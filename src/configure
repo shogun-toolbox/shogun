@@ -963,23 +963,16 @@ check_doxygen()
 
 	if test "$_doxygen" = yes || test "$_doxygen" = auto
 	then
-		if doxygen --version 2>&1 >/dev/null 2>&1
+		_doxygen_version=`doxygen --version 2>/dev/null`
+
+		if test -n "$_doxygen_version"
 		then
-
-			DOXY_MAJOR=`doxygen --version | cut -d '.' -f 1`
-			DOXY_MINOR=`doxygen --version | cut -d '.' -f 2`
-
-			if test "$DOXY_MAJOR" -ge 1 && test "$DOXY_MINOR" -ge 6
+			if assert_version doxygen $_doxygen $_doxygen_version 1.6.0
 			then
-				echores "`doxygen --version`"
+				echores "$_doxygen_version"
 				_doxygen=yes
 			else
-				if test "$_doxygen" = yes
-				then
-					die "doxygen version 1.6.0 or higher required for documentation"
-				else
-					echores "doxygen version 1.6.0 or higher required for documentation"
-				fi
+				_doxygen=no
 			fi
 		else
 			if test "$_doxygen" = yes
@@ -3813,10 +3806,9 @@ test_modular()
 		echocheck "SWIG"
 		if ${SWIG} -version >/dev/null 2>&1
 		then
-			_swig_version=`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`
-			if assert_version swig $_swig $_swig_version; then
-				echores "`${SWIG} -version 2>&1 | grep Version | cut -f 3 -d ' '`"
-
+			_swig_version=`swig -version 2>/dev/null | grep Version | cut -f 3 -d ' '`
+			if assert_version swig $_swig $_swig_version 2.0.4; then
+				echores "$_swig_version"
 				_swig=yes
 
 				if cygwin
@@ -3849,68 +3841,20 @@ test_modular()
 
 		if test "$_octave" = yes && test "$_octave_modular" != no
 		then
-			echocheck "SWIG Octave Support"
-			if [ `echo "$_swig_version" | cut -f 1 -d '.'` -ge 2 ] || \
-				[ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
-				[ `echo "$_swig_version" | cut -f 3 -d '.'` -ge 36 ]
-			then
-				if [ `echo "$_octave_version" | cut -f 1 -d '.'` -ge 3 ] || \
-					[ `echo "$_octave_version" | cut -f 2 -d '.'` -ge 2 ]
-				then
-					if [ `echo "$_swig_version" | cut -f 1 -d '.'` -ge 2 ] || \
-						[ `echo "$_swig_version" | cut -f 2 -d '.'` -ge 4 ] || \
-						[ `echo "$_swig_version" | cut -f 3 -d '.'` -ge 40 ]
-					then
-						PARTS="$PARTS octave_modular"
-						OCTAVE_MODULAR_TARGET=octave_modular
-						echores "yes"
-					else
-						if test "$_octave_modular" = yes ; then
-							die "swig too old: Version 1.3.40 or later required for octave 3.2.x or later; swig version 1.3.36 or later is sufficient for octave 3.0.x."
-						else
-							echores "swig too old: Version 1.3.40 or later required for octave 3.2.x or later; swig version 1.3.36 or later is sufficient for octave 3.0.x."
-						fi
-
-					fi
-				else
-					PARTS="$PARTS octave_modular"
-					OCTAVE_MODULAR_TARGET=octave_modular
-					echores "yes"
-				fi
-			else
-				if test "$_octave_modular" = yes ; then
-					die "swig too old version 1.3.36 or later required"
-				else
-					echores "too old version 1.3.36 or later required"
-				fi
-			fi
+			PARTS="$PARTS octave_modular"
+			OCTAVE_MODULAR_TARGET=octave_modular
 		fi
 
 		if test "$_python" = yes && test "$_python_modular" != no
 		then
-			echocheck "SWIG Python Support"
 			PARTS="$PARTS python_modular"
 			PYTHON_MODULAR_TARGET=python_modular
-			echores "yes"
 		fi
 
 		if test "$_r" = yes && test "$_r_modular" != no
 		then
-			echocheck "SWIG R Support"
-			if [ `echo $_swig_version | cut -f 1 -d '.'` -ge 2 ] || \
-				[ `echo $_swig_version | cut -f 2 -d '.'` -ge 4 ] || \
-				[ `echo $_swig_version | cut -f 3 -d '.'` -ge 37 ]
-			then
-				PARTS="$PARTS r_modular"
-				R_MODULAR_TARGET=r_modular
-				echores "yes"
-			else
-				if test "$_r_modular" = yes ; then
-					die "swig too old version 1.3.37 or later required"
-				else
-					echores "too old version 1.3.37 or later required"
-				fi
-			fi
+			PARTS="$PARTS r_modular"
+			R_MODULAR_TARGET=r_modular
 		fi
 
 		if test "$_java_modular" != no
@@ -5025,13 +4969,14 @@ test_static_linking()
 		fi
 	fi
 }
+
 echo_check
 head_check
 parse_arguments $@
 set_install_dirs
-determine_system_name
 detect_ldd
 detect_cc
+determine_system_name
 check_makedepend
 check_python
 check_pkg_config
