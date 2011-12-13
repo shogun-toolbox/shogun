@@ -46,6 +46,16 @@ class CKernelMachine : public CMachine
 		/** default constructor */
 		CKernelMachine();
 
+        /** Convenience constructor to initialize a trained kernel
+         * machine
+         *
+         * @param k kernel 
+         * @param alphas vector of alpha weights
+         * @param svs indices of examples, i.e. i's for x_i
+         * @param b bias term
+         */
+        CKernelMachine(CKernel* k, SGVector<float64_t> alphas, SGVector<int32_t> svs, float64_t b);
+
 		/** destructor */
 		virtual ~CKernelMachine();
 
@@ -54,120 +64,81 @@ class CKernelMachine : public CMachine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const {
-			return "KernelMachine"; }
+		virtual const char* get_name() const { return "KernelMachine"; }
 
 		/** set kernel
 		 *
 		 * @param k kernel
 		 */
-		inline void set_kernel(CKernel* k)
-		{
-			SG_UNREF(kernel);
-			SG_REF(k);
-			kernel=k;
-		}
+		void set_kernel(CKernel* k);
 
 		/** get kernel
 		 *
 		 * @return kernel
 		 */
-		inline CKernel* get_kernel()
-		{
-			SG_REF(kernel);
-			return kernel;
-		}
+		CKernel* get_kernel();
 
 		/** set batch computation enabled
 		 *
 		 * @param enable if batch computation shall be enabled
 		 */
-		inline void set_batch_computation_enabled(bool enable)
-		{
-			use_batch_computation=enable;
-		}
+		void set_batch_computation_enabled(bool enable);
 
 		/** check if batch computation is enabled
 		 *
 		 * @return if batch computation is enabled
 		 */
-		inline bool get_batch_computation_enabled()
-		{
-			return use_batch_computation;
-		}
+		bool get_batch_computation_enabled();
 
 		/** set linadd enabled
 		 *
 		 * @param enable if linadd shall be enabled
 		 */
-		inline void set_linadd_enabled(bool enable)
-		{
-			use_linadd=enable;
-		}
+		void set_linadd_enabled(bool enable);
 
 		/** check if linadd is enabled
 		 *
 		 * @return if linadd is enabled
 		 */
-		inline bool get_linadd_enabled()
-		{
-			return use_linadd ;
-		}
+		bool get_linadd_enabled();
 
 		/** set state of bias
 		 *
 		 * @param enable_bias if bias shall be enabled
 		 */
-		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
+		void set_bias_enabled(bool enable_bias);
 
 		/** get state of bias
 		 *
 		 * @return state of bias
 		 */
-		inline bool get_bias_enabled() { return use_bias; }
+		bool get_bias_enabled();
 
 		/** get bias
 		 *
 		 * @return bias
 		 */
-		inline float64_t get_bias()
-		{
-			return m_bias;
-		}
+		float64_t get_bias();
 
 		/** set bias to given value
 		 *
 		 * @param bias new bias
 		 */
-		inline void set_bias(float64_t bias)
-		{
-			m_bias=bias;
-		}
+		void set_bias(float64_t bias);
 
 		/** get support vector at given index
 		 *
 		 * @param idx index of support vector
 		 * @return support vector
 		 */
-		inline int32_t get_support_vector(int32_t idx)
-		{
-			ASSERT(m_svs.vector && idx<m_svs.vlen);
-			return m_svs.vector[idx];
-		}
+		int32_t get_support_vector(int32_t idx);
 
 		/** get alpha at given index
 		 *
 		 * @param idx index of alpha
 		 * @return alpha
 		 */
-		inline float64_t get_alpha(int32_t idx)
-		{
-			if (!m_alpha.vector)
-				SG_ERROR("No alphas set\n");
-			if (idx>=m_alpha.vlen)
-				SG_ERROR("Alphas index (%d) out of range (%d)\n", idx, m_svs.vlen);
-			return m_alpha.vector[idx];
-		}
+		float64_t get_alpha(int32_t idx);
 
 		/** set support vector at given index to given value
 		 *
@@ -175,15 +146,7 @@ class CKernelMachine : public CMachine
 		 * @param val new value of support vector
 		 * @return if operation was successful
 		 */
-		inline bool set_support_vector(int32_t idx, int32_t val)
-		{
-			if (m_svs.vector && idx<m_svs.vlen)
-				m_svs.vector[idx]=val;
-			else
-				return false;
-
-			return true;
-		}
+		bool set_support_vector(int32_t idx, int32_t val);
 
 		/** set alpha at given index to given value
 		 *
@@ -191,99 +154,41 @@ class CKernelMachine : public CMachine
 		 * @param val new value of alpha vector
 		 * @return if operation was successful
 		 */
-		inline bool set_alpha(int32_t idx, float64_t val)
-		{
-			if (m_alpha.vector && idx<m_alpha.vlen)
-				m_alpha.vector[idx]=val;
-			else
-				return false;
-
-			return true;
-		}
+		bool set_alpha(int32_t idx, float64_t val);
 
 		/** get number of support vectors
 		 *
 		 * @return number of support vectors
 		 */
-		inline int32_t get_num_support_vectors()
-		{
-			return m_svs.vlen;
-		}
+		int32_t get_num_support_vectors();
 
 		/** set alphas to given values
 		 *
 		 * @param alphas float vector with all alphas to set
 		 */
-		void set_alphas(SGVector<float64_t> alphas)
-		{
-			m_alpha = alphas;
-		}
+		void set_alphas(SGVector<float64_t> alphas);
 
 		/** set support vectors to given values
 		 *
 		 * @param svs integer vector with all support vectors indexes to set
 		 */
-		void set_support_vectors(SGVector<int32_t> svs)
-		{
-			m_svs = svs;
-		}
+		void set_support_vectors(SGVector<int32_t> svs);
 
 		/** get all support vectors
 		 *
 		 */
-		SGVector<int32_t> get_support_vectors()
-		{
-			int32_t nsv = get_num_support_vectors();
-			int32_t* svs = NULL;
-
-			if (nsv>0)
-			{
-				svs = SG_MALLOC(int32_t, nsv);
-				for(int32_t i=0; i<nsv; i++)
-					svs[i] = get_support_vector(i);
-			}
-
-			return SGVector<int32_t>(svs,nsv);
-		}
+		SGVector<int32_t> get_support_vectors();
 
 		/** get all alphas
 		 *
 		 */
-		SGVector<float64_t> get_alphas()
-		{
-			int32_t nsv = get_num_support_vectors();
-			float64_t* alphas = NULL;
-
-			if (nsv>0)
-			{
-				alphas = SG_MALLOC(float64_t, nsv);
-				for(int32_t i=0; i<nsv; i++)
-					alphas[i] = get_alpha(i);
-			}
-
-			return SGVector<float64_t>(alphas,nsv);
-		}
+		SGVector<float64_t> get_alphas();
 
 		/** create new model
 		 *
 		 * @param num number of alphas and support vectors in new model
 		 */
-		inline bool create_new_model(int32_t num)
-		{
-			m_alpha.destroy_vector();
-			m_svs.destroy_vector();
-
-			m_bias=0;
-
-			if (num>0)
-			{
-				m_alpha= SGVector<float64_t>(num);
-				m_svs= SGVector<int32_t>(num);
-				return (m_alpha.vector!=NULL && m_svs.vector!=NULL);
-			}
-			else
-				return true;
-		}
+		bool create_new_model(int32_t num);
 
 		/** initialise kernel optimisation
 		 *
@@ -323,6 +228,10 @@ class CKernelMachine : public CMachine
 		 * underlying kernel. Then, all SV indices are set to identity.
 		 */
 		virtual void store_model_features();
+
+    private:
+        /** register parameters and do misc init */
+        void init();
 
 	protected:
 		/** kernel */

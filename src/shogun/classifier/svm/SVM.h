@@ -59,6 +59,7 @@ class CSVM : public CKernelMachine
 		 * @param lab the Label object
 		 */
 		CSVM(float64_t C, CKernel* k, CLabels* lab);
+
 		virtual ~CSVM();
 
 		/** set default values for members a SVM object

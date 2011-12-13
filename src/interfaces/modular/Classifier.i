@@ -109,21 +109,6 @@
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 
-#ifdef HAVE_PYTHON
-%pythoncode %{
-  class SVM(CSVM):
-      def __init__(self, kernel, alphas, support_vectors, b):
-          assert(len(alphas)==len(support_vectors))
-          num_sv=len(alphas)
-          CSVM.__init__(self, num_sv)
-          self.set_alphas(alphas)
-          self.set_support_vectors(support_vectors)
-          self.set_kernel(kernel)
-          self.set_bias(b)
-%}
-#endif //HAVE_PYTHON
-
-
 #ifdef USE_SVMLIGHT
 
 %ignore VERSION;
