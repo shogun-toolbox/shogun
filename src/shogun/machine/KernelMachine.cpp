@@ -25,20 +25,23 @@ struct S_THREAD_PARAM
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CKernelMachine::CKernelMachine()
-: CMachine(), kernel(NULL), use_batch_computation(true), use_linadd(true), use_bias(true)
+CKernelMachine::CKernelMachine() : CMachine()
 {
-	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
-	SG_ADD(&use_batch_computation, "use_batch_computation",
-			"Batch computation is enabled.", MS_NOT_AVAILABLE);
-	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", MS_NOT_AVAILABLE);
-	SG_ADD(&use_bias, "use_bias", "Bias shall be used.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_bias, "m_bias", "Bias term.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
+    init();
+}
 
-	m_bias=0.0;
+CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
+        SGVector<int32_t> svs, float64_t b) : CMachine()
+{
+    init();
+
+    int32_t num_sv=svs.vlen;
+    ASSERT(num_sv == alphas.vlen);
+    create_new_model(num_sv);
+    set_alphas(alphas);
+    set_support_vectors(svs);
+    set_kernel(kernel);
+    set_bias(b);
 }
 
 CKernelMachine::~CKernelMachine()
@@ -47,6 +50,156 @@ CKernelMachine::~CKernelMachine()
 
 	SG_FREE(m_alpha.vector);
 	SG_FREE(m_svs.vector);
+}
+
+void CKernelMachine::set_kernel(CKernel* k)
+{
+    SG_UNREF(kernel);
+    SG_REF(k);
+    kernel=k;
+}
+
+CKernel* CKernelMachine::get_kernel()
+{
+    SG_REF(kernel);
+    return kernel;
+}
+
+void CKernelMachine::set_batch_computation_enabled(bool enable)
+{
+    use_batch_computation=enable;
+}
+
+bool CKernelMachine::get_batch_computation_enabled()
+{
+    return use_batch_computation;
+}
+
+void CKernelMachine::set_linadd_enabled(bool enable)
+{
+    use_linadd=enable;
+}
+
+bool CKernelMachine::get_linadd_enabled()
+{
+    return use_linadd;
+}
+
+void CKernelMachine::set_bias_enabled(bool enable_bias)
+{
+    use_bias=enable_bias;
+}
+
+bool CKernelMachine::get_bias_enabled()
+{
+    return use_bias;
+}
+
+float64_t CKernelMachine::get_bias()
+{
+    return m_bias;
+}
+
+void CKernelMachine::set_bias(float64_t bias)
+{
+    m_bias=bias;
+}
+
+int32_t CKernelMachine::get_support_vector(int32_t idx)
+{
+    ASSERT(m_svs.vector && idx<m_svs.vlen);
+    return m_svs.vector[idx];
+}
+
+float64_t CKernelMachine::get_alpha(int32_t idx)
+{
+    if (!m_alpha.vector)
+        SG_ERROR("No alphas set\n");
+    if (idx>=m_alpha.vlen)
+        SG_ERROR("Alphas index (%d) out of range (%d)\n", idx, m_svs.vlen);
+    return m_alpha.vector[idx];
+}
+
+bool CKernelMachine::set_support_vector(int32_t idx, int32_t val)
+{
+    if (m_svs.vector && idx<m_svs.vlen)
+        m_svs.vector[idx]=val;
+    else
+        return false;
+
+    return true;
+}
+
+bool CKernelMachine::set_alpha(int32_t idx, float64_t val)
+{
+    if (m_alpha.vector && idx<m_alpha.vlen)
+        m_alpha.vector[idx]=val;
+    else
+        return false;
+
+    return true;
+}
+
+int32_t CKernelMachine::get_num_support_vectors()
+{
+    return m_svs.vlen;
+}
+
+void CKernelMachine::set_alphas(SGVector<float64_t> alphas)
+{
+    m_alpha = alphas;
+}
+
+void CKernelMachine::set_support_vectors(SGVector<int32_t> svs)
+{
+    m_svs = svs;
+}
+
+SGVector<int32_t> CKernelMachine::get_support_vectors()
+{
+    int32_t nsv = get_num_support_vectors();
+    int32_t* svs = NULL;
+
+    if (nsv>0)
+    {
+        svs = SG_MALLOC(int32_t, nsv);
+        for(int32_t i=0; i<nsv; i++)
+            svs[i] = get_support_vector(i);
+    }
+
+    return SGVector<int32_t>(svs,nsv);
+}
+
+SGVector<float64_t> CKernelMachine::get_alphas()
+{
+    int32_t nsv = get_num_support_vectors();
+    float64_t* alphas = NULL;
+
+    if (nsv>0)
+    {
+        alphas = SG_MALLOC(float64_t, nsv);
+        for(int32_t i=0; i<nsv; i++)
+            alphas[i] = get_alpha(i);
+    }
+
+    return SGVector<float64_t>(alphas,nsv);
+}
+
+inline bool CKernelMachine::create_new_model(int32_t num)
+{
+    m_alpha.destroy_vector();
+    m_svs.destroy_vector();
+
+    m_bias=0;
+
+    if (num>0)
+    {
+        m_alpha= SGVector<float64_t>(num);
+        m_svs= SGVector<int32_t>(num);
+        return (m_alpha.vector!=NULL && m_svs.vector!=NULL);
+    }
+    else
+        return true;
 }
 
 bool CKernelMachine::init_kernel_optimization()
@@ -285,4 +438,23 @@ void CKernelMachine::store_model_features()
 	kernel->init(sv_features, rhs);
 
 	SG_UNREF(rhs);
+}
+
+void CKernelMachine::init()
+{
+	m_bias=0.0;
+    kernel=NULL;
+    use_batch_computation=true;
+    use_linadd=true;
+    use_bias=true;
+
+	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	SG_ADD(&use_batch_computation, "use_batch_computation",
+			"Batch computation is enabled.", MS_NOT_AVAILABLE);
+	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", MS_NOT_AVAILABLE);
+	SG_ADD(&use_bias, "use_bias", "Bias shall be used.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_bias, "m_bias", "Bias term.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
 }
