@@ -27,7 +27,7 @@
 	     types into different feature types.
 	   - LibSVM is now pthread-parallelized.
 	   - Create modshogun.dll for csharp.
-	   - Various new c# examples (thanks Daniel Korn).
+	   - Various new c# examples (thanks Daniel Korn and Ori Cohen).
 	   - Dimensionality reduction examples application is introduced
 	* Bugfixes:
 	   - Octave_static and octave_modular examples fix.
