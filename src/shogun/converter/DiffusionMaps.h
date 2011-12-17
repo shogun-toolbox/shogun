@@ -23,7 +23,13 @@ class CFeatures;
 class CKernel;
 
 /** @brief CDiffusionMaps used to preprocess given data using 
-  * diffusion maps dimensionality reduction technique
+  * diffusion maps dimensionality reduction technique according to
+  * 
+  * Coifman, R., & Lafon, S. (2006). 
+  * Diffusion maps. 
+  * Applied and Computational Harmonic Analysis, 21(1), 5-30. Elsevier. 
+  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S1063520306000546
+  *
   */
 class CDiffusionMaps: public CEmbeddingConverter
 {
