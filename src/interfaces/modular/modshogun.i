@@ -7,7 +7,6 @@
  * Written (W) 2011 Soeren Sonnenburg
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-
 %define DOCSTR
 "The `modshogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef
@@ -17,6 +16,20 @@
 
 /* Documentation */
 %feature("autodoc","0");
+
+#ifdef SWIGPYTHON
+#include <object.h>
+%{
+    static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
+%}
+
+%feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
+%feature("python:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
+/*%feature("python:slot", "tp_hash", functype="hashfunc") shogun::CSGObject::myHashFunc;*/
+%feature("python:tp_print") shogun::CSGObject "print_sgobject";
+/*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;
+%feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
+#endif
 
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY

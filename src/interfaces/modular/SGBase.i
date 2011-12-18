@@ -113,17 +113,16 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <Rdefines.h>
 #endif
 
+#ifdef SWIGPYTHON
+ #include <shogun/io/SerializableFile.h>
+ #include <shogun/io/SerializableAsciiFile.h>
+ #include <shogun/io/SerializableHdf5File.h>
+
+ static int pickle_ascii;
+#endif
+
  using namespace shogun;
 %}
-
-/*#ifdef SWIGJAVA
-%pragma(java) moduleimports=%{
-    import java.io.*; // For Serializable
-%}
-%pragma(java) jniclassinterfaces="Serializable"
-%pragma(java) moduleinterfaces="Serializable"
-#endif
-*/
 
 %init %{
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
@@ -134,10 +133,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
                 &sg_global_print_error);
 #endif
-#endif
-
-#ifdef SWIGPYTHON
-        import_array();
 #endif
 
 #ifdef SWIGRUBY
@@ -185,7 +180,40 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
                 exit(EXIT_FAILURE);
         }*/
 #endif
+
 %}
+
+#ifdef SWIGPYTHON
+%{
+        static int print_sgobject(PyObject *pyobj, FILE *f, int flags) {
+            void *argp;
+            int res;
+            res = SWIG_ConvertPtr(pyobj, &argp, SWIGTYPE_p_shogun__CSGObject, 0);
+            if (!SWIG_IsOK(res)) {
+                SWIG_Error(SWIG_ArgError(res), "in method 'CSGObject::tp_print', argument 1 of type 'CSGObject *'");
+                return SWIG_ERROR;
+            }
+
+            CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
+            fprintf(f, "%s", obj->get_name());
+            return 0;
+        }
+%}
+
+%typemap(out) PyObject* __reduce_ex__(int proto)
+{
+    return PyObject_CallMethod(self, (char*) "__reduce__", (char*) "");
+}
+
+%typemap(in) __setstate__(PyObject* state) {
+    $1 = $input;
+}       
+
+%typemap(out) PyObject* __getstate__()
+{
+    $result=$1;
+}
+#endif
 
 %exception
 {
@@ -232,6 +260,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 %include <shogun/io/SGIO.h>
 SERIALIZABLE_DUMMY(shogun::SGIO);
+
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 SERIALIZABLE_DUMMY(shogun::Version);
@@ -239,91 +268,137 @@ SERIALIZABLE_DUMMY(shogun::Version);
 SERIALIZABLE_DUMMY(shogun::Parallel);
 
 #ifdef SWIGPYTHON
+namespace shogun
+{
+
+    %extend CSGObject
+    {
+        const char* __str__() const
+        {
+            return $self->get_name();
+        }
+
+        const char* __repr__() const
+        {
+            return $self->get_name();
+        }
+
+        PyObject* __reduce_ex__(int proto)
+        {
+            pickle_ascii= (proto==0) ? 0 : 1;
+            return NULL;
+        }
+
+        PyObject* __getstate__()
+        {
+            char* fname=tmpnam(NULL);
+            FILE* tmpf=fopen(fname, "w");;
+            CSerializableFile* fstream=NULL;
+#ifdef HAVE_HDF5
+            if (pickle_ascii)
+                fstream = new CSerializableHdf5File(fname, 'w');
+            else
+                fstream = new CSerializableAsciiFile(fname, 'w');
+#else
+            fstream = new CSerializableAsciiFile(fname, 'w');
+#endif
+            $self->save_serializable(fstream);
+            fstream->close();
+            delete fstream;
+
+            size_t len=0;
+            char* result=CFile::read_whole_file(fname, len);
+            unlink(fname);
+
+            PyObject* str=PyString_FromStringAndSize(result, len);
+            SG_FREE(result);
+
+            PyObject* tuple=PyTuple_New(2);
+            PyTuple_SetItem(tuple, 0, PyBool_FromLong(pickle_ascii));
+            PyTuple_SetItem(tuple, 1, str);
+            return tuple;
+        }
+
+
+        void __setstate__(PyObject* state)
+        {
+            PyObject* py_ascii = PyTuple_GetItem(state,0);
+            pickle_ascii= (py_ascii == Py_True) ? 1 : 0;
+            PyObject* py_str = PyTuple_GetItem(state,1);
+            char* str=NULL;
+            Py_ssize_t len=0;
+            PyString_AsStringAndSize(py_str, &str, &len);
+
+            char* fname=tmpnam(NULL);
+            FILE* tmpf=fopen(fname, "w");;
+            size_t total = fwrite(str, (size_t) 1, (size_t) len, tmpf);
+            fclose(tmpf);
+            ASSERT(total==len);
+
+            CSerializableFile* fstream=NULL;
+#ifdef HAVE_HDF5
+            if (pickle_ascii)
+                fstream = new CSerializableHdf5File(fname, 'r');
+            else
+                fstream = new CSerializableAsciiFile(fname, 'r');
+#else
+            if (!pickle_ascii)
+                SG_SERROR("File contains an HDF5 stream but " \
+                        "Shogun was not compiled with HDF5" \
+                        " support! -  cannot load.")
+            fstream = new CSerializableAsciiFile(fname, 'r');
+#endif
+            $self->load_serializable(fstream);
+            fstream->close();
+            delete fstream;
+            unlink(fname);
+        }
+
+        /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
+    }
+}
+
 
 %pythoncode %{
-import tempfile, random, os, exceptions
+import copy_reg
 
-import modshogun
+def _reconstructor(cls, base, state):
+    if base is object:
+        obj = cls() #object.__new__(cls)
+    else:
+        obj = base.__new__(cls, state)
+        if base.__init__ != object.__init__:
+            base.__init__(obj, state)
+    return obj
 
-def __SGgetstate__(self):
-    fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
-        + str(random.randint(0, 1e15))
 
+def _reduce_ex(self, proto):
+    base = object # not really reachable
+    if base is object:
+        state = None
+    else:
+        if base is self.__class__:
+            raise TypeError, "can't pickle %s objects" % base.__name__
+        state = base(self)
+    args = (self.__class__, base, state)
     try:
-        fstream = modshogun.SerializableAsciiFile(fname, "w") \
-            if self.__pickle_ascii__ \
-            else modshogun.SerializableHDF5File(fname, "w")
-    except exceptions.AttributeError:
-        fstream = modshogun.SerializableAsciiFile(fname, "w")
-        self.__pickle_ascii__ = True
+        getstate = self.__getstate__
+    except AttributeError:
+        if getattr(self, "__slots__", None):
+            raise TypeError("a class that defines __slots__ without "
+                            "defining __getstate__ cannot be pickled")
+        try:
+            dict = self.__dict__
+        except AttributeError:
+            dict = None
+    else:
+        dict = getstate()
+    if dict:
+        return _reconstructor, args, dict
+    else:   
+        return _reconstructor, args
 
-    if not self.save_serializable(fstream):
-        fstream.close(); os.remove(fname)
-        raise exceptions.IOError("Could not dump Shogun object!")
-    fstream.close()
-    fstream = open(fname, "r"); result = fstream.read();
-    fstream.close()
-
-    os.remove(fname)
-    return (self.__pickle_ascii__, result)
-
-def __SGsetstate__(self, state_tuple):
-    self.__init__()
-
-    fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
-        + str(random.randint(0, 1e15))
-
-    fstream = open(fname, "w"); fstream.write(state_tuple[1]);
-    fstream.close()
-
-    try:
-        fstream = modshogun.SerializableAsciiFile(fname, "r") \
-            if state_tuple[0] \
-            else modshogun.SerializableHDF5File(fname, "r")
-    except exceptions.AttributeError:
-        raise exceptions.IOError("File contains an HDF5 stream but " \
-                                 "Shogun was not compiled with HDF5" \
-                                 " support!")
-
-    if not self.load_serializable(fstream):
-        fstream.close(); os.remove(fname)
-        raise exceptions.IOError("Could not load Shogun object!")
-    fstream.close()
-
-    os.remove(fname)
-
-def __SGreduce_ex__(self, protocol):
-    self.__pickle_ascii__ = True if protocol == 0 else False
-    return super(self.__class__, self).__reduce__()
-
-def __SGstr__(self):
-    fname = tempfile.gettempdir() + "/" + tempfile.gettempprefix() \
-        + str(random.randint(0, 1e15))
-
-    fstream = modshogun.SerializableAsciiFile(fname, "w")
-    if not self.save_serializable(fstream):
-        fstream.close(); os.remove(fname)
-        raise exceptions.IOError("Could not dump Shogun object!")
-    fstream.close()
-
-    fstream = open(fname, "r"); result = fstream.read();
-    fstream.close()
-
-    os.remove(fname)
-    return result
-
-def __SGeq__(self, other):
-    return self.__str__() == str(other)
-
-def __SGneq__(self, other):
-    return self.__str__() != str(other)
-
-SGObject.__setstate__ = __SGsetstate__
-SGObject.__getstate__ = __SGgetstate__
-SGObject.__reduce_ex__ = __SGreduce_ex__
-SGObject.__str__ = __SGstr__
-SGObject.__eq__ = __SGeq__
-SGObject.__neq__ = __SGneq__
+copy_reg._reduce_ex=_reduce_ex
 %}
 
 #endif /* SWIGPYTHON  */
