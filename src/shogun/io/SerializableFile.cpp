@@ -60,7 +60,9 @@ CSerializableFile::~CSerializableFile()
 void
 CSerializableFile::init(FILE* fstream, char task, const char* filename)
 {
-	m_fstream = fstream; m_task = task; m_filename = strdup(filename);
+	m_fstream = fstream;
+    m_task = task;
+    m_filename = strdup(filename);
 	m_reader = NULL;
 }
 
