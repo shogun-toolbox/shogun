@@ -399,6 +399,14 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const { return "File"; }
 
+    /** read whole file in memory
+     *
+     * @param fname - file name
+     * @param len - length of file (returned by reference)
+     * @return buffer to read file - needs to be freed with SG_FREE
+     */
+    static char* read_whole_file(char* fname, size_t& len);
+
 protected:
 	/** file object */
 	FILE* file;

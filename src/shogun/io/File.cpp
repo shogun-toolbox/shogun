@@ -177,3 +177,18 @@ char* CFile::get_variable_name()
 {
 	return strdup(variable_name);
 }
+
+char* CFile::read_whole_file(char* fname, size_t& len)
+{
+    FILE* tmpf=fopen(fname, "r");
+    ASSERT(tmpf);
+    fseek(tmpf,0,SEEK_END);
+    len=ftell(tmpf);
+    ASSERT(len>0);
+    rewind(tmpf);
+    char* result = SG_MALLOC(char, len);
+    size_t total=fread(result,1,len,tmpf);
+    ASSERT(total==len);
+    fclose(tmpf);
+    return result;
+}
