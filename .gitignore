@@ -70,6 +70,7 @@ configure.log
 /src/interfaces/*_modular/modshogun_ignores.i
 /src/interfaces/*_modular/*_includes.i
 /src/interfaces/*_modular/Makefile
+/src/interfaces/*_modular/Converter.i
 
 # particular modular ones
 /src/interfaces/csharp_modular/*.cs
