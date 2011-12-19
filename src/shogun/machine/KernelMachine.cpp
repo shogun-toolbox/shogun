@@ -185,7 +185,7 @@ SGVector<float64_t> CKernelMachine::get_alphas()
     return SGVector<float64_t>(alphas,nsv);
 }
 
-inline bool CKernelMachine::create_new_model(int32_t num)
+bool CKernelMachine::create_new_model(int32_t num)
 {
     m_alpha.destroy_vector();
     m_svs.destroy_vector();
