@@ -616,7 +616,6 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 {
 	int32_t num = totdoc;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
-	int nk = (int) num_kernels; // calling external lib
 	float64_t sumalpha = 0;
 	float64_t* sumw=SG_MALLOC(float64_t, num_kernels);
 
@@ -624,6 +623,7 @@ void CSVRLight::call_mkl_callback(float64_t* a, int32_t* label, float64_t* lin, 
 		sumalpha-=a[i]*(learn_parm->eps[i]-label[i]*c[i]);
 
 #ifdef HAVE_LAPACK
+	int nk = (int) num_kernels; // calling external lib
 	double* alphay  = SG_MALLOC(double, num);
 	for (int32_t i=0; i<num; i++)
 		alphay[i]=a[i]*label[i];
