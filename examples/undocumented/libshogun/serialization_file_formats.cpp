@@ -61,7 +61,7 @@ void check_content_equal(Parameter* save_param, Parameter* load_param)
 		ASSERT(sm->matrix[i]==lm->matrix[i]);
 }
 
-void test_acsii(Parameter* save_param, Parameter* load_param)
+void test_ascii(Parameter* save_param, Parameter* load_param)
 {
 	SG_SPRINT("testing ascii serialization\n");
 	SG_SPRINT("to save:\n");
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
 	test_json(sp, lp);
 
 	reset_values(sp, lp);
-	test_acsii(sp, lp);
+	test_ascii(sp, lp);
 
 	/* still leaks memory TODO */
 	reset_values(sp, lp);
