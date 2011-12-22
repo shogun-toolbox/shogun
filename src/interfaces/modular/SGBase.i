@@ -292,7 +292,7 @@ namespace shogun
         PyObject* __getstate__()
         {
             char* fname=tmpnam(NULL);
-            FILE* tmpf=fopen(fname, "w");;
+            FILE* tmpf=fopen(fname, "w");
             CSerializableFile* fstream=NULL;
 #ifdef HAVE_HDF5
             if (pickle_ascii)
@@ -345,7 +345,7 @@ namespace shogun
             if (!pickle_ascii)
                 SG_SERROR("File contains an HDF5 stream but " \
                         "Shogun was not compiled with HDF5" \
-                        " support! -  cannot load.")
+                        " support! -  cannot load.");
             fstream = new CSerializableAsciiFile(fname, 'r');
 #endif
             $self->load_serializable(fstream);
