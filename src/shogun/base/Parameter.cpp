@@ -603,280 +603,280 @@ void Parameter::add(SGVector<bool>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_BOOL, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<char>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_CHAR, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<int8_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_INT8, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<uint8_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_UINT8, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<int16_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_INT16, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<uint16_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_UINT16, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<int32_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_INT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<uint32_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_UINT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<int64_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_INT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<uint64_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_UINT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<float32_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_FLOAT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<float64_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_FLOAT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<floatmax_t>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_FLOATMAX, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<CSGObject*>* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_SGOBJECT, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<bool> >* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_BOOL, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<char> >* param, const char* name,
 		const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_CHAR, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<int8_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_INT8, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<uint8_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_UINT8, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<int16_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_INT16, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<uint16_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_UINT16, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<int32_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_INT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<uint32_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_UINT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<int64_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_INT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<uint64_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_UINT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<float32_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_FLOAT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<float64_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_FLOAT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGString<floatmax_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_STRING, PT_FLOATMAX, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<bool> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_BOOL, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<char> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_CHAR, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<int8_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_INT8, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<uint8_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_UINT8, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<int16_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_INT16, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<uint16_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_UINT16, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<int32_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_INT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<uint32_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_UINT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<int64_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_INT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<uint64_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_UINT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<float32_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_FLOAT32, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<float64_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_FLOAT64, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 void Parameter::add(SGVector<SGSparseVector<floatmax_t> >* param,
 		const char* name, const char* description)
 {
 	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_FLOATMAX, &param->vlen);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->vector, name, description);
 }
 
 /* **************************************************************** */
@@ -1250,7 +1250,7 @@ void Parameter::add(SGMatrix<bool>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_BOOL, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<char>* param, const char* name,
@@ -1258,7 +1258,7 @@ void Parameter::add(SGMatrix<char>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_CHAR, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<int8_t>* param, const char* name,
@@ -1266,7 +1266,7 @@ void Parameter::add(SGMatrix<int8_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_INT8, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<uint8_t>* param, const char* name,
@@ -1274,7 +1274,7 @@ void Parameter::add(SGMatrix<uint8_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_UINT8, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<int16_t>* param, const char* name,
@@ -1282,7 +1282,7 @@ void Parameter::add(SGMatrix<int16_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_INT16, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<uint16_t>* param, const char* name,
@@ -1290,7 +1290,7 @@ void Parameter::add(SGMatrix<uint16_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_UINT16, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<int32_t>* param, const char* name,
@@ -1298,7 +1298,7 @@ void Parameter::add(SGMatrix<int32_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_INT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<uint32_t>* param, const char* name,
@@ -1306,7 +1306,7 @@ void Parameter::add(SGMatrix<uint32_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_UINT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<int64_t>* param, const char* name,
@@ -1314,7 +1314,7 @@ void Parameter::add(SGMatrix<int64_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_INT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<uint64_t>* param, const char* name,
@@ -1322,7 +1322,7 @@ void Parameter::add(SGMatrix<uint64_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_UINT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<float32_t>* param, const char* name,
@@ -1330,7 +1330,7 @@ void Parameter::add(SGMatrix<float32_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_FLOAT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<float64_t>* param, const char* name,
@@ -1338,7 +1338,7 @@ void Parameter::add(SGMatrix<float64_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_FLOAT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<floatmax_t>* param, const char* name,
@@ -1346,7 +1346,7 @@ void Parameter::add(SGMatrix<floatmax_t>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_FLOATMAX, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<CSGObject*>* param, const char* name,
@@ -1354,7 +1354,7 @@ void Parameter::add(SGMatrix<CSGObject*>* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_SGOBJECT, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<bool> >* param, const char* name,
@@ -1362,7 +1362,7 @@ void Parameter::add(SGMatrix<SGString<bool> >* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_BOOL, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<char> >* param, const char* name,
@@ -1370,7 +1370,7 @@ void Parameter::add(SGMatrix<SGString<char> >* param, const char* name,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_CHAR, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<int8_t> >* param,
@@ -1378,7 +1378,7 @@ void Parameter::add(SGMatrix<SGString<int8_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_INT8, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<uint8_t> >* param,
@@ -1386,7 +1386,7 @@ void Parameter::add(SGMatrix<SGString<uint8_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_UINT8, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<int16_t> >* param,
@@ -1394,7 +1394,7 @@ void Parameter::add(SGMatrix<SGString<int16_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_INT16, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<uint16_t> >* param,
@@ -1402,7 +1402,7 @@ void Parameter::add(SGMatrix<SGString<uint16_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_UINT16, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<int32_t> >* param,
@@ -1410,7 +1410,7 @@ void Parameter::add(SGMatrix<SGString<int32_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_INT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<uint32_t> >* param,
@@ -1418,7 +1418,7 @@ void Parameter::add(SGMatrix<SGString<uint32_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_UINT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<int64_t> >* param,
@@ -1426,7 +1426,7 @@ void Parameter::add(SGMatrix<SGString<int64_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_INT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<uint64_t> >* param,
@@ -1434,7 +1434,7 @@ void Parameter::add(SGMatrix<SGString<uint64_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_UINT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<float32_t> >* param,
@@ -1442,7 +1442,7 @@ void Parameter::add(SGMatrix<SGString<float32_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_FLOAT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<float64_t> >* param,
@@ -1450,7 +1450,7 @@ void Parameter::add(SGMatrix<SGString<float64_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_FLOAT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGString<floatmax_t> >* param,
@@ -1458,7 +1458,7 @@ void Parameter::add(SGMatrix<SGString<floatmax_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_STRING, PT_FLOATMAX, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<bool> >* param,
@@ -1466,7 +1466,7 @@ void Parameter::add(SGMatrix<SGSparseVector<bool> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_BOOL, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<char> >* param,
@@ -1474,7 +1474,7 @@ void Parameter::add(SGMatrix<SGSparseVector<char> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_CHAR, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<int8_t> >* param,
@@ -1482,7 +1482,7 @@ void Parameter::add(SGMatrix<SGSparseVector<int8_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT8, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<uint8_t> >* param,
@@ -1490,7 +1490,7 @@ void Parameter::add(SGMatrix<SGSparseVector<uint8_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT8, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<int16_t> >* param,
@@ -1498,7 +1498,7 @@ void Parameter::add(SGMatrix<SGSparseVector<int16_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT16, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<uint16_t> >* param,
@@ -1506,7 +1506,7 @@ void Parameter::add(SGMatrix<SGSparseVector<uint16_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT16, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<int32_t> >* param,
@@ -1514,7 +1514,7 @@ void Parameter::add(SGMatrix<SGSparseVector<int32_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<uint32_t> >* param,
@@ -1522,7 +1522,7 @@ void Parameter::add(SGMatrix<SGSparseVector<uint32_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<int64_t> >* param,
@@ -1530,7 +1530,7 @@ void Parameter::add(SGMatrix<SGSparseVector<int64_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<uint64_t> >* param,
@@ -1538,7 +1538,7 @@ void Parameter::add(SGMatrix<SGSparseVector<uint64_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<float32_t> >* param,
@@ -1546,7 +1546,7 @@ void Parameter::add(SGMatrix<SGSparseVector<float32_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT32, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<float64_t> >* param,
@@ -1554,7 +1554,7 @@ void Parameter::add(SGMatrix<SGSparseVector<float64_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT64, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 
 void Parameter::add(SGMatrix<SGSparseVector<floatmax_t> >* param,
@@ -1562,7 +1562,7 @@ void Parameter::add(SGMatrix<SGSparseVector<floatmax_t> >* param,
 {
 	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOATMAX, &param->num_rows,
 			&param->num_cols);
-	add_type(&type, param, name, description);
+	add_type(&type, &param->matrix, name, description);
 }
 /* **************************************************************** */
 /* End of wrappers  */
@@ -1615,23 +1615,7 @@ TParameter::print(const char* prefix)
 void
 TParameter::delete_cont()
 {
-	/* In the case, ctype is a struct (not array of a basic type)
-	 * data does not start at m_parameter, since the latter may have
-	 * methods so move start pointer to array of struct */
-	void* data_start=m_parameter;
-	switch(m_datatype.m_ctype)
-	{
-	case CT_SGVECTOR:
-		data_start=&(((SGVector<char>*)m_parameter)->vector);
-		break;
-	case CT_SGMATRIX:
-		data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
-		break;
-	default:
-		break;
-	}
-
-	if (*(void**) data_start != NULL) {
+	if (*(void**) m_parameter != NULL) {
 		index_t old_length = *m_datatype.m_length_y;
 		switch (m_datatype.m_ctype) {
 		case CT_NDARRAY:
@@ -1646,34 +1630,34 @@ TParameter::delete_cont()
 		case ST_NONE:
 			switch (m_datatype.m_ptype) {
 			case PT_BOOL:
-				SG_FREE(*(bool**) data_start); break;
+				SG_FREE(*(bool**) m_parameter); break;
 			case PT_CHAR:
-				SG_FREE(*(char**) data_start); break;
+				SG_FREE(*(char**) m_parameter); break;
 			case PT_INT8:
-				SG_FREE(*(int8_t**) data_start); break;
+				SG_FREE(*(int8_t**) m_parameter); break;
 			case PT_UINT8:
-				SG_FREE(*(uint8_t**) data_start); break;
+				SG_FREE(*(uint8_t**) m_parameter); break;
 			case PT_INT16:
-				SG_FREE(*(int16_t**) data_start); break;
+				SG_FREE(*(int16_t**) m_parameter); break;
 			case PT_UINT16:
-				SG_FREE(*(uint16_t**) data_start); break;
+				SG_FREE(*(uint16_t**) m_parameter); break;
 			case PT_INT32:
-				SG_FREE(*(int32_t**) data_start); break;
+				SG_FREE(*(int32_t**) m_parameter); break;
 			case PT_UINT32:
-				SG_FREE(*(uint32_t**) data_start); break;
+				SG_FREE(*(uint32_t**) m_parameter); break;
 			case PT_INT64:
-				SG_FREE(*(int64_t**) data_start); break;
+				SG_FREE(*(int64_t**) m_parameter); break;
 			case PT_UINT64:
-				SG_FREE(*(uint64_t**) data_start); break;
+				SG_FREE(*(uint64_t**) m_parameter); break;
 			case PT_FLOAT32:
-				SG_FREE(*(float32_t**) data_start); break;
+				SG_FREE(*(float32_t**) m_parameter); break;
 			case PT_FLOAT64:
-				SG_FREE(*(float64_t**) data_start); break;
+				SG_FREE(*(float64_t**) m_parameter); break;
 			case PT_FLOATMAX:
-				SG_FREE(*(floatmax_t**) data_start); break;
+				SG_FREE(*(floatmax_t**) m_parameter); break;
 			case PT_SGOBJECT:
 				CSGObject** buf =
-					*(CSGObject***) data_start;
+					*(CSGObject***) m_parameter;
 				for (index_t i=0; i<old_length; i++)
 					if (buf[i] != NULL) SG_UNREF(buf[i]);
 				delete buf;
@@ -1683,37 +1667,37 @@ TParameter::delete_cont()
 		case ST_STRING:
 			for (index_t i=0; i<old_length; i++) {
 				SGString<char>* buf = (SGString<char>*) (*(char**)
-						data_start + i *m_datatype.sizeof_stype());
+						m_parameter + i *m_datatype.sizeof_stype());
 				if (buf->slen > 0) SG_FREE(buf->string);
 			}
 
 			switch (m_datatype.m_ptype) {
 			case PT_BOOL:
-				SG_FREE(*(SGString<bool>**) data_start); break;
+				SG_FREE(*(SGString<bool>**) m_parameter); break;
 			case PT_CHAR:
-				SG_FREE(*(SGString<char>**) data_start); break;
+				SG_FREE(*(SGString<char>**) m_parameter); break;
 			case PT_INT8:
-				SG_FREE(*(SGString<int8_t>**) data_start); break;
+				SG_FREE(*(SGString<int8_t>**) m_parameter); break;
 			case PT_UINT8:
-				SG_FREE(*(SGString<uint8_t>**) data_start); break;
+				SG_FREE(*(SGString<uint8_t>**) m_parameter); break;
 			case PT_INT16:
-				SG_FREE(*(SGString<int16_t>**) data_start); break;
+				SG_FREE(*(SGString<int16_t>**) m_parameter); break;
 			case PT_UINT16:
-				SG_FREE(*(SGString<uint16_t>**) data_start); break;
+				SG_FREE(*(SGString<uint16_t>**) m_parameter); break;
 			case PT_INT32:
-				SG_FREE(*(SGString<int32_t>**) data_start); break;
+				SG_FREE(*(SGString<int32_t>**) m_parameter); break;
 			case PT_UINT32:
-				SG_FREE(*(SGString<uint32_t>**) data_start); break;
+				SG_FREE(*(SGString<uint32_t>**) m_parameter); break;
 			case PT_INT64:
-				SG_FREE(*(SGString<int64_t>**) data_start); break;
+				SG_FREE(*(SGString<int64_t>**) m_parameter); break;
 			case PT_UINT64:
-				SG_FREE(*(SGString<uint64_t>**) data_start); break;
+				SG_FREE(*(SGString<uint64_t>**) m_parameter); break;
 			case PT_FLOAT32:
-				SG_FREE(*(SGString<float32_t>**) data_start); break;
+				SG_FREE(*(SGString<float32_t>**) m_parameter); break;
 			case PT_FLOAT64:
-				SG_FREE(*(SGString<float64_t>**) data_start); break;
+				SG_FREE(*(SGString<float64_t>**) m_parameter); break;
 			case PT_FLOATMAX:
-				SG_FREE(*(SGString<floatmax_t>**) data_start); break;
+				SG_FREE(*(SGString<floatmax_t>**) m_parameter); break;
 			case PT_SGOBJECT:
 				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
@@ -1724,37 +1708,37 @@ TParameter::delete_cont()
 		case ST_SPARSE:
 			for (index_t i=0; i<old_length; i++) {
 				SGSparseVector<char>* buf = (SGSparseVector<char>*) (*(char**)
-						data_start + i *m_datatype.sizeof_stype());
+						m_parameter + i *m_datatype.sizeof_stype());
 				if (buf->num_feat_entries > 0) SG_FREE(buf->features);
 			}
 
 			switch (m_datatype.m_ptype) {
 			case PT_BOOL:
-				SG_FREE(*(SGSparseVector<bool>**) data_start); break;
+				SG_FREE(*(SGSparseVector<bool>**) m_parameter); break;
 			case PT_CHAR:
-				SG_FREE(*(SGSparseVector<char>**) data_start); break;
+				SG_FREE(*(SGSparseVector<char>**) m_parameter); break;
 			case PT_INT8:
-				SG_FREE(*(SGSparseVector<int8_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<int8_t>**) m_parameter); break;
 			case PT_UINT8:
-				SG_FREE(*(SGSparseVector<uint8_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<uint8_t>**) m_parameter); break;
 			case PT_INT16:
-				SG_FREE(*(SGSparseVector<int16_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<int16_t>**) m_parameter); break;
 			case PT_UINT16:
-				SG_FREE(*(SGSparseVector<uint16_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<uint16_t>**) m_parameter); break;
 			case PT_INT32:
-				SG_FREE(*(SGSparseVector<int32_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<int32_t>**) m_parameter); break;
 			case PT_UINT32:
-				SG_FREE(*(SGSparseVector<uint32_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<uint32_t>**) m_parameter); break;
 			case PT_INT64:
-				SG_FREE(*(SGSparseVector<int64_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<int64_t>**) m_parameter); break;
 			case PT_UINT64:
-				SG_FREE(*(SGSparseVector<uint64_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<uint64_t>**) m_parameter); break;
 			case PT_FLOAT32:
-				SG_FREE(*(SGSparseVector<float32_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<float32_t>**) m_parameter); break;
 			case PT_FLOAT64:
-				SG_FREE(*(SGSparseVector<float64_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<float64_t>**) m_parameter); break;
 			case PT_FLOATMAX:
-				SG_FREE(*(SGSparseVector<floatmax_t>**) data_start); break;
+				SG_FREE(*(SGSparseVector<floatmax_t>**) m_parameter); break;
 			case PT_SGOBJECT:
 				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
@@ -1763,9 +1747,9 @@ TParameter::delete_cont()
 			}
 			break;
 		} /* switch (m_datatype.m_stype)  */
-	} /* if (*(void**) data_start != NULL)  */
+	} /* if (*(void**) m_parameter != NULL)  */
 
-	*(void**) data_start = NULL;
+	*(void**) m_parameter = NULL;
 }
 
 void
@@ -1776,66 +1760,50 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 	index_t new_length = new_len_y*new_len_x;
 	if (new_length == 0) return;
 
-	/* In the case, ctype is a struct (not array of a basic type)
-	 * data does not start at m_parameter, since the latter may have
-	 * methods so move start pointer to array of struct */
-	void* data_start=m_parameter;
-	switch(m_datatype.m_ctype)
-	{
-	case CT_SGVECTOR:
-		data_start=&(((SGVector<char>*)m_parameter)->vector);
-		break;
-	case CT_SGMATRIX:
-		data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
-		break;
-	default:
-		break;
-	}
-
 	switch (m_datatype.m_stype) {
 	case ST_NONE:
 		switch (m_datatype.m_ptype) {
 		case PT_BOOL:
-			*(bool**) data_start
+			*(bool**) m_parameter
 				= SG_MALLOC(bool, new_length); break;
 		case PT_CHAR:
-			*(char**) data_start
+			*(char**) m_parameter
 				= SG_MALLOC(char, new_length); break;
 		case PT_INT8:
-			*(int8_t**) data_start
+			*(int8_t**) m_parameter
 				= SG_MALLOC(int8_t, new_length); break;
 		case PT_UINT8:
-			*(uint8_t**) data_start
+			*(uint8_t**) m_parameter
 				= SG_MALLOC(uint8_t, new_length); break;
 		case PT_INT16:
-			*(int16_t**) data_start
+			*(int16_t**) m_parameter
 				= SG_MALLOC(int16_t, new_length); break;
 		case PT_UINT16:
-			*(uint16_t**) data_start
+			*(uint16_t**) m_parameter
 				= SG_MALLOC(uint16_t, new_length); break;
 		case PT_INT32:
-			*(int32_t**) data_start
+			*(int32_t**) m_parameter
 				= SG_MALLOC(int32_t, new_length); break;
 		case PT_UINT32:
-			*(uint32_t**) data_start
+			*(uint32_t**) m_parameter
 				= SG_MALLOC(uint32_t, new_length); break;
 		case PT_INT64:
-			*(int64_t**) data_start
+			*(int64_t**) m_parameter
 				= SG_MALLOC(int64_t, new_length); break;
 		case PT_UINT64:
-			*(uint64_t**) data_start
+			*(uint64_t**) m_parameter
 				= SG_MALLOC(uint64_t, new_length); break;
 		case PT_FLOAT32:
-			*(float32_t**) data_start
+			*(float32_t**) m_parameter
 				= SG_MALLOC(float32_t, new_length); break;
 		case PT_FLOAT64:
-			*(float64_t**) data_start
+			*(float64_t**) m_parameter
 				= SG_MALLOC(float64_t, new_length); break;
 		case PT_FLOATMAX:
-			*(floatmax_t**) data_start
+			*(floatmax_t**) m_parameter
 				= SG_MALLOC(floatmax_t, new_length); break;
 		case PT_SGOBJECT:
-			*(CSGObject***) data_start
+			*(CSGObject***) m_parameter
 				= SG_CALLOC(CSGObject*, new_length);
 			break;
 		}
@@ -1843,43 +1811,43 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 	case ST_STRING:
 		switch (m_datatype.m_ptype) {
 		case PT_BOOL:
-			*(SGString<bool>**) data_start
+			*(SGString<bool>**) m_parameter
 				= SG_MALLOC(SGString<bool>, new_length); break;
 		case PT_CHAR:
-			*(SGString<char>**) data_start
+			*(SGString<char>**) m_parameter
 				= SG_MALLOC(SGString<char>, new_length); break;
 		case PT_INT8:
-			*(SGString<int8_t>**) data_start
+			*(SGString<int8_t>**) m_parameter
 				= SG_MALLOC(SGString<int8_t>, new_length); break;
 		case PT_UINT8:
-			*(SGString<uint8_t>**) data_start
+			*(SGString<uint8_t>**) m_parameter
 				= SG_MALLOC(SGString<uint8_t>, new_length); break;
 		case PT_INT16:
-			*(SGString<int16_t>**) data_start
+			*(SGString<int16_t>**) m_parameter
 				= SG_MALLOC(SGString<int16_t>, new_length); break;
 		case PT_UINT16:
-			*(SGString<uint16_t>**) data_start
+			*(SGString<uint16_t>**) m_parameter
 				= SG_MALLOC(SGString<uint16_t>, new_length); break;
 		case PT_INT32:
-			*(SGString<int32_t>**) data_start
+			*(SGString<int32_t>**) m_parameter
 				= SG_MALLOC(SGString<int32_t>, new_length); break;
 		case PT_UINT32:
-			*(SGString<uint32_t>**) data_start
+			*(SGString<uint32_t>**) m_parameter
 				= SG_MALLOC(SGString<uint32_t>, new_length); break;
 		case PT_INT64:
-			*(SGString<int64_t>**) data_start
+			*(SGString<int64_t>**) m_parameter
 				= SG_MALLOC(SGString<int64_t>, new_length); break;
 		case PT_UINT64:
-			*(SGString<uint64_t>**) data_start
+			*(SGString<uint64_t>**) m_parameter
 				= SG_MALLOC(SGString<uint64_t>, new_length); break;
 		case PT_FLOAT32:
-			*(SGString<float32_t>**) data_start
+			*(SGString<float32_t>**) m_parameter
 				= SG_MALLOC(SGString<float32_t>, new_length); break;
 		case PT_FLOAT64:
-			*(SGString<float64_t>**) data_start
+			*(SGString<float64_t>**) m_parameter
 				= SG_MALLOC(SGString<float64_t>, new_length); break;
 		case PT_FLOATMAX:
-			*(SGString<floatmax_t>**) data_start
+			*(SGString<floatmax_t>**) m_parameter
 				= SG_MALLOC(SGString<floatmax_t>, new_length); break;
 		case PT_SGOBJECT:
 			SG_SERROR("TParameter::new_cont(): Implementation "
@@ -1887,49 +1855,49 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 					 "String<SGSerializable*>");
 			break;
 		}
-		memset(*(void**) data_start, 0, new_length
+		memset(*(void**) m_parameter, 0, new_length
 			   *m_datatype.sizeof_stype());
 		break;
 	case ST_SPARSE:
 		switch (m_datatype.m_ptype) {
 		case PT_BOOL:
-			*(SGSparseVector<bool>**) data_start
+			*(SGSparseVector<bool>**) m_parameter
 				= SG_MALLOC(SGSparseVector<bool>, new_length); break;
 		case PT_CHAR:
-			*(SGSparseVector<char>**) data_start
+			*(SGSparseVector<char>**) m_parameter
 				= SG_MALLOC(SGSparseVector<char>, new_length); break;
 		case PT_INT8:
-			*(SGSparseVector<int8_t>**) data_start
+			*(SGSparseVector<int8_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<int8_t>, new_length); break;
 		case PT_UINT8:
-			*(SGSparseVector<uint8_t>**) data_start
+			*(SGSparseVector<uint8_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<uint8_t>, new_length); break;
 		case PT_INT16:
-			*(SGSparseVector<int16_t>**) data_start
+			*(SGSparseVector<int16_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<int16_t>, new_length); break;
 		case PT_UINT16:
-			*(SGSparseVector<uint16_t>**) data_start
+			*(SGSparseVector<uint16_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<uint16_t>, new_length); break;
 		case PT_INT32:
-			*(SGSparseVector<int32_t>**) data_start
+			*(SGSparseVector<int32_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<int32_t>, new_length); break;
 		case PT_UINT32:
-			*(SGSparseVector<uint32_t>**) data_start
+			*(SGSparseVector<uint32_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<uint32_t>, new_length); break;
 		case PT_INT64:
-			*(SGSparseVector<int64_t>**) data_start
+			*(SGSparseVector<int64_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<int64_t>, new_length); break;
 		case PT_UINT64:
-			*(SGSparseVector<uint64_t>**) data_start
+			*(SGSparseVector<uint64_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<uint64_t>, new_length); break;
 		case PT_FLOAT32:
-			*(SGSparseVector<float32_t>**) data_start
+			*(SGSparseVector<float32_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<float32_t>, new_length); break;
 		case PT_FLOAT64:
-			*(SGSparseVector<float64_t>**) data_start
+			*(SGSparseVector<float64_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<float64_t>, new_length); break;
 		case PT_FLOATMAX:
-			*(SGSparseVector<floatmax_t>**) data_start
+			*(SGSparseVector<floatmax_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<floatmax_t>, new_length); break;
 		case PT_SGOBJECT:
 			SG_SERROR("TParameter::new_cont(): Implementation "
@@ -1937,7 +1905,7 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 					 "Sparse<SGSerializable*>");
 			break;
 		}
-		memset(*(void**) data_start, 0, new_length
+		memset(*(void**) m_parameter, 0, new_length
 			   *m_datatype.sizeof_stype());
 		break;
 	} /* switch (m_datatype.m_stype)  */
@@ -2240,24 +2208,8 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 						&m_datatype, m_name, prefix, y, x))
 					return false;
 
-				/* In the case, ctype is a struct (not array of a basic type)
-				 * data does not start at m_parameter, since the latter may have
-				 * methods so move start pointer to array of struct */
-				void* data_start=m_parameter;
-				switch(m_datatype.m_ctype)
-				{
-				case CT_SGVECTOR:
-					data_start=&(((SGVector<char>*)m_parameter)->vector);
-					break;
-				case CT_SGMATRIX:
-					data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
-					break;
-				default:
-					break;
-				}
-
 				if (!save_stype(
-						file, (*(char**) data_start)
+						file, (*(char**) m_parameter)
 						+ (x*len_real_y + y)*m_datatype.sizeof_stype(),
 						prefix)) return false;
 				if (!file->write_item_end(
@@ -2331,24 +2283,8 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 								&m_datatype, m_name, prefix, y, x))
 						return false;
 
-					/* In the case, ctype is a struct (not array of a basic type)
-					 * data does not start at m_parameter, since the latter may
-					 * have methods so move start pointer to array of struct */
-					void* data_start=m_parameter;
-					switch(m_datatype.m_ctype)
-					{
-					case CT_SGVECTOR:
-						data_start=&(((SGVector<char>*)m_parameter)->vector);
-						break;
-					case CT_SGMATRIX:
-						data_start=&(((SGMatrix<char>*)m_parameter)->matrix);
-						break;
-					default:
-						break;
-					}
-
 					if (!load_stype(
-								file, (*(char**) data_start)
+								file, (*(char**) m_parameter)
 								+ (x*len_read_y + y)*m_datatype.sizeof_stype(),
 								prefix)) return false;
 					if (!file->read_item_end(
