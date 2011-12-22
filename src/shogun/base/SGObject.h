@@ -200,7 +200,7 @@ public:
 
 	/** @return vector of names of all parameters which are registered for model
 	 * selection */
-	SGVector<char*> get_modelsel_names();
+	SGStringList<char> get_modelsel_names();
 
 	/** Returns description of a given parameter string, if it exists. SG_ERROR
 	 * otherwise
