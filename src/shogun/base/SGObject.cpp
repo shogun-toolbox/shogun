@@ -480,7 +480,8 @@ SGStringList<char> CSGObject::get_modelsel_names()
     {
         char* name=m_model_selection_parameters->get_parameter(i)->m_name;
         index_t len=strlen(name);
-        result.strings[i]=SGString<char>(name, len);
+		// +1 to have a zero terminated string
+        result.strings[i]=SGString<char>(name, len+1);
 
         if (len>max_string_length)
             max_string_length=len;

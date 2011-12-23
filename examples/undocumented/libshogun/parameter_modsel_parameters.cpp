@@ -25,16 +25,16 @@ void print_message(FILE* target, const char* str)
 
 void print_modsel_parameters(CSGObject* object)
 {
-	SGVector<char*> modsel_params=object->get_modelsel_names();
+	SGStringList<char> modsel_params=object->get_modelsel_names();
 
 	SG_SPRINT("Parameters of %s available for model selection:\n",
 			object->get_name());
 
 	char* type_string=SG_MALLOC(char, 100);
-	for (index_t i=0; i<modsel_params.vlen; ++i)
+	for (index_t i=0; i<modsel_params.num_strings; ++i)
 	{
 		/* extract current name, ddescription and type, and print them */
-		const char* name=modsel_params.vector[i];
+		const char* name=modsel_params.strings[i].string;
 		index_t index=object->get_modsel_param_index(name);
 		TSGDataType type=object->m_model_selection_parameters->get_parameter(
 				index)->m_datatype;
@@ -44,7 +44,7 @@ void print_modsel_parameters(CSGObject* object)
 	}
 	SG_FREE(type_string);
 
-	modsel_params.destroy_vector();
+	modsel_params.destroy_list();
 	SG_SPRINT("\n");
 }
 
