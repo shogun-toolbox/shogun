@@ -125,6 +125,10 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %}
 
 %init %{
+#ifdef SWIGPYTHON
+        import_array();
+#endif
+
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 #ifndef DISABLE_CANCEL_CALLBACK
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
@@ -134,6 +138,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
                 &sg_global_print_error);
 #endif
 #endif
+
+
 
 #ifdef SWIGRUBY
         rb_require("narray");
