@@ -1,5 +1,6 @@
 from modshogun import *
 from numpy import array
+import os
 
 parameter_list=[[[[1.0,2,3],[4,5,6]]]]
 
