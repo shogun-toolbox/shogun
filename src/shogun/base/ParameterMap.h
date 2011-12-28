@@ -69,10 +69,10 @@ public:
 	/** operator for comparison, true iff all attributes are equal */
 	bool operator==(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name, if equal by param_version) */
+	/** operator for comparison (by string m_name, if equal by others) */
 	bool operator<(const SGParamInfo& other) const;
 
-	/** operator for comparison (by string m_name, if equal by param_version) */
+	/** operator for comparison (by string m_name, if equal by others) */
 	bool operator>(const SGParamInfo& other) const;
 
 private:
