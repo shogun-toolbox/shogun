@@ -61,7 +61,7 @@ public:
 	void print_param_info();
 
 	/** @return string representation, caller has to clean up */
-	char* to_string();
+	char* to_string() const;
 
 	/** @return an identical copy */
 	SGParamInfo* duplicate() const;

@@ -65,7 +65,7 @@ SGParamInfo::~SGParamInfo()
 	SG_FREE(m_name);
 }
 
-char* SGParamInfo::to_string()
+char* SGParamInfo::to_string() const
 {
 	char* buffer=SG_MALLOC(char, 200);
 	strcpy(buffer, "SGParamInfo with: ");
@@ -118,6 +118,7 @@ bool SGParamInfo::operator==(const SGParamInfo& other) const
 	result&=m_stype==other.m_stype;
 	result&=m_ptype==other.m_ptype;
 	result&=m_param_version==other.m_param_version;
+	SG_SPRINT("result: %d\n", result);
 	return result;
 }
 
@@ -125,8 +126,31 @@ bool SGParamInfo::operator<(const SGParamInfo& other) const
 {
 	int32_t result=strcmp(m_name, other.m_name);
 
-	if (!result)
-		return m_param_version<other.m_param_version;
+	if (result==0)
+	{
+		if (m_param_version==other.m_param_version)
+		{
+			if (m_ctype==other.m_ctype)
+			{
+				if (m_stype==other.m_stype)
+				{
+					if (m_ptype==other.m_ptype)
+					{
+						return false;
+					}
+					else
+						return m_ptype<other.m_ptype;
+				}
+				else
+					return m_stype<other.m_stype;
+			}
+			else
+				return m_ctype<other.m_ctype;
+		}
+		else
+			return m_param_version<other.m_param_version;
+
+	}
 	else
 		return result<0;
 }
@@ -134,10 +158,34 @@ bool SGParamInfo::operator<(const SGParamInfo& other) const
 bool SGParamInfo::operator>(const SGParamInfo& other) const
 {
 	int32_t result=strcmp(m_name, other.m_name);
-	if (!result)
-			return m_param_version<other.m_param_version;
-	else
-		return result>0;
+
+		if (result==0)
+		{
+			if (m_param_version==other.m_param_version)
+			{
+				if (m_ctype==other.m_ctype)
+				{
+					if (m_stype==other.m_stype)
+					{
+						if (m_ptype==other.m_ptype)
+						{
+							return false;
+						}
+						else
+							return m_ptype>other.m_ptype;
+					}
+					else
+						return m_stype>other.m_stype;
+				}
+				else
+					return m_ctype>other.m_ctype;
+			}
+			else
+				return m_param_version>other.m_param_version;
+
+		}
+		else
+			return result>0;
 }
 
 ParameterMapElement::ParameterMapElement()
