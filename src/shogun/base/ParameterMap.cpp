@@ -118,7 +118,6 @@ bool SGParamInfo::operator==(const SGParamInfo& other) const
 	result&=m_stype==other.m_stype;
 	result&=m_ptype==other.m_ptype;
 	result&=m_param_version==other.m_param_version;
-	SG_SPRINT("result: %d\n", result);
 	return result;
 }
 
