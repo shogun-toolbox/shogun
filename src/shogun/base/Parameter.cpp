@@ -1574,12 +1574,39 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	m_parameter = parameter;
 	m_name = strdup(name);
 	m_description = strdup(description);
+	m_delete_data=false;
+}
+
+TParameter::TParameter(const TSGDataType* datatype, void* parameter,
+		bool delete_data, const char* name, const char* description)
+	:m_datatype(*datatype)
+{
+	m_parameter = parameter;
+	m_name = strdup(name);
+	m_description = strdup(description);
+	m_delete_data=delete_data;
 }
 
 TParameter::~TParameter()
 {
 	SG_FREE(m_description);
 	SG_FREE(m_name);
+
+	/* possibly delete content, m_parameter variable, and lengths variables */
+	if (m_delete_data)
+	{
+		if (m_datatype.m_ctype!=CT_SCALAR)
+			delete_cont();
+
+		if (m_parameter != NULL)
+			SG_FREE(m_parameter);
+
+		if (m_datatype.m_length_x != NULL)
+			SG_FREE(m_datatype.m_length_x);
+
+		if (m_datatype.m_length_y != NULL)
+			SG_FREE(m_datatype.m_length_y);
+	}
 }
 
 char*
