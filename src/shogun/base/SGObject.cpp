@@ -409,7 +409,6 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 	SG_SPRINT("try to get mapping for: %s\n", s);
 	SG_FREE(s);
 	SGParamInfo* old=m_parameter_map->get(param_info);
-	m_parameter_map->print_map();
 	bool free_old=false;
 	if (old)
 	{
@@ -468,15 +467,32 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 			break;
 		}
 
-		/* create type and copy lengths, empty data for now */
+		/* create type and copy lengths, empty data for now
+		 * dummy data will be created below. Note that the delete_data flag is
+		 * set here which will handle the deletion of the data pointer, data,
+		 * and possible length variables */
 		TSGDataType type(param_info->m_ctype, param_info->m_stype,
 				param_info->m_ptype, len_y, len_x);
-		result=new TParameter(&type, NULL, param_info->m_name, "");
+		result=new TParameter(&type, NULL, true, param_info->m_name, "");
 
-		/* for scalars, allocate memory because normally they are on stack */
+		/* for scalars, allocate memory because normally they are on stack
+		 * and excluded in the TParameter data allocation */
 		if (param_info->m_ctype==CT_SCALAR)
 		{
 			result->m_parameter=SG_MALLOC(char, type.get_size());
+		}
+		else
+		{
+			/* allocate pointer for data pointer */
+			void** data_p=SG_MALLOC(void*, 1);
+
+			/* allocate dummy data at the point the above pointer points to
+			 * will be freed by the delete_cont() method of TParameter when
+			 * load is called below. This is needed because delete_cont cannot
+			 * handle non-existing data. */
+			*data_p=SG_MALLOC(void, 1);
+
+			result->m_parameter=data_p;
 		}
 
 		/* tell instance to load data from file */
