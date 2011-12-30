@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
@@ -16,6 +17,69 @@ using namespace shogun;
 void print_message(FILE* target, const char* str)
 {
 	fprintf(target, "%s", str);
+}
+
+
+
+void test_mapping_1()
+{
+	ParameterMap* map=new ParameterMap();
+
+	map->put(
+			new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_FLOAT64, 2),
+			new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT32, 1)
+	);
+
+	map->put(
+			new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT32, 1),
+			new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_FLOAT64, 0)
+	);
+
+	/* finalizing the map is needed before accessing it */
+	map->finalize_map();
+
+	map->print_map();
+	SG_SPRINT("\n");
+
+
+	/* get some elements from map, one/two ARE in map, three and four are NOT */
+	DynArray<SGParamInfo*> dummies;
+	dummies.append_element(new SGParamInfo("number", CT_SCALAR, ST_NONE,
+			PT_INT32, 1));
+	dummies.append_element(new SGParamInfo("number", CT_SCALAR, ST_NONE,
+			PT_FLOAT64, 2));
+	dummies.append_element(new SGParamInfo("number", CT_SCALAR, ST_NONE,
+				PT_INT32, 2));
+	dummies.append_element(new SGParamInfo("number", CT_SCALAR, ST_NONE,
+			PT_FLOAT64, 0));
+
+	for (index_t i=0; i<dummies.get_num_elements(); ++i)
+	{
+		SGParamInfo* current=dummies.get_element(i);
+
+		char* s=current->to_string();
+		SG_SPRINT("searching for: %s\n", s);
+		SG_FREE(s);
+
+		if (i==2)
+		{
+
+		}
+
+		SGParamInfo* result=map->get(current);
+		if (result)
+		{
+			s=result->to_string();
+			SG_SPRINT("found: %s\n\n", s);
+			SG_FREE(s);
+		}
+		else
+			SG_SPRINT("nothing found\n\n");
+
+		delete current;
+	}
+
+	delete map;
 }
 
 void print_value(SGParamInfo* key, ParameterMap* map)
@@ -32,10 +96,8 @@ void print_value(SGParamInfo* key, ParameterMap* map)
 	SG_SPRINT("\n");
 }
 
-int main(int argc, char **argv)
+void test_mapping_2()
 {
-	init_shogun(&print_message, &print_message, &print_message);
-
 	ParameterMap* map=new ParameterMap();
 
 	EContainerType cfrom=CT_SCALAR;
@@ -47,14 +109,14 @@ int main(int argc, char **argv)
 	EPrimitiveType pfrom=PT_BOOL;
 	EPrimitiveType pto=PT_SGOBJECT;
 
-	map->put(new SGParamInfo("2", cfrom, sfrom, pfrom),
-			new SGParamInfo("zwei", cto, sto, pto));
-	map->put(new SGParamInfo("1", cfrom, sfrom, pfrom),
-			new SGParamInfo("eins", cto, sto, pto));
-	map->put(new SGParamInfo("4", cfrom, sfrom, pfrom),
-			new SGParamInfo("vier", cto, sto, pto));
-	map->put(new SGParamInfo("3", cfrom, sfrom, pfrom),
-			new SGParamInfo("drei", cto, sto, pto));
+	map->put(new SGParamInfo("1", cfrom, sfrom, pfrom, 1),
+			new SGParamInfo("eins", cto, sto, pto, 2));
+	map->put(new SGParamInfo("2", cfrom, sfrom, pfrom, 2),
+			new SGParamInfo("zwei", cto, sto, pto, 1));
+	map->put(new SGParamInfo("3", cfrom, sfrom, pfrom, 3),
+			new SGParamInfo("drei", cto, sto, pto, 5));
+	map->put(new SGParamInfo("4", cfrom, sfrom, pfrom, 4),
+			new SGParamInfo("vier", cto, sto, pto, 2));
 
 	SG_SPRINT("before finalization:\n");
 	map->print_map();
@@ -66,31 +128,39 @@ int main(int argc, char **argv)
 	SGParamInfo* key;
 
 	SG_SPRINT("\n\ntesting map\n");
-	key=new SGParamInfo("1", cfrom, sfrom, pfrom);
+	key=new SGParamInfo("1", cfrom, sfrom, pfrom, 1);
 	print_value(key, map);
 	delete key;
 
-	key=new SGParamInfo("2", cfrom, sfrom, pfrom);
+	key=new SGParamInfo("2", cfrom, sfrom, pfrom, 2);
 	print_value(key, map);
 	delete key;
 
-	key=new SGParamInfo("2", cto, sfrom, pfrom);
+	key=new SGParamInfo("2", cto, sfrom, pfrom, 2);
 	print_value(key, map);
 	delete key;
 
-	key=new SGParamInfo("2", cfrom, sto, pfrom);
+	key=new SGParamInfo("2", cfrom, sto, pfrom, 2);
 	print_value(key, map);
 	delete key;
 
-	key=new SGParamInfo("2", cfrom, sfrom, pto);
+	key=new SGParamInfo("2", cfrom, sfrom, pto, 2);
 	print_value(key, map);
 	delete key;
 
-	key=new SGParamInfo("5", cfrom, sfrom, pfrom);
+	key=new SGParamInfo("5", cfrom, sfrom, pfrom, 5);
 	print_value(key, map);
 	delete key;
 
 	delete map;
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun(&print_message, &print_message, &print_message);
+
+	test_mapping_1();
+	test_mapping_2();
 
 	exit_shogun();
 
