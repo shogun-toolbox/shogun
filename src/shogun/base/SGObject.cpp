@@ -15,6 +15,8 @@
 #include <shogun/base/init.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/ParameterMap.h>
+#include <shogun/base/DynArray.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -126,6 +128,7 @@ CSGObject::~CSGObject()
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
+	delete m_parameter_map;
 }
 
 #ifdef USE_REFERENCE_COUNTING
@@ -392,6 +395,106 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	return true;
 }
 
+TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
+		int32_t file_version, CSerializableFile* file, const char* prefix)
+{
+	/* ensure that recursion works */
+	if (file_version>param_info->m_param_version)
+		SG_SERROR("parameter version in file is more recent than provided!\n");
+
+	TParameter* result;
+
+	/* do mapping */
+	char* s=param_info->to_string();
+	SG_SPRINT("try to get mapping for: %s\n", s);
+	SG_FREE(s);
+	SGParamInfo* old=m_parameter_map->get(param_info);
+	m_parameter_map->print_map();
+	bool free_old=false;
+	if (old)
+	{
+		s=old->to_string();
+		SG_SPRINT("found: %s\n", s);
+		SG_FREE(s);
+	}
+	else
+	{
+		/* if no mapping was found, nothing has changed. Simply create new param
+		 * info with decreased version */
+		SG_SPRINT("no mapping found, ");
+		if (file_version<param_info->m_param_version)
+		{
+			old=new SGParamInfo(*param_info);
+			old->m_param_version--;
+			free_old=true;
+			s=old->to_string();
+			SG_SPRINT("using %s\n", s);
+			SG_FREE(s);
+		}
+		else
+		{
+			SG_SPRINT("reached file version\n");
+		}
+	}
+
+	/* case file version same as provided version.
+	 * means that parameter has to be loaded from file, recursion stops here */
+	if (file_version==param_info->m_param_version)
+	{
+		/* allocate memory for length and matrix/vector
+		 * This has to be done because this stuff normally is in the class
+		 * variables which do not exist in this case. Deletion is handled
+		 * via the m_delete_data flag of TParameter */
+
+		/* length has to be allocated for matrices/vectors
+		 * are also created here but no data allocation takes place */
+		index_t* len_x=NULL;
+		index_t* len_y=NULL;
+
+		switch (param_info->m_ctype)
+		{
+		case CT_VECTOR: case CT_SGVECTOR:
+			len_y=SG_MALLOC(index_t, 1);
+			break;
+		case CT_MATRIX: case CT_SGMATRIX:
+			len_x=SG_MALLOC(index_t, 1);
+			len_y=SG_MALLOC(index_t, 1);
+			break;
+		case CT_SCALAR:
+			break;
+		case CT_NDARRAY:
+			SG_NOTIMPLEMENTED;
+		default:
+			break;
+		}
+
+		/* create type and copy lengths, empty data for now */
+		TSGDataType type(param_info->m_ctype, param_info->m_stype,
+				param_info->m_ptype, len_y, len_x);
+		result=new TParameter(&type, NULL, param_info->m_name, "");
+
+		/* for scalars, allocate memory because normally they are on stack */
+		if (param_info->m_ctype==CT_SCALAR)
+		{
+			result->m_parameter=SG_MALLOC(char, type.get_size());
+		}
+
+		/* tell instance to load data from file */
+		result->load(file, prefix);
+		SG_SPRINT("done\n");
+		//CMath::display_vector((float64_t*)result->m_parameter, *result->m_datatype.m_length_y);
+	}
+	/* recursion with mapped type, a mapping exists in this case (ensured by
+	 * above assert) */
+	else
+		result=load_file_parameter(old, file_version, file, prefix);
+
+	if (free_old)
+		delete old;
+
+	return result;
+}
+
 bool CSGObject::save_parameter_version(CSerializableFile* file,
 		const char* prefix)
 {
@@ -463,6 +566,7 @@ void CSGObject::init()
 	version = NULL;
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
+	m_parameter_map=new ParameterMap();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
