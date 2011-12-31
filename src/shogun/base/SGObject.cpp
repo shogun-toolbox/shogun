@@ -475,24 +475,48 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 				param_info->m_ptype, len_y, len_x);
 		result=new TParameter(&type, NULL, true, param_info->m_name, "");
 
-		/* for scalars, allocate memory because normally they are on stack
-		 * and excluded in the TParameter data allocation */
+		/* scalars are treated differently than vectors/matrices. memory has to
+		 * be allocated for the data itself */
 		if (param_info->m_ctype==CT_SCALAR)
 		{
-			result->m_parameter=SG_MALLOC(char, type.get_size());
+			/* sgobjects are treated differently than the rest */
+			if (param_info->m_ptype!=PT_SGOBJECT)
+			{
+				/* for non-sgobject allocate memory because normally they are on
+				 * stack and excluded in the TParameter data allocation.
+				 * Will be deleted by the TParameter destructor */
+				result->m_parameter=SG_MALLOC(char, type.get_size());
+			}
+			else
+			{
+				/* for sgobjects, allocate memory for pointer and set to NULL
+				 * * Will be deleted by the TParameter destructor */
+				result->m_parameter=SG_MALLOC(CSGObject**, 1);
+				*((CSGObject**)result->m_parameter)=NULL;
+			}
 		}
 		else
 		{
-			/* allocate pointer for data pointer */
-			void** data_p=SG_MALLOC(void*, 1);
+			/* sgobjects are treated differently than the rest */
+			if (param_info->m_ptype!=PT_SGOBJECT)
+			{
+				/* allocate pointer for data pointer */
+				void** data_p=SG_MALLOC(void*, 1);
 
-			/* allocate dummy data at the point the above pointer points to
-			 * will be freed by the delete_cont() method of TParameter when
-			 * load is called below. This is needed because delete_cont cannot
-			 * handle non-existing data. */
-			*data_p=SG_MALLOC(void, 1);
+				/* allocate dummy data at the point the above pointer points to
+				 * will be freed by the delete_cont() method of TParameter when
+				 * load is called below. This is needed because delete_cont cannot
+				 * handle non-existing data. */
+				*data_p=SG_MALLOC(void, 1);
 
-			result->m_parameter=data_p;
+				result->m_parameter=data_p;
+			}
+			else
+			{
+				SG_ERROR("Sorry, the deserialization of non-scalar containers "
+						" of PT_SGOBJECT from sratch is not implemented yet.");
+				SG_NOTIMPLEMENTED;
+			}
 		}
 
 		/* tell instance to load data from file */
