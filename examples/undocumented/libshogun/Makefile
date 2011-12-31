@@ -51,7 +51,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  converter_neighborhoodpreservingembedding \
 		  converter_linearlocaltangentspacealignment \
 		  converter_localitypreservingprojections \
-		  serialization_vector_matrix \
+		  serialization_basic_tests \
 
 all: $(TARGETS)
 
