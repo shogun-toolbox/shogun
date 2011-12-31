@@ -1599,7 +1599,14 @@ TParameter::~TParameter()
 			delete_cont();
 
 		if (m_parameter != NULL)
+		{
+			/* eventually unref sgobject */
+			if (m_datatype.m_ptype==PT_SGOBJECT)
+				SG_UNREF(*((CSGObject**)m_parameter));
+
+			/* delete pointer in any case */
 			SG_FREE(m_parameter);
+		}
 
 		if (m_datatype.m_length_x != NULL)
 			SG_FREE(m_datatype.m_length_x);
@@ -2265,7 +2272,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	const int32_t buflen=100;
 	char* buf=SG_MALLOC(char, buflen);
 	m_datatype.to_string(buf, buflen);
-	SG_SDEBUG("Loading parameter '%s' of type '%s'\n", m_name, buf);
+	SG_SPRINT("Loading parameter '%s' of type '%s'\n", m_name, buf);
 	SG_FREE(buf);
 
 	if (!file->read_type_begin(&m_datatype, m_name, prefix))
