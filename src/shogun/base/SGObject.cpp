@@ -405,36 +405,37 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 	TParameter* result;
 
 	/* do mapping */
-	char* s=param_info->to_string();
-	SG_SPRINT("try to get mapping for: %s\n", s);
-	SG_FREE(s);
+//	char* s=param_info->to_string();
+//	SG_SPRINT("try to get mapping for: %s\n", s);
+//	SG_FREE(s);
 	SGParamInfo* old=m_parameter_map->get(param_info);
 	bool free_old=false;
-	if (old)
-	{
-		s=old->to_string();
-		SG_SPRINT("found: %s\n", s);
-		SG_FREE(s);
-	}
-	else
+	if (!old)
 	{
 		/* if no mapping was found, nothing has changed. Simply create new param
 		 * info with decreased version */
-		SG_SPRINT("no mapping found, ");
+//		SG_SPRINT("no mapping found, ");
 		if (file_version<param_info->m_param_version)
 		{
 			old=new SGParamInfo(*param_info);
 			old->m_param_version--;
 			free_old=true;
-			s=old->to_string();
-			SG_SPRINT("using %s\n", s);
-			SG_FREE(s);
+//			s=old->to_string();
+//			SG_SPRINT("using %s\n", s);
+//			SG_FREE(s);
 		}
-		else
-		{
-			SG_SPRINT("reached file version\n");
-		}
+//		else
+//		{
+//			SG_SPRINT("reached file version\n");
+//		}
 	}
+//	else
+//	{
+//			s=old->to_string();
+//			SG_SPRINT("found: %s\n", s);
+//			SG_FREE(s);
+//	}
+
 
 	/* case file version same as provided version.
 	 * means that parameter has to be loaded from file, recursion stops here */
@@ -521,8 +522,7 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 
 		/* tell instance to load data from file */
 		result->load(file, prefix);
-		SG_SPRINT("done\n");
-		//CMath::display_vector((float64_t*)result->m_parameter, *result->m_datatype.m_length_y);
+//		SG_SPRINT("done\n");
 	}
 	/* recursion with mapped type, a mapping exists in this case (ensured by
 	 * above assert) */
