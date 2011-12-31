@@ -12,6 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
+#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 
@@ -40,21 +41,32 @@ public:
 		CMath::range_fill_vector(m_matrix, m_matrix_rows*m_matrix_cols);
 		m_parameters->add_matrix(&m_matrix, &m_matrix_rows, &m_matrix_cols,
 				"matrix", "Test matrix");
+
+		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
+		CMath::range_fill_vector(features.matrix,
+				features.num_rows*features.num_cols, 3);
+		m_features=new CSimpleFeatures<int32_t>(features);
+		SG_REF(m_features);
+		m_parameters->add((CSGObject**)&m_features, "int_features",
+				"Test features");
 	}
 
 	virtual ~CTestClassInt()
 	{
 		SG_FREE(m_vector);
 		SG_FREE(m_matrix);
+		SG_UNREF(m_features);
 	}
 
 	int32_t m_number;
 	int32_t* m_vector;
 	int32_t m_vector_length;
+
 	int32_t* m_matrix;
 	int32_t m_matrix_rows;
 	int32_t m_matrix_cols;
 
+	CSimpleFeatures<int32_t>* m_features;
 
 	virtual const char* get_name() const { return "TestClassInt"; }
 };
@@ -71,6 +83,14 @@ public:
 		m_parameters->add(&m_number, "number", "Test number");
 		m_parameters->add(&m_vector, "vector", "Test vector");
 		m_parameters->add(&m_matrix, "matrix", "Test matrix");
+
+		SGMatrix<float64_t> features=SGMatrix<float64_t>(2, 3);
+		CMath::range_fill_vector(features.matrix,
+				features.num_rows*features.num_cols, 3.0);
+		m_features=new CSimpleFeatures<float64_t>(features);
+		SG_REF(m_features);
+		m_parameters->add((CSGObject**)&m_features, "float_features",
+				"Test features");
 
 		/* add some parameter mappings for number, here: type changes */
 		m_parameter_map->put(
@@ -107,6 +127,14 @@ public:
 				new SGParamInfo("matrix", CT_MATRIX, ST_NONE, PT_INT32, -1)
 		);
 
+		/* name change for sgobject */
+		m_parameter_map->put(
+				new SGParamInfo("float_features", CT_SCALAR, ST_NONE,
+						PT_SGOBJECT, 1),
+				new SGParamInfo("int_features", CT_SCALAR, ST_NONE, PT_SGOBJECT,
+						0)
+		);
+
 		m_parameter_map->finalize_map();
 	}
 
@@ -114,11 +142,13 @@ public:
 	{
 		m_vector.destroy_vector();
 		m_matrix.destroy_matrix();
+		SG_UNREF(m_features);
 	}
 
 	float64_t m_number;
 	SGVector<float64_t> m_vector;
 	SGMatrix<float64_t> m_matrix;
+	CSimpleFeatures<float64_t>* m_features;
 
 	virtual const char* get_name() const { return "TestClassFloat"; }
 };
@@ -153,6 +183,9 @@ void test_load_file_parameter()
 	SGParamInfo param_info_matrix(
 			float_instance->m_parameters->get_parameter(2), 1);
 
+	SGParamInfo param_info_sgobject(
+			float_instance->m_parameters->get_parameter(3), 1);
+
 	int32_t file_version=-1;
 
 	/* now, here the magic happens, the parameter info of the float instance is
@@ -167,6 +200,9 @@ void test_load_file_parameter()
 
 	TParameter* file_loaded_matrix=float_instance->load_file_parameter(
 			&param_info_matrix, file_version, file);
+
+	TParameter* file_loaded_sgobject=float_instance->load_file_parameter(
+			&param_info_sgobject, file_version, file);
 
 	/* ensure that its he same as of the instance */
 	int32_t value_number=*((int32_t*)file_loaded_number->m_parameter);
@@ -189,18 +225,55 @@ void test_load_file_parameter()
 		ASSERT(value_matrix[i]==int_instance->m_matrix[i]);
 	}
 
+	/* and for the feature object */
+	CSimpleFeatures<int32_t>* features=
+			*((CSimpleFeatures<int32_t>**)file_loaded_sgobject->m_parameter);
+	SGMatrix<int32_t> feature_matrix=features->get_feature_matrix();
+	CMath::display_matrix(feature_matrix.matrix,
+			feature_matrix.num_rows, feature_matrix.num_cols, "features");
+	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
+			++i)
+	{
+		ASSERT(value_matrix[i]==int_instance->m_matrix[i]);
+	}
+
 
 	/* only the TParameter instances have to be deleted, data, data pointer,
 	 * and possible length variables are deleted automatically */
 	delete file_loaded_number;
 	delete file_loaded_vector;
 	delete file_loaded_matrix;
+	delete file_loaded_sgobject;
 
 	file->close();
 	SG_UNREF(file);
 	SG_UNREF(int_instance);
 	SG_UNREF(float_instance);
 }
+
+void temp()
+{
+	SGMatrix<int32_t> data=SGMatrix<int32_t>(3, 2);
+	CMath::range_fill_vector(data.matrix, data.num_rows*data.num_cols);
+	CSimpleFeatures<int32_t>* features=new CSimpleFeatures<int32_t>(data);
+	CSerializableAsciiFile* file=new CSerializableAsciiFile(filename, 'w');
+	features->save_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	SG_UNREF(features);
+
+	file=new CSerializableAsciiFile(filename, 'r');
+	features=new CSimpleFeatures<int32_t>();
+	features->load_serializable(file);
+	file->close();
+	SG_UNREF(file);
+
+	SGMatrix<int32_t> feature_matrix=features->get_feature_matrix();
+	CMath::display_matrix(feature_matrix.matrix, feature_matrix.num_rows,
+			feature_matrix.num_cols);
+	SG_UNREF(features);
+}
+
 
 int main(int argc, char **argv)
 {
