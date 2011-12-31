@@ -2272,7 +2272,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	const int32_t buflen=100;
 	char* buf=SG_MALLOC(char, buflen);
 	m_datatype.to_string(buf, buflen);
-	SG_SPRINT("Loading parameter '%s' of type '%s'\n", m_name, buf);
+	SG_SDEBUG("Loading parameter '%s' of type '%s'\n", m_name, buf);
 	SG_FREE(buf);
 
 	if (!file->read_type_begin(&m_datatype, m_name, prefix))
