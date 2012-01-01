@@ -30,6 +30,16 @@ struct TParameter
 	explicit TParameter(const TSGDataType* datatype, void* parameter,
 						const char* name, const char* description);
 
+	/** explicit constructor. same as above but sets delete_data flag
+	 * @param datatype datatype
+	 * @param parameter pointer to parameter
+	 * @param delete_data delete_data flag (see description of variable)
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	explicit TParameter(const TSGDataType* datatype, void* parameter,
+			bool delete_data, const char* name, const char* description);
+
 	/** destructor */
 	~TParameter();
 
@@ -58,6 +68,15 @@ struct TParameter
 	char* m_name;
 	/** description of parameter */
 	char* m_description;
+
+	/** if this is set true, the data, m_parameter points to, m_parameter
+	 * itself, and possible lengths of the type will be deleted in destructor.
+	 * This is needed because in data migration, TParameter instances are
+	 * created from scratch without having a class instance and allocated data
+	 * has to ne deleted in this case.
+	 * The only way to set this is via an alternate constructor, false by
+	 * default */
+	bool m_delete_data;
 
 private:
 	char* new_prefix(const char* s1, const char* s2);
