@@ -33,6 +33,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  features_copy_subset_sparse_features \
 		  mathematics_confidence_intervals \
 		  clustering_kmeans base_parameter_map \
+		  base_load_file_parameter \
 		  splitting_stratified_crossvalidation \
 		  mathematics_arpack \
 		  library_fibonacci_heap \
@@ -50,7 +51,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  converter_neighborhoodpreservingembedding \
 		  converter_linearlocaltangentspacealignment \
 		  converter_localitypreservingprojections \
-		  serialization_vector_matrix \
+		  serialization_basic_tests \
 
 all: $(TARGETS)
 
