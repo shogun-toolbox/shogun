@@ -268,8 +268,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 		/** set subkernel weights
 		 *
-		 * @param weights2 weights
-		 * @param num_weights2 number of weights
+		 * @param w weights
 		 */
 		virtual void set_subkernel_weights(SGVector<float64_t> w)
 		{

@@ -289,7 +289,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 
 		/** set subkernel weights
 		 *
-		 * @param wweights
+		 * @param w weights
 		 */
 		virtual void set_subkernel_weights(SGVector<float64_t> w)
 		{
