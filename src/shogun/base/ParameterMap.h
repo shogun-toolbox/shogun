@@ -50,7 +50,7 @@ public:
 	SGParamInfo(const TParameter* param, int32_t param_version);
 
 	/** copy constructor
-	 * @param element to copy from
+	 * @param orig element to copy from
 	 */
 	SGParamInfo(const SGParamInfo& orig);
 
@@ -91,6 +91,7 @@ public:
 	/** primitive type */
 	EPrimitiveType m_ptype;
 
+	/** version of the parameter */
 	int32_t m_param_version;
 };
 
