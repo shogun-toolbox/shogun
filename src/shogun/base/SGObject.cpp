@@ -508,7 +508,7 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 				 * will be freed by the delete_cont() method of TParameter when
 				 * load is called below. This is needed because delete_cont cannot
 				 * handle non-existing data. */
-				*data_p=SG_MALLOC(void, 1);
+				*data_p=SG_MALLOC(uint8_t, 1);
 
 				result->m_parameter=data_p;
 			}
