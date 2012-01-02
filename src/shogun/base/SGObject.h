@@ -192,6 +192,7 @@ public:
 	 * @return (sorted) array of created TParameter instances with file data
 	 */
 	DynArray<TParameter*>* load_file_parameters(int32_t file_version,
+			int32_t current_version,
 			CSerializableFile* file, const char* prefix="");
 
 	/** set the io object
