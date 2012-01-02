@@ -14,6 +14,8 @@
 %module(docstring=DOCSTR) modshogun
 #undef DOCSTR
 
+%include "modshogun_ignores.i"
+
 /* Documentation */
 %feature("autodoc","0");
 
@@ -36,8 +38,6 @@
 %include "modshogun_doxygen.i"
 #endif
 #endif
-
-%include "modshogun_ignores.i"
 
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"

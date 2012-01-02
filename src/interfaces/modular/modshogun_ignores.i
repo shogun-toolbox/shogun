@@ -10,6 +10,10 @@
 %ignore ref;
 %ignore unref;
 
+#ifdef SWIGCSHARP
+%ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas, SGVector<int32_t> svs, float64_t b);
+#endif
+
 %ignore cleanup;
 %ignore QP;
 %ignore ConsensusEntry;
