@@ -232,6 +232,23 @@ void test_load_file_parameter()
 		}
 	}
 
+	/* assert that parameter data is sorted */
+	for (index_t i=1; i<params->get_num_elements(); ++i)
+	{
+		/* assert via TParameter < and == operator */
+		TParameter* t1=params->get_element(i-1);
+		TParameter* t2=params->get_element(i);
+		ASSERT((*t1)<(*t2) || (*t1)==(*t2));
+
+		/* assert via name (which is used in the operator, but to be sure */
+		const char* s1=t1->m_name;
+		const char* s2=t2->m_name;
+		SG_SPRINT("param \"%s\" <= \"%s\" ? ... ", s1, s2);
+		ASSERT(strcmp(s1, s2)<=0);
+		SG_SPRINT("yes\n");
+	}
+
+
 	/* clean up */
 	for (index_t i=0; i<params->get_num_elements(); ++i)
 		delete params->get_element(i);
