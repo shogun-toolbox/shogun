@@ -204,7 +204,7 @@ void test_load_file_parameter()
 	TParameter* file_loaded_sgobject=float_instance->load_file_parameter(
 			&param_info_sgobject, file_version, file);
 
-	/* ensure that its he same as of the instance */
+	/* ensure that its the same as of the instance */
 	int32_t value_number=*((int32_t*)file_loaded_number->m_parameter);
 	SG_SPRINT("%i\n", value_number);
 	ASSERT(value_number=int_instance->m_number);
@@ -215,7 +215,7 @@ void test_load_file_parameter()
 	for (index_t i=0; i<int_instance->m_vector_length; ++i)
 		ASSERT(value_vector[i]=int_instance->m_vector[i]);
 
-	/* and for the vector */
+	/* and for the matrix */
 	int32_t* value_matrix=*((int32_t**)file_loaded_matrix->m_parameter);
 	CMath::display_matrix(value_matrix, int_instance->m_matrix_rows,
 			int_instance->m_matrix_cols);
