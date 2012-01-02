@@ -251,30 +251,6 @@ void test_load_file_parameter()
 	SG_UNREF(float_instance);
 }
 
-void temp()
-{
-	SGMatrix<int32_t> data=SGMatrix<int32_t>(3, 2);
-	CMath::range_fill_vector(data.matrix, data.num_rows*data.num_cols);
-	CSimpleFeatures<int32_t>* features=new CSimpleFeatures<int32_t>(data);
-	CSerializableAsciiFile* file=new CSerializableAsciiFile(filename, 'w');
-	features->save_serializable(file);
-	file->close();
-	SG_UNREF(file);
-	SG_UNREF(features);
-
-	file=new CSerializableAsciiFile(filename, 'r');
-	features=new CSimpleFeatures<int32_t>();
-	features->load_serializable(file);
-	file->close();
-	SG_UNREF(file);
-
-	SGMatrix<int32_t> feature_matrix=features->get_feature_matrix();
-	CMath::display_matrix(feature_matrix.matrix, feature_matrix.num_rows,
-			feature_matrix.num_cols);
-	SG_UNREF(features);
-}
-
-
 int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
