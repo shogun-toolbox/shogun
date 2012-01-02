@@ -515,7 +515,7 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 			else
 			{
 				SG_ERROR("Sorry, the deserialization of non-scalar containers "
-						" of PT_SGOBJECT from sratch is not implemented yet.");
+						" of PT_SGOBJECT from scratch is not implemented yet.");
 				SG_NOTIMPLEMENTED;
 			}
 		}
