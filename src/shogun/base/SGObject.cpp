@@ -535,6 +535,33 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 	return result;
 }
 
+DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
+		CSerializableFile* file, const char* prefix)
+{
+	DynArray<TParameter*>* result=new DynArray<TParameter*>();
+
+	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	{
+		/* extract current parameter info */
+		SGParamInfo* info=new SGParamInfo(m_parameters->get_parameter(i),
+				VERSION_PARAMETER);
+
+		/* load parameter data from file */
+		result->append_element(load_file_parameter(info, file_version, file,
+				prefix));
+
+		/* clean up */
+		delete info;
+	}
+
+	/* sort array before returning */
+	SGVector<TParameter*> to_sort(result->get_array(),
+			result->get_num_elements());
+	CMath::qsort(to_sort);
+
+	return result;
+}
+
 bool CSGObject::save_parameter_version(CSerializableFile* file,
 		const char* prefix)
 {
