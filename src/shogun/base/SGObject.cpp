@@ -536,7 +536,7 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 }
 
 DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
-		CSerializableFile* file, const char* prefix)
+		int32_t current_version, CSerializableFile* file, const char* prefix)
 {
 	DynArray<TParameter*>* result=new DynArray<TParameter*>();
 
@@ -544,7 +544,7 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
 	{
 		/* extract current parameter info */
 		SGParamInfo* info=new SGParamInfo(m_parameters->get_parameter(i),
-				VERSION_PARAMETER);
+				current_version);
 
 		/* load parameter data from file */
 		result->append_element(load_file_parameter(info, file_version, file,
