@@ -204,7 +204,7 @@ void test_load_file_parameter()
 	TParameter* file_loaded_sgobject=float_instance->load_file_parameter(
 			&param_info_sgobject, file_version, file);
 
-	/* ensure that its he same as of the instance */
+	/* ensure that its the same as of the instance */
 	int32_t value_number=*((int32_t*)file_loaded_number->m_parameter);
 	SG_SPRINT("%i\n", value_number);
 	ASSERT(value_number=int_instance->m_number);
@@ -215,7 +215,7 @@ void test_load_file_parameter()
 	for (index_t i=0; i<int_instance->m_vector_length; ++i)
 		ASSERT(value_vector[i]=int_instance->m_vector[i]);
 
-	/* and for the vector */
+	/* and for the matrix */
 	int32_t* value_matrix=*((int32_t**)file_loaded_matrix->m_parameter);
 	CMath::display_matrix(value_matrix, int_instance->m_matrix_rows,
 			int_instance->m_matrix_cols);
@@ -228,15 +228,22 @@ void test_load_file_parameter()
 	/* and for the feature object */
 	CSimpleFeatures<int32_t>* features=
 			*((CSimpleFeatures<int32_t>**)file_loaded_sgobject->m_parameter);
-	SGMatrix<int32_t> feature_matrix=features->get_feature_matrix();
-	CMath::display_matrix(feature_matrix.matrix,
-			feature_matrix.num_rows, feature_matrix.num_cols, "features");
-	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
+	SGMatrix<int32_t> feature_matrix_loaded=
+			features->get_feature_matrix();
+	SGMatrix<int32_t> feature_matrix_original=
+			int_instance->m_features->get_feature_matrix();
+
+	CMath::display_matrix(feature_matrix_loaded.matrix,
+			feature_matrix_loaded.num_rows,
+			feature_matrix_loaded.num_cols,
+			"features");
+	for (index_t i=0;
+			i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
 			++i)
 	{
-		ASSERT(value_matrix[i]==int_instance->m_matrix[i]);
+		ASSERT(feature_matrix_original.matrix[i]==
+				feature_matrix_loaded.matrix[i]);
 	}
-
 
 	/* only the TParameter instances have to be deleted, data, data pointer,
 	 * and possible length variables are deleted automatically */
@@ -250,30 +257,6 @@ void test_load_file_parameter()
 	SG_UNREF(int_instance);
 	SG_UNREF(float_instance);
 }
-
-void temp()
-{
-	SGMatrix<int32_t> data=SGMatrix<int32_t>(3, 2);
-	CMath::range_fill_vector(data.matrix, data.num_rows*data.num_cols);
-	CSimpleFeatures<int32_t>* features=new CSimpleFeatures<int32_t>(data);
-	CSerializableAsciiFile* file=new CSerializableAsciiFile(filename, 'w');
-	features->save_serializable(file);
-	file->close();
-	SG_UNREF(file);
-	SG_UNREF(features);
-
-	file=new CSerializableAsciiFile(filename, 'r');
-	features=new CSimpleFeatures<int32_t>();
-	features->load_serializable(file);
-	file->close();
-	SG_UNREF(file);
-
-	SGMatrix<int32_t> feature_matrix=features->get_feature_matrix();
-	CMath::display_matrix(feature_matrix.matrix, feature_matrix.num_rows,
-			feature_matrix.num_cols);
-	SG_UNREF(features);
-}
-
 
 int main(int argc, char **argv)
 {
