@@ -74,23 +74,18 @@ bool CSVMOcas::train_machine(CFeatures* data)
 		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen);
 
 	SG_FREE(w);
-	w=SG_MALLOC(float64_t, w_dim);
-	memset(w, 0, w_dim*sizeof(float64_t));
+	w=SG_CALLOC(float64_t, w_dim);
 
 	SG_FREE(old_w);
-	old_w=SG_MALLOC(float64_t, w_dim);
-	memset(old_w, 0, w_dim*sizeof(float64_t));
+	old_w=SG_CALLOC(float64_t, w_dim);
 	bias=0;
 	old_bias=0;
 
-	tmp_a_buf=SG_MALLOC(float64_t, w_dim);
-	cp_value=SG_MALLOC(float64_t*, bufsize);
-	memset(cp_value, sizeof(float64_t*)*bufsize, 0);
-	cp_index=SG_MALLOC(uint32_t*, bufsize);
-	memset(cp_index, sizeof(float64_t*)*bufsize, 0);
-	cp_nz_dims=SG_MALLOC(uint32_t, bufsize);
-	cp_bias=SG_MALLOC(float64_t, bufsize);
-	memset(cp_bias, 0, sizeof(float64_t)*bufsize);
+	tmp_a_buf=SG_CALLOC(float64_t, w_dim);
+	cp_value=SG_CALLOC(float64_t*, bufsize);
+	cp_index=SG_CALLOC(uint32_t*, bufsize);
+	cp_nz_dims=SG_CALLOC(uint32_t, bufsize);
+	cp_bias=SG_CALLOC(float64_t, bufsize);
 
 	float64_t TolAbs=0;
 	float64_t QPBound=0;
