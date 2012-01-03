@@ -51,6 +51,18 @@ class CLabels : public CSGObject
 		CLabels(SGVector<float64_t> src);
 
 		/** constructor
+		 * 
+		 * @param labels labels 
+		 */
+		CLabels(SGVector<int32_t> labels);
+
+		/** constructor
+		 * 
+		 * @param labels labels 
+		 */
+		CLabels(SGVector<int64_t> labels);
+
+		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
