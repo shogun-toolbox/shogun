@@ -187,6 +187,8 @@ public:
 	 * results into a sorted array)
 	 *
 	 * @param file_version parameter version of the file
+	 * @param current_version version from which mapping begins (you want to use
+	 * VERSION_PARAMETER for this in most cases)
 	 * @param file file to load from
 	 * @param prefix prefix for members
 	 * @return (sorted) array of created TParameter instances with file data
