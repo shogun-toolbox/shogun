@@ -54,12 +54,6 @@ class CLabels : public CSGObject
 		 * 
 		 * @param labels labels 
 		 */
-		CLabels(SGVector<int32_t> labels);
-
-		/** constructor
-		 * 
-		 * @param labels labels 
-		 */
 		CLabels(SGVector<int64_t> labels);
 
 		/** constructor
