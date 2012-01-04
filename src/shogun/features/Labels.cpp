@@ -42,6 +42,7 @@ CLabels::CLabels(SGVector<float64_t> src)
 	m_num_classes=get_num_classes();
 }
 
+/*
 CLabels::CLabels(SGVector<int64_t> src)
 : CSGObject()
 {
@@ -55,6 +56,7 @@ CLabels::CLabels(SGVector<int64_t> src)
 	set_labels(converted);
 	m_num_classes=get_num_classes();
 }
+*/
 
 void CLabels::set_to_one()
 {
