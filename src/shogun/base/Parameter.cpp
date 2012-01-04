@@ -1577,16 +1577,6 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	m_delete_data=false;
 }
 
-TParameter::TParameter(const TSGDataType* datatype, void* parameter,
-		bool delete_data, const char* name, const char* description)
-	:m_datatype(*datatype)
-{
-	m_parameter = parameter;
-	m_name = strdup(name);
-	m_description = strdup(description);
-	m_delete_data=delete_data;
-}
-
 TParameter::~TParameter()
 {
 	SG_FREE(m_description);
