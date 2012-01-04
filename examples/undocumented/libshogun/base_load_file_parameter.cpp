@@ -228,15 +228,22 @@ void test_load_file_parameter()
 	/* and for the feature object */
 	CSimpleFeatures<int32_t>* features=
 			*((CSimpleFeatures<int32_t>**)file_loaded_sgobject->m_parameter);
-	SGMatrix<int32_t> feature_matrix=features->get_feature_matrix();
-	CMath::display_matrix(feature_matrix.matrix,
-			feature_matrix.num_rows, feature_matrix.num_cols, "features");
-	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
+	SGMatrix<int32_t> feature_matrix_loaded=
+			features->get_feature_matrix();
+	SGMatrix<int32_t> feature_matrix_original=
+			int_instance->m_features->get_feature_matrix();
+
+	CMath::display_matrix(feature_matrix_loaded.matrix,
+			feature_matrix_loaded.num_rows,
+			feature_matrix_loaded.num_cols,
+			"features");
+	for (index_t i=0;
+			i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
 			++i)
 	{
-		ASSERT(value_matrix[i]==int_instance->m_matrix[i]);
+		ASSERT(feature_matrix_original.matrix[i]==
+				feature_matrix_loaded.matrix[i]);
 	}
-
 
 	/* only the TParameter instances have to be deleted, data, data pointer,
 	 * and possible length variables are deleted automatically */
