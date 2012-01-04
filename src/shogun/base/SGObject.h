@@ -197,6 +197,10 @@ public:
 			int32_t current_version,
 			CSerializableFile* file, const char* prefix="");
 
+	/** TODO documentation */
+	void map_parameters(DynArray<TParameter*>* param_base,
+			int32_t& base_version, DynArray<SGParamInfo*>* target_param_infos);
+
 	/** set the io object
 	 *
 	 * @param io io object to use
@@ -261,6 +265,27 @@ public:
 #endif
 
 protected:
+	/** creates a new TParameter instance, which contains migrated data from
+	 * the version that is provided. The provided parameter data base is used
+	 * for migration, this base is a collection of all parameter data of the
+	 * previous version.
+	 * Migration is done FROM the data in param_base TO the provided param info
+	 * Migration is always one version step.
+	 * Method has to be implemented in subclasses, if no match is found, base
+	 * method has to be called.
+	 * If there is an element in the param_base which equals the target,
+	 * a copy of the element is returned.
+	 *
+	 * NOT IMPLEMENTED
+	 *
+	 * TODO parameter doc
+	 */
+	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
+			SGParamInfo* target);
+
+	/** TODO documentation */
+	virtual TParameter* one_to_one_migration(DynArray<TParameter*>* param_base,
+			SGParsamInfo* target);
 
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
