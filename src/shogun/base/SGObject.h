@@ -283,9 +283,21 @@ protected:
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
 			SGParamInfo* target);
 
-	/** TODO documentation */
-	virtual TParameter* one_to_one_migration(DynArray<TParameter*>* param_base,
-			SGParsamInfo* target);
+	/** This method prepares everything for a one-to-one parameter migration.
+	 * One to one here means that only ONE element of the parameter base is
+	 * needed for the migration (the one with the same name as the target).
+	 * Data is allocated for the target (in the type as provided in the target
+	 * SGParamInfo), and a corresponding new TParameter instance is written to
+	 * replacement. The to_migrate pointer points to the single needed
+	 * TParameter instance needed for migration.
+	 * In addition, the m_delete_data flag of to_migrate is set to true.
+	 * So if you want to migrate data, the only thing to do after this call is
+	 * converting the data in the m_parameter fields.
+	 * If unsure how to use - have a look into an example for this.
+	 */
+	virtual void one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
+			SGParamInfo* target, TParameter*& replacement,
+			TParameter*& to_migrate);
 
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
