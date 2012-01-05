@@ -50,6 +50,9 @@ struct TParameter
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
 
+	/** TODO documentation */
+	void allocate_data_from_scratch(index_t len_y, index_t len_x);
+
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
 
