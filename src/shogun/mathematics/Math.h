@@ -454,6 +454,17 @@ class CMath : public CSGObject
 		}
 
 #ifdef HAVE_LAPACK
+
+		/// inverses square matrix in-place
+		static void inverse(SGMatrix<float64_t> matrix)
+		{
+			ASSERT(matrix.num_cols==matrix.num_rows);
+			int32_t* ipiv = SG_MALLOC(int32_t, matrix.num_cols);
+			clapack_dgetrf(CblasColMajor,matrix.num_cols,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
+			clapack_dgetri(CblasColMajor,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
+			SG_FREE(ipiv);
+		};
+		
 		/// return the pseudo inverse for matrix
 		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
 		static float64_t* pinv(
