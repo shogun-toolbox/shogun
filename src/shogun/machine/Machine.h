@@ -67,7 +67,7 @@ enum EClassifierType
 	CT_GAUSSIANNAIVEBAYES = 370,
 	CT_AVERAGEDPERCEPTRON = 380,
 	CT_SGDQN = 390,
-
+	CT_CONJUGATEINDEX = 400
 };
 
 /** solver type */
