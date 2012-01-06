@@ -246,6 +246,12 @@ ParameterMap::~ParameterMap()
 
 void ParameterMap::put(SGParamInfo* key, SGParamInfo* value)
 {
+	if (key->m_ptype==PT_SGOBJECT || value->m_ptype==PT_SGOBJECT)
+	{
+		SG_SPRINT("Parameter maps for CSGObjects are not yet supported\n");
+		SG_SNOTIMPLEMENTED;
+	}
+
 	m_map_elements.append_element(new ParameterMapElement(key, value));
 	m_finalized=false;
 }
