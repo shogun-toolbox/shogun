@@ -22,15 +22,16 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief CDiffusionMaps used to preprocess given data using 
-  * diffusion maps dimensionality reduction technique according to
-  * 
-  * Coifman, R., & Lafon, S. (2006). 
-  * Diffusion maps. 
-  * Applied and Computational Harmonic Analysis, 21(1), 5-30. Elsevier. 
-  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S1063520306000546
-  *
-  */
+/** @brief class DiffusionMaps (part of the Efficient Dimensionality Reduction Toolkit)
+ * used to preprocess given data using Diffusion Maps dimensionality 
+ * reduction technique as described in
+ * 
+ * Coifman, R., & Lafon, S. (2006). 
+ * Diffusion maps. 
+ * Applied and Computational Harmonic Analysis, 21(1), 5-30. Elsevier. 
+ * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S1063520306000546
+ *
+ */
 class CDiffusionMaps: public CEmbeddingConverter
 {
 public:

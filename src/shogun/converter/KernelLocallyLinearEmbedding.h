@@ -23,15 +23,16 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief the class KernelLocallyLinearEmbedding used to preprocess
- * data using kernel extension of Locally Linear Embedding algorithm as
+/** @brief class KernelLocallyLinearEmbedding (part of the
+ * Efficient Dimensionality Reduction Toolkit) used to construct embeddings
+ * of data using kernel formulation of Locally Linear Embedding algorithm as
  * described in
  *
  * Decoste, D. (2001). 
  * Visualizing Mercer Kernel Feature Spaces Via Kernelized Locally-Linear Embeddings.
  * The 8th International Conference on Neural Information Processing ICONIP2001
  *
- * It is optimized with alignment formulation as described in 
+ * It is optimized with the alignment formulation as described in 
  * 
  * Zhao, D. (2006). 
  * Formulating LLE using alignment technique. 

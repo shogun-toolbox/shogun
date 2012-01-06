@@ -24,7 +24,8 @@ class CFeatures;
 class CDistance;
 class CKernel;
 
-/** @brief class EmbeddingConverter used to create embeddings of 
+/** @brief class EmbeddingConverter (part of the Efficient Dimensionality 
+ * Reduction Toolkit) used to construct embeddings of 
  * features, e.g. construct dense numeric embedding of string features
  */
 class CEmbeddingConverter: public CConverter

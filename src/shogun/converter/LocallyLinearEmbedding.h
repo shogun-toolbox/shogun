@@ -23,7 +23,8 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief the class LocallyLinearEmbedding used to preprocess
+/** @brief class LocallyLinearEmbedding (part of the Efficient
+ * Dimensionality Reduction Toolkit) used to embed
  * data using Locally Linear Embedding algorithm described in
  *
  * Saul, L. K., Ave, P., Park, F., & Roweis, S. T. (2001).

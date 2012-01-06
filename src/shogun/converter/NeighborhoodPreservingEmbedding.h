@@ -23,7 +23,8 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief NeighborhoodPreservingEmbedding converter used to 
+/** @brief NeighborhoodPreservingEmbedding (part of the
+ * Efficient Dimensionality Reduction Toolkit) converter used to 
  * construct embeddings as described in:
  * 
  * He, X., Cai, D., Yan, S., & Zhang, H.-J. (2005). 

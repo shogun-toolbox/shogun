@@ -26,7 +26,8 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief the class Isomap used to preprocess data using K-Isomap algorithm
+/** @brief class Isomap (part of the Efficient Dimension
+ * Reduction Toolkit) used to embed data using Isomap algorithm
  * as described in
  * 
  * Silva, V. D., & Tenenbaum, J. B. (2003). 

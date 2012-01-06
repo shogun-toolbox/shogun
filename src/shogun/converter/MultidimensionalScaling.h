@@ -22,7 +22,8 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief the class Multidimensionalscaling is used to perform
+/** @brief class Multidimensionalscaling (part of the Efficient Dimensionality
+ * Reduction Toolkit) is used to perform
  * multidimensional scaling (capable of landmark approximation
  * if requested).
  *

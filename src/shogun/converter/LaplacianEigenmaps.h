@@ -22,7 +22,8 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief the class LaplacianEigenmaps used to preprocess
+/** @brief class LaplacianEigenmaps (part of the Efficient Dimensionality 
+ * Reduction Toolbox) used to construct embeddings of
  * data using Laplacian Eigenmaps algorithm as described in:
  *
  * Belkin, M., & Niyogi, P. (2002). 
