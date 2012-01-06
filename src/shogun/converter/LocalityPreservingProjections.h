@@ -20,7 +20,18 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief  */
+/** @brief class LocalityPreservingProjections (part of the
+ * Efficient Dimensionality Reduction Toolkit) used to compute
+ * embeddings of data using Locality Preserving Projections method
+ * as described in
+ *
+ * He, X., & Niyogi, P. (2003). 
+ * Locality Preserving Projections. 
+ * Matrix, 16(December), 153–160. Citeseer. 
+ * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.7147&rep=rep1&type=pdf
+ *
+ *
+ */
 class CLocalityPreservingProjections: public CLaplacianEigenmaps
 {
 public:

@@ -22,7 +22,8 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief LocalTangentSpaceAlignment used to embed
+/** @brief class LocalTangentSpaceAlignment (part of the Efficient
+ * Dimensionality Reduction Toolkit) used to embed
  * data using Local Tangent Space Alignment (LTSA) 
  * algorithm as described in:
  *

@@ -22,8 +22,9 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief the class HessianLocallyLinearEmbedding used to preprocess
- * data using Hessian Locally Linear Embedding algorithm described in
+/** @brief class HessianLocallyLinearEmbedding (part of the
+ * Efficient Dimensionality Reduction Toolkit) used to preprocess
+ * data using Hessian Locally Linear Embedding algorithm as described in
  *
  * Donoho, D., & Grimes, C. (2003). 
  * Hessian eigenmaps: new tools for nonlinear dimensionality reduction.

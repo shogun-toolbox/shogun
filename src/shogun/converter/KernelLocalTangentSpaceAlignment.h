@@ -22,8 +22,10 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief the class LocalTangentSpaceAlignment used to preprocess
- * data using kernel extension of the Local Tangent Space Alignment (LTSA) algorithm.
+/** @brief class LocalTangentSpaceAlignment (part of the
+ * Efficient Dimensionality Reduction Toolkit) used to embed
+ * data using kernel extension of the Local Tangent Space 
+ * Alignment (LTSA) algorithm.
  *
  * The stated eigenproblem is solved in the same way as
  * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
