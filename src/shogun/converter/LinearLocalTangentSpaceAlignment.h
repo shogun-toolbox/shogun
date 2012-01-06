@@ -24,7 +24,7 @@ class CFeatures;
 class CDistance;
 
 /** @brief class LinearLocalTangentSpaceAlignment (part of the
- * Efficient Dimensionality Reduction Toolbox) converter used to 
+ * Efficient Dimensionality Reduction Toolkit) converter used to 
  * construct embeddings as described in:
  * 
  * Zhang, T., Yang, J., Zhao, D., & Ge, X. (2007).

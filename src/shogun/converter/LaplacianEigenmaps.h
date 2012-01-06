@@ -23,7 +23,7 @@ class CFeatures;
 class CDistance;
 
 /** @brief class LaplacianEigenmaps (part of the Efficient Dimensionality 
- * Reduction Toolbox) used to construct embeddings of
+ * Reduction Toolkit) used to construct embeddings of
  * data using Laplacian Eigenmaps algorithm as described in:
  *
  * Belkin, M., & Niyogi, P. (2002). 
