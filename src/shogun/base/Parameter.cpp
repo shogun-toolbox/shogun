@@ -2636,7 +2636,7 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 			 * redundant if load() is called afterwards, however, if one wants
 			 * to write directly to the array data after this call, it is
 			 * necessary */
-			SG_SPRINT("new_cont call with len_y=%d, len_x=%d\n", len_y, len_x);
+//			SG_SPRINT("new_cont call with len_y=%d, len_x=%d\n", len_y, len_x);
 			new_cont(len_y, len_x);
 		}
 		else
