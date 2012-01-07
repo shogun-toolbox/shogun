@@ -181,6 +181,22 @@ public:
 			int32_t file_version, CSerializableFile* file,
 			const char* prefix="");
 
+	/** maps all parameters of this instance to the provided file version and
+	 * loads all parameter data from the file into an array, which is sorted
+	 * (basically calls load_file_parameter(...) for all parameters and puts all
+	 * results into a sorted array)
+	 *
+	 * @param file_version parameter version of the file
+	 * @param current_version version from which mapping begins (you want to use
+	 * VERSION_PARAMETER for this in most cases)
+	 * @param file file to load from
+	 * @param prefix prefix for members
+	 * @return (sorted) array of created TParameter instances with file data
+	 */
+	DynArray<TParameter*>* load_file_parameters(int32_t file_version,
+			int32_t current_version,
+			CSerializableFile* file, const char* prefix="");
+
 	/** set the io object
 	 *
 	 * @param io io object to use
