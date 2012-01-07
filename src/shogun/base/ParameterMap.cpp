@@ -259,13 +259,11 @@ SGParamInfo* ParameterMap::get(SGParamInfo* key) const
 		SG_SERROR("Call finalize_map() before calling get()\n");
 
 	/* do binary search in array of pointers */
-	SGVector<ParameterMapElement*> array(m_map_elements.get_array(),
-			num_elements);
-
 	/* dummy element for searching */
 	ParameterMapElement* dummy=new ParameterMapElement(key->duplicate(),
 			key->duplicate());
-	index_t index=CMath::binary_search<ParameterMapElement> (array, dummy);
+	index_t index=CMath::binary_search<ParameterMapElement> (
+			m_map_elements.get_array(), num_elements, dummy);
 	delete dummy;
 
 	if (index==-1)
