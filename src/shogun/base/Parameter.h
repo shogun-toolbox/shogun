@@ -60,6 +60,15 @@ struct TParameter
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
 
+	/** operator for comparison, (by string m_name) */
+	bool operator==(const TParameter& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator<(const TParameter& other) const;
+
+	/** operator for comparison (by string m_name) */
+	bool operator>(const TParameter& other) const;
+
 	/** type of parameter */
 	TSGDataType m_datatype;
 	/** pointer to parameter */
