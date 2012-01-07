@@ -515,7 +515,7 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 			else
 			{
 				SG_ERROR("Sorry, the deserialization of non-scalar containers "
-						" of PT_SGOBJECT from sratch is not implemented yet.");
+						" of PT_SGOBJECT from scratch is not implemented yet.");
 				SG_NOTIMPLEMENTED;
 			}
 		}
@@ -531,6 +531,31 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 
 	if (free_old)
 		delete old;
+
+	return result;
+}
+
+DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
+		int32_t current_version, CSerializableFile* file, const char* prefix)
+{
+	DynArray<TParameter*>* result=new DynArray<TParameter*>();
+
+	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	{
+		/* extract current parameter info */
+		SGParamInfo* info=new SGParamInfo(m_parameters->get_parameter(i),
+				current_version);
+
+		/* load parameter data from file */
+		result->append_element(load_file_parameter(info, file_version, file,
+				prefix));
+
+		/* clean up */
+		delete info;
+	}
+
+	/* sort array before returning */
+	CMath::qsort(result->get_array(), result->get_num_elements());
 
 	return result;
 }
