@@ -9,6 +9,7 @@
  */
 
 #include <shogun/classifier/ConjugateIndex.h>
+#ifdef HAVE_LAPACK
 #include <shogun/machine/Machine.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/Labels.h>
@@ -238,5 +239,4 @@ float64_t CConjugateIndex::apply(int32_t index)
 	return predicted_label;
 };
 
-
-
+#endif /* HAVE_LAPACK */

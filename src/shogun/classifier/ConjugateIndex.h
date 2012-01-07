@@ -10,7 +10,7 @@
 
 #ifndef CONJUGATEINDEX_H_
 #define CONJUGATEINDEX_H_
-
+#ifdef HAVE_LAPACK
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/SimpleFeatures.h>
@@ -124,5 +124,5 @@ protected:
 };
 
 }
-
+#endif /* HAVE_LAPACK */
 #endif /* CONJUGATEINDEX_H_ */
