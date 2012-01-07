@@ -555,9 +555,7 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
 	}
 
 	/* sort array before returning */
-	SGVector<TParameter*> to_sort(result->get_array(),
-			result->get_num_elements());
-	CMath::qsort(to_sort);
+	CMath::qsort(result->get_array(), result->get_num_elements());
 
 	return result;
 }

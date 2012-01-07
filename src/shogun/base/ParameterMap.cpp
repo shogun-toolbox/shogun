@@ -280,10 +280,8 @@ SGParamInfo* ParameterMap::get(SGParamInfo* key) const
 void ParameterMap::finalize_map()
 {
 	/* sort underlying array */
-	SGVector<ParameterMapElement*> array(m_map_elements.get_array(),
+	CMath::qsort<ParameterMapElement> (m_map_elements.get_array(),
 			m_map_elements.get_num_elements());
-
-	CMath::qsort<ParameterMapElement> (array);
 
 	m_finalized=true;
 }
