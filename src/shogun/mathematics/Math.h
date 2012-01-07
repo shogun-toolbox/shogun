@@ -1123,6 +1123,7 @@ class CMath : public CSGObject
 		 * Every element is dereferenced once before being compared
 		 *
 		 * @param array array of pointers to sort
+		 * @param length length of array
 		 *
 		 * */
 		template <class T>
@@ -1386,24 +1387,26 @@ class CMath : public CSGObject
 		 * Every element is dereferenced once before being compared
 		 *
 		 * @param array array of pointers to search in (assumed being sorted)
+		 * @param length length of array
 		 * @param elem pointer to element to search for
 		 * @return index of elem, -1 if not found */
 		template<class T>
-			static inline int32_t binary_search(SGVector<T*> array, T* elem)
+			static inline int32_t binary_search(T** vector, index_t length,
+					T* elem)
 			{
 				int32_t start=0;
-				int32_t end=array.vlen-1;
+				int32_t end=length-1;
 
-				if (array.vlen<1)
+				if (length<1)
 					return -1;
 
 				while (start<end)
 				{
 					int32_t middle=(start+end)/2;
 
-					if (*array.vector[middle]>*elem)
+					if (*vector[middle]>*elem)
 						end=middle-1;
-					else if (*array.vector[middle]<*elem)
+					else if (*vector[middle]<*elem)
 						start=middle+1;
 					else
 					{
@@ -1412,7 +1415,7 @@ class CMath : public CSGObject
 					}
 				}
 
-				if (start>=0&&*array.vector[start]==*elem)
+				if (start>=0&&*vector[start]==*elem)
 					return start;
 
 				return -1;
