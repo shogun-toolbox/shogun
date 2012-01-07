@@ -596,9 +596,7 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 
 	/* sort the just created new base */
 //	SG_PRINT("sorting base\n");
-	SGVector<TParameter*> to_sort(param_base->get_array(),
-			param_base->get_num_elements());
-	CMath::qsort(to_sort);
+	CMath::qsort(param_base->get_array(), param_base->get_num_elements());
 
 	/* at this point the param_base is at the same version as the version of
 	 * the provided parameter infos */
@@ -613,12 +611,10 @@ void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 
 	/* first find index of needed data.
 	 * in this case, element in base with same name */
-	SGVector<TParameter*> v(param_base->get_array(),
-			param_base->get_num_elements());
-
 	/* dummy for searching, search and save result in to_migrate parameter */
 	TParameter* t=new TParameter(&type, NULL, target->m_name, "");
-	index_t i=CMath::binary_search(v, t);
+	index_t i=CMath::binary_search(param_base->get_array(),
+			param_base->get_num_elements(), t);
 	delete t;
 	to_migrate=param_base->get_element(i);
 
@@ -657,16 +653,14 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 
 	/* first find index of needed data.
 	 * in this case, element in base with same name */
-	SGVector<TParameter*> v(param_base->get_array(),
-			param_base->get_num_elements());
-
 	/* type is also needed */
 	TSGDataType type(target->m_ctype, target->m_stype,
 			target->m_ptype);
 
 	/* dummy for searching, search and save result */
 	TParameter* t=new TParameter(&type, NULL, target->m_name, "");
-	index_t i=CMath::binary_search(v, t);
+	index_t i=CMath::binary_search(param_base->get_array(),
+			param_base->get_num_elements(), t);
 	delete t;
 	TParameter* to_migrate=param_base->get_element(i);
 
