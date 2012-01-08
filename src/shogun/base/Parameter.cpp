@@ -1577,16 +1577,6 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	m_delete_data=false;
 }
 
-TParameter::TParameter(const TSGDataType* datatype, void* parameter,
-		bool delete_data, const char* name, const char* description)
-	:m_datatype(*datatype)
-{
-	m_parameter = parameter;
-	m_name = strdup(name);
-	m_description = strdup(description);
-	m_delete_data=delete_data;
-}
-
 TParameter::~TParameter()
 {
 	SG_FREE(m_description);
@@ -2576,4 +2566,84 @@ bool TParameter::operator<(const TParameter& other) const
 bool TParameter::operator>(const TParameter& other) const
 {
 	return strcmp(m_name, other.m_name)>0;
+}
+
+void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
+{
+	/* length has to be allocated for matrices/vectors */
+	switch (m_datatype.m_ctype)
+	{
+	case CT_VECTOR: case CT_SGVECTOR:
+		m_datatype.m_length_y=SG_MALLOC(index_t, 1);
+		*m_datatype.m_length_y=len_y;
+		break;
+	case CT_MATRIX: case CT_SGMATRIX:
+		m_datatype.m_length_x=SG_MALLOC(index_t, 1);
+		m_datatype.m_length_y=SG_MALLOC(index_t, 1);
+		*m_datatype.m_length_y=len_y;
+		*m_datatype.m_length_x=len_x;
+		break;
+	case CT_SCALAR:
+		m_datatype.m_length_x=NULL;
+		m_datatype.m_length_y=NULL;
+		break;
+	case CT_NDARRAY:
+		SG_SNOTIMPLEMENTED;
+	}
+
+	/* check if there is no data loss */
+	if (m_parameter)
+		SG_SERROR("TParameter::allocate_data_from_scratch must not be called "
+				"when the underlying TParameter instance already has data.\n");
+
+	/* scalars are treated differently than vectors/matrices. memory has to
+	 * be allocated for the data itself */
+	if (m_datatype.m_ctype==CT_SCALAR)
+	{
+		/* sgobjects are treated differently than the rest */
+		if (m_datatype.m_ptype!=PT_SGOBJECT)
+		{
+			/* for non-sgobject allocate memory because normally they are on
+			 * stack and excluded in the TParameter data allocation.
+			 * Will be deleted by the TParameter destructor */
+			m_parameter=SG_MALLOC(char, m_datatype.get_size());
+		}
+		else
+		{
+			/* for sgobjects, allocate memory for pointer and set to NULL
+			 * * Will be deleted by the TParameter destructor */
+			m_parameter=SG_MALLOC(CSGObject**, 1);
+			*((CSGObject**)m_parameter)=NULL;
+		}
+	}
+	else
+	{
+		/* sgobjects are treated differently than the rest */
+		if (m_datatype.m_ptype!=PT_SGOBJECT)
+		{
+			/* allocate pointer for data pointer */
+			void** data_p=SG_MALLOC(void*, 1);
+
+			/* allocate dummy data at the point the above pointer points to
+			 * will be freed by the delete_cont() method of TParameter.
+			 * This is needed because new_cont/delete_cont cannot handle
+			 * non-existing data. */
+			*data_p=SG_MALLOC(uint8_t, 1);
+
+			m_parameter=data_p;
+
+			/* perform one data allocation. This may be repeated and therefore
+			 * redundant if load() is called afterwards, however, if one wants
+			 * to write directly to the array data after this call, it is
+			 * necessary */
+//			SG_SPRINT("new_cont call with len_y=%d, len_x=%d\n", len_y, len_x);
+			new_cont(len_y, len_x);
+		}
+		else
+		{
+			SG_SERROR("Sorry, the deserialization of non-scalar containers "
+					" of PT_SGOBJECT from scratch is not implemented yet.");
+			SG_SNOTIMPLEMENTED;
+		}
+	}
 }
