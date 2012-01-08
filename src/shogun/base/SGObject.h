@@ -197,6 +197,10 @@ public:
 			int32_t current_version,
 			CSerializableFile* file, const char* prefix="");
 
+	/** TODO documentation */
+	void map_parameters(DynArray<TParameter*>* param_base,
+			int32_t& base_version, DynArray<SGParamInfo*>* target_param_infos);
+
 	/** set the io object
 	 *
 	 * @param io io object to use
@@ -261,6 +265,41 @@ public:
 #endif
 
 protected:
+	/** creates a new TParameter instance, which contains migrated data from
+	 * the version that is provided. The provided parameter data base is used
+	 * for migration, this base is a collection of all parameter data of the
+	 * previous version.
+	 * Migration is done FROM the data in param_base TO the provided param info
+	 * Migration is always one version step.
+	 * Method has to be implemented in subclasses, if no match is found, base
+	 * method has to be called.
+	 * If there is an element in the param_base which equals the target,
+	 * a copy of the element is returned.
+	 *
+	 * NOT IMPLEMENTED
+	 *
+	 * TODO parameter doc
+	 */
+	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
+			SGParamInfo* target);
+
+	/** This method prepares everything for a one-to-one parameter migration.
+	 * One to one here means that only ONE element of the parameter base is
+	 * needed for the migration (the one with the same name as the target).
+	 * Data is allocated for the target (in the type as provided in the target
+	 * SGParamInfo), and a corresponding new TParameter instance is written to
+	 * replacement. The to_migrate pointer points to the single needed
+	 * TParameter instance needed for migration.
+	 * If a name change happened, the old name may be specified by old_name.
+	 * In addition, the m_delete_data flag of to_migrate is set to true.
+	 * So if you want to migrate data, the only thing to do after this call is
+	 * converting the data in the m_parameter fields.
+	 * If unsure how to use - have a look into an example for this.
+	 * TODO document parameter
+	 */
+	virtual void one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
+			SGParamInfo* target, TParameter*& replacement,
+			TParameter*& to_migrate, char* old_name=NULL);
 
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at

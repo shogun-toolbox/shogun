@@ -30,16 +30,6 @@ struct TParameter
 	explicit TParameter(const TSGDataType* datatype, void* parameter,
 						const char* name, const char* description);
 
-	/** explicit constructor. same as above but sets delete_data flag
-	 * @param datatype datatype
-	 * @param parameter pointer to parameter
-	 * @param delete_data delete_data flag (see description of variable)
-	 * @param name name of parameter
-	 * @param description description of parameter
-	 */
-	explicit TParameter(const TSGDataType* datatype, void* parameter,
-			bool delete_data, const char* name, const char* description);
-
 	/** destructor */
 	~TParameter();
 
@@ -59,6 +49,9 @@ struct TParameter
 	 * @param prefix prefix
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
+
+	/** TODO documentation */
+	void allocate_data_from_scratch(index_t len_y, index_t len_x);
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;

@@ -35,6 +35,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  clustering_kmeans base_parameter_map \
 		  base_load_file_parameter \
 		  base_load_file_parameters \
+		  base_map_parameters \
 		  splitting_stratified_crossvalidation \
 		  mathematics_arpack \
 		  library_fibonacci_heap \
