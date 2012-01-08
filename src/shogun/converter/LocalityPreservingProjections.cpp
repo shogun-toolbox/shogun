@@ -78,7 +78,7 @@ CSimpleFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(
 	float64_t* evectors = SG_MALLOC(float64_t, m_target_dim*dim);
 	int32_t info = 0;
 #ifdef HAVE_ARPACK
-	arpack_dsxupd(lhs_M,rhs_M,false,dim,m_target_dim,"LA",false,3,true,-1e-9,0.0,
+	arpack_dsxupd(lhs_M,rhs_M,false,dim,m_target_dim,"LA",false,3,true,false,-1e-9,0.0,
 	              evals,evectors,info);
 #else
 	wrap_dsygvx(1,'V','U',dim,lhs_M,dim,rhs_M,dim,dim-m_target_dim+1,dim,evals,evectors,&info);

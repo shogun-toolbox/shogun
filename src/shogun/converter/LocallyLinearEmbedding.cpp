@@ -413,7 +413,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_embedding(SGMatrix<float6
 		// using ARPACK (faster)
 		eigenvalues_vector = SG_MALLOC(float64_t, dimension+1);
 #ifdef HAVE_ARPACK
-		arpack_dsxupd(matrix.matrix,NULL,false,N,dimension+1,"LA",true,3,true,m_nullspace_shift,0.0,
+		arpack_dsxupd(matrix.matrix,NULL,false,N,dimension+1,"LA",true,3,true,false,m_nullspace_shift,0.0,
 		              eigenvalues_vector,matrix.matrix,eigenproblem_status);
 #endif
 		if (eigenproblem_status)

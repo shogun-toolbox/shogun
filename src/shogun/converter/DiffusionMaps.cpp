@@ -12,6 +12,7 @@
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
+#include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
@@ -69,6 +70,11 @@ CFeatures* CDiffusionMaps::apply(CFeatures* features)
 
 CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 {
+#ifdef HAVE_ARPACK
+	bool use_arpack = false;
+#else
+	bool use_arpack = false;
+#endif
 	int32_t i,j;
 	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
 	ASSERT(kernel_matrix.num_rows==kernel_matrix.num_cols);
@@ -104,42 +110,41 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 	SG_FREE(p_vector);
 
 	for (i=0; i<N*N; i++)
-	{
 		kernel_matrix.matrix[i] /= ppt;
-	}
-
 
 	float64_t* s_values = SG_MALLOC(float64_t, N);
 
-	float64_t* kkt_matrix = SG_MALLOC(float64_t, N*N);
-
-	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
-	            N,N,N,
-	            1.0,kernel_matrix.matrix,N,
-	            kernel_matrix.matrix,N,
-	            0.0,kkt_matrix,N);
-
 	int32_t info = 0;
+	SGMatrix<float64_t> new_feature_matrix;
 
-	wrap_dsyevr('V','U',N,kkt_matrix,N,N-m_target_dim,N,s_values,kernel_matrix.matrix,&info);
+	if (use_arpack)
+	{
+#ifdef HAVE_ARPACK
+		arpack_dsxupd(kernel_matrix.matrix,NULL,false,N,m_target_dim,"LA",false,1,false,true,0.0,0.0,s_values,kernel_matrix.matrix,info);
+#endif /* HAVE_ARPACK */
+		SG_REALLOC(float64_t,kernel_matrix.matrix,m_target_dim*N);
+		new_feature_matrix = SGMatrix<float64_t>(kernel_matrix.matrix,m_target_dim,N);
+	}
+	else 
+	{
+		SG_WARNING("LAPACK does not provide efficient routines to construct embedding (this may take time). Consider installing ARPACK.");
+		wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
+		new_feature_matrix = SGMatrix<float64_t>(m_target_dim,N);
+		for (i=0; i<m_target_dim; i++)
+		{
+			for (j=0; j<N; j++)
+				new_feature_matrix[j*m_target_dim+i] = 
+				    kernel_matrix[(m_target_dim-i-1)*N+j];
+		}
+		kernel_matrix.destroy_matrix();
+	}
 	if (info)
-		SG_ERROR("DGESVD failed with %d code", info);
+	{
+		SG_ERROR("Eigenproblem solving  failed with %d code", info);
+		kernel_matrix.destroy_matrix();
+	}
 
 	SG_FREE(s_values);
-/*
-	int32_t info = 0;
-	wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
-*/
-
-	SG_FREE(kkt_matrix);
-	SGMatrix<float64_t> new_feature_matrix = SGMatrix<float64_t>(m_target_dim,N);
-
-	for (i=0; i<m_target_dim; i++)
-	{
-		for (j=0; j<N; j++)
-			new_feature_matrix[j*m_target_dim+i] = kernel_matrix.matrix[(m_target_dim-i-1)*N+j]/kernel_matrix.matrix[(m_target_dim)*N+j];
-	}
-	kernel_matrix.destroy_matrix();
 
 	return new CSimpleFeatures<float64_t>(new_feature_matrix);
 }
