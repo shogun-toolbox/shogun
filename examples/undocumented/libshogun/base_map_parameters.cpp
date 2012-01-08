@@ -86,10 +86,10 @@ public:
 		m_parameters->add(&m_vector, "vector", "Test vector");
 		m_parameters->add(&m_matrix, "matrix", "Test matrix");
 
-		SGMatrix<float64_t> features=SGMatrix<float64_t>(2, 3);
+		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
 		CMath::range_fill_vector(features.matrix,
-				features.num_rows*features.num_cols, 3.0);
-		m_features=new CSimpleFeatures<float64_t>(features);
+				features.num_rows*features.num_cols, 3);
+		m_features=new CSimpleFeatures<int32_t>(features);
 		SG_REF(m_features);
 		m_parameters->add((CSGObject**)&m_features, "float_features",
 				"Test features");
@@ -151,7 +151,9 @@ public:
 	float64_t m_number;
 	SGVector<float64_t> m_vector;
 	SGMatrix<float64_t> m_matrix;
-	CSimpleFeatures<float64_t>* m_features;
+
+	/* no type change here */
+	CSimpleFeatures<int32_t>* m_features;
 
 	virtual const char* get_name() const { return "TestClassFloat"; }
 
@@ -240,11 +242,9 @@ public:
 		{
 			TParameter* to_migrate=NULL;
 
-			/* specify name change */
+			/* specify name change and thats it */
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate, "int_features");
-
-
 		}
 
 		if (result)
@@ -298,13 +298,13 @@ void test_load_file_parameter()
 	 * alphabetical order is "float_features", "matrix", "number", "vector" */
 	TParameter* current=NULL;
 
-	/* "float_features" */
+	/* "float_features" (no type change here) */
 	current=params->get_element(0);
 	SG_SPRINT("checking \"float_features\":\n");
 	ASSERT(!strcmp(current->m_name, "float_features"));
 	/* cast to simple features */
-	CSimpleFeatures<float64_t>* features=
-			*((CSimpleFeatures<float64_t>**)current->m_parameter);
+	CSimpleFeatures<int32_t>* features=
+			*((CSimpleFeatures<int32_t>**)current->m_parameter);
 	SG_SPRINT("checking address (mapped!=original): %p!=%p\n", features,
 			int_instance->m_features);
 	ASSERT((void*)features!=(void*)int_instance->m_features);
@@ -318,9 +318,8 @@ void test_load_file_parameter()
 	ASSERT(features->get_combined_feature_weight()==
 			int_instance->m_features->get_combined_feature_weight());
 	SG_SPRINT("checking feature matrix:\n");
-	SGMatrix<int32_t> int_matrix(int_instance->m_matrix,
-			int_instance->m_matrix_rows, int_instance->m_matrix_cols);
-	SGMatrix<float64_t> float_matrix=features->get_feature_matrix();
+	SGMatrix<int32_t> int_matrix=int_instance->m_features->get_feature_matrix();
+	SGMatrix<int32_t> float_matrix=features->get_feature_matrix();
 	SG_SPRINT("number of rows: %d==%d\n", int_matrix.num_rows,
 			float_matrix.num_rows);
 	ASSERT(int_matrix.num_rows==float_matrix.num_rows);
@@ -329,10 +328,10 @@ void test_load_file_parameter()
 	ASSERT(int_matrix.num_cols==float_matrix.num_cols);
 	CMath::display_matrix(float_matrix.matrix, float_matrix.num_rows,
 			float_matrix.num_cols, "mapped");
-//	CMath::display_matrix(int_matrix.matrix, int_matrix.num_rows,
-//			int_matrix.num_cols, "original");
-//	for (index_t i=0; i<int_matrix.num_rows*int_matrix.num_cols; ++i)
-//		ASSERT(int_matrix.matrix[i]==float_matrix.matrix[i]);
+	CMath::display_matrix(int_matrix.matrix, int_matrix.num_rows,
+			int_matrix.num_cols, "original");
+	for (index_t i=0; i<int_matrix.num_rows*int_matrix.num_cols; ++i)
+		ASSERT(int_matrix.matrix[i]==float_matrix.matrix[i]);
 
 	/* "matrix" */
 	current=params->get_element(1);
