@@ -182,7 +182,7 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::construct_embedding(CFeatures* 
 	// using ARPACK DS{E,A}UPD
 	int eigenproblem_status = 0;
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t,m_target_dim+1);
-	arpack_dsxupd(W_matrix.matrix,D_diag_vector,true,N,m_target_dim+1,"LA",true,3,false,-1e-9,0.0,
+	arpack_dsxupd(W_matrix.matrix,D_diag_vector,true,N,m_target_dim+1,"LA",true,3,false,false,-1e-9,0.0,
 	              eigenvalues_vector,W_matrix.matrix,eigenproblem_status);
 
 	if (eigenproblem_status!=0) 

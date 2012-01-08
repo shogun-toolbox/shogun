@@ -49,6 +49,7 @@ namespace shogun
  *        - 3: shift-invert mode
  * @param pos true if matrix is positive definite (Cholesky factorization is used in
  *        this case instead of LUP factorization))
+ * @param cov true whether matrix A should be considered as A^T A
  * @param shift shift for shift-invert (3) mode of IRLM. In this mode
  *        routine will compute eigenvalues near provided shift
  * @param tolerance tolerance with eigenvalues should be computed (zero means machine precision)
@@ -57,7 +58,7 @@ namespace shogun
  * @param status on output -1 if computation failed
  */
 void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev, 
-                   const char* which, bool use_superlu, int mode, bool pos, 
+                   const char* which, bool use_superlu, int mode, bool pos, bool cov, 
                    double shift, double tolerance, double* eigenvalues,
                    double* eigenvectors, int& status);
 }

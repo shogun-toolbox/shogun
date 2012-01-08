@@ -58,7 +58,7 @@ SGMatrix<float64_t> CNeighborhoodPreservingEmbedding::construct_embedding(CFeatu
 	float64_t* evectors = SG_MALLOC(float64_t, dimension*dim);
 	int32_t info = 0;
 #ifdef HAVE_ARPACK
-	arpack_dsxupd(lhs_M,rhs_M,false,dim,dimension,"LA",false,3,true,m_nullspace_shift,0.0,
+	arpack_dsxupd(lhs_M,rhs_M,false,dim,dimension,"LA",false,3,true,false,m_nullspace_shift,0.0,
 	              evals,evectors,info);
 #else
 	wrap_dsygvx(1,'V','U',dim,lhs_M,dim,rhs_M,dim,dim-dimension+1,dim,evals,evectors,&info);

@@ -40,7 +40,7 @@ using namespace shogun;
 namespace shogun
 {
 void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev, 
-                   const char* which, bool use_superlu, int mode, bool pos, 
+                   const char* which, bool use_superlu, int mode, bool pos, bool cov, 
                    double shift, double tolerance, double* eigenvalues,
                    double* eigenvectors, int& status)
 {
@@ -254,11 +254,26 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		{
 			if (mode==1)
 			{
-				// compute (workd+ipntr[1]-1) = A*(workd+ipntr[0]-1)
-				cblas_dsymv(CblasColMajor,CblasUpper,
-				            n,1.0,matrix,n,
-				            (workd+ipntr[0]-1),1,
-				            0.0,(workd+ipntr[1]-1),1);
+				if (cov) 
+				{
+					// compute (workd+ipntr[1]-1) = A*(workd+ipntr[0]-1)
+					cblas_dsymv(CblasColMajor,CblasUpper,
+					            n,1.0,matrix,n,
+					            (workd+ipntr[0]-1),1,
+					            0.0,(workd+ipntr[1]-1),1);
+				}
+				else
+				{
+					cblas_dgemv(CblasColMajor,CblasNoTrans,
+					            n,n,1.0,matrix,n,
+					            (workd+ipntr[0]-1),1,
+					            0.0,(workd+ipntr[1]-1),1);
+					cblas_dgemv(CblasColMajor,CblasTrans,
+					            n,n,1.0,matrix,n,
+					            (workd+ipntr[1]-1),1,
+					            0.0,(workd+ipntr[0]-1),1);
+					cblas_dcopy(n,workd+ipntr[0]-1,1,workd+ipntr[1]-1,1);
+				}
 			}
 			if (mode==3)
 			{
