@@ -571,19 +571,19 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 	DynArray<TParameter*>* new_base=new DynArray<TParameter*>();
 	for (index_t i=0; i<target_param_infos->get_num_elements(); ++i)
 	{
-		char* s=target_param_infos->get_element(i)->to_string();
-		SG_PRINT("migrating one step to target: %s\n", s);
-		SG_FREE(s);
+//		char* s=target_param_infos->get_element(i)->to_string();
+//		SG_PRINT("migrating one step to target: %s\n", s);
+//		SG_FREE(s);
 		TParameter* p=migrate(param_base, target_param_infos->get_element(i));
 		new_base->append_element(p);
 	}
 
 	/* replace base by new base, delete old base, if it was created in migrate */
-	SG_PRINT("deleting parameters base version %d\n", base_version);
+//	SG_PRINT("deleting parameters base version %d\n", base_version);
 	for (index_t i=0; i<param_base->get_num_elements(); ++i)
 		delete param_base->get_element(i);
 
-	SG_PRINT("replacing base\n");
+//	SG_PRINT("replacing base\n");
 	*param_base=*new_base;
 	base_version=mapped_version+1;
 
@@ -694,7 +694,7 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 	/* check if element in base is equal to target one */
 	if (*target==SGParamInfo(to_migrate, target->m_param_version))
 	{
-		SG_PRINT("nothing changed, using old data\n");
+//		SG_PRINT("nothing changed, using old data\n");
 		result=new TParameter(&to_migrate->m_datatype, to_migrate->m_parameter,
 				to_migrate->m_name, to_migrate->m_description);
 
@@ -706,12 +706,6 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 			CSGObject* object=*((CSGObject**)to_migrate->m_parameter);
 			*((CSGObject**)result->m_parameter)=object;
 			SG_REF(object);
-			SGMatrix<float64_t> matrix1=(*((CSimpleFeatures<float64_t>**)to_migrate->m_parameter))->get_feature_matrix();
-			SGMatrix<float64_t> matrix2=(*((CSimpleFeatures<float64_t>**)result->m_parameter))->get_feature_matrix();
-
-			CMath::display_matrix(matrix1.matrix, matrix1.num_rows, matrix1.num_cols, "to_migrate");
-			CMath::display_matrix(matrix2.matrix, matrix2.num_rows, matrix2.num_cols, "result");
-
 		}
 	}
 	else
