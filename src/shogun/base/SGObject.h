@@ -290,14 +290,16 @@ protected:
 	 * SGParamInfo), and a corresponding new TParameter instance is written to
 	 * replacement. The to_migrate pointer points to the single needed
 	 * TParameter instance needed for migration.
+	 * If a name change happened, the old name may be specified by old_name.
 	 * In addition, the m_delete_data flag of to_migrate is set to true.
 	 * So if you want to migrate data, the only thing to do after this call is
 	 * converting the data in the m_parameter fields.
 	 * If unsure how to use - have a look into an example for this.
+	 * TODO document parameter
 	 */
 	virtual void one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 			SGParamInfo* target, TParameter*& replacement,
-			TParameter*& to_migrate);
+			TParameter*& to_migrate, char* old_name=NULL);
 
 	/** Can (optionally) be overridden to pre-initialize some member
 	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at

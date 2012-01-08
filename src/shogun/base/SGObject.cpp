@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
+#include <shogun/features/SimpleFeatures.h>
 namespace shogun
 {
 	class CMath;
@@ -571,24 +571,28 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 	DynArray<TParameter*>* new_base=new DynArray<TParameter*>();
 	for (index_t i=0; i<target_param_infos->get_num_elements(); ++i)
 	{
-//		char* s=target_param_infos->get_element(i)->to_string();
-//		SG_PRINT("migrating one step to target: %s\n", s);
-//		SG_FREE(s);
+		char* s=target_param_infos->get_element(i)->to_string();
+		SG_PRINT("migrating one step to target: %s\n", s);
+		SG_FREE(s);
 		TParameter* p=migrate(param_base, target_param_infos->get_element(i));
 		new_base->append_element(p);
 	}
 
 	/* replace base by new base, delete old base, if it was created in migrate */
-//	SG_PRINT("deleting parameters base version %d\n", base_version);
+	SG_PRINT("deleting parameters base version %d\n", base_version);
 	for (index_t i=0; i<param_base->get_num_elements(); ++i)
 		delete param_base->get_element(i);
 
-//	SG_PRINT("replacing base\n");
+	SG_PRINT("replacing base\n");
 	*param_base=*new_base;
 	base_version=mapped_version+1;
-//	SG_PRINT("new base:\n");
+
+//	SG_PRINT("new param base:\n");
 //	for (index_t i=0; i<param_base->get_num_elements(); ++i)
+//	{
 //		SG_PRINT("%s, ", param_base->get_element(i)->m_name);
+//		param_base->get_element(i)->print("");
+//	}
 //	SG_PRINT("\n");
 
 	/* because content was copied, new base may be deleted */
@@ -604,18 +608,26 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 }
 
 void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
-		SGParamInfo* target, TParameter*& replacement, TParameter*& to_migrate)
+		SGParamInfo* target, TParameter*& replacement, TParameter*& to_migrate,
+		char* old_name)
 {
 	/* generate type of target structure */
 	TSGDataType type(target->m_ctype, target->m_stype, target->m_ptype);
 
 	/* first find index of needed data.
-	 * in this case, element in base with same name */
+	 * in this case, element in base with same name or old name */
+	char* name=target->m_name;
+	if (old_name)
+		name=old_name;
+
 	/* dummy for searching, search and save result in to_migrate parameter */
-	TParameter* t=new TParameter(&type, NULL, target->m_name, "");
+	TParameter* t=new TParameter(&type, NULL, name, "");
 	index_t i=CMath::binary_search(param_base->get_array(),
 			param_base->get_num_elements(), t);
 	delete t;
+
+	/* assert that something is found */
+	ASSERT(i>=0);
 	to_migrate=param_base->get_element(i);
 
 	/* result structure, data NULL for now */
@@ -633,6 +645,15 @@ void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 
 //	SG_SPRINT("allocate_data_from_scratch call with len_y=%d, len_x=%d\n", len_y, len_x);
 	replacement->allocate_data_from_scratch(len_y, len_x);
+
+	/* in case of sgobject, copy pointer data and SG_REF */
+	if (to_migrate->m_datatype.m_ptype==PT_SGOBJECT)
+	{
+		/* note that the memory is already allocated before the migrate call */
+		CSGObject* object=*((CSGObject**)to_migrate->m_parameter);
+		*((CSGObject**)replacement->m_parameter)=object;
+		SG_REF(object);
+	}
 
 	/* tell the old TParameter to delete its data on deletion */
 	to_migrate->m_delete_data=true;
@@ -662,14 +683,36 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 	index_t i=CMath::binary_search(param_base->get_array(),
 			param_base->get_num_elements(), t);
 	delete t;
+
+	/* check if name change occurred while no migration method was specified */
+	if (i<0)
+		SG_ERROR("Name change for parameter that has to be mapped to \"%s\","
+				" and to migration method available\n", target->m_name);
+
 	TParameter* to_migrate=param_base->get_element(i);
 
 	/* check if element in base is equal to target one */
 	if (*target==SGParamInfo(to_migrate, target->m_param_version))
 	{
-//		SG_PRINT("nothing changed, using old data\n");
+		SG_PRINT("nothing changed, using old data\n");
 		result=new TParameter(&to_migrate->m_datatype, to_migrate->m_parameter,
 				to_migrate->m_name, to_migrate->m_description);
+
+		/* in case of sgobject, allocate data for pointer (not done yet)
+		 * and copy the value of the pointer to not loose the sgobject */
+		if (to_migrate->m_datatype.m_ptype==PT_SGOBJECT)
+		{
+			result->m_parameter=SG_MALLOC(CSGObject*, 1);
+			CSGObject* object=*((CSGObject**)to_migrate->m_parameter);
+			*((CSGObject**)result->m_parameter)=object;
+			SG_REF(object);
+			SGMatrix<float64_t> matrix1=(*((CSimpleFeatures<float64_t>**)to_migrate->m_parameter))->get_feature_matrix();
+			SGMatrix<float64_t> matrix2=(*((CSimpleFeatures<float64_t>**)result->m_parameter))->get_feature_matrix();
+
+			CMath::display_matrix(matrix1.matrix, matrix1.num_rows, matrix1.num_cols, "to_migrate");
+			CMath::display_matrix(matrix2.matrix, matrix2.num_rows, matrix2.num_cols, "result");
+
+		}
 	}
 	else
 	{
