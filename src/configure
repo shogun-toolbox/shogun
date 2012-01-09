@@ -313,6 +313,7 @@ assert_version() {
 
 			if test "$mode" = auto; then
 				echores "`echo $is_ver` ... too old version $wanted_ver or later required"
+				return 1
 			fi
 		fi
 
@@ -643,7 +644,6 @@ EOF
 			if ant -version >/dev/null 2>&1
 			then
 				echores "`ant -version | cut -f 4 -d ' '`"
-				_java_modular=yes
 				test_jblas
 				test_ujmp
 			else
@@ -694,8 +694,6 @@ test_csharp()
 		SWIGFLAGS_CSHARP_MODULAR="-c++ -csharp"
 		INCLUDES_CSHARP=
 		LINKFLAGS_CSHARP="--shared"
-
-		_csharp_modular=yes
 	else
 		if test "$_csharp_modular" = yes
 		then
@@ -890,7 +888,6 @@ test_lua()
 
 		POSTLINKFLAGS_LUA="$POSTLINKFLAGS_LUA --shared"
 		echores "${LUAVER}"
-		_lua_modular=yes
 	else
 		if test "$_lua_modular" = yes
 		then
