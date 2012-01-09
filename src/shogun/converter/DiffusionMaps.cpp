@@ -71,7 +71,7 @@ CFeatures* CDiffusionMaps::apply(CFeatures* features)
 CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 {
 #ifdef HAVE_ARPACK
-	bool use_arpack = false;
+	bool use_arpack = true;
 #else
 	bool use_arpack = false;
 #endif
