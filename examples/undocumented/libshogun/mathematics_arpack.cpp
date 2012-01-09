@@ -37,17 +37,17 @@ int main(int argc, char** argv)
 	}
 
 	int status = 0;
-	arpack_dsxupd(double_matrix, NULL, false, N, 2, "LM", false, 1, false, 0.0, 0.0,
+	arpack_dsxupd(double_matrix, NULL, false, N, 2, "LM", false, 1, false, false, 0.0, 0.0,
 	              double_eigenvalues, double_eigenvectors, status);
 	if (status!=0)
 		return -1;
 
-	arpack_dsxupd(double_matrix, NULL, false, N, 2, "BE", false, 3, false, 1.0, 0.0,
+	arpack_dsxupd(double_matrix, NULL, false, N, 2, "BE", false, 3, false, false, 1.0, 0.0,
 	              double_eigenvalues, double_eigenvectors, status);
 	if (status!=0)
 		return -1;
 
-	arpack_dsxupd(double_matrix, rhs_double_diag, true, N, 2, "SM", false, 3, false, 0.0, 0.0,
+	arpack_dsxupd(double_matrix, rhs_double_diag, true, N, 2, "SM", false, 3, false, false, 0.0, 0.0,
 	              double_eigenvalues, double_eigenvectors, status);
 	if (status!=0)
 		return -1;
