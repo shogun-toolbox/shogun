@@ -47,6 +47,22 @@ CGaussianNaiveBayes::~CGaussianNaiveBayes()
 	m_label_prob.destroy_vector();
 };
 
+CFeatures* CGaussianNaiveBayes::get_features()
+{
+	SG_REF(m_features);
+	return m_features;
+}
+
+void CGaussianNaiveBayes::set_features(CFeatures* features)
+{
+	if (!features->has_property(FP_DOT))
+		SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+	SG_UNREF(m_features);
+	SG_REF(features);
+	m_features = (CDotFeatures*)features;
+}
+
 bool CGaussianNaiveBayes::train(CFeatures* data)
 {
 	// init features with data if necessary and assure type is correct
@@ -153,6 +169,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		m_label_prob.vector[i]/= m_num_classes;
 	}
 
+	feature_matrix.free_matrix();
 	train_labels.free_vector();
 
 	return true;
@@ -178,11 +195,9 @@ CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 	// check data correctness
 	if (!data)
 		SG_ERROR("No features specified\n");
-	if (!data->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
 
 	// set features to classify
-	set_features((CDotFeatures*)data);
+	set_features(data);
 
 	// classify using features
 	return apply();
@@ -221,6 +236,7 @@ float64_t CGaussianNaiveBayes::apply(int32_t idx)
 		if (m_rates.vector[i]>m_rates.vector[max_label_idx])
 			max_label_idx = i;
 	}
+	feature_vector.free_vector();
 
 	return max_label_idx+m_min_label;
 };

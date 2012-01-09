@@ -55,21 +55,12 @@ public:
 	/** set features for classify
 	 * @param features features to be set
 	 */
-	virtual inline void set_features(CDotFeatures* features)
-	{
-		 SG_UNREF(m_features);
-		 SG_REF(features);
-		 m_features = features;
-	}
+	virtual void set_features(CFeatures* features);
 
 	/** get features for classify
 	 * @return current features
 	 */
-	virtual inline CDotFeatures* get_features()
-	{
-		SG_REF(m_features);
-		return m_features;
-	}
+	virtual CFeatures* get_features();
 
 	/** train classifier
 	 * @param data train examples
