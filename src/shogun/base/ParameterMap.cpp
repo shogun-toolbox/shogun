@@ -252,6 +252,17 @@ void ParameterMap::put(SGParamInfo* key, SGParamInfo* value)
 //		SG_SNOTIMPLEMENTED;
 //	}
 
+	/* assert that versions do differ exactly one */
+	if(key->m_param_version-value->m_param_version!=1)
+	{
+		char* s=key->to_string();
+		char* t=value->to_string();
+		SG_SERROR("Versions of parameter mappings from \"%s\" to \"%s\" have to"
+				" differ exactly one\n", s, t);
+		SG_FREE(s);
+		SG_FREE(t);
+	}
+
 	m_map_elements.append_element(new ParameterMapElement(key, value));
 	m_finalized=false;
 }
