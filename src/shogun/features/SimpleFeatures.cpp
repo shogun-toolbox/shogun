@@ -21,6 +21,7 @@ template<class ST> CSimpleFeatures<ST>::CSimpleFeatures(const CSimpleFeatures & 
 									 orig.num_vectors));
 	initialize_cache();
 	m_subset=orig.m_subset->duplicate();
+	init();
 }
 
 template<class ST> CSimpleFeatures<ST>::CSimpleFeatures(SGMatrix<ST> matrix) :
@@ -46,7 +47,10 @@ template<class ST> CFeatures* CSimpleFeatures<ST>::duplicate() const
 	return new CSimpleFeatures<ST>(*this);
 }
 
-template<class ST> CSimpleFeatures<ST>::~CSimpleFeatures() { free_features(); }
+template<class ST> CSimpleFeatures<ST>::~CSimpleFeatures()
+{
+	free_features();
+}
 
 template<class ST> void CSimpleFeatures<ST>::free_features()
 {
