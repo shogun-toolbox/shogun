@@ -430,6 +430,8 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 			if (index<0)
 			{
 				/* TODO think of this case */
+				/* This happens when new parameter are added to a file without
+				 * being in the old version */
 				SG_NOTIMPLEMENTED;
 			}
 			/* mapped parameter was found, use it */
