@@ -382,8 +382,22 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	{
 		/* load normally if file has current version */
 //		SG_PRINT("loading normally\n");
-		if (!m_parameters->load(file, prefix))
-			return false;
+
+		/* load all parameters, except new ones */
+		for (int32_t i=0; i<m_parameters->get_num_parameters(); i++)
+		{
+			TParameter* current=m_parameters->get_parameter(i);
+
+			/* skip new parameters */
+			if (is_param_new(SGParamInfo(current, param_version)))
+				continue;
+
+			if (!current->load(file, prefix))
+				return false;
+		}
+
+//		if (!m_parameters->load(file, prefix))
+//			return false;
 	}
 	else
 	{
@@ -392,12 +406,18 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 				param_version, file, prefix);
 
 		/* create an array of param infos from current parameters */
-		DynArray<SGParamInfo*>* param_infos=new DynArray<SGParamInfo*>();
+		DynArray<const SGParamInfo*>* param_infos=
+				new DynArray<const SGParamInfo*>();
 		for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
 		{
+			TParameter* current=m_parameters->get_parameter(i);
+
+			/* skip new parameters */
+			if (is_param_new(SGParamInfo(current, param_version)))
+				continue;
+
 			param_infos->append_element(
-					new SGParamInfo(m_parameters->get_parameter(i),
-					param_version));
+					new SGParamInfo(current, param_version));
 		}
 
 		/* map all parameters */
@@ -419,29 +439,19 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 		{
 			TParameter* current=m_parameters->get_parameter(i);
 
+			/* skip new parameters */
+			if (is_param_new(SGParamInfo(current, param_version)))
+				continue;
+
 			/* search for current parameter in mapped ones */
 			index_t index=CMath::binary_search(param_base->get_array(),
 					param_base->get_num_elements(), current);
 
 			TParameter* migrated=param_base->get_element(index);
 
-			/* no mapped parameter was found, just load */
-			if (index<0)
-			{
-				/* TODO think of this case */
-				/* This happens when new parameter are added to a file without
-				 * being in the old version */
-				SG_NOTIMPLEMENTED;
-			}
-			/* mapped parameter was found, use it */
-			else
-			{
-//				SG_PRINT("replacing \"%s\"\n", current->m_name);
-
-				/* now copy data from migrated TParameter instance
-				 * (this automatically deletes the old data allocations) */
-				current->copy_data(migrated);
-			}
+			/* now copy data from migrated TParameter instance
+			 * (this automatically deletes the old data allocations) */
+			current->copy_data(migrated);
 		}
 
 		/* delete the migrated parameter data base, data was copied so delete all
@@ -485,12 +495,16 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	return true;
 }
 
-TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
+TParameter* CSGObject::load_file_parameter(const SGParamInfo* param_info,
 		int32_t file_version, CSerializableFile* file, const char* prefix)
 {
 	/* ensure that recursion works */
 	if (file_version>param_info->m_param_version)
-		SG_SERROR("parameter version in file is more recent than provided!\n");
+	{
+		SG_SERROR("parameter version of \"%s\" in file (%d) is more recent than"
+				" provided %d!\n", param_info->m_name, file_version,
+				param_info->m_param_version);
+	}
 
 	TParameter* result;
 
@@ -498,7 +512,7 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 //	char* s=param_info->to_string();
 //	SG_SPRINT("try to get mapping for: %s\n", s);
 //	SG_FREE(s);
-	SGParamInfo* old=m_parameter_map->get(param_info);
+	const SGParamInfo* old=m_parameter_map->get(param_info);
 	bool free_old=false;
 	if (!old)
 	{
@@ -507,8 +521,9 @@ TParameter* CSGObject::load_file_parameter(SGParamInfo* param_info,
 //		SG_SPRINT("no mapping found, ");
 		if (file_version<param_info->m_param_version)
 		{
-			old=new SGParamInfo(*param_info);
-			old->m_param_version--;
+			old=new SGParamInfo(param_info->m_name, param_info->m_ctype,
+					param_info->m_stype, param_info->m_ptype,
+					param_info->m_param_version-1);
 			free_old=true;
 //			s=old->to_string();
 //			SG_SPRINT("using %s\n", s);
@@ -577,11 +592,19 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
 
 	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
 	{
-		/* extract current parameter info */
-		SGParamInfo* info=new SGParamInfo(m_parameters->get_parameter(i),
-				current_version);
+		TParameter* current=m_parameters->get_parameter(i);
 
-		/* load parameter data from file */
+		/* extract current parameter info */
+		const SGParamInfo* info=new SGParamInfo(current, current_version);
+
+		/* skip new parameters */
+		if (is_param_new(*info))
+		{
+			delete info;
+			continue;
+		}
+
+		/* in the other case, load parameter data from file */
 		result->append_element(load_file_parameter(info, file_version, file,
 				prefix));
 
@@ -596,23 +619,24 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
 }
 
 void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
-		int32_t& base_version, DynArray<SGParamInfo*>* target_param_infos)
+		int32_t& base_version, DynArray<const SGParamInfo*>* target_param_infos)
 {
 //	SG_PRINT("entering map_parameters\n");
 	/* NOTE: currently the migration is done step by step over every version */
 
 	/* map all target parameter infos once */
-	DynArray<SGParamInfo*>* mapped_infos=new DynArray<SGParamInfo*>();
+	DynArray<const SGParamInfo*>* mapped_infos=
+			new DynArray<const SGParamInfo*>();
 	DynArray<SGParamInfo*>* to_delete=new DynArray<SGParamInfo*>();
 	for (index_t i=0; i<target_param_infos->get_num_elements(); ++i)
 	{
-		SGParamInfo* current=target_param_infos->get_element(i);
+		const SGParamInfo* current=target_param_infos->get_element(i);
 
 //		char* s=current->to_string();
 //		SG_PRINT("trying to get mapping for %s\n", s);
 //		SG_FREE(s);
 
-		SGParamInfo* mapped=m_parameter_map->get(current);
+		const SGParamInfo* mapped=m_parameter_map->get(current);
 
 		if (mapped)
 		{
@@ -638,9 +662,12 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 	ASSERT(mapped_infos->get_num_elements());
 	int32_t mapped_version=mapped_infos->get_element(0)->m_param_version;
 
-	/* assert that all param versions are equal for now */
+	/* assert that all param versions are equal for now (if not empty param) */
 	for (index_t i=1; i<mapped_infos->get_num_elements(); ++i)
-		ASSERT(mapped_infos->get_element(i)->m_param_version==mapped_version);
+	{
+		ASSERT(mapped_infos->get_element(i)->m_param_version==mapped_version ||
+				*mapped_infos->get_element(i)==SGParamInfo());
+	}
 
 	/* recursion, after this call, base is at version of mapped infos */
 	if (mapped_version>base_version)
@@ -698,8 +725,8 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 }
 
 void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
-		SGParamInfo* target, TParameter*& replacement, TParameter*& to_migrate,
-		char* old_name)
+		const SGParamInfo* target, TParameter*& replacement,
+		TParameter*& to_migrate, char* old_name)
 {
 	/* generate type of target structure */
 	TSGDataType type(target->m_ctype, target->m_stype, target->m_ptype);
@@ -750,9 +777,9 @@ void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 }
 
 TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
-		SGParamInfo* target)
+		const SGParamInfo* target)
 {
-//	SG_PRINT("entering CSGObject::migrate\n");
+//	SG_PRINT("entering CSGObject::migrate by %s\n", get_name());
 	/* this is only executed, iff there was no migration method which handled
 	 * migration to the provided target. In this case, it is assumed that the
 	 * parameter simply has not changed. Verify this here and return copy of
@@ -777,7 +804,7 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 	/* check if name change occurred while no migration method was specified */
 	if (i<0)
 		SG_ERROR("Name change for parameter that has to be mapped to \"%s\","
-				" and to migration method available\n", target->m_name);
+				" and to no migration method available\n", target->m_name);
 
 	TParameter* to_migrate=param_base->get_element(i);
 
@@ -805,7 +832,7 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 		SG_FREE(s);
 	}
 
-//	SG_PRINT("leaving CSGObject::migrate\n");
+	SG_PRINT("leaving CSGObject::migrate\n");
 
 	return result;
 }
@@ -945,4 +972,16 @@ index_t CSGObject::get_modsel_param_index(const char* param_name)
 	names.destroy_list();
 
 	return index;
+}
+
+bool CSGObject::is_param_new(const SGParamInfo param_info) const
+{
+	/* check if parameter is new in this version (has empty mapping) */
+	const SGParamInfo* value=m_parameter_map->get(&param_info);
+	bool result=value && *value==SGParamInfo();
+
+//	if (result)
+//		SG_PRINT("\"%s\" is new\n", param_info.m_name);
+
+	return result;
 }
