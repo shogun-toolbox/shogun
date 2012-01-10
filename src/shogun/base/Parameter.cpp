@@ -2618,33 +2618,23 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 	}
 	else
 	{
-		/* sgobjects are treated differently than the rest */
-		if (m_datatype.m_ptype!=PT_SGOBJECT)
-		{
-			/* allocate pointer for data pointer */
-			void** data_p=SG_MALLOC(void*, 1);
+		/* allocate pointer for data pointer */
+		void** data_p=SG_MALLOC(void*, 1);
 
-			/* allocate dummy data at the point the above pointer points to
-			 * will be freed by the delete_cont() method of TParameter.
-			 * This is needed because new_cont/delete_cont cannot handle
-			 * non-existing data. */
-			*data_p=SG_MALLOC(uint8_t, 1);
+		/* allocate dummy data at the point the above pointer points to
+		 * will be freed by the delete_cont() method of TParameter.
+		 * This is needed because new_cont/delete_cont cannot handle
+		 * non-existing data. */
+		*data_p=SG_MALLOC(uint8_t, 1);
 
-			m_parameter=data_p;
+		m_parameter=data_p;
 
-			/* perform one data allocation. This may be repeated and therefore
-			 * redundant if load() is called afterwards, however, if one wants
-			 * to write directly to the array data after this call, it is
-			 * necessary */
+		/* perform one data allocation. This may be repeated and therefore
+		 * redundant if load() is called afterwards, however, if one wants
+		 * to write directly to the array data after this call, it is
+		 * necessary */
 //			SG_SPRINT("new_cont call with len_y=%d, len_x=%d\n", len_y, len_x);
-			new_cont(len_y, len_x);
-		}
-		else
-		{
-			SG_SERROR("Sorry, the deserialization of non-scalar containers "
-					" of PT_SGOBJECT from scratch is not implemented yet.");
-			SG_SNOTIMPLEMENTED;
-		}
+		new_cont(len_y, len_x);
 	}
 }
 
