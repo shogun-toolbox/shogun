@@ -2686,7 +2686,7 @@ void TParameter::copy_data(const TParameter* source)
 		*m_datatype.m_length_y=*source->m_datatype.m_length_y;
 }
 
-void TParameter::get_rid_of()
+void TParameter::delete_all_but_data()
 {
 	if (m_datatype.m_ctype==CT_SCALAR)
 	{

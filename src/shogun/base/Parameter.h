@@ -59,12 +59,12 @@ struct TParameter
 	/** Frees everything of this TParameter except for the data.
 	 * Namely, length variables of type, data pointer for non-scalars of
 	 * PT_SGOBJECT scalars.
-	 * If primitive type is PT_SCALAR, the data is also deleted.
+	 * If container type is CT_SCALAR and numeric, the data is also deleted.
 	 * Do not call unless this TParameter instance was created by
 	 * allocate_data_from scratch because some of these variables may lie on
 	 * stack if not. This method is used in parameter version migration
 	 */
-	void get_rid_of();
+	void delete_all_but_data();
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
