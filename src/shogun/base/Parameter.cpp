@@ -2647,3 +2647,68 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 		}
 	}
 }
+
+void TParameter::copy_data(const TParameter* source)
+{
+	/* assert that type is equal */
+	ASSERT(m_datatype.m_ctype==source->m_datatype.m_ctype);
+	ASSERT(m_datatype.m_stype==source->m_datatype.m_stype);
+	ASSERT(m_datatype.m_ptype==source->m_datatype.m_ptype);
+
+	/* first delete old data if non-scalar */
+	if (m_datatype.m_ctype!=CT_SCALAR)
+		delete_cont();
+
+	/* then copy data in case of numeric scalars, or pointer to data else */
+	if (m_datatype.m_ctype==CT_SCALAR && m_datatype.m_ptype!=PT_SGOBJECT)
+	{
+		/* just copy value behind pointer */
+		memcpy(m_parameter, source->m_parameter,
+				m_datatype.get_size());
+	}
+	else
+	{
+		/* if this is a sgobject, the old one has to be unrefed */
+		if (m_datatype.m_ptype==PT_SGOBJECT)
+			SG_UNREF(*((CSGObject**)m_parameter));
+
+		/* in this case, data is a pointer pointing to the actual
+		 * data, so copy pointer */
+		*((void**)m_parameter)=
+				*((void**)source->m_parameter);
+	}
+
+	/* copy lengths */
+	if (source->m_datatype.m_length_x)
+		*m_datatype.m_length_x=*source->m_datatype.m_length_x;
+
+	if (source->m_datatype.m_length_y)
+		*m_datatype.m_length_y=*source->m_datatype.m_length_y;
+}
+
+void TParameter::get_rid_of()
+{
+	if (m_datatype.m_ctype==CT_SCALAR)
+	{
+		/* if scalar, delete data directly (no length allocated) */
+		SG_FREE(m_parameter);
+	}
+	else
+	{
+		/* the delete data flag cannot be used here because the data
+		 * is used by the instance that was de-serialized, so delete
+		 * lengths and data pointer by hand */
+
+		/* delete lengths and data pointer in case of non-scalars */
+		if (m_datatype.m_ctype!=CT_SCALAR)
+		{
+			if (m_datatype.m_length_x)
+				SG_FREE(m_datatype.m_length_x);
+			if (m_datatype.m_length_y)
+				SG_FREE(m_datatype.m_length_y);
+
+			/* now delete data pointer */
+			SG_FREE(m_parameter);
+		}
+	}
+}
