@@ -145,14 +145,15 @@ public:
 
 	/** Save this object to file.
 	 *
-	 *  @param file where to save the object; will be closed during
-	 *              returning if PREFIX is an empty string.
-	 *  @param prefix prefix for members
-	 *
-	 *  @return TRUE if done, otherwise FALSE
+	 * @param file where to save the object; will be closed during
+	 * returning if PREFIX is an empty string.
+	 * @param prefix prefix for members
+	 * @param (optionally) a parameter version different to (this
+	 * is mainly for testing, better do not use)
+	 * @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool save_serializable(CSerializableFile* file,
-	                               const char* prefix="");
+			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -160,11 +161,13 @@ public:
 	 *
 	 *  @param file where to load from
 	 *  @param prefix prefix for members
+	 *  @param (optionally) a parameter version different to (this
+	 * is mainly for testing, better do not use)
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
-	                               const char* prefix="");
+			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
 
 	/** loads a a specified parameter from a file with a specified version
 	 * The provided parameter info has a version which is recursively mapped
@@ -347,9 +350,15 @@ private:
 	void init();
 
 	/** stores the current parameter version in the provided file
-	 *  @return true iff successful
+	 * @param file file to stort parameter in
+	 * @param prefix prefix for the save
+	 * @param param_version (optionally) a parameter version different to (this
+	 * is mainly for testing, better do not use)
+	 * current one may be specified
+	 * @return true iff successful
 	 */
-	bool save_parameter_version(CSerializableFile* file, const char* prefix="");
+	bool save_parameter_version(CSerializableFile* file, const char* prefix="",
+			int32_t param_version=VERSION_PARAMETER);
 
 	/** loads the parameter version of the provided file.
 	 * @return parameter version of file, -1 if there is no such
