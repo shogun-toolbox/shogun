@@ -53,6 +53,19 @@ struct TParameter
 	/** TODO documentation */
 	void allocate_data_from_scratch(index_t len_y, index_t len_x);
 
+	/** TODO documentation */
+	void copy_data(const TParameter* source);
+
+	/** Frees everything of this TParameter except for the data.
+	 * Namely, length variables of type, data pointer for non-scalars of
+	 * PT_SGOBJECT scalars.
+	 * If primitive type is PT_SCALAR, the data is also deleted.
+	 * Do not call unless this TParameter instance was created by
+	 * allocate_data_from scratch because some of these variables may lie on
+	 * stack if not. This method is used in parameter version migration
+	 */
+	void get_rid_of();
+
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
 
