@@ -162,7 +162,7 @@ public:
 	virtual const char* get_name() const { return "TestClassFloat"; }
 
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
-				SGParamInfo* target)
+				const SGParamInfo* target)
 	{
 		TParameter* result=NULL;
 		TParameter* to_migrate=NULL;
@@ -244,8 +244,9 @@ public:
 			TParameter* to_migrate=NULL;
 
 			/* specify name change and thats it */
+			char* new_name="int_features";
 			one_to_one_migration_prepare(param_base, target, result,
-					to_migrate, "int_features");
+					to_migrate, new_name);
 		}
 
 		if (result)
