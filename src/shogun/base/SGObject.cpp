@@ -452,7 +452,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 
 			/* get rid of TParameter instance without deleting data, but lengths
 			 * data pointer */
-			current->get_rid_of();
+			current->delete_all_but_data();
 
 			delete current;
 		}
