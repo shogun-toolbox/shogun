@@ -298,6 +298,19 @@ void ParameterMap::finalize_map()
 	CMath::qsort<ParameterMapElement> (m_map_elements.get_array(),
 			m_map_elements.get_num_elements());
 
+	/* ensure that there are no duplicate keys */
+	if (m_map_elements.get_num_elements()>1)
+	{
+		for (index_t i=1; i<m_map_elements.get_num_elements(); ++i)
+		{
+			SGParamInfo* key1=m_map_elements.get_element(i-1)->m_key;
+			SGParamInfo* key2=m_map_elements.get_element(i)->m_key;
+			if (*key1==*key2)
+				SG_SERROR("ParameterMap::finalize_map(): duplicate key!\n");
+		}
+	}
+
+
 	m_finalized=true;
 }
 
