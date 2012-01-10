@@ -50,7 +50,18 @@ struct TParameter
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
 
-	/** TODO documentation */
+	/** Allocates data for this instance from scratch. This is one of the core
+	 * methods in parameter migration. It is used if parameters have to be
+	 * loaded from file without having a class instance to put the data into.
+	 * Namely, the data length variables are allocated,
+	 * for numeric scalars, the memory is allocated,
+	 * for SG_OBJECT scalars, a pointer to an CSGObject is allocated,
+	 * for non-scalars, the pointer to the data is allocated
+	 * for non-scalars, the actual data is also allocated via cont_new()
+	 *
+	 * @param len_y desired y length of the data
+	 * @param len_x desired x length of the data
+	 * */
 	void allocate_data_from_scratch(index_t len_y, index_t len_x);
 
 	/** Given another TParameter instance (with same type, except for lengths)
