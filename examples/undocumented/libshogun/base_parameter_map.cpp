@@ -68,7 +68,7 @@ void test_mapping_1()
 		SG_SPRINT("searching for: %s\n", s);
 		SG_FREE(s);
 
-		SGParamInfo* result=map->get(current);
+		const SGParamInfo* result=map->get(current);
 		if (result)
 		{
 			s=result->to_string();
@@ -84,9 +84,9 @@ void test_mapping_1()
 	delete map;
 }
 
-void print_value(SGParamInfo* key, ParameterMap* map)
+void print_value(const SGParamInfo* key, ParameterMap* map)
 {
-	SGParamInfo* current=map->get(key);
+	const SGParamInfo* current=map->get(key);
 	key->print_param_info();
 	SG_SPRINT("value: ");
 
@@ -127,7 +127,7 @@ void test_mapping_2()
 	SG_SPRINT("\n\nafter finalization:\n");
 	map->print_map();
 
-	SGParamInfo* key;
+	const SGParamInfo* key;
 
 	SG_SPRINT("\n\ntesting map\n");
 	key=new SGParamInfo("1", cfrom, sfrom, pfrom, 1);
