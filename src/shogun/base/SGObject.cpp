@@ -637,7 +637,7 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 	ASSERT(mapped_infos->get_num_elements());
 	int32_t mapped_version=mapped_infos->get_element(0)->m_param_version;
 
-	/* assert that all param versions are equal for now TODO*/
+	/* assert that all param versions are equal for now */
 	for (index_t i=1; i<mapped_infos->get_num_elements(); ++i)
 		ASSERT(mapped_infos->get_element(i)->m_param_version==mapped_version);
 
