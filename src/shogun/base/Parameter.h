@@ -53,13 +53,19 @@ struct TParameter
 	/** TODO documentation */
 	void allocate_data_from_scratch(index_t len_y, index_t len_x);
 
-	/** TODO documentation */
+	/** Given another TParameter instance (with same type, except for lengths)
+	 * all its data is copied to the current one. This means in case of numeric
+	 * scalars that the value is copied and in SG_OBJECT scalars and any arrays
+	 * that the pointer to the data is copied. The old data is overwritten.
+	 * Old SG_OBJECTS are SG_UNREF'ed and the new ones are SG_REF'ed.
+	 * @param source source TParameter instance to copy from */
 	void copy_data(const TParameter* source);
 
 	/** Frees everything of this TParameter except for the data.
 	 * Namely, length variables of type, data pointer for non-scalars of
 	 * PT_SGOBJECT scalars.
 	 * If container type is CT_SCALAR and numeric, the data is also deleted.
+	 * SG_OBJECTS are SG_UNREF'ed
 	 * Do not call unless this TParameter instance was created by
 	 * allocate_data_from scratch because some of these variables may lie on
 	 * stack if not. This method is used in parameter version migration

@@ -2668,9 +2668,13 @@ void TParameter::copy_data(const TParameter* source)
 	}
 	else
 	{
-		/* if this is a sgobject, the old one has to be unrefed */
+		/* if this is a sgobject, the old one has to be unrefed
+		 * and the new one to be reded */
 		if (m_datatype.m_ptype==PT_SGOBJECT)
+		{
 			SG_UNREF(*((CSGObject**)m_parameter));
+			SG_REF(*((CSGObject**)source->m_parameter))
+		}
 
 		/* in this case, data is a pointer pointing to the actual
 		 * data, so copy pointer */
@@ -2690,6 +2694,10 @@ void TParameter::delete_all_but_data()
 {
 	if (m_datatype.m_ctype==CT_SCALAR)
 	{
+		/* if this a sgobject, unref */
+		if (m_datatype.m_ptype==PT_SGOBJECT)
+			SG_UNREF(*((CSGObject**)m_parameter));
+
 		/* if scalar, delete data directly (no length allocated) */
 		SG_FREE(m_parameter);
 	}
@@ -2702,10 +2710,27 @@ void TParameter::delete_all_but_data()
 		/* delete lengths and data pointer in case of non-scalars */
 		if (m_datatype.m_ctype!=CT_SCALAR)
 		{
+			/* while deleting lengths, remember them to eventually sgunref
+			 * sgobjects later */
+			int32_t length=1;
+
 			if (m_datatype.m_length_x)
+			{
+				length*=*m_datatype.m_length_x;
 				SG_FREE(m_datatype.m_length_x);
+			}
 			if (m_datatype.m_length_y)
+			{
+				length*=*m_datatype.m_length_y;
 				SG_FREE(m_datatype.m_length_y);
+			}
+
+			/* eventually unref sg_objects */
+			if (m_datatype.m_ptype==PT_SGOBJECT)
+			{
+				for (index_t i=0; i<length; ++i)
+					SG_UNREF(*((CSGObject***)m_parameter)[i]);
+			}
 
 			/* now delete data pointer */
 			SG_FREE(m_parameter);
