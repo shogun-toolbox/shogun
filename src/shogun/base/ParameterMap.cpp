@@ -158,33 +158,33 @@ bool SGParamInfo::operator>(const SGParamInfo& other) const
 {
 	int32_t result=strcmp(m_name, other.m_name);
 
-		if (result==0)
+	if (result==0)
+	{
+		if (m_param_version==other.m_param_version)
 		{
-			if (m_param_version==other.m_param_version)
+			if (m_ctype==other.m_ctype)
 			{
-				if (m_ctype==other.m_ctype)
+				if (m_stype==other.m_stype)
 				{
-					if (m_stype==other.m_stype)
+					if (m_ptype==other.m_ptype)
 					{
-						if (m_ptype==other.m_ptype)
-						{
-							return false;
-						}
-						else
-							return m_ptype>other.m_ptype;
+						return false;
 					}
 					else
-						return m_stype>other.m_stype;
+						return m_ptype>other.m_ptype;
 				}
 				else
-					return m_ctype>other.m_ctype;
+					return m_stype>other.m_stype;
 			}
 			else
-				return m_param_version>other.m_param_version;
-
+				return m_ctype>other.m_ctype;
 		}
 		else
-			return result>0;
+			return m_param_version>other.m_param_version;
+
+	}
+	else
+		return result>0;
 }
 
 ParameterMapElement::ParameterMapElement()
