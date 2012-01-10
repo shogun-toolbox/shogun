@@ -158,7 +158,7 @@ public:
 	virtual const char* get_name() const { return "TestClassFloat"; }
 
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
-				SGParamInfo* target)
+				const SGParamInfo* target)
 	{
 		TSGDataType type(target->m_ctype, target->m_stype,
 				target->m_ptype);
@@ -283,7 +283,8 @@ void test_load_file_parameter()
 					file, "");
 
 	/* create an array of param infos from float instance parameters */
-	DynArray<SGParamInfo*>* param_infos=new DynArray<SGParamInfo*>();
+	DynArray<const SGParamInfo*>* param_infos=
+			new DynArray<const SGParamInfo*>();
 	for (index_t i=0; i<float_instance->m_parameters->get_num_parameters(); ++i)
 	{
 		param_infos->append_element(
