@@ -387,7 +387,6 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	}
 	else
 	{
-
 		/* load all parameters from file, mappings to current version */
 		DynArray<TParameter*>* param_base=load_file_parameters(file_version,
 				param_version, file, prefix);
