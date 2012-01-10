@@ -58,7 +58,7 @@ public:
 	virtual ~SGParamInfo();
 
 	/** prints all parameter values */
-	void print_param_info();
+	void print_param_info() const;
 
 	/** @return string representation, caller has to clean up */
 	char* to_string() const;
@@ -74,6 +74,10 @@ public:
 
 	/** operator for comparison (by string m_name, if equal by others) */
 	bool operator>(const SGParamInfo& other) const;
+
+	/** @return true iff this was constructed using the std constructor (empty
+	 * parameter used to say that it appeared here first time */
+	bool is_empty() const;
 
 private:
 	void init();
@@ -110,7 +114,7 @@ public:
 	 * @param key key of this element, is copied
 	 * @param value value of this element, is copied
 	 */
-	ParameterMapElement(SGParamInfo* key, SGParamInfo* value);
+	ParameterMapElement(const SGParamInfo* key, const SGParamInfo* value);
 
 	/** destructor */
 	virtual ~ParameterMapElement();
@@ -135,9 +139,9 @@ private:
 
 public:
 	/** keys */
-	SGParamInfo* m_key;
+	const SGParamInfo* m_key;
 	/** values */
-	SGParamInfo* m_value;
+	const SGParamInfo* m_value;
 
 };
 
@@ -165,7 +169,7 @@ public:
 	 * @param key key of the element
 	 * @param value value of the lement
 	 */
-	void put(SGParamInfo* key, SGParamInfo* value);
+	void put(const SGParamInfo* key, const SGParamInfo* value);
 
 	/** Gets a specific element of the map. Note that it is SG_REF'ed
 	 * finalize_map() has to be called first if more than one elements are in
@@ -174,7 +178,7 @@ public:
 	 * @param key key of the element to get
 	 * @return value of the key element
 	 */
-	SGParamInfo* get(SGParamInfo* key) const;
+	const SGParamInfo* get(const SGParamInfo* key) const;
 
 	/** Finalizes the map. Has to be called before get may be called if more
 	 * than one element in map */
