@@ -145,14 +145,15 @@ public:
 
 	/** Save this object to file.
 	 *
-	 *  @param file where to save the object; will be closed during
-	 *              returning if PREFIX is an empty string.
-	 *  @param prefix prefix for members
-	 *
-	 *  @return TRUE if done, otherwise FALSE
+	 * @param file where to save the object; will be closed during
+	 * returning if PREFIX is an empty string.
+	 * @param prefix prefix for members
+	 * @param (optionally) a parameter version different to (this
+	 * is mainly for testing, better do not use)
+	 * @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool save_serializable(CSerializableFile* file,
-	                               const char* prefix="");
+			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -160,11 +161,13 @@ public:
 	 *
 	 *  @param file where to load from
 	 *  @param prefix prefix for members
+	 *  @param (optionally) a parameter version different to (this
+	 * is mainly for testing, better do not use)
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
-	                               const char* prefix="");
+			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
 
 	/** loads a a specified parameter from a file with a specified version
 	 * The provided parameter info has a version which is recursively mapped
@@ -197,7 +200,20 @@ public:
 			int32_t current_version,
 			CSerializableFile* file, const char* prefix="");
 
-	/** TODO documentation */
+	/** Takes a set of TParameter instances (base) with a certain version and a
+	 * set of target parameter infos and recursively maps the base level wise
+	 * to the current version using CSGObject::migrate(...).
+	 * The base is replaced. After this call, the base version containing
+	 * parameters should be of same version/type as the initial target parameter
+	 * infos.
+	 * Note for this to work, the migrate methods and all the internal parameter
+	 * mappings have to match
+	 *
+	 * @param param_base set of TParameter instances that are mapped to the
+	 * provided target parameter infos
+	 * @param base_version version of the parameter base
+	 * @param target_param_infos set of SGParamInfo instances that specify the
+	 * target parameter base */
 	void map_parameters(DynArray<TParameter*>* param_base,
 			int32_t& base_version, DynArray<SGParamInfo*>* target_param_infos);
 
@@ -273,12 +289,16 @@ protected:
 	 * Migration is always one version step.
 	 * Method has to be implemented in subclasses, if no match is found, base
 	 * method has to be called.
+	 *
 	 * If there is an element in the param_base which equals the target,
-	 * a copy of the element is returned.
+	 * a copy of the element is returned. This represents the case when nothing
+	 * has changed and therefore, the migrate method is not overloaded in a
+	 * subclass
 	 *
-	 * NOT IMPLEMENTED
-	 *
-	 * TODO parameter doc
+	 * @param param_base set of TParameter instances to use for migration
+	 * @param target parameter info for the resulting TParameter
+	 * @return a new TParameter instance with migrated data from the base of the
+	 * type which is specified by the target parameter
 	 */
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
 			SGParamInfo* target);
@@ -295,7 +315,15 @@ protected:
 	 * So if you want to migrate data, the only thing to do after this call is
 	 * converting the data in the m_parameter fields.
 	 * If unsure how to use - have a look into an example for this.
-	 * TODO document parameter
+	 * (base_migration_type_conversion.cpp for example)
+	 *
+	 * @param param_base set of TParameter instances to use for migration
+	 * @param target parameter info for the resulting TParameter
+	 * @param replacement (used as output) here the TParameter instance which is
+	 * returned by migration is created into
+	 * @param to_migrate the only source that is used for migration
+	 * @param old_name with this parameter, a name change may be specified
+	 *
 	 */
 	virtual void one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 			SGParamInfo* target, TParameter*& replacement,
@@ -347,9 +375,15 @@ private:
 	void init();
 
 	/** stores the current parameter version in the provided file
-	 *  @return true iff successful
+	 * @param file file to stort parameter in
+	 * @param prefix prefix for the save
+	 * @param param_version (optionally) a parameter version different to (this
+	 * is mainly for testing, better do not use)
+	 * current one may be specified
+	 * @return true iff successful
 	 */
-	bool save_parameter_version(CSerializableFile* file, const char* prefix="");
+	bool save_parameter_version(CSerializableFile* file, const char* prefix="",
+			int32_t param_version=VERSION_PARAMETER);
 
 	/** loads the parameter version of the provided file.
 	 * @return parameter version of file, -1 if there is no such

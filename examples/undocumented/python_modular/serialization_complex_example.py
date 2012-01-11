@@ -70,11 +70,11 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 	check_status(status)
 	new_svm.train()
 
-	fstream = SerializableJsonFile("blaah.json", "r")
-	new_svm=GMNPSVM()
-	status = new_svm.load_serializable(fstream)
-	check_status(status)
-	new_svm.train()
+	#fstream = SerializableJsonFile("blaah.json", "r")
+	#new_svm=GMNPSVM()
+	#status = new_svm.load_serializable(fstream)
+	#check_status(status)
+	#new_svm.train()
 
 	fstream = SerializableXmlFile("blaah.xml", "r")
 	new_svm=GMNPSVM()
