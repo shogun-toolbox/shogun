@@ -162,11 +162,8 @@ public:
 	virtual const char* get_name() const { return "TestClassFloat"; }
 
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
-				SGParamInfo* target)
+				const SGParamInfo* target)
 	{
-		TSGDataType type(target->m_ctype, target->m_stype,
-				target->m_ptype);
-
 		TParameter* result=NULL;
 		TParameter* to_migrate=NULL;
 
@@ -247,8 +244,9 @@ public:
 			TParameter* to_migrate=NULL;
 
 			/* specify name change and thats it */
+			char* new_name="int_features";
 			one_to_one_migration_prepare(param_base, target, result,
-					to_migrate, "int_features");
+					to_migrate, new_name);
 		}
 
 		if (result)
@@ -324,7 +322,7 @@ void check_equalness(CTestClassInt* int_instance,
 	}
 }
 
-void test_load_file_parameter()
+void test_migration()
 {
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
@@ -369,7 +367,7 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	test_load_file_parameter();
+	test_migration();
 
 	exit_shogun();
 
