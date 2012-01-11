@@ -75,7 +75,6 @@ public:
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
 				const SGParamInfo* target)
 	{
-		SG_PRINT("entering CTestClassNew::migrate\n");
 		TParameter* result=NULL;
 		TParameter* to_migrate=NULL;
 
