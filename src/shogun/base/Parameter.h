@@ -151,11 +151,11 @@ public:
 	 */
 	virtual bool save(CSerializableFile* file, const char* prefix="");
 
-	/** load from serializable file
-	 * @param file source file
-	 * @param prefix prefix
-	 */
-	virtual bool load(CSerializableFile* file, const char* prefix="");
+//	/** load from serializable file
+//	 * @param file source file
+//	 * @param prefix prefix
+//	 */
+//	virtual bool load(CSerializableFile* file, const char* prefix="");
 
 	/** getter for number of parameters
 	 * @return number of parameters
