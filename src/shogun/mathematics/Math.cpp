@@ -85,124 +85,137 @@ CMath::~CMath()
 namespace shogun 
 {
 template <>
-void CMath::display_vector(const uint8_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const uint8_t* vector, int32_t n, const char* name,
+		const char* prefix)
 {
 	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
+	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%d%s", vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
-void CMath::display_vector(const int32_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const int32_t* vector, int32_t n, const char* name,
+		const char* prefix)
 {
 	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
+	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%d%s", vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
-void CMath::display_vector(const int64_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const int64_t* vector, int32_t n, const char* name,
+		const char* prefix)
 {
 	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
+	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%lld%s", vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
+		SG_SPRINT("%s%lld%s", prefix, vector[i], i==n-1? "" : ",");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
-void CMath::display_vector(const uint64_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const uint64_t* vector, int32_t n, const char* name,
+		const char* prefix)
 {
 	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
+	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%llu%s", vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
+		SG_SPRINT("%s%llu%s", prefix, vector[i], i==n-1? "" : ",");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
-void CMath::display_vector(const float32_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const float32_t* vector, int32_t n, const char* name,
+		const char* prefix)
 {
 	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
+	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%g%s", vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
+		SG_SPRINT("%s%g%s", prefix, vector[i], i==n-1? "" : ",");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
-void CMath::display_vector(const float64_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const float64_t* vector, int32_t n, const char* name,
+		const char* prefix)
 {
 	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
+	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%.18g%s", vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
+		SG_SPRINT("%s%.18g%s", prefix, vector[i], i==n-1? "" : ",");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
-void CMath::display_vector(const floatmax_t* vector, int32_t n, const char* name)
+void CMath::display_vector(const floatmax_t* vector, int32_t n,
+		const char* name, const char* prefix)
 {
 	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
+	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%.36Lg%s", (long double) vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
+	{
+		SG_SPRINT("%s%.36Lg%s", prefix, (long double) vector[i],
+				i==n-1? "" : ",");
+	}
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
 void CMath::display_matrix(
-	const int32_t* matrix, int32_t rows, int32_t cols, const char* name)
+	const int32_t* matrix, int32_t rows, int32_t cols, const char* name,
+	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s=[\n", name);
+	SG_SPRINT("%s%s=[\n", prefix, name);
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("[");
+		SG_SPRINT("%s[", prefix);
 		for (int32_t j=0; j<cols; j++)
-			SG_SPRINT("\t%d%s", matrix[j*rows+i],
+			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
 	}
-	SG_SPRINT("]\n");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
 void CMath::display_matrix(
-	const float64_t* matrix, int32_t rows, int32_t cols, const char* name)
+	const float64_t* matrix, int32_t rows, int32_t cols, const char* name,
+	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s=[\n", name);
+	SG_SPRINT("%s%s=[\n", prefix, name);
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("[");
+		SG_SPRINT("%s[", prefix);
 		for (int32_t j=0; j<cols; j++)
-			SG_SPRINT("\t%.18g%s", (double) matrix[j*rows+i],
+			SG_SPRINT("%s\t%.18g%s", prefix, (double) matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
 	}
-	SG_SPRINT("]\n");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 template <>
 void CMath::display_matrix(
-	const float32_t* matrix, int32_t rows, int32_t cols, const char* name)
+	const float32_t* matrix, int32_t rows, int32_t cols, const char* name,
+	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s=[\n", name);
+	SG_SPRINT("%s%s=[\n", prefix, name);
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("[");
+		SG_SPRINT("%s[", prefix);
 		for (int32_t j=0; j<cols; j++)
-			SG_SPRINT("\t%.18g%s", (float) matrix[j*rows+i],
+			SG_SPRINT("%s\t%.18g%s", prefix, (float) matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
 	}
-	SG_SPRINT("]\n");
+	SG_SPRINT("%s]\n", prefix);
 }
 
 }

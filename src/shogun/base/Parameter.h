@@ -50,8 +50,38 @@ struct TParameter
 	 */
 	bool load(CSerializableFile* file, const char* prefix="");
 
-	/** TODO documentation */
+	/** Allocates data for this instance from scratch. This is one of the core
+	 * methods in parameter migration. It is used if parameters have to be
+	 * loaded from file without having a class instance to put the data into.
+	 * Namely, the data length variables are allocated,
+	 * for numeric scalars, the memory is allocated,
+	 * for SG_OBJECT scalars, a pointer to an CSGObject is allocated,
+	 * for non-scalars, the pointer to the data is allocated
+	 * for non-scalars, the actual data is also allocated via cont_new()
+	 *
+	 * @param len_y desired y length of the data
+	 * @param len_x desired x length of the data
+	 * */
 	void allocate_data_from_scratch(index_t len_y, index_t len_x);
+
+	/** Given another TParameter instance (with same type, except for lengths)
+	 * all its data is copied to the current one. This means in case of numeric
+	 * scalars that the value is copied and in SG_OBJECT scalars and any arrays
+	 * that the pointer to the data is copied. The old data is overwritten.
+	 * Old SG_OBJECTS are SG_UNREF'ed and the new ones are SG_REF'ed.
+	 * @param source source TParameter instance to copy from */
+	void copy_data(const TParameter* source);
+
+	/** Frees everything of this TParameter except for the data.
+	 * Namely, length variables of type, data pointer for non-scalars of
+	 * PT_SGOBJECT scalars.
+	 * If container type is CT_SCALAR and numeric, the data is also deleted.
+	 * SG_OBJECTS are SG_UNREF'ed
+	 * Do not call unless this TParameter instance was created by
+	 * allocate_data_from scratch because some of these variables may lie on
+	 * stack if not. This method is used in parameter version migration
+	 */
+	void delete_all_but_data();
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
