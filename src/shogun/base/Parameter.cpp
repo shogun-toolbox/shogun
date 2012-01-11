@@ -2618,32 +2618,112 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 	}
 	else
 	{
-		/* sgobjects are treated differently than the rest */
-		if (m_datatype.m_ptype!=PT_SGOBJECT)
-		{
-			/* allocate pointer for data pointer */
-			void** data_p=SG_MALLOC(void*, 1);
+		/* allocate pointer for data pointer */
+		void** data_p=SG_MALLOC(void*, 1);
 
-			/* allocate dummy data at the point the above pointer points to
-			 * will be freed by the delete_cont() method of TParameter.
-			 * This is needed because new_cont/delete_cont cannot handle
-			 * non-existing data. */
-			*data_p=SG_MALLOC(uint8_t, 1);
+		/* allocate dummy data at the point the above pointer points to
+		 * will be freed by the delete_cont() method of TParameter.
+		 * This is needed because new_cont/delete_cont cannot handle
+		 * non-existing data. */
+		*data_p=SG_MALLOC(uint8_t, 1);
 
-			m_parameter=data_p;
+		m_parameter=data_p;
 
-			/* perform one data allocation. This may be repeated and therefore
-			 * redundant if load() is called afterwards, however, if one wants
-			 * to write directly to the array data after this call, it is
-			 * necessary */
+		/* perform one data allocation. This may be repeated and therefore
+		 * redundant if load() is called afterwards, however, if one wants
+		 * to write directly to the array data after this call, it is
+		 * necessary */
 //			SG_SPRINT("new_cont call with len_y=%d, len_x=%d\n", len_y, len_x);
-			new_cont(len_y, len_x);
-		}
-		else
+		new_cont(len_y, len_x);
+	}
+}
+
+void TParameter::copy_data(const TParameter* source)
+{
+	/* assert that type is equal */
+	ASSERT(m_datatype.m_ctype==source->m_datatype.m_ctype);
+	ASSERT(m_datatype.m_stype==source->m_datatype.m_stype);
+	ASSERT(m_datatype.m_ptype==source->m_datatype.m_ptype);
+
+	/* first delete old data if non-scalar */
+	if (m_datatype.m_ctype!=CT_SCALAR)
+		delete_cont();
+
+	/* then copy data in case of numeric scalars, or pointer to data else */
+	if (m_datatype.m_ctype==CT_SCALAR && m_datatype.m_ptype!=PT_SGOBJECT)
+	{
+		/* just copy value behind pointer */
+		memcpy(m_parameter, source->m_parameter,
+				m_datatype.get_size());
+	}
+	else
+	{
+		/* if this is a sgobject, the old one has to be unrefed
+		 * and the new one to be reded */
+		if (m_datatype.m_ptype==PT_SGOBJECT)
 		{
-			SG_SERROR("Sorry, the deserialization of non-scalar containers "
-					" of PT_SGOBJECT from scratch is not implemented yet.");
-			SG_SNOTIMPLEMENTED;
+			SG_UNREF(*((CSGObject**)m_parameter));
+			SG_REF(*((CSGObject**)source->m_parameter))
+		}
+
+		/* in this case, data is a pointer pointing to the actual
+		 * data, so copy pointer */
+		*((void**)m_parameter)=
+				*((void**)source->m_parameter);
+	}
+
+	/* copy lengths */
+	if (source->m_datatype.m_length_x)
+		*m_datatype.m_length_x=*source->m_datatype.m_length_x;
+
+	if (source->m_datatype.m_length_y)
+		*m_datatype.m_length_y=*source->m_datatype.m_length_y;
+}
+
+void TParameter::delete_all_but_data()
+{
+	if (m_datatype.m_ctype==CT_SCALAR)
+	{
+		/* if this a sgobject, unref */
+		if (m_datatype.m_ptype==PT_SGOBJECT)
+			SG_UNREF(*((CSGObject**)m_parameter));
+
+		/* if scalar, delete data directly (no length allocated) */
+		SG_FREE(m_parameter);
+	}
+	else
+	{
+		/* the delete data flag cannot be used here because the data
+		 * is used by the instance that was de-serialized, so delete
+		 * lengths and data pointer by hand */
+
+		/* delete lengths and data pointer in case of non-scalars */
+		if (m_datatype.m_ctype!=CT_SCALAR)
+		{
+			/* while deleting lengths, remember them to eventually sgunref
+			 * sgobjects later */
+			int32_t length=1;
+
+			if (m_datatype.m_length_x)
+			{
+				length*=*m_datatype.m_length_x;
+				SG_FREE(m_datatype.m_length_x);
+			}
+			if (m_datatype.m_length_y)
+			{
+				length*=*m_datatype.m_length_y;
+				SG_FREE(m_datatype.m_length_y);
+			}
+
+			/* eventually unref sg_objects */
+			if (m_datatype.m_ptype==PT_SGOBJECT)
+			{
+				for (index_t i=0; i<length; ++i)
+					SG_UNREF(*((CSGObject***)m_parameter)[i]);
+			}
+
+			/* now delete data pointer */
+			SG_FREE(m_parameter);
 		}
 	}
 }

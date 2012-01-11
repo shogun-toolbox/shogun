@@ -268,7 +268,7 @@ void CSGObject::print_serializable(const char* prefix)
 }
 
 bool CSGObject::save_serializable(CSerializableFile* file,
-								   const char* prefix)
+		const char* prefix, int32_t param_version)
 {
 	SG_DEBUG("START SAVING CSGObject '%s'\n", get_name());
 	try
@@ -291,7 +291,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	}
 
 	/* save parameter version */
-	if (!save_parameter_version(file, prefix))
+	if (!save_parameter_version(file, prefix, param_version))
 		return false;
 
 	if (!m_parameters->save(file, prefix))
@@ -326,7 +326,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 }
 
 bool CSGObject::load_serializable(CSerializableFile* file,
-								   const char* prefix)
+		const char* prefix, int32_t param_version)
 {
 	SG_DEBUG("START LOADING CSGObject '%s'\n", get_name());
 	try
@@ -350,26 +350,117 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 
 	/* try to load version of parameters */
 	int32_t file_version=load_parameter_version(file, prefix);
+//	SG_PRINT("file_version=%d, current_version=%d\n", file_version, param_version);
 
 	if (file_version<0)
 	{
 		SG_WARNING("%s%s::load_serializable(): File contains no parameter "
-		           "version. Seems like your file is from the days before this "
-		           "was introduced. Ignore warning or serialize with this version "
-		           "of shogun to get rid of above and this warnings.\n",
-		           prefix, get_name());
+			"version. Seems like your file is from the days before this "
+			"was introduced. Ignore warning or serialize with this version "
+			"of shogun to get rid of above and this warnings.\n",
+			prefix, get_name());
 	}
 
-	if (file_version>version->get_version_parameter())
+	if (file_version>param_version)
 	{
-		SG_WARNING("%s%s::load_serializable(): parameter version of file "
-		           "larger than the one of shogun. Try with a more recent version "
-		           "of shogun.\n", prefix, get_name());
+		if (param_version==VERSION_PARAMETER)
+		{
+			SG_WARNING("%s%s::load_serializable(): parameter version of file "
+					"larger than the one of shogun. Try with a more recent"
+					"version of shogun.\n", prefix, get_name());
+		}
+		else
+		{
+			SG_WARNING("%s%s::load_serializable(): parameter version of file "
+					"larger than the current. This is probably an implementation"
+					" error.\n", prefix, get_name());
+		}
 		return false;
 	}
 
-	if (!m_parameters->load(file, prefix))
-		return false;
+	if (file_version==param_version)
+	{
+		/* load normally if file has current version */
+//		SG_PRINT("loading normally\n");
+		if (!m_parameters->load(file, prefix))
+			return false;
+	}
+	else
+	{
+
+		/* load all parameters from file, mappings to current version */
+		DynArray<TParameter*>* param_base=load_file_parameters(file_version,
+				param_version, file, prefix);
+
+		/* create an array of param infos from current parameters */
+		DynArray<SGParamInfo*>* param_infos=new DynArray<SGParamInfo*>();
+		for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+		{
+			param_infos->append_element(
+					new SGParamInfo(m_parameters->get_parameter(i),
+					param_version));
+		}
+
+		/* map all parameters */
+		map_parameters(param_base, file_version, param_infos);
+//		SG_PRINT("mapping is done!\n");
+
+		/* delete above created param infos */
+		for (index_t i=0; i<param_infos->get_num_elements(); ++i)
+			delete param_infos->get_element(i);
+
+		delete param_infos;
+
+		/* this is assumed now */
+		ASSERT(file_version==param_version);
+
+		/* replace parameters by loaded and mapped */
+//		SG_PRINT("replacing parameter data by new values\n");
+		for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+		{
+			TParameter* current=m_parameters->get_parameter(i);
+
+			/* search for current parameter in mapped ones */
+			index_t index=CMath::binary_search(param_base->get_array(),
+					param_base->get_num_elements(), current);
+
+			TParameter* migrated=param_base->get_element(index);
+
+			/* no mapped parameter was found, just load */
+			if (index<0)
+			{
+				/* TODO think of this case */
+				/* This happens when new parameter are added to a file without
+				 * being in the old version */
+				SG_NOTIMPLEMENTED;
+			}
+			/* mapped parameter was found, use it */
+			else
+			{
+//				SG_PRINT("replacing \"%s\"\n", current->m_name);
+
+				/* now copy data from migrated TParameter instance
+				 * (this automatically deletes the old data allocations) */
+				current->copy_data(migrated);
+			}
+		}
+
+		/* delete the migrated parameter data base, data was copied so delete all
+		 * data */
+		for (index_t i=0; i<param_base->get_num_elements(); ++i)
+		{
+			TParameter* current=param_base->get_element(i);
+//			SG_PRINT("deleting old \"%s\"\n", current->m_name);
+
+			/* get rid of TParameter instance without deleting data, but lengths
+			 * data pointer */
+			current->delete_all_but_data();
+
+			delete current;
+		}
+		delete param_base;
+	}
+//	SG_PRINT("loading is done\n");
 
 	try
 	{
@@ -548,7 +639,7 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 	ASSERT(mapped_infos->get_num_elements());
 	int32_t mapped_version=mapped_infos->get_element(0)->m_param_version;
 
-	/* assert that all param versions are equal for now TODO*/
+	/* assert that all param versions are equal for now */
 	for (index_t i=1; i<mapped_infos->get_num_elements(); ++i)
 		ASSERT(mapped_infos->get_element(i)->m_param_version==mapped_version);
 
@@ -721,12 +812,11 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 }
 
 bool CSGObject::save_parameter_version(CSerializableFile* file,
-		const char* prefix)
+		const char* prefix, int32_t param_version)
 {
 	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
-	int32_t v=version->get_version_parameter();
-	TParameter p(&t, &v, "version_parameter",
-	             "Version of parameters of this object");
+	TParameter p(&t, &param_version, "version_parameter",
+			"Version of parameters of this object");
 	return p.save(file, prefix);
 }
 
