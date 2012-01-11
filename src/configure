@@ -734,9 +734,9 @@ EOF
 			RUBYSO=`$RUBY -e 'require "mkmf"; puts RbConfig::expand("$(RUBY_SO_NAME)")'`
 			if ld -o "$TMPO" -l$RUBYSO >/dev/null 2>&1
 			then
-				LINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared -ldl"
+				POSTLINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared -ldl"
 			else
-				LINKFLAGS_RUBY="-lruby -fPIC -shared -ldl"
+				POSTLINKFLAGS_RUBY="-lruby -fPIC -shared -ldl"
 			fi
 			EXT_IF_SWIG_RUBY_MODULAR='stop'
 			PRE_LIB_SWIG_RUBY_MODULAR=
@@ -821,7 +821,7 @@ EOF
 		fi
 
 		echocheck "Ruby NArray Developer Files"
-		if cc_check $INCLUDES_RUBY $LINKFLAGS_RUBY && test -f $NARRAY
+		if cc_check $INCLUDES_RUBY $POSTLINKFLAGS_RUBY && test -f $NARRAY
 		then
 			echores "yes"
 			DEFINES="$DEFINES -DHAVE_RUBY_NARRAY"
