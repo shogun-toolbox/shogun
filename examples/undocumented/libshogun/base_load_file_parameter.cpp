@@ -94,44 +94,44 @@ public:
 
 		/* add some parameter mappings for number, here: type changes */
 		m_parameter_map->put(
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_FLOAT64, 1),
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0)
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_FLOAT64, 1),
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0)
 		);
 
 		m_parameter_map->put(
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0),
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT32, -1)
-		);
-
-		/* changes for vector: from int32_t vector to float64_t SG_VECTOR */
-		m_parameter_map->put(
-				new SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_FLOAT64, 1),
-				new SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0)
-		);
-
-		/* from normal vector to SG_VECTOR of same type */
-		m_parameter_map->put(
-				new SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0),
-				new SGParamInfo("vector", CT_VECTOR, ST_NONE, PT_INT32, -1)
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0),
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT32, -1)
 		);
 
 		/* changes for vector: from int32_t vector to float64_t SG_VECTOR */
 		m_parameter_map->put(
-				new SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_FLOAT64, 1),
-				new SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0)
+				new const SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_FLOAT64, 1),
+				new const SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0)
 		);
 
 		/* from normal vector to SG_VECTOR of same type */
 		m_parameter_map->put(
-				new SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0),
-				new SGParamInfo("matrix", CT_MATRIX, ST_NONE, PT_INT32, -1)
+				new const SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0),
+				new const SGParamInfo("vector", CT_VECTOR, ST_NONE, PT_INT32, -1)
+		);
+
+		/* changes for vector: from int32_t vector to float64_t SG_VECTOR */
+		m_parameter_map->put(
+				new const SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_FLOAT64, 1),
+				new const SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0)
+		);
+
+		/* from normal vector to SG_VECTOR of same type */
+		m_parameter_map->put(
+				new const SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0),
+				new const SGParamInfo("matrix", CT_MATRIX, ST_NONE, PT_INT32, -1)
 		);
 
 		/* name change for sgobject */
 		m_parameter_map->put(
-				new SGParamInfo("float_features", CT_SCALAR, ST_NONE,
+				new const SGParamInfo("float_features", CT_SCALAR, ST_NONE,
 						PT_SGOBJECT, 1),
-				new SGParamInfo("int_features", CT_SCALAR, ST_NONE, PT_SGOBJECT,
+				new const SGParamInfo("int_features", CT_SCALAR, ST_NONE, PT_SGOBJECT,
 						0)
 		);
 
@@ -174,16 +174,16 @@ void test_load_file_parameter()
 
 	/* build parameter info for parameter of the OTHER instance, start from
 	 * version 1 */
-	SGParamInfo param_info_number(
+	const SGParamInfo param_info_number(
 			float_instance->m_parameters->get_parameter(0), 1);
 
-	SGParamInfo param_info_vector(
+	const SGParamInfo param_info_vector(
 			float_instance->m_parameters->get_parameter(1), 1);
 
-	SGParamInfo param_info_matrix(
+	const SGParamInfo param_info_matrix(
 			float_instance->m_parameters->get_parameter(2), 1);
 
-	SGParamInfo param_info_sgobject(
+	const SGParamInfo param_info_sgobject(
 			float_instance->m_parameters->get_parameter(3), 1);
 
 	int32_t file_version=-1;

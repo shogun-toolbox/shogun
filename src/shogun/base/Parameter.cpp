@@ -2394,15 +2394,15 @@ Parameter::save(CSerializableFile* file, const char* prefix)
 	return true;
 }
 
-bool
-Parameter::load(CSerializableFile* file, const char* prefix)
-{
-	for (int32_t i=0; i<get_num_parameters(); i++)
-		if (!m_params.get_element(i)->load(file, prefix))
-			return false;
-
-	return true;
-}
+//bool
+//Parameter::load(CSerializableFile* file, const char* prefix)
+//{
+//	for (int32_t i=0; i<get_num_parameters(); i++)
+//		if (!m_params.get_element(i)->load(file, prefix))
+//			return false;
+//
+//	return true;
+//}
 
 void Parameter::set_from_parameters(Parameter* params)
 {

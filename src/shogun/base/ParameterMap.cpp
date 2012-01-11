@@ -70,15 +70,22 @@ char* SGParamInfo::to_string() const
 	char* buffer=SG_MALLOC(char, 200);
 	strcpy(buffer, "SGParamInfo with: ");
 	strcat(buffer, "name=\"");
-	strcat(buffer, m_name);
+	strcat(buffer, m_name ? m_name : "NULL");
 	strcat(buffer, "\", type=");
 
-	TSGDataType t(m_ctype, m_stype, m_ptype);
-	index_t l=100;
-	char* b=SG_MALLOC(char, l);
-	t.to_string(b, l);
-	strcat(buffer, b);
-	SG_FREE(b);
+	char* b;
+	/* only cat type if it is defined (is not when std constructor was used)*/
+	if (!is_empty())
+	{
+		TSGDataType t(m_ctype, m_stype, m_ptype);
+		index_t l=100;
+		b=SG_MALLOC(char, l);
+		t.to_string(b, l);
+		strcat(buffer, b);
+		SG_FREE(b);
+	}
+	else
+		strcat(buffer, "no type");
 
 	b=SG_MALLOC(char, 10);
 	sprintf(b, "%d", m_param_version);
@@ -89,7 +96,7 @@ char* SGParamInfo::to_string() const
 	return buffer;
 }
 
-void SGParamInfo::print_param_info()
+void SGParamInfo::print_param_info() const
 {
 	char* s=to_string();
 	SG_SPRINT("%s\n", s);
@@ -113,7 +120,14 @@ void SGParamInfo::init()
 bool SGParamInfo::operator==(const SGParamInfo& other) const
 {
 	bool result=true;
-	result&=!strcmp(m_name, other.m_name);
+
+	/* handle NULL strings */
+	if ((!m_name && other.m_name) || (m_name && !other.m_name))
+		return false;
+
+	if (m_name && other.m_name)
+		result&=!strcmp(m_name, other.m_name);
+
 	result&=m_ctype==other.m_ctype;
 	result&=m_stype==other.m_stype;
 	result&=m_ptype==other.m_ptype;
@@ -123,6 +137,17 @@ bool SGParamInfo::operator==(const SGParamInfo& other) const
 
 bool SGParamInfo::operator<(const SGParamInfo& other) const
 {
+	/* NULL here is always smaller than anything */
+	if (!m_name)
+	{
+		if (!other.m_name)
+			return false;
+		else
+			return true;
+	}
+	else if (!other.m_name)
+		return true;
+
 	int32_t result=strcmp(m_name, other.m_name);
 
 	if (result==0)
@@ -156,35 +181,13 @@ bool SGParamInfo::operator<(const SGParamInfo& other) const
 
 bool SGParamInfo::operator>(const SGParamInfo& other) const
 {
-	int32_t result=strcmp(m_name, other.m_name);
+	return !(*this<(other)) && !(*this==other);
+}
 
-		if (result==0)
-		{
-			if (m_param_version==other.m_param_version)
-			{
-				if (m_ctype==other.m_ctype)
-				{
-					if (m_stype==other.m_stype)
-					{
-						if (m_ptype==other.m_ptype)
-						{
-							return false;
-						}
-						else
-							return m_ptype>other.m_ptype;
-					}
-					else
-						return m_stype>other.m_stype;
-				}
-				else
-					return m_ctype>other.m_ctype;
-			}
-			else
-				return m_param_version>other.m_param_version;
-
-		}
-		else
-			return result>0;
+bool SGParamInfo::is_empty() const
+{
+	/* return true if this info is for empty parameter */
+	return m_ctype<0 && m_stype<0 && m_ptype<0 && !m_name;
 }
 
 ParameterMapElement::ParameterMapElement()
@@ -192,8 +195,8 @@ ParameterMapElement::ParameterMapElement()
 	init();
 }
 
-ParameterMapElement::ParameterMapElement(SGParamInfo* key,
-		SGParamInfo* value)
+ParameterMapElement::ParameterMapElement(const SGParamInfo* key,
+		const SGParamInfo* value)
 {
 	init();
 
@@ -244,7 +247,7 @@ ParameterMap::~ParameterMap()
 		delete m_map_elements[i];
 }
 
-void ParameterMap::put(SGParamInfo* key, SGParamInfo* value)
+void ParameterMap::put(const SGParamInfo* key, const SGParamInfo* value)
 {
 //	if (key->m_ptype==PT_SGOBJECT || value->m_ptype==PT_SGOBJECT)
 //	{
@@ -252,11 +255,25 @@ void ParameterMap::put(SGParamInfo* key, SGParamInfo* value)
 //		SG_SNOTIMPLEMENTED;
 //	}
 
+	/* assert that versions do differ exactly one if mapping is non-empty */
+	if(key->m_param_version-value->m_param_version!=1)
+	{
+		if (!key->is_empty() && !value->is_empty())
+		{
+			char* s=key->to_string();
+			char* t=value->to_string();
+			SG_SERROR("Versions of parameter mappings from \"%s\" to \"%s\" have"
+					" to differ exactly one\n", s, t);
+			SG_FREE(s);
+			SG_FREE(t);
+		}
+	}
+
 	m_map_elements.append_element(new ParameterMapElement(key, value));
 	m_finalized=false;
 }
 
-SGParamInfo* ParameterMap::get(SGParamInfo* key) const
+const SGParamInfo* ParameterMap::get(const SGParamInfo* key) const
 {
 	index_t num_elements=m_map_elements.get_num_elements();
 
@@ -276,7 +293,7 @@ SGParamInfo* ParameterMap::get(SGParamInfo* key) const
 		return NULL;
 
 	ParameterMapElement* element=m_map_elements.get_element(index);
-	SGParamInfo* value=element->m_value;
+	const SGParamInfo* value=element->m_value;
 
 	return value;
 }
@@ -286,6 +303,19 @@ void ParameterMap::finalize_map()
 	/* sort underlying array */
 	CMath::qsort<ParameterMapElement> (m_map_elements.get_array(),
 			m_map_elements.get_num_elements());
+
+	/* ensure that there are no duplicate keys */
+	if (m_map_elements.get_num_elements()>1)
+	{
+		for (index_t i=1; i<m_map_elements.get_num_elements(); ++i)
+		{
+			const SGParamInfo* key1=m_map_elements.get_element(i-1)->m_key;
+			const SGParamInfo* key2=m_map_elements.get_element(i)->m_key;
+			if (*key1==*key2)
+				SG_SERROR("ParameterMap::finalize_map(): duplicate key!\n");
+		}
+	}
+
 
 	m_finalized=true;
 }

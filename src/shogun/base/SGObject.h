@@ -180,7 +180,7 @@ public:
 	 * @param prefix prefix for members
 	 * @return new TParameter instance with the attached data
 	 */
-	TParameter* load_file_parameter(SGParamInfo* param_info,
+	TParameter* load_file_parameter(const SGParamInfo* param_info,
 			int32_t file_version, CSerializableFile* file,
 			const char* prefix="");
 
@@ -215,7 +215,8 @@ public:
 	 * @param target_param_infos set of SGParamInfo instances that specify the
 	 * target parameter base */
 	void map_parameters(DynArray<TParameter*>* param_base,
-			int32_t& base_version, DynArray<SGParamInfo*>* target_param_infos);
+			int32_t& base_version,
+			DynArray<const SGParamInfo*>* target_param_infos);
 
 	/** set the io object
 	 *
@@ -301,7 +302,7 @@ protected:
 	 * type which is specified by the target parameter
 	 */
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
-			SGParamInfo* target);
+			const SGParamInfo* target);
 
 	/** This method prepares everything for a one-to-one parameter migration.
 	 * One to one here means that only ONE element of the parameter base is
@@ -326,7 +327,7 @@ protected:
 	 *
 	 */
 	virtual void one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
-			SGParamInfo* target, TParameter*& replacement,
+			const SGParamInfo* target, TParameter*& replacement,
 			TParameter*& to_migrate, char* old_name=NULL);
 
 	/** Can (optionally) be overridden to pre-initialize some member
@@ -373,6 +374,13 @@ private:
 	void set_global_objects();
 	void unset_global_objects();
 	void init();
+
+	/** Checks in the underlying parameter mapping if this parameter leads to
+	 * the empty parameter which means that it was newly added in this version
+	 *
+	 * @param param_info parameter information of that parameter
+	 */
+	bool is_param_new(const SGParamInfo param_info) const;
 
 	/** stores the current parameter version in the provided file
 	 * @param file file to stort parameter in
