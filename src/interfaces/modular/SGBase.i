@@ -291,7 +291,7 @@ namespace shogun
 
         PyObject* __reduce_ex__(int proto)
         {
-            pickle_ascii= (proto==0) ? 0 : 1;
+            pickle_ascii= (proto==0) ? 1 : 0;
             return NULL;
         }
 
