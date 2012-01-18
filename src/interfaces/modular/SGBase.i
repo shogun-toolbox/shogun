@@ -302,9 +302,9 @@ namespace shogun
             CSerializableFile* fstream=NULL;
 #ifdef HAVE_HDF5
             if (pickle_ascii)
-                fstream = new CSerializableHdf5File(fname, 'w');
-            else
                 fstream = new CSerializableAsciiFile(fname, 'w');
+            else
+                fstream = new CSerializableHdf5File(fname, 'w');
 #else
             fstream = new CSerializableAsciiFile(fname, 'w');
 #endif
@@ -344,9 +344,9 @@ namespace shogun
             CSerializableFile* fstream=NULL;
 #ifdef HAVE_HDF5
             if (pickle_ascii)
-                fstream = new CSerializableHdf5File(fname, 'r');
-            else
                 fstream = new CSerializableAsciiFile(fname, 'r');
+            else
+                fstream = new CSerializableHdf5File(fname, 'r');
 #else
             if (!pickle_ascii)
                 SG_SERROR("File contains an HDF5 stream but " \
@@ -405,6 +405,7 @@ def _reduce_ex(self, proto):
         return _reconstructor, args
 
 copy_reg._reduce_ex=_reduce_ex
+copy_reg._reconstructor=_reconstructor
 %}
 
 #endif /* SWIGPYTHON  */
