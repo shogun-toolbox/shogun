@@ -368,7 +368,13 @@ namespace shogun
 %pythoncode %{
 import copy_reg
 
-def _reconstructor(cls, base, state):
+def _sg_reconstructor(cls, base, state):
+    try:
+        if not isinstance(cls(), SGObject):
+            return _py_orig_reconstructor(cls, base, state)
+    except:
+        return _py_orig_reconstructor(cls, base, state)
+
     if base is object:
         obj = cls() #object.__new__(cls)
     else:
@@ -378,7 +384,13 @@ def _reconstructor(cls, base, state):
     return obj
 
 
-def _reduce_ex(self, proto):
+def _sg_reduce_ex(self, proto):
+    try:
+        if not isinstance(self, SGObject):
+            return _py_orig_reduce_ex(self, proto)
+    except:
+        return _py_orig_reduce_ex(self, proto)
+
     base = object # not really reachable
     if base is object:
         state = None
@@ -400,12 +412,15 @@ def _reduce_ex(self, proto):
     else:
         dict = getstate()
     if dict:
-        return _reconstructor, args, dict
+        return _sg_reconstructor, args, dict
     else:   
-        return _reconstructor, args
+        return _sg_reconstructor, args
 
-copy_reg._reduce_ex=_reduce_ex
-copy_reg._reconstructor=_reconstructor
+_py_orig_reduce_ex=copy_reg._reduce_ex
+_py_orig_reconstructor=copy_reg._reconstructor
+      
+copy_reg._reduce_ex=_sg_reduce_ex
+copy_reg._reconstructor=_sg_reconstructor
 %}
 
 #endif /* SWIGPYTHON  */
