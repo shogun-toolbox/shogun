@@ -46,6 +46,7 @@ EXT_CPP_TMP="${EXT_SRC_CPP}.templ"
 EXT_CPP_SH="${EXT_SRC_CPP}.sh"
 EXT_CPP_PY="${EXT_SRC_CPP}.py"
 CLASSPATH="$CLASSPATH"
+COMP_CSHARP=gmcs
 
 #the defaults are
 _swig_version=0.0.0
@@ -683,25 +684,35 @@ test_csharp()
 	fi
 
 	echocheck "Mono C#"
-	if gmcs --version >/dev/null 2>&1
+	if dmcs --version >/dev/null 2>&1
 	then
-		MONOVER=`gmcs --version 2>&1 | head -n 1 | cut -f 5 -d ' '`
-		echores "${MONOVER}"
+		COMP_CSHARP=dmcs
+		MONOVER=`dmcs --version 2>&1 | head -n 1 | cut -f 5 -d ' '`
+	else
+		if gmcs --version >/dev/null 2>&1
+		then
+			COMP_CSHARP=gmcs
+			MONOVER=`gmcs --version 2>&1 | head -n 1 | cut -f 5 -d ' '`
+		else
+			if test "$_csharp_modular" = yes
+			then
+				die "csharp/csharp development files missing"
+			else
+				echores "not detected"
+				_csharp_modular=no
+			fi
+		fi
+	fi
 
+	if test "$_csharp_modular" != no
+	then
+		echores "${COMP_CSHARP} ${MONOVER}"
 		EXT_IF_SWIG_CSHARP_MODULAR='stop'
 		PRE_LIB_SWIG_CSHARP_MODULAR='lib'
 		EXT_LIB_SWIG_CSHARP_MODULAR=.so
 		SWIGFLAGS_CSHARP_MODULAR="-c++ -csharp"
 		INCLUDES_CSHARP=
 		LINKFLAGS_CSHARP="--shared"
-	else
-		if test "$_csharp_modular" = yes
-		then
-			die "csharp/csharp development files missing"
-		else
-			echores "not detected"
-			_csharp_modular=no
-		fi
 	fi
 }
 
@@ -4642,6 +4653,7 @@ EXT_SWIG_DOXY  	= ${EXT_SWIG_DOXY}
 GDB				= ${GDB}
 COMP_C			= ${COMP_C}
 COMP_CPP		= ${COMP_CPP}
+COMP_CSHARP		= ${COMP_CSHARP}
 
 DEFINES				= ${DEFINES}
 DEFINES_SWIG		= ${DEFINES_SWIG}
