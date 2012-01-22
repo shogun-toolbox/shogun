@@ -510,7 +510,7 @@ ifeq (java_modular,$(TEMPLATE_TARGET))
 	CLASSPATH=$(CLASSPATH) ant dist
 endif
 ifeq (csharp_modular,$(TEMPLATE_TARGET))
-	gmcs /t:library *.cs /out:modshogun.dll
+	$(COMP_CSHARP) /t:library *.cs /out:modshogun.dll
 endif
 else
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
