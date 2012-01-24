@@ -115,65 +115,65 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 	if (!kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
-		return false ;
+		return NULL;
 	}
 
-	if ( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs())
+	if (!( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs()))
+		return NULL;
+
+	int32_t num_vectors=kernel->get_num_vec_rhs();
+
+	result=new CLabels(num_vectors);
+	SG_REF(result);
+
+	ASSERT(num_vectors==result->get_num_labels());
+	CLabels** outputs=SG_MALLOC(CLabels*, m_num_svms);
+
+	for (int32_t i=0; i<m_num_svms; i++)
 	{
-		int32_t num_vectors=kernel->get_num_vec_rhs();
-
-		result=new CLabels(num_vectors);
-		SG_REF(result);
-
-		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=SG_MALLOC(CLabels*, m_num_svms);
-
-		for (int32_t i=0; i<m_num_svms; i++)
-		{
-			SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_num_svms, i, m_svms[i]);
-			ASSERT(m_svms[i]);
-			m_svms[i]->set_kernel(kernel);
-			outputs[i]=m_svms[i]->apply();
-		}
-
-		int32_t* votes=SG_MALLOC(int32_t, m_num_classes);
-		for (int32_t v=0; v<num_vectors; v++)
-		{
-			int32_t s=0;
-			memset(votes, 0, sizeof(int32_t)*m_num_classes);
-
-			for (int32_t i=0; i<m_num_classes; i++)
-			{
-				for (int32_t j=i+1; j<m_num_classes; j++)
-				{
-					if (outputs[s++]->get_label(v)>0)
-						votes[i]++;
-					else
-						votes[j]++;
-				}
-			}
-
-			int32_t winner=0;
-			int32_t max_votes=votes[0];
-
-			for (int32_t i=1; i<m_num_classes; i++)
-			{
-				if (votes[i]>max_votes)
-				{
-					max_votes=votes[i];
-					winner=i;
-				}
-			}
-
-			result->set_label(v, winner);
-		}
-
-		SG_FREE(votes);
-
-		for (int32_t i=0; i<m_num_svms; i++)
-			SG_UNREF(outputs[i]);
-		SG_FREE(outputs);
+		SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_num_svms, i, m_svms[i]);
+		ASSERT(m_svms[i]);
+		m_svms[i]->set_kernel(kernel);
+		outputs[i]=m_svms[i]->apply();
 	}
+
+	int32_t* votes=SG_MALLOC(int32_t, m_num_classes);
+	for (int32_t v=0; v<num_vectors; v++)
+	{
+		int32_t s=0;
+		memset(votes, 0, sizeof(int32_t)*m_num_classes);
+
+		for (int32_t i=0; i<m_num_classes; i++)
+		{
+			for (int32_t j=i+1; j<m_num_classes; j++)
+			{
+				if (outputs[s++]->get_label(v)>0)
+					votes[i]++;
+				else
+					votes[j]++;
+			}
+		}
+
+		int32_t winner=0;
+		int32_t max_votes=votes[0];
+
+		for (int32_t i=1; i<m_num_classes; i++)
+		{
+			if (votes[i]>max_votes)
+			{
+				max_votes=votes[i];
+				winner=i;
+			}
+		}
+
+		result->set_label(v, winner);
+	}
+
+	SG_FREE(votes);
+
+	for (int32_t i=0; i<m_num_svms; i++)
+		SG_UNREF(outputs[i]);
+	SG_FREE(outputs);
 
 	return result;
 }
