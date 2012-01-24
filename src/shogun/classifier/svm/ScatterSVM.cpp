@@ -377,103 +377,103 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	if (!kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
-		return false ;
+		return NULL;
 	}
 
-	if ( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs())
+	if (!( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs()))
+		return NULL;
+
+	int32_t num_vectors=kernel->get_num_vec_rhs();
+
+	output=new CLabels(num_vectors);
+	SG_REF(output);
+
+	if (scatter_type == TEST_RULE1)
 	{
-		int32_t num_vectors=kernel->get_num_vec_rhs();
-
-		output=new CLabels(num_vectors);
-		SG_REF(output);
-
-		if (scatter_type == TEST_RULE1)
-		{
-			ASSERT(m_num_svms>0);
-			for (int32_t i=0; i<num_vectors; i++)
-				output->set_label(i, apply(i));
-		}
+		ASSERT(m_num_svms>0);
+		for (int32_t i=0; i<num_vectors; i++)
+			output->set_label(i, apply(i));
+	}
 #ifdef USE_SVMLIGHT
-		else if (scatter_type == NO_BIAS_SVMLIGHT)
+	else if (scatter_type == NO_BIAS_SVMLIGHT)
+	{
+		float64_t* outputs=SG_MALLOC(float64_t, num_vectors*m_num_classes);
+		CMath::fill_vector(outputs,num_vectors*m_num_classes,0.0);
+
+		for (int32_t i=0; i<num_vectors; i++)
 		{
-			float64_t* outputs=SG_MALLOC(float64_t, num_vectors*m_num_classes);
-			CMath::fill_vector(outputs,num_vectors*m_num_classes,0.0);
-
-			for (int32_t i=0; i<num_vectors; i++)
+			for (int32_t j=0; j<get_num_support_vectors(); j++)
 			{
-				for (int32_t j=0; j<get_num_support_vectors(); j++)
+				float64_t score=kernel->kernel(get_support_vector(j), i)*get_alpha(j);
+				int32_t label=labels->get_int_label(get_support_vector(j));
+				for (int32_t c=0; c<m_num_classes; c++)
 				{
-					float64_t score=kernel->kernel(get_support_vector(j), i)*get_alpha(j);
-					int32_t label=labels->get_int_label(get_support_vector(j));
-					for (int32_t c=0; c<m_num_classes; c++)
-					{
-						float64_t s= (label==c) ? (m_num_classes-1) : (-1);
-						outputs[c+i*m_num_classes]+=s*score;
-					}
+					float64_t s= (label==c) ? (m_num_classes-1) : (-1);
+					outputs[c+i*m_num_classes]+=s*score;
 				}
 			}
-
-			for (int32_t i=0; i<num_vectors; i++)
-			{
-				int32_t winner=0;
-				float64_t max_out=outputs[i*m_num_classes+0];
-
-				for (int32_t j=1; j<m_num_classes; j++)
-				{
-					float64_t out=outputs[i*m_num_classes+j];
-
-					if (out>max_out)
-					{
-						winner=j;
-						max_out=out;
-					}
-				}
-
-				output->set_label(i, winner);
-			}
-
-			SG_FREE(outputs);
 		}
+
+		for (int32_t i=0; i<num_vectors; i++)
+		{
+			int32_t winner=0;
+			float64_t max_out=outputs[i*m_num_classes+0];
+
+			for (int32_t j=1; j<m_num_classes; j++)
+			{
+				float64_t out=outputs[i*m_num_classes+j];
+
+				if (out>max_out)
+				{
+					winner=j;
+					max_out=out;
+				}
+			}
+
+			output->set_label(i, winner);
+		}
+
+		SG_FREE(outputs);
+	}
 #endif //USE_SVMLIGHT
-		else
+	else
+	{
+		ASSERT(m_num_svms>0);
+		ASSERT(num_vectors==output->get_num_labels());
+		CLabels** outputs=SG_MALLOC(CLabels*, m_num_svms);
+
+		for (int32_t i=0; i<m_num_svms; i++)
 		{
-			ASSERT(m_num_svms>0);
-			ASSERT(num_vectors==output->get_num_labels());
-			CLabels** outputs=SG_MALLOC(CLabels*, m_num_svms);
-
-			for (int32_t i=0; i<m_num_svms; i++)
-			{
-				//SG_PRINT("svm %d\n", i);
-				ASSERT(m_svms[i]);
-				m_svms[i]->set_kernel(kernel);
-				m_svms[i]->set_labels(labels);
-				outputs[i]=m_svms[i]->apply();
-			}
-
-			for (int32_t i=0; i<num_vectors; i++)
-			{
-				int32_t winner=0;
-				float64_t max_out=outputs[0]->get_label(i)/norm_wc[0];
-
-				for (int32_t j=1; j<m_num_svms; j++)
-				{
-					float64_t out=outputs[j]->get_label(i)/norm_wc[j];
-
-					if (out>max_out)
-					{
-						winner=j;
-						max_out=out;
-					}
-				}
-
-				output->set_label(i, winner);
-			}
-
-			for (int32_t i=0; i<m_num_svms; i++)
-				SG_UNREF(outputs[i]);
-
-			SG_FREE(outputs);
+			//SG_PRINT("svm %d\n", i);
+			ASSERT(m_svms[i]);
+			m_svms[i]->set_kernel(kernel);
+			m_svms[i]->set_labels(labels);
+			outputs[i]=m_svms[i]->apply();
 		}
+
+		for (int32_t i=0; i<num_vectors; i++)
+		{
+			int32_t winner=0;
+			float64_t max_out=outputs[0]->get_label(i)/norm_wc[0];
+
+			for (int32_t j=1; j<m_num_svms; j++)
+			{
+				float64_t out=outputs[j]->get_label(i)/norm_wc[j];
+
+				if (out>max_out)
+				{
+					winner=j;
+					max_out=out;
+				}
+			}
+
+			output->set_label(i, winner);
+		}
+
+		for (int32_t i=0; i<m_num_svms; i++)
+			SG_UNREF(outputs[i]);
+
+		SG_FREE(outputs);
 	}
 
 	return output;

@@ -1411,7 +1411,7 @@ CLabels* CGUIClassifier::classify_linear()
 	if (!(testfeatures->has_property(FP_DOT)))
 	{
 		SG_ERROR("testfeatures not based on DotFeatures\n") ;
-		return false ;
+		return NULL;
 	}
 
 	((CLinearMachine*) classifier)->set_features((CDotFeatures*) testfeatures);
