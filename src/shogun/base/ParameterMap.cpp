@@ -48,8 +48,8 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 
 SGParamInfo::SGParamInfo(const TParameter* param, int32_t param_version)
 {
-	/* copy name */
-	m_name=strdup(param->m_name);
+	/* copy name if existent */
+	m_name=param->m_name ? strdup(param->m_name) : NULL;
 
 	TSGDataType type=param->m_datatype;
 	m_ctype=type.m_ctype;
