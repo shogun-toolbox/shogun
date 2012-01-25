@@ -83,7 +83,7 @@ public:
 			/* specify name change here (again, was also done in mappings) */
 			char* old_name="m_number_to_keep";
 			one_to_one_migration_prepare(param_base, target, result,
-					to_migrate, name_name);
+					to_migrate, old_name);
 
 			/* here: simply copy data because nothing has changed */
 			*((int32_t*)result->m_parameter)=
