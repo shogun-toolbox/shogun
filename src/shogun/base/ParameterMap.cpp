@@ -263,18 +263,12 @@ void ParameterMap::put(const SGParamInfo* key, const SGParamInfo* value)
 	m_finalized=false;
 }
 
-const SGParamInfo* ParameterMap::get(const SGParamInfo* key) const
-{
-	return NULL;
-}
-
 DynArray<const SGParamInfo*>* ParameterMap::get(const SGParamInfo key) const
 {
-	return get(&key, 0);
+	return get(&key);
 }
 
-// TODO remove a
-DynArray<const SGParamInfo*>* ParameterMap::get(const SGParamInfo* key, int a) const
+DynArray<const SGParamInfo*>* ParameterMap::get(const SGParamInfo* key) const
 {
 	index_t num_elements=m_multi_map_elements.get_num_elements();
 
