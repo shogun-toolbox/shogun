@@ -25,8 +25,8 @@ SGParamInfo::SGParamInfo()
 
 SGParamInfo::SGParamInfo(const SGParamInfo& orig)
 {
-	/* copy name */
-	m_name=strdup(orig.m_name);
+	/* copy name if existent */
+	m_name=orig.m_name ? strdup(orig.m_name) : NULL;
 
 	m_ctype=orig.m_ctype;
 	m_stype=orig.m_stype;
@@ -37,8 +37,8 @@ SGParamInfo::SGParamInfo(const SGParamInfo& orig)
 SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 		EStructType stype, EPrimitiveType ptype, int32_t param_version)
 {
-	/* copy name */
-	m_name=strdup(name);
+	/* copy name if existent */
+	m_name=name ? strdup(name) : NULL;
 
 	m_ctype=ctype;
 	m_stype=stype;
