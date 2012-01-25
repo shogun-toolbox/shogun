@@ -70,7 +70,7 @@ void test_mapping_1()
 		SG_SPRINT("searching for: %s\n", s);
 		SG_FREE(s);
 
-		DynArray<const SGParamInfo*>* result=map->get(current, 0);
+		DynArray<const SGParamInfo*>* result=map->get(current);
 		if (result)
 		{
 			for (index_t i=0; i<result->get_num_elements(); ++i)
@@ -91,7 +91,7 @@ void test_mapping_1()
 
 void print_value(const SGParamInfo* key, ParameterMap* map)
 {
-	DynArray<const SGParamInfo*>* current=map->get(key, 0);
+	DynArray<const SGParamInfo*>* current=map->get(key);
 	key->print_param_info();
 	SG_SPRINT("value: ");
 

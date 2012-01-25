@@ -177,7 +177,7 @@ public:
 	/** Gets a specific element of the map
 	 * finalize_map() has to be called first if more than one elements are in
 	 * map.
-	 * Same as above but withou pointer for syntactic ease.
+	 * Same as above but without pointer for syntactic ease.
 	 *
 	 * @param key key of the element to get
 	 * @return set of values of the key element
@@ -191,11 +191,7 @@ public:
 	 * @param key key of the element to get
 	 * @return set of values of the key element
 	 */
-	// TODO remove a
-	DynArray<const SGParamInfo*>* get(const SGParamInfo* key, int a) const;
-
-	/* TODO REMOVE */
-	const SGParamInfo* get(const SGParamInfo* key) const;
+	DynArray<const SGParamInfo*>* get(const SGParamInfo* key) const;
 
 	/** Finalizes the map. Has to be called before get may be called if more
 	 * than one element in map */
