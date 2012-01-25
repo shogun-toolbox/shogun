@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008-2009 Soeren Sonnenburg
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -512,7 +513,7 @@ TParameter* CSGObject::load_file_parameter(const SGParamInfo* param_info,
 //	char* s=param_info->to_string();
 //	SG_SPRINT("try to get mapping for: %s\n", s);
 //	SG_FREE(s);
-	const SGParamInfo* old=m_parameter_map->get(param_info);
+	DynArray<const SGParamInfo*>* old=m_parameter_map->get(param_info);
 	bool free_old=false;
 	if (!old)
 	{
@@ -521,9 +522,10 @@ TParameter* CSGObject::load_file_parameter(const SGParamInfo* param_info,
 //		SG_SPRINT("no mapping found, ");
 		if (file_version<param_info->m_param_version)
 		{
-			old=new SGParamInfo(param_info->m_name, param_info->m_ctype,
-					param_info->m_stype, param_info->m_ptype,
-					param_info->m_param_version-1);
+			old=new DynArray<const SGParamInfo*>();
+			old->append_element(new SGParamInfo(param_info->m_name,
+					param_info->m_ctype, param_info->m_stype,
+					param_info->m_ptype, param_info->m_param_version-1));
 			free_old=true;
 //			s=old->to_string();
 //			SG_SPRINT("using %s\n", s);
@@ -577,10 +579,14 @@ TParameter* CSGObject::load_file_parameter(const SGParamInfo* param_info,
 	/* recursion with mapped type, a mapping exists in this case (ensured by
 	 * above assert) */
 	else
-		result=load_file_parameter(old, file_version, file, prefix);
+		result=load_file_parameter(old->get_element(0), file_version, file, prefix);
 
 	if (free_old)
+	{
+		/* there was only one element in old array */
+		delete old->get_element(0);
 		delete old;
+	}
 
 	return result;
 }
@@ -636,11 +642,11 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 //		SG_PRINT("trying to get mapping for %s\n", s);
 //		SG_FREE(s);
 
-		const SGParamInfo* mapped=m_parameter_map->get(current);
+		DynArray<const SGParamInfo*>* mapped=m_parameter_map->get(current);
 
 		if (mapped)
 		{
-			mapped_infos->append_element(mapped);
+			mapped_infos->append_element(mapped->get_element(0));
 //			s=mapped->to_string();
 //			SG_PRINT("found: %s\n", s);
 //			SG_FREE(s);
@@ -977,8 +983,8 @@ index_t CSGObject::get_modsel_param_index(const char* param_name)
 bool CSGObject::is_param_new(const SGParamInfo param_info) const
 {
 	/* check if parameter is new in this version (has empty mapping) */
-	const SGParamInfo* value=m_parameter_map->get(&param_info);
-	bool result=value && *value==SGParamInfo();
+	DynArray<const SGParamInfo*>* value=m_parameter_map->get(&param_info);
+	bool result=value && *value->get_element(0) == SGParamInfo();
 
 //	if (result)
 //		SG_PRINT("\"%s\" is new\n", param_info.m_name);

@@ -75,16 +75,15 @@ public:
 	virtual TParameter* migrate(DynArray<TParameter*>* param_base,
 				const SGParamInfo* target)
 	{
-		SG_PRINT("entering CTestClassNew::migrate\n");
 		TParameter* result=NULL;
 		TParameter* to_migrate=NULL;
 
 		if (*target==SGParamInfo("m_number", CT_SCALAR, ST_NONE, PT_INT32, 1))
 		{
 			/* specify name change here (again, was also done in mappings) */
-			char* new_name="m_number_to_keep";
+			char* old_name="m_number_to_keep";
 			one_to_one_migration_prepare(param_base, target, result,
-					to_migrate, new_name);
+					to_migrate, old_name);
 
 			/* here: simply copy data because nothing has changed */
 			*((int32_t*)result->m_parameter)=
