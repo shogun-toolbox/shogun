@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008-2010 Soeren Sonnenburg
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
  */
 
