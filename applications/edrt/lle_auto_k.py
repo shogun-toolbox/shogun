@@ -13,7 +13,8 @@ preprocs.append((lle, "LLE preset k"))
 
 lle_adaptive_k = LocallyLinearEmbedding()
 lle_adaptive_k.set_k(3)
-lle_adaptive_k.set_max_k(20)
+lle_adaptive_k.set_max_k(40)
+lle_adaptive_k.parallel.set_num_threads(1)
 lle_adaptive_k.set_auto_k(True)
 preprocs.append((lle_adaptive_k, "LLE auto k"))
 

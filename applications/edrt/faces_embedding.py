@@ -14,49 +14,25 @@ from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationB
 import re,os,time
 from pylab import *
 
-def pbm2numpy(filename):
-	fin = None
-	try:
-		fin = open(filename, 'rb')
-		fin.readline()
-		#fin.readline()
-		header = fin.readline().strip()
-		match = re.match('^(\d+) (\d+)$', header)
-		colsr, rowsr = match.groups()
-		rows,cols = int(rowsr),int(colsr)
-		result = zeros((rows, cols))
-		fin.readline()
-		for i in range(rows):
-			for j in range(cols):
-				char1 = fin.read(1)
-				#fin.read(1)
-				result[i, j] = ord(char1)
-		return (result.ravel(), rows,cols)
-	finally:
-		if fin != None:
-			fin.close()
-		fin = None
-	return None
-
 def build_features(path):
 	files = os.listdir(path)
 	files.remove('README')
 	N = len(files)
-	first,nd,md = pbm2numpy(os.path.join(path,files[0]))
+	(nd,md) = imread(os.path.join(path,files[0])).shape
 	dim = nd*md
 	feature_matrix = zeros([dim,N])
 	for i,filename in enumerate(files):
-		feature_matrix[:,i], q,p = pbm2numpy(os.path.join(path,filename))
+		feature_matrix[:,i] = imread(os.path.join(path,filename)).ravel()
 	return nd,md,RealFeatures(feature_matrix)
 
 path = '../../data/faces/'
-converter = DiffusionMaps
+converter = KernelLocallyLinearEmbedding
 nd,md,features = build_features(path)
 converter_instance = converter()
 converter_instance.parallel.set_num_threads(2)
-converter_instance.set_t(1)
-#converter_instance.set_kernel(GaussianKernel(50,500000.0))
-#converter_instance.set_nullspace_shift(1e-3)
+converter_instance.set_k(10)
+converter_instance.set_kernel(GaussianKernel(50,500000.0))
+converter_instance.set_nullspace_shift(1e-3)
 converter_instance.set_target_dim(2)
 
 start = time.time()
@@ -75,19 +51,20 @@ print 'plotting'
 fig = figure()
 ax = fig.add_subplot(111,axisbg='#ffffff')
 ax.scatter(new_features[0],new_features[1],color='black')
-for i in range(len(new_features[0])):
+import random
+for i in random.sample(range(len(new_features[0])),15):
 	feature_vector = features.get_feature_vector(i)
 	Z = zeros([nd,md,4])
-	Z[:,:,0] = 255-feature_vector.reshape(nd,md)
+	Z[:,:,0] = 255-feature_vector.reshape(nd,md)[::-1,:]
 	Z[:,:,1] = Z[:,:,0]
-	Z[:,:,2] = Z[:,:,0]-30*(labels[i])
-	Z[Z[:,:,2]<0] = 0
+	Z[:,:,2] = Z[:,:,0]
 	for k in range(nd):
 		for j in range(md):
 			Z[k,j,3] = pow(sin(k*pi/nd)*sin(j*pi/md),0.5)
-	imagebox = OffsetImage(Z,cmap=cm.gray,zoom=0.60)
+	imagebox = OffsetImage(Z,cmap=cm.gray,zoom=1.0)
 	ab = AnnotationBbox(imagebox, (new_features[0,i],new_features[1,i]),
 						pad=0.001,frameon=False)
 	ax.add_artist(ab)
 axis('off')
+savefig('faces.png')
 show()
