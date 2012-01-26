@@ -226,12 +226,17 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 
 	// construct weight matrix
 	SG_DEBUG("Constructing weight matrix\n");
+	CTime* time = new CTime();
 	SGMatrix<float64_t> weight_matrix = construct_weight_matrix(simple_features,W_matrix,neighborhood_matrix);
+	SG_DEBUG("Weight matrix construction took %.5fs\n", time->cur_time_diff());
 	neighborhood_matrix.destroy_matrix();
 
 	// find null space of weight matrix
 	SG_DEBUG("Finding nullspace\n");
+	time->start();
 	SGMatrix<float64_t> new_feature_matrix = construct_embedding(weight_matrix,m_target_dim);
+	SG_DEBUG("Eigenproblem solving took %.5fs\n", time->cur_time_diff());
+	delete time;
 	weight_matrix.destroy_matrix();
 
 	SG_UNREF(features);
@@ -415,6 +420,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_embedding(SGMatrix<float6
 #ifdef HAVE_ARPACK
 		arpack_dsxupd(matrix.matrix,NULL,false,N,dimension+1,"LA",true,3,true,false,m_nullspace_shift,0.0,
 		              eigenvalues_vector,matrix.matrix,eigenproblem_status);
+		matrix.num_rows = dimension+1;
 #endif
 		if (eigenproblem_status)
 			SG_ERROR("ARPACK failed with code: %d", eigenproblem_status);
