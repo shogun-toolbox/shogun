@@ -108,7 +108,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 	double* workl = SG_MALLOC(double, lworkl);
 
 	// init info holding status (1 means that residual vector is provided initially)
-	int info = 1;
+	int info = 0;
 
 	// which eigenpairs to find
 	char* which_ = strdup(which);
@@ -201,8 +201,12 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 
 			// initialize options
 			set_default_options(&options);
-			options.Equil = YES;
+			//options.Equil = YES;
+			//options.SymmetricMode = YES;
+
 			options.SymmetricMode = YES;
+			options.ColPerm = MMD_AT_PLUS_A;
+			options.DiagPivotThresh = 0.001; 
 			StatInit(&stat);
 
 			// factorize
