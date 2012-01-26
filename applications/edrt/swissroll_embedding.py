@@ -1,7 +1,7 @@
 import numpy
 numpy.random.seed(40)
-tt = numpy.genfromtxt('../../../../data/toy/swissroll_color.dat',unpack=True).T
-X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
+tt = numpy.genfromtxt('../../data/toy/swissroll_color.dat',unpack=True).T
+X = numpy.genfromtxt('../../data/toy/swissroll.dat',unpack=True).T
 N = X.shape[1]
 converters = []
 
@@ -27,8 +27,8 @@ converters.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
 from shogun.Converter import DiffusionMaps
 from shogun.Kernel import GaussianKernel
 dm = DiffusionMaps()
-dm.set_t(20)
-kernel = GaussianKernel(100,1.0)
+dm.set_t(1)
+kernel = GaussianKernel(100,10.0)
 dm.set_kernel(kernel)
 converters.append((dm,"Diffusion Maps with t=%d, sigma=%f" % (dm.get_t(),kernel.get_width())))
 
@@ -69,7 +69,7 @@ plt.subplots_adjust(hspace=0.4)
 from shogun.Features import RealFeatures
 
 for (i, (converter, label)) in enumerate(converters):
-	X = numpy.genfromtxt('../../../../data/toy/swissroll.dat',unpack=True).T
+	X = numpy.genfromtxt('../../data/toy/swissroll.dat',unpack=True).T
 	features = RealFeatures(X)
 	converter.set_target_dim(2)
 	new_feats = converter.embed(features).get_feature_matrix()
