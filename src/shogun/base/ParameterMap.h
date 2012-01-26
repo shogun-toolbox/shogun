@@ -58,7 +58,7 @@ public:
 	virtual ~SGParamInfo();
 
 	/** prints all parameter values */
-	void print_param_info() const;
+	void print_param_info(const char* prefix="") const;
 
 	/** @return string representation, caller has to clean up */
 	char* to_string() const;
@@ -69,6 +69,9 @@ public:
 	/** operator for comparison, true iff all attributes are equal */
 	bool operator==(const SGParamInfo& other) const;
 
+	/** operator for comparison, false iff all attributes are equal */
+	bool operator!=(const SGParamInfo& other) const;
+
 	/** operator for comparison (by string m_name, if equal by others) */
 	bool operator<(const SGParamInfo& other) const;
 
@@ -78,9 +81,6 @@ public:
 	/** @return true iff this was constructed using the std constructor (empty
 	 * parameter used to say that it appeared here first time */
 	bool is_empty() const;
-
-private:
-	void init();
 
 public:
 	/** name */
@@ -100,7 +100,7 @@ public:
 };
 
 /** @brief Class to hold instances of a parameter map. Each element contains a
- * key and a value, which are of type SGParamInfo.
+ * key and a set of values, which each are of type SGParamInfo.
  * May be compared to each other based on their keys
  */
 class ParameterMapElement
@@ -111,10 +111,11 @@ public:
 
 	/** constructor
 	 *
-	 * @param key key of this element, is copied
-	 * @param value value of this element, is copied
+	 * @param key key of this element
+	 * @param values array of value of this element
 	 */
-	ParameterMapElement(const SGParamInfo* key, const SGParamInfo* value);
+	ParameterMapElement(const SGParamInfo* key,
+			DynArray<const SGParamInfo*>* values);
 
 	/** destructor */
 	virtual ~ParameterMapElement();
@@ -134,26 +135,28 @@ public:
 		return "ParameterMapElement";
 	}
 
-private:
-	void init();
-
 public:
-	/** keys */
+	/** key */
 	const SGParamInfo* m_key;
+
 	/** values */
-	const SGParamInfo* m_value;
+	DynArray<const SGParamInfo*>* m_values;
 
 };
 
 /** @brief Implements a map of ParameterMapElement instances
+ * Maps one key to a set of values.
  *
- * Implementation is done via an array. Via the call finalize_map(), it is
- * sorted. Then, get() may be called. If it is called before, an error is
+ * Implementation is done via an array. Via the call finalize_map(), a hidden
+ * structure is built which bundles all values for each key.
+ * Then, get() may be called, which returns an array of values for a key.
+ * If it is called before, an error is
  * thrown.
  *
- * In finalize_map() the array is sorted.
- * So inserting n elements is n*O(1) + O(n*log n) = O(n*log n).
- * Getting an element is then possible in O(log n) by binary search
+ * Putting elements is in O(1).
+ * finalize_map sorts the underlying array and then regroups values, O(n*log n).
+ * Add all values and then call once.
+ * Getting a set of values is possible in O(log n) via binary search
  */
 class ParameterMap
 {
@@ -164,38 +167,61 @@ public:
 	/** destructor */
 	virtual ~ParameterMap();
 
-	/** Puts an newly allocated element into the map
+	/** Puts an newly allocated element into the map. Note that get(...)
+	 * returns an array of value elements, so it is allowed to add multiple
+	 * values for one key. Note that there is also no check for double entries,
+	 * i.e. same key and same value.This will result in two elements when get
+	 * is called.
+	 * Operation in O(1).
 	 *
 	 * @param key key of the element
 	 * @param value value of the lement
 	 */
 	void put(const SGParamInfo* key, const SGParamInfo* value);
 
-	/** Gets a specific element of the map. Note that it is SG_REF'ed
+	/** Gets a specific element of the map
 	 * finalize_map() has to be called first if more than one elements are in
-	 * map
+	 * map.
+	 *
+	 * Operation in O(log n)
+	 *
+	 * Same as below but without pointer for syntactic ease.
 	 *
 	 * @param key key of the element to get
-	 * @return value of the key element
+	 * @return set of values of the key element
 	 */
-	const SGParamInfo* get(const SGParamInfo* key) const;
+	DynArray<const SGParamInfo*>* get(const SGParamInfo) const;
+
+	/** Gets a specific element of the map.
+	 * finalize_map() has to be called first if more than one elements are in
+	 * map.
+	 *
+	 * Operation in O(log n)
+	 *
+	 * @param key key of the element to get
+	 * @return set of values of the key element
+	 */
+	DynArray<const SGParamInfo*>* get(const SGParamInfo* key) const;
 
 	/** Finalizes the map. Has to be called before get may be called if more
-	 * than one element in map */
+	 * than one element in map
+	 *
+	 * Operation in O(n*log n)
+	 */
 	void finalize_map();
 
 	/** prints all elements of this map */
 	void print_map();
 
-private:
-	void init();
-
 protected:
 	/** list of CLinearMap elements, this is always kept sorted */
 	DynArray<ParameterMapElement*> m_map_elements;
 
-	/** variable that indicates if underlying array is sorted (and thus get
-	 * may safely be called) */
+	/* hidden internal structure which is used to hold multiple values for one
+	 * key. It is built when finalize_map() is called. */
+	DynArray<ParameterMapElement*> m_multi_map_elements;
+
+	/** variable that indicates if its possible to call get method */
 	bool m_finalized;
 };
 
