@@ -244,7 +244,7 @@ public:
 
 			/* specify name change and thats it */
 			one_to_one_migration_prepare(param_base, target, result,
-					to_migrate, "int_features");
+					to_migrate, (char*) "int_features");
 		}
 
 		if (result)
@@ -279,8 +279,8 @@ void test_load_file_parameter()
 
 	/* load all parameter data, current version is set to 1 here */
 	DynArray<TParameter*>* params=
-			float_instance->load_file_parameters(file_version, current_version,
-					file, "");
+			float_instance->load_all_file_parameters(file_version,
+					current_version, file, "");
 
 	/* create an array of param infos from float instance parameters */
 	DynArray<const SGParamInfo*>* param_infos=

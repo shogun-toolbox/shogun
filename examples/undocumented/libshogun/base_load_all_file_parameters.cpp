@@ -176,7 +176,7 @@ void test_load_file_parameter()
 
 	/* load all parameter data, current version is set to 1 here */
 	DynArray<TParameter*>* params=
-			float_instance->load_file_parameters(file_version, 1, file, "");
+			float_instance->load_all_file_parameters(file_version, 1, file, "");
 
 	/* test the result */
 	for (index_t i=0; i<params->get_num_elements(); ++i)
