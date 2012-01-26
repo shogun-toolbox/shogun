@@ -81,7 +81,7 @@ public:
 		if (*target==SGParamInfo("m_number", CT_SCALAR, ST_NONE, PT_INT32, 1))
 		{
 			/* specify name change here (again, was also done in mappings) */
-			char* old_name="m_number_to_keep";
+			char* old_name= (char*) "m_number_to_keep";
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate, old_name);
 
