@@ -155,7 +155,7 @@ public:
 
 const char* filename="test.txt";
 
-void test_load_file_parameter()
+void test_load_file_parameters()
 {
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
@@ -190,33 +190,44 @@ void test_load_file_parameter()
 
 	/* now, here the magic happens, the parameter info of the float instance is
 	 * mapped backwards (see its parameter map above) until the parameter
-	 * info of the file is found. Then the parameter with the file version
-	 * is loaded into memory. This will be used for migration */
-	TParameter* file_loaded_number=float_instance->load_file_parameter(
-			&param_info_number, file_version, file);
+	 * info of the file is found. Then the parameters with the file version
+	 * are loaded into memory. This will be used for migration.
+	 * Note that only one parameter is in the array here for testing */
+	DynArray<TParameter*>* file_loaded_number=
+			float_instance->load_file_parameters(&param_info_number,
+					file_version, file);
 
-	TParameter* file_loaded_vector=float_instance->load_file_parameter(
-			&param_info_vector, file_version, file);
+	DynArray<TParameter*>* file_loaded_vector=
+			float_instance->load_file_parameters(&param_info_vector,
+					file_version, file);
 
-	TParameter* file_loaded_matrix=float_instance->load_file_parameter(
-			&param_info_matrix, file_version, file);
+	DynArray<TParameter*>* file_loaded_matrix=
+			float_instance->load_file_parameters(&param_info_matrix,
+					file_version, file);
 
-	TParameter* file_loaded_sgobject=float_instance->load_file_parameter(
-			&param_info_sgobject, file_version, file);
+	DynArray<TParameter*>* file_loaded_sgobject=
+			float_instance->load_file_parameters(&param_info_sgobject,
+					file_version, file);
+
+	/* Note that there is only ONE element in array here (old test) */
+	TParameter* current;
 
 	/* ensure that its the same as of the instance */
-	int32_t value_number=*((int32_t*)file_loaded_number->m_parameter);
+	current=file_loaded_number->get_element(0);
+	int32_t value_number=*((int32_t*)current->m_parameter);
 	SG_SPRINT("%i\n", value_number);
 	ASSERT(value_number=int_instance->m_number);
 
 	/* same for the vector */
-	int32_t* value_vector=*((int32_t**)file_loaded_vector->m_parameter);
+	current=file_loaded_vector->get_element(0);
+	int32_t* value_vector=*((int32_t**)current->m_parameter);
 	CMath::display_vector(value_vector, int_instance->m_vector_length);
 	for (index_t i=0; i<int_instance->m_vector_length; ++i)
 		ASSERT(value_vector[i]=int_instance->m_vector[i]);
 
 	/* and for the matrix */
-	int32_t* value_matrix=*((int32_t**)file_loaded_matrix->m_parameter);
+	current=file_loaded_matrix->get_element(0);
+	int32_t* value_matrix=*((int32_t**)current->m_parameter);
 	CMath::display_matrix(value_matrix, int_instance->m_matrix_rows,
 			int_instance->m_matrix_cols);
 	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
@@ -226,8 +237,9 @@ void test_load_file_parameter()
 	}
 
 	/* and for the feature object */
+	current=file_loaded_sgobject->get_element(0);
 	CSimpleFeatures<int32_t>* features=
-			*((CSimpleFeatures<int32_t>**)file_loaded_sgobject->m_parameter);
+			*((CSimpleFeatures<int32_t>**)current->m_parameter);
 	SGMatrix<int32_t> feature_matrix_loaded=
 			features->get_feature_matrix();
 	SGMatrix<int32_t> feature_matrix_original=
@@ -247,10 +259,24 @@ void test_load_file_parameter()
 
 	/* only the TParameter instances have to be deleted, data, data pointer,
 	 * and possible length variables are deleted automatically */
+	for (index_t i=0; i<file_loaded_number->get_num_elements(); ++i)
+		delete file_loaded_number->get_element(i);
+
+	for (index_t i=0; i<file_loaded_vector->get_num_elements(); ++i)
+		delete file_loaded_vector->get_element(i);
+
+	for (index_t i=0; i<file_loaded_matrix->get_num_elements(); ++i)
+		delete file_loaded_matrix->get_element(i);
+
+	for (index_t i=0; i<file_loaded_sgobject->get_num_elements(); ++i)
+		delete file_loaded_sgobject->get_element(i);
+
+	/* also delete arrays */
 	delete file_loaded_number;
 	delete file_loaded_vector;
 	delete file_loaded_matrix;
 	delete file_loaded_sgobject;
+
 
 	file->close();
 	SG_UNREF(file);
@@ -262,7 +288,7 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	test_load_file_parameter();
+	test_load_file_parameters();
 
 	exit_shogun();
 
