@@ -33,8 +33,8 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  features_copy_subset_sparse_features \
 		  mathematics_confidence_intervals \
 		  clustering_kmeans base_parameter_map \
-		  base_load_file_parameter \
 		  base_load_file_parameters \
+		  base_load_all_file_parameters \
 		  base_map_parameters \
 		  base_migration_type_conversion \
 		  base_migration_dropping_and_new \

@@ -94,44 +94,44 @@ public:
 
 		/* add some parameter mappings for number, here: type changes */
 		m_parameter_map->put(
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_FLOAT64, 1),
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0)
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_FLOAT64, 1),
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0)
 		);
 
 		m_parameter_map->put(
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0),
-				new SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT32, -1)
-		);
-
-		/* changes for vector: from int32_t vector to float64_t SG_VECTOR */
-		m_parameter_map->put(
-				new SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_FLOAT64, 1),
-				new SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0)
-		);
-
-		/* from normal vector to SG_VECTOR of same type */
-		m_parameter_map->put(
-				new SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0),
-				new SGParamInfo("vector", CT_VECTOR, ST_NONE, PT_INT32, -1)
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT8, 0),
+				new const SGParamInfo("number", CT_SCALAR, ST_NONE, PT_INT32, -1)
 		);
 
 		/* changes for vector: from int32_t vector to float64_t SG_VECTOR */
 		m_parameter_map->put(
-				new SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_FLOAT64, 1),
-				new SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0)
+				new const SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_FLOAT64, 1),
+				new const SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0)
 		);
 
 		/* from normal vector to SG_VECTOR of same type */
 		m_parameter_map->put(
-				new SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0),
-				new SGParamInfo("matrix", CT_MATRIX, ST_NONE, PT_INT32, -1)
+				new const SGParamInfo("vector", CT_SGVECTOR, ST_NONE, PT_INT32, 0),
+				new const SGParamInfo("vector", CT_VECTOR, ST_NONE, PT_INT32, -1)
+		);
+
+		/* changes for vector: from int32_t vector to float64_t SG_VECTOR */
+		m_parameter_map->put(
+				new const SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_FLOAT64, 1),
+				new const SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0)
+		);
+
+		/* from normal vector to SG_VECTOR of same type */
+		m_parameter_map->put(
+				new const SGParamInfo("matrix", CT_SGMATRIX, ST_NONE, PT_INT32, 0),
+				new const SGParamInfo("matrix", CT_MATRIX, ST_NONE, PT_INT32, -1)
 		);
 
 		/* name change for sgobject */
 		m_parameter_map->put(
-				new SGParamInfo("float_features", CT_SCALAR, ST_NONE,
+				new const SGParamInfo("float_features", CT_SCALAR, ST_NONE,
 						PT_SGOBJECT, 1),
-				new SGParamInfo("int_features", CT_SCALAR, ST_NONE, PT_SGOBJECT,
+				new const SGParamInfo("int_features", CT_SCALAR, ST_NONE, PT_SGOBJECT,
 						0)
 		);
 
@@ -155,7 +155,7 @@ public:
 
 const char* filename="test.txt";
 
-void test_load_file_parameter()
+void test_load_file_parameters()
 {
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
@@ -172,88 +172,111 @@ void test_load_file_parameter()
 	/* reopen file for reading */
 	file=new CSerializableAsciiFile(filename, 'r');
 
+	/* build parameter info for parameter of the OTHER instance, start from
+	 * version 1 */
+	const SGParamInfo param_info_number(
+			float_instance->m_parameters->get_parameter(0), 1);
+
+	const SGParamInfo param_info_vector(
+			float_instance->m_parameters->get_parameter(1), 1);
+
+	const SGParamInfo param_info_matrix(
+			float_instance->m_parameters->get_parameter(2), 1);
+
+	const SGParamInfo param_info_sgobject(
+			float_instance->m_parameters->get_parameter(3), 1);
+
 	int32_t file_version=-1;
 
-	/* load all parameter data, current version is set to 1 here */
-	DynArray<TParameter*>* params=
-			float_instance->load_file_parameters(file_version, 1, file, "");
+	/* now, here the magic happens, the parameter info of the float instance is
+	 * mapped backwards (see its parameter map above) until the parameter
+	 * info of the file is found. Then the parameters with the file version
+	 * are loaded into memory. This will be used for migration.
+	 * Note that only one parameter is in the array here for testing */
+	DynArray<TParameter*>* file_loaded_number=
+			float_instance->load_file_parameters(&param_info_number,
+					file_version, file);
 
-	/* test the result */
-	for (index_t i=0; i<params->get_num_elements(); ++i)
+	DynArray<TParameter*>* file_loaded_vector=
+			float_instance->load_file_parameters(&param_info_vector,
+					file_version, file);
+
+	DynArray<TParameter*>* file_loaded_matrix=
+			float_instance->load_file_parameters(&param_info_matrix,
+					file_version, file);
+
+	DynArray<TParameter*>* file_loaded_sgobject=
+			float_instance->load_file_parameters(&param_info_sgobject,
+					file_version, file);
+
+	/* Note that there is only ONE element in array here (old test) */
+	TParameter* current;
+
+	/* ensure that its the same as of the instance */
+	current=file_loaded_number->get_element(0);
+	int32_t value_number=*((int32_t*)current->m_parameter);
+	SG_SPRINT("%i\n", value_number);
+	ASSERT(value_number=int_instance->m_number);
+
+	/* same for the vector */
+	current=file_loaded_vector->get_element(0);
+	int32_t* value_vector=*((int32_t**)current->m_parameter);
+	CMath::display_vector(value_vector, int_instance->m_vector_length);
+	for (index_t i=0; i<int_instance->m_vector_length; ++i)
+		ASSERT(value_vector[i]=int_instance->m_vector[i]);
+
+	/* and for the matrix */
+	current=file_loaded_matrix->get_element(0);
+	int32_t* value_matrix=*((int32_t**)current->m_parameter);
+	CMath::display_matrix(value_matrix, int_instance->m_matrix_rows,
+			int_instance->m_matrix_cols);
+	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
+			++i)
 	{
-		TParameter* current=params->get_element(i);
-
-		/* ensure that data is same as of the instance for all parameters */
-		if (!strcmp(current->m_name, "number"))
-		{
-			int32_t value_number=*((int32_t*)current->m_parameter);
-			SG_SPRINT("%i\n", value_number);
-			ASSERT(value_number=int_instance->m_number);
-		}
-		else if (!strcmp(current->m_name, "vector"))
-		{
-			int32_t* value_vector=*((int32_t**)current->m_parameter);
-			CMath::display_vector(value_vector, int_instance->m_vector_length);
-			for (index_t i=0; i<int_instance->m_vector_length; ++i)
-				ASSERT(value_vector[i]=int_instance->m_vector[i]);
-		}
-		else if (!strcmp(current->m_name, "matrix"))
-		{
-			int32_t* value_matrix=*((int32_t**)current->m_parameter);
-			CMath::display_matrix(value_matrix, int_instance->m_matrix_rows,
-					int_instance->m_matrix_cols);
-			for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
-					++i)
-			{
-				ASSERT(value_matrix[i]==int_instance->m_matrix[i]);
-			}
-		}
-		else if (!strcmp(current->m_name, "int_features"))
-		{
-			CSimpleFeatures<int32_t>* features=
-					*((CSimpleFeatures<int32_t>**)
-							current->m_parameter);
-			SGMatrix<int32_t> feature_matrix_loaded=
-					features->get_feature_matrix();
-			SGMatrix<int32_t> feature_matrix_original=
-					int_instance->m_features->get_feature_matrix();
-
-			CMath::display_matrix(feature_matrix_loaded.matrix,
-					feature_matrix_loaded.num_rows,
-					feature_matrix_loaded.num_cols,
-					"features");
-			for (index_t i=0;
-					i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
-					++i)
-			{
-				ASSERT(feature_matrix_original.matrix[i]==
-						feature_matrix_loaded.matrix[i]);
-			}
-		}
+		ASSERT(value_matrix[i]==int_instance->m_matrix[i]);
 	}
 
-	/* assert that parameter data is sorted */
-	for (index_t i=1; i<params->get_num_elements(); ++i)
-	{
-		/* assert via TParameter < and == operator */
-		TParameter* t1=params->get_element(i-1);
-		TParameter* t2=params->get_element(i);
-		ASSERT((*t1)<(*t2) || (*t1)==(*t2));
+	/* and for the feature object */
+	current=file_loaded_sgobject->get_element(0);
+	CSimpleFeatures<int32_t>* features=
+			*((CSimpleFeatures<int32_t>**)current->m_parameter);
+	SGMatrix<int32_t> feature_matrix_loaded=
+			features->get_feature_matrix();
+	SGMatrix<int32_t> feature_matrix_original=
+			int_instance->m_features->get_feature_matrix();
 
-		/* assert via name (which is used in the operator, but to be sure */
-		const char* s1=t1->m_name;
-		const char* s2=t2->m_name;
-		SG_SPRINT("param \"%s\" <= \"%s\" ? ... ", s1, s2);
-		ASSERT(strcmp(s1, s2)<=0);
-		SG_SPRINT("yes\n");
+	CMath::display_matrix(feature_matrix_loaded.matrix,
+			feature_matrix_loaded.num_rows,
+			feature_matrix_loaded.num_cols,
+			"features");
+	for (index_t i=0;
+			i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
+			++i)
+	{
+		ASSERT(feature_matrix_original.matrix[i]==
+				feature_matrix_loaded.matrix[i]);
 	}
 
+	/* only the TParameter instances have to be deleted, data, data pointer,
+	 * and possible length variables are deleted automatically */
+	for (index_t i=0; i<file_loaded_number->get_num_elements(); ++i)
+		delete file_loaded_number->get_element(i);
 
-	/* clean up */
-	for (index_t i=0; i<params->get_num_elements(); ++i)
-		delete params->get_element(i);
+	for (index_t i=0; i<file_loaded_vector->get_num_elements(); ++i)
+		delete file_loaded_vector->get_element(i);
 
-	delete params;
+	for (index_t i=0; i<file_loaded_matrix->get_num_elements(); ++i)
+		delete file_loaded_matrix->get_element(i);
+
+	for (index_t i=0; i<file_loaded_sgobject->get_num_elements(); ++i)
+		delete file_loaded_sgobject->get_element(i);
+
+	/* also delete arrays */
+	delete file_loaded_number;
+	delete file_loaded_vector;
+	delete file_loaded_matrix;
+	delete file_loaded_sgobject;
+
 
 	file->close();
 	SG_UNREF(file);
@@ -265,7 +288,7 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	test_load_file_parameter();
+	test_load_file_parameters();
 
 	exit_shogun();
 

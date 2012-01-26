@@ -170,18 +170,20 @@ public:
 	virtual bool load_serializable(CSerializableFile* file,
 			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
 
-	/** loads a a specified parameter from a file with a specified version
+	/** loads some specified parameters from a file with a specified version
 	 * The provided parameter info has a version which is recursively mapped
 	 * until the file parameter version is reached.
+	 * Note that there may be possibly multiple parameters in the mapping,
+	 * therefore, a set of TParameter instances is returned
 	 *
 	 * @param param_info information of parameter
 	 * @param file_version parameter version of the file, must be <= provided
 	 * parameter version
 	 * @param file file to load from
 	 * @param prefix prefix for members
-	 * @return new TParameter instance with the attached data
+	 * @return new array with TParameter instances with the attached data
 	 */
-	TParameter* load_file_parameter(const SGParamInfo* param_info,
+	DynArray<TParameter*>* load_file_parameters(const SGParamInfo* param_info,
 			int32_t file_version, CSerializableFile* file,
 			const char* prefix="");
 
@@ -197,7 +199,7 @@ public:
 	 * @param prefix prefix for members
 	 * @return (sorted) array of created TParameter instances with file data
 	 */
-	DynArray<TParameter*>* load_file_parameters(int32_t file_version,
+	DynArray<TParameter*>* load_all_file_parameters(int32_t file_version,
 			int32_t current_version,
 			CSerializableFile* file, const char* prefix="");
 
