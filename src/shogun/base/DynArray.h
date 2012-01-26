@@ -353,6 +353,13 @@ template <class T> class DynArray
 				memset(array, 0, (last_element_idx+1)*sizeof(T));
 		}
 
+		/** resets the array (as if it was just created), keeps granularity */
+		void reset()
+		{
+			clear_array();
+			last_element_idx=-1;
+		}
+
 		/** randomizes the array */
 		void shuffle()
 		{

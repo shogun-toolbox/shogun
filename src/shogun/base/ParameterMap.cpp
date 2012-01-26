@@ -16,15 +16,17 @@ using namespace shogun;
 
 SGParamInfo::SGParamInfo()
 {
-	init();
+	m_name=NULL;
+	m_ctype=(EContainerType) -1;
+	m_stype=(EStructType) -1;
+	m_ptype=(EPrimitiveType) -1;
+	m_param_version=-1;
 }
 
 SGParamInfo::SGParamInfo(const SGParamInfo& orig)
 {
-	init();
-
-	/* copy name */
-	m_name=strdup(orig.m_name);
+	/* copy name if existent */
+	m_name=orig.m_name ? strdup(orig.m_name) : NULL;
 
 	m_ctype=orig.m_ctype;
 	m_stype=orig.m_stype;
@@ -35,10 +37,8 @@ SGParamInfo::SGParamInfo(const SGParamInfo& orig)
 SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 		EStructType stype, EPrimitiveType ptype, int32_t param_version)
 {
-	init();
-
-	/* copy name */
-	m_name=strdup(name);
+	/* copy name if existent */
+	m_name=name ? strdup(name) : NULL;
 
 	m_ctype=ctype;
 	m_stype=stype;
@@ -48,10 +48,8 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 
 SGParamInfo::SGParamInfo(const TParameter* param, int32_t param_version)
 {
-	init();
-
-	/* copy name */
-	m_name=strdup(param->m_name);
+	/* copy name if existent */
+	m_name=param->m_name ? strdup(param->m_name) : NULL;
 
 	TSGDataType type=param->m_datatype;
 	m_ctype=type.m_ctype;
@@ -96,25 +94,16 @@ char* SGParamInfo::to_string() const
 	return buffer;
 }
 
-void SGParamInfo::print_param_info() const
+void SGParamInfo::print_param_info(const char* prefix) const
 {
 	char* s=to_string();
-	SG_SPRINT("%s\n", s);
+	SG_SPRINT("%s%s\n", prefix, s);
 	SG_FREE(s);
 }
 
 SGParamInfo* SGParamInfo::duplicate() const
 {
 	return new SGParamInfo(m_name, m_ctype, m_stype, m_ptype, m_param_version);
-}
-
-void SGParamInfo::init()
-{
-	m_name=NULL;
-	m_ctype=(EContainerType) -1;
-	m_stype=(EStructType) -1;
-	m_ptype=(EPrimitiveType) -1;
-	m_param_version=-1;
 }
 
 bool SGParamInfo::operator==(const SGParamInfo& other) const
@@ -133,6 +122,11 @@ bool SGParamInfo::operator==(const SGParamInfo& other) const
 	result&=m_ptype==other.m_ptype;
 	result&=m_param_version==other.m_param_version;
 	return result;
+}
+
+bool SGParamInfo::operator!=(const SGParamInfo& other) const
+{
+	return !operator ==(other);
 }
 
 bool SGParamInfo::operator<(const SGParamInfo& other) const
@@ -192,22 +186,28 @@ bool SGParamInfo::is_empty() const
 
 ParameterMapElement::ParameterMapElement()
 {
-	init();
+	m_key=NULL;
+	m_values=NULL;
 }
 
 ParameterMapElement::ParameterMapElement(const SGParamInfo* key,
-		const SGParamInfo* value)
+		DynArray<const SGParamInfo*>* values)
 {
-	init();
-
 	m_key=key;
-	m_value=value;
+	m_values=values;
 }
 
 ParameterMapElement::~ParameterMapElement()
 {
 	delete m_key;
-	delete m_value;
+
+	if (m_values)
+	{
+		for (index_t i=0; i<m_values->get_num_elements(); ++i)
+			delete m_values->get_element(i);
+
+		delete m_values;
+	}
 }
 
 bool ParameterMapElement::operator==(const ParameterMapElement& other) const
@@ -225,18 +225,7 @@ bool ParameterMapElement::operator>(const ParameterMapElement& other) const
 	return *m_key>*other.m_key;
 }
 
-void ParameterMapElement::init()
-{
-	m_key=NULL;
-	m_value=NULL;
-}
-
 ParameterMap::ParameterMap()
-{
-	init();
-}
-
-void ParameterMap::init()
 {
 	m_finalized=false;
 }
@@ -245,16 +234,13 @@ ParameterMap::~ParameterMap()
 {
 	for (index_t i=0; i<m_map_elements.get_num_elements(); ++i)
 		delete m_map_elements[i];
+
+	for (index_t i=0; i<m_multi_map_elements.get_num_elements(); ++i)
+		delete m_multi_map_elements[i];
 }
 
 void ParameterMap::put(const SGParamInfo* key, const SGParamInfo* value)
 {
-//	if (key->m_ptype==PT_SGOBJECT || value->m_ptype==PT_SGOBJECT)
-//	{
-//		SG_SPRINT("Parameter maps for CSGObjects are not yet supported\n");
-//		SG_SNOTIMPLEMENTED;
-//	}
-
 	/* assert that versions do differ exactly one if mapping is non-empty */
 	if(key->m_param_version-value->m_param_version!=1)
 	{
@@ -269,66 +255,127 @@ void ParameterMap::put(const SGParamInfo* key, const SGParamInfo* value)
 		}
 	}
 
-	m_map_elements.append_element(new ParameterMapElement(key, value));
+	/* always add array of ONE element as values, will be processed later
+	 * in finalize map method */
+	DynArray<const SGParamInfo*>* values=new DynArray<const SGParamInfo*>();
+	values->append_element(value);
+	m_map_elements.append_element(new ParameterMapElement(key, values));
 	m_finalized=false;
 }
 
-const SGParamInfo* ParameterMap::get(const SGParamInfo* key) const
+DynArray<const SGParamInfo*>* ParameterMap::get(const SGParamInfo key) const
 {
-	index_t num_elements=m_map_elements.get_num_elements();
+	return get(&key);
+}
 
-	/* check if underlying array is sorted */
-	if (!m_finalized && num_elements>1)
+DynArray<const SGParamInfo*>* ParameterMap::get(const SGParamInfo* key) const
+{
+	index_t num_elements=m_multi_map_elements.get_num_elements();
+
+	/* check if maps is finalized */
+	if (!m_finalized && num_elements)
 		SG_SERROR("Call finalize_map() before calling get()\n");
 
 	/* do binary search in array of pointers */
 	/* dummy element for searching */
-	ParameterMapElement* dummy=new ParameterMapElement(key->duplicate(),
-			key->duplicate());
+	ParameterMapElement* dummy=new ParameterMapElement(key->duplicate(), NULL);
 	index_t index=CMath::binary_search<ParameterMapElement> (
-			m_map_elements.get_array(), num_elements, dummy);
+			m_multi_map_elements.get_array(), num_elements, dummy);
 	delete dummy;
 
 	if (index==-1)
 		return NULL;
 
-	ParameterMapElement* element=m_map_elements.get_element(index);
-	const SGParamInfo* value=element->m_value;
-
-	return value;
+	ParameterMapElement* element=m_multi_map_elements.get_element(index);
+	return element->m_values;
 }
 
 void ParameterMap::finalize_map()
 {
+	/* only do something if there are elements in map */
+	if (!m_map_elements.get_num_elements())
+		return;
+
 	/* sort underlying array */
 	CMath::qsort<ParameterMapElement> (m_map_elements.get_array(),
 			m_map_elements.get_num_elements());
 
-	/* ensure that there are no duplicate keys */
-	if (m_map_elements.get_num_elements()>1)
+//	SG_SPRINT("map elements before finalize\n");
+	for (index_t i=0; i<m_map_elements.get_num_elements(); ++i)
 	{
-		for (index_t i=1; i<m_map_elements.get_num_elements(); ++i)
+		ParameterMapElement* current=m_map_elements[i];
+//		SG_SPRINT("element %d:\n", i);
+//		SG_SPRINT("\tkey: ");
+		current->m_key->print_param_info();
+//		SG_SPRINT("\t%d values:\n", current->m_values->get_num_elements());
+		for (index_t j=0; j<current->m_values->get_num_elements(); ++j)
+			current->m_values->get_element(j)->print_param_info("\t\t");
+	}
+
+	/* clear old multi elements. These were copies. */
+	for (index_t i=0; i<m_multi_map_elements.get_num_elements(); ++i)
+		delete m_multi_map_elements[i];
+
+	m_multi_map_elements.reset();
+//	SG_SPRINT("\nstarting finalization\n");
+
+	/* iterate over all elements of map elements (have all one value (put)) and
+	 * add all values of same key to ONE map element of hidden structure */
+	DynArray<const SGParamInfo*>* values=new DynArray<const SGParamInfo*>();
+	const SGParamInfo* current_key=m_map_elements[0]->m_key;
+	char* s=current_key->to_string();
+//	SG_SPRINT("current key: %s\n", s);
+	SG_FREE(s);
+	for (index_t i=0; i<m_map_elements.get_num_elements(); ++i)
+	{
+		const ParameterMapElement* current=m_map_elements[i];
+		if (*current_key != *current->m_key)
 		{
-			const SGParamInfo* key1=m_map_elements.get_element(i-1)->m_key;
-			const SGParamInfo* key2=m_map_elements.get_element(i)->m_key;
-			if (*key1==*key2)
-				SG_SERROR("ParameterMap::finalize_map(): duplicate key!\n");
+			/* create new values array to add and update key */
+			values=new DynArray<const SGParamInfo*>();
+			current_key=current->m_key;
+			s=current_key->to_string();
+//			SG_SPRINT("new current key: %s\n", s);
+			SG_FREE(s);
+		}
+
+		/* add to values array */
+		char* t=current->m_values->get_element(0)->to_string();
+//		SG_SPRINT("\tadding %s\n", t);
+		SG_FREE(t);
+		values->append_element(current->m_values->get_element(0)->duplicate());
+
+		/* if current values array has not been added to multi map elements, do
+		 * now */
+		index_t last_idx=m_multi_map_elements.get_num_elements()-1;
+		if (last_idx<0 ||
+				m_multi_map_elements.get_element(last_idx)->m_values != values)
+		{
+//			SG_SPRINT("adding values array\n");
+			m_multi_map_elements.append_element(
+				new ParameterMapElement(current_key->duplicate(), values));
 		}
 	}
 
-
 	m_finalized=true;
+//	SG_SPRINT("leaving finalize_map()\n");
 }
 
 void ParameterMap::print_map()
 {
-	for (index_t i=0; i< m_map_elements.get_num_elements(); ++i)
+	/* check if maps is finalized */
+	if (!m_finalized && m_map_elements.get_num_elements())
+		SG_SERROR("Call finalize_map() before calling print_map()\n");
+
+//	SG_SPRINT("map with %d keys:\n", m_multi_map_elements.get_num_elements());
+	for (index_t i=0; i<m_multi_map_elements.get_num_elements(); ++i)
 	{
-		ParameterMapElement* current=m_map_elements[i];
-		SG_SPRINT("%d\n", i);
-		SG_SPRINT("key: ");
+		ParameterMapElement* current=m_multi_map_elements[i];
+//		SG_SPRINT("element %d:\n", i);
+//		SG_SPRINT("\tkey: ");
 		current->m_key->print_param_info();
-		SG_SPRINT("value: ");
-		current->m_value->print_param_info();
+//		SG_SPRINT("\t%d values:\n", current->m_values->get_num_elements());
+		for (index_t j=0; j<current->m_values->get_num_elements(); ++j)
+			current->m_values->get_element(j)->print_param_info("\t\t");
 	}
 }
