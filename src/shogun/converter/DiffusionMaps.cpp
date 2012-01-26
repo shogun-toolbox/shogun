@@ -15,6 +15,7 @@
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/Signal.h>
@@ -26,6 +27,7 @@ CDiffusionMaps::CDiffusionMaps() :
 		CEmbeddingConverter()
 {
 	m_t = 10;
+	set_kernel(new CGaussianKernel(10,1.0));
 	
 	init();
 }
@@ -88,14 +90,15 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 			p_vector[i] += kernel_matrix.matrix[j*N+i];
 		}
 	}
-
-	float64_t* p_matrix = SG_CALLOC(float64_t, N*N);
-	cblas_dger(CblasColMajor,N,N,1.0,p_vector,1,p_vector,1,p_matrix,N);
-	for (i=0; i<N*N; i++)
+	//CMath::display_matrix(kernel_matrix.matrix,N,N,"K");
+	for (i=0; i<N; i++)
 	{
-		kernel_matrix.matrix[i] /= CMath::pow(p_matrix[i], m_t);
+		for (j=0; j<N; j++)
+		{
+			kernel_matrix.matrix[i*N+j] /= CMath::pow(p_vector[i]*p_vector[j], m_t);
+		}
 	}
-	SG_FREE(p_matrix);
+	//CMath::display_matrix(kernel_matrix.matrix,N,N,"K");
 
 	for (i=0; i<N; i++)
 	{
@@ -106,12 +109,16 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 		}
 		p_vector[i] = CMath::sqrt(p_vector[i]);
 	}
-	float64_t ppt = cblas_ddot(N,p_vector,1,p_vector,1);
+
+	for (i=0; i<N; i++)
+	{
+		for (j=0; j<N; j++)
+		{
+			kernel_matrix.matrix[i*N+j] /= p_vector[i]*p_vector[j];
+		}
+	}
+
 	SG_FREE(p_vector);
-
-	for (i=0; i<N*N; i++)
-		kernel_matrix.matrix[i] /= ppt;
-
 	float64_t* s_values = SG_MALLOC(float64_t, N);
 
 	int32_t info = 0;
@@ -122,7 +129,7 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 #ifdef HAVE_ARPACK
 		arpack_dsxupd(kernel_matrix.matrix,NULL,false,N,m_target_dim,"LA",false,1,false,true,0.0,0.0,s_values,kernel_matrix.matrix,info);
 #endif /* HAVE_ARPACK */
-		SG_REALLOC(float64_t,kernel_matrix.matrix,m_target_dim*N);
+		SG_REALLOC(float64_t,kernel_matrix.matrix,N*m_target_dim);
 		new_feature_matrix = SGMatrix<float64_t>(kernel_matrix.matrix,m_target_dim,N);
 	}
 	else 
@@ -139,10 +146,7 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 		kernel_matrix.destroy_matrix();
 	}
 	if (info)
-	{
 		SG_ERROR("Eigenproblem solving  failed with %d code", info);
-		kernel_matrix.destroy_matrix();
-	}
 
 	SG_FREE(s_values);
 
