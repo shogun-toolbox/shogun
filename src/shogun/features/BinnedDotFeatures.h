@@ -133,19 +133,31 @@ class CBinnedDotFeatures : public CDotFeatures
 		virtual CFeatures* duplicate() const;
 		virtual EFeatureType get_feature_type();
 		virtual EFeatureClass get_feature_class();
+
+
 		virtual int32_t get_num_vectors() const;
+
+		/** get size of underlying data type in bytes
+		 *
+		 * @return size in bytes
+		 */ 
 		virtual int32_t get_size();
 
 
 	private:
 		void init();
+
+		/** test if feature matrix matches size of bins with limits
+		 *
+		 * @param vec2_len length of dense vector
+		 */
 		void assert_shape(int32_t vec2_len);
 
 	protected:
 		/// underlying features
 		CSimpleFeatures<float64_t>* m_features;
 
-		/// bins with limits limits
+		/// bins with limits
 		SGMatrix<float64_t> m_bins;
 
 		/// fill up with 1's or flag just one column
