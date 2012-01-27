@@ -23,6 +23,7 @@
 #include <shogun/ui/GUITime.h>
 #include <shogun/ui/GUIStructure.h>
 #include <shogun/ui/GUISignals.h>
+#include <shogun/ui/GUIConverter.h>
 
 namespace shogun
 {
@@ -319,6 +320,11 @@ class CSGInterface : public CSGObject
 		bool cmd_attach_preproc();
 		/** clear/clean preproc */
 		bool cmd_clean_preproc();
+
+		/** create converter */
+		bool cmd_set_converter();
+		/** embed features */
+		bool cmd_embed();
 
 		/** create new HMM */
 		bool cmd_new_hmm();
@@ -1011,6 +1017,8 @@ class CSGInterface : public CSGObject
 		/** ui structure */
 		CGUIStructure* ui_structure;
 		//CGUISignals* ui_signals;
+		/** ui_converter */
+		CGUIConverter* ui_converter;
 
 	protected:
 		/** return true if str starts with cmd

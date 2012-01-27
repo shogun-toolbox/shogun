@@ -56,6 +56,10 @@ class CDistance;
  * proper triangulation. For reasonable embedding accuracy greater
  * values (30%-50% of total examples number) is pretty good for the
  * most tasks.
+ *
+ * To use this converter with static interfaces please refer it by
+ * sg('create_converter','mds');
+ * 
  */
 class CMultidimensionalScaling: public CEmbeddingConverter
 {

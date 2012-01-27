@@ -602,6 +602,18 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE(N_CLEAN_PREPROC)
 	},
 
+	{ "Converters", NULL, NULL },
+	{
+		N_SET_CONVERTER,
+		(&CSGInterface::cmd_set_converter),
+		USAGE(N_SET_CONVERTER)
+	},
+	{
+		N_EMBED,
+		(&CSGInterface::cmd_embed),
+		USAGE_IO(N_EMBED,"target dim","embedding")
+	},
+
 
 	{ "HMM", NULL, NULL },
 	{
@@ -1182,7 +1194,8 @@ CSGInterface::CSGInterface(bool print_copyright)
 	ui_pluginestimate(new CGUIPluginEstimate(this)),
 	ui_preproc(new CGUIPreprocessor(this)),
 	ui_time(new CGUITime(this)),
-  ui_structure(new CGUIStructure(this))/*,
+	ui_structure(new CGUIStructure(this)),
+	ui_converter(new CGUIConverter(this))/*,
 /	ui_signals(new CGUISignals(this))*/
 {
 	if (print_copyright)
@@ -1216,6 +1229,7 @@ CSGInterface::~CSGInterface()
 	//delete ui_signals; 
 	delete ui_time;
 	delete ui_distance;
+	delete ui_converter;
 
 	if (file_out)
 		fclose(file_out);
@@ -5279,6 +5293,86 @@ bool CSGInterface::cmd_clean_preproc()
 	return ui_preproc->clean_preproc();
 }
 
+/* Converter */
+
+bool CSGInterface::cmd_set_converter()
+{
+	int32_t len=0;
+	char* type=get_str_from_str_or_direct(len);
+	
+	if (strmatch(type, "lle"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		ui_converter->create_locallylinearembedding(k);
+		return true;
+	}
+	if (strmatch(type, "npe"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		ui_converter->create_neighborhoodpreservingembedding(k);
+		return true;
+	}
+	if (strmatch(type, "ltsa"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		ui_converter->create_localtangentspacealignment(k);
+		return true;
+	}
+	if (strmatch(type, "lltsa"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		ui_converter->create_linearlocaltangentspacealignment(k);
+		return true;
+	}
+	if (strmatch(type, "hlle"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		ui_converter->create_hessianlocallylinearembedding(k);
+		return true;
+	}
+	if (strmatch(type, "laplacian_eigenmaps"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		int32_t width = get_real_from_real_or_str();
+		ui_converter->create_laplacianeigenmaps(k,width);
+		return true;
+	}
+	if (strmatch(type, "lpp"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		int32_t width = get_real_from_real_or_str();
+		ui_converter->create_localitypreservingprojections(k,width);
+		return true;
+	}
+	if (strmatch(type, "diffusion_maps"))
+	{
+		int32_t t = get_int_from_int_or_str();
+		int32_t width = get_real_from_real_or_str();
+		ui_converter->create_diffusionmaps(t,width);
+		return true;
+	}
+	if (strmatch(type, "isomap"))
+	{
+		int32_t k = get_int_from_int_or_str();
+		ui_converter->create_isomap(k);
+		return true;
+	}
+	if (strmatch(type, "mds"))
+	{
+		ui_converter->create_multidimensionalscaling();
+		return true;
+	}
+	return false;
+}
+
+bool CSGInterface::cmd_embed()
+{
+	int32_t target_dim = get_int_from_int_or_str();
+	CSimpleFeatures<float64_t>* embedding = ui_converter->embed(target_dim);
+	SGMatrix<float64_t> embedding_matrix = embedding->get_feature_matrix();
+	set_matrix(embedding_matrix.matrix,embedding_matrix.num_cols,embedding_matrix.num_rows);
+	return true;
+}
 
 /* HMM */
 

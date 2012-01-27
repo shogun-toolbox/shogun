@@ -30,6 +30,8 @@ class CDistance;
  * Matrix, 16(December), 153–160. Citeseer. 
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.7147&rep=rep1&type=pdf
  *
+ * To use this converter with static interfaces please refer it by
+ * sg('create_converter','lpp',k,width);
  *
  */
 class CLocalityPreservingProjections: public CLaplacianEigenmaps

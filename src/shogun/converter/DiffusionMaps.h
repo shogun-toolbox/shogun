@@ -31,6 +31,9 @@ class CKernel;
  * Applied and Computational Harmonic Analysis, 21(1), 5-30. Elsevier. 
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S1063520306000546
  *
+ * To use this converter with static interfaces please refer it by
+ * sg('create_converter','diffusion_maps',t,width); 
+ *
  */
 class CDiffusionMaps: public CEmbeddingConverter
 {
