@@ -403,7 +403,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	else
 	{
 		/* load all parameters from file, mappings to current version */
-		DynArray<TParameter*>* param_base=load_file_parameters(file_version,
+		DynArray<TParameter*>* param_base=load_all_file_parameters(file_version,
 				param_version, file, prefix);
 
 		/* create an array of param infos from current parameters */
@@ -496,9 +496,11 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	return true;
 }
 
-TParameter* CSGObject::load_file_parameter(const SGParamInfo* param_info,
-		int32_t file_version, CSerializableFile* file, const char* prefix)
+DynArray<TParameter*>* CSGObject::load_file_parameters(
+		const SGParamInfo* param_info, int32_t file_version,
+		CSerializableFile* file, const char* prefix)
 {
+//	SG_SPRINT("entering CSGObject::load_file_parameters\n");
 	/* ensure that recursion works */
 	if (file_version>param_info->m_param_version)
 	{
@@ -507,91 +509,152 @@ TParameter* CSGObject::load_file_parameter(const SGParamInfo* param_info,
 				param_info->m_param_version);
 	}
 
-	TParameter* result;
+	DynArray<TParameter*>* result_array=new DynArray<TParameter*>();
 
 	/* do mapping */
 //	char* s=param_info->to_string();
 //	SG_SPRINT("try to get mapping for: %s\n", s);
 //	SG_FREE(s);
-	DynArray<const SGParamInfo*>* old=m_parameter_map->get(param_info);
-	bool free_old=false;
-	if (!old)
+
+	/* mapping has only be deleted if was created here (no mapping was found) */
+	bool free_mapped=false;
+	DynArray<const SGParamInfo*>* mapped=m_parameter_map->get(param_info);
+	if (!mapped)
 	{
+		/* since a new mapped array will be created, set deletion flag */
+		free_mapped=true;
+		mapped=new DynArray<const SGParamInfo*>();
+
 		/* if no mapping was found, nothing has changed. Simply create new param
 		 * info with decreased version */
 //		SG_SPRINT("no mapping found, ");
 		if (file_version<param_info->m_param_version)
 		{
-			old=new DynArray<const SGParamInfo*>();
-			old->append_element(new SGParamInfo(param_info->m_name,
+			/* create new array and put param info with decreased version in */
+			mapped->append_element(new SGParamInfo(param_info->m_name,
 					param_info->m_ctype, param_info->m_stype,
 					param_info->m_ptype, param_info->m_param_version-1));
-			free_old=true;
-//			s=old->to_string();
-//			SG_SPRINT("using %s\n", s);
-//			SG_FREE(s);
+
+//			SG_SPRINT("using:\n");
+//			for (index_t i=0; i<mapped->get_num_elements(); ++i)
+//			{
+//				s=mapped->get_element(i)->to_string();
+//				SG_SPRINT("\t%s\n", s);
+//				SG_FREE(s);
+//			}
 		}
-//		else
-//		{
+		else
+		{
 //			SG_SPRINT("reached file version\n");
-//		}
+			/* create new array and put original param info in */
+			mapped->append_element(param_info->duplicate());
+		}
 	}
 //	else
 //	{
-//			s=old->to_string();
-//			SG_SPRINT("found: %s\n", s);
+//		SG_SPRINT("found:\n");
+//		for (index_t i=0; i<mapped->get_num_elements(); ++i)
+//		{
+//			s=mapped->get_element(i)->to_string();
+//			SG_SPRINT("\t%s\n", s);
 //			SG_FREE(s);
+//		}
 //	}
 
 
 	/* case file version same as provided version.
-	 * means that parameter has to be loaded from file, recursion stops here */
+	 * means that parameters have to be loaded from file, recursion stops */
 	if (file_version==param_info->m_param_version)
 	{
-		/* allocate memory for length and matrix/vector
-		 * This has to be done because this stuff normally is in the class
-		 * variables which do not exist in this case. Deletion is handled
-		 * via the m_delete_data flag of TParameter */
-
-		/* create type and copy lengths, empty data for now
-		 * dummy data will be created below. Note that the delete_data flag is
-		 * set here which will handle the deletion of the data pointer, data,
-		 * and possible length variables */
-		TSGDataType type(param_info->m_ctype, param_info->m_stype,
-				param_info->m_ptype);
-		result=new TParameter(&type, NULL, param_info->m_name, "");
-		result->m_delete_data=true;
-
-		/* allocate data/length variables for the TParameter, lengths are not
-		 * important now, so set to one */
-		result->allocate_data_from_scratch(1, 1);
-
-		/* tell instance to load data from file */
-		if (!result->load(file, prefix))
+//		SG_SPRINT("recursion stop, loading from file\n");
+		/* load all parameters in mapping from file */
+		for (index_t i=0; i<mapped->get_num_elements(); ++i)
 		{
-			char* s=param_info->to_string();
-			SG_ERROR("Could not load %s. The reason for this might be wrong "
-					"parameter mappings\n", s);
-			SG_FREE(s);
+			const SGParamInfo* current=mapped->get_element(i);
+//			s=current->to_string();
+//			SG_SPRINT("loading %s\n", s);
+//			SG_FREE(s);
+
+			TParameter* loaded;
+			/* allocate memory for length and matrix/vector
+			 * This has to be done because this stuff normally is in the class
+			 * variables which do not exist in this case. Deletion is handled
+			 * via the m_delete_data flag of TParameter */
+
+			/* create type and copy lengths, empty data for now
+			 * dummy data will be created below. Note that the delete_data flag is
+			 * set here which will handle the deletion of the data pointer, data,
+			 * and possible length variables */
+			TSGDataType type(current->m_ctype, current->m_stype,
+					current->m_ptype);
+			loaded=new TParameter(&type, NULL, current->m_name, "");
+			loaded->m_delete_data=true;
+
+			/* allocate data/length variables for the TParameter, lengths are not
+			 * important now, so set to one */
+			loaded->allocate_data_from_scratch(1, 1);
+
+			/* tell instance to load data from file */
+			if (!loaded->load(file, prefix))
+			{
+				char* s=param_info->to_string();
+				SG_ERROR("Could not load %s. The reason for this might be wrong "
+						"parameter mappings\n", s);
+				SG_FREE(s);
+			}
+
+			/* append new TParameter to result array */
+			result_array->append_element(loaded);
 		}
 //		SG_SPRINT("done\n");
 	}
 	/* recursion with mapped type, a mapping exists in this case (ensured by
 	 * above assert) */
 	else
-		result=load_file_parameter(old->get_element(0), file_version, file, prefix);
-
-	if (free_old)
 	{
-		/* there was only one element in old array */
-		delete old->get_element(0);
-		delete old;
+//		SG_SPRINT("starting recursion\n");
+		/* for all elements in mapping, do recursion */
+		for (index_t i=0; i<mapped->get_num_elements(); ++i)
+		{
+			const SGParamInfo* current=mapped->get_element(i);
+//			s=current->to_string();
+//			SG_SPRINT("starting recursion over %s\n", s);
+
+			/* recursively get all file parameters for this parameter */
+			DynArray<TParameter*>* recursion_array=
+					load_file_parameters(current, file_version, file, prefix);
+
+//			SG_SPRINT("recursion over %s done\n", s);
+//			SG_FREE(s);
+
+//			SG_SPRINT("appending all results to current result\n");
+			/* append all recursion data to current array */
+			for (index_t j=0; j<recursion_array->get_num_elements(); ++j)
+				result_array->append_element(recursion_array->get_element(j));
+
+			/* clean up */
+			delete recursion_array;
+//			SG_SPRINT("done\n");
+		}
 	}
 
-	return result;
+//	SG_SPRINT("cleaning up old mapping \n");
+
+
+	/* clean up mapping */
+	if (free_mapped)
+	{
+		for (index_t i=0; i<mapped->get_num_elements(); ++i)
+			delete mapped->get_element(i);
+
+		delete mapped;
+	}
+
+//	SG_SPRINT("leaving CSGObject::load_file_parameters\n");
+	return result_array;
 }
 
-DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
+DynArray<TParameter*>* CSGObject::load_all_file_parameters(int32_t file_version,
 		int32_t current_version, CSerializableFile* file, const char* prefix)
 {
 	DynArray<TParameter*>* result=new DynArray<TParameter*>();
@@ -610,11 +673,16 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(int32_t file_version,
 			continue;
 		}
 
-		/* in the other case, load parameter data from file */
-		result->append_element(load_file_parameter(info, file_version, file,
-				prefix));
+		/* in the other case, load parameters data from file */
+		DynArray<TParameter*>* temp=load_file_parameters(info, file_version,
+				file, prefix);
+
+		/* and append them all to array */
+		for (index_t j=0; j<temp->get_num_elements(); ++j)
+			result->append_element(temp->get_element(j));
 
 		/* clean up */
+		delete temp;
 		delete info;
 	}
 
