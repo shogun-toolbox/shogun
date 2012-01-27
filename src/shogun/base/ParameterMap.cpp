@@ -301,16 +301,16 @@ void ParameterMap::finalize_map()
 			m_map_elements.get_num_elements());
 
 //	SG_SPRINT("map elements before finalize\n");
-	for (index_t i=0; i<m_map_elements.get_num_elements(); ++i)
-	{
-		ParameterMapElement* current=m_map_elements[i];
+//	for (index_t i=0; i<m_map_elements.get_num_elements(); ++i)
+//	{
+//		ParameterMapElement* current=m_map_elements[i];
 //		SG_SPRINT("element %d:\n", i);
 //		SG_SPRINT("\tkey: ");
-		current->m_key->print_param_info();
+//		current->m_key->print_param_info();
 //		SG_SPRINT("\t%d values:\n", current->m_values->get_num_elements());
-		for (index_t j=0; j<current->m_values->get_num_elements(); ++j)
-			current->m_values->get_element(j)->print_param_info("\t\t");
-	}
+//		for (index_t j=0; j<current->m_values->get_num_elements(); ++j)
+//			current->m_values->get_element(j)->print_param_info("\t\t");
+//	}
 
 	/* clear old multi elements. These were copies. */
 	for (index_t i=0; i<m_multi_map_elements.get_num_elements(); ++i)
@@ -323,9 +323,9 @@ void ParameterMap::finalize_map()
 	 * add all values of same key to ONE map element of hidden structure */
 	DynArray<const SGParamInfo*>* values=new DynArray<const SGParamInfo*>();
 	const SGParamInfo* current_key=m_map_elements[0]->m_key;
-	char* s=current_key->to_string();
+//	char* s=current_key->to_string();
 //	SG_SPRINT("current key: %s\n", s);
-	SG_FREE(s);
+//	SG_FREE(s);
 	for (index_t i=0; i<m_map_elements.get_num_elements(); ++i)
 	{
 		const ParameterMapElement* current=m_map_elements[i];
@@ -334,9 +334,9 @@ void ParameterMap::finalize_map()
 			/* create new values array to add and update key */
 			values=new DynArray<const SGParamInfo*>();
 			current_key=current->m_key;
-			s=current_key->to_string();
+//			s=current_key->to_string();
 //			SG_SPRINT("new current key: %s\n", s);
-			SG_FREE(s);
+//			SG_FREE(s);
 		}
 
 		/* add to values array */
@@ -373,7 +373,7 @@ void ParameterMap::print_map()
 		ParameterMapElement* current=m_multi_map_elements[i];
 //		SG_SPRINT("element %d:\n", i);
 //		SG_SPRINT("\tkey: ");
-		current->m_key->print_param_info();
+//		current->m_key->print_param_info();
 //		SG_SPRINT("\t%d values:\n", current->m_values->get_num_elements());
 		for (index_t j=0; j<current->m_values->get_num_elements(); ++j)
 			current->m_values->get_element(j)->print_param_info("\t\t");
