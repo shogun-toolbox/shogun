@@ -42,6 +42,9 @@ class CDistance;
  * It is possible to apply preprocessor to specified distance using
  * apply_to_distance.
  *
+ * To use this converter with static interfaces please refer it by
+ * sg('create_converter','isomap',k);
+ * 
  */
 class CIsomap: public CMultidimensionalScaling
 {

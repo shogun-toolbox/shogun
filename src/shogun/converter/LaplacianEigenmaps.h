@@ -44,6 +44,9 @@ class CDistance;
  * If ARPACK is available then DSAUPD/DSEUPD is used with no extra 
  * memory usage. 
  *
+ * To use this converter with static interfaces please refer it by
+ * sg('create_converter','laplacian_eigenmaps',k,width);
+ * 
  */
 class CLaplacianEigenmaps: public CEmbeddingConverter
 {

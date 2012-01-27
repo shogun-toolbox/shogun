@@ -233,4 +233,6 @@
 #define N_RUN_OCTAVE					"run_octave"
 #define N_RUN_R							"run_r"
 #define N_PR_LOQO						"pr_loqo"
+#define N_SET_CONVERTER						"set_converter"
+#define N_EMBED							"embed"
 #endif

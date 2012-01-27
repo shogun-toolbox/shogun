@@ -39,6 +39,10 @@ class CDistance;
  * Be sure k value is set with at least 
  * 1+[target dim]+1/2 [target_dim]*[1 + target dim], e.g.
  * greater than 6 for target dimensionality of 2.
+ *
+ * To use this converter with static interfaces please refer it by
+ * sg('create_converter','hlle',k); 
+ * 
  */
 class CHessianLocallyLinearEmbedding: public CLocallyLinearEmbedding
 {
