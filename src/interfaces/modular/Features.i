@@ -25,6 +25,7 @@
 %rename(Features) CFeatures;
 %rename(StreamingFeatures) CStreamingFeatures;
 %rename(DotFeatures) CDotFeatures;
+%rename(BinnedDotFeatures) CBinnedDotFeatures;
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
 %rename(StreamingVwFeatures) CStreamingVwFeatures;
 %rename(DummyFeatures) CDummyFeatures;
@@ -51,6 +52,7 @@
 %include <shogun/lib/Compressor.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
+%include <shogun/features/BinnedDotFeatures.h>
 %include <shogun/features/StreamingFeatures.h>
 %include <shogun/features/StreamingDotFeatures.h>
 %include <shogun/features/StreamingVwFeatures.h>
