@@ -244,7 +244,7 @@ public:
 			TParameter* to_migrate=NULL;
 
 			/* specify name change and thats it */
-			char* new_name="int_features";
+			char* new_name=(char*) "int_features";
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate, new_name);
 		}
