@@ -6,6 +6,7 @@
 	* This release contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Support for new SWIG -builtin python interface feature (SWIG 2.0.4 is required now)
+		- EDRT now supports static interfaces such as matlab and octave
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was changed to log-space one.
 		- Various fixes for compile errors with clang.
