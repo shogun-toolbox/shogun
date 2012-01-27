@@ -56,25 +56,41 @@ float64_t CBinnedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 	assert_shape(vec2_len);
 
 	float64_t result=0;
+	double sum=0;
 
 	SGVector<float64_t> vec1=m_features->get_feature_vector(vec_idx1);
 
-	int32_t idx=0;
 
 	for (int32_t i=0; i<m_bins.num_cols; i++)
 	{
 		float64_t v=vec1.vector[i];
 		float64_t* col=m_bins.get_column_vector(i);
+		int32_t offs=i*m_bins.num_rows;
 
 		for (int32_t j=0; j<m_bins.num_rows; j++)
 		{
-			if (v<=col[j])
-				result+=vec2[idx];
-
-			idx++;
+			if (m_fill)
+			{
+				if (col[j]<=v)
+				{
+					result+=vec2[offs+j];
+					sum+=1.0;
+				}
+			}
+			else
+			{
+				if (col[j]<=v && (j+1)<m_bins.num_rows && col[j+1]>v)
+				{
+					result+=vec2[offs+j];
+					break;
+				}
+			}
 		}
 	}
 	m_features->free_feature_vector(vec1, vec_idx1);
+
+	if (m_fill && m_norm_one && sum!=0)
+		result/=CMath::sqrt(sum);
 
 	return result;
 }
@@ -84,19 +100,48 @@ void CBinnedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 	assert_shape(vec2_len);
 	SGVector<float64_t> vec1=m_features->get_feature_vector(vec_idx1);
 
-	int32_t idx=0;
+	if (m_fill && m_norm_one)
+	{
+		float64_t alpha_correction=0;
+		for (int32_t i=0; i<m_bins.num_cols; i++)
+		{
+			float64_t v=vec1.vector[i];
+			float64_t* col=m_bins.get_column_vector(i);
+
+			for (int32_t j=0; j<m_bins.num_rows; j++)
+			{
+				if (col[j]<=v)
+					alpha_correction+=1.0;
+			}
+		}
+
+		if (alpha_correction==0.0)
+			return;
+
+		alpha/=CMath::sqrt(alpha_correction);
+	}
 
 	for (int32_t i=0; i<m_bins.num_cols; i++)
 	{
 		float64_t v=vec1.vector[i];
 		float64_t* col=m_bins.get_column_vector(i);
+		int32_t offs=i*m_bins.num_rows;
 
 		for (int32_t j=0; j<m_bins.num_rows; j++)
 		{
-			if (col[j]<=v)
-				vec2[idx]+=alpha;
-
-			idx++;
+			if (m_fill)
+			{
+				if (col[j]<=v)
+					vec2[offs+j]+=alpha;
+			}
+			else
+			{
+				if (col[j]<=v && (j+1)<m_bins.num_rows && col[j+1]>v)
+				{
+					vec2[offs+j]+=alpha;
+					break;
+				}
+			}
 		}
 	}
 	m_features->free_feature_vector(vec1, vec_idx1);
