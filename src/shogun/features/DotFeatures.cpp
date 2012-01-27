@@ -289,8 +289,8 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
     int64_t sz=((uint64_t) num)* dim;
 
 	m.do_free=true;
-    m.num_cols=dim;
-    m.num_rows=num;
+    m.num_cols=num;
+    m.num_rows=dim;
     m.matrix=SG_MALLOC(float64_t, sz);
     memset(m.matrix, 0, sz*sizeof(float64_t));
 
