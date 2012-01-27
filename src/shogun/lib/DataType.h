@@ -343,6 +343,14 @@ template<class T> class SGMatrix
 			free_matrix();
 		}
 
+		/** get a column vector
+		 * @param col column index
+		 */
+        T* get_column_vector(index_t col)
+        {
+            return &matrix[col*num_rows];
+        }
+
 		/** operator overload for matrix read only access
 		 * @param index to access
 		 */
