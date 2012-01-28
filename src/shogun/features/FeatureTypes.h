@@ -48,6 +48,7 @@ namespace shogun
 		C_STREAMING_SPARSE = 120,
 		C_STREAMING_STRING = 130,
 		C_STREAMING_VW = 140,
+		C_BINNED_DOT = 150,
 		C_ANY = 1000
 	};
 
