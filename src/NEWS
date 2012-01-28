@@ -9,6 +9,7 @@
 		- EDRT now supports static interfaces such as matlab and octave
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was changed to log-space one.
+		- SVMOcas memsetting bugfix.
 		- Various fixes for compile errors with clang.
 	* Cleanup and API Changes:
 		- Improvements for parameters handling and serialization by Heiko Strathmann.
