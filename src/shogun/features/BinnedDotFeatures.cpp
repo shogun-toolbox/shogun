@@ -47,8 +47,51 @@ int32_t CBinnedDotFeatures::get_dim_feature_space() const
 
 float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	SG_NOTIMPLEMENTED;
-	return 0;
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+
+	float64_t result=0;
+	double sum=0;
+
+	SGVector<float64_t> vec1=m_features->get_feature_vector(vec_idx1);
+	SGVector<float64_t> vec2=((CBinnedDotFeatures*) df)->m_features->get_feature_vector(vec_idx2);
+
+	for (int32_t i=0; i<m_bins.num_cols; i++)
+	{
+		float64_t v1=vec1.vector[i];
+		float64_t v2=vec2.vector[i];
+		float64_t* col=m_bins.get_column_vector(i);
+
+		for (int32_t j=0; j<m_bins.num_rows; j++)
+		{
+			if (m_fill)
+			{
+				if ( !(col[j]<=v1 && col[j]<=v2) )
+					break;
+
+				result+=1.0;
+				sum+=1.0;
+			}
+			else
+			{
+				if (col[j]<=v1 && (j+1)<m_bins.num_rows && col[j+1]>v1 &&
+						col[j]<=v2 && (j+1)<m_bins.num_rows && col[j+1]>v2)
+				{
+					result+=1;
+					break;
+				}
+			}
+		}
+	}
+	m_features->free_feature_vector(vec1, vec_idx1);
+	((CBinnedDotFeatures*) df)->m_features->free_feature_vector(vec2, vec_idx2);
+
+	if (m_fill && m_norm_one && sum!=0)
+		result/=CMath::sqrt(sum);
+
+	return result;
+
 }
 
 float64_t CBinnedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
@@ -249,13 +292,13 @@ CFeatures* CBinnedDotFeatures::duplicate() const
 
 EFeatureType CBinnedDotFeatures::get_feature_type()
 {
-	return F_UNKNOWN;
+	return F_DREAL;
 }
 
 
 EFeatureClass CBinnedDotFeatures::get_feature_class()
 {
-	return C_UNKNOWN;
+	return C_BINNED_DOT;
 }
 
 int32_t CBinnedDotFeatures::get_num_vectors() const
