@@ -122,32 +122,34 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 	float64_t* s_values = SG_MALLOC(float64_t, N);
 
 	int32_t info = 0;
-	SGMatrix<float64_t> new_feature_matrix;
+	SGMatrix<float64_t> new_feature_matrix = SGMatrix<float64_t>(m_target_dim,N);
 
 	if (use_arpack)
 	{
 #ifdef HAVE_ARPACK
 		arpack_dsxupd(kernel_matrix.matrix,NULL,false,N,m_target_dim,"LA",false,1,false,true,0.0,0.0,s_values,kernel_matrix.matrix,info);
 #endif /* HAVE_ARPACK */
-		SG_REALLOC(float64_t,kernel_matrix.matrix,N*m_target_dim);
-		new_feature_matrix = SGMatrix<float64_t>(kernel_matrix.matrix,m_target_dim,N);
+		for (i=0; i<m_target_dim; i++)
+		{
+			for (j=0; j<N; j++)
+				new_feature_matrix[j*m_target_dim+i] = kernel_matrix[j*m_target_dim+i];
+		}
 	}
 	else 
 	{
 		SG_WARNING("LAPACK does not provide efficient routines to construct embedding (this may take time). Consider installing ARPACK.");
 		wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
-		new_feature_matrix = SGMatrix<float64_t>(m_target_dim,N);
 		for (i=0; i<m_target_dim; i++)
 		{
 			for (j=0; j<N; j++)
 				new_feature_matrix[j*m_target_dim+i] = 
 				    kernel_matrix[(m_target_dim-i-1)*N+j];
 		}
-		kernel_matrix.destroy_matrix();
 	}
 	if (info)
 		SG_ERROR("Eigenproblem solving  failed with %d code", info);
 
+	kernel_matrix.destroy_matrix();
 	SG_FREE(s_values);
 
 	return new CSimpleFeatures<float64_t>(new_feature_matrix);

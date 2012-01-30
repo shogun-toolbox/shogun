@@ -16,6 +16,7 @@
 #include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/Time.h>
 #include <shogun/lib/Signal.h>
 
 #ifdef HAVE_PTHREAD
@@ -67,6 +68,8 @@ struct K_NEIGHBORHOOD_THREAD_PARAM
 	CFibonacciHeap* heap;
 	/// kernel matrix
 	const float64_t* kernel_matrix;
+	/// kernel diag
+	const float64_t* kernel_diag;
 	/// matrix containing neighbors indexes
 	int32_t* neighborhood_matrix;
 };
@@ -114,14 +117,28 @@ CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
 
 CSimpleFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel* kernel)
 {
+	CTime* time = new CTime();
+	
+	time->start();
 	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
+	SG_DEBUG("Kernel matrix computation took %fs\n",time->cur_time_diff());
+	
+	time->start();
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(kernel_matrix,m_k);
-
+	SG_DEBUG("Neighbors finding took %fs\n",time->cur_time_diff());
+	
+	time->start();
 	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix);
+	SG_DEBUG("Weights computation took %fs\n",time->cur_time_diff());
+	kernel_matrix.destroy_matrix();
 	neighborhood_matrix.destroy_matrix();
 
+	time->start();
 	SGMatrix<float64_t> nullspace = construct_embedding(M_matrix,m_target_dim);
+	SG_DEBUG("Embedding construction took %fs\n",time->cur_time_diff());
 	M_matrix.destroy_matrix();
+
+	delete time;
 
 	return new CSimpleFeatures<float64_t>(nullspace);
 }
@@ -217,9 +234,9 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 			for (k=0; k<m_k; k++)
 				local_gram_matrix[j*m_k+k] = 
 					kernel_matrix[i*N+i] -
-					kernel_matrix[i*N+neighborhood_matrix[j*N+i]] -
-					kernel_matrix[i*N+neighborhood_matrix[k*N+i]] +
-					kernel_matrix[neighborhood_matrix[j*N+i]*N+neighborhood_matrix[k*N+i]];
+					kernel_matrix[i*N+neighborhood_matrix[i*m_k+j]] -
+					kernel_matrix[i*N+neighborhood_matrix[i*m_k+k]] +
+					kernel_matrix[neighborhood_matrix[i*m_k+j]*N+neighborhood_matrix[i*m_k+k]];
 		}
 
 		for (j=0; j<m_k; j++)
@@ -250,13 +267,13 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		W_matrix[N*i+i] += 1.0;
 		for (j=0; j<m_k; j++)
 		{
-			W_matrix[N*i+neighborhood_matrix[j*N+i]] -= id_vector[j];
-			W_matrix[N*neighborhood_matrix[j*N+i]+i] -= id_vector[j];
+			W_matrix[N*i+neighborhood_matrix[i*m_k+j]] -= id_vector[j];
+			W_matrix[N*neighborhood_matrix[i*m_k+j]+i] -= id_vector[j];
 		}
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[k*N+i]]+=local_gram_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix[i*m_k+j]+neighborhood_matrix[i*m_k+k]]+=local_gram_matrix[j*m_k+k];
 		}
 	}
 	return NULL;
@@ -268,6 +285,11 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 	int32_t N = kernel_matrix.num_cols;
 	// init matrix and heap to be used
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
+	float64_t* kernel_diag = SG_MALLOC(float64_t, N);
+	// dirty
+	for (t=0; t<N; t++)
+		kernel_diag[t] = kernel_matrix.matrix[t*N+t];
+
 #ifdef HAVE_PTHREAD
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -294,6 +316,7 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 		parameters[t].heap = heaps[t];
 		parameters[t].neighborhood_matrix = neighborhood_matrix;
 		parameters[t].kernel_matrix = kernel_matrix.matrix;
+		parameters[t].kernel_diag = kernel_diag;
 		pthread_create(&threads[t], &attr, run_neighborhood_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -311,9 +334,11 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 	single_thread_param.heap = heaps[0]
 	single_thread_param.neighborhood_matrix = neighborhood_matrix;
 	single_thread_param.kernel_matrix = kernel_matrix.matrix;
+	single_thread_param.kernel_diag = kernel_diag;
 	run_neighborhood_thread((void*)&single_thread_param);
 #endif
 
+	SG_FREE(kernel_diag);
 	for (t=0; t<num_threads; t++)
 		delete heaps[t];
 	SG_FREE(heaps);
@@ -331,21 +356,23 @@ void* CKernelLocallyLinearEmbedding::run_neighborhood_thread(void* p)
 	int32_t m_k = parameters->m_k;
 	CFibonacciHeap* heap = parameters->heap;
 	const float64_t* kernel_matrix = parameters->kernel_matrix;
+	const float64_t* kernel_diag = parameters->kernel_diag;
 	int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
 
 	int32_t i,j;
-	float64_t tmp;
+	float64_t tmp,k_diag_i,k_diag_j;
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{
+		k_diag_i = kernel_diag[i];
 		for (j=0; j<N; j++)
 		{
-			heap->insert(j,kernel_matrix[i*N+i]-2*kernel_matrix[i*N+j]+kernel_matrix[j*N+j]);
+			heap->insert(j,k_diag_i+kernel_diag[j]-2.0*kernel_matrix[i*N+j]);
 		}
 
 		heap->extract_min(tmp);
 
 		for (j=0; j<m_k; j++)
-			neighborhood_matrix[j*N+i] = heap->extract_min(tmp);
+			neighborhood_matrix[i*m_k+j] = heap->extract_min(tmp);
 
 		heap->clear();
 	}

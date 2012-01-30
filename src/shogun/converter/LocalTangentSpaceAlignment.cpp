@@ -166,7 +166,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	for (int32_t i=0; i<N; i++)
 	{
 		for (int32_t j=0; j<m_k; j++)
-			W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[j*N+i]] += 1.0;
+			W_matrix[N*neighborhood_matrix[i*m_k+j]+neighborhood_matrix[i*m_k+j]] += 1.0;
 	}
 
 	return SGMatrix<float64_t>(W_matrix,N,N);
@@ -208,7 +208,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<dim; k++)
-				local_feature_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[j*N+i]*dim+k];
+				local_feature_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[i*m_k+j]*dim+k];
 
 			cblas_daxpy(dim,1.0,local_feature_matrix+j*dim,1,mean_vector,1);
 		}
@@ -246,7 +246,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] -= q_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix[i*m_k+k]+neighborhood_matrix[i*m_k+j]] -= q_matrix[j*m_k+k];
 		}
 #ifdef HAVE_PTHREAD
 		PTHREAD_UNLOCK(W_matrix_lock);

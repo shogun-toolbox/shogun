@@ -205,12 +205,16 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 	// compute distance matrix
 	SG_DEBUG("Computing distance matrix\n");
 	ASSERT(m_distance);
+	CTime* time = new CTime();
+	time->start();
 	m_distance->init(simple_features,simple_features);
 	SGMatrix<float64_t> distance_matrix = m_distance->get_distance_matrix();
 	m_distance->remove_lhs_and_rhs();
+	SG_DEBUG("Distance matrix computation took %fs\n",time->cur_time_diff());
 	SG_DEBUG("Calculating neighborhood matrix\n");
 	SGMatrix<int32_t> neighborhood_matrix;
 
+	time->start();
 	if (m_auto_k) 
 	{
 		neighborhood_matrix = get_neighborhood_matrix(distance_matrix,m_max_k);
@@ -219,6 +223,8 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 	} 
 	else
 		neighborhood_matrix = get_neighborhood_matrix(distance_matrix,m_k);
+	
+	SG_DEBUG("Neighbors finding took %fs\n",time->cur_time_diff());
 
 	// init W (weight) matrix
 	float64_t* W_matrix = distance_matrix.matrix;
@@ -226,7 +232,7 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 
 	// construct weight matrix
 	SG_DEBUG("Constructing weight matrix\n");
-	CTime* time = new CTime();
+	time->start();
 	SGMatrix<float64_t> weight_matrix = construct_weight_matrix(simple_features,W_matrix,neighborhood_matrix);
 	SG_DEBUG("Weight matrix construction took %.5fs\n", time->cur_time_diff());
 	neighborhood_matrix.destroy_matrix();
@@ -292,7 +298,7 @@ float64_t CLocallyLinearEmbedding::compute_reconstruction_error(int32_t k, int d
 	{
 		for (j=0; j<k; j++)
 		{
-			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[j*N+i]*dim,1,z_matrix+j*dim,1);   
+			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[i*m_k+j]*dim,1,z_matrix+j*dim,1);   
 			cblas_daxpy(dim,-1.0,feature_matrix+i*dim,1,z_matrix+j*dim,1);
 		}
 		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
@@ -479,7 +485,7 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		// center features by subtracting i-th feature column
 		for (j=0; j<m_k; j++)
 		{
-			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[j*N+i]*dim,1,z_matrix+j*dim,1);
+			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[i*m_k+j]*dim,1,z_matrix+j*dim,1);
 			cblas_daxpy(dim,-1.0,feature_matrix+i*dim,1,z_matrix+j*dim,1);
 		}
 
@@ -523,13 +529,13 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		W_matrix[N*i+i] += 1.0;
 		for (j=0; j<m_k; j++)
 		{
-			W_matrix[N*i+neighborhood_matrix[j*N+i]] -= id_vector[j];
-			W_matrix[N*neighborhood_matrix[j*N+i]+i] -= id_vector[j];
+			W_matrix[N*i+neighborhood_matrix[i*m_k+j]] -= id_vector[j];
+			W_matrix[N*neighborhood_matrix[i*m_k+j]+i] -= id_vector[j];
 		}
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[k*N+i]]+=covariance_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix[i*m_k+j]+neighborhood_matrix[i*m_k+k]]+=covariance_matrix[j*m_k+k];
 		}
 	}
 	return NULL;
@@ -618,7 +624,7 @@ void* CLocallyLinearEmbedding::run_neighborhood_thread(void* p)
 		heap->extract_min(tmp);
 
 		for (j=0; j<m_k; j++)
-			neighborhood_matrix[j*N+i] = heap->extract_min(tmp);
+			neighborhood_matrix[i*m_k+j] = heap->extract_min(tmp);
 
 		heap->clear();
 	}
