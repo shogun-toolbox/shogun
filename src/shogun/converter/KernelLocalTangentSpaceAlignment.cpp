@@ -131,12 +131,11 @@ SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(S
 	SG_FREE(local_gram_matrix);
 	SG_FREE(ev_vector);
 	SG_FREE(G_matrix);
-	kernel_matrix.destroy_matrix();
 
 	for (int32_t i=0; i<N; i++)
 	{
 		for (int32_t j=0; j<m_k; j++)
-			W_matrix[N*neighborhood_matrix[j*N+i]+neighborhood_matrix[j*N+i]] += 1.0;
+			W_matrix[N*neighborhood_matrix[i*m_k+j]+neighborhood_matrix[i*m_k+j]] += 1.0;
 	}
 
 	return SGMatrix<float64_t>(W_matrix,N,N);
@@ -171,7 +170,7 @@ void* CKernelLocalTangentSpaceAlignment::run_kltsa_thread(void* p)
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				local_gram_matrix[j*m_k+k] = kernel_matrix[neighborhood_matrix[j*N+i]*N+neighborhood_matrix[k*N+i]];
+				local_gram_matrix[j*m_k+k] = kernel_matrix[neighborhood_matrix[i*m_k+j]*N+neighborhood_matrix[i*m_k+k]];
 		}
 
 		CMath::center_matrix(local_gram_matrix,m_k,m_k);
@@ -192,7 +191,7 @@ void* CKernelLocalTangentSpaceAlignment::run_kltsa_thread(void* p)
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[k*N+i]+neighborhood_matrix[j*N+i]] -= local_gram_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix[i*m_k+k]+neighborhood_matrix[i*m_k+j]] -= local_gram_matrix[j*m_k+k];
 		}
 #ifdef HAVE_PTHREAD
 		PTHREAD_UNLOCK(W_matrix_lock);
