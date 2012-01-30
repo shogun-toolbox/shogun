@@ -13,6 +13,8 @@ LINKFLAGS+=$(LIBS) $(LIBS_ADD) -L$(LIB_PATH)
 CXXFLAGS+=-I$(INC_PATH) $(INCLUDES)
 CC=c++
 
+VALGRIND_LOG = valgrind.log
+
 TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  classifier_mklmulticlass kernel_gaussian kernel_revlin \
 		  library_dyn_int library_gc_array library_indirect_object \
@@ -63,11 +65,15 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 
 all: $(TARGETS)
 
+check-valgrind:
+	for t in $(TARGETS); do echo $$t && valgrind --log-file=$(VALGRIND_LOG) ./$$t >/dev/null && cat $(VALGRIND_LOG) | grep SUMMARY && rm -f $(VALGRIND_LOG); done
+
 print_targets:
 	@echo $(TARGETS)
 
 clean:
 	rm -f $(TARGETS)
+	rm -f $(VALGRIND_LOG)
 
 $(TARGETS): $(foreach t, $(TARGET), $t.cpp)
 
