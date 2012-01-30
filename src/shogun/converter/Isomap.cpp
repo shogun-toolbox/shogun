@@ -16,6 +16,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/CoverTree.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -51,6 +52,31 @@ struct DIJKSTRA_THREAD_PARAM
 	/// (f)rontier bool array
 	bool* f;
 };
+
+class ISOMAP_COVERTREE_POINT
+{
+public:
+
+	ISOMAP_COVERTREE_POINT(int32_t index, const SGMatrix<float64_t>& dmatrix)
+	{
+		point_index = index;
+		distance_matrix = dmatrix;
+	}
+
+	inline double distance(const ISOMAP_COVERTREE_POINT& p) const
+	{
+		return distance_matrix[point_index*distance_matrix.num_rows+p.point_index];
+	}
+
+	inline bool operator==(const ISOMAP_COVERTREE_POINT& p) const
+	{
+		return (p.point_index==point_index);
+	}
+
+	int32_t point_index;
+	SGMatrix<float64_t> distance_matrix;
+};
+
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CIsomap::CIsomap() : CMultidimensionalScaling()
@@ -109,29 +135,26 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	// cut by k-nearest neighbors
 	int32_t* edges_idx_matrix = SG_MALLOC(int32_t, N*m_k);
 	float64_t* edges_matrix = SG_MALLOC(float64_t, N*m_k);
-			
-	// query neighbors and edges to neighbors
-	CFibonacciHeap* heap = new CFibonacciHeap(N);
+
+	float64_t max_dist = CMath::max(D_matrix.matrix,N*N);
+	CoverTree<ISOMAP_COVERTREE_POINT>* coverTree = new CoverTree<ISOMAP_COVERTREE_POINT>(max_dist);
+
+	for (i=0; i<N; i++)
+		coverTree->insert(ISOMAP_COVERTREE_POINT(i,D_matrix));
+	
 	for (i=0; i<N; i++)
 	{
-		// insert distances to heap
-		for (j=0; j<N; j++)
-			heap->insert(j,D_matrix[i*N+j]);
-
-		// extract nearest neighbor: the jth object itself
-		heap->extract_min(tmp);
-
-		// extract m_k neighbors and distances
-		for (j=0; j<m_k; j++)
+		ISOMAP_COVERTREE_POINT origin(i,D_matrix);
+		std::vector<ISOMAP_COVERTREE_POINT> neighbors = 
+		   coverTree->kNearestNeighbors(origin,m_k+1);
+		for (std::size_t m=1; m<neighbors.size(); m++)
 		{
-			edges_idx_matrix[i*m_k+j] = heap->extract_min(tmp);
-			edges_matrix[i*m_k+j] = tmp;
+			edges_matrix[i*m_k+m-1] = origin.distance(neighbors[m]);
+			edges_idx_matrix[i*m_k+m-1] = neighbors[m].point_index;
 		}
-		// clear heap
-		heap->clear();
 	}
-	// cleanup
-	delete heap;
+
+	delete coverTree;
 
 #ifdef HAVE_PTHREAD
 

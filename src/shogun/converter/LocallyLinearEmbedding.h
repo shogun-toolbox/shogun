@@ -218,11 +218,6 @@ protected:
 	/// THREADS
 protected:
 
-	/** runs neighborhood determination thread
-	 * @param p thread params
-	 */
-	static void* run_neighborhood_thread(void* p);
-
 	/** runs linear reconstruction thread
 	 * @param p thread params
 	 */
