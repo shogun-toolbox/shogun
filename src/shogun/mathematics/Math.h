@@ -1117,12 +1117,12 @@ class CMath : public CSGObject
 					qsort(&output[left],size-left);
 			}
 
-		/**Performs a quicksort on an array of pointers.
+		/** Performs a quicksort on an array of pointers.
 		 * It is sorted from in ascending (for type T)
 		 *
 		 * Every element is dereferenced once before being compared
 		 *
-		 * @param array array of pointers to sort
+		 * @param vector array of pointers to sort
 		 * @param length length of array
 		 *
 		 * */

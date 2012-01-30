@@ -32,7 +32,9 @@ class CBinnedDotFeatures : public CDotFeatures
 
 		/** constructor
 		 *
-		 * @param loader File object via which to load data
+		 * @param sf CSimpleFeatureMatrix of type float64_t to convert into
+		 * binned features
+		 * @param bins a matrix with bins to compute binned features from
 		 */
 		CBinnedDotFeatures(CSimpleFeatures<float64_t>* sf, SGMatrix<float64_t> bins);
 
@@ -113,8 +115,17 @@ class CBinnedDotFeatures : public CDotFeatures
 		 */
 		virtual void free_feature_iterator(void* iterator);
 
+
+		/** get the fill flag 
+		 *
+		 * @return fill flag - if true bins are filled up to value v
+		 */
 		bool get_fill();
 
+		/** set the fill flag 
+		 *
+		 * @param fill - if fill is true bins are filled up to value v
+		 */
 		void set_fill(bool fill);
 
 		bool get_norm_one();

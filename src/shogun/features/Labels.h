@@ -50,7 +50,7 @@ class CLabels : public CSGObject
 		 */
 		CLabels(SGVector<float64_t> src);
 
-		/** constructor
+		/* constructor
 		 * 
 		 * @param labels labels 
 		 */

@@ -149,7 +149,7 @@ public:
 	 * @param file where to save the object; will be closed during
 	 * returning if PREFIX is an empty string.
 	 * @param prefix prefix for members
-	 * @param (optionally) a parameter version different to (this
+	 * @param param_version (optional) a parameter version different to (this
 	 * is mainly for testing, better do not use)
 	 * @return TRUE if done, otherwise FALSE
 	 */
@@ -162,7 +162,7 @@ public:
 	 *
 	 *  @param file where to load from
 	 *  @param prefix prefix for members
-	 *  @param (optionally) a parameter version different to (this
+	 *  @param param_version (optional) a parameter version different to (this
 	 * is mainly for testing, better do not use)
 	 *
 	 *  @return TRUE if done, otherwise FALSE
