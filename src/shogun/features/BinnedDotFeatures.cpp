@@ -52,7 +52,8 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	ASSERT(df->get_feature_class() == get_feature_class());
 
 	float64_t result=0;
-	double sum=0;
+	double sum1=0;
+	double sum2=0;
 
 	SGVector<float64_t> vec1=m_features->get_feature_vector(vec_idx1);
 	SGVector<float64_t> vec2=((CBinnedDotFeatures*) df)->m_features->get_feature_vector(vec_idx2);
@@ -67,11 +68,34 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 		{
 			if (m_fill)
 			{
-				if ( !(col[j]<=v1 && col[j]<=v2) )
-					break;
+				if (col[j]<=v1)
+				{
+					sum1+=1.0;
 
-				result+=1.0;
-				sum+=1.0;
+					if (col[j]<=v2)
+					{
+						sum2+=1.0;
+						result+=1.0;
+					}
+				}
+				else
+				{
+					if (col[j]<=v2)
+						sum2+=1.0;
+					else
+						break;
+				}
+
+				/* the above is the fast version of
+				if (col[j]<=v1 && col[j]<=v2)
+					result+=1.0;
+
+				if (col[j]<=v1)
+					sum1+=1.0;
+
+				if (col[j]<=v2)
+					sum2+=1.0;
+				*/
 			}
 			else
 			{
@@ -87,8 +111,8 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	m_features->free_feature_vector(vec1, vec_idx1);
 	((CBinnedDotFeatures*) df)->m_features->free_feature_vector(vec2, vec_idx2);
 
-	if (m_fill && m_norm_one && sum!=0)
-		result/=CMath::sqrt(sum);
+	if (m_fill && m_norm_one && sum1!=0 && sum2!=0)
+		result/=CMath::sqrt(sum1*sum2);
 
 	return result;
 
