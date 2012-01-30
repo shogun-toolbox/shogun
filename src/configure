@@ -3171,7 +3171,7 @@ EOF
 
 					cat > $TMPC << EOF
 #include <cblas.h>
-#include <atlas/clapack.h>
+#include <clapack.h>
 
 int main(int argc, char** argv)
 {
