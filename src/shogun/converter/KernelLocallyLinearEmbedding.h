@@ -16,6 +16,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/lib/CoverTree.h>
 
 namespace shogun
 {
@@ -84,11 +85,6 @@ protected:
 
 /// THREADS
 protected:
-
-	/** runs neighborhood determination thread
-	 * @param p thread params
-	 */
-	static void* run_neighborhood_thread(void* p);
 
 	/** runs linear reconstruction thread
 	 * @param p thread params

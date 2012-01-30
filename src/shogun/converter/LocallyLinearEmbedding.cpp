@@ -15,6 +15,7 @@
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/FibonacciHeap.h>
+#include <shogun/lib/CoverTree.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
@@ -59,25 +60,30 @@ struct LINRECONSTRUCTION_THREAD_PARAM
 	float64_t m_reconstruction_shift;
 };
 
-struct NEIGHBORHOOD_THREAD_PARAM
+class LLE_COVERTREE_POINT
 {
-	/// starting index of loop
-	int32_t idx_start;
-	/// step of loop
-	int32_t idx_step;
-	/// end index of loop
-	int32_t idx_stop;
-	/// number of vectors
-	int32_t N;
-	/// number of neighbors
-	int32_t m_k;
-	/// heap used to get nearest vector's indexes
-	CFibonacciHeap* heap;
-	/// distance matrix
-	const float64_t* distance_matrix;
-	/// matrix containing indexes of neighbors of ith object in ith column
-	int32_t* neighborhood_matrix;
+public:
+
+	LLE_COVERTREE_POINT(int32_t index, const SGMatrix<float64_t>& dmatrix)
+	{
+		point_index = index;
+		distance_matrix = dmatrix;
+	}
+
+	inline double distance(const LLE_COVERTREE_POINT& p) const
+	{
+		return distance_matrix[point_index*distance_matrix.num_rows+p.point_index];
+	}
+
+	inline bool operator==(const LLE_COVERTREE_POINT& p) const
+	{
+		return (p.point_index==point_index);
+	}
+
+	int32_t point_index;
+	SGMatrix<float64_t> distance_matrix;
 };
+
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
@@ -543,92 +549,28 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 
 SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k)
 {
-	int32_t t;
+	int32_t i;
 	int32_t N = distance_matrix.num_rows;
-	// init matrix and heap to be used
+
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
-#ifdef HAVE_PTHREAD
-	int32_t num_threads = parallel->get_num_threads();
-	ASSERT(num_threads>0);
-	NEIGHBORHOOD_THREAD_PARAM* parameters = SG_MALLOC(NEIGHBORHOOD_THREAD_PARAM, num_threads);
-	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	pthread_attr_t attr;
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-#else
-	int32_t num_threads = 1;
-#endif
-	CFibonacciHeap** heaps = SG_MALLOC(CFibonacciHeap*, num_threads);
-	for (t=0; t<num_threads; t++)
-		heaps[t] = new CFibonacciHeap(N);
+	
+	float64_t max_dist = CMath::max(distance_matrix.matrix,N*N);
 
-#ifdef HAVE_PTHREAD
-	for (t=0; t<num_threads; t++)
+	CoverTree<LLE_COVERTREE_POINT>* coverTree = new CoverTree<LLE_COVERTREE_POINT>(max_dist);
+
+	for (i=0; i<N; i++)
+		coverTree->insert(LLE_COVERTREE_POINT(i,distance_matrix));
+	
+	for (i=0; i<N; i++)
 	{
-		parameters[t].idx_start = t;
-		parameters[t].idx_step = num_threads;
-		parameters[t].idx_stop = N;
-		parameters[t].m_k = k;
-		parameters[t].N = N;
-		parameters[t].heap = heaps[t];
-		parameters[t].neighborhood_matrix = neighborhood_matrix;
-		parameters[t].distance_matrix = distance_matrix.matrix;
-		pthread_create(&threads[t], &attr, run_neighborhood_thread, (void*)&parameters[t]);
+		std::vector<LLE_COVERTREE_POINT> neighbors = 
+		   coverTree->kNearestNeighbors(LLE_COVERTREE_POINT(i,distance_matrix),k+1);
+		for (std::size_t m=1; m<neighbors.size(); m++)
+			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;
 	}
-	for (t=0; t<num_threads; t++)
-		pthread_join(threads[t], NULL);
-	pthread_attr_destroy(&attr);
-	SG_FREE(threads);
-	SG_FREE(parameters);
-#else
-	NEIGHBORHOOD_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_step = 1;
-	single_thread_param.idx_stop = N;
-	single_thread_param.m_k = k;
-	single_thread_param.N = N;
-	single_thread_param.heap = heaps[0]
-	single_thread_param.neighborhood_matrix = neighborhood_matrix;
-	single_thread_param.distance_matrix = distance_matrix.matrix;
-	run_neighborhood_thread((void*)&single_thread_param);
-#endif
 
-	for (t=0; t<num_threads; t++)
-		delete heaps[t];
-	SG_FREE(heaps);
+	delete coverTree;
 
 	return SGMatrix<int32_t>(neighborhood_matrix,k,N);
-}
-
-void* CLocallyLinearEmbedding::run_neighborhood_thread(void* p)
-{
-	NEIGHBORHOOD_THREAD_PARAM* parameters = (NEIGHBORHOOD_THREAD_PARAM*)p;
-	int32_t idx_start = parameters->idx_start;
-	int32_t idx_step = parameters->idx_step;
-	int32_t idx_stop = parameters->idx_stop;
-	int32_t N = parameters->N;
-	int32_t m_k = parameters->m_k;
-	CFibonacciHeap* heap = parameters->heap;
-	const float64_t* distance_matrix = parameters->distance_matrix;
-	int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
-
-	int32_t i,j;
-	float64_t tmp;
-	for (i=idx_start; i<idx_stop; i+=idx_step)
-	{
-		for (j=0; j<N; j++)
-		{
-			heap->insert(j,distance_matrix[i*N+j]);
-		}
-
-		heap->extract_min(tmp);
-
-		for (j=0; j<m_k; j++)
-			neighborhood_matrix[i*m_k+j] = heap->extract_min(tmp);
-
-		heap->clear();
-	}
-
-	return NULL;
 }
 #endif /* HAVE_LAPACK */
