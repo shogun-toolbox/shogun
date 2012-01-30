@@ -289,7 +289,6 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 {
 	int32_t i;
 	int32_t N = kernel_matrix.num_cols;
-	SG_PRINT("%d\n",N);
 	
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
 	
