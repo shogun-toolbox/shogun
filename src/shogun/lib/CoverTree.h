@@ -122,6 +122,7 @@ class CoverTree
                     bool& multi);
 
  public:
+	/** base level of cover tree */
     static const double base = 2.0;
 
     /**
@@ -169,6 +170,10 @@ class CoverTree
      */
     std::vector<Point> kNearestNeighbors(const Point& p, const unsigned int& k) const;
 
+	/** get the root node of the tree
+	 *
+	 * @return root node
+	 */
     CoverTreeNode* getRoot() const;
 
 }; // CoverTree class

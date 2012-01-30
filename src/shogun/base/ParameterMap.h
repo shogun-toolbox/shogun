@@ -187,8 +187,8 @@ public:
 	 *
 	 * Same as below but without pointer for syntactic ease.
 	 *
-	 * @param key key of the element to get
-	 * @return set of values of the key element
+	 * parameter key: key of the element to get
+	 * returns set of values of the key element
 	 */
 	DynArray<const SGParamInfo*>* get(const SGParamInfo) const;
 
@@ -217,7 +217,7 @@ protected:
 	/** list of CLinearMap elements, this is always kept sorted */
 	DynArray<ParameterMapElement*> m_map_elements;
 
-	/* hidden internal structure which is used to hold multiple values for one
+	/** hidden internal structure which is used to hold multiple values for one
 	 * key. It is built when finalize_map() is called. */
 	DynArray<ParameterMapElement*> m_multi_map_elements;
 
