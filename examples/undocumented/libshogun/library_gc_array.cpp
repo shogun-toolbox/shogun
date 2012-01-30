@@ -14,14 +14,20 @@ int main(int argc, char** argv)
 {
 	init_shogun();
 
-	// create array a
+	// create array of kernels
 	CGCArray<CKernel*> kernels(l);
 
+	// fill array with kernels
 	for (int i=0; i<l; i++)
 		kernels.set(new CGaussianKernel(10, 1.0), i);
 
+	// print kernels
 	for (int i=0; i<l; i++)
-		printf("kernels[%d]=%p\n", i, kernels.get(i));
+	{
+		CKernel* kernel = kernels.get(i);
+		printf("kernels[%d]=%p\n", i, kernel);
+		SG_UNREF(kernel);
+	}
 
 	exit_shogun();
 
