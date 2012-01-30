@@ -40,14 +40,10 @@ struct LINRECONSTRUCTION_THREAD_PARAM
 	int32_t idx_step;
 	/// number of neighbors
 	int32_t m_k;
-	/// current dimension
-	int32_t dim;
-	/// number of vectors
-	int32_t N;
 	/// matrix containing indexes of neighbors of ith object in ith column
-	const int32_t* neighborhood_matrix;
+	SGMatrix<int32_t> neighborhood_matrix;
 	/// old feature matrix
-	const float64_t* feature_matrix;
+	SGMatrix<float64_t> feature_matrix;
 	/// Z matrix containing features of neighbors
 	float64_t* z_matrix;
 	/// covariance matrix, ZZ'
@@ -369,11 +365,9 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 		parameters[t].idx_step = num_threads;
 		parameters[t].idx_stop = N;
 		parameters[t].m_k = m_k;
-		parameters[t].dim = dim;
-		parameters[t].N = N;
-		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
+		parameters[t].neighborhood_matrix = neighborhood_matrix;
 		parameters[t].z_matrix = z_matrix+(m_k*dim)*t;
-		parameters[t].feature_matrix = feature_matrix.matrix;
+		parameters[t].feature_matrix = feature_matrix;
 		parameters[t].covariance_matrix = covariance_matrix+(m_k*m_k)*t;
 		parameters[t].id_vector = id_vector+m_k*t;
 		parameters[t].W_matrix = W_matrix;
@@ -391,11 +385,9 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	single_thread_param.idx_step = 1;
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
-	single_thread_param.dim = dim;
-	single_thread_param.N = N;
-	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
+	single_thread_param.neighborhood_matrix = neighborhood_matrix;
 	single_thread_param.z_matrix = z_matrix;
-	single_thread_param.feature_matrix = feature_matrix.matrix;
+	single_thread_param.feature_matrix = feature_matrix;
 	single_thread_param.covariance_matrix = covariance_matrix;
 	single_thread_param.id_vector = id_vector;
 	single_thread_param.W_matrix = W_matrix;
@@ -472,17 +464,18 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	int32_t idx_step = parameters->idx_step;
 	int32_t idx_stop = parameters->idx_stop;
 	int32_t m_k = parameters->m_k;
-	int32_t dim = parameters->dim;
-	int32_t N = parameters->N;
-	const int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
+	SGMatrix<int32_t> neighborhood_matrix = parameters->neighborhood_matrix;
 	float64_t* z_matrix = parameters->z_matrix;
-	const float64_t* feature_matrix = parameters->feature_matrix;
+	SGMatrix<float64_t> feature_matrix = parameters->feature_matrix;
 	float64_t* covariance_matrix = parameters->covariance_matrix;
 	float64_t* id_vector = parameters->id_vector;
 	float64_t* W_matrix = parameters->W_matrix;
 	float64_t m_reconstruction_shift = parameters->m_reconstruction_shift;
 
 	int32_t i,j,k;
+	int32_t dim = feature_matrix.num_rows;
+	int32_t N = feature_matrix.num_cols;
+	int32_t actual_k = neighborhood_matrix.num_rows;
 	float64_t norming,trace;
 
 	for (i=idx_start; i<idx_stop; i+=idx_step)
@@ -491,8 +484,8 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		// center features by subtracting i-th feature column
 		for (j=0; j<m_k; j++)
 		{
-			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[i*m_k+j]*dim,1,z_matrix+j*dim,1);
-			cblas_daxpy(dim,-1.0,feature_matrix+i*dim,1,z_matrix+j*dim,1);
+			cblas_dcopy(dim,feature_matrix.matrix+neighborhood_matrix[i*actual_k+j]*dim,1,z_matrix+j*dim,1);
+			cblas_daxpy(dim,-1.0,feature_matrix.matrix+i*dim,1,z_matrix+j*dim,1);
 		}
 
 		// compute local covariance matrix
@@ -535,13 +528,14 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		W_matrix[N*i+i] += 1.0;
 		for (j=0; j<m_k; j++)
 		{
-			W_matrix[N*i+neighborhood_matrix[i*m_k+j]] -= id_vector[j];
-			W_matrix[N*neighborhood_matrix[i*m_k+j]+i] -= id_vector[j];
+			W_matrix[N*i+neighborhood_matrix[i*actual_k+j]] -= id_vector[j];
+			W_matrix[N*neighborhood_matrix[i*actual_k+j]+i] -= id_vector[j];
 		}
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[i*m_k+j]+neighborhood_matrix[i*m_k+k]]+=covariance_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix[i*actual_k+j]+neighborhood_matrix[i*actual_k+k]]+=
+				  covariance_matrix[j*m_k+k];
 		}
 	}
 	return NULL;
@@ -565,7 +559,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 	{
 		std::vector<LLE_COVERTREE_POINT> neighbors = 
 		   coverTree->kNearestNeighbors(LLE_COVERTREE_POINT(i,distance_matrix),k+1);
-		for (std::size_t m=1; m<neighbors.size(); m++)
+		for (std::size_t m=1; m<unsigned(k+1); m++)
 			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;
 	}
 

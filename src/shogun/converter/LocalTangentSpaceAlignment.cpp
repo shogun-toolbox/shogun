@@ -37,12 +37,8 @@ struct LTSA_THREAD_PARAM
 	int32_t m_k;
 	/// target dimension
 	int32_t target_dim;
-	/// current dimension
-	int32_t dim;
-	/// number of objects
-	int32_t N;
 	/// matrix containing indexes of ith vector's neighbors in ith column
-	const int32_t* neighborhood_matrix;
+	SGMatrix<int32_t> neighborhood_matrix;
 	/// G matrix
 	float64_t* G_matrix;
 	/// mean vector
@@ -50,7 +46,7 @@ struct LTSA_THREAD_PARAM
 	/// local feature matrix containing neighbors of vector
 	float64_t* local_feature_matrix;
 	/// feature matrix of given features instance
-	const float64_t* feature_matrix;
+	SGMatrix<float64_t> feature_matrix;
 	/// used to store singular values
 	float64_t* s_values_vector;
 	/// q matrix
@@ -118,13 +114,11 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 		parameters[t].idx_stop = N;
 		parameters[t].m_k = m_k;
 		parameters[t].target_dim = m_target_dim;
-		parameters[t].dim = dim;
-		parameters[t].N = N;
-		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
+		parameters[t].neighborhood_matrix = neighborhood_matrix;
 		parameters[t].G_matrix = G_matrix + (m_k*(1+m_target_dim))*t;
 		parameters[t].mean_vector = mean_vector + dim*t;
 		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
-		parameters[t].feature_matrix = feature_matrix.matrix;
+		parameters[t].feature_matrix = feature_matrix;
 		parameters[t].s_values_vector = s_values_vector + dim*t;
 		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
 		parameters[t].W_matrix = W_matrix;
@@ -143,13 +137,11 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
 	single_thread_param.target_dim = m_target_dim;
-	single_thread_param.dim = dim;
-	single_thread_param.N = N;
-	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
+	single_thread_param.neighborhood_matrix = neighborhood_matrix;
 	single_thread_param.G_matrix = G_matrix;
 	single_thread_param.mean_vector = mean_vector;
 	single_thread_param.local_feature_matrix = local_feature_matrix;
-	single_thread_param.feature_matrix = feature_matrix.matrix;
+	single_thread_param.feature_matrix = feature_matrix;
 	single_thread_param.s_values_vector = s_values_vector;
 	single_thread_param.q_matrix = q_matrix;
 	single_thread_param.W_matrix = W_matrix;
@@ -163,10 +155,11 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	SG_FREE(local_feature_matrix);
 	SG_FREE(q_matrix);
 
+	int32_t actual_k = neighborhood_matrix.num_rows;
 	for (int32_t i=0; i<N; i++)
 	{
 		for (int32_t j=0; j<m_k; j++)
-			W_matrix[N*neighborhood_matrix[i*m_k+j]+neighborhood_matrix[i*m_k+j]] += 1.0;
+			W_matrix[N*neighborhood_matrix[i*actual_k+j]+neighborhood_matrix[i*actual_k+j]] += 1.0;
 	}
 
 	return SGMatrix<float64_t>(W_matrix,N,N);
@@ -180,13 +173,11 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 	int32_t idx_stop = parameters->idx_stop;
 	int32_t m_k = parameters->m_k;
 	int32_t target_dim = parameters->target_dim;
-	int32_t dim = parameters->dim;
-	int32_t N = parameters->N;
-	const int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
+	SGMatrix<int32_t> neighborhood_matrix = parameters->neighborhood_matrix;
 	float64_t* G_matrix = parameters->G_matrix;
 	float64_t* mean_vector = parameters->mean_vector;
 	float64_t* local_feature_matrix = parameters->local_feature_matrix;
-	const float64_t* feature_matrix = parameters->feature_matrix;
+	SGMatrix<float64_t> feature_matrix = parameters->feature_matrix;
 	float64_t* s_values_vector = parameters->s_values_vector;
 	float64_t* q_matrix = parameters->q_matrix;
 	float64_t* W_matrix = parameters->W_matrix;
@@ -195,6 +186,9 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 #endif
 
 	int32_t i,j,k;
+	int32_t N = feature_matrix.num_cols;
+	int32_t dim = feature_matrix.num_rows;
+	int32_t actual_k = neighborhood_matrix.num_rows;
 
 	for (j=0; j<m_k; j++)
 		G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
@@ -208,7 +202,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<dim; k++)
-				local_feature_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[i*m_k+j]*dim+k];
+				local_feature_matrix[j*dim+k] = feature_matrix[neighborhood_matrix[i*actual_k+j]*dim+k];
 
 			cblas_daxpy(dim,1.0,local_feature_matrix+j*dim,1,mean_vector,1);
 		}
@@ -246,7 +240,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				W_matrix[N*neighborhood_matrix[i*m_k+k]+neighborhood_matrix[i*m_k+j]] -= q_matrix[j*m_k+k];
+				W_matrix[N*neighborhood_matrix[i*actual_k+k]+neighborhood_matrix[i*actual_k+j]] -= q_matrix[j*m_k+k];
 		}
 #ifdef HAVE_PTHREAD
 		PTHREAD_UNLOCK(W_matrix_lock);
