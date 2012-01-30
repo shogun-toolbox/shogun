@@ -18,6 +18,26 @@ namespace shogun
 {
 	template <class T> class CSimpleFeatures;
 
+/** @brief The class BinnedDotFeatures contains a 0-1 conversion of features into bins.
+ *
+ * It is often useful to convert real valued features into 0-1 vectors by
+ * defining a fixed set of bins and then filling all bins with 0 except the
+ * bin into which the value falls, i.e.bin=1 iff
+ * bin lower limit <= value < bin upper limit
+ *
+ * This class optionally allows to fill all bins with 1 up to the one with
+ * value < bin upper limit when the fill flag is set.
+ *
+ * In addition one may choose to normalize vectors to have norm one (if the
+ * norm one flag is set).
+ *
+ * Bins take the form of a matrix with as many columns as there are input
+ * dimensions. Then each row vector contains the limits of the bins.
+ *
+ * Note that BinnedDotFeatures never *explicitly* compute the binned feature
+ * representation but only overload the abstract dot/add methods in
+ * CDotFeatures making them highly memory and computationally efficient.
+ */
 class CBinnedDotFeatures : public CDotFeatures
 {
 	public:
@@ -128,24 +148,74 @@ class CBinnedDotFeatures : public CDotFeatures
 		 */
 		void set_fill(bool fill);
 
+		/** get norm one flag
+		 *
+		 * @return norm one flag - if true vectors are normalized to have norm one
+		 */
 		bool get_norm_one();
 
+		/** set norm one flag
+		 *
+		 * @param norm_one if norm_one is true vectors are normalized to have norm one
+		 */
 		void set_norm_one(bool norm_one);
 
+		/** set features to convert to binned features
+		 *
+		 * @param features - features to convert to binned features
+		 */
 		void set_simple_features(CSimpleFeatures<float64_t>* features);
 
+		/** get features that are convert to binned features
+		 *
+		 * @return features - simple features object
+		 */
 		CSimpleFeatures<float64_t>* get_simple_features();
 
+		/** set bins
+		 *
+		 * bins have a matrix shape with as many column vectors as there are
+		 * dimensions in the corresponding feature object. The column vector
+		 * then contains the limits, e.g. linspace from minimum to maximum
+		 * value of that dimension.
+		 *
+		 * @param bins - bins to convert features into
+		 */
 		void set_bins(SGMatrix<float64_t> bins);
 
+		/** get current bins
+		 *
+		 * @return bins
+		 */
 		SGMatrix<float64_t> get_bins();
 
+		/** Returns the name of the Object.
+		 *  @return name "BinnedDotFeatures"
+		 */
 		virtual const char* get_name() const;
+
+		/** duplicate feature object
+		 *
+		 * @return feature object
+		 */
 		virtual CFeatures* duplicate() const;
+
+		/** get feature type
+		 *
+		 * @return feature type
+		 */
 		virtual EFeatureType get_feature_type();
+
+		/** get feature class
+		 *
+		 * @return feature class
+		 */
 		virtual EFeatureClass get_feature_class();
 
-
+		/** get number of examples/vectors
+		 *
+		 * @return number of examples/vectors
+		 */
 		virtual int32_t get_num_vectors() const;
 
 		/** get size of underlying data type in bytes
@@ -153,7 +223,6 @@ class CBinnedDotFeatures : public CDotFeatures
 		 * @return size in bytes
 		 */ 
 		virtual int32_t get_size();
-
 
 	private:
 		void init();
