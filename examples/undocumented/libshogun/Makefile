@@ -59,6 +59,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  serialization_basic_tests \
 		  classifier_conjugateindex \
 		  classifier_gaussiannaivebayes \
+		  library_cover_tree \
 
 all: $(TARGETS)
 
