@@ -118,8 +118,7 @@ SGMatrix<float64_t> CIsomap::process_distance_matrix(SGMatrix<float64_t> distanc
 
 SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 {
-	int32_t N,t,i,j;
-	float64_t tmp;
+	int32_t N,t,i;
 	N = D_matrix.num_cols;
 	if (D_matrix.num_cols!=D_matrix.num_rows)
 	{
