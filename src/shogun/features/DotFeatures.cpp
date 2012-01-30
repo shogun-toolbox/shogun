@@ -59,6 +59,11 @@ CDotFeatures::CDotFeatures(CFile* loader)
 	init();
 }
 
+float64_t CDotFeatures::dense_dot_vec(int32_t vec_idx1, SGVector<float64_t> vec2)
+{
+	return dense_dot(vec_idx1, vec2.vector, vec2.vlen);
+}
+
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
 	ASSERT(output);
