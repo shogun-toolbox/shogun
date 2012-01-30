@@ -65,8 +65,8 @@ public:
 
 	inline double distance(const KLLE_COVERTREE_POINT& p) const
 	{
-		return kernel_matrix[p.point_index*kernel_matrix.num_rows+p.point_index]+kii-
-		       2.0*kernel_matrix[point_index*kernel_matrix.num_rows+p.point_index];
+		int32_t N = kernel_matrix.num_rows;
+		return kii+kernel_matrix[p.point_index*N+p.point_index]-2.0*kernel_matrix[point_index*N+p.point_index];
 	}
 
 	inline bool operator==(const KLLE_COVERTREE_POINT& p) const
@@ -289,21 +289,29 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 {
 	int32_t i;
 	int32_t N = kernel_matrix.num_cols;
+	SG_PRINT("%d\n",N);
 	
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
 	
-	float64_t max_dist = CMath::max(kernel_matrix.matrix,N*N);
-
-	CoverTree<KLLE_COVERTREE_POINT>* coverTree = new CoverTree<KLLE_COVERTREE_POINT>(max_dist);
-
+	float64_t max_dist=0.0;
 	for (i=0; i<N; i++)
-		coverTree->insert(KLLE_COVERTREE_POINT(i,kernel_matrix));
+		max_dist = CMath::max(max_dist,kernel_matrix[i*N+i]);
+
+	std::vector<KLLE_COVERTREE_POINT> vectors;
+	vectors.reserve(N);
+	for (i=0; i<N; i++)
+		vectors.push_back(KLLE_COVERTREE_POINT(i,kernel_matrix));
+
+	CoverTree<KLLE_COVERTREE_POINT>* coverTree = new CoverTree<KLLE_COVERTREE_POINT>(2.0*max_dist,vectors);
 
 	for (i=0; i<N; i++)
 	{
 		std::vector<KLLE_COVERTREE_POINT> neighbors = 
-		   coverTree->kNearestNeighbors(KLLE_COVERTREE_POINT(i,kernel_matrix),k+1);
-		for (std::size_t m=1; m<neighbors.size(); m++)
+		   coverTree->kNearestNeighbors(vectors[i],k+1);
+
+		ASSERT(neighbors.size()>=unsigned(k+1));
+
+		for (std::size_t m=1; m<unsigned(k+1); m++)
 			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;
 	}
 
