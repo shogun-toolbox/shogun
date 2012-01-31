@@ -23,28 +23,55 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 		CLabels* labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
+	/* check for "stupid" combinations of label numbers and num_subsets.
+	 * if there are of a class less labels than num_subsets, the class will not
+	 * appear in every subset, leading to subsets of only one class in the
+	 * extreme case of a two class labeling. */
+	SGVector<index_t> labels_per_class(labels->get_num_classes());
+	SGVector<float64_t> classes=labels->get_unique_labels();
+
+	for (index_t i=0; i<labels->get_num_classes(); ++i)
+	{
+		labels_per_class.vector[i]=0;
+		for (index_t j=0; j<labels->get_num_labels(); ++j)
+		{
+			if (classes.vector[i]==labels->get_label(j))
+				labels_per_class.vector[i]++;
+		}
+	}
+
+	for (index_t i=0; i<labels->get_num_classes(); ++i)
+	{
+		if (labels_per_class.vector[i]<num_subsets)
+		{
+			SG_WARNING("There are only %d labels of class %.18g, but %d "
+					"subsets. Labels of that class will not appear in every "
+					"subset!\n", labels_per_class.vector[i], classes.vector[i], num_subsets);
+		}
+	}
+
+	labels_per_class.destroy_vector();
+	classes.destroy_vector();
+
 	build_subsets();
 }
 
 void CStratifiedCrossValidationSplitting::build_subsets()
 {
-	/* extract all labels */
-	CSet<float64_t> unique_labels;
-	for (index_t i=0; i<m_labels->get_num_labels(); ++i)
-		unique_labels.add(m_labels->get_label(i));
+	SGVector<float64_t> unique_labels=m_labels->get_unique_labels();
 
 	/* for every label, build set for indices */
 	CDynamicObjectArray<CDynamicArray<index_t> > label_indices;
-	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
+	for (index_t i=0; i<unique_labels.vlen; ++i)
 		label_indices.append_element(new CDynamicArray<index_t> ());
 
 	/* fill set with indices, for each label type ... */
-	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
+	for (index_t i=0; i<unique_labels.vlen; ++i)
 	{
 		/* ... iterate over all labels and add indices with same label to set */
 		for (index_t j=0; j<m_labels->get_num_labels(); ++j)
 		{
-			if (m_labels->get_label(j)==unique_labels[i])
+			if (m_labels->get_label(j)==unique_labels.vector[i])
 			{
 				CDynamicArray<index_t>* current=label_indices.get_element(i);
 				current->append_element(j);
@@ -63,7 +90,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 
 	/* distribute labels to subsets for all label types */
 	index_t target_set=0;
-	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
+	for (index_t i=0; i<unique_labels.vlen; ++i)
 	{
 		/* current index set for current label */
 		CDynamicArray<index_t>* current=label_indices.get_element(i);
@@ -84,4 +111,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets */
 	m_subset_indices->shuffle();
+
+	/* clean up */
+	unique_labels.destroy_vector();
 }
