@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 		SG_SPRINT("\n");
 
 		/* print classes */
-		SGVector<float64_t> classes=labels->get_classes();
+		SGVector<float64_t> classes=labels->get_unique_labels();
 		CMath::display_vector(classes.vector, classes.vlen, "classes");
 		classes.destroy_vector();
 
