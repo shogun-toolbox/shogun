@@ -369,6 +369,7 @@ int CWDSVMOcas::add_new_cut(
 		step=1;
 	}
 
+#ifdef HAVE_PTHREAD
 	for (t=0; t<nthreads; t++)
 	{
 		params_add[t].wdocas=o;
@@ -407,7 +408,7 @@ int CWDSVMOcas::add_new_cut(
 		//	new_a[i]+=a[i];
 		//SG_FREE(a);
 	}
-
+#endif /* HAVE_PTHREAD */
 	for(i=0; i < cut_length; i++) 
 	{
 		if (o->use_bias)
@@ -552,7 +553,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		nthreads=nData-1;
 		step=1;
 	}
-
+#ifdef HAVE_PTHREAD
 	for (t=0; t<nthreads; t++)
 	{
 		params_output[t].wdocas=o;
@@ -589,6 +590,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	SG_FREE(params_output);
 	SG_FREE(val);
 	SG_FREE(out);
+#endif /* HAVE_PTHREAD */
 	return 0;
 }
 /*----------------------------------------------------------------------

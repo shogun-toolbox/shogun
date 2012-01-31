@@ -272,7 +272,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	ASSERT(m_target_dim>0);
 	ASSERT(distance_matrix.num_cols==distance_matrix.num_rows);
 	int32_t lmk_N = m_landmark_number;
-	int32_t i,j,t;
+	int32_t i,j;
 	int32_t total_N = distance_matrix.num_cols;
 	if (lmk_N<3)
 	{
@@ -340,6 +340,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 
 	// get embedding for non-landmark vectors
 #ifdef HAVE_PTHREAD
+	int32_t t;
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads and it's parameters

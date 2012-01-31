@@ -502,7 +502,7 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 {
     // Read the examples into current_* objects
     // Instead of allocating mem for new objects each time
-
+#ifdef HAVE_PTHREAD
     CInputParser* this_obj = (CInputParser *) params;
     this->input_source = this_obj->input_source;
 
@@ -548,7 +548,7 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
         pthread_cond_signal(&examples_state_changed);
         pthread_mutex_unlock(&examples_state_lock);
     }
-
+#endif /* HAVE_PTHREAD */
     return NULL;
 }
 

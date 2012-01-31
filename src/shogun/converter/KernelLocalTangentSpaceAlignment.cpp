@@ -121,7 +121,7 @@ SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(S
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	KLTSA_THREAD_PARAM single_thread_param = {0,1,N,m_k,m_target_dim,neighborhood_matrix.matrix,
+	KLTSA_THREAD_PARAM single_thread_param = {0,1,N,m_k,m_target_dim,N,neighborhood_matrix.matrix,
 	                                          kernel_matrix.matrix,local_gram_matrix,ev_vector,
 	                                          G_matrix,W_matrix};
 	run_kltsa_thread((void*)&single_thread_param);
