@@ -42,6 +42,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  base_migration_dropping_and_new \
 		  base_migration_multiple_dependencies \
 		  splitting_stratified_crossvalidation \
+		  splitting_standard_crossvalidation \
 		  mathematics_arpack \
 		  library_fibonacci_heap \
 		  library_hashset \

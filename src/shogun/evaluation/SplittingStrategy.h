@@ -26,7 +26,7 @@ class CLabels;
  *
  * When being extended, the abstract method build_subsets() has to be
  * implemented AND to be called in the constructor of sub-classes.
- * Implementations have to fill the DynArray<index_t> elements in the
+ * Implementations have to fill the CDynamicArray<index_t> elements in the
  * (inherited) m_subset_indices variable. Note that these elements are already
  * created by the constructor of this class - they just have to be filled. Every
  * element represents one index subset.

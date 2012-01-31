@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#ifndef __STRATIFIEDCROSSVALIDATION_H_
-#define __STRATIFIEDCROSSVALIDATION_H_
+#ifndef __STRATIFIEDCROSSVALIDATIONSPLITTING_H_
+#define __STRATIFIEDCROSSVALIDATIONSPLITTING_H_
 
 #include <shogun/evaluation/SplittingStrategy.h>
 
@@ -21,7 +21,8 @@ class CLabels;
 /** @brief Implementation of stratified cross-validation on the base of
  * CSplittingStrategy. Produces subset index sets of equal size (at most one
  * difference) in which the label ratio is equal (at most one difference) to
- * the label ratio of the specified labels
+ * the label ratio of the specified labels. Do not use for regression since it
+ * may be impossible to distribute nice in that case
  */
 class CStratifiedCrossValidationSplitting: public CSplittingStrategy
 {
@@ -39,7 +40,7 @@ public:
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
 	{
-		return "StratifiedCrossValidation";
+		return "StratifiedCrossValidationSplitting";
 	}
 protected:
 	/** implementation of the stratified cross-validation splitting strategy */
@@ -47,4 +48,4 @@ protected:
 };
 }
 
-#endif /* __STRATIFIEDCROSSVALIDATION_H_ */
+#endif /* __STRATIFIEDCROSSVALIDATIONSPLITTING_H_ */
