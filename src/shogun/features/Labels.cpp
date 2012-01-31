@@ -142,27 +142,26 @@ int32_t CLabels::get_num_classes()
 	return result;
 }
 
-SGVector<float64_t> CLabels::get_classes()
-{
-	CSet<float64_t>* classes=new CSet<float64_t>();
-
-	for (int32_t i=0; i<get_num_labels(); i++)
-		classes->add(get_label(i));
-
-	SGVector<float64_t> result(classes->get_num_elements());
-	memcpy(result.vector, classes->get_array(),
-			sizeof(float64_t)*classes->get_num_elements());
-
-	SG_UNREF(classes);
-	return result;
-}
-
 SGVector<float64_t> CLabels::get_labels()
 {
 	if (m_subset)
 		SG_ERROR("get_labels() is not possible on subset");
 
 	return labels;
+}
+
+SGVector<float64_t> CLabels::get_unique_labels()
+{
+	/* extract all labels */
+	CSet<float64_t> unique_labels;
+	for (index_t i=0; i<labels.vlen; ++i)
+		unique_labels.add(labels.vector[i]);
+
+	SGVector<float64_t> result(unique_labels.get_num_elements());
+	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
+		result.vector[i]=unique_labels.get_element(i);
+
+	return result;
 }
 
 SGVector<int32_t> CLabels::get_int_labels()

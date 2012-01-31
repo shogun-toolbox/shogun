@@ -11,5 +11,6 @@
  #include <shogun/evaluation/CrossValidation.h>
  #include <shogun/evaluation/SplittingStrategy.h>
  #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
+ #include <shogun/evaluation/CrossValidationSplitting.h>
 %}
 
