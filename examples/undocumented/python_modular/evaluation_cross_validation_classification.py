@@ -24,22 +24,9 @@ def evaluation_cross_validation_classification(traindat=traindat, label_traindat
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
     from shogun.Evaluation import StratifiedCrossValidationSplitting
-    from shogun.ModelSelection import GridSearchModelSelection
-    from shogun.ModelSelection import ModelSelectionParameters, R_EXP
-    from shogun.ModelSelection import ParameterCombination
     from shogun.Features import Labels
     from shogun.Features import RealFeatures
     from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
-
-    # build parameter tree to select C1 and C2 
-    param_tree_root=ModelSelectionParameters()
-    c1=ModelSelectionParameters("C1");
-    param_tree_root.append_child(c1)
-    c1.build_values(-2.0, 2.0, R_EXP);
-
-    c2=ModelSelectionParameters("C2");
-    param_tree_root.append_child(c2);
-    c2.build_values(-2.0, 2.0, R_EXP);
 
     # training data
     features=RealFeatures(traindat)
