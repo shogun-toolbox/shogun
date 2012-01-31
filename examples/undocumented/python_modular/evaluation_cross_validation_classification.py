@@ -20,7 +20,7 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 
 parameter_list = [[traindat,label_traindat]]
 
-def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=label_traindat):
+def evaluation_cross_validation_classification(traindat=traindat, label_traindat=label_traindat):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
     from shogun.Evaluation import StratifiedCrossValidationSplitting
@@ -72,5 +72,5 @@ def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=
     result.print_result()
 
 if __name__=='__main__':
-	print 'Evaluation CrossValidation'
+	print 'Evaluation CrossValidationClassification'
 	modelselection_grid_search_linear_modular(*parameter_list[0])
