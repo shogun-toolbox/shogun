@@ -284,6 +284,7 @@ public:
 		}
 		else
 		{
+#ifdef HAVE_PTHREAD
 			int32_t total_num=(len-start);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
 			Q_THREAD_PARAM* params = SG_MALLOC(Q_THREAD_PARAM, num_threads);
@@ -329,6 +330,7 @@ public:
 
 			SG_FREE(params);
 			SG_FREE(threads);
+#endif /* HAVE_PTHREAD */
 		}
 	}
 

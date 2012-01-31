@@ -337,8 +337,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 {
 	int32_t N = simple_features->get_num_vectors();
 	int32_t dim = simple_features->get_num_features();
-	int32_t t;
 #ifdef HAVE_PTHREAD
+	int32_t t;
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads
@@ -392,7 +392,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	single_thread_param.id_vector = id_vector;
 	single_thread_param.W_matrix = W_matrix;
 	single_thread_param.m_reconstruction_shift = m_reconstruction_shift;
-	run_linearreconstruction_thread((void*)single_thread_param);
+	run_linearreconstruction_thread((void*)&single_thread_param);
 #endif
 
 	// clean

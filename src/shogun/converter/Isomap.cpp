@@ -118,7 +118,7 @@ SGMatrix<float64_t> CIsomap::process_distance_matrix(SGMatrix<float64_t> distanc
 
 SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 {
-	int32_t N,t,i;
+	int32_t N,i;
 	N = D_matrix.num_cols;
 	if (D_matrix.num_cols!=D_matrix.num_rows)
 	{
@@ -156,7 +156,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	delete coverTree;
 
 #ifdef HAVE_PTHREAD
-
+	int32_t t;
 	// Parallel Dijkstra with Fibonacci Heap 
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
@@ -207,7 +207,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	SG_FREE(parameters);
 	SG_FREE(threads);
 #else
-	D_THREAD_PARAM single_thread_param;
+	DIJKSTRA_THREAD_PARAM single_thread_param;
 	single_thread_param.i_start = 0;
 	single_thread_param.i_stop = N;
 	single_thread_param.i_step = 1;

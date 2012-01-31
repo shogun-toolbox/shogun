@@ -154,8 +154,8 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMat
 {
 	int32_t N = kernel_matrix.num_cols;
 	// loop variables
-	int32_t t;
 #ifdef HAVE_PTHREAD
+	int32_t t;
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads
@@ -205,7 +205,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMat
 	single_thread_param.kernel_matrix = kernel_matrix.matrix;
 	single_thread_param.id_vector = id_vector;
 	single_thread_param.W_matrix = W_matrix;
-	run_linearreconstruction_thread((void*)single_thread_param);
+	run_linearreconstruction_thread((void*)&single_thread_param);
 #endif
 
 	// clean

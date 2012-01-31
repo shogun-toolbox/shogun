@@ -87,8 +87,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	int32_t dp = m_target_dim*(m_target_dim+1)/2;
 	if (m_k<(1+m_target_dim+dp))
 		SG_ERROR("K parameter should have value greater than 1+target dimensionality+dp.\n");
-	int32_t t;
 #ifdef HAVE_PTHREAD
+	int32_t t;
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads and params
@@ -146,11 +146,10 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	SG_FREE(threads);
 #else
 	HESSIANESTIMATION_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = t;
+	single_thread_param.idx_start = 0;
 	single_thread_param.idx_step = num_threads;
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
-	single_thread_param.dim = dim;
 	single_thread_param.neighborhood_matrix = neighborhood_matrix;
 	single_thread_param.feature_matrix = feature_matrix;
 	single_thread_param.local_feature_matrix = local_feature_matrix;

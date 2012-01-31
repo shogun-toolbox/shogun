@@ -428,7 +428,7 @@ void CCombinedKernel::emulate_compute_batch(
 				params.vec_idx = vec_idx;
 				compute_optimized_kernel_helper((void*) &params);
 			}
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 			else
 			{
 				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
@@ -460,7 +460,7 @@ void CCombinedKernel::emulate_compute_batch(
 				SG_FREE(params);
 				SG_FREE(threads);
 			}
-#endif
+#endif /* HAVE_PTHREAD */
 
 			k->delete_optimization();
 		}
@@ -488,7 +488,7 @@ void CCombinedKernel::emulate_compute_batch(
 				params.num_suppvec = num_suppvec;
 				compute_kernel_helper((void*) &params);
 			}
-#ifndef WIN32
+#ifdef HAVE_PTHREAD
 			else
 			{
 				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
@@ -526,7 +526,7 @@ void CCombinedKernel::emulate_compute_batch(
 				SG_FREE(params);
 				SG_FREE(threads);
 			}
-#endif
+#endif /* HAVE_PTHREAD */
 		}
 	}
 }
