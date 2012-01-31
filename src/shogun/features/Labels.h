@@ -143,6 +143,14 @@ class CLabels : public CSGObject
 		 */
 		SGVector<float64_t> get_labels();
 
+		/** get unqiue labels (new SGVector, caller has to clean up)
+		 *
+		 * possible with subset
+		 *
+		 * @reutrn unique labels
+		 */
+		SGVector<float64_t> get_unique_labels();
+
 		/** set labels
 		 *
 		 * not possible with subset
@@ -166,15 +174,6 @@ class CLabels : public CSGObject
 		 * @return INT labels
 		 */
 		SGVector<int32_t> get_int_labels();
-
-		/** get classes of labels
-		 * Caller has to clean up
-		 *
-		 * possible with subset
-		 *
-		 * @return classes of labels
-		 */
-		SGVector<float64_t> get_classes();
 
 		/** set INT labels
 		 * caller has to clean up
