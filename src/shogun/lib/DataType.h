@@ -96,6 +96,8 @@ template<class T> class SGVector
 		/** random permutate */
 		void randperm()
 		{
+			/* this does not work. Heiko Strathmann */
+			SG_SNOTIMPLEMENTED;
 			randperm(vector, vlen);
 		}
 
