@@ -21,7 +21,6 @@ using namespace shogun;
 CKRR::CKRR()
 : CKernelMachine()
 {
-	alpha=NULL;
 	tau=1e-6;
 }
 
@@ -31,19 +30,10 @@ CKRR::CKRR(float64_t t, CKernel* k, CLabels* lab)
 	tau=t;
 	set_labels(lab);
 	set_kernel(k);
-	alpha=NULL;
-}
-
-
-CKRR::~CKRR()
-{
-	SG_FREE(alpha);
 }
 
 bool CKRR::train_machine(CFeatures* data)
 {
-	SG_FREE(alpha);
-
 	ASSERT(labels);
 	if (data)
 	{
@@ -66,21 +56,26 @@ bool CKRR::train_machine(CFeatures* data)
 	if (!labels)
 		SG_ERROR("No labels set\n");
 
-	SGVector<float64_t> alpha_orig=labels->get_labels_copy();
-	alpha=CMath::clone_vector(alpha_orig.vector, alpha_orig.vlen);
+	/* re-set alphas of kernel machine */
+	m_alpha.destroy_vector();
+	m_alpha=labels->get_labels_copy();
 
-	if (alpha_orig.vlen!=n)
+	/* tell kernel machine that all alphas are needed as'support vectors' */
+	m_svs.destroy_vector();
+	m_svs=SGVector<index_t>(m_alpha.vlen);
+	m_svs.range_fill();
+
+	if (get_alphas().vlen!=n)
 	{
 		SG_ERROR("Number of labels does not match number of kernel"
-				" columns (num_labels=%d cols=%d\n", alpha_orig.vlen, n);
+				" columns (num_labels=%d cols=%d\n", m_alpha.vlen, n);
 	}
 
-	/* clean up */
-	alpha_orig.destroy_vector();
-
-	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n, alpha, n);
+	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n,
+			m_alpha.vector, n);
 
 	SG_FREE(kernel_matrix.matrix);
+
 	return true;
 }
 
@@ -117,7 +112,7 @@ CLabels* CKRR::apply()
 	int m_int = (int) m;
 	int n_int = (int) n;
 	cblas_dgemv(CblasColMajor, CblasTrans, m_int, n_int, 1.0, (double*) kernel_matrix.matrix,
-		m_int, (double*) alpha, 1, 0.0, (double*) Yh.vector, 1);
+		m_int, (double*) m_alpha.vector, 1, 0.0, (double*) Yh.vector, 1);
 
 	SG_FREE(kernel_matrix.matrix);
 
@@ -138,21 +133,10 @@ float64_t CKRR::apply(int32_t num)
 	float64_t Yh;
 
 	// predict
-	Yh = CMath::dot(kernel_matrix.matrix + m*num, alpha, m);
+	Yh = CMath::dot(kernel_matrix.matrix + m*num, m_alpha.vector, m);
 
 	SG_FREE(kernel_matrix.matrix);
 	return Yh;
-}
-
-CLabels* CKRR::apply(CFeatures* data)
-{
-	if (!kernel)
-		SG_ERROR("No kernel assigned!\n");
-
-	/* just put data on both sides of kernel */
-	kernel->init(data, data);
-
-	return apply();
 }
 
 #endif
