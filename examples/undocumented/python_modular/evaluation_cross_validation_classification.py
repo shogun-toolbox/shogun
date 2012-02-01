@@ -56,7 +56,9 @@ def evaluation_cross_validation_classification(traindat=traindat, label_traindat
 	
     # perform cross-validation and print results
     result=cross_validation.evaluate()
-    result.print_result()
+    print "mean:", result.mean
+    if result.has_conf_int:
+        print "[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha
 
 if __name__=='__main__':
 	print 'Evaluation CrossValidationClassification'
