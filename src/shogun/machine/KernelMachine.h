@@ -174,14 +174,10 @@ class CKernelMachine : public CMachine
 		 */
 		void set_support_vectors(SGVector<int32_t> svs);
 
-		/** get all support vectors
-		 *
-		 */
+		/** @return all support vectors */
 		SGVector<int32_t> get_support_vectors();
 
-		/** get all alphas
-		 *
-		 */
+		/** @return vector of alphas */
 		SGVector<float64_t> get_alphas();
 
 		/** create new model
