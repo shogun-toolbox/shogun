@@ -226,6 +226,9 @@ class CKernelMachine : public CMachine
 	protected:
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
+		 *
+		 * May be overwritten by subclasses in case the model should be stored
+		 * differently.
 		 */
 		virtual void store_model_features();
 
