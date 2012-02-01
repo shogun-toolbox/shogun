@@ -97,6 +97,10 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
+	/* make sure that features are not deleted i reset */
+	SG_REF(l);
+	SG_REF(r);
+
 	//make sure features were indeed supplied
 	ASSERT(l);
 	ASSERT(r);
@@ -123,6 +127,10 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
+
+	/* unref "safety" refs from beginning */
+	SG_UNREF(r);
+	SG_UNREF(l);
 
 	return true;
 }
