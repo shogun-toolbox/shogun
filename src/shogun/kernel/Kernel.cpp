@@ -97,7 +97,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
-	/* make sure that features are not deleted i reset */
+	/* make sure that features are not deleted if same ones are used */
 	SG_REF(l);
 	SG_REF(r);
 
