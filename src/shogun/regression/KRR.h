@@ -64,7 +64,7 @@ class CKRR : public CKernelMachine
 		 * @param lab labels
 		 */
 		CKRR(float64_t tau, CKernel* k, CLabels* lab);
-		virtual ~CKRR();
+		virtual ~CKRR() {}
 
 		/** set regularization constant
 		 *
@@ -77,13 +77,6 @@ class CKRR : public CKernelMachine
 		 * @return resulting labels
 		 */
 		virtual CLabels* apply();
-
-		/** classify one example
-		 *
-		 * @param features examples to predict, are applied to kernel before
-		 * @return result
-		 */
-		virtual CLabels* apply(CFeatures* features);
 
 		/** classify one example
 		 *
@@ -129,16 +122,7 @@ class CKRR : public CKernelMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
-		/** Since the store_features_method of KernelMachine stores the used
-		 * features in the lhs of the kernel (which does not work here, since
-		 * a different matrix is the model here), the method is overwritten
-		 * empty. The model is stored in alpha variable anyway.
-		 */
-		virtual void store_model_features() {}
-
 	private:
-		/** alpha */
-		float64_t *alpha;
 		/** regularization parameter tau */
 		float64_t tau;
 };
