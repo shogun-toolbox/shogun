@@ -21,15 +21,24 @@ using namespace shogun;
 CKRR::CKRR()
 : CKernelMachine()
 {
-	tau=1e-6;
+	init();
 }
 
-CKRR::CKRR(float64_t t, CKernel* k, CLabels* lab)
+CKRR::CKRR(float64_t tau, CKernel* k, CLabels* lab)
 : CKernelMachine()
 {
-	tau=t;
+	init();
+
+	m_tau=tau;
 	set_labels(lab);
 	set_kernel(k);
+}
+
+void CKRR::init()
+{
+	m_tau=1e-6;
+
+	SG_ADD(&m_tau, "m_tau", "Regularization parameter", MS_AVAILABLE);
 }
 
 bool CKRR::train_machine(CFeatures* data)
