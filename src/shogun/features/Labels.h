@@ -143,6 +143,14 @@ class CLabels : public CSGObject
 		 */
 		SGVector<float64_t> get_labels();
 
+		/** get copy of labels. Caller has to clean up
+		 *
+		 * possible with subset
+		 *
+		 * @return labels
+		 */
+		SGVector<float64_t> get_labels_copy();
+
 		/** get unqiue labels (new SGVector, caller has to clean up)
 		 *
 		 * possible with subset

@@ -150,6 +150,25 @@ SGVector<float64_t> CLabels::get_labels()
 	return labels;
 }
 
+SGVector<float64_t> CLabels::get_labels_copy()
+{
+	index_t num_labels=get_num_labels();
+	SGVector<float64_t> result(NULL, num_labels);
+
+	/* in case of subset, simply clone vector, else copy element wise */
+	if (!m_subset)
+		result.vector=CMath::clone_vector(labels.vector, num_labels);
+	else
+	{
+		result.vector=SG_MALLOC(float64_t, num_labels);
+		/* copy element wise because of possible subset */
+		for (index_t i=0; i<result.vlen; ++i)
+			result[i]=get_label(i);
+	}
+
+	return result;
+}
+
 SGVector<float64_t> CLabels::get_unique_labels()
 {
 	/* extract all labels */
