@@ -27,7 +27,7 @@ void print_message(FILE* target, const char* str)
 void test_cross_validation()
 {
 	/* data matrix dimensions */
-	index_t num_vectors=500;
+	index_t num_vectors=40;
 	index_t num_features=5;
 
 	/* data means -1, 1 in all components, std deviation of 3 */
@@ -36,6 +36,9 @@ void test_cross_validation()
 	CMath::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
 	CMath::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
 	float64_t sigma=3;
+
+	CMath::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
+	CMath::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
 
 	/* fill data matrix around mean */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
@@ -51,6 +54,7 @@ void test_cross_validation()
 	/* training features */
 	CSimpleFeatures<float64_t>* features=
 			new CSimpleFeatures<float64_t>(train_dat);
+	SG_REF(features);
 
 	/* training labels +/- 1 for each cluster */
 	SGVector<float64_t> lab(num_vectors);
@@ -71,20 +75,36 @@ void test_cross_validation()
 	CLibSVM* svm=new CLibSVM(svm_C, kernel, labels);
 	svm->set_epsilon(svm_eps);
 
+	/* train and output */
+	svm->train(features);
+	CLabels* output=svm->apply(features);
+	for (index_t i=0; i<num_vectors; ++i)
+		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
+
+	/* evaluation criterion */
+	CContingencyTableEvaluation* eval_crit=
+			new CContingencyTableEvaluation(ACCURACY);
+
+	/* evaluate training error */
+	float64_t eval_result=eval_crit->evaluate(output, labels);
+	SG_SPRINT("training error: %f\n", eval_result);
+	SG_UNREF(output);
+
+	/* assert that regression "works". this is not guaranteed to always work
+	 * but should be a really coarse check to see if everything is going
+	 * approx. right */
+	ASSERT(eval_result<2);
+
 	/* splitting strategy */
 	index_t n_folds=5;
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
 
-	/* evaluation criterium */
-	CContingencyTableEvaluation* eval_crit=
-			new CContingencyTableEvaluation(ACCURACY);
-
 	/* cross validation instance, 10 runs, 95% confidence interval */
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(10);
+	cross->set_num_runs(100);
 	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
@@ -93,6 +113,7 @@ void test_cross_validation()
 
 	/* clean up */
 	SG_UNREF(cross);
+	SG_UNREF(features);
 	mean_1.destroy_vector();
 	mean_2.destroy_vector();
 }
