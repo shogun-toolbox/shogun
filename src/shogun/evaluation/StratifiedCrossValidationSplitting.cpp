@@ -52,12 +52,14 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 
 	labels_per_class.destroy_vector();
 	classes.destroy_vector();
-
-	build_subsets();
 }
 
 void CStratifiedCrossValidationSplitting::build_subsets()
 {
+	/* ensure that subsets are empty and set flag to filled */
+	reset_subsets();
+	m_is_filled=true;
+
 	SGVector<float64_t> unique_labels=m_labels->get_unique_labels();
 
 	/* for every label, build set for indices */
