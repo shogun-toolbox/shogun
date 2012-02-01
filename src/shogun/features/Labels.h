@@ -147,7 +147,7 @@ class CLabels : public CSGObject
 		 *
 		 * possible with subset
 		 *
-		 * @reutrn unique labels
+		 * @return unique labels
 		 */
 		SGVector<float64_t> get_unique_labels();
 
