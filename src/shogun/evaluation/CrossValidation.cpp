@@ -28,11 +28,11 @@ CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 {
 	init();
 
-	m_machine = machine;
-	m_features = features;
-	m_labels = labels;
-	m_splitting_strategy = splitting_strategy;
-	m_evaluation_criterion = evaluation_criterion;
+	m_machine=machine;
+	m_features=features;
+	m_labels=labels;
+	m_splitting_strategy=splitting_strategy;
+	m_evaluation_criterion=evaluation_criterion;
 
 	SG_REF(m_machine);
 	SG_REF(m_features);
@@ -57,13 +57,13 @@ EEvaluationDirection CCrossValidation::get_evaluation_direction()
 
 void CCrossValidation::init()
 {
-	m_machine = NULL;
-	m_features = NULL;
-	m_labels = NULL;
-	m_splitting_strategy = NULL;
-	m_evaluation_criterion = NULL;
-	m_num_runs = 1;
-	m_conf_int_alpha = 0;
+	m_machine=NULL;
+	m_features=NULL;
+	m_labels=NULL;
+	m_splitting_strategy=NULL;
+	m_evaluation_criterion=NULL;
+	m_num_runs=1;
+	m_conf_int_alpha=0;
 
 	m_parameters->add((CSGObject**) &m_machine, "machine",
 			"Used learning machine");
@@ -89,22 +89,22 @@ CrossValidationResult CCrossValidation::evaluate()
 {
 	SGVector<float64_t> results(m_num_runs);
 
-	for (index_t i = 0; i < m_num_runs; ++i)
-		results.vector[i] = evaluate_one_run();
+	for (index_t i=0; i <m_num_runs; ++i)
+		results.vector[i]=evaluate_one_run();
 
 	/* construct evaluation result */
 	CrossValidationResult result;
-	result.has_conf_int = m_conf_int_alpha != 0;
-	result.conf_int_alpha = m_conf_int_alpha;
+	result.has_conf_int=m_conf_int_alpha != 0;
+	result.conf_int_alpha=m_conf_int_alpha;
 
 	if (result.has_conf_int) {
-		result.conf_int_alpha = m_conf_int_alpha;
-		result.mean = CStatistics::confidence_intervals_mean(results,
+		result.conf_int_alpha=m_conf_int_alpha;
+		result.mean=CStatistics::confidence_intervals_mean(results,
 				result.conf_int_alpha, result.conf_int_low, result.conf_int_up);
 	} else {
-		result.mean = CStatistics::mean(results);
-		result.conf_int_low = 0;
-		result.conf_int_up = 0;
+		result.mean=CStatistics::mean(results);
+		result.conf_int_low=0;
+		result.conf_int_up=0;
 	}
 
 	SG_FREE(results.vector);
@@ -114,20 +114,20 @@ CrossValidationResult CCrossValidation::evaluate()
 
 void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 {
-	if (conf_int_alpha < 0 || conf_int_alpha >= 1) {
+	if (conf_int_alpha <0 || conf_int_alpha>= 1) {
 		SG_ERROR("%f is an illegal alpha-value for confidence interval of "
 		"cross-validation\n", conf_int_alpha);
 	}
 
-	m_conf_int_alpha = conf_int_alpha;
+	m_conf_int_alpha=conf_int_alpha;
 }
 
 void CCrossValidation::set_num_runs(int32_t num_runs)
 {
-	if (num_runs < 1)
+	if (num_runs <1)
 		SG_ERROR("%d is an illegal number of repetitions\n", num_runs);
 
-	m_num_runs = num_runs;
+	m_num_runs=num_runs;
 }
 
 float64_t CCrossValidation::evaluate_one_run()
@@ -138,7 +138,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	m_splitting_strategy->build_subsets();
 
 	/* results array */
-	float64_t* results = SG_MALLOC(float64_t, num_subsets);
+	float64_t* results=SG_MALLOC(float64_t, num_subsets);
 
 	/* set labels to machine */
 	m_machine->set_labels(m_labels);
@@ -148,7 +148,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	m_machine->set_store_model_features(true);
 
 	/* do actual cross-validation */
-	for (index_t i = 0; i < num_subsets; ++i)
+	for (index_t i=0; i <num_subsets; ++i)
 	{
 		/* set feature subset for training */
 		SGVector<index_t> inverse_subset_indices =
@@ -172,7 +172,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		m_features->set_subset(new CSubset(subset_indices));
 
 		/* apply machine to test features */
-		CLabels* result_labels = m_machine->apply(m_features);
+		CLabels* result_labels=m_machine->apply(m_features);
 		SG_REF(result_labels);
 
 		/* set label subset for testing (copy data before) */
@@ -182,7 +182,7 @@ float64_t CCrossValidation::evaluate_one_run()
 		m_labels->set_subset(new CSubset(subset_indices_copy));
 
 		/* evaluate */
-		results[i] = m_evaluation_criterion->evaluate(result_labels, m_labels);
+		results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
 		/* clean up, reset subsets */
 		SG_UNREF(result_labels);
@@ -191,8 +191,8 @@ float64_t CCrossValidation::evaluate_one_run()
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean = CStatistics::mean(
-			SGVector < float64_t > (results, num_subsets));
+	float64_t mean=CStatistics::mean(
+			SGVector <float64_t> (results, num_subsets));
 
 	/* clean up */
 	SG_FREE(results);
