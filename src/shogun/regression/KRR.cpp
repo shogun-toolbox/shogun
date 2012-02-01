@@ -21,29 +21,28 @@ using namespace shogun;
 CKRR::CKRR()
 : CKernelMachine()
 {
-	alpha=NULL;
-	tau=1e-6;
+	init();
 }
 
-CKRR::CKRR(float64_t t, CKernel* k, CLabels* lab)
+CKRR::CKRR(float64_t tau, CKernel* k, CLabels* lab)
 : CKernelMachine()
 {
-	tau=t;
+	init();
+
+	m_tau=tau;
 	set_labels(lab);
 	set_kernel(k);
-	alpha=NULL;
 }
 
-
-CKRR::~CKRR()
+void CKRR::init()
 {
-	SG_FREE(alpha);
+	m_tau=1e-6;
+
+	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
 }
 
 bool CKRR::train_machine(CFeatures* data)
 {
-	SG_FREE(alpha);
-
 	ASSERT(labels);
 	if (data)
 	{
@@ -60,25 +59,32 @@ bool CKRR::train_machine(CFeatures* data)
 	ASSERT(kernel_matrix.matrix && m>0 && n>0);
 
 	for(int32_t i=0; i < n; i++)
-		kernel_matrix.matrix[i+i*n]+=tau;
+		kernel_matrix.matrix[i+i*n]+=m_tau;
 
 	// Get labels
 	if (!labels)
 		SG_ERROR("No labels set\n");
 
-	SGVector<float64_t> alpha_orig=labels->get_labels();
+	/* re-set alphas of kernel machine */
+	m_alpha.destroy_vector();
+	m_alpha=labels->get_labels_copy();
 
-	alpha=CMath::clone_vector(alpha_orig.vector, alpha_orig.vlen);
+	/* tell kernel machine that all alphas are needed as'support vectors' */
+	m_svs.destroy_vector();
+	m_svs=SGVector<index_t>(m_alpha.vlen);
+	m_svs.range_fill();
 
-	if (alpha_orig.vlen!=n)
+	if (get_alphas().vlen!=n)
 	{
 		SG_ERROR("Number of labels does not match number of kernel"
-				" columns (num_labels=%d cols=%d\n", alpha_orig.vlen, n);
+				" columns (num_labels=%d cols=%d\n", m_alpha.vlen, n);
 	}
 
-	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n, alpha, n);
+	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n,
+			m_alpha.vector, n);
 
 	SG_FREE(kernel_matrix.matrix);
+
 	return true;
 }
 
@@ -115,7 +121,7 @@ CLabels* CKRR::apply()
 	int m_int = (int) m;
 	int n_int = (int) n;
 	cblas_dgemv(CblasColMajor, CblasTrans, m_int, n_int, 1.0, (double*) kernel_matrix.matrix,
-		m_int, (double*) alpha, 1, 0.0, (double*) Yh.vector, 1);
+		m_int, (double*) m_alpha.vector, 1, 0.0, (double*) Yh.vector, 1);
 
 	SG_FREE(kernel_matrix.matrix);
 
@@ -136,7 +142,7 @@ float64_t CKRR::apply(int32_t num)
 	float64_t Yh;
 
 	// predict
-	Yh = CMath::dot(kernel_matrix.matrix + m*num, alpha, m);
+	Yh = CMath::dot(kernel_matrix.matrix + m*num, m_alpha.vector, m);
 
 	SG_FREE(kernel_matrix.matrix);
 	return Yh;

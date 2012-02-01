@@ -174,14 +174,10 @@ class CKernelMachine : public CMachine
 		 */
 		void set_support_vectors(SGVector<int32_t> svs);
 
-		/** get all support vectors
-		 *
-		 */
+		/** @return all support vectors */
 		SGVector<int32_t> get_support_vectors();
 
-		/** get all alphas
-		 *
-		 */
+		/** @return vector of alphas */
 		SGVector<float64_t> get_alphas();
 
 		/** create new model
@@ -226,6 +222,9 @@ class CKernelMachine : public CMachine
 	protected:
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
+		 *
+		 * May be overwritten by subclasses in case the model should be stored
+		 * differently.
 		 */
 		virtual void store_model_features();
 

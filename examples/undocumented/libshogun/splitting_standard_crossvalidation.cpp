@@ -53,6 +53,10 @@ int main(int argc, char **argv)
 		CCrossValidationSplitting* splitting=
 				new CCrossValidationSplitting(labels, num_subsets);
 
+		/* build index sets (twice to ensure memory is not leaking) */
+		splitting->build_subsets();
+		splitting->build_subsets();
+
 		for (index_t i=0; i<num_subsets; ++i)
 		{
 			SG_SPRINT("subset %d\n", i);
