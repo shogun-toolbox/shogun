@@ -21,6 +21,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  library_hash parameter_set_from_parameters \
 		  parameter_iterate_float64 parameter_iterate_sgobject \
 		  parameter_modsel_parameters \
+		  evaluation_cross_validation_classification \
 		  modelselection_parameter_combination_test \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
