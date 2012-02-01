@@ -157,32 +157,12 @@ void CKernelMachine::set_support_vectors(SGVector<int32_t> svs)
 
 SGVector<int32_t> CKernelMachine::get_support_vectors()
 {
-    int32_t nsv = get_num_support_vectors();
-    int32_t* svs = NULL;
-
-    if (nsv>0)
-    {
-        svs = SG_MALLOC(int32_t, nsv);
-        for(int32_t i=0; i<nsv; i++)
-            svs[i] = get_support_vector(i);
-    }
-
-    return SGVector<int32_t>(svs,nsv);
+	return m_svs;
 }
 
 SGVector<float64_t> CKernelMachine::get_alphas()
 {
-    int32_t nsv = get_num_support_vectors();
-    float64_t* alphas = NULL;
-
-    if (nsv>0)
-    {
-        alphas = SG_MALLOC(float64_t, nsv);
-        for(int32_t i=0; i<nsv; i++)
-            alphas[i] = get_alpha(i);
-    }
-
-    return SGVector<float64_t>(alphas,nsv);
+	return m_alpha;
 }
 
 bool CKernelMachine::create_new_model(int32_t num)
@@ -378,11 +358,12 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 		SG_ERROR("No kernel assigned!\n");
 
 	CFeatures* lhs=kernel->get_lhs();
-	if (!lhs || !lhs->get_num_vectors())
-	{
-		SG_UNREF(lhs);
+	if (!lhs)
+		SG_ERROR("No left hand side specified\n");
+
+	if (!lhs->get_num_vectors())
 		SG_ERROR("No vectors on left hand side\n");
-	}
+
 	kernel->init(lhs, data);
 	SG_UNREF(lhs);
 
