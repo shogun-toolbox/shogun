@@ -66,8 +66,7 @@ bool CKRR::train_machine(CFeatures* data)
 	if (!labels)
 		SG_ERROR("No labels set\n");
 
-	SGVector<float64_t> alpha_orig=labels->get_labels();
-
+	SGVector<float64_t> alpha_orig=labels->get_labels_copy();
 	alpha=CMath::clone_vector(alpha_orig.vector, alpha_orig.vlen);
 
 	if (alpha_orig.vlen!=n)
@@ -75,6 +74,9 @@ bool CKRR::train_machine(CFeatures* data)
 		SG_ERROR("Number of labels does not match number of kernel"
 				" columns (num_labels=%d cols=%d\n", alpha_orig.vlen, n);
 	}
+
+	/* clean up */
+	alpha_orig.destroy_vector();
 
 	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n, alpha, n);
 
@@ -140,6 +142,17 @@ float64_t CKRR::apply(int32_t num)
 
 	SG_FREE(kernel_matrix.matrix);
 	return Yh;
+}
+
+CLabels* CKRR::apply(CFeatures* data)
+{
+	if (!kernel)
+		SG_ERROR("No kernel assigned!\n");
+
+	/* just put data on both sides of kernel */
+	kernel->init(data, data);
+
+	return apply();
 }
 
 #endif
