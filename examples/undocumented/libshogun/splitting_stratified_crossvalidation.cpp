@@ -57,6 +57,10 @@ int main(int argc, char **argv)
 		CStratifiedCrossValidationSplitting* splitting=
 				new CStratifiedCrossValidationSplitting(labels, num_subsets);
 
+		/* build index sets (twice to ensure memory is not leaking) */
+		splitting->build_subsets();
+		splitting->build_subsets();
+
 		for (index_t i=0; i<num_subsets; ++i)
 		{
 			SGVector<index_t> subset=splitting->generate_subset_indices(i);
