@@ -24,7 +24,7 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
+    from shogun.Evaluation import MeanSquaredError
     from shogun.Evaluation import StratifiedCrossValidationSplitting
     from shogun.Features import Labels
     from shogun.Features import RealFeatures
@@ -53,7 +53,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     splitting_strategy=StratifiedCrossValidationSplitting(labels, 5)
 
     # evaluation method
-    evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
+    evaluation_criterium=MeanSquaredError()
 
     # cross-validation instance
     cross_validation=CrossValidation(predictor, features_train, labels,
