@@ -41,11 +41,18 @@ public:
 	virtual ~CMulticlassAccuracy() {};
 
 	/** evaluate accuracy
-	 * @param predicted labels for evaluating
+	 * @param predicted labels to be evaluated
 	 * @param ground_truth labels assumed to be correct
 	 * @return accuracy
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+
+	/** constructs confusion matrix for multiclass classification
+	 * @param predicted labels to be evaluated
+	 * @param ground_truth labels assumed to be correct
+	 * @return confusion matrix
+	 */
+	SGMatrix<int32_t> confusion_matrix(CLabels* predicted, CLabels* ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction()
 	{
