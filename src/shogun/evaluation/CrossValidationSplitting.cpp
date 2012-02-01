@@ -23,11 +23,14 @@ CCrossValidationSplitting::CCrossValidationSplitting(
 		CLabels* labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
-	build_subsets();
 }
 
 void CCrossValidationSplitting::build_subsets()
 {
+	/* ensure that subsets are empty and set flag to filled */
+	reset_subsets();
+	m_is_filled=true;
+
 	/* permute indices */
 	SGVector<index_t> indices(m_labels->get_num_labels());
 	indices.range_fill();
@@ -64,5 +67,4 @@ void CCrossValidationSplitting::build_subsets()
 
 	/* clean up */
 	indices.destroy_vector();
-
 }

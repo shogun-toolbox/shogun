@@ -64,13 +64,13 @@ class CKRR : public CKernelMachine
 		 * @param lab labels
 		 */
 		CKRR(float64_t tau, CKernel* k, CLabels* lab);
-		virtual ~CKRR();
+		virtual ~CKRR() {}
 
 		/** set regularization constant
 		 *
-		 * @param t new tau
+		 * @param tau new tau
 		 */
-		inline void set_tau(float64_t t) { tau = t; };
+		inline void set_tau(float64_t tau) { m_tau = tau; };
 
 		/** classify regression
 		 *
@@ -123,10 +123,11 @@ class CKRR : public CKernelMachine
 		virtual bool train_machine(CFeatures* data=NULL);
 
 	private:
-		/** alpha */
-		float64_t *alpha;
+		void init();
+
+	private:
 		/** regularization parameter tau */
-		float64_t tau;
+		float64_t m_tau;
 };
 }
 #endif // HAVE_LAPACK

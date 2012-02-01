@@ -89,11 +89,11 @@ public:
 	 * @param features features to use for cross-validation
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
-	 * @param evaluation_criterium evaluation criterium to use
+	 * @param evaluation_criterion evaluation criterion to use
 	 */
 	CCrossValidation(CMachine* machine, CFeatures* features, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CEvaluation* evaluation_criterium);
+			CEvaluation* evaluation_criterion);
 
 	/** destructor */
 	virtual ~CCrossValidation();
@@ -147,7 +147,7 @@ private:
 	CFeatures* m_features;
 	CLabels* m_labels;
 	CSplittingStrategy* m_splitting_strategy;
-	CEvaluation* m_evaluation_criterium;
+	CEvaluation* m_evaluation_criterion;
 };
 
 }

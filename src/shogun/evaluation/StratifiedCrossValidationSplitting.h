@@ -42,9 +42,9 @@ public:
 	{
 		return "StratifiedCrossValidationSplitting";
 	}
-protected:
+
 	/** implementation of the stratified cross-validation splitting strategy */
-	void build_subsets();
+	virtual void build_subsets();
 };
 }
 
