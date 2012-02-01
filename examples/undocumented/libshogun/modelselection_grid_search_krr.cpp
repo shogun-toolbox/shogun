@@ -34,14 +34,14 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* tau=new CModelSelectionParameters("tau");
 	root->append_child(tau);
-	tau->build_values(-3.0, 3.0, R_EXP);
+	tau->build_values(-1.0, 1.0, R_EXP);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 	CModelSelectionParameters* gaussian_kernel_width=
 			new CModelSelectionParameters("width");
-	gaussian_kernel_width->build_values(0.0, 8.0, R_EXP, 1.0, 2.0);
+	gaussian_kernel_width->build_values(5.0, 8.0, R_EXP, 1.0, 2.0);
 	param_gaussian_kernel->append_child(gaussian_kernel_width);
 	root->append_child(param_gaussian_kernel);
 
@@ -53,7 +53,7 @@ CModelSelectionParameters* create_param_tree()
 
 	CModelSelectionParameters* param_poly_kernel_degree=
 			new CModelSelectionParameters("degree");
-	param_poly_kernel_degree->build_values(1, 3, R_LINEAR);
+	param_poly_kernel_degree->build_values(2, 3, R_LINEAR);
 	param_poly_kernel->append_child(param_poly_kernel_degree);
 
 	return root;
