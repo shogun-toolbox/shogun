@@ -34,7 +34,7 @@ CGridSearchModelSelection::~CGridSearchModelSelection()
 {
 }
 
-CParameterCombination* CGridSearchModelSelection::select_model()
+CParameterCombination* CGridSearchModelSelection::select_model(bool print)
 {
 	/* Retrieve all possible parameter combinations */
 	CDynamicObjectArray<CParameterCombination>* combinations=
@@ -55,6 +55,14 @@ CParameterCombination* CGridSearchModelSelection::select_model()
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
 		CParameterCombination* current_combination=combinations->get_element(i);
+
+		/* eventually print */
+		if (print)
+		{
+			SG_PRINT("trying combination:\n");
+			current_combination->print_tree();
+		}
+
 		current_combination->apply_to_modsel_parameter(
 				machine->m_model_selection_parameters);
 		CrossValidationResult result=m_cross_validation->evaluate();
