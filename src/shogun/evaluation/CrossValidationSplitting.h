@@ -40,9 +40,9 @@ public:
 	{
 		return "CrossValidationSplitting";
 	}
-protected:
+
 	/** implementation of the standard cross-validation splitting strategy */
-	void build_subsets();
+	virtual void build_subsets();
 };
 }
 

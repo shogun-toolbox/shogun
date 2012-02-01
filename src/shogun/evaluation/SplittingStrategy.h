@@ -25,11 +25,17 @@ class CLabels;
  * being accessed by their indices via the method  generate_subset_indices(...).
  *
  * When being extended, the abstract method build_subsets() has to be
- * implemented AND to be called in the constructor of sub-classes.
- * Implementations have to fill the CDynamicArray<index_t> elements in the
+ * implemented.
+ * build_subsets implementations HAVE TO call reset_subsets before, in order
+ * to allow calling them from the outside. Also they HAVE to set the m_is_filled
+ * flag to true (otherwise there will be an error when accessing the index sets)
+ *
+ * Implementations have to (re)fill the CDynamicArray<index_t> elements in the
  * (inherited) m_subset_indices variable. Note that these elements are already
  * created by the constructor of this class - they just have to be filled. Every
  * element represents one index subset.
+ *
+ * Calling the method agains means that the indices are rebuilt.
  */
 class CSplittingStrategy: public CSGObject
 {
@@ -53,6 +59,8 @@ public:
 	 * @param subset_idx subset index of the to be generated vector indices
 	 * @return newly created vector of subset indices of the specified
 	 * subset is written here. do not forget to free_vector
+	 *
+	 * Error if there are no index sets
 	 */
 	SGVector<index_t> generate_subset_indices(index_t subset_idx);
 
@@ -62,34 +70,44 @@ public:
 	 * @param subset_idx subset index of the to be generated inverse indices
 	 * @return newly created vector of the subset's inverse indices is
 	 * written here. do not forget to free_vector
+	 *
+	 * Error if there are no index sets
 	 */
 	SGVector<index_t> generate_subset_inverse(index_t subset_idx);
 
-	/** @return number of subsets */
-	index_t get_num_subsets() const {
-		return m_subset_indices->get_num_elements();
-	}
+	/** @return number of subsets. */
+	index_t get_num_subsets() const;
 
-	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const	{ return "SplittingStrategy"; }
-
-protected:
 	/** Abstract method.
-	 * Has to fill the elements of the m_subset_indices variable with concrete
-	 * indices. Note that CDynamicArray<index_t> instances for every subset are
+	 * Has to refill the elements of the m_subset_indices variable with concrete
+	 * indices. Note that virtual const char* get_name() const = 0;CDynamicArray<index_t> instances for every subset are
 	 * created in the constructor of this class - they just have to be filled.
 	 */
 	virtual void build_subsets()=0;
 
+protected:
+	/** resets the current subsets, meaning that all the arrays of indices will
+	 * be empty again. To be called before build_subsets. */
+	void reset_subsets();
+
 private:
 	void init();
+
 
 protected:
 
 	/** labels */
 	CLabels* m_labels;
+
 	/** subset indices */
 	CDynamicObjectArray<CDynamicArray<index_t> >* m_subset_indices;
+
+	/** additional variable to store number of index subsets */
+	index_t m_num_subsets;
+
+	/** flag to check whether there is a set of index sets stored. If not,
+	 * call build_subsets() */
+	bool m_is_filled;
 };
 }
 
