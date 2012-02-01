@@ -153,7 +153,7 @@ SGVector<float64_t> CLabels::get_labels()
 SGVector<float64_t> CLabels::get_labels_copy()
 {
 	index_t num_labels=get_num_labels();
-	SGVector<float64_t> result(NULL, num_labels);
+	SGVector<float64_t> result(NULL, num_labels, true);
 
 	/* in case of subset, simply clone vector, else copy element wise */
 	if (!m_subset)
