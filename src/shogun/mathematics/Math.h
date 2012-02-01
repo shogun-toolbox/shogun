@@ -629,7 +629,8 @@ class CMath : public CSGObject
 		template <class T>
 			static void fill_vector(T* vec, int32_t len, T value)
 			{
-				memset(vec, value, sizeof(T)*len);
+				for (index_t i=0; i<len; ++i)
+					vec[i]=value;
 			}
 		template <class T>
 			static void range_fill_vector(T* vec, int32_t len, T start=0)
