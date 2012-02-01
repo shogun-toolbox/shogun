@@ -43,9 +43,11 @@ public:
 
 	/**
 	 * abstract method to select model
+	 *
+	 * @param print if true, the current combination is printed
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model()=0;
+	virtual CParameterCombination* select_model(bool print=false)=0;
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const	{ return "ModelSelection"; }
