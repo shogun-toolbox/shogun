@@ -70,7 +70,7 @@ class CKRR : public CKernelMachine
 		 *
 		 * @param tau new tau
 		 */
-		inline void set_tau(float64_t tau) { tau = t; };
+		inline void set_tau(float64_t tau) { m_tau = tau; };
 
 		/** classify regression
 		 *
@@ -127,7 +127,7 @@ class CKRR : public CKernelMachine
 
 	private:
 		/** regularization parameter tau */
-		float64_t tau;
+		float64_t m_tau;
 };
 }
 #endif // HAVE_LAPACK

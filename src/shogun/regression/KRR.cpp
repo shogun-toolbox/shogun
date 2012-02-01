@@ -38,7 +38,7 @@ void CKRR::init()
 {
 	m_tau=1e-6;
 
-	SG_ADD(&m_tau, "m_tau", "Regularization parameter", MS_AVAILABLE);
+	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
 }
 
 bool CKRR::train_machine(CFeatures* data)
@@ -59,7 +59,7 @@ bool CKRR::train_machine(CFeatures* data)
 	ASSERT(kernel_matrix.matrix && m>0 && n>0);
 
 	for(int32_t i=0; i < n; i++)
-		kernel_matrix.matrix[i+i*n]+=tau;
+		kernel_matrix.matrix[i+i*n]+=m_tau;
 
 	// Get labels
 	if (!labels)
