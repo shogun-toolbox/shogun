@@ -60,4 +60,4 @@ def evaluation_cross_validation_classification(traindat=traindat, label_traindat
 
 if __name__=='__main__':
 	print 'Evaluation CrossValidationClassification'
-	modelselection_grid_search_linear_modular(*parameter_list[0])
+	evaluation_cross_validation_classification(*parameter_list[0])
