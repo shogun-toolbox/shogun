@@ -68,9 +68,9 @@ class CKRR : public CKernelMachine
 
 		/** set regularization constant
 		 *
-		 * @param t new tau
+		 * @param tau new tau
 		 */
-		inline void set_tau(float64_t t) { tau = t; };
+		inline void set_tau(float64_t tau) { tau = t; };
 
 		/** classify regression
 		 *
@@ -121,6 +121,9 @@ class CKRR : public CKernelMachine
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
+
+	private:
+		void init();
 
 	private:
 		/** regularization parameter tau */
