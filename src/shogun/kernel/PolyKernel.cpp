@@ -72,8 +72,8 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CPolyKernel::init()
 {
-	m_parameters->add(&degree, "degree");
-	m_parameters->add(&inhomogene, "inhomogene",
-					  "If kernel is inhomogeneous.");
+	SG_ADD(&degree, "degree", "Degree of polynomial kernel", MS_AVAILABLE);
+	SG_ADD(&inhomogene, "inhomogene", "If kernel is inhomogeneous.",
+			MS_NOT_AVAILABLE);
 }
 
