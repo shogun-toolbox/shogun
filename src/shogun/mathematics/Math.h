@@ -416,6 +416,11 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
+		static inline float64_t sin(float64_t x)
+		{
+			return ::sin(x);
+		}
+
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
 			ASSERT(len>0 && xy);
@@ -618,16 +623,13 @@ class CMath : public CSGObject
 			static T* clone_vector(const T* vec, int32_t len)
 			{
 				T* result = SG_MALLOC(T, len);
-				for (int32_t i=0; i<len; i++)
-					result[i]=vec[i];
-
+				memcpy(result, vec, sizeof(T)*len);
 				return result;
 			}
 		template <class T>
 			static void fill_vector(T* vec, int32_t len, T value)
 			{
-				for (int32_t i=0; i<len; i++)
-					vec[i]=value;
+				memset(vec, value, sizeof(T)*len);
 			}
 		template <class T>
 			static void range_fill_vector(T* vec, int32_t len, T start=0)
