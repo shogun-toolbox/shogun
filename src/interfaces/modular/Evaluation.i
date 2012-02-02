@@ -15,7 +15,7 @@
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
 %rename(MeanAbsoluteError) CMeanAbsoluteError;
 %rename(MeanSquaredError) CMeanSquaredError;
-%rename(MeanSquaredError) CMeanSquaredLogError;
+%rename(MeanSquaredLogError) CMeanSquaredLogError;
 %rename(ROCEvaluation) CROCEvaluation;
 %rename(PRCEvaluation) CPRCEvaluation;
 %rename(AccuracyMeasure) CAccuracyMeasure;
