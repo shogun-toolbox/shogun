@@ -119,6 +119,12 @@ void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 		"cross-validation\n", conf_int_alpha);
 	}
 
+	if (m_num_runs==1)
+	{
+		SG_ERROR("Confidence interval for Cross-Validation only possible"
+				" when number of runs is >1\n");
+	}
+
 	m_conf_int_alpha=conf_int_alpha;
 }
 
