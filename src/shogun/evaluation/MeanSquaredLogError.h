@@ -22,8 +22,8 @@ class CLabels;
 /** @brief Class CMeanSquaredLogError
  * used to compute an error of regression model.
  *
- * Formally, for real labels \f$ L,R, |L|=|R|, L_i, R_i \geq 0\f$ mean squared
- * error (MSE) is estimated as
+ * Formally, for real labels \f$ L,R, |L|=|R|, L_i, R_i > -1\f$ mean squared
+ * log error is estimated as
  *
  * \f[
  * 		\sqrt{\frac{1}{|L|} \sum_{i=1}^{|L|} (\log{L_i+1} - \log{R_i+1})^2}
