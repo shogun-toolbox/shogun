@@ -24,8 +24,8 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-    from shogun.Evaluation import StratifiedCrossValidationSplitting
+    from shogun.Evaluation import MeanSquaredError
+    from shogun.Evaluation import CrossValidationSplitting
     from shogun.Features import Labels
     from shogun.Features import RealFeatures
     from shogun.Regression import KRR
@@ -46,10 +46,10 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
     # "StratifiedCrossValidationSplitting" is also available
-    splitting_strategy=StratifiedCrossValidationSplitting(labels, 5)
+    splitting_strategy=CrossValidationSplitting(labels, 5)
 
     # evaluation method
-    evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
+    evaluation_criterium=MeanSquaredError()
 
     # cross-validation instance
     cross_validation=CrossValidation(predictor, features_train, labels,
