@@ -32,6 +32,11 @@ CModelSelectionParameters* create_param_tree()
 	c->build_values(1, 2, R_EXP);
 
 	CPowerKernel* power_kernel=new CPowerKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	power_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_power_kernel=
 			new CModelSelectionParameters("kernel", power_kernel);
 
@@ -43,6 +48,11 @@ CModelSelectionParameters* create_param_tree()
 	param_power_kernel->append_child(param_power_kernel_degree);
 
 	CMinkowskiMetric* m_metric=new CMinkowskiMetric(10);
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	m_metric->print_modsel_params();
+
 	CModelSelectionParameters* param_power_kernel_metric1=
 			new CModelSelectionParameters("distance", m_metric);
 
@@ -54,6 +64,11 @@ CModelSelectionParameters* create_param_tree()
 	param_power_kernel_metric1->append_child(param_power_kernel_metric1_k);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	gaussian_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 
@@ -65,6 +80,11 @@ CModelSelectionParameters* create_param_tree()
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	ds_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters("kernel",
 			ds_kernel);
 
