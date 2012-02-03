@@ -79,6 +79,11 @@ int main(int argc, char **argv)
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	classifier->print_modsel_params();
+
+
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
 	param_tree->print_tree();

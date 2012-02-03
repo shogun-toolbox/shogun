@@ -41,6 +41,11 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
 
     # kernel
     kernel=GaussianKernel(features_train, features_train, width)
+    
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    kernel.print_modsel_params()
+    
     labels=Labels(label_train)
 
     # predictor
@@ -66,6 +71,9 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     # for this toy example)
     cross_validation.set_conf_int_alpha(0.05)
 
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    predictor.print_modsel_params()
 
     # build parameter tree to select C1 and C2 
     param_tree_root=ModelSelectionParameters()

@@ -62,9 +62,12 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     # for this toy example)
     cross_validation.set_conf_int_alpha(0.05)
 
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    predictor.print_modsel_params("\t")
+
     # build parameter tree to select regularization parameter
     param_tree_root=create_param_tree()
-    
 
     # model selection instance
     model_selection=GridSearchModelSelection(param_tree_root,
@@ -72,7 +75,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
 
     # perform model selection with selected methods
     #print "performing model selection of"
-    print "parameter tree"
+    print "parameter tree:"
     param_tree_root.print_tree()
     
     print "starting model selection"
@@ -110,6 +113,11 @@ def create_param_tree():
 
     # gaussian kernel with width
     gaussian_kernel=GaussianKernel()
+    
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    gaussian_kernel.print_modsel_params()
+    
     param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
     gaussian_kernel_width=ModelSelectionParameters("width");
     gaussian_kernel_width.build_values(5.0, 8.0, R_EXP, 1.0, 2.0)
@@ -118,6 +126,11 @@ def create_param_tree():
 
     # polynomial kernel with degree
     poly_kernel=PolyKernel()
+    
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    poly_kernel.print_modsel_params()
+    
     param_poly_kernel=ModelSelectionParameters("kernel", poly_kernel)
 
     root.append_child(param_poly_kernel)

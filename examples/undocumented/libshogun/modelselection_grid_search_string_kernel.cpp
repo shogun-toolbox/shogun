@@ -41,6 +41,12 @@ CModelSelectionParameters* create_param_tree()
 	c2->build_values(1.0, 2.0, R_EXP);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	ds_kernel->print_modsel_params();
+
+
 	CModelSelectionParameters* param_ds_kernel=
 			new CModelSelectionParameters("kernel", ds_kernel);
 	root->append_child(param_ds_kernel);
@@ -115,6 +121,10 @@ int main(int argc, char **argv)
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 	cross->set_num_runs(2);
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	classifier->print_modsel_params();
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
