@@ -37,6 +37,11 @@ CModelSelectionParameters* create_param_tree()
 	tau->build_values(-1.0, 1.0, R_EXP);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	gaussian_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 	CModelSelectionParameters* gaussian_kernel_width=
@@ -46,6 +51,11 @@ CModelSelectionParameters* create_param_tree()
 	root->append_child(param_gaussian_kernel);
 
 	CPolyKernel* poly_kernel=new CPolyKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	poly_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_poly_kernel=
 	new CModelSelectionParameters("kernel", poly_kernel);
 
@@ -104,6 +114,10 @@ void test_cross_validation()
 
 	cross->set_num_runs(3);
 	cross->set_conf_int_alpha(0.05);
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	krr->print_modsel_params();
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();

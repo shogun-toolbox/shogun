@@ -32,6 +32,11 @@ CModelSelectionParameters* build_complex_example_tree()
 	c->build_values(1.0, 1.0, R_EXP);
 
 	CPowerKernel* power_kernel=new CPowerKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	power_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_power_kernel=
 			new CModelSelectionParameters("kernel", power_kernel);
 
@@ -54,6 +59,11 @@ CModelSelectionParameters* build_complex_example_tree()
 	param_power_kernel_metric1->append_child(param_power_kernel_metric1_k);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	gaussian_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 
@@ -65,6 +75,11 @@ CModelSelectionParameters* build_complex_example_tree()
 	param_gaussian_kernel->append_child(param_gaussian_kernel_width);
 
 	CDistantSegmentsKernel* ds_kernel=new CDistantSegmentsKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	ds_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_ds_kernel=new CModelSelectionParameters("kernel",
 			ds_kernel);
 
@@ -125,6 +140,11 @@ CModelSelectionParameters* build_root_sg_object_child_tree()
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 
 	CPowerKernel* power_kernel=new CPowerKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	power_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_power_kernel=
 			new CModelSelectionParameters("kernel", power_kernel);
 
@@ -138,6 +158,11 @@ CModelSelectionParameters* build_root_sg_object_child_value_child_tree()
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 
 	CPowerKernel* power_kernel=new CPowerKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	power_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_power_kernel=
 			new CModelSelectionParameters("kernel", power_kernel);
 
