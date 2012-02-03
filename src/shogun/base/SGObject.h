@@ -261,6 +261,9 @@ public:
 	 * selection */
 	SGStringList<char> get_modelsel_names();
 
+	/** prints all parameter registered for model selection and their type */
+	void print_modsel_params();
+
 	/** Returns description of a given parameter string, if it exists. SG_ERROR
 	 * otherwise
 	 *

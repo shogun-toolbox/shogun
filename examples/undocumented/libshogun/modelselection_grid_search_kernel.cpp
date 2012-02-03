@@ -43,6 +43,11 @@ CModelSelectionParameters* create_param_tree()
 	c2->build_values(-1.0, 1.0, R_EXP);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	gaussian_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 	CModelSelectionParameters* gaussian_kernel_width=
@@ -52,6 +57,11 @@ CModelSelectionParameters* create_param_tree()
 	root->append_child(param_gaussian_kernel);
 
 	CPowerKernel* power_kernel=new CPowerKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	power_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_power_kernel=
 	new CModelSelectionParameters("kernel", power_kernel);
 
@@ -63,6 +73,11 @@ CModelSelectionParameters* create_param_tree()
 	param_power_kernel->append_child(param_power_kernel_degree);
 
 	CMinkowskiMetric* m_metric=new CMinkowskiMetric(10);
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	m_metric->print_modsel_params();
+
 	CModelSelectionParameters* param_power_kernel_metric1=
 			new CModelSelectionParameters("distance", m_metric);
 
@@ -113,6 +128,10 @@ int main(int argc, char **argv)
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 	cross->set_num_runs(1);
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	classifier->print_modsel_params();
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();

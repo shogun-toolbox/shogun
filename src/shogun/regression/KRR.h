@@ -85,6 +85,13 @@ class CKRR : public CKernelMachine
 		 */
 		virtual float64_t apply(int32_t num);
 
+		/** apply kernel machine to data
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CLabels* apply(CFeatures* data);
+
 		/** load regression from file
 		 *
 		 * @param srcfile file to load from

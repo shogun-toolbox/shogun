@@ -2428,8 +2428,16 @@ void Parameter::set_from_parameters(Parameter* params)
 				}
 				else
 				{
-					SG_SERROR("given parameter name %s has a different type"
-							" than existing one\n", current->m_name);
+					index_t l=200;
+					char* given_type=SG_MALLOC(char, l);
+					char* own_type=SG_MALLOC(char, l);
+					current->m_datatype.to_string(given_type, l);
+					own->m_datatype.to_string(own_type, l);
+					SG_SERROR("given parameter \"%s\" has a different type (%s)"
+							" than existing one (%s)\n", current->m_name,
+							given_type, own_type);
+					SG_FREE(given_type);
+					SG_FREE(own_type);
 				}
 			}
 			else

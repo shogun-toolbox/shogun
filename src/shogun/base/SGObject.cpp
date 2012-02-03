@@ -987,6 +987,30 @@ void CSGObject::init()
 	m_load_post_called = false;
 }
 
+void CSGObject::print_modsel_params()
+{
+	SG_PRINT("parameters available for model selection for %s:\n", get_name());
+
+	index_t num_param=m_model_selection_parameters->get_num_parameters();
+
+	if (!num_param)
+		SG_PRINT("\tnone\n");
+
+	for (index_t i=0; i<num_param; i++)
+	{
+		TParameter* current=m_model_selection_parameters->get_parameter(i);
+		index_t  l=200;
+		char* type=SG_MALLOC(char, l);
+		if (type)
+		{
+			current->m_datatype.to_string(type, l);
+			SG_PRINT("\t%s (%s): %s\n", current->m_name, current->m_description,
+					type);
+			SG_FREE(type);
+		}
+	}
+}
+
 SGStringList<char> CSGObject::get_modelsel_names()
 {
     index_t num_param=m_model_selection_parameters->get_num_parameters();
