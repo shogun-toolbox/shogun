@@ -32,6 +32,11 @@ CModelSelectionParameters* create_param_tree()
 	c->build_values(1.0, 2.0, R_EXP);
 
 	CGaussianKernel* gaussian_kernel=new CGaussianKernel();
+
+	/* print all parameter available for modelselection
+	 * Dont worry if yours is not included, simply write to the mailing list */
+	gaussian_kernel->print_modsel_params();
+
 	CModelSelectionParameters* param_gaussian_kernel=
 			new CModelSelectionParameters("kernel", gaussian_kernel);
 
