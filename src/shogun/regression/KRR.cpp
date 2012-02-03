@@ -148,4 +148,9 @@ float64_t CKRR::apply(int32_t num)
 	return Yh;
 }
 
+CLabels* CKRR::apply(CFeatures* data)
+{
+	return CKernelMachine::apply(data);
+}
+
 #endif
