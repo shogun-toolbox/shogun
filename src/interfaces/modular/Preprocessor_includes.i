@@ -5,6 +5,7 @@
 #include <shogun/preprocessor/SparsePreprocessor.h>
 
 #include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/SumOne.h>
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/LogPlusOne.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
