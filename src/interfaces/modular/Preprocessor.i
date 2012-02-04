@@ -11,6 +11,7 @@
 /* Remove C Prefix */
 %rename(Preprocessor) CPreprocessor;
 %rename(SparsePreprocessor) CSparsePreprocessor;
+%rename(SumOne) CSumOne;
 %rename(NormOne) CNormOne;
 %rename(LogPlusOne) CLogPlusOne;
 %rename(PruneVarSubMean) CPruneVarSubMean;
@@ -93,6 +94,7 @@ namespace shogun
 }
 %include <shogun/preprocessor/SparsePreprocessor.h>
 %include <shogun/preprocessor/NormOne.h>
+%include <shogun/preprocessor/SumOne.h>
 %include <shogun/preprocessor/LogPlusOne.h>
 %include <shogun/preprocessor/PruneVarSubMean.h>
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
