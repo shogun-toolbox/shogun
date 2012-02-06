@@ -21,14 +21,15 @@ CDistantSegmentsKernel::CDistantSegmentsKernel() : CStringKernel<char>(),
 }
 
 CDistantSegmentsKernel::CDistantSegmentsKernel(int32_t size, int32_t delta,
-		int32_t theta) : CStringKernel<char>(), m_delta(delta), m_theta(theta)
+		int32_t theta) : CStringKernel<char>(size), m_delta(delta),
+		m_theta(theta)
 {
 	init();
 }
 
 CDistantSegmentsKernel::CDistantSegmentsKernel(CStringFeatures<char>* l,
 		CStringFeatures<char>* r, int32_t size, int32_t delta, int32_t theta) :
-	CStringKernel<char>(), m_delta(delta), m_theta(theta)
+	CStringKernel<char>(size), m_delta(delta), m_theta(theta)
 {
 	init();
 	CStringKernel<char>::init(l, r);
@@ -121,7 +122,7 @@ int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 			}
 		}
 	}
-	delete l_;
-	delete i_;
+	SG_FREE(l_);
+	SG_FREE(i_);
 	return c;
 }
