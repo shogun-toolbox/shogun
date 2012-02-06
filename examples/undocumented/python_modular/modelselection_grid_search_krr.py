@@ -64,7 +64,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    predictor.print_modsel_params("\t")
+    predictor.print_modsel_params()
 
     # build parameter tree to select regularization parameter
     param_tree_root=create_param_tree()
