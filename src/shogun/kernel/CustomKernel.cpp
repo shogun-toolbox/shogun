@@ -79,3 +79,22 @@ void CCustomKernel::cleanup()
 	CKernel::cleanup();
 }
 
+SGMatrix<float32_t> CCustomKernel::get_kernel_matrix_row_subset(
+		SGVector<index_t> indices)
+{
+	/* generate subset of kernel matrix */
+	index_t num_rows=indices.vlen;
+	index_t num_cols=get_num_vec_rhs();
+	SGMatrix<float32_t> subset_k(num_rows, num_cols);
+	for (index_t col=0; col<num_cols; ++col)
+	{
+		for (index_t row=0; row<num_rows; ++row)
+		{
+			index_t to=num_rows*col+row;
+			index_t from=get_num_vec_lhs()*col+indices.vector[row];
+			subset_k.matrix[to]=kmatrix.matrix[from];
+		}
+	}
+
+	return subset_k;
+}
