@@ -49,7 +49,6 @@ CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
 	SG_UNREF(m_custom_kernel);
-	SG_UNREF(m_label_backup);
 	SG_UNREF(m_kernel_backup);
 
 	SG_FREE(m_alpha.vector);
@@ -467,9 +466,7 @@ void CKernelMachine::data_lock()
 	/* unref possible old custom kernel */
 	SG_UNREF(m_custom_kernel);
 
-	/* backup reference to old labels and kernel */
-	m_label_backup=labels;
-	SG_REF(m_label_backup);
+	/* backup reference to old kernel */
 	m_kernel_backup=kernel;
 	SG_REF(m_kernel_backup);
 
@@ -478,22 +475,14 @@ void CKernelMachine::data_lock()
 	m_custom_kernel=new CCustomKernel(kernel);
 	SG_REF(m_custom_kernel);
 	SG_PRINT("done\n");
+
+	/* dont forget to call superclass method */
+	CMachine::data_lock();
 }
 
 void CKernelMachine::data_unlock()
 {
 	SG_UNREF(m_custom_kernel);
-
-	/* restore original labels, possibly delete created ones */
-	if (m_label_backup)
-	{
-		/* check if labels were created in train_locked */
-		if (labels!=m_label_backup)
-			SG_UNREF(labels);
-
-		labels=m_label_backup;
-		m_label_backup=NULL;
-	}
 
 	/* restore original kernel, possibly delete created one */
 	if (m_kernel_backup)
@@ -505,6 +494,9 @@ void CKernelMachine::data_unlock()
 		kernel=m_kernel_backup;
 		m_kernel_backup=NULL;
 	}
+
+	/* dont forget to call superclass method */
+	CMachine::data_unlock();
 }
 
 void CKernelMachine::init()
@@ -521,8 +513,6 @@ void CKernelMachine::init()
 	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
 	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
 			" data lock", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_label_backup, "label_backup",
-			"Label backup for data lock", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
 			"Kernel backup for data lock", MS_NOT_AVAILABLE);
 	SG_ADD(&use_batch_computation, "use_batch_computation",

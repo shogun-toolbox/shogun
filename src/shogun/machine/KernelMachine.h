@@ -249,8 +249,6 @@ class CKernelMachine : public CMachine
 		CCustomKernel* m_custom_kernel;
 		/** TODO */
 		CKernel* m_kernel_backup;
-		/** TODO */
-		CLabels* m_label_backup;
 		/** if batch computation is enabled */
 		bool use_batch_computation;
 		/** if linadd is enabled */

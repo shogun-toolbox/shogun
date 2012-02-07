@@ -16,7 +16,7 @@
 using namespace shogun;
 
 CMachine::CMachine() : CSGObject(), max_train_time(0), labels(NULL),
-	solver_type(ST_AUTO)
+		m_label_backup(NULL), solver_type(ST_AUTO)
 {
 	m_parameters->add(&max_train_time, "max_train_time",
 					  "Maximum training time.");
@@ -24,13 +24,16 @@ CMachine::CMachine() : CSGObject(), max_train_time(0), labels(NULL),
 	m_parameters->add((CSGObject**) &labels, "labels");
 	m_parameters->add(&m_store_model_features, "store_model_features",
 			"Should feature data of model be stored after training?");
+	SG_ADD((CSGObject**) &m_label_backup, "label_backup",
+			"Label backup for data lock", MS_NOT_AVAILABLE);
 
 	m_store_model_features=false;
 }
 
 CMachine::~CMachine()
 {
-    SG_UNREF(labels);
+	SG_UNREF(labels);
+	SG_UNREF(m_label_backup);
 }
 
 bool CMachine::train(CFeatures* data)
@@ -114,4 +117,27 @@ void CMachine::set_store_model_features(bool store_model)
 	m_store_model_features = store_model;
 }
 
+void CMachine::data_lock()
+{
+	/* dont lock twice */
+	if (m_label_backup)
+		SG_ERROR("CMachine::data_lock() already called. Unlock before!\n");
 
+	/* backup reference to old labels */
+	m_label_backup=labels;
+	SG_REF(m_label_backup);
+}
+
+void CMachine::data_unlock()
+{
+	/* restore original labels, possibly delete created ones */
+	if (m_label_backup)
+	{
+		/* check if labels were created in train_locked */
+		if (labels!=m_label_backup)
+			SG_UNREF(labels);
+
+		labels=m_label_backup;
+		m_label_backup=NULL;
+	}
+}
