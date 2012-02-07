@@ -209,6 +209,12 @@ class CMachine : public CSGObject
 		 */
 		virtual void set_store_model_features(bool store_model);
 
+		virtual bool train_locked(SGVector<index_t> indices)
+		{
+			SG_ERROR("train(SGVector<index_t>) is not yet implemented for %s\n",
+					get_name());
+			return false;
+		}
 	protected:
 		/** train machine
 		 *
@@ -226,6 +232,14 @@ class CMachine : public CSGObject
 					get_name());
 			return false;
 		}
+
+		virtual void data_lock()
+		{
+			SG_ERROR("data_lock is not yet implemented for %s!\n",
+					get_name());
+		}
+
+		virtual void data_unlock() {}
 
 		/** Stores feature data of underlying model.
 		 * After this method has been called, it is possible to change

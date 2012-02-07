@@ -34,6 +34,8 @@ CMachine::~CMachine()
 
 bool CMachine::train(CFeatures* data)
 {
+	data_unlock();
+
 	bool result = train_machine(data);
 
 	if (m_store_model_features)
