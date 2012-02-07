@@ -252,6 +252,10 @@ class CCustomKernel: public CKernel
 			return true;
 		}
 
+		/** TODO */
+		SGMatrix<float32_t> get_kernel_matrix_row_subset(
+				SGVector<index_t> row_indices);
+
 		/** get number of vectors of lhs features
 		 *
 		 * @return number of vectors of left-hand side
