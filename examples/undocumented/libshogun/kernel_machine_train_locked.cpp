@@ -1,0 +1,121 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2012 Heiko Strathmann
+ * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
+ */
+
+#include <shogun/base/init.h>
+#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/Labels.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/classifier/svm/LibSVM.h>
+
+using namespace shogun;
+
+void print_message(FILE* target, const char* str)
+{
+	fprintf(target, "%s", str);
+}
+
+void test()
+{
+	/* data matrix dimensions */
+	index_t num_vectors=4;
+	index_t num_features=1;
+
+	/* data means -1, 1 in all components, std deviation of 3 */
+	SGVector<float64_t> mean_1(num_features);
+	SGVector<float64_t> mean_2(num_features);
+	CMath::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
+	CMath::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
+	float64_t sigma=3;
+
+	CMath::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
+	CMath::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
+
+	/* fill data matrix around mean */
+	SGMatrix<float64_t> train_dat(num_features, num_vectors);
+	for (index_t i=0; i<num_vectors; ++i)
+	{
+		for (index_t j=0; j<num_features; ++j)
+		{
+			float64_t mean=i<num_vectors/2 ? mean_1.vector[0] : mean_2.vector[0];
+			train_dat.matrix[i*num_features+j]=CMath::normal_random(mean, sigma);
+		}
+	}
+
+	/* training features */
+	CSimpleFeatures<float64_t>* features=
+			new CSimpleFeatures<float64_t>(train_dat);
+	SG_REF(features);
+
+	/* training labels +/- 1 for each cluster */
+	SGVector<float64_t> lab(num_vectors);
+	for (index_t i=0; i<num_vectors; ++i)
+		lab.vector[i]=i<num_vectors/2 ? -1.0 : 1.0;
+
+	CLabels* labels=new CLabels(lab);
+
+	/* gaussian kernel */
+	int32_t kernel_cache=100;
+	int32_t width=10;
+	CGaussianKernel* kernel=new CGaussianKernel(kernel_cache, width);
+	kernel->init(features, features);
+
+	/* create svm via libsvm */
+	float64_t svm_C=10;
+	float64_t svm_eps=0.0001;
+	CLibSVM* svm=new CLibSVM(svm_C, kernel, labels);
+	svm->set_epsilon(svm_eps);
+
+	SGVector<index_t> indices(3);
+	indices.range_fill();
+	CMath::display_vector(indices.vector, indices.vlen, "training indices");
+	svm->train_locked(indices);
+	for (index_t i=0; i<indices.vlen; ++i)
+		SG_SPRINT("%f\n", svm->apply(i));
+
+	indices.vector[0]=1;
+	indices.vector[1]=2;
+	indices.vector[2]=3;
+	CMath::display_vector(indices.vector, indices.vlen, "training indices");
+	svm->train_locked(indices);
+	for (index_t i=0; i<indices.vlen; ++i)
+		SG_SPRINT("%f\n", svm->apply(i));
+
+	indices.destroy_vector();
+	indices=SGVector<index_t>(4);
+	indices.range_fill();
+	CMath::display_vector(indices.vector, indices.vlen, "training indices");
+	svm->train_locked(indices);
+	for (index_t i=0; i<indices.vlen; ++i)
+		SG_SPRINT("%f\n", svm->apply(i));
+
+	svm->train();
+	CLabels* output=svm->apply();
+	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
+	SG_UNREF(output);
+
+	/* clean up */
+	SG_UNREF(svm);
+	SG_UNREF(features);
+	mean_1.destroy_vector();
+	mean_2.destroy_vector();
+	indices.destroy_vector();
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun(&print_message, &print_message, &print_message);
+
+	test();
+
+	exit_shogun();
+
+	return 0;
+}
+

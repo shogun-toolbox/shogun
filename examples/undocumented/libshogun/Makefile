@@ -65,6 +65,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  classifier_conjugateindex \
 		  classifier_gaussiannaivebayes \
 		  library_cover_tree \
+		  kernel_machine_train_locked \
 
 all: $(TARGETS)
 
