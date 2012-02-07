@@ -76,7 +76,7 @@ void test()
 	indices.range_fill();
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	for (index_t i=0; i<indices.vlen; ++i)
+	for (index_t i=0; i<num_vectors; ++i)
 		SG_SPRINT("%f\n", svm->apply(i));
 
 	indices.vector[0]=1;
@@ -84,7 +84,7 @@ void test()
 	indices.vector[2]=3;
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	for (index_t i=0; i<indices.vlen; ++i)
+	for (index_t i=0; i<num_vectors; ++i)
 		SG_SPRINT("%f\n", svm->apply(i));
 
 	indices.destroy_vector();
@@ -92,9 +92,10 @@ void test()
 	indices.range_fill();
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	for (index_t i=0; i<indices.vlen; ++i)
+	for (index_t i=0; i<num_vectors; ++i)
 		SG_SPRINT("%f\n", svm->apply(i));
 
+	SG_SPRINT("normal train\n");
 	svm->train();
 	CLabels* output=svm->apply();
 	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
