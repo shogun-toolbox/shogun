@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/Labels.h>
 #include <shogun/machine/Machine.h>
 
@@ -219,6 +220,8 @@ class CKernelMachine : public CMachine
 		 */
 		static void* apply_helper(void* p);
 
+		virtual bool train_locked(SGVector<index_t> indices);
+
 	protected:
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
@@ -228,6 +231,12 @@ class CKernelMachine : public CMachine
 		 */
 		virtual void store_model_features();
 
+		/** TODO */
+		virtual void data_lock();
+
+		/** TODO */
+		virtual void data_unlock();
+
     private:
         /** register parameters and do misc init */
         void init();
@@ -235,6 +244,12 @@ class CKernelMachine : public CMachine
 	protected:
 		/** kernel */
 		CKernel* kernel;
+		/** TODO data lock custom kernel */
+		CCustomKernel* m_custom_kernel;
+		/** TODO */
+		CKernel* m_kernel_backup;
+		/** TODO */
+		CLabels* m_label_backup;
 		/** if batch computation is enabled */
 		bool use_batch_computation;
 		/** if linadd is enabled */

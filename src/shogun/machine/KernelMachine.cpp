@@ -47,6 +47,9 @@ CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
 CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
+	SG_UNREF(m_custom_kernel);
+	SG_UNREF(m_label_backup);
+	SG_UNREF(m_kernel_backup);
 
 	SG_FREE(m_alpha.vector);
 	SG_FREE(m_svs.vector);
@@ -359,10 +362,15 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 
 	CFeatures* lhs=kernel->get_lhs();
 	if (!lhs)
-		SG_ERROR("No left hand side specified\n");
+		SG_ERROR("%s: No left hand side specified\n", get_name());
 
 	if (!lhs->get_num_vectors())
-		SG_ERROR("No vectors on left hand side\n");
+	{
+		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
+				" an implementation error in %s, where it was forgotten to set "
+				"the data (m_svs) indices\n", get_name(),
+				data->get_name());
+	}
 
 	kernel->init(lhs, data);
 	SG_UNREF(lhs);
@@ -413,7 +421,7 @@ void CKernelMachine::store_model_features()
 	SG_UNREF(lhs);
 
 	/* now sv indices are just the identity */
-	CMath::range_fill_vector(m_svs.vector, m_svs.vlen, 0);
+	m_svs.range_fill();
 
 	/* set new lhs to kernel */
 	kernel->init(sv_features, rhs);
@@ -421,15 +429,101 @@ void CKernelMachine::store_model_features()
 	SG_UNREF(rhs);
 }
 
+bool CKernelMachine::train_locked(SGVector<index_t> indices)
+{
+	if (!m_custom_kernel)
+		data_lock();
+
+	/* TODO this float32_t stuff is ugly :( */
+	SGMatrix<float32_t> subset_k=m_custom_kernel->
+			get_kernel_matrix_row_subset(indices);
+
+	/* create custom kernel with subset of data to train on */
+	CCustomKernel* subset_kernel=new CCustomKernel();
+	subset_kernel->set_full_kernel_matrix_from_full(subset_k);
+
+	/* get rid of old kernel and use this one */
+	SG_UNREF(kernel);
+	kernel=subset_kernel;
+	SG_REF(kernel);
+
+	/* create corresponding labels subsets are IGNORED */
+	SGVector<index_t> indices_copy(indices);
+	indices_copy.vector=CMath::clone_vector(indices.vector, indices.vlen);
+	m_label_backup->set_subset(new CSubset(indices_copy));
+	SG_UNREF(labels);
+	labels=new CLabels(m_label_backup->get_labels_copy());
+	SG_REF(labels);
+	m_label_backup->remove_subset();
+
+	/* dont do train because model should not be stored (no acutal features)
+	 * and train does data_unlock */
+	return train_machine();
+}
+
+void CKernelMachine::data_lock()
+{
+	/* unref possible old custom kernel */
+	SG_UNREF(m_custom_kernel);
+
+	/* backup reference to old labels and kernel */
+	m_label_backup=labels;
+	SG_REF(m_label_backup);
+	m_kernel_backup=kernel;
+	SG_REF(m_kernel_backup);
+
+	/* create custom kernel matrix from current kernel */
+	SG_PRINT("computing kernel matrix for %s\n", kernel->get_name());
+	m_custom_kernel=new CCustomKernel(kernel);
+	SG_REF(m_custom_kernel);
+	SG_PRINT("done\n");
+}
+
+void CKernelMachine::data_unlock()
+{
+	SG_UNREF(m_custom_kernel);
+
+	/* restore original labels, possibly delete created ones */
+	if (m_label_backup)
+	{
+		/* check if labels were created in train_locked */
+		if (labels!=m_label_backup)
+			SG_UNREF(labels);
+
+		labels=m_label_backup;
+		m_label_backup=NULL;
+	}
+
+	/* restore original kernel, possibly delete created one */
+	if (m_kernel_backup)
+	{
+		/* check if kernel was created in train_locked */
+		if (kernel!=m_kernel_backup)
+			SG_UNREF(kernel);
+
+		kernel=m_kernel_backup;
+		m_kernel_backup=NULL;
+	}
+}
+
 void CKernelMachine::init()
 {
 	m_bias=0.0;
-    kernel=NULL;
-    use_batch_computation=true;
-    use_linadd=true;
-    use_bias=true;
+	kernel=NULL;
+	m_custom_kernel=NULL;
+	m_label_backup=NULL;
+	m_kernel_backup=NULL;
+	use_batch_computation=true;
+	use_linadd=true;
+	use_bias=true;
 
 	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
+			" data lock", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_label_backup, "label_backup",
+			"Label backup for data lock", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
+			"Kernel backup for data lock", MS_NOT_AVAILABLE);
 	SG_ADD(&use_batch_computation, "use_batch_computation",
 			"Batch computation is enabled.", MS_NOT_AVAILABLE);
 	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", MS_NOT_AVAILABLE);
