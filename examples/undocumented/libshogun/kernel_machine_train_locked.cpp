@@ -11,8 +11,9 @@
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/Labels.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/LinearKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/evaluation/ContingencyTableEvaluation.h>
 
 using namespace shogun;
 
@@ -24,15 +25,15 @@ void print_message(FILE* target, const char* str)
 void test()
 {
 	/* data matrix dimensions */
-	index_t num_vectors=4;
-	index_t num_features=1;
+	index_t num_vectors=6;
+	index_t num_features=2;
 
 	/* data means -1, 1 in all components, std deviation of 3 */
 	SGVector<float64_t> mean_1(num_features);
 	SGVector<float64_t> mean_2(num_features);
-	CMath::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
-	CMath::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
-	float64_t sigma=3;
+	CMath::fill_vector(mean_1.vector, mean_1.vlen, -10.0);
+	CMath::fill_vector(mean_2.vector, mean_2.vlen, 10.0);
+	float64_t sigma=0.5;
 
 	CMath::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
 	CMath::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
@@ -48,6 +49,8 @@ void test()
 		}
 	}
 
+	CMath::display_matrix(train_dat.matrix, train_dat.num_rows, train_dat.num_cols, "training data");
+
 	/* training features */
 	CSimpleFeatures<float64_t>* features=
 			new CSimpleFeatures<float64_t>(train_dat);
@@ -58,12 +61,15 @@ void test()
 	for (index_t i=0; i<num_vectors; ++i)
 		lab.vector[i]=i<num_vectors/2 ? -1.0 : 1.0;
 
+	CMath::display_vector(lab.vector, lab.vlen, "training labels");
+
 	CLabels* labels=new CLabels(lab);
 
-	/* gaussian kernel */
-	int32_t kernel_cache=100;
-	int32_t width=10;
-	CGaussianKernel* kernel=new CGaussianKernel(kernel_cache, width);
+	/* evaluation instance */
+	CContingencyTableEvaluation* eval=new CContingencyTableEvaluation(ACCURACY);
+
+	/* kernel */
+	CKernel* kernel=new CLinearKernel();
 	kernel->init(features, features);
 
 	/* create svm via libsvm */
@@ -72,38 +78,58 @@ void test()
 	CLibSVM* svm=new CLibSVM(svm_C, kernel, labels);
 	svm->set_epsilon(svm_eps);
 
-	SGVector<index_t> indices(3);
-	indices.range_fill();
+	/* now train a few times on different subsets on data and assert that
+	 * results are correc (data linear separable) */
+
+	svm->data_lock();
+
+	SGVector<index_t> indices(4);
+	indices.vector[0]=1;
+	indices.vector[1]=2;
+	indices.vector[2]=3;
+	indices.vector[3]=4;
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	for (index_t i=0; i<num_vectors; ++i)
-		SG_SPRINT("%f\n", svm->apply(i));
+	CLabels* output=svm->apply();
+	ASSERT(eval->evaluate(output, labels)==1);
+	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
+	SG_UNREF(output);
 
+	SG_SPRINT("\n\n");
+	indices.destroy_vector();
+	indices=SGVector<index_t>(3);
 	indices.vector[0]=1;
 	indices.vector[1]=2;
 	indices.vector[2]=3;
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
-	svm->train_locked(indices);
-	for (index_t i=0; i<num_vectors; ++i)
-		SG_SPRINT("%f\n", svm->apply(i));
+	output=svm->apply();
+	ASSERT(eval->evaluate(output, labels)==1);
+	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
+	SG_UNREF(output);
 
+	SG_SPRINT("\n\n");
 	indices.destroy_vector();
 	indices=SGVector<index_t>(4);
 	indices.range_fill();
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	for (index_t i=0; i<num_vectors; ++i)
-		SG_SPRINT("%f\n", svm->apply(i));
+	output=svm->apply();
+	ASSERT(eval->evaluate(output, labels)==1);
+	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
+	SG_UNREF(output);
 
 	SG_SPRINT("normal train\n");
+	svm->data_unlock();
 	svm->train();
-	CLabels* output=svm->apply();
+	output=svm->apply();
+	ASSERT(eval->evaluate(output, labels)==1);
 	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
 	SG_UNREF(output);
 
 	/* clean up */
 	SG_UNREF(svm);
 	SG_UNREF(features);
+	SG_UNREF(eval);
 	mean_1.destroy_vector();
 	mean_2.destroy_vector();
 	indices.destroy_vector();
