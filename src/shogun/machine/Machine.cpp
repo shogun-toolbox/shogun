@@ -123,8 +123,13 @@ void CMachine::set_store_model_features(bool store_model)
 	m_store_model_features = store_model;
 }
 
-void CMachine::data_lock()
+void CMachine::data_lock(CFeatures* features, CLabels* labs)
 {
+	ASSERT(features && labs);
+
+	/* first set labels */
+	set_labels(labs);
+
 	/* if labels have a subset this might cause problems */
 	if (labels->has_subset())
 	{
