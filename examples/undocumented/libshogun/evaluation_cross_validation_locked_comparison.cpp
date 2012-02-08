@@ -119,12 +119,10 @@ void test_cross_validation()
 	}
 
 	/* actual evaluation with five kernel matrix (restore features first) */
-	kernel->init(features, features);
+	svm->data_lock(features, labels);
 	SG_SPRINT("locked x-val\n");
 	for (index_t i=0; i<repetitions; ++i)
 	{
-		svm->data_unlock();
-		svm->data_lock();
 		CTime time;
 		time.start();
 		cross->evaluate().print_result();
