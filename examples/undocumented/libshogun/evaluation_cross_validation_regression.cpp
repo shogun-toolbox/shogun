@@ -96,7 +96,7 @@ void test_cross_validation()
 
 	/* this is optional and speeds everything up since the kernel matrix is
 	 * precomputed. May not work though.*/
-	krr->data_lock();
+	krr->data_lock(features, labels);
 
 	/* actual evaluation */
 	CrossValidationResult result=cross->evaluate();
