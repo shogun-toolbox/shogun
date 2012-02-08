@@ -16,29 +16,35 @@
 using namespace shogun;
 
 CMachine::CMachine() : CSGObject(), max_train_time(0), labels(NULL),
-		m_label_backup(NULL), solver_type(ST_AUTO)
+		solver_type(ST_AUTO)
 {
+	m_data_locked=false;
+	m_store_model_features=false;
+
 	m_parameters->add(&max_train_time, "max_train_time",
 					  "Maximum training time.");
 	m_parameters->add((machine_int_t*) &solver_type, "solver_type");
 	m_parameters->add((CSGObject**) &labels, "labels");
 	m_parameters->add(&m_store_model_features, "store_model_features",
 			"Should feature data of model be stored after training?");
-	SG_ADD((CSGObject**) &m_label_backup, "label_backup",
-			"Label backup for data lock", MS_NOT_AVAILABLE);
-
-	m_store_model_features=false;
+	SG_ADD(&m_data_locked, "data_locked",
+			"Flag weather data is locked", MS_NOT_AVAILABLE);
 }
 
 CMachine::~CMachine()
 {
 	SG_UNREF(labels);
-	SG_UNREF(m_label_backup);
 }
 
 bool CMachine::train(CFeatures* data)
 {
-	data_unlock();
+	/* not allowed to train on locked data */
+	if (m_data_locked)
+	{
+		SG_ERROR("%s::train data_lock() was called, only train_locked() is"
+				" possible. Call data_unlock if you want to call train()\n",
+				get_name());
+	}
 
 	bool result = train_machine(data);
 
@@ -119,25 +125,28 @@ void CMachine::set_store_model_features(bool store_model)
 
 void CMachine::data_lock()
 {
-	/* dont lock twice */
-	if (m_label_backup)
-		SG_ERROR("CMachine::data_lock() already called. Unlock before!\n");
+	/* if labels have a subset this might cause problems */
+	if (labels->has_subset())
+	{
+		SG_ERROR("%s::data_lock() not possible if labels have a subset. Remove"
+				" first!\n", get_name());
+	}
 
-	/* backup reference to old labels */
-	m_label_backup=labels;
-	SG_REF(m_label_backup);
+	if (m_data_locked)
+	{
+		SG_ERROR("%s::data_lock() was already called. Dont lock twice!",
+				get_name());
+	}
+
+	m_data_locked=true;
 }
 
 void CMachine::data_unlock()
 {
-	/* restore original labels, possibly delete created ones */
-	if (m_label_backup)
+	if (m_data_locked)
 	{
-		/* check if labels were created in train_locked */
-		if (labels!=m_label_backup)
-			SG_UNREF(labels);
-
-		labels=m_label_backup;
-		m_label_backup=NULL;
+		/* remove possible subset in labels */
+		labels->remove_subset();
+		m_data_locked=false;
 	}
 }
