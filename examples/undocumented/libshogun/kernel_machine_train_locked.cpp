@@ -64,6 +64,7 @@ void test()
 	CMath::display_vector(lab.vector, lab.vlen, "training labels");
 
 	CLabels* labels=new CLabels(lab);
+	SG_REF(labels);
 
 	/* evaluation instance */
 	CContingencyTableEvaluation* eval=new CContingencyTableEvaluation(ACCURACY);
@@ -130,6 +131,7 @@ void test()
 	SG_UNREF(svm);
 	SG_UNREF(features);
 	SG_UNREF(eval);
+	SG_UNREF(labels);
 	mean_1.destroy_vector();
 	mean_2.destroy_vector();
 	indices.destroy_vector();
