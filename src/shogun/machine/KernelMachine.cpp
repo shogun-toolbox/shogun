@@ -357,6 +357,13 @@ float64_t CKernelMachine::apply(int32_t num)
 
 CLabels* CKernelMachine::apply(CFeatures* data)
 {
+	if (m_kernel_backup)
+	{
+		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
+				"data_lock was called before - only apply() and apply(int32_t)."
+				" Call data_unlock to allow.");
+	}
+
 	if (!kernel)
 		SG_ERROR("No kernel assigned!\n");
 
@@ -432,49 +439,65 @@ void CKernelMachine::store_model_features()
 bool CKernelMachine::train_locked(SGVector<index_t> indices)
 {
 	if (!m_custom_kernel)
-		data_lock();
+		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n");
 
-	/* TODO this float32_t stuff is ugly :( */
-	SGMatrix<float32_t> subset_k=m_custom_kernel->
-			get_kernel_matrix_row_subset(indices);
+	/* set custom kernel subset of data to train on (copies because CSubset
+	 * will delete vetors at the end)*/
+	SGVector<index_t> row_inds=SGVector<index_t>(indices);
+	row_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
+	m_custom_kernel->set_row_subset(new CSubset(row_inds));
+	SGVector<index_t> col_inds=SGVector<index_t>(indices);
+	col_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
+	m_custom_kernel->set_col_subset(new CSubset(col_inds));
+//	SG_PRINT("training matrix:\n");
+//	m_custom_kernel->print_kernel_matrix("\t");
 
-	/* create custom kernel with subset of data to train on */
-	CCustomKernel* subset_kernel=new CCustomKernel();
-	subset_kernel->set_full_kernel_matrix_from_full(subset_k);
-
-	/* get rid of old kernel and use this one */
-	SG_UNREF(kernel);
-	kernel=subset_kernel;
-	SG_REF(kernel);
-
-	/* create corresponding labels subsets are IGNORED */
-	SGVector<index_t> indices_copy(indices);
-	indices_copy.vector=CMath::clone_vector(indices.vector, indices.vlen);
-	m_label_backup->set_subset(new CSubset(indices_copy));
-	SG_UNREF(labels);
-	labels=new CLabels(m_label_backup->get_labels_copy());
-	SG_REF(labels);
-	m_label_backup->remove_subset();
+	/* set corresponding labels subset */
+	SGVector<index_t> label_inds=SGVector<index_t>(indices);
+	label_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
+	labels->set_subset(new CSubset(label_inds));
+//	SGVector<float64_t> temp=labels->get_labels_copy();
+//	CMath::display_vector(temp.vector, temp.vlen, "training labels");
+//	temp.destroy_vector();
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
-	return train_machine();
+//	SG_PRINT("calling train_machine\n");
+	bool result=train_machine();
+//	SG_PRINT("done train_machine\n");
+
+//	CMath::display_vector(get_support_vectors().vector, get_num_support_vectors(), "sv indices");
+
+	/* set col subset of kernel to contain all elements */
+	m_custom_kernel->remove_col_subset();
+//	SG_PRINT("matrix after training:\n");
+//	m_custom_kernel->print_kernel_matrix("\t");
+
+	/* remove label subset after training */
+	labels->remove_subset();
+
+	return result;
 }
 
 void CKernelMachine::data_lock()
 {
-	/* unref possible old custom kernel */
-	SG_UNREF(m_custom_kernel);
-
 	/* backup reference to old kernel */
 	m_kernel_backup=kernel;
 	SG_REF(m_kernel_backup);
+
+	/* unref possible old custom kernel */
+	SG_UNREF(m_custom_kernel);
 
 	/* create custom kernel matrix from current kernel */
 	SG_PRINT("computing kernel matrix for %s\n", kernel->get_name());
 	m_custom_kernel=new CCustomKernel(kernel);
 	SG_REF(m_custom_kernel);
 	SG_PRINT("done\n");
+
+	/* replace kernel by custom kernel */
+	SG_UNREF(kernel);
+	kernel=m_custom_kernel;
+	SG_REF(kernel);
 
 	/* dont forget to call superclass method */
 	CMachine::data_lock();
@@ -483,6 +506,7 @@ void CKernelMachine::data_lock()
 void CKernelMachine::data_unlock()
 {
 	SG_UNREF(m_custom_kernel);
+	m_custom_kernel=NULL;
 
 	/* restore original kernel, possibly delete created one */
 	if (m_kernel_backup)
@@ -504,7 +528,6 @@ void CKernelMachine::init()
 	m_bias=0.0;
 	kernel=NULL;
 	m_custom_kernel=NULL;
-	m_label_backup=NULL;
 	m_kernel_backup=NULL;
 	use_batch_computation=true;
 	use_linadd=true;
