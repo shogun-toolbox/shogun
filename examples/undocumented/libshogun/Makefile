@@ -23,6 +23,7 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  parameter_modsel_parameters \
 		  evaluation_cross_validation_classification \
 		  evaluation_cross_validation_regression \
+		  evaluation_cross_validation_locked_comparison \
 		  modelselection_parameter_combination_test \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
