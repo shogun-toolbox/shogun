@@ -24,8 +24,8 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-    from shogun.Evaluation import StratifiedCrossValidationSplitting
+    from shogun.Evaluation import MeanSquaredError
+    from shogun.Evaluation import CrossValidationSplitting
     from shogun.Features import Labels
     from shogun.Features import RealFeatures
     from shogun.Regression import KRR
@@ -46,10 +46,10 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
     # "StratifiedCrossValidationSplitting" is also available
-    splitting_strategy=StratifiedCrossValidationSplitting(labels, 5)
+    splitting_strategy=CrossValidationSplitting(labels, 5)
 
     # evaluation method
-    evaluation_criterium=ContingencyTableEvaluation(ACCURACY)
+    evaluation_criterium=MeanSquaredError()
 
     # cross-validation instance
     cross_validation=CrossValidation(predictor, features_train, labels,
@@ -62,9 +62,12 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     # for this toy example)
     cross_validation.set_conf_int_alpha(0.05)
 
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    predictor.print_modsel_params("\t")
+
     # build parameter tree to select regularization parameter
     param_tree_root=create_param_tree()
-    
 
     # model selection instance
     model_selection=GridSearchModelSelection(param_tree_root,
@@ -72,7 +75,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
 
     # perform model selection with selected methods
     #print "performing model selection of"
-    print "parameter tree"
+    print "parameter tree:"
     param_tree_root.print_tree()
     
     print "starting model selection"
@@ -110,6 +113,11 @@ def create_param_tree():
 
     # gaussian kernel with width
     gaussian_kernel=GaussianKernel()
+    
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    gaussian_kernel.print_modsel_params()
+    
     param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
     gaussian_kernel_width=ModelSelectionParameters("width");
     gaussian_kernel_width.build_values(5.0, 8.0, R_EXP, 1.0, 2.0)
@@ -118,6 +126,11 @@ def create_param_tree():
 
     # polynomial kernel with degree
     poly_kernel=PolyKernel()
+    
+    # print all parameter available for modelselection
+    # Dont worry if yours is not included but, write to the mailing list
+    poly_kernel.print_modsel_params()
+    
     param_poly_kernel=ModelSelectionParameters("kernel", poly_kernel)
 
     root.append_child(param_poly_kernel)
