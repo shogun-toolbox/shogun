@@ -85,6 +85,19 @@ CMachine* CCrossValidation::get_machine() const
 	return m_machine;
 }
 
+CFeatures* CCrossValidation::get_features() const
+{
+	SG_REF(m_features);
+	return m_features;
+}
+
+CLabels* CCrossValidation::get_labels() const
+{
+	SG_REF(m_labels);
+	return m_labels;
+}
+
+
 CrossValidationResult CCrossValidation::evaluate()
 {
 	SGVector<float64_t> results(m_num_runs);
