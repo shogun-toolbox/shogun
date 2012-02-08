@@ -223,6 +223,12 @@ class CKernelMachine : public CMachine
 
 		virtual bool train_locked(SGVector<index_t> indices);
 
+		/** TODO */
+		virtual void data_lock();
+
+		/** TODO */
+		virtual void data_unlock();
+
 	protected:
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
@@ -231,12 +237,6 @@ class CKernelMachine : public CMachine
 		 * differently.
 		 */
 		virtual void store_model_features();
-
-		/** TODO */
-		virtual void data_lock();
-
-		/** TODO */
-		virtual void data_unlock();
 
     private:
         /** register parameters and do misc init */
