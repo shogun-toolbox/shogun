@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -20,6 +20,14 @@ using namespace shogun;
 void
 CCustomKernel::init()
 {
+	m_row_subset=NULL;
+	m_col_subset=NULL;
+
+	SG_ADD((CSGObject**)&m_row_subset, "row_subset", "Subset of rows",
+			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_col_subset, "col_subset", "Subset of columns",
+			MS_NOT_AVAILABLE);
+
 	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
 	m_parameters->add(&upper_diagonal, "upper_diagonal");
 }
@@ -33,7 +41,11 @@ CCustomKernel::CCustomKernel()
 CCustomKernel::CCustomKernel(CKernel* k)
 : CKernel(10)
 {
+	init();
+
 	set_full_kernel_matrix_from_full(k->get_kernel_matrix());
+//	SG_PRINT("created custom kernel with kernel matrix:\n");
+//	print_kernel_matrix();
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
@@ -45,6 +57,8 @@ CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 
 CCustomKernel::~CCustomKernel()
 {
+	SG_UNREF(m_row_subset);
+	SG_UNREF(m_col_subset);
 	cleanup();
 }
 
@@ -55,6 +69,9 @@ bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
 
 bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 {
+	remove_row_subset();
+	remove_col_subset();
+
 	CKernel::init(l, r);
 
 	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows);
@@ -67,6 +84,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 void CCustomKernel::cleanup_custom()
 {
 	SG_DEBUG("cleanup up custom kernel\n");
+	remove_row_subset();
+	remove_col_subset();
 	SG_FREE(kmatrix.matrix);
 	kmatrix.matrix=NULL;
 	upper_diagonal=false;
@@ -76,26 +95,62 @@ void CCustomKernel::cleanup_custom()
 
 void CCustomKernel::cleanup()
 {
+	remove_row_subset();
+	remove_col_subset();
 	cleanup_custom();
 	CKernel::cleanup();
 }
 
-SGMatrix<float32_t> CCustomKernel::get_kernel_matrix_row_subset(
-		SGVector<index_t> indices)
+void CCustomKernel::set_row_subset(CSubset* subset)
 {
-	/* generate subset of kernel matrix */
-	index_t num_rows=indices.vlen;
-	index_t num_cols=get_num_vec_rhs();
-	SGMatrix<float32_t> subset_k(num_rows, num_cols);
-	for (index_t col=0; col<num_cols; ++col)
-	{
-		for (index_t row=0; row<num_rows; ++row)
-		{
-			index_t to=num_rows*col+row;
-			index_t from=get_num_vec_lhs()*col+indices.vector[row];
-			subset_k.matrix[to]=kmatrix.matrix[from];
-		}
-	}
+	SG_UNREF(m_row_subset);
+	m_row_subset=subset;
+	SG_REF(subset);
 
-	return subset_k;
+	/* update num_lhs */
+	num_lhs=subset ? subset->get_size() : 0;
+}
+void CCustomKernel::set_col_subset(CSubset* subset)
+{
+	SG_UNREF(m_col_subset);
+	m_col_subset=subset;
+	SG_REF(subset);
+
+	/* update num_rhs */
+	num_rhs=subset ? subset->get_size() : 0;
+}
+
+void CCustomKernel::remove_row_subset()
+{
+	set_row_subset(NULL);
+
+	/* restore num_lhs */
+	num_lhs=kmatrix.num_rows;
+}
+
+void CCustomKernel::remove_col_subset()
+{
+	set_col_subset(NULL);
+
+	/* restore num_rhs */
+	num_rhs=kmatrix.num_cols;
+}
+
+void CCustomKernel::print_kernel_matrix(const char* prefix) const
+{
+	index_t num_rows=m_row_subset ? m_row_subset->get_size() : kmatrix.num_rows;
+	index_t num_cols=m_col_subset ? m_col_subset->get_size() : kmatrix.num_cols;
+	for (index_t i=0; i<num_rows; ++i)
+	{
+		for (index_t j=0; j<num_cols; ++j)
+		{
+			index_t real_i=row_subset_idx_conversion(i);
+			index_t real_j=col_subset_idx_conversion(j);
+			SG_PRINT("%s%4.2f", kmatrix.matrix[kmatrix.num_rows*real_j+real_i],
+					prefix);
+			if (j<num_cols-1)
+				SG_PRINT(", \t");
+		}
+		SG_PRINT("\n");
+	}
 }
