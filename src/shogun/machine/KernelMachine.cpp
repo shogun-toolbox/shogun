@@ -479,8 +479,11 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	return result;
 }
 
-void CKernelMachine::data_lock()
+void CKernelMachine::data_lock(CFeatures* features, CLabels* labels)
 {
+	/* init kernel with data */
+	kernel->init(features, features);
+
 	/* backup reference to old kernel */
 	m_kernel_backup=kernel;
 	SG_REF(m_kernel_backup);
@@ -500,7 +503,7 @@ void CKernelMachine::data_lock()
 	SG_REF(kernel);
 
 	/* dont forget to call superclass method */
-	CMachine::data_lock();
+	CMachine::data_lock(features, labels);
 }
 
 void CKernelMachine::data_unlock()
