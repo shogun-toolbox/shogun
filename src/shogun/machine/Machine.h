@@ -217,6 +217,15 @@ class CMachine : public CSGObject
 					get_name());
 			return false;
 		}
+
+		/** TODO */
+		virtual void data_lock();
+
+		/** TODO */
+		virtual void data_unlock();
+
+		bool is_data_locked() const { return m_data_locked; }
+
 	protected:
 		/** train machine
 		 *
@@ -234,12 +243,6 @@ class CMachine : public CSGObject
 					get_name());
 			return false;
 		}
-
-		/** TODO */
-		virtual void data_lock();
-
-		/** TODO */
-		virtual void data_unlock();
 
 		/** Stores feature data of underlying model.
 		 * After this method has been called, it is possible to change
@@ -271,7 +274,7 @@ class CMachine : public CSGObject
 		bool m_store_model_features;
 
 		/** TODO */
-		CLabels* m_label_backup;
+		bool m_data_locked;
 };
 }
 #endif // _MACHINE_H__
