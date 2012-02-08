@@ -283,6 +283,11 @@ void CLabels::set_subset(CSubset* subset)
 	SG_REF(subset);
 }
 
+bool CLabels::has_subset() const
+{
+	return m_subset!=NULL;
+}
+
 void CLabels::remove_subset()
 {
 	set_subset(NULL);
