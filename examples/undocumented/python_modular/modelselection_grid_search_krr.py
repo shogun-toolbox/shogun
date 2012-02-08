@@ -80,7 +80,12 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     
     print "starting model selection"
     # print the current parameter combination, if no parameter nothing is printed
-    best_parameters=model_selection.select_model(True)
+    print_state=True
+    
+    # tell modelselection to lock data before (optional, speeds up since kernel
+    # matrix is precomputed, may not work)
+    lock_data=True
+    best_parameters=model_selection.select_model(print_state, lock_data)
 
     # print best parameters
     print "best parameters:"
