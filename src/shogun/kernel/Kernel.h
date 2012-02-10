@@ -107,6 +107,7 @@ enum EKernelType
 	K_INVERSEMULTIQUADRIC = 440,
 	K_DISTANTSEGMENTS = 450,
 	K_BESSEL = 460,
+	K_JENSENSHANNON = 470
 };
 
 /** kernel property */
