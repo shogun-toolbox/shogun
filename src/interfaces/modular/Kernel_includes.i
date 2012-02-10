@@ -74,4 +74,5 @@
 #include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
 #include <shogun/kernel/RationalQuadraticKernel.h>
 #include <shogun/kernel/CircularKernel.h>
+#include <shogun/kernel/JensenShannonKernel.h>
 %}
