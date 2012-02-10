@@ -63,9 +63,9 @@ float64_t CJensenShannonKernel::compute(int32_t idx_a, int32_t idx_b)
 		float64_t a_i = 0, b_i = 0;
 		float64_t ab = avec[i]+bvec[i];
 		if (avec[i] != 0)
-			a_i = avec[i]/2 * log2(ab/avec[i]);
+			a_i = avec[i]/2 * CMath::log2(ab/avec[i]);
 		if (bvec[i] != 0)
-			b_i = bvec[i]/2 * log2(ab/bvec[i]);
+			b_i = bvec[i]/2 * CMath::log2(ab/bvec[i]);
 
 		result += a_i + b_i;
 	}
