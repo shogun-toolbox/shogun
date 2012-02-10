@@ -751,6 +751,7 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_SPECTRUMMISMATCHRBF)
 		ENUM_CASE(K_DISTANTSEGMENTS)
 		ENUM_CASE(K_BESSEL)
+		ENUM_CASE(K_JENSENSHANNON)
 	}
 
 	switch (get_feature_class())
