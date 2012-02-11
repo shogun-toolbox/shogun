@@ -150,7 +150,7 @@ bool CCplex::setup_subgradientlpm_QP(
 			int32_t vlen=0;
 			bool vfree=false;
 			//SG_PRINT("idx=%d\n", idx);
-			SGSparseVectorEntry<float64_t>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
+			SGSparseVector<float64_t> vec=features->get_sparse_feature_vector(idx);
 			//SG_PRINT("vlen=%d\n", vlen);
 
 			cmatbeg[i]=offs;
@@ -162,11 +162,11 @@ bool CCplex::setup_subgradientlpm_QP(
 			{
 				for (int32_t j=0; j<vlen; j++)
 				{
-					cmatind[offs]=vec[j].feat_index;
-					cmatval[offs]=-val*vec[j].entry;
+					cmatind[offs]=vec.features[j].feat_index;
+					cmatval[offs]=-val*vec.features[j].entry;
 					offs++;
 					ASSERT(offs<cmatsize);
-					//SG_PRINT("vec[%d]=%10.10f\n", j, vec[j].entry);
+					//SG_PRINT("vec[%d]=%10.10f\n", j, vec.features[j].entry);
 				}
 
 				if (use_bias)
@@ -192,7 +192,7 @@ bool CCplex::setup_subgradientlpm_QP(
 				ASSERT(offs<cmatsize);
 			}
 
-			features->free_feature_vector(vec, idx, vfree);
+			features->free_feature_vector(vec, idx);
 		}
 	}
 

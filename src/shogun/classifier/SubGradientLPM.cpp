@@ -18,7 +18,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/SubGradientLPM.h>
-#include <shogun/classifier/svm/qpbsvmlib.h>
+#include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Labels.h>
 
@@ -27,18 +27,18 @@ using namespace shogun;
 #define DEBUG_SUBGRADIENTLPM
 
 CSubGradientLPM::CSubGradientLPM()
-: CLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
+: CLinearMachine(), C1(1), C2(1), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 }
 
 CSubGradientLPM::CSubGradientLPM(
 	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
+: CLinearMachine(), C1(C), C2(C), epsilon(1e-5), qpsize(42),
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
-	CLinearClassifier::features=traindat;
-	CClassifier::labels=trainlab;
+	CLinearMachine::features=traindat;
+	CLinearMachine::labels=trainlab;
 }
 
 
