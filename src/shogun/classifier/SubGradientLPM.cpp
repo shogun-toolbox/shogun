@@ -18,7 +18,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/SubGradientLPM.h>
-#include <shogun/classifier/svm/qpbsvmlib.h>
+#include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Labels.h>
 
