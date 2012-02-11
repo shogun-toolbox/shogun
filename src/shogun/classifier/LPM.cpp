@@ -20,7 +20,7 @@
 using namespace shogun;
 
 CLPM::CLPM()
-: CLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
+: CLinearMachine(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
 }
 
