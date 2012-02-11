@@ -25,7 +25,11 @@ float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_tru
 		float64_t truth=ground_truth->get_label(i);
 
 		if (prediction<=-1.0 || truth<=-1.0)
-			SG_ERROR("Negative label[%d] in %s is not allowed!\n", i, get_name());
+		{
+			SG_WARNING("Negative label[%d] in %s is not allowed, ignoring!\n",
+					i, get_name());
+			continue;
+		}
 
 		float64_t a=CMath::log(prediction+1);
 		float64_t b=CMath::log(truth+1);
