@@ -45,7 +45,7 @@ namespace shogun
  *
  * \sa CLPM
  */
-class CLPBoost : public CLinearClassifier
+class CLPBoost : public CLinearMachine
 {
 	public:
 		CLPBoost();
@@ -69,7 +69,7 @@ class CLPBoost : public CLinearClassifier
 				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("LPBoost requires SPARSE REAL valued features\n");
 
-			CLinearClassifier::set_features(feat);
+			CLinearMachine::set_features(feat);
 		}
 
 		/** set C
