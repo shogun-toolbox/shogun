@@ -441,6 +441,9 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	if (!m_custom_kernel)
 		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n");
 
+	/* this is asusmed here */
+	ASSERT(m_custom_kernel==kernel);
+
 	/* set custom kernel subset of data to train on (copies because CSubset
 	 * will delete vetors at the end)*/
 	SGVector<index_t> row_inds=SGVector<index_t>(indices);
@@ -485,6 +488,7 @@ void CKernelMachine::data_lock(CFeatures* features, CLabels* labels)
 	kernel->init(features, features);
 
 	/* backup reference to old kernel */
+	SG_UNREF(m_kernel_backup)
 	m_kernel_backup=kernel;
 	SG_REF(m_kernel_backup);
 
