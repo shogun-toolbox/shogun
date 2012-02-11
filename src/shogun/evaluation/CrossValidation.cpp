@@ -204,7 +204,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
 
-			/* produce ouput for desired indices */
+			/* produce output for desired indices */
 //			CMath::display_vector(subset_indices.vector, subset_indices.vlen, "validation indices");
 			SGVector<float64_t> output(subset_indices.vlen);
 			for (index_t j=0; j<subset_indices.vlen; ++j)
