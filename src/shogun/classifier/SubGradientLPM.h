@@ -45,7 +45,7 @@ namespace shogun
  * \sa CLPBoost
  * \sa CLPM
  */
-class CSubGradientLPM : public CLinearClassifier
+class CSubGradientLPM : public CLinearMachine
 {
 	public:
 		CSubGradientLPM();
