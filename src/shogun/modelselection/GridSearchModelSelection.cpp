@@ -78,6 +78,9 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state,
 
 		CrossValidationResult result=m_cross_validation->evaluate();
 
+		if (print_state)
+			result.print_result();
+
 		if (lock_data)
 			machine->data_unlock();
 
