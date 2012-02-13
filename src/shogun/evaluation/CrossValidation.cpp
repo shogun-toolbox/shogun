@@ -41,6 +41,23 @@ CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 	SG_REF(m_evaluation_criterion);
 }
 
+CCrossValidation::CCrossValidation(CMachine* machine, CLabels* labels,
+		CSplittingStrategy* splitting_strategy,
+		CEvaluation* evaluation_criterion)
+{
+	init();
+
+	m_machine=machine;
+	m_labels=labels;
+	m_splitting_strategy=splitting_strategy;
+	m_evaluation_criterion=evaluation_criterion;
+
+	SG_REF(m_machine);
+	SG_REF(m_labels);
+	SG_REF(m_splitting_strategy);
+	SG_REF(m_evaluation_criterion);
+}
+
 CCrossValidation::~CCrossValidation()
 {
 	SG_UNREF(m_machine);
@@ -102,11 +119,12 @@ CrossValidationResult CCrossValidation::evaluate()
 {
 	SGVector<float64_t> results(m_num_runs);
 
+	/* set labels to machine */
+	m_machine->set_labels(m_labels);
+
+	/* perform all the x-val runs */
 	for (index_t i=0; i <m_num_runs; ++i)
-//	{
-//		SG_PRINT("xval run %d\n", i);
 		results.vector[i]=evaluate_one_run();
-//	}
 
 	/* construct evaluation result */
 	CrossValidationResult result;
@@ -138,7 +156,7 @@ void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 	if (m_num_runs==1)
 	{
 		SG_WARNING("Confidence interval for Cross-Validation only possible"
-				" when number of runs is >1\n");
+				" when number of runs is >1, ignoring.\n");
 	}
 	else
 		m_conf_int_alpha=conf_int_alpha;
@@ -162,65 +180,34 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* results array */
 	float64_t* results=SG_MALLOC(float64_t, num_subsets);
 
-	/* set labels to machine */
-	m_machine->set_labels(m_labels);
-
 	/* different behavior whether data is locked or not */
 	if (m_machine->is_data_locked())
 	{
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
-//			SG_PRINT("\n\n\n");
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
 					m_splitting_strategy->generate_subset_inverse(i);
 
 			/* train machine on training features */
-//			CMath::display_vector(inverse_subset_indices.vector, inverse_subset_indices.vlen, "training indices");
-
-//			SGVector<index_t> temp(inverse_subset_indices);
-//			temp.vector=CMath::clone_vector(inverse_subset_indices.vector, inverse_subset_indices.vlen);
-//			m_labels->set_subset(new CSubset(temp));
-//			SGVector<float64_t> train_lab=m_labels->get_labels_copy();
-//			CMath::display_vector(train_lab.vector, train_lab.vlen, "training labels");
-//			m_labels->remove_subset();
-
 			m_machine->train_locked(inverse_subset_indices);
-
-//			SGVector<float64_t> train_output(inverse_subset_indices.vlen);
-//			for (index_t j=0; j<train_output.vlen; ++j)
-//				train_output.vector[j]=m_machine->apply(inverse_subset_indices.vector[j]);
-//			CMath::display_vector(train_output.vector, train_output.vlen, "training output");
-
-//			CLabels* train_labels=new CLabels(train_lab);
-//			CLabels* output_labels=new CLabels(train_output);
-//			SG_PRINT("training accuracy: %f\n", m_evaluation_criterion->evaluate(output_labels,
-//					train_labels));
-//			SG_UNREF(train_labels);
-//			SG_UNREF(output_labels);
 
 			/* feature subset for testing, will be implicitly freed by CSubset */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
 
 			/* produce output for desired indices */
-//			CMath::display_vector(subset_indices.vector, subset_indices.vlen, "validation indices");
 			CLabels* result_labels=m_machine->apply_locked(subset_indices);
 			SG_REF(result_labels);
 
 			/* set subset for training labels, note that this will (later) free
 			 * the subset_indices vector */
 			m_labels->set_subset(new CSubset(subset_indices));
-//			SGVector<float64_t> truth=m_labels->get_labels_copy();
-//			CMath::display_vector(truth.vector, truth.vlen, "truth");
-//			truth.destroy_vector();
 
 			/* evaluate against own labels */
-//			SG_PRINT("evaluating machine\n");
 			results[i]=m_evaluation_criterion->evaluate(result_labels,
 					m_labels);
-//			SG_PRINT("result=%f\n", results[i]);
 
 			/* remove subset to prevent side efects */
 			m_labels->remove_subset();
