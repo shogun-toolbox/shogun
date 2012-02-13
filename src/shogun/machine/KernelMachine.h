@@ -225,7 +225,7 @@ class CKernelMachine : public CMachine
 		virtual CLabels* apply_locked(SGVector<index_t> indices);
 
 		/** TODO */
-		virtual void data_lock(CFeatures* features, CLabels* labs);
+		virtual void data_lock(CLabels* labs, CFeatures* features=NULL);
 
 		/** TODO */
 		virtual void data_unlock();

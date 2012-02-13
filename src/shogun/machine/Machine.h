@@ -228,7 +228,7 @@ class CMachine : public CSGObject
 		}
 
 		/** TODO */
-		virtual void data_lock(CFeatures* features, CLabels* labs);
+		virtual void data_lock(CLabels* labs, CFeatures* features);
 
 		/** TODO */
 		virtual void data_unlock();
