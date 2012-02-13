@@ -95,6 +95,16 @@ public:
 			CSplittingStrategy* splitting_strategy,
 			CEvaluation* evaluation_criterion);
 
+	/** constructor, for use with custom kernels (no features)
+	 * @param machine learning machine to use
+	 * @param labels labels that correspond to the features
+	 * @param splitting_strategy splitting strategy to use
+	 * @param evaluation_criterion evaluation criterion to use
+	 */
+	CCrossValidation(CMachine* machine, CLabels* labels,
+			CSplittingStrategy* splitting_strategy,
+			CEvaluation* evaluation_criterion);
+
 	/** destructor */
 	virtual ~CCrossValidation();
 
