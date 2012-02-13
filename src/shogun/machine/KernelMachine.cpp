@@ -438,7 +438,7 @@ void CKernelMachine::store_model_features()
 
 bool CKernelMachine::train_locked(SGVector<index_t> indices)
 {
-	if (!m_custom_kernel)
+	if (!is_data_locked())
 		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n");
 
 	/* this is asusmed here */
@@ -482,7 +482,20 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	return result;
 }
 
-void CKernelMachine::data_lock(CFeatures* features, CLabels* labels)
+CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
+{
+	if (!is_data_locked())
+		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n");
+
+	/* TODO parallelize? */
+	SGVector<float64_t> output(indices.vlen);
+	for (index_t i=0; i<indices.vlen; ++i)
+		output.vector[i]=apply(indices.vector[i]);
+
+	return new CLabels(output);
+}
+
+void CKernelMachine::data_lock(CFeatures* features, CLabels* labs)
 {
 	/* init kernel with data */
 	kernel->init(features, features);
@@ -496,10 +509,10 @@ void CKernelMachine::data_lock(CFeatures* features, CLabels* labels)
 	SG_UNREF(m_custom_kernel);
 
 	/* create custom kernel matrix from current kernel */
-	SG_PRINT("computing kernel matrix for %s\n", kernel->get_name());
+//	SG_PRINT("computing kernel matrix for %s\n", kernel->get_name());
 	m_custom_kernel=new CCustomKernel(kernel);
 	SG_REF(m_custom_kernel);
-	SG_PRINT("done\n");
+//	SG_PRINT("done\n");
 
 	/* replace kernel by custom kernel */
 	SG_UNREF(kernel);
@@ -507,7 +520,7 @@ void CKernelMachine::data_lock(CFeatures* features, CLabels* labels)
 	SG_REF(kernel);
 
 	/* dont forget to call superclass method */
-	CMachine::data_lock(features, labels);
+	CMachine::data_lock(features, labs);
 }
 
 void CKernelMachine::data_unlock()
