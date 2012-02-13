@@ -273,6 +273,10 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
 
 	int32_t* votes=SG_MALLOC(int32_t, m_num_classes);
+
+	/* set votes array to zero to prevent uninitialised values if class gets
+	 * no votes */
+	memset(votes, 0, sizeof(int32_t)*m_num_classes);
 	int32_t s=0;
 
 	for (int32_t i=0; i<m_num_classes; i++)
