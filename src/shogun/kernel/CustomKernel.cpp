@@ -86,7 +86,8 @@ void CCustomKernel::cleanup_custom()
 	SG_DEBUG("cleanup up custom kernel\n");
 	remove_row_subset();
 	remove_col_subset();
-	SG_FREE(kmatrix.matrix);
+	if (kmatrix.matrix)
+		SG_FREE(kmatrix.matrix);
 	kmatrix.matrix=NULL;
 	upper_diagonal=false;
 	kmatrix.num_cols=0;
