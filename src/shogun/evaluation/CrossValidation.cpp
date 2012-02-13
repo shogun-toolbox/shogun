@@ -137,11 +137,11 @@ void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 
 	if (m_num_runs==1)
 	{
-		SG_ERROR("Confidence interval for Cross-Validation only possible"
+		SG_WARNING("Confidence interval for Cross-Validation only possible"
 				" when number of runs is >1\n");
 	}
-
-	m_conf_int_alpha=conf_int_alpha;
+	else
+		m_conf_int_alpha=conf_int_alpha;
 }
 
 void CCrossValidation::set_num_runs(int32_t num_runs)
@@ -206,13 +206,7 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* produce output for desired indices */
 //			CMath::display_vector(subset_indices.vector, subset_indices.vlen, "validation indices");
-			SGVector<float64_t> output(subset_indices.vlen);
-			for (index_t j=0; j<subset_indices.vlen; ++j)
-				output.vector[j]=m_machine->apply(subset_indices.vector[j]);
-
-//			CMath::display_vector(output.vector, output.vlen, "output");
-
-			CLabels* result_labels=new CLabels(output);
+			CLabels* result_labels=m_machine->apply_locked(subset_indices);
 			SG_REF(result_labels);
 
 			/* set subset for training labels, note that this will (later) free
