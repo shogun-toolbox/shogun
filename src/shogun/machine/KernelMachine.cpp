@@ -22,6 +22,9 @@ struct S_THREAD_PARAM
 	CLabels* result;
 	int32_t start;
 	int32_t end;
+
+	/* if non-null, start and end correspond to indices in this vector */
+	SGVector<index_t> indices;
 	bool verbose;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -329,8 +332,6 @@ CLabels* CKernelMachine::apply()
 #endif
 			SG_DONE();
 	}
-	else
-		return NULL;
 
 	return lab;
 }
@@ -406,7 +407,9 @@ void* CKernelMachine::apply_helper(void* p)
 				SG_SPROGRESS(v, 0.0, num_vectors-1);
 		}
 
-		result->set_label(vec, kernel_machine->apply(vec));
+		/* eventually use index mapping if exists */
+		index_t idx=params->indices.vector ? params->indices.vector[vec] : vec;
+		result->set_label(vec, kernel_machine->apply(idx));
 	}
 
 	return NULL;
@@ -452,29 +455,20 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	SGVector<index_t> col_inds=SGVector<index_t>(indices);
 	col_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
 	m_custom_kernel->set_col_subset(new CSubset(col_inds));
-//	SG_PRINT("training matrix:\n");
-//	m_custom_kernel->print_kernel_matrix("\t");
 
 	/* set corresponding labels subset */
 	SGVector<index_t> label_inds=SGVector<index_t>(indices);
 	label_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
 	labels->set_subset(new CSubset(label_inds));
-//	SGVector<float64_t> temp=labels->get_labels_copy();
-//	CMath::display_vector(temp.vector, temp.vlen, "training labels");
-//	temp.destroy_vector();
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
-//	SG_PRINT("calling train_machine\n");
 	bool result=train_machine();
-//	SG_PRINT("done train_machine\n");
 
 //	CMath::display_vector(get_support_vectors().vector, get_num_support_vectors(), "sv indices");
 
 	/* set col subset of kernel to contain all elements */
 	m_custom_kernel->remove_col_subset();
-//	SG_PRINT("matrix after training:\n");
-//	m_custom_kernel->print_kernel_matrix("\t");
 
 	/* remove label subset after training */
 	labels->remove_subset();
@@ -487,15 +481,90 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 	if (!is_data_locked())
 		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n");
 
-	/* TODO parallelize? */
-	SGVector<float64_t> output(indices.vlen);
-	for (index_t i=0; i<indices.vlen; ++i)
-		output.vector[i]=apply(indices.vector[i]);
+	/* we are working on a custom kernel here */
+	ASSERT(m_custom_kernel==kernel);
 
-	return new CLabels(output);
+	int32_t num_inds=indices.vlen;
+	CLabels* lab=new CLabels(num_inds);
+
+	CSignal::clear_cancel();
+
+	if (io->get_show_progress())
+		io->enable_progress();
+	else
+		io->disable_progress();
+
+	/* custom kernel never has batch evaluation property so dont do this here */
+	int32_t num_threads=parallel->get_num_threads();
+	ASSERT(num_threads>0);
+
+	if (num_threads<2)
+	{
+		S_THREAD_PARAM params;
+		params.kernel_machine=this;
+		params.result=lab;
+
+		/* use the parameter index vector */
+		params.start=0;
+		params.end=num_inds;
+		params.indices=indices;
+
+		params.verbose=true;
+		apply_helper((void*) &params);
+	}
+#ifdef HAVE_PTHREAD
+	else
+	{
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		S_THREAD_PARAM* params=SG_MALLOC(S_THREAD_PARAM, num_threads);
+		int32_t step= num_inds/num_threads;
+
+		int32_t t;
+		for (t=0; t<num_threads-1; t++)
+		{
+			params[t].kernel_machine=this;
+			params[t].result=lab;
+
+			/* use the parameter index vector */
+			params[t].start=t*step;
+			params[t].end=(t+1)*step;
+			params[t].indices=indices;
+
+			params[t].verbose=false;
+			pthread_create(&threads[t], NULL, CKernelMachine::apply_helper,
+					(void*)&params[t]);
+		}
+
+		params[t].kernel_machine=this;
+		params[t].result=lab;
+
+		/* use the parameter index vector */
+		params[t].start=t*step;
+		params[t].end=num_inds;
+		params[t].indices=indices;
+
+		params[t].verbose=true;
+		apply_helper((void*) &params[t]);
+
+		for (t=0; t<num_threads-1; t++)
+			pthread_join(threads[t], NULL);
+
+		SG_FREE(params);
+		SG_FREE(threads);
+	}
+#endif
+
+#ifndef WIN32
+	if ( CSignal::cancel_computations() )
+		SG_INFO("prematurely stopped.\n");
+	else
+#endif
+		SG_DONE();
+
+	return lab;
 }
 
-void CKernelMachine::data_lock(CFeatures* features, CLabels* labs)
+void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
 {
 	/* init kernel with data */
 	kernel->init(features, features);
@@ -509,10 +578,8 @@ void CKernelMachine::data_lock(CFeatures* features, CLabels* labs)
 	SG_UNREF(m_custom_kernel);
 
 	/* create custom kernel matrix from current kernel */
-//	SG_PRINT("computing kernel matrix for %s\n", kernel->get_name());
 	m_custom_kernel=new CCustomKernel(kernel);
 	SG_REF(m_custom_kernel);
-//	SG_PRINT("done\n");
 
 	/* replace kernel by custom kernel */
 	SG_UNREF(kernel);
@@ -520,7 +587,7 @@ void CKernelMachine::data_lock(CFeatures* features, CLabels* labs)
 	SG_REF(kernel);
 
 	/* dont forget to call superclass method */
-	CMachine::data_lock(features, labs);
+	CMachine::data_lock(labs, features);
 }
 
 void CKernelMachine::data_unlock()
