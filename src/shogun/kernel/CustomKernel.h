@@ -352,6 +352,12 @@ class CCustomKernel: public CKernel
 		/** TODO */
 		void print_kernel_matrix(const char* prefix="") const;
 
+		/** TODO */
+		SGMatrix<float32_t> get_kernel_matrix()
+		{
+			return kmatrix;
+		}
+
 	protected:
 
 		/** compute kernel function
