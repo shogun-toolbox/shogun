@@ -119,7 +119,7 @@ void test_cross_validation()
 	}
 
 	/* actual evaluation with five kernel matrix (restore features first) */
-	svm->data_lock(features, labels);
+	svm->data_lock(labels, features);
 	SG_SPRINT("locked x-val\n");
 	for (index_t i=0; i<repetitions; ++i)
 	{
