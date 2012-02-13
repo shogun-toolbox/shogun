@@ -2,11 +2,11 @@
 
 VERSION=`head -n 3 ../../NEWS | tail -n 1| awk '{ print $5 }'`
 DATE=`head -n 1 ../../NEWS | cut -f 1 -d ' '`
-RVERSION="`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
-PLATFORM=`echo 'R.version$platform' | R --no-save 2>/dev/null | grep '\[1\]' | cut -f 2 -d '"'`
-DATE="`date '+%Y-%m-%d %H:%M:%S'`"
-OSTYPE=`echo '.Platform[1]' | R --no-save 2>/dev/null | grep '\[1\]' | cut -f 2 -d '"' | grep -v '^>'`
+RVERSION=`R --slave -e "with(R.version, cat(sprintf('%s.%s', major, minor)))"`
+PLATFORM=`R --slave -e "cat(R.version\\$platform)"`
+OSTYPE=`R --slave -e "cat(.Platform\\$OS.type)"`
 #OSTYPE="`uname -o`"
+DATE="`date '+%Y-%m-%d %H:%M:%S'`"
 PKGFILE="$1/$2/Meta/package.rds"
 
 cat >"$1/$2/DESCRIPTION" <<EOF
@@ -16,7 +16,7 @@ Date: $DATE
 Title: The SHOGUN Machine Learning Toolbox
 Author: Soeren Sonnenburg, Gunnar Raetsch
 Maintainer: Soeren Sonnenburg <sonne@debian.org>
-Depends: R (>= 2.10.0)
+Depends: R (>= 2.13.0)
 Suggests:
 Description: SHOGUN - is a new machine learning toolbox with focus on large
         scale kernel methods and especially on Support Vector Machines (SVM) with focus
@@ -44,15 +44,16 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		Title=\"The SHOGUN Machine Learning Toolbox\",\
 		Author=\"Soeren Sonnenburg, Gunnar Raetsch\",\
 		Maintainer=\"sonne@debian.org\",\
-		Depends=\"R (>= $RVERSION)\"),\
+		Depends=\"R (>= $RVERSION)\", \
+		Built=\"R $RVERSION; ; $DATE\"),\
 		Built = list(R=\"$RVERSION\", Platform=\"$PLATFORM\", Date=\"$DATE\", OStype=\"$OSTYPE\"),\
-		Rdepends = list(name='R', op='>=', version='2.10'),\
-		Rdepends2 = list(list(name='R', op='>=', version='2.10')),\
+		Rdepends = list(name='R', op='>=', version='2.13'),\
+		Rdepends2 = list(list(name='R', op='>=', version='2.13')),\
 		Depends = list(),\
 		Suggests = list(),\
 		Imports = list()),\
 		class = 'packageDescription2');\
-		.saveRDS(x, \"$PKGFILE\")" | R --no-save
+		saveRDS(x, \"$PKGFILE\")" | R --no-save
 
 # R STATIC
 if test "$2" = "sg" || test "$2" = "elwms"
