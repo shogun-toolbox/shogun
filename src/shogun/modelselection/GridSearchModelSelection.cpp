@@ -37,6 +37,9 @@ CGridSearchModelSelection::~CGridSearchModelSelection()
 CParameterCombination* CGridSearchModelSelection::select_model(bool print_state,
 		bool lock_data)
 {
+	if (print_state)
+		SG_PRINT("Generating parameter combinations\n");
+
 	/* Retrieve all possible parameter combinations */
 	CDynamicObjectArray<CParameterCombination>* combinations=
 			m_model_parameters->get_combinations();
