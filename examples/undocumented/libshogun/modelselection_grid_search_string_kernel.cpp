@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
-	classifier->data_lock(features, labels);
+	classifier->data_lock(labels, features);
 	CrossValidationResult result=cross->evaluate();
 	SG_SPRINT("result: ");
 	result.print_result();
