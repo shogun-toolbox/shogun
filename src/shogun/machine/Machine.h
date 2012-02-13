@@ -213,13 +213,20 @@ class CMachine : public CSGObject
 		/** TODO */
 		virtual bool train_locked(SGVector<index_t> indices)
 		{
-			SG_ERROR("train(SGVector<index_t>) is not yet implemented for %s\n",
-					get_name());
+			SG_ERROR("train_locked(SGVector<index_t>) is not yet implemented "
+					"for %s\n", get_name());
+			return false;
+		}
+
+		virtual CLabels* apply_locked(SGVector<index_t> indices)
+		{
+			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "
+					"for %s\n", get_name());
 			return false;
 		}
 
 		/** TODO */
-		virtual void data_lock(CFeatures* features, CLabels* labels);
+		virtual void data_lock(CFeatures* features, CLabels* labs);
 
 		/** TODO */
 		virtual void data_unlock();
