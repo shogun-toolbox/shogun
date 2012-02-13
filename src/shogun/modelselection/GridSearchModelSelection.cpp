@@ -74,9 +74,9 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state,
 		{
 			CFeatures* features=m_cross_validation->get_features();
 			CLabels* labels=m_cross_validation->get_labels();
+			machine->data_lock(labels, features);
 			SG_UNREF(features);
 			SG_UNREF(labels);
-			machine->data_lock(features, labels);
 		}
 
 		CrossValidationResult result=m_cross_validation->evaluate();
