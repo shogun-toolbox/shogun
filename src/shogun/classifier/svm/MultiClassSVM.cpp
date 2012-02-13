@@ -286,10 +286,12 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 			/** TODO, this was never used before, make classify_on_vs_one()
 			 * use this code, instead of having a duplicate copy down there */
 			m_svms[s]->set_kernel(kernel);
-			if (m_svms[s++]->apply(num)>0)
+			if (m_svms[s]->apply(num)>0)
 				votes[i]++;
 			else
 				votes[j]++;
+
+			s++;
 		}
 	}
 
