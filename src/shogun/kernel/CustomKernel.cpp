@@ -72,6 +72,14 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	remove_row_subset();
 	remove_col_subset();
 
+	/* make it possible to call with NULL values since features are useless
+	 * for custom kernel matrix */
+	if (!l)
+		l=lhs;
+
+	if (!r)
+		r=rhs;
+
 	CKernel::init(l, r);
 
 	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows);
