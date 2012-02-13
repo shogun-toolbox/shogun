@@ -31,7 +31,7 @@ CHistogramIntersectionKernel::CHistogramIntersectionKernel(int32_t size)
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(
 	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
 	float64_t beta, int32_t size)
-: CDotKernel(size), m_beta(1.0)
+: CDotKernel(size), m_beta(beta)
 {
 	init(l,r);
 	register_params();
