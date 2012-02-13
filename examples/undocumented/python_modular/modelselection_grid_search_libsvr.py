@@ -99,7 +99,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     # tell modelselection to not lock data before (since kernel matrix does not
     # change here, just lock before model selection)
     lock_data=False
-    predictor.data_lock(features_train, labels)
+    predictor.data_lock(labels, features_train)
     best_parameters=model_selection.select_model(print_state, lock_data)
 
     # print best parameters
