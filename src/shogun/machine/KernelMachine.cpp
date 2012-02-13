@@ -286,6 +286,7 @@ CLabels* CKernelMachine::apply()
 				params.result=lab;
 				params.start=0;
 				params.end=num_vectors;
+				params.indices=SGVector<index_t>();
 				params.verbose=true;
 				apply_helper((void*) &params);
 			}
@@ -304,6 +305,7 @@ CLabels* CKernelMachine::apply()
 					params[t].result = lab;
 					params[t].start = t*step;
 					params[t].end = (t+1)*step;
+					params[t].indices=SGVector<index_t>();
 					params[t].verbose = false;
 					pthread_create(&threads[t], NULL,
 							CKernelMachine::apply_helper, (void*)&params[t]);
@@ -313,6 +315,7 @@ CLabels* CKernelMachine::apply()
 				params[t].result = lab;
 				params[t].start = t*step;
 				params[t].end = num_vectors;
+				params[t].indices=SGVector<index_t>();
 				params[t].verbose = true;
 				apply_helper((void*) &params[t]);
 
