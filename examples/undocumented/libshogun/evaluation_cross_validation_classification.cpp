@@ -109,7 +109,7 @@ void test_cross_validation()
 
 	/* this is optional and speeds everything up since the kernel matrix is
 	 * precomputed. May not work though. */
-	svm->data_lock(features, labels);
+	svm->data_lock(labels, features);
 
 	/* actual evaluation */
 	CrossValidationResult result=cross->evaluate();
