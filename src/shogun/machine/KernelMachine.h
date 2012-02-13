@@ -222,9 +222,10 @@ class CKernelMachine : public CMachine
 		static void* apply_helper(void* p);
 
 		virtual bool train_locked(SGVector<index_t> indices);
+		virtual CLabels* apply_locked(SGVector<index_t> indices);
 
 		/** TODO */
-		virtual void data_lock(CFeatures* features, CLabels* labels);
+		virtual void data_lock(CFeatures* features, CLabels* labs);
 
 		/** TODO */
 		virtual void data_unlock();
