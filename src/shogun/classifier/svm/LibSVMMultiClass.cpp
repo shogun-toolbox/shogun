@@ -183,6 +183,12 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 		svm_destroy_model(model);
 		model=NULL;
 
+		/* the features needed for the model are all support vectors for now,
+		 * which  means that a copy of the features is stored in lhs */
+		m_svs.destroy_vector();
+		m_svs=SGVector<index_t>(kernel->get_num_vec_lhs());
+		m_svs.range_fill();
+
 		return true;
 	}
 	else

@@ -113,6 +113,12 @@ public:
 	/** @return underlying learning machine */
 	CMachine* get_machine() const;
 
+	/** @return underlying features TODO python refcount */
+	CFeatures* get_features() const;
+
+	/** @return underlying features TODO python refcount */
+	CLabels* get_labels() const;
+
 	/** setter for the number of runs to use for evaluation */
 	void set_num_runs(int32_t num_runs);
 

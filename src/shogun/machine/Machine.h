@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -209,6 +210,29 @@ class CMachine : public CSGObject
 		 */
 		virtual void set_store_model_features(bool store_model);
 
+		/** TODO */
+		virtual bool train_locked(SGVector<index_t> indices)
+		{
+			SG_ERROR("train_locked(SGVector<index_t>) is not yet implemented "
+					"for %s\n", get_name());
+			return false;
+		}
+
+		virtual CLabels* apply_locked(SGVector<index_t> indices)
+		{
+			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "
+					"for %s\n", get_name());
+			return false;
+		}
+
+		/** TODO */
+		virtual void data_lock(CFeatures* features, CLabels* labs);
+
+		/** TODO */
+		virtual void data_unlock();
+
+		bool is_data_locked() const { return m_data_locked; }
+
 	protected:
 		/** train machine
 		 *
@@ -255,6 +279,9 @@ class CMachine : public CSGObject
 
 		/** whether model features should be stored after training */
 		bool m_store_model_features;
+
+		/** TODO */
+		bool m_data_locked;
 };
 }
 #endif // _MACHINE_H__

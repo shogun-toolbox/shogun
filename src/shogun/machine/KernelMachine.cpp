@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -47,6 +48,8 @@ CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
 CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
+	SG_UNREF(m_custom_kernel);
+	SG_UNREF(m_kernel_backup);
 
 	SG_FREE(m_alpha.vector);
 	SG_FREE(m_svs.vector);
@@ -354,15 +357,27 @@ float64_t CKernelMachine::apply(int32_t num)
 
 CLabels* CKernelMachine::apply(CFeatures* data)
 {
+	if (m_kernel_backup)
+	{
+		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
+				"data_lock was called before - only apply() and apply(int32_t)."
+				" Call data_unlock to allow.");
+	}
+
 	if (!kernel)
 		SG_ERROR("No kernel assigned!\n");
 
 	CFeatures* lhs=kernel->get_lhs();
 	if (!lhs)
-		SG_ERROR("No left hand side specified\n");
+		SG_ERROR("%s: No left hand side specified\n", get_name());
 
 	if (!lhs->get_num_vectors())
-		SG_ERROR("No vectors on left hand side\n");
+	{
+		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
+				" an implementation error in %s, where it was forgotten to set "
+				"the data (m_svs) indices\n", get_name(),
+				data->get_name());
+	}
 
 	kernel->init(lhs, data);
 	SG_UNREF(lhs);
@@ -413,7 +428,7 @@ void CKernelMachine::store_model_features()
 	SG_UNREF(lhs);
 
 	/* now sv indices are just the identity */
-	CMath::range_fill_vector(m_svs.vector, m_svs.vlen, 0);
+	m_svs.range_fill();
 
 	/* set new lhs to kernel */
 	kernel->init(sv_features, rhs);
@@ -421,15 +436,128 @@ void CKernelMachine::store_model_features()
 	SG_UNREF(rhs);
 }
 
+bool CKernelMachine::train_locked(SGVector<index_t> indices)
+{
+	if (!is_data_locked())
+		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n");
+
+	/* this is asusmed here */
+	ASSERT(m_custom_kernel==kernel);
+
+	/* set custom kernel subset of data to train on (copies because CSubset
+	 * will delete vetors at the end)*/
+	SGVector<index_t> row_inds=SGVector<index_t>(indices);
+	row_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
+	m_custom_kernel->set_row_subset(new CSubset(row_inds));
+	SGVector<index_t> col_inds=SGVector<index_t>(indices);
+	col_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
+	m_custom_kernel->set_col_subset(new CSubset(col_inds));
+//	SG_PRINT("training matrix:\n");
+//	m_custom_kernel->print_kernel_matrix("\t");
+
+	/* set corresponding labels subset */
+	SGVector<index_t> label_inds=SGVector<index_t>(indices);
+	label_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
+	labels->set_subset(new CSubset(label_inds));
+//	SGVector<float64_t> temp=labels->get_labels_copy();
+//	CMath::display_vector(temp.vector, temp.vlen, "training labels");
+//	temp.destroy_vector();
+
+	/* dont do train because model should not be stored (no acutal features)
+	 * and train does data_unlock */
+//	SG_PRINT("calling train_machine\n");
+	bool result=train_machine();
+//	SG_PRINT("done train_machine\n");
+
+//	CMath::display_vector(get_support_vectors().vector, get_num_support_vectors(), "sv indices");
+
+	/* set col subset of kernel to contain all elements */
+	m_custom_kernel->remove_col_subset();
+//	SG_PRINT("matrix after training:\n");
+//	m_custom_kernel->print_kernel_matrix("\t");
+
+	/* remove label subset after training */
+	labels->remove_subset();
+
+	return result;
+}
+
+CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
+{
+	if (!is_data_locked())
+		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n");
+
+	/* TODO parallelize? */
+	SGVector<float64_t> output(indices.vlen);
+	for (index_t i=0; i<indices.vlen; ++i)
+		output.vector[i]=apply(indices.vector[i]);
+
+	return new CLabels(output);
+}
+
+void CKernelMachine::data_lock(CFeatures* features, CLabels* labs)
+{
+	/* init kernel with data */
+	kernel->init(features, features);
+
+	/* backup reference to old kernel */
+	SG_UNREF(m_kernel_backup)
+	m_kernel_backup=kernel;
+	SG_REF(m_kernel_backup);
+
+	/* unref possible old custom kernel */
+	SG_UNREF(m_custom_kernel);
+
+	/* create custom kernel matrix from current kernel */
+//	SG_PRINT("computing kernel matrix for %s\n", kernel->get_name());
+	m_custom_kernel=new CCustomKernel(kernel);
+	SG_REF(m_custom_kernel);
+//	SG_PRINT("done\n");
+
+	/* replace kernel by custom kernel */
+	SG_UNREF(kernel);
+	kernel=m_custom_kernel;
+	SG_REF(kernel);
+
+	/* dont forget to call superclass method */
+	CMachine::data_lock(features, labs);
+}
+
+void CKernelMachine::data_unlock()
+{
+	SG_UNREF(m_custom_kernel);
+	m_custom_kernel=NULL;
+
+	/* restore original kernel, possibly delete created one */
+	if (m_kernel_backup)
+	{
+		/* check if kernel was created in train_locked */
+		if (kernel!=m_kernel_backup)
+			SG_UNREF(kernel);
+
+		kernel=m_kernel_backup;
+		m_kernel_backup=NULL;
+	}
+
+	/* dont forget to call superclass method */
+	CMachine::data_unlock();
+}
+
 void CKernelMachine::init()
 {
 	m_bias=0.0;
-    kernel=NULL;
-    use_batch_computation=true;
-    use_linadd=true;
-    use_bias=true;
+	kernel=NULL;
+	m_custom_kernel=NULL;
+	m_kernel_backup=NULL;
+	use_batch_computation=true;
+	use_linadd=true;
+	use_bias=true;
 
 	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
+			" data lock", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
+			"Kernel backup for data lock", MS_NOT_AVAILABLE);
 	SG_ADD(&use_batch_computation, "use_batch_computation",
 			"Batch computation is enabled.", MS_NOT_AVAILABLE);
 	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", MS_NOT_AVAILABLE);
