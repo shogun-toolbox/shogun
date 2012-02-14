@@ -224,9 +224,6 @@ class CLabels : public CSGObject
 		/** the label vector */
 		SGVector<float64_t> labels;
 
-		/** number of classes */
-		int32_t m_num_classes;
-
 	private:
 		/* subset class to enable subset support for this class */
 		CSubset* m_subset;
