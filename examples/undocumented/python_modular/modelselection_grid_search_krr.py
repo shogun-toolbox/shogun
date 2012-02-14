@@ -28,7 +28,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     from shogun.Evaluation import CrossValidationSplitting
     from shogun.Features import Labels
     from shogun.Features import RealFeatures
-    from shogun.Regression import KRR
+    from shogun.Regression import KernelRidgeRegression
     from shogun.ModelSelection import GridSearchModelSelection
     from shogun.ModelSelection import ModelSelectionParameters
 
@@ -41,7 +41,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     labels=Labels(label_train)
 
     # predictor, set tau=0 here, doesnt matter
-    predictor=KRR()
+    predictor=KernelRidgeRegression()
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard

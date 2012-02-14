@@ -4945,7 +4945,7 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_MKLONECLASS:
 			return ui_classifier->train_mkl();
 
-		case CT_KRR:
+		case CT_KERNELRIDGEREGRESSION:
 			return ui_classifier->train_krr();
 
 		case CT_KNN:

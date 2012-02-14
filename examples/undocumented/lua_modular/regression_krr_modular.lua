@@ -16,7 +16,7 @@ function regression_krr_modular (fm_train,fm_test,label_train,width,tau)
 
 	labels=modshogun.Labels(label_train)
 
-	krr=modshogun.KRR(tau, kernel, labels)
+	krr=modshogun.KernelRidgeRegression(tau, kernel, labels)
 	krr:train(feats_train)
 
 	kernel:init(feats_train, feats_test)
@@ -24,5 +24,5 @@ function regression_krr_modular (fm_train,fm_test,label_train,width,tau)
 	return out,kernel,krr
 end
 
-print 'KRR'
+print 'KernelRidgeRegression'
 regression_krr_modular(unpack(parameter_list[1]))

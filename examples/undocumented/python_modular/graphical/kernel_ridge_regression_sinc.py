@@ -4,7 +4,7 @@ from shogun.Regression import *
 from shogun.Kernel import *
 import util
 
-util.set_title('KRR on Sine')
+util.set_title('KernelRidgeRegression on Sine')
 
 
 X, Y=util.get_sinedata()
@@ -13,7 +13,7 @@ width=1
 feat=RealFeatures(X)
 lab=Labels(Y.flatten())
 gk=GaussianKernel(feat, feat, width)
-krr=KRR()
+krr=KernelRidgeRegression()
 krr.set_labels(lab)
 krr.set_kernel(gk)
 krr.set_tau(1e-6)
