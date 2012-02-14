@@ -102,6 +102,17 @@ template<class T> class SGVector
 		}
 
 		/** clone vector */
+		SGVector<T> clone()
+		{
+			SGVector<T> c;
+			c.vector=clone_vector(vector, vlen);
+			c.vlen=vlen;
+			c.do_free=true;
+
+			return c;
+		}
+
+		/** clone vector */
 		template <class VT>
 		static VT* clone_vector(const VT* vec, int32_t len)
 		{
