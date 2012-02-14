@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -61,6 +62,8 @@ class CCustomKernel: public CKernel
 		 * does not really require this it creates some magic dummy features
 		 * that only know about the number of vectors
 		 *
+		 * removes subset before
+		 *
 		 * @param rows features of left-hand side
 		 * @param cols features of right-hand side
 		 * @return if initializing was successful
@@ -68,6 +71,8 @@ class CCustomKernel: public CKernel
 		virtual bool dummy_init(int32_t rows, int32_t cols);
 
 		/** initialize kernel
+		 *
+		 * removes subset before
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
@@ -108,12 +113,19 @@ class CCustomKernel: public CKernel
 		 *
 		 * small variant for floats64's, triangle needs to have less than 2**32 elements
 		 *
+		 * works NOT with subset
+		 *
 		 * @param tri_kernel_matrix tri kernel matrix
 		 * @return if setting was successful
 		 */
 		bool set_triangle_kernel_matrix_from_triangle(
 			SGVector<float64_t> tri_kernel_matrix)
 		{
+			if (m_row_subset || m_col_subset)
+			{
+				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle not"
+						" possible with subset. Remove first\n", get_name());
+			}
 			return set_triangle_kernel_matrix_from_triangle_generic(tri_kernel_matrix);
 		}
 
@@ -123,6 +135,8 @@ class CCustomKernel: public CKernel
 		 *
 		 * big variant, allowing the triangle to have more than 2**31-1 elements
 		 *
+		 * works NOT with subset
+		 *
 		 * @param tri_kernel_matrix tri kernel matrix
 		 * @return if setting was successful
 		 */
@@ -130,6 +144,11 @@ class CCustomKernel: public CKernel
 		bool set_triangle_kernel_matrix_from_triangle_generic(
 			SGVector<T> tri_kernel_matrix)
 		{
+			if (m_row_subset || m_col_subset)
+			{
+				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle_generic "
+						"not possible with subset. Remove first\n", get_name());
+			}
 			ASSERT(tri_kernel_matrix.vector);
 
 			int64_t len = tri_kernel_matrix.vlen;
@@ -161,6 +180,8 @@ class CCustomKernel: public CKernel
 		 *
 		 * for float64's
 		 * 
+		 * works NOT with subset
+		 *
 		 * @return if setting was successful
 		 */
 		inline bool set_triangle_kernel_matrix_from_full(
@@ -172,12 +193,20 @@ class CCustomKernel: public CKernel
 		/** set kernel matrix (only elements from upper triangle)
 		 * from squared matrix
 		 *
+		 * works NOT with subset
+		 *
 		 * @return if setting was successful
 		 */
 		template <class T>
 		bool set_triangle_kernel_matrix_from_full_generic(
 			SGMatrix<T> full_kernel_matrix)
 		{
+			if (m_row_subset || m_col_subset)
+			{
+				SG_ERROR("%s::set_triangle_kernel_matrix_from_full_generic "
+						"not possible with subset. Remove first\n", get_name());
+			}
+
 			int32_t rows = full_kernel_matrix.num_rows;
 			int32_t cols = full_kernel_matrix.num_cols;
 			ASSERT(rows==cols);
@@ -207,11 +236,19 @@ class CCustomKernel: public CKernel
 		 *
 		 * for float32
 		 *
+		 * works NOT with subset
+		 *
 		 * @return if setting was successful
 		 */
 		bool set_full_kernel_matrix_from_full(
 			SGMatrix<float32_t> full_kernel_matrix)
 		{
+			if (m_row_subset || m_col_subset)
+			{
+				SG_ERROR("%s::set_full_kernel_matrix_from_full "
+						"not possible with subset. Remove first\n", get_name());
+			}
+
 			cleanup_custom();
 			kmatrix.matrix = full_kernel_matrix.matrix;
 			kmatrix.num_rows=full_kernel_matrix.num_rows;
@@ -224,11 +261,19 @@ class CCustomKernel: public CKernel
 		 *
 		 * for float64
 		 *
+		 * works NOT with subset
+		 *
 		 * @return if setting was successful
 		 */
 		bool set_full_kernel_matrix_from_full(
 			SGMatrix<float64_t> full_kernel_matrix)
 		{
+			if (m_row_subset || m_col_subset)
+			{
+				SG_ERROR("%s::set_full_kernel_matrix_from_full "
+						"not possible with subset. Remove first\n", get_name());
+			}
+
 			cleanup_custom();
 			int32_t rows=full_kernel_matrix.num_rows;
 			int32_t cols=full_kernel_matrix.num_cols;
@@ -252,36 +297,72 @@ class CCustomKernel: public CKernel
 			return true;
 		}
 
+		/* TODO */
+		void set_row_subset(CSubset* subset);
+		void set_col_subset(CSubset* subset);
+
+		/* TODO */
+		void remove_row_subset();
+		void remove_col_subset();
+
+		/* TODO */
+		inline index_t row_subset_idx_conversion(index_t idx) const
+		{
+			return m_row_subset ? m_row_subset->subset_idx_conversion(idx) : idx;
+		}
+
+		inline index_t col_subset_idx_conversion(index_t idx) const
+		{
+			return m_col_subset ? m_col_subset->subset_idx_conversion(idx) : idx;
+		}
+
 		/** get number of vectors of lhs features
+		 *
+		 * works with subset
 		 *
 		 * @return number of vectors of left-hand side
 		 */
 		virtual inline int32_t get_num_vec_lhs()
 		{
-			return kmatrix.num_rows;
+			return m_row_subset ? m_row_subset->get_size() : num_lhs;
 		}
 
 		/** get number of vectors of rhs features
+		 *
+		 * works with subset
 		 *
 		 * @return number of vectors of right-hand side
 		 */
 		virtual inline int32_t get_num_vec_rhs()
 		{
-			return kmatrix.num_cols;
+			return m_col_subset ? m_col_subset->get_size() : num_rhs;
 		}
 
 		/** test whether features have been assigned to lhs and rhs
+		 *
+		 * works with subset
 		 *
 		 * @return true if features are assigned
 		 */
 		virtual inline bool has_features()
 		{
-			return (kmatrix.num_rows>0) && (kmatrix.num_cols>0);
+			return (get_num_vec_lhs()>0) && (get_num_vec_rhs()>0);
+		}
+
+		/** TODO */
+		void print_kernel_matrix(const char* prefix="") const;
+
+		/** TODO */
+		SGMatrix<float32_t> get_kernel_matrix()
+		{
+			return kmatrix;
 		}
 
 	protected:
 
 		/** compute kernel function
+		 *
+		 * works with subset
 		 *
 		 * @param row row
 		 * @param col col
@@ -291,23 +372,27 @@ class CCustomKernel: public CKernel
 		{
 			ASSERT(kmatrix.matrix);
 
+			index_t real_row=row_subset_idx_conversion(row);
+			index_t real_col=col_subset_idx_conversion(col);
+
+
 			if (upper_diagonal)
 			{
-				if (row <= col)
+				if (real_row <= real_col)
 				{
-					int64_t r=row;
-					return kmatrix.matrix[r*kmatrix.num_rows - r*(r+1)/2 + col];
+					int64_t r=real_row;
+					return kmatrix.matrix[r*kmatrix.num_rows - r*(r+1)/2 + real_col];
 				}
 				else
 				{
-					int64_t c=col;
-					return kmatrix.matrix[c*kmatrix.num_cols - c*(c+1)/2 + row];
+					int64_t c=real_col;
+					return kmatrix.matrix[c*kmatrix.num_cols - c*(c+1)/2 + real_row];
 				}
 			}
 			else
 			{
-				int64_t r=row;
-				return kmatrix.matrix[r*kmatrix.num_cols+col];
+				int64_t r=real_row;
+				return kmatrix.matrix[r*kmatrix.num_cols+real_col];
 			}
 		}
 
@@ -323,6 +408,9 @@ class CCustomKernel: public CKernel
 
 		/** upper diagonal */
 		bool upper_diagonal;
+
+		CSubset* m_row_subset;
+		CSubset* m_col_subset;
 };
 
 }

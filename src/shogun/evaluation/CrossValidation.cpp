@@ -85,12 +85,28 @@ CMachine* CCrossValidation::get_machine() const
 	return m_machine;
 }
 
+CFeatures* CCrossValidation::get_features() const
+{
+	SG_REF(m_features);
+	return m_features;
+}
+
+CLabels* CCrossValidation::get_labels() const
+{
+	SG_REF(m_labels);
+	return m_labels;
+}
+
+
 CrossValidationResult CCrossValidation::evaluate()
 {
 	SGVector<float64_t> results(m_num_runs);
 
 	for (index_t i=0; i <m_num_runs; ++i)
+//	{
+//		SG_PRINT("xval run %d\n", i);
 		results.vector[i]=evaluate_one_run();
+//	}
 
 	/* construct evaluation result */
 	CrossValidationResult result;
@@ -121,11 +137,11 @@ void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 
 	if (m_num_runs==1)
 	{
-		SG_ERROR("Confidence interval for Cross-Validation only possible"
+		SG_WARNING("Confidence interval for Cross-Validation only possible"
 				" when number of runs is >1\n");
 	}
-
-	m_conf_int_alpha=conf_int_alpha;
+	else
+		m_conf_int_alpha=conf_int_alpha;
 }
 
 void CCrossValidation::set_num_runs(int32_t num_runs)
@@ -149,51 +165,119 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* set labels to machine */
 	m_machine->set_labels(m_labels);
 
-	/* tell machine to store model internally
-	 * (otherwise changing subset of features will kaboom the classifier) */
-	m_machine->set_store_model_features(true);
-
-	/* do actual cross-validation */
-	for (index_t i=0; i <num_subsets; ++i)
+	/* different behavior whether data is locked or not */
+	if (m_machine->is_data_locked())
 	{
-		/* set feature subset for training */
-		SGVector<index_t> inverse_subset_indices =
-				m_splitting_strategy->generate_subset_inverse(i);
-		m_features->set_subset(new CSubset(inverse_subset_indices));
+		/* do actual cross-validation */
+		for (index_t i=0; i <num_subsets; ++i)
+		{
+//			SG_PRINT("\n\n\n");
+			/* index subset for training, will be freed below */
+			SGVector<index_t> inverse_subset_indices =
+					m_splitting_strategy->generate_subset_inverse(i);
 
-		/* set label subset for training (copy data before) */
-		SGVector<index_t> inverse_subset_indices_copy(
-				inverse_subset_indices.vlen);
-		memcpy(inverse_subset_indices_copy.vector,
-				inverse_subset_indices.vector,
-				inverse_subset_indices.vlen * sizeof(index_t));
-		m_labels->set_subset(new CSubset(inverse_subset_indices_copy));
+			/* train machine on training features */
+//			CMath::display_vector(inverse_subset_indices.vector, inverse_subset_indices.vlen, "training indices");
 
-		/* train machine on training features */
-		m_machine->train(m_features);
+//			SGVector<index_t> temp(inverse_subset_indices);
+//			temp.vector=CMath::clone_vector(inverse_subset_indices.vector, inverse_subset_indices.vlen);
+//			m_labels->set_subset(new CSubset(temp));
+//			SGVector<float64_t> train_lab=m_labels->get_labels_copy();
+//			CMath::display_vector(train_lab.vector, train_lab.vlen, "training labels");
+//			m_labels->remove_subset();
 
-		/* set feature subset for testing (subset method that stores pointer) */
-		SGVector<index_t> subset_indices =
-				m_splitting_strategy->generate_subset_indices(i);
-		m_features->set_subset(new CSubset(subset_indices));
+			m_machine->train_locked(inverse_subset_indices);
 
-		/* apply machine to test features */
-		CLabels* result_labels=m_machine->apply(m_features);
-		SG_REF(result_labels);
+//			SGVector<float64_t> train_output(inverse_subset_indices.vlen);
+//			for (index_t j=0; j<train_output.vlen; ++j)
+//				train_output.vector[j]=m_machine->apply(inverse_subset_indices.vector[j]);
+//			CMath::display_vector(train_output.vector, train_output.vlen, "training output");
 
-		/* set label subset for testing (copy data before) */
-		SGVector<index_t> subset_indices_copy(subset_indices.vlen);
-		memcpy(subset_indices_copy.vector, subset_indices.vector,
-				subset_indices.vlen * sizeof(index_t));
-		m_labels->set_subset(new CSubset(subset_indices_copy));
+//			CLabels* train_labels=new CLabels(train_lab);
+//			CLabels* output_labels=new CLabels(train_output);
+//			SG_PRINT("training accuracy: %f\n", m_evaluation_criterion->evaluate(output_labels,
+//					train_labels));
+//			SG_UNREF(train_labels);
+//			SG_UNREF(output_labels);
 
-		/* evaluate */
-		results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
+			/* feature subset for testing, will be implicitly freed by CSubset */
+			SGVector<index_t> subset_indices =
+					m_splitting_strategy->generate_subset_indices(i);
 
-		/* clean up, reset subsets */
-		SG_UNREF(result_labels);
-		m_features->remove_subset();
-		m_labels->remove_subset();
+			/* produce output for desired indices */
+//			CMath::display_vector(subset_indices.vector, subset_indices.vlen, "validation indices");
+			CLabels* result_labels=m_machine->apply_locked(subset_indices);
+			SG_REF(result_labels);
+
+			/* set subset for training labels, note that this will (later) free
+			 * the subset_indices vector */
+			m_labels->set_subset(new CSubset(subset_indices));
+//			SGVector<float64_t> truth=m_labels->get_labels_copy();
+//			CMath::display_vector(truth.vector, truth.vlen, "truth");
+//			truth.destroy_vector();
+
+			/* evaluate against own labels */
+//			SG_PRINT("evaluating machine\n");
+			results[i]=m_evaluation_criterion->evaluate(result_labels,
+					m_labels);
+//			SG_PRINT("result=%f\n", results[i]);
+
+			/* remove subset to prevent side efects */
+			m_labels->remove_subset();
+
+			/* clean up, inverse subset indices yet have to be deleted */
+			SG_UNREF(result_labels);
+			inverse_subset_indices.destroy_vector();
+		}
+	}
+	else
+	{
+		/* tell machine to store model internally
+		 * (otherwise changing subset of features will kaboom the classifier) */
+		m_machine->set_store_model_features(true);
+
+		/* do actual cross-validation */
+		for (index_t i=0; i <num_subsets; ++i)
+		{
+			/* set feature subset for training */
+			SGVector<index_t> inverse_subset_indices =
+					m_splitting_strategy->generate_subset_inverse(i);
+			m_features->set_subset(new CSubset(inverse_subset_indices));
+
+			/* set label subset for training (copy data before) */
+			SGVector<index_t> inverse_subset_indices_copy(
+					inverse_subset_indices.vlen);
+			memcpy(inverse_subset_indices_copy.vector,
+					inverse_subset_indices.vector,
+					inverse_subset_indices.vlen * sizeof(index_t));
+			m_labels->set_subset(new CSubset(inverse_subset_indices_copy));
+
+			/* train machine on training features */
+			m_machine->train(m_features);
+
+			/* set feature subset for testing (subset method that stores pointer) */
+			SGVector<index_t> subset_indices =
+					m_splitting_strategy->generate_subset_indices(i);
+			m_features->set_subset(new CSubset(subset_indices));
+
+			/* apply machine to test features */
+			CLabels* result_labels=m_machine->apply(m_features);
+			SG_REF(result_labels);
+
+			/* set label subset for testing (copy data before) */
+			SGVector<index_t> subset_indices_copy(subset_indices.vlen);
+			memcpy(subset_indices_copy.vector, subset_indices.vector,
+					subset_indices.vlen * sizeof(index_t));
+			m_labels->set_subset(new CSubset(subset_indices_copy));
+
+			/* evaluate */
+			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
+
+			/* clean up, reset subsets */
+			SG_UNREF(result_labels);
+			m_features->remove_subset();
+			m_labels->remove_subset();
+		}
 	}
 
 	/* build arithmetic mean of results */
