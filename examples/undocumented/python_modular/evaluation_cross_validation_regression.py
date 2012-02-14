@@ -25,7 +25,7 @@ def evaluation_cross_validation_regression(fm_train=traindat,fm_test=testdat,lab
     from shogun.Evaluation import CrossValidationSplitting
     from shogun.Features import Labels, RealFeatures
     from shogun.Kernel import GaussianKernel
-    from shogun.Regression import KRR
+    from shogun.Regression import KernelRidgeRegression
 
     # training data
     features=RealFeatures(fm_train)
@@ -33,7 +33,7 @@ def evaluation_cross_validation_regression(fm_train=traindat,fm_test=testdat,lab
 
     # kernel and predictor
     kernel=GaussianKernel()
-    predictor=KRR(tau, kernel, labels)
+    predictor=KernelRidgeRegression(tau, kernel, labels)
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but here, the std x-val is used

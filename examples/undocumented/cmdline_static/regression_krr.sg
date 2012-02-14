@@ -1,5 +1,5 @@
 % kernel ridge regression
-print KRR
+print Kernel Ridge Regression
 set_kernel GAUSSIAN REAL 10 2.1
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat

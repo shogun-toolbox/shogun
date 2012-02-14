@@ -13,7 +13,7 @@
 #include <shogun/features/Labels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/PolyKernel.h>
-#include <shogun/regression/KRR.h>
+#include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/evaluation/MeanSquaredError.h>
@@ -97,7 +97,7 @@ void test_cross_validation()
 	CLabels* labels=new CLabels(lab);
 
 	/* kernel ridge regression, only set labels for now, rest does not matter */
-	CKRR* krr=new CKRR(0, NULL, labels);
+	CKernelRidgeRegression* krr=new CKernelRidgeRegression(0, NULL, labels);
 
 	/* evaluation criterion */
 	CMeanSquaredError* eval_crit=

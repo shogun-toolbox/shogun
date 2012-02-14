@@ -22,7 +22,7 @@ public class regression_krr_modular {
 
 		Labels labels = new Labels(trainlab);
 
-		KRR krr = new KRR(tau, kernel, labels);
+		KernelRidgeRegression krr = new KernelRidgeRegression(tau, kernel, labels);
 		krr.train(feats_train);
 
 		kernel.init(feats_train, feats_test);

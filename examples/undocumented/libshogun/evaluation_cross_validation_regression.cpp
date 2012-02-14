@@ -12,7 +12,7 @@
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/features/Labels.h>
 #include <shogun/kernel/LinearKernel.h>
-#include <shogun/regression/KRR.h>
+#include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/evaluation/MeanSquaredError.h>
@@ -57,7 +57,7 @@ void test_cross_validation()
 
 	/* kernel ridge regression*/
 	float64_t tau=0.0001;
-	CKRR* krr=new CKRR(tau, kernel, labels);
+	CKernelRidgeRegression* krr=new CKernelRidgeRegression(tau, kernel, labels);
 
 	/* evaluation criterion */
 	CMeanSquaredError* eval_crit=

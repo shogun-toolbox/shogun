@@ -6,7 +6,7 @@ from shogun.Regression import *
 from shogun.Kernel import *
 import util
 
-util.set_title('KRR')
+util.set_title('KernelRidgeRegression')
 
 width=20
 
@@ -22,7 +22,7 @@ plot(neg[0,:], neg[1,:], "b.")
 labels = util.get_labels()
 train = util.get_realfeatures(pos, neg)
 gk=GaussianKernel(train, train, width)
-krr = KRR()
+krr = KernelRidgeRegression()
 krr.set_labels(labels)
 krr.set_kernel(gk)
 krr.set_tau(1e-3)

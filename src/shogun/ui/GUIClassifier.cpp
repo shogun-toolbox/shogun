@@ -49,7 +49,7 @@
 #include <shogun/classifier/svm/LibSVMMultiClass.h>
 
 #include <shogun/regression/svr/LibSVR.h>
-#include <shogun/regression/KRR.h>
+#include <shogun/regression/KernelRidgeRegression.h>
 
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/classifier/svm/MPDSVM.h>
@@ -229,7 +229,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strcmp(name, "KRR")==0)
 	{
 		SG_UNREF(classifier);
-		classifier=new CKRR(krr_tau, ui->ui_kernel->get_kernel(),
+		classifier=new CKernelRidgeRegression(krr_tau, ui->ui_kernel->get_kernel(),
 			ui->ui_labels->get_train_labels());
 		SG_INFO("created KRR object %p\n", classifier);
 	}
@@ -685,7 +685,7 @@ bool CGUIClassifier::train_knn(int32_t k)
 bool CGUIClassifier::train_krr()
 {
 #ifdef HAVE_LAPACK
-	CKRR* krr= (CKRR*) classifier;
+	CKernelRidgeRegression* krr= (CKernelRidgeRegression*) classifier;
 	if (!krr)
 		SG_ERROR("No SVM available.\n");
 
@@ -1115,7 +1115,7 @@ CLabels* CGUIClassifier::classify()
 		case CT_MKLMULTICLASS:
 		case CT_MKLREGRESSION:
 		case CT_MKLONECLASS:
-		case CT_KRR:
+		case CT_KERNELRIDGEREGRESSION:
 			return classify_kernelmachine();
 		case CT_KNN:
 			return classify_distancemachine();
@@ -1208,7 +1208,7 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_MKLREGRESSION:
 		case CT_MKLONECLASS:
 		case CT_MKLMULTICLASS:
-		case CT_KRR:
+		case CT_KERNELRIDGEREGRESSION:
 			return get_svm(weights, rows, cols, bias, brows, bcols, idx);
 			break;
 		case CT_PERCEPTRON:
@@ -1490,7 +1490,7 @@ bool CGUIClassifier::set_krr_tau(float64_t tau)
 {
 #ifdef HAVE_LAPACK
 	krr_tau=tau;
-	((CKRR*) classifier)->set_tau(krr_tau);
+	((CKernelRidgeRegression*) classifier)->set_tau(krr_tau);
 	SG_INFO("Set to krr_tau=%f.\n", krr_tau);
 
 	return true;
