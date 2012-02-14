@@ -52,7 +52,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return confusion matrix
 	 */
-	SGMatrix<int32_t> confusion_matrix(CLabels* predicted, CLabels* ground_truth);
+	SGMatrix<int32_t> get_confusion_matrix(CLabels* predicted, CLabels* ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction()
 	{

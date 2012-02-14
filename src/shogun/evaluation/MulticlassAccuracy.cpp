@@ -28,7 +28,7 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 	return accuracy;
 }
 
-SGMatrix<int32_t> CMulticlassAccuracy::confusion_matrix(CLabels* predicted, CLabels* ground_truth)
+SGMatrix<int32_t> CMulticlassAccuracy::get_confusion_matrix(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
 	int32_t length = ground_truth->get_num_labels();
