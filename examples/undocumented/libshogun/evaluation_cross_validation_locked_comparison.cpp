@@ -13,9 +13,11 @@
 #include <shogun/features/Labels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/classifier/svm/SVMLight.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <shogun/lib/Time.h>
 
 using namespace shogun;
 
@@ -27,18 +29,15 @@ void print_message(FILE* target, const char* str)
 void test_cross_validation()
 {
 	/* data matrix dimensions */
-	index_t num_vectors=40;
-	index_t num_features=5;
+	index_t num_vectors=500;
+	index_t num_features=50;
 
-	/* data means -1, 1 in all components, std deviation of 3 */
+	/* data means -1, 1 in all components, std deviation of sigma */
 	SGVector<float64_t> mean_1(num_features);
 	SGVector<float64_t> mean_2(num_features);
 	CMath::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
 	CMath::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
-	float64_t sigma=3;
-
-	CMath::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
-	CMath::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
+	float64_t sigma=1.5;
 
 	/* fill data matrix around mean */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
@@ -64,22 +63,20 @@ void test_cross_validation()
 	CLabels* labels=new CLabels(lab);
 
 	/* gaussian kernel */
-	int32_t kernel_cache=100;
-	int32_t width=10;
-	CGaussianKernel* kernel=new CGaussianKernel(kernel_cache, width);
+	CGaussianKernel* kernel=new CGaussianKernel();
+	kernel->set_width(10);
 	kernel->init(features, features);
 
 	/* create svm via libsvm */
-	float64_t svm_C=10;
+	float64_t svm_C=1;
 	float64_t svm_eps=0.0001;
-	CLibSVM* svm=new CLibSVM(svm_C, kernel, labels);
+	CSVM* svm=new CLibSVM(svm_C, kernel, labels);
 	svm->set_epsilon(svm_eps);
 
-	/* train and output */
+	/* train and output the normal way */
+	SG_SPRINT("starting normal training\n");
 	svm->train(features);
 	CLabels* output=svm->apply(features);
-	for (index_t i=0; i<num_vectors; ++i)
-		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 
 	/* evaluation criterion */
 	CContingencyTableEvaluation* eval_crit=
@@ -87,7 +84,7 @@ void test_cross_validation()
 
 	/* evaluate training error */
 	float64_t eval_result=eval_crit->evaluate(output, labels);
-	SG_SPRINT("training error: %f\n", eval_result);
+	SG_SPRINT("training accuracy: %f\n", eval_result);
 	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
@@ -104,19 +101,34 @@ void test_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(100);
+	cross->set_num_runs(20);
 	cross->set_conf_int_alpha(0.05);
 
-	/* this is optional and speeds everything up since the kernel matrix is
-	 * precomputed. May not work though. */
+	/* actual evaluation without fixex kernel matrix */
+
+	index_t repetitions=1;
+	SG_SPRINT("unlocked x-val\n");
+	kernel->init(features, features);
+	for (index_t i=0; i<repetitions; ++i)
+	{
+		CTime time;
+		time.start();
+		cross->evaluate().print_result();
+		time.stop();
+		SG_SPRINT("%f sec\n", time.cur_time_diff());
+	}
+
+	/* actual evaluation with five kernel matrix (restore features first) */
 	svm->data_lock(features, labels);
-
-	/* actual evaluation */
-	CrossValidationResult result=cross->evaluate();
-	result.print_result();
-
-	/* see above */
-	svm->data_unlock();
+	SG_SPRINT("locked x-val\n");
+	for (index_t i=0; i<repetitions; ++i)
+	{
+		CTime time;
+		time.start();
+		cross->evaluate().print_result();
+		time.stop();
+		SG_SPRINT("%f sec\n", time.cur_time_diff());
+	}
 
 	/* clean up */
 	SG_UNREF(cross);

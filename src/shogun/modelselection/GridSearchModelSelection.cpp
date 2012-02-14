@@ -34,8 +34,12 @@ CGridSearchModelSelection::~CGridSearchModelSelection()
 {
 }
 
-CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
+CParameterCombination* CGridSearchModelSelection::select_model(bool print_state,
+		bool lock_data)
 {
+	if (print_state)
+		SG_PRINT("Generating parameter combinations\n");
+
 	/* Retrieve all possible parameter combinations */
 	CDynamicObjectArray<CParameterCombination>* combinations=
 			m_model_parameters->get_combinations();
@@ -65,7 +69,23 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 
 		current_combination->apply_to_modsel_parameter(
 				machine->m_model_selection_parameters);
+
+		if (lock_data)
+		{
+			CFeatures* features=m_cross_validation->get_features();
+			CLabels* labels=m_cross_validation->get_labels();
+			SG_UNREF(features);
+			SG_UNREF(labels);
+			machine->data_lock(features, labels);
+		}
+
 		CrossValidationResult result=m_cross_validation->evaluate();
+
+		if (print_state)
+			result.print_result();
+
+		if (lock_data)
+			machine->data_unlock();
 
 		/* check if current result is better, delete old combinations */
 		if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)

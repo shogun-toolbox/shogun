@@ -134,7 +134,10 @@ int main(int argc, char **argv)
 	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
 			param_tree, cross);
 
-	CParameterCombination* best_combination=grid_search->select_model();
+	bool print_state=true;
+	bool lock_data=true;
+	CParameterCombination* best_combination=grid_search->select_model(
+			print_state, lock_data);
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 
@@ -143,6 +146,7 @@ int main(int argc, char **argv)
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
+	classifier->data_lock(features, labels);
 	CrossValidationResult result=cross->evaluate();
 	SG_SPRINT("result: ");
 	result.print_result();

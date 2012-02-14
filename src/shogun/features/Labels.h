@@ -207,6 +207,9 @@ class CLabels : public CSGObject
 		 */
 		virtual void set_subset(CSubset* subset);
 
+		/** TODO */
+		bool has_subset() const;
+
 		/** deletes any set subset */
 		virtual void remove_subset();
 
@@ -223,9 +226,6 @@ class CLabels : public CSGObject
 	protected:
 		/** the label vector */
 		SGVector<float64_t> labels;
-
-		/** number of classes */
-		int32_t m_num_classes;
 
 	private:
 		/* subset class to enable subset support for this class */

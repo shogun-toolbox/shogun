@@ -39,24 +39,7 @@ CLabels::CLabels(SGVector<float64_t> src)
 	init();
 
 	set_labels(src);
-	m_num_classes=get_num_classes();
 }
-
-/*
-CLabels::CLabels(SGVector<int64_t> src)
-: CSGObject()
-{
-	init();
-
-	SGVector<float64_t> converted(src.vlen);	
-	for (int32_t i=0; i<src.vlen; i++)
-		converted[i] = (float64_t)src[i];
-	src.free_vector();		
-
-	set_labels(converted);
-	m_num_classes=get_num_classes();
-}
-*/
 
 void CLabels::set_to_one()
 {
@@ -78,8 +61,6 @@ CLabels::~CLabels()
 	labels.destroy_vector();
 	delete m_subset;
 	m_subset=NULL;
-
-	m_num_classes=0;
 }
 
 void CLabels::init()
@@ -88,7 +69,6 @@ void CLabels::init()
 	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
 
 	labels=SGVector<float64_t>();
-	m_num_classes=0;
 	m_subset=NULL;
 }
 
@@ -133,13 +113,11 @@ bool CLabels::is_two_class_labeling()
 
 int32_t CLabels::get_num_classes()
 {
-	CSet<float64_t>* classes=new CSet<float64_t>();
-	for (int32_t i=0; i<get_num_labels(); i++)
-		classes->add(get_label(i));
+	SGVector<float64_t> unique=get_unique_labels();
+	int32_t num_classes=unique.vlen;
+	unique.free_vector();
 
-	int32_t result=classes->get_num_elements();
-	SG_UNREF(classes);
-	return result;
+	return num_classes;
 }
 
 SGVector<float64_t> CLabels::get_labels()
@@ -172,13 +150,14 @@ SGVector<float64_t> CLabels::get_labels_copy()
 SGVector<float64_t> CLabels::get_unique_labels()
 {
 	/* extract all labels */
-	CSet<float64_t> unique_labels;
-	for (index_t i=0; i<labels.vlen; ++i)
-		unique_labels.add(labels.vector[i]);
+	SGVector<float64_t> unique_labels=labels.clone();
+	unique_labels.vlen=CMath::unique(unique_labels.vector, unique_labels.vlen);
 
-	SGVector<float64_t> result(unique_labels.get_num_elements());
-	for (index_t i=0; i<unique_labels.get_num_elements(); ++i)
-		result.vector[i]=unique_labels.get_element(i);
+	SGVector<float64_t> result(unique_labels.vlen, true);
+	for (index_t i=0; i<unique_labels.vlen; ++i)
+		result.vector[i]=unique_labels.vector[i];
+
+	unique_labels.free_vector();
 
 	return result;
 }
@@ -214,7 +193,6 @@ void CLabels::load(CFile* loader)
 
 	ASSERT(loader);
 	loader->get_vector(labels.vector, labels.vlen);
-	m_num_classes=get_num_classes();
 	SG_RESET_LOCALE;
 }
 
@@ -281,6 +259,11 @@ void CLabels::set_subset(CSubset* subset)
 	SG_UNREF(m_subset);
 	m_subset=subset;
 	SG_REF(subset);
+}
+
+bool CLabels::has_subset() const
+{
+	return m_subset!=NULL;
 }
 
 void CLabels::remove_subset()

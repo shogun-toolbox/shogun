@@ -1257,11 +1257,14 @@ class CMath : public CSGObject
 			static int32_t unique(T* output, int32_t size)
 			{
 				qsort(output, size);
-				int32_t i,j=0 ;
-				for (i=0; i<size; i++)
+				int32_t j=0;
+
+				for (int32_t i=0; i<size; i++)
+				{
 					if (i==0 || output[i]!=output[i-1])
 						output[j++]=output[i];
-				return j ;
+				}
+				return j;
 			}
 
 		/** compute eigenvalues and eigenvectors of symmetric matrix
