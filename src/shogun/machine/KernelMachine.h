@@ -230,6 +230,8 @@ class CKernelMachine : public CMachine
 		/** TODO */
 		virtual void data_unlock();
 
+		virtual bool supports_locking() const { return true; }
+
 	protected:
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
