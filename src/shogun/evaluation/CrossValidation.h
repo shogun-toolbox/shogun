@@ -27,7 +27,6 @@ class CEvaluation;
  * May contain confidence interval (if conf_int_alpha!=0).
  * m_conf_int_alpha is the probability for an error, i.e. the value does not lie
  * in the confidence interval.
- * TODO say something about model locking
  */
 
 class CrossValidationResult
@@ -78,6 +77,8 @@ class CrossValidationResult
  * See [Forman, G. and Scholz, M. (2009). Apples-to-apples in cross-validation
  * studies: Pitfalls in classifier performance measurement. Technical report,
  * HP Laboratories.] for details on this subject.
+ *
+ * TODO say something about locking and custom kernel
  */
 class CCrossValidation: public CSGObject
 {
@@ -105,7 +106,7 @@ public:
 	 */
 	CCrossValidation(CMachine* machine, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CEvaluation* evaluation_criterion);
+			CEvaluation* evaluation_criterion, bool autolock=true);
 
 	/** destructor */
 	virtual ~CCrossValidation();
