@@ -13,6 +13,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/ParameterMap.h>
 #include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
@@ -24,7 +25,7 @@ CCrossValidation::CCrossValidation()
 
 CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterion)
+		CEvaluation* evaluation_criterion, bool autolock)
 {
 	init();
 
@@ -33,6 +34,7 @@ CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 	m_labels=labels;
 	m_splitting_strategy=splitting_strategy;
 	m_evaluation_criterion=evaluation_criterion;
+	m_autolock=autolock;
 
 	SG_REF(m_machine);
 	SG_REF(m_features);
@@ -81,6 +83,8 @@ void CCrossValidation::init()
 	m_evaluation_criterion=NULL;
 	m_num_runs=1;
 	m_conf_int_alpha=0;
+	m_do_unlock=false;
+	m_autolock=true;
 
 	m_parameters->add((CSGObject**) &m_machine, "machine",
 			"Used learning machine");
@@ -94,6 +98,23 @@ void CCrossValidation::init()
 	m_parameters->add(&m_conf_int_alpha, "conf_int_alpha",
 			"alpha-value of confidence "
 					"interval");
+	m_parameters->add(&m_do_unlock, "do_unlock",
+			"Whether machine should be unlocked after evaluation");
+	m_parameters->add(&m_autolock, "m_autolock",
+			"Whether machine should automatically try to be locked before "
+			"evaluation");
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("m_do_unlock", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("m_autolock", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo()
+	);
 }
 
 CMachine* CCrossValidation::get_machine() const
@@ -102,25 +123,39 @@ CMachine* CCrossValidation::get_machine() const
 	return m_machine;
 }
 
-CFeatures* CCrossValidation::get_features() const
-{
-	SG_REF(m_features);
-	return m_features;
-}
-
-CLabels* CCrossValidation::get_labels() const
-{
-	SG_REF(m_labels);
-	return m_labels;
-}
-
-
 CrossValidationResult CCrossValidation::evaluate()
 {
-	SGVector<float64_t> results(m_num_runs);
+	/* if for some reason the do_unlock_frag is set, unlock */
+	if (m_do_unlock)
+	{
+		m_machine->data_unlock();
+		m_do_unlock=false;
+	}
 
-	/* set labels to machine */
+	/* set labels in any case (no locking needs this) */
 	m_machine->set_labels(m_labels);
+
+	if (m_autolock)
+	{
+		/* if machine supports locking try to do so */
+		if (m_machine->supports_locking())
+		{
+			/* only lock if machine is not yet locked */
+			if (!m_machine->is_data_locked())
+			{
+				m_machine->data_lock(m_labels, m_features);
+				m_do_unlock=true;
+			}
+		}
+		else
+		{
+			SG_WARNING("%s does not support locking. Autolocking is skipped. "
+					"Set autolock flag to false to get rid of wanrning.\n",
+					m_machine->get_name());
+		}
+	}
+
+	SGVector<float64_t> results(m_num_runs);
 
 	/* perform all the x-val runs */
 	for (index_t i=0; i <m_num_runs; ++i)
@@ -135,13 +170,22 @@ CrossValidationResult CCrossValidation::evaluate()
 		result.conf_int_alpha=m_conf_int_alpha;
 		result.mean=CStatistics::confidence_intervals_mean(results,
 				result.conf_int_alpha, result.conf_int_low, result.conf_int_up);
-	} else {
+	}
+	else
+	{
 		result.mean=CStatistics::mean(results);
 		result.conf_int_low=0;
 		result.conf_int_up=0;
 	}
 
 	SG_FREE(results.vector);
+
+	/* unlock machine if it was locked in this method */
+	if (m_machine->is_data_locked() && m_do_unlock)
+	{
+		m_machine->data_unlock();
+		m_do_unlock=false;
+	}
 
 	return result;
 }

@@ -90,10 +90,11 @@ public:
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
 	 * @param evaluation_criterion evaluation criterion to use
+	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
 	CCrossValidation(CMachine* machine, CFeatures* features, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CEvaluation* evaluation_criterion);
+			CEvaluation* evaluation_criterion, bool autolock=true);
 
 	/** constructor, for use with custom kernels (no features)
 	 * @param machine learning machine to use
@@ -123,17 +124,15 @@ public:
 	/** @return underlying learning machine */
 	CMachine* get_machine() const;
 
-	/** @return underlying features TODO python refcount */
-	CFeatures* get_features() const;
-
-	/** @return underlying features TODO python refcount */
-	CLabels* get_labels() const;
-
 	/** setter for the number of runs to use for evaluation */
 	void set_num_runs(int32_t num_runs);
 
 	/** setter for the number of runs to use for evaluation */
 	void set_conf_int_alpha(float64_t m_conf_int_alpha);
+
+	/** setter for the autolock property. If true, machine will tried to be
+	 * locked before evaluation */
+	void set_autolock(bool autolock) { m_autolock=autolock; }
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
@@ -164,6 +163,12 @@ private:
 	CLabels* m_labels;
 	CSplittingStrategy* m_splitting_strategy;
 	CEvaluation* m_evaluation_criterion;
+
+	/** whether machine will automaticall be locked before evaluation */
+	bool m_autolock;
+
+	/** whether machine should be unlocked after evaluation */
+	bool m_do_unlock;
 };
 
 }
