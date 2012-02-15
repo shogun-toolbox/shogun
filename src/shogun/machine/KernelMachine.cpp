@@ -361,11 +361,10 @@ float64_t CKernelMachine::apply(int32_t num)
 
 CLabels* CKernelMachine::apply(CFeatures* data)
 {
-	if (m_kernel_backup)
+	if (is_data_locked())
 	{
 		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
-				"data_lock was called before - only apply() and apply(int32_t)."
-				" Call data_unlock to allow.");
+				"data_lock was called before. Call data_unlock to allow.");
 	}
 
 	if (!kernel)
