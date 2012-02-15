@@ -22,11 +22,14 @@ CCustomKernel::init()
 {
 	m_row_subset=NULL;
 	m_col_subset=NULL;
+	m_free_km=true;
 
 	SG_ADD((CSGObject**)&m_row_subset, "row_subset", "Subset of rows",
 			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_col_subset, "col_subset", "Subset of columns",
 			MS_NOT_AVAILABLE);
+	SG_ADD(&m_free_km, "free_km", "Wheather kernel matrix should be freed in "
+			"destructor", MS_NOT_AVAILABLE);
 
 	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
 	m_parameters->add(&upper_diagonal, "upper_diagonal");
@@ -48,6 +51,7 @@ CCustomKernel::CCustomKernel(CKernel* k)
 	{
 		CCustomKernel* casted=(CCustomKernel*)k;
 		set_full_kernel_matrix_from_full(casted->get_float32_kernel_matrix());
+		m_free_km=false;
 	}
 	else
 		set_full_kernel_matrix_from_full(k->get_kernel_matrix());
@@ -99,8 +103,10 @@ void CCustomKernel::cleanup_custom()
 	SG_DEBUG("cleanup up custom kernel\n");
 	remove_row_subset();
 	remove_col_subset();
-	if (kmatrix.matrix)
+
+	if (m_free_km)
 		SG_FREE(kmatrix.matrix);
+
 	kmatrix.matrix=NULL;
 	upper_diagonal=false;
 	kmatrix.num_cols=0;
