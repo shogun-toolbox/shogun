@@ -135,9 +135,8 @@ int main(int argc, char **argv)
 			param_tree, cross);
 
 	bool print_state=true;
-	bool lock_data=true;
 	CParameterCombination* best_combination=grid_search->select_model(
-			print_state, lock_data);
+			print_state);
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 

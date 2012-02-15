@@ -94,17 +94,10 @@ void test_cross_validation()
 	cross->set_num_runs(100);
 	cross->set_conf_int_alpha(0.05);
 
-	/* this is optional and speeds everything up since the kernel matrix is
-	 * precomputed. May not work though.*/
-	krr->data_lock(labels, features);
-
 	/* actual evaluation */
 	CrossValidationResult result=cross->evaluate();
 	SG_SPRINT("cross_validation estimate:\n");
 	result.print_result();
-
-	/* see above */
-	krr->data_unlock();
 
 	/* same crude assertion as for above evaluation */
 	ASSERT(result.mean<2);
