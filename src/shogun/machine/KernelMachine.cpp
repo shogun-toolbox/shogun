@@ -60,9 +60,9 @@ CKernelMachine::~CKernelMachine()
 
 void CKernelMachine::set_kernel(CKernel* k)
 {
-    SG_UNREF(kernel);
-    SG_REF(k);
-    kernel=k;
+	SG_REF(k);
+	SG_UNREF(kernel);
+	kernel=k;
 }
 
 CKernel* CKernelMachine::get_kernel()
