@@ -76,7 +76,9 @@ bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
 		m_svms=SG_MALLOC(CSVM*, m_num_svms);
 		if (m_svms)
 		{
-			memset(m_svms,0, m_num_svms*sizeof(CSVM*));
+			for (index_t i=0; i<m_num_svms; ++i)
+				m_svms[i]=NULL;
+
 			return true;
 		}
 	}
@@ -272,11 +274,11 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 	ASSERT(m_num_svms>0);
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
 
-	int32_t* votes=SG_MALLOC(int32_t, m_num_classes);
+	SGVector<int32_t> votes(m_num_classes);
 
-	/* set votes array to zero to prevent uninitialised values if class gets
+	/* set votes array to zero to prevent uninitialized values if class gets
 	 * no votes */
-	memset(votes, 0, sizeof(int32_t)*m_num_classes);
+	votes.set_const(0);
 	int32_t s=0;
 
 	for (int32_t i=0; i<m_num_classes; i++)
@@ -287,27 +289,27 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 			 * use this code, instead of having a duplicate copy down there */
 			m_svms[s]->set_kernel(kernel);
 			if (m_svms[s]->apply(num)>0)
-				votes[i]++;
+				votes.vector[i]++;
 			else
-				votes[j]++;
+				votes.vector[j]++;
 
 			s++;
 		}
 	}
 
 	int32_t winner=0;
-	int32_t max_votes=votes[0];
+	int32_t max_votes=votes.vector[0];
 
 	for (int32_t i=1; i<m_num_classes; i++)
 	{
-		if (votes[i]>max_votes)
+		if (votes.vector[i]>max_votes)
 		{
-			max_votes=votes[i];
+			max_votes=votes.vector[i];
 			winner=i;
 		}
 	}
 
-	SG_FREE(votes);
+	votes.destroy_vector();
 
 	return winner;
 }
