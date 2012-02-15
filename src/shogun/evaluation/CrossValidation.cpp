@@ -45,7 +45,7 @@ CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 
 CCrossValidation::CCrossValidation(CMachine* machine, CLabels* labels,
 		CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterion)
+		CEvaluation* evaluation_criterion, bool autolock)
 {
 	init();
 
@@ -53,6 +53,7 @@ CCrossValidation::CCrossValidation(CMachine* machine, CLabels* labels,
 	m_labels=labels;
 	m_splitting_strategy=splitting_strategy;
 	m_evaluation_criterion=evaluation_criterion;
+	m_autolock=autolock;
 
 	SG_REF(m_machine);
 	SG_REF(m_labels);
