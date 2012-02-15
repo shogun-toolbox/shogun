@@ -41,6 +41,8 @@ class CKernel;
  *
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
  * in a training procedure.
+ *
+ * TODO say something about locking
  */
 class CKernelMachine : public CMachine
 {

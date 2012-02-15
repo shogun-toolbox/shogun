@@ -95,6 +95,8 @@ enum ESolverType
  * the functions apply(idx) (optionally apply() to predict on the
  * whole set of examples) and the load and save routines.
  *
+ * TODO say something about locking
+ *
  */
 class CMachine : public CSGObject
 {
