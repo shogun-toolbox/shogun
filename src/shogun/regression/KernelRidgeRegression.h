@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _KRR_H__
-#define _KRR_H__
+#ifndef _KERNELRIDGEREGRESSION_H__
+#define _KERNELRIDGEREGRESSION_H__
 
 #include <shogun/lib/config.h>
 #include <shogun/regression/Regression.h>
@@ -21,7 +21,7 @@
 
 namespace shogun
 {
-/** @brief Class KRR implements Kernel Ridge Regression - a regularized least square
+/** @brief Class KernelRidgeRegression implements Kernel Ridge Regression - a regularized least square
  * method for classification and regression.
  *
  * It is similar to support vector machines (cf. CSVM). However in contrast to
@@ -51,11 +51,11 @@ namespace shogun
  * solution can again be written as a linear combination of kernels (cf.
  * CKernelMachine) with bias \f$b=0\f$.
  */
-class CKRR : public CKernelMachine
+class CKernelRidgeRegression : public CKernelMachine
 {
 	public:
 		/** default constructor */
-		CKRR();
+		CKernelRidgeRegression();
 
 		/** constructor
 		 *
@@ -63,34 +63,14 @@ class CKRR : public CKernelMachine
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CKRR(float64_t tau, CKernel* k, CLabels* lab);
-		virtual ~CKRR() {}
+		CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab);
+		virtual ~CKernelRidgeRegression() {}
 
 		/** set regularization constant
 		 *
 		 * @param tau new tau
 		 */
 		inline void set_tau(float64_t tau) { m_tau = tau; };
-
-		/** classify regression
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* apply();
-
-		/** classify one example
-		 *
-		 * @param num which example to classify
-		 * @return result
-		 */
-		virtual float64_t apply(int32_t num);
-
-		/** apply kernel machine to data
-		 *
-		 * @param data (test)data to be classified
-		 * @return classified labels
-		 */
-		virtual CLabels* apply(CFeatures* data);
 
 		/** load regression from file
 		 *
@@ -108,15 +88,15 @@ class CKRR : public CKernelMachine
 
 		/** get classifier type
 		 *
-		 * @return classifier type KRR
+		 * @return classifier type KernelRidgeRegression
 		 */
 		inline virtual EClassifierType get_classifier_type()
 		{
-			return CT_KRR;
+			return CT_KERNELRIDGEREGRESSION;
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "KRR"; }
+		inline virtual const char* get_name() const { return "KernelRidgeRegression"; }
 
 	protected:
 		/** train regression
@@ -138,4 +118,4 @@ class CKRR : public CKernelMachine
 };
 }
 #endif // HAVE_LAPACK
-#endif // _KRR_H__
+#endif // _KERNELRIDGEREGRESSION_H__
