@@ -43,9 +43,14 @@ CCustomKernel::CCustomKernel(CKernel* k)
 {
 	init();
 
-	set_full_kernel_matrix_from_full(k->get_kernel_matrix());
-//	SG_PRINT("created custom kernel with kernel matrix:\n");
-//	print_kernel_matrix();
+	/* if constructed from a custom kernel, use same kernel matrix */
+	if (k->get_kernel_type()==K_CUSTOM)
+	{
+		CCustomKernel* casted=(CCustomKernel*)k;
+		set_full_kernel_matrix_from_full(casted->get_float32_kernel_matrix());
+	}
+	else
+		set_full_kernel_matrix_from_full(k->get_kernel_matrix());
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
