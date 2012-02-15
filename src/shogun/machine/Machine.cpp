@@ -148,6 +148,7 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 	}
 
 	m_data_locked=true;
+	SG_PRINT("%s was locked!\n", get_name());
 }
 
 void CMachine::data_unlock()
@@ -157,5 +158,6 @@ void CMachine::data_unlock()
 		/* remove possible subset in labels */
 		labels->remove_subset();
 		m_data_locked=false;
+		SG_PRINT("%s was unlocked!\n", get_name());
 	}
 }
