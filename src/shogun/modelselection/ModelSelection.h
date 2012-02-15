@@ -42,14 +42,12 @@ public:
 	virtual ~CModelSelection();
 
 	/**
-	 * abstractmethod to select model
+	 * abstract method to select model
 	 *
 	 * @param print_state if true, the current combination is printed
-	 * @param flag wheather data should be locked before one x-val evaluation
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false,
-			bool lock_data=false)=0;
+	virtual CParameterCombination* select_model(bool print_state=false)=0;
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const	{ return "ModelSelection"; }

@@ -41,6 +41,8 @@ class CKernel;
  *
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
  * in a training procedure.
+ *
+ * TODO say something about locking
  */
 class CKernelMachine : public CMachine
 {
@@ -225,10 +227,12 @@ class CKernelMachine : public CMachine
 		virtual CLabels* apply_locked(SGVector<index_t> indices);
 
 		/** TODO */
-		virtual void data_lock(CFeatures* features, CLabels* labs);
+		virtual void data_lock(CLabels* labs, CFeatures* features=NULL);
 
 		/** TODO */
 		virtual void data_unlock();
+
+		virtual bool supports_locking() const { return true; }
 
 	protected:
 		/** Stores feature data of the SV indices and sets it to the lhs of the
