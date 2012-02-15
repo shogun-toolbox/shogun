@@ -27,6 +27,7 @@ class CEvaluation;
  * May contain confidence interval (if conf_int_alpha!=0).
  * m_conf_int_alpha is the probability for an error, i.e. the value does not lie
  * in the confidence interval.
+ * TODO say something about model locking
  */
 
 class CrossValidationResult

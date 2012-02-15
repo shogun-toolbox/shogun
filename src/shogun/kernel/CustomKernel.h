@@ -26,6 +26,8 @@ namespace shogun
  * is or can be internally converted into (or directly given in) upper triangle
  * representation. Also note that values are stored as 32bit floats.
  *
+ * TODO say something about the row/col subsets
+ *
  */
 class CCustomKernel: public CKernel
 {
