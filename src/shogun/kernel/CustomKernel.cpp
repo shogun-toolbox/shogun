@@ -14,6 +14,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
 
@@ -30,9 +31,26 @@ CCustomKernel::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_free_km, "free_km", "Wheather kernel matrix should be freed in "
 			"destructor", MS_NOT_AVAILABLE);
-
 	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
 	m_parameters->add(&upper_diagonal, "upper_diagonal");
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("m_free_km", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("row_subset", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("col_subset", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo()
+	);
 }
 
 CCustomKernel::CCustomKernel()
