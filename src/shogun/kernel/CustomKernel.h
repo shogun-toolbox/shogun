@@ -413,6 +413,9 @@ class CCustomKernel: public CKernel
 
 		CSubset* m_row_subset;
 		CSubset* m_col_subset;
+
+		/* whether kernel matrix is to be freed in destructor */
+		bool m_free_km;
 };
 
 }
