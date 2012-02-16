@@ -18,7 +18,7 @@ tau=1e-6;
 num_threads=1;
 labels=Labels(label_train);
 
-krr=KRR(tau, kernel, labels);
+krr=KernelRidgeRegression(tau, kernel, labels);
 krr.parallel.set_num_threads(num_threads);
 krr.train();
 
