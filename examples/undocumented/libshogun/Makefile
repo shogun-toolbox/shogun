@@ -15,8 +15,14 @@ CC=c++
 
 VALGRIND_LOG = valgrind.log
 
-TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
-		  classifier_mklmulticlass kernel_gaussian kernel_revlin \
+TARGETS = basic_minimal \
+		  classifier_libsvm \
+		  classifier_minimal_svm \
+		  classifier_mklmulticlass \
+  		  classifier_conjugateindex \
+		  classifier_gaussiannaivebayes \
+		  classifier_libsvmmulticlass \
+		  kernel_gaussian kernel_revlin \
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
 		  parameter_iterate_float64 parameter_iterate_sgobject \
@@ -63,8 +69,6 @@ TARGETS =	  basic_minimal classifier_libsvm classifier_minimal_svm \
 		  converter_linearlocaltangentspacealignment \
 		  converter_localitypreservingprojections \
 		  serialization_basic_tests \
-		  classifier_conjugateindex \
-		  classifier_gaussiannaivebayes \
 		  library_cover_tree \
 		  kernel_machine_train_locked \
 
