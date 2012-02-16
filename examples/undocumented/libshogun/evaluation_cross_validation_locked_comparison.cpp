@@ -101,34 +101,38 @@ void test_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(20);
+	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.05);
 
-	/* actual evaluation without fixex kernel matrix */
-
-	index_t repetitions=1;
+	/* no locking */
+	index_t repetitions=3;
 	SG_SPRINT("unlocked x-val\n");
 	kernel->init(features, features);
+	cross->set_autolock(false);
+	CTime time;
+	time.start();
 	for (index_t i=0; i<repetitions; ++i)
-	{
-		CTime time;
-		time.start();
-		cross->evaluate().print_result();
-		time.stop();
-		SG_SPRINT("%f sec\n", time.cur_time_diff());
-	}
+		cross->evaluate();
+	time.stop();
+	SG_SPRINT("%f sec\n", time.cur_time_diff());
 
-	/* actual evaluation with five kernel matrix (restore features first) */
-	svm->data_lock(features, labels);
-	SG_SPRINT("locked x-val\n");
+	/* auto_locking in every iteration of this loop (better, not so nice) */
+	SG_SPRINT("locked in every iteration x-val\n");
+	cross->set_autolock(true);
+	time.start();
 	for (index_t i=0; i<repetitions; ++i)
-	{
-		CTime time;
-		time.start();
-		cross->evaluate().print_result();
-		time.stop();
-		SG_SPRINT("%f sec\n", time.cur_time_diff());
-	}
+		cross->evaluate();
+	time.stop();
+	SG_SPRINT("%f sec\n", time.cur_time_diff());
+
+	/* lock once before, (no locking/unlocking in this loop) */
+	svm->data_lock(labels, features);
+	SG_SPRINT("locked x-val\n");
+	time.start();
+	for (index_t i=0; i<repetitions; ++i)
+		cross->evaluate();
+	time.stop();
+	SG_SPRINT("%f sec\n", time.cur_time_diff());
 
 	/* clean up */
 	SG_UNREF(cross);

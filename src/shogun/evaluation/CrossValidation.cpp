@@ -13,6 +13,7 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/ParameterMap.h>
 #include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
@@ -24,7 +25,7 @@ CCrossValidation::CCrossValidation()
 
 CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterion)
+		CEvaluation* evaluation_criterion, bool autolock)
 {
 	init();
 
@@ -33,9 +34,28 @@ CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 	m_labels=labels;
 	m_splitting_strategy=splitting_strategy;
 	m_evaluation_criterion=evaluation_criterion;
+	m_autolock=autolock;
 
 	SG_REF(m_machine);
 	SG_REF(m_features);
+	SG_REF(m_labels);
+	SG_REF(m_splitting_strategy);
+	SG_REF(m_evaluation_criterion);
+}
+
+CCrossValidation::CCrossValidation(CMachine* machine, CLabels* labels,
+		CSplittingStrategy* splitting_strategy,
+		CEvaluation* evaluation_criterion, bool autolock)
+{
+	init();
+
+	m_machine=machine;
+	m_labels=labels;
+	m_splitting_strategy=splitting_strategy;
+	m_evaluation_criterion=evaluation_criterion;
+	m_autolock=autolock;
+
+	SG_REF(m_machine);
 	SG_REF(m_labels);
 	SG_REF(m_splitting_strategy);
 	SG_REF(m_evaluation_criterion);
@@ -64,6 +84,8 @@ void CCrossValidation::init()
 	m_evaluation_criterion=NULL;
 	m_num_runs=1;
 	m_conf_int_alpha=0;
+	m_do_unlock=false;
+	m_autolock=true;
 
 	m_parameters->add((CSGObject**) &m_machine, "machine",
 			"Used learning machine");
@@ -77,6 +99,23 @@ void CCrossValidation::init()
 	m_parameters->add(&m_conf_int_alpha, "conf_int_alpha",
 			"alpha-value of confidence "
 					"interval");
+	m_parameters->add(&m_do_unlock, "do_unlock",
+			"Whether machine should be unlocked after evaluation");
+	m_parameters->add(&m_autolock, "m_autolock",
+			"Whether machine should automatically try to be locked before "
+			"evaluation");
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("m_do_unlock", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("m_autolock", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo()
+	);
 }
 
 CMachine* CCrossValidation::get_machine() const
@@ -85,28 +124,43 @@ CMachine* CCrossValidation::get_machine() const
 	return m_machine;
 }
 
-CFeatures* CCrossValidation::get_features() const
-{
-	SG_REF(m_features);
-	return m_features;
-}
-
-CLabels* CCrossValidation::get_labels() const
-{
-	SG_REF(m_labels);
-	return m_labels;
-}
-
-
 CrossValidationResult CCrossValidation::evaluate()
 {
+	/* if for some reason the do_unlock_frag is set, unlock */
+	if (m_do_unlock)
+	{
+		m_machine->data_unlock();
+		m_do_unlock=false;
+	}
+
+	/* set labels in any case (no locking needs this) */
+	m_machine->set_labels(m_labels);
+
+	if (m_autolock)
+	{
+		/* if machine supports locking try to do so */
+		if (m_machine->supports_locking())
+		{
+			/* only lock if machine is not yet locked */
+			if (!m_machine->is_data_locked())
+			{
+				m_machine->data_lock(m_labels, m_features);
+				m_do_unlock=true;
+			}
+		}
+		else
+		{
+			SG_WARNING("%s does not support locking. Autolocking is skipped. "
+					"Set autolock flag to false to get rid of wanrning.\n",
+					m_machine->get_name());
+		}
+	}
+
 	SGVector<float64_t> results(m_num_runs);
 
+	/* perform all the x-val runs */
 	for (index_t i=0; i <m_num_runs; ++i)
-//	{
-//		SG_PRINT("xval run %d\n", i);
 		results.vector[i]=evaluate_one_run();
-//	}
 
 	/* construct evaluation result */
 	CrossValidationResult result;
@@ -117,13 +171,22 @@ CrossValidationResult CCrossValidation::evaluate()
 		result.conf_int_alpha=m_conf_int_alpha;
 		result.mean=CStatistics::confidence_intervals_mean(results,
 				result.conf_int_alpha, result.conf_int_low, result.conf_int_up);
-	} else {
+	}
+	else
+	{
 		result.mean=CStatistics::mean(results);
 		result.conf_int_low=0;
 		result.conf_int_up=0;
 	}
 
 	SG_FREE(results.vector);
+
+	/* unlock machine if it was locked in this method */
+	if (m_machine->is_data_locked() && m_do_unlock)
+	{
+		m_machine->data_unlock();
+		m_do_unlock=false;
+	}
 
 	return result;
 }
@@ -138,7 +201,7 @@ void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 	if (m_num_runs==1)
 	{
 		SG_WARNING("Confidence interval for Cross-Validation only possible"
-				" when number of runs is >1\n");
+				" when number of runs is >1, ignoring.\n");
 	}
 	else
 		m_conf_int_alpha=conf_int_alpha;
@@ -162,65 +225,34 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* results array */
 	float64_t* results=SG_MALLOC(float64_t, num_subsets);
 
-	/* set labels to machine */
-	m_machine->set_labels(m_labels);
-
 	/* different behavior whether data is locked or not */
 	if (m_machine->is_data_locked())
 	{
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
-//			SG_PRINT("\n\n\n");
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
 					m_splitting_strategy->generate_subset_inverse(i);
 
 			/* train machine on training features */
-//			CMath::display_vector(inverse_subset_indices.vector, inverse_subset_indices.vlen, "training indices");
-
-//			SGVector<index_t> temp(inverse_subset_indices);
-//			temp.vector=CMath::clone_vector(inverse_subset_indices.vector, inverse_subset_indices.vlen);
-//			m_labels->set_subset(new CSubset(temp));
-//			SGVector<float64_t> train_lab=m_labels->get_labels_copy();
-//			CMath::display_vector(train_lab.vector, train_lab.vlen, "training labels");
-//			m_labels->remove_subset();
-
 			m_machine->train_locked(inverse_subset_indices);
-
-//			SGVector<float64_t> train_output(inverse_subset_indices.vlen);
-//			for (index_t j=0; j<train_output.vlen; ++j)
-//				train_output.vector[j]=m_machine->apply(inverse_subset_indices.vector[j]);
-//			CMath::display_vector(train_output.vector, train_output.vlen, "training output");
-
-//			CLabels* train_labels=new CLabels(train_lab);
-//			CLabels* output_labels=new CLabels(train_output);
-//			SG_PRINT("training accuracy: %f\n", m_evaluation_criterion->evaluate(output_labels,
-//					train_labels));
-//			SG_UNREF(train_labels);
-//			SG_UNREF(output_labels);
 
 			/* feature subset for testing, will be implicitly freed by CSubset */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
 
 			/* produce output for desired indices */
-//			CMath::display_vector(subset_indices.vector, subset_indices.vlen, "validation indices");
 			CLabels* result_labels=m_machine->apply_locked(subset_indices);
 			SG_REF(result_labels);
 
 			/* set subset for training labels, note that this will (later) free
 			 * the subset_indices vector */
 			m_labels->set_subset(new CSubset(subset_indices));
-//			SGVector<float64_t> truth=m_labels->get_labels_copy();
-//			CMath::display_vector(truth.vector, truth.vlen, "truth");
-//			truth.destroy_vector();
 
 			/* evaluate against own labels */
-//			SG_PRINT("evaluating machine\n");
 			results[i]=m_evaluation_criterion->evaluate(result_labels,
 					m_labels);
-//			SG_PRINT("result=%f\n", results[i]);
 
 			/* remove subset to prevent side efects */
 			m_labels->remove_subset();

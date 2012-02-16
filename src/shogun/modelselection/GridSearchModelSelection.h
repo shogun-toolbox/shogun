@@ -43,11 +43,9 @@ public:
 	 * method to select model via grid search
 	 *
 	 * @param print_state if true, the current combination is printed
-	 * @param flag wheather data should be locked before one x-val evaluation
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false,
-			bool lock_data=false);
+	virtual CParameterCombination* select_model(bool print_state=false);
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const

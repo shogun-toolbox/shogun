@@ -32,30 +32,44 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 {
 	struct svm_node* x_space;
 
-    problem = svm_problem();
+	problem = svm_problem();
 
 	ASSERT(labels && labels->get_num_labels());
 	int32_t num_classes = labels->get_num_classes();
 	problem.l=labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
 
+	/* ensure that there are only positive labels, otherwise, train_machine
+	 * will produce memory errors since svm index gets wrong */
+	for (index_t i=0; i<labels->get_num_labels(); ++i)
+	{
+		if (labels->get_label(i)<0)
+		{
+			SG_ERROR("Only labels >= 0 allowed for %s::train_machine!\n",
+					get_name());
+		}
+	}
+
 	if (data)
 	{
 		if (labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+		{
+			SG_ERROR("Number of training vectors does not match number of "
+					"labels\n");
+		}
 		kernel->init(data, data);
 	}
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
 	problem.pv=SG_MALLOC(float64_t, problem.l);
-    problem.C=SG_MALLOC(float64_t, problem.l);
+	problem.C=SG_MALLOC(float64_t, problem.l);
 
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-        problem.pv[i]=-1.0;
+		problem.pv[i]=-1.0;
 		problem.y[i]=labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
@@ -167,7 +181,6 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 //					idx=((num_classes-1)*model->label[j]+model->label[i])/2;
 //
 				SG_DEBUG("svm[%d] has %d sv (total: %d), b=%f label:(%d,%d) -> svm[%d]\n", s, num_sv, model->l, bias, model->label[i], model->label[j], idx);
-
 				set_svm(idx, svm);
 				s++;
 			}
@@ -179,12 +192,16 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 		SG_FREE(problem.x);
 		SG_FREE(problem.y);
 		SG_FREE(x_space);
+		SG_FREE(problem.pv);
+		SG_FREE(problem.C);
 
 		svm_destroy_model(model);
 		model=NULL;
 
 		/* the features needed for the model are all support vectors for now,
 		 * which  means that a copy of the features is stored in lhs */
+		/* TODO this can be done better, ie only store sv of underlying svms
+		 * and map indices */
 		m_svs.destroy_vector();
 		m_svs=SGVector<index_t>(kernel->get_num_vec_lhs());
 		m_svs.range_fill();
