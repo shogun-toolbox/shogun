@@ -96,11 +96,11 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
     print "starting model selection"
     # print the current parameter combination, if no parameter nothing is printed
     print_state=True
-    # tell modelselection to not lock data before (since kernel matrix does not
-    # change here, just lock before model selection)
-    lock_data=False
-    predictor.data_lock(features_train, labels)
-    best_parameters=model_selection.select_model(print_state, lock_data)
+    # lock data before since model selection will not change the kernel matrix
+    # (use with care) This avoids that the kernel matrix is recomputed in every
+    # iteration of the model search
+    predictor.data_lock(labels, features_train)
+    best_parameters=model_selection.select_model(print_state)
 
     # print best parameters
     print "best parameters:"

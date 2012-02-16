@@ -95,6 +95,8 @@ enum ESolverType
  * the functions apply(idx) (optionally apply() to predict on the
  * whole set of examples) and the load and save routines.
  *
+ * TODO say something about locking
+ *
  */
 class CMachine : public CSGObject
 {
@@ -228,11 +230,15 @@ class CMachine : public CSGObject
 		}
 
 		/** TODO */
-		virtual void data_lock(CFeatures* features, CLabels* labs);
+		virtual void data_lock(CLabels* labs, CFeatures* features);
 
 		/** TODO */
 		virtual void data_unlock();
 
+		/** TODO */
+		virtual bool supports_locking() const { return false; }
+
+		/** TODO */
 		bool is_data_locked() const { return m_data_locked; }
 
 	protected:
@@ -265,8 +271,9 @@ class CMachine : public CSGObject
 		 */
 		virtual void store_model_features()
 		{
-			SG_ERROR("Model storage and therefore Cross-Validation and "
-					"Model-Selection is not supported for %s\n", get_name());
+			SG_ERROR("Model storage and therefore unlocked Cross-Validation and"
+					" Model-Selection is not supported for %s. Locked may"
+					" work though.\n", get_name());
 		}
 
 	protected:

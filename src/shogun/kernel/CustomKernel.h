@@ -26,6 +26,8 @@ namespace shogun
  * is or can be internally converted into (or directly given in) upper triangle
  * representation. Also note that values are stored as 32bit floats.
  *
+ * TODO say something about the row/col subsets
+ *
  */
 class CCustomKernel: public CKernel
 {
@@ -353,7 +355,7 @@ class CCustomKernel: public CKernel
 		void print_kernel_matrix(const char* prefix="") const;
 
 		/** TODO */
-		SGMatrix<float32_t> get_kernel_matrix()
+		SGMatrix<float32_t> get_float32_kernel_matrix()
 		{
 			return kmatrix;
 		}
@@ -411,6 +413,9 @@ class CCustomKernel: public CKernel
 
 		CSubset* m_row_subset;
 		CSubset* m_col_subset;
+
+		/* whether kernel matrix is to be freed in destructor */
+		bool m_free_km;
 };
 
 }

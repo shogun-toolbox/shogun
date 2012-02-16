@@ -141,10 +141,9 @@ int main(int argc, char **argv)
 	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
 			param_tree, cross);
 
-	bool lock_data=true;
 	bool print_state=true;
 	CParameterCombination* best_combination=grid_search->select_model(
-			print_state, lock_data);
+			print_state);
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 

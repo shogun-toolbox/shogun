@@ -107,16 +107,9 @@ void test_cross_validation()
 	cross->set_num_runs(100);
 	cross->set_conf_int_alpha(0.05);
 
-	/* this is optional and speeds everything up since the kernel matrix is
-	 * precomputed. May not work though. */
-	svm->data_lock(features, labels);
-
 	/* actual evaluation */
 	CrossValidationResult result=cross->evaluate();
 	result.print_result();
-
-	/* see above */
-	svm->data_unlock();
 
 	/* clean up */
 	SG_UNREF(cross);

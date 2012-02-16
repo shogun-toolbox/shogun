@@ -135,9 +135,8 @@ int main(int argc, char **argv)
 			param_tree, cross);
 
 	bool print_state=true;
-	bool lock_data=true;
 	CParameterCombination* best_combination=grid_search->select_model(
-			print_state, lock_data);
+			print_state);
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 
@@ -146,7 +145,7 @@ int main(int argc, char **argv)
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
-	classifier->data_lock(features, labels);
+	classifier->data_lock(labels, features);
 	CrossValidationResult result=cross->evaluate();
 	SG_SPRINT("result: ");
 	result.print_result();
