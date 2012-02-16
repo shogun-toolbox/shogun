@@ -82,7 +82,7 @@ void test()
 	/* now train a few times on different subsets on data and assert that
 	 * results are correc (data linear separable) */
 
-	svm->data_lock(features, labels);
+	svm->data_lock(labels, features);
 
 	SGVector<index_t> indices(4);
 	indices.vector[0]=1;

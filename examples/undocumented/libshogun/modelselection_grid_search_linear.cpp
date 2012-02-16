@@ -83,7 +83,6 @@ int main(int argc, char **argv)
 	 * Dont worry if yours is not included, simply write to the mailing list */
 	classifier->print_modsel_params();
 
-
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=create_param_tree();
 	param_tree->print_tree();
@@ -91,6 +90,9 @@ int main(int argc, char **argv)
 	/* handles all of the above structures in memory */
 	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
 			param_tree, cross);
+
+	/* set autolocking to false to get rid of warnings */
+	cross->set_autolock(false);
 
 	CParameterCombination* best_combination=grid_search->select_model();
 	SG_SPRINT("best parameter(s):\n");

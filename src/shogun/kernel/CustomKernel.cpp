@@ -14,6 +14,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
 
@@ -22,14 +23,34 @@ CCustomKernel::init()
 {
 	m_row_subset=NULL;
 	m_col_subset=NULL;
+	m_free_km=true;
 
 	SG_ADD((CSGObject**)&m_row_subset, "row_subset", "Subset of rows",
 			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_col_subset, "col_subset", "Subset of columns",
 			MS_NOT_AVAILABLE);
-
+	SG_ADD(&m_free_km, "free_km", "Wheather kernel matrix should be freed in "
+			"destructor", MS_NOT_AVAILABLE);
 	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
 	m_parameters->add(&upper_diagonal, "upper_diagonal");
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("m_free_km", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("row_subset", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo()
+	);
+
+	/* new parameter from param version 0 to 1 */
+	m_parameter_map->put(
+			new SGParamInfo("col_subset", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo()
+	);
 }
 
 CCustomKernel::CCustomKernel()
@@ -43,9 +64,15 @@ CCustomKernel::CCustomKernel(CKernel* k)
 {
 	init();
 
-	set_full_kernel_matrix_from_full(k->get_kernel_matrix());
-//	SG_PRINT("created custom kernel with kernel matrix:\n");
-//	print_kernel_matrix();
+	/* if constructed from a custom kernel, use same kernel matrix */
+	if (k->get_kernel_type()==K_CUSTOM)
+	{
+		CCustomKernel* casted=(CCustomKernel*)k;
+		set_full_kernel_matrix_from_full(casted->get_float32_kernel_matrix());
+		m_free_km=false;
+	}
+	else
+		set_full_kernel_matrix_from_full(k->get_kernel_matrix());
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
@@ -72,6 +99,14 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	remove_row_subset();
 	remove_col_subset();
 
+	/* make it possible to call with NULL values since features are useless
+	 * for custom kernel matrix */
+	if (!l)
+		l=lhs;
+
+	if (!r)
+		r=rhs;
+
 	CKernel::init(l, r);
 
 	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows);
@@ -86,8 +121,10 @@ void CCustomKernel::cleanup_custom()
 	SG_DEBUG("cleanup up custom kernel\n");
 	remove_row_subset();
 	remove_col_subset();
-	if (kmatrix.matrix)
+
+	if (m_free_km)
 		SG_FREE(kmatrix.matrix);
+
 	kmatrix.matrix=NULL;
 	upper_diagonal=false;
 	kmatrix.num_cols=0;

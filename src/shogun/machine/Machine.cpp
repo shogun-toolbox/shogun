@@ -123,9 +123,13 @@ void CMachine::set_store_model_features(bool store_model)
 	m_store_model_features = store_model;
 }
 
-void CMachine::data_lock(CFeatures* features, CLabels* labs)
+void CMachine::data_lock(CLabels* labs, CFeatures* features)
 {
-	ASSERT(features && labs);
+	if (!labs)
+	{
+		SG_ERROR("%s::data_lock() is not possible will NULL labels!\n",
+				get_name());
+	}
 
 	/* first set labels */
 	set_labels(labs);
