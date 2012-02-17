@@ -103,6 +103,7 @@ namespace shogun
 			
 		private:
 			void init ();
+			void register_params ();
 			inline float64_t get_smooth_spectrum (float64_t omega) const;
 			inline float64_t sinc (float64_t x) const;
 			inline float64_t get_spectrum (float64_t omega) const;
