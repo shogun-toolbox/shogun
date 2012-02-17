@@ -106,12 +106,7 @@ void CHomogeneousKernelMap::init () {
 	m_table = SGVector<float64_t> (NULL, numElements, true);
 	m_table.vlen = numElements;
 	m_table.vector = SG_CALLOC (float64_t, numElements);
-	
-	/* check whether allocation was ok */
-	if (m_table.vector == NULL) {
-		throw ShogunException ("CHomogeneousKernelMap::init: could not allocate memory for vector");
-	}
-	
+		
 	int exponent;
   uint64_t i = 0, j = 0;
   float64_t* tablep = m_table.vector;
@@ -175,6 +170,9 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 		SGVector<float64_t> col (result.get_column_vector (i), result.num_rows);
 		apply_to_vector (v, col);
 	}
+	
+	/* set the new generated feature matrix */
+	simple_features->set_feature_matrix (result);
 	
 	return result;
 }
