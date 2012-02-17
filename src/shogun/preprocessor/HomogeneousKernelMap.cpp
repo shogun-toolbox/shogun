@@ -17,9 +17,15 @@
 using namespace shogun;
 
 CHomogeneousKernelMap::CHomogeneousKernelMap () 
-	: CSimplePreprocessor<float64_t> ()
+	: CSimplePreprocessor<float64_t> (),
+		m_kernel (HomogeneousKernelIntersection),
+		m_window (HomogeneousKernelMapWindowRectangular),
+		m_gamma (1.0),
+		m_period (-1),
+		m_order (1)
 {
-				
+	init ();
+	register_params ();
 }
 
 CHomogeneousKernelMap::CHomogeneousKernelMap 
@@ -34,25 +40,30 @@ CHomogeneousKernelMap::CHomogeneousKernelMap
 		
 {
 	init ();
+	register_params ();
 }
 
-CHomogeneousKernelMap::~CHomogeneousKernelMap() {
+CHomogeneousKernelMap::~CHomogeneousKernelMap() 
+{
 	m_table.destroy_vector ();
 }
 
-bool CHomogeneousKernelMap::init (CFeatures* features) {
+bool CHomogeneousKernelMap::init (CFeatures* features) 
+{
 	ASSERT(features->get_feature_class()==C_SIMPLE);
 	ASSERT(features->get_feature_type()==F_DREAL);
 	
 	return true;
 }
 
-void CHomogeneousKernelMap::cleanup () {
+void CHomogeneousKernelMap::cleanup () 
+{
 	m_table.destroy_vector ();
 }
 
 
-void CHomogeneousKernelMap::init () {
+void CHomogeneousKernelMap::init () 
+{
 	SG_DEBUG ("Initialising homogeneous kernel map...\n");
 	ASSERT (m_gamma > 0) ;
 
@@ -103,10 +114,12 @@ void CHomogeneousKernelMap::init () {
   int tableHeight = 2*m_order + 1 ;
   int tableWidth = m_numSubdivisions * (m_maxExponent - m_minExponent + 1);
 	size_t numElements = (tableHeight * tableWidth + 2*(1+m_order));
-	m_table = SGVector<float64_t> (NULL, numElements, true);
-	m_table.vlen = numElements;
-	m_table.vector = SG_CALLOC (float64_t, numElements);
-		
+	if (m_table.vlen != numElements) {
+		SG_DEBUG ("reallocating... %d -> %d\n", m_table.vlen, numElements);
+		m_table.vector = SG_REALLOC (float64_t, m_table.vector, numElements);
+		m_table.vlen = numElements;
+	}
+	
 	int exponent;
   uint64_t i = 0, j = 0;
   float64_t* tablep = m_table.vector;
@@ -146,20 +159,10 @@ void CHomogeneousKernelMap::init () {
     } /* next mantissa */
   } /* next exponent */
 
-	/* register variables */
-	m_parameters->add ((machine_int_t*) &m_kernel, "kernel", "Kernel type to use.");
-	m_parameters->add ((machine_int_t*) &m_window, "window", "Window type to use.");
-	m_parameters->add (&m_gamma, "gamma", "Homogeneity order.");
-	m_parameters->add (&m_period, "period", "Approximation order");
-	m_parameters->add (&m_numSubdivisions, "numSubdivisions", "The number of sublevels");
-	m_parameters->add (&m_subdivision, "subdivision", "subdivision.");
-	m_parameters->add (&m_order, "order", "The order");
-	m_parameters->add (&m_minExponent, "minExponent", "Minimum exponent");
-	m_parameters->add (&m_maxExponent, "maxExponent", "Maximum exponent");
-	m_parameters->add (&m_table, "table", "Lookup-table");
 }
 
-SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* features) {
+SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* features) 
+{
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*)features;
 	int32_t num_vectors = simple_features->get_num_vectors ();
 	int32_t num_features = simple_features->get_num_features ();
@@ -178,7 +181,8 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 }
 
 /// apply preproc on single feature vector
-SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector (SGVector<float64_t> vector) {
+SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector (SGVector<float64_t> vector) 
+{
 	uint64_t featureDimension = 2*m_order+1;
 	uint64_t m_target_dim = vector.vlen * featureDimension;
 	SGVector<float64_t> result = SGVector<float64_t> (m_target_dim);
@@ -188,48 +192,64 @@ SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector (SGVector<flo
 	return result;
 }
 
-void CHomogeneousKernelMap::setKernelType (HomogeneousKernelType k) {
+void CHomogeneousKernelMap::setKernelType (HomogeneousKernelType k) 
+{
 	m_kernel = k;
+	init ();
 }
 
-HomogeneousKernelType CHomogeneousKernelMap::getKernelType () const {
+HomogeneousKernelType CHomogeneousKernelMap::getKernelType () const 
+{
 	return m_kernel;
 }
 
-void CHomogeneousKernelMap::setWindowType (HomogeneousKernelMapWindowType w) {
+void CHomogeneousKernelMap::setWindowType (HomogeneousKernelMapWindowType w) 
+{
 	m_window = w;
+	init ();
 }
 
-HomogeneousKernelMapWindowType CHomogeneousKernelMap::getWindowType () const {
+HomogeneousKernelMapWindowType CHomogeneousKernelMap::getWindowType () const 
+{
 	return m_window;
 }
 
-void CHomogeneousKernelMap::setGamma (float64_t g) {
+void CHomogeneousKernelMap::setGamma (float64_t g) 
+{
 	m_gamma = g;
+	init ();
 }
 
-float64_t CHomogeneousKernelMap::getGamma (float64_t g) const {
+float64_t CHomogeneousKernelMap::getGamma (float64_t g) const 
+{
 	return m_gamma;
 }
 
-void CHomogeneousKernelMap::setOrder (uint64_t o) {
+void CHomogeneousKernelMap::setOrder (uint64_t o) 
+{
 	m_order = o;
+	init ();
 }
 
-uint64_t CHomogeneousKernelMap::getOrder () const {
+uint64_t CHomogeneousKernelMap::getOrder () const 
+{
 	return m_order;
 }
 
-void CHomogeneousKernelMap::setPeriod (float64_t p) {
+void CHomogeneousKernelMap::setPeriod (float64_t p) 
+{
 	m_period = p;
+	init ();
 }
 
-float64_t CHomogeneousKernelMap::getPeriod () const {
+float64_t CHomogeneousKernelMap::getPeriod () const 
+{
 	return m_period;
 }
 
 inline float64_t
-CHomogeneousKernelMap::get_spectrum (float64_t omega) const {
+CHomogeneousKernelMap::get_spectrum (float64_t omega) const 
+{
   switch (m_kernel) {
     case HomogeneousKernelIntersection:
       return (2.0 / CMath::PI) / (1 + 4 * omega*omega);
@@ -246,13 +266,15 @@ CHomogeneousKernelMap::get_spectrum (float64_t omega) const {
 }
 
 inline float64_t 
-CHomogeneousKernelMap::sinc (float64_t x) const {
+CHomogeneousKernelMap::sinc (float64_t x) const 
+{
   if (x == 0.0) return 1.0 ;
   return CMath::sin (x) / x;
 }
 
 inline float64_t
-CHomogeneousKernelMap::get_smooth_spectrum (float64_t omega) const {
+CHomogeneousKernelMap::get_smooth_spectrum (float64_t omega) const 
+{
   float64_t kappa_hat = 0;
   float64_t omegap ;
   float64_t epsilon = 1e-2;
@@ -303,8 +325,6 @@ inline void CHomogeneousKernelMap::apply_to_vector (const SGVector<float64_t>& i
 		{
 	    for (j = 0 ; j <= m_order ; ++j) {
 	      out_v[k*featureDimension+j] = 0.0;
-//				*destination = (T) 0.0 ;
-//	      destination += stride ;
 	    }
 	    continue;
 	  }
@@ -327,8 +347,21 @@ inline void CHomogeneousKernelMap::apply_to_vector (const SGVector<float64_t>& i
       f2 = *v2++;
 
 			out_v[k*featureDimension+j] = sign * ((f2 - f1) * (m_numSubdivisions * mantissa) + f1);
-//      *destination = sign * ((f2 - f1) * (m_numSubdivisions * mantissa) + f1) ;
-//      destination += stride ;
     }
 	}	
+}
+
+void CHomogeneousKernelMap::register_params ()
+{
+	/* register variables */
+	m_parameters->add ((machine_int_t*) &m_kernel, "kernel", "Kernel type to use.");
+	m_parameters->add ((machine_int_t*) &m_window, "window", "Window type to use.");
+	m_parameters->add (&m_gamma, "gamma", "Homogeneity order.");
+	m_parameters->add (&m_period, "period", "Approximation order");
+	m_parameters->add (&m_numSubdivisions, "numSubdivisions", "The number of sublevels");
+	m_parameters->add (&m_subdivision, "subdivision", "subdivision.");
+	m_parameters->add (&m_order, "order", "The order");
+	m_parameters->add (&m_minExponent, "minExponent", "Minimum exponent");
+	m_parameters->add (&m_maxExponent, "maxExponent", "Maximum exponent");
+	m_parameters->add (&m_table, "table", "Lookup-table");
 }
