@@ -106,12 +106,7 @@ void CHomogeneousKernelMap::init () {
 	m_table = SGVector<float64_t> (NULL, numElements, true);
 	m_table.vlen = numElements;
 	m_table.vector = SG_CALLOC (float64_t, numElements);
-	
-	/* check whether allocation was ok */
-	if (m_table.vector == NULL) {
-		throw ShogunException ("CHomogeneousKernelMap::init: could not allocate memory for vector");
-	}
-	
+		
 	int exponent;
   uint64_t i = 0, j = 0;
   float64_t* tablep = m_table.vector;
