@@ -63,11 +63,11 @@ float64_t CJensenShannonKernel::compute(int32_t idx_a, int32_t idx_b)
 		float64_t a_i = 0, b_i = 0;
 		float64_t ab = avec[i]+bvec[i];
 		if (avec[i] != 0)
-			a_i = avec[i]/2 * CMath::log2(ab/avec[i]);
+			a_i = avec[i] * CMath::log2(ab/avec[i]);
 		if (bvec[i] != 0)
-			b_i = bvec[i]/2 * CMath::log2(ab/bvec[i]);
+			b_i = bvec[i] * CMath::log2(ab/bvec[i]);
 
-		result += a_i + b_i;
+		result += 0.5*(a_i + b_i);
 	}
 	
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
