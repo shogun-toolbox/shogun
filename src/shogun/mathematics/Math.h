@@ -421,6 +421,11 @@ class CMath : public CSGObject
 			return ::sin(x);
 		}
 
+		static inline float64_t cos(float64_t x)
+		{
+			return ::cos(x);
+		}
+		
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
 			ASSERT(len>0 && xy);
