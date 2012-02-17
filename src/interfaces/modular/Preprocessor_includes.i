@@ -10,6 +10,7 @@
 #include <shogun/preprocessor/LogPlusOne.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
+#include <shogun/preprocessor/HomogeneousKernelMap.h>
 
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/PCA.h>
