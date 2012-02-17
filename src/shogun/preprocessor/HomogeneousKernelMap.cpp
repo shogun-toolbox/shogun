@@ -171,6 +171,9 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 		apply_to_vector (v, col);
 	}
 	
+	/* set the new generated feature matrix */
+	simple_features->set_feature_matrix (result);
+	
 	return result;
 }
 
