@@ -103,6 +103,7 @@ public:
 	 * @param labels labels that correspond to the features
 	 * @param splitting_strategy splitting strategy to use
 	 * @param evaluation_criterion evaluation criterion to use
+	 * @param autolock autolock
 	 */
 	CCrossValidation(CMachine* machine, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,

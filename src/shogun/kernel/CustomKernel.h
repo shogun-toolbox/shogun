@@ -300,19 +300,35 @@ class CCustomKernel: public CKernel
 		}
 
 		/* TODO */
+		/** sets row subset 
+		 * @param subset 
+		 */
 		void set_row_subset(CSubset* subset);
+		/** sets column subset
+		 * @param subset
+		 */
 		void set_col_subset(CSubset* subset);
 
 		/* TODO */
+		/** removes row subset */
 		void remove_row_subset();
+		/** removes column subset */
 		void remove_col_subset();
 
 		/* TODO */
+		/** index conversion for row subset
+		 * @param idx index to convert
+		 * @return converted index
+		 */
 		inline index_t row_subset_idx_conversion(index_t idx) const
 		{
 			return m_row_subset ? m_row_subset->subset_idx_conversion(idx) : idx;
 		}
 
+		/** index conversion for column subset
+		 * @param idx index to convert
+		 * @return converted index
+		 */
 		inline index_t col_subset_idx_conversion(index_t idx) const
 		{
 			return m_col_subset ? m_col_subset->subset_idx_conversion(idx) : idx;
@@ -355,6 +371,9 @@ class CCustomKernel: public CKernel
 		void print_kernel_matrix(const char* prefix="") const;
 
 		/** TODO */
+		/** returns kernel matrix as is
+		 * @param kernel matrix
+		 */
 		SGMatrix<float32_t> get_float32_kernel_matrix()
 		{
 			return kmatrix;
@@ -411,10 +430,12 @@ class CCustomKernel: public CKernel
 		/** upper diagonal */
 		bool upper_diagonal;
 
+		/** row subset */
 		CSubset* m_row_subset;
+		/** column subset */
 		CSubset* m_col_subset;
 
-		/* whether kernel matrix is to be freed in destructor */
+		/** indicates whether kernel matrix is to be freed in destructor */
 		bool m_free_km;
 };
 
