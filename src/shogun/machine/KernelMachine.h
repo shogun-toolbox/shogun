@@ -223,7 +223,13 @@ class CKernelMachine : public CMachine
 		 */
 		static void* apply_helper(void* p);
 
+		/** train being locked
+		 * @param indices train with indices
+		 */
 		virtual bool train_locked(SGVector<index_t> indices);
+		/** apply being locked
+		 * @param indices apply with indices
+		 */
 		virtual CLabels* apply_locked(SGVector<index_t> indices);
 
 		/** TODO */

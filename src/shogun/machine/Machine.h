@@ -222,6 +222,7 @@ class CMachine : public CSGObject
 			return false;
 		}
 
+		/** TODO doc */
 		virtual CLabels* apply_locked(SGVector<index_t> indices)
 		{
 			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "

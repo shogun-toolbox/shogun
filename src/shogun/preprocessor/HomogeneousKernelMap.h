@@ -58,7 +58,7 @@ namespace shogun
 			/** constructor
 			 *
 			 * @param kernel kernel type
-			 * @param window window type (use HomogeneousKernelMapWindowRectangular if unsure)
+			 * @param wType window type (use HomogeneousKernelMapWindowRectangular if unsure)
 			 * @param gamma the homogeneity order
 			 * @param order the approximation order
 			 * @param period the period (use a negative value to use the default period)
