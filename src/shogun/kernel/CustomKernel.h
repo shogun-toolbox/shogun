@@ -370,9 +370,9 @@ class CCustomKernel: public CKernel
 		/** TODO */
 		void print_kernel_matrix(const char* prefix="") const;
 
-		/** TODO */
 		/** returns kernel matrix as is
-		 * @param kernel matrix
+		 *
+		 * @return kernel matrix
 		 */
 		SGMatrix<float32_t> get_float32_kernel_matrix()
 		{
