@@ -20,7 +20,6 @@ from matplotlib.figure import Figure
 from shogun.Features import *
 from shogun.Classifier import *
 from shogun.Kernel import *
-import util
 
 class Form(QMainWindow):
     def __init__(self, parent=None):
@@ -48,8 +47,7 @@ class Form(QMainWindow):
     def on_show(self):
         self.axes.clear()        
         self.axes.grid(True)
-        self.axes.plot(self.data.x1_pos, self.data.x2_pos, 'ro')
-        self.axes.plot(self.data.x1_neg, self.data.x2_neg, 'bo')
+        self.axes.plot(self.data.x1, self.data.x2, 'bo')
         self.axes.set_xlim((-5,5))
         self.axes.set_ylim((-5,5))
         self.canvas.draw()
@@ -71,11 +69,7 @@ class Form(QMainWindow):
 
     def onclick(self, event):
         print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(event.button, event.x, event.y, event.xdata, event.ydata)
-        if event.button==1:
-            label = 1.0
-        else:
-            label = -1.0
-        self.data.add_example(event.xdata, event.ydata, label)
+        self.data.add_example(event.xdata, event.ydata)
         self.on_show()
 
 
@@ -102,8 +96,7 @@ class Form(QMainWindow):
 
         self.axes.clear()        
         self.axes.grid(True)
-        self.axes.plot(self.data.x1_pos, self.data.x2_pos, 'ro')
-        self.axes.plot(self.data.x1_neg, self.data.x2_neg, 'bo')
+        self.axes.plot(self.data.x1, self.data.x2, 'bo')
 
         # train svm
         labels = self.data.get_labels()
@@ -125,35 +118,22 @@ class Form(QMainWindow):
             gk = GaussianKernel(train, train, width)
  
         cost = float(self.cost.text())
+        tubeeps = float(self.tubeeps.text())
 
         print "cost", cost
-        svm = LibSVM(cost, gk, lab)
+        svm = LibSVR(cost, tubeeps, gk, lab)
         svm.train()
         svm.set_epsilon(1e-2)
 
-        x, y, z = util.compute_output_plot_isolines(svm, gk, train)
-        plt=self.axes.pcolor(x, y, z, shading='interp')
-        CS=self.axes.contour(x, y, z, [-1,0,1], linewidths=1, colors='black', hold=True)
-        #CS=self.axes.contour(x, y, z, linewidths=1, colors='black', hold=True)
-        #CS=self.axes.contour(x, y, z, 5, linewidths=1, colors='black', hold=True)
-        matplotlib.pyplot.clabel(CS, inline=1, fontsize=10)
+        x=numpy.linspace(-5.0,5.0,100)
+        y=svm.apply(RealFeatures(numpy.array([x]))).get_labels()
+
+        self.axes.plot(x,y,'r-')
 
         self.axes.set_xlim((-5,5))
         self.axes.set_ylim((-5,5))
 
-        cmap = matplotlib.cm.jet
-        norm = mpl.colors.Normalize(numpy.min(z), numpy.max(z))
-        print CS.get_clim()
-        if not self.cax:
-            self.cax, kw = make_axes(self.axes)
 
-# ColorbarBase derives from ScalarMappable and puts a colorbar
-# in a specified axes, so it has everything needed for a
-# standalone colorbar.  There are many more kwargs, but the
-# following gives a basic continuous colorbar with ticks
-# and labels.
-        cb1 = mpl.colorbar.ColorbarBase(self.cax, cmap=cmap,
-                                           norm=norm)
         self.canvas.draw()
 
 
@@ -182,10 +162,14 @@ class Form(QMainWindow):
         self.cost = QLineEdit()
         self.cost.setText("1.0")
         #self.cost.setMinimum(1)
-        spin_label2 = QLabel('sigma')
+        spin_label2 = QLabel('tube')
+        self.tubeeps = QLineEdit()
+        self.tubeeps.setText("0.1")
+        spin_label3 = QLabel('sigma')
         self.sigma = QLineEdit()
         self.sigma.setText("1.2")
         #self.sigma.setMinimum(1)
+        spin_label4 = QLabel('d')
         self.degree = QLineEdit()
         self.degree.setText("2")
         #self.sigma.setMinimum(1)
@@ -194,14 +178,17 @@ class Form(QMainWindow):
         spins_hbox.addWidget(cost_label)
         spins_hbox.addWidget(self.cost)
         spins_hbox.addWidget(spin_label2)
+        spins_hbox.addWidget(self.tubeeps)
+        spins_hbox.addWidget(spin_label3)
         spins_hbox.addWidget(self.sigma)
+        spins_hbox.addWidget(spin_label4)
         spins_hbox.addWidget(self.degree)
         spins_hbox.addStretch(1)
         
         self.legend_cb = QCheckBox("Show Support Vectors")
         self.legend_cb.setChecked(False)
         
-        self.show_button = QPushButton("&Train SVM")
+        self.show_button = QPushButton("&Train SVR")
         self.connect(self.show_button, SIGNAL('clicked()'), self.train_svm)
 
         self.clear_button = QPushButton("&Clear")
@@ -317,50 +304,35 @@ class DataHolder(object):
 
 
     def clear(self):
-        self.x1_pos = []
-        self.x2_pos = []
-        self.x1_neg = []
-        self.x2_neg = []
+        self.x1 = []
+        self.x2 = []
 
 
     def get_stats(self):
 
-        num_neg = len(self.x1_neg)
-        num_pos = len(self.x1_pos)
+        num = len(self.x1)
 
-        str_neg = "num negative examples: %i" % num_neg
-        str_pos = "num positive examples: %i" % num_pos
+        str_num = "num examples: %i" % num
 
-        return (str_neg, str_pos)
+        return (str_num, str_num)
 
 
     def get_labels(self):
-        return numpy.array([1]*len(self.x1_pos) + [-1]*len(self.x1_neg), dtype=numpy.float64)
+        return numpy.array(self.x2, dtype=numpy.float64)
 
 
     def get_examples(self):
-        num_pos = len(self.x1_pos)
-        num_neg = len(self.x1_neg)
-        examples = numpy.zeros((2,num_pos+num_neg))
+        num = len(self.x1)
+        examples = numpy.zeros((1,num))
 
-        for i in xrange(num_pos):
-            examples[0,i] = self.x1_pos[i]
-            examples[1,i] = self.x2_pos[i]
-
-        for i in xrange(num_neg):
-            examples[0,i+num_pos] = self.x1_neg[i]
-            examples[1,i+num_pos] = self.x2_neg[i]
-
+        for i in xrange(num):
+            examples[0,i] = self.x1[i]
         return examples
 
 
-    def add_example(self, x1, x2, label):
-        if label==1:
-            self.x1_pos.append(x1)
-            self.x2_pos.append(x2)
-        else:
-            self.x1_neg.append(x1)
-            self.x2_neg.append(x2)
+    def add_example(self, x1, x2):
+        self.x1.append(x1)
+        self.x2.append(x2)
 
     def load_from_file(self, filename=None):
         self.data = {}
