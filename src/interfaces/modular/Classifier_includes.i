@@ -28,6 +28,9 @@
  #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/classifier/GaussianNaiveBayes.h>
  #include <shogun/machine/KernelMachine.h>
+ #include <shogun/machine/MulticlassMachine.h>
+ #include <shogun/machine/KernelMulticlassMachine.h>
+ #include <shogun/machine/LinearMulticlassMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/SGDQN.h>
