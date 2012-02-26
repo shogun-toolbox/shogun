@@ -48,6 +48,23 @@ CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
     set_bias(b);
 }
 
+CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
+{
+	init();
+
+	SGVector<float64_t> alphas = machine->get_alphas().clone();
+	SGVector<int32_t> svs = machine->get_support_vectors().clone();
+	float64_t bias = machine->get_bias();
+	CKernel* kernel = machine->get_kernel();
+
+	int32_t num_sv = svs.vlen;
+	create_new_model(num_sv);
+	set_alphas(alphas);
+	set_support_vectors(svs);
+	set_bias(bias);
+	set_kernel(kernel);
+}
+
 CKernelMachine::~CKernelMachine()
 {
 	SG_UNREF(kernel);
