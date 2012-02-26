@@ -32,6 +32,7 @@
 %rename(ChiSquareDistance) CChiSquareDistance;
 %rename(CosineDistance) CCosineDistance;
 %rename(TanimotoDistance) CTanimotoDistance;
+%rename(MahalanobisDistance) CMahalanobisDistance;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distance/Distance.h>
@@ -112,3 +113,4 @@ namespace shogun
 %include <shogun/distance/ChiSquareDistance.h>
 %include <shogun/distance/CosineDistance.h>
 %include <shogun/distance/TanimotoDistance.h>
+%include <shogun/distance/MahalanobisDistance.h>
