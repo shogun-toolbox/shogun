@@ -38,7 +38,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 * @param labels labels
 		 */
 		CLinearMulticlassMachine(EMulticlassStrategy strategy, CDotFeatures* features, CLinearMachine* machine, CLabels* labs) :
-			CMulticlassMachine(strategy,machine,labs), m_features(NULL)
+			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_features(NULL)
 		{
 			set_features(features);
 			m_parameters->add((CSGObject**)&m_features,"m_features");

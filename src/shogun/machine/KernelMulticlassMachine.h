@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/MulticlassMachine.h>
 
 namespace shogun
@@ -38,7 +39,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 * @param labels labels
 		 */
 		CKernelMulticlassMachine(EMulticlassStrategy strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs) :
-			CMulticlassMachine(strategy,machine,labs), m_kernel(NULL)
+			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_kernel(NULL)
 		{
 			set_kernel(kernel);
 			m_parameters->add((CSGObject**)&m_kernel,"m_kernel");
