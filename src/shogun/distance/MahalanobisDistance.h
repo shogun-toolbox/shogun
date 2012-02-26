@@ -5,11 +5,13 @@
  * (at your option) any later version.
  *
  * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2012 Fernando José Iglesias García
  */
 
 #ifndef _MAHALANOBISDISTANCE_H__
 #define _MAHALANOBISDISTANCE_H__
+
+#ifdef HAVE_LAPACK
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
@@ -19,7 +21,22 @@ namespace shogun
 {
 /** @brief class MahalanobisDistance 
  *
- * TODO Documentation like in EuclidianDistance.h
+ * The Mahalanobis distance for real valued features computes the distance
+ * between a feature vector and a distribution of features characterized by its 
+ * mean and covariance.
+ *
+ * \f[\displaystyle
+ *  D = \sqrt{ (x_i - \mu)' \Sigma^{-1} (x_i - \mu)  }
+ * \f]
+ * 
+ * The Mahalanobis Squared distance does not take the square root:
+ *
+ * \f[\displaystyle
+ *  D = (x_i - \mu)' \Sigma^{-1} (x_i - \mu)
+ * \f]
+ *
+ * @see <a href="en.wikipedia.org/wiki/Mahalanobis_distance"> 
+ * Wikipedia: Mahalanobis Distance</a>                   
  */
 class CMahalanobisDistance: public CRealDistance
 {
@@ -79,9 +96,11 @@ class CMahalanobisDistance: public CRealDistance
 		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
 
 	protected:
-		/// compute kernel function for features a and b
-		/// idx_{a,b} denote the index of the feature vectors
-		/// in the corresponding feature object
+		/// compute Mahalanobis distance between a feature vector of the
+                /// rhs to the lhs distribution
+                /// idx_a is not used here but included because of inheritance
+		/// idx_b denote the index of the feature vector
+		/// in the corresponding feature object rhs
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	private:
@@ -93,4 +112,5 @@ class CMahalanobisDistance: public CRealDistance
 };
 
 } // namespace shogun
+#endif /* HAVE_LAPACK */
 #endif /* _MAHALANOBISDISTANCE_H__ */
