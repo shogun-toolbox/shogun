@@ -41,6 +41,11 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 {
 	CRealDistance::init(l, r);
 
+	mean = ((CSimpleFeatures<float64_t>*) l)->get_mean();
+	icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+
+	CMath::inverse(icov);
+
 	return true;
 }
 
@@ -50,10 +55,6 @@ void CMahalanobisDistance::cleanup()
 
 float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-
-	SGVector<float64_t> mean = ((CSimpleFeatures<float64_t>*) lhs)->get_mean();
-	SGMatrix<float64_t>  cov = ((CSimpleFeatures<float64_t>*) lhs)->get_cov();
-
 	int32_t blen;
 	bool bfree;
 	float64_t* bvec = ((CSimpleFeatures<float64_t>*) rhs)->
@@ -65,11 +66,9 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	for (int32_t i = 0 ; i<blen ; i++)
 		diff[i] -= mean[i];
 
-	CMath::inverse(cov);
-
 	SGVector<float64_t> v = diff.clone();
 	cblas_dgemv(CblasColMajor, CblasNoTrans,
-		cov.num_rows, cov.num_cols, 1.0, cov.matrix, 
+		icov.num_rows, icov.num_cols, 1.0, icov.matrix, 
 		diff.vlen, diff.vector, 1, 0.0, v.vector, 1);
 
 	float64_t result = cblas_ddot(v.vlen, v.vector, 1, diff.vector, 1);

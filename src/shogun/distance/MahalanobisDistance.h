@@ -99,7 +99,7 @@ class CMahalanobisDistance: public CRealDistance
 		/// compute Mahalanobis distance between a feature vector of the
                 /// rhs to the lhs distribution
                 /// idx_a is not used here but included because of inheritance
-		/// idx_b denote the index of the feature vector
+		/// idx_b denotes the index of the feature vector
 		/// in the corresponding feature object rhs
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
@@ -109,6 +109,11 @@ class CMahalanobisDistance: public CRealDistance
 	protected:
 		/** if application of sqrt on matrix computation is disabled */
 		bool disable_sqrt;
+
+		/** vector mean of the lhs feature vectors */
+		SGVector<float64_t> mean;
+		/** inverse of the covariance matrix of lhs feature vectors */
+		SGMatrix<float64_t> icov;
 };
 
 } // namespace shogun
