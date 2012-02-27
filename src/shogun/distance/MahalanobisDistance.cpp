@@ -74,6 +74,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result = cblas_ddot(v.vlen, v.vector, 1, diff.vector, 1);
 
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(bvec, idx_b, bfree);
+	v.destroy_vector();
 
 	if (disable_sqrt)
 		return result;
