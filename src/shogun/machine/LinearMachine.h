@@ -65,6 +65,9 @@ class CLinearMachine : public CMachine
 		CLinearMachine();
 		virtual ~CLinearMachine();
 
+		/** copy constructor */
+		CLinearMachine(CLinearMachine* machine);
+
 		/** get w
 		 *
 		 * @param dst_w store w in this argument
@@ -178,6 +181,10 @@ class CLinearMachine : public CMachine
 		 * and therefore the model anyway
 		 */
 		virtual void store_model_features() {}
+
+	private:
+
+		void init();
 
 	protected:
 		/** dimension of w */

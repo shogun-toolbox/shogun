@@ -60,6 +60,11 @@ class CKernelMachine : public CMachine
          */
         CKernelMachine(CKernel* k, SGVector<float64_t> alphas, SGVector<int32_t> svs, float64_t b);
 
+		/** copy constructor
+		 * @param machine machine having parameters to copy
+		 */
+		CKernelMachine(CKernelMachine* machine);
+
 		/** destructor */
 		virtual ~CKernelMachine();
 

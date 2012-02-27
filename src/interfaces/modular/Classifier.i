@@ -17,6 +17,8 @@
 /* Remove C Prefix */
 %rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
+%rename(KernelMulticlassMachine) CKernelMulticlassMachine;
+%rename(LinearMulticlassMachine) CLinearMulticlassMachine;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
 %rename(GPBTSVM) CGPBTSVM;
@@ -72,6 +74,9 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/KernelMachine.h>
+%include <shogun/machine/MulticlassMachine.h>
+%include <shogun/machine/KernelMulticlassMachine.h>
+%include <shogun/machine/LinearMulticlassMachine.h>
 %include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/MultiClassSVM.h>

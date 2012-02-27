@@ -16,12 +16,25 @@ using namespace shogun;
 CLinearMachine::CLinearMachine()
 : CMachine(), w_dim(0), w(NULL), bias(0), features(NULL)
 {
+	init();
+}
 
+CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine(), 
+	w_dim(0), w(NULL), bias(0), features(NULL)
+{
+	set_w(machine->get_w().clone());
+	set_bias(machine->get_bias());
+
+	init();
+}
+
+void CLinearMachine::init()
+{
 	m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
 	m_parameters->add(&bias, "bias", "Bias b.");
 	m_parameters->add((CSGObject**) &features, "features", "Feature object.");
-
 }
+
 
 CLinearMachine::~CLinearMachine()
 {
