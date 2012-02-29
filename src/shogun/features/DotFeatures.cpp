@@ -418,7 +418,7 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 
 	SGMatrix<float64_t> cov(dim, dim);
 
-    memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
+	memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
 
 	SGVector<float64_t> mean = get_mean();
 
@@ -450,6 +450,70 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 		}
 	}
 	mean.destroy_vector();
+	return cov;
+}
+
+SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* rhs)
+{
+	CDotFeatures* feats[2];
+	feats[0]=lhs;
+	feats[1]=rhs;
+
+	int32_t nums[2], dims[2], num=0;
+
+	for (int i = 0; i < 2; i++)
+	{
+		nums[i]=feats[i]->get_num_vectors();
+		dims[i]=feats[i]->get_dim_feature_space();
+		ASSERT(nums[i]>0);
+		ASSERT(dims[i]>0);
+		num += nums[i];
+	}
+
+	ASSERT(dims[0]==dims[1]);
+	int32_t dim = dims[0];
+
+	SGMatrix<float64_t> cov(dim, dim);
+
+	memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
+
+	SGVector<float64_t>  mean=lhs->get_mean();
+	SGVector<float64_t> meanr=rhs->get_mean();
+	CMath::add<float64_t>(mean.vector, 0.5, mean.vector, 0.5, meanr.vector, mean.vlen);
+
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < nums[i]; j++)
+		{
+			SGVector<float64_t> v = feats[i]->get_computed_dot_feature_vector(j);
+			CMath::add<float64_t>(v.vector, 1, v.vector, -1, mean.vector, v.vlen);
+			for (int m = 0; m < v.vlen; m++)
+			{
+				for (int n = 0; n <= m; n++)
+				{
+					(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
+				}
+			}
+			v.free_vector();
+		}
+	}
+	for (int m = 0; m < dim; m++)
+	{
+		for (int n = 0; n <= m; n++)
+		{
+			(cov.matrix)[m*dim+n] /= num;
+		}
+	}
+	for (int m = 0; m < dim-1; m++)
+	{
+		for (int n = m+1; n < dim; n++)
+		{
+			(cov.matrix[m*dim+n]) = (cov.matrix)[n*dim+m];
+		}
+	}
+
+	mean.destroy_vector();
+	meanr.destroy_vector();
 	return cov;
 }
 
