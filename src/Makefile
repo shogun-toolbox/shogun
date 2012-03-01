@@ -102,7 +102,7 @@ linecount:
 	@echo -n "SWIG header files (.i):"
 	@cat `find ./interfaces -type f -name '*.i'`  | grep -vc '^ *$$'
 	@echo -n "Total:"
-	@(cat `find ./ -type f -name '*.cpp' -o -name '*.c' -o -name '*.h'`; cat `find ./interfaces -type f -o -name '*.i'`)  | grep -vc '^ *$$'
+	@(cat `find ./ -type f -name '*.cpp' -o -name '*.c' -o -name '*.h'`; cat `find ./interfaces -type f -name '*.i'`)  | grep -vc '^ *$$'
 
 ChangeLog:
 	git log --name-status --graph >$@
