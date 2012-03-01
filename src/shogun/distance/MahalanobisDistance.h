@@ -96,11 +96,15 @@ class CMahalanobisDistance: public CRealDistance
 		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
 
 	protected:
-		/// compute Mahalanobis distance between a feature vector of the
-                /// rhs to the lhs distribution
-                /// idx_a is not used here but included because of inheritance
-		/// idx_b denotes the index of the feature vector
-		/// in the corresponding feature object rhs
+		/// compute Mahalanobis distance between a feature vector of lhs
+		/// to a feature vector of rhs
+		/// if equal_features then idx_a is not used and the distance 
+		/// computed is between a feature vector of rhs and the 
+		/// distribution
+		///
+		/// @param idx_a index of the feature vector in lhs
+		/// @param idx_b index of the feature vector in rhs
+		/// @return value of the Mahalanobis distance
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	private:
