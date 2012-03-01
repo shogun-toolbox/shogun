@@ -453,8 +453,9 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 
 		R.vector[i]=(0.7*CMath::sqrt(rmin1)+0.3*CMath::sqrt(rmin2));
 	}
-        distance->replace_rhs(rhs_cache);
-        delete rhs_mus;        
+
+	distance->replace_rhs(rhs_cache);
+	delete rhs_mus;        
 	SG_FREE(ClList);
 	SG_FREE(weights_set);
 	SG_FREE(dists);
