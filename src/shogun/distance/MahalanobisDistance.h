@@ -110,6 +110,9 @@ class CMahalanobisDistance: public CRealDistance
 		/** if application of sqrt on matrix computation is disabled */
 		bool disable_sqrt;
 
+		/** whether the features lhs and rhs have exactly the same values */
+		bool equal_features;
+
 		/** vector mean of the lhs feature vectors */
 		SGVector<float64_t> mean;
 		/** inverse of the covariance matrix of lhs feature vectors */

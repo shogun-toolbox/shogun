@@ -42,7 +42,17 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 	CRealDistance::init(l, r);
 
 	mean = ((CSimpleFeatures<float64_t>*) l)->get_mean();
-	icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+
+	if ( ((CSimpleFeatures<float64_t>*) l)->is_equal((CSimpleFeatures<float64_t>*) r) )
+	{
+		icov = CDotFeatures::compute_cov((CDotFeatures*)lhs, 
+				(CDotFeatures*)rhs);
+		equal_features = true;
+	}
+	else
+	{
+		icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+	}
 
 	CMath::inverse(icov);
 
@@ -55,16 +65,36 @@ void CMahalanobisDistance::cleanup()
 
 float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	int32_t blen;
-	bool bfree;
+	int32_t alen, blen;
+	bool afree, bfree;
+	float64_t* avec;
+
 	float64_t* bvec = ((CSimpleFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b, blen, bfree);
 
-	ASSERT(blen == mean.vlen);
+	SGVector<float64_t> c;
+
+	if (equal_features)
+	{
+		c = mean.clone();
+	}
+	else
+	{
+		avec = ((CSimpleFeatures<float64_t>*) lhs)-> 
+			get_feature_vector(idx_a, alen, afree);
+
+		c.resize_vector(alen);
+		for (int i = 0; i < alen; i++)
+			c[i] = avec[i];
+
+		((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	}
+
+	ASSERT(blen == c.vlen);
 
 	SGVector<float64_t> diff(bvec, blen);
-	for (int32_t i = 0 ; i<blen ; i++)
-		diff[i] -= mean[i];
+	for (int32_t i = 0 ; i < diff.vlen ; i++)
+		diff[i] -= c[i];
 
 	SGVector<float64_t> v = diff.clone();
 	cblas_dgemv(CblasColMajor, CblasNoTrans,
@@ -73,8 +103,9 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t result = cblas_ddot(v.vlen, v.vector, 1, diff.vector, 1);
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 	v.destroy_vector();
+	c.destroy_vector();
 
 	if (disable_sqrt)
 		return result;
@@ -84,7 +115,8 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 void CMahalanobisDistance::init()
 {
-	disable_sqrt = false;
+	disable_sqrt   = false;
+	equal_features = false;
 
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
 }
