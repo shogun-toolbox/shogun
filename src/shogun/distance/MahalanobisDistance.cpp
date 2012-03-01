@@ -45,13 +45,12 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 
 	if ( ((CSimpleFeatures<float64_t>*) l)->is_equal((CSimpleFeatures<float64_t>*) r) )
 	{
-		icov = CDotFeatures::compute_cov((CDotFeatures*)lhs, 
-				(CDotFeatures*)rhs);
+		icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
 		equal_features = true;
 	}
 	else
 	{
-		icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+		icov = CDotFeatures::compute_cov((CDotFeatures*)lhs, (CDotFeatures*)rhs);
 	}
 
 	CMath::inverse(icov);
@@ -92,9 +91,10 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(blen == c.vlen);
 
-	SGVector<float64_t> diff(bvec, blen);
+	SGVector<float64_t> diff;
+	diff.resize_vector(blen);
 	for (int32_t i = 0 ; i < diff.vlen ; i++)
-		diff[i] -= c[i];
+		diff[i] = bvec[i] - c[i];
 
 	SGVector<float64_t> v = diff.clone();
 	cblas_dgemv(CblasColMajor, CblasNoTrans,
