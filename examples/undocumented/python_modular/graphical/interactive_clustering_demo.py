@@ -119,6 +119,7 @@ class Form(QMainWindow):
         self.axes.plot(features[0,labels==-1], features[1,labels==-1],'bo')
 
         for i in xrange(k):
+            self.axes.plot(centers[0,i],centers[1,i],'kx', markersize=20, linewidth=5)
             t = numpy.linspace(0, 2*numpy.pi, 100)
             self.axes.plot(radi[i]*numpy.cos(t)+centers[0,i],radi[i]*numpy.sin(t)+centers[1,i],'k-')
 
