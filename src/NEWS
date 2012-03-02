@@ -7,8 +7,14 @@
 	* Features:
 		- Support for new SWIG -builtin python interface feature (SWIG 2.0.4 is required now)
 		- EDRT now supports static interfaces such as matlab and octave
+		- Jensen-Shannon kernel and Homogeneous kernel map preprocessor (thanks to Viktor Gal)
+		- New Mahalanobis distance class (thanks to Fernando J. Iglesias Garcia)
+		- Generic linear and kernel multiclass machines
+		- New regression estimation algorithms by Soeren Sonnenburg
+		- New graphical examples 
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was changed to log-space one.
+		- Fix for R_static interface installation (thanks Steve Lianoglou)
 		- SVMOcas memsetting bugfix.
 		- Various fixes for compile errors with clang.
 	* Cleanup and API Changes:
