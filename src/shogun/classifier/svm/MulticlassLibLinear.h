@@ -14,7 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/classifier/svm/SVM_linear.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
+#include <shogun/machine/multiclass/LinearMulticlassMachine.h>
 
 namespace shogun
 {

@@ -28,9 +28,6 @@
  #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/classifier/GaussianNaiveBayes.h>
  #include <shogun/machine/KernelMachine.h>
- #include <shogun/machine/MulticlassMachine.h>
- #include <shogun/machine/KernelMulticlassMachine.h>
- #include <shogun/machine/LinearMulticlassMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/SGDQN.h>
@@ -42,6 +39,9 @@
  #include <shogun/classifier/mkl/MKLMultiClass.h>
  #include <shogun/classifier/vw/VowpalWabbit.h>
  #include <shogun/classifier/ConjugateIndex.h>
+ #include <shogun/machine/multiclass/MulticlassMachine.h>
+ #include <shogun/machine/multiclass/KernelMulticlassMachine.h>
+ #include <shogun/machine/multiclass/LinearMulticlassMachine.h>
  #include <shogun/classifier/svm/MulticlassLibLinear.h>
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVMLight.h>
