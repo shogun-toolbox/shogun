@@ -50,7 +50,7 @@ class CMulticlassMachine : public CMachine
 		 * @param machine machine to set
 		 * @return if setting was successful
 		 */
-		bool inline set_machine(int32_t num, CMachine* machine)
+		inline bool set_machine(int32_t num, CMachine* machine)
 		{
 			ASSERT(num<m_machines.vlen && num>=0);
 			SG_REF(machine);
@@ -64,7 +64,7 @@ class CMulticlassMachine : public CMachine
 		 * @param num index of machine to get
 		 * @return SVM at number num
 		 */
-		CMachine* get_machine(int32_t num) const
+		inline CMachine* get_machine(int32_t num) const
 		{
 			ASSERT(num<m_machines.vlen && num>=0);
 			SG_REF(m_machines[num]);
@@ -75,7 +75,7 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @return number of machines
 		 */
-		int32_t inline get_num_machines() const
+		inline int32_t get_num_machines() const
 		{
 			return m_machines.vlen;
 		}
@@ -128,20 +128,27 @@ class CMulticlassMachine : public CMachine
 
 	protected:
 
+		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
+		/** abstract init machine for training method */ 
 		virtual bool init_machine_for_train(CFeatures* data) = 0;
 
+		/** abstract init machines for applying method */
 		virtual bool init_machines_for_apply(CFeatures* data) = 0;
 
+		/** check whether machine is ready */
 		virtual bool is_ready() = 0;
 
+		/** obtain machine from trained one */
 		virtual CMachine* get_machine_from_trained(CMachine* machine) = 0;
 
+		/** get num rhs vectors */
 		virtual int32_t get_num_rhs_vectors() = 0;
 
 	private:
 
+		/** init parameters */
 		void init();
 
 	protected:
@@ -153,6 +160,9 @@ class CMulticlassMachine : public CMachine
 
 		/** machines */
 		SGVector<CMachine*> m_machines;
+
+		/** rejection strategy */
+		//CRejectionStrategy* m_rejection_strategy;
 };
 }
 #endif
