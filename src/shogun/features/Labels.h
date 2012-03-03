@@ -220,6 +220,10 @@ class CLabels : public CSGObject
 		 */
 		index_t subset_idx_conversion(index_t idx) const;
 
+	public:
+
+		static const int32_t REJECTION_LABEL = -2;
+
 	private:
 		void init();
 
