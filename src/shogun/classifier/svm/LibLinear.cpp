@@ -195,18 +195,6 @@ bool CLibLinear::train_machine(CFeatures* data)
 			solve_l1r_lr(&prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
 			break;
 		}
-		case MCSVM_CS:
-		{
-			SG_NOTIMPLEMENTED;
-			/* TODO...
-			model_->w=Malloc(double, n*nr_class);
-			for(i=0;i<nr_class;i++)
-				for(j=start[i];j<start[i]+count[i];j++)
-					sub_prob.y[j] = i;
-			Solver_MCSVM_CS Solver(&sub_prob, nr_class, weighted_C, param->eps);
-			Solver.Solve(model_->w);
-			*/
-		}
 		default:
 			SG_ERROR("Error: unknown solver_type\n");
 			break;

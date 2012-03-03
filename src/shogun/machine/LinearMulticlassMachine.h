@@ -12,6 +12,7 @@
 #define _LINEARMULTICLASSMACHINE_H___
 
 #include <shogun/lib/common.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/MulticlassMachine.h>
@@ -19,6 +20,7 @@
 namespace shogun
 {
 
+class Parameter;
 class CDotFeatures;
 class CLinearMachine;
 
@@ -117,7 +119,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			return m_features->get_num_vectors();
 		}
 
-	private:
+	protected:
 
 		CDotFeatures* m_features;
 

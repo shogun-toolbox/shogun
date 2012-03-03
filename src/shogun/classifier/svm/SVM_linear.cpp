@@ -342,8 +342,8 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 
 Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class, double *weighted_C, double epsilon, int max_it)
 {
-	this->w_size = prob->n;
-	this->l = prob->l;
+	this->w_size = p->n;
+	this->l = p->l;
 	this->nr_class = n_class;
 	this->eps = epsilon;
 	this->max_iter = max_it;
@@ -457,17 +457,18 @@ void Solver_MCSVM_CS::Solve(double *w)
 				if(y_index[i] < active_size_i[i])
 					G[y_index[i]] = 0;
 
-				SG_SNOTIMPLEMENTED;
-				/* FIXME
-				feature_node *xi = prob->x[i];
-				while(xi->index!= -1)
+				void* feature_iter = prob->x->get_feature_iterator(i);
+				int32_t feature_index = 0;
+				float64_t feature_value = 0.0;
+				bool got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
+				while(got_feature)
 				{
-					double *w_i = &w[(xi->index-1)*nr_class];
+					double *w_i = &w[feature_index*nr_class];
 					for(m=0;m<active_size_i[i];m++)
-						G[m] += w_i[alpha_index_i[m]]*(xi->value);
-					xi++;
+						G[m] += w_i[alpha_index_i[m]]*(feature_value);
+					got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
 				}
-				*/
+				prob->x->free_feature_iterator(feature_iter);
 
 				double minG = CMath::INFTY;
 				double maxG = -CMath::INFTY;
@@ -535,15 +536,18 @@ void Solver_MCSVM_CS::Solve(double *w)
 					}
 				}
 
-				/* FIXME
-				xi = prob->x[i];
-				while(xi->index != -1)
+				feature_iter = prob->x->get_feature_iterator(i);
+				feature_index = 0;
+				feature_value = 0.0;
+				got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
+				while(got_feature)
 				{
-					double *w_i = &w[(xi->index-1)*nr_class];
+					double *w_i = &w[feature_index*nr_class];
 					for(m=0;m<nz_d;m++)
-						w_i[d_ind[m]] += d_val[m]*xi->value;
-					xi++;
-				}*/
+						w_i[d_ind[m]] += d_val[m]*feature_value;
+					got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
+				}
+				prob->x->free_feature_iterator(feature_iter);
 			}
 		}
 
@@ -592,15 +596,15 @@ void Solver_MCSVM_CS::Solve(double *w)
 	SG_SINFO("Objective value = %lf\n",v);
 	SG_SINFO("nSV = %d\n",nSV);
 
-	delete [] alpha;
-	delete [] alpha_new;
-	delete [] index;
-	delete [] QD;
-	delete [] d_ind;
-	delete [] d_val;
-	delete [] alpha_index;
-	delete [] y_index;
-	delete [] active_size_i;
+	SG_FREE(alpha);
+	SG_FREE(alpha_new);
+	SG_FREE(index);
+	SG_FREE(QD);
+	SG_FREE(d_ind);
+	SG_FREE(d_val);
+	SG_FREE(alpha_index);
+	SG_FREE(y_index);
+	SG_FREE(active_size_i);
 }
 
 //

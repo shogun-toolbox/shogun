@@ -118,7 +118,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			return m_kernel->get_num_vec_rhs();
 		}
 
-	private:
+	protected:
 
 		CKernel* m_kernel;
 
