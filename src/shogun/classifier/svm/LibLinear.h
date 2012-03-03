@@ -33,8 +33,6 @@ namespace shogun
 		/// L2 regularized linear SVM with L1-loss using dual coordinate descent
 		// (default since this is the standard SVM)
 		L2R_L1LOSS_SVC_DUAL,
-		/// linear multi-class svm by Crammer and Singer
-		MCSVM_CS,
 		/// L1 regularized SVM with L2-loss using dual coordinate descent
 		L1R_L2LOSS_SVC,
 		/// L1 regularized logistic regression

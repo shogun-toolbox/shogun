@@ -58,6 +58,7 @@
 %rename(MKLMultiClass) CMKLMultiClass;
 %rename(VowpalWabbit) CVowpalWabbit;
 %rename(ConjugateIndex) CConjugateIndex;
+%rename(MulticlassLibLinear) CMulticlassLibLinear;
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
@@ -116,6 +117,7 @@
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %include <shogun/classifier/ConjugateIndex.h>
+%include <shogun/classifier/svm/MulticlassLibLinear.h>
 
 #ifdef USE_SVMLIGHT
 
