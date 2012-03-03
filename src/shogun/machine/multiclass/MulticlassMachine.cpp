@@ -10,11 +10,12 @@
 
 #include <shogun/machine/multiclass/MulticlassMachine.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/features/Labels.h>
 
 using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
-: CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY)
+: CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY), m_rejection_strategy(NULL)
 {
 	init();
 }
@@ -22,7 +23,7 @@ CMulticlassMachine::CMulticlassMachine()
 CMulticlassMachine::CMulticlassMachine(
 	EMulticlassStrategy strategy,
 	CMachine* machine, CLabels* labs)
-: CMachine(), m_multiclass_strategy(strategy), m_machine(machine)
+: CMachine(), m_multiclass_strategy(strategy), m_machine(machine), m_rejection_strategy(NULL)
 {
 	set_labels(labs);
 	SG_REF(machine);
@@ -118,9 +119,9 @@ bool CMulticlassMachine::train_one_vs_rest()
 
 CLabels* CMulticlassMachine::classify_one_vs_rest()
 {
-	int32_t m_num_classes = labels->get_num_classes();
-	int32_t m_num_machines = get_num_machines();
-	ASSERT(m_num_machines==m_num_classes);
+	int32_t num_classes = labels->get_num_classes();
+	int32_t num_machines = get_num_machines();
+	ASSERT(num_machines==num_classes);
 	CLabels* result=NULL;
 
 	if (is_ready())
@@ -131,33 +132,42 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 		SG_REF(result);
 
 		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=SG_MALLOC(CLabels*, m_num_machines);
+		CLabels** outputs=SG_MALLOC(CLabels*, num_machines);
 
-		for (int32_t i=0; i<m_num_machines; i++)
+		for (int32_t i=0; i<num_machines; i++)
 		{
 			ASSERT(m_machines[i]);
 			outputs[i]=m_machines[i]->apply();
 		}
 
+		SGVector<float64_t> outputs_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			int32_t winner=0;
-			float64_t max_out=outputs[0]->get_label(i);
+			int32_t winner = 0;
+			float64_t max_out = outputs[0]->get_label(i);
 
-			for (int32_t j=1; j<m_num_machines; j++)
+			for (int32_t j=0; j<num_machines; j++)
+				outputs_for_i[j] = outputs[j]->get_label(i);
+
+			if (m_rejection_strategy && m_rejection_strategy->reject(outputs_for_i))
 			{
-				float64_t out=outputs[j]->get_label(i);
-
-				if (out>max_out)
+				winner=result->REJECTION_LABEL;
+			}
+			else
+			{
+				for (int32_t j=1; j<num_machines; j++)
 				{
-					winner=j;
-					max_out=out;
+					if (outputs_for_i[j]>max_out)
+					{
+						max_out = outputs_for_i[j];
+						winner = j;
+					}
 				}
 			}
 			result->set_label(i, winner);
 		}
 
-		for (int32_t i=0; i<m_num_machines; i++)
+		for (int32_t i=0; i<num_machines; i++)
 			SG_UNREF(outputs[i]);
 
 		SG_FREE(outputs);

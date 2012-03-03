@@ -12,12 +12,14 @@
 #define _MULTICLASSMACHINE_H___
 
 #include <shogun/machine/Machine.h>
+#include <shogun/machine/multiclass/RejectionStrategy.h>
 
 namespace shogun
 {
 
 class CFeatures;
 class CLabels;
+class CRejectionStrategy;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EMulticlassStrategy
@@ -117,13 +119,24 @@ class CMulticlassMachine : public CMachine
 		 */
 		inline EMulticlassStrategy get_multiclass_strategy() const 
 		{ 
-				return m_multiclass_strategy; 
+			return m_multiclass_strategy; 
+		}
+
+		/** get rejection strategy */
+		inline CRejectionStrategy* get_rejection_strategy() const
+		{
+			return m_rejection_strategy;
+		}
+		/** set rejection strategy */
+		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
+		{
+			m_rejection_strategy = rejection_strategy;
 		}
 
 		/** get name */
 		virtual const char* get_name() const 
 		{
-				return "MulticlassMachine";
+			return "MulticlassMachine";
 		}
 
 	protected:
@@ -162,7 +175,7 @@ class CMulticlassMachine : public CMachine
 		SGVector<CMachine*> m_machines;
 
 		/** rejection strategy */
-		//CRejectionStrategy* m_rejection_strategy;
+		CRejectionStrategy* m_rejection_strategy;
 };
 }
 #endif
