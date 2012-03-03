@@ -46,7 +46,6 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 	if ( ((CSimpleFeatures<float64_t>*) l)->is_equal((CSimpleFeatures<float64_t>*) r) )
 	{
 		icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
-		equal_features = true;
 	}
 	else
 	{
@@ -73,7 +72,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	SGVector<float64_t> c;
 
-	if (equal_features)
+	if (use_mean)
 	{
 		c = mean.clone();
 	}
@@ -115,8 +114,8 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 void CMahalanobisDistance::init()
 {
-	disable_sqrt   = false;
-	equal_features = false;
+	disable_sqrt	= false;
+	use_mean	= false;
 
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
 }

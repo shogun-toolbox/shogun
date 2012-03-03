@@ -95,12 +95,26 @@ class CMahalanobisDistance: public CRealDistance
 		 */
 		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
 
+		/** whether the distance is between the mean of lhs and a vector of 
+		 * rhs
+		 *
+		 * @return if the mean of lhs is used to obtain the distance
+		 */
+		virtual bool get_use_mean() { return use_mean; };
+
+		/** whether the distance is between the mean of lhs and a vector of 
+		 * rhs
+		 *
+		 * @param state new use_mean
+		 */
+		virtual void set_use_mean(bool state) { use_mean=state; };
+
 	protected:
 		/// compute Mahalanobis distance between a feature vector of lhs
 		/// to a feature vector of rhs
-		/// if equal_features then idx_a is not used and the distance 
+		/// if use_mean then idx_a is not used and the distance 
 		/// computed is between a feature vector of rhs and the 
-		/// distribution
+		/// distribution lhs
 		///
 		/// @param idx_a index of the feature vector in lhs
 		/// @param idx_b index of the feature vector in rhs
@@ -115,7 +129,7 @@ class CMahalanobisDistance: public CRealDistance
 		bool disable_sqrt;
 
 		/** whether the features lhs and rhs have exactly the same values */
-		bool equal_features;
+		bool use_mean;
 
 		/** vector mean of the lhs feature vectors */
 		SGVector<float64_t> mean;
