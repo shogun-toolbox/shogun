@@ -187,20 +187,20 @@ class CDotFeatures : public CFeatures
 
 		/** iterate over the non-zero features
 		 *
-		 * call this function with the iterator returned by get_first_feature
+		 * call this function with the iterator returned by get_feature_iterator
 		 * and call free_feature_iterator to cleanup
 		 *
 		 * @param index is returned by reference (-1 when not available)
 		 * @param value is returned by reference
-		 * @param iterator as returned by get_first_feature
+		 * @param iterator as returned by get_feature_iterator
 		 * @return true if a new non-zero feature got returned
 		 */
 		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)=0;
 
 		/** clean up iterator
-		 * call this function with the iterator returned by get_first_feature
+		 * call this function with the iterator returned by get_feature_iterator
 		 *
-		 * @param iterator as returned by get_first_feature
+		 * @param iterator as returned by get_feature_iterator
 		 */
 		virtual void free_feature_iterator(void* iterator)=0;
 
