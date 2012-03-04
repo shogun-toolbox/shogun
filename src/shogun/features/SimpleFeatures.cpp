@@ -960,6 +960,40 @@ template<> float64_t CSimpleFeatures<floatmax_t>::dense_dot(
 	return result;
 }
 
+template<class ST> bool CSimpleFeatures<ST>::is_equal(CSimpleFeatures* rhs)
+{
+	if ( num_features != rhs->num_features || num_vectors != rhs->num_vectors )
+		return false;
+
+	ST* vec1;
+	ST* vec2;
+	int32_t v1len, v2len;
+	bool v1free, v2free, stop = false;
+
+	for (int32_t i = 0; i < num_vectors; i++)
+	{
+		vec1 = get_feature_vector(i, v1len, v1free);
+		vec2 = rhs->get_feature_vector(i, v2len, v2free);
+
+		if ( v1len != v2len )
+			stop = true;
+
+		for (int32_t j = 0; j < v1len; j++)
+		{
+			if ( vec1[j] != vec2[j] )
+				stop = true;
+		}
+
+		free_feature_vector(vec1, i, v1free);
+		free_feature_vector(vec2, i, v2free);
+
+		if ( stop )
+			return false;
+	}
+
+	return true;
+}
+
 #define LOAD(f_load, sg_type)												\
 template<> void CSimpleFeatures<sg_type>::load(CFile* loader)		\
 { 																			\

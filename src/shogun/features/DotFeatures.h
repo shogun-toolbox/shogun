@@ -216,6 +216,12 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual SGMatrix<float64_t> get_cov();
 
+		/** compute the covariance of two CDotFeatures together
+		 *
+		 * @return covariance
+		 */
+		static SGMatrix<float64_t> compute_cov(CDotFeatures* lhs, CDotFeatures* rhs);
+
 	protected:
 		/** display progress output
 		 *
