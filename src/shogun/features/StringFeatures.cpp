@@ -768,7 +768,7 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 
 template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 {
-    #ifndef _WIN32
+	#ifndef _WIN32
 	remove_subset();
 
 	struct dirent **namelist;
@@ -834,7 +834,7 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 			return true;
 		}
 	}
-    #endif // _WIN32
+	#endif // _WIN32
 	return false;
 }
 

@@ -190,11 +190,11 @@ inline void v_array<T>::reserve(size_t length)
 	size_t old_length = end_array-begin;
 	begin = SG_REALLOC(T, begin, length);
 	if (old_length < length)
-#ifndef _WIN32
+		#ifndef _WIN32
 		bzero(begin + old_length, (length - old_length)*sizeof(T));
-#else // _WIN32
-        memset(begin + old_length, 0, (length - old_length)*sizeof(T));
-#endif // _WIN32
+		#else // _WIN32
+                memset(begin + old_length, 0, (length - old_length)*sizeof(T));
+		#endif // _WIN32
 
 	end = begin;
 	end_array = begin + length;

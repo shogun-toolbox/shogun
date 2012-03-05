@@ -62,7 +62,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		CMemoryMappedFile(const char* fname, char flag='r', int64_t fsize=0)
 		: CSGObject()
 		{
-            #ifndef _WIN32
+			#ifndef _WIN32
 			last_written_byte=0;
 			rw=flag;
 
@@ -104,13 +104,13 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			address = mmap(NULL, length, mmap_prot, mmap_flags, fd, 0);
 			if (address == MAP_FAILED)
 				SG_ERROR("Error mapping file");
-            #endif // _WIN32
+			#endif // _WIN32
 		}
 
 		/** destructor */
 		virtual ~CMemoryMappedFile()
 		{
-            #ifndef _WIN32
+			#ifndef _WIN32
 			munmap(address, length);
 			if (rw=='w' && last_written_byte && ftruncate(fd, last_written_byte) == -1)
 
@@ -119,7 +119,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 				SG_ERROR("Error Truncating file to %ld bytes\n", last_written_byte);
 			}
 			close(fd);
-            #endif // _WIN32
+			#endif // _WIN32
 		}
 
 		/** get the mapping address

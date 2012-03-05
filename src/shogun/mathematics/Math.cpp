@@ -263,11 +263,11 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 	for (int32_t i=0; i<3*2; i++)
 	{
 		log_denom+=CMath::lgammal((floatmax_t) table.matrix[i]+1);
-#ifndef _WIN32
+		#ifndef _WIN32
 		log_denomf+=gamma(table.matrix[i]+1);
-#else // _WIN32
-        log_denomf+=CMath::lgammal((floatmax_t) table.matrix[i]+1);
-#endif // _WIN32
+		#else // _WIN32
+        	log_denomf+=CMath::lgammal((floatmax_t) table.matrix[i]+1);
+		#endif // _WIN32
 	}
 
 	floatmax_t prob_table_log=log_nom - log_denom;
@@ -298,7 +298,7 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 	SG_SPRINT("l=%g...%g\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]));
 	SG_SPRINT("n=%g\n", n);
 	SG_SPRINT("prob_table_log=%.18Lg\n", prob_table_log);
-    SG_SPRINT("log_denomf=%.18g\n", log_denomf);
+    	SG_SPRINT("log_denomf=%.18g\n", log_denomf);
 	SG_SPRINT("log_denom=%.18Lg\n", log_denom);
 	SG_SPRINT("log_nom=%.18g\n", log_nom);
 	display_vector(m, m_len, "marginals");

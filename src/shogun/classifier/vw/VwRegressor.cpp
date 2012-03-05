@@ -65,11 +65,11 @@ void CVwRegressor::init(CVwEnvironment* env_to_use)
 		if (env->random_weights)
 		{
 			for (vw_size_t j = 0; j < length/num_threads; j++)
-                #ifndef _WIN32
+				#ifndef _WIN32
 				weight_vectors[i][j] = drand48() - 0.5;
-                #else // _WIN32
-                weight_vectors[i][j] = (double(rand()) / RAND_MAX) - 0.5;
-                #endif // _WIN32
+				#else // _WIN32
+				weight_vectors[i][j] = (double(rand()) / RAND_MAX) - 0.5;
+				#endif // _WIN32
 		}
 
 		if (env->initial_weight != 0.)

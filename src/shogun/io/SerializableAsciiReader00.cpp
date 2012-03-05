@@ -35,7 +35,7 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		}
 
 		break;
-#ifndef _WIN32
+	#ifndef _WIN32
 	case PT_CHAR:
 		if (fscanf(m_file->m_fstream, "%"SCNu8, (uint8_t*) param)
 			!= 1) return false;
@@ -72,7 +72,7 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		if (fscanf(m_file->m_fstream, "%"SCNu64, (uint64_t*) param)
 			!= 1) return false;
 		break;
-#endif // _WIN32
+	#endif // _WIN32
 	case PT_FLOAT32:
 		if (fscanf(m_file->m_fstream, "%g", (float32_t*) param)
 			!= 1) return false;
