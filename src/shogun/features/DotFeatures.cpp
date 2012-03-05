@@ -409,6 +409,31 @@ SGVector<float64_t> CDotFeatures::get_mean()
 	return mean;
 }									
 
+SGVector<float64_t> CDotFeatures::get_mean(CDotFeatures* lhs, CDotFeatures* rhs)
+{
+	ASSERT(lhs && rhs);
+	ASSERT(lhs->get_dim_feature_space() == rhs->get_dim_feature_space());
+
+	int32_t num_lhs=lhs->get_num_vectors();
+	int32_t num_rhs=rhs->get_num_vectors();
+	int32_t dim=lhs->get_dim_feature_space();
+	ASSERT(num_lhs>0);
+	ASSERT(num_rhs>0);
+	ASSERT(dim>0);
+
+	SGVector<float64_t> mean(dim);
+    memset(mean.vector, 0, sizeof(float64_t)*dim);
+
+	for (int i = 0; i < num_lhs; i++)
+		lhs->add_to_dense_vec(1, i, mean.vector, dim);
+	for (int i = 0; i < num_rhs; i++)
+		rhs->add_to_dense_vec(1, i, mean.vector, dim);
+	for (int j = 0; j < dim; j++)
+		mean.vector[j] /= (num_lhs+num_rhs);
+
+	return mean;
+}									
+
 SGMatrix<float64_t> CDotFeatures::get_cov()
 {
 	int32_t num=get_num_vectors();
@@ -477,9 +502,7 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 
 	memset(cov.matrix, 0, sizeof(float64_t)*dim*dim);
 
-	SGVector<float64_t>  mean=lhs->get_mean();
-	SGVector<float64_t> meanr=rhs->get_mean();
-	CMath::add<float64_t>(mean.vector, 0.5, mean.vector, 0.5, meanr.vector, mean.vlen);
+	SGVector<float64_t>  mean=get_mean(lhs,rhs);
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -513,7 +536,6 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 	}
 
 	mean.destroy_vector();
-	meanr.destroy_vector();
 	return cov;
 }
 
