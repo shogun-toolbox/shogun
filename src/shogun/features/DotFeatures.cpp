@@ -244,12 +244,8 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 
 	if (sub_index)
 	{
-#ifdef WIN32
-		for (int32_t i=start; i<stop i++)
-#else
 		for (int32_t i=start; i<stop &&
 				!CSignal::cancel_computations(); i++)
-#endif
 		{
 			if (alphas)
 				output[i]=alphas[sub_index[i]]*df->dense_dot(sub_index[i], vec, dim)+bias;
@@ -262,12 +258,8 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 	}
 	else
 	{
-#ifdef WIN32
-		for (int32_t i=start; i<stop i++)
-#else
 		for (int32_t i=start; i<stop &&
 				!CSignal::cancel_computations(); i++)
-#endif
 		{
 			if (alphas)
 				output[i]=alphas[i]*df->dense_dot(i, vec, dim)+bias;

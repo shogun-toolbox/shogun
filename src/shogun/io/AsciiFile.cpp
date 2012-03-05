@@ -1013,7 +1013,7 @@ template <class T> void CAsciiFile::append_item(
 	items->append_element(item);
 }
 
-#ifdef __MACH__
+#if defined __MACH__ || defined _WIN32
 ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
 {
 	int32_t total_bytes_read=0;

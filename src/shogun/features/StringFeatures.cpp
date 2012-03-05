@@ -8,7 +8,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef _WIN32
 #include <dirent.h>
+#endif // _WIN32
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -766,6 +768,7 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 
 template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 {
+    #ifndef _WIN32
 	remove_subset();
 
 	struct dirent **namelist;
@@ -831,6 +834,7 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 			return true;
 		}
 	}
+    #endif // _WIN32
 	return false;
 }
 

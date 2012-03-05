@@ -16,7 +16,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifndef _WIN32
 #include <sys/mman.h>
+#endif // _WIN32
 
 namespace shogun
 {

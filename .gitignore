@@ -7,6 +7,7 @@
 *.so.*
 *.dylib
 *.a
+*.dll
 *_doxygen.i
 .depend
 .config
@@ -23,6 +24,7 @@ configure.log
 *.swo
 *.mex*
 *.oct
+*.user
 
 # /doc/
 /doc/html
@@ -47,6 +49,7 @@ configure.log
 /src/examples
 
 # static interfaces
+/src/interfaces/*_static/Makefile
 /src/interfaces/cmdline_static/shogun
 
 # modular interfaces
