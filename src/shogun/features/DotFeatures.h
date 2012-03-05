@@ -210,6 +210,12 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual SGVector<float64_t> get_mean();
 
+		/** get mean of two CDotFeature objects
+		 *
+		 * @return mean returned
+		 */
+		static SGVector<float64_t> get_mean(CDotFeatures* lhs, CDotFeatures* rhs);
+
 		/** get covariance
 		 *
 		 * @return covariance
