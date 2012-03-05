@@ -1,8 +1,7 @@
 include_directories(. ..)
 
 if(WIN32)
-  find_path(ATLAS_DIR include/cblas.h)
-  include_directories(${ATLAS_DIR}/include)
+  include_directories(win32fixes)
 endif()
 
 if(MINGW)
@@ -60,4 +59,3 @@ add_library(shogun STATIC ${BASE}
                             ${REGRESSION_SVR}
                           ${STRUCTURE}
                           ${UI})
-
