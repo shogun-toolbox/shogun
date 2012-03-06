@@ -39,7 +39,7 @@ namespace shogun
  * as 
  *
  * \f[\displaystyle
- *  D = \sqrt{ (x_i - \x_i')^T \Sigma^{-1} (x_i - \x_i')  }
+ *  D = \sqrt{ (x_i - x_i')^T \Sigma^{-1} (x_i - x_i')  }
  * \f]
  *
  * i.e., instead of the mean as reference two vector \f$x_i\f$ and \f$x_i'\f$
