@@ -126,6 +126,9 @@ class CQDA : public CMachine
 		 */
 		virtual bool train_machine(CFeatures* data = NULL);
 
+	private:
+		void init();
+
 	protected:
 		/** feature vectors */
 		CDotFeatures* m_features;
@@ -133,8 +136,11 @@ class CQDA : public CMachine
 		/** tolerance used during training */
 		float64_t m_tolerance;
 
-		/** store_covs */
+		/** whether to store the within class covariances */
 		bool m_store_covs;
+
+		/** number of classes */
+		int32_t m_num_classes;
 
 		// TODO getters and setters for the attributes below?
 
