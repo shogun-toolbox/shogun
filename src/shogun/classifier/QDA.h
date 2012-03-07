@@ -12,6 +12,9 @@
 #define _QDA_H__
 
 #include <shogun/lib/config.h>
+
+#ifdef HAVE_LAPACK
+
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/machine/Machine.h>
@@ -40,7 +43,7 @@ class CQDA : public CMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
 		 */
-		CQDA(CSimpleFeatures<float64_t>* traindat, CLabels* trainlab, float64_t = 1e-4, bool store_covs = false);
+		CQDA(CSimpleFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance = 1e-4, bool store_covs = false);
 
 		virtual ~CQDA();
 
@@ -94,19 +97,19 @@ class CQDA : public CMachine
 		virtual inline void set_features(CDotFeatures* feat)
 		{
 			if (feat->get_feature_class() != C_SIMPLE ||
-				feat->fet_feature:type() != F_DREAL)
+				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("QDA requires SIMPLE REAL valued features\n");
 
-			SG_UNREF(features);
+			SG_UNREF(m_features);
 			SG_REF(feat);
-			features = feat;
+			m_features = feat;
 		}
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		virtual CDotFeatures* get_features() { SG_REF(features); return features; }
+		virtual CDotFeatures* get_features() { SG_REF(m_features); return m_features; }
 
 		/** get object name
 		 *
@@ -149,6 +152,8 @@ class CQDA : public CMachine
 		/** feature means for each of the classes in the training data */
 		SGVector< float64_t >* m_means;
 
-}
-}
+}; /* class QDA */
+}  /* namespace shogun */
+
+#endif /* HAVE_LAPACK */
 #endif /* _QDA_H__ */
