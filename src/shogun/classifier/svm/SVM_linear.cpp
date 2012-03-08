@@ -429,6 +429,8 @@ void Solver_MCSVM_CS::Solve(double *w)
 			alpha_index[i*nr_class+m] = m;
 
 		QD[i] = prob->x->dot(i, prob->x,i);
+		if (prob->use_bias)
+			QD[i] += 1.0;
 
 		active_size_i[i] = nr_class;
 		y_index[i] = prob->y[i];
@@ -468,6 +470,15 @@ void Solver_MCSVM_CS::Solve(double *w)
 						G[m] += w_i[alpha_index_i[m]]*(feature_value);
 					got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
 				}
+				// experimental
+				// ***
+				if (prob->use_bias)
+				{
+					double *w_i = &w[(w_size-1)*nr_class];
+					for(m=0;m<active_size_i[i];m++)
+						G[m] += w_i[alpha_index_i[m]];
+				}
+				// ***
 				prob->x->free_feature_iterator(feature_iter);
 
 				double minG = CMath::INFTY;
@@ -547,6 +558,15 @@ void Solver_MCSVM_CS::Solve(double *w)
 						w_i[d_ind[m]] += d_val[m]*feature_value;
 					got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
 				}
+				// experimental
+				// ***
+				if (prob->use_bias)
+				{
+					double *w_i = &w[(w_size-1)*nr_class];
+					for(m=0;m<nz_d;m++)
+						w_i[d_ind[m]] += d_val[m];
+				}
+				// ***
 				prob->x->free_feature_iterator(feature_iter);
 			}
 		}

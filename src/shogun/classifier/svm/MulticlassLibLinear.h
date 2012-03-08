@@ -13,7 +13,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/machine/multiclass/LinearMulticlassMachine.h>
 
 namespace shogun
@@ -38,6 +37,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		{
 			set_epsilon(1e-2);
 			set_max_iter(10000);
+			set_use_bias(false);
 		}
 
 		/** destructor */
@@ -77,6 +77,21 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		 */
 		inline float64_t get_epsilon() const { return m_epsilon; }
 
+		/** set use bias
+		 * @param use_bias use_bias value
+		 */
+		inline void set_use_bias(bool use_bias)
+		{
+			m_use_bias = use_bias;
+		}
+		/** get use bias 
+		 * @return use_bias value
+		 */
+		inline bool get_use_bias() const
+		{
+			return m_use_bias;
+		}
+
 		/** set max iter
 		 * @param max_iter max iter value
 		 */
@@ -106,6 +121,9 @@ protected:
 
 		/** max number of iterations */
 		int32_t m_max_iter;
+
+		/** use bias */
+		bool m_use_bias;
 };
 }
 #endif
