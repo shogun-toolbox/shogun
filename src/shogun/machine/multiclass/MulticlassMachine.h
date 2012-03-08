@@ -82,9 +82,6 @@ class CMulticlassMachine : public CMachine
 			return m_machines.vlen;
 		}
 
-		/** cleanup */
-		void cleanup();
-
 		/** classify all examples
 		 *
 		 * @return resulting labels
@@ -103,15 +100,6 @@ class CMulticlassMachine : public CMachine
 		 * @return resulting classification
 		 */
 		virtual float64_t apply(int32_t num);
-
-		/** classify one vs rest
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_rest();
-
-		/** train one vs rest */
-		bool train_one_vs_rest();
 
 		/** get the type of multiclass'ness
 		 *
@@ -141,6 +129,15 @@ class CMulticlassMachine : public CMachine
 
 	protected:
 
+		/** classify one vs rest
+		 *
+		 * @return resulting labels
+		 */
+		virtual CLabels* classify_one_vs_rest();
+
+		/** train one vs rest */
+		bool train_one_vs_rest();
+
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
@@ -161,8 +158,8 @@ class CMulticlassMachine : public CMachine
 
 	private:
 
-		/** init parameters */
-		void init();
+		/** register parameters */
+		void register_parameters();
 
 	protected:
 		/** type of multiclass strategy */
