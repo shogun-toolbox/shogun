@@ -17,32 +17,21 @@ using namespace shogun;
 CMulticlassMachine::CMulticlassMachine()
 : CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY), m_rejection_strategy(NULL)
 {
-	init();
+	register_parameters();
 }
 
 CMulticlassMachine::CMulticlassMachine(
 	EMulticlassStrategy strategy,
 	CMachine* machine, CLabels* labs)
-: CMachine(), m_multiclass_strategy(strategy), m_machine(machine), m_rejection_strategy(NULL)
+: CMachine(), m_multiclass_strategy(strategy), m_rejection_strategy(NULL)
 {
 	set_labels(labs);
 	SG_REF(machine);
-	init();
+	m_machine = machine;
+	register_parameters();
 }
 
 CMulticlassMachine::~CMulticlassMachine()
-{
-	cleanup();
-}
-
-void CMulticlassMachine::init()
-{
-	m_parameters->add((machine_int_t*)&m_multiclass_strategy,"m_multiclass_type");
-	m_parameters->add((CSGObject**)&m_machine, "m_machine");
-	m_parameters->add_vector((CSGObject***)&m_machines.vector,&m_machines.vlen, "m_machines");
-}
-
-void CMulticlassMachine::cleanup()
 {
 	SG_UNREF(m_machine);
 
@@ -50,6 +39,14 @@ void CMulticlassMachine::cleanup()
 		SG_UNREF(m_machines[i]);
 
 	m_machines.destroy_vector();
+}
+
+void CMulticlassMachine::register_parameters()
+{
+	m_parameters->add((machine_int_t*)&m_multiclass_strategy,"m_multiclass_type");
+	m_parameters->add((CSGObject**)&m_machine, "m_machine");
+	m_parameters->add((CSGObject**)&m_rejection_strategy, "m_rejection_strategy");
+	m_parameters->add_vector((CSGObject***)&m_machines.vector,&m_machines.vlen, "m_machines");
 }
 
 CLabels* CMulticlassMachine::apply(CFeatures* features)
@@ -166,6 +163,7 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 			}
 			result->set_label(i, winner);
 		}
+		outputs_for_i.destroy_vector();
 
 		for (int32_t i=0; i<num_machines; i++)
 			SG_UNREF(outputs[i]);
