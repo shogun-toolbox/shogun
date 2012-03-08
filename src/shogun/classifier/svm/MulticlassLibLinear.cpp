@@ -10,6 +10,7 @@
 
 
 #include <shogun/classifier/svm/MulticlassLibLinear.h>
+#include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -24,13 +25,13 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	
 	problem mc_problem;
 	mc_problem.l = num_vectors;
-	mc_problem.n = m_features->get_dim_feature_space();
+	mc_problem.n = m_features->get_dim_feature_space()+1;
 	mc_problem.y = SG_MALLOC(int32_t, mc_problem.l);
 	for (int32_t i=0; i<num_vectors; i++)
 		mc_problem.y[i] = labels->get_int_label(i);
 
 	mc_problem.x = m_features;
-	mc_problem.use_bias = true;
+	mc_problem.use_bias = m_use_bias;
 
 	float64_t* w = SG_MALLOC(float64_t, mc_problem.n*num_classes);
 	float64_t* C = SG_MALLOC(float64_t, num_vectors);
@@ -45,10 +46,12 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();
-		SGVector<float64_t> cw(mc_problem.n);
-		for (int32_t j=0; j<mc_problem.n; j++)
+		float64_t* cw = SG_MALLOC(float64_t, mc_problem.n);
+		for (int32_t j=0; j<mc_problem.n-1; j++)
 			cw[j] = w[j*num_classes+i];
-		machine->set_w(cw);
+		machine->set_w(SGVector<float64_t>(cw,mc_problem.n-1));
+		CMath::display_vector(cw,mc_problem.n);
+		machine->set_bias(w[(mc_problem.n-1)*num_classes+i]);
 
 		m_machines[i] = machine;
 	}
