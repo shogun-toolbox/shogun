@@ -65,6 +65,7 @@
 %rename(KernelMulticlassMachine) CKernelMulticlassMachine;
 %rename(LinearMulticlassMachine) CLinearMulticlassMachine;
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
+%rename(MulticlassOCAS) CMulticlassOCAS;
 %rename(RejectionStrategy) CRejectionStrategy;
 %rename(ThresholdReject) CThresholdReject;
 
@@ -122,6 +123,7 @@
 %include <shogun/machine/multiclass/LinearMulticlassMachine.h>
 %include <shogun/machine/multiclass/RejectionStrategy.h>
 %include <shogun/classifier/svm/MulticlassLibLinear.h>
+%include <shogun/classifier/svm/MulticlassOCAS.h>
 
 #ifdef USE_SVMLIGHT
 
