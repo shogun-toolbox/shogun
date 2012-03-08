@@ -50,7 +50,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 		for (int32_t j=0; j<mc_problem.n-1; j++)
 			cw[j] = w[j*num_classes+i];
 		machine->set_w(SGVector<float64_t>(cw,mc_problem.n-1));
-		CMath::display_vector(cw,mc_problem.n);
+		//CMath::display_vector(cw,mc_problem.n);
 		machine->set_bias(w[(mc_problem.n-1)*num_classes+i]);
 
 		m_machines[i] = machine;
