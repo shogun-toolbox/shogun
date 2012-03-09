@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2012 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/machine/multiclass/MulticlassMachine.h>
+#include <shogun/machine/MulticlassMachine.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/features/Labels.h>
 

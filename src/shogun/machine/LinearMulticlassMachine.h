@@ -15,7 +15,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/machine/multiclass/MulticlassMachine.h>
+#include <shogun/machine/MulticlassMachine.h>
 
 namespace shogun
 {

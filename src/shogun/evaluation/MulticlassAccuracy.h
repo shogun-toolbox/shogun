@@ -35,7 +35,11 @@ class CMulticlassAccuracy: public CEvaluation
 {
 public:
 	/** constructor */
-	CMulticlassAccuracy() : CEvaluation() {};
+	CMulticlassAccuracy() : 
+		CEvaluation(), m_ignore_rejects(false) {};
+
+	CMulticlassAccuracy(bool ignore_rejects) : 
+		CEvaluation(), m_ignore_rejects(ignore_rejects) {};
 
 	/** destructor */
 	virtual ~CMulticlassAccuracy() {};
@@ -61,6 +65,11 @@ public:
 
 	/** get name */
 	virtual inline const char* get_name() const { return "MulticlassAccuracy"; }
+
+protected:
+
+	/** ignore rejects */
+	bool m_ignore_rejects;
 };
 
 }
