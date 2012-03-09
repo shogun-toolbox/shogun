@@ -31,6 +31,13 @@ CQDA::CQDA(CSimpleFeatures<float64_t>* traindat, CLabels* trainlab, float64_t to
 	init();
 }
 
+CQDA::~CQDA()
+{
+	SG_UNREF(m_features);
+
+	cleanup();
+}
+
 void CQDA::init()
 {
 	m_parameters->add(&m_tolerance, "m_tolerance", "Tolerance member.");
@@ -42,16 +49,19 @@ void CQDA::init()
 	m_parameters->add((CSGObject**) &m_means, "m_means", "Mean vectors list");
 }
 
-CQDA::~CQDA()
+void CQDA::cleanup()
 {
-	SG_UNREF(m_features);
-
-	/* TODO loop here and free every SGVector/SGMatrix?? */
-	if ( m_store_covs ) 
-		SG_FREE(m_covs);
+	for ( int32_t i = 0 ; i < m_num_classes ; ++i )
+	{
+		m_covs[i].free_matrix();
+		m_means[i].free_vector();
+		m_scalings[i].free_vector();
+		m_rotations[i].free_matrix();
+	}
+	SG_FREE(m_covs);
+	SG_FREE(m_means);
 	SG_FREE(m_scalings);
 	SG_FREE(m_rotations);
-	SG_FREE(m_means);
 
 	m_covs      = NULL;
 	m_scalings  = NULL;
@@ -82,7 +92,9 @@ bool CQDA::train_machine(CFeatures* data)
 	}
 	ASSERT(m_features);
 	SGVector< int32_t > train_labels = labels->get_int_labels();
-	ASSERT(trains_labels.vector);
+	ASSERT(train_labels.vector);
+
+	cleanup();
 
 	m_num_classes = labels->get_num_classes();
 
@@ -95,8 +107,8 @@ bool CQDA::train_machine(CFeatures* data)
 	// number of examples of each class
 	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes);
 	memset(class_nums, 0, m_num_classes*sizeof(int32_t));
-	int32_t i = 0, j = 0, k = 0;
 	int32_t class_idx;
+	int32_t i = 0, j = 0, k = 0;
 	for ( i = 0 ; i < train_labels.vlen ; ++i )
 	{
 		class_idx = train_labels.vector[i];
@@ -121,66 +133,64 @@ bool CQDA::train_machine(CFeatures* data)
 		}
 	}
 
-	/* TODO loop here and free every SGVector/SGMatrix?? */
-	SG_FREE(m_covs);
-	SG_FREE(m_means);
-	SG_FREE(m_scalings)g_vector
-	SG_FREE(m_rotations);
-
 	if ( m_store_covs )
 	{
-		m_covs = SG_MALLOC(SGMatrix< float64_t >*, m_num_classes);
+		m_covs = SG_MALLOC(SGMatrix< float64_t >, m_num_classes);
 		for ( i = 0 ; i < m_num_classes ; ++i )
-			m_covs[i] = new SGMatrix< float64_t >(num_feat, num_feat);
+			m_covs[i] = SGMatrix< float64_t >(num_feat, num_feat);
 	}
-	m_means     = SG_MALLOC(SGVector< float64_t >*, m_num_classes);
-	m_scalings  = SG_MALLOC(SGVector< float64_t >*, m_num_classes);
-	m_rotations = SG_MALLOC(SGMatrix< float64_t >*, m_num_classes);
+	m_means     = SG_MALLOC(SGVector< float64_t >, m_num_classes);
+	m_scalings  = SG_MALLOC(SGVector< float64_t >, m_num_classes);
+	m_rotations = SG_MALLOC(SGMatrix< float64_t >, m_num_classes);
 	for ( i = 0 ; i < m_num_classes ; ++i )
 	{
-		/* TODO check the dimensions of these guys */
-		m_scalings[i]  = new SGVector< float64_t >(num_feat);
-		m_rotations[i] = new SGMatrix< float64_t >(num_feat, num_feat);
+		m_means[i]     = SGVector< float64_t >(num_feat);
+		m_scalings[i]  = SGVector< float64_t >(num_feat);
+		m_rotations[i] = SGMatrix< float64_t >(num_feat, num_feat);
 	}
 
-	SGVector< float64_t > mean = SGVector< float64_t>(num_feat);
-	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) features;
+	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) m_features;
+	SGVector< float64_t > buffer(num_feat*CMath::max(class_nums, m_num_classes));
 
 	int32_t vlen;
 	bool vfree;
-
-	for ( i = 0 ; i < m_num_classes ; ++i )
+	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		mean.set_const(0);
-		for ( j = 0 ; j < class_nums[i] ; ++j )
+		m_means[i].zero();
+		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
-			float64_t* vec = rf->get_feature_vector( class_idxs[i*num_vec + j] );
+			float64_t* vec = 
+				rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec);
 
-			for ( k = 0 ; k < vlen ; ++k )
+			for ( j = 0 ; j < vlen ; ++j )
 			{
-				mean[k] += vec[k];
-				buffer[num_feat*j + k] = vec[k];
+				m_means[k][j] += vec[j];
+				buffer[num_feat*i + j] = vec[j];
 			}
 
-			rf->free_feature_vector(vec, class_idxs[i*num_vec + j], vfree);
+			rf->free_feature_vector(vec, class_idxs[k*num_vec + i], vfree);
 		}
 		
-		for ( k = 0 ; k < num_feat ; ++k )
-			mean[k] /= class_nums[i];
+		for ( j = 0 ; j < num_feat ; ++j )
+			m_means[k][j] /= class_nums[k];
 
-		for ( j = 0 ; j < class_nums[i] ; ++j )
+		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
-			for ( k = 0 ; k < num_feat ; ++k )
-				buffer[num_feat*j + k] -= mean[k];
+			for ( j = 0 ; j < num_feat ; ++j )
+				buffer[num_feat*i + j] -= m_means[k][j];
 		}
 
-		m_means[i]->vector = SGVector< float64_t >.clone_vector(mean);
+		// buffer = U * S * V^T
 	}
+
+#ifdef DEBUG_QDA
+#endif
 
 	train_labels.free_vector();
 	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
+	return true;
 }
 
 #endif /* HAVE_LAPACK */
