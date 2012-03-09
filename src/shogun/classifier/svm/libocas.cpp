@@ -451,7 +451,7 @@ ocas_return_value_T svm_ocas_solver(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
+    if(MaxTime>0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
          
   } /* end of the main loop */
@@ -898,10 +898,7 @@ ocas_return_value_T svm_ocas_solver_difC(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
-	if (MaxTime>0)
-	{
-		if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
-	}
+    if(MaxTime>0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
          
   } /* end of the main loop */
@@ -1470,7 +1467,7 @@ ocas_return_value_T msvm_ocas_solver(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
+    if(MaxTime>0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
          
   } /* end of the main loop */
