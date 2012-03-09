@@ -12,7 +12,7 @@
 #define _MULTICLASSMACHINE_H___
 
 #include <shogun/machine/Machine.h>
-#include <shogun/machine/multiclass/RejectionStrategy.h>
+#include <shogun/features/RejectionStrategy.h>
 
 namespace shogun
 {

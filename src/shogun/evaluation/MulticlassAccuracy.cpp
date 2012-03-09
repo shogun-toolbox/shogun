@@ -18,14 +18,26 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
 	int32_t length = predicted->get_num_labels();
-	float64_t accuracy = 0.0;
-	for (int32_t i=0; i<length; i++)
+	int32_t correct = 0;
+	if (!m_ignore_rejects)
 	{
-		if (predicted->get_int_label(i)==ground_truth->get_int_label(i))
-			accuracy += 1.0;
+		for (int32_t i=0; i<length; i++)
+		{
+			if (predicted->get_int_label(i)==ground_truth->get_int_label(i))
+				correct++;
+		}
 	}
-	accuracy /= length;
-	return accuracy;
+	else
+	{
+		for (int32_t i=0; i<length; i++)
+		{
+			int32_t predicted_label = predicted->get_int_label(i);
+
+			if (predicted_label!=predicted->REJECTION_LABEL && predicted_label==ground_truth->get_int_label(i))
+				correct++;
+		}
+	}
+	return ((float64_t)correct)/length;
 }
 
 SGMatrix<int32_t> CMulticlassAccuracy::get_confusion_matrix(CLabels* predicted, CLabels* ground_truth)
@@ -39,6 +51,10 @@ SGMatrix<int32_t> CMulticlassAccuracy::get_confusion_matrix(CLabels* predicted, 
 	{
 		int32_t predicted_label = predicted->get_int_label(i);
 		int32_t ground_truth_label = ground_truth->get_int_label(i);
+
+		if (predicted_label==predicted->REJECTION_LABEL) 
+			continue;
+
 		confusion_matrix[predicted_label*num_classes+ground_truth_label]++;
 	}
 	return confusion_matrix;
