@@ -330,7 +330,6 @@ void CSVMOcas::compute_W(
 
 void CSVMOcas::init()
 {
-	max_train_time=1000000;
 	use_bias=true;
 	bufsize=3000;
 	C1=1;
