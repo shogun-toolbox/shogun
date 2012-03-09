@@ -9,7 +9,8 @@
 		- EDRT now supports static interfaces such as matlab and octave
 		- Jensen-Shannon kernel and Homogeneous kernel map preprocessor (thanks to Viktor Gal)
 		- New Mahalanobis distance class (thanks to Fernando J. Iglesias Garcia)
-		- Generic linear and kernel multiclass machines
+		- Generic linear and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
+		  new rejection schemes concept
 		- New regression estimation algorithms by Soeren Sonnenburg
 		- New graphical examples 
 	* Bugfixes:
