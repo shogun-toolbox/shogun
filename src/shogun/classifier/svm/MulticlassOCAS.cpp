@@ -36,7 +36,6 @@ CMulticlassOCAS::CMulticlassOCAS() :
 	set_max_iter(1000000);
 	set_method(1);
 	set_buf_size(5000);
-	set_max_train_time(CMath::ALMOST_INFTY);
 }
 
 CMulticlassOCAS::CMulticlassOCAS(float64_t C, CDotFeatures* train_features, CLabels* train_labels) :
@@ -47,7 +46,6 @@ CMulticlassOCAS::CMulticlassOCAS(float64_t C, CDotFeatures* train_features, CLab
 	set_max_iter(1000000);
 	set_method(1);
 	set_buf_size(5000);
-	set_max_train_time(CMath::ALMOST_INFTY);
 }
 
 void CMulticlassOCAS::register_parameters()
