@@ -22,6 +22,8 @@
 namespace shogun
 {
 
+#define DEBUG_QDA
+
 /** @brief Class QDA implements Quadratic Discriminant Analysis.
  *
  *  TODO
@@ -129,6 +131,8 @@ class CQDA : public CMachine
 	private:
 		void init();
 
+		void cleanup();
+
 	protected:
 		/** feature vectors */
 		CDotFeatures* m_features;
@@ -147,16 +151,16 @@ class CQDA : public CMachine
 		/** feature covariances for each of the classes in the training data
 		 *  stored iif store_covs
 		 */
-		SGMatrix< float64_t >** m_covs;
+		SGMatrix< float64_t >* m_covs;
 
 		/** feature means for each of the classes in the training data */
-		SGVector< float64_t >** m_means;
+		SGVector< float64_t >* m_means;
 
 		/** scalings obtained during training and used in classification */
-		SGVector< float64_t >** m_scalings;
+		SGVector< float64_t >* m_scalings;
 
 		/** rotations obtained during training and used in classification */
-		SGMatrix< float64_t >** m_rotations;
+		SGMatrix< float64_t >* m_rotations;
 
 }; /* class QDA */
 }  /* namespace shogun */
