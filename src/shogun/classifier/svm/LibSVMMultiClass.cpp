@@ -34,16 +34,16 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 
 	problem = svm_problem();
 
-	ASSERT(labels && labels->get_num_labels());
-	int32_t num_classes = labels->get_num_classes();
-	problem.l=labels->get_num_labels();
+	ASSERT(m_labels && m_labels->get_num_labels());
+	int32_t num_classes = m_labels->get_num_classes();
+	problem.l=m_labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
 
 	/* ensure that there are only positive labels, otherwise, train_machine
 	 * will produce memory errors since svm index gets wrong */
-	for (index_t i=0; i<labels->get_num_labels(); ++i)
+	for (index_t i=0; i<m_labels->get_num_labels(); ++i)
 	{
-		if (labels->get_label(i)<0)
+		if (m_labels->get_label(i)<0)
 		{
 			SG_ERROR("Only labels >= 0 allowed for %s::train_machine!\n",
 					get_name());
@@ -52,7 +52,7 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 		{
 			SG_ERROR("Number of training vectors does not match number of "
 					"labels\n");
@@ -70,7 +70,7 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.pv[i]=-1.0;
-		problem.y[i]=labels->get_label(i);
+		problem.y[i]=m_labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
@@ -86,7 +86,7 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 	param.nu = get_nu(); // Nu
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
-	param.max_train_time = max_train_time;
+	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = 0.1;

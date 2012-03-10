@@ -36,16 +36,16 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	QPproblem prob;                          /* object containing the solvers  */
 
 	ASSERT(kernel);
-	ASSERT(labels && labels->get_num_labels());
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->is_two_class_labeling());
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
 
-	SGVector<int32_t> lab=labels->get_int_labels();
+	SGVector<int32_t> lab=m_labels->get_int_labels();
 	prob.KER=new sKernel(kernel, lab.vlen);
 	prob.y=lab.vector;
 	prob.ell=lab.vlen;
@@ -120,7 +120,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		if (solution[i] > prob.DELTAsv)
 		{
 			set_support_vector(k, i);
-			set_alpha(k++, solution[i]*labels->get_label(i));
+			set_alpha(k++, solution[i]*m_labels->get_label(i));
 		}
 	}
 

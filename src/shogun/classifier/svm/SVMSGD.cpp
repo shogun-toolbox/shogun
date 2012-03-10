@@ -69,7 +69,7 @@ void CSVMSGD::set_loss_function(CLossFunction* loss_func)
 bool CSVMSGD::train_machine(CFeatures* data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
-	ASSERT(labels);
+	ASSERT(m_labels);
 
 	if (data)
 	{
@@ -79,9 +79,9 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	}
 
 	ASSERT(features);
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(m_labels->is_two_class_labeling());
 
-	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=m_labels->get_num_labels();
 	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -123,7 +123,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			float64_t eta = 1.0 / (lambda * t);
-			float64_t y = labels->get_label(i);
+			float64_t y = m_labels->get_label(i);
 			float64_t z = y * (features->dense_dot(i, w, w_dim) + bias);
 
 			if (z < 1 || is_log_loss)

@@ -64,8 +64,6 @@
 
 %rename(KernelMulticlassMachine) CKernelMulticlassMachine;
 %rename(LinearMulticlassMachine) CLinearMulticlassMachine;
-%rename(MulticlassLibLinear) CMulticlassLibLinear;
-%rename(MulticlassOCAS) CMulticlassOCAS;
 
 /* These functions return new Objects */
 %newobject apply();
@@ -119,8 +117,6 @@
 %include <shogun/machine/MulticlassMachine.h>
 %include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/machine/LinearMulticlassMachine.h>
-%include <shogun/classifier/svm/MulticlassLibLinear.h>
-%include <shogun/classifier/svm/MulticlassOCAS.h>
 
 #ifdef USE_SVMLIGHT
 

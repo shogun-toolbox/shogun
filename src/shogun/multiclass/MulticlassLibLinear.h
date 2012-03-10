@@ -18,7 +18,12 @@
 namespace shogun
 {
 
-/** @brief multiclass LibLinear wrapper */
+/** @brief multiclass LibLinear wrapper. Uses Crammer-Singer
+    formulation and gradient descent optimization algorithm
+    implemented in the LibLinear library. Regularized bias 
+    support is added using stacking bias to hyperplane normal
+    vector. 
+ */
 class CMulticlassLibLinear : public CLinearMulticlassMachine
 {
 	public:

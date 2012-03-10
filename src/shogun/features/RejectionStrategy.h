@@ -14,7 +14,7 @@
 namespace shogun
 {
 
-/** @brief rejection strategy */
+/** @brief base rejection strategy class */
 class CRejectionStrategy : public CSGObject
 {
 	public:
@@ -35,6 +35,7 @@ class CRejectionStrategy : public CSGObject
 
 };
 
+/** @brief threshold based rejection strategy */
 class CThresholdReject : public CRejectionStrategy
 {
 	public:

@@ -243,13 +243,13 @@ float64_t CSVM::compute_svm_dual_objective()
 {
 	int32_t n=get_num_support_vectors();
 
-	if (labels && kernel)
+	if (m_labels && kernel)
 	{
 		objective=0;
 		for (int32_t i=0; i<n; i++)
 		{
 			int32_t ii=get_support_vector(i);
-			objective-=get_alpha(i)*labels->get_label(ii);
+			objective-=get_alpha(i)*m_labels->get_label(ii);
 
 			for (int32_t j=0; j<n; j++)
 			{
@@ -272,7 +272,7 @@ float64_t CSVM::compute_svm_primal_objective()
 
 
 	
-	if (labels && kernel)
+	if (m_labels && kernel)
 	{
 		float64_t C2_tmp=C1;
 		if(C2>0)
@@ -315,10 +315,10 @@ void CSVM::set_linear_term(SGVector<float64_t> linear_term)
 {
 	ASSERT(linear_term.vector);
 
-	if (!labels)
+	if (!m_labels)
 		SG_ERROR("Please assign labels first!\n");
 
-	int32_t num_labels=labels->get_num_labels();
+	int32_t num_labels=m_labels->get_num_labels();
 
 	if (num_labels != linear_term.vlen)
 	{

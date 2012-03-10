@@ -9,7 +9,7 @@
  * Copyright (C) 2009-2012 Vojtech Franc and Soeren Sonnenburg
  */
 
-#include <shogun/classifier/svm/MulticlassOCAS.h>
+#include <shogun/multiclass/MulticlassOCAS.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -67,17 +67,17 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 		set_features((CDotFeatures*)data);
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = labels->get_num_classes();
+	int32_t num_classes = m_labels->get_num_classes();
 	int32_t num_features = m_features->get_dim_feature_space();
 
 	float64_t C = m_C;
-	float64_t* data_y = labels->get_labels().vector;
+	float64_t* data_y = m_labels->get_labels().vector;
 	uint32_t nY = num_classes;
 	uint32_t nData = num_vectors;
 	float64_t TolRel = m_epsilon;
 	float64_t TolAbs = 0.0;
 	float64_t QPBound = 0.0;
-	float64_t MaxTime = max_train_time;
+	float64_t MaxTime = m_max_train_time;
 	uint32_t BufSize = m_buf_size;
 	uint8_t Method = m_method;
 

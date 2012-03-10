@@ -31,12 +31,12 @@ CMPDSVM::~CMPDSVM()
 
 bool CMPDSVM::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	ASSERT(kernel);
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
@@ -48,7 +48,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	const int64_t maxiter = 1L<<30;
 	//const bool nustop=false;
 	//const int32_t k=2;
-	const int32_t n=labels->get_num_labels();
+	const int32_t n=m_labels->get_num_labels();
 	ASSERT(n>0);
 	//const float64_t d = 1.0/n/nu; //NUSVC
 	const float64_t d = get_C1(); //CSVC
@@ -84,9 +84,9 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	for (int32_t i=0; i<n; i++)
 	{
 		alphas[i]=0;
-		F[i]=labels->get_label(i);
+		F[i]=m_labels->get_label(i);
 		//F[i+n]=-1;
-		hessres[i]=labels->get_label(i);
+		hessres[i]=m_labels->get_label(i);
 		//hessres[i+n]=-1;
 		//dalphas[i]=F[i+n]*etas[1]; //NUSVC
 		dalphas[i]=-1; //CSVC
@@ -147,7 +147,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 			{
 				obj-=alphas[i];
 				for (int32_t j=0; j<n; j++)
-					obj+=0.5*labels->get_label(i)*labels->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
+					obj+=0.5*m_labels->get_label(i)*m_labels->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
 			}
 
 			SG_DEBUG( "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter);
@@ -246,7 +246,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		if (alphas[i]>0)
 		{
 			//set_alpha(j, alphas[i]*labels->get_label(i)/etas[1]);
-			set_alpha(j, alphas[i]*labels->get_label(i));
+			set_alpha(j, alphas[i]*m_labels->get_label(i));
 			set_support_vector(j, i);
 			j++;
 		}

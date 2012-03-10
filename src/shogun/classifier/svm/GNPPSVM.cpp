@@ -32,16 +32,16 @@ CGNPPSVM::~CGNPPSVM()
 bool CGNPPSVM::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
-	ASSERT(labels && labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
 
-	int32_t num_data=labels->get_num_labels();
+	int32_t num_data=m_labels->get_num_labels();
 	SG_INFO("%d trainlabels\n", num_data);
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);

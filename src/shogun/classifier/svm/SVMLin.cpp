@@ -38,7 +38,7 @@ CSVMLin::~CSVMLin()
 
 bool CSVMLin::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 
 	if (data)
 	{
@@ -49,7 +49,7 @@ bool CSVMLin::train_machine(CFeatures* data)
 
 	ASSERT(features);
 
-	SGVector<float64_t> train_labels=labels->get_labels();
+	SGVector<float64_t> train_labels=m_labels->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
