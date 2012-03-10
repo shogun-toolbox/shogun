@@ -92,16 +92,15 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	user_data.nDim = num_features;
 	user_data.nData = num_vectors;
 
-	ocas_return_value_T ocas = 
-		msvm_ocas_solver(C, data_y, nY, nData, TolRel, TolAbs, 
-		                 QPBound, MaxTime, BufSize, Method,
-		                 &CMulticlassOCAS::msvm_full_compute_W,
-		                 &CMulticlassOCAS::msvm_update_W,
-		                 &CMulticlassOCAS::msvm_full_add_new_cut,
-		                 &CMulticlassOCAS::msvm_full_compute_output,
-		                 &CMulticlassOCAS::msvm_sort_data,
-		                 &CMulticlassOCAS::msvm_print,
-		                 &user_data);
+	msvm_ocas_solver(C, data_y, nY, nData, TolRel, TolAbs, 
+	                 QPBound, MaxTime, BufSize, Method,
+	                 &CMulticlassOCAS::msvm_full_compute_W,
+	                 &CMulticlassOCAS::msvm_update_W,
+	                 &CMulticlassOCAS::msvm_full_add_new_cut,
+	                 &CMulticlassOCAS::msvm_full_compute_output,
+	                 &CMulticlassOCAS::msvm_sort_data,
+	                 &CMulticlassOCAS::msvm_print,
+	                 &user_data);
 
 	clear_machines();
 	m_machines = SGVector<CMachine*>(num_classes);
