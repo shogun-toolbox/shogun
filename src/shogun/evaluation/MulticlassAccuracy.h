@@ -36,10 +36,10 @@ class CMulticlassAccuracy: public CEvaluation
 public:
 	/** constructor */
 	CMulticlassAccuracy() : 
-		CEvaluation(), m_ignore_rejects(false) {};
+		CEvaluation(), m_ignore_rejects(false), m_rejects_num(0) {};
 
 	CMulticlassAccuracy(bool ignore_rejects) : 
-		CEvaluation(), m_ignore_rejects(ignore_rejects) {};
+		CEvaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0) {};
 
 	/** destructor */
 	virtual ~CMulticlassAccuracy() {};
@@ -63,6 +63,12 @@ public:
 		return ED_MAXIMIZE;
 	}
 
+	/** get rejects num */
+	int32_t get_rejects_num() const 
+	{
+		return m_rejects_num;
+	}
+
 	/** get name */
 	virtual inline const char* get_name() const { return "MulticlassAccuracy"; }
 
@@ -70,6 +76,9 @@ protected:
 
 	/** ignore rejects */
 	bool m_ignore_rejects;
+
+	/** rejects num */
+	int32_t m_rejects_num;
 };
 
 }
