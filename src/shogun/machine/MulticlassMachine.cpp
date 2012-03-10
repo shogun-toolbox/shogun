@@ -35,10 +35,7 @@ CMulticlassMachine::~CMulticlassMachine()
 {
 	SG_UNREF(m_machine);
 
-	for(int32_t i=0; i<m_machines.vlen; i++)
-		SG_UNREF(m_machines[i]);
-
-	m_machines.destroy_vector();
+	clear_machines();
 }
 
 void CMulticlassMachine::register_parameters()
@@ -47,6 +44,14 @@ void CMulticlassMachine::register_parameters()
 	m_parameters->add((CSGObject**)&m_machine, "m_machine");
 	m_parameters->add((CSGObject**)&m_rejection_strategy, "m_rejection_strategy");
 	m_parameters->add_vector((CSGObject***)&m_machines.vector,&m_machines.vlen, "m_machines");
+}
+
+void CMulticlassMachine::clear_machines()
+{
+	for(int32_t i=0; i<m_machines.vlen; i++)
+		SG_UNREF(m_machines[i]);
+
+	m_machines.destroy_vector();
 }
 
 CLabels* CMulticlassMachine::apply(CFeatures* features)

@@ -103,7 +103,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 		                 &CMulticlassOCAS::msvm_print,
 		                 &user_data);
 
-	m_machines.destroy_vector();
+	clear_machines();
 	m_machines = SGVector<CMachine*>(num_classes);
 	for (int32_t i=0; i<num_classes; i++)
 	{

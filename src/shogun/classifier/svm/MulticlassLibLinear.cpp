@@ -15,6 +15,8 @@
 
 using namespace shogun;
 
+struct problem;
+
 bool CMulticlassLibLinear::train_machine(CFeatures* data)
 {
 	if (data)
@@ -41,7 +43,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,m_epsilon,m_max_iter);
 	solver.Solve(w);
 
-	m_machines.destroy_vector();
+	clear_machines();
 	m_machines = SGVector<CMachine*>(num_classes);
 	for (int32_t i=0; i<num_classes; i++)
 	{
