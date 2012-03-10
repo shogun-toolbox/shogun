@@ -8,6 +8,7 @@
 #include <shogun/converter/HessianLocallyLinearEmbedding.h>
 #include <shogun/converter/KernelLocallyLinearEmbedding.h>
 #include <shogun/converter/KernelLocalTangentSpaceAlignment.h>
+#include <shogun/converter/SupervisedKernelLocalTangentSpaceAlignment.h>
 #include <shogun/converter/DiffusionMaps.h>
 #include <shogun/converter/LaplacianEigenmaps.h>
 #include <shogun/converter/LocalityPreservingProjections.h>

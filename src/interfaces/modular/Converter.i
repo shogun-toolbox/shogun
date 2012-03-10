@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011
+ * Written (W) 2012 Sergey Lisitsyn
+ * Copyright (C) 2012 Sergey Lisitsyn
  */
  
 %rename(EmbeddingConverter) CEmbeddingConverter;
@@ -16,6 +16,7 @@
 %rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
 %rename(KernelLocallyLinearEmbedding) CKernelLocallyLinearEmbedding;
 %rename(KernelLocalTangentSpaceAlignment) CKernelLocalTangentSpaceAlignment;
+%rename(SupervisedKernelLocalTangentSpaceAlignment) CSupervisedKernelLocalTangentSpaceAlignment;
 %rename(DiffusionMaps) CDiffusionMaps;
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
 %rename(LocalityPreservingProjections) CLocalityPreservingProjections;
@@ -23,6 +24,8 @@
 %rename(Isomap) CIsomap;
 
 %newobject shogun::CEmbeddingConverter::apply;
+%newobject shogun::*::embed_kernel;
+%newobject shogun::*::embed_distance;
 
 %include <shogun/converter/Converter.h>
 %include <shogun/converter/EmbeddingConverter.h>
@@ -33,6 +36,7 @@
 %include <shogun/converter/HessianLocallyLinearEmbedding.h>
 %include <shogun/converter/KernelLocallyLinearEmbedding.h>
 %include <shogun/converter/KernelLocalTangentSpaceAlignment.h>
+%include <shogun/converter/SupervisedKernelLocalTangentSpaceAlignment.h>
 %include <shogun/converter/DiffusionMaps.h>
 %include <shogun/converter/LaplacianEigenmaps.h>
 %include <shogun/converter/LocalityPreservingProjections.h>
