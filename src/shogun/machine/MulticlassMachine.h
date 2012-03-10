@@ -118,6 +118,7 @@ class CMulticlassMachine : public CMachine
 		/** set rejection strategy */
 		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
 		{
+			SG_UNREF(m_rejection_strategy);
 			m_rejection_strategy = rejection_strategy;
 		}
 
