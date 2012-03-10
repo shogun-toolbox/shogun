@@ -151,10 +151,9 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 			for (int32_t j=0; j<num_machines; j++)
 				outputs_for_i[j] = outputs[j]->get_label(i);
 
-			if (m_rejection_strategy)
+			if (m_rejection_strategy && rejection_strategy->reject(outputs_for_i))
 			{
-				if (m_rejection_strategy->reject(outputs_for_i))
-					winner=result->REJECTION_LABEL;
+				winner=result->REJECTION_LABEL;
 			}
 			else
 			{

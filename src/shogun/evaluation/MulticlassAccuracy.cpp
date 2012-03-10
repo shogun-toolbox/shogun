@@ -19,7 +19,7 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
 	int32_t length = predicted->get_num_labels();
 	int32_t correct = 0;
-	if (!m_ignore_rejects)
+	if (m_ignore_rejects)
 	{
 		for (int32_t i=0; i<length; i++)
 		{
@@ -37,11 +37,11 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 
 			if (predicted_label==predicted->REJECTION_LABEL)
 				total--;
-			else
+			else if (predicted_label==ground_truth->get_int_label(i))
 				correct++;
-
-			return ((float64_t)correct)/total;
 		}
+		SG_DEBUG("correct=%d, total=%d, rejected=%d\n",correct,total,length-total);
+		return ((float64_t)correct)/total;
 	}
 	return 0.0;
 }
