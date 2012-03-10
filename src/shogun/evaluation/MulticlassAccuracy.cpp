@@ -26,18 +26,24 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 			if (predicted->get_int_label(i)==ground_truth->get_int_label(i))
 				correct++;
 		}
+		return ((float64_t)correct)/length;
 	}
 	else
 	{
+		int32_t total = length;
 		for (int32_t i=0; i<length; i++)
 		{
 			int32_t predicted_label = predicted->get_int_label(i);
 
-			if (predicted_label!=predicted->REJECTION_LABEL && predicted_label==ground_truth->get_int_label(i))
+			if (predicted_label==predicted->REJECTION_LABEL)
+				total--;
+			else
 				correct++;
+
+			return ((float64_t)correct)/total;
 		}
 	}
-	return ((float64_t)correct)/length;
+	return 0.0;
 }
 
 SGMatrix<int32_t> CMulticlassAccuracy::get_confusion_matrix(CLabels* predicted, CLabels* ground_truth)

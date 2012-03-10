@@ -113,12 +113,14 @@ class CMulticlassMachine : public CMachine
 		/** get rejection strategy */
 		inline CRejectionStrategy* get_rejection_strategy() const
 		{
+			SG_REF(m_rejection_strategy);
 			return m_rejection_strategy;
 		}
 		/** set rejection strategy */
 		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
 		{
 			SG_UNREF(m_rejection_strategy);
+			SG_REF(rejection_strategy);
 			m_rejection_strategy = rejection_strategy;
 		}
 

@@ -33,6 +33,7 @@ CMulticlassMachine::CMulticlassMachine(
 
 CMulticlassMachine::~CMulticlassMachine()
 {
+	SG_UNREF(m_rejection_strategy);
 	SG_UNREF(m_machine);
 
 	clear_machines();
@@ -146,17 +147,19 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			int32_t winner = 0;
-			float64_t max_out = outputs[0]->get_label(i);
 
 			for (int32_t j=0; j<num_machines; j++)
 				outputs_for_i[j] = outputs[j]->get_label(i);
 
-			if (m_rejection_strategy && m_rejection_strategy->reject(outputs_for_i))
+			if (m_rejection_strategy)
 			{
-				winner=result->REJECTION_LABEL;
+				if (m_rejection_strategy->reject(outputs_for_i))
+					winner=result->REJECTION_LABEL;
 			}
 			else
 			{
+				float64_t max_out = outputs[0]->get_label(i);
+
 				for (int32_t j=1; j<num_machines; j++)
 				{
 					if (outputs_for_i[j]>max_out)
