@@ -52,7 +52,7 @@ class CThresholdReject : public CRejectionStrategy
 		/** get name */
 		virtual const char* get_name() const 
 		{
-				return "AllNegativesMulticlassReject";
+				return "ThresholdReject";
 		}
 
 		/** returns true if given output set leads to rejection */
@@ -68,6 +68,7 @@ class CThresholdReject : public CRejectionStrategy
 
 protected:
 
+		/** threshold */
 		float64_t m_threshold;
 
 
