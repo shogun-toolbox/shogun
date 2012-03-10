@@ -40,6 +40,7 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 			else if (predicted_label==ground_truth->get_int_label(i))
 				correct++;
 		}
+		m_rejects_num = length-total;
 		SG_DEBUG("correct=%d, total=%d, rejected=%d\n",correct,total,length-total);
 		return ((float64_t)correct)/total;
 	}
