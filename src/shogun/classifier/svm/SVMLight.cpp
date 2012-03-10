@@ -207,7 +207,7 @@ bool CSVMLight::train_machine(CFeatures* data)
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
@@ -215,9 +215,9 @@ bool CSVMLight::train_machine(CFeatures* data)
     if (!kernel->has_features())
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
 
-	ASSERT(labels && labels->get_num_labels());
-	ASSERT(labels->is_two_class_labeling());
-	ASSERT(kernel->get_num_vec_lhs()==labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->is_two_class_labeling());
+	ASSERT(kernel->get_num_vec_lhs()==m_labels->get_num_labels());
 
 	// in case of LINADD enabled kernels cleanup!
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
@@ -296,8 +296,8 @@ void CSVMLight::svm_learn()
 	float64_t maxdiff, *lin, *c, *a;
 	int32_t iterations;
 	int32_t trainpos=0, trainneg=0 ;
-	ASSERT(labels);
-	SGVector<int32_t> lab=labels->get_int_labels();
+	ASSERT(m_labels);
+	SGVector<int32_t> lab=m_labels->get_int_labels();
 	int32_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen);
 	int32_t* label=CMath::clone_vector(lab.vector, lab.vlen);
@@ -894,7 +894,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 	  SG_ABS_PROGRESS(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
 
 	  /* Terminate loop */
-	  if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time) {
+	  if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time) {
 	      terminate = 1;
 	      retrain = 0;
 	  }

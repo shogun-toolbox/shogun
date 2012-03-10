@@ -41,7 +41,7 @@ void CLinearRidgeRegression::init()
 
 bool CLinearRidgeRegression::train_machine(CFeatures* data)
 {
-	if (!labels)
+	if (!m_labels)
 		SG_ERROR("No labels set\n");
 
 	if (!data)
@@ -50,7 +50,7 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 	if (!data)
 		SG_ERROR("No features set\n");
 
-	if (labels->get_num_labels() != data->get_num_vectors())
+	if (m_labels->get_num_labels() != data->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
 
 	if (data->get_feature_class() != C_SIMPLE)
@@ -78,7 +78,7 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 		cblas_dger(CblasColMajor, num_feat,num_feat, 1.0, v.vector,1,
 				v.vector,1, kernel_matrix.matrix, num_feat);
 
-		cblas_daxpy(num_feat, labels->get_label(i), v.vector, 1, y.vector, 1);
+		cblas_daxpy(num_feat, m_labels->get_label(i), v.vector, 1, y.vector, 1);
 
 		feats->free_feature_vector(v, i);
 	}

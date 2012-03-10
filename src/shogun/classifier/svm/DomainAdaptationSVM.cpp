@@ -83,7 +83,7 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}

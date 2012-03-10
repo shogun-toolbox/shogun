@@ -43,11 +43,11 @@ EClassifierType CLibSVR::get_classifier_type()
 bool CLibSVR::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
-	ASSERT(labels && labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
@@ -56,7 +56,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 
 	struct svm_node* x_space;
 
-	problem.l=labels->get_num_labels();
+	problem.l=m_labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
@@ -65,7 +65,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=labels->get_label(i);
+		problem.y[i]=m_labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
@@ -82,7 +82,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	param.nu = 0.5;
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
-	param.max_train_time = max_train_time;
+	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = tube_epsilon;

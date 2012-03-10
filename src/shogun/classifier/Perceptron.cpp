@@ -32,7 +32,7 @@ CPerceptron::~CPerceptron()
 
 bool CPerceptron::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -42,7 +42,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 	ASSERT(features);
 	bool converged=false;
 	int32_t iter=0;
-	SGVector<int32_t> train_labels=labels->get_int_labels();
+	SGVector<int32_t> train_labels=m_labels->get_int_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 

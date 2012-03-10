@@ -78,7 +78,7 @@ CLibLinear::~CLibLinear()
 bool CLibLinear::train_machine(CFeatures* data)
 {
 	CSignal::clear_cancel();
-	ASSERT(labels);
+	ASSERT(m_labels);
 
 	if (data)
 	{
@@ -88,10 +88,10 @@ bool CLibLinear::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(m_labels->is_two_class_labeling());
 
 
-	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -141,7 +141,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	prob.use_bias=use_bias;
 
 	for (int32_t i=0; i<prob.l; i++)
-		prob.y[i]=labels->get_int_label(i);
+		prob.y[i]=m_labels->get_int_label(i);
 
 	int pos = 0;
 	int neg = 0;
@@ -164,7 +164,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 			fun_obj=new l2r_lr_fun(&prob, Cp, Cn);
 			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
 			SG_DEBUG("starting L2R_LR training via tron\n");
-			tron_obj.tron(w, max_train_time);
+			tron_obj.tron(w, m_max_train_time);
 			SG_DEBUG("done with tron\n");
 			delete fun_obj;
 			break;
@@ -173,7 +173,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		{
 			fun_obj=new l2r_l2_svc_fun(&prob, Cp, Cn);
 			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
-			tron_obj.tron(w, max_train_time);
+			tron_obj.tron(w, m_max_train_time);
 			delete fun_obj;
 			break;
 		}
@@ -297,7 +297,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	CTime start_time;
 	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
-		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
+		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
 
 		PGmax_new = -CMath::INFTY;
@@ -505,7 +505,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	CTime start_time;
 	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
-		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
+		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
 
 		Gmax_new  = 0;
@@ -873,7 +873,7 @@ void CLibLinear::solve_l1r_lr(
 	CTime start_time;
 	while (iter < max_iterations && !CSignal::cancel_computations())
 	{
-		if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time)
+		if (m_max_train_time > 0 && start_time.cur_time_diff() > m_max_train_time)
 		  break;
 
 		Gmax_new = 0;
@@ -1143,12 +1143,12 @@ SGVector<float64_t> CLibLinear::get_linear_term()
 
 void CLibLinear::init_linear_term()
 {
-	if (!labels)
+	if (!m_labels)
 		SG_ERROR("Please assign labels first!\n");
 
 	m_linear_term.destroy_vector();
 
-	m_linear_term=SGVector<float64_t>(labels->get_num_labels());
+	m_linear_term=SGVector<float64_t>(m_labels->get_num_labels());
 	CMath::fill_vector(m_linear_term.vector, m_linear_term.vlen, -1.0);
 }
 

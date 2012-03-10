@@ -155,7 +155,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if (data)
 	{
 		if (data->get_feature_class() != C_STRING ||
@@ -167,13 +167,13 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	}
 
 	ASSERT(get_features());
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(m_labels->is_two_class_labeling());
 	CAlphabet* alphabet=get_features()->get_alphabet();
 	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA);
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
-	SGVector<float64_t> labvec=labels->get_labels();
+	SGVector<float64_t> labvec=m_labels->get_labels();
 	lab=labvec.vector;
 
 	w_dim_single_char=set_wd_weights();

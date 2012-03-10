@@ -93,7 +93,7 @@ void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c
 bool CSGDQN::train(CFeatures* data)
 {
 
-	ASSERT(labels);
+	ASSERT(m_labels);
 
 	if (data)
 	{
@@ -103,9 +103,9 @@ bool CSGDQN::train(CFeatures* data)
 	}
 
 	ASSERT(features);
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(m_labels->is_two_class_labeling());
 
-	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=m_labels->get_num_labels();
 	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -156,7 +156,7 @@ bool CSGDQN::train(CFeatures* data)
 			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
 			ASSERT(w_dim==v.vlen);
 			float64_t eta = 1.0/t;
-			float64_t y = labels->get_label(i);
+			float64_t y = m_labels->get_label(i);
 			float64_t z = y * features->dense_dot(i, w, w_dim);
 			if(updateB==true)
 			{

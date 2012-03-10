@@ -44,7 +44,7 @@ float64_t CMKLRegression::compute_mkl_dual_objective()
 
 void CMKLRegression::init_training()
 {
-	ASSERT(labels && labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
 	ASSERT(svm);
 	ASSERT(svm->get_classifier_type() == CT_SVRLIGHT);
 	ASSERT(interleaved_optimization);

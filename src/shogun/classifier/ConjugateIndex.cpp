@@ -70,7 +70,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 	if (train_features)
 		set_features(train_features);
 
-	m_num_classes = labels->get_num_classes();
+	m_num_classes = m_labels->get_num_classes();
 	ASSERT(m_num_classes>=2);
 	clean_classes();
 
@@ -91,7 +91,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 		int32_t count = 0;
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			if (labels->get_int_label(i) == label)
+			if (m_labels->get_int_label(i) == label)
 				count++;
 		}
 
@@ -102,7 +102,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 		count = 0;
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			if (labels->get_label(i) == label)
+			if (m_labels->get_label(i) == label)
 			{
 				memcpy(class_feature_matrix.matrix+count*num_features,
 				       feature_matrix+i*num_features,

@@ -96,7 +96,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 
 bool CMulticlassMachine::train_one_vs_rest()
 {
-	int32_t m_num_classes = labels->get_num_classes();
+	int32_t m_num_classes = m_labels->get_num_classes();
 	m_machines = SGVector<CMachine*>(m_num_classes);
 	int32_t num_vectors = get_num_rhs_vectors();
 
@@ -108,7 +108,7 @@ bool CMulticlassMachine::train_one_vs_rest()
 	{
 		for (int32_t j=0; j<num_vectors; j++)
 		{
-			if (labels->get_int_label(j)==i)
+			if (m_labels->get_int_label(j)==i)
 				train_labels->set_label(j,+1.0);
 			else
 				train_labels->set_label(j,-1.0);
@@ -122,7 +122,7 @@ bool CMulticlassMachine::train_one_vs_rest()
 
 CLabels* CMulticlassMachine::classify_one_vs_rest()
 {
-	int32_t num_classes = labels->get_num_classes();
+	int32_t num_classes = m_labels->get_num_classes();
 	int32_t num_machines = get_num_machines();
 	ASSERT(num_machines==num_classes);
 	CLabels* result=NULL;

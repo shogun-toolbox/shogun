@@ -42,8 +42,6 @@
  #include <shogun/machine/MulticlassMachine.h>
  #include <shogun/machine/KernelMulticlassMachine.h>
  #include <shogun/machine/LinearMulticlassMachine.h>
- #include <shogun/classifier/svm/MulticlassLibLinear.h>
- #include <shogun/classifier/svm/MulticlassOCAS.h>
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
