@@ -407,7 +407,7 @@ bool CMKL::perform_mkl_step(
 	ASSERT(nweights==num_kernels);
 	float64_t* beta = SG_MALLOC(float64_t, num_kernels);
 
-	//int32_t inner_iters=0;
+	int32_t inner_iters=0;
 	float64_t mkl_objective=0;
 
 	mkl_objective=-suma;
