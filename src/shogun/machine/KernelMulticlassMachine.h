@@ -35,8 +35,9 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 
 		/** standard constructor
 		 * @param strategy multiclass strategy
-		 * @param machine machine
-		 * @param labels labels
+		 * @param kernel kernel
+		 * @param machine kernel machine
+		 * @param labs labels
 		 */
 		CKernelMulticlassMachine(EMulticlassStrategy strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs) :
 			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_kernel(NULL)
@@ -80,6 +81,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 
 	protected:
 
+		/** init machine for training with kernel init */
 		virtual bool init_machine_for_train(CFeatures* data)
 		{
 			if (data)
@@ -90,6 +92,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			return true;
 		}
 
+		/** init machines for applying with kernel init */
 		virtual bool init_machines_for_apply(CFeatures* data)
 		{
 			if (data)
@@ -100,6 +103,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			return true;
 		}
 
+		/** check kernel availability */
 		virtual bool is_ready()
 		{
 			if (m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
@@ -108,11 +112,13 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			return false;
 		}
 
+		/** construct kernel machine from given kernel machine */
 		virtual CMachine* get_machine_from_trained(CMachine* machine)
 		{
 			return new CKernelMachine((CKernelMachine*)machine);
 		}
 
+		/** return number of rhs feature vectors */
 		virtual int32_t get_num_rhs_vectors()
 		{
 			return m_kernel->get_num_vec_rhs();
@@ -120,6 +126,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 
 	protected:
 
+		/** kernel */
 		CKernel* m_kernel;
 
 };

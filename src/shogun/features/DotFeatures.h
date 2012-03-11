@@ -187,20 +187,20 @@ class CDotFeatures : public CFeatures
 
 		/** iterate over the non-zero features
 		 *
-		 * call this function with the iterator returned by get_first_feature
+		 * call this function with the iterator returned by get_feature_iterator
 		 * and call free_feature_iterator to cleanup
 		 *
 		 * @param index is returned by reference (-1 when not available)
 		 * @param value is returned by reference
-		 * @param iterator as returned by get_first_feature
+		 * @param iterator as returned by get_feature_iterator
 		 * @return true if a new non-zero feature got returned
 		 */
 		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)=0;
 
 		/** clean up iterator
-		 * call this function with the iterator returned by get_first_feature
+		 * call this function with the iterator returned by get_feature_iterator
 		 *
-		 * @param iterator as returned by get_first_feature
+		 * @param iterator as returned by get_feature_iterator
 		 */
 		virtual void free_feature_iterator(void* iterator)=0;
 
@@ -210,11 +210,23 @@ class CDotFeatures : public CFeatures
 		 */
 		virtual SGVector<float64_t> get_mean();
 
+		/** get mean of two CDotFeature objects
+		 *
+		 * @return mean returned
+		 */
+		static SGVector<float64_t> get_mean(CDotFeatures* lhs, CDotFeatures* rhs);
+
 		/** get covariance
 		 *
 		 * @return covariance
 		 */
 		virtual SGMatrix<float64_t> get_cov();
+
+		/** compute the covariance of two CDotFeatures together
+		 *
+		 * @return covariance
+		 */
+		static SGMatrix<float64_t> compute_cov(CDotFeatures* lhs, CDotFeatures* rhs);
 
 	protected:
 		/** display progress output

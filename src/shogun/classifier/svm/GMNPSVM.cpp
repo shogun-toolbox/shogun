@@ -51,20 +51,20 @@ CGMNPSVM::init()
 bool CGMNPSVM::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
-	ASSERT(labels && labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
 
 	if (data)
 	{
-		if (data->get_num_vectors() != labels->get_num_labels())
+		if (data->get_num_vectors() != m_labels->get_num_labels())
 		{
 			SG_ERROR("Numbert of vectors (%d) does not match number of labels (%d)\n",
-					data->get_num_vectors(), labels->get_num_labels());
+					data->get_num_vectors(), m_labels->get_num_labels());
 		}
 		kernel->init(data, data);
 	}
 
-	int32_t num_data = labels->get_num_labels();
-	int32_t num_classes = labels->get_num_classes();
+	int32_t num_data = m_labels->get_num_labels();
+	int32_t num_classes = m_labels->get_num_classes();
 	int32_t num_virtual_data= num_data*(num_classes-1);
 
 	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
@@ -72,7 +72,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)
 	{
-		vector_y[i]= labels->get_label(i)+1;
+		vector_y[i] = m_labels->get_label(i)+1;
 
 	}
 

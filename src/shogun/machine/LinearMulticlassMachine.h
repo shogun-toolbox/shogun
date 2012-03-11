@@ -36,8 +36,9 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 		/** standard constructor
 		 * @param strategy multiclass strategy
-		 * @param machine machine
-		 * @param labels labels
+		 * @param features features 
+		 * @param machine linear machine
+		 * @param labs labels
 		 */
 		CLinearMulticlassMachine(EMulticlassStrategy strategy, CDotFeatures* features, CLinearMachine* machine, CLabels* labs) :
 			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_features(NULL)
@@ -52,6 +53,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			SG_UNREF(m_features);
 		}
 
+		/** get name */
 		virtual const char* get_name() const 
 		{
 			return "LinearMulticlassMachine";
@@ -80,6 +82,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 	protected:
 
+		/** init machine for train with setting features */
 		virtual bool init_machine_for_train(CFeatures* data)
 		{
 			if (data)
@@ -90,6 +93,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			return true;
 		}
 
+		/** init machines for applying with setting features */
 		virtual bool init_machines_for_apply(CFeatures* data)
 		{
 			if (data)
@@ -101,6 +105,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			return true;
 		}
 
+		/** check features availability */
 		virtual bool is_ready()
 		{
 			if (m_features)
@@ -109,11 +114,13 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			return false;
 		}
 
+		/** construct linear machine from given linear machine */
 		virtual CMachine* get_machine_from_trained(CMachine* machine)
 		{
 			return new CLinearMachine((CLinearMachine*)machine);
 		}
 
+		/** get number of rhs feature vectors */
 		virtual int32_t get_num_rhs_vectors()
 		{
 			return m_features->get_num_vectors();
@@ -121,6 +128,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 	protected:
 
+		/** features */
 		CDotFeatures* m_features;
 
 };

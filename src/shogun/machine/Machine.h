@@ -279,13 +279,13 @@ class CMachine : public CSGObject
 
 	protected:
 		/** maximum training time */
-		float64_t max_train_time;
+		float64_t m_max_train_time;
 
 		/** labels */
-		CLabels* labels;
+		CLabels* m_labels;
 
 		/** solver type */
-		ESolverType solver_type;
+		ESolverType m_solver_type;
 
 		/** whether model features should be stored after training */
 		bool m_store_model_features;

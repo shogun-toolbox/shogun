@@ -26,14 +26,24 @@ namespace shogun
  * mean and covariance.
  *
  * \f[\displaystyle
- *  D = \sqrt{ (x_i - \mu)' \Sigma^{-1} (x_i - \mu)  }
+ *  D = \sqrt{ (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)  }
  * \f]
  * 
  * The Mahalanobis Squared distance does not take the square root:
  *
  * \f[\displaystyle
- *  D = (x_i - \mu)' \Sigma^{-1} (x_i - \mu)
+ *  D = (x_i - \mu)^T \Sigma^{-1} (x_i - \mu)
  * \f]
+ *
+ * If use_mean is set to false (which it is by default) the distance is computed
+ * as 
+ *
+ * \f[\displaystyle
+ *  D = \sqrt{ (x_i - x_i')^T \Sigma^{-1} (x_i - x_i')  }
+ * \f]
+ *
+ * i.e., instead of the mean as reference two vector \f$x_i\f$ and \f$x_i'\f$
+ * are compared.
  *
  * @see <a href="en.wikipedia.org/wiki/Mahalanobis_distance"> 
  * Wikipedia: Mahalanobis Distance</a>                   
@@ -95,12 +105,30 @@ class CMahalanobisDistance: public CRealDistance
 		 */
 		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
 
+		/** whether the distance is computed between the mean and a vector of rhs
+		 * or between lhs and rhs
+		 *
+		 * @return if the mean of lhs is used to obtain the distance
+		 */
+		virtual bool get_use_mean() { return use_mean; };
+
+		/** whether the distance is computed between the mean and a vector of rhs
+		 * or between lhs and rhs
+		 *
+		 * @param state new use_mean
+		 */
+		virtual void set_use_mean(bool state) { use_mean=state; };
+
 	protected:
-		/// compute Mahalanobis distance between a feature vector of the
-                /// rhs to the lhs distribution
-                /// idx_a is not used here but included because of inheritance
-		/// idx_b denotes the index of the feature vector
-		/// in the corresponding feature object rhs
+		/// compute Mahalanobis distance between a feature vector of lhs
+		/// to a feature vector of rhs
+		/// if use_mean then idx_a is not used and the distance 
+		/// computed is between a feature vector of rhs and the 
+		/// distribution lhs
+		///
+		/// @param idx_a index of the feature vector in lhs
+		/// @param idx_b index of the feature vector in rhs
+		/// @return value of the Mahalanobis distance
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 	private:
@@ -109,6 +137,9 @@ class CMahalanobisDistance: public CRealDistance
 	protected:
 		/** if application of sqrt on matrix computation is disabled */
 		bool disable_sqrt;
+
+		/** whether the features lhs and rhs have exactly the same values */
+		bool use_mean;
 
 		/** vector mean of the lhs feature vectors */
 		SGVector<float64_t> mean;

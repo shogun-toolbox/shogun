@@ -61,17 +61,17 @@ CKNN::~CKNN()
 
 bool CKNN::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	ASSERT(distance);
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		distance->init(data, data);
 	}
 
-	SGVector<int32_t> lab=labels->get_int_labels();
+	SGVector<int32_t> lab=m_labels->get_int_labels();
 	train_labels.vlen=lab.vlen;
 	train_labels.vector=CMath::clone_vector(lab.vector, lab.vlen);
 	lab.free_vector();

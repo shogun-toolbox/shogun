@@ -54,6 +54,7 @@
 %include "Preprocessor_includes.i"
 %include "Regression_includes.i"
 %include "Structure_includes.i"
+%include "Multiclass_includes.i"
 
 %include "SGBase.i"
 %include "IO.i"
@@ -71,3 +72,4 @@
 %include "Clustering.i"
 %include "ModelSelection.i"
 %include "Structure.i"
+%include "Multiclass.i"

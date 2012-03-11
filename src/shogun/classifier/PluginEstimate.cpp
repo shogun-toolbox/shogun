@@ -45,7 +45,7 @@ CPluginEstimate::~CPluginEstimate()
 
 bool CPluginEstimate::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if (data)
 	{
 		if (data->get_feature_class() != C_STRING ||
@@ -70,14 +70,14 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 	int32_t* pos_indizes=SG_MALLOC(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
 	int32_t* neg_indizes=SG_MALLOC(int32_t, ((CStringFeatures<uint16_t>*) features)->get_num_vectors());
 
-	ASSERT(labels->get_num_labels()==features->get_num_vectors());
+	ASSERT(m_labels->get_num_labels()==features->get_num_vectors());
 
 	int32_t pos_idx=0;
 	int32_t neg_idx=0;
 
-	for (int32_t i=0; i<labels->get_num_labels(); i++)
+	for (int32_t i=0; i<m_labels->get_num_labels(); i++)
 	{
-		if (labels->get_label(i) > 0)
+		if (m_labels->get_label(i) > 0)
 			pos_indizes[pos_idx++]=i;
 		else
 			neg_indizes[neg_idx++]=i;

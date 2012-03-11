@@ -17,8 +17,6 @@
 /* Remove C Prefix */
 %rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
-%rename(KernelMulticlassMachine) CKernelMulticlassMachine;
-%rename(LinearMulticlassMachine) CLinearMulticlassMachine;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
 %rename(GPBTSVM) CGPBTSVM;
@@ -58,12 +56,14 @@
 %rename(MKLMultiClass) CMKLMultiClass;
 %rename(VowpalWabbit) CVowpalWabbit;
 %rename(ConjugateIndex) CConjugateIndex;
-%rename(MulticlassLibLinear) CMulticlassLibLinear;
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
 %rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
 #endif //USE_SVMLIGHT
+
+%rename(KernelMulticlassMachine) CKernelMulticlassMachine;
+%rename(LinearMulticlassMachine) CLinearMulticlassMachine;
 
 /* These functions return new Objects */
 %newobject apply();
@@ -75,9 +75,6 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/KernelMachine.h>
-%include <shogun/machine/MulticlassMachine.h>
-%include <shogun/machine/KernelMulticlassMachine.h>
-%include <shogun/machine/LinearMulticlassMachine.h>
 %include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
 %include <shogun/classifier/svm/MultiClassSVM.h>
@@ -117,7 +114,9 @@
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %include <shogun/classifier/ConjugateIndex.h>
-%include <shogun/classifier/svm/MulticlassLibLinear.h>
+%include <shogun/machine/MulticlassMachine.h>
+%include <shogun/machine/KernelMulticlassMachine.h>
+%include <shogun/machine/LinearMulticlassMachine.h>
 
 #ifdef USE_SVMLIGHT
 

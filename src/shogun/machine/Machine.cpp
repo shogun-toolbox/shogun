@@ -15,16 +15,16 @@
 
 using namespace shogun;
 
-CMachine::CMachine() : CSGObject(), max_train_time(0), labels(NULL),
-		solver_type(ST_AUTO)
+CMachine::CMachine() : CSGObject(), m_max_train_time(0), m_labels(NULL),
+		m_solver_type(ST_AUTO)
 {
 	m_data_locked=false;
 	m_store_model_features=false;
 
-	m_parameters->add(&max_train_time, "max_train_time",
+	m_parameters->add(&m_max_train_time, "m_max_train_time",
 					  "Maximum training time.");
-	m_parameters->add((machine_int_t*) &solver_type, "solver_type");
-	m_parameters->add((CSGObject**) &labels, "labels");
+	m_parameters->add((machine_int_t*) &m_solver_type, "m_solver_type");
+	m_parameters->add((CSGObject**) &m_labels, "m_labels");
 	m_parameters->add(&m_store_model_features, "store_model_features",
 			"Should feature data of model be stored after training?");
 	SG_ADD(&m_data_locked, "data_locked",
@@ -33,7 +33,7 @@ CMachine::CMachine() : CSGObject(), max_train_time(0), labels(NULL),
 
 CMachine::~CMachine()
 {
-	SG_UNREF(labels);
+	SG_UNREF(m_labels);
 }
 
 bool CMachine::train(CFeatures* data)
@@ -74,33 +74,33 @@ bool CMachine::save(FILE* dstfile)
 
 void CMachine::set_labels(CLabels* lab)
 {
-	SG_UNREF(labels);
+	SG_UNREF(m_labels);
 	SG_REF(lab);
-	labels = lab;
+	m_labels = lab;
 }
 
 CLabels* CMachine::get_labels()
 {
-	SG_REF(labels);
-	return labels;
+	SG_REF(m_labels);
+	return m_labels;
 }
 
 float64_t CMachine::get_label(int32_t i)
 {
-	if (!labels)
+	if (!m_labels)
 		SG_ERROR("No Labels assigned\n");
 	
-	return labels->get_label(i);
+	return m_labels->get_label(i);
 }
 
 void CMachine::set_max_train_time(float64_t t)
 {
-	max_train_time = t;
+	m_max_train_time = t;
 }
 
 float64_t CMachine::get_max_train_time()
 {
-	return max_train_time;
+	return m_max_train_time;
 }
 
 EClassifierType CMachine::get_classifier_type()
@@ -110,12 +110,12 @@ EClassifierType CMachine::get_classifier_type()
 
 void CMachine::set_solver_type(ESolverType st)
 {
-	solver_type = st;
+	m_solver_type = st;
 }
 
 ESolverType CMachine::get_solver_type()
 {
-	return solver_type;
+	return m_solver_type;
 }
 
 void CMachine::set_store_model_features(bool store_model)
@@ -135,7 +135,7 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 	set_labels(labs);
 
 	/* if labels have a subset this might cause problems */
-	if (labels->has_subset())
+	if (m_labels->has_subset())
 	{
 		SG_ERROR("%s::data_lock() not possible if labels have a subset. Remove"
 				" first!\n", get_name());
@@ -155,7 +155,7 @@ void CMachine::data_unlock()
 	if (m_data_locked)
 	{
 		/* remove possible subset in labels */
-		labels->remove_subset();
+		m_labels->remove_subset();
 		m_data_locked=false;
 	}
 }

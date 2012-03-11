@@ -41,8 +41,17 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 {
 	CRealDistance::init(l, r);
 
-	mean = ((CSimpleFeatures<float64_t>*) l)->get_mean();
-	icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+
+	if ( l == r)
+	{
+		mean = ((CSimpleFeatures<float64_t>*) l)->get_mean();
+		icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+	}
+	else
+	{
+		mean = ((CSimpleFeatures<float64_t>*) l)->get_mean((CDotFeatures*) lhs, (CDotFeatures*) rhs);
+		icov = CDotFeatures::compute_cov((CDotFeatures*) lhs, (CDotFeatures*) rhs);
+	}
 
 	CMath::inverse(icov);
 
@@ -55,16 +64,25 @@ void CMahalanobisDistance::cleanup()
 
 float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	int32_t blen;
-	bool bfree;
-	float64_t* bvec = ((CSimpleFeatures<float64_t>*) rhs)->
-		get_feature_vector(idx_b, blen, bfree);
 
-	ASSERT(blen == mean.vlen);
+	SGVector<float64_t> bvec = ((CSimpleFeatures<float64_t>*) rhs)->
+		get_feature_vector(idx_b);
 
-	SGVector<float64_t> diff(bvec, blen);
-	for (int32_t i = 0 ; i<blen ; i++)
-		diff[i] -= mean[i];
+	SGVector<float64_t> diff;
+	SGVector<float64_t> avec;
+
+	if (use_mean)
+		diff = mean.clone();
+	else
+	{
+		avec = ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
+		diff=avec.clone();
+	}
+
+	ASSERT(diff.vlen == bvec.vlen);
+
+	for (int32_t i=0; i < diff.vlen; i++)
+		diff[i] = bvec.vector[i] - diff[i];
 
 	SGVector<float64_t> v = diff.clone();
 	cblas_dgemv(CblasColMajor, CblasNoTrans,
@@ -73,8 +91,13 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t result = cblas_ddot(v.vlen, v.vector, 1, diff.vector, 1);
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(bvec, idx_b, bfree);
 	v.destroy_vector();
+	diff.destroy_vector();
+
+	if (!use_mean)
+		((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a);
+
+	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b);
 
 	if (disable_sqrt)
 		return result;
@@ -84,9 +107,11 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 void CMahalanobisDistance::init()
 {
-	disable_sqrt = false;
+	disable_sqrt=false;
+	use_mean=false;
 
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
+	m_parameters->add(&use_mean, "use_mean", "If distance shall be computed between mean vector and vector from rhs or between lhs and rhs.");
 }
 
 #endif /* HAVE_LAPACK */

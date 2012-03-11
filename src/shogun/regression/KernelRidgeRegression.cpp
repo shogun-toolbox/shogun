@@ -43,12 +43,12 @@ void CKernelRidgeRegression::init()
 
 bool CKernelRidgeRegression::train_machine(CFeatures* data)
 {
-	if (!labels)
+	if (!m_labels)
 		SG_ERROR("No labels set\n");
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
@@ -65,7 +65,7 @@ bool CKernelRidgeRegression::train_machine(CFeatures* data)
 
 	/* re-set alphas of kernel machine */
 	m_alpha.destroy_vector();
-	m_alpha=labels->get_labels_copy();
+	m_alpha=m_labels->get_labels_copy();
 
 	/* tell kernel machine that all alphas are needed as'support vectors' */
 	m_svs.destroy_vector();

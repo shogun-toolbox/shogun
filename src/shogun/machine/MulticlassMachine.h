@@ -12,12 +12,14 @@
 #define _MULTICLASSMACHINE_H___
 
 #include <shogun/machine/Machine.h>
+#include <shogun/features/RejectionStrategy.h>
 
 namespace shogun
 {
 
 class CFeatures;
 class CLabels;
+class CRejectionStrategy;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EMulticlassStrategy
@@ -50,7 +52,7 @@ class CMulticlassMachine : public CMachine
 		 * @param machine machine to set
 		 * @return if setting was successful
 		 */
-		bool inline set_machine(int32_t num, CMachine* machine)
+		inline bool set_machine(int32_t num, CMachine* machine)
 		{
 			ASSERT(num<m_machines.vlen && num>=0);
 			SG_REF(machine);
@@ -64,7 +66,7 @@ class CMulticlassMachine : public CMachine
 		 * @param num index of machine to get
 		 * @return SVM at number num
 		 */
-		CMachine* get_machine(int32_t num) const
+		inline CMachine* get_machine(int32_t num) const
 		{
 			ASSERT(num<m_machines.vlen && num>=0);
 			SG_REF(m_machines[num]);
@@ -75,13 +77,10 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @return number of machines
 		 */
-		int32_t inline get_num_machines() const
+		inline int32_t get_num_machines() const
 		{
 			return m_machines.vlen;
 		}
-
-		/** cleanup */
-		void cleanup();
 
 		/** classify all examples
 		 *
@@ -102,47 +101,71 @@ class CMulticlassMachine : public CMachine
 		 */
 		virtual float64_t apply(int32_t num);
 
-		/** classify one vs rest
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_rest();
-
-		/** train one vs rest */
-		bool train_one_vs_rest();
-
 		/** get the type of multiclass'ness
 		 *
 		 * @return multiclass type 1 vs one etc
 		 */
 		inline EMulticlassStrategy get_multiclass_strategy() const 
 		{ 
-				return m_multiclass_strategy; 
+			return m_multiclass_strategy; 
+		}
+
+		/** get rejection strategy */
+		inline CRejectionStrategy* get_rejection_strategy() const
+		{
+			SG_REF(m_rejection_strategy);
+			return m_rejection_strategy;
+		}
+		/** set rejection strategy */
+		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
+		{
+			SG_UNREF(m_rejection_strategy);
+			SG_REF(rejection_strategy);
+			m_rejection_strategy = rejection_strategy;
 		}
 
 		/** get name */
 		virtual const char* get_name() const 
 		{
-				return "MulticlassMachine";
+			return "MulticlassMachine";
 		}
 
 	protected:
 
+		/** classify one vs rest
+		 *
+		 * @return resulting labels
+		 */
+		virtual CLabels* classify_one_vs_rest();
+
+		/** clear machines */
+		void clear_machines();
+
+		/** train one vs rest */
+		bool train_one_vs_rest();
+
+		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
+		/** abstract init machine for training method */ 
 		virtual bool init_machine_for_train(CFeatures* data) = 0;
 
+		/** abstract init machines for applying method */
 		virtual bool init_machines_for_apply(CFeatures* data) = 0;
 
+		/** check whether machine is ready */
 		virtual bool is_ready() = 0;
 
+		/** obtain machine from trained one */
 		virtual CMachine* get_machine_from_trained(CMachine* machine) = 0;
 
+		/** get num rhs vectors */
 		virtual int32_t get_num_rhs_vectors() = 0;
 
 	private:
 
-		void init();
+		/** register parameters */
+		void register_parameters();
 
 	protected:
 		/** type of multiclass strategy */
@@ -153,6 +176,9 @@ class CMulticlassMachine : public CMachine
 
 		/** machines */
 		SGVector<CMachine*> m_machines;
+
+		/** rejection strategy */
+		CRejectionStrategy* m_rejection_strategy;
 };
 }
 #endif

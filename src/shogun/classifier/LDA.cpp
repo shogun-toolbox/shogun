@@ -39,7 +39,7 @@ CLDA::~CLDA()
 
 bool CLDA::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -47,7 +47,7 @@ bool CLDA::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	SGVector<int32_t> train_labels=labels->get_int_labels();
+	SGVector<int32_t> train_labels=m_labels->get_int_labels();
 	ASSERT(train_labels.vector);
 
 	int32_t num_feat=features->get_dim_feature_space();

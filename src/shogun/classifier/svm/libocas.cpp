@@ -451,7 +451,7 @@ ocas_return_value_T svm_ocas_solver(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
+    if(MaxTime>0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
          
   } /* end of the main loop */
@@ -898,7 +898,7 @@ ocas_return_value_T svm_ocas_solver_difC(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
+    if(MaxTime>0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
          
   } /* end of the main loop */
@@ -1016,7 +1016,8 @@ ocas_return_value_T msvm_ocas_solver(
   float64_t xi, sq_norm_W, QPSolverTolRel, QPSolverTolAbs, dot_prod_WoldW, sq_norm_oldW;
   float64_t A0, B0, t, t1, t2, R, tmp, element_b, x;
   float64_t *A, *B, *theta, *Theta, *sortedA, *Add;
-  float64_t start_time, ocas_start_time, grad_sum, grad, min_x = 0, old_x, old_grad;
+  float64_t start_time = 0.0, ocas_start_time = 0.0, grad_sum = 0.0;
+  float64_t grad = 0.0, min_x = 0.0, old_x = 0.0, old_grad = 0.0;
   uint32_t i, y, y2, ypred = 0, *new_cut, cnt1, cnt2, j, nSortedA, idx;
   uint32_t *I;
   uint8_t S = 1;
@@ -1169,7 +1170,7 @@ ocas_return_value_T msvm_ocas_solver(
   /* initial cutting plane */
   for(i=0; i < nData; i++)
   {
-    y2 = (uint32_t)data_y[i]-1;
+    y2 = (uint32_t)data_y[i];
 
     if(y2 > 0)
       new_cut[i] = 0;
@@ -1252,7 +1253,7 @@ ocas_return_value_T msvm_ocas_solver(
                             /* new_cut[i] = argmax_i ( [[y != y_i]] + (w_y- w_y_i)'*x_i )  */
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
 
           for(xi=-LIBOCAS_PLUS_INF, y=0; y < nY; y++)
           {
@@ -1304,7 +1305,7 @@ ocas_return_value_T msvm_ocas_solver(
         
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
 
           for(y=0; y < nY; y++)
           {
@@ -1402,7 +1403,7 @@ ocas_return_value_T msvm_ocas_solver(
                             /* new_cut[i] = argmax_i ( [[y != y_i]] + (w_y- w_y_i)'*x_i )  */
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
 
           for(xi=-LIBOCAS_PLUS_INF, y=0; y < nY; y++)
           {
@@ -1430,7 +1431,7 @@ ocas_return_value_T msvm_ocas_solver(
         R = 0;
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
           
           for(tmp=-LIBOCAS_PLUS_INF, y=0; y < nY; y++)
           {
@@ -1466,7 +1467,7 @@ ocas_return_value_T msvm_ocas_solver(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
+    if(MaxTime>0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4; 
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
          
   } /* end of the main loop */

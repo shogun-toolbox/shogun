@@ -46,13 +46,13 @@ CScatterSVM::~CScatterSVM()
 
 bool CScatterSVM::train_machine(CFeatures* data)
 {
-	ASSERT(labels && labels->get_num_labels());
-	m_num_classes = labels->get_num_classes();
-	int32_t num_vectors = labels->get_num_labels();
+	ASSERT(m_labels && m_labels->get_num_labels());
+	m_num_classes = m_labels->get_num_classes();
+	int32_t num_vectors = m_labels->get_num_labels();
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
@@ -61,7 +61,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 	CMath::fill_vector(numc, m_num_classes, 0);
 
 	for (int32_t i=0; i<num_vectors; i++)
-		numc[(int32_t) labels->get_int_label(i)]++;
+		numc[(int32_t) m_labels->get_int_label(i)]++;
 
 	int32_t Nc=0;
 	int32_t Nmin=num_vectors;
@@ -111,7 +111,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 {
 	struct svm_node* x_space;
 
-	problem.l=labels->get_num_labels();
+	problem.l=m_labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
@@ -140,7 +140,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	param.nu = get_nu(); // Nu
 	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
 	kernel->set_normalizer(new CScatterKernelNormalizer(
-				m_num_classes-1, -1, labels, prev_normalizer));
+				m_num_classes-1, -1, m_labels, prev_normalizer));
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
 	param.C = 0;
@@ -217,7 +217,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 {
 	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
 	CScatterKernelNormalizer* n=new CScatterKernelNormalizer(
-				 m_num_classes-1, -1, labels, prev_normalizer);
+				 m_num_classes-1, -1, m_labels, prev_normalizer);
 	kernel->set_normalizer(n);
 	kernel->init_normalizer();
 
@@ -245,7 +245,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 bool CScatterSVM::train_testrule12()
 {
 	struct svm_node* x_space;
-	problem.l=labels->get_num_labels();
+	problem.l=m_labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
@@ -254,7 +254,7 @@ bool CScatterSVM::train_testrule12()
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=labels->get_label(i);
+		problem.y[i]=m_labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
@@ -405,7 +405,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 			for (int32_t j=0; j<get_num_support_vectors(); j++)
 			{
 				float64_t score=kernel->kernel(get_support_vector(j), i)*get_alpha(j);
-				int32_t label=labels->get_int_label(get_support_vector(j));
+				int32_t label=m_labels->get_int_label(get_support_vector(j));
 				for (int32_t c=0; c<m_num_classes; c++)
 				{
 					float64_t s= (label==c) ? (m_num_classes-1) : (-1);
@@ -447,7 +447,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 			//SG_PRINT("svm %d\n", i);
 			ASSERT(m_svms[i]);
 			m_svms[i]->set_kernel(kernel);
-			m_svms[i]->set_labels(labels);
+			m_svms[i]->set_labels(m_labels);
 			outputs[i]=m_svms[i]->apply();
 		}
 

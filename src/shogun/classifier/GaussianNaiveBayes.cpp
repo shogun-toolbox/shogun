@@ -73,8 +73,8 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	// get int labels to train_labels and check length equality
-	ASSERT(labels);
-	SGVector<int32_t> train_labels = labels->get_int_labels();
+	ASSERT(m_labels);
+	SGVector<int32_t> train_labels = m_labels->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen);
 
 	// init min_label, max_label and loop variables

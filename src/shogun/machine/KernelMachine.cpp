@@ -55,14 +55,14 @@ CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
 	SGVector<float64_t> alphas = machine->get_alphas().clone();
 	SGVector<int32_t> svs = machine->get_support_vectors().clone();
 	float64_t bias = machine->get_bias();
-	CKernel* kernel = machine->get_kernel();
+	CKernel* ker = machine->get_kernel();
 
 	int32_t num_sv = svs.vlen;
 	create_new_model(num_sv);
 	set_alphas(alphas);
 	set_support_vectors(svs);
 	set_bias(bias);
-	set_kernel(kernel);
+	set_kernel(ker);
 }
 
 CKernelMachine::~CKernelMachine()
@@ -478,7 +478,7 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	/* set corresponding labels subset */
 	SGVector<index_t> label_inds=SGVector<index_t>(indices);
 	label_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
-	labels->set_subset(new CSubset(label_inds));
+	m_labels->set_subset(new CSubset(label_inds));
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
@@ -490,7 +490,7 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	m_custom_kernel->remove_col_subset();
 
 	/* remove label subset after training */
-	labels->remove_subset();
+	m_labels->remove_subset();
 
 	return result;
 }

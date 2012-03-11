@@ -34,5 +34,5 @@ float64_t CMKLClassification::compute_sum_alpha()
 
 void CMKLClassification::init_training()
 {
-	ASSERT(labels && labels->get_num_labels() && labels->is_two_class_labeling());
+	ASSERT(m_labels && m_labels->get_num_labels() && m_labels->is_two_class_labeling());
 }

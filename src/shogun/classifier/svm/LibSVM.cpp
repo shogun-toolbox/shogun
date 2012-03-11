@@ -33,23 +33,23 @@ bool CLibSVM::train_machine(CFeatures* data)
 {
 	struct svm_node* x_space;
 
-	ASSERT(labels && labels->get_num_labels());
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->is_two_class_labeling());
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
 
-	problem.l=labels->get_num_labels();
+	problem.l=m_labels->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 
 	// set linear term
 	if (m_linear_term.vlen>0)
 	{
-		if (labels->get_num_labels()!=m_linear_term.vlen)
+		if (m_labels->get_num_labels()!=m_linear_term.vlen)
             SG_ERROR("Number of training vectors does not match length of linear term\n");
 
 		// set with linear term from base class
@@ -72,7 +72,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=labels->get_label(i);
+		problem.y[i]=m_labels->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
@@ -92,7 +92,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 	param.nu = get_nu();
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
-	param.max_train_time = max_train_time;
+	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = 0.1;

@@ -60,7 +60,7 @@ class CMPDSVM : public CSVM
 		 */
 		inline float64_t compute_H(int32_t i, int32_t j)
 		{
-			return labels->get_label(i)*labels->get_label(j)*kernel->kernel(i,j);
+			return m_labels->get_label(i)*m_labels->get_label(j)*kernel->kernel(i,j);
 		}
 
 		/** lock kernel row
@@ -83,8 +83,8 @@ class CMPDSVM : public CSVM
 				line=kernel_cache->set_entry(i);
 				ASSERT(line);
 
-				for (int32_t j=0; j<labels->get_num_labels(); j++)
-					line[j]=(KERNELCACHE_ELEM) labels->get_label(i)*labels->get_label(j)*kernel->kernel(i,j);
+				for (int32_t j=0; j<m_labels->get_num_labels(); j++)
+					line[j]=(KERNELCACHE_ELEM) m_labels->get_label(i)*m_labels->get_label(j)*kernel->kernel(i,j);
 			}
 
 			return line;
