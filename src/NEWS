@@ -1,22 +1,22 @@
 2012-02-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 1.2.0 (libshogun 12.0, data 0.3, parameter 0, EDRT 0.1)
-	* This release contains first release of Efficient Dimensionality Reduction Toolkit,
-	  based on the SHOGUN machine learning toolbox
-	* This release contains several enhancements, cleanups and bugfixes:
+	* This release contains first release of Efficient Dimensionality Reduction Toolkit (EDRT)
+	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Support for new SWIG -builtin python interface feature (SWIG 2.0.4 is required now)
-		- EDRT now supports static interfaces such as matlab and octave
+		- EDRT algorithms are now available using static interfaces such as matlab and octave
 		- Jensen-Shannon kernel and Homogeneous kernel map preprocessor (thanks to Viktor Gal)
 		- New Mahalanobis distance class (thanks to Fernando J. Iglesias Garcia)
-		- Generic linear and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
+		- New 'multiclass' module for multiclass classification algorithms,
+		  generic linear and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
 		  new rejection schemes concept
 		- New regression estimation algorithms by Soeren Sonnenburg
 		- New graphical examples 
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was changed to log-space one.
 		- Fix for R_static interface installation (thanks Steve Lianoglou)
-		- SVMOcas memsetting bugfix.
+		- SVMOcas memsetting and max_train_time bugfix.
 		- Various fixes for compile errors with clang.
 	* Cleanup and API Changes:
 		- Improvements for parameters handling and serialization by Heiko Strathmann.
