@@ -190,7 +190,7 @@ inline void v_array<T>::reserve(size_t length)
 	size_t old_length = end_array-begin;
 	begin = SG_REALLOC(T, begin, length);
 	if (old_length < length)
-        memset(begin + old_length, 0, (length - old_length)*sizeof(T));
+		memset(begin + old_length, 0, (length - old_length)*sizeof(T));
 
 	end = begin;
 	end_array = begin + length;

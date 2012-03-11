@@ -64,7 +64,7 @@ void CVwRegressor::init(CVwEnvironment* env_to_use)
 
 		if (env->random_weights)
 			for (vw_size_t j = 0; j < length/num_threads; j++)
-                weight_vectors[i][j] = CMath::random(-0.5, 0.5);
+				weight_vectors[i][j] = CMath::random(-0.5, 0.5);
 
 		if (env->initial_weight != 0.)
 			for (vw_size_t j = 0; j < env->stride*length/num_threads; j+=env->stride)
