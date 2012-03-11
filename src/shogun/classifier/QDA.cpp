@@ -18,13 +18,13 @@
 using namespace shogun;
 
 CQDA::CQDA(float64_t tolerance, bool store_covs)
-: CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0)
+: CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
 {
 	init();
 }
 
 CQDA::CQDA(CSimpleFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
-: CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0)
+: CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
@@ -86,12 +86,61 @@ void CQDA::cleanup()
 
 CLabels* CQDA::apply()
 {
-	// TODO
+	if ( !m_features )
+		return NULL;
+
+	int32_t num_vecs = m_features->get_num_vectors();
+	ASSERT(num_vecs > 0);
+	ASSERT( m_dim == m_features->get_dim_feature_space() );
+
+	float64_t* out = SG_MALLOC(float64_t, num_vecs); /* TODO use this */
+
+	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) m_features;
+
+	SGMatrix< float64_t > X(num_vecs, m_dim);
+	int i, j, k, vlen;
+	bool vfree;
+	float64_t* vec;
+	// Xm = X - means[k] 
+	for ( i = 0 ; i < num_vecs ; ++i )
+	{
+		vec = rf->get_feature_vector(i, vlen, vfree);
+		ASSERT(vec);
+
+		for ( j = 0 ; j < m_dim ; ++j )
+			X[i + j*num_vecs] = vec[j] - m_means[k][j];
+
+		rf->free_feature_vector(vec, i, vfree);
+
+	}
+
+	/* TODO avoid the repetition of the same operations here */
+
+	// X2 = np.dot(X, R * (S ** -0.5))
+	SGVector< float32_t > sinvsqrt(m_dim);
+	for ( j = 0 ; j < m_dim ; ++j )
+		sinvsqrt = CMath::invsqrt(m_scalings[k][j]);
+
+	SGMatrix< float64_t > mat; 
+	mat.matrix = CMath::clone_vector(m_rotations[k].matrix, m_dim*m_dim);
+	for ( i = 0 ; i < m_dim ; ++i )
+		for ( j = 0 ; j < m_dim ; ++j )
+			mat[i + j*m_dim] *= sinvsqrt[j];
+
+	mat.destroy_matrix();
+	sinvsqrt.destroy_vector();
+	X.destroy_matrix();
 }
 
 CLabels* CQDA::apply(CFeatures* data)
 {
-	// TODO
+	if ( !data )
+		SG_ERROR("No features specified\n");
+	if ( !data->has_property(FP_DOT) )
+		SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+	set_features((CDotFeatures*) data);
+	return apply();
 }
 
 bool CQDA::train_machine(CFeatures* data)
@@ -110,7 +159,7 @@ bool CQDA::train_machine(CFeatures* data)
 	cleanup();
 
 	m_num_classes = labels->get_num_classes();
-	int32_t num_feat = m_features->get_dim_feature_space();
+	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 	ASSERT(num_vec == train_labels.vlen);
 
@@ -120,7 +169,7 @@ bool CQDA::train_machine(CFeatures* data)
 	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes);
 	memset(class_nums, 0, m_num_classes*sizeof(int32_t));
 	int32_t class_idx;
-	int32_t i = 0, j = 0, k = 0;
+	int32_t i, j, k;
 	for ( i = 0 ; i < train_labels.vlen ; ++i )
 	{
 		class_idx = train_labels.vector[i];
@@ -149,7 +198,7 @@ bool CQDA::train_machine(CFeatures* data)
 	{
 		m_covs = new SGMatrix< float64_t >[m_num_classes];
 		for ( i = 0 ; i < m_num_classes ; ++i )
-			m_covs[i] = SGMatrix< float64_t >(num_feat, num_feat);
+			m_covs[i] = SGMatrix< float64_t >(m_dim, m_dim);
 	}
 
 	m_means     = new SGVector< float64_t >[m_num_classes];
@@ -157,9 +206,9 @@ bool CQDA::train_machine(CFeatures* data)
 	m_rotations = new SGMatrix< float64_t >[m_num_classes];
 	for ( i = 0 ; i < m_num_classes ; ++i )
 	{
-		m_means[i]     = SGVector< float64_t >(num_feat);
-		m_scalings[i]  = SGVector< float64_t >(num_feat);
-		m_rotations[i] = SGMatrix< float64_t >(num_feat, num_feat);
+		m_means[i]     = SGVector< float64_t >(m_dim);
+		m_scalings[i]  = SGVector< float64_t >(m_dim);
+		m_rotations[i] = SGMatrix< float64_t >(m_dim, m_dim);
 	}
 
 	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) m_features;
@@ -169,7 +218,7 @@ bool CQDA::train_machine(CFeatures* data)
 	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		SGMatrix< float64_t > buffer(class_nums[k], num_feat);
+		SGMatrix< float64_t > buffer(class_nums[k], m_dim);
 		m_means[k].zero();
 		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
@@ -185,16 +234,16 @@ bool CQDA::train_machine(CFeatures* data)
 			rf->free_feature_vector(vec, class_idxs[k*num_vec + i], vfree);
 		}
 		
-		for ( j = 0 ; j < num_feat ; ++j )
+		for ( j = 0 ; j < m_dim ; ++j )
 			m_means[k][j] /= class_nums[k];
 
 		for ( i = 0 ; i < class_nums[k] ; ++i )
-			for ( j = 0 ; j < num_feat ; ++j )
+			for ( j = 0 ; j < m_dim ; ++j )
 				buffer[i + j*class_nums[k]] -= m_means[k][j];
 
 		/* calling external lib, buffer = U * S * V^T, U is not interesting here */
 		char jobu = 'N', jobvt = 'A';
-		int m = class_nums[k], n = num_feat;
+		int m = class_nums[k], n = m_dim;
 		int lda = m, ldu = m, ldvt = n;
 		int info = -1;
 		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, m_scalings[k].vector,
@@ -224,7 +273,7 @@ bool CQDA::train_machine(CFeatures* data)
 
 	SG_PRINT("\n>>> Displaying rotations ... \n");
 	for ( k = 0 ; k < m_num_classes ; ++k )
-		CMath::display_matrix(m_rotations[k].matrix, num_feat, num_feat);
+		CMath::display_matrix(m_rotations[k].matrix, m_dim, m_dim);
 
 	SG_PRINT("\n>>> Exit DEBUG_QDA\n");
 #endif
