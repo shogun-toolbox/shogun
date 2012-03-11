@@ -96,7 +96,7 @@ class CQDA : public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CDotFeatures* feat)
+		inline virtual void set_features(CDotFeatures* feat)
 		{
 			if (feat->get_feature_class() != C_SIMPLE ||
 				feat->get_feature_type() != F_DREAL)

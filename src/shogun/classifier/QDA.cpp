@@ -26,9 +26,9 @@ CQDA::CQDA(float64_t tolerance, bool store_covs)
 CQDA::CQDA(CSimpleFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
 : CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0)
 {
+	init();
 	set_features(traindat);
 	set_labels(trainlab);
-	init();
 }
 
 CQDA::~CQDA()
@@ -47,21 +47,34 @@ void CQDA::init()
 	m_parameters->add((CSGObject**) &m_scalings, "m_scalings", "Scaling vectors list");
 	m_parameters->add((CSGObject**) &m_rotations, "m_rotations", "Rotation matrices list");
 	m_parameters->add((CSGObject**) &m_means, "m_means", "Mean vectors list");
+
+	m_covs      = NULL;
+	m_scalings  = NULL;
+	m_rotations = NULL;
+	m_means     = NULL;
+	m_features  = NULL;
 }
 
 void CQDA::cleanup()
 {
+	if ( m_store_covs )
+	{
+		for ( int32_t i = 0 ; i < m_num_classes ; ++i )
+			m_covs[i].destroy_matrix();
+
+		delete[] m_covs;
+	}
+
 	for ( int32_t i = 0 ; i < m_num_classes ; ++i )
 	{
-		m_covs[i].free_matrix();
-		m_means[i].free_vector();
-		m_scalings[i].free_vector();
-		m_rotations[i].free_matrix();
+		m_means[i].destroy_vector();
+		m_scalings[i].destroy_vector();
+		m_rotations[i].destroy_matrix();
 	}
-	SG_FREE(m_covs);
-	SG_FREE(m_means);
-	SG_FREE(m_scalings);
-	SG_FREE(m_rotations);
+
+	delete[] m_means;
+	delete[] m_scalings;
+	delete[] m_rotations;
 
 	m_covs      = NULL;
 	m_scalings  = NULL;
@@ -97,7 +110,6 @@ bool CQDA::train_machine(CFeatures* data)
 	cleanup();
 
 	m_num_classes = labels->get_num_classes();
-
 	int32_t num_feat = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 	ASSERT(num_vec == train_labels.vlen);
@@ -135,13 +147,14 @@ bool CQDA::train_machine(CFeatures* data)
 
 	if ( m_store_covs )
 	{
-		m_covs = SG_MALLOC(SGMatrix< float64_t >, m_num_classes);
+		m_covs = new SGMatrix< float64_t >[m_num_classes];
 		for ( i = 0 ; i < m_num_classes ; ++i )
 			m_covs[i] = SGMatrix< float64_t >(num_feat, num_feat);
 	}
-	m_means     = SG_MALLOC(SGVector< float64_t >, m_num_classes);
-	m_scalings  = SG_MALLOC(SGVector< float64_t >, m_num_classes);
-	m_rotations = SG_MALLOC(SGMatrix< float64_t >, m_num_classes);
+
+	m_means     = new SGVector< float64_t >[m_num_classes];
+	m_scalings  = new SGVector< float64_t >[m_num_classes];
+	m_rotations = new SGMatrix< float64_t >[m_num_classes];
 	for ( i = 0 ; i < m_num_classes ; ++i )
 	{
 		m_means[i]     = SGVector< float64_t >(num_feat);
@@ -150,23 +163,23 @@ bool CQDA::train_machine(CFeatures* data)
 	}
 
 	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) m_features;
-	SGVector< float64_t > buffer(num_feat*CMath::max(class_nums, m_num_classes));
 
 	int32_t vlen;
 	bool vfree;
+	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		m_means[i].zero();
+		SGMatrix< float64_t > buffer(class_nums[k], num_feat);
+		m_means[k].zero();
 		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
-			float64_t* vec = 
-				rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
+			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec);
 
 			for ( j = 0 ; j < vlen ; ++j )
 			{
 				m_means[k][j] += vec[j];
-				buffer[num_feat*i + j] = vec[j];
+				buffer[i + j*class_nums[k]] = vec[j];
 			}
 
 			rf->free_feature_vector(vec, class_idxs[k*num_vec + i], vfree);
@@ -176,15 +189,44 @@ bool CQDA::train_machine(CFeatures* data)
 			m_means[k][j] /= class_nums[k];
 
 		for ( i = 0 ; i < class_nums[k] ; ++i )
-		{
 			for ( j = 0 ; j < num_feat ; ++j )
-				buffer[num_feat*i + j] -= m_means[k][j];
-		}
+				buffer[i + j*class_nums[k]] -= m_means[k][j];
 
-		// buffer = U * S * V^T
+		/* calling external lib, buffer = U * S * V^T, U is not interesting here */
+		char jobu = 'N', jobvt = 'A';
+		int m = class_nums[k], n = num_feat;
+		int lda = m, ldu = m, ldvt = n;
+		int info = -1;
+		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, m_scalings[k].vector,
+			NULL, ldu, m_rotations[k].matrix, ldvt, &info);
+		ASSERT(info == 0);
+		buffer.destroy_matrix();
+
+		CMath::vector_multiply(m_scalings[k].vector, m_scalings[k].vector,
+				m_scalings[k].vector, m_scalings[k].vlen);
+		CMath::scale_vector(1.0/(m-1), m_scalings[k].vector, m_scalings[k].vlen);
+
+		CMath::transpose_matrix(m_rotations[k].matrix, n, n);
+
+		// TODO compute and store covs if necessary
 	}
 
 #ifdef DEBUG_QDA
+	SG_PRINT(">>> QDA machine trained with %d classes\n", m_num_classes);
+
+	SG_PRINT("\n>>> Displaying means ...\n");
+	for ( k = 0 ; k < m_num_classes ; ++k )
+		m_means[k].display_vector();
+
+	SG_PRINT("\n>>> Displaying scalings ...\n");
+	for ( k = 0 ; k < m_num_classes ; ++k )
+		m_scalings[k].display_vector();
+
+	SG_PRINT("\n>>> Displaying rotations ... \n");
+	for ( k = 0 ; k < m_num_classes ; ++k )
+		CMath::display_matrix(m_rotations[k].matrix, num_feat, num_feat);
+
+	SG_PRINT("\n>>> Exit DEBUG_QDA\n");
 #endif
 
 	train_labels.free_vector();
