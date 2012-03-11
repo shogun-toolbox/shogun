@@ -263,7 +263,7 @@ float64_t CMath::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
 	for (int32_t i=0; i<3*2; i++)
 	{
 		log_denom+=CMath::lgammal((floatmax_t) table.matrix[i]+1);
-		log_denomf+=gamma(table.matrix[i]+1);
+		log_denomf+=CMath::lgammal((floatmax_t) table.matrix[i]+1);
 	}
 
 	floatmax_t prob_table_log=log_nom - log_denom;

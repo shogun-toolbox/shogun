@@ -23,7 +23,6 @@ extern void (*sg_cancel_computations)(bool &delayed, bool &immediately);
 #include <shogun/base/SGObject.h>
 #include <shogun/base/init.h>
 
-#ifndef WIN32
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 
@@ -113,6 +112,5 @@ class CSignal : public CSGObject
 		/** if shogun should return ASAP */
 		static bool cancel_immediately;
 };
-#endif // WIN32
 }
 #endif // __SIGNAL__H_

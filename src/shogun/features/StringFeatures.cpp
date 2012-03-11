@@ -775,7 +775,11 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 
 	SG_DEBUG("dirname '%s'\n", dirname);
 
+    #ifndef _WIN32
 	n=scandir(dirname, &namelist, &SGIO::filter, alphasort);
+    #else // _WIN32
+    n=0;
+    #endif // _WIN32
 	if (n <= 0)
 	{
 		SG_ERROR("error calling scandir - no files found\n");

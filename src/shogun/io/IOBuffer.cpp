@@ -111,7 +111,9 @@ void CIOBuffer::flush()
 	if (write_file(space.begin, space.index()) != (int) space.index())
 		SG_ERROR("Error, failed to write example!\n");
 	space.end = space.begin;
+	#ifndef _WIN32
 	fsync(working_file);
+	#endif // _WIN32
 }
 
 bool CIOBuffer::close_file()
