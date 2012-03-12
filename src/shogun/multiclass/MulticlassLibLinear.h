@@ -10,7 +10,7 @@
 
 #ifndef _MULTICLASSLIBLINEAR_H___
 #define _MULTICLASSLIBLINEAR_H___
-
+#ifdef HAVE_LAPACK
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
@@ -131,4 +131,5 @@ protected:
 		bool m_use_bias;
 };
 }
+#endif /* HAVE_LAPACK */
 #endif
