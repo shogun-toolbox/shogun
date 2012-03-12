@@ -8,7 +8,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-
+#include <shogun/lib/config.h>
+#ifdef HAVE_LAPACK
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/mathematics/Math.h>
@@ -64,3 +65,4 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 
 	return true;
 }
+#endif /* HAVE_LAPACK */
