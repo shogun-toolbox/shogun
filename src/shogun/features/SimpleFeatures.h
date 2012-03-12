@@ -499,7 +499,7 @@ public:
 	/** checks if the contents of this CSimpleFeatures object are the same to 
 	 * the contents of rhs
 	 *
-	 * @params rhs other CSimpleFeatures object to compare to this one
+	 * @param rhs other CSimpleFeatures object to compare to this one
 	 * @return whether they represent the same information
 	 */
 	virtual bool is_equal(CSimpleFeatures* rhs);
