@@ -38,6 +38,7 @@ public:
 	CMulticlassAccuracy() : 
 		CEvaluation(), m_ignore_rejects(false), m_rejects_num(0) {};
 
+	/** constructor */
 	CMulticlassAccuracy(bool ignore_rejects) : 
 		CEvaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0) {};
 
