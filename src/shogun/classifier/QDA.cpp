@@ -93,43 +93,99 @@ CLabels* CQDA::apply()
 	ASSERT(num_vecs > 0);
 	ASSERT( m_dim == m_features->get_dim_feature_space() );
 
-	float64_t* out = SG_MALLOC(float64_t, num_vecs); /* TODO use this */
-
 	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) m_features;
 
 	SGMatrix< float64_t > X(num_vecs, m_dim);
+	SGMatrix< float64_t > A(num_vecs, m_dim);
+	SGMatrix< float64_t > M(m_dim, m_dim); 
+	SGVector< float32_t > sinvsqrt(m_dim);
+	SGVector< float64_t > norm2(num_vecs*m_num_classes);
+
+	norm2.zero();
+
 	int i, j, k, vlen;
 	bool vfree;
 	float64_t* vec;
-	// Xm = X - means[k] 
-	for ( i = 0 ; i < num_vecs ; ++i )
+	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		vec = rf->get_feature_vector(i, vlen, vfree);
-		ASSERT(vec);
+		// Xm = X - means[k] 
+		for ( i = 0 ; i < num_vecs ; ++i )
+		{
+			vec = rf->get_feature_vector(i, vlen, vfree);
+			ASSERT(vec);
 
+			for ( j = 0 ; j < m_dim ; ++j )
+				X[i + j*num_vecs] = vec[j] - m_means[k][j];
+
+			rf->free_feature_vector(vec, i, vfree);
+
+		}
+
+		/* TODO avoid the repetition of the same operations here */
+
+		// X2 = np.dot(X, R * (S ** -0.5))
 		for ( j = 0 ; j < m_dim ; ++j )
-			X[i + j*num_vecs] = vec[j] - m_means[k][j];
+			/* TODO use this approximation of the exact commented below?
+			   class member to decide which to use?*/
+			sinvsqrt[j] = CMath::invsqrt(m_scalings[k][j]);
+			//sinvsqrt[j] = 1.0 / CMath::sqrt(m_scalings[k][j]);
 
-		rf->free_feature_vector(vec, i, vfree);
+		M.matrix = CMath::clone_vector(m_rotations[k].matrix, m_dim*m_dim);
+		for ( i = 0 ; i < m_dim ; ++i )
+			for ( j = 0 ; j < m_dim ; ++j )
+				M[i + j*m_dim] *= sinvsqrt[j];
+		
+		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, num_vecs, m_dim, 
+			m_dim, 1.0, X.matrix, num_vecs, M.matrix, m_dim, 0.0, 
+			A.matrix, num_vecs);
 
+		for ( i = 0 ; i < num_vecs ; ++i )
+			for ( j = 0 ; j < m_dim ; ++j )
+				norm2[i + k*num_vecs] += CMath::sq(A[i + j*num_vecs]);
+
+#ifdef DEBUG_QDA
+	m_scalings[k].display_vector();
+
+	sinvsqrt.display_vector();
+
+	CMath::display_matrix(M.matrix, m_dim, m_dim, "M");
+
+	CMath::display_matrix(A.matrix, num_vecs, m_dim, "A");
+#endif
 	}
 
-	/* TODO avoid the repetition of the same operations here */
-
-	// X2 = np.dot(X, R * (S ** -0.5))
-	SGVector< float32_t > sinvsqrt(m_dim);
-	for ( j = 0 ; j < m_dim ; ++j )
-		sinvsqrt = CMath::invsqrt(m_scalings[k][j]);
-
-	SGMatrix< float64_t > mat; 
-	mat.matrix = CMath::clone_vector(m_rotations[k].matrix, m_dim*m_dim);
-	for ( i = 0 ; i < m_dim ; ++i )
+	/* TODO avoid the repetitions of the same operations every time apply is called */
+	SGVector< float32_t > slog(m_num_classes);
+	slog.zero();
+	for ( k = 0 ; k < m_num_classes ; ++k )
 		for ( j = 0 ; j < m_dim ; ++j )
-			mat[i + j*m_dim] *= sinvsqrt[j];
+			slog[k] += CMath::log(m_scalings[k][j]);
 
-	mat.destroy_matrix();
+	for ( i = 0 ; i < num_vecs ; ++i )
+		for ( k = 0 ; k < m_num_classes ; ++k )
+		{
+			norm2[i + k*num_vecs] += slog[k];
+			norm2[i + k*num_vecs] *= -0.5;
+		}
+
+	CLabels* out = new CLabels(num_vecs);
+
+	for ( i = 0 ; i < num_vecs ; ++i )
+		out->set_label(i, CMath::arg_max(norm2.vector+i, num_vecs, m_num_classes));
+
+#ifdef DEBUG_QDA
+	CMath::display_matrix(norm2.vector, num_vecs, m_num_classes, "norm2");
+	CMath::display_vector(out->get_labels().vector, num_vecs, "Labels");
+#endif
+
+	slog.destroy_vector();
+	norm2.destroy_vector();
+	M.destroy_matrix();
 	sinvsqrt.destroy_vector();
+	A.destroy_matrix();
 	X.destroy_matrix();
+
+	return out;
 }
 
 CLabels* CQDA::apply(CFeatures* data)
