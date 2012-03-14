@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2012 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/machine/multiclass/MulticlassMachine.h>
+#include <shogun/machine/MulticlassMachine.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/features/Labels.h>
 
@@ -17,35 +17,38 @@ using namespace shogun;
 CMulticlassMachine::CMulticlassMachine()
 : CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY), m_rejection_strategy(NULL)
 {
-	init();
+	register_parameters();
 }
 
 CMulticlassMachine::CMulticlassMachine(
 	EMulticlassStrategy strategy,
 	CMachine* machine, CLabels* labs)
-: CMachine(), m_multiclass_strategy(strategy), m_machine(machine), m_rejection_strategy(NULL)
+: CMachine(), m_multiclass_strategy(strategy), m_rejection_strategy(NULL)
 {
 	set_labels(labs);
 	SG_REF(machine);
-	init();
+	m_machine = machine;
+	register_parameters();
 }
 
 CMulticlassMachine::~CMulticlassMachine()
 {
-	cleanup();
+	SG_UNREF(m_rejection_strategy);
+	SG_UNREF(m_machine);
+
+	clear_machines();
 }
 
-void CMulticlassMachine::init()
+void CMulticlassMachine::register_parameters()
 {
 	m_parameters->add((machine_int_t*)&m_multiclass_strategy,"m_multiclass_type");
 	m_parameters->add((CSGObject**)&m_machine, "m_machine");
+	m_parameters->add((CSGObject**)&m_rejection_strategy, "m_rejection_strategy");
 	m_parameters->add_vector((CSGObject***)&m_machines.vector,&m_machines.vlen, "m_machines");
 }
 
-void CMulticlassMachine::cleanup()
+void CMulticlassMachine::clear_machines()
 {
-	SG_UNREF(m_machine);
-
 	for(int32_t i=0; i<m_machines.vlen; i++)
 		SG_UNREF(m_machines[i]);
 
@@ -93,7 +96,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 
 bool CMulticlassMachine::train_one_vs_rest()
 {
-	int32_t m_num_classes = labels->get_num_classes();
+	int32_t m_num_classes = m_labels->get_num_classes();
 	m_machines = SGVector<CMachine*>(m_num_classes);
 	int32_t num_vectors = get_num_rhs_vectors();
 
@@ -105,7 +108,7 @@ bool CMulticlassMachine::train_one_vs_rest()
 	{
 		for (int32_t j=0; j<num_vectors; j++)
 		{
-			if (labels->get_int_label(j)==i)
+			if (m_labels->get_int_label(j)==i)
 				train_labels->set_label(j,+1.0);
 			else
 				train_labels->set_label(j,-1.0);
@@ -119,7 +122,7 @@ bool CMulticlassMachine::train_one_vs_rest()
 
 CLabels* CMulticlassMachine::classify_one_vs_rest()
 {
-	int32_t num_classes = labels->get_num_classes();
+	int32_t num_classes = m_labels->get_num_classes();
 	int32_t num_machines = get_num_machines();
 	ASSERT(num_machines==num_classes);
 	CLabels* result=NULL;
@@ -144,7 +147,6 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			int32_t winner = 0;
-			float64_t max_out = outputs[0]->get_label(i);
 
 			for (int32_t j=0; j<num_machines; j++)
 				outputs_for_i[j] = outputs[j]->get_label(i);
@@ -155,6 +157,8 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 			}
 			else
 			{
+				float64_t max_out = outputs[0]->get_label(i);
+
 				for (int32_t j=1; j<num_machines; j++)
 				{
 					if (outputs_for_i[j]>max_out)
@@ -166,6 +170,7 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 			}
 			result->set_label(i, winner);
 		}
+		outputs_for_i.destroy_vector();
 
 		for (int32_t i=0; i<num_machines; i++)
 			SG_UNREF(outputs[i]);

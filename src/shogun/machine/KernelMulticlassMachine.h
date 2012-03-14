@@ -15,7 +15,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/machine/KernelMachine.h>
-#include <shogun/machine/multiclass/MulticlassMachine.h>
+#include <shogun/machine/MulticlassMachine.h>
 
 namespace shogun
 {

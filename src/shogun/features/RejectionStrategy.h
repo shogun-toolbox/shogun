@@ -14,7 +14,7 @@
 namespace shogun
 {
 
-/** @brief rejection strategy */
+/** @brief base rejection strategy class */
 class CRejectionStrategy : public CSGObject
 {
 	public:
@@ -35,6 +35,7 @@ class CRejectionStrategy : public CSGObject
 
 };
 
+/** @brief threshold based rejection strategy */
 class CThresholdReject : public CRejectionStrategy
 {
 	public:
@@ -52,7 +53,7 @@ class CThresholdReject : public CRejectionStrategy
 		/** get name */
 		virtual const char* get_name() const 
 		{
-				return "AllNegativesMulticlassReject";
+				return "ThresholdReject";
 		}
 
 		/** returns true if given output set leads to rejection */
@@ -68,6 +69,7 @@ class CThresholdReject : public CRejectionStrategy
 
 protected:
 
+		/** threshold */
 		float64_t m_threshold;
 
 

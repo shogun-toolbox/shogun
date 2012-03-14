@@ -101,7 +101,7 @@ bool CDomainAdaptationSVMLinear::train_machine(CDotFeatures* train_data)
 
 	if (train_data)
 	{
-		if (labels->get_num_labels() != train_data->get_num_vectors())
+		if (m_labels->get_num_labels() != train_data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		tmp_data = train_data;
 

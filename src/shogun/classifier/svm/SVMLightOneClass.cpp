@@ -90,9 +90,9 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 	int32_t num_vec=kernel->get_num_vec_lhs();
 	SG_INFO("num_vec=%d\n", num_vec);
 
-	SG_UNREF(labels);
-	labels=new CLabels(num_vec);
-	labels->set_to_one();
+	SG_UNREF(m_labels);
+	m_labels=new CLabels(num_vec);
+	m_labels->set_to_one();
 
 	// in case of LINADD enabled kernels cleanup!
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())

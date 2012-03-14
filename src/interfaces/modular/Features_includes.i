@@ -19,6 +19,7 @@
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
 #include <shogun/features/Labels.h>
+#include <shogun/features/RejectionStrategy.h>
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/TOPFeatures.h>

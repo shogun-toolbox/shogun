@@ -531,7 +531,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 {
 	tim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
-	ASSERT(labels);
+	ASSERT(m_labels);
 
 	if (data)
 	{
@@ -542,7 +542,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 	ASSERT(get_features());
 
 	int32_t num_iterations=0;
-	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 

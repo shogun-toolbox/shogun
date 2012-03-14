@@ -193,11 +193,11 @@ bool CMKL::check_lpx_status(LPX *lp)
 bool CMKL::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
-	ASSERT(labels && labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
@@ -207,10 +207,10 @@ bool CMKL::train_machine(CFeatures* data)
 		SG_ERROR("No constraint generator (SVM) set\n");
 
 	int32_t num_label=0;
-	if (labels)
-		num_label = labels->get_num_labels();
+	if (m_labels)
+		num_label = m_labels->get_num_labels();
 
-	SG_INFO("%d trainlabels (%ld)\n", num_label, labels);
+	SG_INFO("%d trainlabels (%ld)\n", num_label, m_labels);
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
 
@@ -265,7 +265,7 @@ bool CMKL::train_machine(CFeatures* data)
 	svm->set_shrinking_enabled(get_shrinking_enabled());
 	svm->set_linadd_enabled(get_linadd_enabled());
 	svm->set_batch_computation_enabled(get_batch_computation_enabled());
-	svm->set_labels(labels);
+	svm->set_labels(m_labels);
 	svm->set_kernel(kernel);
 
 #ifdef USE_CPLEX
@@ -584,7 +584,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 	int32_t num_kernels = kernel->get_num_subkernels();
 	float64_t mkl_obj=0;
 
-	if (labels && kernel && kernel->get_kernel_type() == K_COMBINED)
+	if (m_labels && kernel && kernel->get_kernel_type() == K_COMBINED)
 	{
 		// Compute Elastic-net dual
 		float64_t* nm = SG_MALLOC(float64_t, num_kernels);
@@ -1521,7 +1521,7 @@ float64_t CMKL::compute_mkl_dual_objective()
 	int32_t n=get_num_support_vectors();
 	float64_t mkl_obj=0;
 
-	if (labels && kernel && kernel->get_kernel_type() == K_COMBINED)
+	if (m_labels && kernel && kernel->get_kernel_type() == K_COMBINED)
 	{
 		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
 		while (kn)

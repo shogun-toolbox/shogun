@@ -8,11 +8,15 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-
-#include <shogun/classifier/svm/MulticlassLibLinear.h>
+#include <shogun/lib/config.h>
+#ifdef HAVE_LAPACK
+#include <shogun/multiclass/MulticlassLibLinear.h>
+#include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
+
+struct problem;
 
 bool CMulticlassLibLinear::train_machine(CFeatures* data)
 {
@@ -20,17 +24,17 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 		set_features((CDotFeatures*)data);
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = labels->get_num_classes();
+	int32_t num_classes = m_labels->get_num_classes();
 	
 	problem mc_problem;
 	mc_problem.l = num_vectors;
-	mc_problem.n = m_features->get_dim_feature_space();
+	mc_problem.n = m_features->get_dim_feature_space()+1;
 	mc_problem.y = SG_MALLOC(int32_t, mc_problem.l);
 	for (int32_t i=0; i<num_vectors; i++)
-		mc_problem.y[i] = labels->get_int_label(i);
+		mc_problem.y[i] = m_labels->get_int_label(i);
 
 	mc_problem.x = m_features;
-	mc_problem.use_bias = true;
+	mc_problem.use_bias = m_use_bias;
 
 	float64_t* w = SG_MALLOC(float64_t, mc_problem.n*num_classes);
 	float64_t* C = SG_MALLOC(float64_t, num_vectors);
@@ -40,15 +44,17 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,m_epsilon,m_max_iter);
 	solver.Solve(w);
 
-	m_machines.destroy_vector();
+	clear_machines();
 	m_machines = SGVector<CMachine*>(num_classes);
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();
-		SGVector<float64_t> cw(mc_problem.n);
-		for (int32_t j=0; j<mc_problem.n; j++)
+		float64_t* cw = SG_MALLOC(float64_t, mc_problem.n);
+		for (int32_t j=0; j<mc_problem.n-1; j++)
 			cw[j] = w[j*num_classes+i];
-		machine->set_w(cw);
+		machine->set_w(SGVector<float64_t>(cw,mc_problem.n-1));
+		//CMath::display_vector(cw,mc_problem.n);
+		machine->set_bias(w[(mc_problem.n-1)*num_classes+i]);
 
 		m_machines[i] = machine;
 	}
@@ -59,3 +65,4 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 
 	return true;
 }
+#endif /* HAVE_LAPACK */

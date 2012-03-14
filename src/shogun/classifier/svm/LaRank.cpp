@@ -606,23 +606,23 @@ bool CLaRank::train_machine(CFeatures* data)
 	tau = 0.0001;
 
 	ASSERT(kernel);
-	ASSERT(labels && labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
 
 	CSignal::clear_cancel();
 
 	if (data)
 	{
-		if (data->get_num_vectors() != labels->get_num_labels())
+		if (data->get_num_vectors() != m_labels->get_num_labels())
 		{
 			SG_ERROR("Numbert of vectors (%d) does not match number of labels (%d)\n",
-					data->get_num_vectors(), labels->get_num_labels());
+					data->get_num_vectors(), m_labels->get_num_labels());
 		}
 		kernel->init(data, data);
 	}
 
 	ASSERT(kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs());
 
-	nb_train=labels->get_num_labels();
+	nb_train=m_labels->get_num_labels();
 	cache = kernel->get_cache_size();
 
 	int32_t n_it = 1;
@@ -635,7 +635,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		int32_t ind = step;
 		for (int32_t i = 0; i < nb_train; i++)
 		{
-			int32_t y=labels->get_label(i);
+			int32_t y=m_labels->get_label(i);
 			if (add (i, y) != y)   // call the add function
 				tr_err++;
 

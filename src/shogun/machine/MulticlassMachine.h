@@ -12,7 +12,7 @@
 #define _MULTICLASSMACHINE_H___
 
 #include <shogun/machine/Machine.h>
-#include <shogun/machine/multiclass/RejectionStrategy.h>
+#include <shogun/features/RejectionStrategy.h>
 
 namespace shogun
 {
@@ -82,9 +82,6 @@ class CMulticlassMachine : public CMachine
 			return m_machines.vlen;
 		}
 
-		/** cleanup */
-		void cleanup();
-
 		/** classify all examples
 		 *
 		 * @return resulting labels
@@ -104,15 +101,6 @@ class CMulticlassMachine : public CMachine
 		 */
 		virtual float64_t apply(int32_t num);
 
-		/** classify one vs rest
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_rest();
-
-		/** train one vs rest */
-		bool train_one_vs_rest();
-
 		/** get the type of multiclass'ness
 		 *
 		 * @return multiclass type 1 vs one etc
@@ -125,11 +113,14 @@ class CMulticlassMachine : public CMachine
 		/** get rejection strategy */
 		inline CRejectionStrategy* get_rejection_strategy() const
 		{
+			SG_REF(m_rejection_strategy);
 			return m_rejection_strategy;
 		}
 		/** set rejection strategy */
 		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
 		{
+			SG_UNREF(m_rejection_strategy);
+			SG_REF(rejection_strategy);
 			m_rejection_strategy = rejection_strategy;
 		}
 
@@ -140,6 +131,18 @@ class CMulticlassMachine : public CMachine
 		}
 
 	protected:
+
+		/** classify one vs rest
+		 *
+		 * @return resulting labels
+		 */
+		virtual CLabels* classify_one_vs_rest();
+
+		/** clear machines */
+		void clear_machines();
+
+		/** train one vs rest */
+		bool train_one_vs_rest();
 
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
@@ -161,8 +164,8 @@ class CMulticlassMachine : public CMachine
 
 	private:
 
-		/** init parameters */
-		void init();
+		/** register parameters */
+		void register_parameters();
 
 	protected:
 		/** type of multiclass strategy */

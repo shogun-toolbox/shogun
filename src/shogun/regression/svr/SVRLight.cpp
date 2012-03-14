@@ -104,7 +104,7 @@ bool CSVRLight::train_machine(CFeatures* data)
 		return false ;
 	}
 
-	if (!labels)
+	if (!m_labels)
 	{
 		SG_ERROR( "SVR_light can not proceed without labels!\n");
 		return false;
@@ -112,7 +112,7 @@ bool CSVRLight::train_machine(CFeatures* data)
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
@@ -164,8 +164,8 @@ void CSVRLight::svr_learn()
 	int32_t* label;
 	int32_t* docs;
 
-	ASSERT(labels);
-	int32_t totdoc=labels->get_num_labels();
+	ASSERT(m_labels);
+	int32_t totdoc=m_labels->get_num_labels();
 	num_vectors=totdoc;
 
 	// set up regression problem in standard form
@@ -177,10 +177,10 @@ void CSVRLight::svr_learn()
 	  docs[i]=i;
 	  j=2*totdoc-1-i;
 	  label[i]=+1;
-	  c[i]=labels->get_label(i);
+	  c[i]=m_labels->get_label(i);
 	  docs[j]=j;
 	  label[j]=-1;
-	  c[j]=labels->get_label(i);
+	  c[j]=m_labels->get_label(i);
   }
   totdoc*=2;
 

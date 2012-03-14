@@ -66,7 +66,7 @@ CMKLMultiClass CMKLMultiClass::operator=( const CMKLMultiClass & cm)
 
 void CMKLMultiClass::initsvm()
 {
-	if (!labels)	
+	if (!m_labels)
 	{
 		SG_ERROR("CMKLMultiClass::initsvm(): the set labels is NULL\n");
 	}
@@ -78,13 +78,13 @@ void CMKLMultiClass::initsvm()
 	svm->set_C(get_C1(),get_C2());
 	svm->set_epsilon(epsilon);
 
-	if (labels->get_num_labels()<=0)	
+	if (m_labels->get_num_labels()<=0)
 	{
 		SG_ERROR("CMKLMultiClass::initsvm(): the number of labels is "
 				"nonpositive, do not know how to handle this!\n");
 	}
 
-	svm->set_labels(labels);
+	svm->set_labels(m_labels);
 }
 
 void CMKLMultiClass::initlpsolver()
@@ -241,15 +241,15 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
 float64_t CMKLMultiClass::getsumofsignfreealphas()
 {
 
-	std::vector<int> trainlabels2(labels->get_num_labels());
-	SGVector<int32_t> lab=labels->get_int_labels();
+	std::vector<int> trainlabels2(m_labels->get_num_labels());
+	SGVector<int32_t> lab=m_labels->get_int_labels();
 	std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
 	lab.free_vector();
 
 	ASSERT (trainlabels2.size()>0);
 	float64_t sum=0;
 
-	for (int32_t nc=0; nc< labels->get_num_classes();++nc)
+	for (int32_t nc=0; nc< m_labels->get_num_classes();++nc)
 	{
 		CSVM * sm=svm->get_svm(nc);
 
@@ -265,7 +265,7 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 
 	for (size_t lb=0; lb< trainlabels2.size();++lb)
 	{
-		for (int32_t nc=0; nc< labels->get_num_classes();++nc)
+		for (int32_t nc=0; nc< m_labels->get_num_classes();++nc)
 		{
 			CSVM * sm=svm->get_svm(nc);
 
@@ -293,7 +293,7 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 
 	float64_t tmp=0;
 
-	for (int32_t classindex=0; classindex< labels->get_num_classes();
+	for (int32_t classindex=0; classindex< m_labels->get_num_classes();
 			++classindex)
 	{
 		CSVM * sm=svm->get_svm(classindex);
@@ -324,13 +324,13 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 
 bool CMKLMultiClass::train_machine(CFeatures* data)
 {
-	int numcl=labels->get_num_classes();
+	int numcl=m_labels->get_num_classes();
 	ASSERT(kernel);
-	ASSERT(labels && labels->get_num_labels());
+	ASSERT(m_labels && m_labels->get_num_labels());
 
 	if (data)
 	{
-		if (labels->get_num_labels() != data->get_num_vectors())
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of "
 					"labels\n");
 		kernel->init(data, data);

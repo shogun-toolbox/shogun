@@ -65,9 +65,6 @@
 
 %rename(KernelMulticlassMachine) CKernelMulticlassMachine;
 %rename(LinearMulticlassMachine) CLinearMulticlassMachine;
-%rename(MulticlassLibLinear) CMulticlassLibLinear;
-%rename(RejectionStrategy) CRejectionStrategy;
-%rename(ThresholdReject) CThresholdReject;
 
 /* These functions return new Objects */
 %newobject apply();
@@ -119,11 +116,9 @@
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %include <shogun/classifier/ConjugateIndex.h>
-%include <shogun/machine/multiclass/MulticlassMachine.h>
-%include <shogun/machine/multiclass/KernelMulticlassMachine.h>
-%include <shogun/machine/multiclass/LinearMulticlassMachine.h>
-%include <shogun/machine/multiclass/RejectionStrategy.h>
-%include <shogun/classifier/svm/MulticlassLibLinear.h>
+%include <shogun/machine/MulticlassMachine.h>
+%include <shogun/machine/KernelMulticlassMachine.h>
+%include <shogun/machine/LinearMulticlassMachine.h>
 
 #ifdef USE_SVMLIGHT
 

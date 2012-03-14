@@ -56,7 +56,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
 
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -64,9 +64,9 @@ bool CSVMOcas::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(m_labels->is_two_class_labeling());
 
-	lab=labels->get_labels();
+	lab=m_labels->get_labels();
 	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
