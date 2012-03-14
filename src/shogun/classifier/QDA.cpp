@@ -201,7 +201,7 @@ CLabels* CQDA::apply(CFeatures* data)
 
 bool CQDA::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if ( data )
 	{
 		if ( !data->has_property(FP_DOT) )
@@ -209,12 +209,12 @@ bool CQDA::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(m_features);
-	SGVector< int32_t > train_labels = labels->get_int_labels();
+	SGVector< int32_t > train_labels = m_labels->get_int_labels();
 	ASSERT(train_labels.vector);
 
 	cleanup();
 
-	m_num_classes = labels->get_num_classes();
+	m_num_classes = m_labels->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 	ASSERT(num_vec == train_labels.vlen);
