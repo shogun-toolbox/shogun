@@ -22,7 +22,7 @@
 namespace shogun
 {
 
-#define DEBUG_QDA
+//#define DEBUG_QDA
 
 /** @brief Class QDA implements Quadratic Discriminant Analysis.
  *
