@@ -16,7 +16,42 @@
 
 using namespace shogun;
 
-struct problem;
+CMulticlassLibLinear::CMulticlassLibLinear() :
+	CLinearMulticlassMachine()
+{
+	init_defaults();
+}
+
+CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs) :
+	CLinearMulticlassMachine(ONE_VS_REST_STRATEGY,features,NULL,labs)
+{
+	init_defaults();
+	set_C(C);
+}
+
+void CMulticlassLibLinear::init_defaults()
+{
+	set_C(1.0);
+	set_epsilon(1e-2);
+	set_max_iter(10000);
+	set_use_bias(false);
+	set_save_train_state(false);
+	m_train_state = NULL;
+}
+
+void CMulticlassLibLinear::register_parameters()
+{
+	m_parameters->add(&m_C, "m_C", "regularization constant");
+	m_parameters->add(&m_epsilon, "m_epsilon", "tolerance epsilon");
+	m_parameters->add(&m_max_iter, "m_max_iter", "max number of iterations");
+	m_parameters->add(&m_use_bias, "m_use_bias", "indicates whether bias should be used");
+	m_parameters->add(&m_save_train_state, "m_save_train_state", "indicates whether bias should be used");
+}
+
+CMulticlassLibLinear::~CMulticlassLibLinear()
+{
+	reset_train_state();
+}
 
 bool CMulticlassLibLinear::train_machine(CFeatures* data)
 {
@@ -25,10 +60,11 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = m_labels->get_num_classes();
+	int32_t bias_n = m_use_bias ? 1 : 0;
 	
 	problem mc_problem;
 	mc_problem.l = num_vectors;
-	mc_problem.n = m_features->get_dim_feature_space()+1;
+	mc_problem.n = m_features->get_dim_feature_space() + bias_n;
 	mc_problem.y = SG_MALLOC(int32_t, mc_problem.l);
 	for (int32_t i=0; i<num_vectors; i++)
 		mc_problem.y[i] = m_labels->get_int_label(i);
@@ -36,13 +72,16 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	mc_problem.x = m_features;
 	mc_problem.use_bias = m_use_bias;
 
-	float64_t* w = SG_MALLOC(float64_t, mc_problem.n*num_classes);
+	if (!m_train_state)
+		m_train_state = new mcsvm_state();
+
 	float64_t* C = SG_MALLOC(float64_t, num_vectors);
 	for (int32_t i=0; i<num_vectors; i++)
 		C[i] = m_C;
 
-	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,m_epsilon,m_max_iter);
-	solver.Solve(w);
+	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,m_epsilon,
+	                       m_max_iter,m_max_train_time,m_train_state);
+	solver.solve();
 
 	clear_machines();
 	m_machines = SGVector<CMachine*>(num_classes);
@@ -50,17 +89,22 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	{
 		CLinearMachine* machine = new CLinearMachine();
 		float64_t* cw = SG_MALLOC(float64_t, mc_problem.n);
-		for (int32_t j=0; j<mc_problem.n-1; j++)
-			cw[j] = w[j*num_classes+i];
-		machine->set_w(SGVector<float64_t>(cw,mc_problem.n-1));
-		//CMath::display_vector(cw,mc_problem.n);
-		machine->set_bias(w[(mc_problem.n-1)*num_classes+i]);
+
+		for (int32_t j=0; j<mc_problem.n-bias_n; j++)
+			cw[j] = m_train_state->w[j*num_classes+i];
+
+		machine->set_w(SGVector<float64_t>(cw,mc_problem.n-bias_n));
+
+		if (m_use_bias)
+			machine->set_bias(m_train_state->w[(mc_problem.n-bias_n)*num_classes+i]);
 
 		m_machines[i] = machine;
 	}
 
+	if (!m_save_train_state)
+		reset_train_state();
+
 	SG_FREE(C);
-	SG_FREE(w);
 	SG_FREE(mc_problem.y);
 
 	return true;

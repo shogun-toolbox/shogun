@@ -42,6 +42,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/classifier/svm/Tron.h>
+#include <shogun/lib/Time.h>
 
 using namespace shogun;
 
@@ -340,7 +341,10 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 #define GETI(i) (prob->y[i])
 // To support weights for instances, use GETI(i) (i)
 
-Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class, double *weighted_C, double epsilon, int max_it)
+Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class, 
+                                 double *weighted_C, double epsilon, 
+                                 int max_it, double max_time,
+                                 mcsvm_state* given_state)
 {
 	this->w_size = p->n;
 	this->l = p->l;
@@ -349,14 +353,12 @@ Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class, double *weighted
 	this->max_iter = max_it;
 	this->prob = p;
 	this->C = weighted_C;
-	this->B = SG_MALLOC(double, nr_class);
-	this->G = SG_MALLOC(double, nr_class);
+	this->max_train_time = max_time;
+	this->state = given_state;
 }
 
 Solver_MCSVM_CS::~Solver_MCSVM_CS()
 {
-	SG_FREE(B);
-	SG_FREE(G);
 }
 
 int compare_double(const void *a, const void *b)
@@ -371,7 +373,7 @@ int compare_double(const void *a, const void *b)
 void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new)
 {
 	int r;
-	double *D=CMath::clone_vector(B, active_i);
+	double *D=CMath::clone_vector(state->B, active_i);
 
 	if(yi < active_i)
 		D[yi] += A_i*C_yi;
@@ -385,9 +387,9 @@ void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int act
 	for(r=0;r<active_i;r++)
 	{
 		if(r == yi)
-			alpha_new[r] = CMath::min(C_yi, (beta-B[r])/A_i);
+			alpha_new[r] = CMath::min(C_yi, (beta-state->B[r])/A_i);
 		else
-			alpha_new[r] = CMath::min((double)0, (beta - B[r])/A_i);
+			alpha_new[r] = CMath::min((double)0, (beta - state->B[r])/A_i);
 	}
 	SG_FREE(D);
 }
@@ -397,44 +399,68 @@ bool Solver_MCSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double min
 	double bound = 0;
 	if(m == yi)
 		bound = C[GETI(i)];
-	if(alpha_i == bound && G[m] < minG)
+	if(alpha_i == bound && state->G[m] < minG)
 		return true;
 	return false;
 }
 
-void Solver_MCSVM_CS::Solve(double *w)
+void Solver_MCSVM_CS::solve()
 {
 	int i, m, s;
 	int iter = 0;
-	double *alpha =  SG_MALLOC(double, l*nr_class);
-	double *alpha_new = SG_MALLOC(double, nr_class);
-	int *index = SG_MALLOC(int, l);
-	double *QD = SG_MALLOC(double, l);
-	int *d_ind = SG_MALLOC(int, nr_class);
-	double *d_val = SG_MALLOC(double, nr_class);
-	int *alpha_index = SG_MALLOC(int, nr_class*l);
-	int *y_index = SG_MALLOC(int, l);
+	double *w,*B,*G,*alpha,*alpha_new,*QD,*d_val;
+	int *index,*d_ind,*alpha_index,*y_index,*active_size_i;
+	
+	if (!state->allocated)
+	{
+		state->w = SG_CALLOC(double, nr_class*w_size);
+		state->B = SG_CALLOC(double, nr_class);
+		state->G = SG_CALLOC(double, nr_class);
+		state->alpha = SG_CALLOC(double, l*nr_class);
+		state->alpha_new = SG_CALLOC(double, nr_class);
+		state->index = SG_CALLOC(int, l);
+		state->QD = SG_CALLOC(double, l);
+		state->d_ind = SG_CALLOC(int, nr_class);
+		state->d_val = SG_CALLOC(double, nr_class);
+		state->alpha_index = SG_CALLOC(int, nr_class*l);
+		state->y_index = SG_CALLOC(int, l);
+		state->active_size_i = SG_CALLOC(int, l);
+		state->allocated = true;
+	}
+	w = state->w;
+	B = state->B;
+	G = state->G;
+	alpha = state->alpha;
+	alpha_new = state->alpha_new;
+	index = state->index;
+	QD = state->QD;
+	d_ind = state->d_ind;
+	d_val = state->d_val;
+	alpha_index = state->alpha_index;
+	y_index = state->y_index;
+	active_size_i = state->active_size_i;
+
 	int active_size = l;
-	int *active_size_i = SG_MALLOC(int, l);
 	double eps_shrink = CMath::max(10.0*eps, 1.0); // stopping tolerance for shrinking
 	bool start_from_all = true;
+	CTime start_time;
 	// initial
-	for(i=0;i<l*nr_class;i++)
-		alpha[i] = 0;
-	for(i=0;i<w_size*nr_class;i++)
-		w[i] = 0; 
-	for(i=0;i<l;i++)
+	if (!state->inited)
 	{
-		for(m=0;m<nr_class;m++)
-			alpha_index[i*nr_class+m] = m;
+		for(i=0;i<l;i++)
+		{
+			for(m=0;m<nr_class;m++)
+				alpha_index[i*nr_class+m] = m;
 
-		QD[i] = prob->x->dot(i, prob->x,i);
-		if (prob->use_bias)
-			QD[i] += 1.0;
+			QD[i] = prob->x->dot(i, prob->x,i);
+			if (prob->use_bias)
+				QD[i] += 1.0;
 
-		active_size_i[i] = nr_class;
-		y_index[i] = prob->y[i];
-		index[i] = i;
+			active_size_i[i] = nr_class;
+			y_index[i] = prob->y[i];
+			index[i] = i;
+		}
+		state->inited = true;
 	}
 
 	while(iter < max_iter) 
@@ -593,6 +619,9 @@ void Solver_MCSVM_CS::Solve(double *w)
 		}
 		else
 			start_from_all = false;
+
+		if (max_train_time!=0.0 && max_train_time < start_time.cur_time_diff())
+			break;
 	}
 
 	SG_SINFO("\noptimization finished, #iter = %d\n",iter);
@@ -613,18 +642,8 @@ void Solver_MCSVM_CS::Solve(double *w)
 	}
 	for(i=0;i<l;i++)
 		v -= alpha[i*nr_class+prob->y[i]];
-	SG_SINFO("Objective value = %lf\n",v);
+	SG_SINFO("Objective value = %f\n",v);
 	SG_SINFO("nSV = %d\n",nSV);
-
-	SG_FREE(alpha);
-	SG_FREE(alpha_new);
-	SG_FREE(index);
-	SG_FREE(QD);
-	SG_FREE(d_ind);
-	SG_FREE(d_val);
-	SG_FREE(alpha_index);
-	SG_FREE(y_index);
-	SG_FREE(active_size_i);
 }
 
 //
