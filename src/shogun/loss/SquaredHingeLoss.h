@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Shashwat Lal Das
- * Copyright (c) 2011 Berlin Institute of TechnosquaredHingey and Max-Planck-Society.
+ * Copyright (c) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
 #ifndef _SQUAREDHINGELOSS_H__
