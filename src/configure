@@ -3544,9 +3544,10 @@ check_snappy()
 int main(int argc, char** argv)
 {
 	size_t input_length = (size_t) argc;
+	char* input = new char[input_length];
 	char* output = new char[snappy::MaxCompressedLength(input_length)];
 	size_t output_length;
-	RawCompress(input, input_length, output, &output_length);
+	snappy::RawCompress(input, input_length, output, &output_length);
 	delete [] output;
 	return int(output_length);
 }
