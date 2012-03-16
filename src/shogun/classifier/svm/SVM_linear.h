@@ -230,21 +230,76 @@ private:
 	const problem *prob;
 };
 
+struct mcsvm_state
+{
+	double* w;
+	double* B;
+	double* G;
+	double* alpha;
+	double* alpha_new;
+	int* index;
+	double* QD;
+	int* d_ind;
+	double* d_val;
+	int* alpha_index;
+	int* y_index;
+	int* active_size_i;
+	bool allocated,inited;
+
+	mcsvm_state()
+	{
+		w = NULL;
+		B = NULL;
+		G = NULL;
+		alpha = NULL;
+		alpha_new = NULL;
+		index = NULL;
+		QD = NULL;
+		d_ind = NULL;
+		d_val = NULL;
+		alpha_index = NULL;
+		y_index = NULL;
+		active_size_i = NULL;
+		allocated = false;
+		inited = false;
+	}
+
+	~mcsvm_state()
+	{
+		SG_FREE(w);
+		SG_FREE(B);
+		SG_FREE(G);
+		SG_FREE(alpha);
+		SG_FREE(alpha_new);
+		SG_FREE(index);
+		SG_FREE(QD);
+		SG_FREE(d_ind);
+		SG_FREE(d_val);
+		SG_FREE(alpha_index);
+		SG_FREE(y_index);
+		SG_FREE(active_size_i);
+	}
+};
+
 class Solver_MCSVM_CS
 {
 	public:
-		Solver_MCSVM_CS(const problem *prob, int nr_class, double *C, double eps=0.1, int max_iter=100000);
+		Solver_MCSVM_CS(const problem *prob, int nr_class, double *C, 
+		                double eps, int max_iter, 
+		                double train_time, mcsvm_state* given_state);
 		~Solver_MCSVM_CS();
-		void Solve(double *w);
+		void solve();
 	private:
 		void solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new);
 		bool be_shrunk(int i, int m, int yi, double alpha_i, double minG);
-		double *B, *C, *G;
+		double *C;
 		int w_size, l;
 		int nr_class;
 		int max_iter;
 		double eps;
+		double max_train_time;
 		const problem *prob;
+		mcsvm_state* state;
 };
 
 
