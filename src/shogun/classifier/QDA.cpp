@@ -313,7 +313,21 @@ bool CQDA::train_machine(CFeatures* data)
 
 		CMath::transpose_matrix(m_rotations[k].matrix, n, n);
 
-		// TODO compute and store covs if necessary
+		if ( m_store_covs )
+		{
+			SGMatrix< float64_t > M(n ,n);
+
+			M.matrix = CMath::clone_vector(m_rotations[k].matrix, n*n);
+			for ( i = 0 ; i < m_dim ; ++i )
+				for ( j = 0 ; j < m_dim ; ++j )
+					M[i + j*m_dim] *= m_scalings[k][j];
+			
+			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n, 
+				1.0, M.matrix, n, m_rotations[k].matrix, n, 0.0, 
+				m_covs[k].matrix, n);
+
+			M.destroy_matrix();
+		}
 	}
 
 #ifdef DEBUG_QDA
@@ -334,7 +348,7 @@ bool CQDA::train_machine(CFeatures* data)
 	SG_PRINT("\n>>> Exit DEBUG_QDA\n");
 #endif
 
-	train_labels.free_vector();
+	train_labels.destroy_vector();
 	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
 	return true;
