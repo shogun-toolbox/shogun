@@ -21,10 +21,10 @@ CMachine::CMachine() : CSGObject(), m_max_train_time(0), m_labels(NULL),
 	m_data_locked=false;
 	m_store_model_features=false;
 
-	m_parameters->add(&m_max_train_time, "m_max_train_time",
+	m_parameters->add(&m_max_train_time, "max_train_time",
 					  "Maximum training time.");
-	m_parameters->add((machine_int_t*) &m_solver_type, "m_solver_type");
-	m_parameters->add((CSGObject**) &m_labels, "m_labels");
+	m_parameters->add((machine_int_t*) &m_solver_type, "solver_type");
+	m_parameters->add((CSGObject**) &m_labels, "labels");
 	m_parameters->add(&m_store_model_features, "store_model_features",
 			"Should feature data of model be stored after training?");
 	SG_ADD(&m_data_locked, "data_locked",
