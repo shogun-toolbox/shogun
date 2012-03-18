@@ -64,12 +64,6 @@
 %rename(LocalAlignmentStringKernel) CLocalAlignmentStringKernel;
 %rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 %rename(MatchWordStringKernel) CMatchWordStringKernel;
-%rename(MultitaskKernelNormalizer) CMultitaskKernelNormalizer;
-%rename(MultitaskKernelMklNormalizer) CMultitaskKernelMklNormalizer;
-%rename(MultitaskKernelTreeNormalizer) CMultitaskKernelTreeNormalizer;
-%rename(MultitaskKernelMaskNormalizer) CMultitaskKernelMaskNormalizer;
-%rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
-%rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 %rename(OligoStringKernel) COligoStringKernel;
 %rename(PolyKernel) CPolyKernel;
 %rename(PolyMatchStringKernel) CPolyMatchStringKernel;
@@ -178,12 +172,6 @@ namespace shogun
 %include <shogun/kernel/LocalAlignmentStringKernel.h>
 %include <shogun/kernel/LocalityImprovedStringKernel.h>
 %include <shogun/kernel/MatchWordStringKernel.h>
-%include <shogun/kernel/MultitaskKernelNormalizer.h>
-%include <shogun/kernel/MultitaskKernelMklNormalizer.h>
-%include <shogun/kernel/MultitaskKernelTreeNormalizer.h>
-%include <shogun/kernel/MultitaskKernelMaskNormalizer.h>
-%include <shogun/kernel/MultitaskKernelMaskPairNormalizer.h>
-%include <shogun/kernel/MultitaskKernelPlifNormalizer.h>
 %include <shogun/kernel/OligoStringKernel.h>
 %include <shogun/kernel/PolyKernel.h>
 %include <shogun/kernel/PolyMatchStringKernel.h>

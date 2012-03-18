@@ -12,7 +12,7 @@
 #define _MULTITASKKERNELMKLNORMALIZER_H___
 
 #include <shogun/kernel/KernelNormalizer.h>
-#include <shogun/kernel/MultitaskKernelMklNormalizer.h>
+#include <shogun/multitask/MultitaskKernelMklNormalizer.h>
 #include <shogun/kernel/Kernel.h>
 #include <algorithm>
 #include <string>
