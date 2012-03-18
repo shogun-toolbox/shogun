@@ -10,10 +10,12 @@
 
 #ifndef _MULTICLASSLIBLINEAR_H___
 #define _MULTICLASSLIBLINEAR_H___
+#include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
+#include <shogun/classifier/svm/SVM_linear.h>
 
 namespace shogun
 {
@@ -21,34 +23,32 @@ namespace shogun
 /** @brief multiclass LibLinear wrapper. Uses Crammer-Singer
     formulation and gradient descent optimization algorithm
     implemented in the LibLinear library. Regularized bias 
-    support is added using stacking bias to hyperplane normal
-    vector. 
+    support is added using stacking bias 'feature' to
+    hyperplanes normal vectors.
+
+    In case of small changes of C or particularly epsilon
+    this class provides ability to save whole liblinear
+    training state (i.e. W vector, gradients, etc) and re-use
+    on next train() calls. This capability could be 
+    enabled using set_save_train_state() method. Train
+    state can be forced to clear using 
+    reset_train_state() method.
  */
 class CMulticlassLibLinear : public CLinearMulticlassMachine
 {
 	public:
 		/** default constructor  */
-		CMulticlassLibLinear() : CLinearMulticlassMachine()
-		{
-		}
+		CMulticlassLibLinear();
 
 		/** standard constructor
-		 * @param C C regularication constant value
+		 * @param C C regularization constant value
 		 * @param features features 
 		 * @param labs labels
 		 */
-		CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs) :
-			CLinearMulticlassMachine(ONE_VS_REST_STRATEGY,features,NULL,labs), m_C(C)
-		{
-			set_epsilon(1e-2);
-			set_max_iter(10000);
-			set_use_bias(false);
-		}
+		CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs);
 
 		/** destructor */
-		virtual ~CMulticlassLibLinear()
-		{
-		}
+		virtual ~CMulticlassLibLinear();
 
 		/** get name */
 		virtual const char* get_name() const 
@@ -59,7 +59,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		/** set C 
 		 * @param C C value
 		 */
-		inline void set_C(int32_t C) 
+		inline void set_C(float64_t C) 
 		{
 			ASSERT(C>0);
 			m_C = C;
@@ -67,7 +67,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		/** get C
 		 * @return C value
 		 */
-		inline int32_t get_C() const { return m_C; }
+		inline float64_t get_C() const { return m_C; }
 
 		/** set epsilon 
 		 * @param epsilon epsilon value
@@ -97,6 +97,21 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 			return m_use_bias;
 		}
 
+		/** set save train state
+		 * @param save_train_state save train state value
+		 */
+		inline void set_save_train_state(bool save_train_state)
+		{
+			m_save_train_state = save_train_state;
+		}
+		/** get save train state
+		 * @return save_train_state value
+		 */
+		inline bool get_save_train_state() const
+		{
+			return m_save_train_state;
+		}
+
 		/** set max iter
 		 * @param max_iter max iter value
 		 */
@@ -110,11 +125,28 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		 */
 		inline int32_t get_max_iter() const { return m_max_iter; }
 
+		/** reset train state */
+		void reset_train_state()
+		{
+			if (m_train_state)
+			{
+				delete m_train_state;
+				m_train_state = NULL;
+			}
+		}
 
 protected:
 
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
+
+private:
+
+		/** init defaults */
+		void init_defaults();
+
+		/** register parameters */
+		void register_parameters();
 
 protected:
 
@@ -129,6 +161,12 @@ protected:
 
 		/** use bias */
 		bool m_use_bias;
+
+		/** save train state */
+		bool m_save_train_state;
+
+		/** solver state */
+		mcsvm_state* m_train_state;
 };
 }
 #endif /* HAVE_LAPACK */
