@@ -122,15 +122,15 @@ bool CMulticlassMachine::train_one_vs_rest()
 
 bool CMulticlassMachine::train_one_vs_one()
 {
-	int32_t m_num_classes = m_labels->get_num_classes();
-	m_machines = SGVectro<CMachine*>(m_num_classes*(m_num_classes-1)/2);
+	int32_t num_classes = m_labels->get_num_classes();
 	int32_t num_vectors = get_num_rhs_vectors();
 
+	m_machines = SGVectro<CMachine*>(num_classes*(num_classes-1)/2);
 	CLabels* train_labels = new CLabels(num_vectors);
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
-	SGVector<int32_t> num_vectors_class(m_num_classes);
+	SGVector<int32_t> num_vectors_class(num_classes);
 	num_vectors_class.set_const(0);
 
 	if (m_labels->is_two_class_labeling())
@@ -141,9 +141,9 @@ bool CMulticlassMachine::train_one_vs_one()
 		num_vectors_class[m_labels->get_int_label(j)]++;
 	}
 
-	for (int32_t i=0, c=0; i<m_num_classes; i++)
+	for (int32_t i=0, c=0; i<num_classes; i++)
 	{
-		for (int32_t j=i+1; j<m_num_classes; j++)
+		for (int32_t j=i+1; j<num_classes; j++)
 		{
 			SGVector<index_t> subset_indices(
 				num_vectors_class[i]+num_vectors_class[j]);
