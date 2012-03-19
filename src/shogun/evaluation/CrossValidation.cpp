@@ -151,7 +151,7 @@ CrossValidationResult CCrossValidation::evaluate()
 		else
 		{
 			SG_WARNING("%s does not support locking. Autolocking is skipped. "
-					"Set autolock flag to false to get rid of wanrning.\n",
+					"Set autolock flag to false to get rid of warning.\n",
 					m_machine->get_name());
 		}
 	}
