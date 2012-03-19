@@ -118,6 +118,8 @@ bool CMulticlassMachine::train_one_vs_rest()
 		m_machine->train();
 		m_machines[i] = get_machine_from_trained(m_machine);
 	}
+
+	SG_UNREF(train_labels);
 	return true;
 }
 
@@ -152,30 +154,36 @@ bool CMulticlassMachine::train_one_vs_one()
 
 			for (int32_t k=0, idx=0; k<num_vectors; k++)
 			{
-				switch(m_labels->get_int_labels(k))
+				if (m_labels->get_int_label(k)==i)
 				{
-					case i:
-						train_labels->set_label(k,-1.0);
-						subset_indices[idx++] = k;
-						break;
-					case j:
-						train_labels->set_label(k,1.0):
-						subset_indices[idx++] = k;
-						break;
+					train_labels->set_label(k,-1.0);
+					subset_indices[idx++] = k;
+				}
+				else if (m_labels->get_int_label(k)==j)
+				{
+					train_labels->set_label(k,1.0);
+					subset_indices[idx++] = k;
 				}
 			}
 
-			m_labels->set_subset(new CSubset(subset_indices));
+			/** TODO issue here, need to set the subset for the features but
+			  * they're accesible from here. Use it as a parameter for this 
+			  * function may not help that much either because the function can
+			  * be called with CFeatures*=NULL
+			  */
+
+			train_labels->set_subset(new CSubset(subset_indices));
 			features->set_subset(new CSubset(subset_indices));
-			
+
 			m_machine->train();
 			m_machines[c++] = get_machine_from_trained(m_machine);
 
-			m_labels->remove_subset();
+			train_labels->remove_subset();
 			features->remove_subset();
 		}
 	}
 
+	SG_UNREF(train_labels);
 	num_vectors_class.destroy_vector();
 	return true;
 }
