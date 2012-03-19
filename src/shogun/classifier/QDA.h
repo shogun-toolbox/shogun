@@ -119,6 +119,22 @@ class CQDA : public CMachine
 		 */
 		inline virtual const char* get_name() const { return "QDA"; }
 
+		/** get a class' mean vector
+		 *
+		 * @param i class index
+		 *
+		 * @return mean vector of class i
+		 */
+		inline SGVector< float64_t > get_mean(int32_t i) const { return m_means[i]; }
+
+		/** get a class' covariance matrix
+		 *
+		 * @param i class index
+		 *
+		 * @return covariance matrix of class i
+		 */
+		inline SGMatrix< float64_t > get_cov(int32_t i) const { return m_covs[i]; }
+
 	protected:
 		/** train QDA classifier
 		 *
@@ -132,6 +148,12 @@ class CQDA : public CMachine
 		void init();
 
 		void cleanup();
+
+		/** scalings obtained during training and used in classification */
+		SGVector< float64_t >* m_scalings;
+
+		/** rotations obtained during training and used in classification */
+		SGMatrix< float64_t >* m_rotations;
 
 	protected:
 		/** feature vectors */
@@ -158,12 +180,6 @@ class CQDA : public CMachine
 
 		/** feature means for each of the classes in the training data */
 		SGVector< float64_t >* m_means;
-
-		/** scalings obtained during training and used in classification */
-		SGVector< float64_t >* m_scalings;
-
-		/** rotations obtained during training and used in classification */
-		SGMatrix< float64_t >* m_rotations;
 
 }; /* class QDA */
 }  /* namespace shogun */
