@@ -120,6 +120,64 @@ bool CMulticlassMachine::train_one_vs_rest()
 	return true;
 }
 
+bool CMulticlassMachine::train_one_vs_one()
+{
+	int32_t m_num_classes = m_labels->get_num_classes();
+	m_machines = SGVectro<CMachine*>(m_num_classes*(m_num_classes-1)/2);
+	int32_t num_vectors = get_num_rhs_vectors();
+
+	CLabels* train_labels = new CLabels(num_vectors);
+	SG_REF(train_labels);
+	m_machine->set_labels(train_labels);
+
+	SGVector<int32_t> num_vectors_class(m_num_classes);
+	num_vectors_class.set_const(0);
+
+	if (m_labels->is_two_class_labeling())
+		SG_ERROR("Multiclass used for two class training set\n");
+
+	for (int32_t i=0; i<num_vectors; i++)
+	{
+		num_vectors_class[m_labels->get_int_label(j)]++;
+	}
+
+	for (int32_t i=0, c=0; i<m_num_classes; i++)
+	{
+		for (int32_t j=i+1; j<m_num_classes; j++)
+		{
+			SGVector<index_t> subset_indices(
+				num_vectors_class[i]+num_vectors_class[j]);
+
+			for (int32_t k=0, idx=0; k<num_vectors; k++)
+			{
+				switch(m_labels->get_int_labels(k))
+				{
+					case i:
+						train_labels->set_label(k,-1.0);
+						subset_indices[idx++] = k;
+						break;
+					case j:
+						train_labels->set_label(k,1.0):
+						subset_indices[idx++] = k;
+						break;
+				}
+			}
+
+			m_labels->set_subset(new CSubset(subset_indices));
+			features->set_subset(new CSubset(subset_indices));
+			
+			m_machine->train();
+			m_machines[c++] = get_machine_from_trained(m_machine);
+
+			m_labels->remove_subset();
+			features->remove_subset();
+		}
+	}
+
+	num_vectors_class.destroy_vector();
+	return true;
+}
+
 CLabels* CMulticlassMachine::classify_one_vs_rest()
 {
 	int32_t num_classes = m_labels->get_num_classes();
