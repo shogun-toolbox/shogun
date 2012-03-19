@@ -1,6 +1,7 @@
 CXXFLAGS=-O9 -g $(INCLUDES)
 LINKFLAGS=-lshogun
 TARGETS = sailfish
+COMP = g++
 
 all: $(TARGETS)
 
@@ -10,4 +11,4 @@ clean:
 $(TARGETS): $(foreach t, $(TARGET), $t.cpp)
 
 %: %.cpp
-	gcc $(CXXFLAGS) $< $(LINKFLAGS) -lshogun -o $@
+	$(COMP) $(CXXFLAGS) $< $(LINKFLAGS) -o $@

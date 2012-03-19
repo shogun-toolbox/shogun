@@ -16,7 +16,7 @@ from shogun.Features import StringCharFeatures, StringWordFeatures, CombinedFeat
 from shogun.Kernel import CombinedKernel, WeightedDegreePositionStringKernel
 from shogun.Kernel import K_COMMWORDSTRING, CommWordStringKernel, IdentityKernelNormalizer
 from shogun.Preprocessor import SortWordString
-from shogun.Classifier import SVM
+from shogun.Classifier import KernelMachine
 
 
 class Sensor(object):
@@ -156,7 +156,7 @@ class SignalSensor(object):
                         self.svs.append_feature_obj(f)
 
                     self.kernel.init(self.svs, self.svs)
-                    self.svm = SVM(self.kernel, alphas,
+                    self.svm = KernelMachine(self.kernel, alphas,
                             numpy.arange(len(alphas), dtype=numpy.int32), bias)
                     self.svm.io.set_target_to_stderr()
                     self.svm.io.enable_progress()
