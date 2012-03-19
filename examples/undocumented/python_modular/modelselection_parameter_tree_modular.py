@@ -32,7 +32,7 @@ def modelselection_parameter_tree_modular(dummy):
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    power_kernel.print_modsel_params()
+    #power_kernel.print_modsel_params()
 
     param_power_kernel=ModelSelectionParameters('kernel', power_kernel)
     root.append_child(param_power_kernel)
@@ -45,7 +45,7 @@ def modelselection_parameter_tree_modular(dummy):
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    metric1.print_modsel_params()
+    #metric1.print_modsel_params()
 
     param_power_kernel_metric1=ModelSelectionParameters('distance', metric1)
 
@@ -59,7 +59,7 @@ def modelselection_parameter_tree_modular(dummy):
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    gaussian_kernel.print_modsel_params()
+    #gaussian_kernel.print_modsel_params()
 
     param_gaussian_kernel=ModelSelectionParameters('kernel', gaussian_kernel)
 
@@ -73,7 +73,7 @@ def modelselection_parameter_tree_modular(dummy):
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    ds_kernel.print_modsel_params()
+    #ds_kernel.print_modsel_params()
 
     param_ds_kernel=ModelSelectionParameters('kernel', ds_kernel)
 
