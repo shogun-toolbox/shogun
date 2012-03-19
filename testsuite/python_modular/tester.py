@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+import modshogun
 import pickle
 import os
 import filecmp
@@ -19,9 +21,11 @@ def compare(a, b, tolerance):
 
 	if type(a) == numpy.ndarray: 
 		if tolerance:
-			return max(a - b) < tolerance
+			return numpy.max(numpy.abs(a - b)) < tolerance
 		else:
 			return numpy.all(a == b)
+	elif isinstance(a, modshogun.SGObject):
+		return pickle.dumps(a) == pickle.dumps(b)
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
 		for obj1, obj2 in zip(a,b):
@@ -41,6 +45,12 @@ def compare_dbg(a, b):
 		else:
 			print "Numpy Array mismatch"
 			print a-b
+	elif isinstance(a, modshogun.SGObject):
+		if pickle.dumps(a) == pickle.dumps(b):
+			return True
+		print "a", pickle.dumps(a)
+		print "b", pickle.dumps(b)
+		return False
 	elif type(a) in (tuple,list):
 		if len(a) != len(b):
 			print "Length mismatch (len(a)=%d vs len(b)=%d)" % (len(a), len(b))
@@ -82,7 +92,9 @@ def tester(tests, cmp_method, tolerance):
 						print "%-60s OK" % setting_str
 					else:
 						print "%-60s ERROR" % setting_str
-				except:
+				except Exception, e:
+					print e
+
 					import pdb
 					pdb.set_trace()
 			except Exception, e:

@@ -1,15 +1,9 @@
 # File   : $HeadURL$
 # Version: $Id$
 
-try:
-    # different import paths were used during development...
-    from Features import RealFeatures, Labels
-    from Kernel import GaussianKernel
-    from Classifier import GMNPSVM
-except ImportError:
-    from modshogun import RealFeatures, Labels
-    from modshogun import GaussianKernel
-    from modshogun import GMNPSVM
+from modshogun import RealFeatures, Labels
+from modshogun import GaussianKernel
+from modshogun import GMNPSVM
 
 import numpy as np
 import gzip as gz
