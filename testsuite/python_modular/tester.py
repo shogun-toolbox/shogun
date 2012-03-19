@@ -1,10 +1,10 @@
 #!/usr/bin/env python
+import modshogun
 import pickle
 import os
 import filecmp
 import numpy
 
-from modshogun import SGObject
 from generator import setup_tests, get_fname, blacklist, get_test_mod, run_test
 
 def typecheck(a, b):
@@ -24,7 +24,7 @@ def compare(a, b, tolerance):
 			return numpy.max(numpy.abs(a - b)) < tolerance
 		else:
 			return numpy.all(a == b)
-	elif isinstance(a, SGObject):
+	elif isinstance(a, modshogun.SGObject):
 		return pickle.dumps(a) == pickle.dumps(b)
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
@@ -45,7 +45,7 @@ def compare_dbg(a, b):
 		else:
 			print "Numpy Array mismatch"
 			print a-b
-	elif isinstance(a, SGObject):
+	elif isinstance(a, modshogun.SGObject):
 		if pickle.dumps(a) == pickle.dumps(b):
 			return True
 		print "a", pickle.dumps(a)
