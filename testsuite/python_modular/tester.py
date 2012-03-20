@@ -97,6 +97,8 @@ def tester(tests, cmp_method, tolerance):
 
 					import pdb
 					pdb.set_trace()
+			except IOError, e:
+				print "%-60s NO TEST" % (setting_str)
 			except Exception, e:
 				print "%-60s EXCEPTION %s" % (setting_str,e)
 				pass
