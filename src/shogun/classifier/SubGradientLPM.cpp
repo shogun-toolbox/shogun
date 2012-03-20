@@ -38,7 +38,7 @@ CSubGradientLPM::CSubGradientLPM(
 	qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 	CLinearMachine::features=traindat;
-	CLinearMachine::labels=trainlab;
+	CLinearMachine::m_labels=trainlab;
 }
 
 
@@ -342,7 +342,7 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 
 		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 
-		solver->setup_subgradientlpm_QP(C1, labels, (CSparseFeatures<float64_t>*) features, idx_bound, num_bound,
+		solver->setup_subgradientlpm_QP(C1, m_labels, (CSparseFeatures<float64_t>*) features, idx_bound, num_bound,
 				w_zero, zero_idx,
 				grad_w, num_feat+1,
 				use_bias);
@@ -542,7 +542,7 @@ bool CSubGradientLPM::train_machine(CFeatures* data)
 {
 	lpmtim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -552,7 +552,7 @@ bool CSubGradientLPM::train_machine(CFeatures* data)
 	ASSERT(features);
 
 	int32_t num_iterations=0;
-	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 

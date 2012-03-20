@@ -31,7 +31,7 @@ CLPM::~CLPM()
 
 bool CLPM::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -39,7 +39,7 @@ bool CLPM::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -55,7 +55,7 @@ bool CLPM::train_machine(CFeatures* data)
 	CCplex solver;
 	solver.init(E_LINEAR);
 	SG_INFO("C=%f\n", C1);
-	solver.setup_lpm(C1, (CSparseFeatures<float64_t>*) features, labels, get_bias_enabled());
+	solver.setup_lpm(C1, (CSparseFeatures<float64_t>*) features, m_labels, get_bias_enabled());
 	if (get_max_train_time()>0)
 		solver.set_time_limit(get_max_train_time());
 	bool result=solver.optimize(params);

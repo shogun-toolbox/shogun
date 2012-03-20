@@ -79,7 +79,7 @@ float64_t CLPBoost::find_max_violator(int32_t& max_dim)
 		for (int32_t j=0; j<sfeat[i].num_feat_entries; j++)
 		{
 			int32_t idx=sfeat[i].features[j].feat_index;
-			float64_t v=u[idx]*labels->get_label(idx)*sfeat[i].features[j].entry;
+			float64_t v=u[idx]*m_labels->get_label(idx)*sfeat[i].features[j].entry;
 			valplus+=v;
 			valminus-=v;
 		}
@@ -103,9 +103,9 @@ float64_t CLPBoost::find_max_violator(int32_t& max_dim)
 
 bool CLPBoost::train_machine(CFeatures* data)
 {
-	ASSERT(labels);
+	ASSERT(m_labels);
 	ASSERT(features);
-	int32_t num_train_labels=labels->get_num_labels();
+	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -148,7 +148,7 @@ bool CLPBoost::train_machine(CFeatures* data)
 
 		SGSparseVectorEntry<float64_t>* h=sfeat[max_dim].features;
 		int32_t len=sfeat[max_dim].num_feat_entries;
-		solver.add_lpboost_constraint(factor, h, len, num_vec, labels);
+		solver.add_lpboost_constraint(factor, h, len, num_vec, m_labels);
 		solver.optimize(u);
 		//CMath::display_vector(u, num_vec, "u");
 		num_hypothesis++;
