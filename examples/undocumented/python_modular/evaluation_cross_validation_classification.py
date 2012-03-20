@@ -46,6 +46,7 @@ def evaluation_cross_validation_classification(traindat=traindat, label_traindat
     # cross-validation instance
     cross_validation=CrossValidation(classifier, features, labels,
 	    splitting_strategy, evaluation_criterium)
+    cross_validation.set_autolock(False)
 	
     # (optional) repeat x-val 10 times
     cross_validation.set_num_runs(10)

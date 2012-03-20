@@ -21,7 +21,7 @@ def evaluation_contingencytableevaluation_modular(ground_truth, predicted):
 	base_evaluator = ContingencyTableEvaluation()
 	base_evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = AccuracyMeasure()	
+	evaluator = AccuracyMeasure()
 	accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	evaluator = ErrorRateMeasure()
@@ -52,6 +52,6 @@ def evaluation_contingencytableevaluation_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'ContingencyTableEvaluation'
+	print 'EvaluationContingencyTableEvaluation'
 	evaluation_contingencytableevaluation_modular(*parameter_list[0])
 

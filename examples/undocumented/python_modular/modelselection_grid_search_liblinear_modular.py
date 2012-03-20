@@ -20,7 +20,7 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 
 parameter_list = [[traindat,label_traindat]]
 
-def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=label_traindat):
+def modelselection_grid_search_liblinear_modular(traindat=traindat, label_traindat=label_traindat):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
     from shogun.Evaluation import StratifiedCrossValidationSplitting
@@ -50,7 +50,7 @@ def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    classifier.print_modsel_params()
+    #classifier.print_modsel_params()
 
     # splitting strategy for cross-validation
     splitting_strategy=StratifiedCrossValidationSplitting(labels, 10)
@@ -60,11 +60,12 @@ def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=
 
     # cross-validation instance
     cross_validation=CrossValidation(classifier, features, labels,
-	    splitting_strategy, evaluation_criterium)
+                                     splitting_strategy, evaluation_criterium)
+    cross_validation.set_autolock(False)
 
     # model selection instance
     model_selection=GridSearchModelSelection(param_tree_root,
-	    cross_validation)
+	    cross_validation) 
 
     # perform model selection with selected methods
     #print "performing model selection of"
@@ -81,5 +82,5 @@ def modelselection_grid_search_linear_modular(traindat=traindat, label_traindat=
     #result.print_result()
 
 if __name__=='__main__':
-    print 'ModelSelection GridSearchLinear'
-    modelselection_grid_search_linear_modular(*parameter_list[0])
+    print 'ModelSelectionGridSearchLibLinear'
+    modelselection_grid_search_liblinear_modular(*parameter_list[0])

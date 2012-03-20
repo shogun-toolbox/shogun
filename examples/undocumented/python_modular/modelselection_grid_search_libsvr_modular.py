@@ -21,7 +21,7 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
                  [traindat,testdat,label_traindat,2.1,1,1e-5,1e-2]]
 
-def evaluation_cross_validation_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
+def modelselection_grid_search_libsvr_modular(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import MeanSquaredError
@@ -114,5 +114,5 @@ def evaluation_cross_validation_regression(fm_train=traindat,fm_test=testdat,lab
     #    print "[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha
 
 if __name__=='__main__':
-	print 'Modelselection Grid Search LibSVR'
-	evaluation_cross_validation_regression(*parameter_list[0])
+	print 'ModelselectionGridSearchLibSVR'
+	modelselection_grid_search_libsvr_modular(*parameter_list[0])
