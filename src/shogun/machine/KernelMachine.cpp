@@ -12,6 +12,7 @@
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
 
@@ -652,4 +653,14 @@ void CKernelMachine::init()
 	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.",
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
+
+	m_parameter_map->put(
+		new SGParamInfo("custom_kernel", CT_SCALAR, ST_NONE, PT_SGOBJECT, 0),
+		new SGParamInfo()
+	);
+	m_parameter_map->put(
+		new SGParamInfo("kernel_backup", CT_SCALAR, ST_NONE, PT_SGOBJECT, 0),
+		new SGParamInfo()
+	);
+	m_parameter_map->finalize_map();
 }
