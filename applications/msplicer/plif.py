@@ -27,7 +27,7 @@ class plif:
 		self.acceptor.set_plif_penalty(p)
 		self.acceptor.set_min_value(-1e+20)
 		self.acceptor.set_max_value(1e+20)
-		self.acceptor.set_name("acceptor")
+		self.acceptor.set_plif_name("acceptor")
 
 		l=array(model.penalty_donor_boundaries).flatten()
 		p=array(model.penalty_donor_penalty).flatten()
@@ -36,7 +36,7 @@ class plif:
 		self.donor.set_plif_penalty(p)
 		self.donor.set_min_value(-1e+20)
 		self.donor.set_max_value(1e+20)
-		self.donor.set_name("donor")
+		self.donor.set_plif_name("donor")
 
 		l=array(model.penalty_coding_len_boundaries).flatten()
 		p=array(model.penalty_coding_len_penalty).flatten()
@@ -45,7 +45,7 @@ class plif:
 		self.coding_len.set_plif_penalty(p)
 		self.coding_len.set_min_value(min_exon_len)
 		self.coding_len.set_max_value(max_len)
-		self.coding_len.set_name('coding_len')
+		self.coding_len.set_plif_name('coding_len')
 		self.coding_len.set_transform_type("log(+1)")
 
 		l=array(model.penalty_first_coding_len_boundaries).flatten()
@@ -55,7 +55,7 @@ class plif:
 		self.first_coding_len.set_plif_penalty(p)
 		self.first_coding_len.set_min_value(min_exon_len)
 		self.first_coding_len.set_max_value(max_len)
-		self.first_coding_len.set_name("first_coding_len")
+		self.first_coding_len.set_plif_name("first_coding_len")
 		self.first_coding_len.set_transform_type("log(+1)")
 
 		l=array(model.penalty_last_coding_len_boundaries).flatten()
@@ -65,7 +65,7 @@ class plif:
 		self.last_coding_len.set_plif_penalty(p)
 		self.last_coding_len.set_min_value(min_exon_len)
 		self.last_coding_len.set_max_value(max_len)
-		self.last_coding_len.set_name('last_coding_len')
+		self.last_coding_len.set_plif_name('last_coding_len')
 		self.last_coding_len.set_transform_type("log(+1)")
 
 		l=array(model.penalty_single_coding_len_boundaries).flatten()
@@ -75,7 +75,7 @@ class plif:
 		self.single_coding_len.set_plif_penalty(p)
 		self.single_coding_len.set_min_value(min_exon_len)
 		self.single_coding_len.set_max_value(max_len)
-		self.single_coding_len.set_name('single_coding_len')
+		self.single_coding_len.set_plif_name('single_coding_len')
 		self.single_coding_len.set_transform_type("log(+1)")
 
 		l=array(model.penalty_intron_len_boundaries).flatten()
@@ -85,7 +85,7 @@ class plif:
 		self.intron_len.set_plif_penalty(p)
 		self.intron_len.set_min_value(min_intron_len)
 		self.intron_len.set_max_value(max_len)
-		self.intron_len.set_name('intron_len')
+		self.intron_len.set_plif_name('intron_len')
 		self.intron_len.set_transform_type("log(+1)")
 
 		l=array(model.penalty_coding_boundaries).flatten()
@@ -96,7 +96,7 @@ class plif:
 		self.coding.set_plif_penalty(p)
 		self.coding.set_min_value(-1e+20)
 		self.coding.set_max_value(1e+20)
-		self.coding.set_name('coding')
+		self.coding.set_plif_name('coding')
 
 		l=array(model.penalty_coding2_boundaries).flatten()
 		p=array(model.penalty_coding2_penalty).flatten()
@@ -106,7 +106,7 @@ class plif:
 		self.coding2.set_plif_penalty(p)
 		self.coding2.set_min_value(-1e+20)
 		self.coding2.set_max_value(1e+20)
-		self.coding2.set_name('coding2')
+		self.coding2.set_plif_name('coding2')
 
 		l=array(model.penalty_coding3_boundaries).flatten()
 		p=array(model.penalty_coding3_penalty).flatten()
@@ -116,7 +116,7 @@ class plif:
 		self.coding3.set_plif_penalty(p)
 		self.coding3.set_min_value(-1e+20)
 		self.coding3.set_max_value(1e+20)
-		self.coding3.set_name('coding3')
+		self.coding3.set_plif_name('coding3')
 
 		l=array(model.penalty_coding4_boundaries).flatten()
 		p=array(model.penalty_coding4_penalty).flatten()
@@ -126,7 +126,7 @@ class plif:
 		self.coding4.set_plif_penalty(p)
 		self.coding4.set_min_value(-1e+20)
 		self.coding4.set_max_value(1e+20)
-		self.coding4.set_name('coding4')
+		self.coding4.set_plif_name('coding4')
 
 		l=array(model.penalty_intron_boundaries).flatten()
 		p=array(model.penalty_intron_penalty).flatten()
@@ -136,7 +136,7 @@ class plif:
 		self.intron.set_plif_penalty(p)
 		self.intron.set_min_value(-1e+20)
 		self.intron.set_max_value(1e+20)
-		self.intron.set_name('intron')
+		self.intron.set_plif_name('intron')
 
 		l=array(model.penalty_intron2_boundaries).flatten()
 		p=array(model.penalty_intron2_penalty).flatten()
@@ -146,7 +146,7 @@ class plif:
 		self.intron2.set_plif_penalty(p)
 		self.intron2.set_min_value(-1e+20)
 		self.intron2.set_max_value(1e+20)
-		self.intron2.set_name('intron2')
+		self.intron2.set_plif_name('intron2')
 
 		l=array(model.penalty_intron3_boundaries).flatten()
 		p=array(model.penalty_intron3_penalty).flatten()
@@ -156,7 +156,7 @@ class plif:
 		self.intron3.set_plif_penalty(p)
 		self.intron3.set_min_value(-1e+20)
 		self.intron3.set_max_value(1e+20)
-		self.intron3.set_name('intron3') 
+		self.intron3.set_plif_name('intron3') 
 
 		l=array(model.penalty_intron4_boundaries).flatten()
 		p=array(model.penalty_intron4_penalty).flatten()
@@ -166,7 +166,7 @@ class plif:
 		self.intron4.set_plif_penalty(p)
 		self.intron4.set_min_value(-1e+20)
 		self.intron4.set_max_value(1e+20)
-		self.intron4.set_name('intron4')
+		self.intron4.set_plif_name('intron4')
 
 		p=array(model.penalty_transitions_penalty).flatten()
 		self.transitions=Plif(len(p))

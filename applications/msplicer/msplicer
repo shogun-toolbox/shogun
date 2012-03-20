@@ -33,7 +33,8 @@ try:
 	from content_sensors import content_sensors
 	from signal_detectors import signal_detectors
 	from plif import plif
-except ImportError:
+except ImportError, e:
+	print e
 	print
 	print "ERROR IMPORTING MODULES, MAKE SURE YOU HAVE SHOGUN INSTALLED"
 	print

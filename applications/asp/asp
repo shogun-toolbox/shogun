@@ -32,7 +32,8 @@ try:
 		print
 		sys.exit(1)
 	from signal_detectors import signal_detectors
-except ImportError:
+except ImportError,e :
+	print e
 	print
 	print "ERROR IMPORTING MODULES, MAKE SURE YOU HAVE SHOGUN INSTALLED"
 	print
