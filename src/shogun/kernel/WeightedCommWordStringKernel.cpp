@@ -82,14 +82,14 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 	return weights!=NULL;
 }
 
-bool CWeightedCommWordStringKernel::set_weights(float64_t* w, int32_t d)
+bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 {
-	ASSERT(d==degree);
+	ASSERT(w.vlen==degree);
 
 	SG_FREE(weights);
-	weights=SG_MALLOC(float64_t, degree);
+	weights = w.vector;
 	for (int32_t i=0; i<degree; i++)
-		weights[i]=CMath::sqrt(w[i]);
+		weights[i]=CMath::sqrt(weights[i]);
 	return true;
 }
   

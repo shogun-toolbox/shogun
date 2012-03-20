@@ -109,11 +109,10 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 
 		/** set custom weights (swig compatible)
 		 *
-		 * @param w weights
-		 * @param d degree (must match number of weights)
-		 * @return if setting was successful
+		 * @param weights weights
+		 * @return true if setting was successful
 		 */
-		bool set_weights(float64_t* w, int32_t d);
+		bool set_weights(SGVector<float64_t> weights);
 
 		/** return what type of kernel we are
 		 *
