@@ -167,19 +167,19 @@ bool CMulticlassMachine::train_one_vs_one()
 			}
 
 			/** TODO issue here, need to set the subset for the features but
-			  * they're accesible from here. Use it as a parameter for this 
-			  * function may not help that much either because the function can
-			  * be called with CFeatures*=NULL
-			  */
+			 *  they're accesible from here. Use it as a parameter for this 
+			 *  function may not help that much either because the function can
+			 *  be called with CFeatures*=NULL
+			 */
 
 			train_labels->set_subset(new CSubset(subset_indices));
-			features->set_subset(new CSubset(subset_indices));
+			//features->set_subset(new CSubset(subset_indices));
 
 			m_machine->train();
 			m_machines[c++] = get_machine_from_trained(m_machine);
 
 			train_labels->remove_subset();
-			features->remove_subset();
+			//features->remove_subset();
 		}
 	}
 
