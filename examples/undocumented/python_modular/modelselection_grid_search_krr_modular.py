@@ -21,7 +21,7 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
                  [traindat,testdat,label_traindat,2.1,1,1e-5,1e-2]]
 
-def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
+def modelselection_grid_search_krr_modular(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import MeanSquaredError
@@ -64,7 +64,7 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    predictor.print_modsel_params()
+    #predictor.print_modsel_params()
 
     # build parameter tree to select regularization parameter
     param_tree_root=create_param_tree()
@@ -75,25 +75,25 @@ def evaluation_cross_validation_classification(fm_train=traindat,fm_test=testdat
 
     # perform model selection with selected methods
     #print "performing model selection of"
-    print "parameter tree:"
-    param_tree_root.print_tree()
+    #print "parameter tree:"
+    #param_tree_root.print_tree()
     
-    print "starting model selection"
+    #print "starting model selection"
     # print the current parameter combination, if no parameter nothing is printed
-    print_state=True
+    print_state=False
     
     best_parameters=model_selection.select_model(print_state)
 
     # print best parameters
-    print "best parameters:"
-    best_parameters.print_tree()
+    #print "best parameters:"
+    #best_parameters.print_tree()
 
     # apply them and print result
     best_parameters.apply_to_machine(predictor)
     result=cross_validation.evaluate()
-    print "mean:", result.mean
-    if result.has_conf_int:
-        print "[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha
+    #print "mean:", result.mean
+    #if result.has_conf_int:
+    #    print "[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha
 
 # creates all the parameters to optimize
 def create_param_tree():
@@ -118,7 +118,7 @@ def create_param_tree():
     
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    gaussian_kernel.print_modsel_params()
+    #gaussian_kernel.print_modsel_params()
     
     param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
     gaussian_kernel_width=ModelSelectionParameters("width");
@@ -131,7 +131,7 @@ def create_param_tree():
     
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
-    poly_kernel.print_modsel_params()
+    #poly_kernel.print_modsel_params()
     
     param_poly_kernel=ModelSelectionParameters("kernel", poly_kernel)
 
@@ -146,5 +146,5 @@ def create_param_tree():
 
 
 if __name__=='__main__':
-	print 'Evaluation CrossValidationClassification'
-	evaluation_cross_validation_classification(*parameter_list[0])
+	print 'ModelselectionGridSearchKRR'
+	modelselection_grid_search_krr_modular(*parameter_list[0])

@@ -10,7 +10,7 @@ predicted = abs(random.randn(N))
 
 parameter_list = [[ground_truth,predicted]]
 
-def evaluation_meansquarederror_modular(ground_truth, predicted):
+def evaluation_meansquaredlogerror_modular(ground_truth, predicted):
 	from shogun.Features import Labels
 	from shogun.Evaluation import MeanSquaredLogError
 
@@ -24,6 +24,6 @@ def evaluation_meansquarederror_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'MeanSquaredLogError'
-	evaluation_meansquarederror_modular(*parameter_list[0])
+	print 'EvaluationMeanSquaredLogError'
+	evaluation_meansquaredlogerror_modular(*parameter_list[0])
 
