@@ -29,14 +29,14 @@ CCustomKernel::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_col_subset, "col_subset", "Subset of columns",
 			MS_NOT_AVAILABLE);
-	SG_ADD(&m_free_km, "free_km", "Wheather kernel matrix should be freed in "
+	SG_ADD(&m_free_km, "free_km", "Whether kernel matrix should be freed in "
 			"destructor", MS_NOT_AVAILABLE);
 	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
 	m_parameters->add(&upper_diagonal, "upper_diagonal");
 
 	/* new parameter from param version 0 to 1 */
 	m_parameter_map->put(
-			new SGParamInfo("m_free_km", CT_SCALAR, ST_NONE, PT_BOOL, 1),
+			new SGParamInfo("free_km", CT_SCALAR, ST_NONE, PT_BOOL, 1),
 			new SGParamInfo()
 	);
 
@@ -51,6 +51,7 @@ CCustomKernel::init()
 			new SGParamInfo("col_subset", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
 			new SGParamInfo()
 	);
+	m_parameter_map->finalize_map();
 }
 
 CCustomKernel::CCustomKernel()
