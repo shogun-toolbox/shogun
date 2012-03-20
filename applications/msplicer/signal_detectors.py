@@ -19,7 +19,7 @@ class svm_splice_model(object):
 	def __init__(self, order, traindat, alphas, b, (window_left,offset,window_right), consensus):
 
 		f=StringCharFeatures(DNA)
-		f.set_string_features(traindat)
+		f.set_features(traindat)
 		wd_kernel = WeightedDegreeStringKernel(f,f, int(order))
 		wd_kernel.io.set_target_to_stderr()
 

@@ -13,7 +13,7 @@ import sys
 import numpy
 import seqdict
 
-from shogun.Classifier import SVM
+from shogun.Classifier import KernelMachine
 from shogun.Features import StringCharFeatures,DNA
 from shogun.Kernel import WeightedDegreeStringKernel
 
@@ -24,7 +24,7 @@ class svm_splice_model(object):
 		wd_kernel = WeightedDegreeStringKernel(f,f, int(order))
 		wd_kernel.io.set_target_to_stderr()
 
-		self.svm=SVM(wd_kernel, alphas, numpy.arange(len(alphas), dtype=numpy.int32), b)
+		self.svm=KernelMachine(wd_kernel, alphas, numpy.arange(len(alphas), dtype=numpy.int32), b)
 		self.svm.io.set_target_to_stderr()
 		self.svm.parallel.set_num_threads(self.svm.parallel.get_num_cpus())
 		self.svm.set_linadd_enabled(False)
