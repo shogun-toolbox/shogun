@@ -373,10 +373,10 @@ namespace shogun
 }
 
 
-
 /* Include Class Headers to make them visible from within the target language */
 /* Template Class DynamicArray */
 %include <shogun/lib/DynamicArray.h>
+%include <shogun/base/DynArray.h>
 namespace shogun
 {
 #ifdef USE_CHAR
@@ -419,9 +419,14 @@ namespace shogun
         %template(DynamicRealArray) CDynamicArray<float64_t>;
         SERIALIZABLE_DUMMY(CDynamicArray<float64_t>);
 #endif
+        %template(DynamicPlifArray) DynArray<shogun::CPlifBase*>;
 }
 /* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
+namespace shogun
+{
+        %template(PlifGCArray) CGCArray<shogun::CPlifBase*>;
+}
 
 /* Hash */
 %include <shogun/lib/Hash.h>
@@ -475,7 +480,6 @@ namespace shogun
 }*/
 
 %include <shogun/lib/Cache.h>
-%include <shogun/lib/GCArray.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Signal.h>
 %include <shogun/lib/Time.h>
