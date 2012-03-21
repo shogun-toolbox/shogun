@@ -114,6 +114,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
 #ifdef SWIGPYTHON
+
  #include <shogun/io/SerializableFile.h>
  #include <shogun/io/SerializableAsciiFile.h>
  #include <shogun/io/SerializableHdf5File.h>
@@ -364,14 +365,11 @@ namespace shogun
     }
 }
 
-
 %pythoncode %{
-#if PY_MAJOR_VERSION >= 3
-	import copyreg
-#else
-	import copy_reg
-#endif
-
+try:
+    import copy_reg
+except ImportError:
+    import copyreg as copy_reg
 def _sg_reconstructor(cls, base, state):
     try:
         if not isinstance(cls(), SGObject):

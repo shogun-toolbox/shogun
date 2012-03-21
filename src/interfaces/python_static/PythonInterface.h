@@ -15,7 +15,7 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
-#if PY_MAJOR_VERSION >= 3
+#if PY_VERSION_HEX >= 0x03000000
     #define PyString_FromStringAndSize PyBytes_FromStringAndSize
 	#define PyString_Check PyBytes_Check
     #define PyString_Size PyBytes_GET_SIZE
@@ -23,12 +23,12 @@ extern "C" {
     #define PyString_AsString PyBytes_AsString
 #endif
 
-#if PY_MAJOR_VERSION >= 3
+#if PY_VERSION_HEX >= 0x03000000
     #define PyInt_Check PyLong_Check
     #define PyInt_AS_LONG PyLong_AS_LONG
 #endif
 
-#if PY_MAJOR_VERSION >= 3
+#if PY_VERSION_HEX >= 0x03000000
   #define MOD_ERROR_VAL NULL
   #define MOD_SUCCESS_VAL(val) val
   #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
@@ -39,12 +39,12 @@ extern "C" {
 #else
   #define MOD_ERROR_VAL
   #define MOD_SUCCESS_VAL(val)
-  #define MOD_INIT(name) void init##name(void)
-  #define MOD_DEF(ob, name methods) \
+  #define MOD_INIT(name) PyMODINIT_FUNC init##name(void)
+  #define MOD_DEF(ob, name, methods) \
           ob = Py_InitModule(name, methods);
 #endif
 
-#if PY_MAJOR_VERSION >= 3
+#if PY_VERSION_HEX >= 0x03000000
 void* init_numpy()
 {
 	import_array();
