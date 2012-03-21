@@ -15,6 +15,46 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
+#if PY_MAJOR_VERSION >= 3
+    #define PyString_FromStringAndSize PyBytes_FromStringAndSize
+	#define PyString_Check PyBytes_Check
+    #define PyString_Size PyBytes_GET_SIZE
+    #define PyString_AS_STRING PyBytes_AS_STRING
+    #define PyString_AsString PyBytes_AsString
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    #define PyInt_Check PyLong_Check
+    #define PyInt_AS_LONG PyLong_AS_LONG
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+  #define MOD_ERROR_VAL NULL
+  #define MOD_SUCCESS_VAL(val) val
+  #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
+  #define MOD_DEF(ob, name, methods) \
+          static struct PyModuleDef moduledef = { \
+            PyModuleDef_HEAD_INIT, name, NULL, -1, methods, }; \
+          ob = PyModule_Create(&moduledef);
+#else
+  #define MOD_ERROR_VAL
+  #define MOD_SUCCESS_VAL(val)
+  #define MOD_INIT(name) void init##name(void)
+  #define MOD_DEF(ob, name methods) \
+          ob = Py_InitModule(name, methods);
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+void* init_numpy()
+{
+	import_array();
+}
+#else
+void init_numpy()
+{
+	import_array();
+}
+#endif
 
 namespace shogun
 {

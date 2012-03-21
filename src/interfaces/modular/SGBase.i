@@ -366,7 +366,11 @@ namespace shogun
 
 
 %pythoncode %{
-import copy_reg
+#if PY_MAJOR_VERSION >= 3
+	import copyreg
+#else
+	import copy_reg
+#endif
 
 def _sg_reconstructor(cls, base, state):
     try:
@@ -396,7 +400,8 @@ def _sg_reduce_ex(self, proto):
         state = None
     else:
         if base is self.__class__:
-            raise TypeError, "can't pickle %s objects" % base.__name__
+# 			raise TypeError "can't pickle %s objects" % base.__name__
+            raise TypeError("can't pickle %s objects" % base.__name__)
         state = base(self)
     args = (self.__class__, base, state)
     try:
