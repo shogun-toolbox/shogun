@@ -42,10 +42,10 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 	CRealDistance::init(l, r);
 
 
-	if ( l == r)
+	if (l == r)
 	{
 		mean = ((CSimpleFeatures<float64_t>*) l)->get_mean();
-		icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+		icov = ((CSimpleFeatures<float64_t>*) l)->get_cov();
 	}
 	else
 	{
@@ -64,7 +64,6 @@ void CMahalanobisDistance::cleanup()
 
 float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-
 	SGVector<float64_t> bvec = ((CSimpleFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b);
 
