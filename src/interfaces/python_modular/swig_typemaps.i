@@ -29,7 +29,7 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
-#if PY_MAJOR_VERSION >= 3
+#if PY_VERSION_HEX >= 0x03000000
     #define PyString_FromStringAndSize PyBytes_FromStringAndSize
 	#define PyString_AsStringAndSize PyBytes_AsStringAndSize
 #endif
@@ -55,7 +55,7 @@ static const char* typecode_string(PyObject* py_obj) {
   if (PyTuple_Check(   py_obj)) return "tuple"       ;
   if (PyModule_Check(  py_obj)) return "module"      ;
 
-#if PY_MAJOR_VERSION < 3
+#if PY_VERSION_HEX < 0x03000000
   if (PyFile_Check(    py_obj)) return "file"        ;
   if (PyInstance_Check(py_obj)) return "instance"    ;
 #endif

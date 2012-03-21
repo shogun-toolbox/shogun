@@ -165,7 +165,7 @@ char* CPythonInterface::get_string(int32_t& len)
 {
 	const PyObject* s=get_arg_increment();
 
-#if PY_MAJOR_VERSION >= 3
+#if PY_VERSION_HEX >= 0x03000000
     if (!s || !PyUnicode_Check(s))
         SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
         
@@ -705,8 +705,12 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 
 	SG_FREE(python_code);
 
-	//PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
+#if PY_MAJOR_VERSION >= 3
     PyObject* res = PyEval_EvalCode(python_code_obj, globals, NULL);
+#else
+    PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
+#endif
+
 	Py_DECREF(python_code_obj);
 
 	if (res == NULL)
@@ -831,11 +835,11 @@ static PyMethodDef sg_pythonmethods[] = {
 };
 
 #ifdef HAVE_ELWMS
-    //PyMODINIT_FUNC initelwms(void)
-    MOD_INIT(elwms)
+//PyMODINIT_FUNC initelwms(void)
+MOD_INIT(elwms)
 #else
-    //PyMODINIT_FUNC initsg(void)
-    MOD_INIT(sg)
+//PyMODINIT_FUNC initsg(void)
+MOD_INIT(sg)
 #endif
 {
     PyObject *module;
