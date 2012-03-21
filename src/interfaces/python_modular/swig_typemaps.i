@@ -29,6 +29,11 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
+#if PY_MAJOR_VERSION >= 3
+    #define PyString_FromStringAndSize PyBytes_FromStringAndSize
+	#define PyString_AsStringAndSize PyBytes_AsStringAndSize
+#endif
+
 /* Functions to extract array attributes.
  */
 static bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
@@ -48,9 +53,12 @@ static const char* typecode_string(PyObject* py_obj) {
   if (PyDict_Check(    py_obj)) return "dict"        ;
   if (PyList_Check(    py_obj)) return "list"        ;
   if (PyTuple_Check(   py_obj)) return "tuple"       ;
-  if (PyFile_Check(    py_obj)) return "file"        ;
   if (PyModule_Check(  py_obj)) return "module"      ;
+
+#if PY_MAJOR_VERSION < 3
+  if (PyFile_Check(    py_obj)) return "file"        ;
   if (PyInstance_Check(py_obj)) return "instance"    ;
+#endif
 
   return "unknown type";
 }

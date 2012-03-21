@@ -133,11 +133,12 @@ IFType CPythonInterface::get_argument_type()
 
 int32_t CPythonInterface::get_int()
 {
-	const PyObject* i=get_arg_increment();
+	const PyObject* i = get_arg_increment();
 	if (!i || !PyInt_Check(i))
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
-	return PyInt_AS_LONG(i);
+	//return PyInt_AS_LONG(i);
+    return PyInt_AS_LONG(const_cast<PyObject*>(i));
 }
 
 float64_t CPythonInterface::get_real()
@@ -155,19 +156,31 @@ bool CPythonInterface::get_bool()
 	if (!b || !PyBool_Check(b))
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
-	return PyInt_AS_LONG(b) != 0;
+	//return PyInt_AS_LONG(b) != 0;
+    return PyInt_AS_LONG(const_cast<PyObject*>(b)) != 0;
 }
 
 
 char* CPythonInterface::get_string(int32_t& len)
 {
 	const PyObject* s=get_arg_increment();
-	if (!s || !PyString_Check(s))
-		SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
 
-	len=PyString_Size((PyObject*) s);
-	char* str=PyString_AS_STRING(s);
+#if PY_MAJOR_VERSION >= 3
+    if (!s || !PyUnicode_Check(s))
+        SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
+        
+    len = PyUnicode_GetSize((PyObject*) s);
+    char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(s)));
+#else
+    if (!s || !PyString_Check(s))
+        SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
+    
+    len = PyString_Size((PyObject*) s);
+	char* str = PyString_AS_STRING(s);
 	ASSERT(str && len>0);
+#endif
+
+    ASSERT(str && len>0);
 
 	char* cstr=SG_MALLOC(char, len+1);
 	memcpy(cstr, str, len+1);
@@ -637,7 +650,8 @@ void CPythonInterface::run_python_init()
 		SG_SERROR("couldn't open " LIBPYTHON ".so\n");
 #endif
 	Py_Initialize();
-	import_array();
+    //import_array();
+    init_numpy();
 }
 
 void CPythonInterface::run_python_exit()
@@ -691,7 +705,8 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 
 	SG_FREE(python_code);
 
-	PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
+	//PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
+    PyObject* res = PyEval_EvalCode(python_code_obj, globals, NULL);
 	Py_DECREF(python_code_obj);
 
 	if (res == NULL)
@@ -816,11 +831,15 @@ static PyMethodDef sg_pythonmethods[] = {
 };
 
 #ifdef HAVE_ELWMS
-PyMODINIT_FUNC initelwms(void)
+    //PyMODINIT_FUNC initelwms(void)
+    MOD_INIT(elwms)
 #else
-PyMODINIT_FUNC initsg(void)
+    //PyMODINIT_FUNC initsg(void)
+    MOD_INIT(sg)
 #endif
 {
+    PyObject *module;
+    
 	// initialize python interpreter
 	Py_Initialize();
 
@@ -832,10 +851,15 @@ PyMODINIT_FUNC initsg(void)
 
 	// initialize callbacks
 #ifdef HAVE_ELWMS
-    Py_InitModule((char*) "elwms", sg_pythonmethods);
+    //Py_InitModule((char*) "elwms", sg_pythonmethods);
+    MOD_DEF(module, (char*) "elwms", sg_pythonmethods);
 #else
-    Py_InitModule((char*) "sg", sg_pythonmethods);
+    //Py_InitModule((char*) "sg", sg_pythonmethods);
+    MOD_DEF(module, (char*) "sg", sg_pythonmethods);
 #endif
+
+    if (module == NULL)
+        return MOD_ERROR_VAL;
 
 #ifdef HAVE_OCTAVE
 	COctaveInterface::run_octave_init();
@@ -844,10 +868,13 @@ PyMODINIT_FUNC initsg(void)
 	CRInterface::run_r_init();
 #endif
 
-	import_array();
+	//import_array();
+    init_numpy();
 
 	// init_shogun has to be called before anything else
 	// exit_shogun is called upon destruction in exitsg()
 	init_shogun(&python_print_message, &python_print_warning,
 			&python_print_error, &python_cancel_computations);
+            
+    return MOD_SUCCESS_VAL(module);
 }
