@@ -171,8 +171,6 @@ class CQDA : public CMachine
 		/** dimension of the features space */
 		int32_t m_dim;
 
-		// TODO getters and setters for the attributes below?
-
 		/** feature covariances for each of the classes in the training data
 		 *  stored iif store_covs
 		 */
