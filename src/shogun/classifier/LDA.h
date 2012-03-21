@@ -67,7 +67,7 @@ class CLDA : public CLinearMachine
 		CLDA(float64_t gamma, CSimpleFeatures<float64_t>* traindat, CLabels* trainlab);
 		virtual ~CLDA();
 
-		/** set gamme
+		/** set gamma
 		 *
 		 * @param gamma the new gamma
 		 */
