@@ -131,7 +131,7 @@ err2warn: $(SRCFILES)
 ctags: tags
 
 tags:	$(SRCFILES)
-	ctags */*.$(EXT_SRC_CPP) */*.h */*.$(EXT_SRC_C)
+	ctags $(SRCFILES)
 
 linecount:
 	@echo -n "C/C++ source code files (.cpp,.c):"
