@@ -149,13 +149,13 @@ class CQDA : public CMachine
 
 		void cleanup();
 
+	private:
 		/** scalings obtained during training and used in classification */
 		SGVector< float64_t >* m_scalings;
 
 		/** rotations obtained during training and used in classification */
 		SGMatrix< float64_t >* m_rotations;
 
-	protected:
 		/** feature vectors */
 		CDotFeatures* m_features;
 
