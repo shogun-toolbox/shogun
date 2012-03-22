@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2012 Soeren Sonnenburg and Sergey Lisitsyn
+ * One vs. One strategy written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
  * Copyright (C) 1999-2012 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -94,7 +95,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 				return train_one_vs_rest();
 				break;
 			case ONE_VS_ONE_STRATEGY:
-				SG_NOTIMPLEMENTED;
+				return train_one_vs_one();
 				break;
 			default:
 				SG_ERROR("Unknown multiclass strategy\n");
@@ -105,15 +106,16 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 
 bool CMulticlassMachine::train_one_vs_rest()
 {
-	int32_t m_num_classes = m_labels->get_num_classes();
-	m_machines = SGVector<CMachine*>(m_num_classes);
+	int32_t num_classes = m_labels->get_num_classes();
 	int32_t num_vectors = get_num_rhs_vectors();
 
+	clear_machines();
+	m_machines = SGVector<CMachine*>(num_classes);
 	CLabels* train_labels = new CLabels(num_vectors);
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
-	for (int32_t i=0; i<m_num_classes; i++)
+	for (int32_t i=0; i<num_classes; i++)
 	{
 		for (int32_t j=0; j<num_vectors; j++)
 		{
@@ -126,6 +128,65 @@ bool CMulticlassMachine::train_one_vs_rest()
 		m_machine->train();
 		m_machines[i] = get_machine_from_trained(m_machine);
 	}
+
+	SG_UNREF(train_labels);
+	return true;
+}
+
+bool CMulticlassMachine::train_one_vs_one()
+{
+	int32_t num_classes = m_labels->get_num_classes();
+	int32_t num_vectors = get_num_rhs_vectors();
+
+	clear_machines();
+	m_machines = SGVector<CMachine*>(num_classes*(num_classes-1)/2);
+	CLabels* train_labels = new CLabels(num_vectors);
+	SG_REF(train_labels);
+	m_machine->set_labels(train_labels);
+
+	/** Number of vectors included in every subset */
+	int32_t tot = 0;
+
+	for (int32_t i=0, c=0; i<num_classes; i++)
+	{
+		for (int32_t j=i+1; j<num_classes; j++)
+		{
+			/** TODO fix this, there must be a way not to allocate these guys on every
+			 * iteration */
+			SGVector<index_t> subset_labels(num_vectors);
+			SGVector<index_t> subset_feats(num_vectors);
+
+			tot = 0;
+			for (int32_t k=0; k<num_vectors; k++)
+			{
+				if (m_labels->get_int_label(k)==i)
+				{
+					train_labels->set_label(k,-1.0);
+					subset_labels[tot] = k;
+					subset_feats[tot]  = k;
+					tot++;
+				}
+				else if (m_labels->get_int_label(k)==j)
+				{
+					train_labels->set_label(k,1.0);
+					subset_labels[tot] = k;
+					subset_feats[tot]  = k;
+					tot++;
+				}
+			}
+
+			train_labels->set_subset( new CSubset( SGVector<index_t>(subset_labels.vector, tot) ) );
+			set_machine_subset( new CSubset( SGVector<index_t>(subset_feats.vector, tot) ) );
+
+			m_machine->train();
+			m_machines[c++] = get_machine_from_trained(m_machine);
+
+			train_labels->remove_subset();
+			remove_machine_subset();
+		}
+	}
+
+	SG_UNREF(train_labels);
 	return true;
 }
 
