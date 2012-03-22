@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2012 Soeren Sonnenburg and Sergey Lisitsyn
+ * One vs. One strategy written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
  * Copyright (C) 1999-2012 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -144,6 +145,9 @@ class CMulticlassMachine : public CMachine
 		/** train one vs rest */
 		bool train_one_vs_rest();
 
+		/** train one vs one */
+		bool train_one_vs_one();
+
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
@@ -161,6 +165,15 @@ class CMulticlassMachine : public CMachine
 
 		/** get num rhs vectors */
 		virtual int32_t get_num_rhs_vectors() = 0;
+
+		/** set subset to the features of the machine, deletes old one
+		 *
+		 * @param subset subset instance to set
+		 */
+		virtual void set_machine_subset(CSubset* subset) = 0;
+
+		/** deletes any subset set to the features of the machine */
+		virtual void remove_machine_subset() = 0;
 
 	private:
 
