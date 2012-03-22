@@ -124,6 +124,21 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			return m_kernel->get_num_vec_rhs();
 		}
 
+		/** set subset to the features of the machine, deletes old one
+		 *
+		 * @param subset subset instance to set
+		 */
+		virtual void set_machine_subset(CSubset* subset)
+		{
+			SG_NOTIMPLEMENTED;
+		}
+
+		/** deletes any subset set to the features of the machine */
+		virtual void remove_machine_subset()
+		{
+			SG_NOTIMPLEMENTED;
+		}
+
 	protected:
 
 		/** kernel */
