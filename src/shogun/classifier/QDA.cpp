@@ -125,10 +125,7 @@ CLabels* CQDA::apply()
 
 		// X2 = np.dot(X, R * (S ** -0.5))
 		for ( j = 0 ; j < m_dim ; ++j )
-			/* TODO use this approximation of the exact commented below?
-			   class member to decide which to use?*/
-			sinvsqrt[j] = CMath::invsqrt(m_scalings[k][j]);
-			//sinvsqrt[j] = 1.0 / CMath::sqrt(m_scalings[k][j]);
+			sinvsqrt[j] = 1.0 / CMath::sqrt(m_scalings[k][j]);
 
 		M.matrix = CMath::clone_vector(m_rotations[k].matrix, m_dim*m_dim);
 		for ( i = 0 ; i < m_dim ; ++i )
