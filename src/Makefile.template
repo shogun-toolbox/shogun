@@ -322,7 +322,7 @@ run-testsuite-libshogun:
 check-examples-libshogun:
 	cd $(CONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
 		LIBRARY_PATH="$(LIBRARY_PATH)" LIB_PATH="$(DESTDIR)$(LIBDIR)" \
-		INC_PATH="$(DESTDIR)$(INCDIR)" LIBS="$(LINKFLAGS) -lshogun" $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
+		INC_PATH="$(DESTDIR)$(INCDIR)" LIBS="$(LINKFLAGS) -lshogun" $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) INCLUDES="$(INCLUDES)" ./check.sh
 
 run-testsuite-elwms:
 	true
