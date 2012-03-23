@@ -18,7 +18,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/DataType.h>
@@ -464,16 +463,17 @@ class CMath : public CSGObject
 		}
 
 #ifdef HAVE_LAPACK
+		/** compute eigenvalues and eigenvectors of symmetric matrix
+		 *
+		 * @param matrix  overwritten and contains n orthonormal eigenvectors
+		 * @param n
+		 * @param m
+		 * @return eigenvalues (array of length n, to be deleted[])
+		 * */
+		static double* compute_eigenvectors(double* matrix, int n, int m);
 
 		/// inverses square matrix in-place
-		static void inverse(SGMatrix<float64_t> matrix)
-		{
-			ASSERT(matrix.num_cols==matrix.num_rows);
-			int32_t* ipiv = SG_MALLOC(int32_t, matrix.num_cols);
-			clapack_dgetrf(CblasColMajor,matrix.num_cols,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
-			clapack_dgetri(CblasColMajor,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
-			SG_FREE(ipiv);
-		};
+		static void inverse(SGMatrix<float64_t> matrix);
 		
 		/// return the pseudo inverse for matrix
 		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
@@ -481,28 +481,6 @@ class CMath : public CSGObject
 			float64_t* matrix, int32_t rows, int32_t cols,
 			float64_t* target=NULL);
 
-
-		//C := alpha*op( A )*op( B ) + beta*C
-		//op( X ) = X   or   op( X ) = X',
-		static inline void dgemm(
-			double alpha, const double* A, int rows, int cols,
-			CBLAS_TRANSPOSE transposeA, double *B, int cols_B,
-			CBLAS_TRANSPOSE transposeB, double beta, double *C)
-		{
-			cblas_dgemm(CblasColMajor, transposeA, transposeB, rows, cols, cols_B,
-					alpha, A, cols, B, cols_B, beta, C, cols);
-		}
-
-		//y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y,
-		static inline void dgemv(
-			double alpha, const double *A, int rows, int cols,
-			const CBLAS_TRANSPOSE transposeA, const double* X, double beta,
-			double* Y)
-		{
-			cblas_dgemv(CblasColMajor, transposeA,
-					rows, cols, alpha, A, cols,
-					X, 1, beta, Y, 1);
-		}
 #endif
 
 		static inline int64_t factorial(int32_t n)
@@ -703,33 +681,11 @@ class CMath : public CSGObject
 		
 
 		/// compute dot product between v1 and v2 (blas optimized)
-		static inline float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n)
-		{
-			float64_t r=0;
-#ifdef HAVE_LAPACK
-			int32_t skip=1;
-			r = cblas_ddot(n, v1, skip, v2, skip);
-#else
-			for (int32_t i=0; i<n; i++)
-				r+=v1[i]*v2[i];
-#endif
-			return r;
-		}
+		static float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n);
 		
 		/// compute dot product between v1 and v2 (blas optimized)
-		static inline float32_t dot(
-			const float32_t* v1, const float32_t* v2, int32_t n)
-		{
-			float64_t r=0;
-#ifdef HAVE_LAPACK
-			int32_t skip=1;
-			r = cblas_sdot(n, v1, skip, v2, skip);
-#else
-			for (int32_t i=0; i<n; i++)
-				r+=v1[i]*v2[i];
-#endif
-			return r;
-		}
+		static float32_t dot(
+			const float32_t* v1, const float32_t* v2, int32_t n);
 
 		/// compute dot product between v1 and v2 (for 64bit unsigned ints)
 		static inline float64_t dot(
@@ -1272,38 +1228,6 @@ class CMath : public CSGObject
 				return j;
 			}
 
-		/** compute eigenvalues and eigenvectors of symmetric matrix
-		 *
-		 * @param matrix  overwritten and contains n orthonormal eigenvectors
-		 * @param n
-		 * @param m
-		 * @return eigenvalues (array of length n, to be deleted[])
-		 * */
-		static double* compute_eigenvectors(double* matrix, int n, int m)
-		{
-#ifdef HAVE_LAPACK
-			ASSERT(n == m);
-
-			char V='V';
-			char U='U';
-			int info;
-			int ord=n;
-			int lda=n;
-			double* eigenvalues=SG_CALLOC(float64_t, n+1);
-
-			// lapack sym matrix eigenvalues+vectors
-			wrap_dsyev(V, U,  ord, matrix, lda,
-					eigenvalues, &info);
-
-			if (info!=0)
-				SG_SERROR("DSYEV failed with code %d\n", info);
-
-			return eigenvalues;
-#else
-			SG_SERROR("Function not available - Lapack/Atlas not enabled at compile time!\n");
-			return NULL;
-#endif
-		}
 
 		/* Sums up all rows of a matrix and returns the resulting rowvector */
 		template <class T>
