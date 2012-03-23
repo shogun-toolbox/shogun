@@ -55,7 +55,6 @@ int main(int argc, char ** argv)
 
 	// Create train labels
 	CLabels* labels = new CLabels(lab);
-	SG_REF(labels);
 
 	// Create train features
 	CSimpleFeatures< float64_t >* features = new CSimpleFeatures< float64_t >(feature_cache);
@@ -73,7 +72,6 @@ int main(int argc, char ** argv)
 	// Free memory
 	SG_UNREF(out_labels);
 	SG_UNREF(qda);
-	SG_UNREF(labels);
 
 	exit_shogun();
 
