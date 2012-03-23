@@ -127,10 +127,9 @@ CLabels* CQDA::apply()
 		for ( j = 0 ; j < m_dim ; ++j )
 			sinvsqrt[j] = 1.0 / CMath::sqrt(m_scalings[k][j]);
 
-		M.matrix = CMath::clone_vector(m_rotations[k].matrix, m_dim*m_dim);
 		for ( i = 0 ; i < m_dim ; ++i )
 			for ( j = 0 ; j < m_dim ; ++j )
-				M[i + j*m_dim] *= sinvsqrt[j];
+				M[i + j*m_dim] = m_rotations[k][i + j*m_dim] * sinvsqrt[j];
 		
 		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, num_vecs, m_dim, 
 			m_dim, 1.0, X.matrix, num_vecs, M.matrix, m_dim, 0.0, 
@@ -198,25 +197,29 @@ CLabels* CQDA::apply(CFeatures* data)
 
 bool CQDA::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
+	if ( !m_labels )
+		SG_ERROR("No labels allocated in QDA training\n");
+
 	if ( data )
 	{
 		if ( !data->has_property(FP_DOT) )
 			SG_ERROR("Speficied features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
-	ASSERT(m_features);
+	if ( !m_features )
+		SG_ERROR("No features allocated in QDA training\n");
 	SGVector< int32_t > train_labels = m_labels->get_int_labels();
-	ASSERT(train_labels.vector);
+	if ( !train_labels.vector )
+		SG_ERROR("No train_labels allocated in QDA training\n");
 
 	cleanup();
 
 	m_num_classes = m_labels->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
-	ASSERT(num_vec == train_labels.vlen);
+	if ( num_vec != train_labels.vlen )
+		SG_ERROR("Dimension mismatch between features and labels in QDA training");
 
-	/* TODO too memory consuming like this?? */
 	int32_t* class_idxs = SG_MALLOC(int32_t, num_vec*m_num_classes);
 	// number of examples of each class
 	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes);
