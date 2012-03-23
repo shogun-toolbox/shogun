@@ -500,7 +500,7 @@ float64_t CMath::entropy(float64_t* p, int32_t len)
 
 #ifdef HAVE_LAPACK
 float64_t* CMath::pinv(
-	float64_t* matrix, int32_t rows, int32_t cols, float64_t* target)
+		float64_t* matrix, int32_t rows, int32_t cols, float64_t* target)
 {
 	if (!target)
 		target=SG_MALLOC(float64_t, rows*cols);
@@ -535,4 +535,62 @@ float64_t* CMath::pinv(
 
 	return target;
 }
+
+/// inverses square matrix in-place
+void CMath::inverse(SGMatrix<float64_t> matrix)
+{
+	ASSERT(matrix.num_cols==matrix.num_rows);
+	int32_t* ipiv = SG_MALLOC(int32_t, matrix.num_cols);
+	clapack_dgetrf(CblasColMajor,matrix.num_cols,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
+	clapack_dgetri(CblasColMajor,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
+	SG_FREE(ipiv);
+}
+
+double* CMath::compute_eigenvectors(double* matrix, int n, int m)
+{
+	ASSERT(n == m);
+
+	char V='V';
+	char U='U';
+	int info;
+	int ord=n;
+	int lda=n;
+	double* eigenvalues=SG_CALLOC(float64_t, n+1);
+
+	// lapack sym matrix eigenvalues+vectors
+	wrap_dsyev(V, U,  ord, matrix, lda,
+			eigenvalues, &info);
+
+	if (info!=0)
+		SG_SERROR("DSYEV failed with code %d\n", info);
+
+	return eigenvalues;
+}
+#endif //HAVE_LAPACK
+
+float64_t CMath::dot(const float64_t* v1, const float64_t* v2, int32_t n)
+{
+	float64_t r=0;
+#ifdef HAVE_LAPACK
+	int32_t skip=1;
+	r = cblas_ddot(n, v1, skip, v2, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		r+=v1[i]*v2[i];
 #endif
+	return r;
+}
+
+float32_t CMath::dot(
+		const float32_t* v1, const float32_t* v2, int32_t n)
+{
+	float64_t r=0;
+#ifdef HAVE_LAPACK
+	int32_t skip=1;
+	r = cblas_sdot(n, v1, skip, v2, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		r+=v1[i]*v2[i];
+#endif
+	return r;
+}

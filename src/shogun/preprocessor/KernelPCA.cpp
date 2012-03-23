@@ -104,8 +104,9 @@ bool CKernelPCA::init(CFeatures* features)
 		m_bias_vector = SGVector<float64_t>(n);
 		CMath::fill_vector(m_bias_vector.vector, m_bias_vector.vlen, 0.0);
 
-		CMath::dgemv(1.0, m_transformation_matrix.matrix, n, n, 
-		             CblasTrans, bias_tmp, 0.0, m_bias_vector.vector);
+		cblas_dgemv(CblasColMajor, CblasTrans,
+				n, n, 1.0, m_transformation_matrix.matrix, n,
+				bias_tmp, 1, 0.0, m_bias_vector.vector, 1);
 
 		float64_t* rowsum = CMath::get_row_sum(m_transformation_matrix.matrix, n, n);
 		CMath::scale_vector(1.0/n, rowsum, n);
