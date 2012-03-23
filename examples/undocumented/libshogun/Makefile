@@ -22,6 +22,7 @@ TARGETS = basic_minimal \
   		  classifier_conjugateindex \
 		  classifier_gaussiannaivebayes \
 		  classifier_libsvmmulticlass \
+		  classifier_qda \
 		  kernel_gaussian kernel_revlin \
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
