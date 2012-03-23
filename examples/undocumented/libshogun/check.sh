@@ -6,11 +6,12 @@ test -n "$LIBRARY_PATH" && LIBRARY_PATH="LIBRARY_PATH=${LIBRARY_PATH}"
 test -n "$LIB_PATH" && LIB_PATH="LIB_PATH=${LIB_PATH}"
 test -n "$INC_PATH" && INC_PATH="INC_PATH=${INC_PATH}"
 test -n "$LIBS" && LIBS="LIBS=${LIBS}"
+test -n "$INCLUDES" && INCLUDES="INCLUDES=${INCLUDES}"
 
 for e in `make print_targets | grep -v ^make`
 do
 	echo -n "running $e .."
-	if make "$e" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" >/dev/null 2>&1 && "./$e" >/dev/null 2>&1
+	if make "$e" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" "$INCLUDES" >/dev/null 2>&1 && "./$e" >/dev/null 2>&1
 	then
 		echo " OK"
 	else
