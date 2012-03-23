@@ -160,12 +160,11 @@ bool CPythonInterface::get_bool()
     return PyInt_AS_LONG(const_cast<PyObject*>(b)) != 0;
 }
 
-
 char* CPythonInterface::get_string(int32_t& len)
 {
 	const PyObject* s=get_arg_increment();
 
-#if PY_VERSION_HEX >= 0x03000000
+#ifdef IS_PYTHON3
     if (!s || !PyUnicode_Check(s))
         SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
         
@@ -650,7 +649,6 @@ void CPythonInterface::run_python_init()
 		SG_SERROR("couldn't open " LIBPYTHON ".so\n");
 #endif
 	Py_Initialize();
-    //import_array();
     init_numpy();
 }
 
@@ -705,7 +703,7 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 
 	SG_FREE(python_code);
 
-#if PY_MAJOR_VERSION >= 3
+#ifdef IS_PYTHON3
     PyObject* res = PyEval_EvalCode(python_code_obj, globals, NULL);
 #else
     PyObject* res = PyEval_EvalCode((PyCodeObject*) python_code_obj, globals, NULL);
@@ -835,10 +833,8 @@ static PyMethodDef sg_pythonmethods[] = {
 };
 
 #ifdef HAVE_ELWMS
-//PyMODINIT_FUNC initelwms(void)
 MOD_INIT(elwms)
 #else
-//PyMODINIT_FUNC initsg(void)
 MOD_INIT(sg)
 #endif
 {
@@ -871,8 +867,6 @@ MOD_INIT(sg)
 #ifdef HAVE_R
 	CRInterface::run_r_init();
 #endif
-
-	//import_array();
     init_numpy();
 
 	// init_shogun has to be called before anything else

@@ -31,7 +31,7 @@ extern "C" {
 
 #if PY_VERSION_HEX >= 0x03000000
     #define PyString_FromStringAndSize PyBytes_FromStringAndSize
-	#define PyString_AsStringAndSize PyBytes_AsStringAndSize
+    #define PyString_AsStringAndSize PyBytes_AsStringAndSize
 #endif
 
 /* Functions to extract array attributes.
