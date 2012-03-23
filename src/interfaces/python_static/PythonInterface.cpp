@@ -137,7 +137,6 @@ int32_t CPythonInterface::get_int()
 	if (!i || !PyInt_Check(i))
 		SG_ERROR("Expected Scalar Integer as argument %d\n", m_rhs_counter);
 
-	//return PyInt_AS_LONG(i);
     return PyInt_AS_LONG(const_cast<PyObject*>(i));
 }
 
@@ -156,7 +155,6 @@ bool CPythonInterface::get_bool()
 	if (!b || !PyBool_Check(b))
 		SG_ERROR("Expected Scalar Boolean as argument %d\n", m_rhs_counter);
 
-	//return PyInt_AS_LONG(b) != 0;
     return PyInt_AS_LONG(const_cast<PyObject*>(b)) != 0;
 }
 

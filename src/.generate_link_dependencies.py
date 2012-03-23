@@ -93,5 +93,5 @@ for f in deps.iterkeys():
 					if d[-2:]=='.h' or d[-2:]=='.i':
 						str2+=' ' + d 
 
-			print str1
-			print str2
+			print(str1)
+			print(str2)
