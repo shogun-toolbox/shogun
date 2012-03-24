@@ -906,7 +906,7 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 		SG_FREE(s);
 	}
 
-	SG_PRINT("leaving CSGObject::migrate\n");
+//	SG_PRINT("leaving CSGObject::migrate\n");
 
 	return result;
 }
