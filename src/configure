@@ -4361,6 +4361,11 @@ EOF
 		fi
 	fi
 
+	if [ `echo $PYVER | cut -c 1` -gt 2 ]
+	then
+		SWIGFLAGS_PYTHON_MODULAR="${SWIGFLAGS_PYTHON_MODULAR} -py3"	
+	fi
+
 	if test "$_python" = yes
 	then
 		DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"

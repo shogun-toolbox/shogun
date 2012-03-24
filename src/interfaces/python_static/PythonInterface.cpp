@@ -849,10 +849,8 @@ MOD_INIT(sg)
 
 	// initialize callbacks
 #ifdef HAVE_ELWMS
-    //Py_InitModule((char*) "elwms", sg_pythonmethods);
     MOD_DEF(module, (char*) "elwms", sg_pythonmethods);
 #else
-    //Py_InitModule((char*) "sg", sg_pythonmethods);
     MOD_DEF(module, (char*) "sg", sg_pythonmethods);
 #endif
 
