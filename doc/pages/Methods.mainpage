@@ -8,11 +8,11 @@
   ML related Algorithms/Classes/Methods implemented within shogun.
 
   \section featrep_sec Feature Representations
-  Shogun supports a wide range of feature representations. Among them are the so called
-  simple features (cf., CSimpleFeatures) that are standard 2-d Matrices, strings
-  (cf., CStringFeatures) that however in contrast to other meanings of string are
-  just a list of vectors of arbitrary length and sparse features (cf.,
-  CSparseFeatures) to efficiently represent sparse matrices.
+  Shogun supports a wide range of feature representations. Among them are the so
+  called simple features (cf., CSimpleFeatures) that are standard 2-d Matrices,
+  strings (cf., CStringFeatures) that however in contrast to other meanings of
+  string are just a list of vectors of arbitrary length and sparse features
+  (cf., CSparseFeatures) to efficiently represent sparse matrices.
 
   Each of these feature objects
 
@@ -37,9 +37,9 @@
   Many other feature types available. Some of them are based on the three basic
   feature types above, like CTOPFeatures (TOP Kernel features from CHMM),
   CFKFeatures (Fisher Kernel features from CHMM) and CRealFileFeatures (vectors
-  fetched from a binary file). It should be noted that all 
-  feature objects are derived from CFeatures 
-  More complex 
+  fetched from a binary file). It should be noted that all
+  feature objects are derived from CFeatures
+  More complex
   \li CAttributeFeatures - Features of attribute value pairs.
   \li CCombinedDotFeatures -  Features that allow stacking of dot features.
   \li CCombinedFeatures - Features that allow stacking of arbitrary features.
@@ -49,7 +49,8 @@
   \li CImplicitWeightedSpecFeatures - DotFeatures that implicitly implement weighted spectrum kernel features.
   \li CWDFeatures - DotFeatures that implicitly implement weighted degree kernel features.
 
-  In addition, labels are represented in CLabels and the alphabet of a string in CAlphabet.
+  In addition, labels are represented in CLabels and the alphabet of a string in
+  CAlphabet.
 
 
 
@@ -112,7 +113,7 @@
   \subsection other_regress Others
   \li CKRR - Kernel Ridge Regression
 
-  
+
 
   \section distrib_sec Distributions
   \li CHMM - Hidden Markov Models
@@ -142,7 +143,7 @@
   \li CAUCKernel - To maximize AUC in SVM training (takes a kernel as input)
   \li CChi2Kernel - Chi^2 Kernel
   \li CCombinedKernel - Combined kernel to work with multiple kernels
-  \li CCommUlongStringKernel - Spectrum Kernel with spectrums of up to 64bit 
+  \li CCommUlongStringKernel - Spectrum Kernel with spectrums of up to 64bit
   \li CCommWordStringKernel - Spectrum kernel with spectrum of up to 16 bit
   \li CConstKernel - A ``kernel'' returning a constant
   \li CCustomKernel - A user supplied custom kernel

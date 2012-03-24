@@ -1,18 +1,18 @@
 /*!
 \page modular_tutorial Tutorial for Modular Interfaces
 
-SHOGUN's "modular" interfaces to Python, Octave, Java, Lua, Ruby and C#
-give intuitive and easy access to the shogun's functionality.
-Compared to the static interfaces (\subpage staticinterfaces), 
-the modular ones are much more flexible and allow for nearly unlimited extensibility. 
+SHOGUN's "modular" interfaces to Python, Octave, Java, Lua, Ruby and C# give
+intuitive and easy access to the shogun's functionality. Compared to the static
+interfaces (\subpage staticinterfaces), the modular ones are much more flexible
+and allow for nearly unlimited extensibility.
 
 If this is your first time using shogun, you've found the right place to start!
 
 
-In this tutorial, we demonstrate how to use shogun to create a simple
-Gaussian kernel based Support Vector Machine (SVM) classifier, but first
-things first. Let's fire up python, octave, java, lua, ruby or C#, and load the modular
-shogun environment.
+In this tutorial, we demonstrate how to use shogun to create a simple Gaussian
+kernel based Support Vector Machine (SVM) classifier, but first things first.
+Let's fire up python, octave, java, lua, ruby or C#, and load the modular shogun
+environment.
 
 \section start_shogun_modular Starting SHOGUN
 
@@ -21,8 +21,8 @@ To load all of shogun's modules under octave start octave and issue
 init_shogun
 \endverbatim
 
-Under python we have to specify what we'd like to import. 
-For this example, we will need features and labels to represent our input data, 
+Under python we have to specify what we'd like to import.
+For this example, we will need features and labels to represent our input data,
 a classifier, a kernel to compare the similarity of features and
 some evaluation procedures.
 
@@ -70,8 +70,8 @@ as kernel, classifier, distance and so on.
 require('shogun')
 \endverbatim
 
-we also have to specify what we'd like to load. 
-For this example, we will need features and labels to represent our input data, 
+we also have to specify what we'd like to load.
+For this example, we will need features and labels to represent our input data,
 a classifier, a kernel to compare the similarity of features
 
 \verbatim
@@ -89,9 +89,9 @@ Features.init_shogun_with_defaults();
 
 \section docu_shogun_modular Getting Help
 
-If you would like to get an overview of the classes in shogun or 
+If you would like to get an overview of the classes in shogun or
 if you are looking for the documentation of a particular class,
-use the "Classes" tab above and browse through the class list. 
+use the "Classes" tab above and browse through the class list.
 All classes are rather well documented (if documentation is not good enough in a
 particular class, please notify us). Note that all classes in the
 classes list (classes tab above) are all prefixed with a 'C' - that
@@ -99,7 +99,7 @@ really is the only difference to using them from within the python or
 octave modular interfaces (where the C prefix is missing).
 
 Alternatively, under python the same documentation is available via
-python help strings, so you may issue 
+python help strings, so you may issue
 
 \verbatim
 help(<classname>)
@@ -180,7 +180,7 @@ function concatenate(...)
 		for row,rowdata in ipairs(t) do
 			for col,coldata in ipairs(rowdata) do
 				table.insert(result[row], coldata)
-			end		
+			end
 		end
 	end
 	return result
@@ -192,7 +192,7 @@ function rand_matrix(rows, cols, dist)
 		matrix[i] = {}
 		for j = 1, cols do
 			matrix[i][j] = math.random() + dist
-		end	
+		end
 	end
 	return matrix
 end
@@ -299,13 +299,15 @@ for (int i = 0; i < num; i ++) {
 	testlab[i + num] = 1;
 }
 
-The rest of this tutorial below will now work the same (identical syntax) for python,
-octave (when using a trailing semicolon for each command, which is optional in python),
-lua(we use colon to get the method of an object), ruby and C#
+The rest of this tutorial below will now work the same (identical syntax) for
+python, octave (when using a trailing semicolon for each command, which is
+optional in python), lua(we use colon to get the method of an object), ruby and
+C#
 
-For java, we use DoubleMatrix to represent most of the types. If shogun C++ class need a 
-int Vector/Matrix, we convert the DoubleMatrix into int Vector/Matrix and when returned 
-from the function, we convert the int Vector/Matrix into DoubleMatrix again.
+For java, we use DoubleMatrix to represent most of the types. If shogun C++
+class need a int Vector/Matrix, we convert the DoubleMatrix into int
+Vector/Matrix and when returned from the function, we convert the int
+Vector/Matrix into DoubleMatrix again.
 
 \section svm_tutorial_modular Creating an SVM classifier
 
@@ -333,19 +335,20 @@ and can now compute the kernel matrix
 km = kernel.get_kernel_matrix();
 \endverbatim
 
-To train an SVM, we need labeled examples, which is a vector of ones
-and minus ones, such as the one we have previously stored in the variable train_labels.
-We now create a shogun label object from it (the same goes for our test labels, which we'll
-use later):
+To train an SVM, we need labeled examples, which is a vector of ones and minus
+ones, such as the one we have previously stored in the variable train_labels. We
+now create a shogun label object from it (the same goes for our test labels,
+which we'll use later):
 
 \verbatim
 labels = Labels(train_labels);
 labels_test = Labels(test_labels);
 \endverbatim
 
-Given the labels object and the kernel all that is left to do is to specify a cost parameter C
-(used to control generalization performance) and we can construct an SVM object. To start the
-training, we simply invoke the train method of the SVM object. Quiet easy, isn't it?
+Given the labels object and the kernel all that is left to do is to specify a
+cost parameter C (used to control generalization performance) and we can
+construct an SVM object. To start the training, we simply invoke the train
+method of the SVM object. Quiet easy, isn't it?
 
 \verbatim
 C = 1.0;
@@ -353,12 +356,13 @@ svm = LibSVM(C, kernel, labels);
 svm.train();
 \endverbatim
 
-To apply the SVM to unseen test data, we simply need to pass a feature object to the 
-SVM's apply method, which returns a shogun Label object (note that we could alternatively
-initialize the kernel object with the train and test data manually and then call apply
-without arguments, which is done in some of the other example scripts).
-If we would like to analyze the outputs directly in python/octave, we can obtain the vector 
-of outputs in native python/octave representation via get_labels(). 
+To apply the SVM to unseen test data, we simply need to pass a feature object to
+the SVM's apply method, which returns a shogun Label object (note that we could
+alternatively initialize the kernel object with the train and test data manually
+and then call apply without arguments, which is done in some of the other
+example scripts). If we would like to analyze the outputs directly in
+python/octave, we can obtain the vector of outputs in native python/octave
+representation via get_labels().
 
 \verbatim
 output = svm.apply(feats_test);
@@ -366,10 +370,11 @@ output_vector = output.get_labels();
 \endverbatim
 
 
-Given the output and the test labels, we can now assess the prediction performance. For this, 
-we create an instance of the class PerformanceMeasures, which provides a convenient
-way of obtaining various performance measures, such as accuracy (acc), area under
-the receiver operator characteristic curve (auROC), F-score and others:
+Given the output and the test labels, we can now assess the prediction
+performance. For this, we create an instance of the class PerformanceMeasures,
+which provides a convenient way of obtaining various performance measures, such
+as accuracy (acc), area under the receiver operator characteristic curve
+(auROC), F-score and others:
 
 \verbatim
 pm = PerformanceMeasures(labels_test, output);
@@ -378,7 +383,8 @@ roc = pm.get_auROC();
 fms = pm.get_fmeasure();
 \endverbatim
 
-That's really it. For any of the advanced topics please have a look one of the \b many self-explanatory examples in
+That's really it. For any of the advanced topics please have a look one of the
+\b many self-explanatory examples in
 
 \li examples/octave-modular also available online \subpage octave_modular_examples "here"
 \li examples/python-modular also available online \subpage python_modular_examples "here"

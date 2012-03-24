@@ -2,9 +2,9 @@
 
 As mentioned before SHOGUN interfaces to several programming languages and
 toolkits such as Matlab(tm), R, Python, Octave. The special
-Eierlegendewollmilchsau (elwms) interface does everything in one file. It is
-a chimera of all the \subpage staticinterfaces, thus all the examples and documentation
-form \subpage staticinterfaces still apply.
+Eierlegendewollmilchsau (elwms) interface does everything in one file. It is a
+chimera of all the \subpage staticinterfaces, thus all the examples and
+documentation form \subpage staticinterfaces still apply.
 
 One of the key strengths of this interface is that it provides the
 \verbatim
@@ -13,7 +13,8 @@ elwms('run_r', 'A', A, ..., 'rfile', '...')
 elwms('run_octave', 'A', A, ..., octavecode, '...')
 \endverbatim
 
-interoperability commands that enable running of code in foreign languages. For example 
+interoperability commands that enable running of code in foreign languages. For
+example
 
 \verbinclude octave_matplotlib.m
 
