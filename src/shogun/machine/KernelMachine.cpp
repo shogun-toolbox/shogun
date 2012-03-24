@@ -655,11 +655,11 @@ void CKernelMachine::init()
 	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
 
 	m_parameter_map->put(
-		new SGParamInfo("custom_kernel", CT_SCALAR, ST_NONE, PT_SGOBJECT, 0),
+		new SGParamInfo("custom_kernel", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
 		new SGParamInfo()
 	);
 	m_parameter_map->put(
-		new SGParamInfo("kernel_backup", CT_SCALAR, ST_NONE, PT_SGOBJECT, 0),
+		new SGParamInfo("kernel_backup", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
 		new SGParamInfo()
 	);
 	m_parameter_map->finalize_map();

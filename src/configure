@@ -3197,6 +3197,14 @@ EOF
 						HAVE_LAPACK='#define HAVE_LAPACK 1'
 						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
 						POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas -llapack_atlas"
+					elif cc_check -I/usr/include/atlas -llapack -lcblas -llapack_atlas
+					then
+						echores "yes"
+						INCLUDES="$INCLUDES -I/usr/include/atlas"
+						HAVE_ATLAS='#define HAVE_ATLAS 1'
+						HAVE_LAPACK='#define HAVE_LAPACK 1'
+						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+						POSTLINKFLAGS="$POSTLINKFLAGS -llapack -lcblas -llapack_atlas"
 					elif cc_check -L${ALTERNATIVE_ATLASDIR} -llapack -lcblas -llapack_atlas
 					then
 						echores "yes"

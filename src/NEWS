@@ -1,6 +1,6 @@
 2012-03-16 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 1.2.0 (libshogun 12.0, data 0.3, parameter 0)
+	* SHOGUN Release version 1.2.0 (libshogun 12.0, data 0.3, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- This release contains first release of Efficient Dimensionality Reduction Toolkit (EDRT).
@@ -13,14 +13,23 @@
 		  new rejection schemes concept by Sergey Lisitsyn.
 		- New regression estimation algorithms.
 		- New graphical python modular examples.
+		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
+		- New data-locking concept by Heiko Strathmann which allows to tell machines that data
+		  is not going to change during training/testing until unlocked.
+		  KernelMachines now make use of that by not recomputing kernel matrix in cross-validation.
+		- Cross-validation for KernelMachines is now parallelized.
+		- Cross-validation is now possible with custom kernels.
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was
 		  changed to log-space.
 		- Fix for R_static interface installation (thanks Steve Lianoglou).
 		- SVMOcas memsetting and max_train_time bugfix.
 		- Various fixes for compile errors with clang.
+		- Stratified-cross-validation now used different indices for each run.
 	* Cleanup and API Changes:
-		- Improvements for parameters handling and serialization by Heiko Strathmann.
+		- Parameter migration framework by Heiko Strathmann. From now on,
+		  changes in the shogun objects will not break loading old serialized
+		  files anymore
 
 2011-12-01 Soeren Sonnenburg <sonne@debian.org>
 

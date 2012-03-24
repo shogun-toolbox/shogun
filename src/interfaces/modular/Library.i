@@ -420,12 +420,14 @@ namespace shogun
         SERIALIZABLE_DUMMY(CDynamicArray<float64_t>);
 #endif
         %template(DynamicPlifArray) DynArray<shogun::CPlifBase*>;
+        SERIALIZABLE_DUMMY(DynArray<shogun::CPlifBase*>);
 }
 /* Template Class GCArray */
 %include <shogun/lib/GCArray.h>
 namespace shogun
 {
         %template(PlifGCArray) CGCArray<shogun::CPlifBase*>;
+        SERIALIZABLE_DUMMY(CGCArray<shogun::CPlifBase*>);
 }
 
 /* Hash */
