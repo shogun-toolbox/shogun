@@ -58,7 +58,7 @@ void CQDA::cleanup()
 
 	m_covs.destroy_ndarray();
 	m_M.destroy_ndarray();
-	m_means.destroy_matrix();
+	m_means.free_matrix();
 	m_slog.free_vector();
 
 	m_num_classes = 0;
@@ -212,7 +212,7 @@ bool CQDA::train_machine(CFeatures* data)
 		m_covs = SGNDArray< float64_t >(cov_dims, 3);
 	}
 
-	m_means     = SGMatrix< float64_t >(m_dim, m_num_classes);
+	m_means = SGMatrix< float64_t >(m_dim, m_num_classes, true);
 	SGMatrix< float64_t > scalings  = SGMatrix< float64_t >(m_dim, m_num_classes);
 
 	// rot_dims will be freed in rotations.destroy_ndarray()
