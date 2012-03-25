@@ -188,6 +188,9 @@ class CQDA : public CMachine
 		/** feature means for each of the classes in the training data */
 		SGMatrix< float64_t > m_means;
 
+		/** vector computed in training and used in classification */
+		SGVector< float32_t > m_slog;
+
 }; /* class QDA */
 }  /* namespace shogun */
 

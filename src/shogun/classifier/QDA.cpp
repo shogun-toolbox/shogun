@@ -43,8 +43,9 @@ void CQDA::init()
 	m_parameters->add(&m_tolerance, "m_tolerance", "Tolerance member.");
 	m_parameters->add(&m_store_covs, "m_store_covs", "Store covariances member");
 	m_parameters->add((CSGObject**) &m_features, "m_features", "Feature object.");
-	m_parameters->add(&m_scalings, "m_scalings", "Scaling vect rs list");
+	m_parameters->add(&m_scalings, "m_scalings", "Scaling vectors list");
 	m_parameters->add(&m_means, "m_means", "Mean vectors list");
+	m_parameters->add(&m_slog, "m_slog", "Vector used in classification");
 
 	//TODO include SGNDArray objects for serialization
 
@@ -61,6 +62,7 @@ void CQDA::cleanup()
 	m_rotations.destroy_ndarray();
 	m_scalings.destroy_matrix();
 	m_means.destroy_matrix();
+	m_slog.free_vector();
 
 	m_num_classes = 0;
 }
@@ -87,7 +89,7 @@ CLabels* CQDA::apply()
 	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		// Xm = X - means[k] 
+		// X = features - means
 		for ( i = 0 ; i < num_vecs ; ++i )
 		{
 			vec = rf->get_feature_vector(i, vlen, vfree);
@@ -113,17 +115,10 @@ CLabels* CQDA::apply()
 #endif
 	}
 
-	/* TODO avoid the repetitions of the same operations every time apply is called */
-	SGVector< float32_t > slog(m_num_classes);
-	slog.zero();
-	for ( k = 0 ; k < m_num_classes ; ++k )
-		for ( j = 0 ; j < m_dim ; ++j )
-			slog[k] += CMath::log(m_scalings[k*m_dim + j]);
-
 	for ( i = 0 ; i < num_vecs ; ++i )
 		for ( k = 0 ; k < m_num_classes ; ++k )
 		{
-			norm2[i + k*num_vecs] += slog[k];
+			norm2[i + k*num_vecs] += m_slog[k];
 			norm2[i + k*num_vecs] *= -0.5;
 		}
 
@@ -137,7 +132,6 @@ CLabels* CQDA::apply()
 	CMath::display_vector(out->get_labels().vector, num_vecs, "Labels");
 #endif
 
-	slog.destroy_vector();
 	norm2.destroy_vector();
 	A.destroy_matrix();
 	X.destroy_matrix();
@@ -277,8 +271,6 @@ bool CQDA::train_machine(CFeatures* data)
 
 		CMath::vector_multiply(col, col, col, m_dim);
 		CMath::scale_vector(1.0/(m-1), col, m_dim);
-
-		//CMath::transpose_matrix(rot_mat, n, n);
 		m_rotations.transpose_matrix(k);
 
 		if ( m_store_covs )
@@ -300,6 +292,7 @@ bool CQDA::train_machine(CFeatures* data)
 	/* Computation of terms required for classification */
 
 	SGVector< float32_t > sinvsqrt(m_dim);
+
 	// M_dims will be freed in m_M.destroy_ndarray()
 	index_t* M_dims = SG_MALLOC(index_t, 3);
 	M_dims[0] = m_dim;
@@ -307,12 +300,17 @@ bool CQDA::train_machine(CFeatures* data)
 	M_dims[2] = m_num_classes;
 	m_M = SGNDArray< float64_t >(M_dims, 3);
 
-	index_t idx = 0;
+	m_slog = SGVector< float32_t >(m_num_classes, true);
+	m_slog.zero();
 
+	index_t idx = 0;
 	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
 		for ( j = 0 ; j < m_dim ; ++j )
+		{
 			sinvsqrt[j] = 1.0 / CMath::sqrt(m_scalings[k*m_dim + j]);
+			m_slog[k]  += CMath::log(m_scalings[k*m_dim + j]);
+		}
 
 		for ( i = 0 ; i < m_dim ; ++i )
 			for ( j = 0 ; j < m_dim ; ++j )
