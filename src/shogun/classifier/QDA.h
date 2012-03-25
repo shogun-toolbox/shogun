@@ -125,7 +125,10 @@ class CQDA : public CMachine
 		 *
 		 * @return mean vector of class i
 		 */
-		inline SGVector< float64_t > get_mean(int32_t i) const { return m_means[i]; }
+		inline SGVector< float64_t > get_mean(int32_t i) const 
+		{
+			return SGVector< float64_t >(m_means.get_column_vector(i), m_dim);
+		}
 
 		/** get a class' covariance matrix
 		 *
@@ -133,7 +136,10 @@ class CQDA : public CMachine
 		 *
 		 * @return covariance matrix of class i
 		 */
-		inline SGMatrix< float64_t > get_cov(int32_t i) const { return m_covs[i]; }
+		inline SGMatrix< float64_t > get_cov(int32_t i) const 
+		{ 
+			return SGMatrix< float64_t >(m_covs.get_matrix(i), m_dim, m_dim); 
+		}
 
 	protected:
 		/** train QDA classifier
@@ -151,10 +157,13 @@ class CQDA : public CMachine
 
 	private:
 		/** scalings obtained during training and used in classification */
-		SGVector< float64_t >* m_scalings;
+		SGMatrix< float64_t > m_scalings;
 
 		/** rotations obtained during training and used in classification */
-		SGMatrix< float64_t >* m_rotations;
+		SGNDArray< float64_t > m_rotations;
+
+		/** matrices computed in training and used in classification */
+		SGNDArray< float64_t > m_M;
 
 		/** feature vectors */
 		CDotFeatures* m_features;
@@ -174,10 +183,10 @@ class CQDA : public CMachine
 		/** feature covariances for each of the classes in the training data
 		 *  stored iif store_covs
 		 */
-		SGMatrix< float64_t >* m_covs;
+		SGNDArray< float64_t > m_covs;
 
 		/** feature means for each of the classes in the training data */
-		SGVector< float64_t >* m_means;
+		SGMatrix< float64_t > m_means;
 
 }; /* class QDA */
 }  /* namespace shogun */
