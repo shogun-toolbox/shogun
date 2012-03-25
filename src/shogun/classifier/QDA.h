@@ -156,15 +156,6 @@ class CQDA : public CMachine
 		void cleanup();
 
 	private:
-		/** scalings obtained during training and used in classification */
-		SGMatrix< float64_t > m_scalings;
-
-		/** rotations obtained during training and used in classification */
-		SGNDArray< float64_t > m_rotations;
-
-		/** matrices computed in training and used in classification */
-		SGNDArray< float64_t > m_M;
-
 		/** feature vectors */
 		CDotFeatures* m_features;
 
@@ -187,6 +178,9 @@ class CQDA : public CMachine
 
 		/** feature means for each of the classes in the training data */
 		SGMatrix< float64_t > m_means;
+
+		/** matrices computed in training and used in classification */
+		SGNDArray< float64_t > m_M;
 
 		/** vector computed in training and used in classification */
 		SGVector< float32_t > m_slog;
