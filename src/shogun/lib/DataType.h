@@ -409,106 +409,106 @@ template<class T> class SGMatrix
 /** @brief shogun n-dimensional array */
 template<class T> class SGNDArray
 {
-    public:
-        /** default constructor */
-        SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
+	public:
+		/** default constructor */
+		SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
 
-        /** constructor for setting params */
-        SGNDArray(T* a, index_t* d, index_t nd)
-            : array(a), dims(d), num_dims(nd) { }
+		/** constructor for setting params */
+		SGNDArray(T* a, index_t* d, index_t nd)
+		    : array(a), dims(d), num_dims(nd) { }
 
-	/** constructor to create new ndarray in memory */
-	SGNDArray(index_t* d, index_t nd)
-		: dims(d), num_dims(nd)
-	{
-		index_t tot = 1;
-		for (int32_t i=0; i<nd; i++)
-			tot *= dims[i];
-		array=SG_MALLOC(T, tot);
-	}
+		/** constructor to create new ndarray in memory */
+		SGNDArray(index_t* d, index_t nd)
+			: dims(d), num_dims(nd)
+		{
+			index_t tot = 1;
+			for (int32_t i=0; i<nd; i++)
+				tot *= dims[i];
+			array=SG_MALLOC(T, tot);
+		}
 
-        /** copy constructor */
-        SGNDArray(const SGNDArray &orig)
-            : array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
+		/** copy constructor */
+		SGNDArray(const SGNDArray &orig)
+		    : array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
 
-	/** empty destructor */
-	virtual ~SGNDArray()
-	{
-	}
+		/** empty destructor */
+		virtual ~SGNDArray()
+		{
+		}
 
-	/** destroy ndarry */
-	virtual void destroy_ndarray()
-	{
-		SG_FREE(array);
-		SG_FREE(dims);
+		/** destroy ndarry */
+		virtual void destroy_ndarray()
+		{
+			SG_FREE(array);
+			SG_FREE(dims);
 
-		array     = NULL;
-		dims      = NULL;
-		num_dims  = 0;
-	}
+			array     = NULL;
+			dims      = NULL;
+			num_dims  = 0;
+		}
 
-	/** get a matrix formed by the two first dimensions
-	 *
-	 * @param  matIdx matrix index
-	 * @return pointer to the matrix
-	 */
-	T* get_matrix(index_t matIdx) const
-	{	
-		ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
-		return &array[matIdx*dims[0]*dims[1]];
-	}
-	
-	/** operator overload for ndarray read only access
-	 *
-	 * @param index to access
-	 */
-	inline const T& operator[](index_t index) const
-	{
-		return array[index];
-	}
-
-	/** operator overload for ndarray r/w access
-	 *
-	 * @param index to access
-	 */
-	inline T& operator[](index_t index)
-	{
-		return array[index];
-	}
-
-	/** transposes a matrix formed by the two first dimensions
-	 *
-	 * @param matIdx matrix index
-	 */
-	void transpose_matrix(index_t matIdx) const
-	{
-		ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
+		/** get a matrix formed by the two first dimensions
+		 *
+		 * @param  matIdx matrix index
+		 * @return pointer to the matrix
+		 */
+		T* get_matrix(index_t matIdx) const
+		{	
+			ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
+			return &array[matIdx*dims[0]*dims[1]];
+		}
 		
-		T aux;
-		// Index to acces directly the elements of the matrix of interest
-		int32_t idx = matIdx*dims[0]*dims[1];
+		/** operator overload for ndarray read only access
+		 *
+		 * @param index to access
+		 */
+		inline const T& operator[](index_t index) const
+		{
+			return array[index];
+		}
 
-		for (int32_t i=0; i<dims[0]; i++)
-			for (int32_t j=0; j<i-1; j++)
-			{
-				aux = array[idx + i + j*dims[0]];
-				array[idx + i + j*dims[0]] = array[idx + j + i*dims[0]];
-				array[idx + j + i*dims[1]] = aux;
-			}
+		/** operator overload for ndarray r/w access
+		 *
+		 * @param index to access
+		 */
+		inline T& operator[](index_t index)
+		{
+			return array[index];
+		}
 
-		// Swap the sizes of the two first dimensions
-		index_t auxDim = dims[0];
-		dims[0] = dims[1];
-		dims[1] = auxDim;
-	}
+		/** transposes a matrix formed by the two first dimensions
+		 *
+		 * @param matIdx matrix index
+		 */
+		void transpose_matrix(index_t matIdx) const
+		{
+			ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
+			
+			T aux;
+			// Index to acces directly the elements of the matrix of interest
+			int32_t idx = matIdx*dims[0]*dims[1];
 
-    public:
-        /** array  */
-        T* array;
-        /** dimension sizes */
-        index_t* dims;
-        /** number of dimensions  */
-        index_t num_dims;
+			for (int32_t i=0; i<dims[0]; i++)
+				for (int32_t j=0; j<i-1; j++)
+				{
+					aux = array[idx + i + j*dims[0]];
+					array[idx + i + j*dims[0]] = array[idx + j + i*dims[0]];
+					array[idx + j + i*dims[1]] = aux;
+				}
+
+			// Swap the sizes of the two first dimensions
+			index_t auxDim = dims[0];
+			dims[0] = dims[1];
+			dims[1] = auxDim;
+		}
+
+	public:
+		/** array  */
+		T* array;
+		/** dimension sizes */
+		index_t* dims;
+		/** number of dimensions  */
+		index_t num_dims;
 };
 
 /** @brief shogun string */
