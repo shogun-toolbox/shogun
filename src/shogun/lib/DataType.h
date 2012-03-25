@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Wrriten (W) 2012 Fernando José Iglesias García
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -16,7 +17,7 @@
 #include <shogun/io/SGIO.h>
 
 #define PT_NOT_GENERIC	PT_SGOBJECT
-#define PT_LONGEST		floatmax_t
+#define PT_LONGEST	floatmax_t
 
 namespace shogun
 {
@@ -359,9 +360,9 @@ template<class T> class SGMatrix
 		/** get a column vector
 		 * @param col column index
 		 */
-		T* get_column_vector(index_t col)
+		T* get_column_vector(index_t col) const
 		{
-		    return &matrix[col*num_rows];
+			return &matrix[col*num_rows];
 		}
 
 		/** operator overload for matrix read only access
@@ -378,6 +379,20 @@ template<class T> class SGMatrix
 		inline T& operator[](index_t index)
 		{
 			return matrix[index];
+		}
+
+		/** set matrix to a constant */
+		void set_const(T const_elem)
+		{
+			for (index_t i=0; i<num_rows*num_cols; i++)
+				matrix[i]=const_elem ;
+		}
+
+		/** fill matrix with zeros */
+		void zero()
+		{
+			if (matrix && (num_rows*num_cols))
+				set_const(0);
 		}
 
 	public:
@@ -402,9 +417,90 @@ template<class T> class SGNDArray
         SGNDArray(T* a, index_t* d, index_t nd)
             : array(a), dims(d), num_dims(nd) { }
 
+	/** constructor to create new ndarray in memory */
+	SGNDArray(index_t* d, index_t nd)
+		: dims(d), num_dims(nd)
+	{
+		index_t tot = 1;
+		for (int32_t i=0; i<nd; i++)
+			tot *= dims[i];
+		array=SG_MALLOC(T, tot);
+	}
+
         /** copy constructor */
         SGNDArray(const SGNDArray &orig)
             : array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
+
+	/** empty destructor */
+	virtual ~SGNDArray()
+	{
+	}
+
+	/** destroy ndarry */
+	virtual void destroy_ndarray()
+	{
+		SG_FREE(array);
+		SG_FREE(dims);
+
+		array     = NULL;
+		dims      = NULL;
+		num_dims  = 0;
+	}
+
+	/** get a matrix formed by the two first dimensions
+	 *
+	 * @param  matIdx matrix index
+	 * @return pointer to the matrix
+	 */
+	T* get_matrix(index_t matIdx) const
+	{	
+		ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
+		return &array[matIdx*dims[0]*dims[1]];
+	}
+	
+	/** operator overload for ndarray read only access
+	 *
+	 * @param index to access
+	 */
+	inline const T& operator[](index_t index) const
+	{
+		return array[index];
+	}
+
+	/** operator overload for ndarray r/w access
+	 *
+	 * @param index to access
+	 */
+	inline T& operator[](index_t index)
+	{
+		return array[index];
+	}
+
+	/** transposes a matrix formed by the two first dimensions
+	 *
+	 * @param matIdx matrix index
+	 */
+	void transpose_matrix(index_t matIdx) const
+	{
+		ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
+		
+		T aux;
+		// Index to acces directly the elements of the matrix of interest
+		int32_t idx = matIdx*dims[0]*dims[1];
+
+		for (int32_t i=0; i<dims[0]; i++)
+			for (int32_t j=0; j<i-1; j++)
+			{
+				aux = array[idx + i + j*dims[0]];
+				array[idx + i + j*dims[0]] = array[idx + j + i*dims[0]];
+				array[idx + j + i*dims[1]] = aux;
+			}
+
+		// Swap the sizes of the two first dimensions
+		index_t auxDim = dims[0];
+		dims[0] = dims[1];
+		dims[1] = auxDim;
+	}
 
     public:
         /** array  */
