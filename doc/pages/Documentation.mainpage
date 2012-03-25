@@ -25,7 +25,7 @@
   Perceptrons and features algorithms to train hidden markov models. The input
   feature-objects can be dense, sparse or strings and of type
   int/short/double/char and can be converted into different feature types.
-  Chains of preprocessors (e.g.  substracting the mean) can be attached to each
+  Chains of preprocessors (e.g.  subtracting the mean) can be attached to each
   feature object allowing for on-the-fly pre-processing.
 
   SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave and
