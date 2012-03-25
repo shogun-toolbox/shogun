@@ -1,13 +1,14 @@
 /*!
 \page static_tutorial Tutorial for Static Interfaces
 
-SHOGUN provides "static" interfaces to  Matlab(tm), R, Python, Octave and provides a command
-line stand-a-lone executable. The idea behind the static interfaces is to
-provide a simple environment just enough to do simple experiments. For example,
-it will allow you to train and evaluate a classifier but not go beyond that. In
-case you are looking for basically unlimited extensibility (multiple methods
-like classifiers potentially sharing data and interacting) you might want to
-look at the \subpage modular_tutorial "Modular Interfaces" instead.
+SHOGUN provides "static" interfaces to Matlab(tm), R, Python, Octave and
+provides a command line stand-a-lone executable. The idea behind the static
+interfaces is to provide a simple environment just enough to do simple
+experiments. For example, it will allow you to train and evaluate a classifier
+but not go beyond that. In case you are looking for basically unlimited
+extensibility (multiple methods like classifiers potentially sharing data and
+interacting) you might want to look at the \subpage modular_tutorial "Modular
+Interfaces" instead.
 
 In this tutorial we demonstrate how to use shogun to create a simple
 gaussian kernel based support vector machine classifier but first
@@ -27,7 +28,8 @@ For R issue (from within R)
   library(sg)
 \endverbatim
 
-For octave and matlab just make sure sg is in the path (use addpath). For the cmdline interface just start the shogun executable
+For octave and matlab just make sure sg is in the path (use addpath). For the
+cmdline interface just start the shogun executable
 
 Now in all languages
 
@@ -48,7 +50,7 @@ in the cmdline interface will show the help screen. If not consult
 
 The rest of this tutorial assumes that the cmdline shogun executable
 is used (but hints on how things work using other interfaces). The
-basic syntax is 
+basic syntax is
 \verbatim
   <command> <option1> <option2> ...
 \endverbatim
@@ -58,13 +60,16 @@ here options are separated by spaces. For example
 set_kernel GAUSSIAN REAL 10 1.2
 \endverbatim
 
-will create a gaussian kernel that operates on real-valued features uses a kernel cache of size 10 MB and kernel width of 1.2. In analogy the other the cmdline for the other interfaces (python,r,...) would look like
+will create a gaussian kernel that operates on real-valued features uses a
+kernel cache of size 10 MB and kernel width of 1.2. In analogy the other the
+cmdline for the other interfaces (python,r,...) would look like
 
 \verbatim
 sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 1.2)
 \endverbatim
 
-Note that there is little difference to the other interfaces, basically only strings are marked as such and arguments comma separated.
+Note that there is little difference to the other interfaces, basically only
+strings are marked as such and arguments comma separated.
 
 We now use two random gaussians as inputs as train data:
 \verbatim
@@ -77,7 +82,8 @@ sg('set_features', 'TRAIN', [ randn(2, 100)-1, randn(2,100)+1 ])
 \endverbatim
 would work).
 
-For training a supervised method like an SVM we need a labeling of the training data, which we set via
+For training a supervised method like an SVM we need a labeling of the training
+data, which we set via
 \verbatim
 set_labels TRAIN ../data/label_train_twoclass.dat
 \endverbatim
@@ -88,7 +94,9 @@ sg('set_labels', 'TRAIN', sign(randn(1, 100)))
 \endverbatim
 would work)
 
-Now we create an SVM and set the SVM-C parameter to some hopefully sane value (which in real applications needs tuning; like the kernel parameters (here kernel width)).
+Now we create an SVM and set the SVM-C parameter to some hopefully sane value
+(which in real applications needs tuning; like the kernel parameters (here
+kernel width)).
 \verbatim
 new_classifier LIBSVM
 c 1
@@ -131,7 +139,7 @@ Finally, the complete example looks like this
 \verbinclude classifier_libsvm.sg
 
 and can be found together with many other \subpage examples "examples"
-in examples/cmdline/classifier_libsvm.sg . 
+in examples/cmdline/classifier_libsvm.sg .
 
 For users of other interfaces we show the translated example for completeness:
 

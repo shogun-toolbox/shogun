@@ -108,7 +108,8 @@ CSimpleKernel<float64_t> (for strings it would be CStringKernel, for sparse
 features CSparseKernel).
 
 Essentially we only need to overload the CKernel::compute() function with our
-own implementation of compute. All the rest gets empty defaults. An example for our compute() function could be
+own implementation of compute. All the rest gets empty defaults. An example for
+our compute() function could be
 
 
 \verbatim
@@ -117,7 +118,7 @@ virtual float64_t compute(int32_t idx_a, int32_t idx_b)
     int32_t alen, blen;
     bool afree, bfree;
 
-    float64_t* avec= 
+    float64_t* avec=
         ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
     float64_t* bvec=
         ((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
@@ -183,11 +184,11 @@ and finally tell swig to wrap all functions found in the header
 \endverbatim
 
 In case you got your object working we will happily integrate it into shogun
-provided you follow a number of basic coding conventions detailed in \subpage devel (see
-FORMATTING for formatting instructions, MACROS on how to use and name macros,
-TYPES on which types to use, FUNCTIONS on how functions should look like and
-NAMING CONVENTIONS for the naming scheme. Note that in case you change the API
-in a way that breaks ABI compatibility you need to increase the major number of
-the libshogun soname (see \subpage soname ).
+provided you follow a number of basic coding conventions detailed in \subpage
+devel (see FORMATTING for formatting instructions, MACROS on how to use and name
+macros, TYPES on which types to use, FUNCTIONS on how functions should look like
+and NAMING CONVENTIONS for the naming scheme. Note that in case you change the
+API in a way that breaks ABI compatibility you need to increase the major number
+of the libshogun soname (see \subpage soname ).
 
 */
