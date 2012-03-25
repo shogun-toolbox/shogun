@@ -2,28 +2,29 @@
 
 This page lists ready to run shogun examples for the C++ libshogun interface.
 
-\li \subpage libshogun_base_examples 
-\li \subpage libshogun_basic_examples 
-\li \subpage libshogun_classifier_examples 
-\li \subpage libshogun_clustering_examples 
-\li \subpage libshogun_converter_examples 
-\li \subpage libshogun_features_examples 
-\li \subpage libshogun_kernel_examples 
-\li \subpage libshogun_library_examples 
-\li \subpage libshogun_mathematics_examples 
-\li \subpage libshogun_modelselection_examples 
-\li \subpage libshogun_parameter_examples 
-\li \subpage libshogun_preprocessor_examples 
-\li \subpage libshogun_serialization_examples 
-\li \subpage libshogun_splitting_examples 
-\li \subpage libshogun_streaming_examples 
+\li \subpage libshogun_base_examples
+\li \subpage libshogun_basic_examples
+\li \subpage libshogun_classifier_examples
+\li \subpage libshogun_clustering_examples
+\li \subpage libshogun_converter_examples
+\li \subpage libshogun_features_examples
+\li \subpage libshogun_kernel_examples
+\li \subpage libshogun_library_examples
+\li \subpage libshogun_mathematics_examples
+\li \subpage libshogun_modelselection_examples
+\li \subpage libshogun_parameter_examples
+\li \subpage libshogun_preprocessor_examples
+\li \subpage libshogun_serialization_examples
+\li \subpage libshogun_splitting_examples
+\li \subpage libshogun_streaming_examples
 
 To run the examples you will need to manually compile them via
 \verbatim
 g++ name_of_example.cpp -lshogun
 \endverbatim
 
-in case you installed libshogun to a nonstandard directory you will need to specify the appropriate library and include paths, e.g.
+in case you installed libshogun to a nonstandard directory you will need to
+specify the appropriate library and include paths, e.g.
 \verbatim
 g++ -I/path/to/libshogun/includes name_of_example.cpp -L/path/to/libshogun/sofile -lshogun
 \endverbatim
@@ -32,11 +33,12 @@ Then the examples are standard binary executables and can be started via
 \verbatim
 ./name_of_example
 \endverbatim
-respectively if the libraries are in nonstandard locations (such that they cannot be found by the dynamic linker)
+respectively if the libraries are in nonstandard locations (such that they
+cannot be found by the dynamic linker)
 \verbatim
 LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \endverbatim
-		
+
 \section libshogun_base_examples Base
 
 
