@@ -1588,9 +1588,9 @@ set_install_dirs() {
 	python_minor=`$PYTHON -V 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
 	if test -z "$_pydir" ; then
 		if test "$python_major" -ge 2 && test "$python_minor" -ge 6 ; then
-			_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/dist-packages"
+			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/dist-packages"
 		else
-			_pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
+			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/site-packages"
 		fi
 	fi
 }
@@ -4279,11 +4279,11 @@ test_python()
 		echocheck "Python numpy support"
 		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
 		then
-			if [ `$PYTHON -c 'import numpy; print numpy.__version__' | cut -c 1` -gt 0 ]
+			if [ `$PYTHON -c 'import numpy; print(numpy.__version__)' | cut -c 1` -gt 0 ]
 			then
-				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
+				echores "`$PYTHON -c 'import numpy; print(numpy.__version__)'`"
 			else
-				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`... too old version 1.0 or later required"
+				echores "`$PYTHON -c 'import numpy; print(numpy.__version__)'`... too old version 1.0 or later required"
 				if test "$_python" = yes
 				then
 					die "python numpy outdated"
@@ -4305,10 +4305,10 @@ test_python()
 			PRE_LIB_SWIG_PYTHON_MODULAR=_
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
 			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
-			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "from distutils.sysconfig import get_python_inc; import numpy; print '-I%s -I%s' % (get_python_inc(), numpy.get_include())"`
-			_pylibpath=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print "-L%(LIBPL)s" % get_config_vars()'`
-			EXT_LIB_SWIG_PYTHON_MODULAR=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print "%(SO)s" % get_config_vars()'`
-			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`${EXT_LIB_SWIG_PYTHON_MODULAR%.*}
+			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "from distutils.sysconfig import get_python_inc; import numpy; print('-I%s -I%s' % (get_python_inc(), numpy.get_include()))"`
+			_pylibpath=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print("-L%(LIBPL)s" % get_config_vars())'`
+			EXT_LIB_SWIG_PYTHON_MODULAR=`$PYTHON -c "from distutils.sysconfig import get_config_vars, get_config_var; sle=(get_config_var('SO').replace('.'+get_config_var('SOABI'),'',1) if 'SOABI' in get_config_vars() else get_config_var('SO')); print(sle)"`
+			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print('python'+sys.version[0:3])"`${EXT_LIB_SWIG_PYTHON_MODULAR%.*}
 			INCLUDES_PYTHON="$_pyinclude $INCLUDES_PYTHON"
 			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PYTHON"
 			COMPFLAGS_C_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_C_PYTHON"
@@ -4340,6 +4340,7 @@ PyMODINIT_FUNC initsg(void)
 
 PyMODINIT_FUNC initsg(void);
 EOF
+
 			echocheck "Python/Python Numpy Developer Files"
 			if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON
 			then
@@ -4366,6 +4367,11 @@ EOF
 				fi
 			fi
 		fi
+	fi
+
+	if [ `echo $PYVER | cut -c 1` -gt 2 ]
+	then
+		SWIGFLAGS_PYTHON_MODULAR="${SWIGFLAGS_PYTHON_MODULAR} -py3"	
 	fi
 
 	if test "$_python" = yes
