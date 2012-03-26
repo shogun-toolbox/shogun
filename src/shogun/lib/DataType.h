@@ -411,15 +411,15 @@ template<class T> class SGNDArray
 {
 	public:
 		/** default constructor */
-		SGNDArray() : array(NULL), dims(NULL), num_dims(0) { }
+		SGNDArray() : array(NULL), dims(NULL), num_dims(0), do_free(false) { }
 
 		/** constructor for setting params */
-		SGNDArray(T* a, index_t* d, index_t nd)
-		    : array(a), dims(d), num_dims(nd) { }
+		SGNDArray(T* a, index_t* d, index_t nd, bool free_ndarray = false)
+		    : array(a), dims(d), num_dims(nd), do_free(free_ndarray) { }
 
 		/** constructor to create new ndarray in memory */
-		SGNDArray(index_t* d, index_t nd)
-			: dims(d), num_dims(nd)
+		SGNDArray(index_t* d, index_t nd, bool free_ndarray = false)
+			: dims(d), num_dims(nd), do_free(free_ndarray)
 		{
 			index_t tot = 1;
 			for (int32_t i=0; i<nd; i++)
@@ -429,22 +429,33 @@ template<class T> class SGNDArray
 
 		/** copy constructor */
 		SGNDArray(const SGNDArray &orig)
-		    : array(orig.array), dims(orig.dims), num_dims(orig.num_dims) { }
+		    : array(orig.array), dims(orig.dims), num_dims(orig.num_dims), 
+		    do_free(orig.do_free) { }
 
 		/** empty destructor */
 		virtual ~SGNDArray()
 		{
 		}
 
-		/** destroy ndarry */
-		virtual void destroy_ndarray()
+		/** free ndarray */
+		virtual void free_ndarray()
 		{
-			SG_FREE(array);
+			if (do_free)
+				SG_FREE(array);
+
 			SG_FREE(dims);
 
 			array     = NULL;
 			dims      = NULL;
 			num_dims  = 0;
+		}
+
+
+		/** destroy ndarray */
+		virtual void destroy_ndarray()
+		{
+			do_free = true;
+			free_ndarray();
 		}
 
 		/** get a matrix formed by the two first dimensions
@@ -509,6 +520,8 @@ template<class T> class SGNDArray
 		index_t* dims;
 		/** number of dimensions  */
 		index_t num_dims;
+		/** whether ndarry needs to be freed */
+		bool do_free;
 };
 
 /** @brief shogun string */
