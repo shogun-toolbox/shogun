@@ -228,6 +228,12 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     {
         $action
     }
+#ifdef SWIGPYTHON
+    catch (Swig::DirectorException &e)
+    {
+        SWIG_fail;
+    }
+#endif
     catch (std::bad_alloc)
     {
         SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));

@@ -24,8 +24,6 @@
 #include <shogun/features/Features.h>
 #include <shogun/kernel/KernelNormalizer.h>
 
-#include <vector>
-
 namespace shogun
 {
 	class CFile;
@@ -107,7 +105,8 @@ enum EKernelType
 	K_INVERSEMULTIQUADRIC = 440,
 	K_DISTANTSEGMENTS = 450,
 	K_BESSEL = 460,
-	K_JENSENSHANNON = 470
+	K_JENSENSHANNON = 470,
+	K_DIRECTOR = 480
 };
 
 /** kernel property */
