@@ -148,6 +148,7 @@ protected:
 	/** default init */
 	void init();
 
+<<<<<<< HEAD
 	/** constructs weight matrix
 	 * @param simple_features features to be used
 	 * @param W_matrix weight matrix
@@ -171,6 +172,9 @@ protected:
 	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
 
 	/** estimates k using ternary search
+=======
+	/** estimates k using ternary search 
+>>>>>>> e70b94f... Proof-of-concept libedrt
 	 * @param simple_features simple features to use
 	 * @param neighborhood_matrix matrix containing indexes of neighbors for every vector
 	 * @return optimal k (in means of reconstruction error)
@@ -193,6 +197,9 @@ protected:
 	                                       float64_t* z_matrix, float64_t* covariance_matrix,
 	                                       float64_t* resid_vector, float64_t* id_vector,
 	                                       SGMatrix<int32_t> neighborhood_matrix);
+
+	static float64_t compute_kernel(int32_t i, int32_t j, void* user_data);
+
 
 	/// FIELDS
 protected:

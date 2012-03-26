@@ -123,6 +123,7 @@ CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
 
 CSimpleFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel* kernel)
 {
+	/* 
 	CTime* time = new CTime();
 
 	time->start();
@@ -147,6 +148,7 @@ CSimpleFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel*
 	delete time;
 
 	return new CSimpleFeatures<float64_t>(nullspace);
+	*/
 }
 
 SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
