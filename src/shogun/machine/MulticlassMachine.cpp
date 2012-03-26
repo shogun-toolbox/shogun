@@ -70,7 +70,7 @@ CLabels* CMulticlassMachine::apply()
 				return classify_one_vs_rest();
 				break;
 			case ONE_VS_ONE_STRATEGY:
-				SG_NOTIMPLEMENTED;
+				return classify_one_vs_one();
 				break;
 			default:
 				SG_ERROR("Unknown multiclass strategy\n");
@@ -186,6 +186,8 @@ bool CMulticlassMachine::train_one_vs_one()
 		}
 	}
 
+	SG_PRINT(">>>> at the end of training num_machines = %d\n", get_num_machines());
+
 	SG_UNREF(train_labels);
 	return true;
 }
@@ -245,6 +247,85 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 		for (int32_t i=0; i<num_machines; i++)
 			SG_UNREF(outputs[i]);
 
+		SG_FREE(outputs);
+	}
+
+	return result;
+}
+
+CLabels* CMulticlassMachine::classify_one_vs_one()
+{
+	int32_t num_classes  = m_labels->get_num_classes();
+	int32_t num_machines = get_num_machines();
+	SG_PRINT(">>>> at the beginning of classify num_machines = %d\n", num_machines);
+	SG_PRINT(">>>> at the beginning of classify num_classes = %d\n",  num_classes);
+	if ( num_machines != num_classes*(num_classes-1)/2 )
+		SG_ERROR("Dimension mismatch in classify_one_vs_one between number \
+			of machines = %d and number of classes = %d\n", num_machines, 
+			num_classes);
+	CLabels* result = NULL;
+
+	if ( is_ready() )
+	{
+		int32_t num_vectors = get_num_rhs_vectors();
+
+		result = new CLabels(num_vectors);
+		SG_REF(result);
+
+		ASSERT(num_vectors==result->get_num_labels());
+		CLabels** outputs=SG_MALLOC(CLabels*, num_machines);
+
+		for (int32_t i=0; i<num_machines; i++)
+		{
+			ASSERT(m_machines[i]);
+			outputs[i]=m_machines[i]->apply();
+		}
+
+		SG_PRINT(">>>> Starting to go through the vectors\n");
+
+		SGVector<float64_t> votes(num_classes);
+		for (int32_t v=0; v<num_vectors; v++)
+		{
+			int32_t s=0;
+			votes.zero();
+
+			for (int32_t i=0; i<num_classes; i++)
+			{
+				for (int32_t j=i+1; j<num_classes; j++)
+				{
+					SG_PRINT(">>>> s = %d v  = %d\n", s, v);
+					if ( ! outputs[s] )
+						SG_ERROR(">>>>>> outputs[%d] is null!!!\n", s);
+					if (outputs[s++]->get_label(v)>0)
+						votes[i]++;
+					else
+						votes[j]++;
+				}
+			}
+
+			SG_PRINT(">>>> votes counted\n");
+
+			int32_t winner=0;
+			int32_t max_votes=votes[0];
+
+			for (int32_t i=1; i<num_classes; i++)
+			{
+				if (votes[i]>max_votes)
+				{
+					max_votes=votes[i];
+					winner=i;
+				}
+			}
+
+			SG_PRINT(">>>> max_votes found\n");
+			result->set_label(v, winner);
+		}
+
+		SG_PRINT(">>>> Destroy votes\n");
+		votes.destroy_vector();
+
+		for (int32_t i=0; i<num_machines; i++)
+			SG_UNREF(outputs[i]);
 		SG_FREE(outputs);
 	}
 

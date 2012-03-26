@@ -139,6 +139,12 @@ class CMulticlassMachine : public CMachine
 		 */
 		virtual CLabels* classify_one_vs_rest();
 
+		/** classifiy one vs one
+		 *
+		 * @return resulting labels
+		 */
+		virtual CLabels* classify_one_vs_one();
+		
 		/** clear machines */
 		void clear_machines();
 
