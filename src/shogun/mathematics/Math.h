@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2012 Fernando José Iglesias Garía
  * Written (W) 2011 Siddharth Kherada
  * Written (W) 2011 Justin Patera
  * Written (W) 2011 Alesis Novik
@@ -854,6 +855,27 @@ class CMath : public CSGObject
 					maxv=CMath::max(vec[i], maxv);
 
 				return maxv;
+			}
+
+		/// return arg_max(vec)
+		template <class T>
+			static inline int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL)
+			{
+				ASSERT(len > 0 || inc > 0);
+
+				T maxv = vec[0];
+				int32_t maxIdx = 0;
+
+				for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+				{
+					if (vec[j] > maxv)
+						maxv = vec[j], maxIdx = i;
+				}
+
+				if (maxv_ptr != NULL)
+					*maxv_ptr = maxv;
+
+				return maxIdx;
 			}
 
 		/// return sum(abs(vec))
