@@ -34,5 +34,5 @@ def kernel_io_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.9):
 	return km_train, km_test, kernel
 
 if __name__=='__main__':
-	print 'Gaussian'
+	print('Gaussian')
 	kernel_io_modular(*parameter_list[0])

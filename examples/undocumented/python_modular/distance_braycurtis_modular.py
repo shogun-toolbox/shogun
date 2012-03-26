@@ -24,6 +24,6 @@ def distance_braycurtis_modular (fm_train_real=traindat,fm_test_real=testdat):
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'BrayCurtisDistance'
+	print('BrayCurtisDistance')
 	distance_braycurtis_modular(*parameter_list[0])
 

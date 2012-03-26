@@ -21,7 +21,7 @@ def regression_svrlight_modular(fm_train=traindat,fm_test=testdat,label_train=la
 	try:
 		from shogun.Regression import SVRLight
 	except ImportError:
-		print 'No support for SVRLight available.'
+		print('No support for SVRLight available.')
 		return
 
 	feats_train=RealFeatures(fm_train)
@@ -42,5 +42,5 @@ def regression_svrlight_modular(fm_train=traindat,fm_test=testdat,label_train=la
 	return out, kernel 
 
 if __name__=='__main__':
-	print 'SVRLight'
+	print('SVRLight')
 	regression_svrlight_modular(*parameter_list[0])

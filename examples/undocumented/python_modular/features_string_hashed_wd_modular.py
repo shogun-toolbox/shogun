@@ -26,5 +26,5 @@ def features_string_hashed_wd_modular(A=matrix,order=3,start_order=1,hash_bits=2
     return fm
 
 if __name__=='__main__':
-    print 'string_hashed_wd'
+    print('string_hashed_wd')
     features_string_hashed_wd_modular(*parameter_list[0])

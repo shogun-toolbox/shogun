@@ -24,6 +24,6 @@ def evaluation_meansquarederror_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'MeanSquaredError'
+	print('MeanSquaredError')
 	evaluation_meansquarederror_modular(*parameter_list[0])
 

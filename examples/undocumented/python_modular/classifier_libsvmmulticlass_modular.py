@@ -28,5 +28,5 @@ def classifier_libsvmmulticlass_modular (fm_train_real=traindat,fm_test_real=tes
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
-	print 'LibSVMMultiClass'	
+	print('LibSVMMultiClass'	)
 	classifier_libsvmmulticlass_modular(*parameter_list[0])

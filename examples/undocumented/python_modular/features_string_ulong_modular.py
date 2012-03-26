@@ -19,5 +19,5 @@ def features_string_ulong_modular(start=0,order=2,gap=0,rev=False):
     return uf.get_features(),uf.get_feature_vector(2), uf.get_num_vectors()
 
 if __name__=='__main__':
-    print 'simple_longint'
+    print('simple_longint')
     features_string_ulong_modular(*parameter_list[0])

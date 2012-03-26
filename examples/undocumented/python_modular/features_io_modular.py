@@ -40,11 +40,11 @@ def features_io_modular(fm_train_real, label_train_twoclass):
 
 	f=BinaryFile("fm_train_real.bin")
 	feats2.load(f)
-	#print "diff binary", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten()))
+	#print("diff binary", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten())))
 
 	f=AsciiFile("fm_train_real.ascii")
 	feats2.load(f)
-	#print "diff ascii", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten()))
+	#print("diff ascii", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten())))
 
 	lab=Labels(numpy.array([1.0,2.0,3.0]))
 	lab2=Labels()
@@ -65,10 +65,10 @@ def features_io_modular(fm_train_real, label_train_twoclass):
 
 	f=HDF5File("fm_train_real.h5","r", "/data/doubles")
 	feats2.load(f)
-	#print feats2.get_feature_matrix()
+	#print(feats2.get_feature_matrix())
 	f=HDF5File("label_train_real.h5","r", "/data/labels")
 	lab2.load(f)
-	#print lab2.get_labels()
+	#print(lab2.get_labels())
 
 	#clean up
 	import os
@@ -79,5 +79,5 @@ def features_io_modular(fm_train_real, label_train_twoclass):
 	return feats, feats2, lab, lab2
 
 if __name__=='__main__':
-	print 'Features IO'
+	print('Features IO')
 	features_io_modular(*parameter_list[0])

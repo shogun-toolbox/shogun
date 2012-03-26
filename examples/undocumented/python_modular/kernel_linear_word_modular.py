@@ -25,5 +25,5 @@ def kernel_linear_word_modular (fm_train_word=traindat,fm_test_word=testdat,scal
 	return kernel
 
 if __name__=='__main__':
-	print 'LinearWord'
+	print('LinearWord')
 	kernel_linear_word_modular(*parameter_list[0])

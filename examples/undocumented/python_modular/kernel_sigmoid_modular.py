@@ -23,5 +23,5 @@ def kernel_sigmoid_modular(fm_train_real=traindat,fm_test_real=testdat,size_cach
 	return km_train,km_test,kernel
 	
 if __name__=='__main__':
-	print 'Sigmoid'
+	print('Sigmoid')
 	kernel_sigmoid_modular(*parameter_list[0])

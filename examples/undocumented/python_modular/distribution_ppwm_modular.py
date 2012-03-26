@@ -33,10 +33,10 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 
 
 	ppwm.set_pwm(log(pwm))
-	#print ppwm.get_pwm()
+	#print(ppwm.get_pwm())
 	ppwm.compute_w(L)
 	w=ppwm.get_w()
-	#print w
+	#print(w)
 	#from pylab import *
 	#figure(1)
 	#pcolor(exp(w))
@@ -60,5 +60,5 @@ def distribution_ppwm_modular (fm_dna=traindna, order=3):
 ###########################################################################
 
 if __name__=='__main__':
-	print 'PositionalPWM'
+	print('PositionalPWM')
 	distribution_ppwm_modular(*parameter_list[0])

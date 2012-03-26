@@ -19,6 +19,6 @@ def preprocessor_pca_modular(data):
 
 
 if __name__=='__main__':
-	print 'PCA'
+	print('PCA')
 	preprocessor_pca_modular(*parameter_list[0])
 

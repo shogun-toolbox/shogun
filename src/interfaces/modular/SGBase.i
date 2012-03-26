@@ -2,6 +2,8 @@
 %include "stdint.i"
 %include "exception.i"
 
+#include <Python.h>
+
 %define SERIALIZABLE_DUMMY(SWIGCLASS)
 %extend SWIGCLASS {
 bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
@@ -275,6 +277,7 @@ SERIALIZABLE_DUMMY(shogun::Version);
 SERIALIZABLE_DUMMY(shogun::Parallel);
 
 #ifdef SWIGPYTHON
+
 namespace shogun
 {
 
@@ -316,8 +319,11 @@ namespace shogun
             size_t len=0;
             char* result=CFile::read_whole_file(fname, len);
             unlink(fname);
-
+#if PY_VERSION_HEX >= 0x03000000
+			PyObject* str=PyUnicode_FromStringAndSize(result, len);
+#else
             PyObject* str=PyString_FromStringAndSize(result, len);
+#endif
             SG_FREE(result);
 
             PyObject* tuple=PyTuple_New(2);
@@ -334,7 +340,14 @@ namespace shogun
             PyObject* py_str = PyTuple_GetItem(state,1);
             char* str=NULL;
             Py_ssize_t len=0;
-            PyString_AsStringAndSize(py_str, &str, &len);
+			
+#if PY_VERSION_HEX >= 0x03000000
+			len = PyUnicode_GetSize((PyObject*) py_str);
+			str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(py_str)));
+#else
+			len = PyString_Size((PyObject*) py_str);
+			str = PyString_AsString(py_str);
+#endif		
 
             char* fname=tmpnam(NULL);
             FILE* tmpf=fopen(fname, "w");;

@@ -21,6 +21,6 @@ def converter_laplacianeigenmaps_modular(data,k):
 
 
 if __name__=='__main__':
-	print 'LaplacianEigenmaps'
+	print('LaplacianEigenmaps')
 	converter_laplacianeigenmaps_modular(*parameter_list[0])
 

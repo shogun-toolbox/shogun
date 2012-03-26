@@ -25,5 +25,5 @@ def kernel_linear_byte_modular(fm_train_byte=traindat,fm_test_byte=testdat):
 	return kernel
 
 if __name__=='__main__':
-	print 'LinearByte'
+	print('LinearByte')
 	kernel_linear_byte_modular(*parameter_list[0])

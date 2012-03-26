@@ -36,5 +36,5 @@ def regression_libsvr_modular (fm_train=traindat,fm_test=testdat,label_train=lab
 	return out1,out2,kernel
 
 if __name__=='__main__':
-	print 'LibSVR'
+	print('LibSVR')
 	regression_libsvr_modular(*parameter_list[0])

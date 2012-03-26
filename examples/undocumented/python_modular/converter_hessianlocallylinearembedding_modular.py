@@ -20,6 +20,6 @@ def converter_hessianlocallylinearembedding_modular(data,k):
 
 
 if __name__=='__main__':
-	print 'HessianLocallyLinearEmbedding'
+	print('HessianLocallyLinearEmbedding')
 	converter_hessianlocallylinearembedding_modular(*parameter_list[0])
 

@@ -32,5 +32,5 @@ def preprocessor_logplusone_modular (fm_train_real=traindat,fm_test_real=testdat
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'LogPlusOne'
+	print('LogPlusOne')
 	preprocessor_logplusone_modular(*parameter_list[0])

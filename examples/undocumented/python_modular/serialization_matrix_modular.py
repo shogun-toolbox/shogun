@@ -18,5 +18,5 @@ def serialization_matrix_modular(m):
 	os.unlink("foo2.asc")
 
 if __name__=='__main__':
-	print 'Serialization Matrix Modular'
+	print('Serialization Matrix Modular')
 	serialization_matrix_modular(*parameter_list[0])

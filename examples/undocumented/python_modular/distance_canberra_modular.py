@@ -21,5 +21,5 @@ def distance_canberra_modular (fm_train_real=traindat,fm_test_real=testdat):
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'CanberaMetric'
+	print('CanberaMetric')
 	distance_canberra_modular(*parameter_list[0])

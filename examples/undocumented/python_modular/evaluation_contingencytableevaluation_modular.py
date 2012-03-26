@@ -52,6 +52,6 @@ def evaluation_contingencytableevaluation_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'EvaluationContingencyTableEvaluation'
+	print('EvaluationContingencyTableEvaluation')
 	evaluation_contingencytableevaluation_modular(*parameter_list[0])
 

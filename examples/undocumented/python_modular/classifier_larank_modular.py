@@ -35,6 +35,6 @@ def classifier_larank_modular (fm_train_real=traindat,fm_test_real=testdat,label
 
 
 if __name__=='__main__':
-	print 'LaRank'
+	print('LaRank')
 	classifier_larank_modular(*parameter_list[0])
 

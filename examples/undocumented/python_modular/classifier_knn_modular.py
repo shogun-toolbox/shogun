@@ -25,5 +25,5 @@ def classifier_knn_modular(fm_train_real=traindat,fm_test_real=testdat,label_tra
 	return knn,knn_train,output,multiple_k
 
 if __name__=='__main__':
-	print 'KNN'
+	print('KNN')
 	classifier_knn_modular(*parameter_list[0])

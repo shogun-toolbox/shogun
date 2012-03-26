@@ -35,7 +35,7 @@ def regression_kernel_ridge_modular (fm_train=traindat,fm_test=testdat,label_tra
 
 # equivialent shorter version
 def krr_short ():
-	print 'KRR_short'
+	print('KRR_short')
 	from shogun.Features import Labels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Regression import KernelRidgeRegression
@@ -48,5 +48,5 @@ def krr_short ():
 	return krr,out
 
 if __name__=='__main__':
-	print 'KRR'
+	print('KRR')
 	regression_kernel_ridge_modular(*parameter_list[0])

@@ -24,5 +24,5 @@ def classifier_custom_kernel_modular(C=1,dim=7):
 	return svm,out
 
 if __name__=='__main__':
-	print 'custom_kernel'
+	print('custom_kernel')
 	classifier_custom_kernel_modular(*parameter_list[0])

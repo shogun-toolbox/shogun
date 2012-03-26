@@ -23,5 +23,5 @@ def classifier_multiclassliblinear_modular (fm_train_real=traindat,fm_test_real=
 	return out
 
 if __name__=='__main__':
-	print 'MulticlassLibLinear'
+	print('MulticlassLibLinear')
 	classifier_multiclassliblinear_modular(*parameter_list[0])

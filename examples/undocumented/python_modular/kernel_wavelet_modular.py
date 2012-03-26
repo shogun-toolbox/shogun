@@ -23,5 +23,5 @@ def kernel_wavelet_modular (fm_train_real=traindat,fm_test_real=testdat, dilatio
 
 
 if __name__=='__main__':
-	print 'Wavelet'
+	print('Wavelet')
 	kernel_wavelet_modular(*parameter_list[0])

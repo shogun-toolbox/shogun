@@ -22,6 +22,6 @@ def converter_diffusionmaps_modular(data,t):
 
 
 if __name__=='__main__':
-	print 'DiffusionMaps'
+	print('DiffusionMaps')
 	converter_diffusionmaps_modular(*parameter_list[0])
 

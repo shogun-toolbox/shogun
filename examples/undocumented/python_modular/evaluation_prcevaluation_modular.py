@@ -22,6 +22,6 @@ def evaluation_prcevaluation_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'PRCEvaluation'
+	print('PRCEvaluation')
 	evaluation_prcevaluation_modular(*parameter_list[0])
 

@@ -14,6 +14,6 @@ def kernel_diag_modular (diag=23):
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'Diag'
+	print('Diag')
 	kernel_diag_modular(*parameter_list[0])
 	
