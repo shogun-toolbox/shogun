@@ -13,7 +13,10 @@
 #ifdef HAVE_LAPACK
 
 #include <shogun/classifier/QDA.h>
+#include <shogun/features/Features.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
 
 using namespace shogun;
 
@@ -56,9 +59,9 @@ void CQDA::cleanup()
 	if ( m_store_covs )
 		m_covs.destroy_ndarray();
 
-	m_covs.destroy_ndarray();
-	m_M.destroy_ndarray();
-	m_means.destroy_matrix();
+	m_covs.free_ndarray();
+	m_M.free_ndarray();
+	m_means.free_matrix();
 	m_slog.free_vector();
 
 	m_num_classes = 0;
@@ -209,10 +212,10 @@ bool CQDA::train_machine(CFeatures* data)
 		cov_dims[0] = m_dim;
 		cov_dims[1] = m_dim;
 		cov_dims[2] = m_num_classes;
-		m_covs = SGNDArray< float64_t >(cov_dims, 3);
+		m_covs = SGNDArray< float64_t >(cov_dims, 3, true);
 	}
 
-	m_means     = SGMatrix< float64_t >(m_dim, m_num_classes);
+	m_means = SGMatrix< float64_t >(m_dim, m_num_classes, true);
 	SGMatrix< float64_t > scalings  = SGMatrix< float64_t >(m_dim, m_num_classes);
 
 	// rot_dims will be freed in rotations.destroy_ndarray()
@@ -295,7 +298,7 @@ bool CQDA::train_machine(CFeatures* data)
 	M_dims[0] = m_dim;
 	M_dims[1] = m_dim;
 	M_dims[2] = m_num_classes;
-	m_M = SGNDArray< float64_t >(M_dims, 3);
+	m_M = SGNDArray< float64_t >(M_dims, 3, true);
 
 	m_slog = SGVector< float32_t >(m_num_classes, true);
 	m_slog.zero();
