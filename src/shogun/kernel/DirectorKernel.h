@@ -49,6 +49,7 @@ class CDirectorKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
+			return false;
 		}
 
 		/** clean up kernel */
