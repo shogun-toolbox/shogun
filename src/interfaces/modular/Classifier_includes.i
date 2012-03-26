@@ -10,6 +10,7 @@
  #include <shogun/classifier/svm/LibLinear.h>
  #include <shogun/classifier/svm/ScatterSVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
+ #include <shogun/classifier/svm/NewtonSVM.h>
  #include <shogun/classifier/svm/LaRank.h>
  #include <shogun/classifier/svm/LibSVMMultiClass.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
