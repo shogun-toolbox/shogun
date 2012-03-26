@@ -148,28 +148,6 @@ protected:
 	/** default init */
 	void init();
 
-	/** constructs weight matrix 
-	 * @param simple_features features to be used
-	 * @param W_matrix weight matrix
-	 * @param neighborhood_matrix matrix containing neighbor idxs
-	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
-                                                            SGMatrix<int32_t> neighborhood_matrix);
-
-	/** constructs embedding
-	 * @param matrix computed weight matrix
-	 * @param dimension dimension of embedding
-	 * @return embedding features
-	 */
-	virtual SGMatrix<float64_t> construct_embedding(SGMatrix<float64_t> matrix,int dimension);
-
-	/** constructs neighborhood matrix by distance
-	 * @param distance_matrix distance matrix to be used
-	 * @param k number of neighbors
-	 * @return matrix containing indexes of neighbors of i-th vector in i-th column
-	 */
-	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
-
 	/** estimates k using ternary search 
 	 * @param simple_features simple features to use
 	 * @param neighborhood_matrix matrix containing indexes of neighbors for every vector
@@ -193,6 +171,9 @@ protected:
 	                                       float64_t* z_matrix, float64_t* covariance_matrix,
 	                                       float64_t* resid_vector, float64_t* id_vector,
 	                                       SGMatrix<int32_t> neighborhood_matrix);
+
+	static float64_t compute_kernel(int32_t i, int32_t j, void* user_data);
+
 
 	/// FIELDS
 protected:
