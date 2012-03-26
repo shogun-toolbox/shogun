@@ -414,12 +414,12 @@ template<class T> class SGNDArray
 		SGNDArray() : array(NULL), dims(NULL), num_dims(0), do_free(false) { }
 
 		/** constructor for setting params */
-		SGNDArray(T* a, index_t* d, index_t nd, bool free_ndarray = false)
-		    : array(a), dims(d), num_dims(nd), do_free(free_ndarray) { }
+		SGNDArray(T* a, index_t* d, index_t nd, bool do_free_ndarray = false)
+		    : array(a), dims(d), num_dims(nd), do_free(do_free_ndarray) { }
 
 		/** constructor to create new ndarray in memory */
-		SGNDArray(index_t* d, index_t nd, bool free_ndarray = false)
-			: dims(d), num_dims(nd), do_free(free_ndarray)
+		SGNDArray(index_t* d, index_t nd, bool do_free_ndarray = false)
+			: dims(d), num_dims(nd), do_free(do_free_ndarray)
 		{
 			index_t tot = 1;
 			for (int32_t i=0; i<nd; i++)
