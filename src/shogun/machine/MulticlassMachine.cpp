@@ -151,8 +151,6 @@ bool CMulticlassMachine::train_one_vs_one()
 	{
 		for (int32_t j=i+1; j<num_classes; j++)
 		{
-			/** TODO fix this, there must be a way not to allocate these guys on every
-			 * iteration */
 			SGVector<index_t> subset_labels(num_vectors);
 			SGVector<index_t> subset_feats(num_vectors);
 
@@ -185,8 +183,6 @@ bool CMulticlassMachine::train_one_vs_one()
 			remove_machine_subset();
 		}
 	}
-
-	SG_PRINT(">>>> at the end of training num_machines = %d\n", get_num_machines());
 
 	SG_UNREF(train_labels);
 	return true;
@@ -257,8 +253,6 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 {
 	int32_t num_classes  = m_labels->get_num_classes();
 	int32_t num_machines = get_num_machines();
-	SG_PRINT(">>>> at the beginning of classify num_machines = %d\n", num_machines);
-	SG_PRINT(">>>> at the beginning of classify num_classes = %d\n",  num_classes);
 	if ( num_machines != num_classes*(num_classes-1)/2 )
 		SG_ERROR("Dimension mismatch in classify_one_vs_one between number \
 			of machines = %d and number of classes = %d\n", num_machines, 
@@ -281,8 +275,6 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 			outputs[i]=m_machines[i]->apply();
 		}
 
-		SG_PRINT(">>>> Starting to go through the vectors\n");
-
 		SGVector<float64_t> votes(num_classes);
 		for (int32_t v=0; v<num_vectors; v++)
 		{
@@ -293,7 +285,6 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 			{
 				for (int32_t j=i+1; j<num_classes; j++)
 				{
-					SG_PRINT(">>>> s = %d v  = %d\n", s, v);
 					if ( ! outputs[s] )
 						SG_ERROR(">>>>>> outputs[%d] is null!!!\n", s);
 					if (outputs[s++]->get_label(v)>0)
@@ -303,7 +294,6 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 				}
 			}
 
-			SG_PRINT(">>>> votes counted\n");
 
 			int32_t winner=0;
 			int32_t max_votes=votes[0];
@@ -317,11 +307,9 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 				}
 			}
 
-			SG_PRINT(">>>> max_votes found\n");
 			result->set_label(v, winner);
 		}
 
-		SG_PRINT(">>>> Destroy votes\n");
 		votes.destroy_vector();
 
 		for (int32_t i=0; i<num_machines; i++)
