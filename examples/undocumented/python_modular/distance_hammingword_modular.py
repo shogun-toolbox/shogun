@@ -39,5 +39,5 @@ def distance_hammingword_modular (fm_train_dna=traindna,fm_test_dna=testdna,
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'HammingWordDistance'
+	print('HammingWordDistance')
 	distance_hammingword_modular(*parameter_list[0])

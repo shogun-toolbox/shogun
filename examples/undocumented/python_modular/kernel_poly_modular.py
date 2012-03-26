@@ -21,5 +21,5 @@ def kernel_poly_modular (fm_train_real=traindat,fm_test_real=testdat,degree=4,in
 	km_test=kernel.get_kernel_matrix()
 	return km_train,km_test,kernel
 if __name__=='__main__':
-	print 'Poly'
+	print('Poly')
 	kernel_poly_modular (*parameter_list[0])

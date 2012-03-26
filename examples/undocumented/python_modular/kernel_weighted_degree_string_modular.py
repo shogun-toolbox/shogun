@@ -36,5 +36,5 @@ def kernel_weighted_degree_string_modular (fm_train_dna=traindat,fm_test_dna=tes
 
 
 if __name__=='__main__':
-	print 'WeightedDegreeString'
+	print('WeightedDegreeString')
 	kernel_weighted_degree_string_modular(*parameter_list[0])

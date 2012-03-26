@@ -38,5 +38,5 @@ def kernel_comm_ulong_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'CommUlongString'
+	print('CommUlongString')
 	kernel_comm_ulong_string_modular(*parameter_list[0])

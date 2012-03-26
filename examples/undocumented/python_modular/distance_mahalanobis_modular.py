@@ -22,5 +22,5 @@ def distance_mahalanobis_modular (fm_train_real = traindat, fm_test_real = testd
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'MahalanobisDistance'
+	print('MahalanobisDistance')
 	distance_mahalanobis_modular(*parameter_list[0])

@@ -15,6 +15,8 @@
  * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2011 Berlin Institute of Technology
  */
+#include <Python.h>
+
 #ifdef HAVE_PYTHON
 %{
 #ifndef SWIG_FILE_WITH_INIT
@@ -29,11 +31,6 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
-#if PY_VERSION_HEX >= 0x03000000
-    #define PyString_FromStringAndSize PyBytes_FromStringAndSize
-    #define PyString_AsStringAndSize PyBytes_AsStringAndSize
-#endif
-
 /* Functions to extract array attributes.
  */
 static bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
@@ -47,8 +44,18 @@ static bool array_is_contiguous(PyObject* a) { return PyArray_ISCONTIGUOUS(a); }
 static const char* typecode_string(PyObject* py_obj) {
   if (py_obj == NULL          ) return "C NULL value";
   if (PyCallable_Check(py_obj)) return "callable"    ;
+
+#if PY_VERSION_HEX >= 0x03000000
+  if (PyUnicode_Check( py_obj)) return "unicode"	 ;
+#else
   if (PyString_Check(  py_obj)) return "string"      ;
+#endif
+  
+#if PY_VERSION_HEX >= 0x03000000
+  if (PyLong_Check(    py_obj)) return "long"        ;
+#else
   if (PyInt_Check(     py_obj)) return "int"         ;
+#endif
   if (PyFloat_Check(   py_obj)) return "float"       ;
   if (PyDict_Check(    py_obj)) return "dict"        ;
   if (PyList_Check(    py_obj)) return "list"        ;
@@ -201,13 +208,21 @@ static int is_pystring_list(PyObject* obj, int typecode)
         for (int32_t i=0; i<size; i++)
         {
             PyObject *o = PyList_GetItem(list,i);
-            if (typecode == NPY_STRING)
+            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
             {
+#if PY_VERSION_HEX >= 0x03000000
+				if (!PyUnicode_Check(o))
+                {
+                    result=0;
+                    break;
+                }
+#else
                 if (!PyString_Check(o))
                 {
                     result=0;
                     break;
                 }
+#endif
             }
             else
             {
@@ -357,14 +372,22 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
         for (int32_t i=0; i<size; i++)
         {
             PyObject *o = PyList_GetItem(list,i);
-            if (typecode == NPY_STRING)
+            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
             {
+#if PY_VERSION_HEX >= 0x03000000
+				if (PyUnicode_Check(o))
+#else
                 if (PyString_Check(o))
-                {
-                    int32_t len=PyString_Size(o);
-                    max_len=shogun::CMath::max(len,max_len);
-                    const char* str=PyString_AsString(o);
-
+#endif
+				{
+#if PY_VERSION_HEX >= 0x03000000
+					int32_t len=PyUnicode_GetSize(o);
+					const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(o)));
+#else
+					int32_t len=PyString_Size(o);
+					const char* str = PyString_AsString(o);
+#endif
+					max_len=shogun::CMath::max(len,max_len);
                     strings[i].slen=len;
                     strings[i].string=NULL;
 
@@ -449,11 +472,15 @@ static bool string_to_strpy(PyObject* &obj, SGStringList<type> sg_strings, int t
         {
             PyObject* s=NULL;
 
-            if (typecode == NPY_STRING)
+            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
             {
                 /* This path is only taking if str[i].string is a char*. However this cast is
                    required to build through for non char types. */
-                s=PyString_FromStringAndSize((char*) str[i].string, str[i].slen);
+#if PY_VERSION_HEX >= 0x03000000
+			s=PyUnicode_FromStringAndSize((char*) str[i].string, str[i].slen);               
+#else
+			s=PyString_FromStringAndSize((char*) str[i].string, str[i].slen);
+#endif
             }
             else
             {
@@ -749,7 +776,6 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 
 %}
 
-
 /* One dimensional input arrays */
 %define TYPEMAP_IN_SGVECTOR(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
@@ -764,9 +790,16 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 }
 %enddef
 
+
+#define PY_VERSION_HEX 0x03000000
+
 /* Define concrete examples of the TYPEMAP_IN_SGVECTOR macros */
 TYPEMAP_IN_SGVECTOR(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_IN_SGVECTOR(char, 		   NPY_UNICODE)
+#else
 TYPEMAP_IN_SGVECTOR(char,          NPY_STRING)
+#endif
 TYPEMAP_IN_SGVECTOR(uint8_t,       NPY_UINT8)
 TYPEMAP_IN_SGVECTOR(int16_t,       NPY_INT16)
 TYPEMAP_IN_SGVECTOR(uint16_t,      NPY_UINT16)
@@ -792,7 +825,11 @@ TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_OUT_SGVECTOR macros */
 TYPEMAP_OUT_SGVECTOR(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_OUT_SGVECTOR(char, 		    NPY_UNICODE)
+#else
 TYPEMAP_OUT_SGVECTOR(char,          NPY_STRING)
+#endif
 TYPEMAP_OUT_SGVECTOR(uint8_t,       NPY_UINT8)
 TYPEMAP_OUT_SGVECTOR(int16_t,       NPY_INT16)
 TYPEMAP_OUT_SGVECTOR(uint16_t,      NPY_UINT16)
@@ -823,7 +860,11 @@ TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_IN_SGMATRIX macros */
 TYPEMAP_IN_SGMATRIX(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_IN_SGMATRIX(char, 		   NPY_UNICODE)
+#else
 TYPEMAP_IN_SGMATRIX(char,          NPY_STRING)
+#endif
 TYPEMAP_IN_SGMATRIX(uint8_t,       NPY_UINT8)
 TYPEMAP_IN_SGMATRIX(int16_t,       NPY_INT16)
 TYPEMAP_IN_SGMATRIX(uint16_t,      NPY_UINT16)
@@ -849,7 +890,11 @@ TYPEMAP_IN_SGMATRIX(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_OUT_SGMATRIX macros */
 TYPEMAP_OUT_SGMATRIX(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_OUT_SGMATRIX(char, 		    NPY_UNICODE)
+#else
 TYPEMAP_OUT_SGMATRIX(char,          NPY_STRING)
+#endif
 TYPEMAP_OUT_SGMATRIX(uint8_t,       NPY_UINT8)
 TYPEMAP_OUT_SGMATRIX(int16_t,       NPY_INT16)
 TYPEMAP_OUT_SGMATRIX(uint16_t,      NPY_UINT16)
@@ -881,7 +926,11 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
 
 /* Define concrete examples of the TYPEMAP_INND macros */
 TYPEMAP_INND(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_INND(char, 		    NPY_UNICODE)
+#else
 TYPEMAP_INND(char,          NPY_STRING)
+#endif
 TYPEMAP_INND(uint8_t,       NPY_UINT8)
 TYPEMAP_INND(int16_t,       NPY_INT16)
 TYPEMAP_INND(uint16_t,      NPY_UINT16)
@@ -910,7 +959,11 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_STRINGFEATURES_IN(char, 	     NPY_UNICODE)
+#else
 TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING)
+#endif
 TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8)
 TYPEMAP_STRINGFEATURES_IN(int16_t,       NPY_INT16)
 TYPEMAP_STRINGFEATURES_IN(uint16_t,      NPY_UINT16)
@@ -935,7 +988,11 @@ TYPEMAP_STRINGFEATURES_IN(PyObject,      NPY_OBJECT)
 %enddef
 
 TYPEMAP_STRINGFEATURES_OUT(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_STRINGFEATURES_OUT(char, 		  NPY_UNICODE)
+#else
 TYPEMAP_STRINGFEATURES_OUT(char,          NPY_STRING)
+#endif
 TYPEMAP_STRINGFEATURES_OUT(uint8_t,       NPY_UINT8)
 TYPEMAP_STRINGFEATURES_OUT(int16_t,       NPY_INT16)
 TYPEMAP_STRINGFEATURES_OUT(uint16_t,      NPY_UINT16)
@@ -965,7 +1022,11 @@ TYPEMAP_STRINGFEATURES_OUT(PyObject,      NPY_OBJECT)
 %enddef
 
 TYPEMAP_SPARSEFEATURES_IN(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_SPARSEFEATURES_IN(char, 		 NPY_UNICODE)
+#else
 TYPEMAP_SPARSEFEATURES_IN(char,          NPY_STRING)
+#endif
 TYPEMAP_SPARSEFEATURES_IN(uint8_t,       NPY_UINT8)
 TYPEMAP_SPARSEFEATURES_IN(int16_t,       NPY_INT16)
 TYPEMAP_SPARSEFEATURES_IN(uint16_t,      NPY_UINT16)
@@ -995,7 +1056,11 @@ TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
 %enddef
 
 TYPEMAP_SPARSEFEATURES_OUT(bool,          NPY_BOOL)
+#if PY_VERSION_HEX >= 0x03000000
+TYPEMAP_SPARSEFEATURES_OUT(char, 		  NPY_UNICODE)
+#else
 TYPEMAP_SPARSEFEATURES_OUT(char,          NPY_STRING)
+#endif
 TYPEMAP_SPARSEFEATURES_OUT(uint8_t,       NPY_UINT8)
 TYPEMAP_SPARSEFEATURES_OUT(int16_t,       NPY_INT16)
 TYPEMAP_SPARSEFEATURES_OUT(uint16_t,      NPY_UINT16)

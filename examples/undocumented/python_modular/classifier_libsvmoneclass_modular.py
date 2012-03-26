@@ -27,5 +27,5 @@ def classifier_libsvmoneclass_modular (fm_train_real=traindat,fm_test_real=testd
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
-	print 'LibSVMOneClass'
+	print('LibSVMOneClass')
 	classifier_libsvmoneclass_modular(*parameter_list[0])

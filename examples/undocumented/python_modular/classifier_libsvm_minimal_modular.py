@@ -26,4 +26,4 @@ svm.train();
 kernel.init(feats_train, feats_test);
 out=svm.apply().get_labels();
 testerr=mean(sign(out)!=testlab)
-print testerr
+print(testerr)

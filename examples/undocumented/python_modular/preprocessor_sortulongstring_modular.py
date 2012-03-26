@@ -38,5 +38,5 @@ def preprocessor_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=test
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'CommUlongString'
+	print('CommUlongString')
 	preprocessor_sortulongstring_modular(*parameter_list[0])

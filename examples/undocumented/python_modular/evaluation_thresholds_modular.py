@@ -21,11 +21,11 @@ def evaluation_thresholds_modular(index):
 	thresh=evaluator.get_thresholds()
 	b=thresh[index]
 
-	#print "tpr", numpy.mean(output[label>0]>b), tp[index]
-	#print "fpr", numpy.mean(output[label<0]>b), fp[index]
+	#print("tpr", numpy.mean(output[label>0]>b), tp[index])
+	#print("fpr", numpy.mean(output[label<0]>b), fp[index])
 
 	return tp[index],fp[index],numpy.mean(output[label>0]>b),numpy.mean(output[label<0]>b)
 
 if __name__=='__main__':
-	print 'Evaluation with Thresholds'
+	print('Evaluation with Thresholds')
 	evaluation_thresholds_modular(*parameter_list[0])

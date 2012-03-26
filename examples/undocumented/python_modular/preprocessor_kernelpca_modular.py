@@ -22,6 +22,6 @@ def preprocessor_kernelpca_modular(data, threshold, width):
 
 
 if __name__=='__main__':
-	print 'KernelPCA'
+	print('KernelPCA')
 	preprocessor_kernelpca_modular(*parameter_list[0])
 

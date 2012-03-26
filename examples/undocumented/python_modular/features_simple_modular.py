@@ -21,7 +21,7 @@ def features_simple_modular(A=matrixA,B=matrixB,C=matrixC):
 #feat2 = f.WordFeatures(N.zeros((10,5),N.uint16))
 
 
-# print some statistics about a
+# print(some statistics about a)
 
 # get first feature vector and set it
 
@@ -40,5 +40,5 @@ def features_simple_modular(A=matrixA,B=matrixB,C=matrixC):
     return a_out,b_out,c_out,a,b,c
 
 if __name__=='__main__':
-    print 'simple'
+    print('simple')
     features_simple_modular(*parameter_list[0])

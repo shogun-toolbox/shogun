@@ -23,5 +23,5 @@ def distance_cosine_modular (fm_train_real=traindat,fm_test_real=testdat):
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'CosineDistance'
+	print('CosineDistance')
 	distance_cosine_modular(*parameter_list[0])

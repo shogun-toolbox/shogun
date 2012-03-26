@@ -30,5 +30,5 @@ def classifier_gpbtsvm_modular (fm_train_real=traindat,fm_test_real=testdat,labe
 
 
 if __name__=='__main__':
-	print 'GPBTSVM'
+	print('GPBTSVM')
 	classifier_gpbtsvm_modular(*parameter_list[0])

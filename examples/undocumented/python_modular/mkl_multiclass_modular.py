@@ -59,5 +59,5 @@ def mkl_multiclass_modular(fm_train_real, fm_test_real, label_train_multiclass,
 	return out
 
 if __name__ == '__main__':
-	print 'mkl_multiclass'
+	print('mkl_multiclass')
 	mkl_multiclass_modular(*parameter_list[0])

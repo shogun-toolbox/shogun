@@ -35,5 +35,5 @@ def preprocessor_sortwordstring_modular (fm_train_dna=traindna,fm_test_dna=testd
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'CommWordString'
+	print('CommWordString')
 	preprocessor_sortwordstring_modular(*parameter_list[0])

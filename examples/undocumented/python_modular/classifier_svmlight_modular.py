@@ -13,7 +13,7 @@ def classifier_svmlight_modular (fm_train_dna=traindat,fm_test_dna=testdat,label
 	try:
 		from shogun.Classifier import SVMLight
 	except ImportError:
-		print 'No support for SVMLight available.'
+		print('No support for SVMLight available.')
 		return
 
 	feats_train=StringCharFeatures(DNA)
@@ -35,5 +35,5 @@ def classifier_svmlight_modular (fm_train_dna=traindat,fm_test_dna=testdat,label
 	svm.apply().get_labels()
 	return kernel
 if __name__=='__main__':
-	print 'SVMLight'
+	print('SVMLight')
 	classifier_svmlight_modular(*parameter_list[0])

@@ -56,12 +56,12 @@ def evaluation_cross_validation_regression(fm_train=traindat,fm_test=testdat,lab
     # (optional) tell machine to precompute kernel matrix. speeds up. may not work
     predictor.data_lock(labels, features)
 
-    # perform cross-validation and print results
+    # perform cross-validation and print(results)
     result=cross_validation.evaluate()
-    #print "mean:", result.mean
+    #print("mean:", result.mean)
     #if result.has_conf_int:
-    #    print "[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha
+    #    print("[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha)
 
 if __name__=='__main__':
-	print 'Evaluation CrossValidationClassification'
+	print('Evaluation CrossValidationClassification')
 	evaluation_cross_validation_regression(*parameter_list[0])
