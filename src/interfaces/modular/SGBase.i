@@ -114,6 +114,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
 #ifdef SWIGPYTHON
+
  #include <shogun/io/SerializableFile.h>
  #include <shogun/io/SerializableAsciiFile.h>
  #include <shogun/io/SerializableHdf5File.h>
@@ -364,10 +365,11 @@ namespace shogun
     }
 }
 
-
 %pythoncode %{
-import copy_reg
-
+try:
+    import copy_reg
+except ImportError:
+    import copyreg as copy_reg
 def _sg_reconstructor(cls, base, state):
     try:
         if not isinstance(cls(), SGObject):
@@ -396,7 +398,7 @@ def _sg_reduce_ex(self, proto):
         state = None
     else:
         if base is self.__class__:
-            raise TypeError, "can't pickle %s objects" % base.__name__
+            raise TypeError("can't pickle %s objects" % base.__name__)
         state = base(self)
     args = (self.__class__, base, state)
     try:

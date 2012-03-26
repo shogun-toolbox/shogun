@@ -8,6 +8,11 @@
 # Written (W) 2008-2009 Soeren Sonnenburg
 # Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
 
+import sys
+if sys.version_info >= (3,):
+# HACK, HACK, HACK?
+    xrange = range
+
 class_str='class'
 types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
 		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX"] 
@@ -72,15 +77,27 @@ def extract_class_name(lines, line_nr, line, blacklist):
 
 def get_includes(classes):
 	from subprocess import Popen, PIPE 
-	from StringIO import StringIO
+	try:
+	    from StringIO import StringIO
+	except ImportError:
+	    from io import BytesIO
 	cmd=["find", ".", "-false"]
 	for c in classes:
 		cmd.extend(["-o", "-name", "%s.h" % c])
 	p = Popen(cmd, stdout=PIPE)
-	output = StringIO(p.communicate()[0])
+
+	if sys.version_info < (3,):
+		output = StringIO(p.communicate()[0])
+	else:
+		output = BytesIO(p.communicate()[0])
+
 	includes=[]
 	for o in output:
-		includes.append('#include "%s"' % o.strip().lstrip('./'))
+		if sys.version_info > (3,):
+			tempstr = o.decode()
+			includes.append('#include "%s"' % tempstr.strip().lstrip('./'))
+		else:
+			includes.append('#include "%s"' % o.strip().lstrip('./'))
 	return includes
 
 def get_definitions(classes):
@@ -161,7 +178,7 @@ def extract_classes(HEADERS, template, blacklist):
 	"""
 	classes=list()
 	for fname in HEADERS:
-		lines=file(fname).readlines()
+		lines=open(fname).readlines()
 		line_nr=0
 		while line_nr<len(lines):
 			line=lines[line_nr]
@@ -193,24 +210,30 @@ def extract_classes(HEADERS, template, blacklist):
 
 
 def write_templated_file(fname, substitutes):
-	template=file(fname).readlines()
+	template=open(fname).readlines()
 
-	f=file(fname,'w')
+	f=open(fname,'w')
 	for line in template:
 		l=line.strip()
 		if l.startswith('REPLACE') and l.endswith('THIS'):
 			l=line.split()[1]
-			for s in substitutes.iterkeys():
-				if l==s:
-					f.write('\n'.join(substitutes[s]))
-				continue
+			if sys.version_info >= (3,):
+				for s in substitutes.keys():
+					if l==s:
+						f.write('\n'.join(substitutes[s]))
+					continue			
+			else:		
+				for s in substitutes.iterkeys():
+					if l==s:
+						f.write('\n'.join(substitutes[s]))
+					continue
 		else:
 			f.write(line)
 
 
 def read_config():
 	config=dict()
-	for line in file('lib/config.h').readlines():
+	for line in open('lib/config.h').readlines():
 		if line=='\n':
 			continue
 		l=[l.strip() for l in line.split()]
@@ -222,7 +245,7 @@ def get_blacklist():
 	config=read_config()
 	blacklist=dict()
 	for cfg in config_tests:
-		if not config.has_key(cfg):
+		if not cfg in config:
 			blacklist[cfg]=1
 	return blacklist
 		
