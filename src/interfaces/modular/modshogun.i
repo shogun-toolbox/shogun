@@ -11,7 +11,7 @@
 "The `modshogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef
 
-%module(docstring=DOCSTR) modshogun
+%module(directors="1", docstring=DOCSTR) modshogun
 #undef DOCSTR
 
 %include "modshogun_ignores.i"
