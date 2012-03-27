@@ -11,7 +11,11 @@
 "The `modshogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef
 
+#ifdef USE_SWIG_DIRECTORS
 %module(directors="1", docstring=DOCSTR) modshogun
+#else
+%module(docstring=DOCSTR) modshogun
+#endif
 #undef DOCSTR
 
 %include "modshogun_ignores.i"

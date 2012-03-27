@@ -228,7 +228,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     {
         $action
     }
-#ifdef SWIGPYTHON
+#if defined(SWIGPYTHON) && defined(USE_SWIG_DIRECTORS)
     catch (Swig::DirectorException &e)
     {
         SWIG_fail;

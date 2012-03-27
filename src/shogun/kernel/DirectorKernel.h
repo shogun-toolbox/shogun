@@ -11,13 +11,16 @@
 #ifndef _DIRECTORKERNEL_H___
 #define _DIRECTORKERNEL_H___
 
+#include <shogun/lib/config.h>
+
+#ifdef USE_SWIG_DIRECTORS
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {
-class CDirectorKernel: public CKernel
+IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 {
 	public:
 		/** default constructor
@@ -248,4 +251,5 @@ class CDirectorKernel: public CKernel
 		}
 };
 }
-#endif /* _GAUSSIANKERNEL_H__ */
+#endif /* USE_SWIG_DIRECTORS */
+#endif /* _DIRECTORKERNEL_H__ */
