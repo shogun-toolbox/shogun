@@ -8,8 +8,8 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST
  */
 
-#ifndef _CHISQUAREDISTANCE_H___
-#define __CHISQUAREDISTANCE___
+#ifndef __CHISQUAREDISTANCE_H__
+#define __CHISQUAREDISTANCE_H__
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/SimpleDistance.h>

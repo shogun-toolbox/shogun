@@ -56,15 +56,33 @@ void operator delete[](void *p) throw();
 #ifdef TRACE_MEMORY_ALLOCS
 namespace shogun
 {
+/** @brief memory block */
 class MemoryBlock
 {
 	public:
+		/** constructor
+		 * @param p p
+		 */
 		MemoryBlock(void* p);
+		/** constructor
+		 * @param p p
+		 * @param sz sz
+		 * @param fname fname
+		 * @param linenr line number
+		 */
 		MemoryBlock(void* p, size_t sz, const char* fname=NULL, int linenr=-1);
+		/** copy constructor 
+		 * @param b b
+		 */
         MemoryBlock(const MemoryBlock &b);
 		
+		/** equality
+		 * @param b b
+		 */
 		bool operator==(const MemoryBlock &b) const;
+		/** display */
 		void display();
+		/** set sg object */
 		void set_sgobject();
 
 	protected:

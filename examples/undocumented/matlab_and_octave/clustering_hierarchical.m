@@ -1,15 +1,14 @@
 addpath('tools');
 fm_train=load_matrix('../data/fm_train_real.dat');
 
-% KMEANS
-disp('KMeans');
+% Hierarchical
+disp('Hierarchical');
 
-k=3;
-iter=1000;
+merges=3;
 
 sg('set_features', 'TRAIN', fm_train);
 sg('set_distance', 'EUCLIDIAN', 'REAL');
-sg('new_clustering', 'KMEANS');
+sg('new_clustering', 'HIERARCHICAL');
 
-sg('train_clustering', k, iter);
-[radi, centers]=sg('get_clustering');
+sg('train_clustering', merges);
+[merge_distance, pairs]=sg('get_clustering');
