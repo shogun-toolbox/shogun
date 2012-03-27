@@ -5,10 +5,10 @@ toolkits such as Matlab(tm), R, Python, Octave. The following sections shall
 give you an overview over the static interface commands of SHOGUN. For the
 static interfaces we tried to preserve the syntax of the commands in a
 consistent manner through all the different languages. However as in some cases
-this was not possible and we document the subtle differences of syntax and semantic
-in the respective toolkit. Instead of reading through all this, we suggest to have a look at
-the large number of examples available in the \b examples / interface directory.
-For example examples/R or examples/python etc.
+this was not possible and we document the subtle differences of syntax and
+semantic in the respective toolkit. Instead of reading through all this, we
+suggest to have a look at the large number of examples available in the \b
+examples / interface directory. For example examples/R or examples/python etc.
 
 <b>Overview of Static Interfaces & Testing the Installation</b>
 \li \ref staticoctaveinterf_sec
@@ -25,7 +25,7 @@ For example examples/R or examples/python etc.
 \li \ref staticifexample_sec
 
 <b>Command Reference</b>
-\li \ref staticifcmdref_sec 
+\li \ref staticifcmdref_sec
 
 \section staticifoverview_sec Overview of Static Interfaces & Testing the Installation
 
@@ -35,8 +35,8 @@ Since octave is nowadays up to par with matlab a single documentation for both
 interfaces is sufficient and will be based on octave (matlab can be used
 synonymously).
 
-To start SHOGUN in octave, start octave and check if it is correctly installed by
-by typing ( let ">" be the octave prompt )
+To start SHOGUN in octave, start octave and check if it is correctly installed
+by by typing ( let ">" be the octave prompt )
 
 \verbatim
   sg('help')
@@ -46,8 +46,8 @@ inside of octave. This should show you some help text.
 
 \subsection staticpythoninterf_sec Static Python Interface
 
-To start SHOGUN in python, start python and check if it is correctly installed by
-by typing ( let ">" be the python prompt )
+To start SHOGUN in python, start python and check if it is correctly installed
+by by typing ( let ">" be the python prompt )
 
 \verbatim
   from sg import sg
@@ -106,14 +106,16 @@ Transfer the features to shogun
 
 Features can be char/byte/word/int/real valued matrices, real values sparse
 matrices, or strings (lists or cell arrays of strings). When dealing with
-strings an alphabet name has to be specified (DNA, RAW, ...).
-Use 'TRAIN' to tell SHOGUN that this is the data you want to train your classifier and TEST for the test data.
+strings an alphabet name has to be specified (DNA, RAW, ...). Use 'TRAIN' to
+tell SHOGUN that this is the data you want to train your classifier and TEST for
+the test data.
 
 In contrast to \b set_features, \b add_features will create a combined feature
 object and append the features to it. This is useful when dealing with a set of
 different features (real valued and strings) and multiple kernels.
 
-In case a single string was set using \b set_features, it can be "multiplexed" by sliding a window over it using
+In case a single string was set using \b set_features, it can be "multiplexed"
+by sliding a window over it using
 \arg \b from_position_list \verbatim sg('from_position_list', 'TRAIN|TEST', winsize, shift[, skip]) \endverbatim
 or
 \arg \b obtain_from_sliding_window \verbatim sg('obtain_from_sliding_window', winsize, skip) \endverbatim
@@ -124,8 +126,8 @@ Deletes the features which we assigned before in the actual SHOGUN session.
 Obtain the Features from shogun
 \arg \b get_features \verbatim [features]=sg('get_features', 'TRAIN|TEST') \endverbatim
 
-One proceeds similar when assigning labels to the training data and obtaining labels from shogun:
-The commands
+One proceeds similar when assigning labels to the training data and obtaining
+labels from shogun: The commands
 
 \arg \b set_labels \verbatim sg('set_labels', 'TRAIN', trainlab) \endverbatim
 \arg \b get_labels \verbatim [labels]=sg('get_labels', 'TRAIN|TEST') \endverbatim
@@ -137,13 +139,17 @@ interface).
 
 \subsection staticifkernel_sec Kernel & Distances
 
-Kernel and DistanceMatrix specific commands, used to create, obtain and setting the kernel matrix.
+Kernel and DistanceMatrix specific commands, used to create, obtain and setting
+the kernel matrix.
 
 Creating a kernel in shogun
 \arg \b set_kernel \verbatim sg('set_kernel', 'KERNELNAME', 'FEATURETYPE', CACHESIZE, PARAMETERS) \endverbatim
 \arg \b add_kernel \verbatim sg('add_kernel', WEIGHT, 'KERNELNAME', 'FEATURETYPE', CACHESIZE, PARAMETERS) \endverbatim
 
-Here KERNELNAME is the name of the kernel one wishes to use, FEATURETYPE the type of features (e.g. REAL for standard realvalued feature vectors), CACHESIZE the size of the kernel cache in megabytes and PARAMETERS kernel specific additional parameters.
+Here KERNELNAME is the name of the kernel one wishes to use, FEATURETYPE the
+type of features (e.g. REAL for standard realvalued feature vectors), CACHESIZE
+the size of the kernel cache in megabytes and PARAMETERS kernel specific
+additional parameters.
 
 \subsubsection staticifsuppkernels_sec Supported Kernels
 
@@ -211,10 +217,14 @@ value of 0.1 and a coefficient of 0.1. Available types for the gaussian kernel: 
 \li Match Kernel
 \li Custom Kernel
 
-Assign a user defined custom kernel, fo which only the upper triangle may be given (DIAG) or the FULL matrix (FULL), or the full matrix which is then internally stored as a upper triangle (FULL2DIAG).
+Assign a user defined custom kernel, fo which only the upper triangle may be
+given (DIAG) or the FULL matrix (FULL), or the full matrix which is then
+internally stored as a upper triangle (FULL2DIAG).
 \arg \b set_custom_kernel \verbatim sg('set_custom_kernel', kernelmatrix, 'DIAG|FULL|FULL2DIAG') \endverbatim
 
-The purpose of the get_kernel_matrix and get_distance_matrix commands is to return a kernel or distance matrix representing the kernel/distance matrix for the actual problem. 
+The purpose of the get_kernel_matrix and get_distance_matrix commands is to
+return a kernel or distance matrix representing the kernel/distance matrix for
+the actual problem.
 
 \arg \b get_distance_matrix \verbatim [D]=sg('get_distance_matrix', 'TRAIN|TEST') \endverbatim
 \arg \b get_kernel_matrix \verbatim [K]=sg('get_kernel_matrix', 'TRAIN|TEST') \endverbatim

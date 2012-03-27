@@ -14,6 +14,13 @@
 
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 
+%feature("director") shogun::CDirectorKernel;
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+
 /* Remove C Prefix */
 %rename(Kernel) CKernel;
 %rename(KernelNormalizer) CKernelNormalizer;
@@ -40,6 +47,7 @@
 %rename(DistanceKernel) CDistanceKernel;
 %rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
 %rename(GaussianKernel) CGaussianKernel;
+%rename(DirectorKernel) CDirectorKernel;
 %rename(WaveletKernel) CWaveletKernel;
 %rename(GaussianShiftKernel) CGaussianShiftKernel;
 %rename(GaussianShortRealKernel) CGaussianShortRealKernel;
@@ -155,6 +163,7 @@ namespace shogun
 %include <shogun/kernel/ExponentialKernel.h>
 %include <shogun/kernel/FixedDegreeStringKernel.h>
 %include <shogun/kernel/GaussianKernel.h>
+%include <shogun/kernel/DirectorKernel.h>
 %include <shogun/kernel/GaussianShiftKernel.h>
 %include <shogun/kernel/GaussianShortRealKernel.h>
 %include <shogun/kernel/HistogramIntersectionKernel.h>

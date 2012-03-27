@@ -1,18 +1,19 @@
 /*! \page octave_static_examples Examples for Static Matlab(tm) and Octave Interface
 
-This page lists ready to run shogun examples for the Static Matlab(tm) and Octave interface.
+This page lists ready to run shogun examples for the Static Matlab(tm) and
+Octave interface.
 
-\li \subpage octave_static_classifier_examples 
-\li \subpage octave_static_clustering_examples 
-\li \subpage octave_static_distance_examples 
-\li \subpage octave_static_distribution_examples 
-\li \subpage octave_static_features_examples 
-\li \subpage octave_static_kernel_examples 
-\li \subpage octave_static_misc_examples 
-\li \subpage octave_static_mkl_examples 
-\li \subpage octave_static_preproc_examples 
-\li \subpage octave_static_regression_examples 
-\li \subpage octave_static_structure_examples 
+\li \subpage octave_static_classifier_examples
+\li \subpage octave_static_clustering_examples
+\li \subpage octave_static_distance_examples
+\li \subpage octave_static_distribution_examples
+\li \subpage octave_static_features_examples
+\li \subpage octave_static_kernel_examples
+\li \subpage octave_static_misc_examples
+\li \subpage octave_static_mkl_examples
+\li \subpage octave_static_preproc_examples
+\li \subpage octave_static_regression_examples
+\li \subpage octave_static_structure_examples
 
 To run the examples issue
 \verbatim
@@ -24,8 +25,9 @@ or start up matlab or octave and then type
 name_of_example
 \endverbatim
 
-Note that you have to make sure that the sg.oct or sg.mexglx (name varies with architecture)
-has to be in the matlab/octave path. This can be achieved using the addpath command:
+Note that you have to make sure that the sg.oct or sg.mexglx (name varies with
+architecture) has to be in the matlab/octave path. This can be achieved using
+the addpath command:
 \verbatim
 addpath /path/to/octave
 \endverbatim
@@ -34,13 +36,15 @@ respectively
 addpath /path/to/matlab
 \endverbatim
 
-Finally note that for non-root installations you will have to make sure that libshogun and libshogun ui can be found by the dynamic linker, e.g. you will need to set:
+Finally note that for non-root installations you will have to make sure that
+libshogun and libshogun ui can be found by the dynamic linker, e.g. you will
+need to set:
 
 \verbatim
 LD_LIBRARY_PATH=path/to/libshogun:path/to/libshogunui
 \endverbatim
 before starting matlab.
-		
+
 \section octave_static_classifier_examples Classifier
 
 

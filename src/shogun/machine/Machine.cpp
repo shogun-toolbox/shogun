@@ -31,7 +31,7 @@ CMachine::CMachine() : CSGObject(), m_max_train_time(0), m_labels(NULL),
 	SG_ADD(&m_store_model_features, "store_model_features",
 	       "Should feature data of model be stored after training?", MS_NOT_AVAILABLE);
 	SG_ADD(&m_data_locked, "data_locked",
-	       "Indicates whether data is locked", MS_NOT_AVAILABLE);
+			"Indicates whether data is locked", MS_NOT_AVAILABLE);
 
 	m_parameter_map->put(
 		new SGParamInfo("data_locked", CT_SCALAR, ST_NONE, PT_BOOL, 1),

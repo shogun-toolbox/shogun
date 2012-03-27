@@ -139,7 +139,7 @@ will autodetect and configure for the available interfaces.
 
 Call
 \verbatim./configure --help \endverbatim
-to see the list of additional options detailled below.
+to see the list of additional options detailed below.
 \verbinclude Configure.generated
 
 If this does not work for you, consult the INSTALL file for platform specific

@@ -21,6 +21,7 @@
 #include <shogun/lib/Array.h>
 #include <shogun/lib/Array2.h>
 #include <string>
+#include <vector>
 
 namespace shogun
 {
