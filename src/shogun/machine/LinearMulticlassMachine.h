@@ -109,7 +109,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		virtual bool is_ready()
 		{
 			if (m_features)
-					return true;
+				return true;
 
 			return false;
 		}
