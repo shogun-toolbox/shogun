@@ -1575,35 +1575,85 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	m_name = strdup(name);
 	m_description = strdup(description);
 	m_delete_data=false;
+	m_was_allocated_from_scratch=false;
 }
 
 TParameter::~TParameter()
 {
+	SG_SDEBUG("entering ~TParameter for \"%s\"\n", m_name);
 	SG_FREE(m_description);
 	SG_FREE(m_name);
 
-	/* possibly delete content, m_parameter variable, and lengths variables */
-	if (m_delete_data)
+	/* possibly delete content, m_parameter variable */
+	if (m_was_allocated_from_scratch)
 	{
-		if (m_datatype.m_ctype!=CT_SCALAR)
-			delete_cont();
+		SG_SDEBUG("deleting from scratch data\n");
 
-		if (m_parameter != NULL)
+		if (m_delete_data)
 		{
-			/* eventually unref sgobject */
-			if (m_datatype.m_ptype==PT_SGOBJECT)
-				SG_UNREF(*((CSGObject**)m_parameter));
+			SG_SDEBUG("deleting pure data\n");
+			if (m_datatype.m_ctype!=CT_SCALAR || m_datatype.m_ptype==PT_SGOBJECT)
+				delete_cont();
+			else
+			{
+				/* free pointer/data */
+				SG_FREE(m_parameter);
+			}
+		}
 
-			/* delete pointer in any case */
+		if (m_datatype.m_ctype!=CT_SCALAR || m_datatype.m_ptype==PT_SGOBJECT)
+		{
+			/* free pointer */
 			SG_FREE(m_parameter);
 		}
 
-		if (m_datatype.m_length_x != NULL)
+		/* free lengths */
+		if (m_datatype.m_length_x)
 			SG_FREE(m_datatype.m_length_x);
 
-		if (m_datatype.m_length_y != NULL)
+		if (m_datatype.m_length_y)
 			SG_FREE(m_datatype.m_length_y);
 	}
+
+
+//		if (m_delete_data)
+//		{
+//			if (m_datatype.m_ctype!=CT_SCALAR)
+//				delete_cont();
+//		}
+//
+//		/* eventually unref all sgobjects */
+//		if (m_parameter)
+//		{
+//			if (m_datatype.m_ptype==PT_SGOBJECT)
+//			{
+//				if (m_datatype.m_ctype==CT_SCALAR)
+//				{
+//					CSGObject* object=*((CSGObject**)m_parameter);
+//					SG_SDEBUG("SGUNREF %s\n", object ? object->get_name() : "NULL");
+//					SG_UNREF(object);
+//				}
+//				else
+//				{
+//					int32_t length=1;
+//					length*=m_datatype.m_length_x ? *m_datatype.m_length_x : 1;
+//					length*=m_datatype.m_length_y ? *m_datatype.m_length_y : 1;
+//
+//					for (index_t j=0; j<length; ++j)
+//					{
+//						CSGObject* object=((CSGObject**)(m_parameter))[j];
+//						SG_SDEBUG("SGUNREF %s\n", object ? object->get_name() : "NULL");
+//						SG_UNREF(object);
+//					}
+//				}
+//			}
+//
+//			/* free pointer/data */
+//			if (m_delete_data)
+//				SG_FREE(m_parameter);
+//		}
+
+	SG_SDEBUG("leaving ~TParameter\n");
 }
 
 char*
@@ -2578,6 +2628,12 @@ bool TParameter::operator>(const TParameter& other) const
 
 void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 {
+	SG_SDEBUG("entering TParameter::allocate_data_from_scratch(%d,%d) of "
+			"\"%s\"\n", len_y, len_x, m_name);
+
+	/* set flag to delete all this stuff later on */
+	m_was_allocated_from_scratch=true;
+
 	/* length has to be allocated for matrices/vectors */
 	switch (m_datatype.m_ctype)
 	{
@@ -2619,7 +2675,7 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 		else
 		{
 			/* for sgobjects, allocate memory for pointer and set to NULL
-			 * * Will be deleted by the TParameter destructor */
+			 * Will be deleted by the TParameter destructor */
 			m_parameter=SG_MALLOC(CSGObject**, 1);
 			*((CSGObject**)m_parameter)=NULL;
 		}
@@ -2632,8 +2688,9 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 		/* allocate dummy data at the point the above pointer points to
 		 * will be freed by the delete_cont() method of TParameter.
 		 * This is needed because new_cont/delete_cont cannot handle
-		 * non-existing data. */
+		 * non-existing data. Set to NULL to avoid problems */
 		*data_p=SG_MALLOC(uint8_t, 1);
+		*data_p=NULL;
 
 		m_parameter=data_p;
 
@@ -2641,9 +2698,11 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 		 * redundant if load() is called afterwards, however, if one wants
 		 * to write directly to the array data after this call, it is
 		 * necessary */
-//			SG_SPRINT("new_cont call with len_y=%d, len_x=%d\n", len_y, len_x);
 		new_cont(len_y, len_x);
 	}
+
+	SG_SDEBUG("leaving TParameter::allocate_data_from_scratch(%d,%d) of "
+				"\"%s\"\n", len_y, len_x, m_name);
 }
 
 void TParameter::copy_data(const TParameter* source)
@@ -2672,10 +2731,24 @@ void TParameter::copy_data(const TParameter* source)
 		{
 			SG_UNREF(*((CSGObject**)m_parameter));
 			SG_REF(*((CSGObject**)source->m_parameter))
+
+			if (m_datatype.m_ctype!=CT_SCALAR)
+			{
+				int32_t length=1;
+				length*=m_datatype.m_length_x ? *m_datatype.m_length_x : 1;
+				length*=m_datatype.m_length_y ? *m_datatype.m_length_y : 1;
+
+				for (index_t j=0; j<length; ++j)
+				{
+					SG_REF(((CSGObject**)(m_parameter))[j]);
+					SG_REF(((CSGObject**)(source->m_parameter))[j]);
+				}
+			}
 		}
 
 		/* in this case, data is a pointer pointing to the actual
-		 * data, so copy pointer */
+		 * data, so copy pointer if non-NULL*/
+		SG_SDEBUG("Copying pointer %p\n", *((void**)source->m_parameter));
 		*((void**)m_parameter)=
 				*((void**)source->m_parameter);
 	}
@@ -2690,48 +2763,55 @@ void TParameter::copy_data(const TParameter* source)
 
 void TParameter::delete_all_but_data()
 {
-	if (m_datatype.m_ctype==CT_SCALAR)
-	{
-		/* if this a sgobject, unref */
-		if (m_datatype.m_ptype==PT_SGOBJECT)
-			SG_UNREF(*((CSGObject**)m_parameter));
-
-		/* if scalar, delete data directly (no length allocated) */
+	/* delete data pointer */
+	if (m_datatype.m_ctype!=CT_SCALAR || m_datatype.m_ptype==PT_SGOBJECT)
 		SG_FREE(m_parameter);
-	}
-	else
-	{
-		/* the delete data flag cannot be used here because the data
-		 * is used by the instance that was de-serialized, so delete
-		 * lengths and data pointer by hand */
 
-		/* delete lengths and data pointer in case of non-scalars */
-		if (m_datatype.m_ctype!=CT_SCALAR)
-		{
-			/* while deleting lengths, remember them to eventually sgunref
-			 * sgobjects later */
-			int32_t length=1;
+//	if (m_datatype.m_length_x)
+//		SG_FREE(m_datatype.m_length_x);
+//
+//	if (m_datatype.m_length_y)
+//		SG_FREE(m_datatype.m_length_y);
 
-			if (m_datatype.m_length_x)
-			{
-				length*=*m_datatype.m_length_x;
-				SG_FREE(m_datatype.m_length_x);
-			}
-			if (m_datatype.m_length_y)
-			{
-				length*=*m_datatype.m_length_y;
-				SG_FREE(m_datatype.m_length_y);
-			}
-
-			/* eventually unref sg_objects */
-			if (m_datatype.m_ptype==PT_SGOBJECT)
-			{
-				for (index_t i=0; i<length; ++i)
-					SG_UNREF(*((CSGObject***)m_parameter)[i]);
-			}
-
-			/* now delete data pointer */
-			SG_FREE(m_parameter);
-		}
-	}
+//	if (m_datatype.m_ctype==CT_SCALAR)
+//	{
+////		/* if this a sgobject, unref */
+////		if (m_datatype.m_ptype==PT_SGOBJECT)
+////			SG_UNREF(*((CSGObject**)m_parameter));
+//
+//		/* if scalar, delete data directly (no length allocated) */
+//		SG_FREE(m_parameter);
+//		m_parameter=NULL;
+//	}
+//	else
+//	{
+//		/* the delete data flag cannot be used here because the data
+//		 * is used by the instance that was de-serialized, so delete
+//		 * lengths and data pointer by hand */
+//
+//		/* while deleting lengths, remember them to eventually sgunref
+//		 * sgobjects later */
+//		int32_t length=1;
+//
+//		if (m_datatype.m_length_x)
+//		{
+//			length*=*m_datatype.m_length_x;
+//			SG_FREE(m_datatype.m_length_x);
+//		}
+//		if (m_datatype.m_length_y)
+//		{
+//			length*=*m_datatype.m_length_y;
+//			SG_FREE(m_datatype.m_length_y);
+//		}
+//
+////		/* eventually unref sg_objects */
+////		if (m_datatype.m_ptype==PT_SGOBJECT)
+////		{
+////			for (index_t i=0; i<length; ++i)
+////				SG_UNREF(*((CSGObject***)m_parameter)[i]);
+////		}
+//
+//		/* now delete data pointer */
+//		SG_FREE(m_parameter);
+//	}
 }
