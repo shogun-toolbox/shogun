@@ -2,7 +2,12 @@
 
 using namespace shogun;
 
-CLatentLinearMachine::CLatentLinearMachine (minLatent usrFunc)
+CLatentLinearMachine::CLatentLinearMachine ()
+{
+	
+}
+
+CLatentLinearMachine::CLatentLinearMachine (minimizeLatent usrFunc)
 	: handleLatent (usrFunc)
 {
 	ASSERT (handleLatent != NULL);
@@ -23,3 +28,10 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
 {
 	
 }
+
+void CLatentLinearMachine::setLatentHandlerFunc (minimizeLatent usrFunc)
+{
+	ASSERT (handleLatent != NULL);
+	handleLatent = usrFunc;
+}
+
