@@ -17,11 +17,14 @@
 
 namespace shogun
 {
+	/* function pointer to the latent variable minimalization */
+	typedef CLatentFeatures* (*minimizeLatent) (CLatentFeatures *lFeatures, void* userData);
+	
 	class CLatentLinearMachine : public CLinearMachine
 	{
 		
 		public:
-			CLatentLinearMachine ();
+			CLatentLinearMachine (minLatent usrFunc);
 		
 			virtual ~CLatentLinearMachine ();
 		
@@ -49,9 +52,10 @@ namespace shogun
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "LatentLinearMachine"; }		
-		private:
+			virtual const char* get_name() const { return "LatentLinearMachine"; }
 			
+		private:
+			minimizeLatent handleLatent;
 	};
 }
 

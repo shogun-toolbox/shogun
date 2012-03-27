@@ -2,9 +2,10 @@
 
 using namespace shogun;
 
-CLatentLinearMachine::CLatentLinearMachine ()
+CLatentLinearMachine::CLatentLinearMachine (minLatent usrFunc)
+	: handleLatent (usrFunc)
 {
-	
+	ASSERT (handleLatent != NULL);
 }
 
 
