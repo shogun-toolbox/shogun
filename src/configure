@@ -50,6 +50,7 @@ COMP_CSHARP=gmcs
 
 #the defaults are
 _swig_version=0.0.0
+_swig_directors=no
 _readline=auto
 _hdf5=auto
 _ant=no
@@ -1313,6 +1314,7 @@ Miscellaneous options:
   --enable-debug                 enable debugging [enabled]
   --enable-trace-mallocs         enable memory allocation tracing [disabled]
   --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
+  --enable-swig-directors        enables swig based director classes [disabled]
   --enable-path-debug            enable viterbi path debugging [disabled]
   --enable-profile               compile profiling information into shogun [disable]
   --enable-static                build a statically linked binary (to the extend possible);
@@ -1521,6 +1523,8 @@ EOF
 	  --enable-trace-mallocs) _trace_mallocs=yes ;;
 	  --disable-reference-counting) _reference_counting=no ;;
 	  --enable-reference-counting) _reference_counting=yes ;;
+	  --disable-swig-directors) _swig_directors=no ;;
+	  --enable-swig-directors) _swig_directors=yes ;;
 	  --disable-hmm-debug) 	_hmmdebug=no ;;
 	  --enable-hmm-debug)   _hmmdebug=yes ;;
 	  --disable-path-debug)	_pathdebug=no ;;
@@ -3792,6 +3796,12 @@ set_opts()
 		DEFINES="$DEFINES -DUSE_REFERENCE_COUNTING"
 	fi
 
+	if test "$_swig_directors" = yes
+	then
+		USE_SWIG_DIRECTORS='#define USE_SWIG_DIRECTORS 1'
+		DEFINES="$DEFINES -DUSE_SWIG_DIRECTORS"
+	fi
+
 	if test "$_hmmdebug" = yes
 	then
 		USE_HMMDEBUG='#define USE_HMMDEBUG 1'
@@ -4914,6 +4924,7 @@ $USE_BZIP2
 $USE_LZMA
 $TRACE_MEMORY_ALLOCS
 $USE_REFERENCE_COUNTING
+$USE_SWIG_DIRECTORS
 #define OCTAVE_APIVERSION $OCTAVE_APIVERSION
 #define $OS 1
 #define CONFIGURE_OPTIONS "$CONFIGURE_OPTIONS"
