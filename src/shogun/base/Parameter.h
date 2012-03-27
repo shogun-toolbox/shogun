@@ -110,6 +110,9 @@ struct TParameter
 	 * default */
 	bool m_delete_data;
 
+	/* TODO */
+	bool m_was_allocated_from_scratch;
+
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont();
