@@ -602,30 +602,6 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(
 					loaded->m_datatype.m_length_y ? *loaded->m_datatype.m_length_y : -1,
 					loaded->m_datatype.m_length_x ? *loaded->m_datatype.m_length_x : -1);
 
-//			/* if loaded object was sgobject, add reference count */
-//			if (type.m_ptype==PT_SGOBJECT)
-//			{
-//				if (type.m_ctype==CT_SCALAR)
-//				{
-//					CSGObject* object=*((CSGObject**)(loaded->m_parameter));
-//					SG_DEBUG("SGREF %s\n", object ? object->get_name() : "NULL");
-//					SG_REF(object);
-//				}
-//				else
-//				{
-//					int32_t length=1;
-//					length*=type.m_length_x ? *type.m_length_x : 1;
-//					length*=type.m_length_y ? *type.m_length_y : 1;
-//
-//					for (index_t j=0; j<length; ++j)
-//					{
-//						CSGObject* object=((CSGObject**)(loaded->m_parameter))[j];
-//						SG_DEBUG("SGREF %s\n", object ? object->get_name() : "NULL");
-//						SG_REF(object);
-//					}
-//				}
-//			}
-
 			/* append new TParameter to result array */
 			result_array->append_element(loaded);
 		}
@@ -635,7 +611,6 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(
 	 * above assert) */
 	else
 	{
-//		SG_SPRINT("starting recursion\n");
 		/* for all elements in mapping, do recursion */
 		for (index_t i=0; i<mapped->get_num_elements(); ++i)
 		{
@@ -1144,9 +1119,6 @@ bool CSGObject::is_param_new(const SGParamInfo param_info) const
 	/* check if parameter is new in this version (has empty mapping) */
 	DynArray<const SGParamInfo*>* value=m_parameter_map->get(&param_info);
 	bool result=value && *value->get_element(0) == SGParamInfo();
-
-//	if (result)
-//		SG_PRINT("\"%s\" is new\n", param_info.m_name);
 
 	return result;
 }
