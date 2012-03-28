@@ -75,17 +75,6 @@ struct TParameter
 	 * @param source source TParameter instance to copy from */
 	void copy_data(const TParameter* source);
 
-	/** Frees everything of this TParameter except for the data.
-	 * Namely, length variables of type, data pointer for non-scalars of
-	 * PT_SGOBJECT scalars.
-	 * If container type is CT_SCALAR and numeric, the data is also deleted.
-	 * SG_OBJECTS are SG_UNREF'ed
-	 * Do not call unless this TParameter instance was created by
-	 * allocate_data_from scratch because some of these variables may lie on
-	 * stack if not. This method is used in parameter version migration
-	 */
-	void delete_all_but_data();
-
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
 
