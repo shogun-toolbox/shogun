@@ -47,7 +47,7 @@ def _compute (params, feats, kernel, pout):
 			params['sv_sum']+=item
 
 	kernel.init(feats['train'], feats['test'])
-	params['classified']=regression.classify().get_labels()
+	params['classified']=regression.apply().get_labels()
 
 	output=pout.copy()
 	output.update(fileop.get_output(category.REGRESSION, params))

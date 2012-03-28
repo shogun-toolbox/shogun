@@ -11,7 +11,7 @@ import shogun.Kernel as kernel
 from shogun.Features import CombinedFeatures, TOPFeatures, FKFeatures, CUBE, RAWBYTE
 from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
-from shogun.Distribution import HMM, Model, LinearHMM, BW_NORMAL
+from shogun.Distribution import HMM, LinearHMM, BW_NORMAL
 from shogun.Library import Math_init_random
 
 import fileop
@@ -47,7 +47,7 @@ def _compute_pie (feats, params):
 	pie.set_features(feats['test'])
 	output['kernel_matrix_test']=kern.get_kernel_matrix()
 
-	classified=pie.classify().get_labels()
+	classified=pie.apply().get_labels()
 	output['classifier_classified']=classified
 
 	fileop.write(category.KERNEL, output)
@@ -273,21 +273,21 @@ def _run_distance ():
 	_compute(feats, params)
 
 
-def _run_feats_byte ():
-	"""Run kernel with ByteFeatures."""
-
-	params={
-		'name': 'LinearByte',
-		'accuracy': 1e-8,
-		'feature_class': 'simple',
-		'feature_type': 'Byte',
-		'data': dataop.get_rand(dattype=numpy.ubyte),
-		'normalizer': kernel.AvgDiagKernelNormalizer()
-	}
-	feats=featop.get_features(params['feature_class'], params['feature_type'],
-		params['data'], RAWBYTE)
-
-	_compute(feats, params)
+#def _run_feats_byte ():
+#	"""Run kernel with ByteFeatures."""
+#
+#	params={
+#		'name': 'LinearByte',
+#		'accuracy': 1e-8,
+#		'feature_class': 'simple',
+#		'feature_type': 'Byte',
+#		'data': dataop.get_rand(dattype=numpy.ubyte),
+#		'normalizer': kernel.AvgDiagKernelNormalizer()
+#	}
+#	feats=featop.get_features(params['feature_class'], params['feature_type'],
+#		params['data'], RAWBYTE)
+#
+#	_compute(feats, params)
 
 
 def _run_mindygram ():
@@ -335,9 +335,9 @@ def _run_feats_real ():
 	}
 	_compute(feats, params)
 
-	params['name']='SparseGaussian'
-	params['args']={'key': ('size', 'width'), 'val': (10, 1.7)}
-	_compute(sparsefeats, params)
+    #params['name']='SparseGaussian'
+	#params['args']={'key': ('size', 'width'), 'val': (10, 1.7)}
+	#_compute(sparsefeats, params)
 
 	params['accuracy']=0
 	params['name']='Const'
@@ -362,15 +362,15 @@ def _run_feats_real ():
 	params['args']={'key': ('size', 'width'), 'val': (10, 1.2)}
 	_compute(feats, params)
 
-	params['accuracy']=1e-8
-	params['name']='SparsePoly'
-	params['args']={
-		'key': ('size', 'degree', 'inhomogene'),
-		'val': (10, 3, True)
-	}
-	_compute(sparsefeats, params)
-	params['args']['val']=(10, 3, False)
-	_compute(sparsefeats, params)
+    #params['accuracy']=1e-8
+	#params['name']='SparsePoly'
+	#params['args']={
+	#	'key': ('size', 'degree', 'inhomogene'),
+	#	'val': (10, 3, True)
+	#}
+    #_compute(sparsefeats, params)
+	#params['args']['val']=(10, 3, False)
+	#_compute(sparsefeats, params)
 
 	params['name']='Poly'
 	params['normalizer']=kernel.SqrtDiagKernelNormalizer()
@@ -382,12 +382,12 @@ def _run_feats_real ():
 	params['args']['val']=(10, 3, False)
 	_compute(feats, params)
 
-	params['normalizer']=kernel.AvgDiagKernelNormalizer()
-	del params['args']
-	params['name']='Linear'
-	_compute(feats, params)
-	params['name']='SparseLinear'
-	_compute(sparsefeats, params)
+    #params['normalizer']=kernel.AvgDiagKernelNormalizer()
+	#del params['args']
+	#params['name']='Linear'
+	#_compute(feats, params)
+	#params['name']='SparseLinear'
+	#_compute(sparsefeats, params)
 
 
 def _run_feats_string ():
@@ -458,23 +458,23 @@ def _run_feats_string ():
 	_compute(feats, params)
 
 
-def _run_feats_word ():
-	"""Run kernel with WordFeatures."""
-
-	maxval=42
-	params={
-		'name': 'LinearWord',
-		'accuracy': 1e-8,
-		'feature_class': 'simple',
-		'feature_type': 'Word',
-		'data': dataop.get_rand(
-			dattype=numpy.ushort, max_train=maxval, max_test=maxval),
-		'normalizer': kernel.AvgDiagKernelNormalizer()
-	}
-	feats=featop.get_features(
-		params['feature_class'], params['feature_type'], params['data'])
-
-	_compute(feats, params)
+#def _run_feats_word ():
+#	"""Run kernel with WordFeatures."""
+#
+#	maxval=42
+#	params={
+#		'name': 'LinearWord',
+#		'accuracy': 1e-8,
+#		'feature_class': 'simple',
+#		'feature_type': 'Word',
+#		'data': dataop.get_rand(
+#			dattype=numpy.ushort, max_train=maxval, max_test=maxval),
+#		'normalizer': kernel.AvgDiagKernelNormalizer()
+#	}
+#	feats=featop.get_features(
+#		params['feature_class'], params['feature_type'], params['data'])
+#
+#	_compute(feats, params)
 
 
 def _run_feats_string_complex ():
@@ -600,8 +600,8 @@ def run ():
 	_run_distance()
 	_run_subkernels()
 
-	_run_feats_byte()
+    #_run_feats_byte()
 	_run_feats_real()
 	_run_feats_string()
 	_run_feats_string_complex()
-	_run_feats_word()
+    #_run_feats_word()
