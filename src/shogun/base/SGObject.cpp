@@ -418,18 +418,18 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 					new SGParamInfo(current, param_version));
 		}
 
-		/* map all parameters */
+		/* map all parameters, result may be empty if input is */
 		map_parameters(param_base, file_version, param_infos);
 		SG_DEBUG("mapping is done!\n");
+
+		/* this is assumed now, mapping worked or no parameters in base */
+		ASSERT(file_version==param_version || !param_base->get_num_elements());
 
 		/* delete above created param infos */
 		for (index_t i=0; i<param_infos->get_num_elements(); ++i)
 			delete param_infos->get_element(i);
 
 		delete param_infos;
-
-		/* this is assumed now */
-		ASSERT(file_version==param_version);
 
 		/* replace parameters by loaded and mapped */
 		SG_DEBUG("replacing parameter data by loaded/mapped values\n");
@@ -694,6 +694,13 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 {
 	SG_DEBUG("entering %s::map_parameters\n", get_name());
 	/* NOTE: currently the migration is done step by step over every version */
+
+	if (!target_param_infos->get_num_elements())
+	{
+		SG_DEBUG("no target parameter infos\n");
+		SG_DEBUG("leaving %s::map_parameters\n", get_name());
+		return;
+	}
 
 	/* map all target parameter infos once */
 	DynArray<const SGParamInfo*>* mapped_infos=
