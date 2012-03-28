@@ -300,6 +300,7 @@ CSimpleFeatures<float64_t>* CBinnedDotFeatures::get_simple_features()
 
 void CBinnedDotFeatures::init()
 {
+	m_features=NULL;
 	m_fill=true;
 	m_norm_one=false;
 }
