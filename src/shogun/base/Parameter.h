@@ -61,8 +61,11 @@ struct TParameter
 	 *
 	 * @param len_y desired y length of the data
 	 * @param len_x desired x length of the data
+	 * @new_cont_call whether new_cont should be called, if false, only scalar
+	 * non-sgobject data will be allocated (needed for migration)
 	 * */
-	void allocate_data_from_scratch(index_t len_y, index_t len_x);
+	void allocate_data_from_scratch(index_t len_y, index_t len_x,
+			bool new_cont_call=true);
 
 	/** Given another TParameter instance (with same type, except for lengths)
 	 * all its data is copied to the current one. This means in case of numeric
