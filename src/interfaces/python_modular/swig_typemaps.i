@@ -969,7 +969,6 @@ TYPEMAP_INND(PyObject,      NPY_OBJECT)
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<type>
 {
-	printf("Now in typemap stringfeat. ");
     $1 = is_pystring_list($input, typecode);
 }
 %typemap(in) shogun::SGStringList<type>
