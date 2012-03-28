@@ -1591,7 +1591,7 @@ set_install_dirs() {
 	python_major=`$PYTHON -V 2>&1 | cut -f 2 -d ' ' | cut -f 1 -d '.'`
 	python_minor=`$PYTHON -V 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
 	if test -z "$_pydir" ; then
-		if test "$python_major" -ge 2 && test "$python_minor" -ge 6 ; then
+		if (test "$python_major" -ge 2 && test "$python_minor" -ge 6) || (test "$python_major" -ge 3) ; then
 			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/dist-packages"
 		else
 			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/site-packages"
@@ -4379,11 +4379,6 @@ EOF
 		fi
 	fi
 
-	if [ `echo $PYVER | cut -c 1` -gt 2 ]
-	then
-		SWIGFLAGS_PYTHON_MODULAR="${SWIGFLAGS_PYTHON_MODULAR} -py3"	
-	fi
-
 	if test "$_python" = yes
 	then
 		DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
@@ -4399,6 +4394,12 @@ EOF
 		LINKFLAGS_PYTHON=""
 		COMPFLAGS_CPP_PYTHON=""
 		COMPFLAGS_C_PYTHON=""
+	fi
+	
+	if [ `echo $PYVER | cut -c 1` -gt 2 ]
+	then
+		SWIGFLAGS_PYTHON_MODULAR="${SWIGFLAGS_PYTHON_MODULAR} -py3"
+		DEFINES_PYTHON="${DEFINES_PYTHON} -DPYTHON3"
 	fi
 }
 
