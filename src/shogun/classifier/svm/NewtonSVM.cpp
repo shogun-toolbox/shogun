@@ -70,8 +70,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	
 	SG_FREE(w);
 	float64_t *w = SG_CALLOC(float64_t,x_d+1);
-	//memset(w,0,sizeof(float64_t)*(x_d+1));
-
+	
 	float64_t *out=SG_MALLOC(float64_t,x_n);
 	for(int32_t i=0;i<x_n;i++)
 		out[i]=1;
@@ -103,13 +102,12 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 		for(int32_t i=0;i<x_d;i++)
 			vector[i]=lambda;
 		vector[x_d]=0;
-		CMath::createDiagonalMatrix(lcrossdiag,vector,x_d+1);
+		CMath::create_diagonal_matrix(lcrossdiag,vector,x_d+1);
 	
 		float64_t *Xsv2=SG_MALLOC(float64_t,x_d*x_d);
 		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,x_d,x_d,size_sv,1.0,Xsv,size_sv,Xsv,size_sv,0.0,Xsv2,x_d);		
 		float64_t *sum=SG_CALLOC(float64_t,x_d);
-		//memset(sum,0,sizeof(float64_t)*x_d);
-	
+		
 		for(int32_t j=0;j<x_d;j++)
 		{	
 			for(int32_t i=0;i<size_sv;i++)
@@ -131,7 +129,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	
 		for(int32_t i=0;i<x_d+1;i++)
 			vector[i]=1;
-		CMath::createDiagonalMatrix(identity_matrix,vector,x_d+1);
+		CMath::create_diagonal_matrix(identity_matrix,vector,x_d+1);
 	
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,x_d+1,x_d+1,x_d+1,1.0,lcrossdiag,x_d+1,identity_matrix,x_d+1,1.0,Xsv2sum,x_d+1);		
 		float64_t *inverse=SG_MALLOC(float64_t,(x_d+1)*(x_d+1));
