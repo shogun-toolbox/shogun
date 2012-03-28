@@ -1591,19 +1591,20 @@ TParameter::~TParameter()
 
 		if (m_delete_data)
 		{
+			/* for non-scalar data, delte_cont does the job, rest is handled
+			 * below */
 			SG_SDEBUG("deleting pure data\n");
-			if (m_datatype.m_ctype!=CT_SCALAR || m_datatype.m_ptype==PT_SGOBJECT)
+			if (m_datatype.m_ctype!=CT_SCALAR)
 				delete_cont();
-			else
-			{
-				/* free pointer/data */
-				SG_FREE(m_parameter);
-			}
+
+			if (m_datatype.m_ctype==CT_SCALAR && m_datatype.m_ptype==PT_SGOBJECT)
+				SG_UNREF(*(CSGObject**)m_parameter);
 		}
 
-		if (m_datatype.m_ctype!=CT_SCALAR || m_datatype.m_ptype==PT_SGOBJECT)
+		/* free pointer/data */
+		if (m_parameter)
 		{
-			/* free pointer */
+			SG_SDEBUG("freeing m_parameter pointer/data at %p\n", m_parameter);
 			SG_FREE(m_parameter);
 		}
 
@@ -1690,7 +1691,7 @@ void
 TParameter::delete_cont()
 {
 	if (*(void**) m_parameter != NULL) {
-		index_t old_length = *m_datatype.m_length_y;
+		index_t old_length = m_datatype.m_length_y ? *m_datatype.m_length_y : 0;
 		switch (m_datatype.m_ctype) {
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED;
@@ -1698,7 +1699,6 @@ TParameter::delete_cont()
 			old_length *= *m_datatype.m_length_x; break;
 		case CT_SCALAR: case CT_VECTOR: case CT_SGVECTOR: break;
 		}
-
 
 		switch (m_datatype.m_stype) {
 		case ST_NONE:
@@ -1734,7 +1734,8 @@ TParameter::delete_cont()
 					*(CSGObject***) m_parameter;
 				for (index_t i=0; i<old_length; i++)
 					if (buf[i] != NULL) SG_UNREF(buf[i]);
-				delete buf;
+
+				SG_FREE(buf);
 				break;
 			}
 			break;
@@ -1829,6 +1830,11 @@ TParameter::delete_cont()
 void
 TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 {
+	char* s=SG_MALLOC(char, 200);
+	m_datatype.to_string(s, 200);
+	SG_SDEBUG("entering TParameter::new_cont(%d, %d) for \"%s\" of type %s\n",
+			new_len_y, new_len_x, s, m_name ? m_name : "(nil)");
+	SG_FREE(s);
 	delete_cont();
 
 	index_t new_length = new_len_y*new_len_x;
@@ -1983,6 +1989,12 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 			   *m_datatype.sizeof_stype());
 		break;
 	} /* switch (m_datatype.m_stype)  */
+
+	s=SG_MALLOC(char, 200);
+	m_datatype.to_string(s, 200);
+	SG_SDEBUG("leaving TParameter::new_cont(%d, %d) for \"%s\" of type %s\n",
+			new_len_y, new_len_x, s, m_name ? m_name : "(nil)");
+	SG_FREE(s);
 }
 
 bool
@@ -2626,7 +2638,8 @@ bool TParameter::operator>(const TParameter& other) const
 	return strcmp(m_name, other.m_name)>0;
 }
 
-void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
+void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x,
+		bool new_cont_call)
 {
 	SG_SDEBUG("entering TParameter::allocate_data_from_scratch(%d,%d) of "
 			"\"%s\"\n", len_y, len_x, m_name);
@@ -2684,13 +2697,17 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 	{
 		/* allocate pointer for data pointer */
 		void** data_p=SG_MALLOC(void*, 1);
+		*data_p=NULL;
 
 		/* allocate dummy data at the point the above pointer points to
 		 * will be freed by the delete_cont() method of TParameter.
 		 * This is needed because new_cont/delete_cont cannot handle
 		 * non-existing data. Set to NULL to avoid problems */
-		*data_p=SG_MALLOC(uint8_t, 1);
-		*data_p=NULL;
+		if (new_cont_call)
+		{
+			*data_p=SG_MALLOC(void**, 1);
+			**(void***)data_p=NULL;
+		}
 
 		m_parameter=data_p;
 
@@ -2698,7 +2715,8 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 		 * redundant if load() is called afterwards, however, if one wants
 		 * to write directly to the array data after this call, it is
 		 * necessary */
-		new_cont(len_y, len_x);
+		if (new_cont_call)
+			new_cont(len_y, len_x);
 	}
 
 	SG_SDEBUG("leaving TParameter::allocate_data_from_scratch(%d,%d) of "
@@ -2707,6 +2725,8 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x)
 
 void TParameter::copy_data(const TParameter* source)
 {
+	SG_SDEBUG("entering TParameter::copy_data for %s\n", m_name);
+
 	/* assert that type is equal */
 	ASSERT(m_datatype.m_ctype==source->m_datatype.m_ctype);
 	ASSERT(m_datatype.m_stype==source->m_datatype.m_stype);
@@ -2720,19 +2740,21 @@ void TParameter::copy_data(const TParameter* source)
 	if (m_datatype.m_ctype==CT_SCALAR && m_datatype.m_ptype!=PT_SGOBJECT)
 	{
 		/* just copy value behind pointer */
+		SG_SDEBUG("Copying scalar data of size %d from %p to %p\n",
+				m_datatype.get_size(), source->m_parameter, m_parameter);
 		memcpy(m_parameter, source->m_parameter,
 				m_datatype.get_size());
 	}
 	else
 	{
-		/* if this is a sgobject, the old one has to be unrefed
-		 * and the new one to be reded */
+		/* if this is a sgobject, the old one has to be unrefed */
 		if (m_datatype.m_ptype==PT_SGOBJECT)
 		{
-			SG_UNREF(*((CSGObject**)m_parameter));
-			SG_REF(*((CSGObject**)source->m_parameter))
-
-			if (m_datatype.m_ctype!=CT_SCALAR)
+			if (m_datatype.m_ctype==CT_SCALAR)
+			{
+				SG_UNREF(*((CSGObject**)m_parameter));
+			}
+			else
 			{
 				int32_t length=1;
 				length*=m_datatype.m_length_x ? *m_datatype.m_length_x : 1;
@@ -2740,17 +2762,15 @@ void TParameter::copy_data(const TParameter* source)
 
 				for (index_t j=0; j<length; ++j)
 				{
-					SG_REF(((CSGObject**)(m_parameter))[j]);
-					SG_REF(((CSGObject**)(source->m_parameter))[j]);
+					SG_UNREF(((CSGObject**)(m_parameter))[j]);
 				}
 			}
 		}
 
 		/* in this case, data is a pointer pointing to the actual
 		 * data, so copy pointer if non-NULL*/
-		SG_SDEBUG("Copying pointer %p\n", *((void**)source->m_parameter));
-		*((void**)m_parameter)=
-				*((void**)source->m_parameter);
+		SG_SDEBUG("Copying non-scalar pointer %p\n", *((void**)source->m_parameter));
+		*((void**)m_parameter)=*((void**)source->m_parameter);
 	}
 
 	/* copy lengths */
@@ -2759,6 +2779,8 @@ void TParameter::copy_data(const TParameter* source)
 
 	if (source->m_datatype.m_length_y)
 		*m_datatype.m_length_y=*source->m_datatype.m_length_y;
+
+	SG_SDEBUG("leaving TParameter::copy_data for %s\n", m_name);
 }
 
 void TParameter::delete_all_but_data()
