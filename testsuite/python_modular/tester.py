@@ -94,7 +94,7 @@ def tester(tests, cmp_method, tolerance, failures):
 					else:
 						print "%-60s ERROR" % setting_str
 				except Exception, e:
-					print e
+					print setting_str, e
 
 					import pdb
 					pdb.set_trace()
