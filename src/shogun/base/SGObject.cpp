@@ -436,7 +436,10 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 		for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
 		{
 			TParameter* current=m_parameters->get_parameter(i);
-			SG_DEBUG("processing \"%s\"\n", current->m_name);
+			char* s=SG_MALLOC(char, 200);
+			current->m_datatype.to_string(s, 200);
+			SG_DEBUG("processing \"%s\": %s\n", current->m_name, s);
+			SG_FREE(s);
 
 			/* skip new parameters */
 			if (is_param_new(SGParamInfo(current, param_version)))
@@ -463,12 +466,6 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 		{
 			TParameter* current=param_base->get_element(i);
 			SG_DEBUG("deleting old \"%s\"\n", current->m_name);
-
-			/* get rid of TParameter instance without deleting data, but lengths
-			 * data pointer */
-			if (!current->m_delete_data)
-				current->delete_all_but_data();
-
 			delete current;
 		}
 		delete param_base;
@@ -581,7 +578,7 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(
 			/* allocate memory for length and matrix/vector
 			 * This has to be done because this stuff normally is in the class
 			 * variables which do not exist in this case. Deletion is handled
-			 * via the m_delete_data flag of TParameter */
+			 * via the allocated_from_scratch flag of TParameter */
 
 			/* create type and copy lengths, empty data for now */
 			TSGDataType type(current->m_ctype, current->m_stype,
@@ -600,6 +597,10 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(
 						"parameter mappings\n", s);
 				SG_FREE(s);
 			}
+
+			SG_DEBUG("loaded lengths: y=%d, x=%d\n",
+					loaded->m_datatype.m_length_y ? *loaded->m_datatype.m_length_y : -1,
+					loaded->m_datatype.m_length_x ? *loaded->m_datatype.m_length_x : -1);
 
 //			/* if loaded object was sgobject, add reference count */
 //			if (type.m_ptype==PT_SGOBJECT)
@@ -791,13 +792,6 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 		SG_FREE(s);
 		TParameter* p=migrate(param_base, target_param_infos->get_element(i));
 		new_base->append_element(p);
-
-		if (p->m_datatype.m_ctype==CT_SGVECTOR &&
-				p->m_datatype.m_ptype==PT_FLOAT64)
-		{
-			CMath::display_vector(*((float64_t**)p->m_parameter),
-					*(p->m_datatype.m_length_y));
-		}
 	}
 
 	/* replace base by new base, delete old base, if it was created in migrate */
@@ -815,7 +809,7 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 		TParameter* current=param_base->get_element(i);
 		if (current->m_datatype.m_ptype==PT_SGOBJECT)
 		{
-			CSGObject* object=*((CSGObject**)current->m_parameter);
+			CSGObject* object=*(CSGObject**)current->m_parameter;
 			SG_DEBUG("\"%s\": sgobject \"%s\" at %p\n", current->m_name,
 					object ? object->get_name() : "", object);
 		}
@@ -826,13 +820,6 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 			SG_DEBUG("\"%s\": type: %s at %p\n", current->m_name, s,
 					current->m_parameter);
 			SG_FREE(s);
-
-			if (current->m_datatype.m_ctype==CT_SGVECTOR &&
-					current->m_datatype.m_ptype==PT_FLOAT64)
-			{
-				CMath::display_vector(*((float64_t**)current->m_parameter),
-						*(current->m_datatype.m_length_y));
-			}
 		}
 	}
 
@@ -852,6 +839,9 @@ void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 		const SGParamInfo* target, TParameter*& replacement,
 		TParameter*& to_migrate, char* old_name)
 {
+	SG_DEBUG("CSGObject::entering CSGObject::one_to_one_migration_prepare() for "
+			"\"%s\"\n", target->m_name);
+
 	/* generate type of target structure */
 	TSGDataType type(target->m_ctype, target->m_stype, target->m_ptype);
 
@@ -877,14 +867,13 @@ void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 
 	/* allocate content to write into, lengths are needed for this */
 	index_t len_x=1;
-	if (to_migrate->m_datatype.m_length_x!=NULL)
+	if (to_migrate->m_datatype.m_length_x)
 		len_x=*to_migrate->m_datatype.m_length_x;
 
 	index_t len_y=1;
-	if (to_migrate->m_datatype.m_length_y!=NULL)
+	if (to_migrate->m_datatype.m_length_y)
 		len_y=*to_migrate->m_datatype.m_length_y;
 
-	SG_SDEBUG("allocate_data_from_scratch call with len_y=%d, len_x=%d\n", len_y, len_x);
 	replacement->allocate_data_from_scratch(len_y, len_x);
 
 	/* in case of sgobject, copy pointer data and SG_REF */
@@ -894,10 +883,15 @@ void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 		CSGObject* object=*((CSGObject**)to_migrate->m_parameter);
 		*((CSGObject**)replacement->m_parameter)=object;
 		SG_REF(object);
+		SG_DEBUG("copied and SG_REF sgobject pointer for \"%s\" at %p\n",
+				object->get_name(), object);
 	}
 
 	/* tell the old TParameter to delete its data on deletion */
 	to_migrate->m_delete_data=true;
+
+	SG_DEBUG("CSGObject::leaving CSGObject::one_to_one_migration_prepare() for "
+			"\"%s\"\n", target->m_name);
 }
 
 TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
@@ -937,26 +931,39 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 	/* check if element in base is equal to target one */
 	if (*target==SGParamInfo(to_migrate, target->m_param_version))
 	{
-		SG_DEBUG("nothing changed, using old data\n");
-		result=new TParameter(&to_migrate->m_datatype, to_migrate->m_parameter,
-				to_migrate->m_name, to_migrate->m_description);
+		char* s=SG_MALLOC(char, 200);
+		to_migrate->m_datatype.to_string(s, 200);
+		SG_DEBUG("nothing changed, using old data: %s\n", s);
+		SG_FREE(s);
+		result=new TParameter(&to_migrate->m_datatype, NULL, to_migrate->m_name,
+				to_migrate->m_description);
 
-		/* in case of non scalar or sgobject,
-		 * allocate data for pointer (not done yet)
-		 * and copy the value of the pointer to not loose the data */
-		if (to_migrate->m_datatype.m_ctype!=CT_SCALAR ||
-				to_migrate->m_datatype.m_ptype==PT_SGOBJECT)
+		int len_x=1;
+		if (to_migrate->m_datatype.m_length_x)
+			len_x=*to_migrate->m_datatype.m_length_x;
+
+		int len_y=1;
+		if (to_migrate->m_datatype.m_length_y)
+			len_y=*to_migrate->m_datatype.m_length_y;
+
+		/* allocate lengths and evtl scalar data but not non-scalar data (no
+		 * new_cont call */
+		result->allocate_data_from_scratch(len_y, len_x, false);
+
+		/* now use old data */
+		if (to_migrate->m_datatype.m_ctype==CT_SCALAR &&
+				to_migrate->m_datatype.m_ptype!=PT_SGOBJECT)
 		{
-			result->m_parameter=SG_MALLOC(void**, 1);
-			void* pointer=*((void**)to_migrate->m_parameter);
-			*((void**)result->m_parameter)=pointer;
-
-			/* in case of sgobject, dont forget to ref */
-			if (to_migrate->m_datatype.m_ptype==PT_SGOBJECT)
-			{
-				CSGObject* object=(CSGObject*)pointer;
-				SG_REF(object);
-			}
+			/* copy data */
+			SG_DEBUG("copying scalar data\n");
+			memcpy(result->m_parameter,to_migrate->m_parameter,
+					to_migrate->m_datatype.get_size());
+		}
+		else
+		{
+			/* copy content of pointer */
+			SG_DEBUG("copying content of poitner for non-scalar data\n");
+			*(void**)result->m_parameter=*(void**)(to_migrate->m_parameter);
 		}
 	}
 	else
