@@ -61,8 +61,11 @@ struct TParameter
 	 *
 	 * @param len_y desired y length of the data
 	 * @param len_x desired x length of the data
+	 * @new_cont_call whether new_cont should be called, if false, only scalar
+	 * non-sgobject data will be allocated (needed for migration)
 	 * */
-	void allocate_data_from_scratch(index_t len_y, index_t len_x);
+	void allocate_data_from_scratch(index_t len_y, index_t len_x,
+			bool new_cont_call=true);
 
 	/** Given another TParameter instance (with same type, except for lengths)
 	 * all its data is copied to the current one. This means in case of numeric
@@ -71,17 +74,6 @@ struct TParameter
 	 * Old SG_OBJECTS are SG_UNREF'ed and the new ones are SG_REF'ed.
 	 * @param source source TParameter instance to copy from */
 	void copy_data(const TParameter* source);
-
-	/** Frees everything of this TParameter except for the data.
-	 * Namely, length variables of type, data pointer for non-scalars of
-	 * PT_SGOBJECT scalars.
-	 * If container type is CT_SCALAR and numeric, the data is also deleted.
-	 * SG_OBJECTS are SG_UNREF'ed
-	 * Do not call unless this TParameter instance was created by
-	 * allocate_data_from scratch because some of these variables may lie on
-	 * stack if not. This method is used in parameter version migration
-	 */
-	void delete_all_but_data();
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
@@ -109,6 +101,9 @@ struct TParameter
 	 * The only way to set this is via an alternate constructor, false by
 	 * default */
 	bool m_delete_data;
+
+	/* TODO */
+	bool m_was_allocated_from_scratch;
 
 private:
 	char* new_prefix(const char* s1, const char* s2);
