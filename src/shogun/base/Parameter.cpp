@@ -1616,44 +1616,6 @@ TParameter::~TParameter()
 			SG_FREE(m_datatype.m_length_y);
 	}
 
-
-//		if (m_delete_data)
-//		{
-//			if (m_datatype.m_ctype!=CT_SCALAR)
-//				delete_cont();
-//		}
-//
-//		/* eventually unref all sgobjects */
-//		if (m_parameter)
-//		{
-//			if (m_datatype.m_ptype==PT_SGOBJECT)
-//			{
-//				if (m_datatype.m_ctype==CT_SCALAR)
-//				{
-//					CSGObject* object=*((CSGObject**)m_parameter);
-//					SG_SDEBUG("SGUNREF %s\n", object ? object->get_name() : "NULL");
-//					SG_UNREF(object);
-//				}
-//				else
-//				{
-//					int32_t length=1;
-//					length*=m_datatype.m_length_x ? *m_datatype.m_length_x : 1;
-//					length*=m_datatype.m_length_y ? *m_datatype.m_length_y : 1;
-//
-//					for (index_t j=0; j<length; ++j)
-//					{
-//						CSGObject* object=((CSGObject**)(m_parameter))[j];
-//						SG_SDEBUG("SGUNREF %s\n", object ? object->get_name() : "NULL");
-//						SG_UNREF(object);
-//					}
-//				}
-//			}
-//
-//			/* free pointer/data */
-//			if (m_delete_data)
-//				SG_FREE(m_parameter);
-//		}
-
 	SG_SDEBUG("leaving ~TParameter\n");
 }
 
