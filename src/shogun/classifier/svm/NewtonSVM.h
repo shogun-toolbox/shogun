@@ -26,12 +26,12 @@ class CNewtonSVM : public CLinearMachine
 		CNewtonSVM();
 
 		/** constructor
-		 * @param l constant lambda
+		 * @param C constant C
 	         * @param itr constant no of iterations
 		 * @param traindat training features
 		 * @param trainlab labels for features
 		 */
-		CNewtonSVM(float64_t l, CDotFeatures* traindat, CLabels* trainlab,int32_t itr=20);
+		CNewtonSVM(float64_t C, CDotFeatures* traindat, CLabels* trainlab,int32_t itr=20);
 		
 		virtual ~CNewtonSVM();
 
@@ -42,16 +42,16 @@ class CNewtonSVM : public CLinearMachine
 		virtual inline EClassifierType get_classifier_type() { return CT_NEWTONSVM; }
 
 		/**
-		 * set lambda
-	         * @param lambda lambda=1/C
+		 * set C
+	         * @param C constant C
 		 */
-		inline void set_lambda(float64_t l) { lambda=l; }
+		inline void set_C(float64_t c) { C=c; }
 
-		/** get lambda
+		/** get C
 		 * 
-		 * @return lambda
+		 * @return C
 		 */
-		inline float64_t get_lambda() { return lambda; }
+		inline float64_t get_C() { return C; }
 
 		
 		/** set if bias shall be enabled
@@ -94,9 +94,9 @@ class CNewtonSVM : public CLinearMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
-		void obj_fun_linear(float64_t* out,float64_t* obj,int32_t* sv,int32_t* numsv,float64_t* grad,SGVector<float64_t> v);
+		void obj_fun_linear(float64_t* weights,float64_t* out,float64_t* obj,int32_t* sv,int32_t* numsv,float64_t* grad);
 
-		void line_search_linear(float64_t* d,float64_t* out,SGVector<float64_t> Y,float64_t* tx);
+		void line_search_linear(float64_t* weights,float64_t* d,float64_t* out,float64_t* tx);
 	protected:
 		/** lambda=1/C */
 		float64_t lambda,C;
