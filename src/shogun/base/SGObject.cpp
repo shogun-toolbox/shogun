@@ -778,21 +778,40 @@ void CSGObject::map_parameters(DynArray<TParameter*>* param_base,
 	*param_base=*new_base;
 	base_version=mapped_version+1;
 
-	SG_DEBUG("new parameter base:\n");
+	SG_DEBUG("new parameter base of size %d:\n", param_base->get_num_elements());
 	for (index_t i=0; i<param_base->get_num_elements(); ++i)
 	{
 		TParameter* current=param_base->get_element(i);
-		if (current->m_datatype.m_ptype==PT_SGOBJECT)
+		TSGDataType type=current->m_datatype;
+		if (type.m_ptype==PT_SGOBJECT)
 		{
-			CSGObject* object=*(CSGObject**)current->m_parameter;
-			SG_DEBUG("\"%s\": sgobject \"%s\" at %p\n", current->m_name,
-					object ? object->get_name() : "", object);
+			if (type.m_ctype==CT_SCALAR)
+			{
+				CSGObject* object=*(CSGObject**)current->m_parameter;
+				SG_DEBUG("(%d:) \"%s\": sgobject \"%s\" at %p\n", i,
+						current->m_name, object ? object->get_name() : "",
+								object);
+			}
+			else
+			{
+				index_t len=1;
+				len*=type.m_length_x ? *type.m_length_x : 1;
+				len*=type.m_length_y ? *type.m_length_y : 1;
+				CSGObject** array=*(CSGObject***)current->m_parameter;
+				for (index_t j=0; j<len; ++j)
+				{
+					CSGObject* object=array[j];
+					SG_DEBUG("(%d:) \"%s\": sgobject \"%s\" at %p\n", i,
+							current->m_name, object ? object->get_name() : "",
+									object);
+				}
+			}
 		}
 		else
 		{
 			char* s=SG_MALLOC(char, 200);
 			current->m_datatype.to_string(s, 200);
-			SG_DEBUG("\"%s\": type: %s at %p\n", current->m_name, s,
+			SG_DEBUG("(%d:) \"%s\": type: %s at %p\n", i, current->m_name, s,
 					current->m_parameter);
 			SG_FREE(s);
 		}
