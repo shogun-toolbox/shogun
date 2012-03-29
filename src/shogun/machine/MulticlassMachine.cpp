@@ -74,10 +74,8 @@ CLabels* CMulticlassMachine::apply()
 	{
 		case ONE_VS_REST_STRATEGY:
 			return classify_one_vs_rest();
-			break;
 		case ONE_VS_ONE_STRATEGY:
 			return classify_one_vs_one();
-			break;
 		default:
 			SG_ERROR("Unknown multiclass strategy\n");
 	}
