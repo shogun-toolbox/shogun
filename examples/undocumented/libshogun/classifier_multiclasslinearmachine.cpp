@@ -19,8 +19,10 @@ int main(int argc, char** argv)
 	init_shogun_with_defaults();
 
 	// Prepare to read a file for the training data
-	CStreamingAsciiFile* ffeats_train = new CStreamingAsciiFile("../data/fm_train_real.dat");
-	CStreamingAsciiFile* flabels_train = new CStreamingAsciiFile("../data/label_train_multiclass.dat");
+	char fname_feats[]  = "../data/fm_train_real.dat";
+	char fname_labels[] = "../data/label_train_multiclass.dat";
+	CStreamingAsciiFile* ffeats_train  = new CStreamingAsciiFile(fname_feats);
+	CStreamingAsciiFile* flabels_train = new CStreamingAsciiFile(fname_labels);
 
 	CStreamingSimpleFeatures< float64_t >* stream_features = 
 		new CStreamingSimpleFeatures< float64_t >(ffeats_train, false, 1024);
