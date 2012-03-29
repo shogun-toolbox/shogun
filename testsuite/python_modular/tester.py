@@ -68,7 +68,7 @@ def compare_dbg(a, b):
 		print "b", b
 		return False
 
-def tester(tests, cmp_method, tolerance):
+def tester(tests, cmp_method, tolerance, failures):
 	for t in tests:
 		try:
 			mod, mod_name = get_test_mod(t)
@@ -89,16 +89,18 @@ def tester(tests, cmp_method, tolerance):
 
 				try:
 					if cmp_method(a,b,tolerance):
-						print "%-60s OK" % setting_str
+						if not failures:
+							print "%-60s OK" % setting_str
 					else:
 						print "%-60s ERROR" % setting_str
 				except Exception, e:
-					print e
+					print setting_str, e
 
 					import pdb
 					pdb.set_trace()
 			except IOError, e:
-				print "%-60s NO TEST" % (setting_str)
+				if not failures:
+					print "%-60s NO TEST" % (setting_str)
 			except Exception, e:
 				print "%-60s EXCEPTION %s" % (setting_str,e)
 				pass
@@ -109,6 +111,8 @@ if __name__=='__main__':
 	op=OptionParser()
 	op.add_option("-d", "--debug", action="store_true", default=False,
 				help="detailed debug output of objects that don't match")
+	op.add_option("-f", "--failures", action="store_true", default=False,
+				help="show only failures")
 	op.add_option("-t", "--tolerance", action="store", default=None,
 	              help="tolerance used to estimate accuracy")
 
@@ -119,4 +123,4 @@ if __name__=='__main__':
 	else:
 		cmp_method=compare
 	tests = setup_tests(args)
-	tester(tests, cmp_method, opts.tolerance)
+	tester(tests, cmp_method, opts.tolerance, opts.failures)

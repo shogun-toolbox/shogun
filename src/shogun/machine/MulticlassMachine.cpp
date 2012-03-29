@@ -79,7 +79,15 @@ CLabels* CMulticlassMachine::apply()
 
 bool CMulticlassMachine::train_machine(CFeatures* data)
 {
-	init_machine_for_train(data);
+	if (!data && !is_ready())
+		SG_ERROR("Please provide training data.\n");
+
+	if (data)
+	{
+		init_machine_for_train(data);
+		init_machines_for_apply(data);
+	}
+
 	switch (m_multiclass_strategy)
 	{
 			case ONE_VS_REST_STRATEGY:
@@ -91,6 +99,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 			default:
 				SG_ERROR("Unknown multiclass strategy\n");
 	}
+
 	return NULL;
 }
 
