@@ -64,8 +64,7 @@ CLabels* CMulticlassMachine::apply(CFeatures* features)
 
 CLabels* CMulticlassMachine::apply()
 {
-	/** TODO Little bit ugly to to this again here but we need to set the 
-	 *  machines. It doesn't work just doing it a the end of train_machine */
+	/** Ensure that m_machines have the features set */
 	init_machines_for_apply(NULL);
 
 	switch (m_multiclass_strategy)
