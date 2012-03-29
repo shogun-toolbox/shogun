@@ -16,7 +16,7 @@
 using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
-: CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY), m_rejection_strategy(NULL)
+: CMachine(), m_machine(NULL), m_multiclass_strategy(ONE_VS_REST_STRATEGY), m_rejection_strategy(NULL)
 {
 	register_parameters();
 }
@@ -35,9 +35,7 @@ CMulticlassMachine::CMulticlassMachine(
 CMulticlassMachine::~CMulticlassMachine()
 {
 	SG_UNREF(m_rejection_strategy);
-	/** TODO invalid read of size 4 if not commented, because it is already 
-	 * freed in the specific machine?? */
-	//SG_UNREF(m_machine);
+	SG_UNREF(m_machine);
 
 	clear_machines();
 }
