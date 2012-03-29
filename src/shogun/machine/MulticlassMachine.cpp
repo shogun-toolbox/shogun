@@ -91,10 +91,8 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	{
 		case ONE_VS_REST_STRATEGY:
 			return train_one_vs_rest();
-			break;
 		case ONE_VS_ONE_STRATEGY:
 			return train_one_vs_one();
-			break;
 		default:
 			SG_ERROR("Unknown multiclass strategy\n");
 	}
