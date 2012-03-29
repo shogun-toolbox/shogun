@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 	stream_labels->end_parser();
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
-	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC_DUAL);
+	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
 	SG_REF(svm);
 
 	// Add some configuration to the svm
