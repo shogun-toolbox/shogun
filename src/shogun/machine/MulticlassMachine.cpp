@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2012 Soeren Sonnenburg and Sergey Lisitsyn
- * One vs. One strategy written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
- * Copyright (C) 1999-2012 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2011 Soeren Sonnenburg
+ * Written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
+ * Copyright (C) 2012 Sergey Lisitsyn, Fernando José Iglesias Garcia
  */
 
 #include <shogun/machine/MulticlassMachine.h>
@@ -16,7 +16,8 @@
 using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
-: CMachine(), m_machine(NULL), m_multiclass_strategy(ONE_VS_REST_STRATEGY), m_rejection_strategy(NULL)
+: CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY), 
+  m_machine(NULL), m_rejection_strategy(NULL)
 {
 	register_parameters();
 }
