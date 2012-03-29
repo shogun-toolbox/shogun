@@ -85,6 +85,9 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		/** init machine for train with setting features */
 		virtual bool init_machine_for_train(CFeatures* data)
 		{
+			if (!m_machine)
+				SG_ERROR("No machine given in Multiclass constructor\n");
+
 			if (data)
 				set_features((CDotFeatures*)data);
 
@@ -109,7 +112,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		virtual bool is_ready()
 		{
 			if (m_features)
-					return true;
+				return true;
 
 			return false;
 		}
@@ -124,6 +127,21 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		virtual int32_t get_num_rhs_vectors()
 		{
 			return m_features->get_num_vectors();
+		}
+
+		/** set subset to the features of the machine, deletes old one
+		 *
+		 * @param subset subset instance to set
+		 */
+		virtual void set_machine_subset(CSubset* subset)
+		{
+			m_features->set_subset(subset);
+		}
+
+		/** deletes any subset set to the features of the machine */
+		virtual void remove_machine_subset()
+		{
+			m_features->remove_subset();
 		}
 
 	protected:
