@@ -85,6 +85,9 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		/** init machine for train with setting features */
 		virtual bool init_machine_for_train(CFeatures* data)
 		{
+			if (!m_machine)
+				SG_ERROR("No machine given in Multiclass constructor\n");
+
 			if (data)
 				set_features((CDotFeatures*)data);
 
