@@ -35,7 +35,9 @@ CMulticlassMachine::CMulticlassMachine(
 CMulticlassMachine::~CMulticlassMachine()
 {
 	SG_UNREF(m_rejection_strategy);
-	SG_UNREF(m_machine);
+	/** TODO invalid read of size 4 if not commented, because it is already 
+	 * freed in the specific machine?? */
+	//SG_UNREF(m_machine);
 
 	clear_machines();
 }
@@ -64,7 +66,8 @@ CLabels* CMulticlassMachine::apply(CFeatures* features)
 
 CLabels* CMulticlassMachine::apply()
 {
-	/** TODO little bit ugly to have this here but we to set the machines */
+	/** TODO Little bit ugly to to this again here but we need to set the 
+	 *  machines. It doesn't work just doing it a the end of train_machine */
 	init_machines_for_apply(NULL);
 
 	switch (m_multiclass_strategy)
@@ -84,7 +87,7 @@ CLabels* CMulticlassMachine::apply()
 
 bool CMulticlassMachine::train_machine(CFeatures* data)
 {
-	if (!data && !is_ready())
+	if ( !data && !is_ready() )
 		SG_ERROR("Please provide training data.\n");
 	else
 		init_machine_for_train(data);
@@ -147,6 +150,7 @@ bool CMulticlassMachine::train_one_vs_one()
 	/** Number of vectors included in every subset */
 	int32_t tot = 0;
 
+	/** Train each machine */
 	for (int32_t i=0, c=0; i<num_classes; i++)
 	{
 		for (int32_t j=i+1; j<num_classes; j++)
@@ -154,11 +158,16 @@ bool CMulticlassMachine::train_one_vs_one()
 			SGVector<index_t> subset_labels(num_vectors);
 			SGVector<index_t> subset_feats(num_vectors);
 
+			/** Modify the labels of the training examples that belong
+			 *  to the classes relevant to train with this machine. 
+			 *  The training examples of the other classes are excluded */
+
 			tot = 0;
 			for (int32_t k=0; k<num_vectors; k++)
 			{
 				/* It is important to use the same index-label association
 				 * here and in classifiy_one_vs_one: i -> 1.0, j -> -1.0 */
+
 				if (m_labels->get_int_label(k)==i)
 				{
 					train_labels->set_label(k,1.0);
