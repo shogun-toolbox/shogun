@@ -47,22 +47,8 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
         }
     }
 
-    for (size_t i = 0; i < label_g.size(); ++i) {
-        for (size_t j = 0; j < label_p.size(); ++j) {
-            printf("%5.0lf ", G(i, j));
-        }
-        printf("\n");
-    }
-
     Munkres munkres_solver(G);
     munkres_solver.solve();
-
-    for (size_t i = 0; i < label_g.size(); ++i) {
-        for (size_t j = 0; j < label_p.size(); ++j) {
-            printf("%3.0lf ", G(i, j));
-        }
-        printf("\n");
-    }
 
     map<int, int> label_map;
     for (size_t i = 0; i < label_p.size(); ++i) {
@@ -72,9 +58,6 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
                 break;
             }
         }
-    }
-    for (map<int,int>::iterator it = label_map.begin(); it != label_map.end(); ++it) {
-        printf("%d => %d\n", it->first, it->second);
     }
 
     for (int i = predicted->get_num_labels()-1; i >= 0; --i) {

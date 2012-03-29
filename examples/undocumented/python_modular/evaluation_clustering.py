@@ -59,19 +59,8 @@ if __name__ == '__main__':
     gnd_hat = assign_labels(fea, centroids)
     gnd = Labels(gnd_raw)
 
-    ous = open('/tmp/foo.txt', 'w') 
-    for i in range(gnd.get_num_labels()):
-        ous.write('%d ' % gnd.get_label(i))
-    ous.write('\n')
-    for i in range(gnd_hat.get_num_labels()):
-        ous.write('%d ' % gnd_hat.get_label(i))
-    ous.write('\n')
-
     AccuracyEval = ClusteringAccuracy()
     AccuracyEval.best_map(gnd_hat, gnd)
-    for i in range(gnd_hat.get_num_labels()):
-        ous.write('%d ' % gnd_hat.get_label(i))
-    ous.write('\n')
     accuracy = AccuracyEval.evaluate(gnd_hat, gnd)
     print('Clustering accuracy = %.4f' % accuracy)
 
