@@ -20,7 +20,7 @@ namespace shogun
  *
  * For a (very complex) example see e.g. CWeightedDegreeStringKernel
  *
- */ 
+ */
 template <class ST> class CStringKernel : public CKernel
 {
 	public:

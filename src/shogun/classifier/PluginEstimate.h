@@ -187,7 +187,7 @@ class CPluginEstimate: public CMachine
 		{
 			return pos_model->get_num_model_parameters()+neg_model->get_num_model_parameters();
 		}
-		
+
 		/** check models
 		 *
 		 * @return if one of the two models is invalid

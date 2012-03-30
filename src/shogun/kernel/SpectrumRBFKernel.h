@@ -46,7 +46,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
-		 * @param size 
+		 * @param size
 		 * @param AA_matrix
 		 * @param degree
 		 * @param width
@@ -68,7 +68,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** clean up kernel */
 		virtual void cleanup();
 
-		/** get degree 
+		/** get degree
 		 *
 		 * @return degree of the kernel
 		 */
@@ -79,13 +79,13 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 		/** return what type of kernel we are
 		 *
-		 * @return kernel type 
+		 * @return kernel type
 		 */
 		virtual EKernelType get_kernel_type() { return K_SPECTRUMRBF; }
 
 		/** return the kernel's name
 		 *
-		 * @return name 
+		 * @return name
 		 */
 		virtual const char* get_name() const { return "SpectrumRBFKernel"; }
 
@@ -146,7 +146,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** maximum mismatch */
 		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
-		float64_t* AA_matrix ; 
+		float64_t* AA_matrix ;
 		/** length of the AA_matrix -- for registration*/
 		int32_t AA_matrix_length;
 		/** width of Gaussian*/
@@ -162,7 +162,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** sequences */
 		SGString<char>* sequences; // profile
 		/** string features */
-		CStringFeatures<char>* string_features; 
+		CStringFeatures<char>* string_features;
 		/** nof sequences */
 		int32_t nof_sequences;
 		/** max sequence length */
@@ -174,7 +174,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		CArray2<float64_t> kernel_matrix;
 		/** target letter 0 */
 		int32_t target_letter_0;
-	
+
 	private:
 		void init();
 };

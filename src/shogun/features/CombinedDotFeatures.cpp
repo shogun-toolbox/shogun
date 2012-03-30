@@ -374,7 +374,7 @@ void CCombinedDotFeatures::set_subfeature_weights(
 	float64_t* weights, int32_t num_weights)
 {
 	int32_t i=0 ;
-	CListElement* current = NULL ;	
+	CListElement* current = NULL ;
 	CDotFeatures* f = get_first_feature_obj(current);
 
 	ASSERT(num_weights==get_num_feature_obj());

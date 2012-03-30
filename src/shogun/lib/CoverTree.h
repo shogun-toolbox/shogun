@@ -42,7 +42,7 @@ namespace shogun
  *
  * The user should define double Point::distance(const Point& p) and
  * bool Point::operator==(const Point& p), where
- * p1.distance(p2)==0 doesn't necessarily mean that p1==p2). 
+ * p1.distance(p2)==0 doesn't necessarily mean that p1==p2).
  *
  * For example, a point could consist of a vector and a string
  * name, where their distance measure is simply euclidean distance but to be
@@ -78,12 +78,12 @@ class CoverTree
         void removePoint(const Point& p);
         const std::vector<Point>& getPoints() { return _points; }
         double distance(const CoverTreeNode& p) const;
-        
+
         bool isSingle() const;
         bool hasPoint(const Point& p) const;
-            
+
         const Point& getPoint() const;
-        
+
         /**
          * Return every child of the node from any level. This is handy for
          * the destructor.
@@ -107,7 +107,7 @@ class CoverTree
     bool insert_rec(const Point& p,
                     const std::vector<distNodePair>& Qi,
                     const int& level);
-    
+
     /**
      * Finds the node in Q with the minimum distance to p. Returns a
      * pair consisting of this node and the distance.
@@ -115,7 +115,7 @@ class CoverTree
     distNodePair distance(const Point& p,
                           const std::vector<CoverTreeNode*>& Q);
 
-    
+
     void remove_rec(const Point& p,
                     std::map<int,std::vector<distNodePair> >& coverSets,
                     int level,
@@ -133,9 +133,9 @@ class CoverTree
      * p,q that you will ever try to insert. The cover tree may be invalid
      * if an inaccurate maxDist is given.
      */
-    
+
     CoverTree(const double& maxDist,
-              const std::vector<Point>& points=std::vector<Point>()); 
+              const std::vector<Point>& points=std::vector<Point>());
     ~CoverTree();
 
     /**
@@ -208,7 +208,7 @@ CoverTree<Point>::~CoverTree()
         //std::cout << _numNodes << "\n";
         delete byeNode;
         //_numNodes--;
-    }   
+    }
 }
 
 template<class Point>
@@ -427,7 +427,7 @@ CoverTree<Point>::distance(const Point& p,
             minNode = *it;
         }
     }
-    return std::make_pair(minDist,minNode);  
+    return std::make_pair(minDist,minNode);
 }
 
 template<class Point>
@@ -573,7 +573,7 @@ double CoverTree<Point>::CoverTreeNode::distance(const CoverTreeNode& p) const
 {
     return _points[0].distance(p.getPoint());
 }
- 
+
 template<class Point>
 bool CoverTree<Point>::CoverTreeNode::isSingle() const
 {
@@ -623,7 +623,7 @@ bool CoverTree<Point>::isValidTree() const {
             }
         }
         std::vector<CoverTreeNode*> allChildren;
-        for(it=nodes.begin(); it!=nodes.end(); ++it) {        
+        for(it=nodes.begin(); it!=nodes.end(); ++it) {
             std::vector<CoverTreeNode*> children = (*it)->getChildren(i);
             //verify covering tree invariant: the children of node n at level
             //i are no further than base^i away
@@ -643,4 +643,4 @@ bool CoverTree<Point>::isValidTree() const {
 }
 }
 #endif // _COVER_TREE_H
- 
+

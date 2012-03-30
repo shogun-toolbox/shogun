@@ -17,28 +17,28 @@
 
 namespace shogun
 {
-/** @brief MKLMultiClassOptimizationBase is a helper class for MKLMultiClass. 
+/** @brief MKLMultiClassOptimizationBase is a helper class for MKLMultiClass.
  *
  *	it is a virtual base class for MKLMultiClassGLPK and MKLMultiClassGradient which are instances of optimization
- * 	
+ *
  */
 class MKLMultiClassOptimizationBase: public CSGObject
 {
 public:
 	/** Class default Constructor
-	 * 
+	 *
 	 */
 	MKLMultiClassOptimizationBase();
 	/** Class default Destructor
-	 * 
+	 *
 	 */
 	virtual ~MKLMultiClassOptimizationBase();
 
-	/** initializes solver 
+	/** initializes solver
 	 *
 	 * @param numkernels2 is the number of kernels
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	virtual void setup(const int32_t numkernels2);
 
@@ -48,7 +48,7 @@ public:
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
 	 * MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
-	 * 
+	 *
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas);
@@ -56,7 +56,7 @@ public:
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
-	 * 
+	 *
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 

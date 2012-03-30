@@ -63,7 +63,7 @@ void CLinearKernel::clear_normal()
 	set_is_initialized(true);
 }
 
-void CLinearKernel::add_to_normal(int32_t idx, float64_t weight) 
+void CLinearKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	((CDotFeatures*) lhs)->add_to_dense_vec(
 		normalizer->normalize_lhs(weight, idx), idx, normal, normal_length);

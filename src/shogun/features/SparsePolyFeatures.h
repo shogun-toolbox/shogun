@@ -28,7 +28,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		CSparsePolyFeatures();
 
 		/** constructor
-		 * 
+		 *
 		 * @param feat real features
 		 * @param degree degree of the polynomial kernel
 		 * 					(only degree 2 & 3 are supported)
@@ -40,17 +40,17 @@ class CSparsePolyFeatures : public CDotFeatures
 		virtual ~CSparsePolyFeatures();
 
 		/** copy constructor
-		 * 
+		 *
 		 * not implemented!
 		 *
 		 * @param orig original PolyFeature
-		 */ 
+		 */
 		CSparsePolyFeatures(const CSparsePolyFeatures & orig);
 
 		/** get dimensions of feature space
 		 *
 		 * @return dimensions of feature space
-		 */ 
+		 */
 		inline virtual int32_t get_dim_feature_space() const;
 
 		/** get number of non-zero features in vector
@@ -153,8 +153,8 @@ class CSparsePolyFeatures : public CDotFeatures
 		 */
 		inline virtual const char* get_name() const { return "SparsePolyFeatures"; }
 
-		/** compute dot product of vector with index arg1 
-		 *  with an given second vector 
+		/** compute dot product of vector with index arg1
+		 *  with an given second vector
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 second vector
@@ -163,7 +163,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
 
 		/** compute alpha*x+vec2
-		 * 
+		 *
 		 * @param alpha alpha
 		 * @param vec_idx1 index of first vector x
 		 * @param vec2 vec2
@@ -172,7 +172,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 */
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
-	protected: 
+	protected:
 		/** store the norm of each training example */
 		void store_normalization_values();
 
@@ -188,7 +188,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		/** dimensions of the feature space of the polynomial kernel */
 		int32_t m_output_dimensions;
 		/**store norm of each training example */
-		float64_t* m_normalization_values; 
+		float64_t* m_normalization_values;
 		/** mask */
 		uint32_t mask;
 		/** number of bits in hash */

@@ -17,15 +17,15 @@
 
 namespace shogun
 {
-/** @brief class ManhattanMetric 
+/** @brief class ManhattanMetric
  *
  * The Manhattan distance (city block distance,\f$L_{1}\f$ norm, rectilinear
  * distance or taxi cab metric ) is a special case
  * of general Minkowski metric and computes the absolute differences
  * between the feature dimensions of two data points.
- * 
+ *
  * \f[\displaystyle
- *  d(\bf{x},\bf{x'}) = \sum_{i=1}^{n} |\bf{x_{i}}-\bf{x'_{i}}| \quad 
+ *  d(\bf{x},\bf{x'}) = \sum_{i=1}^{n} |\bf{x_{i}}-\bf{x'_{i}}| \quad
  *  \bf{x},\bf{x'} \in R^{n}
  * \f]
  *

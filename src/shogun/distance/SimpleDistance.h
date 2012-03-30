@@ -38,14 +38,14 @@ template <class ST> class CSimpleDistance : public CDistance
 			ASSERT(r->get_feature_class()==C_SIMPLE);
 			ASSERT(l->get_feature_type()==this->get_feature_type());
 			ASSERT(r->get_feature_type()==this->get_feature_type());
-			
-			
+
+
 			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
-			{  
+			{
 				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
 			}
-		
+
 			return true;
 		}
 

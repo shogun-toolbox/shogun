@@ -25,12 +25,12 @@ class CGUIConverter : public CSGObject
 {
 	public:
 		/** constructor */
-		CGUIConverter() 
-		{ 
+		CGUIConverter()
+		{
 
 		};
 
-		/** constructor 
+		/** constructor
 		 * @param interface
 		 */
 		CGUIConverter(CSGInterface* interface);

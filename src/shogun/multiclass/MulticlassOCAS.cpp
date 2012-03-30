@@ -28,7 +28,7 @@ struct mocas_data
 	float64_t* new_a;
 };
 
-CMulticlassOCAS::CMulticlassOCAS() : 
+CMulticlassOCAS::CMulticlassOCAS() :
 	CLinearMulticlassMachine()
 {
 	register_parameters();
@@ -94,8 +94,8 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	user_data.nDim = num_features;
 	user_data.nData = num_vectors;
 
-	ocas_return_value_T value = 
-	msvm_ocas_solver(C, data_y, nY, nData, TolRel, TolAbs, 
+	ocas_return_value_T value =
+	msvm_ocas_solver(C, data_y, nY, nData, TolRel, TolAbs,
 	                 QPBound, MaxTime, BufSize, Method,
 	                 &CMulticlassOCAS::msvm_full_compute_W,
 	                 &CMulticlassOCAS::msvm_update_W,
@@ -147,7 +147,7 @@ float64_t CMulticlassOCAS::msvm_update_W(float64_t t, void* user_data)
 	uint32_t nY = ((mocas_data*)user_data)->nY;
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
 
-	for(uint32_t j=0; j < nY*nDim; j++) 
+	for(uint32_t j=0; j < nY*nDim; j++)
 		W[j] = oldW[j]*(1-t) + t*W[j];
 
 	float64_t sq_norm_W = CMath::dot(W,W,nDim*nY);
@@ -155,7 +155,7 @@ float64_t CMulticlassOCAS::msvm_update_W(float64_t t, void* user_data)
 	return sq_norm_W;
 }
 
-void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_WoldW, 
+void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_WoldW,
                                           float64_t *alpha, uint32_t nSel, void* user_data)
 {
 	float64_t* W = ((mocas_data*)user_data)->W;
@@ -166,14 +166,14 @@ void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_Wo
 
 	uint32_t i,j;
 
-	memcpy(oldW, W, sizeof(float64_t)*nDim*nY); 
+	memcpy(oldW, W, sizeof(float64_t)*nDim*nY);
 	memset(W, 0, sizeof(float64_t)*nDim*nY);
 
 	for(i=0; i<nSel; i++)
 	{
 		if(alpha[i] > 0)
 		{
-			for(j=0; j<nDim*nY; j++) 
+			for(j=0; j<nDim*nY; j++)
 				W[j] += alpha[i]*full_A[LIBOCAS_INDEX(j,i,nDim*nY)];
 		}
 	}
@@ -184,7 +184,7 @@ void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_Wo
 	return;
 }
 
-int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_cut, 
+int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_cut,
                                            uint32_t nSel, void* user_data)
 {
 	float64_t* full_A = ((mocas_data*)user_data)->full_A;
@@ -213,15 +213,15 @@ int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_c
 
 	// compute new_a'*new_a and insert new_a to the last column of full_A
 	sq_norm_a = CMath::dot(new_a,new_a,nDim*nY);
-	for(j=0; j < nDim*nY; j++ ) 
+	for(j=0; j < nDim*nY; j++ )
 		full_A[LIBOCAS_INDEX(j,nSel,nDim*nY)] = new_a[j];
 
 	new_col_H[nSel] = sq_norm_a;
-	for(i=0; i < nSel; i++) 
+	for(i=0; i < nSel; i++)
 	{
 		float64_t tmp = 0;
 
-		for(j=0; j < nDim*nY; j++ ) 
+		for(j=0; j < nDim*nY; j++ )
 			tmp += new_a[j]*full_A[LIBOCAS_INDEX(j,i,nDim*nY)];
 
 		new_col_H[i] = tmp;

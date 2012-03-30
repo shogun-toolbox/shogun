@@ -48,7 +48,7 @@ struct LINRECONSTRUCTION_THREAD_PARAM
 	float64_t* z_matrix;
 	/// covariance matrix, ZZ'
 	float64_t* covariance_matrix;
-	/// vector used for solving equation 
+	/// vector used for solving equation
 	float64_t* id_vector;
 	/// weight matrix
 	float64_t* W_matrix;
@@ -100,14 +100,14 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 
 void CLocallyLinearEmbedding::init()
 {
-	m_parameters->add(&m_auto_k, "auto_k", 
+	m_parameters->add(&m_auto_k, "auto_k",
 	                  "whether k should be determined automatically in range");
 	m_parameters->add(&m_k, "k", "number of neighbors");
-	m_parameters->add(&m_max_k, "max_k", 
+	m_parameters->add(&m_max_k, "max_k",
 	                  "maximum number of neighbors used to compute optimal one");
 	m_parameters->add(&m_nullspace_shift, "nullspace_shift",
 	                  "nullspace finding regularization shift");
-	m_parameters->add(&m_reconstruction_shift, "reconstruction_shift", 
+	m_parameters->add(&m_reconstruction_shift, "reconstruction_shift",
 	                  "shift used to regularize reconstruction step");
 	m_parameters->add(&m_use_arpack, "use_arpack",
 	                  "whether arpack is being used or not");
@@ -217,15 +217,15 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 	SGMatrix<int32_t> neighborhood_matrix;
 
 	time->start();
-	if (m_auto_k) 
+	if (m_auto_k)
 	{
 		neighborhood_matrix = get_neighborhood_matrix(distance_matrix,m_max_k);
 		m_k = estimate_k(simple_features,neighborhood_matrix);
 		SG_DEBUG("Estimated k with value of %d\n",m_k);
-	} 
+	}
 	else
 		neighborhood_matrix = get_neighborhood_matrix(distance_matrix,m_k);
-	
+
 	SG_DEBUG("Neighbors finding took %fs\n",time->cur_time_diff());
 
 	// init W (weight) matrix
@@ -278,7 +278,7 @@ int32_t CLocallyLinearEmbedding::estimate_k(CSimpleFeatures<float64_t>* simple_f
 		                                                   id_vector,neighborhood_matrix);
 		if (left_val<right_val)
 			right = right_third;
-		else 
+		else
 			left = left_third;
 	}
 	SG_FREE(z_matrix);
@@ -300,7 +300,7 @@ float64_t CLocallyLinearEmbedding::compute_reconstruction_error(int32_t k, int d
 	{
 		for (j=0; j<k; j++)
 		{
-			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[i*m_k+j]*dim,1,z_matrix+j*dim,1);   
+			cblas_dcopy(dim,feature_matrix+neighborhood_matrix[i*m_k+j]*dim,1,z_matrix+j*dim,1);
 			cblas_daxpy(dim,-1.0,feature_matrix+i*dim,1,z_matrix+j*dim,1);
 		}
 		cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,
@@ -349,7 +349,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeat
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 #else
 	int32_t num_threads = 1;
-#endif 
+#endif
 	// init storages to be used
 	float64_t* z_matrix = SG_MALLOC(float64_t, m_k*dim*num_threads);
 	float64_t* covariance_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
@@ -547,17 +547,17 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 	int32_t N = distance_matrix.num_rows;
 
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
-	
+
 	float64_t max_dist = CMath::max(distance_matrix.matrix,N*N);
 
 	CoverTree<LLE_COVERTREE_POINT>* coverTree = new CoverTree<LLE_COVERTREE_POINT>(max_dist);
 
 	for (i=0; i<N; i++)
 		coverTree->insert(LLE_COVERTREE_POINT(i,distance_matrix));
-	
+
 	for (i=0; i<N; i++)
 	{
-		std::vector<LLE_COVERTREE_POINT> neighbors = 
+		std::vector<LLE_COVERTREE_POINT> neighbors =
 		   coverTree->kNearestNeighbors(LLE_COVERTREE_POINT(i,distance_matrix),k+1);
 		for (std::size_t m=1; m<unsigned(k+1); m++)
 			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;

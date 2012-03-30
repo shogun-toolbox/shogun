@@ -104,7 +104,7 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 	SG_UNREF(ralphabet);
 
 	compute_all() ;
-	
+
 	return init_normalizer();
 }
 
@@ -135,19 +135,19 @@ float64_t CSpectrumMismatchRBFKernel::AA_helper(std::string &path, const char* j
 }
 
 /*
-float64_t CSpectrumMismatchRBFKernel::compute_helper(const char* joint_seq, 
-													  std::vector<unsigned int> joint_index, std::vector<unsigned int> joint_mismatch, 
-													  std::string path, unsigned int d, 
-													  const int & alen) 
+float64_t CSpectrumMismatchRBFKernel::compute_helper(const char* joint_seq,
+													  std::vector<unsigned int> joint_index, std::vector<unsigned int> joint_mismatch,
+													  std::string path, unsigned int d,
+													  const int & alen)
 {
 	const char* AA = "ACDEFGHIKLMNPQRSTVWY" ;
 	const unsigned int num_AA = strlen(AA) ;
 
 	assert(path.size()==d) ;
 	assert(joint_mismatch.size()==joint_index.size()) ;
-	
+
 	float64_t res = 0.0 ;
-	
+
 	for (unsigned int i=0; i<num_AA; i++)
 	{
 		std::vector<unsigned int> joint_mismatch_ ;
@@ -213,9 +213,9 @@ float64_t CSpectrumMismatchRBFKernel::compute_helper(const char* joint_seq,
 								bnum++ ;
 						}
 					}
-				
+
 				//fprintf(stdout, "%s: %i x %i\n", path_.c_str(), anum, bnum) ;
-				
+
 				res+= anum*bnum ;
 			}
 		}
@@ -224,24 +224,24 @@ float64_t CSpectrumMismatchRBFKernel::compute_helper(const char* joint_seq,
 }
 */
 
-void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq, 
+void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 													 std::vector<struct joint_list_struct> &joint_list,
-													 std::string path, unsigned int d) 
+													 std::string path, unsigned int d)
 {
 	const char* AA = "ACDEFGHIKLMNPQRSTVWY" ;
 	const unsigned int num_AA = strlen(AA) ;
 
 	assert(path.size()==d) ;
-	
+
 	for (unsigned int i=0; i<num_AA; i++)
 	{
 		std::vector<struct joint_list_struct> joint_list_ ;
-		
+
 		if (d==0)
 			fprintf(stderr, "i=%i: ", i) ;
 		if (d==0 && target_letter_0!=-1 && (int)i != target_letter_0 )
 			continue ;
-		
+
 		if (d==1)
 		{
 			fprintf(stdout, "*") ;
@@ -282,7 +282,7 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 				CArray<float64_t> feats ;
 				feats.resize_array(kernel_matrix.get_dim1()) ;
 				feats.zero() ;
-				
+
 				for (unsigned int j=0; j<joint_list_.size(); j++)
 				{
 					if (width==0.0)
@@ -323,7 +323,7 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 
 void CSpectrumMismatchRBFKernel::compute_all()
 {
-	std::string joint_seq ; 
+	std::string joint_seq ;
 	std::vector<struct joint_list_struct> joint_list ;
 
 	assert(lhs->get_num_vectors()==rhs->get_num_vectors()) ;
@@ -332,7 +332,7 @@ void CSpectrumMismatchRBFKernel::compute_all()
 	for (int i=0; i<lhs->get_num_vectors(); i++)
 		for (int j=0; j<lhs->get_num_vectors(); j++)
 			kernel_matrix.set_element(0, i, j) ;
-	
+
 	for (int i=0; i<lhs->get_num_vectors(); i++)
 	{
 		int32_t alen ;
@@ -345,14 +345,14 @@ void CSpectrumMismatchRBFKernel::compute_all()
 			list_item.ex_index = i ;
 			list_item.index = apos+joint_seq.size() ;
 			list_item.mismatch = 0 ;
-			
+
 			joint_list.push_back(list_item) ;
 		}
 		joint_seq += std::string(avec, alen) ;
-		
+
 		((CStringFeatures<char>*) lhs)->free_feature_vector(avec, i, free_avec);
 	}
-	
+
 	compute_helper_all(joint_seq.c_str(), joint_list, "", 0) ;
 }
 
@@ -438,7 +438,7 @@ bool CSpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
 		return true;
 }
 
-void CSpectrumMismatchRBFKernel::register_params() 
+void CSpectrumMismatchRBFKernel::register_params()
 {
 	m_parameters->add(&degree, "degree", "degree of the kernel");
 	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
@@ -461,7 +461,7 @@ void CSpectrumMismatchRBFKernel::init()
 	max_mismatch = 0;
 	AA_matrix = NULL;
 	width = 0.0;
-	
+
 	initialized = false;
 	target_letter_0 = 0;
 }

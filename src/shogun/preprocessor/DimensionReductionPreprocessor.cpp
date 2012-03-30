@@ -5,7 +5,7 @@
 
 using namespace shogun;
 
-namespace shogun 
+namespace shogun
 {
 CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
 : CSimplePreprocessor<float64_t>()
@@ -30,7 +30,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor(CEmbeddingConve
 	init();
 }
 
-CDimensionReductionPreprocessor::~CDimensionReductionPreprocessor() 
+CDimensionReductionPreprocessor::~CDimensionReductionPreprocessor()
 {
 	SG_UNREF(m_distance);
 	SG_UNREF(m_kernel);

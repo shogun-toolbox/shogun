@@ -106,9 +106,9 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @return multiclass type 1 vs one etc
 		 */
-		inline EMulticlassStrategy get_multiclass_strategy() const 
-		{ 
-			return m_multiclass_strategy; 
+		inline EMulticlassStrategy get_multiclass_strategy() const
+		{
+			return m_multiclass_strategy;
 		}
 
 		/** get rejection strategy */
@@ -126,7 +126,7 @@ class CMulticlassMachine : public CMachine
 		}
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MulticlassMachine";
 		}
@@ -144,7 +144,7 @@ class CMulticlassMachine : public CMachine
 		 * @return resulting labels
 		 */
 		virtual CLabels* classify_one_vs_one();
-		
+
 		/** clear machines */
 		void clear_machines();
 
@@ -157,7 +157,7 @@ class CMulticlassMachine : public CMachine
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
-		/** abstract init machine for training method */ 
+		/** abstract init machine for training method */
 		virtual bool init_machine_for_train(CFeatures* data) = 0;
 
 		/** abstract init machines for applying method */

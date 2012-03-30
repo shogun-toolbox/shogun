@@ -24,7 +24,7 @@ class CKernel;
 
 /** @brief class LocalTangentSpaceAlignment (part of the
  * Efficient Dimensionality Reduction Toolkit) used to embed
- * data using kernel extension of the Local Tangent Space 
+ * data using kernel extension of the Local Tangent Space
  * Alignment (LTSA) algorithm.
  *
  * The stated eigenproblem is solved in the same way as
@@ -43,7 +43,7 @@ public:
 	/** constructor */
 	CKernelLocalTangentSpaceAlignment();
 
-	/** constructor with kernel parameter 
+	/** constructor with kernel parameter
 	 * @param kernel kernel to be used
 	 */
 	CKernelLocalTangentSpaceAlignment(CKernel* kernel);
@@ -57,9 +57,9 @@ public:
 /// HELPERS
 protected:
 
-	/** construct weight matrix 
+	/** construct weight matrix
 	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 
+	virtual SGMatrix<float64_t> construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
 	                                                    SGMatrix<int32_t> neighborhood_matrix);
 
 /// THREADS

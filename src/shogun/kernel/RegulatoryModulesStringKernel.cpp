@@ -26,14 +26,14 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel()
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
 		int32_t size, float64_t w, int32_t d, int32_t s, int32_t wl)
-: CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl), 
+: CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl),
 	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
 {
 	register_params();
 }
 
-CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr, 
-		CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos, 
+CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
+		CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos,
 		float64_t w, int32_t d, int32_t s, int32_t wl, int32_t size)
 : CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl),
 	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
@@ -53,14 +53,14 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	ASSERT(motif_positions_lhs);
 	ASSERT(motif_positions_rhs);
-	
+
 	if (l->get_num_vectors() != motif_positions_lhs->get_num_vectors())
-		SG_ERROR("Number of vectors does not agree (LHS: %d, Motif LHS: %d).\n", 
+		SG_ERROR("Number of vectors does not agree (LHS: %d, Motif LHS: %d).\n",
 				l->get_num_vectors(),  motif_positions_lhs->get_num_vectors());
 	if (r->get_num_vectors() != motif_positions_rhs->get_num_vectors())
 		SG_ERROR("Number of vectors does not agree (RHS: %d, Motif RHS: %d).\n",
 				r->get_num_vectors(), motif_positions_rhs->get_num_vectors());
-	
+
 	set_wd_weights();
 	CStringKernel<char>::init(l, r);
 	return init_normalizer();
@@ -75,7 +75,7 @@ void CRegulatoryModulesStringKernel::set_motif_positions(
 	SG_UNREF(motif_positions_rhs);
 	if (positions_lhs->get_num_features() != positions_rhs->get_num_features())
 		SG_ERROR("Number of dimensions does not agree.\n");
-		
+
 	motif_positions_lhs=positions_lhs;
 	motif_positions_rhs=positions_rhs;
 	SG_REF(positions_lhs);
@@ -103,23 +103,23 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result_wds=0;
 
 	for (int32_t p=0; p<num_pos; p++)
-	{		
+	{
 		result_rbf+=CMath::sq(positions_a[p]-positions_b[p]);
 
 		for (int32_t p2=0; p2<num_pos; p2++) //p+1 and below * 2
 			result_rbf+=CMath::sq( (positions_a[p]-positions_a[p2]) - (positions_b[p]-positions_b[p2]) );
-		
+
 		int32_t limit = window;
 		if (window + positions_a[p] > alen)
 			limit = alen - positions_a[p];
 
 		if (window + positions_b[p] > blen)
 			limit = CMath::min(limit, blen - positions_b[p]);
-		
+
 		result_wds+=compute_wds(&avec[positions_a[p]], &bvec[positions_b[p]],
 				limit);
 	}
-	
+
 	float64_t result=exp(-result_rbf/width)+result_wds;
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
@@ -201,15 +201,15 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 
 	SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, degree);
-		
+
 	int32_t i;
 	float64_t sum=0;
 	for (i=0; i<degree; i++)
 	{
-		weights[i]=degree-i;	
+		weights[i]=degree-i;
 		sum+=weights[i];
 	}
-	
+
 	for (i=0; i<degree; i++)
 		weights[i]/=sum;
 }

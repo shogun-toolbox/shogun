@@ -34,34 +34,34 @@ namespace shogun
 class CStreamingFileFromFeatures: public CStreamingFile
 {
 public:
-	/** 
+	/**
 	 * Default constructor
 	 */
 	CStreamingFileFromFeatures();
 
-	/** 
+	/**
 	 * Constructor taking a CFeatures object as argument
-	 * 
+	 *
 	 * @param feat features object
 	 */
 	CStreamingFileFromFeatures(CFeatures* feat);
 
-	/** 
+	/**
 	 * Constructor taking a CFeatures object and labels as arguments
-	 * 
+	 *
 	 * @param feat features object
 	 * @param lab labels as float64_t*
 	 */
 	CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab);
 
-	/** 
+	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingFileFromFeatures();
 
-	/** 
+	/**
 	 * Set the features object
-	 * 
+	 *
 	 * @param feat features object as argument
 	 */
 	virtual void set_features(CFeatures* feat)
@@ -84,7 +84,7 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		
+
 		return "StreamingFileFromFeatures";
 
 	}

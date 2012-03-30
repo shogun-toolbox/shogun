@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-/** @brief MKLMultiClassGLPK is a helper class for MKLMultiClass. 
+/** @brief MKLMultiClassGLPK is a helper class for MKLMultiClass.
  *
  *	it solves the corresponding linear problem arising in SIP formulation for
  * 	MKL using glpk
@@ -26,19 +26,19 @@ class MKLMultiClassGLPK: public MKLMultiClassOptimizationBase
 {
 public:
 	/** Class default Constructor
-	 * 
+	 *
 	 */
 	MKLMultiClassGLPK();
 	/** Class default Destructor
-	 * 
+	 *
 	 */
 	virtual ~MKLMultiClassGLPK();
 
-	/** initializes GLPK LP sover 
+	/** initializes GLPK LP sover
 	 *
 	 * @param numkernels2 is the number of kernels
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	virtual void setup(const int32_t numkernels2);
 
@@ -48,7 +48,7 @@ public:
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
 	 * MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
-	 * 
+	 *
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas);
@@ -56,7 +56,7 @@ public:
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
-	 * 
+	 *
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 

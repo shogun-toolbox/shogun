@@ -18,7 +18,7 @@
 
 namespace shogun
 {
-/** @brief Template Set class 
+/** @brief Template Set class
  *
  * Lazy implementation of a set. Set grows and shrinks dynamically and can be
  * conveniently iterated through via the [] operator.
@@ -39,7 +39,7 @@ template <class T> class CSet : public CSGObject
 		}
 
 		/** Add an element to the set
-		 * 
+		 *
 		 * @param e elemet to be added
 		 */
 		inline void add(T e)
@@ -49,7 +49,7 @@ template <class T> class CSet : public CSGObject
 		}
 
 		/** Remove an element from the set
-		 * 
+		 *
 		 * @param e element to be removed
 		 */
 		inline void remove(T e)
@@ -60,7 +60,7 @@ template <class T> class CSet : public CSGObject
 		}
 
 		/** Remove an element from the set
-		 * 
+		 *
 		 * @param e element to be looked for
 		 */
 		inline bool contains(T e)
@@ -70,7 +70,7 @@ template <class T> class CSet : public CSGObject
 		}
 
 		/** Index of element in the set
-		 * 
+		 *
 		 * @param e element to be removed
 		 * @return index of the element or -1 if not found
 		 */
@@ -113,7 +113,7 @@ template <class T> class CSet : public CSGObject
 		}
 
 		/** operator overload for set read only access
-		 * use add() for write access 
+		 * use add() for write access
 		 *
 		 * DOES NOT DO ANY BOUNDS CHECKING
 		 *

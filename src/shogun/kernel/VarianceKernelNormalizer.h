@@ -42,7 +42,7 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		{
 		}
 
-		/** initialization of the normalizer 
+		/** initialization of the normalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{

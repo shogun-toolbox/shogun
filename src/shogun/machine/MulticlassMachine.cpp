@@ -16,7 +16,7 @@
 using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
-: CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY), 
+: CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY),
   m_machine(NULL), m_rejection_strategy(NULL)
 {
 	register_parameters();
@@ -153,7 +153,7 @@ bool CMulticlassMachine::train_one_vs_one()
 			SGVector<index_t> subset_feats(num_vectors);
 
 			/** Modify the labels of the training examples that belong
-			 *  to the classes relevant to train with this machine. 
+			 *  to the classes relevant to train with this machine.
 			 *  The training examples of the other classes are excluded */
 
 			tot = 0;
@@ -260,7 +260,7 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 	int32_t num_machines = get_num_machines();
 	if ( num_machines != num_classes*(num_classes-1)/2 )
 		SG_ERROR("Dimension mismatch in classify_one_vs_one between number \
-			of machines = %d and number of classes = %d\n", num_machines, 
+			of machines = %d and number of classes = %d\n", num_machines,
 			num_classes);
 	CLabels* result = NULL;
 

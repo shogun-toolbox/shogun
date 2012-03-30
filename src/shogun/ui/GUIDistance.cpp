@@ -97,7 +97,7 @@ bool CGUIDistance::init_distance(const char* target)
 			EFeatureType ftype=train->get_feature_type();
 			if ((d_fclass==fclass || d_fclass==C_ANY || fclass==C_ANY) &&
 				(d_ftype==ftype || d_ftype==F_ANY || ftype==F_ANY))
-			
+
 			{
 				distance->init(train, train);
 				initialized=true;
@@ -118,7 +118,7 @@ bool CGUIDistance::init_distance(const char* target)
 			EFeatureType ftype=test->get_feature_type();
 			if ((d_fclass==fclass || d_fclass==C_ANY || fclass==C_ANY) &&
 				(d_ftype==ftype || d_ftype==F_ANY || ftype==F_ANY))
-			
+
 			{
 				if (!initialized)
 					SG_ERROR("Distance not initialized with training examples.\n");

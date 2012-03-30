@@ -1,7 +1,7 @@
 /*    Copyright 2006 Vikas Sindhwani (vikass@cs.uchicago.edu)
 	  SVM-lin: Fast SVM Solvers for Supervised and Semi-supervised Learning
 
-	  This file is part of SVM-lin.      
+	  This file is part of SVM-lin.
 
 	  SVM-lin is free software; you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
@@ -30,12 +30,12 @@
 
 namespace shogun
 {
-void ssl_train(struct data *Data, 
-		struct options *Options, 
+void ssl_train(struct data *Data,
+		struct options *Options,
 		struct vector_double *Weights,
 		struct vector_double *Outputs)
 {
-	// initialize 
+	// initialize
 	initialize(Weights,Data->n,0.0);
 	initialize(Outputs,Data->m,0.0);
 	vector_int    *Subset  = SG_MALLOC(vector_int, 1);
@@ -94,13 +94,13 @@ int32_t CGLS(
 	int32_t cgitermax = Options->cgitermax;
 	float64_t epsilon = Options->epsilon;
 	float64_t *beta = Weights->vec;
-	float64_t *o  = Outputs->vec; 
-	// initialize z 
+	float64_t *o  = Outputs->vec;
+	// initialize z
 	float64_t *z = SG_MALLOC(float64_t, active);
 	float64_t *q = SG_MALLOC(float64_t, active);
 	int32_t ii=0;
 	for (int32_t i = active ; i-- ;){
-		ii=J[i];      
+		ii=J[i];
 		z[i]  = C[ii]*(Y[ii] - o[ii]);
 	}
 	float64_t *r = SG_MALLOC(float64_t, n);
@@ -111,14 +111,14 @@ int32_t CGLS(
 		features->add_to_dense_vec(z[j], J[j], r, n-1);
 		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
 	}
-	float64_t *p = SG_MALLOC(float64_t, n);   
+	float64_t *p = SG_MALLOC(float64_t, n);
 	float64_t omega1 = 0.0;
 	for (int32_t i = n ; i-- ;)
 	{
 		r[i] -= lambda*beta[i];
 		p[i] = r[i];
 		omega1 += r[i]*r[i];
-	}   
+	}
 	float64_t omega_p = omega1;
 	float64_t omega_q = 0.0;
 	float64_t inv_omega2 = 1/omega1;
@@ -127,7 +127,7 @@ int32_t CGLS(
 	float64_t gamma = 0.0;
 	int32_t cgiter = 0;
 	int32_t optimality = 0;
-	float64_t epsilon2 = epsilon*epsilon;   
+	float64_t epsilon2 = epsilon*epsilon;
 	// iterate
 	while(cgiter < cgitermax)
 	{
@@ -143,14 +143,14 @@ int32_t CGLS(
 			t+=Options->bias*p[n-1]; //bias (modelled as last dim)
 			q[i]=t;
 			omega_q += C[ii]*t*t;
-		}       
-		gamma = omega1/(lambda*omega_p + omega_q);    
-		inv_omega2 = 1/omega1;     
+		}
+		gamma = omega1/(lambda*omega_p + omega_q);
+		inv_omega2 = 1/omega1;
 		for (i = n ; i-- ;)
 		{
 			r[i] = 0.0;
 			beta[i] += gamma*p[i];
-		} 
+		}
 		omega_z=0.0;
 		for (i = active ; i-- ;)
 		{
@@ -158,7 +158,7 @@ int32_t CGLS(
 			o[ii] += gamma*q[i];
 			z[i] -= gamma*C[ii]*q[i];
 			omega_z+=z[i]*z[i];
-		} 
+		}
 		for (j=0; j < active; j++)
 		{
 			t=z[j];
@@ -182,9 +182,9 @@ int32_t CGLS(
 		for(i = n ; i-- ;)
 		{
 			p[i] = r[i] + p[i]*scale;
-			omega_p += p[i]*p[i]; 
-		} 
-	}            
+			omega_p += p[i]*p[i];
+		}
+	}
 	SG_SDEBUG("...Done.");
 	SG_SINFO("CGLS converged in %d iteration(s)", cgiter);
 
@@ -200,7 +200,7 @@ int32_t L2_SVM_MFN(
 	struct vector_double *Weights, struct vector_double *Outputs,
 	int32_t ini)
 {
-	/* Disassemble the structures */  
+	/* Disassemble the structures */
 	CDotFeatures* features=Data->features;
 	float64_t *Y = Data->Y;
 	float64_t *C = Data->C;
@@ -209,7 +209,7 @@ int32_t L2_SVM_MFN(
 	float64_t lambda = Options->lambda;
 	float64_t epsilon;
 	float64_t *w = Weights->vec;
-	float64_t *o = Outputs->vec; 
+	float64_t *o = Outputs->vec;
 	float64_t F_old = 0.0;
 	float64_t F = 0.0;
 	float64_t diff=0.0;
@@ -218,17 +218,17 @@ int32_t L2_SVM_MFN(
 	ActiveSubset->d = m;
 	// initialize
 	if(ini==0) {
-		epsilon=BIG_EPSILON; 
-		Options->cgitermax=SMALL_CGITERMAX; 
+		epsilon=BIG_EPSILON;
+		Options->cgitermax=SMALL_CGITERMAX;
 		Options->epsilon=BIG_EPSILON;
 	}
-	else {epsilon = Options->epsilon;}  
+	else {epsilon = Options->epsilon;}
 	for (int32_t i=0;i<n;i++) F+=w[i]*w[i];
-	F=0.5*lambda*F;        
+	F=0.5*lambda*F;
 	int32_t active=0;
-	int32_t inactive=m-1; // l-1      
+	int32_t inactive=m-1; // l-1
 	for (int32_t i=0; i<m ; i++)
-	{ 
+	{
 		diff=1-Y[i]*o[i];
 		if(diff>0)
 		{
@@ -240,9 +240,9 @@ int32_t L2_SVM_MFN(
 		{
 			ActiveSubset->vec[inactive]=i;
 			inactive--;
-		}   
+		}
 	}
-	ActiveSubset->d=active;        
+	ActiveSubset->d=active;
 	int32_t iter=0;
 	int32_t opt=0;
 	int32_t opt2=0;
@@ -265,11 +265,11 @@ int32_t L2_SVM_MFN(
 			w_bar[i]=w[i];
 		for (int32_t i=m; i-- ;)
 			o_bar[i]=o[i];
-		
+
 		opt=CGLS(Data,Options,ActiveSubset,Weights_bar,Outputs_bar);
-		for(register int32_t i=active; i < m; i++) 
+		for(register int32_t i=active; i < m; i++)
 		{
-			ii=ActiveSubset->vec[i];   
+			ii=ActiveSubset->vec[i];
 
 			t=features->dense_dot(ii, w_bar, n-1);
 			t+=Options->bias*w_bar[n-1]; //bias (modelled as last dim)
@@ -279,17 +279,17 @@ int32_t L2_SVM_MFN(
 		if(ini==0) {Options->cgitermax=CGITERMAX; ini=1;};
 		opt2=1;
 		for (int32_t i=0;i<m;i++)
-		{ 
+		{
 			ii=ActiveSubset->vec[i];
 			if(i<active)
 				opt2=(opt2 && (Y[ii]*o_bar[ii]<=1+epsilon));
 			else
-				opt2=(opt2 && (Y[ii]*o_bar[ii]>=1-epsilon));  
+				opt2=(opt2 && (Y[ii]*o_bar[ii]>=1-epsilon));
 			if(opt2==0) break;
-		}      
+		}
 		if(opt && opt2) // l
 		{
-			if(epsilon==BIG_EPSILON) 
+			if(epsilon==BIG_EPSILON)
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
@@ -299,9 +299,9 @@ int32_t L2_SVM_MFN(
 			else
 			{
 				for (int32_t i=n; i-- ;)
-					w[i]=w_bar[i];      
+					w[i]=w_bar[i];
 				for (int32_t i=m; i-- ;)
-					o[i]=o_bar[i]; 
+					o[i]=o_bar[i];
 				SG_FREE(ActiveSubset->vec);
 				SG_FREE(ActiveSubset);
 				SG_FREE(o_bar);
@@ -309,10 +309,10 @@ int32_t L2_SVM_MFN(
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
 				SG_SINFO("L2_SVM_MFN converged (optimality) in %d", iter);
-				return 1;      
+				return 1;
 			}
 		}
-		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m); 
+		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m);
 		SG_SDEBUG("LINE_SEARCH delta = %f\n", delta);
 		F_old=F;
 		F=0.0;
@@ -320,9 +320,9 @@ int32_t L2_SVM_MFN(
 			w[i]+=delta*(w_bar[i]-w[i]);
 			F+=w[i]*w[i];
 		}
-		F=0.5*lambda*F;      
+		F=0.5*lambda*F;
 		active=0;
-		inactive=m-1;  
+		inactive=m-1;
 		for (int32_t i=0; i<m ; i++)
 		{
 			o[i]+=delta*(o_bar[i]-o[i]);
@@ -337,9 +337,9 @@ int32_t L2_SVM_MFN(
 			{
 				ActiveSubset->vec[inactive]=i;
 				inactive--;
-			}   
+			}
 		}
-		ActiveSubset->d=active;      
+		ActiveSubset->d=active;
 		if(CMath::abs(F-F_old)<RELATIVE_STOP_EPS*CMath::abs(F_old))
 		{
 			SG_SINFO("L2_SVM_MFN converged (rel. criterion) in %d iterations", iter);
@@ -356,22 +356,22 @@ int32_t L2_SVM_MFN(
 	return 0;
 }
 
-float64_t line_search(float64_t *w, 
+float64_t line_search(float64_t *w,
 		float64_t *w_bar,
 		float64_t lambda,
-		float64_t *o, 
-		float64_t *o_bar, 
-		float64_t *Y, 
+		float64_t *o,
+		float64_t *o_bar,
+		float64_t *Y,
 		float64_t *C,
 		int32_t d, /* data dimensionality -- 'n' */
 		int32_t l) /* number of examples */
-{                       
+{
 	float64_t omegaL = 0.0;
 	float64_t omegaR = 0.0;
-	float64_t diff=0.0;   
+	float64_t diff=0.0;
 	for(int32_t i=d; i--; )
 	{
-		diff=w_bar[i]-w[i];  
+		diff=w_bar[i]-w[i];
 		omegaL+=w[i]*diff;
 		omegaR+=w_bar[i]*diff;
 	}
@@ -384,17 +384,17 @@ float64_t line_search(float64_t *w,
 	{
 		if(Y[i]*o[i]<1)
 		{
-			diff=C[i]*(o_bar[i]-o[i]);  
+			diff=C[i]*(o_bar[i]-o[i]);
 			L+=(o[i]-Y[i])*diff;
 			R+=(o_bar[i]-Y[i])*diff;
 		}
 	}
 	L+=omegaL;
 	R+=omegaR;
-	Delta* deltas=SG_MALLOC(Delta, l);    
+	Delta* deltas=SG_MALLOC(Delta, l);
 	int32_t p=0;
 	for(int32_t i=0;i<l;i++)
-	{ 
+	{
 		diff=Y[i]*(o_bar[i]-o[i]);
 
 		if(Y[i]*o[i]<1)
@@ -413,23 +413,23 @@ float64_t line_search(float64_t *w,
 			{
 				deltas[p].delta=(1-Y[i]*o[i])/diff;
 				deltas[p].index=i;
-				deltas[p].s=1;      
+				deltas[p].s=1;
 				p++;
 			}
 		}
 	}
-	std::sort(deltas,deltas+p);            
-	float64_t delta_prime=0.0;  
+	std::sort(deltas,deltas+p);
+	float64_t delta_prime=0.0;
 	for (int32_t i=0;i<p;i++)
 	{
-		delta_prime = L + deltas[i].delta*(R-L);       
+		delta_prime = L + deltas[i].delta*(R-L);
 		if(delta_prime>=0)
 			break;
-		ii=deltas[i].index;   
+		ii=deltas[i].index;
 		diff=(deltas[i].s)*C[ii]*(o_bar[ii]-o[ii]);
 		L+=diff*(o[ii]-Y[ii]);
 		R+=diff*(o_bar[ii]-Y[ii]);
-	}   
+	}
 	delete [] deltas;
 	return (-L/(R-L));
 }
@@ -467,17 +467,17 @@ int32_t TSVM_MFN(
 			q++;
 		}
 		else
-		{                
+		{
 			Outputs->vec[i]=Outputs_Labeled->vec[p];
 			Data->C[i]=1.0/Data->l;
-			p++;   
+			p++;
 		}
 	}
 	std::nth_element(ou,ou+int32_t((1-Options->R)*Data->u-1),ou+Data->u);
 	float64_t thresh=*(ou+int32_t((1-Options->R)*Data->u)-1);
 	delete [] ou;
 	for (int32_t i=0;i<Data->u;i++)
-	{  
+	{
 		if(Outputs->vec[JU[i]]>thresh)
 			Data->Y[JU[i]]=1.0;
 		else
@@ -487,7 +487,7 @@ int32_t TSVM_MFN(
 		Weights->vec[i]=0.0;
 	for (int32_t i=0;i<Data->m;i++)
 		Outputs->vec[i]=0.0;
-	L2_SVM_MFN(Data,Options,Weights,Outputs,0); 
+	L2_SVM_MFN(Data,Options,Weights,Outputs,0);
 	int32_t num_switches=0;
 	int32_t s=0;
 	int32_t last_round=0;
@@ -502,16 +502,16 @@ int32_t TSVM_MFN(
 			SG_SDEBUG("Optimizing unknown labels. switched %d labels.\n");
 			num_switches+=s;
 			SG_SDEBUG("Optimizing weights\n");
-			L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
+			L2_SVM_MFN(Data,Options,Weights,Outputs,1);
 		}
 		if(last_round==1) break;
 		lambda_0=TSVM_ANNEALING_RATE*lambda_0;
-		if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;} 
+		if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;}
 		for (int32_t i=0;i<Data->u;i++)
-			Data->C[JU[i]]=lambda_0*1.0/Data->u;       
+			Data->C[JU[i]]=lambda_0*1.0/Data->u;
 		SG_SDEBUG("****** lambda0 increased to %f%% of lambda_u = %f ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u);
 		SG_SDEBUG("Optimizing weights\n");
-		L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
+		L2_SVM_MFN(Data,Options,Weights,Outputs,1);
 	}
 	SG_SDEBUG("Total Number of Switches = %d\n", num_switches);
 	/* reset labels */
@@ -528,11 +528,11 @@ int32_t switch_labels(float64_t* Y, float64_t* o, int32_t* JU, int32_t u, int32_
 	int32_t nneg=0;
 	for (int32_t i=0;i<u;i++)
 	{
-		if((Y[JU[i]]>0) && (o[JU[i]]<1.0)) npos++;   
-		if((Y[JU[i]]<0) && (-o[JU[i]]<1.0)) nneg++;        
-	}     
+		if((Y[JU[i]]>0) && (o[JU[i]]<1.0)) npos++;
+		if((Y[JU[i]]<0) && (-o[JU[i]]<1.0)) nneg++;
+	}
 	Delta* positive=SG_MALLOC(Delta, npos);
-	Delta* negative=SG_MALLOC(Delta, nneg);  
+	Delta* negative=SG_MALLOC(Delta, nneg);
 	int32_t p=0;
 	int32_t n=0;
 	int32_t ii=0;
@@ -540,23 +540,23 @@ int32_t switch_labels(float64_t* Y, float64_t* o, int32_t* JU, int32_t u, int32_
 	{
 		ii=JU[i];
 		if((Y[ii]>0.0) && (o[ii]<1.0)) {
-			positive[p].delta=o[ii]; 
+			positive[p].delta=o[ii];
 			positive[p].index=ii;
 			positive[p].s=0;
-			p++;};   
-			if((Y[ii]<0.0) && (-o[ii]<1.0)) 
+			p++;};
+			if((Y[ii]<0.0) && (-o[ii]<1.0))
 			{
-				negative[n].delta=-o[ii]; 
+				negative[n].delta=-o[ii];
 				negative[n].index=ii;
 				negative[n].s=0;
-				n++;};   
+				n++;};
 	}
 	std::sort(positive,positive+npos);
-	std::sort(negative,negative+nneg);  
+	std::sort(negative,negative+nneg);
 	int32_t s=-1;
 	while(1)
 	{
-		s++;    
+		s++;
 		if((s>=S) || (positive[s].delta>=-negative[s].delta) || (s>=npos) || (s>=nneg))
 			break;
 		Y[positive[s].index]=-1.0;
@@ -593,9 +593,9 @@ int32_t DA_S3VM(
 	{
 		if(Data->Y[i]==0.0)
 		{JU[j]=i;j++;}
-	}  
+	}
 	float64_t H = entropy(p,Data->u);
-	optimize_w(Data,p,Options,Weights,Outputs,0);  
+	optimize_w(Data,p,Options,Weights,Outputs,0);
 	F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
 	F_min = F;
 	for (int32_t i=0;i<Weights->d;i++)
@@ -607,13 +607,13 @@ int32_t DA_S3VM(
 		iter1++;
 		iter2=0;
 		kl_divergence=1.0;
-		while((iter2 < DA_INNER_ITERMAX) && (kl_divergence > Options->epsilon)) 
+		while((iter2 < DA_INNER_ITERMAX) && (kl_divergence > Options->epsilon))
 		{
 			iter2++;
 			for (int32_t i=0;i<Data->u;i++)
 			{
 				q[i]=p[i];
-				g[i] = Options->lambda_u*((o[JU[i]] > 1 ? 0 : (1 - o[JU[i]])*(1 - o[JU[i]])) - (o[JU[i]]< -1 ? 0 : (1 + o[JU[i]])*(1 + o[JU[i]]))); 
+				g[i] = Options->lambda_u*((o[JU[i]] > 1 ? 0 : (1 - o[JU[i]])*(1 - o[JU[i]])) - (o[JU[i]]< -1 ? 0 : (1 + o[JU[i]])*(1 + o[JU[i]])));
 			}
 			SG_SDEBUG("Optimizing p.\n");
 			optimize_p(g,Data->u,T,Options->R,p);
@@ -629,9 +629,9 @@ int32_t DA_S3VM(
 				for (int32_t i=0;i<Outputs->d;i++)
 					o_min[i]=o[i];
 			}
-			SG_SDEBUG("***** outer_iter = %d  T = %g  inner_iter = %d  kl = %g  cost = %g *****\n",iter1,T,iter2,kl_divergence,F); 
+			SG_SDEBUG("***** outer_iter = %d  T = %g  inner_iter = %d  kl = %g  cost = %g *****\n",iter1,T,iter2,kl_divergence,F);
 		}
-		H = entropy(p,Data->u); 
+		H = entropy(p,Data->u);
 		SG_SDEBUG("***** Finished outer_iter = %d T = %g  Entropy = %g ***\n", iter1,T,H);
 		T = T/DA_ANNEALING_RATE;
 	}
@@ -639,8 +639,8 @@ int32_t DA_S3VM(
 		w[i]=w_min[i];
 	for (int32_t i=0;i<Outputs->d;i++)
 		o[i]=o_min[i];
-	/* may want to reset the original Y */ 
-	delete [] p; 
+	/* may want to reset the original Y */
+	delete [] p;
 	delete [] q;
 	delete [] g;
 	delete [] JU;
@@ -674,23 +674,23 @@ int32_t optimize_w(
 	ActiveSubset->vec = SG_MALLOC(int32_t, m);
 	ActiveSubset->d = m;
 	// initialize
-	if(ini==0) 
+	if(ini==0)
 	{
-		epsilon=BIG_EPSILON; 
+		epsilon=BIG_EPSILON;
 		Options->cgitermax=SMALL_CGITERMAX;
 		Options->epsilon=BIG_EPSILON;}
-	else {epsilon = Options->epsilon;}  
+	else {epsilon = Options->epsilon;}
 
 	for(i=0;i<n;i++) F+=w[i]*w[i];
-	F=lambda*F;        
+	F=lambda*F;
 	int32_t active=0;
-	int32_t inactive=m-1; // l-1      
+	int32_t inactive=m-1; // l-1
 	float64_t temp1;
 	float64_t temp2;
 
 	j = 0;
 	for(i=0; i<m ; i++)
-	{ 
+	{
 		o[i]=Outputs->vec[i];
 		if(Data->Y[i]==0.0)
 		{
@@ -701,7 +701,7 @@ int32_t optimize_w(
 			C[i]=lambda_u_by_u*p[j];
 			C[m+j]=lambda_u_by_u*(1-p[j]);
 			ActiveSubset->vec[active]=i;
-			active++; 
+			active++;
 			diff = 1 - CMath::abs(o[i]);
 			if(diff>0)
 			{
@@ -721,13 +721,13 @@ int32_t optimize_w(
 				else
 				{
 					Data->Y[i] = 1.0;
-					Data->C[i] = C[i];		 
+					Data->C[i] = C[i];
 				}
 				temp1 = (1-Data->Y[i]*o[i]);
 				F+= Data->C[i]*temp1*temp1;
 			}
 			j++;
-		} 
+		}
 		else
 		{
 			labeled_indices[i]=1;
@@ -768,21 +768,21 @@ int32_t optimize_w(
 	{
 		iter++;
 		SG_SDEBUG("L2_SVM_MFN Iteration# %d (%d active examples,  objective_value = %f)", iter, active, F);
-		for(i=n; i-- ;) 
+		for(i=n; i-- ;)
 			w_bar[i]=w[i];
 
-		for(i=m+u; i-- ;)  
-			o_bar[i]=o[i];     
+		for(i=m+u; i-- ;)
+			o_bar[i]=o[i];
 		opt=CGLS(Data,Options,ActiveSubset,Weights_bar,Outputs_bar);
-		for(i=active; i < m; i++) 
+		for(i=active; i < m; i++)
 		{
-			ii=ActiveSubset->vec[i];   
+			ii=ActiveSubset->vec[i];
 			t=features->dense_dot(ii, w_bar, n-1);
 			t+=Options->bias*w_bar[n-1]; //bias (modelled as last dim)
 
 			o_bar[ii]=t;
 		}
-		// make o_bar consistent in the bottom half      
+		// make o_bar consistent in the bottom half
 		j=0;
 		for(i=0; i<m;i++)
 		{
@@ -792,7 +792,7 @@ int32_t optimize_w(
 		if(ini==0) {Options->cgitermax=CGITERMAX; ini=1;};
 		opt2=1;
 		for(i=0; i < m ;i++)
-		{ 
+		{
 			ii=ActiveSubset->vec[i];
 			if(i<active)
 			{
@@ -807,12 +807,12 @@ int32_t optimize_w(
 				}
 			}
 			else
-				opt2=(opt2 && (Data->Y[ii]*o_bar[ii]>=1-epsilon));  
+				opt2=(opt2 && (Data->Y[ii]*o_bar[ii]>=1-epsilon));
 			if(opt2==0) break;
 		}
 		if(opt && opt2) // l
 		{
-			if(epsilon==BIG_EPSILON) 
+			if(epsilon==BIG_EPSILON)
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
@@ -821,10 +821,10 @@ int32_t optimize_w(
 			}
 			else
 			{
-				for(i=n; i-- ;) 
-					w[i]=w_bar[i];      
+				for(i=n; i-- ;)
+					w[i]=w_bar[i];
 				for(i=m; i-- ;)
-					Outputs->vec[i]=o_bar[i]; 
+					Outputs->vec[i]=o_bar[i];
 				for(i=m; i-- ;)
 				{
 					if(labeled_indices[i]==0)
@@ -841,11 +841,11 @@ int32_t optimize_w(
 				SG_FREE(C);
 				SG_FREE(labeled_indices);
 				SG_SINFO("L2_SVM_MFN converged in %d iteration(s)", iter);
-				return 1;      
+				return 1;
 			}
-		}  
+		}
 
-		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m+u); 
+		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m+u);
 		SG_SDEBUG("LINE_SEARCH delta = %f", delta);
 		F_old=F;
 		F=0.0;
@@ -855,13 +855,13 @@ int32_t optimize_w(
 		active=0;
 		inactive=m-1;
 		for(i=0; i<m ; i++)
-		{ 
+		{
 			o[i]+=delta*(o_bar[i]-o[i]);
 			if(labeled_indices[i]==0)
 			{
 				o[m+j]=o[i];
 				ActiveSubset->vec[active]=i;
-				active++; 
+				active++;
 				diff = 1 - CMath::abs(o[i]);
 				if(diff>0)
 				{
@@ -934,12 +934,12 @@ void optimize_p(
 {
 	int32_t iter=0;
 	float64_t epsilon=1e-10;
-	int32_t maxiter=500; 
+	int32_t maxiter=500;
 	float64_t nu_minus=g[0];
 	float64_t nu_plus=g[0];
 	for (int32_t i=0;i<u;i++)
 	{
-		if(g[i]<nu_minus) nu_minus=g[i]; 
+		if(g[i]<nu_minus) nu_minus=g[i];
 		if(g[i]>nu_plus) nu_plus=g[i];
 	};
 
@@ -958,7 +958,7 @@ void optimize_p(
 		{
 			tmp=1.0/(1.0+s);
 			Bnu+=tmp;
-			BnuPrime+=s*tmp*tmp;    
+			BnuPrime+=s*tmp*tmp;
 		}
 	}
 	Bnu=Bnu/u;
@@ -973,7 +973,7 @@ void optimize_p(
 		if((CMath::abs(BnuPrime) > 0.0) | (nuHat>nu_plus)  | (nuHat < nu_minus))
 			nu=(nu_minus+nu_plus)/2.0;
 		else
-			nu=nuHat; 
+			nu=nuHat;
 		Bnu=0.0;
 		BnuPrime=0.0;
 		for(int32_t i=0;i<u;i++)
@@ -983,7 +983,7 @@ void optimize_p(
 			{
 				tmp=1.0/(1.0+s);
 				Bnu+=tmp;
-				BnuPrime+=s*tmp*tmp;    
+				BnuPrime+=s*tmp*tmp;
 			}
 		}
 		Bnu=Bnu/u;
@@ -994,7 +994,7 @@ void optimize_p(
 		else
 			nu_plus=nu;
 		if(CMath::abs(nu_minus-nu_plus)<epsilon)
-			break;   
+			break;
 	}
 	if(CMath::abs(Bnu)>epsilon)
 		SG_SWARNING("Warning (Root): root not found to required precision\n");
@@ -1003,7 +1003,7 @@ void optimize_p(
 	{
 		s=exp((g[i]-nu)/T);
 		if(CMath::is_infinity(s)) p[i]=0.0;
-		else p[i]=1.0/(1.0+s);  
+		else p[i]=1.0/(1.0+s);
 	}
 	SG_SINFO(" root (nu) = %f B(nu) = %f", nu, Bnu);
 }
@@ -1012,7 +1012,7 @@ float64_t transductive_cost(
 	float64_t normWeights, float64_t *Y, float64_t *Outputs, int32_t m,
 	float64_t lambda, float64_t lambda_u)
 {
-	float64_t F1=0.0,F2=0.0, o=0.0, y=0.0; 
+	float64_t F1=0.0,F2=0.0, o=0.0, y=0.0;
 	int32_t u=0,l=0;
 	for (int32_t i=0;i<m;i++)
 	{
@@ -1021,7 +1021,7 @@ float64_t transductive_cost(
 		if(y==0.0)
 		{F1 += CMath::abs(o) > 1 ? 0 : (1 - CMath::abs(o))*(1 - CMath::abs(o)); u++;}
 		else
-		{F2 += y*o > 1 ? 0 : (1-y*o)*(1-y*o); l++;}   
+		{F2 += y*o > 1 ? 0 : (1-y*o)*(1-y*o); l++;}
 	}
 	float64_t F;
 	F = 0.5*(lambda*normWeights + lambda_u*F1/u + F2/l);
@@ -1059,7 +1059,7 @@ float64_t KL(const float64_t *p, const float64_t *q, int32_t u)
 		if(CMath::abs(g)<1e-12 || CMath::is_nan(g)) g=0.0;
 		h+=g;
 	}
-	return h/u;   
+	return h/u;
 }
 
 /********************** UTILITIES ********************/
@@ -1088,7 +1088,7 @@ void initialize(struct vector_int *A, int32_t k)
 {
 	int32_t *vec = SG_MALLOC(int32_t, k);
 	for(int32_t i=0;i<k;i++)
-		vec[i]=i; 
+		vec[i]=i;
 	A->vec = vec;
 	A->d   = k;
 	return;
@@ -1113,9 +1113,9 @@ void GetLabeledData(struct data *D, const struct data *Data)
 			nz+=(Data->rowptr[i+1] - Data->rowptr[i]);
 			k++;
 		}
-	}  
+	}
 	D->val    = SG_MALLOC(float64_t, nz);
-	D->colind = SG_MALLOC(int32_t, nz); 
+	D->colind = SG_MALLOC(int32_t, nz);
 	D->rowptr = new int32_trowptrs_+1];
 	nz=0;
 	for(int32_t i=0;i<Data->l;i++)
@@ -1125,7 +1125,7 @@ void GetLabeledData(struct data *D, const struct data *Data)
 		{
 			D->val[nz] = Data->val[j];
 			D->colind[nz] = Data->colind[j];
-			nz++;	
+			nz++;
 		}
 	}
 	D->rowptr[rowptrs_]=nz;

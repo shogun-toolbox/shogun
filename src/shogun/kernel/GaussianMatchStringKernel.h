@@ -40,7 +40,7 @@ class CGaussianMatchStringKernel: public CStringKernel<char>
 		/** constructor
 		 *
 		 * @param size cache size
-		 * @param width width 
+		 * @param width width
 		 */
 		CGaussianMatchStringKernel(int32_t size, float64_t width);
 
