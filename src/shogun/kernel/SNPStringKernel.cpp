@@ -182,7 +182,8 @@ void CSNPStringKernel::register_params()
 {
 	SG_ADD(&m_degree, "m_degree", "the order of the kernel", MS_AVAILABLE);
 	SG_ADD(&m_win_len, "m_win_len", "the window length", MS_AVAILABLE);
-	m_parameters->add(&m_inhomogene, "m_inhomogene", "the mark of whether it's an inhomogeneous poly kernel");
+	SG_ADD(&m_inhomogene, "m_inhomogene",
+	  "the mark of whether it's an inhomogeneous poly kernel", MS_NOT_AVAILABLE);
 	m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");
 	m_parameters->add_vector(&m_str_maj, &m_str_len, "m_str_maj", "allele B");
 }
