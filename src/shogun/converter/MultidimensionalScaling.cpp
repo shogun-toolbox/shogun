@@ -68,9 +68,12 @@ CMultidimensionalScaling::CMultidimensionalScaling() : CEmbeddingConverter()
 
 void CMultidimensionalScaling::init()
 {
-	m_parameters->add(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding");
-	m_parameters->add(&m_landmark, "landmark", "indicates if landmark approximation should be used");
-	m_parameters->add(&m_landmark_number, "landmark number", "the number of landmarks for approximation");
+	SG_ADD(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_landmark, "landmark",
+	    "indicates if landmark approximation should be used", MS_NOT_AVAILABLE);
+	SG_ADD(&m_landmark_number, "landmark number",
+	    "the number of landmarks for approximation", MS_AVAILABLE);
 }
 
 CMultidimensionalScaling::~CMultidimensionalScaling()
