@@ -37,21 +37,18 @@ void CPCA::init()
 	m_mean_vector = SGVector<float64_t>(NULL,0,true);
 	m_eigenvalues_vector = SGVector<float64_t>(NULL,0,true);
 
-
-	m_parameters->add(&m_transformation_matrix,
-					"transformation matrix", "Transformation matrix (Eigenvectors of covariance matrix).");
-	m_parameters->add(&m_mean_vector,
-					"mean vector", "Mean Vector.");
-	m_parameters->add(&m_eigenvalues_vector,
-					"eigenvalues vector", "Vector with Eigenvalues.");
-	m_parameters->add(&m_initialized,
-			"initalized", "True when initialized.");
-	m_parameters->add(&m_whitening,
-			"whitening", "Whether data shall be whitened.");
-	m_parameters->add((machine_int_t*) &m_mode, "mode",
-			"PCA Mode.");
-	m_parameters->add(&thresh,
-			"thresh", "Cutoff threshold.");
+	SG_ADD(&m_transformation_matrix, "transformation matrix",
+	    "Transformation matrix (Eigenvectors of covariance matrix).",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_mean_vector, "mean vector", "Mean Vector.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_eigenvalues_vector, "eigenvalues vector",
+	    "Vector with Eigenvalues.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_initialized, "initalized", "True when initialized.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_whitening, "whitening", "Whether data shall be whitened.",
+	    MS_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
+	SG_ADD(&thresh, "thresh", "Cutoff threshold.", MS_AVAILABLE);
 }
 
 CPCA::~CPCA()
