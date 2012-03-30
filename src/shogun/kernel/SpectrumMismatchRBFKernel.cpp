@@ -440,13 +440,19 @@ bool CSpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
 
 void CSpectrumMismatchRBFKernel::register_params()
 {
-	m_parameters->add(&degree, "degree", "degree of the kernel");
-	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
-	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix", "128*128 scalar product matrix");
-	m_parameters->add(&width,"width","width of Gaussian");
+	SG_ADD(&degree, "degree", "degree of the kernel", MS_AVAILABLE);
+	m_parameters->add(&AA_matrix_length, "AA_matrix_length",
+	    "the length of AA matrix");
+	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix",
+	    "128*128 scalar product matrix");
+	SG_ADD(&width,"width","width of Gaussian", MS_AVAILABLE);
 	m_parameters->add(&target_letter_0, "target_letter_0","target letter 0");
-	m_parameters->add(&initialized, "initialized", "the mark of initialization status");
-	m_parameters->add_vector((SGString<float64_t>**)&kernel_matrix, &kernel_matrix_length, "kernel_matrix", "the kernel matrix with its length defined by the number of vectors of the string features");
+	m_parameters->add(&initialized, "initialized",
+	    "the mark of initialization status");
+	m_parameters->add_vector((SGString<float64_t>**)&kernel_matrix,
+	    &kernel_matrix_length, "kernel_matrix",
+	    "the kernel matrix with its length defined by the number of "
+	    "vectors of the string features");
 }
 
 void CSpectrumMismatchRBFKernel::register_alphabet()

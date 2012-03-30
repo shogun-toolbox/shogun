@@ -416,6 +416,7 @@ void CLocalAlignmentStringKernel::init()
 	init_logsum();
 
 	m_parameters->add(&initialized, "initialized", "if kernel is initalized");
-	m_parameters->add(&m_opening, "opening", "opening gap opening penalty");
-	m_parameters->add(&m_extension, "extension", "extension gap extension penalty");
+	SG_ADD(&m_opening, "opening", "opening gap opening penalty", MS_AVAILABLE);
+	SG_ADD(&m_extension, "extension", "extension gap extension penalty",
+	    MS_AVAILABLE);
 }

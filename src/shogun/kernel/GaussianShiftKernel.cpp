@@ -80,7 +80,7 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CGaussianShiftKernel::init()
 {
-	m_parameters->add(&max_shift, "max_shift", "Maximum shift.");
-	m_parameters->add(&shift_step, "shift_step", "Shift stepsize.");
+	SG_ADD(&max_shift, "max_shift", "Maximum shift.", MS_AVAILABLE);
+	SG_ADD(&shift_step, "shift_step", "Shift stepsize.", MS_AVAILABLE);
 }
 

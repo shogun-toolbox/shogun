@@ -1947,10 +1947,10 @@ void CWeightedDegreePositionStringKernel::init()
 	m_parameters->add_vector(&shift, &shift_len,
 			"shift",
 			"Shift Vector.");
-	m_parameters->add(&mkl_stepsize, "mkl_stepsize", "MKL step size.");
-	m_parameters->add(&degree, "degree", "Order of WD kernel.");
-	m_parameters->add(&max_mismatch, "max_mismatch",
-			"Number of allowed mismatches.");
+	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);
+	SG_ADD(&max_mismatch, "max_mismatch",
+			"Number of allowed mismatches.", MS_AVAILABLE);
 	m_parameters->add(&block_computation, "block_computation",
 			"If block computation shall be used.");
 	m_parameters->add((machine_int_t*) &type, "type",

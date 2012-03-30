@@ -180,8 +180,8 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CSNPStringKernel::register_params()
 {
-	m_parameters->add(&m_degree, "m_degree", "the order of the kernel");
-	m_parameters->add(&m_win_len, "m_win_len", "the window length");
+	SG_ADD(&m_degree, "m_degree", "the order of the kernel", MS_AVAILABLE);
+	SG_ADD(&m_win_len, "m_win_len", "the window length", MS_AVAILABLE);
 	m_parameters->add(&m_inhomogene, "m_inhomogene", "the mark of whether it's an inhomogeneous poly kernel");
 	m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");
 	m_parameters->add_vector(&m_str_maj, &m_str_len, "m_str_maj", "allele B");

@@ -91,7 +91,9 @@ void CPolyMatchStringKernel::init()
 	rescaling=false;
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 
-	m_parameters->add(&degree, "degree", "Degree of poly-kernel.");
-	m_parameters->add(&inhomogene, "inhomogene", "True for inhomogene poly-kernel.");
-	m_parameters->add(&rescaling, "rescaling", "True to rescale kernel with string length.");
+	SG_ADD(&degree, "degree", "Degree of poly-kernel.", MS_AVAILABLE);
+	m_parameters->add(&inhomogene, "inhomogene",
+	    "True for inhomogene poly-kernel.");
+	m_parameters->add(&rescaling, "rescaling",
+	    "True to rescale kernel with string length.");
 }

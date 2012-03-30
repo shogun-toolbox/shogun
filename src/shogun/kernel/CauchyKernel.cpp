@@ -51,7 +51,7 @@ bool CCauchyKernel::init(CFeatures* l, CFeatures* r)
 
 void CCauchyKernel::init()
 {
-	m_parameters->add(&m_sigma, "sigma", "Sigma kernel parameter.");
+	SG_ADD(&m_sigma, "sigma", "Sigma kernel parameter.", MS_AVAILABLE);
 	m_parameters->add((CSGObject**) &m_distance, "distance", "Distance to be used.");
 }
 

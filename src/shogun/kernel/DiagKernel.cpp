@@ -51,5 +51,5 @@ bool CDiagKernel::init(CFeatures* l, CFeatures* r)
 void CDiagKernel::init()
 {
 	diag=1.0;
-	m_parameters->add(&diag, "diag", "Value on kernel diagonal.");
+	SG_ADD(&diag, "diag", "Value on kernel diagonal.", MS_AVAILABLE);
 }
