@@ -484,9 +484,9 @@ void CKMeans::init()
 	k=3;
 	dimensions=0;
 
-	m_parameters->add(&max_iter, "max_iter", "Maximum number of iterations");
-	m_parameters->add(&k, "k", "Parameter k");
-	m_parameters->add(&dimensions, "dimensions", "Dimensions of data");
-	m_parameters->add(&R, "R", "Cluster radiuses");
+	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", MS_AVAILABLE);
+	SG_ADD(&k, "k", "k, the number of clusters", MS_AVAILABLE);
+	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
+	SG_ADD(&R, "R", "Cluster radiuses", MS_NOT_AVAILABLE);
 }
 
