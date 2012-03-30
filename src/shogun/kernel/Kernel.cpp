@@ -900,7 +900,7 @@ void CKernel::save_serializable_post() throw (ShogunException)
 }
 
 void CKernel::register_params()   {
-	m_parameters->add(&cache_size, "cache_size",
+	SG_ADD(&cache_size, "cache_size",
 	    "Cache size in MB.", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &lhs, "lhs",
       "Feature vectors to occur on left hand side.", MS_NOT_AVAILABLE);
