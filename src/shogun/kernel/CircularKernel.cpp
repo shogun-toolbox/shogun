@@ -62,7 +62,8 @@ void CCircularKernel::load_serializable_post() throw (ShogunException)
 
 void CCircularKernel::init()
 {
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
+	    MS_AVAILABLE);
 	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", MS_AVAILABLE);
 }
 

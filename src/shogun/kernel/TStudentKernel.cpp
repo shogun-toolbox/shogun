@@ -17,7 +17,8 @@ using namespace shogun;
 void CTStudentKernel::init()
 {
 	SG_ADD(&degree, "degree", "Kernel degree.", MS_AVAILABLE);
-	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
+	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
+	    MS_AVAILABLE);
 }
 
 CTStudentKernel::CTStudentKernel(): CKernel(0), distance(NULL), degree(1.0)
