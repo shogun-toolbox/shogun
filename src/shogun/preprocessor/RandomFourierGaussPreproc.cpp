@@ -76,12 +76,11 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 	//serialization initialization
 	if(m_parameters)
 	{
-		m_parameters->add(&dim_input_space,"dim_input_space");
-		m_parameters->add(&cur_dim_input_space,"cur_dim_input_space");
-		m_parameters->add(&dim_feature_space,"dim_feature_space");
-		m_parameters->add(&kernelwidth,"kernelwidth");
-		m_parameters->add(&cur_kernelwidth,"cur_kernelwidth");
-
+		m_parameters->add(&dim_input_space, "dim_input_space");
+		m_parameters->add(&cur_dim_input_space, "cur_dim_input_space");
+		m_parameters->add(&dim_feature_space, "dim_feature_space");
+		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width.", MS_AVAILABLE);
+		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", MS_AVAILABLE);
 
 		m_parameters->add(&cur_dim_feature_space,"cur_dim_feature_space");
 		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
@@ -104,8 +103,8 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		m_parameters->add(&dim_input_space,"dim_input_space");
 		m_parameters->add(&cur_dim_input_space,"cur_dim_input_space");
 		m_parameters->add(&dim_feature_space,"dim_feature_space");
-		m_parameters->add(&kernelwidth,"kernelwidth");
-		m_parameters->add(&cur_kernelwidth,"cur_kernelwidth");
+		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width", MS_AVAILABLE);
+		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", MS_AVAILABLE);
 
 		m_parameters->add(&cur_dim_feature_space,"cur_dim_feature_space");
 		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");

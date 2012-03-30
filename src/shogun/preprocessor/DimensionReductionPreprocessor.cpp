@@ -106,13 +106,13 @@ CKernel* CDimensionReductionPreprocessor::get_kernel() const
 
 void CDimensionReductionPreprocessor::init()
 {
-	this->m_parameters->add((CSGObject**)&m_converter, "converter",
+	m_parameters->add((CSGObject**)&m_converter, "converter",
 					  "embedding converter used to apply to data");
-	this->m_parameters->add(&m_target_dim, "target_dim",
-					  "target dimensionality of preprocessor");
-	this->m_parameters->add((CSGObject**)&m_distance, "distance",
+	SG_ADD(&m_target_dim, "target_dim",
+					  "target dimensionality of preprocessor", MS_AVAILABLE);
+	m_parameters->add((CSGObject**)&m_distance, "distance",
 					  "distance to be used for embedding");
-	this->m_parameters->add((CSGObject**)&m_kernel, "kernel",
+	m_parameters->add((CSGObject**)&m_kernel, "kernel",
 					  "kernel to be used for embedding");
 }
 }
