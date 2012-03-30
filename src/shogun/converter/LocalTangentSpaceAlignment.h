@@ -53,33 +53,29 @@ class CLocalTangentSpaceAlignment: public CLocallyLinearEmbedding
 public:
 
 	/** constructor */
-	CLocalTangentSpaceAlignment();
+	CLocalTangentSpaceAlignment()
+	{
+
+	}
 
 	/** destructor */
-	virtual ~CLocalTangentSpaceAlignment();
+	virtual ~CLocalTangentSpaceAlignment()
+	{
+
+	}
 
 	/** get name */
-	virtual const char* get_name() const;
+	virtual const char* get_name() const
+	{
+		return "LocalTangentSpaceAlignment";
+	}
 
-/// HELPER
 protected:
-
-	/** construct weight matrix 
-	 * @param simple_features features to be used
-	 * @param W_matrix weight matrix
-	 * @param neighborhood_matrix matrix containing neighbor idxs
-	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
-                                                            SGMatrix<int32_t> neighborhood_matrix);
-
-/// THREAD
-protected:
-
-	/** run ltsa thread
-	 * @param p thread params
-	 */
-	static void* run_ltsa_thread(void* p);
-
+	
+	virtual const edrt_method_t get_edrt_method() const
+	{
+		return KERNEL_LOCAL_TANGENT_SPACE_ALIGNMENT;
+	}
 };
 }
 

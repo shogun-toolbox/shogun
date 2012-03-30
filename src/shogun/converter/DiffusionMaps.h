@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
+ * Written (W) 2011-2012 Sergey Lisitsyn
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Copyright (C) 2012 Sergey Lisitsyn
  */
 
 #ifndef DIFFUSIONMAPS_H_
@@ -14,7 +15,7 @@
 #include <shogun/converter/EmbeddingConverter.h>
 #ifdef HAVE_LAPACK
 #include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/Kernel.h> 
 
 namespace shogun
 {
@@ -70,6 +71,8 @@ public:
 	virtual const char* get_name() const;
 
 protected:
+
+	static float64_t compute_kernel(int32_t i, int32_t j, const void* user_data);
 
 	/** default init */
 	void init();
