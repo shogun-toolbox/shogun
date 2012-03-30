@@ -2,7 +2,7 @@
 
 import shogun.Library as library
 from shogun.Kernel import GaussianKernel, CommWordStringKernel, \
-	CommUlongStringKernel, LinearWordKernel
+	CommUlongStringKernel
 
 import fileop
 import featop

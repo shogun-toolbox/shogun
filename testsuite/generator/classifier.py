@@ -122,7 +122,7 @@ def _compute_svm (params, labels, feats, kernel, pout):
 	elif params['type']=='linear' or params['type']=='wdsvmocas':
 		svm.set_features(feats['test'])
 
-	params['classified']=svm.classify().get_labels()
+	params['classified']=svm.apply().get_labels()
 
 	output=fileop.get_output(category.CLASSIFIER, params)
 	if pout:
