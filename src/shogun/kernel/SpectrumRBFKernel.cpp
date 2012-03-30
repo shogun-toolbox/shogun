@@ -394,10 +394,10 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 
 void CSpectrumRBFKernel::register_param()
 {
-	m_parameters->add(&degree, "degree", "degree of the kernel");
+	SG_ADD(&degree, "degree", "degree of the kernel", MS_AVAILABLE);
 	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
 	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix", "128*128 scalar product matrix");
-	m_parameters->add(&width,"width","width of Gaussian");
+	SG_ADD(&width,"width","width of Gaussian", MS_AVAILABLE);
 	m_parameters->add(&nof_sequences, "nof_sequences","length of the sequence");
 	m_parameters->add_vector(&sequences, &nof_sequences, "the sequences as a part of profile");
 	m_parameters->add(&max_sequence_length,"max_sequence_length","max length of the sequence");

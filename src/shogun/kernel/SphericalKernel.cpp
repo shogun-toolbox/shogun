@@ -57,7 +57,7 @@ bool CSphericalKernel::init(CFeatures* l, CFeatures* r)
 void CSphericalKernel::init()
 {
  	m_parameters->add((CSGObject**) &distance, "distance", "Distance to be used.");
-	m_parameters->add(&sigma, "sigma", "Sigma kernel parameter.");
+	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", MS_AVAILABLE);
 }
 
 float64_t CSphericalKernel::compute(int32_t idx_a, int32_t idx_b)

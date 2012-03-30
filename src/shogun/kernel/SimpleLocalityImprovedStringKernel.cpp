@@ -231,7 +231,7 @@ void CSimpleLocalityImprovedStringKernel::init()
 	pyramid_weights=NULL;
 	num_pyramid_weights=0;
 
-	m_parameters->add(&length, "length", "Window Length.");
+	SG_ADD(&length, "length", "Window Length.", MS_AVAILABLE);
 	m_parameters->add(&inner_degree, "inner_degree", "Inner degree.");
 	m_parameters->add(&outer_degree, "outer_degree", "Outer degree.");
 

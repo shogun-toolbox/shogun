@@ -19,7 +19,7 @@ using namespace shogun;
 void
 CChi2Kernel::init()
 {
-	m_parameters->add(&width, "width");
+	SG_ADD(&width, "width", "Kernel width.", MS_AVAILABLE);
 }
 
 CChi2Kernel::CChi2Kernel()
