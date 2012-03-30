@@ -137,7 +137,7 @@ GET_FEATURE_TYPE(F_DREAL, float64_t)
 GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 #undef GET_FEATURE_TYPE
 
-	
+
 template <class T>
 void CStreamingStringFeatures<T>::init()
 {
@@ -162,13 +162,13 @@ void CStreamingStringFeatures<T>::init(CStreamingFile* file,
 	parser.set_free_vector_after_release(false);
 	parser.set_free_vectors_on_destruct(false);
 }
-	
+
 template <class T>
 void CStreamingStringFeatures<T>::start_parser()
 {
 	if (!remap_to_bin)
 		alpha_ascii=alphabet;
-	
+
 	if (!parser.is_running())
 		parser.start_parser();
 }
@@ -183,14 +183,14 @@ template <class T>
 bool CStreamingStringFeatures<T>::get_next_example()
 {
 	bool ret_value;
-	
+
 	ret_value = (bool) parser.get_next_example(current_string,
 						   current_length,
 						   current_label);
 
 	if (!ret_value)
 		return false;
-	
+
 	int32_t i;
 	if (remap_to_bin)
 	{
@@ -218,10 +218,10 @@ bool CStreamingStringFeatures<T>::get_next_example()
 		alphabet=alpha_bin;
 	else
 		alphabet=alpha_ascii;
-	
+
 	//SG_REF(alphabet);
 	num_symbols=alphabet->get_num_symbols();
-			
+
 	return ret_value;
 }
 
@@ -241,7 +241,7 @@ float64_t CStreamingStringFeatures<T>::get_label()
 
 	return current_label;
 }
-	
+
 template <class T>
 void CStreamingStringFeatures<T>::release_example()
 {

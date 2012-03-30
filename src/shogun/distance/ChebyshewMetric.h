@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-/** @brief class ChebyshewMetric 
+/** @brief class ChebyshewMetric
  *
  * The Chebyshev distance (\f$L_{\infty}\f$ norm) returns the maximum of
  * absolute feature dimension differences between two data points.
@@ -25,7 +25,7 @@ namespace shogun
  * \f[\displaystyle
  *  d(\bf{x},\bf{x'}) = max|\bf{x_{i}}-\bf{x'_{i}}| \quad x,x' \in R^{n}
  * \f]
- * 
+ *
  * @see <a href="http://en.wikipedia.org/wiki/Chebyshev_distance">Wikipedia: Chebyshev distance</a>
  */
 class CChebyshewMetric: public CSimpleDistance<float64_t>

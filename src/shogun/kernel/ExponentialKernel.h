@@ -8,7 +8,7 @@
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
- * 
+ *
  * Slightly edited by Justin Patera 2011
  */
 

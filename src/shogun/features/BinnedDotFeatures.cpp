@@ -235,7 +235,7 @@ int32_t CBinnedDotFeatures::get_nnz_features_for_vector(int32_t num)
 {
 	if (m_fill)
 		return m_bins.num_rows;
-	else 
+	else
 		return 1;
 }
 

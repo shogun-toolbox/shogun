@@ -123,7 +123,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 				maxpviol=v;
 				maxpidx=i;
 			} // if we cannot improve on maxpviol, we can still improve by choosing a cached element
-			else if (v == maxpviol) 
+			else if (v == maxpviol)
 			{
 				if (kernel_cache->is_cached(i))
 					maxpidx=i;
@@ -135,7 +135,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
-		//stopfac = CMath::max(etas[1], 1e-10);    
+		//stopfac = CMath::max(etas[1], 1e-10);
 		//else
 		//stopfac = 1;
 
@@ -183,7 +183,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		// do primal updates ..
 		float64_t tmpalpha = alphas[maxpidx] - dalphas[maxpidx]/compute_H(maxpidx,maxpidx);
 
-		if (tmpalpha > d-alpha_eps) 
+		if (tmpalpha > d-alpha_eps)
 			tmpalpha = d;
 
 		if (tmpalpha < 0+alpha_eps)
@@ -207,15 +207,15 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		//detas[0]+=F[maxpidx]*alphachange;
 		//detas[1]+=F[maxpidx+n]*alphachange;
 
-		// if at primal minimum, do eta update ...            
+		// if at primal minimum, do eta update ...
 		if (primalcool)
 		{
 			//float64_t etachange[2] = { detas[0]/hessest[0] , detas[1]/hessest[1] };
 			float64_t etachange = detas/hessest;
 
-			etas+=etachange;        
-			//etas[0]+=etachange[0];        
-			//etas[1]+=etachange[1];        
+			etas+=etachange;
+			//etas[0]+=etachange[0];
+			//etas[1]+=etachange[1];
 
 			// update dalphas
 			for (int32_t i=0; i<n; i++)

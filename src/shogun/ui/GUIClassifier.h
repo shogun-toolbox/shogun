@@ -27,7 +27,7 @@ class CGUIClassifier : public CSGObject
 		/** constructor */
 		CGUIClassifier() { };
 		/** constructor
-		 * @param interface 
+		 * @param interface
 		 */
 		CGUIClassifier(CSGInterface* interface);
 		/** destructor */
@@ -39,7 +39,7 @@ class CGUIClassifier : public CSGObject
 		bool set_max_train_time(float64_t max);
 		/** load classifier from file */
 		bool load(char* filename, char* type);
-		/** save 
+		/** save
 		 * @param param
 		 */
 		bool save(char* param);
@@ -61,7 +61,7 @@ class CGUIClassifier : public CSGObject
 		/** get classifier */
 		inline CMachine* get_classifier() { return classifier; }
 
-		/** get trained classifier 
+		/** get trained classifier
 		 * @param weights
 		 * @param rows
 		 * @param cols
@@ -181,7 +181,7 @@ class CGUIClassifier : public CSGObject
 		 */
 		bool set_svm_mkl_parameters(
 			float64_t weight_epsilon, float64_t C_mkl, float64_t mkl_norm);
-		/** set mkl block norm 
+		/** set mkl block norm
 		 * @param mkl_bnorm
 		 */
 		bool set_mkl_block_norm(float64_t mkl_bnorm);

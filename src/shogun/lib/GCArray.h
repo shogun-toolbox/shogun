@@ -38,7 +38,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		}
 
 		/** Constructor
-		  * 
+		  *
 		  * @param sz length of array
 		  */
 		CGCArray(int32_t sz) : CSGObject()

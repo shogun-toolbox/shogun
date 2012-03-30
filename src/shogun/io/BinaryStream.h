@@ -69,7 +69,7 @@ template <class T> class CBinaryStream : public CSGObject
 			close_stream();
 		}
 
-		/** open file stream 
+		/** open file stream
 		 *
 		 * @param fname file name
 		 * @param flag flags "r" for reading etc
@@ -105,7 +105,7 @@ template <class T> class CBinaryStream : public CSGObject
 			length = 0;
 		}
 
-		/** get the number of objects of type T cointained in the file 
+		/** get the number of objects of type T cointained in the file
 		 *
 		 * @return length of file
 		 */
@@ -155,7 +155,7 @@ template <class T> class CBinaryStream : public CSGObject
 		 * @param num number of elements to be read
 		 */
 		void pre_buffer(T* buffer, long index, long num) const
-		{           
+		{
 			ASSERT(index>=0);
 			ASSERT(num>=0);
 

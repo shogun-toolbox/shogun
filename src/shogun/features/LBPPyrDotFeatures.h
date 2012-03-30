@@ -29,7 +29,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		CLBPPyrDotFeatures();
 
 		/** constructor
-		 * 
+		 *
 		 * @param images images
 		 * @param num_pyramids
 		 */
@@ -38,17 +38,17 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		virtual ~CLBPPyrDotFeatures();
 
 		/** copy constructor
-		 * 
+		 *
 		 * not implemented!
 		 *
 		 * @param orig original PolyFeature
-		 */ 
+		 */
 		CLBPPyrDotFeatures(const CLBPPyrDotFeatures & orig);
 
 		/** get dimensions of feature space
 		 *
 		 * @return dimensions of feature space
-		 */ 
+		 */
 		virtual int32_t get_dim_feature_space() const;
 
 		/** get number of non-zero features in vector
@@ -133,8 +133,8 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 */
 		virtual const char* get_name() const { return "LBPPyrDotFeatures"; }
 
-		/** compute dot product of vector with index arg1 
-		 *  with an given second vector 
+		/** compute dot product of vector with index arg1
+		 *  with an given second vector
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 second vector
@@ -143,7 +143,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len);
 
 		/** compute alpha*x+vec2
-		 * 
+		 *
 		 * @param alpha alpha
 		 * @param vec_idx1 index of first vector x
 		 * @param vec2 vec2
@@ -154,7 +154,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
 	protected:
-		
+
 		/** lib lbp pyr get dim
 		 * @param nPyramids
 		 */

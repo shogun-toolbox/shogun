@@ -21,7 +21,7 @@
 namespace shogun
 {
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS	
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 // Packed structure for efficient storage
 struct one_float
 {

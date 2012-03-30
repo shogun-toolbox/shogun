@@ -50,7 +50,7 @@ CHammingWordDistance::~CHammingWordDistance()
 {
 	cleanup();
 }
-  
+
 bool CHammingWordDistance::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CStringDistance<uint16_t>::init(l,r);
@@ -78,7 +78,7 @@ float64_t CHammingWordDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	if (use_sign)
 	{
-		// hamming of: if words appear in both vectors 
+		// hamming of: if words appear in both vectors
 		while (left_idx < alen && right_idx < blen)
 		{
 			uint16_t sym=avec[left_idx];

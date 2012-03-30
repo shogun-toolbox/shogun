@@ -216,19 +216,19 @@ bool CLabels::set_label(int32_t idx, float64_t label)
 		labels.vector[real_num]=label;
 		return true;
 	}
-	else 
+	else
 		return false;
 }
 
 bool CLabels::set_int_label(int32_t idx, int32_t label)
-{ 
+{
 	int32_t real_num=subset_idx_conversion(idx);
 	if (labels.vector && real_num<get_num_labels())
 	{
 		labels.vector[real_num]= (float64_t) label;
 		return true;
 	}
-	else 
+	else
 		return false;
 }
 

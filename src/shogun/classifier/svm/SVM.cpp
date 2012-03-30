@@ -271,7 +271,7 @@ float64_t CSVM::compute_svm_primal_objective()
 	float64_t loss=0;
 
 
-	
+
 	if (m_labels && kernel)
 	{
 		float64_t C2_tmp=C1;
@@ -279,7 +279,7 @@ float64_t CSVM::compute_svm_primal_objective()
 		{
 			C2_tmp=C2;
 		}
-		
+
 		for (int32_t i=0; i<n; i++)
 		{
 			int32_t ii=get_support_vector(i);
@@ -290,7 +290,7 @@ float64_t CSVM::compute_svm_primal_objective()
 			}
 
 			loss-=(C1*(-get_label(ii)+1)/2.0 + C2_tmp*(get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-get_label(ii)*apply(ii));
-		}	
+		}
 
 	}
 	else

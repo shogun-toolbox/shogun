@@ -86,10 +86,10 @@ class CKernelNormalizer : public CSGObject
 		 * @param idx_rhs index of right hand side vector
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)=0;
-	
+
 		/** register the parameters
 		 */
-		virtual void register_params() 
+		virtual void register_params()
 		{
 			m_parameters->add((machine_int_t*) &m_type, "m_type","Normalizer type.");
 		}

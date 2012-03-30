@@ -53,7 +53,7 @@ int32_t CCombinedFeatures::get_size()
 		SG_UNREF(f)
 			return s;
 	}
-	else 
+	else
 		return 0;
 }
 
@@ -88,7 +88,7 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 		{
 			SG_UNREF(f1);
 			SG_UNREF(f2);
-			while( ( (f1=this->get_next_feature_obj()) != NULL )  && 
+			while( ( (f1=this->get_next_feature_obj()) != NULL )  &&
 				   ( (f2=comb_feat->get_next_feature_obj()) != NULL) )
 			{
 				if (!f1->check_feature_compatibility(f2))

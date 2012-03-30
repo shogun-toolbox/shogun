@@ -24,19 +24,19 @@ class CFeatures;
 class CDistance;
 
 /** @brief class LinearLocalTangentSpaceAlignment (part of the
- * Efficient Dimensionality Reduction Toolkit) converter used to 
+ * Efficient Dimensionality Reduction Toolkit) converter used to
  * construct embeddings as described in:
- * 
+ *
  * Zhang, T., Yang, J., Zhao, D., & Ge, X. (2007).
- * Linear local tangent space alignment and application to face recognition. 
- * Neurocomputing, 70(7-9), 1547-1553. 
+ * Linear local tangent space alignment and application to face recognition.
+ * Neurocomputing, 70(7-9), 1547-1553.
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0925231206004577
- * 
- * This method is hardly applicable to very high-dimensional data due to 
+ *
+ * This method is hardly applicable to very high-dimensional data due to
  * necessity to solve eigenproblem involving matrix of size (dim x dim).
  *
  * To use this converter with static interfaces please refer it by
- * sg('create_converter','lltsa',k); 
+ * sg('create_converter','lltsa',k);
  *
  */
 class CLinearLocalTangentSpaceAlignment: public CLocalTangentSpaceAlignment

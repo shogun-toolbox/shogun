@@ -14,8 +14,8 @@
 #include <vector>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/kernel/Kernel.h>  
-#include <shogun/kernel/CombinedKernel.h> 
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/svm/GMNPSVM.h>
 #include <shogun/classifier/mkl/MKLMultiClassGLPK.h>
 #include <shogun/classifier/mkl/MKLMultiClassGradient.h>
@@ -33,7 +33,7 @@ class CMKLMultiClass : public CMultiClassSVM
 {
 public:
 	/** Class default Constructor
-	 * 
+	 *
 	 */
 	CMKLMultiClass();
 	/** Class Constructor commonly used in Shogun Toolbox
@@ -45,7 +45,7 @@ public:
 
 
 	/** Class default Destructor
-	 * 
+	 *
 	 */
 	virtual ~CMKLMultiClass();
 
@@ -55,33 +55,33 @@ public:
 	 */
 	virtual inline EClassifierType get_classifier_type()
 		{ return CT_MKLMULTICLASS; }
-	
+
 
 	/** returns MKL weights for the different kernels
 	 *
 	 * @param numweights is output parameter, is set to zero if no weights
 	 * have been computed or to the number of MKL weights which is equal to the number of kernels
-	 * 
+	 *
 	 * @return NULL if no weights have been computed or otherwise an array
 	 * with the weights, caller has to SG_FREE() the output
 	 */
 	float64_t* getsubkernelweights(int32_t & numweights);
-	
+
 	/** sets MKL termination threshold
 	 *
 	 * @param eps is the desired threshold value
 	 * the termination criterion is the L2 norm between the current MKL weights
 	 *  and their counterpart from the previous iteration
-	 * 
+	 *
 	 */
-	void set_mkl_epsilon(float64_t eps ); 
+	void set_mkl_epsilon(float64_t eps );
 
 	/** sets maximal number of MKL iterations
 	 *
 	 * @param maxnum is the desired maximal number of MKL iterations; when it
 	 *  is reached the MKL terminates irrespective of the MKL progress
 	 * set it to a nonpositive value in order to turn it off
-	 * 
+	 *
 	 */
 	void set_max_num_mkliters(int32_t maxnum);
 
@@ -90,49 +90,49 @@ public:
 	 */
 	virtual void set_mkl_norm(float64_t norm);
 
-	
+
 protected:
 	/** Class Copy Constructor
-	 * protected to avoid its usage 
-	 * 
+	 * protected to avoid its usage
+	 *
 	 */
 	CMKLMultiClass( const CMKLMultiClass & cm);
 	/** Class Assignment operator
 	 * protected to avoid its usage
-	 * 
+	 *
 	 */
 	CMKLMultiClass operator=( const CMKLMultiClass & cm);
 
 	/** performs some sanity checks (on the provided kernel), inits the
 	 * GLPK-based LP solver
-	 * 
+	 *
 	 */
 	void initlpsolver();
 
 	/** inits the underlying Multiclass SVM
-	 * 
+	 *
 	 */
 	void initsvm();
-	
 
 
-	
+
+
 	/** checks MKL for convergence
 	 *
 	 * @param numberofsilpiterations is the number of currently done iterations
-	 * 
+	 *
 	 */
 	virtual bool evaluatefinishcriterion(const int32_t
 			numberofsilpiterations);
-	
+
 
 	/** adds a constraint to the LP used in MKL
 	 *
 	 * @param curweights are the current MKL weights
 	 *
-	 * it uses 
+	 * it uses
 	 * void addingweightsstep( const std::vector<float64_t> & curweights);
-	 * and 
+	 * and
 	 * float64_t getsumofsignfreealphas();
 	 */
 	void addingweightsstep( const std::vector<float64_t> & curweights);
@@ -149,7 +149,7 @@ protected:
 	 */
 	float64_t getsquarenormofprimalcoefficients(
 			const int32_t ind);
-	
+
 
 	/** train Multiclass MKL classifier
 	 *
@@ -160,40 +160,40 @@ protected:
 	 * @return whether training was successful
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
-	
+
 
 protected:
 	/** the multiclass svm for fixed MKL weights
 	*
 	*
-	*/	
+	*/
 	CGMNPSVM* svm;
 	/** the solver wrapper
-	*	
+	*
 	*/
-	MKLMultiClassOptimizationBase* lpw; 
-	/** stores the last two mkl iteration weights 
-	*	
+	MKLMultiClassOptimizationBase* lpw;
+	/** stores the last two mkl iteration weights
+	*
 	*/
 	::std::vector< std::vector< float64_t> > weightshistory;
 
 	/** MKL termination threshold
-	*	is set void set_mkl_epsilon(float64_t eps ); 
+	*	is set void set_mkl_epsilon(float64_t eps );
 	*/
-	float64_t mkl_eps; 
+	float64_t mkl_eps;
 	/** maximal number of MKL iterations
 	*	is set by void set_max_num_mkliters(int32_t maxnum);
 	*/
-	int32_t max_num_mkl_iters; 
+	int32_t max_num_mkl_iters;
 	/** MKL norm >=1
-	*   
+	*
 	*/
 	float64_t pnorm;
 	/** stores the term  \| w_l \|^2 ~~~ "alpha o Y K_l Y o alpha"
-	*   
+	*
 	*/
 	std::vector<float64_t> normweightssquared;
-	
+
 };
 }
 #endif // GMNPMKL_H_

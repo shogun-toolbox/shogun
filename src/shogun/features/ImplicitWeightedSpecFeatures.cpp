@@ -91,8 +91,8 @@ bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 	return true;
 }
 
-CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeightedSpecFeatures& orig) : CDotFeatures(orig), 
-	num_strings(orig.num_strings), 
+CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeightedSpecFeatures& orig) : CDotFeatures(orig),
+	num_strings(orig.num_strings),
 	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
 	SG_NOTIMPLEMENTED;

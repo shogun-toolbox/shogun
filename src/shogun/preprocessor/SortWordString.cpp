@@ -61,14 +61,14 @@ bool CSortWordString::apply_to_string_features(CFeatures* f)
 {
 	int32_t i;
 	int32_t num_vec=((CStringFeatures<uint16_t>*)f)->get_num_vectors() ;
-	
+
 	for (i=0; i<num_vec; i++)
 	{
 		int32_t len = 0 ;
 		bool free_vec;
 		uint16_t* vec = ((CStringFeatures<uint16_t>*)f)->get_feature_vector(i, len, free_vec);
 		ASSERT(!free_vec); // won't work with non-in-memory string features
-		
+
 		//CMath::qsort(vec, len);
 		CMath::radix_sort(vec, len);
 

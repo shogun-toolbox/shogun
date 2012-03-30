@@ -59,7 +59,7 @@ SGMatrix<int32_t> CMulticlassAccuracy::get_confusion_matrix(CLabels* predicted, 
 		int32_t predicted_label = predicted->get_int_label(i);
 		int32_t ground_truth_label = ground_truth->get_int_label(i);
 
-		if (predicted_label==predicted->REJECTION_LABEL) 
+		if (predicted_label==predicted->REJECTION_LABEL)
 			continue;
 
 		confusion_matrix[predicted_label*num_classes+ground_truth_label]++;

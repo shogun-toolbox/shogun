@@ -30,7 +30,7 @@
 
 namespace shogun
 {
-/** gpm solver 
+/** gpm solver
  * @param Solver
  * @param Projector
  * @param n

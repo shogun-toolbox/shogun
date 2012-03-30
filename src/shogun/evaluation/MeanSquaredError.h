@@ -22,7 +22,7 @@ class CLabels;
 /** @brief Class MeanSquaredError
  * used to compute an error of regression model.
  *
- * Formally, for real labels \f$ L,R, |L|=|R|\f$ mean squared 
+ * Formally, for real labels \f$ L,R, |L|=|R|\f$ mean squared
  * error (MSE) is estimated as
  *
  * \f[

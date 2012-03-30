@@ -152,7 +152,7 @@ private:
 
 		m_testing_class = -1;
 
-		
+
 		m_parameters->add(&m_testing_class, "m_testing_class"
 				"Testing Class.");
 		m_parameters->add(&m_const_diag, "m_const_diag"

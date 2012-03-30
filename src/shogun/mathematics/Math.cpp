@@ -69,7 +69,7 @@ CMath::CMath()
 		i++;
 
 	LOGRANGE=i;
-#endif 
+#endif
 }
 
 CMath::~CMath()
@@ -82,7 +82,7 @@ CMath::~CMath()
 #endif
 }
 
-namespace shogun 
+namespace shogun
 {
 template <>
 void CMath::display_vector(const uint8_t* vector, int32_t n, const char* name,
@@ -393,9 +393,9 @@ void CMath::sort(int32_t *a, int32_t cols, int32_t sort_col)
 		  i++ ;
 	  } ;
   } ;
-} 
+}
 
-void CMath::sort(float64_t *a, int32_t* idx, int32_t N) 
+void CMath::sort(float64_t *a, int32_t* idx, int32_t N)
 {
 	int32_t changed=1;
 	while (changed)
@@ -411,7 +411,7 @@ void CMath::sort(float64_t *a, int32_t* idx, int32_t N)
 			} ;
 		} ;
 	} ;
- 
+
 }
 
 float64_t CMath::Align(
@@ -452,7 +452,7 @@ float64_t CMath::Align(
   delete [] gapCosts2;
   delete [] costs2_0;
   delete [] costs2_1;
-  
+
   // return the final cost
   return actCost;
 }
