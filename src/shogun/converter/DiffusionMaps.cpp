@@ -4,14 +4,16 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
+ * Written (W) 2011-2012 Sergey Lisitsyn
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Copyright (C) 2012 Sergey Lisitsyn
  */
 
 #include <shogun/converter/DiffusionMaps.h>
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
+#include <shogun/converter/libedrt.h>
 #include <shogun/mathematics/arpack.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
@@ -72,86 +74,24 @@ CFeatures* CDiffusionMaps::apply(CFeatures* features)
 
 CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 {
-#ifdef HAVE_ARPACK
-	bool use_arpack = true;
-#else
-	bool use_arpack = false;
-#endif
-	int32_t i,j;
-	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
-	ASSERT(kernel_matrix.num_rows==kernel_matrix.num_cols);
-	int32_t N = kernel_matrix.num_rows;
+	int32_t N = kernel->get_num_vec_rhs();
 
-	float64_t* p_vector = SG_CALLOC(float64_t, N);
-	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
-		{
-			p_vector[i] += kernel_matrix.matrix[j*N+i];
-		}
-	}
-	//CMath::display_matrix(kernel_matrix.matrix,N,N,"K");
-	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
-		{
-			kernel_matrix.matrix[i*N+j] /= CMath::pow(p_vector[i]*p_vector[j], m_t);
-		}
-	}
-	//CMath::display_matrix(kernel_matrix.matrix,N,N,"K");
+	float64_t* new_features = NULL;
 
-	for (i=0; i<N; i++)
-	{
-		p_vector[i] = 0.0;
-		for (j=0; j<N; j++)
-		{
-			p_vector[i] += kernel_matrix.matrix[j*N+i];
-		}
-		p_vector[i] = CMath::sqrt(p_vector[i]);
-	}
+	edrt_options_t options;
+	options.method = DIFFUSION_MAPS;
+	options.diffusion_maps_t = m_t;
 
-	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
-		{
-			kernel_matrix.matrix[i*N+j] /= p_vector[i]*p_vector[j];
-		}
-	}
+	edrt_embedding(options, m_target_dim, N, 0, 0, NULL,
+	               &compute_kernel, NULL, NULL, (void*)kernel,
+	               &new_features);
 
-	SG_FREE(p_vector);
-	float64_t* s_values = SG_MALLOC(float64_t, N);
-
-	int32_t info = 0;
-	SGMatrix<float64_t> new_feature_matrix = SGMatrix<float64_t>(m_target_dim,N);
-
-	if (use_arpack)
-	{
-#ifdef HAVE_ARPACK
-		arpack_dsxupd(kernel_matrix.matrix,NULL,false,N,m_target_dim,"LA",false,1,false,true,0.0,0.0,s_values,kernel_matrix.matrix,info);
-#endif /* HAVE_ARPACK */
-		for (i=0; i<m_target_dim; i++)
-		{
-			for (j=0; j<N; j++)
-				new_feature_matrix[j*m_target_dim+i] = kernel_matrix[j*m_target_dim+i];
-		}
-	}
-	else
-	{
-		SG_WARNING("LAPACK does not provide efficient routines to construct embedding (this may take time). Consider installing ARPACK.");
-		wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
-		for (i=0; i<m_target_dim; i++)
-		{
-			for (j=0; j<N; j++)
-				new_feature_matrix[j*m_target_dim+i] =
-				    kernel_matrix[(m_target_dim-i-1)*N+j];
-		}
-	}
-	if (info)
-		SG_ERROR("Eigenproblem solving  failed with %d code", info);
-
-	kernel_matrix.destroy_matrix();
-	SG_FREE(s_values);
-
-	return new CSimpleFeatures<float64_t>(new_feature_matrix);
+	return new CSimpleFeatures<float64_t>(SGMatrix<float64_t>(new_features,m_target_dim,N));
 }
+
+float64_t CDiffusionMaps::compute_kernel(int32_t i, int32_t j, const void* user_data)
+{
+	return ((CKernel*)user_data)->kernel(i,j);
+}
+
 #endif /* HAVE_LAPACK */
