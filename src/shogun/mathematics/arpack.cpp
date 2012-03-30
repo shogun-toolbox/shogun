@@ -29,7 +29,7 @@ extern "C" void dsaupd_(int *ido, char *bmat, int *n, char *which,
 
 /** external ARPACK routine DSEUPD */
 extern "C" void dseupd_(int *rvec, char *All, int *select, double *d,
-			double *v, int *ldv, double *sigma, 
+			double *v, int *ldv, double *sigma,
 			char *bmat, int *n, char *which, int *nev,
 			double *tol, double *resid, int *ncv, double *tv,
 			int *tldv, int *iparam, int *ipntr, double *workd,
@@ -39,8 +39,8 @@ using namespace shogun;
 
 namespace shogun
 {
-void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev, 
-                   const char* which, bool use_superlu, int mode, bool pos, bool cov, 
+void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev,
+                   const char* which, bool use_superlu, int mode, bool pos, bool cov,
                    double shift, double tolerance, double* eigenvalues,
                    double* eigenvectors, int& status)
 {
@@ -63,7 +63,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 	if (mode!=1 && mode!=3)
 		SG_SERROR("Mode not supported yet\n");
 
-	// init ARPACK's reverse communication parameter 
+	// init ARPACK's reverse communication parameter
  	// (should be zero initially)
 	int ido = 0;
 
@@ -92,7 +92,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 
 	// init array for i/o params for routine
 	int* iparam = SG_MALLOC(int, 11);
-	// specify method for selecting implicit shifts (1 - exact shifts) 
+	// specify method for selecting implicit shifts (1 - exact shifts)
 	iparam[0] = 1;
 	// specify max number of iterations
 	iparam[2] = 3*n;
@@ -153,12 +153,12 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		{
 			SG_SDEBUG("ARPACK: Subtracting shift\n");
 			// if right hand side diagonal matrix is provided
-			
+
 			if (rhs && is_rhs_diag)
 				// subtract I*diag(rhs_diag)
 				for (i=0; i<n; i++)
 					matrix[i*n+i] -= rhs[i]*shift;
-			
+
 			else
 				// subtract I
 				for (i=0; i<n; i++)
@@ -196,7 +196,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 				}
 			}
 			colptr[i] = nnz;
-			// create CCS matrix 
+			// create CCS matrix
 			dCreate_CompCol_Matrix(&slu_A,n,n,nnz,val,rowind,colptr,SLU_NC,SLU_D,SLU_GE);
 
 			// initialize options
@@ -206,7 +206,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 
 			options.SymmetricMode = YES;
 			options.ColPerm = MMD_AT_PLUS_A;
-			options.DiagPivotThresh = 0.001; 
+			options.DiagPivotThresh = 0.001;
 			StatInit(&stat);
 
 			// factorize
@@ -228,7 +228,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 			options.Fact = FACTORED;
 #endif
 		}
-		else 
+		else
 		{
 			// compute factorization according to pos value
 			if (pos)
@@ -258,7 +258,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		{
 			if (mode==1)
 			{
-				if (!cov) 
+				if (!cov)
 				{
 					// compute (workd+ipntr[1]-1) = A*(workd+ipntr[0]-1)
 					cblas_dsymv(CblasColMajor,CblasUpper,
@@ -286,17 +286,17 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 					if (use_superlu)
 					{
 #ifdef HAVE_SUPERLU
-						// treat workd+ipntr(0) as B 
+						// treat workd+ipntr(0) as B
 						for (i=0; i<n; i++)
 							slu_Bv[i] = (workd+ipntr[0]-1)[i];
 						slu_info = 0;
 						// solve
 						dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
-						       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, 
+						       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond,
 						       &ferr, &berr, &mem_usage, &stat, &slu_info);
 						if (slu_info)
 							SG_SERROR("SUPERLU: GOT %d\n", slu_info);
-						// move elements from resulting X to workd+ipntr(1) 
+						// move elements from resulting X to workd+ipntr(1)
 						for (i=0; i<n; i++)
 							(workd+ipntr[1]-1)[i] = slu_Xv[i];
 #endif
@@ -307,7 +307,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 							(workd+ipntr[1]-1)[i] = (workd+ipntr[0]-1)[i];
 							if (pos)
 							clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,(workd+ipntr[1]-1),n);
-						else 
+						else
 							clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,(workd+ipntr[1]-1),n);
 					}
 				}
@@ -323,7 +323,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 								slu_Bv[i] = (workd+ipntr[0]-1)[i];
 							slu_info = 0;
 							dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
-							       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, 
+							       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond,
 							       &ferr, &berr, &mem_usage, &stat, &slu_info);
 							if (slu_info)
 								SG_SERROR("SUPERLU: GOT %d\n", slu_info);
@@ -331,13 +331,13 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 								(workd+ipntr[1]-1)[i] = slu_Xv[i];
 #endif
 						}
-						else 
+						else
 						{
 							for (i=0; i<n; i++)
 								(workd+ipntr[1]-1)[i] = rhs[i]*(workd+ipntr[0]-1)[i];
 							if (pos)
 								clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,(workd+ipntr[1]-1),n);
-							else 
+							else
 								clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,(workd+ipntr[1]-1),n);
 						}
 					}
@@ -350,7 +350,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 								slu_Bv[i] = (workd+ipntr[2]-1)[i];
 							slu_info = 0;
 							dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
-							       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, 
+							       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond,
 							       &ferr, &berr, &mem_usage, &stat, &slu_info);
 							if (slu_info)
 								SG_SERROR("SUPERLU: GOT %d\n", slu_info);
@@ -358,13 +358,13 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 								(workd+ipntr[1]-1)[i] = slu_Xv[i];
 #endif
 						}
-						else 
+						else
 						{
 							for (i=0; i<n; i++)
 								(workd+ipntr[1]-1)[i] = (workd+ipntr[2]-1)[i];
 							if (pos)
 								clapack_dpotrs(CblasColMajor,CblasUpper,n,1,matrix,n,(workd+ipntr[1]-1),n);
-							else 
+							else
 								clapack_dgetrs(CblasColMajor,CblasNoTrans,n,1,matrix,n,ipiv,(workd+ipntr[1]-1),n);
 						}
 					}
@@ -373,7 +373,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 						if (is_rhs_diag)
 						{
 							for (i=0; i<n; i++)
-								(workd+ipntr[1]-1)[i] = rhs[i]*(workd+ipntr[0]-1)[i]; 
+								(workd+ipntr[1]-1)[i] = rhs[i]*(workd+ipntr[0]-1)[i];
 						}
 						else
 						{
@@ -387,9 +387,9 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 			}
 		}
 	} while ((ido==1)||(ido==-1)||(ido==2));
-	
+
 	if (!pos && mode==3) SG_FREE(ipiv);
-	
+
 	if (mode==3 && use_superlu)
 	{
 #ifdef HAVE_SUPERLU
@@ -407,37 +407,37 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		Destroy_SuperMatrix_Store(&slu_X);
 		Destroy_SuperNode_Matrix(&slu_L);
 		Destroy_CompCol_Matrix(&slu_U);
-#endif 
+#endif
 	}
-	
+
 	// check if DSAUPD failed
-	if (info<0) 
+	if (info<0)
 	{
 		if ((info<=-1)&&(info>=-6))
 			SG_SWARNING("ARPACK: DSAUPD failed. Wrong parameter passed.\n");
 		else if (info==-7)
 			SG_SWARNING("ARPACK: DSAUPD failed. Workaround array size is not sufficient.\n");
-		else 
+		else
 			SG_SWARNING("ARPACK: DSAUPD failed. Error code: %d.\n", info);
 
 		status = info;
 	}
-	else 
+	else
 	{
 		if (info==1)
 			SG_SWARNING("ARPACK: Maximum number of iterations reached.\n");
-			
+
 		// allocate select for dseupd
 		int* select = SG_MALLOC(int, ncv);
 		// allocate d to hold eigenvalues
 		double* d = SG_MALLOC(double, 2*ncv);
 		// sigma for dseupd
 		double sigma = shift;
-		
+
 		// init ierr indicating dseupd possible errors
 		int ierr = 0;
 
-		// specify that eigenvectors are going to be computed too		
+		// specify that eigenvectors are going to be computed too
 		int rvec = 1;
 
 		SG_SDEBUG("APRACK: Starting DSEUPD.\n");
@@ -459,14 +459,14 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 
 			// store eigenpairs to specified arrays
 			for (i=0; i<nev; i++)
-			{	
+			{
 				eigenvalues[i] = d[i];
-			
+
 				for (j=0; j<n; j++)
 					eigenvectors[j*nev+i] = v[i*n+j];
 			}
 		}
-		
+
 		// cleanup
 		SG_FREE(select);
 		SG_FREE(d);

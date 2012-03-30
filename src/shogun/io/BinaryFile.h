@@ -278,7 +278,7 @@ public:
 	virtual void set_ndarray(
 			const uint16_t* array, int32_t* dims, int32_t num_dims);
 	//@}
-	
+
 	/** @name Sparse Matrix Access Functions
 	 *
 	 * Functions to access sparse matrices of one of the several base data types.
@@ -305,7 +305,7 @@ public:
 	virtual void set_sparse_matrix(
 			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec); 
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
 			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
@@ -371,12 +371,12 @@ protected:
      * @return -1
      */
     int32_t parse_first_header(TSGDataType& type);
-    
+
     /** parse next header - defunct!
      *
      * @param type feature type
      * @return -1
-     */     
+     */
     int32_t parse_next_header(TSGDataType& type);
 
 private:

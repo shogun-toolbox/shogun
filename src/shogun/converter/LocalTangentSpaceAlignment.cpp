@@ -70,8 +70,8 @@ CLocalTangentSpaceAlignment::~CLocalTangentSpaceAlignment()
 }
 
 const char* CLocalTangentSpaceAlignment::get_name() const
-{ 
-	return "LocalTangentSpaceAlignment"; 
+{
+	return "LocalTangentSpaceAlignment";
 };
 
 SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features, float64_t* W_matrix,
@@ -96,7 +96,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	float64_t* q_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
 	float64_t* s_values_vector = SG_MALLOC(float64_t, dim*num_threads);
 	float64_t* G_matrix = SG_MALLOC(float64_t, m_k*(1+m_target_dim)*num_threads);
-	
+
 	// get feature matrix
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
@@ -219,7 +219,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 		wrap_dgesvd('N','O',dim,m_k,local_feature_matrix,dim,
 		            s_values_vector,NULL,1, NULL,1,&info);
 		ASSERT(info==0);
-		
+
 		for (j=0; j<target_dim; j++)
 		{
 			for (k=0; k<m_k; k++)
@@ -232,7 +232,7 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 		            1.0,G_matrix,m_k,
 		                G_matrix,m_k,
 		            0.0,q_matrix,m_k);
-		
+
 		// W[neighbors of i, neighbors of i] = I - GG'
 #ifdef HAVE_PTHREAD
 		PTHREAD_LOCK(W_matrix_lock);

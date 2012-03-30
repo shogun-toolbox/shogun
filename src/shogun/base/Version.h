@@ -69,13 +69,13 @@ public:
 	/** get version in minutes */
 	static int64_t get_version_in_minutes();
 
-	/** ref object 
+	/** ref object
 	 * @return ref count
 	 */
 	int32_t ref();
 
 	/** ref count
-	 * @return ref count 
+	 * @return ref count
 	 */
 	int32_t ref_count() const;
 

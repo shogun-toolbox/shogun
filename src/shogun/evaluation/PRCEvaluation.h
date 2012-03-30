@@ -18,7 +18,7 @@ namespace shogun
 
 class CLabels;
 
-/** @brief Class PRCEvaluation used to evaluate PRC 
+/** @brief Class PRCEvaluation used to evaluate PRC
  * (Precision Recall Curve) and an area under PRC curve (auPRC).
  *
  */

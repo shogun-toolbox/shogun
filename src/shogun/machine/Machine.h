@@ -157,7 +157,7 @@ class CMachine : public CSGObject
 		 * @param dstfile file to save to
 		 * @return failure
 		 */
-		virtual bool save(FILE* dstfile); 
+		virtual bool save(FILE* dstfile);
 
 		/** set labels
 		 *

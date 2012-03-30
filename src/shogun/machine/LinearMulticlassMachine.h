@@ -36,7 +36,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 		/** standard constructor
 		 * @param strategy multiclass strategy
-		 * @param features features 
+		 * @param features features
 		 * @param machine linear machine
 		 * @param labs labels
 		 */
@@ -54,7 +54,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		}
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "LinearMulticlassMachine";
 		}

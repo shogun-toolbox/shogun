@@ -38,7 +38,7 @@ struct HESSIANESTIMATION_THREAD_PARAM
 	int32_t target_dim;
 	/// matrix containing indexes of neighbors of ith vector in ith column
 	SGMatrix<int32_t> neighborhood_matrix;
-	/// feature matrix 
+	/// feature matrix
 	SGMatrix<float64_t> feature_matrix;
 	/// local feature matrix contating features of neighbors
 	float64_t* local_feature_matrix;
@@ -74,12 +74,12 @@ CHessianLocallyLinearEmbedding::~CHessianLocallyLinearEmbedding()
 {
 }
 
-const char* CHessianLocallyLinearEmbedding::get_name() const 
-{ 
+const char* CHessianLocallyLinearEmbedding::get_name() const
+{
 	return "HessianLocallyLinearEmbedding";
 };
 
-SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
+SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix,
                                                                             SGMatrix<int32_t> neighborhood_matrix)
 {
 	int32_t N = simple_features->get_num_vectors();
@@ -245,7 +245,7 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 		}
 
 		int32_t ct = 0;
-		
+
 		// construct 2nd order hessian approx
 		for (j=0; j<target_dim; j++)
 		{
@@ -258,13 +258,13 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 			}
 			ct += ct + target_dim - j;
 		}
-	
+
 		// perform QR factorization
 		wrap_dgeqrf(m_k,(1+target_dim+dp),Yi_matrix,m_k,tau,&info);
 		ASSERT(info==0);
 		wrap_dorgqr(m_k,(1+target_dim+dp),tau_len,Yi_matrix,m_k,tau,&info);
 		ASSERT(info==0);
-		
+
 		float64_t* Pii = (Yi_matrix+m_k*(1+target_dim));
 
 		for (j=0; j<dp; j++)
@@ -274,12 +274,12 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 			{
 				w_sum_vector[j] += Pii[j*m_k+k];
 			}
-			if (w_sum_vector[j]<0.001) 
+			if (w_sum_vector[j]<0.001)
 				w_sum_vector[j] = 1.0;
 			for (k=0; k<m_k; k++)
 				Pii[j*m_k+k] /= w_sum_vector[j];
 		}
-		
+
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,
 		            m_k,m_k,dp,
 		            1.0,Pii,m_k,

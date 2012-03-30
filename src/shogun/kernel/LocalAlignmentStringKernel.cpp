@@ -7,12 +7,12 @@
  * Copyright 2005 Jean-Philippe Vert, Hiroto Saigo
  *
  * Shogun specific adjustments Written (W) 2007-2008,2010 Soeren Sonnenburg
- * 
+ *
  * Reference:
  * H. Saigo, J.-P. Vert, T. Akutsu and N. Ueda, "Protein homology
  * detection using string alignment kernels", Bioinformatics,
  * vol.20, p.1682-1689, 2004.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -140,7 +140,7 @@ void CLocalAlignmentStringKernel::cleanup()
 
 void CLocalAlignmentStringKernel::init_logsum(){
   int32_t i;
-  for (i = 0; i < LOGSUM_TBL; i++) 
+  for (i = 0; i < LOGSUM_TBL; i++)
     logsum_lookup[i] = (int32_t) (INTSCALE*
 			       (log(1.+exp( (float32_t) -i/INTSCALE))));
 }
@@ -181,13 +181,13 @@ void CLocalAlignmentStringKernel::init_static_variables()
   /* Initialization of the array which gives the position of each amino-acid in the set of amino-acid */
   if ((aaIndex=(int32_t *)calloc(NLET,sizeof(int32_t))) == NULL)
     SG_ERROR("run out o memory");
-  for (i=0;i<NAA;i++) 
+  for (i=0;i<NAA;i++)
     aaIndex[aaList[i]-'A']=i;
-  
+
   /* Initialization of the array which indicates whether a char is an amino-acid */
   if ((isAA=(int32_t *)calloc(256,sizeof(int32_t))) == NULL)
     SG_ERROR("run out of memory");
-  for (i=0;i<NAA;i++) 
+  for (i=0;i<NAA;i++)
     isAA[(int32_t)aaList[i]]=1;
 
   /* Scale the blossum matrix */
@@ -271,11 +271,11 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
 
     /* Special update for positions (i=1..nX,j=0) */
     curpos = cur*cl;                  /* index of the state (i,0) */
-    logM[curpos] = LOG0; 
-    logX[curpos] = LOG0; 
-    logY[curpos] = LOG0; 
-    logX2[curpos] = LOG0; 
-    logY2[curpos] = LOG0; 
+    logM[curpos] = LOG0;
+    logX[curpos] = LOG0;
+    logY[curpos] = LOG0;
+    logX2[curpos] = LOG0;
+    logY2[curpos] = LOG0;
 
     /* Secondary loop to vary the position in aaY : j=1..nY */
     for (j=1;j<=nY;j++) {
@@ -286,7 +286,7 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
       /***************************************/
 
       frompos = old*cl + j;            /* index of the state (i-1,j) */
-      
+
       /* State RX */
       logX[curpos] = LOGP( - m_opening + logM[frompos] , - m_extension + logX[frompos] );
       /*      printf("%.5f\n",logX[curpos]);*/
@@ -315,7 +315,7 @@ float64_t CLocalAlignmentStringKernel::LAkernelcompute(
       aux = LOGP( logX[frompos] , logY[frompos] );
       aux2 = LOGP( 0 , logM[frompos] );
       logM[curpos] = LOGP( aux , aux2 ) + scaled_blosum[ BINDEX( aaX[i-1] , aaY[j-1] ) ];
-      
+
       /*      printf("i=%d , j=%d\nM=%.5f\nX=%.5f\nY=%.5f\nX2=%.5f\nY2=%.5f\n",i,j,logM[curpos],logX[curpos],logY[curpos],logX2[curpos],logY2[curpos]);
        */
 
@@ -379,7 +379,7 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
   /* Extract the characters corresponding to aminoacids and keep their indexes */
 
   j=0;
-  for (i=0 ; i<lx ; i++) 
+  for (i=0 ; i<lx ; i++)
     if (isAA[toupper(x[i])])
       aax[j++] = aaIndex[toupper(x[i])-'A'];
   lx = j;

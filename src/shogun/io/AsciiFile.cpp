@@ -1018,16 +1018,16 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 {
 	int32_t total_bytes_read=0;
 	int32_t default_size=10;
-				
+
 	if ((lineptr == NULL) || (n == NULL) || (stream == NULL))
 		return -1;
-		
+
 	if ((*lineptr == NULL) && (*n == 0))
 	{
 		*lineptr=SG_MALLOC(char, default_size);
 		*n=default_size;
 	}
-		
+
 	int32_t bytes_read, pos=-1;
 	int32_t threshold_size=100000;
 
@@ -1036,7 +1036,7 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 		// We need some limit in case file does not contain '\n'
 		if (*n > threshold_size)
 			return -1;
-				
+
 		// Read from file and append to buffer
 		bytes_read=fread(*lineptr+total_bytes_read, sizeof(char), *n-total_bytes_read, stream);
 

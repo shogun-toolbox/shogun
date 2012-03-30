@@ -157,7 +157,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 			float64_t alpha;
 			//@}
 		};
-		#endif 
+		#endif
 
 		/** iterate over the non-zero features
 		 *

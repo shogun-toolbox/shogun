@@ -52,7 +52,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 	target_letter_0=-1 ;
 
 	AA_matrix=SG_MALLOC(float64_t, 128*128);
-	
+
 
 	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
@@ -147,16 +147,16 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 
 	double C = 0.8;
 	const char *filename="/fml/ag-raetsch/home/toussaint/scp/aawd_compbio_workshop/code_nora/data/profile/profiles";
-	std::ifstream fin(filename);	
-	
+	std::ifstream fin(filename);
+
 	SG_DEBUG("Reading profiles from %s\n", filename);
 	std::string line;
 	while (!fin.eof())
-	{ 
+	{
 		std::getline(fin, line);
 
 		if (line[0] == '>') // new sequence
-		{ 
+		{
 			int idx = line.find_first_of(' ');
 			sequence_labels.push_back(line.substr(1,idx-1));
 			std::getline(fin, line);
@@ -175,7 +175,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 
 			std::vector<double>& curr_profile = profiles.back();
 			for (int i=0; i < len_line; ++i)
-			{ 
+			{
 					std::getline(fin, line);
 					int a = line.find_first_not_of(' '); // index position
 					int b = line.find_first_of(' ', a); // index position
@@ -196,7 +196,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 						b = line.find_first_of(' ', a); // aa position
 
 						for (int j=0; j < 19; ++j)
-						{ 
+						{
 							a = line.find_first_not_of(' ', b);
 							b = line.find_first_of(' ', a);
 						}
@@ -204,7 +204,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 						int all_zeros = 1;
 						// interesting block
 						for (int j=0; j < 20; ++j)
-						{ 
+						{
 							a = line.find_first_not_of(' ', b);
 							b = line.find_first_of(' ', a);
 							double p = atof(line.substr(a, b-a).c_str());
@@ -228,7 +228,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 								SG_DEBUG("before %f\n", profiles.back()[(i-1) * 20 + aa_index]);
 								curr_profile[(i*20) + aa_index] = value;
 								SG_DEBUG(">>> aa %c \t %d \t %f\n", aa.c_str()[0], aa_index, value);
-								
+
 								/*
 								for (int z=0; z <20; ++z)
 								{
@@ -242,7 +242,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 			}
 
 			if (curr_profile.size() != 20 * sequence.length())
-	    { 
+	    {
 				SG_ERROR("Something's wrong with the profile.\n");
 				break;
 			}
@@ -253,14 +253,14 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 			/*
 			// 6 irrelevant lines
 			for (int i=0; i < 6; ++i)
-			{ 
+			{
 				std::getline(fin, line);
 			}
 			//
 			*/
 		}
 	}
-	
+
 	fin.close();
 
 	nof_sequences = seqs.size();
@@ -337,7 +337,7 @@ float64_t CSpectrumRBFKernel::AA_helper(const char* path, const int seq_degree, 
 {
 	//const char* AA = "ARNDCQEGHILKMFPSTWYV";
   float64_t diff=0.0 ;
-  
+
   for (int i=0; i<seq_degree; i++)
     {
       if (!isaa(path[i])||!isaa(joint_seq[index+i]))
@@ -351,7 +351,7 @@ float64_t CSpectrumRBFKernel::AA_helper(const char* path, const int seq_degree, 
 	    fprintf(stderr, "nan occurred: '%c' '%c'\n", path[i], joint_seq[index+i]) ;
 	}
     }
-  
+
   return exp( - diff/width) ;
 }
 
@@ -392,7 +392,7 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 	return false;
 }
 
-void CSpectrumRBFKernel::register_param() 
+void CSpectrumRBFKernel::register_param()
 {
 	m_parameters->add(&degree, "degree", "degree of the kernel");
 	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
@@ -408,7 +408,7 @@ void CSpectrumRBFKernel::register_alphabet()
 	m_parameters->add((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel");
 }
 
-void CSpectrumRBFKernel::init() 
+void CSpectrumRBFKernel::init()
 {
 	alphabet = NULL;
 	degree = 0;
@@ -419,9 +419,9 @@ void CSpectrumRBFKernel::init()
 	string_features = NULL;
 	nof_sequences = 0;
 	max_sequence_length = 0;
-	
+
 	initialized = false;
-	
+
 	max_mismatch = 0;
-	target_letter_0 = 0;	
+	target_letter_0 = 0;
 }

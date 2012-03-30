@@ -92,7 +92,7 @@ template<class ST> ST* CSimpleFeatures<ST>::get_feature_vector(int32_t num, int3
 
 		if (feat)
 			return feat;
-		else 
+		else
 			feat = feature_cache->set_entry(real_num);
 	}
 

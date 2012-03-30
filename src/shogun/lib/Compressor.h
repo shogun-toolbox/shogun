@@ -34,7 +34,7 @@ namespace shogun
 	};
 
 
-	/** @brief Compression library for compressing and decompressing buffers using 
+	/** @brief Compression library for compressing and decompressing buffers using
 	 * one of the standard compression algorithms, LZO, GZIP, BZIP2 or LZMA.
 	 *
 	 * The general recommendation is to use LZO whenever lightweight compression

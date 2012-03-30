@@ -217,7 +217,7 @@ template <class T> class CArray2: public CArray<T>
 		 * @param p_dim1_size size of dimension 1
 		 * @return element of given array at given index
 		 */
-		inline T& element(T* p_array, int32_t idx1, int32_t idx2, int32_t p_dim1_size) 
+		inline T& element(T* p_array, int32_t idx1, int32_t idx2, int32_t p_dim1_size)
 		{
 			ARRAY_ASSERT(CArray<T>::array==p_array);
 			ARRAY_ASSERT(p_dim1_size==dim1_size);

@@ -138,7 +138,7 @@ class CPlif: public CPlifBase
 				return "log(+3)";
 			else if (transform== T_LINEAR_PLUS3)
 				return "(+3)";
-			else 
+			else
 				SG_ERROR("wrong type");
 			return "";
 		}
@@ -216,7 +216,7 @@ class CPlif: public CPlifBase
 			SG_FREE(cache);
 			cache=NULL;
 		}
-		
+
 		/** get use cache
 		 *
 		 * @return if cache is used
@@ -317,9 +317,9 @@ class CPlif: public CPlifBase
 		}
 
 		/** get plif penalty
- 		 *	
+ 		 *
  		 * @return plif penalty
- 		 */ 
+ 		 */
 		float64_t* get_plif_penalties()
 		{
 			return penalties;
@@ -396,12 +396,12 @@ class CPlif: public CPlifBase
 		 * @param b if calc shall be done
 		 */
 		void set_do_calc(bool b);
-		
+
 		/** get SVM_ids and number of SVMs used
 		 *
 		 */
 		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
-		
+
 		/** get plif len
 		 *
 		 * @return plif len
@@ -415,7 +415,7 @@ class CPlif: public CPlifBase
 		 *
 		 * lists some properties of the PLIF
 		 */
-		virtual void list_plif() const 
+		virtual void list_plif() const
 		{
 			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
 		}

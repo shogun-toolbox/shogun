@@ -35,14 +35,14 @@ class CDistance;
  *
  * Sparse multidimensional scaling using landmark points
  * V De Silva, J B Tenenbaum (2004) Technology, p. 1-4
- * 
+ *
  * In this preprocessor the LAPACK routine DSYEVR is used for
  * solving an eigenproblem. If ARPACK library is available,
  * its routines DSAUPD/DSEUPD are used instead.
  *
  * Note that target dimension should be set with reasonable value
  * (using set_target_dim). In case it is higher than intrinsic
- * dimensionality of the dataset 'extra' features of the output 
+ * dimensionality of the dataset 'extra' features of the output
  * might be inconsistent (essentially, according to zero or
  * negative eigenvalues). In this case a warning is showed.
  *
@@ -59,7 +59,7 @@ class CDistance;
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','mds');
- * 
+ *
  */
 class CMultidimensionalScaling: public CEmbeddingConverter
 {
@@ -87,7 +87,7 @@ public:
 	/** get name */
 	const char* get_name() const;
 
-	/** get last embedding eigenvectors 
+	/** get last embedding eigenvectors
 	 * @return vector with last eigenvalues
 	 */
 	SGVector<float64_t> get_eigenvalues() const;
@@ -98,7 +98,7 @@ public:
 	 * @param num number of landmark to be set
 	 */
 	void set_landmark_number(int32_t num);
-	
+
 	/** get number of landmarks
 	 * @return current number of landmarks
 	 */

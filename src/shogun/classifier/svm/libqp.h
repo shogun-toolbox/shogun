@@ -3,18 +3,18 @@
  *
  * The library provides two solvers:
  *   1. Solver for QP task with simplex constraints.
- *      See function ./lib/libqp_splx.c for definition of the QP task. 
+ *      See function ./lib/libqp_splx.c for definition of the QP task.
  *
- *   2. Solver for QP task with box constraints and a single linear 
- *      equality constraint. 
- *      See function ./lib/libqp_gsmo.c for definiton of the QP task. 
- *  
+ *   2. Solver for QP task with box constraints and a single linear
+ *      equality constraint.
+ *      See function ./lib/libqp_gsmo.c for definiton of the QP task.
+ *
  * Copyright (C) 2006-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  * Center for Machine Perception, CTU FEL Prague
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation; 
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation;
  * Version 3, 29 June 2007
  *-------------------------------------------------------------------- */
 
@@ -44,8 +44,8 @@ typedef struct {
   /** dual objective value */
   float64_t QD;
   /** exit flag */
-  int8_t exitflag;      /* -1 ... not enough memory 
-                            0 ... nIter >= MaxIter 
+  int8_t exitflag;      /* -1 ... not enough memory
+                            0 ... nIter >= MaxIter
                             1 ... QP - QD <= TolRel*ABS(QP)
                             2 ... QP - QD <= TolAbs
                             3 ... QP <= QP_TH

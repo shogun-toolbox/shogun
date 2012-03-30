@@ -151,7 +151,7 @@ class CKMeans : public CDistanceMachine
 
 		/// radi of the clusters (size k)
 		SGVector<float64_t> R;
-		
+
 	private:
 		/* temporary variable for weighting over the train data */
 		SGVector<float64_t> Weights;

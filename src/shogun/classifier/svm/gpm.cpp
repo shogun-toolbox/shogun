@@ -442,7 +442,7 @@ Clean:
 
 /******************************************************************************
  *** Dai-Fletcher QP solver (Y. Dai and R. Fletcher,"New Algorithms for     ***
- *** Singly Linear Constrained Quadratic Programs Subject to Lower and      *** 
+ *** Singly Linear Constrained Quadratic Programs Subject to Lower and      ***
  *** Upper Bounds"; Math. Prog. to appear)                                  ***
  ******************************************************************************/
 int32_t FletcherAlg2A(
@@ -497,7 +497,7 @@ int32_t FletcherAlg2A(
       tempv[i] = -x[i];
 
   lam_ext = 0.0;
-  
+
   projcount += InnerProjector(Projector, n, iy, e, tempv, 0, c, x, lam_ext);
 
   // g = A*x + b;
@@ -824,7 +824,7 @@ int32_t gpm_solver(
 }
 
 /******************************************************************************
- *** Piecewise linear monotone target function for the Dai-Fletcher         *** 
+ *** Piecewise linear monotone target function for the Dai-Fletcher         ***
  *** projector (Y. Dai and R. Fletcher, "New Algorithms for Singly Linear   ***
  *** Constrained Quadratic Programs Subject to Lower and Upper Bounds";     ***
  *** Math. Prog. to appear)                                                 ***
@@ -923,8 +923,8 @@ int32_t ProjectDai(
   lambda  = lambdau - dlambda;
   r       = ProjectR(x, n, lambda, a, b, c, l, u);
 
-  while (   fabs(r) > tol_r 
-         && dlambda > tol_lam * (1.0 + fabs(lambda)) 
+  while (   fabs(r) > tol_r
+         && dlambda > tol_lam * (1.0 + fabs(lambda))
          && iter    < maxprojections                )
   {
      iter++;

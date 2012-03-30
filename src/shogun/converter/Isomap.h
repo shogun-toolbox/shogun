@@ -29,10 +29,10 @@ class CDistance;
 /** @brief class Isomap (part of the Efficient Dimension
  * Reduction Toolkit) used to embed data using Isomap algorithm
  * as described in
- * 
- * Silva, V. D., & Tenenbaum, J. B. (2003). 
- * Global versus local methods in nonlinear dimensionality reduction. 
- * Advances in Neural Information Processing Systems 15, 15(Figure 2), 721-728. MIT Press. 
+ *
+ * Silva, V. D., & Tenenbaum, J. B. (2003).
+ * Global versus local methods in nonlinear dimensionality reduction.
+ * Advances in Neural Information Processing Systems 15, 15(Figure 2), 721-728. MIT Press.
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.9.3407&rep=rep1&type=pdf
  *
  * Shortest paths are being computed with Dijkstra's algorithm with heap
@@ -44,7 +44,7 @@ class CDistance;
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','isomap',k);
- * 
+ *
  */
 class CIsomap: public CMultidimensionalScaling
 {

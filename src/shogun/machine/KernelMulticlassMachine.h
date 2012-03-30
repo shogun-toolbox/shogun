@@ -53,7 +53,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		}
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "KernelMulticlassMachine";
 		}

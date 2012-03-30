@@ -32,37 +32,37 @@ class CDistance;
  * Retrieved from:
  * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7319&rep=rep1&type=pdf
  *
- * The process of finding nearest neighbors is parallel and 
+ * The process of finding nearest neighbors is parallel and
  * involves Fibonacci Heap and Euclidian distance.
  *
- * Linear reconstruction step runs in parallel for objects and 
+ * Linear reconstruction step runs in parallel for objects and
  * involves LAPACK routine DPOSV for solving a system of linear equations.
  *
- * The eigenproblem stated in the algorithm is solved with LAPACK routine 
+ * The eigenproblem stated in the algorithm is solved with LAPACK routine
  * DSYEVR or with ARPACK DSAUPD/DSEUPD routines if available.
  *
- * Due to computation speed, ARPACK is being used with small 
+ * Due to computation speed, ARPACK is being used with small
  * regularization of weight matrix and Cholesky factorization is used
  * internally for Lanzcos iterations (in case of only LAPACK is available)
- * and SUPERLU library for fast solving sparse equations stated by ARPACK 
+ * and SUPERLU library for fast solving sparse equations stated by ARPACK
  * is being used if available.
  *
- * This class also have capability of selecting k automatically in 
- * range between "k" and "max_k" in case if "auto_k" is true. This 
- * is being done using ternary search of minima of 
- * the mean reconstruction error. The reconstruction error is 
+ * This class also have capability of selecting k automatically in
+ * range between "k" and "max_k" in case if "auto_k" is true. This
+ * is being done using ternary search of minima of
+ * the mean reconstruction error. The reconstruction error is
  * considered to have only one global minimum in this mode.
  *
- * It is optimized with alignment formulation as described in 
- * 
- * Zhao, D. (2006). 
- * Formulating LLE using alignment technique. 
- * Pattern Recognition, 39(11), 2233-2235. 
+ * It is optimized with alignment formulation as described in
+ *
+ * Zhao, D. (2006).
+ * Formulating LLE using alignment technique.
+ * Pattern Recognition, 39(11), 2233-2235.
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0031320306002160
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','lle',k);
- * 
+ *
  */
 class CLocallyLinearEmbedding: public CEmbeddingConverter
 {
@@ -148,12 +148,12 @@ protected:
 	/** default init */
 	void init();
 
-	/** constructs weight matrix 
+	/** constructs weight matrix
 	 * @param simple_features features to be used
 	 * @param W_matrix weight matrix
 	 * @param neighborhood_matrix matrix containing neighbor idxs
 	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
+	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix,
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
 	/** constructs embedding
@@ -170,7 +170,7 @@ protected:
 	 */
 	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
 
-	/** estimates k using ternary search 
+	/** estimates k using ternary search
 	 * @param simple_features simple features to use
 	 * @param neighborhood_matrix matrix containing indexes of neighbors for every vector
 	 * @return optimal k (in means of reconstruction error)

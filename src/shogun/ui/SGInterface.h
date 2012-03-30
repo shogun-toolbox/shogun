@@ -52,7 +52,7 @@ enum IFType
 	VECTOR_SHORT,
 	VECTOR_WORD,
 
-	///dense matrices 
+	///dense matrices
 	DENSE_INT,
 	DENSE_REAL,
 	DENSE_SHORTREAL,
@@ -109,7 +109,7 @@ enum E_WHICH_OBJ
 class CSGInterface : public CSGObject
 {
 	public:
-		/** constructor 
+		/** constructor
 		 * @param print_copyrights
 		 */
 		CSGInterface(bool print_copyrights=true);
@@ -120,7 +120,7 @@ class CSGInterface : public CSGObject
 		/// reset to clean state
 		virtual void reset();
 
-		/// translate matrix from language A to language B 
+		/// translate matrix from language A to language B
 		void translate_arg(CSGInterface* source, CSGInterface* target);
 
 		/* commands */
@@ -412,14 +412,14 @@ class CSGInterface : public CSGObject
 		bool cmd_best_path();
 		/** best path 2struct */
 		bool cmd_best_path_2struct();
-		/** 
- 		 * -assemble plif struct from a bunch of 
+		/**
+ 		 * -assemble plif struct from a bunch of
  		 *  arrays of the same length corresponding
  		 *  to the fields of the plif-struct-array
  		 */
 		bool cmd_set_plif_struct();
-		/** 
-		 * -get plif struct as a bunch 
+		/**
+		 * -get plif struct as a bunch
 		 *  of arrays of the same length
 		 * -each array corresponding to one
 		 *  field of the struct
@@ -430,65 +430,65 @@ class CSGInterface : public CSGObject
 		 */
 		bool cmd_precompute_subkernels();
 		/** cmd signals model
-		 * 
+		 *
 		 */
 		bool cmd_signals_set_model() { return false; };
 		/** cmd signals set position
-		 * 
+		 *
 		 */
 		bool cmd_signals_set_positions();
 		/** cmd signals set labels
-		 * 
+		 *
 		 */
 		bool cmd_signals_set_labels();
 		/** cmd signals set split
-		 * 
+		 *
 		 */
 		bool cmd_signals_set_split();
 		/** cmd signals set train mask
-		 * 
+		 *
 		 */
 		bool cmd_signals_set_train_mask();
 		/** cmd signals add feature
-		 * 
+		 *
 		 */
 		bool cmd_signals_add_feature();
 		/** cmd signals add kernel
-		 * 
+		 *
 		 */
 		bool cmd_signals_add_kernel();
 		/** cmd signals run
-		 * 
+		 *
 		 */
 		bool cmd_signals_run();
-		/** 
-		 * -precompute content svms 
-		 *  and save the outputs 
-		 *  in a matrix with dim nof contents times 
-		 *  nof feature positions 
+		/**
+		 * -precompute content svms
+		 *  and save the outputs
+		 *  in a matrix with dim nof contents times
+		 *  nof feature positions
 		 *
 		 * -the SVM score for a specific segment can be
-		 *  calculated by subtraction the 
-		 *  the start and end position entries 
-		 *  from the row corresponding to the segment 
+		 *  calculated by subtraction the
+		 *  the start and end position entries
+		 *  from the row corresponding to the segment
 		 *  type
 		 */
 		bool cmd_precompute_content_svms();
-		/** 
+		/**
 		 * -get lin feat
 		 */
 		bool cmd_get_lin_feat();
-		/** 
+		/**
 		 * -set lin feat
 		 */
 		bool cmd_set_lin_feat();
 
-		/** 
+		/**
 		 * -init dyn prog
 		 */
 		bool cmd_init_dyn_prog();
 
-		/** 
+		/**
 		 * clean up dyn prog
 		 */
 		bool cmd_clean_up_dyn_prog();
@@ -502,35 +502,35 @@ class CSGInterface : public CSGObject
 		bool cmd_long_transition_settings();
 
 		/**
-		 * -precompute tiling features 
-		 *  and save the outputs (# content types x 
-		 *  # features positons) in a member variable 
+		 * -precompute tiling features
+		 *  and save the outputs (# content types x
+		 *  # features positons) in a member variable
 		 *  of the DynProg Object
-		 * -the tiling intensities are transformed 
+		 * -the tiling intensities are transformed
 		 *  and then stored as cumulative scores
 		 */
 		bool cmd_precompute_tiling_features();
-		/** 
- 		 * -compute the matrix that links 
+		/**
+ 		 * -compute the matrix that links
  		 *  the plif ids to the transitions
  		 *
- 		 * -the matrix has dimensions nof states 
+ 		 * -the matrix has dimensions nof states
  		 *  times nof states times nof feature types
  		 *
- 		 * - feature types are for example 
+ 		 * - feature types are for example
  		 *   signal features, length features,
  		 *   content features and tiling features
  		 */
 		bool cmd_set_model();
 		/**
-		 * set sparse feature matrix and 
+		 * set sparse feature matrix and
 		 * all feature positions
-		 */	
+		 */
 		bool cmd_set_feature_matrix_sparse();
 		/**
-		 * set feature matrix and 
+		 * set feature matrix and
 		 * all feature positions
-		 */	
+		 */
 		bool cmd_set_feature_matrix();
 		/** best path trans */
 		bool cmd_best_path_trans();
@@ -604,47 +604,47 @@ class CSGInterface : public CSGObject
 		/** get bool */
 		virtual bool get_bool()=0;
 
-		/** get string 
+		/** get string
 		 * @param len
 		 */
 		virtual char* get_string(int32_t& len)=0;
 
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
 		virtual void get_vector(bool*& vector, int32_t& len);
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
 		virtual void get_vector(uint8_t*& vector, int32_t& len)=0;
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
 		virtual void get_vector(char*& vector, int32_t& len)=0;
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
 		virtual void get_vector(int32_t*& vector, int32_t& len)=0;
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
 		virtual void get_vector(float64_t*& vector, int32_t& len)=0;
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
 		virtual void get_vector(float32_t*& vector, int32_t& len)=0;
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
 		virtual void get_vector(int16_t*& vector, int32_t& len)=0;
-		/** get vector 
+		/** get vector
 		 * @param vector
 		 * @param len
 		 */
@@ -759,7 +759,7 @@ class CSGInterface : public CSGObject
 			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 
 		/*  future versions might support types other than float64_t
-		
+
 		virtual void get_sparse_matrix(SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 		virtual void get_sparse_matrix(SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 		virtual void get_sparse_matrix(SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
@@ -767,7 +767,7 @@ class CSGInterface : public CSGObject
 		virtual void get_sparse_matrix(SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0;
 		virtual void get_sparse_matrix(SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec)=0; */
 
-		/** get string list 
+		/** get string list
 		 * @param strings
 		 * @param num_str
 		 * @param max_string_len
@@ -775,7 +775,7 @@ class CSGInterface : public CSGObject
 		virtual void get_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		/** get string list 
+		/** get string list
 		 * @param strings
 		 * @param num_str
 		 * @param max_string_len
@@ -783,7 +783,7 @@ class CSGInterface : public CSGObject
 		virtual void get_string_list(
 			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		/** get string list 
+		/** get string list
 		 * @param strings
 		 * @param num_str
 		 * @param max_string_len
@@ -791,7 +791,7 @@ class CSGInterface : public CSGObject
 		virtual void get_string_list(
 			SGString<int32_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		/** get string list 
+		/** get string list
 		 * @param strings
 		 * @param num_str
 		 * @param max_string_len
@@ -799,7 +799,7 @@ class CSGInterface : public CSGObject
 		virtual void get_string_list(
 			SGString<int16_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len)=0;
-		/** get string list 
+		/** get string list
 		 * @param strings
 		 * @param num_str
 		 * @param max_string_len
@@ -815,7 +815,7 @@ class CSGInterface : public CSGObject
 			const CDynamicArray<T_ATTRIBUTE>* &attrs)=0;
 
 		// set functions - to pass data from shogun to the target interface
-		/** create return values 
+		/** create return values
 		 * @param num_val
 		 */
 		virtual bool create_return_values(int32_t num_val)=0;
@@ -935,7 +935,7 @@ class CSGInterface : public CSGObject
 			int32_t num_vec, int64_t nnz)=0;
 
 		/*  future versions might support types other than float64_t
-		
+
 		virtual void set_sparse_matrix(const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
 		virtual void set_sparse_matrix(const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec)=0;
 		virtual void set_sparse_matrix(const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec)=0;
@@ -993,7 +993,7 @@ class CSGInterface : public CSGObject
 		int32_t get_nrhs() { return m_nrhs; }
 
 
-		// ui lib 
+		// ui lib
 		/** ui classifier */
 		CGUIClassifier* ui_classifier;
 		/** ui distance */
@@ -1040,7 +1040,7 @@ class CSGInterface : public CSGObject
 			return (strncmp(str, cmd, len)==0);
 		}
 
-		/** ends with 
+		/** ends with
 		 * @param str
 		 * @param cmd
 		 */

@@ -158,7 +158,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 	  const int32_t childIdx = node->children[ symRight ];
 	  if( childIdx != NO_CHILD )
 	  {
-		  if( depth < degree-2 ) 
+		  if( depth < degree-2 )
 		  {
 			  int32_t new_left_tries_idx[4];
 
@@ -175,7 +175,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 			  }
 			  POIMs_calc_SLR_helper2( distrib, i, childIdx, new_left_tries_idx, depth+1, &auxS, &dummy, &auxR );
 		  }
-		  else 
+		  else
 			  POIMs_calc_SLR_helper1( distrib, i, childIdx, left_tries_idx, depth+1, symRight, &auxS, &dummy, &auxR );
 
 		  if (i+depth<length)

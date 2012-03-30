@@ -71,11 +71,11 @@ class MemoryBlock
 		 * @param linenr line number
 		 */
 		MemoryBlock(void* p, size_t sz, const char* fname=NULL, int linenr=-1);
-		/** copy constructor 
+		/** copy constructor
 		 * @param b b
 		 */
         MemoryBlock(const MemoryBlock &b);
-		
+
 		/** equality
 		 * @param b b
 		 */

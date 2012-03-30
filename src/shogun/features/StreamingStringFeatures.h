@@ -28,7 +28,7 @@ template <class T> class CStreamingStringFeatures : public CStreamingFeatures
 {
 public:
 
-	/** 
+	/**
 	 * Default constructor.
 	 *
 	 * Sets the reading functions to be
@@ -37,10 +37,10 @@ public:
 	 */
 	CStreamingStringFeatures();
 
-	/** 
+	/**
 	 * Constructor taking args.
 	 * Initializes the parser with the given args.
-	 * 
+	 *
 	 * @param file StreamingFile object, input file.
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
@@ -49,52 +49,52 @@ public:
 				 bool is_labelled,
 				 int32_t size);
 
-	/** 
+	/**
 	 * Destructor.
-	 * 
+	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
 	virtual ~CStreamingStringFeatures();
 
-	/** 
+	/**
 	 * Sets the read function (in case the examples are
 	 * unlabelled) to get_*_vector() from CStreamingFile.
 	 *
 	 * The exact function depends on type T.
-	 * 
+	 *
 	 * The parser uses the function set by this while reading
 	 * unlabelled examples.
 	 */
 	virtual void set_vector_reader();
 
-	/** 
+	/**
 	 * Sets the read function (in case the examples are labelled)
 	 * to get_*_vector_and_label from CStreamingFile.
 	 *
 	 * The exact function depends on type T.
-	 * 
+	 *
 	 * The parser uses the function set by this while reading
 	 * labelled examples.
 	 */
 	virtual void set_vector_and_label_reader();
 
-	/** 
+	/**
 	 * Set the alphabet to be used.
 	 * Call before parsing.
-	 * 
+	 *
 	 * @param alpha alphabet as an EAlphabet enum.
 	 */
 	void use_alphabet(EAlphabet alpha);
 
-	/** 
+	/**
 	 * Set the alphabet to be used.
 	 * Call before parsing.
-	 * 
+	 *
 	 * @param alpha alphabet as a pointer to a CAlphabet object.
 	 */
 	void use_alphabet(CAlphabet* alpha);
 
-	/** 
+	/**
 	 * Set whether remapping to another alphabet is required.
 	 *
 	 * Call before parsing.
@@ -103,7 +103,7 @@ public:
 	 */
 	void set_remap(CAlphabet* ascii_alphabet, CAlphabet* binary_alphabet);
 
-	/** 
+	/**
 	 * Set whether remapping to another alphabet is required.
 	 *
 	 * Call before parsing.
@@ -112,12 +112,12 @@ public:
 	 */
 	void set_remap(EAlphabet ascii_alphabet=DNA, EAlphabet binary_alphabet=RAWDNA);
 
-	/** 
+	/**
 	 * Return the alphabet being used as a CAlphabet*
-	 * @return 
+	 * @return
 	 */
 	CAlphabet* get_alphabet();
-	
+
 	/** get number of symbols
 	 *
 	 * Note: floatmax_t sounds weird, but LONG is not long enough
@@ -126,47 +126,47 @@ public:
 	 */
 	floatmax_t get_num_symbols();
 
-	/** 
+	/**
 	 * Starts the parsing thread.
 	 *
 	 * To be called before trying to use any feature vectors from this object.
 	 */
 	virtual void start_parser();
 
-	/** 
+	/**
 	 * Ends the parsing thread.
 	 *
 	 * Waits for the thread to join.
 	 */
 	virtual void end_parser();
 
-	/** 
+	/**
 	 * Instructs the parser to return the next example.
-	 * 
+	 *
 	 * This example is stored as the current_example in this object.
-	 * 
+	 *
 	 * @return True on success, false if there are no more
 	 * examples, or an error occurred.
 	 */
 	virtual bool get_next_example();
 
-	/** 
+	/**
 	 * Return the current feature vector as an SGString<T>.
-	 * 
+	 *
 	 * @return The vector as SGString<T>
 	 */
 	SGString<T> get_vector();
 
-	/** 
+	/**
 	 * Return the label of the current example as a float.
-	 * 
+	 *
 	 * Examples must be labelled, otherwise an error occurs.
-	 * 
+	 *
 	 * @return The label as a float64_t.
 	 */
 	virtual float64_t get_label();
 
-	/** 
+	/**
 	 * Release the current example, indicating to the parser that
 	 * it has been processed by the learning algorithm.
 	 *
@@ -174,73 +174,73 @@ public:
 	 */
 	virtual void release_example();
 
-	/** 
+	/**
 	 * Return the length of the current vector.
-	 * 
+	 *
 	 * @return current vector length as int32_t
 	 */
 	virtual int32_t get_vector_length();
 
-	/** 
+	/**
 	 * Return the feature type, depending on T.
-	 * 
+	 *
 	 * @return Feature type as EFeatureType
 	 */
 	virtual EFeatureType get_feature_type();
 
-	/** 
+	/**
 	 * Return the feature class
-	 * 
+	 *
 	 * @return C_STREAMING_STRING
 	 */
 	virtual EFeatureClass get_feature_class();
 
-	/** 
+	/**
 	 * Duplicate the object.
-	 * 
+	 *
 	 * @return a duplicate object as CFeatures*
 	 */
 	virtual CFeatures* duplicate() const;
 
-	/** 
+	/**
 	 * Return the name.
-	 * 
+	 *
 	 * @return StreamingSparseFeatures
 	 */
 	inline virtual const char* get_name() const { return "StreamingStringFeatures"; }
 
-	/** 
+	/**
 	 * Return the number of vectors stored in this object.
-	 * 
+	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
 	virtual int32_t get_num_vectors() const;
 
-	/** 
+	/**
 	 * Return the size of one T object.
-	 * 
+	 *
 	 * @return Size of T.
 	 */
 	virtual int32_t get_size();
 
-	/** 
+	/**
 	 * Return the number of features in the current vector.
-	 * 
+	 *
 	 * @return length of the vector
 	 */
 	virtual int32_t get_num_features();
 
 private:
 
-	/** 
+	/**
 	 * Initializes members to null values.
 	 * current_length is set to -1.
 	 */
 	void init();
-	
-	/** 
+
+	/**
 	 * Calls init, and also initializes the parser with the given args.
-	 * 
+	 *
 	 * @param file StreamingFile to read from
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring

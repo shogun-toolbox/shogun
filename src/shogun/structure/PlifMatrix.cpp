@@ -13,20 +13,20 @@ CPlifMatrix::CPlifMatrix() : m_PEN(NULL), m_num_plifs(0), m_num_limits(0),
 CPlifMatrix::~CPlifMatrix()
 {
 	for (int32_t i=0; i<m_num_plifs; i++)
-		delete m_PEN[i];	
+		delete m_PEN[i];
 	SG_FREE(m_PEN);
-	
+
 	for (int32_t i=0; i<m_num_states*m_num_states; i++)
 		delete m_plif_matrix[i];
 
-	SG_FREE(m_plif_matrix);	
+	SG_FREE(m_plif_matrix);
 
 	SG_FREE(m_state_signals);
 }
 
 void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 {
-	for (int32_t i=0; i<m_num_plifs; i++)	
+	for (int32_t i=0; i<m_num_plifs; i++)
 		delete m_PEN[i];
 	SG_FREE(m_PEN);
 	m_PEN=NULL;
@@ -34,7 +34,7 @@ void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 	m_num_plifs=num_plifs;
 	m_num_limits=num_limits;
 	m_PEN = SG_MALLOC(CPlif*, num_plifs);
-	for (int32_t i=0; i<num_plifs; i++)	
+	for (int32_t i=0; i<num_plifs; i++)
 		m_PEN[i]=new CPlif(num_limits) ;
 }
 

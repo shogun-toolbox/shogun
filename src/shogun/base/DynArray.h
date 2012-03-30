@@ -289,7 +289,7 @@ template <class T> class DynArray
 				*resize_granularity;
 
 			T* p;
-            
+
             if (use_sg_mallocs)
                 p = SG_REALLOC(T, array, new_num_elements);
             else
