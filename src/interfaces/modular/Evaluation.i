@@ -11,6 +11,8 @@
 /* Remove C Prefix */
 %rename(Evaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;
+%rename(ClusteringEvaluation) CClusteringEvaluation;
+%rename(ClusteringAccuracy) CClusteringAccuracy;
 %rename(ContingencyTableEvaluation) CContingencyTableEvaluation;
 %rename(MulticlassAccuracy) CMulticlassAccuracy;
 %rename(MeanAbsoluteError) CMeanAbsoluteError;
@@ -35,6 +37,8 @@
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/Evaluation.h>
 %include <shogun/evaluation/BinaryClassEvaluation.h>
+%include <shogun/evaluation/ClusteringEvaluation.h>
+%include <shogun/evaluation/ClusteringAccuracy.h>
 %include <shogun/evaluation/ContingencyTableEvaluation.h>
 %include <shogun/evaluation/MulticlassAccuracy.h>
 %include <shogun/evaluation/MeanAbsoluteError.h>
