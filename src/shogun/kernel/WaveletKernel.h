@@ -30,7 +30,7 @@ namespace shogun
  * \f[
  * h({\bf x}=cos(1.75*x)\cdot exp(\frac{(-x^2)}{2})
  * \f]
- * 
+ *
  */
 class CWaveletKernel: public CDotKernel
 {

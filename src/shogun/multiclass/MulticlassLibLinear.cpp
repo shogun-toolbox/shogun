@@ -61,7 +61,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = m_labels->get_num_classes();
 	int32_t bias_n = m_use_bias ? 1 : 0;
-	
+
 	problem mc_problem;
 	mc_problem.l = num_vectors;
 	mc_problem.n = m_features->get_dim_feature_space() + bias_n;

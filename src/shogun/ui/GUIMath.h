@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef __GUIMATH__H__ 
-#define __GUIMATH__H__ 
+#ifndef __GUIMATH__H__
+#define __GUIMATH__H__
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
@@ -28,7 +28,7 @@ class CGUIMath : public CSGObject
 		 * @param interface
 		 */
 		CGUIMath(CSGInterface* interface);
-		/** set threshold 
+		/** set threshold
 		 * @param value
 		 */
 		void set_threshold(float64_t value);

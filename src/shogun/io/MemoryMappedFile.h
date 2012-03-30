@@ -130,7 +130,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			return (T*) address;
 		}
 
-		/** get the number of objects of type T cointained in the file 
+		/** get the number of objects of type T cointained in the file
 		 *
 		 * @return length of file
 		 */
@@ -203,7 +203,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		}
 
 		/** set file size
-		 * 
+		 *
 		 * When the file is opened for read/write mode, it will be truncated
 		 * upon destruction of the CMemoryMappedFile object. This is
 		 * automagically determined when writing lines, but might have to be
@@ -258,7 +258,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		{
 		  return ((T*)address)[index];
 		}
-		
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MemoryMappedFile"; }
 

@@ -10,7 +10,7 @@
 
 
 #ifndef _GUISTRUCTURE_H__
-#define _GUISTRUCTURE_H__ 
+#define _GUISTRUCTURE_H__
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
@@ -67,7 +67,7 @@ class CGUIStructure : public CSGObject
 				memcpy(d_cpy, m_feature_matrix,len*sizeof(float64_t));
 				return d_cpy;
 			}
-			else 
+			else
 				return m_feature_matrix;
 		}
 
@@ -84,7 +84,7 @@ class CGUIStructure : public CSGObject
 			return NULL ;
 		}
 
-		/** set feature matrix 
+		/** set feature matrix
 		 * @param feat
 		 * @param dims
 		 */
@@ -145,7 +145,7 @@ class CGUIStructure : public CSGObject
 		/** get num positions */
 		inline int32_t get_num_positions() { return m_num_positions; }
 
-		/** set content svm weights 
+		/** set content svm weights
 		 * @param weights
 		 * @param Nweights
 		 * @param Mweights
@@ -166,7 +166,7 @@ class CGUIStructure : public CSGObject
 		inline float64_t* get_content_svm_weights() { return m_content_svm_weights; }
 		/** get num svm weights */
 		inline int32_t get_num_svm_weights() { return m_num_svm_weights; }
-		
+
 		/** get plif matrix */
 		inline CPlifMatrix* get_plif_matrix() { return m_plif_matrix; }
 
@@ -203,7 +203,7 @@ class CGUIStructure : public CSGObject
 		/** get use orf */
 		inline bool get_use_orf() { return m_use_orf; }
 
-		/** set mod words 
+		/** set mod words
 		 * @param mod_words
 		 * @param Nmod_words
 		 * @param Mmod_words
@@ -216,18 +216,18 @@ class CGUIStructure : public CSGObject
 			int32_t* cp_array = SG_MALLOC(int32_t, Nmod_words*Mmod_words);
 			memcpy(cp_array, mod_words, Nmod_words*Mmod_words*sizeof(int32_t));
 			m_mod_words = cp_array;
-			return true;	
+			return true;
 		}
 		/** get mod words */
 		inline int32_t* get_mod_words() { return m_mod_words; }
 		/** get num states */
 		inline int32_t get_num_states() { return m_num_states; }
-		/** set num states 
-		 * @param num 
+		/** set num states
+		 * @param num
 		 */
 		inline bool set_num_states(int32_t num)
 		{
-			m_num_states = num; 
+			m_num_states = num;
 			return true;
 		}
 		/** cleanup */

@@ -7,39 +7,39 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
 //
 /***********************************************************************
- * 
+ *
  *  LUSH Lisp Universal Shell
  *    Copyright (C) 2002 Leon Bottou, Yann Le Cun, AT&T Corp, NECI.
  *  Includes parts of TL3:
  *    Copyright (C) 1987-1999 Leon Bottou and Neuristique.
  *  Includes selected parts of SN3.2:
  *    Copyright (C) 1991-2001 AT&T Corp.
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
- * 
+ *
  ***********************************************************************/
 
 /***********************************************************************
@@ -114,7 +114,7 @@ namespace shogun
 			// !Important! Computing the score of a given input vector for the actual output
 			float64_t computeScore (int32_t x_id);
 
-			// !Important! Computing the gradient of a given input vector for the actual output           
+			// !Important! Computing the gradient of a given input vector for the actual output
 			float64_t computeGradient (int32_t xi_id, int32_t yi, int32_t ythis);
 
 			// Updating the solution in the actual output
@@ -122,20 +122,20 @@ namespace shogun
 
 			// Linking the cache of this output to the cache of an other "buddy" output
 			// so that if a requested value is not found in this cache, you can
-			// ask your buddy if it has it.                              
+			// ask your buddy if it has it.
 			void set_kernel_buddy (larank_kcache_t * bud);
 
-			// Removing useless support vectors (for which beta=0)                
+			// Removing useless support vectors (for which beta=0)
 			int32_t cleanup ();
 
 			// --- Below are information or "get" functions --- //
 
-			//                            
+			//
 			inline larank_kcache_t *getKernel () const
 			{
 				return kernel;
 			}
-			//                            
+			//
 			inline int32_t get_l () const
 			{
 				return l;
@@ -171,7 +171,7 @@ namespace shogun
 			float32_t* beta;		// Beta coefficiens
 			float32_t* g;		// Strored gradient derivatives
 			larank_kcache_t *kernel;	// Cache for kernel values
-			int32_t l;			// Number of support vectors 
+			int32_t l;			// Number of support vectors
 	};
 
 	/*
@@ -180,9 +180,9 @@ namespace shogun
 	class LaRankPattern
 	{
 		public:
-			LaRankPattern (int32_t x_index, int32_t label) 
+			LaRankPattern (int32_t x_index, int32_t label)
 				: x_id (x_index), y (label) {}
-			LaRankPattern () 
+			LaRankPattern ()
 				: x_id (0) {}
 
 			bool exists () const
@@ -322,7 +322,7 @@ namespace shogun
 
 			// LEARNING FUNCTION: add new patterns and run optimization steps
 			// selected with adaptative schedule
-			/** add 
+			/** add
 			 * @param x_id
 			 * @param yi
 			 */
@@ -367,7 +367,7 @@ namespace shogun
 			inline virtual const char* get_name() const { return "LaRank"; }
 
 			/** set batch mode
-			 * @param enable 
+			 * @param enable
 			 */
 			void set_batch_mode(bool enable) { batch_mode=enable; };
 			/** get batch mode */
@@ -399,7 +399,7 @@ namespace shogun
 
 			LaRankOutput *getOutput (int32_t index);
 
-			// 
+			//
 			LaRankPatterns patterns;
 
 			// Parameters
@@ -411,7 +411,7 @@ namespace shogun
 			int32_t n_rep;
 			int32_t n_opt;
 
-			// Running estimates for each operations 
+			// Running estimates for each operations
 			float64_t w_pro;
 			float64_t w_rep;
 			float64_t w_opt;
@@ -435,7 +435,7 @@ namespace shogun
 				}
 			};
 
-			//3 types of operations in LaRank               
+			//3 types of operations in LaRank
 			enum process_type
 			{
 				processNew,
@@ -445,7 +445,7 @@ namespace shogun
 
 			struct process_return_t
 			{
-				process_return_t (float64_t dual, int32_t yprediction) 
+				process_return_t (float64_t dual, int32_t yprediction)
 					: dual_increase (dual), ypred (yprediction) {}
 				process_return_t () {}
 				float64_t dual_increase;

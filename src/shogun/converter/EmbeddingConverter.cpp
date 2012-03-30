@@ -15,7 +15,7 @@
 
 using namespace shogun;
 
-namespace shogun 
+namespace shogun
 {
 CEmbeddingConverter::CEmbeddingConverter()
 : CConverter()
@@ -27,7 +27,7 @@ CEmbeddingConverter::CEmbeddingConverter()
 	init();
 }
 
-CEmbeddingConverter::~CEmbeddingConverter() 
+CEmbeddingConverter::~CEmbeddingConverter()
 {
 	SG_UNREF(m_distance);
 	SG_UNREF(m_kernel);

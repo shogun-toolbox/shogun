@@ -53,7 +53,7 @@ class CKernelMachine : public CMachine
         /** Convenience constructor to initialize a trained kernel
          * machine
          *
-         * @param k kernel 
+         * @param k kernel
          * @param alphas vector of alpha weights
          * @param svs indices of examples, i.e. i's for x_i
          * @param b bias term

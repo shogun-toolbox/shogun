@@ -173,7 +173,7 @@ bool CLPBoost::train_machine(CFeatures* data)
 	solver.cleanup();
 
 	cleanup();
-	
+
 	return true;
 }
 #endif

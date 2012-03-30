@@ -64,7 +64,7 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 				break;
 			else
 				k++;
-				
+
 		}
 		while (k<len && end_pos[k]==m_all_pos[i])
 		{
@@ -93,7 +93,7 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 			m_quality_list[i] = new_list;
 
 			k++;
-		}			
+		}
 	}
 }
 /**
@@ -109,7 +109,7 @@ void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t 
 	int32_t* from_list = m_intron_list[to_pos];
 	int32_t* q_list = m_quality_list[to_pos];
 
-	//SG_PRINT("from_list[0]: %i\n", from_list[0]);	
+	//SG_PRINT("from_list[0]: %i\n", from_list[0]);
 
 	int32_t coverage = 0;
 	int32_t quality = 0;
@@ -120,9 +120,9 @@ void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t 
 		{
 			//SG_PRINT("found intron: %i->%i\n", from_pos, to_pos );
 			coverage = coverage+1;
-			quality = CMath::max(quality, q_list[i]); 
+			quality = CMath::max(quality, q_list[i]);
 		}
-	}	
+	}
 	values[0] = coverage;
 	values[1] = quality;
 }

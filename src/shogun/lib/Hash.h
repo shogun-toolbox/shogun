@@ -30,9 +30,9 @@
  * MurmurHash2
  *
  * (C) Austin Appleby, released under the MIT License
- * 
+ *
  *  Note - This code makes a few assumptions about how your machine behaves -
- * 
+ *
  *  1. We can read a 4-byte value from any address without crashing
  *  2. It will not produce the same results on little-endian and big-endian
  *     machines.
@@ -50,7 +50,7 @@ namespace shogun
  *
  * This class implements a number of hashing functions like
  * crc32, md5 and murmur.
- * 
+ *
  */
 class CHash : public CSGObject
 {
@@ -61,14 +61,14 @@ class CHash : public CSGObject
 		virtual ~CHash() {}
 
 		/** crc32 checksumming
-		 * 
+		 *
 		 * @param data data to checksum
 		 * @param len length in number of bytes
 		 */
 		static uint32_t crc32(uint8_t *data, int32_t len);
 
 		/** Wrapper for MD5 function compatible to OpenSSL interface.
-		 * 
+		 *
 		 * @param x data
 		 * @param l length
 		 * @param buf buf needs to provide an allocated array of 16 bytes
@@ -144,7 +144,7 @@ class CHash : public CSGObject
 				unsigned char const *buf, unsigned len);
 
 		/**
-		 * Final wrapup - pad to 64-byte boundary with the bit pattern 
+		 * Final wrapup - pad to 64-byte boundary with the bit pattern
 		 * 1 0* (64-bit count of bits processed, MSB-first)
 		 *
 		 * @param digest the 64 byte hash

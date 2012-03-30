@@ -57,7 +57,7 @@ void CLogKernel::init()
 
 float64_t CLogKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	float64_t dist = m_distance->distance(idx_a, idx_b);	
+	float64_t dist = m_distance->distance(idx_a, idx_b);
 	float64_t temp = pow(dist, m_degree);
 	temp = log(temp + 1);
 	return -temp;

@@ -65,7 +65,7 @@ float64_t CSphericalKernel::compute(int32_t idx_a, int32_t idx_b)
 	float64_t dist=distance->distance(idx_a, idx_b);
 	float64_t ds_ratio=dist/sigma;
 
-	if (dist < sigma) 
+	if (dist < sigma)
 		return 1.0-1.5*(ds_ratio)+0.5*(ds_ratio*ds_ratio*ds_ratio);
 	else
 		return 0;

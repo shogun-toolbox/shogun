@@ -22,7 +22,7 @@ namespace shogun
 {
 /** @brief Class LibSVR, performs support vector regression using LibSVM.
  *
- * The SVR solution can be expressed as 
+ * The SVR solution can be expressed as
  *  \f[
  * 		f({\bf x})=\sum_{i=1}^{N} \alpha_i k({\bf x}, {\bf x_i})+b
  * 	\f]

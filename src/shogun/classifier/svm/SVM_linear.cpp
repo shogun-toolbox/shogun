@@ -1,23 +1,23 @@
 /*
  * Copyright (c) 2007-2009 The LIBLINEAR Project.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither name of copyright holders nor the names of its contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
- * 
+ *
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -320,19 +320,19 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 	}
 }
 
-// A coordinate descent algorithm for 
+// A coordinate descent algorithm for
 // multi-class support vector machines by Crammer and Singer
 //
 //  min_{\alpha}  0.5 \sum_m ||w_m(\alpha)||^2 + \sum_i \sum_m e^m_i alpha^m_i
 //    s.t.     \alpha^m_i <= C^m_i \forall m,i , \sum_m \alpha^m_i=0 \forall i
-// 
+//
 //  where e^m_i = 0 if y_i  = m,
 //        e^m_i = 1 if y_i != m,
-//  C^m_i = C if m  = y_i, 
-//  C^m_i = 0 if m != y_i, 
-//  and w_m(\alpha) = \sum_i \alpha^m_i x_i 
+//  C^m_i = C if m  = y_i,
+//  C^m_i = 0 if m != y_i,
+//  and w_m(\alpha) = \sum_i \alpha^m_i x_i
 //
-// Given: 
+// Given:
 // x, y, C
 // eps is the stopping tolerance
 //
@@ -341,8 +341,8 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 #define GETI(i) (prob->y[i])
 // To support weights for instances, use GETI(i) (i)
 
-Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class, 
-                                 double *weighted_C, double epsilon, 
+Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class,
+                                 double *weighted_C, double epsilon,
                                  int max_it, double max_time,
                                  mcsvm_state* given_state)
 {
@@ -410,7 +410,7 @@ void Solver_MCSVM_CS::solve()
 	int iter = 0;
 	double *w,*B,*G,*alpha,*alpha_new,*QD,*d_val;
 	int *index,*d_ind,*alpha_index,*y_index,*active_size_i;
-	
+
 	if (!state->allocated)
 	{
 		state->w = SG_CALLOC(double, nr_class*w_size);
@@ -463,7 +463,7 @@ void Solver_MCSVM_CS::solve()
 		state->inited = true;
 	}
 
-	while(iter < max_iter) 
+	while(iter < max_iter)
 	{
 		double stopping = -CMath::INFTY;
 		for(i=0;i<active_size;i++)
@@ -527,14 +527,14 @@ void Solver_MCSVM_CS::solve()
 						active_size_i[i]--;
 						while(active_size_i[i]>m)
 						{
-							if(!be_shrunk(i, active_size_i[i], y_index[i], 
+							if(!be_shrunk(i, active_size_i[i], y_index[i],
 											alpha_i[alpha_index_i[active_size_i[i]]], minG))
 							{
 								CMath::swap(alpha_index_i[m], alpha_index_i[active_size_i[i]]);
 								CMath::swap(G[m], G[active_size_i[i]]);
 								if(y_index[i] == active_size_i[i])
 									y_index[i] = m;
-								else if(y_index[i] == m) 
+								else if(y_index[i] == m)
 									y_index[i] = active_size_i[i];
 								break;
 							}
@@ -547,7 +547,7 @@ void Solver_MCSVM_CS::solve()
 				{
 					active_size--;
 					CMath::swap(index[s], index[active_size]);
-					s--;	
+					s--;
 					continue;
 				}
 

@@ -23,7 +23,7 @@ namespace shogun
  * It is computed as
  *
  * \f[
- * k({\bf x},{\bf x'})= \exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau}) + 
+ * k({\bf x},{\bf x'})= \exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau}) +
                         \sum_{s=1}^{S_{\mathrm{max}}/S_{\mathrm{step}}} \frac{1}{2s}
 						   \exp(-\frac{||{\bf x}_{[1:|{\bf x}|-sS_{\mathrm{step}}]}-{\bf x'}_{[sS_{\mathrm{step}}:|{\bf x}|]}||^2}{\tau}) +
                         \sum_{s=1}^{S_{max}/S_{step}} \frac{1}{2s}
@@ -31,7 +31,7 @@ namespace shogun
  * \f]
  *
  * where \f$\tau\f$ is the kernel width. The idea is to shift the dimensions of the input vectors against eachother.
- * \f$S_{\mathrm{step}}\f$ is the step size (parameter shift_step) of the shifts and 
+ * \f$S_{\mathrm{step}}\f$ is the step size (parameter shift_step) of the shifts and
  * \f$S_{\mathrm{max}}\f$ (parameter max_shift) is the maximal shift.
  */
 class CGaussianShiftKernel: public CGaussianKernel

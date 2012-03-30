@@ -26,7 +26,7 @@ struct TParameter
 	 * @param parameter pointer to parameter
 	 * @param name name of parameter
 	 * @param description description of parameter
-	 */ 
+	 */
 	explicit TParameter(const TSGDataType* datatype, void* parameter,
 						const char* name, const char* description);
 
@@ -122,8 +122,8 @@ private:
 					const char* prefix);
 };
 
-/** @brief Parameter class 
- * 
+/** @brief Parameter class
+ *
  * Must not be an CSGObject to prevent a recursive call of
  * constructors.
  */

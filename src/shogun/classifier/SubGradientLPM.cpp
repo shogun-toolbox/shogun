@@ -263,7 +263,7 @@ float64_t CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 		{
 			float64_t p=get_label(i-num_feat)*(features->dense_dot(i-num_feat, grad_w, num_feat)+grad_b);
 			grad_proj[i-num_feat]=p;
-			
+
 			A[i]=0;
 			B[i]=0;
 			C[i]=C1*p;
@@ -411,7 +411,7 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 float64_t CSubGradientLPM::compute_objective(int32_t num_feat, int32_t num_vec)
 {
 	float64_t result= CMath::sum_abs(w, num_feat);
-	
+
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		if (proj[i]<1.0)
@@ -601,7 +601,7 @@ bool CSubGradientLPM::train_machine(CFeatures* data)
 		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active);
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
 		//SG_PRINT("grad_b:%f\n", grad_b);
-		
+
 		dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
 
 		alpha=line_search(num_feat, num_vec);

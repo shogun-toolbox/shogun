@@ -2,7 +2,7 @@
 
 namespace shogun
 {
-template <class ST> 
+template <class ST>
 CSimplePreprocessor<ST>::CSimplePreprocessor() : CPreprocessor()
 {
 }

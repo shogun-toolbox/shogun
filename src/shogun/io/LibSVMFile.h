@@ -18,7 +18,7 @@
 namespace shogun
 {
 	/** read sparse real valued features in svm light format
-	 * e.g. -1 1:10.0 2:100.2 1000:1.3 
+	 * e.g. -1 1:10.0 2:100.2 1000:1.3
 	 * with -1 == (optional) label
 	 * and dim 1    - value  10.0
 	 *     dim 2    - value 100.2
@@ -43,7 +43,7 @@ namespace shogun
 		const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 
 	/** read dense real valued features, simple ascii format
-	 * e.g. 1.0 1.1 0.2 
+	 * e.g. 1.0 1.1 0.2
 	 *      2.3 3.5 5
 	 *
 	 *  a matrix that consists of 3 vectors with each of 2d

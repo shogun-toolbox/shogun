@@ -25,9 +25,9 @@ class CDistance;
  * embeddings of data using Locality Preserving Projections method
  * as described in
  *
- * He, X., & Niyogi, P. (2003). 
- * Locality Preserving Projections. 
- * Matrix, 16(December), 153–160. Citeseer. 
+ * He, X., & Niyogi, P. (2003).
+ * Locality Preserving Projections.
+ * Matrix, 16(December), 153–160. Citeseer.
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.7147&rep=rep1&type=pdf
  *
  * To use this converter with static interfaces please refer it by
@@ -49,11 +49,11 @@ public:
 
 protected:
 
-	/** construct embedding 
+	/** construct embedding
 	 * @param features features
 	 * @param W_matrix W matrix to be used
 	 */
-	virtual CSimpleFeatures<float64_t>* construct_embedding(CFeatures* features, 
+	virtual CSimpleFeatures<float64_t>* construct_embedding(CFeatures* features,
 	                                                        SGMatrix<float64_t> W_matrix);
 
 };

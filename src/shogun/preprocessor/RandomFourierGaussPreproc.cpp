@@ -24,7 +24,7 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 
 	kernelwidth=feats.kernelwidth;
 	cur_kernelwidth=feats.cur_kernelwidth;
-	
+
 	if(cur_dim_feature_space>0)
 	{
 		if(feats.randomcoeff_additive==NULL)
@@ -40,7 +40,7 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 	{
 		randomcoeff_additive = NULL;
 	}
-	
+
 	if((cur_dim_feature_space>0)&&(cur_dim_input_space>0))
 	{
 		if(feats.randomcoeff_multiplicative==NULL)
@@ -204,7 +204,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 	SG_INFO("initializing randomcoefficients \n") ;
 
 	float64_t pi = 3.14159265;
-	
+
 
 	SG_FREE(randomcoeff_multiplicative);
 	randomcoeff_multiplicative=NULL;
@@ -283,7 +283,7 @@ void CRandomFourierGaussPreproc::set_randomcoefficients(
 	dim_feature_space = dim_feature_space2;
 	dim_input_space = dim_input_space2;
 	kernelwidth=kernelwidth2;
-	
+
 	SG_FREE(randomcoeff_multiplicative);
 	randomcoeff_multiplicative=NULL;
 	SG_FREE(randomcoeff_additive);
@@ -360,8 +360,8 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 {
 	init(features);
 
-	// version for case dim_feature_space < dim_input space with direct transformation on feature matrix ?? 
-	
+	// version for case dim_feature_space < dim_input space with direct transformation on feature matrix ??
+
 	int32_t num_vectors = 0;
 	int32_t num_features = 0;
 	float64_t* m = ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(
@@ -393,7 +393,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 		}
 		((CSimpleFeatures<float64_t>*) features)->set_feature_matrix(res,
 				cur_dim_feature_space, num_vectors);
-		
+
 		m = ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(
 				num_features, num_vectors);
 		ASSERT(num_features==cur_dim_feature_space);
@@ -406,5 +406,5 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 
 void CRandomFourierGaussPreproc::cleanup()
 {
-	
+
 }

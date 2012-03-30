@@ -30,7 +30,7 @@ CPyramidChi2::CPyramidChi2()
 
 CPyramidChi2::CPyramidChi2(
 	int32_t size, int32_t num_cells2,
-		float64_t* weights_foreach_cell2, 
+		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
 : CDotKernel(size), num_cells(num_cells2),weights(NULL),
@@ -56,7 +56,7 @@ width_computation_type(width_computation_type2), width(width2),
 		width=-1;
 	}
 
-	
+
 }
 
 void CPyramidChi2::cleanup()
@@ -81,9 +81,9 @@ bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
 }
 
 CPyramidChi2::CPyramidChi2(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, 
+	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
 		int32_t size, int32_t num_cells2,
-		float64_t* weights_foreach_cell2, 
+		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
 : CDotKernel(size), num_cells(num_cells2), weights(NULL),
@@ -133,7 +133,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
 					blen, bfree);
 	if(alen!=blen)
-		SG_ERROR("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim");	
+		SG_ERROR("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim");
 
 	int32_t dims=alen/num_cells;
 
@@ -142,7 +142,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	{
 		if(width_computation_type >0)
 		{
-			
+
 			//compute width
 			int32_t numind;
 
@@ -166,11 +166,11 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 				for(int32_t i=0; i< numind;++i)
 					featindices[i]=i;
 			}
-			
+
 
 			width=0;
 
-			//get avec, get bvec	only from lhs, do not free	
+			//get avec, get bvec	only from lhs, do not free
 			for (int32_t li=0; li < numind;++li)
 			{
 				avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(featindices[li],
@@ -180,17 +180,17 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 					// lhs is right here!!!
 					bvec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(featindices[ri],
 							blen, bfree);
-				
+
 					float64_t result=0;
 					for (int32_t histoind=0; histoind<num_cells; ++histoind)
 					{
 						float64_t curweight=weights[histoind];
-			
+
 						for (int32_t i=0; i< dims; ++i)
 						{
 							int32_t index= histoind*dims+i;
 							if(avec[index] + bvec[index]>0)
-							{	
+							{
 								result+= curweight*(avec[index] - bvec[index])*(avec[index]
 									- bvec[index])/(avec[index] + bvec[index]);
 							}
@@ -219,20 +219,20 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	for (int32_t histoind=0; histoind<num_cells; ++histoind)
 	{
 		float64_t curweight=weights[histoind];
-			
+
 		for (int32_t i=0; i< dims; ++i)
 		{
 			int32_t index= histoind*dims+i;
 			if(avec[index] + bvec[index]>0)
-			{	
+			{
 				result+= curweight*(avec[index] - bvec[index])*(avec[index]
 					- bvec[index])/(avec[index] + bvec[index]);
 			}
 		}
 	}
 	result= CMath::exp(-result/width);
-	
-	
+
+
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
@@ -240,12 +240,12 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 }
 
 void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
-		float64_t* weights_foreach_cell2, 
+		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
 {
 	num_cells=num_cells2;
-	width_computation_type=width_computation_type2; 
+	width_computation_type=width_computation_type2;
 	width=width2;
 	num_randfeats_forwidthcomputation=-1;
 

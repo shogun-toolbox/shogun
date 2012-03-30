@@ -70,7 +70,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 * @return kernel type TPPK
 		 */
 		virtual EKernelType get_kernel_type() { return K_TPPK; }
-	
+
 		/* register the parameters
 		 */
 		virtual void register_params();

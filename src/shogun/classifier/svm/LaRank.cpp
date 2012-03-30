@@ -7,39 +7,39 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // aint64_t with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
 //
 /***********************************************************************
- * 
+ *
  *  LUSH Lisp Universal Shell
  *    Copyright (C) 2002 Leon Bottou, Yann Le Cun, AT&T Corp, NECI.
  *  Includes parts of TL3:
  *    Copyright (C) 1987-1999 Leon Bottou and Neuristique.
  *  Includes selected parts of SN3.2:
  *    Copyright (C) 1991-2001 AT&T Corp.
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  aint64_t with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
- * 
+ *
  ***********************************************************************/
 
 /***********************************************************************
@@ -429,7 +429,7 @@ float64_t LaRankOutput::computeScore (int32_t x_id)
 	}
 }
 
-// !Important! Computing the gradient of a given input vector for the actual output           
+// !Important! Computing the gradient of a given input vector for the actual output
 float64_t LaRankOutput::computeGradient (int32_t xi_id, int32_t yi, int32_t ythis)
 {
 	return (yi == ythis ? 1 : 0) - computeScore (xi_id);
@@ -472,13 +472,13 @@ void LaRankOutput::update (int32_t x_id, float64_t lambda, float64_t gp)
 }
 
 // Linking the cahe of this output to the cache of an other "buddy" output
-// so that if a requested value is not found in this cache, you can ask your buddy if it has it.                              
+// so that if a requested value is not found in this cache, you can ask your buddy if it has it.
 void LaRankOutput::set_kernel_buddy (larank_kcache_t * bud)
 {
 	larank_kcache_set_buddy (bud, kernel);
 }
 
-// Removing useless support vectors (for which beta=0)                
+// Removing useless support vectors (for which beta=0)
 int32_t LaRankOutput::cleanup ()
 {
 	int32_t count = 0;
@@ -579,7 +579,7 @@ int32_t LaRankOutput::getSV (float32_t* &sv) const
 	return l;
 }
 
-CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST), 
+CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
@@ -588,7 +588,7 @@ CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST),
 }
 
 CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
-	CMultiClassSVM(ONE_VS_REST, C, k, lab), 
+	CMultiClassSVM(ONE_VS_REST, C, k, lab),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
@@ -696,7 +696,7 @@ bool CLaRank::train_machine(CFeatures* data)
 int32_t CLaRank::add (int32_t x_id, int32_t yi)
 {
 	++nb_seen_examples;
-	// create a new output object if this one has never been seen before 
+	// create a new output object if this one has never been seen before
 	if (!getOutput (yi))
 	{
 		outputs.insert (std::make_pair (yi, LaRankOutput ()));
@@ -704,7 +704,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 		cur->initialize (kernel, cache);
 		if (outputs.size () == 1)
 			y0 = outputs.begin ()->first;
-		// link the cache of this new output to a buddy 
+		// link the cache of this new output to a buddy
 		if (outputs.size () > 1)
 		{
 			LaRankOutput *out0 = getOutput (y0);
@@ -753,7 +753,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 			n_rep++;
 			w_rep = 0.05 * lcoeff + (1 - 0.05) * w_rep;
 		}
-		else			// Optimize here 
+		else			// Optimize here
 		{
 			float64_t ltime1 = CTime::get_curtime ();
 			float64_t ldual_increase = optimize ();
@@ -793,7 +793,7 @@ void CLaRank::destroy ()
 }
 
 
-// Compute Duality gap (costly but used in stopping criteria in batch mode)                     
+// Compute Duality gap (costly but used in stopping criteria in batch mode)
 float64_t CLaRank::computeGap ()
 {
 	float64_t sum_sl = 0;
@@ -888,7 +888,7 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 	process_return_t pro_ret = process_return_t (0, 0);
 
 	/*
-	 ** compute gradient and sort   
+	 ** compute gradient and sort
 	 */
 	std::vector < outputgradient_t > outputgradients;
 

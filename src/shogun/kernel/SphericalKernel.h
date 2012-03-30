@@ -28,7 +28,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- *     k(x, y) = 1 - \frac{3}{2} \frac{|x-y|}{\sigma} 
+ *     k(x, y) = 1 - \frac{3}{2} \frac{|x-y|}{\sigma}
  *     + \frac{1}{2} \left( \frac{|x-y|}{\sigma} \right)^3
  *     \mbox{if}~ |x-y| \leq \sigma \mbox{, zero otherwise}
  * \f]
@@ -42,7 +42,7 @@ class CSphericalKernel: public CKernel
 	CSphericalKernel();
 
 	/** constructor
-	 * 
+	 *
 	 * @param size cache size
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance
@@ -50,7 +50,7 @@ class CSphericalKernel: public CKernel
 	CSphericalKernel(int32_t size, float64_t sigma, CDistance* dist);
 
 	/** constructor
-	 * 
+	 *
 	 * @param l features of left-side
 	 * @param r features of right-side
 	 * @param sigma kernel parameter sigma
@@ -59,7 +59,7 @@ class CSphericalKernel: public CKernel
 	CSphericalKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist);
 
 	/** initialize kernel with features
-	 * 
+	 *
 	 * @param l features of left-side
 	 * @param r features of right-side
 	 * @return true if successful
@@ -119,7 +119,7 @@ protected:
 	 * compute kernel function for features a and b
 	 * idx_{a,b} denote the index of the feature vectors
 	 * in the corresponding feature object
-	 * 
+	 *
 	 * @param idx_a index a
 	 * @param idx_b index b
 	 * @return computed kernel function at indices a,b

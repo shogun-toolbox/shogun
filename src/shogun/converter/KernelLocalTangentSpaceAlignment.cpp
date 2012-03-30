@@ -47,7 +47,7 @@ struct KLTSA_THREAD_PARAM
 	const float64_t* kernel_matrix;
 	/// local gram matrix
 	float64_t* local_gram_matrix;
-	/// eigenvalues 
+	/// eigenvalues
 	float64_t* ev_vector;
 	/// G matrix
 	float64_t* G_matrix;
@@ -75,8 +75,8 @@ CKernelLocalTangentSpaceAlignment::~CKernelLocalTangentSpaceAlignment()
 }
 
 const char* CKernelLocalTangentSpaceAlignment::get_name() const
-{ 
-	return "KernelLocalTangentSpaceAlignment"; 
+{
+	return "KernelLocalTangentSpaceAlignment";
 };
 
 SGMatrix<float64_t> CKernelLocalTangentSpaceAlignment::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
@@ -175,7 +175,7 @@ void* CKernelLocalTangentSpaceAlignment::run_kltsa_thread(void* p)
 
 		CMath::center_matrix(local_gram_matrix,m_k,m_k);
 
-		int32_t info = 0; 
+		int32_t info = 0;
 		wrap_dsyevr('V','U',m_k,local_gram_matrix,m_k,m_k-target_dim+1,m_k,ev_vector,G_matrix+m_k,&info);
 		ASSERT(info==0);
 
