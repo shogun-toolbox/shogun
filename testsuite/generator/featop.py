@@ -136,10 +136,10 @@ def add_preproc (name, feats, *args):
 	fun=eval('preproc.'+name)
 	preproc=fun(*args)
 	preproc.init(feats['train'])
-	feats['train'].add_preproc(preproc)
-	feats['train'].apply_preproc()
-	feats['test'].add_preproc(preproc)
-	feats['test'].apply_preproc()
+	feats['train'].add_preprocessor(preproc)
+	feats['train'].apply_preprocessor()
+	feats['test'].add_preprocessor(preproc)
+	feats['test'].apply_preprocessor()
 
 	return feats
 
