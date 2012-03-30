@@ -901,17 +901,17 @@ void CKernel::save_serializable_post() throw (ShogunException)
 
 void CKernel::register_params()   {
 	m_parameters->add(&cache_size, "cache_size",
-					  "Cache size in MB.");
-	m_parameters->add((CSGObject**) &lhs, "lhs",
-					  "Feature vectors to occur on left hand side.");
-	m_parameters->add((CSGObject**) &rhs, "rhs",
-					  "Feature vectors to occur on right hand side.");
-	m_parameters->add(&lhs_equals_rhs, "lhs_equals_rhs",
-					  "If features on lhs are the same as on rhs.");
-	m_parameters->add(&num_lhs, "num_lhs",
-					  "Number of feature vectors on left hand side.");
-	m_parameters->add(&num_rhs, "num_rhs",
-					  "Number of feature vectors on right hand side.");
+	    "Cache size in MB.", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &lhs, "lhs",
+      "Feature vectors to occur on left hand side.", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &rhs, "rhs",
+      "Feature vectors to occur on right hand side.", MS_NOT_AVAILABLE);
+	SG_ADD(&lhs_equals_rhs, "lhs_equals_rhs",
+	    "If features on lhs are the same as on rhs.", MS_NOT_AVAILABLE);
+	SG_ADD(&num_lhs, "num_lhs", "Number of feature vectors on left hand side.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&num_rhs, "num_rhs", "Number of feature vectors on right hand side.",
+	    MS_NOT_AVAILABLE);
 	m_parameters->add(&combined_kernel_weight, "combined_kernel_weight",
 					  "Combined kernel weight.");
 	m_parameters->add(&optimization_initialized,
