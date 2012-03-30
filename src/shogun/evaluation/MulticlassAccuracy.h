@@ -22,7 +22,7 @@ class CLabels;
 /** @brief The class MulticlassAccuracy
  * used to compute accuracy of multiclass classification.
  *
- * Formally, for multiclass labels \f$L,R, |L|=|R|\f$ multiclass 
+ * Formally, for multiclass labels \f$L,R, |L|=|R|\f$ multiclass
  * accuracy is estimated as
  *
  * \f[
@@ -35,11 +35,11 @@ class CMulticlassAccuracy: public CEvaluation
 {
 public:
 	/** constructor */
-	CMulticlassAccuracy() : 
+	CMulticlassAccuracy() :
 		CEvaluation(), m_ignore_rejects(false), m_rejects_num(0) {};
 
 	/** constructor */
-	CMulticlassAccuracy(bool ignore_rejects) : 
+	CMulticlassAccuracy(bool ignore_rejects) :
 		CEvaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0) {};
 
 	/** destructor */
@@ -65,7 +65,7 @@ public:
 	}
 
 	/** get rejects num */
-	int32_t get_rejects_num() const 
+	int32_t get_rejects_num() const
 	{
 		return m_rejects_num;
 	}

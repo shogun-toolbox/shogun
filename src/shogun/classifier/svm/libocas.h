@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * libocas.h: Implementation of the OCAS solver for training 
+ * libocas.h: Implementation of the OCAS solver for training
  *            linear SVM classifiers.
- *  
+ *
  * Copyright (C) 2008, 2009 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  *                          Soeren Sonnenburg, soeren.sonnenburg@first.fraunhofer.de
  *  Implementation of SVM-Ocas solver.
@@ -42,11 +42,11 @@ typedef struct {
   float64_t ocas_time;      /* total time spent in svm_ocas_solver */
   float64_t print_time;     /* time spent in ocas_print function */
   int8_t qp_exitflag;    /* exitflag from the last call of the inner QP solver */
-  int8_t exitflag;       /*  1 .. ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P) 
-                             2 .. ocas.Q_P - ocas.Q_D <= TolAbs 
+  int8_t exitflag;       /*  1 .. ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P)
+                             2 .. ocas.Q_P - ocas.Q_D <= TolAbs
                              3 .. ocas.Q_P <= QPBound
-                             4 .. optimization time >= MaxTime 
-                            -1 .. ocas.nCutPlanes >= BufSize 
+                             4 .. optimization time >= MaxTime
+                            -1 .. ocas.nCutPlanes >= BufSize
                             -2 .. not enough memory for the solver */
 } ocas_return_value_T;
 
@@ -91,7 +91,7 @@ ocas_return_value_T msvm_ocas_solver(
             float64_t C,
             float64_t *data_y,
             uint32_t nY,
-            uint32_t nData, 
+            uint32_t nData,
             float64_t TolRel,
             float64_t TolAbs,
             float64_t QPBound,

@@ -48,7 +48,7 @@ enum EPCAMode
 class CPCA: public CDimensionReductionPreprocessor
 {
 	public:
-	
+
 		/** constructor
 		 * @param do_whitening do whitening
 		 * @param mode mode of pca
@@ -59,8 +59,8 @@ class CPCA: public CDimensionReductionPreprocessor
 		/** destructor */
 		virtual ~CPCA();
 
-		/** initialize preprocessor from features 
-		 * @param features 
+		/** initialize preprocessor from features
+		 * @param features
 		 */
 		virtual bool init(CFeatures* features);
 
@@ -69,7 +69,7 @@ class CPCA: public CDimensionReductionPreprocessor
 
 		/** apply preprocessor to feature matrix
 		 * @param features features
-		 * @return processed feature matrix 
+		 * @return processed feature matrix
 		 */
 		virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 

@@ -30,7 +30,7 @@ CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
 {
 	svm=NULL;
 	lpw=NULL;
-	
+
 	mkl_eps=0.01;
 	max_num_mkl_iters=999;
 	pnorm=1;
@@ -89,7 +89,7 @@ void CMKLMultiClass::initsvm()
 
 void CMKLMultiClass::initlpsolver()
 {
-	if (!kernel)	
+	if (!kernel)
 	{
 		SG_ERROR("CMKLMultiClass::initlpsolver(): the set kernel is NULL\n");
 	}
@@ -110,7 +110,7 @@ void CMKLMultiClass::initlpsolver()
 		delete lpw;
 	}
 	*/
-	
+
 	//lpw=new MKLMultiClassGLPK;
 	if(pnorm>1)
 	{
@@ -122,7 +122,7 @@ void CMKLMultiClass::initlpsolver()
 		lpw=new MKLMultiClassGLPK;
 	}
 	lpw->setup(numker);
-	
+
 }
 
 
@@ -177,7 +177,7 @@ bool CMKLMultiClass::evaluatefinishcriterion(const int32_t
 			{
 				return(true);
 			}
-			
+
 
 
 		}
@@ -301,7 +301,7 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 		for (int32_t i=0; i < sm->get_num_support_vectors(); ++i)
 		{
 			float64_t alphai=sm->get_alpha(i);
-			int32_t svindi= sm->get_support_vector(i); 
+			int32_t svindi= sm->get_support_vector(i);
 
 			for (int32_t k=0; k < sm->get_num_support_vectors(); ++k)
 			{

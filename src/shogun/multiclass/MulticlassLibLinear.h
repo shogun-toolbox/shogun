@@ -22,16 +22,16 @@ namespace shogun
 
 /** @brief multiclass LibLinear wrapper. Uses Crammer-Singer
     formulation and gradient descent optimization algorithm
-    implemented in the LibLinear library. Regularized bias 
+    implemented in the LibLinear library. Regularized bias
     support is added using stacking bias 'feature' to
     hyperplanes normal vectors.
 
     In case of small changes of C or particularly epsilon
     this class provides ability to save whole liblinear
     training state (i.e. W vector, gradients, etc) and re-use
-    on next train() calls. This capability could be 
+    on next train() calls. This capability could be
     enabled using set_save_train_state() method. Train
-    state can be forced to clear using 
+    state can be forced to clear using
     reset_train_state() method.
  */
 class CMulticlassLibLinear : public CLinearMulticlassMachine
@@ -42,7 +42,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 
 		/** standard constructor
 		 * @param C C regularization constant value
-		 * @param features features 
+		 * @param features features
 		 * @param labs labels
 		 */
 		CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs);
@@ -51,15 +51,15 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		virtual ~CMulticlassLibLinear();
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MulticlassLibLinear";
 		}
 
-		/** set C 
+		/** set C
 		 * @param C C value
 		 */
-		inline void set_C(float64_t C) 
+		inline void set_C(float64_t C)
 		{
 			ASSERT(C>0);
 			m_C = C;
@@ -69,13 +69,13 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		 */
 		inline float64_t get_C() const { return m_C; }
 
-		/** set epsilon 
+		/** set epsilon
 		 * @param epsilon epsilon value
 		 */
-		inline void set_epsilon(float64_t epsilon) 
-		{ 
+		inline void set_epsilon(float64_t epsilon)
+		{
 			ASSERT(epsilon>0);
-			m_epsilon = epsilon; 
+			m_epsilon = epsilon;
 		}
 		/** get epsilon
 		 * @return epsilon value
@@ -89,7 +89,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		{
 			m_use_bias = use_bias;
 		}
-		/** get use bias 
+		/** get use bias
 		 * @return use_bias value
 		 */
 		inline bool get_use_bias() const
@@ -115,7 +115,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		/** set max iter
 		 * @param max_iter max iter value
 		 */
-		inline void set_max_iter(int32_t max_iter) 
+		inline void set_max_iter(int32_t max_iter)
 		{
 			ASSERT(max_iter>0);
 			m_max_iter = max_iter;

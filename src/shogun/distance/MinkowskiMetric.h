@@ -17,10 +17,10 @@
 
 namespace shogun
 {
-/** @brief class MinkowskiMetric 
+/** @brief class MinkowskiMetric
  *
- * The Minkowski metric is one general class of metrics for a 
- * \f$\displaystyle R^{n}\f$ feature space also referred as 
+ * The Minkowski metric is one general class of metrics for a
+ * \f$\displaystyle R^{n}\f$ feature space also referred as
  * the \f$\displaystyle L_{k} \f$ norm.
  *
  * \f[ \displaystyle
@@ -31,8 +31,8 @@ namespace shogun
  * special cases:
  * -# \f$\displaystyle L_{1} \f$ norm: Manhattan distance @see CManhattanMetric
  * -# \f$\displaystyle L_{2} \f$ norm: Euclidean distance @see CEuclidianDistance
- *  
- * Note that the Minkowski distance tends to the Chebyshew distance for 
+ *
+ * Note that the Minkowski distance tends to the Chebyshew distance for
  * increasing \f$k\f$.
  *
  * @see <a href="http://en.wikipedia.org/wiki/Distance">Wikipedia: Distance</a>

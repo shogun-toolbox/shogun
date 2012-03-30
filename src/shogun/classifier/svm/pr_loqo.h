@@ -35,7 +35,7 @@ namespace shogun
 #define DUAL_UNBOUNDED              9
 #define TIME_LIMIT                  10
 
-/* 
+/*
  * solve the quadratic programming problem
  *
  * minimize   c' * x + 1/2 x' * H * x

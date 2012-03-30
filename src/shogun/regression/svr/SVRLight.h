@@ -23,7 +23,7 @@ namespace shogun
 {
 /** @brief Class SVRLight, performs support vector regression using SVMLight.
  *
- * The SVR solution can be expressed as 
+ * The SVR solution can be expressed as
  *  \f[
  * 		f({\bf x})=\sum_{i=1}^{N} \alpha_i k({\bf x}, {\bf x_i})+b
  * 	\f]
@@ -156,7 +156,7 @@ class CSVRLight: public CSVMLight
 			int32_t *working2dnum, int32_t totdoc,
 			float64_t *lin, float64_t *aicache, float64_t* c);
 
-		/** call mkl callback 
+		/** call mkl callback
 		 * @param a
 		 * @param label
 		 * @param lin

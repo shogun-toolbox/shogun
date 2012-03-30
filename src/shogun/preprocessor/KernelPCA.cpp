@@ -44,7 +44,7 @@ void CKernelPCA::init()
 	m_transformation_matrix = SGMatrix<float64_t>(NULL, 0, 0, false);
 	m_bias_vector = SGVector<float64_t>(NULL, 0, false);
 
-	m_parameters->add(&m_transformation_matrix, "transformation matrix", 
+	m_parameters->add(&m_transformation_matrix, "transformation matrix",
 	                  "matrix used to transform data");
 	m_parameters->add(&m_bias_vector, "bias vector",
 	                  "bias vector used to transform data");
@@ -89,7 +89,7 @@ bool CKernelPCA::init(CFeatures* features)
 		float64_t* eigenvalues=CMath::compute_eigenvectors(kernel_matrix.matrix, n, n);
 
 		for (int32_t i=0; i<n; i++)
-		{	
+		{
 			//normalize and trap divide by zero and negative eigenvalues
 			for (int32_t j=0; j<n; j++)
 				kernel_matrix.matrix[i*n+j]/=CMath::sqrt(CMath::max(1e-16,eigenvalues[i]));
@@ -112,7 +112,7 @@ bool CKernelPCA::init(CFeatures* features)
 		CMath::scale_vector(1.0/n, rowsum, n);
 
 		for (int32_t i=0; i<n; i++)
-		{	
+		{
 			for (int32_t j=0; j<n; j++)
 				m_transformation_matrix.matrix[j+n*i] -= rowsum[i];
 		}

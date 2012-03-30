@@ -19,7 +19,7 @@ namespace shogun
 {
 
 /** @brief class Converter used to convert data
- * 
+ *
  */
 class CConverter : public CSGObject
 {
@@ -33,7 +33,7 @@ public:
 	/** get name */
 	virtual const char* get_name() const { return "Converter"; }
 
-	/** applies to the given data, returning converted features 
+	/** applies to the given data, returning converted features
 	 * (e.g. dense embedding of string features)
 	 * @param features features to convert
 	 * @return converted features

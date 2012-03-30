@@ -86,7 +86,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	SGVector<float64_t> v = diff.clone();
 	cblas_dgemv(CblasColMajor, CblasNoTrans,
-		icov.num_rows, icov.num_cols, 1.0, icov.matrix, 
+		icov.num_rows, icov.num_cols, 1.0, icov.matrix,
 		diff.vlen, diff.vector, 1, 0.0, v.vector, 1);
 
 	float64_t result = cblas_ddot(v.vlen, v.vector, 1, diff.vector, 1);

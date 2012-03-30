@@ -93,10 +93,10 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	if (method == SVM_OCAS)
 		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
-			TolAbs, QPBound, get_max_train_time(), bufsize, Method, 
+			TolAbs, QPBound, get_max_train_time(), bufsize, Method,
 			&CSVMOcas::compute_W,
-			&CSVMOcas::update_W, 
-			&CSVMOcas::add_new_cut, 
+			&CSVMOcas::update_W,
+			&CSVMOcas::add_new_cut,
 			&CSVMOcas::compute_output,
 			&CSVMOcas::sort,
 			&CSVMOcas::print,
@@ -152,7 +152,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
   ---------------------------------------------------------------------------------*/
 float64_t CSVMOcas::update_W( float64_t t, void* ptr )
 {
-  float64_t sq_norm_W = 0;         
+  float64_t sq_norm_W = 0;
   CSVMOcas* o = (CSVMOcas*) ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
   float64_t* W=o->w;
@@ -162,7 +162,7 @@ float64_t CSVMOcas::update_W( float64_t t, void* ptr )
   {
 	  W[j] = oldW[j]*(1-t) + t*W[j];
 	  sq_norm_W += W[j]*W[j];
-  }          
+  }
   o->bias=o->old_bias*(1-t) + t*o->bias;
   sq_norm_W += CMath::sq(o->bias);
 
@@ -198,7 +198,7 @@ int CSVMOcas::add_new_cut(
 	float64_t* new_a = o->tmp_a_buf;
 	memset(new_a, 0, sizeof(float64_t)*nDim);
 
-	for(i=0; i < cut_length; i++) 
+	for(i=0; i < cut_length; i++)
 	{
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
 
@@ -207,7 +207,7 @@ int CSVMOcas::add_new_cut(
 	}
 
 	/* compute new_a'*new_a and count number of non-zerou dimensions */
-	nz_dims = 0; 
+	nz_dims = 0;
 	sq_norm_a = CMath::sq(c_bias[nSel]);
 	for(j=0; j < nDim; j++ ) {
 		if(new_a[j] != 0) {
@@ -323,7 +323,7 @@ void CSVMOcas::compute_W(
 	*sq_norm_W = CMath::dot(W,W, nDim) + CMath::sq(bias);
 	*dp_WoldW = CMath::dot(W,oldW, nDim) + bias*old_bias;
 	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW);
-	
+
 	o->bias = bias;
 	o->old_bias = old_bias;
 }

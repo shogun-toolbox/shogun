@@ -17,11 +17,11 @@
 
 namespace shogun
 {
-/** @brief class JensenMetric 
+/** @brief class JensenMetric
  *
  * The Jensen-Shannon distance/divergence measures the similarity between
  * two data points which is based on the Kullback-Leibler divergence.
- *  
+ *
  * \f[\displaystyle
  *  d(\bf{x},\bf{x'}) = \sum_{i=0}^{n} x_{i} log\frac{x_{i}}{0.5(x_{i}
  *  +x'_{i})} + x'_{i} log\frac{x'_{i}}{0.5(x_{i}+x'_{i})}
@@ -30,7 +30,7 @@ namespace shogun
  * @see <a href="http://en.wikipedia.org/wiki/Jensen-Shannon_divergence">
  * Wikipedia: Jensen-Shannon divergence</a>
  * @see <a href="http://en.wikipedia.org/wiki/Kullback-Leibler_divergence">
- * Wikipedia: Kullback-Leibler divergence</a>             
+ * Wikipedia: Kullback-Leibler divergence</a>
  */
 class CJensenMetric: public CSimpleDistance<float64_t>
 {

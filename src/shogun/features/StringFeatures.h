@@ -172,7 +172,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * not possible with subset
 		 *
-		 * @param vector 
+		 * @param vector
 		 * @param num index of the string
 		 */
 		void set_feature_vector(SGVector<ST> vector, int32_t num);
@@ -420,7 +420,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		bool append_features(SGString<ST>* p_features, int32_t p_num_vectors,
 				int32_t p_max_string_length);
 
-		/** get_features 
+		/** get_features
 		 * @return features
 		 */
         SGStringList<ST> get_features();

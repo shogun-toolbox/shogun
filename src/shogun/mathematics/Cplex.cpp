@@ -196,7 +196,7 @@ bool CCplex::setup_subgradientlpm_QP(
 		}
 	}
 
-	result = CPXcopylp(env, lp, num_variables, num_dim, CPX_MIN, 
+	result = CPXcopylp(env, lp, num_variables, num_dim, CPX_MIN,
 			obj, vee, sense, cmatbeg, cmatcnt, cmatind, cmatval, lb, ub, NULL) == 0;
 
 	if (!result)
@@ -313,7 +313,7 @@ bool CCplex::add_lpboost_constraint(
 
 	int32_t status = CPXaddrows (env, lp, 0, 1, len, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
 
-	if ( status ) 
+	if ( status )
 		SG_ERROR( "Failed to add the new row.\n");
 
 	return status == 0;
@@ -330,7 +330,7 @@ bool CCplex::setup_lpm(
 
 	//number of variables: b,w+,w-,xi concatenated
 	int32_t num_dims=1+2*num_feat+num_vec;
-	int32_t num_constraints=num_vec; 
+	int32_t num_constraints=num_vec;
 
 	float64_t* lb=SG_MALLOC(float64_t, num_dims);
 	float64_t* ub=SG_MALLOC(float64_t, num_dims);
@@ -338,7 +338,7 @@ bool CCplex::setup_lpm(
 	float64_t* b=SG_MALLOC(float64_t, num_dims);
 
 	//number of non zero entries in A (b,w+,w-,xi)
-	int64_t amatsize=((int64_t) num_vec)+nnz+nnz+num_vec; 
+	int64_t amatsize=((int64_t) num_vec)+nnz+nnz+num_vec;
 
 	int* amatbeg=SG_MALLOC(int, num_dims); /* for calling external lib */
 	int* amatcnt=SG_MALLOC(int, num_dims); /* for calling external lib */
@@ -450,7 +450,7 @@ bool CCplex::setup_lpm(
 		SG_ERROR( "Failure to select barrier optimization, error %d.\n", status);
 	CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
 
-	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN, 
+	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN,
 			f, b, sense, amatbeg, amatcnt, amatind, amatval, lb, ub, NULL) == 0;
 
 
@@ -486,7 +486,7 @@ bool CCplex::cleanup()
 	{
 		int32_t status = CPXcloseCPLEX (&env);
 		env=NULL;
-		
+
 		if (status)
 		{
 			char  errmsg[1024];
@@ -554,7 +554,7 @@ bool CCplex::setup_lp(
 
 		result=dense_to_cplex_sparse(constraints_mat, 0, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 		ASSERT(result);
-		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
+		result = CPXcopylp(env, lp, cols, rows, CPX_MIN,
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
 		SG_FREE(constraints_mat);
 	}
@@ -563,7 +563,7 @@ bool CCplex::setup_lp(
 		sense=SG_MALLOC(char, rows);
 		memset(sense,'L',sizeof(char)*rows);
 		result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
-		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
+		result = CPXcopylp(env, lp, cols, rows, CPX_MIN,
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
 	}
 

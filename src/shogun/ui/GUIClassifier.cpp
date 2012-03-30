@@ -244,7 +244,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strncmp(name,"LIBLINEAR",9)==0)
 	{
 		LIBLINEAR_SOLVER_TYPE st=L2R_LR;
-		
+
 		if (strcmp(name,"LIBLINEAR_L2R_LR")==0)
 		{
 			st=L2R_LR;
@@ -463,7 +463,7 @@ bool CGUIClassifier::train_mkl_multiclass()
 	SG_INFO("Starting MC-MKL training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 
 	mkl->set_mkl_epsilon(svm_weight_epsilon);
-	mkl->set_mkl_norm(mkl_norm); 
+	mkl->set_mkl_norm(mkl_norm);
 	//mkl->set_max_num_mkliters(-1);
 	mkl->set_solver_type(solver_type);
 	mkl->set_bias_enabled(svm_use_bias);
@@ -526,7 +526,7 @@ bool CGUIClassifier::train_mkl()
 	mkl->set_linadd_enabled(svm_use_linadd);
 	mkl->set_batch_computation_enabled(svm_use_batch_computation);
 	mkl->set_mkl_epsilon(svm_weight_epsilon);
-	mkl->set_mkl_norm(mkl_norm); 
+	mkl->set_mkl_norm(mkl_norm);
 	mkl->set_elasticnet_lambda(ent_lambda);
 	mkl->set_mkl_block_norm(mkl_block_norm);
 	mkl->set_C_mkl(C_mkl);
@@ -596,7 +596,7 @@ bool CGUIClassifier::train_svm()
 
 	if(svm->get_classifier_type()==CT_MKLMULTICLASS)
 	{
-		((CMKLMultiClass *)svm)->set_mkl_epsilon(svm_weight_epsilon ); 
+		((CMKLMultiClass *)svm)->set_mkl_epsilon(svm_weight_epsilon );
 	}
 
 	if (svm_do_auc_maximization)
@@ -1386,7 +1386,7 @@ CLabels* CGUIClassifier::classify_distancemachine()
 		SG_ERROR("distance not initialized\n") ;
 		return NULL;
 	}
-	  
+
 	((CDistanceMachine*) classifier)->set_distance(
 		ui->ui_distance->get_distance());
 	SG_INFO("starting distance machine testing\n") ;
