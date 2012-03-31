@@ -181,7 +181,7 @@ class CCustomKernel: public CKernel
 		 * from squared matrix
 		 *
 		 * for float64's
-		 * 
+		 *
 		 * works NOT with subset
 		 *
 		 * @return if setting was successful
@@ -300,8 +300,8 @@ class CCustomKernel: public CKernel
 		}
 
 		/* TODO */
-		/** sets row subset 
-		 * @param subset 
+		/** sets row subset
+		 * @param subset
 		 */
 		void set_row_subset(CSubset* subset);
 		/** sets column subset

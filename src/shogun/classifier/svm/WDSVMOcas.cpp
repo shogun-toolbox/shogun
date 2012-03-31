@@ -260,7 +260,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
   ---------------------------------------------------------------------------------*/
 float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
 {
-  float64_t sq_norm_W = 0;         
+  float64_t sq_norm_W = 0;
   CWDSVMOcas* o = (CWDSVMOcas*) ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
   float32_t* W=o->w;
@@ -272,7 +272,7 @@ float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
   {
 	  W[j] = oldW[j]*(1-t) + t*W[j];
 	  sq_norm_W += W[j]*W[j];
-  }          
+  }
 
   bias=old_bias*(1-t) + t*bias;
   sq_norm_W += CMath::sq(bias);
@@ -328,7 +328,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 			uint8_t* vec = f->get_feature_vector(j+k, len, free_vec);
 			float32_t wd = wd_weights[k]/normalization_const;
 
-			for(uint32_t i=0; i < cut_length; i++) 
+			for(uint32_t i=0; i < cut_length; i++)
 			{
 				val[i]=val[i]*alphabet_size + vec[new_cut[i]];
 				new_a[offs+val[i]]+=wd * y[new_cut[i]];
@@ -409,7 +409,7 @@ int CWDSVMOcas::add_new_cut(
 		//SG_FREE(a);
 	}
 #endif /* HAVE_PTHREAD */
-	for(i=0; i < cut_length; i++) 
+	for(i=0; i < cut_length; i++)
 	{
 		if (o->use_bias)
 			c_bias[nSel]+=o->lab[new_cut[i]];

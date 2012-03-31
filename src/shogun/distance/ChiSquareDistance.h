@@ -27,7 +27,7 @@ namespace shogun
  *  {|x_{i}|+|x'_{i}|} \quad \bf{x},\bf{x'} \in R^{n}
  * \f]
  *
- * @see K. Rieck, P. Laskov. Linear-Time Computation of Similarity Measures 
+ * @see K. Rieck, P. Laskov. Linear-Time Computation of Similarity Measures
  * for Sequential Data. Journal of Machine Learning Research, 9:23--48,2008.
  */
 class CChiSquareDistance: public CSimpleDistance<float64_t>
@@ -63,7 +63,7 @@ class CChiSquareDistance: public CSimpleDistance<float64_t>
 
 		/** get name of the distance
 		 *
-		 * @return name Chi-square distance 
+		 * @return name Chi-square distance
 		 */
 		virtual const char* get_name() const { return "ChiSquareDistance"; }
 

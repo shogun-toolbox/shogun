@@ -74,11 +74,11 @@ bool CPCA::init(CFeatures* features)
 		int32_t num_vectors=((CSimpleFeatures<float64_t>*)features)->get_num_vectors();
 		int32_t num_features=((CSimpleFeatures<float64_t>*)features)->get_num_features();
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
-		
+
 		m_mean_vector.vlen = num_features;
 		m_mean_vector.vector = SG_CALLOC(float64_t, num_features);
-		
-		// sum 
+
+		// sum
 		SGMatrix<float64_t> feature_matrix = ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 		for (i=0; i<num_vectors; i++)
 		{
@@ -130,7 +130,7 @@ bool CPCA::init(CFeatures* features)
 			float64_t eig_sum = 0;
 			for (i=0; i<num_features; i++)
 				eig_sum += m_eigenvalues_vector.vector[i];
-			
+
 			float64_t com_sum = 0;
 			for (i=num_features-1; i>-1; i--)
 			{
@@ -152,7 +152,7 @@ bool CPCA::init(CFeatures* features)
 		}
 
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
-		
+
 		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 		num_old_dim = num_features;
 
@@ -205,7 +205,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			for (i=0; i<num_features; i++)
 				sub_mean[i] = m.matrix[num_features*vec+i] - m_mean_vector.vector[i];
 
-			cblas_dgemv(CblasColMajor,CblasNoTrans, 
+			cblas_dgemv(CblasColMajor,CblasNoTrans,
 			            num_dim,num_features,
 			            1.0,m_transformation_matrix.matrix,num_dim,
 			            sub_mean,1,
@@ -231,14 +231,14 @@ SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t* result = SG_MALLOC(float64_t, num_dim);
 	float64_t* sub_mean = SG_MALLOC(float64_t, vector.vlen);
-	
+
 	for (int32_t i=0; i<vector.vlen; i++)
 		sub_mean[i]=vector.vector[i]-m_mean_vector.vector[i];
 
 	cblas_dgemv(CblasColMajor,CblasNoTrans,
-	            num_dim,vector.vlen, 
-	            1.0,m_transformation_matrix.matrix,m_transformation_matrix.num_cols, 
-	            sub_mean,1, 
+	            num_dim,vector.vlen,
+	            1.0,m_transformation_matrix.matrix,m_transformation_matrix.num_cols,
+	            sub_mean,1,
 	            0.0,result,1);
 
 	SG_FREE(sub_mean);

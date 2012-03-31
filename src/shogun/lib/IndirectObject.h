@@ -38,7 +38,7 @@ template <class T, class P> class CIndirectObject
 			index=idx;
 		}
 
-		/** set array 
+		/** set array
 		 *
 		 * @param a array
 		 */
@@ -47,7 +47,7 @@ template <class T, class P> class CIndirectObject
 			array=a;
 		}
 
-		/** get array 
+		/** get array
 		 *
 		 * @return array
 		 */
@@ -73,12 +73,12 @@ template <class T, class P> class CIndirectObject
 		 * @param x assign elements from x
 		 */
 		CIndirectObject<T,P>& operator=(const CIndirectObject<T,P>& x)
-		{ 
+		{
 			index=x.index;
-			return *this; 
+			return *this;
 		}
 
-		/** overload | operator and return x | y 
+		/** overload | operator and return x | y
 		 *
 		 * @param x x
 		 */
@@ -87,7 +87,7 @@ template <class T, class P> class CIndirectObject
 			return (*array)[index] | *(x.array)[x.index];
 		}
 
-		/** overload & operator and return x & y 
+		/** overload & operator and return x & y
 		 *
 		 * @param x x
 		 */
@@ -118,7 +118,7 @@ template <class T, class P> class CIndirectObject
 			return (*array)[index] >> shift;
 		}
 
-		/** overload ^ operator and return x ^ y 
+		/** overload ^ operator and return x ^ y
 		 *
 		 * @param x x
 		 */
@@ -127,7 +127,7 @@ template <class T, class P> class CIndirectObject
 			return (*array)[index] ^ *(x.array)[x.index];
 		}
 
-		/** overload + operator and return x + y 
+		/** overload + operator and return x + y
 		 *
 		 * @param x x
 		 */
@@ -136,7 +136,7 @@ template <class T, class P> class CIndirectObject
 			return (*array)[index] + *(x.array)[x.index];
 		}
 
-		/** overload - operator and return x - y 
+		/** overload - operator and return x - y
 		 *
 		 * @param x x
 		 */
@@ -145,7 +145,7 @@ template <class T, class P> class CIndirectObject
 			return (*array)[index] - *(x.array)[x.index];
 		}
 
-		/** overload / operator and return x / y 
+		/** overload / operator and return x / y
 		 *
 		 * @param x x
 		 */
@@ -154,7 +154,7 @@ template <class T, class P> class CIndirectObject
 			return (*array)[index] / *(x.array)[x.index];
 		}
 
-		/** overload * operator and return x * y 
+		/** overload * operator and return x * y
 		 *
 		 * @param x x
 		 */

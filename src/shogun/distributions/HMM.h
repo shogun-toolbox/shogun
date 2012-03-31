@@ -116,19 +116,19 @@ class Model
 		}
 
 		/// get entry out of learn_b matrix
-		inline int32_t get_learn_b(int32_t line, int32_t column) const 
+		inline int32_t get_learn_b(int32_t line, int32_t column) const
 		{
 			return learn_b[line*2 + column];
 		}
 
 		/// get entry out of learn_p vector
-		inline int32_t get_learn_p(int32_t offset) const 
+		inline int32_t get_learn_p(int32_t offset) const
 		{
 			return learn_p[offset];
 		}
 
 		/// get entry out of learn_q vector
-		inline int32_t get_learn_q(int32_t offset) const 
+		inline int32_t get_learn_q(int32_t offset) const
 		{
 			return learn_q[offset];
 		}
@@ -140,13 +140,13 @@ class Model
 		}
 
 		/// get entry out of const_b matrix
-		inline int32_t get_const_b(int32_t line, int32_t column) const 
+		inline int32_t get_const_b(int32_t line, int32_t column) const
 		{
 			return const_b[line*2 + column];
 		}
 
 		/// get entry out of const_p vector
-		inline int32_t get_const_p(int32_t offset) const 
+		inline int32_t get_const_p(int32_t offset) const
 		{
 			return const_p[offset];
 		}
@@ -164,13 +164,13 @@ class Model
 		}
 
 		/// get value out of const_b_val vector
-		inline float64_t get_const_b_val(int32_t line) const 
+		inline float64_t get_const_b_val(int32_t line) const
 		{
 			return const_b_val[line];
 		}
 
 		/// get value out of const_p_val vector
-		inline float64_t get_const_p_val(int32_t offset) const 
+		inline float64_t get_const_p_val(int32_t offset) const
 		{
 			return const_p_val[offset];
 		}
@@ -291,7 +291,7 @@ class Model
 		/// FIX_ALLOWED - state is allowed
 		const static char FIX_ALLOWED ;
 
-		/// FIX_DEFAULT - default value 
+		/// FIX_DEFAULT - default value
 		const static char FIX_DEFAULT ;
 
 		/// DISALLOWED_PENALTY - states in FIX_DISALLOWED will be penalized with this value
@@ -304,7 +304,7 @@ class Model
 		 * and normalized to satisfy stochasticity.
 		 */
 		//@{
-		/// transitions to be learned 
+		/// transitions to be learned
 		int32_t* learn_a;
 
 		/// emissions to be learned
@@ -333,7 +333,7 @@ class Model
 		int32_t* const_p;
 
 		/// end states that have constant probability
-		int32_t* const_q;		
+		int32_t* const_q;
 
 
 		/// values for transitions that have constant probability
@@ -346,7 +346,7 @@ class Model
 		float64_t* const_p_val;
 
 		/// values for end states that have constant probability
-		float64_t* const_q_val;		
+		float64_t* const_q_val;
 
 #ifdef FIX_POS
 		/** states in whose the model has to be at specific times/states which the model has to avoid.
@@ -409,7 +409,7 @@ class CHMM : public CDistribution
 			return alpha_cache[dim%parallel->get_num_threads()] ; } ;
 		inline T_ALPHA_BETA & BETA_CACHE(int32_t dim) {
 			return beta_cache[dim%parallel->get_num_threads()] ; } ;
-#ifdef USE_LOGSUMARRAY 
+#ifdef USE_LOGSUMARRAY
 		inline float64_t* ARRAYS(int32_t dim) {
 			return arrayS[dim%parallel->get_num_threads()] ; } ;
 #endif
@@ -540,7 +540,7 @@ class CHMM : public CDistribution
 		 * Pr[O|lambda] for time > T
 		 * @param time t
 		 * @param state i
-		 * @param dimension dimension of observation (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
+		 * @param dimension dimension of observation (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1}
 		 */
 		float64_t forward_comp(int32_t time, int32_t state, int32_t dimension);
 		float64_t forward_comp_old(
@@ -551,7 +551,7 @@ class CHMM : public CDistribution
 		 * Pr[O|lambda] for time >= T
 		 * @param time t
 		 * @param state i
-		 * @param dimension dimension of observation (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
+		 * @param dimension dimension of observation (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1}
 		 */
 		float64_t backward_comp(int32_t time, int32_t state, int32_t dimension);
 		float64_t backward_comp_old(
@@ -559,7 +559,7 @@ class CHMM : public CDistribution
 
 		/** calculates probability of best state sequence s_0,...,s_T-1 AND path itself using viterbi algorithm.
 		 * The path can be found in the array PATH(dimension)[0..T-1] afterwards
-		 * @param dimension dimension of observation for which the most probable path is calculated (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
+		 * @param dimension dimension of observation for which the most probable path is calculated (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1}
 		 */
 		float64_t best_path(int32_t dimension);
 		inline uint16_t get_best_path_state(int32_t dim, int32_t t)
@@ -568,7 +568,7 @@ class CHMM : public CDistribution
 			return PATH(dim)[t];
 		}
 
-		/// calculates probability that observations were generated 
+		/// calculates probability that observations were generated
 		/// by the model using forward algorithm.
 		float64_t model_probability_comp() ;
 
@@ -742,13 +742,13 @@ class CHMM : public CDistribution
 		 */
 		void invalidate_model();
 
-		/** get status 
+		/** get status
 		 * @return true if everything is ok, else false
 		 */
-		inline bool get_status() const 
-		{	
-			return status; 
-		} 
+		inline bool get_status() const
+		{
+			return status;
+		}
 
 		/// returns current pseudo value
 		inline float64_t get_pseudo() const
@@ -757,7 +757,7 @@ class CHMM : public CDistribution
 		}
 
 		/// sets current pseudo value
-		inline void set_pseudo(float64_t pseudo) 
+		inline void set_pseudo(float64_t pseudo)
 		{
 			PSEUDO=pseudo ;
 		}
@@ -769,7 +769,7 @@ class CHMM : public CDistribution
 #endif
 
 #ifdef FIX_POS
-		/** access function to set value in fix_pos_state vector in underlying model 
+		/** access function to set value in fix_pos_state vector in underlying model
 		 * @see Model
 		 */
 		inline bool set_fix_pos_state(int32_t pos, T_STATES state, char value)
@@ -779,7 +779,7 @@ class CHMM : public CDistribution
 			model->set_fix_pos_state(pos, state, N, value) ;
 			return true ;
 		} ;
-#endif	
+#endif
 		//@}
 
 		/** observation functions
@@ -814,7 +814,7 @@ class CHMM : public CDistribution
 		 % HMM-TRAIN - specification
 		 % learn_a - elements in state_transition_matrix to be learned
 		 % learn_b - elements in oberservation_per_state_matrix to be learned
-		 %			note: each line stands for 
+		 %			note: each line stands for
 		 %				state, observation(0), observation(1)...observation(NOW)
 		 % learn_p - elements in initial distribution to be learned
 		 % learn_q - elements in the end-state distribution to be learned
@@ -879,7 +879,7 @@ class CHMM : public CDistribution
 		 % HMM - specification
 		 % N  - number of states
 		 % M  - number of observation_tokens
-		 % a is state_transition_matrix 
+		 % a is state_transition_matrix
 		 % size(a)= [N,N]
 		 %
 		 % b is observation_per_state_matrix
@@ -1025,7 +1025,7 @@ class CHMM : public CDistribution
 			transition_matrix_A[line_+column*N]=value;
 		}
 
-		/** access function for matrix a 
+		/** access function for matrix a
 		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...N-1
 		 * @param value value to be set
@@ -1087,7 +1087,7 @@ class CHMM : public CDistribution
 		 * @param offset index 0...N-1
 		 * @return value at offset
 		 */
-		inline float64_t get_q(T_STATES offset) const 
+		inline float64_t get_q(T_STATES offset) const
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
@@ -1100,7 +1100,7 @@ class CHMM : public CDistribution
 		 * @param offset index 0...N-1
 		 * @return value at offset
 		 */
-		inline float64_t get_p(T_STATES offset) const 
+		inline float64_t get_p(T_STATES offset) const
 		{
 #ifdef HMM_DEBUG
 			if (offset>=N)
@@ -1156,7 +1156,7 @@ class CHMM : public CDistribution
 		 * @param column column in matrix 0...M-1
 		 * @return value at position line colum
 		 */
-		inline float64_t get_b(T_STATES line_, uint16_t column) const 
+		inline float64_t get_b(T_STATES line_, uint16_t column) const
 		{
 #ifdef HMM_DEBUG
 			if ((line_>=N)||(column>=M))
@@ -1189,7 +1189,7 @@ class CHMM : public CDistribution
 
 	protected:
 		/**@name model specific variables.
-		 * these are p,q,a,b,N,M etc 
+		 * these are p,q,a,b,N,M etc
 		 */
 		//@{
 		/// number of observation symbols eg. ACGT -> 0123
@@ -1210,23 +1210,23 @@ class CHMM : public CDistribution
 		//train definition for HMM
 		Model* model;
 
-		/// matrix  of absolute counts of transitions 
+		/// matrix  of absolute counts of transitions
 		float64_t* transition_matrix_A;
 
 		/// matrix of absolute counts of observations within each state
 		float64_t* observation_matrix_B;
 
-		/// transition matrix 
+		/// transition matrix
 		float64_t* transition_matrix_a;
 
 		/// initial distribution of states
 		float64_t* initial_state_distribution_p;
 
 		/// distribution of end-states
-		float64_t* end_state_distribution_q;		
+		float64_t* end_state_distribution_q;
 
 		/// distribution of observations within each state
-		float64_t* observation_matrix_b;	
+		float64_t* observation_matrix_b;
 
 		/// convergence criterion iterations
 		int32_t iterations;
@@ -1237,19 +1237,19 @@ class CHMM : public CDistribution
 		int32_t conv_it;
 
 		/// probability of best path
-		float64_t all_pat_prob; 
+		float64_t all_pat_prob;
 
 		/// probability of best path
-		float64_t pat_prob;	
+		float64_t pat_prob;
 
 		/// probability of model
-		float64_t mod_prob;	
+		float64_t mod_prob;
 
 		/// true if model probability is up to date
-		bool mod_prob_updated;	
+		bool mod_prob_updated;
 
 		/// true if path probability is up to date
-		bool all_path_prob_updated;	
+		bool all_path_prob_updated;
 
 		/// dimension for which path_deriv was calculated
 		int32_t path_deriv_dimension;
@@ -1258,10 +1258,10 @@ class CHMM : public CDistribution
 		bool path_deriv_updated;
 
 		// true if model is using log likelihood
-		bool loglikelihood;		
+		bool loglikelihood;
 
 		// true->ok, false->error
-		bool status;			
+		bool status;
 
 		// true->stolen from other HMMs, false->got own
 		bool reused_caches;
@@ -1306,7 +1306,7 @@ class CHMM : public CDistribution
 		bool* path_prob_updated /*[parallel.get_num_threads()]*/;
 
 		/// dimension for which path_prob was calculated
-		int32_t* path_prob_dimension /*[parallel.get_num_threads()]*/ ;	
+		int32_t* path_prob_dimension /*[parallel.get_num_threads()]*/ ;
 
 #else //USE_HMMPARALLEL_STRUCTURES
 		/// cache for forward variables can be terrible HUGE O(T*N)
@@ -1378,13 +1378,13 @@ inline float64_t state_probability(
 inline float64_t transition_probability(
 	int32_t time, int32_t state_i, int32_t state_j, int32_t dimension)
 {
-	return forward(time, state_i, dimension) + 
-		backward(time+1, state_j, dimension) + 
+	return forward(time, state_i, dimension) +
+		backward(time+1, state_j, dimension) +
 		get_a(state_i,state_j) + get_b(state_j,p_observations->get_feature(dimension ,time+1)) - model_probability(dimension);
 }
 
 /**@name derivatives of model probabilities.
- * computes log dp(lambda)/d lambda_i 
+ * computes log dp(lambda)/d lambda_i
  * @param dimension dimension for that derivatives are calculated
  * @param i,j parameter specific
  */
@@ -1406,15 +1406,15 @@ inline float64_t linear_model_derivative(
 	return der;
 }
 
-/** computes log dp(lambda)/d p_i. 
+/** computes log dp(lambda)/d p_i.
  * backward path downto time 0 multiplied by observing first symbol in path at state i
  */
 inline float64_t model_derivative_p(T_STATES i, int32_t dimension)
 {
-	return backward(0,i,dimension)+get_b(i, p_observations->get_feature(dimension, 0));		
+	return backward(0,i,dimension)+get_b(i, p_observations->get_feature(dimension, 0));
 }
 
-/** computes log dp(lambda)/d q_i. 
+/** computes log dp(lambda)/d q_i.
  * forward path upto time T-1
  */
 inline float64_t model_derivative_q(T_STATES i, int32_t dimension)
@@ -1422,7 +1422,7 @@ inline float64_t model_derivative_q(T_STATES i, int32_t dimension)
 	return forward(p_observations->get_vector_length(dimension)-1,i,dimension) ;
 }
 
-/// computes log dp(lambda)/d a_ij. 
+/// computes log dp(lambda)/d a_ij.
 inline float64_t model_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
 {
 	float64_t sum=-CMath::INFTY;
@@ -1433,7 +1433,7 @@ inline float64_t model_derivative_a(T_STATES i, T_STATES j, int32_t dimension)
 }
 
 
-/// computes log dp(lambda)/d b_ij. 
+/// computes log dp(lambda)/d b_ij.
 inline float64_t model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 {
 	float64_t sum=-CMath::INFTY;
@@ -1445,14 +1445,14 @@ inline float64_t model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 	//if (sum==-CMath::INFTY)
 	// SG_DEBUG( "log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) ;
 	return sum;
-} 
+}
 //@}
 
 /**@name derivatives of path probabilities.
  * computes d log p(lambda,best_path)/d lambda_i
  * @param dimension dimension for that derivatives are calculated
  * @param i,j parameter specific
- */ 
+ */
 //@{
 
 ///computes d log p(lambda,best_path)/d p_i
@@ -1481,7 +1481,7 @@ inline float64_t path_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 {
 	prepare_path_derivative(dimension) ;
 	return (get_B(i,j)==0) ? (0) : (get_B(i,j)*exp(-get_b(i,j))) ;
-} 
+}
 
 //@}
 
@@ -1494,7 +1494,7 @@ protected:
 	/// put a sequence of numbers into the buffer
 	bool get_numbuffer(FILE* file, char* buffer, int32_t length);
 
-	/// expect open bracket. 
+	/// expect open bracket.
 	void open_bracket(FILE* file);
 
 	/// expect closing bracket

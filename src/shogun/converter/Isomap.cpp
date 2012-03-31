@@ -82,7 +82,7 @@ public:
 CIsomap::CIsomap() : CMultidimensionalScaling()
 {
 	m_k = 3;
-	
+
 	init();
 }
 
@@ -106,7 +106,7 @@ int32_t CIsomap::get_k() const
 	return m_k;
 }
 
-const char* CIsomap::get_name() const 
+const char* CIsomap::get_name() const
 {
 	return "Isomap";
 }
@@ -130,7 +130,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 		D_matrix.destroy_matrix();
 		SG_ERROR("K parameter should be less than number of given vectors (k=%d, N=%d)\n", m_k, N);
 	}
-	
+
 	// cut by k-nearest neighbors
 	int32_t* edges_idx_matrix = SG_MALLOC(int32_t, N*m_k);
 	float64_t* edges_matrix = SG_MALLOC(float64_t, N*m_k);
@@ -140,11 +140,11 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 
 	for (i=0; i<N; i++)
 		coverTree->insert(ISOMAP_COVERTREE_POINT(i,D_matrix));
-	
+
 	for (i=0; i<N; i++)
 	{
 		ISOMAP_COVERTREE_POINT origin(i,D_matrix);
-		std::vector<ISOMAP_COVERTREE_POINT> neighbors = 
+		std::vector<ISOMAP_COVERTREE_POINT> neighbors =
 		   coverTree->kNearestNeighbors(origin,m_k+1);
 		for (std::size_t m=1; m<neighbors.size(); m++)
 		{
@@ -157,7 +157,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 
 #ifdef HAVE_PTHREAD
 	int32_t t;
-	// Parallel Dijkstra with Fibonacci Heap 
+	// Parallel Dijkstra with Fibonacci Heap
 	int32_t num_threads = parallel->get_num_threads();
 	ASSERT(num_threads>0);
 	// allocate threads and thread parameters
@@ -170,7 +170,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 
 #else
 	int32_t num_threads = 1;
-#endif	
+#endif
 
 	// allocate (s)olution
 	bool* s = SG_MALLOC(bool,N*num_threads);
@@ -274,7 +274,7 @@ void* CIsomap::run_dijkstra_thread(void *p)
 			min_item = heap->extract_min(tmp);
 			s[min_item] = true;
 			f[min_item] = false;
-			
+
 			// for-each edge (min_item->w)
 			for (i=0; i<m_k; i++)
 			{
@@ -290,19 +290,19 @@ void* CIsomap::run_dijkstra_thread(void *p)
 					{
 						// relax distance
 						shortest_D[k*N+w] = dist;
-						// if w is in (f)rontier 
+						// if w is in (f)rontier
 						if (f[w])
 						{
 							// decrease distance in heap
 							heap->decrease_key(w, dist);
 						}
-						else 
+						else
 						{
 							// insert w to heap and set (f)rontier as true
 							heap->insert(w, dist);
 							f[w] = true;
 						}
-					} 
+					}
 				}
 			}
 		}

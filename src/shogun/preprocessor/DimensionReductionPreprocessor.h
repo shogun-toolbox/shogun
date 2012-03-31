@@ -24,8 +24,8 @@ class CDistance;
 class CKernel;
 
 /** @brief the class DimensionReductionPreprocessor, a base
- * class for preprocessors used to lower the dimensionality of given 
- * simple features (dense matrices). 
+ * class for preprocessors used to lower the dimensionality of given
+ * simple features (dense matrices).
  */
 class CDimensionReductionPreprocessor: public CSimplePreprocessor<float64_t>
 {

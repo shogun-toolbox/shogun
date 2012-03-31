@@ -67,7 +67,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	SG_REF(p);
 	SG_REF(n);
 
-	pos=p; 
+	pos=p;
 	neg=n;
 	set_num_vectors(0);
 
@@ -90,7 +90,7 @@ float64_t* CTOPFeatures::compute_feature_vector(
 {
 	float64_t* featurevector=target;
 
-	if (!featurevector) 
+	if (!featurevector)
 		featurevector=SG_MALLOC(float64_t, get_num_features());
 
 	if (!featurevector)
@@ -301,7 +301,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 			ASSERT(idx_p < hmm_idx->num_p);
 			hmm_idx->idx_p[idx_p++]=i;
 		}
-		
+
 		if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
 		{
 			ASSERT(idx_q < hmm_idx->num_q);

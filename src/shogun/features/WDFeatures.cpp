@@ -127,7 +127,7 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 		float64_t wd = wd_weights[k];
 
 		int32_t o=offs;
-		for (int32_t i=0; i+k < len; i++) 
+		for (int32_t i=0; i+k < len; i++)
 		{
 			val[i]+=asizem1*vec[i+k];
 			sum+=vec2[val[i]+o]*wd;
@@ -167,7 +167,7 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 			wd=CMath::abs(wd);
 
 		int32_t o=offs;
-		for (int32_t i=0; i+k < len; i++) 
+		for (int32_t i=0; i+k < len; i++)
 		{
 			val[i]+=asizem1*vec[i+k];
 			vec2[val[i]+o]+=wd;

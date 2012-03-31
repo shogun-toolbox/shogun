@@ -17,7 +17,7 @@
 namespace shogun
 {
 /** @brief DiceKernelNormalizer performs kernel normalization inspired by the Dice
- * coefficient (see http://en.wikipedia.org/wiki/Dice's_coefficient) 
+ * coefficient (see http://en.wikipedia.org/wiki/Dice's_coefficient)
  *
  * \f[
  * k'({\bf x},{\bf x'}) = \frac{2k({\bf x},{\bf x'})}{k({\bf x},{\bf x})+k({\bf x'},{\bf x'}}
@@ -32,7 +32,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 */
 		CDiceKernelNormalizer(bool use_opt_diag=false) : CKernelNormalizer(),
 			diag_lhs(NULL), num_diag_lhs(0), diag_rhs(NULL), num_diag_rhs(0),
-			use_optimized_diagonal_computation(use_opt_diag) 
+			use_optimized_diagonal_computation(use_opt_diag)
 		{
 			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
 							  "K(x,x) for left hand side examples.");
@@ -50,7 +50,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			SG_FREE(diag_rhs);
 		}
 
-		/** initialization of the normalizer 
+		/** initialization of the normalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{

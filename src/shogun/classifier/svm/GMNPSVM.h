@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
+ * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
  */
 
 #ifndef _GMNPSVM_H___

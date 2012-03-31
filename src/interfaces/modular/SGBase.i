@@ -228,7 +228,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     {
         $action
     }
-#ifdef SWIGPYTHON
+#if defined(SWIGPYTHON) && defined(USE_SWIG_DIRECTORS)
     catch (Swig::DirectorException &e)
     {
         SWIG_fail;
@@ -323,7 +323,11 @@ namespace shogun
             char* result=CFile::read_whole_file(fname, len);
             unlink(fname);
 
+#ifdef PYTHON3
+			PyObject* str=PyUnicode_FromStringAndSize(result, len);
+#else
             PyObject* str=PyString_FromStringAndSize(result, len);
+#endif
             SG_FREE(result);
 
             PyObject* tuple=PyTuple_New(2);
@@ -340,7 +344,13 @@ namespace shogun
             PyObject* py_str = PyTuple_GetItem(state,1);
             char* str=NULL;
             Py_ssize_t len=0;
+
+#ifdef PYTHON3
+			len = PyUnicode_GetSize((PyObject*) py_str);
+    		str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(py_str)));
+#else
             PyString_AsStringAndSize(py_str, &str, &len);
+#endif
 
             char* fname=tmpnam(NULL);
             FILE* tmpf=fopen(fname, "w");;

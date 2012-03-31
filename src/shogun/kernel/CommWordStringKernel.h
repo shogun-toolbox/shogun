@@ -202,7 +202,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		{
 			return use_dict_diagonal_optimization;
 		}
-		
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

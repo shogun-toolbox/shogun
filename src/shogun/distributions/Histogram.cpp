@@ -153,7 +153,7 @@ bool CHistogram::set_histogram(SGVector<float64_t> histogram)
 	hist=SG_MALLOC(float64_t, histogram.vlen);
 	for (int32_t i=0; i<histogram.vlen; i++)
 		hist[i]=histogram.vector[i];
-	
+
 	return true;
 }
 

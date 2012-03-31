@@ -97,7 +97,7 @@ float64_t CCanberraWordDistance::compute(int32_t idx_a, int32_t idx_b)
 				right_idx++;
 		}
 	}
-	
+
 	while (left_idx < alen)
 	{
 		uint16_t sym=avec[left_idx];

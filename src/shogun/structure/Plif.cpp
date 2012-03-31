@@ -83,7 +83,7 @@ void CPlif::init_penalty_struct_cache()
 		return ;
 
 	float64_t* local_cache=SG_MALLOC(float64_t,  ((int32_t) max_value) + 2);
-	
+
 	if (local_cache)
 	{
 		for (int32_t i=0; i<=max_value; i++)
@@ -104,7 +104,7 @@ void CPlif::set_plif_name(char *p_name)
 	strcpy(name,p_name) ;
 }
 
-void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P) 
+void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P)
 {
 	for (int32_t i=0; i<P; i++)
 		delete PEN[i] ;
@@ -142,7 +142,7 @@ float64_t CPlif::lookup_penalty_svm(
 		SG_ERROR("unknown transform\n");
 		break ;
 	}
-	
+
 	int32_t idx = 0 ;
 	float64_t ret ;
 	for (int32_t i=0; i<len; i++)
@@ -150,11 +150,11 @@ float64_t CPlif::lookup_penalty_svm(
 			idx++ ;
 		else
 			break ; // assume it is monotonically increasing
-	 
+
 #ifdef PLIF_DEBUG
 	SG_PRINT("  -> idx = %i ", idx) ;
 #endif
-	
+
 	if (idx==0)
 		ret=penalties[0] ;
 	else if (idx==len)
@@ -162,7 +162,7 @@ float64_t CPlif::lookup_penalty_svm(
 	else
 	{
 		ret = (penalties[idx]*(d_value-limits[idx-1]) + penalties[idx-1]*
-			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;  
+			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;
 #ifdef PLIF_DEBUG
 		SG_PRINT("  -> (%1.3f*%1.3f, %1.3f*%1.3f)", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), penalties[idx], (limits[idx]-d_value)/(limits[idx]-limits[idx-1]), penalties[idx-1]) ;
 #endif
@@ -170,7 +170,7 @@ float64_t CPlif::lookup_penalty_svm(
 #ifdef PLIF_DEBUG
 		SG_PRINT("  -> ret=%1.3f\n", ret) ;
 #endif
-	
+
 	return ret ;
 }
 
@@ -246,11 +246,11 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 			idx++ ;
 		else
 			break ; // assume it is monotonically increasing
-	
+
 #ifdef PLIF_DEBUG
 	SG_PRINT("  -> idx = %i ", idx) ;
 #endif
-	
+
 	if (idx==0)
 		ret=penalties[0] ;
 	else if (idx==len)
@@ -258,7 +258,7 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 	else
 	{
 		ret = (penalties[idx]*(d_value-limits[idx-1]) + penalties[idx-1]*
-			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;  
+			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;
 #ifdef PLIF_DEBUG
 		SG_PRINT("  -> (%1.3f*%1.3f, %1.3f*%1.3f) ", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), penalties[idx], (limits[idx]-d_value)/(limits[idx]-limits[idx-1]), penalties[idx-1]) ;
 #endif
@@ -268,11 +268,11 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 #ifdef PLIF_DEBUG
 	SG_PRINT("  -> ret=%1.3f\n", ret) ;
 #endif
-	
+
 	return ret ;
 }
 
-void CPlif::penalty_clear_derivative() 
+void CPlif::penalty_clear_derivative()
 {
 	for (int32_t i=0; i<len; i++)
 		cum_derivatives[i]=0.0 ;
@@ -285,7 +285,7 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, flo
 		penalty_add_derivative_svm(p_value, svm_values, factor) ;
 		return ;
 	}
-	
+
 	if ((p_value<min_value) || (p_value>max_value))
 	{
 		return ;
@@ -318,7 +318,7 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, flo
 			idx++ ;
 		else
 			break ; // assume it is monotonically increasing
-	
+
 	if (idx==0)
 		cum_derivatives[0]+= factor ;
 	else if (idx==len)
@@ -337,7 +337,7 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 
 	if (d_value<-1e+20)
 		return;
-	
+
 	switch (transform)
 	{
 	case T_LINEAR:
@@ -358,14 +358,14 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 		SG_ERROR( "unknown transform\n") ;
 		break ;
 	}
-	
+
 	int32_t idx = 0 ;
 	for (int32_t i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
 		else
 			break ; // assume it is monotonically increasing
-	
+
 	if (idx==0)
 		cum_derivatives[0]+=factor ;
 	else if (idx==len)

@@ -42,11 +42,11 @@ using namespace shogun;
 //        if(img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern = pattern | 0x80;
 //
 //        vec[offset+pattern]++;
-//        offset += 256; 
+//        offset += 256;
 //
 //      }
 //    }
-//    if(vec_nDim <= offset) 
+//    if(vec_nDim <= offset)
 //      return;
 //
 //    if(ww % 2 == 1) ww--;
@@ -55,15 +55,15 @@ using namespace shogun;
 //    ww = ww/2;
 //    for(x=0; x < ww; x++)
 //      for(j=0; j < hh; j++)
-//        img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] + 
+//        img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] +
 //          img[LIBLBP_INDEX(j,2*x+1,img_nRows)];
 //
 //    hh = hh/2;
 //    for(y=0; y < hh; y++)
 //      for(j=0; j < ww; j++)
-//        img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] + 
+//        img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] +
 //          img[LIBLBP_INDEX(2*y+1,j,img_nRows)];
-//    
+//
 //  }
 //
 //  return;
@@ -97,11 +97,11 @@ using namespace shogun;
 //        if(img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern = pattern | 0x80;
 //
 //        vec[offset+pattern]--;
-//        offset += 256; 
+//        offset += 256;
 //
 //      }
 //    }
-//    if(vec_nDim <= offset) 
+//    if(vec_nDim <= offset)
 //      return;
 //
 //    if(ww % 2 == 1) ww--;
@@ -110,15 +110,15 @@ using namespace shogun;
 //    ww = ww/2;
 //    for(x=0; x < ww; x++)
 //      for(j=0; j < hh; j++)
-//        img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] + 
+//        img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] +
 //          img[LIBLBP_INDEX(j,2*x+1,img_nRows)];
 //
 //    hh = hh/2;
 //    for(y=0; y < hh; y++)
 //      for(j=0; j < ww; j++)
-//        img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] + 
+//        img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] +
 //          img[LIBLBP_INDEX(2*y+1,j,img_nRows)];
-//    
+//
 //  }
 //
 //  return;
@@ -153,7 +153,7 @@ CLBPPyrDotFeatures::~CLBPPyrDotFeatures()
 }
 
 CLBPPyrDotFeatures::CLBPPyrDotFeatures(const CLBPPyrDotFeatures & orig)
-{ 
+{
 	SG_PRINT("CLBPPyrDotFeatures:\n");
 	SG_NOTIMPLEMENTED;
 };
@@ -254,12 +254,12 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 				if (img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern |= 0x80;
 
 				dot_prod += vec2[offset+pattern];
-				offset += 256; 
+				offset += 256;
 
 
 			}
 		}
-		if(vec_nDim <= offset) 
+		if(vec_nDim <= offset)
 			return(dot_prod);
 
 
@@ -269,14 +269,14 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 		ww = ww/2;
 		for(x=0; x < ww; x++)
 			for(j=0; j < hh; j++)
-				img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] + 
+				img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] +
 					img[LIBLBP_INDEX(j,2*x+1,img_nRows)];
 
 		hh = hh/2;
 		for(y=0; y < hh; y++)
 			for(j=0; j < ww; j++)
-				img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] + 
-					img[LIBLBP_INDEX(2*y+1,j,img_nRows)];    
+				img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] +
+					img[LIBLBP_INDEX(2*y+1,j,img_nRows)];
 	}
 
 	//m_feat->free_feature_vector(vec, vlen, do_free);
@@ -322,11 +322,11 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
         if(img[LIBLBP_INDEX(y+1,x+1,img_nRows)] < center) pattern |= 0x80;
 
         vec2[offset+pattern]+=alpha;
-        offset += 256; 
+        offset += 256;
 
       }
     }
-    if(vec_nDim <= offset) 
+    if(vec_nDim <= offset)
       return;
 
     if(ww % 2 == 1) ww--;
@@ -335,15 +335,15 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
     ww = ww/2;
     for(x=0; x < ww; x++)
       for(j=0; j < hh; j++)
-        img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] + 
+        img[LIBLBP_INDEX(j,x,img_nRows)] = img[LIBLBP_INDEX(j,2*x,img_nRows)] +
              img[LIBLBP_INDEX(j,2*x+1,img_nRows)];
 
     hh = hh/2;
     for(y=0; y < hh; y++)
       for(j=0; j < ww; j++)
-        img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] + 
+        img[LIBLBP_INDEX(y,j,img_nRows)] = img[LIBLBP_INDEX(2*y,j,img_nRows)] +
           img[LIBLBP_INDEX(2*y+1,j,img_nRows)];
-    
+
   }
 
  // return;

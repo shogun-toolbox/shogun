@@ -62,7 +62,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	{
 		if (int_labels.vector[i]==1)
 			num_pos++;
-		else 
+		else
 			num_neg++;
 	}
 

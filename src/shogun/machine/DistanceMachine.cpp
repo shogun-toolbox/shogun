@@ -72,7 +72,7 @@ void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t id
     {
         pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
         D_THREAD_PARAM* params = SG_MALLOC(D_THREAD_PARAM, num_threads);
-        int32_t num_vec=idx_a2-idx_a1+1; 
+        int32_t num_vec=idx_a2-idx_a1+1;
         int32_t step= num_vec/num_threads;
         int32_t t;
 
@@ -99,7 +99,7 @@ void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t id
         params[t].idx_comp=idx_b;
 
         run_distance_thread_lhs(&params[t]);
-            
+
         for (t=0; t<num_threads-1; t++)
             pthread_join(threads[t], NULL);
 
@@ -134,7 +134,7 @@ void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t id
     {
         pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
         D_THREAD_PARAM* params = SG_MALLOC(D_THREAD_PARAM, num_threads);
-        int32_t num_vec=idx_b2-idx_b1+1; 
+        int32_t num_vec=idx_b2-idx_b1+1;
         int32_t step= num_vec/num_threads;
         int32_t t;
 
@@ -161,7 +161,7 @@ void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t id
         params[t].idx_comp=idx_a;
 
         run_distance_thread_rhs(&params[t]);
-            
+
         for (t=0; t<num_threads-1; t++)
             pthread_join(threads[t], NULL);
 

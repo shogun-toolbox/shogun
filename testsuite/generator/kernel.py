@@ -11,7 +11,7 @@ import shogun.Kernel as kernel
 from shogun.Features import CombinedFeatures, TOPFeatures, FKFeatures, CUBE, RAWBYTE
 from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
-from shogun.Distribution import HMM, Model, LinearHMM, BW_NORMAL
+from shogun.Distribution import HMM, LinearHMM, BW_NORMAL
 from shogun.Library import Math_init_random
 
 import fileop
@@ -47,7 +47,7 @@ def _compute_pie (feats, params):
 	pie.set_features(feats['test'])
 	output['kernel_matrix_test']=kern.get_kernel_matrix()
 
-	classified=pie.classify().get_labels()
+	classified=pie.apply().get_labels()
 	output['classifier_classified']=classified
 
 	fileop.write(category.KERNEL, output)
@@ -277,7 +277,7 @@ def _run_feats_byte ():
 	"""Run kernel with ByteFeatures."""
 
 	params={
-		'name': 'LinearByte',
+		'name': 'Linear',
 		'accuracy': 1e-8,
 		'feature_class': 'simple',
 		'feature_type': 'Byte',
@@ -335,7 +335,7 @@ def _run_feats_real ():
 	}
 	_compute(feats, params)
 
-	params['name']='SparseGaussian'
+	params['name']='Gaussian'
 	params['args']={'key': ('size', 'width'), 'val': (10, 1.7)}
 	_compute(sparsefeats, params)
 
@@ -363,7 +363,7 @@ def _run_feats_real ():
 	_compute(feats, params)
 
 	params['accuracy']=1e-8
-	params['name']='SparsePoly'
+	params['name']='Poly'
 	params['args']={
 		'key': ('size', 'degree', 'inhomogene'),
 		'val': (10, 3, True)
@@ -386,7 +386,7 @@ def _run_feats_real ():
 	del params['args']
 	params['name']='Linear'
 	_compute(feats, params)
-	params['name']='SparseLinear'
+	params['name']='Linear'
 	_compute(sparsefeats, params)
 
 
@@ -463,7 +463,7 @@ def _run_feats_word ():
 
 	maxval=42
 	params={
-		'name': 'LinearWord',
+		'name': 'Linear',
 		'accuracy': 1e-8,
 		'feature_class': 'simple',
 		'feature_type': 'Word',

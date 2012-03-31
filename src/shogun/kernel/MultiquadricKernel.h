@@ -22,7 +22,7 @@ namespace shogun
 
 class CDistance;
 /** @brief MultiquadricKernel
-* 
+*
 * \f[
 *             K(x,x') = \sqrt{\| x - x' \|^2 +c^2}
 * \f]

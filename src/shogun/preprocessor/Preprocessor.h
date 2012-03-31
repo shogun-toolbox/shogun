@@ -82,7 +82,7 @@ public:
 
 	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;
-	
+
 	/** @return type of objects preprocessor can deal with */
 	virtual EFeatureType get_feature_type()=0;
 

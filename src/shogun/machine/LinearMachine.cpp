@@ -19,7 +19,7 @@ CLinearMachine::CLinearMachine()
 	init();
 }
 
-CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine(), 
+CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine(),
 	w_dim(0), w(NULL), bias(0), features(NULL)
 {
 	set_w(machine->get_w().clone());

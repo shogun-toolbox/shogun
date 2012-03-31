@@ -109,7 +109,7 @@ class CPlifArray: public CPlifBase
 		 *
 		 * lists all PLIFs in array
 		 */
-		virtual void list_plif() const 
+		virtual void list_plif() const
 		{
 			SG_PRINT("CPlifArray(num_elements=%i, min_value=%1.2f, max_value=%1.2f)\n", m_array.get_num_elements(), min_value, max_value) ;
 			for (int32_t i=0; i<m_array.get_num_elements(); i++)

@@ -23,7 +23,7 @@ namespace shogun
 
 class CDistance;
 /** @brief InverseMultiQuadricKernel
-* 
+*
 * \f[
 *             K(x,x') = 1/(\sqrt{\| x - x' \|^2 +c^2})
 * \f]

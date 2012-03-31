@@ -33,7 +33,7 @@ class CPlifMatrix: public CSGObject
 		 */
 		CPlifMatrix();
 
-		/** destructor 
+		/** destructor
 		 *
 		 */
 		~CPlifMatrix();
@@ -45,40 +45,40 @@ class CPlifMatrix: public CSGObject
 		inline CPlif** get_PEN() { return m_PEN; }
 
 		/** get plif matrix
-		 * 
+		 *
 		 * @return matrix of plifs
 		 */
 		inline CPlifBase** get_plif_matrix() { return m_plif_matrix; }
 
 		/** get number of states
 		 *  the number of states determines the size of the plif matrix
-		 * 
+		 *
 		 * @return number of states
 		 */
 		inline int32_t get_num_states() { return m_num_states; }
 
 
 		/** get plifs defining the mapping of signals to states
-		 * 
+		 *
 		 * @return plifs
 		 */
 		inline CPlifBase** get_state_signals() { return m_state_signals; }
 
 		/** get number of plifs
-		 * 
+		 *
 		 * @return number of plifs
 		 */
 		inline int32_t get_num_plifs() { return m_num_plifs; }
 
 		/** get number of support points for picewise linear transformations (PLiFs)
-		 * 
+		 *
 		 * @return number of support points
 		 */
 		inline int32_t get_num_limits() { return m_num_limits; }
 
 		/** create an empty plif matrix of size num_plifs * num_limits
 		 *
-		 * @param num_plifs number of plifs 
+		 * @param num_plifs number of plifs
 		 * @param num_limits number of plif limits
 		 */
 		void create_plifs(int32_t num_plifs, int32_t num_limits);
@@ -90,45 +90,45 @@ class CPlifMatrix: public CSGObject
 		void set_plif_ids(SGVector<int32_t> ids);
 
 		/** set array of min values for all plifs
-		 * 
+		 *
 		 * @param min_values array of min values
 		 */
 		void set_plif_min_values(SGVector<float64_t> min_values);
 
 		/** set array of max values for all plifs
-		 * 
+		 *
 		 * @param max_values array of max values
 		 */
 		void set_plif_max_values(SGVector<float64_t> max_values);
 
 		/** set plif use cache
-		 * 
-		 * @param use_cache set array of bool values 
+		 *
+		 * @param use_cache set array of bool values
 		 */
 		void set_plif_use_cache(SGVector<bool> use_cache);
 
 		/** set plif use svm
-		 * 
+		 *
 		 * @param use_svm use svm
 		 */
 		void set_plif_use_svm(SGVector<int32_t> use_svm);
 
-		/** set all abscissa values of the support points for the 
+		/** set all abscissa values of the support points for the
 		 *  for the pice wise linear transformations (PLiFs)
-		 * 
+		 *
 		 * @param limits array of length num_plifs*num_limits
 		 */
 		void set_plif_limits(SGMatrix<float64_t> limits);
 
 		/** set all ordinate values of the support points for the
 		 *  for the pice wise linear transformations (PLiFs)
-		 * 
+		 *
 		 * @param penalties plif values: array of length num_plifs*num_limits
 		 */
 		void set_plif_penalties(SGMatrix<float64_t> penalties);
 
 		/** set names for the PLiFs
-		 * 
+		 *
 		 * @param names names
 		 * @param num_values number of names
 		 * @param maxlen maximal string len of the names
@@ -136,7 +136,7 @@ class CPlifMatrix: public CSGObject
 		void set_plif_names(SGString<char>* names, int32_t num_values, int32_t maxlen=0);
 
 		/** set plif transform type; for some features the plifs live in log space
-		 *  therefore the input values have to be transformed to log space before 
+		 *  therefore the input values have to be transformed to log space before
 		 *  the transformation can be applied; the transform type is string coded
 		 *
 		 * @param transform_type transform type (e.g. LOG(x), LOG(x+1), ...)
@@ -146,7 +146,7 @@ class CPlifMatrix: public CSGObject
 		void set_plif_transform_type(SGString<char>* transform_type, int32_t num_values, int32_t maxlen=0);
 
 		/** return plif id for idx
-		 * 
+		 *
 		 * @param idx idx of plif
 		 * @return id of plif
 		 */
@@ -158,19 +158,19 @@ class CPlifMatrix: public CSGObject
 			return id;
 		}
 
-		/** parse an 3D array of plif ids and compute the corresponding 
-		 *  2D plif matrix by subsuming the third dim into one PlifArray; 
-		 *  Note: the class PlifArray is derived from PlifBase. It computes 
+		/** parse an 3D array of plif ids and compute the corresponding
+		 *  2D plif matrix by subsuming the third dim into one PlifArray;
+		 *  Note: the class PlifArray is derived from PlifBase. It computes
 		 *        all individual plifs and sums them up.
-		 * 
+		 *
 		 * @param penalties_array 3D array of plif ids (nofstates x nofstates x nof(features for each transition))
 		 * @return success
 		 */
 		bool compute_plif_matrix(SGNDArray<float64_t> penalties_array);
 
-		/** parse an 3D array of plif ids and compute the corresponding 
-		 *  3D plif array; 
-		 * 
+		/** parse an 3D array of plif ids and compute the corresponding
+		 *  3D plif array;
+		 *
 		 * @param state_signals mapping of features to states
 		 * @return success
 		 */
@@ -189,7 +189,7 @@ class CPlifMatrix: public CSGObject
 		inline virtual const char* get_name() const { return "PlifMatrix"; }
 
 	protected:
-		
+
 		/** array of plifs*/
 		CPlif** m_PEN;
 
