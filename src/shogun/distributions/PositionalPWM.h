@@ -143,7 +143,7 @@ class CPositionalPWM : public CDistribution
 		virtual SGMatrix<float64_t> get_scoring(int32_t d);
 
 		/** compute w
-		 * @param num_pos 
+		 * @param num_pos
 		 */
 		void compute_w(int32_t num_pos);
 

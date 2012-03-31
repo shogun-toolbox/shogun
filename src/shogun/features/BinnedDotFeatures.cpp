@@ -235,7 +235,7 @@ int32_t CBinnedDotFeatures::get_nnz_features_for_vector(int32_t num)
 {
 	if (m_fill)
 		return m_bins.num_rows;
-	else 
+	else
 		return 1;
 }
 
@@ -300,6 +300,7 @@ CSimpleFeatures<float64_t>* CBinnedDotFeatures::get_simple_features()
 
 void CBinnedDotFeatures::init()
 {
+	m_features=NULL;
 	m_fill=true;
 	m_norm_one=false;
 }

@@ -215,7 +215,7 @@ CStreamingFile::CStreamingFile(char* fname, char rw) : CSGObject()
 	default:
 		SG_ERROR("Unknown mode '%c'\n", task);
 	}
-	
+
 	if (filename)
 	{
 		int file = open((const char*) filename, mode);

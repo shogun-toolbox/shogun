@@ -120,7 +120,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 */
 		inline virtual bool init_optimization(
 			int32_t p_count, int32_t *IDX, float64_t * alphas)
-		{ 
+		{
 			return init_optimization(p_count, IDX, alphas, -1);
 		}
 
@@ -151,7 +151,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 	 	* @return optimized value at given index
 	 	*/
 		inline virtual float64_t compute_optimized(int32_t idx)
-		{ 
+		{
 			ASSERT(get_is_initialized());
 			ASSERT(alphabet);
 			ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
@@ -193,7 +193,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 			if (get_is_initialized())
 			{
 				if (opt_type==SLOWBUTMEMEFFICIENT)
-					tries.delete_trees(true); 
+					tries.delete_trees(true);
 				else if (opt_type==FASTBUTMEMHUNGRY)
 					tries.delete_trees(false);  // still buggy
 				else
@@ -234,7 +234,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 */
 		inline void compute_by_subkernel(
 			int32_t idx, float64_t * subkernel_contrib)
-		{ 
+		{
 			if (get_is_initialized())
 			{
 				compute_by_tree(idx, subkernel_contrib);
@@ -602,7 +602,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 		/// cleanup POIM2
 		void cleanup_POIM2();
-		
+
 	protected:
 		/** create emtpy tries */
 		void create_empty_tries();
@@ -765,9 +765,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** makes add_example_to_tree (ONLY!) use POIMTrie */
 		bool use_poim_tries;
 
-		/** temporary memory for the interface to the poim functions */ 
+		/** temporary memory for the interface to the poim functions */
 		float64_t* m_poim_distrib;
-		/** temporary memory for the interface to the poim functions */ 
+		/** temporary memory for the interface to the poim functions */
 		float64_t* m_poim;
 
 		/** number of symbols */

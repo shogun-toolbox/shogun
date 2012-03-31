@@ -40,7 +40,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, boo
 	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings);
 }
 
-CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig), 
+CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig),
 	num_strings(orig.num_strings), alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
 	k_spectrum= SG_MALLOC(float64_t*, num_strings);
@@ -79,7 +79,7 @@ float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	ASSERT(vec_idx1 < num_strings);
 	float64_t* vec1=k_spectrum[vec_idx1];
 	float64_t result=0;
-	
+
 	for (int32_t i=0; i<spec_size; i++)
 		result+=vec1[i]*vec2[i];
 

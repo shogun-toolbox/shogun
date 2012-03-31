@@ -14,12 +14,14 @@
 
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 
+#ifdef USE_SWIG_DIRECTORS
 %feature("director") shogun::CDirectorKernel;
 %feature("director:except") {
     if ($error != NULL) {
         throw Swig::DirectorMethodException();
     }
 }
+#endif
 
 /* Remove C Prefix */
 %rename(Kernel) CKernel;

@@ -84,7 +84,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 		{
 			var[j]/=num_examples;
 
-			if (var[j]>=1e-14) 
+			if (var[j]>=1e-14)
 			{
 				idx_ok[num_ok]=j;
 				num_ok++ ;

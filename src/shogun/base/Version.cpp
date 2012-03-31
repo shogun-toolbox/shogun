@@ -111,7 +111,7 @@ int64_t Version::get_version_in_minutes()
 	return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
 }
 
-/** ref object 
+/** ref object
  * @return ref count
  */
 int32_t Version::ref()
@@ -121,7 +121,7 @@ int32_t Version::ref()
 }
 
 /** ref count
- * @return ref count 
+ * @return ref count
  */
 int32_t Version::ref_count() const
 {

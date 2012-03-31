@@ -134,7 +134,7 @@ class CList : public CSGObject
 					SG_REF(current->data);
 				return current->data;
 			}
-			else 
+			else
 				return NULL;
 		}
 
@@ -151,7 +151,7 @@ class CList : public CSGObject
 					SG_REF(current->data);
 				return current->data;
 			}
-			else 
+			else
 				return NULL;
 		}
 
@@ -201,7 +201,7 @@ class CList : public CSGObject
 					SG_REF(current->data);
 				return current->data;
 			}
-			else 
+			else
 				return NULL;
 		}
 
@@ -294,7 +294,7 @@ class CList : public CSGObject
 					SG_REF(p_current->data);
 				return p_current->data;
 			}
-			else 
+			else
 				return NULL;
 		}
 		//@}
@@ -444,7 +444,7 @@ class CList : public CSGObject
 				delete element;
 
 				return data;
-			} 
+			}
 
 			return NULL;
 		}

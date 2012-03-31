@@ -24,15 +24,15 @@ class CFeatures;
 class CDistance;
 
 /** @brief NeighborhoodPreservingEmbedding (part of the
- * Efficient Dimensionality Reduction Toolkit) converter used to 
+ * Efficient Dimensionality Reduction Toolkit) converter used to
  * construct embeddings as described in:
- * 
- * He, X., Cai, D., Yan, S., & Zhang, H.-J. (2005). 
- * Neighborhood preserving embedding. 
+ *
+ * He, X., Cai, D., Yan, S., & Zhang, H.-J. (2005).
+ * Neighborhood preserving embedding.
  * Tenth IEEE International Conference on Computer Vision ICCV05 Volume 1, 2, 1208-1213. Ieee.
  * Retrieved from http://ieeexplore.ieee.org/lpdocs/epic03/wrapper.htm?arnumber=1544858
  *
- * This method is hardly applicable to very high-dimensional data due to 
+ * This method is hardly applicable to very high-dimensional data due to
  * necessity to solve eigenproblem involving matrix of size (dim x dim).
  *
  * To use this converter with static interfaces please refer it by

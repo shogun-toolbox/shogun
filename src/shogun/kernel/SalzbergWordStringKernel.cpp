@@ -189,9 +189,9 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 			//fprintf(stderr, "%i: mean=%1.2e  std=%1.2e\n", i, mean[i], std[i]) ;
 			sum_m2_s2 += mean[i]*mean[i]/(variance[i]) ;
 		} ;
-	} 
+	}
 
-	// compute sum of 
+	// compute sum of
 	//result -= feature*mean[a_idx]/variance[a_idx] ;
 
 	for (i=0; i<l->get_num_vectors(); i++)
@@ -217,7 +217,7 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 	if (ld_mean_lhs!=ld_mean_rhs)
 	{
-		// compute sum of 
+		// compute sum of
 		//result -= feature*mean[b_idx]/variance[b_idx] ;
 		for (i=0; i<r->get_num_vectors(); i++)
 		{

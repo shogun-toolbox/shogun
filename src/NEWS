@@ -7,10 +7,10 @@
 		- Support for new SWIG -builtin python interface feature (SWIG 2.0.4 is required now).
 		- EDRT algorithms are now available using static interfaces such as matlab and octave.
 		- Jensen-Shannon kernel and Homogeneous kernel map preprocessor (thanks to Viktor Gal).
-		- New Mahalanobis distance and QDA classes (thanks to Fernando J. Iglesias Garcia).
 		- New 'multiclass' module for multiclass classification algorithms, generic linear
 		  and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
 		  new rejection schemes concept by Sergey Lisitsyn.
+		- Mahalanobis distance, QDA and generic OvO multiclass machine (thanks to Fernando J. Iglesias Garcia).
 		- New regression estimation algorithms.
 		- New graphical python modular examples.
 		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann

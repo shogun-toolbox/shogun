@@ -30,7 +30,7 @@ extern "C" {
 namespace shogun
 {
 /** @brief Multiple Kernel Learning
- * 
+ *
  * A support vector machine based method for use with multiple kernels.  In
  * Multiple Kernel Learning (MKL) in addition to the SVM \f$\bf\alpha\f$ and
  * bias term \f$b\f$ the kernel weights \f$\bf\beta\f$ are estimated in
@@ -48,7 +48,7 @@ namespace shogun
  *
  * Kernels have to be chosen a-priori. In MKL \f$\alpha_i,\;\beta\f$ and bias are determined
  * by solving the following optimization program
- * 
+ *
  * \f{eqnarray*}
  *    \mbox{min} && \gamma-\sum_{i=1}^N\alpha_i\\
  *    \mbox{w.r.t.} && \gamma\in R, \alpha\in R^N \nonumber\\
@@ -88,7 +88,7 @@ namespace shogun
  *    \mbox{w.r.t.} && f_1\in\mathcal{H}_1,f_2\in\mathcal{H}_2,\ldots,f_K\in\mathcal{H}_K,\,b\in R \nonumber\\
  * \f}
  * where \f$\ell\f$ is a loss function. Here \f$\lambda\f$ controls the trade-off between the two regularization terms. \f$\lambda=0\f$ corresponds to \f$L_1\f$-MKL, whereas \f$\lambda=1\f$ corresponds to the uniform-weighted combination of kernels (\f$L_\infty\f$-MKL). This approach was studied by Shawe-Taylor (2008) "Kernel Learning for Novelty Detection" (NIPS MKL Workshop 2008) and Tomioka & Suzuki (2009) "Sparsity-accuracy trade-off in MKL" (NIPS MKL Workshop 2009).
- * 
+ *
  */
 class CMKL : public CSVM
 {
@@ -199,7 +199,7 @@ class CMKL : public CSVM
 		 * @return computed dual objective
 		 */
 		float64_t compute_elasticnet_dual_objective();
-		
+
 		/** set mkl epsilon (optimization accuracy for kernel weights)
 		 *
 		 * @param eps new weight_epsilon
@@ -452,7 +452,7 @@ class CMKL : public CSVM
 		/** norm used in mkl must be > 0 */
 		float64_t mkl_norm;
 		/** Sparsity trade-off parameter used in ElasticnetMKL
-		    must be 0<=lambda<=1 
+		    must be 0<=lambda<=1
 		    lambda=0: L1-MKL
 		    lambda=1: Linfinity-MKL
 		 */

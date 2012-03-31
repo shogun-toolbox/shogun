@@ -117,7 +117,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 
 			if (c1==c2)
 				continue;
-			
+
 			SG_PROGRESS(k, 0, num_pairs-1);
 
 			if (c1<c2)

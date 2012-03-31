@@ -32,7 +32,7 @@ CManhattanWordDistance::CManhattanWordDistance(
 	init(l, r);
 }
 
-CManhattanWordDistance::~CManhattanWordDistance() 
+CManhattanWordDistance::~CManhattanWordDistance()
 {
 	cleanup();
 }

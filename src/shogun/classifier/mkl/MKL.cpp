@@ -319,7 +319,7 @@ bool CMKL::train_machine(CFeatures* data)
 	{
 		float64_t* sumw = SG_MALLOC(float64_t, num_kernels);
 
-		
+
 
 		while (true)
 		{
@@ -367,7 +367,7 @@ void CMKL::set_mkl_norm(float64_t norm)
 
   if (norm<1)
     SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL\n");
-  
+
   mkl_norm = norm;
 }
 
@@ -375,7 +375,7 @@ void CMKL::set_elasticnet_lambda(float64_t lambda)
 {
   if (lambda>1 || lambda<0)
     SG_ERROR("0<=lambda<=1\n");
-  
+
   if (lambda==0)
     lambda = 1e-6;
   else if (lambda==1.0)
@@ -388,7 +388,7 @@ void CMKL::set_mkl_block_norm(float64_t q)
 {
   if (q<1)
     SG_ERROR("1<=q<=inf\n");
-  
+
   mkl_block_norm=q;
 }
 

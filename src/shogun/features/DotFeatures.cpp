@@ -69,7 +69,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 	ASSERT(output);
 	// write access is internally between output[start..stop] so the following
 	// line is necessary to write to output[0...(stop-start-1)]
-	output-=start; 
+	output-=start;
 	ASSERT(start>=0);
 	ASSERT(start<stop);
 	ASSERT(stop<=get_num_vectors());
@@ -284,7 +284,7 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 {
 	SGMatrix<float64_t> m;
-	
+
     int64_t offs=0;
 	int32_t num=get_num_vectors();
     int32_t dim=get_dim_feature_space();
@@ -407,7 +407,7 @@ SGVector<float64_t> CDotFeatures::get_mean()
 		mean.vector[j] /= num;
 
 	return mean;
-}									
+}
 
 SGVector<float64_t> CDotFeatures::get_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 {
@@ -432,7 +432,7 @@ SGVector<float64_t> CDotFeatures::get_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 		mean.vector[j] /= (num_lhs+num_rhs);
 
 	return mean;
-}									
+}
 
 SGMatrix<float64_t> CDotFeatures::get_cov()
 {

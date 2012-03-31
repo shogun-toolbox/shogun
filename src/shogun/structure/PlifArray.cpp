@@ -37,7 +37,7 @@ void CPlifArray::add_plif(CPlifBase* new_plif)
 {
 	ASSERT(new_plif);
 	m_array.append_element(new_plif) ;
-	
+
 	min_value = -1e6 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 	{
@@ -45,14 +45,14 @@ void CPlifArray::add_plif(CPlifBase* new_plif)
 		if (!m_array[i]->uses_svm_values())
 			min_value = CMath::max(min_value, m_array[i]->get_min_value()) ;
 	}
-	
+
 	max_value = 1e6 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		if (!m_array[i]->uses_svm_values())
 			max_value = CMath::min(max_value, m_array[i]->get_max_value()) ;
 }
 
-void CPlifArray::clear() 
+void CPlifArray::clear()
 {
 	m_array.clear_array();
 	min_value = -1e6 ;
@@ -73,7 +73,7 @@ float64_t CPlifArray::lookup_penalty(
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
 	return ret ;
-} 
+}
 
 float64_t CPlifArray::lookup_penalty(
 	int32_t p_value, float64_t* svm_values) const
@@ -99,9 +99,9 @@ float64_t CPlifArray::lookup_penalty(
 #endif
 	}
 	return ret ;
-} 
+}
 
-void CPlifArray::penalty_clear_derivative() 
+void CPlifArray::penalty_clear_derivative()
 {
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 		m_array[i]->penalty_clear_derivative() ;

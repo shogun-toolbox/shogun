@@ -32,7 +32,7 @@ namespace shogun
 /** @brief Class Signal implements signal handling to e.g. allow ctrl+c to cancel a
  * long running process.
  *
- * This is done in two ways: 
+ * This is done in two ways:
  *
  * -# A signal handler is attached to trap the SIGINT and SIGURG signal.
  *  Pressing ctrl+c or sending the SIGINT (kill ...) signal to the shogun
@@ -62,7 +62,7 @@ class CSignal : public CSGObject
 		 * @return if setting was successful
 		 */
 		static bool set_handler();
-		
+
 		/** unset handler
 		 *
 		 * @return if unsetting was successful

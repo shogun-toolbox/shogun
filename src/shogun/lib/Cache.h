@@ -20,7 +20,7 @@
 
 namespace shogun
 {
-/** @brief Template class Cache implements a simple cache. 
+/** @brief Template class Cache implements a simple cache.
  *
  * When the cache is full -- elements that are least used are freed from the
  * cache. Thus for the cache to be effective one should not visit loop over
@@ -237,7 +237,7 @@ template<class T> class CCache : public CSGObject
 			else
 				return NULL;
 		}
-		else 
+		else
 			return NULL;
 	}
 

@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-CHomogeneousKernelMap::CHomogeneousKernelMap () 
+CHomogeneousKernelMap::CHomogeneousKernelMap ()
 	: CSimplePreprocessor<float64_t> (),
 		m_kernel (HomogeneousKernelIntersection),
 		m_window (HomogeneousKernelMapWindowRectangular),
@@ -28,7 +28,7 @@ CHomogeneousKernelMap::CHomogeneousKernelMap ()
 	register_params ();
 }
 
-CHomogeneousKernelMap::CHomogeneousKernelMap 
+CHomogeneousKernelMap::CHomogeneousKernelMap
 	(HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType,
 	 float64_t gamma, uint64_t order, float64_t period)
 	: CSimplePreprocessor<float64_t> (),
@@ -37,32 +37,32 @@ CHomogeneousKernelMap::CHomogeneousKernelMap
 		m_gamma (gamma),
 		m_period (period),
 		m_order (order)
-		
+
 {
 	init ();
 	register_params ();
 }
 
-CHomogeneousKernelMap::~CHomogeneousKernelMap() 
+CHomogeneousKernelMap::~CHomogeneousKernelMap()
 {
 	m_table.destroy_vector ();
 }
 
-bool CHomogeneousKernelMap::init (CFeatures* features) 
+bool CHomogeneousKernelMap::init (CFeatures* features)
 {
 	ASSERT(features->get_feature_class()==C_SIMPLE);
 	ASSERT(features->get_feature_type()==F_DREAL);
-	
+
 	return true;
 }
 
-void CHomogeneousKernelMap::cleanup () 
+void CHomogeneousKernelMap::cleanup ()
 {
 	m_table.destroy_vector ();
 }
 
 
-void CHomogeneousKernelMap::init () 
+void CHomogeneousKernelMap::init ()
 {
 	SG_DEBUG ("Initialising homogeneous kernel map...\n");
 	ASSERT (m_gamma > 0) ;
@@ -78,13 +78,13 @@ void CHomogeneousKernelMap::init ()
 	  switch (m_window) {
 	  case HomogeneousKernelMapWindowUniform:
 	    switch (m_kernel) {
-		    case HomogeneousKernelChi2:         
-					m_period = 5.86 * CMath::sqrt (static_cast<float64_t> (m_order))  + 3.65; 
+		    case HomogeneousKernelChi2:
+					m_period = 5.86 * CMath::sqrt (static_cast<float64_t> (m_order))  + 3.65;
 					break;
 		    case HomogeneousKernelJS:
-		      m_period = 6.64 * CMath::sqrt (static_cast<float64_t> (m_order))  + 7.24; 
+		      m_period = 6.64 * CMath::sqrt (static_cast<float64_t> (m_order))  + 7.24;
 					break;
-		    case HomogeneousKernelIntersection: 
+		    case HomogeneousKernelIntersection:
 					m_period = 2.38 * CMath::log (m_order + 0.8) + 5.6;
 					break;
 	    }
@@ -92,12 +92,12 @@ void CHomogeneousKernelMap::init ()
 	  case HomogeneousKernelMapWindowRectangular:
 	    switch (m_kernel) {
 		    case HomogeneousKernelChi2:
-					m_period = 8.80 * CMath::sqrt (m_order + 4.44) - 12.6; 
+					m_period = 8.80 * CMath::sqrt (m_order + 4.44) - 12.6;
 					break;
 		    case HomogeneousKernelJS:
 					m_period = 9.63 * CMath::sqrt (m_order + 1.00) - 2.93;
 					break;
-		    case HomogeneousKernelIntersection: 
+		    case HomogeneousKernelIntersection:
 					m_period = 2.00 * CMath::log (m_order + 0.99) + 3.52;
 					break;
 	    }
@@ -110,7 +110,7 @@ void CHomogeneousKernelMap::init ()
   m_subdivision = 1.0 / m_numSubdivisions;
   m_minExponent = -20;
   m_maxExponent = 8;
-  
+
   int tableHeight = 2*m_order + 1 ;
   int tableWidth = m_numSubdivisions * (m_maxExponent - m_minExponent + 1);
 	size_t numElements = (tableHeight * tableWidth + 2*(1+m_order));
@@ -119,7 +119,7 @@ void CHomogeneousKernelMap::init ()
 		m_table.vector = SG_REALLOC (float64_t, m_table.vector, numElements);
 		m_table.vlen = numElements;
 	}
-	
+
 	int exponent;
   uint64_t i = 0, j = 0;
   float64_t* tablep = m_table.vector;
@@ -149,7 +149,7 @@ void CHomogeneousKernelMap::init ()
       xgamma = CMath::pow (x, m_gamma);
       Lxgamma = L * xgamma;
       Llogx = L * CMath::log (x);
-			
+
       *tablep++ = CMath::sqrt (Lxgamma * kappa[0]);
       for (j = 1 ; j <= m_order; ++j) {
         sqrt2kappaLxgamma = CMath::sqrt (2.0 * Lxgamma * kappa[j]);
@@ -161,94 +161,94 @@ void CHomogeneousKernelMap::init ()
 
 }
 
-SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* features) 
+SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* features)
 {
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*)features;
 	int32_t num_vectors = simple_features->get_num_vectors ();
 	int32_t num_features = simple_features->get_num_features ();
 	SGMatrix<float64_t> result (num_features*(2*m_order+1), num_vectors);
-	
+
 	for (int i = 0; i < num_vectors; ++i) {
 		SGVector<float64_t> v = simple_features->get_feature_vector (i);
 		SGVector<float64_t> col (result.get_column_vector (i), result.num_rows);
 		apply_to_vector (v, col);
 	}
-	
+
 	/* set the new generated feature matrix */
 	simple_features->set_feature_matrix (result);
-	
+
 	return result;
 }
 
 /// apply preproc on single feature vector
-SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector (SGVector<float64_t> vector) 
+SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector (SGVector<float64_t> vector)
 {
 	uint64_t featureDimension = 2*m_order+1;
 	uint64_t m_target_dim = vector.vlen * featureDimension;
 	SGVector<float64_t> result = SGVector<float64_t> (m_target_dim);
 
 	apply_to_vector (vector, result);
-	
+
 	return result;
 }
 
-void CHomogeneousKernelMap::setKernelType (HomogeneousKernelType k) 
+void CHomogeneousKernelMap::setKernelType (HomogeneousKernelType k)
 {
 	m_kernel = k;
 	init ();
 }
 
-HomogeneousKernelType CHomogeneousKernelMap::getKernelType () const 
+HomogeneousKernelType CHomogeneousKernelMap::getKernelType () const
 {
 	return m_kernel;
 }
 
-void CHomogeneousKernelMap::setWindowType (HomogeneousKernelMapWindowType w) 
+void CHomogeneousKernelMap::setWindowType (HomogeneousKernelMapWindowType w)
 {
 	m_window = w;
 	init ();
 }
 
-HomogeneousKernelMapWindowType CHomogeneousKernelMap::getWindowType () const 
+HomogeneousKernelMapWindowType CHomogeneousKernelMap::getWindowType () const
 {
 	return m_window;
 }
 
-void CHomogeneousKernelMap::setGamma (float64_t g) 
+void CHomogeneousKernelMap::setGamma (float64_t g)
 {
 	m_gamma = g;
 	init ();
 }
 
-float64_t CHomogeneousKernelMap::getGamma (float64_t g) const 
+float64_t CHomogeneousKernelMap::getGamma (float64_t g) const
 {
 	return m_gamma;
 }
 
-void CHomogeneousKernelMap::setOrder (uint64_t o) 
+void CHomogeneousKernelMap::setOrder (uint64_t o)
 {
 	m_order = o;
 	init ();
 }
 
-uint64_t CHomogeneousKernelMap::getOrder () const 
+uint64_t CHomogeneousKernelMap::getOrder () const
 {
 	return m_order;
 }
 
-void CHomogeneousKernelMap::setPeriod (float64_t p) 
+void CHomogeneousKernelMap::setPeriod (float64_t p)
 {
 	m_period = p;
 	init ();
 }
 
-float64_t CHomogeneousKernelMap::getPeriod () const 
+float64_t CHomogeneousKernelMap::getPeriod () const
 {
 	return m_period;
 }
 
 inline float64_t
-CHomogeneousKernelMap::get_spectrum (float64_t omega) const 
+CHomogeneousKernelMap::get_spectrum (float64_t omega) const
 {
   switch (m_kernel) {
     case HomogeneousKernelIntersection:
@@ -265,15 +265,15 @@ CHomogeneousKernelMap::get_spectrum (float64_t omega) const
   }
 }
 
-inline float64_t 
-CHomogeneousKernelMap::sinc (float64_t x) const 
+inline float64_t
+CHomogeneousKernelMap::sinc (float64_t x) const
 {
   if (x == 0.0) return 1.0 ;
   return CMath::sin (x) / x;
 }
 
 inline float64_t
-CHomogeneousKernelMap::get_smooth_spectrum (float64_t omega) const 
+CHomogeneousKernelMap::get_smooth_spectrum (float64_t omega) const
 {
   float64_t kappa_hat = 0;
   float64_t omegap ;
@@ -301,15 +301,15 @@ CHomogeneousKernelMap::get_smooth_spectrum (float64_t omega) const
   return kappa_hat;
 }
 
-inline void CHomogeneousKernelMap::apply_to_vector (const SGVector<float64_t>& in_v, 
-																										SGVector<float64_t>& out_v) const 
+inline void CHomogeneousKernelMap::apply_to_vector (const SGVector<float64_t>& in_v,
+																										SGVector<float64_t>& out_v) const
 {
 	/* assert for in and out vectors */
 	ASSERT (in_v.vlen > 0 && out_v.vlen);
 	ASSERT (in_v.vector != NULL && out_v.vector != NULL);
-	
+
 	uint64_t featureDimension = 2*m_order+1;
-	
+
 	for (int k = 0; k < in_v.vlen; ++k) {
 	  /* break value into exponent and mantissa */
 	  int exponent;
@@ -321,7 +321,7 @@ inline void CHomogeneousKernelMap::apply_to_vector (const SGVector<float64_t>& i
 
 	  if (mantissa == 0 ||
 	      exponent <= m_minExponent ||
-	      exponent >= m_maxExponent) 
+	      exponent >= m_maxExponent)
 		{
 	    for (j = 0 ; j <= m_order ; ++j) {
 	      out_v[k*featureDimension+j] = 0.0;
@@ -348,7 +348,7 @@ inline void CHomogeneousKernelMap::apply_to_vector (const SGVector<float64_t>& i
 
 			out_v[k*featureDimension+j] = sign * ((f2 - f1) * (m_numSubdivisions * mantissa) + f1);
     }
-	}	
+	}
 }
 
 void CHomogeneousKernelMap::register_params ()

@@ -98,7 +98,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 * @return the number of training epochs
 		 */
 		inline int32_t get_epochs() { return epochs; }
-		
+
 		/** set lambda
 		 *
 		 * @param l value of regularization parameter lambda
@@ -134,7 +134,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 * @return if regularized bias is enabled
 		 */
 		inline bool get_regularized_bias_enabled() { return use_regularized_bias; }
-		
+
 		/** Set the loss function to use
 		 *
 		 * @param loss_func object derived from CLossFunction

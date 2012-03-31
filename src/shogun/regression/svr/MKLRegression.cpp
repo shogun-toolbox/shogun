@@ -28,7 +28,7 @@ float64_t CMKLRegression::compute_sum_alpha()
 	SG_NOTIMPLEMENTED;
 	return 0;
 
-	// not correct needs explicit access to alpha and alpha* 
+	// not correct needs explicit access to alpha and alpha*
 	//float64_t suma=0;
 	//int32_t nsv=svm->get_num_support_vectors();
 	//for (int32_t i=0; i<nsv; i++)

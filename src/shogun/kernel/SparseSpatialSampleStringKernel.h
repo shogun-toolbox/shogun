@@ -24,7 +24,7 @@ namespace shogun
 		/// group
 		int *group;
 		/// n
-		int n; 
+		int n;
 	};
 
 /** @brief Sparse Spatial Sample String Kernel
@@ -114,7 +114,7 @@ class CSparseSpatialSampleStringKernel: public CStringKernel<char>
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-		/** extract triple 
+		/** extract triple
 		 * @param S
 		 * @param len
 		 * @param nStr
@@ -129,7 +129,7 @@ class CSparseSpatialSampleStringKernel: public CStringKernel<char>
 		 * @param d1
 		 */
 		SSKFeatures *extractDouble(int **S, int *len, int nStr, int d1);
-		/** compute double 
+		/** compute double
 		 * @param idx_a
 		 * @param idx_b
 		 */
@@ -139,14 +139,14 @@ class CSparseSpatialSampleStringKernel: public CStringKernel<char>
 		 * @param idx_b
 		 */
 		void compute_triple(int32_t idx_a, int32_t idx_b);
-		/** makes CNTSRTNA 
+		/** makes CNTSRTNA
 		 * @param sx
 		 * @param k
 		 * @param r
 		 * @param na
 		 */
 		int* cntsrtna(int *sx, int k, int r, int na);
-		/** count and update 
+		/** count and update
 		 * @param outK
 		 * @param sx
 		 * @param g

@@ -189,7 +189,7 @@ float64_t CLinearHMM::get_log_likelihood_example(uint16_t* vector, int32_t len)
 
 	for (int32_t i=1; i<len; i++)
 		result+=log_transition_probs[i*num_symbols+vector[i]];
-	
+
 	return result;
 }
 
@@ -216,7 +216,7 @@ float64_t CLinearHMM::get_likelihood_example(uint16_t* vector, int32_t len)
 
 	for (int32_t i=1; i<len; i++)
 		result*=transition_probs[i*num_symbols+vector[i]];
-	
+
 	return result;
 }
 
@@ -241,12 +241,12 @@ float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 
 SGVector<float64_t> CLinearHMM::get_transition_probs()
 {
-	return SGVector<float64_t>(transition_probs, num_params);	
+	return SGVector<float64_t>(transition_probs, num_params);
 }
 
 bool CLinearHMM::set_transition_probs(SGVector<float64_t> probs)
 {
-	ASSERT(probs.vlen == num_params);	
+	ASSERT(probs.vlen == num_params);
 
 	if (!log_transition_probs)
 		log_transition_probs=SG_MALLOC(float64_t, num_params);

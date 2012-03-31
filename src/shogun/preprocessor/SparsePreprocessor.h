@@ -54,7 +54,7 @@ public:
 
 	/// return a type of preprocessor
 	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; }
-  
+
 };
 }
 #endif

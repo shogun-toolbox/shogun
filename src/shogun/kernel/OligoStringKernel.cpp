@@ -89,7 +89,7 @@ void COligoStringKernel::encodeOligo(
 		values.resize(sequence_length - k_mer_length + 1,
 			std::pair<int32_t, float64_t>());
 		for (uint32_t i = 0; i < number_of_residues; ++i)
-		{	
+		{
 			residue_values.insert(std::make_pair(allowed_characters[i], counter));
 			++counter;
 		}
@@ -119,7 +119,7 @@ void COligoStringKernel::encodeOligo(
 	else
 	{
 		values.clear();
-	}	
+	}
 }
 
 void COligoStringKernel::getSequences(
@@ -227,7 +227,7 @@ float64_t COligoStringKernel::kernelOligoFast(
 		}
 	}
 	return result;
-}		
+}
 
 
 float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)

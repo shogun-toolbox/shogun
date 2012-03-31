@@ -68,9 +68,9 @@ float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-	
+
 	s=sqrt(sa)*sqrt(sb);
-	
+
 	// trap division by zero
 	if(s==0)
 		return 0;

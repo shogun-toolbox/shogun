@@ -43,7 +43,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 			SG_FREE(diag_rhs);
 		}
 
-		/** initialization of the normalizer 
+		/** initialization of the normalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{

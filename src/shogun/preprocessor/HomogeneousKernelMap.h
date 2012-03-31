@@ -31,12 +31,12 @@ namespace shogun
 	  HomogeneousKernelMapWindowUniform = 0, /**< uniform window */
 	  HomogeneousKernelMapWindowRectangular = 1, /**< rectangular window */
 	};
-	
+
 	/** @brief Preprocessor HomogeneousKernelMap performs homogeneous kernel maps
 	 * as described in
 	 *
-	 * A. Vedaldi and A. Zisserman. 
-	 * Efficient additive kernels via explicit feature maps. 
+	 * A. Vedaldi and A. Zisserman.
+	 * Efficient additive kernels via explicit feature maps.
 	 * In PAMI, 2011
 	 *
 	 * The homogeneous kernel map is a finite dimensional linear
@@ -63,19 +63,19 @@ namespace shogun
 			 * @param order the approximation order
 			 * @param period the period (use a negative value to use the default period)
 			 */
-			CHomogeneousKernelMap (HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType, 
+			CHomogeneousKernelMap (HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType,
 														float64_t gamma = 1.0, uint64_t order = 1, float64_t period = -1);
 
 			/** destructor */
 			virtual ~CHomogeneousKernelMap ();
-			
+
 			/** initialize preprocessor from features */
 			virtual bool init(CFeatures* features);
-			
+
 			/** cleanup */
 			virtual void cleanup();
-			
-			/** applies to features 
+
+			/** applies to features
 			 * @param features features
 			 * @return feature matrix
 			 */
@@ -97,12 +97,12 @@ namespace shogun
 			 * @param k type of homogeneous kernel
 			 */
 			void setKernelType (HomogeneousKernelType k);
-			/** returns kernel type 
-			 * @return kernel type 
+			/** returns kernel type
+			 * @return kernel type
 			 */
 			HomogeneousKernelType getKernelType () const;
-			
-			/** sets window type 
+
+			/** sets window type
 			 * @param w type of window
 			 */
 			void setWindowType (HomogeneousKernelMapWindowType w);
@@ -110,7 +110,7 @@ namespace shogun
 			 * @return window type
 			 */
 			HomogeneousKernelMapWindowType getWindowType () const;
-			
+
 			/** sets gamma
 			 * @param g gamma value
 			 */
@@ -119,8 +119,8 @@ namespace shogun
 			 * @return gamma value
 			 */
 			float64_t getGamma (float64_t g) const;
-			
-			/** sets approximation order 
+
+			/** sets approximation order
 			 * @param o order
 			 */
 			void setOrder (uint64_t o);
@@ -128,7 +128,7 @@ namespace shogun
 			 * @return approximation order
 			 */
 			uint64_t getOrder () const;
-			
+
 			/** sets period
 			 * @param p period value
 			 */
@@ -137,7 +137,7 @@ namespace shogun
 			 * @return period value
 			 */
 			float64_t getPeriod () const;
-			
+
 		private:
 			void init ();
 			void register_params ();
@@ -145,7 +145,7 @@ namespace shogun
 			inline float64_t sinc (float64_t x) const;
 			inline float64_t get_spectrum (float64_t omega) const;
 			inline void apply_to_vector (const SGVector<float64_t>& in_v, SGVector<float64_t>& out_v) const;
-			
+
 		private:
 			HomogeneousKernelType m_kernel;
 			HomogeneousKernelMapWindowType m_window;

@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2012 Soeren Sonnenburg and Sergey Lisitsyn
- * Copyright (C) 1999-2012 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2011 Soeren Sonnenburg
+ * Written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
+ * Copyright (C) 2012 Sergey Lisitsyn, Fernando José Iglesias Garcia
  */
 
 #ifndef _MULTICLASSMACHINE_H___
@@ -105,9 +106,9 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @return multiclass type 1 vs one etc
 		 */
-		inline EMulticlassStrategy get_multiclass_strategy() const 
-		{ 
-			return m_multiclass_strategy; 
+		inline EMulticlassStrategy get_multiclass_strategy() const
+		{
+			return m_multiclass_strategy;
 		}
 
 		/** get rejection strategy */
@@ -125,7 +126,7 @@ class CMulticlassMachine : public CMachine
 		}
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MulticlassMachine";
 		}
@@ -138,16 +139,25 @@ class CMulticlassMachine : public CMachine
 		 */
 		virtual CLabels* classify_one_vs_rest();
 
+		/** classifiy one vs one
+		 *
+		 * @return resulting labels
+		 */
+		virtual CLabels* classify_one_vs_one();
+
 		/** clear machines */
 		void clear_machines();
 
 		/** train one vs rest */
 		bool train_one_vs_rest();
 
+		/** train one vs one */
+		bool train_one_vs_one();
+
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
-		/** abstract init machine for training method */ 
+		/** abstract init machine for training method */
 		virtual bool init_machine_for_train(CFeatures* data) = 0;
 
 		/** abstract init machines for applying method */
@@ -161,6 +171,15 @@ class CMulticlassMachine : public CMachine
 
 		/** get num rhs vectors */
 		virtual int32_t get_num_rhs_vectors() = 0;
+
+		/** set subset to the features of the machine, deletes old one
+		 *
+		 * @param subset subset instance to set
+		 */
+		virtual void set_machine_subset(CSubset* subset) = 0;
+
+		/** deletes any subset set to the features of the machine */
+		virtual void remove_machine_subset() = 0;
 
 	private:
 
