@@ -49,7 +49,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 * @param c scale parameter, if <= 0 scaling will be computed
 		 * from the avg of the kernel diagonal elements
 		 *
-		 * the scalar r*c will be added to the kernel diagonal, typical use cases: 
+		 * the scalar r*c will be added to the kernel diagonal, typical use cases:
 		 * - r=1e-10 and c=0.0 will add mean(diag(K))*1e-10 to the diagonal
 		 * - r=0.1 and c=1 will add 0.1 to the diagonal
 		 */

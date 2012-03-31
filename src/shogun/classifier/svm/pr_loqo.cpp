@@ -45,7 +45,7 @@ namespace shogun
 void nrerror(char error_text[])
 {
 	SG_SDEBUG("terminating optimizer - %s\n", error_text);
- // exit(1); 
+ // exit(1);
 }
 
 /*****************************************************************
@@ -89,7 +89,7 @@ bool choldc(float64_t* a, int32_t n, float64_t* p)
 		SG_SDEBUG("Choldc failed, matrix not positive definite\n");
 
 	SG_FREE(a2);
-	
+
 	return result==0;
 }
 #else
@@ -119,7 +119,7 @@ bool choldc(float64_t a[], int32_t n, float64_t p[])
 
 				p[i]=sqrt(sum);
 
-			} 
+			}
 			else
 				a[n*j + i] = sum/p[i];
 		}
@@ -150,7 +150,7 @@ void cholsb(
 
 /*****************************************************************
   sometimes we only need the forward or backward pass of the
-  backsubstitution, hence we provide these two routines separately 
+  backsubstitution, hence we provide these two routines separately
   ***************************************************************/
 
 void chol_forward(
@@ -229,15 +229,15 @@ bool solve_reduced(
 
     for (i=0; i<m; i++)         /* forward pass for A' */
       chol_forward(h_x, n, p_x, a+i*n, t_a+i*n);
-				
+
     for (i=0; i<m; i++)         /* compute (h_y + a h_x^-1A') */
       for (j=i; j<m; j++)
-	for (k=0; k<n; k++) 
+	for (k=0; k<n; k++)
 	  h_y[m*i + j] += t_a[n*j + k] * t_a[n*i + k];
-				
+
     choldc(h_y, m, p_y);	/* and cholesky decomposition */
   }
-  
+
   chol_forward(h_x, n, p_x, c_x, t_c);
 				/* forward pass for c */
 
@@ -264,7 +264,7 @@ bool solve_reduced(
   given). computes m*x = y
   no need to tune it as it's only of O(n^2) but cholesky is of
   O(n^3). so don't waste your time _here_ although it isn't very
-  elegant. 
+  elegant.
   ***************************************************************/
 
 void matrix_vector(int32_t n, float64_t m[], float64_t x[], float64_t y[])
@@ -277,8 +277,8 @@ void matrix_vector(int32_t n, float64_t m[], float64_t x[], float64_t y[])
     for (j=0; j<i; j++)
       y[i] += m[i + n*j] * x[j];
 
-    for (j=i+1; j<n; j++) 
-      y[i] += m[n*i + j] * x[j]; 
+    for (j=i+1; j<n; j++)
+      y[i] += m[n*i + j] * x[j];
   }
 }
 
@@ -320,7 +320,7 @@ int32_t pr_loqo(
   float64_t *tau;
   float64_t *sigma;
   float64_t *gamma_z;
-  float64_t *gamma_s;  
+  float64_t *gamma_s;
 
   float64_t *hat_nu;
   float64_t *hat_tau;
@@ -340,7 +340,7 @@ int32_t pr_loqo(
   float64_t *g;
   float64_t *z;
   float64_t *s;
-  float64_t *t;  
+  float64_t *t;
 
   /* auxiliary variables */
   float64_t b_plus_1;
@@ -403,14 +403,14 @@ int32_t pr_loqo(
   for (i=0; i<n; i++) c_plus_1 += c[i];
 
   /* get diagonal terms */
-  for (i=0; i<n; i++) diag_h_x[i] = h_x[(n+1)*i]; 
-  
+  for (i=0; i<n; i++) diag_h_x[i] = h_x[(n+1)*i];
+
   /* starting point */
   if (restart == 1) {
 				/* x, y already preset */
     for (i=0; i<n; i++) {	/* compute g, t for primal feasibility */
       g[i] = CMath::max(CMath::abs(x[i] - l[i]), bound);
-      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound); 
+      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound);
     }
 
     matrix_vector(n, h_x, x, h_dot_x); /* h_dot_x = h_x * x */
@@ -434,25 +434,25 @@ int32_t pr_loqo(
     for (i=0; i<m; i++)
       for (j=i; j<m; j++)
 	h_y[i*m + j] = (i==j) ? 1 : 0;
-    
+
     for (i=0; i<n; i++) {
       c_x[i] = c[i];
       h_x[(n+1)*i] += 1;
     }
-    
+
     for (i=0; i<m; i++)
       c_y[i] = b[i];
-    
+
     /* and solve the system [-H_x A'; A H_y] [x, y] = [c_x; c_y] */
     solve_reduced(n, m, h_x, h_y, a, x, y, c_x, c_y, workspace,
 		  PREDICTOR);
-    
+
     /* initialize the other variables */
     for (i=0; i<n; i++) {
       g[i] = CMath::max(CMath::abs(x[i] - l[i]), bound);
       z[i] = CMath::max(CMath::abs(x[i]), bound);
-      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound); 
-      s[i] = CMath::max(CMath::abs(x[i]), bound); 
+      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound);
+      s[i] = CMath::max(CMath::abs(x[i]), bound);
     }
   }
 
@@ -467,12 +467,12 @@ int32_t pr_loqo(
 	  SG_SDEBUG("-------------------------------------------------------");
 	  SG_SDEBUG("---------------------------\n");
   }
-  
+
   while (status == STILL_RUNNING) {
     /* predictor */
-    
+
     /* put back original diagonal values */
-    for (i=0; i<n; i++) 
+    for (i=0; i<n; i++)
       h_x[(n+1) * i] = diag_h_x[i];
 
     matrix_vector(n, h_x, x, h_dot_x); /* compute h_dot_x = h_x * x */
@@ -482,7 +482,7 @@ int32_t pr_loqo(
       for (j=0; j<n; j++)
 	rho[i] -= a[n*i + j] * x[j];
     }
-    
+
     for (i=0; i<n; i++) {
       nu[i] = l[i] - x[i] + g[i];
       tau[i] = u[i] - x[i] - t[i];
@@ -499,14 +499,14 @@ int32_t pr_loqo(
     x_h_x = 0;
     primal_inf = 0;
     dual_inf = 0;
-    
+
     for (i=0; i<n; i++) {
       x_h_x += h_dot_x[i] * x[i];
       primal_inf += CMath::sq(tau[i]);
       primal_inf += CMath::sq(nu[i]);
       dual_inf += CMath::sq(sigma[i]);
     }
-    for (i=0; i<m; i++) 
+    for (i=0; i<m; i++)
       primal_inf += CMath::sq(rho[i]);
     primal_inf = sqrt(primal_inf)/b_plus_1;
     dual_inf = sqrt(dual_inf)/c_plus_1;
@@ -523,7 +523,7 @@ int32_t pr_loqo(
     sigfig = log10(CMath::abs(primal_obj) + 1) -
              log10(CMath::abs(primal_obj - dual_obj));
     sigfig = CMath::max(sigfig, 0.0);
-		   
+
     /* the diagnostics - after we computed our results we will
        analyze them */
 
@@ -538,7 +538,7 @@ int32_t pr_loqo(
     /* write some nice routine to enforce the time limit if you
        _really_ want, however it's quite useless as you can compute
        the time from the maximum number of iterations as every
-       iteration costs one cholesky decomposition plus a couple of 
+       iteration costs one cholesky decomposition plus a couple of
        backsubstitutions */
 
     /* generate report */
@@ -559,65 +559,65 @@ int32_t pr_loqo(
 	/* diagonal terms */
 	d[i] = z[i] / g[i] + s[i] / t[i];
       }
-      
+
       /* initialization before the cholesky solver */
       for (i=0; i<n; i++) {
 	h_x[(n+1)*i] = diag_h_x[i] + d[i];
-	c_x[i] = sigma[i] - z[i] * hat_nu[i] / g[i] - 
+	c_x[i] = sigma[i] - z[i] * hat_nu[i] / g[i] -
 	  s[i] * hat_tau[i] / t[i];
       }
       for (i=0; i<m; i++) {
 	c_y[i] = rho[i];
-	for (j=i; j<m; j++) 
+	for (j=i; j<m; j++)
 	  h_y[m*i + j] = 0;
       }
-      
+
       /* and do it */
       if (!solve_reduced(n, m, h_x, h_y, a, delta_x, delta_y, c_x, c_y, workspace, PREDICTOR))
 	  {
 	  	  status=INCONSISTENT;
 		  goto exit_optimizer;
 	  }
-      
+
       for (i=0; i<n; i++) {
 	/* backsubstitution */
 	delta_s[i] = s[i] * (delta_x[i] - hat_tau[i]) / t[i];
 	delta_z[i] = z[i] * (hat_nu[i] - delta_x[i]) / g[i];
-	
+
 	delta_g[i] = g[i] * (gamma_z[i] - delta_z[i]) / z[i];
 	delta_t[i] = t[i] * (gamma_s[i] - delta_s[i]) / s[i];
-	
+
 	/* central path (corrector) */
 	gamma_z[i] = mu / g[i] - z[i] - delta_z[i] * delta_g[i] / g[i];
 	gamma_s[i] = mu / t[i] - s[i] - delta_s[i] * delta_t[i] / t[i];
-	
+
 	/* (some more intermediate variables) the hat variables */
 	hat_nu[i] = nu[i] + g[i] * gamma_z[i] / z[i];
 	hat_tau[i] = tau[i] - t[i] * gamma_s[i] / s[i];
-	
+
 	/* initialization before the cholesky */
 	c_x[i] = sigma[i] - z[i] * hat_nu[i] / g[i] - s[i] * hat_tau[i] / t[i];
       }
-      
+
       for (i=0; i<m; i++) {	/* comput c_y and rho */
 	c_y[i] = rho[i];
 	for (j=i; j<m; j++)
 	  h_y[m*i + j] = 0;
       }
-      
+
       /* and do it */
       solve_reduced(n, m, h_x, h_y, a, delta_x, delta_y, c_x, c_y, workspace,
 		    CORRECTOR);
-      
+
       for (i=0; i<n; i++) {
 	/* backsubstitution */
 	delta_s[i] = s[i] * (delta_x[i] - hat_tau[i]) / t[i];
 	delta_z[i] = z[i] * (hat_nu[i] - delta_x[i]) / g[i];
-	
+
 	delta_g[i] = g[i] * (gamma_z[i] - delta_z[i]) / z[i];
 	delta_t[i] = t[i] * (gamma_s[i] - delta_s[i]) / s[i];
       }
-      
+
       alfa = -1;
       for (i=0; i<n; i++) {
 	alfa = CMath::min(alfa, delta_g[i]/g[i]);
@@ -626,13 +626,13 @@ int32_t pr_loqo(
 	alfa = CMath::min(alfa, delta_z[i]/z[i]);
       }
       alfa = (margin - 1) / alfa;
-      
+
       /* compute mu */
       for (i=0, mu=0; i<n; i++)
 	mu += z[i] * g[i] + s[i] * t[i];
       mu = mu / (2*n);
       mu = mu * CMath::sq((alfa - 1) / (alfa + 10));
-      
+
       for (i=0; i<n; i++) {
 	x[i] += alfa * delta_x[i];
 	g[i] += alfa * delta_g[i];
@@ -640,18 +640,18 @@ int32_t pr_loqo(
 	z[i] += alfa * delta_z[i];
 	s[i] += alfa * delta_s[i];
       }
-      
-      for (i=0; i<m; i++) 
+
+      for (i=0; i<m; i++)
 	y[i] += alfa * delta_y[i];
     }
   }
 
-exit_optimizer: 
+exit_optimizer:
   if ((status == 1) && (verb >= STATUS)) {
 	  SG_SDEBUG("----------------------------------------------------------------------------------\n");
 	  SG_SDEBUG("optimization converged\n");
   }
-  
+
   /* free memory */
   SG_FREE(workspace);
   SG_FREE(diag_h_x);
@@ -659,24 +659,24 @@ exit_optimizer:
   SG_FREE(c_x);
   SG_FREE(c_y);
   SG_FREE(h_dot_x);
-  
+
   SG_FREE(rho);
   SG_FREE(nu);
   SG_FREE(tau);
   SG_FREE(sigma);
   SG_FREE(gamma_z);
   SG_FREE(gamma_s);
-  
+
   SG_FREE(hat_nu);
   SG_FREE(hat_tau);
-    
+
   SG_FREE(delta_x);
   SG_FREE(delta_y);
   SG_FREE(delta_s);
   SG_FREE(delta_z);
   SG_FREE(delta_g);
   SG_FREE(delta_t);
-    
+
   SG_FREE(d);
 
   /* and return to sender */

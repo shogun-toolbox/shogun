@@ -55,13 +55,6 @@ We integrated the work of the following people:
  Baozeng Ding
 	 - Support for modular java, c#, ruby, lua interfaces
 
- Sergey Lisitsyn
-	- Locally Linear Embedding, Classic and Landmark 
-	  Multidimensional Scaling, Local Tangent Space Alignment,
-	  Hessian Locally Linear Embedding, Isomap, Laplacian Eigenmaps
-	- ARPACK wrapper
-	- Various bugfixes and structural improvements
-
  Shashwat Lal Das
 	- Streaming / Online Feature Framework for SimpleFeatures, SparseFeatures,
 	  StringFeatures, SGD-QN, Online SGD, Online Liblinear, Online Vowpal Vabit
@@ -78,6 +71,8 @@ We integrated the work of the following people:
 
  Evgeniy Andreev:
 	- FibonacciHeap
+	- Python 3 support
+	- CoverTree
 	- HashSet
 
  Justin Patera
@@ -85,3 +80,7 @@ We integrated the work of the following people:
 
  Daniel Korn
  	- C# examples
+
+ Fernando José Iglesias Garcia
+ 	- Generic multiclass OvO training
+ 	- Quadratic Discriminant Analysis

@@ -242,7 +242,7 @@ void CSGDQN::init()
 
 	loss=new CHingeLoss();
 	SG_REF(loss);
-	
+
 	m_parameters->add(&C1, "C1",  "Cost constant 1.");
 	m_parameters->add(&C2, "C2",  "Cost constant 2.");
 	m_parameters->add(&epochs, "epochs",  "epochs");

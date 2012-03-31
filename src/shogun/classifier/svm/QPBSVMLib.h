@@ -5,10 +5,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Library for solving QP task required for learning SVM without bias term. 
+ * Library for solving QP task required for learning SVM without bias term.
  *
  * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
+ * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
  *
  -------------------------------------------------------------------- */
 

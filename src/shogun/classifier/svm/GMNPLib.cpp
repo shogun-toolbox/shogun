@@ -8,24 +8,24 @@
  * Library of solvers for Generalized Nearest Point Problem (GNPP).
  *
  * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
+ * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
  *
  *
 gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
- 
+
  Generalized Minimal Norm Problem to solve is
-  
+
   min 0.5*alpha'*H*alpha + c'*alpha
 
   subject to  sum(alpha) = 1,  alpha(i) >= 0
-  
+
  H [dim x dim] is symmetric positive definite matrix.
  c [dim x 1] is an arbitrary vector.
 
  The precision of the found solution is given by
  the parameters tmax, tolabs and tolrel which
  define the stopping conditions:
- 
+
  UB-LB <= tolabs      ->  exit_flag = 1   Abs. tolerance.
  UB-LB <= UB*tolrel   ->  exit_flag = 2   Relative tolerance.
  LB > th              ->  exit_flag = 3   Threshold on lower bound.
@@ -41,10 +41,10 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
  ..............................................
 
  - GMNP solver based on improved MDM algorithm 1 (u fixed v optimized)
-    exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,  
+    exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,
                  tmax, tolabs, tolrel, th, &alpha, &t, &History, verb  );
 
-  For more info refer to V.Franc: Optimization Algorithms for Kernel 
+  For more info refer to V.Franc: Optimization Algorithms for Kernel
   Methods. Research report. CTU-CMP-2005-22. CTU FEL Prague. 2005.
   ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf .
 
@@ -142,10 +142,10 @@ CGMNPLib::CGMNPLib(
 
 CGMNPLib::~CGMNPLib()
 {
-	for(int32_t i = 0; i < Cache_Size; i++ ) 
+	for(int32_t i = 0; i < Cache_Size; i++ )
 		SG_FREE(kernel_columns[i]);
 
-	for(int32_t i = 0; i < 3; i++ ) 
+	for(int32_t i = 0; i < 3; i++ )
 		SG_FREE(virt_columns[i]);
 
 	SG_FREE(cache_index);
@@ -168,12 +168,12 @@ float64_t* CGMNPLib::get_kernel_col( int32_t a )
   for( i=0; i < Cache_Size; i++ ) {
     if( cache_index[i] == a ) { inx = i; break; }
   }
-    
+
   if( inx != -1 ) {
     col_ptr = kernel_columns[inx];
     return( col_ptr );
   }
-   
+
   col_ptr = kernel_columns[first_kernel_inx];
   cache_index[first_kernel_inx] = a;
 
@@ -188,13 +188,13 @@ float64_t* CGMNPLib::get_kernel_col( int32_t a )
 }
 
 /* ------------------------------------------------------------
-  Computes index of input example and its class label from 
+  Computes index of input example and its class label from
   index of virtual "single-class" example.
 ------------------------------------------------------------ */
 void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
 {
    *index = i / (m_num_classes-1);
- 
+
    *c= (i % (m_num_classes-1))+1;
    if( *c>= m_vector_y[ *index ]) (*c)++;
 
@@ -205,7 +205,7 @@ void CGMNPLib::get_indices2( int32_t *index, int32_t *c, int32_t i )
 /* ------------------------------------------------------------
   Returns pointer at the a-th column of the virtual K matrix.
 
-  (note: the b-th column must be preserved in the cache during 
+  (note: the b-th column must be preserved in the cache during
    updating but b is from (a(t-2), a(t-1)) where a=a(t) and
    thus FIFO with three columns does not have to take care od b.)
 ------------------------------------------------------------ */
@@ -227,7 +227,7 @@ float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
     get_indices2( &i2, &c2, i );
 
     if( KDELTA4(m_vector_y[i1],m_vector_y[i2],c1,c2) ) {
-      value = (+KDELTA(m_vector_y[i1],m_vector_y[i2]) 
+      value = (+KDELTA(m_vector_y[i1],m_vector_y[i2])
                -KDELTA(m_vector_y[i1],c2)
                -KDELTA(m_vector_y[i2],c1)
                +KDELTA(c1,c2)
@@ -238,11 +238,11 @@ float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
       value = 0;
     }
 
-    if(a==i) value += m_reg_const; 
+    if(a==i) value += m_reg_const;
 
     col_ptr[i] = value;
   }
-  
+
   return( col_ptr );
 }
 
@@ -250,15 +250,15 @@ float64_t* CGMNPLib::get_col( int32_t a, int32_t b )
 /* --------------------------------------------------------------
  GMNP solver based on improved MDM algorithm 1.
 
- Search strategy: u determined by common rule and v is 
+ Search strategy: u determined by common rule and v is
  optimized.
 
- Usage: exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,  
+ Usage: exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,
                   tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
 
 int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
-            int32_t dim, 
+            int32_t dim,
             int32_t tmax,
             float64_t tolabs,
             float64_t tolrel,
@@ -310,7 +310,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
 
   col_v = (float64_t*)get_col(v,-1);
 
-  for( min_beta = PLUS_INF, i = 0; i < dim; i++ ) 
+  for( min_beta = PLUS_INF, i = 0; i < dim; i++ )
   {
     alpha[i] = 0;
     Ha[i] = col_v[i];
@@ -336,7 +336,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   if( verb ) {
     SG_PRINT("Init: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);
-  }  
+  }
 
   /* Stopping conditions */
   if( UB-LB <= tolabs ) exitflag = 1;
@@ -349,9 +349,9 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   /* ------------------------------------------------------------ */
 
   col_u = (float64_t*)get_col(u,-1);
-  while( exitflag == -1 ) 
+  while( exitflag == -1 )
   {
-    t++;     
+    t++;
 
     col_v = (float64_t*)get_col(v,u);
 
@@ -373,23 +373,23 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
     alpha[v]=alpha[v]-lambda*alpha[v];
 
     UB = 0.5*aHa + ac;
-    
+
 /*    max_beta = MINUS_INF;*/
-    for( min_beta = PLUS_INF, i = 0; i < dim; i++ ) 
+    for( min_beta = PLUS_INF, i = 0; i < dim; i++ )
     {
        Ha[i] = Ha[i] + lambda*tmp*(col_u[i] - col_v[i]);
 
        beta = Ha[i]+ vector_c[i];
 
        if( beta < min_beta )
-       { 
+       {
          new_u = i;
          min_beta = beta;
        }
-    }    
+    }
 
-    LB = min_beta - 0.5*aHa; 
-    u = new_u;    
+    LB = min_beta - 0.5*aHa;
+    u = new_u;
     col_u = (float64_t*)get_col(u,-1);
 
     /* search for optimal v while u is fixed */
@@ -414,10 +414,10 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
     }
 
     /* Stopping conditions */
-    if( UB-LB <= tolabs ) exitflag = 1; 
+    if( UB-LB <= tolabs ) exitflag = 1;
     else if( UB-LB <= CMath::abs(UB)*tolrel) exitflag = 2;
     else if(LB > th ) exitflag = 3;
-    else if(t >= tmax) exitflag = 0; 
+    else if(t >= tmax) exitflag = 0;
 
     /* print info */
 	SG_ABS_PROGRESS(CMath::abs((UB-LB)/UB),
@@ -427,7 +427,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
     if(verb && (t % verb) == 0 ) {
       SG_PRINT("%d: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
         t, UB, LB, UB-LB,(UB-LB)/UB);
-    }  
+    }
 
     /* Store selected values */
     if( t < History_size ) {
@@ -443,7 +443,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
       }
       tmp_ptr[INDEX(0,t,2)] = LB;
       tmp_ptr[INDEX(1,t,2)] = UB;
-      
+
       History_size += HISTORY_BUF;
       SG_FREE(History);
       History = tmp_ptr;
@@ -455,7 +455,7 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
   if(verb && (t % verb) ) {
     SG_PRINT("exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);
-  }  
+  }
 
 
   /*------------------------------------------------------- */
@@ -466,13 +466,13 @@ int8_t CGMNPLib::gmnp_imdm(float64_t *vector_c,
 
   /* Free memory */
   SG_FREE(Ha);
-  
-  return( exitflag ); 
+
+  return( exitflag );
 }
 
 /* ------------------------------------------------------------
-  Retures (a,b)-th element of the virtual kernel matrix 
-  of size [num_virt_data x num_virt_data]. 
+  Retures (a,b)-th element of the virtual kernel matrix
+  of size [num_virt_data x num_virt_data].
 ------------------------------------------------------------ */
 float64_t CGMNPLib::kernel_fce( int32_t a, int32_t b )
 {
@@ -483,7 +483,7 @@ float64_t CGMNPLib::kernel_fce( int32_t a, int32_t b )
   get_indices2( &i2, &c2, b );
 
   if( KDELTA4(m_vector_y[i1],m_vector_y[i2],c1,c2) ) {
-    value = (+KDELTA(m_vector_y[i1],m_vector_y[i2]) 
+    value = (+KDELTA(m_vector_y[i1],m_vector_y[i2])
              -KDELTA(m_vector_y[i1],c2)
              -KDELTA(m_vector_y[i2],c1)
              +KDELTA(c1,c2)
@@ -494,7 +494,7 @@ float64_t CGMNPLib::kernel_fce( int32_t a, int32_t b )
     value = 0;
   }
 
-  if(a==b) value += m_reg_const; 
+  if(a==b) value += m_reg_const;
 
   return( value );
 }

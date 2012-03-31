@@ -54,13 +54,13 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 */
 		//virtual EKernelType get_kernel_type() { return K_UNKNOWN; }
 		virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREERBF; }
-		
+
 		/** return the kernel's name
 		 *
 		 * @return name Gaussian
 		 */
 		inline virtual const char* get_name() const { return "WeightedDegreeRBFKernel"; }
-		
+
 
 		/** return feature class the kernel can deal with
 		 *
@@ -73,8 +73,8 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 * @return float64_t feature type
 		 */
 		virtual EFeatureType get_feature_type() { return F_DREAL; }
-	
-	
+
+
 		/** set degree
 		 *
 		 * @param deg new degree

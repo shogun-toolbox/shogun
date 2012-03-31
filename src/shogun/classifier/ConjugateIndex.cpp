@@ -33,7 +33,7 @@ CConjugateIndex::CConjugateIndex(CFeatures* train_features, CLabels* train_label
 	m_classes = NULL;
 };
 
-CConjugateIndex::~CConjugateIndex() 
+CConjugateIndex::~CConjugateIndex()
 {
 	clean_classes();
 	m_feature_vector.destroy_vector();
@@ -65,7 +65,7 @@ void CConjugateIndex::clean_classes()
 	}
 }
 
-bool CConjugateIndex::train(CFeatures* train_features) 
+bool CConjugateIndex::train(CFeatures* train_features)
 {
 	if (train_features)
 		set_features(train_features);
@@ -85,7 +85,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 	m_feature_vector = SGVector<float64_t>(num_features);
 
 	SG_PROGRESS(0,0,m_num_classes-1);
-	
+
 	for (int32_t label=0; label<m_num_classes; label++)
 	{
 		int32_t count = 0;
@@ -124,13 +124,13 @@ bool CConjugateIndex::train(CFeatures* train_features)
 		            1.0,matrix.matrix,count,
 		            class_feature_matrix.matrix,num_features,
 		            0.0,helper_matrix.matrix,count);
-		
+
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,
 		            num_features,num_features,count,
 		            1.0,class_feature_matrix.matrix,num_features,
 		            helper_matrix.matrix,count,
 		            0.0,m_classes[label].matrix,num_features);
-		
+
 		SG_PROGRESS(label+1,0,m_num_classes);
 		helper_matrix.destroy_matrix();
 		class_feature_matrix.destroy_matrix();
@@ -141,7 +141,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 	return true;
 };
 
-CLabels* CConjugateIndex::apply(CFeatures* test_features) 
+CLabels* CConjugateIndex::apply(CFeatures* test_features)
 {
 	set_features(test_features);
 
@@ -187,7 +187,7 @@ float64_t CConjugateIndex::conjugate_index(SGVector<float64_t> feature_vector, i
 	return product/norm;
 };
 
-float64_t CConjugateIndex::apply(int32_t index) 
+float64_t CConjugateIndex::apply(int32_t index)
 {
 	int32_t predicted_label = 0;
 	float64_t max_conjugate_index = 0.0;

@@ -168,7 +168,7 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	{
 		register float64_t pot2;
 		if (i>0)
-			conv += ((x1[i+PYRAL-1] == x2[i+PYRAL-1]) ? 1 : 0 ) - 
+			conv += ((x1[i+PYRAL-1] == x2[i+PYRAL-1]) ? 1 : 0 ) -
 				((x1[i-1] == x2[i-1]) ? 1 : 0);
 		{ /* potencing of conv -- float64_t is faster*/
 		register float64_t conv2 = conv;

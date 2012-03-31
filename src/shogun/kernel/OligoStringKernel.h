@@ -21,7 +21,7 @@
 namespace shogun
 {
 /**
- * @brief This class offers access to the Oligo Kernel introduced 
+ * @brief This class offers access to the Oligo Kernel introduced
  * by Meinicke et al. in 2004
  *
  * The class has functions to preprocess the data such that the kernel
@@ -29,7 +29,7 @@ namespace shogun
  * kernelOligoFast or kernelOligo.
  *
  * Requires significant speedup, should be working but as is might be
- * applicable only to academic small scale problems: 
+ * applicable only to academic small scale problems:
  *
  * - the kernel should only ever see encoded sequences, which however
  * requires another OligoFeatures object (using CSimpleFeatures of pairs)
@@ -84,14 +84,14 @@ class COligoStringKernel : public CStringKernel<char>
 	protected:
 		/**
 		 * @brief encodes the signals of the sequence
-		 * 
-		 * This function stores the oligo function signals in 'values'. 
-		 * 
-		 * The 'k_mer_length' and the 'allowed_characters' determine, 
+		 *
+		 * This function stores the oligo function signals in 'values'.
+		 *
+		 * The 'k_mer_length' and the 'allowed_characters' determine,
 		 * which signals are used. Every pair contains the position of the
 		 * signal and a numerical value reflecting the signal. The
-		 * numerical value represents the k_mer to a base 
-		 * n = |allowed_characters|. 
+		 * numerical value represents the k_mer to a base
+		 * n = |allowed_characters|.
 		 * Example: The value of k_mer CG for the allowed characters ACGT
 		 * would be 1 * n^1 + 2 * n^0 = 6.
 		 */
@@ -117,12 +117,12 @@ class COligoStringKernel : public CStringKernel<char>
 
 		  This function computes the kernel value of the oligo kernel,
 		  which was introduced by Meinicke et al. in 2004. 'x' and
-		  'y' are encoded by encodeOligo and 'exp_cache' has to be 
-		  constructed by getExpFunctionCache. 
+		  'y' are encoded by encodeOligo and 'exp_cache' has to be
+		  constructed by getExpFunctionCache.
 
-		  'max_distance' can be used to speed up the computation 
+		  'max_distance' can be used to speed up the computation
 		  even further by restricting the maximum distance between a k_mer at
-		  position i in sequence 'x' and a k_mer at position j 
+		  position i in sequence 'x' and a k_mer at position j
 		  in sequence 'y'. If i - j > 'max_distance' the value is not
 		  added to the kernel value. This approximation is switched
 		  off by default (max_distance < 0).
@@ -132,15 +132,15 @@ class COligoStringKernel : public CStringKernel<char>
 			const std::vector< std::pair<int32_t, float64_t> >& y,
 			int32_t max_distance = -1);
 
-	private: 
+	private:
 		/**
 		  @brief prepares the exp function cache of the oligo kernel
 
 		  The oligo kernel was introduced for sequences of fixed length.
-		  Let n be the sequence length of sequences x and y. There can 
-		  only be n different distances between signals in sequence x 
-		  and sequence y (0, 1, ..., n-1). Therefore, we precompute 
-		  the corresponding values of the e-function. These values 
+		  Let n be the sequence length of sequences x and y. There can
+		  only be n different distances between signals in sequence x
+		  and sequence y (0, 1, ..., n-1). Therefore, we precompute
+		  the corresponding values of the e-function. These values
 		  can then be used in kernelOligoFast.
 		  */
 		void getExpFunctionCache(uint32_t sequence_length);

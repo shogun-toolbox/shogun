@@ -57,7 +57,7 @@ float64_t CJensenShannonKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(alen==blen);
 
 	float64_t result=0;
-	
+
 	/* calcualte Jensen-Shannon kernel */
 	for (int32_t i=0; i<alen; i++) {
 		float64_t a_i = 0, b_i = 0;
@@ -69,7 +69,7 @@ float64_t CJensenShannonKernel::compute(int32_t idx_a, int32_t idx_b)
 
 		result += 0.5*(a_i + b_i);
 	}
-	
+
 	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 

@@ -76,7 +76,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
     virtual void cleanup_feature_vector(int32_t num);
 
 	/** obtain meta information from file
-	 * 
+	 *
 	 * i.e., determine number of strings and their lengths
 	 */
 	void fetch_meta_info_from_file(int32_t granularity=1048576);

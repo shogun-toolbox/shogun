@@ -99,10 +99,10 @@ float64_t CWeightedDegreeRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 			{
 				resultid+=CMath::sq(avec[i+k]-bvec[i+k]);
 			}
-			
+
 			resulti += weights[d] * exp(-resultid/width);
 		}
-	
+
 		result+=resulti ;
 	}
 

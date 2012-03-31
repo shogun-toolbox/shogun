@@ -16,7 +16,7 @@
 namespace shogun
 {
 /** @brief Multiple Kernel Learning for two-class-classification
- * 
+ *
  * Learns an SVM classifier and its kernel weights. Makes only sense if
  * multiple kernels are used.
  *

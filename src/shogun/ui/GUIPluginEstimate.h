@@ -10,7 +10,7 @@
  */
 
 #ifndef _GUIPLUGINESTIMATE_H__
-#define _GUIPLUGINESTIMATE_H__ 
+#define _GUIPLUGINESTIMATE_H__
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
@@ -28,7 +28,7 @@ class CGUIPluginEstimate : public CSGObject
 	public:
 		/** constructor */
 		CGUIPluginEstimate() {};
-		/** constructor 
+		/** constructor
 		 * @param interface
 		 */
 		CGUIPluginEstimate(CSGInterface* interface);
@@ -43,7 +43,7 @@ class CGUIPluginEstimate : public CSGObject
 		 * @param param
 		 */
 		bool marginalized_train(char* param);
-		/** load 
+		/** load
 		 * @param param
 		 */
 		bool load(char* param);

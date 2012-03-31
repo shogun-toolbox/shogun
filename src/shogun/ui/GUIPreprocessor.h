@@ -27,7 +27,7 @@ class CGUIPreprocessor : public CSGObject
 	public:
 		/** constructor */
 		CGUIPreprocessor() { };
-		/** constructor 
+		/** constructor
 		 * @param interface
 		 */
 		CGUIPreprocessor(CSGInterface* interface);

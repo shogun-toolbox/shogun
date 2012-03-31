@@ -325,7 +325,7 @@ public:
 	}
 
 protected:
-	/** register the parameters 
+	/** register the parameters
 	 */
 	virtual void register_params()
 	{

@@ -54,14 +54,14 @@ bool CCommWordStringKernel::init_dictionary(int32_t size)
 	return dictionary_weights!=NULL;
 }
 
-CCommWordStringKernel::~CCommWordStringKernel() 
+CCommWordStringKernel::~CCommWordStringKernel()
 {
 	cleanup();
 
 	SG_FREE(dictionary_weights);
 	SG_FREE(dict_diagonal_optimization);
 }
-  
+
 bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	CStringKernel<uint16_t>::init(l,r);
@@ -315,7 +315,7 @@ bool CCommWordStringKernel::init_optimization(
 	return true;
 }
 
-bool CCommWordStringKernel::delete_optimization() 
+bool CCommWordStringKernel::delete_optimization()
 {
 	SG_DEBUG( "deleting CCommWordStringKernel optimization\n");
 
@@ -324,11 +324,11 @@ bool CCommWordStringKernel::delete_optimization()
 }
 
 float64_t CCommWordStringKernel::compute_optimized(int32_t i)
-{ 
+{
 	if (!get_is_initialized())
 	{
       SG_ERROR( "CCommWordStringKernel optimization not initialized\n");
-		return 0 ; 
+		return 0 ;
 	}
 
 	float64_t result = 0;
@@ -389,7 +389,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 	int32_t offset=0;
 
 	num_sym=0;
-	
+
 	for (int32_t i=0; i<order; i++)
 		num_sym+=CMath::pow((int32_t) num_words,i+1);
 
@@ -442,7 +442,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 
 			float64_t marginalizer=
 				1.0/CMath::pow((int32_t) num_words,(int32_t) m_sym);
-			
+
 			for (uint32_t i=0; i<words; i++)
 			{
 				uint16_t x= ((i << (num_bits*il)) >> (num_bits*ir)) & imer_mask;
@@ -454,7 +454,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 					SG_PRINT("o=%d/%d p=%d/%d i=0x%x x=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d marg=%g o_sym:%d m_sym:%d weight(",
 							o,order, p,order, i, x, imer_mask, jmer_mask, kmer_mask, il, ir, marginalizer, o_sym, m_sym);
 
-					SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n", 
+					SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n",
 							alpha->remap_to_char((x>>(3*num_bits))&0x03), alpha->remap_to_char((x>>(2*num_bits))&0x03),
 							alpha->remap_to_char((x>>num_bits)&0x03), alpha->remap_to_char(x&0x03),
 							alpha->remap_to_char((i>>(3*num_bits))&0x03), alpha->remap_to_char((i>>(2*num_bits))&0x03),
@@ -472,7 +472,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 
 						SG_PRINT("o=%d/%d p=%d/%d i=0x%x j=0x%x x=0x%x c=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d jl=%d marg=%g o_sym:%d m_sym:%d weight(",
 								o,order, p,order, i, j, x, c, imer_mask, jmer_mask, kmer_mask, il, ir, jl, marginalizer, o_sym, m_sym);
-						SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n", 
+						SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n",
 								alpha->remap_to_char((c>>(3*num_bits))&0x03), alpha->remap_to_char((c>>(2*num_bits))&0x03),
 								alpha->remap_to_char((c>>num_bits)&0x03), alpha->remap_to_char(c&0x03),
 								alpha->remap_to_char((i>>(3*num_bits))&0x03), alpha->remap_to_char((i>>(2*num_bits))&0x03),
@@ -511,7 +511,7 @@ char* CCommWordStringKernel::compute_consensus(
 	int32_t num_bits=alpha->get_num_bits();
 	int32_t order=str->get_order();
 	int32_t max_idx=-1;
-	float64_t max_score=0; 
+	float64_t max_score=0;
 	result_len=num_feat+order-1;
 
 	//init
@@ -536,10 +536,10 @@ char* CCommWordStringKernel::compute_consensus(
 		for (int32_t t1=0; t1<num_words; t1++)
 		{
 			max_idx=-1;
-			max_score=0; 
+			max_score=0;
 
-			/* ignore weights the svm does not care about 
-			 * (has not seen in training). note that this assumes that zero 
+			/* ignore weights the svm does not care about
+			 * (has not seen in training). note that this assumes that zero
 			 * weights are very unlikely to appear elsewise */
 
 			//if (dictionary_weights[t1]==0.0)
@@ -584,7 +584,7 @@ char* CCommWordStringKernel::compute_consensus(
 	}
 
 	SG_PRINT("max_idx:%i, max_score:%f\n", max_idx, max_score);
-	
+
 	for (int32_t i=result_len-1; i>=num_feat; i--)
 		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (uint16_t) max_idx >> (num_bits*(result_len-1-i)), 1) );
 

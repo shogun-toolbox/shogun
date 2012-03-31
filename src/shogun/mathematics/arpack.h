@@ -16,12 +16,12 @@
 
 namespace shogun
 {
-/** Wrapper for ARPACK's dsaupd/dseupd routines. These ARPACK 
- * routines are being used to compute specified number of eigenpairs 
- * (e.g. k largest eigenvalues). Underlying routines involve 
+/** Wrapper for ARPACK's dsaupd/dseupd routines. These ARPACK
+ * routines are being used to compute specified number of eigenpairs
+ * (e.g. k largest eigenvalues). Underlying routines involve
  * a variant of Arnoldi process called the IRAM
- * (Implicitly Restarted Arnoldi Method) reduced to IRLM 
- * (Implicitly Restarted Lanczos Method). A strategy specifying 
+ * (Implicitly Restarted Arnoldi Method) reduced to IRLM
+ * (Implicitly Restarted Lanczos Method). A strategy specifying
  * which eigenpairs to compute should be provided as parameter.
  *
  * @param matrix symmetric real matrix of size n*n
@@ -37,7 +37,7 @@ namespace shogun
  *        - "LM": nev Largest Magnitude eigenvalues
  *        - "SM": nev Smallest Magnitude eigenvalues
  *        - "LA": nev Largest Algebraic eigenvalues
- *                (if mode==3 eigenvalues from the right of shift) 
+ *                (if mode==3 eigenvalues from the right of shift)
  *        - "SA": nev Smallest Algebraic eigenvalues
  *                (if mode==3 eigenvalues from the left of shift)
  *        - "BE": half of nev from each end of the spectrum, i.e. nev%2
@@ -57,8 +57,8 @@ namespace shogun
  * @param eigenvectors array of size nev*n to hold computed eigenvectors
  * @param status on output -1 if computation failed
  */
-void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev, 
-                   const char* which, bool use_superlu, int mode, bool pos, bool cov, 
+void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev,
+                   const char* which, bool use_superlu, int mode, bool pos, bool cov,
                    double shift, double tolerance, double* eigenvalues,
                    double* eigenvectors, int& status);
 }

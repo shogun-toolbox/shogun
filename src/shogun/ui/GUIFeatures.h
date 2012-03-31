@@ -45,7 +45,7 @@ class CGUIFeatures : public CSGObject
 	public:
 		/** constructor */
 		CGUIFeatures() {};
-		/** constructor 
+		/** constructor
 		 * @param interface
 		 */
 		CGUIFeatures(CSGInterface* interface);
@@ -61,7 +61,7 @@ class CGUIFeatures : public CSGObject
 		 * @param f
 		 */
 		inline bool set_train_features(CFeatures* f)
-		{ 
+		{
 			//invalidate_train();
 			SG_UNREF(train_features);
 			SG_REF(f);
@@ -73,7 +73,7 @@ class CGUIFeatures : public CSGObject
 		 * @param f
 		 */
 		inline bool set_test_features(CFeatures* f)
-		{ 
+		{
 			//invalidate_test();
 			SG_UNREF(test_features);
 			SG_REF(f);
@@ -93,7 +93,7 @@ class CGUIFeatures : public CSGObject
 		 * @param f
 		 */
 		void add_train_dotfeatures(CDotFeatures* f);
-		/** add test dotfeatures 
+		/** add test dotfeatures
 		 * @param f
 		 */
 		void add_test_dotfeatures(CDotFeatures* f);
@@ -139,18 +139,18 @@ class CGUIFeatures : public CSGObject
 		CSimpleFeatures<float64_t>* convert_simple_char_to_simple_align(
 			CSimpleFeatures<char>* src,
 			float64_t gap_cost=0);
-		/** convert simple word to simple salzberg 
+		/** convert simple word to simple salzberg
 		 * @param src
 		 */
 		CSimpleFeatures<float64_t>* convert_simple_word_to_simple_salzberg(
 			CSimpleFeatures<uint16_t>* src);
 
-		/** convert string word to simple top 
+		/** convert string word to simple top
 		 * @param src
 		 */
 		CTOPFeatures* convert_string_word_to_simple_top(
 			CStringFeatures<uint16_t>* src);
-		/** convert string word to simple fk 
+		/** convert string word to simple fk
 		 * @param src
 		 */
 		CFKFeatures* convert_string_word_to_simple_fk(
@@ -185,7 +185,7 @@ class CGUIFeatures : public CSGObject
 				//create dense features with 0 cache
 				SG_INFO("Converting CT STRING features to ST STRING ones (order=%i).\n",order);
 				bool free_alpha=false;
-				
+
 				if (!alpha)
 				{
 					CAlphabet* a = src->get_alphabet();

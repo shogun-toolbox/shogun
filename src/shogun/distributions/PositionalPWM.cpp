@@ -151,7 +151,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 	CStringFeatures<uint16_t>* str= new CStringFeatures<uint16_t>(alpha);
 	int32_t num_bits=alpha->get_num_bits();
 	str->compute_symbol_mask_table(num_bits);
-	
+
 	for (int32_t i=0; i<order; i++)
 		num_sym+=CMath::pow((int32_t) num_words,i+1);
 
@@ -200,7 +200,7 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 
 			float64_t marginalizer=
 				1.0/CMath::pow((int32_t) num_words,(int32_t) m_sym);
-			
+
 			for (uint32_t i=0; i<words; i++)
 			{
 				uint16_t x= ((i << (num_bits*il)) >> (num_bits*ir)) & imer_mask;

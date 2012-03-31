@@ -31,7 +31,7 @@ CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 
 CFKFeatures::CFKFeatures(const CFKFeatures &orig)
 : CSimpleFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
-{ 
+{
 }
 
 CFKFeatures::~CFKFeatures()
@@ -131,7 +131,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 	SG_REF(p);
 	SG_REF(n);
 
-	pos=p; 
+	pos=p;
 	neg=n;
 	set_num_vectors(0);
 
@@ -191,7 +191,7 @@ void CFKFeatures::compute_feature_vector(
 
 		for (j=0; j<pos->get_M(); j++) {
 			featurevector[p++]=weight_a*exp(pos->model_derivative_b(i, j, x)-px);
-		} 
+		}
 
 	}
 
@@ -241,7 +241,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 	}
 
 	SG_DONE();
-	
+
 	num_vectors=get_num_vectors();
 	num_features=get_num_features();
 

@@ -64,40 +64,40 @@ public:
 
 	// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
 	// create the following 1-norm SVM problem & transfer to cplex
-	// 
-	///////////////////////////////////////////////////////////////// 
+	//
+	/////////////////////////////////////////////////////////////////
 	// min_w 		sum_{i=0}^N ( w^+_i + w^-_i) + C \sum_{i=0}^N \xi_i
 	// w=[w^+ w^-]
 	// b, xi
-	// 
+	//
 	// -y_i((w^+-w^-)^T x_i + b)-xi_i <= -1
-	// xi_i >= 0 
+	// xi_i >= 0
 	// w_i >= 0    forall i=1...N
-	///////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////
 	// min f^x
 	// Ax <= b
 	// -x <= 0
-	// 
+	//
 	// lb= [ -inf, //b
 	// 	  2*dims [0], //w
-	// 	  num_train [0] //xi 
+	// 	  num_train [0] //xi
 	// 	]
-	// 
+	//
 	// ub= [ inf, //b
 	// 	  2*dims [inf], //w
-	// 	  num_train [inf] //xi 
+	// 	  num_train [inf] //xi
 	// 	]
-	// 
+	//
 	// f= [0,2*dim[1], num_train*C]
 	// A= [-y', // b
 	// 	-y_ix_i // w_+
 	// 	+y_ix_i // w_-
 	// 	-1 //xi
 	// 	]
-	// 
+	//
 	// 	dim(A)=(n,1+2*dim+n)
-	// 
-	// b =  -1 -1 -1 -1 ... 
+	//
+	// b =  -1 -1 -1 -1 ...
 	bool setup_lpm(
 		float64_t C, CSparseFeatures<float64_t>* x, CLabels* y, bool use_bias);
 

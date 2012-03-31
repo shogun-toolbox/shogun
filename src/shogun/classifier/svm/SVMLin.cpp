@@ -63,7 +63,7 @@ bool CSVMLin::train_machine(CFeatures* data)
 
 	Data.l=num_vec;
 	Data.m=num_vec;
-	Data.u=0; 
+	Data.u=0;
 	Data.n=num_feat+1;
 	Data.nz=num_feat+1;
 	Data.Y=train_labels.vector;
@@ -80,7 +80,7 @@ bool CSVMLin::train_machine(CFeatures* data)
 	Options.mfnitermax=50;
 	Options.Cp = get_C2()/get_C1();
 	Options.Cn = 1;
-	
+
 	if (use_bias)
 		Options.bias=1.0;
 	else
@@ -88,9 +88,9 @@ bool CSVMLin::train_machine(CFeatures* data)
 
 	for (int32_t i=0;i<num_vec;i++)
 	{
-		if(train_labels.vector[i]>0) 
+		if(train_labels.vector[i]>0)
 			Data.C[i]=Options.Cp;
-		else 
+		else
 			Data.C[i]=Options.Cn;
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);

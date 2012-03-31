@@ -208,7 +208,7 @@ class CGMM : public CDistribution
 		inline virtual const char* get_name() const { return "GMM"; }
 
 	private:
-		/** 1NN assignment initialization 
+		/** 1NN assignment initialization
 		 *
 		 * @param init_means initial means
 		 *
@@ -219,7 +219,7 @@ class CGMM : public CDistribution
 		/** Initialize parameters for serialization */
 		void register_params();
 
-		/** apply the partial EM algorithm on 3 components 
+		/** apply the partial EM algorithm on 3 components
 		 *
 		 * @param comp1 index of first component
 		 * @param comp2 index of second component

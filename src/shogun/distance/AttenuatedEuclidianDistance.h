@@ -25,15 +25,15 @@ namespace shogun
  * valued as 0. Note that this might make sense only in the Decoding
  *  step of the ECOC framework, since the 0 value denotes that a certain category is
  *  ignored.
- * 
+ *
  * This distance was proposed by
- * S. Escalera, O. Pujol, P.Radeva in On the decoding process in ternary error-correcting output codes, 
+ * S. Escalera, O. Pujol, P.Radeva in On the decoding process in ternary error-correcting output codes,
  * Transactions in Pattern Analysis and Machine Intelligence 99 (1).
  *
  * \f[\displaystyle
  *  d({\bf x},{\bf x'})= \sqrt{\sum_{i=0}^{n}|x_i||x'_i|{\bf x_i}-{\bf x'_i}|^2}
  * \f]
- *                  
+ *
  */
 class CAttenuatedEuclidianDistance: public CRealDistance
 {

@@ -65,8 +65,8 @@ CSupervisedKernelLocalTangentSpaceAlignment::~CSupervisedKernelLocalTangentSpace
 }
 
 const char* CSupervisedKernelLocalTangentSpaceAlignment::get_name() const
-{ 
-	return "SupervisedKernelLocalTangentSpaceAlignment"; 
+{
+	return "SupervisedKernelLocalTangentSpaceAlignment";
 };
 
 SGMatrix<int32_t> CSupervisedKernelLocalTangentSpaceAlignment::get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix, int32_t k)
@@ -75,9 +75,9 @@ SGMatrix<int32_t> CSupervisedKernelLocalTangentSpaceAlignment::get_neighborhood_
 	int32_t N = kernel_matrix.num_cols;
 	ASSERT(m_labels);
 	ASSERT(m_labels->get_num_labels()==N);
-	
+
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
-	
+
 	float64_t max_dist=0.0;
 	for (i=0; i<N; i++)
 		max_dist = CMath::max(max_dist,kernel_matrix[i*N+i]);
@@ -91,7 +91,7 @@ SGMatrix<int32_t> CSupervisedKernelLocalTangentSpaceAlignment::get_neighborhood_
 
 	for (i=0; i<N; i++)
 	{
-		std::vector<SKLTSA_COVERTREE_POINT> neighbors = 
+		std::vector<SKLTSA_COVERTREE_POINT> neighbors =
 		   coverTree->kNearestNeighbors(vectors[i],k+1);
 
 		ASSERT(neighbors.size()>=unsigned(k+1));

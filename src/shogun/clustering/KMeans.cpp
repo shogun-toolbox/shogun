@@ -165,7 +165,7 @@ void *sqdist_thread_func(void * P)
 		for (i=0; i<n1; i++)
 		{
 			float64_t sum=0;
-			for (k=0; k<m; k++) 
+			for (k=0; k<m; k++)
 				sum = sum + CMath::sq(x[i*m + k] - vec[k]);
 			z[j*n1 + i] = sum;
 		}
@@ -173,7 +173,7 @@ void *sqdist_thread_func(void * P)
 		y->free_feature_vector(vec, j, vfree);
 	}
 	return NULL;
-} 
+}
 }
 
 void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
@@ -200,7 +200,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	///replace rhs feature vectors
 	CSimpleFeatures<float64_t>* rhs_mus = new CSimpleFeatures<float64_t>(0);
 	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
- 
+
 	int32_t vlen=0;
 	bool vfree=false;
 	float64_t* vec=NULL;
@@ -215,7 +215,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 
 	if (!use_old_mus)
 	{
-		for (i=0; i<XSize; i++) 
+		for (i=0; i<XSize; i++)
 		{
 			const int32_t Cl=CMath::random(0, k-1);
 			int32_t j;
@@ -240,7 +240,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 					mus.matrix[i*dimensions+j] /= weights_set[i];
 		}
 	}
-	else 
+	else
 	{
 		ASSERT(mus_start);
 
@@ -250,7 +250,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 
 		for(int32_t idx=0;idx<XSize;idx++,p_dists+=k)
 			distances_rhs(p_dists,0,k,idx);
-		p_dists=NULL;            
+		p_dists=NULL;
 
 		for (i=0; i<XSize; i++)
 		{
@@ -268,9 +268,9 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			ClList[i]=Cl;
 		}
 
-		/* Compute the sum of all points belonging to a cluster 
+		/* Compute the sum of all points belonging to a cluster
 		 * and count the points */
-		for (i=0; i<XSize; i++) 
+		for (i=0; i<XSize; i++)
 		{
 			const int32_t Cl = ClList[i];
 			float64_t weight=Weights.vector[i];
@@ -285,7 +285,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 #endif
 		}
 #ifndef MUSRECALC
-		/* normalization to get the mean */ 
+		/* normalization to get the mean */
 		for (i=0; i<k; i++)
 		{
 			if (weights_set[i]!=0.0)
@@ -314,7 +314,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		/* mus=zeros(dimensions, k) ; */
 		memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
 
-		for (i=0; i<XSize; i++) 
+		for (i=0; i<XSize; i++)
 		{
 			int32_t j;
 			int32_t Cl=ClList[i];
@@ -352,7 +352,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 			/* compute the distance of this point to all centers */
 			for(int32_t idx_k=0;idx_k<k;idx_k++)
 				dists[idx_k]=distance->distance(Pat,idx_k);
-           
+
 			/* [mini,imini]=min(dists(:,i)) ; */
 			imini=0 ; mini=dists[0];
 			for (j=1; j<k; j++)
@@ -442,7 +442,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 					if ((dist<rmin2) && (dist>=rmin1))
 						rmin2=dist;
 
-					if (dist<rmin1) 
+					if (dist<rmin1)
 					{
 						rmin2=rmin1;
 						rmin1=dist;
@@ -455,7 +455,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	}
 
 	distance->replace_rhs(rhs_cache);
-	delete rhs_mus;        
+	delete rhs_mus;
 	SG_FREE(ClList);
 	SG_FREE(weights_set);
 	SG_FREE(dists);

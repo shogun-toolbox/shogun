@@ -26,7 +26,7 @@ CLaplacianEigenmaps::CLaplacianEigenmaps() :
 {
 	m_k = 3;
 	m_tau = 1.0;
-	
+
 	init();
 }
 
@@ -61,8 +61,8 @@ float64_t CLaplacianEigenmaps::get_tau() const
 	return m_tau;
 }
 
-const char* CLaplacianEigenmaps::get_name() const 
-{ 
+const char* CLaplacianEigenmaps::get_name() const
+{
 	return "LaplacianEigenmaps";
 };
 
@@ -119,7 +119,7 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* dista
 			else
 				W_matrix[i*N+j] *= -1.0;
 		}
-		
+
 		// clear heap to reuse
 		heap->clear();
 	}
@@ -139,7 +139,7 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* dista
 			{
 				W_matrix[i*N+j] = W_matrix[j*N+i];
 			}
-			
+
 			if (W_matrix[i*N+j] != 0.0)
 			{
 				// compute heat, exp(-d^2/tau)
@@ -185,9 +185,9 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::construct_embedding(CFeatures* 
 	arpack_dsxupd(W_matrix.matrix,D_diag_vector,true,N,m_target_dim+1,"LA",true,3,false,false,-1e-9,0.0,
 	              eigenvalues_vector,W_matrix.matrix,eigenproblem_status);
 
-	if (eigenproblem_status!=0) 
+	if (eigenproblem_status!=0)
 		SG_ERROR("DSXUPD failed with code %d\n",eigenproblem_status);
-	
+
 	SG_FREE(eigenvalues_vector);
 #else /* HAVE_ARPACK */
 	// using LAPACK DSYGVX
@@ -200,7 +200,7 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::construct_embedding(CFeatures* 
 		rhs[i*N+i] = D_diag_vector[i];
 
 	wrap_dsygvx(1,'V','U',N,W_matrix.matrix,N,rhs,N,1,m_target_dim+2,eigenvalues_vector,W_matrix.matrix,&eigenproblem_status);
-	
+
 	if (eigenproblem_status)
 		SG_ERROR("DSYGVX failed with code: %d.\n",eigenproblem_status);
 

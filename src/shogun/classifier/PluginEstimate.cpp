@@ -89,7 +89,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 
 	SG_FREE(pos_indizes);
 	SG_FREE(neg_indizes);
-	
+
 	return true;
 }
 
@@ -130,7 +130,7 @@ float64_t CPluginEstimate::apply(int32_t vec_idx)
 
 	if ((!pos_model) || (!neg_model))
 		SG_ERROR( "model(s) not assigned\n");
-	  
+
 	float64_t result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 	features->free_feature_vector(vector, vec_idx, free_vec);
 	return result;

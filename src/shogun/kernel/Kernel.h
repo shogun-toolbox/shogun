@@ -898,8 +898,8 @@ class CKernel : public CSGObject
 		 */
 		virtual void save_serializable_post() throw (ShogunException);
 		/** Separate the function of parameter registration
-		 *	This can be the first stage of a *general* framework for 
-		 *	cross-validation or other parameter-based operations 
+		 *	This can be the first stage of a *general* framework for
+		 *	cross-validation or other parameter-based operations
 		 */
 		virtual void register_params();
 
