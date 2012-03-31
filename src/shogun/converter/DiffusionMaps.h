@@ -23,16 +23,16 @@ class CFeatures;
 class CKernel;
 
 /** @brief class DiffusionMaps (part of the Efficient Dimensionality Reduction Toolkit)
- * used to preprocess given data using Diffusion Maps dimensionality 
+ * used to preprocess given data using Diffusion Maps dimensionality
  * reduction technique as described in
- * 
- * Coifman, R., & Lafon, S. (2006). 
- * Diffusion maps. 
- * Applied and Computational Harmonic Analysis, 21(1), 5-30. Elsevier. 
+ *
+ * Coifman, R., & Lafon, S. (2006).
+ * Diffusion maps.
+ * Applied and Computational Harmonic Analysis, 21(1), 5-30. Elsevier.
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S1063520306000546
  *
  * To use this converter with static interfaces please refer it by
- * sg('create_converter','diffusion_maps',t,width); 
+ * sg('create_converter','diffusion_maps',t,width);
  *
  */
 class CDiffusionMaps: public CEmbeddingConverter

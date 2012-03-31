@@ -137,7 +137,7 @@ CSGInterfaceMethod sg_methods[]=
 	{
 		N_CONVERT,
 		(&CSGInterface::cmd_convert),
-		USAGE_I(N_CONVERT, USAGE_STR "TRAIN|TEST" USAGE_STR 
+		USAGE_I(N_CONVERT, USAGE_STR "TRAIN|TEST" USAGE_STR
 				USAGE_COMMA "from_class"
 				USAGE_COMMA "from_type"
 				USAGE_COMMA "to_class"
@@ -882,7 +882,7 @@ CSGInterfaceMethod sg_methods[]=
 		N_BEST_PATH_2STRUCT,
 		(&CSGInterface::cmd_best_path_2struct),
 		USAGE_IO(N_BEST_PATH_2STRUCT, "p"
-				USAGE_COMMA "q" 
+				USAGE_COMMA "q"
 				USAGE_COMMA "cmd_trans"
 				USAGE_COMMA "seq"
 				USAGE_COMMA "pos"
@@ -1209,7 +1209,7 @@ CSGInterface::CSGInterface(bool print_copyright)
 				CMath::get_log_range()*CMath::get_log_accuracy()*sizeof(float64_t)/(1024.0*1024.0));
 #else
 		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::get_log_range());
-#endif 
+#endif
 	}
 
 	reset();
@@ -1226,7 +1226,7 @@ CSGInterface::~CSGInterface()
 	delete ui_labels;
 	delete ui_math;
 	delete ui_structure;
-	//delete ui_signals; 
+	//delete ui_signals;
 	delete ui_time;
 	delete ui_distance;
 	delete ui_converter;
@@ -1827,7 +1827,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			if (m_nrhs==6)
 				feat = create_custom_real_features((CSimpleFeatures<float64_t>*) feat);
-			
+
 			break;
 		}
 
@@ -2629,7 +2629,7 @@ CKernel* CSGInterface::create_kernel()
 	}
 	else if (strmatch(type, "WAVELET"))
 	{
-		 
+
                 if (m_nrhs<4)
                         return NULL;
 
@@ -3052,7 +3052,7 @@ CKernel* CSGInterface::create_kernel()
 
 		}
 		//if (strmatch(dtype, "REAL"))
-		
+
 		kernel=ui_kernel->create_weighteddegreerbf(size, degree, nof_properties, width);
 
 		SG_FREE(dtype);
@@ -3404,7 +3404,7 @@ CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>*
 			feat = new CPolyFeatures((CSimpleFeatures<float64_t>*) feat, degree, normalize);
 
 		}
-		else 	
+		else
 			SG_ERROR("Unknown feature class: %s\n", feature_class_str);
 
 		SG_FREE(feature_class_str);
@@ -3448,7 +3448,7 @@ bool CSGInterface::cmd_get_kernel_matrix()
 
 	int32_t len=0;
 	char* target=NULL;
-	
+
 	if (m_nrhs==2)
 		target=get_string(len);
 	bool success=ui_kernel->init_kernel(target);
@@ -3531,7 +3531,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			if (strmatch(target, "TEST"))
 				is_train=false;
 		}
-		
+
 		if (dim!=1 && len>0)
 		{
 			SG_FREE(target);
@@ -5113,7 +5113,7 @@ bool CSGInterface::cmd_set_svm_mkl_parameters()
 	float64_t weight_epsilon=get_real_from_real_or_str();
 	float64_t C_mkl=get_real_from_real_or_str();
 	float64_t mkl_norm=1.0;
-	
+
 	if (m_nrhs==4)
 		mkl_norm=get_real_from_real_or_str();
 
@@ -5299,7 +5299,7 @@ bool CSGInterface::cmd_set_converter()
 {
 	int32_t len=0;
 	char* type=get_str_from_str_or_direct(len);
-	
+
 	if (strmatch(type, "lle"))
 	{
 		int32_t k = get_int_from_int_or_str();
@@ -6154,7 +6154,7 @@ void CSGInterface::set_vector(const bool* vector, int32_t len)
 
 bool CSGInterface::cmd_set_plif_struct()
 {
-	// ARG 2 
+	// ARG 2
 	int32_t Nid=0;
 	int32_t* ids;
 	get_vector(ids,Nid);
@@ -6230,7 +6230,7 @@ bool CSGInterface::cmd_set_plif_struct()
 		SG_ERROR("Mlimits!=Mpenalties, Mlimits:%i, Mpenalties:%i\n",Mlimits,Mpenalties);
 
 	int32_t N = Ncalc;
-	int32_t M = Mlimits; 	
+	int32_t M = Mlimits;
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 	pm->create_plifs(N, M);
 	pm->set_plif_ids(SGVector<int32_t>(ids, N));
@@ -6248,8 +6248,8 @@ bool CSGInterface::cmd_set_plif_struct()
 	SG_FREE(names);
 	SG_FREE(all_transform);
 	SG_FREE(min_values);
-	SG_FREE(max_values); 
-	SG_FREE(all_use_cache); 
+	SG_FREE(max_values);
+	SG_FREE(all_use_cache);
 	SG_FREE(all_use_svm);
 	SG_FREE(all_do_calc);
 
@@ -6263,7 +6263,7 @@ bool CSGInterface::cmd_get_plif_struct()
 	int32_t N = pm->get_num_plifs();
 	int32_t M = pm->get_num_limits();
 
-	
+
 	int32_t* ids = SG_MALLOC(int32_t, N);
 	float64_t* max_values = SG_MALLOC(float64_t, N);
 	float64_t* min_values = SG_MALLOC(float64_t, N);
@@ -6293,7 +6293,7 @@ bool CSGInterface::cmd_get_plif_struct()
 		all_use_cache[i]=PEN[i]->get_use_cache();
 		all_use_svm[i]=PEN[i]->get_use_svm();
 		all_do_calc[i]=PEN[i]->get_do_calc();
-		
+
 	}
 	set_vector(ids,N);
 	set_string_list(names, N);
@@ -6307,7 +6307,7 @@ bool CSGInterface::cmd_get_plif_struct()
 	set_vector(all_do_calc,N);
 
 	SG_FREE(ids);
-	SG_FREE(max_values);	
+	SG_FREE(max_values);
 	SG_FREE(min_values);
 	SG_FREE(names);
 	SG_FREE(all_transform);
@@ -6378,15 +6378,15 @@ bool CSGInterface::cmd_clean_up_dyn_prog()
 
 bool CSGInterface::cmd_set_model()
 {
-	
+
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
-	
+
 	CDynProg* h = ui_structure->get_dyn_prog();
 	int32_t num_svms = h->get_num_svms();
 	//CDynProg* h=new CDynProg(Nweights/* = num_svms */);
 
 	//ARG 1
-	// transition pointers 
+	// transition pointers
 	// link transitions to length, content, frame (and tiling)
 	// plifs (#states x #states x 3 or 4)
 	int32_t numDim=0;
@@ -6443,7 +6443,7 @@ bool CSGInterface::cmd_set_model()
 	SG_FREE(orf_info);
 
 	h->set_num_states(num_states) ;
-	
+
 	return true;
 }
 
@@ -6519,7 +6519,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	int32_t* all_pos;
 	get_vector(all_pos, Npos);
 
-	//ARG 3 
+	//ARG 3
 	//
 	int32_t num_svms, seq_len;
 	float64_t* lin_feat=NULL;
@@ -6532,7 +6532,7 @@ bool CSGInterface::cmd_set_lin_feat()
 	    SG_FREE(lin_feat);
 	    SG_FREE(seq);
 	    SG_FREE(all_pos);
-	    
+
 	    return false ;
 	  }
 
@@ -6559,7 +6559,7 @@ bool CSGInterface::cmd_long_transition_settings()
 	int32_t max_len = get_int();
 
 	CDynProg* h = ui_structure->get_dyn_prog();
-        if (!h) 
+        if (!h)
                 SG_ERROR("no DynProg object found, use set_model first\n");
 
 	h->long_transition_settings(use_long_transitions, threshold, max_len);
@@ -6576,7 +6576,7 @@ bool CSGInterface::cmd_set_feature_matrix()
 	int32_t numDims=0;
 	float64_t* features = NULL;
 	get_ndarray(features, Dims, numDims);
-	
+
 	if (numDims!=3)
 		SG_ERROR("expected a 3 dimensional array, got %i dimensions\n", numDims);
 	if (Dims[0]!=num_states)
@@ -6600,7 +6600,7 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	int32_t dim11, dim12 ;
 	SGSparseVector<float64_t> *features1=NULL ;
 	get_sparse_matrix(features1, dim11, dim12);
-	
+
 	int32_t dim21, dim22 ;
 	SGSparseVector<float64_t> *features2=NULL ;
 	get_sparse_matrix(features2, dim21, dim22);
@@ -6622,7 +6622,7 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	SG_FREE(features1);
 	SG_FREE(features2);
 	SG_FREE(Dims);
-	
+
 	return true;
 }
 bool CSGInterface::cmd_init_intron_list()
@@ -6632,14 +6632,14 @@ bool CSGInterface::cmd_init_intron_list()
 	int32_t* start_positions;
 	get_vector(start_positions, Nstart_positions);
         //SG_PRINT("Nstart_positions:%i\n",Nstart_positions);
-	
+
 	//ARG2 end_positions
 	int32_t Nend_positions;
 	int32_t* end_positions;
 	get_vector(end_positions, Nend_positions);
         //SG_PRINT("Nend_positions:%i\n",Nend_positions);
 
-	//ARG3 quality	
+	//ARG3 quality
 	int32_t Nquality;
         int32_t* quality;
         get_vector(quality, Nquality);
@@ -6670,7 +6670,7 @@ bool CSGInterface::cmd_init_intron_list()
 	//intron_list->get_coverage(&test, &testq, 15 ,16);
 
 	//SG_PRINT("coverage: %i, quality: %i\n",test, testq);
-	
+
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
 		SG_ERROR("no DynProg object found, use set_model first\n");
@@ -6707,7 +6707,7 @@ bool CSGInterface::cmd_best_path_trans()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
 
-	CSegmentLoss* seg_loss_obj = h->get_segment_loss_object();	
+	CSegmentLoss* seg_loss_obj = h->get_segment_loss_object();
 
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 
@@ -6745,16 +6745,16 @@ bool CSGInterface::cmd_best_path_trans()
 	int32_t nother = 0;
 	if (Nnbest==2)
 	{
-		nbest =all_nbest[0];	
-		nother=all_nbest[1];	
+		nbest =all_nbest[0];
+		nother=all_nbest[1];
 	}
 	else
-		nbest =all_nbest[0];	
+		nbest =all_nbest[0];
 	SG_FREE(all_nbest);
 
 	// ARG 4
 	// segment path (2 x #feature_positions)
-	// masking/weighting of loss for specific 
+	// masking/weighting of loss for specific
 	// regions of the true path
 	int32_t Nseg_path=0;
 	int32_t Mseg_path=0;
@@ -6770,23 +6770,23 @@ bool CSGInterface::cmd_best_path_trans()
 
 	// ARG 6
 	// loss matrix (#segment x 2*#segments)
-	// one (#segment x #segments)-matrix for segment loss 
+	// one (#segment x #segments)-matrix for segment loss
 	// and one for nucleotide loss
 	int32_t Nloss=0;
 	int32_t Mloss=0;
 	float64_t* loss;
 	get_matrix(loss, Nloss,Mloss);
-	
+
 	int32_t M = h->get_num_positions();
-	
+
 	/////////////////////////////////////////////////////////////////////////////////
 	// check input
 	/////////////////////////////////////////////////////////////////////////////////
-	ASSERT(num_states==Nq);	
+	ASSERT(num_states==Nq);
 
 	CPlif** PEN=pm->get_PEN();
 	ASSERT(PEN);
-	
+
 	h->set_p_vector(SGVector<float64_t>(p, num_states));
 	SG_FREE(p); p=NULL ;
 	h->set_q_vector(SGVector<float64_t>(q, num_states));
@@ -6798,7 +6798,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	else
 	{
-		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ; // segment_id = 0 
+		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ; // segment_id = 0
 	}
 	SG_FREE(a_trans);
 	a_trans=NULL ;
@@ -6809,9 +6809,9 @@ bool CSGInterface::cmd_best_path_trans()
 		CPlif::delete_penalty_struct(PEN, Nplif) ;
 		return false ;
 	}
-	
+
 	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
-	
+
 	h->set_observation_matrix(SGNDArray<float64_t>(features, feat_dims, 3));
 
 	if (seg_path!=NULL)
@@ -6827,7 +6827,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
 	SG_FREE(seg_path);
-	
+
 	bool segment_loss_non_zero=false;
 	for (int32_t i=0; i<Nloss*Mloss; i++)
 	{
@@ -6868,7 +6868,7 @@ bool CSGInterface::cmd_best_path_trans()
 	// transcribe result
 	float64_t* d_my_path= SG_MALLOC(float64_t, (nbest+nother)*M);
 	float64_t* d_my_pos= SG_MALLOC(float64_t, (nbest+nother)*M);
-	
+
 	for (int32_t k=0; k<(nbest+nother); k++)
 	{
 		for (int32_t i=0; i<M; i++)
@@ -6920,7 +6920,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 	// ARG 3
 	// segment path (2 x #feature_positions)
-	// masking/weighting of loss for specific 
+	// masking/weighting of loss for specific
 	// regions of the true path
 	int32_t Nseg_path=0;
 	int32_t Mseg_path=0;
@@ -6936,7 +6936,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 	// ARG 5
 	// loss matrix (#segment x 2*#segments)
-	// one (#segment x #segments)-matrix for segment loss 
+	// one (#segment x #segments)-matrix for segment loss
 	// and one for nucleotide loss
 	int32_t Nloss=0;
 	int32_t Mloss=0;
@@ -6944,7 +6944,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	get_matrix(loss, Nloss,Mloss);
 
 	// ARG 6
-	// path to calc derivative for 
+	// path to calc derivative for
 	int32_t Nmystate_seq=0;
 	int32_t* mystate_seq=NULL;
 	get_vector(mystate_seq, Nmystate_seq);
@@ -6977,7 +6977,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	h->set_p_vector(SGVector<float64_t>(p, num_states)) ;
 	h->set_q_vector(SGVector<float64_t>(q, num_states)) ;
 
-	if (seg_path!=NULL) 
+	if (seg_path!=NULL)
 		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, Na_trans)) ;
 	else
 		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ;
@@ -7259,10 +7259,10 @@ bool CSGInterface::cmd_translate_string()
 		uint16_t value=0;
 		for (j=i; j>=i-order+1; j--)
 			value=(value>>max_val) | ((obs[j])<<(max_val*(order-1)));
-		
+
 		obs[i]=(uint16_t) value;
 	}
-	
+
 	for (i=order-2;i>=0;i--)
 	{
 		uint16_t value=0;
@@ -7520,7 +7520,7 @@ bool CSGInterface::cmd_help()
 				}
 				else if (!sg_methods[i].method) // display group
 				{
-					SG_PRINT("\n\\section %s_sec %s\n", 
+					SG_PRINT("\n\\section %s_sec %s\n",
 							sg_methods[i].command, sg_methods[i].command);
 				}
 				i++;
@@ -7533,7 +7533,7 @@ bool CSGInterface::cmd_help()
 			{
 				if (sg_methods[i].usage_prefix) // display group item
 				{
-					SG_PRINT("\t%s%s%s%s%s\n", sg_methods[i].usage_prefix, 
+					SG_PRINT("\t%s%s%s%s%s\n", sg_methods[i].usage_prefix,
 							hilight.get_command_prefix(),
 							sg_methods[i].command,
 							hilight.get_command_suffix(),
@@ -7541,7 +7541,7 @@ bool CSGInterface::cmd_help()
 				}
 				else if (!sg_methods[i].method) // display group
 				{
-					SG_PRINT("\nCommands in group %s%s%s\n", 
+					SG_PRINT("\nCommands in group %s%s%s\n",
 							hilight.get_command_prefix(),
 							sg_methods[i].command,
 							hilight.get_command_suffix());

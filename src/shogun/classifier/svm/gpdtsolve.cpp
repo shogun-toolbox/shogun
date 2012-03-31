@@ -667,8 +667,8 @@ int32_t QPproblem::optimal()
           DELTAkin *= 0.1;
           if (DELTAkin < 1.0e-6)
           {
-              SG_INFO("\n***ERROR***: GPDT stops with tolerance"); 
-              SG_INFO( 
+              SG_INFO("\n***ERROR***: GPDT stops with tolerance");
+              SG_INFO(
               " %lf because it is unable to change the working set.\n", kktold);
               return 1;
           }
@@ -840,7 +840,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
       sv[j] = 1;
   }
 
-  /* eventually fill up the working set with other components 
+  /* eventually fill up the working set with other components
      randomly chosen                                          */
   for (; i < chunk_size; i++)
   {
@@ -1152,8 +1152,8 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
               sp_alpha[i] = 0.0;
 
       /*** call the chosen inner gradient projection QP solver ***/
-      i = gpm_solver(projection_solver, projection_projector, chunk_size, 
-                    sp_D, sp_h, c_const, sp_e, sp_y, sp_alpha, 
+      i = gpm_solver(projection_solver, projection_projector, chunk_size,
+                    sp_D, sp_h, c_const, sp_e, sp_y, sp_alpha,
                     DELTAvpm*DELTAkin, &lsCount, &projCount);
 
       if (i > vpmWarningThreshold)
@@ -1203,7 +1203,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
             aux += sp_D[i*chunk_size + j]*(alpha_in(j) - sp_alpha[j]);
           dfval += (0.5*aux - st[index_in[i]]*y_in(i) + 1.0) * (alpha_in(i) - sp_alpha[i]);
         }
-        
+
         aux=0.0;
         for (i = 0; i < chunk_size; i++)
             aux +=  (alpha_in(i) - sp_alpha[i])*(alpha_in(i) - sp_alpha[i]);
@@ -1382,18 +1382,18 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   SG_INFO( "- Total CPU time: %lf\n", total_time);
   if (verbosity > 0)
   {
-      SG_INFO( 
+      SG_INFO(
               "- Total kernel evaluations: %.0lf\n", aux);
-      SG_INFO( 
+      SG_INFO(
               "- Total inner solver iterations: %i\n", tot_vpm_iter);
-      if (projection_projector == 1) 
-          SG_INFO( 
+      if (projection_projector == 1)
+          SG_INFO(
               "- Total projector iterations: %i\n", tot_vpm_secant);
-      SG_INFO( 
+      SG_INFO(
               "- Total preparation time: %lf\n", tot_prep_time);
-      SG_INFO( 
+      SG_INFO(
               "- Total inner solver time: %lf\n", tot_vpm_time);
-      SG_INFO( 
+      SG_INFO(
               "- Total gradient updating time: %lf\n", tot_st_time);
   }
   SG_INFO( "- Objective function value: %lf\n", fval);

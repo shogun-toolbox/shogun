@@ -39,7 +39,7 @@ SGMatrix<float64_t> CLinearLocalTangentSpaceAlignment::construct_embedding(CFeat
 	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*)features;
 	ASSERT(simple_features);
 	int i,j;
-		
+
 	int N;
 	int dim;
 	float64_t* feature_matrix;

@@ -420,7 +420,7 @@ bool CGUIHMM::load_definitions(char* filename, bool do_init)
 	FILE* def_file=fopen(filename, "r");
 	if (!def_file)
 		SG_ERROR("Opening file %s failed\n", filename);
-	
+
 	if (working->load_definitions(def_file, true, do_init))
 	{
 		SG_INFO("Definitions successfully read from %s.\n", filename);

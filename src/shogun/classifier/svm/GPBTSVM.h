@@ -24,7 +24,7 @@ class CGPBTSVM : public CSVM
 	public:
 		/** default constructor */
 		CGPBTSVM();
-		
+
 		/** constructor
 		 *
 		 * @param C constant C

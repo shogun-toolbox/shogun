@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-/** @brief class Tanimoto coefficient 
+/** @brief class Tanimoto coefficient
  *
  * The Tanimoto distance/coefficient (extended Jaccard coefficient)
  * is obtained by extending the cosine similarity.

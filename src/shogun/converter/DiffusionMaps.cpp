@@ -28,7 +28,7 @@ CDiffusionMaps::CDiffusionMaps() :
 {
 	m_t = 10;
 	set_kernel(new CGaussianKernel(10,1.0));
-	
+
 	init();
 }
 
@@ -135,14 +135,14 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 				new_feature_matrix[j*m_target_dim+i] = kernel_matrix[j*m_target_dim+i];
 		}
 	}
-	else 
+	else
 	{
 		SG_WARNING("LAPACK does not provide efficient routines to construct embedding (this may take time). Consider installing ARPACK.");
 		wrap_dgesvd('O','N',N,N,kernel_matrix.matrix,N,s_values,NULL,1,NULL,1,&info);
 		for (i=0; i<m_target_dim; i++)
 		{
 			for (j=0; j<N; j++)
-				new_feature_matrix[j*m_target_dim+i] = 
+				new_feature_matrix[j*m_target_dim+i] =
 				    kernel_matrix[(m_target_dim-i-1)*N+j];
 		}
 	}

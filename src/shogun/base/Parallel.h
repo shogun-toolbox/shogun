@@ -57,11 +57,11 @@ public:
 	int32_t get_num_cpus() const;
 
 	/** set number of threads
-	 * @param n number of threads 
+	 * @param n number of threads
 	 */
 	void set_num_threads(int32_t n);
 
-	/** get number of threads 
+	/** get number of threads
 	 * @return number of threads
 	 */
 	int32_t get_num_threads() const;

@@ -64,7 +64,7 @@ bool COnlineLibLinear::train(CFeatures* data)
 						SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
 				set_features((CStreamingDotFeatures*) data);
 		}
-		
+
 		float64_t C, d, G;
 		float64_t QD;
 

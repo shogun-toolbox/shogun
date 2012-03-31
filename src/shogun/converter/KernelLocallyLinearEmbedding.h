@@ -29,17 +29,17 @@ class CKernel;
  * of data using kernel formulation of Locally Linear Embedding algorithm as
  * described in
  *
- * Decoste, D. (2001). 
+ * Decoste, D. (2001).
  * Visualizing Mercer Kernel Feature Spaces Via Kernelized Locally-Linear Embeddings.
  * The 8th International Conference on Neural Information Processing ICONIP2001
  *
- * It is optimized with the alignment formulation as described in 
- * 
- * Zhao, D. (2006). 
- * Formulating LLE using alignment technique. 
- * Pattern Recognition, 39(11), 2233-2235. 
+ * It is optimized with the alignment formulation as described in
+ *
+ * Zhao, D. (2006).
+ * Formulating LLE using alignment technique.
+ * Pattern Recognition, 39(11), 2233-2235.
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0031320306002160
- * 
+ *
  */
 class CKernelLocallyLinearEmbedding: public CLocallyLinearEmbedding
 {
@@ -76,7 +76,7 @@ protected:
 
 	/** construct neighborhood matrix by kernel matrix
 	 * @param kernel_matrix kernel matrix to be used
-	 * @param k k 
+	 * @param k k
 	 * @return matrix containing indexes of neighbors of i-th object
 	 * in i-th column
 	 */

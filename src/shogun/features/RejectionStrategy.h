@@ -25,7 +25,7 @@ class CRejectionStrategy : public CSGObject
 		virtual ~CRejectionStrategy() { };
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 				return "RejectionStrategy";
 		};
@@ -43,15 +43,15 @@ class CThresholdReject : public CRejectionStrategy
 		/** constructor */
 		CThresholdReject() :
 			CRejectionStrategy(), m_threshold(0.0) { };
-		
+
 		/** constructor */
-		CThresholdReject(float64_t threshold) : 
+		CThresholdReject(float64_t threshold) :
 			CRejectionStrategy(), m_threshold(threshold) { };
 
 		virtual ~CThresholdReject() {};
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 				return "ThresholdReject";
 		}

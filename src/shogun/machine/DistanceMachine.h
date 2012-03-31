@@ -56,9 +56,9 @@ class CDistanceMachine : public CMachine
 		/**
 		 * get distance functions for lhs feature vectors
 		 * going from a1 to a2 and rhs feature vector b
-		 * 
+		 *
 		 * @param result array of distance values
-		 * @param idx_a1 first feature vector a1 at idx_a1 
+		 * @param idx_a1 first feature vector a1 at idx_a1
 		 * @param idx_a2 last feature vector a2 at idx_a2
 		 * @param idx_b feature vector b at idx_b
 		 */
@@ -67,13 +67,13 @@ class CDistanceMachine : public CMachine
 		/**
 		 * get distance functions for rhs feature vectors
 		 * going from b1 to b2 and lhs feature vector a
-		 * 
+		 *
 		 * @param result array of distance values
-		 * @param idx_b1 first feature vector a1 at idx_b1 
+		 * @param idx_b1 first feature vector a1 at idx_b1
 		 * @param idx_b2 last feature vector a2 at idx_b2
 		 * @param idx_a feature vector a at idx_a
 		 */
-		void distances_rhs(float64_t* result,int32_t idx_b1,int32_t idx_b2,int32_t idx_a);  
+		void distances_rhs(float64_t* result,int32_t idx_b1,int32_t idx_b2,int32_t idx_a);
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
@@ -124,17 +124,17 @@ class CDistanceMachine : public CMachine
 					get_name());
 		}
 
-		/** 
+		/**
 		 * pthread function for compute distance values
 		 *
-		 * @param p thread parameter 
+		 * @param p thread parameter
 		 */
 		static void* run_distance_thread_lhs(void* p);
 
-		/** 
+		/**
 		 * pthread function for compute distance values
 		 *
-		 * @param p thread parameter 
+		 * @param p thread parameter
 		 */
 		static void* run_distance_thread_rhs(void* p);
 

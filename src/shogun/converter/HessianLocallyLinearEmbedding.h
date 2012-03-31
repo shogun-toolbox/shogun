@@ -26,23 +26,23 @@ class CDistance;
  * Efficient Dimensionality Reduction Toolkit) used to preprocess
  * data using Hessian Locally Linear Embedding algorithm as described in
  *
- * Donoho, D., & Grimes, C. (2003). 
+ * Donoho, D., & Grimes, C. (2003).
  * Hessian eigenmaps: new tools for nonlinear dimensionality reduction.
  * Proceedings of National Academy of Science (Vol. 100, pp. 5591-5596).
  *
  * Stated eigenproblem is solved in the same way as in
  * CLocallyLinearEmbedding (LAPACK or ARPACK if available).
  *
- * The hessian estimation step is parallel and neighborhood determination 
+ * The hessian estimation step is parallel and neighborhood determination
  * too as in CLocallyLinearEmbedding.
  *
- * Be sure k value is set with at least 
+ * Be sure k value is set with at least
  * 1+[target dim]+1/2 [target_dim]*[1 + target dim], e.g.
  * greater than 6 for target dimensionality of 2.
  *
  * To use this converter with static interfaces please refer it by
- * sg('create_converter','hlle',k); 
- * 
+ * sg('create_converter','hlle',k);
+ *
  */
 class CHessianLocallyLinearEmbedding: public CLocallyLinearEmbedding
 {
@@ -60,12 +60,12 @@ public:
 /// HELPER
 protected:
 
-	/** construct weight matrix 
+	/** construct weight matrix
 	 * @param simple_features features to be used
 	 * @param W_matrix weight matrix
 	 * @param neighborhood_matrix matrix containing neighbor idxs
 	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
+	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix,
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
 /// THREAD

@@ -83,7 +83,7 @@ public:
 	 */
 	CDynProg(int32_t p_num_svms=8);
 	virtual ~CDynProg();
-	
+
 	// model related functions
 	/** set number of states
 	 * use this to set N first
@@ -120,10 +120,10 @@ public:
 	 * @param tiling_plif_ids tiling plif id's
 	 * @param num_tiling_plifs number of tiling plifs
 	 */
-	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs);	
+	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs);
 
 	/** append rows to linear features array
- 	 * 
+ 	 *
  	 * @param num_new_feat number of new rows to add
  	 */
 	void resize_lin_feat(int32_t num_new_feat);
@@ -138,19 +138,19 @@ public:
 	 * @param q new vector q
 	 */
 	void set_q_vector(SGVector<float64_t> q);
-	
+
 	/** set matrix a
 	 *
 	 * @param a new matrix a
 	 */
 	void set_a(SGMatrix<float64_t> a);
-	
+
 	/** set a id
 	 *
 	 * @param a new a id
 	 */
 	void set_a_id(SGMatrix<int32_t> a);
-	
+
 	/** set a transition matrix
 	 *
 	 * @param a_trans transition matrix a
@@ -181,14 +181,14 @@ public:
 	 *  be part of a predicted path
 	 *
 	 * @return number of positions
-	 */	
+	 */
 	int32_t get_num_positions();
 
-	/** set an array of length #(candidate positions) 
+	/** set an array of length #(candidate positions)
 	 *  which specifies the content type of each pos
-	 *  and a mask that determines to which extend the 
-	 *  loss should be applied to this position; this 
-	 *  is a way to encode label confidence via weights 
+	 *  and a mask that determines to which extend the
+	 *  loss should be applied to this position; this
+	 *  is a way to encode label confidence via weights
 	 *  between zero and one
 	 *
 	 * @param seg_path seg path
@@ -278,12 +278,12 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 	/** given a path though the state model and the corresponding
-	 *  positions compute the features. This can be seen as the derivative 
-	 *  of the score (output of dynamic program) with respect to the 
+	 *  positions compute the features. This can be seen as the derivative
+	 *  of the score (output of dynamic program) with respect to the
 	 *  parameters
 	 *
 	 * @param my_state_seq state sequence of the path
-	 * @param my_pos_seq sequence of positions 
+	 * @param my_pos_seq sequence of positions
 	 * @param my_seq_len length of state and position sequences
 	 * @param seq_array array of features
 	 * @param max_num_signals maximal number of signals
@@ -329,7 +329,7 @@ public:
 	{
 		return m_N ;
 	}
-	
+
 	/** access function for probability of end states
 	 * @param offset index 0...N-1
 	 * @param value value to be set
@@ -398,7 +398,7 @@ public:
 	{
 		return m_initial_state_distribution_p_deriv[offset];
 	}
-	
+
 	/** create array of precomputed content svm values
 	 *
 	 */
@@ -410,7 +410,7 @@ public:
 	 *
 	 * @return lin_feat_array
 	 */
-	inline float64_t* get_lin_feat(int32_t & dim1, int32_t & dim2) 
+	inline float64_t* get_lin_feat(int32_t & dim1, int32_t & dim2)
 	{
 		m_lin_feat.get_array_size(dim1, dim2);
 		return m_lin_feat.get_array();
@@ -423,7 +423,7 @@ public:
 	 * @param p_num_svms number of tracks
 	 * @param p_seq_len number of candidate positions
 	 */
-	inline void set_lin_feat(float64_t* p_lin_feat, int32_t p_num_svms, int32_t p_seq_len) 
+	inline void set_lin_feat(float64_t* p_lin_feat, int32_t p_num_svms, int32_t p_seq_len)
 	{
  	  m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true, true);
 	}
@@ -460,7 +460,7 @@ public:
 	}
 	//@}
 	/** set intron list
-	 *  
+	 *
 	 * @param intron_list
 	 * @param num_plifs number of intron plifs
 	 */
@@ -472,8 +472,8 @@ public:
 		return m_seg_loss_obj;
 	}
 
-	/** settings for long transition handling 
-	 *  
+	/** settings for long transition handling
+	 *
 	 *  @param use_long_transitions use the long transition approximation
 	 *  @param threshold use long transition for segments larger than
 	 *  @param max_len allow transitions up to
@@ -578,7 +578,7 @@ private:
 	CTime MyTime;
 	CTime MyTime2;
 	CTime MyTime3;
-	
+
 	float64_t segment_init_time;
 	float64_t segment_pos_time;
 	float64_t segment_clean_time;
@@ -587,15 +587,15 @@ private:
 	float64_t content_time;
 	float64_t content_penalty_time;
 	float64_t content_svm_values_time ;
-	float64_t content_plifs_time ;	
+	float64_t content_plifs_time ;
 	float64_t svm_init_time;
 	float64_t svm_pos_time;
 	float64_t inner_loop_time;
-	float64_t inner_loop_max_time ;	
+	float64_t inner_loop_max_time ;
 	float64_t svm_clean_time;
 	float64_t long_transition_time ;
 #endif
-	
+
 
 protected:
 	/**@name model specific variables.
@@ -619,7 +619,7 @@ protected:
 	CArray<float64_t> m_end_state_distribution_q_deriv;
 
 	//@}
-		
+
 	/** number of degress */
 	int32_t m_num_degrees;
 	/** number of SVMs */
@@ -656,14 +656,14 @@ protected:
 	bool m_svm_arrays_clean;
 	/** max a id */
 	int32_t m_max_a_id;
-	
+
 	// input arguments
 	/** sequence */
 	CArray3<float64_t> m_observation_matrix;
 	/** candidate position */
 	CArray<int32_t> m_pos;
 	/** number of candidate positions */
-	int32_t m_seq_len; 
+	int32_t m_seq_len;
 	/** orf info */
 	CArray2<int32_t> m_orf_info;
 	/** segment sum weights */
@@ -676,18 +676,18 @@ protected:
 	CArray2<CPlifBase*> m_PEN_state_signals;
 	/** a single string (to be segmented) */
 	CArray<char> m_genestr;
-	/** 
-	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
-	  corresponding to the 6-mer in genestr(i-5:i) 
+	/**
+	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095
+	  corresponding to the 6-mer in genestr(i-5:i)
 	  pos is a vector of candidate transition positions (it is input to compute_nbest_paths)
 	  t_end is some index in pos
-	  
+
 	  svs has been initialized by init_svm_values
-	  
-	  At the end of this procedure, 
-	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
+
+	  At the end of this procedure,
+	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end))
 	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
-	  
+
 	  The SVM weights are precomputed in m_dict_weights
 	**/
 	uint16_t*** m_wordstr;
@@ -758,7 +758,7 @@ protected:
 
 	/** use long transition approximation*/
 	bool m_long_transitions ;
-	/** threshold for transitions that are computed 
+	/** threshold for transitions that are computed
 	 *  the traditional way*/
 	int32_t m_long_transition_threshold  ;
 	/** maximal length of a long transition
@@ -772,16 +772,16 @@ protected:
 	 */
 	static int32_t word_degree_default[4];
 
-	/**default values storing the cumulative sum 
-	 * of the number of kmers that exist for the 
+	/**default values storing the cumulative sum
+	 * of the number of kmers that exist for the
 	 * different degrees e.g. matlab spoken: cumsum(4.^[3 4 5 6])*/
 	static int32_t cum_num_words_default[5];
 
-	/**default values defining which of the plif are the 
+	/**default values defining which of the plif are the
 	 * frame specific plifs*/
 	static int32_t frame_plifs[3];
 
-	/**default values like cum_num_words_default 
+	/**default values like cum_num_words_default
 	 * but not cumsumed: e.g. 4.^[3 4 5 6]*/
 	static int32_t num_words_default[4];
 

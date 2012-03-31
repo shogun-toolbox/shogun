@@ -30,9 +30,9 @@
  * MurmurHash2
  *
  * (C) Austin Appleby, released under the MIT License
- * 
+ *
  *  Note - This code makes a few assumptions about how your machine behaves -
- * 
+ *
  *  1. We can read a 4-byte value from any address without crashing
  *  2. It will not produce the same results on little-endian and big-endian
  *     machines.
@@ -68,7 +68,7 @@ uint32_t CHash::crc32(uint8_t *data, int32_t len)
 		}
 	}
 
-    return ~result; 
+    return ~result;
 }
 
 void CHash::MD5(unsigned char *x, unsigned l, unsigned char *buf)
@@ -390,11 +390,11 @@ uint32_t CHash::MurmurHash2(uint8_t* data, int32_t len, uint32_t seed)
 	{
 		uint32_t k = *(uint32_t *)data;
 
-		k *= m; 
-		k ^= k >> r; 
-		k *= m; 
+		k *= m;
+		k ^= k >> r;
+		k *= m;
 
-		h *= m; 
+		h *= m;
 		h ^= k;
 
 		data += 4;
@@ -419,7 +419,7 @@ uint32_t CHash::MurmurHash2(uint8_t* data, int32_t len, uint32_t seed)
 	h ^= h >> 15;
 
 	return h;
-} 
+}
 
 uint32_t CHash::IncrementalMurmurHash2(uint8_t data, uint32_t h)
 {
@@ -439,7 +439,7 @@ uint32_t CHash::IncrementalMurmurHash2(uint8_t data, uint32_t h)
 	h ^= h >> 15;
 
 	return h;
-} 
+}
 
 uint32_t CHash::MurmurHashString(substring s, uint32_t h)
 {

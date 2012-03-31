@@ -28,7 +28,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 
 		/** standard constructor
 		 * @param C C regularication constant value
-		 * @param features features 
+		 * @param features features
 		 * @param labs labels
 		 */
 		CMulticlassOCAS(float64_t C, CDotFeatures* features, CLabels* labs);
@@ -37,15 +37,15 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		virtual ~CMulticlassOCAS();
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MulticlassOCAS";
 		}
 
-		/** set C 
+		/** set C
 		 * @param C C value
 		 */
-		inline void set_C(int32_t C) 
+		inline void set_C(int32_t C)
 		{
 			ASSERT(C>0);
 			m_C = C;
@@ -55,13 +55,13 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		 */
 		inline int32_t get_C() const { return m_C; }
 
-		/** set epsilon 
+		/** set epsilon
 		 * @param epsilon epsilon value
 		 */
-		inline void set_epsilon(float64_t epsilon) 
-		{ 
+		inline void set_epsilon(float64_t epsilon)
+		{
 			ASSERT(epsilon>0);
-			m_epsilon = epsilon; 
+			m_epsilon = epsilon;
 		}
 		/** get epsilon
 		 * @return epsilon value
@@ -71,7 +71,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		/** set max iter
 		 * @param max_iter max iter value
 		 */
-		inline void set_max_iter(int32_t max_iter) 
+		inline void set_max_iter(int32_t max_iter)
 		{
 			ASSERT(max_iter>0);
 			m_max_iter = max_iter;
@@ -84,7 +84,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		/** set method
 		 * @param method method value
 		 */
-		inline void set_method(int32_t method) 
+		inline void set_method(int32_t method)
 		{
 			ASSERT(method==0 || method==1);
 			m_method = method;
@@ -97,7 +97,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		/** set buf size
 		 * @param buf_size buf size value
 		 */
-		inline void set_buf_size(int32_t buf_size) 
+		inline void set_buf_size(int32_t buf_size)
 		{
 			ASSERT(buf_size>0);
 			m_buf_size = buf_size;
@@ -116,23 +116,23 @@ protected:
 		static float64_t msvm_update_W(float64_t t, void* user_data);
 
 		/** full compute W */
-		static void msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_WoldW, 
+		static void msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_WoldW,
 		                                float64_t *alpha, uint32_t nSel, void* user_data);
 
 		/** full add new cut */
-		static int msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_cut, 
+		static int msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_cut,
 		                                 uint32_t nSel, void* user_data);
 
 		/** full compute output */
 		static int msvm_full_compute_output(float64_t *output, void* user_data);
-		
+
 		/** sort */
 		static int msvm_sort_data(float64_t* vals, float64_t* data, uint32_t size);
 
 		/** print nothing */
 		static void msvm_print(ocas_return_value_T value);
 
-private: 
+private:
 
 		/** register parameters */
 		void register_parameters();

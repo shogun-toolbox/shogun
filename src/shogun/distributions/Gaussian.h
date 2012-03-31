@@ -232,7 +232,7 @@ class CGaussian : public CDistribution
 		/** Initialize parameters for serialization */
 		void register_params();
 
-		/** decompose covariance matrix according to type 
+		/** decompose covariance matrix according to type
 		 *
 		 * @param cov covariance
 		 */

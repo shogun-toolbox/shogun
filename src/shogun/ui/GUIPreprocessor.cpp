@@ -173,11 +173,11 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 						SG_ERROR("One of the combined features has no sub-features ?!\n");
 
 					SG_INFO("BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects).\n", num_combined);
-					
+
 					int32_t n=0;
 					while (n<num_combined && tr_feat && te_feat)
 					{
-						// and preprocess using that one 
+						// and preprocess using that one
 						SG_INFO("TRAIN ");
 						tr_feat->list_feature_obj();
 						SG_INFO("TEST ");
@@ -220,7 +220,7 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 	{
 		if (testfeat)
 		{
-			// if we don't have a preproc for trainfeatures we 
+			// if we don't have a preproc for trainfeatures we
 			// don't need a preproc for test features
 			SG_DEBUG( "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preprocessors(), testfeat->get_num_preprocessors());
 

@@ -21,7 +21,7 @@ class CLabels;
 /** @brief Class MeanAbsoluteError
  * used to compute an error of regression model.
  *
- * Formally, for real labels \f$ L,R, |L|=|R|\f$ mean absolute 
+ * Formally, for real labels \f$ L,R, |L|=|R|\f$ mean absolute
  * error (MAE) is estimated as
  *
  * \f[

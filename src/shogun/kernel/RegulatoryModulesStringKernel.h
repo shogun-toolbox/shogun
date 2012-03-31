@@ -50,8 +50,8 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param window size of window around motifs to compute wds kernels on
 		 * @param size cache size
 		 */
-		CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr, 
-			CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos, 
+		CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
+			CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos,
 			float64_t width, int32_t degree, int32_t shift, int32_t window, int32_t size=10);
 
 		/** default destructor */
@@ -76,7 +76,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @return name Regulatory Modules
 		 */
 		inline virtual const char* get_name() const { return "RegulatoryModulesStringKernel"; }
-		
+
 		/** set motif positions
 		 *
 		 * @param positions_lhs motif positions on lhs
@@ -87,7 +87,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		/* register the parameters
 		 */
 		virtual void register_params();
-		
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
@@ -98,7 +98,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @return computed kernel function at indices a,b
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
-		
+
 		/** compute WDS kernel for features a and b
 		 *
 		 * @param avec vector a
@@ -108,7 +108,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 */
 		float64_t compute_wds(char* avec, char* bvec, int32_t len);
 
-		
+
 		/** set standard weighted degree kernel weighting */
 		void set_wd_weights();
 
@@ -117,10 +117,10 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		float64_t width;
 
 		/** degree of Weighted Degree kernel part */
-		int32_t degree; 
+		int32_t degree;
 		/** shift of Weighted Degree with Shifts kernel part */
 		int32_t shift;
-		
+
 		/** size of window around motifs */
 		int32_t window;
 
@@ -129,7 +129,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 
 		/** Matrix of motif positions from sequences right-hand side */
 		CSimpleFeatures<uint16_t>* motif_positions_rhs;
-	
+
 		/** the length of matrix of motif positions -- for serialization purposes*/
 		int32_t alen;
 		/** the length of matrix of motif positions -- for serialization purposes*/

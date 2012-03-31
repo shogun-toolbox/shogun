@@ -54,7 +54,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			SG_FREE(sqrtdiag_rhs);
 		}
 
-		/** initialization of the normalizer 
+		/** initialization of the normalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{

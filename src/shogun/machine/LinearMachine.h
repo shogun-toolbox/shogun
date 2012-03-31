@@ -27,13 +27,13 @@ namespace shogun
 /** @brief Class LinearMachine is a generic interface for all kinds of linear
  * machines like classifiers.
  *
- * A linear classifier computes 
+ * A linear classifier computes
  *
  *  \f[
  * 		f({\bf x})= {\bf w} \cdot {\bf x} + b
  * 	\f]
  *
- * where \f${\bf w}\f$ are the weights assigned to each feature in training 
+ * where \f${\bf w}\f$ are the weights assigned to each feature in training
  * and \f$b\f$ the bias.
  *
  * To implement a linear classifier all that is required is to define the

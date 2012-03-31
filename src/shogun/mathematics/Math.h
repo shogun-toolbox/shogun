@@ -159,14 +159,14 @@ class CMath : public CSGObject
 
 		///return the maximum of two integers
 		template <class T>
-			static inline T max(T a, T b) 
+			static inline T max(T a, T b)
 			{
 				return (a>=b) ? a : b;
 			}
 
 		///return the value clamped to interval [lb,ub]
 		template <class T>
-			static inline T clamp(T value, T lb, T ub) 
+			static inline T clamp(T value, T lb, T ub)
 			{
 				if (value<=lb)
 					return lb;
@@ -425,22 +425,22 @@ class CMath : public CSGObject
 		{
 			return ::cos(x);
 		}
-		
+
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
 			ASSERT(len>0 && xy);
 
 			float64_t area = 0.0;
-			
+
 			if (!reversed)
 			{
 				for (int i=1; i<len; i++)
 					area += 0.5*(xy[2*i]-xy[2*(i-1)])*(xy[2*i+1]+xy[2*(i-1)+1]);
-			} 
+			}
 			else
 			{
 				for (int i=1; i<len; i++)
-					area += 0.5*(xy[2*i+1]-xy[2*(i-1)+1])*(xy[2*i]+xy[2*(i-1)]);	
+					area += 0.5*(xy[2*i+1]-xy[2*(i-1)+1])*(xy[2*i]+xy[2*(i-1)]);
 			}
 
 			return area;
@@ -475,7 +475,7 @@ class CMath : public CSGObject
 
 		/// inverses square matrix in-place
 		static void inverse(SGMatrix<float64_t> matrix);
-		
+
 		/// return the pseudo inverse for matrix
 		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
 		static float64_t* pinv(
@@ -679,11 +679,11 @@ class CMath : public CSGObject
 				r+=v1[i]*v2[i];
 			return r;
 		}
-		
+
 
 		/// compute dot product between v1 and v2 (blas optimized)
 		static float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n);
-		
+
 		/// compute dot product between v1 and v2 (blas optimized)
 		static float32_t dot(
 			const float32_t* v1, const float32_t* v2, int32_t n);
@@ -926,7 +926,7 @@ class CMath : public CSGObject
 
 		/*
 		 * Inline function to extract the byte at position p (from left)
-		 * of an 64 bit integer. The function is somewhat identical to 
+		 * of an 64 bit integer. The function is somewhat identical to
 		 * accessing an array of characters via [].
 		 */
 
@@ -1181,9 +1181,9 @@ class CMath : public CSGObject
 			const char* name="matrix", const char* prefix="");
 
 		/** performs a quicksort on an array output of length size
-		 * it is sorted in ascending order 
+		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
-		 * matlab alike [sorted,index]=sort(output) 
+		 * matlab alike [sorted,index]=sort(output)
 		 */
 		template <class T1,class T2>
 			static void qsort_index(T1* output, T2* index, uint32_t size);
@@ -1191,7 +1191,7 @@ class CMath : public CSGObject
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in descending order
 		 * (for type T1) and returns the index (type T2)
-		 * matlab alike [sorted,index]=sort(output) 
+		 * matlab alike [sorted,index]=sort(output)
 		 */
 		template <class T1,class T2>
 			static void qsort_backward_index(
@@ -1200,7 +1200,7 @@ class CMath : public CSGObject
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
-		 * matlab alike [sorted,index]=sort(output) 
+		 * matlab alike [sorted,index]=sort(output)
 		 *
 		 * parallel version
 		 */
@@ -1223,12 +1223,12 @@ class CMath : public CSGObject
 			static void* parallel_qsort_index(void* p);
 
 
-		/* finds the smallest element in output and puts that element as the 
+		/* finds the smallest element in output and puts that element as the
 		   first element  */
 		template <class T>
 			static void min(float64_t* output, T* index, int32_t size);
 
-		/* finds the n smallest elements in output and puts these elements as the 
+		/* finds the n smallest elements in output and puts these elements as the
 		   first n elements  */
 		template <class T>
 			static void nmin(
@@ -1318,7 +1318,7 @@ class CMath : public CSGObject
 
 				while (start<end)
 				{
-					int32_t middle=(start+end)/2; 
+					int32_t middle=(start+end)/2;
 
 					if (output[middle]>elem)
 						end=middle-1;
@@ -1405,7 +1405,7 @@ class CMath : public CSGObject
 		/// where p,q are given in logspace
 		static float64_t mutual_info(float64_t* p1, float64_t* p2, int32_t len);
 
-		/// returns the relative entropy H(P||Q), 
+		/// returns the relative entropy H(P||Q),
 		/// where p,q are given in logspace
 		static float64_t relative_entropy(
 			float64_t* p, float64_t* q, int32_t len);
@@ -1425,7 +1425,7 @@ class CMath : public CSGObject
 			return CMath::LOGRANGE;
 		}
 
-#ifdef USE_LOGCACHE	
+#ifdef USE_LOGCACHE
 		/// returns range of logtable
 		inline static uint32_t get_log_accuracy()
 		{
@@ -1466,18 +1466,18 @@ class CMath : public CSGObject
 #endif
 		}
 
-		/** fisher's test for multiple 2x3 tables 
+		/** fisher's test for multiple 2x3 tables
 		 * @param tables
 		 */
 		static SGVector<float64_t> fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables);
-		
+
 		/** fisher's test for 2x3 table
 		 * @param table
 		 */
 		static float64_t fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table);
 
 		/**@name summing functions */
-		//@{ 
+		//@{
 		/**
 		 * sum logarithmic probabilities.
 		 * Probability measures are summed up but are now given in logspace
@@ -1531,7 +1531,7 @@ class CMath : public CSGObject
 #endif
 #ifdef USE_LOGSUMARRAY
 				/** sum up a whole array of values in logspace.
-				 * This function addresses the numeric instabiliy caused by simply summing up N elements by adding 
+				 * This function addresses the numeric instabiliy caused by simply summing up N elements by adding
 				 * each of the elements to some variable. Instead array neighbours are summed up until one element remains.
 				 * Whilst the number of additions remains the same, the error is only in the order of log(N) instead N.
 				 */
@@ -1554,7 +1554,7 @@ class CMath : public CSGObject
 							pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
 					}
 					return logarithmic_sum_array(p,len%2 + (len>>1)) ;
-				} 
+				}
 #endif //USE_LOGSUMARRAY
 				//@}
 
@@ -1588,13 +1588,13 @@ class CMath : public CSGObject
 				static uint32_t seed;
 				static char* rand_state;
 
-#ifdef USE_LOGCACHE	
+#ifdef USE_LOGCACHE
 
 				/// number of steps per integer
 				static int32_t LOGACCURACY;
 				//@}
 				///table with log-values
-				static float64_t* logtable;	
+				static float64_t* logtable;
 #endif
 };
 
@@ -1789,7 +1789,7 @@ void CMath::qsort_backward_index(T1* output, T2* index, int32_t size)
 		qsort_backward_index(&output[left],&index[left], size-left);
 }
 
-	template <class T> 
+	template <class T>
 void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 {
 	if (6*n*size<13*size*CMath::log(size))

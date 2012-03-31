@@ -89,7 +89,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 		result=train_no_bias_svmlight();
 	}
 #endif //USE_SVMLIGHT
-	else if (scatter_type==TEST_RULE1 || scatter_type==TEST_RULE2) 
+	else if (scatter_type==TEST_RULE1 || scatter_type==TEST_RULE2)
 	{
 		float64_t nu_min=((float64_t) Nc)/num_vectors;
 		float64_t nu_max=((float64_t) Nc)*Nmin/num_vectors;
@@ -102,7 +102,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 		result=train_testrule12();
 	}
 	else
-		SG_ERROR("Unknown Scatter type\n"); 
+		SG_ERROR("Unknown Scatter type\n");
 
 	return result;
 }

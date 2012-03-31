@@ -29,8 +29,8 @@ CLocalityPreservingProjections::~CLocalityPreservingProjections()
 {
 }
 
-const char* CLocalityPreservingProjections::get_name() const 
-{ 
+const char* CLocalityPreservingProjections::get_name() const
+{
 	return "LocalityPreservingProjections";
 };
 
@@ -42,7 +42,7 @@ CSimpleFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(
 	int i,j;
 	int N = simple_features->get_num_vectors();
 	int dim = simple_features->get_num_features();
-	
+
 	float64_t* D_diag_vector = SG_CALLOC(float64_t, N);
 	for (i=0; i<N; i++)
 	{
@@ -70,7 +70,7 @@ CSimpleFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(
 		cblas_dscal(dim,D_diag_vector[i],feature_matrix.matrix+i*dim,1);
 
 	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,feature_matrix.matrix,dim,feature_matrix.matrix,dim,0.0,rhs_M,dim);
-	
+
 	for (i=0; i<N; i++)
 		cblas_dscal(dim,1.0/D_diag_vector[i],feature_matrix.matrix+i*dim,1);
 

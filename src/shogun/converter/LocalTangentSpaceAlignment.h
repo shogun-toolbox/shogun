@@ -24,12 +24,12 @@ class CDistance;
 
 /** @brief class LocalTangentSpaceAlignment (part of the Efficient
  * Dimensionality Reduction Toolkit) used to embed
- * data using Local Tangent Space Alignment (LTSA) 
+ * data using Local Tangent Space Alignment (LTSA)
  * algorithm as described in:
  *
- * Zhang, Z., & Zha, H. (2002). Principal Manifolds 
- * and Nonlinear Dimension Reduction via Local Tangent Space Alignment. 
- * Journal of Shanghai University English Edition, 8(4), 406-424. SIAM. 
+ * Zhang, Z., & Zha, H. (2002). Principal Manifolds
+ * and Nonlinear Dimension Reduction via Local Tangent Space Alignment.
+ * Journal of Shanghai University English Edition, 8(4), 406-424. SIAM.
  * Retrieved from http://arxiv.org/abs/cs/0212008
  *
  * Due to performance reasons on high-dimensional datasets please
@@ -64,12 +64,12 @@ public:
 /// HELPER
 protected:
 
-	/** construct weight matrix 
+	/** construct weight matrix
 	 * @param simple_features features to be used
 	 * @param W_matrix weight matrix
 	 * @param neighborhood_matrix matrix containing neighbor idxs
 	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix, 
+	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix,
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
 /// THREAD

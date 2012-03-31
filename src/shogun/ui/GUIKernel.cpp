@@ -185,7 +185,7 @@ CKernel* CGUIKernel::create_wavelet(
 		SG_ERROR("Couldn't create WaveletKernel with size %d, Wdilation %f, Wtranslation %f.\n", size, Wdilation, Wtranslation);
 	else
 		SG_DEBUG("created WaveletKernel (%p) with size %d, Wdilation %f, Wtranslation %f.\n", kern, size, Wdilation, Wtranslation);
-	
+
 	return kern;
 }
 CKernel* CGUIKernel::create_sparsepoly(
@@ -264,7 +264,7 @@ CKernel* CGUIKernel::create_weighteddegreestring(
 
 	if (!use_normalization)
 		kern->set_normalizer(new CIdentityKernelNormalizer());
-		
+
 	((CWeightedDegreeStringKernel*) kern)->
 		set_use_block_computation(block_computation);
 	((CWeightedDegreeStringKernel*) kern)->set_max_mismatch(max_mismatch);
@@ -364,7 +364,7 @@ float64_t* CGUIKernel::get_weights(int32_t order, int32_t max_mismatch)
 	}
 	for (i=0; i<order; i++)
 		weights[i]/=sum;
-	
+
 	for (i=0; i<order; i++)
 	{
 		for (int32_t j=1; j<=max_mismatch; j++)
@@ -728,7 +728,7 @@ bool CGUIKernel::init_kernel_optimization()
 			int32_t num_sv=svm->get_num_support_vectors();
 			int32_t* sv_idx=SG_MALLOC(int32_t, num_sv);
 			float64_t* sv_weight=SG_MALLOC(float64_t, num_sv);
-			
+
 			for (int32_t i=0; i<num_sv; i++)
 			{
 				sv_idx[i]=svm->get_support_vector(i);
@@ -785,7 +785,7 @@ bool CGUIKernel::init_kernel(const char* target)
 			EFeatureType ftype=train->get_feature_type();
 			if ((k_fclass==fclass || k_fclass==C_ANY || fclass==C_ANY) &&
 				(k_ftype==ftype || k_ftype==F_ANY || ftype==F_ANY))
-			
+
 			{
 				SG_INFO("Initialising kernel with TRAIN DATA, train: %p\n", train);
 				kernel->init(train, train);
@@ -807,7 +807,7 @@ bool CGUIKernel::init_kernel(const char* target)
 			EFeatureType ftype=test->get_feature_type();
 			if ((k_fclass==fclass || k_fclass==C_ANY || fclass==C_ANY) &&
 				(k_ftype==ftype || k_ftype==F_ANY || ftype==F_ANY))
-			
+
 			{
 				if (!initialized)
 				{
@@ -823,7 +823,7 @@ bool CGUIKernel::init_kernel(const char* target)
 					else
 						SG_ERROR("Kernel can not process this train feature type: %d %d.\n", fclass, ftype);
 				}
-				
+
 				SG_INFO("Initialising kernel with TEST DATA, train: %p test %p\n", train, test);
 				// lhs -> always train_features; rhs -> always test_features
 				kernel->init(train, test);

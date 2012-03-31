@@ -315,14 +315,14 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 			{
 				for (int32_t j=i; j<num_bound; j++)
 				{
-					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
+					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])*
 						(features->dot(idx_bound[i], features, idx_bound[j]) + bias_const);
 
 					Z[j*num_bound+i]=Z[i*num_bound+j];
 
 				}
 
-				Zv[i]=-2.0*C1*get_label(idx_bound[i])* 
+				Zv[i]=-2.0*C1*get_label(idx_bound[i])*
 					(features->dense_dot(idx_bound[i], v, num_feat)-sum_Cy_active);
 			}
 
@@ -392,7 +392,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 float64_t CSubGradientSVM::compute_objective(int32_t num_feat, int32_t num_vec)
 {
 	float64_t result= 0.5 * CMath::dot(w,w, num_feat);
-	
+
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		if (proj[i]<1.0)
@@ -593,7 +593,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active);
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
 		//SG_PRINT("grad_b:%f\n", grad_b);
-		
+
 		dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
 
 		alpha=line_search(num_feat, num_vec);
