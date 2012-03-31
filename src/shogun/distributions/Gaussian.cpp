@@ -70,7 +70,7 @@ bool CGaussian::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n");		
+				SG_ERROR("Specified features are not of type CDotFeatures\n");
 		set_features(data);
 	}
 	CDotFeatures* dotdata=(CDotFeatures *) data;
@@ -230,7 +230,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 
 			for (int32_t i=0; i<cov.num_rows; i++)
 				m_d.vector[i]=cov.matrix[i*cov.num_rows+i];
-			
+
 			m_d.vlen=cov.num_rows;
 			break;
 		case SPHERICAL:
@@ -276,7 +276,7 @@ SGVector<float64_t> CGaussian::sample()
 		SG_FREE(r_matrix);
 		r_matrix=temp_matrix;
 	}
-	
+
 	float64_t* samp=SG_MALLOC(float64_t, m_mean.vlen);
 
 	cblas_dgemv(CblasRowMajor, CblasNoTrans, m_mean.vlen, m_mean.vlen,

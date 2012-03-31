@@ -44,7 +44,7 @@ SGMatrix<float64_t> CNeighborhoodPreservingEmbedding::construct_embedding(CFeatu
 	int N = simple_features->get_num_vectors();
 	int dim = simple_features->get_num_features();
 	ASSERT(dimension<=dim);
-	
+
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 	float64_t* XTM = SG_MALLOC(float64_t, dim*N);
 	float64_t* lhs_M = SG_MALLOC(float64_t, dim*dim);

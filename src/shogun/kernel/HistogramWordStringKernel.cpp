@@ -115,7 +115,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	float64_t* l_plo_rhs=plo_rhs;
 	float64_t* l_ld_mean_lhs=ld_mean_lhs;
 	float64_t* l_ld_mean_rhs=ld_mean_rhs;
-	
+
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
 	{
@@ -213,9 +213,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 			//fprintf(stderr, "%i: mean=%1.2e  std=%1.2e\n", i, mean[i], std[i]) ;
 			sum_m2_s2 += mean[i]*mean[i]/(variance[i]) ;
 		} ;
-	} 
+	}
 
-	// compute sum of 
+	// compute sum of
 	//result -= estimate->log_derivative_pos(avec[i], i)*mean[a_idx]/variance[a_idx] ;
 	//result -= estimate->log_derivative_neg(avec[i], i)*mean[a_idx+num_params]/variance[a_idx+num_params] ;
 	for (i=0; i<l->get_num_vectors(); i++)
@@ -240,9 +240,9 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 	if (ld_mean_lhs!=ld_mean_rhs)
 	{
-		// compute sum of 
+		// compute sum of
 		//result -= estimate->log_derivative_pos(bvec[i], i)*mean[b_idx]/variance[b_idx] ;
-		//result -= estimate->log_derivative_neg(bvec[i], i)*mean[b_idx+num_params]/variance[b_idx+num_params] ;	
+		//result -= estimate->log_derivative_neg(bvec[i], i)*mean[b_idx+num_params]/variance[b_idx+num_params] ;
 		for (i=0; i < r->get_num_vectors(); i++)
 		{
 			int32_t alen;

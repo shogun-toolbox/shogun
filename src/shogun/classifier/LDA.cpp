@@ -124,7 +124,7 @@ bool CLDA::train_machine(CFeatures* data)
 	}
 	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, nf, nf,
 		(int) num_neg, 1.0, buffer, nf, buffer, nf, 0, scatter, nf);
-	
+
 	//mean pos
 	for (i=0; i<num_pos; i++)
 	{

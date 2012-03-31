@@ -234,7 +234,7 @@ class CBitString : public CSGObject
 				uint64_t m=mask ;
 				uint64_t b=bits ;
 				char cnt=0 ;
-				
+
 				char ar[256][256] ;
 
 				for (int i=0; i<8; i++)
@@ -249,9 +249,9 @@ class CBitString : public CSGObject
 				}
 				res=res>>cnt ;
 				//fprintf(stdout, "%lx %lx %lx\n", res, m, b) ;
-				
+
 				//res = res & bits & mask ;
-				
+
 				return res ;
 			}
 		*/
@@ -281,7 +281,7 @@ class CBitString : public CSGObject
 			return res;
 		}
 
-		/** set a binary word 
+		/** set a binary word
 		 *
 		 * @param word 16 bit word to be set
 		 * @param index word based index

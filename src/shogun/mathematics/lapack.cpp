@@ -23,7 +23,7 @@
 
 using namespace shogun;
 
-#if defined(HAVE_MKL) || defined(HAVE_ACML) 
+#if defined(HAVE_MKL) || defined(HAVE_ACML)
 #define DSYEV dsyev
 #define DGESVD dgesvd
 #define DPOSV dposv
@@ -179,12 +179,12 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 
 // order not supported (yet?)
 int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
-                   const int N, const int NRHS, double *A, const int lda, 
+                   const int N, const int NRHS, double *A, const int lda,
                    int *ipiv, double *B, const int ldb)
 {
 	int info = 0;
 	char trans = 'N';
-	if (Transpose==CblasTrans) 
+	if (Transpose==CblasTrans)
 	{
 		trans = 'T';
 	}
@@ -247,7 +247,7 @@ void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int 
 }
 #undef DSYEV
 
-void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double *sing, 
+void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double *sing,
 		double *u, int ldu, double *vt, int ldvt, int *info)
 {
 #ifdef HAVE_ACML
@@ -301,11 +301,11 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 }
 #undef DORGQR
 
-void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu, 
+void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu,
                  double *eigenvalues, double *eigenvectors, int *info)
 {
 	int m;
-	double vl,vu; 
+	double vl,vu;
 	double abstol = 0.0;
 	char I = 'I';
 	int* isuppz = SG_MALLOC(int, n);

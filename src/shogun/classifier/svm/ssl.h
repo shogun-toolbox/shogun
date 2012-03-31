@@ -1,7 +1,7 @@
 /*    Copyright 2006 Vikas Sindhwani (vikass@cs.uchicago.edu)
 	  SVM-lin: Fast SVM Solvers for Supervised and Semi-supervised Learning
 
-	  This file is part of SVM-lin.      
+	  This file is part of SVM-lin.
 
 	  SVM-lin is free software; you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ void initialize(struct vector_double *A, int32_t k, float64_t a);
 /* initializes a vector_double to be of length k, all elements set to a */
 void initialize(struct vector_int *A, int32_t k);
 /* initializes a vector_int to be of length k, elements set to 1,2..k. */
-void GetLabeledData(struct data *Data_Labeled, const struct data *Data); 
+void GetLabeledData(struct data *Data_Labeled, const struct data *Data);
 /* extracts labeled data from Data and copies it into Data_Labeled */
 float64_t norm_square(const vector_double *A); /* returns squared length of A */
 
@@ -183,7 +183,7 @@ float64_t line_search(
 	int32_t l);
 
 /* Transductive L2-SVM */
-/* Solves : min_(w, Y[i],i in UNlabeled) 0.5*Options->lamda*w'*w + 0.5*(1/Data->l)*sum_{i in labeled} max(0,1 - Y[i] w' x_i)^2 + 0.5*(Options->lambda_u/Data->u)*sum_{i in UNlabeled} max(0,1 - Y[i] w' x_i)^2 
+/* Solves : min_(w, Y[i],i in UNlabeled) 0.5*Options->lamda*w'*w + 0.5*(1/Data->l)*sum_{i in labeled} max(0,1 - Y[i] w' x_i)^2 + 0.5*(Options->lambda_u/Data->u)*sum_{i in UNlabeled} max(0,1 - Y[i] w' x_i)^2
    subject to: (1/Data->u)*sum_{i in UNlabeled} max(0,Y[i]) = Options->R */
 int32_t TSVM_MFN(
 	const struct data *Data,

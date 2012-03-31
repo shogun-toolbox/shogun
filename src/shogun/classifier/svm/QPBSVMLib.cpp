@@ -20,7 +20,7 @@
  * H [dim x dim] is symmetric positive semi-definite matrix.
  * f [dim x 1] is an arbitrary vector.
  *
- * The precision of found solution is given by parameters 
+ * The precision of found solution is given by parameters
  * tmax, tolabs, tolrel which define the stopping conditions:
  *
  *    t >= tmax                   ->  exit_flag = 0  Number of iterations.
@@ -33,15 +33,15 @@
  * History ... Value of LB and UB wrt. number of iterations.
  *
  * 1. Generalized Gauss-Seidel methods
- * exitflag = qpbsvm_sca( &get_col, diag_H, f, UB, dim, tmax, 
+ * exitflag = qpbsvm_sca( &get_col, diag_H, f, UB, dim, tmax,
  *               tolabs, tolrel, x, Nabla, &t, &History, verb )
  *
  * 2. Greedy variant - Udpate variable yielding the best improvement.
- * exitflag = qpbsvm_scas( &get_col, diag_H, f, UB, dim, tmax, 
+ * exitflag = qpbsvm_scas( &get_col, diag_H, f, UB, dim, tmax,
  *               tolabs, tolrel, x, Nabla, &t, &History, verb )
  *
  * 3. Updates variable which most violates the KKT conditions
- * exitflag = qpbsvm_scamv( &get_col, diag_H, f, UB, dim, tmax, 
+ * exitflag = qpbsvm_scamv( &get_col, diag_H, f, UB, dim, tmax,
  *               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
  *
 -------------------------------------------------------------------- */
@@ -164,7 +164,7 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_sca(m_UB, m_dim, m_tmax, 
+Usage: exitflag = qpbsvm_sca(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
@@ -221,16 +221,16 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
   }
 
   exitflag = -1;
-  while( exitflag == -1 ) 
+  while( exitflag == -1 )
   {
-    t++;     
- 
+    t++;
+
     for(i = 0; i < m_dim; i++ ) {
       if( m_diag_H[i] > 0 ) {
         /* variable update */
         x_old = x[i];
         x[i] = CMath::min(m_UB,CMath::max(0.0, x[i] - Nabla[i]/m_diag_H[i]));
-        
+
         /* update Nabla */
         delta_x = x[i] - x_old;
         if( delta_x != 0 ) {
@@ -238,7 +238,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
           for(j = 0; j < m_dim; j++ ) {
             Nabla[j] += col_H[j]*delta_x;
           }
-        }   
+        }
 
       }
     }
@@ -253,7 +253,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
       xf += x[i]*m_f[i];
       xi_sum += CMath::max(0.0,-Nabla[i]);
 
-      if((x[i] > 0 && x[i] < m_UB && CMath::abs(Nabla[i]) > m_tolKKT) || 
+      if((x[i] > 0 && x[i] < m_UB && CMath::abs(Nabla[i]) > m_tolKKT) ||
          (x[i] == 0 && Nabla[i] < -m_tolKKT) ||
          (x[i] == m_UB && Nabla[i] > m_tolKKT)) KKTsatisf = 0;
     }
@@ -287,7 +287,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
       }
       tmp_ptr[INDEX(0,t,2)] = Q_P;
       tmp_ptr[INDEX(1,t,2)] = Q_D;
-      
+
       History_size += HISTORY_BUF;
       SG_FREE(History);
       History = tmp_ptr;
@@ -299,13 +299,13 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
 
   SG_PRINT("QP: %f QD: %f\n", Q_P, Q_D);
 
-  return( exitflag ); 
+  return( exitflag );
 }
 
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_scas(m_UB, m_dim, m_tmax, 
+Usage: exitflag = qpbsvm_scas(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
@@ -367,18 +367,18 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
   }
 
   exitflag = -1;
-  while( exitflag == -1 ) 
+  while( exitflag == -1 )
   {
-    t++;     
+    t++;
 
     max_update = -CMath::INFTY;
     for(i = 0; i < m_dim; i++ ) {
-      if( m_diag_H[i] > 0 ) { 
+      if( m_diag_H[i] > 0 ) {
         /* variable update */
         x_old = x[i];
         x_new = CMath::min(m_UB,CMath::max(0.0, x[i] - Nabla[i]/m_diag_H[i]));
-  
-        curr_update = -0.5*m_diag_H[i]*(x_new*x_new-x_old*x_old) - 
+
+        curr_update = -0.5*m_diag_H[i]*(x_new*x_new-x_old*x_old) -
           (Nabla[i] - m_diag_H[i]*x_old)*(x_new - x_old);
 
         if( curr_update > max_update ) {
@@ -386,8 +386,8 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
           max_update = curr_update;
           max_x = x_new;
         }
-      } 
-    }                                                                                            
+      }
+    }
 
     x_old = x[max_i];
     x[max_i] = max_x;
@@ -399,7 +399,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
       for(j = 0; j < m_dim; j++ ) {
         Nabla[j] += col_H[j]*delta_x;
       }
-    }   
+    }
 
     /* compute Q_P and Q_D */
     xHx = 0;
@@ -411,7 +411,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
       xf += x[i]*m_f[i];
       xi_sum += CMath::max(0.0,-Nabla[i]);
 
-      if((x[i] > 0 && x[i] < m_UB && CMath::abs(Nabla[i]) > m_tolKKT) || 
+      if((x[i] > 0 && x[i] < m_UB && CMath::abs(Nabla[i]) > m_tolKKT) ||
          (x[i] == 0 && Nabla[i] < -m_tolKKT) ||
          (x[i] == m_UB && Nabla[i] > m_tolKKT)) KKTsatisf = 0;
     }
@@ -444,7 +444,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
       }
       tmp_ptr[INDEX(0,t,2)] = Q_P;
       tmp_ptr[INDEX(1,t,2)] = Q_D;
-      
+
       History_size += HISTORY_BUF;
       SG_FREE(History);
       History = tmp_ptr;
@@ -454,12 +454,12 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
   (*ptr_t) = t;
   (*ptr_History) = History;
 
-  return( exitflag ); 
+  return( exitflag );
 }
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_scamv(m_UB, m_dim, m_tmax, 
+Usage: exitflag = qpbsvm_scamv(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
@@ -486,30 +486,30 @@ int32_t CQPBSVMLib::qpbsvm_scamv(float64_t *x,
 
   t = 0;
   exitflag = -1;
-  while( exitflag == -1 && t <= m_tmax) 
+  while( exitflag == -1 && t <= m_tmax)
   {
-    t++;     
+    t++;
 
     max_viol = 0;
-    for(i = 0; i < m_dim; i++ ) 
-    {      
+    for(i = 0; i < m_dim; i++ )
+    {
       if( x[i] == 0 )
       {
         if( max_viol < -Nabla[i]) { u = i; max_viol = -Nabla[i]; }
       }
       else if( x[i] > 0 && x[i] < m_UB )
       {
-        if( max_viol < CMath::abs(Nabla[i]) ) { u = i; max_viol = CMath::abs(Nabla[i]); } 
+        if( max_viol < CMath::abs(Nabla[i]) ) { u = i; max_viol = CMath::abs(Nabla[i]); }
       }
       else if( max_viol < Nabla[i]) { u = i; max_viol = Nabla[i]; }
     }
 
 /*    SG_PRINT("%d: max_viol=%m_f, u=%d\n", t, max_viol, u);*/
 
-    if( max_viol <= m_tolKKT ) 
+    if( max_viol <= m_tolKKT )
     {
       exitflag = 1;
-    } 
+    }
     else
     {
       /* update */
@@ -541,12 +541,12 @@ int32_t CQPBSVMLib::qpbsvm_scamv(float64_t *x,
 
 
 
-  return( exitflag ); 
+  return( exitflag );
 }
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax, 
+Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
@@ -650,7 +650,7 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
 #ifdef USE_CPLEX
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax, 
+Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax,
                m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */

@@ -132,14 +132,14 @@ class CGUIHMM : public CSGObject
 		inline float64_t get_pseudo() { return PSEUDO; }
 
 		/** classify
-		 * @param output 
+		 * @param output
 		 */
 		CLabels* classify(CLabels* output=NULL);
 		/** classify example
 		 * @param idx
 		 */
 		float64_t classify_example(int32_t idx);
-		/** one class classify 
+		/** one class classify
 		 * @param output
 		 */
 		CLabels* one_class_classify(CLabels* output=NULL);
@@ -147,7 +147,7 @@ class CGUIHMM : public CSGObject
 		 * @param output
 		 */
 		CLabels* linear_one_class_classify(CLabels* output=NULL);
-		/** one class classfiy example 
+		/** one class classfiy example
 		 * @param idx
 		 */
 		float64_t one_class_classify_example(int32_t idx);
@@ -161,7 +161,7 @@ class CGUIHMM : public CSGObject
 		 * @param y
 		 */
 		bool converge(float64_t x, float64_t y);
-		/** switch model 
+		/** switch model
 		 * @param m1
 		 * @param m2
 		 */

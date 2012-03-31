@@ -25,7 +25,7 @@ class CKernel;
 
 /** @brief class LocalTangentSpaceAlignment (part of the
  * Efficient Dimensionality Reduction Toolkit) used to embed
- * data using supervised kernel extension of the Local Tangent Space 
+ * data using supervised kernel extension of the Local Tangent Space
  * Alignment (LTSA) algorithm.
  */
 class CSupervisedKernelLocalTangentSpaceAlignment: public CKernelLocalTangentSpaceAlignment
@@ -35,7 +35,7 @@ public:
 	/** constructor */
 	CSupervisedKernelLocalTangentSpaceAlignment();
 
-	/** constructor with kernel parameter 
+	/** constructor with kernel parameter
 	 * @param kernel kernel to be used
 	 */
 	CSupervisedKernelLocalTangentSpaceAlignment(CKernel* kernel, CLabels* labels);
@@ -59,12 +59,12 @@ public:
 
 	/** get name */
 	virtual const char* get_name() const;
-	
+
 protected:
 
 	/** constructs neighborhood matrix by kernel matrix
 	 * @param kernel_matrix kernel matrix to be used
-	 * @param k k 
+	 * @param k k
 	 * @return matrix containing indexes of neighbors of i-th object
 	 * in i-th column
 	 */

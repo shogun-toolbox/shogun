@@ -92,7 +92,7 @@ bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 		weights[i]=CMath::sqrt(weights[i]);
 	return true;
 }
-  
+
 float64_t CWeightedCommWordStringKernel::compute_helper(
 	int32_t idx_a, int32_t idx_b, bool do_sort)
 {
@@ -251,7 +251,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 }
 
 float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
-{ 
+{
 	if (!get_is_initialized())
 		SG_ERROR( "CCommWordStringKernel optimization not initialized\n");
 

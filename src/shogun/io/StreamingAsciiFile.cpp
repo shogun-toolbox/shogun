@@ -295,7 +295,7 @@ void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)		\
 	else								\
 		len=bytes_read;						\
 	vector=(sg_type *) buffer;					\
-}									
+}
 
 GET_STRING(get_bool_string, str_to_bool, bool)
 GET_STRING(get_byte_string, atoi, uint8_t)

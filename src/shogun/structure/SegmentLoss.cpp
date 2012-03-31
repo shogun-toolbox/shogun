@@ -8,7 +8,7 @@
 #include <shogun/lib/Array.h>
 #include <shogun/lib/Array2.h>
 #include <shogun/lib/Array3.h>
-#include <shogun/base/SGObject.h> 
+#include <shogun/base/SGObject.h>
 //# define DEBUG
 
 using namespace shogun;
@@ -79,8 +79,8 @@ void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 			m_segment_loss_matrix.element(seg_type, pos)=value;
 		}
 	}
-#ifdef DEBUG 
-	m_segment_loss_matrix.display_array();	
+#ifdef DEBUG
+	m_segment_loss_matrix.display_array();
 #endif
 }
 

@@ -264,9 +264,9 @@ void CSparseSpatialSampleStringKernel::compute_triple(int32_t idx_a, int32_t idx
 }
 
 void CSparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g, int k, int r, int nStr)
-{  
+{
 	char same;
-	int i, j; 
+	int i, j;
 	int cu;
 	long int ucnt;
 	long int startInd, endInd, j1;
@@ -278,16 +278,16 @@ void CSparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g
 	i = 0;
 	ucnt = 0;
 	while (i<r)
-	{  
+	{
 		for (j = 0; j < k; ++j)
 			curfeat[j]=sx[i+j*r];
 		same=1;
 		for (j = 0;j < k; ++j)
 			if (curfeat[j]!=sx[i+j*r])
-			{ 
+			{
 				same=0;
 				break;
-			}   
+			}
 		startInd=i;
 		while (same && i<r)
 		{
@@ -333,7 +333,7 @@ void CSparseSpatialSampleStringKernel::countAndUpdate(int *outK, int *sx, int *g
 }
 
 int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
-{      
+{
 	int *sxc, *bc, *sxl, *cc, *regroup;
 	int i, j;
 
@@ -346,7 +346,7 @@ int *CSparseSpatialSampleStringKernel::cntsrtna(int *sx, int k, int r, int na)
 	for (i = 0; i < r; ++i)
 		regroup[i]=i;
 	for (j = k-1; j >= 0; --j)
-	{ 
+	{
 		for(i = 0; i < na; ++i)
 			sxc[i]=0;
 		for (i = 0; i < r; ++i)

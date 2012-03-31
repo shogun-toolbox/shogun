@@ -15,7 +15,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/SimpleFeatures.h>
 
-namespace shogun 
+namespace shogun
 {
 
 class CLabels;
@@ -29,7 +29,7 @@ class CFeatures;
  * Building of classifiers based on conjugation indices
  *
  * Currently supports only multiclass problems.
- * Useless for datasets with # of dimensions less than # of class vectors. 
+ * Useless for datasets with # of dimensions less than # of class vectors.
  */
 class CConjugateIndex : public CMachine
 {

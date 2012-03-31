@@ -191,7 +191,7 @@ class CSNPFeatures : public CDotFeatures
 		 */
 		virtual SGMatrix<float64_t> get_histogram(bool normalize=true);
 
-		/** 
+		/**
 		 * compute 2x3 histogram table
 		 */
 		static SGMatrix<float64_t> get_2x3_table(CSNPFeatures* pos, CSNPFeatures* neg);

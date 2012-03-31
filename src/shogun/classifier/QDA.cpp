@@ -102,8 +102,8 @@ CLabels* CQDA::apply()
 
 		}
 
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, num_vecs, m_dim, 
-			m_dim, 1.0, X.matrix, num_vecs, m_M.get_matrix(k), m_dim, 0.0, 
+		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, num_vecs, m_dim,
+			m_dim, 1.0, X.matrix, num_vecs, m_M.get_matrix(k), m_dim, 0.0,
 			A.matrix, num_vecs);
 
 		for ( i = 0 ; i < num_vecs ; ++i )
@@ -248,7 +248,7 @@ bool CQDA::train_machine(CFeatures* data)
 
 			rf->free_feature_vector(vec, class_idxs[k*num_vec + i], vfree);
 		}
-		
+
 		for ( j = 0 ; j < m_dim ; ++j )
 			m_means[k*m_dim + j] /= class_nums[k];
 
@@ -264,7 +264,7 @@ bool CQDA::train_machine(CFeatures* data)
 		float64_t * col = scalings.get_column_vector(k);
 		float64_t * rot_mat = rotations.get_matrix(k);
 
-		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu, 
+		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu,
 			rot_mat, ldvt, &info);
 		ASSERT(info == 0);
 		buffer.destroy_matrix();
@@ -281,7 +281,7 @@ bool CQDA::train_machine(CFeatures* data)
 			for ( i = 0 ; i < m_dim ; ++i )
 				for ( j = 0 ; j < m_dim ; ++j )
 					M[i + j*m_dim] *= scalings[k*m_dim + j];
-			
+
 			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n, 1.0,
 				M.matrix, n, rot_mat, n, 0.0, m_covs.get_matrix(k), n);
 

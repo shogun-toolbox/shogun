@@ -152,13 +152,13 @@ public:
 	 * @param x assign elements from x
 	 */
 	CDynInt<T,sz>& operator=(const CDynInt<T,sz>& x)
-	{ 
+	{
 		for (int i=0; i<sz; i++)
 			integer[i]=x.integer[i];
-		return *this; 
+		return *this;
 	}
 
-	/** overload | operator and return x | y 
+	/** overload | operator and return x | y
 	 *
 	 * @param x x
 	 */
@@ -172,7 +172,7 @@ public:
 		return r;
 	}
 
-	/** overload & operator and return x & y 
+	/** overload & operator and return x & y
 	 *
 	 * @param x x
 	 */
@@ -242,7 +242,7 @@ public:
 		return r;
 	}
 
-	/** overload ^ operator and return x ^ y 
+	/** overload ^ operator and return x ^ y
 	 *
 	 * @param x x
 	 */
@@ -256,7 +256,7 @@ public:
 		return r;
 	}
 
-	/** overload + operator and return x + y 
+	/** overload + operator and return x + y
 	 *
 	 * @param x x
 	 */
@@ -277,7 +277,7 @@ public:
 		return x;
 	}
 
-	/** overload - operator and return x - y 
+	/** overload - operator and return x - y
 	 *
 	 * @param x x
 	 */
@@ -286,7 +286,7 @@ public:
 		return NULL;
 	}
 
-	/** overload / operator and return x / y 
+	/** overload / operator and return x / y
 	 *
 	 * @param x x
 	 */
@@ -295,7 +295,7 @@ public:
 		return NULL;
 	}
 
-	/** overload * operator and return x * y 
+	/** overload * operator and return x * y
 	 *
 	 * @param x x
 	 */

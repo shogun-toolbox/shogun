@@ -1,23 +1,23 @@
 /*
  * Copyright (c) 2007-2009 The LIBLINEAR Project.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither name of copyright holders nor the names of its contributors
  * may be used to endorse or promote products derived from this software
  * without specific prior written permission.
- * 
- * 
+ *
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -118,14 +118,14 @@ public:
 	 */
 	l2loss_svm_fun(const problem *prob, float64_t Cp, float64_t Cn);
 	~l2loss_svm_fun();
-	
+
 	/** fun
 	 *
 	 * @param w w
 	 * @return something floaty
 	 */
 	float64_t fun(float64_t *w);
-	
+
 	/** grad
 	 *
 	 * @param w w
@@ -178,7 +178,7 @@ public:
 	 * @return something floaty
 	 */
 	float64_t fun(float64_t *w);
-	
+
 	/** grad
 	 *
 	 * @param w w
@@ -284,8 +284,8 @@ struct mcsvm_state
 class Solver_MCSVM_CS
 {
 	public:
-		Solver_MCSVM_CS(const problem *prob, int nr_class, double *C, 
-		                double eps, int max_iter, 
+		Solver_MCSVM_CS(const problem *prob, int nr_class, double *C,
+		                double eps, int max_iter,
 		                double train_time, mcsvm_state* given_state);
 		~Solver_MCSVM_CS();
 		void solve();

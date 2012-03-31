@@ -136,13 +136,13 @@ class CBinnedDotFeatures : public CDotFeatures
 		virtual void free_feature_iterator(void* iterator);
 
 
-		/** get the fill flag 
+		/** get the fill flag
 		 *
 		 * @return fill flag - if true bins are filled up to value v
 		 */
 		bool get_fill();
 
-		/** set the fill flag 
+		/** set the fill flag
 		 *
 		 * @param fill - if fill is true bins are filled up to value v
 		 */
@@ -221,7 +221,7 @@ class CBinnedDotFeatures : public CDotFeatures
 		/** get size of underlying data type in bytes
 		 *
 		 * @return size in bytes
-		 */ 
+		 */
 		virtual int32_t get_size();
 
 	private:

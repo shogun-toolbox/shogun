@@ -23,30 +23,30 @@ namespace shogun
 class CStreamingAsciiFile: public CStreamingFile
 {
 public:
-	/** 
+	/**
 	 * Default constructor
-	 * 
+	 *
 	 */
 	CStreamingAsciiFile();
 
-	/** 
+	/**
 	 * Constructor taking file name argument
-	 * 
+	 *
 	 * @param fname file name
 	 * @param rw read/write mode
 	 */
 	CStreamingAsciiFile(char* fname, char rw='r');
 
-	/** 
+	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingAsciiFile();
 
-	/** 
+	/**
 	 * Utility function to convert a string to a boolean value
-	 * 
+	 *
 	 * @param str string to convert
-	 * 
+	 *
 	 * @return boolean value
 	 */
 	inline bool str_to_bool(char *str)

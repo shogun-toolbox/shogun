@@ -58,7 +58,7 @@ CDistance::CDistance() : CSGObject()
 	init();
 }
 
-		
+
 CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs) : CSGObject()
 {
 	init();
@@ -121,7 +121,7 @@ void CDistance::remove_lhs_and_rhs()
 }
 
 void CDistance::remove_lhs()
-{ 
+{
 	SG_UNREF(lhs);
 	lhs = NULL;
 }
@@ -144,7 +144,7 @@ CFeatures* CDistance::replace_rhs(CFeatures* r)
 
      //remove references to previous rhs features
      CFeatures* tmp=rhs;
-     
+
      rhs=r;
 
      SG_FREE(precomputed_matrix);
@@ -163,7 +163,7 @@ void CDistance::do_precompute_matrix()
 	ASSERT(num_left==num_right);
 	ASSERT(lhs==rhs);
 	int32_t num=num_left;
-	
+
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=SG_MALLOC(float32_t, num*(num+1)/2);
 
@@ -265,7 +265,7 @@ float64_t* CDistance::get_distance_matrix_real(
 	if (!lhs_features || !rhs_features)
 		SG_ERROR("No features assigned to the distance.\n");
 
-	if (target && 
+	if (target &&
 	    (lhs_vectors_number!=lhs_features->get_num_vectors() ||
 	     rhs_vectors_number!=rhs_features->get_num_vectors()))
 		SG_ERROR("Distance matrix does not fit into the given target.\n");
@@ -277,7 +277,7 @@ float64_t* CDistance::get_distance_matrix_real(
 
 	SG_DEBUG("Calculating distance matrix of size %dx%d.\n", lhs_vectors_number, rhs_vectors_number);
 
-	// redirect to target or allocate memory 
+	// redirect to target or allocate memory
 	if (target)
 		distance_matrix = target;
 	else

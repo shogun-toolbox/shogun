@@ -50,8 +50,8 @@ void CCommUlongStringKernel::remove_lhs()
 		cache_reset();
 #endif
 
-	lhs = NULL ; 
-	rhs = NULL ; 
+	lhs = NULL ;
+	rhs = NULL ;
 }
 
 void CCommUlongStringKernel::remove_rhs()
@@ -237,12 +237,12 @@ bool CCommUlongStringKernel::init_optimization(
 	}
 
 	SG_PRINT( "Done.         \n");
-	
+
 	set_is_initialized(true);
 	return true;
 }
 
-bool CCommUlongStringKernel::delete_optimization() 
+bool CCommUlongStringKernel::delete_optimization()
 {
 	SG_DEBUG( "deleting CCommUlongStringKernel optimization\n");
 	clear_normal();
@@ -252,7 +252,7 @@ bool CCommUlongStringKernel::delete_optimization()
 // binary search for each feature. trick: as features are sorted save last found idx in old_idx and
 // only search in the remainder of the dictionary
 float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
-{ 
+{
 	float64_t result = 0;
 	int32_t j, last_j=0;
 	int32_t old_idx = 0;
@@ -260,7 +260,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 	if (!get_is_initialized())
 	{
       SG_ERROR( "CCommUlongStringKernel optimization not initialized\n");
-		return 0 ; 
+		return 0 ;
 	}
 
 

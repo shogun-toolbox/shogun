@@ -8,12 +8,12 @@
  * Library of solvers for Generalized Nearest Point Problem (GNPP).
  *
  * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
+ * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
  *
  -------------------------------------------------------------------- */
 
-#ifndef GMNPLIB_H__ 
-#define GMNPLIB_H__ 
+#ifndef GMNPLIB_H__
+#define GMNPLIB_H__
 
 #include <math.h>
 #include <limits.h>
@@ -27,39 +27,39 @@ namespace shogun
 {
 /** @brief class GMNPLib
  * Library of solvers for Generalized Minimal Norm Problem (GMNP).
- *  
+ *
  *  Generalized Minimal Norm Problem to solve is
- *   
+ *
  *   min 0.5*alpha'*H*alpha + c'*alpha
- * 
+ *
  *   subject to  sum(alpha) = 1,  alpha(i) >= 0
- *   
+ *
  *  H [dim x dim] is symmetric positive definite matrix.
  *  c [dim x 1] is an arbitrary vector.
- * 
+ *
  *  The precision of the found solution is given by
  *  the parameters tmax, tolabs and tolrel which
  *  define the stopping conditions:
- *  
+ *
  *  UB-LB <= tolabs      ->  exit_flag = 1   Abs. tolerance.
  *  UB-LB <= UB*tolrel   ->  exit_flag = 2   Relative tolerance.
  *  LB > th              ->  exit_flag = 3   Threshold on lower bound.
  *  t >= tmax            ->  exit_flag = 0   Number of iterations.
- * 
+ *
  *  UB ... Upper bound on the optimal solution.
  *  LB ... Lower bound on the optimal solution.
  *  t  ... Number of iterations.
  *  History ... Value of LB and UB wrt. number of iterations.
- * 
- * 
+ *
+ *
  *  The following algorithms are implemented:
  *  ..............................................
- * 
+ *
  *  - GMNP solver based on improved MDM algorithm 1 (u fixed v optimized)
- *     exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,  
+ *     exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,
  *                  tmax, tolabs, tolrel, th, &alpha, &t, &History, verb  );
- * 
- *   For more info refer to V.Franc: Optimization Algorithms for Kernel 
+ *
+ *   For more info refer to V.Franc: Optimization Algorithms for Kernel
  *   Methods. Research report. CTU-CMP-2005-22. CTU FEL Prague. 2005.
  *   ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf .
 */
@@ -87,10 +87,10 @@ class CGMNPLib: public CSGObject
 		/** --------------------------------------------------------------
 		  GMNP solver based on improved MDM algorithm 1.
 
-		  Search strategy: u determined by common rule and v is 
+		  Search strategy: u determined by common rule and v is
 		  optimized.
 
-Usage: exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,  
+Usage: exitflag = gmnp_imdm( &get_col, diag_H, vector_c, dim,
 tmax, tolabs, tolrel, th, &alpha, &t, &History );
 -------------------------------------------------------------- */
 		int8_t gmnp_imdm(float64_t *vector_c,

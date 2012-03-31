@@ -17,18 +17,18 @@
 
 namespace shogun
 {
-/** @brief class CosineDistance 
+/** @brief class CosineDistance
  *
  * The Cosine distance is obtained by using the Cosine similarity (Orchini
  * similarity, angular similarity, normalized dot product), which
  * measures similarity between two vectors by finding their angle.
  * An extension to the Cosine similarity yields the Tanimoto coefficient.
- * 
+ *
  * \f[\displaystyle
  *  d(\bf{x},\bf{x'}) = 1 - \frac{\sum_{i=1}^{n}\bf{x_{i}}\bf{x'_{i}}}
  *  {\sqrt{\sum_{i=1}^{n} x_{i}^2 \sum_{i=1}^{n} {x'}_{i}^2}} \quad x,x' \in R^{n}
- * \f] 
- * 
+ * \f]
+ *
  * @see <a href="http://en.wikipedia.org/wiki/Cosine_similarity"> Wikipedia:
  * Cosine similarity </a>
  * @see CTanimotoDistance

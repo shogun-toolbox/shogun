@@ -15,7 +15,7 @@ using namespace shogun;
 
 CMultiquadricKernel::CMultiquadricKernel(): CKernel(0), m_distance(NULL), m_coef(0.0001)
 {
-	init();	
+	init();
 }
 
 CMultiquadricKernel::CMultiquadricKernel(int32_t cache, float64_t coef, CDistance* dist)

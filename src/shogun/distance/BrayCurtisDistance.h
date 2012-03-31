@@ -17,16 +17,16 @@
 
 namespace shogun
 {
-/** @brief class Bray-Curtis distance 
+/** @brief class Bray-Curtis distance
  *
- * The Bray-Curtis distance (Sorensen distance) is similar to the 
+ * The Bray-Curtis distance (Sorensen distance) is similar to the
  * Manhattan distance with normalization.
- * 
+ *
  * \f[\displaystyle
  *  d(\bf{x},\bf{x}') = \frac{\sum_{i=1}^{n}|x_{i}-x'_{i}|}{\sum_{i=1}^{n}|x_{i}
  *  +x'_{i}|} \quad x,x' \in R^{n}
  *  \f]
- * 
+ *
  */
 class CBrayCurtisDistance: public CSimpleDistance<float64_t>
 {

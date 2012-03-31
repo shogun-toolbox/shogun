@@ -118,7 +118,7 @@ bool CGMM::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n");		
+				SG_ERROR("Specified features are not of type CDotFeatures\n");
 		set_features(data);
 	}
 
@@ -601,7 +601,7 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 					cov_sum[0]+=temp*alpha.matrix[j*alpha.num_cols+i];
 					break;
 			}
-			
+
 			v.free_vector();
 		}
 

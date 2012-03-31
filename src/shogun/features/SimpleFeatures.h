@@ -206,7 +206,7 @@ public:
 	 */
 	SGMatrix<ST> get_feature_matrix();
 
-	/** steals feature matrix, i.e. returns matrix and 
+	/** steals feature matrix, i.e. returns matrix and
 	 * forget about it
 	 * subset is ignored
 	 *
@@ -496,7 +496,7 @@ public:
 	 */
 	virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
-	/** checks if the contents of this CSimpleFeatures object are the same to 
+	/** checks if the contents of this CSimpleFeatures object are the same to
 	 * the contents of rhs
 	 *
 	 * @param rhs other CSimpleFeatures object to compare to this one

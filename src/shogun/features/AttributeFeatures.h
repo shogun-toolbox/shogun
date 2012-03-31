@@ -30,7 +30,7 @@ struct T_ATTRIBUTE
 /** @brief Implements attributed features, that is in the simplest case a number of
  * (attribute, value) pairs.
  *
- * For example 
+ * For example
  *
  * x[0...].attr1 = <value(s)>
  * x[0...].attr2 = <value(s)>.
