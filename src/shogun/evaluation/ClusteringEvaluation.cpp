@@ -81,7 +81,7 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	}
 
 	for (int32_t i= 0; i < predicted_ilabels.vlen; ++i)
-		predicted->set_int_label(label_map[predicted_ilabels[i]]);
+		predicted->set_int_label(i, label_map[predicted_ilabels[i]]);
 
 	G.destroy_matrix();
 }
