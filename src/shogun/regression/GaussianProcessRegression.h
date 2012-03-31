@@ -9,13 +9,13 @@
 
 namespace shogun
 {
-/* Class GaussianProcessRegression implements Gaussian Process Regression.
+/** @brief Class GaussianProcessRegression implements Gaussian Process Regression.
  * Instead of a distribution over weights, the GP specifies a distribution over functions.
  * Here we assume noisy observations y:
  *
- * 
- * y = f(x) + N(0, {sigma}^2)
- * 
+ * \f[
+ *  y = f(x) + \mathcal{N}(0, \sigma^{2})
+ * \f]
  * 
  * 
  * In this simple implementation, the regression predicts 
@@ -64,6 +64,12 @@ class CGaussianProcessRegression : public CMachine
 		* @param sigma observation noise
 		*/
 		inline void set_sigma(float64_t sigma) { m_sigma = sigma; };
+		
+		/** get sigma
+		*
+		* @return sigma observation noise
+		*/
+		inline float64_t get_sigma() { return m_sigma; };
 			
 		/** load from file
 		*
