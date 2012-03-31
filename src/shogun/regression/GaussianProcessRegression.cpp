@@ -1,0 +1,184 @@
+#include <shogun/lib/config.h>
+
+#ifdef HAVE_LAPACK
+
+#include <shogun/io/SGIO.h>
+#include <shogun/regression/GaussianProcessRegression.h>
+#include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/kernel/Kernel.h>
+
+using namespace shogun;
+
+CGaussianProcessRegression::CGaussianProcessRegression()
+: CMachine()
+{
+	init();
+
+}
+
+CGaussianProcessRegression::CGaussianProcessRegression(float64_t sigma, CKernel* k, CSimpleFeatures<float64_t>* data, CLabels* lab)
+: CMachine()
+{
+	init();
+
+	m_sigma = sigma;
+	
+	set_labels(lab);
+	set_features(data);
+	set_kernel(k);
+}
+
+void CGaussianProcessRegression::init()
+{
+  	m_sigma = 1.0;
+	kernel = NULL;
+	features = NULL;
+	
+	m_parameters->add((CSGObject**) &kernel, "kernel", "Kernel.");
+	m_parameters->add((CSGObject**) &features, "features", "Feature object.");
+	m_parameters->add(&m_sigma, "sigma", "Sigma.");
+}
+
+CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
+{
+	if(kernel == NULL) return NULL;
+	
+	kernel->init(features, features);
+	SGMatrix<float64_t> kernel_train_matrix = kernel->get_kernel_matrix();
+	
+	kernel->init(data, features);
+	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
+	
+	SGMatrix<float64_t> temp1(kernel_train_matrix.num_rows,kernel_train_matrix.num_cols);
+	SGMatrix<float64_t> temp2(kernel_train_matrix.num_rows,kernel_train_matrix.num_cols);
+		
+	for(int i = 0; i < temp1.num_rows; i++)
+	{
+	  for(int j = 0; j < temp1.num_cols; j++)
+	  {
+	     temp1[i*temp1.num_rows+j] = 0;
+	     if(i == j) temp1[i*temp1.num_rows+j] = 1;
+	  }
+	}
+	
+	for(int i = 0; i < temp2.num_rows; i++)
+	{
+	  for(int j = 0; j < temp2.num_cols; j++)
+	  {
+	     temp2[i*temp2.num_rows+j] = 0;
+	     if(i == j) temp2[i*temp2.num_rows+j] = 1;
+	  }
+	}
+	
+	SGVector< float64_t > result_vector(m_labels->get_num_labels());
+	SGVector< float64_t > label_vector = m_labels->get_labels();
+	
+	/* We wish to calculate K(X_test, X_train)*(K(X_train, X_train)+sigma^(2)*I)^-1 * labels
+	 * for mean predictions.
+	 */
+	
+	//Calculate first (K(X_train, X_train)+sigma*I)
+	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, kernel_train_matrix.num_rows, 
+		    temp2.num_cols, 1.0, kernel_train_matrix.matrix, kernel_train_matrix.num_cols, 
+		    temp2.matrix, temp2.num_cols, m_sigma*m_sigma, temp1.matrix, temp1.num_cols);
+	
+	
+	//Take inverse of (K(X_train, X_train)+sigma*I)
+	CMath::inverse(temp1);
+	
+	//Then multiply K(X_test, X_train) by (K(X_train, X_train) + sigma*I)^-1)
+	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, kernel_test_matrix.num_rows, 
+		    temp1.num_cols, 1.0, kernel_test_matrix.matrix, kernel_test_matrix.num_cols, 
+		    temp1.matrix, temp1.num_cols, 0.0, temp2.matrix, temp2.num_cols);
+	
+	//Finally multiply result by labels to obtain mean predictions on training
+	//examples	
+	cblas_dgemv(CblasColMajor, CblasNoTrans, temp1.num_rows, m_labels->get_num_labels(), 1.0, 
+		    temp1.matrix, temp1.num_cols, label_vector.vector,   1, 0.0, result_vector.vector, 
+		    1);
+	
+	CLabels* result = new CLabels(result_vector);
+		
+	kernel_train_matrix.destroy_matrix();
+	kernel_test_matrix.destroy_matrix();
+	temp2.destroy_matrix();
+	temp1.destroy_matrix();  
+	//result_vector.destroy_vector();
+	
+	return result;
+}
+
+CLabels* CGaussianProcessRegression::apply()
+{
+  	if (!features)
+		return NULL;
+	
+	return mean_prediction(features);
+}
+
+CLabels* CGaussianProcessRegression::apply(CFeatures* data)
+{
+  	if (!data)
+		SG_ERROR("No features specified\n");
+	if (!data->has_property(FP_DOT))
+		SG_ERROR("Specified features are not of type CDotFeatures\n");
+	if (m_labels->get_num_labels() != data->get_num_vectors())
+		SG_ERROR("Number of training vectors does not match number of labels\n");
+	if (data->get_feature_class() != C_SIMPLE)
+		SG_ERROR("Expected Simple Features\n");
+	if (data->get_feature_type() != F_DREAL)
+		SG_ERROR("Expected Real Features\n");
+	if (!kernel)
+		SG_ERROR( "No kernel assigned!\n");
+
+	return mean_prediction(data);
+}
+
+float64_t CGaussianProcessRegression::apply(int32_t num)
+{
+	SG_ERROR("apply(int32_t num) is not yet implemented "
+	"for %s\n", get_name());
+	
+	return 0;
+}
+
+/*
+bool CGaussianProcessRegression::train_machine(CFeatures* data)
+{
+	return false;
+}*/
+
+CGaussianProcessRegression::~CGaussianProcessRegression()
+{
+	SG_UNREF(kernel);
+	SG_UNREF(features);
+}
+
+void CGaussianProcessRegression::set_kernel(CKernel* k)
+{
+	SG_REF(k);
+	SG_UNREF(kernel);
+	kernel=k;
+}
+
+bool CGaussianProcessRegression::load(FILE* srcfile)
+{
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
+	return false;
+}
+
+CKernel* CGaussianProcessRegression::get_kernel()
+{
+	SG_REF(kernel);
+	return kernel;
+}
+
+bool CGaussianProcessRegression::save(FILE* dstfile)
+{
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
+	return false;
+}
+#endif
