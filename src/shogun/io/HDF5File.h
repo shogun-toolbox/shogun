@@ -280,7 +280,7 @@ public:
 	virtual void set_sparse_matrix(
 			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec); 
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
 			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(

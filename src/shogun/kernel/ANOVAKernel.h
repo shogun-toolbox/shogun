@@ -88,7 +88,7 @@ public:
 	 *  @return kernel parameter cardinality
 	 */
 	inline int32_t get_cardinality() { return this->cardinality; }
-	
+
 	/** setter for degree parameter
 	 *  @param value kernel parameter cardinality
 	 */
@@ -146,12 +146,12 @@ private:
 protected:
 	/// degree parameter of kernel
 	int32_t cardinality;
-	
+
 	/// array for compute_recursive1
 	float64_t* DP;
 	/// length of DP
 	int32_t DP_len;
-	
+
 	/// arrays for compute_recursive2
 	float64_t* KD;
 	/// KS

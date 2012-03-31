@@ -149,7 +149,7 @@ float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 	bool do_free;
 	float64_t* vec = m_feat->get_feature_vector(vec_idx1, len, do_free);
 
-	
+
 	int cnt=0;
 	float64_t sum=0;
 	for (int j=0; j<vec2_len; j++)
@@ -177,7 +177,7 @@ void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 	bool do_free;
 	float64_t* vec = m_feat->get_feature_vector(vec_idx1, len, do_free);
 
-	
+
 	int cnt=0;
 	float32_t norm_val=1;
 	if (m_normalize)
@@ -214,7 +214,7 @@ void CPolyFeatures::store_normalization_values()
 		else
 			m_normalization_values[i]=tmp;
 	}
-		
+
 }
 
 void CPolyFeatures::store_multi_index()
@@ -225,7 +225,7 @@ void CPolyFeatures::store_multi_index()
 
         uint16_t* exponents = SG_MALLOC(uint16_t, m_input_dimensions);
         if (!exponents)
-		SG_ERROR( "Error allocating mem \n");	
+		SG_ERROR( "Error allocating mem \n");
 	/*copy adress: otherwise it will be overwritten in recursion*/
         uint16_t* index = m_multi_index;
         enumerate_multi_index(0, &index, exponents, m_degree);
@@ -255,7 +255,7 @@ void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** ind
 	for (k=0; k<=degree; k++)
 	{
 		exponents[feat_idx] =  k;
-		enumerate_multi_index(feat_idx+1, index,  exponents, degree-k);	
+		enumerate_multi_index(feat_idx+1, index,  exponents, degree-k);
 	}
 	return;
 
@@ -291,10 +291,10 @@ void CPolyFeatures::store_multinomial_coefficients()
 
 int32_t CPolyFeatures::bico2(int32_t n, int32_t k)
 {
-		
+
 	/* for this problem k is usually small (<=degree),
 	 * thus it is efficient to
-	 * to use recursion and prune end recursions*/	
+	 * to use recursion and prune end recursions*/
 	if (n<k)
 		return 0;
 	if (k>n/2)
@@ -311,7 +311,7 @@ int32_t CPolyFeatures::bico2(int32_t n, int32_t k)
 	/* call function as implemented in numerical recipies:
 	 * much more efficient for large binomial coefficients*/
 	return bico(n, k);
-	
+
 }
 
 int32_t CPolyFeatures::calc_feature_space_dimensions(int32_t N, int32_t D)

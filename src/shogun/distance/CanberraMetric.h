@@ -19,9 +19,9 @@ namespace shogun
 {
 	template <class T> class CSimpleFeatures;
 
-/** @brief class CanberraMetric 
+/** @brief class CanberraMetric
  *
- * The Canberra distance sums up the dissimilarity (ratios) between feature 
+ * The Canberra distance sums up the dissimilarity (ratios) between feature
  * dimensions of two data points.
  *
  * \f[\displaystyle
@@ -29,7 +29,7 @@ namespace shogun
  *    {|\bf{x_{i}}|+|\bf{x'_{i}}|} \quad \bf{x},\bf{x'} \in R^{n}
  * \f]
  *
- *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$ 
+ *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$
  *  and \f$d(0,0)=0\f$.
  */
 class CCanberraMetric: public CSimpleDistance<float64_t>

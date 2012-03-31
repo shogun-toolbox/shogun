@@ -1,17 +1,17 @@
 /*
    SVM with stochastic gradient
    Copyright (C) 2007- Leon Bottou
-   
+
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
@@ -75,7 +75,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	}
 
 	features->start_parser();
-	
+
 	// allocate memory for w and initialize everyting w and bias with 0
 	ASSERT(features);
 	ASSERT(features->get_has_labels());
@@ -85,7 +85,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	w=new float32_t;
 	bias=0;
 
-	// Shift t in order to have a 
+	// Shift t in order to have a
 	// reasonable initial learning rate.
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
@@ -94,7 +94,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
-	
+
 	//do the sgd
 	calibrate();
 	if (features->is_seekable())
@@ -117,7 +117,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 			vec_count++;
 			// Expand w vector if more features are seen in this example
 			features->expand_if_required(w, w_dim);
-				
+
 			float64_t eta = 1.0 / (lambda * t);
 			float64_t y = features->get_label();
 			float64_t z = y * (features->dense_dot(w, w_dim) + bias);
@@ -165,10 +165,10 @@ bool COnlineSVMSGD::train(CFeatures* data)
 }
 
 void COnlineSVMSGD::calibrate(int32_t max_vec_num)
-{ 
+{
 	int32_t c_dim=1;
 	float32_t* c=new float32_t;
-	
+
 	// compute average gradient size
 	int32_t n = 0;
 	float64_t m = 0;
@@ -178,7 +178,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	{
 		//Expand c if more features are seen in this example
 		features->expand_if_required(c, c_dim);
-			
+
 		r += features->get_nnz_features_for_vector();
 		features->add_to_dense_vec(1, c, c_dim, true);
 

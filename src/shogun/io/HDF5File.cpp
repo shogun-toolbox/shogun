@@ -425,7 +425,7 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 	if (dataspace<0)
 		SG_ERROR("Error obtaining hdf5 dataspace\n");
 
-	ndims = H5Sget_simple_extent_ndims(dataspace); 
+	ndims = H5Sget_simple_extent_ndims(dataspace);
 	total_elements=H5Sget_simple_extent_npoints(dataspace);
 	hsize_t* dims_out=SG_MALLOC(hsize_t, ndims);
 	dims=SG_MALLOC(int32_t, ndims);
@@ -449,7 +449,7 @@ void CHDF5File::create_group_hierarchy()
 			if (g<0)
 			{
 				g=H5Gcreate2(h5file, vname, H5P_DEFAULT, H5P_DEFAULT,
-						H5P_DEFAULT);   
+						H5P_DEFAULT);
 				if (g<0)
 					SG_ERROR("Error creating group '%s'\n", vname);
 				vname[i]='/';

@@ -79,7 +79,7 @@ class CLoss
 #endif
 		}
 
-		/** dloss 
+		/** dloss
 		 * @param z
 		 */
 		static inline float64_t dloss(float64_t z)

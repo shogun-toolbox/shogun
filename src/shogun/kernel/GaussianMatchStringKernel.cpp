@@ -68,7 +68,7 @@ float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	ASSERT(alen==blen);
 
-	for (i = 0;  i<alen; i++) 
+	for (i = 0;  i<alen; i++)
 		result+=(avec[i]==bvec[i]) ? 0:4;
 
 	result=exp(-result/width);

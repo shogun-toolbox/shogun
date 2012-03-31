@@ -199,7 +199,7 @@ class CDistance : public CSGObject
 		 * @return right-hand side features
 		 */
 		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
-    
+
 		/** replace right-hand side features used in distance matrix
 		 *
 		 * make sure to check that your distance can deal with the
@@ -209,7 +209,7 @@ class CDistance : public CSGObject
 		 * @return replaced right-hand side features
 		 */
 		CFeatures* replace_rhs(CFeatures* rhs);
-            
+
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs();
 
@@ -218,7 +218,7 @@ class CDistance : public CSGObject
 
 		/// takes all necessary steps if the rhs is removed from distance matrix
 		virtual void remove_rhs();
-		
+
 		/** get distance type we are
 		 *
 		 * abstrace base method
@@ -256,9 +256,9 @@ class CDistance : public CSGObject
 		 * @param flag if precompute_matrix
 		 */
 		inline virtual void set_precompute_matrix(bool flag)
-		{ 
+		{
 			precompute_matrix=flag;
-		
+
 			if (!precompute_matrix)
 			{
 				SG_FREE(precomputed_matrix);
@@ -311,7 +311,7 @@ class CDistance : public CSGObject
 	protected:
 
 		/// run distance thread
-		static void* run_distance_thread(void* p);		
+		static void* run_distance_thread(void* p);
 
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors

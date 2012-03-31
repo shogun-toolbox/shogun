@@ -22,7 +22,7 @@ CCustomDistance::CCustomDistance() : CDistance()
 	init();
 }
 
-CCustomDistance::CCustomDistance(CDistance* d) : CDistance() 
+CCustomDistance::CCustomDistance(CDistance* d) : CDistance()
 {
 	init();
 
@@ -73,7 +73,7 @@ CCustomDistance::CCustomDistance(const SGMatrix<float64_t> distance_matrix)
 }
 
 CCustomDistance::CCustomDistance(const float64_t* dm, int32_t rows, int32_t cols)
-: CDistance() 
+: CDistance()
 {
 	init();
 	set_full_distance_matrix_from_full(dm, rows, cols);

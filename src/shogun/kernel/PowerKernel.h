@@ -96,7 +96,7 @@ private:
 	void init();
 
 protected:
-  
+
   /// distance to be used
 	CDistance* distance;
 

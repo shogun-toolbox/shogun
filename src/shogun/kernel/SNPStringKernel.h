@@ -81,8 +81,8 @@ class CSNPStringKernel: public CStringKernel<char>
 		{
 			return K_POLYMATCH;
 		}
-		
-		/** set the base string for minor aleles 
+
+		/** set the base string for minor aleles
 		 *
 		 * @param str minor freq. string
 		 */
@@ -91,7 +91,7 @@ class CSNPStringKernel: public CStringKernel<char>
 			m_str_min=strdup(str);
 		}
 
-		/** set the base string for major aleles 
+		/** set the base string for major aleles
 		 *
 		 * @param str major freq. string
 		 */
@@ -100,7 +100,7 @@ class CSNPStringKernel: public CStringKernel<char>
 			m_str_maj=strdup(str);
 		}
 
-		/** get the base string for minor aleles 
+		/** get the base string for minor aleles
 		 *
 		 * @return minor freq. string
 		 */
@@ -109,7 +109,7 @@ class CSNPStringKernel: public CStringKernel<char>
 			return m_str_min;
 		}
 
-		/** get the base string for major aleles 
+		/** get the base string for major aleles
 		 *
 		 * @return major freq. string
 		 */
@@ -159,7 +159,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		char* m_str_min;
 		/** allele B */
 		char* m_str_maj;
-	
+
 	private:
 		void init();
 };

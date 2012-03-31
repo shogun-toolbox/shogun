@@ -1,6 +1,7 @@
 /*
  *   Copyright (c) 2007 John Weaver
- *   2012: Ported to shogun by pluskid
+ *
+ *   2012: Ported to shogun by Chiyuan Zhang
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,28 +26,32 @@
 #include <list>
 #include <utility>
 
-namespace shogun {
+namespace shogun
+{
 
-class Munkres {
+class Munkres
+{
 public:
-    Munkres(SGMatrix<double> &m)
-        :mask_matrix(m.num_rows, m.num_cols, true), matrix(m.num_rows, m.num_cols, true), ref_m(m)
-    {
-    }
+	Munkres(SGMatrix<double> &m)
+		:mask_matrix(m.num_rows, m.num_cols, true), matrix(m.num_rows, m.num_cols, true), ref_m(m)
+	{
+	}
 
-    void solve() {
-        solve(ref_m);
-    }
+	void solve()
+	{
+		solve(ref_m);
+	}
 
-    ~Munkres() {
-        mask_matrix.free_matrix();
-        matrix.free_matrix();
-    }
+	~Munkres()
+	{
+		mask_matrix.free_matrix();
+		matrix.free_matrix();
+	}
 
 private:
-    static const int NORMAL = 0;
-    static const int STAR = 1;
-    static const int PRIME = 2; 
+	static const int NORMAL=0;
+	static const int STAR=1;
+	static const int PRIME=2;
 
 	void solve(SGMatrix<double> &m);
 
@@ -64,7 +69,7 @@ private:
 	bool *col_mask;
 	int saverow, savecol;
 
-    SGMatrix<double> &ref_m;
+	SGMatrix<double> &ref_m;
 };
 
 } // namespace shogun

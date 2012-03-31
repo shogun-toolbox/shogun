@@ -27,7 +27,7 @@ namespace shogun
  * \f[
  * \frac{1}{2}\left(\sum_{i=1}^N(y_i-{\bf w}\cdot {\bf x}_i)^2\right)
  * \f]
- * 
+ *
  * which boils down to solving the linear system
  *
  * \f[

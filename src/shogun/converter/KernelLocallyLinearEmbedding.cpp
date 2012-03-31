@@ -40,11 +40,11 @@ struct LK_RECONSTRUCTION_THREAD_PARAM
 	int32_t N;
 	/// matrix containing indexes of ith neighbors of jth vector in ith column
 	const int32_t* neighborhood_matrix;
-	/// local gram matrix 
+	/// local gram matrix
 	float64_t* local_gram_matrix;
 	/// gram matrix
 	const float64_t* kernel_matrix;
-	/// vector used for solving equation 
+	/// vector used for solving equation
 	float64_t* id_vector;
 	/// reconstruction shift
 	float64_t reconstruction_shift;
@@ -124,15 +124,15 @@ CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
 CSimpleFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel* kernel)
 {
 	CTime* time = new CTime();
-	
+
 	time->start();
 	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
 	SG_DEBUG("Kernel matrix computation took %fs\n",time->cur_time_diff());
-	
+
 	time->start();
 	SGMatrix<int32_t> neighborhood_matrix = get_neighborhood_matrix(kernel_matrix,m_k);
 	SG_DEBUG("Neighbors finding took %fs\n",time->cur_time_diff());
-	
+
 	time->start();
 	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix);
 	SG_DEBUG("Weights computation took %fs\n",time->cur_time_diff());
@@ -149,7 +149,7 @@ CSimpleFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel*
 	return new CSimpleFeatures<float64_t>(nullspace);
 }
 
-SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix, 
+SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
                                                                            SGMatrix<int32_t> neighborhood_matrix)
 {
 	int32_t N = kernel_matrix.num_cols;
@@ -166,7 +166,7 @@ SGMatrix<float64_t> CKernelLocallyLinearEmbedding::construct_weight_matrix(SGMat
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 #else
 	int32_t num_threads = 1;
-#endif 
+#endif
 	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 	// init matrices and norm factor to be used
 	float64_t* local_gram_matrix = SG_MALLOC(float64_t, m_k*m_k*num_threads);
@@ -238,7 +238,7 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		for (j=0; j<m_k; j++)
 		{
 			for (k=0; k<m_k; k++)
-				local_gram_matrix[j*m_k+k] = 
+				local_gram_matrix[j*m_k+k] =
 					kernel_matrix[i*N+i] -
 					kernel_matrix[i*N+neighborhood_matrix[i*m_k+j]] -
 					kernel_matrix[i*N+neighborhood_matrix[i*m_k+k]] +
@@ -252,7 +252,7 @@ void* CKernelLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 		trace = 0.0;
 		for (j=0; j<m_k; j++)
 			trace += local_gram_matrix[j*m_k+j];
-		
+
 		// regularize gram matrix
 		for (j=0; j<m_k; j++)
 			local_gram_matrix[j*m_k+j] += reconstruction_shift*trace;
@@ -289,9 +289,9 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 {
 	int32_t i;
 	int32_t N = kernel_matrix.num_cols;
-	
+
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
-	
+
 	float64_t max_dist=0.0;
 	for (i=0; i<N; i++)
 		max_dist = CMath::max(max_dist,kernel_matrix[i*N+i]);
@@ -305,7 +305,7 @@ SGMatrix<int32_t> CKernelLocallyLinearEmbedding::get_neighborhood_matrix(SGMatri
 
 	for (i=0; i<N; i++)
 	{
-		std::vector<KLLE_COVERTREE_POINT> neighbors = 
+		std::vector<KLLE_COVERTREE_POINT> neighbors =
 		   coverTree->kNearestNeighbors(vectors[i],k+1);
 
 		ASSERT(neighbors.size()>=unsigned(k+1));

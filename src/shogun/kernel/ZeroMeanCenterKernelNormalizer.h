@@ -20,19 +20,19 @@ namespace shogun
  * After centering, each feature must have zero mean.  The centered kernel
  * matrix can be expressed in terms of the non-centered version.
  *
- * Denoting the mapping from input space to feature space by \f$\phi:\mathcal{X}\rightarrow\mathcal{F}\f$, the centered square kernel matrix \f$K_c\f$ (with  dimensionality \f$ M \f$) 
- * 
+ * Denoting the mapping from input space to feature space by \f$\phi:\mathcal{X}\rightarrow\mathcal{F}\f$, the centered square kernel matrix \f$K_c\f$ (with  dimensionality \f$ M \f$)
+ *
  * can be expressed in terms of the original matrix \f$K\f$ as follows:
  *
  * \f{eqnarray*}
- * k({\bf x}_i,{\bf x}_j)_c & = & \left(\phi({\bf x}_i) - \frac{1}{m} \sum_{p=1}^M \phi({\bf x}_p)\right) \cdot \left(\phi({\bf x}_j) - \frac{1}{M} \sum_{q=1}^M \phi({\bf x}_q)\right)  \\ 
+ * k({\bf x}_i,{\bf x}_j)_c & = & \left(\phi({\bf x}_i) - \frac{1}{m} \sum_{p=1}^M \phi({\bf x}_p)\right) \cdot \left(\phi({\bf x}_j) - \frac{1}{M} \sum_{q=1}^M \phi({\bf x}_q)\right)  \\
  *          & = & K_{ij} - \frac{1}{M} \sum_{p=1}^M K_{pj} - \frac{1}{M} \sum_{q=1}^M K_{iq} + \frac{1}{M^2} \sum_{p=1}^M \sum_{q=1}^M K_{pq} \\
  *          & = & (K - 1_M K - K 1_M + 1_M K 1_M)_{ij}
  * \f}
  *
  *
- * Additionally, let  \f$ K^{t} \f$  be the \f$ L \times M \f$ test matrix describing the similarity between a \f$ L \f$ test instances with \f$M\f$ training instances 
- * 
+ * Additionally, let  \f$ K^{t} \f$  be the \f$ L \times M \f$ test matrix describing the similarity between a \f$ L \f$ test instances with \f$M\f$ training instances
+ *
  * (defined by a \f$ M x M \f$ kernel matrix \f$ K\f$), the centered testing set kernel matrix is given by
  * \f[
  * K_{c}^t  =  (K - 1'_M K - K^{t} 1_M + 1'_M K 1_M)
@@ -57,10 +57,10 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		virtual ~CZeroMeanCenterKernelNormalizer()
 		{
 			SG_FREE(ktrain_row_means);
-			SG_FREE(ktest_row_means);    
+			SG_FREE(ktest_row_means);
 		}
 
-		/** initialization of the normalizer 
+		/** initialization of the normalizer
 		 * @param k kernel */
 		virtual bool init(CKernel* k)
 		{

@@ -63,14 +63,14 @@ namespace shogun
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 // double precision
-void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, 
+void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda,
 		double *w, int *info);
-void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, 
-		double *sing, double *u, int ldu, double *vt, int ldvt, 
+void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda,
+		double *sing, double *u, int ldu, double *vt, int ldvt,
 		int *info);
 void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info);
 void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info);
-void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu, 
+void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu,
                  double *eigenvalues, double *eigenvectors, int *info);
 void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, double *b,
                  int ldb, int il, int iu, double *eigenvalues, double *eigenvectors, int *info);
@@ -91,7 +91,7 @@ int dgetri_(int *n, double *a, int *lda, int *ipiv, double *work, int *lwork, in
 int dgetrf_(int *m, int *n, double *a, int *lda, int *ipiv, int *info);
 int dgeqrf_(int*, int*, double*, int*, double*, double*, int*, int*);
 int dorgqr_(int*, int*, int*, double*, int*, double*, double*, int*, int*);
-int dsyevr_(const char*, const char*, const char*, int*, double*, int*, 
+int dsyevr_(const char*, const char*, const char*, int*, double*, int*,
             double*, double*, int*, int*, double*, int*, double*, double*,
             int*, int*, double*, int*, int*, int*, int*);
 int dgetrs_(const char*, int*, int*, double*, int*, int*, double*, int*, int*);

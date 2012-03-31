@@ -447,7 +447,7 @@ template<class T> class SGNDArray
 
 		/** copy constructor */
 		SGNDArray(const SGNDArray &orig)
-		    : array(orig.array), dims(orig.dims), num_dims(orig.num_dims), 
+		    : array(orig.array), dims(orig.dims), num_dims(orig.num_dims),
 		    do_free(orig.do_free) { }
 
 		/** empty destructor */
@@ -482,11 +482,11 @@ template<class T> class SGNDArray
 		 * @return pointer to the matrix
 		 */
 		T* get_matrix(index_t matIdx) const
-		{	
+		{
 			ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
 			return &array[matIdx*dims[0]*dims[1]];
 		}
-		
+
 		/** operator overload for ndarray read only access
 		 *
 		 * @param index to access
@@ -512,7 +512,7 @@ template<class T> class SGNDArray
 		void transpose_matrix(index_t matIdx) const
 		{
 			ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
-			
+
 			T aux;
 			// Index to acces directly the elements of the matrix of interest
 			int32_t idx = matIdx*dims[0]*dims[1];
@@ -600,7 +600,7 @@ template <class T> struct SGStringList
 {
 public:
 	/** default constructor */
-	SGStringList() : num_strings(0), max_string_length(0), strings(NULL), 
+	SGStringList() : num_strings(0), max_string_length(0), strings(NULL),
 		do_free(false) { }
 
 	/** constructor for setting params */
@@ -845,7 +845,7 @@ struct TSGDataType
 	/** length x */
 	index_t *m_length_x;
 
-	/** constructor 
+	/** constructor
 	 * @param ctype
 	 * @param stype
 	 * @param ptype
@@ -892,7 +892,7 @@ struct TSGDataType
 	/** size of ptype */
 	size_t sizeof_ptype() const;
 
-	/** size of sparse entry 
+	/** size of sparse entry
 	 * @param ptype
 	 */
 	static size_t sizeof_sparseentry(EPrimitiveType ptype);
@@ -910,14 +910,14 @@ struct TSGDataType
 	 */
 	static void stype_to_string(char* dest, EStructType stype,
 	                            EPrimitiveType ptype, size_t n);
-	/** ptype to string 
+	/** ptype to string
 	 * @param dest
 	 * @param ptype
 	 * @param n
 	 */
 	static void ptype_to_string(char* dest, EPrimitiveType ptype,
 	                            size_t n);
-	/** string to ptype 
+	/** string to ptype
 	 * @param ptype
 	 * @param str
 	 */

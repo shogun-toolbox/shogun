@@ -84,7 +84,7 @@ class CHistogram : public CDistribution
 		/** get histogram
 		 *
 		 * @return current histogram
-		 * 
+		 *
 		 */
 		virtual SGVector<float64_t> get_histogram();
 

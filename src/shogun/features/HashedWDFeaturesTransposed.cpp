@@ -98,7 +98,7 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 
 CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(const CHashedWDFeaturesTransposed& orig)
 	: CDotFeatures(orig), strings(orig.strings), transposed_strings(orig.transposed_strings),
-	degree(orig.degree), start_degree(orig.start_degree), 
+	degree(orig.degree), start_degree(orig.start_degree),
 	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits),
 	normalization_const(orig.normalization_const)
 {
@@ -169,7 +169,7 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 
 	CMath::fill_vector(val, len, 0xDEADBEAF);
 
-	for (int32_t i=0; i < len; i++) 
+	for (int32_t i=0; i < len; i++)
 	{
 		uint32_t o=offs;
 		for (int32_t k=0; k<degree && i+k<len; k++)
@@ -196,7 +196,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 	ASSERT(output);
 	// write access is internally between output[start..stop] so the following
 	// line is necessary to write to output[0...(stop-start-1)]
-	output-=start; 
+	output-=start;
 	ASSERT(start>=0);
 	ASSERT(start<stop);
 	ASSERT(stop<=get_num_vectors());
@@ -488,7 +488,7 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 
 	CMath::fill_vector(val, len, 0xDEADBEAF);
 
-	for (int32_t i=0; i<len; i++) 
+	for (int32_t i=0; i<len; i++)
 	{
 		uint32_t o=offs;
 		for (int32_t k=0; k<degree && i+k<len; k++)
@@ -526,8 +526,8 @@ void CHashedWDFeaturesTransposed::set_wd_weights()
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 
 	SG_DEBUG("created HashedWDFeaturesTransposed with d=%d (%d), alphabetsize=%d, "
-			"dim=%d partial_dim=%d num=%d, len=%d\n", 
-			degree, from_degree, alphabet_size, 
+			"dim=%d partial_dim=%d num=%d, len=%d\n",
+			degree, from_degree, alphabet_size,
 			w_dim, partial_w_dim, num_strings, string_length);
 }
 

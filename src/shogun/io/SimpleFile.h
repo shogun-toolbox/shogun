@@ -22,7 +22,7 @@ namespace shogun
 {
 /** @brief Template class SimpleFile to read and write from files.
  *
- * Currently only simple reading and writing of blocks is supported. 
+ * Currently only simple reading and writing of blocks is supported.
  */
 template <class T> class CSimpleFile : public CSGObject
 {
@@ -119,7 +119,7 @@ template <class T> class CSimpleFile : public CSGObject
 				}
 				return target;
 			}
-			else 
+			else
 			{
 				num=-1;
 				return NULL;

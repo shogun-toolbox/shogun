@@ -47,7 +47,7 @@ CKernel::CKernel() : CSGObject()
 CKernel::CKernel(int32_t size) : CSGObject()
 {
 	init();
-	
+
 	if (size<10)
 		size=10;
 

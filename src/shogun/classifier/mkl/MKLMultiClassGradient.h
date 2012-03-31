@@ -20,7 +20,7 @@
 
 namespace shogun
 {
-/** @brief MKLMultiClassGradient is a helper class for MKLMultiClass. 
+/** @brief MKLMultiClassGradient is a helper class for MKLMultiClass.
  *
  *	it solves the corresponding linear problem arising in SIP formulation for
  * 	MKL using a gradient based approach
@@ -29,11 +29,11 @@ class MKLMultiClassGradient: public MKLMultiClassOptimizationBase
 {
 public:
 	/** Class default Constructor
-	 * 
+	 *
 	 */
 	MKLMultiClassGradient();
 	/** Class default Destructor
-	 * 
+	 *
 	 */
 	virtual ~MKLMultiClassGradient();
 
@@ -43,15 +43,15 @@ public:
 	MKLMultiClassGradient(MKLMultiClassGradient & gl);
 
 	/** Class Assignment operator
-	 * 
+	 *
 	 */
 	MKLMultiClassGradient operator=(MKLMultiClassGradient & gl);
 
-	/** initializes solver 
+	/** initializes solver
 	 *
 	 * @param numkernels2 is the number of kernels
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	virtual void setup(const int32_t numkernels2);
 
@@ -61,7 +61,7 @@ public:
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
 	 * MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
-	 * 
+	 *
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas);
@@ -69,7 +69,7 @@ public:
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
-	 * 
+	 *
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
@@ -101,7 +101,7 @@ protected:
 	*
 	*/
 	void gengammagradient( ::std::vector<float64_t> & gammagradient ,const ::std::vector<float64_t> & gammas,const int32_t dim);
-	/** helper routine for MKL optimization, computes optimization objective for one contraint 
+	/** helper routine for MKL optimization, computes optimization objective for one contraint
 	*
 	*	@param weights - MKL weights
 	*	@param index - index of constraint
