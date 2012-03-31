@@ -365,6 +365,15 @@ template<class T> class SGMatrix
 			return &matrix[col*num_rows];
 		}
 
+        /** operator overload for matrix read only access
+         * @param i_row
+         * @param i_col
+         */
+        inline const T& operator()(index_t i_row, index_t i_col) const
+        {
+            return matrix[i_col*num_rows + i_row];
+        }
+
 		/** operator overload for matrix read only access
 		 * @param index to access
 		 */
@@ -372,6 +381,15 @@ template<class T> class SGMatrix
 		{
 			return matrix[index];
 		}
+
+        /** operator overload for matrix r/w access
+         * @param i_row
+         * @param i_col
+         */
+        inline T& operator()(index_t i_row, index_t i_col)
+        {
+            return matrix[i_col*num_rows + i_row];
+        }
 
 		/** operator overload for matrix r/w access
 		 * @param index to access
