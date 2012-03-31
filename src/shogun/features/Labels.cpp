@@ -181,7 +181,7 @@ void CLabels::set_int_labels(SGVector<int32_t> lab)
 	labels = SGVector<float64_t>(lab.vlen);
 
 	for (int32_t i=0; i<lab.vlen; i++)
-		set_int_label(i, labels.vector[i]);
+		set_int_label(i, lab.vector[i]);
 }
 
 void CLabels::load(CFile* loader)
