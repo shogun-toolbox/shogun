@@ -31,14 +31,14 @@ static void unique_labels(CLabels* labels, vector<int32_t>& result)
 
 static int32_t find_mismatch_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2)
 {
-	int32_t match_count=0;
+	int32_t mismatch_count=0;
 	for (int32_t i=l1.vlen-1; i >= 0; --i)
 	{
 		if (l1[i] != m1 || l2[i] != m2)
-			match_count++;
+			mismatch_count++;
 	}
 
-	return match_count;
+	return mismatch_count;
 }
 
 void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
@@ -81,9 +81,7 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	}
 
 	for (int32_t i= 0; i < predicted_ilabels.vlen; ++i)
-		predicted_ilabels[i]=label_map[predicted_ilabels[i]];
-
-	predicted->set_int_labels(predicted_ilabels);
+		predicted->set_int_label(label_map[predicted_ilabels[i]]);
 
 	G.destroy_matrix();
 }

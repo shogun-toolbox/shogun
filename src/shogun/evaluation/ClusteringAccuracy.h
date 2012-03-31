@@ -38,8 +38,8 @@ public:
 	{
 		SGVector<int32_t> predicted_ilabels=predicted->get_int_labels();
 		SGVector<int32_t> groundtruth_ilabels=ground_truth->get_int_labels();
-		int correct=0;
-		for (int i=predicted_ilabels.vlen-1; i >= 0; --i)
+		int32_t correct=0;
+		for (int32_t i=0; i < predicted_ilabels.vlen; ++i)
 		{
 			if (predicted_ilabels[i] == groundtruth_ilabels[i])
 				correct++;
