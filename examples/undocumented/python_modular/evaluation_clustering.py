@@ -61,6 +61,7 @@ if __name__ == '__main__':
 
     AccuracyEval = ClusteringAccuracy()
     AccuracyEval.best_map(gnd_hat, gnd)
+
     accuracy = AccuracyEval.evaluate(gnd_hat, gnd)
     print('Clustering accuracy = %.4f' % accuracy)
 
