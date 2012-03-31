@@ -31,7 +31,7 @@ CGaussianProcessRegression::CGaussianProcessRegression(float64_t sigma, CKernel*
 
 void CGaussianProcessRegression::init()
 {
-  	m_sigma = 1.0;
+	m_sigma = 1.0;
 	kernel = NULL;
 	features = NULL;
 	
@@ -45,30 +45,29 @@ CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
 	if(kernel == NULL) return NULL;
 	
 	kernel->init(features, features);
+	
+	//K(X_train, X_train)
 	SGMatrix<float64_t> kernel_train_matrix = kernel->get_kernel_matrix();
 	
 	kernel->init(data, features);
+	
+	//K(X_test, X_train)
 	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
 	
 	SGMatrix<float64_t> temp1(kernel_train_matrix.num_rows,kernel_train_matrix.num_cols);
 	SGMatrix<float64_t> temp2(kernel_train_matrix.num_rows,kernel_train_matrix.num_cols);
 		
+	temp1.zero();
+	temp2.zero(); 
+	
 	for(int i = 0; i < temp1.num_rows; i++)
 	{
-	  for(int j = 0; j < temp1.num_cols; j++)
-	  {
-	     temp1[i*temp1.num_rows+j] = 0;
-	     if(i == j) temp1[i*temp1.num_rows+j] = 1;
-	  }
+	     temp1[i*temp1.num_rows+i] = 1;
 	}
 	
 	for(int i = 0; i < temp2.num_rows; i++)
 	{
-	  for(int j = 0; j < temp2.num_cols; j++)
-	  {
-	     temp2[i*temp2.num_rows+j] = 0;
-	     if(i == j) temp2[i*temp2.num_rows+j] = 1;
-	  }
+	     temp2[i*temp2.num_rows+i] = 1;
 	}
 	
 	SGVector< float64_t > result_vector(m_labels->get_num_labels());
@@ -111,7 +110,7 @@ CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
 
 CLabels* CGaussianProcessRegression::apply()
 {
-  	if (!features)
+	if (!features)
 		return NULL;
 	
 	return mean_prediction(features);
@@ -119,7 +118,7 @@ CLabels* CGaussianProcessRegression::apply()
 
 CLabels* CGaussianProcessRegression::apply(CFeatures* data)
 {
-  	if (!data)
+	if (!data)
 		SG_ERROR("No features specified\n");
 	if (!data->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
