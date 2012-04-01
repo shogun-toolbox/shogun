@@ -50,8 +50,8 @@ bool CWaveletKernel::init(CFeatures* l, CFeatures* r)
 
 void CWaveletKernel::init()
 {
-	m_parameters->add(&Wdilation, "Wdilation", "Dilation coefficient");
-	m_parameters->add(&Wtranslation, "Wtranslaton", "Translation coefficient");
+	SG_ADD(&Wdilation, "Wdilation", "Dilation coefficient", MS_AVAILABLE);
+	SG_ADD(&Wtranslation, "Wtranslaton", "Translation coefficient", MS_AVAILABLE);
 }
 
 float64_t CWaveletKernel::compute(int32_t idx_a, int32_t idx_b)

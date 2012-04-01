@@ -32,9 +32,9 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		CVarianceKernelNormalizer()
 			: CKernelNormalizer(), meandiff(1.0), sqrt_meandiff(1.0)
 		{
-			m_parameters->add(&meandiff, "meandiff", "Scaling constant.");
-			m_parameters->add(&sqrt_meandiff, "sqrt_meandiff",
-					"Square root of scaling constant.");
+			SG_ADD(&meandiff, "meandiff", "Scaling constant.", MS_AVAILABLE);
+			SG_ADD(&sqrt_meandiff, "sqrt_meandiff",
+					"Square root of scaling constant.", MS_AVAILABLE);
 		}
 
 		/** default destructor */

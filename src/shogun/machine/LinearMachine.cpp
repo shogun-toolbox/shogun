@@ -31,8 +31,9 @@ CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine(),
 void CLinearMachine::init()
 {
 	m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
-	m_parameters->add(&bias, "bias", "Bias b.");
-	m_parameters->add((CSGObject**) &features, "features", "Feature object.");
+	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &features, "features", "Feature object.",
+	    MS_NOT_AVAILABLE);
 }
 
 
