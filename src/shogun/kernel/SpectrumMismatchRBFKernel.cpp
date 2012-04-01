@@ -458,7 +458,7 @@ void CSpectrumMismatchRBFKernel::register_params()
 
 void CSpectrumMismatchRBFKernel::register_alphabet()
 {
-	SG_ADD((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel"
+	SG_ADD((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel",
 	  MS_NOT_AVAILABLE);
 }
 
