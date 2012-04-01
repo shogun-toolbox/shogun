@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias Garía
+ * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2011 Siddharth Kherada
  * Written (W) 2011 Justin Patera
  * Written (W) 2011 Alesis Novik
@@ -616,6 +616,7 @@ class CMath : public CSGObject
 				for (index_t i=0; i<len; ++i)
 					vec[i]=value;
 			}
+
 		template <class T>
 			static void range_fill_vector(T* vec, int32_t len, T start=0)
 			{
