@@ -779,17 +779,14 @@ void CCombinedKernel::init()
 	kernel_list=new CList(true);
 	SG_REF(kernel_list);
 
-
-	m_parameters->add((CSGObject**) &kernel_list, "kernel_list",
-					  "List of kernels.");
+	SG_ADD((CSGObject**) &kernel_list, "kernel_list", "List of kernels.",
+	    MS_AVAILABLE);
 	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
-							 "Support vector index.");
+		 "Support vector index.");
 	m_parameters->add_vector(&sv_weight, &sv_count, "sv_weight",
-							 "Support vector weights.");
-	m_parameters->add(&append_subkernel_weights,
-					  "append_subkernel_weights",
-					  "If subkernel weights are appended.");
-	m_parameters->add(&initialized, "initialized",
-					  "Whether kernel is ready to be used.");
+		 "Support vector weights.");
+	SG_ADD(&append_subkernel_weights, "append_subkernel_weights",
+	    "If subkernel weights are appended.", MS_AVAILABLE);
+	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
+	    MS_NOT_AVAILABLE);
 }
-

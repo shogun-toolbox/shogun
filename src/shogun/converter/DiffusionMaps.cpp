@@ -34,7 +34,7 @@ CDiffusionMaps::CDiffusionMaps() :
 
 void CDiffusionMaps::init()
 {
-	m_parameters->add(&m_t, "t", "number of steps");
+	SG_ADD(&m_t, "t", "number of steps", MS_AVAILABLE);
 }
 
 CDiffusionMaps::~CDiffusionMaps()

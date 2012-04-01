@@ -104,7 +104,7 @@ void CLocalityImprovedStringKernel::init()
 	inner_degree = 0;
 	outer_degree = 0;
 
-	m_parameters->add(&length, "length", "Window Length.");
-	m_parameters->add(&inner_degree, "inner_degree", "Inner degree.");
-	m_parameters->add(&outer_degree, "outer_degree", "Outer degree.");
+	SG_ADD(&length, "length", "Window Length.", MS_AVAILABLE);
+	SG_ADD(&inner_degree, "inner_degree", "Inner degree.", MS_AVAILABLE);
+	SG_ADD(&outer_degree, "outer_degree", "Outer degree.", MS_AVAILABLE);
 }

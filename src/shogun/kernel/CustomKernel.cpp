@@ -31,8 +31,8 @@ CCustomKernel::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_free_km, "free_km", "Whether kernel matrix should be freed in "
 			"destructor", MS_NOT_AVAILABLE);
-	m_parameters->add(&kmatrix, "kmatrix", "Kernel matrix.");
-	m_parameters->add(&upper_diagonal, "upper_diagonal");
+	SG_ADD(&kmatrix, "kmatrix", "Kernel matrix.", MS_NOT_AVAILABLE);
+	SG_ADD(&upper_diagonal, "upper_diagonal", MS_NOT_AVAILABLE);
 
 	/* new parameter from param version 0 to 1 */
 	m_parameter_map->put(

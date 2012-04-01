@@ -31,7 +31,8 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		/** default constructor  */
 		CLinearMulticlassMachine() : CMulticlassMachine(), m_features(NULL)
 		{
-			m_parameters->add((CSGObject**)&m_features,"m_features");
+			SG_ADD((CSGObject**)&m_features, "m_features", "Feature object.",
+			    MS_NOT_AVAILABLE);
 		}
 
 		/** standard constructor
@@ -44,7 +45,8 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_features(NULL)
 		{
 			set_features(features);
-			m_parameters->add((CSGObject**)&m_features,"m_features");
+			SG_ADD((CSGObject**)&m_features, "m_features", "Feature object.",
+			    MS_NOT_AVAILABLE);
 		}
 
 		/** destructor */
