@@ -56,9 +56,9 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		CRidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
 			: CKernelNormalizer()
 		{
-			m_parameters->add(&scale, "scale",
-							  "Scale quotient by which kernel is scaled.");
-			m_parameters->add(&ridge, "ridge", "Ridge added to diagonal.");
+			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    MS_AVAILABLE);
+			SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", MS_AVAILABLE);
 
 			scale=c;
 			ridge=r;
