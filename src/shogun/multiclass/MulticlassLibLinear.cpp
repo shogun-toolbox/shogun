@@ -13,6 +13,7 @@
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/v_array.h>
 
 using namespace shogun;
 
@@ -51,6 +52,33 @@ void CMulticlassLibLinear::register_parameters()
 CMulticlassLibLinear::~CMulticlassLibLinear()
 {
 	reset_train_state();
+}
+
+SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
+{
+	if (!m_train_state)
+		SG_ERROR("Please enable save_train_state option and train machine.\n");
+
+	int32_t num_vectors = m_features->get_num_vectors();
+	int32_t num_classes = m_labels->get_num_classes();
+
+	v_array<int32_t> nz_idxs;
+	nz_idxs.reserve(num_vectors);
+
+	for (int32_t i=0; i<num_vectors; i++)
+	{
+		for (int32_t y=0; y<num_classes; y++)
+		{
+			if (CMath::abs(m_train_state->alpha[i*num_classes+y])>1e-6)
+			{
+				nz_idxs.push(i);
+				break;
+			}
+		}
+	}
+	int32_t num_nz = nz_idxs.index();
+	nz_idxs.reserve(num_nz);
+	return SGVector<int32_t>(nz_idxs.begin,num_nz);
 }
 
 bool CMulticlassLibLinear::train_machine(CFeatures* data)
