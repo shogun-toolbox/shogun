@@ -581,16 +581,16 @@ float64_t CMath::dot(const float64_t* v1, const float64_t* v2, int32_t n)
 	return r;
 }
 
-float32_t CMath::dot(
+float64_t CMath::dot(
 		const float32_t* v1, const float32_t* v2, int32_t n)
 {
 	float64_t r=0;
 #ifdef HAVE_LAPACK
 	int32_t skip=1;
-	r = cblas_sdot(n, v1, skip, v2, skip);
+	r = cblas_ddot(n, v1, skip, v2, skip);
 #else
 	for (int32_t i=0; i<n; i++)
-		r+=v1[i]*v2[i];
+		r+=((float64_t)v1[i])*v2[i];
 #endif
 	return r;
 }
