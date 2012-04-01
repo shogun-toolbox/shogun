@@ -52,13 +52,13 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
-		/** setter for K parameter
+		/** setter for number of neighbors k in local strategy
 		 *
 		 * @param k k value
 		 */
 		void set_k(int32_t k);
 
-		/** getter for K parameter
+		/** getter for number of neighbors k in local strategy
 		 *
 		 * @return k value
 		 */
@@ -88,13 +88,13 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 */
 		int32_t get_tolerance() const;
 
-		/** setter for number of updates per iteration parameter
+		/** setter for number of updates per iteration
 		 *
 		 * @param nupdates number of updates per SPE iteration
 		 */
 		void set_nupdates(int32_t nupdates);
 
-		/** getter for number of updates per iteration parameter
+		/** getter for number of updates per iteration
 		 *
 		 * @return nupdates value
 		 */

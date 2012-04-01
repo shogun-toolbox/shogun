@@ -46,6 +46,7 @@ public:
 CStochasticProximityEmbedding::CStochasticProximityEmbedding() : 
 	CEmbeddingConverter()
 {
+	// Initialize to default values
 	m_k         = 12;
 	m_nupdates  = 100;
 	m_strategy  = SPE_GLOBAL;
@@ -57,8 +58,10 @@ CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
 void CStochasticProximityEmbedding::init()
 {
 	SG_ADD(&m_k, "m_k", "Number of neighbors", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_strategy, "m_strategy", "SPE strategy", MS_NOT_AVAILABLE);
-	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_strategy, "m_strategy", "SPE strategy", 
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter", 
+			MS_NOT_AVAILABLE);
 }
 
 CStochasticProximityEmbedding::~CStochasticProximityEmbedding()
@@ -91,7 +94,8 @@ ESPEStrategy CStochasticProximityEmbedding::get_strategy() const
 void CStochasticProximityEmbedding::set_tolerance(float32_t tolerance)
 {
 	if ( tolerance <= 0 )
-		SG_ERROR("Tolerance regularization parameter must be greater than 0");
+		SG_ERROR("Tolerance regularization parameter must be greater "
+			 "than 0");
 
 	m_tolerance = tolerance;
 }
@@ -121,8 +125,6 @@ const char * CStochasticProximityEmbedding::get_name() const
 
 CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 {
-	io->set_loglevel((EMessageType) (MSG_ERROR | MSG_DEBUG));
-
 	if ( !features )
 		SG_ERROR("Features are required to apply SPE\n");
 
@@ -145,9 +147,6 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 		SG_ERROR("The number of vectors (%d) must be at least two times "
 			 "the number of updates (%d)\n", N, m_nupdates);
 
-	// Get the number of dimensions in the original space
-	int32_t orig_dim = simple_features->get_num_features();
-
 	// Compute distance matrix
 	SG_DEBUG("Computing distance matrix\n");
 
@@ -158,15 +157,12 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 	m_distance->init(simple_features, simple_features);
 	SGMatrix< float64_t > distance_matrix = m_distance->get_distance_matrix();
 	m_distance->remove_lhs_and_rhs();
-	SG_DEBUG("Distance matrix computed\n");
-	//CMath::display_matrix(distance_matrix.matrix, N, N, "distance_matrix");
 
 	// Normalize the distance matrix if global strategy used
 	if ( m_strategy == SPE_GLOBAL )
 	{
 		float64_t alpha = 1.0 / CMath::max(distance_matrix.matrix, N*N) 
 					* CMath::sqrt(2.0);
-		//SG_PRINT(">>>> max = %f alpha = %f\n", CMath::max(distance_matrix.matrix, N*N), alpha);
 		CMath::scale_vector(alpha, distance_matrix.matrix, N*N);
 	}
 
@@ -182,7 +178,6 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 	// new_feature_matrix
 	SGMatrix< float64_t > Y(m_target_dim, N);
 	CMath::random_vector(Y.matrix, m_target_dim*N, 0.0, 1.0);
-	//CMath::display_matrix(Y.matrix, m_target_dim, N, "Y");
 
 	// SPE's loop
 	
@@ -194,59 +189,72 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 	// Initialize the learning parameter
 	float32_t lambda = 1.0;
 
+	// Initialize variables to use in the main loop
 	int32_t i, j, k;
+	float64_t sum = 0.0;
+	index_t   idx1 = 0, idx2 = 0, idx = 0;
+
+	SGVector< float64_t > scale(m_nupdates);
+	SGVector< float64_t > D(m_nupdates);
+	SGMatrix< float64_t > Yd(m_nupdates, m_target_dim);
+	SGVector< float64_t > Rt(m_nupdates);
+	int32_t* ind2 = NULL;
+
+	// Variables required just if local strategy used
+	SGMatrix< int32_t > ind1Neighbors;
+	SGVector< int32_t > J2;
+	if ( m_strategy == SPE_LOCAL )
+	{
+		ind2 = SG_MALLOC(int32_t, m_nupdates);
+
+		CMath::resize(ind1Neighbors.matrix, 0, m_k*m_nupdates);
+		ind1Neighbors.num_rows = m_k;
+		ind1Neighbors.num_cols = m_nupdates;
+
+		CMath::resize(J2.vector, 0, m_nupdates);
+		J2.vlen = m_nupdates;
+	}
 
 	for ( i = 0 ; i < max_iter ; ++i )
 	{
+		if ( !(i % 1000) )
+			SG_DEBUG("SPE's loop, iteration %d of %d\n", i, max_iter);
+
 		// Select the vectors to be updated in this iteration
 		int32_t* J = CMath::randperm(N);
 
 		// Pointer to the first set of vector indices to update
 		int32_t* ind1 = J;
 
-		// Pointer to the second set of vector indices to update
-		int32_t* ind2 = NULL;
+		// Pointer ind2 to the second set of vector indices to update
 		if ( m_strategy == SPE_GLOBAL )
 			ind2 = J + m_nupdates;
 		else
 		{
 			// Select the second set of indices to update among neighbors
 			// of the first set
-
-			ind2 = SG_MALLOC(int32_t, m_nupdates);
-			SGMatrix< int32_t > ind1Neighbors(orig_dim, m_nupdates);
-	
+				
 			// Get the neighbors of interest
 			for ( j = 0 ; j < m_nupdates ; ++j )
 			{
-				for ( k = 0 ; k < orig_dim ; ++k )
-					ind1Neighbors[k + j*orig_dim] =
-						neighbors_mat.matrix[ind1[j] + k*N];
+				for ( k = 0 ; k < m_k ; ++k )
+					ind1Neighbors[k + j*m_k] =
+						neighbors_mat.matrix[k + ind1[j]*m_k];
 			}
 
-			CMath::display_matrix(ind1Neighbors.matrix, orig_dim, m_nupdates, "in1Neighbors");
-
 			// Generate pseudo-random indices
-			SGVector< int32_t > J2(m_nupdates);
 			for ( j = 0 ; j < m_nupdates ; ++j )
 			{
-				J2[j] = CMath::round(CMath::random(0.0, 1.0))*(m_k-1)
-						+ 1 + m_nupdates*m_k;
+				J2[j] = CMath::round( CMath::random(0.0, 1.0)*(m_k-1) )
+						+ m_k*j;
 			}
 
 			// Select final indices
 			for ( j = 0 ; j < m_nupdates ; ++j )
 				ind2[j] = ind1Neighbors.matrix[ J2[j] ];
-
-			// Free memory used in this else branch
-			J2.destroy_vector();
-			ind1Neighbors.destroy_matrix();
 		}
 
 		// Compute distances betweeen the selected points in embedded space
-		SGVector< float64_t > D(m_nupdates);
-		float64_t sum = 0.0;
-		index_t   idx1 = 0, idx2 = 0, idx = 0;
 
 		for ( j = 0 ; j < m_nupdates ; ++j )
 		{
@@ -263,19 +271,16 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 		}
 
 		// Get the corresponding distances in the original space
-		SGVector< float64_t > Rt(m_nupdates);
 		for ( j = 0 ; j < m_nupdates ; ++j )
 			Rt[j] = distance_matrix.matrix[ ind1[j]*N + ind2[j] ];
 
 		// Compute some terms for update
 
 		// Scale factor: (Rt - D) ./ (D + m_tolerance)
-		SGVector< float64_t > scale(m_nupdates);
 		for ( j = 0 ; j < m_nupdates ; ++j )
 			scale[j] = ( Rt[j] - D[j] ) / ( D[j] + m_tolerance );
 
 		// Difference matrix: Y(ind1) - Y(ind2)
-		SGMatrix< float64_t > Yd(m_nupdates, m_target_dim);
 		for ( j = 0 ; j < m_nupdates ; ++j )
 			for ( k = 0 ; k < m_target_dim ; ++k )
 			{
@@ -302,15 +307,22 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 		lambda = lambda - ( lambda / max_iter );
 
 		// Free memory
-		// TODO get some the creations of the vectors out of the loop
-		scale.destroy_vector();
-		Yd.destroy_matrix();
-		Rt.destroy_vector();
-		D.destroy_vector();
-		if ( m_strategy == SPE_LOCAL )
-			delete[] ind2;
 		delete[] J;
 	}
+
+	// Free memory
+	distance_matrix.destroy_matrix();
+	scale.destroy_vector();
+	D.destroy_vector();
+	Yd.destroy_matrix();
+	Rt.destroy_vector();
+	if ( m_strategy == SPE_LOCAL )
+	{
+		ind1Neighbors.destroy_matrix();
+		J2.destroy_vector();
+		delete[] ind2;
+	}
+	SG_UNREF(features);
 
 	return (CFeatures*)( new CSimpleFeatures< float64_t >(Y) );
 }
