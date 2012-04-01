@@ -395,17 +395,21 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 void CSpectrumRBFKernel::register_param()
 {
 	SG_ADD(&degree, "degree", "degree of the kernel", MS_AVAILABLE);
-	m_parameters->add(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix");
+	SG_ADD(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix",
+	    MS_NOT_AVAILABLE);
 	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix", "128*128 scalar product matrix");
-	SG_ADD(&width,"width","width of Gaussian", MS_AVAILABLE);
-	m_parameters->add(&nof_sequences, "nof_sequences","length of the sequence");
+	SG_ADD(&width, "width", "width of Gaussian", MS_AVAILABLE);
+	SG_ADD(&nof_sequences, "nof_sequences", "length of the sequence",
+	    MS_NOT_AVAILABLE);
 	m_parameters->add_vector(&sequences, &nof_sequences, "the sequences as a part of profile");
-	m_parameters->add(&max_sequence_length,"max_sequence_length","max length of the sequence");
+	SG_ADD(&max_sequence_length,
+	    "max_sequence_length", "max length of the sequence", MS_NOT_AVAILABLE);
 }
 
 void CSpectrumRBFKernel::register_alphabet()
 {
-	m_parameters->add((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel");
+	SG_ADD((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel",
+	    MS_NOT_AVAILABLE);
 }
 
 void CSpectrumRBFKernel::init()

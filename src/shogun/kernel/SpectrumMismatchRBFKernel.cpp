@@ -441,14 +441,15 @@ bool CSpectrumMismatchRBFKernel::set_max_mismatch(int32_t max)
 void CSpectrumMismatchRBFKernel::register_params()
 {
 	SG_ADD(&degree, "degree", "degree of the kernel", MS_AVAILABLE);
-	m_parameters->add(&AA_matrix_length, "AA_matrix_length",
-	    "the length of AA matrix");
+	SG_ADD(&AA_matrix_length, "AA_matrix_length",
+	    "the length of AA matrix", MS_NOT_AVAILABLE);
 	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix",
 	    "128*128 scalar product matrix");
-	SG_ADD(&width,"width","width of Gaussian", MS_AVAILABLE);
-	m_parameters->add(&target_letter_0, "target_letter_0","target letter 0");
-	m_parameters->add(&initialized, "initialized",
-	    "the mark of initialization status");
+	SG_ADD(&width,"width", "width of Gaussian", MS_AVAILABLE);
+	SG_ADD(&target_letter_0, "target_letter_0", "target letter 0",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&initialized, "initialized",
+	    "the mark of initialization status", MS_NOT_AVAILABLE);
 	m_parameters->add_vector((SGString<float64_t>**)&kernel_matrix,
 	    &kernel_matrix_length, "kernel_matrix",
 	    "the kernel matrix with its length defined by the number of "
@@ -457,7 +458,8 @@ void CSpectrumMismatchRBFKernel::register_params()
 
 void CSpectrumMismatchRBFKernel::register_alphabet()
 {
-	m_parameters->add((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel");
+	SG_ADD((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel"
+	  MS_NOT_AVAILABLE);
 }
 
 void CSpectrumMismatchRBFKernel::init()
