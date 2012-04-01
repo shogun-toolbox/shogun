@@ -912,17 +912,15 @@ void CKernel::register_params()   {
 	    MS_NOT_AVAILABLE);
 	SG_ADD(&num_rhs, "num_rhs", "Number of feature vectors on right hand side.",
 	    MS_NOT_AVAILABLE);
-	m_parameters->add(&combined_kernel_weight, "combined_kernel_weight",
-					  "Combined kernel weight.");
-	m_parameters->add(&optimization_initialized,
-					  "optimization_initialized",
-					  "Optimization is initialized.");
-	m_parameters->add((machine_int_t*) &opt_type, "opt_type",
-					  "Optimization type.");
-	m_parameters->add(&properties, "properties",
-					  "Kernel properties.");
-	m_parameters->add((CSGObject**) &normalizer, "normalizer",
-					  "Normalize the kernel.");
+	SG_ADD(&combined_kernel_weight, "combined_kernel_weight",
+			"Combined kernel weight.", MS_NOT_AVAILABLE);
+	SG_ADD(&optimization_initialized, "optimization_initialized",
+		  "Optimization is initialized.", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &opt_type, "opt_type",
+		  "Optimization type.", MS_NOT_AVAILABLE);
+	SG_ADD(&properties, "properties", "Kernel properties.", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &normalizer, "normalizer", "Normalize the kernel.",
+	    MS_AVAILABLE);
 }
 
 
