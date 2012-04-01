@@ -587,7 +587,7 @@ float64_t CMath::dot(
 	float64_t r=0;
 #ifdef HAVE_LAPACK
 	int32_t skip=1;
-	r = cblas_ddot(n, v1, skip, v2, skip);
+	r = cblas_dsdot(n, v1, skip, v2, skip);
 #else
 	for (int32_t i=0; i<n; i++)
 		r+=((float64_t)v1[i])*v2[i];
