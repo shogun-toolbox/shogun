@@ -319,6 +319,7 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 	if ( m_strategy == SPE_LOCAL )
 	{
 		ind1Neighbors.destroy_matrix();
+		neighbors_mat.destroy_matrix();
 		J2.destroy_vector();
 		delete[] ind2;
 	}
