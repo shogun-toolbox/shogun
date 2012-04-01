@@ -19,22 +19,22 @@
 
 using namespace shogun;
 
-class LLE_COVERTREE_POINT
+class SPE_COVERTREE_POINT
 {
 public:
 
-	LLE_COVERTREE_POINT(int32_t index, const SGMatrix<float64_t>& dmatrix)
+	SPE_COVERTREE_POINT(int32_t index, const SGMatrix<float64_t>& dmatrix)
 	{
 		point_index = index;
 		distance_matrix = dmatrix;
 	}
 
-	inline double distance(const LLE_COVERTREE_POINT& p) const
+	inline double distance(const SPE_COVERTREE_POINT& p) const
 	{
 		return distance_matrix[point_index*distance_matrix.num_rows+p.point_index];
 	}
 
-	inline bool operator==(const LLE_COVERTREE_POINT& p) const
+	inline bool operator==(const SPE_COVERTREE_POINT& p) const
 	{
 		return (p.point_index==point_index);
 	}
@@ -337,15 +337,15 @@ SGMatrix<int32_t> CStochasticProximityEmbedding::get_neighborhood_matrix(SGMatri
 
 	float64_t max_dist = CMath::max(distance_matrix.matrix,N*N);
 
-	CoverTree<LLE_COVERTREE_POINT>* coverTree = new CoverTree<LLE_COVERTREE_POINT>(max_dist);
+	CoverTree<SPE_COVERTREE_POINT>* coverTree = new CoverTree<SPE_COVERTREE_POINT>(max_dist);
 
 	for (i=0; i<N; i++)
-		coverTree->insert(LLE_COVERTREE_POINT(i,distance_matrix));
+		coverTree->insert(SPE_COVERTREE_POINT(i,distance_matrix));
 
 	for (i=0; i<N; i++)
 	{
-		std::vector<LLE_COVERTREE_POINT> neighbors =
-		   coverTree->kNearestNeighbors(LLE_COVERTREE_POINT(i,distance_matrix),k+1);
+		std::vector<SPE_COVERTREE_POINT> neighbors =
+		   coverTree->kNearestNeighbors(SPE_COVERTREE_POINT(i,distance_matrix),k+1);
 		for (std::size_t m=1; m<unsigned(k+1); m++)
 			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;
 	}
