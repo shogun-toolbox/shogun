@@ -56,33 +56,65 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 *
 		 * @param k k value
 		 */
-		inline void set_k(int32_t k);
+		void set_k(int32_t k);
 
 		/** getter for K parameter
 		 *
 		 * @return k value
 		 */
-		inline int32_t get_k() const;
+		int32_t get_k() const;
+
+		/** setter for strategy parameter
+		 *
+		 * @param stragegy type of SPE strategy
+		 */
+		void set_strategy(ESPEStrategy strategy);
+
+		/** getter for type of SPE strategy
+		 *
+		 * @return strategy value
+		 */
+		ESPEStrategy get_strategy() const;
 
 		/** setter for regularization parameter
 		 *
-		 * @param m_tolerance regularization value
+		 * @param tolerance regularization value
 		 */
-		inline void set_tolerance(float32_t tolerance);
+		void set_tolerance(float32_t tolerance);
 
 		/** getter for regularization parameter
 		 *
 		 * @return regularization value
 		 */
-		inline int32_t get_tolerance() const;
+		int32_t get_tolerance() const;
+
+		/** setter for number of updates per iteration parameter
+		 *
+		 * @param nupdates number of updates per SPE iteration
+		 */
+		void set_nupdates(int32_t nupdates);
+
+		/** getter for number of updates per iteration parameter
+		 *
+		 * @return nupdates value
+		 */
+		int32_t get_nupdates() const;
 
 		/** get name */
-		inline virtual const char* get_name() const;
+		virtual const char* get_name() const;
 
 	private:
 
 		/** default init */
 		void init();
+
+		/** constructs neighborhood matrix by distance
+		 * @param distance_matrix distance matrix to be used
+		 * @param k number of neighbors
+		 * @return matrix containing indexes of neighbors of i-th vector in 
+		 * i-th column
+		 */
+		virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
 
 	private:
 
@@ -94,6 +126,9 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 
 		/** regularization parameter */
 		float32_t m_tolerance;
+
+		/** number of apdates per SPE iteration */
+		int32_t m_nupdates;
 
 };
 
