@@ -415,8 +415,9 @@ void CLocalAlignmentStringKernel::init()
 	scaled_blosum=SG_CALLOC(int32_t, sizeof(blosum));
 	init_logsum();
 
-	m_parameters->add(&initialized, "initialized", "if kernel is initalized");
-	SG_ADD(&m_opening, "opening", "opening gap opening penalty", MS_AVAILABLE);
-	SG_ADD(&m_extension, "extension", "extension gap extension penalty",
+	SG_ADD(&initialized, "initialized", "If kernel is initalized.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_opening, "opening", "Opening gap opening penalty.", MS_AVAILABLE);
+	SG_ADD(&m_extension, "extension", "Extension gap extension penalty.",
 	    MS_AVAILABLE);
 }
