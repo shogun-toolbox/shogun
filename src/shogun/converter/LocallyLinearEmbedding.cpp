@@ -100,17 +100,17 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 
 void CLocallyLinearEmbedding::init()
 {
-	m_parameters->add(&m_auto_k, "auto_k",
-	                  "whether k should be determined automatically in range");
-	m_parameters->add(&m_k, "k", "number of neighbors");
-	m_parameters->add(&m_max_k, "max_k",
-	                  "maximum number of neighbors used to compute optimal one");
+	SG_ADD(&m_auto_k, "auto_k",
+      "whether k should be determined automatically in range", MS_AVAILABLE);
+	SG_ADD(&m_k, "k", "number of neighbors", MS_AVAILABLE);
+	SG_ADD(&m_max_k, "max_k",
+      "maximum number of neighbors used to compute optimal one", MS_AVAILABLE);
 	m_parameters->add(&m_nullspace_shift, "nullspace_shift",
-	                  "nullspace finding regularization shift");
-	m_parameters->add(&m_reconstruction_shift, "reconstruction_shift",
-	                  "shift used to regularize reconstruction step");
-	m_parameters->add(&m_use_arpack, "use_arpack",
-	                  "whether arpack is being used or not");
+      "nullspace finding regularization shift");
+	SG_ADD(&m_reconstruction_shift, "reconstruction_shift",
+      "shift used to regularize reconstruction step", MS_NOT_AVAILABLE);
+	SG_ADD(&m_use_arpack, "use_arpack", "whether arpack is being used or not",
+	    MS_NOT_AVAILABLE);
 }
 
 

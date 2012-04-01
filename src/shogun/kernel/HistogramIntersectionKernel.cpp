@@ -83,5 +83,5 @@ float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CHistogramIntersectionKernel::register_params()
 {
-	m_parameters->add(&m_beta, "beta", "the beta parameter of the kernel");
+	SG_ADD(&m_beta, "beta", "the beta parameter of the kernel", MS_AVAILABLE);
 }

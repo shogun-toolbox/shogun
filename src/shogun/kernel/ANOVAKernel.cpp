@@ -148,7 +148,7 @@ void CANOVAKernel::load_serializable_post() throw (ShogunException)
 
 void CANOVAKernel::register_params()
 {
-	m_parameters->add(&cardinality, "cardinality", "Kernel cardinality.");
+	SG_ADD(&cardinality, "cardinality", "Kernel cardinality.", MS_AVAILABLE);
 }
 
 

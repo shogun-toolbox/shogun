@@ -77,11 +77,11 @@ CKernel* CEmbeddingConverter::get_kernel() const
 
 void CEmbeddingConverter::init()
 {
-	this->m_parameters->add(&m_target_dim, "target_dim",
-	                        "target dimensionality of preprocessor");
-	this->m_parameters->add((CSGObject**)&m_distance, "distance",
-	                        "distance to be used for embedding");
-	this->m_parameters->add((CSGObject**)&m_kernel, "kernel",
-	                        "kernel to be used for embedding");
+	SG_ADD(&m_target_dim, "target_dim",
+      "target dimensionality of preprocessor", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_distance, "distance",
+	    "distance to be used for embedding", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_kernel, "kernel", "kernel to be used for embedding",
+	    MS_AVAILABLE);
 }
 }

@@ -32,8 +32,8 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		 */
 		CFirstElementKernelNormalizer() : CKernelNormalizer(), scale(1.0)
 		{
-			m_parameters->add(&scale, "scale",
-							  "Scale quotient by which kernel is scaled.");
+			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    MS_AVAILABLE);
 		}
 
 		/** default destructor */
