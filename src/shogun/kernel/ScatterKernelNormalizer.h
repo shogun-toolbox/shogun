@@ -152,11 +152,11 @@ private:
 
 		m_testing_class = -1;
 
-		SG_ADD(&m_testing_class, "m_testing_class"
+		SG_ADD(&m_testing_class, "m_testing_class",
 				"Testing Class.", MS_NOT_AVAILABLE);
-		SG_ADD(&m_const_diag, "m_const_diag"
+		SG_ADD(&m_const_diag, "m_const_diag",
 				"Factor to multiply to diagonal elements.", MS_AVAILABLE);
-		SG_ADD(&m_const_offdiag, "m_const_offdiag"
+		SG_ADD(&m_const_offdiag, "m_const_offdiag",
 				"Factor to multiply to off-diagonal elements.", MS_AVAILABLE);
 
 		SG_ADD((CSGObject**) &m_labels, "m_labels", "Labels", MS_NOT_AVAILABLE);
