@@ -135,6 +135,11 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 			}
 		}
 
+		/** get support vector indices
+		 * @return support vector indices 
+		 */
+		SGVector<int32_t> get_support_vectors() const;
+
 protected:
 
 		/** train machine */
