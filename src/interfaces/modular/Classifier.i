@@ -42,6 +42,7 @@
 %rename(AveragedPerceptron) CAveragedPerceptron;
 %rename(SubGradientLPM) CSubGradientLPM;
 %rename(SubGradientSVM) CSubGradientSVM;
+%rename(NewtonSVM) CNewtonSVM;
 #ifndef HAVE_PYTHON
 %rename(SVM) CSVM;
 #endif
@@ -119,6 +120,7 @@
 %include <shogun/machine/MulticlassMachine.h>
 %include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/machine/LinearMulticlassMachine.h>
+%include <shogun/classifier/svm/NewtonSVM.h>
 
 #ifdef USE_SVMLIGHT
 
