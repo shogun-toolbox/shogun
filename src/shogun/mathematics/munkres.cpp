@@ -207,10 +207,14 @@ int Munkres::step4(void)
 	}
 
 	// 4. Erase all primes, uncover all columns and rows,
-	for (int row=0; row < mask_matrix.num_rows; row++)
-		for (int col=0; col < mask_matrix.num_cols; col++)
-			if (mask_matrix(row,col) == PRIME)
-				mask_matrix(row,col)=NORMAL;
+	for (int rowi=0; rowi < mask_matrix.num_rows; rowi++)
+	{
+		for (int coli=0; coli < mask_matrix.num_cols; coli++)
+		{
+			if (mask_matrix(rowi,coli) == PRIME)
+				mask_matrix(rowi,coli) = NORMAL;
+		}
+	}
 
 	for (int i=0; i < rows; i++)
 		row_mask[i]=false;
