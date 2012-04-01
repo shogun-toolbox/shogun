@@ -685,7 +685,7 @@ class CMath : public CSGObject
 		static float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n);
 
 		/// compute dot product between v1 and v2 (blas optimized)
-		static float32_t dot(
+		static float64_t dot(
 			const float32_t* v1, const float32_t* v2, int32_t n);
 
 		/// compute dot product between v1 and v2 (for 64bit unsigned ints)
