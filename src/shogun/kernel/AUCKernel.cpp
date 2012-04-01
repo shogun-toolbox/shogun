@@ -20,7 +20,7 @@ using namespace shogun;
 void
 CAUCKernel::init()
 {
-	SG_ADD(CSGObject**) &subkernel, "subkernel", "The subkernel.",
+	SG_ADD((CSGObject**) &subkernel, "subkernel", "The subkernel.",
 	    MS_AVAILABLE);
 }
 

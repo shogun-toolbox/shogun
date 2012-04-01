@@ -52,7 +52,7 @@ bool CLogKernel::init(CFeatures* l, CFeatures* r)
 void CLogKernel::init()
 {
 	SG_ADD(&m_degree, "degree", "Degree kernel parameter.", MS_AVAILABLE);
-	SG_ADD((CSGObject**) &m_distance, "distance", "Distance to be used."
+	SG_ADD((CSGObject**) &m_distance, "distance", "Distance to be used.",
 	    MS_AVAILABLE);
 }
 
