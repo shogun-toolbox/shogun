@@ -169,8 +169,23 @@ FORMATTING:
 	set ts=4            " tabstop
 	set sw=4            " shiftwidth
 
-- avoid whitespaces at end of lines and never use them for indentation; only
-ever use tabs for indentations
+- for newlines use LF only; avoid CRLF and CR. Git can be configured to convert
+  all newlines to LF as source files are commited to the repo by:
+
+  git config --global core.autocrlf input
+
+  (for more information consult http://help.github.com/line-endings/)
+
+- avoid trailing whitespace (spaces & tabs) at end of lines and never use spaces
+  for indentation; only ever use tabs for indentations.
+
+  for emacs:
+
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+  for vim in ~/.vimrc (implemented as an autocmd, use wisely):
+
+  autocmd BufWritePre * :%s/\s\+$//e
 
 - semicolons and commas ;, should be placed directly after a variable/statement
 
@@ -365,7 +380,30 @@ NAMING CONVENTIONS:
 
 VERSIONING SCHEME:
 
-- an automagic version will be created from the date of the last svn update.
-if that is not enough make releases:
+The git repo for the project is hosted on GitHub at
+https://github.com/shogun-toolbox/shogun. To get started, create your own fork
+and clone it. Remember to set the upstream remote to the main repo by:
 
-e.g.: svn cp trunk releases/shogun_0.1.0
+git remote add upstream git://github.com/shogun-toolbox/shogun.git
+
+Each time you want to develop new feature / fix a bug / etc consider creating
+new branch using:
+
+git checkout -b new_feature_name
+
+While being on new_feature_name branch, develop your code, commit things and do
+everything you want.
+
+Once your feature is ready (please consider larger commits that keep shogun in
+compileable state), rebase your new_feature_name branch on upstream/master
+with:
+
+git fetch upstream
+git checkout master
+git rebase upstream/master
+git checkout new_feature_name
+git rebase master
+
+and send a pull request.
+
+To make a release, refer to the Makefile in the root dir of the repo.
