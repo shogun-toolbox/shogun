@@ -40,6 +40,6 @@ CSubset* CSubset::duplicate() {
 }
 
 void CSubset::init() {
-	m_parameters->add((CSGObject**)&m_subset_idx, "subset",
-			"Vector of subset indices");
+	SG_ADD((SGVector<index_t>*)&m_subset_idx, "subset",
+			"Vector of subset indices", MS_NOT_AVAILABLE);
 }
