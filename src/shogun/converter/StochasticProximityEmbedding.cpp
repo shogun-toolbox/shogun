@@ -143,16 +143,55 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 		SG_ERROR("The number of vectors (%d) must be at least two times "
 			 "the number of updates (%d)\n", N, m_nupdates);
 
+	m_distance->init(simple_features, simple_features);
+	CSimpleFeatures< float64_t >* embedding = embed_distance(m_distance);
+	m_distance->remove_lhs_and_rhs();
+
+	SG_UNREF(features);
+	return (CFeatures*)embedding;
+}
+
+SGMatrix<int32_t> CStochasticProximityEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k)
+{
+	int32_t i;
+	int32_t N = distance_matrix.num_rows;
+
+	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
+
+	float64_t max_dist = CMath::max(distance_matrix.matrix,N*N);
+
+	CoverTree<SPE_COVERTREE_POINT>* coverTree = new CoverTree<SPE_COVERTREE_POINT>(max_dist);
+
+	for (i=0; i<N; i++)
+		coverTree->insert(SPE_COVERTREE_POINT(i,distance_matrix));
+
+	for (i=0; i<N; i++)
+	{
+		std::vector<SPE_COVERTREE_POINT> neighbors =
+		   coverTree->kNearestNeighbors(SPE_COVERTREE_POINT(i,distance_matrix),k+1);
+		for (std::size_t m=1; m<unsigned(k+1); m++)
+			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;
+	}
+
+	delete coverTree;
+
+	return SGMatrix<int32_t>(neighborhood_matrix,k,N);
+}
+
+CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDistance* distance)
+{
+	if ( !distance )
+		SG_ERROR("Embed distance received no instance of CDistance\n");
+
 	// Compute distance matrix
 	SG_DEBUG("Computing distance matrix\n");
 
-	if ( m_distance->get_distance_type() != D_EUCLIDIAN )
+	if ( distance->get_distance_type() != D_EUCLIDIAN )
 		SG_ERROR("SPE only supports Euclidian distance, %s given\n", 
-				m_distance->get_name());
+				distance->get_name());
 
-	m_distance->init(simple_features, simple_features);
-	SGMatrix< float64_t > distance_matrix = m_distance->get_distance_matrix();
-	m_distance->remove_lhs_and_rhs();
+	SGMatrix< float64_t > distance_matrix = distance->get_distance_matrix();
+	int32_t N = distance_matrix.num_rows;
 
 	// Normalize the distance matrix if global strategy used
 	if ( m_strategy == SPE_GLOBAL )
@@ -319,36 +358,8 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 		J2.destroy_vector();
 		delete[] ind2;
 	}
-	SG_UNREF(features);
 
-	return (CFeatures*)( new CSimpleFeatures< float64_t >(Y) );
-}
-
-SGMatrix<int32_t> CStochasticProximityEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k)
-{
-	int32_t i;
-	int32_t N = distance_matrix.num_rows;
-
-	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
-
-	float64_t max_dist = CMath::max(distance_matrix.matrix,N*N);
-
-	CoverTree<SPE_COVERTREE_POINT>* coverTree = new CoverTree<SPE_COVERTREE_POINT>(max_dist);
-
-	for (i=0; i<N; i++)
-		coverTree->insert(SPE_COVERTREE_POINT(i,distance_matrix));
-
-	for (i=0; i<N; i++)
-	{
-		std::vector<SPE_COVERTREE_POINT> neighbors =
-		   coverTree->kNearestNeighbors(SPE_COVERTREE_POINT(i,distance_matrix),k+1);
-		for (std::size_t m=1; m<unsigned(k+1); m++)
-			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;
-	}
-
-	delete coverTree;
-
-	return SGMatrix<int32_t>(neighborhood_matrix,k,N);
+	return new CSimpleFeatures< float64_t >(Y);
 }
 
 #endif /* HAVE_LAPACK */
