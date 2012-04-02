@@ -81,6 +81,7 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 	for t in tests:
 		try:
 			mod, mod_name = get_test_mod(t)
+			n=len(mod.parameter_list)
 		except TypeError:
 			continue
 		except Exception, e:
@@ -88,7 +89,6 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 			continue
 		fname = ""
 
-		n=len(mod.parameter_list)
 		for i in xrange(n):
 			fname = get_fname(mod_name, i)
 			setting_str = "%s setting %d/%d" % (t,i+1,n)
