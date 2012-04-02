@@ -128,10 +128,6 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 	if ( !features )
 		SG_ERROR("Features are required to apply SPE\n");
 
-	if ( !(features->get_feature_class() == C_SIMPLE &&
-	       features->get_feature_type()  == F_DREAL) )
-		SG_ERROR("Features must be dense real features\n");
-
 	// Shorthand for the SimpleFeatures
 	CSimpleFeatures< float64_t >* simple_features = 
 		(CSimpleFeatures< float64_t >*) features;
