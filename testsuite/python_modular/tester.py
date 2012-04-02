@@ -103,13 +103,8 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 					else:
 						if not missing:
 							print "%-60s ERROR" % setting_str
-					import pdb
-					pdb.set_trace()
 				except Exception, e:
 					print setting_str, e
-
-					import pdb
-					pdb.set_trace()
 			except IOError, e:
 				if not failures:
 					print "%-60s NO TEST" % (setting_str)
