@@ -116,6 +116,12 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 */
 		virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
 
+		/** apply embedding to CDistance
+		 * @param distance TODO Euclidian works fine, check with others
+		 * @return new features in the embedded space
+		 */
+		virtual CSimpleFeatures< float64_t >* embed_distance(CDistance* distance);
+
 	private:
 
 		/** SPE strategy */
