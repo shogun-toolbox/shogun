@@ -1,4 +1,3 @@
-#include <shogun/features/BOWFeatures.h>
 #include <shogun/base/init.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/clustering/KMeans.h>
