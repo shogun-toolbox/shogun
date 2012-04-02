@@ -29,19 +29,23 @@
 namespace shogun
 {
 
+/** @brief Munkres */
 class Munkres
 {
 public:
+	/** constructor */
 	Munkres(SGMatrix<double> &m)
 		:mask_matrix(m.num_rows, m.num_cols, true), matrix(m.num_rows, m.num_cols, true), ref_m(m)
 	{
 	}
 
+	/** solve  */
 	void solve()
 	{
 		solve(ref_m);
 	}
 
+	/** destructor */
 	~Munkres()
 	{
 		mask_matrix.free_matrix();
