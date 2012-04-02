@@ -33,7 +33,7 @@ TARGETS = basic_minimal \
 		  evaluation_cross_validation_regression \
 		  evaluation_cross_validation_locked_comparison \
 		  modelselection_parameter_combination_test \
-		  mean_prediction_minimal \
+		  regression_gaussian_process \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \
