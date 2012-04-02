@@ -16,7 +16,8 @@
 namespace shogun
 {
 
-
+/** @brief clustering accuracy
+ */
 class CClusteringAccuracy: public CClusteringEvaluation
 {
 public:
