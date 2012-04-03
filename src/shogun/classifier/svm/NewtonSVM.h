@@ -27,11 +27,11 @@ class CNewtonSVM : public CLinearMachine
 
 		/** constructor
 		 * @param C constant C
-	         * @param itr constant no of iterations
+		 * @param itr constant no of iterations
 		 * @param traindat training features
 		 * @param trainlab labels for features
 		 */
-		CNewtonSVM(float64_t C, CDotFeatures* traindat, CLabels* trainlab,int32_t itr=20);
+		CNewtonSVM(float64_t C, CDotFeatures* traindat, CLabels* trainlab, int32_t itr=20);
 		
 		virtual ~CNewtonSVM();
 
@@ -43,7 +43,7 @@ class CNewtonSVM : public CLinearMachine
 
 		/**
 		 * set C
-	         * @param C constant C
+		 * @param C constant C
 		 */
 		inline void set_C(float64_t c) { C=c; }
 
@@ -54,7 +54,7 @@ class CNewtonSVM : public CLinearMachine
 
 		/**
 		 * set epsilon
-	         * @param epsilon constant epsilon
+		 * @param epsilon constant epsilon
 		 */
 		inline void set_epsilon(float64_t e) { epsilon=e; }
 
@@ -98,15 +98,18 @@ class CNewtonSVM : public CLinearMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
-		void obj_fun_linear(float64_t* weights,float64_t* out,float64_t* obj,int32_t* sv,int32_t* numsv,float64_t* grad);
+		void obj_fun_linear(float64_t* weights, float64_t* out, float64_t* obj,
+				int32_t* sv, int32_t* numsv, float64_t* grad);
 
-		void line_search_linear(float64_t* weights,float64_t* d,float64_t* out,float64_t* tx);
+		void line_search_linear(float64_t* weights, float64_t* d,
+				float64_t* out, float64_t* tx);
 
 	protected:
 		/** lambda=1/C */
-		float64_t lambda,C,epsilon;
+		float64_t lambda, C, epsilon;
 		float64_t prec;
-		int32_t x_n,x_d,num_iter;
+		int32_t x_n, x_d, num_iter;
+
 		/** if bias is used */
 		bool use_bias;
 };
