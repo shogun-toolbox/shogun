@@ -462,6 +462,20 @@ class CMath : public CSGObject
 
 			CMath::swap(num_feat, num_vec);
 		}
+		template <class T>
+		static void create_diagonal_matrix(T* matrix,T* v,int32_t size)
+		{	
+			for(int32_t i=0;i<size;i++)
+			{
+				for(int32_t j=0;j<size;j++)
+				{
+					if(i==j)
+						matrix[j*size+i]=v[i];
+					else
+						matrix[j*size+i]=0;
+				}
+			}
+		}
 
 #ifdef HAVE_LAPACK
 		/** compute eigenvalues and eigenvectors of symmetric matrix
