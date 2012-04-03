@@ -4,8 +4,7 @@
 # the Free Software Foundation either version 3 of the License, or
 # (at your option) any later version.
 #
-# Written (W) 2012 Heiko Strathmann
-# Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
+# Written (C) 2012 Heiko Strathmann
 #
 
 from numpy import array
