@@ -1,3 +1,12 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Copyright (C) 2012 Jacob Walker
+ */
+
 #ifndef _GAUSSIANPROCESSREGRESSION_H__
 #define _GAUSSIANPROCESSREGRESSION_H__
 
@@ -37,7 +46,8 @@ class CGaussianProcessRegression : public CMachine
 	 * @param data training data
 	 * @param lab labels
 	 */
-	CGaussianProcessRegression(float64_t sigma, CKernel* k, CSimpleFeatures<float64_t>* data, CLabels* lab);
+	CGaussianProcessRegression(float64_t sigma, CKernel* k, 
+				   CSimpleFeatures<float64_t>* data, CLabels* lab);
 
 		  /** default constructor */
 		CGaussianProcessRegression();
@@ -130,10 +140,11 @@ class CGaussianProcessRegression : public CMachine
 		
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GaussianProcessRegression"; }
-		
-	protected:
-		
+	
 	private:
+	  	
+		/** function for initialization*/
+		void init();
 		
 		/** apply mean prediction from data
 		*
@@ -141,7 +152,9 @@ class CGaussianProcessRegression : public CMachine
 		* @return classified labels
 		*/
 		virtual CLabels* mean_prediction(CFeatures* data);
-		
+				
+	private:
+				
 		/** Observation noise alpha */
 		float64_t m_sigma;
 		
@@ -151,9 +164,7 @@ class CGaussianProcessRegression : public CMachine
 		/** kernel */
 		CKernel* kernel;
 		
-		/** function for initialization*/
-		void init();
 };
 }
+#endif 
 #endif /* _GAUSSIANPROCESSREGRESSION_H__ */
-#endif

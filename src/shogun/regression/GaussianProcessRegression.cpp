@@ -1,3 +1,12 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Copyright (C) 2012 Jacob Walker
+ */
+
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
@@ -17,7 +26,8 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 
 }
 
-CGaussianProcessRegression::CGaussianProcessRegression(float64_t sigma, CKernel* k, CSimpleFeatures<float64_t>* data, CLabels* lab)
+CGaussianProcessRegression::CGaussianProcessRegression(float64_t sigma, 
+CKernel* k, CSimpleFeatures<float64_t>* data, CLabels* lab)
 : CMachine()
 {
 	init();
@@ -35,9 +45,10 @@ void CGaussianProcessRegression::init()
 	kernel = NULL;
 	features = NULL;
 	
-	m_parameters->add((CSGObject**) &kernel, "kernel", "Kernel.");
-	m_parameters->add((CSGObject**) &features, "features", "Feature object.");
-	m_parameters->add(&m_sigma, "sigma", "Sigma.");
+	SG_ADD((CSGObject**) &kernel, "kernel", "", MS_AVAILABLE);
+	SG_ADD((CSGObject**) &features, "features", "Feature object.",
+	    MS_NOT_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Sigma.", MS_AVAILABLE);
 }
 
 CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
@@ -54,56 +65,59 @@ CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
 	//K(X_test, X_train)
 	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
 	
-	SGMatrix<float64_t> temp1(kernel_train_matrix.num_rows,kernel_train_matrix.num_cols);
-	SGMatrix<float64_t> temp2(kernel_train_matrix.num_rows,kernel_train_matrix.num_cols);
-		
-	temp1.zero();
-	temp2.zero(); 
+	SGMatrix<float64_t> temp1(kernel_train_matrix.num_rows,
+	kernel_train_matrix.num_cols);
 	
-	for(int i = 0; i < temp1.num_rows; i++)
-	{
-	     temp1[i*temp1.num_rows+i] = 1;
-	}
+	SGMatrix<float64_t> temp2(kernel_train_matrix.num_rows,
+	kernel_train_matrix.num_cols);
 	
-	for(int i = 0; i < temp2.num_rows; i++)
-	{
-	     temp2[i*temp2.num_rows+i] = 1;
-	}
+	SGVector<float64_t> diagonal(temp1.num_rows);
+	CMath::fill_vector(diagonal.vector, temp1.num_rows, 1.0);
+	
+	
+	CMath::create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
+	CMath::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
 	
 	SGVector< float64_t > result_vector(m_labels->get_num_labels());
 	SGVector< float64_t > label_vector = m_labels->get_labels();
 	
-	/* We wish to calculate K(X_test, X_train)*(K(X_train, X_train)+sigma^(2)*I)^-1 * labels
+	/* We wish to calculate
+	 * K(X_test, X_train)*(K(X_train, X_train)+sigma^(2)*I)^-1 * labels
 	 * for mean predictions.
 	 */
 	
 	//Calculate first (K(X_train, X_train)+sigma*I)
-	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, kernel_train_matrix.num_rows, 
-		    temp2.num_cols, 1.0, kernel_train_matrix.matrix, kernel_train_matrix.num_cols, 
-		    temp2.matrix, temp2.num_cols, m_sigma*m_sigma, temp1.matrix, temp1.num_cols);
-	
+	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, 
+		    kernel_train_matrix.num_rows, temp2.num_cols, 1.0, 
+		    kernel_train_matrix.matrix, kernel_train_matrix.num_cols,
+		    temp2.matrix, temp2.num_cols, m_sigma*m_sigma, 
+		    temp1.matrix, temp1.num_cols);
 	
 	//Take inverse of (K(X_train, X_train)+sigma*I)
 	CMath::inverse(temp1);
 	
-	//Then multiply K(X_test, X_train) by (K(X_train, X_train) + sigma*I)^-1)
-	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, kernel_test_matrix.num_rows, 
-		    temp1.num_cols, 1.0, kernel_test_matrix.matrix, kernel_test_matrix.num_cols, 
-		    temp1.matrix, temp1.num_cols, 0.0, temp2.matrix, temp2.num_cols);
+	//Then multiply K(X_test, X_train) by 
+	//(K(X_train, X_train) + sigma*I)^-1)
+	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, 
+		    kernel_test_matrix.num_rows,  temp1.num_cols, 1.0, 
+		    kernel_test_matrix.matrix, kernel_test_matrix.num_cols, 
+		    temp1.matrix, temp1.num_cols, 0.0, temp2.matrix, 
+		    temp2.num_cols);
 	
 	//Finally multiply result by labels to obtain mean predictions on training
 	//examples	
-	cblas_dgemv(CblasColMajor, CblasNoTrans, temp1.num_rows, m_labels->get_num_labels(), 1.0, 
-		    temp1.matrix, temp1.num_cols, label_vector.vector,   1, 0.0, result_vector.vector, 
-		    1);
+	cblas_dgemv(CblasColMajor, CblasNoTrans, temp1.num_rows, 
+		    m_labels->get_num_labels(), 1.0, temp1.matrix, 
+		    temp1.num_cols, label_vector.vector,   1, 0.0, 
+		    result_vector.vector, 1);
 	
 	CLabels* result = new CLabels(result_vector);
 		
 	kernel_train_matrix.destroy_matrix();
 	kernel_test_matrix.destroy_matrix();
 	temp2.destroy_matrix();
-	temp1.destroy_matrix();  
-	//result_vector.destroy_vector();
+	temp1.destroy_matrix();
+	diagonal.destroy_vector();
 	
 	return result;
 }
