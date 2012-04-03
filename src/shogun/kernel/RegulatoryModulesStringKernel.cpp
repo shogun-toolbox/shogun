@@ -216,10 +216,12 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 
 void CRegulatoryModulesStringKernel::register_params()
 {
-	m_parameters->add(&width, "width", "the width of Gaussian kernel part");
-	m_parameters->add(&degree, "degree", "the degree of weighted degree kernel part");
-	m_parameters->add(&shift, "shift", "the shift of weighted degree with shifts kernel part");
-	m_parameters->add(&window, "window", "the size of window around motifs");
+	SG_ADD(&width, "width", "the width of Gaussian kernel part", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "the degree of weighted degree kernel part",
+	    MS_AVAILABLE);
+	SG_ADD(&shift, "shift",
+	    "the shift of weighted degree with shifts kernel part", MS_AVAILABLE);
+	SG_ADD(&window, "window", "the size of window around motifs", MS_AVAILABLE);
 	m_parameters->add_vector((CSGObject***)&motif_positions_lhs, &alen, "motif_positions_lhs", "the matrix of motif positions from sequences left-hand side");
 	m_parameters->add_vector((CSGObject***)&motif_positions_rhs, &blen, "motif_positions_rhs", "the matrix of motif positions from sequences right-hand side");
 	m_parameters->add_vector(&position_weights, &degree, "position_weights", "scaling weights in window");

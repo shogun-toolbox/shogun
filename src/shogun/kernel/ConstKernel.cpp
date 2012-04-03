@@ -52,5 +52,6 @@ bool CConstKernel::init(CFeatures* l, CFeatures* r)
 void CConstKernel::init()
 {
 	const_value=1.0;
-	m_parameters->add(&const_value, "const_value", "Value for kernel elements.");
+	SG_ADD(&const_value, "const_value", "Value for kernel elements.",
+	    MS_AVAILABLE);
 }

@@ -7,7 +7,7 @@ label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
 
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat,label_traindat,2.2,1,1e-5]]
 
-def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
+def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine, ONE_VS_REST_STRATEGY, ONE_VS_ONE_STRATEGY
 
@@ -27,4 +27,4 @@ def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=te
 
 if __name__=='__main__':
 	print 'MulticlassMachine'
-	classifier_multiclassmachine_modular(*parameter_list[0])
+	classifier_multiclasslinearmachine_modular(*parameter_list[0])

@@ -1947,16 +1947,17 @@ void CWeightedDegreePositionStringKernel::init()
 	m_parameters->add_vector(&shift, &shift_len,
 			"shift",
 			"Shift Vector.");
-	m_parameters->add(&mkl_stepsize, "mkl_stepsize", "MKL step size.");
-	m_parameters->add(&degree, "degree", "Order of WD kernel.");
-	m_parameters->add(&max_mismatch, "max_mismatch",
-			"Number of allowed mismatches.");
-	m_parameters->add(&block_computation, "block_computation",
-			"If block computation shall be used.");
-	m_parameters->add((machine_int_t*) &type, "type",
-			"WeightedDegree kernel type.");
-	m_parameters->add(&which_degree, "which_degree",
-			"Unqueal -1 if just a single degree is selected.");
-	m_parameters->add((CSGObject**) &alphabet, "alphabet",
-			"Alphabet of Features.");
+	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);
+	SG_ADD(&max_mismatch, "max_mismatch",
+			"Number of allowed mismatches.", MS_AVAILABLE);
+	SG_ADD(&block_computation, "block_computation",
+			"If block computation shall be used.", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &type, "type",
+			"WeightedDegree kernel type.", MS_AVAILABLE);
+	SG_ADD(&which_degree, "which_degree",
+			"The selected degree. All degrees are used by default (for value -1).",
+			MS_AVAILABLE);
+	SG_ADD((CSGObject**) &alphabet, "alphabet",
+			"Alphabet of Features.", MS_NOT_AVAILABLE);
 }

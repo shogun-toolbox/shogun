@@ -586,6 +586,9 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 
 void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
 {
+	if ( !kernel )
+		SG_ERROR("The kernel is not initialized\n");
+
 	/* init kernel with data */
 	kernel->init(features, features);
 
