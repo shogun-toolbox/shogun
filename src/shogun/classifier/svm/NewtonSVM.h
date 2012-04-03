@@ -18,6 +18,7 @@
 
 namespace shogun
 {
+#ifdef HAVE_LAPACK
 /** @brief class NewtonSVM */
 class CNewtonSVM : public CLinearMachine
 {
@@ -98,6 +99,7 @@ class CNewtonSVM : public CLinearMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+	private:
 		void obj_fun_linear(float64_t* weights, float64_t* out, float64_t* obj,
 				int32_t* sv, int32_t* numsv, float64_t* grad);
 
@@ -113,5 +115,6 @@ class CNewtonSVM : public CLinearMachine
 		/** if bias is used */
 		bool use_bias;
 };
+#endif //HAVE_LAPACK
 }
-#endif
+#endif //_NEWTONSVM_H___
