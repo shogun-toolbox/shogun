@@ -78,7 +78,6 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	while(1)
 	{
 		iter++;
-		SG_SPRINT("Iteration no. %d\n",iter);
 
 		if(iter>num_iter)
 		{
