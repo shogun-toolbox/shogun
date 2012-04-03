@@ -23,24 +23,24 @@ class SPE_COVERTREE_POINT
 {
 public:
 
-	SPE_COVERTREE_POINT(int32_t index, const SGMatrix<float64_t>& dmatrix)
+	SPE_COVERTREE_POINT(int32_t index, CDistance* specp_distance)
 	{
-		point_index = index;
-		distance_matrix = dmatrix;
+		m_point_index = index;
+		m_distance = specp_distance;
 	}
 
 	inline double distance(const SPE_COVERTREE_POINT& p) const
 	{
-		return distance_matrix[point_index*distance_matrix.num_rows+p.point_index];
+		return m_distance->distance(m_point_index, p.m_point_index);
 	}
 
 	inline bool operator==(const SPE_COVERTREE_POINT& p) const
 	{
-		return (p.point_index==point_index);
+		return (p.m_point_index == m_point_index);
 	}
 
-	int32_t point_index;
-	SGMatrix<float64_t> distance_matrix;
+	int32_t m_point_index;
+	CDistance* m_distance;
 };
 
 CStochasticProximityEmbedding::CStochasticProximityEmbedding() : 
@@ -151,26 +151,22 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 	return (CFeatures*)embedding;
 }
 
-SGMatrix<int32_t> CStochasticProximityEmbedding::get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k)
+SGMatrix<int32_t> CStochasticProximityEmbedding::get_neighborhood_matrix(CDistance* distance, int32_t k, int32_t N, float64_t max_dist)
 {
 	int32_t i;
-	int32_t N = distance_matrix.num_rows;
-
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
-
-	float64_t max_dist = CMath::max(distance_matrix.matrix,N*N);
 
 	CoverTree<SPE_COVERTREE_POINT>* coverTree = new CoverTree<SPE_COVERTREE_POINT>(max_dist);
 
 	for (i=0; i<N; i++)
-		coverTree->insert(SPE_COVERTREE_POINT(i,distance_matrix));
+		coverTree->insert(SPE_COVERTREE_POINT(i, distance));
 
 	for (i=0; i<N; i++)
 	{
 		std::vector<SPE_COVERTREE_POINT> neighbors =
-		   coverTree->kNearestNeighbors(SPE_COVERTREE_POINT(i,distance_matrix),k+1);
+		   coverTree->kNearestNeighbors(SPE_COVERTREE_POINT(i, distance), k+1);
 		for (std::size_t m=1; m<unsigned(k+1); m++)
-			neighborhood_matrix[i*k+m-1] = neighbors[m].point_index;
+			neighborhood_matrix[i*k+m-1] = neighbors[m].m_point_index;
 	}
 
 	delete coverTree;
@@ -190,23 +186,28 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 		SG_ERROR("SPE only supports Euclidian distance, %s given\n", 
 				distance->get_name());
 
-	SGMatrix< float64_t > distance_matrix = distance->get_distance_matrix();
-	int32_t N = distance_matrix.num_rows;
+	// Get the number of features, assume that distance(features, features)
+	int32_t N = distance->get_num_vec_rhs();
 
-	// Normalize the distance matrix if global strategy used
+	// Look for the maximum distance (make the same assumption)
+	int32_t i, j, k;
+	float64_t max = 0.0, tmp = 0.0;
+	for ( i = 0 ; i < N ; ++i )
+		for ( j = 0 ; j < N ; ++j )
+			if ( ( tmp = distance->distance(i, j) ) > max )
+				max = tmp;
+
+	// Compute a normalizer to be used for the distances if global strategy selected
+	float64_t alpha = 0.0;
 	if ( m_strategy == SPE_GLOBAL )
-	{
-		float64_t alpha = 1.0 / CMath::max(distance_matrix.matrix, N*N) 
-					* CMath::sqrt(2.0);
-		CMath::scale_vector(alpha, distance_matrix.matrix, N*N);
-	}
+		alpha = 1.0 / max * CMath::sqrt(2.0);
 
 	// Compute neighborhood matrix if local strategy used
 	SGMatrix< int32_t > neighbors_mat;
 	if ( m_strategy == SPE_LOCAL )
 	{
 		SG_DEBUG("Computing neighborhood matrix\n");
-		neighbors_mat = get_neighborhood_matrix(distance_matrix, m_k);
+		neighbors_mat = get_neighborhood_matrix(distance, m_k, N, max);
 	}
 
 	// Initialize vectors in the embedded space randomly, Y is the short for
@@ -225,7 +226,6 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 	float32_t lambda = 1.0;
 
 	// Initialize variables to use in the main loop
-	int32_t i, j, k;
 	float64_t sum = 0.0;
 	index_t   idx1 = 0, idx2 = 0, idx = 0;
 
@@ -306,8 +306,14 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 		}
 
 		// Get the corresponding distances in the original space
+		
+		if ( m_strategy == SPE_LOCAL )
+			Rt.set_const(1);
+		else	// SPE_GLOBAL strategy used
+			Rt.set_const(alpha);
+
 		for ( j = 0 ; j < m_nupdates ; ++j )
-			Rt[j] = distance_matrix.matrix[ ind1[j]*N + ind2[j] ];
+			Rt[j] *= distance->distance( ind1[j], ind2[j] );
 
 		// Compute some terms for update
 
@@ -346,7 +352,6 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 	}
 
 	// Free memory
-	distance_matrix.destroy_matrix();
 	scale.destroy_vector();
 	D.destroy_vector();
 	Yd.destroy_matrix();
