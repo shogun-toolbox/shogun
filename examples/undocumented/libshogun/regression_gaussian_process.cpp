@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 {
 	init_shogun(&print_message);
 	
-	#ifdef HAVE_LAPACK
+#ifdef HAVE_LAPACK
 	
 	// create some data
 	float64_t* matrix = SG_MALLOC(float64_t, 6);
