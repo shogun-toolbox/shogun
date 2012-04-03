@@ -70,6 +70,7 @@ TARGETS = basic_minimal \
 		  converter_neighborhoodpreservingembedding \
 		  converter_linearlocaltangentspacealignment \
 		  converter_localitypreservingprojections \
+		  converter_stochasticproximityembedding \
 		  serialization_basic_tests \
 		  library_cover_tree \
 		  kernel_machine_train_locked \
