@@ -464,7 +464,8 @@ class CMath : public CSGObject
 		}
 		template <class T>
 		static void create_diagonal_matrix(T* matrix,T* v,int32_t size)
-		{	for(int32_t i=0;i<size;i++)
+		{	
+			for(int32_t i=0;i<size;i++)
 			{
 				for(int32_t j=0;j<size;j++)
 				{
