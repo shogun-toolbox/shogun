@@ -61,7 +61,7 @@ struct TParameter
 	 *
 	 * @param len_y desired y length of the data
 	 * @param len_x desired x length of the data
-	 * @new_cont_call whether new_cont should be called, if false, only scalar
+	 * @param new_cont_call whether new_cont should be called, if false, only scalar
 	 * non-sgobject data will be allocated (needed for migration)
 	 * */
 	void allocate_data_from_scratch(index_t len_y, index_t len_x,
@@ -102,7 +102,7 @@ struct TParameter
 	 * default */
 	bool m_delete_data;
 
-	/* TODO */
+	/** TODO */
 	bool m_was_allocated_from_scratch;
 
 private:

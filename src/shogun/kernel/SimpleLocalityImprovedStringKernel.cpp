@@ -231,9 +231,9 @@ void CSimpleLocalityImprovedStringKernel::init()
 	pyramid_weights=NULL;
 	num_pyramid_weights=0;
 
-	m_parameters->add(&length, "length", "Window Length.");
-	m_parameters->add(&inner_degree, "inner_degree", "Inner degree.");
-	m_parameters->add(&outer_degree, "outer_degree", "Outer degree.");
+	SG_ADD(&length, "length", "Window Length.", MS_AVAILABLE);
+	SG_ADD(&inner_degree, "inner_degree", "Inner degree.", MS_AVAILABLE);
+	SG_ADD(&outer_degree, "outer_degree", "Outer degree.", MS_AVAILABLE);
 
 	m_parameters->add_vector(&pyramid_weights, &num_pyramid_weights,
 			"pyramid_weights", "Pyramid weights.");

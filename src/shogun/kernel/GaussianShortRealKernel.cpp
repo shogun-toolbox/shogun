@@ -69,5 +69,5 @@ float64_t CGaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CGaussianShortRealKernel::register_params()
 {
-	m_parameters->add(&width, "width", "kernel width");
+	SG_ADD(&width, "width", "kernel width", MS_AVAILABLE);
 }

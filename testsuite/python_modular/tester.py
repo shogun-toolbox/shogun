@@ -34,17 +34,26 @@ def compare(a, b, tolerance):
 
 	return a == b
 
-def compare_dbg(a, b):
+def compare_dbg(a, b, tolerance):
 	if not typecheck(a,b):
 		print "Type mismatch (type(a)=%s vs type(b)=%s)" % (str(type(a)),str(type(b)))
 		return False
 
 	if type(a) == numpy.ndarray:
-		if numpy.all(a == b):
-			return True
+		if tolerance:
+			if numpy.max(numpy.abs(a - b)) < tolerance:
+				return True
+			else:
+				print "Numpy Array mismatch > max_tol"
+				print a-b
+				return False
 		else:
-			print "Numpy Array mismatch"
-			print a-b
+			if numpy.all(a == b):
+				return True
+			else:
+				print "Numpy Array mismatch"
+				print a-b
+				return False
 	elif isinstance(a, modshogun.SGObject):
 		if pickle.dumps(a) == pickle.dumps(b):
 			return True
@@ -56,7 +65,7 @@ def compare_dbg(a, b):
 			print "Length mismatch (len(a)=%d vs len(b)=%d)" % (len(a), len(b))
 			return False
 		for obj1, obj2 in zip(a,b):
-			if not compare_dbg(obj1, obj2):
+			if not compare_dbg(obj1, obj2, tolerance):
 				return False
 		return True
 
@@ -68,18 +77,18 @@ def compare_dbg(a, b):
 		print "b", b
 		return False
 
-def tester(tests, cmp_method, tolerance, failures):
+def tester(tests, cmp_method, tolerance, failures, missing):
 	for t in tests:
 		try:
 			mod, mod_name = get_test_mod(t)
+			n=len(mod.parameter_list)
 		except TypeError:
 			continue
 		except Exception, e:
-			print e
+			print "%-60s ERROR (%s)" % (t,e)
 			continue
 		fname = ""
 
-		n=len(mod.parameter_list)
 		for i in xrange(n):
 			fname = get_fname(mod_name, i)
 			setting_str = "%s setting %d/%d" % (t,i+1,n)
@@ -89,22 +98,19 @@ def tester(tests, cmp_method, tolerance, failures):
 
 				try:
 					if cmp_method(a,b,tolerance):
-						if not failures:
+						if not failures and not missing:
 							print "%-60s OK" % setting_str
 					else:
-						print "%-60s ERROR" % setting_str
+						if not missing:
+							print "%-60s ERROR" % setting_str
 				except Exception, e:
 					print setting_str, e
-
-					import pdb
-					pdb.set_trace()
 			except IOError, e:
 				if not failures:
 					print "%-60s NO TEST" % (setting_str)
 			except Exception, e:
-				print "%-60s EXCEPTION %s" % (setting_str,e)
-				pass
-
+				if not missing:
+					print "%-60s EXCEPTION %s" % (setting_str,e)
 
 if __name__=='__main__':
 	from optparse import OptionParser
@@ -113,6 +119,8 @@ if __name__=='__main__':
 				help="detailed debug output of objects that don't match")
 	op.add_option("-f", "--failures", action="store_true", default=False,
 				help="show only failures")
+	op.add_option("-m", "--missing", action="store_true", default=False,
+				help="show only missing tests")
 	op.add_option("-t", "--tolerance", action="store", default=None,
 	              help="tolerance used to estimate accuracy")
 
@@ -123,4 +131,4 @@ if __name__=='__main__':
 	else:
 		cmp_method=compare
 	tests = setup_tests(args)
-	tester(tests, cmp_method, opts.tolerance, opts.failures)
+	tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing)

@@ -413,7 +413,8 @@ void CHistogramWordStringKernel::init()
 	sum_m2_s2=0;
 	initialized=false;
 
-	m_parameters->add(&initialized, "initialized", "if kernel is initalized");
+	SG_ADD(&initialized, "initialized", "If kernel is initalized.",
+	    MS_NOT_AVAILABLE);
 	m_parameters->add_vector(&plo_lhs, &num_lhs, "plo_lhs");
 	m_parameters->add_vector(&plo_rhs, &num_rhs, "plo_rhs");
 	m_parameters->add_vector(&ld_mean_lhs, &num_lhs, "ld_mean_lhs");
@@ -423,7 +424,8 @@ void CHistogramWordStringKernel::init()
 	m_parameters->add_vector(&mean, &num_params2, "mean");
 	m_parameters->add_vector(&variance, &num_params2, "variance");
 
-	m_parameters->add((CSGObject**) &estimate, "estimate", "Plugin Estimate.");
+	SG_ADD((CSGObject**) &estimate, "estimate", "Plugin Estimate.",
+	    MS_NOT_AVAILABLE);
 }
 
 #ifdef DEBUG_HWSK_COMPUTATION

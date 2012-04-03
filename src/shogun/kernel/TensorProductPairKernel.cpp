@@ -79,5 +79,5 @@ float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CTensorProductPairKernel::register_params()
 {
-	m_parameters->add((CSGObject**)&subkernel, "subkernel", "the subkernel");
+	SG_ADD((CSGObject**)&subkernel, "subkernel", "the subkernel", MS_AVAILABLE);
 }

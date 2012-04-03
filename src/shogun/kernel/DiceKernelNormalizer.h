@@ -38,9 +38,9 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 							  "K(x,x) for left hand side examples.");
 			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
 							  "K(x,x) for right hand side examples.");
-			m_parameters->add(&use_optimized_diagonal_computation,
+			SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
-					"flat if optimized diagonal computation is used");
+					"flat if optimized diagonal computation is used", MS_NOT_AVAILABLE);
 		}
 
 		/** default destructor */

@@ -60,6 +60,6 @@ void CSigmoidKernel::init()
 	gamma=0.0;
 	coef0=0.0;
 
-	m_parameters->add(&gamma, "gamma", "Gamma.");
-	m_parameters->add(&coef0, "coef0", "Coefficient 0.");
+	SG_ADD(&gamma, "gamma", "Gamma.", MS_AVAILABLE);
+	SG_ADD(&coef0, "coef0", "Coefficient 0.", MS_AVAILABLE);
 }

@@ -44,10 +44,10 @@ void CKernelPCA::init()
 	m_transformation_matrix = SGMatrix<float64_t>(NULL, 0, 0, false);
 	m_bias_vector = SGVector<float64_t>(NULL, 0, false);
 
-	m_parameters->add(&m_transformation_matrix, "transformation matrix",
-	                  "matrix used to transform data");
-	m_parameters->add(&m_bias_vector, "bias vector",
-	                  "bias vector used to transform data");
+	SG_ADD(&m_transformation_matrix, "transformation matrix",
+      "matrix used to transform data", MS_NOT_AVAILABLE);
+	SG_ADD(&m_bias_vector, "bias vector",
+      "bias vector used to transform data", MS_NOT_AVAILABLE);
 }
 
 void CKernelPCA::cleanup()
