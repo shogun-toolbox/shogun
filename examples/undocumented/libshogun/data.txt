@@ -1,0 +1,14 @@
+0	low	big	1	1
+0	low	big	1	2
+1	middle	big	1	1
+1	high	medium	1	1
+1	high	small	2	1
+0	high	small	2	2
+1	middle	small	2	2
+0	low	medium	1	1
+1	low	small	2	1
+1	high	medium	2	1
+1	low	medium	2	2
+1	middle	medium	1	2
+1	middle	big	2	1
+0	high	medium	1	2
