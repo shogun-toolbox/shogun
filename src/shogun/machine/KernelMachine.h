@@ -50,15 +50,15 @@ class CKernelMachine : public CMachine
 		/** default constructor */
 		CKernelMachine();
 
-        /** Convenience constructor to initialize a trained kernel
-         * machine
-         *
-         * @param k kernel
-         * @param alphas vector of alpha weights
-         * @param svs indices of examples, i.e. i's for x_i
-         * @param b bias term
-         */
-        CKernelMachine(CKernel* k, SGVector<float64_t> alphas, SGVector<int32_t> svs, float64_t b);
+		/** Convenience constructor to initialize a trained kernel
+		 * machine
+		 *
+		 * @param k kernel
+		 * @param alphas vector of alpha weights
+		 * @param svs indices of examples, i.e. i's for x_i
+		 * @param b bias term
+		 */
+		CKernelMachine(CKernel* k, SGVector<float64_t> alphas, SGVector<int32_t> svs, float64_t b);
 
 		/** copy constructor
 		 * @param machine machine having parameters to copy
