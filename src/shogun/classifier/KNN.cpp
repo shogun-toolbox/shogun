@@ -13,10 +13,35 @@
 #include <shogun/classifier/KNN.h>
 #include <shogun/features/Labels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/CoverTree.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
+
+class KNN_COVERTREE_POINT
+{
+public:
+
+	KNN_COVERTREE_POINT(int32_t index, CDistance* knncp_distance)
+	{
+		m_point_index = index;
+		m_distance = knncp_distance;
+	}
+
+	inline double distance(const KNN_COVERTREE_POINT& p) const
+	{
+		return m_distance->distance(m_point_index, p.m_point_index);
+	}
+
+	inline bool operator==(const KNN_COVERTREE_POINT& p) const
+	{
+		return (p.m_point_index == m_point_index);
+	}
+
+	int32_t m_point_index;
+	CDistance* m_distance;
+};
 
 CKNN::CKNN()
 : CDistanceMachine()
@@ -323,8 +348,31 @@ bool CKNN::save(FILE* dstfile)
 
 SGMatrix<int32_t> CKNN::get_neighborhood_matrix(int32_t N)
 {
-	//TODO
-	return SGMatrix<int32_t>();
+	int32_t i, j;
+	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
+
+	// Look for the maximum distance, assume that distance(features, features)
+	float64_t max_dist = 0.0;
+	for (i=0; i<N; i++)
+		for (j=i+1; j<N; j++)
+			max_dist = CMath::max(max_dist, distance->distance(i, j));
+
+	CoverTree<KNN_COVERTREE_POINT>* coverTree = new CoverTree<KNN_COVERTREE_POINT>(max_dist);
+
+	for (i=0; i<N; i++)
+		coverTree->insert(KNN_COVERTREE_POINT(i, distance));
+
+	for (i=0; i<N; i++)
+	{
+		std::vector<KNN_COVERTREE_POINT> neighbors =
+			coverTree->kNearestNeighbors(KNN_COVERTREE_POINT(i, distance), m_k+1);
+		for (std::size_t m=1; m<unsigned(m_k+1); m++)
+			neighborhood_matrix[i*m_k+m-1] = neighbors[m].m_point_index;
+	}
+
+	delete coverTree;
+
+	return SGMatrix<int32_t>(neighborhood_matrix, m_k, N);
 }
 
 void CKNN::store_model_features()
