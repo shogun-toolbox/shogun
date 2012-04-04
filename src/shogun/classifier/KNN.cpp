@@ -34,9 +34,9 @@ CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
 	ASSERT(d);
 	ASSERT(trainlab);
 
-    set_distance(d);
-    set_labels(trainlab);
-    train_labels.vlen=trainlab->get_num_labels();
+	set_distance(d);
+	set_labels(trainlab);
+	train_labels.vlen=trainlab->get_num_labels();
 }
 
 void CKNN::init()
@@ -47,11 +47,16 @@ void CKNN::init()
 
 	m_k=3;
 	m_q=1.0;
+	m_use_covertree=false;
 	num_classes=0;
 
-	m_parameters->add(&m_k, "k", "Parameter k");
-	m_parameters->add(&m_q, "q", "Parameter q");
-	m_parameters->add(&num_classes, "num_classes", "Number of classes");
+	/** TODO not really sure here if these guys should be MS_AVAILABLE or 
+	 *  MS_NOT_AVAILABLE
+	 */
+	SG_ADD(&m_k, "m_k", "Parameter k", MS_AVAILABLE);
+	SG_ADD(&m_q, "m_q", "Parameter q", MS_AVAILABLE);
+	SG_ADD(&m_use_covertree, "m_use_covertree", "Parameter use_covertree", MS_NOT_AVAILABLE);
+	SG_ADD(&num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
 }
 
 CKNN::~CKNN()
@@ -314,6 +319,12 @@ bool CKNN::save(FILE* dstfile)
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
+}
+
+SGMatrix<int32_t> CKNN::get_neighborhood_matrix(int32_t N)
+{
+	//TODO
+	return SGMatrix<int32_t>();
 }
 
 void CKNN::store_model_features()

@@ -144,6 +144,19 @@ class CKNN : public CDistanceMachine
 		 */
 		inline float64_t get_q() { return m_q; }
 
+		/* set whether to use cover trees for fast KNN
+		 * @param use_covertree
+		 */
+		inline void set_use_covertree(bool use_covertree)
+		{
+			m_use_covertree = use_covertree;
+		}
+
+		/** get whether to use cover trees for fast KNN
+		 * @return use_covertree parameter
+		 */
+		inline bool get_use_covertree() const { return m_use_covertree; }
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KNN"; }
 
@@ -174,6 +187,13 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+		/** constructs neighborhood matrix by distance
+		 * @param N number of features
+		 * @return matrix containing indexes of neighbors of i-th vector in 
+		 * i-th column
+		 */
+		virtual SGMatrix<int32_t> get_neighborhood_matrix(int32_t N);
+
 	private:
 		void init();
 
@@ -183,6 +203,9 @@ class CKNN : public CDistanceMachine
 
 		/// parameter q of rank weighting
 		float64_t m_q;
+
+		/// parameter to enable cover tree support
+		bool m_use_covertree;
 
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;
