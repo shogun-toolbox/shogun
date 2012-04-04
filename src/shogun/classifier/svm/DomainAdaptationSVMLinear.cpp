@@ -94,19 +94,23 @@ bool CDomainAdaptationSVMLinear::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVMLinear::train_machine(CDotFeatures* train_data)
+bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 {
 
 	CDotFeatures* tmp_data;
 
 	if (train_data)
 	{
+		if (!train_data->has_property(FP_DOT))
+			SG_ERROR("DotFeatures expected\n");
+
 		if (m_labels->get_num_labels() != train_data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
-		tmp_data = train_data;
 
-	} else {
-
+		tmp_data = (CDotFeatures*) train_data;
+	}
+	else
+	{
 		tmp_data = features;
 	}
 
@@ -197,9 +201,8 @@ void CDomainAdaptationSVMLinear::set_train_factor(float64_t factor)
 }
 
 
-CLabels* CDomainAdaptationSVMLinear::apply(CDotFeatures* data)
+CLabels* CDomainAdaptationSVMLinear::apply(CFeatures* data)
 {
-
     ASSERT(presvm->get_bias()==0.0);
 
     int32_t num_examples = data->get_num_vectors();
@@ -208,7 +211,6 @@ CLabels* CDomainAdaptationSVMLinear::apply(CDotFeatures* data)
 
     if (presvm)
     {
-
         // recursive call if used on DomainAdaptationSVM object
         CLabels* out_presvm = presvm->apply(data);
 
@@ -219,12 +221,9 @@ CLabels* CDomainAdaptationSVMLinear::apply(CDotFeatures* data)
             float64_t out_combined = out_current->get_label(i) + B*out_presvm->get_label(i);
             out_current->set_label(i, out_combined);
         }
-
     }
 
-
     return out_current;
-
 }
 
 #endif //HAVE_LAPACK

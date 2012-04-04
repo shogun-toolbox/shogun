@@ -65,7 +65,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CDotFeatures* data);
+		virtual CLabels* apply(CFeatures* data);
 
 
 		/** returns SVM that is used as prior information
@@ -129,7 +129,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CDotFeatures* data=NULL);
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 

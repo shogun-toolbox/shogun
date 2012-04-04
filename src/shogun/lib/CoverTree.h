@@ -123,7 +123,7 @@ class CoverTree
 
  public:
 	/** base level of cover tree */
-    static const double base = 2.0;
+    static const double base;
 
     /**
      * Constructs a cover tree which begins with all points in points.
@@ -177,6 +177,9 @@ class CoverTree
     CoverTreeNode* getRoot() const;
 
 }; // CoverTree class
+
+template<class Point>
+const double CoverTree<Point>::base = 2.0;
 
 template<class Point>
 CoverTree<Point>::CoverTree(const double& maxDist,

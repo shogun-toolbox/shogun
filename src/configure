@@ -416,7 +416,7 @@ EOF
 	echocheck "C Compiler flags"
 	for opt in `echo $COMP_OPTS`
 	do
-		cc_check $opt && COMPFLAGS_C="$COMPFLAGS_C $opt"
+		cc_check -Werror $opt && COMPFLAGS_C="$COMPFLAGS_C $opt"
 	done
 	echores "$COMPFLAGS_C"
 
@@ -479,7 +479,7 @@ EOF
 	echocheck "C++ Compiler flags"
 	for opt in `echo $COMP_OPTS`
 	do
-		cxx_check $opt && COMPFLAGS_CPP="$COMPFLAGS_CPP $opt"
+		cxx_check -Werror $opt && COMPFLAGS_CPP="$COMPFLAGS_CPP $opt"
 	done
 	echores "$COMPFLAGS_CPP"
 

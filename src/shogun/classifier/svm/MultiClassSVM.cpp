@@ -187,8 +187,8 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 
 	if (!kernel)
 	{
-		SG_ERROR( "SVM can not proceed without kernel!\n");
-		return false ;
+		SG_ERROR("SVM can not proceed without kernel!\n");
+		return NULL;
 	}
 
 	if ( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs())
