@@ -230,7 +230,7 @@ class CMachine : public CSGObject
 		{
 			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "
 					"for %s\n", get_name());
-			return false;
+			return NULL;
 		}
 
 		/** TODO */
