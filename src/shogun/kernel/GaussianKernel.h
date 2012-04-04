@@ -126,6 +126,10 @@ class CGaussianKernel: public CDotKernel
 		{
 			return m_compact;
 		}
+		
+		#ifdef USE_OPENCL
+		virtual void ocl_compute(SGVector<int32_t> const & svs);
+		#endif
 
 	protected:
 		/** compute kernel function for features a and b

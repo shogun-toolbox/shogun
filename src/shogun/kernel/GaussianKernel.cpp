@@ -17,6 +17,9 @@
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
+#ifdef USE_OPENCL
+#include <shogun/opencl/kernels/svm/dot_kernels.h>
+#endif 
 using namespace shogun;
 
 CGaussianKernel::CGaussianKernel()
@@ -121,6 +124,20 @@ void CGaussianKernel::precompute_squared()
 		precompute_squared_helper(sq_rhs, (CDotFeatures*) rhs);
 }
 
+
+#ifdef USE_OPENCL
+void CGaussianKernel::ocl_compute(SGVector<int32_t> const & svs){
+	dynamic_cast<CDotFeatures*>(lhs)->enqueue_ocl_dot_program(ocl_kernel_matrix,svs,dynamic_cast<CDotFeatures*>(rhs));
+	viennacl::ocl::get_queue().finish();
+	viennacl::ocl::kernel & k = viennacl::ocl::get_kernel(shogun::ocl::svm::dot_kernels::program_name(lhs->get_feature_type()), "gaussian_kernel");
+	viennacl::ocl::enqueue(k(cl_double(width),
+				 viennacl::traits::handle(ocl_kernel_matrix), 
+					cl_uint(viennacl::traits::size1(ocl_kernel_matrix)),          cl_uint(viennacl::traits::size2(ocl_kernel_matrix)),
+					cl_uint(viennacl::traits::internal_size1(ocl_kernel_matrix)), cl_uint(viennacl::traits::internal_size2(ocl_kernel_matrix))));
+	viennacl::ocl::get_queue().finish();
+}
+#endif
+		
 void CGaussianKernel::init()
 {
 	set_width(1.0);

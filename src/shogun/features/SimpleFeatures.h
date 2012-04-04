@@ -21,6 +21,11 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/DataType.h>
 
+#ifdef USE_OPENCL
+#include <viennacl/matrix.hpp>
+#include <shogun/opencl/viennacl_compatibility.h>
+#endif
+
 namespace shogun {
 template<class ST> class CStringFeatures;
 template<class ST> class CSimpleFeatures;
@@ -64,6 +69,11 @@ class CDotFeatures;
  */
 template<class ST> class CSimpleFeatures: public CDotFeatures
 {
+	
+#ifdef USE_OPENCL
+	typedef typename make_vcl_compatible<ST>::Result GPU_ST;
+#endif
+
 public:
 	/** constructor
 	 *
@@ -107,7 +117,7 @@ public:
 	 * Any subset is removed
 	 */
 	void free_feature_matrix();
-
+	
 	/** free feature matrix and cache
 	 *
 	 * Any subset is removed
@@ -212,7 +222,11 @@ public:
 	 * @return matrix feature matrix
 	 */
 	SGMatrix<ST> get_feature_matrix();
-
+/*
+#ifdef USE_OPENCL
+	viennacl::matrix<GPU_ST,viennacl::column_major> & get_ocl_feature_cache();
+#endif*/
+	
 	/** steals feature matrix, i.e. returns matrix and
 	 * forget about it
 	 * subset is ignored
@@ -228,6 +242,7 @@ public:
 	 * @param matrix feature matrix to set
 	 */
 	void set_feature_matrix(SGMatrix<ST> matrix);
+	
 
 	/** get the pointer to the feature matrix
 	 * num_feat,num_vectors are returned by reference
@@ -239,7 +254,7 @@ public:
 	 * @return feature matrix
 	 */
 	ST* get_feature_matrix(int32_t &num_feat, int32_t &num_vec);
-
+	
 	/** get a transposed copy of the features
 	 *
 	 * possible with subset
@@ -274,7 +289,7 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 */
 	virtual void set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec);
-
+	
 	/** copy feature matrix
 	 * store copy of feature_matrix, where num_features is the
 	 * column offset, and columns are linear in memory
@@ -285,7 +300,7 @@ public:
 	 * @param src feature matrix to copy
 	 */
 	virtual void copy_feature_matrix(SGMatrix<ST> src);
-
+	
 	/** obtain simple features from other dotfeatures
 	 *
 	 * removes any subset before
@@ -386,6 +401,10 @@ public:
 	 */
 	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
 			int32_t vec_idx2);
+	
+#ifdef USE_OPENCL
+	virtual void enqueue_ocl_dot_program(viennacl::matrix<float64_t> & ocl_kernel_matrix,  SGVector<int32_t> const & vec_indices, CDotFeatures* df);
+#endif
 
 	/** compute dot product between vector1 and a dense vector
 	 *
@@ -544,6 +563,10 @@ protected:
 	 * above have the same sizes if feature_matrix != NULL
 	 * */
 	ST* feature_matrix;
+	
+// #ifdef USE_OPENCL
+// 	viennacl::matrix<GPU_ST,viennacl::column_major> ocl_feature_cache;
+// #endif
 
 	/** number of vectors in feature matrix */
 	int32_t feature_matrix_num_vectors;

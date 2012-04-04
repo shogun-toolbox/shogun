@@ -24,6 +24,10 @@
 #include <shogun/features/Features.h>
 #include <shogun/kernel/KernelNormalizer.h>
 
+#ifdef USE_OPENCL
+#include <viennacl/matrix.hpp>
+#endif
+
 namespace shogun
 {
 	class CFile;
@@ -757,7 +761,16 @@ class CKernel : public CSGObject
 		 * @param weights new subkernel weights
 		 */
 		virtual void set_subkernel_weights(SGVector<float64_t> weights);
-
+		
+#ifdef USE_OPENCL
+		virtual void ocl_compute(SGVector<int32_t> const & svs){ }
+		
+		viennacl::matrix<float64_t> & get_ocl_kernel_matrix()
+		{
+		  return ocl_kernel_matrix;
+		}
+#endif
+		
 	protected:
 		/** set property
 		 *
@@ -984,6 +997,10 @@ class CKernel : public CSGObject
 		KERNEL_CACHE kernel_cache;
 #endif //USE_SVMLIGHT
 
+#ifdef USE_OPENCL
+		viennacl::matrix<float64_t> ocl_kernel_matrix;
+#endif
+		
 		/// this *COULD* store the whole kernel matrix
 		/// usually not applicable / necessary to compute the whole matrix
 		KERNELCACHE_ELEM* kernel_matrix;

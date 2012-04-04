@@ -15,6 +15,10 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
 
+#ifdef USE_OPENCL
+#include <shogun/opencl/kernels/svm/dot_kernels.h>
+#endif 
+
 namespace shogun
 {
 /** @brief Template class DotKernel is the base class for kernels working on
@@ -32,9 +36,10 @@ class CDotKernel : public CKernel
 		/** default constructor
 		 *
 		 */
-		CDotKernel() : CKernel() {}
+		CDotKernel() : CKernel() {
+		}
 
-		/** constructor
+			/** constructor
 		 *
 		 * @param cachesize cache size
 		 */
@@ -74,6 +79,11 @@ class CDotKernel : public CKernel
 				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CDotFeatures*) l)->get_dim_feature_space(),((CDotFeatures*) r)->get_dim_feature_space());
 			}
+			
+			#ifdef USE_OPENCL
+			shogun::ocl::svm::dot_kernels::init(l->get_feature_type());
+			#endif
+			
 			return true;
 		}
 
@@ -108,6 +118,13 @@ class CDotKernel : public CKernel
 		 * @return kernel type
 		 */
 		virtual EKernelType get_kernel_type()=0 ;
+		
+		#ifdef USE_OPENCL
+		/**
+		 * I know, not generic enough, but still it provides a basis for further optimizations
+		 */
+		virtual void ocl_compute(SGVector<int32_t> svs){ }
+		#endif
 
 	protected:
 		/** compute kernel function for features a and b
