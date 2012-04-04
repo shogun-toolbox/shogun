@@ -164,7 +164,7 @@ SGMatrix<int32_t> CStochasticProximityEmbedding::get_neighborhood_matrix(CDistan
 	for (i=0; i<N; i++)
 	{
 		std::vector<SPE_COVERTREE_POINT> neighbors =
-		   coverTree->kNearestNeighbors(SPE_COVERTREE_POINT(i, distance), k+1);
+			coverTree->kNearestNeighbors(SPE_COVERTREE_POINT(i, distance), k+1);
 		for (std::size_t m=1; m<unsigned(k+1); m++)
 			neighborhood_matrix[i*k+m-1] = neighbors[m].m_point_index;
 	}
@@ -193,7 +193,7 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 	int32_t i, j, k;
 	float64_t max = 0.0, tmp = 0.0;
 	for ( i = 0 ; i < N ; ++i )
-		for ( j = 0 ; j < N ; ++j )
+		for ( j = i+1 ; j < N ; ++j )
 			if ( ( tmp = distance->distance(i, j) ) > max )
 				max = tmp;
 
