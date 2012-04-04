@@ -19,40 +19,44 @@
 using namespace shogun;
 using namespace std;
 
-static void unique_labels(CLabels* labels, vector<int32_t>& result)
+vector<int32_t> CClusteringEvaluation::unique_labels(CLabels* labels)
 {
-	set<int32_t> uniq_lbl;
+	std::set<int32_t> uniq_lbl;
 	for (int32_t i=labels->get_num_labels()-1; i >= 0; --i)
 	{
 		uniq_lbl.insert(labels->get_int_label(i));
 	}
-	result.assign(uniq_lbl.begin(), uniq_lbl.end());
+	return std::vector<int32_t>(uniq_lbl.begin(), uniq_lbl.end());
 }
 
-static int32_t find_mismatch_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2)
+int32_t CClusteringEvaluation::find_match_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2)
 {
-	int32_t mismatch_count=0;
+	int32_t match_count=0;
 	for (int32_t i=l1.vlen-1; i >= 0; --i)
 	{
-		if (l1[i] != m1 || l2[i] != m2)
-			mismatch_count++;
+		if (l1[i] == m1 && l2[i] == m2)
+			match_count++;
 	}
 
-	return mismatch_count;
+	return match_count;
+}
+
+int32_t CClusteringEvaluation::find_mismatch_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2)
+{
+	return l1.vlen - find_match_count(l1, m1, l2, m2);
 }
 
 void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
-	vector<int32_t> label_p, label_g;
-	unique_labels(predicted, label_p);
-	unique_labels(ground_truth, label_g);
+	std::vector<int32_t> label_p=unique_labels(predicted);
+	std::vector<int32_t> label_g=unique_labels(ground_truth);
 
 	SGVector<int32_t> predicted_ilabels=predicted->get_int_labels();
 	SGVector<int32_t> groundtruth_ilabels=ground_truth->get_int_labels();
 
 	int32_t n_class=max(label_p.size(), label_g.size());
-	SGMatrix<double> G(n_class, n_class);
+	SGMatrix<float64_t> G(n_class, n_class);
 	G.zero();
 
 	for (size_t i=0; i < label_g.size(); ++i)
@@ -67,7 +71,7 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	Munkres munkres_solver(G);
 	munkres_solver.solve();
 
-	map<int32_t, int32_t> label_map;
+	std::map<int32_t, int32_t> label_map;
 	for (size_t i=0; i < label_p.size(); ++i)
 	{
 		for (size_t j=0; j < label_g.size(); ++j)
