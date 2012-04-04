@@ -14,4 +14,5 @@
 #include <shogun/converter/LocalityPreservingProjections.h>
 #include <shogun/converter/MultidimensionalScaling.h>
 #include <shogun/converter/Isomap.h>
+#include <shogun/converter/StochasticProximityEmbedding.h>
 %}

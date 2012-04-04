@@ -22,6 +22,7 @@
 %rename(LocalityPreservingProjections) CLocalityPreservingProjections;
 %rename(MultidimensionalScaling) CMultidimensionalScaling;
 %rename(Isomap) CIsomap;
+%rename(StochasticProximityEmbedding) CStochasticProximityEmbedding;
 
 %newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
@@ -42,4 +43,5 @@
 %include <shogun/converter/LocalityPreservingProjections.h>
 %include <shogun/converter/MultidimensionalScaling.h>
 %include <shogun/converter/Isomap.h>
+%include <shogun/converter/StochasticProximityEmbedding.h>
 
