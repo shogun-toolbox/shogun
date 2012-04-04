@@ -43,6 +43,29 @@ public:
 	 * @return evaluation result
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
+protected:
+	/** get a vector of unique labels occured
+	 *
+	 * @param labels labels to be investigated
+	 * @return a vector of unique labels
+	 */
+	std::vector<int32_t> unique_labels(CLabels* labels);
+
+	/** find number of matches in the two labels sequence.
+	 *
+	 * For each index i, if l1[i] == m1 and l2[i] == m2, then we get a match.
+	 * @param l1 the first label sequence to be matched
+	 * @param m1 the first label to match
+	 * @param l2 the second label sequence to be matched
+	 * @param m2 the second label to match
+	 * @return number of matches
+	 */
+	int32_t find_match_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2);
+
+	/** find number of mismatches in the two labels sequence.
+	 * @see find_match_count
+	 */
+	int32_t find_mismatch_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2);
 };
 
 } // namespace shogun

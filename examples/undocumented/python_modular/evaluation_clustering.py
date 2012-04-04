@@ -5,6 +5,7 @@ from shogun.Distance import EuclidianDistance
 from shogun.Features import RealFeatures
 from shogun.Features import Labels
 from shogun.Evaluation import ClusteringAccuracy
+from shogun.Evaluation import ClusteringMutualInformation
 
 def get_dataset():
     from os.path import exists
@@ -62,6 +63,18 @@ if __name__ == '__main__':
     AccuracyEval = ClusteringAccuracy()
     AccuracyEval.best_map(gnd_hat, gnd)
 
+    with open('/tmp/foo.txt', 'w') as ous:
+        for i in range(gnd_hat.get_num_labels()):
+            ous.write('%d ' % gnd_hat.get_int_label(i))
+        ous.write('\n')
+        for i in range(gnd.get_num_labels()):
+            ous.write('%d ' % gnd.get_int_label(i))
+        ous.write('\n')
+
     accuracy = AccuracyEval.evaluate(gnd_hat, gnd)
     print('Clustering accuracy = %.4f' % accuracy)
+
+    MIEval = ClusteringMutualInformation()
+    mutual_info = MIEval.evaluate(gnd_hat, gnd)
+    print('Clustering mutual information = %.4f' % mutual_info)
 
