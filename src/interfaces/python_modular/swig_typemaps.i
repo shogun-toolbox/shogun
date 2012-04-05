@@ -50,7 +50,7 @@ static const char* typecode_string(PyObject* py_obj) {
 #endif  
 
 #if PY_VERSION_HEX >= 0x03000000
-  if (PyLong_Check(    py_obj)) return "long"		 ;
+  if (PyLong_Check(    py_obj)) return "int"		 ;
 #else
   if (PyInt_Check(     py_obj)) return "int"         ;
 #endif  
@@ -160,29 +160,62 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
 static int is_pyvector(PyObject* obj, int typecode)
 {
-    return  ((obj && !PyList_Check(obj)) &&
-            (
-             is_array(obj) &&
-             array_dimensions(obj)==1 &&
-             array_type(obj) == typecode
-            )) ? 1 : 0;
+	if((obj && !PyList_Check(obj)) && (is_array(obj) && array_dimensions(obj)==1))
+	{
+		if(array_type(obj) != typecode && typecode == NPY_INT32)
+		{
+			if(PyArray_ISSIGNED(obj) && PyArray_ITEMSIZE(obj)==SIZEOF_INT)
+			{
+				return 1;
+			}
+		}
+		else
+		{
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 static int is_pymatrix(PyObject* obj, int typecode)
 {
-    return ((obj && !PyList_Check(obj)) &&
-                (is_array(obj) &&
-                 array_dimensions(obj)==2 &&
-                 array_type(obj) == typecode
-                )) ? 1 : 0;
+	if((obj && !PyList_Check(obj)) && (is_array(obj) && array_dimensions(obj)==2))
+	{
+		if(array_type(obj) != typecode && typecode == NPY_INT32)
+		{
+			if(PyArray_ISSIGNED(obj) && PyArray_ITEMSIZE(obj)==SIZEOF_INT)
+			{
+				return 1;
+			}
+		}
+		else
+		{
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 static int is_pyarray(PyObject* obj, int typecode)
 {
-    return ((obj && !PyList_Check(obj)) &&
-                (is_array(obj) &&
-                 array_type(obj) == typecode
-                )) ? 1 : 0;
+	if((obj && !PyList_Check(obj)) && is_array(obj))
+	{
+		if(array_type(obj) != typecode && typecode == NPY_INT32)
+		{
+			if(PyArray_ISSIGNED(obj) && PyArray_ITEMSIZE(obj)==SIZEOF_INT)
+			{
+				return 1;
+			}
+		}
+		else
+		{
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 static int is_pysparse_matrix(PyObject* obj, int typecode)
@@ -779,6 +812,27 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 %}
 
 
+#ifdef PYTHON3
+%typemap(typecheck) const char* 
+{
+	$1 = PyUnicode_Check($input);
+}
+
+%typemap(in) const char* 
+{
+	if(PyUnicode_Check($input))
+	{
+    	$1 = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>($input)));
+	}
+	else { SWIG_fail; }
+}
+
+%typemap(freearg) const char* 
+{
+	// pass
+}
+#endif
+
 /* One dimensional input arrays */
 %define TYPEMAP_IN_SGVECTOR(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
@@ -803,11 +857,7 @@ TYPEMAP_IN_SGVECTOR(char,          NPY_STRING)
 TYPEMAP_IN_SGVECTOR(uint8_t,       NPY_UINT8)
 TYPEMAP_IN_SGVECTOR(int16_t,       NPY_INT16)
 TYPEMAP_IN_SGVECTOR(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_IN_SGVECTOR(int32_t,       NPY_INT)
-#else
 TYPEMAP_IN_SGVECTOR(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_IN_SGVECTOR(uint32_t,      NPY_UINT32)
 TYPEMAP_IN_SGVECTOR(int64_t,       NPY_INT64)
 TYPEMAP_IN_SGVECTOR(uint64_t,      NPY_UINT64)
@@ -837,11 +887,7 @@ TYPEMAP_OUT_SGVECTOR(char,          NPY_STRING)
 TYPEMAP_OUT_SGVECTOR(uint8_t,       NPY_UINT8)
 TYPEMAP_OUT_SGVECTOR(int16_t,       NPY_INT16)
 TYPEMAP_OUT_SGVECTOR(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_OUT_SGVECTOR(int32_t,       NPY_INT)
-#else
 TYPEMAP_OUT_SGVECTOR(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_OUT_SGVECTOR(uint32_t,      NPY_UINT32)
 TYPEMAP_OUT_SGVECTOR(int64_t,       NPY_INT64)
 TYPEMAP_OUT_SGVECTOR(uint64_t,      NPY_UINT64)
@@ -876,11 +922,7 @@ TYPEMAP_IN_SGMATRIX(char,          NPY_STRING)
 TYPEMAP_IN_SGMATRIX(uint8_t,       NPY_UINT8)
 TYPEMAP_IN_SGMATRIX(int16_t,       NPY_INT16)
 TYPEMAP_IN_SGMATRIX(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_IN_SGMATRIX(int32_t,       NPY_INT)
-#else
 TYPEMAP_IN_SGMATRIX(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_IN_SGMATRIX(uint32_t,      NPY_UINT32)
 TYPEMAP_IN_SGMATRIX(int64_t,       NPY_INT64)
 TYPEMAP_IN_SGMATRIX(uint64_t,      NPY_UINT64)
@@ -910,11 +952,7 @@ TYPEMAP_OUT_SGMATRIX(char,          NPY_STRING)
 TYPEMAP_OUT_SGMATRIX(uint8_t,       NPY_UINT8)
 TYPEMAP_OUT_SGMATRIX(int16_t,       NPY_INT16)
 TYPEMAP_OUT_SGMATRIX(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_OUT_SGMATRIX(int32_t,       NPY_INT)
-#else
 TYPEMAP_OUT_SGMATRIX(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_OUT_SGMATRIX(uint32_t,      NPY_UINT32)
 TYPEMAP_OUT_SGMATRIX(int64_t,       NPY_INT64)
 TYPEMAP_OUT_SGMATRIX(uint64_t,      NPY_UINT64)
@@ -950,11 +988,7 @@ TYPEMAP_INND(char,          NPY_STRING)
 TYPEMAP_INND(uint8_t,       NPY_UINT8)
 TYPEMAP_INND(int16_t,       NPY_INT16)
 TYPEMAP_INND(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_INND(int32_t,       NPY_INT)
-#else
 TYPEMAP_INND(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_INND(uint32_t,      NPY_UINT32)
 TYPEMAP_INND(int64_t,       NPY_INT64)
 TYPEMAP_INND(uint64_t,      NPY_UINT64)
@@ -987,11 +1021,7 @@ TYPEMAP_STRINGFEATURES_IN(char,          NPY_STRING)
 TYPEMAP_STRINGFEATURES_IN(uint8_t,       NPY_UINT8)
 TYPEMAP_STRINGFEATURES_IN(int16_t,       NPY_INT16)
 TYPEMAP_STRINGFEATURES_IN(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_STRINGFEATURES_IN(int32_t,       NPY_INT)
-#else
 TYPEMAP_STRINGFEATURES_IN(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_STRINGFEATURES_IN(uint32_t,      NPY_UINT32)
 TYPEMAP_STRINGFEATURES_IN(int64_t,       NPY_INT64)
 TYPEMAP_STRINGFEATURES_IN(uint64_t,      NPY_UINT64)
@@ -1020,11 +1050,7 @@ TYPEMAP_STRINGFEATURES_OUT(char,          NPY_STRING)
 TYPEMAP_STRINGFEATURES_OUT(uint8_t,       NPY_UINT8)
 TYPEMAP_STRINGFEATURES_OUT(int16_t,       NPY_INT16)
 TYPEMAP_STRINGFEATURES_OUT(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_STRINGFEATURES_OUT(int32_t,       NPY_INT)
-#else
 TYPEMAP_STRINGFEATURES_OUT(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_STRINGFEATURES_OUT(uint32_t,      NPY_UINT32)
 TYPEMAP_STRINGFEATURES_OUT(int64_t,       NPY_INT64)
 TYPEMAP_STRINGFEATURES_OUT(uint64_t,      NPY_UINT64)
@@ -1058,11 +1084,7 @@ TYPEMAP_SPARSEFEATURES_IN(char,          NPY_STRING)
 TYPEMAP_SPARSEFEATURES_IN(uint8_t,       NPY_UINT8)
 TYPEMAP_SPARSEFEATURES_IN(int16_t,       NPY_INT16)
 TYPEMAP_SPARSEFEATURES_IN(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_SPARSEFEATURES_IN(int32_t,       NPY_INT)
-#else
 TYPEMAP_SPARSEFEATURES_IN(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_SPARSEFEATURES_IN(uint32_t,      NPY_UINT32)
 TYPEMAP_SPARSEFEATURES_IN(int64_t,       NPY_INT64)
 TYPEMAP_SPARSEFEATURES_IN(uint64_t,      NPY_UINT64)
@@ -1096,11 +1118,7 @@ TYPEMAP_SPARSEFEATURES_OUT(char,          NPY_STRING)
 TYPEMAP_SPARSEFEATURES_OUT(uint8_t,       NPY_UINT8)
 TYPEMAP_SPARSEFEATURES_OUT(int16_t,       NPY_INT16)
 TYPEMAP_SPARSEFEATURES_OUT(uint16_t,      NPY_UINT16)
-#ifdef PYTHON3 // int -> long for python3
-TYPEMAP_SPARSEFEATURES_OUT(int32_t,       NPY_INT)
-#else
 TYPEMAP_SPARSEFEATURES_OUT(int32_t,       NPY_INT32)
-#endif
 TYPEMAP_SPARSEFEATURES_OUT(uint32_t,      NPY_UINT32)
 TYPEMAP_SPARSEFEATURES_OUT(int64_t,       NPY_INT64)
 TYPEMAP_SPARSEFEATURES_OUT(uint64_t,      NPY_UINT64)
