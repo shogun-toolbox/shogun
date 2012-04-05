@@ -15,6 +15,12 @@
 #include <string.h>
 #include <math.h>
 
+<<<<<<< HEAD
+=======
+//TEST
+#include "libbmrm.h"
+
+>>>>>>> 8f28ad3... BMRM work in progress
 #include <shogun/classifier/svm/libbmrm.h>
 #include <shogun/classifier/svm/libqp.h>
 
@@ -43,10 +49,17 @@ bmrm_return_value_T svm_bmrm_solver(
         uint32_t (*get_dim)(void*),
         void (*risk_function)(void*, float64_t*, float64_t*, float64_t*))
 {
+<<<<<<< HEAD
     bmrm_return_value_T bmrm = {0, 0, 0, 0, 0, 0};
     libqp_state_T qp_exitflag;
     float64_t *b, *beta, *diag_H, sq_norm_W;
     float64_t R, *subgrad, *A, QPSolverTolRel, rsum, C = 1.0;
+=======
+    bmrm_return_value bmrm = {0, 0, 0, 0, 0, 0};
+    libqp_state_T qp_exitflag;
+    float64_t *b, *beta, *diag_H, sq_norm_W;
+    float64_t R, *subgrad, *A, QPSolverTolRel, rsum;
+>>>>>>> 8f28ad3... BMRM work in progress
     uint32_t nDim;
     uint32_t *I;
     uint8_t S = 1;
@@ -85,8 +98,13 @@ bmrm_return_value_T svm_bmrm_solver(
     b = (float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
     if (b == NULL)
     {
+<<<<<<< HEAD
         bmrm.exitflag = -2;
         goto cleanup;
+=======
+        bmmr.exitflag = -2;
+        goto clenup;
+>>>>>>> 8f28ad3... BMRM work in progress
     }
 
     beta = (float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
@@ -159,7 +177,11 @@ bmrm_return_value_T svm_bmrm_solver(
             }
             for (uint32_t i = 0; i < bmrm.nCP - 1; i++)
             {
+<<<<<<< HEAD
                 H[LIBBMRM_INDEX(bmrm.nCP, i, BufSize)] = H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)];
+=======
+                H[LIBBMRM_INDEX(bmrm.nCP, i, BufSize)] = H[LIBBMRM_INDEX(i, bmrm.nCP)];
+>>>>>>> 8f28ad3... BMRM work in progress
             }
         }
         H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)] = 0.0;
@@ -172,7 +194,11 @@ bmrm_return_value_T svm_bmrm_solver(
         bmrm.nCP++;
 
         /* call QP solver */
+<<<<<<< HEAD
         qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, &C, I, &S, beta,
+=======
+        qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, 1.0, I, &S, beta,
+>>>>>>> 8f28ad3... BMRM work in progress
                                         bmrm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
 
         bmrm.qp_exitflag = qp_exitflag.exitflag;
@@ -191,6 +217,7 @@ bmrm_return_value_T svm_bmrm_solver(
         /* risk and subgradient computation */
         risk_function(data, &R, subgrad, W);
         LIBBMRM_MEMCPY(subgrad, A+bmrm.nCP*nDim, nDim*sizeof(float64_t));
+<<<<<<< HEAD
         b[bmrm.nCP] = -R;
         for (uint32_t j = 0; j < nDim; j++)
             b[bmrm.nCP] += subgrad[j]*W[j];
@@ -198,6 +225,15 @@ bmrm_return_value_T svm_bmrm_solver(
         sq_norm_W = 0;
         for (uint32_t j = 0; j < nDim; j++)
             sq_norm_W += W[j]*W[j];
+=======
+        b[bmrm.nCP] = R;
+        for (uint32_t j = 0; j < nDim; j++)
+            b[bmrm.nCP] -= subgrad[j]*W[j];
+
+        norm_W = 0;
+        for (uint32_t j = 0; j < nDim; j++)
+            norm_W += W[j]*W[j];
+>>>>>>> 8f28ad3... BMRM work in progress
 
         bmrm.Fp = R + 0.5*lambda*sq_norm_W;
         bmrm.Fd = -qp_exitflag.QP;
