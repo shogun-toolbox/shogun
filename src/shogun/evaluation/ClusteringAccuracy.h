@@ -35,18 +35,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)
-	{
-		SGVector<int32_t> predicted_ilabels=predicted->get_int_labels();
-		SGVector<int32_t> groundtruth_ilabels=ground_truth->get_int_labels();
-		int32_t correct=0;
-		for (int32_t i=0; i < predicted_ilabels.vlen; ++i)
-		{
-			if (predicted_ilabels[i] == groundtruth_ilabels[i])
-				correct++;
-		}
-		return float64_t(correct)/predicted_ilabels.vlen;
-	}
+	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
 	/** @return whether criterium has to be maximized or minimized */
 	virtual EEvaluationDirection get_evaluation_direction()
