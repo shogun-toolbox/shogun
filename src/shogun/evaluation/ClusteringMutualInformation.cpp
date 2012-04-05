@@ -18,12 +18,12 @@ using namespace shogun;
 
 float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	std::vector<int32_t> label_p=unique_labels(predicted);
-	std::vector<int32_t> label_g=unique_labels(ground_truth);
+	SGVector<float64_t> label_p=predicted->get_unique_labels();
+	SGVector<float64_t> label_g=ground_truth->get_unique_labels();
 
-	if (label_p.size() != label_g.size())
+	if (label_p.vlen != label_g.vlen)
 		SG_ERROR("Number of classes are different\n");
-	uint32_t n_class=label_p.size();
+	uint32_t n_class=label_p.vlen;
 	float64_t n_label=predicted->get_num_labels();
 
 	SGVector<int32_t> ilabels_p=predicted->get_int_labels();
@@ -64,6 +64,10 @@ float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* gr
 		entropy_g += -G_rowsum[i] * log(G_rowsum[i])/log(2.);
 		entropy_p += -G_colsum[i] * log(G_colsum[i])/log(2.);
 	}
+
+	label_p.free_vector();
+	label_g.free_vector();
+	G.destroy_matrix();
 
 	return mutual_info / std::max(entropy_g, entropy_p);
 }
