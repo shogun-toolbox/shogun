@@ -324,7 +324,7 @@ namespace shogun
             unlink(fname);
 
 #ifdef PYTHON3
-			PyObject* str=PyUnicode_FromStringAndSize(result, len);
+			PyObject* str=PyBytes_FromStringAndSize(result, len);
 #else
             PyObject* str=PyString_FromStringAndSize(result, len);
 #endif
@@ -346,8 +346,7 @@ namespace shogun
             Py_ssize_t len=0;
 
 #ifdef PYTHON3
-			len = PyUnicode_GetSize((PyObject*) py_str);
-    		str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(py_str)));
+			PyBytes_AsStringAndSize(py_str, &str, &len);
 #else
             PyString_AsStringAndSize(py_str, &str, &len);
 #endif
