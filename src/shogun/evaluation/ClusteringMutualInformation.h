@@ -8,28 +8,28 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#ifndef __CLUSTERINGACCURACY_H__
-#define __CLUSTERINGACCURACY_H__
+#ifndef __CLUSTERINGMUTUALINFORMATION_H__
+#define __CLUSTERINGMUTUALINFORMATION_H__
 
 #include <shogun/evaluation/ClusteringEvaluation.h>
 
 namespace shogun
 {
 
-/** @brief clustering accuracy
+/** @brief clustering (normalized) mutual information
  */
-class CClusteringAccuracy: public CClusteringEvaluation
+class CClusteringMutualInformation: public CClusteringEvaluation
 {
 public:
 	/** constructor */
-	CClusteringAccuracy(): CClusteringEvaluation() {}
+	CClusteringMutualInformation(): CClusteringEvaluation() {}
 
 	/** destructor */
-	virtual ~CClusteringAccuracy() {}
+	virtual ~CClusteringMutualInformation() {}
 
 	/** evaluate labels
 	 * Make sure to call CClusteringEvaluation::best_map to map the predicted label
-	 * before calculating accuracy.
+	 * before calculating mutual information.
 	 *
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
@@ -50,11 +50,10 @@ public:
 	 */
 	virtual const char* get_name() const
 	{
-		return "ClusteringAccuracy";
+		return "ClusteringMutualInformation";
 	}
 };
 
-} // namespace shogun
+}
 
-#endif /* end of include guard: __CLUSTERINGACCURACY_H__ */
-
+#endif /* end of include guard: __CLUSTERINGMUTUALINFORMATION_H__ */
