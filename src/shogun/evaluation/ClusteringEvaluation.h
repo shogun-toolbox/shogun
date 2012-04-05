@@ -46,13 +46,6 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
 protected:
-	/** get a vector of unique labels occured
-	 *
-	 * @param labels labels to be investigated
-	 * @return a vector of unique labels
-	 */
-	std::vector<int32_t> unique_labels(CLabels* labels);
-
 	/** find number of matches in the two labels sequence.
 	 *
 	 * For each index i, if l1[i] == m1 and l2[i] == m2, then we get a match.
