@@ -1,142 +1,31 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2012 Delu Zhu
+ * Copyright (C) 2012 Delu Zhu
+ */
+
 #include <shogun/classifier/C45.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/DotFeatures.h>
 
+//the recursive procedure of generating decision is stopped when there're MIN_SAMPLES_NUM samples left
+#define MIN_SAMPLES_NUM 2
 
-#include <stdio.h>
+#define MIN_GAIN_RATIO -10
+
+//define the types of a tree node
+enum NodeType {OtherNode, LeafNode, CutLeafNode};
 
 using namespace shogun;
 
+
 static float64_t log_2=log(2.0);
-
-const double BOUND = 1;
-double Val[] = {  0,  0.001, 0.005, 0.01, 0.05, 0.10, 0.20, 0.40, 1.00},
-               Dev[] = {4.0,  3.09,  2.58,  2.33, 1.65, 1.28, 0.84, 0.25, 0.00};
-double CF = 0.25;
-
-double NUcfENdE(const double E, const double N)
-{
-    static double Coeff=0;
-    double Val0, Pr, e, ans;
-
-    if ( ! Coeff )
-    {
-        /*  Compute and retain the coefficient value, interpolating from
-
-            the values in Val and Dev  */
-        int i = 0;
-        while ( CF > Val[i] ) i++;
-        Coeff = Dev[i-1] + (Dev[i] - Dev[i-1]) * (CF - Val[i-1]) /(Val[i] - Val[i-1]);
-        Coeff = Coeff * Coeff;
-    }
-
-    e = E;//E>N/2 ? N-E:E;
-    if ( e < 1E-6 )
-    {
-        ans = N * (1 - exp(log(CF) / N));
-    }
-    else if ( e < 0.9999 )
-    {
-        Val0 = N * (1 - exp(log(CF) / N));
-        ans = Val0 + e * (NUcfENdE(1.0, N) - Val0);
-    }
-    else if ( e + 0.5 >= N )
-    {
-        ans = 0.67 * (N - e);
-    }
-    else
-    {
-        Pr = (e + 0.5 + Coeff/2
-              + sqrt(Coeff * ((e + 0.5) * (1 - (e + 0.5)/N) + Coeff/4)) )
-             / (N + Coeff);
-        ans = (N * Pr - e);
-    }
-    return ans;//E>N/2 ? N-ans:ans;
-}
-
-double UcfEN(const double E, const double N)
-{
-    static double Coeff=0;
-    double Val0, Pr, e, ans;
-
-    if (E==N) return 0;
-
-    if ( ! Coeff )
-    {
-        /*  Compute and retain the coefficient value, interpolating from
-            the values in Val and Dev  */
-        int i = 0;
-        while ( CF > Val[i] ) i++;
-        Coeff = Dev[i-1] + (Dev[i] - Dev[i-1]) * (CF - Val[i-1]) /(Val[i] - Val[i-1]);
-        Coeff = Coeff * Coeff;
-    }
-
-    e = E>N/2 ? N-E:E;
-    if ( e < 1E-6 )
-    {
-        ans = (BOUND - exp(log(CF) / N));
-    }
-    else if ( e < 0.9999 )
-    {
-        Val0 = (BOUND - exp(log(CF) / N));
-        ans = Val0 + e * (UcfEN(1.0, N) - Val0);
-    }
-    else if ( e + 0.5 >= N )
-    {
-        ans = 0.67 * (BOUND - e/N);
-    }
-    else
-    {
-        Pr = (e + 0.5 + Coeff/2
-              + sqrt(Coeff * ((e + 0.5) * (1 - (e + 0.5)/N) + Coeff/4)) )
-             / (N + Coeff);
-        ans =  Pr;
-    }
-    return E>N/2 ? BOUND-ans:ans;
-}
-
-double NUcfEN(const double E, const double N)
-{
-    static double Coeff=0;
-    double Val0, Pr, e, ans;
-
-    if (E>=N) return 0;
-
-    if ( ! Coeff )
-    {
-        /*  Compute and retain the coefficient value, interpolating from
-            the values in Val and Dev  */
-        int i = 0;
-        while ( CF > Val[i] ) i++;
-        Coeff = Dev[i-1] + (Dev[i] - Dev[i-1]) * (CF - Val[i-1]) /(Val[i] - Val[i-1]);
-        Coeff = Coeff * Coeff;
-    }
-
-    e = E>N/2 ? N-E:E;
-    if ( e < 1E-6 )
-    {
-        ans = N * (1 - exp(log(CF) / N));
-    }
-    else if ( e < 0.9999 )
-    {
-        Val0 = N * (1 - exp(log(CF) / N));
-        ans = Val0 + e * (NUcfENdE(1.0, N) - Val0);
-    }
-    else if ( e + 0.5 >= N )
-    {
-        ans = 0.67 * (N - e);
-    }
-    else
-    {
-        Pr = (e + 0.5 + Coeff/2
-              + sqrt(Coeff * ((e + 0.5) * (1 - (e + 0.5)/N) + Coeff/4)) )
-             / (N + Coeff);
-        ans = N * Pr;
-    }
-    return E>N/2 ? N-ans:ans;
-}
 
 
 CTreeNode::CTreeNode(int32_t num)
@@ -148,40 +37,16 @@ CTreeNode::CTreeNode(int32_t num)
     this->samples_count=num;
     if(num==0)
     {
-        this->is_leaf=1;//is a leaf node when the samples set is empty
+		//is a leaf node when the samples set is empty
+        this->is_leaf=1;
         this->index=NULL;
     }
     else
     {
         this->is_leaf=0;
-        this->index=SG_MALLOC(int32_t,num);//the index array stores the indexes of samples included in this node
+		//the index array stores the indexes of samples included in this node
+        this->index=SG_MALLOC(int32_t,num);
     }
-}
-
-
-bool CTreeNode::isLeaf()
-{
-    return LeafNode==this->is_leaf;
-}
-
-int32_t CTreeNode::getMajorClassLabel()
-{
-    return this->major_class;
-}
-
-int32_t CTreeNode::getMajorLabelCount()
-{
-    return this->samples_count - this->minor_count;
-}
-
-int32_t CTreeNode::getMinorLabelCount()
-{
-    return this->minor_count;
-};
-
-CTreeNode* CTreeNode::getNextChild()
-{
-    return this->rightNode;
 }
 
 
@@ -196,7 +61,7 @@ CC45::CC45(CFeatures* t_examples, CLabels* t_labels) :
     //get number of feature vectors and dimensionality
     m_num_samples=m_features->get_num_vectors();
     m_dim=m_features->get_dim_feature_space();
-};
+}
 
 CC45::~CC45()
 {
@@ -208,12 +73,9 @@ CC45::~CC45()
     value_label->destroy_matrix();
 }
 
-
-
 bool CC45::train_machine(CFeatures* train_examples)
 {
     // get int labels to train_labels and check length equality
-
     train_labels = m_labels->get_int_labels();
 
     ASSERT(m_features->get_num_vectors()==train_labels.vlen);
@@ -241,7 +103,7 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
 {
     /*************
     the first phase:
-        return n as a leaf node,if samples included in n are all of the same class label
+    return n as a leaf node,if samples included in n are all of the same class label
     ***************/
     current_tree_node=n;
     if(n->minor_count==0)
@@ -259,9 +121,7 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
         return n;
     }
     /*************
-    ****************************
     the third phase
-    ***********************
     ***************/
     int32_t split=-1;
     float64_t max=-10;
@@ -280,7 +140,8 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
         //reset
         yes_num->zero();
         no_num->zero();
-        if(a->is_discrete==1)//a discretee-valued attribute
+		//a discretee-valued attribute
+        if(a->is_discrete==1)
         {
             tmp=compute_gain_ratio_discreteized(a);
             if(tmp>max)
@@ -319,7 +180,7 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
         a=a->next;
     }
 
-//delete the splitting attribute
+    //delete the splitting attribute
     a=attribute_list;
     if(a==max_a)
     {
@@ -338,15 +199,16 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
     n->attrib_id=max_a->id;
 
     /*************
-    ****************************
     the forth phase:
     split the samples included in the current node
     ***************/
-    if(max_a->is_discrete==1)// discrete-valued attribute
+	// discrete-valued attribute
+    if(max_a->is_discrete==1)
     {
         CTreeNode *mid=NULL;
         CTreeNode *n_list=NULL;
-        int j;//the index of child nodes of the current node
+		//the index of child nodes of the current node
+        int j;
         for (int i=0; i<max_a->size; i++)
         {
             if (n_list==NULL)
@@ -359,16 +221,19 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
                 n_list->list=new CTreeNode((*max_yes_num)[i]+(*max_no_num)[i]);
                 n_list=n_list->list;
             }
-            if(n_list->samples_count!=0)//the samples set isn't empty
+			//the samples set isn't empty
+            if(n_list->samples_count!=0)
             {
                 if((*max_yes_num)[i]>(*max_no_num)[i])
                 {
-                    n_list->major_class=1;//represents the major class label is 1
+					//represents the major class label is 1
+                    n_list->major_class=1;
                     n_list->minor_count=(*max_no_num)[i];
                 }
                 else
                 {
-                    n_list->major_class=0;//represents the major class label is 0
+					//represents the major class label is 0
+                    n_list->major_class=0;
                     n_list->minor_count=(*max_yes_num)[i];
                 }
                 j=0;
@@ -386,7 +251,8 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
             }
             else
             {
-                n_list->major_class=n->major_class; //assign major_class of father node to major_class of child node
+				//assign major_class of father node to major_class of child node
+                n_list->major_class=n->major_class; 
             }
         }
         n->rightNode=mid;
@@ -450,7 +316,7 @@ CTreeNode* CC45::generate_decision_tree(CTreeNode* n)
     return n;
 }
 
-// compute the gain ratio when splitting samples by a discrete-valued attribute
+
 float64_t CC45::compute_gain_ratio_discreteized(CAttribNode* a)
 {
     float64_t gain_ratio=0;
@@ -506,7 +372,6 @@ float64_t CC45::compute_gain_ratio_discreteized(CAttribNode* a)
 }
 
 
-// compute the gain ratio when splitting samples by a continuous-valued attribute
 float64_t CC45::compute_gain_ratio_continuous(CAttribNode* a, int32_t &max_split)
 {
     float64_t gain_ratio=0,max_gain_ratio=MIN_GAIN_RATIO;
@@ -596,53 +461,8 @@ float64_t CC45::compute_gain_ratio_continuous(CAttribNode* a, int32_t &max_split
     return max_gain_ratio;
 }
 
-float64_t CC45::compute_error_ratio(CTreeNode* n)
-{
-    float64_t e,N;
-    N = (float64_t)n->samples_count;
-    e = (float64_t)n->minor_count;
-    n->ucfErrorsRate=NUcfEN(e,N);
 
-    if (n->is_leaf)
-    {
-        n->error_rate = n->expErrorsRate = n->ucfErrorsRate;
-        //cout << "A leaf.\tN:" << N << "\te:" << e << endl;
-        //cout << "\terror_rate=" << n->error_rate << "\tucfErrorsRate(e:"<<e<< ",N:"<<N<<")=" << n->ucfErrorsRate << "\texpErrorsRate=" << n->expErrorsRate << endl;
-        return n->error_rate;
-    }
-    if (NULL==n->leftNode) //按照离散属性划分的
-    {
-        CTreeNode* cl = n->rightNode;
-        n->expErrorsRate = 0;
-        do
-        {
-            n->expErrorsRate+=compute_error_ratio(cl);
-            cl=cl->list;
-        }
-        while(cl!=NULL);
-    }
-    else
-    {
-        n->expErrorsRate=compute_error_ratio(n->rightNode)+compute_error_ratio(n->leftNode);
-    }
 
-    if (n->ucfErrorsRate < n->expErrorsRate)
-    {
-        n->error_rate = n->ucfErrorsRate;
-        n->is_leaf = CutLeafNode;
-        //cout << "A Cutleaf.";
-    }
-    else
-    {
-        n->error_rate = n->expErrorsRate;
-        //cout << "A Banch.";
-    }
-    //cout << "\tN:" << N << "\te:" << e << endl;
-    //cout << "\terror_rate=" << n->error_rate << "\tucfErrorsRate(e:"<<e<< ",N:"<<N<<")=" << n->ucfErrorsRate << "\texpErrorsRate=" << n->expErrorsRate << endl;
-    return n->error_rate;
-}
-
-//idx represents the id of attribute
 int32_t CC45::partition(int32_t idx, int32_t left, int32_t right)
 {
     int low,high,mid,t;
@@ -680,15 +500,16 @@ int32_t CC45::partition(int32_t idx, int32_t left, int32_t right)
     return high;
 }
 
-//sort the values of a continuous attribute with the attribute idx
 void CC45::quicksort(int32_t idx, int32_t left, int32_t right)
 {
     int32_t mid;
     if(left<right)
     {
         mid=partition(idx,left,right);
-        quicksort(idx,left,mid-1);//recursive procedure,left side
-        quicksort(idx,mid+1,right);//recursive procedure,right side
+		//recursive procedure,left side
+        quicksort(idx,left,mid-1);
+		//recursive procedure,right side
+        quicksort(idx,mid+1,right);
     }
 }
 
@@ -744,7 +565,6 @@ void  CC45::set_info(float64_t information)
     info=information;
 }
 
-
 CLabels* CC45::apply()
 {
     // init number of vectors
@@ -792,7 +612,8 @@ float64_t CC45::dfs(CTreeNode* r,int k)
     {
         return r->major_class;
     }
-    if (r->leftNode==NULL)//represents a discrete-valued attribute
+	//represents a discrete-valued attribute
+    if (r->leftNode==NULL)
     {
         CTreeNode* child=r->rightNode;
         for(tmp=0; tmp<value; tmp++)
@@ -822,5 +643,3 @@ float64_t CC45::dfs(CTreeNode* r,int k)
         }
     }
 }
-
-
