@@ -4,6 +4,7 @@
  #include <shogun/evaluation/BinaryClassEvaluation.h>
  #include <shogun/evaluation/ClusteringEvaluation.h>
  #include <shogun/evaluation/ClusteringAccuracy.h>
+ #include <shogun/evaluation/ClusteringMutualInformation.h>
  #include <shogun/evaluation/ContingencyTableEvaluation.h>
  #include <shogun/evaluation/MulticlassAccuracy.h>
  #include <shogun/evaluation/MeanAbsoluteError.h>
