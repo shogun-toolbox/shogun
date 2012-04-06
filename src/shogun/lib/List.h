@@ -103,16 +103,26 @@ class CList : public CSGObject
 		{
 			SG_DEBUG("Destroying List %p\n", this);
 
+			delete_all_elements();
+		}
+
+		/** deletes all elements from list */
+		inline void delete_all_elements()
+		{
 			while (get_num_elements())
 			{
 				CSGObject* d=delete_element();
 
 				if (delete_data)
 				{
-					SG_DEBUG("Destroying List Element %p\n", d);
+					SG_DEBUG("SG_UNREF List Element %p\n", d);
 					SG_UNREF(d);
 				}
 			}
+
+			first=NULL;
+			current=NULL;
+			last=NULL;
 		}
 
 		/** get number of elements in list
@@ -354,6 +364,36 @@ class CList : public CSGObject
 				SG_UNREF(p);
 
 			return append_element(data);
+		}
+
+		/** append at end of list
+		 *
+		 * @param data data element to append
+		 * @return if appending was successful
+		 */
+		inline bool push(CSGObject* data)
+		{
+			return append_element_at_listend(data);
+		}
+
+		/** removes last element of list
+		 *
+		 * @return if deletion was successful
+		 */
+		inline bool pop()
+		{
+			if (last)
+			{
+				if (delete_data)
+					SG_UNREF(last);
+
+				last=last->prev;
+				num_elements--;
+
+				return true;
+			}
+			else
+				return false;
 		}
 
 		/** insert element BEFORE the current element
