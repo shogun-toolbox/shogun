@@ -170,10 +170,10 @@ class CoverTree
      */
     std::vector<Point> kNearestNeighbors(const Point& p, const unsigned int& k) const;
 
-	/** get the root node of the tree
-	 *
-	 * @return root node
-	 */
+    /** get the root node of the tree
+     *
+     * @return root node
+     */
     CoverTreeNode* getRoot() const;
 
 }; // CoverTree class
