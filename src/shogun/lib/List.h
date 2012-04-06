@@ -388,6 +388,14 @@ class CList : public CSGObject
 				if (first==last)
 					first=NULL;
 
+				if (current==last)
+				{
+					if (first==last)
+						current=NULL;
+					else
+						current=current->prev;
+				}
+
 				if (delete_data)
 					SG_UNREF(last->data);
 
