@@ -80,7 +80,7 @@ public:
 
 	/** Abstract method.
 	 * Has to refill the elements of the m_subset_indices variable with concrete
-	 * indices. Note that virtual const char* get_name() const = 0;CDynamicArray<index_t> instances for every subset are
+	 * indices. Note that CDynamicArray<index_t> instances for every subset are
 	 * created in the constructor of this class - they just have to be filled.
 	 */
 	virtual void build_subsets()=0;
