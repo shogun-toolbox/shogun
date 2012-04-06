@@ -7,6 +7,7 @@
  * Written (W) 2006 Christian Gehl
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 2011 Sergey Lisitsyn
+ * Written (W) 2012 Fernando José Iglesias García, cover tree support
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -149,17 +150,17 @@ class CKNN : public CDistanceMachine
 		inline float64_t get_q() { return m_q; }
 
 		/* set whether to use cover trees for fast KNN
-		 * @param use_coverTree
+		 * @param use_covertree
 		 */
-		inline void set_use_coverTree(bool use_coverTree)
+		inline void set_use_covertree(bool use_covertree)
 		{
-			m_use_coverTree = use_coverTree;
+			m_use_covertree = use_covertree;
 		}
 
 		/** get whether to use cover trees for fast KNN
 		 * @return use_covertree parameter
 		 */
-		inline bool get_use_coverTree() const { return m_use_coverTree; }
+		inline bool get_use_covertree() const { return m_use_covertree; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KNN"; }
@@ -193,7 +194,7 @@ class CKNN : public CDistanceMachine
 
 		/** get the m_k nearest neighbors to the test vector indexed by "idx"
 		 *  these neighbors are found within the set of training vectors. This 
-		 *  function makes use of CoverTree support
+		 *  function makes use of cover tree support
 		 *
 		 * @param idx index of the test vector for which to find NN
 		 * @return out vector with indices to the NN
@@ -211,13 +212,13 @@ class CKNN : public CDistanceMachine
 		float64_t m_q;
 
 		/// parameter to enable cover tree support
-		bool m_use_coverTree;
+		bool m_use_covertree;
 
 		/// parameter to tell if the cover tree has been built during training
-		bool m_built_coverTree;
+		bool m_built_covertree;
 
 		/// class member cover tree
-		CoverTree<KNN_COVERTREE_POINT>* m_coverTree;
+		CoverTree<KNN_COVERTREE_POINT>* m_covertree;
 
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;
