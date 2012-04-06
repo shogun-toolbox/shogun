@@ -272,17 +272,13 @@ float64_t CCrossValidation::evaluate_one_run()
 		for (index_t i=0; i <num_subsets; ++i)
 		{
 			/* set feature subset for training */
-			SGVector<index_t> inverse_subset_indices =
+			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
-			m_features->push_subset(new CSubset(inverse_subset_indices));
+			CSubset* training_subset=new CSubset(inverse_subset_indices);
+			m_features->push_subset(training_subset);
 
-			/* set label subset for training (copy data before) */
-			SGVector<index_t> inverse_subset_indices_copy(
-					inverse_subset_indices.vlen);
-			memcpy(inverse_subset_indices_copy.vector,
-					inverse_subset_indices.vector,
-					inverse_subset_indices.vlen * sizeof(index_t));
-			m_labels->set_subset(new CSubset(inverse_subset_indices_copy));
+			/* set label subset for training */
+			m_labels->set_subset(training_subset);
 
 			/* train machine on training features and remove subset */
 			m_machine->train(m_features);
@@ -291,23 +287,21 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set feature subset for testing (subset method that stores pointer) */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
-			m_features->push_subset(new CSubset(subset_indices));
+			CSubset* test_subset=new CSubset(subset_indices);
+			m_features->push_subset(test_subset);
+
+			/* set label subset for testing */
+			m_labels->set_subset(test_subset);
 
 			/* apply machine to test features and remove subset */
 			CLabels* result_labels=m_machine->apply(m_features);
 			m_features->pop_subset();
 			SG_REF(result_labels);
 
-			/* set label subset for testing (copy data before) */
-			SGVector<index_t> subset_indices_copy(subset_indices.vlen);
-			memcpy(subset_indices_copy.vector, subset_indices.vector,
-					subset_indices.vlen * sizeof(index_t));
-			m_labels->set_subset(new CSubset(subset_indices_copy));
-
 			/* evaluate */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
-			/* clean up, reset subsets */
+			/* clean up, remove subsets */
 			SG_UNREF(result_labels);
 			m_labels->remove_subset();
 		}
