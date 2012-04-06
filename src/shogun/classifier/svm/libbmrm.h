@@ -46,7 +46,7 @@ bmrm_return_value_T svm_bmrm_solver(
     float64_t lambda,
     uint32_t _BufSize,
     uint32_t (*get_dim)(void*),
-    void (*risk_function)(void*, float64_t*, float64_t*, float64_t*),
+    void (*risk_function)(void*, float64_t*, float64_t*, float64_t*)
     );
 }
 
