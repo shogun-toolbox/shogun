@@ -19,6 +19,7 @@
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Subset.h>
+#include <shogun/lib/List.h>
 
 namespace shogun
 {
@@ -49,6 +50,8 @@ namespace shogun
  *   set of strings) from which all the specific features like CSimpleFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
  *
+ *
+ *   TODO update this
  *   Subsets may be supported by inheriting classes.
  *   Sub-classes may want to overwrite the subset_changed_post() method which is
  *   called automatically after each subset change
@@ -219,16 +222,21 @@ class CFeatures : public CSGObject
 		 */
 		void unset_property(EFeatureProperty p);
 
-		/** setter for subset variable, deletes old one
-		 * subset_changed_post() is called afterwards
+		/** adds a subset of indices on top of the current subsets (possibly
+		 * subset o subset. Calls subset_changed_post() afterwards
 		 *
-		 * @param subset subset instance to set
-		 */
-		virtual void set_subset(CSubset* subset);
+		 * @param subset subset of indices to add
+		 * */
+		virtual void push_subset(CSubset* subset);
 
-		/** deletes any set subset
-		 * subset_changed_post() is called afterwards */
-		virtual void remove_subset();
+		/** removes that last added subset from subset stack, if existing */
+		virtual void pop_subset();
+
+		/** removes all subsets */
+		virtual void remove_all_subsets();
+
+		/* recomputes the visible active subset using the subset stack */
+		virtual void update_active_subset();
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
@@ -240,13 +248,14 @@ class CFeatures : public CSGObject
 		 */
 		inline index_t subset_idx_conversion(index_t idx) const
 		{
-			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
+			return m_active_subset ?
+					m_active_subset->subset_idx_conversion(idx) : idx;
 		}
 
 		/** check if has subsets
 		 * @return true if has subsets
 		 */
-		bool has_subset() const;
+		bool has_subsets() const;
 
 		/** Creates a new CFeatures instance containing copies of the elements
 		 * which are specified by the provided indices.
@@ -277,8 +286,11 @@ class CFeatures : public CSGObject
 
 	protected:
 
-		/** subset class to enable subset support for this class */
-		CSubset* m_subset;
+		/** stack of subsets */
+		CList* m_subset_stack;
+
+		/** current subset which is all stack subsets merged. for performance */
+		CSubset* m_active_subset;
 };
 }
 #endif
