@@ -298,6 +298,7 @@ CLabels* CKNN::classify_NN()
 	return output;
 }
 
+/** TODO add covertree suppot */
 SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 {
 	ASSERT(num_classes>0);
