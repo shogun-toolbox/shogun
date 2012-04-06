@@ -26,5 +26,5 @@ def kernel_wave_modular (fm_train_real=traindat,fm_test_real=testdat, theta=1.0)
 
 
 if __name__=='__main__':
-	print 'Wave'
+	print('Wave')
 	kernel_wave_modular(*parameter_list[0])

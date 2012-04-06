@@ -21,5 +21,5 @@ def kernel_linear_string_modular (fm_train_dna=traindat,fm_test_dna=testdat):
 
 if __name__=='__main__':
 	from tools.load import LoadMatrix
-	print 'LinearString'
- 	kernel_linear_string_modular(*parameter_list[0])
+	print('LinearString')
+	kernel_linear_string_modular(*parameter_list[0])

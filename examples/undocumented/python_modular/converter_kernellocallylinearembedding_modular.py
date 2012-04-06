@@ -23,6 +23,6 @@ def converter_kernellocallylinearembedding_modular(data,k):
 
 
 if __name__=='__main__':
-	print 'KernelLocallyLinearEmbedding'
+	print('KernelLocallyLinearEmbedding')
 	converter_kernellocallylinearembedding_modular(*parameter_list[0])
 

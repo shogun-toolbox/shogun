@@ -33,5 +33,5 @@ def classifier_svmocas_modular (fm_train_real=traindat,fm_test_real=testdat,labe
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
-	print 'SVMOcas'
+	print('SVMOcas')
 	classifier_svmocas_modular(*parameter_list[0])

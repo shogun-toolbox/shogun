@@ -22,6 +22,6 @@ def evaluation_rocevaluation_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'ROCEvaluation'
+	print('ROCEvaluation')
 	evaluation_rocevaluation_modular(*parameter_list[0])
 

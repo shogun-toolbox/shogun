@@ -39,5 +39,5 @@ def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=test
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'PluginEstimate w/ HistogramWord'
+	print('PluginEstimate w/ HistogramWord')
 	kernel_histogram_word_string_modular(*parameter_list[0])

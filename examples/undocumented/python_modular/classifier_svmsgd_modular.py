@@ -34,5 +34,5 @@ def classifier_svmsgd_modular (fm_train_real=traindat,fm_test_real=testdat,label
 
 
 if __name__=='__main__':
-	print 'SVMSGD'
+	print('SVMSGD')
 	classifier_svmsgd_modular(*parameter_list[0])

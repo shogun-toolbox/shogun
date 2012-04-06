@@ -22,5 +22,5 @@ def kernel_distantsegments_modular (fm_train_dna=traindat,fm_test_dna=testdat,de
 
 
 if __name__=='__main__':
-	print 'DistantSegments'
+	print('DistantSegments')
 	kernel_distantsegments_modular(*parameter_list[0])

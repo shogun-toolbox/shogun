@@ -23,5 +23,5 @@ def kernel_gaussian_modular (fm_train_real=traindat,fm_test_real=testdat, width=
 
 
 if __name__=='__main__':
-	print 'Gaussian'
+	print('Gaussian')
 	kernel_gaussian_modular(*parameter_list[0])

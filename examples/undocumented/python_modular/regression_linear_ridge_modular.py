@@ -24,5 +24,5 @@ def regression_linear_ridge_modular (fm_train=traindat,fm_test=testdat,label_tra
 	return out,rr
 
 if __name__=='__main__':
-	print 'LinearRidgeRegression'
+	print('LinearRidgeRegression')
 	regression_linear_ridge_modular(*parameter_list[0])

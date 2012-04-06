@@ -26,5 +26,5 @@ def kernel_circular_modular (fm_train_real=traindat,fm_test_real=testdat, sigma=
 
 
 if __name__=='__main__':
-	print 'Circular'
+	print('Circular')
 	kernel_circular_modular(*parameter_list[0])

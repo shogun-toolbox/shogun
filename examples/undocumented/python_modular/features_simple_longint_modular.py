@@ -21,5 +21,5 @@ def features_simple_longint_modular(A=matrix):
     return a_out
 
 if __name__=='__main__':
-    print 'simple_longint'
+    print('simple_longint')
     features_simple_longint_modular(*parameter_list[0])

@@ -30,5 +30,5 @@ def classifier_libsvm_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
-	print 'LibSVM'
+	print('LibSVM')
 	classifier_libsvm_modular(*parameter_list[0])

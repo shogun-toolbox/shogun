@@ -22,6 +22,6 @@ def converter_isomap_modular(data):
 
 
 if __name__=='__main__':
-	print 'Isomap'
+	print('Isomap')
 	converter_isomap_modular(*parameter_list[0])
 
