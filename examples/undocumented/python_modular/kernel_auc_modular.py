@@ -26,5 +26,5 @@ def kernel_auc_modular(fm_train_real=traindat,label_train_real=testdat,width=1.7
 	return kernel
 
 if __name__=='__main__':
-	print 'AUC'
+	print('AUC')
 	kernel_auc_modular(*parameter_list[0])

@@ -30,5 +30,5 @@ def classifier_mpdsvm_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
-	print 'MPDSVM'
+	print('MPDSVM')
 	classifier_mpdsvm_modular(*parameter_list[0])

@@ -25,5 +25,5 @@ def kernel_sparse_poly_modular (fm_train_real=traindat,fm_test_real=testdat,
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'SparsePoly'
+	print('SparsePoly')
 	kernel_sparse_poly_modular(*parameter_list[0])

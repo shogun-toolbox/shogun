@@ -21,6 +21,6 @@ def converter_localitypreservingprojections_modular(data,k):
 
 
 if __name__=='__main__':
-	print 'LocalityPreservingProjections'
+	print('LocalityPreservingProjections')
 	converter_localitypreservingprojections_modular(*parameter_list[0])
 

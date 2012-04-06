@@ -33,5 +33,5 @@ def kernel_weighted_comm_word_string_modular (fm_train_dna=traindat,fm_test_dna=
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'WeightedCommWordString'
+	print('WeightedCommWordString')
 	kernel_weighted_comm_word_string_modular(*parameter_list[0])

@@ -23,5 +23,5 @@ def kernel_linear_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.2
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'Linear'
+	print('Linear')
 	kernel_linear_modular(*parameter_list[0])

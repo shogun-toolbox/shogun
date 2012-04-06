@@ -23,6 +23,6 @@ def preprocessor_dimensionreductionpreprocessor_modular(data, k):
 
 
 if __name__=='__main__':
-	print 'DimensionReductionPreprocessor'
+	print('DimensionReductionPreprocessor')
 	preprocessor_dimensionreductionpreprocessor_modular(*parameter_list[0])
 

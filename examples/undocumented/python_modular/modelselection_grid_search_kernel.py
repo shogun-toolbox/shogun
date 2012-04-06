@@ -117,7 +117,7 @@ def modelselection_grid_search_kernel():
 
 	print_state=True
 	best_combination=grid_search.select_model(print_state)
-	print "best parameter(s):"
+	print("best parameter(s):")
 	best_combination.print_tree()
 
 	best_combination.apply_to_machine(classifier)
@@ -126,11 +126,11 @@ def modelselection_grid_search_kernel():
 	cross.set_num_runs(10)
 	cross.set_conf_int_alpha(0.01)
 	result=cross.evaluate()
-	print "result: "
+	print("result: ")
 	result.print_result()
 
 	return 0
 	
 if __name__=='__main__':
-	print 'ModelselectionGridSearchKernel'
+	print('ModelselectionGridSearchKernel')
 	modelselection_grid_search_kernel()

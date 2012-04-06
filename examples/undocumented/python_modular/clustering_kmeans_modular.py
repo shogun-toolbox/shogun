@@ -29,6 +29,6 @@ def clustering_kmeans_modular (fm_train=traindat,k=3):
 	return out_centers, kmeans
 
 if __name__=='__main__':
-	print 'KMeans'
+	print('KMeans')
 	clustering_kmeans_modular(*parameter_list[0])
 

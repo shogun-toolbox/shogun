@@ -24,6 +24,6 @@ def evaluation_meansquaredlogerror_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'EvaluationMeanSquaredLogError'
+	print('EvaluationMeanSquaredLogError')
 	evaluation_meansquaredlogerror_modular(*parameter_list[0])
 

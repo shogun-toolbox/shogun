@@ -28,5 +28,5 @@ def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=te
 	return out
 
 if __name__=='__main__':
-	print 'MulticlassMachine'
+	print('MulticlassMachine')
 	classifier_multiclassmachine_modular(*parameter_list[0])

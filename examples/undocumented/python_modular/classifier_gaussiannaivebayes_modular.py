@@ -20,5 +20,5 @@ def classifier_gaussiannaivebayes_modular(fm_train_real=traindat,fm_test_real=te
 	return gnb, gnb_train, output
 
 if __name__=='__main__':
-	print 'GaussianNaiveBayes'
+	print('GaussianNaiveBayes')
 	classifier_gaussiannaivebayes_modular(*parameter_list[0])

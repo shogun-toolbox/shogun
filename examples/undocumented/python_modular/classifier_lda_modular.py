@@ -26,5 +26,5 @@ def classifier_lda_modular (fm_train_real=traindat,fm_test_real=testdat,label_tr
 	return lda,lda.apply().get_labels()
 
 if __name__=='__main__':
-	print 'LDA'
+	print('LDA')
 	classifier_lda_modular(*parameter_list[0])

@@ -33,6 +33,6 @@ def distribution_histogram_modular (fm_dna=traindna,order=3,gap=0,reverse=False)
 ###########################################################################
 
 if __name__=='__main__':
-	print 'Histogram'
+	print('Histogram')
 	distribution_histogram_modular(*parameter_list[0])
 

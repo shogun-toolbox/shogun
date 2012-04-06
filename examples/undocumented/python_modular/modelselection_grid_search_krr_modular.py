@@ -146,5 +146,5 @@ def create_param_tree():
 
 
 if __name__=='__main__':
-	print 'ModelselectionGridSearchKRR'
+	print('ModelselectionGridSearchKRR')
 	modelselection_grid_search_krr_modular(*parameter_list[0])
