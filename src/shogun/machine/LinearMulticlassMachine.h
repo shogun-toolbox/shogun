@@ -139,8 +139,8 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */
-			SG_NOTIMPLEMENTED;
-//			m_features->set_subset(subset);
+			SG_WARNING("FIXME");
+			m_features->push_subset(subset);
 		}
 
 		/** deletes any subset set to the features of the machine */
@@ -148,8 +148,8 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */
-			SG_NOTIMPLEMENTED;
-//			m_features->remove_subset();
+			SG_WARNING("FIXME");
+			m_features->pop_subset();
 		}
 
 	protected:
