@@ -404,10 +404,20 @@ void CFeatures::update_active_subset()
 		SGVector<index_t> indices=SGVector<index_t>(last->get_size());
 
 		/* map mappings of latest subset using active subset */
-		for (index_t i=0; i<last->get_size(); ++i)
+		if (m_active_subset)
 		{
-			indices.vector[i]=m_active_subset->subset_idx_conversion(
-					last->subset_idx_conversion(i));
+			for (index_t i=0; i<last->get_size(); ++i)
+			{
+				indices.vector[i]=m_active_subset->subset_idx_conversion(
+						last->subset_idx_conversion(i));
+			}
+		}
+		else
+		{
+			for (index_t i=0; i<last->get_size(); ++i)
+			{
+				indices.vector[i]=last->subset_idx_conversion(i);
+			}
 		}
 		SG_UNREF(last);
 
