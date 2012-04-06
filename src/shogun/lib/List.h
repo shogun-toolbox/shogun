@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -384,10 +385,18 @@ class CList : public CSGObject
 		{
 			if (last)
 			{
-				if (delete_data)
-					SG_UNREF(last);
+				if (first==last)
+					first=NULL;
 
+				if (delete_data)
+					SG_UNREF(last->data);
+
+				CListElement* temp=last;
 				last=last->prev;
+				SG_UNREF(temp);
+				if (last)
+					last->next=NULL;
+
 				num_elements--;
 
 				return true;
@@ -501,6 +510,17 @@ class CList : public CSGObject
 				prev = cur;
 			}
 			last = prev;
+		}
+
+		void print_list()
+		{
+			CListElement* c=first;
+
+			while (c)
+			{
+				SG_PRINT("\"%s\" at %p\n", c->data ? c->data->get_name() : "", c->data);
+				c=c->next;
+			}
 		}
 
 		/** @return object name */
