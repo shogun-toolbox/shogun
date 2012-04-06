@@ -13,35 +13,10 @@
 #include <shogun/classifier/KNN.h>
 #include <shogun/features/Labels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/CoverTree.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
-
-class KNN_COVERTREE_POINT
-{
-public:
-
-	KNN_COVERTREE_POINT(int32_t index, CDistance* knncp_distance)
-	{
-		m_point_index = index;
-		m_distance = knncp_distance;
-	}
-
-	inline double distance(const KNN_COVERTREE_POINT& p) const
-	{
-		return m_distance->distance(m_point_index, p.m_point_index);
-	}
-
-	inline bool operator==(const KNN_COVERTREE_POINT& p) const
-	{
-		return (p.m_point_index == m_point_index);
-	}
-
-	int32_t m_point_index;
-	CDistance* m_distance;
-};
 
 CKNN::CKNN()
 : CDistanceMachine()
@@ -72,21 +47,27 @@ void CKNN::init()
 
 	m_k=3;
 	m_q=1.0;
-	m_use_covertree=false;
+	m_use_coverTree=false;
 	num_classes=0;
+	m_coverTree=NULL;
+	m_built_coverTree=false;
 
-	/** TODO not really sure here if these guys should be MS_AVAILABLE or 
+	/** TODO not really sure here if these two first guys should be MS_AVAILABLE or 
 	 *  MS_NOT_AVAILABLE
 	 */
 	SG_ADD(&m_k, "m_k", "Parameter k", MS_AVAILABLE);
 	SG_ADD(&m_q, "m_q", "Parameter q", MS_AVAILABLE);
-	SG_ADD(&m_use_covertree, "m_use_covertree", "Parameter use_covertree", MS_NOT_AVAILABLE);
+	SG_ADD(&m_use_coverTree, "m_use_covertree", "Parameter use_covertree", MS_NOT_AVAILABLE);
+	SG_ADD(&m_built_coverTree, "m_built_covertree", "Parameter built_covertree", MS_NOT_AVAILABLE);
 	SG_ADD(&num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_coverTree, "m_coverTree", "Member cover tree", MS_NOT_AVAILABLE);
 }
 
 CKNN::~CKNN()
 {
 	SG_FREE(train_labels.vector);
+	if ( m_use_coverTree )
+		delete m_coverTree;
 }
 
 bool CKNN::train_machine(CFeatures* data)
@@ -125,6 +106,38 @@ bool CKNN::train_machine(CFeatures* data)
 
 	SG_INFO( "num_classes: %d (%+d to %+d) num_train: %d\n", num_classes,
 			min_class, max_class, train_labels.vlen);
+
+	// If cover tree is to be used, populate it with training vectors
+	// assuming that distance(train_vectors, train_vectors)
+	if ( m_use_coverTree )
+	{
+		// Ensure that distance has the same features lhs and rhs
+		if ( ! distance->lhs_equals_rhs() )
+			SG_ERROR("Features lhs and rhs must be equal to train KNN "
+				 "with CoverTree support\n");
+
+		int32_t j;
+
+		// Look for the max distance among training vectors
+		float64_t max_dist = 0.0;
+		for (i=0; i<train_labels.vlen; i++)
+			for (j=i+1; j<train_labels.vlen; j++)
+				max_dist = CMath::max(max_dist, distance->distance(i, j));
+
+		// Create cover tree
+		m_coverTree = new CoverTree<KNN_COVERTREE_POINT>(max_dist);
+
+		// Insert training vectors
+		for (i=0; i<train_labels.vlen; i++)
+			m_coverTree->insert(KNN_COVERTREE_POINT(i, distance));
+
+		m_built_coverTree = true;
+	}
+	else
+	{
+		m_built_coverTree = false;
+	}
+
 	return true;
 }
 
@@ -134,14 +147,30 @@ CLabels* CKNN::apply()
 	ASSERT(distance);
 	ASSERT(distance->get_num_vec_rhs());
 
+	if ( m_use_coverTree && ! m_built_coverTree )
+		SG_ERROR("The CoverTree must have been built during training to use "
+			 "it for classification\n");
+
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=num_lab);
 
 	CLabels* output=new CLabels(num_lab);
 
+	float64_t* dists;
+	int32_t* train_lab;
+	//vector of neighbors used for the cover tree support
+	int32_t* nearest_neighbors;
 	//distances to train data and working buffer of train_labels
-	float64_t* dists=SG_MALLOC(float64_t, train_labels.vlen);
-	int32_t* train_lab=SG_MALLOC(int32_t, train_labels.vlen);
+	if ( ! m_use_coverTree )
+	{
+		dists=SG_MALLOC(float64_t, train_labels.vlen);
+		train_lab=SG_MALLOC(int32_t, train_labels.vlen);
+	}
+	else
+	{
+		train_lab=SG_MALLOC(int32_t, m_k);
+		nearest_neighbors=SG_MALLOC(int32_t, m_k);
+	}
 
 	SG_INFO( "%d test examples\n", num_lab);
 	CSignal::clear_cancel();
@@ -153,16 +182,29 @@ CLabels* CKNN::apply()
 	{
 		SG_PROGRESS(i, 0, num_lab);
 
-		// lhs idx 1..n and rhs idx i
-		distances_lhs(dists,0,train_labels.vlen-1,i);
 		int32_t j;
 
-		for (j=0; j<train_labels.vlen; j++)
-			train_lab[j]=train_labels.vector[j];
+		if ( ! m_use_coverTree )
+		{
+			//lhs idx 1..n and rhs idx i
+			distances_lhs(dists,0,train_labels.vlen-1,i);
 
-		//sort the distance vector for test example j to all train examples
-		//classes[1..k] then holds the classes for minimum distance
-		CMath::qsort_index(dists, train_lab, train_labels.vlen);
+			for (j=0; j<train_labels.vlen; j++)
+				train_lab[j]=train_labels.vector[j];
+
+			//sort the distance vector for test example j to all train examples
+			//classes[1..k] then holds the classes for minimum distance
+			CMath::qsort_index(dists, train_lab, train_labels.vlen);
+		}
+		else
+		{
+			//get the k nearest neighbors to test vector i using the CoverTree 
+			get_neighbors(nearest_neighbors, i);
+
+			//translate from indices to labels of the nearest neighbors
+			for (j=0; j<m_k; j++)
+				train_lab[j]=train_labels.vector[ nearest_neighbors[j] ];
+		}
 
 		//compute histogram of class outputs of the first k nearest neighbours
 		for (j=0; j<num_classes; j++)
@@ -191,8 +233,11 @@ CLabels* CKNN::apply()
 	}
 
 	SG_FREE(classes);
-	SG_FREE(dists);
 	SG_FREE(train_lab);
+	if ( ! m_use_coverTree )
+		SG_FREE(dists);
+	else
+		SG_FREE(nearest_neighbors);
 
 	return output;
 }
@@ -315,7 +360,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	SG_FREE(train_lab);
 	SG_FREE(classes);
 
-	return SGMatrix<int32_t>(output,num_lab,m_k);
+	return SGMatrix<int32_t>(output,num_lab,m_k,true);
 }
 
 void CKNN::init_distance(CFeatures* data)
@@ -346,33 +391,13 @@ bool CKNN::save(FILE* dstfile)
 	return false;
 }
 
-SGMatrix<int32_t> CKNN::get_neighborhood_matrix(int32_t N)
+void CKNN::get_neighbors(int32_t* out, int32_t idx)
 {
-	int32_t i, j;
-	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*m_k);
+	std::vector<KNN_COVERTREE_POINT> neighbors =
+		m_coverTree->kNearestNeighbors(KNN_COVERTREE_POINT(idx, distance), m_k);
 
-	// Look for the maximum distance, assume that distance(features, features)
-	float64_t max_dist = 0.0;
-	for (i=0; i<N; i++)
-		for (j=i+1; j<N; j++)
-			max_dist = CMath::max(max_dist, distance->distance(i, j));
-
-	CoverTree<KNN_COVERTREE_POINT>* coverTree = new CoverTree<KNN_COVERTREE_POINT>(max_dist);
-
-	for (i=0; i<N; i++)
-		coverTree->insert(KNN_COVERTREE_POINT(i, distance));
-
-	for (i=0; i<N; i++)
-	{
-		std::vector<KNN_COVERTREE_POINT> neighbors =
-			coverTree->kNearestNeighbors(KNN_COVERTREE_POINT(i, distance), m_k+1);
-		for (std::size_t m=1; m<unsigned(m_k+1); m++)
-			neighborhood_matrix[i*m_k+m-1] = neighbors[m].m_point_index;
-	}
-
-	delete coverTree;
-
-	return SGMatrix<int32_t>(neighborhood_matrix, m_k, N);
+	for (std::size_t m=0; m<unsigned(m_k); m++)
+		out[m] = neighbors[m].m_point_index;
 }
 
 void CKNN::store_model_features()
