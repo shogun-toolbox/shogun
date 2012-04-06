@@ -7,6 +7,7 @@
  * Written (W) 2006 Christian Gehl
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 2011 Sergey Lisitsyn
+ * Written (W) 2012 Fernando José Iglesias García, cover tree support
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -18,10 +19,14 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/lib/CoverTree.h>
 #include <shogun/machine/DistanceMachine.h>
 
 namespace shogun
 {
+
+class KNN_COVERTREE_POINT;
+
 class CDistanceMachine;
 
 /** @brief Class KNN, an implementation of the standard k-nearest neigbor
@@ -144,6 +149,19 @@ class CKNN : public CDistanceMachine
 		 */
 		inline float64_t get_q() { return m_q; }
 
+		/* set whether to use cover trees for fast KNN
+		 * @param use_covertree
+		 */
+		inline void set_use_covertree(bool use_covertree)
+		{
+			m_use_covertree = use_covertree;
+		}
+
+		/** get whether to use cover trees for fast KNN
+		 * @return use_covertree parameter
+		 */
+		inline bool get_use_covertree() const { return m_use_covertree; }
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "KNN"; }
 
@@ -174,6 +192,15 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+		/** get the m_k nearest neighbors to the test vector indexed by "idx"
+		 *  these neighbors are found within the set of training vectors. This 
+		 *  function makes use of cover tree support
+		 *
+		 * @param idx index of the test vector for which to find NN
+		 * @return out vector with indices to the NN
+		 */
+		virtual void get_neighbors(int32_t* out, int32_t idx);
+
 	private:
 		void init();
 
@@ -184,6 +211,15 @@ class CKNN : public CDistanceMachine
 		/// parameter q of rank weighting
 		float64_t m_q;
 
+		/// parameter to enable cover tree support
+		bool m_use_covertree;
+
+		/// parameter to tell if the cover tree has been built during training
+		bool m_built_covertree;
+
+		/// class member cover tree
+		CoverTree<KNN_COVERTREE_POINT>* m_covertree;
+
 		///	number of classes (i.e. number of values labels can take)
 		int32_t num_classes;
 
@@ -193,5 +229,33 @@ class CKNN : public CDistanceMachine
 		/** the actual trainlabels */
 		SGVector<int32_t> train_labels;
 };
+
+class KNN_COVERTREE_POINT
+{
+	public:
+
+		KNN_COVERTREE_POINT(int32_t index, CDistance* knncp_distance)
+		{
+			m_point_index = index;
+			m_distance = knncp_distance;
+		}
+
+		inline double distance(const KNN_COVERTREE_POINT& p) const
+		{
+			return m_distance->distance(p.m_point_index, m_point_index);
+		}
+
+		inline bool operator==(const KNN_COVERTREE_POINT& p) const
+		{
+			return (p.m_point_index == m_point_index);
+		}
+
+	public:
+
+		int32_t m_point_index;
+
+		CDistance* m_distance;
+};
+
 }
 #endif
