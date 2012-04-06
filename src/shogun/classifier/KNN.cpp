@@ -298,21 +298,36 @@ CLabels* CKNN::classify_NN()
 	return output;
 }
 
-/** TODO add covertree suppot */
 SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 {
 	ASSERT(num_classes>0);
 	ASSERT(distance);
 	ASSERT(distance->get_num_vec_rhs());
 
+	if ( m_use_coverTree && ! m_built_coverTree )
+		SG_ERROR("The CoverTree must have been built during training to use "
+			 "it for classification\n");
+
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=num_lab);
 
 	int32_t* output=SG_MALLOC(int32_t, m_k*num_lab);
 
+	float64_t* dists;
+	int32_t* train_lab;
+	//vector of neighbors used for the cover tree support
+	int32_t* nearest_neighbors;
 	//distances to train data and working buffer of train_labels
-	float64_t* dists=SG_MALLOC(float64_t, train_labels.vlen);
-	int32_t* train_lab=SG_MALLOC(int32_t, train_labels.vlen);
+	if ( ! m_use_coverTree )
+	{
+		dists=SG_MALLOC(float64_t, train_labels.vlen);
+		train_lab=SG_MALLOC(int32_t, train_labels.vlen);
+	}
+	else
+	{
+		train_lab=SG_MALLOC(int32_t, m_k);
+		nearest_neighbors=SG_MALLOC(int32_t, m_k);
+	}
 
 	///histogram of classes and returned output
 	int32_t* classes=SG_MALLOC(int32_t, num_classes);
@@ -324,20 +339,34 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	{
 		SG_PROGRESS(i, 0, num_lab);
 
-		// lhs idx 1..n and rhs idx i
-		distances_lhs(dists,0,train_labels.vlen-1,i);
-		for (int32_t j=0; j<train_labels.vlen; j++)
-			train_lab[j]=train_labels.vector[j];
+		int32_t j;
 
-		//sort the distance vector for test example j to all train examples
-		//classes[1..k] then holds the classes for minimum distance
-		CMath::qsort_index(dists, train_lab, train_labels.vlen);
+		if ( ! m_use_coverTree )
+		{
+			// lhs idx 1..n and rhs idx i
+			distances_lhs(dists,0,train_labels.vlen-1,i);
+			for (j=0; j<train_labels.vlen; j++)
+				train_lab[j]=train_labels.vector[j];
+
+			//sort the distance vector for test example j to all train examples
+			//classes[1..k] then holds the classes for minimum distance
+			CMath::qsort_index(dists, train_lab, train_labels.vlen);
+		}
+		else
+		{
+			//get the k nearest neighbors to test vector i using the CoverTree 
+			get_neighbors(nearest_neighbors, i);
+
+			//translate from indices to labels of the nearest neighbors
+			for (j=0; j<m_k; j++)
+				train_lab[j]=train_labels.vector[ nearest_neighbors[j] ];
+		}
 
 		//compute histogram of class outputs of the first k nearest neighbours
-		for (int32_t j=0; j<num_classes; j++)
+		for (j=0; j<num_classes; j++)
 			classes[j]=0;
 
-		for (int32_t j=0; j<m_k; j++)
+		for (j=0; j<m_k; j++)
 		{
 			classes[train_lab[j]]++;
 
@@ -357,9 +386,12 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 		}
 	}
 
-	SG_FREE(dists);
 	SG_FREE(train_lab);
 	SG_FREE(classes);
+	if ( ! m_use_coverTree )
+		SG_FREE(dists);
+	else
+		SG_FREE(nearest_neighbors);
 
 	return SGMatrix<int32_t>(output,num_lab,m_k,true);
 }
