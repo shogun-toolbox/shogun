@@ -275,27 +275,27 @@ float64_t CCrossValidation::evaluate_one_run()
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
 			CSubset* training_subset=new CSubset(inverse_subset_indices);
-			m_features->push_subset(training_subset);
+			m_features->add_subset(training_subset);
 
 			/* set label subset for training */
 			m_labels->set_subset(training_subset);
 
 			/* train machine on training features and remove subset */
 			m_machine->train(m_features);
-			m_features->pop_subset();
+			m_features->remove_subset();
 
 			/* set feature subset for testing (subset method that stores pointer) */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
 			CSubset* test_subset=new CSubset(subset_indices);
-			m_features->push_subset(test_subset);
+			m_features->add_subset(test_subset);
 
 			/* set label subset for testing */
 			m_labels->set_subset(test_subset);
 
 			/* apply machine to test features and remove subset */
 			CLabels* result_labels=m_machine->apply(m_features);
-			m_features->pop_subset();
+			m_features->remove_subset();
 			SG_REF(result_labels);
 
 			/* evaluate */

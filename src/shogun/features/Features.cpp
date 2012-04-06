@@ -354,11 +354,11 @@ void CFeatures::unset_property(EFeatureProperty p)
 	properties &= (properties | p) ^ p;
 }
 
-void CFeatures::push_subset(CSubset* subset)
+void CFeatures::add_subset(CSubset* subset)
 {
 	/* do some basic consistency checks */
 	if (!subset)
-		SG_ERROR("CFeatures::push_subset(NULL) is illegal.\n");
+		SG_ERROR("CFeatures::add_subset(NULL) is illegal.\n");
 
 	/* check for legal size (only possible if there is already a subset) */
 	if (has_subsets())
@@ -381,7 +381,7 @@ bool CFeatures::has_subsets() const
 	return m_subset_stack->get_num_elements();
 }
 
-void CFeatures::pop_subset()
+void CFeatures::remove_subset()
 {
 	m_subset_stack->pop();
 	update_active_subset();
