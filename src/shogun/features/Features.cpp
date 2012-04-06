@@ -400,10 +400,14 @@ void CFeatures::update_active_subset()
 	/* delete active subset and rebuild from subset stack */
 	SG_UNREF(m_active_subset);
 
-	if (m_subset_stack->get_num_elements())
+	/* important since this might the first subset from stack */
+	m_active_subset=NULL;
+
+	index_t num_subsets=m_subset_stack->get_num_elements();
+	if (num_subsets)
 	{
 		/* if there is only one subset, use that as current active */
-		if (m_subset_stack->get_num_elements()==1)
+		if (num_subsets==1)
 		{
 			/* this automatically SG_REFs */
 			m_active_subset=(CSubset*)m_subset_stack->get_first_element();
