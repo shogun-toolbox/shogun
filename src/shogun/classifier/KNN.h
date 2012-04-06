@@ -191,8 +191,12 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
-		/**
-		 * TODO
+		/** get the m_k nearest neighbors to the test vector indexed by "idx"
+		 *  these neighbors are found within the set of training vectors. This 
+		 *  function makes use of CoverTree support
+		 *
+		 * @param idx index of the test vector for which to find NN
+		 * @return out vector with indices to the NN
 		 */
 		virtual void get_neighbors(int32_t* out, int32_t idx);
 
