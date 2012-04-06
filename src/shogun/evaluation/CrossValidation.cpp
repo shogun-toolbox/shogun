@@ -274,7 +274,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices =
 					m_splitting_strategy->generate_subset_inverse(i);
-			m_features->set_subset(new CSubset(inverse_subset_indices));
+			m_features->push_subset(new CSubset(inverse_subset_indices));
 
 			/* set label subset for training (copy data before) */
 			SGVector<index_t> inverse_subset_indices_copy(
@@ -284,16 +284,18 @@ float64_t CCrossValidation::evaluate_one_run()
 					inverse_subset_indices.vlen * sizeof(index_t));
 			m_labels->set_subset(new CSubset(inverse_subset_indices_copy));
 
-			/* train machine on training features */
+			/* train machine on training features and remove subset */
 			m_machine->train(m_features);
+			m_features->pop_subset();
 
 			/* set feature subset for testing (subset method that stores pointer) */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
-			m_features->set_subset(new CSubset(subset_indices));
+			m_features->push_subset(new CSubset(subset_indices));
 
-			/* apply machine to test features */
+			/* apply machine to test features and remove subset */
 			CLabels* result_labels=m_machine->apply(m_features);
+			m_features->pop_subset();
 			SG_REF(result_labels);
 
 			/* set label subset for testing (copy data before) */
@@ -307,7 +309,6 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* clean up, reset subsets */
 			SG_UNREF(result_labels);
-			m_features->remove_subset();
 			m_labels->remove_subset();
 		}
 	}
