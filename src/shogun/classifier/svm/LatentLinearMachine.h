@@ -11,23 +11,26 @@
 #ifndef __LATENTLINEARMACHINE_H__
 #define __LATENTLINEARMACHINE_H__
 
+#include <functional>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/LatentLabels.h>
 
 namespace shogun
-{
-	/* function pointer to the latent variable minimalization */
-	typedef CLatentFeatures* (*minimizeLatent) (CLatentFeatures* lFeatures, void* userData);
+{	
+	class CLatentLinearMachine;
 	
-	class CLatentLinearMachine : public CLinearMachine
+	typedef CFeatures* (*argMaxLatent) (const CLatentLinearMachine&, void* userData);
+	
+	class CLatentLinearMachine: public CLinearMachine
 	{
 		
 		public:
 			CLatentLinearMachine ();
-			
-			CLatentLinearMachine (minimizeLatent usrFunc);
 		
+			CLatentLinearMachine (argMaxLatent usrArgMaxFunc);
+			
 			virtual ~CLatentLinearMachine ();
 		
 			/** apply linear machine to all examples
@@ -56,10 +59,13 @@ namespace shogun
 			 */
 			virtual const char* get_name() const { return "LatentLinearMachine"; }
 			
-			void setLatentHandlerFunc (minimizeLatent usrFunc);
+			void setArgmax (argMaxLatent usrFunc);
+
+		private:
+			static CFeatures* defaultArgMaxH (CLatentLinearMachine&, void* userData);
 			
 		private:
-			minimizeLatent handleLatent;
+			argMaxLatent argMaxH;
 	};
 }
 

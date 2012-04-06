@@ -4,20 +4,18 @@ using namespace shogun;
 
 CLatentLinearMachine::CLatentLinearMachine ()
 {
-	
 }
 
-CLatentLinearMachine::CLatentLinearMachine (minimizeLatent usrFunc)
-	: handleLatent (usrFunc)
+CLatentLinearMachine::CLatentLinearMachine (argMaxLatent usrArgMaxFunc)
 {
-	ASSERT (handleLatent != NULL);
+	setArgmax (usrArgMaxFunc);
 }
-
 
 CLatentLinearMachine::~CLatentLinearMachine ()
 {
-	
 }
+
+
 
 CLatentLabels* CLatentLinearMachine::apply ()
 {
@@ -29,9 +27,17 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
 	
 }
 
-void CLatentLinearMachine::setLatentHandlerFunc (minimizeLatent usrFunc)
+void CLatentLinearMachine::setArgmax (argMaxLatent usrArgMaxFunc)
 {
-	ASSERT (handleLatent != NULL);
-	handleLatent = usrFunc;
+	ASSERT (usrArgMaxFunc != NULL);
+	argMaxH = usrArgMaxFunc;
 }
 
+CFeatures* CLatentLinearMachine::defaultArgMaxH (CLatentLinearMachine& llm, void* userData)
+{
+	SGVector<float64_t> w = llm.get_w ();
+	CDotFeatures* features = llm.get_features ();
+	
+	
+	return 0;
+}
