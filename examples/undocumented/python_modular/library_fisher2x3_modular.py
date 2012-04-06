@@ -14,5 +14,5 @@ def library_fisher2x3_modular(table, tables):
 	return (pval,pvals)
 
 if __name__=='__main__':
-	print 'Fisher 2x3'
+	print('Fisher 2x3')
 	library_fisher2x3_modular(*parameter_list[0])

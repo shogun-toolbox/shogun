@@ -22,6 +22,6 @@ def evaluation_multiclassaccuracy_modular(ground_truth, predicted):
 
 
 if __name__=='__main__':
-	print 'MulticlassAccuracy'
+	print('MulticlassAccuracy')
 	evaluation_multiclassaccuracy_modular(*parameter_list[0])
 

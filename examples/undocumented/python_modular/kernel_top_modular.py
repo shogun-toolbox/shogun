@@ -64,5 +64,5 @@ def kernel_top_modular(fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print "TOP Kernel"
+	print("TOP Kernel")
 	kernel_top_modular(*parameter_list[0])

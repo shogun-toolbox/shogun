@@ -10,5 +10,5 @@ def features_read_svmlight_format_modular(fname):
 	os.unlink('testwrite.light')
 
 if __name__=='__main__':
-	print 'Reading SVMLIGHT format'
+	print('Reading SVMLIGHT format')
 	features_read_svmlight_format_modular(*parameter_list[0])

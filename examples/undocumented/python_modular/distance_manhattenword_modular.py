@@ -37,5 +37,5 @@ def distance_manhattenword_modular (fm_train_dna=traindna ,fm_test_dna=testdna,f
 	return dm_train,dm_test
 
 if __name__=='__main__':
-	print 'ManhattanWordDistance'
+	print('ManhattanWordDistance')
 	distance_manhattenword_modular(*parameter_list[0])

@@ -26,5 +26,5 @@ def kernel_multiquadric_modular (fm_train_real=traindat,fm_test_real=testdat, sh
 
 
 if __name__=='__main__':
-	print 'Multiquadric'
+	print('Multiquadric')
 	kernel_multiquadric_modular(*parameter_list[0])

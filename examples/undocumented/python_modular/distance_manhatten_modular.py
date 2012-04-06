@@ -23,7 +23,7 @@ def distance_manhatten_modular (fm_train_real=traindat,fm_test_real=testdat):
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'ManhattanMetric'
+	print('ManhattanMetric')
 	distance_manhatten_modular(*parameter_list[0])
 
 

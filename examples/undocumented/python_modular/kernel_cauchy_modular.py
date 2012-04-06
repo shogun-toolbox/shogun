@@ -26,5 +26,5 @@ def kernel_cauchy_modular (fm_train_real=traindat,fm_test_real=testdat, sigma=1.
 
 
 if __name__=='__main__':
-	print 'Cauchy'
+	print('Cauchy')
 	kernel_cauchy_modular(*parameter_list[0])

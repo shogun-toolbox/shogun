@@ -26,5 +26,5 @@ def kernel_power_modular (fm_train_real=traindat,fm_test_real=testdat, degree=2.
 
 
 if __name__=='__main__':
-	print 'Power'
+	print('Power')
 	kernel_power_modular(*parameter_list[0])

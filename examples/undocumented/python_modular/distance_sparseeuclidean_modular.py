@@ -26,5 +26,5 @@ def distance_sparseeuclidean_modular (fm_train_real=traindat,fm_test_real=testda
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'SparseEuclidianDistance'
+	print('SparseEuclidianDistance')
 	distance_sparseeuclidean_modular(*parameter_list[0])

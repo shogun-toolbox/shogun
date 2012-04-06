@@ -15,5 +15,5 @@ def library_time(sleep_secs):
 	return round(diff),round(cpu_diff)
 
 if __name__=='__main__':
-	print 'Time'
+	print('Time')
 	library_time(*parameter_list[0])

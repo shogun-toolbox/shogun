@@ -21,5 +21,5 @@ def kernel_sparse_gaussian_modular (fm_train_real=traindat,fm_test_real=testdat,
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'SparseGaussian'
+	print('SparseGaussian')
 	kernel_sparse_gaussian_modular (*parameter_list[0])

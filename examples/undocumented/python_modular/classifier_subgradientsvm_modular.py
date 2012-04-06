@@ -32,5 +32,5 @@ def classifier_subgradientsvm_modular(fm_train_real, fm_test_real,
 	return labels, svm
 
 if __name__=='__main__':
-	print 'SubGradientSVM'
+	print('SubGradientSVM')
 	classifier_subgradientsvm_modular(*parameter_list[0])

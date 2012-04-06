@@ -35,5 +35,5 @@ def classifier_svmlin_modular (fm_train_real=traindat,fm_test_real=testdat,label
 
 
 if __name__=='__main__':
-	print 'SVMLin'
+	print('SVMLin')
 	classifier_svmlin_modular(*parameter_list[0])

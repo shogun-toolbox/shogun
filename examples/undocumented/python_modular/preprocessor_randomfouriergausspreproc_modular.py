@@ -30,5 +30,5 @@ def preprocessor_randomfouriergausspreproc_modular (fm_train_real=traindat,fm_te
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'RandomFourierGaussPreproc'
+	print('RandomFourierGaussPreproc')
 	preprocessor_randomfouriergausspreproc_modular(*parameter_list[0])

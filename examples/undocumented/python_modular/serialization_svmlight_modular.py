@@ -12,7 +12,10 @@ def serialization_svmlight_modular(num, dist, width, C):
 	import types
 	import random
 	import bz2
-	import cPickle as pickle
+	try:
+		import cPickle as pickle
+	except ImportError:
+		import pickle as pickle	
 	import inspect
 
 
@@ -28,7 +31,7 @@ def serialization_svmlight_modular(num, dist, width, C):
 
 		try:
 			f = bz2.BZ2File(filename, 'wb')
-		except IOError, details:
+		except IOError as details:
 			sys.stderr.write('File ' + filename + ' cannot be written\n')
 			sys.stderr.write(details)
 			return
@@ -48,7 +51,7 @@ def serialization_svmlight_modular(num, dist, width, C):
 		
 		try:
 			f = bz2.BZ2File(filename, 'rb')
-		except IOError, details:
+		except IOError as details:
 			sys.stderr.write('File ' + filename + ' cannot be read\n')
 			sys.stderr.write(details)
 			return
@@ -80,40 +83,40 @@ def serialization_svmlight_modular(num, dist, width, C):
 
 	##################################################
 
-	#print "labels:"
-	#print pickle.dumps(labels)
+	#print("labels:")
+	#print(pickle.dumps(labels))
 	#
-	#print "features"
-	#print pickle.dumps(feats_train)
+	#print("features")
+	#print(pickle.dumps(feats_train))
 	#
-	#print "kernel"
-	#print pickle.dumps(kernel)
+	#print("kernel")
+	#print(pickle.dumps(kernel))
 	#
-	#print "svm"
-	#print pickle.dumps(svm)
+	#print("svm")
+	#print(pickle.dumps(svm))
 	#
-	#print "#################################"
+	#print("#################################")
 
 	fn = "serialized_svm.bz2"
-	#print "serializing SVM to file", fn
+	#print("serializing SVM to file", fn)
 
 	save(fn, svm)
 
-	#print "#################################"
+	#print("#################################")
 
-	#print "unserializing SVM"
+	#print("unserializing SVM")
 	svm2 = load(fn)
 
 
-	#print "#################################"
-	#print "comparing training"
+	#print("#################################")
+	#print("comparing training")
 
 	svm2.train()
 
-	#print "objective before serialization:", svm.get_objective()
-	#print "objective after serialization:", svm2.get_objective()
+	#print("objective before serialization:", svm.get_objective())
+	#print("objective after serialization:", svm2.get_objective())
 	return svm, svm.get_objective(), svm2, svm2.get_objective()
 
 if __name__=='__main__':
-	print 'Serialization SVMLight'
+	print('Serialization SVMLight')
 	serialization_svmlight_modular(*parameter_list[0])

@@ -22,5 +22,5 @@ def kernel_gaussian_shift_modular (fm_train_real=traindat,fm_test_real=testdat,w
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'GaussianShift'
+	print('GaussianShift')
 	kernel_gaussian_shift_modular(*parameter_list[0])

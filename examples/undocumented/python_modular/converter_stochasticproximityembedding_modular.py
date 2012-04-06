@@ -25,5 +25,5 @@ def converter_stochasticproximityembedding_modular(data, k):
 	return features
 
 if __name__=='__main__':
-	print 'StochasticProximityEmbedding'
+	print('StochasticProximityEmbedding')
 	converter_stochasticproximityembedding_modular(*parameter_list[0])

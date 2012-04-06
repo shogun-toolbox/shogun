@@ -33,7 +33,7 @@ def classifier_liblinear_modular(fm_train_real, fm_test_real,
 
 
 if __name__=='__main__':
-	print 'LibLinear'
+	print('LibLinear')
 	classifier_liblinear_modular(*parameter_list[0])
 
 

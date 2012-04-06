@@ -24,5 +24,5 @@ def distance_geodesic_modular (fm_train_real=traindat,fm_test_real=testdat):
 
 
 if __name__=='__main__':
-	print 'GeodesicMetric'
+	print('GeodesicMetric')
 	distance_geodesic_modular(*parameter_list[0])

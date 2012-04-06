@@ -30,5 +30,5 @@ def converter_multidimensionalscaling_modular(data):
 	return numpy.linalg.norm(distance_matrix_after-distance_matrix_before)/numpy.linalg.norm(distance_matrix_before)
 
 if __name__=='__main__':
-	print 'MultidimensionalScaling'
+	print('MultidimensionalScaling')
 	converter_multidimensionalscaling_modular(*parameter_list[0])

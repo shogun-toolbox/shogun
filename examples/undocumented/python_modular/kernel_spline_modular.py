@@ -23,5 +23,5 @@ def kernel_spline_modular (fm_train_real=traindat,fm_test_real=testdat):
 
 
 if __name__=='__main__':
-	print 'Spline'
+	print('Spline')
 	kernel_spline_modular(*parameter_list[0])

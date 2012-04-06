@@ -20,6 +20,6 @@ def converter_linearlocaltangentspacealignment_modular(data,k):
 
 
 if __name__=='__main__':
-	print 'LinearLocalTangentSpaceAlignment'
+	print('LinearLocalTangentSpaceAlignment')
 	converter_linearlocaltangentspacealignment_modular(*parameter_list[0])
 
