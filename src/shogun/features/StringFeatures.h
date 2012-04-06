@@ -63,8 +63,9 @@ struct SSKTripleFeature
  *
  * Also note that string features cannot currently be computed on-the-fly.
  *
+ * TODO update for subset stacks
  * (Partly) subset access is supported for this feature type.
- * Simple use the (inherited) set_subset(), remove_subset() functions.
+ * Simple use the (inherited) set_subset(), remove_all_subsets() functions.
  * If done, all calls that work with features are translated to the subset.
  * See comments to find out whether it is supported for that method
  */

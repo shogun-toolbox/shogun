@@ -44,6 +44,7 @@ template <class ST> class CSimpleFeatures;
  * As this is a template class it can directly be used for different data types
  * like sparse matrices of real valued, integer, byte etc type.
  *
+ * TODO update for subset stacks
  * (Partly) subset access is supported for this feature type.
  * Simple use the (inherited) set_subset(), remove_subset() functions.
  * If done, all calls that work with features are translated to the subset.

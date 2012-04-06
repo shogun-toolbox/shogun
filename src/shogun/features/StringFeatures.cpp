@@ -105,7 +105,12 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(const CStringFeatures & 
 			symbol_mask_table[i]=orig.symbol_mask_table[i];
 	}
 
-	m_subset=orig.m_subset->duplicate();
+	m_active_subset=orig.m_active_subset;
+	SG_REF(m_active_subset);
+
+	SG_UNREF(m_subset_stack);
+	m_subset_stack=orig.m_subset_stack;
+	SG_REF(m_subset_stack);
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet alpha)
@@ -132,7 +137,7 @@ template<class ST> CStringFeatures<ST>::~CStringFeatures()
 
 template<class ST> void CStringFeatures<ST>::cleanup()
 {
-	remove_subset();
+	remove_all_subsets();
 
 	if (single_string)
 	{
@@ -228,7 +233,7 @@ template<class ST> void CStringFeatures<ST>::set_feature_vector(SGVector<ST> vec
 {
 	ASSERT(features);
 
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("A subset is set, cannot set feature vector\n");
 
 	if (num>=num_vectors)
@@ -408,7 +413,7 @@ template<class ST> int32_t CStringFeatures<ST>::get_max_vector_length()
 
 template<class ST> int32_t CStringFeatures<ST>::get_num_vectors() const
 {
-	return m_subset ? m_subset->get_size() : num_vectors;
+	return m_active_subset ? m_active_subset->get_size() : num_vectors;
 }
 
 template<class ST> floatmax_t CStringFeatures<ST>::get_num_symbols() { return num_symbols; }
@@ -440,7 +445,7 @@ template<class ST> ST CStringFeatures<ST>::shift_symbol(ST symbol, int32_t amoun
 template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool remap_to_bin,
 		EAlphabet ascii_alphabet, EAlphabet binary_alphabet)
 {
-	remove_subset();
+	remove_all_subsets();
 
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=0;
@@ -572,7 +577,7 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 
 template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, bool ignore_invalid)
 {
-	remove_subset();
+	remove_all_subsets();
 
 	int32_t i=0;
 	uint64_t len=0;
@@ -666,7 +671,7 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 		bool ignore_invalid, bool bitremap_in_single_string)
 {
-	remove_subset();
+	remove_all_subsets();
 
 	CMemoryMappedFile<char> f(fname);
 
@@ -766,7 +771,7 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 
 template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 {
-	remove_subset();
+	remove_all_subsets();
 
 	struct dirent **namelist;
 	int32_t n;
@@ -841,7 +846,7 @@ template<class ST> void CStringFeatures<ST>::set_features(SGStringList<ST> feats
 
 template<class ST> bool CStringFeatures<ST>::set_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("Cannot call set_features() with subset.\n");
 
 	if (p_features)
@@ -880,7 +885,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(CStringFeatures<ST>
 {
 	ASSERT(sf);
 
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("Cannot call set_features() with subset.\n");
 
 	SGString<ST>* new_features=SG_MALLOC(SGString<ST>, sf->get_num_vectors());
@@ -900,7 +905,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(CStringFeatures<ST>
 
 template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("Cannot call set_features() with subset.\n");
 
 	if (!features)
@@ -961,7 +966,7 @@ template<class ST> SGStringList<ST> CStringFeatures<ST>::get_features()
 
 template<class ST> SGString<ST>* CStringFeatures<ST>::get_features(int32_t& num_str, int32_t& max_str_len)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("get features() is not possible on subset");
 
 	num_str=num_vectors;
@@ -1001,7 +1006,7 @@ template<class ST> void CStringFeatures<ST>::get_features(SGString<ST>** dst, in
 
 template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool decompress)
 {
-	remove_subset();
+	remove_all_subsets();
 
 	FILE* file=NULL;
 
@@ -1096,7 +1101,7 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 
 template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPRESSION_TYPE compression, int level)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("save_compressed() is not possible on subset");
 
 	FILE* file=NULL;
@@ -1182,7 +1187,7 @@ template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_prepr
 
 template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t window_size, int32_t step_size, int32_t skip)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	ASSERT(step_size>0);
@@ -1220,7 +1225,7 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t
 template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t window_size, CDynamicArray<int32_t>* positions,
 		int32_t skip)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	ASSERT(positions);
@@ -1301,7 +1306,7 @@ template<class ST> bool CStringFeatures<ST>::have_same_length(int32_t len)
 
 template<class ST> void CStringFeatures<ST>::embed_features(int32_t p_order)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	ASSERT(alphabet->get_num_symbols_in_histogram() > 0);
@@ -1355,7 +1360,7 @@ template<class ST> void CStringFeatures<ST>::embed_features(int32_t p_order)
 
 template<class ST> void CStringFeatures<ST>::compute_symbol_mask_table(int64_t max_val)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	SG_FREE(symbol_mask_table);
@@ -1924,7 +1929,7 @@ LOAD(get_longreal_string_list, floatmax_t)
 #define SAVE(f_write, sg_type)												\
 template<> void CStringFeatures<sg_type>::save(CFile* writer)		\
 { 																			\
-	if (m_subset)															\
+	if (has_subsets())															\
 		SG_ERROR("save() is not possible on subset");						\
 	SG_SET_LOCALE_C;													\
 	ASSERT(writer);															\
@@ -1951,7 +1956,7 @@ template <class ST> template <class CT>
 bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start,
 		int32_t p_order, int32_t gap, bool rev)
 {
-	remove_subset();
+	remove_all_subsets();
 	ASSERT(sf);
 
 	CAlphabet* alpha=sf->get_alphabet();
