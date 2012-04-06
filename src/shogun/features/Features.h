@@ -227,10 +227,10 @@ class CFeatures : public CSGObject
 		 *
 		 * @param subset subset of indices to add
 		 * */
-		virtual void push_subset(CSubset* subset);
+		virtual void add_subset(CSubset* subset);
 
 		/** removes that last added subset from subset stack, if existing */
-		virtual void pop_subset();
+		virtual void remove_subset();
 
 		/** removes all subsets */
 		virtual void remove_all_subsets();
