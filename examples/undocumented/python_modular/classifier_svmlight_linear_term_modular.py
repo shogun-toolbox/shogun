@@ -54,5 +54,5 @@ def classifier_svmlight_linear_term_modular(fm_train_dna=traindna,fm_test_dna=te
     return out,kernel
 
 if __name__=='__main__':
-    print 'SVMLight'
+    print('SVMLight')
     classifier_svmlight_linear_term_modular(*parameter_list[0])

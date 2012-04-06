@@ -25,5 +25,5 @@ def kernel_weighted_degree_position_string_modular(fm_train_dna=traindat,fm_test
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'WeightedDegreePositionString'
+	print('WeightedDegreePositionString')
 	kernel_weighted_degree_position_string_modular(*parameter_list[0])

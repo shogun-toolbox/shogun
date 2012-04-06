@@ -25,5 +25,5 @@ def regression_least_squares_modular (fm_train=traindat,fm_test=testdat,label_tr
 	return out,ls
 
 if __name__=='__main__':
-	print 'LeastSquaresRegression'
+	print('LeastSquaresRegression')
 	regression_least_squares_modular(*parameter_list[0])

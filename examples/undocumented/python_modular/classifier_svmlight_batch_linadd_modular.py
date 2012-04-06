@@ -16,7 +16,7 @@ def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
 	try:
 		from shogun.Classifier import SVMLight
 	except ImportError:
-		print 'No support for SVMLight available.'
+		print('No support for SVMLight available.')
 		return
 
 	feats_train=StringCharFeatures(DNA)
@@ -37,7 +37,7 @@ def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
 
 	kernel.init(feats_train, feats_test)
 
-	#print 'SVMLight Objective: %f num_sv: %d' % \
+	#print('SVMLight Objective: %f num_sv: %d' % \)
 	#	(svm.get_objective(), svm.get_num_support_vectors())
 	svm.set_batch_computation_enabled(False)
 	svm.set_linadd_enabled(False)
@@ -49,5 +49,5 @@ def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
 
 
 if __name__=='__main__':
-	print 'SVMlight batch'
+	print('SVMlight batch')
 	classifier_svmlight_batch_linadd_modular(*parameter_list[0])

@@ -25,5 +25,5 @@ def kernel_chi2_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4, 
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'Chi2'
+	print('Chi2')
 	kernel_chi2_modular(*parameter_list[0])

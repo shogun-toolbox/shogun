@@ -3,11 +3,11 @@
 #
 #class MyKernel(DirectorKernel):
 #	def init(self, f1,f2):
-#		print "hallo"
+#		print("hallo")
 #		return true
 #
 #	def compute(self, i,j):
-#		print i+j
+#		print(i+j)
 #		return i+j
 #
 #
@@ -45,14 +45,14 @@
 ##	return predictions, svm, predictions.get_labels()
 ##
 ##if __name__=='__main__':
-##	print 'LibSVM'
+##	print('LibSVM')
 ##	classifier_libsvm_modular(*parameter_list[0])
 #
 #labels=Labels(label_traindat)
 ##kernel=DirectorKernel()
 #kernel=MyKernel()
-#print kernel.get_cache_size()
-#print kernel.get_name()
+#print(kernel.get_cache_size())
+#print(kernel.get_name())
 #k=CombinedKernel()
 #k.io.set_loglevel(0)
 #k.append_kernel(kernel)
@@ -61,5 +61,5 @@
 ##
 ##svm=LibSVM(0.1, kernel, labels)
 ##svm.train()
-##print kernel.compute(0,0)
+##print(kernel.compute(0,0))
 #

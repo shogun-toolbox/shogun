@@ -24,5 +24,5 @@ def kernel_distance_modular (fm_train_real=traindat,fm_test_real=testdat,width=1
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'Distance'
+	print('Distance')
 	kernel_distance_modular(*parameter_list[0])

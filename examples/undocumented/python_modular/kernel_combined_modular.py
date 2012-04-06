@@ -45,7 +45,7 @@ def kernel_combined_modular(fm_train_real=traindat,fm_test_real=testdat,fm_train
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'Combined'
+	print('Combined')
 	kernel_combined_modular(*parameter_list[0])
 
 

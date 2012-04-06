@@ -23,7 +23,7 @@ def kernel_anova_modular (fm_train_real=traindat,fm_test_real=testdat,cardinalit
 			k1 = kernel.compute_rec1(i,j)
 			k2 = kernel.compute_rec2(i,j)
 			#if abs(k1-k2) > 1e-10:
-			#	print "|%s|%s|" % (k1, k2)
+			#	print("|%s|%s|" % (k1, k2))
 
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
@@ -31,5 +31,5 @@ def kernel_anova_modular (fm_train_real=traindat,fm_test_real=testdat,cardinalit
 	return km_train, km_test, kernel
 
 if __name__=='__main__':
-	print 'ANOVA'
+	print('ANOVA')
 	kernel_anova_modular(*parameter_list[0])

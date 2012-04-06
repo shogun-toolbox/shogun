@@ -36,5 +36,5 @@ def distance_canberraword_modular (fm_train_dna=traindna,fm_test_dna=testdna,ord
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'CanberraWordDistance'
+	print('CanberraWordDistance')
 	distance_canberraword_modular(*parameter_list[0])

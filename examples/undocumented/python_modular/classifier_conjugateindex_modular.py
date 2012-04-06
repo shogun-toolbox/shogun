@@ -23,5 +23,5 @@ def classifier_conjugateindex_modular (fm_train_real=traindat,fm_test_real=testd
 	return ci, res
 
 if __name__=='__main__':
-	print 'ConjugateIndex'
+	print('ConjugateIndex')
 	classifier_conjugateindex_modular(*parameter_list[0])

@@ -160,62 +160,31 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
 static int is_pyvector(PyObject* obj, int typecode)
 {
-	if((obj && !PyList_Check(obj)) && (is_array(obj) && array_dimensions(obj)==1))
-	{
-		if(array_type(obj) != typecode && typecode == NPY_INT32)
-		{
-			if(PyArray_ISSIGNED(obj) && PyArray_ITEMSIZE(obj)==SIZEOF_INT)
-			{
-				return 1;
-			}
-		}
-		else
-		{
-			return 1;
-		}
-	}
-
-	return 0;
+    return  ((obj && !PyList_Check(obj)) &&
+            (
+             is_array(obj) &&
+             array_dimensions(obj)==1 &&
+             (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
+            )) ? 1 : 0;
 }
 
 static int is_pymatrix(PyObject* obj, int typecode)
 {
-	if((obj && !PyList_Check(obj)) && (is_array(obj) && array_dimensions(obj)==2))
-	{
-		if(array_type(obj) != typecode && typecode == NPY_INT32)
-		{
-			if(PyArray_ISSIGNED(obj) && PyArray_ITEMSIZE(obj)==SIZEOF_INT)
-			{
-				return 1;
-			}
-		}
-		else
-		{
-			return 1;
-		}
-	}
-
-	return 0;
+    return ((obj && !PyList_Check(obj)) &&
+                (
+				 is_array(obj) &&
+                 array_dimensions(obj)==2 &&
+                 (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
+                )) ? 1 : 0;
 }
 
 static int is_pyarray(PyObject* obj, int typecode)
 {
-	if((obj && !PyList_Check(obj)) && is_array(obj))
-	{
-		if(array_type(obj) != typecode && typecode == NPY_INT32)
-		{
-			if(PyArray_ISSIGNED(obj) && PyArray_ITEMSIZE(obj)==SIZEOF_INT)
-			{
-				return 1;
-			}
-		}
-		else
-		{
-			return 1;
-		}
-	}
-
-	return 0;
+    return ((obj && !PyList_Check(obj)) &&
+                (
+				 is_array(obj) &&
+                 (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
+                )) ? 1 : 0;
 }
 
 static int is_pysparse_matrix(PyObject* obj, int typecode)

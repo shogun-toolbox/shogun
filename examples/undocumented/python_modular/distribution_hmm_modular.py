@@ -19,15 +19,15 @@ def distribution_hmm_modular(fm_cube, N, M, pseudo, order, gap, reverse, num_exa
 
 	num_examples=feats.get_num_vectors()
 	num_param=hmm.get_num_model_parameters()
-	for i in xrange(num_examples):
-		for j in xrange(num_param):
+	for i in range(num_examples):
+		for j in range(num_param):
 			hmm.get_log_derivative(j, i)
 
 	best_path=0
 	best_path_state=0
-	for i in xrange(num_examples):
+	for i in range(num_examples):
 		best_path+=hmm.best_path(i)
-		for j in xrange(N):
+		for j in range(N):
 			best_path_state+=hmm.get_best_path_state(i, j)
 
 	lik_example = hmm.get_log_likelihood()
@@ -40,5 +40,5 @@ def distribution_hmm_modular(fm_cube, N, M, pseudo, order, gap, reverse, num_exa
 ###########################################################################
 
 if __name__=='__main__':
-	print 'HMM'
+	print('HMM')
 	distribution_hmm_modular(*parameter_list[0])

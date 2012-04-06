@@ -22,5 +22,5 @@ def kernel_locality_improved_string_modular(fm_train_dna=traindat,fm_test_dna=te
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'LocalityImprovedString'
+	print('LocalityImprovedString')
 	kernel_locality_improved_string_modular(*parameter_list[0])

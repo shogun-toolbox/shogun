@@ -96,7 +96,7 @@ def modelselection_parameter_tree_modular(dummy):
 
 
 if __name__=='__main__':
-    print 'ModelSelection ParameterTree'
+    print('ModelSelection ParameterTree')
     modelselection_parameter_tree_modular(*parameter_list[0])
 
 

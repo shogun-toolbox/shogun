@@ -13,8 +13,8 @@ def kernel_custom_modular (dim=7):
 	data=rand(dim, dim)
 	feats=RealFeatures(data)
 	symdata=data+data.T
-	lowertriangle=array([symdata[(x,y)] for x in xrange(symdata.shape[1])
-		for y in xrange(symdata.shape[0]) if y<=x])
+	lowertriangle=array([symdata[(x,y)] for x in range(symdata.shape[1])
+		for y in range(symdata.shape[0]) if y<=x])
 
 	kernel=CustomKernel()
 
@@ -42,6 +42,6 @@ def kernel_custom_modular (dim=7):
 	return km_fullfull,kernel
 
 if __name__=='__main__':
-	print 'Custom'
+	print('Custom')
 	kernel_custom_modular(*parameter_list[0])
 

@@ -12,12 +12,12 @@ def features_simple_real_modular(A=matrix):
 # ... of type Real, LongInt and Byte
     a=RealFeatures(A)
 
-# print some statistics about a
-#print a.get_num_vectors()
-#print a.get_num_features()
+# print(some statistics about a)
+#print(a.get_num_vectors())
+#print(a.get_num_features())
 
 # get first feature vector and set it
-#print a.get_feature_vector(0)
+#print(a.get_feature_vector(0))
     a.set_feature_vector(array([1,4,0,0,0,9], dtype=float64), 0)
 
 # get matrix
@@ -28,5 +28,5 @@ def features_simple_real_modular(A=matrix):
 
 
 if __name__=='__main__':
-    print 'simple_real'
+    print('simple_real')
     features_simple_real_modular(*parameter_list[0])

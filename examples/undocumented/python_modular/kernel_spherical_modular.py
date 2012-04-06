@@ -26,5 +26,5 @@ def kernel_spherical_modular (fm_train_real=traindat,fm_test_real=testdat, sigma
 
 
 if __name__=='__main__':
-	print 'Spherical'
+	print('Spherical')
 	kernel_spherical_modular(*parameter_list[0])

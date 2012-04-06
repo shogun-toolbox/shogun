@@ -23,6 +23,6 @@ def distance_minkowski_modular (fm_train_real=traindat,fm_test_real=testdat,k=3)
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print 'MinkowskiMetric'
+	print('MinkowskiMetric')
 	distance_minkowski_modular(*parameter_list[0])
 

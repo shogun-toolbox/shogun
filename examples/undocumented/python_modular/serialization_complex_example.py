@@ -4,9 +4,9 @@ def check_status(status):
 	# silent...
 	assert(status)
 	#if  status:
-	#	print "OK reading/writing .h5\n"
+	#	print("OK reading/writing .h5\n")
 	#else:
-	#	print "ERROR reading/writing .h5\n"
+	#	print("ERROR reading/writing .h5\n")
 
 def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
@@ -90,5 +90,5 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 
 
 if __name__=='__main__':
-	print 'Serialization SVMLight'
+	print('Serialization SVMLight')
 	serialization_complex_example(*parameter_list[0])
