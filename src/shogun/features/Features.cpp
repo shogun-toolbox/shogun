@@ -50,27 +50,32 @@ CFeatures::CFeatures(CFile* loader)
 CFeatures::~CFeatures()
 {
 	clean_preprocessors();
-	delete m_subset;
+	SG_UNREF(m_active_subset);
+	SG_UNREF(m_subset_stack);
 }
 
 void
 CFeatures::init()
 {
-	m_parameters->add(&properties, "properties",
-					  "Feature properties.");
-	m_parameters->add(&cache_size, "cache_size",
-					  "Size of cache in MB.");
+	SG_ADD(&properties, "properties", "Feature properties", MS_NOT_AVAILABLE);
+	SG_ADD(&cache_size, "cache_size", "Size of cache in MB", MS_NOT_AVAILABLE);
 
-	m_parameters->add_vector((CSGObject***) &preproc,
-							 &num_preproc, "preproc",
-							 "List of preprocessors.");
-	m_parameters->add_vector(&preprocessed,
-							 &num_preproc, "preprocessed",
-							 "Feature[i] is already preprocessed.");
+	/* TODO, use SGVector for arrays to be able to use SG_ADD macro */
+	m_parameters->add_vector((CSGObject***) &preproc, &num_preproc, "preproc",
+			"List of preprocessors");
+	m_parameters->add_vector(&preprocessed, &num_preproc, "preprocessed",
+			"Feature[i] is already preprocessed");
 
-	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
+	SG_ADD((CSGObject**)&m_active_subset, "active_subset", "Subset object",
+			MS_NOT_AVAILABLE);
 
-	m_subset=NULL;
+	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack",
+			"Stack of subsets of indices", MS_NOT_AVAILABLE);
+
+	m_subset_stack=new CList(true);
+	SG_REF(m_subset_stack);
+
+	m_active_subset=NULL;
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = NULL;
@@ -349,22 +354,75 @@ void CFeatures::unset_property(EFeatureProperty p)
 	properties &= (properties | p) ^ p;
 }
 
-void CFeatures::set_subset(CSubset* subset)
+void CFeatures::push_subset(CSubset* subset)
 {
-	SG_UNREF(m_subset);
-	m_subset=subset;
-	SG_REF(subset);
+	/* do some basic consistency checks */
+	if (!subset)
+		SG_ERROR("CFeatures::push_subset(NULL) is illegal.\n");
+
+	/* check for legal size (only possible if there is already a subset) */
+	if (has_subsets())
+	{
+		index_t available=m_active_subset->get_size();
+		if (subset->get_size()>available)
+			SG_ERROR("Pushed subset contains more indices than available.\n");
+
+		if (subset->get_max_index()>= available)
+			SG_ERROR("Pushed subset contains index out of bounds (too large).\n");
+	}
+
+	m_subset_stack->push(subset);
+	update_active_subset();
 	subset_changed_post();
 }
 
-bool CFeatures::has_subset() const
+bool CFeatures::has_subsets() const
 {
-	return m_subset!=NULL;
+	return m_subset_stack->get_num_elements();
 }
 
-void CFeatures::remove_subset()
+void CFeatures::pop_subset()
 {
-	set_subset(NULL);
+	m_subset_stack->pop();
+	update_active_subset();
+	subset_changed_post();
+}
+
+void CFeatures::remove_all_subsets()
+{
+	m_subset_stack->delete_all_elements();
+	update_active_subset();
+	subset_changed_post();
+}
+
+void CFeatures::update_active_subset()
+{
+	if (m_subset_stack->get_num_elements())
+	{
+		CSubset* last=(CSubset*)m_subset_stack->get_last_element();
+
+		SGVector<index_t> indices=SGVector<index_t>(last->get_size());
+
+		/* map mappings of latest subset using active subset */
+		for (index_t i=0; i<last->get_size(); ++i)
+		{
+			indices.vector[i]=m_active_subset->subset_idx_conversion(
+					last->subset_idx_conversion(i));
+		}
+		SG_UNREF(last);
+
+		/* replace active subset */
+		SG_UNREF(m_active_subset);
+		m_active_subset=new CSubset(indices);
+		SG_REF(m_active_subset);
+
+	}
+	else
+	{
+		SG_UNREF(m_active_subset);
+		m_active_subset=NULL;
+	}
+
 }
 
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
