@@ -397,42 +397,47 @@ void CFeatures::remove_all_subsets()
 
 void CFeatures::update_active_subset()
 {
+	/* delete active subset and rebuild from subset stack */
+	SG_UNREF(m_active_subset);
+
 	if (m_subset_stack->get_num_elements())
 	{
-		CSubset* last=(CSubset*)m_subset_stack->get_last_element();
 
-		SGVector<index_t> indices=SGVector<index_t>(last->get_size());
+		/* current_indices will contain the "real" indices which are translated
+		 * iteratively through all stacked subsets. start with last subset */
+		CSubset* current_subset=(CSubset*)m_subset_stack->get_last_element();
+		SGVector<index_t> current_indices=SGVector<index_t>(
+				current_subset->get_size());
+		for (index_t i=0; i<current_indices.vlen; ++i)
+			current_indices.vector[i]=current_subset->subset_idx_conversion(i);
 
-		/* map mappings of latest subset using active subset */
-		if (m_active_subset)
+		SG_UNREF(current_subset);
+		current_subset=(CSubset*)m_subset_stack->get_previous_element();
+
+		/* now remaining subsets */
+		while(current_subset)
 		{
-			for (index_t i=0; i<last->get_size(); ++i)
+			SGVector<index_t> new_indices=SGVector<index_t>(
+					current_subset->get_size());
+
+			/* translate current real indices through current subset */
+			for (index_t i=0; i<current_indices.vlen; ++i)
 			{
-				indices.vector[i]=m_active_subset->subset_idx_conversion(
-						last->subset_idx_conversion(i));
+				new_indices.vector[i]=current_subset->subset_idx_conversion(
+						current_indices.vector[i]);
 			}
+
+			/* replace current real indices */
+			current_indices.destroy_vector();
+			current_indices=SGVector<index_t>(new_indices);
+
+			/* next subset */
+			SG_UNREF(current_subset);
+			current_subset=(CSubset*)m_subset_stack->get_next_element();
 		}
-		else
-		{
-			for (index_t i=0; i<last->get_size(); ++i)
-			{
-				indices.vector[i]=last->subset_idx_conversion(i);
-			}
-		}
-		SG_UNREF(last);
 
-		/* replace active subset */
-		SG_UNREF(m_active_subset);
-		m_active_subset=new CSubset(indices);
-		SG_REF(m_active_subset);
-
+		m_active_subset=new CSubset(current_indices);
 	}
-	else
-	{
-		SG_UNREF(m_active_subset);
-		m_active_subset=NULL;
-	}
-
 }
 
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
