@@ -137,13 +137,19 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 */
 		virtual void set_machine_subset(CSubset* subset)
 		{
-			m_features->set_subset(subset);
+			/* changing the subset structure to use subset stacks. This might
+			 * have to be revised. Heiko Strathmann */
+			SG_NOTIMPLEMENTED;
+//			m_features->set_subset(subset);
 		}
 
 		/** deletes any subset set to the features of the machine */
 		virtual void remove_machine_subset()
 		{
-			m_features->remove_subset();
+			/* changing the subset structure to use subset stacks. This might
+			 * have to be revised. Heiko Strathmann */
+			SG_NOTIMPLEMENTED;
+//			m_features->remove_subset();
 		}
 
 	protected:
