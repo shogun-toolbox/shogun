@@ -18,9 +18,9 @@ from scipy.io import loadmat
 import pickle
 
 try:
-	from cStringIO import StringIO
-except ImportError:
 	from StringIO import StringIO
+except ImportError:
+	from io import StringIO
 
 if scipy.__version__ >= '0.7.0':
 	renametable = {
@@ -61,17 +61,17 @@ def structure_dynprog_modular(fname):
 	data_dict = loads(gzip.GzipFile(fname).read())
 	#data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat=False, struct_as_record=False)
 
-	#print data_dict
-	#print len(data_dict['penalty_array'][0][0][0][0].limits[0])
+	#print(data_dict)
+	#print(len(data_dict['penalty_array'][0][0][0][0].limits[0]))
 	num_plifs,num_limits = len(data_dict['penalty_array']),len(data_dict['penalty_array'][0].limits)
 	pm = PlifMatrix()
 	pm.create_plifs(num_plifs,num_limits)
 
-	ids = numpy.array(range(num_plifs),dtype=numpy.int32)
-	min_values = numpy.array(range(num_plifs),dtype=numpy.float64)
-	max_values = numpy.array(range(num_plifs),dtype=numpy.float64)
-	all_use_cache = numpy.array(range(num_plifs),dtype=numpy.bool)
-	all_use_svm = numpy.array(range(num_plifs),dtype=numpy.int32)
+	ids = numpy.array(list(range(num_plifs)),dtype=numpy.int32)
+	min_values = numpy.array(list(range(num_plifs)),dtype=numpy.float64)
+	max_values = numpy.array(list(range(num_plifs)),dtype=numpy.float64)
+	all_use_cache = numpy.array(list(range(num_plifs)),dtype=numpy.bool)
+	all_use_svm = numpy.array(list(range(num_plifs)),dtype=numpy.int32)
 	all_limits = zeros((num_plifs,num_limits))
 	all_penalties = zeros((num_plifs,num_limits))
 	all_names = ['']*num_plifs
@@ -167,14 +167,14 @@ def structure_dynprog_modular(fname):
 
 	## fetch results
 	#states = dyn.get_states()
-	##print states
+	##print(states)
 	#scores = dyn.get_scores()
-	##print scores
+	##print(scores)
 	#positions = dyn.get_positions()
-	##print positions
+	##print(positions)
 
 	#return states, scores, positions
 
 if __name__ == '__main__':
-	print "Structure"
+	print("Structure")
 	structure_dynprog_modular(*parameter_list[0])

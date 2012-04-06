@@ -27,5 +27,5 @@ def classifier_gmnpsvm_modular (fm_train_real=traindat,fm_test_real=testdat,labe
 	out=svm.apply(feats_test).get_labels()
 	return out,kernel
 if __name__=='__main__':
-	print 'GMNPSVM'
+	print('GMNPSVM')
 	classifier_gmnpsvm_modular(*parameter_list[0])

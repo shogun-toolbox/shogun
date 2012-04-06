@@ -10,7 +10,7 @@ def features_binned_dot_modular(matrix, bins):
 	from modshogun import RealFeatures, BinnedDotFeatures
 	rf=RealFeatures(matrix)
 
-	#print rf.get_feature_matrix()
+	#print(rf.get_feature_matrix())
 
 	bf=BinnedDotFeatures(rf, bins)
 	filled=bf.get_computed_dot_feature_matrix()
@@ -27,5 +27,5 @@ def features_binned_dot_modular(matrix, bins):
 	return bf,filled,unfilled,unfilled_normed,filled_normed
 
 if __name__=='__main__':
-    print 'BinnedDotFeatures'
+    print('BinnedDotFeatures')
     features_binned_dot_modular(*parameter_list[0])

@@ -9,7 +9,10 @@ from shogun.Evaluation import ClusteringMutualInformation
 
 def get_dataset():
     from os.path import exists
-    from urllib2 import urlopen
+    try:
+        from urllib2 import urlopen
+    except ImportError:
+        from urllib.request import urlopen
 
     filename = "../data/optdigits.tes"
     if exists(filename):
@@ -64,9 +67,9 @@ if __name__ == '__main__':
     AccuracyEval.best_map(gnd_hat, gnd)
 
     accuracy = AccuracyEval.evaluate(gnd_hat, gnd)
-    print('Clustering accuracy = %.4f' % accuracy)
+    print(('Clustering accuracy = %.4f' % accuracy))
 
     MIEval = ClusteringMutualInformation()
     mutual_info = MIEval.evaluate(gnd_hat, gnd)
-    print('Clustering mutual information = %.4f' % mutual_info)
+    print(('Clustering mutual information = %.4f' % mutual_info))
 

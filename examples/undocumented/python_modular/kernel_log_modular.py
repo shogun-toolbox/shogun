@@ -26,5 +26,5 @@ def kernel_log_modular (fm_train_real=traindat,fm_test_real=testdat, degree=2.0)
 
 
 if __name__=='__main__':
-	print 'Log'
+	print('Log')
 	kernel_log_modular(*parameter_list[0])

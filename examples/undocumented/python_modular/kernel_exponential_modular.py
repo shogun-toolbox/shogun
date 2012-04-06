@@ -26,5 +26,5 @@ def kernel_exponential_modular (fm_train_real=traindat,fm_test_real=testdat, tau
 
 
 if __name__=='__main__':
-	print 'Exponential'
+	print('Exponential')
 	kernel_exponential_modular(*parameter_list[0])

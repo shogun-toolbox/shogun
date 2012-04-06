@@ -56,7 +56,7 @@ def tests_check_commwordkernel_memleak_modular(num, order, gap, reverse):
 	num*'ACGT',num*'ACGT', num*'ACGT', num*'ACGT',num*'ACGT', num*'ACGT', 
 	num*'ACGT',num*'ACGT', num*'ACGT', num*'ACGT']
 
-	for i in xrange(10):
+	for i in range(10):
 		alpha=Alphabet(DNA)
 		traindat=StringCharFeatures(alpha)
 		traindat.set_features(POS+NEG)
@@ -81,5 +81,5 @@ def tests_check_commwordkernel_memleak_modular(num, order, gap, reverse):
 	return K
 
 if __name__=='__main__':
-	print 'Leak Check Comm Word Kernel'
+	print('Leak Check Comm Word Kernel')
 	tests_check_commwordkernel_memleak_modular(*parameter_list[0])

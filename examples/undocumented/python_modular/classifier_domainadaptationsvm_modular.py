@@ -73,7 +73,7 @@ def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=tes
     
 	#####################################
 		
-	#print "obtaining DA SVM from previously trained SVM"
+	#print("obtaining DA SVM from previously trained SVM")
 
 	feats_train2 = StringCharFeatures(fm_train_dna, DNA)
 	feats_test2 = StringCharFeatures(fm_test_dna, DNA)
@@ -89,5 +89,5 @@ def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=tes
 	return out #,dasvm TODO
 
 if __name__=='__main__':
-	print 'SVMLight'
+	print('SVMLight')
 	classifier_domainadaptationsvm_modular(*parameter_list[0])

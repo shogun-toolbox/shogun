@@ -15,5 +15,5 @@ def kernel_const_modular (c=23):
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'Const'
+	print('Const')
 	kernel_const_modular(*parameter_list[0])

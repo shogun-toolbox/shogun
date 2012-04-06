@@ -43,6 +43,6 @@ def clustering_gmm_modular (fm_train=generated,n=2,min_cov=1e-9,max_iter=1000,mi
 	return est_gmm
 
 if __name__=='__main__':
-	print 'GMM'
+	print('GMM')
 	clustering_gmm_modular(*parameter_list[0])
 

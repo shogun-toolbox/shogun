@@ -24,5 +24,5 @@ def clustering_hierarchical_modular (fm_train=traindat,merges=3):
 	return hierarchical,out_distance,out_cluster 
 
 if __name__=='__main__':
-	print 'Hierarchical'
+	print('Hierarchical')
 	clustering_hierarchical_modular(*parameter_list[0])

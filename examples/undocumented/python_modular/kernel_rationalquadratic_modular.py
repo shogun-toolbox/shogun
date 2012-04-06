@@ -26,5 +26,5 @@ def kernel_rationalquadratic_modular (fm_train_real=traindat,fm_test_real=testda
 
 
 if __name__=='__main__':
-	print 'RationalQuadratic'
+	print('RationalQuadratic')
 	kernel_rationalquadratic_modular(*parameter_list[0])

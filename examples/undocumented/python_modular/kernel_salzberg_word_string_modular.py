@@ -35,6 +35,6 @@ order=3,gap=0,reverse=False):
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'PluginEstimate w/ SalzbergWord'
+	print('PluginEstimate w/ SalzbergWord')
 	kernel_salzberg_word_string_modular(*parameter_list[0])
 

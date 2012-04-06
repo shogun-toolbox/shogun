@@ -23,5 +23,5 @@ def classifier_multiclassocas_modular (fm_train_real=traindat,fm_test_real=testd
 	return out
 
 if __name__=='__main__':
-	print 'MulticlassOCAS'
+	print('MulticlassOCAS')
 	classifier_multiclassocas_modular(*parameter_list[0])

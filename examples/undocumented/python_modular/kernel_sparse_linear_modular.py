@@ -23,5 +23,5 @@ def kernel_sparse_linear_modular (fm_train_real=traindat,fm_test_real=testdat,sc
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'SparseLinear'
+	print('SparseLinear')
 	kernel_sparse_linear_modular(*parameter_list[0])

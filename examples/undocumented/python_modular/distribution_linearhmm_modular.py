@@ -22,8 +22,8 @@ def distribution_linearhmm_modular (fm_dna=traindna,order=3,gap=0,reverse=False)
 
 	num_examples=feats.get_num_vectors()
 	num_param=hmm.get_num_model_parameters()
-	for i in xrange(num_examples):
-		for j in xrange(num_param):
+	for i in range(num_examples):
+		for j in range(num_param):
 			hmm.get_log_derivative(j, i)
 
 	out_likelihood = hmm.get_log_likelihood()
@@ -36,4 +36,4 @@ def distribution_linearhmm_modular (fm_dna=traindna,order=3,gap=0,reverse=False)
 
 if __name__=='__main__':
 	distribution_linearhmm_modular(*parameter_list[0])
-	print 'LinearHMM'
+	print('LinearHMM')

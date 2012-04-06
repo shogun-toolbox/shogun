@@ -28,5 +28,5 @@ degree=2,inhomogene=True,order=3,gap=0,reverse=False):
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print 'PolyMatchWordString'
+	print('PolyMatchWordString')
 	kernel_poly_match_word_string_modular(*parameter_list[0])

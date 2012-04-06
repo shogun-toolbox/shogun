@@ -8,11 +8,6 @@
 # Written (W) 2008-2009 Soeren Sonnenburg
 # Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
 
-import sys
-if sys.version_info >= (3,):
-# HACK, HACK, HACK?
-    xrange = range
-
 class_str='class'
 types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
 		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX"] 
@@ -31,7 +26,7 @@ def check_abstract_class(line):
 
 def check_is_in_blacklist(c, lines, line_nr, blacklist):
 	ifdef_cnt=0
-	for i in xrange(line_nr,0,-1):
+	for i in range(line_nr,0,-1):
 		line=lines[i]
 		if line.find('#endif')!=-1:
 			ifdef_cnt-=1
@@ -135,7 +130,7 @@ def extract_block(c, lines, start_line, stop_line, start_sym, stop_sym):
 	block_start=-1;
 	block_stop=-1;
 
-	for line_nr in xrange(start_line, stop_line):
+	for line_nr in range(start_line, stop_line):
 		line=lines[line_nr]
 		if line.find(start_sym)!=-1:
 			sym_cnt+=1
@@ -153,14 +148,14 @@ def test_candidate(c, lines, line_nr):
 	start,stop=extract_block(c, lines, line_nr, len(lines), '{','}')
 	if stop<line_nr:
 		return False, line_nr+1
-	for line_nr in xrange(start, stop):
+	for line_nr in range(start, stop):
 		line=lines[line_nr]
 		if line.find('virtual')!=-1:
 			if check_abstract_class(line):
 				return False, stop
 			else:
 				vstart,vstop=extract_block(c, lines, line_nr, len(lines), '(',')')
-				for line_nr in xrange(vstart, vstop):
+				for line_nr in range(vstart, vstop):
 					line=lines[line_nr]
 					if check_abstract_class(line):
 						return False, stop
