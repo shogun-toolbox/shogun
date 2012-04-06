@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n\n-------------------\n"
 			"applying subset to features\n"
 			"-------------------\n");
-	features->push_subset(new CSubset(subset_idx));
+	features->add_subset(new CSubset(subset_idx));
 
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_subset_idx);

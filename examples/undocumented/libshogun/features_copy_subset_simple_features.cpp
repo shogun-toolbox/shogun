@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 	CMath::display_vector(feature_subset.vector, feature_subset.vlen,
 			"feature subset");
 
-	f->push_subset(new CSubset(feature_subset));
+	f->add_subset(new CSubset(feature_subset));
 	SG_SPRINT("feature vectors after setting subset on original data:\n");
 	for (index_t i=0; i<f->get_num_vectors(); ++i)
 	{
