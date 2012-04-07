@@ -82,23 +82,23 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 
 		if (iter>num_iter)
 		{
-			SG_SPRINT("Maximum number of Newton steps reached.Try larger lambda");
+			SG_PRINT("Maximum number of Newton steps reached. Try larger lambda");
 			break;
 		}
 
 		obj_fun_linear(weights, out, &obj, sv, &size_sv, grad);
 
 #ifdef DEBUG_NEWTON
-		SG_SPRINT("fun linear passed !\n");
-		SG_SPRINT("Obj =%f\n", obj);
-		SG_SPRINT("Grad=\n");
+		SG_PRINT("fun linear passed !\n");
+		SG_PRINT("Obj =%f\n", obj);
+		SG_PRINT("Grad=\n");
 
 		for (int32_t i=0; i<x_d+1; i++)
-			SG_SPRINT("grad[%d]=%.16g\n", i, grad[i]);
-		SG_SPRINT("SV=\n");
+			SG_PRINT("grad[%d]=%.16g\n", i, grad[i]);
+		SG_PRINT("SV=\n");
 
 		for (int32_t i=0; i<size_sv; i++)
-			SG_SPRINT("sv[%d]=%d\n", i, sv[i]);
+			SG_PRINT("sv[%d]=%d\n", i, sv[i]);
 #endif
 
 		SGVector<float64_t> sgv;
@@ -108,6 +108,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 			sgv=features->get_computed_dot_feature_vector(sv[k]);
 			for (int32_t j=0; j<x_d; j++)
 				Xsv[k*x_d+j]=sgv.vector[j];
+			sgv.destroy_vector();
 		}
 		int32_t tx=x_d;
 		int32_t ty=size_sv;
@@ -175,13 +176,13 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 		line_search_linear(weights, step, out, &t);
 
 #ifdef DEBUG_NEWTON
-		SG_SPRINT("t=%f\n\n", t);
+		SG_PRINT("t=%f\n\n", t);
 
 		for (int32_t i=0; i<x_n; i++)
-			SG_SPRINT("out[%d]=%.16g\n", i, out[i]);
+			SG_PRINT("out[%d]=%.16g\n", i, out[i]);
 
 		for (int32_t i=0; i<x_d+1; i++)
-			SG_SPRINT("weights[%d]=%.16g\n", i, weights[i]);
+			SG_PRINT("weights[%d]=%.16g\n", i, weights[i]);
 #endif
 
 		CMath::vec1_plus_scalar_times_vec2(weights, t, step, r);
@@ -189,21 +190,35 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 		cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 1, 1, r, -0.5,
 				step, r, grad, r, 0.0, &newton_decrement, 1);
 #ifdef V_NEWTON
-		SG_SPRINT("Itr=%d, Obj=%f, No of sv=%d, Newton dec=%0.3f, line search=%0.3f\n\n",
+		SG_PRINT("Itr=%d, Obj=%f, No of sv=%d, Newton dec=%0.3f, line search=%0.3f\n\n",
 				iter, obj, size_sv, newton_decrement, t);
 #endif
+
+		SG_FREE(Xsv);
+		SG_FREE(vector);
+		SG_FREE(lcrossdiag);
+		SG_FREE(Xsv2);
+		SG_FREE(Xsv2sum);
+		SG_FREE(identity_matrix);
+		SG_FREE(inverse);
+		SG_FREE(step);
+		SG_FREE(s2);
 
 		if (newton_decrement*2<prec*obj)
 			break;
 	}
 
 #ifdef V_NEWTON
-	SG_SPRINT("FINAL W AND BIAS Vector=\n\n");
+	SG_PRINT("FINAL W AND BIAS Vector=\n\n");
 	CMath::display_matrix(weights, x_d+1, 1);
 #endif
 
 	set_w(SGVector<float64_t>(weights, x_d));
 	set_bias(weights[x_d]);
+
+	SG_FREE(sv);
+	SG_FREE(grad);
+	SG_FREE(out);
 
 	return true;
 
@@ -295,6 +310,7 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 		out[i]=outz[i];
 	*tx=t;
 
+	SG_FREE(sv);
 	SG_FREE(temp1);
 	SG_FREE(temp2);
 	SG_FREE(temp1forout);
@@ -372,6 +388,7 @@ void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 	*numsv=sv_len;
 
 	SG_FREE(w0);
+	SG_FREE(w0copy);
 	SG_FREE(out1);
 	SG_FREE(temp);
 	SG_FREE(temp1);
