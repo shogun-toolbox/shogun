@@ -581,8 +581,7 @@ float64_t CMath::dot(const float64_t* v1, const float64_t* v2, int32_t n)
 	return r;
 }
 
-float64_t CMath::dot(
-		const float32_t* v1, const float32_t* v2, int32_t n)
+float32_t CMath::dot(const float32_t* v1, const float32_t* v2, int32_t n)
 {
 	float32_t r=0;
 #ifdef HAVE_LAPACK
