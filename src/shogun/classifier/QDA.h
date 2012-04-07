@@ -27,6 +27,10 @@ namespace shogun
 
 /** @brief Class QDA implements Quadratic Discriminant Analysis.
  *
+ *  QDA learns a quadratic classifier and requires examples to be CSimplefeatures.
+ *  This classifier is optimal under the assumptions that the classes are normally
+ *  distributed (i.e. they are Gaussians). Unlike LDA, QDA does not assume that all
+ *  the classes are distributed with equal co-variance.
  *  TODO
  */
 class CQDA : public CMachine
