@@ -58,10 +58,10 @@ void CKNN::init()
 	 */
 	SG_ADD(&m_k, "m_k", "Parameter k", MS_AVAILABLE);
 	SG_ADD(&m_q, "m_q", "Parameter q", MS_AVAILABLE);
-	SG_ADD(&m_use_covertree, "m_use_covertree", "Parameter use_covertree", MS_NOT_AVAILABLE);
+	//SG_ADD(&m_use_covertree, "m_use_covertree", "Parameter use_covertree", MS_NOT_AVAILABLE);
 	SG_ADD(&m_built_covertree, "m_built_covertree", "Parameter built_covertree", MS_NOT_AVAILABLE);
 	SG_ADD(&num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_covertree, "m_covertree", "Member cover tree", MS_NOT_AVAILABLE);
+	//SG_ADD((CSGObject**) &m_covertree, "m_covertree", "Member cover tree", MS_NOT_AVAILABLE);
 }
 
 CKNN::~CKNN()
