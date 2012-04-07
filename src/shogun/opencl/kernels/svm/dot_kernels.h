@@ -19,12 +19,12 @@ namespace shogun{
 	class dot_kernels{
 	  
 	private:
-		typedef std::map<std::pair<EKernelType,EFeatureType>, const char *> SourcesMapType;
+		typedef std::map<EKernelType, const char *> SourcesMapType;
 		static SourcesMapType create_sources_map();
-		static std::string dot_kernel_src(EFeatureType feature_type);
-	public:	
-		static std::string program_name(EFeatureType feature_type);
-		static void init(EFeatureType feature_type);
+	public:
+		static std::string dot_kernel_name(EFeatureType feature_type);
+		static std::string program_name();
+		static void init();
 	};
 	
     }

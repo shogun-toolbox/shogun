@@ -572,7 +572,7 @@ template<class ST> void CSimpleFeatures<ST>::enqueue_ocl_dot_program(viennacl::m
 	ocl_kernel_matrix.resize(ocl_feature_cache.size2(),sf_ocl_feature_cache.size2(),false);
 	
 	//Compute result matrix
-	viennacl::ocl::kernel & k = viennacl::ocl::get_kernel(shogun::ocl::svm::dot_kernels::program_name(get_feature_type()), "dot_kernel");
+	viennacl::ocl::kernel & k = viennacl::ocl::get_kernel(shogun::ocl::svm::dot_kernels::program_name(), shogun::ocl::svm::dot_kernels::dot_kernel_name(get_feature_type()));
 	k.global_work_size(0, viennacl::tools::roundUpToNextMultiple<unsigned int>(viennacl::traits::size1(ocl_kernel_matrix), block_size));
 	k.global_work_size(1, viennacl::tools::roundUpToNextMultiple<unsigned int>(viennacl::traits::size2(ocl_kernel_matrix), block_size));
 	k.local_work_size(0, block_size);

@@ -5,58 +5,40 @@
 namespace shogun{
   
   namespace ocl{
-    
-	bool is_ocl_valid(EFeatureType feature_type){
-		return feature_type == F_SHORTREAL
-			||feature_type == F_LONGREAL;
-	}
-		
+    	
     namespace svm{
 	    		
 	dot_kernels::SourcesMapType dot_kernels::create_sources_map()
 	{
 		SourcesMapType m;
-		m[std::make_pair(K_GAUSSIAN,F_SHORTREAL)] = 
-		#include "dot_kernels/float/gaussian_kernel.cl"
-				;
+		m[K_GAUSSIAN] = 
+			#include "dot_kernels/gaussian_kernel.cl"
+		;
+		
 		return m;
 	}
 	
 		
-	std::string dot_kernels::program_name(EFeatureType feature_type){
-		if(feature_type==F_SHORTREAL){
-			return "svm_dot_float";
-		}
-		if(feature_type==F_LONGREAL){
-			return "svm_dot_doule";
-		}
-		return "";
+	std::string dot_kernels::program_name(){
+		return "svm_dot";
 	}
 
-	std::string dot_kernels::dot_kernel_src(EFeatureType feature_type){
+	std::string dot_kernels::dot_kernel_name(EFeatureType feature_type){
 		if(feature_type==F_SHORTREAL){
-			std::string res;
-			res =
-			#include "dot_kernels/float/dot_kernel.cl"
-			;
-			return res;
+			return "dot_kernel_float";
 		}
-		if(feature_type==F_LONGREAL){
-			//TODO
-			return "";
+		if(feature_type==F_DREAL){
+			return "dot_kernel_double";
 		}
 		return "";
 	}
 	
-	void dot_kernels::init(EFeatureType feature_type){
-		if(!is_ocl_valid(feature_type)) return;
+	void dot_kernels::init(){
 		std::cout << "Init" << std::endl;
-		typedef std::pair<EFeatureType, cl_context> KeyType;
-		static std::map<KeyType, bool> init_done;	
+		static std::map<cl_context, bool> init_done;	
 		static SourcesMapType ocl_sources_map = create_sources_map();
 		viennacl::ocl::context & context = viennacl::ocl::current_context();
-		KeyType type_context(std::make_pair(feature_type,context.handle()));
-		if(init_done[type_context]==false){
+		if(init_done[context.handle()]==false){
 			std::cout << "Adding sources" << std::endl;
 			
 			//Compiles OpenCL Program for SVM.
@@ -64,17 +46,27 @@ namespace shogun{
 			pragma_option.append("#pragma OPENCL EXTENSION cl_khr_fp64 : enable\n");
 			
 			std::string sources(pragma_option);
-			sources.append(dot_kernel_src(feature_type));
-			sources.append( ocl_sources_map[std::make_pair(K_GAUSSIAN,feature_type)]);
-			std::string prog_name = program_name(feature_type);
+			
+			std::string dot_kernel_float_src = 
+				#include "dot_kernels/float/dot_kernel.cl"
+			;
+			std::string dot_kernel_double_src = 
+				#include "dot_kernels/double/dot_kernel.cl"
+			;
+			
+			sources.append(dot_kernel_float_src);
+			sources.append(dot_kernel_double_src);
+			sources.append(ocl_sources_map[K_GAUSSIAN]);
+			std::string prog_name = program_name();
 			
 			std::cout << "Compiling sources" << std::endl;
 			
 			context.add_program(sources,prog_name);
 			viennacl::ocl::program & prog = context.get_program(prog_name);
+			prog.add_kernel("dot_kernel_float");
+			prog.add_kernel("dot_kernel_double");
 			prog.add_kernel("gaussian_kernel");
-			prog.add_kernel("dot_kernel");
-			init_done[type_context] = true;
+			init_done[context.handle()] = true;
 		}
 	}
 	

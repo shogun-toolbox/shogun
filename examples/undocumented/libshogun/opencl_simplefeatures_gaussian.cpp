@@ -19,7 +19,6 @@
 #include <viennacl/ocl/utils.hpp>
 #include <stdlib.h>
 #include <stdio.h>
-#include "Timer.hpp"
 
 
 using namespace shogun;
@@ -29,15 +28,44 @@ using namespace shogun;
 #define NUM_SV 1000
 #define DIST 0.5
 
+typedef float32_t feature_type;
+
+class Timer
+  {
+  public:
+
+    Timer() : ts ( 0 )
+    {}
+
+    void start()
+    {
+      struct timeval tval;
+      gettimeofday ( &tval, NULL );
+      ts = tval.tv_sec * 1000000 + tval.tv_usec;
+    }
+
+    double get() const
+      {
+        struct timeval tval;
+        gettimeofday ( &tval, NULL );
+        int64_t end_time = tval.tv_sec * 1000000 + tval.tv_usec;
+
+        return static_cast<double> ( end_time-ts ) / 1000000.0;
+      }
+
+  private:
+    int64_t ts;
+  };
+  
 float64_t* lab;
-float32_t* feat;
+feature_type* feat;
 float64_t* alphas;
 int32_t* svs;
 
 void gen_rand_data()
 {
 	lab=SG_MALLOC(float64_t, NUM);
-	feat=SG_MALLOC(float32_t, NUM*DIMS);
+	feat=SG_MALLOC(feature_type, NUM*DIMS);
 	alphas=SG_MALLOC(float64_t, NUM_SV);
 	svs=SG_MALLOC(int32_t, NUM_SV);
 	for (int32_t i=0; i<NUM; i++)
@@ -85,7 +113,7 @@ int main()
 	SG_REF(labels);
 	
 	// create train features
-	CSimpleFeatures<float32_t>* features = new CSimpleFeatures<float32_t>(feature_cache);
+	CSimpleFeatures<feature_type>* features = new CSimpleFeatures<feature_type>(feature_cache);
 	SG_REF(features);
 	features->set_feature_matrix(feat, DIMS, NUM);
 

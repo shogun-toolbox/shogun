@@ -129,7 +129,7 @@ void CGaussianKernel::precompute_squared()
 void CGaussianKernel::ocl_compute(SGVector<int32_t> const & svs){
 	dynamic_cast<CDotFeatures*>(lhs)->enqueue_ocl_dot_program(ocl_kernel_matrix,svs,dynamic_cast<CDotFeatures*>(rhs));
 	viennacl::ocl::get_queue().finish();
-	viennacl::ocl::kernel & k = viennacl::ocl::get_kernel(shogun::ocl::svm::dot_kernels::program_name(lhs->get_feature_type()), "gaussian_kernel");
+	viennacl::ocl::kernel & k = viennacl::ocl::get_kernel(shogun::ocl::svm::dot_kernels::program_name(), "gaussian_kernel");
 	viennacl::ocl::enqueue(k(cl_double(width),
 				 viennacl::traits::handle(ocl_kernel_matrix), 
 					cl_uint(viennacl::traits::size1(ocl_kernel_matrix)),          cl_uint(viennacl::traits::size2(ocl_kernel_matrix)),

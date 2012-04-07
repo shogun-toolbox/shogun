@@ -81,7 +81,7 @@ class CDotKernel : public CKernel
 			}
 			
 			#ifdef USE_OPENCL
-			shogun::ocl::svm::dot_kernels::init(l->get_feature_type());
+			shogun::ocl::svm::dot_kernels::init();
 			#endif
 			
 			return true;
