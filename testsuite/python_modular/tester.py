@@ -35,6 +35,11 @@ def compare(a, b, tolerance):
 	return a == b
 
 def compare_dbg(a, b, tolerance):
+	if not compare_dbg_helper(a, b, tolerance):
+		import pdb
+		pdb.set_trace()
+
+def compare_dbg_helper(a, b, tolerance):
 	if not typecheck(a,b):
 		print "Type mismatch (type(a)=%s vs type(b)=%s)" % (str(type(a)),str(type(b)))
 		return False
