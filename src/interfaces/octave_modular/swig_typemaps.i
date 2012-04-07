@@ -319,7 +319,7 @@ TYPEMAP_STRINGFEATURES_OUT(float64_t,     Matrix)
 }
 %typemap(in) shogun::SGSparseMatrix<type>
 {
-    const octave_value mat_feat = $input;
+	const octave_value mat_feat = $input;
 	if (!mat_feat.is_sparse_type() || !(mat_feat.is_double_type()))
 	{
 		SWIG_fail;
@@ -381,7 +381,7 @@ TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
 		}
 	}
 
-    SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
+	SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
 
 	if(sm.cols() != num_vec || sm.rows() != num_feat)
 	{

@@ -22,6 +22,5 @@ a_out=a.get_full_feature_matrix()
 a=SparseRealFeatures(X)
 a_out=a.get_full_feature_matrix()
 
-# obtain (data,row,indptr) csc arrays of sparse shogun features
 z=a.get_sparse_feature_matrix()
 
