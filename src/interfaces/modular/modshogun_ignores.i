@@ -55,6 +55,8 @@
 %ignore free_feature_iterator;
 %ignore compute_sparse_feature_vector;
 
+%ignore shogun::CKNN::m_covertree;
+%ignore shogun::KNN_COVERTREE_POINT;
 %ignore free_feature_vector;
 %ignore free_sparse_feature_vector;
 %ignore shogun::CNode;
