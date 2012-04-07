@@ -311,9 +311,54 @@ TYPEMAP_STRINGFEATURES_OUT(float64_t,     Matrix)
 
 /* input typemap for Sparse Features */
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGSparseMatrix<type>
+{
+	const octave_value m=$input;
+
+    $1 = (m.is_sparse_type() && m.is_double_type()) ? 1 : 0;
+}
 %typemap(in) shogun::SGSparseMatrix<type>
 {
-    /* TODO SPARSE MATRIX IN */
+    const octave_value mat_feat = $input;
+	if (!mat_feat.is_sparse_type() || !(mat_feat.is_double_type()))
+	{
+		SWIG_fail;
+	}
+
+	SparseMatrix sm = mat_feat.sparse_matrix_value ();
+	int32_t num_vec=sm.cols();
+	int32_t num_feat=sm.rows();
+	int64_t nnz=sm.nelem();
+
+	SGSparseVector<type>* matrix = SG_MALLOC(SGSparseVector<type>, num_vec);
+
+	int64_t offset=0;
+	for (int32_t i=0; i<num_vec; i++)
+	{
+		int32_t len=sm.cidx(i+1)-sm.cidx(i);
+		matrix[i].vec_index=i;
+		matrix[i].num_feat_entries=len;
+
+		if (len>0)
+		{
+			matrix[i].features=SG_MALLOC(SGSparseVectorEntry<type>, len);
+
+			for (int32_t j=0; j<len; j++)
+			{
+				matrix[i].features[j].entry=sm.data(offset);
+				matrix[i].features[j].feat_index=sm.ridx(offset);
+				offset++;
+			}
+		}
+		else
+			matrix[i].features=NULL;
+	}
+	ASSERT(offset=nnz);
+	$1 = shogun::SGSparseMatrix<type>(matrix, num_feat, num_vec, true);
+}
+%typemap(freearg) shogun::SGSparseMatrix<type>
+{
+
 }
 %enddef
 TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
@@ -323,7 +368,43 @@ TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
 %define TYPEMAP_SPARSEFEATURES_OUT(type,typecode)
 %typemap(out) shogun::SGSparseMatrix<type>
 {
-    /* TODO SPARSE MATRIX OUT */
+	int32_t num_vec = $1.num_vectors;
+	int32_t num_feat = $1.num_features;
+	
+	int64_t nnz = 0;
+	for (int32_t i = 0; i < num_vec; i++)
+	{
+		int32_t len = $1.sparse_matrix[i].num_feat_entries;
+		for (int32_t j = 0; j < len; j++)
+		{
+			nnz++;
+		}
+	}
+
+    SparseMatrix sm((octave_idx_type) num_feat, (octave_idx_type) num_vec, (octave_idx_type) nnz);
+
+	if(sm.cols() != num_vec || sm.rows() != num_feat)
+	{
+		SWIG_fail;
+	}
+
+	int64_t offset = 0;
+	for (int32_t i = 0; i < num_vec; i++)
+	{
+		int32_t len = $1.sparse_matrix[i].num_feat_entries;
+		sm.cidx(i) = offset;
+		for (int32_t j = 0; j < len; j++)
+		{
+			sm.data(offset) = $1.sparse_matrix[i].features[j].entry;
+			sm.ridx(offset) = $1.sparse_matrix[i].features[j].feat_index;
+			offset++;
+		}
+	}
+	sm.cidx(num_vec) = offset;
+	ASSERT(offset=nnz);
+
+	$1.free_matrix();
+	$result = sm;
 }
 %enddef
 
