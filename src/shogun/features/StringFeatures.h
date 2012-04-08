@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Subset support written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -63,11 +63,11 @@ struct SSKTripleFeature
  *
  * Also note that string features cannot currently be computed on-the-fly.
  *
- * TODO update for subset stacks
  * (Partly) subset access is supported for this feature type.
- * Simple use the (inherited) set_subset(), remove_all_subsets() functions.
+ * Simple use the (inherited) add_subset(), remove_subset() functions.
  * If done, all calls that work with features are translated to the subset.
- * See comments to find out whether it is supported for that method
+ * See comments to find out whether it is supported for that method.
+ * See also CFeatures class documentation
  */
 template <class ST> class CStringFeatures : public CFeatures
 {

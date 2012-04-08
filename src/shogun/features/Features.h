@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Subset support written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -51,10 +51,11 @@ namespace shogun
  *   (dense real valued feature matrices) are derived.
  *
  *
- *   TODO update this
- *   Subsets may be supported by inheriting classes.
+ *   (Multiple) Subsets (of subsets) may be supported by inheriting classes.
  *   Sub-classes may want to overwrite the subset_changed_post() method which is
- *   called automatically after each subset change
+ *   called automatically after each subset change.
+ *   A subset is put onto a stack using the add_subset() method. The last added
+ *   subset may be removed via remove_subset()
  */
 class CFeatures : public CSGObject
 {
@@ -229,14 +230,13 @@ class CFeatures : public CSGObject
 		 * */
 		virtual void add_subset(CSubset* subset);
 
-		/** removes that last added subset from subset stack, if existing */
+		/** removes that last added subset from subset stack, if existing
+		 * Calls subset_changed_post() afterwards */
 		virtual void remove_subset();
 
-		/** removes all subsets */
+		/** removes all subsets
+		 * Calls subset_changed_post() afterwards */
 		virtual void remove_all_subsets();
-
-		/* recomputes the visible active subset using the subset stack */
-		virtual void update_active_subset();
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
@@ -267,6 +267,11 @@ class CFeatures : public CSGObject
 		 * @return new CFeatures instance with copies of feature data
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
+
+	protected:
+
+		/* recomputes the visible active subset using the subset stack */
+		virtual void update_active_subset();
 
 	private:
 		/** feature properties */

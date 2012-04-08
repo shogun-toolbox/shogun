@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Subset support written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -44,11 +44,11 @@ template <class ST> class CSimpleFeatures;
  * As this is a template class it can directly be used for different data types
  * like sparse matrices of real valued, integer, byte etc type.
  *
- * TODO update for subset stacks
  * (Partly) subset access is supported for this feature type.
- * Simple use the (inherited) set_subset(), remove_subset() functions.
+ * Simple use the (inherited) add_subset(), remove_subset() functions.
  * If done, all calls that work with features are translated to the subset.
- * See comments to find out whether it is supported for that method
+ * See comments to find out whether it is supported for that method.
+ * See also CFeatures class documentation
  */
 template <class ST> class CSparseFeatures : public CDotFeatures
 {
