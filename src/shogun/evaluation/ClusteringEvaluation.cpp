@@ -49,9 +49,9 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	SGMatrix<float64_t> G(n_class, n_class);
 	G.zero();
 
-	for (size_t i=0; i < label_g.vlen; ++i)
+	for (int32_t i=0; i < label_g.vlen; ++i)
 	{
-		for (size_t j=0; j < label_p.vlen; ++j)
+		for (int32_t j=0; j < label_p.vlen; ++j)
 		{
 			G(i, j)=find_mismatch_count(groundtruth_ilabels, static_cast<int32_t>(label_g[i]),
 				predicted_ilabels, static_cast<int32_t>(label_p[j]));
@@ -62,9 +62,9 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	munkres_solver.solve();
 
 	std::map<int32_t, int32_t> label_map;
-	for (size_t i=0; i < label_p.vlen; ++i)
+	for (int32_t i=0; i < label_p.vlen; ++i)
 	{
-		for (size_t j=0; j < label_g.vlen; ++j)
+		for (int32_t j=0; j < label_g.vlen; ++j)
 		{
 			if (G(j, i) == 0)
 			{
