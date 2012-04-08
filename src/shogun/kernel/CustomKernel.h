@@ -216,10 +216,10 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix.matrix = SG_MALLOC(float32_t, int64_t(rows)*cols);
+			kmatrix.matrix = SG_MALLOC(float32_t, cols*(cols+1)/2);
 			kmatrix.num_rows = rows;
-			kmatrix.num_cols = cols;
-			upper_diagonal = false;
+			kmatrix.num_cols = cols;			
+			upper_diagonal = true;
 
 			for (int64_t row=0; row<rows; row++)
 			{
