@@ -22,8 +22,6 @@
 namespace shogun
 {
 
-
-	
 class CDistanceMachine;
 
 /** @brief Class NearestCentroid, an implementation of Nearest Shrunk Centroid classifier
@@ -47,6 +45,10 @@ public:
 	 */
 	CNearestCentroid(CDistance* distance, CLabels* trainlab);
 	
+	/** Destructor
+	 */
+	virtual ~CNearestCentroid();
+	
 	/** Set shrinking constant
 	 * 
 	 * @param shrinking to be set
@@ -66,22 +68,6 @@ public:
 	CSimpleFeatures<float64_t>* get_centroids() const{
 		return m_centroids;
 	}
-	
-	/** classify all examples
-	 *
-	 * @return resulting labels
-	 */
-	virtual CLabels* apply();
-
-	/** classify objects
-	 *
-	 * @param data (test)data to be classified
-	 * @return classified labels
-	 */
-	virtual CLabels* apply(CFeatures* data);
-
-	/// get output for example "vec_idx"
-	virtual float64_t apply(int32_t vec_idx);
 	
 protected:
 	/** train Nearest Centroid classifier
@@ -103,6 +89,7 @@ protected:
 	int32_t m_num_classes;
 	float64_t m_shrinking;
 	CSimpleFeatures<float64_t>* m_centroids;
+	bool m_is_trained;
 };
 
 }
