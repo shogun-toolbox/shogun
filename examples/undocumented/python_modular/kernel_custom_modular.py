@@ -1,9 +1,9 @@
 from numpy.random import seed
 seed(42)
 
-parameter_list=[[3],[3]]
+parameter_list=[[7],[8]]
 
-def kernel_custom_modular (dim=1):
+def kernel_custom_modular (dim=7):
 	from numpy.random import rand, seed
 	from numpy import array, float32
 	from shogun.Features import RealFeatures
