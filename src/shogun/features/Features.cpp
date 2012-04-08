@@ -50,27 +50,32 @@ CFeatures::CFeatures(CFile* loader)
 CFeatures::~CFeatures()
 {
 	clean_preprocessors();
-	delete m_subset;
+	SG_UNREF(m_active_subset);
+	SG_UNREF(m_subset_stack);
 }
 
 void
 CFeatures::init()
 {
-	m_parameters->add(&properties, "properties",
-					  "Feature properties.");
-	m_parameters->add(&cache_size, "cache_size",
-					  "Size of cache in MB.");
+	SG_ADD(&properties, "properties", "Feature properties", MS_NOT_AVAILABLE);
+	SG_ADD(&cache_size, "cache_size", "Size of cache in MB", MS_NOT_AVAILABLE);
 
-	m_parameters->add_vector((CSGObject***) &preproc,
-							 &num_preproc, "preproc",
-							 "List of preprocessors.");
-	m_parameters->add_vector(&preprocessed,
-							 &num_preproc, "preprocessed",
-							 "Feature[i] is already preprocessed.");
+	/* TODO, use SGVector for arrays to be able to use SG_ADD macro */
+	m_parameters->add_vector((CSGObject***) &preproc, &num_preproc, "preproc",
+			"List of preprocessors");
+	m_parameters->add_vector(&preprocessed, &num_preproc, "preprocessed",
+			"Feature[i] is already preprocessed");
 
-	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
+	SG_ADD((CSGObject**)&m_active_subset, "active_subset", "Subset object",
+			MS_NOT_AVAILABLE);
 
-	m_subset=NULL;
+	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack",
+			"Stack of subsets of indices", MS_NOT_AVAILABLE);
+
+	m_subset_stack=new CList(true);
+	SG_REF(m_subset_stack);
+
+	m_active_subset=NULL;
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = NULL;
@@ -349,22 +354,102 @@ void CFeatures::unset_property(EFeatureProperty p)
 	properties &= (properties | p) ^ p;
 }
 
-void CFeatures::set_subset(CSubset* subset)
+void CFeatures::add_subset(CSubset* subset)
 {
-	SG_UNREF(m_subset);
-	m_subset=subset;
-	SG_REF(subset);
+	/* do some basic consistency checks */
+	if (!subset)
+		SG_ERROR("CFeatures::add_subset(NULL) is illegal.\n");
+
+	/* check for legal size (only possible if there is already a subset) */
+	if (has_subsets())
+	{
+		index_t available=m_active_subset->get_size();
+		if (subset->get_size()>available)
+			SG_ERROR("Pushed subset contains more indices than available.\n");
+
+		if (subset->get_max_index()>= available)
+			SG_ERROR("Pushed subset contains index out of bounds (too large).\n");
+	}
+
+	m_subset_stack->push(subset);
+	update_active_subset();
 	subset_changed_post();
 }
 
-bool CFeatures::has_subset() const
+bool CFeatures::has_subsets() const
 {
-	return m_subset!=NULL;
+	return m_subset_stack->get_num_elements();
 }
 
 void CFeatures::remove_subset()
 {
-	set_subset(NULL);
+	m_subset_stack->pop();
+	update_active_subset();
+	subset_changed_post();
+}
+
+void CFeatures::remove_all_subsets()
+{
+	m_subset_stack->delete_all_elements();
+	update_active_subset();
+	subset_changed_post();
+}
+
+void CFeatures::update_active_subset()
+{
+	/* delete active subset and rebuild from subset stack */
+	SG_UNREF(m_active_subset);
+
+	/* important since this might the first subset from stack */
+	m_active_subset=NULL;
+
+	index_t num_subsets=m_subset_stack->get_num_elements();
+	if (num_subsets)
+	{
+		/* if there is only one subset, use that as current active */
+		if (num_subsets==1)
+		{
+			/* this automatically SG_REFs */
+			m_active_subset=(CSubset*)m_subset_stack->get_first_element();
+		}
+		else
+		{
+			/* current_indices will contain the "real" indices which are translated
+			 * iteratively through all stacked subsets. start with last subset */
+			CSubset* current_subset=(CSubset*)m_subset_stack->get_last_element();
+			SGVector<index_t> current_indices=SGVector<index_t>(
+					current_subset->get_size());
+			for (index_t i=0; i<current_indices.vlen; ++i)
+				current_indices.vector[i]=current_subset->subset_idx_conversion(i);
+
+			SG_UNREF(current_subset);
+			current_subset=(CSubset*)m_subset_stack->get_previous_element();
+
+			/* now remaining subsets */
+			while(current_subset)
+			{
+				SGVector<index_t> new_indices=SGVector<index_t>(
+						current_subset->get_size());
+
+				/* translate current real indices through current subset */
+				for (index_t i=0; i<current_indices.vlen; ++i)
+				{
+					new_indices.vector[i]=current_subset->subset_idx_conversion(
+							current_indices.vector[i]);
+				}
+
+				/* replace current real indices */
+				current_indices.destroy_vector();
+				current_indices=SGVector<index_t>(new_indices);
+
+				/* next subset */
+				SG_UNREF(current_subset);
+				current_subset=(CSubset*)m_subset_stack->get_next_element();
+			}
+			m_active_subset=new CSubset(current_indices);
+			SG_REF(m_active_subset);
+		}
+	}
 }
 
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)

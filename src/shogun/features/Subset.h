@@ -12,6 +12,7 @@
 #define __SUBSET_H_
 
 #include <shogun/base/SGObject.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -43,6 +44,18 @@ public:
 	 * @return size of subset
 	 */
 	inline const index_t get_size() const { return m_subset_idx.vlen; }
+
+	/* @ return largest index in subset */
+	inline const index_t get_max_index() const
+	{
+		return CMath::max(m_subset_idx.vector, m_subset_idx.vlen);
+	}
+
+	/* @ return smallest index in subset */
+	inline const index_t get_min_index() const
+	{
+		return CMath::min(m_subset_idx.vector, m_subset_idx.vlen);
+	}
 
 	/** @return a copy of this instance with a copy of the index vector */
 	CSubset* duplicate();

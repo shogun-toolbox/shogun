@@ -858,7 +858,20 @@ class CMath : public CSGObject
 				return result;
 			}
 
-		/// return max(vec)
+		/** @return min(vec) */
+		template <class T>
+			static inline T min(T* vec, int32_t len)
+			{
+				ASSERT(len>0);
+				T minv=vec[0];
+
+				for (int32_t i=1; i<len; i++)
+					minv=CMath::min(vec[i], minv);
+
+				return minv;
+			}
+
+		/** @return max(vec) */
 		template <class T>
 			static inline T max(T* vec, int32_t len)
 			{

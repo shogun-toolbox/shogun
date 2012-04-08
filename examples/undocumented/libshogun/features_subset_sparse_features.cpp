@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n-------------------\n"
 	"applying subset to features\n"
 	"-------------------\n");
-	features->set_subset(new CSubset(subset_idx));
+	features->add_subset(new CSubset(subset_idx));
 
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_subset_idx);
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n-------------------\n"
 	"removing subset from features\n"
 	"-------------------\n");
-	features->remove_subset();
+	features->remove_all_subsets();
 
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_vectors);
