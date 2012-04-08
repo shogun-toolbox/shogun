@@ -19,6 +19,7 @@
 		  KernelMachines now make use of that by not recomputing kernel matrix in cross-validation.
 		- Cross-validation for KernelMachines is now parallelized.
 		- Cross-validation is now possible with custom kernels.
+		- Features may now have arbritarily many index subsets (of subsets (of subsets (...)))
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was
 		  changed to log-space.

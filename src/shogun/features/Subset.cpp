@@ -22,6 +22,10 @@ CSubset::CSubset() : m_subset_idx(SGVector<index_t>())
 CSubset::CSubset(SGVector<index_t> subset_idx) : m_subset_idx(subset_idx)
 {
 	init();
+
+	/* check for non-negative values */
+	if (get_min_index()<0)
+		SG_ERROR("Subset with negative indices not allowed.\n");
 }
 
 CSubset::~CSubset() {
