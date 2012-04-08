@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -54,6 +55,12 @@ class CDotFeatures;
  * \li 64bit Tangent of posterior log-odds (TOP) features from HMM - CTOPFeatures
  * \li 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
  * \li 96bit Float matrix - CSimpleFeatures<floatmax_t>
+ *
+ * Partly) subset access is supported for this feature type.
+ * Simple use the (inherited) add_subset(), remove_subset() functions.
+ * If done, all calls that work with features are translated to the subset.
+ * See comments to find out whether it is supported for that method.
+ * See also CFeatures class documentation
  */
 template<class ST> class CSimpleFeatures: public CDotFeatures
 {
@@ -382,7 +389,7 @@ public:
 
 	/** compute dot product between vector1 and a dense vector
 	 *
-	 * possible with subset TODO: where?
+	 * possible with subset
 	 *
 	 * @param vec_idx1 index of first vector
 	 * @param vec2 pointer to real valued vector

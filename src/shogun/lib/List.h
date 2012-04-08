@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -103,16 +104,26 @@ class CList : public CSGObject
 		{
 			SG_DEBUG("Destroying List %p\n", this);
 
+			delete_all_elements();
+		}
+
+		/** deletes all elements from list */
+		inline void delete_all_elements()
+		{
 			while (get_num_elements())
 			{
 				CSGObject* d=delete_element();
 
 				if (delete_data)
 				{
-					SG_DEBUG("Destroying List Element %p\n", d);
+					SG_DEBUG("SG_UNREF List Element %p\n", d);
 					SG_UNREF(d);
 				}
 			}
+
+			first=NULL;
+			current=NULL;
+			last=NULL;
 		}
 
 		/** get number of elements in list
@@ -356,6 +367,52 @@ class CList : public CSGObject
 			return append_element(data);
 		}
 
+		/** append at end of list
+		 *
+		 * @param data data element to append
+		 * @return if appending was successful
+		 */
+		inline bool push(CSGObject* data)
+		{
+			return append_element_at_listend(data);
+		}
+
+		/** removes last element of list
+		 *
+		 * @return if deletion was successful
+		 */
+		inline bool pop()
+		{
+			if (last)
+			{
+				if (first==last)
+					first=NULL;
+
+				if (current==last)
+				{
+					if (first==last)
+						current=NULL;
+					else
+						current=current->prev;
+				}
+
+				if (delete_data)
+					SG_UNREF(last->data);
+
+				CListElement* temp=last;
+				last=last->prev;
+				SG_UNREF(temp);
+				if (last)
+					last->next=NULL;
+
+				num_elements--;
+
+				return true;
+			}
+			else
+				return false;
+		}
+
 		/** insert element BEFORE the current element
 		 *
 		 * @param data data element to insert
@@ -461,6 +518,17 @@ class CList : public CSGObject
 				prev = cur;
 			}
 			last = prev;
+		}
+
+		void print_list()
+		{
+			CListElement* c=first;
+
+			while (c)
+			{
+				SG_PRINT("\"%s\" at %p\n", c->data ? c->data->get_name() : "", c->data);
+				c=c->next;
+			}
 		}
 
 		/** @return object name */

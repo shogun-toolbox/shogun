@@ -78,7 +78,12 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 		}
 	}
 
-	m_subset=orig.m_subset->duplicate();
+	m_active_subset=orig.m_active_subset;
+	SG_REF(m_active_subset);
+
+	SG_UNREF(m_subset_stack);
+	m_subset_stack=orig.m_subset_stack;
+	SG_REF(m_subset_stack);
 }
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
 : CDotFeatures(loader), num_vectors(0), num_features(0),
@@ -99,7 +104,7 @@ template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
 	sparse_feature_matrix = NULL;
 	num_vectors=0;
 	num_features=0;
-	remove_subset();
+	remove_all_subsets();
 }
 template<class ST> void CSparseFeatures<ST>::free_sparse_features()
 {
@@ -372,7 +377,7 @@ template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(SGSparse
 
 template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_sparse_feature_matrix(int32_t &num_feat, int32_t &num_vec)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("get_sparse_feature_matrix() not allowed with subset\n");
 
 	num_feat=num_features;
@@ -383,7 +388,7 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_sparse_feature_m
 
 template<class ST> SGSparseMatrix<ST> CSparseFeatures<ST>::get_sparse_feature_matrix()
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("get_sparse_feature_matrix() not allowed with subset\n");
 
 	SGSparseMatrix<ST> sm;
@@ -462,7 +467,7 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 
 template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseMatrix<ST> sm)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("set_sparse_feature_matrix() not allowed with subset\n");
 
 
@@ -505,7 +510,7 @@ template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 
 template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST> full)
 {
-	remove_subset();
+	remove_all_subsets();
 
 	ST* src=full.matrix;
 	int32_t num_feat=full.num_rows;
@@ -634,7 +639,7 @@ template<class ST> bool CSparseFeatures<ST>::obtain_from_simple(CSimpleFeatures<
 
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
 {
-	return m_subset ? m_subset->get_size() : num_vectors;
+	return m_active_subset ? m_active_subset->get_size() : num_vectors;
 }
 
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_features()
@@ -755,7 +760,7 @@ template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
 template<class ST> CLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname,
 		bool do_sort_features)
 {
-	remove_subset();
+	remove_all_subsets();
 
 	CLabels* lab=NULL;
 
@@ -920,7 +925,7 @@ template<class ST> CLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname,
 
 template<class ST> void CSparseFeatures<ST>::sort_features()
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("sort_features() not allowed with subset\n");
 
 	ASSERT(get_num_preprocessors()==0);
@@ -966,7 +971,7 @@ template<class ST> void CSparseFeatures<ST>::sort_features()
 template<class ST> bool CSparseFeatures<ST>::write_svmlight_file(char* fname,
 		CLabels* label)
 {
-	if (m_subset)
+	if (has_subsets())
 		SG_ERROR("write_svmlight_file() not allowed with subset\n");
 
 	ASSERT(label);
@@ -1157,7 +1162,7 @@ GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
 #define LOAD(fname, sg_type)											\
 template<> void CSparseFeatures<sg_type>::load(CFile* loader)	\
 {																		\
-	remove_subset();													\
+	remove_all_subsets();													\
 	SG_SET_LOCALE_C;													\
 	ASSERT(loader);														\
 	SGSparseVector<sg_type>* matrix=NULL;										\
@@ -1185,7 +1190,7 @@ LOAD(get_longreal_sparsematrix, floatmax_t)
 #define WRITE(fname, sg_type)											\
 template<> void CSparseFeatures<sg_type>::save(CFile* writer)	\
 {																		\
-	if (m_subset)														\
+	if (has_subsets())														\
 		SG_ERROR("save() not allowed with subset\n");					\
 	SG_SET_LOCALE_C;													\
 	ASSERT(writer);														\

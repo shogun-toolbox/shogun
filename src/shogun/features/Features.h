@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Subset support written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -19,6 +19,7 @@
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Subset.h>
+#include <shogun/lib/List.h>
 
 namespace shogun
 {
@@ -49,9 +50,12 @@ namespace shogun
  *   set of strings) from which all the specific features like CSimpleFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
  *
- *   Subsets may be supported by inheriting classes.
+ *
+ *   (Multiple) Subsets (of subsets) may be supported by inheriting classes.
  *   Sub-classes may want to overwrite the subset_changed_post() method which is
- *   called automatically after each subset change
+ *   called automatically after each subset change.
+ *   A subset is put onto a stack using the add_subset() method. The last added
+ *   subset may be removed via remove_subset()
  */
 class CFeatures : public CSGObject
 {
@@ -219,16 +223,20 @@ class CFeatures : public CSGObject
 		 */
 		void unset_property(EFeatureProperty p);
 
-		/** setter for subset variable, deletes old one
-		 * subset_changed_post() is called afterwards
+		/** adds a subset of indices on top of the current subsets (possibly
+		 * subset o subset. Calls subset_changed_post() afterwards
 		 *
-		 * @param subset subset instance to set
-		 */
-		virtual void set_subset(CSubset* subset);
+		 * @param subset subset of indices to add
+		 * */
+		virtual void add_subset(CSubset* subset);
 
-		/** deletes any set subset
-		 * subset_changed_post() is called afterwards */
+		/** removes that last added subset from subset stack, if existing
+		 * Calls subset_changed_post() afterwards */
 		virtual void remove_subset();
+
+		/** removes all subsets
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_all_subsets();
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
@@ -240,13 +248,14 @@ class CFeatures : public CSGObject
 		 */
 		inline index_t subset_idx_conversion(index_t idx) const
 		{
-			return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
+			return m_active_subset ?
+					m_active_subset->subset_idx_conversion(idx) : idx;
 		}
 
 		/** check if has subsets
 		 * @return true if has subsets
 		 */
-		bool has_subset() const;
+		bool has_subsets() const;
 
 		/** Creates a new CFeatures instance containing copies of the elements
 		 * which are specified by the provided indices.
@@ -258,6 +267,11 @@ class CFeatures : public CSGObject
 		 * @return new CFeatures instance with copies of feature data
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
+
+	protected:
+
+		/* recomputes the visible active subset using the subset stack */
+		virtual void update_active_subset();
 
 	private:
 		/** feature properties */
@@ -277,8 +291,11 @@ class CFeatures : public CSGObject
 
 	protected:
 
-		/** subset class to enable subset support for this class */
-		CSubset* m_subset;
+		/** stack of subsets */
+		CList* m_subset_stack;
+
+		/** current subset which is all stack subsets merged. for performance */
+		CSubset* m_active_subset;
 };
 }
 #endif
