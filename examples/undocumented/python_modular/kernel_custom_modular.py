@@ -25,7 +25,7 @@ def kernel_custom_modular (dim=7):
 	kernel.set_triangle_kernel_matrix_from_full(symdata)
 	km_fulltriangle=kernel.get_kernel_matrix()
 
-	kernel.set_full_kernel_matrix_from_full(data)
+	kernel.set_full_kernel_matrix_from_full(symdata)
 	km_fullfull=kernel.get_kernel_matrix()
 
 	# now once with float32's
@@ -37,7 +37,7 @@ def kernel_custom_modular (dim=7):
 	kernel.set_triangle_kernel_matrix_from_full(symdata)
 	km_fulltriangle=kernel.get_kernel_matrix()
 
-	kernel.set_full_kernel_matrix_from_full(data)
+	kernel.set_full_kernel_matrix_from_full(symdata)
 	km_fullfull=kernel.get_kernel_matrix()
 	return km_fullfull,kernel
 
