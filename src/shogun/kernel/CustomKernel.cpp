@@ -185,8 +185,7 @@ void CCustomKernel::print_kernel_matrix(const char* prefix) const
 		{
 			index_t real_i=row_subset_idx_conversion(i);
 			index_t real_j=col_subset_idx_conversion(j);
-			SG_PRINT("%s%4.2f", kmatrix.matrix[kmatrix.num_rows*real_j+real_i],
-					prefix);
+			SG_PRINT("%s%4.2f", prefix, kmatrix.matrix[kmatrix.num_rows*real_j+real_i]);
 			if (j<num_cols-1)
 				SG_PRINT(", \t");
 		}
