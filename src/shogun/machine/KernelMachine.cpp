@@ -461,6 +461,7 @@ void CKernelMachine::store_model_features()
 
 bool CKernelMachine::train_locked(SGVector<index_t> indices)
 {
+	SG_DEBUG("entering %s::train_locked()\n", get_name());
 	if (!is_data_locked())
 		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n");
 
@@ -485,14 +486,13 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	 * and train does data_unlock */
 	bool result=train_machine();
 
-//	CMath::display_vector(get_support_vectors().vector, get_num_support_vectors(), "sv indices");
-
 	/* set col subset of kernel to contain all elements */
 	m_custom_kernel->remove_col_subset();
 
 	/* remove label subset after training */
 	m_labels->remove_subset();
 
+	SG_DEBUG("leaving %s::train_locked()\n", get_name());
 	return result;
 }
 
