@@ -125,17 +125,11 @@ inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const
 	}
 	else if (m_p == 2.0)
 	{
-#ifdef HAVE_LAPACK
-		norm = cblas_dnrm2 (vec_len, vec, 1);
-#else
-		norm = CMath::sqrt (CMath::dot (vec, vec, vec_len));
-#endif
+		norm = CMath::twonorm (vec, vec_len);
 	}
 	else
 	{
-		for (int i = 0; i < vec_len; ++i)
-			norm += CMath::pow (fabs (vec[i]), m_p);
-		norm = CMath::pow (norm, 1/m_p);
+		norm = CMath::qnorm (vec, vec_len, m_p);
 	}
 		
 	return norm;

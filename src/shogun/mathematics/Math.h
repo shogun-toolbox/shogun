@@ -253,6 +253,8 @@ class CMath : public CSGObject
 				return CMath::sqrt(result);
 			}
 
+		static float64_t twonorm(const float64_t* v, int32_t n);
+		
 		/// || x ||_q^q
 		template <class T>
 			static inline T qsq(T* x, int32_t len, float64_t q)
