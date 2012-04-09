@@ -67,17 +67,17 @@ class CPNorm : public CSimplePreprocessor<float64_t>
 		 * Set norm
 		 * @param p norm value
 		 */
-		void setPNorm (double pnorm);
+		void set_pnorm (double pnorm);
 		
 		/**
 		 * Get norm
 		 * @return norm
 		 */
-		double getPNorm () const;
+		double get_pnorm () const;
 	
 	private: 
 		void register_param ();
-		inline float64_t getPNorm (float64_t* vec, int32_t vec_len) const;
+		inline float64_t get_pnorm (float64_t* vec, int32_t vec_len) const;
 		
 	private:
 		double m_p;

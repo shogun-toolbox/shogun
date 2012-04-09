@@ -79,7 +79,7 @@ SGMatrix<float64_t> CPNorm::apply_to_feature_matrix (CFeatures* features)
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{
 		float64_t* vec= &(feature_matrix.matrix[i*feature_matrix.num_rows]);
-		float64_t norm = getPNorm (vec, feature_matrix.num_rows);
+		float64_t norm = get_pnorm (vec, feature_matrix.num_rows);
 		CMath::scale_vector(1.0/norm, vec, feature_matrix.num_rows);
 	}
 	return feature_matrix;
@@ -90,7 +90,7 @@ SGMatrix<float64_t> CPNorm::apply_to_feature_matrix (CFeatures* features)
 SGVector<float64_t> CPNorm::apply_to_feature_vector (SGVector<float64_t> vector)
 {
 	float64_t* normed_vec = SG_MALLOC(float64_t, vector.vlen);
-	float64_t norm = getPNorm (vector.vector, vector.vlen);
+	float64_t norm = get_pnorm (vector.vector, vector.vlen);
 
 	for (int32_t i=0; i<vector.vlen; i++)
 		normed_vec[i]=vector.vector[i]/norm;
@@ -98,14 +98,14 @@ SGVector<float64_t> CPNorm::apply_to_feature_vector (SGVector<float64_t> vector)
 	return SGVector<float64_t>(normed_vec,vector.vlen);
 }
 
-void CPNorm::setPNorm (double pnorm)
+void CPNorm::set_pnorm (double pnorm)
 {
 	ASSERT (pnorm >= 1.0);
 	m_p = pnorm;
 	register_param ();
 }
 
-double CPNorm::getPNorm () const
+double CPNorm::get_pnorm () const
 {
 	return m_p;
 }
@@ -115,7 +115,7 @@ void CPNorm::register_param ()
 	m_parameters->add (&m_p, "norm", "P-norm parameter");
 }
 
-inline float64_t CPNorm::getPNorm (float64_t* vec, int32_t vec_len) const
+inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const
 {
 	float64_t norm;
 	if (m_p == 1.0)
