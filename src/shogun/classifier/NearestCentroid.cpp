@@ -7,7 +7,7 @@
  * Written (W) 2012 Philippe Tillet
  */
 
-#include "NearestCentroid.h"
+#include <shogun/classifier/NearestCentroid.h>
 
 namespace shogun{
 	
