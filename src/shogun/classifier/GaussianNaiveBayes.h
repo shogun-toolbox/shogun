@@ -110,10 +110,10 @@ protected:
 	int32_t m_dim;
 
 	/// means for normal distributions of features
-	SGVector<float64_t> m_means;
+	SGMatrix<float64_t> m_means;
 
 	/// variances for normal distributions of features
-	SGVector<float64_t> m_variances;
+	SGMatrix<float64_t> m_variances;
 
 	/// a priori probabilities of labels
 	SGVector<float64_t> m_label_prob;
@@ -126,7 +126,7 @@ protected:
 	 */
 	float64_t inline normal_exp(float64_t x, int32_t l_idx, int32_t f_idx)
 	{
-		return CMath::exp(-CMath::sq(x-m_means.vector[m_dim*l_idx+f_idx])/(2*m_variances.vector[m_dim*l_idx+f_idx]));
+		return CMath::exp(-CMath::sq(x-m_means(f_idx, l_idx))/(2*m_variances(f_idx, l_idx)));
 	}
 
 	/// label rates
