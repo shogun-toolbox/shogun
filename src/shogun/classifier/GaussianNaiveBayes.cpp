@@ -126,13 +126,13 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	m_label_prob.zero();
 	m_rates.zero();
 
-	SGMatrix<float64_t> feature_matrix = m_features->get_computed_dot_feature_matrix();
-
 	// get sum of features among labels
 	for (i=0; i<train_labels.vlen; i++)
 	{
+		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
-			m_means(j, train_labels.vector[i]) += feature_matrix.matrix[i*m_dim+j];
+			m_means(j, train_labels.vector[i]) += fea.vector[j];
+		fea.free_vector();
 
 		m_label_prob.vector[train_labels.vector[i]]+=1.0;
 	}
@@ -147,11 +147,13 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	// compute squared residuals with means available
 	for (i=0; i<train_labels.vlen; i++)
 	{
+		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
 		{
-			m_variances(j, train_labels.vector[i]) +=
-				CMath::sq(feature_matrix.matrix[i*m_dim+j]-m_means(j, train_labels.vector[i]));
+			m_variances(j, train_labels.vector[i]) += 
+				CMath::sq(fea[j]-m_means(j, train_labels.vector[i]));
 		}
+		fea.free_vector();
 	}
 
 	// get variance of features of labels
@@ -167,7 +169,6 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		m_label_prob.vector[i]/= m_num_classes;
 	}
 
-	feature_matrix.free_matrix();
 	train_labels.free_vector();
 
 	return true;
