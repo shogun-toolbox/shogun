@@ -261,7 +261,7 @@ class CMath : public CSGObject
 			{
 				float64_t result=0;
 				for (int32_t i=0; i<len; i++)
-					result+=CMath::pow(x[i], q);
+					result+=CMath::pow(fabs(x[i]), q);
 
 				return result;
 			}
