@@ -10,7 +10,8 @@
 		- New 'multiclass' module for multiclass classification algorithms, generic linear
 		  and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
 		  new rejection schemes concept by Sergey Lisitsyn.
-		- Mahalanobis distance, QDA and generic OvO multiclass machine (thanks to Fernando J. Iglesias Garcia).
+		- Mahalanobis distance, QDA, Stochastic Proximity Embedding
+		  and generic OvO multiclass machine (thanks to Fernando J. Iglesias Garcia).
 		- New regression estimation algorithms.
 		- New graphical python modular examples.
 		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
@@ -19,7 +20,10 @@
 		  KernelMachines now make use of that by not recomputing kernel matrix in cross-validation.
 		- Cross-validation for KernelMachines is now parallelized.
 		- Cross-validation is now possible with custom kernels.
-		- Features may now have arbritarily many index subsets (of subsets (of subsets (...)))
+		- Features may now have arbritarily many index subsets (of subsets (of subsets (...))).
+		- Various clustering measures (thanks to Chiyuan Zhang).
+		- Python Sparse matrix typemap for octave modular interface (thanks to Evgeniy Andreev).
+		- Newton SVM port (thanks to Harshit Syal)
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was
 		  changed to log-space.
@@ -28,6 +32,7 @@
 		- Various fixes for compile errors with clang.
 		- Stratified-cross-validation now used different indices for each run.
 	* Cleanup and API Changes:
+		- Various code cleanups by Evan Shelhamer
 		- Parameter migration framework by Heiko Strathmann. From now on,
 		  changes in the shogun objects will not break loading old serialized
 		  files anymore
