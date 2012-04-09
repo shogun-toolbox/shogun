@@ -13,7 +13,7 @@ void print_message(FILE* target, const char* str)
 
 int main(){
 	init_shogun(&print_message);
-	index_t num_vec=4;
+	index_t num_vec=7;
 	index_t num_feat=2;
 	index_t num_class=2;
 

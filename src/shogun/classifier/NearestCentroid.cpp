@@ -64,7 +64,7 @@ namespace shogun{
 		int32_t num_vectors = data->get_num_vectors();
 		int32_t num_classes = m_labels->get_num_classes();
 		int32_t num_feats = ((CSimpleFeatures<float64_t>*)data)->get_num_features();
-		float64_t* centroids = SG_MALLOC(float64_t, num_feats*num_classes);
+		float64_t* centroids = SG_CALLOC(float64_t, num_feats*num_classes);
 		for(int32_t i=0 ; i < num_feats*num_classes ; i++)
 		{
 			centroids[i]=0;
@@ -80,20 +80,28 @@ namespace shogun{
 		
 		for(int32_t idx=0 ; idx<num_vectors ; idx++)
 		{
-			int32_t target_len, current_len;
-			bool target_free, current_free;
+			int32_t current_len;
+			bool current_free;
 			int32_t current_class = m_labels->get_label(idx);
 			float64_t* target = centroids + num_feats*current_class;
 			float64_t* current = ((CSimpleFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
 			CMath::add(target,1.0,target,1.0,current,current_len);
 			num_per_class[current_class]++;
+			((CSimpleFeatures<float64_t>*)data)->free_feature_vector(current, current_len, current_free);
 		}
 
 
 		for(int32_t i=0 ; i<num_classes ; i++)
 		{
 			float64_t* target = centroids + num_feats*i;
-			CMath::scale_vector(1.0/(float64_t)num_per_class[i],target,num_feats);
+			int32_t total = num_per_class[i];
+			float64_t scale = 0;
+			if(total>1)
+				scale = 1.0/((float64_t)(total-1));
+			else
+				scale = 1.0/(float64_t)total;
+				
+			CMath::scale_vector(scale,target,num_feats);
 		}
 				
 		m_centroids->free_feature_matrix();
