@@ -47,7 +47,8 @@ enum EPreprocessorType
 	P_NORMDERIVATIVELEM3=150,
 	P_DIMENSIONREDUCTIONPREPROCESSOR=160,
 	P_SUMONE=170,
-	P_HOMOGENEOUSKERNELMAP = 180
+	P_HOMOGENEOUSKERNELMAP = 180,
+	P_PNORM = 190
 };
 
 /** @brief Class Preprocessor defines a preprocessor interface.
