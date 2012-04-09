@@ -18,10 +18,9 @@
 
 using namespace shogun;
 
-CMKL::CMKL(CSVM* s)
-  : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0), beta_local(NULL),
-	mkl_iterations(0), mkl_epsilon(1e-5), interleaved_optimization(true),
-	w_gap(1.0), rho(0)
+CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),
+		mkl_block_norm(1),beta_local(NULL), mkl_iterations(0), mkl_epsilon(1e-5),
+		interleaved_optimization(true), w_gap(1.0), rho(0)
 {
 	set_constraint_generator(s);
 #ifdef USE_CPLEX
@@ -1489,6 +1488,9 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 	for (int32_t n=0; n<num_kernels; n++)
 	{
 		beta[n]=1.0;
+		/* this currently only copies the value of the first entry of this array
+		 * so it may be deleted safely afterwards. On the other hand: Is this
+		 * really intended to be like this? Heiko Strathmann */
 		kernel->set_subkernel_weights(SGVector<float64_t>(beta, num_kernels));
 
 		for (int32_t i=0; i<nsv; i++)
@@ -1506,6 +1508,9 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 
 	mkl_iterations++;
 	kernel->set_subkernel_weights(SGVector<float64_t>( (float64_t*) old_beta, num_kernels));
+
+	/* safe because of above comment, otherwise: memleak */
+	SG_FREE(beta);
 }
 
 
