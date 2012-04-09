@@ -158,10 +158,10 @@ CLabels* CKNN::apply()
 
 	CLabels* output=new CLabels(num_lab);
 
-	float64_t* dists;
-	int32_t* train_lab;
+	float64_t* dists   = NULL;
+	int32_t* train_lab = NULL;
 	//vector of neighbors used for the cover tree support
-	int32_t* nearest_neighbors;
+	int32_t* nearest_neighbors = NULL;
 	//distances to train data and working buffer of train_labels
 	if ( ! m_use_covertree )
 	{
