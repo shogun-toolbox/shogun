@@ -128,7 +128,7 @@ bool LARS::train_machine(CFeatures* data)
 	int32_t nloop=0;
 	while (n_active < n_fea && max_corr > CMath::MACHINE_EPSILON)
 	{
-		printf("    \nLARS::loop %02d> find correlation...\n", nloop++);
+		printf("    \nLARS::loop %02d> find correlation...\n", ++nloop);
 		// for (int32_t i=0; i < n_fea; ++i)
 		// 	if (beta[i] != 0)
 		// 		printf("%d=%.4f  ", i+1, beta[i]);
@@ -216,7 +216,7 @@ bool LARS::train_machine(CFeatures* data)
 				R.num_cols = nR.num_cols;
 			}
 
-			printf("    LARS::loop> add new variable %d...\n", i_max_corr);
+			printf("    LARS::loop> add new variable %d...\n", i_max_corr+1);
 			// add new variable to active set
 			active_set.push_back(i_max_corr);
 			is_active[i_max_corr] = true;
@@ -316,10 +316,21 @@ bool LARS::train_machine(CFeatures* data)
 		// if lasso cond, drop the variable from active set
 		if (lasso_cond)
 		{
+			beta[i_change] = 0; // ensure it be zero
+
 			// -------------------------------------------
 			// update Cholesky factorization
 			// -------------------------------------------
-			SGMatrix<float64_t> nR(n_active-1, n_active-1);
+			if (nloop == 46)
+			{
+				FILE *fp = fopen("/tmp/before.txt", "w");
+				for (int32_t i=0;i<R.num_rows;++i) {
+					for (int32_t j=0;j<R.num_cols;++j)
+						fprintf(fp, "%.4f ", R(i,j));
+					fprintf(fp, "\n");
+				}
+				fclose(fp);
+			}
 			if (i_kick != n_active-1)
 			{
 				// remove i_kick-th column
@@ -330,15 +341,15 @@ bool LARS::train_machine(CFeatures* data)
 				SGMatrix<float64_t> G(2,2);
 				for (int32_t i=i_kick; i < n_active-1; ++i)
 				{
-					plane_rot(R(i,i),R(i+1,i), 
-						R(i,i), R(i+1,i), G);
+					plane_rot(R(i,i),R(i+1,i), R(i,i), R(i+1,i), G);
 					if (i < n_active-2)
 					{
 						for (int32_t k=i+1; k < n_active-1; ++k)
 						{
 							// R[i:i+1, k] = G*R[i:i+1, k]
-							R(i,k) = G(0,0)*R(i,k) + G(0,1)*R(i+1,k);
-							R(i+1,k) = G(1,0)*R(i,k)+G(1,1)*R(i+1,k);
+							float64_t Rik = R(i,k), Ri1k = R(i+1,k);
+							R(i,k) = G(0,0)*Rik + G(0,1)*Ri1k;
+							R(i+1,k) = G(1,0)*Rik+G(1,1)*Ri1k;
 						}
 					}
 				}
@@ -346,6 +357,8 @@ bool LARS::train_machine(CFeatures* data)
 				G.destroy_matrix();
 
 			}
+
+			SGMatrix<float64_t> nR(n_active-1, n_active-1);
 			for (int32_t i=0; i < n_active-1; ++i)
 				for (int32_t j=0; j < n_active-1; ++j)
 					nR(i,j) = R(i,j);
@@ -355,7 +368,18 @@ bool LARS::train_machine(CFeatures* data)
 			R.num_cols = nR.num_cols;
 			R.num_rows = nR.num_rows;
 
-			printf("    LARS::loop> drop variable %d...\n", i_change);
+			if (nloop == 46)
+			{
+				FILE *fp = fopen("/tmp/after.txt", "w");
+				for (int32_t i=0;i<R.num_rows;++i) {
+					for (int32_t j=0;j<R.num_cols;++j)
+						fprintf(fp, "%.4f ", R(i,j));
+					fprintf(fp, "\n");
+				}
+				fclose(fp);
+			}
+
+			printf("    LARS::loop> drop variable %d...\n", i_change+1);
 			// remove this variable
 			active_set.erase(active_set.begin() + i_kick);
 			is_active[i_change] = false;
