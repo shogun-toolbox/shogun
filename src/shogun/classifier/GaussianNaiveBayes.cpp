@@ -129,6 +129,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	// get sum of features among labels
 	for (i=0; i<train_labels.vlen; i++)
 	{
+		SG_PROGRESS(i, 0, train_labels.vlen-1, 1, "Getting sum of features among labels:\t");
 		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
 			m_means(j, train_labels.vector[i]) += fea.vector[j];
@@ -136,17 +137,21 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 
 		m_label_prob.vector[train_labels.vector[i]]+=1.0;
 	}
+	SG_DONE();
 
 	// get means of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
+		SG_PROGRESS(i, 0, m_num_classes-1, 1, "Getting means of features of labels:\t");
 		for (j=0; j<m_dim; j++)
 			m_means(j, i) /= m_label_prob.vector[i];
 	}
+	SG_DONE();
 
 	// compute squared residuals with means available
 	for (i=0; i<train_labels.vlen; i++)
 	{
+		SG_PROGRESS(i, 0, train_labels.vlen-1, 1, "Computing squared residuals with means available:\t");
 		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
 		{
@@ -155,19 +160,24 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		}
 		fea.free_vector();
 	}
+	SG_DONE();
 
 	// get variance of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
+		SG_PROGRESS(i, 0, m_num_classes-1, 1, "Getting variance of features of labels:\t");
 		for (j=0; j<m_dim; j++)
 			m_variances(j, i) /= m_label_prob.vector[i] > 1 ? m_label_prob.vector[i]-1 : 1;
 	}
+	SG_DONE();
 
 	// get a priori probabilities of labels
 	for (i=0; i<m_num_classes; i++)
 	{
+		SG_PROGRESS(i, 0, m_num_classes-1, 1, "Getting a priori probabilities of labels:\t");
 		m_label_prob.vector[i]/= m_num_classes;
 	}
+	SG_DONE();
 
 	train_labels.free_vector();
 
@@ -177,15 +187,18 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 CLabels* CGaussianNaiveBayes::apply()
 {
 	// init number of vectors
-	int32_t n = m_features->get_num_vectors();
+	int32_t num_vectors = m_features->get_num_vectors();
 
 	// init result labels
-	CLabels* result = new CLabels(n);
+	CLabels* result = new CLabels(num_vectors);
 
 	// classify each example of data
-	for (int i=0; i<n; i++)
+	for (int i = 0; i < num_vectors; i++)
+	{
+		SG_PROGRESS(i, 0, num_vectors-1);
 		result->set_label(i,apply(i));
-
+	}
+	SG_DONE();
 	return result;
 };
 
