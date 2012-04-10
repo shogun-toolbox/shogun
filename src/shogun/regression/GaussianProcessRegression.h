@@ -138,9 +138,23 @@ class CGaussianProcessRegression : public CMachine
 		  return CT_GAUSSIANPROCESSREGRESSION;
 		}
 		
+		/** get covariance matrix
+		*
+		* @return covariance matrix
+		*/
+		SGMatrix<float64_t> getCovarianceMatrix(CFeatures* data);
+		
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GaussianProcessRegression"; }
 	
+	protected:
+  		/** train regression
+		 *
+		 * @param data training data 
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 	private:
 	  	
 		/** function for initialization*/
@@ -163,6 +177,17 @@ class CGaussianProcessRegression : public CMachine
 		
 		/** kernel */
 		CKernel* kernel;
+		
+		/** Lower triangle Cholesky decomposition of 
+		 *  feature matrix
+		 */
+		SGMatrix<float64_t> m_L;
+		
+		/** Alpha used for calculation of mean predictions,
+		 * solves the equation (K(train,train)+sigma^2*I) alpha = labels.
+		 */
+		SGVector< float64_t > m_alpha;
+
 		
 };
 }
