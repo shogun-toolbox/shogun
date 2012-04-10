@@ -13,17 +13,24 @@
 
 #include <shogun/machine/LinearMachine.h>
 
+class CFeatures;
+
 namespace shogun 
 {
 
 class LARS: public CLinearMachine
 {
 public:
-	LARS();
+	LARS():m_lasso(true)
+	{
+	}
 	virtual ~LARS();
 
 protected:
 	virtual bool train_machine(CFeatures* data=NULL);
+
+private:
+	bool m_lasso;
 }; // class LARS
 
 } // namespace shogun
