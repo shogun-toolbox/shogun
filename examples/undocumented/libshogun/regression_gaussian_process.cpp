@@ -48,8 +48,14 @@ int main(int argc, char** argv)
 	//Gaussian Process Regression with sigma = 1.
 	CGaussianProcessRegression regressor(1.0, kernel, features, labels);
 	
+	regressor.train(features);
 	//Get mean predictions
 	CLabels* result = regressor.apply();
+	SG_REF(result);
+	
+	SGMatrix<float64_t> cov = regressor.getCovarianceMatrix(features);
+	
+	CMath::display_matrix(cov.matrix, cov.num_rows, cov.num_cols, "Covariance Matrix");
 
 	// output predictions
 	for (int32_t i=0; i<3; i++)
@@ -60,6 +66,7 @@ int main(int argc, char** argv)
 	SG_UNREF(features);
 	SG_UNREF(labels);
 	SG_UNREF(kernel);
+	cov.destroy_matrix();
 			
 	#endif
 	
