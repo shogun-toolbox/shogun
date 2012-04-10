@@ -23,7 +23,7 @@ CBinaryFile::CBinaryFile(FILE* f, const char* name) : CFile(f, name)
 {
 }
 
-CBinaryFile::CBinaryFile(char* fname, char rw, const char* name) : CFile(fname, rw, name)
+CBinaryFile::CBinaryFile(const char* fname, char rw, const char* name) : CFile(fname, rw, name)
 {
 }
 

@@ -49,7 +49,7 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CFile(char* fname, char rw='r', const char* name=NULL);
+	CFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** default destructor */
 	virtual ~CFile();
