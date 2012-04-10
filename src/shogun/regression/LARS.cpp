@@ -11,6 +11,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <cstdio> // TODO: remove debug code
 
 #include <shogun/lib/config.h>
 
@@ -78,6 +79,7 @@ bool LARS::train_machine(CFeatures* data)
 
 	// TODO: X should be normalized (zero mean, unit length) and y should
 	// be centered (zero mean)
+	printf("LARS::train> prepare data...\n");
 
 	CSimpleFeatures<float64_t>* feats=(CSimpleFeatures<float64_t>*) data;
 	int32_t n_fea = feats->get_num_features();
@@ -96,18 +98,20 @@ bool LARS::train_machine(CFeatures* data)
 	// transpose(X) is more convenient to work with since we care
 	// about features here. After transpose, each row will be a data
 	// point while each column corresponds to a feature
-	SGMatrix<float64_t> X(n_vec, n_fea);
+	SGMatrix<float64_t> X(n_vec, n_fea, true);
 	for (int32_t i=0; i < n_vec; ++i)
 		for (int32_t j=0; j < n_fea; ++j)
 			X(i,j) = Xorig(j,i);
-	Xorig.destroy_matrix();
+	Xorig.free_matrix();
 	
+	printf("LARS::train> init variables...\n");
+
 	// beta is the regressor
 	vector<float64_t> beta = make_vector(n_fea, 0);
 
 	vector<float64_t> Xy = make_vector(n_fea, 0);
 	// Xy = X' * y
-	cblas_dgemv(CblasColMajor, CblasTrans, n_fea, n_vec, 1, X.matrix, n_fea, 
+	cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, 1, X.matrix, n_vec, 
 		y.vector, 1, 0, &Xy[0], 1);
 
 	// mu is the prediction
@@ -124,17 +128,22 @@ bool LARS::train_machine(CFeatures* data)
 	float64_t max_corr = 1;
 	int32_t i_max_corr = 1;
 
+	printf("LARS::train> enter main loop...\n");
+
 	while (n_active < n_fea && max_corr > CMath::MACHINE_EPSILON)
 	{
+		printf("    \nLARS::loop> find correlation...\n");
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		copy(Xy.begin(), Xy.end(), corr.begin());
-		cblas_dgemv(CblasColMajor, CblasTrans, n_fea, n_vec, -1, 
-			X.matrix, n_fea, &mu[0], 1, 1, &corr[0], 1);
+		cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, -1, 
+			X.matrix, n_vec, &mu[0], 1, 1, &corr[0], 1);
 
 		// corr_sign = sign(corr)
 		for (uint32_t i=0; i < corr.size(); ++i)
 			corr_sign[i] = CMath::sign(corr[i]);
 
+		max_corr = -1;
+		i_max_corr = -1;
 		// find max absolute correlation in inactive set
 		for (uint32_t i=0; i < corr.size(); ++i)
 		{
@@ -153,6 +162,7 @@ bool LARS::train_machine(CFeatures* data)
 			// update Cholesky factorization matrix
 			//--------------------------------------
 
+			printf("    LARS::loop> update cholesky...\n");
 			// diag_k = X[:,i_max_corr]' * X[:,i_max_corr]
 			float64_t diag_k = cblas_ddot(n_vec, X.get_column_vector(i_max_corr), 1,
 				X.get_column_vector(i_max_corr), 1);
@@ -206,6 +216,7 @@ bool LARS::train_machine(CFeatures* data)
 				R.num_cols = nR.num_cols;
 			}
 
+			printf("    LARS::loop> add new variable %d...\n", i_max_corr);
 			// add new variable to active set
 			active_set.push_back(i_max_corr);
 			is_active[i_max_corr] = true;
@@ -213,9 +224,11 @@ bool LARS::train_machine(CFeatures* data)
 		} // if (!lasso_cond)
 
 
+		printf("    LARS::loop> compute aux values...\n");
+
 		// GA1 = R\(R'\corr_sign)
 		vector<float64_t> GA1(corr_sign);
-		cblas_dtrsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, CblasNonUnit, 
+		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, 
 			n_active, 1, 1, R.matrix, n_active, &GA1[0], n_active);
 		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
 			n_active, 1, 1, R.matrix, n_active, &GA1[0], n_active);
@@ -224,20 +237,25 @@ bool LARS::train_machine(CFeatures* data)
 		float64_t AA = cblas_ddot(n_active, &GA1[0], 1, &corr_sign[0], 1);
 		AA = 1/CMath::sqrt(AA);
 
+		// wA = AA*GA1
+		vector<float64_t> wA(GA1);
 		for (int32_t i=0; i < n_active; ++i)
-			GA1[i] *= AA;
+			wA[i] *= AA;
 
 		// equiangular direction (unit vector)
 		vector<float64_t> u = make_vector(n_vec, 0);
-		// u = X[:,active_set] * GA1
+		// u = X[:,active_set] * wA
 		for (int32_t i=0; i < n_active; ++i)
 		{
-			// u += GA1[i] * X[:,active_set[i]]
-			cblas_daxpy(n_vec, GA1[i], 
+			// u += wA[i] * X[:,active_set[i]]
+			cblas_daxpy(n_vec, wA[i], 
 				X.get_column_vector(active_set[i]), 1, &u[0], 1);
 		}
 
-		float64_t gamma = max_corr / AA; // step size
+		printf("    LARS::loop> find suitable step size...\n");
+
+		// step size
+		float64_t gamma = max_corr / AA; 
 		if (n_active < n_fea)
 		{
 			for (int32_t i=0; i < n_fea; ++i)
@@ -245,8 +263,10 @@ bool LARS::train_machine(CFeatures* data)
 				if (is_active[i])
 					continue;
 
+				// correlation between X[:,i] and u
 				float64_t dir_corr = cblas_ddot(n_vec, 
 					X.get_column_vector(i), 1, &u[0], 1);
+
 				float64_t tmp1 = (max_corr-corr[i])/(AA-dir_corr);
 				float64_t tmp2 = (max_corr+corr[i])/(AA+dir_corr);
 				if (tmp1 > 0 && tmp1 < gamma)
@@ -256,17 +276,17 @@ bool LARS::train_machine(CFeatures* data)
 			}
 		}
 
-		int32_t i_change = i_max_corr;
+		int32_t i_kick=-1;
+		int32_t i_change=i_max_corr;
 		if (m_lasso)
 		{
 			// lasso modification to further refine gamma
 			lasso_cond = false;
 			float64_t lasso_bound = numeric_limits<float64_t>::max();
-			int32_t i_kick = -1;
 
 			for (int32_t i=0; i < n_active; ++i)
 			{
-				float64_t tmp = -beta[active_set[i]] / GA1[i];
+				float64_t tmp = -beta[active_set[i]] / wA[i];
 				if (tmp > 0 && tmp < lasso_bound)
 				{
 					lasso_bound = tmp;
@@ -278,56 +298,49 @@ bool LARS::train_machine(CFeatures* data)
 			{
 				gamma = lasso_bound;
 				lasso_cond = true;
-				i_change = i_kick;
+				i_change = active_set[i_kick];
 			}
 		}
+
+		printf("    LARS::loop> update estimations...\n");
 
 		// update prediction: mu = mu + gamma * u
 		cblas_daxpy(n_vec, gamma, &u[0], 1, &mu[0], 1);
 
-		// update coefficients
+		// update regressor
 		for (int32_t i=0; i < n_active; ++i)
-			beta[active_set[i]] += gamma * GA1[i];
+			beta[active_set[i]] += gamma * wA[i];
 
 		// TODO: record beta along the path
 
 		// if lasso cond, drop the variable from active set
 		if (lasso_cond)
 		{
-			int32_t ii = -1;
-			for (int32_t i=0; i < n_active; ++i)
-			{
-				if (active_set[i] == i_change)
-				{
-					ii=i;
-					break;
-				}
-			}
-			ASSERT(ii >= 0);
+			printf("    LARS::loop> lasso cond...\n");
 
 			// -------------------------------------------
 			// update Cholesky factorization
 			// -------------------------------------------
 			SGMatrix<float64_t> nR(n_active-1, n_active-1);
-			if (ii != n_active-1)
+			if (i_kick != n_active-1)
 			{
-				// remove ii-th column
-				for (int32_t j=ii; j < n_active-1; ++j)
+				// remove i_kick-th column
+				for (int32_t j=i_kick; j < n_active-1; ++j)
 					for (int32_t i=0; i < n_active; ++i)
 						R(i,j) = R(i,j+1);
 
 				SGMatrix<float64_t> G(2,2);
-				for (int32_t j=ii; j < n_active-1; ++j)
+				for (int32_t i=i_kick; i < n_active-1; ++i)
 				{
-					plane_rot(R(j,j),R(j+1,j), 
-						R(j,j), R(j+1,j), G);
-					if (j < n_active-2)
+					plane_rot(R(i,i),R(i+1,i), 
+						R(i,i), R(i+1,i), G);
+					if (i < n_active-2)
 					{
-						for (int32_t k=j+1; k < n_active-1; ++k)
+						for (int32_t k=i+1; k < n_active-1; ++k)
 						{
-							// R[j:j+1, k] = G*R[j:j+1, k]
-							R(j,k) = G(0,0)*R(j,k) + G(0,1)*R(j+1,k);
-							R(j+1,k) = G(1,0)*R(j,k)+G(1,1)*R(j+1,k);
+							// R[i:i+1, k] = G*R[i:i+1, k]
+							R(i,k) = G(0,0)*R(i,k) + G(0,1)*R(i+1,k);
+							R(i+1,k) = G(1,0)*R(i,k)+G(1,1)*R(i+1,k);
 						}
 					}
 				}
@@ -345,17 +358,32 @@ bool LARS::train_machine(CFeatures* data)
 			R.num_rows = nR.num_rows;
 
 			// remove this variable
-			active_set.erase(active_set.begin() + ii);
+			active_set.erase(active_set.begin() + i_kick);
 			is_active[i_change] = false;
 			n_active--;
 		}
 	}
 
-	y.destroy_vector();
-	X.destroy_matrix();
+	printf("LARS::train> exit main loop...\n");
+
+	y.free_vector();
+	X.free_matrix();
 	// TODO: destroy R
 
 	return true;
 }
 
+bool LARS::load(FILE* srcfile)
+{
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
+	return false;
+}
+
+bool LARS::save(FILE* dstfile)
+{
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
+	return false;
+}
 #endif // HAVE_LAPACK

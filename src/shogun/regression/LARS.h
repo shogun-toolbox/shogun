@@ -18,13 +18,43 @@ class CFeatures;
 namespace shogun 
 {
 
+// TODO: rename LARS to CLARS
 class LARS: public CLinearMachine
 {
 public:
 	LARS():m_lasso(true)
 	{
 	}
-	virtual ~LARS();
+	virtual ~LARS()
+	{
+	}
+
+	/** load regression from file
+	 *
+	 * @param srcfile file to load from
+	 * @return if loading was successful
+	 */
+	virtual bool load(FILE* srcfile);
+
+	/** save regression to file
+	 *
+	 * @param dstfile file to save to
+	 * @return if saving was successful
+	 */
+	virtual bool save(FILE* dstfile);
+
+	/** get classifier type
+	 *
+	 * @return classifier type LinearRidgeRegression
+	 */
+	inline virtual EClassifierType get_classifier_type()
+	{
+		// TODO: fix this
+		return CT_LINEARRIDGEREGRESSION;
+	}
+
+	/** @return object name */
+	inline virtual const char* get_name() const { return "LARS"; }
 
 protected:
 	virtual bool train_machine(CFeatures* data=NULL);
