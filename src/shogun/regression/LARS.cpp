@@ -11,7 +11,6 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
-#include <cstdio> // TODO: remove debug code
 
 #include <shogun/lib/config.h>
 
@@ -171,7 +170,6 @@ bool CLARS::train_machine(CFeatures* data)
 			cholesky_insert(X, R, i_max_corr);
 
 			activate_variable(i_max_corr);
-			printf("    LARS::loop> add new variable %d...\n", i_max_corr+1);
 		}
 
 		// corr_sign_a = corr_sign[m_active_set]
@@ -247,7 +245,6 @@ bool CLARS::train_machine(CFeatures* data)
 
 			if (lasso_bound < gamma)
 			{
-				printf("    LASSO %.4f < %.4f\n", lasso_bound, gamma);
 				gamma = lasso_bound;
 				lasso_cond = true;
 				i_change = m_active_set[i_kick];
@@ -289,7 +286,6 @@ bool CLARS::train_machine(CFeatures* data)
 			cholesky_delete(R, i_kick);
 
 			deactivate_variable(i_kick);
-			printf("    LARS::loop> drop variable %d...\n", i_change+1);
 		}
 
 		nloop++;
