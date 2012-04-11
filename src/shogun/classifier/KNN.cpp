@@ -154,7 +154,7 @@ CLabels* CKNN::apply()
 			 "it for classification\n");
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(m_k<=num_lab);
+	ASSERT(m_k<=distance->get_num_vec_lhs());
 
 	CLabels* output=new CLabels(num_lab);
 
