@@ -253,6 +253,17 @@ class CMath : public CSGObject
 				return CMath::sqrt(result);
 			}
 
+		/// || x ||_1
+		template <class T>
+			static inline float64_t onenorm(T* x, int32_t len)
+			{
+				float64_t result=0;
+				for (int32_t i=0;i<len; ++i)
+					result+=CMath::abs(x[i]);
+
+				return result;
+			}
+
 		static float64_t twonorm(const float64_t* v, int32_t n);
 		
 		/// || x ||_q^q

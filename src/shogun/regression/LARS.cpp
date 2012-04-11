@@ -151,7 +151,7 @@ bool CLARS::train_machine(CFeatures* data)
 	// main loop 
 	//========================================
 	int32_t nloop=0;
-	while (m_num_active < n_fea && max_corr > CMath::MACHINE_EPSILON)// && !stop_cond)
+	while (m_num_active < n_fea && max_corr > CMath::MACHINE_EPSILON && !stop_cond)
 	{
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		copy(Xy.begin(), Xy.end(), corr.begin());
@@ -261,12 +261,24 @@ bool CLARS::train_machine(CFeatures* data)
 		for (int32_t i=0; i < m_num_active; ++i)
 			beta[m_active_set[i]] += gamma * wA[i];
 
-		nloop++;
-		m_beta_path.push_back(beta);
-		if (size_t(m_num_active) >= m_beta_idx.size())
-			m_beta_idx.push_back(nloop);
-		else
-			m_beta_idx[m_num_active] = nloop;
+		// early stopping on max l1-norm
+		if (m_max_l1_norm > 0)
+		{
+			float64_t l1 = CMath::onenorm(&beta[0], n_fea);
+			if (l1 > m_max_l1_norm)
+			{
+				// stopping with interpolated beta
+				stop_cond = true;
+				lasso_cond = false;
+				float64_t l1_prev = CMath::onenorm(&m_beta_path[nloop][0], n_fea);
+				float64_t s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
+
+				// beta = beta_prev + s*(beta-beta_prev)
+				//      = (1-s)*beta_prev + s*beta
+				cblas_dscal(n_fea, s, &beta[0], 1);
+				cblas_daxpy(n_fea, 1-s, &m_beta_path[nloop][0], 1, &beta[0], 1);
+			}
+		}
 
 		// if lasso cond, drop the variable from active set
 		if (lasso_cond)
@@ -279,6 +291,18 @@ bool CLARS::train_machine(CFeatures* data)
 			deactivate_variable(i_kick);
 			printf("    LARS::loop> drop variable %d...\n", i_change+1);
 		}
+
+		nloop++;
+		m_beta_path.push_back(beta);
+		if (size_t(m_num_active) >= m_beta_idx.size())
+			m_beta_idx.push_back(nloop);
+		else
+			m_beta_idx[m_num_active] = nloop;
+
+		// early stopping with max number of non-zero variables
+		if (m_max_nonz > 0 && m_num_active >= m_max_nonz)
+			stop_cond = true;
+
 	} // main loop
 
 	y.free_vector();
