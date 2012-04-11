@@ -600,7 +600,7 @@ float64_t CMath::twonorm (const float64_t* v, int32_t n)
 #ifdef HAVE_LAPACK
 	norm = cblas_dnrm2 (n, v, 1);
 #else
-	norm = CMath::sqrt (CMath::dot (vec, vec, vec_len));
+	norm = CMath::sqrt (CMath::dot (v, v, n));
 #endif
 	return norm;
 }
