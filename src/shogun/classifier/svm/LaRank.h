@@ -53,12 +53,11 @@
 #include <vector>
 #include <algorithm>
 #include <sys/time.h>
-#include <ext/hash_map>
-#include <ext/hash_set>
-
+#include <set>
+#include <map>
 #define STDEXT_NAMESPACE __gnu_cxx
-#define std_hash_map STDEXT_NAMESPACE::hash_map
-#define std_hash_set STDEXT_NAMESPACE::hash_set
+#define std_hash_map std::map
+#define std_hash_set std::set
 
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
