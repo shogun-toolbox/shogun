@@ -86,10 +86,10 @@ bool CLARS::train_machine(CFeatures* data)
 
 	bool lasso_cond = false;
 
-	int32_t n_active = 0;
-	vector<int32_t> active_set;
-	vector<bool> is_active(n_fea);
-	fill(is_active.begin(), is_active.end(), false);
+	m_num_active = 0;
+	m_active_set.clear();
+	m_is_active.resize(n_fea);
+	fill(m_is_active.begin(), m_is_active.end(), false);
 
 	SGVector<float64_t> y = m_labels->get_labels();
 	SGMatrix<float64_t> Xorig = feats->get_feature_matrix();
@@ -103,7 +103,7 @@ bool CLARS::train_machine(CFeatures* data)
 			X(i,j) = Xorig(j,i);
 	Xorig.free_matrix();
 	
-	// beta is the regressor
+	// beta is the estimator
 	vector<float64_t> beta = make_vector(n_fea, 0);
 
 	vector<float64_t> Xy = make_vector(n_fea, 0);
@@ -126,7 +126,7 @@ bool CLARS::train_machine(CFeatures* data)
 	int32_t i_max_corr = 1;
 
 	int32_t nloop=0;
-	while (n_active < n_fea && max_corr > CMath::MACHINE_EPSILON)
+	while (m_num_active < n_fea && max_corr > CMath::MACHINE_EPSILON)
 	{
 		printf("    \nLARS::loop %02d> find correlation...\n", ++nloop);
 		// for (int32_t i=0; i < n_fea; ++i)
@@ -148,7 +148,7 @@ bool CLARS::train_machine(CFeatures* data)
 		// find max absolute correlation in inactive set
 		for (uint32_t i=0; i < corr.size(); ++i)
 		{
-			if (is_active[i])
+			if (m_is_active[i])
 				continue;
 			if (CMath::abs(corr[i]) > max_corr)
 			{
@@ -167,7 +167,7 @@ bool CLARS::train_machine(CFeatures* data)
 			float64_t diag_k = cblas_ddot(n_vec, X.get_column_vector(i_max_corr), 1,
 				X.get_column_vector(i_max_corr), 1);
 
-			if (n_active == 0)
+			if (m_num_active == 0)
 			{ // R isn't allocated yet
 				R.matrix = SG_MALLOC(float64_t, 1);
 				R.num_rows = 1;
@@ -176,38 +176,38 @@ bool CLARS::train_machine(CFeatures* data)
 			}
 			else
 			{
-				float64_t *new_R = SG_MALLOC(float64_t, (n_active+1)*(n_active+1));
+				float64_t *new_R = SG_MALLOC(float64_t, (m_num_active+1)*(m_num_active+1));
 
 				// col_k is the k-th column of (X'X)
-				vector<float64_t> col_k(n_active);
-				for (int32_t i=0; i < n_active; ++i)
+				vector<float64_t> col_k(m_num_active);
+				for (int32_t i=0; i < m_num_active; ++i)
 				{
-					// col_k[i] = X[:,i_max_corr]' * X[:,active_set[i]]
+					// col_k[i] = X[:,i_max_corr]' * X[:,m_active_set[i]]
 					col_k[i] = cblas_ddot(n_vec, X.get_column_vector(i_max_corr), 1,
-						X.get_column_vector(active_set[i]), 1);
+						X.get_column_vector(m_active_set[i]), 1);
 				}
 
 				// R' * R_k = (X' * X)_k = col_k, solving to get R_k
 				vector<float64_t> R_k(col_k);
-				cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, n_active, 1, 
-					1, R.matrix, n_active, &R_k[0], n_active);
+				cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, m_num_active, 1, 
+					1, R.matrix, m_num_active, &R_k[0], m_num_active);
 
 				float64_t R_kk = CMath::sqrt(diag_k - 
-					cblas_ddot(n_active, &R_k[0], 1, &R_k[0], 1));
+					cblas_ddot(m_num_active, &R_k[0], 1, &R_k[0], 1));
 
 				// new_R = [R R_k; zeros(...) R_kk]
 				SGMatrix<float64_t> nR;
 				nR.matrix = new_R;
-				nR.num_rows = n_active+1;
-				nR.num_cols = n_active+1;
-				for (int32_t i=0; i < n_active; ++i)
-					for (int32_t j=0; j < n_active; ++j)
+				nR.num_rows = m_num_active+1;
+				nR.num_cols = m_num_active+1;
+				for (int32_t i=0; i < m_num_active; ++i)
+					for (int32_t j=0; j < m_num_active; ++j)
 						nR(i,j) = R(i,j);
-				for (int32_t i=0; i < n_active; ++i)
-					nR(i, n_active) = R_k[i];
-				for (int32_t i=0; i < n_active; ++i)
-					nR(n_active, i) = 0;
-				nR(n_active, n_active) = R_kk;
+				for (int32_t i=0; i < m_num_active; ++i)
+					nR(i, m_num_active) = R_k[i];
+				for (int32_t i=0; i < m_num_active; ++i)
+					nR(m_num_active, i) = 0;
+				nR(m_num_active, m_num_active) = R_kk;
 
 				// update R
 				SG_FREE(R.matrix);
@@ -216,52 +216,53 @@ bool CLARS::train_machine(CFeatures* data)
 				R.num_cols = nR.num_cols;
 			}
 
+			activate_variable(i_max_corr);
 			printf("    LARS::loop> add new variable %d...\n", i_max_corr+1);
-			// add new variable to active set
-			active_set.push_back(i_max_corr);
-			is_active[i_max_corr] = true;
-			n_active++;
+			//// // add new variable to active set
+			//// m_active_set.push_back(i_max_corr);
+			//// m_is_active[i_max_corr] = true;
+			//// m_num_active++;
 		} // if (!lasso_cond)
 
 
-		// corr_sign_a = corr_sign[active_set]
-		vector<float64_t> corr_sign_a(n_active);
-		for (int32_t i=0; i < n_active; ++i)
-			corr_sign_a[i] = corr_sign[active_set[i]];
+		// corr_sign_a = corr_sign[m_active_set]
+		vector<float64_t> corr_sign_a(m_num_active);
+		for (int32_t i=0; i < m_num_active; ++i)
+			corr_sign_a[i] = corr_sign[m_active_set[i]];
 
 		// GA1 = R\(R'\corr_sign_a)
 		vector<float64_t> GA1(corr_sign_a);
 		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, 
-			n_active, 1, 1, R.matrix, n_active, &GA1[0], n_active);
+			m_num_active, 1, 1, R.matrix, m_num_active, &GA1[0], m_num_active);
 		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
-			n_active, 1, 1, R.matrix, n_active, &GA1[0], n_active);
+			m_num_active, 1, 1, R.matrix, m_num_active, &GA1[0], m_num_active);
 
 		// AA = 1/sqrt(GA1' * corr_sign_a)
-		float64_t AA = cblas_ddot(n_active, &GA1[0], 1, &corr_sign_a[0], 1);
+		float64_t AA = cblas_ddot(m_num_active, &GA1[0], 1, &corr_sign_a[0], 1);
 		AA = 1/CMath::sqrt(AA);
 
 		// wA = AA*GA1
 		vector<float64_t> wA(GA1);
-		for (int32_t i=0; i < n_active; ++i)
+		for (int32_t i=0; i < m_num_active; ++i)
 			wA[i] *= AA;
 
 		// equiangular direction (unit vector)
 		vector<float64_t> u = make_vector(n_vec, 0);
-		// u = X[:,active_set] * wA
-		for (int32_t i=0; i < n_active; ++i)
+		// u = X[:,m_active_set] * wA
+		for (int32_t i=0; i < m_num_active; ++i)
 		{
-			// u += wA[i] * X[:,active_set[i]]
+			// u += wA[i] * X[:,m_active_set[i]]
 			cblas_daxpy(n_vec, wA[i], 
-				X.get_column_vector(active_set[i]), 1, &u[0], 1);
+				X.get_column_vector(m_active_set[i]), 1, &u[0], 1);
 		}
 
 		// step size
 		float64_t gamma = max_corr / AA; 
-		if (n_active < n_fea)
+		if (m_num_active < n_fea)
 		{
 			for (int32_t i=0; i < n_fea; ++i)
 			{
-				if (is_active[i])
+				if (m_is_active[i])
 					continue;
 
 				// correlation between X[:,i] and u
@@ -285,9 +286,9 @@ bool CLARS::train_machine(CFeatures* data)
 			lasso_cond = false;
 			float64_t lasso_bound = numeric_limits<float64_t>::max();
 
-			for (int32_t i=0; i < n_active; ++i)
+			for (int32_t i=0; i < m_num_active; ++i)
 			{
-				float64_t tmp = -beta[active_set[i]] / wA[i];
+				float64_t tmp = -beta[m_active_set[i]] / wA[i];
 				if (tmp > CMath::MACHINE_EPSILON && tmp < lasso_bound)
 				{
 					lasso_bound = tmp;
@@ -300,16 +301,16 @@ bool CLARS::train_machine(CFeatures* data)
 				printf("    LASSO %.4f < %.4f\n", lasso_bound, gamma);
 				gamma = lasso_bound;
 				lasso_cond = true;
-				i_change = active_set[i_kick];
+				i_change = m_active_set[i_kick];
 			}
 		}
 
 		// update prediction: mu = mu + gamma * u
 		cblas_daxpy(n_vec, gamma, &u[0], 1, &mu[0], 1);
 
-		// update regressor
-		for (int32_t i=0; i < n_active; ++i)
-			beta[active_set[i]] += gamma * wA[i];
+		// update estimator
+		for (int32_t i=0; i < m_num_active; ++i)
+			beta[m_active_set[i]] += gamma * wA[i];
 
 		// TODO: record beta along the path
 
@@ -331,20 +332,20 @@ bool CLARS::train_machine(CFeatures* data)
 				}
 				fclose(fp);
 			}
-			if (i_kick != n_active-1)
+			if (i_kick != m_num_active-1)
 			{
 				// remove i_kick-th column
-				for (int32_t j=i_kick; j < n_active-1; ++j)
-					for (int32_t i=0; i < n_active; ++i)
+				for (int32_t j=i_kick; j < m_num_active-1; ++j)
+					for (int32_t i=0; i < m_num_active; ++i)
 						R(i,j) = R(i,j+1);
 
 				SGMatrix<float64_t> G(2,2);
-				for (int32_t i=i_kick; i < n_active-1; ++i)
+				for (int32_t i=i_kick; i < m_num_active-1; ++i)
 				{
 					plane_rot(R(i,i),R(i+1,i), R(i,i), R(i+1,i), G);
-					if (i < n_active-2)
+					if (i < m_num_active-2)
 					{
-						for (int32_t k=i+1; k < n_active-1; ++k)
+						for (int32_t k=i+1; k < m_num_active-1; ++k)
 						{
 							// R[i:i+1, k] = G*R[i:i+1, k]
 							float64_t Rik = R(i,k), Ri1k = R(i+1,k);
@@ -358,9 +359,9 @@ bool CLARS::train_machine(CFeatures* data)
 
 			}
 
-			SGMatrix<float64_t> nR(n_active-1, n_active-1);
-			for (int32_t i=0; i < n_active-1; ++i)
-				for (int32_t j=0; j < n_active-1; ++j)
+			SGMatrix<float64_t> nR(m_num_active-1, m_num_active-1);
+			for (int32_t i=0; i < m_num_active-1; ++i)
+				for (int32_t j=0; j < m_num_active-1; ++j)
 					nR(i,j) = R(i,j);
 
 			SG_FREE(R.matrix);
@@ -379,11 +380,12 @@ bool CLARS::train_machine(CFeatures* data)
 				fclose(fp);
 			}
 
+			deactivate_variable(i_kick);
 			printf("    LARS::loop> drop variable %d...\n", i_change+1);
-			// remove this variable
-			active_set.erase(active_set.begin() + i_kick);
-			is_active[i_change] = false;
-			n_active--;
+			//// // remove this variable
+			//// m_active_set.erase(m_active_set.begin() + i_kick);
+			//// m_is_active[i_change] = false;
+			//// m_num_active--;
 		}
 	}
 
