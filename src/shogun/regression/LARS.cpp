@@ -57,6 +57,23 @@ static void plane_rot(float64_t x0, float64_t x1,
 	}
 }
 
+static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignore, 
+	int32_t &imax, float64_t& vmax)
+{
+	imax = -1;
+	vmax = -1;
+	for (uint32_t i=0; i < vec.size(); ++i)
+	{
+		if (ignore[i])
+			continue;
+		if (CMath::abs(vec[i]) > vmax)
+		{
+			vmax = CMath::abs(vec[i]);
+			imax = i;
+		}
+	}
+}
+
 bool CLARS::train_machine(CFeatures* data)
 {
 	if (!m_labels)
@@ -85,6 +102,7 @@ bool CLARS::train_machine(CFeatures* data)
 	bool stop_cond = false;
 
 	// init facilities
+	m_beta_idx.clear();
 	m_beta_path.clear();
 	m_num_active = 0;
 	m_active_set.clear();
@@ -125,8 +143,15 @@ bool CLARS::train_machine(CFeatures* data)
 	float64_t max_corr = 1;
 	int32_t i_max_corr = 1;
 
+	// first entry: all coefficients are zero
+	m_beta_path.push_back(beta);
+	m_beta_idx.push_back(0);
+
+	//========================================
+	// main loop 
+	//========================================
 	int32_t nloop=0;
-	while (m_num_active < n_fea && max_corr > CMath::MACHINE_EPSILON)
+	while (m_num_active < n_fea && max_corr > CMath::MACHINE_EPSILON)// && !stop_cond)
 	{
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		copy(Xy.begin(), Xy.end(), corr.begin());
@@ -138,18 +163,7 @@ bool CLARS::train_machine(CFeatures* data)
 			corr_sign[i] = CMath::sign(corr[i]);
 
 		// find max absolute correlation in inactive set
-		max_corr = -1;
-		i_max_corr = -1;
-		for (uint32_t i=0; i < corr.size(); ++i)
-		{
-			if (m_is_active[i])
-				continue;
-			if (CMath::abs(corr[i]) > max_corr)
-			{
-				max_corr = CMath::abs(corr[i]);
-				i_max_corr = i;
-			}
-		}
+		find_max_abs(corr, m_is_active, i_max_corr, max_corr);
 
 		if (!lasso_cond)
 		{
@@ -159,7 +173,6 @@ bool CLARS::train_machine(CFeatures* data)
 			activate_variable(i_max_corr);
 			printf("    LARS::loop> add new variable %d...\n", i_max_corr+1);
 		}
-
 
 		// corr_sign_a = corr_sign[m_active_set]
 		vector<float64_t> corr_sign_a(m_num_active);
@@ -248,7 +261,12 @@ bool CLARS::train_machine(CFeatures* data)
 		for (int32_t i=0; i < m_num_active; ++i)
 			beta[m_active_set[i]] += gamma * wA[i];
 
-		// TODO: record beta along the path
+		nloop++;
+		m_beta_path.push_back(beta);
+		if (size_t(m_num_active) >= m_beta_idx.size())
+			m_beta_idx.push_back(nloop);
+		else
+			m_beta_idx[m_num_active] = nloop;
 
 		// if lasso cond, drop the variable from active set
 		if (lasso_cond)
@@ -261,14 +279,16 @@ bool CLARS::train_machine(CFeatures* data)
 			deactivate_variable(i_kick);
 			printf("    LARS::loop> drop variable %d...\n", i_change+1);
 		}
-
-		nloop++;
 	} // main loop
 
 	y.free_vector();
 	X.free_matrix();
 	if (R.matrix != NULL)
 		R.destroy_matrix();
+
+	// assign default estimator
+	w_dim = n_fea;
+	switch_w(m_beta_idx.size()-1);
 
 	return true;
 }
