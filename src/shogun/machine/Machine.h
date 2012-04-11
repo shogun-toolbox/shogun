@@ -74,6 +74,7 @@ enum EClassifierType
 	CT_QDA = 430,
 	CT_NEWTONSVM = 440,
 	CT_GAUSSIANPROCESSREGRESSION = 450
+	CT_LARS = 460
 };
 
 /** solver type */

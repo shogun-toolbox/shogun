@@ -19,13 +19,13 @@ namespace shogun
 {
 
 // TODO: rename LARS to CLARS
-class LARS: public CLinearMachine
+class CLARS: public CLinearMachine
 {
 public:
-	LARS():m_lasso(true)
+	CLARS():m_lasso(true)
 	{
 	}
-	virtual ~LARS()
+	virtual ~CLARS()
 	{
 	}
 
@@ -49,8 +49,7 @@ public:
 	 */
 	inline virtual EClassifierType get_classifier_type()
 	{
-		// TODO: fix this
-		return CT_LINEARRIDGEREGRESSION;
+		return CT_LARS;
 	}
 
 	/** @return object name */

@@ -57,7 +57,7 @@ static void plane_rot(float64_t x0, float64_t x1,
 	}
 }
 
-bool LARS::train_machine(CFeatures* data)
+bool CLARS::train_machine(CFeatures* data)
 {
 	if (!m_labels)
 		SG_ERROR("No labels set\n");
@@ -394,14 +394,14 @@ bool LARS::train_machine(CFeatures* data)
 	return true;
 }
 
-bool LARS::load(FILE* srcfile)
+bool CLARS::load(FILE* srcfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-bool LARS::save(FILE* dstfile)
+bool CLARS::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
