@@ -15,17 +15,17 @@
 
 #include <shogun/machine/LinearMachine.h>
 
-class CFeatures;
 
 namespace shogun 
 {
+class CFeatures;
 
 /** @brief Class for Least Angle Regression, can be used to solve LASSO.
  *
  * LASSO is basically L1 regulairzed least square regression
  * 
  * \f[
- * \|X^T\beta - y\|^2 + \lambda\|\beta\|_{1}
+ * \min \|X^T\beta - y\|^2 + \lambda\|\beta\|_{1}
  * \f]
  *
  * where the L1 norm is defined as
@@ -38,6 +38,20 @@ namespace shogun
  * of this algorithm:
  * * X needs to be normalized: each feature should have zero-mean and unit-norm
  * * y needs to be centered: its mean should be zero
+ *
+ * The above equation is equivalent to the following form
+ *
+ * \f[
+ * \min \|X^T\beta - y\|^2 \quad s.t. \|\beta\|_1 \leq C
+ * \f]
+ *
+ * There is a correspondence between the regularization coefficient lambda
+ * and the hard constraint constant C. The latter form is easier to control
+ * by explicitly constraining the l1-norm of the estimator. In this 
+ * implementation, we provide support for the latter form, moreover, we
+ * allow explicit control of the number of non-zero variables. 
+ *
+ * When no constraints is provided, the full path is generated.
  *
  * Please see the following paper for more details.
  *
@@ -59,6 +73,8 @@ class CLARS: public CLinearMachine
 public:
 	CLARS(bool lasso=true):m_lasso(lasso),m_max_nonz(0),m_max_l1_norm(0)
 	{
+		SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", MS_AVAILABLE);
+		SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", MS_AVAILABLE);
 	}
 	virtual ~CLARS()
 	{
@@ -110,6 +126,19 @@ public:
 			w = SG_MALLOC(float64_t, w_dim);
 		std::copy(m_beta_path[m_beta_idx[num_variable]].begin(),
 			m_beta_path[m_beta_idx[num_variable]].end(), w);
+	}
+
+	/** get path size
+	 *
+	 * @return the size of variable selection path. Call get_w(i) to get the
+	 * estimator of i-th entry on the path, where i can be in the range [0, path_size)
+	 *
+	 * @see switch_w
+	 * @see get_w
+	 */
+	int32_t get_path_size() const
+	{
+		return m_beta_idx.size();
 	}
 
 	/** get w
