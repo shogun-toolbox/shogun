@@ -127,7 +127,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	m_rates.zero();
 
 	// number of iterations in all cycles
-	int32_t max_progress = 2 * train_labels.vlen + 3 * m_num_classes;
+	int32_t max_progress = 2 * train_labels.vlen + 2 * m_num_classes;
 	
 	// current progress
 	int32_t progress = 0;	
@@ -177,16 +177,10 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	{
 		for (j=0; j<m_dim; j++)
 			m_variances(j, i) /= m_label_prob.vector[i] > 1 ? m_label_prob.vector[i]-1 : 1;
-
-		progress++;
-		SG_PROGRESS(progress, 0, max_progress);
-	}
-
-	// get a priori probabilities of labels
-	for (i=0; i<m_num_classes; i++)
-	{
-		m_label_prob.vector[i]/= m_num_classes;
 		
+		// get a priori probabilities of labels
+		m_label_prob.vector[i]/= m_num_classes;
+
 		progress++;
 		SG_PROGRESS(progress, 0, max_progress);
 	}
