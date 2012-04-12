@@ -81,7 +81,7 @@ int32_t CGLS(
 	const struct vector_int *Subset, struct vector_double *Weights,
 	struct vector_double *Outputs)
 {
-	SG_SDEBUG("CGLS starting...");
+	SG_SDEBUG("CGLS starting...\n");
 
 	/* Disassemble the structures */
 	int32_t active = Subset->d;
@@ -185,8 +185,8 @@ int32_t CGLS(
 			omega_p += p[i]*p[i];
 		}
 	}
-	SG_SDEBUG("...Done.");
-	SG_SINFO("CGLS converged in %d iteration(s)", cgiter);
+	SG_SDEBUG("...Done.\n");
+	SG_SINFO("CGLS converged in %d iteration(s)\n", cgiter);
 
 	SG_FREE(z);
 	SG_FREE(q);
@@ -293,7 +293,7 @@ int32_t L2_SVM_MFN(
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
-				SG_SDEBUG("epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f",  BIG_EPSILON , EPSILON);
+				SG_SDEBUG("epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f\n",  BIG_EPSILON , EPSILON);
 				continue;
 			}
 			else
@@ -308,7 +308,7 @@ int32_t L2_SVM_MFN(
 				SG_FREE(w_bar);
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
-				SG_SINFO("L2_SVM_MFN converged (optimality) in %d", iter);
+				SG_SINFO("L2_SVM_MFN converged (optimality) in %d\n", iter);
 				return 1;
 			}
 		}
@@ -342,7 +342,7 @@ int32_t L2_SVM_MFN(
 		ActiveSubset->d=active;
 		if(CMath::abs(F-F_old)<RELATIVE_STOP_EPS*CMath::abs(F_old))
 		{
-			SG_SINFO("L2_SVM_MFN converged (rel. criterion) in %d iterations", iter);
+			SG_SINFO("L2_SVM_MFN converged (rel. criterion) in %d iterations\n", iter);
 			return 2;
 		}
 	}
@@ -352,7 +352,7 @@ int32_t L2_SVM_MFN(
 	SG_FREE(w_bar);
 	SG_FREE(Weights_bar);
 	SG_FREE(Outputs_bar);
-	SG_SINFO("L2_SVM_MFN converged (max iter exceeded) in %d iterations", iter);
+	SG_SINFO("L2_SVM_MFN converged (max iter exceeded) in %d iterations\n", iter);
 	return 0;
 }
 
@@ -442,10 +442,10 @@ int32_t TSVM_MFN(
 	struct data *Data_Labeled = SG_MALLOC(data, 1);
 	struct vector_double *Outputs_Labeled = SG_MALLOC(vector_double, 1);
 	initialize(Outputs_Labeled,Data->l,0.0);
-	SG_SDEBUG("Initializing weights, unknown labels");
+	SG_SDEBUG("Initializing weights, unknown labels\n");
 	GetLabeledData(Data_Labeled,Data); /* gets labeled data and sets C=1/l */
 	L2_SVM_MFN(Data_Labeled, Options, Weights,Outputs_Labeled,0);
-	///FIXME Clear(Data_Labeled);
+	Clear(Data_Labeled);
 	/* Use this weight vector to classify R*u unlabeled examples as
 	   positive*/
 	int32_t p=0,q=0;
@@ -583,7 +583,7 @@ int32_t DA_S3VM(
 	float64_t *o = Outputs->vec;
 	float64_t kl_divergence = 1.0;
 	/*initialize */
-	SG_SDEBUG("Initializing weights, p");
+	SG_SDEBUG("Initializing weights, p\n");
 	for (int32_t i=0;i<Data->u; i++)
 		p[i] = Options->R;
 	/* record which examples are unlabeled */
@@ -767,7 +767,7 @@ int32_t optimize_w(
 	while(iter<MFNITERMAX)
 	{
 		iter++;
-		SG_SDEBUG("L2_SVM_MFN Iteration# %d (%d active examples,  objective_value = %f)", iter, active, F);
+		SG_SDEBUG("L2_SVM_MFN Iteration# %d (%d active examples,  objective_value = %f)\n", iter, active, F);
 		for(i=n; i-- ;)
 			w_bar[i]=w[i];
 
@@ -840,13 +840,13 @@ int32_t optimize_w(
 				SG_FREE(Y);
 				SG_FREE(C);
 				SG_FREE(labeled_indices);
-				SG_SINFO("L2_SVM_MFN converged in %d iteration(s)", iter);
+				SG_SINFO("L2_SVM_MFN converged in %d iteration(s)\n", iter);
 				return 1;
 			}
 		}
 
 		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m+u);
-		SG_SDEBUG("LINE_SEARCH delta = %f", delta);
+		SG_SDEBUG("LINE_SEARCH delta = %f\n", delta);
 		F_old=F;
 		F=0.0;
 		for(i=0;i<n;i++) {w[i]+=delta*(w_bar[i]-w[i]);  F+=w[i]*w[i];}
@@ -925,7 +925,7 @@ int32_t optimize_w(
 	SG_FREE(Outputs_bar);
 	SG_FREE(Y);
 	SG_FREE(C);
-	SG_SINFO("L2_SVM_MFN converged in %d iterations", iter);
+	SG_SINFO("L2_SVM_MFN converged in %d iterations\n", iter);
 	return 0;
 }
 
@@ -1093,14 +1093,12 @@ void initialize(struct vector_int *A, int32_t k)
 	A->d   = k;
 	return;
 }
-
 void GetLabeledData(struct data *D, const struct data *Data)
 {
-	/*FIXME
-	int32_t *J = SG_MALLOC(int, Data->l);
+	//int32_t *J = SG_MALLOC(int, Data->l);
 	D->C   = SG_MALLOC(float64_t, Data->l);
 	D->Y   = SG_MALLOC(float64_t, Data->l);
-	int32_t nz=0;
+	/*int32_t nz=0;
 	int32_t k=0;
 	int32_t rowptrs_=Data->l;
 	for(int32_t i=0;i<Data->m;i++)
@@ -1116,7 +1114,7 @@ void GetLabeledData(struct data *D, const struct data *Data)
 	}
 	D->val    = SG_MALLOC(float64_t, nz);
 	D->colind = SG_MALLOC(int32_t, nz);
-	D->rowptr = new int32_trowptrs_+1];
+	D->rowptr = new int32_t[rowptrs_+1];
 	nz=0;
 	for(int32_t i=0;i<Data->l;i++)
 	{
@@ -1127,13 +1125,38 @@ void GetLabeledData(struct data *D, const struct data *Data)
 			D->colind[nz] = Data->colind[j];
 			nz++;
 		}
-	}
-	D->rowptr[rowptrs_]=nz;
-	D->nz=nz;
+	}*/
+	int32_t num_feat=Data->n-1;
+	SGVector<float64_t> temp_vector(num_feat);
+	SGMatrix<float64_t> fmatrix(num_feat,Data->l);
+        // iterate
+
+	int32_t k=0;
+	for(int32_t i=0;i<Data->m;i++)
+		if(Data->Y[i]!=0)
+		{	temp_vector=Data->features->get_computed_dot_feature_vector(i);
+			for(int32_t j=0;j<num_feat;j++)
+				fmatrix.matrix[k*(num_feat)+j]=temp_vector.vector[j];
+			D->Y[k]=Data->Y[i];
+			D->C[k]=1.0/Data->l;
+			k++;
+			
+		}
+
+			
+	CSimpleFeatures<float64_t>* features = new CSimpleFeatures<float64_t>(fmatrix);
+	D->features=(CDotFeatures *)features;
+	D->nz=Data->nz;
 	D->l=Data->l;
 	D->m=Data->l;
 	D->n=Data->n;
 	D->u=0;
-	delete [] J;*/
+}
+void Clear(struct data *a)
+{     
+  delete [] a->Y;
+  delete [] a->C;
+  delete [] a;
+  return;
 }
 }

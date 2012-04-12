@@ -21,7 +21,6 @@
 
 #ifndef _SSL_H
 #define _SSL_H
-
 /* OPTIMIZATION CONSTANTS */
 #define CGITERMAX 10000 /* maximum number of CGLS iterations */
 #define SMALL_CGITERMAX 10 /* for heuristic 1 in reference [2] */
@@ -140,6 +139,9 @@ void initialize(struct vector_int *A, int32_t k);
 void GetLabeledData(struct data *Data_Labeled, const struct data *Data);
 /* extracts labeled data from Data and copies it into Data_Labeled */
 float64_t norm_square(const vector_double *A); /* returns squared length of A */
+
+void Clear(struct data *a);
+
 
 /* ssl_train: takes data, options, uninitialized weight and output
    vector_doubles, routes it to the algorithm */

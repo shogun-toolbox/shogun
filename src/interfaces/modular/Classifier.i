@@ -47,6 +47,7 @@
 %rename(SVM) CSVM;
 #endif
 %rename(SVMLin) CSVMLin;
+%rename(TSVM) CTSVM;
 %rename(SVMOcas) CSVMOcas;
 %rename(SVMSGD) CSVMSGD;
 %rename(SGDQN) CSGDQN;
@@ -105,6 +106,7 @@
 %include <shogun/classifier/SubGradientLPM.h>
 %include <shogun/classifier/svm/SubGradientSVM.h>
 %include <shogun/classifier/svm/SVMLin.h>
+%include <shogun/classifier/svm/TSVM.h>
 %include <shogun/classifier/svm/SVMOcas.h>
 %include <shogun/classifier/svm/SVMSGD.h>
 %include <shogun/classifier/svm/SGDQN.h>

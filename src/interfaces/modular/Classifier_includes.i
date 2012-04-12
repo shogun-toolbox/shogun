@@ -27,6 +27,7 @@
  #include <shogun/classifier/svm/SubGradientSVM.h>
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/SVMLin.h>
+ #include <shogun/classifier/svm/TSVM.h>
  #include <shogun/classifier/GaussianNaiveBayes.h>
  #include <shogun/machine/KernelMachine.h>
  #include <shogun/classifier/svm/SVMOcas.h>
