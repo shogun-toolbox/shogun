@@ -90,12 +90,77 @@ class CJLCoverTreePoint
 /** Functions declared out of the class definition to respect JLCoverTree 
  *  structure */
 
-float64_t distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound);
+float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound)
+{
+	/** Call m_distance->distance() with the proper index order depending on 
+	 *  the feature containers in m_distance for each of the points*/
+
+	if ( p1.m_features_container == p2.m_features_container )
+	{
+		if ( ! p1.m_distance->lhs_equals_rhs() )
+		{
+			SG_SERROR("lhs != rhs but the distance of two points "
+			       "from the same container has been requested\n");
+		}
+		else
+		{
+			return p1.m_distance->distance(p1.m_index, p2.m_index);
+		}
+	}
+	else
+	{
+		if ( p1.m_distance->lhs_equals_rhs() )
+		{
+			SG_SERROR("lhs == rhs but the distance of two points "
+			      "from different containers has been requested\n");
+		}
+		else
+		{
+			if ( p1.m_features_container == FC_LHS )
+			{
+				return p1.m_distance->distance(p1.m_index, 
+								p2.m_index);
+			}
+			else
+			{
+				return p1.m_distance->distance(p2.m_index, 
+								p1.m_index);
+			}
+		}
+	}
+
+	SG_SERROR("Something has gone wrong, case not handled\n");
+	return -1;
+}
 
 /** Fills up a v_array of CJLCoverTreePoint objects */
-v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContainer fc);
+v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContainer fc)
+{
+	CFeatures* features;
+	if ( fc == FC_LHS )
+		features = distance->get_lhs();
+	else
+		features = distance->get_rhs();
 
-void print(CJLCoverTreePoint &p);
+	v_array< CJLCoverTreePoint > parsed;
+	for ( int32_t i = 0 ; i < features->get_num_vectors() ; ++i )
+	{
+		CJLCoverTreePoint new_point;
+
+		new_point.m_distance = distance;
+		new_point.m_index = i;
+		new_point.m_features_container = fc;
+
+		push(parsed, new_point);
+	}
+	
+	return parsed;
+}
+
+void print(CJLCoverTreePoint &p)
+{
+	SG_SERROR("Print JLCoverTreePoint not implemented\n");
+}
 
 } /* namespace shogun */
 
