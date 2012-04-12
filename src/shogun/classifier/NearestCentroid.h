@@ -64,7 +64,11 @@ public:
 	float64_t get_shrinking() const{
 		return m_shrinking;
 	}
-	
+
+	/** Get the centroids
+	 * 
+	 * @return Matrix containing the centroids
+	 */
 	CSimpleFeatures<float64_t>* get_centroids() const{
 		return m_centroids;
 	}
@@ -80,15 +84,26 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 	
+	/** Stores feature data of underlying model.
+	 *
+	 * Sets centroids as lhs
+	 */
 	virtual void store_model_features();
 
 private:
 	void init();
 	
 protected:
+	///	number of classes (i.e. number of values labels can take)
 	int32_t m_num_classes;
+	
+	///	Shrinking parameter
 	float64_t m_shrinking;
+	
+	///	The centroids of the trained features
 	CSimpleFeatures<float64_t>* m_centroids;
+	
+	///	Tells if the classifier has been trained or not
 	bool m_is_trained;
 };
 
