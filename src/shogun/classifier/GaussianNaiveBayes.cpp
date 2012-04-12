@@ -126,32 +126,40 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	m_label_prob.zero();
 	m_rates.zero();
 
+	// number of iterations in all cycles
+	int32_t max_progress = 2 * train_labels.vlen + 3 * m_num_classes;
+	
+	// current progress
+	int32_t progress = 0;	
+	SG_PROGRESS(progress, 0, max_progress);
+
 	// get sum of features among labels
 	for (i=0; i<train_labels.vlen; i++)
 	{
-		SG_PROGRESS(i, 0, train_labels.vlen-1, 1, "Getting sum of features among labels:\t");
 		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
 			m_means(j, train_labels.vector[i]) += fea.vector[j];
 		fea.free_vector();
 
 		m_label_prob.vector[train_labels.vector[i]]+=1.0;
+
+		progress++;
+		SG_PROGRESS(progress, 0, max_progress);
 	}
-	SG_DONE();
 
 	// get means of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
-		SG_PROGRESS(i, 0, m_num_classes-1, 1, "Getting means of features of labels:\t");
 		for (j=0; j<m_dim; j++)
 			m_means(j, i) /= m_label_prob.vector[i];
+
+		progress++;
+		SG_PROGRESS(progress, 0, max_progress);
 	}
-	SG_DONE();
 
 	// compute squared residuals with means available
 	for (i=0; i<train_labels.vlen; i++)
 	{
-		SG_PROGRESS(i, 0, train_labels.vlen-1, 1, "Computing squared residuals with means available:\t");
 		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
 		{
@@ -159,23 +167,28 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 				CMath::sq(fea[j]-m_means(j, train_labels.vector[i]));
 		}
 		fea.free_vector();
-	}
-	SG_DONE();
+
+		progress++;
+		SG_PROGRESS(progress, 0, max_progress);
+	}	
 
 	// get variance of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
-		SG_PROGRESS(i, 0, m_num_classes-1, 1, "Getting variance of features of labels:\t");
 		for (j=0; j<m_dim; j++)
 			m_variances(j, i) /= m_label_prob.vector[i] > 1 ? m_label_prob.vector[i]-1 : 1;
+
+		progress++;
+		SG_PROGRESS(progress, 0, max_progress);
 	}
-	SG_DONE();
 
 	// get a priori probabilities of labels
 	for (i=0; i<m_num_classes; i++)
 	{
-		SG_PROGRESS(i, 0, m_num_classes-1, 1, "Getting a priori probabilities of labels:\t");
 		m_label_prob.vector[i]/= m_num_classes;
+		
+		progress++;
+		SG_PROGRESS(progress, 0, max_progress);
 	}
 	SG_DONE();
 
@@ -193,10 +206,11 @@ CLabels* CGaussianNaiveBayes::apply()
 	CLabels* result = new CLabels(num_vectors);
 
 	// classify each example of data
+	SG_PROGRESS(0, 0, num_vectors);
 	for (int i = 0; i < num_vectors; i++)
 	{
-		SG_PROGRESS(i, 0, num_vectors-1);
 		result->set_label(i,apply(i));
+		SG_PROGRESS(i + 1, 0, num_vectors);
 	}
 	SG_DONE();
 	return result;
