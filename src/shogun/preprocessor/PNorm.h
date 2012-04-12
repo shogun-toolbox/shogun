@@ -65,12 +65,12 @@ class CPNorm : public CSimplePreprocessor<float64_t>
 		
 		/**
 		 * Set norm
-		 * @param p norm value
+		 * @param pnorm norm value
 		 */
 		void set_pnorm (double pnorm);
 		
 		/**
-		 * Get norm
+		 * Get norm value
 		 * @return norm
 		 */
 		double get_pnorm () const;
