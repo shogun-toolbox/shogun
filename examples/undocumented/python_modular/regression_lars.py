@@ -12,7 +12,7 @@ from shogun.Regression import LARS, LinearRidgeRegression, LeastSquaresRegressio
 # 
 # if OLE is unstable, we may use RidgeRegression (with
 # a small regularization coefficient) to simulate OLE
-use_ridge = True
+use_ridge = False
 
 np.random.seed(1024)
 
