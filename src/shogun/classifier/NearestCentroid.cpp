@@ -43,7 +43,7 @@ namespace shogun{
 
 	void CNearestCentroid::store_model_features()
 	{
-
+		distance->init(m_centroids,distance->get_rhs());
 	}
 
 	bool CNearestCentroid::train_machine(CFeatures* data)
@@ -106,9 +106,6 @@ namespace shogun{
 				
 		m_centroids->free_feature_matrix();
 		m_centroids->set_feature_matrix(centroids,num_feats,num_classes);
-
-		
-		distance->init(m_centroids,distance->get_rhs());
 		
 		m_is_trained=true;
 		
