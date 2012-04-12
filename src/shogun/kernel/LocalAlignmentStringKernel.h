@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-#define LOGSUM_TBL 10000      /* span of the logsum table */
+const int32_t LOGSUM_TBL=10000;      /* span of the logsum table */
 
 /** @brief The LocalAlignmentString kernel compares two sequences through all
  * possible local alignments between the two sequences.
