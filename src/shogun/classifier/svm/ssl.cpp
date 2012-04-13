@@ -1095,37 +1095,8 @@ void initialize(struct vector_int *A, int32_t k)
 }
 void GetLabeledData(struct data *D, const struct data *Data)
 {
-	//int32_t *J = SG_MALLOC(int, Data->l);
 	D->C   = SG_MALLOC(float64_t, Data->l);
 	D->Y   = SG_MALLOC(float64_t, Data->l);
-	/*int32_t nz=0;
-	int32_t k=0;
-	int32_t rowptrs_=Data->l;
-	for(int32_t i=0;i<Data->m;i++)
-	{
-		if(Data->Y[i]!=0.0)
-		{
-			J[k]=i;
-			D->Y[k]=Data->Y[i];
-			D->C[k]=1.0/Data->l;
-			nz+=(Data->rowptr[i+1] - Data->rowptr[i]);
-			k++;
-		}
-	}
-	D->val    = SG_MALLOC(float64_t, nz);
-	D->colind = SG_MALLOC(int32_t, nz);
-	D->rowptr = new int32_t[rowptrs_+1];
-	nz=0;
-	for(int32_t i=0;i<Data->l;i++)
-	{
-		D->rowptr[i]=nz;
-		for(int32_t j=Data->rowptr[J[i]];j<Data->rowptr[J[i]+1];j++)
-		{
-			D->val[nz] = Data->val[j];
-			D->colind[nz] = Data->colind[j];
-			nz++;
-		}
-	}*/
 	int32_t num_feat=Data->n-1;
 	SGVector<float64_t> temp_vector(num_feat);
 	SGMatrix<float64_t> fmatrix(num_feat,Data->l);

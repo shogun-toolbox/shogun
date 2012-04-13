@@ -79,15 +79,15 @@ bool CTSVM::train_machine(CFeatures* data)
 	//Options.lambda=1/(2*get_C1());
 	//Options.lambda_u=1/(2*get_C1());
 	Options.lambda=1/(get_C1());
-	Options.lambda_u=1/(get_C1());
+	Options.lambda_u=1.0;
 	
 	Options.S=10000;
 	Options.R=0.5;
 	Options.epsilon = get_epsilon();
 	Options.cgitermax=10000;
 	Options.mfnitermax=50;
-	Options.Cp = get_C2()/get_C1();
-	Options.Cn = 1;
+	Options.Cp = 1.0;
+	Options.Cn = 1.0;
 
 	if (use_bias)
 		Options.bias=1.0;
