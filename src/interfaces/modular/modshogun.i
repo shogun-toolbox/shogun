@@ -59,6 +59,7 @@
 %include "Regression_includes.i"
 %include "Structure_includes.i"
 %include "Multiclass_includes.i"
+%include "Transfer_includes.i"
 
 %include "SGBase.i"
 %include "IO.i"
@@ -77,3 +78,4 @@
 %include "ModelSelection.i"
 %include "Structure.i"
 %include "Multiclass.i"
+%include "Transfer.i"

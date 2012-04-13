@@ -12,7 +12,7 @@
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
+#include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
 #include <iostream>
