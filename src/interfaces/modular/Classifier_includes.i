@@ -46,7 +46,5 @@
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
- #include <shogun/classifier/svm/DomainAdaptationSVM.h>
 #endif //USE_SVMLIGHT
- #include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %}

@@ -52,8 +52,6 @@
 %rename(VowpalWabbit) CVowpalWabbit;
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
-%rename(DomainAdaptationSVM) CDomainAdaptationSVM;
-%rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
 #endif //USE_SVMLIGHT
 
 %rename(MulticlassStrategy) CMulticlassStrategy;
@@ -105,7 +103,6 @@
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
-%include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
 
 %include <shogun/multiclass/MulticlassStrategy.h>
@@ -129,6 +126,5 @@
 
 %include <shogun/classifier/svm/SVMLight.h>
 %include <shogun/classifier/svm/SVMLightOneClass.h>
-%include <shogun/classifier/svm/DomainAdaptationSVM.h>
 
 #endif //USE_SVMLIGHT
