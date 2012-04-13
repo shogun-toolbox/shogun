@@ -57,20 +57,39 @@ class CKernelRidgeRegression : public CKernelMachine
 		/** default constructor */
 		CKernelRidgeRegression();
 
+        typedef bool (CKernelRidgeRegression::*train_method)(CFeatures* data);
+
+        enum ETrainingType
+        {
+            PINV=1,
+            GS=2,
+        };
+
 		/** constructor
 		 *
 		 * @param tau regularization constant tau
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab);
+        CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab, ETrainingType m=PINV);
 		virtual ~CKernelRidgeRegression() {}
+
+        /** set training function
+         *
+         */
+        inline void set_train_func(train_method m) { m_train_func = m; };
 
 		/** set regularization constant
 		 *
 		 * @param tau new tau
 		 */
 		inline void set_tau(float64_t tau) { m_tau = tau; };
+
+        /** set precision
+         *
+         * @param tau new tau
+         */
+        inline void set_epsilon(float64_t epsilon) { m_epsilon = epsilon; }
 
 		/** load regression from file
 		 *
@@ -96,7 +115,7 @@ class CKernelRidgeRegression : public CKernelMachine
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "KernelRidgeRegression"; }
+        inline virtual const char* get_name() const { return "KernelRidgeRegression"; }
 
 	protected:
 		/** train regression
@@ -109,13 +128,42 @@ class CKernelRidgeRegression : public CKernelMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+        /** train regression using Gauss-Seidel iterative method
+          *
+          * @param data training data (parameter can be avoided if distance or
+          * kernel-based regressors are used and distance/kernels are
+          * initialized with train data)
+          *
+          * @return whether training was successful
+          */
+        bool train_machine_gs(CFeatures* data=NULL);
+
+        /** train regression using pinv
+          *
+          * @param data training data (parameter can be avoided if distance or
+          * kernel-based regressors are used and distance/kernels are
+          * initialized with train data)
+          *
+          * @return whether training was successful
+          */
+        bool train_machine_pinv(CFeatures* data=NULL);
+
 	private:
 		void init();
 
 	private:
 		/** regularization parameter tau */
 		float64_t m_tau;
+
+        /** epsilon constant */
+        float64_t m_epsilon;
+
+        /** training function */
+        train_method m_train_func;
+
+        static train_method getTrainFunction(ETrainingType id);
 };
 }
+
 #endif // HAVE_LAPACK
 #endif // _KERNELRIDGEREGRESSION_H__
