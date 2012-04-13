@@ -117,7 +117,7 @@ void CPNorm::register_param ()
 
 inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const
 {
-	float64_t norm;
+	float64_t norm = 0.0;
 	if (m_p == 1.0)
 	{
 		for (int i = 0; i < vec_len; ++i)
