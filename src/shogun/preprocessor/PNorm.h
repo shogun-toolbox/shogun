@@ -34,6 +34,9 @@ class CPNorm : public CSimplePreprocessor<float64_t>
 		/** default PNorm Constructor */
 		CPNorm ();
 
+    /** constructor
+     * @param p the norm to calculate. NOTE: has to be greater or equal than 1.0
+     */
 		CPNorm (double p);
 		
 		/** destructor */
