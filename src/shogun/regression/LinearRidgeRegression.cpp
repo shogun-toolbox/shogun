@@ -67,6 +67,10 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 	SGMatrix<float64_t> kernel_matrix(num_feat,num_feat);
 	SGVector<float64_t> y(num_feat);
 
+	// init
+	kernel_matrix.zero();
+	y.zero();
+
 	for (int32_t i=0; i<num_feat; i++)
 		kernel_matrix.matrix[i+i*num_feat]+=m_tau;
 
