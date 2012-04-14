@@ -218,14 +218,11 @@ SGMatrix<float64_t> CGaussianProcessRegression::getCovarianceMatrix(CFeatures* d
 	//Indices used to solve Lv=K(X_test, X_train) for v
 	SGVector< int32_t > ipiv(CMath::min(m_L.num_rows, m_L.num_cols));
 	
-	int info;
-
-	
 	memcpy(temp1.matrix, kernel_test_matrix.matrix, 
 		kernel_test_matrix.num_cols*kernel_test_matrix.num_rows*sizeof(float64_t));
 	
 	//Get indices used to solve Lv=K(X_test, X_train) for v
-	dgetrf_(&m_L.num_rows, &m_L.num_cols, m_L.matrix, &m_L.num_cols, ipiv.vector, &info);
+	clapack_dgetrf(CblasColMajor, m_L.num_rows, m_L.num_cols, m_L.matrix, m_L.num_cols, ipiv.vector);
 	
 	//Solve Lv=K(X_test, X_train) for v
 	clapack_dgetrs(CblasColMajor, CblasNoTrans,
