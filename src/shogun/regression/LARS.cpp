@@ -73,6 +73,19 @@ static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignor
 	}
 }
 
+CLARS::CLARS(bool lasso) :
+	CLinearMachine(), m_lasso(lasso),
+	m_max_nonz(0), m_max_l1_norm(0)
+{
+	SG_ADD(&m_max_nonz, "max_nonz", "Max number of non-zero variables", MS_AVAILABLE);
+	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", MS_AVAILABLE);
+}
+
+CLARS::~CLARS()
+{
+
+}
+
 bool CLARS::train_machine(CFeatures* data)
 {
 	if (!m_labels)
