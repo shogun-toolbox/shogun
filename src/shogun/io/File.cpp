@@ -37,7 +37,7 @@ CFile::CFile(FILE* f, const char* name) : CSGObject()
 		set_variable_name(name);
 }
 
-CFile::CFile(char* fname, char rw, const char* name) : CSGObject()
+CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 {
 	variable_name=NULL;
 	task=rw;

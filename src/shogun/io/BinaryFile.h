@@ -44,7 +44,7 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CBinaryFile(char* fname, char rw='r', const char* name=NULL);
+	CBinaryFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** default destructor */
 	virtual ~CBinaryFile();

@@ -14,6 +14,7 @@
 %rename(LinearRidgeRegression) CLinearRidgeRegression;
 %rename(LeastSquaresRegression) CLeastSquaresRegression;
 %rename(GaussianProcessRegression) CGaussianProcessRegression;
+%rename(LARS) CLARS;
 %rename(LibSVR) CLibSVR;
 %rename(MKL) CMKL;
 %rename(MKLRegression) CMKLRegression;
@@ -27,6 +28,7 @@
 %include <shogun/regression/LinearRidgeRegression.h>
 %include <shogun/regression/LeastSquaresRegression.h>
 %include <shogun/regression/GaussianProcessRegression.h>
+%include <shogun/regression/LARS.h>
 %include <shogun/regression/svr/LibSVR.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/regression/svr/MKLRegression.h>
