@@ -104,7 +104,8 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		}
 		else
 		{
-			return p1.m_distance->distance(p1.m_index, p2.m_index);
+			return p1.m_distance->distance_upper_bounded(p1.m_index, 
+					p2.m_index, upper_bound);
 		}
 	}
 	else
@@ -118,13 +119,13 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		{
 			if ( p1.m_features_container == FC_LHS )
 			{
-				return p1.m_distance->distance(p1.m_index, 
-								p2.m_index);
+				return p1.m_distance->distance_upper_bounded(p1.m_index, 
+						p2.m_index, upper_bound);
 			}
 			else
 			{
-				return p1.m_distance->distance(p2.m_index, 
-								p1.m_index);
+				return p1.m_distance->distance_upper_bounded(p2.m_index, 
+						p1.m_index, upper_bound);
 			}
 		}
 	}
