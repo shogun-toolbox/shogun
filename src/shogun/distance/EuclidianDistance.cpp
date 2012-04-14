@@ -74,3 +74,44 @@ void CEuclidianDistance::init()
 
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
 }
+
+float64_t CEuclidianDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
+{
+	int32_t alen, blen;
+	bool afree, bfree;
+	float64_t result=0;
+
+	upper_bound *= upper_bound;
+
+	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->
+		get_feature_vector(idx_a, alen, afree);
+	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->
+		get_feature_vector(idx_b, blen, bfree);
+	ASSERT(alen==blen);
+
+	for (int32_t i=0; i<alen; i++)
+	{
+		result+=CMath::sq(avec[i] - bvec[i]);
+
+		if (result > upper_bound)
+		{
+			((CSimpleFeatures<float64_t>*) lhs)->
+				free_feature_vector(avec, idx_a, afree);
+			((CSimpleFeatures<float64_t>*) rhs)->
+				free_feature_vector(bvec, idx_b, bfree);
+
+			if (disable_sqrt)
+				return result;
+			else
+				return CMath::sqrt(result);
+		}
+	}
+
+	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	
+	if (disable_sqrt)
+		return result;
+	else
+		return CMath::sqrt(result);
+}
