@@ -1473,7 +1473,7 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 
 	int32_t nsv=svm->get_num_support_vectors();
 	int32_t num_kernels = kernel->get_num_subkernels();
-	float64_t* beta = SG_MALLOC(float64_t, num_kernels);
+	SGVector<float64_t> beta=SGVector<float64_t>(num_kernels, true);
 	int32_t nweights=0;
 	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
 	ASSERT(nweights==num_kernels);
@@ -1481,17 +1481,16 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 
 	for (int32_t i=0; i<num_kernels; i++)
 	{
-		beta[i]=0;
+		beta.vector[i]=0;
 		sumw[i]=0;
 	}
 
 	for (int32_t n=0; n<num_kernels; n++)
 	{
-		beta[n]=1.0;
-		/* this currently only copies the value of the first entry of this array
-		 * so it may be deleted safely afterwards. On the other hand: Is this
-		 * really intended to be like this? Heiko Strathmann */
-		kernel->set_subkernel_weights(SGVector<float64_t>(beta, num_kernels));
+		beta.vector[n]=1.0;
+		/* this only copies the value of the first entry of this array
+		 * so it may be freed safely afterwards. */
+		kernel->set_subkernel_weights(beta);
 
 		for (int32_t i=0; i<nsv; i++)
 		{
@@ -1510,7 +1509,7 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 	kernel->set_subkernel_weights(SGVector<float64_t>( (float64_t*) old_beta, num_kernels));
 
 	/* safe because of above comment, otherwise: memleak */
-	SG_FREE(beta);
+	beta.free_vector();
 }
 
 
