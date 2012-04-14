@@ -154,6 +154,27 @@ CFeatures* CDistance::replace_rhs(CFeatures* r)
      return tmp;
 }
 
+CFeatures* CDistance::replace_lhs(CFeatures* l)
+{
+     //make sure features were indeed supplied
+     ASSERT(l);
+
+     //make sure features are compatible
+     ASSERT(rhs->get_feature_class()==l->get_feature_class());
+     ASSERT(rhs->get_feature_type()==l->get_feature_type());
+
+     //remove references to previous rhs features
+     CFeatures* tmp=lhs;
+
+     lhs=l;
+
+     SG_FREE(precomputed_matrix);
+     precomputed_matrix=NULL ;
+
+	 // return old features including reference count
+     return tmp;
+}
+
 void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
