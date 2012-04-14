@@ -57,12 +57,14 @@ CCustomKernel::init()
 CCustomKernel::CCustomKernel()
 : CKernel(10), kmatrix(), upper_diagonal(false)
 {
+	SG_DEBUG("created CCustomKernel\n");
 	init();
 }
 
 CCustomKernel::CCustomKernel(CKernel* k)
 : CKernel(10)
 {
+	SG_DEBUG("created CCustomKernel\n");
 	init();
 
 	/* if constructed from a custom kernel, use same kernel matrix */
@@ -79,12 +81,14 @@ CCustomKernel::CCustomKernel(CKernel* k)
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 : CKernel(10), upper_diagonal(false)
 {
+	SG_DEBUG("created CCustomKernel\n");
 	init();
 	set_full_kernel_matrix_from_full(km);
 }
 
 CCustomKernel::~CCustomKernel()
 {
+	SG_DEBUG("destroying CCustomKernel\n");
 	SG_UNREF(m_row_subset);
 	SG_UNREF(m_col_subset);
 	cleanup();
