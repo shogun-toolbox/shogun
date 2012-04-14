@@ -51,7 +51,7 @@ public:
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
-	CAsciiFile(char* fname, char rw='r', const char* name=NULL);
+	CAsciiFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** default destructor */
 	virtual ~CAsciiFile();

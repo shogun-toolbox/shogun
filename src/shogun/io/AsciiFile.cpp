@@ -30,7 +30,7 @@ CAsciiFile::CAsciiFile(FILE* f, const char* name) : CFile(f, name)
 {
 }
 
-CAsciiFile::CAsciiFile(char* fname, char rw, const char* name) : CFile(fname, rw, name)
+CAsciiFile::CAsciiFile(const char* fname, char rw, const char* name) : CFile(fname, rw, name)
 {
 }
 
