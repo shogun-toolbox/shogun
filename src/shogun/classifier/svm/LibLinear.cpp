@@ -16,7 +16,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/classifier/svm/SVM_linear.h>
+#include <shogun/lib/external/shogun_liblinear.h>
 #include <shogun/classifier/svm/Tron.h>
 #include <shogun/features/DotFeatures.h>
 

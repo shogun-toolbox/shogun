@@ -15,7 +15,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/machine/Machine.h>
-#include <shogun/classifier/svm/libocas.h>
+#include <shogun/lib/external/libocas.h>
 #include <shogun/classifier/svm/WDSVMOcas.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/Alphabet.h>

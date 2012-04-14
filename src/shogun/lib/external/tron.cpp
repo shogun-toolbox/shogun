@@ -10,7 +10,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/classifier/svm/Tron.h>
+#include <shogun/lib/external/tron.h>
 
 using namespace shogun;
 
