@@ -19,13 +19,10 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/lib/CoverTree.h>
 #include <shogun/machine/DistanceMachine.h>
 
 namespace shogun
 {
-
-class KNN_COVERTREE_POINT;
 
 class CDistanceMachine;
 
@@ -192,17 +189,22 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
-		/** get the m_k nearest neighbors to the test vector indexed by "idx"
-		 *  these neighbors are found within the set of training vectors. This 
-		 *  function makes use of cover tree support
-		 *
-		 * @param idx index of the test vector for which to find NN
-		 * @return out vector with indices to the NN
-		 */
-		virtual void get_neighbors(int32_t* out, int32_t idx);
-
 	private:
 		void init();
+
+		/** compute the histogram of class outputs of the first k nearest
+		 *  neighbors to a test vector and return the index of the most 
+		 *  frequent class
+		 *
+		 * @param classes vector used to store the histogram
+		 * @param train_lab class indices of the training data. If the cover
+		 * tree is not used, the elements are ordered by increasing distance
+		 * and there are elements for each of the training vectors. If the cover
+		 * tree is used, it contains just m_k elements not necessary ordered.
+		 * 
+		 * @return index of the most frequent class, class detected by KNN
+		 */
+		int32_t choose_class(float64_t* classes, int32_t* train_lab);
 
 	protected:
 		/// the k parameter in KNN
@@ -214,47 +216,14 @@ class CKNN : public CDistanceMachine
 		/// parameter to enable cover tree support
 		bool m_use_covertree;
 
-		/// parameter to tell if the cover tree has been built during training
-		bool m_built_covertree;
-
-		/// class member cover tree
-		CoverTree<KNN_COVERTREE_POINT>* m_covertree;
-
 		///	number of classes (i.e. number of values labels can take)
-		int32_t num_classes;
+		int32_t m_num_classes;
 
 		///	smallest label, i.e. -1
-		int32_t min_label;
+		int32_t m_min_label;
 
 		/** the actual trainlabels */
-		SGVector<int32_t> train_labels;
-};
-
-class KNN_COVERTREE_POINT
-{
-	public:
-
-		KNN_COVERTREE_POINT(int32_t index, CDistance* knncp_distance)
-		{
-			m_point_index = index;
-			m_distance = knncp_distance;
-		}
-
-		inline double distance(const KNN_COVERTREE_POINT& p) const
-		{
-			return m_distance->distance(p.m_point_index, m_point_index);
-		}
-
-		inline bool operator==(const KNN_COVERTREE_POINT& p) const
-		{
-			return (p.m_point_index == m_point_index);
-		}
-
-	public:
-
-		int32_t m_point_index;
-
-		CDistance* m_distance;
+		SGVector<int32_t> m_train_labels;
 };
 
 }
