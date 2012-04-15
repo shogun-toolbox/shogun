@@ -88,7 +88,6 @@ protected:
 	 *
 	 * Sets centroids as lhs
 	 */
-	virtual void store_model_features();
 
 private:
 	void init();
