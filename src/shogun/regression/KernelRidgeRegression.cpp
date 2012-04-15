@@ -136,9 +136,7 @@ bool CKernelRidgeRegression::train_machine_gs(CFeatures* data)
     m_alpha.zero();
 
     for(int32_t i=0; i < n; i++)
-    {
         b[i]*=2*m_tau;
-    }
 
     // tell kernel machine that all alphas are needed as 'support vectors'
     m_svs.destroy_vector();
