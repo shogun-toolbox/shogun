@@ -15,20 +15,20 @@
 using namespace shogun;
 
 CMultiClassSVM::CMultiClassSVM()
-: CSVM(0), multiclass_type(ONE_VS_REST), m_num_svms(0), m_svms(NULL)
+	:CKernelMulticlassMachine(ONE_VS_REST_STRATEGY, NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
-CMultiClassSVM::CMultiClassSVM(EMultiClassSVM type)
-: CSVM(0), multiclass_type(type), m_num_svms(0), m_svms(NULL)
+CMultiClassSVM::CMultiClassSVM(EMulticlassStrategy strategy)
+	:CKernelMulticlassMachine(strategy, NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
 CMultiClassSVM::CMultiClassSVM(
-	EMultiClassSVM type, float64_t C, CKernel* k, CLabels* lab)
-: CSVM(C, k, lab), multiclass_type(type), m_num_svms(0), m_svms(NULL)
+	EMulticlassStrategy strategy, float64_t C, CKernel* k, CLabels* lab)
+	:CKernelMulticlassMachine(strategy, k, new CSVM(C, k, lab), lab)
 {
 	init();
 }
@@ -96,6 +96,35 @@ bool CMultiClassSVM::set_svm(int32_t num, CSVM* svm)
 	return false;
 }
 
+CLabels* CMultiClassSVM::apply(CFeatures* data)
+{
+	if (is_data_locked())
+	{
+		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
+				"data_lock was called before. Call data_unlock to allow.");
+	}
+
+	if (!m_kernel)
+		SG_ERROR("No kernel assigned!\n");
+
+	CFeatures* lhs=m_kernel->get_lhs();
+	if (!lhs)
+		SG_ERROR("%s: No left hand side specified\n", get_name());
+
+	if (!lhs->get_num_vectors())
+	{
+		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
+				" an implementation error in %s, where it was forgotten to set "
+				"the data (m_svs) indices\n", get_name(),
+				data->get_name());
+	}
+
+	m_kernel->init(lhs, data);
+	SG_UNREF(lhs);
+
+	return apply();
+}
+
 CLabels* CMultiClassSVM::apply()
 {
 	if (multiclass_type==ONE_VS_REST)
@@ -114,16 +143,16 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
 	CLabels* result=NULL;
 
-	if (!kernel)
+	if (!m_kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
 		return NULL;
 	}
 
-	if (!( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs()))
+	if (!( m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs()))
 		return NULL;
 
-	int32_t num_vectors=kernel->get_num_vec_rhs();
+	int32_t num_vectors=m_kernel->get_num_vec_rhs();
 
 	result=new CLabels(num_vectors);
 	SG_REF(result);
@@ -135,7 +164,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 	{
 		SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_num_svms, i, m_svms[i]);
 		ASSERT(m_svms[i]);
-		m_svms[i]->set_kernel(kernel);
+		m_svms[i]->set_kernel(m_kernel);
 		outputs[i]=m_svms[i]->apply();
 	}
 
@@ -185,15 +214,15 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 	ASSERT(m_num_svms>0);
 	CLabels* result=NULL;
 
-	if (!kernel)
+	if (!m_kernel)
 	{
 		SG_ERROR("SVM can not proceed without kernel!\n");
 		return NULL;
 	}
 
-	if ( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs())
+	if ( m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
 	{
-		int32_t num_vectors=kernel->get_num_vec_rhs();
+		int32_t num_vectors=m_kernel->get_num_vec_rhs();
 
 		result=new CLabels(num_vectors);
 		SG_REF(result);
@@ -204,7 +233,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 		for (int32_t i=0; i<m_num_svms; i++)
 		{
 			ASSERT(m_svms[i]);
-			m_svms[i]->set_kernel(kernel);
+			m_svms[i]->set_kernel(m_kernel);
 			outputs[i]=m_svms[i]->apply();
 		}
 
@@ -287,7 +316,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 		{
 			/** TODO, this was never used before, make classify_on_vs_one()
 			 * use this code, instead of having a duplicate copy down there */
-			m_svms[s]->set_kernel(kernel);
+			m_svms[s]->set_kernel(m_kernel);
 			if (m_svms[s]->apply(num)>0)
 				votes.vector[i]++;
 			else
@@ -466,7 +495,7 @@ bool CMultiClassSVM::load(FILE* modelfl)
 		set_svm(n, svm);
 	}
 
-	svm_loaded=result;
+	svm_proto()->svm_loaded=result;
 
 	SG_RESET_LOCALE;
 	return result;
@@ -476,7 +505,7 @@ bool CMultiClassSVM::save(FILE* modelfl)
 {
 	SG_SET_LOCALE_C;
 
-	if (!kernel)
+	if (!m_kernel)
 		SG_ERROR("Kernel not defined!\n");
 
 	if (!m_svms || m_num_svms<1 || m_num_classes <=2)
@@ -487,7 +516,7 @@ bool CMultiClassSVM::save(FILE* modelfl)
 	fprintf(modelfl,"multiclass_type=%d;\n", multiclass_type);
 	fprintf(modelfl,"num_classes=%d;\n", m_num_classes);
 	fprintf(modelfl,"num_svms=%d;\n", m_num_svms);
-	fprintf(modelfl,"kernel='%s';\n", kernel->get_name());
+	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());
 
 	for (int32_t i=0; i<m_num_svms; i++)
 	{

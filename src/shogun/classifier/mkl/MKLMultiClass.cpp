@@ -15,7 +15,7 @@ using namespace shogun;
 
 
 CMKLMultiClass::CMKLMultiClass()
-: CMultiClassSVM(ONE_VS_REST)
+: CMultiClassSVM(ONE_VS_REST_STRATEGY)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -26,7 +26,7 @@ CMKLMultiClass::CMKLMultiClass()
 }
 
 CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab)
+: CMultiClassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -46,7 +46,7 @@ CMKLMultiClass::~CMKLMultiClass()
 }
 
 CMKLMultiClass::CMKLMultiClass( const CMKLMultiClass & cm)
-: CMultiClassSVM(ONE_VS_REST)
+: CMultiClassSVM(ONE_VS_REST_STRATEGY)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -76,7 +76,7 @@ void CMKLMultiClass::initsvm()
 	SG_REF(svm);
 
 	svm->set_C(get_C1(),get_C2());
-	svm->set_epsilon(epsilon);
+	svm->set_epsilon(get_epsilon());
 
 	if (m_labels->get_num_labels()<=0)
 	{
@@ -89,19 +89,19 @@ void CMKLMultiClass::initsvm()
 
 void CMKLMultiClass::initlpsolver()
 {
-	if (!kernel)
+	if (!m_kernel)
 	{
 		SG_ERROR("CMKLMultiClass::initlpsolver(): the set kernel is NULL\n");
 	}
 
-	if (kernel->get_kernel_type()!=K_COMBINED)
+	if (m_kernel->get_kernel_type()!=K_COMBINED)
 	{
 		SG_ERROR("CMKLMultiClass::initlpsolver(): given kernel is not of type"
 				" K_COMBINED %d required by Multiclass Mkl \n",
-				kernel->get_kernel_type());
+				m_kernel->get_kernel_type());
 	}
 
-	int numker=dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
+	int numker=dynamic_cast<CCombinedKernel *>(m_kernel)->get_num_subkernels();
 
 	ASSERT(numker>0);
 	/*
@@ -215,18 +215,18 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
 	weights=SG_MALLOC(float64_t, curweights.size());
 	std::copy(curweights.begin(),curweights.end(),weights);
 
-	kernel->set_subkernel_weights(SGVector<float64_t>(weights, curweights.size()));
+	m_kernel->set_subkernel_weights(SGVector<float64_t>(weights, curweights.size()));
 	SG_FREE(weights);
 	weights=NULL;
 
 	initsvm();
 
-	svm->set_kernel(kernel);
+	svm->set_kernel(m_kernel);
 	svm->train();
 
 	float64_t sumofsignfreealphas=getsumofsignfreealphas();
 	int32_t numkernels=
-			dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
+			dynamic_cast<CCombinedKernel *>(m_kernel)->get_num_subkernels();
 
 
 	normweightssquared.resize(numkernels);
@@ -289,7 +289,7 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 		const int32_t ind)
 {
-	CKernel * ker=dynamic_cast<CCombinedKernel *>(kernel)->get_kernel(ind);
+	CKernel * ker=dynamic_cast<CCombinedKernel *>(m_kernel)->get_kernel(ind);
 
 	float64_t tmp=0;
 
@@ -325,7 +325,7 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 bool CMKLMultiClass::train_machine(CFeatures* data)
 {
 	int numcl=m_labels->get_num_classes();
-	ASSERT(kernel);
+	ASSERT(m_kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
 
 	if (data)
@@ -333,7 +333,7 @@ bool CMKLMultiClass::train_machine(CFeatures* data)
 		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of "
 					"labels\n");
-		kernel->init(data, data);
+		m_kernel->init(data, data);
 	}
 
 	initlpsolver();
@@ -341,7 +341,7 @@ bool CMKLMultiClass::train_machine(CFeatures* data)
 	weightshistory.clear();
 
 	int32_t numkernels=
-			dynamic_cast<CCombinedKernel *>(kernel)->get_num_subkernels();
+			dynamic_cast<CCombinedKernel *>(m_kernel)->get_num_subkernels();
 
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);

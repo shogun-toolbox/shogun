@@ -20,20 +20,20 @@
 using namespace shogun;
 
 CScatterSVM::CScatterSVM()
-: CMultiClassSVM(ONE_VS_REST), scatter_type(NO_BIAS_LIBSVM),
+: CMultiClassSVM(ONE_VS_REST_STRATEGY), scatter_type(NO_BIAS_LIBSVM),
   model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
 {
 	SG_UNSTABLE("CScatterSVM::CScatterSVM()", "\n");
 }
 
 CScatterSVM::CScatterSVM(SCATTER_TYPE type)
-: CMultiClassSVM(ONE_VS_REST), scatter_type(type), model(NULL),
+: CMultiClassSVM(ONE_VS_REST_STRATEGY), scatter_type(type), model(NULL),
 	norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
 {
 }
 
 CScatterSVM::CScatterSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab), scatter_type(NO_BIAS_LIBSVM), model(NULL),
+: CMultiClassSVM(ONE_VS_REST_STRATEGY, C, k, lab), scatter_type(NO_BIAS_LIBSVM), model(NULL),
 	norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
 {
 }
@@ -54,7 +54,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
-		kernel->init(data, data);
+		m_kernel->init(data, data);
 	}
 
 	int32_t* numc=SG_MALLOC(int32_t, m_num_classes);
@@ -129,8 +129,8 @@ bool CScatterSVM::train_no_bias_libsvm()
 	int32_t weights_label[2]={-1,+1};
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
-	ASSERT(kernel && kernel->has_features());
-    ASSERT(kernel->get_num_vec_lhs()==problem.l);
+	ASSERT(m_kernel && m_kernel->has_features());
+    ASSERT(m_kernel->get_num_vec_lhs()==problem.l);
 
 	param.svm_type=C_SVC; // Nu MC SVM
 	param.kernel_type = LINEAR;
@@ -138,20 +138,20 @@ bool CScatterSVM::train_no_bias_libsvm()
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu(); // Nu
-	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
-	kernel->set_normalizer(new CScatterKernelNormalizer(
+	CKernelNormalizer* prev_normalizer=m_kernel->get_normalizer();
+	m_kernel->set_normalizer(new CScatterKernelNormalizer(
 				m_num_classes-1, -1, m_labels, prev_normalizer));
-	param.kernel=kernel;
-	param.cache_size = kernel->get_cache_size();
+	param.kernel=m_kernel;
+	param.cache_size = m_kernel->get_cache_size();
 	param.C = 0;
-	param.eps = epsilon;
+	param.eps = get_epsilon();
 	param.p = 0.1;
 	param.shrinking = 0;
 	param.nr_weight = 2;
 	param.weight_label = weights_label;
 	param.weight = weights;
 	param.nr_class=m_num_classes;
-	param.use_bias = get_bias_enabled();
+	param.use_bias = svm_proto()->get_bias_enabled();
 
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
@@ -159,7 +159,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 		SG_ERROR("Error: %s\n",error_msg);
 
 	model = svm_train(&problem, &param);
-	kernel->set_normalizer(prev_normalizer);
+	m_kernel->set_normalizer(prev_normalizer);
 	SG_UNREF(prev_normalizer);
 
 	if (model)
@@ -215,13 +215,13 @@ bool CScatterSVM::train_no_bias_libsvm()
 #ifdef USE_SVMLIGHT
 bool CScatterSVM::train_no_bias_svmlight()
 {
-	CKernelNormalizer* prev_normalizer=kernel->get_normalizer();
+	CKernelNormalizer* prev_normalizer=m_kernel->get_normalizer();
 	CScatterKernelNormalizer* n=new CScatterKernelNormalizer(
 				 m_num_classes-1, -1, m_labels, prev_normalizer);
-	kernel->set_normalizer(n);
-	kernel->init_normalizer();
+	m_kernel->set_normalizer(n);
+	m_kernel->init_normalizer();
 
-	CSVMLightOneClass* light=new CSVMLightOneClass(C1, kernel);
+	CSVMLightOneClass* light=new CSVMLightOneClass(get_C1(), m_kernel);
 	light->set_linadd_enabled(false);
 	light->train();
 
@@ -229,15 +229,15 @@ bool CScatterSVM::train_no_bias_svmlight()
 	norm_wcw = SG_MALLOC(float64_t, m_num_classes);
 
 	int32_t num_sv=light->get_num_support_vectors();
-	create_new_model(num_sv);
+	svm_proto()->create_new_model(num_sv);
 
 	for (int32_t i=0; i<num_sv; i++)
 	{
-		set_alpha(i, light->get_alpha(i));
-		set_support_vector(i, light->get_support_vector(i));
+		svm_proto()->set_alpha(i, light->get_alpha(i));
+		svm_proto()->set_support_vector(i, light->get_support_vector(i));
 	}
 
-	kernel->set_normalizer(prev_normalizer);
+	m_kernel->set_normalizer(prev_normalizer);
 	return true;
 }
 #endif //USE_SVMLIGHT
@@ -263,8 +263,8 @@ bool CScatterSVM::train_testrule12()
 	int32_t weights_label[2]={-1,+1};
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
-	ASSERT(kernel && kernel->has_features());
-    ASSERT(kernel->get_num_vec_lhs()==problem.l);
+	ASSERT(m_kernel && m_kernel->has_features());
+    ASSERT(m_kernel->get_num_vec_lhs()==problem.l);
 
 	param.svm_type=NU_MULTICLASS_SVC; // Nu MC SVM
 	param.kernel_type = LINEAR;
@@ -272,17 +272,17 @@ bool CScatterSVM::train_testrule12()
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu(); // Nu
-	param.kernel=kernel;
-	param.cache_size = kernel->get_cache_size();
+	param.kernel=m_kernel;
+	param.cache_size = m_kernel->get_cache_size();
 	param.C = 0;
-	param.eps = epsilon;
+	param.eps = get_epsilon();
 	param.p = 0.1;
 	param.shrinking = 0;
 	param.nr_weight = 2;
 	param.weight_label = weights_label;
 	param.weight = weights;
 	param.nr_class=m_num_classes;
-	param.use_bias = get_bias_enabled();
+	param.use_bias = svm_proto()->get_bias_enabled();
 
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
@@ -360,7 +360,7 @@ void CScatterSVM::compute_norm_wc()
 			for (int32_t j=0; j<num_sv; j++)
 			{
 				int32_t jj=svm->get_support_vector(j);
-				norm_wc[c]+=svm->get_alpha(i)*kernel->kernel(ii,jj)*svm->get_alpha(j);
+				norm_wc[c]+=svm->get_alpha(i)*m_kernel->kernel(ii,jj)*svm->get_alpha(j);
 			}
 		}
 	}
@@ -374,16 +374,16 @@ void CScatterSVM::compute_norm_wc()
 CLabels* CScatterSVM::classify_one_vs_rest()
 {
 	CLabels* output=NULL;
-	if (!kernel)
+	if (!m_kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
 		return NULL;
 	}
 
-	if (!( kernel && kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs()))
+	if (!( m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs()))
 		return NULL;
 
-	int32_t num_vectors=kernel->get_num_vec_rhs();
+	int32_t num_vectors=m_kernel->get_num_vec_rhs();
 
 	output=new CLabels(num_vectors);
 	SG_REF(output);
@@ -402,10 +402,10 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			for (int32_t j=0; j<get_num_support_vectors(); j++)
+			for (int32_t j=0; j<svm_proto()->get_num_support_vectors(); j++)
 			{
-				float64_t score=kernel->kernel(get_support_vector(j), i)*get_alpha(j);
-				int32_t label=m_labels->get_int_label(get_support_vector(j));
+				float64_t score=m_kernel->kernel(svm_proto()->get_support_vector(j), i)*svm_proto()->get_alpha(j);
+				int32_t label=m_labels->get_int_label(svm_proto()->get_support_vector(j));
 				for (int32_t c=0; c<m_num_classes; c++)
 				{
 					float64_t s= (label==c) ? (m_num_classes-1) : (-1);
@@ -446,7 +446,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 		{
 			//SG_PRINT("svm %d\n", i);
 			ASSERT(m_svms[i]);
-			m_svms[i]->set_kernel(kernel);
+			m_svms[i]->set_kernel(m_kernel);
 			m_svms[i]->set_labels(m_labels);
 			outputs[i]=m_svms[i]->apply();
 		}
@@ -498,7 +498,7 @@ float64_t CScatterSVM::apply(int32_t num)
 			{
 				float64_t alpha=m_svms[c]->get_alpha(i);
 				int32_t svidx=m_svms[c]->get_support_vector(i);
-				v += alpha*kernel->kernel(svidx, num);
+				v += alpha*m_kernel->kernel(svidx, num);
 			}
 
 			outputs[c] += v;
