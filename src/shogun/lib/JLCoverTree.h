@@ -648,6 +648,7 @@ void descend(const node<P>* query, float* upper_bound,
 	{
 	  node<P> *chi = par->children;
 	  if (parent->dist <= upper_dist + chi->max_dist)
+            {
 	    if (chi->num_children > 0)
 	      {
 		if (max_scale < chi->scale)
@@ -660,6 +661,7 @@ void descend(const node<P>* query, float* upper_bound,
 		d_node<P> temp = {parent->dist, chi};
 		push(zero_set, temp);
 	      }
+	    }
 	  node<P> *child_end = par->children + par->num_children;
 	  for (chi++; chi != child_end; chi++)
 	    {
@@ -806,10 +808,10 @@ void batch_nearest_neighbor(const node<P> &top_node, const node<P> &query,
   
   for (int i = 0; i < spare_cover_sets.index; i++)
     {
-      v_array<v_array<d_node<P> > > cover_sets = spare_cover_sets[i];
-      for (int j = 0; j < cover_sets.index; j++)
-	free (cover_sets[j].elements);
-      free(cover_sets.elements);
+      v_array<v_array<d_node<P> > > cover_sets2 = spare_cover_sets[i];
+      for (int j = 0; j < cover_sets2.index; j++)
+	free (cover_sets2[j].elements);
+      free(cover_sets2.elements);
     }
   free(spare_cover_sets.elements);
   
