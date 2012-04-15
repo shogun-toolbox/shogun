@@ -579,7 +579,7 @@ int32_t LaRankOutput::getSV (float32_t* &sv) const
 	return l;
 }
 
-CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST),
+CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST_STRATEGY),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
@@ -588,7 +588,7 @@ CLaRank::CLaRank (): CMultiClassSVM(ONE_VS_REST),
 }
 
 CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
-	CMultiClassSVM(ONE_VS_REST, C, k, lab),
+	CMultiClassSVM(ONE_VS_REST_STRATEGY, C, k, lab),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
@@ -605,7 +605,7 @@ bool CLaRank::train_machine(CFeatures* data)
 {
 	tau = 0.0001;
 
-	ASSERT(kernel);
+	ASSERT(m_kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
 
 	CSignal::clear_cancel();
@@ -617,19 +617,19 @@ bool CLaRank::train_machine(CFeatures* data)
 			SG_ERROR("Numbert of vectors (%d) does not match number of labels (%d)\n",
 					data->get_num_vectors(), m_labels->get_num_labels());
 		}
-		kernel->init(data, data);
+		m_kernel->init(data, data);
 	}
 
-	ASSERT(kernel->get_num_vec_lhs() && kernel->get_num_vec_rhs());
+	ASSERT(m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs());
 
 	nb_train=m_labels->get_num_labels();
-	cache = kernel->get_cache_size();
+	cache = m_kernel->get_cache_size();
 
 	int32_t n_it = 1;
 	float64_t gap = DBL_MAX;
 
 	SG_INFO("Training on %d examples\n", nb_train);
-	while (gap > C1 && (!CSignal::cancel_computations()))      // stopping criteria
+	while (gap > get_C1() && (!CSignal::cancel_computations()))      // stopping criteria
 	{
 		float64_t tr_err = 0;
 		int32_t ind = step;
@@ -650,7 +650,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		SG_DEBUG("End of iteration %d\n", n_it++);
 		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100);
 		gap = computeGap ();
-		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(C1), 6);
+		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C1()), 6);
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
@@ -701,7 +701,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 	{
 		outputs.insert (std::make_pair (yi, LaRankOutput ()));
 		LaRankOutput *cur = getOutput (yi);
-		cur->initialize (kernel, cache);
+		cur->initialize (m_kernel, cache);
 		if (outputs.size () == 1)
 			y0 = outputs.begin ()->first;
 		// link the cache of this new output to a buddy
@@ -821,7 +821,7 @@ float64_t CLaRank::computeGap ()
 		}
 		sum_sl += CMath::max (0.0, gi - gmin);
 	}
-	return CMath::max (0.0, computeW2 () + C1 * sum_sl - sum_bi);
+	return CMath::max (0.0, computeW2 () + get_C1() * sum_sl - sum_bi);
 }
 
 // Nuber of classes so far
@@ -933,7 +933,7 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 		bool support = ptype == processOptimize || output->isSupportVector (pattern.x_id);
 		bool goodclass = current.output == pattern.y;
 		if ((!support && goodclass) ||
-				(support && output->getBeta (pattern.x_id) < (goodclass ? C1 : 0)))
+				(support && output->getBeta (pattern.x_id) < (goodclass ? get_C1() : 0)))
 		{
 			ygp = current;
 			outp = output;
@@ -982,12 +982,12 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 	{
 		float64_t beta = outp->getBeta (pattern.x_id);
 		if (ygp.output == pattern.y)
-			lambda = CMath::min (lambda, C1 - beta);
+			lambda = CMath::min (lambda, get_C1() - beta);
 		else
 			lambda = CMath::min (lambda, fabs (beta));
 	}
 	else
-		lambda = CMath::min (lambda, C1);
+		lambda = CMath::min (lambda, get_C1());
 
 	/*
 	 ** update the solution

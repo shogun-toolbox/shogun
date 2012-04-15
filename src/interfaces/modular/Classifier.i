@@ -79,6 +79,8 @@
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
+%include <shogun/machine/MulticlassMachine.h>
+%include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/classifier/svm/MultiClassSVM.h>
 %include <shogun/machine/LinearMachine.h>
 %include <shogun/machine/OnlineLinearMachine.h>
@@ -117,8 +119,6 @@
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %include <shogun/classifier/ConjugateIndex.h>
-%include <shogun/machine/MulticlassMachine.h>
-%include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/machine/LinearMulticlassMachine.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
 
