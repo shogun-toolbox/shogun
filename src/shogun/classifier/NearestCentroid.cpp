@@ -8,6 +8,10 @@
  */
 
 #include <shogun/classifier/NearestCentroid.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/FeatureTypes.h>
+
+
 
 namespace shogun{
 	
@@ -37,20 +41,15 @@ namespace shogun{
 	{
 		m_shrinking=0;
 		m_is_trained=false;
-		set_store_model_features(true);
 		m_centroids = new CSimpleFeatures<float64_t>();
 	}
 
-	void CNearestCentroid::store_model_features()
-	{
-		distance->init(m_centroids,distance->get_rhs());
-	}
 
 	bool CNearestCentroid::train_machine(CFeatures* data)
 	{
 		ASSERT(m_labels);
 		ASSERT(distance);
-		
+		ASSERT( data->get_feature_class() == C_SIMPLE)
 		if (data)
 		{
 			if (m_labels->get_num_labels() != data->get_num_vectors())
@@ -107,7 +106,9 @@ namespace shogun{
 		m_centroids->free_feature_matrix();
 		m_centroids->set_feature_matrix(centroids,num_feats,num_classes);
 		
+		
 		m_is_trained=true;
+		distance->init(m_centroids,distance->get_rhs());
 		
 		delete [] num_per_class;
 		
