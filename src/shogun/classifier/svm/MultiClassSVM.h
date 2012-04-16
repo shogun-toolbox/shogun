@@ -19,14 +19,6 @@
 namespace shogun
 {
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-enum EMultiClassSVM
-{
-	ONE_VS_REST,
-	ONE_VS_ONE,
-};
-#endif
-
 class CSVM;
 
 /** @brief class MultiClassSVM */
@@ -75,19 +67,9 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 		 */
 		CSVM* get_svm(int32_t num)
 		{
-			ASSERT(m_svms && m_num_svms>0);
-			ASSERT(num>=0 && num<m_num_svms);
-			SG_REF(m_svms[num]);
-			return m_svms[num];
-		}
-
-		/** get number of SVMs
-		 *
-		 * @return number of SVMs
-		 */
-		int32_t inline get_num_svms()
-		{
-			return m_num_svms;
+			ASSERT(num>=0 && num<m_machines.vlen);
+			SG_REF(m_machines[num]);
+			return dynamic_cast<CSVM *>(m_machines[num]);
 		}
 
 		/** cleanup SVM */
@@ -148,12 +130,6 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 		 */
 		bool save(FILE* svm_file);
 
-		/** get the type of multiclass'ness
-		 *
-		 * @return multiclass type 1 vs one etc
-		 */
-		inline EMultiClassSVM get_multiclass_type() { return multiclass_type; }
-
 		// proxy of SVM getters
 		SGVector<float64_t> get_linear_term() { return svm_proto()->get_linear_term(); }
 		float64_t get_tube_epsilon() { return svm_proto()->get_tube_epsilon(); }
@@ -196,17 +172,6 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 
 	private:
 		void init();
-
-	protected:
-		/** type of MultiClassSVM */
-		EMultiClassSVM multiclass_type;
-
-		/** number of classes */
-		int32_t m_num_classes;
-		/** number of SVMs */
-		int32_t m_num_svms;
-		/** the SVMs */
-		CSVM** m_svms;
 };
 }
 #endif

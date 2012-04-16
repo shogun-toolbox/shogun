@@ -40,22 +40,11 @@ CMultiClassSVM::~CMultiClassSVM()
 
 void CMultiClassSVM::init()
 {
-	m_parameters->add((machine_int_t*) &multiclass_type,
-					  "multiclass_type", "Type of MultiClassSVM.");
-	m_parameters->add(&m_num_classes, "m_num_classes",
-					  "Number of classes.");
-	m_parameters->add_vector((CSGObject***) &m_svms,
-							 &m_num_svms, "m_svms");
 }
 
 void CMultiClassSVM::cleanup()
 {
-	for (int32_t i=0; i<m_num_svms; i++)
-		SG_UNREF(m_svms[i]);
-
-	SG_FREE(m_svms);
-	m_num_svms=0;
-	m_svms=NULL;
+	clear_machines();
 }
 
 bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
@@ -64,33 +53,29 @@ bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
 	{
 		cleanup();
 
-		m_num_classes=num_classes;
-
-		if (multiclass_type==ONE_VS_REST)
-			m_num_svms=num_classes;
-		else if (multiclass_type==ONE_VS_ONE)
-			m_num_svms=num_classes*(num_classes-1)/2;
+		int32_t num_svms=0;
+		if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
+			num_svms=num_classes;
+		else if (m_multiclass_strategy==ONE_VS_ONE_STRATEGY)
+			num_svms=num_classes*(num_classes-1)/2;
 		else
-			SG_ERROR("unknown multiclass type\n");
+			SG_ERROR("unknown multiclass strategy\n");
 
-		m_svms=SG_MALLOC(CSVM*, m_num_svms);
-		if (m_svms)
-		{
-			for (index_t i=0; i<m_num_svms; ++i)
-				m_svms[i]=NULL;
+		m_machines = SGVector<CMachine *>(num_svms);
+		for (index_t i=0; i<num_svms; ++i)
+			m_machines[i]=NULL;
 
-			return true;
-		}
+		return true;
 	}
 	return false;
 }
 
 bool CMultiClassSVM::set_svm(int32_t num, CSVM* svm)
 {
-	if (m_num_svms>0 && m_num_svms>num && num>=0 && svm)
+	if (m_machines.vlen>0 && m_machines.vlen>num && num>=0 && svm)
 	{
 		SG_REF(svm);
-		m_svms[num]=svm;
+		m_machines[num]=svm;
 		return true;
 	}
 	return false;
@@ -127,20 +112,21 @@ CLabels* CMultiClassSVM::apply(CFeatures* data)
 
 CLabels* CMultiClassSVM::apply()
 {
-	if (multiclass_type==ONE_VS_REST)
+	if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
 		return classify_one_vs_rest();
-	else if (multiclass_type==ONE_VS_ONE)
+	else if (m_multiclass_strategy==ONE_VS_ONE_STRATEGY)
 		return classify_one_vs_one();
 	else
-		SG_ERROR("unknown multiclass type\n");
+		SG_ERROR("unknown multiclass strategy\n");
 
 	return NULL;
 }
 
 CLabels* CMultiClassSVM::classify_one_vs_one()
 {
-	ASSERT(m_num_svms>0);
-	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
+	int32_t num_classes=m_labels->get_num_classes();
+	ASSERT(m_machines.vlen>0);
+	ASSERT(m_machines.vlen==num_classes*(num_classes-1)/2);
 	CLabels* result=NULL;
 
 	if (!m_kernel)
@@ -158,25 +144,26 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 	SG_REF(result);
 
 	ASSERT(num_vectors==result->get_num_labels());
-	CLabels** outputs=SG_MALLOC(CLabels*, m_num_svms);
+	CLabels** outputs=SG_MALLOC(CLabels*, m_machines.vlen);
 
-	for (int32_t i=0; i<m_num_svms; i++)
+	for (int32_t i=0; i<m_machines.vlen; i++)
 	{
-		SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_num_svms, i, m_svms[i]);
-		ASSERT(m_svms[i]);
-		m_svms[i]->set_kernel(m_kernel);
-		outputs[i]=m_svms[i]->apply();
+		SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_machines.vlen, i, m_machines[i]);
+		ASSERT(m_machines[i]);
+		CSVM *the_svm=(CSVM *)m_machines[i];
+		the_svm->set_kernel(m_kernel);
+		outputs[i]=the_svm->apply();
 	}
 
-	int32_t* votes=SG_MALLOC(int32_t, m_num_classes);
+	int32_t* votes=SG_MALLOC(int32_t, num_classes);
 	for (int32_t v=0; v<num_vectors; v++)
 	{
 		int32_t s=0;
-		memset(votes, 0, sizeof(int32_t)*m_num_classes);
+		memset(votes, 0, sizeof(int32_t)*num_classes);
 
-		for (int32_t i=0; i<m_num_classes; i++)
+		for (int32_t i=0; i<num_classes; i++)
 		{
-			for (int32_t j=i+1; j<m_num_classes; j++)
+			for (int32_t j=i+1; j<num_classes; j++)
 			{
 				if (outputs[s++]->get_label(v)>0)
 					votes[i]++;
@@ -188,7 +175,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 		int32_t winner=0;
 		int32_t max_votes=votes[0];
 
-		for (int32_t i=1; i<m_num_classes; i++)
+		for (int32_t i=1; i<num_classes; i++)
 		{
 			if (votes[i]>max_votes)
 			{
@@ -202,7 +189,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 
 	SG_FREE(votes);
 
-	for (int32_t i=0; i<m_num_svms; i++)
+	for (int32_t i=0; i<m_machines.vlen; i++)
 		SG_UNREF(outputs[i]);
 	SG_FREE(outputs);
 
@@ -211,7 +198,7 @@ CLabels* CMultiClassSVM::classify_one_vs_one()
 
 CLabels* CMultiClassSVM::classify_one_vs_rest()
 {
-	ASSERT(m_num_svms>0);
+	ASSERT(m_machines.vlen>0);
 	CLabels* result=NULL;
 
 	if (!m_kernel)
@@ -228,13 +215,14 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 		SG_REF(result);
 
 		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=SG_MALLOC(CLabels*, m_num_svms);
+		CLabels** outputs=SG_MALLOC(CLabels*, m_machines.vlen);
 
-		for (int32_t i=0; i<m_num_svms; i++)
+		for (int32_t i=0; i<m_machines.vlen; i++)
 		{
-			ASSERT(m_svms[i]);
-			m_svms[i]->set_kernel(m_kernel);
-			outputs[i]=m_svms[i]->apply();
+			ASSERT(m_machines[i]);
+			CSVM *the_svm = (CSVM *)m_machines[i];
+			the_svm->set_kernel(m_kernel);
+			outputs[i]=the_svm->apply();
 		}
 
 		for (int32_t i=0; i<num_vectors; i++)
@@ -242,7 +230,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 			int32_t winner=0;
 			float64_t max_out=outputs[0]->get_label(i);
 
-			for (int32_t j=1; j<m_num_svms; j++)
+			for (int32_t j=1; j<m_machines.vlen; j++)
 			{
 				float64_t out=outputs[j]->get_label(i);
 
@@ -256,7 +244,7 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 			result->set_label(i, winner);
 		}
 
-		for (int32_t i=0; i<m_num_svms; i++)
+		for (int32_t i=0; i<m_machines.vlen; i++)
 			SG_UNREF(outputs[i]);
 
 		SG_FREE(outputs);
@@ -267,26 +255,26 @@ CLabels* CMultiClassSVM::classify_one_vs_rest()
 
 float64_t CMultiClassSVM::apply(int32_t num)
 {
-	if (multiclass_type==ONE_VS_REST)
+	if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
 		return classify_example_one_vs_rest(num);
-	else if (multiclass_type==ONE_VS_ONE)
+	else if (m_multiclass_strategy==ONE_VS_ONE_STRATEGY)
 		return classify_example_one_vs_one(num);
 	else
-		SG_ERROR("unknown multiclass type\n");
+		SG_ERROR("unknown multiclass strategy\n");
 
 	return 0;
 }
 
 float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 {
-	ASSERT(m_num_svms>0);
-	float64_t* outputs=SG_MALLOC(float64_t, m_num_svms);
+	ASSERT(m_machines.vlen>0);
+	float64_t* outputs=SG_MALLOC(float64_t, m_machines.vlen);
 	int32_t winner=0;
-	float64_t max_out=m_svms[0]->apply(num);
+	float64_t max_out=get_svm(0)->apply(num);
 
-	for (int32_t i=1; i<m_num_svms; i++)
+	for (int32_t i=1; i<m_machines.vlen; i++)
 	{
-		outputs[i]=m_svms[i]->apply(num);
+		outputs[i]=get_svm(i)->apply(num);
 		if (outputs[i]>max_out)
 		{
 			winner=i;
@@ -300,24 +288,25 @@ float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 
 float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 {
-	ASSERT(m_num_svms>0);
-	ASSERT(m_num_svms==m_num_classes*(m_num_classes-1)/2);
+	int32_t num_classes=m_labels->get_num_classes();
+	ASSERT(m_machines.vlen>0);
+	ASSERT(m_machines.vlen==num_classes*(num_classes-1)/2);
 
-	SGVector<int32_t> votes(m_num_classes);
+	SGVector<int32_t> votes(num_classes);
 
 	/* set votes array to zero to prevent uninitialized values if class gets
 	 * no votes */
 	votes.set_const(0);
 	int32_t s=0;
 
-	for (int32_t i=0; i<m_num_classes; i++)
+	for (int32_t i=0; i<num_classes; i++)
 	{
-		for (int32_t j=i+1; j<m_num_classes; j++)
+		for (int32_t j=i+1; j<num_classes; j++)
 		{
 			/** TODO, this was never used before, make classify_on_vs_one()
 			 * use this code, instead of having a duplicate copy down there */
-			m_svms[s]->set_kernel(m_kernel);
-			if (m_svms[s]->apply(num)>0)
+			get_svm(s)->set_kernel(m_kernel);
+			if (get_svm(s)->apply(num)>0)
 				votes.vector[i]++;
 			else
 				votes.vector[j]++;
@@ -329,7 +318,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 	int32_t winner=0;
 	int32_t max_votes=votes.vector[0];
 
-	for (int32_t i=1; i<m_num_classes; i++)
+	for (int32_t i=1; i<num_classes; i++)
 	{
 		if (votes.vector[i]>max_votes)
 		{
@@ -365,6 +354,7 @@ bool CMultiClassSVM::load(FILE* modelfl)
 		line_number++;
 	}
 
+	/*
 	int_buffer=0;
 	if (fscanf(modelfl," multiclass_type=%d; \n", &int_buffer) != 1)
 		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
@@ -374,6 +364,7 @@ bool CMultiClassSVM::load(FILE* modelfl)
 
 	if (int_buffer != multiclass_type)
 		SG_ERROR("multiclass type does not match %ld vs. %ld\n", int_buffer, multiclass_type);
+	*/
 
 	int_buffer=0;
 	if (fscanf(modelfl," num_classes=%d; \n", &int_buffer) != 1)
@@ -394,8 +385,8 @@ bool CMultiClassSVM::load(FILE* modelfl)
 	if (!feof(modelfl))
 		line_number++;
 
-	if (m_num_svms != int_buffer)
-		SG_ERROR("Mismatch in number of svms: m_num_svms=%d vs m_num_svms(file)=%d\n", m_num_svms, int_buffer);
+	if (m_machines.vlen != int_buffer)
+		SG_ERROR("Mismatch in number of svms: m_num_svms=%d vs m_num_svms(file)=%d\n", m_machines.vlen, int_buffer);
 
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
@@ -403,7 +394,7 @@ bool CMultiClassSVM::load(FILE* modelfl)
 	if (!feof(modelfl))
 		line_number++;
 
-	for (int32_t n=0; n<m_num_svms; n++)
+	for (int32_t n=0; n<m_machines.vlen; n++)
 	{
 		svm_idx=-1;
 		if (fscanf(modelfl,"\n%4s %d of %d\n", char_buffer, &svm_idx, &int_buffer)==EOF)
@@ -508,21 +499,21 @@ bool CMultiClassSVM::save(FILE* modelfl)
 	if (!m_kernel)
 		SG_ERROR("Kernel not defined!\n");
 
-	if (!m_svms || m_num_svms<1 || m_num_classes <=2)
+	if (m_machines.vlen<1)
 		SG_ERROR("Multiclass SVM not trained!\n");
 
 	SG_INFO( "Writing model file...");
 	fprintf(modelfl,"%%MultiClassSVM\n");
-	fprintf(modelfl,"multiclass_type=%d;\n", multiclass_type);
-	fprintf(modelfl,"num_classes=%d;\n", m_num_classes);
-	fprintf(modelfl,"num_svms=%d;\n", m_num_svms);
+	//fprintf(modelfl,"multiclass_type=%d;\n", multiclass_type);
+	fprintf(modelfl,"num_classes=%d;\n", m_labels->get_num_classes());
+	fprintf(modelfl,"num_svms=%d;\n", m_machines.vlen);
 	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());
 
-	for (int32_t i=0; i<m_num_svms; i++)
+	for (int32_t i=0; i<m_machines.vlen; i++)
 	{
-		CSVM* svm=m_svms[i];
+		CSVM* svm=get_svm(i);
 		ASSERT(svm);
-		fprintf(modelfl,"\n%%SVM %d of %d\n", i, m_num_svms-1);
+		fprintf(modelfl,"\n%%SVM %d of %d\n", i, m_machines.vlen-1);
 		fprintf(modelfl,"numsv%d=%d;\n", i, svm->get_num_support_vectors());
 		fprintf(modelfl,"b%d=%+10.16e;\n",i,svm->get_bias());
 
