@@ -98,7 +98,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 			SG_ERROR("Unknown multiclass strategy\n");
 	}
 
-	return NULL;
+	return false;
 }
 
 bool CMulticlassMachine::train_one_vs_rest()

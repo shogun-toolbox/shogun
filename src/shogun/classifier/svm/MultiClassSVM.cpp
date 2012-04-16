@@ -81,7 +81,7 @@ bool CMultiClassSVM::set_svm(int32_t num, CSVM* svm)
 	return false;
 }
 
-CLabels* CMultiClassSVM::apply(CFeatures* data)
+bool CMultiClassSVM::init_machines_for_apply(CFeatures* data)
 {
 	if (is_data_locked())
 	{
@@ -104,153 +104,18 @@ CLabels* CMultiClassSVM::apply(CFeatures* data)
 				data->get_name());
 	}
 
-	m_kernel->init(lhs, data);
+	if (data)
+		m_kernel->init(lhs, data);
 	SG_UNREF(lhs);
 
-	return apply();
-}
-
-CLabels* CMultiClassSVM::apply()
-{
-	if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
-		return classify_one_vs_rest();
-	else if (m_multiclass_strategy==ONE_VS_ONE_STRATEGY)
-		return classify_one_vs_one();
-	else
-		SG_ERROR("unknown multiclass strategy\n");
-
-	return NULL;
-}
-
-CLabels* CMultiClassSVM::classify_one_vs_one()
-{
-	int32_t num_classes=m_labels->get_num_classes();
-	ASSERT(m_machines.vlen>0);
-	ASSERT(m_machines.vlen==num_classes*(num_classes-1)/2);
-	CLabels* result=NULL;
-
-	if (!m_kernel)
-	{
-		SG_ERROR( "SVM can not proceed without kernel!\n");
-		return NULL;
-	}
-
-	if (!( m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs()))
-		return NULL;
-
-	int32_t num_vectors=m_kernel->get_num_vec_rhs();
-
-	result=new CLabels(num_vectors);
-	SG_REF(result);
-
-	ASSERT(num_vectors==result->get_num_labels());
-	CLabels** outputs=SG_MALLOC(CLabels*, m_machines.vlen);
-
 	for (int32_t i=0; i<m_machines.vlen; i++)
 	{
-		SG_INFO("num_svms:%d svm[%d]=0x%0X\n", m_machines.vlen, i, m_machines[i]);
 		ASSERT(m_machines[i]);
-		CSVM *the_svm=(CSVM *)m_machines[i];
+		CSVM *the_svm = (CSVM *)m_machines[i];
 		the_svm->set_kernel(m_kernel);
-		outputs[i]=the_svm->apply();
 	}
 
-	int32_t* votes=SG_MALLOC(int32_t, num_classes);
-	for (int32_t v=0; v<num_vectors; v++)
-	{
-		int32_t s=0;
-		memset(votes, 0, sizeof(int32_t)*num_classes);
-
-		for (int32_t i=0; i<num_classes; i++)
-		{
-			for (int32_t j=i+1; j<num_classes; j++)
-			{
-				if (outputs[s++]->get_label(v)>0)
-					votes[i]++;
-				else
-					votes[j]++;
-			}
-		}
-
-		int32_t winner=0;
-		int32_t max_votes=votes[0];
-
-		for (int32_t i=1; i<num_classes; i++)
-		{
-			if (votes[i]>max_votes)
-			{
-				max_votes=votes[i];
-				winner=i;
-			}
-		}
-
-		result->set_label(v, winner);
-	}
-
-	SG_FREE(votes);
-
-	for (int32_t i=0; i<m_machines.vlen; i++)
-		SG_UNREF(outputs[i]);
-	SG_FREE(outputs);
-
-	return result;
-}
-
-CLabels* CMultiClassSVM::classify_one_vs_rest()
-{
-	ASSERT(m_machines.vlen>0);
-	CLabels* result=NULL;
-
-	if (!m_kernel)
-	{
-		SG_ERROR("SVM can not proceed without kernel!\n");
-		return NULL;
-	}
-
-	if ( m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
-	{
-		int32_t num_vectors=m_kernel->get_num_vec_rhs();
-
-		result=new CLabels(num_vectors);
-		SG_REF(result);
-
-		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=SG_MALLOC(CLabels*, m_machines.vlen);
-
-		for (int32_t i=0; i<m_machines.vlen; i++)
-		{
-			ASSERT(m_machines[i]);
-			CSVM *the_svm = (CSVM *)m_machines[i];
-			the_svm->set_kernel(m_kernel);
-			outputs[i]=the_svm->apply();
-		}
-
-		for (int32_t i=0; i<num_vectors; i++)
-		{
-			int32_t winner=0;
-			float64_t max_out=outputs[0]->get_label(i);
-
-			for (int32_t j=1; j<m_machines.vlen; j++)
-			{
-				float64_t out=outputs[j]->get_label(i);
-
-				if (out>max_out)
-				{
-					winner=j;
-					max_out=out;
-				}
-			}
-
-			result->set_label(i, winner);
-		}
-
-		for (int32_t i=0; i<m_machines.vlen; i++)
-			SG_UNREF(outputs[i]);
-
-		SG_FREE(outputs);
-	}
-
-	return result;
+	return true;
 }
 
 float64_t CMultiClassSVM::apply(int32_t num)

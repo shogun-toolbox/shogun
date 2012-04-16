@@ -75,18 +75,6 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 		/** cleanup SVM */
 		void cleanup();
 
-		/** classify all examples
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* apply();
-
-		/** classify all examples
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* apply(CFeatures* data);
-
 		/** classify one example
 		 *
 		 * @param num number of example to classify
@@ -94,24 +82,12 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 		 */
 		virtual float64_t apply(int32_t num);
 
-		/** classify one vs rest
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_rest();
-
 		/** classify one example one vs rest
 		 *
 		 * @param num number of example of classify
 		 * @return resulting classification
 		 */
 		virtual float64_t classify_example_one_vs_rest(int32_t num);
-
-		/** classify one vs one
-		 *
-		 * @return resulting labels
-		 */
-		CLabels* classify_one_vs_one();
 
 		/** classify one example one vs one
 		 *
@@ -169,6 +145,8 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 		{
 			return svm_proto()->m_svs;
 		}
+
+		virtual bool init_machines_for_apply(CFeatures* data);
 
 	private:
 		void init();
