@@ -219,30 +219,11 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 		SGVector<float64_t> outputs_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			int32_t winner = 0;
-
 			for (int32_t j=0; j<num_machines; j++)
 				outputs_for_i[j] = outputs[j]->get_label(i);
-
-			if (m_rejection_strategy && m_rejection_strategy->reject(outputs_for_i))
-			{
-				winner=result->REJECTION_LABEL;
-			}
-			else
-			{
-				float64_t max_out = outputs[0]->get_label(i);
-
-				for (int32_t j=1; j<num_machines; j++)
-				{
-					if (outputs_for_i[j]>max_out)
-					{
-						max_out = outputs_for_i[j];
-						winner = j;
-					}
-				}
-			}
-			result->set_label(i, winner);
+			result->set_label(i, maxvote_one_vs_rest(outputs_for_i));
 		}
+
 		outputs_for_i.destroy_vector();
 
 		for (int32_t i=0; i<num_machines; i++)
@@ -252,6 +233,30 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 	}
 
 	return result;
+}
+
+int32_t CMulticlassMachine::maxvote_one_vs_rest(const SGVector<float64_t> &predicts)
+{
+	int32_t winner = 0;
+
+	if (m_rejection_strategy && m_rejection_strategy->reject(predicts))
+	{
+		winner=CLabels::REJECTION_LABEL;
+	}
+	else
+	{
+		float64_t max_out = predicts[0];
+
+		for (int32_t j=1; j<predicts.vlen; j++)
+		{
+			if (predicts[j]>max_out)
+			{
+				max_out = predicts[j];
+				winner = j;
+			}
+		}
+	}
+	return winner;
 }
 
 CLabels* CMulticlassMachine::classify_one_vs_one()
@@ -280,40 +285,16 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 			outputs[i]=m_machines[i]->apply();
 		}
 
-		SGVector<float64_t> votes(num_classes);
+		SGVector<float64_t> output_for_v(num_machines);
+
 		for (int32_t v=0; v<num_vectors; v++)
 		{
-			int32_t s=0;
-			votes.zero();
-
-			for (int32_t i=0; i<num_classes; i++)
-			{
-				for (int32_t j=i+1; j<num_classes; j++)
-				{
-					if (outputs[s++]->get_label(v)>0)
-						votes[i]++;
-					else
-						votes[j]++;
-				}
-			}
-
-
-			int32_t winner=0;
-			int32_t max_votes=votes[0];
-
-			for (int32_t i=1; i<num_classes; i++)
-			{
-				if (votes[i]>max_votes)
-				{
-					max_votes=votes[i];
-					winner=i;
-				}
-			}
-
-			result->set_label(v, winner);
+			for (int32_t i=0; i < num_machines; ++i)
+				output_for_v[i] = outputs[i]->get_label(v);
+			result->set_label(v, maxvote_one_vs_one(output_for_v, num_classes));
 		}
 
-		votes.destroy_vector();
+		output_for_v.destroy_vector();
 
 		for (int32_t i=0; i<num_machines; i++)
 			SG_UNREF(outputs[i]);
@@ -321,6 +302,40 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 	}
 
 	return result;
+}
+
+int32_t CMulticlassMachine::maxvote_one_vs_one(const SGVector<float64_t> &predicts, int32_t num_classes)
+{
+	int32_t s=0;
+	SGVector<int32_t> votes(num_classes);
+	votes.zero();
+
+	for (int32_t i=0; i<num_classes; i++)
+	{
+		for (int32_t j=i+1; j<num_classes; j++)
+		{
+			if (predicts[s++]>0)
+				votes[i]++;
+			else
+				votes[j]++;
+		}
+	}
+
+	int32_t winner=0;
+	int32_t max_votes=votes[0];
+
+	for (int32_t i=1; i<num_classes; i++)
+	{
+		if (votes[i]>max_votes)
+		{
+			max_votes=votes[i];
+			winner=i;
+		}
+	}
+
+	votes.destroy_vector();
+
+	return winner;
 }
 
 float64_t CMulticlassMachine::apply(int32_t num)

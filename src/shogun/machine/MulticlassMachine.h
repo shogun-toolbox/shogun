@@ -145,6 +145,17 @@ class CMulticlassMachine : public CMachine
 		 */
 		virtual CLabels* classify_one_vs_one();
 
+		/** max vote to calculate the best label in one-vs-rest.
+		 * @param predicts predictions made by each machine
+		 */
+		int32_t maxvote_one_vs_rest(const SGVector<float64_t> &predicts);
+
+		/** max vote to calculate the best label in one-vs-one.
+		 * @param predicts predictions made by each machine
+		 * @param num_classes number of classes in this problem
+		 */
+		int32_t maxvote_one_vs_one(const SGVector<float64_t> &predicts, int32_t num_classes);
+
 		/** clear machines */
 		void clear_machines();
 

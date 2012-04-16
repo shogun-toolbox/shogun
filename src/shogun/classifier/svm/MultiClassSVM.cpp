@@ -133,20 +133,16 @@ float64_t CMultiClassSVM::apply(int32_t num)
 float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 {
 	ASSERT(m_machines.vlen>0);
-	float64_t* outputs=SG_MALLOC(float64_t, m_machines.vlen);
-	int32_t winner=0;
-	float64_t max_out=get_svm(0)->apply(num);
+	SGVector<float64_t> outputs(m_machines.vlen);
 
-	for (int32_t i=1; i<m_machines.vlen; i++)
+	for (int32_t i=0; i < m_machines.vlen; ++i)
 	{
+		get_svm(i)->set_kernel(m_kernel);
 		outputs[i]=get_svm(i)->apply(num);
-		if (outputs[i]>max_out)
-		{
-			winner=i;
-			max_out=outputs[i];
-		}
 	}
-	SG_FREE(outputs);
+
+	float64_t winner = maxvote_one_vs_rest(outputs);
+	outputs.destroy_vector();
 
 	return winner;
 }
@@ -157,42 +153,15 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 	ASSERT(m_machines.vlen>0);
 	ASSERT(m_machines.vlen==num_classes*(num_classes-1)/2);
 
-	SGVector<int32_t> votes(num_classes);
-
-	/* set votes array to zero to prevent uninitialized values if class gets
-	 * no votes */
-	votes.set_const(0);
-	int32_t s=0;
-
-	for (int32_t i=0; i<num_classes; i++)
+	SGVector<float64_t> outputs(m_machines.vlen);
+	for (int32_t i=0; i < m_machines.vlen; ++i)
 	{
-		for (int32_t j=i+1; j<num_classes; j++)
-		{
-			/** TODO, this was never used before, make classify_on_vs_one()
-			 * use this code, instead of having a duplicate copy down there */
-			get_svm(s)->set_kernel(m_kernel);
-			if (get_svm(s)->apply(num)>0)
-				votes.vector[i]++;
-			else
-				votes.vector[j]++;
-
-			s++;
-		}
+		get_svm(i)->set_kernel(m_kernel);
+		outputs[i] = get_svm(i)->apply(num);
 	}
 
-	int32_t winner=0;
-	int32_t max_votes=votes.vector[0];
-
-	for (int32_t i=1; i<num_classes; i++)
-	{
-		if (votes.vector[i]>max_votes)
-		{
-			max_votes=votes.vector[i];
-			winner=i;
-		}
-	}
-
-	votes.destroy_vector();
+	float64_t winner = maxvote_one_vs_one(outputs, num_classes);
+	outputs.destroy_vector();
 
 	return winner;
 }
