@@ -1242,7 +1242,7 @@ bool CGUIClassifier::get_trained_classifier(
 int32_t CGUIClassifier::get_num_svms()
 {
 	ASSERT(classifier);
-	return ((CMultiClassSVM*) classifier)->get_num_svms();
+	return ((CMultiClassSVM*) classifier)->get_num_machines();
 }
 
 bool CGUIClassifier::get_svm(
