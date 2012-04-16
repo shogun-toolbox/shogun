@@ -72,9 +72,6 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 			return dynamic_cast<CSVM *>(m_machines[num]);
 		}
 
-		/** cleanup SVM */
-		void cleanup();
-
 		/** classify one example
 		 *
 		 * @param num number of example to classify
@@ -147,6 +144,14 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 		}
 
 		virtual bool init_machines_for_apply(CFeatures* data);
+
+		virtual bool is_acceptable_machine(CMachine *machine)
+		{
+			CSVM *svm = dynamic_cast<CSVM*>(machine);
+			if (svm == NULL)
+				return false;
+			return true;
+		}
 
 	private:
 		void init();

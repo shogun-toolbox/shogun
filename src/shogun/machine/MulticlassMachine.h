@@ -56,6 +56,9 @@ class CMulticlassMachine : public CMachine
 		inline bool set_machine(int32_t num, CMachine* machine)
 		{
 			ASSERT(num<m_machines.vlen && num>=0);
+			if (machine != NULL && !is_acceptable_machine(machine))
+				SG_ERROR("Machine %s is not acceptable by %s", machine->get_name(), this->get_name());
+
 			SG_REF(machine);
 			SG_UNREF(m_machines[num]);
 			m_machines[num] = machine;
@@ -191,6 +194,12 @@ class CMulticlassMachine : public CMachine
 
 		/** deletes any subset set to the features of the machine */
 		virtual void remove_machine_subset() = 0;
+
+		/** whether the machine is acceptable in set_machine */
+		virtual bool is_acceptable_machine(CMachine *machine)
+		{
+			return true;
+		}
 
 	private:
 

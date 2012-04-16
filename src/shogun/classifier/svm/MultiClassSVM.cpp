@@ -35,23 +35,18 @@ CMultiClassSVM::CMultiClassSVM(
 
 CMultiClassSVM::~CMultiClassSVM()
 {
-	cleanup();
+	clear_machines();
 }
 
 void CMultiClassSVM::init()
 {
 }
 
-void CMultiClassSVM::cleanup()
-{
-	clear_machines();
-}
-
 bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
 {
 	if (num_classes>0)
 	{
-		cleanup();
+		clear_machines();
 
 		int32_t num_svms=0;
 		if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
