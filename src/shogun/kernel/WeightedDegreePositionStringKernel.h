@@ -595,10 +595,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 		/** get POIM2
 		 *
-		 * @param poim POIMs (returned)
-		 * @param result_len (returned)
+		 * @return poim
 		 */
-		void get_POIM2(float64_t** poim, int32_t* result_len);
+		SGVector<float64_t> get_POIM2();
 
 		/// cleanup POIM2
 		void cleanup_POIM2();
