@@ -21,7 +21,7 @@
 
 #include <sys/time.h>
 
-//#define BENCHMARK_KNN
+#define BENCHMARK_KNN
 //#define DEBUG_KNN
 
 #ifdef BENCHMARK_KNN
@@ -72,10 +72,9 @@ void CKNN::init()
 	m_use_covertree=false;
 	m_num_classes=0;
 
-	/** TODO not really sure here if these two first guys should be MS_AVAILABLE or 
-	 *  MS_NOT_AVAILABLE
-	 */
-	SG_ADD(&m_k, "m_k", "Parameter k", MS_AVAILABLE);
+	/* use the method classify_multiply_k to experiment with different values 
+	 * of k */
+	SG_ADD(&m_k, "m_k", "Parameter k", MS_NOT_AVAILABLE);
 	SG_ADD(&m_q, "m_q", "Parameter q", MS_AVAILABLE);
 	SG_ADD(&m_use_covertree, "m_use_covertree", "Parameter use_covertree", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes", MS_NOT_AVAILABLE);
@@ -203,6 +202,12 @@ CLabels* CKNN::apply()
 	}
 	else	// Use cover tree
 	{
+		// m_q != 1.0 not supported with cover tree because the neighbors
+		// are not retrieved in increasing order of distance to the query
+		float64_t old_q = m_q;
+		if ( old_q != 1.0 )
+			SG_INFO("q != 1.0 not supported with cover tree, using q = 1\n");
+
 		// From the sets of features (lhs and rhs) stored in distance,
 		// build arrays of cover tree points
 		v_array< CJLCoverTreePoint > set_of_points  = 
@@ -264,6 +269,8 @@ CLabels* CKNN::apply()
 			int32_t out_idx = choose_class(classes, train_lab);
 			output->set_label(res[i][0].m_index, out_idx+m_min_label);
 		}
+
+		m_q = old_q;
 
 #ifdef BENCHMARK_KNN
 		time(finish);
@@ -519,8 +526,6 @@ void CKNN::store_model_features()
 	SG_UNREF(d_rhs);
 }
 
-// TODO multiplier stuff not supported with cover tree because the
-// neighbors are not outputted in ascending order of distance
 int32_t CKNN::choose_class(float64_t* classes, int32_t* train_lab)
 {
 	memset(classes, 0, sizeof(float64_t)*m_num_classes);
