@@ -54,10 +54,8 @@ namespace shogun
 class CKernelRidgeRegression : public CKernelMachine
 {
 	public:
-		/** default constructor */
+        /** default constructor */
 		CKernelRidgeRegression();
-
-        typedef bool (CKernelRidgeRegression::*train_method)(CFeatures* data);
 
         enum ETrainingType
         {
@@ -73,11 +71,6 @@ class CKernelRidgeRegression : public CKernelMachine
 		 */
         CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab, ETrainingType m=PINV);
 		virtual ~CKernelRidgeRegression() {}
-
-        /** set training function
-         *
-         */
-        inline void set_train_func(train_method m) { m_train_func = m; };
 
 		/** set regularization constant
 		 *
@@ -159,9 +152,7 @@ class CKernelRidgeRegression : public CKernelMachine
         float64_t m_epsilon;
 
         /** training function */
-        train_method m_train_func;
-
-        static train_method getTrainFunction(ETrainingType id);
+        ETrainingType m_train_func;
 };
 }
 
