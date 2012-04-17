@@ -10,8 +10,8 @@
 		- New 'multiclass' module for multiclass classification algorithms, generic linear
 		  and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
 		  new rejection schemes concept by Sergey Lisitsyn.
-		- Mahalanobis distance, QDA, Stochastic Proximity Embedding
-		  and generic OvO multiclass machine (thanks to Fernando J. Iglesias Garcia).
+		- Mahalanobis distance, QDA, Stochastic Proximity Embedding,
+		  generic OvO multiclass machine and CoverTree & KNN integation (thanks to Fernando J. Iglesias Garcia).
 		- New regression estimation algorithms.
 		- New graphical python modular examples.
 		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
@@ -21,9 +21,11 @@
 		- Cross-validation for KernelMachines is now parallelized.
 		- Cross-validation is now possible with custom kernels.
 		- Features may now have arbritarily many index subsets (of subsets (of subsets (...))).
-		- Various clustering measures (thanks to Chiyuan Zhang).
+		- Various clustering measures and Least Angle Regression (thanks to Chiyuan Zhang).
 		- Python Sparse matrix typemap for octave modular interface (thanks to Evgeniy Andreev).
 		- Newton SVM port (thanks to Harshit Syal)
+		- Some progress on native windows compilation using 
+		  cmake and mingw-w64 (thanks to Josh aka jklontz)
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was
 		  changed to log-space.
