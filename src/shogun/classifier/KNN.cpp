@@ -21,7 +21,7 @@
 
 #include <sys/time.h>
 
-#define BENCHMARK_KNN
+//#define BENCHMARK_KNN
 //#define DEBUG_KNN
 
 #ifdef BENCHMARK_KNN
@@ -117,7 +117,7 @@ bool CKNN::train_machine(CFeatures* data)
 
 	m_min_label=min_class;
 	m_num_classes=max_class-min_class+1;
-
+	
 	SG_INFO( "m_num_classes: %d (%+d to %+d) num_train: %d\n", m_num_classes,
 			min_class, max_class, m_train_labels.vlen);
 
