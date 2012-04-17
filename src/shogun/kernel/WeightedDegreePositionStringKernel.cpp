@@ -1858,13 +1858,10 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(
 	SG_FREE(sv_idx);
 }
 
-void CWeightedDegreePositionStringKernel::get_POIM2(
-	float64_t** poim, int32_t* result_len)
+SGMatrix<float64_t> CWeightedDegreePositionStringKernel::get_POIM2()
 {
-	*poim=SG_MALLOC(float64_t, m_poim_result_len);
-	ASSERT(*poim);
-	memcpy(*poim, m_poim, m_poim_result_len*sizeof(float64_t)) ;
-	*result_len=m_poim_result_len ;
+	SGVector<float64_t> poim(m_poim, m_poim_result_len);
+	return poim;
 }
 
 void CWeightedDegreePositionStringKernel::cleanup_POIM2()
