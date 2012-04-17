@@ -71,8 +71,13 @@ class CFeatures;
 class CLARS: public CLinearMachine
 {
 public:
+	/** default constructor
+	 *
+	 * @param lasso - when true, it runs the LASSO, when false, it runs LARS
+	 * */
 	CLARS(bool lasso=true);
 
+	/** default destructor */
 	virtual ~CLARS();
 
 	/** set max number of non-zero variables for early stopping
