@@ -70,9 +70,8 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** constructor
 		 *
 		 * @param weights kernel's weights
-		 * @param degree degree
 		 */
-		CWeightedDegreeStringKernel(float64_t* weights, int32_t degree);
+		CWeightedDegreeStringKernel(SGVector<float64_t> weights);
 
 		/** constructor
 		 *
