@@ -1858,7 +1858,7 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(
 	SG_FREE(sv_idx);
 }
 
-SGMatrix<float64_t> CWeightedDegreePositionStringKernel::get_POIM2()
+SGVector<float64_t> CWeightedDegreePositionStringKernel::get_POIM2()
 {
 	SGVector<float64_t> poim(m_poim, m_poim_result_len);
 	return poim;

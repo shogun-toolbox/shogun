@@ -254,7 +254,7 @@ CKernel* CGUIKernel::create_weighteddegreestring(
 		}
 	}
 
-	CKernel* kern=new CWeightedDegreeStringKernel(weights, order);
+	CKernel* kern=new CWeightedDegreeStringKernel(SGVector<float64_t>(weights, order));
 
 	SG_DEBUG("created WeightedDegreeStringKernel (%p) with size %d, order %d, "
 			"max_mismatch %d, use_normalization %d, mkl_stepsize %d, "
