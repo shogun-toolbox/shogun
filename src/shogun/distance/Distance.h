@@ -133,6 +133,25 @@ class CDistance : public CSGObject
 			return compute(idx_a, idx_b);
 		}
 
+		/** get distance function for lhs feature vector a
+		 *  and rhs feature vector b. The computation of the
+		 *  distance stops if the intermediate result is 
+		 *  larger than upper_bound. This is useful to use 
+		 *  with John Langford's Cover Tree and it is ONLY 
+		 *  implemented for Euclidian distance
+		 *
+		 *  @param idx_a feature vector a at idx_a
+		 *  @param idx_b feature vector b at idx_b
+		 *  @param upper_bound value above which the computation
+		 *  halts
+		 *  @return distance value or upper_bound
+		 */
+		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
+		{
+			return distance(idx_a, idx_b);
+		}
+
+			
 		/** get distance matrix
 		 *
 		 * @return computed distance matrix (needs to be cleaned up)
@@ -209,6 +228,16 @@ class CDistance : public CSGObject
 		 * @return replaced right-hand side features
 		 */
 		CFeatures* replace_rhs(CFeatures* rhs);
+
+		/** replace left-hand side features used in distance matrix
+		 *
+		 * make sure to check that your distance can deal with the
+		 * supplied features (!)
+		 *
+		 * @param lhs features of right-hand side
+		 * @return replaced left-hand side features
+		 */
+		CFeatures* replace_lhs(CFeatures* rhs);
 
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs();
