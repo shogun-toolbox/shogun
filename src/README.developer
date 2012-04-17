@@ -406,4 +406,52 @@ git rebase master
 
 and send a pull request.
 
+- Why rebasing?
+
+  What rebasing does is, in short, "Forward-port local commits to the updated
+  upstream head". A longer and more detailed illustration with nice figures
+  can be found at http://book.git-scm.com/4_rebasing.html. So rebasing (instead
+  of merging) makes the main "commit-thread" of the repo a simple series.
+
+  Rebasing before issuing a pull request also enable us to find and fix any
+  potential conflicts early at the developer side (instead of at the one who
+  merges your pull request).
+
+- Multiple pull requests
+
+  You can have multiple pull requests by creating multiple branches. Github
+  only tracks the branch names you used for identify the pull request. So when
+  you push new commits to your remote branch at github, the pull request will
+  "update" accordingly.
+
+- Non-fast-forward error
+
+  This error happens when:
+
+  1. git checkout -b my-branch
+  2. ... do something ...
+  3. ... rebasing ...
+  4. git push origin my-branch
+  5. ... do more thing ...
+  6. ... rebasing ...
+  7. git push origin my-branch
+
+  then git will complain about non-fast-forward error and not pushing into the remote
+  my-branch branch. This is because the first push has already created the my-branch 
+  branch in origin. Later when you run rebasing, which is a destructive operation for
+  the local history. Since the local history is no longer the same as those in the remote
+  branch, pushing is not allowed.
+
+  Solution for this situation is to delete your remote branch by
+
+    git push origin :my-branch
+
+  and push again by
+
+    git push origin my-branch
+
+  note deleting your remote branch will not delete your pull request associated with that
+  branch. And as long as you push your branch there again, your pull request will be OK.
+  
+
 To make a release, refer to the Makefile in the root dir of the repo.
