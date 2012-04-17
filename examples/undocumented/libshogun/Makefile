@@ -75,6 +75,7 @@ TARGETS = basic_minimal \
 		  serialization_basic_tests \
 		  library_cover_tree \
 		  kernel_machine_train_locked \
+		  statistics \
 
 all: $(TARGETS)
 
