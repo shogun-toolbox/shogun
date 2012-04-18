@@ -15,5 +15,5 @@ def clustering_kmeans (fm_train=traindat, size_cache=10,k=3,iter=1000):
 	return [radi, centers]
 
 if __name__=='__main__':
-	print 'KMeans'
+	print('KMeans')
 	clustering_kmeans(*parameter_list[0])

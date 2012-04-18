@@ -30,5 +30,5 @@ def classifier_mpdsvm (fm_train_real=traindat,fm_test_real=testdat,
 	return result, kernel_matrix
 
 if __name__=='__main__':
-	print 'MPDSVM'
+	print('MPDSVM')
 	classifier_mpdsvm(*parameter_list[0])

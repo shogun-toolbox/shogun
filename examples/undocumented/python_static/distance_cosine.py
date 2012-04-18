@@ -15,5 +15,5 @@ def distance_cosine (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'CosineDistance'
+	print('CosineDistance')
 	distance_cosine(*parameter_list[0])

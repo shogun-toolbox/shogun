@@ -30,5 +30,5 @@ def classifier_gmnpsvm (fm_train_real=traindat,fm_test_real=testdat,
 	return result, kernel_matrix
 
 if __name__=='__main__':
-	print 'GMNPSVM'
+	print('GMNPSVM')
 	classifier_gmnpsvm(*parameter_list[0])

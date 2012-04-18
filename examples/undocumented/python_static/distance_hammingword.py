@@ -22,5 +22,5 @@ def distance_hammingword (fm_train_dna=traindna,fm_test_dna=testdna,order=3,
 	return dm
 
 if __name__=='__main__':
-	print 'HammingWordDistance'
+	print('HammingWordDistance')
 	distance_hammingword(*parameter_list[0])

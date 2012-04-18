@@ -18,5 +18,5 @@ def kernel_poly (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'Poly'
+	print('Poly')
 	kernel_poly(*parameter_list[0])

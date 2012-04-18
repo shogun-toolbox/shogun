@@ -15,5 +15,5 @@ def distance_jensen (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'JensenMetric'
+	print('JensenMetric')
 	distance_jensen(*parameter_list[0])

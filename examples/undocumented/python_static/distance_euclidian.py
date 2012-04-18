@@ -15,5 +15,5 @@ def distance_euclidian (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'EuclidianDistance'
+	print('EuclidianDistance')
 	distance_euclidian(*parameter_list[0])
