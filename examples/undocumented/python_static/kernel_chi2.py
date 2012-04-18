@@ -17,5 +17,5 @@ def kernel_chi2 (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'Chi2'
+	print('Chi2')
 	kernel_chi2(*parameter_list[0])

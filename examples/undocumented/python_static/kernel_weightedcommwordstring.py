@@ -28,5 +28,5 @@ def kernel_weightedcommwordstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'WeightedCommWordString'
+	print('WeightedCommWordString')
 	kernel_weightedcommwordstring(*parameter_list[0])

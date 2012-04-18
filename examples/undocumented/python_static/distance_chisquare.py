@@ -15,5 +15,5 @@ def distance_chisquare (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'ChiSquareDistance'
+	print('ChiSquareDistance')
 	distance_chisquare(*parameter_list[0])

@@ -105,8 +105,14 @@ IFType CPythonInterface::get_argument_type()
 	{
 		PyObject* item= PyList_GetItem((PyObject *) arg, 0);
 
+#ifdef IS_PYTHON3
+		if (PyUnicode_Check(item))
+#else
 		if (PyString_Check(item))
+#endif
+		{
 			return STRING_CHAR;
+		}
 	}
 	else if PyArray_Check(arg)
 	{
@@ -125,8 +131,6 @@ IFType CPythonInterface::get_argument_type()
 		if (PyArray_TYPE(arg)==NPY_USHORT)
 			return DENSE_WORD;
 	}
-
-
 	return UNDEFINED;
 }
 
@@ -353,6 +357,88 @@ GET_SPARSEMATRIX(get_sparse_matrix, "single", float32_t, float, "Single Precisio
 GET_SPARSEMATRIX(get_sparse_matrix, "uint16", uint16_t, unsigned short, "Word")*/
 #undef GET_SPARSEMATRIX
 
+#ifdef IS_PYTHON3
+
+#define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
+void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
+{ 																			\
+	max_string_len=0;														\
+	const PyObject* py_str= get_arg_increment();							\
+	if (!py_str)															\
+		SG_ERROR("Expected Stringlist as argument (none given).\n");		\
+																			\
+	if (PyList_Check(py_str))												\
+	{																		\
+		if (!is_char_str)													\
+			SG_ERROR("Only Character Strings supported.\n");				\
+																			\
+		num_str=PyList_Size((PyObject*) py_str);							\
+		ASSERT(num_str>=1);													\
+																			\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);								\
+		ASSERT(strings);													\
+																			\
+		for (int32_t i=0; i<num_str; i++)										\
+		{																	\
+			PyObject *o = PyList_GetItem((PyObject*) py_str,i);				\
+			if (PyUnicode_Check(o))											\
+			{																\
+				int32_t len = PyUnicode_GetSize((PyObject*) o);									\
+				const sg_type* str = (const sg_type*) PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(o))); \
+																			\
+				strings[i].slen=len;										\
+				strings[i].string=NULL;										\
+				max_string_len=CMath::max(max_string_len, len);				\
+																			\
+				if (len>0)													\
+				{															\
+					strings[i].string=SG_MALLOC(sg_type, len+1);					\
+					memcpy(strings[i].string, str, len);					\
+					strings[i].string[len]='\0';							\
+				}															\
+			}																\
+			else															\
+			{																\
+				for (int32_t j=0; j<i; j++)										\
+					SG_FREE(strings[i].string);								\
+				SG_FREE(strings);											\
+				SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
+			}																\
+		}																	\
+	}																		\
+	else if (PyArray_TYPE(py_str)==py_type && ((PyArrayObject*) py_str)->nd==2)	\
+	{																		\
+		const PyArrayObject* py_array_str=(const PyArrayObject*) py_str;	\
+		if_type* data=(if_type*) py_array_str->data;						\
+		num_str=py_array_str->dimensions[0]; 								\
+		int32_t len=py_array_str->dimensions[1]; 								\
+		strings=SG_MALLOC(SGString<sg_type>, num_str); 							\
+																			\
+		for (int32_t i=0; i<num_str; i++) 										\
+		{ 																	\
+			if (len>0) 														\
+			{ 																\
+				strings[i].slen=len; /* all must have same length*/			\
+				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated */	\
+				int32_t j; 														\
+				for (j=0; j<len; j++) 										\
+					strings[i].string[j]=data[j+i*len]; 					\
+				strings[i].string[j]='\0'; 									\
+			} 																\
+			else 															\
+			{ 																\
+				SG_WARNING( "string with index %d has zero length.\n", i+1);	\
+				strings[i].slen=0; 											\
+				strings[i].string=NULL; 									\
+			} 																\
+		} 																	\
+		max_string_len=len;													\
+	}																		\
+	else																	\
+		SG_ERROR("Expected String as argument %d.\n", m_rhs_counter);		\
+}
+
+#else
 
 #define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
 void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
@@ -432,6 +518,8 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 	else																	\
 		SG_ERROR("Expected String as argument %d.\n", m_rhs_counter);		\
 }
+
+#endif
 
 GET_STRINGLIST(get_string_list, NPY_BYTE, uint8_t, uint8_t, 1, "Byte")
 GET_STRINGLIST(get_string_list, NPY_CHAR, char, char, 1, "Char")
@@ -584,6 +672,39 @@ SET_SPARSEMATRIX(set_sparse_matrix, mxSINGLE_CLASS, float32_t, float, "Single Pr
 SET_SPARSEMATRIX(set_sparse_matrix, mxUINT16_CLASS, uint16_t, unsigned short, "Word")*/
 #undef SET_SPARSEMATRIX
 
+#ifdef IS_PYTHON3
+
+#define SET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
+void CPythonInterface::function_name(const SGString<sg_type>* strings, int32_t num_str)	\
+{																				\
+	if (!is_char_str)															\
+		SG_ERROR("Only character strings supported.\n");						\
+																				\
+	if (!strings || num_str<1)													\
+		SG_ERROR("Given strings are invalid.\n");								\
+																				\
+	PyObject* py_str=PyList_New(num_str);										\
+	if (!py_str || PyTuple_GET_SIZE(py_str)!=num_str)							\
+		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);		\
+																				\
+	for (int32_t i=0; i<num_str; i++)											\
+	{																			\
+		int32_t len=strings[i].slen;											\
+		if (len>0)																\
+		{																		\
+			PyObject* str=PyUnicode_FromStringAndSize((const char*) strings[i].string, len); \
+			if (!str) 															\
+				SG_ERROR("Couldn't create " error_string 						\
+						" String %d of length %d.\n", i, len);					\
+																				\
+			PyList_SET_ITEM(py_str, i, str);									\
+		}																		\
+	}																			\
+																				\
+	set_arg_increment(py_str);													\
+}
+
+#else
 
 #define SET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
 void CPythonInterface::function_name(const SGString<sg_type>* strings, int32_t num_str)	\
@@ -614,6 +735,8 @@ void CPythonInterface::function_name(const SGString<sg_type>* strings, int32_t n
 																				\
 	set_arg_increment(py_str);													\
 }
+
+#endif
 
 SET_STRINGLIST(set_string_list, NPY_BYTE, uint8_t, uint8_t, 0, "Byte")
 SET_STRINGLIST(set_string_list, NPY_CHAR, char, char, 1, "Char")

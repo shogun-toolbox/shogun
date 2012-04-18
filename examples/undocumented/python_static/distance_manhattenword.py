@@ -23,5 +23,5 @@ def distance_manhattenword (fm_train_dna=traindna,fm_test_dna=testdna,order=3,
 	return dm
 
 if __name__=='__main__':
-	print 'ManhattanWordDistance'
+	print('ManhattanWordDistance')
 	distance_manhattenword(*parameter_list[0])

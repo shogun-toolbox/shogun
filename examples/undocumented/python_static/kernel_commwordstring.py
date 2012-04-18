@@ -27,5 +27,5 @@ def kernel_commwordstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'CommWordString'
+	print('CommWordString')
 	kernel_commwordstring(*parameter_list[0])

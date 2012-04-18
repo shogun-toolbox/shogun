@@ -31,5 +31,5 @@ def regression_svrlight (fm_train=traindat,fm_test=testdat,
 	return result
 
 if __name__=='__main__':
-	print 'SVRLight'
+	print('SVRLight')
 	regression_svrlight(*parameter_list[0])

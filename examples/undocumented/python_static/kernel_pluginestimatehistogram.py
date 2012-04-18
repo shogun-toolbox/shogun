@@ -33,5 +33,5 @@ def kernel_pluginestimatehistogram (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'PluginEstimate w/ HistogramWord'
+	print('PluginEstimate w/ HistogramWord')
 	kernel_pluginestimatehistogram(*parameter_list[0])

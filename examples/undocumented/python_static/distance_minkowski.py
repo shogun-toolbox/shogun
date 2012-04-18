@@ -17,5 +17,5 @@ def distance_minkowski (fm_train_real=traindat,fm_test_real=testdat,k=3.):
 	return dm
 
 if __name__=='__main__':
-	print 'MinkowskiMetric'
+	print('MinkowskiMetric')
 	distance_minkowski(*parameter_list[0])

@@ -39,5 +39,5 @@ def mkl_multiclass (fm_train_real=traindat,fm_test_real=testdat,
 	return result
 
 if __name__=='__main__':
-	print 'mkl_multiclass'
+	print('mkl_multiclass')
 	mkl_multiclass(*parameter_list[0])

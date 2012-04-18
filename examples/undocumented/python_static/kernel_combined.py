@@ -8,7 +8,7 @@ parameter_list=[[traindat,testdat,1.,10],[traindat,testdat,1.5,11]]
 
 def kernel_combined(fm_train_real=traindat,fm_test_real=testdat,
 		 weight=1.,size_cache=10):
- 	sg('clean_kernel')
+	sg('clean_kernel')
 	sg('clean_features', 'TRAIN')
 	sg('clean_features', 'TEST')
 	sg('set_kernel', 'COMBINED', size_cache)
@@ -27,5 +27,5 @@ def kernel_combined(fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'Combined'
+	print('Combined')
 	kernel_combined(*parameter_list[0])

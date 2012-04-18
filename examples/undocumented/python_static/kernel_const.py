@@ -15,5 +15,5 @@ def kernel_const (fm_train_real=traindat,fm_test_real=testdat,c=23.,size_cache=1
 	return km
 
 if __name__=='__main__':
-	print 'Const'
+	print('Const')
 	kernel_const(*parameter_list[0])

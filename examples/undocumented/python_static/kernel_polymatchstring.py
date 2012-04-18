@@ -18,5 +18,5 @@ def kernel_polymatchstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'PolyMatchString'
+	print('PolyMatchString')
 	kernel_polymatchstring(*parameter_list[0])

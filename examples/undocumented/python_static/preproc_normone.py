@@ -21,5 +21,5 @@ def preproc_normone (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'NormOne'
+	print('NormOne')
 	preproc_normone(*parameter_list[0])

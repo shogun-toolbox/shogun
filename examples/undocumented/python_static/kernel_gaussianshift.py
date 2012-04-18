@@ -17,5 +17,5 @@ def kernel_gaussianshift (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'GaussianShift'
+	print('GaussianShift')
 	kernel_gaussianshift(*parameter_list[0])

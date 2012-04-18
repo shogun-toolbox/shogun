@@ -17,5 +17,5 @@ def kernel_diag (fm_train_real=traindat,fm_test_real=testdat,diag=23.,
 	return km
 
 if __name__=='__main__':
-	print 'Diag'
+	print('Diag')
 	kernel_diag(*parameter_list[0])
