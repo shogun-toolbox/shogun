@@ -19,24 +19,8 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
 
-#include <sys/time.h>
-
 //#define BENCHMARK_KNN
 //#define DEBUG_KNN
-
-#ifdef BENCHMARK_KNN
-
-float diff_timeval(timeval t1, timeval t2)
-{
-	return (float) (t1.tv_sec - t2.tv_sec) + (t1.tv_usec - t2.tv_usec) * 1e-6;
-}
-
-void time(timeval & t)
-{
-	gettimeofday(&t, NULL);
-}
-
-#endif
 
 using namespace shogun;
 
@@ -155,8 +139,8 @@ CLabels* CKNN::apply()
 	float64_t* classes=SG_MALLOC(float64_t, m_num_classes);
 
 #ifdef BENCHMARK_KNN
-	timeval start, finish, parsed, created, queried;
-	time(start);
+	CTime tstart;
+	float64_t tfinish, tparsed, tcreated, tqueried;
 #endif
 
 	if ( ! m_use_covertree )
@@ -195,9 +179,8 @@ CLabels* CKNN::apply()
 		}
 
 #ifdef BENCHMARK_KNN
-		time(finish);
 		SG_PRINT(">>>> Quick sort applied in %9.4f\n", 
-				diff_timeval(finish, start));
+				(tfinish = tstart.cur_time_diff(false)));
 #endif
 	}
 	else	// Use cover tree
@@ -216,10 +199,9 @@ CLabels* CKNN::apply()
 			parse_points(distance, FC_RHS);
 
 #ifdef BENCHMARK_KNN
-		time(parsed);
-		SG_PRINT(">>>> JL parsed in %9.4f\n", diff_timeval(parsed, start));
+		SG_PRINT(">>>> JL parsed in %9.4f\n",
+			( tparsed = tstart.cur_time_diff(false) ) - tfinish);
 #endif
-		
 		// Build the cover trees, one for the test vectors (rhs features) 
 		// and another for the training vectors (lhs features)
 		CFeatures* r = distance->replace_rhs( distance->get_lhs() );
@@ -229,9 +211,8 @@ CLabels* CKNN::apply()
 		node< CJLCoverTreePoint > top_query = batch_create(set_of_queries);
 
 #ifdef BENCHMARK_KNN
-		time(created);
 		SG_PRINT(">>>> Cover trees created in %9.4f\n", 
-				diff_timeval(created, parsed));
+				(tcreated = tstart.cur_time_diff(false)) - tparsed);
 #endif
 
 		// Get the k nearest neighbors to all the test vectors (batch method)
@@ -240,9 +221,8 @@ CLabels* CKNN::apply()
 		k_nearest_neighbor(top, top_query, res, m_k);
 
 #ifdef BENCHMARK_KNN
-		time(queried);
 		SG_PRINT(">>>> Query finished in %9.4f\n", 
-				diff_timeval(queried, created));
+				(tqueried = tstart.cur_time_diff(false)) - tcreated);
 #endif
 
 #ifdef DEBUG_KNN
@@ -273,8 +253,7 @@ CLabels* CKNN::apply()
 		m_q = old_q;
 
 #ifdef BENCHMARK_KNN
-		time(finish);
-		SG_PRINT(">>>> JL applied in %9.4f\n", diff_timeval(finish, start));
+		SG_PRINT(">>>> JL applied in %9.4f\n", tstart.cur_time_diff(false));
 #endif
 	}
 
