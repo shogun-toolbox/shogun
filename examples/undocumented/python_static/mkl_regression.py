@@ -31,5 +31,5 @@ def mkl_regression (weight=1.,
 	return km
 
 if __name__=='__main__':
-	print 'MKL_REGRESSION'
+	print('MKL_REGRESSION')
 	mkl_regression(*parameter_list[0])

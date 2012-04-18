@@ -35,5 +35,5 @@ def classifier_svmlight (fm_train_dna=traindna,fm_test_dna=testdna,label_train_d
 	return result, kernel_matrix
 
 if __name__=='__main__':
-	print 'SVMLight'
+	print('SVMLight')
 	classifier_svmlight(*parameter_list[0])

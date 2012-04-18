@@ -18,5 +18,5 @@ def kernel_weighteddegreestring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'WeightedDegreeString'
+	print('WeightedDegreeString')
 	kernel_weighteddegreestring(*parameter_list[0])

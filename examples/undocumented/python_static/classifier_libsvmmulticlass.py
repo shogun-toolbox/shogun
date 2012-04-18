@@ -30,5 +30,5 @@ def classifier_libsvm_multiclass (fm_train_real=traindat,fm_test_real=testdat,
 	return result, kernel_matrix
 
 if __name__=='__main__':
-	print 'LibSVMMultiClass'
+	print('LibSVMMultiClass')
 	classifier_libsvm_multiclass(*parameter_list[0])

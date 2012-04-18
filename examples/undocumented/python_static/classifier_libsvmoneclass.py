@@ -27,5 +27,5 @@ def classifier_libsvm_oneclass (fm_train_real=traindat,fm_test_real=testdat,
 	return result, kernel_matrix
 
 if __name__=='__main__':
-	print 'LibSVMOneClass'
+	print('LibSVMOneClass')
 	classifier_libsvm_oneclass(*parameter_list[0])

@@ -29,5 +29,5 @@ def classifier_gpbtsvm (fm_train_real=traindat,fm_test_real=testdat,
 	return result
 
 if __name__=='__main__':
-	print 'GPBTSVM'
+	print('GPBTSVM')
 	classifier_gpbtsvm(*parameter_list[0])

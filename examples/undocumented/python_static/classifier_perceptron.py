@@ -21,5 +21,5 @@ def classifier_perceptron (fm_train_real=traindat,fm_test_real=testdat,
 	result=sg('classify')
 	return result
 if __name__=='__main__':
-	print 'Perceptron'
+	print('Perceptron')
 	classifier_perceptron(*parameter_list[0])

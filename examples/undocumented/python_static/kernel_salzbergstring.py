@@ -36,5 +36,5 @@ def kernel_salzbergstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'PluginEstimate w/ SalzbergWord'
+	print('PluginEstimate w/ SalzbergWord')
 	kernel_salzbergstring(*parameter_list[0])

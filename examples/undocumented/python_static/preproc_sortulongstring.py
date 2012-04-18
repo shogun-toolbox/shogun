@@ -26,5 +26,5 @@ def preproc_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'CommUlongString'
+	print('CommUlongString')
 	preproc_sortulongstring(*parameter_list[0])
