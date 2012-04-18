@@ -2,6 +2,7 @@
 #define JLCOVERTREE_H
 
 #include <shogun/lib/JLCoverTreePoint.h>
+#include <shogun/mathematics/Math.h>
 
 #include<math.h>
 #include<stdio.h>
@@ -11,6 +12,7 @@
 
 /* First written by John Langford jl@hunch.net
    Templatization by Dinoj Surendran dinojs@gmail.com
+   Adaptation to Shogun by Fernando José Iglesias García
 */
 
 // the files below may not need to be included
@@ -62,30 +64,12 @@ float il2 = 1. / log(base);
 
 inline float dist_of_scale (int s)
 {
-  return pow(base, s);
+  return CMath::pow(base, s);
 }
 
 inline int get_scale(float d)
 {
-  return (int) ceilf(il2 * log(d));
-}
-
-
-
-int min(int f1, int f2)
-{
-  if ( f1 <= f2 )
-    return f1;
-  else 
-    return f2;
-}
-
-float max(float f1, float f2)
-{
-  if ( f1 <= f2 )
-    return f2;
-  else 
-    return f1;
+  return (int) CMath::ceil(il2 * log(d));
 }
 
 template<class P>
@@ -116,7 +100,7 @@ float max_set(v_array<ds_node<P> > &v)
 void print_space(int s)
 {
   for (int i = 0; i < s; i++)
-    printf(" ");
+    SG_SPRINT(" ");
 }
 
 template<class P>
@@ -124,10 +108,14 @@ void print(int depth, node<P> &top_node)
 {
   print_space(depth);
   print(top_node.p);
-  if ( top_node.num_children > 0 ) {
-    print_space(depth); printf("scale = %i\n",top_node.scale);
-    print_space(depth); printf("max_dist = %f\n",top_node.max_dist);
-    print_space(depth); printf("num children = %i\n",top_node.num_children);
+  if ( top_node.num_children > 0 ) 
+  {
+    print_space(depth); 
+    SG_SPRINT("scale = %i\n",top_node.scale);
+    print_space(depth); 
+    SG_SPRINT("max_dist = %f\n",top_node.max_dist);
+    print_space(depth); 
+    SG_SPRINT("num children = %i\n",top_node.num_children);
     for (int i = 0; i < top_node.num_children;i++)
       print(depth+1, top_node.children[i]);
   }
@@ -138,8 +126,10 @@ void split(v_array<ds_node<P> >& point_set, v_array<ds_node<P> >& far_set, int m
 {
   unsigned int new_index = 0;
   float fmax = dist_of_scale(max_scale);
-  for (int i = 0; i < point_set.index; i++){
-    if (point_set[i].dist.last() <= fmax) {
+  for (int i = 0; i < point_set.index; i++)
+  {
+    if (point_set[i].dist.last() <= fmax) 
+    {
       point_set[new_index++] = point_set[i];
     }
     else
@@ -160,7 +150,8 @@ void dist_split(v_array<ds_node<P> >& point_set,
     {
       float new_d;
       new_d = distance(new_point, point_set[i].p, fmax);
-      if (new_d <= fmax ) {
+      if (new_d <= fmax ) 
+      {
 	push(point_set[i].dist, new_d);
 	push(new_point_set,point_set[i]);
       }
@@ -190,7 +181,7 @@ node<P> batch_insert(const P& p,
     return new_leaf(p);
   else {
     float max_dist = max_set(point_set); //O(|point_set|)
-    int next_scale = min (max_scale - 1, get_scale(max_dist));
+    int next_scale = CMath::min(max_scale - 1, get_scale(max_dist));
     if (next_scale == -2147483647-1) // We have points with distance 0.
       {
 	v_array<node<P> > children;
@@ -332,7 +323,7 @@ int height_dist(const node<P> top_node,v_array<int> &heights)
 	{
 	  int d = height_dist(top_node.children[i], heights);
 	  if (d > max_v)
-	    max_v = d;	
+	    max_v = d;
 	}
       add_height(1 + max_v, heights);
       return (1 + max_v);
@@ -370,31 +361,10 @@ struct d_node {
 };
 
 template <class P>
-inline float compare(const d_node<P> *p1, const d_node<P>* p2) 
+inline float compare(const d_node<P> *p1, const d_node<P>* p2)
 {
   return p1 -> dist - p2 -> dist;
 }
-
-
-/*
-#define SWAP(a, b)				\
-  do						\
-    {						\
-      tmp = * a;				\
-      * a = * b;				\
-      * b = tmp;				\
-    } while (0)
-*/
-
-
-template <class P>
-void SWAP (d_node<P>* a, d_node<P>* b)
-{
-      d_node<P> tmp = *a;			
-      *a = *b;				
-      *b = tmp;				
-}
-
 
 template <class P>
 void halfsort (v_array<d_node<P> > cover_set)
@@ -407,24 +377,24 @@ void halfsort (v_array<d_node<P> > cover_set)
   d_node<P> *hi = &base_ptr[cover_set.index - 1];
   d_node<P> *right_ptr = hi;
   d_node<P> *left_ptr;
-  
+
   while (right_ptr > base_ptr)
     {
       d_node<P> *mid = base_ptr + ((hi - base_ptr) >> 1);
-      
+
       if (compare ( mid,  base_ptr) < 0.)
-	SWAP (mid, base_ptr);
+	CMath::swap(*mid, *base_ptr);
       if (compare ( hi,  mid) < 0.)
-	SWAP (mid, hi);
+	CMath::swap(*mid, *hi);
       else
 	goto jump_over;
       if (compare ( mid,  base_ptr) < 0.)
-	SWAP (mid, base_ptr);
+	CMath::swap(*mid, *base_ptr);
     jump_over:;
-      
+
       left_ptr  = base_ptr + 1;
       right_ptr = hi - 1;
-      
+
       do
 	{
 	  while (compare (left_ptr, mid) < 0.)
@@ -435,7 +405,7 @@ void halfsort (v_array<d_node<P> > cover_set)
 	  
 	  if (left_ptr < right_ptr)
 	    {
-	      SWAP (left_ptr, right_ptr);
+	      CMath::swap(*left_ptr, *right_ptr);
 	      if (mid == left_ptr)
 		mid = right_ptr;
 	      else if (mid == right_ptr)
@@ -578,18 +548,18 @@ inline void copy_cover_sets(node<P>* query_chi, float* new_upper_bound,
 		}
 	    }
 	}
-    }  
+    }
 }
 
 template <class P>
 void print_query(const node<P> *top_node)
 {
-  printf ("query = \n");
+  SG_SPRINT ("query = \n");
   print(top_node->p);
   if ( top_node->num_children > 0 ) {
-    printf("scale = %i\n",top_node->scale);
-    printf("max_dist = %f\n",top_node->max_dist);
-    printf("num children = %i\n",top_node->num_children);
+    SG_SPRINT("scale = %i\n",top_node->scale);
+    SG_SPRINT("max_dist = %f\n",top_node->max_dist);
+    SG_SPRINT("num children = %i\n",top_node->num_children);
   }
 }
 
@@ -598,12 +568,12 @@ void print_cover_sets(v_array<v_array<d_node<P> > > &cover_sets,
 		      v_array<d_node<P> > &zero_set,
 		      int current_scale, int max_scale)
 {
-  printf("cover set = \n");
+  SG_SPRINT("cover set = \n");
   for (; current_scale <= max_scale; current_scale++)
     {
       d_node<P> *ele = cover_sets[current_scale].elements;
       d_node<P> *end = cover_sets[current_scale].elements + cover_sets[current_scale].index;
-      printf ("%i\n", current_scale);
+      SG_SPRINT ("%i\n", current_scale);
       for (; ele != end; ele++)
 	{
 	  node<P> *n = (node<P> *)ele->n;
@@ -611,7 +581,7 @@ void print_cover_sets(v_array<v_array<d_node<P> > > &cover_sets,
 	}
     }
   d_node<P> *end = zero_set.elements + zero_set.index;
-  printf ("infinity\n");
+  SG_SPRINT ("infinity\n");
   for (d_node<P> *ele = zero_set.elements; ele != end ; ele++)
     {
       node<P> *n = (node<P> *)ele->n;
@@ -858,5 +828,3 @@ void unequal_nearest_neighbor(const node<P> &top_node, const node<P> &query,
 }
 
 #endif
-
-
