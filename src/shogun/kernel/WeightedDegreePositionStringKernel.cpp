@@ -1812,15 +1812,17 @@ float64_t* CWeightedDegreePositionStringKernel::compute_POIM(
 }
 
 
-void CWeightedDegreePositionStringKernel::prepare_POIM2(
-	float64_t* distrib, int32_t num_sym, int32_t num_feat)
+void CWeightedDegreePositionStringKernel::prepare_POIM2(SGMatrix<float64_t> distrib)
 {
 	SG_FREE(m_poim_distrib);
+	int32_t num_sym=distrib.num_cols;
+	int32_t num_feat=distrib.num_rows;
 	m_poim_distrib=SG_MALLOC(float64_t, num_sym*num_feat);
-
-	memcpy(m_poim_distrib, distrib, num_sym*num_feat*sizeof(float64_t));
+	memcpy(m_poim_distrib, distrib.matrix, num_sym*num_feat*sizeof(float64_t));
 	m_poim_num_sym=num_sym;
 	m_poim_num_feat=num_feat;
+
+	distrib.free_matrix();
 }
 
 void CWeightedDegreePositionStringKernel::compute_POIM2(
