@@ -578,12 +578,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 		/** prepare POIM2
 		 *
-		 * @param num_feat number of features
-		 * @param num_sym number of symbols
 		 * @param distrib distribution
 		 */
-		void prepare_POIM2(
-			float64_t* distrib, int32_t num_sym, int32_t num_feat);
+		void prepare_POIM2(SGMatrix<float64_t> distrib);
 
 		/** compute POIM2
 		 *
