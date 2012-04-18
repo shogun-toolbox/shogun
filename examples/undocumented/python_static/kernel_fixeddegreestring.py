@@ -17,5 +17,5 @@ def kernel_fixeddegreestring (fm_train_dna=traindna,fm_test_dna=testdna,degree=3
 	return km
 
 if __name__=='__main__':
-	print 'FixedDegreeString'
+	print('FixedDegreeString')
 	kernel_fixeddegreestring(*parameter_list[0])

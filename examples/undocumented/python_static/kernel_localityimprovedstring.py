@@ -20,5 +20,5 @@ def kernel_localityimprovedstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'LocalityImprovedString'
+	print('LocalityImprovedString')
 	kernel_localityimprovedstring(*parameter_list[0])

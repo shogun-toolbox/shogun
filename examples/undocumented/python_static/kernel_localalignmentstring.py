@@ -18,5 +18,5 @@ def kernel_localalignmentstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'LocalAlignmentString'
+	print('LocalAlignmentString')
 	kernel_localalignmentstring(*parameter_list[0])

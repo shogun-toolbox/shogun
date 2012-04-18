@@ -18,5 +18,5 @@ def kernel_linear (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'Linear'
+	print('Linear')
 	kernel_linear(*parameter_list[0])

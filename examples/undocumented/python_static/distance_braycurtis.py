@@ -15,5 +15,5 @@ def distance_braycurtis (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'BrayCurtisDistance'
+	print('BrayCurtisDistance')
 	distance_braycurtis(*parameter_list[0])

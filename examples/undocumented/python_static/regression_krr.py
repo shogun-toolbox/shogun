@@ -27,5 +27,5 @@ def regression_krr (fm_train=traindat,fm_test=testdat,
 	return result
 
 if __name__=='__main__':
-	print 'KRR'
+	print('KRR')
 	regression_krr(*parameter_list[0])

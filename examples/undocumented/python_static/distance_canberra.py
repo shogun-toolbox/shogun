@@ -17,5 +17,5 @@ def distance_canberra (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'CanberraMetric'
+	print('CanberraMetric')
 	distance_canberra(*parameter_list[0])

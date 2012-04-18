@@ -28,5 +28,5 @@ def classifier_libsvm (fm_train_real=traindat,fm_test_real=testdat,
 	return result, kernel_matrix
 
 if __name__=='__main__':
-	print 'LibSVM'
+	print('LibSVM')
 	classifier_libsvm(*parameter_list[0])

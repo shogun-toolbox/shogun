@@ -17,5 +17,5 @@ def kernel_sigmoid (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'Sigmoid'
+	print('Sigmoid')
 	kernel_sigmoid(*parameter_list[0])
