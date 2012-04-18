@@ -97,6 +97,20 @@ class CEuclidianDistance: public CRealDistance
 		 */
 		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
 
+		/** compute the distance between lhs feature vector a
+		 *  and rhs feature vector b. The computation of the
+		 *  distance stops if the intermediate result is 
+		 *  larger than upper_bound. This is useful to use 
+		 *  with John Langford's Cover Tree
+		 *
+		 *  @param idx_a feature vector a at idx_a
+		 *  @param idx_b feature vector b at idx_b
+		 *  @param upper_bound value above which the computation
+		 *  halts
+		 *  @return distance value or upper_bound
+		 */
+		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound);
+
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
