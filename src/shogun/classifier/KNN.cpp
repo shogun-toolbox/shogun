@@ -21,7 +21,7 @@
 
 #include <sys/time.h>
 
-#define BENCHMARK_KNN
+//#define BENCHMARK_KNN
 //#define DEBUG_KNN
 
 #ifdef BENCHMARK_KNN
