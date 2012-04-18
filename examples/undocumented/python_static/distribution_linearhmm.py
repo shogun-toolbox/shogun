@@ -28,5 +28,5 @@ def distribution_linearhmm (fm_train=traindna,fm_cube=cubedna,
 
 
 if __name__=='__main__':
-	print 'LinearHMM'
+	print('LinearHMM')
 	distribution_linearhmm(*parameter_list[0])

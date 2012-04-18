@@ -22,5 +22,5 @@ def preproc_prunevarsubmean (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'PruneVarSubMean'
+	print('PruneVarSubMean')
 	preproc_prunevarsubmean(*parameter_list[0])

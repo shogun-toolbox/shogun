@@ -18,5 +18,5 @@ def kernel_weighteddegreepositonstring (fm_train_dna=traindna,fm_test_dna=testdn
 	return km
 
 if __name__=='__main__':
-	print 'WeightedDegreePositionString'
+	print('WeightedDegreePositionString')
 	kernel_weighteddegreepositonstring(*parameter_list[0])

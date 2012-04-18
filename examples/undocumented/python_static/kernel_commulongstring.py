@@ -26,5 +26,5 @@ def kernel_commulongstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'CommUlongString'
+	print('CommUlongString')
 	kernel_commulongstring(*parameter_list[0])

@@ -26,5 +26,5 @@ def preproc_sortwordstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'CommWordString'
+	print('CommWordString')
 	preproc_sortwordstring(*parameter_list[0])

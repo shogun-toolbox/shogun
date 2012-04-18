@@ -20,6 +20,6 @@ def distribution_hmm(fm_train=traindna,fm_cube=cubedna,N=3,M=6,
 	return likelihood
 
 if __name__=='__main__':
-	print 'HMM'
+	print('HMM')
 	distribution_hmm(*parameter_list[0])
 

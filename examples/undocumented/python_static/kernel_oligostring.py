@@ -18,5 +18,5 @@ def kernel_oligostring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'OligoString'
+	print('OligoString')
 	kernel_oligostring(*parameter_list[0])

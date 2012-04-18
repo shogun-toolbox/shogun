@@ -22,5 +22,5 @@ def preproc_logplusone (fm_train_real=traindat,fm_test_real=testdat,
 	return km
 
 if __name__=='__main__':
-	print 'LogPlusOne'
+	print('LogPlusOne')
 	preproc_logplusone(*parameter_list[0])
