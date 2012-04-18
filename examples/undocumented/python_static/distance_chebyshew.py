@@ -15,5 +15,5 @@ def distance_chebyshew (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'ChebyshewMetric'
+	print('ChebyshewMetric')
 	distance_chebyshew(*parameter_list[0])

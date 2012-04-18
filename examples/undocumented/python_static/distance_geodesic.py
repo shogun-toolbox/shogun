@@ -15,5 +15,5 @@ def distance_geodesic (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'GeodesicMetric'
+	print('GeodesicMetric')
 	distance_geodesic(*parameter_list[0])

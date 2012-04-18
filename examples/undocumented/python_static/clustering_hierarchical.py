@@ -15,5 +15,5 @@ def clustering_hierarchical (fm_train=traindat, size_cache=10,merges=3):
 	return [merge_distance, pairs]
 
 if __name__=='__main__':
-	print 'Hierarchical'
+	print('Hierarchical')
 	clustering_hierarchical(*parameter_list[0])

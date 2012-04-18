@@ -18,5 +18,5 @@ def kernel_linearword (fm_train_word=trainword,fm_test_word=testword,
 	return km
 
 if __name__=='__main__':
-	print 'LinearWord'
+	print('LinearWord')
 	kernel_linearword(*parameter_list[0])

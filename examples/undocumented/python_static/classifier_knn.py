@@ -23,5 +23,5 @@ def classifier_knn (fm_train_real=traindat,fm_test_real=testdat,
 	return result
 
 if __name__=='__main__':
-	print 'KNN'
+	print('KNN')
 	classifier_knn(*parameter_list[0])

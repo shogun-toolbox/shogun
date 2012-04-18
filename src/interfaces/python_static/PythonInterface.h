@@ -17,12 +17,6 @@ extern "C" {
 
 #if PY_VERSION_HEX >= 0x03000000
     #define IS_PYTHON3
-    
-    #define PyString_FromStringAndSize PyBytes_FromStringAndSize
-	#define PyString_Check PyBytes_Check
-    #define PyString_Size PyBytes_GET_SIZE
-    #define PyString_AS_STRING PyBytes_AS_STRING
-    #define PyString_AsString PyBytes_AsString
 
     #define PyInt_Check PyLong_Check
     #define PyInt_AS_LONG PyLong_AS_LONG

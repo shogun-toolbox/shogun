@@ -18,5 +18,5 @@ def kernel_linearstring (fm_train_dna=traindna,fm_test_dna=testdna,
 	return km
 
 if __name__=='__main__':
-	print 'LinearString'
+	print('LinearString')
 	kernel_linearstring(*parameter_list[0])

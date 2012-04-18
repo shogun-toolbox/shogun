@@ -26,5 +26,5 @@ def regression_libsvr (fm_train=traindat,fm_test=testdat,
 	return result
 
 if __name__=='__main__':
-	print 'LibSVR'
+	print('LibSVR')
 	regression_libsvr(*parameter_list[0])

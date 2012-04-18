@@ -29,6 +29,6 @@ def mkl_twoclass (weight=1.,
 	return km
 
 if __name__=='__main__':
-	print 'MKL_TWOCLASS'
+	print('MKL_TWOCLASS')
 	mkl_twoclass(*parameter_list[0])
 

@@ -17,5 +17,5 @@ def distance_tanimoto (fm_train_real=traindat,fm_test_real=testdat):
 	return dm
 
 if __name__=='__main__':
-	print 'TanimotoDistance'
+	print('TanimotoDistance')
 	distance_tanimoto(*parameter_list[0])
