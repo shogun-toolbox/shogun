@@ -1558,32 +1558,6 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		constraint_generator = new CLibSVMOneClass();
 		SG_INFO("created SVMlibsvm object for oneclass\n");
 	}
-	/*
-	else if (strcmp(name,"LIBSVM_MULTICLASS")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator = new CLibSVMMultiClass();
-		SG_INFO("created SVMlibsvm object for multiclass\n");
-	}
-	else if (strcmp(name,"LIBSVM_NUMULTICLASS")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CLibSVMMultiClass(LIBSVM_NU_SVC);
-		SG_INFO("created SVMlibsvm object for multiclass\n") ;
-	}
-	else if (strcmp(name,"SCATTERSVM_RULE1")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CScatterSVM(TEST_RULE1);
-		SG_INFO("created ScatterSVM RULE1 object\n") ;
-	}
-	else if (strcmp(name,"SCATTERSVM_RULE2")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CScatterSVM(TEST_RULE2);
-		SG_INFO("created ScatterSVM RULE2 object\n") ;
-	}
-	*/
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{
 		SG_UNREF(constraint_generator);
@@ -1596,14 +1570,6 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		constraint_generator= new CLibSVM();
 		SG_INFO("created SVMlibsvm object\n") ;
 	}
-	/*
-	else if (strcmp(name,"LARANK")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CLaRank();
-		SG_INFO("created LaRank object\n") ;
-	}
-	*/
 #ifdef USE_SVMLIGHT
 	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))
 	{
@@ -1642,14 +1608,6 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		constraint_generator= new CGNPPSVM();
 		SG_INFO("created GNPP-SVM object\n") ;
 	}
-	/*
-	else if (strcmp(name,"GMNPSVM")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CGMNPSVM();
-		SG_INFO("created GMNP-SVM object\n") ;
-	}
-	*/
 	else if (strcmp(name,"LIBSVR")==0)
 	{
 		SG_UNREF(constraint_generator);
