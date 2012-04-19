@@ -94,7 +94,7 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 }
 
 template <class T>
-void CModelSelectionParameters::set_values(SGVector<T> values)
+void CModelSelectionParameters::set_values(const SGVector<T>& values)
 {
 	/* possibly delete old range values */
 	delete_values();
