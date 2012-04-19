@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/classifier/svm/libocas.h>
+#include <shogun/lib/external/libocas.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 
 namespace shogun
