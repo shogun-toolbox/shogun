@@ -17,7 +17,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/lib/external/shogun_liblinear.h>
-#include <shogun/classifier/svm/Tron.h>
+#include <shogun/lib/external/tron.h>
 #include <shogun/features/DotFeatures.h>
 
 using namespace shogun;
