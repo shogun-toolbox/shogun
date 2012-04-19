@@ -36,7 +36,7 @@
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <shogun/lib/memory.h>
-#include <shogun/classifier/svm/SVM_libsvm.h>
+#include <shogun/lib/external/shogun_libsvm.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Time.h>

@@ -41,7 +41,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/shogun_liblinear.h>
-#include <shogun/classifier/svm/Tron.h>
+#include <shogun/lib/external/tron.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
