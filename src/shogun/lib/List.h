@@ -520,6 +520,7 @@ class CList : public CSGObject
 			last = prev;
 		}
 
+		/** print all elements of the list */
 		void print_list()
 		{
 			CListElement* c=first;
