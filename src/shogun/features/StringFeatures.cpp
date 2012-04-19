@@ -229,7 +229,7 @@ template<class ST> SGVector<ST> CStringFeatures<ST>::get_feature_vector(int32_t 
 	return SGVector<ST>(dst, l, true);
 }
 
-template<class ST> void CStringFeatures<ST>::set_feature_vector(SGVector<ST> vector, int32_t num)
+template<class ST> void CStringFeatures<ST>::set_feature_vector(const SGVector<ST>& vector, int32_t num)
 {
 	ASSERT(features);
 
@@ -363,7 +363,7 @@ template<class ST> void CStringFeatures<ST>::free_feature_vector(ST* feat_vec, i
 		SG_FREE(feat_vec);
 }
 
-template<class ST> void CStringFeatures<ST>::free_feature_vector(SGVector<ST> feat_vec, int32_t num)
+template<class ST> void CStringFeatures<ST>::free_feature_vector(SGVector<ST>& feat_vec, int32_t num)
 {
 	if (num>=get_num_vectors())
 	{
@@ -1593,7 +1593,7 @@ CStringFeatures<SSKFeature>* obtain_sssk_double_from_char(int **S, int *len, int
 }
 */
 
-template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(SGVector<index_t> indices)
+template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(const SGVector<index_t>& indices)
 {
 	/* string list to create new CStringFeatures from */
 	SGStringList<ST> list_copy(indices.vlen, max_string_length);

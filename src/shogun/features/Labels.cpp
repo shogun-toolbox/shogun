@@ -33,7 +33,7 @@ CLabels::CLabels(int32_t num_lab)
 	labels=SGVector<float64_t>(num_lab);
 }
 
-CLabels::CLabels(SGVector<float64_t> src)
+CLabels::CLabels(const SGVector<float64_t>& src)
 : CSGObject()
 {
 	init();
@@ -72,7 +72,7 @@ void CLabels::init()
 	m_subset=NULL;
 }
 
-void CLabels::set_labels(SGVector<float64_t> v)
+void CLabels::set_labels(const SGVector<float64_t>& v)
 {
 	if (m_subset)
 		SG_ERROR("A subset is set, cannot set labels\n");
@@ -172,7 +172,7 @@ SGVector<int32_t> CLabels::get_int_labels()
 	return intlab;
 }
 
-void CLabels::set_int_labels(SGVector<int32_t> lab)
+void CLabels::set_int_labels(const SGVector<int32_t>& lab)
 {
 	if (m_subset)
 		SG_ERROR("set_int_labels() is not possible on subset");
