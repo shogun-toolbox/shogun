@@ -181,7 +181,7 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 }
 
 /// apply preproc on single feature vector
-SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector (SGVector<float64_t> vector)
+SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector (const SGVector<float64_t>& vector)
 {
 	uint64_t featureDimension = 2*m_order+1;
 	uint64_t m_target_dim = vector.vlen * featureDimension;
