@@ -57,10 +57,13 @@ class CKernelRidgeRegression : public CKernelMachine
 		/** default constructor */
 		CKernelRidgeRegression();
 
+		/** which training method to use for KRR */
 		enum ETrainingType
 		{
+			/// via pseudo inverse
 			PINV=1,
-			GS=2,
+			/// or gauss-seidel iterative method
+			GS=2
 		};
 
 		/** constructor
@@ -68,9 +71,11 @@ class CKernelRidgeRegression : public CKernelMachine
 		 * @param tau regularization constant tau
 		 * @param k kernel
 		 * @param lab labels
-		 * @m method to use for training PINV (pseudo inverse by default)
+		 * @param m method to use for training PINV (pseudo inverse by default)
 		 */
 		CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab, ETrainingType m=PINV);
+
+		/** default destructor */
 		virtual ~CKernelRidgeRegression() {}
 
 		/** set regularization constant
