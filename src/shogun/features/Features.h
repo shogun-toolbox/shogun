@@ -266,7 +266,7 @@ class CFeatures : public CSGObject
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices);
+		virtual CFeatures* copy_subset(const SGVector<index_t>& indices);
 
 	protected:
 
