@@ -274,7 +274,7 @@ node<P> batch_create(v_array<P> points)
 
   for (int i = 1; i < points.index; i++) {
     ds_node<P> temp;
-    push(temp.dist, distance(points[0], points[i], MAXFLOAT)); 
+    push(temp.dist, distance(points[0], points[i], FLT_MAX)); 
     temp.p = points[i];
     push(point_set,temp);
   }
@@ -761,9 +761,9 @@ void batch_nearest_neighbor(const node<P> &top_node, const node<P> &query,
   v_array<d_node<P> > zero_set = pop(spare_zero_sets);
   
   float* upper_bound = alloc_upper();
-  setter(upper_bound,MAXFLOAT);
+  setter(upper_bound,FLT_MAX);
   
-  float top_dist = distance(query.p, top_node.p, MAXFLOAT);
+  float top_dist = distance(query.p, top_node.p, FLT_MAX);
   update(upper_bound, top_dist);
   
   d_node<P> temp = {top_dist, &top_node};
