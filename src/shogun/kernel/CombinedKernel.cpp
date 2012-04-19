@@ -693,7 +693,7 @@ SGVector<float64_t> CCombinedKernel::get_subkernel_weights()
 	return SGVector<float64_t>((float64_t*) w, num);
 }
 
-void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
+void CCombinedKernel::set_subkernel_weights(const SGVector<float64_t>& weights)
 {
 	if (append_subkernel_weights)
 	{
