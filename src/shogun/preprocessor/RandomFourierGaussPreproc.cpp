@@ -347,7 +347,7 @@ bool CRandomFourierGaussPreproc::init(CFeatures *f) {
 
 }
 
-SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(const SGVector<float64_t>& vector)
 {
 	if (!test_rfinited()) {
 		throw ShogunException(

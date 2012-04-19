@@ -159,7 +159,7 @@ SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 	return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
 }
 
-SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> CKernelPCA::apply_to_feature_vector(const SGVector<float64_t>& vector)
 {
 	ASSERT(m_initialized);
 	SGVector<float64_t> result = SGVector<float64_t>(m_target_dim);

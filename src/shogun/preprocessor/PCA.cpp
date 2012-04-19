@@ -224,7 +224,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	return m;
 }
 
-SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> CPCA::apply_to_feature_vector(const SGVector<float64_t>& vector)
 {
 	float64_t* result = SG_MALLOC(float64_t, num_dim);
 	float64_t* sub_mean = SG_MALLOC(float64_t, vector.vlen);
