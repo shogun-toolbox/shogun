@@ -145,7 +145,7 @@ float64_t CHistogram::get_log_model_parameter(int32_t num_param)
 	return hist[num_param];
 }
 
-bool CHistogram::set_histogram(SGVector<float64_t> histogram)
+bool CHistogram::set_histogram(const SGVector<float64_t>& histogram)
 {
 	ASSERT(histogram.vlen==get_num_model_parameters());
 
