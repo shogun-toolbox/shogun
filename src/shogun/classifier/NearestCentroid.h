@@ -40,7 +40,7 @@ public:
 	
 	/** constructor
 	 *
-	 * @param d distance
+	 * @param distance distance
 	 * @param trainlab labels for training
 	 */
 	CNearestCentroid(CDistance* distance, CLabels* trainlab);

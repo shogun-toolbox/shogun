@@ -237,7 +237,7 @@ class CDistance : public CSGObject
 		 * @param lhs features of right-hand side
 		 * @return replaced left-hand side features
 		 */
-		CFeatures* replace_lhs(CFeatures* rhs);
+		CFeatures* replace_lhs(CFeatures* lhs);
 
 		/** remove lhs and rhs from distance */
 		virtual void remove_lhs_and_rhs();

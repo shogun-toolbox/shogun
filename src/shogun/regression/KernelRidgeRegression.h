@@ -68,6 +68,7 @@ class CKernelRidgeRegression : public CKernelMachine
 		 * @param tau regularization constant tau
 		 * @param k kernel
 		 * @param lab labels
+		 * @m method to use for training PINV (pseudo inverse by default)
 		 */
 		CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab, ETrainingType m=PINV);
 		virtual ~CKernelRidgeRegression() {}
@@ -78,9 +79,9 @@ class CKernelRidgeRegression : public CKernelMachine
 		 */
 		inline void set_tau(float64_t tau) { m_tau = tau; };
 
-		/** set precision
+		/** set convergence precision for gauss seidel method
 		 *
-		 * @param tau new tau
+		 * @param epsilon new epsilon
 		 */
 		inline void set_epsilon(float64_t epsilon) { m_epsilon = epsilon; }
 
