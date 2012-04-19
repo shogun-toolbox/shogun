@@ -8,7 +8,6 @@
 #include<stdio.h>
 #define NDEBUG
 #include<assert.h>
-#include <values.h>
 
 /* First written by John Langford jl@hunch.net
    Templatization by Dinoj Surendran dinojs@gmail.com
