@@ -79,8 +79,6 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(const SGVector<float64_
 
 	for (int32_t i=0; i<degree*(1+max_mismatch); i++)
 		weights[i]=w.vector[i];
-
-	w.free_vector();
 }
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
