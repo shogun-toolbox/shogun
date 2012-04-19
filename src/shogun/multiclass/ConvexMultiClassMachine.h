@@ -64,65 +64,65 @@ public:
      * @param iterations number of iterations performed
      * @param task_indexes sizes of samples per task (may be unbalanced)
      */
-    CConvexMultiClassMachine(CDotFeatures* features, CLabels* labs, TRAINING_METHOD method, SGVector<float64_t>* gammas,SGMatrix<float64_t>* d_ini,
+    CConvexMultiClassMachine(CDotFeatures* features, CLabels* labs, TRAINING_METHOD method, SGMatrix<float64_t>* gammas,SGMatrix<float64_t>* d_ini,
     float64_t init_epsilon, CKernel* kernel, int32_t iterations, int32_t* task_indexes);
     
     /*destructor*/
     virtual ~CConvexMultiClassMachine();
     
-    SGMatrix<float64_t>* getD_ini() const {
+    SGMatrix<float64_t>* get_d_ini() const {
     return m_d_ini;
 }
 
-    void setD_ini(SGMatrix<float64_t>* d_ini_) {
+    void set_d_ini(SGMatrix<float64_t>* d_ini_) {
         this->m_d_ini = d_ini_;
     }
 
-    SGVector<float64_t>* getGammas() const {
+    SGMatrix<float64_t>* get_gammas() const {
         return m_gammas;
     }
 
-    void setGammas(SGVector<float64_t>* gammas_) {
+    void set_gammas(SGMatrix<float64_t>* gammas_) {
         this->m_gammas = gammas_;
     }
 
-    float64_t getInit_epsilon() const {
+    float64_t get_init_epsilon() const {
         return m_epsilon_init;
     }
 
-    void setInit_epsilon(float64_t init_epsilon_) {
+    void set_init_epsilon(float64_t init_epsilon_) {
         this->m_epsilon_init = init_epsilon_;
     }
 
-    int32_t getIterations() const {
+    int32_t get_iterations() const {
         return m_iterations;
     }
 
-    void setIterations(int32_t iterations_) {
+    void set_iterations(int32_t iterations_) {
         this->m_iterations = iterations_;
     }
 
-    CKernel* getKernel() const {
+    CKernel* get_kernel() const {
         return m_kernel;
     }
 
-    void setKernel(CKernel* kernel_) {
+    void set_kernel(CKernel* kernel_) {
         this->m_kernel = kernel_;
     }
 
-    TRAINING_METHOD getMethod() const {
+    TRAINING_METHOD get_method() const {
         return m_method;
     }
 
-    void setMethod(TRAINING_METHOD method_) {
+    void set_method(TRAINING_METHOD method_) {
         this->m_method = method_;
     }
 
-    int32_t* getTask_indexes() const {
+    int32_t* get_task_indexes() const {
         return m_task_indexes;
     }
 
-    void setTask_indexes(int32_t* task_indexes_) {
+    void set_task_indexes(int32_t* task_indexes_) {
         this->m_task_indexes = task_indexes_;
     }
 
@@ -146,23 +146,22 @@ private:
      * 
      * @param matrix
      */
-//    void eval_d(SGMatrix<float64_t>* matrix);
     /**evaluates (computes) f(D) (acts on the singular values of D)*/
-    void f_method(float64_t* vec, float64_t* new_vec);
+    void f_method(float64_t* vec, float64_t* new_vec, int32_t len);
     /**method for minimizing over D of the form 
      * min_d { sum_i f(d_i) b_i^2 } 
      *(b_i are the singular values of W, or in case of var. selection the L2 norms of the rows of W)*/
-    void d_method(float64_t* vec, float64_t* new_vec);
-    void train_alternating_epsilon(SGVector<float64_t>* out_w, SGVector<float64_t>* out_d, float64_t* out_costfunc, float64_t* out_mineps);
-    void train_alternating(SGVector<float64_t>* out_w, SGVector<float64_t>* out_d, float64_t* out_costfunc);
-    void d_min_e_method(float64_t* vec, float64_t* new_vec);
+    void d_method(float64_t* vec, float64_t* new_vec, int32_t len);
+    void train_alternating_epsilon(SGMatrix<float64_t>* out_w, SGMatrix<float64_t>* out_d, float64_t* out_costfunc, float64_t* out_mineps);
+    void train_alternating(SGMatrix<float64_t>* out_w, SGMatrix<float64_t>* out_d, float64_t* out_costfunc);
+    void d_min_e_method(float64_t* vec, float64_t* new_vec, int32_t len);
     void test_error_unbalanced(CDotFeatures* features_test, SGMatrix<float64_t> estimated_w, int32_t task_indexes_test, float64_t* testerr);
 
     
 protected:
     
     TRAINING_METHOD m_method;
-    SGVector<float64_t>* m_gammas;
+    SGMatrix<float64_t>* m_gammas;
     SGMatrix<float64_t>* m_d_ini;
     float64_t m_epsilon_init;
     CKernel* m_kernel;

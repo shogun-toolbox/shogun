@@ -29,24 +29,24 @@ CConvexMultiClassMachine::CConvexMultiClassMachine() :
 
 void CConvexMultiClassMachine::init_defaults()
 {
-    setInit_epsilon(1e-2);
-    setIterations(10000);
+    set_init_epsilon(1e-2);
+    set_iterations(10000);
 }
 
 CConvexMultiClassMachine::CConvexMultiClassMachine(CDotFeatures* features, CLabels* labs,
-        TRAINING_METHOD method, SGVector<float64_t>* gammas,SGMatrix<float64_t>* d_ini,
+        TRAINING_METHOD method, SGMatrix<float64_t>* gammas,SGMatrix<float64_t>* d_ini,
     float64_t init_epsilon, CKernel* kernel, int32_t iterations, int32_t* task_indexes):
         CLinearMulticlassMachine(ONE_VS_ONE_STRATEGY, features, NULL, labs), training_method(method)
     {
         set_features((CDotFeatures*)features);
         set_labels((CLabels*)labs);
-        setInit_epsilon(init_epsilon);
+        set_init_epsilon(init_epsilon);
 
-        setGammas((SGVector<float64_t>*)gammas);
-        setD_ini((SGMatrix<float64_t>*)d_ini);
-        setKernel((CKernel*)kernel);
-        setIterations(iterations);
-        setTask_indexes(task_indexes);
+        set_gammas((SGMatrix<float64_t>*)gammas);
+        set_d_ini((SGMatrix<float64_t>*)d_ini);
+        set_kernel((CKernel*)kernel);
+        set_iterations(iterations);
+        set_task_indexes(task_indexes);
     }
 //void CConvexMultiClassMachine::register_parameters()
 //{
@@ -61,30 +61,10 @@ CConvexMultiClassMachine::CConvexMultiClassMachine(CDotFeatures* features, CLabe
 
 
 
-
-//void CConvexMultiClassMachine::eval_d(SGMatrix<float64_t>* matrix)
-//{
-////    //http://software.intel.com/sites/products/documentation/hpc/mkl/lapack/mkl_lapack_examples/dgesvd_ex.c.htm
-////    //http://www.netlib.org/lapack/double/dgesvd.f
-////    //s matrix
-////    //M = number of rows
-////    //N = number of columns
-////    //LDA = M
-////    //LDU =M
-////    //LDVT = N
-//    float64_t s_matrix=SG_MALLOC(float64_t, matrix->num_cols);
-//    float64_t u_matrix=SG_MALLOC(float64_t, (matrix->num_rows*matrix->num_rows));
-//    float64_t vt_matrix=SG_MALLOC(float64_t, (matrix->num_cols*matrix->num_cols));
-//    int32_t info;
-//    wrap_dgesvd('A', 'A', matrix.num_rows, matrix.num_cols, matrix.matrix, matrix.num_rows, s_matrix, u_matrix, matrix.num_rows, vt_matrix, &info);
-//       
-//}
-
-void CConvexMultiClassMachine::f_method(float64_t* vec, float64_t* new_vec)
+void CConvexMultiClassMachine::f_method(float64_t* vec, float64_t* new_vec, int32_t len)
 {
-    int32_t size=(sizeof vec/sizeof(float64_t));
-    //float64_t* new_vec=SG_MALLOC(float64_t, size);
-    for (int32_t i=0;i<size;i++)
+
+    for (int32_t i=0;i<len;i++)
     {
         //assuming eps=2^-52
         //TODO check the accuracy of this value against float64_t
@@ -95,11 +75,10 @@ void CConvexMultiClassMachine::f_method(float64_t* vec, float64_t* new_vec)
     }
 }
 
-void CConvexMultiClassMachine::d_method(float64_t* vec, float64_t* new_vec)
+void CConvexMultiClassMachine::d_method(float64_t* vec, float64_t* new_vec, int32_t len)
 {
-    int32_t size=(sizeof vec/sizeof(float64_t));
-    float64_t sum_value=CMath::sum(vec, size);
-    for (int32_t i=0;i<size;i++)
+    float64_t sum_value=CMath::sum(vec, len);
+    for (int32_t i=0;i<len;i++)
     {
         new_vec[i]=vec[i]/sum_value;
     }
