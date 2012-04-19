@@ -73,7 +73,7 @@ SGMatrix<float64_t> CSumOne::apply_to_feature_matrix(CFeatures* features)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CSumOne::apply_to_feature_vector(const SGVector<float64_t>&w vector)
+SGVector<float64_t> CSumOne::apply_to_feature_vector(const SGVector<float64_t>& vector)
 {
 	float64_t* normed_vec = SG_MALLOC(float64_t, vector.vlen);
 	float64_t sum = CMath::sum(vector.vector, vector.vlen);
