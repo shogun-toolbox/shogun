@@ -89,9 +89,8 @@ libqp_state_T libqp_gsmo_solver(const float64_t* (*get_col)(uint32_t),
   float64_t tau;
   float64_t F_i;
   float64_t tau_ub, tau_lb;
-  float64_t Q_P;
   uint32_t i, j;
-  uint32_t u, v;
+  uint32_t u=0, v=0;
   libqp_state_T state;
 
   Nabla = NULL;
