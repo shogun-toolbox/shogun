@@ -8,12 +8,6 @@
 #include<stdio.h>
 #define NDEBUG
 #include<assert.h>
-#ifdef DARWIN
-#include <limits.h>
-#include <float.h>
-#else
-#include <values.h>
-#endif
 
 /* First written by John Langford jl@hunch.net
    Templatization by Dinoj Surendran dinojs@gmail.com
