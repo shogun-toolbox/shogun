@@ -11,7 +11,7 @@
 %ignore unref;
 
 #ifdef SWIGCSHARP
-%ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas, SGVector<int32_t> svs, float64_t b);
+%ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t>& alphas, const SGVector<int32_t>& svs, float64_t b);
 #endif
 
 %ignore cleanup;
@@ -64,7 +64,7 @@
 %ignore shogun::CTaxonomy::add_node;
 %ignore shogun::CTaxonomy::intersect_root_path;
 %ignore shogun::SGVector<shogun::CGaussian*>;
-%ignore shogun::CGMM::CGMM(SGVector<shogun::CGaussian*>, shogun::SGVector<float64_t>, bool);
+%ignore shogun::CGMM::CGMM(const SGVector<shogun::CGaussian*>&, const shogun::SGVector<float64_t>&, bool);
 %ignore shogun::CGMM::get_comp;
 %ignore shogun::CGMM::set_comp;
 %ignore shogun::CSimpleFeatures::CSimpleFeatures(ST*, int32_t, int32_t);
