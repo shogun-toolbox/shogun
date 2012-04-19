@@ -58,7 +58,7 @@ class CKernelMachine : public CMachine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		CKernelMachine(CKernel* k, SGVector<float64_t> alphas, SGVector<int32_t> svs, float64_t b);
+		CKernelMachine(CKernel* k, const SGVector<float64_t>& alphas, const SGVector<int32_t>& svs, float64_t b);
 
 		/** copy constructor
 		 * @param machine machine having parameters to copy
@@ -175,13 +175,13 @@ class CKernelMachine : public CMachine
 		 *
 		 * @param alphas float vector with all alphas to set
 		 */
-		void set_alphas(SGVector<float64_t> alphas);
+		void set_alphas(const SGVector<float64_t>& alphas);
 
 		/** set support vectors to given values
 		 *
 		 * @param svs integer vector with all support vectors indexes to set
 		 */
-		void set_support_vectors(SGVector<int32_t> svs);
+		void set_support_vectors(const SGVector<int32_t>& svs);
 
 		/** @return all support vectors */
 		SGVector<int32_t> get_support_vectors();
@@ -231,11 +231,11 @@ class CKernelMachine : public CMachine
 		/** train being locked
 		 * @param indices train with indices
 		 */
-		virtual bool train_locked(SGVector<index_t> indices);
+		virtual bool train_locked(const SGVector<index_t>& indices);
 		/** apply being locked
 		 * @param indices apply with indices
 		 */
-		virtual CLabels* apply_locked(SGVector<index_t> indices);
+		virtual CLabels* apply_locked(const SGVector<index_t>& indices);
 
 		/** TODO */
 		virtual void data_lock(CLabels* labs, CFeatures* features=NULL);
