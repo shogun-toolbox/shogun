@@ -38,7 +38,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/classifier/svm/Tron.h>
+#include <shogun/lib/external/tron.h>
 #include <shogun/features/DotFeatures.h>
 #include <vector>
 

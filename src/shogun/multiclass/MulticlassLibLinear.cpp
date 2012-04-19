@@ -11,7 +11,6 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/classifier/svm/SVM_linear.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/v_array.h>
 

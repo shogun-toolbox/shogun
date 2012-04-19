@@ -17,7 +17,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/classifier/svm/SVM_linear.h>
+#include <shogun/lib/external/shogun_liblinear.h>
 
 namespace shogun
 {

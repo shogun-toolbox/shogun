@@ -15,7 +15,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/classifier/svm/SVM.h>
-#include <shogun/classifier/svm/SVM_libsvm.h>
+#include <shogun/lib/external/shogun_libsvm.h>
 #include <shogun/regression/Regression.h>
 
 namespace shogun

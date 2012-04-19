@@ -14,7 +14,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/classifier/svm/libocas.h>
+#include <shogun/lib/external/libocas.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Labels.h>
 
