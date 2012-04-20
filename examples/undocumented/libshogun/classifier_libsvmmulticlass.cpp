@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	kernel->init(features, features);
 
 	// create libsvm with C=10 and train
-	CLibSVMMultiClass* svm = new CLibSVMMultiClass(10, kernel, labels);
+	CLibSVMMulticlass* svm = new CLibSVMMulticlass(10, kernel, labels);
 	svm->train();
 
 	// classify on training examples
