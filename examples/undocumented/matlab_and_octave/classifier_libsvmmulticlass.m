@@ -11,8 +11,8 @@ label_train_multiclass=load_matrix('../data/label_train_multiclass.dat');
 fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
 
-% LibSVM MultiClass
-disp('LibSVMMultiClass');
+% LibSVM Multiclass
+disp('LibSVMMulticlass');
 
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_features', 'TRAIN', fm_train_real);

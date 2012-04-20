@@ -1,5 +1,5 @@
-% MKL_MultiClass
-print MKL_MultiClass
+% MKL_Multiclass
+print MKL_Multiclass
 
 
 set_labels TRAIN ../data/label_train_multiclass.dat

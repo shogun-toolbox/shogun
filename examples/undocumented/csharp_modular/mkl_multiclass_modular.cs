@@ -46,7 +46,7 @@ public class mkl_multiclass_modular {
 
 		Labels labels = new Labels(trainlab);
 
-		MKLMultiClass mkl = new MKLMultiClass(C, kernel, labels);
+		MKLMulticlass mkl = new MKLMulticlass(C, kernel, labels);
 		mkl.set_epsilon(epsilon);
 		mkl.set_mkl_epsilon(epsilon);
 		mkl.set_mkl_norm(mkl_norm);

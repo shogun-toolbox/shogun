@@ -45,7 +45,7 @@ labels=Labels(label_train_multiclass);
 
 % MKL_MULTICLASS
 disp('MKL_MULTICLASS')
-mkl=MKLMultiClass(C, kernel, labels);
+mkl=MKLMulticlass(C, kernel, labels);
 mkl.set_epsilon(epsilon);
 mkl.parallel.set_num_threads(num_threads);
 mkl.set_mkl_epsilon(0.001);

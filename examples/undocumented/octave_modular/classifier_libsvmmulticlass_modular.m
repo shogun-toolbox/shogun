@@ -6,7 +6,7 @@ fm_train_real=load_matrix('../data/fm_train_real.dat');
 fm_test_real=load_matrix('../data/fm_test_real.dat');
 
 % libsvmmulticlass
-disp('LibSVMMultiClass')
+disp('LibSVMMulticlass')
 
 feats_train=RealFeatures(fm_train_real);
 feats_test=RealFeatures(fm_test_real);
@@ -18,7 +18,7 @@ epsilon=1e-5;
 num_threads=8;
 labels=Labels(label_train_multiclass);
 
-svm=LibSVMMultiClass(C, kernel, labels);
+svm=LibSVMMulticlass(C, kernel, labels);
 svm.set_epsilon(epsilon);
 svm.parallel.set_num_threads(num_threads);
 svm.train();
