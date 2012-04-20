@@ -34,21 +34,21 @@ public:
 	 * @param values vector of values
 	 * @return variance of given values
 	 */
-	static float64_t mean(SGVector<float64_t> values);
+	static float64_t mean(const SGVector<float64_t>& values);
 
 	/** Calculates variance of given values
 	 *
 	 * @param values vector of values
 	 * @return variance of given values
 	 */
-	static float64_t variance(SGVector<float64_t> values);
+	static float64_t variance(const SGVector<float64_t>& values);
 
 	/** Calculates standard deviation of given values
 	 *
 	 * @param values vector of values
 	 * @return standard deviation of given values
 	 */
-	static float64_t std_deviation(SGVector<float64_t> values);
+	static float64_t std_deviation(const SGVector<float64_t>& values);
 
 	/** Calculates the sample mean of a given set of samples and also computes
 	 * the confidence interval for the actual mean for a given p-value,
@@ -64,7 +64,7 @@ public:
 	 * @return sample mean
 	 *
 	 */
-	static float64_t confidence_intervals_mean(SGVector<float64_t> values,
+	static float64_t confidence_intervals_mean(const SGVector<float64_t>& values,
 			float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up);
 
 	/** Student's t distribution

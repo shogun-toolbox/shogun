@@ -176,7 +176,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param vector
 		 * @param num index of the string
 		 */
-		void set_feature_vector(SGVector<ST> vector, int32_t num);
+		void set_feature_vector(const SGVector<ST>& vector, int32_t num);
 
 		/** call this to preprocess string features upon get_feature_vector
 		 */
@@ -239,7 +239,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param feat_vec feature vector to free
 		 * @param num index in feature cache, possibly from subset
 		 */
-		void free_feature_vector(SGVector<ST> feat_vec, int32_t num);
+		void free_feature_vector(SGVector<ST>& feat_vec, int32_t num);
 
 		/** get feature
 		 *
@@ -643,7 +643,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices);
+		virtual CFeatures* copy_subset(const SGVector<index_t>& indices);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "StringFeatures"; }

@@ -80,7 +80,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param linear_term the linear term
 		 */
-		virtual void set_linear_term(SGVector<float64_t> linear_term);
+		virtual void set_linear_term(const SGVector<float64_t>& linear_term);
 
 
 		/** load a SVM from file

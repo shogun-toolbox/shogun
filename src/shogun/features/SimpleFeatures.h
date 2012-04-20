@@ -134,7 +134,7 @@ public:
 	 * @param vector vector
 	 * @param num index if vector to set
 	 */
-	void set_feature_vector(SGVector<ST> vector, int32_t num);
+	void set_feature_vector(const SGVector<ST>& vector, int32_t num);
 
 	/** get feature vector num
 	 *
@@ -162,7 +162,7 @@ public:
 	 * @param vec feature vector to free
 	 * @param num index in feature cache
 	 */
-	void free_feature_vector(SGVector<ST> vec, int32_t num);
+	void free_feature_vector(const SGVector<ST>& vec, int32_t num);
 
 	/**
 	 * Extracts the feature vectors mentioned in idx and replaces them in
@@ -501,7 +501,7 @@ public:
 	 * @param indices indices of feature elements to copy
 	 * @return new CFeatures instance with copies of feature data
 	 */
-	virtual CFeatures* copy_subset(SGVector<index_t> indices);
+	virtual CFeatures* copy_subset(const SGVector<index_t>& indices);
 
 	/** checks if the contents of this CSimpleFeatures object are the same to
 	 * the contents of rhs

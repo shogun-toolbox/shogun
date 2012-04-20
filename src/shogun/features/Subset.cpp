@@ -19,7 +19,7 @@ CSubset::CSubset() : m_subset_idx(SGVector<index_t>())
 	init();
 }
 
-CSubset::CSubset(SGVector<index_t> subset_idx) : m_subset_idx(subset_idx)
+CSubset::CSubset(const SGVector<index_t>& subset_idx) : m_subset_idx(subset_idx)
 {
 	init();
 

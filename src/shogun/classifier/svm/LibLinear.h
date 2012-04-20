@@ -142,7 +142,7 @@ class CLibLinear : public CLinearMachine
 		}
 
 		/** set the linear term for qp */
-		inline void set_linear_term(SGVector<float64_t> linear_term)
+		inline void set_linear_term(const SGVector<float64_t>& linear_term)
 		{
 			if (!m_labels)
 				SG_ERROR("Please assign labels first!\n");

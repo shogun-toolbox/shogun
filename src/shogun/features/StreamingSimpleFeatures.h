@@ -156,7 +156,7 @@ public:
 	 *
 	 * @return Dot product as a float32_t
 	 */
-	virtual float32_t dot(SGVector<T> vec);
+	virtual float32_t dot(const SGVector<T>& vec);
 
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.

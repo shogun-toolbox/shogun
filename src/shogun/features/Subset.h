@@ -32,7 +32,7 @@ public:
 	 *
 	 * @param subset_idx vector of subset indices, is deleted in destructor
 	 */
-	CSubset(SGVector<index_t> subset_idx);
+	CSubset(const SGVector<index_t>& subset_idx);
 
 	/** destructor */
 	virtual ~CSubset();

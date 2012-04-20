@@ -333,7 +333,7 @@ float64_t CWDFeatures::get_normalization_const()
 	return normalization_const;
 }
 
-void CWDFeatures::set_wd_weights(SGVector<float64_t> weights)
+void CWDFeatures::set_wd_weights(const SGVector<float64_t>& weights)
 {
 	ASSERT(weights.vlen==degree);
 

@@ -105,7 +105,7 @@ protected:
 	 * @param feature_vector feature vector
 	 * @param label label
 	 */
-	float64_t conjugate_index(SGVector<float64_t> feature_vector, int32_t label);
+	float64_t conjugate_index(const SGVector<float64_t>& feature_vector, int32_t label);
 
 protected:
 

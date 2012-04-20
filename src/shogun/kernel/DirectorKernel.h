@@ -99,7 +99,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @param weights new subkernel weights
 		 */
-		virtual void set_subkernel_weights(SGVector<float64_t> weights)
+		virtual void set_subkernel_weights(const SGVector<float64_t>& weights)
 		{
 			CKernel::set_subkernel_weights(weights);
 		}
