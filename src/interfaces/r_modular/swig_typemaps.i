@@ -87,6 +87,34 @@ TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, uint16_t, int, "Word")
 
 #undef TYPEMAP_OUT_SGVECTOR
 
+/* One dimensional input arrays (references) */
+%define TYPEMAP_IN_SGVECTOR_REF(r_type, r_cast, sg_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
+    shogun::SGVector<sg_type>&, const shogun::SGVector<sg_type>&
+{
+    $1 = (TYPEOF($input) == r_type && Rf_ncols($input)==1 ) ? 1 : 0;
+}
+
+%typemap(in) shogun::SGVector<sg_type>& (SGVector<sg_type> temp), const shogun::SGVector<sg_type>& (SGVector<sg_type> temp)
+{
+    SEXP rvec=$input;
+    if (TYPEOF(rvec) != r_type || Rf_ncols(rvec)!=1)
+    {
+        /*SG_ERROR("Expected Double Vector as argument %d\n", m_rhs_counter);*/
+        SWIG_fail;
+    }
+
+	temp = shogun::SGVector<sg_type>((sg_type*) r_cast(rvec), LENGTH(rvec)); 
+    $1 = &temp;
+}
+%typemap(freearg) shogun::SGVector<sg_type>&, const shogun::SGVector<sg_type>&
+{
+}
+%enddef
+
+TYPEMAP_IN_SGVECTOR_REF(INTSXP, INTEGER, int32_t, "Integer")
+TYPEMAP_IN_SGVECTOR_REF(REALSXP, REAL, float64_t, "Double Precision")
+#undef TYPEMAP_IN_SGVECTOR_REF
 
 %define TYPEMAP_IN_SGMATRIX(r_type, r_cast, sg_type, error_string)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
