@@ -151,6 +151,126 @@ TYPEMAP_SGVECTOR(float64_t)
  	SWIG_arg++;
 }
 
+/* One dimensional input arrays (references) */
+%define TYPEMAP_SGVECTOR_REF(SGTYPE)
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE>&, const shogun::SGVector<SGTYPE>& {
+	if(!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "vector");		
+		$1 = 0;
+	}
+	else {
+		$1 = 1;
+		int numitems = 0;
+		numitems = lua_objlen(L, $input);
+		if(numitems == 0) {
+			luaL_argerror(L, $input, "empty vector");
+			$1 = 0;
+		}
+	}
+}
+
+%typemap(in) shogun::SGVector<SGTYPE>& (SGVector<SGTYPE> temp), const shogun::SGVector<SGTYPE>& (SGVector<SGTYPE> temp) {
+	SGTYPE *array;
+	int32_t i, len;
+
+	if (!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "vector");
+		return 0;
+	}
+	
+	len = lua_objlen(L, $input);
+	if (len == 0){
+		luaL_argerror(L, $input, "empty vector");
+		return 0;
+	}
+	
+	array = SG_MALLOC(SGTYPE, len);
+	for ( i = 0; i < len; i++) {
+		lua_rawgeti(L, $input, i + 1);
+		if (lua_isnumber(L, -1)){
+			array[i] = (SGTYPE)lua_tonumber(L, -1);
+		}
+		else {
+			lua_pop(L, 1);
+			luaL_argerror(L, $input, "vector must contain numbers");
+			delete [] array;
+			return 0;
+		}
+		lua_pop(L,1);
+	}
+
+	temp = shogun::SGVector<SGTYPE>((SGTYPE *)array, len); 
+	$1 = &temp;
+}
+
+%enddef
+
+/* Define concrete examples of the TYPEMAP_SGVECTOR_REF macros */
+TYPEMAP_SGVECTOR_REF(uint8_t)
+TYPEMAP_SGVECTOR_REF(int32_t)
+TYPEMAP_SGVECTOR_REF(int16_t)
+TYPEMAP_SGVECTOR_REF(uint16_t)
+TYPEMAP_SGVECTOR_REF(float32_t)
+TYPEMAP_SGVECTOR_REF(float64_t)
+
+#undef TYPEMAP_SGVECTOR_REF
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<char>&, const shogun::SGVector<char>& {
+	if(!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "vector");		
+		$1 = 0;
+	}
+	else {
+		$1 = 1;
+		int numitems = 0;
+		numitems = lua_objlen(L, $input);
+		if(numitems == 0) {
+			luaL_argerror(L, $input, "empty vector");
+			$1 = 0;
+		}
+	}
+}
+
+%typemap(in) shogun::SGVector<char>& (SGVector<char> temp), const shogun::SGVector<char>& (SGVector<char> temp) {
+	char *array;
+	int32_t i, len;
+
+	if (!lua_istable(L, $input)) {
+		luaL_typerror(L, $input, "vector");
+		return 0;
+	}
+	
+	len = lua_objlen(L, $input);
+	if (len == 0){
+		luaL_argerror(L, $input, "empty vector");
+		return 0;
+	}
+	
+	array = SG_MALLOC(char, len);
+	for (i = 0; i < len; i++) {
+		lua_rawgeti(L, $input, i + 1);
+		if (lua_isstring(L, -1)){
+			len = 0;				
+			const char *str = lua_tolstring(L, -1, (size_t *)&len);
+			if (len != 1) {
+				luaL_argerror(L, $input, "no more than one charactor expected");
+			}
+			array[i] = (char)*str;
+		}
+		else {
+			lua_pop(L, 1);
+			luaL_argerror(L, $input, "char vector expected");
+			delete [] array;
+			return 0;
+		}
+		lua_pop(L,1);
+	}
+
+	temp = shogun::SGVector<char>((char *)array, len); 
+	$1 = &temp;
+}
+
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE)
 
