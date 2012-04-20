@@ -61,7 +61,7 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/classifier/svm/MultiClassSVM.h>
+#include <shogun/multiclass/MulticlassSVM.h>
 
 namespace shogun
 {
@@ -304,7 +304,7 @@ namespace shogun
 	/** @brief the LaRank multiclass SVM machine
 	 *
 	 */
-	class CLaRank:  public CMultiClassSVM
+	class CLaRank:  public CMulticlassSVM
 	{
 		public:
 			CLaRank ();

@@ -8,27 +8,27 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/LibSVMMultiClass.h>
+#include <shogun/classifier/svm/LibSVMMulticlass.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
-CLibSVMMultiClass::CLibSVMMultiClass(LIBSVM_SOLVER_TYPE st)
-: CMultiClassSVM(ONE_VS_ONE), model(NULL), solver_type(st)
+CLibSVMMulticlass::CLibSVMMulticlass(LIBSVM_SOLVER_TYPE st)
+: CMulticlassSVM(ONE_VS_ONE_STRATEGY), model(NULL), solver_type(st)
 {
 }
 
-CLibSVMMultiClass::CLibSVMMultiClass(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_ONE, C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
+CLibSVMMulticlass::CLibSVMMulticlass(float64_t C, CKernel* k, CLabels* lab)
+: CMulticlassSVM(ONE_VS_ONE_STRATEGY, C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
 {
 }
 
-CLibSVMMultiClass::~CLibSVMMultiClass()
+CLibSVMMulticlass::~CLibSVMMulticlass()
 {
 	//SG_PRINT("deleting LibSVM\n");
 }
 
-bool CLibSVMMultiClass::train_machine(CFeatures* data)
+bool CLibSVMMulticlass::train_machine(CFeatures* data)
 {
 	struct svm_node* x_space;
 
@@ -57,7 +57,7 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 			SG_ERROR("Number of training vectors does not match number of "
 					"labels\n");
 		}
-		kernel->init(data, data);
+		m_kernel->init(data, data);
 	}
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
@@ -76,7 +76,7 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 		x_space[2*i+1].index=-1;
 	}
 
-	ASSERT(kernel);
+	ASSERT(m_kernel);
 
 	param.svm_type=solver_type; // C SVM or NU_SVM
 	param.kernel_type = LINEAR;
@@ -84,17 +84,17 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu(); // Nu
-	param.kernel=kernel;
-	param.cache_size = kernel->get_cache_size();
+	param.kernel=m_kernel;
+	param.cache_size = m_kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
-	param.eps = epsilon;
+	param.eps = get_epsilon();
 	param.p = 0.1;
 	param.shrinking = 1;
 	param.nr_weight = 0;
 	param.weight_label = NULL;
 	param.weight = NULL;
-	param.use_bias = get_bias_enabled();
+	param.use_bias = svm_proto()->get_bias_enabled();
 
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
@@ -186,7 +186,7 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 			}
 		}
 
-		CSVM::set_objective(model->objective);
+		set_objective(model->objective);
 
 		SG_FREE(offsets);
 		SG_FREE(problem.x);
@@ -202,9 +202,9 @@ bool CLibSVMMultiClass::train_machine(CFeatures* data)
 		 * which  means that a copy of the features is stored in lhs */
 		/* TODO this can be done better, ie only store sv of underlying svms
 		 * and map indices */
-		m_svs.destroy_vector();
-		m_svs=SGVector<index_t>(kernel->get_num_vec_lhs());
-		m_svs.range_fill();
+		svm_svs().destroy_vector();
+		svm_svs()=SGVector<index_t>(m_kernel->get_num_vec_lhs());
+		svm_svs().range_fill();
 
 		return true;
 	}

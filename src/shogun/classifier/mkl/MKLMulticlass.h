@@ -17,37 +17,38 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/svm/GMNPSVM.h>
-#include <shogun/classifier/mkl/MKLMultiClassGLPK.h>
-#include <shogun/classifier/mkl/MKLMultiClassGradient.h>
+#include <shogun/classifier/mkl/MKLMulticlassGLPK.h>
+#include <shogun/classifier/mkl/MKLMulticlassGradient.h>
+#include <shogun/multiclass/MulticlassSVM.h>
 
 
 namespace shogun
 {
-/** @brief MKLMultiClass is a class for L1-norm multiclass MKL.
+/** @brief MKLMulticlass is a class for L1-norm multiclass MKL.
 *
 *	It is based on the GMNPSVM Multiclass SVM.
 *	Its own parameters are the L2 norm weight change based MKL
 *	Its termination criterion set by void set_mkl_epsilon(float64_t eps ); and the maximal number of MKL iterations set by void set_max_num_mkliters(int32_t maxnum); It passes the regularization constants C1 and C2 to GMNPSVM.
  */
-class CMKLMultiClass : public CMultiClassSVM
+class CMKLMulticlass : public CMulticlassSVM
 {
 public:
 	/** Class default Constructor
 	 *
 	 */
-	CMKLMultiClass();
+	CMKLMulticlass();
 	/** Class Constructor commonly used in Shogun Toolbox
 	 * @param C constant C
 	 * @param k kernel
 	 * @param lab labels
 	 */
-	CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab);
+	CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab);
 
 
 	/** Class default Destructor
 	 *
 	 */
-	virtual ~CMKLMultiClass();
+	virtual ~CMKLMulticlass();
 
 	/** get classifier type
 	 *
@@ -96,12 +97,12 @@ protected:
 	 * protected to avoid its usage
 	 *
 	 */
-	CMKLMultiClass( const CMKLMultiClass & cm);
+	CMKLMulticlass( const CMKLMulticlass & cm);
 	/** Class Assignment operator
 	 * protected to avoid its usage
 	 *
 	 */
-	CMKLMultiClass operator=( const CMKLMultiClass & cm);
+	CMKLMulticlass operator=( const CMKLMulticlass & cm);
 
 	/** performs some sanity checks (on the provided kernel), inits the
 	 * GLPK-based LP solver
@@ -171,7 +172,7 @@ protected:
 	/** the solver wrapper
 	*
 	*/
-	MKLMultiClassOptimizationBase* lpw;
+	MKLMulticlassOptimizationBase* lpw;
 	/** stores the last two mkl iteration weights
 	*
 	*/

@@ -8,34 +8,34 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/mkl/MKLMultiClassOptimizationBase.h>
+#include <shogun/classifier/mkl/MKLMulticlassOptimizationBase.h>
 
 using namespace shogun;
 
-MKLMultiClassOptimizationBase::MKLMultiClassOptimizationBase()
+MKLMulticlassOptimizationBase::MKLMulticlassOptimizationBase()
 {
 
 }
-MKLMultiClassOptimizationBase::~MKLMultiClassOptimizationBase()
+MKLMulticlassOptimizationBase::~MKLMulticlassOptimizationBase()
 {
 
 }
 
 
 
-void MKLMultiClassOptimizationBase::setup(const int32_t numkernels2)
+void MKLMulticlassOptimizationBase::setup(const int32_t numkernels2)
 {
 	SG_ERROR("class MKLMultiOptimizationBase, method not implemented in derivedclass");
 
 }
 
-void MKLMultiClassOptimizationBase::set_mkl_norm(float64_t norm)
+void MKLMulticlassOptimizationBase::set_mkl_norm(float64_t norm)
 {
 	//deliberately no error here
 	SG_WARNING("class MKLMultiOptimizationBase, method set_mkl_norm() not implemented in derived class, has no effect");
 }
 
-void MKLMultiClassOptimizationBase::addconstraint(const ::std::vector<float64_t> & normw2,
+void MKLMulticlassOptimizationBase::addconstraint(const ::std::vector<float64_t> & normw2,
 		const float64_t sumofpositivealphas)
 {
 	SG_ERROR("class MKLMultiOptimizationBase, method not implemented in derivedclass");
@@ -44,7 +44,7 @@ void MKLMultiClassOptimizationBase::addconstraint(const ::std::vector<float64_t>
 
 
 
-void MKLMultiClassOptimizationBase::computeweights(std::vector<float64_t> & weights2)
+void MKLMulticlassOptimizationBase::computeweights(std::vector<float64_t> & weights2)
 {
 	SG_ERROR("class MKLMultiOptimizationBase, method not implemented in derivedclass");
 }

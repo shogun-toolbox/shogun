@@ -28,14 +28,14 @@
 %rename(ScatterSVM) CScatterSVM;
 %rename(LibSVM) CLibSVM;
 %rename(LaRank) CLaRank;
-%rename(LibSVMMultiClass) CLibSVMMultiClass;
+%rename(LibSVMMultiClass) CLibSVMMulticlass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
 %rename(LinearMachine) CLinearMachine;
 %rename(OnlineLinearMachine) COnlineLinearMachine;
 %rename(LPBoost) CLPBoost;
 %rename(LPM) CLPM;
 %rename(MPDSVM) CMPDSVM;
-%rename(MultiClassSVM) CMultiClassSVM;
+%rename(MulticlassSVM) CMulticlassSVM;
 %rename(OnlineSVMSGD) COnlineSVMSGD;
 %rename(OnlineLibLinear) COnlineLibLinear;
 %rename(Perceptron) CPerceptron;
@@ -55,7 +55,7 @@
 %rename(MKL) CMKL;
 %rename(MKLClassification) CMKLClassification;
 %rename(MKLOneClass) CMKLOneClass;
-%rename(MKLMultiClass) CMKLMultiClass;
+%rename(MKLMulticlass) CMKLMulticlass;
 %rename(VowpalWabbit) CVowpalWabbit;
 %rename(ConjugateIndex) CConjugateIndex;
 #ifdef USE_SVMLIGHT
@@ -79,7 +79,9 @@
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
-%include <shogun/classifier/svm/MultiClassSVM.h>
+%include <shogun/machine/MulticlassMachine.h>
+%include <shogun/machine/KernelMulticlassMachine.h>
+%include <shogun/multiclass/MulticlassSVM.h>
 %include <shogun/machine/LinearMachine.h>
 %include <shogun/machine/OnlineLinearMachine.h>
 %include <shogun/classifier/GaussianNaiveBayes.h>
@@ -93,7 +95,7 @@
 %include <shogun/classifier/svm/ScatterSVM.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/classifier/svm/LaRank.h>
-%include <shogun/classifier/svm/LibSVMMultiClass.h>
+%include <shogun/classifier/svm/LibSVMMulticlass.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
 %include <shogun/classifier/LPBoost.h> 
 %include <shogun/classifier/LPM.h>
@@ -113,12 +115,10 @@
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
-%include <shogun/classifier/mkl/MKLMultiClass.h>
+%include <shogun/classifier/mkl/MKLMulticlass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %include <shogun/classifier/ConjugateIndex.h>
-%include <shogun/machine/MulticlassMachine.h>
-%include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/machine/LinearMulticlassMachine.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
 
