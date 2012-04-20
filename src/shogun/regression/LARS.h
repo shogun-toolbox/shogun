@@ -8,13 +8,14 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#ifndef LARS_H_WSBLKNVU
-#define LARS_H_WSBLKNVU
+#ifndef _LARS_H__
+#define _LARS_H__
 
+#include <shogun/lib/config.h>
+
+#ifdef HAVE_LAPACK
 #include <vector>
-
 #include <shogun/machine/LinearMachine.h>
-
 
 namespace shogun 
 {
@@ -242,5 +243,5 @@ private:
 
 } // namespace shogun
 
-#endif /* end of include guard: LARS_H_WSBLKNVU */
-
+#endif // HAVE_LAPACK
+#endif // _LARS_H__

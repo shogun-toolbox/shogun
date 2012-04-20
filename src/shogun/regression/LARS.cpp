@@ -8,13 +8,14 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <shogun/lib/config.h>
+
+#ifdef HAVE_LAPACK
+
 #include <vector>
 #include <limits>
 #include <algorithm>
 
-#include <shogun/lib/config.h>
-
-#ifdef HAVE_LAPACK
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
