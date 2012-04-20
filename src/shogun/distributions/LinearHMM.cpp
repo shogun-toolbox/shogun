@@ -244,7 +244,7 @@ SGVector<float64_t> CLinearHMM::get_transition_probs()
 	return SGVector<float64_t>(transition_probs, num_params);
 }
 
-bool CLinearHMM::set_transition_probs(SGVector<float64_t> probs)
+bool CLinearHMM::set_transition_probs(const SGVector<float64_t>& probs)
 {
 	ASSERT(probs.vlen == num_params);
 
@@ -268,7 +268,7 @@ SGVector<float64_t> CLinearHMM::get_log_transition_probs()
 	return SGVector<float64_t>(log_transition_probs, num_params);
 }
 
-bool CLinearHMM::set_log_transition_probs(SGVector<float64_t> probs)
+bool CLinearHMM::set_log_transition_probs(const SGVector<float64_t>& probs)
 {
 	ASSERT(probs.vlen == num_params);
 

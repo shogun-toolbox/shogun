@@ -311,7 +311,7 @@ float64_t* CSVM::get_linear_term_array()
 	return a.vector;
 }
 
-void CSVM::set_linear_term(SGVector<float64_t> linear_term)
+void CSVM::set_linear_term(const SGVector<float64_t>& linear_term)
 {
 	ASSERT(linear_term.vector);
 

@@ -35,8 +35,8 @@ CKernelMachine::CKernelMachine() : CMachine()
     init();
 }
 
-CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
-        SGVector<int32_t> svs, float64_t b) : CMachine()
+CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t>& alphas,
+        const SGVector<int32_t>& svs, float64_t b) : CMachine()
 {
     init();
 
@@ -169,12 +169,12 @@ int32_t CKernelMachine::get_num_support_vectors()
     return m_svs.vlen;
 }
 
-void CKernelMachine::set_alphas(SGVector<float64_t> alphas)
+void CKernelMachine::set_alphas(const SGVector<float64_t>& alphas)
 {
     m_alpha = alphas;
 }
 
-void CKernelMachine::set_support_vectors(SGVector<int32_t> svs)
+void CKernelMachine::set_support_vectors(const SGVector<int32_t>& svs)
 {
     m_svs = svs;
 }
@@ -459,7 +459,7 @@ void CKernelMachine::store_model_features()
 	SG_UNREF(rhs);
 }
 
-bool CKernelMachine::train_locked(SGVector<index_t> indices)
+bool CKernelMachine::train_locked(const SGVector<index_t>& indices)
 {
 	SG_DEBUG("entering %s::train_locked()\n", get_name());
 	if (!is_data_locked())
@@ -496,7 +496,7 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	return result;
 }
 
-CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
+CLabels* CKernelMachine::apply_locked(const SGVector<index_t>& indices)
 {
 	if (!is_data_locked())
 		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n");

@@ -82,7 +82,7 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 	return weights!=NULL;
 }
 
-bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
+bool CWeightedCommWordStringKernel::set_weights(const SGVector<float64_t>& w)
 {
 	ASSERT(w.vlen==degree);
 

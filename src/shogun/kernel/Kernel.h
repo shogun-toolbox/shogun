@@ -756,7 +756,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param weights new subkernel weights
 		 */
-		virtual void set_subkernel_weights(SGVector<float64_t> weights);
+		virtual void set_subkernel_weights(const SGVector<float64_t>& weights);
 
 	protected:
 		/** set property

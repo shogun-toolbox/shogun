@@ -219,7 +219,7 @@ class CMachine : public CSGObject
 		virtual void set_store_model_features(bool store_model);
 
 		/** TODO */
-		virtual bool train_locked(SGVector<index_t> indices)
+		virtual bool train_locked(const SGVector<index_t>& indices)
 		{
 			SG_ERROR("train_locked(SGVector<index_t>) is not yet implemented "
 					"for %s\n", get_name());
@@ -227,7 +227,7 @@ class CMachine : public CSGObject
 		}
 
 		/** TODO doc */
-		virtual CLabels* apply_locked(SGVector<index_t> indices)
+		virtual CLabels* apply_locked(const SGVector<index_t>& indices)
 		{
 			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "
 					"for %s\n", get_name());

@@ -266,7 +266,7 @@ template <class T>
 }
 
 template <class T>
-float32_t CStreamingSimpleFeatures<T>::dot(SGVector<T> sgvec1)
+float32_t CStreamingSimpleFeatures<T>::dot(const SGVector<T>& sgvec1)
 {
 	int32_t len1;
 	len1=sgvec1.vlen;

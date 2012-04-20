@@ -85,7 +85,7 @@ namespace shogun
 			 * @param vector features vector
 			 * @return transformed feature vector
 			 */
-			virtual SGVector<float64_t> apply_to_feature_vector (SGVector<float64_t> vector);
+			virtual SGVector<float64_t> apply_to_feature_vector (const SGVector<float64_t>& vector);
 
 			/** @return object name */
 			virtual inline const char* get_name () const { return "HomogeneousKernelMap"; }

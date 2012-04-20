@@ -93,7 +93,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @param src_w new w
 		 */
-		inline void set_w(SGVector<float64_t> src_w)
+		inline void set_w(const SGVector<float64_t>& src_w)
 		{
 			SG_FREE(w);
 			w=src_w.vector;
