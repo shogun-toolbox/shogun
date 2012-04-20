@@ -32,7 +32,11 @@ class CLibSVMMulticlass : public CMulticlassSVM
 		 * @param lab labels
 		 */
 		CLibSVMMulticlass(float64_t C, CKernel* k, CLabels* lab);
+
+		/** destructor */
 		virtual ~CLibSVMMulticlass();
+
+		using CMulticlassMachine::apply;
 
 		/** get classifier type
 		 *
