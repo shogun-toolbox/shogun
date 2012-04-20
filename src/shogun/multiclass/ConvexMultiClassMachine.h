@@ -64,25 +64,25 @@ public:
      * @param iterations number of iterations performed
      * @param task_indexes sizes of samples per task (may be unbalanced)
      */
-    CConvexMultiClassMachine(CDotFeatures* features, CLabels* labs, TRAINING_METHOD method, SGMatrix<float64_t>* gammas,SGMatrix<float64_t>* d_ini,
-    float64_t init_epsilon, CKernel* kernel, int32_t iterations, int32_t* task_indexes);
+    CConvexMultiClassMachine(CDotFeatures* features, CLabels* labs, TRAINING_METHOD method, SGVector<float64_t> gammas,SGMatrix<float64_t> d_ini,
+    float64_t init_epsilon, CKernel* kernel, int32_t iterations, SGVector<int32_t> task_indexes);
     
     /*destructor*/
     virtual ~CConvexMultiClassMachine();
     
-    SGMatrix<float64_t>* get_d_ini() const {
+    SGMatrix<float64_t> get_d_ini() const {
     return m_d_ini;
 }
 
-    void set_d_ini(SGMatrix<float64_t>* d_ini_) {
+    void set_d_ini(SGMatrix<float64_t> d_ini_) {
         this->m_d_ini = d_ini_;
     }
 
-    SGMatrix<float64_t>* get_gammas() const {
+    SGVector<float64_t> get_gammas() const {
         return m_gammas;
     }
 
-    void set_gammas(SGMatrix<float64_t>* gammas_) {
+    void set_gammas(SGVector<float64_t> gammas_) {
         this->m_gammas = gammas_;
     }
 
@@ -118,11 +118,11 @@ public:
         this->m_method = method_;
     }
 
-    int32_t* get_task_indexes() const {
+    SGVector<int32_t> get_task_indexes() const {
         return m_task_indexes;
     }
 
-    void set_task_indexes(int32_t* task_indexes_) {
+    void set_task_indexes(SGVector<int32_t> task_indexes_) {
         this->m_task_indexes = task_indexes_;
     }
 
@@ -152,21 +152,21 @@ private:
      * min_d { sum_i f(d_i) b_i^2 } 
      *(b_i are the singular values of W, or in case of var. selection the L2 norms of the rows of W)*/
     void d_method(float64_t* vec, float64_t* new_vec, int32_t len);
-    void train_alternating_epsilon(SGMatrix<float64_t>* out_w, SGMatrix<float64_t>* out_d, float64_t* out_costfunc, float64_t* out_mineps);
-    void train_alternating(SGMatrix<float64_t>* out_w, SGMatrix<float64_t>* out_d, float64_t* out_costfunc);
+    void train_alternating_epsilon(SGMatrix<float64_t> out_w, SGMatrix<float64_t> out_d, float64_t* out_costfunc, float64_t* out_mineps);
+    void train_alternating(SGMatrix<float64_t> out_w, SGMatrix<float64_t> out_d, float64_t* out_costfunc);
     void d_min_e_method(float64_t* vec, float64_t* new_vec, int32_t len);
-    void test_error_unbalanced(CDotFeatures* features_test, SGMatrix<float64_t> estimated_w, int32_t task_indexes_test, float64_t* testerr);
+    void test_error_unbalanced(CDotFeatures* features_test, SGMatrix<float64_t> estimated_w, SGVector<int32_t> task_indexes_test, float64_t* testerr);
 
     
 protected:
     
     TRAINING_METHOD m_method;
-    SGMatrix<float64_t>* m_gammas;
-    SGMatrix<float64_t>* m_d_ini;
+    SGVector<float64_t> m_gammas;
+    SGMatrix<float64_t> m_d_ini;
     float64_t m_epsilon_init;
     CKernel* m_kernel;
     int32_t m_iterations;
-    int32_t* m_task_indexes;
+    SGVector<int32_t> m_task_indexes;
     TRAINING_METHOD training_method;
     D_MIN_METHOD d_min_method;
     
