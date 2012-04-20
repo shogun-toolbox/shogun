@@ -122,13 +122,13 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	SG_DEBUG("Exit flag [exitflag] = %d \n",value.exitflag);
 
 	clear_machines();
-	m_machines = SGVector<CMachine*>(num_classes);
+	m_machines.clear_array();
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();
 		machine->set_w(SGVector<float64_t>(&user_data.W[i*num_features],num_features).clone());
 
-		m_machines[i] = machine;
+		m_machines.push_back(machine);
 	}
 
 	SG_FREE(user_data.W);

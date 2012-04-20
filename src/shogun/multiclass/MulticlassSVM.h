@@ -67,9 +67,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 */
 		CSVM* get_svm(int32_t num)
 		{
-			ASSERT(num>=0 && num<m_machines.vlen);
-			SG_REF(m_machines[num]);
-			return dynamic_cast<CSVM *>(m_machines[num]);
+			return dynamic_cast<CSVM *>(m_machines.get_element_safe(num));
 		}
 
 		/** classify one example

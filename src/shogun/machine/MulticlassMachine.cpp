@@ -43,18 +43,16 @@ CMulticlassMachine::~CMulticlassMachine()
 
 void CMulticlassMachine::register_parameters()
 {
-	m_parameters->add((machine_int_t*)&m_multiclass_strategy,"m_multiclass_type");
-	m_parameters->add((CSGObject**)&m_machine, "m_machine");
-	m_parameters->add((CSGObject**)&m_rejection_strategy, "m_rejection_strategy");
-	m_parameters->add_vector((CSGObject***)&m_machines.vector,&m_machines.vlen, "m_machines");
+	SG_ADD((machine_int_t*)&m_multiclass_strategy,"m_multiclass_type", "Multiclass strategy", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_machine, "m_machine", "The base machine", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_rejection_strategy, "m_rejection_strategy", "Rejection strategy", MS_NOT_AVAILABLE);
+	//TODO: fix this
+	//SG_ADD(&m_machines, "machines", "Machines that jointly make up the multi-class machine.", MS_NOT_AVAILABLE);
 }
 
 void CMulticlassMachine::clear_machines()
 {
-	for(int32_t i=0; i<m_machines.vlen; i++)
-		SG_UNREF(m_machines[i]);
-
-	m_machines.destroy_vector();
+	m_machines.clear_array();
 }
 
 CLabels* CMulticlassMachine::apply(CFeatures* features)
@@ -107,7 +105,7 @@ bool CMulticlassMachine::train_one_vs_rest()
 	int32_t num_vectors = get_num_rhs_vectors();
 
 	clear_machines();
-	m_machines = SGVector<CMachine*>(num_classes);
+	m_machines.clear_array();
 	CLabels* train_labels = new CLabels(num_vectors);
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
@@ -123,7 +121,8 @@ bool CMulticlassMachine::train_one_vs_rest()
 		}
 
 		m_machine->train();
-		m_machines[i] = get_machine_from_trained(m_machine);
+		
+		m_machines.push_back(get_machine_from_trained(m_machine));
 	}
 
 	SG_UNREF(train_labels);
@@ -136,7 +135,7 @@ bool CMulticlassMachine::train_one_vs_one()
 	int32_t num_vectors = get_num_rhs_vectors();
 
 	clear_machines();
-	m_machines = SGVector<CMachine*>(num_classes*(num_classes-1)/2);
+	m_machines.clear_array();
 	CLabels* train_labels = new CLabels(num_vectors);
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
@@ -145,7 +144,7 @@ bool CMulticlassMachine::train_one_vs_one()
 	int32_t tot = 0;
 
 	/** Train each machine */
-	for (int32_t i=0, c=0; i<num_classes; i++)
+	for (int32_t i=0; i<num_classes; i++)
 	{
 		for (int32_t j=i+1; j<num_classes; j++)
 		{
@@ -182,7 +181,7 @@ bool CMulticlassMachine::train_one_vs_one()
 			set_machine_subset( new CSubset( SGVector<index_t>(subset_feats.vector, tot) ) );
 
 			m_machine->train();
-			m_machines[c++] = get_machine_from_trained(m_machine);
+			m_machines.push_back(get_machine_from_trained(m_machine));
 
 			train_labels->remove_subset();
 			remove_machine_subset();
@@ -212,8 +211,10 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 
 		for (int32_t i=0; i<num_machines; i++)
 		{
-			ASSERT(m_machines[i]);
-			outputs[i]=m_machines[i]->apply();
+			CMachine *machine = m_machines.get_element(i);
+			ASSERT(machine);
+			outputs[i]=machine->apply();
+			SG_UNREF(machine);
 		}
 
 		SGVector<float64_t> outputs_for_i(num_machines);
@@ -281,8 +282,10 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 
 		for (int32_t i=0; i<num_machines; i++)
 		{
-			ASSERT(m_machines[i]);
-			outputs[i]=m_machines[i]->apply();
+			CMachine *machine = m_machines.get_element(i);
+			ASSERT(machine);
+			outputs[i]=machine->apply();
+			SG_UNREF(machine);
 		}
 
 		SGVector<float64_t> output_for_v(num_machines);
