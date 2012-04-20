@@ -229,7 +229,7 @@ void tester()
 	//here comes the core stuff
 	float64_t regconst=1.0;
 
-	CMKLMultiClass* tsvm =new CMKLMultiClass(regconst, ker, lab);
+	CMKLMulticlass* tsvm =new CMKLMulticlass(regconst, ker, lab);
 
 	tsvm->set_epsilon(0.0001); // SVM epsilon
 	// MKL parameters
