@@ -17,15 +17,17 @@ using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
 : CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY),
-  m_machine(NULL), m_rejection_strategy(NULL), m_machines(new CDynamicObjectArray<CMachine>())
+	m_machine(NULL), m_machines(new CDynamicObjectArray<CMachine>()),
+	m_rejection_strategy(NULL)
 {
 	register_parameters();
 }
 
 CMulticlassMachine::CMulticlassMachine(
-	EMulticlassStrategy strategy,
-	CMachine* machine, CLabels* labs)
-: CMachine(), m_multiclass_strategy(strategy), m_rejection_strategy(NULL), m_machines(new CDynamicObjectArray<CMachine>())
+		EMulticlassStrategy strategy,
+		CMachine* machine, CLabels* labs)
+: CMachine(), m_multiclass_strategy(strategy),
+	m_machines(new CDynamicObjectArray<CMachine>()), m_rejection_strategy(NULL)
 {
 	set_labels(labs);
 	SG_REF(machine);
