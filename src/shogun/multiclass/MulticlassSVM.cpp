@@ -183,17 +183,15 @@ bool CMulticlassSVM::load(FILE* modelfl)
 		line_number++;
 	}
 
-	/*
 	int_buffer=0;
-	if (fscanf(modelfl," multiclass_type=%d; \n", &int_buffer) != 1)
+	if (fscanf(modelfl," multiclass_strategy=%d; \n", &int_buffer) != 1)
 		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 
 	if (!feof(modelfl))
 		line_number++;
 
-	if (int_buffer != multiclass_type)
-		SG_ERROR("multiclass type does not match %ld vs. %ld\n", int_buffer, multiclass_type);
-	*/
+	if (int_buffer != m_multiclass_strategy)
+		SG_ERROR("multiclass strategy does not match %ld vs. %ld\n", int_buffer, m_multiclass_strategy);
 
 	int_buffer=0;
 	if (fscanf(modelfl," num_classes=%d; \n", &int_buffer) != 1)
@@ -333,7 +331,7 @@ bool CMulticlassSVM::save(FILE* modelfl)
 
 	SG_INFO( "Writing model file...");
 	fprintf(modelfl,"%%MultiClassSVM\n");
-	//fprintf(modelfl,"multiclass_type=%d;\n", multiclass_type);
+	fprintf(modelfl,"multiclass_strategy=%d;\n", m_multiclass_strategy);
 	fprintf(modelfl,"num_classes=%d;\n", m_labels->get_num_classes());
 	fprintf(modelfl,"num_svms=%d;\n", m_machines.vlen);
 	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());
