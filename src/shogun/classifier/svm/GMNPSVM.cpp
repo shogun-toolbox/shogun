@@ -21,13 +21,13 @@
 using namespace shogun;
 
 CGMNPSVM::CGMNPSVM()
-: CMultiClassSVM(ONE_VS_REST)
+: CMulticlassSVM(ONE_VS_REST_STRATEGY)
 {
 	init();
 }
 
 CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST, C, k, lab)
+: CMulticlassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
 {
 	init();
 }
@@ -50,7 +50,7 @@ CGMNPSVM::init()
 
 bool CGMNPSVM::train_machine(CFeatures* data)
 {
-	ASSERT(kernel);
+	ASSERT(m_kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
 
 	if (data)
@@ -60,7 +60,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 			SG_ERROR("Numbert of vectors (%d) does not match number of labels (%d)\n",
 					data->get_num_vectors(), m_labels->get_num_labels());
 		}
-		kernel->init(data, data);
+		m_kernel->init(data, data);
 	}
 
 	int32_t num_data = m_labels->get_num_labels();
@@ -79,7 +79,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	float64_t C = get_C1();
 	int32_t tmax = 1000000000;
 	float64_t tolabs = 0;
-	float64_t tolrel = epsilon;
+	float64_t tolrel = get_epsilon();
 
 	float64_t reg_const=0;
 	if( C!=0 )
@@ -95,7 +95,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	float64_t* History = NULL;
 	int32_t verb = 0;
 
-	CGMNPLib mnp(vector_y,kernel,num_data, num_virtual_data, num_classes, reg_const);
+	CGMNPLib mnp(vector_y,m_kernel,num_data, num_virtual_data, num_classes, reg_const);
 
 	mnp.gmnp_imdm(vector_c, num_virtual_data, tmax,
 				  tolabs, tolrel, thlb, alpha, &t, &History, verb);

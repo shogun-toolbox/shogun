@@ -41,12 +41,12 @@
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/regression/svr/MKLRegression.h>
 #include <shogun/classifier/mkl/MKLOneClass.h>
-#include <shogun/classifier/mkl/MKLMultiClass.h>
+#include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/svm/LaRank.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
-#include <shogun/classifier/svm/LibSVMMultiClass.h>
+#include <shogun/classifier/svm/LibSVMMulticlass.h>
 
 #include <shogun/regression/svr/LibSVR.h>
 #include <shogun/regression/KernelRidgeRegression.h>
@@ -122,13 +122,13 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strcmp(name,"LIBSVM_MULTICLASS")==0)
 	{
 		SG_UNREF(classifier);
-		classifier = new CLibSVMMultiClass();
+		classifier = new CLibSVMMulticlass();
 		SG_INFO("created SVMlibsvm object for multiclass\n");
 	}
 	else if (strcmp(name,"LIBSVM_NUMULTICLASS")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CLibSVMMultiClass(LIBSVM_NU_SVC);
+		classifier= new CLibSVMMulticlass(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object for multiclass\n") ;
 	}
 #ifdef USE_SVMLIGHT
@@ -420,7 +420,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strcmp(name,"MKL_MULTICLASS")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CMKLMultiClass();
+		classifier= new CMKLMulticlass();
 	}
 	else if (strcmp(name,"MKL_REGRESSION")==0)
 	{
@@ -439,7 +439,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 
 bool CGUIClassifier::train_mkl_multiclass()
 {
-	CMKLMultiClass* mkl= (CMKLMultiClass*) classifier;
+	CMKLMulticlass* mkl= (CMKLMulticlass*) classifier;
 	if (!mkl)
 		SG_ERROR("No MKL available.\n");
 
@@ -596,7 +596,7 @@ bool CGUIClassifier::train_svm()
 
 	if(svm->get_classifier_type()==CT_MKLMULTICLASS)
 	{
-		((CMKLMultiClass *)svm)->set_mkl_epsilon(svm_weight_epsilon );
+		((CMKLMulticlass *)svm)->set_mkl_epsilon(svm_weight_epsilon );
 	}
 
 	if (svm_do_auc_maximization)
@@ -1185,7 +1185,7 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 bool CGUIClassifier::get_trained_classifier(
 	float64_t* &weights, int32_t &rows, int32_t &cols, float64_t*& bias,
 	int32_t& brows, int32_t& bcols,
-	int32_t idx) // which SVM for MultiClass
+	int32_t idx) // which SVM for Multiclass
 {
 	ASSERT(classifier);
 
@@ -1242,7 +1242,7 @@ bool CGUIClassifier::get_trained_classifier(
 int32_t CGUIClassifier::get_num_svms()
 {
 	ASSERT(classifier);
-	return ((CMultiClassSVM*) classifier)->get_num_svms();
+	return ((CMulticlassSVM*) classifier)->get_num_machines();
 }
 
 bool CGUIClassifier::get_svm(
@@ -1251,8 +1251,8 @@ bool CGUIClassifier::get_svm(
 {
 	CSVM* svm=(CSVM*) classifier;
 
-	if (idx>-1) // should be MultiClassSVM
-		svm=((CMultiClassSVM*) svm)->get_svm(idx);
+	if (idx>-1) // should be MulticlassSVM
+		svm=((CMulticlassSVM*) svm)->get_svm(idx);
 
 	if (svm)
 	{
@@ -1558,30 +1558,6 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		constraint_generator = new CLibSVMOneClass();
 		SG_INFO("created SVMlibsvm object for oneclass\n");
 	}
-	else if (strcmp(name,"LIBSVM_MULTICLASS")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator = new CLibSVMMultiClass();
-		SG_INFO("created SVMlibsvm object for multiclass\n");
-	}
-	else if (strcmp(name,"LIBSVM_NUMULTICLASS")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CLibSVMMultiClass(LIBSVM_NU_SVC);
-		SG_INFO("created SVMlibsvm object for multiclass\n") ;
-	}
-	else if (strcmp(name,"SCATTERSVM_RULE1")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CScatterSVM(TEST_RULE1);
-		SG_INFO("created ScatterSVM RULE1 object\n") ;
-	}
-	else if (strcmp(name,"SCATTERSVM_RULE2")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CScatterSVM(TEST_RULE2);
-		SG_INFO("created ScatterSVM RULE2 object\n") ;
-	}
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{
 		SG_UNREF(constraint_generator);
@@ -1593,12 +1569,6 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CLibSVM();
 		SG_INFO("created SVMlibsvm object\n") ;
-	}
-	else if (strcmp(name,"LARANK")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CLaRank();
-		SG_INFO("created LaRank object\n") ;
 	}
 #ifdef USE_SVMLIGHT
 	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))
@@ -1637,12 +1607,6 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CGNPPSVM();
 		SG_INFO("created GNPP-SVM object\n") ;
-	}
-	else if (strcmp(name,"GMNPSVM")==0)
-	{
-		SG_UNREF(constraint_generator);
-		constraint_generator= new CGMNPSVM();
-		SG_INFO("created GMNP-SVM object\n") ;
 	}
 	else if (strcmp(name,"LIBSVR")==0)
 	{

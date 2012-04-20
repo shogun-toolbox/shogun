@@ -15,37 +15,37 @@
 #include <cmath>
 #include <cassert>
 #include <shogun/base/SGObject.h>
-#include <shogun/classifier/mkl/MKLMultiClassOptimizationBase.h>
+#include <shogun/classifier/mkl/MKLMulticlassOptimizationBase.h>
 
 
 namespace shogun
 {
-/** @brief MKLMultiClassGradient is a helper class for MKLMultiClass.
+/** @brief MKLMulticlassGradient is a helper class for MKLMulticlass.
  *
  *	it solves the corresponding linear problem arising in SIP formulation for
  * 	MKL using a gradient based approach
  */
-class MKLMultiClassGradient: public MKLMultiClassOptimizationBase
+class MKLMulticlassGradient: public MKLMulticlassOptimizationBase
 {
 public:
 	/** Class default Constructor
 	 *
 	 */
-	MKLMultiClassGradient();
+	MKLMulticlassGradient();
 	/** Class default Destructor
 	 *
 	 */
-	virtual ~MKLMultiClassGradient();
+	virtual ~MKLMulticlassGradient();
 
 	/** Class Copy Constructor
 	 *
 	 */
-	MKLMultiClassGradient(MKLMultiClassGradient & gl);
+	MKLMulticlassGradient(MKLMulticlassGradient & gl);
 
 	/** Class Assignment operator
 	 *
 	 */
-	MKLMultiClassGradient operator=(MKLMultiClassGradient & gl);
+	MKLMulticlassGradient operator=(MKLMulticlassGradient & gl);
 
 	/** initializes solver
 	 *
@@ -60,7 +60,7 @@ public:
 	 * @param normw2 is the vector of \f$ \|w_k \|^2 \f$ for all kernels
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
-	 * MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
+	 * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
 	 *
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
@@ -76,7 +76,7 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		return "MKLMultiClassGradient";
+		return "MKLMulticlassGradient";
 	}
 
 	/** sets p-norm parameter for MKL

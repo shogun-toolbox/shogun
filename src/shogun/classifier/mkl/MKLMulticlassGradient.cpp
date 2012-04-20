@@ -8,36 +8,36 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/mkl/MKLMultiClassGradient.h>
+#include <shogun/classifier/mkl/MKLMulticlassGradient.h>
 
 using namespace shogun;
 
-MKLMultiClassGradient::MKLMultiClassGradient()
+MKLMulticlassGradient::MKLMulticlassGradient()
 {
 	numkernels = 0;
 	pnorm=2;
 
 }
-MKLMultiClassGradient::~MKLMultiClassGradient()
+MKLMulticlassGradient::~MKLMulticlassGradient()
 {
 
 }
 
-MKLMultiClassGradient MKLMultiClassGradient::operator=(MKLMultiClassGradient & gl)
+MKLMulticlassGradient MKLMulticlassGradient::operator=(MKLMulticlassGradient & gl)
 {
 	numkernels=gl.numkernels;
 	pnorm=gl.pnorm;
 	return (*this);
 
 }
-MKLMultiClassGradient::MKLMultiClassGradient(MKLMultiClassGradient & gl)
+MKLMulticlassGradient::MKLMulticlassGradient(MKLMulticlassGradient & gl)
 {
 	numkernels=gl.numkernels;
 	pnorm=gl.pnorm;
 
 }
 
-void MKLMultiClassGradient::setup(const int32_t numkernels2)
+void MKLMulticlassGradient::setup(const int32_t numkernels2)
 {
 	numkernels=numkernels2;
 	if (numkernels<=1)
@@ -49,22 +49,22 @@ void MKLMultiClassGradient::setup(const int32_t numkernels2)
 
 }
 
-void MKLMultiClassGradient::set_mkl_norm(float64_t norm)
+void MKLMulticlassGradient::set_mkl_norm(float64_t norm)
 {
 	pnorm=norm;
 	if(pnorm<1 )
-		SG_ERROR("MKLMultiClassGradient::set_mkl_norm(float64_t norm) : parameter pnorm<1");
+		SG_ERROR("MKLMulticlassGradient::set_mkl_norm(float64_t norm) : parameter pnorm<1");
 }
 
 
-void MKLMultiClassGradient::addconstraint(const ::std::vector<float64_t> & normw2,
+void MKLMulticlassGradient::addconstraint(const ::std::vector<float64_t> & normw2,
 		const float64_t sumofpositivealphas)
 {
 	normsofsubkernels.push_back(normw2);
 	sumsofalphas.push_back(sumofpositivealphas);
 }
 
-void MKLMultiClassGradient::genbetas( ::std::vector<float64_t> & weights ,const ::std::vector<float64_t> & gammas)
+void MKLMulticlassGradient::genbetas( ::std::vector<float64_t> & weights ,const ::std::vector<float64_t> & gammas)
 {
 
 	assert((int32_t)gammas.size()+1==numkernels);
@@ -95,7 +95,7 @@ void MKLMultiClassGradient::genbetas( ::std::vector<float64_t> & weights ,const 
 
 }
 
-void MKLMultiClassGradient::gengammagradient( ::std::vector<float64_t> & gammagradient ,const ::std::vector<float64_t> & gammas,const int32_t dim)
+void MKLMulticlassGradient::gengammagradient( ::std::vector<float64_t> & gammagradient ,const ::std::vector<float64_t> & gammas,const int32_t dim)
 {
 
 	assert((int32_t)gammas.size()+1==numkernels);
@@ -135,7 +135,7 @@ void MKLMultiClassGradient::gengammagradient( ::std::vector<float64_t> & gammagr
 
 
 
-float64_t MKLMultiClassGradient::objectives(const ::std::vector<float64_t> & weights, const int32_t index)
+float64_t MKLMulticlassGradient::objectives(const ::std::vector<float64_t> & weights, const int32_t index)
 {
 	assert(index>=0);
 	assert(index < (int32_t) sumsofalphas.size());
@@ -151,7 +151,7 @@ float64_t MKLMultiClassGradient::objectives(const ::std::vector<float64_t> & wei
 }
 
 
-void MKLMultiClassGradient::linesearch(std::vector<float64_t> & finalbeta,const std::vector<float64_t> & oldweights)
+void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const std::vector<float64_t> & oldweights)
 {
 
 	float64_t pi4=3.151265358979238/2;
@@ -352,12 +352,12 @@ void MKLMultiClassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 }
 
 
-void MKLMultiClassGradient::computeweights(std::vector<float64_t> & weights2)
+void MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2)
 {
 	if(pnorm<1 )
-		SG_ERROR("MKLMultiClassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1");
+		SG_ERROR("MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1");
 
-	SG_SDEBUG("MKLMultiClassGradient::computeweights(...): pnorm %f\n",pnorm);
+	SG_SDEBUG("MKLMulticlassGradient::computeweights(...): pnorm %f\n",pnorm);
 
 	int maxnumlinesrch=15;
 	float64_t maxdiff=1e-6;

@@ -12,7 +12,7 @@
 #define _GMNPSVM_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/classifier/svm/MultiClassSVM.h>
+#include <shogun/multiclass/MulticlassSVM.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -21,7 +21,7 @@ namespace shogun
  *
  * It uses CGMNPLib for training (in true multiclass-SVM fashion).
  */
-class CGMNPSVM : public CMultiClassSVM
+class CGMNPSVM : public CMulticlassSVM
 {
 	void init();
 
