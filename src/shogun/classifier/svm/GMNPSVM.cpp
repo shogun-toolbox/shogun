@@ -21,13 +21,13 @@
 using namespace shogun;
 
 CGMNPSVM::CGMNPSVM()
-: CMultiClassSVM(ONE_VS_REST_STRATEGY)
+: CMulticlassSVM(ONE_VS_REST_STRATEGY)
 {
 	init();
 }
 
 CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
+: CMulticlassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
 {
 	init();
 }

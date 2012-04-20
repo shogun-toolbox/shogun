@@ -8,14 +8,14 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/mkl/MKLMultiClass.h>
+#include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
 
-CMKLMultiClass::CMKLMultiClass()
-: CMultiClassSVM(ONE_VS_REST_STRATEGY)
+CMKLMulticlass::CMKLMulticlass()
+: CMulticlassSVM(ONE_VS_REST_STRATEGY)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -25,8 +25,8 @@ CMKLMultiClass::CMKLMultiClass()
 	pnorm=1;
 }
 
-CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
+CMKLMulticlass::CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab)
+: CMulticlassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -37,7 +37,7 @@ CMKLMultiClass::CMKLMultiClass(float64_t C, CKernel* k, CLabels* lab)
 }
 
 
-CMKLMultiClass::~CMKLMultiClass()
+CMKLMulticlass::~CMKLMulticlass()
 {
 	SG_UNREF(svm);
 	svm=NULL;
@@ -45,30 +45,30 @@ CMKLMultiClass::~CMKLMultiClass()
 	lpw=NULL;
 }
 
-CMKLMultiClass::CMKLMultiClass( const CMKLMultiClass & cm)
-: CMultiClassSVM(ONE_VS_REST_STRATEGY)
+CMKLMulticlass::CMKLMulticlass( const CMKLMulticlass & cm)
+: CMulticlassSVM(ONE_VS_REST_STRATEGY)
 {
 	svm=NULL;
 	lpw=NULL;
 	SG_ERROR(
-			" CMKLMultiClass::CMKLMultiClass(const CMKLMultiClass & cm): must "
+			" CMKLMulticlass::CMKLMulticlass(const CMKLMulticlass & cm): must "
 			"not be called, glpk structure is currently not copyable");
 }
 
-CMKLMultiClass CMKLMultiClass::operator=( const CMKLMultiClass & cm)
+CMKLMulticlass CMKLMulticlass::operator=( const CMKLMulticlass & cm)
 {
 		SG_ERROR(
-			" CMKLMultiClass CMKLMultiClass::operator=(...): must "
+			" CMKLMulticlass CMKLMulticlass::operator=(...): must "
 			"not be called, glpk structure is currently not copyable");
 	return (*this);
 }
 
 
-void CMKLMultiClass::initsvm()
+void CMKLMulticlass::initsvm()
 {
 	if (!m_labels)
 	{
-		SG_ERROR("CMKLMultiClass::initsvm(): the set labels is NULL\n");
+		SG_ERROR("CMKLMulticlass::initsvm(): the set labels is NULL\n");
 	}
 
 	SG_UNREF(svm);
@@ -80,23 +80,23 @@ void CMKLMultiClass::initsvm()
 
 	if (m_labels->get_num_labels()<=0)
 	{
-		SG_ERROR("CMKLMultiClass::initsvm(): the number of labels is "
+		SG_ERROR("CMKLMulticlass::initsvm(): the number of labels is "
 				"nonpositive, do not know how to handle this!\n");
 	}
 
 	svm->set_labels(m_labels);
 }
 
-void CMKLMultiClass::initlpsolver()
+void CMKLMulticlass::initlpsolver()
 {
 	if (!m_kernel)
 	{
-		SG_ERROR("CMKLMultiClass::initlpsolver(): the set kernel is NULL\n");
+		SG_ERROR("CMKLMulticlass::initlpsolver(): the set kernel is NULL\n");
 	}
 
 	if (m_kernel->get_kernel_type()!=K_COMBINED)
 	{
-		SG_ERROR("CMKLMultiClass::initlpsolver(): given kernel is not of type"
+		SG_ERROR("CMKLMulticlass::initlpsolver(): given kernel is not of type"
 				" K_COMBINED %d required by Multiclass Mkl \n",
 				m_kernel->get_kernel_type());
 	}
@@ -111,22 +111,22 @@ void CMKLMultiClass::initlpsolver()
 	}
 	*/
 
-	//lpw=new MKLMultiClassGLPK;
+	//lpw=new MKLMulticlassGLPK;
 	if(pnorm>1)
 	{
-		lpw=new MKLMultiClassGradient;
+		lpw=new MKLMulticlassGradient;
 		lpw->set_mkl_norm(pnorm);
 	}
 	else
 	{
-		lpw=new MKLMultiClassGLPK;
+		lpw=new MKLMulticlassGLPK;
 	}
 	lpw->setup(numker);
 
 }
 
 
-bool CMKLMultiClass::evaluatefinishcriterion(const int32_t
+bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 		numberofsilpiterations)
 {
 	if ( (max_num_mkl_iters>0) && (numberofsilpiterations>=max_num_mkl_iters) )
@@ -202,7 +202,7 @@ bool CMKLMultiClass::evaluatefinishcriterion(const int32_t
 	return(false);
 }
 
-void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
+void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 		curweights)
 {
 
@@ -238,7 +238,7 @@ void CMKLMultiClass::addingweightsstep( const std::vector<float64_t> &
 	lpw->addconstraint(normweightssquared,sumofsignfreealphas);
 }
 
-float64_t CMKLMultiClass::getsumofsignfreealphas()
+float64_t CMKLMulticlass::getsumofsignfreealphas()
 {
 
 	std::vector<int> trainlabels2(m_labels->get_num_labels());
@@ -286,7 +286,7 @@ float64_t CMKLMultiClass::getsumofsignfreealphas()
 	return(sum);
 }
 
-float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
+float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 		const int32_t ind)
 {
 	CKernel * ker=dynamic_cast<CCombinedKernel *>(m_kernel)->get_kernel(ind);
@@ -322,7 +322,7 @@ float64_t CMKLMultiClass::getsquarenormofprimalcoefficients(
 }
 
 
-bool CMKLMultiClass::train_machine(CFeatures* data)
+bool CMKLMulticlass::train_machine(CFeatures* data)
 {
 	int numcl=m_labels->get_num_classes();
 	ASSERT(m_kernel);
@@ -400,7 +400,7 @@ bool CMKLMultiClass::train_machine(CFeatures* data)
 
 
 
-float64_t* CMKLMultiClass::getsubkernelweights(int32_t & numweights)
+float64_t* CMKLMulticlass::getsubkernelweights(int32_t & numweights)
 {
 	if ( weightshistory.empty() )
 	{
@@ -416,19 +416,19 @@ float64_t* CMKLMultiClass::getsubkernelweights(int32_t & numweights)
 	return res;
 }
 
-void CMKLMultiClass::set_mkl_epsilon(float64_t eps )
+void CMKLMulticlass::set_mkl_epsilon(float64_t eps )
 {
 	mkl_eps=eps;
 }
 
-void CMKLMultiClass::set_max_num_mkliters(int32_t maxnum)
+void CMKLMulticlass::set_max_num_mkliters(int32_t maxnum)
 {
 	max_num_mkl_iters=maxnum;
 }
 
-void CMKLMultiClass::set_mkl_norm(float64_t norm)
+void CMKLMulticlass::set_mkl_norm(float64_t norm)
 {
 	pnorm=norm;
 	if(pnorm<1 )
-		SG_ERROR("CMKLMultiClass::set_mkl_norm(float64_t norm) : parameter pnorm<1");
+		SG_ERROR("CMKLMulticlass::set_mkl_norm(float64_t norm) : parameter pnorm<1");
 }

@@ -14,7 +14,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
-#include <shogun/classifier/svm/MultiClassSVM.h>
+#include <shogun/multiclass/MulticlassSVM.h>
 #include <shogun/lib/external/shogun_libsvm.h>
 
 #include <stdio.h>
@@ -50,7 +50,7 @@ namespace shogun
  * TU Berlin, 2009
  *
  * */
-class CScatterSVM : public CMultiClassSVM
+class CScatterSVM : public CMulticlassSVM
 {
 	public:
 		/** default constructor  */

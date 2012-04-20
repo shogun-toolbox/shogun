@@ -73,9 +73,9 @@ class CGUIClassifier : public CSGObject
 		bool get_trained_classifier(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
 			float64_t*& bias, int32_t& brows, int32_t& bcols,
-			int32_t idx=-1); // which SVM in MultiClass
+			int32_t idx=-1); // which SVM in Multiclass
 
-		/** get number of SVMs in MultiClass */
+		/** get number of SVMs in Multiclass */
 		int32_t get_num_svms();
 		/** get svm
 		 * @param weights
@@ -89,7 +89,7 @@ class CGUIClassifier : public CSGObject
 		bool get_svm(
 			float64_t* &weights, int32_t& rows, int32_t& cols,
 			float64_t*& bias, int32_t& brows, int32_t& bcols,
-			int32_t idx=-1); // which SVM in MultiClass
+			int32_t idx=-1); // which SVM in Multiclass
 		/** get linear
 		 * @param weights
 		 * @param rows

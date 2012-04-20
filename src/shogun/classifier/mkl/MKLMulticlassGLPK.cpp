@@ -8,7 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/mkl/MKLMultiClassGLPK.h>
+#include <shogun/classifier/mkl/MKLMulticlassGLPK.h>
 #ifdef USE_GLPK
 #include <glpk.h>
 #endif
@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-MKLMultiClassGLPK::MKLMultiClassGLPK()
+MKLMulticlassGLPK::MKLMulticlassGLPK()
 {
 	numkernels = 0;
 #ifdef USE_GLPK
@@ -25,7 +25,7 @@ MKLMultiClassGLPK::MKLMultiClassGLPK()
 	linearproblem=NULL;
 #endif
 }
-MKLMultiClassGLPK::~MKLMultiClassGLPK()
+MKLMulticlassGLPK::~MKLMulticlassGLPK()
 {
 #if defined(USE_GLPK)
 	if (linearproblem)
@@ -37,23 +37,23 @@ MKLMultiClassGLPK::~MKLMultiClassGLPK()
 #endif
 }
 
-MKLMultiClassGLPK MKLMultiClassGLPK::operator=(MKLMultiClassGLPK & gl)
+MKLMulticlassGLPK MKLMulticlassGLPK::operator=(MKLMulticlassGLPK & gl)
 {
 	SG_ERROR(
-			" MKLMultiClassGLPK MKLMultiClassGLPK::operator=(...): must "
+			" MKLMulticlassGLPK MKLMulticlassGLPK::operator=(...): must "
 			"not be called, glpk structure is currently not copyable");
 	return (*this);
 
 }
-MKLMultiClassGLPK::MKLMultiClassGLPK(MKLMultiClassGLPK & gl)
+MKLMulticlassGLPK::MKLMulticlassGLPK(MKLMulticlassGLPK & gl)
 {
 	SG_ERROR(
-			" MKLMultiClassGLPK::MKLMultiClassGLPK(MKLMultiClassGLPK & gl):"
+			" MKLMulticlassGLPK::MKLMulticlassGLPK(MKLMulticlassGLPK & gl):"
 			" must not be called, glpk structure is currently not copyable");
 
 }
 
-void MKLMultiClassGLPK::setup(const int32_t numkernels2)
+void MKLMulticlassGLPK::setup(const int32_t numkernels2)
 {
 #if defined(USE_GLPK)
 	numkernels=numkernels2;
@@ -119,7 +119,7 @@ void MKLMultiClassGLPK::setup(const int32_t numkernels2)
 
 }
 
-void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
+void MKLMulticlassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 		const float64_t sumofpositivealphas)
 {
 #if defined(USE_GLPK)
@@ -168,7 +168,7 @@ void MKLMultiClassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 #endif
 }
 
-void MKLMultiClassGLPK::computeweights(std::vector<float64_t> & weights2)
+void MKLMulticlassGLPK::computeweights(std::vector<float64_t> & weights2)
 {
 #if defined(USE_GLPK)
 	weights2.resize(numkernels);

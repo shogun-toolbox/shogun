@@ -17,22 +17,22 @@
 
 namespace shogun
 {
-/** @brief MKLMultiClassOptimizationBase is a helper class for MKLMultiClass.
+/** @brief MKLMulticlassOptimizationBase is a helper class for MKLMulticlass.
  *
- *	it is a virtual base class for MKLMultiClassGLPK and MKLMultiClassGradient which are instances of optimization
+ *	it is a virtual base class for MKLMulticlassGLPK and MKLMulticlassGradient which are instances of optimization
  *
  */
-class MKLMultiClassOptimizationBase: public CSGObject
+class MKLMulticlassOptimizationBase: public CSGObject
 {
 public:
 	/** Class default Constructor
 	 *
 	 */
-	MKLMultiClassOptimizationBase();
+	MKLMulticlassOptimizationBase();
 	/** Class default Destructor
 	 *
 	 */
-	virtual ~MKLMultiClassOptimizationBase();
+	virtual ~MKLMulticlassOptimizationBase();
 
 	/** initializes solver
 	 *
@@ -47,7 +47,7 @@ public:
 	 * @param normw2 is the vector of \f$ \|w_k \|^2 \f$ for all kernels
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
-	 * MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
+	 * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
 	 *
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
@@ -63,7 +63,7 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		return "MKLMultiClassOptimizationBase";
+		return "MKLMulticlassOptimizationBase";
 	}
 
 	/** sets p-norm parameter for MKL
