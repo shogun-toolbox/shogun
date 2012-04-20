@@ -452,7 +452,7 @@ void CFeatures::update_active_subset()
 	}
 }
 
-CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
+CFeatures* CFeatures::copy_subset(const SGVector<index_t>& indices)
 {
 	SG_ERROR("copy_subset and therefore model storage of CMachine "
 			"(required for cross-validation and model-selection is ",

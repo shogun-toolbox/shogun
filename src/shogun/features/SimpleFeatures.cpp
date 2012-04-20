@@ -135,7 +135,7 @@ template<class ST> ST* CSimpleFeatures<ST>::get_feature_vector(int32_t num, int3
 	return feat;
 }
 
-template<class ST> void CSimpleFeatures<ST>::set_feature_vector(SGVector<ST> vector, int32_t num)
+template<class ST> void CSimpleFeatures<ST>::set_feature_vector(const SGVector<ST>& vector, int32_t num)
 {
 	/* index conversion for subset, only for array access */
 	int32_t real_num=subset_idx_conversion(num);
@@ -182,7 +182,7 @@ template<class ST> void CSimpleFeatures<ST>::free_feature_vector(ST* feat_vec, i
 		SG_FREE(feat_vec);
 }
 
-template<class ST> void CSimpleFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num)
+template<class ST> void CSimpleFeatures<ST>::free_feature_vector(const SGVector<ST>& vec, int32_t num)
 {
 	free_feature_vector(vec.vector, num, vec.do_free);
 }
@@ -603,7 +603,7 @@ template<class ST> void CSimpleFeatures<ST>::free_feature_iterator(void* iterato
 	SG_FREE(it);
 }
 
-template<class ST> CFeatures* CSimpleFeatures<ST>::copy_subset(SGVector<index_t> indices)
+template<class ST> CFeatures* CSimpleFeatures<ST>::copy_subset(const SGVector<index_t>& indices)
 {
 	SGMatrix<ST> feature_matrix_copy(num_features, indices.vlen);
 

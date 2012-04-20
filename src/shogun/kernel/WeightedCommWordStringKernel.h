@@ -112,7 +112,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param weights weights
 		 * @return true if setting was successful
 		 */
-		bool set_weights(SGVector<float64_t> weights);
+		bool set_weights(const SGVector<float64_t>& weights);
 
 		/** return what type of kernel we are
 		 *

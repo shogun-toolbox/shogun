@@ -70,7 +70,7 @@
 /* These functions return new Objects */
 %newobject apply();
 %newobject apply(CFeatures* data);
-%newobject apply_locked(SGVector<index_t> indices);
+%newobject apply_locked(const SGVector<index_t>& indices);
 %newobject classify();
 %newobject classify(CFeatures* data);
 
