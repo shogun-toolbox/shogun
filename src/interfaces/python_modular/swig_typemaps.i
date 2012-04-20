@@ -867,6 +867,43 @@ TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_OUT_SGVECTOR
 
+/* One dimensional input arrays (references) */
+%define TYPEMAP_IN_SGVECTOR_REF(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>&, const shogun::SGVector<type>&
+{
+    $1 = is_pyvector($input, typecode);
+}
+
+%typemap(in) shogun::SGVector<type>& (SGVector<type> temp), const shogun::SGVector<type>& (SGVector<type> temp)
+{
+    if (!vector_from_numpy<type>(temp, $input, typecode))
+        SWIG_fail;
+
+	$1 = &temp;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_IN_SGVECTOR_REF macros */
+TYPEMAP_IN_SGVECTOR_REF(bool,          NPY_BOOL)
+#ifdef PYTHON3 // str -> unicode for python3
+TYPEMAP_IN_SGVECTOR_REF(char,          NPY_UNICODE)
+#else
+TYPEMAP_IN_SGVECTOR_REF(char,          NPY_STRING)
+#endif
+TYPEMAP_IN_SGVECTOR_REF(uint8_t,       NPY_UINT8)
+TYPEMAP_IN_SGVECTOR_REF(int16_t,       NPY_INT16)
+TYPEMAP_IN_SGVECTOR_REF(uint16_t,      NPY_UINT16)
+TYPEMAP_IN_SGVECTOR_REF(int32_t,       NPY_INT32)
+TYPEMAP_IN_SGVECTOR_REF(uint32_t,      NPY_UINT32)
+TYPEMAP_IN_SGVECTOR_REF(int64_t,       NPY_INT64)
+TYPEMAP_IN_SGVECTOR_REF(uint64_t,      NPY_UINT64)
+TYPEMAP_IN_SGVECTOR_REF(float32_t,     NPY_FLOAT32)
+TYPEMAP_IN_SGVECTOR_REF(float64_t,     NPY_FLOAT64)
+TYPEMAP_IN_SGVECTOR_REF(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN_SGVECTOR_REF(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_IN_SGVECTOR_REF
+
 /* Two dimensional input arrays */
 %define TYPEMAP_IN_SGMATRIX(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<type>
