@@ -56,9 +56,9 @@ bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
 		else
 			SG_ERROR("unknown multiclass strategy\n");
 
-		m_machines = SGVector<CMachine *>(num_svms);
+		m_machines.clear_array();
 		for (index_t i=0; i<num_svms; ++i)
-			m_machines[i]=NULL;
+			m_machines.push_back(NULL);
 
 		return true;
 	}
@@ -67,10 +67,9 @@ bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
 
 bool CMulticlassSVM::set_svm(int32_t num, CSVM* svm)
 {
-	if (m_machines.vlen>0 && m_machines.vlen>num && num>=0 && svm)
+	if (m_machines.get_num_elements()>0 && m_machines.get_num_elements()>num && num>=0 && svm)
 	{
-		SG_REF(svm);
-		m_machines[num]=svm;
+		m_machines.set_element(svm, num);
 		return true;
 	}
 	return false;
@@ -103,11 +102,12 @@ bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 		m_kernel->init(lhs, data);
 	SG_UNREF(lhs);
 
-	for (int32_t i=0; i<m_machines.vlen; i++)
+	for (int32_t i=0; i<m_machines.get_num_elements(); i++)
 	{
-		ASSERT(m_machines[i]);
-		CSVM *the_svm = (CSVM *)m_machines[i];
+		CSVM *the_svm = (CSVM *)m_machines.get_element(i);
+		ASSERT(the_svm);
 		the_svm->set_kernel(m_kernel);
+		SG_UNREF(the_svm);
 	}
 
 	return true;
@@ -127,13 +127,15 @@ float64_t CMulticlassSVM::apply(int32_t num)
 
 float64_t CMulticlassSVM::classify_example_one_vs_rest(int32_t num)
 {
-	ASSERT(m_machines.vlen>0);
-	SGVector<float64_t> outputs(m_machines.vlen);
+	ASSERT(m_machines.get_num_elements()>0);
+	SGVector<float64_t> outputs(m_machines.get_num_elements());
 
-	for (int32_t i=0; i < m_machines.vlen; ++i)
+	for (int32_t i=0; i < m_machines.get_num_elements(); ++i)
 	{
-		get_svm(i)->set_kernel(m_kernel);
-		outputs[i]=get_svm(i)->apply(num);
+		CSVM *svm = get_svm(i);
+		svm->set_kernel(m_kernel);
+		outputs[i]=svm->apply(num);
+		SG_UNREF(svm);
 	}
 
 	float64_t winner = maxvote_one_vs_rest(outputs);
@@ -145,14 +147,16 @@ float64_t CMulticlassSVM::classify_example_one_vs_rest(int32_t num)
 float64_t CMulticlassSVM::classify_example_one_vs_one(int32_t num)
 {
 	int32_t num_classes=m_labels->get_num_classes();
-	ASSERT(m_machines.vlen>0);
-	ASSERT(m_machines.vlen==num_classes*(num_classes-1)/2);
+	ASSERT(m_machines.get_num_elements()>0);
+	ASSERT(m_machines.get_num_elements()==num_classes*(num_classes-1)/2);
 
-	SGVector<float64_t> outputs(m_machines.vlen);
-	for (int32_t i=0; i < m_machines.vlen; ++i)
+	SGVector<float64_t> outputs(m_machines.get_num_elements());
+	for (int32_t i=0; i < m_machines.get_num_elements(); ++i)
 	{
-		get_svm(i)->set_kernel(m_kernel);
-		outputs[i] = get_svm(i)->apply(num);
+		CSVM *svm = get_svm(i);
+		svm->set_kernel(m_kernel);
+		outputs[i] = svm->apply(num);
+		SG_UNREF(svm);
 	}
 
 	float64_t winner = maxvote_one_vs_one(outputs, num_classes);
@@ -212,8 +216,8 @@ bool CMulticlassSVM::load(FILE* modelfl)
 	if (!feof(modelfl))
 		line_number++;
 
-	if (m_machines.vlen != int_buffer)
-		SG_ERROR("Mismatch in number of svms: m_num_svms=%d vs m_num_svms(file)=%d\n", m_machines.vlen, int_buffer);
+	if (m_machines.get_num_elements() != int_buffer)
+		SG_ERROR("Mismatch in number of svms: m_num_svms=%d vs m_num_svms(file)=%d\n", m_machines.get_num_elements(), int_buffer);
 
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
@@ -221,7 +225,7 @@ bool CMulticlassSVM::load(FILE* modelfl)
 	if (!feof(modelfl))
 		line_number++;
 
-	for (int32_t n=0; n<m_machines.vlen; n++)
+	for (int32_t n=0; n<m_machines.get_num_elements(); n++)
 	{
 		svm_idx=-1;
 		if (fscanf(modelfl,"\n%4s %d of %d\n", char_buffer, &svm_idx, &int_buffer)==EOF)
@@ -326,21 +330,21 @@ bool CMulticlassSVM::save(FILE* modelfl)
 	if (!m_kernel)
 		SG_ERROR("Kernel not defined!\n");
 
-	if (m_machines.vlen<1)
+	if (m_machines.get_num_elements()<1)
 		SG_ERROR("Multiclass SVM not trained!\n");
 
 	SG_INFO( "Writing model file...");
 	fprintf(modelfl,"%%MultiClassSVM\n");
 	fprintf(modelfl,"multiclass_strategy=%d;\n", m_multiclass_strategy);
 	fprintf(modelfl,"num_classes=%d;\n", m_labels->get_num_classes());
-	fprintf(modelfl,"num_svms=%d;\n", m_machines.vlen);
+	fprintf(modelfl,"num_svms=%d;\n", m_machines.get_num_elements());
 	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());
 
-	for (int32_t i=0; i<m_machines.vlen; i++)
+	for (int32_t i=0; i<m_machines.get_num_elements(); i++)
 	{
 		CSVM* svm=get_svm(i);
 		ASSERT(svm);
-		fprintf(modelfl,"\n%%SVM %d of %d\n", i, m_machines.vlen-1);
+		fprintf(modelfl,"\n%%SVM %d of %d\n", i, m_machines.get_num_elements()-1);
 		fprintf(modelfl,"numsv%d=%d;\n", i, svm->get_num_support_vectors());
 		fprintf(modelfl,"b%d=%+10.16e;\n",i,svm->get_bias());
 

@@ -13,6 +13,7 @@
 #define _MULTICLASSMACHINE_H___
 
 #include <shogun/machine/Machine.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/RejectionStrategy.h>
 
 namespace shogun
@@ -55,13 +56,11 @@ class CMulticlassMachine : public CMachine
 		 */
 		inline bool set_machine(int32_t num, CMachine* machine)
 		{
-			ASSERT(num<m_machines.vlen && num>=0);
+			ASSERT(num<m_machines.get_num_elements() && num>=0);
 			if (machine != NULL && !is_acceptable_machine(machine))
 				SG_ERROR("Machine %s is not acceptable by %s", machine->get_name(), this->get_name());
 
-			SG_REF(machine);
-			SG_UNREF(m_machines[num]);
-			m_machines[num] = machine;
+			m_machines.set_element(machine, num);
 			return true;
 		}
 
@@ -72,9 +71,7 @@ class CMulticlassMachine : public CMachine
 		 */
 		inline CMachine* get_machine(int32_t num) const
 		{
-			ASSERT(num<m_machines.vlen && num>=0);
-			SG_REF(m_machines[num]);
-			return m_machines[num];
+			return m_machines.get_element_safe(num);
 		}
 
 		/** get number of machines
@@ -83,7 +80,7 @@ class CMulticlassMachine : public CMachine
 		 */
 		inline int32_t get_num_machines() const
 		{
-			return m_machines.vlen;
+			return m_machines.get_num_elements();
 		}
 
 		/** classify all examples
@@ -214,7 +211,7 @@ class CMulticlassMachine : public CMachine
 		CMachine* m_machine;
 
 		/** machines */
-		SGVector<CMachine*> m_machines;
+		CDynamicObjectArray<CMachine> m_machines;
 
 		/** rejection strategy */
 		CRejectionStrategy* m_rejection_strategy;

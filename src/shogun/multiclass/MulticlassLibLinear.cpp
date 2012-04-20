@@ -111,7 +111,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	solver.solve();
 
 	clear_machines();
-	m_machines = SGVector<CMachine*>(num_classes);
+	m_machines.clear_array();
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();
@@ -125,7 +125,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 		if (m_use_bias)
 			machine->set_bias(m_train_state->w[(mc_problem.n-bias_n)*num_classes+i]);
 
-		m_machines[i] = machine;
+		m_machines.push_back(machine);
 	}
 
 	if (!m_save_train_state)
