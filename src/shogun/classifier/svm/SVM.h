@@ -265,7 +265,7 @@ class CSVM : public CKernelMachine
 		 * function */
 		CMKL* mkl;
 
-	friend CMulticlassSVM;
+	friend class CMulticlassSVM;
 };
 }
 #endif
