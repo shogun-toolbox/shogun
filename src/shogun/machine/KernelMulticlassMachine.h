@@ -98,9 +98,9 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			if (data)
 				m_kernel->init(m_kernel->get_lhs(),data);
 
-			for (int32_t i=0; i<m_machines.get_num_elements(); i++)
+			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 			{
-				CKernelMachine *machine = (CKernelMachine*)m_machines.get_element(i);
+				CKernelMachine *machine = (CKernelMachine*)m_machines->get_element(i);
 				machine->set_kernel(m_kernel);
 				SG_UNREF(machine);
 			}

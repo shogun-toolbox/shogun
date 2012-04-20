@@ -104,9 +104,9 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			if (data)
 				set_features((CDotFeatures*)data);
 
-			for (int32_t i=0; i<m_machines.get_num_elements(); i++)
+			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 			{
-				CLinearMachine* machine = (CLinearMachine*)m_machines.get_element(i);
+				CLinearMachine* machine = (CLinearMachine*)m_machines->get_element(i);
 				machine->set_features(m_features);
 				SG_UNREF(machine);
 			}
