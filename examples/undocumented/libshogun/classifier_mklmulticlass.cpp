@@ -12,7 +12,7 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
-#include <shogun/classifier/mkl/MKLMultiClass.h>
+#include <shogun/classifier/mkl/MKLMulticlass.h>
 
 // g++ -Wall -O3 classifier_mklmulticlass.cpp -I /home/theseus/private/alx/shoguntrunk/compiledtmp/include -L/home/theseus/private/alx/shoguntrunk/compiledtmp/lib -lshogun
 
