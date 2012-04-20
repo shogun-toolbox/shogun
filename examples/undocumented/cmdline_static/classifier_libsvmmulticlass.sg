@@ -1,5 +1,5 @@
-% LibSVM MultiClass
-print LibSVMMultiClass
+% LibSVM Multiclass
+print LibSVMMulticlass
 
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat

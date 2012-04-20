@@ -26,7 +26,7 @@ public class classifier_libsvmmulticlass_modular {
 
 		Labels labels = new Labels(trainlab);
 
-		LibSVMMultiClass svm = new LibSVMMultiClass(C, kernel, labels);
+		LibSVMMulticlass svm = new LibSVMMulticlass(C, kernel, labels);
 		svm.set_epsilon(epsilon);
 		svm.train();
 		

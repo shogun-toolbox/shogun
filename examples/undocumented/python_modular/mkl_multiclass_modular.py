@@ -13,7 +13,7 @@ def mkl_multiclass_modular(fm_train_real, fm_test_real, label_train_multiclass,
 
 	from shogun.Features import CombinedFeatures, RealFeatures, Labels
 	from shogun.Kernel import CombinedKernel, GaussianKernel, LinearKernel,PolyKernel
-	from shogun.Classifier import MKLMultiClass
+	from shogun.Classifier import MKLMulticlass
 
 	kernel = CombinedKernel()
 	feats_train = CombinedFeatures()
@@ -44,7 +44,7 @@ def mkl_multiclass_modular(fm_train_real, fm_test_real, label_train_multiclass,
 
 	labels = Labels(label_train_multiclass)
 
-	mkl = MKLMultiClass(C, kernel, labels)
+	mkl = MKLMulticlass(C, kernel, labels)
 	
 	mkl.set_epsilon(epsilon);
 	mkl.parallel.set_num_threads(num_threads)

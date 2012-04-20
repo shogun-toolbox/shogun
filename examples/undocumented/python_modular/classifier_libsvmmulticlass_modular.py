@@ -10,7 +10,7 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat
 def classifier_libsvmmulticlass_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
-	from shogun.Classifier import LibSVMMultiClass
+	from shogun.Classifier import LibSVMMulticlass
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -18,7 +18,7 @@ def classifier_libsvmmulticlass_modular (fm_train_real=traindat,fm_test_real=tes
 
 	labels=Labels(label_train_multiclass)
 
-	svm=LibSVMMultiClass(C, kernel, labels)
+	svm=LibSVMMulticlass(C, kernel, labels)
 	svm.set_epsilon(epsilon)
 	svm.train()
 
@@ -28,5 +28,5 @@ def classifier_libsvmmulticlass_modular (fm_train_real=traindat,fm_test_real=tes
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
-	print('LibSVMMultiClass'	)
+	print('LibSVMMulticlass'	)
 	classifier_libsvmmulticlass_modular(*parameter_list[0])

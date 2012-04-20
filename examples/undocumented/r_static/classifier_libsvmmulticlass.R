@@ -11,8 +11,8 @@ fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 label_train_multiclass <- as.real(as.matrix(read.table('../data/label_train_multiclass.dat')))
 
 
-# LibSVM MultiClass
-print('LibSVMMultiClass')
+# LibSVM Multiclass
+print('LibSVMMulticlass')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)

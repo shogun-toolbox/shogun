@@ -4,8 +4,8 @@ fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
 fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 label_train_multiclass <- as.real(as.matrix(read.table('../data/label_train_multiclass.dat')))
 
-# MKLMultiClass
-print('MKLMultiClass')
+# MKLMulticlass
+print('MKLMulticlass')
 
 
 kernel <- CombinedKernel()
@@ -49,7 +49,7 @@ mkl_norm <- 1
 num_threads <- as.integer(1)
 labels <- Labels(label_train_multiclass)
 
-svm <- MKLMultiClass(C, kernel, labels)
+svm <- MKLMulticlass(C, kernel, labels)
 dump <- svm$set_epsilon(svm, epsilon)
 dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
 dump <- svm$set_mkl_epsilon(svm,mkl_eps)
