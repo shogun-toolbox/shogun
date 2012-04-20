@@ -10,39 +10,39 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/classifier/svm/MultiClassSVM.h>
+#include <shogun/multiclass/MulticlassSVM.h>
 
 using namespace shogun;
 
-CMultiClassSVM::CMultiClassSVM()
+CMulticlassSVM::CMulticlassSVM()
 	:CKernelMulticlassMachine(ONE_VS_REST_STRATEGY, NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
-CMultiClassSVM::CMultiClassSVM(EMulticlassStrategy strategy)
+CMulticlassSVM::CMulticlassSVM(EMulticlassStrategy strategy)
 	:CKernelMulticlassMachine(strategy, NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
-CMultiClassSVM::CMultiClassSVM(
+CMulticlassSVM::CMulticlassSVM(
 	EMulticlassStrategy strategy, float64_t C, CKernel* k, CLabels* lab)
 	:CKernelMulticlassMachine(strategy, k, new CSVM(C, k, lab), lab)
 {
 	init();
 }
 
-CMultiClassSVM::~CMultiClassSVM()
+CMulticlassSVM::~CMulticlassSVM()
 {
 	clear_machines();
 }
 
-void CMultiClassSVM::init()
+void CMulticlassSVM::init()
 {
 }
 
-bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
+bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
 {
 	if (num_classes>0)
 	{
@@ -65,7 +65,7 @@ bool CMultiClassSVM::create_multiclass_svm(int32_t num_classes)
 	return false;
 }
 
-bool CMultiClassSVM::set_svm(int32_t num, CSVM* svm)
+bool CMulticlassSVM::set_svm(int32_t num, CSVM* svm)
 {
 	if (m_machines.vlen>0 && m_machines.vlen>num && num>=0 && svm)
 	{
@@ -76,7 +76,7 @@ bool CMultiClassSVM::set_svm(int32_t num, CSVM* svm)
 	return false;
 }
 
-bool CMultiClassSVM::init_machines_for_apply(CFeatures* data)
+bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 {
 	if (is_data_locked())
 	{
@@ -113,7 +113,7 @@ bool CMultiClassSVM::init_machines_for_apply(CFeatures* data)
 	return true;
 }
 
-float64_t CMultiClassSVM::apply(int32_t num)
+float64_t CMulticlassSVM::apply(int32_t num)
 {
 	if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
 		return classify_example_one_vs_rest(num);
@@ -125,7 +125,7 @@ float64_t CMultiClassSVM::apply(int32_t num)
 	return 0;
 }
 
-float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
+float64_t CMulticlassSVM::classify_example_one_vs_rest(int32_t num)
 {
 	ASSERT(m_machines.vlen>0);
 	SGVector<float64_t> outputs(m_machines.vlen);
@@ -142,7 +142,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_rest(int32_t num)
 	return winner;
 }
 
-float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
+float64_t CMulticlassSVM::classify_example_one_vs_one(int32_t num)
 {
 	int32_t num_classes=m_labels->get_num_classes();
 	ASSERT(m_machines.vlen>0);
@@ -161,7 +161,7 @@ float64_t CMultiClassSVM::classify_example_one_vs_one(int32_t num)
 	return winner;
 }
 
-bool CMultiClassSVM::load(FILE* modelfl)
+bool CMulticlassSVM::load(FILE* modelfl)
 {
 	bool result=true;
 	char char_buffer[1024];
@@ -321,7 +321,7 @@ bool CMultiClassSVM::load(FILE* modelfl)
 	return result;
 }
 
-bool CMultiClassSVM::save(FILE* modelfl)
+bool CMulticlassSVM::save(FILE* modelfl)
 {
 	SG_SET_LOCALE_C;
 

@@ -13,26 +13,26 @@
 
 #include <vector>
 #include <shogun/base/SGObject.h>
-#include <shogun/classifier/mkl/MKLMultiClassOptimizationBase.h>
+#include <shogun/classifier/mkl/MKLMulticlassOptimizationBase.h>
 
 namespace shogun
 {
-/** @brief MKLMultiClassGLPK is a helper class for MKLMultiClass.
+/** @brief MKLMulticlassGLPK is a helper class for MKLMulticlass.
  *
  *	it solves the corresponding linear problem arising in SIP formulation for
  * 	MKL using glpk
  */
-class MKLMultiClassGLPK: public MKLMultiClassOptimizationBase
+class MKLMulticlassGLPK: public MKLMulticlassOptimizationBase
 {
 public:
 	/** Class default Constructor
 	 *
 	 */
-	MKLMultiClassGLPK();
+	MKLMulticlassGLPK();
 	/** Class default Destructor
 	 *
 	 */
-	virtual ~MKLMultiClassGLPK();
+	virtual ~MKLMulticlassGLPK();
 
 	/** initializes GLPK LP sover
 	 *
@@ -47,7 +47,7 @@ public:
 	 * @param normw2 is the vector of \f$ \|w_k \|^2 \f$ for all kernels
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
-	 * MKLMultiClass.h, it depends on the formulation of the underlying GMNPSVM.
+	 * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
 	 *
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
@@ -63,7 +63,7 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		return "MKLMultiClassGLPK";
+		return "MKLMulticlassGLPK";
 	}
 
 protected:
@@ -71,12 +71,12 @@ protected:
 	 * protected to avoid its usage because member glp_prob* linearproblem;
 	 * from GLPK package is not copyable
 	 */
-	MKLMultiClassGLPK(MKLMultiClassGLPK & gl);
+	MKLMulticlassGLPK(MKLMulticlassGLPK & gl);
 	/** Class Assignment operator
 	 * protected to avoid its usage because member glp_prob* linearproblem;
 	 * from GLPK package is not copyable
 	 */
-	MKLMultiClassGLPK operator=(MKLMultiClassGLPK & gl);
+	MKLMulticlassGLPK operator=(MKLMulticlassGLPK & gl);
 
 protected:
 	/** stores the number of kernels which acts as a parameter for the LP */

@@ -20,7 +20,7 @@ namespace shogun
 {
 
 class CMKL;
-class CMultiClassSVM;
+class CMulticlassSVM;
 
 /** @brief A generic Support Vector Machine Interface.
  *
@@ -265,7 +265,7 @@ class CSVM : public CKernelMachine
 		 * function */
 		CMKL* mkl;
 
-	friend CMultiClassSVM;
+	friend CMulticlassSVM;
 };
 }
 #endif

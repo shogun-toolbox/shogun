@@ -22,17 +22,17 @@ namespace shogun
 class CSVM;
 
 /** @brief class MultiClassSVM */
-class CMultiClassSVM : public CKernelMulticlassMachine
+class CMulticlassSVM : public CKernelMulticlassMachine
 {
 	public:
 		/** default constructor  */
-		CMultiClassSVM();
+		CMulticlassSVM();
 
 		/** constructor
 		 *
 		 * @param strategy multiclass strategy
 		 */
-		CMultiClassSVM(EMulticlassStrategy strategy);
+		CMulticlassSVM(EMulticlassStrategy strategy);
 
 		/** constructor
 		 *
@@ -41,9 +41,9 @@ class CMultiClassSVM : public CKernelMulticlassMachine
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMultiClassSVM(
+		CMulticlassSVM(
 			EMulticlassStrategy strategy, float64_t C, CKernel* k, CLabels* lab);
-		virtual ~CMultiClassSVM();
+		virtual ~CMulticlassSVM();
 
 		/** create multiclass SVM
 		 *

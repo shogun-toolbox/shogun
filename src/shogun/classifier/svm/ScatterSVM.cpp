@@ -20,20 +20,20 @@
 using namespace shogun;
 
 CScatterSVM::CScatterSVM()
-: CMultiClassSVM(ONE_VS_REST_STRATEGY), scatter_type(NO_BIAS_LIBSVM),
+: CMulticlassSVM(ONE_VS_REST_STRATEGY), scatter_type(NO_BIAS_LIBSVM),
   model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
 {
 	SG_UNSTABLE("CScatterSVM::CScatterSVM()", "\n");
 }
 
 CScatterSVM::CScatterSVM(SCATTER_TYPE type)
-: CMultiClassSVM(ONE_VS_REST_STRATEGY), scatter_type(type), model(NULL),
+: CMulticlassSVM(ONE_VS_REST_STRATEGY), scatter_type(type), model(NULL),
 	norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
 {
 }
 
 CScatterSVM::CScatterSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMultiClassSVM(ONE_VS_REST_STRATEGY, C, k, lab), scatter_type(NO_BIAS_LIBSVM), model(NULL),
+: CMulticlassSVM(ONE_VS_REST_STRATEGY, C, k, lab), scatter_type(NO_BIAS_LIBSVM), model(NULL),
 	norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
 {
 }

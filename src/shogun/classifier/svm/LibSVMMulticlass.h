@@ -12,18 +12,18 @@
 #define _LIBSVM_MULTICLASS_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/classifier/svm/MultiClassSVM.h>
+#include <shogun/multiclass/MulticlassSVM.h>
 #include <shogun/lib/external/shogun_libsvm.h>
 #include <shogun/classifier/svm/LibSVM.h>
 
 namespace shogun
 {
 /** @brief class LibSVMMultiClass */
-class CLibSVMMultiClass : public CMultiClassSVM
+class CLibSVMMulticlass : public CMulticlassSVM
 {
 	public:
 		/** default constructor */
-		CLibSVMMultiClass(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
+		CLibSVMMulticlass(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
 		/** constructor
 		 *
@@ -31,8 +31,8 @@ class CLibSVMMultiClass : public CMultiClassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CLibSVMMultiClass(float64_t C, CKernel* k, CLabels* lab);
-		virtual ~CLibSVMMultiClass();
+		CLibSVMMulticlass(float64_t C, CKernel* k, CLabels* lab);
+		virtual ~CLibSVMMulticlass();
 
 		/** get classifier type
 		 *
