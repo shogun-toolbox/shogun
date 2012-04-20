@@ -79,6 +79,66 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 
 #undef TYPEMAP_SGVECTOR
 
+/* One dimensional input/output arrays (references) */
+%define TYPEMAP_SGVECTOR_REF(SGTYPE, R2SG, SG2R)
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE>&, const shogun::SGVector<SGTYPE>& {
+	$1 = (
+					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0) ||
+					($input && NA_IsNArray($input) && NA_SHAPE0($input) > 0)
+			)? 1 : 0;
+}
+
+%typemap(in) shogun::SGVector<SGTYPE>& (SGVector<SGTYPE> temp), const shogun::SGVector<SGTYPE>& (SGVector<SGTYPE> temp) {
+	int32_t i, len;
+	SGTYPE *array;
+	VALUE *ptr;
+
+	if (rb_obj_is_kind_of($input,rb_cArray)) {
+		len = RARRAY_LEN($input);
+		array = SG_MALLOC(SGTYPE, len);
+
+		ptr = RARRAY_PTR($input);
+		for (i = 0; i < len; i++, ptr++) {
+			array[i] = R2SG(*ptr);
+		}
+	}
+	else {
+		if (NA_IsNArray($input)) {
+
+			VALUE v = (*na_to_array_dl)($input);
+			len = RARRAY_LEN(v);
+			array = SG_MALLOC(SGTYPE, len);
+
+			ptr = RARRAY_PTR(v);
+			for (i = 0; i < len; i++, ptr++) {
+				array[i] = R2SG(*ptr);
+			}
+		}
+		else {
+			rb_raise(rb_eArgError, "Expected Array");
+		}
+	}
+
+	temp = shogun::SGVector<SGTYPE>((SGTYPE *)array, len); 
+	$1 = &temp;
+}
+
+%enddef
+
+/* Define concrete examples of the TYPEMAP_SGVECTOR_REF macros */
+TYPEMAP_SGVECTOR_REF(char, NUM2CHR, CHR2FIX)
+TYPEMAP_SGVECTOR_REF(uint16_t, NUM2INT, INT2NUM)
+TYPEMAP_SGVECTOR_REF(int32_t, NUM2INT, INT2NUM)
+TYPEMAP_SGVECTOR_REF(uint32_t, NUM2UINT, UINT2NUM)
+TYPEMAP_SGVECTOR_REF(int64_t, NUM2LONG,  LONG2NUM)
+TYPEMAP_SGVECTOR_REF(uint64_t, NUM2ULONG, ULONG2NUM)
+TYPEMAP_SGVECTOR_REF(long long, NUM2LL, LL2NUM)
+TYPEMAP_SGVECTOR_REF(float32_t, NUM2DBL, rb_float_new)
+TYPEMAP_SGVECTOR_REF(float64_t, NUM2DBL, rb_float_new)
+
+#undef TYPEMAP_SGVECTOR_REF
+
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE, R2SG, SG2R)
 
