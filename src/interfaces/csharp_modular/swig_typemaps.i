@@ -87,6 +87,52 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 #undef TYPEMAP_SGVECTOR
 
+%define TYPEMAP_SGVECTOR_REF(SGTYPE, CTYPE, CSHARPTYPE)
+
+%typemap(ctype, out="CTYPE*") shogun::SGVector<SGTYPE>&, const shogun::SGVector<SGTYPE>&		%{int size, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE>&, const shogun::SGVector<SGTYPE>&		%{CSHARPTYPE[]%}
+%typemap(cstype) shogun::SGVector<SGTYPE>&, const shogun::SGVector<SGTYPE>& 	%{CSHARPTYPE[]%}
+
+%typemap(in) shogun::SGVector<SGTYPE>& (SGVector<SGTYPE> temp), const shogun::SGVector<SGTYPE>& (SGVector<SGTYPE> temp) {
+	int32_t i;
+	SGTYPE *array;
+
+	if (!$input) {
+		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
+		return $null;	
+	}
+
+	array = SG_MALLOC(SGTYPE, size);
+
+	if (!array) {
+		SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");
+		return $null;
+	}
+	for (i = 0; i < size; i++) {
+		array[i] = (SGTYPE)$input[i];	
+	}
+	
+	temp = shogun::SGVector<SGTYPE>((SGTYPE *)array, size); 
+	$1 = &temp;
+}
+
+%typemap(csin) shogun::SGVector<SGTYPE>&, const shogun::SGVector<SGTYPE>&"$csinput.Length, $csinput"
+%enddef
+
+TYPEMAP_SGVECTOR_REF(char, signed char, byte)
+TYPEMAP_SGVECTOR_REF(uint8_t, unsigned char, byte)
+TYPEMAP_SGVECTOR_REF(int16_t, short, short)
+TYPEMAP_SGVECTOR_REF(uint16_t, unsigned short, short)
+TYPEMAP_SGVECTOR_REF(int32_t, int, int)
+TYPEMAP_SGVECTOR_REF(uint32_t, unsigned int, int)
+TYPEMAP_SGVECTOR_REF(int64_t, long, int)
+TYPEMAP_SGVECTOR_REF(uint64_t, unsigned long, long)
+TYPEMAP_SGVECTOR_REF(long long, long long, long)
+TYPEMAP_SGVECTOR_REF(float32_t, float, float)
+TYPEMAP_SGVECTOR_REF(float64_t, double, double)
+
+#undef TYPEMAP_SGVECTOR_REF
+
 %define TYPEMAP_SGMATRIX(SGTYPE, CTYPE, CSHARPTYPE)
 
 %typemap(ctype, out="CTYPE*") shogun::SGMatrix<SGTYPE>		%{int rows, int cols, CTYPE*%}
