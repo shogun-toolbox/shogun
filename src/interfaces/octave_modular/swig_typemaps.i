@@ -105,6 +105,49 @@ TYPEMAP_OUT_SGVECTOR(uint16NDArray, uint16_t, uint16_t, "Word")
 
 #undef TYPEMAP_OUT_SGVECTOR
 
+/* One dimensional input arrays (references) */
+%define TYPEMAP_IN_SGVECTOR_REF(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<sg_type>&, const shogun::SGVector<sg_type>&
+{
+    const octave_value m=$input;
+
+    $1 = (m.is_matrix_type() && m.oct_type_check() && m.rows()==1) ? 1 : 0;
+}
+
+%typemap(in) shogun::SGVector<sg_type>& (SGVector<sg_type> temp), const shogun::SGVector<sg_type>& (SGVector<sg_type> temp)
+{
+    oct_type m;
+    const octave_value mat_feat=$input;
+    if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check() || mat_feat.rows()!=1)
+    {
+        /*SG_ERROR("Expected " error_string " Vector as argument\n");*/
+        SWIG_fail;
+    }
+
+    m = mat_feat.oct_converter();
+
+    void* copy=get_copy((void*) m.fortran_vec(), size_t(m.cols())*sizeof(sg_type));
+
+	temp = shogun::SGVector<sg_type>((sg_type*) copy, m.cols()); 
+    $1 = &temp;
+}
+
+%typemap(freearg) shogun::SGVector<sg_type>&, const shogun::SGVector<sg_type>&
+{
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_SG_VECTOR_REF macros */
+TYPEMAP_IN_SGVECTOR_REF(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
+TYPEMAP_IN_SGVECTOR_REF(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
+TYPEMAP_IN_SGVECTOR_REF(is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
+TYPEMAP_IN_SGVECTOR_REF(is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
+TYPEMAP_IN_SGVECTOR_REF(is_single_type, Matrix, matrix_value, float32_t, float32_t, "Single Precision")
+TYPEMAP_IN_SGVECTOR_REF(is_double_type, Matrix, matrix_value, float64_t, float64_t, "Double Precision")
+TYPEMAP_IN_SGVECTOR_REF(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
+
+#undef TYPEMAP_IN_SGVECTOR_REF
+
 
 /* Two dimensional input arrays */
 %define TYPEMAP_IN_SGMATRIX(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
