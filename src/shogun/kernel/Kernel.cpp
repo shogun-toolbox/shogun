@@ -922,8 +922,7 @@ void CKernel::register_params()   {
 	SG_ADD((CSGObject**) &normalizer, "normalizer", "Normalize the kernel.",
 	    MS_AVAILABLE);
 }
-
-
+		
 void CKernel::init()
 {
 	cache_size=10;

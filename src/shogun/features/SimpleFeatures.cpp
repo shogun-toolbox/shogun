@@ -6,6 +6,10 @@
 
 #include <string.h>
 
+#ifdef USE_OPENCL
+#include <shogun/opencl/kernels/svm/dot_kernels.h>
+#endif
+
 namespace shogun {
 
 template<class ST> CSimpleFeatures<ST>::CSimpleFeatures(int32_t size) : CDotFeatures(size)
@@ -280,6 +284,13 @@ template<class ST> SGMatrix<ST> CSimpleFeatures<ST>::get_feature_matrix()
 	return SGMatrix<ST>(feature_matrix, num_features, num_vectors);
 }
 
+// #ifdef USE_OPENCL
+// template<class ST> viennacl::matrix<typename make_vcl_compatible<ST>::Result,viennacl::column_major> & CSimpleFeatures<ST>::get_ocl_feature_cache()
+// {
+// 	return ocl_feature_cache;
+// }
+// #endif
+
 template<class ST> SGMatrix<ST> CSimpleFeatures<ST>::steal_feature_matrix()
 {
 	SGMatrix<ST> st_feature_matrix(feature_matrix, num_features, num_vectors);
@@ -312,6 +323,7 @@ template<class ST> ST* CSimpleFeatures<ST>::get_feature_matrix(int32_t &num_feat
 	num_vec = num_vectors;
 	return feature_matrix;
 }
+
 
 template<class ST> CSimpleFeatures<ST>* CSimpleFeatures<ST>::get_transposed()
 {
@@ -378,7 +390,7 @@ template<class ST> void CSimpleFeatures<ST>::copy_feature_matrix(SGMatrix<ST> sr
 	num_vectors = num_vec;
 	initialize_cache();
 }
-
+	
 template<class ST> void CSimpleFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 {
 	remove_all_subsets();
@@ -527,6 +539,59 @@ template<class ST> float64_t CSimpleFeatures<ST>::dot(int32_t vec_idx1, CDotFeat
 	return result;
 }
 
+#ifdef USE_OPENCL
+template<class ST> void CSimpleFeatures<ST>::enqueue_ocl_dot_program(viennacl::matrix<float64_t> & ocl_kernel_matrix,  SGVector<int32_t> const & vec_indices, CDotFeatures* df)
+{
+	ASSERT(df);
+	ASSERT(df->get_feature_type() == get_feature_type());
+	ASSERT(df->get_feature_class() == get_feature_class());
+	const int block_size = 15;
+	const unsigned int n_indices = vec_indices.vlen;
+	CSimpleFeatures<ST>* sf = (CSimpleFeatures<ST>*) df;
+	
+	
+	//Declares GPU Handles
+	viennacl::matrix<GPU_ST, viennacl::column_major> ocl_feature_cache(feature_matrix_num_features,feature_matrix_num_vectors);
+	viennacl::matrix<GPU_ST,viennacl::column_major> sf_ocl_feature_cache(sf->get_num_features(),n_indices);
+	//Cache CPU to GPU Memory
+	viennacl::fast_copy((GPU_ST*) feature_matrix,(GPU_ST*)feature_matrix+ocl_feature_cache.size1()*ocl_feature_cache.size2(),ocl_feature_cache);
+	
+	ST* cpu_cache = new ST[feature_matrix_num_features*n_indices];
+	for(unsigned int i=0;i<n_indices;++i){
+	  for(int j=0;j<feature_matrix_num_features;++j){
+	    cpu_cache[i*feature_matrix_num_features+j] = feature_matrix[vec_indices[i]*feature_matrix_num_features+j] ;
+	  }
+	}
+	
+	//Copies to GPU
+	viennacl::fast_copy((GPU_ST*)cpu_cache,(GPU_ST*)cpu_cache + feature_matrix_num_features*n_indices ,sf_ocl_feature_cache);
+	//Clean CPU cache
+	delete[] cpu_cache;
+	//Resizes kernel matrix
+	
+	ocl_kernel_matrix.resize(ocl_feature_cache.size2(),sf_ocl_feature_cache.size2(),false);
+	
+	//Compute result matrix
+	viennacl::ocl::kernel & k = viennacl::ocl::get_kernel(shogun::ocl::svm::dot_kernels::program_name(), shogun::ocl::svm::dot_kernels::dot_kernel_name(get_feature_type()));
+	k.global_work_size(0, viennacl::tools::roundUpToNextMultiple<unsigned int>(viennacl::traits::size1(ocl_kernel_matrix), block_size));
+	k.global_work_size(1, viennacl::tools::roundUpToNextMultiple<unsigned int>(viennacl::traits::size2(ocl_kernel_matrix), block_size));
+	k.local_work_size(0, block_size);
+	k.local_work_size(1, block_size);
+	viennacl::ocl::enqueue(k(viennacl::traits::handle(ocl_feature_cache), 
+					cl_uint(viennacl::traits::size1(ocl_feature_cache)),          cl_uint(viennacl::traits::size2(ocl_feature_cache)),
+					cl_uint(viennacl::traits::internal_size1(ocl_feature_cache)), cl_uint(viennacl::traits::internal_size2(ocl_feature_cache)),
+					viennacl::traits::handle(sf_ocl_feature_cache), 
+					cl_uint(viennacl::traits::size1(sf_ocl_feature_cache)),          cl_uint(viennacl::traits::size2(sf_ocl_feature_cache)),
+					cl_uint(viennacl::traits::internal_size1(sf_ocl_feature_cache)), cl_uint(viennacl::traits::internal_size2(sf_ocl_feature_cache)),
+				viennacl::traits::handle(ocl_kernel_matrix), 
+					cl_uint(viennacl::traits::size1(ocl_kernel_matrix)),          cl_uint(viennacl::traits::size2(ocl_kernel_matrix)),
+					cl_uint(viennacl::traits::internal_size1(ocl_kernel_matrix)), cl_uint(viennacl::traits::internal_size2(ocl_kernel_matrix)),
+				viennacl::ocl::local_mem(sizeof(ST) * block_size * block_size),
+				viennacl::ocl::local_mem(sizeof(ST) * block_size * block_size)
+				));	
+}
+#endif
+	
 template<class ST> void CSimpleFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 		float64_t* vec2, int32_t vec2_len, bool abs_val)
 {

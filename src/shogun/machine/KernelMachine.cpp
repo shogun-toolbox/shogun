@@ -14,6 +14,10 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 
+#ifdef USE_OPENCL
+#include <opencl/kernels/svm/general.h>
+#endif
+
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -357,6 +361,52 @@ CLabels* CKernelMachine::apply()
 	return lab;
 }
 
+#ifdef USE_OPENCL
+CLabels* CKernelMachine::ocl_apply()
+{
+	CLabels* lab=NULL;
+
+	if (!kernel)
+		SG_ERROR( "Kernelmachine can not proceed without kernel!\n");
+
+	if ( kernel && kernel->get_num_vec_rhs()>0 )
+	{	
+		int32_t num_vectors=kernel->get_num_vec_rhs();
+
+		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
+		CSignal::clear_cancel();
+		
+		if (io->get_show_progress())
+			io->enable_progress();
+		else
+			io->disable_progress();
+		
+		int32_t num_svs = m_svs.vlen;
+	
+		viennacl::vector<float64_t> ocl_alphas(num_svs);
+		viennacl::fast_copy(m_alpha.vector,m_alpha.vector+ocl_alphas.size(),ocl_alphas.begin());
+		
+		viennacl::vector<float64_t> ocl_lab(num_vectors);
+		
+		kernel->ocl_compute(m_svs);
+		
+		viennacl::ocl::kernel & apply_kernel = viennacl::ocl::get_kernel(shogun::ocl::svm::general::program_name(), "apply");
+		viennacl::matrix<float64_t> & ocl_kernel_matrix = kernel->get_ocl_kernel_matrix();
+		viennacl::ocl::enqueue(apply_kernel(viennacl::traits::handle(ocl_kernel_matrix), 
+						cl_uint(viennacl::traits::size1(ocl_kernel_matrix)), cl_uint(viennacl::traits::size2(ocl_kernel_matrix)),
+					viennacl::traits::handle(ocl_alphas), 
+					viennacl::traits::handle(ocl_lab),
+					cl_double(m_bias) ));
+		viennacl::ocl::get_queue().finish();
+		lab=new CLabels(num_vectors);
+		viennacl::fast_copy(ocl_lab.begin(),ocl_lab.end(),lab->get_labels().vector);
+		viennacl::ocl::get_queue().finish();
+
+	}
+	return lab;
+}
+#endif
+
 float64_t CKernelMachine::apply(int32_t num)
 {
 	ASSERT(kernel);
@@ -666,4 +716,9 @@ void CKernelMachine::init()
 		new SGParamInfo()
 	);
 	m_parameter_map->finalize_map();
+	
+#ifdef USE_OPENCL
+	//Compiles OpenCL Compute Kernels
+	shogun::ocl::svm::general::init();
+#endif
 }

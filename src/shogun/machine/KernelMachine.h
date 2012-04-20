@@ -207,13 +207,21 @@ class CKernelMachine : public CMachine
 		 */
 		virtual CLabels* apply();
 
+#ifdef USE_OPENCL
+		/** apply kernel machine to all objects using OpenCL
+		 *
+		 * @return result labels
+		 */
+		virtual CLabels* ocl_apply();
+#endif
+		
 		/** apply kernel machine to data
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
 		virtual CLabels* apply(CFeatures* data);
-
+		
 		/** apply kernel machine to one example
 		 *
 		 * @param num which example to apply to

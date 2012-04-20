@@ -15,6 +15,11 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 
+#ifdef USE_OPENCL
+#include <viennacl/ocl/utils.hpp>
+#include <viennacl/matrix.hpp>
+#endif
+
 namespace shogun
 {
 /** @brief Features that support dot products among other operations.
@@ -76,6 +81,10 @@ class CDotFeatures : public CFeatures
 		 * @param vec_idx2 index of second vector
 		 */
 		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)=0;
+		
+#ifdef USE_OPENCL
+		virtual void enqueue_ocl_dot_program(viennacl::matrix<float64_t> & ocl_kernel_matrix,  SGVector<int32_t> const & vec_indices, CDotFeatures* df) { }
+#endif
 
 		/** compute dot product between vector1 and a dense vector
 		 *
