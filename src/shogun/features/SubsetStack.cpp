@@ -47,6 +47,29 @@ void CSubsetStack::init()
 
 void CSubsetStack::add_subset(SGVector<index_t> subset)
 {
+	/* if there are already subsets on stack, do some legality checks */
+	if (m_active_subsets_stack->get_num_elements())
+	{
+		/* check that subsets may only be smaller or equal than existing */
+		CSubset* latest=m_active_subsets_stack->get_last_element();
+		if (subset.vlen>latest->m_subset_idx.vlen)
+		{
+			SG_ERROR("Error in %s::add_subset(): Provided index vector is "
+					"larger than the subsets on the stubset stack!\n", get_name());
+		}
+
+		/* check for range of indices */
+		index_t max_index=CMath::max(subset.vector, subset.vlen);
+		if (max_index>=latest->m_subset_idx.vlen)
+		{
+			SG_ERROR("Error in %s::add_subset(): Provided index vector contains"
+					" indices larger than possible range!\n", get_name());
+		}
+
+		/* clean up */
+		SG_UNREF(latest);
+	}
+
 	/* active subset will be changed anyway, no setting to NULL */
 	SG_UNREF(m_active_subset);
 
@@ -58,6 +81,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 
 		/* get latest current subset */
 		CSubset* latest=m_active_subsets_stack->get_last_element();
+		CMath::display_vector(latest->m_subset_idx.vector, latest->m_subset_idx.vlen, "latest");
 
 		/* create new index vector */
 		SGVector<index_t> new_active_subset=SGVector<index_t>(subset.vlen);
@@ -65,7 +89,10 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		/* using the latest current subset, transform all indices by the latest
 		 * added subset (dynamic programming greets you) */
 		for (index_t i=0; i<subset.vlen; ++i)
-			new_active_subset.vector[i]=latest->m_subset_idx[subset.vector[i]];
+		{
+			new_active_subset.vector[i]=
+					latest->m_subset_idx.vector[subset.vector[i]];
+		}
 
 		/* replace active subset */
 		m_active_subset=new CSubset(new_active_subset);
