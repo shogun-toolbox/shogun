@@ -40,6 +40,7 @@ TARGETS = basic_minimal \
 		  modelselection_grid_search_linear features_subset_labels \
 		  modelselection_grid_search_kernel \
 		  modelselection_grid_search_string_kernel \
+		  features_subset_stack \
 		  features_subset_simple_features \
 		  features_subset_sparse_features \
 		  features_copy_subset_simple_features \
