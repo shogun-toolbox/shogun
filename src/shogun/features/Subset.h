@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -17,63 +17,40 @@
 namespace shogun
 {
 
-/** @brief class for adding subset support to a class. Provides an interface for
- * getting/setting subset_matrices and index conversion.
- * Do not inherit from this class, use it as variable. Write wrappers for all
- * get/set functions.
- */
+/** @brief Wrapper class for an index subset which is used by SubsetStack.
+ * Currently the SGVector with the indices is possibly freed with free_vector()
+ * This might change in the future when there is reference counting for
+ * SGVectors. For now, please either use an index vector only once per subset
+ * and set do_free flag to true, or set it to false and handle memory stuff
+ * yourself */
 class CSubset: public CSGObject
 {
+	friend class CSubsetStack;
+
 public:
 	/** default constructor, do not use */
 	CSubset();
 
 	/** constructor
 	 *
-	 * @param subset_idx vector of subset indices, is deleted in destructor
+	 * @param subset_idx vector of subset indices. free_vector is called in
+	 * destructor, so decide whether it should be deleted when passing vector
 	 */
 	CSubset(const SGVector<index_t>& subset_idx);
 
-	/** destructor */
+	/** destructor. Calls free_vector of index vector*/
 	virtual ~CSubset();
+
+	/** @return size of subset index array */
+	index_t get_size() const { return m_subset_idx.vlen; }
 
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "Subset"; }
-
-	/** get size of subset
-	 * @return size of subset
-	 */
-	inline const index_t get_size() const { return m_subset_idx.vlen; }
-
-	/* @ return largest index in subset */
-	inline const index_t get_max_index() const
-	{
-		return CMath::max(m_subset_idx.vector, m_subset_idx.vlen);
-	}
-
-	/* @ return smallest index in subset */
-	inline const index_t get_min_index() const
-	{
-		return CMath::min(m_subset_idx.vector, m_subset_idx.vlen);
-	}
-
-	/** @return a copy of this instance with a copy of the index vector */
-	CSubset* duplicate();
-
-	/** returns the corresponding real index (in array) of a subset index
-	 * (if there is a subset)
-	 *
-	 * @ return array index of the provided subset index
-	 */
-	inline index_t subset_idx_conversion(index_t idx) const
-	{
-		return m_subset_idx.vector ? m_subset_idx.vector[idx] : idx;
-	}
 private:
 	void init();
 
 private:
-	const SGVector<index_t> m_subset_idx;
+	SGVector<index_t> m_subset_idx;
 };
 
 }
