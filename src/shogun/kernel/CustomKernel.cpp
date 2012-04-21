@@ -83,17 +83,19 @@ CCustomKernel::CCustomKernel(CKernel* k)
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("created CCustomKernel\n");
+	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
 	init();
 	set_full_kernel_matrix_from_full(km);
+	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
 }
 
 CCustomKernel::~CCustomKernel()
 {
-	SG_DEBUG("destroying CCustomKernel\n");
+	SG_DEBUG("Entering CCustomKernel::~CCustomKernel()\n");
 	SG_UNREF(m_row_subset_stack);
 	SG_UNREF(m_col_subset_stack);
 	cleanup();
+	SG_DEBUG("Leaving CCustomKernel::~CCustomKernel()\n");
 }
 
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
@@ -125,9 +127,9 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 void CCustomKernel::cleanup_custom()
 {
-	SG_DEBUG("cleanup up custom kernel\n");
-	remove_row_subset();
-	remove_col_subset();
+	SG_DEBUG("Entering CCustomKernel::cleanup_custom()\n");
+	remove_all_row_subsets();
+	remove_all_col_subsets();
 
 	if (m_free_km)
 		SG_FREE(kmatrix.matrix);
@@ -136,6 +138,8 @@ void CCustomKernel::cleanup_custom()
 	upper_diagonal=false;
 	kmatrix.num_cols=0;
 	kmatrix.num_rows=0;
+
+	SG_DEBUG("Leaving CCustomKernel::cleanup_custom()\n");
 }
 
 void CCustomKernel::cleanup()
