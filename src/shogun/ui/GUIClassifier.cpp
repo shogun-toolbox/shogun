@@ -583,7 +583,7 @@ bool CGUIClassifier::train_svm()
 
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
 	
-	if (type==CT_LARANK || type==CT_GMNPSVM || CT_LIBSVMMULTICLASS)
+	if (type==CT_LARANK || type==CT_GMNPSVM || type==CT_LIBSVMMULTICLASS)
 	{
 		CMulticlassSVM* svm = (CMulticlassSVM*)classifier;
 		svm->set_solver_type(solver_type);
@@ -629,7 +629,7 @@ bool CGUIClassifier::train_svm()
 	}
 	else
 	{
-		if (type==CT_LARANK || type==CT_GMNPSVM || CT_LIBSVMMULTICLASS)
+		if (type==CT_LARANK || type==CT_GMNPSVM || type==CT_LIBSVMMULTICLASS)
 		{
 			((CKernelMulticlassMachine*)classifier)->set_labels(trainlabels);
 			((CKernelMulticlassMachine*)classifier)->set_kernel(kernel);
@@ -1204,7 +1204,7 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 		SG_ERROR("Kernel not initialized.\n");
 
 	EClassifierType type = classifier->get_classifier_type();
-	if (type==CT_LARANK || type==CT_GMNPSVM || CT_LIBSVMMULTICLASS)
+	if (type==CT_LARANK || type==CT_GMNPSVM || type==CT_LIBSVMMULTICLASS)
 	{
 		CKernelMulticlassMachine* kmcm = (CKernelMulticlassMachine*) classifier;
 		kmcm->set_kernel(ui->ui_kernel->get_kernel());
