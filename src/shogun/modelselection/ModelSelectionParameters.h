@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -106,9 +106,8 @@ public:
 	 * that are implied by this tree is generated.
 	 *
 	 * @result result all trees of parameter combinations are put into here
-	 *
 	 */
-	CDynamicObjectArray<CParameterCombination>* get_combinations();
+	CDynamicObjectArray* get_combinations();
 
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,
@@ -148,7 +147,7 @@ private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
 	SGVector<char> m_values; // dummy void type char
-	CDynamicObjectArray<CModelSelectionParameters>* m_child_nodes;
+	CDynamicObjectArray* m_child_nodes;
 	EMSParamType m_value_type;
 };
 

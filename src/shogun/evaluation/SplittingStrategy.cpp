@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -42,7 +42,7 @@ void CSplittingStrategy::reset_subsets()
 	if (m_subset_indices)
 		SG_UNREF(m_subset_indices);
 
-	m_subset_indices=new CDynamicObjectArray<CDynamicArray<index_t> >();
+	m_subset_indices=new CDynamicObjectArray();
 	SG_REF(m_subset_indices);
 
 	/* construct all arrays */
@@ -83,8 +83,8 @@ SGVector<index_t> CSplittingStrategy::generate_subset_indices(index_t subset_idx
 	}
 
 	/* construct SGVector copy from index vector */
-	CDynamicArray<index_t>* to_copy=m_subset_indices->get_element_safe(
-			subset_idx);
+	CDynamicArray<index_t>* to_copy=(CDynamicArray<index_t>*)
+			m_subset_indices->get_element_safe(subset_idx);
 
 	index_t num_elements=to_copy->get_num_elements();
 	SGVector<index_t> result(num_elements, true);
@@ -106,8 +106,8 @@ SGVector<index_t> CSplittingStrategy::generate_subset_inverse(index_t subset_idx
 				get_name(), get_name());
 	}
 
-	CDynamicArray<index_t>* to_invert=m_subset_indices->get_element_safe(
-			subset_idx);
+	CDynamicArray<index_t>* to_invert=(CDynamicArray<index_t>*)
+			m_subset_indices->get_element_safe(subset_idx);
 
 	SGVector<index_t> result(
 			m_labels->get_num_labels()-to_invert->get_num_elements(), true);

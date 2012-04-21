@@ -4,7 +4,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# Written (W) 2011 Heiko Strathmann
+# Written (W) 2011-2012 Heiko Strathmann
 # Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
 #
 
@@ -13,7 +13,6 @@ parameter_list=[[None]]
 def modelselection_parameter_tree_modular(dummy):
     from shogun.ModelSelection import ParameterCombination
     from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
-    from shogun.ModelSelection import DynamicParameterCombinationArray
     from shogun.Kernel import PowerKernel
     from shogun.Kernel import GaussianKernel
     from shogun.Kernel import DistantSegmentsKernel
