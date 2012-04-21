@@ -77,6 +77,18 @@ class CDynamicObjectArray : public CSGObject
 			return element;
 		}
 
+		/** get last array element
+		 *
+		 * @return last array element
+		 */
+		inline T* get_last_element() const
+		{
+			T* element=m_array.get_last_element();
+			CSGObject* casted=cast_to_sgobject(element);
+			SG_REF(casted);
+			return element;
+		}
+
 		/** get array element at index
 		 *
 		 * (does bounds checking)
