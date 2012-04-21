@@ -13,7 +13,7 @@
 #endif //USE_SVMLIGHT
 
 #include <shogun/kernel/Kernel.h>
-#include <shogun/classifier/svm/ScatterSVM.h>
+#include <shogun/multiclass/ScatterSVM.h>
 #include <shogun/kernel/ScatterKernelNormalizer.h>
 #include <shogun/io/SGIO.h>
 

@@ -11,8 +11,18 @@
 /* Remove C Prefix */
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
 %rename(MulticlassOCAS) CMulticlassOCAS;
+%rename(MulticlassSVM) CMulticlassSVM;
+%rename(MulticlassLibSVM) CMulticlassLibSVM;
+%rename(LaRank) CLaRank;
+%rename(ScatterSVM) CScatterSVM;
+%rename(GMNPSVM) CGMNPSVM;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/multiclass/MulticlassLibLinear.h>
 %include <shogun/multiclass/MulticlassOCAS.h>
+%include <shogun/multiclass/MulticlassSVM.h>
+%include <shogun/multiclass/MulticlassLibSVM.h>
+%include <shogun/multiclass/LaRank.h>
+%include <shogun/multiclass/ScatterSVM.h>
+%include <shogun/multiclass/GMNPSVM.h>
 

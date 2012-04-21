@@ -1,6 +1,6 @@
 using System;
 
-public class classifier_libsvmmulticlass_modular {
+public class classifier_multiclasslibsvm_modular {
 	public static void Main() {
 		modshogun.init_shogun_with_defaults();
 		double width = 2.1;
@@ -21,7 +21,7 @@ public class classifier_libsvmmulticlass_modular {
 
 		Labels labels = new Labels(trainlab);
 
-		LibSVMMulticlass svm = new LibSVMMulticlass(C, kernel, labels);
+		MulticlassLibSVM svm = new MulticlassLibSVM(C, kernel, labels);
 		svm.set_epsilon(epsilon);
 		svm.train();
 

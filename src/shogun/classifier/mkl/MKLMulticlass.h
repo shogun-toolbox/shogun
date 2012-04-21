@@ -16,7 +16,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
-#include <shogun/classifier/svm/GMNPSVM.h>
+#include <shogun/multiclass/GMNPSVM.h>
 #include <shogun/classifier/mkl/MKLMulticlassGLPK.h>
 #include <shogun/classifier/mkl/MKLMulticlassGradient.h>
 #include <shogun/multiclass/MulticlassSVM.h>
@@ -49,8 +49,6 @@ public:
 	 *
 	 */
 	virtual ~CMKLMulticlass();
-
-	using CMulticlassMachine::apply;
 
 	/** get classifier type
 	 *

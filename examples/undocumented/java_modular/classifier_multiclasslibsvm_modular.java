@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-public class classifier_libsvmmulticlass_modular {
+public class classifier_multiclasslibsvm_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
@@ -26,7 +26,7 @@ public class classifier_libsvmmulticlass_modular {
 
 		Labels labels = new Labels(trainlab);
 
-		LibSVMMulticlass svm = new LibSVMMulticlass(C, kernel, labels);
+		MulticlassLibSVM svm = new MulticlassLibSVM(C, kernel, labels);
 		svm.set_epsilon(epsilon);
 		svm.train();
 		
