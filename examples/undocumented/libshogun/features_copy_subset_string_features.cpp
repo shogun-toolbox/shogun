@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 	CMath::display_vector(feature_subset.vector, feature_subset.vlen,
 			"feature subset");
 
-	f->add_subset(new CSubset(feature_subset));
+	f->add_subset(feature_subset);
 	SG_SPRINT("feature vectors after setting subset on original data:\n");
 	for (index_t i=0; i<f->get_num_vectors(); ++i)
 	{
@@ -117,7 +117,8 @@ int main(int argc, char **argv)
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
-	SG_FREE(feature_copy_subset.vector);
+	feature_copy_subset.destroy_vector();
+	feature_subset.destroy_vector();
 
 	exit_shogun();
 
