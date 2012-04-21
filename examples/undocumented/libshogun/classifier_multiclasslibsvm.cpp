@@ -1,7 +1,7 @@
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/MulticlassLibSVM.h>
+#include <shogun/multiclass/MulticlassLibSVM.h>
 #include <shogun/base/init.h>
 
 using namespace shogun;
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	kernel->init(features, features);
 
 	// create libsvm with C=10 and train
-	CLibSVMMulticlass* svm = new CLibSVMMulticlass(10, kernel, labels);
+	CMulticlassLibSVM* svm = new CMulticlassLibSVM(10, kernel, labels);
 	svm->train();
 
 	// classify on training examples
