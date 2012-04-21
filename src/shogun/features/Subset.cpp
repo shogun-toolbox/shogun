@@ -9,7 +9,6 @@
  */
 
 #include <shogun/features/Subset.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
@@ -23,12 +22,16 @@ CSubset::CSubset(SGVector<index_t> subset_idx)
 {
 	init();
 
-	m_subset_idx=subset_idx;
+	/* copy indices. TODO this is not needed once there is ref-counting for
+	 * SGVectors */
+	m_subset_idx=SGVector<index_t>(subset_idx.vlen);
+	memcpy(m_subset_idx.vector, subset_idx.vector,
+			subset_idx.vlen*sizeof(index_t));
 }
 
 CSubset::~CSubset() {
 	/* TODO, change to UNREF, once it is possible */
-	m_subset_idx.free_vector();
+	m_subset_idx.destroy_vector();
 }
 
 void CSubset::init() {
