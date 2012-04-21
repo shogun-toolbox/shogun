@@ -70,29 +70,6 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 			return dynamic_cast<CSVM *>(m_machines->get_element_safe(num));
 		}
 
-		using CMulticlassMachine::apply;
-
-		/** classify one example
-		 *
-		 * @param num number of example to classify
-		 * @return resulting classification
-		 */
-		virtual float64_t apply(int32_t num);
-
-		/** classify one example one vs rest
-		 *
-		 * @param num number of example of classify
-		 * @return resulting classification
-		 */
-		virtual float64_t classify_example_one_vs_rest(int32_t num);
-
-		/** classify one example one vs one
-		 *
-		 * @param num number of example of classify
-		 * @return resulting classification
-		 */
-		float64_t classify_example_one_vs_one(int32_t num);
-
 		/** load a Multiclass SVM from file
 		 * @param svm_file the file handle
 		 */

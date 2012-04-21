@@ -110,58 +110,6 @@ bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 	return true;
 }
 
-float64_t CMulticlassSVM::apply(int32_t num)
-{
-	if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
-		return classify_example_one_vs_rest(num);
-	else if (m_multiclass_strategy==ONE_VS_ONE_STRATEGY)
-		return classify_example_one_vs_one(num);
-	else
-		SG_ERROR("unknown multiclass strategy\n");
-
-	return 0;
-}
-
-float64_t CMulticlassSVM::classify_example_one_vs_rest(int32_t num)
-{
-	ASSERT(m_machines->get_num_elements()>0);
-	SGVector<float64_t> outputs(m_machines->get_num_elements());
-
-	for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
-	{
-		CSVM *svm = get_svm(i);
-		svm->set_kernel(m_kernel);
-		outputs[i]=svm->apply(num);
-		SG_UNREF(svm);
-	}
-
-	float64_t winner = maxvote_one_vs_rest(outputs);
-	outputs.destroy_vector();
-
-	return winner;
-}
-
-float64_t CMulticlassSVM::classify_example_one_vs_one(int32_t num)
-{
-	int32_t num_classes=m_labels->get_num_classes();
-	ASSERT(m_machines->get_num_elements()>0);
-	ASSERT(m_machines->get_num_elements()==num_classes*(num_classes-1)/2);
-
-	SGVector<float64_t> outputs(m_machines->get_num_elements());
-	for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
-	{
-		CSVM *svm = get_svm(i);
-		svm->set_kernel(m_kernel);
-		outputs[i] = svm->apply(num);
-		SG_UNREF(svm);
-	}
-
-	float64_t winner = maxvote_one_vs_one(outputs, num_classes);
-	outputs.destroy_vector();
-
-	return winner;
-}
-
 bool CMulticlassSVM::load(FILE* modelfl)
 {
 	bool result=true;
