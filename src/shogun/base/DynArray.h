@@ -18,7 +18,6 @@
 namespace shogun
 {
 template <class T> class CDynamicArray;
-template <class T> class CDynamicObjectArray;
 
 /** @brief Template Dynamic array class that creates an array that can
  * be used like a list or an array.
@@ -31,7 +30,7 @@ template <class T> class CDynamicObjectArray;
 template <class T> class DynArray
 {
 	template<class U> friend class CDynamicArray;
-	template<class U> friend class CDynamicObjectArray;
+	friend class CDynamicObjectArray;
 	friend class CCommUlongStringKernel;
 
 	public:

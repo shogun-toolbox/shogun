@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -63,7 +63,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	SGVector<float64_t> unique_labels=m_labels->get_unique_labels();
 
 	/* for every label, build set for indices */
-	CDynamicObjectArray<CDynamicArray<index_t> > label_indices;
+	CDynamicObjectArray label_indices;
 	for (index_t i=0; i<unique_labels.vlen; ++i)
 		label_indices.append_element(new CDynamicArray<index_t> ());
 
@@ -75,7 +75,8 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 		{
 			if (m_labels->get_label(j)==unique_labels.vector[i])
 			{
-				CDynamicArray<index_t>* current=label_indices.get_element(i);
+				CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
+						label_indices.get_element(i);
 				current->append_element(j);
 				SG_UNREF(current);
 			}
@@ -85,7 +86,8 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* shuffle created label sets */
 	for (index_t i=0; i<label_indices.get_num_elements(); ++i)
 	{
-		CDynamicArray<index_t>* current=label_indices.get_element(i);
+		CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
+				label_indices.get_element(i);
 		current->shuffle();
 		SG_UNREF(current);
 	}
@@ -95,12 +97,13 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	for (index_t i=0; i<unique_labels.vlen; ++i)
 	{
 		/* current index set for current label */
-		CDynamicArray<index_t>* current=label_indices.get_element(i);
+		CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
+				label_indices.get_element(i);
 
 		for (index_t j=0; j<current->get_num_elements(); ++j)
 		{
-			CDynamicArray<index_t>* next=m_subset_indices->get_element(
-					target_set++);
+			CDynamicArray<index_t>* next=(CDynamicArray<index_t>*)
+					m_subset_indices->get_element(target_set++);
 			next->append_element(current->get_element(j));
 			target_set%=m_subset_indices->get_num_elements();
 			SG_UNREF(next);

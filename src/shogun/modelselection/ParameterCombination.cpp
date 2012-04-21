@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -29,7 +29,7 @@ CParameterCombination::CParameterCombination(Parameter* param)
 void CParameterCombination::init()
 {
 	m_param=NULL;
-	m_child_nodes=new CDynamicObjectArray<CParameterCombination> ();
+	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 
 	m_parameters->add((CSGObject**)m_child_nodes, "child nodes",
@@ -99,7 +99,8 @@ void CParameterCombination::print_tree(int prefix_num) const
 
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
-		CParameterCombination* child=m_child_nodes->get_element(i);
+		CParameterCombination* child=(CParameterCombination*)
+				m_child_nodes->get_element(i);
 		child->print_tree(prefix_num+1);
 		SG_UNREF(child);
 	}
@@ -126,18 +127,16 @@ DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
 	return result;
 }
 
-CDynamicObjectArray<CParameterCombination>* CParameterCombination::leaf_sets_multiplication(
-		const CDynamicObjectArray<CDynamicObjectArray<CParameterCombination> >& sets,
-		const CParameterCombination* new_root)
+CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
+		const CDynamicObjectArray& sets, const CParameterCombination* new_root)
 {
-	CDynamicObjectArray<CParameterCombination>* result=new CDynamicObjectArray<
-			CParameterCombination>();
+	CDynamicObjectArray* result=new CDynamicObjectArray();
 
 	/* check marginal cases */
 	if (sets.get_num_elements()==1)
 	{
-		CDynamicObjectArray<CParameterCombination>* current_set=
-				sets.get_element(0);
+		CDynamicObjectArray* current_set=
+				(CDynamicObjectArray*)sets.get_element(0);
 
 		/* just use the only element into result array.
 		 * put root node before all combinations*/
@@ -148,7 +147,8 @@ CDynamicObjectArray<CParameterCombination>* CParameterCombination::leaf_sets_mul
 		for (index_t i=0; i<result->get_num_elements(); ++i)
 		{
 			/* put new root as root into the tree and replace tree */
-			CParameterCombination* current=result->get_element(i);
+			CParameterCombination* current=(CParameterCombination*)
+					result->get_element(i);
 			CParameterCombination* root=new_root->copy_tree();
 			root->append_child(current);
 			result->set_element(root, i);
@@ -164,14 +164,15 @@ CDynamicObjectArray<CParameterCombination>* CParameterCombination::leaf_sets_mul
 
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
-			CDynamicObjectArray<CParameterCombination>* current_set=
+			CDynamicObjectArray* current_set=(CDynamicObjectArray*)
 					sets.get_element(set_nr);
 			DynArray<Parameter*>* new_param_set=new DynArray<Parameter*> ();
 			param_sets.append_element(new_param_set);
 
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 			{
-				CParameterCombination* current_node=current_set->get_element(i);
+				CParameterCombination* current_node=(CParameterCombination*)
+						current_set->get_element(i);
 
 				if (current_node->m_child_nodes->get_num_elements())
 				{
@@ -264,7 +265,8 @@ CParameterCombination* CParameterCombination::copy_tree() const
 	/* recursively copy all children */
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
-		CParameterCombination* child=m_child_nodes->get_element(i);
+		CParameterCombination* child=(CParameterCombination*)
+				m_child_nodes->get_element(i);
 		copy->m_child_nodes->append_element(child->copy_tree());
 		SG_UNREF(child);
 	}
@@ -288,7 +290,8 @@ void CParameterCombination::apply_to_modsel_parameter(
 		 * recursion level downwards) */
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
-			CParameterCombination* child=m_child_nodes->get_element(i);
+			CParameterCombination* child=(CParameterCombination*)
+					m_child_nodes->get_element(i);
 			child->apply_to_modsel_parameter(parameter);
 			SG_UNREF(child);
 		}
@@ -320,7 +323,8 @@ void CParameterCombination::apply_to_modsel_parameter(
 			 * their values */
 			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 			{
-				CParameterCombination* child=m_child_nodes->get_element(i);
+				CParameterCombination* child=(CParameterCombination*)
+						m_child_nodes->get_element(i);
 				child->apply_to_modsel_parameter(
 						current_sgobject->m_model_selection_parameters);
 				SG_UNREF(child);

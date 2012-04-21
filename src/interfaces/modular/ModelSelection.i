@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
  
@@ -26,12 +26,5 @@ SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/GridSearchModelSelection.h>
 %include <shogun/modelselection/ParameterCombination.h>
-
-/* Templated Class DynamicObjectArray */
 %include <shogun/lib/DynamicObjectArray.h>
-namespace shogun
-{
-    %template(DynamicParameterCombinationArray) CDynamicObjectArray<CParameterCombination>;
-}
-
 %include <shogun/modelselection/ModelSelectionParameters.h>
