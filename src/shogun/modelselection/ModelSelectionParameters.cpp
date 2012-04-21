@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -42,7 +42,7 @@ void CModelSelectionParameters::init()
 {
 	m_node_name=NULL;
 	m_sgobject=NULL;
-	m_child_nodes=new CDynamicObjectArray<CModelSelectionParameters>();
+	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 	m_value_type=MSPT_NONE;
 
@@ -164,10 +164,9 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 	}
 }
 
-CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combinations()
+CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 {
-	CDynamicObjectArray<CParameterCombination>* result=new CDynamicObjectArray<
-			CParameterCombination>();
+	CDynamicObjectArray* result=new CDynamicObjectArray();
 
 	/* value case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value
@@ -216,12 +215,13 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 	if (m_child_nodes->get_num_elements())
 	{
 		/* split value and non-value child combinations */
-		CDynamicObjectArray<CModelSelectionParameters> value_children;
-		CDynamicObjectArray<CModelSelectionParameters> non_value_children;
+		CDynamicObjectArray value_children;
+		CDynamicObjectArray non_value_children;
 
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
-			CModelSelectionParameters* current=m_child_nodes->get_element(i);
+			CModelSelectionParameters* current=
+					(CModelSelectionParameters*)m_child_nodes->get_element(i);
 
 			/* split children with values and children with other */
 			if (current->m_values.vector)
@@ -233,12 +233,12 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 		}
 
 		/* extract all tree sets of all value children */
-		CDynamicObjectArray<CDynamicObjectArray<CParameterCombination> > value_node_sets;
+		CDynamicObjectArray value_node_sets;
 		for (index_t i=0; i<value_children.get_num_elements(); ++i)
 		{
 			/* recursively get all combinations in a new array */
 			CModelSelectionParameters* value_child=
-					value_children.get_element(i);
+					(CModelSelectionParameters*)value_children.get_element(i);
 			value_node_sets.append_element(value_child->get_combinations());
 			SG_UNREF(value_child);
 		}
@@ -258,7 +258,7 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 
 		SG_REF(new_root);
 
-		CDynamicObjectArray<CParameterCombination>* value_combinations=
+		CDynamicObjectArray* value_combinations=
 				CParameterCombination::leaf_sets_multiplication(value_node_sets,
 						new_root);
 
@@ -272,12 +272,12 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 		else
 		{
 			/* extract all tree sets of non-value nodes */
-			CDynamicObjectArray<CDynamicObjectArray<CParameterCombination> >
-					non_value_combinations;
+			CDynamicObjectArray non_value_combinations;
 			for (index_t i=0; i<non_value_children.get_num_elements(); ++i)
 			{
 				/* recursively get all combinations in a new array */
 				CModelSelectionParameters* non_value_child=
+						(CModelSelectionParameters*)
 						non_value_children.get_element(i);
 				non_value_combinations.append_element(
 						non_value_child->get_combinations());
@@ -298,13 +298,15 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 				for (index_t j=0;
 						j<non_value_combinations.get_num_elements(); ++j)
 				{
-					CDynamicObjectArray<CParameterCombination>* current_non_value_set=
+					CDynamicObjectArray* current_non_value_set=
+							(CDynamicObjectArray*)
 							non_value_combinations.get_element(j);
 
 					for (index_t k=0; k
 							<current_non_value_set->get_num_elements(); ++k)
 					{
 						CParameterCombination* current_non_value_tree=
+								(CParameterCombination*)
 								current_non_value_set->get_element(k);
 
 						/* append new root with rest of tree to current
@@ -324,18 +326,21 @@ CDynamicObjectArray<CParameterCombination>* CModelSelectionParameters::get_combi
 				for (index_t i=0; i<value_combinations->get_num_elements(); ++i)
 				{
 					CParameterCombination* current_value_tree=
+							(CParameterCombination*)
 							value_combinations->get_element(i);
 
 					for (index_t j=0; j
 							<non_value_combinations.get_num_elements(); ++j)
 					{
-						CDynamicObjectArray<CParameterCombination> * current_non_value_set=
+						CDynamicObjectArray* current_non_value_set=
+								(CDynamicObjectArray*)
 								non_value_combinations.get_element(j);
 
 						for (index_t k=0; k
 								<current_non_value_set->get_num_elements(); ++k)
 						{
 							CParameterCombination* current_non_value_tree=
+									(CParameterCombination*)
 									current_non_value_set->get_element(k);
 
 							/* copy the current trees and append non-value
@@ -401,7 +406,8 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		/* cast safe because only CModelSelectionParameters are added to list */
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
-			CModelSelectionParameters* child=m_child_nodes->get_element(i);
+			CModelSelectionParameters* child=
+					(CModelSelectionParameters*)m_child_nodes->get_element(i);
 			child->print_tree(prefix_num+1);
 			SG_UNREF(child);
 		}

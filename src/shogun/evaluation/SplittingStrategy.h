@@ -100,7 +100,7 @@ protected:
 	CLabels* m_labels;
 
 	/** subset indices */
-	CDynamicObjectArray<CDynamicArray<index_t> >* m_subset_indices;
+	CDynamicObjectArray* m_subset_indices;
 
 	/** additional variable to store number of index subsets */
 	index_t m_num_subsets;
