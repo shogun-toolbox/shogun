@@ -407,11 +407,6 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_UNREF(classifier);
 		classifier= new CMKLClassification();
 	}
-	//else if (strcmp(name,"MKL_MULTICLASS")==0)
-	//{
-	//	SG_UNREF(classifier);
-	//	classifier= new CMKLClassification();
-	//}
 	else if (strcmp(name,"MKL_ONECLASS")==0)
 	{
 		SG_UNREF(classifier);
@@ -1204,7 +1199,8 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 		SG_ERROR("Kernel not initialized.\n");
 
 	EClassifierType type = classifier->get_classifier_type();
-	if (type==CT_LARANK || type==CT_GMNPSVM || type==CT_LIBSVMMULTICLASS)
+	if (type==CT_LARANK || type==CT_GMNPSVM || type==CT_LIBSVMMULTICLASS ||
+		type==CT_MKLMULTICLASS)
 	{
 		CKernelMulticlassMachine* kmcm = (CKernelMulticlassMachine*) classifier;
 		kmcm->set_kernel(ui->ui_kernel->get_kernel());
