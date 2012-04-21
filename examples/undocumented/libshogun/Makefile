@@ -21,7 +21,7 @@ TARGETS = basic_minimal \
 		  classifier_mklmulticlass \
   		  classifier_conjugateindex \
 		  classifier_gaussiannaivebayes \
-		  classifier_libsvmmulticlass \
+		  classifier_multiclasslibsvm \
 		  classifier_qda \
 		  classifier_multiclasslinearmachine \
 		  kernel_gaussian kernel_revlin \
