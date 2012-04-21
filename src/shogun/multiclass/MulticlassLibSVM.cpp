@@ -8,27 +8,26 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/LibSVMMulticlass.h>
+#include <shogun/multiclass/MulticlassLibSVM.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
-CLibSVMMulticlass::CLibSVMMulticlass(LIBSVM_SOLVER_TYPE st)
+CMulticlassLibSVM::CMulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
 : CMulticlassSVM(ONE_VS_ONE_STRATEGY), model(NULL), solver_type(st)
 {
 }
 
-CLibSVMMulticlass::CLibSVMMulticlass(float64_t C, CKernel* k, CLabels* lab)
+CMulticlassLibSVM::CMulticlassLibSVM(float64_t C, CKernel* k, CLabels* lab)
 : CMulticlassSVM(ONE_VS_ONE_STRATEGY, C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
 {
 }
 
-CLibSVMMulticlass::~CLibSVMMulticlass()
+CMulticlassLibSVM::~CMulticlassLibSVM()
 {
-	//SG_PRINT("deleting LibSVM\n");
 }
 
-bool CLibSVMMulticlass::train_machine(CFeatures* data)
+bool CMulticlassLibSVM::train_machine(CFeatures* data)
 {
 	struct svm_node* x_space;
 

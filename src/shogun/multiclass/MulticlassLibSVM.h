@@ -18,12 +18,13 @@
 
 namespace shogun
 {
-/** @brief class LibSVMMultiClass */
-class CLibSVMMulticlass : public CMulticlassSVM
+/** @brief class LibSVMMultiClass. Does one vs one
+ * classification. */
+class CMulticlassLibSVM : public CMulticlassSVM
 {
 	public:
 		/** default constructor */
-		CLibSVMMulticlass(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
+		CMulticlassLibSVM(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
 		/** constructor
 		 *
@@ -31,12 +32,10 @@ class CLibSVMMulticlass : public CMulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CLibSVMMulticlass(float64_t C, CKernel* k, CLabels* lab);
+		CMulticlassLibSVM(float64_t C, CKernel* k, CLabels* lab);
 
 		/** destructor */
-		virtual ~CLibSVMMulticlass();
-
-		using CMulticlassMachine::apply;
+		virtual ~CMulticlassLibSVM();
 
 		/** get classifier type
 		 *
@@ -45,7 +44,7 @@ class CLibSVMMulticlass : public CMulticlassSVM
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LibSVMMultiClass"; }
+		inline virtual const char* get_name() const { return "MulticlassLibSVM"; }
 
 	protected:
 		/** train multiclass SVM classifier

@@ -1,6 +1,5 @@
 %{
  #include <shogun/machine/Machine.h>
- #include <shogun/classifier/svm/GMNPSVM.h>
  #include <shogun/classifier/svm/GNPPSVM.h>
  #include <shogun/classifier/svm/GPBTSVM.h>
  #include <shogun/machine/DistanceMachine.h>
@@ -8,17 +7,13 @@
  #include <shogun/classifier/LDA.h>
  #include <shogun/classifier/QDA.h>
  #include <shogun/classifier/svm/LibLinear.h>
- #include <shogun/classifier/svm/ScatterSVM.h>
  #include <shogun/classifier/svm/LibSVM.h>
- #include <shogun/classifier/svm/LaRank.h>
- #include <shogun/classifier/svm/LibSVMMulticlass.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
  #include <shogun/machine/LinearMachine.h>
  #include <shogun/machine/OnlineLinearMachine.h>
  #include <shogun/classifier/LPBoost.h> 
  #include <shogun/classifier/LPM.h>
  #include <shogun/classifier/svm/MPDSVM.h>
- #include <shogun/multiclass/MulticlassSVM.h>
  #include <shogun/classifier/svm/OnlineSVMSGD.h>
  #include <shogun/classifier/svm/OnlineLibLinear.h>
  #include <shogun/classifier/Perceptron.h>

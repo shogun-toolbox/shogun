@@ -17,7 +17,6 @@
 /* Remove C Prefix */
 %rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
-%rename(GMNPSVM) CGMNPSVM;
 %rename(GNPPSVM) CGNPPSVM;
 %rename(GPBTSVM) CGPBTSVM;
 %rename(GaussianNaiveBayes) CGaussianNaiveBayes;
@@ -25,10 +24,7 @@
 %rename(LDA) CLDA;
 %rename(QDA) CQDA;
 %rename(LibLinear) CLibLinear;
-%rename(ScatterSVM) CScatterSVM;
 %rename(LibSVM) CLibSVM;
-%rename(LaRank) CLaRank;
-%rename(LibSVMMultiClass) CLibSVMMulticlass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
 %rename(LinearMachine) CLinearMachine;
 %rename(OnlineLinearMachine) COnlineLinearMachine;
@@ -85,17 +81,13 @@
 %include <shogun/machine/LinearMachine.h>
 %include <shogun/machine/OnlineLinearMachine.h>
 %include <shogun/classifier/GaussianNaiveBayes.h>
-%include <shogun/classifier/svm/GMNPSVM.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
 %include <shogun/classifier/svm/GPBTSVM.h>
 %include <shogun/classifier/KNN.h>
 %include <shogun/classifier/LDA.h>
 %include <shogun/classifier/QDA.h>
 %include <shogun/classifier/svm/LibLinear.h>
-%include <shogun/classifier/svm/ScatterSVM.h>
 %include <shogun/classifier/svm/LibSVM.h>
-%include <shogun/classifier/svm/LaRank.h>
-%include <shogun/classifier/svm/LibSVMMulticlass.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
 %include <shogun/classifier/LPBoost.h> 
 %include <shogun/classifier/LPM.h>

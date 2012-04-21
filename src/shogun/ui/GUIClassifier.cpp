@@ -43,10 +43,10 @@
 #include <shogun/classifier/mkl/MKLOneClass.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/classifier/svm/LaRank.h>
+#include <shogun/multiclass/LaRank.h>
 #include <shogun/classifier/svm/GPBTSVM.h>
 #include <shogun/classifier/svm/LibSVMOneClass.h>
-#include <shogun/classifier/svm/LibSVMMulticlass.h>
+#include <shogun/multiclass/MulticlassLibSVM.h>
 
 #include <shogun/regression/svr/LibSVR.h>
 #include <shogun/regression/KernelRidgeRegression.h>
@@ -55,7 +55,7 @@
 #include <shogun/classifier/svm/MPDSVM.h>
 #include <shogun/classifier/svm/GNPPSVM.h>
 #include <shogun/classifier/svm/GMNPSVM.h>
-#include <shogun/classifier/svm/ScatterSVM.h>
+#include <shogun/multiclass/ScatterSVM.h>
 
 #include <shogun/classifier/svm/SVMLin.h>
 #include <shogun/classifier/svm/SubGradientSVM.h>
@@ -122,13 +122,13 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	else if (strcmp(name,"LIBSVM_MULTICLASS")==0)
 	{
 		SG_UNREF(classifier);
-		classifier = new CLibSVMMulticlass();
+		classifier = new CMulticlassLibSVM();
 		SG_INFO("created SVMlibsvm object for multiclass\n");
 	}
 	else if (strcmp(name,"LIBSVM_NUMULTICLASS")==0)
 	{
 		SG_UNREF(classifier);
-		classifier= new CLibSVMMulticlass(LIBSVM_NU_SVC);
+		classifier= new CMulticlassLibSVM(LIBSVM_NU_SVC);
 		SG_INFO("created SVMlibsvm object for multiclass\n") ;
 	}
 #ifdef USE_SVMLIGHT
@@ -477,8 +477,8 @@ bool CGUIClassifier::train_mkl_multiclass()
 	mkl->set_linadd_enabled(svm_use_linadd);
 	mkl->set_batch_computation_enabled(svm_use_batch_computation);
 
-	((CKernelMachine*) mkl)->set_labels(trainlabels);
-	((CKernelMachine*) mkl)->set_kernel(kernel);
+	((CKernelMulticlassMachine*) mkl)->set_labels(trainlabels);
+	((CKernelMulticlassMachine*) mkl)->set_kernel(kernel);
 
 	return mkl->train();
 }
@@ -554,11 +554,12 @@ bool CGUIClassifier::train_mkl()
 
 bool CGUIClassifier::train_svm()
 {
-	CSVM* svm= (CSVM*) classifier;
-	if (!svm)
+	EClassifierType type = classifier->get_classifier_type();
+	
+	if (!classifier)
 		SG_ERROR("No SVM available.\n");
 
-	bool oneclass=(svm->get_classifier_type()==CT_LIBSVMONECLASS);
+	bool oneclass=(type==CT_LIBSVMONECLASS);
 	CLabels* trainlabels=NULL;
 	if(!oneclass)
 		trainlabels=ui->ui_labels->get_train_labels();
@@ -581,40 +582,68 @@ bool CGUIClassifier::train_svm()
 		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec);
 
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon);
-
-	svm->set_solver_type(solver_type);
-	svm->set_bias_enabled(svm_use_bias);
-	svm->set_epsilon(svm_epsilon);
-	svm->set_max_train_time(max_train_time);
-	svm->set_tube_epsilon(svm_tube_epsilon);
-	svm->set_nu(svm_nu);
-	svm->set_C(svm_C1, svm_C2);
-	svm->set_qpsize(svm_qpsize);
-	svm->set_shrinking_enabled(svm_use_shrinking);
-	svm->set_linadd_enabled(svm_use_linadd);
-	svm->set_batch_computation_enabled(svm_use_batch_computation);
-
-	if(svm->get_classifier_type()==CT_MKLMULTICLASS)
+	
+	if (type==CT_LARANK || type==CT_GMNPSVM || CT_LIBSVMMULTICLASS)
 	{
-		((CMKLMulticlass *)svm)->set_mkl_epsilon(svm_weight_epsilon );
+		CMulticlassSVM* svm = (CMulticlassSVM*)classifier;
+		svm->set_solver_type(solver_type);
+		svm->set_bias_enabled(svm_use_bias);
+		svm->set_epsilon(svm_epsilon);
+		svm->set_max_train_time(max_train_time);
+		svm->set_tube_epsilon(svm_tube_epsilon);
+		svm->set_nu(svm_nu);
+		svm->set_C(svm_C1, svm_C2);
+		svm->set_qpsize(svm_qpsize);
+		svm->set_shrinking_enabled(svm_use_shrinking);
+		svm->set_linadd_enabled(svm_use_linadd);
+		svm->set_batch_computation_enabled(svm_use_batch_computation);
+	}
+	else
+	{
+		CSVM* svm = (CSVM*)classifier;
+		svm->set_solver_type(solver_type);
+		svm->set_bias_enabled(svm_use_bias);
+		svm->set_epsilon(svm_epsilon);
+		svm->set_max_train_time(max_train_time);
+		svm->set_tube_epsilon(svm_tube_epsilon);
+		svm->set_nu(svm_nu);
+		svm->set_C(svm_C1, svm_C2);
+		svm->set_qpsize(svm_qpsize);
+		svm->set_shrinking_enabled(svm_use_shrinking);
+		svm->set_linadd_enabled(svm_use_linadd);
+		svm->set_batch_computation_enabled(svm_use_batch_computation);
+	}
+
+	if (type==CT_MKLMULTICLASS)
+	{
+		((CMKLMulticlass *)classifier)->set_mkl_epsilon(svm_weight_epsilon);
 	}
 
 	if (svm_do_auc_maximization)
 	{
 		CAUCKernel* auc_kernel = new CAUCKernel(10, kernel);
-		CLabels* auc_labels= auc_kernel->setup_auc_maximization(trainlabels);
-		((CKernelMachine*) svm)->set_labels(auc_labels);
-		((CKernelMachine*) svm)->set_kernel(auc_kernel);
+		CLabels* auc_labels = auc_kernel->setup_auc_maximization(trainlabels);
+		((CKernelMachine*)classifier)->set_labels(auc_labels);
+		((CKernelMachine*)classifier)->set_kernel(auc_kernel);
 		SG_UNREF(auc_labels);
 	}
 	else
 	{
-		if(!oneclass)
-			((CKernelMachine*) svm)->set_labels(trainlabels);
-		((CKernelMachine*) svm)->set_kernel(kernel);
+		if (type==CT_LARANK || type==CT_GMNPSVM || CT_LIBSVMMULTICLASS)
+		{
+			((CKernelMulticlassMachine*)classifier)->set_labels(trainlabels);
+			((CKernelMulticlassMachine*)classifier)->set_kernel(kernel);
+		}
+		else 
+		{
+			if(!oneclass)
+				((CKernelMachine*)classifier)->set_labels(trainlabels);
+
+			((CKernelMachine*)classifier)->set_kernel(kernel);
+		}
 	}
 
-	bool result=svm->train();
+	bool result = classifier->train();
 
 	return result;
 }
@@ -1174,9 +1203,18 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 	if (!success || !ui->ui_kernel->is_initialized())
 		SG_ERROR("Kernel not initialized.\n");
 
-	CKernelMachine* km=(CKernelMachine*) classifier;
-	km->set_kernel(ui->ui_kernel->get_kernel());
-	km->set_batch_computation_enabled(svm_use_batch_computation);
+	EClassifierType type = classifier->get_classifier_type();
+	if (type==CT_LARANK || type==CT_GMNPSVM || CT_LIBSVMMULTICLASS)
+	{
+		CKernelMulticlassMachine* kmcm = (CKernelMulticlassMachine*) classifier;
+		kmcm->set_kernel(ui->ui_kernel->get_kernel());
+	}
+	else 
+	{
+		CKernelMachine* km=(CKernelMachine*) classifier;
+		km->set_kernel(ui->ui_kernel->get_kernel());
+		km->set_batch_computation_enabled(svm_use_batch_computation);
+	}
 
 	SG_INFO("Starting kernel machine testing.\n");
 	return classifier->apply();
