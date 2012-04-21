@@ -47,7 +47,7 @@ void CSubsetStack::init()
 
 void CSubsetStack::add_subset(SGVector<index_t> subset)
 {
-	/* active subset will be changed anyway, no unref */
+	/* active subset will be changed anyway, no setting to NULL */
 	SG_UNREF(m_active_subset);
 
 	/* two cases: stack is empty/stack is not empty */
@@ -59,11 +59,15 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		/* get latest current subset */
 		CSubset* latest=m_active_subsets_stack->get_last_element();
 
+		/* here the do_free flag is set to true to make automatic memory
+		 * handling possible. However, this should be changed to ref-counting
+		 * once that is possible. TODO
+		 */
 		SGVector<index_t> new_active_subset=SGVector<index_t>(subset.vlen, true);
 
 		/* using the latest current subset, transform all indices by the latest
 		 * added subset (dynamic programming greets you) */
-		for (index_t i=0; i<latest->get_size(); ++i)
+		for (index_t i=0; i<subset.vlen; ++i)
 			new_active_subset.vector[i]=latest->m_subset_idx[subset.vector[i]];
 
 		/* replace active subset */
@@ -88,18 +92,24 @@ void CSubsetStack::remove_subset()
 	index_t num_subsets=m_active_subsets_stack->get_num_elements();
 	if (num_subsets)
 	{
+		/* unref current subset */
 		SG_UNREF(m_active_subset);
+		m_active_subset=NULL;
 
-		/* if there are subsets left on stack, set the next one as active and
-		 * delete last one */
-		if (num_subsets>1)
+		/* delete last element on stack */
+		if (num_subsets>=1)
 		{
-			/* delete last element on stack */
 			index_t last_idx=m_active_subsets_stack->get_num_elements()-1;
 			m_active_subsets_stack->delete_element(last_idx);
 
+		}
+
+		/* if there are subsets left on stack, set the next one as active */
+		if (num_subsets>1)
+		{
 			/* use new last element on stack as active subset */
-			m_active_subset=m_active_subsets_stack->get_element(last_idx-1);
+			index_t last_idx=m_active_subsets_stack->get_num_elements()-1;
+			m_active_subset=m_active_subsets_stack->get_element(last_idx);
 		}
 
 		/* otherwise, active subset is just empty */

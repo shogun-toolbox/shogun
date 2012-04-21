@@ -20,9 +20,8 @@ namespace shogun
 /** @brief Wrapper class for an index subset which is used by SubsetStack.
  * Currently the SGVector with the indices is possibly freed with free_vector()
  * This might change in the future when there is reference counting for
- * SGVectors. For now, please either use an index vector only once per subset
- * and set do_free flag to true, or set it to false and handle memory stuff
- * yourself */
+ * SGVectors. For now, please set do_free flag to false and handle memory stuff
+ * yourself. Using subset vectors with do_free==true may cause trouble */
 class CSubset: public CSGObject
 {
 	friend class CSubsetStack;
@@ -33,12 +32,13 @@ public:
 
 	/** constructor
 	 *
-	 * @param subset_idx vector of subset indices. free_vector is called in
-	 * destructor, so decide whether it should be deleted when passing vector
+	 * @param subset_idx vector of subset indices. Please do set th do_free flag
+	 * to false and handle vector memory managment yourself.
+	 * TODO once there is reference couting for vectors, use it.
 	 */
 	CSubset(const SGVector<index_t>& subset_idx);
 
-	/** destructor. Calls free_vector of index vector*/
+	/** destructor. Calls free_vector of index vector */
 	virtual ~CSubset();
 
 	/** @return size of subset index array */
