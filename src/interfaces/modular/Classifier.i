@@ -28,7 +28,7 @@
 %rename(ScatterSVM) CScatterSVM;
 %rename(LibSVM) CLibSVM;
 %rename(LaRank) CLaRank;
-%rename(LibSVMMultiClass) CLibSVMMulticlass;
+%rename(LibSVMMulticlass) CLibSVMMulticlass;
 %rename(LibSVMOneClass) CLibSVMOneClass;
 %rename(LinearMachine) CLinearMachine;
 %rename(OnlineLinearMachine) COnlineLinearMachine;
