@@ -104,6 +104,15 @@ template <class T> class DynArray
 			return array[index];
 		}
 
+		/** gets last array element
+		 *
+		 * @return array element at last index
+		 */
+		inline T get_last_element() const
+		{
+			return array[last_element_idx];
+		}
+
 		/** get array element at index as pointer
 		 *
 		 * (does NOT do bounds checking)
