@@ -1,7 +1,7 @@
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/classifier/svm/LibSVMMulticlass.h>
+#include <shogun/machine/MulticlassLibSVM.h>
 #include <shogun/base/init.h>
 
 using namespace shogun;
