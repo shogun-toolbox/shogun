@@ -54,7 +54,7 @@
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/classifier/svm/MPDSVM.h>
 #include <shogun/classifier/svm/GNPPSVM.h>
-#include <shogun/classifier/svm/GMNPSVM.h>
+#include <shogun/multiclass/GMNPSVM.h>
 #include <shogun/multiclass/ScatterSVM.h>
 
 #include <shogun/classifier/svm/SVMLin.h>
