@@ -144,7 +144,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */
 			SG_WARNING("FIXME");
-			m_features->add_subset(subset);
+//			m_features->add_subset(subset);
 		}
 
 		/** deletes any subset set to the features of the machine */

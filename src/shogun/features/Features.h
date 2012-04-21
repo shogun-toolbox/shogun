@@ -18,7 +18,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/features/FeatureTypes.h>
-#include <shogun/features/Subset.h>
+#include <shogun/features/SubsetStack.h>
 #include <shogun/lib/List.h>
 
 namespace shogun
@@ -228,7 +228,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param subset subset of indices to add
 		 * */
-		virtual void add_subset(CSubset* subset);
+		virtual void add_subset(SGVector<index_t> subset);
 
 		/** removes that last added subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
@@ -240,22 +240,6 @@ class CFeatures : public CSGObject
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
-
-		/** does subset index conversion with the underlying subset if possible
-		 *
-		 * @param idx index to convert
-		 * @return converted index
-		 */
-		inline index_t subset_idx_conversion(index_t idx) const
-		{
-			return m_active_subset ?
-					m_active_subset->subset_idx_conversion(idx) : idx;
-		}
-
-		/** check if has subsets
-		 * @return true if has subsets
-		 */
-		bool has_subsets() const;
 
 		/** Creates a new CFeatures instance containing copies of the elements
 		 * which are specified by the provided indices.
@@ -269,9 +253,6 @@ class CFeatures : public CSGObject
 		virtual CFeatures* copy_subset(const SGVector<index_t>& indices);
 
 	protected:
-
-		/* recomputes the visible active subset using the subset stack */
-		virtual void update_active_subset();
 
 	private:
 		/** feature properties */
@@ -290,12 +271,8 @@ class CFeatures : public CSGObject
 		bool* preprocessed;
 
 	protected:
-
-		/** stack of subsets */
-		CList* m_subset_stack;
-
-		/** current subset which is all stack subsets merged. for performance */
-		CSubset* m_active_subset;
+		/** subset used for index transformations */
+		CSubsetStack* m_subset_stack;
 };
 }
 #endif

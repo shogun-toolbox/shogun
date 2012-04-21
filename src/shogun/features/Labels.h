@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Subset support written (W) 2011 Heiko Strathmann
+ * Written (W) 2011 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -16,7 +16,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/features/Subset.h>
+#include <shogun/features/SubsetStack.h>
 
 namespace shogun
 {
@@ -201,24 +201,20 @@ class CLabels : public CSGObject
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Labels"; }
 
-		/** setter for subset variable, deletes old one
+		/** adds a subset of indices on top of the current subsets (possibly
+		 * subset o subset. Calls subset_changed_post() afterwards
 		 *
-		 * @param subset subset instance to set
-		 */
-		virtual void set_subset(CSubset* subset);
+		 * @param subset subset of indices to add
+		 * */
+		virtual void add_subset(SGVector<index_t> subset);
 
-		/** TODO */
-		bool has_subset() const;
-
-		/** deletes any set subset */
+		/** removes that last added subset from subset stack, if existing
+		 * Calls subset_changed_post() afterwards */
 		virtual void remove_subset();
 
-		/** does subset index conversion with the underlying subset if possible
-		 *
-		 * @param idx index to convert
-		 * @return converted index
-		 */
-		index_t subset_idx_conversion(index_t idx) const;
+		/** removes all subsets
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_all_subsets();
 
 	public:
 
@@ -234,7 +230,7 @@ class CLabels : public CSGObject
 
 	private:
 		/* subset class to enable subset support for this class */
-		CSubset* m_subset;
+		CSubsetStack* m_subset_stack;
 };
 }
 #endif

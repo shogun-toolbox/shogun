@@ -22,10 +22,6 @@ template<class ST> CSimpleFeatures<ST>::CSimpleFeatures(const CSimpleFeatures & 
 	initialize_cache();
 	init();
 
-	m_active_subset=orig.m_active_subset;
-	SG_REF(m_active_subset);
-
-	SG_UNREF(m_subset_stack);
 	m_subset_stack=orig.m_subset_stack;
 	SG_REF(m_subset_stack);
 }
@@ -60,14 +56,14 @@ template<class ST> CSimpleFeatures<ST>::~CSimpleFeatures()
 
 template<class ST> void CSimpleFeatures<ST>::free_features()
 {
-	remove_all_subsets();
+	m_subset_stack->remove_all_subsets();
 	free_feature_matrix();
 	SG_UNREF(feature_cache);
 }
 
 template<class ST> void CSimpleFeatures<ST>::free_feature_matrix()
 {
-	remove_all_subsets();
+	m_subset_stack->remove_all_subsets();
 	SG_FREE(feature_matrix);
 	feature_matrix = NULL;
 	feature_matrix_num_features = num_features;
@@ -79,7 +75,7 @@ template<class ST> void CSimpleFeatures<ST>::free_feature_matrix()
 template<class ST> ST* CSimpleFeatures<ST>::get_feature_vector(int32_t num, int32_t& len, bool& dofree)
 {
 	/* index conversion for subset, only for array access */
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	len = num_features;
 
@@ -138,7 +134,7 @@ template<class ST> ST* CSimpleFeatures<ST>::get_feature_vector(int32_t num, int3
 template<class ST> void CSimpleFeatures<ST>::set_feature_vector(const SGVector<ST>& vector, int32_t num)
 {
 	/* index conversion for subset, only for array access */
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	if (num>=get_num_vectors())
 	{
@@ -160,7 +156,7 @@ template<class ST> void CSimpleFeatures<ST>::set_feature_vector(const SGVector<S
 template<class ST> SGVector<ST> CSimpleFeatures<ST>::get_feature_vector(int32_t num)
 {
 	/* index conversion for subset, only for array access */
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	if (num >= get_num_vectors())
 	{
@@ -176,7 +172,7 @@ template<class ST> SGVector<ST> CSimpleFeatures<ST>::get_feature_vector(int32_t 
 template<class ST> void CSimpleFeatures<ST>::free_feature_vector(ST* feat_vec, int32_t num, bool dofree)
 {
 	if (feature_cache)
-		feature_cache->unlock_entry(subset_idx_conversion(num));
+		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
 
 	if (dofree)
 		SG_FREE(feat_vec);
@@ -189,7 +185,7 @@ template<class ST> void CSimpleFeatures<ST>::free_feature_vector(const SGVector<
 
 template<class ST> void CSimpleFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call vector_subset\n");
 
 	ASSERT(feature_matrix);
@@ -220,7 +216,7 @@ template<class ST> void CSimpleFeatures<ST>::vector_subset(int32_t* idx, int32_t
 
 template<class ST> void CSimpleFeatures<ST>::feature_subset(int32_t* idx, int32_t idx_len)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call feature_subset\n");
 
 	ASSERT(feature_matrix);
@@ -258,12 +254,12 @@ template<class ST> void CSimpleFeatures<ST>::get_feature_matrix(ST** dst, int32_
 	*dst = SG_MALLOC(ST, num);
 
 	/* copying depends on whether a subset is used */
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 	{
 		/* copy vector wise */
 		for (int32_t i = 0; i < *num_vec; ++i)
 		{
-			int32_t real_i = m_active_subset->subset_idx_conversion(i);
+			int32_t real_i = m_subset_stack->subset_idx_conversion(i);
 			memcpy(*dst, &feature_matrix[real_i * int64_t(num_features)],
 					num_features * sizeof(ST));
 		}
@@ -283,7 +279,7 @@ template<class ST> SGMatrix<ST> CSimpleFeatures<ST>::get_feature_matrix()
 template<class ST> SGMatrix<ST> CSimpleFeatures<ST>::steal_feature_matrix()
 {
 	SGMatrix<ST> st_feature_matrix(feature_matrix, num_features, num_vectors);
-	remove_all_subsets();
+	m_subset_stack->remove_all_subsets();
 	SG_UNREF(feature_cache);
 	clean_preprocessors();
 
@@ -297,7 +293,7 @@ template<class ST> SGMatrix<ST> CSimpleFeatures<ST>::steal_feature_matrix()
 
 template<class ST> void CSimpleFeatures<ST>::set_feature_matrix(SGMatrix<ST> matrix)
 {
-	remove_all_subsets();
+	m_subset_stack->remove_all_subsets();
 	free_feature_matrix();
 	feature_matrix = matrix.matrix;
 	num_features = matrix.num_rows;
@@ -346,7 +342,7 @@ template<class ST> ST* CSimpleFeatures<ST>::get_transposed(int32_t &num_feat, in
 
 template<class ST> void CSimpleFeatures<ST>::set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call set_feature_matrix\n");
 
 	free_feature_matrix();
@@ -361,7 +357,7 @@ template<class ST> void CSimpleFeatures<ST>::set_feature_matrix(ST* fm, int32_t 
 
 template<class ST> void CSimpleFeatures<ST>::copy_feature_matrix(SGMatrix<ST> src)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
 
 	free_feature_matrix();
@@ -381,7 +377,7 @@ template<class ST> void CSimpleFeatures<ST>::copy_feature_matrix(SGMatrix<ST> sr
 
 template<class ST> void CSimpleFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 {
-	remove_all_subsets();
+	m_subset_stack->remove_all_subsets();
 
 	int32_t num_feat = df->get_dim_feature_space();
 	int32_t num_vec = df->get_num_vectors();
@@ -409,7 +405,7 @@ template<class ST> void CSimpleFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 
 template<class ST> bool CSimpleFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call apply_preproc\n");
 
 	SG_DEBUG( "force: %d\n", force_preprocessing);
@@ -452,7 +448,7 @@ template<class ST> int32_t CSimpleFeatures<ST>::get_size() { return sizeof(ST); 
 
 template<class ST> int32_t CSimpleFeatures<ST>::get_num_vectors() const
 {
-	return m_active_subset ? m_active_subset->get_size() : num_vectors;
+	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
 }
 
 template<class ST> int32_t CSimpleFeatures<ST>::get_num_features() { return num_features; }
@@ -465,7 +461,7 @@ template<class ST> void CSimpleFeatures<ST>::set_num_features(int32_t num)
 
 template<class ST> void CSimpleFeatures<ST>::set_num_vectors(int32_t num)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call set_num_vectors\n");
 
 	num_vectors = num;
@@ -474,7 +470,7 @@ template<class ST> void CSimpleFeatures<ST>::set_num_vectors(int32_t num)
 
 template<class ST> void CSimpleFeatures<ST>::initialize_cache()
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call initialize_cache\n");
 
 	if (num_features && num_vectors)
@@ -490,7 +486,7 @@ template<class ST> EFeatureClass CSimpleFeatures<ST>::get_feature_class() { retu
 
 template<class ST> bool CSimpleFeatures<ST>::reshape(int32_t p_num_features, int32_t p_num_vectors)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call reshape\n");
 
 	if (p_num_features * p_num_vectors
@@ -609,7 +605,7 @@ template<class ST> CFeatures* CSimpleFeatures<ST>::copy_subset(const SGVector<in
 
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
-		index_t real_idx=subset_idx_conversion(indices.vector[i]);
+		index_t real_idx=m_subset_stack->subset_idx_conversion(indices.vector[i]);
 		memcpy(&feature_matrix_copy.matrix[i*num_features],
 				&feature_matrix[real_idx*num_features],
 				num_features*sizeof(ST));
