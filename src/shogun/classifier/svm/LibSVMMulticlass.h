@@ -36,8 +36,6 @@ class CLibSVMMulticlass : public CMulticlassSVM
 		/** destructor */
 		virtual ~CLibSVMMulticlass();
 
-		using CMulticlassMachine::apply;
-
 		/** get classifier type
 		 *
 		 * @return classifier type LIBSVMMULTICLASS

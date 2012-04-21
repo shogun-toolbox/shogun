@@ -50,8 +50,6 @@ public:
 	 */
 	virtual ~CMKLMulticlass();
 
-	using CMulticlassMachine::apply;
-
 	/** get classifier type
 	 *
 	 * @return classifier type GMNPMKL

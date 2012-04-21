@@ -70,6 +70,8 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 			return dynamic_cast<CSVM *>(m_machines->get_element_safe(num));
 		}
 
+		using CMulticlassMachine::apply;
+
 		/** classify one example
 		 *
 		 * @param num number of example to classify
