@@ -129,7 +129,6 @@ void CSubsetStack::remove_subset()
 		{
 			index_t last_idx=m_active_subsets_stack->get_num_elements()-1;
 			m_active_subsets_stack->delete_element(last_idx);
-
 		}
 
 		/* if there are subsets left on stack, set the next one as active */
