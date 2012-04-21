@@ -92,9 +92,9 @@ CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 CCustomKernel::~CCustomKernel()
 {
 	SG_DEBUG("Entering CCustomKernel::~CCustomKernel()\n");
+	cleanup();
 	SG_UNREF(m_row_subset_stack);
 	SG_UNREF(m_col_subset_stack);
-	cleanup();
 	SG_DEBUG("Leaving CCustomKernel::~CCustomKernel()\n");
 }
 
@@ -144,8 +144,8 @@ void CCustomKernel::cleanup_custom()
 
 void CCustomKernel::cleanup()
 {
-	remove_row_subset();
-	remove_col_subset();
+	remove_all_row_subsets();
+	remove_all_col_subsets();
 	cleanup_custom();
 	CKernel::cleanup();
 }

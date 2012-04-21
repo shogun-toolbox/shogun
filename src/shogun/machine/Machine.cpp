@@ -156,9 +156,5 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 void CMachine::data_unlock()
 {
 	if (m_data_locked)
-	{
-		/* remove possible subset in labels */
-		m_labels->remove_subset();
 		m_data_locked=false;
-	}
 }

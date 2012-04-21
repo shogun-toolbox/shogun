@@ -257,9 +257,10 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* remove subset to prevent side efects */
 			m_labels->remove_subset();
 
-			/* clean up, inverse subset indices yet have to be deleted */
+			/* clean up */
 			SG_UNREF(result_labels);
 			inverse_subset_indices.destroy_vector();
+			subset_indices.destroy_vector();
 		}
 	}
 	else
@@ -282,6 +283,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* train machine on training features and remove subset */
 			m_machine->train(m_features);
 			m_features->remove_subset();
+			m_labels->remove_subset();
 
 			/* set feature subset for testing (subset method that stores pointer) */
 			SGVector<index_t> subset_indices =
@@ -302,6 +304,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* clean up, remove subsets */
 			SG_UNREF(result_labels);
 			m_labels->remove_subset();
+			inverse_subset_indices.destroy_vector();
+			subset_indices.destroy_vector();
 		}
 	}
 
