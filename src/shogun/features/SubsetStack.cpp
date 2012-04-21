@@ -59,11 +59,8 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		/* get latest current subset */
 		CSubset* latest=m_active_subsets_stack->get_last_element();
 
-		/* here the do_free flag is set to true to make automatic memory
-		 * handling possible. However, this should be changed to ref-counting
-		 * once that is possible. TODO
-		 */
-		SGVector<index_t> new_active_subset=SGVector<index_t>(subset.vlen, true);
+		/* create new index vector */
+		SGVector<index_t> new_active_subset=SGVector<index_t>(subset.vlen);
 
 		/* using the latest current subset, transform all indices by the latest
 		 * added subset (dynamic programming greets you) */
@@ -73,6 +70,10 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		/* replace active subset */
 		m_active_subset=new CSubset(new_active_subset);
 		SG_REF(m_active_subset);
+
+		/* delete new index vector (above call currently COPIES vectors, this is
+		 * necessary until ref-couting for SGVectors has arrived */
+		new_active_subset.destroy_vector();
 
 		SG_UNREF(latest);
 	}
