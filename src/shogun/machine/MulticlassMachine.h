@@ -153,12 +153,6 @@ class CMulticlassMachine : public CMachine
 		/** clear machines */
 		void clear_machines();
 
-		/** train one vs rest */
-		bool train_one_vs_rest();
-
-		/** train one vs one */
-		bool train_one_vs_one();
-
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
