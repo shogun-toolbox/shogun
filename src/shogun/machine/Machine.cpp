@@ -144,13 +144,6 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 	/* first set labels */
 	set_labels(labs);
 
-	/* if labels have a subset this might cause problems */
-	if (m_labels->has_subset())
-	{
-		SG_ERROR("%s::data_lock() not possible if labels have a subset. Remove"
-				" first!\n", get_name());
-	}
-
 	if (m_data_locked)
 	{
 		SG_ERROR("%s::data_lock() was already called. Dont lock twice!",
@@ -163,9 +156,5 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 void CMachine::data_unlock()
 {
 	if (m_data_locked)
-	{
-		/* remove possible subset in labels */
-		m_labels->remove_subset();
 		m_data_locked=false;
-	}
 }

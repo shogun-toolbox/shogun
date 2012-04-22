@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2012 Heiko Strathmann
- * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include <shogun/base/init.h>
@@ -29,8 +28,8 @@ void print_message(FILE* target, const char* str)
 void test_cross_validation()
 {
 	/* data matrix dimensions */
-	index_t num_vectors=500;
-	index_t num_features=50;
+	index_t num_vectors=50;
+	index_t num_features=5;
 
 	/* data means -1, 1 in all components, std deviation of sigma */
 	SGVector<float64_t> mean_1(num_features);
@@ -93,7 +92,7 @@ void test_cross_validation()
 	ASSERT(eval_result<2);
 
 	/* splitting strategy */
-	index_t n_folds=5;
+	index_t n_folds=3;
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
 
@@ -101,11 +100,11 @@ void test_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(10);
+	cross->set_num_runs(5);
 	cross->set_conf_int_alpha(0.05);
 
 	/* no locking */
-	index_t repetitions=3;
+	index_t repetitions=5;
 	SG_SPRINT("unlocked x-val\n");
 	kernel->init(features, features);
 	cross->set_autolock(false);

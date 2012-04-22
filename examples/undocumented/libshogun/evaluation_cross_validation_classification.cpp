@@ -104,7 +104,7 @@ void test_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(100);
+	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
@@ -121,6 +121,8 @@ void test_cross_validation()
 int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
+
+	sg_io->set_loglevel(MSG_DEBUG);
 
 	test_cross_validation();
 

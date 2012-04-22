@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -248,7 +248,7 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* set subset for training labels, note that this will (later) free
 			 * the subset_indices vector */
-			m_labels->set_subset(new CSubset(subset_indices));
+			m_labels->add_subset(subset_indices);
 
 			/* evaluate against own labels */
 			results[i]=m_evaluation_criterion->evaluate(result_labels,
@@ -257,9 +257,10 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* remove subset to prevent side efects */
 			m_labels->remove_subset();
 
-			/* clean up, inverse subset indices yet have to be deleted */
+			/* clean up */
 			SG_UNREF(result_labels);
 			inverse_subset_indices.destroy_vector();
+			subset_indices.destroy_vector();
 		}
 	}
 	else
@@ -274,24 +275,23 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
-			CSubset* training_subset=new CSubset(inverse_subset_indices);
-			m_features->add_subset(training_subset);
+			m_features->add_subset(inverse_subset_indices);
 
 			/* set label subset for training */
-			m_labels->set_subset(training_subset);
+			m_labels->add_subset(inverse_subset_indices);
 
 			/* train machine on training features and remove subset */
 			m_machine->train(m_features);
 			m_features->remove_subset();
+			m_labels->remove_subset();
 
 			/* set feature subset for testing (subset method that stores pointer) */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
-			CSubset* test_subset=new CSubset(subset_indices);
-			m_features->add_subset(test_subset);
+			m_features->add_subset(subset_indices);
 
 			/* set label subset for testing */
-			m_labels->set_subset(test_subset);
+			m_labels->add_subset(subset_indices);
 
 			/* apply machine to test features and remove subset */
 			CLabels* result_labels=m_machine->apply(m_features);
@@ -304,6 +304,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* clean up, remove subsets */
 			SG_UNREF(result_labels);
 			m_labels->remove_subset();
+			inverse_subset_indices.destroy_vector();
+			subset_indices.destroy_vector();
 		}
 	}
 

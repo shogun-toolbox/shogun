@@ -468,25 +468,24 @@ bool CKernelMachine::train_locked(const SGVector<index_t>& indices)
 	/* this is asusmed here */
 	ASSERT(m_custom_kernel==kernel);
 
-	/* set custom kernel subset of data to train on (copies because CSubset
-	 * will delete vetors at the end)*/
-	SGVector<index_t> row_inds=SGVector<index_t>(indices);
-	row_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
-	m_custom_kernel->set_row_subset(new CSubset(row_inds));
-	SGVector<index_t> col_inds=SGVector<index_t>(indices);
-	col_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
-	m_custom_kernel->set_col_subset(new CSubset(col_inds));
+	/* since its not easily possible to controll the row subsets of the custom
+	 * kernel from outside, we enforce that there is only one row subset by
+	 * removing all of them. Otherwise, they would add up in the stack until
+	 * an error occurs */
+	m_custom_kernel->remove_all_row_subsets();
+
+	/* set custom kernel subset of data to train on */
+	m_custom_kernel->add_row_subset(indices);
+	m_custom_kernel->add_col_subset(indices);
 
 	/* set corresponding labels subset */
-	SGVector<index_t> label_inds=SGVector<index_t>(indices);
-	label_inds.vector=CMath::clone_vector(indices.vector, indices.vlen);
-	m_labels->set_subset(new CSubset(label_inds));
+	m_labels->add_subset(indices);
 
 	/* dont do train because model should not be stored (no acutal features)
 	 * and train does data_unlock */
 	bool result=train_machine();
 
-	/* set col subset of kernel to contain all elements */
+	/* remove last col subset of custom kernel */
 	m_custom_kernel->remove_col_subset();
 
 	/* remove label subset after training */
