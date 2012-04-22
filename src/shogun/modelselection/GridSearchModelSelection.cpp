@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -40,8 +40,8 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 		SG_PRINT("Generating parameter combinations\n");
 
 	/* Retrieve all possible parameter combinations */
-	CDynamicObjectArray<CParameterCombination>* combinations=
-			m_model_parameters->get_combinations();
+	CDynamicObjectArray* combinations=
+			(CDynamicObjectArray*)m_model_parameters->get_combinations();
 
 	CrossValidationResult best_result;
 
@@ -57,7 +57,8 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		CParameterCombination* current_combination=combinations->get_element(i);
+		CParameterCombination* current_combination=(CParameterCombination*)
+				combinations->get_element(i);
 
 		/* eventually print */
 		if (print_state)
@@ -83,12 +84,14 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				if (best_combination)
 					SG_UNREF(best_combination);
 
-				best_combination=combinations->get_element(i);
+				best_combination=(CParameterCombination*)
+						combinations->get_element(i);
 				best_result=result;
 			}
 			else
 			{
-				CParameterCombination* combination=combinations->get_element(i);
+				CParameterCombination* combination=(CParameterCombination*)
+						combinations->get_element(i);
 				SG_UNREF(combination);
 			}
 		}
@@ -99,12 +102,14 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				if (best_combination)
 					SG_UNREF(best_combination);
 
-				best_combination=combinations->get_element(i);
+				best_combination=(CParameterCombination*)
+						combinations->get_element(i);
 				best_result=result;
 			}
 			else
 			{
-				CParameterCombination* combination=combinations->get_element(i);
+				CParameterCombination* combination=(CParameterCombination*)
+						combinations->get_element(i);
 				SG_UNREF(combination);
 			}
 		}

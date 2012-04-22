@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -50,7 +50,7 @@ CModelSelectionParameters* create_param_tree()
 	return root;
 }
 
-void apply_parameter_tree(CDynamicObjectArray<CParameterCombination>* combinations)
+void apply_parameter_tree(CDynamicObjectArray* combinations)
 {
 	/* create some data */
 	float64_t* matrix=SG_MALLOC(float64_t, 6);
@@ -78,7 +78,8 @@ void apply_parameter_tree(CDynamicObjectArray<CParameterCombination>* combinatio
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
 		SG_SPRINT("applying:\n");
-		CParameterCombination* current_combination=combinations->get_element(i);
+		CParameterCombination* current_combination=(CParameterCombination*)
+				combinations->get_element(i);
 		current_combination->print_tree();
 		Parameter* current_parameters=svm->m_parameters;
 		current_combination->apply_to_modsel_parameter(current_parameters);
@@ -117,14 +118,15 @@ int main(int argc, char **argv)
 	SG_SPRINT("----------------------------------\n");
 
 	/* build combinations of parameter trees */
-	CDynamicObjectArray<CParameterCombination>* combinations=tree->get_combinations();
+	CDynamicObjectArray* combinations=tree->get_combinations();
 
 	apply_parameter_tree(combinations);
 
 	/* print and directly delete them all */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		CParameterCombination* combination=combinations->get_element(i);
+		CParameterCombination* combination=(CParameterCombination*)
+				combinations->get_element(i);
 		SG_UNREF(combination);
 	}
 

@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -114,13 +114,14 @@ int main(int argc, char **argv)
 	tree->print_tree();
 
 	/* build combinations of parameter trees */
-	CDynamicObjectArray<CParameterCombination>* combinations=tree->get_combinations();
+	CDynamicObjectArray* combinations=tree->get_combinations();
 
 	/* print and directly delete them all */
 	SG_SPRINT("----------------------------------\n");
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
-		CParameterCombination* combination=combinations->get_element(i);
+		CParameterCombination* combination=(CParameterCombination*)
+				combinations->get_element(i);
 		combination->print_tree();
 		SG_UNREF(combination);
 	}

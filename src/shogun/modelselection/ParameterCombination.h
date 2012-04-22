@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -103,8 +103,8 @@ public:
 	 * trees
 	 * @result result set of tree combinations
 	 */
-	static CDynamicObjectArray<CParameterCombination>* leaf_sets_multiplication(
-			const CDynamicObjectArray<CDynamicObjectArray<CParameterCombination> >& sets,
+	static CDynamicObjectArray* leaf_sets_multiplication(
+			const CDynamicObjectArray& sets,
 			const CParameterCombination* new_root);
 
 	/** checks whether this node has children
@@ -138,7 +138,7 @@ private:
 
 private:
 	Parameter* m_param;
-	CDynamicObjectArray<CParameterCombination>* m_child_nodes;
+	CDynamicObjectArray* m_child_nodes;
 };
 }
 
