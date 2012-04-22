@@ -123,7 +123,7 @@ class CCustomKernel: public CKernel
 		bool set_triangle_kernel_matrix_from_triangle(
 			const SGVector<float64_t>& tri_kernel_matrix)
 		{
-			if (m_row_subset || m_col_subset)
+			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
 				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle not"
 						" possible with subset. Remove first\n", get_name());
@@ -146,7 +146,7 @@ class CCustomKernel: public CKernel
 		bool set_triangle_kernel_matrix_from_triangle_generic(
 			const SGVector<T>& tri_kernel_matrix)
 		{
-			if (m_row_subset || m_col_subset)
+			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
 				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle_generic "
 						"not possible with subset. Remove first\n", get_name());
@@ -203,7 +203,7 @@ class CCustomKernel: public CKernel
 		bool set_triangle_kernel_matrix_from_full_generic(
 			SGMatrix<T> full_kernel_matrix)
 		{
-			if (m_row_subset || m_col_subset)
+			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
 				SG_ERROR("%s::set_triangle_kernel_matrix_from_full_generic "
 						"not possible with subset. Remove first\n", get_name());
@@ -245,7 +245,7 @@ class CCustomKernel: public CKernel
 		bool set_full_kernel_matrix_from_full(
 			SGMatrix<float32_t> full_kernel_matrix)
 		{
-			if (m_row_subset || m_col_subset)
+			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
 				SG_ERROR("%s::set_full_kernel_matrix_from_full "
 						"not possible with subset. Remove first\n", get_name());
@@ -270,7 +270,7 @@ class CCustomKernel: public CKernel
 		bool set_full_kernel_matrix_from_full(
 			SGMatrix<float64_t> full_kernel_matrix)
 		{
-			if (m_row_subset || m_col_subset)
+			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
 				SG_ERROR("%s::set_full_kernel_matrix_from_full "
 						"not possible with subset. Remove first\n", get_name());
@@ -299,40 +299,49 @@ class CCustomKernel: public CKernel
 			return true;
 		}
 
-		/* TODO */
-		/** sets row subset
-		 * @param subset
-		 */
-		void set_row_subset(CSubset* subset);
-		/** sets column subset
-		 * @param subset
-		 */
-		void set_col_subset(CSubset* subset);
+		// TODO
+		/** adds a subset of indices on top of the current subsets (possibly
+		 * subset o subset. Calls subset_changed_post() afterwards
+		 *
+		 * @param subset subset of indices to add
+		 * */
+		virtual void add_row_subset(SGVector<index_t> subset);
 
-		/* TODO */
-		/** removes row subset */
-		void remove_row_subset();
-		/** removes column subset */
-		void remove_col_subset();
+		// TODO
+		/** removes that last added subset from subset stack, if existing
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_row_subset();
 
-		/* TODO */
-		/** index conversion for row subset
-		 * @param idx index to convert
-		 * @return converted index
-		 */
-		inline index_t row_subset_idx_conversion(index_t idx) const
-		{
-			return m_row_subset ? m_row_subset->subset_idx_conversion(idx) : idx;
-		}
+		// TODO
+		/** removes all subsets
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_all_row_subsets();
 
-		/** index conversion for column subset
-		 * @param idx index to convert
-		 * @return converted index
-		 */
-		inline index_t col_subset_idx_conversion(index_t idx) const
-		{
-			return m_col_subset ? m_col_subset->subset_idx_conversion(idx) : idx;
-		}
+		// TODO
+		/** method may be overwritten to update things that depend on subset */
+		virtual void row_subset_changed_post();
+
+		// TODO
+		/** adds a subset of indices on top of the current subsets (possibly
+		 * subset o subset. Calls subset_changed_post() afterwards
+		 *
+		 * @param subset subset of indices to add
+		 * */
+		virtual void add_col_subset(SGVector<index_t> subset);
+
+		// TODO
+		/** removes that last added subset from subset stack, if existing
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_col_subset();
+
+		// TODO
+		/** removes all subsets
+		 * Calls subset_changed_post() afterwards */
+		virtual void remove_all_col_subsets();
+
+		// TODO
+		/** method may be overwritten to update things that depend on subset */
+		virtual void col_subset_changed_post();
 
 		/** get number of vectors of lhs features
 		 *
@@ -342,7 +351,8 @@ class CCustomKernel: public CKernel
 		 */
 		virtual inline int32_t get_num_vec_lhs()
 		{
-			return m_row_subset ? m_row_subset->get_size() : num_lhs;
+			return m_row_subset_stack->has_subsets()
+					? m_row_subset_stack->get_size() : num_lhs;
 		}
 
 		/** get number of vectors of rhs features
@@ -353,7 +363,8 @@ class CCustomKernel: public CKernel
 		 */
 		virtual inline int32_t get_num_vec_rhs()
 		{
-			return m_col_subset ? m_col_subset->get_size() : num_rhs;
+			return m_col_subset_stack->has_subsets()
+					? m_col_subset_stack->get_size() : num_rhs;
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -393,8 +404,8 @@ class CCustomKernel: public CKernel
 		{
 			ASSERT(kmatrix.matrix);
 
-			index_t real_row=row_subset_idx_conversion(row);
-			index_t real_col=col_subset_idx_conversion(col);
+			index_t real_row=m_row_subset_stack->subset_idx_conversion(row);
+			index_t real_col=m_col_subset_stack->subset_idx_conversion(col);
 
 
 			if (upper_diagonal)
@@ -430,10 +441,10 @@ class CCustomKernel: public CKernel
 		/** upper diagonal */
 		bool upper_diagonal;
 
-		/** row subset */
-		CSubset* m_row_subset;
-		/** column subset */
-		CSubset* m_col_subset;
+		/** row subset stack */
+		CSubsetStack* m_row_subset_stack;
+		/** column subset stack */
+		CSubsetStack* m_col_subset_stack;
 
 		/** indicates whether kernel matrix is to be freed in destructor */
 		bool m_free_km;

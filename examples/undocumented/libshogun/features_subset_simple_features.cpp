@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n\n-------------------\n"
 			"applying subset to features\n"
 			"-------------------\n");
-	features->add_subset(new CSubset(subset_idx));
+	features->add_subset(subset_idx);
 
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_subset_idx);
@@ -99,8 +99,7 @@ int main(int argc, char **argv)
 		CMath::display_vector(vec.vector, vec.vlen);
 
 		for (index_t j=0; j<dim_features; ++j)
-			ASSERT(vec.vector[j]==data.matrix[features->subset_idx_conversion(
-					i)*num_vectors+j]);
+			ASSERT(vec.vector[j]==data.matrix[subset_idx.vector[i]*num_vectors+j]);
 
 		/* not necessary since feature matrix is in memory. for documentation */
 		features->free_feature_vector(vec, i);
@@ -128,8 +127,7 @@ int main(int argc, char **argv)
 		CMath::display_vector(vec.vector, vec.vlen);
 
 		for (index_t j=0; j<dim_features; ++j)
-			ASSERT(vec.vector[j]==data.matrix[features->subset_idx_conversion(i)
-					*num_vectors+j]);
+			ASSERT(vec.vector[j]==data.matrix[i*num_vectors+j]);
 
 		/* not necessary since feature matrix is in memory. for documentation */
 		features->free_feature_vector(vec, i);
@@ -137,8 +135,8 @@ int main(int argc, char **argv)
 
 
 	SG_UNREF(features);
+	subset_idx.destroy_vector();
 
-	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;

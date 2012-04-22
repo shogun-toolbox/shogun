@@ -21,14 +21,16 @@ using namespace shogun;
 void
 CCustomKernel::init()
 {
-	m_row_subset=NULL;
-	m_col_subset=NULL;
+	m_row_subset_stack=new CSubsetStack();
+	SG_REF(m_row_subset_stack)
+	m_col_subset_stack=new CSubsetStack();
+	SG_REF(m_col_subset_stack)
 	m_free_km=true;
 
-	SG_ADD((CSGObject**)&m_row_subset, "row_subset", "Subset of rows",
-			MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_col_subset, "col_subset", "Subset of columns",
-			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_row_subset_stack, "row_subset_stack",
+			"Subset stack of rows", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_col_subset_stack, "col_subset_stack",
+			"Subset stack of columns", MS_NOT_AVAILABLE);
 	SG_ADD(&m_free_km, "free_km", "Whether kernel matrix should be freed in "
 			"destructor", MS_NOT_AVAILABLE);
 	SG_ADD(&kmatrix, "kmatrix", "Kernel matrix.", MS_NOT_AVAILABLE);
@@ -42,13 +44,13 @@ CCustomKernel::init()
 
 	/* new parameter from param version 0 to 1 */
 	m_parameter_map->put(
-			new SGParamInfo("row_subset", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo("row_subset_stack", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
 			new SGParamInfo()
 	);
 
 	/* new parameter from param version 0 to 1 */
 	m_parameter_map->put(
-			new SGParamInfo("col_subset", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
+			new SGParamInfo("col_subset_stack", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
 			new SGParamInfo()
 	);
 	m_parameter_map->finalize_map();
@@ -81,17 +83,19 @@ CCustomKernel::CCustomKernel(CKernel* k)
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("created CCustomKernel\n");
+	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
 	init();
 	set_full_kernel_matrix_from_full(km);
+	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
 }
 
 CCustomKernel::~CCustomKernel()
 {
-	SG_DEBUG("destroying CCustomKernel\n");
-	SG_UNREF(m_row_subset);
-	SG_UNREF(m_col_subset);
+	SG_DEBUG("Entering CCustomKernel::~CCustomKernel()\n");
 	cleanup();
+	SG_UNREF(m_row_subset_stack);
+	SG_UNREF(m_col_subset_stack);
+	SG_DEBUG("Leaving CCustomKernel::~CCustomKernel()\n");
 }
 
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
@@ -101,8 +105,8 @@ bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
 
 bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 {
-	remove_row_subset();
-	remove_col_subset();
+	remove_all_row_subsets();
+	remove_all_col_subsets();
 
 	/* make it possible to call with NULL values since features are useless
 	 * for custom kernel matrix */
@@ -123,9 +127,9 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 void CCustomKernel::cleanup_custom()
 {
-	SG_DEBUG("cleanup up custom kernel\n");
-	remove_row_subset();
-	remove_col_subset();
+	SG_DEBUG("Entering CCustomKernel::cleanup_custom()\n");
+	remove_all_row_subsets();
+	remove_all_col_subsets();
 
 	if (m_free_km)
 		SG_FREE(kmatrix.matrix);
@@ -134,61 +138,82 @@ void CCustomKernel::cleanup_custom()
 	upper_diagonal=false;
 	kmatrix.num_cols=0;
 	kmatrix.num_rows=0;
+
+	SG_DEBUG("Leaving CCustomKernel::cleanup_custom()\n");
 }
 
 void CCustomKernel::cleanup()
 {
-	remove_row_subset();
-	remove_col_subset();
+	remove_all_row_subsets();
+	remove_all_col_subsets();
 	cleanup_custom();
 	CKernel::cleanup();
 }
 
-void CCustomKernel::set_row_subset(CSubset* subset)
+void CCustomKernel::add_row_subset(SGVector<index_t> subset)
 {
-	SG_UNREF(m_row_subset);
-	m_row_subset=subset;
-	SG_REF(subset);
-
-	/* update num_lhs */
-	num_lhs=subset ? subset->get_size() : 0;
-}
-void CCustomKernel::set_col_subset(CSubset* subset)
-{
-	SG_UNREF(m_col_subset);
-	m_col_subset=subset;
-	SG_REF(subset);
-
-	/* update num_rhs */
-	num_rhs=subset ? subset->get_size() : 0;
+	m_row_subset_stack->add_subset(subset);
+	row_subset_changed_post();
 }
 
 void CCustomKernel::remove_row_subset()
 {
-	set_row_subset(NULL);
+	m_row_subset_stack->remove_subset();
+	row_subset_changed_post();
+}
 
-	/* restore num_lhs */
-	num_lhs=kmatrix.num_rows;
+void CCustomKernel::remove_all_row_subsets()
+{
+	m_row_subset_stack->remove_all_subsets();
+	row_subset_changed_post();
+}
+
+void CCustomKernel::row_subset_changed_post()
+{
+	if (m_row_subset_stack->has_subsets())
+		num_lhs=m_row_subset_stack->get_size();
+	else
+		num_lhs=kmatrix.num_rows;
+}
+
+void CCustomKernel::add_col_subset(SGVector<index_t> subset)
+{
+	m_col_subset_stack->add_subset(subset);
+	col_subset_changed_post();
 }
 
 void CCustomKernel::remove_col_subset()
 {
-	set_col_subset(NULL);
+	m_col_subset_stack->remove_subset();
+	col_subset_changed_post();
+}
 
-	/* restore num_rhs */
-	num_rhs=kmatrix.num_cols;
+void CCustomKernel::remove_all_col_subsets()
+{
+	m_col_subset_stack->remove_all_subsets();
+	col_subset_changed_post();
+}
+
+void CCustomKernel::col_subset_changed_post()
+{
+	if (m_col_subset_stack->has_subsets())
+		num_rhs=m_col_subset_stack->get_size();
+	else
+		num_rhs=kmatrix.num_cols;
 }
 
 void CCustomKernel::print_kernel_matrix(const char* prefix) const
 {
-	index_t num_rows=m_row_subset ? m_row_subset->get_size() : kmatrix.num_rows;
-	index_t num_cols=m_col_subset ? m_col_subset->get_size() : kmatrix.num_cols;
+	index_t num_rows=m_row_subset_stack->has_subsets()
+			? m_row_subset_stack->get_size() : kmatrix.num_rows;
+	index_t num_cols=m_col_subset_stack->has_subsets()
+			? m_col_subset_stack->get_size() : kmatrix.num_cols;
 	for (index_t i=0; i<num_rows; ++i)
 	{
 		for (index_t j=0; j<num_cols; ++j)
 		{
-			index_t real_i=row_subset_idx_conversion(i);
-			index_t real_j=col_subset_idx_conversion(j);
+			index_t real_i=m_row_subset_stack->subset_idx_conversion(i);
+			index_t real_j=m_col_subset_stack->subset_idx_conversion(j);
 			SG_PRINT("%s%4.2f", prefix, kmatrix.matrix[kmatrix.num_rows*real_j+real_i]);
 			if (j<num_cols-1)
 				SG_PRINT(", \t");

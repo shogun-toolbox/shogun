@@ -90,6 +90,15 @@ template <class T> class CDynamicArray :public CSGObject
 			return m_array.get_element(index);
 		}
 
+		/** gets last array element
+		 *
+		 * @return array element at last index
+		 */
+		inline T get_last_element() const
+		{
+			return m_array.get_last_element();
+		}
+
 		/** get array element at index
 		 *
 		 * (does bounds checking)

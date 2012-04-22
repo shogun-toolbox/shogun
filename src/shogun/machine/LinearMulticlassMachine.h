@@ -139,11 +139,10 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @param subset subset instance to set
 		 */
-		virtual void set_machine_subset(CSubset* subset)
+		virtual void add_machine_subset(const SGVector<index_t>& subset)
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */
-			SG_WARNING("FIXME");
 			m_features->add_subset(subset);
 		}
 
@@ -152,7 +151,6 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */
-			SG_WARNING("FIXME");
 			m_features->remove_subset();
 		}
 
@@ -160,7 +158,6 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 		/** features */
 		CDotFeatures* m_features;
-
 };
 }
 #endif
