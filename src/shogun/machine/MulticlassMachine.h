@@ -127,18 +127,6 @@ class CMulticlassMachine : public CMachine
 
 	protected:
 
-		/** classify one vs rest
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_rest();
-
-		/** classifiy one vs one
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_one();
-
 		/** max vote to calculate the best label in one-vs-rest.
 		 * @param predicts predictions made by each machine
 		 */

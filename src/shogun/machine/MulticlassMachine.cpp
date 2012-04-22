@@ -62,17 +62,46 @@ CLabels* CMulticlassMachine::apply()
 	/** Ensure that m_machines have the features set */
 	init_machines_for_apply(NULL);
 
-	switch (m_multiclass_strategy->get_strategy_type())
+	if (is_ready())
 	{
-		case ONE_VS_REST_STRATEGY:
-			return classify_one_vs_rest();
-		case ONE_VS_ONE_STRATEGY:
-			return classify_one_vs_one();
-		default:
-			SG_ERROR("Unknown multiclass strategy\n");
-	}
+		int32_t num_vectors=get_num_rhs_vectors();
+		int32_t num_machines=m_multiclass_strategy->get_num_machines();
+		if (num_machines <= 0)
+			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
 
-	return NULL;
+		CLabels *result=new CLabels(num_vectors);
+		SG_REF(result);
+		CLabels **outputs=SG_MALLOC(CLabels*, num_machines);
+
+		for (int32_t i=0; i < num_machines; ++i)
+		{
+			CMachine *machine = (CMachine*)m_machines->get_element(i);
+			ASSERT(machine);
+			outputs[i]=machine->apply();
+			SG_UNREF(machine);
+		}
+
+		SGVector<float64_t> output_for_i(num_machines);
+		for (int32_t i=0; i<num_vectors; i++)
+		{
+			for (int32_t j=0; j<num_machines; j++)
+				output_for_i[j] = outputs[j]->get_label(i);
+
+			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
+		}
+
+		output_for_i.destroy_vector();
+		for (int32_t i=0; i < num_machines; ++i)
+			SG_UNREF(outputs[i]);
+
+		SG_FREE(outputs);
+		
+		return result;
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 bool CMulticlassMachine::train_machine(CFeatures* data)
@@ -116,50 +145,6 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	return true;
 }
 
-CLabels* CMulticlassMachine::classify_one_vs_rest()
-{
-	int32_t num_classes = m_labels->get_num_classes();
-	int32_t num_machines = get_num_machines();
-	ASSERT(num_machines==num_classes);
-	CLabels* result=NULL;
-
-	if (is_ready())
-	{
-		int32_t num_vectors = get_num_rhs_vectors();
-
-		result=new CLabels(num_vectors);
-		SG_REF(result);
-
-		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=SG_MALLOC(CLabels*, num_machines);
-
-		for (int32_t i=0; i<num_machines; i++)
-		{
-			CMachine *machine = (CMachine*)m_machines->get_element(i);
-			ASSERT(machine);
-			outputs[i]=machine->apply();
-			SG_UNREF(machine);
-		}
-
-		SGVector<float64_t> outputs_for_i(num_machines);
-		for (int32_t i=0; i<num_vectors; i++)
-		{
-			for (int32_t j=0; j<num_machines; j++)
-				outputs_for_i[j] = outputs[j]->get_label(i);
-			result->set_label(i, maxvote_one_vs_rest(outputs_for_i));
-		}
-
-		outputs_for_i.destroy_vector();
-
-		for (int32_t i=0; i<num_machines; i++)
-			SG_UNREF(outputs[i]);
-
-		SG_FREE(outputs);
-	}
-
-	return result;
-}
-
 int32_t CMulticlassMachine::maxvote_one_vs_rest(const SGVector<float64_t> &predicts)
 {
 	int32_t winner = 0;
@@ -182,53 +167,6 @@ int32_t CMulticlassMachine::maxvote_one_vs_rest(const SGVector<float64_t> &predi
 		}
 	}
 	return winner;
-}
-
-CLabels* CMulticlassMachine::classify_one_vs_one()
-{
-	int32_t num_classes  = m_labels->get_num_classes();
-	int32_t num_machines = get_num_machines();
-	if ( num_machines != num_classes*(num_classes-1)/2 )
-		SG_ERROR("Dimension mismatch in classify_one_vs_one between number \
-			of machines = %d and number of classes = %d\n", num_machines,
-			num_classes);
-	CLabels* result = NULL;
-
-	if ( is_ready() )
-	{
-		int32_t num_vectors = get_num_rhs_vectors();
-
-		result = new CLabels(num_vectors);
-		SG_REF(result);
-
-		ASSERT(num_vectors==result->get_num_labels());
-		CLabels** outputs=SG_MALLOC(CLabels*, num_machines);
-
-		for (int32_t i=0; i<num_machines; i++)
-		{
-			CMachine *machine = (CMachine*)m_machines->get_element(i);
-			ASSERT(machine);
-			outputs[i]=machine->apply();
-			SG_UNREF(machine);
-		}
-
-		SGVector<float64_t> output_for_v(num_machines);
-
-		for (int32_t v=0; v<num_vectors; v++)
-		{
-			for (int32_t i=0; i < num_machines; ++i)
-				output_for_v[i] = outputs[i]->get_label(v);
-			result->set_label(v, maxvote_one_vs_one(output_for_v, num_classes));
-		}
-
-		output_for_v.destroy_vector();
-
-		for (int32_t i=0; i<num_machines; i++)
-			SG_UNREF(outputs[i]);
-		SG_FREE(outputs);
-	}
-
-	return result;
 }
 
 int32_t CMulticlassMachine::maxvote_one_vs_one(const SGVector<float64_t> &predicts, int32_t num_classes)

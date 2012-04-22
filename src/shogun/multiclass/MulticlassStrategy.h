@@ -4,6 +4,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Labels.h>
 #include <shogun/features/Subset.h>
+#include <shogun/features/RejectionStrategy.h>
 
 namespace shogun
 {
@@ -65,6 +66,11 @@ public:
 		SG_UNREF(m_orig_labels);
 	}
 
+	/** decide the final label.
+	 * @param outputs a vector of output from each machine (in that order)
+	 */
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs)=0;
+
 	/** get number of machines used in this strategy.
 	 */
 	virtual int32_t get_num_machines()=0;
@@ -81,8 +87,26 @@ public:
 	/** constructor */
 	CMulticlassOneVsRestStrategy();
 
+	/** constructor with rejection strategy */
+	CMulticlassOneVsRestStrategy(CRejectionStrategy *rejection_strategy);
+
 	/** destructor */
 	virtual ~CMulticlassOneVsRestStrategy() {}
+
+	/** get rejection strategy */
+	CRejectionStrategy *get_rejection_strategy()
+	{
+		SG_REF(m_rejection_strategy);
+		return m_rejection_strategy;
+	}
+
+	/** set rejection strategy */
+	void set_rejection_strategy(CRejectionStrategy *rejection_strategy)
+	{
+		SG_REF(rejection_strategy);
+		SG_UNREF(m_rejection_strategy);
+		m_rejection_strategy = rejection_strategy;
+	}
 
 	/** start training */
 	virtual void train_start(CLabels *orig_labels, CLabels *train_labels)
@@ -101,6 +125,11 @@ public:
 	 * @return NULL, since no subset is needed in one-vs-rest strategy
 	 */ 
 	virtual CSubset *train_prepare_next();
+
+	/** decide the final label.
+	 * @param outputs a vector of output from each machine (in that order)
+	 */
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs);
 
 	/** get number of machines used in this strategy.
 	 * one-vs-rest strategy use one machine for each of the classes.
@@ -124,6 +153,7 @@ public:
 
 protected:
 	int32_t m_num_machines;
+	CRejectionStrategy *m_rejection_strategy;
 };
 
 class CMulticlassOneVsOneStrategy: public CMulticlassStrategy
@@ -156,6 +186,11 @@ public:
 	 * @return the subset that should be applied before training.
 	 */
 	virtual CSubset *train_prepare_next();
+
+	/** decide the final label.
+	 * @param outputs a vector of output from each machine (in that order)
+	 */
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs);
 
 	/** get number of machines used in this strategy.
 	 * one-vs-one strategy use one machine for each pair of classes.
