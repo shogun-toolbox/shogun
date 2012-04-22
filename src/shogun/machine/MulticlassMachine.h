@@ -111,17 +111,6 @@ class CMulticlassMachine : public CMachine
 
 	protected:
 
-		/** max vote to calculate the best label in one-vs-rest.
-		 * @param predicts predictions made by each machine
-		 */
-		int32_t maxvote_one_vs_rest(const SGVector<float64_t> &predicts);
-
-		/** max vote to calculate the best label in one-vs-one.
-		 * @param predicts predictions made by each machine
-		 * @param num_classes number of classes in this problem
-		 */
-		int32_t maxvote_one_vs_one(const SGVector<float64_t> &predicts, int32_t num_classes);
-
 		/** clear machines */
 		void clear_machines();
 
@@ -157,11 +146,6 @@ class CMulticlassMachine : public CMachine
 		{
 			return true;
 		}
-
-		/** classify example (one-vs-one strategy) */
-		virtual float64_t classify_example_one_vs_one(int32_t num);
-		/** classify example (one-vs-rest strategy) */
-		virtual float64_t classify_example_one_vs_rest(int32_t num);
 
 	private:
 

@@ -142,72 +142,10 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	return true;
 }
 
-int32_t CMulticlassMachine::maxvote_one_vs_rest(const SGVector<float64_t> &predicts)
-{
-	int32_t winner = 0;
-
-	float64_t max_out = predicts[0];
-
-	for (int32_t j=1; j<predicts.vlen; j++)
-	{
-		if (predicts[j]>max_out)
-		{
-			max_out = predicts[j];
-			winner = j;
-		}
-	}
-	return winner;
-}
-
-int32_t CMulticlassMachine::maxvote_one_vs_one(const SGVector<float64_t> &predicts, int32_t num_classes)
-{
-	int32_t s=0;
-	SGVector<int32_t> votes(num_classes);
-	votes.zero();
-
-	for (int32_t i=0; i<num_classes; i++)
-	{
-		for (int32_t j=i+1; j<num_classes; j++)
-		{
-			if (predicts[s++]>0)
-				votes[i]++;
-			else
-				votes[j]++;
-		}
-	}
-
-	int32_t winner=0;
-	int32_t max_votes=votes[0];
-
-	for (int32_t i=1; i<num_classes; i++)
-	{
-		if (votes[i]>max_votes)
-		{
-			max_votes=votes[i];
-			winner=i;
-		}
-	}
-
-	votes.destroy_vector();
-
-	return winner;
-}
-
-
 float64_t CMulticlassMachine::apply(int32_t num)
 {
 	init_machines_for_apply(NULL);
-	if (m_multiclass_strategy->get_strategy_type()==ONE_VS_REST_STRATEGY)
-		return classify_example_one_vs_rest(num);
-	else if (m_multiclass_strategy->get_strategy_type()==ONE_VS_ONE_STRATEGY)
-		return classify_example_one_vs_one(num);
-	else
-		SG_ERROR("unknown multiclass strategy\n");
-	return 0;
-}
 
-float64_t CMulticlassMachine::classify_example_one_vs_rest(int32_t num)
-{
 	ASSERT(m_machines->get_num_elements()>0);
 	SGVector<float64_t> outputs(m_machines->get_num_elements());
 
@@ -218,28 +156,9 @@ float64_t CMulticlassMachine::classify_example_one_vs_rest(int32_t num)
 		SG_UNREF(machine);
 	}
 
-	float64_t winner = maxvote_one_vs_rest(outputs);
+	float64_t result=m_multiclass_strategy->decide_label(outputs);
 	outputs.destroy_vector();
 
-	return winner;
+	return result;
 }
 
-float64_t CMulticlassMachine::classify_example_one_vs_one(int32_t num)
-{
-	int32_t num_classes=m_labels->get_num_classes();
-	ASSERT(m_machines->get_num_elements()>0);
-	ASSERT(m_machines->get_num_elements()==num_classes*(num_classes-1)/2);
-
-	SGVector<float64_t> outputs(m_machines->get_num_elements());
-	for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
-	{
-		CMachine *machine = get_machine(i);
-		outputs[i] = machine->apply(num);
-		SG_UNREF(machine);
-	}
-
-	float64_t winner = maxvote_one_vs_one(outputs, num_classes);
-	outputs.destroy_vector();
-
-	return winner;
-}
