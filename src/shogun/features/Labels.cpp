@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Subset support written (W) 2011 Heiko Strathmann
+ * Written (W) 2011 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -46,7 +46,7 @@ void CLabels::set_to_one()
 	ASSERT(labels.vector);
 	index_t subset_size=get_num_labels();
 	for (int32_t i=0; i<subset_size; i++)
-		labels.vector[subset_idx_conversion(i)]=+1;
+		labels.vector[m_subset_stack->subset_idx_conversion(i)]=+1;
 }
 
 CLabels::CLabels(CFile* loader)
@@ -59,22 +59,23 @@ CLabels::CLabels(CFile* loader)
 CLabels::~CLabels()
 {
 	labels.destroy_vector();
-	delete m_subset;
-	m_subset=NULL;
+	SG_UNREF(m_subset_stack);
 }
 
 void CLabels::init()
 {
 	m_parameters->add(&labels, "labels", "The labels.");
-	m_parameters->add((CSGObject**)&m_subset, "subset", "Subset object");
+	m_parameters->add((CSGObject**)&m_subset_stack, "subset_stack",
+			"Current subset stack");
 
 	labels=SGVector<float64_t>();
-	m_subset=NULL;
+	m_subset_stack=new CSubsetStack();
+	SG_REF(m_subset_stack);
 }
 
 void CLabels::set_labels(const SGVector<float64_t>& v)
 {
-	if (m_subset)
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot set labels\n");
 
 	labels.free_vector();
@@ -91,7 +92,7 @@ bool CLabels::is_two_class_labeling()
 	int32_t subset_size=get_num_labels();
 	for (int32_t i=0; i<subset_size; i++)
 	{
-		int32_t real_i=subset_idx_conversion(i);
+		int32_t real_i=m_subset_stack->subset_idx_conversion(i);
 		if (labels.vector[real_i]==+1.0)
 			found_plus_one=true;
 		else if (labels.vector[real_i]==-1.0)
@@ -122,7 +123,7 @@ int32_t CLabels::get_num_classes()
 
 SGVector<float64_t> CLabels::get_labels()
 {
-	if (m_subset)
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("get_labels() is not possible on subset");
 
 	return labels;
@@ -133,8 +134,8 @@ SGVector<float64_t> CLabels::get_labels_copy()
 	index_t num_labels=get_num_labels();
 	SGVector<float64_t> result(NULL, num_labels, true);
 
-	/* in case of subset, simply clone vector, else copy element wise */
-	if (!m_subset)
+	/* in case of no subset, simply clone vector, else copy element wise */
+	if (!m_subset_stack->has_subsets())
 		result.vector=CMath::clone_vector(labels.vector, num_labels);
 	else
 	{
@@ -149,13 +150,13 @@ SGVector<float64_t> CLabels::get_labels_copy()
 
 SGVector<float64_t> CLabels::get_unique_labels()
 {
-	/* extract all labels */
-	SGVector<float64_t> unique_labels=labels.clone();
+	/* extract all labels (copy because of possible subset) */
+	SGVector<float64_t> unique_labels=get_labels_copy();
 	unique_labels.vlen=CMath::unique(unique_labels.vector, unique_labels.vlen);
 
 	SGVector<float64_t> result(unique_labels.vlen, true);
-	for (index_t i=0; i<unique_labels.vlen; ++i)
-		result.vector[i]=unique_labels.vector[i];
+	memcpy(result.vector, unique_labels.vector,
+			sizeof(float64_t)*unique_labels.vlen);
 
 	unique_labels.free_vector();
 
@@ -174,7 +175,7 @@ SGVector<int32_t> CLabels::get_int_labels()
 
 void CLabels::set_int_labels(const SGVector<int32_t>& lab)
 {
-	if (m_subset)
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("set_int_labels() is not possible on subset");
 
 	labels.free_vector();
@@ -198,7 +199,7 @@ void CLabels::load(CFile* loader)
 
 void CLabels::save(CFile* writer)
 {
-	if (m_subset)
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("save() is not possible on subset");
 
 	SG_SET_LOCALE_C;
@@ -210,7 +211,7 @@ void CLabels::save(CFile* writer)
 
 bool CLabels::set_label(int32_t idx, float64_t label)
 {
-	int32_t real_num=subset_idx_conversion(idx);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	if (labels.vector && real_num<get_num_labels())
 	{
 		labels.vector[real_num]=label;
@@ -222,7 +223,7 @@ bool CLabels::set_label(int32_t idx, float64_t label)
 
 bool CLabels::set_int_label(int32_t idx, int32_t label)
 {
-	int32_t real_num=subset_idx_conversion(idx);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	if (labels.vector && real_num<get_num_labels())
 	{
 		labels.vector[real_num]= (float64_t) label;
@@ -234,14 +235,14 @@ bool CLabels::set_int_label(int32_t idx, int32_t label)
 
 float64_t CLabels::get_label(int32_t idx)
 {
-	int32_t real_num=subset_idx_conversion(idx);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(labels.vector && idx<get_num_labels());
 	return labels.vector[real_num];
 }
 
 int32_t CLabels::get_int_label(int32_t idx)
 {
-	int32_t real_num=subset_idx_conversion(idx);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(labels.vector && idx<get_num_labels());
 	if (labels.vector[real_num] != float64_t((int32_t(labels.vector[real_num]))))
 		SG_ERROR("label[%d]=%g is not an integer\n", labels.vector[real_num]);
@@ -251,27 +252,21 @@ int32_t CLabels::get_int_label(int32_t idx)
 
 int32_t CLabels::get_num_labels()
 {
-	return m_subset ? m_subset->get_size() : labels.vlen;
+	return m_subset_stack->has_subsets()
+			? m_subset_stack->get_size() : labels.vlen;
 }
 
-void CLabels::set_subset(CSubset* subset)
+void CLabels::add_subset(const SGVector<index_t>& subset)
 {
-	SG_UNREF(m_subset);
-	m_subset=subset;
-	SG_REF(subset);
-}
-
-bool CLabels::has_subset() const
-{
-	return m_subset!=NULL;
+	m_subset_stack->add_subset(subset);
 }
 
 void CLabels::remove_subset()
 {
-	set_subset(NULL);
+	m_subset_stack->remove_subset();
 }
 
-index_t CLabels::subset_idx_conversion(index_t idx) const
+void CLabels::remove_all_subsets()
 {
-	return m_subset ? m_subset->subset_idx_conversion(idx) : idx;
+	m_subset_stack->remove_all_subsets();
 }

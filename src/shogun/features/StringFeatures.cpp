@@ -105,10 +105,6 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(const CStringFeatures & 
 			symbol_mask_table[i]=orig.symbol_mask_table[i];
 	}
 
-	m_active_subset=orig.m_active_subset;
-	SG_REF(m_active_subset);
-
-	SG_UNREF(m_subset_stack);
 	m_subset_stack=orig.m_subset_stack;
 	SG_REF(m_subset_stack);
 }
@@ -169,7 +165,7 @@ template<class ST> void CStringFeatures<ST>::cleanup_feature_vector(int32_t num)
 
 	if (features)
 	{
-		int32_t real_num=subset_idx_conversion(num);
+		int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 		SG_FREE(features[real_num].string);
 		features[real_num].string=NULL;
 		features[real_num].slen=0;
@@ -187,7 +183,7 @@ template<class ST> void CStringFeatures<ST>::cleanup_feature_vectors(int32_t sta
 
 		for (int32_t i=start; i<=stop; i++)
 		{
-			int32_t real_num=subset_idx_conversion(i);
+			int32_t real_num=m_subset_stack->subset_idx_conversion(i);
 			SG_FREE(features[real_num].string);
 			features[real_num].string=NULL;
 			features[real_num].slen=0;
@@ -233,7 +229,7 @@ template<class ST> void CStringFeatures<ST>::set_feature_vector(const SGVector<S
 {
 	ASSERT(features);
 
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot set feature vector\n");
 
 	if (num>=num_vectors)
@@ -269,7 +265,7 @@ template<class ST> ST* CStringFeatures<ST>::get_feature_vector(int32_t num, int3
 	ASSERT(num<get_num_vectors());
 
 
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	if (!preprocess_on_get)
 	{
@@ -354,7 +350,7 @@ template<class ST> void CStringFeatures<ST>::free_feature_vector(ST* feat_vec, i
 			get_num_vectors());
 	}
 
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	if (feature_cache)
 		feature_cache->unlock_entry(real_num);
@@ -372,7 +368,7 @@ template<class ST> void CStringFeatures<ST>::free_feature_vector(SGVector<ST>& f
 			get_num_vectors());
 	}
 
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	if (feature_cache)
 		feature_cache->unlock_entry(real_num);
@@ -413,7 +409,7 @@ template<class ST> int32_t CStringFeatures<ST>::get_max_vector_length()
 
 template<class ST> int32_t CStringFeatures<ST>::get_num_vectors() const
 {
-	return m_active_subset ? m_active_subset->get_size() : num_vectors;
+	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
 }
 
 template<class ST> floatmax_t CStringFeatures<ST>::get_num_symbols() { return num_symbols; }
@@ -846,7 +842,7 @@ template<class ST> void CStringFeatures<ST>::set_features(SGStringList<ST> feats
 
 template<class ST> bool CStringFeatures<ST>::set_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("Cannot call set_features() with subset.\n");
 
 	if (p_features)
@@ -885,7 +881,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(CStringFeatures<ST>
 {
 	ASSERT(sf);
 
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("Cannot call set_features() with subset.\n");
 
 	SGString<ST>* new_features=SG_MALLOC(SGString<ST>, sf->get_num_vectors());
@@ -893,7 +889,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(CStringFeatures<ST>
 	index_t sf_num_str=sf->get_num_vectors();
 	for (int32_t i=0; i<sf_num_str; i++)
 	{
-		int32_t real_i = sf->subset_idx_conversion(i);
+		int32_t real_i = sf->m_subset_stack->subset_idx_conversion(i);
 		int32_t length=sf->features[real_i].slen;
 		new_features[i].string=SG_MALLOC(ST, length);
 		memcpy(new_features[i].string, sf->features[real_i].string, length);
@@ -905,7 +901,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(CStringFeatures<ST>
 
 template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_features, int32_t p_num_vectors, int32_t p_max_string_length)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("Cannot call set_features() with subset.\n");
 
 	if (!features)
@@ -966,7 +962,7 @@ template<class ST> SGStringList<ST> CStringFeatures<ST>::get_features()
 
 template<class ST> SGString<ST>* CStringFeatures<ST>::get_features(int32_t& num_str, int32_t& max_str_len)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("get features() is not possible on subset");
 
 	num_str=num_vectors;
@@ -1101,7 +1097,7 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 
 template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPRESSION_TYPE compression, int level)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_ERROR("save_compressed() is not possible on subset");
 
 	FILE* file=NULL;
@@ -1187,7 +1183,7 @@ template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_prepr
 
 template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t window_size, int32_t step_size, int32_t skip)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	ASSERT(step_size>0);
@@ -1225,7 +1221,7 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t
 template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t window_size, CDynamicArray<int32_t>* positions,
 		int32_t skip)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	ASSERT(positions);
@@ -1306,7 +1302,7 @@ template<class ST> bool CStringFeatures<ST>::have_same_length(int32_t len)
 
 template<class ST> void CStringFeatures<ST>::embed_features(int32_t p_order)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	ASSERT(alphabet->get_num_symbols_in_histogram() > 0);
@@ -1360,7 +1356,7 @@ template<class ST> void CStringFeatures<ST>::embed_features(int32_t p_order)
 
 template<class ST> void CStringFeatures<ST>::compute_symbol_mask_table(int64_t max_val)
 {
-	if (has_subsets())
+	if (m_subset_stack->has_subsets())
 		SG_NOTIMPLEMENTED;
 
 	SG_FREE(symbol_mask_table);
@@ -1422,7 +1418,7 @@ template<class ST> void CStringFeatures<ST>::determine_maximum_string_length()
 	for (int32_t i=0; i<num_str; i++)
 	{
 		max_string_length=CMath::max(max_string_length,
-			features[subset_idx_conversion(i)].slen);
+			features[m_subset_stack->subset_idx_conversion(i)].slen);
 	}
 }
 
@@ -1440,7 +1436,7 @@ template<class ST> void CStringFeatures<ST>::set_feature_vector(int32_t num, ST*
 	ASSERT(features);
 	ASSERT(num<get_num_vectors());
 
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 
 	features[real_num].slen=len ;
@@ -1602,7 +1598,7 @@ template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(const SGVector<in
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
 		/* index with respect to possible subset */
-		index_t real_idx=subset_idx_conversion(indices.vector[i]);
+		index_t real_idx=m_subset_stack->subset_idx_conversion(indices.vector[i]);
 
 		/* copy string */
 		SGString<ST> current_string=features[real_idx];
@@ -1631,7 +1627,7 @@ template<class ST> ST* CStringFeatures<ST>::compute_feature_vector(int32_t num, 
 {
 	ASSERT(features && num<get_num_vectors());
 
-	int32_t real_num=subset_idx_conversion(num);
+	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	len=features[real_num].slen;
 	if (len<=0)
@@ -1929,7 +1925,7 @@ LOAD(get_longreal_string_list, floatmax_t)
 #define SAVE(f_write, sg_type)												\
 template<> void CStringFeatures<sg_type>::save(CFile* writer)		\
 { 																			\
-	if (has_subsets())															\
+	if (m_subset_stack->has_subsets())															\
 		SG_ERROR("save() is not possible on subset");						\
 	SG_SET_LOCALE_C;													\
 	ASSERT(writer);															\

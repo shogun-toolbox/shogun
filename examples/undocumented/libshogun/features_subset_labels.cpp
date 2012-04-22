@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n\n-------------------\n"
 			"applying subset to features\n"
 			"-------------------\n");
-	labels->set_subset(new CSubset(subset_idx));
+	labels->add_subset(subset_idx);
 
 	/* do some stuff do check and output */
 	ASSERT(labels->get_num_labels()==num_subset_idx);
@@ -59,13 +59,13 @@ int main(int argc, char **argv)
 	{
 		float64_t label=labels->get_label(i);
 		SG_SPRINT("label %f:\n", label);
-		ASSERT(label==labels_data.vector[labels->subset_idx_conversion(i)]);
+		ASSERT(label==labels_data.vector[subset_idx.vector[i]]);
 	}
 
 	/* remove features subset */SG_SPRINT("\n\n-------------------\n"
 			"removing subset from features\n"
 			"-------------------\n");
-	labels->remove_subset();
+	labels->remove_all_subsets();
 
 	ASSERT(labels->get_num_labels()==num_labels);
 	SG_SPRINT("labels->get_num_labels(): %d\n", labels->get_num_labels());
@@ -77,9 +77,11 @@ int main(int argc, char **argv)
 		ASSERT(label==labels_data.vector[i]);
 	}
 	SG_UNREF(labels);
+	subset_idx.destroy_vector();
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
 	return 0;
 }
+

@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("\n-------------------\n"
 	"applying subset to features\n"
 	"-------------------\n");
-	features->add_subset(new CSubset(subset_idx));
+	features->add_subset(subset_idx);
 
 	/* do some stuff do check and output */
 	ASSERT(features->get_num_vectors()==num_subset_idx);
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 		for (index_t j=0; j<vec.num_feat_entries; ++j)
 		{
 			int32_t a=vec.features[j].entry;
-			index_t ind=features->subset_idx_conversion(i)*num_vectors+j;
+			index_t ind=subset_idx.vector[i]*num_vectors+j;
 			int32_t	b=data.matrix[ind];
 			ASSERT(a==b);
 		}
@@ -145,7 +145,9 @@ int main(int argc, char **argv)
 	}
 
 	SG_UNREF(features);
-	SG_FREE(data.matrix);
+	data.destroy_matrix();
+	subset_idx.destroy_vector();
+
 
 	exit_shogun();
 

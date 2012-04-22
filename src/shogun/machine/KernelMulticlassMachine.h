@@ -130,9 +130,9 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 
 		/** set subset to the features of the machine, deletes old one
 		 *
-		 * @param subset subset instance to set
+		 * @param subset subset indices to set
 		 */
-		virtual void set_machine_subset(CSubset* subset)
+		virtual void add_machine_subset(const SGVector<index_t>&)
 		{
 			SG_NOTIMPLEMENTED;
 		}

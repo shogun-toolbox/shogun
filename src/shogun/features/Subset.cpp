@@ -4,46 +4,39 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include <shogun/features/Subset.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
-CSubset::CSubset() : m_subset_idx(SGVector<index_t>())
+CSubset::CSubset()
 {
 	init();
 }
 
-CSubset::CSubset(const SGVector<index_t>& subset_idx) : m_subset_idx(subset_idx)
+CSubset::CSubset(const SGVector<index_t>& subset_idx)
 {
 	init();
 
-	/* check for non-negative values */
-	if (get_min_index()<0)
-		SG_ERROR("Subset with negative indices not allowed.\n");
+	/* copy indices. TODO this is not needed once there is ref-counting for
+	 * SGVectors */
+	m_subset_idx=SGVector<index_t>(subset_idx.vlen);
+	memcpy(m_subset_idx.vector, subset_idx.vector,
+			subset_idx.vlen*sizeof(index_t));
 }
 
 CSubset::~CSubset() {
-	SG_FREE(m_subset_idx.vector);
-}
-
-CSubset* CSubset::duplicate() {
-	SGVector<index_t> idx_copy(m_subset_idx.vlen);
-
-	memcpy(idx_copy.vector, m_subset_idx.vector,
-			sizeof(index_t)*m_subset_idx.vlen);
-
-	CSubset* copy_subset=new CSubset(idx_copy);
-
-	return copy_subset;
+	/* TODO, change to UNREF, once it is possible */
+	m_subset_idx.destroy_vector();
 }
 
 void CSubset::init() {
 	SG_ADD((SGVector<index_t>*)&m_subset_idx, "subset",
 			"Vector of subset indices", MS_NOT_AVAILABLE);
+
+	m_subset_idx=SGVector<index_t>();
 }
