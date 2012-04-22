@@ -1,4 +1,5 @@
 #include <shogun/multiclass/MulticlassStrategy.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -11,7 +12,12 @@ CMulticlassStrategy::CMulticlassStrategy()
 
 
 CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy()
-	:CMulticlassStrategy(), m_num_machines(0)
+	:CMulticlassStrategy(), m_num_machines(0), m_rejection_strategy(NULL)
+{
+}
+
+CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(CRejectionStrategy *rejection_strategy)
+	:CMulticlassStrategy(), m_num_machines(0), m_rejection_strategy(rejection_strategy)
 {
 }
 
@@ -30,6 +36,13 @@ CSubset *CMulticlassOneVsRestStrategy::train_prepare_next()
 	return NULL;
 }
 
+int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs)
+{
+	if (m_rejection_strategy && m_rejection_strategy->reject(outputs))
+		return CLabels::REJECTION_LABEL;
+
+	return CMath::arg_max(outputs.vector, 1, outputs.vlen);
+}
 
 
 CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy()
@@ -69,3 +82,27 @@ CSubset *CMulticlassOneVsOneStrategy::train_prepare_next()
 	return new CSubset(SGVector<index_t>(subset.vector, tot));
 }
 
+int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &outputs)
+{
+	ASSERT(outputs.vlen == m_num_machines);
+
+	int32_t s=0;
+	SGVector<int32_t> votes(m_num_classes);
+	votes.zero();
+
+	for (int32_t i=0; i<m_num_classes; i++)
+	{
+		for (int32_t j=i+1; j<m_num_classes; j++)
+		{
+			if (outputs[s++]>0)
+				votes[i]++;
+			else
+				votes[j]++;
+		}
+	}
+
+	int32_t result=CMath::arg_max(votes.vector, 1, votes.vlen);
+	votes.destroy_vector();
+
+	return result;
+}
