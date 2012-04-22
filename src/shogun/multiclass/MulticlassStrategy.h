@@ -68,8 +68,9 @@ public:
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
+	 * @param num_classes number of classes
 	 */
-	virtual int32_t decide_label(const SGVector<float64_t> &outputs)=0;
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)=0;
 
 	/** get number of machines used in this strategy.
 	 */
@@ -128,8 +129,9 @@ public:
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
+	 * @param num_classes number of classes
 	 */
-	virtual int32_t decide_label(const SGVector<float64_t> &outputs);
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs, int32_t num_classes);
 
 	/** get number of machines used in this strategy.
 	 * one-vs-rest strategy use one machine for each of the classes.
@@ -189,8 +191,9 @@ public:
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
+	 * @param num_classes number of classes
 	 */
-	virtual int32_t decide_label(const SGVector<float64_t> &outputs);
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs, int32_t num_classes);
 
 	/** get number of machines used in this strategy.
 	 * one-vs-one strategy use one machine for each pair of classes.
