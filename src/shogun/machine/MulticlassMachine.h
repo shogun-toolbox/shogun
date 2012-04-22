@@ -15,6 +15,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/RejectionStrategy.h>
+#include <shogun/multiclass/MulticlassStrategy.h>
 
 namespace shogun
 {
@@ -22,14 +23,6 @@ namespace shogun
 class CFeatures;
 class CLabels;
 class CRejectionStrategy;
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-enum EMulticlassStrategy
-{
-	ONE_VS_REST_STRATEGY,
-	ONE_VS_ONE_STRATEGY,
-};
-#endif
 
 /** @brief experimental abstract generic multiclass machine class */
 class CMulticlassMachine : public CMachine
@@ -43,7 +36,7 @@ class CMulticlassMachine : public CMachine
 		 * @param machine machine
 		 * @param labels labels
 		 */
-		CMulticlassMachine(EMulticlassStrategy strategy, CMachine* machine, CLabels* labels);
+		CMulticlassMachine(CMulticlassStrategy *strategy, CMachine* machine, CLabels* labels);
 
 		/** destructor */
 		virtual ~CMulticlassMachine();
@@ -104,10 +97,11 @@ class CMulticlassMachine : public CMachine
 
 		/** get the type of multiclass'ness
 		 *
-		 * @return multiclass type 1 vs one etc
+		 * @return multiclass type one vs one etc
 		 */
-		inline EMulticlassStrategy get_multiclass_strategy() const
+		inline CMulticlassStrategy* get_multiclass_strategy() const
 		{
+			SG_REF(m_multiclass_strategy);
 			return m_multiclass_strategy;
 		}
 
@@ -210,7 +204,7 @@ class CMulticlassMachine : public CMachine
 
 	protected:
 		/** type of multiclass strategy */
-		EMulticlassStrategy m_multiclass_strategy;
+		CMulticlassStrategy *m_multiclass_strategy;
 
 		/** machine */
 		CMachine* m_machine;

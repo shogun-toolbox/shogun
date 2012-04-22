@@ -16,7 +16,7 @@
 using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
-: CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY),
+: CMachine(), m_multiclass_strategy(new CMulticlassOneVsRestStrategy()),
 	m_machine(NULL), m_machines(new CDynamicObjectArray()),
 	m_rejection_strategy(NULL)
 {
@@ -24,7 +24,7 @@ CMulticlassMachine::CMulticlassMachine()
 }
 
 CMulticlassMachine::CMulticlassMachine(
-		EMulticlassStrategy strategy,
+		CMulticlassStrategy *strategy,
 		CMachine* machine, CLabels* labs)
 : CMachine(), m_multiclass_strategy(strategy),
 	m_machines(new CDynamicObjectArray()), m_rejection_strategy(NULL)
@@ -37,6 +37,7 @@ CMulticlassMachine::CMulticlassMachine(
 
 CMulticlassMachine::~CMulticlassMachine()
 {
+	SG_UNREF(m_multiclass_strategy);
 	SG_UNREF(m_rejection_strategy);
 	SG_UNREF(m_machine);
 	SG_UNREF(m_machines);
@@ -44,7 +45,7 @@ CMulticlassMachine::~CMulticlassMachine()
 
 void CMulticlassMachine::register_parameters()
 {
-	SG_ADD((machine_int_t*)&m_multiclass_strategy,"m_multiclass_type", "Multiclass strategy", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_multiclass_strategy,"m_multiclass_type", "Multiclass strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_machine, "m_machine", "The base machine", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_rejection_strategy, "m_rejection_strategy", "Rejection strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_machines, "machines", "Machines that jointly make up the multi-class machine.", MS_NOT_AVAILABLE);
@@ -61,7 +62,7 @@ CLabels* CMulticlassMachine::apply()
 	/** Ensure that m_machines have the features set */
 	init_machines_for_apply(NULL);
 
-	switch (m_multiclass_strategy)
+	switch (m_multiclass_strategy->get_strategy_type())
 	{
 		case ONE_VS_REST_STRATEGY:
 			return classify_one_vs_rest();
@@ -81,7 +82,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	else
 		init_machine_for_train(data);
 
-	switch (m_multiclass_strategy)
+	switch (m_multiclass_strategy->get_strategy_type())
 	{
 		case ONE_VS_REST_STRATEGY:
 			return train_one_vs_rest();
@@ -341,9 +342,9 @@ int32_t CMulticlassMachine::maxvote_one_vs_one(const SGVector<float64_t> &predic
 float64_t CMulticlassMachine::apply(int32_t num)
 {
 	init_machines_for_apply(NULL);
-	if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
+	if (m_multiclass_strategy->get_strategy_type()==ONE_VS_REST_STRATEGY)
 		return classify_example_one_vs_rest(num);
-	else if (m_multiclass_strategy==ONE_VS_ONE_STRATEGY)
+	else if (m_multiclass_strategy->get_strategy_type()==ONE_VS_ONE_STRATEGY)
 		return classify_example_one_vs_one(num);
 	else
 		SG_ERROR("unknown multiclass strategy\n");
