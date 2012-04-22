@@ -36,7 +36,7 @@ CSubset *CMulticlassOneVsRestStrategy::train_prepare_next()
 	return NULL;
 }
 
-int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs)
+int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)
 {
 	if (m_rejection_strategy && m_rejection_strategy->reject(outputs))
 		return CLabels::REJECTION_LABEL;
@@ -82,17 +82,15 @@ CSubset *CMulticlassOneVsOneStrategy::train_prepare_next()
 	return new CSubset(SGVector<index_t>(subset.vector, tot));
 }
 
-int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &outputs)
+int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)
 {
-	ASSERT(outputs.vlen == m_num_machines);
-
 	int32_t s=0;
-	SGVector<int32_t> votes(m_num_classes);
+	SGVector<int32_t> votes(num_classes);
 	votes.zero();
 
-	for (int32_t i=0; i<m_num_classes; i++)
+	for (int32_t i=0; i<num_classes; i++)
 	{
-		for (int32_t j=i+1; j<m_num_classes; j++)
+		for (int32_t j=i+1; j<num_classes; j++)
 		{
 			if (outputs[s++]>0)
 				votes[i]++;
