@@ -14,7 +14,6 @@
 
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/features/RejectionStrategy.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 
 namespace shogun
@@ -22,7 +21,6 @@ namespace shogun
 
 class CFeatures;
 class CLabels;
-class CRejectionStrategy;
 
 /** @brief experimental abstract generic multiclass machine class */
 class CMulticlassMachine : public CMachine
@@ -105,20 +103,6 @@ class CMulticlassMachine : public CMachine
 			return m_multiclass_strategy;
 		}
 
-		/** get rejection strategy */
-		inline CRejectionStrategy* get_rejection_strategy() const
-		{
-			SG_REF(m_rejection_strategy);
-			return m_rejection_strategy;
-		}
-		/** set rejection strategy */
-		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
-		{
-			SG_UNREF(m_rejection_strategy);
-			SG_REF(rejection_strategy);
-			m_rejection_strategy = rejection_strategy;
-		}
-
 		/** get name */
 		virtual const char* get_name() const
 		{
@@ -193,9 +177,6 @@ class CMulticlassMachine : public CMachine
 
 		/** machines */
 		CDynamicObjectArray *m_machines;
-
-		/** rejection strategy */
-		CRejectionStrategy* m_rejection_strategy;
 };
 }
 #endif

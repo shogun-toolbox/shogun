@@ -17,8 +17,7 @@ using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
 : CMachine(), m_multiclass_strategy(new CMulticlassOneVsRestStrategy()),
-	m_machine(NULL), m_machines(new CDynamicObjectArray()),
-	m_rejection_strategy(NULL)
+	m_machine(NULL), m_machines(new CDynamicObjectArray())
 {
 	register_parameters();
 }
@@ -27,7 +26,7 @@ CMulticlassMachine::CMulticlassMachine(
 		CMulticlassStrategy *strategy,
 		CMachine* machine, CLabels* labs)
 : CMachine(), m_multiclass_strategy(strategy),
-	m_machines(new CDynamicObjectArray()), m_rejection_strategy(NULL)
+	m_machines(new CDynamicObjectArray())
 {
 	set_labels(labs);
 	SG_REF(machine);
@@ -38,7 +37,6 @@ CMulticlassMachine::CMulticlassMachine(
 CMulticlassMachine::~CMulticlassMachine()
 {
 	SG_UNREF(m_multiclass_strategy);
-	SG_UNREF(m_rejection_strategy);
 	SG_UNREF(m_machine);
 	SG_UNREF(m_machines);
 }
@@ -47,7 +45,6 @@ void CMulticlassMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_multiclass_strategy,"m_multiclass_type", "Multiclass strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_machine, "m_machine", "The base machine", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_rejection_strategy, "m_rejection_strategy", "Rejection strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_machines, "machines", "Machines that jointly make up the multi-class machine.", MS_NOT_AVAILABLE);
 }
 
@@ -149,21 +146,14 @@ int32_t CMulticlassMachine::maxvote_one_vs_rest(const SGVector<float64_t> &predi
 {
 	int32_t winner = 0;
 
-	if (m_rejection_strategy && m_rejection_strategy->reject(predicts))
-	{
-		winner=CLabels::REJECTION_LABEL;
-	}
-	else
-	{
-		float64_t max_out = predicts[0];
+	float64_t max_out = predicts[0];
 
-		for (int32_t j=1; j<predicts.vlen; j++)
+	for (int32_t j=1; j<predicts.vlen; j++)
+	{
+		if (predicts[j]>max_out)
 		{
-			if (predicts[j]>max_out)
-			{
-				max_out = predicts[j];
-				winner = j;
-			}
+			max_out = predicts[j];
+			winner = j;
 		}
 	}
 	return winner;
