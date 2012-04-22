@@ -23,7 +23,7 @@ CMulticlassLibLinear::CMulticlassLibLinear() :
 }
 
 CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs) :
-	CLinearMulticlassMachine(ONE_VS_REST_STRATEGY,features,NULL,labs)
+	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(),features,NULL,labs)
 {
 	init_defaults();
 	set_C(C);

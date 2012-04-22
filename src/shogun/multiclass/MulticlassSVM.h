@@ -33,7 +33,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 *
 		 * @param strategy multiclass strategy
 		 */
-		CMulticlassSVM(EMulticlassStrategy strategy);
+		CMulticlassSVM(CMulticlassStrategy *strategy);
 
 		/** constructor
 		 *
@@ -43,7 +43,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 * @param lab labels
 		 */
 		CMulticlassSVM(
-			EMulticlassStrategy strategy, float64_t C, CKernel* k, CLabels* lab);
+			CMulticlassStrategy *strategy, float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CMulticlassSVM();
 
 		/** create multiclass SVM
