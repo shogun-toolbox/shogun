@@ -82,101 +82,26 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	else
 		init_machine_for_train(data);
 
-	switch (m_multiclass_strategy->get_strategy_type())
-	{
-		case ONE_VS_REST_STRATEGY:
-			return train_one_vs_rest();
-		case ONE_VS_ONE_STRATEGY:
-			return train_one_vs_one();
-		default:
-			SG_ERROR("Unknown multiclass strategy\n");
-	}
-
-	return false;
-}
-
-bool CMulticlassMachine::train_one_vs_rest()
-{
-	int32_t num_classes = m_labels->get_num_classes();
-	int32_t num_vectors = get_num_rhs_vectors();
-
 	m_machines->clear_array();
-	CLabels* train_labels = new CLabels(num_vectors);
+	CLabels *train_labels = new CLabels(get_num_rhs_vectors());
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
-	for (int32_t i=0; i<num_classes; i++)
+	m_multiclass_strategy->train_start(m_labels, train_labels);
+	while (m_multiclass_strategy->train_has_more())
 	{
-		for (int32_t j=0; j<num_vectors; j++)
+		CSubset *subset=m_multiclass_strategy->train_prepare_next();
+		if (subset)
 		{
-			if (m_labels->get_int_label(j)==i)
-				train_labels->set_label(j,+1.0);
-			else
-				train_labels->set_label(j,-1.0);
+			train_labels->set_subset(subset);
+			set_machine_subset(subset);
 		}
 
 		m_machine->train();
-		
 		m_machines->push_back(get_machine_from_trained(m_machine));
-	}
 
-	SG_UNREF(train_labels);
-	return true;
-}
-
-bool CMulticlassMachine::train_one_vs_one()
-{
-	int32_t num_classes = m_labels->get_num_classes();
-	int32_t num_vectors = get_num_rhs_vectors();
-
-	m_machines->clear_array();
-	CLabels* train_labels = new CLabels(num_vectors);
-	SG_REF(train_labels);
-	m_machine->set_labels(train_labels);
-
-	/** Number of vectors included in every subset */
-	int32_t tot = 0;
-
-	/** Train each machine */
-	for (int32_t i=0; i<num_classes; i++)
-	{
-		for (int32_t j=i+1; j<num_classes; j++)
+		if (subset)
 		{
-			SGVector<index_t> subset_labels(num_vectors);
-			SGVector<index_t> subset_feats(num_vectors);
-
-			/** Modify the labels of the training examples that belong
-			 *  to the classes relevant to train with this machine.
-			 *  The training examples of the other classes are excluded */
-
-			tot = 0;
-			for (int32_t k=0; k<num_vectors; k++)
-			{
-				/* It is important to use the same index-label association
-				 * here and in classifiy_one_vs_one: i -> 1.0, j -> -1.0 */
-
-				if (m_labels->get_int_label(k)==i)
-				{
-					train_labels->set_label(k,1.0);
-					subset_labels[tot] = k;
-					subset_feats[tot]  = k;
-					tot++;
-				}
-				else if (m_labels->get_int_label(k)==j)
-				{
-					train_labels->set_label(k,-1.0);
-					subset_labels[tot] = k;
-					subset_feats[tot]  = k;
-					tot++;
-				}
-			}
-
-			train_labels->add_subset(SGVector<index_t>(subset_labels.vector, tot));
-			add_machine_subset(SGVector<index_t>(subset_feats.vector, tot) );
-
-			m_machine->train();
-			m_machines->push_back(get_machine_from_trained(m_machine));
-
 			train_labels->remove_subset();
 			remove_machine_subset();
 
@@ -185,7 +110,9 @@ bool CMulticlassMachine::train_one_vs_one()
 		}
 	}
 
+	m_multiclass_strategy->train_stop();
 	SG_UNREF(train_labels);
+
 	return true;
 }
 
