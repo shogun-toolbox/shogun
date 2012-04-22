@@ -171,13 +171,16 @@ bool CMulticlassMachine::train_one_vs_one()
 			}
 
 			train_labels->add_subset(SGVector<index_t>(subset_labels.vector, tot));
-			set_machine_subset( new CSubset( SGVector<index_t>(subset_feats.vector, tot) ) );
+			add_machine_subset(SGVector<index_t>(subset_feats.vector, tot) );
 
 			m_machine->train();
 			m_machines->push_back(get_machine_from_trained(m_machine));
 
 			train_labels->remove_subset();
 			remove_machine_subset();
+
+			subset_feats.destroy_vector();
+			subset_labels.destroy_vector();
 		}
 	}
 
