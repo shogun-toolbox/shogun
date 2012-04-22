@@ -41,7 +41,7 @@ void CSubsetStack::init()
 			"Stack of active subsets", MS_NOT_AVAILABLE);
 
 	m_active_subset=NULL;
-	m_active_subsets_stack=new CDynamicObjectArray<CSubset>();
+	m_active_subsets_stack=new CDynamicObjectArray();
 	SG_REF(m_active_subsets_stack);
 }
 
@@ -51,7 +51,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 	if (m_active_subsets_stack->get_num_elements())
 	{
 		/* check that subsets may only be smaller or equal than existing */
-		CSubset* latest=m_active_subsets_stack->get_last_element();
+		CSubset* latest=(CSubset*)m_active_subsets_stack->get_last_element();
 		if (subset.vlen>latest->m_subset_idx.vlen)
 		{
 			SG_ERROR("Error in %s::add_subset(): Provided index vector is "
@@ -80,7 +80,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		 * existing ones */
 
 		/* get latest current subset */
-		CSubset* latest=m_active_subsets_stack->get_last_element();
+		CSubset* latest=(CSubset*)m_active_subsets_stack->get_last_element();
 		CMath::display_vector(latest->m_subset_idx.vector, latest->m_subset_idx.vlen, "latest");
 
 		/* create new index vector */
@@ -136,7 +136,8 @@ void CSubsetStack::remove_subset()
 		{
 			/* use new last element on stack as active subset */
 			index_t last_idx=m_active_subsets_stack->get_num_elements()-1;
-			m_active_subset=m_active_subsets_stack->get_element(last_idx);
+			m_active_subset=(CSubset*)
+					m_active_subsets_stack->get_element(last_idx);
 		}
 
 		/* otherwise, active subset is just empty */
