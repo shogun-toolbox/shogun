@@ -150,13 +150,13 @@ SGVector<float64_t> CLabels::get_labels_copy()
 
 SGVector<float64_t> CLabels::get_unique_labels()
 {
-	/* extract all labels */
-	SGVector<float64_t> unique_labels=labels.clone();
+	/* extract all labels (copy because of possible subset) */
+	SGVector<float64_t> unique_labels=get_labels_copy();
 	unique_labels.vlen=CMath::unique(unique_labels.vector, unique_labels.vlen);
 
 	SGVector<float64_t> result(unique_labels.vlen, true);
-	for (index_t i=0; i<unique_labels.vlen; ++i)
-		result.vector[i]=unique_labels.vector[i];
+	memcpy(result.vector, unique_labels.vector,
+			sizeof(float64_t)*unique_labels.vlen);
 
 	unique_labels.free_vector();
 
@@ -256,7 +256,7 @@ int32_t CLabels::get_num_labels()
 			? m_subset_stack->get_size() : labels.vlen;
 }
 
-void CLabels::add_subset(SGVector<index_t> subset)
+void CLabels::add_subset(const SGVector<index_t>& subset)
 {
 	m_subset_stack->add_subset(subset);
 }
