@@ -17,7 +17,7 @@ using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
 : CMachine(), m_multiclass_strategy(ONE_VS_REST_STRATEGY),
-	m_machine(NULL), m_machines(new CDynamicObjectArray<CMachine>()),
+	m_machine(NULL), m_machines(new CDynamicObjectArray()),
 	m_rejection_strategy(NULL)
 {
 	register_parameters();
@@ -27,7 +27,7 @@ CMulticlassMachine::CMulticlassMachine(
 		EMulticlassStrategy strategy,
 		CMachine* machine, CLabels* labs)
 : CMachine(), m_multiclass_strategy(strategy),
-	m_machines(new CDynamicObjectArray<CMachine>()), m_rejection_strategy(NULL)
+	m_machines(new CDynamicObjectArray()), m_rejection_strategy(NULL)
 {
 	set_labels(labs);
 	SG_REF(machine);
@@ -204,7 +204,7 @@ CLabels* CMulticlassMachine::classify_one_vs_rest()
 
 		for (int32_t i=0; i<num_machines; i++)
 		{
-			CMachine *machine = m_machines->get_element(i);
+			CMachine *machine = (CMachine*)m_machines->get_element(i);
 			ASSERT(machine);
 			outputs[i]=machine->apply();
 			SG_UNREF(machine);
@@ -275,7 +275,7 @@ CLabels* CMulticlassMachine::classify_one_vs_one()
 
 		for (int32_t i=0; i<num_machines; i++)
 		{
-			CMachine *machine = m_machines->get_element(i);
+			CMachine *machine = (CMachine*)m_machines->get_element(i);
 			ASSERT(machine);
 			outputs[i]=machine->apply();
 			SG_UNREF(machine);

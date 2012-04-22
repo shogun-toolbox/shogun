@@ -47,7 +47,7 @@ void CCrossValidationSplitting::build_subsets()
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
 		/* fill current subset */
-		CDynamicArray<index_t>* current=
+		CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
 				m_subset_indices->get_element(current_subset);
 
 		/* add element of current index */

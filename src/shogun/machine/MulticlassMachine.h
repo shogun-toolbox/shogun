@@ -71,7 +71,7 @@ class CMulticlassMachine : public CMachine
 		 */
 		inline CMachine* get_machine(int32_t num) const
 		{
-			return m_machines->get_element_safe(num);
+			return (CMachine*)m_machines->get_element_safe(num);
 		}
 
 		/** get number of machines
@@ -216,7 +216,7 @@ class CMulticlassMachine : public CMachine
 		CMachine* m_machine;
 
 		/** machines */
-		CDynamicObjectArray<CMachine> *m_machines;
+		CDynamicObjectArray *m_machines;
 
 		/** rejection strategy */
 		CRejectionStrategy* m_rejection_strategy;
