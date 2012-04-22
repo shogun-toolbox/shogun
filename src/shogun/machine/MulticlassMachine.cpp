@@ -61,6 +61,7 @@ CLabels* CMulticlassMachine::apply()
 
 	if (is_ready())
 	{
+		int32_t num_classes=m_labels->get_num_classes();
 		int32_t num_vectors=get_num_rhs_vectors();
 		int32_t num_machines=m_machines->get_num_elements();
 		if (num_machines <= 0)
@@ -84,7 +85,7 @@ CLabels* CMulticlassMachine::apply()
 			for (int32_t j=0; j<num_machines; j++)
 				output_for_i[j] = outputs[j]->get_label(i);
 
-			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i, m_labels->get_num_classes()));
+			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i, num_classes));
 		}
 
 		output_for_i.destroy_vector();
