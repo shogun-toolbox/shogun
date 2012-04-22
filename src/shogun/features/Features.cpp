@@ -349,7 +349,7 @@ void CFeatures::unset_property(EFeatureProperty p)
 	properties &= (properties | p) ^ p;
 }
 
-void CFeatures::add_subset(SGVector<index_t> subset)
+void CFeatures::add_subset(const SGVector<index_t>& subset)
 {
 	m_subset_stack->add_subset(subset);
 	subset_changed_post();
@@ -367,7 +367,7 @@ void CFeatures::remove_all_subsets()
 	subset_changed_post();
 }
 
-CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
+CFeatures* CFeatures::copy_subset(const SGVector<index_t>& indices)
 {
 	SG_ERROR("copy_subset and therefore model storage of CMachine "
 			"(required for cross-validation and model-selection is ",

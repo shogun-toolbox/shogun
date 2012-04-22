@@ -228,7 +228,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param subset subset of indices to add
 		 * */
-		virtual void add_subset(SGVector<index_t> subset);
+		virtual void add_subset(const SGVector<index_t>& subset);
 
 		/** removes that last added subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
