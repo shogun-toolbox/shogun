@@ -3,6 +3,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/features/StreamingSimpleFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
+#include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/base/init.h>
@@ -80,7 +81,7 @@ int main(int argc, char** argv)
 
 	// Create a multiclass svm classifier that consists of several of the previous one
 	CLinearMulticlassMachine* mc_svm = new CLinearMulticlassMachine(
-			ONE_VS_ONE_STRATEGY, (CDotFeatures*) features, svm, labels);
+			new CMulticlassOneVsOneStrategy(), (CDotFeatures*) features, svm, labels);
 	SG_REF(mc_svm);
 
 	// Train the multiclass machine using the data passed in the constructor

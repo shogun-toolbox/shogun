@@ -172,7 +172,7 @@ public:
 	{
 		CMulticlassStrategy::train_start(orig_labels, train_labels);
 		m_num_classes = m_orig_labels->get_num_classes();
-		m_num_machines=m_num_classes*(m_num_classes)/2;
+		m_num_machines=m_num_classes*(m_num_classes-1)/2;
 
 		m_train_pair_idx_1 = 0;
 		m_train_pair_idx_2 = 1;

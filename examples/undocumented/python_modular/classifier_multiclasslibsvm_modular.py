@@ -28,5 +28,20 @@ def classifier_multiclasslibsvm_modular (fm_train_real=traindat,fm_test_real=tes
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
+	from sys import argv
+	from numpy import save, load
+
 	print('MulticlassLibSVM')
-	classifier_multiclasslibsvm_modular(*parameter_list[0])
+	[predictions, svm, labels] = classifier_multiclasslibsvm_modular(*parameter_list[0])
+	if len(argv) > 2:
+		if argv[1] == 'save':
+			print('Save prediction to %s for future regression test' % argv[2])
+			save(argv[2], labels)
+		elif argv[1] == 'regression':
+			print('Regression test from %s' % argv[2])
+			labels_reg = load(argv[2])
+			if (labels == labels_reg).all():
+				print('Regression test passed!')
+			else:
+				print('Regression test FAILED!!!')
+
