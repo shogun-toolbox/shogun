@@ -58,8 +58,11 @@ public:
 	/** removes all subsets, leaving this subset being the pure identity */
 	virtual void remove_all_subsets();
 
-	/** @return size of active subset, -1 if there is no such */
+	/** @return size of active subset */
 	inline index_t get_size() {
+		if (!has_subsets())
+			SG_WARNING("CSubsetStack::get_size(): No subset in stack!\n");
+
 		return has_subsets() ? m_active_subset->get_size() : -1;
 	}
 
@@ -88,7 +91,7 @@ private:
 	 * recomputing them when subsets are removed. There is always the identity
 	 * subset as first element in here (only internal visible, has_subsets()
 	 * returns false if only this identity is present) */
-	CDynamicObjectArray<CSubset>* m_active_subsets_stack;
+	CDynamicObjectArray* m_active_subsets_stack;
 
 	/** active index subset. Last element on stack for quick access */
 	CSubset* m_active_subset;
