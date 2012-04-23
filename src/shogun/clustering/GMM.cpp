@@ -18,7 +18,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/features/Labels.h>
-#include <shogun/classifier/KNN.h>
+#include <shogun/multiclass/KNN.h>
 
 using namespace shogun;
 

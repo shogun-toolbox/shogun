@@ -20,7 +20,7 @@
 
 #include <shogun/kernel/AUCKernel.h>
 
-#include <shogun/classifier/KNN.h>
+#include <shogun/multiclass/KNN.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/clustering/Hierarchical.h>
 #include <shogun/classifier/PluginEstimate.h>
