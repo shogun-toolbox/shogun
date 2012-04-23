@@ -21,7 +21,7 @@ CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(CRejectionStrategy *r
 {
 }
 
-CSubset *CMulticlassOneVsRestStrategy::train_prepare_next()
+SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 {
 	CMulticlassStrategy::train_prepare_next();
 
@@ -33,7 +33,7 @@ CSubset *CMulticlassOneVsRestStrategy::train_prepare_next()
 			m_train_labels->set_label(i, -1.0);
 	}
 
-	return NULL;
+	return SGVector<int32_t>(0);
 }
 
 int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)
@@ -50,11 +50,11 @@ CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy()
 {
 }
 
-CSubset *CMulticlassOneVsOneStrategy::train_prepare_next()
+SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 {
 	CMulticlassStrategy::train_prepare_next();
 
-	SGVector<index_t> subset(m_orig_labels->get_num_labels());
+	SGVector<int32_t> subset(m_orig_labels->get_num_labels());
 	int32_t tot=0;
 	for (int32_t k=0; k < m_orig_labels->get_num_labels(); ++k)
 	{
@@ -79,7 +79,7 @@ CSubset *CMulticlassOneVsOneStrategy::train_prepare_next()
 		m_train_pair_idx_2=m_train_pair_idx_1+1;
 	}
 
-	return new CSubset(SGVector<index_t>(subset.vector, tot));
+	return SGVector<int32_t>(subset.vector, tot);
 }
 
 int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)

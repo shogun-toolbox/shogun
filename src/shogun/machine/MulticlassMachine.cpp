@@ -117,23 +117,21 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	m_multiclass_strategy->train_start(m_labels, train_labels);
 	while (m_multiclass_strategy->train_has_more())
 	{
-		CSubset *subset=m_multiclass_strategy->train_prepare_next();
-		if (subset)
+		SGVector<index_t> subset=m_multiclass_strategy->train_prepare_next();
+		if (subset.vlen)
 		{
-			train_labels->set_subset(subset);
-			set_machine_subset(subset);
+			train_labels->add_subset(subset);
+			add_machine_subset(subset);
 		}
 
 		m_machine->train();
 		m_machines->push_back(get_machine_from_trained(m_machine));
 
-		if (subset)
+		if (subset.vlen)
 		{
 			train_labels->remove_subset();
 			remove_machine_subset();
-
-			subset_feats.destroy_vector();
-			subset_labels.destroy_vector();
+			subset.destroy_vector();
 		}
 	}
 
