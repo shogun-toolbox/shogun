@@ -11,6 +11,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/multiclass/GMNPSVM.h>
 #include <shogun/multiclass/GMNPLib.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 #define MINUS_INF INT_MIN
@@ -21,13 +22,13 @@
 using namespace shogun;
 
 CGMNPSVM::CGMNPSVM()
-: CMulticlassSVM(ONE_VS_REST_STRATEGY)
+: CMulticlassSVM(new CMulticlassOneVsRestStrategy())
 {
 	init();
 }
 
 CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
+: CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab)
 {
 	init();
 }

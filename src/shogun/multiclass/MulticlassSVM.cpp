@@ -11,23 +11,24 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/multiclass/MulticlassSVM.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 
 using namespace shogun;
 
 CMulticlassSVM::CMulticlassSVM()
-	:CKernelMulticlassMachine(ONE_VS_REST_STRATEGY, NULL, new CSVM(0), NULL)
+	:CKernelMulticlassMachine(new CMulticlassOneVsRestStrategy(), NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
-CMulticlassSVM::CMulticlassSVM(EMulticlassStrategy strategy)
+CMulticlassSVM::CMulticlassSVM(CMulticlassStrategy *strategy)
 	:CKernelMulticlassMachine(strategy, NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
 CMulticlassSVM::CMulticlassSVM(
-	EMulticlassStrategy strategy, float64_t C, CKernel* k, CLabels* lab)
+	CMulticlassStrategy *strategy, float64_t C, CKernel* k, CLabels* lab)
 	:CKernelMulticlassMachine(strategy, k, new CSVM(C, k, lab), lab)
 {
 	init();
@@ -45,13 +46,7 @@ bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
 {
 	if (num_classes>0)
 	{
-		int32_t num_svms=0;
-		if (m_multiclass_strategy==ONE_VS_REST_STRATEGY)
-			num_svms=num_classes;
-		else if (m_multiclass_strategy==ONE_VS_ONE_STRATEGY)
-			num_svms=num_classes*(num_classes-1)/2;
-		else
-			SG_ERROR("unknown multiclass strategy\n");
+		int32_t num_svms=m_multiclass_strategy->get_num_machines(num_classes);
 
 		m_machines->clear_array();
 		for (index_t i=0; i<num_svms; ++i)
@@ -139,8 +134,8 @@ bool CMulticlassSVM::load(FILE* modelfl)
 	if (!feof(modelfl))
 		line_number++;
 
-	if (int_buffer != m_multiclass_strategy)
-		SG_ERROR("multiclass strategy does not match %ld vs. %ld\n", int_buffer, m_multiclass_strategy);
+	if (int_buffer != m_multiclass_strategy->get_strategy_type())
+		SG_ERROR("multiclass strategy does not match %ld vs. %ld\n", int_buffer, m_multiclass_strategy->get_strategy_type());
 
 	int_buffer=0;
 	if (fscanf(modelfl," num_classes=%d; \n", &int_buffer) != 1)
@@ -280,7 +275,7 @@ bool CMulticlassSVM::save(FILE* modelfl)
 
 	SG_INFO( "Writing model file...");
 	fprintf(modelfl,"%%MultiClassSVM\n");
-	fprintf(modelfl,"multiclass_strategy=%d;\n", m_multiclass_strategy);
+	fprintf(modelfl,"multiclass_strategy=%d;\n", m_multiclass_strategy->get_strategy_type());
 	fprintf(modelfl,"num_classes=%d;\n", m_labels->get_num_classes());
 	fprintf(modelfl,"num_svms=%d;\n", m_machines->get_num_elements());
 	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());

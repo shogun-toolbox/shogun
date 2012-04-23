@@ -54,6 +54,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/LaRank.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/kernel/Kernel.h>
 
 using namespace shogun;
@@ -579,7 +580,7 @@ int32_t LaRankOutput::getSV (float32_t* &sv) const
 	return l;
 }
 
-CLaRank::CLaRank (): CMulticlassSVM(ONE_VS_REST_STRATEGY),
+CLaRank::CLaRank (): CMulticlassSVM(new CMulticlassOneVsRestStrategy()),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
@@ -588,7 +589,7 @@ CLaRank::CLaRank (): CMulticlassSVM(ONE_VS_REST_STRATEGY),
 }
 
 CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
-	CMulticlassSVM(ONE_VS_REST_STRATEGY, C, k, lab),
+	CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),

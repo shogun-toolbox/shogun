@@ -8,6 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/io/SGIO.h>
 
@@ -15,7 +16,7 @@ using namespace shogun;
 
 
 CMKLMulticlass::CMKLMulticlass()
-: CMulticlassSVM(ONE_VS_REST_STRATEGY)
+: CMulticlassSVM(new CMulticlassOneVsRestStrategy())
 {
 	svm=NULL;
 	lpw=NULL;
@@ -26,7 +27,7 @@ CMKLMulticlass::CMKLMulticlass()
 }
 
 CMKLMulticlass::CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(ONE_VS_REST_STRATEGY, C, k, lab)
+: CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -46,7 +47,7 @@ CMKLMulticlass::~CMKLMulticlass()
 }
 
 CMKLMulticlass::CMKLMulticlass( const CMKLMulticlass & cm)
-: CMulticlassSVM(ONE_VS_REST_STRATEGY)
+: CMulticlassSVM(new CMulticlassOneVsRestStrategy())
 {
 	svm=NULL;
 	lpw=NULL;

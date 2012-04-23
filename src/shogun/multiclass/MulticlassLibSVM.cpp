@@ -9,17 +9,18 @@
  */
 
 #include <shogun/multiclass/MulticlassLibSVM.h>
+#include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
 CMulticlassLibSVM::CMulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
-: CMulticlassSVM(ONE_VS_ONE_STRATEGY), model(NULL), solver_type(st)
+: CMulticlassSVM(new CMulticlassOneVsOneStrategy()), model(NULL), solver_type(st)
 {
 }
 
 CMulticlassLibSVM::CMulticlassLibSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(ONE_VS_ONE_STRATEGY, C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
+: CMulticlassSVM(new CMulticlassOneVsOneStrategy(), C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
 {
 }
 

@@ -10,6 +10,7 @@
  */
 
 #include <shogun/multiclass/MulticlassOCAS.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -40,7 +41,7 @@ CMulticlassOCAS::CMulticlassOCAS() :
 }
 
 CMulticlassOCAS::CMulticlassOCAS(float64_t C, CDotFeatures* train_features, CLabels* train_labels) :
-	CLinearMulticlassMachine(ONE_VS_REST_STRATEGY, train_features, NULL, train_labels), m_C(C)
+	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), train_features, NULL, train_labels), m_C(C)
 {
 	register_parameters();
 	set_epsilon(1e-2);

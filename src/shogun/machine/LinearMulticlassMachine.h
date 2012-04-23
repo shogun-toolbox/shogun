@@ -41,7 +41,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 * @param machine linear machine
 		 * @param labs labels
 		 */
-		CLinearMulticlassMachine(EMulticlassStrategy strategy, CDotFeatures* features, CLinearMachine* machine, CLabels* labs) :
+		CLinearMulticlassMachine(CMulticlassStrategy *strategy, CDotFeatures* features, CLinearMachine* machine, CLabels* labs) :
 			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_features(NULL)
 		{
 			set_features(features);
