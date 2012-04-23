@@ -20,6 +20,7 @@ CMulticlassMachine::CMulticlassMachine()
 : CMachine(), m_multiclass_strategy(new CMulticlassOneVsRestStrategy()),
 	m_machine(NULL), m_machines(new CDynamicObjectArray())
 {
+	SG_REF(m_multiclass_strategy);
 	register_parameters();
 }
 
@@ -29,6 +30,7 @@ CMulticlassMachine::CMulticlassMachine(
 : CMachine(), m_multiclass_strategy(strategy),
 	m_machines(new CDynamicObjectArray())
 {
+	SG_REF(strategy);
 	set_labels(labs);
 	SG_REF(machine);
 	m_machine = machine;
@@ -105,6 +107,8 @@ CLabels* CMulticlassMachine::apply()
 
 bool CMulticlassMachine::train_machine(CFeatures* data)
 {
+	ASSERT(m_multiclass_strategy);
+
 	if ( !data && !is_ready() )
 		SG_ERROR("Please provide training data.\n");
 	else

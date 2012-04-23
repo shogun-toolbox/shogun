@@ -10,7 +10,7 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat
 def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
 	from shogun.Features import RealFeatures, Labels
 	from shogun.Kernel import GaussianKernel
-	from shogun.Classifier import LibSVM, KernelMulticlassMachine, ONE_VS_REST_STRATEGY
+	from shogun.Classifier import LibSVM, KernelMulticlassMachine, MulticlassOneVsRestStrategy
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -20,7 +20,8 @@ def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=te
 
 	classifier = LibSVM(C, kernel, labels)
 	classifier.set_epsilon(epsilon)
-	mc_classifier = KernelMulticlassMachine(ONE_VS_REST_STRATEGY,kernel,classifier,labels)
+	print labels.get_labels()
+	mc_classifier = KernelMulticlassMachine(MulticlassOneVsRestStrategy(),kernel,classifier,labels)
 	mc_classifier.train()
 
 	kernel.init(feats_train, feats_test)
