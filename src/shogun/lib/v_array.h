@@ -51,6 +51,15 @@ public:
 		end_array = NULL;
 	}
 
+	/** Destructor
+	 *
+	 * will only free the array not the ptrs it contains
+	 */
+	~v_array()
+	{
+		SG_FREE(begin);
+	}
+
 	/**
 	 * Operator [] overloaded to return the
 	 * i-th element of the stored array.
