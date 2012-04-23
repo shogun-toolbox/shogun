@@ -33,7 +33,7 @@ SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 			m_train_labels->set_label(i, -1.0);
 	}
 
-	return SGVector<int32_t>(0);
+	return SGVector<int32_t>();
 }
 
 int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)
