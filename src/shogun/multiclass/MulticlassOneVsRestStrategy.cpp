@@ -20,12 +20,11 @@ CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy()
 CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(CRejectionStrategy *rejection_strategy)
 	:CMulticlassStrategy(), m_num_machines(0), m_rejection_strategy(rejection_strategy)
 {
+	SG_REF(m_rejection_strategy);
 }
 
 SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 {
-	CMulticlassStrategy::train_prepare_next();
-
 	for (int32_t i=0; i < m_orig_labels->get_num_labels(); ++i)
 	{
 		if (m_orig_labels->get_int_label(i)==m_train_iter)
@@ -33,6 +32,9 @@ SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 		else
 			m_train_labels->set_label(i, -1.0);
 	}
+
+	// increase m_train_iter *after* setting labels
+	CMulticlassStrategy::train_prepare_next();
 
 	return SGVector<int32_t>();
 }
