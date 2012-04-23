@@ -11,6 +11,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/multiclass/MulticlassLibLinear.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/v_array.h>
 
@@ -23,7 +24,7 @@ CMulticlassLibLinear::CMulticlassLibLinear() :
 }
 
 CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs) :
-	CLinearMulticlassMachine(ONE_VS_REST_STRATEGY,features,NULL,labs)
+	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(),features,NULL,labs)
 {
 	init_defaults();
 	set_C(C);

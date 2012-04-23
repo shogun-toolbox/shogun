@@ -29,4 +29,4 @@ def classifier_multiclasslibsvm_modular (fm_train_real=traindat,fm_test_real=tes
 
 if __name__=='__main__':
 	print('MulticlassLibSVM')
-	classifier_multiclasslibsvm_modular(*parameter_list[0])
+	[predictions, svm, labels] = classifier_multiclasslibsvm_modular(*parameter_list[0])
