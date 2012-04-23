@@ -16,13 +16,13 @@
 using namespace shogun;
 
 CStreamingAsciiFile::CStreamingAsciiFile()
-	: CStreamingFile()
+		: CStreamingFile()
 {
-	SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n");
+		SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n");
 }
 
 CStreamingAsciiFile::CStreamingAsciiFile(char* fname, char rw)
-	: CStreamingFile(fname, rw)
+		: CStreamingFile(fname, rw)
 {
 }
 
@@ -32,72 +32,72 @@ CStreamingAsciiFile::~CStreamingAsciiFile()
 
 /* Methods for reading dense vectors from an ascii file */
 
-#define GET_VECTOR(fname, conv, sg_type)			\
+#define GET_VECTOR(fname, conv, sg_type)									\
 void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
-{									\
-	char* buffer = NULL;						\
-	ssize_t bytes_read;						\
-	int32_t old_len = num_feat;					\
-									\
-	bytes_read = buf->read_line(buffer);				\
-									\
-	if (bytes_read<=0)						\
-	{								\
-		vector=NULL;						\
-		num_feat=-1;						\
-		return;							\
-	}								\
-									\
-	/* determine num_feat, populate dynamic array */		\
-	int32_t nf=0;							\
-	num_feat=0;							\
-									\
-	char* ptr_item=NULL;						\
-	char* ptr_data=buffer;						\
-	DynArray<char*>* items=new DynArray<char*>();			\
-									\
-	while (*ptr_data)						\
-	{								\
-		if ((*ptr_data=='\n') ||				\
-		    (ptr_data - buffer >= bytes_read))			\
-		{							\
-			if (ptr_item)					\
-				nf++;					\
-									\
-			append_item(items, ptr_data, ptr_item);		\
-			num_feat=nf;					\
-									\
-			nf=0;						\
-			ptr_item=NULL;					\
-			break;						\
-		}							\
-		else if (!isblank(*ptr_data) && !ptr_item)		\
-		{							\
-			ptr_item=ptr_data;				\
-		}							\
-		else if (isblank(*ptr_data) && ptr_item)		\
-		{							\
-			append_item(items, ptr_data, ptr_item);		\
-			ptr_item=NULL;					\
-			nf++;						\
-		}							\
-									\
-		ptr_data++;						\
-	}								\
-									\
-	SG_DEBUG("num_feat %d\n", num_feat);				\
-									\
-	/* now copy data into vector */					\
-	if (old_len < num_feat)						\
-		vector=SG_REALLOC(sg_type, vector, num_feat);		\
-									\
-	for (int32_t i=0; i<num_feat; i++)				\
-	{								\
-		char* item=items->get_element(i);			\
-		vector[i]=conv(item);					\
-		SG_FREE(item);						\
-	}								\
-	delete items;							\
+{																			\
+		char* buffer = NULL;												\
+		ssize_t bytes_read;													\
+		int32_t old_len = num_feat;											\
+																			\
+		bytes_read = buf->read_line(buffer);								\
+																			\
+		if (bytes_read<=0)													\
+		{																	\
+				vector=NULL;												\
+				num_feat=-1;												\
+				return;														\
+		}																	\
+																			\
+		/* determine num_feat, populate dynamic array */					\
+		int32_t nf=0;														\
+		num_feat=0;															\
+																			\
+		char* ptr_item=NULL;												\
+		char* ptr_data=buffer;												\
+		DynArray<char*>* items=new DynArray<char*>();						\
+																			\
+		while (*ptr_data)													\
+		{																	\
+				if ((*ptr_data=='\n') ||									\
+				    (ptr_data - buffer >= bytes_read))						\
+				{															\
+						if (ptr_item)										\
+								nf++;										\
+																			\
+						append_item(items, ptr_data, ptr_item);				\
+						num_feat=nf;										\
+																			\
+						nf=0;												\
+						ptr_item=NULL;										\
+						break;												\
+				}															\
+				else if (!isblank(*ptr_data) && !ptr_item)					\
+				{															\
+						ptr_item=ptr_data;									\
+				}															\
+				else if (isblank(*ptr_data) && ptr_item)					\
+				{															\
+						append_item(items, ptr_data, ptr_item);				\
+						ptr_item=NULL;										\
+						nf++;												\
+				}															\
+																			\
+				ptr_data++;													\
+		}																	\
+																			\
+		SG_DEBUG("num_feat %d\n", num_feat);								\
+																			\
+		/* now copy data into vector */										\
+		if (old_len < num_feat)												\
+				vector=SG_REALLOC(sg_type, vector, num_feat);				\
+																			\
+		for (int32_t i=0; i<num_feat; i++)									\
+		{																	\
+				char* item=items->get_element(i);							\
+				vector[i]=conv(item);										\
+				SG_FREE(item);												\
+		}																	\
+		delete items;														\
 }
 
 GET_VECTOR(get_bool_vector, str_to_bool, bool)
@@ -113,35 +113,35 @@ GET_VECTOR(get_ulong_vector, atoi, uint64_t)
 GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 #undef GET_VECTOR
 
-#define GET_FLOAT_VECTOR(sg_type)					\
-	void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& len) \
-	{								\
-		char *line=NULL;					\
-		int32_t num_chars = buf->read_line(line);		\
-		int32_t old_len = len;					\
-									\
-		if (num_chars == 0)					\
-		{							\
-			len = -1;					\
-			return;						\
-		}							\
-									\
-		substring example_string = {line, line + num_chars};	\
-									\
-		CAsciiFile::tokenize(' ', example_string, words);	\
-									\
-		len = words.index();					\
-		substring* feature_start = &words[0];			\
-									\
-		if (len > old_len)					\
-			vector = SG_REALLOC(sg_type, vector, len);	\
-									\
-		int32_t j=0;						\
-		for (substring* i = feature_start; i != words.end; i++)	\
-		{							\
-			vector[j++] = float_of_substring(*i);		\
-		}							\
-	}
+#define GET_FLOAT_VECTOR(sg_type)											\
+		void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& len)\
+		{																	\
+				char *line=NULL;											\
+				int32_t num_chars = buf->read_line(line);					\
+				int32_t old_len = len;										\
+																			\
+				if (num_chars == 0)											\
+				{															\
+						len = -1;											\
+						return;												\
+				}															\
+																			\
+				substring example_string = {line, line + num_chars};		\
+																			\
+				CAsciiFile::tokenize(' ', example_string, words);			\
+																			\
+				len = words.index();										\
+				substring* feature_start = &words[0];						\
+																			\
+				if (len > old_len)											\
+						vector = SG_REALLOC(sg_type, vector, len);			\
+																			\
+				int32_t j=0;												\
+				for (substring* i = feature_start; i != words.end; i++)		\
+				{															\
+						vector[j++] = float_of_substring(*i);				\
+				}															\
+		}
 
 GET_FLOAT_VECTOR(float32_t)
 GET_FLOAT_VECTOR(float64_t)
@@ -149,75 +149,75 @@ GET_FLOAT_VECTOR(float64_t)
 
 /* Methods for reading a dense vector and a label from an ascii file */
 
-#define GET_VECTOR_AND_LABEL(fname, conv, sg_type)			\
-	void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& num_feat, float64_t& label) \
-	{								\
-		char* buffer = NULL;					\
-		ssize_t bytes_read;					\
-		int32_t old_len = num_feat;				\
-									\
-		bytes_read = buf->read_line(buffer);			\
-									\
-		if (bytes_read<=0)					\
-		{							\
-			vector=NULL;					\
-			num_feat=-1;					\
-			return;						\
-		}							\
-									\
-		/* determine num_feat, populate dynamic array */	\
-		int32_t nf=0;						\
-		num_feat=0;						\
-									\
-		char* ptr_item=NULL;					\
-		char* ptr_data=buffer;					\
-		DynArray<char*>* items=new DynArray<char*>();		\
-									\
-		while (*ptr_data)					\
-		{							\
-			if ((*ptr_data=='\n') ||			\
-			    (ptr_data - buffer >= bytes_read))		\
-			{						\
-				if (ptr_item)				\
-					nf++;				\
-									\
-				append_item(items, ptr_data, ptr_item);	\
-				num_feat=nf;				\
-									\
-				nf=0;					\
-				ptr_item=NULL;				\
-				break;					\
-			}						\
-			else if (!isblank(*ptr_data) && !ptr_item)	\
-			{						\
-				ptr_item=ptr_data;			\
-			}						\
-			else if (isblank(*ptr_data) && ptr_item)	\
-			{						\
-				append_item(items, ptr_data, ptr_item);	\
-				ptr_item=NULL;				\
-				nf++;					\
-			}						\
-									\
-			ptr_data++;					\
-		}							\
-									\
-		SG_DEBUG("num_feat %d\n", num_feat);			\
-		/* The first element is the label */			\
-		label=atof(items->get_element(0));			\
-		/* now copy rest of the data into vector */		\
-		if (old_len < num_feat - 1)				\
-			vector=SG_REALLOC(sg_type, vector, num_feat-1);	\
-									\
-		for (int32_t i=1; i<num_feat; i++)			\
-		{							\
-			char* item=items->get_element(i);		\
-			vector[i-1]=conv(item);				\
-			SG_FREE(item);					\
-		}							\
-		delete items;						\
-		num_feat--;						\
-	}
+#define GET_VECTOR_AND_LABEL(fname, conv, sg_type)						\
+		void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& num_feat, float64_t& label) \
+		{																\
+				char* buffer = NULL;									\
+				ssize_t bytes_read;										\
+				int32_t old_len = num_feat;								\
+																		\
+				bytes_read = buf->read_line(buffer);					\
+																		\
+				if (bytes_read<=0)										\
+				{														\
+						vector=NULL;									\
+						num_feat=-1;									\
+						return;											\
+				}														\
+																		\
+				/* determine num_feat, populate dynamic array */		\
+				int32_t nf=0;											\
+				num_feat=0;												\
+																		\
+				char* ptr_item=NULL;									\
+				char* ptr_data=buffer;									\
+				DynArray<char*>* items=new DynArray<char*>();			\
+																		\
+				while (*ptr_data)										\
+				{														\
+						if ((*ptr_data=='\n') ||						\
+						    (ptr_data - buffer >= bytes_read))			\
+						{												\
+								if (ptr_item)							\
+										nf++;							\
+																		\
+								append_item(items, ptr_data, ptr_item);	\
+								num_feat=nf;							\
+																		\
+								nf=0;									\
+								ptr_item=NULL;							\
+								break;									\
+						}												\
+						else if (!isblank(*ptr_data) && !ptr_item)		\
+						{												\
+								ptr_item=ptr_data;						\
+						}												\
+						else if (isblank(*ptr_data) && ptr_item)		\
+						{												\
+								append_item(items, ptr_data, ptr_item);	\
+								ptr_item=NULL;							\
+								nf++;									\
+						}												\
+																		\
+						ptr_data++;										\
+				}														\
+																		\
+				SG_DEBUG("num_feat %d\n", num_feat);					\
+				/* The first element is the label */					\
+				label=atof(items->get_element(0));						\
+				/* now copy rest of the data into vector */				\
+				if (old_len < num_feat - 1)								\
+						vector=SG_REALLOC(sg_type, vector, num_feat-1);	\
+																		\
+				for (int32_t i=1; i<num_feat; i++)						\
+				{														\
+						char* item=items->get_element(i);				\
+						vector[i-1]=conv(item);							\
+						SG_FREE(item);									\
+				}														\
+				delete items;											\
+				num_feat--;												\
+		}
 
 GET_VECTOR_AND_LABEL(get_bool_vector_and_label, str_to_bool, bool)
 GET_VECTOR_AND_LABEL(get_byte_vector_and_label, atoi, uint8_t)
@@ -232,37 +232,37 @@ GET_VECTOR_AND_LABEL(get_ulong_vector_and_label, atoi, uint64_t)
 GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 #undef GET_VECTOR_AND_LABEL
 
-#define GET_FLOAT_VECTOR_AND_LABEL(sg_type)				\
-	void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
-	{								\
-		char *line=NULL;					\
-		int32_t num_chars = buf->read_line(line);		\
-		int32_t old_len = len;					\
-									\
-		if (num_chars == 0)					\
-		{							\
-			len = -1;					\
-			return;						\
-		}							\
-									\
-		substring example_string = {line, line + num_chars};	\
-									\
-		CAsciiFile::tokenize(' ', example_string, words);	\
-									\
-		label = float_of_substring(words[0]);			\
-									\
-		len = words.index() - 1;				\
-		substring* feature_start = &words[1];			\
-									\
-		if (len > old_len)					\
-			vector = SG_REALLOC(sg_type, vector, len);	\
-									\
-		int32_t j=0;						\
-		for (substring* i = feature_start; i != words.end; i++)	\
-		{							\
-			vector[j++] = float_of_substring(*i);		\
-		}							\
-	}
+#define GET_FLOAT_VECTOR_AND_LABEL(sg_type)								\
+		void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
+		{																\
+				char *line=NULL;										\
+				int32_t num_chars = buf->read_line(line);				\
+				int32_t old_len = len;									\
+																		\
+				if (num_chars == 0)										\
+				{														\
+						len = -1;										\
+						return;											\
+				}														\
+																		\
+				substring example_string = {line, line + num_chars};	\
+																		\
+				CAsciiFile::tokenize(' ', example_string, words);		\
+																		\
+				label = float_of_substring(words[0]);					\
+																		\
+				len = words.index() - 1;								\
+				substring* feature_start = &words[1];					\
+																		\
+				if (len > old_len)										\
+						vector = SG_REALLOC(sg_type, vector, len);		\
+																		\
+				int32_t j=0;											\
+				for (substring* i = feature_start; i != words.end; i++)	\
+				{														\
+						vector[j++] = float_of_substring(*i);			\
+				}														\
+		}
 
 GET_FLOAT_VECTOR_AND_LABEL(float32_t)
 GET_FLOAT_VECTOR_AND_LABEL(float64_t)
@@ -270,31 +270,31 @@ GET_FLOAT_VECTOR_AND_LABEL(float64_t)
 
 /* Methods for reading a string vector from an ascii file (see StringFeatures) */
 
-#define GET_STRING(fname, conv, sg_type)				\
-void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)		\
-{									\
-	char* buffer = NULL;						\
-	ssize_t bytes_read;						\
-									\
-	bytes_read = buf->read_line(buffer);				\
-									\
-	if (bytes_read<=1)						\
-	{								\
-		vector=NULL;						\
-		len=-1;							\
-		return;							\
-	}								\
-									\
-	SG_DEBUG("Line read from the file:\n%s\n", buffer);		\
-	/* Remove the terminating \n */					\
-	if (buffer[bytes_read-1]=='\n')					\
-	{								\
-		len=bytes_read-1;					\
-		buffer[bytes_read-1]='\0';				\
-	}								\
-	else								\
-		len=bytes_read;						\
-	vector=(sg_type *) buffer;					\
+#define GET_STRING(fname, conv, sg_type)								\
+void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)	\
+{																		\
+		char* buffer = NULL;											\
+		ssize_t bytes_read;												\
+																		\
+		bytes_read = buf->read_line(buffer);							\
+																		\
+		if (bytes_read<=1)												\
+		{																\
+				vector=NULL;											\
+				len=-1;													\
+				return;													\
+		}																\
+																		\
+		SG_DEBUG("Line read from the file:\n%s\n", buffer);				\
+		/* Remove the terminating \n */									\
+		if (buffer[bytes_read-1]=='\n')									\
+		{																\
+				len=bytes_read-1;										\
+				buffer[bytes_read-1]='\0';								\
+		}																\
+		else															\
+				len=bytes_read;											\
+		vector=(sg_type *) buffer;										\
 }
 
 GET_STRING(get_bool_string, str_to_bool, bool)
@@ -314,51 +314,51 @@ GET_STRING(get_longreal_string, atoi, floatmax_t)
 
 /* Methods for reading a string vector and a label from an ascii file */
 
-#define GET_STRING_AND_LABEL(fname, conv, sg_type)			\
+#define GET_STRING_AND_LABEL(fname, conv, sg_type)						\
 void CStreamingAsciiFile::get_string_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
-{									\
-	char* buffer = NULL;						\
-	ssize_t bytes_read;						\
-									\
-	bytes_read = buf->read_line(buffer);				\
-									\
-	if (bytes_read<=1)						\
-	{								\
-		vector=NULL;						\
-		len=-1;							\
-		return;							\
-	}								\
-									\
-	int32_t str_start_pos=-1;					\
-									\
-	for (int32_t i=0; i<bytes_read; i++)				\
-	{								\
-		if (buffer[i] == ' ')					\
-		{							\
-			buffer[i]='\0';					\
-			label=atoi(buffer);				\
-			buffer[i]=' ';					\
-			str_start_pos=i+1;				\
-			break;						\
-		}							\
-	}								\
-	/* If no label found, set vector=NULL and length=-1 */		\
-	if (str_start_pos == -1)					\
-	{								\
-		vector=NULL;						\
-		len=-1;							\
-		return;							\
-	}								\
-	/* Remove terminating \n */					\
-	if (buffer[bytes_read-1]=='\n')					\
-	{								\
-		buffer[bytes_read-1]='\0';				\
-		len=bytes_read-str_start_pos-1;				\
-	}								\
-	else								\
-		len=bytes_read-str_start_pos;				\
-									\
-	vector=(sg_type*) &buffer[str_start_pos];			\
+{																		\
+		char* buffer = NULL;											\
+		ssize_t bytes_read;												\
+																		\
+		bytes_read = buf->read_line(buffer);							\
+																		\
+		if (bytes_read<=1)												\
+		{																\
+				vector=NULL;											\
+				len=-1;													\
+				return;													\
+		}																\
+																		\
+		int32_t str_start_pos=-1;										\
+																		\
+		for (int32_t i=0; i<bytes_read; i++)							\
+		{																\
+				if (buffer[i] == ' ')									\
+				{														\
+						buffer[i]='\0';									\
+						label=atoi(buffer);								\
+						buffer[i]=' ';									\
+						str_start_pos=i+1;								\
+						break;											\
+				}														\
+		}																\
+		/* If no label found, set vector=NULL and length=-1 */			\
+		if (str_start_pos == -1)										\
+		{																\
+				vector=NULL;											\
+				len=-1;													\
+				return;													\
+		}																\
+		/* Remove terminating \n */										\
+		if (buffer[bytes_read-1]=='\n')									\
+		{																\
+				buffer[bytes_read-1]='\0';								\
+				len=bytes_read-str_start_pos-1;							\
+		}																\
+		else															\
+				len=bytes_read-str_start_pos;							\
+																		\
+		vector=(sg_type*) &buffer[str_start_pos];						\
 }
 
 GET_STRING_AND_LABEL(get_bool_string_and_label, str_to_bool, bool)
@@ -378,77 +378,77 @@ GET_STRING_AND_LABEL(get_longreal_string_and_label, atoi, floatmax_t)
 
 /* Methods for reading a sparse vector from an ascii file */
 
-#define GET_SPARSE_VECTOR(fname, conv, sg_type)				\
+#define GET_SPARSE_VECTOR(fname, conv, sg_type)							\
 void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) \
-{									\
-	char* buffer = NULL;						\
-	ssize_t bytes_read;						\
-									\
-	bytes_read = buf->read_line(buffer);				\
-									\
-	if (bytes_read<=1)						\
-	{								\
-		vector=NULL;						\
-		len=-1;							\
-		return;							\
-	}								\
-									\
-	/* Remove terminating \n */					\
-	int32_t num_chars;						\
-	if (buffer[bytes_read-1]=='\n')					\
-	  {								\
-	    num_chars=bytes_read-1;					\
-	    buffer[num_chars]='\0';					\
-	  }								\
-	else								\
-	  num_chars=bytes_read;						\
-									\
-	int32_t num_dims=0;						\
-	for (int32_t i=0; i<num_chars; i++)				\
-	{								\
-		if (buffer[i]==':')					\
-		{							\
-			num_dims++;					\
-		}							\
-	}								\
-									\
-	int32_t index_start_pos=-1;					\
-	int32_t feature_start_pos;					\
-	int32_t current_feat=0;						\
-	vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
-	for (int32_t i=0; i<num_chars; i++)				\
-	{								\
-		if (buffer[i]==':')					\
-		{							\
-			buffer[i]='\0';					\
-			vector[current_feat].feat_index=(int32_t) atoi(buffer+index_start_pos)-1; \
-			/* Unset index_start_pos */			\
-			index_start_pos=-1;				\
-									\
-			feature_start_pos=i+1;				\
-			while ((buffer[i]!=' ') && (i<num_chars))	\
-			{						\
-				i++;					\
-			}						\
-									\
-			buffer[i]='\0';					\
-			vector[current_feat].entry=(sg_type) conv(buffer+feature_start_pos); \
-									\
-			current_feat++;					\
-		}							\
-		else if (buffer[i]==' ')				\
-		  i++;							\
-		else							\
-		  {							\
-		    /* Set index_start_pos if not set already */	\
-		    /* if already set, it means the index is  */	\
-		    /* more than one digit long.              */	\
-		    if (index_start_pos == -1)				\
-			index_start_pos=i;				\
-		  }							\
-	}								\
-									\
-	len=current_feat;						\
+{																		\
+		char* buffer = NULL;											\
+		ssize_t bytes_read;												\
+																		\
+		bytes_read = buf->read_line(buffer);							\
+																		\
+		if (bytes_read<=1)												\
+		{																\
+				vector=NULL;											\
+				len=-1;													\
+				return;													\
+		}																\
+																		\
+		/* Remove terminating \n */										\
+		int32_t num_chars;												\
+		if (buffer[bytes_read-1]=='\n')									\
+		  {																\
+		    num_chars=bytes_read-1;										\
+		    buffer[num_chars]='\0';										\
+		  }																\
+		else															\
+		  num_chars=bytes_read;											\
+																		\
+		int32_t num_dims=0;												\
+		for (int32_t i=0; i<num_chars; i++)								\
+		{																\
+				if (buffer[i]==':')										\
+				{														\
+						num_dims++;										\
+				}														\
+		}																\
+																		\
+		int32_t index_start_pos=-1;										\
+		int32_t feature_start_pos;										\
+		int32_t current_feat=0;											\
+		vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
+		for (int32_t i=0; i<num_chars; i++)								\
+		{																\
+				if (buffer[i]==':')										\
+				{														\
+						buffer[i]='\0';									\
+						vector[current_feat].feat_index=(int32_t) atoi(buffer+index_start_pos)-1; \
+						/* Unset index_start_pos */						\
+						index_start_pos=-1;								\
+																		\
+						feature_start_pos=i+1;							\
+						while ((buffer[i]!=' ') && (i<num_chars))		\
+						{												\
+								i++;									\
+						}												\
+																		\
+						buffer[i]='\0';									\
+						vector[current_feat].entry=(sg_type) conv(buffer+feature_start_pos); \
+																		\
+						current_feat++;									\
+				}														\
+				else if (buffer[i]==' ')								\
+				  i++;													\
+				else													\
+				  {														\
+				    /* Set index_start_pos if not set already */		\
+				    /* if already set, it means the index is  */		\
+				    /* more than one digit long.              */		\
+				    if (index_start_pos == -1)							\
+						index_start_pos=i;								\
+				  }														\
+		}																\
+																		\
+		len=current_feat;												\
 }
 
 GET_SPARSE_VECTOR(get_bool_sparse_vector, str_to_bool, bool)
@@ -468,99 +468,99 @@ GET_SPARSE_VECTOR(get_longreal_sparse_vector, atoi, floatmax_t)
 
 /* Methods for reading a sparse vector and a label from an ascii file */
 
-#define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)			\
+#define GET_SPARSE_VECTOR_AND_LABEL(fname, conv, sg_type)				\
 void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) \
-{									\
-	char* buffer = NULL;						\
-	ssize_t bytes_read;						\
-									\
-	bytes_read = buf->read_line(buffer);				\
-									\
-	if (bytes_read<=1)						\
-	{								\
-		vector=NULL;						\
-		len=-1;							\
-		return;							\
-	}								\
-									\
-	/* Remove terminating \n */					\
-	int32_t num_chars;						\
-	if (buffer[bytes_read-1]=='\n')					\
-	{								\
-		num_chars=bytes_read-1;					\
-		buffer[num_chars]='\0';					\
-	}								\
-	else								\
-		num_chars=bytes_read;					\
-									\
-	int32_t num_dims=0;						\
-	for (int32_t i=0; i<num_chars; i++)				\
-	{								\
-		if (buffer[i]==':')					\
-		{							\
-			num_dims++;					\
-		}							\
-	}								\
-									\
-	int32_t index_start_pos=-1;					\
-	int32_t feature_start_pos;					\
-	int32_t current_feat=0;						\
-	int32_t label_pos=-1;						\
-	vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
-									\
-	for (int32_t i=1; i<num_chars; i++)				\
-	{								\
-		if (buffer[i]==':')					\
-		{							\
-			break;						\
-		}							\
-		if ( (buffer[i]==' ') && (buffer[i-1]!=' ') )		\
-		{							\
-			buffer[i]='\0';					\
-			label_pos=i;					\
-			label=atof(buffer);				\
-			break;						\
-		}							\
-	}								\
-									\
-	if (label_pos==-1)						\
-		SG_ERROR("No label found!\n");				\
-									\
-	buffer+=label_pos+1;						\
-	num_chars-=label_pos+1;						\
-	for (int32_t i=0; i<num_chars; i++)				\
-	{								\
-		if (buffer[i]==':')					\
-		{							\
-			buffer[i]='\0';					\
-			vector[current_feat].feat_index=(int32_t) atoi(buffer+index_start_pos)-1; \
-			/* Unset index_start_pos */			\
-			index_start_pos=-1;				\
-									\
-			feature_start_pos=i+1;				\
-			while ((buffer[i]!=' ') && (i<num_chars))	\
-			{						\
-				i++;					\
-			}						\
-									\
-			buffer[i]='\0';					\
-			vector[current_feat].entry=(sg_type) conv(buffer+feature_start_pos); \
-									\
-			current_feat++;					\
-		}							\
-		else if (buffer[i]==' ')				\
-			i++;						\
-		else							\
-		{							\
-			/* Set index_start_pos if not set already */	\
-			/* if already set, it means the index is  */	\
-			/* more than one digit long.              */	\
-			if (index_start_pos == -1)			\
-				index_start_pos=i;			\
-		}							\
-	}								\
-									\
-	len=current_feat;						\
+{																		\
+		char* buffer = NULL;											\
+		ssize_t bytes_read;												\
+																		\
+		bytes_read = buf->read_line(buffer);							\
+																		\
+		if (bytes_read<=1)												\
+		{																\
+				vector=NULL;											\
+				len=-1;													\
+				return;													\
+		}																\
+																		\
+		/* Remove terminating \n */										\
+		int32_t num_chars;												\
+		if (buffer[bytes_read-1]=='\n')									\
+		{																\
+				num_chars=bytes_read-1;									\
+				buffer[num_chars]='\0';									\
+		}																\
+		else															\
+				num_chars=bytes_read;									\
+																		\
+		int32_t num_dims=0;												\
+		for (int32_t i=0; i<num_chars; i++)								\
+		{																\
+				if (buffer[i]==':')										\
+				{														\
+						num_dims++;										\
+				}														\
+		}																\
+																		\
+		int32_t index_start_pos=-1;										\
+		int32_t feature_start_pos;										\
+		int32_t current_feat=0;											\
+		int32_t label_pos=-1;											\
+		vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
+																		\
+		for (int32_t i=1; i<num_chars; i++)								\
+		{																\
+				if (buffer[i]==':')										\
+				{														\
+						break;											\
+				}														\
+				if ( (buffer[i]==' ') && (buffer[i-1]!=' ') )			\
+				{														\
+						buffer[i]='\0';									\
+						label_pos=i;									\
+						label=atof(buffer);								\
+						break;											\
+				}														\
+		}																\
+																		\
+		if (label_pos==-1)												\
+				SG_ERROR("No label found!\n");							\
+																		\
+		buffer+=label_pos+1;											\
+		num_chars-=label_pos+1;											\
+		for (int32_t i=0; i<num_chars; i++)								\
+		{																\
+				if (buffer[i]==':')										\
+				{														\
+						buffer[i]='\0';									\
+						vector[current_feat].feat_index=(int32_t) atoi(buffer+index_start_pos)-1; \
+						/* Unset index_start_pos */						\
+						index_start_pos=-1;								\
+																		\
+						feature_start_pos=i+1;							\
+						while ((buffer[i]!=' ') && (i<num_chars))		\
+						{												\
+								i++;									\
+						}												\
+																		\
+						buffer[i]='\0';									\
+						vector[current_feat].entry=(sg_type) conv(buffer+feature_start_pos); \
+																		\
+						current_feat++;									\
+				}														\
+				else if (buffer[i]==' ')								\
+						i++;											\
+				else													\
+				{														\
+						/* Set index_start_pos if not set already */	\
+						/* if already set, it means the index is  */	\
+						/* more than one digit long.              */	\
+						if (index_start_pos == -1)						\
+								index_start_pos=i;						\
+				}														\
+		}																\
+																		\
+		len=current_feat;												\
 }
 
 GET_SPARSE_VECTOR_AND_LABEL(get_bool_sparse_vector_and_label, str_to_bool, bool)
@@ -580,13 +580,13 @@ GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax
 
 template <class T>
 void CStreamingAsciiFile::append_item(
-	DynArray<T>* items, char* ptr_data, char* ptr_item)
+		DynArray<T>* items, char* ptr_data, char* ptr_item)
 {
-	size_t len=(ptr_data-ptr_item)/sizeof(char);
-	char* item=SG_MALLOC(char, len+1);
-	memset(item, 0, sizeof(char)*(len+1));
-	item=strncpy(item, ptr_item, len);
+		size_t len=(ptr_data-ptr_item)/sizeof(char);
+		char* item=SG_MALLOC(char, len+1);
+		memset(item, 0, sizeof(char)*(len+1));
+		item=strncpy(item, ptr_item, len);
 
-	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
-	items->append_element(item);
+		SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
+		items->append_element(item);
 }
