@@ -62,11 +62,11 @@ def modelselection_parameter_tree_modular()
 	param_ds_kernel_theta.build_values(1, 2, Modshogun::R_EXP)
 	param_ds_kernel.append_child(param_ds_kernel_theta)
 
-	root.print_tree()
+	#root.print_tree()
 	combinations=root.get_combinations()
-	combinations.get_num_elements.times do |i|
-		combinations.get_element(i).print_tree()
-	end
+	#combinations.get_num_elements.times do |i|
+	#	combinations.get_element(i).print_tree()
+	#end
 
 	return
 
