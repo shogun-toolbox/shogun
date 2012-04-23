@@ -3,7 +3,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/Subset.h>
 #include <shogun/features/RejectionStrategy.h>
 
 namespace shogun
@@ -53,7 +52,7 @@ public:
 	/** prepare for the next training phase.
 	 * @return The subset that should be applied. Return NULL when no subset is needed.
 	 */
-	virtual CSubset *train_prepare_next()
+	virtual SGVector<int32_t> train_prepare_next()
 	{
 		m_train_iter++;
 		return NULL;
@@ -125,7 +124,7 @@ public:
 	/** prepare for the next training phase.
 	 * @return NULL, since no subset is needed in one-vs-rest strategy
 	 */ 
-	virtual CSubset *train_prepare_next();
+	virtual SGVector<int32_t> train_prepare_next();
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
@@ -187,7 +186,7 @@ public:
 	/** prepare for the next training phase.
 	 * @return the subset that should be applied before training.
 	 */
-	virtual CSubset *train_prepare_next();
+	virtual SGVector<int32_t> train_prepare_next();
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
