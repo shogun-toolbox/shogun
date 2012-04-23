@@ -9,6 +9,7 @@
  */
 
 #include <shogun/multiclass/MulticlassLibSVM.h>
+#include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;

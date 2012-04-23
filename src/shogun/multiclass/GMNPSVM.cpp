@@ -11,6 +11,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/multiclass/GMNPSVM.h>
 #include <shogun/multiclass/GMNPLib.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 #define MINUS_INF INT_MIN

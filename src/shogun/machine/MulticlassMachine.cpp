@@ -9,6 +9,7 @@
  * Copyright (C) 2012 Sergey Lisitsyn, Fernando José Iglesias Garcia
  */
 
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/machine/MulticlassMachine.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/features/Labels.h>

@@ -8,6 +8,7 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/io/SGIO.h>
 

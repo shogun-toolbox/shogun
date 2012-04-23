@@ -3,7 +3,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/features/StreamingSimpleFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/multiclass/MulticlassStrategy.h>
+#include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/base/init.h>
