@@ -6,4 +6,6 @@
  #include <shogun/multiclass/MulticlassLibSVM.h>
  #include <shogun/multiclass/GMNPSVM.h>
  #include <shogun/multiclass/ScatterSVM.h>
+ #include <shogun/multiclass/KNN.h>
+ #include <shogun/multiclass/ConjugateIndex.h>
 %}

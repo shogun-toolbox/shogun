@@ -20,7 +20,6 @@
 %rename(GNPPSVM) CGNPPSVM;
 %rename(GPBTSVM) CGPBTSVM;
 %rename(GaussianNaiveBayes) CGaussianNaiveBayes;
-%rename(KNN) CKNN;
 %rename(LDA) CLDA;
 %rename(QDA) CQDA;
 %rename(LibLinear) CLibLinear;
@@ -51,7 +50,6 @@
 %rename(MKLClassification) CMKLClassification;
 %rename(MKLOneClass) CMKLOneClass;
 %rename(VowpalWabbit) CVowpalWabbit;
-%rename(ConjugateIndex) CConjugateIndex;
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
@@ -83,7 +81,6 @@
 %include <shogun/classifier/GaussianNaiveBayes.h>
 %include <shogun/classifier/svm/GNPPSVM.h>
 %include <shogun/classifier/svm/GPBTSVM.h>
-%include <shogun/classifier/KNN.h>
 %include <shogun/classifier/LDA.h>
 %include <shogun/classifier/QDA.h>
 %include <shogun/classifier/svm/LibLinear.h>
@@ -109,7 +106,6 @@
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
-%include <shogun/classifier/ConjugateIndex.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
 
 %include <shogun/multiclass/MulticlassStrategy.h>

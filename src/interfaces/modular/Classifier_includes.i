@@ -3,7 +3,6 @@
  #include <shogun/classifier/svm/GNPPSVM.h>
  #include <shogun/classifier/svm/GPBTSVM.h>
  #include <shogun/machine/DistanceMachine.h>
- #include <shogun/classifier/KNN.h>
  #include <shogun/classifier/LDA.h>
  #include <shogun/classifier/QDA.h>
  #include <shogun/classifier/svm/LibLinear.h>
@@ -33,7 +32,6 @@
  #include <shogun/classifier/mkl/MKLClassification.h>
  #include <shogun/classifier/mkl/MKLOneClass.h>
  #include <shogun/classifier/vw/VowpalWabbit.h>
- #include <shogun/classifier/ConjugateIndex.h>
  #include <shogun/classifier/svm/NewtonSVM.h>
  
  #include <shogun/multiclass/MulticlassStrategy.h>
