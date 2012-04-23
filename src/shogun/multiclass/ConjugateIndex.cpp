@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Sergey Lisitsyn
  */
 
-#include <shogun/classifier/ConjugateIndex.h>
+#include <shogun/multiclass/ConjugateIndex.h>
 #ifdef HAVE_LAPACK
 #include <shogun/machine/Machine.h>
 #include <shogun/features/Features.h>
