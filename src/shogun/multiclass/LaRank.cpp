@@ -54,6 +54,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/LaRank.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/kernel/Kernel.h>
 
 using namespace shogun;

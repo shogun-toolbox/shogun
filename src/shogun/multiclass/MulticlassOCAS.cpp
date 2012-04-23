@@ -10,6 +10,7 @@
  */
 
 #include <shogun/multiclass/MulticlassOCAS.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;

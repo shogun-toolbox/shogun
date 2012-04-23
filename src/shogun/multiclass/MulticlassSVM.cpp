@@ -11,6 +11,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/multiclass/MulticlassSVM.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 
 using namespace shogun;
 
