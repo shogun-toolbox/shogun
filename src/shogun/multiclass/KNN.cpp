@@ -11,7 +11,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/classifier/KNN.h>
+#include <shogun/multiclass/KNN.h>
 #include <shogun/features/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
