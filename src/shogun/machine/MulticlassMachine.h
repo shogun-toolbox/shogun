@@ -14,22 +14,13 @@
 
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/features/RejectionStrategy.h>
+#include <shogun/multiclass/MulticlassStrategy.h>
 
 namespace shogun
 {
 
 class CFeatures;
 class CLabels;
-class CRejectionStrategy;
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-enum EMulticlassStrategy
-{
-	ONE_VS_REST_STRATEGY,
-	ONE_VS_ONE_STRATEGY,
-};
-#endif
 
 /** @brief experimental abstract generic multiclass machine class */
 class CMulticlassMachine : public CMachine
@@ -43,7 +34,7 @@ class CMulticlassMachine : public CMachine
 		 * @param machine machine
 		 * @param labels labels
 		 */
-		CMulticlassMachine(EMulticlassStrategy strategy, CMachine* machine, CLabels* labels);
+		CMulticlassMachine(CMulticlassStrategy *strategy, CMachine* machine, CLabels* labels);
 
 		/** destructor */
 		virtual ~CMulticlassMachine();
@@ -104,25 +95,12 @@ class CMulticlassMachine : public CMachine
 
 		/** get the type of multiclass'ness
 		 *
-		 * @return multiclass type 1 vs one etc
+		 * @return multiclass type one vs one etc
 		 */
-		inline EMulticlassStrategy get_multiclass_strategy() const
+		inline CMulticlassStrategy* get_multiclass_strategy() const
 		{
+			SG_REF(m_multiclass_strategy);
 			return m_multiclass_strategy;
-		}
-
-		/** get rejection strategy */
-		inline CRejectionStrategy* get_rejection_strategy() const
-		{
-			SG_REF(m_rejection_strategy);
-			return m_rejection_strategy;
-		}
-		/** set rejection strategy */
-		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
-		{
-			SG_UNREF(m_rejection_strategy);
-			SG_REF(rejection_strategy);
-			m_rejection_strategy = rejection_strategy;
 		}
 
 		/** get name */
@@ -133,37 +111,8 @@ class CMulticlassMachine : public CMachine
 
 	protected:
 
-		/** classify one vs rest
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_rest();
-
-		/** classifiy one vs one
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* classify_one_vs_one();
-
-		/** max vote to calculate the best label in one-vs-rest.
-		 * @param predicts predictions made by each machine
-		 */
-		int32_t maxvote_one_vs_rest(const SGVector<float64_t> &predicts);
-
-		/** max vote to calculate the best label in one-vs-one.
-		 * @param predicts predictions made by each machine
-		 * @param num_classes number of classes in this problem
-		 */
-		int32_t maxvote_one_vs_one(const SGVector<float64_t> &predicts, int32_t num_classes);
-
 		/** clear machines */
 		void clear_machines();
-
-		/** train one vs rest */
-		bool train_one_vs_rest();
-
-		/** train one vs one */
-		bool train_one_vs_one();
 
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
@@ -198,11 +147,6 @@ class CMulticlassMachine : public CMachine
 			return true;
 		}
 
-		/** classify example (one-vs-one strategy) */
-		virtual float64_t classify_example_one_vs_one(int32_t num);
-		/** classify example (one-vs-rest strategy) */
-		virtual float64_t classify_example_one_vs_rest(int32_t num);
-
 	private:
 
 		/** register parameters */
@@ -210,16 +154,13 @@ class CMulticlassMachine : public CMachine
 
 	protected:
 		/** type of multiclass strategy */
-		EMulticlassStrategy m_multiclass_strategy;
+		CMulticlassStrategy *m_multiclass_strategy;
 
 		/** machine */
 		CMachine* m_machine;
 
 		/** machines */
 		CDynamicObjectArray *m_machines;
-
-		/** rejection strategy */
-		CRejectionStrategy* m_rejection_strategy;
 };
 }
 #endif

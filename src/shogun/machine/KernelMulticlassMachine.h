@@ -39,7 +39,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 * @param machine kernel machine
 		 * @param labs labels
 		 */
-		CKernelMulticlassMachine(EMulticlassStrategy strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs) :
+		CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs) :
 			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_kernel(NULL)
 		{
 			set_kernel(kernel);
