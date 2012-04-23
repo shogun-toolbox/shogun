@@ -1,6 +1,6 @@
 #include <shogun/features/Labels.h>
 #include <shogun/features/SimpleFeatures.h>
-#include <shogun/classifier/ConjugateIndex.h>
+#include <shogun/multiclass/ConjugateIndex.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
