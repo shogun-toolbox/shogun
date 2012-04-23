@@ -31,7 +31,6 @@
 %rename(LPBoost) CLPBoost;
 %rename(LPM) CLPM;
 %rename(MPDSVM) CMPDSVM;
-%rename(MulticlassSVM) CMulticlassSVM;
 %rename(OnlineSVMSGD) COnlineSVMSGD;
 %rename(OnlineLibLinear) COnlineLibLinear;
 %rename(Perceptron) CPerceptron;
@@ -51,7 +50,6 @@
 %rename(MKL) CMKL;
 %rename(MKLClassification) CMKLClassification;
 %rename(MKLOneClass) CMKLOneClass;
-%rename(MKLMulticlass) CMKLMulticlass;
 %rename(VowpalWabbit) CVowpalWabbit;
 %rename(ConjugateIndex) CConjugateIndex;
 #ifdef USE_SVMLIGHT
@@ -60,8 +58,13 @@
 %rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
 #endif //USE_SVMLIGHT
 
+%rename(MulticlassStrategy) CMulticlassStrategy;
+%rename(MulticlassOneVsRestStrategy) CMulticlassOneVsRestStrategy;
+%rename(MulticlassOneVsOneStrategy) CMulticlassOneVsOneStrategy;
 %rename(KernelMulticlassMachine) CKernelMulticlassMachine;
 %rename(LinearMulticlassMachine) CLinearMulticlassMachine;
+%rename(MulticlassSVM) CMulticlassSVM;
+%rename(MKLMulticlass) CMKLMulticlass;
 
 /* These functions return new Objects */
 %newobject apply();
@@ -75,9 +78,6 @@
 %include <shogun/machine/KernelMachine.h>
 %include <shogun/machine/DistanceMachine.h>
 %include <shogun/classifier/svm/SVM.h>
-%include <shogun/machine/MulticlassMachine.h>
-%include <shogun/machine/KernelMulticlassMachine.h>
-%include <shogun/multiclass/MulticlassSVM.h>
 %include <shogun/machine/LinearMachine.h>
 %include <shogun/machine/OnlineLinearMachine.h>
 %include <shogun/classifier/GaussianNaiveBayes.h>
@@ -107,12 +107,19 @@
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
-%include <shogun/classifier/mkl/MKLMulticlass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/DomainAdaptationSVMLinear.h>
 %include <shogun/classifier/ConjugateIndex.h>
-%include <shogun/machine/LinearMulticlassMachine.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
+
+%include <shogun/multiclass/MulticlassStrategy.h>
+%include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
+%include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
+%include <shogun/machine/MulticlassMachine.h>
+%include <shogun/machine/LinearMulticlassMachine.h>
+%include <shogun/machine/KernelMulticlassMachine.h>
+%include <shogun/multiclass/MulticlassSVM.h>
+%include <shogun/classifier/mkl/MKLMulticlass.h>
 
 #ifdef USE_SVMLIGHT
 

@@ -32,13 +32,19 @@
  #include <shogun/classifier/mkl/MKL.h>
  #include <shogun/classifier/mkl/MKLClassification.h>
  #include <shogun/classifier/mkl/MKLOneClass.h>
- #include <shogun/classifier/mkl/MKLMulticlass.h>
  #include <shogun/classifier/vw/VowpalWabbit.h>
  #include <shogun/classifier/ConjugateIndex.h>
+ #include <shogun/classifier/svm/NewtonSVM.h>
+ 
+ #include <shogun/multiclass/MulticlassStrategy.h>
+ #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
+ #include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
  #include <shogun/machine/MulticlassMachine.h>
  #include <shogun/machine/KernelMulticlassMachine.h>
  #include <shogun/machine/LinearMulticlassMachine.h>
- #include <shogun/classifier/svm/NewtonSVM.h>
+ #include <shogun/multiclass/MulticlassSVM.h>
+ #include <shogun/classifier/mkl/MKLMulticlass.h>
+
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
