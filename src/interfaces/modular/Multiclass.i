@@ -16,6 +16,8 @@
 %rename(LaRank) CLaRank;
 %rename(ScatterSVM) CScatterSVM;
 %rename(GMNPSVM) CGMNPSVM;
+%rename(KNN) CKNN;
+%rename(ConjugateIndex) CConjugateIndex;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/multiclass/MulticlassLibLinear.h>
@@ -25,4 +27,6 @@
 %include <shogun/multiclass/LaRank.h>
 %include <shogun/multiclass/ScatterSVM.h>
 %include <shogun/multiclass/GMNPSVM.h>
+%include <shogun/multiclass/KNN.h>
+%include <shogun/multiclass/ConjugateIndex.h>
 
