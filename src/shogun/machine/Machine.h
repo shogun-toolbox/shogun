@@ -99,7 +99,11 @@ enum ESolverType
  * the functions apply(idx) (optionally apply() to predict on the
  * whole set of examples) and the load and save routines.
  *
- * TODO say something about locking
+ * Machines may support locking. This means that given some data, the machine
+ * can be locked on this data to speed up computations. E.g. a kernel machine
+ * may precompute its kernel. Only train_locked and apply_locked are available
+ * when locked. There are methods for checking whether a machine supports
+ * locking.
  *
  */
 class CMachine : public CSGObject
@@ -218,7 +222,14 @@ class CMachine : public CSGObject
 		 */
 		virtual void set_store_model_features(bool store_model);
 
-		/** TODO */
+		/** Trains a locked machine on a set of indices. Error if machine is
+		 * not locked
+		 *
+		 * NOT IMPLEMENTED
+		 *
+		 * @indices index vector (of locked features) that is used for training
+		 * @return whether training was successful
+		 */
 		virtual bool train_locked(const SGVector<index_t>& indices)
 		{
 			SG_ERROR("train_locked(SGVector<index_t>) is not yet implemented "
@@ -226,7 +237,13 @@ class CMachine : public CSGObject
 			return false;
 		}
 
-		/** TODO doc */
+		/** Applies a locked machine on a set of indices. Error if machine is
+		 * not locked
+		 *
+		 * NOT IMPLEMENTED
+		 *
+		 * @indices index vector (of locked features) that is predicted
+		 */
 		virtual CLabels* apply_locked(const SGVector<index_t>& indices)
 		{
 			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "
@@ -234,16 +251,23 @@ class CMachine : public CSGObject
 			return NULL;
 		}
 
-		/** TODO */
+		/** Locks the machine on given labels and data. After this call, only
+		 * train_locked and apply_locked may be called
+		 *
+		 * Only possible if supports_locking() returns true
+		 *
+		 * @param labs labels used for locking
+		 * @param features features used for locking
+		 */
 		virtual void data_lock(CLabels* labs, CFeatures* features);
 
-		/** TODO */
+		/** Unlocks a locked machine and restores previous state */
 		virtual void data_unlock();
 
-		/** TODO */
+		/** @return whether this machine supports locking */
 		virtual bool supports_locking() const { return false; }
 
-		/** TODO */
+		/** @return whether this machine is locked */
 		bool is_data_locked() const { return m_data_locked; }
 
 	protected:
@@ -294,7 +318,7 @@ class CMachine : public CSGObject
 		/** whether model features should be stored after training */
 		bool m_store_model_features;
 
-		/** TODO */
+		/** whether data is locked */
 		bool m_data_locked;
 };
 }

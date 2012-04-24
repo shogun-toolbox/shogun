@@ -135,6 +135,14 @@ void CMachine::set_store_model_features(bool store_model)
 
 void CMachine::data_lock(CLabels* labs, CFeatures* features)
 {
+	if (!supports_locking())
+	{
+		{
+			SG_ERROR("%s::data_lock(): Machine does not support data locking!\n",
+					get_name());
+		}
+	}
+
 	if (!labs)
 	{
 		SG_ERROR("%s::data_lock() is not possible will NULL labels!\n",

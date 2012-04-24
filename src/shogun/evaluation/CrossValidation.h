@@ -78,7 +78,10 @@ class CrossValidationResult
  * studies: Pitfalls in classifier performance measurement. Technical report,
  * HP Laboratories.] for details on this subject.
  *
- * TODO say something about locking and custom kernel
+ * Cross validation tries to lock underlying machines if that is possible to
+ * speed up computations. Can be turned off by the set_autolock()  method.
+ * Locking in general may speed up things (eg for kernel machines the kernel
+ * matrix is precomputed), however, it is not always supported.
  */
 class CCrossValidation: public CSGObject
 {
