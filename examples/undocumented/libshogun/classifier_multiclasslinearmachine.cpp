@@ -24,6 +24,8 @@ int main(int argc, char** argv)
 	char fname_labels[] = "../data/label_train_multiclass.dat";
 	CStreamingAsciiFile* ffeats_train  = new CStreamingAsciiFile(fname_feats);
 	CStreamingAsciiFile* flabels_train = new CStreamingAsciiFile(fname_labels);
+	SG_REF(ffeats_train);
+	SG_REF(flabels_train);
 
 	CStreamingSimpleFeatures< float64_t >* stream_features = 
 		new CStreamingSimpleFeatures< float64_t >(ffeats_train, false, 1024);
@@ -31,8 +33,6 @@ int main(int argc, char** argv)
 	CStreamingSimpleFeatures< float64_t >* stream_labels = 
 		new CStreamingSimpleFeatures< float64_t >(flabels_train, true, 1024);
 
-	SG_REF(ffeats_train);
-	SG_REF(flabels_train);
 	SG_REF(stream_features);
 	SG_REF(stream_labels);
 
@@ -100,11 +100,10 @@ int main(int argc, char** argv)
 	SG_UNREF(output);
 	SG_UNREF(features);
 	SG_UNREF(labels);
+	//SG_UNREF(ffeats_train);
+	//SG_UNREF(flabels_train);
 	SG_UNREF(stream_features);
 	SG_UNREF(stream_labels);
-	SG_UNREF(ffeats_train);
-	SG_UNREF(flabels_train);
-
 	exit_shogun();
 
 	return 0;
