@@ -550,7 +550,6 @@ template<class ST> void CSimpleFeatures<ST>::add_to_dense_vec(float64_t alpha, i
 
 template<class ST> int32_t CSimpleFeatures<ST>::get_nnz_features_for_vector(int32_t num)
 {
-	/* H.Strathmann: TODO fix according to Soerens mail */
 	return num_features;
 }
 

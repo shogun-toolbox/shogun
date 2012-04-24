@@ -102,7 +102,8 @@ struct TParameter
 	 * default */
 	bool m_delete_data;
 
-	/** TODO */
+	/** @return true if data was not allocated by a class which registered
+	 * its parameter, but from scratch using allocate_data_from_scratch */
 	bool m_was_allocated_from_scratch;
 
 private:
