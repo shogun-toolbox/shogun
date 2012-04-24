@@ -26,7 +26,8 @@ namespace shogun
  * is or can be internally converted into (or directly given in) upper triangle
  * representation. Also note that values are stored as 32bit floats.
  *
- * TODO say something about the row/col subsets
+ * The custom kernel supports subsets each on the rows and the columns.
+ *
  *
  */
 class CCustomKernel: public CKernel
@@ -299,47 +300,39 @@ class CCustomKernel: public CKernel
 			return true;
 		}
 
-		// TODO
-		/** adds a subset of indices on top of the current subsets (possibly
+		/** adds a row subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards
 		 *
 		 * @param subset subset of indices to add
 		 * */
 		virtual void add_row_subset(SGVector<index_t> subset);
 
-		// TODO
-		/** removes that last added subset from subset stack, if existing
+		/** removes that last added row subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_row_subset();
 
-		// TODO
-		/** removes all subsets
+		/** removes all row subsets
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_all_row_subsets();
 
-		// TODO
 		/** method may be overwritten to update things that depend on subset */
 		virtual void row_subset_changed_post();
 
-		// TODO
-		/** adds a subset of indices on top of the current subsets (possibly
+		/** adds a col subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards
 		 *
 		 * @param subset subset of indices to add
 		 * */
 		virtual void add_col_subset(SGVector<index_t> subset);
 
-		// TODO
-		/** removes that last added subset from subset stack, if existing
+		/** removes that last added col subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_col_subset();
 
-		// TODO
-		/** removes all subsets
+		/** removes all col subsets
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_all_col_subsets();
 
-		// TODO
 		/** method may be overwritten to update things that depend on subset */
 		virtual void col_subset_changed_post();
 
@@ -378,7 +371,10 @@ class CCustomKernel: public CKernel
 			return (get_num_vec_lhs()>0) && (get_num_vec_rhs()>0);
 		}
 
-		/** TODO */
+		/** prints the kernel matrix
+		 *
+		 * @param prefix prefix for every line
+		 */
 		void print_kernel_matrix(const char* prefix="") const;
 
 		/** returns kernel matrix as is

@@ -1100,7 +1100,7 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(const SGVector<in
 		/* index to copy */
 		index_t index=indices.vector[i];
 
-		/* copy sparse vector TODO THINK ABOUT VECTOR INDEX (i or vec.index*/
+		/* copy sparse vector */
 		SGSparseVector<ST> current=get_sparse_feature_vector(index);
 		matrix_copy.sparse_matrix[i]=SGSparseVector<ST>(
 			current.num_feat_entries, current.vec_index);

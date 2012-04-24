@@ -42,7 +42,10 @@ class CKernel;
  * Using an a-priori choosen kernel, the \f$\alpha_i\f$ and bias are determined
  * in a training procedure.
  *
- * TODO say something about locking
+ * Kernel machines support locking. This means that given some data, the machine
+ * can be locked. When this is done, the kernel matrix is computed and stored in
+ * a custom kernel. Speeds up cross-validation. Only train_locked and
+ * apply_locked are available when locked.
  */
 class CKernelMachine : public CMachine
 {
@@ -228,21 +231,35 @@ class CKernelMachine : public CMachine
 		 */
 		static void* apply_helper(void* p);
 
-		/** train being locked
-		 * @param indices train with indices
+		/** Trains a locked machine on a set of indices. Error if machine is
+		 * not locked
+		 *
+		 * @indices index vector (of locked features) that is used for training
+		 * @return whether training was successful
 		 */
 		virtual bool train_locked(const SGVector<index_t>& indices);
-		/** apply being locked
-		 * @param indices apply with indices
+
+		/** Applies a locked machine on a set of indices. Error if machine is
+		 * not locked
+		 *
+		 * @indices index vector (of locked features) that is predicted
 		 */
 		virtual CLabels* apply_locked(const SGVector<index_t>& indices);
 
-		/** TODO */
+		/** Locks the machine on given labels and data. After this call, only
+		 * train_locked and apply_locked may be called.
+		 *
+		 * Computes kernel matrix to speed up train/apply calls
+		 *
+		 * @param labs labels used for locking
+		 * @param features features used for locking
+		 */
 		virtual void data_lock(CLabels* labs, CFeatures* features=NULL);
 
-		/** TODO */
+		/** Unlocks a locked machine and restores previous state */
 		virtual void data_unlock();
 
+		/** @return whether machine supports locking */
 		virtual bool supports_locking() const { return true; }
 
 	protected:
@@ -255,22 +272,28 @@ class CKernelMachine : public CMachine
 		virtual void store_model_features();
 
     private:
-        /** register parameters and do misc init */
-        void init();
+		/** register parameters and do misc init */
+		void init();
 
 	protected:
 		/** kernel */
 		CKernel* kernel;
-		/** TODO data lock custom kernel */
+
+		/** is filled with pre-computed custom kernel on data lock */
 		CCustomKernel* m_custom_kernel;
-		/** TODO */
+
+		/** old kernel is stored here on data lock */
 		CKernel* m_kernel_backup;
+
 		/** if batch computation is enabled */
 		bool use_batch_computation;
+
 		/** if linadd is enabled */
 		bool use_linadd;
+
 		/** if bias shall be used */
 		bool use_bias;
+
 		/**  bias term b */
 		float64_t m_bias;
 
