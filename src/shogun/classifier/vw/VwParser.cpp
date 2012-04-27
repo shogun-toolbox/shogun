@@ -41,13 +41,6 @@ CVwParser::CVwParser(CVwEnvironment* env_to_use)
 
 CVwParser::~CVwParser()
 {
-	SG_FREE(channels.begin);
-	channels.begin = channels.end = channels.end_array = NULL;
-	SG_FREE(words.begin);
-	words.begin = words.end = words.end_array = NULL;
-	SG_FREE(name.begin);
-	name.begin = name.end = name.end_array = NULL;
-
 	SG_UNREF(env);
 	SG_UNREF(cache_writer);
 }

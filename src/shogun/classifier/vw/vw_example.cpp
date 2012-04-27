@@ -29,18 +29,6 @@ VwExample::~VwExample()
 {
 	if (ld)
 		delete ld;
-	if (tag.end_array != tag.begin)
-	{
-		SG_FREE(tag.begin);
-		tag.end_array = tag.begin;
-	}
-
-	for (vw_size_t j = 0; j < 256; j++)
-	{
-		if (atomics[j].begin != atomics[j].end_array)
-			SG_FREE(atomics[j].begin);
-	}
-	SG_FREE(indices.begin);
 }
 
 void VwExample::reset_members()

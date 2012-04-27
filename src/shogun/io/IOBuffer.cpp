@@ -31,7 +31,6 @@ CIOBuffer::CIOBuffer(int fd)
 
 CIOBuffer::~CIOBuffer()
 {
-	free(space.begin);
 }
 
 void CIOBuffer::init()
