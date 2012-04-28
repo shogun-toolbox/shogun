@@ -24,7 +24,7 @@
 
 /* Multitask includes */
 %include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>
-%include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>
+%include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelTreeNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelMaskNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelMaskPairNormalizer.h>
