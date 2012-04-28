@@ -58,7 +58,7 @@ public:
 
 	/** prepare for the next training phase.
 	 * @return NULL, since no subset is needed in one-vs-rest strategy
-	 */ 
+	 */
 	virtual SGVector<int32_t> train_prepare_next();
 
 	/** decide the final label.
@@ -73,12 +73,6 @@ public:
 	virtual int32_t get_num_machines(int32_t num_classes)
 	{
 		return num_classes;
-	}
-
-	/** get strategy type */
-	virtual EMulticlassStrategy get_strategy_type()
-	{
-		return ONE_VS_REST_STRATEGY;
 	}
 
 	/** get name */

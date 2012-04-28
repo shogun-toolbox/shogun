@@ -18,14 +18,6 @@
 namespace shogun
 {
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-enum EMulticlassStrategy
-{
-	ONE_VS_REST_STRATEGY,
-	ONE_VS_ONE_STRATEGY,
-};
-#endif
-
 class CMulticlassStrategy: public CSGObject
 {
 public:
@@ -40,9 +32,6 @@ public:
 	{
 		return "MulticlassStrategy";
 	};
-
-	/** get strategy type */
-	virtual EMulticlassStrategy get_strategy_type()=0;
 
 	/** start training */
 	virtual void train_start(CLabels *orig_labels, CLabels *train_labels);
