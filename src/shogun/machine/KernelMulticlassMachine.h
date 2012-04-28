@@ -132,7 +132,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @param subset subset indices to set
 		 */
-		virtual void add_machine_subset(const SGVector<index_t>&)
+		virtual void add_machine_subset(const SGVector<index_t>& subset)
 		{
 			SG_NOTIMPLEMENTED;
 		}
