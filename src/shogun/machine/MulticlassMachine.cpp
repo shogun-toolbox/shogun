@@ -35,6 +35,9 @@ CMulticlassMachine::CMulticlassMachine(
 	SG_REF(machine);
 	m_machine = machine;
 	register_parameters();
+
+    if (labs)
+        init_strategy();
 }
 
 CMulticlassMachine::~CMulticlassMachine()
@@ -44,11 +47,24 @@ CMulticlassMachine::~CMulticlassMachine()
 	SG_UNREF(m_machines);
 }
 
+void CMulticlassMachine::set_labels(CLabels* lab)
+{
+    CMachine::set_labels(lab);
+    if (lab)
+        init_strategy();
+}
+
 void CMulticlassMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_multiclass_strategy,"m_multiclass_type", "Multiclass strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_machine, "m_machine", "The base machine", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_machines, "machines", "Machines that jointly make up the multi-class machine.", MS_NOT_AVAILABLE);
+}
+
+void CMulticlassMachine::init_strategy()
+{
+    int32_t num_classes = m_labels->get_num_classes();
+    m_multiclass_strategy->set_num_classes(num_classes);
 }
 
 CLabels* CMulticlassMachine::apply(CFeatures* features)
@@ -64,7 +80,6 @@ CLabels* CMulticlassMachine::apply()
 
 	if (is_ready())
 	{
-		int32_t num_classes=m_labels->get_num_classes();
 		int32_t num_vectors=get_num_rhs_vectors();
 		int32_t num_machines=m_machines->get_num_elements();
 		if (num_machines <= 0)
@@ -88,7 +103,7 @@ CLabels* CMulticlassMachine::apply()
 			for (int32_t j=0; j<num_machines; j++)
 				output_for_i[j] = outputs[j]->get_label(i);
 
-			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i, num_classes));
+			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
 		}
 
 		output_for_i.destroy_vector();
@@ -96,7 +111,7 @@ CLabels* CMulticlassMachine::apply()
 			SG_UNREF(outputs[i]);
 
 		SG_FREE(outputs);
-		
+
 		return result;
 	}
 	else
@@ -160,7 +175,7 @@ float64_t CMulticlassMachine::apply(int32_t num)
 		SG_UNREF(machine);
 	}
 
-	float64_t result=m_multiclass_strategy->decide_label(outputs, m_labels->get_num_classes());
+	float64_t result=m_multiclass_strategy->decide_label(outputs);
 	outputs.destroy_vector();
 
 	return result;

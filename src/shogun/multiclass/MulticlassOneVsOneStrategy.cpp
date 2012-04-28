@@ -13,14 +13,13 @@
 using namespace shogun;
 
 CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy()
-	:CMulticlassStrategy(), m_num_machines(0), m_num_classes(0)
+	:CMulticlassStrategy(), m_num_machines(0)
 {
 }
 
 void CMulticlassOneVsOneStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)
 {
 	CMulticlassStrategy::train_start(orig_labels, train_labels);
-	m_num_classes = m_orig_labels->get_num_classes();
 	m_num_machines=m_num_classes*(m_num_classes-1)/2;
 
 	m_train_pair_idx_1 = 0;
@@ -64,15 +63,15 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 	return SGVector<int32_t>(subset.vector, tot);
 }
 
-int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)
+int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &outputs)
 {
 	int32_t s=0;
-	SGVector<int32_t> votes(num_classes);
+	SGVector<int32_t> votes(m_num_classes);
 	votes.zero();
 
-	for (int32_t i=0; i<num_classes; i++)
+	for (int32_t i=0; i<m_num_classes; i++)
 	{
-		for (int32_t j=i+1; j<num_classes; j++)
+		for (int32_t j=i+1; j<m_num_classes; j++)
 		{
 			if (outputs[s++]>0)
 				votes[i]++;

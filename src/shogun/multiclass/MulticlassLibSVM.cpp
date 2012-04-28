@@ -35,7 +35,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	problem = svm_problem();
 
 	ASSERT(m_labels && m_labels->get_num_labels());
-	int32_t num_classes = m_labels->get_num_classes();
+	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	problem.l=m_labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
 

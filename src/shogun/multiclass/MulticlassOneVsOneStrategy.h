@@ -12,7 +12,7 @@
 
 namespace shogun
 {
-	
+
 class CMulticlassOneVsOneStrategy: public CMulticlassStrategy
 {
 public:
@@ -35,22 +35,14 @@ public:
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
-	 * @param num_classes number of classes
 	 */
-	virtual int32_t decide_label(const SGVector<float64_t> &outputs, int32_t num_classes);
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs);
 
 	/** get number of machines used in this strategy.
-	 * @param num_classes number of classes in this problem
 	 */
-	virtual int32_t get_num_machines(int32_t num_classes)
+	virtual int32_t get_num_machines()
 	{
-		return num_classes*(num_classes-1)/2;
-	}
-
-	/** get strategy type */
-	virtual EMulticlassStrategy get_strategy_type()
-	{
-		return ONE_VS_ONE_STRATEGY;
+		return m_num_classes*(m_num_classes-1)/2;
 	}
 
 	/** get name */
@@ -61,7 +53,6 @@ public:
 
 protected:
 	int32_t m_num_machines;
-	int32_t m_num_classes;
 	int32_t m_train_pair_idx_1;
 	int32_t m_train_pair_idx_2;
 };
