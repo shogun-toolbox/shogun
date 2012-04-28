@@ -12,7 +12,7 @@
 
 namespace shogun
 {
-	
+
 class CMulticlassOneVsOneStrategy: public CMulticlassStrategy
 {
 public:
@@ -45,12 +45,6 @@ public:
 	virtual int32_t get_num_machines(int32_t num_classes)
 	{
 		return num_classes*(num_classes-1)/2;
-	}
-
-	/** get strategy type */
-	virtual EMulticlassStrategy get_strategy_type()
-	{
-		return ONE_VS_ONE_STRATEGY;
 	}
 
 	/** get name */
