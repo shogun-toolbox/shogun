@@ -11,7 +11,7 @@
 #include <shogun/classifier/svm/SVMLin.h>
 #include <shogun/features/Labels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/classifier/svm/ssl.h>
+#include <shogun/lib/external/ssl.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/Labels.h>
