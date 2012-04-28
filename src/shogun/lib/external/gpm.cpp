@@ -72,7 +72,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <shogun/classifier/svm/gpdt.h>
+#include <shogun/lib/external/gpdt.h>
 #include <shogun/io/SGIO.h>
 
 namespace shogun

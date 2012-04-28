@@ -74,9 +74,9 @@
 #include <string.h>
 #include <time.h>
 
-#include <shogun/classifier/svm/gpm.h>
-#include <shogun/classifier/svm/gpdt.h>
-#include <shogun/classifier/svm/gpdtsolve.h>
+#include <shogun/lib/external/gpm.h>
+#include <shogun/lib/external/gpdt.h>
+#include <shogun/lib/external/gpdtsolve.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/io/SGIO.h>
 
