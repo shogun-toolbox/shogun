@@ -13,14 +13,13 @@
 using namespace shogun;
 
 CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy()
-	:CMulticlassStrategy(), m_num_machines(0), m_num_classes(0)
+	:CMulticlassStrategy(), m_num_machines(0)
 {
 }
 
 void CMulticlassOneVsOneStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)
 {
 	CMulticlassStrategy::train_start(orig_labels, train_labels);
-	m_num_classes = m_orig_labels->get_num_classes();
 	m_num_machines=m_num_classes*(m_num_classes-1)/2;
 
 	m_train_pair_idx_1 = 0;
