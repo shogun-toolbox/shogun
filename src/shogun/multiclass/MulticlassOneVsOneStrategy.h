@@ -40,11 +40,10 @@ public:
 	virtual int32_t decide_label(const SGVector<float64_t> &outputs, int32_t num_classes);
 
 	/** get number of machines used in this strategy.
-	 * @param num_classes number of classes in this problem
 	 */
-	virtual int32_t get_num_machines(int32_t num_classes)
+	virtual int32_t get_num_machines()
 	{
-		return num_classes*(num_classes-1)/2;
+		return m_num_classes*(m_num_classes-1)/2;
 	}
 
 	/** get name */
@@ -55,7 +54,6 @@ public:
 
 protected:
 	int32_t m_num_machines;
-	int32_t m_num_classes;
 	int32_t m_train_pair_idx_1;
 	int32_t m_train_pair_idx_2;
 };

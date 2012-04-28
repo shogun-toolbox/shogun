@@ -33,6 +33,18 @@ public:
 		return "MulticlassStrategy";
 	};
 
+    /** set number of classes */
+    void set_num_classes(int32_t num_classes)
+    {
+        m_num_classes = num_classes;
+    }
+
+    /** get number of classes */
+    int32_t get_num_classes() const
+    {
+        return m_num_classes;
+    }
+
 	/** start training */
 	virtual void train_start(CLabels *orig_labels, CLabels *train_labels);
 
@@ -54,14 +66,14 @@ public:
 	virtual int32_t decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)=0;
 
 	/** get number of machines used in this strategy.
-	 * @param num_classes number of classes in this problem
 	 */
-	virtual int32_t get_num_machines(int32_t num_classes)=0;
+	virtual int32_t get_num_machines()=0;
 
 protected:
 	CLabels *m_train_labels;
 	CLabels *m_orig_labels;
 	int32_t m_train_iter;
+    int32_t m_num_classes;
 };
 
 } // namespace shogun
