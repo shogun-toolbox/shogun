@@ -39,6 +39,12 @@ class CMulticlassMachine : public CMachine
 		/** destructor */
 		virtual ~CMulticlassMachine();
 
+		/** set labels
+		 *
+		 * @param lab labels
+		 */
+		virtual void set_labels(CLabels* lab);
+
 		/** set machine
 		 *
 		 * @param num index of machine
@@ -110,6 +116,8 @@ class CMulticlassMachine : public CMachine
 		}
 
 	protected:
+        /** init strategy */
+        void init_strategy();
 
 		/** clear machines */
 		void clear_machines();

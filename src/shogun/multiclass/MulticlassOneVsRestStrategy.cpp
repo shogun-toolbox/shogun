@@ -13,12 +13,12 @@
 using namespace shogun;
 
 CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy()
-	:CMulticlassStrategy(), m_num_machines(0), m_rejection_strategy(NULL)
+	:CMulticlassStrategy(), m_rejection_strategy(NULL)
 {
 }
 
 CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(CRejectionStrategy *rejection_strategy)
-	:CMulticlassStrategy(), m_num_machines(0), m_rejection_strategy(rejection_strategy)
+	:CMulticlassStrategy(), m_rejection_strategy(rejection_strategy)
 {
 	SG_REF(m_rejection_strategy);
 }
@@ -39,7 +39,7 @@ SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 	return SGVector<int32_t>();
 }
 
-int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)
+int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs)
 {
 	if (m_rejection_strategy && m_rejection_strategy->reject(outputs))
 		return CLabels::REJECTION_LABEL;

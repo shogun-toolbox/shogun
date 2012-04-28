@@ -47,38 +47,29 @@ public:
 	virtual void train_start(CLabels *orig_labels, CLabels *train_labels)
 	{
 		CMulticlassStrategy::train_start(orig_labels, train_labels);
-		m_num_machines=m_orig_labels->get_num_classes();
 	}
 
 	/** has more training phase */
 	virtual bool train_has_more()
 	{
-		return m_train_iter < m_num_machines;
+		return m_train_iter < m_num_classes;
 	}
 
 	/** prepare for the next training phase.
 	 * @return NULL, since no subset is needed in one-vs-rest strategy
-	 */ 
+	 */
 	virtual SGVector<int32_t> train_prepare_next();
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
-	 * @param num_classes number of classes
 	 */
-	virtual int32_t decide_label(const SGVector<float64_t> &outputs, int32_t num_classes);
+	virtual int32_t decide_label(const SGVector<float64_t> &outputs);
 
 	/** get number of machines used in this strategy.
-	 * @param num_classes number of classes in this problem
 	 */
-	virtual int32_t get_num_machines(int32_t num_classes)
+	virtual int32_t get_num_machines()
 	{
-		return num_classes;
-	}
-
-	/** get strategy type */
-	virtual EMulticlassStrategy get_strategy_type()
-	{
-		return ONE_VS_REST_STRATEGY;
+		return m_num_classes;
 	}
 
 	/** get name */
@@ -88,7 +79,6 @@ public:
 	};
 
 protected:
-	int32_t m_num_machines;
 	CRejectionStrategy *m_rejection_strategy;
 };
 
