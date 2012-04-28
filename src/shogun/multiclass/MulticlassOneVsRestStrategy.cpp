@@ -39,7 +39,7 @@ SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 	return SGVector<int32_t>();
 }
 
-int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs, int32_t num_classes)
+int32_t CMulticlassOneVsRestStrategy::decide_label(const SGVector<float64_t> &outputs)
 {
 	if (m_rejection_strategy && m_rejection_strategy->reject(outputs))
 		return CLabels::REJECTION_LABEL;

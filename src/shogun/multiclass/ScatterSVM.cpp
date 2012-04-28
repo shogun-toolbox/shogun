@@ -48,7 +48,7 @@ CScatterSVM::~CScatterSVM()
 bool CScatterSVM::train_machine(CFeatures* data)
 {
 	ASSERT(m_labels && m_labels->get_num_labels());
-	m_num_classes = m_labels->get_num_classes();
+	m_num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_vectors = m_labels->get_num_labels();
 
 	if (data)

@@ -265,7 +265,7 @@ bool CMulticlassSVM::save(FILE* modelfl)
 
 	SG_INFO( "Writing model file...");
 	fprintf(modelfl,"%%MultiClassSVM\n");
-	fprintf(modelfl,"num_classes=%d;\n", m_labels->get_num_classes());
+	fprintf(modelfl,"num_classes=%d;\n", m_multiclass_strategy->get_num_classes());
 	fprintf(modelfl,"num_svms=%d;\n", m_machines->get_num_elements());
 	fprintf(modelfl,"kernel='%s';\n", m_kernel->get_name());
 
