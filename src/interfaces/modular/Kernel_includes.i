@@ -38,12 +38,6 @@
 #include <shogun/kernel/LocalAlignmentStringKernel.h>
 #include <shogun/kernel/LocalityImprovedStringKernel.h>
 #include <shogun/kernel/MatchWordStringKernel.h>
-#include <shogun/kernel/MultitaskKernelNormalizer.h>
-#include <shogun/kernel/MultitaskKernelMklNormalizer.h>
-#include <shogun/kernel/MultitaskKernelTreeNormalizer.h>
-#include <shogun/kernel/MultitaskKernelMaskNormalizer.h>
-#include <shogun/kernel/MultitaskKernelMaskPairNormalizer.h>
-#include <shogun/kernel/MultitaskKernelPlifNormalizer.h>
 #include <shogun/kernel/MultiquadricKernel.h>
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/PolyKernel.h>

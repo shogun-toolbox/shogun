@@ -12,12 +12,13 @@
 #define _MULTITASKKERNELTREENORMALIZER_H___
 
 #include <shogun/kernel/KernelNormalizer.h>
-#include <shogun/kernel/MultitaskKernelMklNormalizer.h>
+#include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
 #include <shogun/kernel/Kernel.h>
 #include <algorithm>
 #include <map>
 #include <set>
 #include <deque>
+#include <vector>
 
 namespace shogun
 {
@@ -355,18 +356,11 @@ protected:
 
 };
 
-
-
-
-class CMultitaskKernelMklNormalizer;
-
 /** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function based on taxonomy.
  *
  */
 class CMultitaskKernelTreeNormalizer: public CMultitaskKernelMklNormalizer
 {
-
-
 
 public:
 
