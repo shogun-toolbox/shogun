@@ -234,7 +234,7 @@ class CKernelMachine : public CMachine
 		/** Trains a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
-		 * @indices index vector (of locked features) that is used for training
+		 * @param indices index vector (of locked features) that is used for training
 		 * @return whether training was successful
 		 */
 		virtual bool train_locked(const SGVector<index_t>& indices);
@@ -242,7 +242,7 @@ class CKernelMachine : public CMachine
 		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
-		 * @indices index vector (of locked features) that is predicted
+		 * @param indices index vector (of locked features) that is predicted
 		 */
 		virtual CLabels* apply_locked(const SGVector<index_t>& indices);
 
