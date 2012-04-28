@@ -17,6 +17,7 @@ using namespace shogun;
 CMulticlassStrategy::CMulticlassStrategy()
 	:m_train_labels(NULL), m_orig_labels(NULL), m_train_iter(0)
 {
+    SG_ADD(&m_num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
 }
 
 void CMulticlassStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)

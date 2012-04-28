@@ -69,7 +69,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 		set_features((CDotFeatures*)data);
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = m_labels->get_num_classes();
+	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_features = m_features->get_dim_feature_space();
 
 	float64_t C = m_C;
