@@ -23,12 +23,18 @@ def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_r
 
     mc_classifier = LinearMulticlassMachine(MulticlassOneVsRestStrategy(), feats_train, classifier, labels)
     mc_classifier.train()
-    out_mc = mc_classifier.apply().get_labels()
+    out_mc = mc_classifier.apply(feats_test).get_labels()
 
     ecoc_strategy = ECOCStrategy(ECOCOVREncoder(), ECOCHDDecoder())
     ecoc_classifier = LinearMulticlassMachine(ecoc_strategy, feats_train, classifier, labels)
     ecoc_classifier.train()
-    out_ecoc = ecoc_classifier.apply().get_labels()
+    out_ecoc = ecoc_classifier.apply(feats_test).get_labels()
+
+    n_diff = (out_mc != out_ecoc).sum()
+    if n_diff == 0:
+        print("Same results for OvR and ECOCOvR")
+    else:
+        print("Different results for OvR and ECOCOvR (%d out of %d are different)" % (n_diff, len(out_mc)))
 
     return out_ecoc, out_mc
 

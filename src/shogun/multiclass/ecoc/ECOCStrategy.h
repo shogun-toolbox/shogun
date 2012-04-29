@@ -18,6 +18,10 @@
 namespace shogun
 {
 
+// those two lines are put here to help SWIG
+class CECOCEncoder;
+class CECOCDecoder;
+
 class CECOCStrategy: public CMulticlassStrategy
 {
 public:
