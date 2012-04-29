@@ -13,7 +13,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/RejectionStrategy.h>
+#include <shogun/multiclass/RejectionStrategy.h>
 
 namespace shogun
 {
