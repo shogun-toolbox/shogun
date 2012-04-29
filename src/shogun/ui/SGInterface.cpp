@@ -11,7 +11,7 @@
 #include <shogun/lib/Signal.h>
 
 #include <shogun/classifier/svm/SVM.h>
-#include <shogun/classifier/svm/pr_loqo.h>
+#include <shogun/lib/external/pr_loqo.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/mkl/MKL.h>
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
