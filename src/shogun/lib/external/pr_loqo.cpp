@@ -17,19 +17,12 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/classifier/svm/pr_loqo.h>
+#include <shogun/lib/external/pr_loqo.h>
 
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-#ifdef HAVE_LAPACK
-extern "C" {
-#ifdef HAVE_ATLAS
-#include <clapack.h>
-#endif
-}
-#endif
 
 namespace shogun
 {

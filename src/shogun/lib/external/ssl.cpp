@@ -26,7 +26,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/SparseFeatures.h>
-#include <shogun/classifier/svm/ssl.h>
+#include <shogun/lib/external/ssl.h>
 
 namespace shogun
 {
