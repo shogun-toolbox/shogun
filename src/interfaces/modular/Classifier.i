@@ -64,6 +64,12 @@
 %rename(MulticlassSVM) CMulticlassSVM;
 %rename(MKLMulticlass) CMKLMulticlass;
 
+%rename(ECOCStrategy) CECOCStrategy;
+%rename(ECOCEncoder) CECOCEncoder;
+%rename(ECOCDecoder) CECOCDecoder;
+%rename(ECOCOVREncoder) CECOCOVREncoder;
+%rename(ECOCHDDecoder) CECOCHDDecoder;
+
 /* These functions return new Objects */
 %newobject apply();
 %newobject apply(CFeatures* data);
@@ -116,6 +122,12 @@
 %include <shogun/machine/KernelMulticlassMachine.h>
 %include <shogun/multiclass/MulticlassSVM.h>
 %include <shogun/classifier/mkl/MKLMulticlass.h>
+
+%include <shogun/multiclass/ecoc/ECOCStrategy.h>
+%include <shogun/multiclass/ecoc/ECOCEncoder.h>
+%include <shogun/multiclass/ecoc/ECOCDecoder.h>
+%include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
+%include <shogun/multiclass/ecoc/ECOCHDDecoder.h>
 
 #ifdef USE_SVMLIGHT
 
