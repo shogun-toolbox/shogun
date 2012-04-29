@@ -56,7 +56,7 @@
 #include <shogun/mathematics/Math.h>
 
 #include <shogun/classifier/svm/QPBSVMLib.h>
-#include <shogun/classifier/svm/pr_loqo.h>
+#include <shogun/lib/external/pr_loqo.h>
 
 using namespace shogun;
 
