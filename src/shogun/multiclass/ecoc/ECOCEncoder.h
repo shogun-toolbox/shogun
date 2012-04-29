@@ -17,6 +17,20 @@
 namespace shogun
 {
 
+/**
+ * @brief ECOCEncoder produce an ECOC codebook.
+ *
+ * Note: for easy of implementation, our codebook is column-based. E.g. the
+ * code-length is L and there are K classes, then our codebook will be a
+ * L-by-K matrix, where each column corresponds to the code for each of the
+ * K classes.
+ *
+ * The elements in the codebook can be
+ *
+ * - +1: positive class
+ * - -1: negative class
+ * - 0: ignore this class
+ */
 class CECOCEncoder: public CSGObject
 {
 public:

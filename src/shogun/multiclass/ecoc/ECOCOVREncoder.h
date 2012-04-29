@@ -26,7 +26,7 @@ public:
     virtual ~CECOCOVREncoder() {}
 
     /** get name */
-    virtual const char* get_name()
+    virtual const char* get_name() const
     {
         return "ECOCOVREncoder";
     }

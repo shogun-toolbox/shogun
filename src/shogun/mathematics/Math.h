@@ -265,7 +265,7 @@ class CMath : public CSGObject
 			}
 
 		static float64_t twonorm(const float64_t* v, int32_t n);
-		
+
 		/// || x ||_q^q
 		template <class T>
 			static inline T qsq(T* x, int32_t len, float64_t q)
@@ -477,7 +477,7 @@ class CMath : public CSGObject
 		}
 		template <class T>
 		static void create_diagonal_matrix(T* matrix,T* v,int32_t size)
-		{	
+		{
 			for(int32_t i=0;i<size;i++)
 			{
 				for(int32_t j=0;j<size;j++)
@@ -916,6 +916,27 @@ class CMath : public CSGObject
 					*maxv_ptr = maxv;
 
 				return maxIdx;
+			}
+
+		/// return arg_min(vec)
+		template <class T>
+			static inline int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL)
+			{
+				ASSERT(len > 0 || inc > 0);
+
+				T minv = vec[0];
+				int32_t minIdx = 0;
+
+				for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+				{
+					if (vec[j] < minv)
+						minv = vec[j], minIdx = i;
+				}
+
+				if (minv_ptr != NULL)
+					*minv_ptr = minv;
+
+				return minIdx;
 			}
 
 		/// return sum(abs(vec))
