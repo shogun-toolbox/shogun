@@ -19,24 +19,44 @@
 namespace shogun
 {
 
-/* v_array class taken directly from JL's implementation */
-
+/** @brief Class v_array taken directly from JL's implementation */
 template<class T> 
 class v_array{
 
 	public:
+		/** Getter for the the last element of the v_array
+		 *  @return the last element of the array */
 		T last() { return elements[index-1];}
+
+		/** Decrement the pointer to the last element */
 		void decr() { index--;}
+
+		/** Create an empty v_array */
 		v_array() { index = 0; length=0; elements = NULL;}
+
+		/** Element access operator
+		 *  @param index of the element to be read
+		 *  @return the corresponding element */
 		T& operator[](unsigned int i) { return elements[i]; }
 
 	public:
+		/** Pointer to the last element of the v_array */
 		int index;
+
+		/** Length of the v_array */
 		int length;
+
+		/** Pointer to the beginning of the v_array elements */
 		T* elements;
 
 };
 
+/**
+ * Insert a new element at the end of the vector
+ *
+ * @param v vector
+ * @param new_ele element to insert
+ */
 template<class T> 
 void push(v_array<T>& v, const T &new_ele)
 {
@@ -48,13 +68,28 @@ void push(v_array<T>& v, const T &new_ele)
 	v[v.index++] = new_ele;
 }
 
+/**
+ * Used to modify the capacity of the vector
+ *
+ * @param v vector
+ * @param length the new length of the vector
+ */
 template<class T> 
 void alloc(v_array<T>& v, int length)
 {
 	v.elements = (T *)realloc(v.elements, sizeof(T) * length);
 	v.length = length;
 }
- 
+
+/**
+ * Returns the vector previous to the pointed one in the stack of
+ * vectors and decrements the index of the stack. No memory is
+ * freed here. If there are no vectors stored in the stack, create
+ * and return a new empty vector
+ *
+ * @param stack of vectors
+ * @return the adequate vector according to the previous conditions
+ */
 template<class T> 
 v_array<T> pop(v_array<v_array<T> > &stack)
 {
@@ -64,12 +99,22 @@ v_array<T> pop(v_array<v_array<T> > &stack)
 		return v_array<T>();
 }
 
+/**
+ * Type used to indicate where to find (either lhs or rhs) the
+ * coordinate information  of this point in the CDistance object
+ * associated
+ */
 enum EFeaturesContainer
 {
 	FC_LHS = 0,
 	FC_RHS = 1,
 };
 
+/** @brief Class Point to use with John Langford's CoverTree. This
+ * class must have some assoficated functions defined (distance,
+ * parse_points and print, see below) so it can be used with the
+ * CoverTree implementation.
+ */
 class CJLCoverTreePoint
 {
 
@@ -158,6 +203,7 @@ v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContaine
 	return parsed;
 }
 
+/** Print the information of the CoverTree point */
 void print(CJLCoverTreePoint &p)
 {
 	SG_SERROR("Print JLCoverTreePoint not implemented\n");
