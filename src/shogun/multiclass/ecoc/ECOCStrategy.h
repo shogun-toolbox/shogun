@@ -13,6 +13,7 @@
 
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <shogun/multiclass/ecoc/ECOCDecoder.h>
 
 namespace shogun
 {
@@ -24,7 +25,7 @@ public:
     CECOCStrategy();
 
     /** constructor */
-    CECOCStrategy(CECOCEncoder *encoder);
+    CECOCStrategy(CECOCEncoder *encoder, CECOCDecoder *decoder);
 
     /** destructor */
     virtual ~CECOCStrategy();
@@ -58,6 +59,8 @@ public:
 protected:
     /** ECOC encoder */
     CECOCEncoder *m_encoder;
+    /** ECOC decoder */
+    CECOCDecoder *m_decoder;
 
     /** ECOC codebook */
     SGMatrix<int32_t> m_codebook;
