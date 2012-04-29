@@ -41,4 +41,6 @@ void CMulticlassStrategy::train_stop()
 {
 	SG_UNREF(m_train_labels);
 	SG_UNREF(m_orig_labels);
+    m_train_labels = NULL;
+    m_orig_labels = NULL;
 }
