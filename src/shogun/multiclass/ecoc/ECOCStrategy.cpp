@@ -30,7 +30,6 @@ void CECOCStrategy::init()
 
     SG_ADD((CSGObject **)&m_encoder, "encoder", "ECOC Encoder", MS_NOT_AVAILABLE);
     SG_ADD((CSGObject **)&m_decoder, "decoder", "ECOC Decoder", MS_NOT_AVAILABLE);
-    SG_ADD(&m_codebook, "codebook", "ECOC codebook", MS_NOT_AVAILABLE);
 }
 
 CECOCStrategy::~CECOCStrategy()
