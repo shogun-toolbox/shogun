@@ -32,7 +32,7 @@
 
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/SVMLight.h>
-#include <shogun/classifier/svm/pr_loqo.h>
+#include <shogun/lib/external/pr_loqo.h>
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/machine/KernelMachine.h>
