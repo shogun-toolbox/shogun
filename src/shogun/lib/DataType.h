@@ -109,8 +109,10 @@ template<class T> class SGVector
 			if (*m_refcount==0 || --(*m_refcount)==0)
 			{
 				SG_FREE(vector);
+				SG_FREE(m_refcount);
 
 				vector=NULL;
+				m_refcount=NULL;
 				do_free=false;
 				vlen=0;
 
@@ -296,8 +298,10 @@ template<class T> class SGVector
 		{
 			if (do_free)
 				SG_FREE(vector);
+				SG_FREE(m_refcount);
 
 			vector=NULL;
+			m_refcount=NULL;
 			do_free=false;
 			vlen=0;
 		}
