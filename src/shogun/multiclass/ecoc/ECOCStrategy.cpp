@@ -17,8 +17,8 @@ CECOCStrategy::CECOCStrategy()
     init();
 }
 
-CECOCStrategy::CECOCStrategy(CECOCEncoder *encoder)
-    :m_encoder(encoder)
+CECOCStrategy::CECOCStrategy(CECOCEncoder *encoder, CECOCDecoder *decoder)
+    :m_encoder(encoder), m_decoder(decoder)
 {
     init();
 }
@@ -26,12 +26,17 @@ CECOCStrategy::CECOCStrategy(CECOCEncoder *encoder)
 void CECOCStrategy::init()
 {
     SG_REF(m_encoder);
+    SG_REF(m_decoder);
+
     SG_ADD((CSGObject **)&m_encoder, "encoder", "ECOC Encoder", MS_NOT_AVAILABLE);
+    SG_ADD((CSGObject **)&m_decoder, "decoder", "ECOC Decoder", MS_NOT_AVAILABLE);
+    SG_ADD(&m_codebook, "codebook", "ECOC codebook", MS_NOT_AVAILABLE);
 }
 
 CECOCStrategy::~CECOCStrategy()
 {
     SG_UNREF(m_encoder);
+    SG_UNREF(m_decoder);
 
     m_codebook.destroy_matrix();
 }
@@ -77,8 +82,7 @@ SGVector<int32_t> CECOCStrategy::train_prepare_next()
 
 int32_t CECOCStrategy::decide_label(const SGVector<float64_t> &outputs)
 {
-    // TODO: implement this with a decoder
-    return 0;
+    return m_decoder->decide_label(outputs, m_codebook);
 }
 
 int32_t CECOCStrategy::get_num_machines()
