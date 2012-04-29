@@ -3762,11 +3762,9 @@ bool CSGInterface::cmd_get_dotfeature_weights_combined()
 	if (features->get_feature_class()!=C_COMBINED_DOT)
 		SG_ERROR("Only works for combined dot features.\n");
 
-	float64_t* weights=NULL;
-	int32_t len=0;
-	((CCombinedDotFeatures*) features)->get_subfeature_weights(&weights, &len);
-	set_vector(weights, len);
-	SG_FREE(weights);
+	SGVector<float64_t> weights = ((CCombinedDotFeatures*) features)->get_subfeature_weights();
+	set_vector(weights.vector, weights.vlen);
+	weights.destroy_vector();
 
 	return true;
 }
@@ -3801,7 +3799,7 @@ bool CSGInterface::cmd_set_dotfeature_weights_combined()
 	int32_t len=0;
 	get_matrix(weights, dim, len);
 
-	((CCombinedDotFeatures*) features)->set_subfeature_weights(weights, len);
+	((CCombinedDotFeatures*) features)->set_subfeature_weights(SGVector<float64_t>(weights, len));
 
 	return true;
 }
