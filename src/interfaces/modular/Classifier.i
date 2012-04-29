@@ -54,6 +54,8 @@
 %rename(SVMLight) CSVMLight;
 #endif //USE_SVMLIGHT
 
+%rename(ThresholdRejectionStrategy) CThresholdRejectionStrategy;
+%rename(DixonQTestRejectionStrategy) CDixonQTestRejectionStrategy;
 %rename(MulticlassStrategy) CMulticlassStrategy;
 %rename(MulticlassOneVsRestStrategy) CMulticlassOneVsRestStrategy;
 %rename(MulticlassOneVsOneStrategy) CMulticlassOneVsOneStrategy;
@@ -105,6 +107,7 @@
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
 
+%include <shogun/multiclass/RejectionStrategy.h>
 %include <shogun/multiclass/MulticlassStrategy.h>
 %include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 %include <shogun/multiclass/MulticlassOneVsOneStrategy.h>

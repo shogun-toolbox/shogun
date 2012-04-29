@@ -33,8 +33,6 @@
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
 %rename(Labels) CLabels;
-%rename(RejectionStrategy) CRejectionStrategy;
-%rename(ThresholdReject) CThresholdReject;
 %rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
@@ -360,7 +358,6 @@ namespace shogun
 %include <shogun/features/CombinedDotFeatures.h>
 
 %include <shogun/features/Labels.h>
-%include <shogun/features/RejectionStrategy.h>
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>
 %include <shogun/features/TOPFeatures.h>
