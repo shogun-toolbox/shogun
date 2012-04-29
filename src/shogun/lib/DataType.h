@@ -22,6 +22,14 @@
 namespace shogun
 {
 
+#ifdef USE_REFERENCE_COUNTING
+#define SG_VREF(x) { x.ref(); }
+#define SG_VUNREF(x) { x.unref(); }
+#else
+#define SG_VREF(x)
+#define SG_VUNREF(x)
+#endif
+
 //class CMath;
 template<class T> class CCache;
 
@@ -33,27 +41,88 @@ template<class T> class SGVector
 {
 	public:
 		/** default constructor */
-		SGVector() : vector(NULL), vlen(0), do_free(false) { }
+		SGVector() : vector(NULL), vlen(0), do_free(false), m_refcount(NULL) { }
 
 		/** constructor for setting params */
 		SGVector(T* v, index_t len, bool free_vec=false)
-			: vector(v), vlen(len), do_free(free_vec) { }
+			: vector(v), vlen(len), do_free(free_vec) 
+		{
+			m_refcount=SG_MALLOC(int32_t, 1);
+			*m_refcount=0; 
+		}
 
 		/** constructor to create new vector in memory */
 		SGVector(index_t len, bool free_vec=false)
 			: vlen(len), do_free(free_vec)
 		{
+			m_refcount=SG_MALLOC(int32_t, 1);
+			*m_refcount=0; 
+
 			vector=SG_MALLOC(T, len);
 		}
 
 		/** copy constructor */
 		SGVector(const SGVector &orig)
-			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free) { }
+			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free), m_refcount(orig.m_refcount) 
+		{
+			this->ref();
+		}
 
 		/** empty destructor */
 		virtual ~SGVector()
 		{
 		}
+
+#ifdef USE_REFERENCE_COUNTING
+		/** increase reference counter
+		 *
+		 * @return reference count
+		 */
+		int32_t ref()
+		{
+			ASSERT(m_refcount);
+
+			++(*m_refcount);
+			return *m_refcount;
+		}
+
+		/** display reference counter
+		 *
+		 * @return reference count
+		 */
+		int32_t ref_count()
+		{
+			ASSERT(m_refcount);
+
+			return *m_refcount;
+		}
+
+		/** decrement reference counter and deallocate object if refcount is zero
+		 * before or after decrementing it
+		 *
+		 * @return reference count
+		 */
+		int32_t unref()
+		{
+			ASSERT(m_refcount);
+
+			if (*m_refcount==0 || --(*m_refcount)==0)
+			{
+				SG_FREE(vector);
+
+				vector=NULL;
+				do_free=false;
+				vlen=0;
+
+				return 0;
+			}
+			else
+			{
+				return *m_refcount;
+			}
+		}
+
+#endif //USE_REFERENCE_COUNTING
 
 		/** get vector
 		 * @param src vector to get
@@ -262,6 +331,9 @@ template<class T> class SGVector
 		index_t vlen;
 		/** whether vector needs to be freed */
 		bool do_free;
+	
+	private:
+		int32_t* m_refcount;
 };
 
 //template<class T> class SGCachedVector : public SGVector<T>
