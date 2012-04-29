@@ -85,10 +85,10 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 
 	mocas_data user_data;
 	user_data.features = m_features;
-	user_data.W = SG_MALLOC(float64_t, num_features*num_classes);
-	user_data.oldW = SG_MALLOC(float64_t, num_features*num_classes);
-	user_data.new_a = SG_MALLOC(float64_t, num_features*num_classes);
-	user_data.full_A = SG_MALLOC(float64_t, num_features*num_classes*m_buf_size);
+	user_data.W = SG_MALLOC(float64_t, (int64_t)num_features*num_classes);
+	user_data.oldW = SG_MALLOC(float64_t, (int64_t)num_features*num_classes);
+	user_data.new_a = SG_MALLOC(float64_t, (int64_t)num_features*num_classes);
+	user_data.full_A = SG_MALLOC(float64_t, (int64_t)num_features*num_classes*m_buf_size);
 	user_data.output_values = SG_MALLOC(float64_t, num_vectors);
 	user_data.data_y = data_y;
 	user_data.nY = num_classes;
