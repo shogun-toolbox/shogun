@@ -41,22 +41,30 @@ template<class T> class SGVector
 {
 	public:
 		/** default constructor */
-		SGVector() : vector(NULL), vlen(0), do_free(false), m_refcount(NULL) { }
+		SGVector() : vector(NULL), vlen(0), m_refcount(NULL) { }
 
 		/** constructor for setting params */
-		SGVector(T* v, index_t len, bool free_vec=false)
-			: vector(v), vlen(len), do_free(free_vec) 
+		SGVector(T* v, index_t len, bool no_ref_counting=true)
+			: vector(v), vlen(len), m_refcount(NULL)
 		{
-			m_refcount=SG_MALLOC(int32_t, 1);
-			*m_refcount=0; 
+			if(!no_ref_counting)
+			{ 
+				m_refcount=SG_CALLOC(int32_t, 1); 
+			}
+			else 
+			{ 
+				m_refcount=NULL; 
+			}
 		}
 
 		/** constructor to create new vector in memory */
-		SGVector(index_t len, bool free_vec=false)
-			: vlen(len), do_free(free_vec)
+		SGVector(index_t len, bool no_ref_counting=true)
+			: vlen(len), m_refcount(NULL)
 		{
-			m_refcount=SG_MALLOC(int32_t, 1);
-			*m_refcount=0; 
+			if(!no_ref_counting)
+			{ 
+				m_refcount=SG_CALLOC(int32_t, 1);
+			}
 
 			vector=SG_MALLOC(T, len);
 		}
@@ -80,7 +88,10 @@ template<class T> class SGVector
 		 */
 		int32_t ref()
 		{
-			ASSERT(m_refcount);
+			if(m_refcount == NULL)
+			{
+				return -1;
+			}
 
 			++(*m_refcount);
 			return *m_refcount;
@@ -92,7 +103,10 @@ template<class T> class SGVector
 		 */
 		int32_t ref_count()
 		{
-			ASSERT(m_refcount);
+			if(m_refcount == NULL)
+			{
+				return -1;
+			}
 
 			return *m_refcount;
 		}
@@ -113,7 +127,6 @@ template<class T> class SGVector
 
 				vector=NULL;
 				m_refcount=NULL;
-				do_free=false;
 				vlen=0;
 
 				return 0;
@@ -296,20 +309,12 @@ template<class T> class SGVector
 		/** free vector */
 		virtual void free_vector()
 		{
-			if (do_free)
-				SG_FREE(vector);
-				SG_FREE(m_refcount);
-
-			vector=NULL;
-			m_refcount=NULL;
-			do_free=false;
-			vlen=0;
+			this.unref();
 		}
 
 		/** destroy vector */
 		virtual void destroy_vector()
 		{
-			do_free=true;
 			free_vector();
 		}
 
@@ -333,10 +338,9 @@ template<class T> class SGVector
 		T* vector;
 		/** length of vector  */
 		index_t vlen;
-		/** whether vector needs to be freed */
-		bool do_free;
 	
 	private:
+		/** reference counter */
 		int32_t* m_refcount;
 };
 
