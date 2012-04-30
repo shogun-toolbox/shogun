@@ -8,28 +8,28 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#ifndef ECOCOVRENCODER_H__
-#define ECOCOVRENCODER_H__
+#ifndef ECOCOVOENCODER_H__
+#define ECOCOVOENCODER_H__
 
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun
 {
 
-/** One-vs-Rest Encoder */
-class CECOCOVREncoder: public CECOCEncoder
+/** One-vs-One Encoder */
+class CECOCOVOEncoder: public CECOCEncoder
 {
 public:
     /** constructor */
-    CECOCOVREncoder() {}
+    CECOCOVOEncoder() {}
 
     /** destructor */
-    virtual ~CECOCOVREncoder() {}
+    virtual ~CECOCOVOEncoder() {}
 
     /** get name */
     virtual const char* get_name() const
     {
-        return "ECOCOVREncoder";
+        return "ECOCOVOEncoder";
     }
 
     /** init codebook.
@@ -40,4 +40,4 @@ public:
 
 }
 
-#endif /* end of include guard: ECOCOVRENCODER_H__ */
+#endif /* end of include guard: ECOCOVOENCODER_H__ */

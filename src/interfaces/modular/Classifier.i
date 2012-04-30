@@ -123,11 +123,11 @@
 %include <shogun/multiclass/MulticlassSVM.h>
 %include <shogun/classifier/mkl/MKLMulticlass.h>
 
-%include <shogun/multiclass/ecoc/ECOCStrategy.h>
 %include <shogun/multiclass/ecoc/ECOCEncoder.h>
 %include <shogun/multiclass/ecoc/ECOCDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
 %include <shogun/multiclass/ecoc/ECOCHDDecoder.h>
+%include <shogun/multiclass/ecoc/ECOCStrategy.h>
 
 #ifdef USE_SVMLIGHT
 
