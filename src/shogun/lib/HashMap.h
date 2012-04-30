@@ -37,7 +37,7 @@ template<class T> struct HashSetNode
 };
 #endif
 
-/** @brief the class HashSet, a set based on the hash-table.
+/** @brief the class HashMap, a <int32_t, class T> map based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table
  */
 template<class T> class CHashMap: public CSGObject
