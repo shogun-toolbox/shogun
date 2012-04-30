@@ -146,7 +146,7 @@ class CKNN : public CDistanceMachine
 		 */
 		inline float64_t get_q() { return m_q; }
 
-		/* set whether to use cover trees for fast KNN
+		/** set whether to use cover trees for fast KNN
 		 * @param use_covertree
 		 */
 		inline void set_use_covertree(bool use_covertree)
