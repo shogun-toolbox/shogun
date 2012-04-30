@@ -406,7 +406,7 @@ bool Solver_MCSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double min
 
 void Solver_MCSVM_CS::solve()
 {
-	int i, m, s;
+	int i, m, s, k;
 	int iter = 0;
 	double *w,*B,*G,*alpha,*alpha_new,*QD,*d_val;
 	int *index,*d_ind,*alpha_index,*y_index,*active_size_i;
@@ -439,6 +439,9 @@ void Solver_MCSVM_CS::solve()
 	alpha_index = state->alpha_index;
 	y_index = state->y_index;
 	active_size_i = state->active_size_i;
+
+	double* tx = SG_MALLOC(double, w_size);
+	int dim = prob->x->get_dim_feature_space();
 
 	int active_size = l;
 	double eps_shrink = CMath::max(10.0*eps, 1.0); // stopping tolerance for shrinking
@@ -485,17 +488,18 @@ void Solver_MCSVM_CS::solve()
 				if(y_index[i] < active_size_i[i])
 					G[y_index[i]] = 0;
 
-				void* feature_iter = prob->x->get_feature_iterator(i);
-				int32_t feature_index = 0;
-				float64_t feature_value = 0.0;
-				bool got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
-				while(got_feature)
+				memset(tx,0,dim*sizeof(double));
+				prob->x->add_to_dense_vec(1.0,i,tx,dim);
+				for (k=0; k<dim; k++)
 				{
-					double *w_i = &w[feature_index*nr_class];
-					for(m=0;m<active_size_i[i];m++)
-						G[m] += w_i[alpha_index_i[m]]*(feature_value);
-					got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
+					if (tx[k]==0.0)
+						continue;
+
+					double* w_i = &w[k*nr_class];
+					for (m=0; m<active_size_i[i]; m++)
+						G[m] += w_i[alpha_index_i[m]]*tx[k];
 				}
+				
 				// experimental
 				// ***
 				if (prob->use_bias)
@@ -505,7 +509,6 @@ void Solver_MCSVM_CS::solve()
 						G[m] += w_i[alpha_index_i[m]];
 				}
 				// ***
-				prob->x->free_feature_iterator(feature_iter);
 
 				double minG = CMath::INFTY;
 				double maxG = -CMath::INFTY;
@@ -573,16 +576,16 @@ void Solver_MCSVM_CS::solve()
 					}
 				}
 
-				feature_iter = prob->x->get_feature_iterator(i);
-				feature_index = 0;
-				feature_value = 0.0;
-				got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
-				while(got_feature)
+				memset(tx,0,dim*sizeof(double));
+				prob->x->add_to_dense_vec(1.0,i,tx,dim);
+				for (k=0; k<dim; k++)
 				{
-					double *w_i = &w[feature_index*nr_class];
-					for(m=0;m<nz_d;m++)
-						w_i[d_ind[m]] += d_val[m]*feature_value;
-					got_feature = prob->x->get_next_feature(feature_index,feature_value,feature_iter);
+					if (tx[k]==0.0)
+						continue;
+
+					double* w_i = &w[k*nr_class];
+					for (m=0; m<nz_d; m++)
+						w_i[d_ind[m]] += d_val[m]*tx[k];
 				}
 				// experimental
 				// ***
@@ -593,7 +596,6 @@ void Solver_MCSVM_CS::solve()
 						w_i[d_ind[m]] += d_val[m];
 				}
 				// ***
-				prob->x->free_feature_iterator(feature_iter);
 			}
 		}
 
@@ -629,6 +631,7 @@ void Solver_MCSVM_CS::solve()
 		SG_SINFO("Warning: reaching max number of iterations\n");
 
 	// calculate objective value
+	/*
 	double v = 0;
 	int nSV = 0;
 	for(i=0;i<w_size*nr_class;i++)
@@ -644,6 +647,8 @@ void Solver_MCSVM_CS::solve()
 		v -= alpha[i*nr_class+prob->y[i]];
 	SG_SINFO("Objective value = %f\n",v);
 	SG_SINFO("nSV = %d\n",nSV);
+	*/
+	SG_FREE(tx);
 }
 
 //
