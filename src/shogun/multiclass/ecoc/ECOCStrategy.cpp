@@ -44,6 +44,7 @@ void CECOCStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)
 {
     CMulticlassStrategy::train_start(orig_labels, train_labels);
 
+    m_codebook.destroy_matrix();
     m_codebook = m_encoder->create_codebook(m_num_classes);
 }
 
