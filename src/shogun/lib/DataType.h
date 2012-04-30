@@ -71,7 +71,7 @@ template<class T> class SGVector
 
 		/** copy constructor */
 		SGVector(const SGVector &orig)
-			: vector(orig.vector), vlen(orig.vlen), do_free(orig.do_free), m_refcount(orig.m_refcount) 
+			: vector(orig.vector), vlen(orig.vlen), m_refcount(orig.m_refcount) 
 		{
 			this->ref();
 		}
@@ -118,7 +118,10 @@ template<class T> class SGVector
 		 */
 		int32_t unref()
 		{
-			ASSERT(m_refcount);
+			if(m_refcount == NULL)
+			{
+				return -1;
+			}
 
 			if (*m_refcount==0 || --(*m_refcount)==0)
 			{
@@ -148,7 +151,7 @@ template<class T> class SGVector
 			if (!own)
 				return src;
 
-			src.do_free=false;
+			//src.do_free=false;
 			return SGVector(src.vector, src.vlen);
 		}
 
@@ -192,7 +195,7 @@ template<class T> class SGVector
 			SGVector<T> c;
 			c.vector=clone_vector(vector, vlen);
 			c.vlen=vlen;
-			c.do_free=true;
+			//c.do_free=true;
 
 			return c;
 		}
@@ -309,7 +312,7 @@ template<class T> class SGVector
 		/** free vector */
 		virtual void free_vector()
 		{
-			this.unref();
+			this->unref();
 		}
 
 		/** destroy vector */
