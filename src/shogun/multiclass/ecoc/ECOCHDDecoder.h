@@ -9,6 +9,7 @@
  */
 
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/multiclass/ecoc/ECOCUtil.h>
 
 namespace shogun
 {
@@ -39,10 +40,7 @@ protected:
     /** compute distance */
     virtual float64_t compute_distance(const SGVector<float64_t> &outputs, const int32_t *code)
     {
-        float64_t dist=0;
-        for (int32_t i=0; i < outputs.vlen; ++i)
-            dist += CMath::abs(code[i]-outputs[i]);
-        return dist;
+        return CECOCUtil::hamming_distance(outputs.vector, code, outputs.vlen);
     }
 };
 
