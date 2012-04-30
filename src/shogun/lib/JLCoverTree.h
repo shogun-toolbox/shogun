@@ -32,14 +32,30 @@
 using namespace std;
 using namespace shogun;
 
+/**
+ * Cover tree node TODO better doc
+ */
 template<class P>
 struct node {
+
+  /** Point */
   P p;
-  float max_dist;  // The maximum distance to any grandchild.
-  float parent_dist; // The distance to the parent.
+
+  /** The maximum distance to any grandchild */
+  float max_dist;
+
+  /** The distance to the parent */
+  float parent_dist;
+
+  /** Pointer to the list of children of this node */
   node<P>* children;
-  unsigned short int num_children; // The number of children.
-  short int scale; // Essentially, an upper bound on the distance to any child.
+
+  /** The number of children nodes of this node */
+  unsigned short int num_children;
+
+  /** Essentially, an upper bound on the distance to any child */
+  short int scale;
+
 };
 
 //template<class P>
@@ -49,11 +65,18 @@ struct node {
 //void remove(P byepoint, node<P> *top_node); // not yet implemented
 //query
 
-
+/**
+ * Cover tree node with an associated set of distances TODO better doc
+ */
 template<class P>
 struct ds_node {
+
+  /** Vector of distances TODO better doc*/
   v_array<float> dist;
+
+  /** Point TODO better doc */
   P p;
+
 };
 
 float base = 1.3;
@@ -353,9 +376,16 @@ void breadth_dist(const node<P> top_node,v_array<int> &breadths)
     }
 }
 
+/**
+ * List of cover tree nodes associated to a distance TODO better doc
+ */
 template <class P>
 struct d_node {
+
+  /** Distance TODO better doc*/
   float dist;
+
+  /** List of nodes TODO better doc*/
   const node<P> *n;
 };
 
