@@ -142,6 +142,59 @@ public:
 		return m_beta_idx.size();
 	}
 
+	/** get w
+	 *
+	 * @param num_var number of non-zero coefficients
+	 * @param dst_w store w in this argument
+	 * @param dst_dims dimension of w
+	 *
+	 * **Note** the returned memory references to some internal structures. The
+	 * pointer will become invalid if train is called *again*. So make a copy
+	 * if you want to call train multiple times.
+	 *
+	 * @see switch_w
+	 */
+	void get_w(int32_t num_var, float64_t*& dst_w, int32_t& dst_dims)
+	{
+		if (w_dim <= 0)
+			SG_ERROR("cannot get estimator before training");
+		if (size_t(num_var) >= m_beta_idx.size() || num_var < 0)
+			SG_ERROR("cannot get an estimator of %d non-zero coefficients", num_var);
+		dst_dims=w_dim;
+		dst_w=&m_beta_path[m_beta_idx[num_var]][0];
+	}
+
+	/** get w
+	 *
+	 * @param num_var number of non-zero coefficients
+	 *
+	 * @return the estimator with num_var non-zero coefficients. **Note** the
+	 * returned memory references to some internal structures. The pointer will
+	 * become invalid if train is called *again*. So make a copy if you want to
+	 * call train multiple times.
+	 */
+	SGVector<float64_t> get_w(int32_t num_var)
+	{
+		SGVector<float64_t> vec;
+		get_w(num_var, vec.vector, vec.vlen);
+		vec.do_free = false;
+		return vec;
+	}
+
+	/** load regression from file
+	 *
+	 * @param srcfile file to load from
+	 * @return if loading was successful
+	 */
+	virtual bool load(FILE* srcfile);
+
+	/** save regression to file
+	 *
+	 * @param dstfile file to save to
+	 * @return if saving was successful
+	 */
+	virtual bool save(FILE* dstfile);
+
 	/** get classifier type
 	 *
 	 * @return classifier type LinearRidgeRegression
