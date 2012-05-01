@@ -122,7 +122,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	SG_DEBUG("QP exit flag [qp_exitflag] = %d \n",value.qp_exitflag);
 	SG_DEBUG("Exit flag [exitflag] = %d \n",value.exitflag);
 
-	m_machines->clear_array();
+	m_machines->reset_array();
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();

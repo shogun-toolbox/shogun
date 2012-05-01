@@ -218,6 +218,13 @@ class CDynamicObjectArray : public CSGObject
 			m_array.clear_array();
 		}
 
+		/** resets the array */
+		inline void reset_array()
+		{
+			unref_all();
+			m_array.reset();
+		}
+
 		/** operator overload for array assignment
 		 *
 		 * @param orig original array
