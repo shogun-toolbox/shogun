@@ -327,6 +327,20 @@ bool CLARS::train_machine(CFeatures* data)
 	return true;
 }
 
+bool CLARS::load(FILE* srcfile)
+{
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
+	return false;
+}
+
+bool CLARS::save(FILE* dstfile)
+{
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
+	return false;
+}
+
 void CLARS::cholesky_insert(const SGMatrix<float64_t> &X, SGMatrix<float64_t> &R, int32_t i_max_corr)
 {
 	// diag_k = X[:,i_max_corr]' * X[:,i_max_corr]
