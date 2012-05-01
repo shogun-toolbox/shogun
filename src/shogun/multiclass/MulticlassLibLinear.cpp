@@ -111,7 +111,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	                       m_max_iter,m_max_train_time,m_train_state);
 	solver.solve();
 
-	m_machines->clear_array();
+	m_machines->reset_array();
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();

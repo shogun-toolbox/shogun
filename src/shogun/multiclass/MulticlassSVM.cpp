@@ -48,7 +48,7 @@ bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
 	{
 		int32_t num_svms=m_multiclass_strategy->get_num_machines();
 
-		m_machines->clear_array();
+		m_machines->reset_array();
 		for (index_t i=0; i<num_svms; ++i)
 			m_machines->push_back(NULL);
 
