@@ -4,12 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from shogun.Features import Labels, RealFeatures
-from shogun.Regression import LARS, LinearRidgeRegression, LeastSquaresRegression
+from shogun.Regression import LeastAngleRegression, LinearRidgeRegression, LeastSquaresRegression
 
 # we compare LASSO with ordinary least-squares (OLE)
 # in the ideal case, the MSE of OLE should coincide
 # with LASSO at the end of the path
-# 
+#
 # if OLE is unstable, we may use RidgeRegression (with
 # a small regularization coefficient) to simulate OLE
 use_ridge = False
@@ -42,9 +42,9 @@ for i in xrange(p):
 y -= np.mean(y)
 
 # train LASSO
-lars = LARS()
-lars.set_labels(Labels(y))
-lars.train(RealFeatures(X.T))
+LeastAngleRegression = LeastAngleRegression()
+LeastAngleRegression.set_labels(Labels(y))
+LeastAngleRegression.train(RealFeatures(X.T))
 
 # train ordinary LSR
 if use_ridge:
@@ -56,24 +56,24 @@ else:
     lsr.train(RealFeatures(X.T))
 
 # gather LASSO path
-path = np.zeros((p, lars.get_path_size()))
+path = np.zeros((p, LeastAngleRegression.get_path_size()))
 for i in xrange(path.shape[1]):
-    path[:,i] = lars.get_w(i)
+    path[:,i] = LeastAngleRegression.get_w(i)
 
 # apply on training data
-mse_train = np.zeros(lars.get_path_size())
+mse_train = np.zeros(LeastAngleRegression.get_path_size())
 for i in xrange(mse_train.shape[0]):
-    lars.switch_w(i)
-    ypred = lars.apply(RealFeatures(X.T)).get_labels()
+    LeastAngleRegression.switch_w(i)
+    ypred = LeastAngleRegression.apply(RealFeatures(X.T)).get_labels()
     mse_train[i] = np.dot(ypred - y, ypred - y) / y.shape[0]
 ypred = lsr.apply(RealFeatures(X.T)).get_labels()
 mse_train_lsr = np.dot(ypred - y, ypred - y) / y.shape[0]
 
 # apply on test data
-mse_test = np.zeros(lars.get_path_size())
+mse_test = np.zeros(LeastAngleRegression.get_path_size())
 for i in xrange(mse_test.shape[0]):
-    lars.switch_w(i)
-    ypred = lars.apply(RealFeatures(Xtest.T)).get_labels()
+    LeastAngleRegression.switch_w(i)
+    ypred = LeastAngleRegression.apply(RealFeatures(Xtest.T)).get_labels()
     mse_test[i] = np.dot(ypred - ytest, ypred - ytest) / ytest.shape[0]
 ypred = lsr.apply(RealFeatures(Xtest.T)).get_labels()
 mse_test_lsr = np.dot(ypred - ytest, ypred - ytest) / ytest.shape[0]
