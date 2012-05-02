@@ -172,15 +172,11 @@ template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int
 
 	if (sv.features)
 	{
-		dense.do_free=true;
-		dense.vlen=num_features;
-		dense.vector=SG_MALLOC(ST, num_features);
-		memset(dense.vector, 0, sizeof(ST)*num_features);
+		dense=SGVector<ST>(num_features);
+		dense.zero();
 
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
-		{
 			dense.vector[sv.features[i].feat_index]= sv.features[i].entry;
-		}
 	}
 
 	free_sparse_feature_vector(sv, num);

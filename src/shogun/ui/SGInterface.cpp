@@ -3,6 +3,8 @@
 #include <shogun/ui/SyntaxHighLight.h>
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/SGNDArray.h>
 #include <shogun/lib/memory.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/mathematics/Math.h>

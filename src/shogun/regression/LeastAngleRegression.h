@@ -153,11 +153,7 @@ public:
 	 */
 	SGVector<float64_t> get_w(int32_t num_var)
 	{
-		SGVector<float64_t> vec;
-        vec.vector = &m_beta_path[m_beta_idx[num_var]][0];
-        vec.vlen = w_dim;
-		vec.do_free = false;
-		return vec;
+		return SGVector<float64_t>(&m_beta_path[m_beta_idx[num_var]][0], w_dim, false);
 	}
 
 	/** get classifier type

@@ -274,8 +274,6 @@ static bool vector_to_numpy(PyObject* &obj, SGVector<type> sg_vec, int typecode)
         ((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
     }
 
-    sg_vec.free_vector();
-
     return descr!=NULL;
 }
 

@@ -22,6 +22,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 
 #include <math.h>
 #include <stdio.h>

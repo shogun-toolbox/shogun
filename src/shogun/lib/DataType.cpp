@@ -12,6 +12,8 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGSparseVector.h>
 
 using namespace shogun;
 

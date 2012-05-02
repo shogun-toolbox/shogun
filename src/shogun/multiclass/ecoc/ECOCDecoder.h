@@ -37,7 +37,7 @@ public:
      * @param outputs outputs by classifiers
      * @param codebook ECOC codebook
      */
-    virtual int32_t decide_label(const SGVector<float64_t> &outputs, const SGMatrix<int32_t> &codebook);
+    virtual int32_t decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook);
 
 protected:
     /** whether to turn the output into binary before decoding */

@@ -164,9 +164,10 @@ template<class ST> SGVector<ST> CSimpleFeatures<ST>::get_feature_vector(int32_t 
 		"requested %d)\n", get_num_vectors(), real_num);
 	}
 
-	SGVector<ST> vec;
-	vec.vector = get_feature_vector(num, vec.vlen, vec.do_free);
-	return vec;
+	int32_t vlen;
+	bool do_free;
+	ST* vector= get_feature_vector(num, vlen, do_free);
+	return SGVector<ST>(vector, vlen, do_free);
 }
 
 template<class ST> void CSimpleFeatures<ST>::free_feature_vector(ST* feat_vec, int32_t num, bool dofree)
@@ -178,9 +179,10 @@ template<class ST> void CSimpleFeatures<ST>::free_feature_vector(ST* feat_vec, i
 		SG_FREE(feat_vec);
 }
 
-template<class ST> void CSimpleFeatures<ST>::free_feature_vector(const SGVector<ST>& vec, int32_t num)
+template<class ST> void CSimpleFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num)
 {
-	free_feature_vector(vec.vector, num, vec.do_free);
+	free_feature_vector(vec.vector, num, false);
+	SG_VUNREF(vec);
 }
 
 template<class ST> void CSimpleFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)

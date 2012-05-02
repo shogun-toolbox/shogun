@@ -15,6 +15,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/memory.h>
 #include <shogun/base/Parallel.h>

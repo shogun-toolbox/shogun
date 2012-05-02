@@ -15,6 +15,8 @@
 #define _SPARSEFEATURES__H__
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>
 
@@ -31,6 +33,7 @@ class CLabels;
 class CFeatures;
 class CDotFeatures;
 template <class ST> class CSimpleFeatures;
+template <class ST> class SGSparseMatrix;
 
 /** @brief Template class SparseFeatures implements sparse matrices.
  *
