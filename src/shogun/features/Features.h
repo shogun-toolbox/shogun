@@ -20,6 +20,7 @@
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/SubsetStack.h>
 #include <shogun/lib/List.h>
+#include <map>
 
 namespace shogun
 {
@@ -252,6 +253,19 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* copy_subset(const SGVector<index_t>& indices);
 
+		/** get title of concrete feature
+		 * @param index of feature
+		 * @return title
+		 */
+		virtual const char* get_feature_title(int32_t index);
+
+		/** set title to concrete feature
+		 * @param index of feature
+		 * @param title
+		 */
+		virtual void set_feature_title(int32_t index, const char* name);
+
+
 	protected:
 
 	private:
@@ -273,6 +287,9 @@ class CFeatures : public CSGObject
 	protected:
 		/** subset used for index transformations */
 		CSubsetStack* m_subset_stack;
+
+		/** titles for features */
+		std::map<int32_t, const char*>* titles;
 };
 }
 #endif

@@ -51,6 +51,11 @@ CFeatures::~CFeatures()
 {
 	clean_preprocessors();
 	SG_UNREF(m_subset_stack);
+	
+	if(titles)
+	{
+		delete titles;
+	}
 }
 
 void
@@ -76,6 +81,8 @@ CFeatures::init()
 	preproc = NULL;
 	num_preproc = 0;
 	preprocessed = NULL;
+
+	titles = new std::map<int32_t, const char*>();
 }
 
 /// set preprocessor
@@ -373,4 +380,20 @@ CFeatures* CFeatures::copy_subset(const SGVector<index_t>& indices)
 			"(required for cross-validation and model-selection is ",
 			"not yet implemented for feature type %s\n", get_name());
 	return NULL;
+}
+
+const char* CFeatures::get_feature_title(int32_t index)
+{
+	if(titles)
+	{
+		return (*titles)[index];
+	}
+}
+
+void CFeatures::set_feature_title(int32_t index, const char* title)
+{
+	if(titles)
+	{
+		(*titles)[index]=title;
+	}
 }
