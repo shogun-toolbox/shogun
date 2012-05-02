@@ -19,7 +19,7 @@
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/regression/LARS.h>
+#include <shogun/regression/LeastAngleRegression.h>
 
 using namespace shogun;
 using namespace std;
@@ -31,7 +31,7 @@ static vector<float64_t> make_vector(int32_t size, float64_t val)
 	return result;
 }
 
-static void plane_rot(float64_t x0, float64_t x1, 
+static void plane_rot(float64_t x0, float64_t x1,
 	float64_t &y0, float64_t &y1, SGMatrix<float64_t> &G)
 {
 	G.zero();
@@ -57,7 +57,7 @@ static void plane_rot(float64_t x0, float64_t x1,
 	}
 }
 
-static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignore, 
+static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignore,
 	int32_t &imax, float64_t& vmax)
 {
 	imax = -1;
@@ -74,7 +74,7 @@ static void find_max_abs(const vector<float64_t> &vec, const vector<bool> &ignor
 	}
 }
 
-CLARS::CLARS(bool lasso) :
+CLeastAngleRegression::CLeastAngleRegression(bool lasso) :
 	CLinearMachine(), m_lasso(lasso),
 	m_max_nonz(0), m_max_l1_norm(0)
 {
@@ -82,12 +82,12 @@ CLARS::CLARS(bool lasso) :
 	SG_ADD(&m_max_l1_norm, "max_l1_norm", "Max l1-norm of estimator", MS_AVAILABLE);
 }
 
-CLARS::~CLARS()
+CLeastAngleRegression::~CLeastAngleRegression()
 {
 
 }
 
-bool CLARS::train_machine(CFeatures* data)
+bool CLeastAngleRegression::train_machine(CFeatures* data)
 {
 	if (!m_labels)
 		SG_ERROR("No labels set\n");
@@ -133,13 +133,13 @@ bool CLARS::train_machine(CFeatures* data)
 		for (int32_t j=0; j < n_fea; ++j)
 			X(i,j) = Xorig(j,i);
 	Xorig.free_matrix();
-	
+
 	// beta is the estimator
 	vector<float64_t> beta = make_vector(n_fea, 0);
 
 	vector<float64_t> Xy = make_vector(n_fea, 0);
 	// Xy = X' * y
-	cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, 1, X.matrix, n_vec, 
+	cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, 1, X.matrix, n_vec,
 		y.vector, 1, 0, &Xy[0], 1);
 
 	// mu is the prediction
@@ -161,14 +161,14 @@ bool CLARS::train_machine(CFeatures* data)
 	m_beta_idx.push_back(0);
 
 	//========================================
-	// main loop 
+	// main loop
 	//========================================
 	int32_t nloop=0;
 	while (m_num_active < n_fea && max_corr > CMath::MACHINE_EPSILON && !stop_cond)
 	{
 		// corr = X' * (y-mu) = - X'*mu + Xy
 		copy(Xy.begin(), Xy.end(), corr.begin());
-		cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, -1, 
+		cblas_dgemv(CblasColMajor, CblasTrans, n_vec, n_fea, -1,
 			X.matrix, n_vec, &mu[0], 1, 1, &corr[0], 1);
 
 		// corr_sign = sign(corr)
@@ -193,7 +193,7 @@ bool CLARS::train_machine(CFeatures* data)
 
 		// GA1 = R\(R'\corr_sign_a)
 		vector<float64_t> GA1(corr_sign_a);
-		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, 
+		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit,
 			m_num_active, 1, 1, R.matrix, m_num_active, &GA1[0], m_num_active);
 		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit,
 			m_num_active, 1, 1, R.matrix, m_num_active, &GA1[0], m_num_active);
@@ -213,12 +213,12 @@ bool CLARS::train_machine(CFeatures* data)
 		for (int32_t i=0; i < m_num_active; ++i)
 		{
 			// u += wA[i] * X[:,m_active_set[i]]
-			cblas_daxpy(n_vec, wA[i], 
+			cblas_daxpy(n_vec, wA[i],
 				X.get_column_vector(m_active_set[i]), 1, &u[0], 1);
 		}
 
 		// step size
-		float64_t gamma = max_corr / AA; 
+		float64_t gamma = max_corr / AA;
 		if (m_num_active < n_fea)
 		{
 			for (int32_t i=0; i < n_fea; ++i)
@@ -227,7 +227,7 @@ bool CLARS::train_machine(CFeatures* data)
 					continue;
 
 				// correlation between X[:,i] and u
-				float64_t dir_corr = cblas_ddot(n_vec, 
+				float64_t dir_corr = cblas_ddot(n_vec,
 					X.get_column_vector(i), 1, &u[0], 1);
 
 				float64_t tmp1 = (max_corr-corr[i])/(AA-dir_corr);
@@ -327,21 +327,7 @@ bool CLARS::train_machine(CFeatures* data)
 	return true;
 }
 
-bool CLARS::load(FILE* srcfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
-bool CLARS::save(FILE* dstfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
-void CLARS::cholesky_insert(const SGMatrix<float64_t> &X, SGMatrix<float64_t> &R, int32_t i_max_corr)
+void CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t> &X, SGMatrix<float64_t> &R, int32_t i_max_corr)
 {
 	// diag_k = X[:,i_max_corr]' * X[:,i_max_corr]
 	float64_t diag_k = cblas_ddot(X.num_rows, X.get_column_vector(i_max_corr), 1,
@@ -369,10 +355,10 @@ void CLARS::cholesky_insert(const SGMatrix<float64_t> &X, SGMatrix<float64_t> &R
 
 		// R' * R_k = (X' * X)_k = col_k, solving to get R_k
 		vector<float64_t> R_k(col_k);
-		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, m_num_active, 1, 
+		cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, CblasNonUnit, m_num_active, 1,
 			1, R.matrix, m_num_active, &R_k[0], m_num_active);
 
-		float64_t R_kk = CMath::sqrt(diag_k - 
+		float64_t R_kk = CMath::sqrt(diag_k -
 			cblas_ddot(m_num_active, &R_k[0], 1, &R_k[0], 1));
 
 		// new_R = [R R_k; zeros(...) R_kk]
@@ -397,7 +383,7 @@ void CLARS::cholesky_insert(const SGMatrix<float64_t> &X, SGMatrix<float64_t> &R
 	}
 }
 
-void CLARS::cholesky_delete(SGMatrix<float64_t> &R, int32_t i_kick)
+void CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t> &R, int32_t i_kick)
 {
 	if (i_kick != m_num_active-1)
 	{
