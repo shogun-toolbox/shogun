@@ -1,5 +1,12 @@
 %{
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGStringList.h>
+#include <shogun/lib/SGNDArray.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/Signal.h>

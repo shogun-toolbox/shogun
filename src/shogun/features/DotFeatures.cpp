@@ -310,17 +310,13 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 
 SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 {
-	SGVector<float64_t> v;
 
     int32_t dim=get_dim_feature_space();
     ASSERT(num>=0 && num<=get_num_vectors());
     ASSERT(dim>0);
 
-	v.do_free=true;
-    v.vlen=dim;
-    v.vector=SG_MALLOC(float64_t, dim);
-    memset(v.vector, 0, dim*sizeof(float64_t));
-
+	SGVector<float64_t> v(dim);
+	v.zero();
     add_to_dense_vec(1.0, num, v.vector, dim);
 	return v;
 }

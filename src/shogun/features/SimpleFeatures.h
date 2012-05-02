@@ -162,7 +162,7 @@ public:
 	 * @param vec feature vector to free
 	 * @param num index in feature cache
 	 */
-	void free_feature_vector(const SGVector<ST>& vec, int32_t num);
+	void free_feature_vector(SGVector<ST> vec, int32_t num);
 
 	/**
 	 * Extracts the feature vectors mentioned in idx and replaces them in

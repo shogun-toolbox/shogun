@@ -18,6 +18,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
 #include <shogun/machine/Machine.h>
+#include <shogun/lib/SGNDArray.h>
 
 namespace shogun
 {

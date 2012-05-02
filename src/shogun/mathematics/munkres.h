@@ -22,6 +22,7 @@
 #define _MUNKRES_H_
 
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGMatrix.h>
 
 #include <list>
 #include <utility>

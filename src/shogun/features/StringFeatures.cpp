@@ -359,7 +359,7 @@ template<class ST> void CStringFeatures<ST>::free_feature_vector(ST* feat_vec, i
 		SG_FREE(feat_vec);
 }
 
-template<class ST> void CStringFeatures<ST>::free_feature_vector(SGVector<ST>& feat_vec, int32_t num)
+template<class ST> void CStringFeatures<ST>::free_feature_vector(SGVector<ST> feat_vec, int32_t num)
 {
 	if (num>=get_num_vectors())
 	{
@@ -372,9 +372,6 @@ template<class ST> void CStringFeatures<ST>::free_feature_vector(SGVector<ST>& f
 
 	if (feature_cache)
 		feature_cache->unlock_entry(real_num);
-
-	if (feat_vec.do_free)
-		SG_FREE(feat_vec.vector);
 }
 
 template<class ST> ST CStringFeatures<ST>::get_feature(int32_t vec_num, int32_t feat_num)

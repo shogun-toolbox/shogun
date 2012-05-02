@@ -239,7 +239,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param feat_vec feature vector to free
 		 * @param num index in feature cache, possibly from subset
 		 */
-		void free_feature_vector(SGVector<ST>& feat_vec, int32_t num);
+		void free_feature_vector(SGVector<ST> feat_vec, int32_t num);
 
 		/** get feature
 		 *

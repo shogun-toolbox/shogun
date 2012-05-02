@@ -73,14 +73,12 @@ void CLabels::init()
 	SG_REF(m_subset_stack);
 }
 
-void CLabels::set_labels(const SGVector<float64_t>& v)
+void CLabels::set_labels(const SGVector<float64_t> v)
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot set labels\n");
 
-	labels.free_vector();
 	labels=v;
-	labels.do_free=false;
 }
 
 bool CLabels::is_two_class_labeling()
