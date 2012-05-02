@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#ifndef _LARS_H__
-#define _LARS_H__
+#ifndef LEASTANGLEREGRESSION_H__
+#define LEASTANGLEREGRESSION_H__
 
 #include <shogun/lib/config.h>
 
@@ -17,14 +17,14 @@
 #include <vector>
 #include <shogun/machine/LinearMachine.h>
 
-namespace shogun 
+namespace shogun
 {
 class CFeatures;
 
 /** @brief Class for Least Angle Regression, can be used to solve LASSO.
  *
  * LASSO is basically L1 regulairzed least square regression
- * 
+ *
  * \f[
  * \min \|X^T\beta - y\|^2 + \lambda\|\beta\|_{1}
  * \f]
@@ -48,9 +48,9 @@ class CFeatures;
  *
  * There is a correspondence between the regularization coefficient lambda
  * and the hard constraint constant C. The latter form is easier to control
- * by explicitly constraining the l1-norm of the estimator. In this 
+ * by explicitly constraining the l1-norm of the estimator. In this
  * implementation, we provide support for the latter form, moreover, we
- * allow explicit control of the number of non-zero variables. 
+ * allow explicit control of the number of non-zero variables.
  *
  * When no constraints is provided, the full path is generated.
  *
@@ -69,17 +69,17 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLARS: public CLinearMachine
+class CLeastAngleRegression: public CLinearMachine
 {
 public:
 	/** default constructor
 	 *
 	 * @param lasso - when true, it runs the LASSO, when false, it runs LARS
 	 * */
-	CLARS(bool lasso=true);
+	CLeastAngleRegression(bool lasso=true);
 
 	/** default destructor */
-	virtual ~CLARS();
+	virtual ~CLeastAngleRegression();
 
 	/** set max number of non-zero variables for early stopping
 	 *
@@ -145,28 +145,6 @@ public:
 	/** get w
 	 *
 	 * @param num_var number of non-zero coefficients
-	 * @param dst_w store w in this argument
-	 * @param dst_dims dimension of w
-	 *
-	 * **Note** the returned memory references to some internal structures. The
-	 * pointer will become invalid if train is called *again*. So make a copy
-	 * if you want to call train multiple times.
-	 *
-	 * @see switch_w
-	 */
-	void get_w(int32_t num_var, float64_t*& dst_w, int32_t& dst_dims)
-	{
-		if (w_dim <= 0)
-			SG_ERROR("cannot get estimator before training");
-		if (size_t(num_var) >= m_beta_idx.size() || num_var < 0)
-			SG_ERROR("cannot get an estimator of %d non-zero coefficients", num_var);
-		dst_dims=w_dim;
-		dst_w=&m_beta_path[m_beta_idx[num_var]][0];
-	}
-
-	/** get w
-	 *
-	 * @param num_var number of non-zero coefficients
 	 *
 	 * @return the estimator with num_var non-zero coefficients. **Note** the
 	 * returned memory references to some internal structures. The pointer will
@@ -176,24 +154,11 @@ public:
 	SGVector<float64_t> get_w(int32_t num_var)
 	{
 		SGVector<float64_t> vec;
-		get_w(num_var, vec.vector, vec.vlen);
+        vec.vector = &m_beta_path[m_beta_idx[num_var]][0];
+        vec.vlen = w_dim;
 		vec.do_free = false;
 		return vec;
 	}
-
-	/** load regression from file
-	 *
-	 * @param srcfile file to load from
-	 * @return if loading was successful
-	 */
-	virtual bool load(FILE* srcfile);
-
-	/** save regression to file
-	 *
-	 * @param dstfile file to save to
-	 * @return if saving was successful
-	 */
-	virtual bool save(FILE* dstfile);
 
 	/** get classifier type
 	 *
@@ -244,4 +209,4 @@ private:
 } // namespace shogun
 
 #endif // HAVE_LAPACK
-#endif // _LARS_H__
+#endif // LEASTANGLEREGRESSION_H__
