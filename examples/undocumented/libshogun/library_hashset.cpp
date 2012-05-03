@@ -1,4 +1,4 @@
-#include <shogun/lib/HSet.h>
+#include <shogun/lib/Set.h>
 #include <stdio.h>
 
 using namespace shogun;
@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 	init_shogun();
 	double v[8] = {0.0,0.0,0.1,0.1,0.2,0.2,0.3,0.3};
 
-	CHSet<double>* set = new CHSet<double>(2, 8);
+	CSet<double>* set = new CSet<double>(2, 8);
 
 	for (int i=0; i<8; i++)
 		set->add(v[i]);
