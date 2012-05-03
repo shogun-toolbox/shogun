@@ -148,24 +148,6 @@ class CMachine : public CSGObject
 		 */
 		virtual float64_t apply(int32_t num);
 
-		/** load Machine from file
-		 *
-		 * abstract base method
-		 *
-		 * @param srcfile file to load from
-		 * @return failure
-		 */
-		virtual bool load(FILE* srcfile);
-
-		/** save Machine to file
-		 *
-		 * abstract base method
-		 *
-		 * @param dstfile file to save to
-		 * @return failure
-		 */
-		virtual bool save(FILE* dstfile);
-
 		/** set labels
 		 *
 		 * @param lab labels
