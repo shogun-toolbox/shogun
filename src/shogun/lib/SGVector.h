@@ -12,6 +12,8 @@
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
 
+#include <shogun/io/SGIO.h>
+
 namespace shogun
 {
 /** @brief shogun vector */
@@ -50,6 +52,16 @@ template<class T> class SGVector
 			ref();
 		}
 
+		/** override assignment operator to increase refcount on assignments */
+		SGVector& operator= (const SGVector &orig)
+		{
+			vector=orig.vector;
+			vlen=orig.vlen;
+			m_refcount=orig.m_refcount;
+			ref();
+			return *this;
+		}
+
 		/** empty destructor */
 		virtual ~SGVector()
 		{
@@ -69,6 +81,7 @@ template<class T> class SGVector
 			}
 
 			++(*m_refcount);
+			SG_SGCDEBUG("ref() refcount %ld vec %p (%p) increased\n", *m_refcount, vector, this);
 			return *m_refcount;
 		}
 
@@ -81,6 +94,7 @@ template<class T> class SGVector
 			if (m_refcount == NULL)
 				return -1;
 
+			SG_SGCDEBUG("ref_count(): refcount %d, vec %p (%p)\n", *m_refcount, vector, this);
 			return *m_refcount;
 		}
 
@@ -96,6 +110,7 @@ template<class T> class SGVector
 
 			if (*m_refcount==0 || --(*m_refcount)==0)
 			{
+				SG_SGCDEBUG("unref() refcount %d vec %p (%p) destroying\n", *m_refcount, vector, this);
 				SG_FREE(vector);
 				SG_FREE(m_refcount);
 
@@ -107,6 +122,7 @@ template<class T> class SGVector
 			}
 			else
 			{
+				SG_SGCDEBUG("unref() refcount %d vec %p (%p) decreased\n", *m_refcount, vector, this);
 				return *m_refcount;
 			}
 		}

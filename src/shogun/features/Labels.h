@@ -165,7 +165,7 @@ class CLabels : public CSGObject
 		 *
 		 * @param v labels
 		 */
-		void set_labels(const SGVector<float64_t> v);
+		void set_labels(SGVector<float64_t> v);
 
 		/**
 		 * set all labels to +1
