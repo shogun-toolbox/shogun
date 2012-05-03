@@ -4,139 +4,350 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2012 Evgeniy Andreev (gsomix)
+ *
+ * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef _SET_H_
 #define _SET_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/Hash.h>
+#include <shogun/base/DynArray.h>
 
 namespace shogun
 {
-/** @brief Template Set class
- *
- * Lazy implementation of a set. Set grows and shrinks dynamically and can be
- * conveniently iterated through via the [] operator.
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+/** hashset node */
+template<class T> struct HashSetNode
+{	
+	/** index in set array
+	 * It also using for reference to next free
+	 * element in array.
+	 */
+	int32_t index;
+
+	/** key and data of node */
+	T element;
+
+	/** pointer to left sibling */
+	HashSetNode *left;
+
+	/** pointer to right sibling */
+	HashSetNode *right;
+};
+#endif
+
+/** @brief the class CSet, a set based on the hash-table.
+ * w: http://en.wikipedia.org/wiki/Hash_table
  */
-template <class T> class CSet : public CSGObject
+template<class T> class CSet: public CSGObject
 {
-	public:
-		/** Default constructor */
-		CSet(bool traceable=true)
+public:
+	/** Default constructor */
+	CSet()
+	{	
+		hash_size=0;
+		free_index=0;
+		num_elements=0;
+		hash_array=NULL;
+		array=NULL;
+	}
+
+	/** Custom constructor */
+	CSet(int32_t size, int32_t reserved=1024)
+	{	
+		hash_size=size;
+		free_index=0;
+		num_elements=0;
+
+		hash_array=SG_MALLOC(HashSetNode<T>*, size);
+		for(int32_t i=0; i<size; i++)
 		{
-			array = new DynArray<T>(1024, traceable);
+			hash_array[i]=NULL;
 		}
 
-		/** Default destructor */
-		~CSet()
+		array=new DynArray<HashSetNode<T>*>(reserved);
+	}
+
+	/** Default destructor */
+	virtual ~CSet()
+	{
+		if(hash_array != NULL)
+		{
+			for(int32_t i = 0; i < hash_size; i++)
+			{
+				delete hash_array[i];
+			}
+			SG_FREE(hash_array);
+		}
+	
+		if(array != NULL)
 		{
 			delete array;
-		}
+		}	
+	}
 
-		/** Add an element to the set
-		 *
-		 * @param e elemet to be added
-		 */
-		inline void add(T e)
+	/** @return object name */
+	virtual const char* get_name() const { return "Set"; }
+
+	/** Add an element to the set
+	 *
+	 * @param e elemet to be added
+	 */
+	void add(const T& e)
+	{
+		int32_t index = hash(e);
+		if(chain_search(index, e) == NULL)
 		{
-			if (!contains(e))
-				array->append_element(e);
+			insert_key(index, e);
+			num_elements++;
 		}
+	}
 
-		/** Remove an element from the set
-		 *
-		 * @param e element to be removed
-		 */
-		inline void remove(T e)
+	/** Remove an element from the set
+	 *
+	 * @param e element to be looked for
+	 */
+	bool contains(const T& e)
+	{
+		int32_t index = hash(e);
+		if(chain_search(index, e) != NULL)
 		{
-			int32_t idx=array->find_element(e);
-			if (idx>=0)
-				array->delete_element(idx);
+			return true; 
 		}
 
-		/** Remove an element from the set
-		 *
-		 * @param e element to be looked for
-		 */
-		inline bool contains(T e)
+		return false;
+	}
+
+	/** Remove an element from the set
+	 *
+	 * @param e element to be removed
+	 */
+	void remove(const T& e)
+	{
+		int32_t index = hash(e);
+		HashSetNode<T>* result = chain_search(index, e);
+
+		if(result != NULL)		
 		{
-			int32_t idx=array->find_element(e);
-			return (idx!=-1);
+			delete_key(index, result);
+			num_elements--;
 		}
+	}
 
-		/** Index of element in the set
-		 *
-		 * @param e element to be removed
-		 * @return index of the element or -1 if not found
-		 */
-		inline int32_t index_of(T e)
+	/** Index of element in the set
+	 *
+	 * @param e element to be removed
+	 * @return index of the element or -1 if not found
+	 */
+	int32_t index_of(const T& e)
+	{
+		int32_t index = hash(e);
+		HashSetNode<T>* result = chain_search(index, e);
+
+		if(result != NULL)		
 		{
-			return array->find_element(e);
+			 return result->index;
 		}
+		
+		return -1;
+	}
 
-		/** get number of elements
-		 *
-		 * @return number of elements
-		 */
-		inline int32_t get_num_elements() const
+	/** Get number of elements
+	 *
+	 * @return number of elements
+	 */
+	int32_t get_num_elements() const
+	{
+		return num_elements;
+	}
+
+	/** Get set element at index
+	 *
+	 * (does NOT do bounds checking)
+	 *
+	 * @param index index
+	 * @return array element at index
+	 */
+	T get_element(int32_t index) const
+	{
+		return array->get_element(index)->element;
+	}
+
+	/** get set element at index as reference
+	 *
+	 * (does NOT do bounds checking)
+	 *
+	 * @param index index
+	 * @return array element at index
+	 */
+	T* get_element_ptr(int32_t index)
+	{
+		return &(array->get_element_ptr(index)->element);
+	}
+
+	/** operator overload for set read only access
+	 * use add() for write access
+	 *
+	 * DOES NOT DO ANY BOUNDS CHECKING
+	 *
+	 * @param index index
+	 * @return element at index
+	 */
+	T operator[](int32_t index) const
+	{
+		return array->get_element(index)->element;
+	}
+		
+	/** @return underlying array of nodes in memory */
+	T* get_array()
+	{
+		return array->get_array();
+	}
+
+private:
+	/** Returns hash of key
+	 * MurmurHash used
+	 */
+	int32_t hash(const T& key)
+	{
+		return CHash::MurmurHash2((uint8_t*)(&key), sizeof(int32_t), 0xDEADBEEF) % hash_size;
+	}
+
+	bool is_free(HashSetNode<T>* node)
+	{
+		if(node->left == NULL && node->right == NULL)
 		{
-			return array->get_num_elements();
+			return true;
 		}
 
-		/** get set element at index
-		 *
-		 * (does NOT do bounds checking)
-		 *
-		 * @param index index
-		 * @return array element at index
-		 */
-		inline T get_element(int32_t index) const
+		return false;
+	}
+
+	/** Searchs key in list(chain) */
+	HashSetNode<T>* chain_search(int32_t index, const T& key)
+	{
+		if(hash_array[index] == NULL)
 		{
-			return array->get_element(index);
+			return NULL;
 		}
-
-		/** get set element at index as reference
-		 *
-		 * (does NOT do bounds checking)
-		 *
-		 * @param index index
-		 * @return array element at index
-		 */
-		inline T* get_element_ptr(int32_t index)
+		else
 		{
-			return array->get_element_ptr(index);
-		}
+			HashSetNode<T>* current = hash_array[index];
 
-		/** operator overload for set read only access
-		 * use add() for write access
-		 *
-		 * DOES NOT DO ANY BOUNDS CHECKING
-		 *
-		 * @param index index
-		 * @return element at index
-		 */
-		inline T operator[](int32_t index) const
+			do // iterating all items in the list
+			{
+				if(current->element == key)
+				{
+					return current; // it's a search key
+				}
+
+				current = current->right;
+
+			} while(current != NULL);
+
+			return NULL;
+		}
+	}
+	
+	/** Inserts nodes with certain key and data in set */
+	void insert_key(int32_t index, const T& e)
+	{
+		int32_t new_index;
+		HashSetNode<T>* new_node;
+
+		if(free_index >= array->get_num_elements() || array->get_element(free_index)==NULL)
 		{
-			return array->get_element(index);
-		}
+			// init new node
+			new_node=new HashSetNode<T>;
+			array->append_element(new_node);
 
-		/** @return underlying array in memory */
-		inline T* get_array()
+			new_index=free_index;
+			free_index++;
+		}
+		else
 		{
-			return array->get_array();
+			new_node=array->get_element(free_index);
+			ASSERT(is_free(new_node));
+
+			new_index=free_index;
+			free_index=new_node->index;
 		}
 
-		/** @return object name */
-		inline virtual const char* get_name() const { return "Set"; }
+		new_node->index=new_index;
+		new_node->element=e;
+		new_node->left=new_node; // self referencing
+		new_node->right=NULL;
 
-	protected:
-		/** dynamic array the set is based on */
-		DynArray<T>* array;
+		// add new node in start of list
+		if(hash_array[index] == NULL)
+		{
+			hash_array[index] = new_node;
+		}
+		else
+		{
+			hash_array[index]->left = new_node;
+			new_node->right = hash_array[index];
+
+			hash_array[index] = new_node;
+		}
+	}
+
+	/** Deletes key from set */
+	void delete_key(int32_t index, HashSetNode<T>* node)
+	{		
+		int32_t temp = 0;
+
+		if(node == NULL)
+		{
+			return;
+		}
+
+		if(node->right != NULL)
+		{
+			node->right->left = node->left;
+		}
+
+		if(node->left != NULL)
+		{
+			node->left->right = node->right;
+		}
+		else
+		{
+			hash_array[index] = node->right;
+		}
+
+		temp = node->index;
+
+		node->index=free_index;
+		node->left=NULL;
+		node->right=NULL;
+
+		free_index=temp;		
+	}
+
+
+protected:
+	/** hashtable size */
+	int32_t hash_size;
+
+	/** next free index for new element */
+	int32_t free_index;
+
+	/** number of elements */
+	int32_t num_elements;
+
+	/** array of lists (chains) */
+	HashSetNode<T>** hash_array;
+
+	/** array for index permission */
+	DynArray<HashSetNode<T>*>* array;
 };
+
 }
-#endif //_SET_H_
+
+#endif /* _SET_H_ */
