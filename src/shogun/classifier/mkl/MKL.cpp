@@ -1473,7 +1473,7 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 
 	int32_t nsv=svm->get_num_support_vectors();
 	int32_t num_kernels = kernel->get_num_subkernels();
-	SGVector<float64_t> beta=SGVector<float64_t>(num_kernels, true);
+	SGVector<float64_t> beta=SGVector<float64_t>(num_kernels);
 	int32_t nweights=0;
 	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
 	ASSERT(nweights==num_kernels);
@@ -1507,9 +1507,6 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 
 	mkl_iterations++;
 	kernel->set_subkernel_weights(SGVector<float64_t>( (float64_t*) old_beta, num_kernels));
-
-	/* safe because of above comment, otherwise: memleak */
-	beta.free_vector();
 }
 
 

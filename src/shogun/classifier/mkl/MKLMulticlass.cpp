@@ -241,11 +241,9 @@ void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 
 float64_t CMKLMulticlass::getsumofsignfreealphas()
 {
-
 	std::vector<int> trainlabels2(m_labels->get_num_labels());
 	SGVector<int32_t> lab=m_labels->get_int_labels();
 	std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
-	lab.free_vector();
 
 	ASSERT (trainlabels2.size()>0);
 	float64_t sum=0;

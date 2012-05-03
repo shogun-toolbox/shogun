@@ -105,6 +105,5 @@ bool CSVMLin::train_machine(CFeatures* data)
 
 	SG_FREE(Data.C);
 	SG_FREE(Outputs.vec);
-	train_labels.free_vector();
 	return true;
 }

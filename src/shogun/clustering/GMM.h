@@ -177,7 +177,7 @@ class CGMM : public CDistribution
 		 *
 		 * @param coefficients mixing coefficients
 		 */
-		virtual void set_coef(const SGVector<float64_t>& coefficients);
+		virtual void set_coef(const SGVector<float64_t> coefficients);
 
 		/** get components
 		 *

@@ -41,7 +41,6 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CSVM::~CSVM()
 {
-	m_linear_term.destroy_vector();
 	SG_UNREF(mkl);
 }
 
@@ -303,15 +302,15 @@ float64_t* CSVM::get_linear_term_array()
 {
 	if (m_linear_term.vlen==0)
 		return NULL;
+	float64_t* a = SG_MALLOC(float64_t, m_linear_term.vlen);
 
-	SGVector<float64_t> a(m_linear_term.vlen);
-	memcpy(a.vector, m_linear_term.vector,
+	memcpy(a, m_linear_term.vector,
 			m_linear_term.vlen*sizeof(float64_t));
 
-	return a.vector;
+	return a;
 }
 
-void CSVM::set_linear_term(const SGVector<float64_t>& linear_term)
+void CSVM::set_linear_term(const SGVector<float64_t> linear_term)
 {
 	ASSERT(linear_term.vector);
 
@@ -326,12 +325,7 @@ void CSVM::set_linear_term(const SGVector<float64_t>& linear_term)
 				"of entries (%d) in linear term \n", num_labels, linear_term.vlen);
 	}
 
-	m_linear_term.destroy_vector();
-
-	m_linear_term.vlen=linear_term.vlen;
-	m_linear_term=SGVector<float64_t> (linear_term.vlen);
-	memcpy(m_linear_term.vector, linear_term.vector,
-			linear_term.vlen*sizeof(float64_t));
+	m_linear_term=linear_term;
 }
 
 SGVector<float64_t> CSVM::get_linear_term()

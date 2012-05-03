@@ -188,7 +188,6 @@ bool CLDA::train_machine(CFeatures* data)
 	CMath::display_vector(mean_neg, num_feat, "mean_neg");
 #endif
 
-	train_labels.free_vector();
 	SG_FREE(mean_neg);
 	SG_FREE(mean_pos);
 	SG_FREE(scatter);

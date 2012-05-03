@@ -42,7 +42,6 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 
 CKMeans::~CKMeans()
 {
-	R.destroy_vector();
 }
 
 bool CKMeans::train_machine(CFeatures* data)
@@ -65,7 +64,6 @@ bool CKMeans::train_machine(CFeatures* data)
 		Weights.vector[i]=1.0;
 
 	clustknb(false, NULL);
-	Weights.destroy_vector();
 
 	return true;
 }
@@ -188,7 +186,6 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	const int32_t XDimk=dimensions*k;
 	int32_t iter=0;
 
-	R.destroy_vector();
 	R=SGVector<float64_t>(k);
 
 	mus=SGMatrix<float64_t>(dimensions, k);

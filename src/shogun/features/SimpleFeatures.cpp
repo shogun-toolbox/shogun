@@ -398,8 +398,6 @@ template<class ST> void CSimpleFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 
 		for (int32_t j = 0; j < num_feat; j++)
 			feature_matrix[i * int64_t(num_feat) + j] = (ST) v.vector[j];
-
-		v.free_vector();
 	}
 	num_features = num_feat;
 	num_vectors = num_vec;

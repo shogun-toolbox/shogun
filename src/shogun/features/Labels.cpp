@@ -58,7 +58,6 @@ CLabels::CLabels(CFile* loader)
 
 CLabels::~CLabels()
 {
-	labels.destroy_vector();
 	SG_UNREF(m_subset_stack);
 }
 
@@ -113,10 +112,7 @@ bool CLabels::is_two_class_labeling()
 int32_t CLabels::get_num_classes()
 {
 	SGVector<float64_t> unique=get_unique_labels();
-	int32_t num_classes=unique.vlen;
-	unique.free_vector();
-
-	return num_classes;
+	return unique.vlen;
 }
 
 SGVector<float64_t> CLabels::get_labels()
@@ -152,11 +148,9 @@ SGVector<float64_t> CLabels::get_unique_labels()
 	SGVector<float64_t> unique_labels=get_labels_copy();
 	unique_labels.vlen=CMath::unique(unique_labels.vector, unique_labels.vlen);
 
-	SGVector<float64_t> result(unique_labels.vlen, true);
+	SGVector<float64_t> result(unique_labels.vlen);
 	memcpy(result.vector, unique_labels.vector,
 			sizeof(float64_t)*unique_labels.vlen);
-
-	unique_labels.free_vector();
 
 	return result;
 }
@@ -176,7 +170,6 @@ void CLabels::set_int_labels(const SGVector<int32_t>& lab)
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("set_int_labels() is not possible on subset");
 
-	labels.free_vector();
 	labels = SGVector<float64_t>(lab.vlen);
 
 	for (int32_t i=0; i<lab.vlen; i++)
@@ -188,8 +181,7 @@ void CLabels::load(CFile* loader)
 	remove_subset();
 
 	SG_SET_LOCALE_C;
-	labels.free_vector();
-
+	labels.unref();
 	ASSERT(loader);
 	loader->get_vector(labels.vector, labels.vlen);
 	SG_RESET_LOCALE;

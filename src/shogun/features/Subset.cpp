@@ -30,8 +30,6 @@ CSubset::CSubset(const SGVector<index_t>& subset_idx)
 }
 
 CSubset::~CSubset() {
-	/* TODO, change to UNREF, once it is possible */
-	m_subset_idx.destroy_vector();
 }
 
 void CSubset::init() {

@@ -244,8 +244,6 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	SG_FREE(cuts);
 
 	lab=NULL;
-	labvec.free_vector();
-
 	SG_UNREF(alphabet);
 
 	return true;

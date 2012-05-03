@@ -108,7 +108,6 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 			sgv=features->get_computed_dot_feature_vector(sv[k]);
 			for (int32_t j=0; j<x_d; j++)
 				Xsv[k*x_d+j]=sgv.vector[j];
-			sgv.destroy_vector();
 		}
 		int32_t tx=x_d;
 		int32_t ty=size_sv;

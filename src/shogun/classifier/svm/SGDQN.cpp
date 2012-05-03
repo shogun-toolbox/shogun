@@ -196,8 +196,6 @@ bool CSGDQN::train(CFeatures* data)
 				}
 			}
 			t++;
-
-			v.free_vector();
 		}
 	}
 	SG_FREE(result);

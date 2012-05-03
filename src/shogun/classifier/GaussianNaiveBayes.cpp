@@ -42,9 +42,7 @@ CGaussianNaiveBayes::~CGaussianNaiveBayes()
 	SG_UNREF(m_features);
 
 	m_means.destroy_matrix();
-	m_rates.destroy_vector();
 	m_variances.destroy_matrix();
-	m_label_prob.destroy_vector();
 };
 
 CFeatures* CGaussianNaiveBayes::get_features()
@@ -107,18 +105,14 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	m_variances.num_rows = m_dim;
 	m_variances.num_cols = m_num_classes;
 
-	m_label_prob.vector = SG_MALLOC(float64_t, m_num_classes);
-	m_label_prob.vlen = m_num_classes;
+	m_label_prob=SGVector<float64_t>(m_num_classes);
 
 	// allocate memory for label rates
-	m_rates.vector = SG_MALLOC(float64_t, m_num_classes);
-	m_rates.vlen = m_num_classes;
+	m_rates=SGVector<float64_t>(m_num_classes);
 
 	// assure that memory is allocated
 	ASSERT(m_means.matrix);
 	ASSERT(m_variances.matrix);
-	ASSERT(m_rates.vector);
-	ASSERT(m_label_prob.vector);
 
 	// make arrays filled by zeros before using
 	m_means.zero();
@@ -139,7 +133,6 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
 			m_means(j, train_labels.vector[i]) += fea.vector[j];
-		fea.free_vector();
 
 		m_label_prob.vector[train_labels.vector[i]]+=1.0;
 
@@ -166,7 +159,6 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 			m_variances(j, train_labels.vector[i]) += 
 				CMath::sq(fea[j]-m_means(j, train_labels.vector[i]));
 		}
-		fea.free_vector();
 
 		progress++;
 		SG_PROGRESS(progress, 0, max_progress);
@@ -185,8 +177,6 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 		SG_PROGRESS(progress, 0, max_progress);
 	}
 	SG_DONE();
-
-	train_labels.free_vector();
 
 	return true;
 }
@@ -256,7 +246,6 @@ float64_t CGaussianNaiveBayes::apply(int32_t idx)
 		if (m_rates.vector[i]>m_rates.vector[max_label_idx])
 			max_label_idx = i;
 	}
-	feature_vector.free_vector();
 
 	return max_label_idx+m_min_label;
 };

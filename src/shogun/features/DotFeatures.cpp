@@ -454,7 +454,6 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 				(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
 			}
 		}
-		v.free_vector();
 	}
 	for (int m = 0; m < dim; m++)
 	{
@@ -470,7 +469,6 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 			(cov.matrix)[m*dim+n] = (cov.matrix)[n*dim+m];
 		}
 	}
-	mean.destroy_vector();
 	return cov;
 }
 
@@ -513,7 +511,6 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 					(cov.matrix)[m*v.vlen+n] += v.vector[m]*v.vector[n];
 				}
 			}
-			v.free_vector();
 		}
 	}
 	for (int m = 0; m < dim; m++)
@@ -531,7 +528,6 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 		}
 	}
 
-	mean.destroy_vector();
 	return cov;
 }
 

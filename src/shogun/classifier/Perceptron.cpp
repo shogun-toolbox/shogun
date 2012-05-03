@@ -83,7 +83,6 @@ bool CPerceptron::train_machine(CFeatures* data)
 		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter);
 
 	SG_FREE(output);
-	train_labels.free_vector();
 
 	return converged;
 }
