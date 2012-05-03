@@ -62,7 +62,7 @@ public:
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
-	virtual int32_t decide_label(const SGVector<float64_t> &outputs)=0;
+	virtual int32_t decide_label(SGVector<float64_t> outputs)=0;
 
 	/** get number of machines used in this strategy.
 	 */

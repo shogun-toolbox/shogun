@@ -1086,7 +1086,7 @@ template<class ST> void CSparseFeatures<ST>::free_feature_iterator(void* iterato
 	SG_FREE(it);
 }
 
-template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(const SGVector<index_t>& indices)
+template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t> indices)
 {
 	SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(indices.vlen,
 		get_dim_feature_space());

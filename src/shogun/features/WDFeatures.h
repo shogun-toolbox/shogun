@@ -184,7 +184,7 @@ class CWDFeatures : public CDotFeatures
 		 *
 		 * @param weights new weights
 		 */
-		void set_wd_weights(const SGVector<float64_t>& weights);
+		void set_wd_weights(SGVector<float64_t> weights);
 
 		/** create wd kernel weighting heuristic */
 		void set_wd_weights();

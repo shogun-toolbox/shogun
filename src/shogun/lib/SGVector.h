@@ -27,6 +27,8 @@ template<class T> class SGVector
 		{
 			if (ref_counting)
 				m_refcount=SG_CALLOC(int32_t, 1); 
+
+			ref();
 		}
 
 		/** constructor to create new vector in memory */
@@ -37,6 +39,8 @@ template<class T> class SGVector
 				m_refcount=SG_CALLOC(int32_t, 1);
 
 			vector=SG_MALLOC(T, len);
+
+			ref();
 		}
 
 		/** copy constructor */

@@ -284,7 +284,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @param weights new subfeature weights
 		 */
-		virtual void set_subfeature_weights(const SGVector<float64_t>& weights);
+		virtual void set_subfeature_weights(SGVector<float64_t> weights);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "CombinedDotFeatures"; }

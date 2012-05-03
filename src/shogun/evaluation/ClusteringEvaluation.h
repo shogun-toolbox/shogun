@@ -55,12 +55,12 @@ protected:
 	 * @param m2 the second label to match
 	 * @return number of matches
 	 */
-	int32_t find_match_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2);
+	int32_t find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2);
 
 	/** find number of mismatches in the two labels sequence.
 	 * @see find_match_count
 	 */
-	int32_t find_mismatch_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2);
+	int32_t find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2);
 };
 
 } // namespace shogun

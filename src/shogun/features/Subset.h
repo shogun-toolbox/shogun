@@ -35,7 +35,7 @@ public:
 	 * TODO, this might be changes once reference counting for SGVectors is
 	 * there
 	 */
-	CSubset(const SGVector<index_t>& subset_idx);
+	CSubset(SGVector<index_t> subset_idx);
 
 	/** destructor */
 	virtual ~CSubset();

@@ -31,7 +31,7 @@ class CRejectionStrategy : public CSGObject
 		};
 
 		/** returns true if given output set leads to rejection */
-		virtual bool reject(const SGVector<float64_t>& outputs) const = 0;
+		virtual bool reject(SGVector<float64_t> outputs) const = 0;
 
 };
 
@@ -57,7 +57,7 @@ class CThresholdRejectionStrategy : public CRejectionStrategy
 		}
 
 		/** returns true if given output set leads to rejection */
-		virtual bool reject(const SGVector<float64_t>& outputs) const
+		virtual bool reject(SGVector<float64_t> outputs) const
 		{
 			for (int32_t i=0; i<outputs.vlen; i++)
 			{
@@ -142,7 +142,7 @@ class CDixonQRejectionStrategy : public CRejectionStrategy
 		}
 
 		/** returns true if given output set leads to rejection */
-		virtual bool reject(const SGVector<float64_t>& outputs) const
+		virtual bool reject(SGVector<float64_t> outputs) const
 		{
 			int32_t N = outputs.vlen;
 			if (N<10 || N>100) 

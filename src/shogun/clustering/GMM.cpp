@@ -44,7 +44,7 @@ CGMM::CGMM(int32_t n, ECovType cov_type) : CDistribution(), m_components(), m_co
 	register_params();
 }
 
-CGMM::CGMM(const SGVector<CGaussian*>& components, const SGVector<float64_t>& coefficients, bool copy) : CDistribution()
+CGMM::CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy) : CDistribution()
 {
 	ASSERT(components.vlen==coefficients.vlen);
 
@@ -675,7 +675,7 @@ SGVector<float64_t> CGMM::get_nth_mean(int32_t num)
 	return m_components.vector[num]->get_mean();
 }
 
-void CGMM::set_nth_mean(const SGVector<float64_t>& mean, int32_t num)
+void CGMM::set_nth_mean(SGVector<float64_t> mean, int32_t num)
 {
 	ASSERT(num<m_components.vlen);
 	m_components.vector[num]->set_mean(mean);
@@ -708,7 +708,7 @@ SGVector<CGaussian*> CGMM::get_comp()
 	return m_components;
 }
 
-void CGMM::set_comp(const SGVector<CGaussian*>& components)
+void CGMM::set_comp(SGVector<CGaussian*> components)
 {
 	for (int32_t i=0; i<m_components.vlen; i++)
 	{
@@ -762,7 +762,7 @@ SGVector<float64_t> CGMM::sample()
 	return m_components.vector[m_coefficients.vlen-1]->sample();
 }
 
-SGVector<float64_t> CGMM::cluster(const SGVector<float64_t>& point)
+SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 {
 	SGVector<float64_t> answer(m_components.vlen+1);
 	answer.vector[m_components.vlen]=0;

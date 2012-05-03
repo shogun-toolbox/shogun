@@ -42,7 +42,7 @@ template <class ST> class CSimplePreprocessor : public CPreprocessor
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<ST> apply_to_feature_vector(const SGVector<ST>& vector)=0;
+		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector)=0;
 
 		/// return that we are simple features (just fixed size matrices)
 		virtual EFeatureClass get_feature_class();

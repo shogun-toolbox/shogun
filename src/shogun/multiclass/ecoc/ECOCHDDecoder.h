@@ -38,7 +38,7 @@ protected:
     }
 
     /** compute distance */
-    virtual float64_t compute_distance(const SGVector<float64_t> &outputs, const int32_t *code)
+    virtual float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code)
     {
         return CECOCUtil::hamming_distance(outputs.vector, code, outputs.vlen);
     }

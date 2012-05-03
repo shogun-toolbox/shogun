@@ -80,7 +80,7 @@ SGVector<int32_t> CECOCStrategy::train_prepare_next()
     return SGVector<int32_t>(subset.vector, tot);
 }
 
-int32_t CECOCStrategy::decide_label(const SGVector<float64_t> &outputs)
+int32_t CECOCStrategy::decide_label(SGVector<float64_t> outputs)
 {
     return m_decoder->decide_label(outputs, m_codebook);
 }

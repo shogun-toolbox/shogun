@@ -139,7 +139,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @param subset subset instance to set
 		 */
-		virtual void add_machine_subset(const SGVector<index_t>& subset)
+		virtual void add_machine_subset(const SGVector<index_t> subset)
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */

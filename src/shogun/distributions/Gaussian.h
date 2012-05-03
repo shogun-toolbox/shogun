@@ -54,7 +54,7 @@ class CGaussian : public CDistribution
 		 * @param cov covariance of the Gaussian
 		 * @param cov_type covariance type (full, diagonal or shperical)
 		 */
-		CGaussian(const SGVector<float64_t>& mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
+		CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov, ECovType cov_type=FULL);
 		virtual ~CGaussian();
 
 		/** Compute the constant part */
@@ -104,7 +104,7 @@ class CGaussian : public CDistribution
 		 * @param point point for which to compute the PDF
 		 * @return computed PDF
 		 */
-		virtual inline float64_t compute_PDF(const SGVector<float64_t>& point)
+		virtual inline float64_t compute_PDF(SGVector<float64_t> point)
 		{
 			return CMath::exp(compute_log_PDF(point));
 		}
@@ -114,7 +114,7 @@ class CGaussian : public CDistribution
 		 * @param point point for which to compute the log PDF
 		 * @return computed log PDF
 		 */
-		virtual float64_t compute_log_PDF(const SGVector<float64_t>& point);
+		virtual float64_t compute_log_PDF(SGVector<float64_t> point);
 
 		/** get mean
 		 *

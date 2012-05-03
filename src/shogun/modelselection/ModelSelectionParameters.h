@@ -92,7 +92,7 @@ public:
 	 * @param values value vector
 	 */
 	template <class T>
-	void set_values(const SGVector<T>& values);
+	void set_values(SGVector<T> values);
 
 	/** SG_PRINT's the tree of which this node is the base
 	 *

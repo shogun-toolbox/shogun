@@ -189,7 +189,7 @@ class CLinearHMM : public CDistribution
 		 * @param probs new logarithm transition probs
 		 * @return if setting was successful
 		 */
-		virtual bool set_log_transition_probs(const SGVector<float64_t>& probs);
+		virtual bool set_log_transition_probs(const SGVector<float64_t> probs);
 
 		/** get all transition probs
 		 *
@@ -202,7 +202,7 @@ class CLinearHMM : public CDistribution
 		 * @param probs new transition probs
 		 * @return if setting was successful
 		 */
-		virtual bool set_transition_probs(const SGVector<float64_t>& probs);
+		virtual bool set_transition_probs(const SGVector<float64_t> probs);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LinearHMM"; }

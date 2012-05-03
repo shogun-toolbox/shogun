@@ -834,7 +834,7 @@ float64_t* CWeightedDegreePositionStringKernel::compute_abs_weights(
 	return tries.compute_abs_weights(len);
 }
 
-void CWeightedDegreePositionStringKernel::set_shifts(const SGVector<int32_t>& shifts)
+void CWeightedDegreePositionStringKernel::set_shifts(SGVector<int32_t> shifts)
 {
 	SG_FREE(shift);
 
@@ -925,7 +925,7 @@ bool CWeightedDegreePositionStringKernel::set_weights(SGMatrix<float64_t> new_we
 	return true;
 }
 
-void CWeightedDegreePositionStringKernel::set_position_weights(const SGVector<float64_t>& pws)
+void CWeightedDegreePositionStringKernel::set_position_weights(SGVector<float64_t> pws)
 {
 	if (seq_length==0)
 		seq_length=pws.vlen;

@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-float64_t CStatistics::mean(const SGVector<float64_t>& values)
+float64_t CStatistics::mean(SGVector<float64_t> values)
 {
 	ASSERT(values.vlen>0);
 	ASSERT(values.vector);
@@ -30,7 +30,7 @@ float64_t CStatistics::mean(const SGVector<float64_t>& values)
 	return sum/values.vlen;
 }
 
-float64_t CStatistics::variance(const SGVector<float64_t>& values)
+float64_t CStatistics::variance(SGVector<float64_t> values)
 {
 	ASSERT(values.vlen>1);
 	ASSERT(values.vector);
@@ -44,12 +44,12 @@ float64_t CStatistics::variance(const SGVector<float64_t>& values)
 	return sum_squared_diff/(values.vlen-1);
 }
 
-float64_t CStatistics::std_deviation(const SGVector<float64_t>& values)
+float64_t CStatistics::std_deviation(SGVector<float64_t> values)
 {
 	return CMath::sqrt(variance(values));
 }
 
-float64_t CStatistics::confidence_intervals_mean(const SGVector<float64_t>& values,
+float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 		float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up)
 {
 	ASSERT(values.vlen>1);
