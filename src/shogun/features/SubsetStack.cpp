@@ -97,11 +97,6 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		/* replace active subset */
 		m_active_subset=new CSubset(new_active_subset);
 		SG_REF(m_active_subset);
-
-		/* delete new index vector (above call currently COPIES vectors, this is
-		 * necessary until ref-couting for SGVectors has arrived */
-		new_active_subset.destroy_vector();
-
 		SG_UNREF(latest);
 	}
 	else

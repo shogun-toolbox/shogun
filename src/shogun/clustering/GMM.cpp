@@ -106,8 +106,8 @@ void CGMM::cleanup()
 	for (int32_t i = 0; i < m_components.vlen; i++)
 		SG_UNREF(m_components.vector[i]);
 
-	m_components.destroy_vector();
-	m_coefficients.destroy_vector();
+	m_components.unref();
+	m_coefficients.unref();
 }
 
 bool CGMM::train(CFeatures* data)
@@ -178,7 +178,6 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 
 			logPx[i]=CMath::log(logPx[i]);
 			log_likelihood_cur+=logPx[i];
-			v.free_vector();
 
 			for (int32_t j=0; j<m_components.vlen; j++)
 			{
@@ -244,7 +243,6 @@ float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov
 			}
 
 			logPx[i]=CMath::log(logPx[i]);
-			v.free_vector();
 
 			for (int32_t j=0; j<m_components.vlen; j++)
 			{
@@ -372,7 +370,6 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		post_add[i]=CMath::log(CMath::exp(init_logPxy[i*m_components.vlen+comp1]-init_logPx[i])+
 					CMath::exp(init_logPxy[i*m_components.vlen+comp2]-init_logPx[i])+
 					CMath::exp(init_logPxy[i*m_components.vlen+comp3]-init_logPx[i]));
-		v.free_vector();
 	}
 
 	SGVector<CGaussian*> components(3);
@@ -495,7 +492,6 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 
 			logPx[i]=CMath::log(logPx[i]+init_logPx_fix[i]);
 			log_likelihood_cur+=logPx[i];
-			v.free_vector();
 
 			for (int32_t j=0; j<3; j++)
 			{
@@ -549,7 +545,6 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 			alpha_sum+=alpha.matrix[j*alpha.num_cols+i];
 			SGVector<float64_t> v=dotdata->get_computed_dot_feature_vector(j);
 			CMath::add<float64_t>(mean_sum, alpha.matrix[j*alpha.num_cols+i], v.vector, 1, mean_sum, v.vlen);
-			v.free_vector();
 		}
 
 		for (int32_t j=0; j<num_dim; j++)
@@ -601,8 +596,6 @@ void CGMM::max_likelihood(SGMatrix<float64_t> alpha, float64_t min_cov)
 					cov_sum[0]+=temp*alpha.matrix[j*alpha.num_cols+i];
 					break;
 			}
-
-			v.free_vector();
 		}
 
 		switch (cov_type)
@@ -705,9 +698,8 @@ SGVector<float64_t> CGMM::get_coef()
 	return m_coefficients;
 }
 
-void CGMM::set_coef(const SGVector<float64_t>& coefficients)
+void CGMM::set_coef(const SGVector<float64_t> coefficients)
 {
-	m_coefficients.destroy_vector();
 	m_coefficients=coefficients;
 }
 
@@ -723,7 +715,6 @@ void CGMM::set_comp(const SGVector<CGaussian*>& components)
 		SG_UNREF(m_components.vector[i]);
 	}
 
-	m_components.destroy_vector();
 	m_components=components;
 
 	for (int32_t i=0; i<m_components.vlen; i++)

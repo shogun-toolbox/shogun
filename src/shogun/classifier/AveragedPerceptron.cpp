@@ -94,7 +94,6 @@ bool CAveragedPerceptron::train(CFeatures* data)
 	bias=tmp_bias/(num_vec*iter);
 
 	SG_FREE(output);
-	train_labels.free_vector();
 	SG_FREE(tmp_w);
 
 	return converged;

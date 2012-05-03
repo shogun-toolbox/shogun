@@ -115,7 +115,6 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	// create AUC kernel and attach the features
 	init(f,f);
 
-	int_labels.free_vector();
 	SG_FREE(labels_auc);
 
 	return lab_auc;

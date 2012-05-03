@@ -62,7 +62,6 @@ void CQDA::cleanup()
 	m_covs.free_ndarray();
 	m_M.free_ndarray();
 	m_means.free_matrix();
-	m_slog.free_vector();
 
 	m_num_classes = 0;
 }
@@ -81,7 +80,6 @@ CLabels* CQDA::apply()
 	SGMatrix< float64_t > X(num_vecs, m_dim);
 	SGMatrix< float64_t > A(num_vecs, m_dim);
 	SGVector< float64_t > norm2(num_vecs*m_num_classes);
-
 	norm2.zero();
 
 	int i, j, k, vlen;
@@ -132,7 +130,6 @@ CLabels* CQDA::apply()
 	CMath::display_vector(out->get_labels().vector, num_vecs, "Labels");
 #endif
 
-	norm2.destroy_vector();
 	A.destroy_matrix();
 	X.destroy_matrix();
 
@@ -300,7 +297,7 @@ bool CQDA::train_machine(CFeatures* data)
 	M_dims[2] = m_num_classes;
 	m_M = SGNDArray< float64_t >(M_dims, 3, true);
 
-	m_slog = SGVector< float32_t >(m_num_classes, true);
+	m_slog = SGVector< float32_t >(m_num_classes);
 	m_slog.zero();
 
 	index_t idx = 0;
@@ -345,8 +342,6 @@ bool CQDA::train_machine(CFeatures* data)
 
 	rotations.destroy_ndarray();
 	scalings.destroy_matrix();
-	sinvsqrt.destroy_vector();
-	train_labels.destroy_vector();
 	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
 	return true;
