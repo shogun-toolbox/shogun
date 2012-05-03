@@ -167,7 +167,7 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(const SGVector<float64_t>& vector)
+SGVector<float64_t> CPruneVarSubMean::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t* ret=NULL;
 

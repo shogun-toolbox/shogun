@@ -58,7 +58,7 @@ public:
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<float64_t> apply_to_feature_vector(const SGVector<float64_t>& vector);
+		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 		/** apply to string features
 		 * @param features

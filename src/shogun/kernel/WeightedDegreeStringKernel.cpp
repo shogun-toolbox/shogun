@@ -65,7 +65,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 		set_wd_weights_by_type(type);
 }
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(const SGVector<float64_t>& w)
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(SGVector<float64_t> w)
 : CStringKernel<char>(10)
 {
 	init();

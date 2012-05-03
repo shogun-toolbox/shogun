@@ -18,7 +18,7 @@ CSubset::CSubset()
 	init();
 }
 
-CSubset::CSubset(const SGVector<index_t>& subset_idx)
+CSubset::CSubset(SGVector<index_t> subset_idx)
 {
 	init();
 

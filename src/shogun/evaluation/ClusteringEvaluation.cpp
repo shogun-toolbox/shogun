@@ -19,7 +19,7 @@
 using namespace shogun;
 using namespace std;
 
-int32_t CClusteringEvaluation::find_match_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2)
+int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	int32_t match_count=0;
 	for (int32_t i=l1.vlen-1; i >= 0; --i)
@@ -31,7 +31,7 @@ int32_t CClusteringEvaluation::find_match_count(const SGVector<int32_t>& l1, int
 	return match_count;
 }
 
-int32_t CClusteringEvaluation::find_mismatch_count(const SGVector<int32_t>& l1, int32_t m1, const SGVector<int32_t>& l2, int32_t m2)
+int32_t CClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	return l1.vlen - find_match_count(l1, m1, l2, m2);
 }

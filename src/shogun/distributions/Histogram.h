@@ -79,7 +79,7 @@ class CHistogram : public CDistribution
 		 *
 		 * @param histogram new histogram
 		 */
-		virtual bool set_histogram(const SGVector<float64_t>& histogram);
+		virtual bool set_histogram(const SGVector<float64_t> histogram);
 
 		/** get histogram
 		 *

@@ -75,7 +75,7 @@ SGMatrix<float64_t> CLogPlusOne::apply_to_feature_matrix(CFeatures* features)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-SGVector<float64_t> CLogPlusOne::apply_to_feature_vector(const SGVector<float64_t>& vector)
+SGVector<float64_t> CLogPlusOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t* log_vec = SG_MALLOC(float64_t, vector.vlen);
 

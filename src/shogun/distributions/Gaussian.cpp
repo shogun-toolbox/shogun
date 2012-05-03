@@ -22,7 +22,7 @@ CGaussian::CGaussian() : CDistribution(), m_constant(0), m_d(), m_u(), m_mean(),
 	register_params();
 }
 
-CGaussian::CGaussian(const SGVector<float64_t>& mean, SGMatrix<float64_t> cov,
+CGaussian::CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov,
 					ECovType cov_type) : CDistribution(), m_d(), m_u(), m_cov_type(cov_type)
 {
 	ASSERT(mean.vlen==cov.num_rows);
@@ -118,7 +118,7 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 	return answer;
 }
 
-float64_t CGaussian::compute_log_PDF(const SGVector<float64_t>& point)
+float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 {
 	ASSERT(m_mean.vector && m_d.vector);
 	ASSERT(point.vlen == m_mean.vlen);
@@ -162,7 +162,7 @@ SGVector<float64_t> CGaussian::get_mean()
 	return m_mean;
 }
 
-void CGaussian::set_mean(const SGVector<float64_t> mean)
+void CGaussian::set_mean(SGVector<float64_t> mean)
 {
 	if (mean.vlen==1)
 		m_cov_type=SPHERICAL;

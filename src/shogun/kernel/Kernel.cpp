@@ -849,7 +849,7 @@ const float64_t* CKernel::get_subkernel_weights(int32_t &num_weights)
 	return &combined_kernel_weight ;
 }
 
-void CKernel::set_subkernel_weights(const SGVector<float64_t>& weights)
+void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
 {
 	ASSERT(weights.vector);
 	if (weights.vlen!=1)

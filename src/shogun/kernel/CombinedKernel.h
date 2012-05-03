@@ -363,7 +363,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @param weights new subkernel weights
 		 */
-		virtual void set_subkernel_weights(const SGVector<float64_t>& weights);
+		virtual void set_subkernel_weights(SGVector<float64_t> weights);
 
 		/** set optimization type
 		 *

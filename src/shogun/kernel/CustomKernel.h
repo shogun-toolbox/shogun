@@ -122,7 +122,7 @@ class CCustomKernel: public CKernel
 		 * @return if setting was successful
 		 */
 		bool set_triangle_kernel_matrix_from_triangle(
-			const SGVector<float64_t>& tri_kernel_matrix)
+			SGVector<float64_t> tri_kernel_matrix)
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
@@ -145,7 +145,7 @@ class CCustomKernel: public CKernel
 		 */
 		template <class T>
 		bool set_triangle_kernel_matrix_from_triangle_generic(
-			const SGVector<T>& tri_kernel_matrix)
+			SGVector<T> tri_kernel_matrix)
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{

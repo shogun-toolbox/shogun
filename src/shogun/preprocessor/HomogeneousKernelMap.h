@@ -85,7 +85,7 @@ namespace shogun
 			 * @param vector features vector
 			 * @return transformed feature vector
 			 */
-			virtual SGVector<float64_t> apply_to_feature_vector (const SGVector<float64_t>& vector);
+			virtual SGVector<float64_t> apply_to_feature_vector (SGVector<float64_t> vector);
 
 			/** @return object name */
 			virtual inline const char* get_name () const { return "HomogeneousKernelMap"; }
@@ -144,7 +144,7 @@ namespace shogun
 			inline float64_t get_smooth_spectrum (float64_t omega) const;
 			inline float64_t sinc (float64_t x) const;
 			inline float64_t get_spectrum (float64_t omega) const;
-			inline void apply_to_vector (const SGVector<float64_t>& in_v, SGVector<float64_t>& out_v) const;
+			void apply_to_vector(SGVector<float64_t> in_v, SGVector<float64_t> out_v) const;
 
 		private:
 			HomogeneousKernelType m_kernel;

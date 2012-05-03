@@ -48,7 +48,7 @@ class CLabels : public CSGObject
 		 *
 		 * @param src labels to set
 		 */
-		CLabels(const SGVector<float64_t>& src);
+		CLabels(const SGVector<float64_t> src);
 
 		/* constructor
 		 *
@@ -190,7 +190,7 @@ class CLabels : public CSGObject
 		 *
 		 * @param labels INT labels
 		 */
-		void set_int_labels(const SGVector<int32_t>& labels);
+		void set_int_labels(SGVector<int32_t> labels);
 
 		/** get number of labels, depending on whether a subset is set
 		 *
@@ -206,7 +206,7 @@ class CLabels : public CSGObject
 		 *
 		 * @param subset subset of indices to add
 		 * */
-		virtual void add_subset(const SGVector<index_t>& subset);
+		virtual void add_subset(SGVector<index_t> subset);
 
 		/** removes that last added subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */

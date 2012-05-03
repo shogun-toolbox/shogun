@@ -67,7 +67,6 @@ int main()
 
 	// create train labels
 	CLabels* labels=new CLabels(SGVector<float64_t>(lab, NUM));
-	SG_REF(labels);
 
 	// create train features
 	CSimpleFeatures<float64_t>* features = new CSimpleFeatures<float64_t>(feature_cache);
@@ -93,7 +92,6 @@ int main()
 	for (int32_t i=0; i<NUM; i++)
 		printf("out[%d]=%f\n", i, out_labels->get_label(i));
 
-	SG_UNREF(labels);
 	SG_UNREF(out_labels);
 	SG_UNREF(kernel);
 	SG_UNREF(features);

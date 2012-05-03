@@ -71,7 +71,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @param weights kernel's weights
 		 */
-		CWeightedDegreeStringKernel(const SGVector<float64_t>& weights);
+		CWeightedDegreeStringKernel(SGVector<float64_t> weights);
 
 		/** constructor
 		 *
@@ -290,7 +290,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @param w weights
 		 */
-		virtual void set_subkernel_weights(const SGVector<float64_t>& w)
+		virtual void set_subkernel_weights(SGVector<float64_t> w)
 		{
 			float64_t* weights2=w.vector;
 			int32_t num_weights2=w.vlen;
@@ -437,7 +437,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @param new_weights new weights
 		 */
-		inline void set_wd_weights(const SGVector<float64_t>& new_weights)
+		inline void set_wd_weights(SGVector<float64_t> new_weights)
 		{
 			set_weights(SGMatrix<float64_t>(new_weights.vector,new_weights.vlen,0));
 		}

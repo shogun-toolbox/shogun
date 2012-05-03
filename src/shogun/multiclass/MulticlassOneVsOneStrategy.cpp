@@ -63,7 +63,7 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 	return SGVector<int32_t>(subset.vector, tot);
 }
 
-int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &outputs)
+int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
 {
 	int32_t s=0;
 	SGVector<int32_t> votes(m_num_classes);

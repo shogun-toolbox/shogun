@@ -144,7 +144,7 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @param subset subset indices to set
 		 */
-		virtual void add_machine_subset(const SGVector<index_t>& subset) = 0;
+		virtual void add_machine_subset(SGVector<index_t> subset) = 0;
 
 		/** deletes any subset set to the features of the machine */
 		virtual void remove_machine_subset() = 0;

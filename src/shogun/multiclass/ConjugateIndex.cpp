@@ -169,7 +169,7 @@ CLabels* CConjugateIndex::apply()
 	return predicted_labels;
 };
 
-float64_t CConjugateIndex::conjugate_index(const SGVector<float64_t>& feature_vector, int32_t label)
+float64_t CConjugateIndex::conjugate_index(SGVector<float64_t> feature_vector, int32_t label)
 {
 	int32_t num_features = feature_vector.vlen;
 	float64_t norm = cblas_ddot(num_features,feature_vector.vector,1,

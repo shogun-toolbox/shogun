@@ -230,7 +230,7 @@ class CMachine : public CSGObject
 		 * @param indices index vector (of locked features) that is used for training
 		 * @return whether training was successful
 		 */
-		virtual bool train_locked(const SGVector<index_t>& indices)
+		virtual bool train_locked(SGVector<index_t> indices)
 		{
 			SG_ERROR("train_locked(SGVector<index_t>) is not yet implemented "
 					"for %s\n", get_name());
@@ -244,7 +244,7 @@ class CMachine : public CSGObject
 		 *
 		 * @param indices index vector (of locked features) that is predicted
 		 */
-		virtual CLabels* apply_locked(const SGVector<index_t>& indices)
+		virtual CLabels* apply_locked(SGVector<index_t> indices)
 		{
 			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "
 					"for %s\n", get_name());

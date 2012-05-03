@@ -72,7 +72,7 @@ public:
 	 * @return processed feature vector
 	 * in order to work this routine requires the steps described above under cases (1) or two (2) before calling this routine
 	 */
-	virtual SGVector<float64_t> apply_to_feature_vector(const SGVector<float64_t>& vector);
+	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** inherited from base class
 	 * @return C_SIMPLE

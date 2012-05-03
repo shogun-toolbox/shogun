@@ -372,7 +372,7 @@ SGVector<float64_t> CCombinedDotFeatures::get_subfeature_weights()
 	return SGVector<float64_t>(weights,num_weights);
 }
 
-void CCombinedDotFeatures::set_subfeature_weights(const SGVector<float64_t>& weights)
+void CCombinedDotFeatures::set_subfeature_weights(SGVector<float64_t> weights)
 {
 	int32_t i = 0;
 	CListElement* current = NULL ;
