@@ -6,7 +6,7 @@
  *
  * Written (W) 2012 Evgeniy Andreev (gsomix)
  *
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
 #ifndef _SET_H_
@@ -65,7 +65,7 @@ public:
 		num_elements=0;
 
 		hash_array=SG_MALLOC(HashSetNode<T>*, size);
-		for(int32_t i=0; i<size; i++)
+		for (int32_t i=0; i<size; i++)
 		{
 			hash_array[i]=NULL;
 		}
@@ -76,16 +76,16 @@ public:
 	/** Default destructor */
 	virtual ~CSet()
 	{
-		if(hash_array != NULL)
+		if (hash_array!=NULL)
 		{
-			for(int32_t i = 0; i < hash_size; i++)
+			for (int32_t i=0; i<hash_size; i++)
 			{
 				delete hash_array[i];
 			}
 			SG_FREE(hash_array);
 		}
 	
-		if(array != NULL)
+		if (array!=NULL)
 		{
 			delete array;
 		}	
@@ -100,8 +100,8 @@ public:
 	 */
 	void add(const T& e)
 	{
-		int32_t index = hash(e);
-		if(chain_search(index, e) == NULL)
+		int32_t index=hash(e);
+		if (chain_search(index, e)==NULL)
 		{
 			insert_key(index, e);
 			num_elements++;
@@ -114,8 +114,8 @@ public:
 	 */
 	bool contains(const T& e)
 	{
-		int32_t index = hash(e);
-		if(chain_search(index, e) != NULL)
+		int32_t index=hash(e);
+		if (chain_search(index, e)!=NULL)
 		{
 			return true; 
 		}
@@ -129,10 +129,10 @@ public:
 	 */
 	void remove(const T& e)
 	{
-		int32_t index = hash(e);
-		HashSetNode<T>* result = chain_search(index, e);
+		int32_t index=hash(e);
+		HashSetNode<T>* result=chain_search(index, e);
 
-		if(result != NULL)		
+		if (result!=NULL)		
 		{
 			delete_key(index, result);
 			num_elements--;
@@ -146,10 +146,10 @@ public:
 	 */
 	int32_t index_of(const T& e)
 	{
-		int32_t index = hash(e);
-		HashSetNode<T>* result = chain_search(index, e);
+		int32_t index=hash(e);
+		HashSetNode<T>* result=chain_search(index, e);
 
-		if(result != NULL)		
+		if (result!=NULL)		
 		{
 			 return result->index;
 		}
@@ -220,7 +220,7 @@ private:
 
 	bool is_free(HashSetNode<T>* node)
 	{
-		if(node->left == NULL && node->right == NULL)
+		if ((node->left==NULL) && (node->right==NULL))
 		{
 			return true;
 		}
@@ -231,24 +231,24 @@ private:
 	/** Searchs key in list(chain) */
 	HashSetNode<T>* chain_search(int32_t index, const T& key)
 	{
-		if(hash_array[index] == NULL)
+		if (hash_array[index]==NULL)
 		{
 			return NULL;
 		}
 		else
 		{
-			HashSetNode<T>* current = hash_array[index];
+			HashSetNode<T>* current=hash_array[index];
 
 			do // iterating all items in the list
 			{
-				if(current->element == key)
+				if (current->element==key)
 				{
 					return current; // it's a search key
 				}
 
-				current = current->right;
+				current=current->right;
 
-			} while(current != NULL);
+			} while (current!=NULL);
 
 			return NULL;
 		}
@@ -260,7 +260,7 @@ private:
 		int32_t new_index;
 		HashSetNode<T>* new_node;
 
-		if(free_index >= array->get_num_elements() || array->get_element(free_index)==NULL)
+		if ((free_index>=array->get_num_elements()) || (array->get_element(free_index)==NULL))
 		{
 			// init new node
 			new_node=new HashSetNode<T>;
@@ -284,35 +284,35 @@ private:
 		new_node->right=NULL;
 
 		// add new node in start of list
-		if(hash_array[index] == NULL)
+		if (hash_array[index]==NULL)
 		{
-			hash_array[index] = new_node;
+			hash_array[index]=new_node;
 		}
 		else
 		{
-			hash_array[index]->left = new_node;
-			new_node->right = hash_array[index];
+			hash_array[index]->left=new_node;
+			new_node->right=hash_array[index];
 
-			hash_array[index] = new_node;
+			hash_array[index]=new_node;
 		}
 	}
 
 	/** Deletes key from set */
 	void delete_key(int32_t index, HashSetNode<T>* node)
 	{		
-		int32_t temp = 0;
+		int32_t temp=0;
 
-		if(node == NULL)
+		if (node==NULL)
 		{
 			return;
 		}
 
-		if(node->right != NULL)
+		if (node->right!=NULL)
 		{
 			node->right->left = node->left;
 		}
 
-		if(node->left != NULL)
+		if (node->left!=NULL)
 		{
 			node->left->right = node->right;
 		}
@@ -321,7 +321,7 @@ private:
 			hash_array[index] = node->right;
 		}
 
-		temp = node->index;
+		temp=node->index;
 
 		node->index=free_index;
 		node->left=NULL;
