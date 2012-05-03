@@ -43,8 +43,6 @@ int main(int argc, char **argv)
 	SG_SPRINT("variance: %f\n", CStatistics::variance(data));
 	SG_SPRINT("deviation: %f\n", CStatistics::std_deviation(data));
 
-	data.free_vector();
-
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
 

@@ -70,12 +70,8 @@ int main(int argc, char **argv)
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
-	feature_copy_subset.destroy_vector();
-	feature_subset.destroy_vector();
-
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
-
 	return 0;
 }
 

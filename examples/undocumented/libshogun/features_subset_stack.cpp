@@ -55,8 +55,6 @@ int main(int argc, char **argv)
 
 	/* clean up */
 	SG_UNREF(stack);
-	subset_a.destroy_vector();
-	subset_b.destroy_vector();
 
 	exit_shogun();
 

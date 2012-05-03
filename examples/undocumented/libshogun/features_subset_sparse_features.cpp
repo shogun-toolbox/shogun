@@ -146,11 +146,7 @@ int main(int argc, char **argv)
 
 	SG_UNREF(features);
 	data.destroy_matrix();
-	subset_idx.destroy_vector();
-
-
 	exit_shogun();
-
 	return 0;
 }
 

@@ -29,10 +29,10 @@ void test_parameter_set_multiplication()
 	DynArray<Parameter*> set1;
 	DynArray<Parameter*> set2;
 
-	SGVector<float64_t> param_vector(8, true);
+	SGVector<float64_t> param_vector(8);
 	CMath::range_fill_vector(param_vector.vector, param_vector.vlen);
 
-	SGVector<Parameter*> parameters(4, true);
+	SGVector<Parameter*> parameters(4);
 
 	parameters.vector[0]=new Parameter();
 	parameters.vector[0]->add(&param_vector.vector[0], "0");
@@ -69,15 +69,12 @@ void test_parameter_set_multiplication()
 
 	for (index_t i=0; i<4; ++i)
 		delete parameters.vector[i];
-
-	param_vector.free_vector();
-	parameters.free_vector();
 }
 
 void test_leaf_sets_multiplication()
 {
 	SG_SPRINT("\ntest_leaf_sets_multiplication()\n");
-	SGVector<float64_t> param_vector(6, true);
+	SGVector<float64_t> param_vector(6);
 	CMath::range_fill_vector(param_vector.vector, param_vector.vlen);
 
 	CDynamicObjectArray sets;
@@ -151,7 +148,6 @@ void test_leaf_sets_multiplication()
 	SG_UNREF(result_complex);
 
 	SG_UNREF(new_root);
-	param_vector.free_vector();
 }
 
 int main(int argc, char **argv)

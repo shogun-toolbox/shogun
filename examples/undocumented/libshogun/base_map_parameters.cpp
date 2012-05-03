@@ -143,7 +143,6 @@ public:
 
 	virtual ~CTestClassFloat()
 	{
-		m_vector.destroy_vector();
 		m_matrix.destroy_matrix();
 		SG_UNREF(m_features);
 	}
