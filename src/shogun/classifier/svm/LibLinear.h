@@ -142,25 +142,7 @@ class CLibLinear : public CLinearMachine
 		}
 
 		/** set the linear term for qp */
-		inline void set_linear_term(const SGVector<float64_t>& linear_term)
-		{
-			if (!m_labels)
-				SG_ERROR("Please assign labels first!\n");
-
-			int32_t num_labels=m_labels->get_num_labels();
-
-			if (num_labels!=linear_term.vlen)
-			{
-				SG_ERROR("Number of labels (%d) does not match number"
-						" of entries (%d) in linear term \n", num_labels,
-						linear_term.vlen);
-			}
-
-			m_linear_term.destroy_vector();
-			m_linear_term.vector=CMath::clone_vector(linear_term.vector,
-				linear_term.vlen);
-			m_linear_term.vlen=linear_term.vlen;
-		}
+		void set_linear_term(const SGVector<float64_t> linear_term);
 
 		/** get the linear term for qp */
 		SGVector<float64_t> get_linear_term();

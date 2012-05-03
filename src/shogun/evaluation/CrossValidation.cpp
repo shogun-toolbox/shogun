@@ -259,8 +259,6 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* clean up */
 			SG_UNREF(result_labels);
-			inverse_subset_indices.destroy_vector();
-			subset_indices.destroy_vector();
 		}
 	}
 	else
@@ -304,8 +302,6 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* clean up, remove subsets */
 			SG_UNREF(result_labels);
 			m_labels->remove_subset();
-			inverse_subset_indices.destroy_vector();
-			subset_indices.destroy_vector();
 		}
 	}
 

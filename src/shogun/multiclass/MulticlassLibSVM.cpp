@@ -202,7 +202,6 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 		 * which  means that a copy of the features is stored in lhs */
 		/* TODO this can be done better, ie only store sv of underlying svms
 		 * and map indices */
-		svm_svs().destroy_vector();
 		svm_svs()=SGVector<index_t>(m_kernel->get_num_vec_lhs());
 		svm_svs().range_fill();
 

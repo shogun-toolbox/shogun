@@ -106,7 +106,6 @@ CLabels* CMulticlassMachine::apply()
 			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
 		}
 
-		output_for_i.destroy_vector();
 		for (int32_t i=0; i < num_machines; ++i)
 			SG_UNREF(outputs[i]);
 
@@ -151,7 +150,6 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 		{
 			train_labels->remove_subset();
 			remove_machine_subset();
-			subset.destroy_vector();
 		}
 	}
 
@@ -176,7 +174,6 @@ float64_t CMulticlassMachine::apply(int32_t num)
 	}
 
 	float64_t result=m_multiclass_strategy->decide_label(outputs);
-	outputs.destroy_vector();
 
 	return result;
 }

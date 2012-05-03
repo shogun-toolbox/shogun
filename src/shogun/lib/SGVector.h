@@ -25,7 +25,7 @@ template<class T> class SGVector
 		SGVector(T* v, index_t len, bool ref_counting=true)
 			: vector(v), vlen(len), m_refcount(NULL)
 		{
-			if(ref_counting)
+			if (ref_counting)
 				m_refcount=SG_CALLOC(int32_t, 1); 
 		}
 
@@ -261,18 +261,6 @@ template<class T> class SGVector
 		inline T& operator[](index_t index)
 		{
 			return vector[index];
-		}
-
-		/** free vector */
-		virtual void free_vector()
-		{
-			unref();
-		}
-
-		/** destroy vector */
-		virtual void destroy_vector()
-		{
-			free_vector();
 		}
 
 		/** display array size */

@@ -78,7 +78,6 @@ void CMultidimensionalScaling::init()
 
 CMultidimensionalScaling::~CMultidimensionalScaling()
 {
-	m_eigenvalues.destroy_vector();
 }
 
 SGVector<float64_t> CMultidimensionalScaling::get_eigenvalues() const
@@ -222,8 +221,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	}
 
 	// set eigenvalues vector
-	m_eigenvalues.destroy_vector();
-	m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim,true);
+	m_eigenvalues = SGVector<float64_t>(eigenvalues_vector,m_target_dim);
 #else /* not HAVE_ARPACK */
 	// using LAPACK
 	float64_t* eigenvalues_vector = SG_MALLOC(float64_t, N);
@@ -234,15 +232,11 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	ASSERT(eigenproblem_status==0);
 
 	// set eigenvalues vector
-	m_eigenvalues.destroy_vector();
 	m_eigenvalues = SGVector<float64_t>(m_target_dim);
-	m_eigenvalues.do_free = false;
 
 	// fill eigenvalues vector in backwards order
 	for (i=0; i<m_target_dim; i++)
 		m_eigenvalues.vector[i] = eigenvalues_vector[m_target_dim-i-1];
-
-	SG_FREE(eigenvalues_vector);
 
 	// construct embedding
 	for (i=0; i<m_target_dim; i++)
@@ -399,10 +393,8 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	// cleanup
 	lmk_feature_matrix.destroy_matrix();
 	SG_FREE(current_dist_to_lmks);
-	lmk_idxs.destroy_vector();
 	SG_FREE(mean_sq_dist_vector);
 	SG_FREE(to_process);
-	lmk_idxs.destroy_vector();
 
 	return SGMatrix<float64_t>(new_feature_matrix,m_target_dim,total_N);
 }

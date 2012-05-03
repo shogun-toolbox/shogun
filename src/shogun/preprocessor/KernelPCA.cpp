@@ -53,7 +53,6 @@ void CKernelPCA::init()
 void CKernelPCA::cleanup()
 {
 	m_transformation_matrix.destroy_matrix();
-	m_bias_vector.destroy_vector();
 	if (m_init_features) SG_UNREF(m_init_features);
 	m_initialized = false;
 }
@@ -61,7 +60,6 @@ void CKernelPCA::cleanup()
 CKernelPCA::~CKernelPCA()
 {
 	m_transformation_matrix.destroy_matrix();
-	m_bias_vector.destroy_vector();
 	if (m_init_features) SG_UNREF(m_init_features);
 }
 
@@ -98,7 +96,6 @@ bool CKernelPCA::init(CFeatures* features)
 		SG_FREE(eigenvalues);
 
 		m_transformation_matrix.destroy_matrix();
-		m_bias_vector.destroy_vector();
 
 		m_transformation_matrix = SGMatrix<float64_t>(kernel_matrix.matrix,n,n);
 		m_bias_vector = SGVector<float64_t>(n);

@@ -72,7 +72,6 @@ void CLibLinear::init()
 
 CLibLinear::~CLibLinear()
 {
-	m_linear_term.destroy_vector();
 }
 
 bool CLibLinear::train_machine(CFeatures* data)
@@ -1133,6 +1132,23 @@ void CLibLinear::solve_l1r_lr(
 	delete [] xjpos_sum;
 }
 
+void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
+{
+	if (!m_labels)
+		SG_ERROR("Please assign labels first!\n");
+
+	int32_t num_labels=m_labels->get_num_labels();
+
+	if (num_labels!=linear_term.vlen)
+	{
+		SG_ERROR("Number of labels (%d) does not match number"
+				" of entries (%d) in linear term \n", num_labels,
+				linear_term.vlen);
+	}
+
+	m_linear_term=linear_term;
+}
+
 SGVector<float64_t> CLibLinear::get_linear_term()
 {
 	if (!m_linear_term.vlen || !m_linear_term.vector)
@@ -1145,8 +1161,6 @@ void CLibLinear::init_linear_term()
 {
 	if (!m_labels)
 		SG_ERROR("Please assign labels first!\n");
-
-	m_linear_term.destroy_vector();
 
 	m_linear_term=SGVector<float64_t>(m_labels->get_num_labels());
 	CMath::fill_vector(m_linear_term.vector, m_linear_term.vlen, -1.0);

@@ -65,8 +65,6 @@ float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* gr
 		entropy_p += -G_colsum[i] * log(G_colsum[i])/log(2.);
 	}
 
-	label_p.free_vector();
-	label_g.free_vector();
 	G.destroy_matrix();
 
 	return mutual_info / std::max(entropy_g, entropy_p);

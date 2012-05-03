@@ -59,9 +59,7 @@ void CGaussian::init()
 
 CGaussian::~CGaussian()
 {
-	m_d.destroy_vector();
 	m_u.destroy_matrix();
-	m_mean.free_vector();
 }
 
 bool CGaussian::train(CFeatures* data)
@@ -74,8 +72,6 @@ bool CGaussian::train(CFeatures* data)
 		set_features(data);
 	}
 	CDotFeatures* dotdata=(CDotFeatures *) data;
-
-	m_mean.destroy_vector();
 
 	m_mean=dotdata->get_mean();
 	SGMatrix<float64_t> cov=dotdata->get_cov();
@@ -119,7 +115,6 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 	ASSERT(features->has_property(FP_DOT));
 	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
 	float64_t answer=compute_log_PDF(v);
-	v.free_vector();
 	return answer;
 }
 
@@ -160,6 +155,35 @@ float64_t CGaussian::compute_log_PDF(const SGVector<float64_t>& point)
 	SG_FREE(difference);
 
 	return -0.5*answer;
+}
+
+SGVector<float64_t> CGaussian::get_mean()
+{
+	return m_mean;
+}
+
+void CGaussian::set_mean(const SGVector<float64_t> mean)
+{
+	if (mean.vlen==1)
+		m_cov_type=SPHERICAL;
+
+	m_mean=mean;
+}
+
+void CGaussian::set_cov(SGMatrix<float64_t> cov)
+{
+	ASSERT(cov.num_rows==cov.num_cols);
+	ASSERT(cov.num_rows==m_mean.vlen);
+	decompose_cov(cov);
+	init();
+	if (cov.do_free)
+		cov.free_matrix();
+}
+
+void CGaussian::set_d(const SGVector<float64_t> d)
+{
+	m_d = d;
+	init();
 }
 
 SGMatrix<float64_t> CGaussian::get_cov()
@@ -212,7 +236,6 @@ void CGaussian::register_params()
 
 void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 {
-	m_d.destroy_vector();
 	switch (m_cov_type)
 	{
 		case FULL:

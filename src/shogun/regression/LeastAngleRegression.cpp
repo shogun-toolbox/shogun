@@ -315,7 +315,6 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 
 	} // main loop
 
-	y.free_vector();
 	X.free_matrix();
 	if (R.matrix != NULL)
 		R.destroy_matrix();

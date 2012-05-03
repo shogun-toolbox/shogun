@@ -125,7 +125,6 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	}
 
 	delete prob.KER;
-	lab.free_vector();
 	SG_FREE(solution);
 
 	return true;

@@ -54,8 +54,6 @@ void CPCA::init()
 CPCA::~CPCA()
 {
 	m_transformation_matrix.destroy_matrix();
-	m_mean_vector.destroy_vector();
-	m_eigenvalues_vector.destroy_vector();
 }
 
 bool CPCA::init(CFeatures* features)
@@ -177,8 +175,6 @@ bool CPCA::init(CFeatures* features)
 void CPCA::cleanup()
 {
 	m_transformation_matrix.destroy_matrix();
-	m_mean_vector.destroy_vector();
-	m_eigenvalues_vector.destroy_vector();
 }
 
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)

@@ -169,7 +169,6 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 		
 	SGVector<float64_t> label_vector = m_labels->get_labels();
 	
-	m_alpha.destroy_vector();
 	m_alpha = SGVector<float64_t>(label_vector.vlen);
 	memcpy(m_alpha.vector, label_vector.vector,
 		label_vector.vlen*sizeof(float64_t));
@@ -182,7 +181,6 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	temp1.destroy_matrix();
 	temp2.destroy_matrix();
 	kernel_train_matrix.destroy_matrix();
-	diagonal.destroy_vector();
 	
 	return true;
 }
@@ -249,10 +247,8 @@ SGMatrix<float64_t> CGaussianProcessRegression::getCovarianceMatrix(CFeatures* d
 	
 	temp1.destroy_matrix();
 	temp2.destroy_matrix();
-	ipiv.destroy_vector();
 	kernel_star_matrix.destroy_matrix();
 	kernel_test_matrix.destroy_matrix();
-	diagonal.destroy_vector();
 	
 	return temp3;
 }
@@ -263,7 +259,6 @@ CGaussianProcessRegression::~CGaussianProcessRegression()
 	SG_UNREF(kernel);
 	SG_UNREF(features);
 	m_L.destroy_matrix();
-	m_alpha.destroy_vector();
 }
 
 void CGaussianProcessRegression::set_kernel(CKernel* k)
