@@ -45,7 +45,6 @@ CHomogeneousKernelMap::CHomogeneousKernelMap
 
 CHomogeneousKernelMap::~CHomogeneousKernelMap()
 {
-	m_table.destroy_vector ();
 }
 
 bool CHomogeneousKernelMap::init (CFeatures* features)
@@ -58,7 +57,7 @@ bool CHomogeneousKernelMap::init (CFeatures* features)
 
 void CHomogeneousKernelMap::cleanup ()
 {
-	m_table.destroy_vector ();
+	m_table.unref();
 }
 
 

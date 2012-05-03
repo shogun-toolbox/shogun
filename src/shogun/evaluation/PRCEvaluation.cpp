@@ -35,7 +35,6 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	SGVector<float64_t> orig_labels = predicted->get_labels();
 	int32_t length = orig_labels.vlen;
 	float64_t* labels = CMath::clone_vector(orig_labels.vector, length);
-	orig_labels.free_vector();
 
 	// get indexes for sort
 	int32_t* idxs = SG_MALLOC(int32_t, length);

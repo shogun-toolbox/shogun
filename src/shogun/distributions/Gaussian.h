@@ -120,23 +120,13 @@ class CGaussian : public CDistribution
 		 *
 		 * @return mean
 		 */
-		virtual inline SGVector<float64_t> get_mean()
-		{
-			return m_mean;
-		}
+		virtual SGVector<float64_t> get_mean();
 
 		/** set mean
 		 *
 		 * @param mean new mean
 		 */
-		virtual inline void set_mean(const SGVector<float64_t>& mean)
-		{
-			m_mean.destroy_vector();
-			if (mean.vlen==1)
-				m_cov_type=SPHERICAL;
-
-			m_mean=mean;
-		}
+		virtual void set_mean(const SGVector<float64_t> mean);
 
 		/** get covariance
 		 *
@@ -150,15 +140,7 @@ class CGaussian : public CDistribution
 		 *
 		 * @param cov new covariance
 		 */
-		virtual inline void set_cov(SGMatrix<float64_t> cov)
-		{
-			ASSERT(cov.num_rows==cov.num_cols);
-			ASSERT(cov.num_rows==m_mean.vlen);
-			decompose_cov(cov);
-			init();
-			if (cov.do_free)
-				cov.free_matrix();
-		}
+		virtual void set_cov(SGMatrix<float64_t> cov);
 
 		/** get covariance type
 		 *
@@ -193,12 +175,7 @@ class CGaussian : public CDistribution
 		 *
 		 * @param d new diagonal
 		 */
-		inline void set_d(const SGVector<float64_t>& d)
-		{
-			m_d.destroy_vector();
-			m_d = d;
-			init();
-		}
+		void set_d(const SGVector<float64_t> d);
 
 		/** get unitary matrix
 		 *

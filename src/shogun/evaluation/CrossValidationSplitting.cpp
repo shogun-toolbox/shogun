@@ -64,7 +64,4 @@ void CCrossValidationSplitting::build_subsets()
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets */
 	m_subset_indices->shuffle();
-
-	/* clean up */
-	indices.destroy_vector();
 }

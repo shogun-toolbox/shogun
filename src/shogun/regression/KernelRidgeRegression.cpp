@@ -66,11 +66,9 @@ bool CKernelRidgeRegression::train_machine_pinv(CFeatures* data)
 		kernel_matrix.matrix[i+i*n]+=m_tau;
 
 	/* re-set alphas of kernel machine */
-	m_alpha.destroy_vector();
 	m_alpha=m_labels->get_labels_copy();
 
 	/* tell kernel machine that all alphas are needed as'support vectors' */
-	m_svs.destroy_vector();
 	m_svs=SGVector<index_t>(m_alpha.vlen);
 	m_svs.range_fill();
 
@@ -106,7 +104,6 @@ bool CKernelRidgeRegression::train_machine_gs(CFeatures* data)
 	ASSERT(m>0 && n>0);
 
 	// re-set alphas of kernel machine
-	m_alpha.destroy_vector();
 	SGVector<float64_t> b;
 	float64_t alpha_old;
 
@@ -115,7 +112,6 @@ bool CKernelRidgeRegression::train_machine_gs(CFeatures* data)
 	m_alpha.zero();
 
 	// tell kernel machine that all alphas are needed as 'support vectors'
-	m_svs.destroy_vector();
 	m_svs=SGVector<index_t>(m_alpha.vlen);
 	m_svs.range_fill();
 

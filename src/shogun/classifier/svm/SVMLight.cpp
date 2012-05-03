@@ -301,7 +301,6 @@ void CSVMLight::svm_learn()
 	int32_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen);
 	int32_t* label=CMath::clone_vector(lab.vector, lab.vlen);
-	lab.free_vector();
 
 	int32_t* docs=SG_MALLOC(int32_t, totdoc);
 	SG_FREE(W);

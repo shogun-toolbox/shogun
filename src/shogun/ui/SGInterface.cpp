@@ -3766,7 +3766,6 @@ bool CSGInterface::cmd_get_dotfeature_weights_combined()
 
 	SGVector<float64_t> weights = ((CCombinedDotFeatures*) features)->get_subfeature_weights();
 	set_vector(weights.vector, weights.vlen);
-	weights.destroy_vector();
 
 	return true;
 }

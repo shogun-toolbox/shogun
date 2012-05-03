@@ -81,7 +81,6 @@ int32_t CMulticlassOneVsOneStrategy::decide_label(const SGVector<float64_t> &out
 	}
 
 	int32_t result=CMath::arg_max(votes.vector, 1, votes.vlen);
-	votes.destroy_vector();
 
 	return result;
 }

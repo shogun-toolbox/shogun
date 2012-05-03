@@ -36,7 +36,6 @@ CConjugateIndex::CConjugateIndex(CFeatures* train_features, CLabels* train_label
 CConjugateIndex::~CConjugateIndex()
 {
 	clean_classes();
-	m_feature_vector.destroy_vector();
 	SG_UNREF(m_features);
 };
 
@@ -204,7 +203,6 @@ float64_t CConjugateIndex::apply(int32_t index)
 			predicted_label = i;
 		}
 	}
-	feature_vector.free_vector();
 
 	return predicted_label;
 };

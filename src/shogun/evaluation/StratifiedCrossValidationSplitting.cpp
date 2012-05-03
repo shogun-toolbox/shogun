@@ -49,9 +49,6 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 					"subset!\n", labels_per_class.vector[i], classes.vector[i], num_subsets);
 		}
 	}
-
-	labels_per_class.destroy_vector();
-	classes.destroy_vector();
 }
 
 void CStratifiedCrossValidationSplitting::build_subsets()
@@ -116,7 +113,4 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets */
 	m_subset_indices->shuffle();
-
-	/* clean up */
-	unique_labels.destroy_vector();
 }
