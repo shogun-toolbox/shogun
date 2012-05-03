@@ -71,9 +71,6 @@ CKernelMachine::~CKernelMachine()
 	SG_UNREF(kernel);
 	SG_UNREF(m_custom_kernel);
 	SG_UNREF(m_kernel_backup);
-
-	SG_FREE(m_alpha.vector);
-	SG_FREE(m_svs.vector);
 }
 
 void CKernelMachine::set_kernel(CKernel* k)
