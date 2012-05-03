@@ -94,7 +94,6 @@ int main(int argc, char** argv)
 	CMath::display_vector(out_labels.vector, out_labels.vlen);
 
 	// Free resources
-	out_labels.destroy_vector();
 	SG_UNREF(mc_svm);
 	SG_UNREF(svm);
 	SG_UNREF(output);

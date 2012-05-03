@@ -82,9 +82,6 @@ int main(int argc, char **argv)
 				SG_SPRINT("%d(%d),", inverse.vector[j],
 						(int32_t)labels->get_label(j));
 			SG_SPRINT("\n\n");
-
-			subset.destroy_vector();
-			inverse.destroy_vector();
 		}
 
 		/* clean up */

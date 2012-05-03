@@ -114,8 +114,6 @@ void test_cross_validation()
 	/* clean up */
 	SG_UNREF(cross);
 	SG_UNREF(features);
-	mean_1.destroy_vector();
-	mean_2.destroy_vector();
 }
 
 int main(int argc, char **argv)

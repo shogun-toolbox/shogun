@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 {
 	init_shogun(&print_message, &print_message, &print_message);
 
-	SGVector<float64_t> data(10, true);
+	SGVector<float64_t> data(10);
 	CMath::range_fill_vector(data.vector, data.vlen, 1.0);
 
 	float64_t low, up, mean;
@@ -32,8 +32,6 @@ int main(int argc, char **argv)
 
 	SG_SPRINT("sample mean: %f. True mean lies in [%f,%f] with %f%%\n",
 			mean, low, up, 100*(1-error_prob));
-
-	data.free_vector();
 
 	SG_SPRINT("\nEND\n");
 	exit_shogun();

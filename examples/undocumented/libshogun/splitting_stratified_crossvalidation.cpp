@@ -51,7 +51,6 @@ int main(int argc, char **argv)
 		/* print classes */
 		SGVector<float64_t> classes=labels->get_unique_labels();
 		CMath::display_vector(classes.vector, classes.vlen, "classes");
-		classes.destroy_vector();
 
 		/* build splitting strategy */
 		CStratifiedCrossValidationSplitting* splitting=
@@ -77,9 +76,6 @@ int main(int argc, char **argv)
 				SG_SPRINT("%d(%d),", inverse.vector[j],
 						(int32_t)labels->get_label(j));
 			SG_SPRINT("\n\n");
-
-			subset.destroy_vector();
-			inverse.destroy_vector();
 		}
 
 		/* check whether number of labels in every subset is nearly equal */
@@ -95,7 +91,6 @@ int main(int argc, char **argv)
 				if ((int32_t)labels->get_label(temp.vector[j])==i)
 					++count;
 			}
-			temp.destroy_vector();
 
 			/* check all subsets for same ratio */
 			for (index_t j=0; j<num_subsets; ++j)
@@ -107,7 +102,6 @@ int main(int argc, char **argv)
 					if ((int32_t)labels->get_label(subset.vector[k])==i)
 						++temp_count;
 				}
-				subset.destroy_vector();
 
 				/* at most one difference */
 				SG_SPRINT("number in subset %d: %d\n", j, temp_count);

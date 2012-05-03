@@ -97,7 +97,6 @@ void test()
 	SG_UNREF(output);
 
 	SG_SPRINT("\n\n");
-	indices.destroy_vector();
 	indices=SGVector<index_t>(3);
 	indices.vector[0]=1;
 	indices.vector[1]=2;
@@ -109,7 +108,6 @@ void test()
 	SG_UNREF(output);
 
 	SG_SPRINT("\n\n");
-	indices.destroy_vector();
 	indices=SGVector<index_t>(4);
 	indices.range_fill();
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
@@ -132,9 +130,6 @@ void test()
 	SG_UNREF(features);
 	SG_UNREF(eval);
 	SG_UNREF(labels);
-	mean_1.destroy_vector();
-	mean_2.destroy_vector();
-	indices.destroy_vector();
 }
 
 int main(int argc, char **argv)

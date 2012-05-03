@@ -133,12 +133,8 @@ int main(int argc, char **argv)
 		features->free_feature_vector(vec, i);
 	}
 
-
 	SG_UNREF(features);
-	subset_idx.destroy_vector();
-
 	exit_shogun();
-
 	return 0;
 }
 

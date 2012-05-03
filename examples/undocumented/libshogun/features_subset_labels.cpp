@@ -77,8 +77,6 @@ int main(int argc, char **argv)
 		ASSERT(label==labels_data.vector[i]);
 	}
 	SG_UNREF(labels);
-	subset_idx.destroy_vector();
-
 	SG_SPRINT("\nEND\n");
 	exit_shogun();
 
