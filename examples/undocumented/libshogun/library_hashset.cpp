@@ -1,4 +1,4 @@
-#include <shogun/lib/HashSet.h>
+#include <shogun/lib/HSet.h>
 #include <stdio.h>
 
 using namespace shogun;
@@ -8,10 +8,13 @@ int main(int argc, char** argv)
 	init_shogun();
 	double v[8] = {0.0,0.0,0.1,0.1,0.2,0.2,0.3,0.3};
 
-	CHashSet* set = new CHashSet(8);
+	CHSet<double>* set = new CHSet<double>(2, 8);
 
 	for (int i=0; i<8; i++)
-		set->insert_key(i,v[i]);
+		set->add(v[i]);
+
+	set->remove(0.1);
+	set->add(0.4);
 
 	delete set;
 	exit_shogun();
