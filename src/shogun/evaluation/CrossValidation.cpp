@@ -179,8 +179,6 @@ CrossValidationResult CCrossValidation::evaluate()
 		result.conf_int_up=0;
 	}
 
-	SG_FREE(results.vector);
-
 	/* unlock machine if it was locked in this method */
 	if (m_machine->is_data_locked() && m_do_unlock)
 	{
@@ -308,9 +306,6 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* build arithmetic mean of results */
 	float64_t mean=CStatistics::mean(
 			SGVector <float64_t> (results, num_subsets));
-
-	/* clean up */
-	SG_FREE(results);
 
 	return mean;
 }
