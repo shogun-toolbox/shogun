@@ -43,20 +43,6 @@ CLinearMachine::~CLinearMachine()
 	SG_UNREF(features);
 }
 
-bool CLinearMachine::load(FILE* srcfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
-bool CLinearMachine::save(FILE* dstfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
 CLabels* CLinearMachine::apply()
 {
 	if (!features)
