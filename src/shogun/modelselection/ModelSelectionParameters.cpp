@@ -139,8 +139,8 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 				*((float64_t*)step),
 				*((float64_t*)type_base));
 
-		m_values.vector=(char*)values.vector;
-		m_values.vlen=values.vlen;
+		m_values = SGVector<char>((char*) values.vector, values.vlen);
+
 	}
 	else if (value_type==MSPT_INT32)
 	{
@@ -150,9 +150,7 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 				type,
 				*((int32_t*)step),
 				*((int32_t*)type_base));
-
-		m_values.vector=(char*)values.vector;
-		m_values.vlen=values.vlen;
+		m_values = SGVector<char>((char*) values.vector, values.vlen);
 	}
 	else if (value_type==MSPT_NONE)
 	{
@@ -458,10 +456,10 @@ void CModelSelectionParameters::delete_values()
 		switch (m_value_type)
 		{
 		case MSPT_FLOAT64:
-			SG_FREE((float64_t*) m_values.vector);
+			m_values.unref();
 			break;
 		case MSPT_INT32:
-			SG_FREE((int32_t*) m_values.vector);
+			m_values.unref();
 			break;
 		case MSPT_NONE:
 			SG_ERROR("Value node has no type!\n");

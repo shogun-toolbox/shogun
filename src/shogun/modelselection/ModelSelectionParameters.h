@@ -172,7 +172,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 
 	/* create value vector */
 	index_t num_values=CMath::round(max-min)/step+1;
-	SGVector<T> result(num_values);
+	SGVector<T> result(num_values, false);
 
 	/* fill array */
 	for (index_t i=0; i<num_values; ++i)
