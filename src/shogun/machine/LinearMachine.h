@@ -118,20 +118,6 @@ class CLinearMachine : public CMachine
 			return bias;
 		}
 
-		/** load from file
-		 *
-		 * @param srcfile file to load from
-		 * @return if loading was successful
-		 */
-		virtual bool load(FILE* srcfile);
-
-		/** save to file
-		 *
-		 * @param dstfile file to save to
-		 * @return if saving was successful
-		 */
-		virtual bool save(FILE* dstfile);
-
 		/** set features
 		 *
 		 * @param feat features to set
