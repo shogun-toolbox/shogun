@@ -70,18 +70,6 @@ float64_t CMachine::apply(int32_t num)
 	return CMath::INFTY;
 }
 
-bool CMachine::load(FILE* srcfile)
-{
-	ASSERT(srcfile);
-	return false;
-}
-
-bool CMachine::save(FILE* dstfile)
-{
-	ASSERT(dstfile);
-	return false;
-}
-
 void CMachine::set_labels(CLabels* lab)
 {
 	SG_UNREF(m_labels);

@@ -31,20 +31,6 @@ COnlineLinearMachine::~COnlineLinearMachine()
 	SG_UNREF(features);
 }
 
-bool COnlineLinearMachine::load(FILE* srcfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
-bool COnlineLinearMachine::save(FILE* dstfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
 CLabels* COnlineLinearMachine::apply()
 {
 	ASSERT(features);
