@@ -64,6 +64,8 @@
 #include <shogun/classifier/svm/SVMSGD.h>
 #include <shogun/classifier/svm/WDSVMOcas.h>
 
+#include <shogun/io/SerializableAsciiFile.h>
+
 using namespace shogun;
 
 CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
@@ -834,10 +836,11 @@ bool CGUIClassifier::load(char* filename, char* type)
 	if (new_classifier(type))
 	{
 		FILE* model_file=fopen(filename, "r");
+		CSerializableAsciiFile* ascii_file = new CSerializableAsciiFile(model_file,'r');
 
-		if (model_file)
+		if (ascii_file)
 		{
-			if (classifier && classifier->load(model_file))
+			if (classifier && classifier->load_serializable(ascii_file))
 			{
 				SG_DEBUG("file successfully read.\n");
 				result=true;
@@ -845,7 +848,7 @@ bool CGUIClassifier::load(char* filename, char* type)
 			else
 				SG_ERROR("SVM/Classifier creation/loading failed on file %s.\n", filename);
 
-			fclose(model_file);
+			delete ascii_file;
 		}
 		else
 			SG_ERROR("Opening file %s failed.\n", filename);
@@ -866,8 +869,9 @@ bool CGUIClassifier::save(char* param)
 	if (classifier)
 	{
 		FILE* file=fopen(param, "w");
+		CSerializableAsciiFile* ascii_file = new CSerializableAsciiFile(file,'w');
 
-		if ((!file) ||	(!classifier->save(file)))
+		if ((!ascii_file) || (!classifier->save_serializable(ascii_file)))
 			printf("writing to file %s failed!\n", param);
 		else
 		{
@@ -875,8 +879,8 @@ bool CGUIClassifier::save(char* param)
 			result=true;
 		}
 
-		if (file)
-			fclose(file);
+		if (ascii_file)
+			delete ascii_file;
 	}
 	else
 		SG_ERROR("create classifier first\n");
