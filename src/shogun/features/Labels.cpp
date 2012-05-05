@@ -49,6 +49,13 @@ void CLabels::set_to_one()
 		labels.vector[m_subset_stack->subset_idx_conversion(i)]=+1;
 }
 
+CLabels::CLabels(CFile* loader)
+: CSGObject()
+{
+	init();
+	load(loader);
+}
+
 CLabels::~CLabels()
 {
 	SG_UNREF(m_subset_stack);
@@ -169,6 +176,29 @@ void CLabels::set_int_labels(SGVector<int32_t> lab)
 
 	for (int32_t i=0; i<lab.vlen; i++)
 		set_int_label(i, lab.vector[i]);
+}
+
+void CLabels::load(CFile* loader)
+{
+	remove_subset();
+
+	SG_SET_LOCALE_C;
+	labels.unref();
+	ASSERT(loader);
+	loader->get_vector(labels.vector, labels.vlen);
+	SG_RESET_LOCALE;
+}
+
+void CLabels::save(CFile* writer)
+{
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("save() is not possible on subset");
+
+	SG_SET_LOCALE_C;
+	ASSERT(writer);
+	ASSERT(labels.vector && labels.vlen>0);
+	writer->set_vector(labels.vector, labels.vlen);
+	SG_RESET_LOCALE;
 }
 
 bool CLabels::set_label(int32_t idx, float64_t label)
