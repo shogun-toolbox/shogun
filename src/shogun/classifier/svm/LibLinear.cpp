@@ -116,23 +116,21 @@ bool CLibLinear::train_machine(CFeatures* data)
 					num_vec, num_train_labels);
 		}
 	}
-	SG_FREE(w);
 	if (use_bias)
-		w=SG_MALLOC(float64_t, num_feat+1);
+		w=SGVector<float64_t>(SG_MALLOC(float64_t, num_feat+1), num_feat);
 	else
-		w=SG_MALLOC(float64_t, num_feat+0);
-	w_dim=num_feat;
+		w=SGVector<float64_t>(num_feat);
 
 	problem prob;
 	if (use_bias)
 	{
-		prob.n=w_dim+1;
-		memset(w, 0, sizeof(float64_t)*(w_dim+1));
+		prob.n=w.vlen+1;
+		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+1));
 	}
 	else
 	{
-		prob.n=w_dim;
-		memset(w, 0, sizeof(float64_t)*(w_dim+0));
+		prob.n=w.vlen;
+		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+0));
 	}
 	prob.l=num_vec;
 	prob.x=features;
@@ -163,7 +161,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 			fun_obj=new l2r_lr_fun(&prob, Cp, Cn);
 			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
 			SG_DEBUG("starting L2R_LR training via tron\n");
-			tron_obj.tron(w, m_max_train_time);
+			tron_obj.tron(w.vector, m_max_train_time);
 			SG_DEBUG("done with tron\n");
 			delete fun_obj;
 			break;
@@ -172,7 +170,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		{
 			fun_obj=new l2r_l2_svc_fun(&prob, Cp, Cn);
 			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
-			tron_obj.tron(w, m_max_train_time);
+			tron_obj.tron(w.vector, m_max_train_time);
 			delete fun_obj;
 			break;
 		}
@@ -200,7 +198,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	}
 
 	if (use_bias)
-		set_bias(w[w_dim]);
+		set_bias(w[w.vlen]);
 	else
 		set_bias(0);
 
@@ -313,9 +311,9 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			i = index[s];
 			int32_t yi = y[i];
 
-			G = prob->x->dense_dot(i, w, n);
+			G = prob->x->dense_dot(i, w.vector, n);
 			if (prob->use_bias)
-				G+=w[n];
+				G+=w.vector[n];
 
 			if (m_linear_term.vector)
 				G = G*yi + m_linear_term.vector[i];
@@ -362,10 +360,10 @@ void CLibLinear::solve_l2r_l1l2_svc(
 				alpha[i] = CMath::min(CMath::max(alpha[i] - G/QD[i], 0.0), C);
 				d = (alpha[i] - alpha_old)*yi;
 
-				prob->x->add_to_dense_vec(d, i, w, n);
+				prob->x->add_to_dense_vec(d, i, w.vector, n);
 
 				if (prob->use_bias)
-					w[n]+=d;
+					w.vector[n]+=d;
 			}
 		}
 
@@ -406,7 +404,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	double v = 0;
 	int nSV = 0;
 	for(i=0; i<w_size; i++)
-		v += w[i]*w[i];
+		v += w.vector[i]*w.vector[i];
 	for(i=0; i<l; i++)
 	{
 		v += alpha[i]*(alpha[i]*diag[GETI(i)] - 2);
@@ -482,7 +480,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	for(j=0; j<w_size; j++)
 	{
-		w[j] = 0;
+		w.vector[j] = 0;
 		index[j] = j;
 		xj_sq[j] = 0;
 
@@ -558,7 +556,7 @@ void CLibLinear::solve_l1r_l2_svc(
 			double Gp = G+1;
 			double Gn = G-1;
 			double violation = 0;
-			if(w[j] == 0)
+			if(w.vector[j] == 0)
 			{
 				if(Gp < 0)
 					violation = -Gp;
@@ -572,7 +570,7 @@ void CLibLinear::solve_l1r_l2_svc(
 					continue;
 				}
 			}
-			else if(w[j] > 0)
+			else if(w.vector[j] > 0)
 				violation = fabs(Gp);
 			else
 				violation = fabs(Gn);
@@ -580,23 +578,23 @@ void CLibLinear::solve_l1r_l2_svc(
 			Gmax_new = CMath::max(Gmax_new, violation);
 
 			// obtain Newton direction d
-			if(Gp <= H*w[j])
+			if(Gp <= H*w.vector[j])
 				d = -Gp/H;
-			else if(Gn >= H*w[j])
+			else if(Gn >= H*w.vector[j])
 				d = -Gn/H;
 			else
-				d = -w[j];
+				d = -w.vector[j];
 
 			if(fabs(d) < 1.0e-12)
 				continue;
 
-			double delta = fabs(w[j]+d)-fabs(w[j]) + G*d;
+			double delta = fabs(w.vector[j]+d)-fabs(w.vector[j]) + G*d;
 			d_old = 0;
 			int num_linesearch;
 			for(num_linesearch=0; num_linesearch < max_num_linesearch; num_linesearch++)
 			{
 				d_diff = d_old - d;
-				cond = fabs(w[j]+d)-fabs(w[j]) - sigma*delta;
+				cond = fabs(w.vector[j]+d)-fabs(w.vector[j]) - sigma*delta;
 
 				appxcond = xj_sq[j]*d*d + G_loss*d + cond;
 				if(appxcond <= 0)
@@ -688,7 +686,7 @@ void CLibLinear::solve_l1r_l2_svc(
 				}
 			}
 
-			w[j] += d;
+			w.vector[j] += d;
 
 			// recompute b[] if line search takes too many steps
 			if(num_linesearch >= max_num_linesearch)
@@ -699,19 +697,19 @@ void CLibLinear::solve_l1r_l2_svc(
 
 				for(int i=0; i<n; i++)
 				{
-					if(w[i]==0)
+					if(w.vector[i]==0)
 						continue;
 
 					iterator=x->get_feature_iterator(i);
 					while (x->get_next_feature(ind, val, iterator))
-						b[ind] -= w[i]*val*y[ind];
+						b[ind] -= w.vector[i]*val*y[ind];
 					x->free_feature_iterator(iterator);
 				}
 
-				if (use_bias && w[n])
+				if (use_bias && w.vector[n])
 				{
 					for (ind=0; ind<l; ind++)
-						b[ind] -= w[n]*y[ind];
+						b[ind] -= w.vector[n]*y[ind];
 				}
 			}
 		}
@@ -748,9 +746,9 @@ void CLibLinear::solve_l1r_l2_svc(
 	int nnz = 0;
 	for(j=0; j<w_size; j++)
 	{
-		if(w[j] != 0)
+		if(w.vector[j] != 0)
 		{
-			v += fabs(w[j]);
+			v += fabs(w.vector[j]);
 			nnz++;
 		}
 	}
@@ -832,7 +830,7 @@ void CLibLinear::solve_l1r_lr(
 	}
 	for(j=0; j<w_size; j++)
 	{
-		w[j] = 0;
+		w.vector[j] = 0;
 		index[j] = j;
 		xj_max[j] = 0;
 		C_sum[j] = 0;
@@ -924,7 +922,7 @@ void CLibLinear::solve_l1r_lr(
 			double Gp = G+1;
 			double Gn = G-1;
 			double violation = 0;
-			if(w[j] == 0)
+			if(w.vector[j] == 0)
 			{
 				if(Gp < 0)
 					violation = -Gp;
@@ -938,7 +936,7 @@ void CLibLinear::solve_l1r_lr(
 					continue;
 				}
 			}
-			else if(w[j] > 0)
+			else if(w.vector[j] > 0)
 				violation = fabs(Gp);
 			else
 				violation = fabs(Gn);
@@ -946,23 +944,23 @@ void CLibLinear::solve_l1r_lr(
 			Gmax_new = CMath::max(Gmax_new, violation);
 
 			// obtain Newton direction d
-			if(Gp <= H*w[j])
+			if(Gp <= H*w.vector[j])
 				d = -Gp/H;
-			else if(Gn >= H*w[j])
+			else if(Gn >= H*w.vector[j])
 				d = -Gn/H;
 			else
-				d = -w[j];
+				d = -w.vector[j];
 
 			if(fabs(d) < 1.0e-12)
 				continue;
 
 			d = CMath::min(CMath::max(d,-10.0),10.0);
 
-			double delta = fabs(w[j]+d)-fabs(w[j]) + G*d;
+			double delta = fabs(w.vector[j]+d)-fabs(w.vector[j]) + G*d;
 			int num_linesearch;
 			for(num_linesearch=0; num_linesearch < max_num_linesearch; num_linesearch++)
 			{
-				cond = fabs(w[j]+d)-fabs(w[j]) - sigma*delta;
+				cond = fabs(w.vector[j]+d)-fabs(w.vector[j]) - sigma*delta;
 
 				if(x_min >= 0)
 				{
@@ -1046,7 +1044,7 @@ void CLibLinear::solve_l1r_lr(
 				}
 			}
 
-			w[j] += d;
+			w.vector[j] += d;
 
 			// recompute exp_wTx[] if line search takes too many steps
 			if(num_linesearch >= max_num_linesearch)
@@ -1057,18 +1055,18 @@ void CLibLinear::solve_l1r_lr(
 
 				for(int i=0; i<w_size; i++)
 				{
-					if(w[i]==0) continue;
+					if(w.vector[i]==0) continue;
 
 					if (use_bias && i==n)
 					{
 						for (ind=0; ind<l; ind++)
-							exp_wTx[ind] += w[i];
+							exp_wTx[ind] += w.vector[i];
 					}
 					else
 					{
 						iterator=x->get_feature_iterator(i);
 						while (x->get_next_feature(ind, val, iterator))
-							exp_wTx[ind] += w[i]*val;
+							exp_wTx[ind] += w.vector[i]*val;
 						x->free_feature_iterator(iterator);
 					}
 				}
@@ -1108,9 +1106,9 @@ void CLibLinear::solve_l1r_lr(
 	double v = 0;
 	int nnz = 0;
 	for(j=0; j<w_size; j++)
-		if(w[j] != 0)
+		if(w.vector[j] != 0)
 		{
-			v += fabs(w[j]);
+			v += fabs(w.vector[j]);
 			nnz++;
 		}
 	for(j=0; j<l; j++)

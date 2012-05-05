@@ -80,9 +80,7 @@ bool CLDA::train_machine(CFeatures* data)
 		return false;
 	}
 
-	SG_FREE(w);
-	w=SG_MALLOC(float64_t, num_feat);
-	w_dim=num_feat;
+	w=SGVector<float64_t>(num_feat);
 
 	float64_t* mean_neg=SG_MALLOC(float64_t, num_feat);
 	memset(mean_neg,0,num_feat*sizeof(float64_t));
@@ -177,11 +175,11 @@ bool CLDA::train_machine(CFeatures* data)
 
 	bias=0.5*(CMath::dot(w_neg, mean_neg, num_feat)-CMath::dot(w_pos, mean_pos, num_feat));
 	for (i=0; i<num_feat; i++)
-		w[i]=w_pos[i]-w_neg[i];
+		w.vector[i]=w_pos[i]-w_neg[i];
 
 #ifdef DEBUG_LDA
 	SG_PRINT("bias: %f\n", bias);
-	CMath::display_vector(w, num_feat, "w");
+	CMath::display_vector(w.vector, num_feat, "w");
 	CMath::display_vector(w_pos, num_feat, "w_pos");
 	CMath::display_vector(w_neg, num_feat, "w_neg");
 	CMath::display_vector(mean_pos, num_feat, "mean_pos");

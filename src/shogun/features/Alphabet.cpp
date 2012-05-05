@@ -594,7 +594,7 @@ void CAlphabet::print_histogram()
 
 SGVector<int64_t> CAlphabet::get_histogram()
 {
-	return SGVector<int64_t>(&histogram[0], 1 << (sizeof(uint8_t)*8));
+	return SGVector<int64_t>(&histogram[0], 1 << (sizeof(uint8_t)*8), false);
 }
 
 bool CAlphabet::check_alphabet(bool print_error)

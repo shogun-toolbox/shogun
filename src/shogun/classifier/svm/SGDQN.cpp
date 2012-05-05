@@ -106,15 +106,13 @@ bool CSGDQN::train(CFeatures* data)
 	ASSERT(m_labels->is_two_class_labeling());
 
 	int32_t num_train_labels=m_labels->get_num_labels();
-	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 
-	SG_FREE(w);
-	w=SG_MALLOC(float64_t, w_dim);
-	memset(w, 0, w_dim*sizeof(float64_t));
+	w=SGVector<float64_t>(features->get_dim_feature_space());
+	w.zero();
 
 	float64_t lambda= 1.0/(C1*num_vec);
 
@@ -129,12 +127,11 @@ bool CSGDQN::train(CFeatures* data)
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
 
 
-	float64_t* Bc=SG_MALLOC(float64_t, w_dim);
-	CMath::fill_vector(Bc, w_dim, 1/lambda);
+	float64_t* Bc=SG_MALLOC(float64_t, w.vlen);
+	CMath::fill_vector(Bc, w.vlen, 1/lambda);
 
-	float64_t* result=SG_MALLOC(float64_t, w_dim);
-	float64_t* B=SG_MALLOC(float64_t, w_dim);
-	float64_t* w_1=SG_MALLOC(float64_t, w_dim);
+	float64_t* result=SG_MALLOC(float64_t, w.vlen);
+	float64_t* B=SG_MALLOC(float64_t, w.vlen);
 
 	//Calibrate
 	calibrate();
@@ -154,27 +151,27 @@ bool CSGDQN::train(CFeatures* data)
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
-			ASSERT(w_dim==v.vlen);
+			ASSERT(w.vlen==v.vlen);
 			float64_t eta = 1.0/t;
 			float64_t y = m_labels->get_label(i);
-			float64_t z = y * features->dense_dot(i, w, w_dim);
+			float64_t z = y * features->dense_dot(i, w.vector, w.vlen);
 			if(updateB==true)
 			{
 				if (z < 1 || is_log_loss)
 				{
-					w_1=w;
+					SGVector<float64_t> w_1=w.clone();
 					float64_t loss_1=-loss->first_derivative(z,1);
-					CMath::vector_multiply(result,Bc,v.vector,w_dim);
-					CMath::add(w,eta*loss_1*y,result,1.0,w,w_dim);
-					float64_t z2 = y * features->dense_dot(i, w, w_dim);
+					CMath::vector_multiply(result,Bc,v.vector,w.vlen);
+					CMath::add(w.vector,eta*loss_1*y,result,1.0,w.vector,w.vlen);
+					float64_t z2 = y * features->dense_dot(i, w.vector, w.vlen);
 					float64_t diffloss = -loss->first_derivative(z2,1) - loss_1;
 					if(diffloss)
 					{
-						compute_ratio(w,w_1,B,v.vector,w_dim,lambda,y*diffloss);
+						compute_ratio(w.vector,w_1.vector,B,v.vector,w.vlen,lambda,y*diffloss);
 						if(t>skip)
-							combine_and_clip(Bc,B,w_dim,(t-skip)/(t+skip),2*skip/(t+skip),1/(100*lambda),100/lambda);
+							combine_and_clip(Bc,B,w.vlen,(t-skip)/(t+skip),2*skip/(t+skip),1/(100*lambda),100/lambda);
 						else
-							combine_and_clip(Bc,B,w_dim,t/(t+skip),skip/(t+skip),1/(100*lambda),100/lambda);
+							combine_and_clip(Bc,B,w.vlen,t/(t+skip),skip/(t+skip),1/(100*lambda),100/lambda);
 					}
 				}
 				updateB=false;
@@ -183,23 +180,22 @@ bool CSGDQN::train(CFeatures* data)
 			{
 				if(--count<=0)
 				{
-					CMath::vector_multiply(result,Bc,w,w_dim);
-					CMath::add(w,-skip*lambda*eta,result,1.0,w,w_dim);
+					CMath::vector_multiply(result,Bc,w.vector,w.vlen);
+					CMath::add(w.vector,-skip*lambda*eta,result,1.0,w.vector,w.vlen);
 					count = skip;
 					updateB=true;
 				}
 
 				if (z < 1 || is_log_loss)
 				{
-					CMath::vector_multiply(result,Bc,v.vector,w_dim);
-					CMath::add(w,eta*-loss->first_derivative(z,1)*y,result,1.0,w,w_dim);
+					CMath::vector_multiply(result,Bc,v.vector,w.vlen);
+					CMath::add(w.vector,eta*-loss->first_derivative(z,1)*y,result,1.0,w.vector,w.vlen);
 				}
 			}
 			t++;
 		}
 	}
 	SG_FREE(result);
-	SG_FREE(w_1);
 	SG_FREE(B);
 
 	return true;

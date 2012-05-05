@@ -14,13 +14,13 @@
 using namespace shogun;
 
 CLinearMachine::CLinearMachine()
-: CMachine(), w_dim(0), w(NULL), bias(0), features(NULL)
+: CMachine(), bias(0), features(NULL)
 {
 	init();
 }
 
 CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine(),
-	w_dim(0), w(NULL), bias(0), features(NULL)
+	bias(0), features(NULL)
 {
 	set_w(machine->get_w().clone());
 	set_bias(machine->get_bias());
@@ -30,7 +30,7 @@ CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine(),
 
 void CLinearMachine::init()
 {
-	m_parameters->add_vector(&w, &w_dim, "w", "Parameter vector w.");
+	SG_ADD(&w, "w", "Parameter vector w.", MS_NOT_AVAILABLE);
 	SG_ADD(&bias, "bias", "Bias b.", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &features, "features", "Feature object.",
 	    MS_NOT_AVAILABLE);
@@ -39,7 +39,6 @@ void CLinearMachine::init()
 
 CLinearMachine::~CLinearMachine()
 {
-	SG_FREE(w);
 	SG_UNREF(features);
 }
 
@@ -50,10 +49,10 @@ CLabels* CLinearMachine::apply()
 
 	int32_t num=features->get_num_vectors();
 	ASSERT(num>0);
-	ASSERT(w_dim==features->get_dim_feature_space());
+	ASSERT(w.vlen==features->get_dim_feature_space());
 
 	float64_t* out=SG_MALLOC(float64_t, num);
-	features->dense_dot_range(out, 0, num, NULL, w, w_dim, bias);
+	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);
 
 	return new CLabels(SGVector<float64_t>(out,num));
 }

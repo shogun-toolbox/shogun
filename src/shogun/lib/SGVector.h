@@ -55,7 +55,6 @@ template<class T> class SGVector
 		/** override assignment operator to increase refcount on assignments */
 		SGVector& operator= (const SGVector &orig)
 		{
-			unref();
 			vector=orig.vector;
 			vlen=orig.vlen;
 			m_refcount=orig.m_refcount;
@@ -82,7 +81,9 @@ template<class T> class SGVector
 			}
 
 			++(*m_refcount);
+#ifdef DEBUG_SGVECTOR
 			SG_SGCDEBUG("ref() refcount %ld vec %p (%p) increased\n", *m_refcount, vector, this);
+#endif
 			return *m_refcount;
 		}
 
@@ -95,7 +96,9 @@ template<class T> class SGVector
 			if (m_refcount == NULL)
 				return -1;
 
+#ifdef DEBUG_SGVECTOR
 			SG_SGCDEBUG("ref_count(): refcount %d, vec %p (%p)\n", *m_refcount, vector, this);
+#endif
 			return *m_refcount;
 		}
 
@@ -111,7 +114,9 @@ template<class T> class SGVector
 
 			if (*m_refcount==0 || --(*m_refcount)==0)
 			{
+#ifdef DEBUG_SGVECTOR
 				SG_SGCDEBUG("unref() refcount %d vec %p (%p) destroying\n", *m_refcount, vector, this);
+#endif
 				SG_FREE(vector);
 				SG_FREE(m_refcount);
 
@@ -123,7 +128,9 @@ template<class T> class SGVector
 			}
 			else
 			{
+#ifdef DEBUG_SGVECTOR
 				SG_SGCDEBUG("unref() refcount %d vec %p (%p) decreased\n", *m_refcount, vector, this);
+#endif
 				return *m_refcount;
 			}
 		}

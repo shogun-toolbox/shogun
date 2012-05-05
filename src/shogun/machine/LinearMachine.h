@@ -63,6 +63,8 @@ class CLinearMachine : public CMachine
 	public:
 		/** default constructor */
 		CLinearMachine();
+
+		/** destructor */
 		virtual ~CLinearMachine();
 
 		/** copy constructor */
@@ -70,23 +72,11 @@ class CLinearMachine : public CMachine
 
 		/** get w
 		 *
-		 * @param dst_w store w in this argument
-		 * @param dst_dims dimension of w
-		 */
-		inline void get_w(float64_t*& dst_w, int32_t& dst_dims)
-		{
-			ASSERT(w && w_dim>0);
-			dst_w=w;
-			dst_dims=w_dim;
-		}
-
-		/** get w
-		 *
 		 * @return weight vector
 		 */
 		inline SGVector<float64_t> get_w()
 		{
-			return SGVector<float64_t>(w, w_dim, false);
+			return w;
 		}
 
 		/** set w
@@ -95,9 +85,7 @@ class CLinearMachine : public CMachine
 		 */
 		inline void set_w(const SGVector<float64_t> src_w)
 		{
-			SG_FREE(w);
-			w=src_w.vector;
-			w_dim=src_w.vlen;
+			w=src_w;
 		}
 
 		/** set bias
@@ -145,7 +133,7 @@ class CLinearMachine : public CMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)
 		{
-			return features->dense_dot(vec_idx, w, w_dim) + bias;
+			return features->dense_dot(vec_idx, w.vector, w.vlen) + bias;
 		}
 
 		/** get features
@@ -173,10 +161,8 @@ class CLinearMachine : public CMachine
 		void init();
 
 	protected:
-		/** dimension of w */
-		int32_t w_dim;
 		/** w */
-		float64_t* w;
+		SGVector<float64_t> w;
 		/** bias */
 		float64_t bias;
 		/** features */

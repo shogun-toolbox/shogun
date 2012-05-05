@@ -54,7 +54,6 @@ bool CSVMLin::train_machine(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen);
-	SG_FREE(w);
 
 	struct options Options;
 	struct data Data;

@@ -82,15 +82,13 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	ASSERT(m_labels->is_two_class_labeling());
 
 	int32_t num_train_labels=m_labels->get_num_labels();
-	w_dim=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 
-	SG_FREE(w);
-	w=SG_MALLOC(float64_t, w_dim);
-	memset(w, 0, w_dim*sizeof(float64_t));
+	w=SGVector<float64_t>(features->get_dim_feature_space());
+	w.zero();
 	bias=0;
 
 	float64_t lambda= 1.0/(C1*num_vec);
@@ -124,12 +122,12 @@ bool CSVMSGD::train_machine(CFeatures* data)
 		{
 			float64_t eta = 1.0 / (lambda * t);
 			float64_t y = m_labels->get_label(i);
-			float64_t z = y * (features->dense_dot(i, w, w_dim) + bias);
+			float64_t z = y * (features->dense_dot(i, w.vector, w.vlen) + bias);
 
 			if (z < 1 || is_log_loss)
 			{
 				float64_t etd = -eta * loss->first_derivative(z,1);
-				features->add_to_dense_vec(etd * y / wscale, i, w, w_dim);
+				features->add_to_dense_vec(etd * y / wscale, i, w.vector, w.vlen);
 
 				if (use_bias)
 				{
@@ -144,14 +142,14 @@ bool CSVMSGD::train_machine(CFeatures* data)
 				float64_t r = 1 - eta * lambda * skip;
 				if (r < 0.8)
 					r = pow(1 - eta * lambda, skip);
-				CMath::scale_vector(r, w, w_dim);
+				CMath::scale_vector(r, w.vector, w.vlen);
 				count = skip;
 			}
 			t++;
 		}
 	}
 
-	float64_t wnorm =  CMath::dot(w,w, w_dim);
+	float64_t wnorm =  CMath::dot(w.vector,w.vector, w.vlen);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
 
 	return true;

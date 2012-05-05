@@ -1386,11 +1386,10 @@ bool CGUIClassifier::get_linear(
 	bcols=1;
 
 	cols=1;
-	float64_t* w=NULL;
-	linear->get_w(w, rows);
+	SGVector<float64_t> w=linear->get_w();
 
-	weights= SG_MALLOC(float64_t, rows);
-	memcpy(weights, w, sizeof(float64_t)*rows);
+	weights= SG_MALLOC(float64_t, w.vlen);
+	memcpy(weights, w.vector, sizeof(float64_t)*rows);
 
 	return true;
 }

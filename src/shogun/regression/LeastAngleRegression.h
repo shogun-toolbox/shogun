@@ -119,14 +119,14 @@ public:
 	 */
 	void switch_w(int32_t num_variable)
 	{
-		if (w_dim <= 0)
+		if (w.vlen <= 0)
 			SG_ERROR("cannot swith estimator before training");
 		if (size_t(num_variable) >= m_beta_idx.size() || num_variable < 0)
 			SG_ERROR("cannot switch to an estimator of %d non-zero coefficients", num_variable);
-		if (w == NULL)
-			w = SG_MALLOC(float64_t, w_dim);
+		if (w.vector == NULL)
+			w = SGVector<float64_t>(w.vlen);
 		std::copy(m_beta_path[m_beta_idx[num_variable]].begin(),
-			m_beta_path[m_beta_idx[num_variable]].end(), w);
+			m_beta_path[m_beta_idx[num_variable]].end(), w.vector);
 	}
 
 	/** get path size
@@ -153,7 +153,7 @@ public:
 	 */
 	SGVector<float64_t> get_w(int32_t num_var)
 	{
-		return SGVector<float64_t>(&m_beta_path[m_beta_idx[num_var]][0], w_dim, false);
+		return SGVector<float64_t>(&m_beta_path[m_beta_idx[num_var]][0], w.vlen, false);
 	}
 
 	/** get classifier type
