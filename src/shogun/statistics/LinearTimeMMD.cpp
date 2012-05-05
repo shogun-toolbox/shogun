@@ -91,10 +91,6 @@ float64_t CLinearTimeMMD::compute_statistic()
 	for (index_t i=m_2; i<m; ++i)
 		third+=tr_K_xy.vector[i-m_2];
 
-	tr_K_x.destroy_vector();
-	tr_K_y.destroy_vector();
-	tr_K_xy.destroy_vector();
-
 	return 1.0/m_2*(first+second)+1.0/m*third;
 }
 
@@ -143,9 +139,6 @@ float64_t CLinearTimeMMD::bootstrap_threshold(float64_t confidence)
 		m_p_and_q->remove_subset();
 	}
 
-	/* clean up */
-	ind_permutation.destroy_vector();
-
 	/* compute threshold, sort elements and return the one that corresponds to
 	 * confidence niveau */
 	CMath::qsort(results.vector, results.vlen);
@@ -153,6 +146,5 @@ float64_t CLinearTimeMMD::bootstrap_threshold(float64_t confidence)
 	float64_t result=results.vector[result_idx];
 
 	/* clean up and return */
-	results.destroy_vector();
 	return result;
 }
