@@ -60,6 +60,9 @@ namespace shogun
 class MemoryBlock
 {
 	public:
+		/** default constructor
+		 */
+		MemoryBlock();
 		/** constructor
 		 * @param p p
 		 */
@@ -74,7 +77,7 @@ class MemoryBlock
 		/** copy constructor
 		 * @param b b
 		 */
-        MemoryBlock(const MemoryBlock &b);
+        	MemoryBlock(const MemoryBlock &b);
 
 		/** equality
 		 * @param b b
