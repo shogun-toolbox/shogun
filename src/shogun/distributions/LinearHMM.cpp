@@ -241,7 +241,7 @@ float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 
 SGVector<float64_t> CLinearHMM::get_transition_probs()
 {
-	return SGVector<float64_t>(transition_probs, num_params);
+	return SGVector<float64_t>(transition_probs, num_params, false);
 }
 
 bool CLinearHMM::set_transition_probs(const SGVector<float64_t> probs)
@@ -265,7 +265,7 @@ bool CLinearHMM::set_transition_probs(const SGVector<float64_t> probs)
 
 SGVector<float64_t> CLinearHMM::get_log_transition_probs()
 {
-	return SGVector<float64_t>(log_transition_probs, num_params);
+	return SGVector<float64_t>(log_transition_probs, num_params, false);
 }
 
 bool CLinearHMM::set_log_transition_probs(const SGVector<float64_t> probs)
