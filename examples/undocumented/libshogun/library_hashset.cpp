@@ -16,8 +16,9 @@ int main(int argc, char** argv)
 	set->remove(0.1);
 	set->add(0.4);
 
-	delete set;
 	exit_shogun();
+
+	delete set;
 	return 0;
 }
 
