@@ -2450,10 +2450,7 @@ bool CSGInterface::cmd_reshape()
 
 bool CSGInterface::cmd_load_labels()
 {
-	//TODO FIXME
-	//
-	SG_NOTIMPLEMENTED;
-	/*if (m_nrhs<4 || !create_return_values(0))
+	if (m_nrhs<4 || !create_return_values(0))
 		return false;
 
 	int32_t len=0;
@@ -2464,8 +2461,7 @@ bool CSGInterface::cmd_load_labels()
 
 	SG_FREE(filename);
 	SG_FREE(target);
-	return success;*/
-	return false;
+	return success;
 }
 
 bool CSGInterface::cmd_set_labels()

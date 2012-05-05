@@ -56,8 +56,30 @@ class CLabels : public CSGObject
 		 */
 		//CLabels(SGVector<int64_t> labels);
 
+		/** constructor
+		 *
+		 * @param loader File object via which to load data
+		 */
+		CLabels(CFile* loader);
+
 		/** destructor */
 		virtual ~CLabels();
+
+		/** load labels from file
+		 *
+		 * any subset is removed before
+		 *
+		 * @param loader File object via which to load data
+		 */
+		virtual void load(CFile* loader);
+
+		/** save labels to file
+		 *
+		 * not possible with subset
+		 *
+		 * @param writer File object via which to save data
+		 */
+		virtual void save(CFile* writer);
 
 		/** set label
 		 *

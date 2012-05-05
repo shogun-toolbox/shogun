@@ -47,6 +47,16 @@ class CGUILabels : public CSGObject
 		 */
 		bool set_test_labels(CLabels* lab) { SG_UNREF(test_labels); SG_REF(lab); test_labels=lab; return true;}
 
+		/** load labels from file
+		 * @param filename
+		 * @param target
+		 */
+		bool load(char* filename, char* target);
+		/** save
+		 * @param param
+		 */
+		bool save(char* param);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GUILabels"; }
 
