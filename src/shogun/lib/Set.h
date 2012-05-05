@@ -55,40 +55,67 @@ public:
 		num_elements=0;
 		hash_array=NULL;
 		array=NULL;
+		use_sg_mallocs=false;
 	}
 
 	/** Custom constructor */
-	CSet(int32_t size, int32_t reserved=1024)
+	CSet(int32_t size, int32_t reserved=1024, bool tracable=true)
 	{	
 		hash_size=size;
 		free_index=0;
 		num_elements=0;
+		use_sg_mallocs=tracable;
 
-		hash_array=SG_MALLOC(HashSetNode<T>*, size);
+		if(use_sg_mallocs)
+		{
+			hash_array=SG_CALLOC(HashSetNode<T>*, size);
+		}
+		else
+		{
+			hash_array=(HashSetNode<T>**) calloc(size, sizeof(HashSetNode<T>*));
+		}
+
 		for (int32_t i=0; i<size; i++)
 		{
 			hash_array[i]=NULL;
 		}
 
-		array=new DynArray<HashSetNode<T>*>(reserved);
+		array=new DynArray<HashSetNode<T>*>(reserved, tracable);
 	}
 
 	/** Default destructor */
 	virtual ~CSet()
 	{
-		if (hash_array!=NULL)
-		{
-			for (int32_t i=0; i<hash_size; i++)
-			{
-				delete hash_array[i];
-			}
-			SG_FREE(hash_array);
-		}
-	
 		if (array!=NULL)
 		{
+			for(int32_t i=0; i<array->get_num_elements(); i++)
+			{
+				if(array->get_element(i)!=NULL)
+				{
+					if(use_sg_mallocs)
+					{
+						SG_FREE(array->get_element(i));
+					}
+					else
+					{
+						free(array->get_element(i));
+					}
+				}
+			}
 			delete array;
-		}	
+		}
+
+		if (hash_array!=NULL)
+		{
+			if(use_sg_mallocs)
+			{
+				SG_FREE(hash_array);
+			}
+			else
+			{
+				free(hash_array);
+			}
+		}
 	}
 
 	/** @return object name */
@@ -187,7 +214,7 @@ public:
 	 */
 	T* get_element_ptr(int32_t index)
 	{
-		return &(array->get_element_ptr(index)->element);
+		return &(array->get_element(index)->element);
 	}
 
 	/** operator overload for set read only access
@@ -260,10 +287,23 @@ private:
 		int32_t new_index;
 		HashSetNode<T>* new_node;
 
+		if(array==NULL)
+		{
+			return;
+		}
+
 		if ((free_index>=array->get_num_elements()) || (array->get_element(free_index)==NULL))
 		{
 			// init new node
-			new_node=new HashSetNode<T>;
+			if(use_sg_mallocs)
+			{
+				new_node=SG_MALLOC(HashSetNode<T>, 1);
+			}
+			else
+			{
+				new_node=(HashSetNode<T>*) calloc(1, sizeof(HashSetNode<T>));
+			}
+
 			array->append_element(new_node);
 
 			new_index=free_index;
@@ -332,6 +372,8 @@ private:
 
 
 protected:
+	/** */
+	bool use_sg_mallocs;
 	/** hashtable size */
 	int32_t hash_size;
 
