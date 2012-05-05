@@ -74,7 +74,7 @@ class MemoryBlock
 		/** copy constructor
 		 * @param b b
 		 */
-        MemoryBlock(const MemoryBlock &b);
+        	MemoryBlock(const MemoryBlock &b);
 
 		/** equality
 		 * @param b b
