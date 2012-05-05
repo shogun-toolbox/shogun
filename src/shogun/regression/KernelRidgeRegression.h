@@ -21,6 +21,16 @@
 
 namespace shogun
 {
+
+/** which training method to use for KRR */
+enum ETrainingType
+{
+	/// via pseudo inverse
+	PINV=1,
+	/// or gauss-seidel iterative method
+	GS=2
+};
+
 /** @brief Class KernelRidgeRegression implements Kernel Ridge Regression - a regularized least square
  * method for classification and regression.
  *
@@ -56,15 +66,6 @@ class CKernelRidgeRegression : public CKernelMachine
 	public:
 		/** default constructor */
 		CKernelRidgeRegression();
-
-		/** which training method to use for KRR */
-		enum ETrainingType
-		{
-			/// via pseudo inverse
-			PINV=1,
-			/// or gauss-seidel iterative method
-			GS=2
-		};
 
 		/** constructor
 		 *
