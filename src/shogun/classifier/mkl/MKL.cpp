@@ -252,7 +252,7 @@ bool CMKL::train_machine(CFeatures* data)
 				beta, num_kernels); //q-norm = 1
 	}
 
-	kernel->set_subkernel_weights(SGVector<float64_t>(beta, num_kernels));
+	kernel->set_subkernel_weights(SGVector<float64_t>(beta, num_kernels, false));
 	SG_FREE(beta);
 
 	svm->set_bias_enabled(get_bias_enabled());
@@ -452,7 +452,7 @@ bool CMKL::perform_mkl_step(
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
 
-	kernel->set_subkernel_weights(SGVector<float64_t>(beta, num_kernels));
+	kernel->set_subkernel_weights(SGVector<float64_t>(beta, num_kernels, false));
 	SG_FREE(beta);
 
 	return converged();

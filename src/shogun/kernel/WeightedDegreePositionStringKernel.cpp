@@ -195,7 +195,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 		for (int32_t i=0; i<shift_len; i++) {
 			shifts[i]=1;
 		}
-		set_shifts(SGVector<int32_t>(shifts, shift_len));
+		set_shifts(SGVector<int32_t>(shifts, shift_len, false));
 		SG_FREE(shifts);
 	}
 
@@ -1862,7 +1862,7 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(
 
 SGVector<float64_t> CWeightedDegreePositionStringKernel::get_POIM2()
 {
-	SGVector<float64_t> poim(m_poim, m_poim_result_len);
+	SGVector<float64_t> poim(m_poim, m_poim_result_len, false);
 	return poim;
 }
 
