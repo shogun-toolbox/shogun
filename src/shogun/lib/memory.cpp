@@ -19,11 +19,6 @@ using namespace shogun;
 #ifdef TRACE_MEMORY_ALLOCS
 extern CSet<shogun::MemoryBlock>* sg_mallocs;
 
-MemoryBlock::MemoryBlock() : ptr(NULL), size(0), file(NULL),
-	line(-1), is_sgobject(false)
-{
-}
-
 MemoryBlock::MemoryBlock(void* p) : ptr(p), size(0), file(NULL),
 	line(-1), is_sgobject(false)
 {
