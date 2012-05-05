@@ -105,7 +105,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 
 	// create label object and attach it to svm
 	CLabels* lab_auc = new CLabels(num_auc);
-	lab_auc->set_int_labels(SGVector<int32_t>(labels_auc, num_auc));
+	lab_auc->set_int_labels(SGVector<int32_t>(labels_auc, num_auc, false));
 	SG_REF(lab_auc);
 
 	// create feature object
