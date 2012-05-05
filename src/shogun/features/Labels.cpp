@@ -49,13 +49,6 @@ void CLabels::set_to_one()
 		labels.vector[m_subset_stack->subset_idx_conversion(i)]=+1;
 }
 
-CLabels::CLabels(CFile* loader)
-: CSGObject()
-{
-	init();
-	load(loader);
-}
-
 CLabels::~CLabels()
 {
 	SG_UNREF(m_subset_stack);
@@ -131,19 +124,15 @@ SGVector<float64_t> CLabels::get_labels()
 
 SGVector<float64_t> CLabels::get_labels_copy()
 {
-	index_t num_labels=get_num_labels();
-	SGVector<float64_t> result(NULL, num_labels, true);
-
-	/* in case of no subset, simply clone vector, else copy element wise */
 	if (!m_subset_stack->has_subsets())
-		result.vector=CMath::clone_vector(labels.vector, num_labels);
-	else
-	{
-		result.vector=SG_MALLOC(float64_t, num_labels);
-		/* copy element wise because of possible subset */
-		for (index_t i=0; i<result.vlen; ++i)
-			result[i]=get_label(i);
-	}
+		return labels.clone();
+
+	index_t num_labels=get_num_labels();
+	SGVector<float64_t> result(SG_MALLOC(float64_t, num_labels), num_labels);
+
+	/* copy element wise because of possible subset */
+	for (index_t i=0; i<num_labels; i++)
+		result[i]=get_label(i);
 
 	return result;
 }
@@ -180,29 +169,6 @@ void CLabels::set_int_labels(SGVector<int32_t> lab)
 
 	for (int32_t i=0; i<lab.vlen; i++)
 		set_int_label(i, lab.vector[i]);
-}
-
-void CLabels::load(CFile* loader)
-{
-	remove_subset();
-
-	SG_SET_LOCALE_C;
-	labels.unref();
-	ASSERT(loader);
-	loader->get_vector(labels.vector, labels.vlen);
-	SG_RESET_LOCALE;
-}
-
-void CLabels::save(CFile* writer)
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("save() is not possible on subset");
-
-	SG_SET_LOCALE_C;
-	ASSERT(writer);
-	ASSERT(labels.vector && labels.vlen>0);
-	writer->set_vector(labels.vector, labels.vlen);
-	SG_RESET_LOCALE;
 }
 
 bool CLabels::set_label(int32_t idx, float64_t label)

@@ -13,7 +13,6 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
 #include <shogun/features/Labels.h>
 
 #include <string.h>
@@ -29,45 +28,4 @@ CGUILabels::~CGUILabels()
 {
 	SG_UNREF(train_labels);
 	SG_UNREF(test_labels);
-}
-
-bool CGUILabels::load(char* filename, char* target)
-{
-	CLabels* labels=NULL;
-
-	if (strncmp(target, "TEST", 4)==0)
-		labels=test_labels;
-	else if (strncmp(target, "TRAIN", 5)==0)
-		labels=train_labels;
-	else
-		SG_ERROR("Invalid target %s.\n", target);
-
-	if (labels)
-	{
-		SG_UNREF(labels);
-		CAsciiFile* file=new CAsciiFile(filename);
-		labels=new CLabels(file);
-
-		if (labels)
-		{
-			if (strncmp(target, "TEST", 4)==0)
-				set_test_labels(labels);
-			else
-				set_train_labels(labels);
-
-			return true;
-		}
-		else
-			SG_ERROR("Loading labels failed.\n");
-
-		SG_UNREF(file);
-	}
-
-	return false;
-}
-
-bool CGUILabels::save(char* param)
-{
-	bool result=false;
-	return result;
 }
