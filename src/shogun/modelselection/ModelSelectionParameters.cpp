@@ -45,14 +45,10 @@ void CModelSelectionParameters::init()
 	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 	m_value_type=MSPT_NONE;
+	m_values=NULL;
+	m_values_length=0;
 
-	m_parameters->add((char*)m_node_name, "node_name", "Name of node");
-	m_parameters->add((CSGObject**)&m_sgobject, "sgobject",
-			"CSGObject of this node");
-	m_parameters->add((CSGObject**)m_child_nodes, "child nodes",
-			"children of this node");
-//	m_parameters->add(&m_value_type, "value_type",
-//				"type of the values of this node");
+	/* no parameter registering. These parameter nodes will not be serialized */
 }
 
 CModelSelectionParameters::~CModelSelectionParameters()
@@ -66,7 +62,7 @@ CModelSelectionParameters::~CModelSelectionParameters()
 void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 {
 	/* only possible if there are no values set */
-	if (m_values.vector)
+	if (m_values)
 		SG_ERROR("not possible to append child: there already is a range\n");
 
 	/* do a basic check if the add is possible */
@@ -94,11 +90,14 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 }
 
 template <class T>
-void CModelSelectionParameters::set_values(SGVector<T> values)
+void CModelSelectionParameters::set_values(const SGVector<T>& values,
+		EMSParamType value_type)
 {
 	/* possibly delete old range values */
 	delete_values();
-	m_values=(SGVector<char>) values;
+	m_values=values.vector;
+	m_values_length=values.vlen;
+	m_value_type=value_type;
 }
 
 void CModelSelectionParameters::build_values(float64_t min, float64_t max,
@@ -139,8 +138,8 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 				*((float64_t*)step),
 				*((float64_t*)type_base));
 
-		m_values = SGVector<char>((char*) values.vector, values.vlen);
-
+		m_values=values.vector;
+		m_values_length=values.vlen;
 	}
 	else if (value_type==MSPT_INT32)
 	{
@@ -150,7 +149,9 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 				type,
 				*((int32_t*)step),
 				*((int32_t*)type_base));
-		m_values = SGVector<char>((char*) values.vector, values.vlen);
+
+		m_values=values.vector;
+		m_values_length=values.vlen;
 	}
 	else if (value_type==MSPT_NONE)
 	{
@@ -170,9 +171,9 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 	 * build trees of Parameter instances which each contain one value
 	 */
 
-	if (m_values.vector)
+	if (m_values)
 	{
-		for (index_t i=0; i<m_values.vlen; ++i)
+		for (index_t i=0; i<m_values_length; ++i)
 		{
 			// create tree with only one parameter element //
 			Parameter* p=new Parameter();
@@ -180,10 +181,10 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 			switch (m_value_type)
 			{
 			case MSPT_FLOAT64:
-				p->add(&((float64_t*)m_values.vector)[i], m_node_name);
+				p->add(&((float64_t*)m_values)[i], m_node_name);
 				break;
 			case MSPT_INT32:
-				p->add(&((int32_t*)m_values.vector)[i], m_node_name);;
+				p->add(&((int32_t*)m_values)[i], m_node_name);;
 				break;
 			case MSPT_NONE:
 				SG_ERROR("Value node has no type!\n");
@@ -222,7 +223,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 					(CModelSelectionParameters*)m_child_nodes->get_element(i);
 
 			/* split children with values and children with other */
-			if (current->m_values.vector)
+			if (current->m_values)
 				value_children.append_element(current);
 			else
 				non_value_children.append_element(current);
@@ -420,7 +421,7 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		}
 		else
 		{
-			if (m_values.vector)
+			if (m_values)
 			{
 				// value node
 				SG_PRINT("%s%s with values: ", prefix, m_node_name);
@@ -428,10 +429,12 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 				switch (m_value_type)
 				{
 				case MSPT_FLOAT64:
-					CMath::display_vector((float64_t*)m_values.vector, m_values.vlen);
+					CMath::display_vector((float64_t*)m_values,
+							m_values_length);
 					break;
 				case MSPT_INT32:
-					CMath::display_vector((int32_t*)m_values.vector, m_values.vlen);;
+					CMath::display_vector((int32_t*)m_values,
+							m_values_length);;
 					break;
 				case MSPT_NONE:
 					SG_ERROR("Value node has no type!\n");
@@ -451,15 +454,15 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 
 void CModelSelectionParameters::delete_values()
 {
-	if (m_values.vector)
+	if (m_values)
 	{
 		switch (m_value_type)
 		{
 		case MSPT_FLOAT64:
-			m_values.unref();
+			SG_FREE((float64_t*)m_values);
 			break;
 		case MSPT_INT32:
-			m_values.unref();
+			SG_FREE((int32_t*)m_values);
 			break;
 		case MSPT_NONE:
 			SG_ERROR("Value node has no type!\n");
