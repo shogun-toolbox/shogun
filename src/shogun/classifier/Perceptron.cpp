@@ -47,18 +47,15 @@ bool CPerceptron::train_machine(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen);
-	SG_FREE(w);
-	w_dim=num_feat;
-	w=SG_MALLOC(float64_t, num_feat);
+	w=SGVector<float64_t>(num_feat);
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
 
 	//start with uniform w, bias=0
 	bias=0;
 	for (int32_t i=0; i<num_feat; i++)
-		w[i]=1.0/num_feat;
+		w.vector[i]=1.0/num_feat;
 
 	//loop till we either get everything classified right or reach max_iter
-
 	while (!converged && iter<max_iter)
 	{
 		converged=true;
@@ -70,7 +67,7 @@ bool CPerceptron::train_machine(CFeatures* data)
 			{
 				converged=false;
 				bias+=learn_rate*train_labels.vector[i];
-				features->add_to_dense_vec(learn_rate*train_labels.vector[i], i, w, w_dim);
+				features->add_to_dense_vec(learn_rate*train_labels.vector[i], i, w.vector, w.vlen);
 			}
 		}
 

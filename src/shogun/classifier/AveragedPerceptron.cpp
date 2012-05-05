@@ -46,12 +46,10 @@ bool CAveragedPerceptron::train(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen);
-	SG_FREE(w);
-	w_dim=num_feat;
-	w=SG_MALLOC(float64_t, num_feat);
+	w=SGVector<float64_t>(num_feat);
 	float64_t* tmp_w=SG_MALLOC(float64_t, num_feat);
-
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
+
 	//start with uniform w, bias=0, tmp_bias=0
 	bias=0;
 	float64_t tmp_bias=0;
@@ -71,7 +69,7 @@ bool CAveragedPerceptron::train(CFeatures* data)
 			{
 				converged=false;
 				bias+=learn_rate*train_labels.vector[i];
-				features->add_to_dense_vec(learn_rate*train_labels.vector[i], i, w, w_dim);
+				features->add_to_dense_vec(learn_rate*train_labels.vector[i], i, w.vector, w.vlen);
 			}
 
 			// Add current w to tmp_w, and current bias to tmp_bias

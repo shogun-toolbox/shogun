@@ -320,7 +320,7 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 		R.destroy_matrix();
 
 	// assign default estimator
-	w_dim = n_fea;
+	w.vlen = n_fea;
 	switch_w(m_beta_idx.size()-1);
 
 	return true;
