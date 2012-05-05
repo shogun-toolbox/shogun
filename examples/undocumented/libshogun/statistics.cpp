@@ -16,18 +16,13 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 const int DATA_SIZE=100;
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
+	init_shogun_with_defaults();
 
-	SGVector<float64_t> data(DATA_SIZE, true);
+	SGVector<float64_t> data(DATA_SIZE);
 	CMath::random_vector(data.vector, data.vlen, 0.0, 1.0);
 
 	// for (int32_t i=0; i<DATA_SIZE; i++)
