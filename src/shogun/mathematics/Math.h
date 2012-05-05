@@ -8,6 +8,7 @@
  * Written (W) 2011 Siddharth Kherada
  * Written (W) 2011 Justin Patera
  * Written (W) 2011 Alesis Novik
+ * Written (W) 2011-2012 Heiko Strathmann
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2007 Konrad Rieck
@@ -659,6 +660,16 @@ class CMath : public CSGObject
 				for (int32_t i=0; i<len; i++)
 					vec[i]=CMath::random(min_value, max_value);
 			}
+
+		template <class T>
+			static void permute_vector(SGVector<T> vec)
+		{
+			for (index_t i=0; i<vec.vlen; ++i)
+			{
+				CMath::swap(vec.vector[i],
+						vec.vector[CMath::random(i, vec.vlen-1)]);
+			}
+		}
 
 		static inline int32_t* randperm(int32_t n)
 		{
