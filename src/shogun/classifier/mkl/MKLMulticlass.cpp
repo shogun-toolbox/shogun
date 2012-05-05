@@ -212,13 +212,10 @@ void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 		weightshistory.erase(weightshistory.begin());
 	}
 
-	float64_t* weights(NULL);
-	weights=SG_MALLOC(float64_t, curweights.size());
-	std::copy(curweights.begin(),curweights.end(),weights);
+	SGVector<float64_t> weights(curweights.size());
+	std::copy(curweights.begin(),curweights.end(),weights.vector);
 
-	m_kernel->set_subkernel_weights(SGVector<float64_t>(weights, curweights.size()));
-	SG_FREE(weights);
-	weights=NULL;
+	m_kernel->set_subkernel_weights(weights);
 
 	initsvm();
 
