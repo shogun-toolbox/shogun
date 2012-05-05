@@ -301,7 +301,7 @@ CLabels* CKernelMachine::apply()
 				params.result=lab;
 				params.start=0;
 				params.end=num_vectors;
-				params.indices=SGVector<index_t>();
+				//params.indices=SGVector<index_t>(0);
 				params.verbose=true;
 				apply_helper((void*) &params);
 			}
@@ -320,7 +320,7 @@ CLabels* CKernelMachine::apply()
 					params[t].result = lab;
 					params[t].start = t*step;
 					params[t].end = (t+1)*step;
-					params[t].indices=SGVector<index_t>();
+					//params[t].indices = SGVector<index_t>();
 					params[t].verbose = false;
 					pthread_create(&threads[t], NULL,
 							CKernelMachine::apply_helper, (void*)&params[t]);
@@ -330,7 +330,7 @@ CLabels* CKernelMachine::apply()
 				params[t].result = lab;
 				params[t].start = t*step;
 				params[t].end = num_vectors;
-				params[t].indices=SGVector<index_t>();
+				//params[t].indices = SGVector<index_t>();
 				params[t].verbose = true;
 				apply_helper((void*) &params[t]);
 
@@ -425,8 +425,8 @@ void* CKernelMachine::apply_helper(void* p)
 		}
 
 		/* eventually use index mapping if exists */
-		index_t idx=params->indices.vector ? params->indices.vector[vec] : vec;
-		result->set_label(vec, kernel_machine->apply(idx));
+		//index_t idx=params->indices.vector ? params->indices.vector[vec] : vec;
+		result->set_label(vec, kernel_machine->apply(vec));
 	}
 
 	return NULL;
