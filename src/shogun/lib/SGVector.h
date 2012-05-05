@@ -55,6 +55,7 @@ template<class T> class SGVector
 		/** override assignment operator to increase refcount on assignments */
 		SGVector& operator= (const SGVector &orig)
 		{
+			unref();
 			vector=orig.vector;
 			vlen=orig.vlen;
 			m_refcount=orig.m_refcount;
