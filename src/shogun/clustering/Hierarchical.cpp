@@ -177,17 +177,17 @@ int32_t CHierarchical::get_merges()
 
 SGVector<int32_t> CHierarchical::get_assignment()
 {
-	return SGVector<int32_t>(assignment,table_size);
+	return SGVector<int32_t>(assignment,table_size, false);
 }
 
 SGVector<float64_t> CHierarchical::get_merge_distances()
 {
-	return SGVector<float64_t>(merge_distance,merges);
+	return SGVector<float64_t>(merge_distance,merges, false);
 }
 
 SGMatrix<int32_t> CHierarchical::get_cluster_pairs()
 {
-	return SGMatrix<int32_t>(pairs,2,merges);
+	return SGMatrix<int32_t>(pairs,2,merges, false);
 }
 
 
