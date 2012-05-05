@@ -1591,7 +1591,7 @@ TParameter::~TParameter()
 
 		if (m_delete_data)
 		{
-			/* for non-scalar data, delte_cont does the job, rest is handled
+			/* for non-scalar data, delete_cont does the job, rest is handled
 			 * below */
 			SG_SDEBUG("deleting pure data\n");
 			if (m_datatype.m_ctype!=CT_SCALAR)
