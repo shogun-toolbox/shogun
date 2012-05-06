@@ -37,9 +37,9 @@ struct HESSIANESTIMATION_THREAD_PARAM
 	/// target dimensionality
 	int32_t target_dim;
 	/// matrix containing indexes of neighbors of ith vector in ith column
-	SGMatrix<int32_t> neighborhood_matrix;
+	const int32_t* neighborhood_matrix;
 	/// feature matrix
-	SGMatrix<float64_t> feature_matrix;
+	const float64_t* feature_matrix;
 	/// local feature matrix contating features of neighbors
 	float64_t* local_feature_matrix;
 	/// Yi matrix
@@ -58,6 +58,12 @@ struct HESSIANESTIMATION_THREAD_PARAM
 	float64_t* q_matrix;
 	/// weight matrix
 	float64_t* W_matrix;
+	/// N
+	int32_t N;
+	/// dim
+	int32_t dim;
+	/// actual k
+	int32_t actual_k;
 #ifdef HAVE_PTHREAD
 	/// lock used on modifying of weight matrix
 	PTHREAD_LOCK_T* W_matrix_lock;
@@ -125,8 +131,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 		parameters[t].idx_stop = N;
 		parameters[t].m_k = m_k;
 		parameters[t].target_dim = m_target_dim;
-		parameters[t].neighborhood_matrix = neighborhood_matrix;
-		parameters[t].feature_matrix = feature_matrix;
+		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
+		parameters[t].feature_matrix = feature_matrix.matrix;
 		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
 		parameters[t].Yi_matrix = Yi_matrix + (m_k*(1+m_target_dim+dp))*t;
 		parameters[t].mean_vector = mean_vector + dim*t;
@@ -137,6 +143,9 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
 		parameters[t].W_matrix = W_matrix;
 		parameters[t].W_matrix_lock = &W_matrix_lock;
+		parameters[t].N = N;
+		parameters[t].dim = dim;
+		parameters[t].actual_k = neighborhood_matrix.num_rows;
 		pthread_create(&threads[t], &attr, run_hessianestimation_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -150,8 +159,8 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	single_thread_param.idx_step = num_threads;
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
-	single_thread_param.neighborhood_matrix = neighborhood_matrix;
-	single_thread_param.feature_matrix = feature_matrix;
+	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
+	single_thread_param.feature_matrix = feature_matrix.matrix;
 	single_thread_param.local_feature_matrix = local_feature_matrix;
 	single_thread_param.Yi_matrix = Yi_matrix;
 	single_thread_param.mean_vector = mean_vector;
@@ -161,6 +170,9 @@ SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSim
 	single_thread_param.w_sum_vector = w_sum_vector;
 	single_thread_param.q_matrix = q_matrix;
 	single_thread_param.W_matrix = W_matrix;
+	single_thread_param.N = N;
+	single_thread_param.dim = dim;
+	single_thread_param.actual_k = neighborhood_matrix.num_rows;
 	run_hessianestimation_thread((void*)&single_thread_param);
 #endif
 
@@ -184,8 +196,8 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 	int32_t idx_stop = parameters->idx_stop;
 	int32_t m_k = parameters->m_k;
 	int32_t target_dim = parameters->target_dim;
-	SGMatrix<int32_t> neighborhood_matrix = parameters->neighborhood_matrix;
-	SGMatrix<float64_t> feature_matrix = parameters->feature_matrix;
+	const int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
+	const float64_t* feature_matrix = parameters->feature_matrix;
 	float64_t* local_feature_matrix = parameters->local_feature_matrix;
 	float64_t* Yi_matrix = parameters->Yi_matrix;
 	float64_t* mean_vector = parameters->mean_vector;
@@ -201,9 +213,9 @@ void* CHessianLocallyLinearEmbedding::run_hessianestimation_thread(void* p)
 
 	int i,j,k,l;
 	int32_t dp = target_dim*(target_dim+1)/2;
-	int32_t actual_k = neighborhood_matrix.num_rows;
-	int32_t N = feature_matrix.num_cols;
-	int32_t dim = feature_matrix.num_rows;
+	int32_t actual_k = parameters->actual_k;
+	int32_t N = parameters->N;
+	int32_t dim = parameters->dim;
 
 	for (i=idx_start; i<idx_stop; i+=idx_step)
 	{

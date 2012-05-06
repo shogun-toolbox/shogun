@@ -38,7 +38,7 @@ struct LTSA_THREAD_PARAM
 	/// target dimension
 	int32_t target_dim;
 	/// matrix containing indexes of ith vector's neighbors in ith column
-	SGMatrix<int32_t> neighborhood_matrix;
+	const int32_t* neighborhood_matrix;
 	/// G matrix
 	float64_t* G_matrix;
 	/// mean vector
@@ -46,13 +46,19 @@ struct LTSA_THREAD_PARAM
 	/// local feature matrix containing neighbors of vector
 	float64_t* local_feature_matrix;
 	/// feature matrix of given features instance
-	SGMatrix<float64_t> feature_matrix;
+	const float64_t* feature_matrix;
 	/// used to store singular values
 	float64_t* s_values_vector;
 	/// q matrix
 	float64_t* q_matrix;
 	/// weight matrix
 	float64_t* W_matrix;
+	/// N
+	int32_t N;
+	/// dim
+	int32_t dim;
+	/// actual_k
+	int32_t actual_k;
 #ifdef HAVE_PTHREAD
 	/// lock used on modifying to weight matrix
 	PTHREAD_LOCK_T* W_matrix_lock;
@@ -114,15 +120,18 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 		parameters[t].idx_stop = N;
 		parameters[t].m_k = m_k;
 		parameters[t].target_dim = m_target_dim;
-		parameters[t].neighborhood_matrix = neighborhood_matrix;
+		parameters[t].neighborhood_matrix = neighborhood_matrix.matrix;
 		parameters[t].G_matrix = G_matrix + (m_k*(1+m_target_dim))*t;
 		parameters[t].mean_vector = mean_vector + dim*t;
 		parameters[t].local_feature_matrix = local_feature_matrix + (m_k*dim)*t;
-		parameters[t].feature_matrix = feature_matrix;
+		parameters[t].feature_matrix = feature_matrix.matrix;
 		parameters[t].s_values_vector = s_values_vector + dim*t;
 		parameters[t].q_matrix = q_matrix + (m_k*m_k)*t;
 		parameters[t].W_matrix = W_matrix;
 		parameters[t].W_matrix_lock = &W_matrix_lock;
+		parameters[t].N = N;
+		parameters[t].dim = dim;
+		parameters[t].actual_k = neighborhood_matrix.num_rows;
 		pthread_create(&threads[t], &attr, run_ltsa_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -137,7 +146,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	single_thread_param.idx_stop = N;
 	single_thread_param.m_k = m_k;
 	single_thread_param.target_dim = m_target_dim;
-	single_thread_param.neighborhood_matrix = neighborhood_matrix;
+	single_thread_param.neighborhood_matrix = neighborhood_matrix.matrix;
 	single_thread_param.G_matrix = G_matrix;
 	single_thread_param.mean_vector = mean_vector;
 	single_thread_param.local_feature_matrix = local_feature_matrix;
@@ -145,6 +154,9 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CSimple
 	single_thread_param.s_values_vector = s_values_vector;
 	single_thread_param.q_matrix = q_matrix;
 	single_thread_param.W_matrix = W_matrix;
+	single_thread_param.N = N;
+	single_thread_param.dim = dim;
+	single_thread_param.actual_k = neighborhood_matrix.num_rows;
 	run_ltsa_thread((void*)&single_thread_param);
 #endif
 
@@ -173,11 +185,11 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 	int32_t idx_stop = parameters->idx_stop;
 	int32_t m_k = parameters->m_k;
 	int32_t target_dim = parameters->target_dim;
-	SGMatrix<int32_t> neighborhood_matrix = parameters->neighborhood_matrix;
+	const int32_t* neighborhood_matrix = parameters->neighborhood_matrix;
 	float64_t* G_matrix = parameters->G_matrix;
 	float64_t* mean_vector = parameters->mean_vector;
 	float64_t* local_feature_matrix = parameters->local_feature_matrix;
-	SGMatrix<float64_t> feature_matrix = parameters->feature_matrix;
+	const float64_t* feature_matrix = parameters->feature_matrix;
 	float64_t* s_values_vector = parameters->s_values_vector;
 	float64_t* q_matrix = parameters->q_matrix;
 	float64_t* W_matrix = parameters->W_matrix;
@@ -186,9 +198,9 @@ void* CLocalTangentSpaceAlignment::run_ltsa_thread(void* p)
 #endif
 
 	int32_t i,j,k;
-	int32_t N = feature_matrix.num_cols;
-	int32_t dim = feature_matrix.num_rows;
-	int32_t actual_k = neighborhood_matrix.num_rows;
+	int32_t N = parameters->N;
+	int32_t dim = parameters->dim;
+	int32_t actual_k = parameters->actual_k;
 
 	for (j=0; j<m_k; j++)
 		G_matrix[j] = 1.0/CMath::sqrt((float64_t)m_k);
