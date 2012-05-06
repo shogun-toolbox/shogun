@@ -17,10 +17,7 @@
 namespace shogun
 {
 
-/** @brief Wrapper class for an index subset which is used by SubsetStack.
- * Currently, all index sets that are given to a CSubset instance are COPIED.
- * This is bad because these should be re-usable, however, until there is no
- * reference counting for SGVectors, this wont be possible. TODO */
+/** @brief Wrapper class for an index subset which is used by SubsetStack. */
 class CSubset: public CSGObject
 {
 	friend class CSubsetStack;
@@ -45,6 +42,7 @@ public:
 
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "Subset"; }
+
 private:
 	void init();
 
