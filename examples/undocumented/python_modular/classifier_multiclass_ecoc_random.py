@@ -21,15 +21,14 @@ def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_r
     classifier.set_epsilon(epsilon)
     classifier.set_bias_enabled(True)
 
-    rnd_dense_strategy = ECOCStrategy(ECOCRandomDenseEncoder(), ECOCHDDecoder)
-    rnd_sparse_strategy = ECOCStrategy(ECOCRandomSparseEncoder(), ECOCHDDecoder)
+    rnd_dense_strategy = ECOCStrategy(ECOCRandomDenseEncoder(), ECOCHDDecoder())
+    rnd_sparse_strategy = ECOCStrategy(ECOCRandomSparseEncoder(), ECOCHDDecoder())
 
     dense_classifier = LinearMulticlassMachine(rnd_dense_strategy, feats_train, classifier, labels)
     dense_classifier.train()
     out_dense = dense_classifier.apply(feats_test).get_labels()
 
-    sparse_strategy = ECOCStrategy(rnd_sparse_strategy, ECOCHDDecoder())
-    sparse_classifier = LinearMulticlassMachine(sparse_strategy, feats_train, classifier, labels)
+    sparse_classifier = LinearMulticlassMachine(rnd_sparse_strategy, feats_train, classifier, labels)
     sparse_classifier.train()
     out_sparse = sparse_classifier.apply(feats_test).get_labels()
 
