@@ -29,8 +29,8 @@ public:
      *
      * @see get_default_code_length
      */
-    CECOCRandomSparseEncoder(int32_t maxiter=1000, int32_t codelen=0,
-            float64_t pzero=0.5, float64_t pposone=0.25, float64_t pnegone=0.25);
+    CECOCRandomSparseEncoder(int32_t maxiter=10000, int32_t codelen=0,
+            float64_t pzero=0.3, float64_t pposone=0.35, float64_t pnegone=0.35);
 
     /** destructor */
     virtual ~CECOCRandomSparseEncoder() {}
@@ -79,7 +79,7 @@ private:
      */
     bool check_probability(float64_t pzero, float64_t pposone, float64_t pnegone)
     {
-        if (pzero + pposone + pnegone != 1)
+        if (CMath::abs(pzero + pposone + pnegone - 1) > 1e-5)
             return false;
         return true;
     }
