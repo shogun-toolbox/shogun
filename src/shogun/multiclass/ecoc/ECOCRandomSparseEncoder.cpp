@@ -51,6 +51,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
     if (codelen <= 0)
         codelen = get_default_code_length(num_classes);
 
+
     SGMatrix<int32_t> best_codebook(codelen, num_classes, true);
     int32_t best_dist = 0;
 
@@ -111,15 +112,17 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             if (min_dist > best_dist)
             {
                 best_dist = min_dist;
-                std::copy(best_codebook.matrix, best_codebook.matrix + codelen*num_classes,
-                        codebook.matrix);
+                std::copy(codebook.matrix, codebook.matrix + codelen*num_classes,
+                        best_codebook.matrix);
             }
         }
 
-        n_iter++;
-        if (best_dist > 0 && n_iter >= m_maxiter)
+        if (++n_iter >= m_maxiter)
             break;
     }
+
+    if (best_dist <= 0)
+        SG_ERROR("Failed to generate ECOC codebook within max number of iterations (%d)", m_maxiter);
 
     codebook.destroy_matrix();
     return best_codebook;

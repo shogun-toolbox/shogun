@@ -40,6 +40,17 @@ template<class T> class SGMatrix
 			: matrix(orig.matrix), num_rows(orig.num_rows),
 			num_cols(orig.num_cols), do_free(orig.do_free) { }
 
+        /** operator= */
+        SGMatrix<T> &operator=(const SGMatrix<T> &rhs)
+        {
+            free_matrix();
+            matrix = rhs.matrix;
+            num_rows = rhs.num_rows;
+            num_cols = rhs.num_cols;
+            do_free = rhs.do_free;
+            return *this;
+        }
+
 		/** empty destructor */
 		virtual ~SGMatrix()
 		{
