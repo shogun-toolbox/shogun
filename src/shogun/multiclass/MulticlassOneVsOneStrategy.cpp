@@ -35,7 +35,7 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 {
 	CMulticlassStrategy::train_prepare_next();
 
-	SGVector<int32_t> subset(m_orig_labels->get_num_labels(), false);
+	SGVector<int32_t> subset(m_orig_labels->get_num_labels());
 	int32_t tot=0;
 	for (int32_t k=0; k < m_orig_labels->get_num_labels(); ++k)
 	{
@@ -60,7 +60,7 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 		m_train_pair_idx_2=m_train_pair_idx_1+1;
 	}
 
-	return SGVector<int32_t>(subset.vector, tot, true);
+	return subset;
 }
 
 int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
