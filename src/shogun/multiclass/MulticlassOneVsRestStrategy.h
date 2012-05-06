@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+class CRejectionStrategy;
+
 class CMulticlassOneVsRestStrategy: public CMulticlassStrategy
 {
 public:
