@@ -73,7 +73,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	int32_t num_features = m_features->get_dim_feature_space();
 
 	float64_t C = m_C;
-	float64_t* data_y = m_labels->get_labels().vector;
+	SGVector<float64_t> labels = m_labels->get_labels();
 	uint32_t nY = num_classes;
 	uint32_t nData = num_vectors;
 	float64_t TolRel = m_epsilon;
@@ -90,13 +90,13 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	user_data.new_a = SG_MALLOC(float64_t, (int64_t)num_features*num_classes);
 	user_data.full_A = SG_MALLOC(float64_t, (int64_t)num_features*num_classes*m_buf_size);
 	user_data.output_values = SG_MALLOC(float64_t, num_vectors);
-	user_data.data_y = data_y;
+	user_data.data_y = labels.vector;
 	user_data.nY = num_classes;
 	user_data.nDim = num_features;
 	user_data.nData = num_vectors;
 
 	ocas_return_value_T value =
-	msvm_ocas_solver(C, data_y, nY, nData, TolRel, TolAbs,
+	msvm_ocas_solver(C, labels.vector, nY, nData, TolRel, TolAbs,
 	                 QPBound, MaxTime, BufSize, Method,
 	                 &CMulticlassOCAS::msvm_full_compute_W,
 	                 &CMulticlassOCAS::msvm_update_W,
@@ -126,7 +126,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();
-		machine->set_w(SGVector<float64_t>(&user_data.W[i*num_features],num_features).clone());
+		machine->set_w(SGVector<float64_t>(&user_data.W[i*num_features],num_features,false).clone());
 
 		m_machines->push_back(machine);
 	}
