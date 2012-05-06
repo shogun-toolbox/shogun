@@ -22,11 +22,7 @@ CSubset::CSubset(SGVector<index_t> subset_idx)
 {
 	init();
 
-	/* copy indices. TODO this is not needed once there is ref-counting for
-	 * SGVectors */
-	m_subset_idx=SGVector<index_t>(subset_idx.vlen);
-	memcpy(m_subset_idx.vector, subset_idx.vector,
-			subset_idx.vlen*sizeof(index_t));
+	m_subset_idx=subset_idx;
 }
 
 CSubset::~CSubset() {
