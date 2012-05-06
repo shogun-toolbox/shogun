@@ -37,14 +37,14 @@ CECOCStrategy::~CECOCStrategy()
     SG_UNREF(m_encoder);
     SG_UNREF(m_decoder);
 
-    m_codebook.destroy_matrix();
+    m_codebook.free_matrix();
 }
 
 void CECOCStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)
 {
     CMulticlassStrategy::train_start(orig_labels, train_labels);
 
-    m_codebook.destroy_matrix();
+    m_codebook.free_matrix();
     m_codebook = m_encoder->create_codebook(m_num_classes);
 }
 
@@ -55,7 +55,7 @@ bool CECOCStrategy::train_has_more()
 
 SGVector<int32_t> CECOCStrategy::train_prepare_next()
 {
-    SGVector<int32_t> subset(m_orig_labels->get_num_labels());
+    SGVector<int32_t> subset(m_orig_labels->get_num_labels(), false);
     int32_t tot=0;
     for (int32_t i=0; i < m_orig_labels->get_num_labels(); ++i)
     {
@@ -77,7 +77,7 @@ SGVector<int32_t> CECOCStrategy::train_prepare_next()
     }
 
     CMulticlassStrategy::train_prepare_next();
-    return SGVector<int32_t>(subset.vector, tot);
+    return SGVector<int32_t>(subset.vector, tot, true);
 }
 
 int32_t CECOCStrategy::decide_label(SGVector<float64_t> outputs)

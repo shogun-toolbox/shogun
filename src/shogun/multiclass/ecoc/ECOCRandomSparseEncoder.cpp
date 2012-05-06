@@ -51,7 +51,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
     if (codelen <= 0)
         codelen = get_default_code_length(num_classes);
 
-    SGMatrix<int32_t> best_codebook(codelen, num_classes);
+    SGMatrix<int32_t> best_codebook(codelen, num_classes, true);
     int32_t best_dist = 0;
 
     SGMatrix<int32_t> codebook(codelen, num_classes);
