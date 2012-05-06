@@ -12,7 +12,6 @@
 #define _LINEARMULTICLASSMACHINE_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/MulticlassMachine.h>
@@ -20,9 +19,9 @@
 namespace shogun
 {
 
-class Parameter;
 class CDotFeatures;
 class CLinearMachine;
+class CMulticlassStrategy;
 
 /** @brief generic linear multiclass machine */
 class CLinearMulticlassMachine : public CMulticlassMachine
@@ -139,7 +138,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @param subset subset instance to set
 		 */
-		virtual void add_machine_subset(const SGVector<index_t> subset)
+		virtual void add_machine_subset(SGVector<index_t> subset)
 		{
 			/* changing the subset structure to use subset stacks. This might
 			 * have to be revised. Heiko Strathmann */
