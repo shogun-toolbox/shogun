@@ -25,7 +25,8 @@ struct S_THREAD_PARAM
 	int32_t end;
 
 	/* if non-null, start and end correspond to indices in this vector */
-	SGVector<index_t> indices;
+	index_t* indices;
+	index_t indices_len;
 	bool verbose;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -520,7 +521,8 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 		/* use the parameter index vector */
 		params.start=0;
 		params.end=num_inds;
-		params.indices=indices;
+		params.indices=indices.vector;
+		params.indices_len=indices.vlen;
 
 		params.verbose=true;
 		apply_helper((void*) &params);
@@ -541,7 +543,8 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 			/* use the parameter index vector */
 			params[t].start=t*step;
 			params[t].end=(t+1)*step;
-			params[t].indices=indices;
+			params[t].indices=indices.vector;
+			params[t].indices_len=indices.vlen;
 
 			params[t].verbose=false;
 			pthread_create(&threads[t], NULL, CKernelMachine::apply_helper,
@@ -554,7 +557,8 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 		/* use the parameter index vector */
 		params[t].start=t*step;
 		params[t].end=num_inds;
-		params[t].indices=indices;
+		params[t].indices=indices.vector;
+		params[t].indices_len=indices.vlen;
 
 		params[t].verbose=true;
 		apply_helper((void*) &params[t]);
