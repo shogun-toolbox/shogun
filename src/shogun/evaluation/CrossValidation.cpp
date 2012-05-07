@@ -167,7 +167,8 @@ CrossValidationResult CCrossValidation::evaluate()
 	result.has_conf_int=m_conf_int_alpha != 0;
 	result.conf_int_alpha=m_conf_int_alpha;
 
-	if (result.has_conf_int) {
+	if (result.has_conf_int)
+	{
 		result.conf_int_alpha=m_conf_int_alpha;
 		result.mean=CStatistics::confidence_intervals_mean(results,
 				result.conf_int_alpha, result.conf_int_low, result.conf_int_up);
