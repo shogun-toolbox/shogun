@@ -86,6 +86,10 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	if (data)
 		set_features((CDotFeatures*)data);
 
+	ASSERT(m_features);
+	ASSERT(m_labels);
+	ASSERT(m_multiclass_strategy);
+
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = m_labels->get_num_classes();
 	int32_t bias_n = m_use_bias ? 1 : 0;
