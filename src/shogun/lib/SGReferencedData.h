@@ -36,6 +36,9 @@ class SGReferencedData
 		/** override assignment operator to increase refcount on assignments */
 		SGReferencedData& operator= (const SGReferencedData &orig)
 		{
+			if (this == &orig)
+				return *this;
+
 			unref();
 			copy_data(orig);
 			copy_refcount(orig);
@@ -43,7 +46,11 @@ class SGReferencedData
 			return *this;
 		}
 
-		/** empty destructor */
+		/** empty destructor
+		 *
+		 * NOTE: unref() has to be called in derived classes
+		 * to avoid memory leaks.
+		 */
 		virtual ~SGReferencedData()
 		{
 		}
