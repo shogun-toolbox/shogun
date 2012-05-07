@@ -166,9 +166,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix.matrix = SG_MALLOC(float32_t, len);
-			kmatrix.num_rows=cols;
-			kmatrix.num_cols=cols;
+			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, len), cols, cols);
 			upper_diagonal=true;
 
 			for (int64_t i=0; i<len; i++)
@@ -217,9 +215,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-			kmatrix.matrix = SG_MALLOC(float32_t, cols*(cols+1)/2);
-			kmatrix.num_rows = rows;
-			kmatrix.num_cols = cols;			
+			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, cols*(cols+1)/2), rows, cols);
 			upper_diagonal = true;
 
 			for (int64_t row=0; row<rows; row++)
@@ -253,9 +249,7 @@ class CCustomKernel: public CKernel
 			}
 
 			cleanup_custom();
-			kmatrix.matrix = full_kernel_matrix.matrix;
-			kmatrix.num_rows=full_kernel_matrix.num_rows;
-			kmatrix.num_cols=full_kernel_matrix.num_cols;
+			kmatrix=full_kernel_matrix;
 			dummy_init(kmatrix.num_rows, kmatrix.num_cols);
 			return true;
 		}
@@ -282,21 +276,15 @@ class CCustomKernel: public CKernel
 			int32_t cols=full_kernel_matrix.num_cols;
 			SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);
 
-			kmatrix.matrix = SG_MALLOC(float32_t, int64_t(rows)*cols);
-			kmatrix.num_rows = rows;
-			kmatrix.num_cols = cols;
+			kmatrix=SGMatrix<float32_t>(rows,cols);
 			upper_diagonal = false;
 
-			for (int32_t row=0; row<rows; row++)
+			for (int64_t i=0; i<int64_t(rows) * cols; i++)
 			{
-				for (int32_t col=0; col<cols; col++)
-					kmatrix.matrix[int64_t(row) * cols + col] =
-							full_kernel_matrix.matrix[int64_t(col)*rows+row];
+				kmatrix.matrix[i]=full_kernel_matrix.matrix[i];
 			}
 
 			dummy_init(rows, cols);
-
-			full_kernel_matrix.free_matrix();
 			return true;
 		}
 

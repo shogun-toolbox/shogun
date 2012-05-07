@@ -192,7 +192,6 @@ class CGaussian : public CDistribution
 		 */
 		inline void set_u(SGMatrix<float64_t> u)
 		{
-			m_u.destroy_matrix();
 			m_u = u;
 		}
 

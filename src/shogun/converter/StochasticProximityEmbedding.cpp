@@ -349,13 +349,8 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 	}
 
 	// Free memory
-	Yd.destroy_matrix();
 	if ( m_strategy == SPE_LOCAL )
-	{
-		ind1Neighbors.destroy_matrix();
-		neighbors_mat.destroy_matrix();
 		SG_FREE(ind2);
-	}
 
 	return new CSimpleFeatures< float64_t >(Y);
 }

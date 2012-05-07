@@ -1744,7 +1744,6 @@ bool CSGInterface::cmd_get_features()
 
 			SGMatrix<float64_t> fmatrix = ((CDotFeatures*) feat)->get_computed_dot_feature_matrix();
 			set_matrix(fmatrix.matrix, fmatrix.num_cols, fmatrix.num_rows);
-			fmatrix.free_matrix();
 			break;
 		}
 

@@ -49,8 +49,6 @@ public:
 	/** destructor */
 	~Munkres()
 	{
-		mask_matrix.free_matrix();
-		matrix.free_matrix();
 	}
 
 private:

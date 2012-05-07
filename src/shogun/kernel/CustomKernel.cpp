@@ -131,13 +131,8 @@ void CCustomKernel::cleanup_custom()
 	remove_all_row_subsets();
 	remove_all_col_subsets();
 
-	if (m_free_km)
-		SG_FREE(kmatrix.matrix);
-
-	kmatrix.matrix=NULL;
+	kmatrix.unref();
 	upper_diagonal=false;
-	kmatrix.num_cols=0;
-	kmatrix.num_rows=0;
 
 	SG_DEBUG("Leaving CCustomKernel::cleanup_custom()\n");
 }

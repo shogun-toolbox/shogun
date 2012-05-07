@@ -37,7 +37,6 @@ CBinnedDotFeatures::CBinnedDotFeatures(CSimpleFeatures<float64_t>* sf, SGMatrix<
 CBinnedDotFeatures::~CBinnedDotFeatures()
 {
 	SG_UNREF(m_features);
-	m_bins.destroy_matrix();
 }
 
 int32_t CBinnedDotFeatures::get_dim_feature_space() const

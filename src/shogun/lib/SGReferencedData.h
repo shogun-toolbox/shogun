@@ -97,7 +97,10 @@ class SGReferencedData
 		int32_t unref()
 		{
 			if (m_refcount == NULL)
+			{
+				init_data();
 				return -1;
+			}
 
 			if (*m_refcount==0 || --(*m_refcount)==0)
 			{
@@ -114,6 +117,7 @@ class SGReferencedData
 #ifdef DEBUG_SGVECTOR
 				SG_SGCDEBUG("unref() refcount %d data %p decreased\n", *m_refcount, this);
 #endif
+				init_data();
 				return *m_refcount;
 			}
 		}

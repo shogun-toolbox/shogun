@@ -1821,8 +1821,6 @@ void CWeightedDegreePositionStringKernel::prepare_POIM2(SGMatrix<float64_t> dist
 	memcpy(m_poim_distrib, distrib.matrix, num_sym*num_feat*sizeof(float64_t));
 	m_poim_num_sym=num_sym;
 	m_poim_num_feat=num_feat;
-
-	distrib.free_matrix();
 }
 
 void CWeightedDegreePositionStringKernel::compute_POIM2(

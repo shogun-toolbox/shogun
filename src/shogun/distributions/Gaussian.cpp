@@ -36,9 +36,6 @@ CGaussian::CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov,
 	decompose_cov(cov);
 	init();
 	register_params();
-
-	if (cov.do_free)
-		cov.free_matrix();
 }
 
 void CGaussian::init()
@@ -59,7 +56,6 @@ void CGaussian::init()
 
 CGaussian::~CGaussian()
 {
-	m_u.destroy_matrix();
 }
 
 bool CGaussian::train(CFeatures* data)
@@ -71,16 +67,12 @@ bool CGaussian::train(CFeatures* data)
 				SG_ERROR("Specified features are not of type CDotFeatures\n");
 		set_features(data);
 	}
-	CDotFeatures* dotdata=(CDotFeatures *) data;
 
+	CDotFeatures* dotdata=(CDotFeatures *) data;
 	m_mean=dotdata->get_mean();
 	SGMatrix<float64_t> cov=dotdata->get_cov();
-
 	decompose_cov(cov);
-	cov.destroy_matrix();
-
 	init();
-
 	return true;
 }
 
@@ -176,8 +168,6 @@ void CGaussian::set_cov(SGMatrix<float64_t> cov)
 	ASSERT(cov.num_rows==m_mean.vlen);
 	decompose_cov(cov);
 	init();
-	if (cov.do_free)
-		cov.free_matrix();
 }
 
 void CGaussian::set_d(const SGVector<float64_t> d)
@@ -239,8 +229,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 	switch (m_cov_type)
 	{
 		case FULL:
-			m_u.destroy_matrix();
-			m_u.matrix=SG_MALLOC(float64_t, cov.num_rows*cov.num_rows);
+			m_u=SGMatrix<float64_t>(cov.num_rows,cov.num_rows);
 			memcpy(m_u.matrix, cov.matrix, sizeof(float64_t)*cov.num_rows*cov.num_rows);
 
 			m_d.vector=CMath::compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);

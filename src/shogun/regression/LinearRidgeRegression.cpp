@@ -90,7 +90,6 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 	clapack_dposv(CblasRowMajor,CblasUpper, num_feat, 1, kernel_matrix.matrix, num_feat,
 			y.vector, num_feat);
 
-	kernel_matrix.destroy_matrix();
 	set_w(y);
 
 	return true;

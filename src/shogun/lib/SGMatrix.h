@@ -14,65 +14,42 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGReferencedData.h>
 
 namespace shogun
 {
 /** @brief shogun matrix */
-template<class T> class SGMatrix
+template<class T> class SGMatrix : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGMatrix() : matrix(NULL), num_rows(0), num_cols(0), do_free(false) { }
+		SGMatrix() : SGReferencedData(false)
+		{
+			init_data();
+		}
 
 		/** constructor for setting params */
-		SGMatrix(T* m, index_t nrows, index_t ncols, bool free_mat=false)
-			: matrix(m), num_rows(nrows), num_cols(ncols), do_free(free_mat) { }
+		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true)
+			: SGReferencedData(ref_counting), matrix(m),
+			num_rows(nrows), num_cols(ncols) { }
 
 		/** constructor to create new matrix in memory */
-		SGMatrix(index_t nrows, index_t ncols, bool free_mat=false)
-			: num_rows(nrows), num_cols(ncols), do_free(free_mat)
+		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true)
+			: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols)
 		{
-			matrix=SG_MALLOC(T, nrows*ncols);
+			matrix=SG_MALLOC(T, ((int64_t) nrows)*ncols);
 		}
 
 		/** copy constructor */
-		SGMatrix(const SGMatrix &orig)
-			: matrix(orig.matrix), num_rows(orig.num_rows),
-			num_cols(orig.num_cols), do_free(orig.do_free) { }
-
-        /** operator= */
-        SGMatrix<T> &operator=(const SGMatrix<T> &rhs)
-        {
-            free_matrix();
-            matrix = rhs.matrix;
-            num_rows = rhs.num_rows;
-            num_cols = rhs.num_cols;
-            do_free = rhs.do_free;
-            return *this;
-        }
+		SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
+		{
+			copy_data(orig);
+		}
 
 		/** empty destructor */
 		virtual ~SGMatrix()
 		{
-		}
-
-		/** free matrix */
-		virtual void free_matrix()
-		{
-			if (do_free)
-				SG_FREE(matrix);
-
-			matrix=NULL;
-			do_free=false;
-			num_rows=0;
-			num_cols=0;
-		}
-
-		/** destroy matrix */
-		virtual void destroy_matrix()
-		{
-			do_free=true;
-			free_matrix();
+			unref();
 		}
 
 		/** get a column vector
@@ -131,6 +108,32 @@ template<class T> class SGMatrix
 				set_const(0);
 		}
 
+	protected:
+		/** needs to be overridden to copy data */
+		virtual void copy_data(const SGReferencedData &orig)
+		{
+			matrix=((SGMatrix*)(&orig))->matrix;
+			num_rows=((SGMatrix*)(&orig))->num_rows;
+			num_cols=((SGMatrix*)(&orig))->num_cols;
+		}
+
+		/** needs to be overridden to initialize empty data */
+		virtual void init_data()
+		{
+			matrix=NULL;
+			num_rows=0;
+			num_cols=0;
+		}
+
+		/** needs to be overridden to free data */
+		virtual void free_data()
+		{
+			SG_FREE(matrix);
+			matrix=NULL;
+			num_rows=0;
+			num_cols=0;
+		}
+
 	public:
 		/** matrix  */
 		T* matrix;
@@ -138,8 +141,6 @@ template<class T> class SGMatrix
 		index_t num_rows;
 		/** number of columns of matrix  */
 		index_t num_cols;
-		/** whether matrix needs to be freed */
-		bool do_free;
 };
 }
 #endif // __SGMATRIX_H__

@@ -149,7 +149,6 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 	if (info)
 		SG_ERROR("Eigenproblem solving  failed with %d code", info);
 
-	kernel_matrix.destroy_matrix();
 	SG_FREE(s_values);
 
 	return new CSimpleFeatures<float64_t>(new_feature_matrix);

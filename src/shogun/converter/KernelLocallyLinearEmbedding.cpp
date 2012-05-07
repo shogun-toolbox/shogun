@@ -136,13 +136,10 @@ CSimpleFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel*
 	time->start();
 	SGMatrix<float64_t> M_matrix = construct_weight_matrix(kernel_matrix,neighborhood_matrix);
 	SG_DEBUG("Weights computation took %fs\n",time->cur_time_diff());
-	kernel_matrix.destroy_matrix();
-	neighborhood_matrix.destroy_matrix();
 
 	time->start();
 	SGMatrix<float64_t> nullspace = construct_embedding(M_matrix,m_target_dim);
 	SG_DEBUG("Embedding construction took %fs\n",time->cur_time_diff());
-	M_matrix.destroy_matrix();
 
 	delete time;
 

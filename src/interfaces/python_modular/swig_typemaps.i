@@ -314,8 +314,6 @@ static bool matrix_to_numpy(PyObject* &obj, SGMatrix<type> sg_matrix, int typeco
         ((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
     }
 
-    sg_matrix.free_matrix();
-
     return descr!=NULL;
 }
 

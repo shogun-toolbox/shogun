@@ -148,11 +148,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 		max_likelihood(alpha, min_cov);
 	}
 	else
-	{
-		alpha.matrix=SG_MALLOC(float64_t, num_vectors*m_components.vlen);
-		alpha.num_rows=num_vectors;
-		alpha.num_cols=m_components.vlen;
-	}
+		alpha=SGMatrix<float64_t>(num_vectors,m_components.vlen);
 
 	int32_t iter=0;
 	float64_t log_likelihood_prev=0;
@@ -196,8 +192,6 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 
 	SG_FREE(logPxy);
 	SG_FREE(logPx);
-	//SG_FREE(logPost);
-	alpha.free_matrix();
 
 	return log_likelihood_cur;
 }
@@ -412,8 +406,6 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 		components.vector[1]->set_d(SGVector<float64_t>(CMath::compute_eigenvectors(c1.matrix, dim_n, dim_n), dim_n));
 		components.vector[1]->set_u(c1);
 
-		c2.destroy_matrix();
-
 		float64_t new_d=0;
 		for (int32_t i=0; i<dim_n; i++)
 		{
@@ -515,7 +507,6 @@ void CGMM::partial_em(int32_t comp1, int32_t comp2, int32_t comp3, float64_t min
 	m_coefficients.vector[comp3]=coefficients.vector[2];
 
 	delete partial_candidate;
-	alpha.destroy_matrix();
 	SG_FREE(logPxy);
 	SG_FREE(logPx);
 	SG_FREE(init_logPxy);
