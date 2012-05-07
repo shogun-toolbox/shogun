@@ -11,12 +11,12 @@
 #include <shogun/base/init.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/memory.h>
-#include <shogun/lib/Set.h>
+#include <shogun/lib/Map.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
 #ifdef TRACE_MEMORY_ALLOCS
-shogun::CSet<shogun::MemoryBlock>* sg_mallocs=NULL;
+shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
 #endif
 
 namespace shogun
@@ -54,7 +54,7 @@ namespace shogun
 			sg_math = new shogun::CMath();
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
-			sg_mallocs = new shogun::CSet<MemoryBlock>(631, 1024, false);
+			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
 
 		SG_REF(sg_mallocs);
 #endif
@@ -84,7 +84,7 @@ namespace shogun
 	{
 #ifdef TRACE_MEMORY_ALLOCS
 		list_memory_allocs();
-		shogun::CSet<shogun::MemoryBlock>* mallocs=sg_mallocs;
+		shogun::CMap<void*, shogun::MemoryBlock>* mallocs=sg_mallocs;
 		sg_mallocs=NULL;
 		SG_UNREF(mallocs);
 #endif

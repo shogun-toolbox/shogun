@@ -9,46 +9,55 @@
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
-#ifndef _SET_H_
-#define _SET_H_
+#ifndef _MAP_H_
+#define _MAP_H_
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/base/DynArray.h>
 
+#include <cstdio>
+
 namespace shogun
 {
 
+#define IGNORE_IN_CLASSLIST
+
+#define MapNode CMapNode<K, T>
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** hashset node */
-template<class T> struct HashSetNode
+IGNORE_IN_CLASSLIST template<class K, class T> struct CMapNode
 {	
-	/** index in set array
-	 * It also using for reference to next free
-	 * element in array.
-	 */
+	/** index in hashtable */
 	int32_t index;
 
-	/** key and data of node */
-	T element;
+	/** is free? */
+	bool free;
+
+	/** key of node */
+	K key;
+
+	/** data of node */
+	T data;
 
 	/** pointer to left sibling */
-	HashSetNode *left;
+	CMapNode *left;
 
 	/** pointer to right sibling */
-	HashSetNode *right;
+	CMapNode *right;
 };
 #endif
 
 /** @brief the class CSet, a set based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table
  */
-template<class T> class CSet: public CSGObject
+IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public CSGObject
 {
 public:
 	/** Default constructor */
-	CSet()
+	CMap()
 	{	
 		hash_size=0;
 		free_index=0;
@@ -59,47 +68,39 @@ public:
 	}
 
 	/** Custom constructor */
-	CSet(int32_t size, int32_t reserved=1024, bool tracable=true)
+	CMap(int32_t size, int32_t reserved=1024, bool tracable=true)
 	{	
 		hash_size=size;
 		free_index=0;
 		num_elements=0;
 		use_sg_mallocs=tracable;
 
-		if(use_sg_mallocs)
-		{
-			hash_array=SG_CALLOC(HashSetNode<T>*, size);
-		}
+		if (use_sg_mallocs)
+			hash_array=SG_CALLOC(MapNode*, size);
 		else
-		{
-			hash_array=(HashSetNode<T>**) calloc(size, sizeof(HashSetNode<T>*));
-		}
+			hash_array=(CMapNode<K, T>**) calloc(size, sizeof(CMapNode<K, T>*));
 
 		for (int32_t i=0; i<size; i++)
 		{
 			hash_array[i]=NULL;
 		}
 
-		array=new DynArray<HashSetNode<T>*>(reserved, tracable);
+		array=new DynArray<CMapNode<K, T>*>(reserved, tracable);
 	}
 
 	/** Default destructor */
-	virtual ~CSet()
+	virtual ~CMap()
 	{
 		if (array!=NULL)
 		{
 			for(int32_t i=0; i<array->get_num_elements(); i++)
 			{
-				if(array->get_element(i)!=NULL)
+				if (array->get_element(i)!=NULL)
 				{
-					if(use_sg_mallocs)
-					{
+					if (use_sg_mallocs)
 						SG_FREE(array->get_element(i));
-					}
 					else
-					{
 						free(array->get_element(i));
-					}
 				}
 			}
 			delete array;
@@ -107,30 +108,26 @@ public:
 
 		if (hash_array!=NULL)
 		{
-			if(use_sg_mallocs)
-			{
+			if (use_sg_mallocs)
 				SG_FREE(hash_array);
-			}
 			else
-			{
 				free(hash_array);
-			}
 		}
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "Set"; }
+	virtual const char* get_name() const { return "Map"; }
 
 	/** Add an element to the set
 	 *
 	 * @param e elemet to be added
 	 */
-	void add(const T& e)
+	void add(const K& key, const T& data)
 	{
-		int32_t index=hash(e);
-		if (chain_search(index, e)==NULL)
+		int32_t index=hash(key);
+		if (chain_search(index, key)==NULL)
 		{
-			insert_key(index, e);
+			insert_key(index, key, data);
 			num_elements++;
 		}
 	}
@@ -139,13 +136,11 @@ public:
 	 *
 	 * @param e element to be looked for
 	 */
-	bool contains(const T& e)
+	bool contains(const K& key)
 	{
-		int32_t index=hash(e);
-		if (chain_search(index, e)!=NULL)
-		{
+		int32_t index=hash(key);
+		if (chain_search(index, key)!=NULL)
 			return true; 
-		}
 
 		return false;
 	}
@@ -154,10 +149,10 @@ public:
 	 *
 	 * @param e element to be removed
 	 */
-	void remove(const T& e)
+	void remove(const K& key)
 	{
-		int32_t index=hash(e);
-		HashSetNode<T>* result=chain_search(index, e);
+		int32_t index=hash(key);
+		CMapNode<K, T>* result=chain_search(index, key);
 
 		if (result!=NULL)		
 		{
@@ -171,15 +166,13 @@ public:
 	 * @param e element to be removed
 	 * @return index of the element or -1 if not found
 	 */
-	int32_t index_of(const T& e)
+	int32_t index_of(const K& key)
 	{
-		int32_t index=hash(e);
-		HashSetNode<T>* result=chain_search(index, e);
+		int32_t index=hash(key);
+		CMapNode<K ,T>* result=chain_search(index, key);
 
 		if (result!=NULL)		
-		{
 			 return result->index;
-		}
 		
 		return -1;
 	}
@@ -193,6 +186,15 @@ public:
 		return num_elements;
 	}
 
+	/** Get number of elements
+	 *
+	 * @return number of elements
+	 */
+	int32_t get_maxnum_elements() const
+	{
+		return array->get_num_elements();
+	}
+
 	/** Get set element at index
 	 *
 	 * (does NOT do bounds checking)
@@ -202,7 +204,7 @@ public:
 	 */
 	T get_element(int32_t index) const
 	{
-		return array->get_element(index)->element;
+		return array->get_element(index)->data;
 	}
 
 	/** get set element at index as reference
@@ -214,7 +216,9 @@ public:
 	 */
 	T* get_element_ptr(int32_t index)
 	{
-		return &(array->get_element(index)->element);
+		if (is_free(array->get_element(index)))
+			return NULL;
+		return &(array->get_element(index)->data);
 	}
 
 	/** operator overload for set read only access
@@ -227,7 +231,7 @@ public:
 	 */
 	T operator[](int32_t index) const
 	{
-		return array->get_element(index)->element;
+		return array->get_element(index)->data;
 	}
 		
 	/** @return underlying array of nodes in memory */
@@ -240,23 +244,22 @@ private:
 	/** Returns hash of key
 	 * MurmurHash used
 	 */
-	int32_t hash(const T& key)
+	int32_t hash(const K& key)
 	{
-		return CHash::MurmurHash2((uint8_t*)(&key), sizeof(int32_t), 0xDEADBEEF) % hash_size;
+		return CHash::MurmurHash2((uint8_t*)(&key), sizeof(key), 0xDEADBEEF) % hash_size;
 	}
 
-	bool is_free(HashSetNode<T>* node)
+	/** is free? */
+	bool is_free(CMapNode<K, T>* node)
 	{
-		if ((node->left==NULL) && (node->right==NULL))
-		{
+		if (node->free==true)
 			return true;
-		}
 
 		return false;
 	}
 
 	/** Searchs key in list(chain) */
-	HashSetNode<T>* chain_search(int32_t index, const T& key)
+	CMapNode<K, T>* chain_search(int32_t index, const K& key)
 	{
 		if (hash_array[index]==NULL)
 		{
@@ -264,14 +267,12 @@ private:
 		}
 		else
 		{
-			HashSetNode<T>* current=hash_array[index];
+			CMapNode<K, T>* current=hash_array[index];
 
 			do // iterating all items in the list
 			{
-				if (current->element==key)
-				{
+				if (current->key==key)
 					return current; // it's a search key
-				}
 
 				current=current->right;
 
@@ -282,27 +283,18 @@ private:
 	}
 	
 	/** Inserts nodes with certain key and data in set */
-	void insert_key(int32_t index, const T& e)
+	void insert_key(int32_t index, const K& key, const T& data)
 	{
 		int32_t new_index;
-		HashSetNode<T>* new_node;
-
-		if(array==NULL)
-		{
-			return;
-		}
+		CMapNode<K, T>* new_node;
 
 		if ((free_index>=array->get_num_elements()) || (array->get_element(free_index)==NULL))
 		{
 			// init new node
-			if(use_sg_mallocs)
-			{
-				new_node=SG_MALLOC(HashSetNode<T>, 1);
-			}
+			if (use_sg_mallocs)
+				new_node=SG_CALLOC(MapNode, 1);
 			else
-			{
-				new_node=(HashSetNode<T>*) calloc(1, sizeof(HashSetNode<T>));
-			}
+				new_node=(CMapNode<K, T>*) calloc(1, sizeof(CMapNode<K, T>));
 
 			array->append_element(new_node);
 
@@ -319,8 +311,10 @@ private:
 		}
 
 		new_node->index=new_index;
-		new_node->element=e;
-		new_node->left=new_node; // self referencing
+		new_node->free=false;
+		new_node->key=key;
+		new_node->data=data;
+		new_node->left=NULL;
 		new_node->right=NULL;
 
 		// add new node in start of list
@@ -338,32 +332,25 @@ private:
 	}
 
 	/** Deletes key from set */
-	void delete_key(int32_t index, HashSetNode<T>* node)
+	void delete_key(int32_t index, CMapNode<K, T>* node)
 	{		
 		int32_t temp=0;
 
 		if (node==NULL)
-		{
 			return;
-		}
 
 		if (node->right!=NULL)
-		{
 			node->right->left = node->left;
-		}
 
 		if (node->left!=NULL)
-		{
-			node->left->right = node->right;
-		}
+			node->left->right = node->right;		
 		else
-		{
 			hash_array[index] = node->right;
-		}
 
 		temp=node->index;
 
 		node->index=free_index;
+		node->free=true;
 		node->left=NULL;
 		node->right=NULL;
 
@@ -372,8 +359,9 @@ private:
 
 
 protected:
-	/** */
+	/** whether SG_MALLOC or just malloc etc shall be used */
 	bool use_sg_mallocs;
+
 	/** hashtable size */
 	int32_t hash_size;
 
@@ -384,12 +372,12 @@ protected:
 	int32_t num_elements;
 
 	/** array of lists (chains) */
-	HashSetNode<T>** hash_array;
+	CMapNode<K, T>** hash_array;
 
 	/** array for index permission */
-	DynArray<HashSetNode<T>*>* array;
+	DynArray<CMapNode<K, T>*>* array;
 };
 
 }
 
-#endif /* _SET_H_ */
+#endif /* _MAP_H_ */

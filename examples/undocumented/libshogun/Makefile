@@ -59,7 +59,6 @@ TARGETS = basic_minimal \
 		  splitting_standard_crossvalidation \
 		  mathematics_arpack \
 		  library_fibonacci_heap \
-		  library_hashset \
 		  mathematics_lapack \
 		  converter_locallylinearembedding \
 		  converter_localtangentspacealignment \
