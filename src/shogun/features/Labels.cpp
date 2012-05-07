@@ -16,7 +16,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/Set.h>
 
 using namespace shogun;
 
