@@ -27,11 +27,11 @@ namespace shogun
  * 2. random sample and assign values to the rest of the code positions
  *
  * In this way, we guarantee that both +1 and -1 are present in the code. However, the effective probability
- * is changed to Q, where
+ * is changed to Q. Assume number of classes is K, then
  *
- * * Q(0)  = 0.5*P(0)
- * * Q(+1) = 0.25 + 0.5*P(+1)
- * * Q(-1) = 0.25 + 0.5*P(-1)
+ * * Q(0)  = (K-2)/K * P(0)
+ * * Q(+1) = 1/K + (K-2)/K * P(+1)
+ * * Q(-1) = 1/K + (K-2)/K * P(-1)
  */
 class CECOCRandomSparseEncoder: public CECOCEncoder
 {
