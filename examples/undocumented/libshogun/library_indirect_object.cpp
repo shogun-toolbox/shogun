@@ -37,6 +37,8 @@ int main(int argc, char** argv)
 	for (int i=0; i<l; i++)
 		printf("a[%d]=%d x[%d]=%d\n", i, a[i], i, int32_t(x[i]));
 
+	SG_FREE(x);
+	SG_FREE(a);
 	exit_shogun();
 
 	return 0;
