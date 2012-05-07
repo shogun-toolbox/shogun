@@ -86,7 +86,6 @@ CLabels* CMulticlassMachine::apply()
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
 
 		CLabels *result=new CLabels(num_vectors);
-		SG_REF(result);
 		CLabels **outputs=SG_MALLOC(CLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
