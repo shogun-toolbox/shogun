@@ -17,6 +17,22 @@
 namespace shogun
 {
 
+/** ECOC Random Sparse Encoder.
+ *
+ * Given probabilities P(0), P(+1) and P(-1) (that sums to 1), the codebook element is randomly
+ * selected according to those probabilities. However, to avoid generating invalid code (i.e. not
+ * both +1 and -1 are present), we use a heuristic modification here:
+ *
+ * 1. randomly select two positions and assign them (+1,-1) or (-1,+1) with probability 0.5, 0.5 respectively
+ * 2. random sample and assign values to the rest of the code positions
+ *
+ * In this way, we guarantee that both +1 and -1 are present in the code. However, the effective probability
+ * is changed to Q, where
+ *
+ * * Q(0)  = 0.5*P(0)
+ * * Q(+1) = 0.25 + 0.5*P(+1)
+ * * Q(-1) = 0.25 + 0.5*P(-1)
+ */
 class CECOCRandomSparseEncoder: public CECOCEncoder
 {
 public:
@@ -30,7 +46,7 @@ public:
      * @see get_default_code_length
      */
     CECOCRandomSparseEncoder(int32_t maxiter=10000, int32_t codelen=0,
-            float64_t pzero=0.3, float64_t pposone=0.35, float64_t pnegone=0.35);
+            float64_t pzero=0.5, float64_t pposone=0.25, float64_t pnegone=0.25);
 
     /** destructor */
     virtual ~CECOCRandomSparseEncoder() {}
