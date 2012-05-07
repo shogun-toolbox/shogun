@@ -70,7 +70,7 @@ public:
      *   S. Escalera, O. Pujol, and P. Radeva. Separability of ternary codes for sparse designs
      *   of error-correcting output codes. Pattern Recognition Letters, 30:285-297, 2009.
      */
-    virtual int32_t get_default_code_length(int32_t num_classes) const
+    int32_t get_default_code_length(int32_t num_classes) const
     {
         return static_cast<int32_t>(CMath::round(15 * CMath::log(num_classes)));
     }
