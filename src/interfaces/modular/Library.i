@@ -27,6 +27,7 @@
 
 /* Templated Datatype Classes */
 %include <shogun/lib/DataType.h>
+%include <shogun/lib/SGReferencedData.h>
 %include <shogun/lib/SGVector.h>
 %include <shogun/lib/SGMatrix.h>
 %include <shogun/lib/SGSparseVector.h>
