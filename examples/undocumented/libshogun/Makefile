@@ -1,12 +1,13 @@
 LIB_PATH=/usr/lib
 INC_PATH=/usr/include
+VALGRINDOPTS=--tool=memcheck --error-limit=no --trace-children=yes --leak-check=full --show-reachable=yes
 
 INCLUDES=
 LIBS=
 LIBS_ADD=-lshogun
 
 LINKFLAGS=
-CXXFLAGS=-O3 -g
+CXXFLAGS=-O0 -g
 
 LIBRARY_PATH=LD_LIBRARY_PATH
 LINKFLAGS+=$(LIBS) $(LIBS_ADD) -L$(LIB_PATH) 
@@ -80,8 +81,8 @@ TARGETS = basic_minimal \
 
 all: $(TARGETS)
 
-check-valgrind:
-	for t in $(TARGETS); do echo $$t && valgrind --log-file=$(VALGRIND_LOG) ./$$t >/dev/null && cat $(VALGRIND_LOG) | grep SUMMARY && rm -f $(VALGRIND_LOG); done
+check-valgrind: $(TARGETS)
+	for t in $(TARGETS); do echo $$t && valgrind $(VALGRINDOPTS) --log-file=$(VALGRIND_LOG) ./$$t >/dev/null && cat $(VALGRIND_LOG) | grep SUMMARY && rm -f $(VALGRIND_LOG); done
 
 print_targets:
 	@echo $(TARGETS)
