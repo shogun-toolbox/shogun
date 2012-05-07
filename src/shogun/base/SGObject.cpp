@@ -1021,8 +1021,8 @@ void CSGObject::save_serializable_post() throw (ShogunException)
 }
 
 #ifdef TRACE_MEMORY_ALLOCS
-#include <shogun/lib/Set.h>
-extern CSet<shogun::MemoryBlock>* sg_mallocs;
+#include <shogun/lib/Map.h>
+extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 #endif
 
 void CSGObject::init()
@@ -1034,7 +1034,7 @@ void CSGObject::init()
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 	{
-		int32_t idx=sg_mallocs->index_of(MemoryBlock(this));
+		int32_t idx=sg_mallocs->index_of(this);
 		if (idx>-1)
 		{
 			MemoryBlock* b=sg_mallocs->get_element_ptr(idx);
