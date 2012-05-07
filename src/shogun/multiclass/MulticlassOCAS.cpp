@@ -52,11 +52,11 @@ CMulticlassOCAS::CMulticlassOCAS(float64_t C, CDotFeatures* train_features, CLab
 
 void CMulticlassOCAS::register_parameters()
 {
-	m_parameters->add(&m_C, "m_C", "regularization constant");
-	m_parameters->add(&m_epsilon, "m_epsilon", "solver relative tolerance");
-	m_parameters->add(&m_max_iter, "m_max_iter", "max number of iterations");
-	m_parameters->add(&m_method, "m_method", "used solver method");
-	m_parameters->add(&m_buf_size, "m_buf_size", "buffer size");
+	SG_ADD(&m_C, "m_C", "regularization constant", MS_AVAILABLE);
+	SG_ADD(&m_epsilon, "m_epsilon", "solver relative tolerance", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations", MS_NOT_AVAILABLE);
+	SG_ADD(&m_method, "m_method", "used solver method", MS_NOT_AVAILABLE);
+	SG_ADD(&m_buf_size, "m_buf_size", "buffer size", MS_NOT_AVAILABLE);
 }
 
 CMulticlassOCAS::~CMulticlassOCAS()
@@ -67,6 +67,10 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 {
 	if (data)
 		set_features((CDotFeatures*)data);
+
+	ASSERT(m_features);
+	ASSERT(m_labels);
+	ASSERT(m_multiclass_strategy);
 
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
