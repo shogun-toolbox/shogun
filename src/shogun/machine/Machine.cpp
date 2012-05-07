@@ -123,6 +123,7 @@ void CMachine::set_store_model_features(bool store_model)
 
 void CMachine::data_lock(CLabels* labs, CFeatures* features)
 {
+	SG_DEBUG("entering %s::data_lock\n", get_name());
 	if (!supports_locking())
 	{
 		{
@@ -147,10 +148,14 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 	}
 
 	m_data_locked=true;
+	SG_DEBUG("leaving %s::data_lock\n", get_name());
 }
 
 void CMachine::data_unlock()
 {
+	SG_DEBUG("entering %s::data_lock\n", get_name());
 	if (m_data_locked)
 		m_data_locked=false;
+
+	SG_DEBUG("leaving %s::data_lock\n", get_name());
 }
