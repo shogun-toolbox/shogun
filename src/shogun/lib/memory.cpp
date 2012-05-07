@@ -11,13 +11,13 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/memory.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Set.h>
+#include <shogun/lib/Map.h>
 #include <shogun/base/SGObject.h>
 
 using namespace shogun;
 
 #ifdef TRACE_MEMORY_ALLOCS
-extern CSet<shogun::MemoryBlock>* sg_mallocs;
+extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
 MemoryBlock::MemoryBlock(void* p) : ptr(p), size(0), file(NULL),
 	line(-1), is_sgobject(false)
@@ -78,7 +78,7 @@ void* operator new(size_t size) throw (std::bad_alloc)
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size));
+		sg_mallocs->add(p, MemoryBlock(p,size));
 #endif
 	if (!p)
 	{
@@ -99,7 +99,7 @@ void operator delete(void *p) throw()
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(p, true));
+		sg_mallocs->remove(p);
 #endif
 	free(p);
 }
@@ -109,7 +109,7 @@ void* operator new[](size_t size) throw(std::bad_alloc)
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size));
+		sg_mallocs->add(p, MemoryBlock(p,size));
 #endif
 
 	if (!p)
@@ -131,7 +131,7 @@ void operator delete[](void *p) throw()
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(p, false));
+		sg_mallocs->remove(p);
 #endif
 	free(p);
 }
@@ -145,7 +145,7 @@ void* sg_malloc(size_t size
 	void* p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size, file, line));
+		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
 #endif
 
 	if (!p)
@@ -172,7 +172,7 @@ void* sg_calloc(size_t num, size_t size
 	void* p=calloc(num, size);
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size, file, line));
+		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
 #endif
 
 	if (!p)
@@ -196,7 +196,7 @@ void  sg_free(void* ptr)
 {
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(ptr, false));
+		sg_mallocs->remove(ptr);
 #endif
 	free(ptr);
 }
@@ -211,10 +211,10 @@ void* sg_realloc(void* ptr, size_t size
 
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
-		sg_mallocs->remove(MemoryBlock(ptr, false));
+		sg_mallocs->remove(ptr);
 
 	if (sg_mallocs)
-		sg_mallocs->add(MemoryBlock(p,size, file, line));
+		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
 #endif
 
 	if (!p && (size || !ptr))
@@ -235,6 +235,7 @@ void* sg_realloc(void* ptr, size_t size
 #ifdef TRACE_MEMORY_ALLOCS
 void list_memory_allocs()
 {
+	MemoryBlock* temp;
 	if (sg_mallocs)
 	{
 		int32_t num=sg_mallocs->get_num_elements();
@@ -242,7 +243,11 @@ void list_memory_allocs()
 
 
 		for (int32_t i=0; i<num; i++)
-			sg_mallocs->get_element(i).display();
+		{
+			temp=sg_mallocs->get_element_ptr(i);
+			if (temp!=NULL)			
+				temp->display();
+		}
 	}
 }
 #endif
