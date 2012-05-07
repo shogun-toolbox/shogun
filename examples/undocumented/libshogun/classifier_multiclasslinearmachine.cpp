@@ -99,8 +99,8 @@ int main(int argc, char** argv)
 	SG_UNREF(output);
 	SG_UNREF(features);
 	SG_UNREF(labels);
-	//SG_UNREF(ffeats_train);
-	//SG_UNREF(flabels_train);
+	SG_UNREF(ffeats_train);
+	SG_UNREF(flabels_train);
 	SG_UNREF(stream_features);
 	SG_UNREF(stream_labels);
 	exit_shogun();
