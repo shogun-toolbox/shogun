@@ -248,6 +248,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 		}
 	}
 	SG_FREE(eigenvectors);
+	SG_FREE(eigenvalues_vector);
 #endif /* HAVE_ARPACK else */
 
 	// warn user if there are negative or zero eigenvalues
