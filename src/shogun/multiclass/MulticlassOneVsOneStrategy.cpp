@@ -60,7 +60,7 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 		m_train_pair_idx_2=m_train_pair_idx_1+1;
 	}
 
-	subset.resize(tot);
+	subset.resize_vector(tot);
 	return subset;
 }
 
