@@ -10,7 +10,6 @@
 
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/features/Labels.h>
-#include <shogun/lib/Set.h>
 
 using namespace shogun;
 
