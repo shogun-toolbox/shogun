@@ -239,10 +239,11 @@ void list_memory_allocs()
 	if (sg_mallocs)
 	{
 		int32_t num=sg_mallocs->get_num_elements();
+		int32_t maxnum=sg_mallocs->get_maxnum_elements();
 		printf("%d Blocks are allocated:\n", num);
 
 
-		for (int32_t i=0; i<num; i++)
+		for (int32_t i=0; i<maxnum; i++)
 		{
 			temp=sg_mallocs->get_element_ptr(i);
 			if (temp!=NULL)			

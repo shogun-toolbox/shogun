@@ -75,14 +75,10 @@ public:
 		num_elements=0;
 		use_sg_mallocs=tracable;
 
-		if(use_sg_mallocs)
-		{
+		if (use_sg_mallocs)
 			hash_array=SG_CALLOC(MapNode*, size);
-		}
 		else
-		{
 			hash_array=(CMapNode<K, T>**) calloc(size, sizeof(CMapNode<K, T>*));
-		}
 
 		for (int32_t i=0; i<size; i++)
 		{
@@ -99,16 +95,12 @@ public:
 		{
 			for(int32_t i=0; i<array->get_num_elements(); i++)
 			{
-				if(array->get_element(i)!=NULL)
+				if (array->get_element(i)!=NULL)
 				{
-					if(use_sg_mallocs)
-					{
+					if (use_sg_mallocs)
 						SG_FREE(array->get_element(i));
-					}
 					else
-					{
 						free(array->get_element(i));
-					}
 				}
 			}
 			delete array;
@@ -116,14 +108,10 @@ public:
 
 		if (hash_array!=NULL)
 		{
-			if(use_sg_mallocs)
-			{
+			if (use_sg_mallocs)
 				SG_FREE(hash_array);
-			}
 			else
-			{
 				free(hash_array);
-			}
 		}
 	}
 
@@ -152,9 +140,7 @@ public:
 	{
 		int32_t index=hash(key);
 		if (chain_search(index, key)!=NULL)
-		{
 			return true; 
-		}
 
 		return false;
 	}
@@ -186,9 +172,7 @@ public:
 		CMapNode<K ,T>* result=chain_search(index, key);
 
 		if (result!=NULL)		
-		{
 			 return result->index;
-		}
 		
 		return -1;
 	}
@@ -200,6 +184,15 @@ public:
 	int32_t get_num_elements() const
 	{
 		return num_elements;
+	}
+
+	/** Get number of elements
+	 *
+	 * @return number of elements
+	 */
+	int32_t get_maxnum_elements() const
+	{
+		return array->get_num_elements();
 	}
 
 	/** Get set element at index
@@ -260,9 +253,7 @@ private:
 	bool is_free(CMapNode<K, T>* node)
 	{
 		if (node->free==true)
-		{
 			return true;
-		}
 
 		return false;
 	}
@@ -281,9 +272,7 @@ private:
 			do // iterating all items in the list
 			{
 				if (current->key==key)
-				{
 					return current; // it's a search key
-				}
 
 				current=current->right;
 
@@ -302,14 +291,10 @@ private:
 		if ((free_index>=array->get_num_elements()) || (array->get_element(free_index)==NULL))
 		{
 			// init new node
-			if(use_sg_mallocs)
-			{
+			if (use_sg_mallocs)
 				new_node=SG_CALLOC(MapNode, 1);
-			}
 			else
-			{
 				new_node=(CMapNode<K, T>*) calloc(1, sizeof(CMapNode<K, T>));
-			}
 
 			array->append_element(new_node);
 
@@ -352,23 +337,15 @@ private:
 		int32_t temp=0;
 
 		if (node==NULL)
-		{
 			return;
-		}
 
 		if (node->right!=NULL)
-		{
 			node->right->left = node->left;
-		}
 
 		if (node->left!=NULL)
-		{
 			node->left->right = node->right;		
-		}
 		else
-		{
 			hash_array[index] = node->right;
-		}
 
 		temp=node->index;
 
