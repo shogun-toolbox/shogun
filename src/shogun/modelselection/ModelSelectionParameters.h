@@ -89,10 +89,11 @@ public:
 	 * If the latter are not possible to be produced by set_range, a vector may
 	 * be specified directly.
 	 *
-	 * @param values value vector
+	 * @param values value vector. no ref counting takes place here
+	 * @param value_type type of the provided vector
 	 */
 	template <class T>
-	void set_values(SGVector<T> values);
+	void set_values(const SGVector<T>& values, EMSParamType value_type);
 
 	/** SG_PRINT's the tree of which this node is the base
 	 *
@@ -105,7 +106,7 @@ public:
 	 * structure, a set of trees which contain all combinations of parameters
 	 * that are implied by this tree is generated.
 	 *
-	 * @result result all trees of parameter combinations are put into here
+	 * @return result all trees of parameter combinations are put into here
 	 */
 	CDynamicObjectArray* get_combinations();
 
@@ -121,6 +122,22 @@ public:
 	inline virtual const char* get_name() const
 	{
 		return "ModelSelectionParameters";
+	}
+
+	/** Not allowed for this class, throws an error */
+	virtual bool save_serializable(CSerializableFile* file,
+			const char* prefix="", int32_t param_version=VERSION_PARAMETER)
+	{
+		SG_ERROR("Serialization is not allowed for %s!\n", get_name());
+		return false;
+	}
+
+	/** Not allowed for this class, throws an error */
+	virtual bool load_serializable(CSerializableFile* file,
+		const char* prefix="", int32_t param_version=VERSION_PARAMETER)
+	{
+		SG_ERROR("Serialization is not allowed for %s!\n", get_name());
+		return false;
 	}
 
 private:
@@ -146,7 +163,8 @@ protected:
 private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
-	SGVector<char> m_values; // dummy void type char
+	void* m_values;
+	index_t m_values_length;
 	CDynamicObjectArray* m_child_nodes;
 	EMSParamType m_value_type;
 };
@@ -170,7 +188,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 	if (max<min)
 		SG_SERROR("unable build values: max=%f < min=%f\n", max, min);
 
-	/* create value vector */
+	/* create value vector, no ref-counting */
 	index_t num_values=CMath::round(max-min)/step+1;
 	SGVector<T> result(num_values, false);
 
