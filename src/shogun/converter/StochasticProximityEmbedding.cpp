@@ -242,12 +242,9 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 	{
 		ind2 = SG_MALLOC(int32_t, m_nupdates);
 
-		CMath::resize(ind1Neighbors.matrix, 0, m_k*m_nupdates);
-		ind1Neighbors.num_rows = m_k;
-		ind1Neighbors.num_cols = m_nupdates;
+		ind1Neighbors = SGMatrix<int32_t>(m_k,m_nupdates);
 
-		CMath::resize(J2.vector, 0, m_nupdates);
-		J2.vlen = m_nupdates;
+		J2 = SGVector<int32_t>(m_nupdates);
 	}
 
 	for ( i = 0 ; i < max_iter ; ++i )
@@ -348,7 +345,7 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 		lambda = lambda - ( lambda / max_iter );
 
 		// Free memory
-		delete[] J;
+		SG_FREE(J);
 	}
 
 	// Free memory
@@ -357,7 +354,7 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 	{
 		ind1Neighbors.destroy_matrix();
 		neighbors_mat.destroy_matrix();
-		delete[] ind2;
+		SG_FREE(ind2);
 	}
 
 	return new CSimpleFeatures< float64_t >(Y);
