@@ -36,8 +36,6 @@ CECOCStrategy::~CECOCStrategy()
 {
     SG_UNREF(m_encoder);
     SG_UNREF(m_decoder);
-
-    m_codebook.free_matrix();
 }
 
 void CECOCStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)

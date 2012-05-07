@@ -130,9 +130,10 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	// point while each column corresponds to a feature
 	SGMatrix<float64_t> X(n_vec, n_fea, true);
 	for (int32_t i=0; i < n_vec; ++i)
+	{
 		for (int32_t j=0; j < n_fea; ++j)
 			X(i,j) = Xorig(j,i);
-	Xorig.free_matrix();
+	}
 
 	// beta is the estimator
 	vector<float64_t> beta = make_vector(n_fea, 0);
@@ -315,10 +316,6 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 
 	} // main loop
 
-	X.free_matrix();
-	if (R.matrix != NULL)
-		R.destroy_matrix();
-
 	// assign default estimator
 	w.vlen = n_fea;
 	switch_w(m_beta_idx.size()-1);
@@ -406,8 +403,6 @@ void CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t> &R, int32_t i_ki
 				}
 			}
 		}
-
-		G.destroy_matrix();
 	}
 
 	SGMatrix<float64_t> nR(m_num_active-1, m_num_active-1);

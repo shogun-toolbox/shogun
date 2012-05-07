@@ -58,7 +58,7 @@ void CConjugateIndex::clean_classes()
 	if (m_classes)
 	{
 		for (int32_t i=0; i<m_num_classes; i++)
-			m_classes[i].destroy_matrix();
+			m_classes[i].unref();
 
 		delete[] m_classes;
 	}
@@ -77,7 +77,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 	int32_t num_features;
 	float64_t* feature_matrix = m_features->get_feature_matrix(num_features,num_vectors);
 
-	m_classes = new SGMatrix<float64_t>[m_num_classes];
+	m_classes = new SGMatrix<float64_t>[m_num_classes]();
 	for (int32_t i=0; i<m_num_classes; i++)
 		m_classes[i] = SGMatrix<float64_t>(num_features,num_features);
 
@@ -131,9 +131,6 @@ bool CConjugateIndex::train(CFeatures* train_features)
 		            0.0,m_classes[label].matrix,num_features);
 
 		SG_PROGRESS(label+1,0,m_num_classes);
-		helper_matrix.destroy_matrix();
-		class_feature_matrix.destroy_matrix();
-		matrix.destroy_matrix();
 	}
 	SG_DONE();
 

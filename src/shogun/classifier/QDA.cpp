@@ -61,7 +61,7 @@ void CQDA::cleanup()
 
 	m_covs.free_ndarray();
 	m_M.free_ndarray();
-	m_means.free_matrix();
+	m_means.unref();
 
 	m_num_classes = 0;
 }
@@ -129,9 +129,6 @@ CLabels* CQDA::apply()
 	CMath::display_matrix(norm2.vector, num_vecs, m_num_classes, "norm2");
 	CMath::display_vector(out->get_labels().vector, num_vecs, "Labels");
 #endif
-
-	A.destroy_matrix();
-	X.destroy_matrix();
 
 	return out;
 }
@@ -264,7 +261,7 @@ bool CQDA::train_machine(CFeatures* data)
 		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu,
 			rot_mat, ldvt, &info);
 		ASSERT(info == 0);
-		buffer.destroy_matrix();
+		buffer.unref();
 
 		CMath::vector_multiply(col, col, col, m_dim);
 		CMath::scale_vector(1.0/(m-1), col, m_dim);
@@ -281,8 +278,6 @@ bool CQDA::train_machine(CFeatures* data)
 
 			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n, 1.0,
 				M.matrix, n, rot_mat, n, 0.0, m_covs.get_matrix(k), n);
-
-			M.destroy_matrix();
 		}
 	}
 
@@ -341,7 +336,6 @@ bool CQDA::train_machine(CFeatures* data)
 #endif
 
 	rotations.destroy_ndarray();
-	scalings.destroy_matrix();
 	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
 	return true;

@@ -283,7 +283,6 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 
 SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 {
-	SGMatrix<float64_t> m;
 
     int64_t offs=0;
 	int32_t num=get_num_vectors();
@@ -291,13 +290,8 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
     ASSERT(num>0);
     ASSERT(dim>0);
 
-    int64_t sz=((uint64_t) num)* dim;
-
-	m.do_free=true;
-    m.num_cols=num;
-    m.num_rows=dim;
-    m.matrix=SG_MALLOC(float64_t, sz);
-    memset(m.matrix, 0, sz*sizeof(float64_t));
+	SGMatrix<float64_t> m(dim, num);
+	m.zero();
 
     for (int32_t i=0; i<num; i++)
     {

@@ -152,7 +152,6 @@ CSimpleFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* dista
 
 	// compute D
 	CSimpleFeatures<float64_t>* embedding = construct_embedding(features,W_sgmatrix);
-	W_sgmatrix.destroy_matrix();
 
 	return embedding;
 }

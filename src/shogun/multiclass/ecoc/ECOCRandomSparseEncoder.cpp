@@ -120,6 +120,5 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             break;
     }
 
-    codebook.destroy_matrix();
     return best_codebook;
 }

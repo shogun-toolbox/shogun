@@ -125,8 +125,6 @@ CSimpleFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* 
 	else
 		feature_matrix = classic_embedding(distance_matrix);
 
-	distance_matrix.destroy_matrix();
-
 	return new CSimpleFeatures<float64_t>(feature_matrix);
 }
 
@@ -307,8 +305,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	}
 	SGMatrix<float64_t> lmk_feature_matrix = classic_embedding(lmk_dist_sgmatrix);
 
-	lmk_dist_sgmatrix.destroy_matrix();
-
 	// construct new feature matrix
 	float64_t* new_feature_matrix = SG_CALLOC(float64_t, m_target_dim*total_N);
 
@@ -392,7 +388,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	run_triangulation_thread((void*)&single_thread_param);
 #endif
 	// cleanup
-	lmk_feature_matrix.destroy_matrix();
 	SG_FREE(current_dist_to_lmks);
 	SG_FREE(mean_sq_dist_vector);
 	SG_FREE(to_process);

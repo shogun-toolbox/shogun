@@ -122,12 +122,10 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	N = D_matrix.num_cols;
 	if (D_matrix.num_cols!=D_matrix.num_rows)
 	{
-		D_matrix.destroy_matrix();
 		SG_ERROR("Given distance matrix is not square.\n");
 	}
 	if (m_k>=N)
 	{
-		D_matrix.destroy_matrix();
 		SG_ERROR("K parameter should be less than number of given vectors (k=%d, N=%d)\n", m_k, N);
 	}
 

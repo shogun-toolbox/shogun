@@ -473,15 +473,10 @@ template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseM
 
 template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 {
-	SGMatrix<ST> full;
+	SGMatrix<ST> full(num_features, get_num_vectors());
+	full.zero();
 
 	SG_INFO( "converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features);
-	full.num_rows=num_features;
-	full.num_cols=get_num_vectors();
-	full.do_free=true;
-	full.matrix=SG_MALLOC(ST, int64_t(num_features)*get_num_vectors());
-
-	memset(full.matrix, 0, size_t(num_features)*size_t(get_num_vectors())*sizeof(ST));
 
 	for (int32_t v=0; v<full.num_cols; v++)
 	{

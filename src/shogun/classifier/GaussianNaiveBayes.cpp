@@ -17,32 +17,30 @@
 
 using namespace shogun;
 
-CGaussianNaiveBayes::CGaussianNaiveBayes() :
-CMachine(), m_features(NULL), m_min_label(0),
-m_num_classes(0), m_dim(0), m_means(),
-m_variances(), m_label_prob(), m_rates()
+CGaussianNaiveBayes::CGaussianNaiveBayes() : CMachine(), m_features(NULL),
+	m_min_label(0), m_num_classes(0), m_dim(0), m_means(), m_variances(),
+	m_label_prob(), m_rates()
 {
 
 };
 
-CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels) :
-CMachine(), m_features(NULL), m_min_label(0),
-m_num_classes(0), m_dim(0), m_means(),
-m_variances(), m_label_prob(), m_rates()
+CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
+	CLabels* train_labels) : CMachine(), m_features(NULL),
+	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
+	m_variances(), m_label_prob(), m_rates()
 {
 	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
 	set_labels(train_labels);
+
 	if (!train_examples->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
+
 	set_features((CDotFeatures*)train_examples);
 };
 
 CGaussianNaiveBayes::~CGaussianNaiveBayes()
 {
 	SG_UNREF(m_features);
-
-	m_means.destroy_matrix();
-	m_variances.destroy_matrix();
 };
 
 CFeatures* CGaussianNaiveBayes::get_features()
@@ -70,6 +68,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 				SG_ERROR("Specified features are not of type CDotFeatures\n");
 		set_features((CDotFeatures*) data);
 	}
+
 	// get int labels to train_labels and check length equality
 	ASSERT(m_labels);
 	SGVector<int32_t> train_labels = m_labels->get_int_labels();

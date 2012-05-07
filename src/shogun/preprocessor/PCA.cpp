@@ -33,9 +33,9 @@ CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_)
 
 void CPCA::init()
 {
-	m_transformation_matrix = SGMatrix<float64_t>(NULL,0,0,true);
-	m_mean_vector = SGVector<float64_t>(NULL,0,true);
-	m_eigenvalues_vector = SGVector<float64_t>(NULL,0,true);
+	m_transformation_matrix = SGMatrix<float64_t>(NULL,0,0);
+	m_mean_vector = SGVector<float64_t>(NULL,0);
+	m_eigenvalues_vector = SGVector<float64_t>(NULL,0);
 
 	SG_ADD(&m_transformation_matrix, "transformation matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
@@ -53,7 +53,6 @@ void CPCA::init()
 
 CPCA::~CPCA()
 {
-	m_transformation_matrix.destroy_matrix();
 }
 
 bool CPCA::init(CFeatures* features)
@@ -174,7 +173,7 @@ bool CPCA::init(CFeatures* features)
 
 void CPCA::cleanup()
 {
-	m_transformation_matrix.destroy_matrix();
+	m_transformation_matrix.unref();
 }
 
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
