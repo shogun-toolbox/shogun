@@ -364,7 +364,7 @@ void test_load_file_parameter()
 	current=params->get_element(3);
 	ASSERT(!strcmp(current->m_name, "vector"));
 	SGVector<float64_t> vector(*(float64_t**)current->m_parameter,
-			*current->m_datatype.m_length_y);
+			*current->m_datatype.m_length_y, false);
 	SG_SPRINT("checking \"vector:\n");
 	SG_SPRINT("length: %d==%d\n", *current->m_datatype.m_length_y,
 			int_instance->m_vector_length);

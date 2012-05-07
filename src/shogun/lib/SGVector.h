@@ -13,54 +13,38 @@
 #define __SGVECTOR_H__
 
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/SGReferencedData.h>
 
 namespace shogun
 {
 /** @brief shogun vector */
-template<class T> class SGVector
+template<class T> class SGVector : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGVector() : vector(NULL), vlen(0), m_refcount(NULL) { }
+		SGVector() : SGReferencedData(false)
+		{
+			init_data();
+		}
 
 		/** constructor for setting params */
 		SGVector(T* v, index_t len, bool ref_counting=true)
-			: vector(v), vlen(len), m_refcount(NULL)
+			: SGReferencedData(ref_counting), vector(v), vlen(len)
 		{
-			if (ref_counting)
-				m_refcount=SG_CALLOC(int32_t, 1); 
-
-			ref();
 		}
 
 		/** constructor to create new vector in memory */
 		SGVector(index_t len, bool ref_counting=true)
-			: vlen(len), m_refcount(NULL)
+			: SGReferencedData(ref_counting), vlen(len)
 		{
-			if (ref_counting)
-				m_refcount=SG_CALLOC(int32_t, 1);
-
 			vector=SG_MALLOC(T, len);
-
-			ref();
 		}
 
 		/** copy constructor */
-		SGVector(const SGVector &orig)
-			: vector(orig.vector), vlen(orig.vlen), m_refcount(orig.m_refcount) 
+		SGVector(const SGVector &orig) : SGReferencedData(orig)
 		{
-			ref();
-		}
-
-		/** override assignment operator to increase refcount on assignments */
-		SGVector& operator= (const SGVector &orig)
-		{
-			unref();
-			vector=orig.vector;
-			vlen=orig.vlen;
-			m_refcount=orig.m_refcount;
-			ref();
-			return *this;
+			copy_data(orig);
 		}
 
 		/** empty destructor */
@@ -68,75 +52,6 @@ template<class T> class SGVector
 		{
 			unref();
 		}
-
-#ifdef USE_REFERENCE_COUNTING
-		/** increase reference counter
-		 *
-		 * @return reference count
-		 */
-		int32_t ref()
-		{
-			if (m_refcount == NULL)
-			{
-				return -1;
-			}
-
-			++(*m_refcount);
-#ifdef DEBUG_SGVECTOR
-			SG_SGCDEBUG("ref() refcount %ld vec %p (%p) increased\n", *m_refcount, vector, this);
-#endif
-			return *m_refcount;
-		}
-
-		/** display reference counter
-		 *
-		 * @return reference count
-		 */
-		int32_t ref_count()
-		{
-			if (m_refcount == NULL)
-				return -1;
-
-#ifdef DEBUG_SGVECTOR
-			SG_SGCDEBUG("ref_count(): refcount %d, vec %p (%p)\n", *m_refcount, vector, this);
-#endif
-			return *m_refcount;
-		}
-
-		/** decrement reference counter and deallocate object if refcount is zero
-		 * before or after decrementing it
-		 *
-		 * @return reference count
-		 */
-		int32_t unref()
-		{
-			if (m_refcount == NULL)
-				return -1;
-
-			if (*m_refcount==0 || --(*m_refcount)==0)
-			{
-#ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d vec %p (%p) destroying\n", *m_refcount, vector, this);
-#endif
-				SG_FREE(vector);
-				SG_FREE(m_refcount);
-
-				vector=NULL;
-				m_refcount=NULL;
-				vlen=0;
-
-				return 0;
-			}
-			else
-			{
-#ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d vec %p (%p) decreased\n", *m_refcount, vector, this);
-#endif
-				return *m_refcount;
-			}
-		}
-
-#endif //USE_REFERENCE_COUNTING
 
 		/** fill vector with zeros */
 		void zero()
@@ -302,15 +217,34 @@ template<class T> class SGVector
 			SG_SPRINT("\n");
 		}
 
+	protected:
+		/** needs to be overridden to copy data */
+		virtual void copy_data(const SGReferencedData &orig)
+		{
+			vector=((SGVector*)(&orig))->vector;
+			vlen=((SGVector*)(&orig))->vlen;
+		}
+
+		/** needs to be overridden to initialize empty data */
+		virtual void init_data()
+		{
+			vector=NULL;
+			vlen=0;
+		}
+
+		/** needs to be overridden to free data */
+		virtual void free_data()
+		{
+			SG_FREE(vector);
+			vector=NULL;
+			vlen=0;
+		}
+
 	public:
 		/** vector  */
 		T* vector;
 		/** length of vector  */
 		index_t vlen;
-	
-	private:
-		/** reference counter */
-		int32_t* m_refcount;
 };
 }
 #endif // __SGVECTOR_H__

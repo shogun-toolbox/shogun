@@ -153,6 +153,12 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			m_features->remove_subset();
 		}
 
+		/** Stores feature data of underlying model. Does nothing because
+		 * Linear machines store the normal vector of the separating hyperplane
+		 * and therefore the model anyway
+		 */
+		virtual void store_model_features() {}
+
 	protected:
 
 		/** features */
