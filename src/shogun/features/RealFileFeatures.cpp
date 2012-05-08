@@ -62,7 +62,6 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
 
 CRealFileFeatures::~CRealFileFeatures()
 {
-	SG_FREE(feature_matrix);
 	SG_FREE(working_filename);
 	SG_FREE(labels);
 }
@@ -97,11 +96,11 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 {
 	ASSERT(working_file);
 	fseek(working_file, filepos, SEEK_SET);
-	SG_FREE(feature_matrix);
+	free_feature_matrix();
 
 	SG_INFO( "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
-	feature_matrix=SG_MALLOC(float64_t, num_features*num_vectors);
+	feature_matrix=SGMatrix<float64_t>(num_features,num_vectors);
 
 	SG_INFO( "loading... be patient.\n");
 
@@ -112,11 +111,11 @@ float64_t* CRealFileFeatures::load_feature_matrix()
 		else if (!(i % (num_vectors/200+1)))
 			SG_PRINT( ".");
 
-		ASSERT(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)==(size_t) num_features);
+		ASSERT(fread(&feature_matrix.matrix[num_features*i], doublelen, num_features, working_file)==(size_t) num_features);
 	}
 	SG_DONE();
 
-	return feature_matrix;
+	return feature_matrix.matrix;
 }
 
 int32_t CRealFileFeatures::get_label(int32_t idx)

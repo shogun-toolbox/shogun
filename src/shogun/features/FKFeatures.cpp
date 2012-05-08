@@ -226,7 +226,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 
 	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
 	free_feature_matrix();
-	feature_matrix=SG_MALLOC(float64_t, num_features*num_vectors);
+	feature_matrix=SGMatrix<float64_t>(num_features,num_vectors);
 
 	SG_INFO( "calculating FK feature matrix\n");
 
@@ -237,7 +237,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 		else if (!(x % (num_vectors/200+1)))
 			SG_DEBUG(".");
 
-		compute_feature_vector(&feature_matrix[x*num_features], x, len);
+		compute_feature_vector(&feature_matrix.matrix[x*num_features], x, len);
 	}
 
 	SG_DONE();
@@ -245,7 +245,7 @@ float64_t* CFKFeatures::set_feature_matrix()
 	num_vectors=get_num_vectors();
 	num_features=get_num_features();
 
-	return feature_matrix;
+	return feature_matrix.matrix;
 }
 
 void CFKFeatures::init()

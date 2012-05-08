@@ -383,34 +383,29 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 						"float64_t * CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeatures *f): num_features!=cur_dim_input_space is not allowed\n");
 	}
 
-	if (m) {
-		float64_t* res = SG_MALLOC(float64_t, num_vectors * cur_dim_feature_space);
-		if (res == NULL) {
-			throw ShogunException(
-					"CRandomFourierGaussPreproc::apply_to_feature_matrix(...): memory allocation failed \n");
-		}
+	if (m)
+	{
+		SGMatrix<float64_t> res(cur_dim_feature_space,num_vectors);
+
 		float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
 
-		for (int32_t vec = 0; vec < num_vectors; vec++) {
-			for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
-				res[od + vec * cur_dim_feature_space] = val * cos(
+		for (int32_t vec = 0; vec < num_vectors; vec++)
+		{
+			for (int32_t od = 0; od < cur_dim_feature_space; ++od)
+			{
+				res.matrix[od + vec * cur_dim_feature_space] = val * cos(
 						randomcoeff_additive[od]
 								+ CMath::dot(m+vec * num_features,
 										randomcoeff_multiplicative+od*cur_dim_input_space,
 										cur_dim_input_space));
 			}
 		}
-		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(res,
-				cur_dim_feature_space, num_vectors);
+		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(res);
 
-		m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix(
-				num_features, num_vectors);
-		ASSERT(num_features==cur_dim_feature_space);
-
-		return SGMatrix<float64_t>(res,num_vectors,cur_dim_feature_space);
-	} else {
-		return SGMatrix<float64_t>();
+		return res;
 	}
+	else
+		return SGMatrix<float64_t>();
 }
 
 void CRandomFourierGaussPreproc::cleanup()
