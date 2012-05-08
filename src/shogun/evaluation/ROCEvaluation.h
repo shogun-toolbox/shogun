@@ -32,8 +32,11 @@ class CROCEvaluation: public CBinaryClassEvaluation
 public:
 	/** constructor */
 	CROCEvaluation() :
-		CBinaryClassEvaluation(), m_ROC_graph(NULL),
-		m_auROC(0.0), m_ROC_length(0), m_computed(false) {};
+		CBinaryClassEvaluation(), m_computed(false) 
+	{
+		m_ROC_graph = SGMatrix<float64_t>();
+		m_thresholds = SGVector<float64_t>();
+	};
 
 	/** destructor */
 	virtual ~CROCEvaluation();
@@ -71,16 +74,13 @@ public:
 protected:
 
 	/** 2-d array used to store ROC graph */
-	float64_t* m_ROC_graph;
+	SGMatrix<float64_t> m_ROC_graph;
 
 	/** vector with thresholds corresponding to points on the ROC graph */
-	float64_t* m_thresholds;
+	SGVector<float64_t> m_thresholds;
 
 	/** area under ROC graph */
 	float64_t m_auROC;
-
-	/** number of points in ROC graph */
-	int32_t m_ROC_length;
 
 	/** indicator of ROC and auROC being computed already */
 	bool m_computed;

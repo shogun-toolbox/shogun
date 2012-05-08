@@ -15,7 +15,6 @@ using namespace shogun;
 
 CROCEvaluation::~CROCEvaluation()
 {
-	SG_FREE(m_ROC_graph);
 }
 
 float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
@@ -58,12 +57,11 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 			diff_count++;
 	}
 
-	delete [] labels;
+	SG_FREE(labels);
 
 	// initialize graph and auROC
-	SG_FREE(m_ROC_graph);
-	m_ROC_graph = SG_MALLOC(float64_t, diff_count*2+2);
-	m_thresholds = SG_MALLOC(float64_t, length);
+	m_ROC_graph = SGMatrix<float64_t>(diff_count+1,2);
+	m_thresholds = SGVector<float64_t>(length);
 	m_auROC = 0.0;
 
 	// get total numbers of positive and negative labels
@@ -106,11 +104,8 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	m_ROC_graph[2*diff_count] = 1.0;
 	m_ROC_graph[2*diff_count+1] = 1.0;
 
-	// set ROC length
-	m_ROC_length = diff_count+1;
-
 	// calc auROC using area under curve
-	m_auROC = CMath::area_under_curve(m_ROC_graph,m_ROC_length,false);
+	m_auROC = CMath::area_under_curve(m_ROC_graph.matrix,diff_count+1,false);
 
 	m_computed = true;
 
@@ -122,9 +117,7 @@ SGMatrix<float64_t> CROCEvaluation::get_ROC()
 	if (!m_computed)
 		SG_ERROR("Uninitialized, please call evaluate first");
 
-	ASSERT(m_ROC_graph);
-
-	return SGMatrix<float64_t>(m_ROC_graph,2,m_ROC_length);
+	return m_ROC_graph;
 }
 
 SGVector<float64_t> CROCEvaluation::get_thresholds()
@@ -132,9 +125,7 @@ SGVector<float64_t> CROCEvaluation::get_thresholds()
 	if (!m_computed)
 		SG_ERROR("Uninitialized, please call evaluate first");
 
-	ASSERT(m_thresholds);
-
-	return SGVector<float64_t>(m_thresholds,m_ROC_length);
+	return m_thresholds;
 }
 
 float64_t CROCEvaluation::get_auROC()
