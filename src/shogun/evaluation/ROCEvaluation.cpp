@@ -60,7 +60,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	SG_FREE(labels);
 
 	// initialize graph and auROC
-	m_ROC_graph = SGMatrix<float64_t>(diff_count+1,2);
+	m_ROC_graph = SGMatrix<float64_t>(2,diff_count+1);
 	m_thresholds = SGVector<float64_t>(length);
 	m_auROC = 0.0;
 
