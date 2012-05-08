@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-# 
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-# 
-# Written (W) 2011      Vipin T. Sreedharan
-# Written (W) 2007,2010 Gunnar Raetsch
-# Written (W) 2006-2009 Soeren Sonnenburg
-# Copyright (C) 2006-2010 Fraunhofer Institute FIRST and Max-Planck-Society
-# 
+""" 
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+ 
+Written (W) 2007,2011 Gunnar Raetsch
+Written (W) 2006-2009 Soeren Sonnenburg
+Copyright (C) 2006-2010 Fraunhofer Institute FIRST and Max-Planck-Society
+""" 
 
 try:
 	import os
@@ -39,7 +38,6 @@ except ImportError:
 	print "ERROR IMPORTING MODULES, MAKE SURE YOU HAVE SHOGUN INSTALLED"
 	print
 	sys.exit(1)
-
 
 asp_version='v0.3'
 
@@ -162,22 +160,6 @@ class asp:
 
 		contig_no = 0 ;
 		for seq in seqs:
-			#print "reshaping"
-			#p=[i+1 for i in seq.preds['donor'].get_positions()]
-			#s=seq.preds['donor'].get_scores()
-
-			#print "writing donor"
-			#for i in xrange(len(p)):
-			#	outfile.write('don\t%d\t%f\n' % (p[i], s[i]))
-
-			#print "writing acceptor"
-			#p=[i-1 for i in seq.preds['acceptor'].get_positions()]
-			#s=seq.preds['acceptor'].get_scores()
-			#for i in xrange(len(p)):
-			#	outfile.write('acc\t%d\t%f\n' % (p[i], s[i]))
-
-			#if outfile!='stdout':
-			#	outfile.close()
 			contig_no = contig_no + 1 
 
 			l=len(seq.preds['donor'].get_positions())
