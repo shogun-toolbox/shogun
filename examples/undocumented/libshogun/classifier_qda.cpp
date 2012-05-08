@@ -44,8 +44,6 @@ void gen_rand_data(SGVector< float64_t > lab, SGMatrix< float64_t > feat)
 
 int main(int argc, char ** argv)
 {
-	const int32_t feature_cache = 0;
-
 	init_shogun_with_defaults();
 
 	SGVector< float64_t > lab(NUM);
@@ -57,7 +55,7 @@ int main(int argc, char ** argv)
 	CLabels* labels = new CLabels(lab);
 
 	// Create train features
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feature_cache);
+	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
 
 	// Create QDA classifier
 	CQDA* qda = new CQDA(features, labels);
