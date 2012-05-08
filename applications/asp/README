@@ -7,9 +7,9 @@ Jonas Behr and Gunnar Raetsch [1].
 ASP PROGRAM REQUIREMENTS:
 
 Asp requires a working python (2.4 or later) installation with numpy
-(version 1.0 or later) and the shogun toolbox (version 0.6.2 or later)
+(version 1.0 or later) and the shogun toolbox (version 0.7.3 or later)
 - which is available from http://www.shogun-toolbox.org for Linux, MacOSX,
-cygwin/win32. If you are running Debian GNU Linux, shogun 0.6.2 is available in
+cygwin/win32. If you are running Debian GNU Linux, shogun 0.7.3 is available in
 debian unstable http://packages.debian.org/unstable/science/shogun-python-modular.
 
 ASP PROGRAM RUNNING TIME AND MEMORY REQUIREMENTS:

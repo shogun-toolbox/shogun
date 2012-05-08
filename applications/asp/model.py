@@ -35,7 +35,7 @@ def parse_file(file):
 	l=file.readline();
 
 	if l != '%asplicer definition file version: 1.0\n':
-		sys.stderr.write("\nfile not a asplicer definition file\n")
+		sys.stdout.write("\nfile not a asplicer definition file\n")
 		return None
 
 	while l:
@@ -59,7 +59,7 @@ def parse_file(file):
 
 		l=file.readline()
 
-	sys.stderr.write('done\n')
+	sys.stdout.write('done\n')
 	return m
 
 def parse_value(line, name):
@@ -89,7 +89,7 @@ def parse_matrix(line, file, name):
 				line+=l
 
 		if line.find(']') < 0:
-			sys.stderr.write("matrix `" + name + "' ended without ']'\n")
+			sys.stdout.write("matrix `" + name + "' ended without ']'\n")
 			return None
 		else:
 			mm = mat(line[line.find('['):line.find(']')+1])
@@ -110,7 +110,7 @@ def parse_string(line, file, name):
 			l=file.readline()
 
 		if l.find(']') < 0:
-			sys.stderr.write("string ended without ']'\n")
+			sys.stdout.write("string ended without ']'\n")
 			return None
 		else:
 			return lines

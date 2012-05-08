@@ -1,3 +1,10 @@
+2009-05-25  Soeren Sonnenburg <Soeren.Sonnenburg@tuebingen.mpg.de>
+
+    * Asp version 0.2
+		- Fixes for shogun 0.7.3
+		- Several bugfixes (including input was shifted by one)
+		- Drastic speedups (e.g., predictions take ~10 minutes for Human ChrY)
+
 2008-10-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
     * Asp version 0.1
