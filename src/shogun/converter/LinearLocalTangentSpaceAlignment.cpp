@@ -40,31 +40,30 @@ SGMatrix<float64_t> CLinearLocalTangentSpaceAlignment::construct_embedding(CFeat
 	ASSERT(simple_features);
 	int i,j;
 
+	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix().clone();
 	int N;
 	int dim;
-	float64_t* feature_matrix;
-	simple_features->get_feature_matrix(&feature_matrix,&dim,&N);
 	ASSERT(dimension<=dim);
 	float64_t* XTM = SG_MALLOC(float64_t, dim*N);
 	float64_t* lhs_M = SG_MALLOC(float64_t, dim*dim);
 	float64_t* rhs_M = SG_MALLOC(float64_t, dim*dim);
 	CMath::center_matrix(matrix.matrix,N,N);
 
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,dim,N,N,1.0,feature_matrix,dim,matrix.matrix,N,0.0,XTM,dim);
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,XTM,dim,feature_matrix,dim,0.0,lhs_M,dim);
+	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,dim,N,N,1.0,feature_matrix.matrix,dim,matrix.matrix,N,0.0,XTM,dim);
+	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,XTM,dim,feature_matrix.matrix,dim,0.0,lhs_M,dim);
 
 	float64_t* mean_vector = SG_CALLOC(float64_t, dim);
 	for (i=0; i<N; i++)
-		cblas_daxpy(dim,1.0,feature_matrix+i*dim,1,mean_vector,1);
+		cblas_daxpy(dim,1.0,feature_matrix.matrix+i*dim,1,mean_vector,1);
 
 	cblas_dscal(dim,1.0/N,mean_vector,1);
 
 	for (i=0; i<N; i++)
-		cblas_daxpy(dim,-1.0,mean_vector,1,feature_matrix+i*dim,1);
+		cblas_daxpy(dim,-1.0,mean_vector,1,feature_matrix.matrix+i*dim,1);
 
 	SG_FREE(mean_vector);
 
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,feature_matrix,dim,feature_matrix,dim,0.0,rhs_M,dim);
+	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,feature_matrix.matrix,dim,feature_matrix.matrix,dim,0.0,rhs_M,dim);
 
 	for (i=0; i<dim; i++) rhs_M[i*dim+i] += 1e-6;
 
@@ -87,9 +86,8 @@ SGMatrix<float64_t> CLinearLocalTangentSpaceAlignment::construct_embedding(CFeat
 		cblas_dswap(dim,evectors+i*dim,1,evectors+(dimension-i-1)*dim,1);
 	}
 
-	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,N,dimension,dim,1.0,feature_matrix,dim,evectors,dim,0.0,XTM,N);
+	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,N,dimension,dim,1.0,feature_matrix.matrix,dim,evectors,dim,0.0,XTM,N);
 	SG_FREE(evectors);
-	SG_FREE(feature_matrix);
 
 	float64_t* new_features = SG_MALLOC(float64_t, dimension*N);
 	for (i=0; i<dimension; i++)

@@ -391,7 +391,7 @@ CDenseFeatures<float64_t>* CGUIFeatures::convert_simple_word_to_simple_salzberg(
 
 				src->free_feature_vector(vec, i, to_free);
 			}
-			target->set_feature_matrix(fm, num_feat, num_vec);
+			target->set_feature_matrix(SGMatrix<float64_t>(fm, num_feat, num_vec));
 
 		}
 		return target;

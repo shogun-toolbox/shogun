@@ -71,9 +71,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	neg=n;
 	set_num_vectors(0);
 
-	SG_FREE(feature_matrix);
-	feature_matrix=NULL ;
-
+	feature_matrix.unref();
 
 	if (pos && pos->get_observations())
 		set_num_vectors(pos->get_observations()->get_num_vectors());
@@ -201,9 +199,8 @@ float64_t* CTOPFeatures::set_feature_matrix()
 
 	num_vectors=pos->get_observations()->get_num_vectors();
 	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
-	SG_FREE(feature_matrix);
-	feature_matrix=SG_MALLOC(float64_t, num_features*num_vectors);
-	if (!feature_matrix)
+	feature_matrix = SGMatrix<float64_t>(num_features,num_vectors);
+	if (!feature_matrix.matrix)
 	{
       SG_ERROR( "allocation not successful!");
 		return NULL ;
@@ -226,7 +223,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;
 
-	return feature_matrix;
+	return feature_matrix.matrix;
 }
 
 bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
