@@ -22,14 +22,6 @@
 namespace shogun
 {
 
-#ifdef USE_REFERENCE_COUNTING
-#define SG_VREF(x) { x.ref(); }
-#define SG_VUNREF(x) { x.unref(); }
-#else
-#define SG_VREF(x)
-#define SG_VUNREF(x)
-#endif
-
 //class CMath;
 template<class T> class CCache;
 
