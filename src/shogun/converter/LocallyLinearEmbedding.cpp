@@ -235,8 +235,7 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 	SG_DEBUG("Neighbors finding took %fs\n",time->cur_time_diff());
 
 	// init W (weight) matrix
-	float64_t* W_matrix = distance_matrix.matrix;
-	memset(W_matrix,0,sizeof(float64_t)*N*N);
+	float64_t* W_matrix = SG_CALLOC(float64_t, N*N);
 
 	// construct weight matrix
 	SG_DEBUG("Constructing weight matrix\n");
