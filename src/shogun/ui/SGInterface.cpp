@@ -3244,7 +3244,7 @@ CKernel* CSGInterface::create_kernel()
 	else if (strmatch(type, "CUSTOM"))
 	{
 		if (m_nrhs!=4 || !create_return_values(0))
-			return false;
+			return NULL;
 
 		float64_t* kmatrix=NULL;
 		int32_t num_feat=0;

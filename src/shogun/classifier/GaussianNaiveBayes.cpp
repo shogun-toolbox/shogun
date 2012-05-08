@@ -96,22 +96,12 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	m_dim = m_features->get_dim_feature_space();
 
 	// allocate memory for distributions' parameters and a priori probability
-	m_means.matrix = SG_MALLOC(float64_t, m_num_classes*m_dim);
-	m_means.num_rows = m_dim;
-	m_means.num_cols = m_num_classes;
-
-	m_variances.matrix = SG_MALLOC(float64_t, m_num_classes*m_dim);
-	m_variances.num_rows = m_dim;
-	m_variances.num_cols = m_num_classes;
-
+	m_means=SGMatrix<float64_t>(m_dim,m_num_classes);
+	m_variances=SGMatrix<float64_t>(m_dim, m_num_classes);
 	m_label_prob=SGVector<float64_t>(m_num_classes);
 
 	// allocate memory for label rates
 	m_rates=SGVector<float64_t>(m_num_classes);
-
-	// assure that memory is allocated
-	ASSERT(m_means.matrix);
-	ASSERT(m_variances.matrix);
 
 	// make arrays filled by zeros before using
 	m_means.zero();

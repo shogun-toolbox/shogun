@@ -41,8 +41,8 @@ SGMatrix<float64_t> CLinearLocalTangentSpaceAlignment::construct_embedding(CFeat
 	int i,j;
 
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix().clone();
-	int N;
-	int dim;
+	int N=feature_matrix.num_cols;
+	int dim=feature_matrix.num_rows;
 	ASSERT(dimension<=dim);
 	float64_t* XTM = SG_MALLOC(float64_t, dim*N);
 	float64_t* lhs_M = SG_MALLOC(float64_t, dim*dim);
