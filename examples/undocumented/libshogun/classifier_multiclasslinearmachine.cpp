@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 		vec = stream_features->get_vector();
 
 		for ( int32_t i = 0 ; i < num_feats ; ++i )
-			mat[num_vectors*num_feats + i] = vec[i];
+			mat.matrix[num_vectors*num_feats + i] = vec[i];
 
 		num_vectors++;
 		stream_features->release_example();
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 	stream_features->end_parser();
 
 	// Create features with the useful values from mat
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(mat.matrix, num_feats, num_vectors);
+	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 
 	CLabels* labels = new CLabels(num_vectors);
 	SG_REF(features);
