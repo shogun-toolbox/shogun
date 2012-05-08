@@ -1824,7 +1824,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<float64_t>(0);
 			((CDenseFeatures<float64_t>*) feat)->
-				set_feature_matrix(SGMatrix<float64_t>(fmatrix, num_feat, num_vec));
+				set_feature_matrix(SGMatrix<float64_t>(fmatrix, num_feat, num_vec).clone());
+			SG_FREE(fmatrix);
 
 			if (m_nrhs==6)
 				feat = create_custom_real_features((CDenseFeatures<float64_t>*) feat);
@@ -1839,7 +1840,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<int32_t>(0);
 			((CDenseFeatures<int32_t>*) feat)->
-				set_feature_matrix(SGMatrix<int32_t>(fmatrix, num_feat, num_vec));
+				set_feature_matrix(SGMatrix<int32_t>(fmatrix, num_feat, num_vec).clone());
+			SG_FREE(fmatrix);
 			break;
 		}
 
@@ -1850,7 +1852,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<int16_t>(0);
 			((CDenseFeatures<int16_t>*) feat)->
-				set_feature_matrix(SGMatrix<int16_t>(fmatrix, num_feat, num_vec));
+				set_feature_matrix(SGMatrix<int16_t>(fmatrix, num_feat, num_vec).clone());
+			SG_FREE(fmatrix);
 			break;
 		}
 
@@ -1861,7 +1864,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<uint16_t>(0);
 			((CDenseFeatures<uint16_t>*) feat)->
-				set_feature_matrix(SGMatrix<uint16_t>(fmatrix, num_feat, num_vec));
+				set_feature_matrix(SGMatrix<uint16_t>(fmatrix, num_feat, num_vec).clone());
+			SG_FREE(fmatrix);
 			break;
 		}
 
@@ -1872,7 +1876,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<float32_t>(0);
 			((CDenseFeatures<float32_t>*) feat)->
-				set_feature_matrix(SGMatrix<float32_t>(fmatrix, num_feat, num_vec));
+				set_feature_matrix(SGMatrix<float32_t>(fmatrix, num_feat, num_vec).clone());
+			SG_FREE(fmatrix);
 			break;
 		}
 
