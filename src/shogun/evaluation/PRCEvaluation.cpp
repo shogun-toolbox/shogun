@@ -45,7 +45,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 	// clean and initialize graph and auPRC
 	SG_FREE(labels);
-	m_PRC_graph = SGMatrix<float64_t>(length,2);
+	m_PRC_graph = SGMatrix<float64_t>(2,length);
 	m_thresholds = SGVector<float64_t>(length);
 	m_auPRC = 0.0;
 
