@@ -15,7 +15,6 @@ using namespace shogun;
 
 CPRCEvaluation::~CPRCEvaluation()
 {
-	SG_FREE(m_PRC_graph);
 }
 
 float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
@@ -46,9 +45,8 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 	// clean and initialize graph and auPRC
 	SG_FREE(labels);
-	SG_FREE(m_PRC_graph);
-	m_PRC_graph = SG_MALLOC(float64_t, length*2);
-	m_thresholds = SG_MALLOC(float64_t, length);
+	m_PRC_graph = SGMatrix<float64_t>(length,2);
+	m_thresholds = SGVector<float64_t>(length);
 	m_auPRC = 0.0;
 
 	// get total numbers of positive and negative labels
@@ -77,10 +75,9 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	}
 
 	// calc auRPC using area under curve
-	m_auPRC = CMath::area_under_curve(m_PRC_graph,length,true);
+	m_auPRC = CMath::area_under_curve(m_PRC_graph.matrix,length,true);
 
-	// set PRC length and computed indicator
-	m_PRC_length = length;
+	// set computed indicator
 	m_computed = true;
 
 	return m_auPRC;
@@ -91,9 +88,7 @@ SGMatrix<float64_t> CPRCEvaluation::get_PRC()
 	if (!m_computed)
 		SG_ERROR("Uninitialized, please call evaluate first");
 
-	ASSERT(m_PRC_graph);
-
-	return SGMatrix<float64_t>(m_PRC_graph,2,m_PRC_length);
+	return m_PRC_graph;
 }
 
 SGVector<float64_t> CPRCEvaluation::get_thresholds()
@@ -101,9 +96,7 @@ SGVector<float64_t> CPRCEvaluation::get_thresholds()
 	if (!m_computed)
 		SG_ERROR("Uninitialized, please call evaluate first");
 
-	ASSERT(m_thresholds);
-
-	return SGVector<float64_t>(m_thresholds,m_PRC_length);
+	return m_thresholds;
 }
 
 float64_t CPRCEvaluation::get_auPRC()
@@ -113,5 +106,3 @@ float64_t CPRCEvaluation::get_auPRC()
 
 	return m_auPRC;
 }
-
-

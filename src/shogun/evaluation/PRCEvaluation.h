@@ -27,8 +27,12 @@ class CPRCEvaluation: public CBinaryClassEvaluation
 public:
 	/** constructor */
 	CPRCEvaluation() :
-		CBinaryClassEvaluation(), m_PRC_graph(NULL),
-		m_auPRC(0.0), m_PRC_length(0), m_computed(false) {};
+		CBinaryClassEvaluation(), m_computed(false) 
+	{
+		m_PRC_graph = SGMatrix<float64_t>();
+		m_thresholds = SGVector<float64_t>();
+		m_auPRC = 0.0;
+	};
 
 	/** destructor */
 	virtual ~CPRCEvaluation();
@@ -65,16 +69,13 @@ public:
 protected:
 
 	/** 2-d array used to store PRC graph */
-	float64_t* m_PRC_graph;
+	SGMatrix<float64_t> m_PRC_graph;
 
 	/** vector with thresholds corresponding to points on the PRC graph */
-	float64_t* m_thresholds;
+	SGVector<float64_t> m_thresholds;
 
 	/** area under PRC graph */
 	float64_t m_auPRC;
-
-	/** number of points in PRC graph */
-	int32_t m_PRC_length;
 
 	/** indicator of PRC and auPRC being computed already */
 	bool m_computed;
