@@ -14,13 +14,13 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Labels.h>
 
 namespace shogun
 {
 	class CLabels;
-	template <class T> class CSimpleFeatures;
+	template <class T> class CDenseFeatures;
 
 /** @brief The AUC kernel can be used to maximize the area under the receiver operator
  * characteristic curve (AUC) instead of margin in SVM training.
@@ -80,7 +80,7 @@ class CAUCKernel: public CDotKernel
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *

@@ -25,7 +25,7 @@ CLDA::CLDA(float64_t gamma)
 {
 }
 
-CLDA::CLDA(float64_t gamma, CSimpleFeatures<float64_t>* traindat, CLabels* trainlab)
+CLDA::CLDA(float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab)
 : CLinearMachine(), m_gamma(gamma)
 {
 	set_features(traindat);
@@ -93,7 +93,7 @@ bool CLDA::train_machine(CFeatures* data)
 	double* buffer=SG_MALLOC(double, num_feat*CMath::max(num_neg, num_pos));
 	int nf = (int) num_feat;
 
-	CSimpleFeatures<float64_t>* rf = (CSimpleFeatures<float64_t>*) features;
+	CDenseFeatures<float64_t>* rf = (CDenseFeatures<float64_t>*) features;
 	//mean neg
 	for (i=0; i<num_neg; i++)
 	{

@@ -1,5 +1,5 @@
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/classifier/NearestCentroid.h>
 #include <shogun/base/init.h>
@@ -22,7 +22,7 @@ int main(){
 	CMath::range_fill_vector(matrix.matrix, num_feat*num_vec);
 	
 	// Create features ; shogun will now own the matrix created
-	CSimpleFeatures<float64_t>* features=new CSimpleFeatures<float64_t>(matrix);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	CMath::display_matrix(matrix.matrix,num_feat,num_vec);
 	

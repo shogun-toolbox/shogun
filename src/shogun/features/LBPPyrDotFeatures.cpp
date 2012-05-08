@@ -136,7 +136,7 @@ CLBPPyrDotFeatures::CLBPPyrDotFeatures() : CDotFeatures()
 	vec_nDim = 0;
 }
 
-CLBPPyrDotFeatures::CLBPPyrDotFeatures(CSimpleFeatures<uint32_t>* images, uint16_t num_pyramids)
+CLBPPyrDotFeatures::CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* images, uint16_t num_pyramids)
 	: CDotFeatures()
 {
 	ASSERT(images);

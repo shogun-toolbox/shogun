@@ -12,7 +12,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 
 namespace shogun
@@ -34,7 +34,7 @@ class CPolyFeatures : public CDotFeatures
 		 * @param degree degree of the polynomial kernel
 		 * @param normalize normalize kernel
 		 */
-		CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize);
+		CPolyFeatures(CDenseFeatures<float64_t>* feat, int32_t degree, bool normalize);
 
 		virtual ~CPolyFeatures();
 
@@ -218,7 +218,7 @@ class CPolyFeatures : public CDotFeatures
 	protected:
 
 		/** features in original space*/
-		CSimpleFeatures<float64_t>* m_feat;
+		CDenseFeatures<float64_t>* m_feat;
 		/** degree of the polynomial kernel */
 		int32_t m_degree;
 		/** normalize */

@@ -12,8 +12,7 @@
 #define _COSINEDISTANCE_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/distance/SimpleDistance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distance/DenseDistance.h>
 
 namespace shogun
 {
@@ -33,7 +32,7 @@ namespace shogun
  * Cosine similarity </a>
  * @see CTanimotoDistance
  */
-class CCosineDistance: public CSimpleDistance<float64_t>
+class CCosineDistance: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -44,7 +43,7 @@ class CCosineDistance: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCosineDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CCosineDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
 		virtual ~CCosineDistance();
 
 		/** init distance

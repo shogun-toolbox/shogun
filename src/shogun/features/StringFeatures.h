@@ -50,7 +50,7 @@ struct SSKTripleFeature
  *
  * As this class is a template the underlying storage type is quite arbitrary and
  * not limited to character strings, but could also be sequences of floating
- * point numbers etc. Strings differ from matrices (cf. CSimpleFeatures) in a
+ * point numbers etc. Strings differ from matrices (cf. CDenseFeatures) in a
  * way that the dimensionality of the feature vectors (i.e. the strings) is not
  * fixed; it may vary between strings.
  *

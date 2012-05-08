@@ -9,7 +9,6 @@
  */
 
 #include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/EuclidianDistance.h>
 
@@ -33,9 +32,9 @@ CEmbeddingConverter::~CEmbeddingConverter()
 	SG_UNREF(m_kernel);
 }
 
-CSimpleFeatures<float64_t>* CEmbeddingConverter::embed(CFeatures* features)
+CDenseFeatures<float64_t>* CEmbeddingConverter::embed(CFeatures* features)
 {
-	return (CSimpleFeatures<float64_t>*)apply(features);
+	return (CDenseFeatures<float64_t>*)apply(features);
 }
 
 void CEmbeddingConverter::set_target_dim(int32_t dim)

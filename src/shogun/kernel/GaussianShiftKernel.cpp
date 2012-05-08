@@ -11,7 +11,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/GaussianShiftKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -30,7 +29,7 @@ CGaussianShiftKernel::CGaussianShiftKernel(
 }
 
 CGaussianShiftKernel::CGaussianShiftKernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t w, int32_t ms, int32_t ss,
+	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t w, int32_t ms, int32_t ss,
 	int32_t size)
 : CGaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {
@@ -48,9 +47,9 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	float64_t result = 0.0 ;
@@ -72,8 +71,8 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 		result += exp(-sum/width)/(2*s) ;
 	}
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

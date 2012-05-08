@@ -41,7 +41,7 @@ namespace shogun{
 	{
 		m_shrinking=0;
 		m_is_trained=false;
-		m_centroids = new CSimpleFeatures<float64_t>();
+		m_centroids = new CDenseFeatures<float64_t>();
 	}
 
 
@@ -49,7 +49,7 @@ namespace shogun{
 	{
 		ASSERT(m_labels);
 		ASSERT(distance);
-		ASSERT( data->get_feature_class() == C_SIMPLE)
+		ASSERT( data->get_feature_class() == C_DENSE)
 		if (data)
 		{
 			if (m_labels->get_num_labels() != data->get_num_vectors())
@@ -62,7 +62,7 @@ namespace shogun{
 		}
 		int32_t num_vectors = data->get_num_vectors();
 		int32_t num_classes = m_labels->get_num_classes();
-		int32_t num_feats = ((CSimpleFeatures<float64_t>*)data)->get_num_features();
+		int32_t num_feats = ((CDenseFeatures<float64_t>*)data)->get_num_features();
 		float64_t* centroids = SG_CALLOC(float64_t, num_feats*num_classes);
 		for(int32_t i=0 ; i < num_feats*num_classes ; i++)
 		{
@@ -83,10 +83,10 @@ namespace shogun{
 			bool current_free;
 			int32_t current_class = m_labels->get_label(idx);
 			float64_t* target = centroids + num_feats*current_class;
-			float64_t* current = ((CSimpleFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
+			float64_t* current = ((CDenseFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
 			CMath::add(target,1.0,target,1.0,current,current_len);
 			num_per_class[current_class]++;
-			((CSimpleFeatures<float64_t>*)data)->free_feature_vector(current, current_len, current_free);
+			((CDenseFeatures<float64_t>*)data)->free_feature_vector(current, current_len, current_free);
 		}
 
 

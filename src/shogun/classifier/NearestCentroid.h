@@ -14,7 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/lib/CoverTree.h>
 #include <shogun/machine/DistanceMachine.h>
@@ -69,7 +69,7 @@ public:
 	 * 
 	 * @return Matrix containing the centroids
 	 */
-	CSimpleFeatures<float64_t>* get_centroids() const{
+	CDenseFeatures<float64_t>* get_centroids() const{
 		return m_centroids;
 	}
 	
@@ -100,7 +100,7 @@ protected:
 	float64_t m_shrinking;
 	
 	///	The centroids of the trained features
-	CSimpleFeatures<float64_t>* m_centroids;
+	CDenseFeatures<float64_t>* m_centroids;
 	
 	///	Tells if the classifier has been trained or not
 	bool m_is_trained;

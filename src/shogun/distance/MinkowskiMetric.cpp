@@ -16,25 +16,24 @@
 
 #include <shogun/distance/MinkowskiMetric.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 
-CMinkowskiMetric::CMinkowskiMetric() : CSimpleDistance<float64_t>()
+CMinkowskiMetric::CMinkowskiMetric() : CDenseDistance<float64_t>()
 {
 	init();
 }
 
 CMinkowskiMetric::CMinkowskiMetric(float64_t k_)
-: CSimpleDistance<float64_t>()
+: CDenseDistance<float64_t>()
 {
 	init();
 	k=k_;
 }
 
 CMinkowskiMetric::CMinkowskiMetric(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t k_)
-: CSimpleDistance<float64_t>()
+	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t k_)
+: CDenseDistance<float64_t>()
 {
 	init();
 	k=k_;
@@ -48,7 +47,7 @@ CMinkowskiMetric::~CMinkowskiMetric()
 
 bool CMinkowskiMetric::init(CFeatures* l, CFeatures* r)
 {
-	return CSimpleDistance<float64_t>::init(l,r);
+	return CDenseDistance<float64_t>::init(l,r);
 }
 
 void CMinkowskiMetric::cleanup()
@@ -61,9 +60,9 @@ float64_t CMinkowskiMetric::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(avec);
 	ASSERT(bvec);
@@ -80,8 +79,8 @@ float64_t CMinkowskiMetric::compute(int32_t idx_a, int32_t idx_b)
 
 	}
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return pow(result,1/k);
 }

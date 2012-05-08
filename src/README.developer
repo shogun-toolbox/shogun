@@ -52,7 +52,7 @@ e.g. we create some features and a gaussian kernel
 
 
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/base/init.h>
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
 	// create three 2-dimensional vectors 
 	// shogun will now own the matrix created
-	CSimpleFeatures<float64_t>* features= new CSimpleFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
 	features->set_feature_matrix(matrix, 2, 3);
 
 	// create three labels
@@ -358,7 +358,7 @@ NAMING CONVENTIONS:
   possible (no monster functions with > 5 arguments please)
 
 - objects which can deal with features of type DREAL and class SIMPLE don't need
-  to contain Real/Simple in class name
+  to contain Real/Dense in class name
 
 - others are required to clarify class/type they can handle, e.g.
   CSparseByteLinearKernel, CSparseGaussianKernel
@@ -370,13 +370,13 @@ NAMING CONVENTIONS:
 - class member variables all start with m_, e.g. m_member (this is to avoid shadowing)
 
 - features
-	-featureclass Simple/Sparse
+	-featureclass Dense/Sparse
 		-featuretype Real/Byte/...
 - preprocessors
-	-featureclass Simple/Sparse
+	-featureclass Dense/Sparse
 		-featuretype Real/Byte/...
 - kernel
-	-featureclass Simple/Sparse
+	-featureclass Dense/Sparse
 		-featuretype Real/Byte/...
 			-kerneltype Linear/Gaussian/...
 

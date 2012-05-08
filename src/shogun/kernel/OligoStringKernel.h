@@ -32,7 +32,7 @@ namespace shogun
  * applicable only to academic small scale problems:
  *
  * - the kernel should only ever see encoded sequences, which however
- * requires another OligoFeatures object (using CSimpleFeatures of pairs)
+ * requires another OligoFeatures object (using CDenseFeatures of pairs)
  *
  * Uses CSqrtDiagKernelNormalizer, as the vanilla kernel seems to be very
  * diagonally dominant.

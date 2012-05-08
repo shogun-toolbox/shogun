@@ -75,45 +75,45 @@ namespace shogun
 #endif
 }
 
-/* Template Class StreamingFileFromSimpleFeatures */
-%include <shogun/io/StreamingFileFromSimpleFeatures.h>
+/* Template Class StreamingFileFromDenseFeatures */
+%include <shogun/io/StreamingFileFromDenseFeatures.h>
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(StreamingFileFromBoolFeatures) CStreamingFileFromSimpleFeatures<bool>;
+    %template(StreamingFileFromBoolFeatures) CStreamingFileFromDenseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StreamingFileFromCharFeatures) CStreamingFileFromSimpleFeatures<char>;
+    %template(StreamingFileFromCharFeatures) CStreamingFileFromDenseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StreamingFileFromByteFeatures) CStreamingFileFromSimpleFeatures<uint8_t>;
+    %template(StreamingFileFromByteFeatures) CStreamingFileFromDenseFeatures<uint8_t>;
 #endif
 #ifdef USE_INT16
-    %template(StreamingFileFromShortFeatures) CStreamingFileFromSimpleFeatures<int16_t>;
+    %template(StreamingFileFromShortFeatures) CStreamingFileFromDenseFeatures<int16_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StreamingFileFromWordFeatures) CStreamingFileFromSimpleFeatures<uint16_t>;
+    %template(StreamingFileFromWordFeatures) CStreamingFileFromDenseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StreamingFileFromIntFeatures) CStreamingFileFromSimpleFeatures<int32_t>;
+    %template(StreamingFileFromIntFeatures) CStreamingFileFromDenseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StreamingFileFromUIntFeatures) CStreamingFileFromSimpleFeatures<uint32_t>;
+    %template(StreamingFileFromUIntFeatures) CStreamingFileFromDenseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StreamingFileFromLongFeatures) CStreamingFileFromSimpleFeatures<int64_t>;
+    %template(StreamingFileFromLongFeatures) CStreamingFileFromDenseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StreamingFileFromUlongFeatures) CStreamingFileFromSimpleFeatures<uint64_t>;
+    %template(StreamingFileFromUlongFeatures) CStreamingFileFromDenseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StreamingFileFromShortRealFeatures) CStreamingFileFromSimpleFeatures<float32_t>;
+    %template(StreamingFileFromShortRealFeatures) CStreamingFileFromDenseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StreamingFileFromRealFeatures) CStreamingFileFromSimpleFeatures<float64_t>;
+    %template(StreamingFileFromRealFeatures) CStreamingFileFromDenseFeatures<float64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StreamingFileFromLongRealFeatures) CStreamingFileFromSimpleFeatures<floatmax_t>;
+    %template(StreamingFileFromLongRealFeatures) CStreamingFileFromDenseFeatures<floatmax_t>;
 #endif
 }
 

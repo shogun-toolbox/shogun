@@ -60,7 +60,7 @@ void CRandomFourierGaussPreproc::copy(const CRandomFourierGaussPreproc & feats) 
 }
 
 CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
-	CSimplePreprocessor<float64_t> () {
+	CDensePreprocessor<float64_t> () {
 	dim_feature_space = 1000;
 	dim_input_space = 0;
 	cur_dim_input_space = 0;
@@ -96,7 +96,7 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 
 CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		const CRandomFourierGaussPreproc & feats) :
-	CSimplePreprocessor<float64_t> () {
+	CDensePreprocessor<float64_t> () {
 
 	randomcoeff_multiplicative=NULL;
 	randomcoeff_additive=NULL;
@@ -132,7 +132,7 @@ CRandomFourierGaussPreproc::~CRandomFourierGaussPreproc() {
 }
 
 EFeatureClass CRandomFourierGaussPreproc::get_feature_class() {
-	return C_SIMPLE;
+	return C_DENSE;
 }
 
 EFeatureType CRandomFourierGaussPreproc::get_feature_type() {
@@ -318,11 +318,11 @@ void CRandomFourierGaussPreproc::set_randomcoefficients(
 bool CRandomFourierGaussPreproc::init(CFeatures *f) {
 	if (f->get_feature_class() != get_feature_class()) {
 		throw ShogunException(
-				"CRandomFourierGaussPreproc::init (CFeatures *f) requires CSimpleFeatures<float64_t> as features\n");
+				"CRandomFourierGaussPreproc::init (CFeatures *f) requires CDenseFeatures<float64_t> as features\n");
 	}
 	if (f->get_feature_type() != get_feature_type()) {
 		throw ShogunException(
-				"CRandomFourierGaussPreproc::init (CFeatures *f) requires CSimpleFeatures<float64_t> as features\n");
+				"CRandomFourierGaussPreproc::init (CFeatures *f) requires CDenseFeatures<float64_t> as features\n");
 	}
 	if (dim_feature_space <= 0) {
 		throw ShogunException(
@@ -331,7 +331,7 @@ bool CRandomFourierGaussPreproc::init(CFeatures *f) {
 
 	SG_INFO("calling CRandomFourierGaussPreproc::init(...)\n");
 	int32_t num_features =
-			((CSimpleFeatures<float64_t>*) f)->get_num_features();
+			((CDenseFeatures<float64_t>*) f)->get_num_features();
 
 	if (!test_rfinited()) {
 		dim_input_space = num_features;
@@ -373,7 +373,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 
 	int32_t num_vectors = 0;
 	int32_t num_features = 0;
-	float64_t* m = ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(
+	float64_t* m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix(
 			num_features, num_vectors);
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features);
 
@@ -400,10 +400,10 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 										cur_dim_input_space));
 			}
 		}
-		((CSimpleFeatures<float64_t>*) features)->set_feature_matrix(res,
+		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(res,
 				cur_dim_feature_space, num_vectors);
 
-		m = ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(
+		m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix(
 				num_features, num_vectors);
 		ASSERT(num_features==cur_dim_feature_space);
 

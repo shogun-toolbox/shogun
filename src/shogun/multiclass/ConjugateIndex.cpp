@@ -41,13 +41,13 @@ CConjugateIndex::~CConjugateIndex()
 
 void CConjugateIndex::set_features(CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_class()==C_DENSE);
 	SG_REF(features);
 	SG_UNREF(m_features);
-	m_features = (CSimpleFeatures<float64_t>*)features;
+	m_features = (CDenseFeatures<float64_t>*)features;
 }
 
-CSimpleFeatures<float64_t>* CConjugateIndex::get_features()
+CDenseFeatures<float64_t>* CConjugateIndex::get_features()
 {
 	SG_REF(m_features);
 	return m_features;

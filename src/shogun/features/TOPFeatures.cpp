@@ -22,7 +22,7 @@ CTOPFeatures::CTOPFeatures()
 
 CTOPFeatures::CTOPFeatures(
 	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
-: CSimpleFeatures<float64_t>(size)
+: CDenseFeatures<float64_t>(size)
 {
 	init();
 	neglinear=neglin;
@@ -32,7 +32,7 @@ CTOPFeatures::CTOPFeatures(
 }
 
 CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig)
-: CSimpleFeatures<float64_t>(orig)
+: CDenseFeatures<float64_t>(orig)
 {
 	init();
 	pos=orig.pos;

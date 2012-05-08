@@ -30,7 +30,6 @@
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/lapack.h>
 
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/classifier/svm/SVMLight.h>
 #include <shogun/lib/external/pr_loqo.h>
 

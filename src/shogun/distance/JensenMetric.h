@@ -12,8 +12,7 @@
 #define _JENSENMETRIC_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/distance/SimpleDistance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distance/DenseDistance.h>
 
 namespace shogun
 {
@@ -32,7 +31,7 @@ namespace shogun
  * @see <a href="http://en.wikipedia.org/wiki/Kullback-Leibler_divergence">
  * Wikipedia: Kullback-Leibler divergence</a>
  */
-class CJensenMetric: public CSimpleDistance<float64_t>
+class CJensenMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -43,7 +42,7 @@ class CJensenMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CJensenMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CJensenMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
 		virtual ~CJensenMetric();
 
 		/** init distance

@@ -725,7 +725,7 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 		label_num.vector[i]=i;
 
 	CKNN* knn=new CKNN(1, new CEuclidianDistance(), new CLabels(label_num));
-	knn->train(new CSimpleFeatures<float64_t>(init_means));
+	knn->train(new CDenseFeatures<float64_t>(init_means));
 	CLabels* init_labels=knn->apply(features);
 
 	SGMatrix<float64_t> alpha(num_vectors, m_components.vlen);

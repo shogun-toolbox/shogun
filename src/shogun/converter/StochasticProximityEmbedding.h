@@ -147,7 +147,7 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 * @param distance TODO Euclidian works fine, check with others
 		 * @return new features in the embedded space
 		 */
-		virtual CSimpleFeatures< float64_t >* embed_distance(CDistance* distance);
+		virtual CDenseFeatures< float64_t >* embed_distance(CDistance* distance);
 
 	private:
 

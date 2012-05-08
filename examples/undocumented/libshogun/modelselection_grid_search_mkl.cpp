@@ -15,7 +15,7 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 		matrix[i]=CMath::randn_double();
 
 	/* create num_feautres 2-dimensional vectors */
-	CSimpleFeatures<float64_t>* features=new CSimpleFeatures<float64_t> ();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
 	features->set_feature_matrix(matrix, dim_vectors, num_vectors);
 
 	/* create combined features */

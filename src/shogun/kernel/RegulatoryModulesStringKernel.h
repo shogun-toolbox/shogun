@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/StringKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -51,7 +51,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param size cache size
 		 */
 		CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
-			CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos,
+			CDenseFeatures<uint16_t>* lpos, CDenseFeatures<uint16_t>* rpos,
 			float64_t width, int32_t degree, int32_t shift, int32_t window, int32_t size=10);
 
 		/** default destructor */
@@ -83,7 +83,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param positions_rhs motif positions on rhs
 		 */
 		void set_motif_positions(
-			CSimpleFeatures<uint16_t>* positions_lhs, CSimpleFeatures<uint16_t>* positions_rhs);
+			CDenseFeatures<uint16_t>* positions_lhs, CDenseFeatures<uint16_t>* positions_rhs);
 		/* register the parameters
 		 */
 		virtual void register_params();
@@ -125,10 +125,10 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		int32_t window;
 
 		/** Matrix of motif positions from sequences left-hand side */
-		CSimpleFeatures<uint16_t>* motif_positions_lhs;
+		CDenseFeatures<uint16_t>* motif_positions_lhs;
 
 		/** Matrix of motif positions from sequences right-hand side */
-		CSimpleFeatures<uint16_t>* motif_positions_rhs;
+		CDenseFeatures<uint16_t>* motif_positions_rhs;
 
 		/** the length of matrix of motif positions -- for serialization purposes*/
 		int32_t alen;

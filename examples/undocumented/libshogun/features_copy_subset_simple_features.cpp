@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Subset.h>
 
 using namespace shogun;
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	init_shogun(&print_message, &print_message, &print_message);
 
 	SGMatrix<float64_t> data(3, 10);
-	CSimpleFeatures<float64_t>* f=new CSimpleFeatures<float64_t>(data);
+	CDenseFeatures<float64_t>* f=new CDenseFeatures<float64_t>(data);
 	CMath::range_fill_vector(data.matrix, data.num_cols*data.num_rows, 1.0);
 	CMath::display_matrix(data.matrix, data.num_rows, data.num_cols,
 			"original feature data");
@@ -53,8 +53,8 @@ int main(int argc, char **argv)
 	CMath::display_vector(feature_copy_subset.vector, feature_copy_subset.vlen,
 			"indices that are to be copied");
 
-	CSimpleFeatures<float64_t>* subset_copy=
-			(CSimpleFeatures<float64_t>*)f->copy_subset(feature_copy_subset);
+	CDenseFeatures<float64_t>* subset_copy=
+			(CDenseFeatures<float64_t>*)f->copy_subset(feature_copy_subset);
 
 	SGMatrix<float64_t> subset_copy_matrix=subset_copy->get_feature_matrix();
 	CMath::display_matrix(subset_copy_matrix.matrix,

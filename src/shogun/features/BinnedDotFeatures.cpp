@@ -26,7 +26,7 @@ CBinnedDotFeatures::CBinnedDotFeatures(const CBinnedDotFeatures & orig)
 	init();
 }
 
-CBinnedDotFeatures::CBinnedDotFeatures(CSimpleFeatures<float64_t>* sf, SGMatrix<float64_t> bins)
+CBinnedDotFeatures::CBinnedDotFeatures(CDenseFeatures<float64_t>* sf, SGMatrix<float64_t> bins)
 {
 	init();
 	set_simple_features(sf);
@@ -285,13 +285,13 @@ SGMatrix<float64_t> CBinnedDotFeatures::get_bins()
 	return m_bins;
 }
 
-void CBinnedDotFeatures::set_simple_features(CSimpleFeatures<float64_t>* features)
+void CBinnedDotFeatures::set_simple_features(CDenseFeatures<float64_t>* features)
 {
 	SG_REF(features);
 	m_features=features;
 }
 
-CSimpleFeatures<float64_t>* CBinnedDotFeatures::get_simple_features()
+CDenseFeatures<float64_t>* CBinnedDotFeatures::get_simple_features()
 {
 	SG_REF(m_features);
 	return m_features;

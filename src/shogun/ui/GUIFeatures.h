@@ -20,7 +20,7 @@
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
@@ -126,24 +126,24 @@ class CGUIFeatures : public CSGObject
 		 * @param src
 		 */
 		CSparseFeatures<float64_t>* convert_simple_real_to_sparse_real(
-			CSimpleFeatures<float64_t>* src);
+			CDenseFeatures<float64_t>* src);
 		/** converst simple char to string char
 		 * @param src
 		 */
 		CStringFeatures<char>* convert_simple_char_to_string_char(
-			CSimpleFeatures<char>* src);
+			CDenseFeatures<char>* src);
 		/** convert simple char to simple align
 		 * @param src
 		 * @param gap_cost
 		 */
-		CSimpleFeatures<float64_t>* convert_simple_char_to_simple_align(
-			CSimpleFeatures<char>* src,
+		CDenseFeatures<float64_t>* convert_simple_char_to_simple_align(
+			CDenseFeatures<char>* src,
 			float64_t gap_cost=0);
 		/** convert simple word to simple salzberg
 		 * @param src
 		 */
-		CSimpleFeatures<float64_t>* convert_simple_word_to_simple_salzberg(
-			CSimpleFeatures<uint16_t>* src);
+		CDenseFeatures<float64_t>* convert_simple_word_to_simple_salzberg(
+			CDenseFeatures<uint16_t>* src);
 
 		/** convert string word to simple top
 		 * @param src
@@ -158,7 +158,7 @@ class CGUIFeatures : public CSGObject
 		/** convert sparse real to simple real
 		 * @param src
 		 */
-		CSimpleFeatures<float64_t>* convert_sparse_real_to_simple_real(
+		CDenseFeatures<float64_t>* convert_sparse_real_to_simple_real(
 			CSparseFeatures<float64_t>* src);
 		/** convert string byte to spec word
 		 * @param src

@@ -14,11 +14,11 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
-	template <class T> class CSimpleFeatures;
+	template <class T> class CDenseFeatures;
 
 /** @brief Pyramid Kernel over Chi2 matched histograms.
  *
@@ -69,7 +69,7 @@ public:
 	 *	LEFT HAND SIDE features for width estimation
 	 */
 	CPyramidChi2(
-		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 		int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,

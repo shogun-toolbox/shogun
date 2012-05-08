@@ -21,7 +21,6 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -128,7 +127,7 @@ bool CKernelPCA::init(CFeatures* features)
 SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized);
-	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*)features;
+	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
 
 	int32_t num_vectors = simple_features->get_num_vectors();
 	int32_t i,j,k;
@@ -154,14 +153,14 @@ SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 
 	m_kernel->cleanup();
 	simple_features->set_feature_matrix(SGMatrix<float64_t>(new_feature_matrix,m_target_dim,num_vectors));
-	return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+	return ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 }
 
 SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	ASSERT(m_initialized);
 	SGVector<float64_t> result = SGVector<float64_t>(m_target_dim);
-	m_kernel->init(new CSimpleFeatures<float64_t>(SGMatrix<float64_t>(vector.vector,vector.vlen,1)),
+	m_kernel->init(new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector.vector,vector.vlen,1)),
 	               m_init_features);
 
 	int32_t j,k;
@@ -182,7 +181,7 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 	return result;
 }
 
-CSimpleFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* features)
+CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* features)
 {
 	ASSERT(m_initialized);
 
@@ -210,7 +209,7 @@ CSimpleFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* feat
 
 	m_kernel->cleanup();
 
-	return new CSimpleFeatures<float64_t>(SGMatrix<float64_t>(new_feature_matrix,m_target_dim,num_vectors));
+	return new CDenseFeatures<float64_t>(SGMatrix<float64_t>(new_feature_matrix,m_target_dim,num_vectors));
 }
 
 #endif

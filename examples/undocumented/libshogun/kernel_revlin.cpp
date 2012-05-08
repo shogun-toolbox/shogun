@@ -1,4 +1,4 @@
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
@@ -86,9 +86,9 @@ protected:
         bool afree, bfree;
 
         float64_t* avec=
-            ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+            ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
         float64_t* bvec=
-            ((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+            ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
         ASSERT(alen==blen);
 
@@ -96,8 +96,8 @@ protected:
         for (int32_t i=0; i<alen; i++)
             result+=avec[i]*bvec[alen-i-1];
 
-        ((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-        ((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+        ((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+        ((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
         return result;
     }
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
     // create three 2-dimensional vectors 
     // shogun will now own the matrix created
-    CSimpleFeatures<float64_t>* features= new CSimpleFeatures<float64_t>();
+    CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
     features->set_feature_matrix(matrix, 2, 3);
 
     // create reverse linear kernel

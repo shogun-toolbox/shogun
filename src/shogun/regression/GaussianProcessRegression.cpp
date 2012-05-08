@@ -27,7 +27,7 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 }
 
 CGaussianProcessRegression::CGaussianProcessRegression(float64_t sigma, 
-CKernel* k, CSimpleFeatures<float64_t>* data, CLabels* lab)
+CKernel* k, CDenseFeatures<float64_t>* data, CLabels* lab)
 : CMachine()
 {
 	init();
@@ -94,7 +94,7 @@ CLabels* CGaussianProcessRegression::apply(CFeatures* data)
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
 	if (m_labels->get_num_labels() != features->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
-	if (data->get_feature_class() != C_SIMPLE)
+	if (data->get_feature_class() != C_DENSE)
 		SG_ERROR("Expected Simple Features\n");
 	if (data->get_feature_type() != F_DREAL)
 		SG_ERROR("Expected Real Features\n");
@@ -119,7 +119,7 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
   	if (m_labels->get_num_labels() != data->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
-	if (data->get_feature_class() != C_SIMPLE)
+	if (data->get_feature_class() != C_DENSE)
 		SG_ERROR("Expected Simple Features\n");
 	if (data->get_feature_type() != F_DREAL)
 		SG_ERROR("Expected Real Features\n");

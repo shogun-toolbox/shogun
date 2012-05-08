@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Labels.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/regression/KernelRidgeRegression.h>
@@ -44,8 +44,8 @@ void test_cross_validation()
 	}
 
 	/* training features */
-	CSimpleFeatures<float64_t>* features=
-			new CSimpleFeatures<float64_t>(train_dat);
+	CDenseFeatures<float64_t>* features=
+			new CDenseFeatures<float64_t>(train_dat);
 	SG_REF(features);
 
 	/* training labels */

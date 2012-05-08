@@ -22,7 +22,7 @@ CLinearRidgeRegression::CLinearRidgeRegression()
 	init();
 }
 
-CLinearRidgeRegression::CLinearRidgeRegression(float64_t tau, CSimpleFeatures<float64_t>* data, CLabels* lab)
+CLinearRidgeRegression::CLinearRidgeRegression(float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab)
 : CLinearMachine()
 {
 	init();
@@ -53,13 +53,13 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 	if (m_labels->get_num_labels() != data->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
 
-	if (data->get_feature_class() != C_SIMPLE)
-		SG_ERROR("Expected Simple Features\n");
+	if (data->get_feature_class() != C_DENSE)
+		SG_ERROR("Expected Dense Features\n");
 
 	if (data->get_feature_type() != F_DREAL)
 		SG_ERROR("Expected Real Features\n");
 
-	CSimpleFeatures<float64_t>* feats=(CSimpleFeatures<float64_t>*) data;
+	CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
 	int32_t num_feat=feats->get_num_features();
 	int32_t num_vec=feats->get_num_vectors();
 

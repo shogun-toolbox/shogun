@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/Isomap.h>
 
 using namespace shogun;
@@ -24,14 +24,14 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = i;
 
-	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CIsomap* isomap = new CIsomap();
 	isomap->set_target_dim(2);
 	isomap->set_landmark(true);
 	isomap->set_k(4);
 	isomap->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = isomap->embed(features);
+	CDenseFeatures<double>* embedding = isomap->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(isomap);
 	SG_UNREF(features);

@@ -11,7 +11,7 @@
 #ifndef DIMENSIONREDUCTIONPREPROCESSOR_H_
 #define DIMENSIONREDUCTIONPREPROCESSOR_H_
 
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
@@ -27,7 +27,7 @@ class CKernel;
  * class for preprocessors used to lower the dimensionality of given
  * simple features (dense matrices).
  */
-class CDimensionReductionPreprocessor: public CSimplePreprocessor<float64_t>
+class CDimensionReductionPreprocessor: public CDensePreprocessor<float64_t>
 {
 public:
 

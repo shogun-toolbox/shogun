@@ -28,7 +28,7 @@ CANOVAKernel::CANOVAKernel(int32_t cache, int32_t d)
 }
 
 CANOVAKernel::CANOVAKernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, int32_t cache)
+	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t d, int32_t cache)
   : CDotKernel(cache), cardinality(d)
 {
 	init();
@@ -63,15 +63,15 @@ float64_t CANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	float64_t result = compute_recursive1(avec, bvec, alen);
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
@@ -82,15 +82,15 @@ float64_t CANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	float64_t result = compute_recursive2(avec, bvec, alen);
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
@@ -111,8 +111,8 @@ void CANOVAKernel::allocate_arrays()
 	cleanup();
 
 	ASSERT(lhs && rhs);
-	int32_t num_feat = ((CSimpleFeatures<float64_t>*) lhs)->get_num_features();
-	ASSERT(num_feat == ((CSimpleFeatures<float64_t>*) rhs)->get_num_features());
+	int32_t num_feat = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
+	ASSERT(num_feat == ((CDenseFeatures<float64_t>*) rhs)->get_num_features());
 
 	//compute_recursive1
 	DP_len=(cardinality+1)*(num_feat+1);

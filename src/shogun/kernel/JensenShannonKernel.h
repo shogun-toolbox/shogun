@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -44,7 +44,7 @@ class CJensenShannonKernel: public CDotKernel
 		 * @param size cache size
 		 */
 		CJensenShannonKernel(
-			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 			int32_t size=10);
 
 		virtual ~CJensenShannonKernel();

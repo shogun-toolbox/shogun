@@ -11,7 +11,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/RegulatoryModulesStringKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -33,7 +32,7 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
 }
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
-		CSimpleFeatures<uint16_t>* lpos, CSimpleFeatures<uint16_t>* rpos,
+		CDenseFeatures<uint16_t>* lpos, CDenseFeatures<uint16_t>* rpos,
 		float64_t w, int32_t d, int32_t s, int32_t wl, int32_t size)
 : CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl),
 	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
@@ -67,7 +66,7 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 }
 
 void CRegulatoryModulesStringKernel::set_motif_positions(
-		CSimpleFeatures<uint16_t>* positions_lhs, CSimpleFeatures<uint16_t>* positions_rhs)
+		CDenseFeatures<uint16_t>* positions_lhs, CDenseFeatures<uint16_t>* positions_rhs)
 {
 	ASSERT(positions_lhs);
 	ASSERT(positions_rhs);
@@ -124,8 +123,8 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
-	((CSimpleFeatures<uint16_t>*) lhs)->free_feature_vector(positions_a, idx_a, afree_pos);
-	((CSimpleFeatures<uint16_t>*) rhs)->free_feature_vector(positions_b, idx_b, bfree_pos);
+	((CDenseFeatures<uint16_t>*) lhs)->free_feature_vector(positions_a, idx_a, afree_pos);
+	((CDenseFeatures<uint16_t>*) rhs)->free_feature_vector(positions_b, idx_b, bfree_pos);
 
 	return result;
 }

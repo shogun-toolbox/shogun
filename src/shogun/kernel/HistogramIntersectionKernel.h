@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -48,7 +48,7 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 * @param size cache size
 		 */
 		CHistogramIntersectionKernel(
-			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 			float64_t beta=1.0, int32_t size=10);
 
 		virtual ~CHistogramIntersectionKernel();

@@ -16,7 +16,7 @@
 #include <limits>
 #include <algorithm>
 
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/regression/LeastAngleRegression.h>
@@ -101,13 +101,13 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	if (m_labels->get_num_labels() != data->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
 
-	if (data->get_feature_class() != C_SIMPLE)
+	if (data->get_feature_class() != C_DENSE)
 		SG_ERROR("Expected Simple Features\n");
 
 	if (data->get_feature_type() != F_DREAL)
 		SG_ERROR("Expected Real Features\n");
 
-	CSimpleFeatures<float64_t>* feats=(CSimpleFeatures<float64_t>*) data;
+	CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
 	int32_t n_fea = feats->get_num_features();
 	int32_t n_vec = feats->get_num_vectors();
 

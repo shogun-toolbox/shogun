@@ -98,7 +98,7 @@ public:
 	 * for reading one vector from the file.  This function should
 	 * be a member of the CStreamingFile class.
 	 *
-	 * See the implementation in StreamingSimpleFeatures for
+	 * See the implementation in StreamingDenseFeatures for
 	 * details.
 	 */
 	virtual void set_vector_reader()=0;
@@ -109,7 +109,7 @@ public:
 	 * file.  This function should be a member of the
 	 * CStreamingFile class.
 	 *
-	 * See the implementation in StreamingSimpleFeatures for
+	 * See the implementation in StreamingDenseFeatures for
 	 * details.
 	 */
 	virtual void set_vector_and_label_reader()=0;

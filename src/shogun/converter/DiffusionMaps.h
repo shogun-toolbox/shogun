@@ -56,7 +56,7 @@ public:
 	 * @param kernel to use for embedding
 	 * @return embedding simple features
 	 */
-	virtual CSimpleFeatures<float64_t>* embed_kernel(CKernel* kernel);
+	virtual CDenseFeatures<float64_t>* embed_kernel(CKernel* kernel);
 
 	/** setter for t parameter
 	 * @param t t value

@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/LaplacianEigenmaps.h>
 
 using namespace shogun;
@@ -24,13 +24,13 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = i;
 
-	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CLaplacianEigenmaps* lem = new CLaplacianEigenmaps();
 	lem->set_target_dim(2);
 	lem->set_k(10);
 	lem->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = lem->embed(features);
+	CDenseFeatures<double>* embedding = lem->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(lem);
 	SG_UNREF(features);

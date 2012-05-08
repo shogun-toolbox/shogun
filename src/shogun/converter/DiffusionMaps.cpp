@@ -64,13 +64,13 @@ CFeatures* CDiffusionMaps::apply(CFeatures* features)
 	// compute distance matrix
 	ASSERT(m_kernel);
 	m_kernel->init(features,features);
-	CSimpleFeatures<float64_t>* embedding = embed_kernel(m_kernel);
+	CDenseFeatures<float64_t>* embedding = embed_kernel(m_kernel);
 	m_kernel->cleanup();
 	SG_UNREF(features);
 	return (CFeatures*)embedding;
 }
 
-CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
+CDenseFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 {
 #ifdef HAVE_ARPACK
 	bool use_arpack = true;
@@ -151,6 +151,6 @@ CSimpleFeatures<float64_t>* CDiffusionMaps::embed_kernel(CKernel* kernel)
 
 	SG_FREE(s_values);
 
-	return new CSimpleFeatures<float64_t>(new_feature_matrix);
+	return new CDenseFeatures<float64_t>(new_feature_matrix);
 }
 #endif /* HAVE_LAPACK */

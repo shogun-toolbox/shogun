@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -61,7 +61,7 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param size cache size
 		 */
 		CGaussianShiftKernel(
-			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 			float64_t width, int32_t max_shift, int32_t shift_step,
 			int32_t size=10);
 

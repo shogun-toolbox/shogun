@@ -12,7 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 
@@ -45,7 +45,7 @@ public:
 		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
 		CMath::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 3);
-		m_features=new CSimpleFeatures<int32_t>(10);
+		m_features=new CDenseFeatures<int32_t>(10);
 		m_features->set_feature_matrix(features);
 		m_features->set_combined_feature_weight(5.0);
 		SG_REF(m_features);
@@ -68,7 +68,7 @@ public:
 	int32_t m_matrix_rows;
 	int32_t m_matrix_cols;
 
-	CSimpleFeatures<int32_t>* m_features;
+	CDenseFeatures<int32_t>* m_features;
 
 	virtual const char* get_name() const { return "TestClassInt"; }
 };
@@ -89,7 +89,7 @@ public:
 		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
 		CMath::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 3);
-		m_features=new CSimpleFeatures<int32_t>(features);
+		m_features=new CDenseFeatures<int32_t>(features);
 		SG_REF(m_features);
 		m_parameters->add((CSGObject**)&m_features, "float_features",
 				"Test features");
@@ -143,7 +143,6 @@ public:
 
 	virtual ~CTestClassFloat()
 	{
-		m_matrix.destroy_matrix();
 		SG_UNREF(m_features);
 	}
 
@@ -152,7 +151,7 @@ public:
 	SGMatrix<float64_t> m_matrix;
 
 	/* no type change here */
-	CSimpleFeatures<int32_t>* m_features;
+	CDenseFeatures<int32_t>* m_features;
 
 	virtual const char* get_name() const { return "TestClassFloat"; }
 
@@ -303,8 +302,8 @@ void test_load_file_parameter()
 	SG_SPRINT("checking \"float_features\":\n");
 	ASSERT(!strcmp(current->m_name, "float_features"));
 	/* cast to simple features */
-	CSimpleFeatures<int32_t>* features=
-			*((CSimpleFeatures<int32_t>**)current->m_parameter);
+	CDenseFeatures<int32_t>* features=
+			*((CDenseFeatures<int32_t>**)current->m_parameter);
 	SG_SPRINT("checking address (mapped!=original): %p!=%p\n", features,
 			int_instance->m_features);
 	ASSERT((void*)features!=(void*)int_instance->m_features);

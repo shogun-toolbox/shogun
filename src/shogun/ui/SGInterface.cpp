@@ -25,7 +25,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/SalzbergWordStringKernel.h>
 #include <shogun/kernel/WaveletKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/PolyFeatures.h>
 #include <shogun/preprocessor/SortWordString.h>
 
@@ -1617,7 +1617,7 @@ bool CSGInterface::cmd_get_features()
 
 	switch (feat->get_feature_class())
 	{
-		case C_SIMPLE:
+		case C_DENSE:
 		{
 			int32_t num_feat=0;
 			int32_t num_vec=0;
@@ -1626,49 +1626,49 @@ bool CSGInterface::cmd_get_features()
 			{
 				case F_BYTE:
 				{
-					uint8_t* fmatrix=((CSimpleFeatures<uint8_t> *) feat)->get_feature_matrix(num_feat, num_vec);
+					uint8_t* fmatrix=((CDenseFeatures<uint8_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_CHAR:
 				{
-					char* fmatrix=((CSimpleFeatures<char> *) feat)->get_feature_matrix(num_feat, num_vec);
+					char* fmatrix=((CDenseFeatures<char> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_DREAL:
 				{
-					float64_t* fmatrix=((CSimpleFeatures<float64_t> *) feat)->get_feature_matrix(num_feat, num_vec);
+					float64_t* fmatrix=((CDenseFeatures<float64_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_INT:
 				{
-					int32_t* fmatrix=((CSimpleFeatures<int32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
+					int32_t* fmatrix=((CDenseFeatures<int32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_SHORT:
 				{
-					int16_t* fmatrix=((CSimpleFeatures<int16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
+					int16_t* fmatrix=((CDenseFeatures<int16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_SHORTREAL:
 				{
-					float32_t* fmatrix=((CSimpleFeatures<float32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
+					float32_t* fmatrix=((CDenseFeatures<float32_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
 
 				case F_WORD:
 				{
-					uint16_t* fmatrix=((CSimpleFeatures<uint16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
+					uint16_t* fmatrix=((CDenseFeatures<uint16_t> *) feat)->get_feature_matrix(num_feat, num_vec);
 					set_matrix(fmatrix, num_feat, num_vec);
 					break;
 				}
@@ -1822,12 +1822,12 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			float64_t* fmatrix=NULL;
 			get_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSimpleFeatures<float64_t>(0);
-			((CSimpleFeatures<float64_t>*) feat)->
+			feat=new CDenseFeatures<float64_t>(0);
+			((CDenseFeatures<float64_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 
 			if (m_nrhs==6)
-				feat = create_custom_real_features((CSimpleFeatures<float64_t>*) feat);
+				feat = create_custom_real_features((CDenseFeatures<float64_t>*) feat);
 
 			break;
 		}
@@ -1837,8 +1837,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			int32_t* fmatrix=NULL;
 			get_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSimpleFeatures<int32_t>(0);
-			((CSimpleFeatures<int32_t>*) feat)->
+			feat=new CDenseFeatures<int32_t>(0);
+			((CDenseFeatures<int32_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1848,8 +1848,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			int16_t* fmatrix=NULL;
 			get_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSimpleFeatures<int16_t>(0);
-			((CSimpleFeatures<int16_t>*) feat)->
+			feat=new CDenseFeatures<int16_t>(0);
+			((CDenseFeatures<int16_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1859,8 +1859,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			uint16_t* fmatrix=NULL;
 			get_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSimpleFeatures<uint16_t>(0);
-			((CSimpleFeatures<uint16_t>*) feat)->
+			feat=new CDenseFeatures<uint16_t>(0);
+			((CDenseFeatures<uint16_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -1870,8 +1870,8 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			float32_t* fmatrix=NULL;
 			get_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSimpleFeatures<float32_t>(0);
-			((CSimpleFeatures<float32_t>*) feat)->
+			feat=new CDenseFeatures<float32_t>(0);
+			((CDenseFeatures<float32_t>*) feat)->
 				set_feature_matrix(fmatrix, num_feat, num_vec);
 			break;
 		}
@@ -2078,7 +2078,7 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "REAL"))
 			{
 				result=ui_features->convert_simple_real_to_sparse_real(
-					((CSimpleFeatures<float64_t>*) features));
+					((CDenseFeatures<float64_t>*) features));
 			}
 			else
 				SG_NOTIMPLEMENTED;
@@ -2090,7 +2090,7 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "CHAR"))
 			{
 				result=ui_features->convert_simple_char_to_string_char(
-					((CSimpleFeatures<char>*) features));
+					((CDenseFeatures<char>*) features));
 			}
 			else if (strmatch(to_class, "SIMPLE"))
 			{
@@ -2098,7 +2098,7 @@ bool CSGInterface::cmd_convert()
 				{
 					float64_t gap_cost=get_real_from_real_or_str();
 					result=ui_features->convert_simple_char_to_simple_align(
-						(CSimpleFeatures<char>*) features, gap_cost);
+						(CDenseFeatures<char>*) features, gap_cost);
 				}
 				else
 					SG_NOTIMPLEMENTED;
@@ -2113,7 +2113,7 @@ bool CSGInterface::cmd_convert()
 				strmatch(to_type, "SALZBERG"))
 			{
 				result=ui_features->convert_simple_word_to_simple_salzberg(
-					(CSimpleFeatures<uint16_t>*) features);
+					(CDenseFeatures<uint16_t>*) features);
 			}
 			else
 				SG_NOTIMPLEMENTED;
@@ -3384,7 +3384,7 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 	return feat;
 }
 
-CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>* orig_feat)
+CFeatures* CSGInterface::create_custom_real_features(CDenseFeatures<float64_t>* orig_feat)
 {
 	CFeatures* feat=orig_feat;
 
@@ -3402,7 +3402,7 @@ CFeatures* CSGInterface::create_custom_real_features(CSimpleFeatures<float64_t>*
 
 			degree=get_int();
 			normalize = get_bool();
-			feat = new CPolyFeatures((CSimpleFeatures<float64_t>*) feat, degree, normalize);
+			feat = new CPolyFeatures((CDenseFeatures<float64_t>*) feat, degree, normalize);
 
 		}
 		else
@@ -5366,7 +5366,7 @@ bool CSGInterface::cmd_set_converter()
 bool CSGInterface::cmd_embed()
 {
 	int32_t target_dim = get_int_from_int_or_str();
-	CSimpleFeatures<float64_t>* embedding = ui_converter->embed(target_dim);
+	CDenseFeatures<float64_t>* embedding = ui_converter->embed(target_dim);
 	SGMatrix<float64_t> embedding_matrix = embedding->get_feature_matrix();
 	set_matrix(embedding_matrix.matrix,embedding_matrix.num_cols,embedding_matrix.num_rows);
 	return true;

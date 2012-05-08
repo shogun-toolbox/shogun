@@ -9,10 +9,9 @@
  */
 
 #include <shogun/preprocessor/PNorm.h>
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
@@ -21,14 +20,14 @@
 using namespace shogun;
 
 CPNorm::CPNorm ()
-: CSimplePreprocessor<float64_t>(),
+: CDensePreprocessor<float64_t>(),
  m_p (2.0)
 {
 	register_param ();
 }
 
 CPNorm::CPNorm (double p)
-: CSimplePreprocessor<float64_t>(),
+: CDensePreprocessor<float64_t>(),
  m_p (p)
 {
 	ASSERT (m_p >= 1.0);
@@ -42,7 +41,7 @@ CPNorm::~CPNorm ()
 /// initialize preprocessor from features
 bool CPNorm::init (CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_class()==C_DENSE);
 	ASSERT(features->get_feature_type()==F_DREAL);
 
 	return true;
@@ -74,7 +73,7 @@ bool CPNorm::save (FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 SGMatrix<float64_t> CPNorm::apply_to_feature_matrix (CFeatures* features)
 {
-	SGMatrix<float64_t> feature_matrix=((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+	SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{

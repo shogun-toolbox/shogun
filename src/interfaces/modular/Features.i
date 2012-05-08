@@ -268,87 +268,87 @@ namespace shogun
 #endif
 }
 
-/* Templated Class SimpleFeatures */
-%include <shogun/features/SimpleFeatures.h>
+/* Templated Class DenseFeatures */
+%include <shogun/features/DenseFeatures.h>
 namespace shogun
 {
 #ifdef USE_BOOL
-    %template(BoolFeatures) CSimpleFeatures<bool>;
+    %template(BoolFeatures) CDenseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(CharFeatures) CSimpleFeatures<char>;
+    %template(CharFeatures) CDenseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(ByteFeatures) CSimpleFeatures<uint8_t>;
+    %template(ByteFeatures) CDenseFeatures<uint8_t>;
 #endif
 #ifdef USE_UINT16
-    %template(WordFeatures) CSimpleFeatures<uint16_t>;
+    %template(WordFeatures) CDenseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(ShortFeatures) CSimpleFeatures<int16_t>;
+    %template(ShortFeatures) CDenseFeatures<int16_t>;
 #endif
 #ifdef USE_INT32
-    %template(IntFeatures)  CSimpleFeatures<int32_t>;
+    %template(IntFeatures)  CDenseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(UIntFeatures)  CSimpleFeatures<uint32_t>;
+    %template(UIntFeatures)  CDenseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(LongIntFeatures)  CSimpleFeatures<int64_t>;
+    %template(LongIntFeatures)  CDenseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(ULongIntFeatures)  CSimpleFeatures<uint64_t>;
+    %template(ULongIntFeatures)  CDenseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(LongRealFeatures) CSimpleFeatures<floatmax_t>;
+    %template(LongRealFeatures) CDenseFeatures<floatmax_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(ShortRealFeatures) CSimpleFeatures<float32_t>;
+    %template(ShortRealFeatures) CDenseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(RealFeatures) CSimpleFeatures<float64_t>;
+    %template(RealFeatures) CDenseFeatures<float64_t>;
 #endif
 }
 
-/* Templated Class StreamingSimpleFeatures */
-%include <shogun/features/StreamingSimpleFeatures.h>
+/* Templated Class StreamingDenseFeatures */
+%include <shogun/features/StreamingDenseFeatures.h>
 namespace shogun
  {
 #ifdef USE_BOOL
-    %template(StreamingBoolFeatures) CStreamingSimpleFeatures<bool>;
+    %template(StreamingBoolFeatures) CStreamingDenseFeatures<bool>;
 #endif
 #ifdef USE_CHAR
-    %template(StreamingCharFeatures) CStreamingSimpleFeatures<char>;
+    %template(StreamingCharFeatures) CStreamingDenseFeatures<char>;
 #endif
 #ifdef USE_UINT8
-    %template(StreamingByteFeatures) CStreamingSimpleFeatures<uint8_t>;
+    %template(StreamingByteFeatures) CStreamingDenseFeatures<uint8_t>;
 #endif
 #ifdef USE_UINT16
-    %template(StreamingWordFeatures) CStreamingSimpleFeatures<uint16_t>;
+    %template(StreamingWordFeatures) CStreamingDenseFeatures<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(StreamingShortFeatures) CStreamingSimpleFeatures<int16_t>;
+    %template(StreamingShortFeatures) CStreamingDenseFeatures<int16_t>;
 #endif
 #ifdef USE_INT32
-    %template(StreamingIntFeatures)  CStreamingSimpleFeatures<int32_t>;
+    %template(StreamingIntFeatures)  CStreamingDenseFeatures<int32_t>;
 #endif
 #ifdef USE_UINT32
-    %template(StreamingUIntFeatures)  CStreamingSimpleFeatures<uint32_t>;
+    %template(StreamingUIntFeatures)  CStreamingDenseFeatures<uint32_t>;
 #endif
 #ifdef USE_INT64
-    %template(StreamingLongIntFeatures)  CStreamingSimpleFeatures<int64_t>;
+    %template(StreamingLongIntFeatures)  CStreamingDenseFeatures<int64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(StreamingULongIntFeatures)  CStreamingSimpleFeatures<uint64_t>;
+    %template(StreamingULongIntFeatures)  CStreamingDenseFeatures<uint64_t>;
 #endif
 #ifdef USE_FLOATMAX
-    %template(StreamingLongRealFeatures) CStreamingSimpleFeatures<floatmax_t>;
+    %template(StreamingLongRealFeatures) CStreamingDenseFeatures<floatmax_t>;
 #endif
 #ifdef USE_FLOAT32
-    %template(StreamingShortRealFeatures) CStreamingSimpleFeatures<float32_t>;
+    %template(StreamingShortRealFeatures) CStreamingDenseFeatures<float32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(StreamingRealFeatures) CStreamingSimpleFeatures<float64_t>;
+    %template(StreamingRealFeatures) CStreamingDenseFeatures<float64_t>;
 #endif
 }
 

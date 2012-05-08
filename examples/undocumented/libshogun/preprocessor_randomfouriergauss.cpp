@@ -11,7 +11,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/preproc/RandomFourierGaussPreproc.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/lib/Mathematics.h>
 #include <shogun/lib/common.h>
@@ -115,7 +115,7 @@ int main()
 	a=time(NULL);
 	std::cout << "initializing shogun train feature"<<std::endl;
 
-	CSimpleFeatures<float64_t>* featurestr1 = new CSimpleFeatures<float64_t>(feature_cache);
+	CDenseFeatures<float64_t>* featurestr1 = new CDenseFeatures<float64_t>(feature_cache);
 	SG_REF(featurestr1);
 
 
@@ -148,7 +148,7 @@ int main()
 	a=time(NULL);
 	std::cout << "initializing shogun test feature"<<std::endl;
 
-	CSimpleFeatures<float64_t>* featureste1 = new CSimpleFeatures<float64_t>(feature_cache);
+	CDenseFeatures<float64_t>* featureste1 = new CDenseFeatures<float64_t>(feature_cache);
 	SG_REF(featureste1);
 
 
@@ -210,7 +210,7 @@ int main()
 	a=time(NULL);
 	std::cout << "initializing shogun train feature again"<<std::endl;
 
-	CSimpleFeatures<float64_t>* featurestr2 = new CSimpleFeatures<float64_t>(feature_cache);
+	CDenseFeatures<float64_t>* featurestr2 = new CDenseFeatures<float64_t>(feature_cache);
 	SG_REF(featurestr2);
 	featurestr2->set_feature_matrix(feattr2, dims, numtr);
 
@@ -267,7 +267,7 @@ int main()
 	a=time(NULL);
 	std::cout << "initializing shogun test feature again"<<std::endl;
 
-	CSimpleFeatures<float64_t>* featureste2 = new CSimpleFeatures<float64_t>(feature_cache);
+	CDenseFeatures<float64_t>* featureste2 = new CDenseFeatures<float64_t>(feature_cache);
 	SG_REF(featureste2);
 	featureste2->set_feature_matrix(featte2, dims, numte);
 	std::cout << "finished"<<std::endl;
@@ -395,7 +395,7 @@ std::cout << "effective kernel width for gaussian kernel and RFgauss "<< avgdist
 // now the same with a new preprocessor to show the usage of set_randomcoefficients
 // ********************************************8
 
-	CSimpleFeatures<float64_t>* featureste3 = new CSimpleFeatures<float64_t>(feature_cache);
+	CDenseFeatures<float64_t>* featureste3 = new CDenseFeatures<float64_t>(feature_cache);
 	SG_REF(featureste3);
 	featureste3->set_feature_matrix(featte3, dims, numte);
 	std::cout << "finished"<<std::endl;

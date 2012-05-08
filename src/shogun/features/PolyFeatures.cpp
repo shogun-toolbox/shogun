@@ -15,7 +15,7 @@ CPolyFeatures::CPolyFeatures() :CDotFeatures()
 	register_parameters();
 }
 
-CPolyFeatures::CPolyFeatures(CSimpleFeatures<float64_t>* feat, int32_t degree, bool normalize)
+CPolyFeatures::CPolyFeatures(CDenseFeatures<float64_t>* feat, int32_t degree, bool normalize)
 	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL),
 		m_normalization_values(NULL)
 {

@@ -13,7 +13,7 @@
 
 #include <shogun/converter/Converter.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -45,11 +45,11 @@ public:
 	virtual CFeatures* apply(CFeatures* features) = 0;
 
 	/** embed given features, acts the same as apply, but returns
-	 * SimpleFeatures
+	 * DenseFeatures
 	 * @param features features to embed
 	 * @return embedding simple features
 	 */
-	virtual CSimpleFeatures<float64_t>* embed(CFeatures* features);
+	virtual CDenseFeatures<float64_t>* embed(CFeatures* features);
 
 	/** setter for target dimension
 	 * @param dim target dimension

@@ -26,7 +26,7 @@
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/Features.h>
@@ -278,19 +278,19 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 {
 	switch (f->get_feature_class())
 	{
-		case C_SIMPLE:
+		case C_DENSE:
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CSimpleFeatures<float64_t>*) f)->apply_preprocessor(force);
+					return ((CDenseFeatures<float64_t>*) f)->apply_preprocessor(force);
 				case F_SHORT:
-					return ((CSimpleFeatures<int16_t>*) f)->apply_preprocessor(force);
+					return ((CDenseFeatures<int16_t>*) f)->apply_preprocessor(force);
 				case F_WORD:
-					return ((CSimpleFeatures<uint16_t>*) f)->apply_preprocessor(force);
+					return ((CDenseFeatures<uint16_t>*) f)->apply_preprocessor(force);
 				case F_CHAR:
-					return ((CSimpleFeatures<char>*) f)->apply_preprocessor(force);
+					return ((CDenseFeatures<char>*) f)->apply_preprocessor(force);
 				case F_BYTE:
-					return ((CSimpleFeatures<uint8_t>*) f)->apply_preprocessor(force);
+					return ((CDenseFeatures<uint8_t>*) f)->apply_preprocessor(force);
 				default:
 					SG_NOTIMPLEMENTED;
 			}

@@ -8,7 +8,7 @@ using namespace shogun;
 namespace shogun
 {
 CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
-: CSimplePreprocessor<float64_t>()
+: CDensePreprocessor<float64_t>()
 {
 	m_target_dim = 1;
 	m_distance = new CEuclidianDistance();
@@ -19,7 +19,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
 }
 
 CDimensionReductionPreprocessor::CDimensionReductionPreprocessor(CEmbeddingConverter* converter)
-: CSimplePreprocessor<float64_t>()
+: CDensePreprocessor<float64_t>()
 {
 	SG_REF(converter);
 	m_target_dim = 1;
@@ -42,16 +42,16 @@ SGMatrix<float64_t> CDimensionReductionPreprocessor::apply_to_feature_matrix(CFe
 	if (m_converter)
 	{
 		m_converter->set_target_dim(m_target_dim);
-		CSimpleFeatures<float64_t>* embedding = m_converter->embed(features);
+		CDenseFeatures<float64_t>* embedding = m_converter->embed(features);
 		SGMatrix<float64_t> embedding_feature_matrix = embedding->steal_feature_matrix();
-		((CSimpleFeatures<float64_t>*)features)->set_feature_matrix(embedding_feature_matrix);
+		((CDenseFeatures<float64_t>*)features)->set_feature_matrix(embedding_feature_matrix);
 		delete embedding;
 		return embedding_feature_matrix;
 	}
 	else
 	{
 		SG_WARNING("Converter to process was not set.\n");
-		return ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+		return ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 	}
 }
 

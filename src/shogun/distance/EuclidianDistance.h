@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -51,7 +51,7 @@ class CEuclidianDistance: public CRealDistance
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CEuclidianDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
 		virtual ~CEuclidianDistance();
 
 		/** init distance

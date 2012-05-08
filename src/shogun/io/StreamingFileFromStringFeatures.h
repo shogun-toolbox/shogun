@@ -70,7 +70,7 @@ public:
 
 	/**
 	 * Reset the stream so the next example returned is the first
-	 * example in the SimpleFeatures object.
+	 * example in the DenseFeatures object.
 	 *
 	 */
 	void reset_stream()

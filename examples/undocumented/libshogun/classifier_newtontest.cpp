@@ -1,6 +1,6 @@
 #include <shogun/base/init.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/classifier/svm/NewtonSVM.h>
 
@@ -28,7 +28,7 @@ int main(int argc,char *argv[])
 	SG_SPRINT("FEATURE MATRIX :\n");	
 	CMath::display_matrix(fmatrix.matrix,x_d,x_n);
 
-	CSimpleFeatures<float64_t>* features = new CSimpleFeatures<float64_t>(fmatrix);
+	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(fmatrix);
 	SG_REF(features);
 	
 /*Creating random labels */

@@ -16,7 +16,7 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclidianDistance.h>
 #include <shogun/distance/MinkowskiMetric.h>
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	}
 
 	/* create features, SG_REF to avoid deletion */
-	CSimpleFeatures<float64_t>* features=new CSimpleFeatures<float64_t> ();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
 	features->set_feature_matrix(data);
 	SG_REF(features);
 
@@ -87,8 +87,8 @@ int main(int argc, char **argv)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
 	/* print cluster centers */
-	CSimpleFeatures<float64_t>* centers=
-			(CSimpleFeatures<float64_t>*)distance->get_lhs();
+	CDenseFeatures<float64_t>* centers=
+			(CDenseFeatures<float64_t>*)distance->get_lhs();
 
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
 

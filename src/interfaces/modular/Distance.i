@@ -39,21 +39,21 @@
 %include <shogun/distance/CustomDistance.h>
 %include <shogun/distance/KernelDistance.h>
 
-/* Templates Class SimpleDistance*/
-%include <shogun/distance/SimpleDistance.h>
+/* Templates Class DenseDistance*/
+%include <shogun/distance/DenseDistance.h>
 namespace shogun
 {
 #ifdef USE_CHAR
-    %template(SimpleCharDistance) CSimpleDistance<char>;
+    %template(DenseCharDistance) CDenseDistance<char>;
 #endif
 #ifdef USE_UINT16
-    %template(SimpleWordDistance) CSimpleDistance<uint16_t>;
+    %template(DenseWordDistance) CDenseDistance<uint16_t>;
 #endif
 #ifdef USE_INT32
-    %template(SimpleIntDistance) CSimpleDistance<int32_t>;
+    %template(DenseIntDistance) CDenseDistance<int32_t>;
 #endif
 #ifdef USE_FLOAT64
-    %template(SimpleRealDistance) CSimpleDistance<float64_t>;
+    %template(DenseRealDistance) CDenseDistance<float64_t>;
 #endif
 
 }

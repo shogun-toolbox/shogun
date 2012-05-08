@@ -11,7 +11,7 @@
 #include <shogun/base/init.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 
@@ -37,7 +37,7 @@ public:
 		SGMatrix<int32_t> data=SGMatrix<int32_t>(3, 2);
 		CMath::range_fill_vector(data.matrix, data.num_rows*data.num_cols,
 				features_start);
-		m_features=new CSimpleFeatures<int32_t>(data);
+		m_features=new CDenseFeatures<int32_t>(data);
 		SG_REF(m_features);
 
 		m_parameters->add(&m_number, "number", "Test variable");
@@ -71,7 +71,7 @@ public:
 	float64_t m_number;
 	SGVector<float64_t> m_vec;
 	SGMatrix<float64_t> m_mat;
-	CSimpleFeatures<int32_t>* m_features;
+	CDenseFeatures<int32_t>* m_features;
 };
 
 

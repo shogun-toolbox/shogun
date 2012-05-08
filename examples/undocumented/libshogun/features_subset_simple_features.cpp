@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Subset.h>
 
 using namespace shogun;
@@ -19,10 +19,10 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
-void check_transposed(CSimpleFeatures<int32_t>* features)
+void check_transposed(CDenseFeatures<int32_t>* features)
 {
-	CSimpleFeatures<int32_t>* transposed=features->get_transposed();
-	CSimpleFeatures<int32_t>* double_transposed=transposed->get_transposed();
+	CDenseFeatures<int32_t>* transposed=features->get_transposed();
+	CDenseFeatures<int32_t>* double_transposed=transposed->get_transposed();
 
 	for (index_t i=0; i<features->get_num_vectors(); ++i)
 	{
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 	}
 
 	/* create simple features */
-	CSimpleFeatures<int32_t>* features=new CSimpleFeatures<int32_t> (data);
+	CDenseFeatures<int32_t>* features=new CDenseFeatures<int32_t> (data);
 	SG_REF(features);
 
 	/* print feature matrix */

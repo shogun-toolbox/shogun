@@ -13,16 +13,15 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/ChebyshewMetric.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 
-CChebyshewMetric::CChebyshewMetric() : CSimpleDistance<float64_t>()
+CChebyshewMetric::CChebyshewMetric() : CDenseDistance<float64_t>()
 {
 }
 
-CChebyshewMetric::CChebyshewMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
-: CSimpleDistance<float64_t>()
+CChebyshewMetric::CChebyshewMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
+: CDenseDistance<float64_t>()
 {
 	init(l, r);
 }
@@ -34,7 +33,7 @@ CChebyshewMetric::~CChebyshewMetric()
 
 bool CChebyshewMetric::init(CFeatures* l, CFeatures* r)
 {
-	return CSimpleDistance<float64_t>::init(l,r);
+	return CDenseDistance<float64_t>::init(l,r);
 }
 
 void CChebyshewMetric::cleanup()
@@ -47,9 +46,9 @@ float64_t CChebyshewMetric::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen);
 
@@ -58,8 +57,8 @@ float64_t CChebyshewMetric::compute(int32_t idx_a, int32_t idx_b)
 	for (int32_t i=0; i<alen; i++)
 		result=CMath::max(result, fabs(avec[i]-bvec[i]));
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

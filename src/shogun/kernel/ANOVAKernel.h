@@ -16,7 +16,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -53,7 +53,7 @@ public:
 	 * @param cache cache size
 	 */
 	CANOVAKernel(
-		CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, int32_t d, int32_t cache);
+		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t d, int32_t cache);
 
 	virtual ~CANOVAKernel();
 
@@ -77,7 +77,7 @@ public:
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+	inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 	/**
 	 * @return name of kernel

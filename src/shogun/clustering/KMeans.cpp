@@ -12,7 +12,7 @@
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 
@@ -53,8 +53,8 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	ASSERT(distance->get_feature_type()==F_DREAL);
 
-	CSimpleFeatures<float64_t>* lhs=
-			(CSimpleFeatures<float64_t>*)distance->get_lhs();
+	CDenseFeatures<float64_t>* lhs=
+			(CDenseFeatures<float64_t>*)distance->get_lhs();
 	ASSERT(lhs);
 	int32_t num=lhs->get_num_vectors();
 	SG_UNREF(lhs);
@@ -115,8 +115,8 @@ SGMatrix<float64_t> CKMeans::get_cluster_centers()
 	if (!R.vector)
 		return SGMatrix<float64_t>();
 
-	CSimpleFeatures<float64_t>* lhs=
-		(CSimpleFeatures<float64_t>*)distance->get_lhs();
+	CDenseFeatures<float64_t>* lhs=
+		(CDenseFeatures<float64_t>*)distance->get_lhs();
 	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
 	SG_UNREF(lhs);
 	return centers;
@@ -131,7 +131,7 @@ int32_t CKMeans::get_dimensions()
 struct thread_data
 {
 	float64_t* x;
-	CSimpleFeatures<float64_t>* y;
+	CDenseFeatures<float64_t>* y;
 	float64_t* z;
 	int32_t n1, n2, m;
 	int32_t js, je; /* defines the matrix stripe */
@@ -145,7 +145,7 @@ void *sqdist_thread_func(void * P)
 {
 	struct thread_data *TD=(struct thread_data*) P;
 	float64_t* x=TD->x;
-	CSimpleFeatures<float64_t>* y=TD->y;
+	CDenseFeatures<float64_t>* y=TD->y;
 	float64_t* z=TD->z;
 	int32_t n1=TD->n1,
 		m=TD->m,
@@ -177,7 +177,7 @@ void *sqdist_thread_func(void * P)
 void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 {
 	ASSERT(distance && distance->get_feature_type()==F_DREAL);
-	CSimpleFeatures<float64_t>* lhs = (CSimpleFeatures<float64_t>*) distance->get_lhs();
+	CDenseFeatures<float64_t>* lhs = (CDenseFeatures<float64_t>*) distance->get_lhs();
 	ASSERT(lhs && lhs->get_num_features()>0 && lhs->get_num_vectors()>0);
 
 	int32_t XSize=lhs->get_num_vectors();
@@ -195,7 +195,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	float64_t *dists=SG_CALLOC(float64_t, k*XSize);
 
 	///replace rhs feature vectors
-	CSimpleFeatures<float64_t>* rhs_mus = new CSimpleFeatures<float64_t>(0);
+	CDenseFeatures<float64_t>* rhs_mus = new CDenseFeatures<float64_t>(0);
 	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
 
 	int32_t vlen=0;
@@ -462,7 +462,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 void CKMeans::store_model_features()
 {
 	/* set lhs of underlying distance to cluster centers */
-	CSimpleFeatures<float64_t>* cluster_centers=new CSimpleFeatures<float64_t>(
+	CDenseFeatures<float64_t>* cluster_centers=new CDenseFeatures<float64_t>(
 			mus);
 
 	/* store cluster centers in lhs of distance variable */

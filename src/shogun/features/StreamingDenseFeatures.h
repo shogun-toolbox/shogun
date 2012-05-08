@@ -7,12 +7,12 @@
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#ifndef _STREAMING_SIMPLEFEATURES__H__
-#define _STREAMING_SIMPLEFEATURES__H__
+#ifndef _STREAMINGDENSEFEATURES__H__
+#define _STREAMINGDENSEFEATURES__H__
 
 #include <shogun/lib/common.h>
 #include <shogun/features/StreamingDotFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/io/InputParser.h>
 
@@ -23,7 +23,7 @@ namespace shogun
  * The current example is stored as a combination of current_vector
  * and current_label.
  */
-template <class T> class CStreamingSimpleFeatures : public CStreamingDotFeatures
+template <class T> class CStreamingDenseFeatures : public CStreamingDotFeatures
 {
 public:
 
@@ -34,7 +34,7 @@ public:
 	 * CStreamingFile::get_*_vector and get_*_vector_and_label
 	 * depending on the type T.
 	 */
-	CStreamingSimpleFeatures();
+	CStreamingDenseFeatures();
 
 	/**
 	 * Constructor taking args.
@@ -44,17 +44,17 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingSimpleFeatures(CStreamingFile* file,
+	CStreamingDenseFeatures(CStreamingFile* file,
 				 bool is_labelled, int32_t size);
 
 	/**
-	 * Constructor taking a SimpleFeatures object and a labels array
+	 * Constructor taking a DenseFeatures object and a labels array
 	 * as args.
 	 *
-	 * @param simple_features SimpleFeatures object of same type
+	 * @param dense_features DenseFeatures object of same type
 	 * @param lab labels array, float64_t*
 	 */
-	CStreamingSimpleFeatures(CSimpleFeatures<T>* simple_features,
+	CStreamingDenseFeatures(CDenseFeatures<T>* dense_features,
 				 float64_t* lab=NULL);
 
 	/**
@@ -62,7 +62,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	~CStreamingSimpleFeatures();
+	~CStreamingDenseFeatures();
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -161,7 +161,7 @@ public:
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.
 	 *
-	 * Currently only works if it is a CStreamingSimpleFeatures object.
+	 * Currently only works if it is a CStreamingDenseFeatures object.
 	 * It takes the dot product of the current_vectors of both objects.
 	 *
 	 * @param df CStreamingDotFeatures object.
@@ -233,7 +233,7 @@ public:
 	/**
 	 * Return the feature class
 	 *
-	 * @return C_STREAMING_SIMPLE
+	 * @return C_STREAMING_DENSE
 	 */
 	virtual EFeatureClass get_feature_class();
 
@@ -247,9 +247,9 @@ public:
 	/**
 	 * Return the name.
 	 *
-	 * @return StreamingSimpleFeatures
+	 * @return StreamingDenseFeatures
 	 */
-	inline virtual const char* get_name() const { return "StreamingSimpleFeatures"; }
+	inline virtual const char* get_name() const { return "StreamingDenseFeatures"; }
 
 	/**
 	 * Return the number of vectors stored in this object.
@@ -302,4 +302,4 @@ protected:
 	int32_t current_length;
 };
 }
-#endif // _STREAMING_SIMPLEFEATURES__H__
+#endif // _STREAMINGDENSEFEATURES__H__

@@ -12,8 +12,7 @@
 #define _CHEBYSHEWMETRIC_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/distance/SimpleDistance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distance/DenseDistance.h>
 
 namespace shogun
 {
@@ -28,7 +27,7 @@ namespace shogun
  *
  * @see <a href="http://en.wikipedia.org/wiki/Chebyshev_distance">Wikipedia: Chebyshev distance</a>
  */
-class CChebyshewMetric: public CSimpleDistance<float64_t>
+class CChebyshewMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -39,7 +38,7 @@ class CChebyshewMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CChebyshewMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CChebyshewMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
 		virtual ~CChebyshewMetric();
 
 		/** init distance

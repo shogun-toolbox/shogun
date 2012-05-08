@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -48,7 +48,7 @@ class CGaussianShortRealKernel: public CDotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		CGaussianShortRealKernel(CSimpleFeatures<float32_t>* l, CSimpleFeatures<float32_t>* r,
+		CGaussianShortRealKernel(CDenseFeatures<float32_t>* l, CDenseFeatures<float32_t>* r,
 			float64_t width, int32_t size=10);
 
 		virtual ~CGaussianShortRealKernel();

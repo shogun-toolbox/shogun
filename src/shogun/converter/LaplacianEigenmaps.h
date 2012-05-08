@@ -68,7 +68,7 @@ public:
 	 * @param distance to use for embedding
 	 * @param embedding features
 	 */
-	virtual CSimpleFeatures<float64_t>* embed_distance(CDistance* distance, CFeatures* features=NULL);
+	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance, CFeatures* features=NULL);
 
 	/** setter for K parameter
 	 * @param k k value
@@ -102,7 +102,7 @@ protected:
 	 * @param features features
 	 * @param W_matrix W matrix to be used
 	 */
-	virtual CSimpleFeatures<float64_t>* construct_embedding(CFeatures* features,
+	virtual CDenseFeatures<float64_t>* construct_embedding(CFeatures* features,
 	                                                        SGMatrix<float64_t> W_matrix);
 
 protected:

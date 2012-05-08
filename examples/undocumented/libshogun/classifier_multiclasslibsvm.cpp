@@ -1,5 +1,5 @@
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/multiclass/MulticlassLibSVM.h>
 #include <shogun/base/init.h>
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
 	// create vectors
 	// shogun will now own the matrix created
-	CSimpleFeatures<float64_t>* features=new CSimpleFeatures<float64_t>(matrix);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	// create three labels
 	CLabels* labels=new CLabels(num_vec);

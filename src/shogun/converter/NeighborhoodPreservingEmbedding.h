@@ -14,7 +14,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/converter/LocallyLinearEmbedding.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/Distance.h>
 
 namespace shogun

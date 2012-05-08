@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/classifier/QDA.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
@@ -57,7 +57,7 @@ int main(int argc, char ** argv)
 	CLabels* labels = new CLabels(lab);
 
 	// Create train features
-	CSimpleFeatures< float64_t >* features = new CSimpleFeatures< float64_t >(feature_cache);
+	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feature_cache);
 	features->set_feature_matrix(feat.matrix, DIMS, NUM);
 
 	// Create QDA classifier

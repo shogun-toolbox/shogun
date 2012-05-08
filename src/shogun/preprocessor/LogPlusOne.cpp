@@ -9,15 +9,14 @@
  */
 
 #include <shogun/preprocessor/LogPlusOne.h>
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 CLogPlusOne::CLogPlusOne()
-: CSimplePreprocessor<float64_t>()
+: CDensePreprocessor<float64_t>()
 {
 }
 
@@ -29,7 +28,7 @@ CLogPlusOne::~CLogPlusOne()
 /// initialize preprocessor from features
 bool CLogPlusOne::init(CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_class()==C_DENSE);
 	ASSERT(features->get_feature_type()==F_DREAL);
 
 	return true;
@@ -62,7 +61,7 @@ bool CLogPlusOne::save(FILE* f)
 SGMatrix<float64_t> CLogPlusOne::apply_to_feature_matrix(CFeatures* features)
 {
 	SGMatrix<float64_t> feature_matrix =
-			((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+			((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{

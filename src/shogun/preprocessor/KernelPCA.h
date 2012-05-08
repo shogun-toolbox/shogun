@@ -63,7 +63,7 @@ public:
 		/** apply to string features
 		 * @param features
 		 */
-		virtual CSimpleFeatures<float64_t>* apply_to_string_features(CFeatures* features);
+		virtual CDenseFeatures<float64_t>* apply_to_string_features(CFeatures* features);
 
 		/** get transformation matrix, i.e. eigenvectors
 		 *

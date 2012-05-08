@@ -12,7 +12,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 
@@ -81,7 +80,7 @@ bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
 }
 
 CPyramidChi2::CPyramidChi2(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 		int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
@@ -128,9 +127,9 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
 					alen, afree);
-	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
 					blen, bfree);
 	if(alen!=blen)
 		SG_ERROR("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim");
@@ -148,18 +147,18 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 			if (num_randfeats_forwidthcomputation >1)
 			{
-				numind=CMath::min( ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors() , num_randfeats_forwidthcomputation);
+				numind=CMath::min( ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors() , num_randfeats_forwidthcomputation);
 			}
 			else
 			{
-				numind= ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors();
+				numind= ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors();
 			}
 			float64_t* featindices = SG_MALLOC(float64_t, numind);
 
 			if (num_randfeats_forwidthcomputation >0)
 			{
 				for(int32_t i=0; i< numind;++i)
-					featindices[i]=CMath::random(0, ((CSimpleFeatures<float64_t>*) lhs)->get_num_vectors()-1);
+					featindices[i]=CMath::random(0, ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1);
 			}
 			else
 			{
@@ -173,12 +172,12 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			//get avec, get bvec	only from lhs, do not free
 			for (int32_t li=0; li < numind;++li)
 			{
-				avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(featindices[li],
+				avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(featindices[li],
 					alen, afree);
 				for (int32_t ri=0; ri <=li;++ri)
 				{
 					// lhs is right here!!!
-					bvec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(featindices[ri],
+					bvec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(featindices[ri],
 							blen, bfree);
 
 					float64_t result=0;
@@ -210,9 +209,9 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 
 	//the actual kernel computation
-	avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+	avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
 					alen, afree);
-	bvec=((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+	bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
 					blen, bfree);
 
 	float64_t result=0;
@@ -233,8 +232,8 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	result= CMath::exp(-result/width);
 
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return (result);
 }

@@ -7,7 +7,7 @@ matrix=array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=int64)
 parameter_list = [[matrix]]
 
 # ... of type LongInt
-def features_simple_longint_modular(A=matrix):
+def features_dense_longint_modular(A=matrix):
     a=LongIntFeatures(A)
 # get first feature vector and set it
 
@@ -21,5 +21,5 @@ def features_simple_longint_modular(A=matrix):
     return a_out
 
 if __name__=='__main__':
-    print('simple_longint')
-    features_simple_longint_modular(*parameter_list[0])
+    print('dense_longint')
+    features_dense_longint_modular(*parameter_list[0])
