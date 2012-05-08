@@ -104,7 +104,6 @@ int main(int argc, char **argv)
 	SG_UNREF(clustering);
 	SG_UNREF(labels);
 	SG_UNREF(features);
-	cluster_centers.destroy_matrix();
 
 	exit_shogun();
 
