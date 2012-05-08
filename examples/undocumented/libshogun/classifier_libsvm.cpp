@@ -24,12 +24,12 @@ using namespace shogun;
 #define DIST 0.5
 
 float64_t* lab;
-float64_t* feat;
+SGMatrix<float64_t> feat;
 
 void gen_rand_data()
 {
 	lab=SG_MALLOC(float64_t, NUM);
-	feat=SG_MALLOC(float64_t, NUM*DIMS);
+	feat=SGMatrix<float64_t>(DIMS, NUM);
 
 	for (int32_t i=0; i<NUM; i++)
 	{
@@ -38,18 +38,18 @@ void gen_rand_data()
 			lab[i]=-1.0;
 
 			for (int32_t j=0; j<DIMS; j++)
-				feat[i*DIMS+j]=CMath::random(0.0,1.0)+DIST;
+				feat.matrix[i*DIMS+j]=CMath::random(0.0,1.0)+DIST;
 		}
 		else
 		{
 			lab[i]=1.0;
 
 			for (int32_t j=0; j<DIMS; j++)
-				feat[i*DIMS+j]=CMath::random(0.0,1.0)-DIST;
+				feat.matrix[i*DIMS+j]=CMath::random(0.0,1.0)-DIST;
 		}
 	}
 	CMath::display_vector(lab,NUM);
-	CMath::display_matrix(feat,DIMS, NUM);
+	CMath::display_matrix(feat.matrix,DIMS, NUM);
 }
 
 int main()
@@ -71,7 +71,7 @@ int main()
 	// create train features
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(feature_cache);
 	SG_REF(features);
-	features->set_feature_matrix(feat, DIMS, NUM);
+	features->set_feature_matrix(feat);
 
 	// create gaussian kernel
 	CGaussianKernel* kernel = new CGaussianKernel(kernel_cache, rbf_width);

@@ -100,14 +100,14 @@ int main(int argc, char **argv)
 	int32_t dim_vectors=3;
 
 	/* create some data and labels */
-	float64_t* matrix=SG_MALLOC(float64_t, num_vectors*dim_vectors);
+	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
 	CLabels* labels=new CLabels(num_vectors);
+
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-		matrix[i]=CMath::randn_double();
+		matrix.matrix[i]=CMath::randn_double();
 
 	/* create num_feautres 2-dimensional vectors */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
-	features->set_feature_matrix(matrix, dim_vectors, num_vectors);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	/* create labels, two classes */
 	for (index_t i=0; i<num_vectors; ++i)

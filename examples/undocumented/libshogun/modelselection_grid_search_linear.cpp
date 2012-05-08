@@ -48,20 +48,19 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_LAPACK
 	int32_t num_subsets=5;
-	int32_t num_features=11;
+	int32_t num_vectors=11;
 
 	/* create some data */
-	float64_t* matrix=SG_MALLOC(float64_t, num_features*2);
-	for (int32_t i=0; i<num_features*2; i++)
-		matrix[i]=i;
+	SGMatrix<float64_t> matrix(2, num_vectors);
+	for (int32_t i=0; i<num_vectors*2; i++)
+		matrix.matrix[i]=i;
 
 	/* create num_feautres 2-dimensional vectors */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
-	features->set_feature_matrix(matrix, 2, num_features);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	/* create three labels */
-	CLabels* labels=new CLabels(num_features);
-	for (index_t i=0; i<num_features; ++i)
+	CLabels* labels=new CLabels(num_vectors);
+	for (index_t i=0; i<num_vectors; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 
 	/* create linear classifier (use -s 2 option to avoid warnings) */

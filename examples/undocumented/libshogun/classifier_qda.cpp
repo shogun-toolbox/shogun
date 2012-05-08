@@ -49,7 +49,7 @@ int main(int argc, char ** argv)
 	init_shogun_with_defaults();
 
 	SGVector< float64_t > lab(NUM);
-	SGMatrix< float64_t > feat(NUM, DIMS);
+	SGMatrix< float64_t > feat(DIMS, NUM);
 
 	gen_rand_data(lab, feat);
 
@@ -58,7 +58,6 @@ int main(int argc, char ** argv)
 
 	// Create train features
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feature_cache);
-	features->set_feature_matrix(feat.matrix, DIMS, NUM);
 
 	// Create QDA classifier
 	CQDA* qda = new CQDA(features, labels);
