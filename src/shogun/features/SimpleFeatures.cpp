@@ -182,7 +182,7 @@ template<class ST> void CSimpleFeatures<ST>::free_feature_vector(ST* feat_vec, i
 template<class ST> void CSimpleFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num)
 {
 	free_feature_vector(vec.vector, num, false);
-	SG_VUNREF(vec);
+	vec.unref();
 }
 
 template<class ST> void CSimpleFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)
