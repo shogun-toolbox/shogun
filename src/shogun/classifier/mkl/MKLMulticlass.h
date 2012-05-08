@@ -162,6 +162,8 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
+  /** @return object name */
+  virtual const char* get_name() const { return "MKLMulticlass"; }
 
 protected:
 	/** the multiclass svm for fixed MKL weights
