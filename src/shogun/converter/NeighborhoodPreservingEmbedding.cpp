@@ -38,7 +38,7 @@ const char* CNeighborhoodPreservingEmbedding::get_name() const
 
 SGMatrix<float64_t> CNeighborhoodPreservingEmbedding::construct_embedding(CFeatures* features, SGMatrix<float64_t> matrix, int dimension)
 {
-	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*)features;
+	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
 	ASSERT(simple_features);
 	int i,j;
 	int N = simple_features->get_num_vectors();

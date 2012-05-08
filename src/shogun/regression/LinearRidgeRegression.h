@@ -16,7 +16,7 @@
 
 #include <shogun/regression/Regression.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -51,7 +51,7 @@ class CLinearRidgeRegression : public CLinearMachine
 		 * @param data training data
 		 * @param lab labels
 		 */
-		CLinearRidgeRegression(float64_t tau, CSimpleFeatures<float64_t>* data, CLabels* lab);
+		CLinearRidgeRegression(float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab);
 		virtual ~CLinearRidgeRegression() {}
 
 		/** set regularization constant

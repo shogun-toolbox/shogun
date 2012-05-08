@@ -1089,7 +1089,7 @@ class CSGInterface : public CSGObject
 		/** helper function to create certain string features */
 		CFeatures* create_custom_string_features(CStringFeatures<uint8_t>* f);
 
-		CFeatures* create_custom_real_features(CSimpleFeatures<float64_t>* orig_feat);
+		CFeatures* create_custom_real_features(CDenseFeatures<float64_t>* orig_feat);
 		/** legacy-related stuff - anybody got a better idea? */
 		char* get_str_from_str_or_direct(int32_t& len);
 		int32_t get_int_from_int_or_str();

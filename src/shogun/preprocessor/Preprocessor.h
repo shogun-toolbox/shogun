@@ -63,7 +63,7 @@ enum EPreprocessorType
  * As preprocessors might need a certain initialization they may expect that
  * the init() function is called before anything else. The actual preprocessing
  * is feature type dependent and thus coordinated in the sub-classes, cf. e.g.
- * CSimplePreprocessor.
+ * CDensePreprocessor.
  */
 class CPreprocessor : public CSGObject
 {

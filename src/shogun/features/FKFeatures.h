@@ -12,13 +12,13 @@
 #ifndef _CFKFEATURES__H__
 #define _CFKFEATURES__H__
 
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/HMM.h>
 
 namespace shogun
 {
 
-template <class T> class CSimpleFeatures;
+template <class T> class CDenseFeatures;
 class CHMM;
 
 /** @brief The class FKFeatures implements Fischer kernel features obtained from
@@ -35,10 +35,10 @@ class CHMM;
  * Note that FK-features are computed on the fly, so to be effective feature
  * caching should be enabled.
  *
- * It inherits its functionality from CSimpleFeatures, which should be
+ * It inherits its functionality from CDenseFeatures, which should be
  * consulted for further reference.
  */
-class CFKFeatures: public CSimpleFeatures<float64_t>
+class CFKFeatures: public CDenseFeatures<float64_t>
 {
 	public:
 		/** default constructor  */

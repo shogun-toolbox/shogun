@@ -13,17 +13,16 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/CosineDistance.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 
 CCosineDistance::CCosineDistance()
-: CSimpleDistance<float64_t>()
+: CDenseDistance<float64_t>()
 {
 }
 
-CCosineDistance::CCosineDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
-: CSimpleDistance<float64_t>()
+CCosineDistance::CCosineDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
+: CDenseDistance<float64_t>()
 {
 	init(l, r);
 }
@@ -35,7 +34,7 @@ CCosineDistance::~CCosineDistance()
 
 bool CCosineDistance::init(CFeatures* l, CFeatures* r)
 {
-	return CSimpleDistance<float64_t>::init(l,r);
+	return CDenseDistance<float64_t>::init(l,r);
 }
 
 void CCosineDistance::cleanup()
@@ -48,9 +47,9 @@ float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen);
 	float64_t s=0;
@@ -66,8 +65,8 @@ float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 		}
 	}
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	s=sqrt(sa)*sqrt(sb);
 

@@ -14,7 +14,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/Distance.h>
 
 namespace shogun
@@ -153,7 +153,7 @@ protected:
 	 * @param W_matrix weight matrix
 	 * @param neighborhood_matrix matrix containing neighbor idxs
 	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix,
+	virtual SGMatrix<float64_t> construct_weight_matrix(CDenseFeatures<float64_t>* simple_features,float64_t* W_matrix,
                                                             SGMatrix<int32_t> neighborhood_matrix);
 
 	/** constructs embedding
@@ -175,7 +175,7 @@ protected:
 	 * @param neighborhood_matrix matrix containing indexes of neighbors for every vector
 	 * @return optimal k (in means of reconstruction error)
 	 */
-	int32_t estimate_k(CSimpleFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix);
+	int32_t estimate_k(CDenseFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix);
 
 	/** computes reconstruction error using subset of given features
 	 * @param k

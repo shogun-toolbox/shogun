@@ -14,7 +14,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/MahalanobisDistance.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
@@ -25,7 +24,7 @@ CMahalanobisDistance::CMahalanobisDistance() : CRealDistance()
 	init();
 }
 
-CMahalanobisDistance::CMahalanobisDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
+CMahalanobisDistance::CMahalanobisDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
 : CRealDistance()
 {
 	init();
@@ -44,12 +43,12 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 
 	if ( l == r)
 	{
-		mean = ((CSimpleFeatures<float64_t>*) l)->get_mean();
-		icov  = ((CSimpleFeatures<float64_t>*) l)->get_cov();
+		mean = ((CDenseFeatures<float64_t>*) l)->get_mean();
+		icov  = ((CDenseFeatures<float64_t>*) l)->get_cov();
 	}
 	else
 	{
-		mean = ((CSimpleFeatures<float64_t>*) l)->get_mean((CDotFeatures*) lhs, (CDotFeatures*) rhs);
+		mean = ((CDenseFeatures<float64_t>*) l)->get_mean((CDotFeatures*) lhs, (CDotFeatures*) rhs);
 		icov = CDotFeatures::compute_cov((CDotFeatures*) lhs, (CDotFeatures*) rhs);
 	}
 
@@ -65,7 +64,7 @@ void CMahalanobisDistance::cleanup()
 float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 
-	SGVector<float64_t> bvec = ((CSimpleFeatures<float64_t>*) rhs)->
+	SGVector<float64_t> bvec = ((CDenseFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b);
 
 	SGVector<float64_t> diff;
@@ -75,7 +74,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 		diff = mean.clone();
 	else
 	{
-		avec = ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
+		avec = ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
 		diff=avec.clone();
 	}
 
@@ -92,9 +91,9 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 	float64_t result = cblas_ddot(v.vlen, v.vector, 1, diff.vector, 1);
 
 	if (!use_mean)
-		((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a);
+		((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a);
 
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b);
 
 	if (disable_sqrt)
 		return result;

@@ -14,7 +14,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/converter/Converter.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -57,7 +57,7 @@ class CGUIConverter : public CSGObject
 		bool create_multidimensionalscaling();
 
 		/** embed */
-		CSimpleFeatures<float64_t>* embed(int32_t target_dim);
+		CDenseFeatures<float64_t>* embed(int32_t target_dim);
 
 		/** destructor */
 		~CGUIConverter();

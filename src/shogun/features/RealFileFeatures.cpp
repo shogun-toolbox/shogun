@@ -33,7 +33,7 @@ CRealFileFeatures::CRealFileFeatures()
 }
 
 CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
-: CSimpleFeatures<float64_t>(size)
+: CDenseFeatures<float64_t>(size)
 {
 	working_file=fopen(fname, "r");
 	working_filename=strdup(fname);
@@ -48,7 +48,7 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
 }
 
 CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
-: CSimpleFeatures<float64_t>(size), working_file(file), working_filename(NULL)
+: CDenseFeatures<float64_t>(size), working_file(file), working_filename(NULL)
 {
 	ASSERT(working_file);
 	intlen=0;
@@ -68,7 +68,7 @@ CRealFileFeatures::~CRealFileFeatures()
 }
 
 CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
-: CSimpleFeatures<float64_t>(orig), working_file(orig.working_file), status(orig.status)
+: CDenseFeatures<float64_t>(orig), working_file(orig.working_file), status(orig.status)
 {
 	if (orig.working_filename)
 		working_filename=strdup(orig.working_filename);

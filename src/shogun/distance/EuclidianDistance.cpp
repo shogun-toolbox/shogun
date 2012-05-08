@@ -11,8 +11,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclidianDistance.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 
@@ -21,7 +19,7 @@ CEuclidianDistance::CEuclidianDistance() : CRealDistance()
 	init();
 }
 
-CEuclidianDistance::CEuclidianDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
+CEuclidianDistance::CEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
 : CRealDistance()
 {
 	init();
@@ -50,17 +48,17 @@ float64_t CEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 	float64_t result=0;
 
-	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->
+	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->
 		get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->
+	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	for (int32_t i=0; i<alen; i++)
 		result+=CMath::sq(avec[i] - bvec[i]);
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	if (disable_sqrt)
 		return result;
@@ -83,9 +81,9 @@ float64_t CEuclidianDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 
 	upper_bound *= upper_bound;
 
-	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->
+	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->
 		get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->
+	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
@@ -95,9 +93,9 @@ float64_t CEuclidianDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 
 		if (result > upper_bound)
 		{
-			((CSimpleFeatures<float64_t>*) lhs)->
+			((CDenseFeatures<float64_t>*) lhs)->
 				free_feature_vector(avec, idx_a, afree);
-			((CSimpleFeatures<float64_t>*) rhs)->
+			((CDenseFeatures<float64_t>*) rhs)->
 				free_feature_vector(bvec, idx_b, bfree);
 
 			if (disable_sqrt)
@@ -107,8 +105,8 @@ float64_t CEuclidianDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 		}
 	}
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 	
 	if (disable_sqrt)
 		return result;

@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
 

@@ -128,9 +128,9 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 	if ( !features )
 		SG_ERROR("Features are required to apply SPE\n");
 
-	// Shorthand for the SimpleFeatures
-	CSimpleFeatures< float64_t >* simple_features = 
-		(CSimpleFeatures< float64_t >*) features;
+	// Shorthand for the DenseFeatures
+	CDenseFeatures< float64_t >* simple_features = 
+		(CDenseFeatures< float64_t >*) features;
 	SG_REF(features);
 
 	// Get and check the number of vectors
@@ -144,7 +144,7 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 			 "the number of updates (%d)\n", N, m_nupdates);
 
 	m_distance->init(simple_features, simple_features);
-	CSimpleFeatures< float64_t >* embedding = embed_distance(m_distance);
+	CDenseFeatures< float64_t >* embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 
 	SG_UNREF(features);
@@ -174,7 +174,7 @@ SGMatrix<int32_t> CStochasticProximityEmbedding::get_neighborhood_matrix(CDistan
 	return SGMatrix<int32_t>(neighborhood_matrix,k,N);
 }
 
-CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDistance* distance)
+CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDistance* distance)
 {
 	if ( !distance )
 		SG_ERROR("Embed distance received no instance of CDistance\n");
@@ -352,7 +352,7 @@ CSimpleFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDis
 	if ( m_strategy == SPE_LOCAL )
 		SG_FREE(ind2);
 
-	return new CSimpleFeatures< float64_t >(Y);
+	return new CDenseFeatures< float64_t >(Y);
 }
 
 #endif /* HAVE_LAPACK */

@@ -11,7 +11,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/WeightedDegreeRBFKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -29,7 +28,7 @@ CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(int32_t size, float64_t w, in
 }
 
 CWeightedDegreeRBFKernel::CWeightedDegreeRBFKernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t w, int32_t d, int32_t nof_prop, int32_t size)
+	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t w, int32_t d, int32_t nof_prop, int32_t size)
 : CDotKernel(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
 {
 	init_wd_weights();
@@ -80,8 +79,8 @@ float64_t CWeightedDegreeRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 	ASSERT(alen%nof_properties == 0);
 

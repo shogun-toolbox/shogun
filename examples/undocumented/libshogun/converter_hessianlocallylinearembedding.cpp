@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/HessianLocallyLinearEmbedding.h>
 
 using namespace shogun;
@@ -24,13 +24,13 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = i;
 
-	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CHessianLocallyLinearEmbedding* hlle = new CHessianLocallyLinearEmbedding();
 	hlle->set_target_dim(2);
 	hlle->set_k(8);
 	hlle->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = hlle->embed(features);
+	CDenseFeatures<double>* embedding = hlle->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(hlle);
 	SG_UNREF(features);

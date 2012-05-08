@@ -616,7 +616,7 @@ template<class ST> int32_t CSparseFeatures<ST>::get_size()
 	return sizeof(ST);
 }
 
-template<class ST> bool CSparseFeatures<ST>::obtain_from_simple(CSimpleFeatures<ST>* sf)
+template<class ST> bool CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<ST>* sf)
 {
 	SGMatrix<ST> fm=sf->get_feature_matrix();
 	ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0);

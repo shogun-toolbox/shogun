@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Labels.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
@@ -52,8 +52,8 @@ void test()
 	CMath::display_matrix(train_dat.matrix, train_dat.num_rows, train_dat.num_cols, "training data");
 
 	/* training features */
-	CSimpleFeatures<float64_t>* features=
-			new CSimpleFeatures<float64_t>(train_dat);
+	CDenseFeatures<float64_t>* features=
+			new CDenseFeatures<float64_t>(train_dat);
 	SG_REF(features);
 
 	/* training labels +/- 1 for each cluster */

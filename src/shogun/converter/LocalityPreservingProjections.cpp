@@ -34,10 +34,10 @@ const char* CLocalityPreservingProjections::get_name() const
 	return "LocalityPreservingProjections";
 };
 
-CSimpleFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(CFeatures* features,
+CDenseFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(CFeatures* features,
                                                                                 SGMatrix<float64_t> W_matrix)
 {
-	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*)features;
+	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
 	ASSERT(simple_features);
 	int i,j;
 	int N = simple_features->get_num_vectors();
@@ -99,7 +99,7 @@ CSimpleFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(
 	}
 	SG_FREE(D_diag_vector);
 	SG_FREE(XTM);
-	return new CSimpleFeatures<float64_t>(new_features);
+	return new CDenseFeatures<float64_t>(new_features);
 }
 
 #endif /* HAVE_LAPACK */

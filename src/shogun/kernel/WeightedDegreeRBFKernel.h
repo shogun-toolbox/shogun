@@ -3,7 +3,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -35,7 +35,7 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 * @param nof_properties number of properties per amino acid
 		 * @param size cache size
 		 */
-		CWeightedDegreeRBFKernel(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+		CWeightedDegreeRBFKernel(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 			float64_t width, int32_t degree, int32_t nof_properties, int32_t size=10);
 
 		virtual ~CWeightedDegreeRBFKernel();
@@ -66,7 +66,7 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *

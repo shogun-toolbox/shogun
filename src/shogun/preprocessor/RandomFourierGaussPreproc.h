@@ -17,7 +17,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 
 namespace shogun {
 /** @brief Preprocessor CRandomFourierGaussPreproc
@@ -46,7 +46,7 @@ namespace shogun {
  * 2c) set_dim_input_space(const int32_t dim);
  * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
  */
-class CRandomFourierGaussPreproc: public CSimplePreprocessor<float64_t> {
+class CRandomFourierGaussPreproc: public CDensePreprocessor<float64_t> {
 public:
 	/** default constructor */
 	CRandomFourierGaussPreproc();
@@ -60,8 +60,8 @@ public:
 	~CRandomFourierGaussPreproc();
 
 	/** default processing routine, inherited from base class
-	 * @param features the features to be processed, must be of type CSimpleFeatures<float64_t>
-	 * @return the processed feature matrix from the CSimpleFeatures<float64_t> class
+	 * @param features the features to be processed, must be of type CDenseFeatures<float64_t>
+	 * @return the processed feature matrix from the CDenseFeatures<float64_t> class
 	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
 	 */
 	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features); // ref count fo the feature matrix???
@@ -75,7 +75,7 @@ public:
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 	/** inherited from base class
-	 * @return C_SIMPLE
+	 * @return C_DENSE
 	 */
 	virtual EFeatureType get_feature_type();
 
@@ -88,7 +88,7 @@ public:
 	 * calls set_dim_input_space(const int32_t dim); with the proper value
 	 * calls init_randomcoefficients(); this call does NOT override a previous call to void set_randomcoefficients(...) IF and ONLY IF
 	 * the dimensions of input AND feature space are equal to the values from the previous call to void set_randomcoefficients(...)
-	 * @param f the features to be processed, must be of type CSimpleFeatures<float64_t>
+	 * @param f the features to be processed, must be of type CDenseFeatures<float64_t>
 	 * @return true if new random coefficients were generated, false if old ones from a call to set_randomcoefficients(...) are kept
 	 */
 	virtual bool init(CFeatures *f);

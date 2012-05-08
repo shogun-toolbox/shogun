@@ -14,7 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -52,7 +52,7 @@ class CChi2Kernel: public CDotKernel
 		 * @param size cache size
 		 */
 		CChi2Kernel(
-			CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t width, int32_t size);
+			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t width, int32_t size);
 
 		virtual ~CChi2Kernel();
 
@@ -74,7 +74,7 @@ class CChi2Kernel: public CDotKernel
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *

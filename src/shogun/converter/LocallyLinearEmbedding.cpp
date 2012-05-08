@@ -195,13 +195,13 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 {
 	ASSERT(features);
 	// check features
-	if (!(features->get_feature_class()==C_SIMPLE &&
+	if (!(features->get_feature_class()==C_DENSE &&
 	      features->get_feature_type()==F_DREAL))
 	{
 		SG_ERROR("Given features are not of SimpleRealFeatures type.\n");
 	}
 	// shorthand for simplefeatures
-	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*) features;
+	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*) features;
 	SG_REF(features);
 
 	// get and check number of vectors
@@ -252,10 +252,10 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 	delete time;
 
 	SG_UNREF(features);
-	return (CFeatures*)(new CSimpleFeatures<float64_t>(new_feature_matrix));
+	return (CFeatures*)(new CDenseFeatures<float64_t>(new_feature_matrix));
 }
 
-int32_t CLocallyLinearEmbedding::estimate_k(CSimpleFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix)
+int32_t CLocallyLinearEmbedding::estimate_k(CDenseFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix)
 {
 	int32_t right = m_max_k;
 	int32_t left = m_k;
@@ -336,7 +336,7 @@ float64_t CLocallyLinearEmbedding::compute_reconstruction_error(int32_t k, int d
 	return total_residual_norm/k;
 }
 
-SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,
+SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CDenseFeatures<float64_t>* simple_features,
                                                                      float64_t* W_matrix, SGMatrix<int32_t> neighborhood_matrix)
 {
 	int32_t N = simple_features->get_num_vectors();

@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -53,7 +53,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @param subkernel the subkernel
 		 */
-		CTensorProductPairKernel(CSimpleFeatures<int32_t> *l, CSimpleFeatures<int32_t> *r, CKernel* subkernel);
+		CTensorProductPairKernel(CDenseFeatures<int32_t> *l, CDenseFeatures<int32_t> *r, CKernel* subkernel);
 
 		virtual ~CTensorProductPairKernel();
 
@@ -85,7 +85,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *

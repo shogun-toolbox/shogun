@@ -16,15 +16,15 @@
 #ifdef HAVE_LAPACK
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/machine/LinearMachine.h>
 
 namespace shogun
 {
-	template <class ST> class CSimpleFeatures;
+	template <class ST> class CDenseFeatures;
 /** @brief Class LDA implements regularized Linear Discriminant Analysis.
  *
- * LDA learns a linear classifier and requires examples to be CSimpleFeatures.
+ * LDA learns a linear classifier and requires examples to be CDenseFeatures.
  * The learned linear classification rule is optimal under the assumption that
  * both classes a gaussian distributed with equal co-variance. To find a linear
  * separation \f${\bf w}\f$ in training, the in-between class variance is
@@ -64,7 +64,7 @@ class CLDA : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CLDA(float64_t gamma, CSimpleFeatures<float64_t>* traindat, CLabels* trainlab);
+		CLDA(float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab);
 		virtual ~CLDA();
 
 		/** set gamma
@@ -100,7 +100,7 @@ class CLDA : public CLinearMachine
 		 */
 		virtual inline void set_features(CDotFeatures* feat)
 		{
-			if (feat->get_feature_class() != C_SIMPLE ||
+			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("LDA requires SIMPLE REAL valued features\n");
 

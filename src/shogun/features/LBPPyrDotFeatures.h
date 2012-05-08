@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -33,7 +33,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param images images
 		 * @param num_pyramids
 		 */
-		CLBPPyrDotFeatures(CSimpleFeatures<uint32_t>* images, uint16_t num_pyramids);
+		CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* images, uint16_t num_pyramids);
 
 		virtual ~CLBPPyrDotFeatures();
 
@@ -162,7 +162,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 
 	protected:
 		/** features in original space*/
-		CSimpleFeatures<uint32_t>* m_feat;
+		CDenseFeatures<uint32_t>* m_feat;
 
 		/** img */
 		uint32_t* img;

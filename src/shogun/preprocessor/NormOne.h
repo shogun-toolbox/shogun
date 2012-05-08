@@ -11,7 +11,7 @@
 #ifndef _CNORM_ONE__H__
 #define _CNORM_ONE__H__
 
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
 
@@ -30,7 +30,7 @@ namespace shogun
  * It therefore does not need any initialization. It is most useful to get data
  * onto a ball of radius one.
  */
-class CNormOne : public CSimplePreprocessor<float64_t>
+class CNormOne : public CDensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */

@@ -1,4 +1,4 @@
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
 	// create three 2-dimensional vectors 
 	// shogun will now own the matrix created
-	CSimpleFeatures<float64_t>* features= new CSimpleFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
 	features->set_feature_matrix(matrix, 2, 3);
 
 	// create gaussian kernel with cache 10MB, width 0.5

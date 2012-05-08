@@ -13,7 +13,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 
 #include <shogun/converter/LocallyLinearEmbedding.h>
@@ -153,7 +153,7 @@ bool CGUIConverter::create_multidimensionalscaling()
 	return true;
 }
 
-CSimpleFeatures<float64_t>* CGUIConverter::embed(int32_t target_dim)
+CDenseFeatures<float64_t>* CGUIConverter::embed(int32_t target_dim)
 {
 	if (!m_converter)
 		SG_ERROR("No converter created");

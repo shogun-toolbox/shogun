@@ -12,8 +12,7 @@
 #define _MINKOWSKIMETRIC_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/distance/SimpleDistance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distance/DenseDistance.h>
 
 namespace shogun
 {
@@ -37,7 +36,7 @@ namespace shogun
  *
  * @see <a href="http://en.wikipedia.org/wiki/Distance">Wikipedia: Distance</a>
  */
-class CMinkowskiMetric: public CSimpleDistance<float64_t>
+class CMinkowskiMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor  */
@@ -55,7 +54,7 @@ class CMinkowskiMetric: public CSimpleDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @param k parameter k
 		 */
-		CMinkowskiMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t k);
+		CMinkowskiMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t k);
 		virtual ~CMinkowskiMetric();
 
 		/** constructor

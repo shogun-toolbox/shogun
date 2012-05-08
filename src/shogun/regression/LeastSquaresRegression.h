@@ -48,7 +48,7 @@ class CLeastSquaresRegression : public CLinearRidgeRegression
 		 * @param data training data
 		 * @param lab labels
 		 */
-		CLeastSquaresRegression(CSimpleFeatures<float64_t>* data, CLabels* lab);
+		CLeastSquaresRegression(CDenseFeatures<float64_t>* data, CLabels* lab);
 		virtual ~CLeastSquaresRegression() {}
 
 		/** get classifier type

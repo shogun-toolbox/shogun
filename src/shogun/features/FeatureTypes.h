@@ -35,7 +35,7 @@ namespace shogun
 	enum EFeatureClass
 	{
 		C_UNKNOWN = 0,
-		C_SIMPLE = 10,
+		C_DENSE = 10,
 		C_SPARSE = 20,
 		C_STRING = 30,
 		C_COMBINED = 40,
@@ -44,7 +44,7 @@ namespace shogun
 		C_SPEC = 80,
 		C_WEIGHTEDSPEC = 90,
 		C_POLY = 100,
-		C_STREAMING_SIMPLE = 110,
+		C_STREAMING_DENSE = 110,
 		C_STREAMING_SPARSE = 120,
 		C_STREAMING_STRING = 130,
 		C_STREAMING_VW = 140,

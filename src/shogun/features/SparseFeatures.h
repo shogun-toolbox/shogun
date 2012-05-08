@@ -23,7 +23,7 @@
 #include <shogun/features/Labels.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -32,7 +32,7 @@ class CFile;
 class CLabels;
 class CFeatures;
 class CDotFeatures;
-template <class ST> class CSimpleFeatures;
+template <class ST> class CDenseFeatures;
 template <class ST> class SGSparseMatrix;
 
 /** @brief Template class SparseFeatures implements sparse matrices.
@@ -311,7 +311,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param sf simple features
 		 * @return if obtaining was successful
 		 */
-		bool obtain_from_simple(CSimpleFeatures<ST>* sf);
+		bool obtain_from_simple(CDenseFeatures<ST>* sf);
 
 		/** get number of feature vectors, possibly of subset
 		 *

@@ -85,7 +85,7 @@ const char* CHessianLocallyLinearEmbedding::get_name() const
 	return "HessianLocallyLinearEmbedding";
 };
 
-SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CSimpleFeatures<float64_t>* simple_features,float64_t* W_matrix,
+SGMatrix<float64_t> CHessianLocallyLinearEmbedding::construct_weight_matrix(CDenseFeatures<float64_t>* simple_features,float64_t* W_matrix,
                                                                             SGMatrix<int32_t> neighborhood_matrix)
 {
 	int32_t N = simple_features->get_num_vectors();

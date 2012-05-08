@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/base/init.h>
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 	CMath::display_matrix(matrix, n, n);
 
 	/* create n n-dimensional feature vectors */
-	CSimpleFeatures<float64_t>* features= new CSimpleFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
 	features->set_feature_matrix(matrix, n, n);
 
 	/* create gaussian kernel with cache 10MB, width will be changed later */

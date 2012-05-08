@@ -11,8 +11,8 @@
 #include <shogun/features/StreamingDotFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/StreamingSparseFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
-#include <shogun/features/StreamingSimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/features/StreamingDenseFeatures.h>
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/features/AttributeFeatures.h>
 #include <shogun/features/Alphabet.h>

@@ -113,7 +113,7 @@ const char* CMultidimensionalScaling::get_name() const
 	return "MultidimensionalScaling";
 };
 
-CSimpleFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* distance)
+CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* distance)
 {
 	ASSERT(distance);
 
@@ -125,7 +125,7 @@ CSimpleFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* 
 	else
 		feature_matrix = classic_embedding(distance_matrix);
 
-	return new CSimpleFeatures<float64_t>(feature_matrix);
+	return new CDenseFeatures<float64_t>(feature_matrix);
 }
 
 SGMatrix<float64_t> CMultidimensionalScaling::process_distance_matrix(SGMatrix<float64_t> distance_matrix)
@@ -139,7 +139,7 @@ CFeatures* CMultidimensionalScaling::apply(CFeatures* features)
 	ASSERT(m_distance);
 
 	m_distance->init(features,features);
-	CSimpleFeatures<float64_t>* embedding = embed_distance(m_distance);
+	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 
 	SG_UNREF(features);

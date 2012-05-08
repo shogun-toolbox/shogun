@@ -6,7 +6,7 @@
 #include <shogun/io/StreamingFile.h>
 #include <shogun/io/StreamingFileFromFeatures.h>
 #include <shogun/io/StreamingFileFromSparseFeatures.h>
-#include <shogun/io/StreamingFileFromSimpleFeatures.h>
+#include <shogun/io/StreamingFileFromDenseFeatures.h>
 #include <shogun/io/AsciiFile.h>
 #include <shogun/io/StreamingAsciiFile.h>
 #include <shogun/classifier/vw/VwParser.h>

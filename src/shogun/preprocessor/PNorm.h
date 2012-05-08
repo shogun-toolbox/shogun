@@ -11,7 +11,7 @@
 #ifndef _PNORM_ONE__H__
 #define _PNORM_ONE__H__
 
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
 
@@ -28,7 +28,7 @@ namespace shogun
  * \f]
  *
  */
-class CPNorm : public CSimplePreprocessor<float64_t>
+class CPNorm : public CDensePreprocessor<float64_t>
 {
 	public:
 		/** default PNorm Constructor */

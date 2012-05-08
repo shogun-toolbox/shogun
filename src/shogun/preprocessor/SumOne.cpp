@@ -9,15 +9,14 @@
  */
 
 #include <shogun/preprocessor/SumOne.h>
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 
 CSumOne::CSumOne()
-: CSimplePreprocessor<float64_t>()
+: CDensePreprocessor<float64_t>()
 {
 }
 
@@ -28,7 +27,7 @@ CSumOne::~CSumOne()
 /// initialize preprocessor from features
 bool CSumOne::init(CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_class()==C_DENSE);
 	ASSERT(features->get_feature_type()==F_DREAL);
 
 	return true;
@@ -60,7 +59,7 @@ bool CSumOne::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 SGMatrix<float64_t> CSumOne::apply_to_feature_matrix(CFeatures* features)
 {
-	SGMatrix<float64_t> feature_matrix=((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+	SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{

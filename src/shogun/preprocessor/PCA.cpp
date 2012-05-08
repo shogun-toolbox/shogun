@@ -17,9 +17,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <shogun/lib/common.h>
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -62,18 +61,18 @@ bool CPCA::init(CFeatures* features)
 		// loop varibles
 		int32_t i,j,k;
 
-		ASSERT(features->get_feature_class()==C_SIMPLE);
+		ASSERT(features->get_feature_class()==C_DENSE);
 		ASSERT(features->get_feature_type()==F_DREAL);
 
-		int32_t num_vectors=((CSimpleFeatures<float64_t>*)features)->get_num_vectors();
-		int32_t num_features=((CSimpleFeatures<float64_t>*)features)->get_num_features();
+		int32_t num_vectors=((CDenseFeatures<float64_t>*)features)->get_num_vectors();
+		int32_t num_features=((CDenseFeatures<float64_t>*)features)->get_num_features();
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 
 		m_mean_vector.vlen = num_features;
 		m_mean_vector.vector = SG_CALLOC(float64_t, num_features);
 
 		// sum
-		SGMatrix<float64_t> feature_matrix = ((CSimpleFeatures<float64_t>*)features)->get_feature_matrix();
+		SGMatrix<float64_t> feature_matrix = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 		for (i=0; i<num_vectors; i++)
 		{
 			for (j=0; j<num_features; j++)
@@ -179,7 +178,7 @@ void CPCA::cleanup()
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized);
-	SGMatrix<float64_t> m = ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix();
+	SGMatrix<float64_t> m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
 	int32_t num_vectors = m.num_cols;
 	int32_t num_features = m.num_rows;
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features);
@@ -211,8 +210,8 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 		SG_FREE(res);
 		SG_FREE(sub_mean);
 
-		((CSimpleFeatures<float64_t>*) features)->set_num_features(num_dim);
-		((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
+		((CDenseFeatures<float64_t>*) features)->set_num_features(num_dim);
+		((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 		SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features);
 	}
 

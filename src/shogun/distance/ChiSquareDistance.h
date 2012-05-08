@@ -12,8 +12,7 @@
 #define __CHISQUAREDISTANCE_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/distance/SimpleDistance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distance/DenseDistance.h>
 
 namespace shogun
 {
@@ -30,7 +29,7 @@ namespace shogun
  * @see K. Rieck, P. Laskov. Linear-Time Computation of Similarity Measures
  * for Sequential Data. Journal of Machine Learning Research, 9:23--48,2008.
  */
-class CChiSquareDistance: public CSimpleDistance<float64_t>
+class CChiSquareDistance: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -41,7 +40,7 @@ class CChiSquareDistance: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CChiSquareDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CChiSquareDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
 		virtual ~CChiSquareDistance();
 
 		/** init distance

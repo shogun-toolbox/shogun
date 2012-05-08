@@ -12,7 +12,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/AttenuatedEuclidianDistance.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 
 using namespace shogun;
 
@@ -21,7 +20,7 @@ CAttenuatedEuclidianDistance::CAttenuatedEuclidianDistance() : CRealDistance()
 	init();
 }
 
-CAttenuatedEuclidianDistance::CAttenuatedEuclidianDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r)
+CAttenuatedEuclidianDistance::CAttenuatedEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
 : CRealDistance()
 {
 	init();
@@ -49,17 +48,17 @@ float64_t CAttenuatedEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 	float64_t result=0;
 
-	float64_t* avec=((CSimpleFeatures<float64_t>*) lhs)->
+	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->
 		get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CSimpleFeatures<float64_t>*) rhs)->
+	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	for (int32_t i=0; i<alen; i++)
 		result+=(CMath::abs(avec[i])*CMath::abs(bvec[i]))*CMath::pow(avec[i] - bvec[i],2);
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	if (disable_sqrt)
 		return result;

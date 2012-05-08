@@ -23,7 +23,7 @@ CLeastSquaresRegression::CLeastSquaresRegression()
 	m_tau=0;
 }
 
-CLeastSquaresRegression::CLeastSquaresRegression(CSimpleFeatures<float64_t>* data, CLabels* lab)
+CLeastSquaresRegression::CLeastSquaresRegression(CDenseFeatures<float64_t>* data, CLabels* lab)
 : CLinearRidgeRegression(0, data, lab)
 {
 }

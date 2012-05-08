@@ -26,7 +26,7 @@ CQDA::CQDA(float64_t tolerance, bool store_covs)
 	init();
 }
 
-CQDA::CQDA(CSimpleFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
+CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
 : CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
 {
 	init();
@@ -75,7 +75,7 @@ CLabels* CQDA::apply()
 	ASSERT(num_vecs > 0);
 	ASSERT( m_dim == m_features->get_dim_feature_space() );
 
-	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) m_features;
+	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
 	SGMatrix< float64_t > X(num_vecs, m_dim);
 	SGMatrix< float64_t > A(num_vecs, m_dim);
@@ -219,7 +219,7 @@ bool CQDA::train_machine(CFeatures* data)
 	rot_dims[2] = m_num_classes;
 	SGNDArray< float64_t > rotations = SGNDArray< float64_t >(rot_dims, 3);
 
-	CSimpleFeatures< float64_t >* rf = (CSimpleFeatures< float64_t >*) m_features;
+	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
 	m_means.zero();
 

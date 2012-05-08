@@ -7,13 +7,13 @@
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  *
- * This file demonstrates how a regular CSimpleFeatures object can
+ * This file demonstrates how a regular CDenseFeatures object can
  * be used as input for the StreamingFeatures framework, effectively
  * making it suitable for using online learning algorithms.
  */
 
-#include <shogun/features/StreamingSimpleFeatures.h>
-#include <shogun/io/StreamingFileFromSimpleFeatures.h>
+#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/io/StreamingFileFromDenseFeatures.h>
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
@@ -63,15 +63,15 @@ int main()
 	gen_rand_data();
 
 	// Create features
-	CSimpleFeatures<float32_t>* features = new CSimpleFeatures<float32_t>();
+	CDenseFeatures<float32_t>* features = new CDenseFeatures<float32_t>();
 	SG_REF(features);
 	features->set_feature_matrix(feat, DIMS, NUM);
 
-	// Create a StreamingSimpleFeatures object which uses the above as input; labels (float64_t*) are optional
-	CStreamingSimpleFeatures<float32_t>* streaming_simple = new CStreamingSimpleFeatures<float32_t>(features, lab);
+	// Create a StreamingDenseFeatures object which uses the above as input; labels (float64_t*) are optional
+	CStreamingDenseFeatures<float32_t>* streaming_simple = new CStreamingDenseFeatures<float32_t>(features, lab);
 	SG_REF(streaming_simple);
 
-	// Start parsing of the examples; in this case, it is trivial - returns each vector from the SimpleFeatures object
+	// Start parsing of the examples; in this case, it is trivial - returns each vector from the DenseFeatures object
 	streaming_simple->start_parser();
 
 	int32_t counter=0;

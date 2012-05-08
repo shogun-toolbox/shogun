@@ -12,17 +12,17 @@
 #define _DREALFILEFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
 /** @brief The class RealFileFeatures implements a dense double-precision floating
  * point matrix <b>from a file</b>.
  *
- * It inherits its functionality from CSimpleFeatures, which should be
+ * It inherits its functionality from CDenseFeatures, which should be
  * consulted for further reference.
  */
-class CRealFileFeatures: public CSimpleFeatures<float64_t>
+class CRealFileFeatures: public CDenseFeatures<float64_t>
 {
 	public:
 		/** default constructor */

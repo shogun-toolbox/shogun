@@ -12,7 +12,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/AUCKernel.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -109,7 +108,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	SG_REF(lab_auc);
 
 	// create feature object
-	CSimpleFeatures<uint16_t>* f = new CSimpleFeatures<uint16_t>(0);
+	CDenseFeatures<uint16_t>* f = new CDenseFeatures<uint16_t>(0);
 	f->set_feature_matrix(features_auc, 2, num_auc);
 
 	// create AUC kernel and attach the features
@@ -133,8 +132,8 @@ float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
   int32_t alen, blen;
   bool afree, bfree;
 
-  uint16_t* avec=((CSimpleFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-  uint16_t* bvec=((CSimpleFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  uint16_t* avec=((CDenseFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+  uint16_t* bvec=((CDenseFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   ASSERT(alen==2);
   ASSERT(blen==2);
@@ -151,8 +150,8 @@ float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
 
   float64_t result = k11+k22-k21-k12;
 
-  ((CSimpleFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSimpleFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+  ((CDenseFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CDenseFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
 }

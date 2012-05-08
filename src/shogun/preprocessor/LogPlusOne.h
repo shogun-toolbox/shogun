@@ -11,7 +11,7 @@
 #ifndef _CLOGPLUSONE__H__
 #define _CLOGPLUSONE__H__
 
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
 
@@ -30,7 +30,7 @@ namespace shogun
  * small counts any difference may matter a lot, while small differences in
  * large counts don't. This is what this log transformation controls for.
  */
-class CLogPlusOne : public CSimplePreprocessor<float64_t>
+class CLogPlusOne : public CDensePreprocessor<float64_t>
 {
 	public:
 		/** default constructor */

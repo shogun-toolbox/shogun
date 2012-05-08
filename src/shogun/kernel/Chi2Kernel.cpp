@@ -11,7 +11,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Chi2Kernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -35,7 +34,7 @@ CChi2Kernel::CChi2Kernel(int32_t size, float64_t w)
 }
 
 CChi2Kernel::CChi2Kernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r, float64_t w, int32_t size)
+	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t w, int32_t size)
 : CDotKernel(size), width(w)
 {
 	init();
@@ -60,9 +59,9 @@ float64_t CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	float64_t result=0;
@@ -76,8 +75,8 @@ float64_t CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 
 	result=exp(-result/width);
 
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

@@ -16,7 +16,7 @@
 
 #include <shogun/regression/Regression.h>
 #include <shogun/machine/Machine.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -47,7 +47,7 @@ class CGaussianProcessRegression : public CMachine
 	 * @param lab labels
 	 */
 	CGaussianProcessRegression(float64_t sigma, CKernel* k, 
-				   CSimpleFeatures<float64_t>* data, CLabels* lab);
+				   CDenseFeatures<float64_t>* data, CLabels* lab);
 
 		  /** default constructor */
 		CGaussianProcessRegression();

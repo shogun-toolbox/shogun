@@ -11,17 +11,17 @@
 #ifndef _REALDISTANCE_H__
 #define _REALDISTANCE_H__
 
-#include <shogun/distance/SimpleDistance.h>
+#include <shogun/distance/DenseDistance.h>
 #include <shogun/lib/common.h>
 
 namespace shogun
 {
 /** @brief class RealDistance */
-class CRealDistance : public CSimpleDistance<float64_t>
+class CRealDistance : public CDenseDistance<float64_t>
 {
 public:
 	/** default constructor */
-	CRealDistance() : CSimpleDistance<float64_t>() {}
+	CRealDistance() : CDenseDistance<float64_t>() {}
 
 	/** init distance
 	 *
@@ -31,7 +31,7 @@ public:
 	 */
 	virtual bool init(CFeatures* l, CFeatures* r)
 	{
-		CSimpleDistance<float64_t>::init(l,r);
+		CDenseDistance<float64_t>::init(l,r);
 
 		ASSERT(l->get_feature_type()==F_DREAL);
 		ASSERT(r->get_feature_type()==F_DREAL);

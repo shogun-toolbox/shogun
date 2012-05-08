@@ -1,17 +1,17 @@
 #include <shogun/mathematics/Math.h>
-#include <shogun/features/StreamingSimpleFeatures.h>
-#include <shogun/io/StreamingFileFromSimpleFeatures.h>
+#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/io/StreamingFileFromDenseFeatures.h>
 
 namespace shogun
 {
-template <class T> CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures() : CStreamingDotFeatures()
+template <class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures() : CStreamingDotFeatures()
 {
 	set_read_functions();
 	init();
 	parser.set_free_vector_after_release(false);
 }
 
-template <class T> CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures(CStreamingFile* file,
+template <class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(CStreamingFile* file,
 			 bool is_labelled,
 			 int32_t size)
 	: CStreamingDotFeatures()
@@ -21,23 +21,23 @@ template <class T> CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures(CStream
 	parser.set_free_vector_after_release(false);
 }
 
-template <class T> CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures(CSimpleFeatures<T>* simple_features,
+template <class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(CDenseFeatures<T>* dense_features,
 			 float64_t* lab)
 	: CStreamingDotFeatures()
 {
-	CStreamingFileFromSimpleFeatures<T>* file;
+	CStreamingFileFromDenseFeatures<T>* file;
 	bool is_labelled;
 	int32_t size = 1024;
 
 	if (lab)
 	{
 		is_labelled = true;
-		file = new CStreamingFileFromSimpleFeatures<T>(simple_features, lab);
+		file = new CStreamingFileFromDenseFeatures<T>(dense_features, lab);
 	}
 	else
 	{
 		is_labelled = false;
-		file = new CStreamingFileFromSimpleFeatures<T>(simple_features);
+		file = new CStreamingFileFromDenseFeatures<T>(dense_features);
 	}
 
 	SG_REF(file);
@@ -49,16 +49,16 @@ template <class T> CStreamingSimpleFeatures<T>::CStreamingSimpleFeatures(CSimple
 	seekable=true;
 }
 
-template <class T> CStreamingSimpleFeatures<T>::~CStreamingSimpleFeatures()
+template <class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
 	parser.end_parser();
 }
 
-template <class T> void CStreamingSimpleFeatures<T>::reset_stream()
+template <class T> void CStreamingDenseFeatures<T>::reset_stream()
 {
 	if (seekable)
 	{
-		((CStreamingFileFromSimpleFeatures<T>*) working_file)->reset_stream();
+		((CStreamingFileFromDenseFeatures<T>*) working_file)->reset_stream();
 		parser.exit_parser();
 		parser.init(working_file, has_labels, 1);
 		parser.set_free_vector_after_release(false);
@@ -66,7 +66,7 @@ template <class T> void CStreamingSimpleFeatures<T>::reset_stream()
 	}
 }
 
-template <class T> float32_t CStreamingSimpleFeatures<T>::dense_dot(const float32_t* vec2, int32_t vec2_len)
+template <class T> float32_t CStreamingDenseFeatures<T>::dense_dot(const float32_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len==current_length);
 	float32_t result=0;
@@ -77,7 +77,7 @@ template <class T> float32_t CStreamingSimpleFeatures<T>::dense_dot(const float3
 	return result;
 }
 
-template <class T> float64_t CStreamingSimpleFeatures<T>::dense_dot(const float64_t* vec2, int32_t vec2_len)
+template <class T> float64_t CStreamingDenseFeatures<T>::dense_dot(const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len==current_length);
 	float64_t result=0;
@@ -88,7 +88,7 @@ template <class T> float64_t CStreamingSimpleFeatures<T>::dense_dot(const float6
 	return result;
 }
 
-template <class T> void CStreamingSimpleFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len , bool abs_val)
+template <class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len , bool abs_val)
 {
 	ASSERT(vec2_len==current_length);
 
@@ -104,7 +104,7 @@ template <class T> void CStreamingSimpleFeatures<T>::add_to_dense_vec(float32_t 
 	}
 }
 
-template <class T> void CStreamingSimpleFeatures<T>::add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len , bool abs_val)
+template <class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len , bool abs_val)
 {
 	ASSERT(vec2_len==current_length);
 
@@ -120,42 +120,42 @@ template <class T> void CStreamingSimpleFeatures<T>::add_to_dense_vec(float64_t 
 	}
 }
 
-template <class T> int32_t CStreamingSimpleFeatures<T>::get_nnz_features_for_vector()
+template <class T> int32_t CStreamingDenseFeatures<T>::get_nnz_features_for_vector()
 {
 	return current_length;
 }
 
-template <class T> CFeatures* CStreamingSimpleFeatures<T>::duplicate() const
+template <class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
 {
-	return new CStreamingSimpleFeatures<T>(*this);
+	return new CStreamingDenseFeatures<T>(*this);
 }
 
-template <class T> int32_t CStreamingSimpleFeatures<T>::get_num_vectors() const
+template <class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
 {
 	if (current_vector)
 		return 1;
 	return 0;
 }
 
-template <class T> int32_t CStreamingSimpleFeatures<T>::get_size()
+template <class T> int32_t CStreamingDenseFeatures<T>::get_size()
 {
 	return sizeof(T);
 }
 
 template <class T>
-void CStreamingSimpleFeatures<T>::set_vector_reader()
+void CStreamingDenseFeatures<T>::set_vector_reader()
 {
 	parser.set_read_vector(&CStreamingFile::get_vector);
 }
 
 template <class T>
-void CStreamingSimpleFeatures<T>::set_vector_and_label_reader()
+void CStreamingDenseFeatures<T>::set_vector_and_label_reader()
 {
 	parser.set_read_vector_and_label(&CStreamingFile::get_vector_and_label);
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)				\
-template<> EFeatureType CStreamingSimpleFeatures<sg_type>::get_feature_type() \
+template<> EFeatureType CStreamingDenseFeatures<sg_type>::get_feature_type() \
 {									\
 	return f_type;							\
 }
@@ -177,7 +177,7 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 
 
 template <class T>
-void CStreamingSimpleFeatures<T>::init()
+void CStreamingDenseFeatures<T>::init()
 {
 	working_file=NULL;
 	current_vector=NULL;
@@ -186,7 +186,7 @@ void CStreamingSimpleFeatures<T>::init()
 }
 
 template <class T>
-void CStreamingSimpleFeatures<T>::init(CStreamingFile* file,
+void CStreamingDenseFeatures<T>::init(CStreamingFile* file,
 				    bool is_labelled,
 				    int32_t size)
 {
@@ -198,20 +198,20 @@ void CStreamingSimpleFeatures<T>::init(CStreamingFile* file,
 }
 
 template <class T>
-void CStreamingSimpleFeatures<T>::start_parser()
+void CStreamingDenseFeatures<T>::start_parser()
 {
 	if (!parser.is_running())
 		parser.start_parser();
 }
 
 template <class T>
-void CStreamingSimpleFeatures<T>::end_parser()
+void CStreamingDenseFeatures<T>::end_parser()
 {
 	parser.end_parser();
 }
 
 template <class T>
-bool CStreamingSimpleFeatures<T>::get_next_example()
+bool CStreamingDenseFeatures<T>::get_next_example()
 {
 	bool ret_value;
 	ret_value = (bool) parser.get_next_example(current_vector,
@@ -222,7 +222,7 @@ bool CStreamingSimpleFeatures<T>::get_next_example()
 }
 
 template <class T>
-SGVector<T> CStreamingSimpleFeatures<T>::get_vector()
+SGVector<T> CStreamingDenseFeatures<T>::get_vector()
 {
 	current_sgvector.vector=current_vector;
 	current_sgvector.vlen=current_length;
@@ -231,7 +231,7 @@ SGVector<T> CStreamingSimpleFeatures<T>::get_vector()
 }
 
 template <class T>
-float64_t CStreamingSimpleFeatures<T>::get_label()
+float64_t CStreamingDenseFeatures<T>::get_label()
 {
 	ASSERT(has_labels);
 
@@ -239,24 +239,24 @@ float64_t CStreamingSimpleFeatures<T>::get_label()
 }
 
 template <class T>
-void CStreamingSimpleFeatures<T>::release_example()
+void CStreamingDenseFeatures<T>::release_example()
 {
 	parser.finalize_example();
 }
 
 template <class T>
-int32_t CStreamingSimpleFeatures<T>::get_dim_feature_space() const
+int32_t CStreamingDenseFeatures<T>::get_dim_feature_space() const
 {
 	return current_length;
 }
 
 template <class T>
-	float32_t CStreamingSimpleFeatures<T>::dot(CStreamingDotFeatures* df)
+	float32_t CStreamingDenseFeatures<T>::dot(CStreamingDotFeatures* df)
 {
 	ASSERT(df);
 	ASSERT(df->get_feature_type() == get_feature_type());
 	ASSERT(df->get_feature_class() == get_feature_class());
-	CStreamingSimpleFeatures<T>* sf = (CStreamingSimpleFeatures<T>*) df;
+	CStreamingDenseFeatures<T>* sf = (CStreamingDenseFeatures<T>*) df;
 
 	SGVector<T> other_vector=sf->get_vector();
 
@@ -266,7 +266,7 @@ template <class T>
 }
 
 template <class T>
-float32_t CStreamingSimpleFeatures<T>::dot(SGVector<T> sgvec1)
+float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 {
 	int32_t len1;
 	len1=sgvec1.vlen;
@@ -279,28 +279,28 @@ float32_t CStreamingSimpleFeatures<T>::dot(SGVector<T> sgvec1)
 }
 
 template <class T>
-int32_t CStreamingSimpleFeatures<T>::get_num_features()
+int32_t CStreamingDenseFeatures<T>::get_num_features()
 {
 	return current_length;
 }
 
 template <class T>
-EFeatureClass CStreamingSimpleFeatures<T>::get_feature_class()
+EFeatureClass CStreamingDenseFeatures<T>::get_feature_class()
 {
-	return C_STREAMING_SIMPLE;
+	return C_STREAMING_DENSE;
 }
 
-template class CStreamingSimpleFeatures<bool>;
-template class CStreamingSimpleFeatures<char>;
-template class CStreamingSimpleFeatures<int8_t>;
-template class CStreamingSimpleFeatures<uint8_t>;
-template class CStreamingSimpleFeatures<int16_t>;
-template class CStreamingSimpleFeatures<uint16_t>;
-template class CStreamingSimpleFeatures<int32_t>;
-template class CStreamingSimpleFeatures<uint32_t>;
-template class CStreamingSimpleFeatures<int64_t>;
-template class CStreamingSimpleFeatures<uint64_t>;
-template class CStreamingSimpleFeatures<float32_t>;
-template class CStreamingSimpleFeatures<float64_t>;
-template class CStreamingSimpleFeatures<floatmax_t>;
+template class CStreamingDenseFeatures<bool>;
+template class CStreamingDenseFeatures<char>;
+template class CStreamingDenseFeatures<int8_t>;
+template class CStreamingDenseFeatures<uint8_t>;
+template class CStreamingDenseFeatures<int16_t>;
+template class CStreamingDenseFeatures<uint16_t>;
+template class CStreamingDenseFeatures<int32_t>;
+template class CStreamingDenseFeatures<uint32_t>;
+template class CStreamingDenseFeatures<int64_t>;
+template class CStreamingDenseFeatures<uint64_t>;
+template class CStreamingDenseFeatures<float32_t>;
+template class CStreamingDenseFeatures<float64_t>;
+template class CStreamingDenseFeatures<floatmax_t>;
 }

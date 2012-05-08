@@ -11,7 +11,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -29,7 +28,7 @@ CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, CKernel* s)
 	register_params();
 }
 
-CTensorProductPairKernel::CTensorProductPairKernel(CSimpleFeatures<int32_t>* l, CSimpleFeatures<int32_t>* r, CKernel* s)
+CTensorProductPairKernel::CTensorProductPairKernel(CDenseFeatures<int32_t>* l, CDenseFeatures<int32_t>* r, CKernel* s)
 : CDotKernel(10), subkernel(s)
 {
 	SG_REF(subkernel);
@@ -55,8 +54,8 @@ float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	int32_t* avec=((CSimpleFeatures<int32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	int32_t* bvec=((CSimpleFeatures<int32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	int32_t* avec=((CDenseFeatures<int32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+	int32_t* bvec=((CDenseFeatures<int32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==2);
 	ASSERT(blen==2);
@@ -71,8 +70,8 @@ float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t result = k->kernel(a,c)*k->kernel(b,d) + k->kernel(a,d)*k->kernel(b,c);
 
-	((CSimpleFeatures<int32_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<int32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<int32_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<int32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

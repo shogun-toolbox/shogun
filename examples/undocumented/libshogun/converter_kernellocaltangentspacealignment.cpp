@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/KernelLocalTangentSpaceAlignment.h>
 #include <shogun/kernel/LinearKernel.h>
 
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = i;
 
-	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CKernelLocalTangentSpaceAlignment* kltsa = new CKernelLocalTangentSpaceAlignment();
 	CKernel* kernel = new CLinearKernel();
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	kltsa->set_k(4);
 	kltsa->set_kernel(kernel);
 	kltsa->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = kltsa->embed(features);
+	CDenseFeatures<double>* embedding = kltsa->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(kltsa);
 	SG_UNREF(features);

@@ -32,27 +32,27 @@
 %include <shogun/lib/Compressor.h>
 %include <shogun/preprocessor/Preprocessor.h>
 
-/* Templates Class SimplePreprocessor*/
-%include <shogun/preprocessor/SimplePreprocessor.h>
+/* Templates Class DensePreprocessor*/
+%include <shogun/preprocessor/DensePreprocessor.h>
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealPreprocessor) CSimplePreprocessor<float64_t>;
+    %template(RealPreprocessor) CDensePreprocessor<float64_t>;
 #endif
 #ifdef USE_UINT64
-    %template(UlongPreprocessor) CSimplePreprocessor<uint64_t>;
+    %template(UlongPreprocessor) CDensePreprocessor<uint64_t>;
 #endif
 #ifdef USE_UINT16
-    %template(WordPreprocessor) CSimplePreprocessor<uint16_t>;
+    %template(WordPreprocessor) CDensePreprocessor<uint16_t>;
 #endif
 #ifdef USE_INT16
-    %template(ShortPreprocessor) CSimplePreprocessor<int16_t>;
+    %template(ShortPreprocessor) CDensePreprocessor<int16_t>;
 #endif
 #ifdef USE_UINT8
-    %template(BytePreprocessor) CSimplePreprocessor<uint8_t>;
+    %template(BytePreprocessor) CDensePreprocessor<uint8_t>;
 #endif
 #ifdef USE_CHAR
-    %template(CharPreprocessor) CSimplePreprocessor<char>;
+    %template(CharPreprocessor) CDensePreprocessor<char>;
 #endif
 }
 

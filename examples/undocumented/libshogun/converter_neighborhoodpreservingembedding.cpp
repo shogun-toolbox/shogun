@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/NeighborhoodPreservingEmbedding.h>
 #include <shogun/mathematics/Math.h>
 
@@ -25,13 +25,13 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = CMath::random(1,100);
 
-	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CNeighborhoodPreservingEmbedding* npe = new CNeighborhoodPreservingEmbedding();
 	npe->set_target_dim(2);
 	npe->set_k(15);
 	npe->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = npe->embed(features);
+	CDenseFeatures<double>* embedding = npe->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(npe);
 	SG_UNREF(features);

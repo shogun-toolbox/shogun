@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/KernelLocallyLinearEmbedding.h>
 #include <shogun/kernel/LinearKernel.h>
 
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = i;
 
-	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CKernelLocallyLinearEmbedding* klle = new CKernelLocallyLinearEmbedding();
 	CKernel* kernel = new CLinearKernel();
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	klle->set_k(4);
 	klle->set_kernel(kernel);
 	klle->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = klle->embed(features);
+	CDenseFeatures<double>* embedding = klle->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(klle);
 	SG_UNREF(features);

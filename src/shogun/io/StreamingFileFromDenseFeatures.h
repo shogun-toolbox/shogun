@@ -7,54 +7,54 @@
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#ifndef __STREAMING_FILEFROMSIMPLE_H__
-#define __STREAMING_FILEFROMSIMPLE_H__
+#ifndef __STREAMING_FILEFROMDENSE_H__
+#define __STREAMING_FILEFROMDENSE_H__
 
 #include <shogun/io/StreamingFileFromFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
-/** @brief Class CStreamingFileFromSimpleFeatures is a derived
+/** @brief Class CStreamingFileFromDenseFeatures is a derived
  * class of CStreamingFile which creates an input source
- * for the online framework from a CSimpleFeatures object.
+ * for the online framework from a CDenseFeatures object.
  *
  * This kind of input is seekable, and hence can be used for
  * making multiple passes over data.
  *
  * It is useful for testing/comparison purposes.
  */
-template <class T> class CStreamingFileFromSimpleFeatures: public CStreamingFileFromFeatures
+template <class T> class CStreamingFileFromDenseFeatures: public CStreamingFileFromFeatures
 {
 public:
 	/**
 	 * Default constructor
 	 */
-	CStreamingFileFromSimpleFeatures();
+	CStreamingFileFromDenseFeatures();
 
 	/**
-	 * Constructor taking a SimpleFeatures object as arg
+	 * Constructor taking a DenseFeatures object as arg
 	 *
-	 * @param feat SimpleFeatures object
+	 * @param feat DenseFeatures object
 	 */
-	CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat);
+	CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat);
 
 	/**
-	 * Constructor taking a SimpleFeatures object as arg
+	 * Constructor taking a DenseFeatures object as arg
 	 *
-	 * @param feat SimpleFeatures object
+	 * @param feat DenseFeatures object
 	 * @param lab Labels as float64_t*
 	 */
-	CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float64_t* lab);
+	CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat, float64_t* lab);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFileFromSimpleFeatures();
+	virtual ~CStreamingFileFromDenseFeatures();
 
 	/**
 	 * This function will be called for reading vectors from the
-	 * corresponding SimpleFeatures object.
+	 * corresponding DenseFeatures object.
 	 * It is specialized depending on class type T.
 	 *
 	 * @param vec vector
@@ -64,7 +64,7 @@ public:
 
 	/**
 	 * This function will be called for reading vectors and labels
-	 * from the corresponding SimpleFeatures object.  It is
+	 * from the corresponding DenseFeatures object.  It is
 	 * specialized depending on class type T.
 	 *
 	 * @param vec vector
@@ -75,7 +75,7 @@ public:
 
 	/**
 	 * Reset the stream so the next example returned is the first
-	 * example in the SimpleFeatures object.
+	 * example in the DenseFeatures object.
 	 *
 	 */
 	void reset_stream()
@@ -86,7 +86,7 @@ public:
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{
-		return "StreamingFileFromSimpleFeatures";
+		return "StreamingFileFromDenseFeatures";
 
 	}
 
@@ -98,8 +98,8 @@ private:
 
 protected:
 
-	/// SimpleFeatures object
-	CSimpleFeatures<T>* features;
+	/// DenseFeatures object
+	CDenseFeatures<T>* features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
@@ -107,14 +107,14 @@ protected:
 };
 
 template <class T>
-CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures()
+CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures()
 	: CStreamingFileFromFeatures()
 {
 	init();
 }
 
 template <class T>
-CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat)
+CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat)
 	: CStreamingFileFromFeatures()
 {
 	ASSERT(feat);
@@ -124,7 +124,7 @@ CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFea
 }
 
 template <class T>
-CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFeatures<T>* feat, float64_t* lab)
+CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat, float64_t* lab)
 	: CStreamingFileFromFeatures()
 {
 	ASSERT(feat);
@@ -136,21 +136,21 @@ CStreamingFileFromSimpleFeatures<T>::CStreamingFileFromSimpleFeatures(CSimpleFea
 }
 
 template <class T>
-CStreamingFileFromSimpleFeatures<T>::~CStreamingFileFromSimpleFeatures()
+CStreamingFileFromDenseFeatures<T>::~CStreamingFileFromDenseFeatures()
 {
 }
 
 template <class T>
-void CStreamingFileFromSimpleFeatures<T>::init()
+void CStreamingFileFromDenseFeatures<T>::init()
 {
 	vector_num=0;
 }
 
-/* Functions to return the vector from the SimpleFeatures object
+/* Functions to return the vector from the DenseFeatures object
  * If the class is of type T, specialize this function to work for
  * vectors of that type. */
 template <class T>
-void CStreamingFileFromSimpleFeatures<T>::get_vector(T*& vector, int32_t& num_feat)
+void CStreamingFileFromDenseFeatures<T>::get_vector(T*& vector, int32_t& num_feat)
 {
 	if (vector_num >= features->get_num_vectors())
 	{
@@ -168,9 +168,9 @@ void CStreamingFileFromSimpleFeatures<T>::get_vector(T*& vector, int32_t& num_fe
 
 }
 
-/* Functions to return the vector from the SimpleFeatures object with label */
+/* Functions to return the vector from the DenseFeatures object with label */
 template <class T>
-void CStreamingFileFromSimpleFeatures<T>::get_vector_and_label
+void CStreamingFileFromDenseFeatures<T>::get_vector_and_label
 (T*& vector, int32_t& num_feat, float64_t& label)
 {
 	if (vector_num >= features->get_num_vectors())
@@ -191,4 +191,4 @@ void CStreamingFileFromSimpleFeatures<T>::get_vector_and_label
 }
 
 }
-#endif //__STREAMING_FILEFROMSIMPLE_H__
+#endif //__STREAMING_FILEFROMDENSE_H__

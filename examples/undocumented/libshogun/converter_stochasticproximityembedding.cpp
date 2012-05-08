@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/StochasticProximityEmbedding.h>
 
 using namespace shogun;
@@ -27,7 +27,7 @@ int main()
 		matrix[i] = i;
 
 	const int32_t feature_cache = 0;
-	CSimpleFeatures< float64_t >* features = new CSimpleFeatures< float64_t >( feature_cache );
+	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >( feature_cache );
 	features->set_feature_matrix(matrix.matrix, dim, N);
 	SG_REF(features);
 	
@@ -39,7 +39,7 @@ int main()
 	SG_REF(spe);
 
 	// Apply embedding with global strategy
-	CSimpleFeatures< float64_t >* embedding = spe->embed(features);
+	CDenseFeatures< float64_t >* embedding = spe->embed(features);
 	SG_REF(embedding);
 
 	// Set parameters for local strategy

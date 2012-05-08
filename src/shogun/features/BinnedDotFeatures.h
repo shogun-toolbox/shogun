@@ -12,11 +12,11 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
-	template <class T> class CSimpleFeatures;
+	template <class T> class CDenseFeatures;
 
 /** @brief The class BinnedDotFeatures contains a 0-1 conversion of features into bins.
  *
@@ -56,7 +56,7 @@ class CBinnedDotFeatures : public CDotFeatures
 		 * binned features
 		 * @param bins a matrix with bins to compute binned features from
 		 */
-		CBinnedDotFeatures(CSimpleFeatures<float64_t>* sf, SGMatrix<float64_t> bins);
+		CBinnedDotFeatures(CDenseFeatures<float64_t>* sf, SGMatrix<float64_t> bins);
 
 		virtual ~CBinnedDotFeatures();
 
@@ -164,13 +164,13 @@ class CBinnedDotFeatures : public CDotFeatures
 		 *
 		 * @param features - features to convert to binned features
 		 */
-		void set_simple_features(CSimpleFeatures<float64_t>* features);
+		void set_simple_features(CDenseFeatures<float64_t>* features);
 
 		/** get features that are convert to binned features
 		 *
 		 * @return features - simple features object
 		 */
-		CSimpleFeatures<float64_t>* get_simple_features();
+		CDenseFeatures<float64_t>* get_simple_features();
 
 		/** set bins
 		 *
@@ -235,7 +235,7 @@ class CBinnedDotFeatures : public CDotFeatures
 
 	protected:
 		/// underlying features
-		CSimpleFeatures<float64_t>* m_features;
+		CDenseFeatures<float64_t>* m_features;
 
 		/// bins with limits
 		SGMatrix<float64_t> m_bins;

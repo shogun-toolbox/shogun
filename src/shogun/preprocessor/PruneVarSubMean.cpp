@@ -10,16 +10,15 @@
  */
 
 #include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/SimplePreprocessor.h>
+#include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
-: CSimplePreprocessor<float64_t>(), idx(NULL), mean(NULL),
+: CDensePreprocessor<float64_t>(), idx(NULL), mean(NULL),
 	std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
 {
 }
@@ -34,10 +33,10 @@ bool CPruneVarSubMean::init(CFeatures* features)
 {
 	if (!initialized)
 	{
-		ASSERT(features->get_feature_class()==C_SIMPLE);
+		ASSERT(features->get_feature_class()==C_DENSE);
 		ASSERT(features->get_feature_type()==F_DREAL);
 
-		CSimpleFeatures<float64_t>* simple_features=(CSimpleFeatures<float64_t>*) features;
+		CDenseFeatures<float64_t>* simple_features=(CDenseFeatures<float64_t>*) features;
 		int32_t num_examples = simple_features->get_num_vectors();
 		int32_t num_features = simple_features->get_num_features();
 
@@ -137,7 +136,7 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 
 	int32_t num_vectors=0;
 	int32_t num_features=0;
-	float64_t* m=((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
+	float64_t* m=((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 
 	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features);
 	SG_INFO( "Preprocessing feature matrix\n");
@@ -158,11 +157,11 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 		}
 	}
 
-	((CSimpleFeatures<float64_t>*) features)->set_num_features(num_idx);
-	((CSimpleFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
+	((CDenseFeatures<float64_t>*) features)->set_num_features(num_idx);
+	((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features);
 
-	return ((CSimpleFeatures<float64_t>*) features)->get_feature_matrix();
+	return ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
 }
 
 /// apply preproc on single feature vector

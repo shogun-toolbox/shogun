@@ -11,8 +11,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#ifndef _SIMPLEFEATURES__H__
-#define _SIMPLEFEATURES__H__
+#ifndef _DENSEFEATURES__H__
+#define _DENSEFEATURES__H__
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Cache.h>
@@ -23,11 +23,11 @@
 
 namespace shogun {
 template<class ST> class CStringFeatures;
-template<class ST> class CSimpleFeatures;
+template<class ST> class CDenseFeatures;
 template<class ST> class SGMatrix;
 class CDotFeatures;
 
-/** @brief The class SimpleFeatures implements dense feature matrices.
+/** @brief The class DenseFeatures implements dense feature matrices.
  *
  * The feature matrices are stored en-block in memory in fortran order, i.e.
  * column-by-column, where a column denotes a feature vector.
@@ -42,43 +42,43 @@ class CDotFeatures;
  * From this template class a number the following dense feature matrix types
  * are used and supported:
  *
- * \li bool matrix - CSimpleFeatures<bool>
- * \li 8bit char matrix - CSimpleFeatures<char>
- * \li 8bit Byte matrix - CSimpleFeatures<uint8_t>
- * \li 16bit Integer matrix - CSimpleFeatures<int16_t>
- * \li 16bit Word matrix - CSimpleFeatures<uint16_t>
- * \li 32bit Integer matrix - CSimpleFeatures<int32_t>
- * \li 32bit Unsigned Integer matrix - CSimpleFeatures<uint32_t>
- * \li 32bit Float matrix - CSimpleFeatures<float32_t>
- * \li 64bit Float matrix - CSimpleFeatures<float64_t>
+ * \li bool matrix - CDenseFeatures<bool>
+ * \li 8bit char matrix - CDenseFeatures<char>
+ * \li 8bit Byte matrix - CDenseFeatures<uint8_t>
+ * \li 16bit Integer matrix - CDenseFeatures<int16_t>
+ * \li 16bit Word matrix - CDenseFeatures<uint16_t>
+ * \li 32bit Integer matrix - CDenseFeatures<int32_t>
+ * \li 32bit Unsigned Integer matrix - CDenseFeatures<uint32_t>
+ * \li 32bit Float matrix - CDenseFeatures<float32_t>
+ * \li 64bit Float matrix - CDenseFeatures<float64_t>
  * \li 64bit Float matrix <b>in a file</b> - CRealFileFeatures
  * \li 64bit Tangent of posterior log-odds (TOP) features from HMM - CTOPFeatures
  * \li 64bit Fisher Kernel (FK) features from HMM - CTOPFeatures
- * \li 96bit Float matrix - CSimpleFeatures<floatmax_t>
+ * \li 96bit Float matrix - CDenseFeatures<floatmax_t>
  *
  * Partly) subset access is supported for this feature type.
- * Simple use the (inherited) add_subset(), remove_subset() functions.
+ * Dense use the (inherited) add_subset(), remove_subset() functions.
  * If done, all calls that work with features are translated to the subset.
  * See comments to find out whether it is supported for that method.
  * See also CFeatures class documentation
  */
-template<class ST> class CSimpleFeatures: public CDotFeatures
+template<class ST> class CDenseFeatures: public CDotFeatures
 {
 public:
 	/** constructor
 	 *
 	 * @param size cache size
 	 */
-	CSimpleFeatures(int32_t size = 0);
+	CDenseFeatures(int32_t size = 0);
 
 	/** copy constructor */
-	CSimpleFeatures(const CSimpleFeatures & orig);
+	CDenseFeatures(const CDenseFeatures & orig);
 
 	/** constructor
 	 *
 	 * @param matrix feature matrix
 	 */
-	CSimpleFeatures(SGMatrix<ST> matrix);
+	CDenseFeatures(SGMatrix<ST> matrix);
 
 	/** constructor
 	 *
@@ -86,13 +86,13 @@ public:
 	 * @param num_feat number of features in matrix
 	 * @param num_vec number of vectors in matrix
 	 */
-	CSimpleFeatures(ST* src, int32_t num_feat, int32_t num_vec);
+	CDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CSimpleFeatures(CFile* loader);
+	CDenseFeatures(CFile* loader);
 
 	/** duplicate feature object
 	 *
@@ -100,7 +100,7 @@ public:
 	 */
 	virtual CFeatures* duplicate() const;
 
-	virtual ~CSimpleFeatures();
+	virtual ~CDenseFeatures();
 
 	/** free feature matrix
 	 *
@@ -246,7 +246,7 @@ public:
 	 *
 	 * @return transposed copy
 	 */
-	CSimpleFeatures<ST>* get_transposed();
+	CDenseFeatures<ST>* get_transposed();
 
 	/** compute and return the transpose of the feature matrix
 	 * which will be prepocessed.
@@ -286,7 +286,7 @@ public:
 	 */
 	virtual void copy_feature_matrix(SGMatrix<ST> src);
 
-	/** obtain simple features from other dotfeatures
+	/** obtain dense features from other dotfeatures
 	 *
 	 * removes any subset before
 	 *
@@ -346,7 +346,7 @@ public:
 
 	/** get feature class
 	 *
-	 * @return feature class SIMPLE
+	 * @return feature class DENSE
 	 */
 	virtual EFeatureClass get_feature_class();
 
@@ -418,16 +418,6 @@ public:
 	 */
 	virtual int32_t get_nnz_features_for_vector(int32_t num);
 
-	/** align char features
-	 *
-	 * @param cf char features
-	 * @param Ref other char features
-	 * @param gapCost gap cost
-	 * @return if aligning was successful
-	 */
-	virtual bool Align_char_features(CStringFeatures<char>* cf,
-			CStringFeatures<char>* Ref, float64_t gapCost);
-
 	/** load features from file
 	 *
 	 * @param loader File object via which to load data
@@ -441,8 +431,8 @@ public:
 	virtual void save(CFile* saver);
 
 	#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	/** iterator for simple features */
-	struct simple_feature_iterator
+	/** iterator for dense features */
+	struct dense_feature_iterator
 	{
 		/** pointer to feature vector */
 		ST* vec;
@@ -503,16 +493,16 @@ public:
 	 */
 	virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
-	/** checks if the contents of this CSimpleFeatures object are the same to
+	/** checks if the contents of this CDenseFeatures object are the same to
 	 * the contents of rhs
 	 *
-	 * @param rhs other CSimpleFeatures object to compare to this one
+	 * @param rhs other CDenseFeatures object to compare to this one
 	 * @return whether they represent the same information
 	 */
-	virtual bool is_equal(CSimpleFeatures* rhs);
+	virtual bool is_equal(CDenseFeatures* rhs);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "SimpleFeatures"; }
+	inline virtual const char* get_name() const { return "DenseFeatures"; }
 
 protected:
 	/** compute feature vector for sample num
@@ -555,4 +545,4 @@ protected:
 	CCache<ST>* feature_cache;
 };
 }
-#endif // _SIMPLEFEATURES__H__
+#endif // _DENSEFEATURES__H__

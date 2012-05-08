@@ -13,7 +13,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -59,7 +59,7 @@ public:
 	/** get features
 	 * @return current features
 	 */
-	virtual CSimpleFeatures<float64_t>* get_features();
+	virtual CDenseFeatures<float64_t>* get_features();
 
 	/** train classifier
 	 * @param data train examples
@@ -119,7 +119,7 @@ protected:
 	SGMatrix<float64_t>* m_classes;
 
 	/** stores features to be used */
-	CSimpleFeatures<float64_t>* m_features;
+	CDenseFeatures<float64_t>* m_features;
 
 };
 

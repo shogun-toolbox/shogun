@@ -73,21 +73,21 @@ bool CGUIFeatures::load(
 	{
 		if (strncmp(type, "REAL", 4)==0)
 		{
-			*f_ptr=new CSimpleFeatures<float64_t>(file);
+			*f_ptr=new CDenseFeatures<float64_t>(file);
 		}
 		else if (strncmp(type, "BYTE", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CSimpleFeatures<uint8_t>(file);
+			*f_ptr=new CDenseFeatures<uint8_t>(file);
 		}
 		else if (strncmp(type, "CHAR", 4)==0)
 		{
 			///FIXME make CHAR type configurable... it is DNA by default
-			*f_ptr=new CSimpleFeatures<char>(file);
+			*f_ptr=new CDenseFeatures<char>(file);
 		}
 		else if (strncmp(type, "SHORT", 5)==0)
 		{
-			*f_ptr=new CSimpleFeatures<int16_t>(file);
+			*f_ptr=new CDenseFeatures<int16_t>(file);
 		}
 		else
 		{
@@ -162,23 +162,23 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 			CAsciiFile* file=new CAsciiFile(filename, 'w');
 			if (strncmp(type, "REAL", 4)==0)
 			{
-				((CSimpleFeatures<float64_t>*) (*f_ptr))->save(file);
+				((CDenseFeatures<float64_t>*) (*f_ptr))->save(file);
 			}
 			else if (strncmp(type, "BYTE", 4)==0)
 			{
-				((CSimpleFeatures<uint8_t>*) (*f_ptr))->save(file);
+				((CDenseFeatures<uint8_t>*) (*f_ptr))->save(file);
 			}
 			else if (strncmp(type, "CHAR", 4)==0)
 			{
-				((CSimpleFeatures<char>*) (*f_ptr))->save(file);
+				((CDenseFeatures<char>*) (*f_ptr))->save(file);
 			}
 			else if (strncmp(type, "SHORT", 5)==0)
 			{
-				((CSimpleFeatures<int16_t>*) (*f_ptr))->save(file);
+				((CDenseFeatures<int16_t>*) (*f_ptr))->save(file);
 			}
 			else if (strncmp(type, "WORD", 4)==0)
 			{
-				((CSimpleFeatures<uint16_t>*) (*f_ptr))->save(file);
+				((CDenseFeatures<uint16_t>*) (*f_ptr))->save(file);
 			}
 			else
 			{
@@ -296,10 +296,10 @@ bool CGUIFeatures::set_convert_features(CFeatures* features, char* target)
 }
 
 CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
-	CSimpleFeatures<float64_t>* src)
+	CDenseFeatures<float64_t>* src)
 {
 	if (src &&
-		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_class()==C_DENSE &&
 		src->get_feature_type()==F_DREAL)
 	{
 		//create sparse features with 0 cache
@@ -320,9 +320,9 @@ CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
 }
 
 CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
-	CSimpleFeatures<char>* src)
+	CDenseFeatures<char>* src)
 {
-	if (src && src->get_feature_class()==C_SIMPLE)
+	if (src && src->get_feature_class()==C_DENSE)
 	{
 		int32_t num_vec=src->get_num_vectors();
 		SGString<char>* strings=SG_MALLOC(SGString<char>, num_vec);
@@ -361,17 +361,17 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 	return NULL;
 }
 
-CSimpleFeatures<float64_t>* CGUIFeatures::convert_simple_word_to_simple_salzberg(
-	CSimpleFeatures<uint16_t>* src)
+CDenseFeatures<float64_t>* CGUIFeatures::convert_simple_word_to_simple_salzberg(
+	CDenseFeatures<uint16_t>* src)
 {
 	CPluginEstimate* pie=ui->ui_pluginestimate->get_estimator();
 
 	if (src &&
 		src->get_feature_type()==F_WORD &&
-		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_class()==C_DENSE &&
 		pie)
 	{
-		CSimpleFeatures<float64_t>* target=new CSimpleFeatures<float64_t>(0);
+		CDenseFeatures<float64_t>* target=new CDenseFeatures<float64_t>(0);
 		int32_t num_feat=src->get_num_features();
 		int32_t num_vec=src->get_num_vectors();
 		float64_t* fm=SG_MALLOC(float64_t, num_vec*num_feat);
@@ -409,7 +409,7 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(
 	CTOPFeatures* tf=NULL;
 
 	if (src &&
-		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_class()==C_DENSE &&
 		src->get_feature_type()==F_WORD)
 	{
 		SG_INFO("Converting to TOP features.\n");
@@ -474,7 +474,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(
 }
 
 
-CSimpleFeatures<float64_t>* CGUIFeatures::convert_sparse_real_to_simple_real(
+CDenseFeatures<float64_t>* CGUIFeatures::convert_sparse_real_to_simple_real(
 	CSparseFeatures<float64_t>* src)
 {
 	if (src &&
@@ -483,7 +483,7 @@ CSimpleFeatures<float64_t>* CGUIFeatures::convert_sparse_real_to_simple_real(
 	{
 		//create dense features with 0 cache
 		SG_INFO("Attempting to convert sparse feature matrix to a dense one.\n");
-		CSimpleFeatures<float64_t>* rf=new CSimpleFeatures<float64_t>(0);
+		CDenseFeatures<float64_t>* rf=new CDenseFeatures<float64_t>(0);
 		if (rf)
 		{
 			SGMatrix<float64_t> feats=src->get_full_feature_matrix();
@@ -503,22 +503,22 @@ CExplicitSpecFeatures* CGUIFeatures::convert_string_byte_to_spec_word(
 	return new CExplicitSpecFeatures(src, use_norm);
 }
 
-CSimpleFeatures<float64_t>* CGUIFeatures::convert_simple_char_to_simple_align(
-	CSimpleFeatures<char>* src, float64_t gap_cost)
+CDenseFeatures<float64_t>* CGUIFeatures::convert_simple_char_to_simple_align(
+	CDenseFeatures<char>* src, float64_t gap_cost)
 {
 	if (src &&
-		src->get_feature_class()==C_SIMPLE &&
+		src->get_feature_class()==C_DENSE &&
 		src->get_feature_type()==F_CHAR)
 	{
 		//create dense features with 0 cache
 		SG_INFO("Converting CHAR features to REAL ones.\n");
 
-		CSimpleFeatures<float64_t>* rf=new CSimpleFeatures<float64_t>(0);
+		CDenseFeatures<float64_t>* rf=new CDenseFeatures<float64_t>(0);
 		if (rf)
 		{
 			SG_INFO("Start aligment with gapCost=%1.2f.\n", gap_cost);
 			/*rf->Align_char_features(
-				src, (CSimpleFeatures<char>*) ref_features, gap_cost);*/
+				src, (CDenseFeatures<char>*) ref_features, gap_cost);*/
 			SG_INFO("Conversion was successful.\n");
 			return rf;
 		}

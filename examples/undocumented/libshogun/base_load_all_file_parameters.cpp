@@ -12,7 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 
@@ -45,7 +45,7 @@ public:
 		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
 		CMath::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 3);
-		m_features=new CSimpleFeatures<int32_t>(features);
+		m_features=new CDenseFeatures<int32_t>(features);
 		SG_REF(m_features);
 		m_parameters->add((CSGObject**)&m_features, "int_features",
 				"Test features");
@@ -66,7 +66,7 @@ public:
 	int32_t m_matrix_rows;
 	int32_t m_matrix_cols;
 
-	CSimpleFeatures<int32_t>* m_features;
+	CDenseFeatures<int32_t>* m_features;
 
 	virtual const char* get_name() const { return "TestClassInt"; }
 };
@@ -87,7 +87,7 @@ public:
 		SGMatrix<float64_t> features=SGMatrix<float64_t>(2, 3);
 		CMath::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 3.0);
-		m_features=new CSimpleFeatures<float64_t>(features);
+		m_features=new CDenseFeatures<float64_t>(features);
 		SG_REF(m_features);
 		m_parameters->add((CSGObject**)&m_features, "float_features",
 				"Test features");
@@ -147,7 +147,7 @@ public:
 	float64_t m_number;
 	SGVector<float64_t> m_vector;
 	SGMatrix<float64_t> m_matrix;
-	CSimpleFeatures<float64_t>* m_features;
+	CDenseFeatures<float64_t>* m_features;
 
 	virtual const char* get_name() const { return "TestClassFloat"; }
 };
@@ -209,8 +209,8 @@ void test_load_file_parameter()
 		}
 		else if (!strcmp(current->m_name, "int_features"))
 		{
-			CSimpleFeatures<int32_t>* features=
-					*((CSimpleFeatures<int32_t>**)
+			CDenseFeatures<int32_t>* features=
+					*((CDenseFeatures<int32_t>**)
 							current->m_parameter);
 			SGMatrix<int32_t> feature_matrix_loaded=
 					features->get_feature_matrix();

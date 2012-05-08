@@ -11,7 +11,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/HistogramIntersectionKernel.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/SimpleFeatures.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -29,7 +28,7 @@ CHistogramIntersectionKernel::CHistogramIntersectionKernel(int32_t size)
 }
 
 CHistogramIntersectionKernel::CHistogramIntersectionKernel(
-	CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r,
+	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 	float64_t beta, int32_t size)
 : CDotKernel(size), m_beta(beta)
 {
@@ -55,9 +54,9 @@ float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen);
 
 	float64_t result=0;
@@ -75,8 +74,8 @@ float64_t CHistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 		for (int32_t i=0; i<alen; i++)
 			result += CMath::min(CMath::pow(avec[i],m_beta), CMath::pow(bvec[i],m_beta));
 	}
-	((CSimpleFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSimpleFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

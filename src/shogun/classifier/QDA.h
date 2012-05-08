@@ -16,7 +16,7 @@
 #ifdef HAVE_LAPACK
 
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGNDArray.h>
 
@@ -46,7 +46,7 @@ class CQDA : public CMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
 		 */
-		CQDA(CSimpleFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance = 1e-4, bool store_covs = false);
+		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance = 1e-4, bool store_covs = false);
 
 		virtual ~CQDA();
 
@@ -99,7 +99,7 @@ class CQDA : public CMachine
 		 */
 		inline virtual void set_features(CDotFeatures* feat)
 		{
-			if (feat->get_feature_class() != C_SIMPLE ||
+			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("QDA requires SIMPLE REAL valued features\n");
 

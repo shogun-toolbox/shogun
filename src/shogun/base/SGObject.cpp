@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 namespace shogun
 {
 	class CMath;

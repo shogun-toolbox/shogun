@@ -220,8 +220,8 @@ void CFeatures::list_feature_obj()
 		case C_UNKNOWN:
 			SG_INFO( "C_UNKNOWN ");
 			break;
-		case C_SIMPLE:
-			SG_INFO( "C_SIMPLE ");
+		case C_DENSE:
+			SG_INFO( "C_DENSE ");
 			break;
 		case C_SPARSE:
 			SG_INFO( "C_SPARSE ");
@@ -244,8 +244,8 @@ void CFeatures::list_feature_obj()
 		case C_WEIGHTEDSPEC:
 			SG_INFO( "C_WEIGHTEDSPEC ");
 			break;
-		case C_STREAMING_SIMPLE:
-			SG_INFO( "C_STREAMING_SIMPLE ");
+		case C_STREAMING_DENSE:
+			SG_INFO( "C_STREAMING_DENSE ");
 			break;
 		case C_STREAMING_SPARSE:
 			SG_INFO( "C_STREAMING_SPARSE ");

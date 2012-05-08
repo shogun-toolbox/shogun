@@ -772,7 +772,7 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 	if (ctype==CT_LDA)
 	{
 		if (trainfeatures->get_feature_type()!=F_DREAL ||
-				trainfeatures->get_feature_class()!=C_SIMPLE)
+				trainfeatures->get_feature_class()!=C_DENSE)
 		SG_ERROR("LDA requires train features of class SIMPLE type REAL.\n");
 		((CLDA*) classifier)->set_gamma(gamma);
 	}
@@ -799,7 +799,7 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 	}
 
 	((CLinearMachine*) classifier)->set_labels(trainlabels);
-	((CLinearMachine*) classifier)->set_features((CSimpleFeatures<float64_t>*) trainfeatures);
+	((CLinearMachine*) classifier)->set_features((CDenseFeatures<float64_t>*) trainfeatures);
 	result=((CLinearMachine*) classifier)->train();
 
 	return result;

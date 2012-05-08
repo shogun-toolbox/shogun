@@ -19,7 +19,7 @@
 #include <shogun/io/AsciiFile.h>
 
 #include <shogun/distance/Distance.h>
-#include <shogun/distance/SimpleDistance.h>
+#include <shogun/distance/DenseDistance.h>
 #include <shogun/distance/CanberraMetric.h>
 #include <shogun/distance/ChebyshewMetric.h>
 #include <shogun/distance/GeodesicMetric.h>
@@ -40,7 +40,7 @@
 #include <shogun/features/TOPFeatures.h>
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;

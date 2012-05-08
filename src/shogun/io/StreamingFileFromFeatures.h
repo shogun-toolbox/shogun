@@ -26,7 +26,7 @@ namespace shogun
  * to be implemented, as appropriate for the CFeatures object
  * which the class works with.
  *
- * For example, a derived class based on SimpleFeatures should only
+ * For example, a derived class based on DenseFeatures should only
  * implement the get_(type)*_vector() functions, and a class based on
  * StringFeatures should only implement the get_(type)*_string()
  * functions.

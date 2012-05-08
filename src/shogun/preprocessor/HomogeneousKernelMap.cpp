@@ -17,7 +17,7 @@
 using namespace shogun;
 
 CHomogeneousKernelMap::CHomogeneousKernelMap ()
-	: CSimplePreprocessor<float64_t> (),
+	: CDensePreprocessor<float64_t> (),
 		m_kernel (HomogeneousKernelIntersection),
 		m_window (HomogeneousKernelMapWindowRectangular),
 		m_gamma (1.0),
@@ -31,7 +31,7 @@ CHomogeneousKernelMap::CHomogeneousKernelMap ()
 CHomogeneousKernelMap::CHomogeneousKernelMap
 	(HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType,
 	 float64_t gamma, uint64_t order, float64_t period)
-	: CSimplePreprocessor<float64_t> (),
+	: CDensePreprocessor<float64_t> (),
 		m_kernel (kernel),
 		m_window (wType),
 		m_gamma (gamma),
@@ -49,7 +49,7 @@ CHomogeneousKernelMap::~CHomogeneousKernelMap()
 
 bool CHomogeneousKernelMap::init (CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_class()==C_DENSE);
 	ASSERT(features->get_feature_type()==F_DREAL);
 
 	return true;
@@ -162,7 +162,7 @@ void CHomogeneousKernelMap::init ()
 
 SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* features)
 {
-	CSimpleFeatures<float64_t>* simple_features = (CSimpleFeatures<float64_t>*)features;
+	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
 	int32_t num_vectors = simple_features->get_num_vectors ();
 	int32_t num_features = simple_features->get_num_features ();
 	SGMatrix<float64_t> result (num_features*(2*m_order+1), num_vectors);

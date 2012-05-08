@@ -12,12 +12,12 @@
 #define _CANBERRAMETRIC_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/distance/SimpleDistance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/distance/DenseDistance.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
-	template <class T> class CSimpleFeatures;
+	template <class T> class CDenseFeatures;
 
 /** @brief class CanberraMetric
  *
@@ -32,7 +32,7 @@ namespace shogun
  *  A summation element has range [0,1]. Note that \f$d(x,0)=d(0,x')=n\f$
  *  and \f$d(0,0)=0\f$.
  */
-class CCanberraMetric: public CSimpleDistance<float64_t>
+class CCanberraMetric: public CDenseDistance<float64_t>
 {
 	public:
 		/** default constructor */
@@ -43,7 +43,7 @@ class CCanberraMetric: public CSimpleDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCanberraMetric(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CCanberraMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
 		virtual ~CCanberraMetric();
 
 		/** init distance

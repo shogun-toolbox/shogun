@@ -1,8 +1,8 @@
 #include <shogun/features/Labels.h>
 #include <shogun/io/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/features/StreamingSimpleFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/ecoc/ECOCStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCRandomDenseEncoder.h>
 #include <shogun/multiclass/ecoc/ECOCRandomSparseEncoder.h>
@@ -30,11 +30,11 @@ int main(int argc, char** argv)
 	SG_REF(ffeats_train);
 	SG_REF(flabels_train);
 
-	CStreamingSimpleFeatures< float64_t >* stream_features =
-		new CStreamingSimpleFeatures< float64_t >(ffeats_train, false, 1024);
+	CStreamingDenseFeatures< float64_t >* stream_features =
+		new CStreamingDenseFeatures< float64_t >(ffeats_train, false, 1024);
 
-	CStreamingSimpleFeatures< float64_t >* stream_labels =
-		new CStreamingSimpleFeatures< float64_t >(flabels_train, true, 1024);
+	CStreamingDenseFeatures< float64_t >* stream_labels =
+		new CStreamingDenseFeatures< float64_t >(flabels_train, true, 1024);
 
 	SG_REF(stream_features);
 	SG_REF(stream_labels);
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 	stream_features->end_parser();
 
 	// Create features with the useful values from mat
-	CSimpleFeatures< float64_t >* features = new CSimpleFeatures< float64_t >(mat.matrix, num_feats, num_vectors);
+	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(mat.matrix, num_feats, num_vectors);
 
 	CLabels* labels = new CLabels(num_vectors);
 	SG_REF(features);

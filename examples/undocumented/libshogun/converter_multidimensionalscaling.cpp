@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/MultidimensionalScaling.h>
 
 using namespace shogun;
@@ -24,13 +24,13 @@ int main(int argc, char** argv)
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = i;
 
-	CSimpleFeatures<double>* features = new CSimpleFeatures<double>(SGMatrix<double>(matrix,dim,N));
+	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
 	CMultidimensionalScaling* mds = new CMultidimensionalScaling();
 	mds->set_target_dim(2);
 	mds->set_landmark(true);
 	mds->parallel->set_num_threads(4);
-	CSimpleFeatures<double>* embedding = mds->embed(features);
+	CDenseFeatures<double>* embedding = mds->embed(features);
 	SG_UNREF(embedding);
 	SG_UNREF(mds);
 	SG_UNREF(features);

@@ -8,21 +8,21 @@
  * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SIMPLEDISTANCE_H___
-#define _SIMPLEDISTANCE_H___
+#ifndef _DENSEDISTANCE_H___
+#define _DENSEDISTANCE_H___
 
 #include <shogun/distance/Distance.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 
 namespace shogun
 {
-/** @brief template class SimpleDistance */
-template <class ST> class CSimpleDistance : public CDistance
+/** @brief template class DenseDistance */
+template <class ST> class CDenseDistance : public CDistance
 {
 	public:
 		/** default constructor */
-		CSimpleDistance() : CDistance() {}
+		CDenseDistance() : CDistance() {}
 
 		/** init distance
 		 *
@@ -34,16 +34,16 @@ template <class ST> class CSimpleDistance : public CDistance
 		{
 			CDistance::init(l,r);
 
-			ASSERT(l->get_feature_class()==C_SIMPLE);
-			ASSERT(r->get_feature_class()==C_SIMPLE);
+			ASSERT(l->get_feature_class()==C_DENSE);
+			ASSERT(r->get_feature_class()==C_DENSE);
 			ASSERT(l->get_feature_type()==this->get_feature_type());
 			ASSERT(r->get_feature_type()==this->get_feature_type());
 
 
-			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
+			if ( ((CDenseFeatures<ST>*) l)->get_num_features() != ((CDenseFeatures<ST>*) r)->get_num_features() )
 			{
 				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
+						((CDenseFeatures<ST>*) l)->get_num_features(),((CDenseFeatures<ST>*) r)->get_num_features());
 			}
 
 			return true;
@@ -51,9 +51,9 @@ template <class ST> class CSimpleDistance : public CDistance
 
 		/** get feature class the distance can deal with
 		 *
-		 * @return feature class SIMPLE
+		 * @return feature class DENSE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 		/** get feature type the distance can deal with
 		 *
@@ -67,7 +67,7 @@ template <class ST> class CSimpleDistance : public CDistance
 		 *  @return name of the SGSerializable
 		 */
 		virtual const char* get_name() const {
-			return "SimpleDistance"; }
+			return "DenseDistance"; }
 
 		/** cleanup distance
 		 *
@@ -88,43 +88,43 @@ template <class ST> class CSimpleDistance : public CDistance
  *
  * @return feature type DREAL
  */
-template<> inline EFeatureType CSimpleDistance<float64_t>::get_feature_type() { return F_DREAL; }
+template<> inline EFeatureType CDenseDistance<float64_t>::get_feature_type() { return F_DREAL; }
 
 /** get feature type the ULONG distance can deal with
  *
  * @return feature type ULONG
  */
-template<> inline EFeatureType CSimpleDistance<uint64_t>::get_feature_type() { return F_ULONG; }
+template<> inline EFeatureType CDenseDistance<uint64_t>::get_feature_type() { return F_ULONG; }
 
 /** get feature type the INT distance can deal with
  *
  * @return feature type INT
  */
-template<> inline EFeatureType CSimpleDistance<int32_t>::get_feature_type() { return F_INT; }
+template<> inline EFeatureType CDenseDistance<int32_t>::get_feature_type() { return F_INT; }
 
 /** get feature type the WORD distance can deal with
  *
  * @return feature type WORD
  */
-template<> inline EFeatureType CSimpleDistance<uint16_t>::get_feature_type() { return F_WORD; }
+template<> inline EFeatureType CDenseDistance<uint16_t>::get_feature_type() { return F_WORD; }
 
 /** get feature type the SHORT distance can deal with
  *
  * @return feature type SHORT
  */
-template<> inline EFeatureType CSimpleDistance<int16_t>::get_feature_type() { return F_SHORT; }
+template<> inline EFeatureType CDenseDistance<int16_t>::get_feature_type() { return F_SHORT; }
 
 /** get feature type the BYTE distance can deal with
  *
  * @return feature type BYTE
  */
-template<> inline EFeatureType CSimpleDistance<uint8_t>::get_feature_type() { return F_BYTE; }
+template<> inline EFeatureType CDenseDistance<uint8_t>::get_feature_type() { return F_BYTE; }
 
 /** get feature type the CHAR distance can deal with
  *
  * @return feature type CHAR
  */
-template<> inline EFeatureType CSimpleDistance<char>::get_feature_type() { return F_CHAR; }
+template<> inline EFeatureType CDenseDistance<char>::get_feature_type() { return F_CHAR; }
 
 } // namespace shogun
 #endif

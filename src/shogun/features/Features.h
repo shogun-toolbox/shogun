@@ -45,9 +45,9 @@ namespace shogun
  *
  *   In addition it provides helpers to check e.g. for compability of feature objects.
  *
- *   Currently there are 3 general feature classes, which are CSimpleFeatures
+ *   Currently there are 3 general feature classes, which are CDenseFeatures
  *   (dense matrices), CSparseFeatures (sparse matrices), CStringFeatures (a
- *   set of strings) from which all the specific features like CSimpleFeatures<float64_t>
+ *   set of strings) from which all the specific features like CDenseFeatures<float64_t>
  *   (dense real valued feature matrices) are derived.
  *
  *

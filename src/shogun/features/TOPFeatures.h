@@ -12,12 +12,12 @@
 #ifndef _CTOPFEATURES__H__
 #define _CTOPFEATURES__H__
 
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/HMM.h>
 
 namespace shogun
 {
-template <class T> class CSimpleFeatures;
+template <class T> class CDenseFeatures;
 class CHMM;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -62,10 +62,10 @@ struct T_HMM_INDIZES
  * Note that TOP-features are computed on the fly, so to be effective feature
  * caching should be enabled.
  *
- * It inherits its functionality from CSimpleFeatures, which should be
+ * It inherits its functionality from CDenseFeatures, which should be
  * consulted for further reference.
  */
-class CTOPFeatures : public CSimpleFeatures<float64_t>
+class CTOPFeatures : public CDenseFeatures<float64_t>
 {
 	public:
 		/** default constructor  */

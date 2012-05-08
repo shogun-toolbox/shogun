@@ -15,7 +15,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
-#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {
@@ -59,7 +58,7 @@ class CMahalanobisDistance: public CRealDistance
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CMahalanobisDistance(CSimpleFeatures<float64_t>* l, CSimpleFeatures<float64_t>* r);
+		CMahalanobisDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
 		virtual ~CMahalanobisDistance();
 
 		/** init distance

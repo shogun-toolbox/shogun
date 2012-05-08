@@ -16,13 +16,13 @@
 
 using namespace shogun;
 
-CFKFeatures::CFKFeatures() : CSimpleFeatures<float64_t>()
+CFKFeatures::CFKFeatures() : CDenseFeatures<float64_t>()
 {
 	init();
 }
 
 CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
-: CSimpleFeatures<float64_t>(size)
+: CDenseFeatures<float64_t>(size)
 {
 	init();
 	weight_a=-1;
@@ -30,7 +30,7 @@ CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 }
 
 CFKFeatures::CFKFeatures(const CFKFeatures &orig)
-: CSimpleFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
+: CDenseFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
 {
 }
 

@@ -13,7 +13,7 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/Labels.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 
 using namespace shogun;
@@ -59,7 +59,7 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 
 	/* create three 2-dimensional vectors
 	 * to avoid deleting these, REF now and UNREF when finished */
-	CSimpleFeatures<float64_t>* features=new CSimpleFeatures<float64_t> ();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
 	SG_REF(features);
 	features->set_feature_matrix(matrix, 2, 3);
 
