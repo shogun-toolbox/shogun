@@ -113,14 +113,14 @@ int main(int argc, char** argv)
     init_shogun(&print_message);
 
     // create some data
-    float64_t* matrix = SG_MALLOC(float64_t, 6);
+    SGMatrix<float64_t> matrix(2,3);
     for (int32_t i=0; i<6; i++)
-        matrix[i]=i;
+        matrix.matrix[i]=i;
 
     // create three 2-dimensional vectors 
     // shogun will now own the matrix created
     CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
-    features->set_feature_matrix(matrix, 2, 3);
+    features->set_feature_matrix(matrix);
 
     // create reverse linear kernel
     CReverseLinearKernel* kernel = new CReverseLinearKernel();

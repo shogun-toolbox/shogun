@@ -26,9 +26,7 @@ int main()
 	for (int i=0; i<N*dim; i++)
 		matrix[i] = i;
 
-	const int32_t feature_cache = 0;
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >( feature_cache );
-	features->set_feature_matrix(matrix.matrix, dim, N);
+	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(matrix);
 	SG_REF(features);
 	
 	// Create embedding and set parameters for global strategy

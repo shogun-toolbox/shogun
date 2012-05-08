@@ -1,4 +1,4 @@
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/GaussianProcessRegression.h>
@@ -23,9 +23,9 @@ int main(int argc, char** argv)
 #ifdef HAVE_LAPACK
 	
 	// create some data
-	float64_t* matrix = SG_MALLOC(float64_t, 6);
+	SGMatrix<float64_t> matrix(2,3);
 	for (int32_t i=0; i<6; i++)
-		matrix[i]=i;
+		matrix.matrix[i]=i;
 	
 	//Labels
 	CLabels* labels = new CLabels(3);
@@ -37,9 +37,8 @@ int main(int argc, char** argv)
 	
 	// create three 2-dimensional vectors 
 	// shogun will now own the matrix created
-	CSimpleFeatures<float64_t>* features= new CSimpleFeatures<float64_t>();
+	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 	SG_REF(features);
-	features->set_feature_matrix(matrix, 2, 3);
 	
 	// create gaussian kernel with cache 10MB, width 0.5
 	CGaussianKernel* kernel = new CGaussianKernel(10, 0.5);
@@ -71,6 +70,3 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
-
-
-	

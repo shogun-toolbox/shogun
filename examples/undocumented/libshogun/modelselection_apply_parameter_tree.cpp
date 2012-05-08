@@ -53,15 +53,14 @@ CModelSelectionParameters* create_param_tree()
 void apply_parameter_tree(CDynamicObjectArray* combinations)
 {
 	/* create some data */
-	float64_t* matrix=SG_MALLOC(float64_t, 6);
+	SGMatrix<float64_t> matrix(2,3);
 	for (index_t i=0; i<6; i++)
-		matrix[i]=i;
+		matrix.matrix[i]=i;
 
 	/* create three 2-dimensional vectors
 	 * to avoid deleting these, REF now and UNREF when finished */
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 	SG_REF(features);
-	features->set_feature_matrix(matrix, 2, 3);
 
 	/* create three labels, will be handed to svm and automaticall deleted */
 	CLabels* labels=new CLabels(3);

@@ -31,15 +31,15 @@ int main(int argc, char** argv)
 	init_shogun(&print_message);
 
 	/* create some random data */
-	float64_t* matrix = SG_MALLOC(float64_t, n*n);
-	for(int32_t i=0; i<n*n; ++i)
-		matrix[i]=CMath::random((float64_t)-n,(float64_t)n);
+	SGMatrix<float64_t> matrix(n,n);
 
-	CMath::display_matrix(matrix, n, n);
+	for(int32_t i=0; i<n*n; ++i)
+		matrix.matrix[i]=CMath::random((float64_t)-n,(float64_t)n);
+
+	CMath::display_matrix(matrix.matrix, n, n);
 
 	/* create n n-dimensional feature vectors */
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
-	features->set_feature_matrix(matrix, n, n);
+	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
 	/* create gaussian kernel with cache 10MB, width will be changed later */
 	CGaussianKernel* kernel = new CGaussianKernel(10, 0);

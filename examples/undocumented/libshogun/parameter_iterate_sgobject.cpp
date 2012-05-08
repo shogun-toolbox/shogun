@@ -31,14 +31,14 @@ int main(int argc, char** argv)
 	init_shogun(&print_message);
 
 	/* create some random data and hand it to each kernel */
-	float64_t* matrix=SG_MALLOC(float64_t, n*n);
+	SGMatrix<float64_t> matrix(n,n);
 	for (int32_t k=0; k<n*n; ++k)
-		matrix[k]=CMath::random((float64_t) -n, (float64_t) n);
-	SG_SPRINT("feature data:\n");
-	CMath::display_matrix(matrix, n, n);
+		matrix.matrix[k]=CMath::random((float64_t) -n, (float64_t) n);
 
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
-	features->set_feature_matrix(matrix, n, n);
+	SG_SPRINT("feature data:\n");
+	CMath::display_matrix(matrix.matrix, n, n);
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	/* create n kernels with n features each */
 	CGaussianKernel** kernels=SG_MALLOC(CGaussianKernel*, n);

@@ -48,7 +48,6 @@ public:
 
 	virtual ~CTestClass()
 	{
-		m_mat.destroy_matrix();
 		SG_UNREF(m_features);
 	}
 
