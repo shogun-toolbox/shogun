@@ -18,6 +18,14 @@ using namespace shogun;
 
 void CKernelMulticlassMachine::store_model_features()
 {
+    CKernel *kernel = ((CKernelMachine *)m_machine)->get_kernel();
+	if (!kernel)
+		SG_ERROR("kernel is needed to store SV features.\n");
+
+	CFeatures* lhs = kernel->get_lhs();
+	if (!lhs)
+		SG_ERROR("kernel lhs is needed to store SV features.\n");
+
     std::set<int32_t> all_sv;
 
     for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
@@ -37,14 +45,6 @@ void CKernelMulticlassMachine::store_model_features()
     std::map<int32_t, int32_t> sv_ridx;
     for (i=0; i < sv_idx.vlen; ++i)
         sv_ridx.insert(std::make_pair(sv_idx[i], i));
-
-    CKernel *kernel = ((CKernelMachine *)m_machine)->get_kernel();
-	if (!kernel)
-		SG_ERROR("kernel is needed to store SV features.\n");
-
-	CFeatures* lhs = kernel->get_lhs();
-	if (!lhs)
-		SG_ERROR("kernel lhs is needed to store SV features.\n");
 
 	CFeatures* sv_features=lhs->copy_subset(sv_idx);
 
