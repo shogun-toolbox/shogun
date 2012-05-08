@@ -79,6 +79,14 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			return m_kernel;
 		}
 
+		/** Stores feature data of underlying model.
+         *
+         * Need to store the SVs for all sub-machines. We make a union of the
+         * SVs for all sub-machines, store the union and adjust the
+         * sub-machines to index into the union.
+		 */
+		virtual void store_model_features();
+
 	protected:
 
 		/** init machine for training with kernel init */
