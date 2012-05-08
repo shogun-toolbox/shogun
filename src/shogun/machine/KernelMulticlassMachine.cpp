@@ -22,6 +22,7 @@ void CKernelMulticlassMachine::store_model_features()
 		SG_ERROR("kernel is needed to store SV features.\n");
 
 	CFeatures* lhs = kernel->get_lhs();
+	CFeatures* rhs = kernel->get_rhs();
 	if (!lhs)
 		SG_ERROR("kernel lhs is needed to store SV features.\n");
 
@@ -47,21 +48,19 @@ void CKernelMulticlassMachine::store_model_features()
 
 	CFeatures* sv_features=lhs->copy_subset(sv_idx);
 
+    kernel->init(sv_features, rhs);
+
     for (i=0; i < m_machines->get_num_elements(); ++i)
     {
         CKernelMachine *machine = (CKernelMachine *)get_machine(i);
-        CKernel *sub_kernel = machine->get_kernel();
-        CFeatures *sub_rhs = sub_kernel->get_rhs();
-        sub_kernel->init(sv_features, sub_rhs);
 
         for (int32_t j=0; j < machine->get_num_support_vectors(); ++j)
             machine->set_support_vector(j, sv_ridx[machine->get_support_vector(j)]);
 
-        SG_UNREF(sub_rhs);
-        SG_UNREF(sub_kernel);
         SG_UNREF(machine);
     }
 
     SG_UNREF(lhs);
+    SG_UNREF(rhs);
     SG_UNREF(kernel);
 }
