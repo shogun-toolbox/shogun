@@ -141,11 +141,3 @@ if __name__ == '__main__':
 		print m.don_splice_svs is None
 
 	load()
-
-	#prof = hotshot.Profile("model.prof")
-	#benchtime = prof.runcall(load)
-	#prof.close()
-	#stats = hotshot.stats.load("model.prof")
-	#stats.strip_dirs()
-	#stats.sort_stats('time', 'calls')
-	#stats.print_stats(20)
