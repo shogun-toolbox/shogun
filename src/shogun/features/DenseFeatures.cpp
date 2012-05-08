@@ -16,9 +16,7 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(int32_t size) : CDotFeatur
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & orig) :
 		CDotFeatures(orig)
 {
-	copy_feature_matrix(SGMatrix<ST>(orig.feature_matrix,
-									 orig.num_features,
-									 orig.num_vectors));
+	set_feature_matrix(orig.feature_matrix);
 	initialize_cache();
 	init();
 
@@ -32,11 +30,12 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(SGMatrix<ST> matrix) :
 	init();
 	set_feature_matrix(matrix);
 }
+
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec) :
 		CDotFeatures()
 {
 	init();
-	set_feature_matrix(src, num_feat, num_vec);
+	set_feature_matrix(SGMatrix<ST>(src, num_feat, num_vec));
 }
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
 		CDotFeatures(loader)
@@ -44,6 +43,7 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
 	init();
 	load(loader);
 }
+
 template<class ST> CFeatures* CDenseFeatures<ST>::duplicate() const
 {
 	return new CDenseFeatures<ST>(*this);
@@ -64,10 +64,7 @@ template<class ST> void CDenseFeatures<ST>::free_features()
 template<class ST> void CDenseFeatures<ST>::free_feature_matrix()
 {
 	m_subset_stack->remove_all_subsets();
-	SG_FREE(feature_matrix);
-	feature_matrix = NULL;
-	feature_matrix_num_features = num_features;
-	feature_matrix_num_vectors = num_vectors;
+	feature_matrix.unref();
 	num_vectors = 0;
 	num_features = 0;
 }
@@ -142,14 +139,14 @@ template<class ST> void CDenseFeatures<ST>::set_feature_vector(SGVector<ST> vect
 		"requested %d)\n", get_num_vectors(), num);
 	}
 
-	if (!feature_matrix)
+	if (!feature_matrix.matrix)
 		SG_ERROR("Requires a in-memory feature matrix\n");
 
 	if (vector.vlen != num_features)
 		SG_ERROR(
 				"Vector not of length %d (has %d)\n", num_features, vector.vlen);
 
-	memcpy(&feature_matrix[real_num * int64_t(num_features)], vector.vector,
+	memcpy(&feature_matrix.matrix[real_num * int64_t(num_features)], vector.vector,
 			int64_t(num_features) * sizeof(ST));
 }
 
@@ -246,50 +243,30 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 	}
 }
 
-template<class ST> void CDenseFeatures<ST>::get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec)
-{
-	ASSERT(feature_matrix);
-
-	int64_t num = int64_t(num_features) * get_num_vectors();
-	*num_feat = num_features;
-	*num_vec = get_num_vectors();
-	*dst = SG_MALLOC(ST, num);
-
-	/* copying depends on whether a subset is used */
-	if (m_subset_stack->has_subsets())
-	{
-		/* copy vector wise */
-		for (int32_t i = 0; i < *num_vec; ++i)
-		{
-			int32_t real_i = m_subset_stack->subset_idx_conversion(i);
-			memcpy(*dst, &feature_matrix[real_i * int64_t(num_features)],
-					num_features * sizeof(ST));
-		}
-	}
-	else
-	{
-		/* copy complete matrix */
-		memcpy(*dst, feature_matrix, num * sizeof(ST));
-	}
-}
-
 template<class ST> SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
 {
-	return SGMatrix<ST>(feature_matrix, num_features, num_vectors);
+	if (!m_subset_stack->has_subsets())
+		return feature_matrix;
+
+	SGMatrix<ST> submatrix(num_features, get_num_vectors());
+
+	/* copy a subset vector wise */
+	for (int32_t i=0; i<submatrix.num_cols; ++i)
+	{
+		int32_t real_i = m_subset_stack->subset_idx_conversion(i);
+		memcpy(&submatrix.matrix[i*int64_t(num_features)],
+				&feature_matrix.matrix[real_i * int64_t(num_features)],
+				num_features * sizeof(ST));
+	}
 }
 
 template<class ST> SGMatrix<ST> CDenseFeatures<ST>::steal_feature_matrix()
 {
-	SGMatrix<ST> st_feature_matrix(feature_matrix, num_features, num_vectors);
+	SGMatrix<ST> st_feature_matrix=feature_matrix;
 	m_subset_stack->remove_all_subsets();
 	SG_UNREF(feature_cache);
 	clean_preprocessors();
-
-	feature_matrix = NULL;
-	feature_matrix_num_vectors = 0;
-	feature_matrix_num_features = 0;
-	num_features = 0;
-	num_vectors = 0;
+	free_feature_matrix();
 	return st_feature_matrix;
 }
 
@@ -297,11 +274,9 @@ template<class ST> void CDenseFeatures<ST>::set_feature_matrix(SGMatrix<ST> matr
 {
 	m_subset_stack->remove_all_subsets();
 	free_feature_matrix();
-	feature_matrix = matrix.matrix;
+	feature_matrix = matrix;
 	num_features = matrix.num_rows;
 	num_vectors = matrix.num_cols;
-	feature_matrix_num_vectors = num_vectors;
-	feature_matrix_num_features = num_features;
 }
 
 template<class ST> ST* CDenseFeatures<ST>::get_feature_matrix(int32_t &num_feat, int32_t &num_vec)
@@ -340,21 +315,6 @@ template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int
 	}
 
 	return fm;
-}
-
-template<class ST> void CDenseFeatures<ST>::set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec)
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call set_feature_matrix\n");
-
-	free_feature_matrix();
-	feature_matrix = fm;
-	feature_matrix_num_features = num_feat;
-	feature_matrix_num_vectors = num_vec;
-
-	num_features = num_feat;
-	num_vectors = num_vec;
-	initialize_cache();
 }
 
 template<class ST> void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> src)
@@ -620,19 +580,15 @@ template<class ST> void CDenseFeatures<ST>::init()
 	num_vectors = 0;
 	num_features = 0;
 
-	feature_matrix = NULL;
-	feature_matrix_num_vectors = 0;
-	feature_matrix_num_features = 0;
-
+	feature_matrix = SGMatrix();
 	feature_cache = NULL;
 
 	set_generic<ST>();
+
 	/* not store number of vectors in subset */
-	m_parameters->add(&num_vectors, "num_vectors",
-			"Number of vectors.");
-	m_parameters->add(&num_features, "num_features", "Number of features.");
-	m_parameters->add_matrix(&feature_matrix, &feature_matrix_num_features,
-			&feature_matrix_num_vectors, "feature_matrix",
+	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.");
+	SG_ADD(&num_features, "num_features", "Number of features.");
+	SG_ADD(&feature_matrix, "feature_matrix",
 			"Matrix of feature vectors / 1 vector per column.");
 }
 
@@ -929,19 +885,19 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 		vec1 = get_feature_vector(i, v1len, v1free);
 		vec2 = rhs->get_feature_vector(i, v2len, v2free);
 
-		if ( v1len != v2len )
+		if (v1len!=v2len)
 			stop = true;
 
-		for (int32_t j = 0; j < v1len; j++)
+		for (int32_t j=0; j<v1len; j++)
 		{
-			if ( vec1[j] != vec2[j] )
+			if (vec1[j]!=vec2[j])
 				stop = true;
 		}
 
 		free_feature_vector(vec1, i, v1free);
 		free_feature_vector(vec2, i, v2free);
 
-		if ( stop )
+		if (stop)
 			return false;
 	}
 
@@ -949,16 +905,16 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 }
 
 #define LOAD(f_load, sg_type)												\
-template<> void CDenseFeatures<sg_type>::load(CFile* loader)		\
+template<> void CDenseFeatures<sg_type>::load(CFile* loader)				\
 { 																			\
-	SG_SET_LOCALE_C;													\
+	SG_SET_LOCALE_C;														\
 	ASSERT(loader);															\
 	sg_type* matrix;														\
 	int32_t num_feat;														\
 	int32_t num_vec;														\
 	loader->f_load(matrix, num_feat, num_vec);								\
-	set_feature_matrix(matrix, num_feat, num_vec);							\
-	SG_RESET_LOCALE;													\
+	set_feature_matrix(SGMatrix<sg_type>(matrix, num_feat, num_vec));		\
+	SG_RESET_LOCALE;														\
 }
 
 LOAD(get_matrix, bool)
@@ -977,12 +933,13 @@ LOAD(get_longreal_matrix, floatmax_t)
 #undef LOAD
 
 #define SAVE(f_write, sg_type)												\
-template<> void CDenseFeatures<sg_type>::save(CFile* writer)		\
+template<> void CDenseFeatures<sg_type>::save(CFile* writer)				\
 { 																			\
-	SG_SET_LOCALE_C;													\
+	SG_SET_LOCALE_C;														\
 	ASSERT(writer);															\
-	writer->f_write(feature_matrix, num_features, num_vectors);				\
-	SG_RESET_LOCALE;													\
+	writer->f_write(feature_matrix.matrix, feature_matrix.num_rows,			\
+			feature_matrix.num_cols);										\
+	SG_RESET_LOCALE;														\
 }
 
 SAVE(set_matrix, bool)
