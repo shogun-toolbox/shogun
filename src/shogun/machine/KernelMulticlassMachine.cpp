@@ -10,7 +10,6 @@
 
 #include <set>
 #include <map>
-#include <vector>
 
 #include <shogun/machine/KernelMulticlassMachine.h>
 
