@@ -69,7 +69,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	int32_t num_auc = num_pos*num_neg;
 	SG_INFO("num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc);
 
-	uint16_t* features_auc = SG_MALLOC(uint16_t, num_auc*2);
+	SGMatrix<uint16_t> features_auc(2,num_auc);
 	int32_t* labels_auc = SG_MALLOC(int32_t, num_auc);
 	int32_t n=0 ;
 
@@ -86,14 +86,14 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 			// create about as many positively as negatively labeled examples
 			if (n%2==0)
 			{
-				features_auc[n*2]=i;
-				features_auc[n*2+1]=j;
+				features_auc.matrix[n*2]=i;
+				features_auc.matrix[n*2+1]=j;
 				labels_auc[n]=1;
 			}
 			else
 			{
-				features_auc[n*2]=j;
-				features_auc[n*2+1]=i;
+				features_auc.matrix[n*2]=j;
+				features_auc.matrix[n*2+1]=i;
 				labels_auc[n]=-1;
 			}
 
@@ -109,7 +109,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 
 	// create feature object
 	CDenseFeatures<uint16_t>* f = new CDenseFeatures<uint16_t>(0);
-	f->set_feature_matrix(features_auc, 2, num_auc);
+	f->set_feature_matrix(features_auc);
 
 	// create AUC kernel and attach the features
 	init(f,f);

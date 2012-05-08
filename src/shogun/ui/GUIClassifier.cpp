@@ -1167,7 +1167,7 @@ CLabels* CGUIClassifier::classify()
 			break;
 	};
 
-	return false;
+	return NULL;
 }
 
 CLabels* CGUIClassifier::classify_kernelmachine()

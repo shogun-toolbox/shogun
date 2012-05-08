@@ -76,10 +76,10 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 
 	len = num_features;
 
-	if (feature_matrix)
+	if (feature_matrix.matrix)
 	{
 		dofree = false;
-		return &feature_matrix[real_num * int64_t(num_features)];
+		return &feature_matrix.matrix[real_num * int64_t(num_features)];
 	}
 
 	ST* feat = NULL;
@@ -187,7 +187,7 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call vector_subset\n");
 
-	ASSERT(feature_matrix);
+	ASSERT(feature_matrix.matrix);
 	ASSERT(idx_len<=num_vectors);
 
 	int32_t num_vec = num_vectors;
@@ -206,8 +206,8 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 		if (i == ii)
 			continue;
 
-		memcpy(&feature_matrix[int64_t(num_features) * i],
-				&feature_matrix[int64_t(num_features) * ii],
+		memcpy(&feature_matrix.matrix[int64_t(num_features) * i],
+				&feature_matrix.matrix[int64_t(num_features) * ii],
 				num_features * sizeof(ST));
 		old_ii = ii;
 	}
@@ -218,15 +218,15 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call feature_subset\n");
 
-	ASSERT(feature_matrix);
+	ASSERT(feature_matrix.matrix);
 	ASSERT(idx_len<=num_features);
 	int32_t num_feat = num_features;
 	num_features = idx_len;
 
 	for (int32_t i = 0; i < num_vectors; i++)
 	{
-		ST* src = &feature_matrix[int64_t(num_feat) * i];
-		ST* dst = &feature_matrix[int64_t(num_features) * i];
+		ST* src = &feature_matrix.matrix[int64_t(num_feat) * i];
+		ST* dst = &feature_matrix.matrix[int64_t(num_features) * i];
 
 		int32_t old_jj = -1;
 		for (int32_t j = 0; j < idx_len; j++)
@@ -258,6 +258,8 @@ template<class ST> SGMatrix<ST> CDenseFeatures<ST>::get_feature_matrix()
 				&feature_matrix.matrix[real_i * int64_t(num_features)],
 				num_features * sizeof(ST));
 	}
+
+	return submatrix;
 }
 
 template<class ST> SGMatrix<ST> CDenseFeatures<ST>::steal_feature_matrix()
@@ -283,7 +285,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_matrix(int32_t &num_feat,
 {
 	num_feat = num_features;
 	num_vec = num_vectors;
-	return feature_matrix;
+	return feature_matrix.matrix;
 }
 
 template<class ST> CDenseFeatures<ST>* CDenseFeatures<ST>::get_transposed()
@@ -323,17 +325,9 @@ template<class ST> void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> src
 		SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
 
 	free_feature_matrix();
-	int32_t num_feat = src.num_rows;
-	int32_t num_vec = src.num_cols;
-	feature_matrix = SG_MALLOC(ST, ((int64_t) num_feat) * num_vec);
-	feature_matrix_num_features = num_feat;
-	feature_matrix_num_vectors = num_vec;
-
-	memcpy(feature_matrix, src.matrix,
-			(sizeof(ST) * ((int64_t) num_feat) * num_vec));
-
-	num_features = num_feat;
-	num_vectors = num_vec;
+	feature_matrix = src.clone();
+	num_features = src.num_rows;
+	num_vectors = src.num_cols;
 	initialize_cache();
 }
 
@@ -347,9 +341,7 @@ template<class ST> void CDenseFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 	ASSERT(num_feat>0 && num_vec>0);
 
 	free_feature_matrix();
-	feature_matrix = SG_MALLOC(ST, ((int64_t) num_feat) * num_vec);
-	feature_matrix_num_features = num_feat;
-	feature_matrix_num_vectors = num_vec;
+	feature_matrix = SGMatrix<ST>(num_feat, num_vec);
 
 	for (int32_t i = 0; i < num_vec; i++)
 	{
@@ -357,7 +349,7 @@ template<class ST> void CDenseFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 		ASSERT(num_feat==v.vlen);
 
 		for (int32_t j = 0; j < num_feat; j++)
-			feature_matrix[i * int64_t(num_feat) + j] = (ST) v.vector[j];
+			feature_matrix.matrix[i * int64_t(num_feat) + j] = (ST) v.vector[j];
 	}
 	num_features = num_feat;
 	num_vectors = num_vec;
@@ -370,7 +362,7 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 
 	SG_DEBUG( "force: %d\n", force_preprocessing);
 
-	if (feature_matrix && get_num_preprocessors())
+	if (feature_matrix.matrix && get_num_preprocessors())
 	{
 		for (int32_t i = 0; i < get_num_preprocessors(); i++)
 		{
@@ -385,7 +377,8 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 				{
 					SG_UNREF(p);
 					return false;
-				}SG_UNREF(p);
+				}
+				SG_UNREF(p);
 
 			}
 		}
@@ -394,7 +387,7 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 	}
 	else
 	{
-		if (!feature_matrix)
+		if (!feature_matrix.matrix)
 			SG_ERROR( "no feature matrix\n");
 
 		if (!get_num_preprocessors())
@@ -560,7 +553,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 	{
 		index_t real_idx=m_subset_stack->subset_idx_conversion(indices.vector[i]);
 		memcpy(&feature_matrix_copy.matrix[i*num_features],
-				&feature_matrix[real_idx*num_features],
+				&feature_matrix.matrix[real_idx*num_features],
 				num_features*sizeof(ST));
 	}
 
@@ -580,16 +573,16 @@ template<class ST> void CDenseFeatures<ST>::init()
 	num_vectors = 0;
 	num_features = 0;
 
-	feature_matrix = SGMatrix();
+	feature_matrix = SGMatrix<ST>();
 	feature_cache = NULL;
 
 	set_generic<ST>();
 
 	/* not store number of vectors in subset */
-	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.");
-	SG_ADD(&num_features, "num_features", "Number of features.");
+	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.", MS_NOT_AVAILABLE);
+	SG_ADD(&num_features, "num_features", "Number of features.", MS_NOT_AVAILABLE);
 	SG_ADD(&feature_matrix, "feature_matrix",
-			"Matrix of feature vectors / 1 vector per column.");
+			"Matrix of feature vectors / 1 vector per column.", MS_NOT_AVAILABLE);
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)	\

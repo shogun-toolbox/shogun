@@ -63,11 +63,9 @@ namespace shogun{
 		int32_t num_vectors = data->get_num_vectors();
 		int32_t num_classes = m_labels->get_num_classes();
 		int32_t num_feats = ((CDenseFeatures<float64_t>*)data)->get_num_features();
-		float64_t* centroids = SG_CALLOC(float64_t, num_feats*num_classes);
-		for(int32_t i=0 ; i < num_feats*num_classes ; i++)
-		{
-			centroids[i]=0;
-		}
+		SGMatrix<float64_t> centroids(num_feats,num_classes);
+		centroids.zero();
+
 		m_centroids->set_num_features(num_feats);
 		m_centroids->set_num_vectors(num_classes);
 		
@@ -82,7 +80,7 @@ namespace shogun{
 			int32_t current_len;
 			bool current_free;
 			int32_t current_class = m_labels->get_label(idx);
-			float64_t* target = centroids + num_feats*current_class;
+			float64_t* target = centroids.matrix + num_feats*current_class;
 			float64_t* current = ((CDenseFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
 			CMath::add(target,1.0,target,1.0,current,current_len);
 			num_per_class[current_class]++;
@@ -92,7 +90,7 @@ namespace shogun{
 
 		for(int32_t i=0 ; i<num_classes ; i++)
 		{
-			float64_t* target = centroids + num_feats*i;
+			float64_t* target = centroids.matrix + num_feats*i;
 			int32_t total = num_per_class[i];
 			float64_t scale = 0;
 			if(total>1)
@@ -104,7 +102,7 @@ namespace shogun{
 		}
 				
 		m_centroids->free_feature_matrix();
-		m_centroids->set_feature_matrix(centroids,num_feats,num_classes);
+		m_centroids->set_feature_matrix(centroids);
 		
 		
 		m_is_trained=true;
