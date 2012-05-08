@@ -225,7 +225,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	SG_FREE(s);
 	SG_FREE(f);
 
-	return SGMatrix<float64_t>(shortest_D,N,N);
+	return D_matrix;
 }
 
 void* CIsomap::run_dijkstra_thread(void *p)
