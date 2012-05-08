@@ -53,7 +53,8 @@ int main(int argc, char** argv)
 		stream_features->release_example();
 	}
 	stream_features->end_parser();
-
+	mat.num_cols = num_vectors;
+	
 	// Create features with the useful values from mat
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 
