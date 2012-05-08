@@ -145,7 +145,6 @@ int main(int argc, char **argv)
 	}
 
 	SG_UNREF(features);
-	data.destroy_matrix();
 	exit_shogun();
 	return 0;
 }

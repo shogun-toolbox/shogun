@@ -66,9 +66,7 @@ int main(int argc, char** argv)
 	SG_UNREF(features);
 	SG_UNREF(labels);
 	SG_UNREF(kernel);
-	cov.destroy_matrix();
-			
-	#endif
+#endif
 	
 	exit_shogun();
 	return 0;
