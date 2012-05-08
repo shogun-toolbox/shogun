@@ -194,20 +194,10 @@ public:
 	 */
 	void feature_subset(int32_t* idx, int32_t idx_len);
 
-	/** get a copy of the feature matrix
-	 * num_feat,num_vectors are returned by reference
+	/** Getter the feature matrix
 	 *
-	 * possible with subset
-	 *
-	 * @param dst destination to store matrix in
-	 * @param num_feat number of features (rows of matrix)
-	 * @param num_vec number of vectors (columns of matrix)
-	 */
-	void get_feature_matrix(ST** dst, int32_t* num_feat, int32_t* num_vec);
-
-	/** Getter for feature matrix
-	 *
-	 * subset is ignored
+	 * in-place without subset
+	 * a copy with subset
 	 *
 	 * @return matrix feature matrix
 	 */
@@ -225,7 +215,12 @@ public:
 	 *
 	 * any subset is removed
 	 *
+	 * num_cols is number of feature vectors
+	 * num_rows is number of dims of vectors
+	 * see below for definition of feature_matrix
+	 *
 	 * @param matrix feature matrix to set
+	 *
 	 */
 	void set_feature_matrix(SGMatrix<ST> matrix);
 
@@ -260,20 +255,6 @@ public:
 	 * @return transposed sparse feature matrix
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec);
-
-	/** set feature matrix
-	 * necessary to set feature_matrix, num_features,
-	 * num_vectors, where num_features is the column offset,
-	 * and columns are linear in memory
-	 * see below for definition of feature_matrix
-	 *
-	 * not possible with subset
-	 *
-	 * @param fm feature matrix to se
-	 * @param num_feat number of features in matrix
-	 * @param num_vec number of vectors in matrix
-	 */
-	virtual void set_feature_matrix(ST* fm, int32_t num_feat, int32_t num_vec);
 
 	/** copy feature matrix
 	 * store copy of feature_matrix, where num_features is the
@@ -430,7 +411,7 @@ public:
 	 */
 	virtual void save(CFile* saver);
 
-	#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** iterator for dense features */
 	struct dense_feature_iterator
 	{
@@ -446,7 +427,7 @@ public:
 		/** feature index */
 		int32_t index;
 	};
-	#endif
+#endif
 
 	/** iterate over the non-zero features
 	 *
@@ -531,15 +512,9 @@ protected:
 
 	/** Feature matrix and its associated number of
 	 * vectors and features. Note that num_vectors / num_features
-	 * above have the same sizes if feature_matrix != NULL
+	 * above match matrix sizes if feature_matrix.matrix != NULL
 	 * */
-	ST* feature_matrix;
-
-	/** number of vectors in feature matrix */
-	int32_t feature_matrix_num_vectors;
-
-	/** number of features in feature matrix */
-	int32_t feature_matrix_num_features;
+	SGMatrix<ST> feature_matrix;
 
 	/** feature cache */
 	CCache<ST>* feature_cache;
