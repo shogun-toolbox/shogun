@@ -108,6 +108,24 @@ template<class T> class SGMatrix : public SGReferencedData
 				set_const(0);
 		}
 
+		/** clone matrix */
+		SGMatrix<T> clone()
+		{
+			return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
+					num_rows, num_cols);
+		}
+
+		/** clone vector */
+		template <class VT>
+		static VT* clone_matrix(const VT* matrix, int32_t nrows, int32_t ncols)
+		{
+			VT* result = SG_MALLOC(VT, int64_t(nrows)*ncols);
+			for (int64_t i=0; i<int64_t(nrows)*ncols; i++)
+				result[i]=matrix[i];
+
+			return result;
+		}
+
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig)
