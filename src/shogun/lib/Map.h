@@ -50,7 +50,7 @@ IGNORE_IN_CLASSLIST template<class K, class T> struct CMapNode
 };
 #endif
 
-/** @brief the class CSet, a set based on the hash-table.
+/** @brief the class CMap, a map based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table
  */
 IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public CSGObject
@@ -118,23 +118,30 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const { return "Map"; }
 
-	/** Add an element to the set
+	/** Add an element to the map
 	 *
-	 * @param e elemet to be added
+	 * @param key key to be added
+	 * @param data data to be added
+	 * @return index of added element
 	 */
-	void add(const K& key, const T& data)
+	int32_t add(const K& key, const T& data)
 	{
 		int32_t index=hash(key);
 		if (chain_search(index, key)==NULL)
 		{
-			insert_key(index, key, data);
+			int32_t added_index=insert_key(index, key, data);
 			num_elements++;
+
+			return added_index;
 		}
+
+		return -1;
 	}
 
-	/** Remove an element from the set
+	/** Check an element in the map
 	 *
-	 * @param e element to be looked for
+	 * @param key key to be looked for
+	 * @return true if element contains in the map
 	 */
 	bool contains(const K& key)
 	{
@@ -147,7 +154,7 @@ public:
 
 	/** Remove an element from the set
 	 *
-	 * @param e element to be removed
+	 * @param key key to be removed
 	 */
 	void remove(const K& key)
 	{
@@ -163,7 +170,7 @@ public:
 
 	/** Index of element in the set
 	 *
-	 * @param e element to be removed
+	 * @param key key to be looked for
 	 * @return index of the element or -1 if not found
 	 */
 	int32_t index_of(const K& key)
@@ -177,6 +184,46 @@ public:
 		return -1;
 	}
 
+	/** Get element by key
+	 *
+	 * @param key key to be looked for
+	 * @return exist element or new element 
+	 * (if key doesn't consist in map)
+	 */
+	T get_element(const K& key)
+	{
+		int32_t index=hash(key);
+		CMapNode<K, T>* result=chain_search(index, key);
+		
+		if (result!=NULL)		
+			return result->data;
+		else
+		{
+			int32_t added_index=add(key, T());
+			result=get_node_ptr(added_index);
+
+			return result->data;
+		}
+	}
+
+	/** Set element by key
+	 *
+	 * @param key key of element 
+	 * @param data new data for element
+	 */
+	void set_element(const K& key, const T& data)
+	{
+		int32_t index=hash(key);
+		CMapNode<K, T>* result=chain_search(index, key);
+		
+		if (result!=NULL)		
+			result->data=data;
+		else
+		{
+			add(key, data);
+		}
+	}
+
 	/** Get number of elements
 	 *
 	 * @return number of elements
@@ -186,28 +233,16 @@ public:
 		return num_elements;
 	}
 
-	/** Get number of elements
+	/** Get size of auxilary array
 	 *
-	 * @return number of elements
+	 * @return array size
 	 */
-	int32_t get_maxnum_elements() const
+	int32_t get_array_size() const
 	{
 		return array->get_num_elements();
 	}
 
-	/** Get set element at index
-	 *
-	 * (does NOT do bounds checking)
-	 *
-	 * @param index index
-	 * @return array element at index
-	 */
-	T get_element(int32_t index) const
-	{
-		return array->get_element(index)->data;
-	}
-
-	/** get set element at index as reference
+	/** get element at index as reference
 	 *
 	 * (does NOT do bounds checking)
 	 *
@@ -216,26 +251,26 @@ public:
 	 */
 	T* get_element_ptr(int32_t index)
 	{
-		if (is_free(array->get_element(index)))
-			return NULL;
-		return &(array->get_element(index)->data);
+		CMapNode<K, T>* result=array->get_element(index);
+		if(result!=NULL && !is_free(result))
+			return &(array->get_element(index)->data);
+		return NULL;
 	}
 
-	/** operator overload for set read only access
-	 * use add() for write access
+	/** get node at index as reference
 	 *
-	 * DOES NOT DO ANY BOUNDS CHECKING
+	 * (does NOT do bounds checking)
 	 *
 	 * @param index index
-	 * @return element at index
+	 * @return node at index
 	 */
-	T operator[](int32_t index) const
+	CMapNode<K, T>* get_node_ptr(int32_t index)
 	{
-		return array->get_element(index)->data;
+		return array->get_element(index);
 	}
 		
 	/** @return underlying array of nodes in memory */
-	T* get_array()
+	CMapNode<K, T>** get_array()
 	{
 		return array->get_array();
 	}
@@ -283,7 +318,7 @@ private:
 	}
 	
 	/** Inserts nodes with certain key and data in set */
-	void insert_key(int32_t index, const K& key, const T& data)
+	int32_t insert_key(int32_t index, const K& key, const T& data)
 	{
 		int32_t new_index;
 		CMapNode<K, T>* new_node;
@@ -329,6 +364,8 @@ private:
 
 			hash_array[index]=new_node;
 		}
+
+		return new_index;
 	}
 
 	/** Deletes key from set */
