@@ -156,7 +156,6 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	int32_t i,j;
 
 	// double center distance_matrix
-	float64_t dsq;
 	for (i=0; i<N; i++)
 	{
 		for (j=0; j<N; j++)
@@ -166,7 +165,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	for (i=0; i<N; i++)
 	{
 		for (j=0; j<N; j++)
-			distance_matrix(i*N+j) = distance_matrix(i,j)*(-0.5);
+			distance_matrix(i,j) = distance_matrix(i,j)*(-0.5);
 	}
 
 	// feature matrix representing given distance
