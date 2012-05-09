@@ -9,8 +9,8 @@
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
-#ifndef _MAP_H_
-#define _MAP_H_
+#ifndef _SET_H_
+#define _SET_H_
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
@@ -22,13 +22,9 @@
 namespace shogun
 {
 
-#define IGNORE_IN_CLASSLIST
-
-#define MapNode CMapNode<K, T>
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** hashset node */
-IGNORE_IN_CLASSLIST template<class K, class T> struct CMapNode
+template<class T> struct CSetNode
 {	
 	/** index in hashtable */
 	int32_t index;
@@ -36,28 +32,25 @@ IGNORE_IN_CLASSLIST template<class K, class T> struct CMapNode
 	/** is free? */
 	bool free;
 
-	/** key of node */
-	K key;
-
 	/** data of node */
-	T data;
+	T element;
 
 	/** pointer to left sibling */
-	CMapNode *left;
+	CSetNode<T> *left;
 
 	/** pointer to right sibling */
-	CMapNode *right;
+	CSetNode<T> *right;
 };
 #endif
 
-/** @brief the class CMap, a map based on the hash-table.
+/** @brief the class CSet, a set based on the hash-table.
  * w: http://en.wikipedia.org/wiki/Hash_table
  */
-IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public CSGObject
+template<class T> class CSet: public CSGObject
 {
 public:
 	/** Default constructor */
-	CMap()
+	CSet()
 	{	
 		hash_size=0;
 		free_index=0;
@@ -68,7 +61,7 @@ public:
 	}
 
 	/** Custom constructor */
-	CMap(int32_t size, int32_t reserved=1024, bool tracable=true)
+	CSet(int32_t size, int32_t reserved=1024, bool tracable=true)
 	{	
 		hash_size=size;
 		free_index=0;
@@ -76,20 +69,20 @@ public:
 		use_sg_mallocs=tracable;
 
 		if (use_sg_mallocs)
-			hash_array=SG_CALLOC(MapNode*, size);
+			hash_array=SG_CALLOC(CSetNode<T>*, size);
 		else
-			hash_array=(CMapNode<K, T>**) calloc(size, sizeof(CMapNode<K, T>*));
+			hash_array=(CSetNode<T>**) calloc(size, sizeof(CSetNode<T>*));
 
 		for (int32_t i=0; i<size; i++)
 		{
 			hash_array[i]=NULL;
 		}
 
-		array=new DynArray<CMapNode<K, T>*>(reserved, tracable);
+		array=new DynArray<CSetNode<T>* >(reserved, tracable);
 	}
 
 	/** Default destructor */
-	virtual ~CMap()
+	virtual ~CSet()
 	{
 		if (array!=NULL)
 		{
@@ -116,37 +109,30 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "Map"; }
+	virtual const char* get_name() const { return "Set"; }
 
-	/** Add an element to the map
+	/** Add an element to the set
 	 *
-	 * @param key key to be added
-	 * @param data data to be added
-	 * @return index of added element
+	 * @param e elemet to be added
 	 */
-	int32_t add(const K& key, const T& data)
+	void add(const T& element)
 	{
-		int32_t index=hash(key);
-		if (chain_search(index, key)==NULL)
+		int32_t index=hash(element);
+		if (chain_search(index, element)==NULL)
 		{
-			int32_t added_index=insert_key(index, key, data);
+			insert_key(index, element);
 			num_elements++;
-
-			return added_index;
 		}
-
-		return -1;
 	}
 
-	/** Check an element in the map
+	/** Remove an element from the set
 	 *
-	 * @param key key to be looked for
-	 * @return true if element contains in the map
+	 * @param e element to be looked for
 	 */
-	bool contains(const K& key)
+	bool contains(const T& element)
 	{
-		int32_t index=hash(key);
-		if (chain_search(index, key)!=NULL)
+		int32_t index=hash(element);
+		if (chain_search(index, element)!=NULL)
 			return true; 
 
 		return false;
@@ -154,12 +140,12 @@ public:
 
 	/** Remove an element from the set
 	 *
-	 * @param key key to be removed
+	 * @param e element to be removed
 	 */
-	void remove(const K& key)
+	void remove(const T& element)
 	{
-		int32_t index=hash(key);
-		CMapNode<K, T>* result=chain_search(index, key);
+		int32_t index=hash(element);
+		CSetNode<T>* result=chain_search(index, element);
 
 		if (result!=NULL)		
 		{
@@ -173,55 +159,15 @@ public:
 	 * @param key key to be looked for
 	 * @return index of the element or -1 if not found
 	 */
-	int32_t index_of(const K& key)
+	int32_t index_of(const T& element)
 	{
-		int32_t index=hash(key);
-		CMapNode<K ,T>* result=chain_search(index, key);
+		int32_t index=hash(element);
+		CSetNode<T>* result=chain_search(index, element);
 
 		if (result!=NULL)		
 			 return result->index;
 		
 		return -1;
-	}
-
-	/** Get element by key
-	 *
-	 * @param key key to be looked for
-	 * @return exist element or new element 
-	 * (if key doesn't consist in map)
-	 */
-	T get_element(const K& key)
-	{
-		int32_t index=hash(key);
-		CMapNode<K, T>* result=chain_search(index, key);
-		
-		if (result!=NULL)		
-			return result->data;
-		else
-		{
-			int32_t added_index=add(key, T());
-			result=get_node_ptr(added_index);
-
-			return result->data;
-		}
-	}
-
-	/** Set element by key
-	 *
-	 * @param key key of element 
-	 * @param data new data for element
-	 */
-	void set_element(const K& key, const T& data)
-	{
-		int32_t index=hash(key);
-		CMapNode<K, T>* result=chain_search(index, key);
-		
-		if (result!=NULL)		
-			result->data=data;
-		else
-		{
-			add(key, data);
-		}
 	}
 
 	/** Get number of elements
@@ -242,7 +188,7 @@ public:
 		return array->get_num_elements();
 	}
 
-	/** get element at index as reference
+	/** get set element at index as reference
 	 *
 	 * (does NOT do bounds checking)
 	 *
@@ -251,8 +197,7 @@ public:
 	 */
 	T* get_element_ptr(int32_t index)
 	{
-		CMapNode<K, T>* result=array->get_element(index);
-		if (result!=NULL && !is_free(result))
+		if (array->get_element(index)!=NULL)
 			return &(array->get_element(index)->data);
 		return NULL;
 	}
@@ -264,13 +209,13 @@ public:
 	 * @param index index
 	 * @return node at index
 	 */
-	CMapNode<K, T>* get_node_ptr(int32_t index)
+	CSetNode<T>* get_node_ptr(int32_t index)
 	{
 		return array->get_element(index);
 	}
 		
 	/** @return underlying array of nodes in memory */
-	CMapNode<K, T>** get_array()
+	CSetNode<T>** get_array()
 	{
 		return array->get_array();
 	}
@@ -279,13 +224,13 @@ private:
 	/** Returns hash of key
 	 * MurmurHash used
 	 */
-	int32_t hash(const K& key)
+	int32_t hash(const T& element)
 	{
-		return CHash::MurmurHash2((uint8_t*)(&key), sizeof(key), 0xDEADBEEF) % hash_size;
+		return CHash::MurmurHash2((uint8_t*)(&element), sizeof(element), 0xDEADBEEF) % hash_size;
 	}
 
 	/** is free? */
-	bool is_free(CMapNode<K, T>* node)
+	bool is_free(CSetNode<T>* node)
 	{
 		if (node->free==true)
 			return true;
@@ -294,7 +239,7 @@ private:
 	}
 
 	/** Searchs key in list(chain) */
-	CMapNode<K, T>* chain_search(int32_t index, const K& key)
+	CSetNode<T>* chain_search(int32_t index, const T& element)
 	{
 		if (hash_array[index]==NULL)
 		{
@@ -302,11 +247,11 @@ private:
 		}
 		else
 		{
-			CMapNode<K, T>* current=hash_array[index];
+			CSetNode<T>* current=hash_array[index];
 
 			do // iterating all items in the list
 			{
-				if (current->key==key)
+				if (current->element==element)
 					return current; // it's a search key
 
 				current=current->right;
@@ -318,18 +263,18 @@ private:
 	}
 	
 	/** Inserts nodes with certain key and data in set */
-	int32_t insert_key(int32_t index, const K& key, const T& data)
+	void insert_key(int32_t index, const T& element)
 	{
 		int32_t new_index;
-		CMapNode<K, T>* new_node;
+		CSetNode<T>* new_node;
 
 		if ((free_index>=array->get_num_elements()) || (array->get_element(free_index)==NULL))
 		{
 			// init new node
 			if (use_sg_mallocs)
-				new_node=SG_CALLOC(MapNode, 1);
+				new_node=SG_CALLOC(CSetNode<T>, 1);
 			else
-				new_node=(CMapNode<K, T>*) calloc(1, sizeof(CMapNode<K, T>));
+				new_node=(CSetNode<T>*) calloc(1, sizeof(CSetNode<T>));
 
 			array->append_element(new_node);
 
@@ -347,8 +292,7 @@ private:
 
 		new_node->index=new_index;
 		new_node->free=false;
-		new_node->key=key;
-		new_node->data=data;
+		new_node->element=element;
 		new_node->left=NULL;
 		new_node->right=NULL;
 
@@ -364,12 +308,10 @@ private:
 
 			hash_array[index]=new_node;
 		}
-
-		return new_index;
 	}
 
 	/** Deletes key from set */
-	void delete_key(int32_t index, CMapNode<K, T>* node)
+	void delete_key(int32_t index, CSetNode<T>* node)
 	{		
 		int32_t temp=0;
 
@@ -409,10 +351,10 @@ protected:
 	int32_t num_elements;
 
 	/** array of lists (chains) */
-	CMapNode<K, T>** hash_array;
+	CSetNode<T>** hash_array;
 
 	/** array for index permission */
-	DynArray<CMapNode<K, T>*>* array;
+	DynArray<CSetNode<T>*>* array;
 };
 
 }
