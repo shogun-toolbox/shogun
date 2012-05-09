@@ -49,19 +49,8 @@ template<class T> struct CSetNode
 template<class T> class CSet: public CSGObject
 {
 public:
-	/** Default constructor */
-	CSet()
-	{	
-		hash_size=0;
-		free_index=0;
-		num_elements=0;
-		hash_array=NULL;
-		array=NULL;
-		use_sg_mallocs=false;
-	}
-
 	/** Custom constructor */
-	CSet(int32_t size, int32_t reserved=1024, bool tracable=true)
+	CSet(int32_t size=1, int32_t reserved=1, bool tracable=true)
 	{	
 		hash_size=size;
 		free_index=0;
