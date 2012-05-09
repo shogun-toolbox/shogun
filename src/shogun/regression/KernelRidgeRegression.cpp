@@ -81,8 +81,6 @@ bool CKernelRidgeRegression::train_machine_pinv(CFeatures* data)
 	clapack_dposv(CblasRowMajor,CblasUpper, n, 1, kernel_matrix.matrix, n,
 			m_alpha.vector, n);
 
-	SG_FREE(kernel_matrix.matrix);
-
 	return true;
 }
 
