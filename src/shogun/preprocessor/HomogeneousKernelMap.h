@@ -144,7 +144,7 @@ namespace shogun
 			inline float64_t get_smooth_spectrum (float64_t omega) const;
 			inline float64_t sinc (float64_t x) const;
 			inline float64_t get_spectrum (float64_t omega) const;
-			void apply_to_vector(SGVector<float64_t> in_v, SGVector<float64_t> out_v) const;
+			SGVector<float64_t> apply_to_vector(SGVector<float64_t> in_v) const;
 
 		private:
 			HomogeneousKernelType m_kernel;
