@@ -8,9 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <set>
-#include <map>
-
+#include <shogun/lib/Map.h>
 #include <shogun/machine/KernelMulticlassMachine.h>
 
 using namespace shogun;
@@ -26,36 +24,33 @@ void CKernelMulticlassMachine::store_model_features()
 	if (!lhs)
 		SG_ERROR("kernel lhs is needed to store SV features.\n");
 
-    std::set<int32_t> all_sv;
-
+    CMap<int32_t, int32_t> all_sv;
     for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
     {
         CKernelMachine *machine = (CKernelMachine *)get_machine(i);
         for (int32_t j=0; j < machine->get_num_support_vectors(); ++j)
-            all_sv.insert(machine->get_support_vector(j));
+            all_sv.add(machine->get_support_vector(j), 0);
 
         SG_UNREF(machine);
     }
 
-    int32_t i=0;
-    SGVector<int32_t> sv_idx(all_sv.size());
-    for (std::set<int32_t>::iterator it = all_sv.begin(); it != all_sv.end(); ++it)
-        sv_idx[i++] = *it;
+    SGVector<int32_t> sv_idx(all_sv.get_num_elements());
+    for (int32_t i=0; i < sv_idx.vlen; ++i)
+        sv_idx[i] = all_sv.get_element(i);
 
-    std::map<int32_t, int32_t> sv_ridx;
-    for (i=0; i < sv_idx.vlen; ++i)
-        sv_ridx.insert(std::make_pair(sv_idx[i], i));
+    for (int32_t i=0; i < sv_idx.vlen; ++i)
+        *all_sv.get_element_ptr(all_sv.index_of(sv_idx[i])) = i;
 
 	CFeatures* sv_features=lhs->copy_subset(sv_idx);
 
     kernel->init(sv_features, rhs);
 
-    for (i=0; i < m_machines->get_num_elements(); ++i)
+    for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
     {
         CKernelMachine *machine = (CKernelMachine *)get_machine(i);
 
         for (int32_t j=0; j < machine->get_num_support_vectors(); ++j)
-            machine->set_support_vector(j, sv_ridx[machine->get_support_vector(j)]);
+            machine->set_support_vector(j, all_sv.get_element(all_sv.index_of(machine->get_support_vector(j))));
 
         SG_UNREF(machine);
     }
