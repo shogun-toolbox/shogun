@@ -9,8 +9,8 @@
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
-#ifndef _MAP_H_
-#define _MAP_H_
+#ifndef _SET_H_
+#define _SET_H_
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
@@ -156,7 +156,7 @@ public:
 
 	/** Index of element in the set
 	 *
-	 * @param e element to be removed
+	 * @param key key to be looked for
 	 * @return index of the element or -1 if not found
 	 */
 	int32_t index_of(const T& element)
@@ -179,25 +179,13 @@ public:
 		return num_elements;
 	}
 
-	/** Get number of elements
+	/** Get size of auxilary array
 	 *
-	 * @return number of elements
+	 * @return array size
 	 */
-	int32_t get_maxnum_elements() const
+	int32_t get_array_size() const
 	{
 		return array->get_num_elements();
-	}
-
-	/** Get set element at index
-	 *
-	 * (does NOT do bounds checking)
-	 *
-	 * @param index index
-	 * @return array element at index
-	 */
-	T get_element(int32_t index) const
-	{
-		return array->get_element(index)->data;
 	}
 
 	/** get set element at index as reference
@@ -209,26 +197,25 @@ public:
 	 */
 	T* get_element_ptr(int32_t index)
 	{
-		if (is_free(array->get_element(index)))
-			return NULL;
-		return &(array->get_element(index)->data);
+		if(array->get_element(index)!=NULL)
+			return &(array->get_element(index)->data);
+		return NULL;
 	}
 
-	/** operator overload for set read only access
-	 * use add() for write access
+	/** get node at index as reference
 	 *
-	 * DOES NOT DO ANY BOUNDS CHECKING
+	 * (does NOT do bounds checking)
 	 *
 	 * @param index index
-	 * @return element at index
+	 * @return node at index
 	 */
-	T operator[](int32_t index) const
+	CSetNode<T>* get_node_ptr(int32_t index)
 	{
-		return array->get_element(index)->data;
+		return array->get_element(index);
 	}
 		
 	/** @return underlying array of nodes in memory */
-	T* get_array()
+	CSetNode<T>** get_array()
 	{
 		return array->get_array();
 	}
