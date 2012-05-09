@@ -56,19 +56,8 @@ IGNORE_IN_CLASSLIST template<class K, class T> struct CMapNode
 IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public CSGObject
 {
 public:
-	/** Default constructor */
-	CMap()
-	{	
-		hash_size=0;
-		free_index=0;
-		num_elements=0;
-		hash_array=NULL;
-		array=NULL;
-		use_sg_mallocs=false;
-	}
-
 	/** Custom constructor */
-	CMap(int32_t size, int32_t reserved=1024, bool tracable=true)
+	CMap(int32_t size=41, int32_t reserved=128, bool tracable=true)
 	{	
 		hash_size=size;
 		free_index=0;
