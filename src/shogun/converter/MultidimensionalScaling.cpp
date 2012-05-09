@@ -59,7 +59,7 @@ struct TRIANGULATION_THREAD_PARAM
 
 CMultidimensionalScaling::CMultidimensionalScaling() : CEmbeddingConverter()
 {
-	m_eigenvalues = SGVector<float64_t>(NULL,0,false);
+	m_eigenvalues = SGVector<float64_t>();
 	m_landmark_number = 3;
 	m_landmark = false;
 
@@ -159,22 +159,14 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 	float64_t dsq;
 	for (i=0; i<N; i++)
 	{
-		for (j=i; j<N; j++)
-		{
-			dsq = CMath::sq(distance_matrix[i*N+j]);
-			distance_matrix[i*N+j] = dsq;
-			distance_matrix[j*N+i] = dsq;
-		}
+		for (j=0; j<N; j++)
+			distance_matrix(i,j) = CMath::sq(distance_matrix(i,j));
 	}
 	CMath::center_matrix(distance_matrix.matrix,N,N);
 	for (i=0; i<N; i++)
 	{
-		distance_matrix[i*N+i] *= -0.5;
-		for (j=i+1; j<N; j++)
-		{
-			distance_matrix[i*N+j] *= -0.5;
-			distance_matrix[j*N+i] *= -0.5;
-		}
+		for (j=0; j<N; j++)
+			distance_matrix(i*N+j) = distance_matrix(i,j)*(-0.5);
 	}
 
 	// feature matrix representing given distance
