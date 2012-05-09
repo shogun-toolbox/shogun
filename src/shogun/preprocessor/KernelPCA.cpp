@@ -51,7 +51,7 @@ void CKernelPCA::init()
 
 void CKernelPCA::cleanup()
 {
-	m_transformation_matrix.unref();
+	m_transformation_matrix = SGMatrix<float64_t>();
 
 	if (m_init_features)
 		SG_UNREF(m_init_features);

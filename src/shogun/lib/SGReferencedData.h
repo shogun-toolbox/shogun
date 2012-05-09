@@ -70,6 +70,32 @@ class SGReferencedData
 #endif
 			return *m_refcount;
 		}
+#endif //USE_REFERENCE_COUNTING
+
+	protected:
+		void copy_refcount(const SGReferencedData &orig)
+		{
+			m_refcount=orig.m_refcount;
+		}
+
+#ifdef USE_REFERENCE_COUNTING
+		/** increase reference counter
+		 *
+		 * @return reference count
+		 */
+		int32_t ref()
+		{
+			if (m_refcount == NULL)
+			{
+				return -1;
+			}
+
+			++(*m_refcount);
+#ifdef DEBUG_SGVECTOR
+			SG_SGCDEBUG("ref() refcount %ld data %p increased\n", *m_refcount, this);
+#endif
+			return *m_refcount;
+		}
 
 		/** decrement reference counter and deallocate object if refcount is zero
 		 * before or after decrementing it
@@ -105,33 +131,6 @@ class SGReferencedData
 				m_refcount=NULL;
 				return c;
 			}
-		}
-
-#endif //USE_REFERENCE_COUNTING
-
-	protected:
-		void copy_refcount(const SGReferencedData &orig)
-		{
-			m_refcount=orig.m_refcount;
-		}
-
-#ifdef USE_REFERENCE_COUNTING
-		/** increase reference counter
-		 *
-		 * @return reference count
-		 */
-		int32_t ref()
-		{
-			if (m_refcount == NULL)
-			{
-				return -1;
-			}
-
-			++(*m_refcount);
-#ifdef DEBUG_SGVECTOR
-			SG_SGCDEBUG("ref() refcount %ld data %p increased\n", *m_refcount, this);
-#endif
-			return *m_refcount;
 		}
 #endif //USE_REFERENCE_COUNTING
 

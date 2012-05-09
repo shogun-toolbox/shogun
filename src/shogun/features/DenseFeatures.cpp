@@ -64,7 +64,7 @@ template<class ST> void CDenseFeatures<ST>::free_features()
 template<class ST> void CDenseFeatures<ST>::free_feature_matrix()
 {
 	m_subset_stack->remove_all_subsets();
-	feature_matrix.unref();
+	feature_matrix=SGMatrix<ST>();
 	num_vectors = 0;
 	num_features = 0;
 }
@@ -179,7 +179,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_vector(ST* feat_vec, in
 template<class ST> void CDenseFeatures<ST>::free_feature_vector(SGVector<ST> vec, int32_t num)
 {
 	free_feature_vector(vec.vector, num, false);
-	vec.unref();
+	vec=SGVector<ST>();
 }
 
 template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)

@@ -71,7 +71,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	neg=n;
 	set_num_vectors(0);
 
-	feature_matrix.unref();
+	feature_matrix=SGMatrix<float64_t>();
 
 	if (pos && pos->get_observations())
 		set_num_vectors(pos->get_observations()->get_num_vectors());

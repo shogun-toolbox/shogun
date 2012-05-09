@@ -54,6 +54,15 @@ class CCustomKernel: public CKernel
 		 */
 		CCustomKernel(SGMatrix<float64_t> km);
 
+		/** constructor
+		 *
+		 * sets full kernel matrix from full kernel matrix
+		 * (from double precision floats)
+		 *
+		 * @param km kernel matrix
+		 */
+		CCustomKernel(SGMatrix<float32_t> km);
+
 		/**
 		 *
 		 */
@@ -280,11 +289,9 @@ class CCustomKernel: public CKernel
 			upper_diagonal = false;
 
 			for (int64_t i=0; i<int64_t(rows) * cols; i++)
-			{
 				kmatrix.matrix[i]=full_kernel_matrix.matrix[i];
-			}
 
-			dummy_init(rows, cols);
+			dummy_init(kmatrix.num_rows, kmatrix.num_cols);
 			return true;
 		}
 

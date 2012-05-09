@@ -1474,7 +1474,7 @@ CLabels* CGUIClassifier::classify_byte_linear()
 			testfeatures->get_feature_type() != F_BYTE )
 	{
 		SG_ERROR("testfeatures not of class STRING type BYTE\n") ;
-		return false ;
+		return NULL;
 	}
 
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) testfeatures);

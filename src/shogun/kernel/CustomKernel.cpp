@@ -89,6 +89,15 @@ CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
 }
 
+CCustomKernel::CCustomKernel(SGMatrix<float32_t> km)
+: CKernel(10), upper_diagonal(false)
+{
+	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
+	init();
+	set_full_kernel_matrix_from_full(km);
+	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
+}
+
 CCustomKernel::~CCustomKernel()
 {
 	SG_DEBUG("Entering CCustomKernel::~CCustomKernel()\n");
@@ -131,7 +140,7 @@ void CCustomKernel::cleanup_custom()
 	remove_all_row_subsets();
 	remove_all_col_subsets();
 
-	kmatrix.unref();
+	kmatrix=SGMatrix<float32_t>();
 	upper_diagonal=false;
 
 	SG_DEBUG("Leaving CCustomKernel::cleanup_custom()\n");

@@ -30,7 +30,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		/** default constructor  */
 		CKernelMulticlassMachine() : CMulticlassMachine(), m_kernel(NULL)
 		{
-			m_parameters->add((CSGObject**)&m_kernel,"m_kernel");
+			SG_ADD((CSGObject**)&m_kernel,"m_kernel", "The kernel", MS_AVAILABLE);
 		}
 
 		/** standard constructor
@@ -43,7 +43,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_kernel(NULL)
 		{
 			set_kernel(kernel);
-			m_parameters->add((CSGObject**)&m_kernel,"m_kernel");
+			SG_ADD((CSGObject**)&m_kernel,"m_kernel", "The kernel", MS_AVAILABLE);
 		}
 
 		/** destructor */

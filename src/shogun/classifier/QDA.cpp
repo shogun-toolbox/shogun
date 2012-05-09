@@ -61,7 +61,7 @@ void CQDA::cleanup()
 
 	m_covs.free_ndarray();
 	m_M.free_ndarray();
-	m_means.unref();
+	m_means=SGMatrix<float64_t>();
 
 	m_num_classes = 0;
 }
@@ -261,7 +261,7 @@ bool CQDA::train_machine(CFeatures* data)
 		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu,
 			rot_mat, ldvt, &info);
 		ASSERT(info == 0);
-		buffer.unref();
+		buffer=SGMatrix<float64_t>();
 
 		CMath::vector_multiply(col, col, col, m_dim);
 		CMath::scale_vector(1.0/(m-1), col, m_dim);
