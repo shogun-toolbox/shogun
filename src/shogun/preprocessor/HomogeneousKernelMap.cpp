@@ -165,18 +165,18 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
 	int32_t num_vectors = simple_features->get_num_vectors ();
 	int32_t num_features = simple_features->get_num_features ();
-	SGMatrix<float64_t> result (num_features*(2*m_order+1), num_vectors);
 
-	for (int i = 0; i < num_vectors; ++i) {
-		SGVector<float64_t> v = simple_features->get_feature_vector (i);
-		SGVector<float64_t> col (result.get_column_vector (i), result.num_rows);
-		apply_to_vector (v, col);
+	SGMatrix<float64_t> feature_matrix(num_features*(2*m_order+1),num_vectors);
+	for (int i = 0; i < num_vectors; ++i) 
+	{
+		SGVector<float64_t> transformed = apply_to_vector(simple_features->get_feature_vector(i));
+		for (int j=0; j< num_features; j++)
+			feature_matrix(j,i) = transformed[j];
 	}
 
-	/* set the new generated feature matrix */
-	simple_features->set_feature_matrix (result);
+	simple_features->set_feature_matrix(feature_matrix);
 
-	return result;
+	return feature_matrix;
 }
 
 /// apply preproc on single feature vector
@@ -184,9 +184,7 @@ SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector(SGVector<floa
 {
 	uint64_t featureDimension = 2*m_order+1;
 	uint64_t m_target_dim = vector.vlen * featureDimension;
-	SGVector<float64_t> result = SGVector<float64_t> (m_target_dim);
-
-	apply_to_vector (vector, result);
+	SGVector<float64_t> result = apply_to_vector(vector);
 
 	return result;
 }
@@ -300,13 +298,15 @@ CHomogeneousKernelMap::get_smooth_spectrum (float64_t omega) const
   return kappa_hat;
 }
 
-void CHomogeneousKernelMap::apply_to_vector(SGVector<float64_t> in_v, SGVector<float64_t> out_v) const
+SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(SGVector<float64_t> in_v) const
 {
-	/* assert for in and out vectors */
-	ASSERT (in_v.vlen > 0 && out_v.vlen);
-	ASSERT (in_v.vector != NULL && out_v.vector != NULL);
+	/* assert for in vector */
+	ASSERT (in_v.vlen > 0);
+	ASSERT (in_v.vector != NULL);
 
 	uint64_t featureDimension = 2*m_order+1;
+
+	SGVector<float64_t> out_v(featureDimension*in_v.vlen);
 
 	for (int k = 0; k < in_v.vlen; ++k) {
 	  /* break value into exponent and mantissa */
@@ -347,6 +347,7 @@ void CHomogeneousKernelMap::apply_to_vector(SGVector<float64_t> in_v, SGVector<f
 			out_v[k*featureDimension+j] = sign * ((f2 - f1) * (m_numSubdivisions * mantissa) + f1);
     }
 	}
+	return out_v;
 }
 
 void CHomogeneousKernelMap::register_params ()
