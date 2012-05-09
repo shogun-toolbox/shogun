@@ -57,7 +57,7 @@ IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public CSGObject
 {
 public:
 	/** Custom constructor */
-	CMap(int32_t size=1, int32_t reserved=1, bool tracable=true)
+	CMap(int32_t size=41, int32_t reserved=128, bool tracable=true)
 	{	
 		hash_size=size;
 		free_index=0;

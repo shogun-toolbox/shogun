@@ -50,7 +50,7 @@ template<class T> class CSet: public CSGObject
 {
 public:
 	/** Custom constructor */
-	CSet(int32_t size=1, int32_t reserved=1, bool tracable=true)
+	CSet(int32_t size=41, int32_t reserved=128, bool tracable=true)
 	{	
 		hash_size=size;
 		free_index=0;
