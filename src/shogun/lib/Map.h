@@ -252,7 +252,7 @@ public:
 	T* get_element_ptr(int32_t index)
 	{
 		CMapNode<K, T>* result=array->get_element(index);
-		if(result!=NULL && !is_free(result))
+		if (result!=NULL && !is_free(result))
 			return &(array->get_element(index)->data);
 		return NULL;
 	}
