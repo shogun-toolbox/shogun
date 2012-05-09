@@ -112,7 +112,7 @@ class CPlif: public CPlifBase
 		const float64_t * get_cum_derivative(int32_t & p_len) const
 		{
 			p_len = len;
-			return cum_derivatives;
+			return cum_derivatives.vector;
 		}
 
 		/** set transform type
@@ -255,8 +255,7 @@ class CPlif: public CPlifBase
 		{
 			ASSERT(len==p_limits.vlen);
 
-			for (int32_t i=0; i<len; i++)
-				limits[i]=p_limits.vector[i];
+			limits = p_limits;
 
 			invalidate_cache();
 			penalty_clear_derivative();
@@ -271,8 +270,7 @@ class CPlif: public CPlifBase
 		{
 			ASSERT(len==p_penalties.vlen);
 
-			for (int32_t i=0; i<len; i++)
-				penalties[i]=p_penalties.vector[i];
+			penalties = p_penalties;
 
 			invalidate_cache();
 			penalty_clear_derivative();
@@ -287,20 +285,18 @@ class CPlif: public CPlifBase
 			if (len!=p_len)
 			{
 				len=p_len;
-				SG_FREE(limits);
-				SG_FREE(penalties);
-				SG_FREE(cum_derivatives);
 
 				SG_DEBUG( "set_plif len=%i\n", p_len);
-				limits=SG_MALLOC(float64_t, len);
-				penalties=SG_MALLOC(float64_t, len);
-				cum_derivatives=SG_MALLOC(float64_t, len);
+				limits = SGVector<float64_t>(len);
+				penalties = SGVector<float64_t>(len);
+				cum_derivatives = SGVector<float64_t>(len);
 			}
 
 			for (int32_t i=0; i<len; i++)
 			{
 				limits[i]=0.0;
 				penalties[i]=0.0;
+				cum_derivatives[i]=0.0;
 			}
 
 			invalidate_cache();
@@ -313,7 +309,7 @@ class CPlif: public CPlifBase
 		 */
 		float64_t* get_plif_limits()
 		{
-			return limits;
+			return limits.vector;
 		}
 
 		/** get plif penalty
@@ -322,8 +318,9 @@ class CPlif: public CPlifBase
  		 */
 		float64_t* get_plif_penalties()
 		{
-			return penalties;
+			return penalties.vector;
 		}
+
 		/** set maximum value
 		 *
 		 * @param p_max_value maximum value
@@ -434,11 +431,11 @@ class CPlif: public CPlifBase
 		/** len */
 		int32_t len;
 		/** limits */
-		float64_t *limits;
+		SGVector<float64_t> limits;
 		/** penalties */
-		float64_t *penalties;
+		SGVector<float64_t> penalties;
 		/** cum derivatives */
-		float64_t *cum_derivatives;
+		SGVector<float64_t> cum_derivatives;
 		/** maximum value */
 		float64_t max_value;
 		/** minimum value */

@@ -109,16 +109,15 @@ void CPlifMatrix::set_plif_limits(SGMatrix<float64_t> limits)
 				m_num_plifs, m_num_limits, limits.num_rows, limits.num_cols);
 	}
 
-	float64_t* lim = SG_MALLOC(float64_t, m_num_limits);
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
+		SGVector<float64_t> lim(m_num_limits);
 		for (int32_t k=0; k<m_num_limits; k++)
 			lim[k] = limits.matrix[i*m_num_limits+k];
 
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_plif_limits(SGVector<float64_t>(lim, m_num_limits));
+		m_PEN[id]->set_plif_limits(lim);
 	}
-	SG_FREE(lim);
 }
 
 void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
@@ -129,17 +128,16 @@ void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
 				m_num_plifs, m_num_limits, penalties.num_rows, penalties.num_cols);
 	}
 
-	float64_t* pen = SG_MALLOC(float64_t, m_num_limits);
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
+		SGVector<float64_t> pen(m_num_limits);
 
 		for (int32_t k=0; k<m_num_limits; k++)
 			pen[k] = penalties.matrix[i*m_num_limits+k];
 
 		int32_t id=get_plif_id(i);
-		m_PEN[id]->set_plif_penalty(SGVector<float64_t>(pen, m_num_limits));
+		m_PEN[id]->set_plif_penalty(pen);
 	}
-	SG_FREE(pen);
 }
 
 void CPlifMatrix::set_plif_names(SGString<char>* names, int32_t num_values, int32_t maxlen)
