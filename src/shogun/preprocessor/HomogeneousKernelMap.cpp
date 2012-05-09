@@ -170,7 +170,7 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 	for (int i = 0; i < num_vectors; ++i) 
 	{
 		SGVector<float64_t> transformed = apply_to_vector(simple_features->get_feature_vector(i));
-		for (int j=0; j< num_features; j++)
+		for (int j=0; j<transformed.vlen; j++)
 			feature_matrix(j,i) = transformed[j];
 	}
 
