@@ -58,7 +58,7 @@ void CConjugateIndex::clean_classes()
 	if (m_classes)
 	{
 		for (int32_t i=0; i<m_num_classes; i++)
-			m_classes[i].unref();
+			m_classes[i]=SGMatrix<float64_t>();
 
 		delete[] m_classes;
 	}

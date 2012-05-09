@@ -57,7 +57,7 @@ bool CHomogeneousKernelMap::init (CFeatures* features)
 
 void CHomogeneousKernelMap::cleanup ()
 {
-	m_table.unref();
+	m_table=SGVector<float64_t>();
 }
 
 

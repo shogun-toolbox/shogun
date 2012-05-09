@@ -176,7 +176,7 @@ void CLabels::load(CFile* loader)
 	remove_subset();
 
 	SG_SET_LOCALE_C;
-	labels.unref();
+	labels=SGVector<float64_t>();
 	ASSERT(loader);
 	loader->get_vector(labels.vector, labels.vlen);
 	SG_RESET_LOCALE;

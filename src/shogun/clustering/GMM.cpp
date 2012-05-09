@@ -106,8 +106,8 @@ void CGMM::cleanup()
 	for (int32_t i = 0; i < m_components.vlen; i++)
 		SG_UNREF(m_components.vector[i]);
 
-	m_components.unref();
-	m_coefficients.unref();
+	m_components=SGVector<CGaussian*>();
+	m_coefficients=SGVector<float64_t>();
 }
 
 bool CGMM::train(CFeatures* data)

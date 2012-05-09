@@ -172,7 +172,7 @@ bool CPCA::init(CFeatures* features)
 
 void CPCA::cleanup()
 {
-	m_transformation_matrix.unref();
+	m_transformation_matrix=SGMatrix<float64_t>();
 }
 
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
