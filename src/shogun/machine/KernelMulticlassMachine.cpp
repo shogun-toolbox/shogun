@@ -35,10 +35,10 @@ void CKernelMulticlassMachine::store_model_features()
     }
 
     SGVector<int32_t> sv_idx(all_sv.get_num_elements());
-    for (int32_t i=0; i < sv_idx.vlen; ++i)
+    for (index_t i=0; i < sv_idx.vlen; ++i)
         sv_idx[i] = all_sv.get_element(i);
 
-    for (int32_t i=0; i < sv_idx.vlen; ++i)
+    for (index_t i=0; i < sv_idx.vlen; ++i)
         *all_sv.get_element_ptr(all_sv.index_of(sv_idx[i])) = i;
 
 	CFeatures* sv_features=lhs->copy_subset(sv_idx);
