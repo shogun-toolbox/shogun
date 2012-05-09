@@ -23,9 +23,9 @@ using namespace shogun;
 CPlif::CPlif(int32_t l)
 : CPlifBase()
 {
-	limits=NULL;
-	penalties=NULL;
-	cum_derivatives=NULL;
+	limits=SGVector<float64_t>();
+	penalties=SGVector<float64_t>();
+	cum_derivatives=SGVector<float64_t>();
 	id=-1;
 	transform=T_LINEAR;
 	name=NULL;
@@ -42,11 +42,8 @@ CPlif::CPlif(int32_t l)
 
 CPlif::~CPlif()
 {
-	SG_FREE(limits);
-	SG_FREE(penalties);
 	SG_FREE(name);
 	SG_FREE(cache);
-	SG_FREE(cum_derivatives);
 }
 
 bool CPlif::set_transform_type(const char *type_str)
