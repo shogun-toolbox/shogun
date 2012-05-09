@@ -45,6 +45,7 @@ configure.log
 /src/interfaces/r/Makefile
 /src/interfaces/r_modular/Makefile
 /src/examples
+/src/shogun/.clang_complete
 
 # static interfaces
 /src/interfaces/cmdline_static/shogun
