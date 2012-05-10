@@ -8,6 +8,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+/* Renames */
+%rename(FeatureTree) CFeatureTree;
+
 /* Multitask renames */
 %rename(MultitaskKernelNormalizer) CMultitaskKernelNormalizer;
 %rename(MultitaskKernelMklNormalizer) CMultitaskKernelMklNormalizer;
@@ -16,11 +19,17 @@
 %rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
 %rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 
+%rename(FeatureTreeLeastSquaresRegression) CFeatureTreeLeastSquaresRegression;
+
 /* Domain adaptation renames */
 #ifdef USE_SVMLIGHT
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
 #endif //USE_SVMLIGHT
 %rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
+
+
+/* Includes */
+%include <shogun/transfer/Trees.h>
 
 /* Multitask includes */
 %include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>
@@ -29,6 +38,8 @@
 %include <shogun/transfer/multitask/MultitaskKernelMaskNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelMaskPairNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
+
+%include <shogun/transfer/multitask/FeatureTreeLeastSquaresRegression.h>
 
 /* Domain adaptation includes */
 #ifdef USE_SVMLIGHT
