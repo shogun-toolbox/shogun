@@ -12,22 +12,42 @@
 #define BINARYLABELS_H__
 
 #include <shogun/labels/LabelsImpl.h>
+#include <shogun/mathematics/CMath.h>
 
 namespace shogun
 {
 
-class CBinaryLabels: public CLabelsImpl<int32_t, float64_t>
+struct BinaryLabelElem
+{
+    typedef int32_t   label_t;
+    typedef float64_t real_label_t;
+
+    label_t      get_label() const { return CMath::sign(val); }
+    real_label_t get_real_label() const { return val; }
+    float64_t    get_confidence() const { return CMath::abs(val); }
+    void         set_label(const real_label_t& label) { val = label; }
+    void         set_confidence(float64_t confidence)
+    {
+        val = CMath::abs(confidence) * CMath::sign(val);
+    }
+
+    label_t val;
+};
+
+class CBinaryLabels: public CLabelsImpl<BinaryLabelElem>
 {
 public:
+    typedef CLabelsImpl<BinaryLabelElem> base_t;
+
     /** constructor */
-    CBinaryLabels():CLabelsImpl<int32_t, float64_t>() {}
+    CBinaryLabels():base_t() {}
 
     
     /** constructor
      *
      * @param num number of labels
      */
-    CBinaryLabels(int32_t num):CLabelsImpl<int32_t, float64_t>(num) { }
+    CBinaryLabels(int32_t num):base_t(num) { }
 
     /** destructor */
     virtual ~CBinaryLabels() {}

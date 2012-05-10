@@ -16,17 +16,33 @@
 namespace shogun
 {
 
+struct RegressionLabelElem
+{
+    typedef float64_t label_t;
+    typedef float64_t real_label_t;
+
+    label_t      get_label() const { return val; }
+    real_label_t get_real_label() const { return val; }
+    float64_t    get_confidence() const { return 1; }
+    void         set_label(const real_label_t& label) { val = label; }
+    void         set_confidence(float64_t confidence) { }
+
+    label_t val;
+};
+
 class CRegressionLabels: public CLabelsImpl<float64_t, float64_t>
 {
 public:
+    typedef CLabelsImpl<RegressionLabelElem> base_t;
+
     /** constructor */
-    CRegressionLabels():CLabelsImpl<float64_t, float64_t>() {}
+    CRegressionLabels():base_t() {}
 
     /** constructor
      *
      * @param num number of labels
      */
-    CRegressionLabels(int32_t num):CLabelsImpl<float64_t, float64_t>(num) { }
+    CRegressionLabels(int32_t num):base_t(num) { }
 
     /** destructor */
     virtual ~CRegressionLabels() {}

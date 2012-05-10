@@ -16,17 +16,35 @@
 namespace shogun
 {
 
-class CMulticlassLabels: public CLabelsImpl<int32_t, int32_t>
+struct MulticlassLabelElem
+{
+    typedef int32_t label_t;
+    typedef int32_t real_label_t;
+
+    label_t      get_label() const { return val; }
+    real_label_t get_real_label() const { return val; }
+    float64_t    get_confidence() const { return conf; }
+    void         set_label(const real_label_t& label) { val = label; }
+    void         set_confidence(float64_t confidence) { conf = confidence; }
+
+    label_t val;
+    float64_t conf;
+};
+
+
+class CMulticlassLabels: public CLabelsImpl<MulticlassLabelElem>
 {
 public:
+    typedef CLabelsImpl<MulticlassLabelElem> base_t;
+
     /** constructor */
-    CMulticlassLabels():CLabelsImpl<int32_t, int32_t>(), m_num_classes(0) { }
+    CMulticlassLabels():base_t(), m_num_classes(0) { }
 
     /** constructor
      *
      * @param num number of labels
      */
-    CMulticlassLabels(int32_t num):CLabelsImpl<int32_t, int32_t>(num), m_num_classes(0) { }
+    CMulticlassLabels(int32_t num):base_t(num), m_num_classes(0) { }
 
     /** destructor */
     virtual ~CMulticlassLabels() {}
@@ -53,9 +71,9 @@ public:
      * @param label value of label
      * @return if setting was successful
      */
-    bool set_label(int32_t idx, const Tstore& label)
+    bool set_label(int32_t idx, const typename MulticlassLabelElem::real_label_t& label)
     {
-        if (CLabelsImpl<int32_t, int32_t>::set_label(idx, label))
+        if (base_t::set_label(idx, label))
         {
             m_num_classes = 0;
             return true;

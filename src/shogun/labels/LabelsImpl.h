@@ -20,10 +20,21 @@ namespace shogun
 /**
  * A template implementation of CLabels.
  *
- * There are two template type parameters T, and TStore. T should be able
- * to implicitly cast-able to TStore.
+ * The template parameter elem_t decides the content of the labels. It should
+ * define the following:
+ *
+ *  - typedef:
+ *    - label_t: the type of the label. e.g. int32_t for binary label
+ *    - real_label_t: the type for storing the label. e.g. float64_t for binary label
+ *  
+ *  - functions:
+ *    - label_t      get_label() const
+ *    - real_label_t get_real_label() const
+ *    - float64_t    get_confidence() const
+ *    - void         set_label(const real_label_t& label)
+ *    - void         set_confidence(float64_t confidence)
  */
-template <typename T, typename TStore>
+template <typename elem_t>
 class CLabelsImpl: public CLabels
 {
 public:
@@ -52,7 +63,7 @@ public:
             m_subset_stack->get_size() : m_labels.vlen; 
     }
 
-    /** set label
+    /** set label.
      *
      * possible with subset
      *
@@ -60,13 +71,13 @@ public:
      * @param label value of label
      * @return if setting was successful
      */
-    bool set_label(int32_t idx, const Tstore& label)
+    bool set_label(int32_t idx, const typename elem_t::real_label_t &label)
     {
         if (idx >= get_num_labels())
             return false;
 
         int32_t true_idx = m_subset_stack->subset_idx_conversion(idx);
-        m_labels[true_idx] = label;
+        m_labels[true_idx].set_label(label);
         return true;
     }
 
@@ -77,22 +88,54 @@ public:
      * @param idx index of label to get
      * @return value of label
      */
-    T get_label(int32_t idx) const
+    typename elem_t::label_t get_label(int32_t idx) const
     {
-        return get_real_labels();
+        ASSERT(idx < get_num_labels());
+        return m_labels[m_subset_stack->subset_idx_conversion(idx)].get_label();
     }
 
-    /** get real label.
+    /** get label (of some internal type).
      *
      * possible with subset
      *
-     * @param idx index of the label to get
+     * @param idx index of label to get
      * @return value of label
      */
-    const TStore& get_real_label(int32_t idx) const
+    typename elem_t::real_label_t get_label(int32_t idx) const
     {
         ASSERT(idx < get_num_labels());
-        return m_labels[m_subset_stack->subset_idx_conversion(idx)];
+        return m_labels[m_subset_stack->subset_idx_conversion(idx)].get_real_label();
+    }
+
+    /** set confidence.
+     *
+     * possible with subset
+     *
+     * @param idx index of label to set
+     * @param confidence the confidence value of the label
+     * @return if setting was successful
+     */
+    bool set_confidence(int32_t idx, float64_t confidence)
+    {
+        if (idx >= get_num_labels())
+            return false;
+
+        int32_t true_idx = m_subset_stack->subset_idx_conversion(idx);
+        m_labels[true_idx].set_confidence(confidence);
+        return true;
+    }
+
+    /** get confidence.
+     *
+     * possible with subset
+     *
+     * @param idx index of label to get
+     * @return confidence of label
+     */
+    float64_t get_label(int32_t idx) const
+    {
+        ASSERT(idx < get_num_labels());
+        return m_labels[m_subset_stack->subset_idx_conversion(idx)].get_confidence();
     }
 
     /** adds a subset of indices on top of the current subsets. 
@@ -121,7 +164,7 @@ public:
     }
 
 protected:
-    SGVector<TStore> m_labels;
+    SGVector<elem_t> m_labels;
     CSubsetStack *m_subset_stack;
 
 private:
