@@ -45,7 +45,6 @@
 %rename(LBPPyrDotFeatures) CLBPPyrDotFeatures;
 %rename(ExplicitSpecFeatures) CExplicitSpecFeatures;
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
-%rename(Subset) CSubset;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/FeatureTypes.h>
@@ -370,4 +369,3 @@ namespace shogun
 %include <shogun/features/LBPPyrDotFeatures.h>
 %include <shogun/features/ExplicitSpecFeatures.h>
 %include <shogun/features/ImplicitWeightedSpecFeatures.h>
-%include <shogun/features/Subset.h>
