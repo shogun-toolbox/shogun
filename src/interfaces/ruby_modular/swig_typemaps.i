@@ -59,8 +59,6 @@
 	for (i = 0; i < $1.vlen; i++)
 		rb_ary_push(arr, SG2R($1.vector[i]));
 
-	$1.free_vector();
-
 	$result = (*na_to_narray_dl)(arr);
 }
 
@@ -202,8 +200,6 @@ TYPEMAP_SGVECTOR_REF(float64_t, NUM2DBL, rb_float_new)
 		}
 		rb_ary_push(arr, vec);
 	}
-
-	$1.free_matrix();
 
 	$result = (*na_to_narray_dl)(arr);
 }
