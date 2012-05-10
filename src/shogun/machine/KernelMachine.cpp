@@ -303,6 +303,8 @@ CLabels* CKernelMachine::apply()
 				params.start=0;
 				params.end=num_vectors;
 				params.verbose=true;
+				params.indices = NULL;
+				params.indices_len = 0;
 				apply_helper((void*) &params);
 			}
 #ifdef HAVE_PTHREAD
@@ -321,6 +323,8 @@ CLabels* CKernelMachine::apply()
 					params[t].start = t*step;
 					params[t].end = (t+1)*step;
 					params[t].verbose = false;
+					params[t].indices = NULL;
+					params[t].indices_len = 0;
 					pthread_create(&threads[t], NULL,
 							CKernelMachine::apply_helper, (void*)&params[t]);
 				}
@@ -330,6 +334,8 @@ CLabels* CKernelMachine::apply()
 				params[t].start = t*step;
 				params[t].end = num_vectors;
 				params[t].verbose = true;
+				params[t].indices = NULL;
+				params[t].indices_len = 0;
 				apply_helper((void*) &params[t]);
 
 				for (t=0; t<num_threads-1; t++)
