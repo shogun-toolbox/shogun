@@ -73,6 +73,23 @@ CLabels* CMulticlassMachine::apply(CFeatures* features)
 	return apply();
 }
 
+CLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
+{
+	CMachine *machine = (CMachine*)m_machines->get_element(i);
+	ASSERT(machine);
+	CLabels* output = machine->apply();
+	SG_UNREF(machine);
+	return output;
+}
+
+float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
+{
+	CMachine *machine = get_machine(i);
+	float64_t output = machine->apply(num);
+	SG_UNREF(machine);
+	return output;
+}
+
 CLabels* CMulticlassMachine::apply()
 {
 	/** Ensure that m_machines have the features set */
@@ -89,12 +106,7 @@ CLabels* CMulticlassMachine::apply()
 		CLabels** outputs=SG_MALLOC(CLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
-		{
-			CMachine *machine = (CMachine*)m_machines->get_element(i);
-			ASSERT(machine);
-			outputs[i]=machine->apply();
-			SG_UNREF(machine);
-		}
+			outputs[i] = get_submachine_outputs(i);
 
 		SGVector<float64_t> output_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
@@ -114,6 +126,7 @@ CLabels* CMulticlassMachine::apply()
 	}
 	else
 	{
+		SG_ERROR("Not ready");
 		return NULL;
 	}
 }
@@ -165,12 +178,8 @@ float64_t CMulticlassMachine::apply(int32_t num)
 	ASSERT(m_machines->get_num_elements()>0);
 	SGVector<float64_t> outputs(m_machines->get_num_elements());
 
-	for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
-	{
-		CMachine *machine = get_machine(i);
-		outputs[i]=machine->apply(num);
-		SG_UNREF(machine);
-	}
+	for (int32_t i=0; i < m_machines->get_num_elements(); i++)
+		outputs[i] = get_submachine_output(i, num);
 
 	float64_t result=m_multiclass_strategy->decide_label(outputs);
 
