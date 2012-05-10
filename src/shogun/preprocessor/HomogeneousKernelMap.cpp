@@ -182,10 +182,7 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 /// apply preproc on single feature vector
 SGVector<float64_t> CHomogeneousKernelMap::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	uint64_t featureDimension = 2*m_order+1;
-	uint64_t m_target_dim = vector.vlen * featureDimension;
 	SGVector<float64_t> result = apply_to_vector(vector);
-
 	return result;
 }
 
@@ -298,7 +295,7 @@ CHomogeneousKernelMap::get_smooth_spectrum (float64_t omega) const
   return kappa_hat;
 }
 
-SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(SGVector<float64_t> in_v) const
+SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(const SGVector<float64_t>& in_v) const
 {
 	/* assert for in vector */
 	ASSERT (in_v.vlen > 0);
