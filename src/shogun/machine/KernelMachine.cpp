@@ -424,7 +424,7 @@ void* CKernelMachine::apply_helper(void* p)
 
 		/* eventually use index mapping if exists */
 		index_t idx=params->indices ? params->indices[vec] : vec;
-		result->set_label(vec, kernel_machine->apply(vec));
+		result->set_label(vec, kernel_machine->apply(idx));
 	}
 
 	return NULL;
