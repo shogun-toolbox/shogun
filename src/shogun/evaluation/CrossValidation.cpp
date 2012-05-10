@@ -160,7 +160,7 @@ CrossValidationResult CCrossValidation::evaluate()
 
 	/* perform all the x-val runs */
 	for (index_t i=0; i <m_num_runs; ++i)
-		results.vector[i]=evaluate_one_run();
+		results[i]=evaluate_one_run();
 
 	/* construct evaluation result */
 	CrossValidationResult result;
@@ -222,7 +222,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	m_splitting_strategy->build_subsets();
 
 	/* results array */
-	float64_t* results=SG_MALLOC(float64_t, num_subsets);
+	SGVector<float64_t> results(num_subsets);
 
 	/* different behavior whether data is locked or not */
 	if (m_machine->is_data_locked())
@@ -237,7 +237,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* train machine on training features */
 			m_machine->train_locked(inverse_subset_indices);
 
-			/* feature subset for testing, will be implicitly freed by CSubset */
+			/* feature subset for testing */
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
 
@@ -245,13 +245,11 @@ float64_t CCrossValidation::evaluate_one_run()
 			CLabels* result_labels=m_machine->apply_locked(subset_indices);
 			SG_REF(result_labels);
 
-			/* set subset for training labels, note that this will (later) free
-			 * the subset_indices vector */
+			/* set subset for training labels */
 			m_labels->add_subset(subset_indices);
 
 			/* evaluate against own labels */
-			results[i]=m_evaluation_criterion->evaluate(result_labels,
-					m_labels);
+			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
 			/* remove subset to prevent side efects */
 			m_labels->remove_subset();
@@ -305,8 +303,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean=CStatistics::mean(
-			SGVector <float64_t> (results, num_subsets));
+	float64_t mean=CStatistics::mean(results);
 
 	return mean;
 }
