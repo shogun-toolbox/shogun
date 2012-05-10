@@ -38,7 +38,7 @@ int lassoCD(double *Theta, double *W, double *S, double lambda, int n, int ith, 
 {
 	int iter_step, i,j;
 	double * Ax, * x;
-	double u, v, s_v, t, x_new;
+	double u, v, s_v, t=0, x_new;
 	double fun_new,fun_old=-100;
 	double x_change;
 
