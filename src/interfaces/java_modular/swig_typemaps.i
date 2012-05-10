@@ -133,8 +133,6 @@ import org.ujmp.core.booleanmatrix.impl.DefaultDenseBooleanMatrix2D;
 		arr[i] = (JNITYPE)$1.vector[i];
 	}
         
-        $1.free_vector();
-
 	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, cols, arr);
 
 	res = JCALL5(NewObject, jenv, cls, mid, rows, cols, jarr);
@@ -351,8 +349,6 @@ TYPEMAP_SGVECTOR_REF(float64_t, double, Double, jdouble, "()[D", "org/jblas/Doub
 		arr[i] = (JNITYPE)$1.vector[i];
 	}
 
-	$1.free_vector();
-
 	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, cols, arr);
 	
 	res = JCALL5(NewObject, jenv, cls, mid, jarr, rows, cols);
@@ -563,7 +559,6 @@ TYPEMAP_SGVECTOR_REF(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D
 	for (int64_t i = 0; i < len; i++) {
 		arr[i] = (JNITYPE)$1.matrix[i];
 	}
-	$1.free_matrix();
 	JCALL4(Set##JAVATYPE##ArrayRegion, jenv, jarr, 0, len, arr);
 
 	res = JCALL5(NewObject, jenv, cls, mid, rows, cols, jarr);
