@@ -101,7 +101,7 @@ void test_cross_validation()
 
 	/* evaluate training error */
 	float64_t eval_result=eval_crit->evaluate(output, labels);
-	SG_SPRINT("training error: %f\n", eval_result);
+	SG_SPRINT("training accuracy: %f\n", eval_result);
 	SG_UNREF(output);
 
 	/* assert that regression "works". this is not guaranteed to always work
