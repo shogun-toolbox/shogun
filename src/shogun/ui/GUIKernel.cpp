@@ -127,7 +127,6 @@ CKernel* CGUIKernel::create_custom(float64_t* kmatrix, int32_t num_feat, int32_t
 	else
 		kern->set_full_kernel_matrix_from_full(km);
 
-	SG_FREE(kmatrix);
 	return kern;
 }
 
@@ -271,7 +270,6 @@ CKernel* CGUIKernel::create_weighteddegreestring(
 	((CWeightedDegreeStringKernel*) kern)->set_mkl_stepsize(mkl_stepsize);
 	((CWeightedDegreeStringKernel*) kern)->set_which_degree(single_degree);
 
-	SG_FREE(weights);
 	return kern;
 }
 

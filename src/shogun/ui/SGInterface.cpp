@@ -1824,8 +1824,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<float64_t>(0);
 			((CDenseFeatures<float64_t>*) feat)->
-				set_feature_matrix(SGMatrix<float64_t>(fmatrix, num_feat, num_vec).clone());
-			SG_FREE(fmatrix);
+				set_feature_matrix(SGMatrix<float64_t>(fmatrix, num_feat, num_vec));
 
 			if (m_nrhs==6)
 				feat = create_custom_real_features((CDenseFeatures<float64_t>*) feat);
@@ -1840,8 +1839,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<int32_t>(0);
 			((CDenseFeatures<int32_t>*) feat)->
-				set_feature_matrix(SGMatrix<int32_t>(fmatrix, num_feat, num_vec).clone());
-			SG_FREE(fmatrix);
+				set_feature_matrix(SGMatrix<int32_t>(fmatrix, num_feat, num_vec));
 			break;
 		}
 
@@ -1852,8 +1850,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<int16_t>(0);
 			((CDenseFeatures<int16_t>*) feat)->
-				set_feature_matrix(SGMatrix<int16_t>(fmatrix, num_feat, num_vec).clone());
-			SG_FREE(fmatrix);
+				set_feature_matrix(SGMatrix<int16_t>(fmatrix, num_feat, num_vec));
 			break;
 		}
 
@@ -1864,8 +1861,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<uint16_t>(0);
 			((CDenseFeatures<uint16_t>*) feat)->
-				set_feature_matrix(SGMatrix<uint16_t>(fmatrix, num_feat, num_vec).clone());
-			SG_FREE(fmatrix);
+				set_feature_matrix(SGMatrix<uint16_t>(fmatrix, num_feat, num_vec));
 			break;
 		}
 
@@ -1876,8 +1872,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			feat=new CDenseFeatures<float32_t>(0);
 			((CDenseFeatures<float32_t>*) feat)->
-				set_feature_matrix(SGMatrix<float32_t>(fmatrix, num_feat, num_vec).clone());
-			SG_FREE(fmatrix);
+				set_feature_matrix(SGMatrix<float32_t>(fmatrix, num_feat, num_vec));
 			break;
 		}
 
@@ -2485,15 +2480,8 @@ bool CSGInterface::cmd_set_labels()
 	int32_t len=0;
 	get_vector(lab, len);
 
-	CLabels* labels=new CLabels(len);
+	CLabels* labels=new CLabels(SGVector<float64_t>(lab, len));
 	SG_INFO("num labels: %d\n", labels->get_num_labels());
-
-	for (int32_t i=0; i<len; i++)
-	{
-		if (!labels->set_label(i, lab[i]))
-			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
-	}
-	SG_FREE(lab);
 
 	if (strmatch(target, "TRAIN"))
 		ui_labels->set_train_labels(labels);
@@ -2532,15 +2520,9 @@ bool CSGInterface::cmd_get_labels()
 	if (!labels)
 		SG_ERROR("No labels.\n");
 
-	int32_t num_labels=labels->get_num_labels();
-	float64_t* lab=SG_MALLOC(float64_t, num_labels);
+	SGVector<float64_t> lab=labels->get_labels();
 
-	for (int32_t i=0; i<num_labels ; i++)
-		lab[i]=labels->get_label(i);
-
-	set_vector(lab, num_labels);
-	SG_FREE(lab);
-
+	set_vector(lab.vector, lab.vlen);
 	return true;
 }
 
@@ -4799,9 +4781,6 @@ bool CSGInterface::cmd_set_linear_classifier()
 
 	c->set_w(SGVector<float64_t>(w, len));
 	c->set_bias(bias);
-
-	SG_FREE(w);
-
 	return true;
 }
 
@@ -6246,14 +6225,8 @@ bool CSGInterface::cmd_set_plif_struct()
 	pm->set_plif_names(names, N);
 	pm->set_plif_transform_type(all_transform, N);
 
-	SG_FREE(all_limits);
-	SG_FREE(all_penalties);
 	SG_FREE(names);
 	SG_FREE(all_transform);
-	SG_FREE(min_values);
-	SG_FREE(max_values);
-	SG_FREE(all_use_cache);
-	SG_FREE(all_use_svm);
 	SG_FREE(all_do_calc);
 
 	return true;
@@ -6419,7 +6392,6 @@ bool CSGInterface::cmd_set_model()
 		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
 	ASSERT(Mmod == 2)
 	h->init_mod_words_array(SGMatrix<int32_t>(mod_words, Nmod, Mmod));
-	SG_FREE(mod_words);
 
 	// ARG 4
 	// links: states -> signal plifs (#states x 2)
@@ -6429,7 +6401,6 @@ bool CSGInterface::cmd_set_model()
 	get_matrix(state_signals,num_states,feat_dim3);
 	ASSERT(num_states==Dim[0]);
 	pm->compute_signal_plifs(SGMatrix<int32_t>(state_signals, feat_dim3, num_states));
-	SG_FREE(state_signals);
 
 
 	// ARG 5
@@ -6443,7 +6414,6 @@ bool CSGInterface::cmd_set_model()
 
 	ui_structure->set_orf_info(orf_info, Norf, Morf);
 	h->set_orf_info(SGMatrix<int32_t>(orf_info, Norf, Morf));
-	SG_FREE(orf_info);
 
 	h->set_num_states(num_states) ;
 
@@ -6484,12 +6454,10 @@ bool CSGInterface::cmd_precompute_content_svms()
 	//int32_t Nweights = ui_structure->get_num_svm_weights();
 	h->set_pos(SGVector<int32_t>(all_pos, Npos));
 	h->set_gene_string(SGVector<char>(seq, seq_len));
-	SG_FREE(seq);
 	h->create_word_string();
 	h->precompute_stop_codons();
 	h->init_content_svm_value_array(num_svms);
 	h->set_dict_weights(SGMatrix<float64_t>(weights, Nweights, num_svms));
-	SG_FREE(weights);
 	h->precompute_content_values();
 	SG_DEBUG("precompute_content_svms done\n");
 	return true;
@@ -6550,8 +6518,6 @@ bool CSGInterface::cmd_set_lin_feat()
 	h->set_lin_feat(lin_feat, num_svms, seq_len);
 
 	SG_FREE(lin_feat);
-	SG_FREE(seq);
-	SG_FREE(all_pos);
 
 	return true;
 }
@@ -6791,9 +6757,7 @@ bool CSGInterface::cmd_best_path_trans()
 	ASSERT(PEN);
 
 	h->set_p_vector(SGVector<float64_t>(p, num_states));
-	SG_FREE(p); p=NULL ;
 	h->set_q_vector(SGVector<float64_t>(q, num_states));
-	SG_FREE(q); q=NULL ;
 
 	if (seg_path!=NULL)
 	{
@@ -6803,8 +6767,6 @@ bool CSGInterface::cmd_best_path_trans()
 	{
 		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ; // segment_id = 0
 	}
-	SG_FREE(a_trans);
-	a_trans=NULL ;
 
 	if (!h->check_svm_arrays())
 	{
@@ -6819,7 +6781,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (seg_path!=NULL)
 	{
-		h->best_path_set_segment_loss(SGMatrix<float64_t>(loss, Nloss, Mloss)) ;
+		h->best_path_set_segment_loss(SGMatrix<float64_t>(loss, Nloss, Mloss, false)) ;
 		seg_loss_obj->set_segment_loss(loss, Nloss, Mloss);
 	}
 	else
@@ -6829,7 +6791,6 @@ bool CSGInterface::cmd_best_path_trans()
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
 	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
-	SG_FREE(seg_path);
 
 	bool segment_loss_non_zero=false;
 	for (int32_t i=0; i<Nloss*Mloss; i++)
@@ -6880,9 +6841,6 @@ bool CSGInterface::cmd_best_path_trans()
 			d_my_pos[i*(nbest+nother)+k] = my_pos.matrix[i+k*M] ;
 		}
 	}
-	SG_FREE(states.matrix);
-	SG_FREE(my_pos.matrix);
-
 	set_vector(p_prob.vector,nbest+nother);
 	set_vector(d_my_path, (nbest+nother)*M);
 	set_vector(d_my_pos, (nbest+nother)*M);
@@ -7008,7 +6966,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
-		h->best_path_set_segment_loss(SGMatrix<float64_t>(zero2, 2, 1)) ;
+		h->best_path_set_segment_loss(SGMatrix<float64_t>(zero2, 2, 1, false)) ;
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
 	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
@@ -7068,7 +7026,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 	SG_FREE(p);
 	SG_FREE(q);
-	SG_FREE(seg_path);
 	SG_FREE(a_trans);
 	SG_FREE(loss);
 	SG_FREE(mystate_seq);
