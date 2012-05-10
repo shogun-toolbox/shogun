@@ -26,7 +26,7 @@ double* slep_tree_lsr(
 	int n_feats = features->get_dim_feature_space();
 	int n_vecs = features->get_num_vectors();
 	double lambda, lambda_max, beta;
-	double funcp, func;
+	double funcp = 0.0, func = 0.0;
 
 	int iter = 1;
 	bool done = false;

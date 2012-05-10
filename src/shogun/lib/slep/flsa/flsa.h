@@ -178,7 +178,7 @@ void flsa(double *x, double *z, double *infor,
 	double *Av, *g, *s;
 	int iterStep, numS;
 	double gap;
-	double *zz; /*to replace z0, so that z0 shall not revised after */
+	double *zz = NULL; /*to replace z0, so that z0 shall not revised after */
 
 
 	Av=(double *) malloc(sizeof(double)*nn);
