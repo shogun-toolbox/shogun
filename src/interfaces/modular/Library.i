@@ -37,6 +37,8 @@
 %include <shogun/lib/SGNDArray.h>
 namespace shogun
 {
+    SERIALIZABLE_DUMMY(SGReferencedData);
+
 #ifdef USE_BOOL
     %template(BoolSparseVector) SGSparseVector<bool>;
     SERIALIZABLE_DUMMY(SGSparseVector<bool>);
