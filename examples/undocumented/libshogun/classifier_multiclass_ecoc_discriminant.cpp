@@ -55,9 +55,10 @@ int main(int argc, char** argv)
 		stream_features->release_example();
 	}
 	stream_features->end_parser();
+    mat.num_cols = num_vectors;
 
 	// Create features with the useful values from mat
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(mat.matrix, num_feats, num_vectors);
+	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(mat);
 
 	CLabels* labels = new CLabels(num_vectors);
 	SG_REF(features);
@@ -105,8 +106,8 @@ int main(int argc, char** argv)
 	SG_UNREF(output);
 	SG_UNREF(features);
 	SG_UNREF(labels);
-	//SG_UNREF(ffeats_train);
-	//SG_UNREF(flabels_train);
+	SG_UNREF(ffeats_train);
+	SG_UNREF(flabels_train);
 	SG_UNREF(stream_features);
 	SG_UNREF(stream_labels);
 	exit_shogun();
