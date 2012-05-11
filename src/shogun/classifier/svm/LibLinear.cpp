@@ -414,10 +414,10 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	SG_INFO("Objective value = %lf\n",v/2);
 	SG_INFO("nSV = %d\n",nSV);
 
-	delete [] QD;
-	delete [] alpha;
-	delete [] y;
-	delete [] index;
+	SG_FREE(QD);
+	SG_FREE(alpha);
+	SG_FREE(y);
+	SG_FREE(index);
 }
 
 // A coordinate descent algorithm for
@@ -759,10 +759,10 @@ void CLibLinear::solve_l1r_l2_svc(
 	SG_INFO("Objective value = %lf\n", v);
 	SG_INFO("#nonzeros/#features = %d/%d\n", nnz, w_size);
 
-	delete [] index;
-	delete [] y;
-	delete [] b;
-	delete [] xj_sq;
+	SG_FREE(index);
+	SG_FREE(y);
+	SG_FREE(b);
+	SG_FREE(xj_sq);
 }
 
 // A coordinate descent algorithm for
@@ -1120,14 +1120,14 @@ void CLibLinear::solve_l1r_lr(
 	SG_INFO("Objective value = %lf\n", v);
 	SG_INFO("#nonzeros/#features = %d/%d\n", nnz, w_size);
 
-	delete [] index;
-	delete [] y;
-	delete [] exp_wTx;
-	delete [] exp_wTx_new;
-	delete [] xj_max;
-	delete [] C_sum;
-	delete [] xjneg_sum;
-	delete [] xjpos_sum;
+	SG_FREE(index);
+	SG_FREE(y);
+	SG_FREE(exp_wTx);
+	SG_FREE(exp_wTx_new);
+	SG_FREE(xj_max);
+	SG_FREE(C_sum);
+	SG_FREE(xjneg_sum);
+	SG_FREE(xjpos_sum);
 }
 
 void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
