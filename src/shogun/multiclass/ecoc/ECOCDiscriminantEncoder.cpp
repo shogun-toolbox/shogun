@@ -88,8 +88,10 @@ void CECOCDiscriminantEncoder::binary_partition(const vector<int32_t>& classes)
             m_codebook(m_code_idx, part2[i]) = -1;
         m_code_idx++;
 
-        binary_partition(part1);
-        binary_partition(part2);
+        if (part1.size() > 1)
+            binary_partition(part1);
+        if (part2.size() > 1)
+            binary_partition(part2);
     }
     else // only two classes
     {
