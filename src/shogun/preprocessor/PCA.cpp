@@ -32,9 +32,9 @@ CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_)
 
 void CPCA::init()
 {
-	m_transformation_matrix = SGMatrix<float64_t>(NULL,0,0);
-	m_mean_vector = SGVector<float64_t>(NULL,0);
-	m_eigenvalues_vector = SGVector<float64_t>(NULL,0);
+	m_transformation_matrix = SGMatrix<float64_t>();
+	m_mean_vector = SGVector<float64_t>();
+	m_eigenvalues_vector = SGVector<float64_t>();
 
 	SG_ADD(&m_transformation_matrix, "transformation matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
