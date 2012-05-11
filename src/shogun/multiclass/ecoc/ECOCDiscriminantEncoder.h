@@ -21,6 +21,15 @@
 namespace shogun
 {
 
+/** Discriminant ECOC Encoder.
+ *
+ * A data-dependent ECOC coding scheme that learns a tree-style codebook. See the 
+ * following paper for details
+ *
+ *   Oriol Pujol, Petia Radeva, Jordi Vitria.  Discriminant ECOC: A Heuristic Method for
+ *   Application Dependent Design of Error Correcting Output Codes. TPAMI 2006.
+ *
+ */
 class CECOCDiscriminantEncoder: public CECOCEncoder
 {
 public:
