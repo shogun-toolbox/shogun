@@ -74,7 +74,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @return weight vector
 		 */
-		inline SGVector<float64_t> get_w()
+		inline SGVector<float64_t> get_w() const
 		{
 			return w;
 		}
