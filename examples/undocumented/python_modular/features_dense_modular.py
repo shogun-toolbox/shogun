@@ -41,4 +41,4 @@ def features_dense_modular(A=matrixA,B=matrixB,C=matrixC):
 
 if __name__=='__main__':
     print('dense')
-    features_simple_modular(*parameter_list[0])
+    features_dense_modular(*parameter_list[0])
