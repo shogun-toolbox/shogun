@@ -1,6 +1,6 @@
 using System;
 
-public class features_simple_real_modular {
+public class features_dense_real_modular {
 	public static void Main() {
 		modshogun.init_shogun_with_defaults();
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class features_simple_modular {
+public class features_dense_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
