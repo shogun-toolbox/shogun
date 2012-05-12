@@ -45,6 +45,15 @@ public:
     /** set labels */
     void set_labels(CLabels *labels);
 
+    /** set sffs iterations
+     * @param iterations number of sffs iterations
+     */
+    void set_sffs_iterations(int32_t iterations) { m_iterations = iterations; }
+
+    /** get sffs iterations
+     */
+    int32_t get_sffs_iterations() const { return m_iterations; }
+
     /** get name */
     virtual const char* get_name() const { return "ECOCDiscriminantEncoder"; }
 
