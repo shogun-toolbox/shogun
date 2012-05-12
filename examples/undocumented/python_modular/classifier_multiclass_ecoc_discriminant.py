@@ -38,6 +38,7 @@ def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_r
     encoder = ECOCDiscriminantEncoder()
     encoder.set_features(feats_train)
     encoder.set_labels(labels)
+    encoder.set_sffs_iterations(50)
 
     strategy = ECOCStrategy(encoder, ECOCHDDecoder())
 
