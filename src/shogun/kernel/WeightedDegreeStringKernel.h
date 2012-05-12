@@ -439,7 +439,9 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		inline void set_wd_weights(SGVector<float64_t> new_weights)
 		{
-			set_weights(SGMatrix<float64_t>(new_weights.vector,new_weights.vlen,0));
+			SGMatrix<float64_t> matrix = SGMatrix<float64_t>(new_weights.vector,new_weights.vlen,0);
+			set_weights(matrix);
+			matrix.matrix = NULL;
 		}
 
 		/** set weights
