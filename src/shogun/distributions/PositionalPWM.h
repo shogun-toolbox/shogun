@@ -75,7 +75,7 @@ class CPositionalPWM : public CDistribution
 
 		/** get sigma
 		 */
-		virtual inline float64_t get_sigma()
+		virtual float64_t get_sigma()
 		{
 			return m_sigma;
 		}
@@ -84,14 +84,14 @@ class CPositionalPWM : public CDistribution
 		 *
 		 * @param sigma new sigma
 		 */
-		virtual inline void set_sigma(float64_t sigma)
+		virtual void set_sigma(float64_t sigma)
 		{
 			m_sigma=sigma;
 		}
 
 		/** get mean
 		 */
-		virtual inline float64_t get_mean()
+		virtual float64_t get_mean()
 		{
 			return m_mean;
 		}
@@ -100,7 +100,7 @@ class CPositionalPWM : public CDistribution
 		 *
 		 * @param mean new mean
 		 */
-		virtual inline void set_mean(float64_t mean)
+		virtual void set_mean(float64_t mean)
 		{
 			m_mean=mean;
 		}
@@ -109,29 +109,27 @@ class CPositionalPWM : public CDistribution
 		 *
 		 * @param pwm new pwm (values must be in logspace)
 		 */
-		virtual inline void set_pwm(SGMatrix<float64_t> pwm)
+		virtual void set_pwm(SGMatrix<float64_t> pwm)
 		{
-			m_pwm=pwm.matrix;
-			m_pwm_rows=pwm.num_rows;
-			m_pwm_cols=pwm.num_cols;
+			m_pwm = pwm;
 		}
 
 		/** get pwm
 		 *
 		 * @return current pwm
 		 */
-		virtual inline SGMatrix<float64_t> get_pwm()
+		virtual SGMatrix<float64_t> get_pwm() const
 		{
-			return SGMatrix<float64_t>(m_pwm,m_pwm_rows,m_pwm_cols);
+			return m_pwm;
 		}
 
 		/** get w
 		 *
 		 * @return current w
 		 */
-		virtual inline SGMatrix<float64_t> get_w()
+		virtual SGMatrix<float64_t> get_w() const
 		{
-			return SGMatrix<float64_t>(m_w,m_w_rows,m_w_cols);
+			return m_w;
 		}
 
 		/** get poim u
@@ -161,14 +159,8 @@ class CPositionalPWM : public CDistribution
 
 	protected:
 
-		/** pwm rows */
-		int32_t m_pwm_rows;
-
-		/** pwm cols */
-		int32_t m_pwm_cols;
-
 		/** pwm */
-		float64_t* m_pwm;
+		SGMatrix<float64_t> m_pwm;
 
 		/** sigma */
 		float64_t m_sigma;
@@ -176,20 +168,11 @@ class CPositionalPWM : public CDistribution
 		/** mean */
 		float64_t m_mean;
 
-		/** w rows */
-		int32_t m_w_rows;
-
-		/** w cols */
-		int32_t m_w_cols;
-
 		/** w */
-		float64_t* m_w;
-
-		/** POIM len */
-		int32_t m_poim_len;
+		SGMatrix<float64_t> m_w;
 
 		/** poim */
-		float64_t* m_poim;
+		SGVector<float64_t> m_poim;
 
 };
 }
