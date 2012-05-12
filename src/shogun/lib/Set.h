@@ -102,7 +102,7 @@ public:
 
 	/** Add an element to the set
 	 *
-	 * @param e elemet to be added
+	 * @param element element to be added
 	 */
 	void add(const T& element)
 	{
@@ -116,7 +116,7 @@ public:
 
 	/** Remove an element from the set
 	 *
-	 * @param e element to be looked for
+	 * @param element element to be looked for
 	 */
 	bool contains(const T& element)
 	{
@@ -129,7 +129,7 @@ public:
 
 	/** Remove an element from the set
 	 *
-	 * @param e element to be removed
+	 * @param element element to be removed
 	 */
 	void remove(const T& element)
 	{
@@ -145,7 +145,7 @@ public:
 
 	/** Index of element in the set
 	 *
-	 * @param key key to be looked for
+	 * @param element element to be looked for
 	 * @return index of the element or -1 if not found
 	 */
 	int32_t index_of(const T& element)
@@ -153,7 +153,7 @@ public:
 		int32_t index=hash(element);
 		CSetNode<T>* result=chain_search(index, element);
 
-		if (result!=NULL)		
+		if (result!=NULL)
 			 return result->index;
 		
 		return -1;

@@ -35,7 +35,7 @@ class v_array{
 		v_array() { index = 0; length=0; elements = NULL;}
 
 		/** Element access operator
-		 *  @param index of the element to be read
+		 *  @param i of the element to be read
 		 *  @return the corresponding element */
 		T& operator[](unsigned int i) { return elements[i]; }
 

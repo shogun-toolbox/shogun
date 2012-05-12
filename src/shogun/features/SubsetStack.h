@@ -36,8 +36,6 @@ class CSubsetStack: public CSGObject
 {
 public:
 	/** Constructor. Creates empty subset stack
-	 *
-	 * @param original_size number of elements in the underlying data
 	 */
 	CSubsetStack();
 
