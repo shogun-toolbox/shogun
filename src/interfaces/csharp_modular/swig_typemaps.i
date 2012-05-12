@@ -52,8 +52,6 @@
 		dst[i ] = (CTYPE) $1.vector[i];
 	}
 
-	$1.free_vector();
-
 	$result = (CTYPE *)res;
 }
 
@@ -179,8 +177,6 @@ TYPEMAP_SGVECTOR_REF(float64_t, double, double)
 	for (i = 0; i < len; i++) {
 		dst[i] = (CTYPE) $1.matrix[i];
 	}
-
-	$1.free_matrix();
 
 	$result = (CTYPE *)res;
 }
