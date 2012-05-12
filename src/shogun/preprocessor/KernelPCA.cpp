@@ -98,6 +98,7 @@ bool CKernelPCA::init(CFeatures* features)
 		SG_FREE(eigenvalues);
 
 		m_transformation_matrix = SGMatrix<float64_t>(kernel_matrix.matrix,n,n);
+		kernel_matrix.matrix = NULL;
 		m_bias_vector = SGVector<float64_t>(n);
 		CMath::fill_vector(m_bias_vector.vector, m_bias_vector.vlen, 0.0);
 
