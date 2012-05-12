@@ -1385,11 +1385,12 @@ bool CGUIClassifier::get_linear(
 	brows=1;
 	bcols=1;
 
-	cols=1;
 	SGVector<float64_t> w=linear->get_w();
+	cols=1;
+	rows=w.vlen;
 
 	weights= SG_MALLOC(float64_t, w.vlen);
-	memcpy(weights, w.vector, sizeof(float64_t)*rows);
+	memcpy(weights, w.vector, sizeof(float64_t)*w.vlen);
 
 	return true;
 }
