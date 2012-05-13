@@ -12,16 +12,12 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/Array.h>
-#include <shogun/lib/Array2.h>
-#include <shogun/lib/Array3.h>
+#include <shogun/lib/DynamicArray.h>
 
 
 namespace shogun
 {
-	template <class T> class CArray;
-	template <class T> class CArray2;
-	template <class T> class CArray3;
+	template <class T> class CDynamicArray;
 /** @brief class IntronList */
 class CSegmentLoss : public CSGObject
 {
@@ -61,7 +57,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_ids segment ids
 		 */
-		void set_segment_ids(CArray<int32_t>* segment_ids);
+		void set_segment_ids(CDynamicArray<int32_t>* segment_ids);
 
 		/** mask parts of the sequence such that there is no
 		 *  loss incured there; this is used if there is uncertainty
@@ -69,7 +65,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_mask mask
 		 */
-		void set_segment_mask(CArray<float64_t>* segment_mask);
+		void set_segment_mask(CDynamicArray<float64_t>* segment_mask);
 
 		/** set num segment types
 		 *
@@ -94,19 +90,19 @@ class CSegmentLoss : public CSGObject
 	protected:
 
 		/** segment loss matrix*/
-		CArray2<float32_t> m_segment_loss_matrix;
+		CDynamicArray<float32_t> m_segment_loss_matrix; // 2d
 
 		/** segment loss
 		 *  two square matrices:
 		 *  one for segment based loss and
 		 *  one for length contribution*/
-		CArray3<float64_t> m_segment_loss;
+		CDynamicArray<float64_t> m_segment_loss; // 3d
 
 		/** segment IDs */
-		CArray<int32_t>* m_segment_ids;
+		CDynamicArray<int32_t>* m_segment_ids;
 
 		/** segment mask */
-		CArray<float64_t>* m_segment_mask;
+		CDynamicArray<float64_t>* m_segment_mask;
 
 		/** number of different segment types (former: max_a_id)*/
 		int32_t m_num_segment_types;

@@ -190,7 +190,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 	m_num_states = num_states;
 	m_plif_matrix = SG_MALLOC(CPlifBase*, num_states*num_states);
 
-	CArray3<float64_t> penalties(penalties_array.array, num_states, num_states, penalties_array.dims[2], true, true) ;
+	CDynamicArray<float64_t> penalties(penalties_array.array, num_states, num_states, penalties_array.dims[2], true, true) ;
 
 	for (int32_t i=0; i<num_states; i++)
 	{

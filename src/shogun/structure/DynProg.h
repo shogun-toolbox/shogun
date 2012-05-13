@@ -27,9 +27,6 @@
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/distributions/Distribution.h>
 #include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/Array.h>
-#include <shogun/lib/Array2.h>
-#include <shogun/lib/Array3.h>
 #include <shogun/lib/Time.h>
 
 #include <stdio.h>
@@ -41,7 +38,8 @@ namespace shogun
 	class CIntronList;
 	class CPlifMatrix;
 	class CSegmentLoss;
-	template <class T> class CArray;
+
+	template <class T> class CDynamicArray;
 
 //#define DYNPROG_TIMING
 
@@ -98,14 +96,14 @@ public:
 	/** get num svms*/
 	int32_t get_num_svms();
 
-	/** init CArray for precomputed content svm values
+	/** init CDynamicArray for precomputed content svm values
 	 *  with size seq_len x num_svms
 	 *
 	 *  @param p_num_svms: number of svm weight vectors for content prediction
 	 */
 	void init_content_svm_value_array(const int32_t p_num_svms);
 
-	/** init CArray for precomputed tiling intensitie-plif-values
+	/** init CDynamicArray for precomputed tiling intensitie-plif-values
 	 *  with size seq_len x num_svms
 	 *
 	 *  @param probe_pos local positions of probes
@@ -606,17 +604,17 @@ protected:
 	int32_t m_N;
 
 	/// transition matrix
-	CArray2<int32_t> m_transition_matrix_a_id;
-	CArray2<float64_t> m_transition_matrix_a;
-	CArray2<float64_t> m_transition_matrix_a_deriv;
+	CDynamicArray<int32_t> m_transition_matrix_a_id; // 2d
+	CDynamicArray<float64_t> m_transition_matrix_a; // 2d
+	CDynamicArray<float64_t> m_transition_matrix_a_deriv; // 2d
 
 	/// initial distribution of states
-	CArray<float64_t> m_initial_state_distribution_p;
-	CArray<float64_t> m_initial_state_distribution_p_deriv;
+	CDynamicArray<float64_t> m_initial_state_distribution_p;
+	CDynamicArray<float64_t> m_initial_state_distribution_p_deriv;
 
 	/// distribution of end-states
-	CArray<float64_t> m_end_state_distribution_q;
-	CArray<float64_t> m_end_state_distribution_q_deriv;
+	CDynamicArray<float64_t> m_end_state_distribution_q;
+	CDynamicArray<float64_t> m_end_state_distribution_q_deriv;
 
 	//@}
 
@@ -626,32 +624,32 @@ protected:
 	int32_t m_num_svms;
 
 	/** word degree */
-	CArray<int32_t> m_word_degree;
+	CDynamicArray<int32_t> m_word_degree;
 	/** cum num words */
-	CArray<int32_t> m_cum_num_words;
+	CDynamicArray<int32_t> m_cum_num_words;
 	/** cum num words array */
 	int32_t * m_cum_num_words_array;
 	/** num words */
-	CArray<int32_t> m_num_words;
+	CDynamicArray<int32_t> m_num_words;
 	/** num words array */
 	int32_t* m_num_words_array;
 	/** mod words */
-	CArray2<int32_t> m_mod_words;
+	CDynamicArray<int32_t> m_mod_words; // 2d
 	/** mod words array */
 	int32_t* m_mod_words_array;
 	/** sign words */
-	CArray<bool> m_sign_words;
+	CDynamicArray<bool> m_sign_words;
 	/** sign words array */
 	bool* m_sign_words_array;
 	/** string words */
-	CArray<int32_t> m_string_words;
+	CDynamicArray<int32_t> m_string_words;
 	/** string words array */
 	int32_t* m_string_words_array;
 
 	/** SVM start position */
-//	CArray<int32_t> m_svm_pos_start;
+//	CDynamicArray<int32_t> m_svm_pos_start;
 	/** number of unique words */
-	CArray<int32_t> m_num_unique_words;
+	CDynamicArray<int32_t> m_num_unique_words;
 	/** SVM arrays clean */
 	bool m_svm_arrays_clean;
 	/** max a id */
@@ -659,23 +657,23 @@ protected:
 
 	// input arguments
 	/** sequence */
-	CArray3<float64_t> m_observation_matrix;
+	CDynamicArray<float64_t> m_observation_matrix; //3d
 	/** candidate position */
-	CArray<int32_t> m_pos;
+	CDynamicArray<int32_t> m_pos;
 	/** number of candidate positions */
 	int32_t m_seq_len;
 	/** orf info */
-	CArray2<int32_t> m_orf_info;
+	CDynamicArray<int32_t> m_orf_info; // 2d
 	/** segment sum weights */
-	CArray2<float64_t> m_segment_sum_weights;
+	CDynamicArray<float64_t> m_segment_sum_weights; // 2d
 	/** Plif list */
-	CArray<CPlifBase*> m_plif_list;
+	CDynamicArray<CPlifBase*> m_plif_list;
 	/** PEN */
-	CArray2<CPlifBase*> m_PEN;
+	CDynamicArray<CPlifBase*> m_PEN; // 2d
 	/** PEN state signals */
-	CArray2<CPlifBase*> m_PEN_state_signals;
+	CDynamicArray<CPlifBase*> m_PEN_state_signals; // 2d
 	/** a single string (to be segmented) */
-	CArray<char> m_genestr;
+	CDynamicArray<char> m_genestr;
 	/**
 	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095
 	  corresponding to the 6-mer in genestr(i-5:i)
@@ -692,21 +690,21 @@ protected:
 	**/
 	uint16_t*** m_wordstr;
 	/** dict weights */
-	CArray2<float64_t> m_dict_weights;
+	CDynamicArray<float64_t> m_dict_weights; // 2d
 	/** segment loss */
-	CArray3<float64_t> m_segment_loss;
+	CDynamicArray<float64_t> m_segment_loss; // 3d
 	/** segment IDs */
-	CArray<int32_t> m_segment_ids;
+	CDynamicArray<int32_t> m_segment_ids;	
 	/** segment mask */
-	CArray<float64_t> m_segment_mask;
+	CDynamicArray<float64_t> m_segment_mask;	
 	/** my state seq */
-	CArray<int32_t> m_my_state_seq;
+	CDynamicArray<int32_t> m_my_state_seq;
 	/** my position sequence */
-	CArray<int32_t> m_my_pos_seq;
+	CDynamicArray<int32_t> m_my_pos_seq;
 	/** my scores */
-	CArray<float64_t> m_my_scores;
+	CDynamicArray<float64_t> m_my_scores;
 	/** my losses */
-	CArray<float64_t> m_my_losses;
+	CDynamicArray<float64_t> m_my_losses;
 
 	/** segment loss object containing the functions
 	 *  to compute the segment loss*/
@@ -714,11 +712,11 @@ protected:
 
 	// output arguments
 	/** scores */
-	CArray<float64_t> m_scores;
+	CDynamicArray<float64_t> m_scores;
 	/** states */
-	CArray2<int32_t> m_states;
+	CDynamicArray<int32_t> m_states; // 2d
 	/** positions */
-	CArray2<int32_t> m_positions;
+	CDynamicArray<int32_t> m_positions; // 2d
 
 	/** sparse feature matrix dim1*/
 	CSparseFeatures<float64_t>* m_seq_sparse1;
@@ -730,7 +728,7 @@ protected:
 	/** storeage of stop codons
 	 *  array of size length(sequence)
 	 */
-	CArray<bool> m_genestr_stop;
+	CDynamicArray<bool> m_genestr_stop;
 
 	/** administers a list of introns and quality scores
 	 *  and provides functions for fast access */
@@ -743,7 +741,7 @@ protected:
 	 *  array for storage of precomputed linear features linge content svm values or pliffed tiling data
 	 * Jonas
 	 */
-	CArray2<float64_t> m_lin_feat;
+	CDynamicArray<float64_t> m_lin_feat; // 2d
 
 	/** raw intensities */
 	float64_t *m_raw_intensities;
