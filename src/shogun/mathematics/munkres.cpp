@@ -293,8 +293,8 @@ void Munkres::solve(SGMatrix<double> &m)
 	std::copy(m.matrix, m.matrix + m.num_cols*m.num_rows, matrix.matrix);
 	// STAR == 1 == starred, PRIME == 2 == primed
 
-	row_mask=new bool[matrix.num_rows];
-	col_mask=new bool[matrix.num_cols];
+	row_mask=SG_MALLOC(bool, matrix.num_rows);
+	col_mask=SG_MALLOC(bool, matrix.num_cols);
 	for (int i=0; i < matrix.num_rows; i++)
 		row_mask[i] = false;
 
@@ -336,7 +336,7 @@ void Munkres::solve(SGMatrix<double> &m)
 
 	std::copy(matrix.matrix, matrix.matrix + m.num_cols*m.num_rows, m.matrix);
 
-	delete [] row_mask;
-	delete [] col_mask;
+	SG_FREE(row_mask);
+	SG_FREE(col_mask);
 }
 

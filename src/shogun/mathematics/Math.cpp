@@ -448,10 +448,10 @@ float64_t CMath::Align(
     }
   }
 
-  delete [] gapCosts1;
-  delete [] gapCosts2;
-  delete [] costs2_0;
-  delete [] costs2_1;
+  SG_FREE(gapCosts1);
+  SG_FREE(gapCosts2);
+  SG_FREE(costs2_0);
+  SG_FREE(costs2_1);
 
   // return the final cost
   return actCost;
