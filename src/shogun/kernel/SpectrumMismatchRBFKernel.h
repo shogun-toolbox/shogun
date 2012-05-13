@@ -18,8 +18,7 @@
 #include <shogun/features/StringFeatures.h>
 
 
-#include <shogun/lib/Array.h>
-#include <shogun/lib/Array2.h>
+#include <shogun/lib/DynamicArray.h>
 #include <string>
 #include <vector>
 
@@ -211,7 +210,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		bool initialized;
 
 		/** kernel matrix */
-		CArray2<float64_t> kernel_matrix ;
+		CDynamicArray<float64_t> kernel_matrix ; // 2d
 		/** kernel matrix length */
 		int32_t kernel_matrix_length;
 		/** target letter 0 */

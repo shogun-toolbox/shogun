@@ -6972,7 +6972,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
 
 	float64_t* p_Plif_deriv = SG_MALLOC(float64_t, (max_plif_id+1)*max_plif_len);
-	CArray2<float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
+	CDynamicArray <float64_t> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ; // 2d
 
 	float64_t* p_A_deriv   = SG_MALLOC(float64_t, num_states*num_states);
 	float64_t* p_p_deriv   = SG_MALLOC(float64_t, num_states);
