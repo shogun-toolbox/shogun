@@ -28,6 +28,7 @@
 %rename(ECOCOVOEncoder) CECOCOVOEncoder;
 %rename(ECOCRandomSparseEncoder) CECOCRandomSparseEncoder;
 %rename(ECOCRandomDenseEncoder) CECOCRandomDenseEncoder;
+%rename(ECOCDiscriminantEncoder) CECOCDiscriminantEncoder;
 %rename(ECOCHDDecoder) CECOCHDDecoder;
 
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
@@ -57,6 +58,7 @@
 %include <shogun/multiclass/ecoc/ECOCOVOEncoder.h>
 %include <shogun/multiclass/ecoc/ECOCRandomSparseEncoder.h>
 %include <shogun/multiclass/ecoc/ECOCRandomDenseEncoder.h>
+%include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
 %include <shogun/multiclass/ecoc/ECOCHDDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCStrategy.h>
 
