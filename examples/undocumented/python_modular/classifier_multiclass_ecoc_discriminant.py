@@ -24,7 +24,7 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[tr
 def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
     from shogun.Features import RealFeatures, Labels
     from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
-    from shogun.Classifier import ECOCStrategy, ECOCOVREncoder, ECOCHDDecoder, MulticlassOneVsRestStrategy
+    from shogun.Classifier import ECOCStrategy, ECOCDiscriminantEncoder, ECOCHDDecoder
 
     feats_train = RealFeatures(fm_train_real)
     feats_test  = RealFeatures(fm_test_real)
@@ -35,33 +35,26 @@ def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_r
     classifier.set_epsilon(epsilon)
     classifier.set_bias_enabled(True)
 
-    mc_classifier = LinearMulticlassMachine(MulticlassOneVsRestStrategy(), feats_train, classifier, labels)
-    mc_classifier.train()
-    label_mc = mc_classifier.apply(feats_test)
-    out_mc = label_mc.get_labels()
+    encoder = ECOCDiscriminantEncoder()
+    encoder.set_features(feats_train)
+    encoder.set_labels(labels)
+    encoder.set_sffs_iterations(50)
 
-    ecoc_strategy = ECOCStrategy(ECOCOVREncoder(), ECOCHDDecoder())
-    ecoc_classifier = LinearMulticlassMachine(ecoc_strategy, feats_train, classifier, labels)
-    ecoc_classifier.train()
-    label_ecoc = ecoc_classifier.apply(feats_test)
-    out_ecoc = label_ecoc.get_labels() 
+    strategy = ECOCStrategy(encoder, ECOCHDDecoder())
 
-    n_diff = (out_mc != out_ecoc).sum()
-    if n_diff == 0:
-        print("Same results for OvR and ECOCOvR")
-    else:
-        print("Different results for OvR and ECOCOvR (%d out of %d are different)" % (n_diff, len(out_mc)))
+    classifier = LinearMulticlassMachine(strategy, feats_train, classifier, labels)
+    classifier.train()
+    label_pred = classifier.apply(feats_test)
+    out = label_pred.get_labels()
 
     if label_test_multiclass is not None:
         from shogun.Evaluation import MulticlassAccuracy
         labels_test = Labels(label_test_multiclass)
         evaluator = MulticlassAccuracy()
-        acc_mc = evaluator.evaluate(label_mc, labels_test)
-        acc_ecoc = evaluator.evaluate(label_ecoc, labels_test)
-        print('Normal OVR Accuracy = %.4f' % acc_mc)
-        print('ECOC OVR Accuracy   = %.4f' % acc_ecoc)
+        acc = evaluator.evaluate(label_pred, labels_test)
+        print('Accuracy = %.4f' % acc)
 
-    return out_ecoc, out_mc
+    return out
 
 if __name__=='__main__':
     print('MulticlassMachine')

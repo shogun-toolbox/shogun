@@ -14,6 +14,7 @@
  #include <shogun/multiclass/ecoc/ECOCOVOEncoder.h>
  #include <shogun/multiclass/ecoc/ECOCRandomSparseEncoder.h>
  #include <shogun/multiclass/ecoc/ECOCRandomDenseEncoder.h>
+ #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
  #include <shogun/multiclass/ecoc/ECOCDecoder.h>
  #include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
  #include <shogun/multiclass/ecoc/ECOCHDDecoder.h>

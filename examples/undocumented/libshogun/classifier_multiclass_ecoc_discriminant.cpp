@@ -4,7 +4,7 @@
 #include <shogun/features/StreamingDenseFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/ecoc/ECOCStrategy.h>
-#include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
+#include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
 #include <shogun/multiclass/ecoc/ECOCHDDecoder.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/classifier/svm/LibLinear.h>
@@ -82,9 +82,13 @@ int main(int argc, char** argv)
 	svm->set_epsilon(EPSILON);
 	svm->set_bias_enabled(true);
 
+    CECOCDiscriminantEncoder *encoder = new CECOCDiscriminantEncoder();
+    encoder->set_features(features);
+    encoder->set_labels(labels);
+
 	// Create a multiclass svm classifier that consists of several of the previous one
 	CLinearMulticlassMachine* mc_svm = new CLinearMulticlassMachine(
-			new CECOCStrategy(new CECOCOVREncoder(), new CECOCHDDecoder()), (CDotFeatures*) features, svm, labels);
+			new CECOCStrategy(encoder, new CECOCHDDecoder()), (CDotFeatures*) features, svm, labels);
 	SG_REF(mc_svm);
 
 	// Train the multiclass machine using the data passed in the constructor
