@@ -70,12 +70,12 @@ namespace shogun{
 		m_centroids->set_num_vectors(num_classes);
 		
 		int64_t* num_per_class = new int64_t[num_classes];
-		for(int32_t i=0 ; i<num_classes ; i++)
+		for (int32_t i=0 ; i<num_classes ; i++)
 		{
 			num_per_class[i]=0;
 		}
 		
-		for(int32_t idx=0 ; idx<num_vectors ; idx++)
+		for (int32_t idx=0 ; idx<num_vectors ; idx++)
 		{
 			int32_t current_len;
 			bool current_free;
@@ -88,7 +88,7 @@ namespace shogun{
 		}
 
 
-		for(int32_t i=0 ; i<num_classes ; i++)
+		for (int32_t i=0 ; i<num_classes ; i++)
 		{
 			float64_t* target = centroids.matrix + num_feats*i;
 			int32_t total = num_per_class[i];
@@ -108,7 +108,7 @@ namespace shogun{
 		m_is_trained=true;
 		distance->init(m_centroids,distance->get_rhs());
 		
-		delete [] num_per_class;
+		SG_FREE(num_per_class);
 		
 		return true;
 	}

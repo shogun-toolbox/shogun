@@ -316,7 +316,7 @@ CLabels* CKNN::classify_NN()
 		output->set_label(i,m_train_labels.vector[out_idx]+m_min_label);
 	}
 
-	delete [] distances;
+	SG_FREE(distances);
 	return output;
 }
 

@@ -430,7 +430,7 @@ float64_t line_search(float64_t *w,
 		L+=diff*(o[ii]-Y[ii]);
 		R+=diff*(o_bar[ii]-Y[ii]);
 	}
-	delete [] deltas;
+	SG_FREE(deltas);
 	return (-L/(R-L));
 }
 
@@ -475,7 +475,7 @@ int32_t TSVM_MFN(
 	}
 	std::nth_element(ou,ou+int32_t((1-Options->R)*Data->u-1),ou+Data->u);
 	float64_t thresh=*(ou+int32_t((1-Options->R)*Data->u)-1);
-	delete [] ou;
+	SG_FREE(ou);
 	for (int32_t i=0;i<Data->u;i++)
 	{
 		if(Outputs->vec[JU[i]]>thresh)
@@ -562,8 +562,8 @@ int32_t switch_labels(float64_t* Y, float64_t* o, int32_t* JU, int32_t u, int32_
 		Y[positive[s].index]=-1.0;
 		Y[negative[s].index]= 1.0;
 	}
-	delete [] positive;
-	delete [] negative;
+	SG_FREE(positive);
+	SG_FREE(negative);
 	return s;
 }
 
@@ -640,12 +640,12 @@ int32_t DA_S3VM(
 	for (int32_t i=0;i<Outputs->d;i++)
 		o[i]=o_min[i];
 	/* may want to reset the original Y */
-	delete [] p;
-	delete [] q;
-	delete [] g;
-	delete [] JU;
-	delete [] w_min;
-	delete [] o_min;
+	SG_FREE(p);
+	SG_FREE(q);
+	SG_FREE(g);
+	SG_FREE(JU);
+	SG_FREE(w_min);
+	SG_FREE(o_min);
 	SG_SINFO("(min) Objective Value = %f", F_min);
 	return 1;
 }
@@ -1134,6 +1134,6 @@ void GetLabeledData(struct data *D, const struct data *Data)
 	D->m=Data->l;
 	D->n=Data->n;
 	D->u=0;
-	delete [] J;*/
+	SG_FREE(J);*/
 }
 }

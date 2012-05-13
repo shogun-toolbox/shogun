@@ -39,8 +39,7 @@ CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),
 CMKL::~CMKL()
 {
 	// -- Delete beta_local for ElasticnetMKL
-	delete [] beta_local;
-	beta_local = NULL;
+	SG_FREE(beta_local);
 
 	SG_DEBUG("deleting MKL object %p\n", this);
 	if (svm)
@@ -241,7 +240,7 @@ bool CMKL::train_machine(CFeatures* data)
 	  // -- Initialize subkernel weights for Elasticnet MKL
 	  CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, 1.0), beta, num_kernels);
 
-	  if (beta_local) { delete [] beta_local; }
+	  SG_FREE(beta_local);
 	  beta_local = CMath::clone_vector(beta, num_kernels);
 
 	  elasticnet_transform(beta, ent_lambda, num_kernels);
