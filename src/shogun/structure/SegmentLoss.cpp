@@ -5,9 +5,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/structure/SegmentLoss.h>
-#include <shogun/lib/Array.h>
-#include <shogun/lib/Array2.h>
-#include <shogun/lib/Array3.h>
 #include <shogun/base/SGObject.h>
 //# define DEBUG
 
@@ -37,12 +34,12 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 }
 
-void CSegmentLoss::set_segment_ids(CArray<int32_t>* segment_ids)
+void CSegmentLoss::set_segment_ids(CDynamicArray<int32_t>* segment_ids)
 {
 	m_segment_ids = segment_ids;
 }
 
-void CSegmentLoss::set_segment_mask(CArray<float64_t>* segment_mask)
+void CSegmentLoss::set_segment_mask(CDynamicArray<float64_t>* segment_mask)
 {
 	m_segment_mask = segment_mask;
 }
