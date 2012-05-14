@@ -13,7 +13,8 @@ function features_string_char_modular(strings)
 	--print ("length of first string" ..f:get_vector_length(0))
 	--print ("strings" .. f:get_features())
 
-	f:set_feature_vector({"t","e","s","t"}, 0)
+	--FIXME
+	--f:set_feature_vector({"t","e","s","t"}, 0)
 
 	return f:get_features(), f
 end
