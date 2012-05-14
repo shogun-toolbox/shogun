@@ -28,9 +28,9 @@ class CTestStatistic : public CSGObject
 			return 0.0;
 		}
 
-		virtual float64_t compute_threshold(float64_t confidence)
+		virtual float64_t compute_p_value(float64_t statistic)
 		{
-			SG_ERROR("%s::compute_threshold() is not implemented!\n");
+			SG_ERROR("%s::compute_p_value() is not implemented!\n");
 			return 0.0;
 		}
 

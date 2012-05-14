@@ -17,15 +17,12 @@ CStatisticalTest::CStatisticalTest() : CSGObject()
 	init();
 }
 
-CStatisticalTest::CStatisticalTest(CTestStatistic* statistic,
-		float64_t confidence) : CSGObject()
+CStatisticalTest::CStatisticalTest(CTestStatistic* statistic) : CSGObject()
 {
 	init();
 
 	m_statistic=statistic;
 	SG_REF(m_statistic);
-
-	m_confidence=confidence;
 }
 
 CStatisticalTest::~CStatisticalTest()
@@ -33,7 +30,7 @@ CStatisticalTest::~CStatisticalTest()
 	SG_UNREF(m_statistic);
 }
 
-bool CStatisticalTest::perform_test()
+float64_t CStatisticalTest::perform_test()
 {
 	if (!m_statistic)
 	{
@@ -42,10 +39,7 @@ bool CStatisticalTest::perform_test()
 	}
 
 	float64_t statistic=m_statistic->compute_statistic();
-	float64_t threshold=m_statistic->compute_threshold(m_confidence);
-
-	/* reject null-hypothesis if statistic is greater than threshold */
-	return statistic<threshold;
+	return m_statistic->compute_p_value(statistic);
 }
 
 void CStatisticalTest::init()
@@ -53,5 +47,4 @@ void CStatisticalTest::init()
 	/* TODO register parameters*/
 
 	m_statistic=NULL;
-	m_confidence=0;
 }
