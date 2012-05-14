@@ -8,8 +8,9 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#ifndef ECOCEDDECODER_H__
-#define ECOCEDDECODER_H__
+#ifndef ECOCAEDDECODER_H__
+#define ECOCAEDDECODER_H__
+
 
 #include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
 #include <shogun/mathematics/Math.h>
@@ -17,23 +18,23 @@
 namespace shogun
 {
 
-/** Euclidean Distance Decoder.
+/** Attenuated Euclidean Distance Decoder.
  *
  * \f[
- * ED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2}
+ * AED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2 |q^j| |b_i^j|}
  * \f]
  */
-class CECOCEDDecoder: public CECOCSimpleDecoder
+class CECOCAEDDecoder: public CECOCSimpleDecoder
 {
 public:
     /** constructor */
-    CECOCEDDecoder() {}
+    CECOCAEDDecoder() {}
 
     /** destructor */
-    virtual ~CECOCEDDecoder() {}
+    virtual ~CECOCAEDDecoder() {}
 
     /** get name */
-    virtual const char* get_name() const { return "ECOCEDDecoder"; }
+    virtual const char* get_name() const { return "ECOCAEDDecoder"; }
 
     
 protected:
@@ -48,12 +49,13 @@ protected:
     {
         float64_t dist = 0;
         for (int32_t i=0; i < outputs.vlen; ++i)
-            dist += (outputs[i]-code[i])*(outputs[i]-code[i]);
+            dist += (outputs[i]-code[i])*(outputs[i]-code[i]) * 
+                CMath::abs(outputs[i]) * CMath::abs(code[i]);
         return CMath::sqrt(dist);
     }
 };
 
 } /* shogun */ 
 
-#endif /* end of include guard: ECOCEDDECODER_H__ */
 
+#endif /* end of include guard: ECOCAEDDECODER_H__ */

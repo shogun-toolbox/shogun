@@ -8,6 +8,9 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#ifndef ECOCHDDECODER_H__
+#define ECOCHDDECODER_H__
+
 #include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCUtil.h>
 
@@ -45,3 +48,5 @@ protected:
 };
 
 }
+
+#endif /* end of include guard: ECOCHDDECODER_H__ */
