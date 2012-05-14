@@ -30,12 +30,12 @@ int32_t CStructuredModel::get_dim()
 {
 }
 
-CFeatures* CStructuredModel::compute_combined_feature(int32_t feat_idx, int32_t lab_idx)
+SGVector< float64_t > CStructuredModel::compute_combined_feature(int32_t feat_idx, int32_t lab_idx)
 {
 	return m_compute_combined_feature(m_features, m_labels, feat_idx, lab_idx);
 }
 
-CStructuredData CStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
+CResultSet* CStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 {
 	return m_argmax(m_features, m_labels, w, feat_idx);
 }
