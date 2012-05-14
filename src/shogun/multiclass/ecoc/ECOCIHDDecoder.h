@@ -10,6 +10,7 @@
 
 #ifndef ECOCIHDDECODER_H__
 #define ECOCIHDDECODER_H__
+#ifdef HAVE_LAPACK
 
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>
 
@@ -58,5 +59,6 @@ protected:
 
 } // namespace shogun
 
+#endif // HAVE_LAPACK
 #endif /* end of include guard: ECOCIHDDECODER_H__ */
 
