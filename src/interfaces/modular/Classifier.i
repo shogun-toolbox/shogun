@@ -52,6 +52,7 @@
 %rename(VowpalWabbit) CVowpalWabbit;
 #ifdef USE_SVMLIGHT
 %rename(SVMLight) CSVMLight;
+%rename(SVMLightOneClass) CSVMLightOneClass;
 #endif //USE_SVMLIGHT
 
 /* These functions return new Objects */
