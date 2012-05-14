@@ -21,7 +21,7 @@ namespace shogun
 /** Attenuated Euclidean Distance Decoder.
  *
  * \f[
- * AED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2 |q^j| |b_i^j|}
+ * AED(q, b_i) = \sqrt{\sum_{j=1}^n (q^j-b_i^j)^2 |b_i^j|}
  * \f]
  */
 class CECOCAEDDecoder: public CECOCSimpleDecoder
@@ -49,8 +49,7 @@ protected:
     {
         float64_t dist = 0;
         for (int32_t i=0; i < outputs.vlen; ++i)
-            dist += (outputs[i]-code[i])*(outputs[i]-code[i]) * 
-                CMath::abs(outputs[i]) * CMath::abs(code[i]);
+            dist += (outputs[i]-code[i])*(outputs[i]-code[i]) * CMath::abs(code[i]);
         return CMath::sqrt(dist);
     }
 };
