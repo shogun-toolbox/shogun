@@ -21,14 +21,16 @@ class CStatisticalTest : public CSGObject
 {
 	public:
 		CStatisticalTest();
-		CStatisticalTest(CTestStatistic* statistic, float64_t confidence);
+		CStatisticalTest(CTestStatistic* statistic);
 
 		virtual ~CStatisticalTest();
 
-		/** TODO
+		/** Performs the underlying statistical test. Returns p-value, which
+		 * corresponds to the (1-p) percentile of the test's resulting statistic
+		 * in the null distribution.
 		 *
-		 * @return true if the NULL-hypothesis is rejected */
-		virtual bool perform_test();
+		 * @return p-value of test result */
+		virtual float64_t perform_test();
 
 		inline virtual const char* get_name() const { return "StatisticalTest"; }
 
@@ -36,9 +38,6 @@ class CStatisticalTest : public CSGObject
 		void init();
 
 	protected:
-		/** Confidence niveau of the test, test correct with (1-m_confidence) */
-		float64_t m_confidence;
-
 		CTestStatistic* m_statistic;
 };
 
