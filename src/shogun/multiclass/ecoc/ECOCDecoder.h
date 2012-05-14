@@ -12,7 +12,8 @@
 #define ECOCDECODER_H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/DataType.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -37,14 +38,11 @@ public:
      * @param outputs outputs by classifiers
      * @param codebook ECOC codebook
      */
-    virtual int32_t decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook);
+    virtual int32_t decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook)=0;
 
 protected:
-    /** whether to turn the output into binary before decoding */
-    virtual bool binary_decoding()=0;
-
-    /** compute distance */
-    virtual float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code)=0;
+    /** turn 2-class labels into binary */
+    SGVector<float64_t> binarize(const SGVector<float64_t> query);
 };
 
 }

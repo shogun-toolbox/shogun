@@ -8,14 +8,14 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCUtil.h>
 
 namespace shogun
 {
 
 /** Hamming Distance Decoder */
-class CECOCHDDecoder: public CECOCDecoder
+class CECOCHDDecoder: public CECOCSimpleDecoder
 {
 public:
     /** constructor */
