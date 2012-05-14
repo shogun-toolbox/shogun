@@ -73,7 +73,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 
 		/** get features
 		 *
-		 * @return kernel
+		 * @return features
 		 */
 		CDotFeatures* get_features() const
 		{
