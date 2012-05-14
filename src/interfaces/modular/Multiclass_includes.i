@@ -17,7 +17,11 @@
  #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
  #include <shogun/multiclass/ecoc/ECOCDecoder.h>
  #include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
+ #include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
  #include <shogun/multiclass/ecoc/ECOCHDDecoder.h>
+ #include <shogun/multiclass/ecoc/ECOCIHDDecoder.h>
+ #include <shogun/multiclass/ecoc/ECOCEDDecoder.h>
+ #include <shogun/multiclass/ecoc/ECOCAEDDecoder.h>
 
  #include <shogun/multiclass/MulticlassLibLinear.h>
  #include <shogun/multiclass/MulticlassOCAS.h>
