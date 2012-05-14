@@ -29,7 +29,7 @@ public:
         {
             int32_t dist = 0;
             for (int32_t i=0; i < len; ++i)
-                dist += static_cast<int32_t>(CMath::abs((c1[i]-c2[i]) * c1[i] * c2[i]));
+                dist += static_cast<int32_t>(CMath::abs((c1[i]-c2[i])));
             return dist/2;
         }
 };
