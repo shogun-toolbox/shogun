@@ -305,7 +305,7 @@ template <class T> class CArray3: public CArray<T>
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() { return "Array3"; }
+		inline virtual const char* get_name() const { return "Array3"; }
 
 	protected:
 		/** size of array's dimension 1 */
