@@ -8,6 +8,10 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <shogun/lib/config.h>
+
+#ifdef HAVE_LAPACK
+
 #include <shogun/multiclass/ecoc/ECOCIHDDecoder.h>
 #include <shogun/multiclass/ecoc/ECOCUtil.h>
 #include <shogun/mathematics/Math.h>
@@ -66,3 +70,5 @@ void CECOCIHDDecoder::update_delta_cache(const SGMatrix<int32_t> codebook)
     clapack_dgetrf(CblasColMajor, m_delta.num_cols, m_delta.num_cols, m_delta.matrix, m_delta.num_cols, IPIV.vector);
     clapack_dgetri(CblasColMajor, m_delta.num_cols, m_delta.matrix, m_delta.num_cols, IPIV.vector);
 }
+
+#endif // HAVE_LAPACK
