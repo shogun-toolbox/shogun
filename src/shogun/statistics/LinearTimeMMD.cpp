@@ -42,8 +42,7 @@ void CLinearTimeMMD::init()
 	/* TODO register parameters*/
 
 	m_kernel=NULL;
-	m_threshold_method=MMD_BOOTSTRAP;
-	m_bootstrap_iterations=100;
+	m_threshold_method=MMD_NONE;
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
@@ -94,57 +93,24 @@ float64_t CLinearTimeMMD::compute_statistic()
 	return 1.0/m_2*(first+second)+1.0/m*third;
 }
 
-float64_t CLinearTimeMMD::compute_threshold(float64_t confidence)
+float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
 	switch (m_threshold_method)
 	{
-	case MMD_BOOTSTRAP:
-		result=bootstrap_threshold(confidence);
-		break;
+		case MMD_NONE:
+			/* use super-class method for bootstrapping */
+			result=CTwoSampleTestStatistic::compute_p_value(statistic);
+			break;
 
-	default:
-		SG_ERROR("%s::compute_threshold(): Unknown method to compute"
-				" threshold!\n");
+		default:
+			SG_ERROR("%s::compute_threshold(): Unknown method to compute"
+					" threshold!\n");
+			break;
 
 	}
 
 	return result;
 }
 
-float64_t CLinearTimeMMD::bootstrap_threshold(float64_t confidence)
-{
-	/* compute mean of all bootstrap statistics using running averages */
-	SGVector<float64_t> results(m_bootstrap_iterations);
-
-	/* memory for index permutations, (would slow down loop) */
-	SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
-	ind_permutation.range_fill();
-
-	for (index_t i=0; i<m_bootstrap_iterations; ++i)
-	{
-		/* idea: merge features of p and q, shuffle, and compute statistic.
-		 * This is done using subsets here */
-
-		/* create index permutation and add as subset. This will mix samples
-		 * from p and q */
-		CMath::permute_vector(ind_permutation);
-		m_p_and_q->add_subset(ind_permutation);
-
-		/* compute statistic for this permutation of mixed samples */
-		results.vector[i]=compute_statistic();
-
-		/* clean up */
-		m_p_and_q->remove_subset();
-	}
-
-	/* compute threshold, sort elements and return the one that corresponds to
-	 * confidence niveau */
-	CMath::qsort(results.vector, results.vlen);
-	index_t result_idx=CMath::round((1-confidence)*results.vlen);
-	float64_t result=results.vector[result_idx];
-
-	/* clean up and return */
-	return result;
-}
