@@ -61,7 +61,7 @@ typedef float64_t (*FDeltaLoss) (CStructuredLabels* labels, CStructuredData ypre
  * example of these functions is implemented, e.g. for HM-SVM and TODO reference
  * to the paper.
  */
-class CStructuredModel : CSGObject
+class CStructuredModel : public CSGObject
 {
 	public:
 		/** default constructor */
