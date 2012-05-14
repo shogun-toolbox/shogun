@@ -150,7 +150,6 @@ TYPEMAP_SGVECTOR(float64_t)
 	}
  	SWIG_arg++;
 }
-%enddef
 
 /* Two dimensional input/output arrays */
 %define TYPEMAP_SGMATRIX(SGTYPE)
