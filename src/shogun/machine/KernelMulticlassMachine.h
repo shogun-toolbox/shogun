@@ -80,10 +80,10 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		}
 
 		/** Stores feature data of underlying model.
-         *
-         * Need to store the SVs for all sub-machines. We make a union of the
-         * SVs for all sub-machines, store the union and adjust the
-         * sub-machines to index into the union.
+		 *
+		 * Need to store the SVs for all sub-machines. We make a union of the
+		 * SVs for all sub-machines, store the union and adjust the
+		 * sub-machines to index into the union.
 		 */
 		virtual void store_model_features();
 
