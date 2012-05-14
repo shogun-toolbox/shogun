@@ -22,11 +22,27 @@ namespace shogun
 
 class CStructuredModel;
 
+/** output of the argmax function */
+struct CResultSet
+{
+	/** joint feature vector for the given truth */
+	SGVector< float64_t > psi_truth;
+
+	/** joint feature vector for the prediction */
+	SGVector< float64_t > psi_pred;
+
+	/** corresponding score */
+	float64_t score;
+
+	/** delta loss for the prediction vs. truth */
+	float64_t delta;
+};
+
 /** function type to compute combined features */
-typedef CFeatures* (*FCombinedFeature) (CFeatures* features, CStructuredLabels* labels, int32_t feat_idx, int32_t lab_idx);
+typedef SGVector< float64_t > (*FCombinedFeature) (CFeatures* features, CStructuredLabels* labels, int32_t feat_idx, int32_t lab_idx);
 
 /** function type to obtain argmax */
-typedef CStructuredData (*FArgmax) (CFeatures* features, CStructuredLabels* labels, SGVector< float64_t> w, int32_t feat_idx);
+typedef CResultSet* (*FArgmax) (CFeatures* features, CStructuredLabels* labels, SGVector< float64_t> w, int32_t feat_idx);
 
 /** 
  * function type to compute the application specific loss 
@@ -67,10 +83,10 @@ class CStructuredModel : CSGObject
 		virtual int32_t get_dim();
 
 		/** TODO */
-		CFeatures* compute_combined_feature(int32_t feat_idx, int32_t lab_idx);
+		SGVector< float64_t > compute_combined_feature(int32_t feat_idx, int32_t lab_idx);
 
 		/** TODO */
-		CStructuredData argmax(SGVector< float64_t > w, int32_t feat_idx);
+		CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx);
 
 		/** TODO */
 		float64_t compute_delta_loss(CStructuredLabels* labels, CStructuredData ypred, int32_t ytrue_id);
