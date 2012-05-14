@@ -29,7 +29,7 @@ class CStructuredLoss;
  * discontinuous w.r.t. \f$w\f$. This class is thought to be used as the 
  * interface for the family of \f$l\f$ functions that contains e.g. hinge loss.
  */
-class CStructuredLoss : CSGObject
+class CStructuredLoss : public CSGObject
 {
 	public:
 		/** default constructor */
