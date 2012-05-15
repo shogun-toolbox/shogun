@@ -19,7 +19,7 @@ SGMatrix<int32_t> CECOCOVOEncoder::create_codebook(int32_t num_classes)
     int32_t k=0;
     for (int32_t i=0; i < num_classes; ++i)
     {
-        for (int32_t j=0; j < num_classes; ++j)
+        for (int32_t j=i+1; j < num_classes; ++j)
         {
             code_book(k, i) = 1;
             code_book(k, j) = -1;
