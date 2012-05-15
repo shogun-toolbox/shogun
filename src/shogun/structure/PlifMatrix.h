@@ -18,9 +18,7 @@
 #include <shogun/structure/Plif.h>
 #include <shogun/structure/PlifBase.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/lib/Array.h>
-#include <shogun/lib/Array2.h>
-#include <shogun/lib/Array3.h>
+#include <shogun/lib/DynamicArray.h>
 
 namespace shogun
 {
@@ -209,7 +207,7 @@ class CPlifMatrix: public CSGObject
 		int m_feat_dim3;
 
 		/** plif ids*/
-		CArray<int32_t> m_ids;
+		CDynamicArray<int32_t> m_ids;
 
 		/** plif matrix */
 		CPlifBase** m_plif_matrix;

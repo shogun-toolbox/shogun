@@ -28,12 +28,36 @@ namespace shogun
 template <class T> class CDynamicArray :public CSGObject
 {
 	public:
+		/** default constructor
+		 *
+		 * @param p_resize_granularity resize granularity
+		 */
+		CDynamicArray()
+		: CSGObject(), m_array()
+		{
+			set_generic<T>();
+
+			/*m_parameters->add_vector(&m_array.array),
+									 &m_array.num_elements, "array",
+									 "Memory for dynamic array.");
+			m_parameters->add(&m_array.last_element_idx,
+							  "last_element_idx",
+							  "Element with largest index.");
+			m_parameters->add(&m_array.resize_granularity,
+							  "resize_granularity",
+							  "shrink/grow step size.");*/
+
+			dim1_size=1;
+			dim2_size=1;
+			dim3_size=1;
+			name="Array";
+		}
 		/** constructor
 		 *
 		 * @param p_resize_granularity resize granularity
 		 */
-		CDynamicArray(int32_t p_resize_granularity=128)
-		: CSGObject()
+		CDynamicArray(int32_t dim1, int32_t dim2=1, int32_t dim3=1)
+		: CSGObject(), m_array(dim1*dim2*dim3)
 		{
 			set_generic<T>();
 
@@ -46,6 +70,57 @@ template <class T> class CDynamicArray :public CSGObject
 			m_parameters->add(&m_array.resize_granularity,
 							  "resize_granularity",
 							  "shrink/grow step size.");
+
+			dim1_size=dim1;
+			dim2_size=dim2;
+			dim3_size=dim3;
+			name="Array";
+		}
+
+		/** 1d */
+		CDynamicArray(T* p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
+		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
+		{
+			dim1_size=p_dim1_size;
+			dim2_size=1;
+			dim3_size=1;
+			name="Array";
+		}
+
+		/** 2d */
+		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
+						bool p_free_array=true, bool p_copy_array=false)
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
+		{
+			dim1_size=p_dim1_size;
+			dim2_size=p_dim2_size;
+			dim3_size=1;
+			name="Array";
+		}
+
+		/** 3d */
+		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
+						int32_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
+		{
+			dim1_size=p_dim1_size;
+			dim2_size=p_dim2_size;
+			dim3_size=p_dim3_size;
+			name="Array";
+		}
+
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_array_size size of another array
+		 */
+		CDynamicArray(const T* p_array, int32_t p_dim1_size=1, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size)
+		{
+			dim1_size=p_dim1_size;
+			dim2_size=p_dim2_size;
+			dim3_size=p_dim3_size;
+			name="Array";
 		}
 
 		virtual ~CDynamicArray() {}
@@ -69,6 +144,36 @@ template <class T> class CDynamicArray :public CSGObject
 			return m_array.get_array_size();
 		}
 
+		/** get array size (including granularity buffer)
+		 *
+		 * @return total array size (including granularity buffer)
+		 */
+		inline void get_array_size(int32_t& dim1, int32_t& dim2)
+		{
+			dim1=dim1_size;
+			dim2=dim2_size;
+		}
+
+		/** get array size (including granularity buffer)
+		 *
+		 * @return total array size (including granularity buffer)
+		 */
+		inline void get_array_size(int32_t& dim1, int32_t& dim2, int32_t& dim3)
+		{
+			dim1=dim1_size;
+			dim2=dim2_size;
+			dim3=dim3_size;
+		}
+
+		/** */
+		inline int32_t get_dim1() { return dim1_size; }
+
+		/** */
+		inline int32_t get_dim2() { return dim2_size; }
+
+		/** */
+		inline int32_t get_dim3() { return dim3_size; }
+
 		/** get number of elements
 		 *
 		 * @return number of elements
@@ -78,17 +183,65 @@ template <class T> class CDynamicArray :public CSGObject
 			return m_array.get_num_elements();
 		}
 
-		/** get array element at index
+		/** get array 3d element at index
 		 *
 		 * (does NOT do bounds checking)
 		 *
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline T get_element(int32_t index) const
+		inline const T& get_element(int32_t index1, int32_t index2=0, int32_t index3=0) const
 		{
-			return m_array.get_element(index);
+			return m_array.get_array()[index1+dim1_size*(index2+dim2_size*index3)];
 		}
+
+		/** */
+		inline const T& element(int32_t index1, int32_t index2=0, int32_t index3=0) const
+		{
+			return get_element(index1, index2, index3);
+		}
+
+		/** */
+		inline T& element(int32_t index1, int32_t index2=0, int32_t index3=0)
+		{
+			return m_array.get_array()[index1+dim1_size*(index2+dim2_size*index3)];
+		}
+
+		/** get element of given array at given index
+		 *
+		 * @param p_array another array
+		 * @param idx1 index 1
+		 * @param idx2 index 2
+		 * @param idx3 index 3
+		 * @return array element at index
+		 */
+		inline T& element(T* p_array, int32_t index1, int32_t index2=0, int32_t index3=0)
+		{
+			ASSERT(index1>=0 && index1<dim1_size);
+			ASSERT(index2>=0 && index2<dim2_size);
+			ASSERT(index3>=0 && index3<dim3_size);
+			return p_array[index1+dim1_size*(index2+dim2_size*index3)];
+		}
+
+		/** get element of given array at given index
+		 *
+		 * @param p_array another array
+		 * @param idx1 index 1
+		 * @param idx2 index 2
+		 * @param idx3 index 3
+		 * @param p_dim1_size size of dimension 1
+		 * @param p_dim2_size size of dimension 2
+		 * @return element of given array at given index
+		 */
+		inline T& element(T* p_array, int32_t index1, int32_t index2, int32_t index3, int32_t p_dim1_size, int32_t p_dim2_size)
+		{
+			ASSERT(p_dim1_size==dim1_size);
+			ASSERT(p_dim2_size==dim2_size);
+			ASSERT(index1>=0 && index1<p_dim1_size);
+			ASSERT(index2>=0 && index2<p_dim2_size);
+			ASSERT(index3>=0 && index3<dim3_size);
+			return p_array[index1+p_dim1_size*(index2+p_dim2_size*index3)];
+		}	
 
 		/** gets last array element
 		 *
@@ -111,15 +264,15 @@ template <class T> class CDynamicArray :public CSGObject
 			return m_array.get_element_safe(index);
 		}
 
-		/** set array element at index
+		/** set array 3d element at index
 		 *
 		 * @param element element to set
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool set_element(T element, int32_t index)
+		inline bool set_element(T elem, int32_t index1, int32_t index2=0, int32_t index3=0)
 		{
-			return m_array.set_element(element, index);
+			return m_array.set_element(elem, index1+dim1_size*(index2+dim2_size*index3));
 		}
 
 		/** insert array element at index
@@ -128,9 +281,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(T element, int32_t index)
+		inline bool insert_element(T elem, int32_t index)
 		{
-			return m_array.insert_element(element, index);
+			return m_array.insert_element(elem, index);
 		}
 
 		/** append array element to the end of array
@@ -138,9 +291,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param element element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(T element)
+		inline bool append_element(T elem)
 		{
-			return m_array.append_element(element);
+			return m_array.append_element(elem);
 		}
 
 		/** STD VECTOR compatible. Append array element to the end
@@ -148,8 +301,8 @@ template <class T> class CDynamicArray :public CSGObject
 		 *
 		 * @param element element to append
 		 */
-		inline void push_back(T element)
-		{ m_array.push_back(element); }
+		inline void push_back(T elem)
+		{ m_array.push_back(elem); }
 
 		/** STD VECTOR compatible. Delete array element at the end
 		 *  of array.
@@ -175,9 +328,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param element element to search for
 		 * @return index of element or -1
 		 */
-		inline int32_t find_element(T element)
+		inline int32_t find_element(T elem)
 		{
-			return m_array.find_element(element);
+			return m_array.find_element(elem);
 		}
 
 		/** delete array element at idx
@@ -191,14 +344,17 @@ template <class T> class CDynamicArray :public CSGObject
 			return m_array.delete_element(idx);
 		}
 
-		/** resize the array
-		 *
-		 * @param n new size
-		 * @return if resizing was successful
-		 */
-		inline bool resize_array(int32_t n)
+		inline bool resize_array(int32_t ndim1, int32_t ndim2=1, int32_t ndim3=1)
 		{
-			return m_array.resize_array(n);
+			dim1_size=ndim1;
+			dim2_size=ndim2;
+			dim3_size=ndim3;
+			return m_array.resize_array(ndim1*ndim2*ndim3);
+		}
+
+		void set_const(const T& const_element)
+		{
+			m_array.set_const(const_element);
 		}
 
 		/** get the array
@@ -219,10 +375,53 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_num_elements last element index + 1
 		 * @param array_size number of elements in array
 		 */
-		inline void set_array(T* p_array, int32_t p_num_elements,
-							  int32_t array_size)
+		inline void set_array(T* p_array, int32_t p_dim1,
+						bool p_free_array=true, bool p_copy_array=false)
 		{
-			m_array.set_array(p_array, p_num_elements, array_size);
+			dim1_size=p_dim1;
+			dim2_size=1;
+			dim3_size=1;
+			m_array.set_array(p_array, p_dim1, p_dim1, p_free_array, p_copy_array);
+		}
+
+		/** set the 2d array pointer and free previously allocated memory
+		 *
+		 * @param p_array new array
+		 * @param p_num_elements last element index + 1
+		 * @param array_size number of elements in array
+		 */
+		inline void set_array(T* p_array, int32_t p_dim1,
+						int32_t p_dim2, bool p_free_array=true, bool p_copy_array=false)
+		{
+			dim1_size=p_dim1;
+			dim2_size=p_dim2;
+			dim3_size=1;
+			m_array.set_array(p_array, p_dim1*p_dim2, p_dim1*p_dim2, p_free_array, p_copy_array);
+		}
+
+		/** set the 3d array pointer and free previously allocated memory
+		 *
+		 * @param p_array new array
+		 * @param p_num_elements last element index + 1
+		 * @param array_size number of elements in array
+		 */
+		inline void set_array(T* p_array, int32_t p_dim1,
+						int32_t p_dim2, int32_t p_dim3, bool p_free_array=true, bool p_copy_array=false)
+		{
+			dim1_size=p_dim1;
+			dim2_size=p_dim2;
+			dim3_size=p_dim3;
+			m_array.set_array(p_array, p_dim1*p_dim2*p_dim3, p_dim1*p_dim2*p_dim3, p_free_array, p_copy_array);
+		}
+
+		/** set the array pointer and free previously allocated memory
+		 *
+		 * @param p_array another array
+		 * @param p_array_size size of another array
+		 */
+		inline void set_array(const T* p_array, int32_t p_size)
+		{
+			m_array.set_array(p_array, p_size, p_size);
 		}
 
 		/** clear the array (with zeros) */
@@ -240,9 +439,15 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param index index
 		 * @return element at index
 		 */
-		inline T operator[](int32_t index) const
+		inline const T& operator[](int32_t index) const
 		{
-			return m_array[index];
+			return get_element(index);
+		}
+
+		/** */
+		inline T& operator[](int32_t index)
+		{
+			return element(index);
 		}
 
 		/** operator overload for array assignment
@@ -252,12 +457,26 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		inline CDynamicArray<T>& operator=(CDynamicArray<T>& orig)
 		{
-			m_array = orig.m_array;
+			m_array=orig.m_array;
+			dim1_size=orig.dim1_size;
+			dim2_size=orig.dim2_size;
+			dim3_size=orig.dim3_size;
+			
 			return *this;
 		}
 
 		/** shuffles the array */
 		inline void shuffle() { m_array.shuffle(); }
+
+		inline void set_array_name(const char* p_name)
+		{
+			name=p_name;
+		}
+
+		inline void display_array() {}
+		inline void display_size() {}
+
+		inline const char* get_array_name() const { return name; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const
@@ -269,6 +488,18 @@ template <class T> class CDynamicArray :public CSGObject
 
 		/** underlying array */
 		DynArray<T> m_array;
+
+		/** */
+		int32_t dim1_size;
+
+		/** */
+		int32_t dim2_size;
+
+		/** */
+		int32_t dim3_size;
+
+		/** */
+		const char* name;
 };
 }
 #endif /* _DYNAMIC_ARRAY_H_  */
