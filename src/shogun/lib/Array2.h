@@ -262,7 +262,7 @@ template <class T> class CArray2: public CArray<T>
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Array2"; }
+		inline virtual const char* get_name() { return "Array2"; }
 
 	protected:
 		/** size of array's dimension 1 */
