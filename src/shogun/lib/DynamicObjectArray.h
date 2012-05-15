@@ -29,75 +29,112 @@ namespace shogun
 class CDynamicObjectArray : public CSGObject
 {
 	public:
-		/** default constructor
-		 *
-		 * @param p_resize_granularity resize granularity
-		 */
+		/** default constructor */
 		CDynamicObjectArray()
-		: CSGObject(), m_array()
+		: CSGObject(), m_array(), name("Array")
 		{
 			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
 					"array", "Memory for dynamic array.");
-			m_parameters->add(&m_array.last_element_idx, "last_element_idx",
-					"Element with largest index.");
-			m_parameters->add(&m_array.resize_granularity, "resize_granularity",
-					"shrink/grow step size.");
+			SG_ADD(&m_array.last_element_idx, "last_element_idx",
+					"Element with largest index.", MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.resize_granularity, "resize_granularity",
+					"shrink/grow step size.", MS_NOT_AVAILABLE);
 
 			dim1_size=1;
 			dim2_size=1;
 			dim3_size=1;
-			name="Array";
 		}
+
 		/** constructor
 		 *
-		 * @param p_resize_granularity resize granularity
+		 * @param dim1 dimension 1
+		 * @param dim2 dimension 2
+		 * @param dim3 dimension 3
 		 */
 		CDynamicObjectArray(int32_t dim1, int32_t dim2=1, int32_t dim3=1)
-		: CSGObject(), m_array(dim1*dim2*dim3)
+		: CSGObject(), m_array(dim1*dim2*dim3), name("Array")
 		{
 			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
 					"array", "Memory for dynamic array.");
-			m_parameters->add(&m_array.last_element_idx, "last_element_idx",
-					"Element with largest index.");
-			m_parameters->add(&m_array.resize_granularity, "resize_granularity",
-					"shrink/grow step size.");
+			SG_ADD(&m_array.last_element_idx, "last_element_idx",
+					"Element with largest index.", MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.resize_granularity, "resize_granularity",
+					"shrink/grow step size.", MS_NOT_AVAILABLE);
 
 			dim1_size=dim1;
 			dim2_size=dim2;
 			dim3_size=dim3;
-			name="Array";
 		}
 
-		/** 1d */
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_dim1_size dimension 1
+		 * @param p_free_array if array must be freed
+		 * @param p_copy_array if array must be copied
+		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
+		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array), name("Array")
 		{
+			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
+					"array", "Memory for dynamic array.");
+			SG_ADD(&m_array.last_element_idx, "last_element_idx",
+					"Element with largest index.", MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.resize_granularity, "resize_granularity",
+					"shrink/grow step size.", MS_NOT_AVAILABLE);
+
 			dim1_size=p_dim1_size;
 			dim2_size=1;
 			dim3_size=1;
-			name="Array";
 		}
 
-		/** 2d */
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_dim1_size dimension 1
+		 * @param p_dim2_size dimension 2
+		 * @param p_free_array if array must be freed
+		 * @param p_copy_array if array must be copied
+		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array), name("Array")
 		{
+			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
+					"array", "Memory for dynamic array.");
+			SG_ADD(&m_array.last_element_idx, "last_element_idx",
+					"Element with largest index.", MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.resize_granularity, "resize_granularity",
+					"shrink/grow step size.", MS_NOT_AVAILABLE);
+
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=1;
-			name="Array";
 		}
 
-		/** 3d */
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_dim1_size dimension 1
+		 * @param p_dim2_size dimension 2
+		 * @param p_dim3_size dimension 3
+		 * @param p_free_array if array must be freed
+		 * @param p_copy_array if array must be copied
+		 */
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						int32_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
+		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array), name("Array")
 		{
+			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
+					"array", "Memory for dynamic array.");
+			SG_ADD(&m_array.last_element_idx, "last_element_idx",
+					"Element with largest index.", MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.resize_granularity, "resize_granularity",
+					"shrink/grow step size.", MS_NOT_AVAILABLE);
+
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=p_dim3_size;
-			name="Array";
 		}
 
 		virtual ~CDynamicObjectArray() { unref_all(); }
@@ -119,9 +156,10 @@ class CDynamicObjectArray : public CSGObject
 			return m_array.get_array_size();
 		}
 
-		/** get array size (including granularity buffer)
+		/** return 2d array size
 		 *
-		 * @return total array size (including granularity buffer)
+		 * @param dim1 dimension 1 will be stored here
+		 * @param dim2 dimension 2 will be stored here
 		 */
 		inline void get_array_size(int32_t& dim1, int32_t& dim2)
 		{
@@ -129,9 +167,11 @@ class CDynamicObjectArray : public CSGObject
 			dim2=dim2_size;
 		}
 
-		/** get array size (including granularity buffer)
+		/** return 3d array size
 		 *
-		 * @return total array size (including granularity buffer)
+		 * @param dim1 dimension 1 will be stored here
+		 * @param dim2 dimension 2 will be stored here
+		 * @param dim3 dimension 3 will be stored here
 		 */
 		inline void get_array_size(int32_t& dim1, int32_t& dim2, int32_t& dim3)
 		{
@@ -140,13 +180,22 @@ class CDynamicObjectArray : public CSGObject
 			dim3=dim3_size;
 		}
 
-		/** */
+		/** get dimension 1
+		 *
+		 * @return dimension 1
+		 */
 		inline int32_t get_dim1() { return dim1_size; }
 
-		/** */
+		/** get dimension 2
+		 *
+		 * @return dimension 2
+		 */
 		inline int32_t get_dim2() { return dim2_size; }
 
-		/** */
+		/** get dimension 3
+		 *
+		 * @return dimension 3
+		 */
 		inline int32_t get_dim3() { return dim3_size; }
 
 		/** get number of elements
@@ -172,10 +221,16 @@ class CDynamicObjectArray : public CSGObject
 			return elem;
 		}
 
-		/** */
-		inline CSGObject* element(int32_t index1, int32_t index2=0, int32_t index3=0)
+		/** get array element at index
+		 *
+		 * @param idx1 index 1
+		 * @param idx2 index 2
+		 * @param idx3 index 3
+		 * @return array element at index
+		 */
+		inline CSGObject* element(int32_t idx1, int32_t idx2=0, int32_t idx3=0)
 		{
-			return get_element(index1+dim1_size*(index2+dim2_size*index3));
+			return get_element(idx1+dim1_size*(idx2+dim2_size*idx3));
 		}
 
 		/** get last array element
@@ -184,9 +239,9 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline CSGObject* get_last_element() const
 		{
-			CSGObject* elem=m_array.get_last_element();
-			SG_REF(elem);
-			return elem;
+			CSGObject* e=m_array.get_last_element();
+			SG_REF(e);
+			return e;
 		}
 
 		/** get array element at index
@@ -198,25 +253,27 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline CSGObject* get_element_safe(int32_t index) const
 		{
-			CSGObject* elem=m_array.get_element_safe(index);
-			SG_REF(elem);
-			return elem;
+			CSGObject* e=m_array.get_element_safe(index);
+			SG_REF(e);
+			return e;
 		}
 
 		/** set array element at index
 		 *
-		 * @param element element to set
-		 * @param index index
+		 * @param e element to set
+		 * @param idx1 index 1
+		 * @param idx2 index 2
+		 * @param idx3 index 2
 		 * @return if setting was successful
 		 */
-		inline bool set_element(CSGObject* elem, int32_t index1, int32_t index2=0, int32_t index3=0)
+		inline bool set_element(CSGObject* e, int32_t idx1, int32_t idx2=0, int32_t idx3=0)
 		{
-			CSGObject* old=(CSGObject*)m_array.get_element(index1+dim1_size*(index2+dim2_size*index3));
+			CSGObject* old=(CSGObject*) m_array.get_element(idx1+dim1_size*(idx2+dim2_size*idx3));
 
-			bool success=m_array.set_element(elem, index1+dim1_size*(index2+dim2_size*index3));
+			bool success=m_array.set_element(e, idx1+dim1_size*(idx2+dim2_size*idx3));
 			if (success)
 			{
-				SG_REF(elem);
+				SG_REF(e);
 				SG_UNREF(old);
 			}
 
@@ -226,29 +283,29 @@ class CDynamicObjectArray : public CSGObject
 
 		/** insert array element at index
 		 *
-		 * @param element element to insert
+		 * @param e element to insert
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(CSGObject* elem, int32_t index)
+		inline bool insert_element(CSGObject* e, int32_t index)
 		{
-			bool success=m_array.insert_element(elem, index);
+			bool success=m_array.insert_element(e, index);
 			if (success)
-				SG_REF(elem);
+				SG_REF(e);
 
 			return success;
 		}
 
 		/** append array element to the end of array
 		 *
-		 * @param element element to append
+		 * @param e element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(CSGObject* elem)
+		inline bool append_element(CSGObject* e)
 		{
-			bool success=m_array.append_element(elem);
+			bool success=m_array.append_element(e);
 			if (success)
-				SG_REF(elem);
+				SG_REF(e);
 
 			return success;
 		}
@@ -258,10 +315,10 @@ class CDynamicObjectArray : public CSGObject
 		 *
 		 * @param element element to append
 		 */
-		inline void push_back(CSGObject* elem)
+		inline void push_back(CSGObject* e)
 		{
-			SG_REF(elem);
-			m_array.push_back(elem);
+			SG_REF(e);
+			m_array.push_back(e);
 		}
 
 		/** STD VECTOR compatible. Delete array element at the end
@@ -269,8 +326,8 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline void pop_back()
 		{
-			CSGObject* elem=m_array.back();
-			SG_UNREF(elem);
+			CSGObject* e=m_array.back();
+			SG_UNREF(e);
 
 			m_array.pop_back();
 		}
@@ -282,9 +339,9 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline CSGObject* back() const
 		{
-			CSGObject* elem=m_array.back();
-			SG_REF(elem);
-			return elem;
+			CSGObject* e=m_array.back();
+			SG_REF(e);
+			return e;
 		}
 
 		/** find first occurence of array element and return its index
@@ -306,12 +363,19 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline bool delete_element(int32_t idx)
 		{
-			CSGObject* elem=m_array.get_element(idx);
-			SG_UNREF(elem);
+			CSGObject* e=m_array.get_element(idx);
+			SG_UNREF(e);
 
 			return m_array.delete_element(idx);
 		}
 
+		/** resize array
+		 *
+		 * @param ndim1 new dimension 1
+		 * @param ndim2 new dimension 2
+		 * @param ndim3 new dimension 3
+		 * @return if resizing was successful
+		 */
 		inline bool resize_array(int32_t ndim1, int32_t ndim2=1, int32_t ndim3=1)
 		{
 			dim1_size=ndim1;
@@ -359,11 +423,19 @@ class CDynamicObjectArray : public CSGObject
 		/** shuffles the array */
 		inline void shuffle() { m_array.shuffle(); }
 
+		/** set array's name
+		 *
+		 * @param p_name new name
+		 */
 		inline void set_array_name(const char* p_name)
 		{
 			name=p_name;
 		}
 
+		/** get array's name
+		 *
+		 * @return array's name
+		 */
 		inline const char* get_array_name() const { return name; }
 
 		/** @return object name */
@@ -383,18 +455,19 @@ class CDynamicObjectArray : public CSGObject
 		}
 
 	private:
+		/** underlying array */
 		DynArray<CSGObject*> m_array;
 
-		/** */
+		/** dimension 1 */
 		int32_t dim1_size;
 
-		/** */
+		/** dimension 2 */
 		int32_t dim2_size;
 
-		/** */
+		/** dimension 3 */
 		int32_t dim3_size;
 
-		/** */
+		/** array's name */
 		const char* name;
 
 };
