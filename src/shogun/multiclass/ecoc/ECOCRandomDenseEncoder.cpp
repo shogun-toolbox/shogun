@@ -68,29 +68,50 @@ SGMatrix<int32_t> CECOCRandomDenseEncoder::create_codebook(int32_t num_classes)
             }
         }
 
-        // see if this is a better codebook
-        // compute the minimum pairwise code distance
-        int32_t min_dist = std::numeric_limits<int32_t>::max();
-        for (int32_t i=0; i < num_classes; ++i)
+        bool valid = true;
+        for (int32_t i=0; i < codelen; ++i)
         {
-            for (int32_t j=i+1; j < num_classes; ++j)
+            bool p1_occur = false, n1_occur = false;
+            for (int32_t j=0; j < num_classes; ++j)
+                if (codebook(i, j) == 1)
+                    p1_occur = true;
+                else if (codebook(i, j) == -1)
+                    n1_occur = true;
+
+            if (!p1_occur || !n1_occur)
             {
-                int32_t dist = CECOCUtil::hamming_distance(codebook.get_column_vector(i),
-                        codebook.get_column_vector(j), codelen);
-                if (dist < min_dist)
-                    min_dist = dist;
+                valid = false;
+                break;
             }
         }
 
-        if (min_dist > best_dist)
+        if (valid)
         {
-            best_dist = min_dist;
-            std::copy(codebook.matrix, codebook.matrix + codelen*num_classes,
-                    best_codebook.matrix);
+            // see if this is a better codebook
+            // compute the minimum pairwise code distance
+            int32_t min_dist = std::numeric_limits<int32_t>::max();
+            for (int32_t i=0; i < num_classes; ++i)
+            {
+                for (int32_t j=i+1; j < num_classes; ++j)
+                {
+                    int32_t dist = CECOCUtil::hamming_distance(codebook.get_column_vector(i),
+                            codebook.get_column_vector(j), codelen);
+                    if (dist < min_dist)
+                        min_dist = dist;
+                }
+            }
+
+            if (min_dist > best_dist)
+            {
+                best_dist = min_dist;
+                std::copy(codebook.matrix, codebook.matrix + codelen*num_classes,
+                        best_codebook.matrix);
+            }
         }
 
         if (++n_iter >= m_maxiter)
-            break;
+            if (best_dist > 0) // already obtained a good codebook
+                break;
     }
 
     return best_codebook;
