@@ -19,9 +19,9 @@ CKernelStructuredOutputMachine::CKernelStructuredOutputMachine()
 }
 
 CKernelStructuredOutputMachine::CKernelStructuredOutputMachine(
-		CStructuredModel*  model, 
-		CStructuredLoss*   loss, 
-		CStructuredLabels* labs, 
+		CStructuredModel*  model,
+		CStructuredLoss*   loss,
+		CStructuredLabels* labs,
 		CKernel*           kernel)
 : CStructuredOutputMachine(model, loss, labs), m_kernel(NULL)
 {
