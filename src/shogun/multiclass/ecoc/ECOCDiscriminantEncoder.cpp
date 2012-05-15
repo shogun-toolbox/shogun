@@ -31,6 +31,7 @@ void CECOCDiscriminantEncoder::init()
 {
     // default parameters
     m_iterations = 5;
+    m_num_trees = 1;
 
     // init values
     m_features = NULL;
@@ -60,15 +61,18 @@ SGMatrix<int32_t> CECOCDiscriminantEncoder::create_codebook(int32_t num_classes)
         SG_ERROR("Need features and labels to learn the codebook");
 
     m_feats = m_features->get_feature_matrix();
-    m_codebook = SGMatrix<int32_t>(num_classes-1, num_classes);
+    m_codebook = SGMatrix<int32_t>(m_num_trees * (num_classes-1), num_classes);
     m_codebook.zero();
     m_code_idx = 0;
 
-    vector<int32_t> classes(num_classes);
-    for (int32_t i=0; i < num_classes; ++i)
-        classes[i] = i;
+    for (int32_t itree = 0; itree < m_num_trees; ++itree)
+    {
+        vector<int32_t> classes(num_classes);
+        for (int32_t i=0; i < num_classes; ++i)
+            classes[i] = i;
 
-    binary_partition(classes);
+        binary_partition(classes);
+    }
 
     m_feats = SGMatrix<float64_t>(); // release memory
     return m_codebook;

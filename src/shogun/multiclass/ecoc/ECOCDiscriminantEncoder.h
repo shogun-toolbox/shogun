@@ -62,7 +62,7 @@ public:
      */
     virtual SGMatrix<int32_t> create_codebook(int32_t num_classes);
 
-private:
+protected:
     void init();
 
 
@@ -75,6 +75,7 @@ private:
             const std::set<int32_t>& idata, int32_t *hist);
 
     int32_t m_iterations;
+    int32_t m_num_trees;
 
     SGMatrix<int32_t> m_codebook;
     int32_t m_code_idx;
