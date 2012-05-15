@@ -1018,10 +1018,10 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
       //   SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
 
-		CDynamicArray<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ; // 2d
+		CDynamicObjectArray PEN((CSGObject**)Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
 		PEN.set_array_name("PEN");
 
-		CDynamicArray<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d
+		CDynamicObjectArray PEN_state_signals((CSGObject**)Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d,  CPlifBase*
 		PEN_state_signals.set_array_name("state_signals");
 
 		CDynamicArray<float64_t> seq(m_N, m_seq_len) ; // 2d
@@ -1095,7 +1095,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							{
 								// just one plif
 								if (CMath::is_finite(seq_input->element(i,j,k)))
-									seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
+									seq.element(i,j) += ((CPlifBase*)PEN_state_signals.element(i,k))->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
 								else
 									// keep infinity values
 									seq.element(i,j) = seq_input->element(i, j, k) ;
@@ -1106,7 +1106,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (CMath::is_finite(m_seq_sparse1->get_feature(i,j)))
-										seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += ((CPlifBase*)PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse1->get_feature(i, j) ;
@@ -1115,7 +1115,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (CMath::is_finite(m_seq_sparse2->get_feature(i,j)))
-										seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += ((CPlifBase*)PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse2->get_feature(i, j) ;
@@ -1205,7 +1205,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				{
 					T_STATES ii = elem_list[i] ;
 
-					CPlifBase *penij=PEN.element(j, ii) ;
+					CPlifBase *penij=(CPlifBase*)PEN.element(j, ii) ;
 					if (penij==NULL)
 					{
 						if (long_transitions)
@@ -1517,7 +1517,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const CPlifBase * penalty = PEN.element(j,ii) ;
+						const CPlifBase* penalty = (CPlifBase*)PEN.element(j,ii) ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -1684,7 +1684,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const CPlifBase * penalty = PEN.element(j,ii) ;
+						const CPlifBase* penalty = (CPlifBase*)PEN.element(j,ii) ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -2079,10 +2079,10 @@ void CDynProg::best_path_trans_deriv(
 
 	bool use_svm = false ;
 
-	CDynamicArray<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ; // 2d
+	CDynamicObjectArray PEN((CSGObject**)Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
 	PEN.set_array_name("PEN");
 
-	CDynamicArray<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d
+	CDynamicObjectArray PEN_state_signals((CSGObject**)Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d, CPlifBase*
  	PEN_state_signals.set_array_name("PEN_state_signals");
 
 	CDynamicArray<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
@@ -2092,7 +2092,7 @@ void CDynProg::best_path_trans_deriv(
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<m_N; j++)
 			{
-				CPlifBase *penij=PEN.element(i,j) ;
+				CPlifBase* penij=(CPlifBase*)PEN.element(i,j) ;
 				if (penij==NULL)
 					continue ;
 
@@ -2103,7 +2103,7 @@ void CDynProg::best_path_trans_deriv(
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<max_num_signals; j++)
 			{
-				CPlifBase *penij=PEN_state_signals.element(i,j) ;
+				CPlifBase* penij=(CPlifBase*)PEN_state_signals.element(i,j) ;
 				if (penij==NULL)
 					continue ;
 				if (penij->uses_svm_values())
@@ -2265,7 +2265,7 @@ void CDynProg::best_path_trans_deriv(
 					int32_t num_current_svms=0;
 					int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
 					SG_PRINT("penalties(%i, %i), frame:%i  ", from_state, to_state, frame);
-					PEN.element(to_state, from_state)->get_used_svms(&num_current_svms, svm_ids);
+					((CPlifBase*)PEN.element(to_state, from_state))->get_used_svms(&num_current_svms, svm_ids);
 					SG_PRINT("\n");
 				}
 
@@ -2284,12 +2284,12 @@ void CDynProg::best_path_trans_deriv(
 			float64_t nscore = 0 ;
 			if (is_long_transition)
 			{
-				float64_t pen_value_part1 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
-				float64_t pen_value_part2 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
+				float64_t pen_value_part1 = ((CPlifBase*)PEN.element(to_state, from_state))->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
+				float64_t pen_value_part2 = ((CPlifBase*)PEN.element(to_state, from_state))->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
 				nscore= 0.5*pen_value_part1 + 0.5*pen_value_part2 ;
 			}
 			else
-				nscore = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
+				nscore = ((CPlifBase*)PEN.element(to_state, from_state))->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
 
 			if (false)//(nscore<-1e9)
 					SG_PRINT("is_long_transition=%i  (from_pos=%i (%i), to_pos=%i (%i)=> %1.5f\n",
@@ -2325,11 +2325,11 @@ void CDynProg::best_path_trans_deriv(
 
 			if (is_long_transition)
 			{
-				PEN.element(to_state, from_state)->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
-				PEN.element(to_state, from_state)->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
+				((CPlifBase*)PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
+				((CPlifBase*)PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
 			}
 			else
-				PEN.element(to_state, from_state)->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
+				((CPlifBase*)PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
 
 			//SG_PRINT("m_num_raw_data = %i \n", m_num_raw_data) ;
 
@@ -2350,7 +2350,7 @@ void CDynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
+						((CPlifBase*)PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
 
 					}
 					num_intensities = raw_intensities_interval_query(m_pos[to_pos_thresh], m_pos[to_pos],intensities, d);
@@ -2359,7 +2359,7 @@ void CDynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
+						((CPlifBase*)PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
 
 					}
 					SG_FREE(intensities);
@@ -2380,7 +2380,7 @@ void CDynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;
+						((CPlifBase*)PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;
 
 					}
 					SG_FREE(intensities);
@@ -2407,7 +2407,7 @@ void CDynProg::best_path_trans_deriv(
 			}
 			if (PEN_state_signals.element(to_state, k)!=NULL)
 			{
-				float64_t nscore = PEN_state_signals.element(to_state,k)->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
+				float64_t nscore = ((CPlifBase*)PEN_state_signals.element(to_state,k))->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
 				my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
 				if (false)//(nscore<-1e9)
@@ -2434,7 +2434,7 @@ void CDynProg::best_path_trans_deriv(
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k) ;
 #endif
-				PEN_state_signals.element(to_state,k)->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
+				((CPlifBase*)PEN_state_signals.element(to_state,k))->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
 			} else
 				break ;
 		}
