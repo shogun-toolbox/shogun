@@ -55,6 +55,14 @@ template <class T> class DynArray
 			last_element_idx=-1;
 		}
 
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_array_size array's size
+		 * @param p_free_array if array must be freed
+		 * @param p_copy_array if array must be copied
+		 * @param tracable
+		 */
 		DynArray(T* p_array, int32_t p_array_size, bool p_free_array=true, bool p_copy_array=false, bool tracable=true)
 		{
 			resize_granularity=p_array_size;
@@ -65,6 +73,12 @@ template <class T> class DynArray
 			set_array(p_array, p_array_size, p_array_size, p_free_array, p_copy_array);
 		}
 
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_array_size array's size
+		 * @param tracable
+		 */
 		DynArray(const T* p_array, int32_t p_array_size, bool tracable=true)
 		{
 			resize_granularity=p_array_size;
@@ -369,6 +383,8 @@ template <class T> class DynArray
 		 * @param p_array new array
 		 * @param p_num_elements last element index + 1
 		 * @param array_size number of elements in array
+		 * @param p_free_array if array must be freed
+		 * @param p_copy_array if array must be copied
 		 */
 		inline void set_array(T* p_array, int32_t p_num_elements,
 							  int32_t p_array_size, bool p_free_array=true, bool copy_array=false)
@@ -436,7 +452,7 @@ template <class T> class DynArray
 				CMath::swap(array[i], array[CMath::random(i, last_element_idx)]);
 		}
 
-		/** */
+		/** set array with a constant */
 		void set_const(const T& const_element)
 		{
 			for (int32_t i=0; i<num_elements; i++)
@@ -504,7 +520,7 @@ template <class T> class DynArray
 		/** whether SG_MALLOC or just malloc etc shall be used */
 		bool use_sg_mallocs;
 
-		/** */
+		/** if array must be freed */
 		bool free_array;
 };
 }
