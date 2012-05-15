@@ -279,9 +279,9 @@ void CSpectrumMismatchRBFKernel::compute_helper_all(const char *joint_seq,
 			}
 			else
 			{
-				CArray<float64_t> feats ;
+				CDynamicArray<float64_t> feats ;
 				feats.resize_array(kernel_matrix.get_dim1()) ;
-				feats.zero() ;
+				feats.set_const(0) ;
 
 				for (unsigned int j=0; j<joint_list_.size(); j++)
 				{

@@ -18,8 +18,7 @@
 #include <shogun/features/StringFeatures.h>
 
 
-#include <shogun/lib/Array.h>
-#include <shogun/lib/Array2.h>
+#include <shogun/lib/DynamicArray.h>
 
 #include <vector> // profile
 #include <string> // profile
@@ -171,7 +170,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** if kernel is initialized */
 		bool initialized;
 		/** kernel matrix */
-		CArray2<float64_t> kernel_matrix;
+		CDynamicArray<float64_t> kernel_matrix; // 2d
 		/** target letter 0 */
 		int32_t target_letter_0;
 
