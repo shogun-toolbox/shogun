@@ -1,9 +1,6 @@
-from tools.load import LoadMatrix
-lm=LoadMatrix()
+import classifier_multiclass_shared
 
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat  = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
+[traindat, label_traindat, testdat, label_testdat] = classifier_multiclass_shared.prepare_data(False)
 
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat,label_traindat,2.2,1,1e-5]]
 
