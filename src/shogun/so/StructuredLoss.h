@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#ifndef _LOSS_H__
-#define _LOSS_H__
+#ifndef _STRUCTURED_LOSS_H__
+#define _STRUCTURED_LOSS_H__
 
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
@@ -99,4 +99,4 @@ class CStructuredLoss : public CSGObject
 
 } /* namespace shogun */
 
-#endif /* _LOSS_H__ */
+#endif /* _STRUCTURED_LOSS_H__ */
