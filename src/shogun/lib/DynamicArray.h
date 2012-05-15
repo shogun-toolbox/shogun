@@ -35,7 +35,7 @@ template <class T> class CDynamicArray :public CSGObject
 		CDynamicArray()
 		: CSGObject(), m_array()
 		{
-			//set_generic<T>();
+			set_generic<T>();
 
 			/*m_parameters->add_vector(&m_array.array),
 									 &m_array.num_elements, "array",
@@ -59,9 +59,9 @@ template <class T> class CDynamicArray :public CSGObject
 		CDynamicArray(int32_t dim1, int32_t dim2=1, int32_t dim3=1)
 		: CSGObject(), m_array(dim1*dim2*dim3)
 		{
-			//set_generic<T>();
+			set_generic<T>();
 
-			/*m_parameters->add_vector(&m_array.array),
+			m_parameters->add_vector(&m_array.array,
 									 &m_array.num_elements, "array",
 									 "Memory for dynamic array.");
 			m_parameters->add(&m_array.last_element_idx,
@@ -69,11 +69,12 @@ template <class T> class CDynamicArray :public CSGObject
 							  "Element with largest index.");
 			m_parameters->add(&m_array.resize_granularity,
 							  "resize_granularity",
-							  "shrink/grow step size.");*/
+							  "shrink/grow step size.");
 
 			dim1_size=dim1;
 			dim2_size=dim2;
 			dim3_size=dim3;
+			name="Array";
 		}
 
 		/** 1d */
@@ -83,6 +84,7 @@ template <class T> class CDynamicArray :public CSGObject
 			dim1_size=p_dim1_size;
 			dim2_size=1;
 			dim3_size=1;
+			name="Array";
 		}
 
 		/** 2d */
@@ -93,6 +95,7 @@ template <class T> class CDynamicArray :public CSGObject
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=1;
+			name="Array";
 		}
 
 		/** 3d */
@@ -103,6 +106,7 @@ template <class T> class CDynamicArray :public CSGObject
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=p_dim3_size;
+			name="Array";
 		}
 
 		/** constructor
@@ -116,6 +120,7 @@ template <class T> class CDynamicArray :public CSGObject
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=p_dim3_size;
+			name="Array";
 		}
 
 		virtual ~CDynamicArray() {}
