@@ -27,6 +27,7 @@
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/distributions/Distribution.h>
 #include <shogun/lib/DynamicArray.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Time.h>
 
 #include <stdio.h>
@@ -667,11 +668,11 @@ protected:
 	/** segment sum weights */
 	CDynamicArray<float64_t> m_segment_sum_weights; // 2d
 	/** Plif list */
-	CDynamicArray<CPlifBase*> m_plif_list;
+	CDynamicObjectArray m_plif_list; // CPlifBase*
 	/** PEN */
-	CDynamicArray<CPlifBase*> m_PEN; // 2d
+	CDynamicObjectArray m_PEN; // 2d, CPlifBase*
 	/** PEN state signals */
-	CDynamicArray<CPlifBase*> m_PEN_state_signals; // 2d
+	CDynamicObjectArray m_PEN_state_signals; // 2d, CPlifBase*
 	/** a single string (to be segmented) */
 	CDynamicArray<char> m_genestr;
 	/**
