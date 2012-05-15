@@ -13,26 +13,17 @@
 
 using namespace shogun;
 
-int32_t CECOCDecoder::decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook)
+SGVector<float64_t> CECOCDecoder::binarize(const SGVector<float64_t> query)
 {
-    SGVector<float64_t> query=outputs;
-
-    if (binary_decoding())
+    SGVector<float64_t> bquery(query.vlen);
+    for (int32_t i=0; i < query.vlen; ++i)
     {
-        query = SGVector<float64_t>(outputs.vlen);
-        for (int32_t i=0; i < outputs.vlen; ++i)
-        {
-            if (outputs.vector[i] >= 0)
-                query.vector[i] = +1.0;
-            else
-                query.vector[i] = -1.0;
-        }
+        if (query.vector[i] >= 0)
+            bquery.vector[i] = +1.0;
+        else
+            bquery.vector[i] = -1.0;
     }
 
-    SGVector<float64_t> distances(codebook.num_cols);
-    for (int32_t i=0; i < distances.vlen; ++i)
-        distances[i] = compute_distance(query, codebook.get_column_vector(i));
-
-    int32_t result = CMath::arg_min(distances.vector, 1, distances.vlen);
-    return result;
+    return bquery;
 }
+
