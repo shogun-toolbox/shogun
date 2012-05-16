@@ -55,7 +55,6 @@ class SGReferencedData
 		{
 		}
 
-#ifdef USE_REFERENCE_COUNTING
 		/** display reference counter
 		 *
 		 * @return reference count
@@ -70,7 +69,6 @@ class SGReferencedData
 #endif
 			return *m_refcount;
 		}
-#endif //USE_REFERENCE_COUNTING
 
 	protected:
 		void copy_refcount(const SGReferencedData &orig)
@@ -78,7 +76,6 @@ class SGReferencedData
 			m_refcount=orig.m_refcount;
 		}
 
-#ifdef USE_REFERENCE_COUNTING
 		/** increase reference counter
 		 *
 		 * @return reference count
@@ -132,7 +129,6 @@ class SGReferencedData
 				return c;
 			}
 		}
-#endif //USE_REFERENCE_COUNTING
 
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig)=0;

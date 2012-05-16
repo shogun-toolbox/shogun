@@ -18,9 +18,6 @@
 #include <shogun/features/Alphabet.h>
 #include <shogun/structure/Plif.h>
 #include <shogun/structure/IntronList.h>
-#include <shogun/lib/Array.h>
-#include <shogun/lib/Array2.h>
-#include <shogun/lib/Array3.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -202,7 +199,7 @@ void CDynProg::precompute_stop_codons()
 	int32_t length=m_genestr.get_dim1();
 
 	m_genestr_stop.resize_array(length) ;
-	m_genestr_stop.zero() ;
+	m_genestr_stop.set_const(0) ;
 	m_genestr_stop.set_array_name("genestr_stop") ;
 	{
 		for (int32_t i=0; i<length-2; i++)
@@ -500,8 +497,8 @@ void CDynProg::set_a_trans_matrix(SGMatrix<float64_t> a_trans)
 	trans_list_forward_val = NULL ;
 	trans_list_len = 0 ;
 
-	m_transition_matrix_a.zero() ;
-	m_transition_matrix_a_id.zero() ;
+	m_transition_matrix_a.set_const(0) ;
+	m_transition_matrix_a_id.set_const(0) ;
 
 	mem_initialized = true ;
 
@@ -793,11 +790,11 @@ void CDynProg::set_dict_weights(SGMatrix<float64_t> dictionary_weights)
 
 	// initialize, so it does not bother when not used
 	m_segment_loss.resize_array(m_max_a_id+1, m_max_a_id+1, 2) ;
-	m_segment_loss.zero() ;
+	m_segment_loss.set_const(0) ;
 	m_segment_ids.resize_array(m_observation_matrix.get_dim2()) ;
 	m_segment_mask.resize_array(m_observation_matrix.get_dim2()) ;
-	m_segment_ids.zero() ;
-	m_segment_mask.zero() ;
+	m_segment_ids.set_const(0) ;
+	m_segment_mask.set_const(0) ;
 }
 
 void CDynProg::best_path_set_segment_loss(SGMatrix<float64_t> segment_loss)
@@ -1021,14 +1018,15 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
       //   SG_PRINT("(%i)%0.2f ",i,seq_array[i]);
 
-		CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
+		CDynamicObjectArray PEN((CSGObject**) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
 		PEN.set_array_name("PEN");
-		CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
+
+		CDynamicObjectArray PEN_state_signals((CSGObject**) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d,  CPlifBase*
 		PEN_state_signals.set_array_name("state_signals");
 
-		CArray2<float64_t> seq(m_N, m_seq_len) ;
+		CDynamicArray<float64_t> seq(m_N, m_seq_len) ; // 2d
 		seq.set_array_name("seq") ;
-		seq.zero() ;
+		seq.set_const(0) ;
 
 #ifdef DYNPROG_DEBUG
 		SG_PRINT("m_num_raw_data: %i\n",m_num_raw_data);
@@ -1049,13 +1047,12 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		{ // convert seq_input to seq
 			// this is independent of the svm values
 
-			//CArray3<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
-			CArray3<float64_t> *seq_input=NULL ;
+			CDynamicArray<float64_t> *seq_input=NULL ; // 3d
 			if (seq_array!=NULL)
 			{
 				//SG_PRINT("using dense seq_array\n") ;
 
-				seq_input=new CArray3<float64_t>(seq_array, m_N, m_seq_len, max_num_signals) ;
+				seq_input=new CDynamicArray<float64_t>(seq_array, m_N, m_seq_len, max_num_signals) ;
 				seq_input->set_array_name("seq_input") ;
 				//seq_input.display_array() ;
 
@@ -1098,7 +1095,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							{
 								// just one plif
 								if (CMath::is_finite(seq_input->element(i,j,k)))
-									seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
+									seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
 								else
 									// keep infinity values
 									seq.element(i,j) = seq_input->element(i, j, k) ;
@@ -1109,7 +1106,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (CMath::is_finite(m_seq_sparse1->get_feature(i,j)))
-										seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse1->get_feature(i, j) ;
@@ -1118,7 +1115,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (CMath::is_finite(m_seq_sparse2->get_feature(i,j)))
-										seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += ((CPlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse2->get_feature(i, j) ;
@@ -1134,25 +1131,29 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 
 		// allow longer transitions than look_back
 		bool long_transitions = m_long_transitions ;
-		CArray2<int32_t> long_transition_content_start_position(m_N,m_N) ;
+		CDynamicArray<int32_t> long_transition_content_start_position(m_N,m_N) ; // 2d
 		long_transition_content_start_position.set_array_name("long_transition_content_start_position");
 #ifdef DYNPROG_DEBUG
-		CArray2<int32_t> long_transition_content_end_position(m_N,m_N) ;
+		CDynamicArray<int32_t> long_transition_content_end_position(m_N,m_N) ; // 2d
 		long_transition_content_end_position.set_array_name("long_transition_content_end_position");
 #endif
-		CArray2<int32_t> long_transition_content_start(m_N,m_N) ;
+		CDynamicArray<int32_t> long_transition_content_start(m_N,m_N) ; // 2d
 		long_transition_content_start.set_array_name("long_transition_content_start");
-		CArray2<float64_t> long_transition_content_scores(m_N,m_N) ;
+
+		CDynamicArray<float64_t> long_transition_content_scores(m_N,m_N) ; // 2d
 		long_transition_content_scores.set_array_name("long_transition_content_scores");
 #ifdef DYNPROG_DEBUG
-		CArray2<float64_t> long_transition_content_scores_pen(m_N,m_N) ;
+
+		CDynamicArray<float64_t> long_transition_content_scores_pen(m_N,m_N) ; // 2d
 		long_transition_content_scores_pen.set_array_name("long_transition_content_scores_pen");
-		CArray2<float64_t> long_transition_content_scores_prev(m_N,m_N) ;
+
+		CDynamicArray<float64_t> long_transition_content_scores_prev(m_N,m_N) ; // 2d
 		long_transition_content_scores_prev.set_array_name("long_transition_content_scores_prev");
-		CArray2<float64_t> long_transition_content_scores_elem(m_N,m_N) ;
+
+		CDynamicArray<float64_t> long_transition_content_scores_elem(m_N,m_N) ; // 2d
 		long_transition_content_scores_elem.set_array_name("long_transition_content_scores_elem");
 #endif
-		CArray2<float64_t> long_transition_content_scores_loss(m_N,m_N) ;
+		CDynamicArray<float64_t> long_transition_content_scores_loss(m_N,m_N) ; // 2d
 		long_transition_content_scores_loss.set_array_name("long_transition_content_scores_loss");
 
 		if (nbest!=1)
@@ -1168,10 +1169,10 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 #endif
 		if (with_loss)
 			long_transition_content_scores_loss.set_const(0) ;
-		long_transition_content_start.zero() ;
-		long_transition_content_start_position.zero() ;
+		long_transition_content_start.set_const(0) ;
+		long_transition_content_start_position.set_const(0) ;
 #ifdef DYNPROG_DEBUG
-		long_transition_content_end_position.zero() ;
+		long_transition_content_end_position.set_const(0) ;
 #endif
 
 		svm_value = SG_MALLOC(float64_t , m_num_lin_feat_plifs_cum[m_num_raw_data]+m_num_intron_plifs);
@@ -1180,9 +1181,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				svm_value[s]=0 ;
 		}
 
-		CArray2<int32_t> look_back(m_N,m_N) ;
+		CDynamicArray<int32_t> look_back(m_N,m_N) ; // 2d
 		look_back.set_array_name("look_back");
-		//CArray2<int32_t> look_back_orig(m_N,m_N) ;
+		//CDynamicArray<int32_t> look_back_orig(m_N,m_N) ;
 		//look_back.set_array_name("look_back_orig");
 
 
@@ -1204,7 +1205,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				{
 					T_STATES ii = elem_list[i] ;
 
-					CPlifBase *penij=PEN.element(j, ii) ;
+					CPlifBase *penij=(CPlifBase*) PEN.element(j, ii) ;
 					if (penij==NULL)
 					{
 						if (long_transitions)
@@ -1289,62 +1290,62 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		  }*/
 		ASSERT(nbest<32000) ;
 
-
-
-		CArray3<float64_t> delta(m_seq_len, m_N, nbest) ;
+		CDynamicArray<float64_t> delta(m_seq_len, m_N, nbest) ; // 3d
 		delta.set_array_name("delta");
 		float64_t* delta_array = delta.get_array() ;
-		//delta.zero() ;
+		//delta.set_const(0) ;
 
-		CArray3<T_STATES> psi(m_seq_len, m_N, nbest) ;
+		CDynamicArray<T_STATES> psi(m_seq_len, m_N, nbest) ; // 3d
 		psi.set_array_name("psi");
-		//psi.zero() ;
+		//psi.set_const(0) ;
 
-		CArray3<int16_t> ktable(m_seq_len, m_N, nbest) ;
+		CDynamicArray<int16_t> ktable(m_seq_len, m_N, nbest) ; // 3d
 		ktable.set_array_name("ktable");
-		//ktable.zero() ;
+		//ktable.set_const(0) ;
 
-		CArray3<int32_t> ptable(m_seq_len, m_N, nbest) ;
+		CDynamicArray<int32_t> ptable(m_seq_len, m_N, nbest) ; // 3d
 		ptable.set_array_name("ptable");
-		//ptable.zero() ;
+		//ptable.set_const(0) ;
 
-		CArray<float64_t> delta_end(nbest) ;
+		CDynamicArray<float64_t> delta_end(nbest) ;
 		delta_end.set_array_name("delta_end");
-		//delta_end.zero() ;
+		//delta_end.set_const(0) ;
 
-		CArray<T_STATES> path_ends(nbest) ;
+		CDynamicArray<T_STATES> path_ends(nbest) ;
 		path_ends.set_array_name("path_ends");
-		//path_ends.zero() ;
+		//path_ends.set_const(0) ;
 
-		CArray<int16_t> ktable_end(nbest) ;
+		CDynamicArray<int16_t> ktable_end(nbest) ;
 		ktable_end.set_array_name("ktable_end");
-		//ktable_end.zero() ;
+		//ktable_end.set_const(0) ;
 
 		float64_t * fixedtempvv=SG_MALLOC(float64_t, look_back_buflen);
 		memset(fixedtempvv, 0, look_back_buflen*sizeof(float64_t)) ;
 		int32_t * fixedtempii=SG_MALLOC(int32_t, look_back_buflen);
 		memset(fixedtempii, 0, look_back_buflen*sizeof(int32_t)) ;
 
-		CArray<float64_t> oldtempvv(look_back_buflen) ;
+		CDynamicArray<float64_t> oldtempvv(look_back_buflen) ;
 		oldtempvv.set_array_name("oldtempvv");
-		CArray<float64_t> oldtempvv2(look_back_buflen) ;
+
+		CDynamicArray<float64_t> oldtempvv2(look_back_buflen) ;
 		oldtempvv2.set_array_name("oldtempvv2");
-		//oldtempvv.zero() ;
+		//oldtempvv.set_const(0) ;
 		//oldtempvv.display_size() ;
 
-		CArray<int32_t> oldtempii(look_back_buflen) ;
+		CDynamicArray<int32_t> oldtempii(look_back_buflen) ;
 		oldtempii.set_array_name("oldtempii");
-		CArray<int32_t> oldtempii2(look_back_buflen) ;
+
+		CDynamicArray<int32_t> oldtempii2(look_back_buflen) ;
 		oldtempii2.set_array_name("oldtempii2");
-		//oldtempii.zero() ;
+		//oldtempii.set_const(0) ;
 
-		CArray<T_STATES> state_seq(m_seq_len) ;
+		CDynamicArray<T_STATES> state_seq(m_seq_len) ;
 		state_seq.set_array_name("state_seq");
-		//state_seq.zero() ;
+		//state_seq.set_const(0) ;
 
-		CArray<int32_t> pos_seq(m_seq_len) ;
+		CDynamicArray<int32_t> pos_seq(m_seq_len) ;
 		pos_seq.set_array_name("pos_seq");
-		//pos_seq.zero() ;
+		//pos_seq.set_const(0) ;
 
 
 		m_dict_weights.set_array_name("dict_weights") ;
@@ -1418,7 +1419,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		state_seq.display_size() ;
 		pos_seq.display_size() ;
 
-		//seq.zero() ;
+		//seq.set_const(0) ;
 
 #endif //DYNPROG_DEBUG
 
@@ -1432,8 +1433,8 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		}
 
 
-		//CArray2<int32_t*> trans_matrix_svms(m_N,m_N);
-		//CArray2<int32_t> trans_matrix_num_svms(m_N,m_N);
+		//CDynamicArray<int32_t*> trans_matrix_svms(m_N,m_N); // 2d
+		//CDynamicArray<int32_t> trans_matrix_num_svms(m_N,m_N); // 2d
 
 		{ // initialization
 
@@ -1516,7 +1517,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const CPlifBase * penalty = PEN.element(j,ii) ;
+						const CPlifBase* penalty = (CPlifBase*) PEN.element(j,ii) ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -1683,7 +1684,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const CPlifBase * penalty = PEN.element(j,ii) ;
+						const CPlifBase* penalty = (CPlifBase*) PEN.element(j,ii) ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -2078,18 +2079,20 @@ void CDynProg::best_path_trans_deriv(
 
 	bool use_svm = false ;
 
-	CArray2<CPlifBase*> PEN(Plif_matrix, m_N, m_N, false, false) ;
-   PEN.set_array_name("PEN");
-	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, m_N, max_num_signals, false, false) ;
-   PEN_state_signals.set_array_name("PEN_state_signals");
-	CArray3<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
-   seq_input.set_array_name("seq_input");
+	CDynamicObjectArray PEN((CSGObject**) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
+	PEN.set_array_name("PEN");
+
+	CDynamicObjectArray PEN_state_signals((CSGObject**) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d, CPlifBase*
+ 	PEN_state_signals.set_array_name("PEN_state_signals");
+
+	CDynamicArray<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
+	seq_input.set_array_name("seq_input");
 
 	{ // determine whether to use svm outputs and clear derivatives
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<m_N; j++)
 			{
-				CPlifBase *penij=PEN.element(i,j) ;
+				CPlifBase* penij=(CPlifBase*) PEN.element(i,j) ;
 				if (penij==NULL)
 					continue ;
 
@@ -2100,7 +2103,7 @@ void CDynProg::best_path_trans_deriv(
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<max_num_signals; j++)
 			{
-				CPlifBase *penij=PEN_state_signals.element(i,j) ;
+				CPlifBase* penij=(CPlifBase*) PEN_state_signals.element(i,j) ;
 				if (penij==NULL)
 					continue ;
 				if (penij->uses_svm_values())
@@ -2262,7 +2265,7 @@ void CDynProg::best_path_trans_deriv(
 					int32_t num_current_svms=0;
 					int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
 					SG_PRINT("penalties(%i, %i), frame:%i  ", from_state, to_state, frame);
-					PEN.element(to_state, from_state)->get_used_svms(&num_current_svms, svm_ids);
+					((CPlifBase*) PEN.element(to_state, from_state))->get_used_svms(&num_current_svms, svm_ids);
 					SG_PRINT("\n");
 				}
 
@@ -2281,12 +2284,12 @@ void CDynProg::best_path_trans_deriv(
 			float64_t nscore = 0 ;
 			if (is_long_transition)
 			{
-				float64_t pen_value_part1 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
-				float64_t pen_value_part2 = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
+				float64_t pen_value_part1 = ((CPlifBase*) PEN.element(to_state, from_state))->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
+				float64_t pen_value_part2 = ((CPlifBase*) PEN.element(to_state, from_state))->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
 				nscore= 0.5*pen_value_part1 + 0.5*pen_value_part2 ;
 			}
 			else
-				nscore = PEN.element(to_state, from_state)->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
+				nscore = ((CPlifBase*) PEN.element(to_state, from_state))->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
 
 			if (false)//(nscore<-1e9)
 					SG_PRINT("is_long_transition=%i  (from_pos=%i (%i), to_pos=%i (%i)=> %1.5f\n",
@@ -2322,11 +2325,11 @@ void CDynProg::best_path_trans_deriv(
 
 			if (is_long_transition)
 			{
-				PEN.element(to_state, from_state)->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
-				PEN.element(to_state, from_state)->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
+				((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
+				((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
 			}
 			else
-				PEN.element(to_state, from_state)->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
+				((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
 
 			//SG_PRINT("m_num_raw_data = %i \n", m_num_raw_data) ;
 
@@ -2347,7 +2350,7 @@ void CDynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
+						((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
 
 					}
 					num_intensities = raw_intensities_interval_query(m_pos[to_pos_thresh], m_pos[to_pos],intensities, d);
@@ -2356,7 +2359,7 @@ void CDynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
+						((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 0.5) ;
 
 					}
 					SG_FREE(intensities);
@@ -2377,7 +2380,7 @@ void CDynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						PEN.element(to_state, from_state)->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;
+						((CPlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-CMath::INFTY, svm_value, 1) ;
 
 					}
 					SG_FREE(intensities);
@@ -2404,7 +2407,7 @@ void CDynProg::best_path_trans_deriv(
 			}
 			if (PEN_state_signals.element(to_state, k)!=NULL)
 			{
-				float64_t nscore = PEN_state_signals.element(to_state,k)->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
+				float64_t nscore = ((CPlifBase*) PEN_state_signals.element(to_state,k))->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
 				my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
 				if (false)//(nscore<-1e9)
@@ -2431,7 +2434,7 @@ void CDynProg::best_path_trans_deriv(
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k) ;
 #endif
-				PEN_state_signals.element(to_state,k)->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
+				((CPlifBase*) PEN_state_signals.element(to_state,k))->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
 			} else
 				break ;
 		}

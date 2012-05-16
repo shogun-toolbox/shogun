@@ -36,8 +36,8 @@ CMulticlassMachine::CMulticlassMachine(
 	m_machine = machine;
 	register_parameters();
 
-    if (labs)
-        init_strategy();
+	if (labs)
+		init_strategy();
 }
 
 CMulticlassMachine::~CMulticlassMachine()

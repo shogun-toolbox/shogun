@@ -116,8 +116,8 @@ class CMulticlassMachine : public CMachine
 		}
 
 	protected:
-        /** init strategy */
-        void init_strategy();
+		/** init strategy */
+		void init_strategy();
 
 		/** clear machines */
 		void clear_machines();

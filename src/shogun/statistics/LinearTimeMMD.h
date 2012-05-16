@@ -18,9 +18,12 @@ namespace shogun
 
 class CFeatures;
 
+/** enum for different method to compute p-value of test, MMD_NONE will result
+ * in calling CTwoSampleTestStatistic::compute_p_value, where bootstrapping
+ * is implemented */
 enum EMMDThreshold
 {
-	MMD_BOOTSTRAP
+	MMD_NONE
 };
 
 class CLinearTimeMMD : public CTwoSampleTestStatistic
@@ -32,15 +35,12 @@ class CLinearTimeMMD : public CTwoSampleTestStatistic
 		virtual ~CLinearTimeMMD();
 
 		virtual float64_t compute_statistic();
-		virtual float64_t compute_threshold(float64_t confidence);
+		virtual float64_t compute_p_value(float64_t statistic);
 
 		inline virtual const char* get_name() const
 		{
 			return "LinearTimeMMD";
 		};
-
-	protected:
-		float64_t bootstrap_threshold(float64_t confidence);
 
 	private:
 		void init();
