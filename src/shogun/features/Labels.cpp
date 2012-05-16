@@ -255,3 +255,16 @@ void CLabels::remove_all_subsets()
 {
 	m_subset_stack->remove_all_subsets();
 }
+
+CLabels* CLabels::get_binary_for_class(int32_t i)
+{
+	SGVector<float64_t> binary_labels(get_num_labels());
+
+	for (int32_t k=0; binary_labels.vlen; k++)
+	{
+		int32_t label = get_int_label(i);
+		binary_labels[k] = label == i ? +1.0 : -1.0;
+	}
+
+	return new CLabels(binary_labels);
+}

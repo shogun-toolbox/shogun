@@ -216,6 +216,13 @@ class CLabels : public CSGObject
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_all_subsets();
 
+		/** returns labels containing +1 at positions with ith class
+		 *  and -1 at other positions
+		 *  @param i index of class
+		 *  @return new binary labels
+		 */
+		CLabels* get_binary_for_class(int32_t i);
+
 	public:
 
 		/** label designates classify reject */
