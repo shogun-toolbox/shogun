@@ -4,34 +4,34 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 # 
-# Written (W) 2006-2008 Soeren Sonnenburg
+# Written (W) 2006-2009 Soeren Sonnenburg
 # Written (W) 2006-2007 Mikio Braun
 # Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
-# 
 
 import time
 from string import maketrans
 
-""" this function is 100% compatible to the matlab function, thus it is one based (!)
-	use one_based=False if needed, then however the interval is [start,stop) (excluding stop)
-"""
-def load_genomic(chromosome, strand, start, stop, genome, one_based=True):
-	fname = '/fml/ag-raetsch/share/databases/genomes/' + genome + '/' + chromosome[3:] + '.flat'
-	f=file(fname)
-	if one_based:
-		f.seek(start-1)
-		str=f.read(stop-start+1)
-	else:
-		f.seek(start)
-		str=f.read(stop-start)
+class ordered_dict(dict):
+    """
+    Provide an ordered dictionary with chromosome identifiers.
+    """
+    def __init__(self, *args, **kwargs):
+        dict.__init__(self, *args, **kwargs)
+        self._order = self.keys()
 
-	if strand=='-':
-		return reverse_complement(str)
-	elif strand=='+':
-		return str
-	else:
-		print 'strand must be + or -'
-		raise KeyError
+    def __setitem__(self, key, value):
+        dict.__setitem__(self, key, value)
+        if key in self._order:
+            self._order.remove(key)
+        self._order.append(key)
+
+    def __delitem__(self, key):
+        dict.__delitem__(self, key)
+        self._order.remove(key)
+
+    def ordered_items(self):
+        return [(key,self[key]) for key in self._order]
+
 
 """ read a table browser ascii output file (http://genome.ucsc.edu/cgi-bin/hgTables) """
 def read_table_browser(f):
@@ -82,24 +82,80 @@ def write_single_fasta(fname, name, str, linelen=60):
 
 """ read fasta as dictionary """
 def read_fasta(f):
-	fasta=dict()
-
+	fasta=ordered_dict()
+	fa=""
+	key=None
 	for s in f.readlines():
 		if s.startswith('>'):
+			if fa and key:
+				fasta[key]=fa
 			key=s[1:-1]
 			fasta[key]=""
+			fa=""
 		else:
-			fasta[key]+=s[:-1]
+			fa+=s[:-1]
+
+	if fa and key:
+		fasta[key]=fa
 
 	return fasta
 
-""" write dictionary fasta """
 def write_fasta(f, d, linelen=60):
+    """ write dictionary fasta """
     for k in sorted(d):
         f.write('>%s\n' % k);
         s = d[k]
         for i in xrange(0, len(s), linelen):
             f.write(s[i:i+linelen] + '\n')
+
+def write_gff_header(f, (source, version), (seqtype, seqname)):
+	""" writes a gff version 2 file
+		descrlist is a list of dictionaries, each of which contain these fields:
+		<seqname> <source> <feature> <start> <end> <score> <strand> <frame> [attributes] [comments]
+	"""
+	f.write('##gff-version 2\n')
+	f.write('##source-version %s %s\n' % (source, version) )
+
+	t=time.localtime()
+	f.write("##date %d-%d-%d %d:%d:%d\n" % t[0:6])
+
+	f.write('##Type %s %s\n' % (seqtype, seqname) )
+
+def write_gff_line(f, descr):
+	d=descr
+	f.write('%s\t%s\t%s\t%d\t%d\t%f\t%s\t%d' % (d['seqname'], d['source'], 
+										d['feature'], d['start'], d['end'], 
+										d['score'], d['strand'], d['frame']))
+	if d.has_key('attributes'):
+		f.write('\t' + d['attributes'])
+		if d.has_key('comments'):
+			f.write('\t' + d['comments'])
+	f.write('\n')
+
+def write_spf_header(f, (source, version), (seqtype, seqname)):
+	""" writes a gff version 2 file
+		descrlist is a list of dictionaries, each of which contain these fields:
+		<seqname> <source> <feature> <start> <end> <score> <strand> <frame> [attributes] [comments]
+	"""
+
+	f.write('##spf-version 1\n')
+	f.write('##source-version %s %s\n' % (source, version) )
+
+	t=time.localtime()
+	f.write("##date %d-%d-%d %d:%d:%d\n" % t[0:6])
+
+	f.write('##Type %s %s\n' % (seqtype, seqname) )
+
+def write_spf_line(f, descr):
+	d=descr
+	f.write('%s\t%s\t%s\t%d\t%s\t%f' % (d['seqname'], d['source'],
+										d['feature'], d['position'], 
+										d['strand'], d['score']))
+	if d.has_key('attributes'):
+		f.write('\t' + d['attributes'])
+		if d.has_key('comments'):
+			f.write('\t' + d['comments'])
+	f.write('\n')
 
 def write_gff(f, (source, version), (seqtype, seqname), descrlist, skipheader=False):
 	""" writes a gff version 2 file
@@ -117,7 +173,7 @@ def write_gff(f, (source, version), (seqtype, seqname), descrlist, skipheader=Fa
 	f.write('##Type %s %s\n' % (seqtype, seqname) )
 
 	for d in descrlist:
-		f.write('%s\t%s\t%s\t%d\t%d\t%+f\t%s\t%d' % (d['seqname'], d['source'], 
+		f.write('%s\t%s\t%s\t%d\t%d\t%f\t%s\t%d' % (d['seqname'], d['source'], 
 											d['feature'], d['start'], d['end'], 
 											d['score'], d['strand'], d['frame']))
 		if d.has_key('attributes'):
@@ -126,27 +182,3 @@ def write_gff(f, (source, version), (seqtype, seqname), descrlist, skipheader=Fa
 				f.write('\t' + d['comments'])
 		f.write('\n')
 
-
-if __name__ == '__main__':
-	import sys,os
-
-	table=read_table_browser(file('/fml/ag-raetsch/home/sonne/addnet/tfbs/share/data/wt1_bibliosphere_table_browser_hg17.txt'))
-	print table.keys()
-	print table[table.keys()[0]]
-	d = { 'ahoernchen' : 'ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT',
-		  'bhoernchen' : 'GATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACAGATTACA' }
-
-	write_fasta(sys.stdout, d)
-	write_fasta(file('/tmp/test.fa','w'), d)
-
-	d2 = read_fasta(file('/tmp/test.fa'))
-	os.unlink('/tmp/test.fa')
-
-	print d
-	print d2
-	print d == d2
-
-	p=load_genomic('chr5', '+', 100000, 100100,'hg17')
-	n=load_genomic('chr1', '-', 3000000, 3001000,'mm7')
-	write_single_fasta('bla.fa','bla', 'ACGT')
-	n2=read_single_fasta('bla.fa')
