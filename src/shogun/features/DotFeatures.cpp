@@ -284,20 +284,20 @@ void* CDotFeatures::dense_dot_range_helper(void* p)
 SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 {
 
-    int64_t offs=0;
+	int64_t offs=0;
 	int32_t num=get_num_vectors();
-    int32_t dim=get_dim_feature_space();
-    ASSERT(num>0);
-    ASSERT(dim>0);
+	int32_t dim=get_dim_feature_space();
+	ASSERT(num>0);
+	ASSERT(dim>0);
 
 	SGMatrix<float64_t> m(dim, num);
 	m.zero();
 
-    for (int32_t i=0; i<num; i++)
-    {
+	for (int32_t i=0; i<num; i++)
+	{
 		add_to_dense_vec(1.0, i, &(m.matrix[offs]), dim);
-        offs+=dim;
-    }
+		offs+=dim;
+	}
 
 	return m;
 }
@@ -305,13 +305,13 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 {
 
-    int32_t dim=get_dim_feature_space();
-    ASSERT(num>=0 && num<=get_num_vectors());
-    ASSERT(dim>0);
+	int32_t dim=get_dim_feature_space();
+	ASSERT(num>=0 && num<=get_num_vectors());
+	ASSERT(dim>0);
 
 	SGVector<float64_t> v(dim);
 	v.zero();
-    add_to_dense_vec(1.0, num, v.vector, dim);
+	add_to_dense_vec(1.0, num, v.vector, dim);
 	return v;
 }
 
