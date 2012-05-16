@@ -53,11 +53,9 @@ public:
 			const TSGDataType* type, index_t y) = 0;
 
 		virtual bool read_sparse_begin_wrapped(
-			const TSGDataType* type, index_t* vec_index,
-			index_t* length) = 0;
+			const TSGDataType* type, index_t* length) = 0;
 		virtual bool read_sparse_end_wrapped(
-			const TSGDataType* type, index_t* vec_index,
-			index_t length) = 0;
+			const TSGDataType* type, index_t length) = 0;
 
 		virtual bool read_sparseentry_begin_wrapped(
 			const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,
@@ -141,11 +139,9 @@ protected:
 		const TSGDataType* type, index_t y) = 0;
 
 	virtual bool write_sparse_begin_wrapped(
-		const TSGDataType* type, index_t vec_index,
-		index_t length) = 0;
+		const TSGDataType* type, index_t length) = 0;
 	virtual bool write_sparse_end_wrapped(
-		const TSGDataType* type, index_t vec_index,
-		index_t length) = 0;
+		const TSGDataType* type, index_t length) = 0;
 
 	virtual bool write_sparseentry_begin_wrapped(
 		const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
@@ -259,17 +255,17 @@ public:
 
 	virtual bool write_sparse_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		index_t vec_index, index_t length);
+		index_t length);
 	virtual bool read_sparse_begin(
 		const TSGDataType* type, const char* name, const char* prefix,
-		index_t* vec_index, index_t* length);
+		 index_t* length);
 
 	virtual bool write_sparse_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		index_t vec_index, index_t length);
+		index_t length);
 	virtual bool read_sparse_end(
 		const TSGDataType* type, const char* name, const char* prefix,
-		index_t* vec_index, index_t length);
+		 index_t length);
 
 	virtual bool write_sparseentry_begin(
 		const TSGDataType* type, const char* name, const char* prefix,

@@ -164,19 +164,13 @@ SerializableJsonReader00::read_stringentry_end_wrapped(
 
 bool
 SerializableJsonReader00::read_sparse_begin_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t* length)
+	const TSGDataType* type, index_t* length)
 {
 	json_object* m = m_file->m_stack_stream.back();
 
 	if (!json_object_is_type(m, json_type_object)) return false;
 
 	json_object* buf;
-	if (!m_file->get_object(&buf, m, STR_KEY_SPARSE_VECINDEX,
-							json_type_int))
-		return false;
-	*vec_index = json_object_get_int(buf);
-
 	if (!m_file->get_object(&buf, m, STR_KEY_SPARSE_FEATURES,
 							json_type_array)) return false;
 	*length = json_object_array_length(buf);
@@ -187,8 +181,7 @@ SerializableJsonReader00::read_sparse_begin_wrapped(
 
 bool
 SerializableJsonReader00::read_sparse_end_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	m_file->pop_object();
 	return true;

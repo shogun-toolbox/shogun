@@ -52,11 +52,9 @@ public:
 		const TSGDataType* type, index_t y);
 
 	virtual bool read_sparse_begin_wrapped(
-		const TSGDataType* type, index_t* vec_index,
-		index_t* length);
+		const TSGDataType* type, index_t* length);
 	virtual bool read_sparse_end_wrapped(
-		const TSGDataType* type, index_t* vec_index,
-		index_t length);
+		const TSGDataType* type, index_t length);
 
 	virtual bool read_sparseentry_begin_wrapped(
 		const TSGDataType* type, SGSparseVectorEntry<char>* first_entry,

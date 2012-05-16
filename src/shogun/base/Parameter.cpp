@@ -2102,8 +2102,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 			len_real = 0;
 		}
 		if (!file->write_sparse_begin(
-				&m_datatype, m_name, prefix, spr_ptr->vec_index,
-				len_real)) return false;
+				&m_datatype, m_name, prefix, len_real)) return false;
 		for (index_t i=0; i<len_real; i++) {
 			SGSparseVectorEntry<char>* cur = (SGSparseVectorEntry<char>*)
 				((char*) spr_ptr->features + i *TSGDataType
@@ -2119,8 +2118,7 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 					cur->feat_index, i)) return false;
 		}
 		if (!file->write_sparse_end(
-				&m_datatype, m_name, prefix, spr_ptr->vec_index,
-				len_real)) return false;
+				&m_datatype, m_name, prefix, len_real)) return false;
 		break;
 	}
 
@@ -2161,8 +2159,7 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 		break;
 	case ST_SPARSE:
 		if (!file->read_sparse_begin(
-				&m_datatype, m_name, prefix, &spr_ptr->vec_index,
-				&len_real)) return false;
+				&m_datatype, m_name, prefix, &len_real)) return false;
 		spr_ptr->features = len_real > 0? (SGSparseVectorEntry<char>*)
 			SG_MALLOC(char, len_real *TSGDataType::sizeof_sparseentry(
 				m_datatype.m_ptype)): NULL;
@@ -2180,9 +2177,10 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 					&m_datatype, m_name, prefix, spr_ptr->features,
 					&cur->feat_index, i)) return false;
 		}
-		if (!file->read_sparse_end(
-				&m_datatype, m_name, prefix, &spr_ptr->vec_index,
-				len_real)) return false;
+
+		if (!file->read_sparse_end(&m_datatype, m_name, prefix, len_real))
+			return false;
+
 		spr_ptr->num_feat_entries = len_real;
 		break;
 	}

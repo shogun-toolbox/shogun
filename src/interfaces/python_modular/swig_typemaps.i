@@ -602,7 +602,6 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
 
     for (int32_t i=0; i<num_vec; i++)
     {
-        sfm[i].vec_index = i;
         sfm[i].num_feat_entries = 0;
         sfm[i].features = NULL;
     }
@@ -685,18 +684,15 @@ static bool spmatrix_to_numpy(PyObject* &obj, SGSparseMatrix<type> sg_matrix, in
             for (int32_t i=0; i<num_vec; i++)
             {
                 indptr[i+1]=indptr[i];
-                if (sfm[i].vec_index==i)
+                indptr[i+1]+=sfm[i].num_feat_entries;
+
+                for (int32_t j=0; j<sfm[i].num_feat_entries; j++)
                 {
-                    indptr[i+1]+=sfm[i].num_feat_entries;
+                    *i_ptr=sfm[i].features[j].feat_index;
+                    *d_ptr=sfm[i].features[j].entry;
 
-                    for (int32_t j=0; j<sfm[i].num_feat_entries; j++)
-                    {
-                        *i_ptr=sfm[i].features[j].feat_index;
-                        *d_ptr=sfm[i].features[j].entry;
-
-                        i_ptr++;
-                        d_ptr++;
-                    }
+                    i_ptr++;
+                    d_ptr++;
                 }
             }
 

@@ -421,7 +421,6 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 						}	\
 					}	\
 	\
-					matrix[lines].vec_index=lines;	\
 					matrix[lines].num_feat_entries=dims;	\
 					matrix[lines].features=feat;	\
 	\

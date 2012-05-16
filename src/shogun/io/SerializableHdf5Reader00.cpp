@@ -179,8 +179,7 @@ SerializableHdf5Reader00::read_stringentry_end_wrapped(
 
 bool
 SerializableHdf5Reader00::read_sparse_begin_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t* length)
+	const TSGDataType* type, index_t* length)
 {
 	CSerializableHdf5File::type_item_t* m_prev
 		= m_file->m_stack_type.back();
@@ -238,8 +237,6 @@ SerializableHdf5Reader00::read_sparse_begin_wrapped(
 	if (H5Sclose(mem_space_id) < 0) return false;
 	if (H5Tclose(mem_type_id) < 0) return false;
 
-	*vec_index = *(index_t*) buf;
-
 	delete buf;
 
 	return true;
@@ -247,8 +244,7 @@ SerializableHdf5Reader00::read_sparse_begin_wrapped(
 
 bool
 SerializableHdf5Reader00::read_sparse_end_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	if (!m_file->group_close()) return false;
 

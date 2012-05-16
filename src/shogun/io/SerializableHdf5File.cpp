@@ -51,8 +51,6 @@ CSerializableHdf5File::new_sparsetype()
 {
 	hid_t result = H5Tcreate(H5T_COMPOUND, sizeof_sparsetype());
 
-	if (H5Tinsert(result, STR_SPARSE_VINDEX, 0, TYPE_INDEX) < 0)
-		return NOT_OPEN;
 	if (H5Tinsert(result, STR_SPARSE_FPTR, H5Tget_size(TYPE_INDEX),
 				  H5T_STD_REF_OBJ) < 0)
 		return NOT_OPEN;
@@ -571,8 +569,7 @@ CSerializableHdf5File::write_stringentry_end_wrapped(
 
 bool
 CSerializableHdf5File::write_sparse_begin_wrapped(
-	const TSGDataType* type, index_t vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	type_item_t* m_prev = m_stack_type.back();
 
@@ -616,8 +613,6 @@ CSerializableHdf5File::write_sparse_begin_wrapped(
 
 	char* buf = SG_MALLOC(char, sizeof_sparsetype());
 
-	*(index_t*) buf = vec_index;
-
 	hid_t mem_type_id;
 	if ((mem_type_id = new_sparsetype()) < 0) return false;
 
@@ -642,8 +637,7 @@ CSerializableHdf5File::write_sparse_begin_wrapped(
 
 bool
 CSerializableHdf5File::write_sparse_end_wrapped(
-	const TSGDataType* type, index_t vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	if (!group_close()) return false;
 	delete m_stack_type.back(); m_stack_type.pop_back();

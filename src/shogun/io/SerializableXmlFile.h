@@ -30,7 +30,6 @@
 #define STR_PROP_IS_NULL           "is_null"
 #define STR_PROP_INSTANCE_NAME     "instance_name"
 #define STR_PROP_GENERIC_NAME      "generic_name"
-#define STR_PROP_VECINDEX          "vec_index"
 #define STR_PROP_FEATINDEX         "feat_index"
 
 namespace shogun
@@ -75,11 +74,9 @@ protected:
 		const TSGDataType* type, index_t y);
 
 	virtual bool write_sparse_begin_wrapped(
-		const TSGDataType* type, index_t vec_index,
-		index_t length);
+		const TSGDataType* type, index_t length);
 	virtual bool write_sparse_end_wrapped(
-		const TSGDataType* type, index_t vec_index,
-		index_t length);
+		const TSGDataType* type, index_t length);
 
 	virtual bool write_sparseentry_begin_wrapped(
 		const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,

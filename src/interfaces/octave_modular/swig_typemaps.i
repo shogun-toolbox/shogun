@@ -331,7 +331,6 @@ TYPEMAP_STRINGFEATURES_OUT(float64_t,     Matrix)
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		int32_t len=sm.cidx(i+1)-sm.cidx(i);
-		matrix[i].vec_index=i;
 		matrix[i].num_feat_entries=len;
 
 		if (len>0)

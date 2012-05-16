@@ -257,20 +257,14 @@ CSerializableJsonFile::write_stringentry_end_wrapped(
 
 bool
 CSerializableJsonFile::write_sparse_begin_wrapped(
-	const TSGDataType* type, index_t vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	push_object(json_object_new_object());
 
-	json_object* buf = json_object_new_int(vec_index);
+	json_object* buf = json_object_new_array();
 	if (is_error(buf)) return false;
 	json_object_object_add(m_stack_stream.back(),
-						   STR_KEY_SPARSE_VECINDEX, buf);
-
-	buf = json_object_new_array();
-	if (is_error(buf)) return false;
-	json_object_object_add(m_stack_stream.back(),
-						   STR_KEY_SPARSE_FEATURES, buf);
+			STR_KEY_SPARSE_FEATURES, buf);
 
 	push_object(buf);
 	return true;
@@ -278,8 +272,7 @@ CSerializableJsonFile::write_sparse_begin_wrapped(
 
 bool
 CSerializableJsonFile::write_sparse_end_wrapped(
-	const TSGDataType* type, index_t vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	pop_object();
 	return true;

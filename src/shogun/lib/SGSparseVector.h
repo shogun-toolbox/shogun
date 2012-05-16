@@ -34,24 +34,24 @@ template <class T> class SGSparseVector
 public:
 	/** default constructor */
 	SGSparseVector() :
-		vec_index(0), num_feat_entries(0), features(NULL), do_free(false) {}
+		num_feat_entries(0), features(NULL), do_free(false) {}
 
 	/** constructor for setting params */
 	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
 			index_t index, bool free_v=false) :
-			vec_index(index), num_feat_entries(num_entries), features(feats),
+			num_feat_entries(num_entries), features(feats),
 			do_free(free_v) {}
 
 	/** constructor to create new vector in memory */
 	SGSparseVector(index_t num_entries, index_t index, bool free_v=false) :
-		vec_index(index), num_feat_entries(num_entries), do_free(free_v)
+		num_feat_entries(num_entries), do_free(free_v)
 	{
 		features=SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
 	}
 
 	/** copy constructor */
 	SGSparseVector(const SGSparseVector& orig) :
-			vec_index(orig.vec_index), num_feat_entries(orig.num_feat_entries),
+			num_feat_entries(orig.num_feat_entries),
 			features(orig.features), do_free(orig.do_free) {}
 
 	/** free vector */
@@ -62,7 +62,6 @@ public:
 
 		features=NULL;
 		do_free=false;
-		vec_index=0;
 		num_feat_entries=0;
 	}
 
@@ -74,9 +73,6 @@ public:
 	}
 
 public:
-	/** vector index */
-	index_t vec_index;
-
 	/** number of feature entries */
 	index_t num_feat_entries;
 

@@ -32,7 +32,6 @@
 
 #define STR_GROUP_PREFIX           "$"
 
-#define STR_SPARSE_VINDEX          "vec_index"
 #define STR_SPARSE_FPTR            "features_ptr"
 #define STR_SPARSEENTRY_FINDEX     "feat_index"
 #define STR_SPARSEENTRY_ENTRY      "entry"
@@ -113,11 +112,9 @@ protected:
 		const TSGDataType* type, index_t y);
 
 	virtual bool write_sparse_begin_wrapped(
-		const TSGDataType* type, index_t vec_index,
-		index_t length);
+		const TSGDataType* type, index_t length);
 	virtual bool write_sparse_end_wrapped(
-		const TSGDataType* type, index_t vec_index,
-		index_t length);
+		const TSGDataType* type, index_t length);
 
 	virtual bool write_sparseentry_begin_wrapped(
 		const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,

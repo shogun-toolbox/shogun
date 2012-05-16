@@ -37,8 +37,8 @@ template <class ST> class SGSparseMatrix;
 
 /** @brief Template class SparseFeatures implements sparse matrices.
  *
- * Features are an array of SGSparseVector, sorted w.r.t. vec_index (increasing) and
- * withing same vec_index w.r.t. feat_index (increasing);
+ * Features are an array of SGSparseVector. Within each vector feat_index are
+ * sorted (increasing).
  *
  * Sparse feature vectors can be accessed via get_sparse_feature_vector() and
  * should be freed (this operation is a NOP in most cases) via
@@ -474,14 +474,17 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 			/** feature vector */
 			SGSparseVector<ST> sv;
 
-			/** index */
+			/** vector index */
+			int32_t vector_index;
+
+			/** feature index */
 			int32_t index;
 
 			/** print details of iterator (for debugging purposes)*/
 			void print_info()
 			{
 				SG_SPRINT("sv=%p, vidx=%d, num_feat_entries=%d, index=%d\n",
-						sv.features, sv.vec_index, sv.num_feat_entries, index);
+						sv.features, vector_index, sv.num_feat_entries, index);
 			}
 		};
 		#endif
