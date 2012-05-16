@@ -30,7 +30,7 @@ CECOCDiscriminantEncoder::~CECOCDiscriminantEncoder()
 void CECOCDiscriminantEncoder::init()
 {
     // default parameters
-    m_iterations = 5;
+    m_iterations = 25;
     m_num_trees = 1;
 
     // init values
@@ -38,7 +38,8 @@ void CECOCDiscriminantEncoder::init()
     m_labels = NULL;
 
     // parameters
-    m_parameters->add(&m_iterations, "iterations", "number of iterations in SFFS");
+    
+    SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS", MS_NOT_AVAILABLE);
 }
 
 void CECOCDiscriminantEncoder::set_features(CDenseFeatures<float64_t> *features)
