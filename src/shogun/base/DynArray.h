@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2012 Engeniy Andreev (gsomix)
  */
 
 #ifndef _DYNARRAY_H_
@@ -41,7 +42,8 @@ template <class T> class DynArray
 		 */
 		DynArray(int32_t p_resize_granularity=128, bool tracable=true)
 		{
-			this->resize_granularity=p_resize_granularity;
+			resize_granularity=p_resize_granularity;
+			free_array=true;
 			use_sg_mallocs=tracable;
 
 			if (use_sg_mallocs)
@@ -53,13 +55,50 @@ template <class T> class DynArray
 			last_element_idx=-1;
 		}
 
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_array_size array's size
+		 * @param p_free_array if array must be freed
+		 * @param p_copy_array if array must be copied
+		 * @param tracable
+		 */
+		DynArray(T* p_array, int32_t p_array_size, bool p_free_array=true, bool p_copy_array=false, bool tracable=true)
+		{
+			resize_granularity=p_array_size;
+			free_array=false;
+			use_sg_mallocs=tracable;
+
+			array=NULL;
+			set_array(p_array, p_array_size, p_array_size, p_free_array, p_copy_array);
+		}
+
+		/** constructor
+		 *
+		 * @param p_array another array
+		 * @param p_array_size array's size
+		 * @param tracable
+		 */
+		DynArray(const T* p_array, int32_t p_array_size, bool tracable=true)
+		{
+			resize_granularity=p_array_size;
+			free_array=false;
+			use_sg_mallocs=tracable;
+
+			array=NULL;
+			set_array(p_array, p_array_size, p_array_size);
+		}
+
 		/** destructor */
 		virtual ~DynArray()
 		{
-			if (use_sg_mallocs)
-				SG_FREE(array);
-			else
-				free(array);
+			if (array!=NULL && free_array)
+			{
+				if (use_sg_mallocs)
+					SG_FREE(array);
+				else
+					free(array);
+			}
 		}
 
 		/** set the resize granularity
@@ -167,7 +206,7 @@ template <class T> class DynArray
 			}
 			else
 			{
-				if (resize_array(index))
+				if (free_array && resize_array(index))
 					return set_element(element, index);
 				else
 					return false;
@@ -293,27 +332,27 @@ template <class T> class DynArray
 		 */
 		bool resize_array(int32_t n)
 		{
-			int32_t new_num_elements= ((n/resize_granularity)+1)
+			int32_t new_num_elements=((n/resize_granularity)+1)
 				*resize_granularity;
 
 			T* p;
 
-            if (use_sg_mallocs)
-                p = SG_REALLOC(T, array, new_num_elements);
-            else
-                p = (T*) realloc(array, new_num_elements*sizeof(T));
+			if (use_sg_mallocs)
+				p = SG_REALLOC(T, array, new_num_elements);
+			else
+				p = (T*) realloc(array, new_num_elements*sizeof(T));
 			if (p)
 			{
 				array=p;
 				if (new_num_elements > num_elements)
 				{
 					memset(&array[num_elements], 0,
-						   (new_num_elements-num_elements)*sizeof(T));
+						(new_num_elements-num_elements)*sizeof(T));
 				}
 				else if (n+1<new_num_elements)
 				{
 					memset(&array[n+1], 0,
-						   (new_num_elements-n-1)*sizeof(T));
+						(new_num_elements-n-1)*sizeof(T));
 				}
 
 				//in case of shrinking we must adjust last element idx
@@ -344,14 +383,52 @@ template <class T> class DynArray
 		 * @param p_array new array
 		 * @param p_num_elements last element index + 1
 		 * @param array_size number of elements in array
+		 * @param p_free_array if array must be freed
+		 * @param p_copy_array if array must be copied
 		 */
 		inline void set_array(T* p_array, int32_t p_num_elements,
-							  int32_t array_size)
+							  int32_t p_array_size, bool p_free_array=true, bool copy_array=false)
 		{
-			SG_FREE(this->array);
-			this->array=p_array;
-			this->num_elements=array_size;
-			this->last_element_idx=p_num_elements-1;
+			if (array!=NULL && free_array)
+				SG_FREE(array);
+
+			if (copy_array)
+			{
+				if (use_sg_mallocs)
+					array=SG_MALLOC(T, p_array_size);
+				else
+					array=(T*) malloc(p_array_size*sizeof(T));
+				memcpy(array, p_array, p_array_size*sizeof(T));
+			}
+			else
+				array=p_array;
+
+			num_elements=p_array_size;
+			last_element_idx=p_num_elements-1;
+			free_array=p_free_array;
+		}
+
+		/** set the array pointer and free previously allocated memory
+		 *
+		 * @param p_array new array
+		 * @param p_num_elements last element index + 1
+		 * @param array_size number of elements in array
+		 */
+		inline void set_array(const T* p_array, int32_t p_num_elements,
+							  int32_t p_array_size)
+		{
+			if (array!=NULL && free_array)
+				SG_FREE(array);
+
+			if (use_sg_mallocs)
+				array=SG_MALLOC(T, p_array_size);
+			else
+				array=(T*) malloc(p_array_size*sizeof(T));
+			memcpy(array, p_array, p_array_size*sizeof(T));
+
+			num_elements=p_array_size;
+			last_element_idx=p_num_elements-1;
+			free_array=true;
 		}
 
 		/** clear the array (with zeros) */
@@ -373,6 +450,13 @@ template <class T> class DynArray
 		{
 			for (index_t i=0; i<=last_element_idx; ++i)
 				CMath::swap(array[i], array[CMath::random(i, last_element_idx)]);
+		}
+
+		/** set array with a constant */
+		void set_const(const T& const_element)
+		{
+			for (int32_t i=0; i<num_elements; i++)
+				array[i]=const_element;
 		}
 
 		/** operator overload for array read only access
@@ -404,10 +488,10 @@ template <class T> class DynArray
 			{
 				SG_FREE(array);
 
-                if (use_sg_mallocs)
-                    array=SG_MALLOC(T, orig.num_elements);
-                else
-                    array=(T*) malloc(sizeof(T)*orig.num_elements);
+				if (use_sg_mallocs)
+					array=SG_MALLOC(T, orig.num_elements);
+				else
+					array=(T*) malloc(sizeof(T)*orig.num_elements);
 			}
 
 			memcpy(array, orig.array, sizeof(T)*orig.num_elements);
@@ -433,8 +517,11 @@ template <class T> class DynArray
 		/** the element in the array that has largest index */
 		int32_t last_element_idx;
 
-        /** whether SG_MALLOC or just malloc etc shall be used */
-        bool use_sg_mallocs;
+		/** whether SG_MALLOC or just malloc etc shall be used */
+		bool use_sg_mallocs;
+
+		/** if array must be freed */
+		bool free_array;
 };
 }
 #endif /* _DYNARRAY_H_  */

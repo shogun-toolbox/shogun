@@ -28,7 +28,6 @@
 }
 
 %typemap(in) shogun::SGVector<SGTYPE> {
-    SGTYPE *array;
     int32_t i, len;
 
     if (!lua_istable(L, $input)) {
@@ -42,22 +41,19 @@
         return 0;
     }
 
-    array = SG_MALLOC(SGTYPE, len);
+    $1 = SGVector<SGTYPE>(len);
     for ( i = 0; i < len; i++) {
         lua_rawgeti(L, $input, i + 1);
         if (lua_isnumber(L, -1)){
-            array[i] = (SGTYPE)lua_tonumber(L, -1);
+            $1.vector[i] = (SGTYPE) lua_tonumber(L, -1);
         }
         else {
             lua_pop(L, 1);
             luaL_argerror(L, $input, "vector must contain numbers");
-            SG_FREE(array);
             return 0;
         }
         lua_pop(L,1);
     }
-
-    $1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, len);
 }
 
 %typemap(out) shogun::SGVector<SGTYPE> {
@@ -101,7 +97,6 @@ TYPEMAP_SGVECTOR(float64_t)
 }
 
 %typemap(in) shogun::SGVector<char> {
-    char *array;
     int32_t i, len;
 
     if (!lua_istable(L, $input)) {
@@ -115,7 +110,8 @@ TYPEMAP_SGVECTOR(float64_t)
         return 0;
     }
 
-    array = SG_MALLOC(char, len);
+    $1 = SGVector<char>(len);
+
     for (i = 0; i < len; i++) {
         lua_rawgeti(L, $input, i + 1);
         if (lua_isstring(L, -1)){
@@ -124,18 +120,15 @@ TYPEMAP_SGVECTOR(float64_t)
             if (len != 1) {
                 luaL_argerror(L, $input, "no more than one charactor expected");
             }
-            array[i] = (char)*str;
+            $1.vector[i] = str[0];
         }
         else {
             lua_pop(L, 1);
             luaL_argerror(L, $input, "char vector expected");
-            SG_FREE(array);
             return 0;
         }
         lua_pop(L,1);
     }
-
-    $1 = shogun::SGVector<char>((char *)array, len);
 }
 
 %typemap(out) shogun::SGVector<char> {
@@ -187,7 +180,6 @@ TYPEMAP_SGVECTOR(float64_t)
 }
 
 %typemap(in) shogun::SGMatrix<SGTYPE> {
-    SGTYPE *array;
     int32_t i, j, rows, cols;
 
     if (!lua_istable(L, $input)) {
@@ -202,11 +194,10 @@ TYPEMAP_SGVECTOR(float64_t)
     }
     lua_pop(L, 1);
 
-    array = SG_MALLOC(SGTYPE, rows * cols);
+    $1 = SGMatrix<SGTYPE>(rows,cols);
     for (i = 0; i < rows; i++) {
         lua_rawgeti(L, $input, i + 1);
         if (!lua_istable(L, -1)) {
-            SG_FREE(array);
             return luaL_argerror(L, $input, "matrix row is not a table");
         }
 
@@ -216,17 +207,14 @@ TYPEMAP_SGVECTOR(float64_t)
         for (j = 0; j < cols; j++) {
             lua_rawgeti(L, -1, j + 1);
             if (!lua_isnumber(L, -1)) {
-                SG_FREE(array);
                 return luaL_argerror(L, 1, "matrix must contain numbers");
             }
 
-            array[j * rows + i] = (SGTYPE)lua_tonumber(L, -1);
+            $1.matrix[j * rows + i] = (SGTYPE)lua_tonumber(L, -1);
             lua_pop(L, 1);
         }
         lua_pop(L, 1);
     }
-
-    $1 = shogun::SGMatrix<SGTYPE>((SGTYPE*)array, rows, cols, true);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE> {
