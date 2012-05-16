@@ -55,14 +55,14 @@ def seqdict(dic, (start,end)):
 		else:
 			tab+='A'
 
-	for seqname in dic:
-		seq=string.translate(dic[seqname], tab) 
+	for seqname in dic.ordered_items():
+		seq=string.translate(seqname[1], tab) 
 		seq=seq.upper()
 		if end<0:
 			stop=len(seq)+end
 		else:
 			stop=end
 
-		sequences.append(sequence(seqname, seq, (start,stop)))
+		sequences.append(sequence(seqname[0], seq, (start,stop)))
 
 	return sequences

@@ -1,0 +1,115 @@
+<tool id="asp" name="ASP" version="0.3">
+	<description>Accurate splice site prediction</description>
+	<command interpreter="bash">./asp.sh
+		$fasta_input
+		$organism
+		$result_format
+		$spf_gff
+		$spf_spf
+		$acc_spf_binary.extra_files_path
+		$acc_spf_binary
+		$don_spf_binary.extra_files_path
+		$don_spf_binary
+		$sigmoid_transform
+		> $log_file
+	</command>
+  	<inputs>
+		<param format="fasta" name="fasta_input" type="data" label="Genome sequence in FASTA format" help=""/>
+    		<param name="organism" type="select" label="Organism" help="">
+			<option value="Cress">Arabidopsis thaliana</option>
+		        <option value="Worm">Caenorhabditis elegans</option>
+		        <option value="Fly">Drosophila melanogaster</option>
+		        <option value="Human">Homo sapiens</option>
+		        <option value="Fish">Danio rerio</option>
+    		</param>
+		<param name="sigmoid_transform" type="select" label="Use sigmoid-transform on SVM outputs to obtain score between 0 and 1" help="By default it is Yes.">
+			<option value="yes">Yes</option>
+			<option value="no">No</option>
+		</param>
+		<param name="result_format" type="select" label="Prediction result file format" help="Types of file format available for prediction results.">
+			<option value="gff2">GFF (Version 2)</option>
+			<option value="spf1">ASCII SPF (Version 1)</option>
+			<option value="binary">SPF format (binary format compatible with Palmapper and QPALMA)</option>
+		</param>
+	</inputs>
+	<outputs>
+		<data format="gff" name="spf_gff" label="Splice site signal predictions in GFF format">
+			<filter>result_format=="gff2"</filter>
+		</data>
+		<data format="spf" name="spf_spf" label="Splice site signal predictions in SPF format">
+			<filter>result_format=="spf1"</filter>
+		</data>
+		<data format="spf" name="acc_spf_binary" label="Acceptor splice site signal predictions in binary SPF format">
+			<filter>result_format=="binary"</filter>
+		</data>
+		<data format="spf" name="don_spf_binary" label="Donor splice site signal predictions in binary SPF format">
+			<filter>result_format=="binary"</filter>
+		</data>
+		<data format="txt" name="log_file" label="Log File">
+			<filter>result_format=="binary"</filter>
+		</data>
+	</outputs>
+  <help>
+
+**What it does**
+
+ASP_ predicts splice sites on genomic sequences of several species [1].
+
+It takes a genomic sequence in FASTA format and for every position
+that exhibits a splice site consensus dimer (AG for acceptor splice
+sites, GT/GC for donor splice site) computes a score indicating how
+likely the position is a splice site.  ASP uses a window of 141 nt
+around each position. Therefore, there are no predictions near the
+boundaries. Predictions are performed on the forward and backward
+strand for all sequences in the FASTA file.
+
+.. _ASP: http://www.fml.tuebingen.mpg.de/raetsch/suppl/splice
+
+**References:**
+
+[1] Soeren Sonnenburg, Gabriele Schweikert, Petra Philips, Jonas Behr, and Gunnar Raetsch: Accurate splice site prediction using support vector machines, BMC Bioinformatics 2007, 8(Suppl 10):S7.
+
+------
+
+**Output:**
+
+The output is a file in GFF-like format which contains a prediction
+score for each candidate location in the genomic input sequence.
+
+Each line contains the sequence name, the position in the sequence,
+the information about which kind of splice site type (GT/GC/AG) is
+considered and the SVM score. The GT and GC lines correspond to donor
+splice site predictions (consensus sequence is either GT or GC). For
+lines with AG, the line corresponds to acceptor splice site
+predictions (AG consensus). The score is related to the likelihood
+that a the given position is a splice site. The larger the score, the
+more likely that there is a splice site. Scores above -1 (original SVM
+scores) and above 0.7 (with sigmoid transformation) are quite likely
+splice sites.
+
+The tool `SignalPredict` in the `mGene.web modules` section can also
+predict splice sites for several organisms. Here the score is
+appropriately transformed into a posterior probability that there is a
+splice site at the predicted sites. These probabilities are easier to
+interpret than the raw SVM outputs provided by ASP.
+
+--------
+
+.. class:: infomark
+
+**About formats**
+
+**SPF format** Signal Prediction format was designed for providing
+information such as labels or predictions for specific genomic
+locations (with strand information). It has requires exactly six
+fields::
+
+    1. chrom - The name of the chromosome (e.g. chr1, chrY_random).
+    2. signalName - possible choices include tss, tis, acc, don, cdsStop, cleave.
+    3. scoreName - possible choices include label, output, Conf, Conf_Cum
+    4. chromPos - The position in the chromosome. (The first base in a chromosome is numbered 1.)
+    5. strand - Defines the strand - either '+' or '-'.
+    6. score - The score between -infinity and infinity. If scoreName is 'label', then the score should be either -1 or 1.
+
+</help>
+</tool>
