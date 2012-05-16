@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 	SG_SPRINT("original data\n");
 	for (index_t i=0; i<num_vectors; ++i)
 	{
-		SG_SPRINT("sparse vector at %i: [", data.sparse_matrix[i].vec_index);
+		SG_SPRINT("sparse vector at %i: [", i);
 		for (index_t j=0; j<num_features; ++j)
 			SG_SPRINT("%f, ", data.sparse_matrix[i].features[j].entry);
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<f->get_num_vectors(); ++i)
 	{
 		SGSparseVector<float64_t> vec=f->get_sparse_feature_vector(i);
-		SG_SPRINT("sparse vector at %i: ", vec.vec_index);
+		SG_SPRINT("sparse vector at %i: ", i);
 		for (index_t j=0; j<num_features; ++j)
 			SG_SPRINT("%f, ", vec.features[j].entry);
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
 	{
 		SGSparseVector<float64_t> vec=subset_copy->get_sparse_feature_vector(i);
-		SG_SPRINT("sparse vector at %i: ", vec.vec_index);
+		SG_SPRINT("sparse vector at %i: ", i);
 		for (index_t j=0; j<num_features; ++j)
 			SG_SPRINT("%f, ", vec.features[j].entry);
 
