@@ -283,21 +283,14 @@ CSerializableXmlFile::write_stringentry_end_wrapped(
 
 bool
 CSerializableXmlFile::write_sparse_begin_wrapped(
-	const TSGDataType* type, index_t vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
-	string_t buf;
-	snprintf(buf, STRING_LEN, "%"PRIi32, vec_index);
-	if (xmlNewProp(m_stack_stream.back(), BAD_CAST STR_PROP_VECINDEX,
-				   BAD_CAST buf) == NULL) return false;
-
 	return true;
 }
 
 bool
 CSerializableXmlFile::write_sparse_end_wrapped(
-	const TSGDataType* type, index_t vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	return true;
 }

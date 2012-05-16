@@ -309,11 +309,11 @@ CSerializableFile::read_stringentry_end(
 bool
 CSerializableFile::write_sparse_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t vec_index, index_t length)
+	index_t length)
 {
 	if (!is_task_warn('w', name, prefix)) return false;
 
-	if (!write_sparse_begin_wrapped(type, vec_index, length))
+	if (!write_sparse_begin_wrapped(type, length))
 		return false_warn(prefix, name);
 
 	return true;
@@ -322,11 +322,11 @@ CSerializableFile::write_sparse_begin(
 bool
 CSerializableFile::read_sparse_begin(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t* vec_index, index_t* length)
+	index_t* length)
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!m_reader->read_sparse_begin_wrapped(type, vec_index, length))
+	if (!m_reader->read_sparse_begin_wrapped(type, length))
 		return false_warn(prefix, name);
 
 	return true;
@@ -335,11 +335,11 @@ CSerializableFile::read_sparse_begin(
 bool
 CSerializableFile::write_sparse_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t vec_index, index_t length)
+	index_t length)
 {
 	if (!is_task_warn('w', name, prefix)) return false;
 
-	if (!write_sparse_end_wrapped(type, vec_index, length))
+	if (!write_sparse_end_wrapped(type, length))
 		return false_warn(prefix, name);
 
 	return true;
@@ -348,11 +348,11 @@ CSerializableFile::write_sparse_end(
 bool
 CSerializableFile::read_sparse_end(
 	const TSGDataType* type, const char* name, const char* prefix,
-	index_t* vec_index, index_t length)
+	index_t length)
 {
 	if (!is_task_warn('r', name, prefix)) return false;
 
-	if (!m_reader->read_sparse_end_wrapped(type, vec_index, length))
+	if (!m_reader->read_sparse_end_wrapped(type, length))
 		return false_warn(prefix, name);
 
 	return true;

@@ -414,7 +414,6 @@ SGSparseVector<T> CStreamingSparseFeatures<T>::get_vector()
 {
 	current_sgvector.features=current_vector;
 	current_sgvector.num_feat_entries=current_length;
-	current_sgvector.vec_index=current_vec_index;
 
 	return current_sgvector;
 }

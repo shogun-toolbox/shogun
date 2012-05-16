@@ -191,29 +191,14 @@ SerializableXmlReader00::read_stringentry_end_wrapped(
 
 bool
 SerializableXmlReader00::read_sparse_begin_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t* length)
+	const TSGDataType* type, index_t* length)
 {
-	xmlNode* m = m_file->m_stack_stream.back();
-
-	bool result = true;
-	xmlChar* buf;
-
-	if ((buf = xmlGetProp(m, BAD_CAST STR_PROP_VECINDEX)) == NULL)
-		return false;
-	if (sscanf((const char*) buf, "%"PRIi32, vec_index) != 1)
-		result = false;
-	xmlFree(buf); if (!result) return false;
-
-	*length = xmlChildElementCount(m);
-
 	return true;
 }
 
 bool
 SerializableXmlReader00::read_sparse_end_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	if (length > 0) m_file->pop_node();
 

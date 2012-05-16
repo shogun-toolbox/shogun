@@ -251,7 +251,6 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 			result.num_feat_entries=tmp_len ;
 			SG_DEBUG( "len: %d len2: %d\n", result.num_feat_entries, num_features);
 		}
-		result.vec_index=num;
 		return result ;
 	}
 }
@@ -432,7 +431,6 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 	{
 		sfm[v].features= SG_MALLOC(SGSparseVectorEntry<ST>, hist[v]);
 		sfm[v].num_feat_entries=hist[v];
-		sfm[v].vec_index=v;
 	}
 
 	// fill future feature vectors with content
@@ -480,12 +478,12 @@ template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 
 	for (int32_t v=0; v<full.num_cols; v++)
 	{
-		SGSparseVector<ST> current=
-			sparse_feature_matrix[m_subset_stack->subset_idx_conversion(v)];
+		int32_t idx=m_subset_stack->subset_idx_conversion(v);
+		SGSparseVector<ST> current=sparse_feature_matrix[idx];
 
 		for (int32_t f=0; f<current.num_feat_entries; f++)
 		{
-			int64_t offs=(current.vec_index*num_features)
+			int64_t offs=(idx*num_features)
 					+current.features[f].feat_index;
 
 			full.matrix[offs]=current.features[f].entry;
@@ -534,7 +532,6 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 			{
 				for (int32_t i=0; i< num_vec; i++)
 				{
-					sparse_feature_matrix[i].vec_index=i;
 					sparse_feature_matrix[i].num_feat_entries=0;
 					sparse_feature_matrix[i].features= NULL;
 
@@ -888,7 +885,6 @@ template<class ST> CLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname,
 						}
 					}
 
-					sparse_feature_matrix[lines].vec_index=lines;
 					sparse_feature_matrix[lines].num_feat_entries=dims;
 					sparse_feature_matrix[lines].features=feat;
 
@@ -1053,6 +1049,7 @@ template<class ST> void* CSparseFeatures<ST>::get_feature_iterator(int32_t vecto
 	sparse_feature_iterator* it=SG_MALLOC(sparse_feature_iterator, 1);
 	it->sv=get_sparse_feature_vector(vector_index);
 	it->index=0;
+	it->vector_index=vector_index;
 
 	return it;
 }
@@ -1077,7 +1074,7 @@ template<class ST> void CSparseFeatures<ST>::free_feature_iterator(void* iterato
 		return;
 
 	sparse_feature_iterator* it=(sparse_feature_iterator*) iterator;
-	free_sparse_feature_vector(it->sv, it->sv.vec_index);
+	free_sparse_feature_vector(it->sv, it->vector_index);
 	SG_FREE(it);
 }
 
@@ -1090,11 +1087,12 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 	{
 		/* index to copy */
 		index_t index=indices.vector[i];
+		index_t real_index=m_subset_stack->subset_idx_conversion(index);
 
 		/* copy sparse vector */
 		SGSparseVector<ST> current=get_sparse_feature_vector(index);
 		matrix_copy.sparse_matrix[i]=SGSparseVector<ST>(
-			current.num_feat_entries, current.vec_index);
+			current.num_feat_entries, real_index);
 
 		/* copy entries */
 		memcpy(matrix_copy.sparse_matrix[i].features, current.features,

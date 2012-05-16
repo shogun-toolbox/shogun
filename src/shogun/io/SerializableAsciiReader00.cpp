@@ -170,11 +170,9 @@ SerializableAsciiReader00::read_stringentry_end_wrapped(
 
 bool
 SerializableAsciiReader00::read_sparse_begin_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t* length)
+	const TSGDataType* type, index_t* length)
 {
-	if (fscanf(m_file->m_fstream, "%"PRIi32" %"PRIi32, vec_index,
-			   length) != 2) return false;
+	if (fscanf(m_file->m_fstream, "%"PRIi32, length) != 2) return false;
 	if (fgetc(m_file->m_fstream) != ' ') return false;
 	if (fgetc(m_file->m_fstream) != CHAR_SPARSE_BEGIN) return false;
 
@@ -183,8 +181,7 @@ SerializableAsciiReader00::read_sparse_begin_wrapped(
 
 bool
 SerializableAsciiReader00::read_sparse_end_wrapped(
-	const TSGDataType* type, index_t* vec_index,
-	index_t length)
+	const TSGDataType* type, index_t length)
 {
 	if (fgetc(m_file->m_fstream) != CHAR_SPARSE_END) return false;
 
