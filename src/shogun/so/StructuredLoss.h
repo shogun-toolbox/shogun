@@ -43,7 +43,7 @@ class CStructuredLoss : public CSGObject
 		 * @param z where to evaluate the function
 		 * @return the loss
 		 */
-		virtual float64_t compute(float64_t z) = 0;
+		virtual float64_t loss(float64_t z) = 0;
 
 		/** abstract method the first gradient of the loss
 		 *

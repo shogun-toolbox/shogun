@@ -55,7 +55,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		}
 
 	private:
-		/** register parameters */
+		/** register class members */
 		void register_parameters();
 
 	protected:
