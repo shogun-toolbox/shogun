@@ -23,7 +23,7 @@ namespace shogun
 class CStructuredModel;
 
 /** output of the argmax function */
-struct CResultSet
+struct CResultSet : public CSGObject
 {
 	/** joint feature vector for the given truth */
 	SGVector< float64_t > psi_truth;

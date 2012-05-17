@@ -55,7 +55,7 @@ class CKernelStructuredOutputMachine : public CStructuredOutputMachine
 		}
 
 	private:
-		/** register parameters */
+		/** register class members */
 		void register_parameters();
 
 	protected:

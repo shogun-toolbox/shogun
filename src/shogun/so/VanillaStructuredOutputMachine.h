@@ -52,6 +52,28 @@ class CVanillaStructuredOutputMachine : public CLinearStructuredOutputMachine
 		 */
 		bool train_machine(CFeatures* data = NULL);
 
+	private:
+		/** register class members */
+		void register_parameters();
+
+		/** computes the result of TODO equation
+		 *
+		 * @param result CResultSet structure with any argmax output
+		 * @return result of the operation
+		 */
+		float64_t compute_loss_arg(CResultSet* result) const;
+
+		/** insert element in the list of argmax results
+		 *
+		 * @param result_list list of CResultSet
+		 * @param result element to insert in the list
+		 */
+		bool insert_result(CList* result_list, CResultSet* result) const;
+
+	private:
+		/** weight vector */
+		SGVector< float64_t > m_w;
+
 }; /* class CVanillaStructuredOutputMachine */
 
 } /* namespace shogun */
