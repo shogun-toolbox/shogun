@@ -16,7 +16,6 @@
 %rename(HessianLocallyLinearEmbedding) CHessianLocallyLinearEmbedding;
 %rename(KernelLocallyLinearEmbedding) CKernelLocallyLinearEmbedding;
 %rename(KernelLocalTangentSpaceAlignment) CKernelLocalTangentSpaceAlignment;
-%rename(SupervisedKernelLocalTangentSpaceAlignment) CSupervisedKernelLocalTangentSpaceAlignment;
 %rename(DiffusionMaps) CDiffusionMaps;
 %rename(LaplacianEigenmaps) CLaplacianEigenmaps;
 %rename(LocalityPreservingProjections) CLocalityPreservingProjections;
@@ -37,7 +36,6 @@
 %include <shogun/converter/HessianLocallyLinearEmbedding.h>
 %include <shogun/converter/KernelLocallyLinearEmbedding.h>
 %include <shogun/converter/KernelLocalTangentSpaceAlignment.h>
-%include <shogun/converter/SupervisedKernelLocalTangentSpaceAlignment.h>
 %include <shogun/converter/DiffusionMaps.h>
 %include <shogun/converter/LaplacianEigenmaps.h>
 %include <shogun/converter/LocalityPreservingProjections.h>
