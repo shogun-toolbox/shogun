@@ -31,7 +31,7 @@ class CStructuredOutputMachine : public CMachine
 		 *
 		 * @param model structured model with application specific functions
 		 * @param loss structured loss function
-		 * @param labels structured labels
+		 * @param labs structured labels
 		 */
 		CStructuredOutputMachine(CStructuredModel* model, CStructuredLoss* loss, CStructuredLabels* labs);
 
@@ -40,7 +40,7 @@ class CStructuredOutputMachine : public CMachine
 
 		/** set labels
 		 *
-		 * @param lab labels
+		 * @param labs labels
 		 */
 		virtual void set_labels(CStructuredLabels* labs);
 

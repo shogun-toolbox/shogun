@@ -51,7 +51,7 @@ class CStructuredLoss : public CSGObject
 		 * @return the gradient (first derivative) of the loss
 		 */
 
-		virtual float64_t compute_gradient(float64_t) = 0;
+		virtual float64_t compute_gradient(float64_t z) = 0;
 
 		/** abstract method the second gradient of the loss
 		 *
