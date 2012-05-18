@@ -55,7 +55,7 @@ class CStructuredOutputMachine : public CMachine
 		 * @return output 'labels'
 		 */
 		/* TODO change this to StructuredLabels when hierarchy fixed */
-		virtual CLabels* apply();
+		CLabels* apply();
 
 		/** apply machine to data
 		 *
@@ -63,7 +63,16 @@ class CStructuredOutputMachine : public CMachine
 		 * @return classified labels
 		 */
 		/* TODO change this to StructuredLabels when hierarchy fixed */
-		virtual CLabels* apply(CFeatures* data);
+		CLabels* apply(CFeatures* data);
+
+		/** apply machine to one example
+		 *
+		 * @param num which example to apply machine to
+		 * @return classified structured label
+		 */
+		/* TODO change this to StructuredData when hierarchy fixed */
+		float64_t apply(int32_t num);
+
 
 	private:
 		/** register class members */
