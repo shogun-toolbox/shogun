@@ -80,6 +80,19 @@ class CMulticlassMachine : public CMachine
 			return m_machines->get_num_elements();
 		}
 
+		/** get outputs of i-th submachine
+		 * @param i number of submachine
+		 * @return outputs
+		 */
+		virtual CLabels* get_submachine_outputs(int32_t i);
+
+		/** get output of i-th submachine for num-th vector
+		 * @param i number of submachine
+		 * @param num number of feature vector
+		 * @return output
+		 */
+		virtual float64_t get_submachine_output(int32_t i, int32_t num);
+
 		/** classify all examples
 		 *
 		 * @return resulting labels

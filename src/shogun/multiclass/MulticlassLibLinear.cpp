@@ -81,6 +81,11 @@ SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
 	return SGVector<int32_t>(nz_idxs.begin,num_nz);
 }
 
+SGMatrix<float64_t> CMulticlassLibLinear::obtain_regularizer_matrix() const
+{
+	return SGMatrix<float64_t>();
+}
+
 bool CMulticlassLibLinear::train_machine(CFeatures* data)
 {
 	if (data)
@@ -104,6 +109,8 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	mc_problem.x = m_features;
 	mc_problem.use_bias = m_use_bias;
 
+	SGMatrix<float64_t> w0 = obtain_regularizer_matrix();
+
 	if (!m_train_state)
 		m_train_state = new mcsvm_state();
 
@@ -111,7 +118,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_vectors; i++)
 		C[i] = m_C;
 
-	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,m_epsilon,
+	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,w0.matrix,m_epsilon,
 	                       m_max_iter,m_max_train_time,m_train_state);
 	solver.solve();
 
@@ -119,12 +126,12 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();
-		float64_t* cw = SG_MALLOC(float64_t, mc_problem.n);
+		SGVector<float64_t> cw(mc_problem.n);
 
 		for (int32_t j=0; j<mc_problem.n-bias_n; j++)
 			cw[j] = m_train_state->w[j*num_classes+i];
 
-		machine->set_w(SGVector<float64_t>(cw,mc_problem.n-bias_n));
+		machine->set_w(cw);
 
 		if (m_use_bias)
 			machine->set_bias(m_train_state->w[(mc_problem.n-bias_n)*num_classes+i]);

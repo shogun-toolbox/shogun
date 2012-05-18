@@ -285,7 +285,7 @@ class Solver_MCSVM_CS
 {
 	public:
 		Solver_MCSVM_CS(const problem *prob, int nr_class, double *C,
-		                double eps, int max_iter,
+		                double *w0, double eps, int max_iter,
 		                double train_time, mcsvm_state* given_state);
 		~Solver_MCSVM_CS();
 		void solve();
@@ -298,6 +298,7 @@ class Solver_MCSVM_CS
 		int max_iter;
 		double eps;
 		double max_train_time;
+		double* w0;
 		const problem *prob;
 		mcsvm_state* state;
 };

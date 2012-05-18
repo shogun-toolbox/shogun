@@ -145,6 +145,9 @@ protected:
 		/** train machine */
 		virtual bool train_machine(CFeatures* data = NULL);
 
+		/** obtain regularizer (w0) matrix */
+		virtual SGMatrix<float64_t> obtain_regularizer_matrix() const;
+
 private:
 
 		/** init defaults */

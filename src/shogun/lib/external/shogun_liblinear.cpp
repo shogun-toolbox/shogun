@@ -342,8 +342,8 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 // To support weights for instances, use GETI(i) (i)
 
 Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class,
-                                 double *weighted_C, double epsilon,
-                                 int max_it, double max_time,
+                                 double *weighted_C, double *w0,
+                                 double epsilon, int max_it, double max_time,
                                  mcsvm_state* given_state)
 {
 	this->w_size = p->n;
@@ -353,6 +353,7 @@ Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class,
 	this->max_iter = max_it;
 	this->prob = p;
 	this->C = weighted_C;
+	this->w0 = w0;
 	this->max_train_time = max_time;
 	this->state = given_state;
 }
@@ -505,8 +506,17 @@ void Solver_MCSVM_CS::solve()
 				if (prob->use_bias)
 				{
 					double *w_i = &w[(w_size-1)*nr_class];
-					for(m=0;m<active_size_i[i];m++)
+					for(m=0; m<active_size_i[i]; m++)
 						G[m] += w_i[alpha_index_i[m]];
+				}
+				if (w0)
+				{
+					for (k=0; k<dim; k++)
+					{
+						double *w0_i = &w0[k*nr_class];
+						for(m=0; m<active_size_i[i]; m++)
+							G[m] += w0_i[alpha_index_i[m]];
+					}
 				}
 				// ***
 
@@ -600,10 +610,12 @@ void Solver_MCSVM_CS::solve()
 		}
 
 		iter++;
+		/*
 		if(iter % 10 == 0)
 		{
 			SG_SINFO(".");
 		}
+		*/
 
 		if(stopping < eps_shrink)
 		{
@@ -614,7 +626,7 @@ void Solver_MCSVM_CS::solve()
 				active_size = l;
 				for(i=0;i<l;i++)
 					active_size_i[i] = nr_class;
-				SG_SINFO("*");
+				//SG_SINFO("*");
 				eps_shrink = CMath::max(eps_shrink/2, eps);
 				start_from_all = true;
 			}
