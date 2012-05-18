@@ -21,8 +21,7 @@ using namespace shogun;
 
 float64_t CSquaredLoss::loss(float64_t prediction, float64_t label)
 {
-	float64_t z = (prediction - label) * (prediction - label);
-	return loss(z);
+	return (prediction - label) * (prediction - label);
 }
 
 float64_t CSquaredLoss::loss(float64_t z)
@@ -32,8 +31,7 @@ float64_t CSquaredLoss::loss(float64_t z)
 
 float64_t CSquaredLoss::first_derivative(float64_t prediction, float64_t label)
 {
-	float64_t z = prediction - label;
-	return first_derivative(z);
+	return 2. * (prediction - label);
 }
 
 float64_t CSquaredLoss::first_derivative(float64_t z)
