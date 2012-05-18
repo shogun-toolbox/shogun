@@ -12,7 +12,8 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/machine/MulticlassMachine.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RealLabels.h>
 
 using namespace shogun;
 
@@ -49,6 +50,7 @@ CMulticlassMachine::~CMulticlassMachine()
 
 void CMulticlassMachine::set_labels(CLabels* lab)
 {
+	ASSERT(lab->get_label_type() == LT_MULTICLASS);
     CMachine::set_labels(lab);
     if (lab)
         init_strategy();
@@ -63,11 +65,11 @@ void CMulticlassMachine::register_parameters()
 
 void CMulticlassMachine::init_strategy()
 {
-    int32_t num_classes = m_labels->get_num_classes();
+    int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
     m_multiclass_strategy->set_num_classes(num_classes);
 }
 
-CLabels* CMulticlassMachine::apply(CFeatures* features)
+CRealLabels* CMulticlassMachine::apply(CFeatures* features)
 {
 	init_machines_for_apply(features);
 	return apply();
@@ -90,7 +92,7 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 	return output;
 }
 
-CLabels* CMulticlassMachine::apply()
+CRealLabels* CMulticlassMachine::apply()
 {
 	/** Ensure that m_machines have the features set */
 	init_machines_for_apply(NULL);
@@ -102,11 +104,11 @@ CLabels* CMulticlassMachine::apply()
 		if (num_machines <= 0)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
 
-		CLabels* result=new CLabels(num_vectors);
-		CLabels** outputs=SG_MALLOC(CLabels*, num_machines);
+		CRealLabels* result=new CRealLabels(num_vectors);
+		CRealLabels** outputs=SG_MALLOC(CRealLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
-			outputs[i] = get_submachine_outputs(i);
+			outputs[i] = (CRealLabels*) get_submachine_outputs(i);
 
 		SGVector<float64_t> output_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
@@ -141,7 +143,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 		init_machine_for_train(data);
 
 	m_machines->clear_array();
-	CLabels *train_labels = new CLabels(get_num_rhs_vectors());
+	CMulticlassLabels* train_labels = new CMulticlassLabels(get_num_rhs_vectors());
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
@@ -185,4 +187,3 @@ float64_t CMulticlassMachine::apply(int32_t num)
 
 	return result;
 }
-

@@ -13,7 +13,7 @@
 #ifdef USE_CPLEX
 
 #include <shogun/classifier/LPBoost.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Cplex.h>
 #include <shogun/lib/DynamicArray.h>

@@ -15,6 +15,7 @@
 
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/classifier/mkl/MKL.h>
+#include <shogun/labels/BinaryLabels.h>
 
 #include <string.h>
 
@@ -248,7 +249,7 @@ float64_t CSVM::compute_svm_dual_objective()
 		for (int32_t i=0; i<n; i++)
 		{
 			int32_t ii=get_support_vector(i);
-			objective-=get_alpha(i)*m_labels->get_label(ii);
+			objective-=get_alpha(i)*((CBinaryLabels*) m_labels)->get_label(ii);
 
 			for (int32_t j=0; j<n; j++)
 			{
@@ -288,7 +289,7 @@ float64_t CSVM::compute_svm_primal_objective()
 				regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
 			}
 
-			loss-=(C1*(-get_label(ii)+1)/2.0 + C2_tmp*(get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-get_label(ii)*apply(ii));
+			loss-=(C1*(-((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 + C2_tmp*(((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-((CBinaryLabels*) m_labels)->get_label(ii)*apply(ii));
 		}
 
 	}

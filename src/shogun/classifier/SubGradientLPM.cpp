@@ -20,7 +20,7 @@
 #include <shogun/classifier/SubGradientLPM.h>
 #include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 using namespace shogun;
 

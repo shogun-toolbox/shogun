@@ -14,7 +14,8 @@
 #include <shogun/kernel/KernelNormalizer.h>
 #include <shogun/kernel/IdentityKernelNormalizer.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/SGIO.h>
 
 namespace shogun
@@ -45,6 +46,7 @@ public:
 		ASSERT(labels)
 		SG_REF(labels);
 		m_labels=labels;
+		ASSERT(labels->get_label_type()==LT_MULTICLASS);
 
 		if (normalizer==NULL)
 			normalizer=new CIdentityKernelNormalizer();
@@ -103,12 +105,12 @@ public:
 
 		if (m_testing_class>=0)
 		{
-			if (m_labels->get_label(idx_lhs) == m_testing_class)
+			if (((CMulticlassLabels*) m_labels)->get_label(idx_lhs) == m_testing_class)
 				c=m_const_diag;
 		}
 		else
 		{
-			if (m_labels->get_label(idx_lhs) == m_labels->get_label(idx_rhs))
+			if (((CMulticlassLabels*) m_labels)->get_label(idx_lhs) == ((CMulticlassLabels*) m_labels)->get_label(idx_rhs))
 				c=m_const_diag;
 
 		}

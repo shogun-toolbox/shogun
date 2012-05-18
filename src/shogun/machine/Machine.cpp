@@ -83,13 +83,13 @@ CLabels* CMachine::get_labels()
 	return m_labels;
 }
 
-float64_t CMachine::get_label(int32_t i)
-{
-	if (!m_labels)
-		SG_ERROR("No Labels assigned\n");
-
-	return m_labels->get_label(i);
-}
+//float64_t CMachine::get_label(int32_t i)
+//{
+//	if (!m_labels)
+//		SG_ERROR("No Labels assigned\n");
+//
+//	return m_labels->get_label(i);
+//}
 
 void CMachine::set_max_train_time(float64_t t)
 {

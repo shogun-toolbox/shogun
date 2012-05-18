@@ -11,7 +11,9 @@
 #include <shogun/classifier/GaussianNaiveBayes.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
 
@@ -71,7 +73,8 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 
 	// get int labels to train_labels and check length equality
 	ASSERT(m_labels);
-	SGVector<int32_t> train_labels = m_labels->get_int_labels();
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+	SGVector<int32_t> train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen);
 
 	// init min_label, max_label and loop variables
@@ -176,7 +179,7 @@ CLabels* CGaussianNaiveBayes::apply()
 	int32_t num_vectors = m_features->get_num_vectors();
 
 	// init result labels
-	CLabels* result = new CLabels(num_vectors);
+	CRealLabels* result = new CRealLabels(num_vectors);
 
 	// classify each example of data
 	SG_PROGRESS(0, 0, num_vectors);

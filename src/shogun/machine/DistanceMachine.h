@@ -14,7 +14,8 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/machine/Machine.h>
 
 #include <stdio.h>
@@ -22,6 +23,7 @@
 namespace shogun
 {
 	class CLabels;
+	class CRealLabels;
 	class CDistance;
 	class CMachine;
 

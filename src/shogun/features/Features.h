@@ -59,8 +59,6 @@ namespace shogun
  */
 class CFeatures : public CSGObject
 {
-	void init();
-
 	public:
 		/** constructor
 		 *
@@ -252,7 +250,8 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
-	protected:
+	private:
+		void init();
 
 	private:
 		/** feature properties */

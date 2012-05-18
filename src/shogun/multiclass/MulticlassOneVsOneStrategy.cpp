@@ -9,6 +9,8 @@
  */
 
 #include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -39,15 +41,15 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 	int32_t tot=0;
 	for (int32_t k=0; k < m_orig_labels->get_num_labels(); ++k)
 	{
-		if (m_orig_labels->get_int_label(k)==m_train_pair_idx_1)
+		if (((CMulticlassLabels*) m_orig_labels)->get_int_label(k)==m_train_pair_idx_1)
 		{
-			m_train_labels->set_label(k, +1.0);
+			((CBinaryLabels*) m_train_labels)->set_label(k, +1.0);
 			subset[tot]=k;
 			tot++;
 		}
-		else if (m_orig_labels->get_int_label(k)==m_train_pair_idx_2)
+		else if (((CMulticlassLabels*) m_orig_labels)->get_int_label(k)==m_train_pair_idx_2)
 		{
-			m_train_labels->set_label(k, -1.0);
+			((CBinaryLabels*) m_train_labels)->set_label(k, -1.0);
 			subset[tot]=k;
 			tot++;
 		}

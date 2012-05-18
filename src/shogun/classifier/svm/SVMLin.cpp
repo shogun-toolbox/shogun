@@ -9,12 +9,13 @@
  */
 
 #include <shogun/classifier/svm/SVMLin.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/ssl.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -49,7 +50,7 @@ bool CSVMLin::train_machine(CFeatures* data)
 
 	ASSERT(features);
 
-	SGVector<float64_t> train_labels=m_labels->get_labels();
+	SGVector<float64_t> train_labels=((CBinaryLabels*) m_labels)->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 

@@ -12,7 +12,7 @@
 #define _LINEARCLASSIFIER_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/Machine.h>
 

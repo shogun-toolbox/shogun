@@ -14,6 +14,9 @@
 
 #include <shogun/classifier/QDA.h>
 #include <shogun/features/Features.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
@@ -120,7 +123,7 @@ CLabels* CQDA::apply()
 			norm2[i + k*num_vecs] *= -0.5;
 		}
 
-	CLabels* out = new CLabels(num_vecs);
+	CRealLabels* out = new CRealLabels(num_vecs);
 
 	for ( i = 0 ; i < num_vecs ; ++i )
 		out->set_label(i, CMath::arg_max(norm2.vector+i, num_vecs, m_num_classes));
@@ -157,13 +160,13 @@ bool CQDA::train_machine(CFeatures* data)
 	}
 	if ( !m_features )
 		SG_ERROR("No features allocated in QDA training\n");
-	SGVector< int32_t > train_labels = m_labels->get_int_labels();
+	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 	if ( !train_labels.vector )
 		SG_ERROR("No train_labels allocated in QDA training\n");
 
 	cleanup();
 
-	m_num_classes = m_labels->get_num_classes();
+	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 	if ( num_vec != train_labels.vlen )

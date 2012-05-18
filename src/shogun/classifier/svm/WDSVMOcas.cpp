@@ -9,7 +9,7 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/Time.h>
@@ -19,7 +19,9 @@
 #include <shogun/classifier/svm/WDSVMOcas.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/Alphabet.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RealLabels.h>
 
 using namespace shogun;
 
@@ -106,7 +108,7 @@ CLabels* CWDSVMOcas::apply()
 		int32_t num=features->get_num_vectors();
 		ASSERT(num>0);
 
-		CLabels* output=new CLabels(num);
+		CRealLabels* output=new CRealLabels(num);
 		SG_REF(output);
 
 		for (int32_t i=0; i<num; i++)
@@ -156,6 +158,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 
 	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 	if (data)
 	{
 		if (data->get_feature_class() != C_STRING ||
@@ -167,13 +170,12 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	}
 
 	ASSERT(get_features());
-	ASSERT(m_labels->is_two_class_labeling());
 	CAlphabet* alphabet=get_features()->get_alphabet();
 	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA);
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
-	SGVector<float64_t> labvec=m_labels->get_labels();
+	SGVector<float64_t> labvec=((CBinaryLabels*) m_labels)->get_labels();
 	lab=labvec.vector;
 
 	w_dim_single_char=set_wd_weights();

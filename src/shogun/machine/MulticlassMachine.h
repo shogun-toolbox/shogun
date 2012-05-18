@@ -15,6 +15,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
+#include <shogun/labels/RealLabels.h>
 
 namespace shogun
 {
@@ -97,13 +98,13 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* apply();
+		virtual CRealLabels* apply();
 
 		/** classify all examples
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* apply(CFeatures* features);
+		virtual CRealLabels* apply(CFeatures* features);
 
 		/** classify one example
 		 *

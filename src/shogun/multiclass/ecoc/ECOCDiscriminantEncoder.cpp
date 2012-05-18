@@ -11,6 +11,8 @@
 #include <algorithm>
 
 #include <shogun/mathematics/Math.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
 
 using namespace std;
@@ -113,9 +115,9 @@ void CECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>&
     
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
-        if (find(part1.begin(), part1.end(), m_labels->get_int_label(i)) != part1.end())
+        if (find(part1.begin(), part1.end(), ((CMulticlassLabels*) m_labels)->get_int_label(i)) != part1.end())
             idata1.insert(i);
-        else if (find(part2.begin(), part2.end(), m_labels->get_int_label(i)) != part2.end())
+        else if (find(part2.begin(), part2.end(), ((CMulticlassLabels*) m_labels)->get_int_label(i)) != part2.end())
             idata2.insert(i);
     }
 
@@ -141,7 +143,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
     // move clas from part1 to part2
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
-        if (m_labels->get_int_label(i) == clas)
+        if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
         {
             idata1.erase(i);
             idata2.insert(i);
@@ -160,7 +162,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
         // revert changes
         for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
         {
-            if (m_labels->get_int_label(i) == clas)
+            if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
             {
                 idata2.erase(i);
                 idata1.insert(i);

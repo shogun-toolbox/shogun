@@ -9,6 +9,7 @@
  */
 
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -72,7 +73,9 @@ inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_directio
 
 void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(ground_truth->is_two_class_labeling());
+	ASSERT(ground_truth->get_label_type() == LT_BINARY);
+	ASSERT(predicted->get_label_type() == LT_BINARY);
+
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
 	m_TP = 0.0;
 	m_FP = 0.0;
@@ -82,16 +85,16 @@ void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* gr
 
 	for (int i=0; i<predicted->get_num_labels(); i++)
 	{
-		if (ground_truth->get_label(i)==1)
+		if (((CBinaryLabels*) ground_truth)->get_label(i)==1)
 		{
-			if (CMath::sign(predicted->get_label(i))==1)
+			if (CMath::sign(((CBinaryLabels*) predicted)->get_label(i))==1)
 				m_TP += 1.0;
 			else
 				m_FN += 1.0;
 		}
 		else
 		{
-			if (CMath::sign(predicted->get_label(i))==1)
+			if (CMath::sign(((CBinaryLabels*) predicted)->get_label(i))==1)
 				m_FP += 1.0;
 			else
 				m_TN += 1.0;

@@ -8,18 +8,22 @@
  */
 
 #include <shogun/evaluation/MeanAbsoluteError.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 float64_t CMeanAbsoluteError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
+	ASSERT(predicted && predicted->get_label_type() == LT_REAL);
+	ASSERT(ground_truth && ground_truth->get_label_type() == LT_REAL);
+
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
 	int32_t length = predicted->get_num_labels();
 	float64_t mae = 0.0;
 	for (int32_t i=0; i<length; i++)
-		mae += CMath::abs(predicted->get_label(i) - ground_truth->get_label(i));
+		mae += CMath::abs(((CRealLabels*) predicted)->get_label(i) - ((CRealLabels*) ground_truth)->get_label(i));
 	mae /= length;
 	return mae;
 }

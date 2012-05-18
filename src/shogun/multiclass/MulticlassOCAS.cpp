@@ -12,6 +12,7 @@
 #include <shogun/multiclass/MulticlassOCAS.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -77,7 +78,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	int32_t num_features = m_features->get_dim_feature_space();
 
 	float64_t C = m_C;
-	SGVector<float64_t> labels = m_labels->get_labels();
+	SGVector<float64_t> labels = ((CMulticlassLabels*) m_labels)->get_labels();
 	uint32_t nY = num_classes;
 	uint32_t nData = num_vectors;
 	float64_t TolRel = m_epsilon;

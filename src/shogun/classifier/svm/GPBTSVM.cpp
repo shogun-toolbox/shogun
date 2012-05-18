@@ -12,6 +12,7 @@
 #include <shogun/lib/external/gpdt.h>
 #include <shogun/lib/external/gpdtsolve.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -37,7 +38,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 
 	ASSERT(kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->is_two_class_labeling());
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
@@ -45,7 +46,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	SGVector<int32_t> lab=m_labels->get_int_labels();
+	SGVector<int32_t> lab=((CBinaryLabels*) m_labels)->get_int_labels();
 	prob.KER=new sKernel(kernel, lab.vlen);
 	prob.y=lab.vector;
 	prob.ell=lab.vlen;
@@ -120,7 +121,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		if (solution[i] > prob.DELTAsv)
 		{
 			set_support_vector(k, i);
-			set_alpha(k++, solution[i]*m_labels->get_label(i));
+			set_alpha(k++, solution[i]*((CBinaryLabels*) m_labels)->get_label(i));
 		}
 	}
 

@@ -15,6 +15,9 @@
 #include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RealLabels.h>
 #include <iostream>
 #include <vector>
 
@@ -99,12 +102,15 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 
 	CDotFeatures* tmp_data;
 
+	if (m_labels->get_label_type() != LT_BINARY)
+		SG_ERROR("DomainAdaptationSVMLinear requires binary labels\n");
+
 	if (train_data)
 	{
 		if (!train_data->has_property(FP_DOT))
 			SG_ERROR("DotFeatures expected\n");
 
-		if (m_labels->get_num_labels() != train_data->get_num_vectors())
+		if (((CBinaryLabels*) m_labels)->get_num_labels() != train_data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n");
 
 		tmp_data = (CDotFeatures*) train_data;
@@ -114,7 +120,8 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 		tmp_data = features;
 	}
 
-	int32_t num_training_points = get_labels()->get_num_labels();
+	CBinaryLabels* labels = (CBinaryLabels*) get_labels();
+	int32_t num_training_points = labels->get_num_labels();
 
 	std::vector<float64_t> lin_term = std::vector<float64_t>(num_training_points);
 
@@ -123,14 +130,14 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
     	ASSERT(presvm->get_bias() == 0.0);
 
         // bias of parent SVM was set to zero in constructor, already contains B
-        CLabels* parent_svm_out = presvm->apply(tmp_data);
+        CRealLabels* parent_svm_out = (CRealLabels*) presvm->apply(tmp_data);
 
         SG_DEBUG("pre-computing linear term from presvm\n");
 
         // pre-compute linear term
         for (int32_t i=0; i!=num_training_points; i++)
         {
-            lin_term[i] = train_factor * B * get_label(i) * parent_svm_out->get_label(i) - 1.0;
+            lin_term[i] = train_factor * B * labels->get_label(i) * parent_svm_out->get_label(i) - 1.0;
         }
 
     	// set linear term for QP
@@ -138,6 +145,8 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 				SGVector<float64_t>(&lin_term[0], lin_term.size()));
 
     }
+
+	SG_UNREF(labels);
 
 	/*
 	// warm-start liblinear
@@ -207,12 +216,12 @@ CLabels* CDomainAdaptationSVMLinear::apply(CFeatures* data)
 
     int32_t num_examples = data->get_num_vectors();
 
-    CLabels* out_current = CLibLinear::apply(data);
+    CRealLabels* out_current = (CRealLabels*) CLibLinear::apply(data);
 
     if (presvm)
     {
         // recursive call if used on DomainAdaptationSVM object
-        CLabels* out_presvm = presvm->apply(data);
+        CRealLabels* out_presvm = (CRealLabels*) presvm->apply(data);
 
 
         // combine outputs

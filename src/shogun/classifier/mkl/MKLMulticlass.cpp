@@ -11,6 +11,7 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -239,13 +240,13 @@ void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 float64_t CMKLMulticlass::getsumofsignfreealphas()
 {
 	std::vector<int> trainlabels2(m_labels->get_num_labels());
-	SGVector<int32_t> lab=m_labels->get_int_labels();
+	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
 
 	ASSERT (trainlabels2.size()>0);
 	float64_t sum=0;
 
-	for (int32_t nc=0; nc< m_labels->get_num_classes();++nc)
+	for (int32_t nc=0; nc< ((CMulticlassLabels*) m_labels)->get_num_classes();++nc)
 	{
 		CSVM * sm=svm->get_svm(nc);
 
@@ -261,7 +262,7 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
 
 	for (size_t lb=0; lb< trainlabels2.size();++lb)
 	{
-		for (int32_t nc=0; nc< m_labels->get_num_classes();++nc)
+		for (int32_t nc=0; nc< ((CMulticlassLabels*) m_labels)->get_num_classes();++nc)
 		{
 			CSVM * sm=svm->get_svm(nc);
 
@@ -289,7 +290,7 @@ float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 
 	float64_t tmp=0;
 
-	for (int32_t classindex=0; classindex< m_labels->get_num_classes();
+	for (int32_t classindex=0; classindex< ((CMulticlassLabels*) m_labels)->get_num_classes();
 			++classindex)
 	{
 		CSVM * sm=svm->get_svm(classindex);
@@ -320,9 +321,10 @@ float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 
 bool CMKLMulticlass::train_machine(CFeatures* data)
 {
-	int numcl=m_labels->get_num_classes();
 	ASSERT(m_kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+	int numcl=((CMulticlassLabels*) m_labels)->get_num_classes();
 
 	if (data)
 	{

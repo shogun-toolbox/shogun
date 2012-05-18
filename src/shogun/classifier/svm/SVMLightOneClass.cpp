@@ -15,6 +15,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/classifier/svm/SVMLightOneClass.h>
 #include <shogun/machine/KernelMachine.h>
@@ -91,8 +92,8 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 	SG_INFO("num_vec=%d\n", num_vec);
 
 	SG_UNREF(m_labels);
-	m_labels=new CLabels(num_vec);
-	m_labels->set_to_one();
+	m_labels=new CBinaryLabels(num_vec);
+	((CBinaryLabels*) m_labels)->set_to_one();
 
 	// in case of LINADD enabled kernels cleanup!
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())

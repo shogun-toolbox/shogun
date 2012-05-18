@@ -53,8 +53,7 @@ CFeatures::~CFeatures()
 	SG_UNREF(m_subset_stack);
 }
 
-void
-CFeatures::init()
+void CFeatures::init()
 {
 	SG_ADD(&properties, "properties", "Feature properties", MS_NOT_AVAILABLE);
 	SG_ADD(&cache_size, "cache_size", "Size of cache in MB", MS_NOT_AVAILABLE);

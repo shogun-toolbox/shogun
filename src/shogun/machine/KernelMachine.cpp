@@ -11,6 +11,7 @@
 
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 
@@ -20,7 +21,7 @@ using namespace shogun;
 struct S_THREAD_PARAM
 {
 	CKernelMachine* kernel_machine;
-	CLabels* result;
+	CRealLabels* result;
 	int32_t start;
 	int32_t end;
 
@@ -237,7 +238,7 @@ bool CKernelMachine::init_kernel_optimization()
 
 CLabels* CKernelMachine::apply()
 {
-	CLabels* lab=NULL;
+	CRealLabels* lab=NULL;
 
 	if (!kernel)
 		SG_ERROR( "Kernelmachine can not proceed without kernel!\n");
@@ -246,7 +247,7 @@ CLabels* CKernelMachine::apply()
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
-		lab=new CLabels(num_vectors);
+		lab=new CRealLabels(num_vectors);
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		CSignal::clear_cancel();
@@ -410,7 +411,7 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 void* CKernelMachine::apply_helper(void* p)
 {
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
-	CLabels* result=params->result;
+	CRealLabels* result=params->result;
 	CKernelMachine* kernel_machine=params->kernel_machine;
 
 #ifdef WIN32
@@ -505,7 +506,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 	ASSERT(m_custom_kernel==kernel);
 
 	int32_t num_inds=indices.vlen;
-	CLabels* lab=new CLabels(num_inds);
+	CRealLabels* lab=new CRealLabels(num_inds);
 
 	CSignal::clear_cancel();
 

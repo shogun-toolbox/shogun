@@ -9,7 +9,7 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
@@ -17,7 +17,8 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -57,6 +58,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
 
 	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -64,9 +66,8 @@ bool CSVMOcas::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	ASSERT(m_labels->is_two_class_labeling());
 
-	lab=m_labels->get_labels();
+	lab=((CBinaryLabels*) m_labels)->get_labels();
 	w=SGVector<float64_t>(features->get_dim_feature_space());
 	w.zero();
 	int32_t num_vec=features->get_num_vectors();

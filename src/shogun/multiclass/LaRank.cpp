@@ -56,6 +56,7 @@
 #include <shogun/multiclass/LaRank.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -608,6 +609,7 @@ bool CLaRank::train_machine(CFeatures* data)
 
 	ASSERT(m_kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
 
 	CSignal::clear_cancel();
 
@@ -636,7 +638,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		int32_t ind = step;
 		for (int32_t i = 0; i < nb_train; i++)
 		{
-			int32_t y=m_labels->get_label(i);
+			int32_t y=((CMulticlassLabels*) m_labels)->get_label(i);
 			if (add (i, y) != y)   // call the add function
 				tr_err++;
 

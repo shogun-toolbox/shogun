@@ -11,7 +11,7 @@
 #define MEANABSOLUTEERROR_H_
 
 #include <shogun/evaluation/Evaluation.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 namespace shogun
 {

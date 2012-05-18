@@ -14,7 +14,8 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/classifier/LDA.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
@@ -47,7 +48,7 @@ bool CLDA::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	SGVector<int32_t> train_labels=m_labels->get_int_labels();
+	SGVector<int32_t> train_labels=((CBinaryLabels*) m_labels)->get_int_labels();
 	ASSERT(train_labels.vector);
 
 	int32_t num_feat=features->get_dim_feature_space();

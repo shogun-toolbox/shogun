@@ -40,6 +40,7 @@
 #include <unistd.h>
 
 #include <shogun/base/Parallel.h>
+#include <shogun/labels/BinaryLabels.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -215,7 +216,7 @@ bool CSVMLight::train_machine(CFeatures* data)
         SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
 
 	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->is_two_class_labeling());
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 	ASSERT(kernel->get_num_vec_lhs()==m_labels->get_num_labels());
 
 	// in case of LINADD enabled kernels cleanup!
@@ -296,7 +297,7 @@ void CSVMLight::svm_learn()
 	int32_t iterations;
 	int32_t trainpos=0, trainneg=0 ;
 	ASSERT(m_labels);
-	SGVector<int32_t> lab=m_labels->get_int_labels();
+	SGVector<int32_t> lab=((CBinaryLabels*) m_labels)->get_int_labels();
 	int32_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen);
 	int32_t* label=CMath::clone_vector(lab.vector, lab.vlen);

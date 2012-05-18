@@ -10,7 +10,7 @@
 
 #include <shogun/clustering/Hierarchical.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>

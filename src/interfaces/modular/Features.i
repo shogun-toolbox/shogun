@@ -33,6 +33,10 @@
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
 %rename(Labels) CLabels;
+%rename(DenseLabels) CDenseLabels;
+%rename(BinaryLabels) CBinaryLabels;
+%rename(MulticlassLabels) CMulticlassLabels;
+%rename(RegressionLabels) CRegressionLabels;
 %rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
@@ -356,7 +360,11 @@ namespace shogun
 %include <shogun/features/CombinedFeatures.h>
 %include <shogun/features/CombinedDotFeatures.h>
 
-%include <shogun/features/Labels.h>
+%include <shogun/labels/Labels.h>
+%include <shogun/labels/DenseLabels.h>
+%include <shogun/labels/BinaryLabels.h>
+%include <shogun/labels/MulticlassLabels.h>
+%include <shogun/labels/RealLabels.h>
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>
 %include <shogun/features/TOPFeatures.h>

@@ -12,7 +12,8 @@
 #ifdef HAVE_LAPACK
 #include <shogun/machine/Machine.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
@@ -69,7 +70,10 @@ bool CConjugateIndex::train(CFeatures* train_features)
 	if (train_features)
 		set_features(train_features);
 
-	m_num_classes = m_labels->get_num_classes();
+	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type()==LT_MULTICLASS);
+
+	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	ASSERT(m_num_classes>=2);
 	clean_classes();
 
@@ -90,7 +94,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 		int32_t count = 0;
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			if (m_labels->get_int_label(i) == label)
+			if (((CMulticlassLabels*) m_labels)->get_int_label(i) == label)
 				count++;
 		}
 
@@ -101,7 +105,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 		count = 0;
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			if (m_labels->get_label(i) == label)
+			if (((CMulticlassLabels*) m_labels)->get_label(i) == label)
 			{
 				memcpy(class_feature_matrix.matrix+count*num_features,
 				       feature_matrix+i*num_features,
@@ -154,7 +158,7 @@ CLabels* CConjugateIndex::apply()
 
 	int32_t num_vectors = m_features->get_num_vectors();
 
-	CLabels* predicted_labels = new CLabels(num_vectors);
+	CMulticlassLabels* predicted_labels = new CMulticlassLabels(num_vectors);
 
 	for (int32_t i=0; i<num_vectors;i++)
 	{

@@ -2,6 +2,7 @@
 #include <shogun/preprocessor/SparsePreprocessor.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/io/SGIO.h>
 
 #include <string.h>
@@ -741,12 +742,12 @@ template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
 	return CMath::abs(result);
 }
 
-template<class ST> CLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname,
+template<class ST> CRealLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname,
 		bool do_sort_features)
 {
 	remove_all_subsets();
 
-	CLabels* lab=NULL;
+	CRealLabels* lab=NULL;
 
 	size_t blocksize=1024*1024;
 	size_t required_blocksize=blocksize;
@@ -788,7 +789,7 @@ template<class ST> CLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname,
 		blocksize=required_blocksize;
 		dummy = SG_MALLOC(uint8_t, blocksize+1); //allow setting of '\0' at EOL
 
-		lab=new CLabels(num_vectors);
+		lab=new CRealLabels(num_vectors);
 		sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
 
 		rewind(f);
@@ -952,7 +953,7 @@ template<class ST> void CSparseFeatures<ST>::sort_features()
 }
 
 template<class ST> bool CSparseFeatures<ST>::write_svmlight_file(char* fname,
-		CLabels* label)
+		CRealLabels* label)
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("write_svmlight_file() not allowed with subset\n");

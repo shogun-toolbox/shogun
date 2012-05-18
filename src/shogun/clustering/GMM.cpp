@@ -17,7 +17,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/KNN.h>
 
 using namespace shogun;
@@ -724,9 +724,9 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 	for (int32_t i=0; i<init_means.num_cols; i++)
 		label_num.vector[i]=i;
 
-	CKNN* knn=new CKNN(1, new CEuclidianDistance(), new CLabels(label_num));
+	CKNN* knn=new CKNN(1, new CEuclidianDistance(), new CMulticlassLabels(label_num));
 	knn->train(new CDenseFeatures<float64_t>(init_means));
-	CLabels* init_labels=knn->apply(features);
+	CMulticlassLabels* init_labels=(CMulticlassLabels*) knn->apply(features);
 
 	SGMatrix<float64_t> alpha(num_vectors, m_components.vlen);
 	memset(alpha.matrix, 0, num_vectors*m_components.vlen*sizeof(float64_t));

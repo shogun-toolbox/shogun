@@ -13,6 +13,7 @@
 #include <shogun/regression/LinearRidgeRegression.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/labels/RealLabels.h>
 
 using namespace shogun;
 
@@ -82,7 +83,7 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 		cblas_dger(CblasColMajor, num_feat,num_feat, 1.0, v.vector,1,
 				v.vector,1, kernel_matrix.matrix, num_feat);
 
-		cblas_daxpy(num_feat, m_labels->get_label(i), v.vector, 1, y.vector, 1);
+		cblas_daxpy(num_feat, ((CRealLabels*) m_labels)->get_label(i), v.vector, 1, y.vector, 1);
 
 		feats->free_feature_vector(v, i);
 	}

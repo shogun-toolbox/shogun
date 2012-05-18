@@ -13,6 +13,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/AUCKernel.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -46,11 +47,11 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 {
 	SG_INFO( "setting up AUC maximization\n") ;
 	ASSERT(labels);
-	ASSERT(labels->is_two_class_labeling());
+	ASSERT(labels->get_label_type() == LT_BINARY);
 
 	// get the original labels
 	ASSERT(labels);
-	SGVector<int32_t> int_labels=labels->get_int_labels();
+	SGVector<int32_t> int_labels=((CBinaryLabels*) labels)->get_int_labels();
 	ASSERT(subkernel->get_num_vec_rhs()==int_labels.vlen);
 
 	// count positive and negative
@@ -103,7 +104,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	}
 
 	// create label object and attach it to svm
-	CLabels* lab_auc = new CLabels(num_auc);
+	CBinaryLabels* lab_auc = new CBinaryLabels(num_auc);
 	lab_auc->set_int_labels(SGVector<int32_t>(labels_auc, num_auc, false));
 	SG_REF(lab_auc);
 

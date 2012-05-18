@@ -9,18 +9,22 @@
  */
 
 #include <shogun/evaluation/MeanSquaredError.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
+	ASSERT(predicted && ground_truth);
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
+	ASSERT(predicted->get_label_type() == LT_REAL);
+	ASSERT(ground_truth->get_label_type() == LT_REAL);
 	int32_t length = predicted->get_num_labels();
 	float64_t mse = 0.0;
 	for (int32_t i=0; i<length; i++)
-		mse += CMath::sq(predicted->get_label(i) - ground_truth->get_label(i));
+		mse += CMath::sq(((CRealLabels*) predicted)->get_label(i) - ((CRealLabels*) ground_truth)->get_label(i));
 	mse /= length;
 	return mse;
 }

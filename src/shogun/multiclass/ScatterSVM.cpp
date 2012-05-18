@@ -48,6 +48,8 @@ CScatterSVM::~CScatterSVM()
 bool CScatterSVM::train_machine(CFeatures* data)
 {
 	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+
 	m_num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_vectors = m_labels->get_num_labels();
 
@@ -62,7 +64,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 	CMath::fill_vector(numc, m_num_classes, 0);
 
 	for (int32_t i=0; i<num_vectors; i++)
-		numc[(int32_t) m_labels->get_int_label(i)]++;
+		numc[(int32_t) ((CMulticlassLabels*) m_labels)->get_int_label(i)]++;
 
 	int32_t Nc=0;
 	int32_t Nmin=num_vectors;
@@ -255,7 +257,7 @@ bool CScatterSVM::train_testrule12()
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=m_labels->get_label(i);
+		problem.y[i]=((CMulticlassLabels*) m_labels)->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;
@@ -374,7 +376,7 @@ void CScatterSVM::compute_norm_wc()
 
 CLabels* CScatterSVM::classify_one_vs_rest()
 {
-	CLabels* output=NULL;
+	CMulticlassLabels* output=NULL;
 	if (!m_kernel)
 	{
 		SG_ERROR( "SVM can not proceed without kernel!\n");
@@ -386,7 +388,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 	int32_t num_vectors=m_kernel->get_num_vec_rhs();
 
-	output=new CLabels(num_vectors);
+	output=new CMulticlassLabels(num_vectors);
 	SG_REF(output);
 
 	if (scatter_type == TEST_RULE1)
@@ -406,7 +408,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 			for (int32_t j=0; j<svm_proto()->get_num_support_vectors(); j++)
 			{
 				float64_t score=m_kernel->kernel(svm_proto()->get_support_vector(j), i)*svm_proto()->get_alpha(j);
-				int32_t label=m_labels->get_int_label(svm_proto()->get_support_vector(j));
+				int32_t label=((CMulticlassLabels*) m_labels)->get_int_label(svm_proto()->get_support_vector(j));
 				for (int32_t c=0; c<m_num_classes; c++)
 				{
 					float64_t s= (label==c) ? (m_num_classes-1) : (-1);
@@ -457,11 +459,11 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			int32_t winner=0;
-			float64_t max_out=outputs[0]->get_label(i)/norm_wc[0];
+			float64_t max_out=((CRealLabels*) outputs[0])->get_label(i)/norm_wc[0];
 
 			for (int32_t j=1; j<m_machines->get_num_elements(); j++)
 			{
-				float64_t out=outputs[j]->get_label(i)/norm_wc[j];
+				float64_t out=((CRealLabels*) outputs[j])->get_label(i)/norm_wc[j];
 
 				if (out>max_out)
 				{

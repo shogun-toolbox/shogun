@@ -10,60 +10,60 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _LABELS__H__
-#define _LABELS__H__
+#ifndef _DENSE_LABELS__H__
+#define _DENSE_LABELS__H__
 
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
-#include <shogun/base/SGObject.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/features/SubsetStack.h>
 
 namespace shogun
 {
 	class CFile;
 
-/** @brief The class Labels models labels, i.e. class assignments of objects.
+/** @brief Dense integer or floating point labels
  *
- * Labels here are always real-valued and thus applicable to classification
+ * DenseLabels here are always real-valued and thus applicable to classification
  * (cf.  CClassifier) and regression (cf. CRegression) problems.
  *
- * (Partly) subset access is supported.
- * Simple use the set_subset(), remove_subset() functions.
- * If done, all calls that work with features are translated to the subset.
- * See comments to find out whether it is supported for that method
+ * This class implements the shared functions for storing, and accessing label
+ * (vectors).
  */
-class CLabels : public CSGObject
+class CDenseLabels : public CLabels
 {
 	public:
 		/** default constructor */
-		CLabels();
+		CDenseLabels();
 
 		/** constructor
 		 *
 		 * @param num_labels number of labels
 		 */
-		CLabels(int32_t num_labels);
+		CDenseLabels(int32_t num_labels);
 
 		/** constructor
 		 *
 		 * @param src labels to set
 		 */
-		CLabels(const SGVector<float64_t> src);
-
-		/* constructor
-		 *
-		 * @param labels labels
-		 */
-		//CLabels(SGVector<int64_t> labels);
+		CDenseLabels(const SGVector<float64_t> src);
 
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CLabels(CFile* loader);
+		CDenseLabels(CFile* loader);
 
 		/** destructor */
-		virtual ~CLabels();
+		virtual ~CDenseLabels();
+
+		/** check if labeling is valid 
+		 *
+		 * possible with subset
+		 *
+		 * @return if labeling is valid (e.g. binary labeling)
+		 */
+		virtual bool is_valid()=0;
 
 		/** load labels from file
 		 *
@@ -119,22 +119,6 @@ class CLabels : public CSGObject
 		 */
 		int32_t get_int_label(int32_t idx);
 
-		/** is two-class labeling
-		 *
-		 * possible with subset
-		 *
-		 * @return if this is two-class labeling
-		 */
-		bool is_two_class_labeling();
-
-		/** return number of classes (for multiclass)
-		 *
-		 * possible with subset
-		 *
-		 * @return number of classes
-		 */
-		int32_t get_num_classes();
-
 		/** get labels
 		 *
 		 * not possible with subset
@@ -143,21 +127,13 @@ class CLabels : public CSGObject
 		 */
 		SGVector<float64_t> get_labels();
 
-		/** get copy of labels. Caller has to clean up
+		/** get copy of labels.
 		 *
 		 * possible with subset
 		 *
 		 * @return labels
 		 */
 		SGVector<float64_t> get_labels_copy();
-
-		/** get unqiue labels (new SGVector, caller has to clean up)
-		 *
-		 * possible with subset
-		 *
-		 * @return unique labels
-		 */
-		SGVector<float64_t> get_unique_labels();
 
 		/** set labels
 		 *
@@ -174,8 +150,23 @@ class CLabels : public CSGObject
 		 * */
 		void set_to_one();
 
+		/**
+		 * set all labels to zero
+		 *
+		 * possible with subset
+		 * */
+		void zero();
+
+		/**
+		 * set all labels to a const value
+		 *
+		 * possible with subset
+		 *
+		 * @param c const to set labels to
+		 * */
+		void set_to_const(float64_t c);
+
 		/** get INT label vector
-		 * caller has to clean up
 		 *
 		 * possible with subset
 		 *
@@ -184,7 +175,6 @@ class CLabels : public CSGObject
 		SGVector<int32_t> get_int_labels();
 
 		/** set INT labels
-		 * caller has to clean up
 		 *
 		 * not possible on subset
 		 *
@@ -196,35 +186,12 @@ class CLabels : public CSGObject
 		 *
 		 * @return number of labels
 		 */
-		int32_t get_num_labels();
+		virtual int32_t get_num_labels();
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Labels"; }
 
-		/** adds a subset of indices on top of the current subsets (possibly
-		 * subset o subset. Calls subset_changed_post() afterwards
-		 *
-		 * @param subset subset of indices to add
-		 * */
-		virtual void add_subset(SGVector<index_t> subset);
-
-		/** removes that last added subset from subset stack, if existing
-		 * Calls subset_changed_post() afterwards */
-		virtual void remove_subset();
-
-		/** removes all subsets
-		 * Calls subset_changed_post() afterwards */
-		virtual void remove_all_subsets();
-
-		/** returns labels containing +1 at positions with ith class
-		 *  and -1 at other positions
-		 *  @param i index of class
-		 *  @return new binary labels
-		 */
-		CLabels* get_binary_for_class(int32_t i);
-
 	public:
-
 		/** label designates classify reject */
 		static const int32_t REJECTION_LABEL = -2;
 
@@ -234,10 +201,6 @@ class CLabels : public CSGObject
 	protected:
 		/** the label vector */
 		SGVector<float64_t> labels;
-
-	private:
-		/* subset class to enable subset support for this class */
-		CSubsetStack* m_subset_stack;
 };
 }
 #endif

@@ -9,6 +9,7 @@
  */
 
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/GMNPSVM.h>
 #include <shogun/multiclass/GMNPLib.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
@@ -53,6 +54,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 {
 	ASSERT(m_kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
 
 	if (data)
 	{
@@ -73,7 +75,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)
 	{
-		vector_y[i] = m_labels->get_label(i)+1;
+		vector_y[i] = ((CMulticlassLabels*) m_labels)->get_label(i)+1;
 
 	}
 

@@ -51,7 +51,7 @@ To finally see some action one has to include the appropriate header files,
 e.g. we create some features and a gaussian kernel
 
 
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>

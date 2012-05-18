@@ -14,7 +14,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/AsciiFile.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 
 #include <string.h>
 
@@ -46,7 +47,8 @@ bool CGUILabels::load(char* filename, char* target)
 	{
 		SG_UNREF(labels);
 		CAsciiFile* file=new CAsciiFile(filename);
-		labels=new CLabels(file);
+		//FIXME
+		labels=new CBinaryLabels(file);
 
 		if (labels)
 		{

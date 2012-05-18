@@ -17,7 +17,8 @@
 #include <shogun/classifier/svm/SubGradientSVM.h>
 #include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 
 #undef DEBUG_SUBGRADIENTSVM
 
@@ -204,15 +205,15 @@ void CSubGradientSVM::update_active(int32_t num_feat, int32_t num_vec)
 	{
 		if (active[i]==1 && old_active[i]!=1)
 		{
-			features->add_to_dense_vec(C1*get_label(i), i, sum_CXy_active, num_feat);
+			features->add_to_dense_vec(C1*((CBinaryLabels*) m_labels)->get_label(i), i, sum_CXy_active, num_feat);
 			if (use_bias)
-				sum_Cy_active+=C1*get_label(i);
+				sum_Cy_active+=C1*((CBinaryLabels*) m_labels)->get_label(i);
 		}
 		else if (old_active[i]==1 && active[i]!=1)
 		{
-			features->add_to_dense_vec(-C1*get_label(i), i, sum_CXy_active, num_feat);
+			features->add_to_dense_vec(-C1*((CBinaryLabels*) m_labels)->get_label(i), i, sum_CXy_active, num_feat);
 			if (use_bias)
-				sum_Cy_active-=C1*get_label(i);
+				sum_Cy_active-=C1*((CBinaryLabels*) m_labels)->get_label(i);
 		}
 	}
 
@@ -229,7 +230,7 @@ float64_t CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		float64_t p=get_label(i)*(features->dense_dot(i, grad_w, num_feat)+grad_b);
+		float64_t p=((CBinaryLabels*) m_labels)->get_label(i)*(features->dense_dot(i, grad_w, num_feat)+grad_b);
 		grad_proj[i]=p;
 		if (p!=0)
 		{
@@ -315,14 +316,14 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 			{
 				for (int32_t j=i; j<num_bound; j++)
 				{
-					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])*
+					Z[i*num_bound+j]= 2.0*C1*C1*((CBinaryLabels*) m_labels)->get_label(idx_bound[i])*((CBinaryLabels*) m_labels)->get_label(idx_bound[j])*
 						(features->dot(idx_bound[i], features, idx_bound[j]) + bias_const);
 
 					Z[j*num_bound+i]=Z[i*num_bound+j];
 
 				}
 
-				Zv[i]=-2.0*C1*get_label(idx_bound[i])*
+				Zv[i]=-2.0*C1*((CBinaryLabels*) m_labels)->get_label(idx_bound[i])*
 					(features->dense_dot(idx_bound[i], v, num_feat)-sum_Cy_active);
 			}
 
@@ -366,15 +367,15 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 
 		for (int32_t i=0; i<num_bound; i++)
 		{
-			features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat);
+			features->add_to_dense_vec(-C1*beta[i]*((CBinaryLabels*) m_labels)->get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat);
 			if (use_bias)
-				grad_b -=  C1 * get_label(idx_bound[i])*beta[i];
+				grad_b -=  C1 * ((CBinaryLabels*) m_labels)->get_label(idx_bound[i])*beta[i];
 		}
 
 		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
 		for (int32_t i=0; i<num_bound; i++)
 		{
-			float64_t val= C1*get_label(idx_bound[i])*(features->dense_dot(idx_bound[i], grad_w, num_feat)+grad_b);
+			float64_t val= C1*((CBinaryLabels*) m_labels)->get_label(idx_bound[i])*(features->dense_dot(idx_bound[i], grad_w, num_feat)+grad_b);
 			dir_deriv += CMath::max(0.0, val);
 		}
 	}
@@ -405,7 +406,7 @@ float64_t CSubGradientSVM::compute_objective(int32_t num_feat, int32_t num_vec)
 void CSubGradientSVM::compute_projection(int32_t num_feat, int32_t num_vec)
 {
 	for (int32_t i=0; i<num_vec; i++)
-		proj[i]=get_label(i)*(features->dense_dot(i, w.vector, num_feat)+bias);
+		proj[i]=((CBinaryLabels*) m_labels)->get_label(i)*(features->dense_dot(i, w.vector, num_feat)+bias);
 }
 
 void CSubGradientSVM::update_projection(float64_t alpha, int32_t num_vec)

@@ -9,6 +9,8 @@
  */
 
 #include <shogun/multiclass/ecoc/ECOCStrategy.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -56,15 +58,15 @@ SGVector<int32_t> CECOCStrategy::train_prepare_next()
     int32_t tot=0;
     for (int32_t i=0; i < m_orig_labels->get_num_labels(); ++i)
     {
-        int32_t label = m_orig_labels->get_int_label(i);
+        int32_t label = ((CMulticlassLabels*) m_orig_labels)->get_int_label(i);
         switch (m_codebook(m_train_iter, label))
         {
         case -1:
-            m_train_labels->set_label(i, -1);
+            ((CBinaryLabels*) m_train_labels)->set_label(i, -1);
             subset[tot++]=i;
             break;
         case 1:
-            m_train_labels->set_label(i, 1);
+            ((CBinaryLabels*) m_train_labels)->set_label(i, 1);
             subset[tot++]=i;
             break;
         default:

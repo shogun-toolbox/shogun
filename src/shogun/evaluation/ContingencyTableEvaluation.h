@@ -12,7 +12,7 @@
 #define CONTINGENCYTABLEEVALUATION_H_
 
 #include <shogun/evaluation/BinaryClassEvaluation.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 
