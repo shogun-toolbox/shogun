@@ -43,16 +43,28 @@ void CStructuredOutputMachine::set_labels(CStructuredLabels* labs)
 		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
 }
 
+// TODO
 CLabels* CStructuredOutputMachine::apply()
 {
-	SG_NOTIMPLEMENTED;
+	SG_ERROR("CStructuredOutputMachine::apply not implemented yet."
+		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
 	return NULL;
 }
 
+// TODO
 CLabels* CStructuredOutputMachine::apply(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED;
+	SG_ERROR("CStructuredOutputMachine::apply not implemented yet."
+		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
 	return NULL;
+}
+
+// TODO
+float64_t CStructuredOutputMachine::apply(int32_t num)
+{
+	SG_ERROR("CStructuredOutputMachine::apply not implemented yet."
+		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
+	return 0;
 }
 
 void CStructuredOutputMachine::register_parameters()
