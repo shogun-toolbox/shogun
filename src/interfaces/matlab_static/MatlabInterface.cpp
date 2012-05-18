@@ -309,7 +309,6 @@ void CMatlabInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& 
 	for (int32_t i=0; i<num_vec; i++) 														\
 	{ 																					\
 		int32_t len=jc[i+1]-jc[i]; 															\
-		matrix[i].vec_index=i; 															\
 		matrix[i].num_feat_entries=len; 												\
  																						\
 		if (len>0) 																		\
