@@ -12,17 +12,24 @@
 
 using namespace shogun;
 
-CStructuredModel::CStructuredModel()
+CStructuredModel::CStructuredModel() : CSGObject()
 {
 }
 
 CStructuredModel::~CStructuredModel()
 {
+	SG_UNREF(m_labels);
+	SG_UNREF(m_features);
 }
 
-/* TODO */
 void CStructuredModel::init()
 {
+	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", MS_NOT_AVAILABLE);
+	//TODO add rest of members when function pointers removed
+
+	m_features = NULL;
+	m_labels   = NULL;
 }
 
 /* TODO */
