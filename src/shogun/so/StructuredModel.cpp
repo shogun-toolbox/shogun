@@ -30,6 +30,20 @@ int32_t CStructuredModel::get_dim()
 {
 }
 
+void CStructuredModel::set_labels(CStructuredLabels* labs)
+{
+	SG_UNREF(m_labels);
+	SG_REF(labs);
+	m_labels = labs;
+}
+
+void CStructuredModel::set_features(CFeatures* feats)
+{
+	SG_UNREF(m_features);
+	SG_REF(feats);
+	m_features = feats;
+}
+
 SGVector< float64_t > CStructuredModel::compute_combined_feature(int32_t feat_idx, int32_t lab_idx)
 {
 	return m_compute_combined_feature(m_features, m_labels, feat_idx, lab_idx);

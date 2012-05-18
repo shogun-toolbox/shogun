@@ -82,6 +82,14 @@ class CStructuredModel : public CSGObject
 		 */
 		virtual int32_t get_dim();
 
+		/** set labels
+		 *
+		 * @param labs labels
+		 */
+		void set_labels(CStructuredLabels* labs);
+
+		void set_features(CFeatures* feats);
+
 		/** TODO */
 		SGVector< float64_t > compute_combined_feature(int32_t feat_idx, int32_t lab_idx);
 
