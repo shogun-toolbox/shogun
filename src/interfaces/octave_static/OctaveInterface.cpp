@@ -349,7 +349,6 @@ void COctaveInterface::get_sparse_matrix(SGSparseVector<float64_t>*& matrix, int
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		int32_t len=sm.cidx(i+1)-sm.cidx(i);
-		matrix[i].vec_index=i;
 		matrix[i].num_feat_entries=len;
 
 		if (len>0)
