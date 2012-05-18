@@ -13,32 +13,14 @@
 
 using namespace shogun;
 
-float64_t CSquaredHingeLoss::loss(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return loss(z);
-}
-
 float64_t CSquaredHingeLoss::loss(float64_t z)
 {
 	return (z < 1) ? 0.5 * (1-z) * (1-z) : 0;
 }
 
-float64_t CSquaredHingeLoss::first_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return first_derivative(z);
-}
-
 float64_t CSquaredHingeLoss::first_derivative(float64_t z)
 {
 	return (z < 1) ? z-1 : 0;
-}
-
-float64_t CSquaredHingeLoss::second_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return second_derivative(z);
 }
 
 float64_t CSquaredHingeLoss::second_derivative(float64_t z)

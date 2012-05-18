@@ -35,16 +35,6 @@ public:
 	/**
 	 * Get loss for an example
 	 *
-	 * @param prediction prediction
-	 * @param label label
-	 *
-	 * @return loss
-	 */
-	float64_t loss(float64_t prediction, float64_t label);
-
-	/**
-	 * Get loss for an example
-	 *
 	 * @param z where to evaluate the loss 
 	 *
 	 * @return loss
@@ -54,31 +44,11 @@ public:
 	/**
 	 * Get first derivative of the loss function
 	 *
-	 * @param prediction prediction
-	 * @param label label
-	 *
-	 * @return first derivative
-	 */
-	virtual float64_t first_derivative(float64_t prediction, float64_t label);
-
-	/**
-	 * Get first derivative of the loss function
-	 *
 	 * @param z where to evaluate the derivative of the loss
 	 *
 	 * @return first derivative
 	 */
-	virtual float64_t first_derivative(float64_t z);
-
-	/**
-	 * Get second derivative of the loss function
-	 *
-	 * @param prediction prediction
-	 * @param label label
-	 *
-	 * @return second derivative
-	 */
-	virtual float64_t second_derivative(float64_t prediction, float64_t label);
+	float64_t first_derivative(float64_t z);
 
 	/**
 	 * Get second derivative of the loss function
@@ -87,7 +57,7 @@ public:
 	 *
 	 * @return second derivative
 	 */
-	virtual float64_t second_derivative(float64_t z);
+	float64_t second_derivative(float64_t z);
 
 	/**
 	 * Get importance aware weight update for this loss function

@@ -13,12 +13,6 @@
 
 using namespace shogun;
 
-float64_t CSmoothHingeLoss::loss(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return loss(z);
-}
-
 float64_t CSmoothHingeLoss::loss(float64_t z)
 {
 	if (z < 0)
@@ -28,12 +22,6 @@ float64_t CSmoothHingeLoss::loss(float64_t z)
 	return 0;
 }
 
-float64_t CSmoothHingeLoss::first_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return first_derivative(z);
-}
-
 float64_t CSmoothHingeLoss::first_derivative(float64_t z)
 {
 	if (z < 0)
@@ -41,12 +29,6 @@ float64_t CSmoothHingeLoss::first_derivative(float64_t z)
 	if (z < 1)
 		return z-1;
 	return 0;
-}
-
-float64_t CSmoothHingeLoss::second_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return second_derivative(z);
 }
 
 float64_t CSmoothHingeLoss::second_derivative(float64_t z)
