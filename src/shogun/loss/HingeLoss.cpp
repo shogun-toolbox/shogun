@@ -11,6 +11,7 @@
   (at your option) any later version.
 
   Modifications (w) 2011 Shashwat Lal Das
+  Modifications (w) 2012 Fernando José Iglesias García
 */
 
 #include <shogun/loss/HingeLoss.h>
@@ -24,14 +25,29 @@ float64_t CHingeLoss::loss(float64_t prediction, float64_t label)
 	return (e > 0) ? e : 0;
 }
 
+float64_t CHingeLoss::loss(float64_t z)
+{
+	return (z < 1) ? 1-z : 0;
+}
+
 float64_t CHingeLoss::first_derivative(float64_t prediction, float64_t label)
 {
 	return (label * prediction >= label * label) ? 0 : -label;
 }
 
+float64_t CHingeLoss::first_derivative(float64_t z)
+{
+	return (z < 1) ? -1 : 0;
+}
+
 float64_t CHingeLoss::second_derivative(float64_t prediction, float64_t label)
 {
 	return 0.;
+}
+
+float64_t CHingeLoss::second_derivative(float64_t z)
+{
+	return 0;
 }
 
 float64_t CHingeLoss::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)

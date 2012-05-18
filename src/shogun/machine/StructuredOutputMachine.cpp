@@ -20,7 +20,7 @@ CStructuredOutputMachine::CStructuredOutputMachine()
 
 CStructuredOutputMachine::CStructuredOutputMachine(
 		CStructuredModel*  model,
-		CStructuredLoss*   loss,
+		CLossFunction*     loss,
 		CStructuredLabels* labs)
 : CMachine(), m_model(model), m_loss(loss)
 {

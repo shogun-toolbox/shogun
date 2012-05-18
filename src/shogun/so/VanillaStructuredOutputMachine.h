@@ -39,7 +39,7 @@ class CVanillaStructuredOutputMachine : public CLinearStructuredOutputMachine
 		 * @param labs structured labels
 		 * @param features features
 		 */
-		CVanillaStructuredOutputMachine(CStructuredModel* model, CStructuredLoss* loss, CStructuredLabels* labs, CFeatures* features);
+		CVanillaStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CFeatures* features);
 
 		/** destructor */
 		~CVanillaStructuredOutputMachine();

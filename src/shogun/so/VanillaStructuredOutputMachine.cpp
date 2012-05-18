@@ -19,8 +19,8 @@ CVanillaStructuredOutputMachine::CVanillaStructuredOutputMachine()
 }
 
 CVanillaStructuredOutputMachine::CVanillaStructuredOutputMachine(
-		CStructuredModel* model,
-		CStructuredLoss*  loss,
+		CStructuredModel*  model,
+		CLossFunction*     loss,
 		CStructuredLabels* labs,
 		CFeatures*         features)
 : CLinearStructuredOutputMachine(model, loss, labs, features)

@@ -14,7 +14,7 @@
 #include <shogun/features/StructuredLabels.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/machine/Machine.h>
-#include <shogun/so/StructuredLoss.h>
+#include <shogun/loss/LossFunction.h>
 #include <shogun/so/StructuredModel.h>
 
 namespace shogun
@@ -30,10 +30,10 @@ class CStructuredOutputMachine : public CMachine
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
-		 * @param loss structured loss function
+		 * @param loss loss function
 		 * @param labs structured labels
 		 */
-		CStructuredOutputMachine(CStructuredModel* model, CStructuredLoss* loss, CStructuredLabels* labs);
+		CStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs);
 
 		/** destructor */
 		virtual ~CStructuredOutputMachine();
@@ -74,7 +74,7 @@ class CStructuredOutputMachine : public CMachine
 		CStructuredModel* m_model;
 
 		/** the general loss function */
-		CStructuredLoss* m_loss;
+		CLossFunction* m_loss;
 
 
 }; /* class CStructuredOutputMachine */
