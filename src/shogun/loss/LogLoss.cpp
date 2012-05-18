@@ -13,21 +13,9 @@
 
 using namespace shogun;
 
-float64_t CLogLoss::loss(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return loss(z);
-}
-
 float64_t CLogLoss::loss(float64_t z)
 {
 	return (z >= 0) ? log(1 + exp(-z)) : -z + log(1 + exp(z));
-}
-
-float64_t CLogLoss::first_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return first_derivative(z);
 }
 
 float64_t CLogLoss::first_derivative(float64_t z)
@@ -37,12 +25,6 @@ float64_t CLogLoss::first_derivative(float64_t z)
 
 	float64_t ez = exp(-z);
 	return -ez / (ez + 1);
-}
-
-float64_t CLogLoss::second_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return second_derivative(z);
 }
 
 float64_t CLogLoss::second_derivative(float64_t z)
@@ -79,7 +61,7 @@ float64_t CLogLoss::get_update(float64_t prediction, float64_t label, float64_t 
 
 float64_t CLogLoss::get_square_grad(float64_t prediction, float64_t label)
 {
-	float64_t d = first_derivative(prediction, label);
+	float64_t d = CLossFunction::first_derivative(prediction, label);
 	return d*d;
 }
 

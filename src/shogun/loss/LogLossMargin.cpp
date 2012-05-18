@@ -13,24 +13,12 @@
 
 using namespace shogun;
 
-float64_t CLogLossMargin::loss(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return loss(z);
-}
-
 float64_t CLogLossMargin::loss(float64_t z)
 {
 	if (z >= 1)
 		return log(1+exp(1-z));
 
 	return 1-z + log(1+exp(z-1));
-}
-
-float64_t CLogLossMargin::first_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return first_derivative(z);
 }
 
 float64_t CLogLossMargin::first_derivative(float64_t z)
@@ -40,12 +28,6 @@ float64_t CLogLossMargin::first_derivative(float64_t z)
 
 	float64_t ez = exp(1-z);
 	return -ez / (ez + 1);
-}
-
-float64_t CLogLossMargin::second_derivative(float64_t prediction, float64_t label)
-{
-	float64_t z = prediction * label;
-	return second_derivative(z);
 }
 
 float64_t CLogLossMargin::second_derivative(float64_t z)

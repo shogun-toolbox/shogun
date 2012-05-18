@@ -45,7 +45,7 @@ public:
 	 *
 	 * @return loss
 	 */
-	virtual float64_t loss(float64_t prediction, float64_t label);
+	float64_t loss(float64_t prediction, float64_t label);
 
 	/**
 	 * Get loss for an example
@@ -54,7 +54,7 @@ public:
 	 *
 	 * @return loss
 	 */
-	virtual float64_t loss(float64_t z);
+	float64_t loss(float64_t z);
 
 	/**
 	 * Get square of the gradient of the loss function
@@ -64,7 +64,7 @@ public:
 	 *
 	 * @return square of gradient
 	 */
-	virtual float64_t first_derivative(float64_t prediction, float64_t label);
+	float64_t first_derivative(float64_t prediction, float64_t label);
 
 	/**
 	 * Get first derivative of the loss function
@@ -73,7 +73,7 @@ public:
 	 *
 	 * @return first derivative
 	 */
-	virtual float64_t first_derivative(float64_t z);
+	float64_t first_derivative(float64_t z);
 
 	/**
 	 * Get second derivative of the loss function
@@ -83,7 +83,7 @@ public:
 	 *
 	 * @return second derivative
 	 */
-	virtual float64_t second_derivative(float64_t prediction, float64_t label);
+	float64_t second_derivative(float64_t prediction, float64_t label);
 
 	/**
 	 * Get second derivative of the loss function
@@ -92,7 +92,7 @@ public:
 	 *
 	 * @return second derivative
 	 */
-	virtual float64_t second_derivative(float64_t z);
+	float64_t second_derivative(float64_t z);
 
 	/**
 	 * Get importance aware weight update for this loss function
