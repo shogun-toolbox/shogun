@@ -31,7 +31,7 @@ COnlineLinearMachine::~COnlineLinearMachine()
 	SG_UNREF(features);
 }
 
-CLabels* COnlineLinearMachine::apply()
+CRealLabels* COnlineLinearMachine::apply()
 {
 	ASSERT(features);
 	ASSERT(features->has_property(FP_STREAMING_DOT));
@@ -55,10 +55,10 @@ CLabels* COnlineLinearMachine::apply()
 	for (int32_t i=0; i<num_labels; i++)
 		labels_array.vector[i]=(*labels_dynarray)[i];
 
-	return new CLabels(labels_array);
+	return new CRealLabels(labels_array);
 }
 
-CLabels* COnlineLinearMachine::apply(CFeatures* data)
+CRealLabels* COnlineLinearMachine::apply(CFeatures* data)
 {
 	if (!data)
 		SG_ERROR("No features specified\n");

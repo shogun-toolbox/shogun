@@ -12,7 +12,8 @@
  */
 
 #include <shogun/multiclass/KNN.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/JLCoverTree.h>
@@ -81,7 +82,7 @@ bool CKNN::train_machine(CFeatures* data)
 		distance->init(data, data);
 	}
 
-	SGVector<int32_t> lab=m_labels->get_int_labels();
+	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	m_train_labels.vlen=lab.vlen;
 	m_train_labels.vector=CMath::clone_vector(lab.vector, lab.vlen);
 	ASSERT(m_train_labels.vlen>0);
@@ -116,10 +117,11 @@ CLabels* CKNN::apply()
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=distance->get_num_vec_lhs());
 
-	CLabels* output=new CLabels(num_lab);
+	CRealLabels* output=new CRealLabels(num_lab);
 
 	float64_t* dists   = NULL;
 	int32_t* train_lab = NULL;
+
 	//distances to train data and working buffer of m_train_labels
 	if ( ! m_use_covertree )
 	{
@@ -283,7 +285,7 @@ CLabels* CKNN::classify_NN()
 	int32_t num_lab = distance->get_num_vec_rhs();
 	ASSERT(num_lab);
 
-	CLabels* output = new CLabels(num_lab);
+	CRealLabels* output = new CRealLabels(num_lab);
 	float64_t* distances = SG_MALLOC(float64_t, m_train_labels.vlen);
 
 	SG_INFO("%d test examples\n", num_lab);

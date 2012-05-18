@@ -16,7 +16,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 namespace shogun
 {

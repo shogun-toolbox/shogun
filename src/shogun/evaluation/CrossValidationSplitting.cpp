@@ -9,7 +9,7 @@
  */
 
 #include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 using namespace shogun;
 

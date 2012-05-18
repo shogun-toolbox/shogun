@@ -13,7 +13,8 @@
 #include <shogun/kernel/SalzbergWordStringKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/classifier/PluginEstimate.h>
 
 using namespace shogun;
@@ -352,13 +353,14 @@ float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 {
 	ASSERT(labels);
+	ASSERT(labels->get_label_type() == LT_BINARY);
 
 	int32_t num_pos=0, num_neg=0;
 	for (int32_t i=0; i<labels->get_num_labels(); i++)
 	{
-		if (labels->get_int_label(i)==1)
+		if (((CBinaryLabels*) labels)->get_int_label(i)==1)
 			num_pos++;
-		if (labels->get_int_label(i)==-1)
+		if (((CBinaryLabels*) labels)->get_int_label(i)==-1)
 			num_neg++;
 	}
 

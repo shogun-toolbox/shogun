@@ -14,6 +14,7 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/v_array.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -59,8 +60,10 @@ SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
 	if (!m_train_state)
 		SG_ERROR("Please enable save_train_state option and train machine.\n");
 
+	ASSERT(m_labels && m_labels->get_label_type() == LT_MULTICLASS);
+
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = m_labels->get_num_classes();
+	int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 
 	v_array<int32_t> nz_idxs;
 	nz_idxs.reserve(num_vectors);
@@ -92,11 +95,11 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 		set_features((CDotFeatures*)data);
 
 	ASSERT(m_features);
-	ASSERT(m_labels);
+	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS);
 	ASSERT(m_multiclass_strategy);
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = m_labels->get_num_classes();
+	int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	int32_t bias_n = m_use_bias ? 1 : 0;
 
 	problem mc_problem;
@@ -104,7 +107,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	mc_problem.n = m_features->get_dim_feature_space() + bias_n;
 	mc_problem.y = SG_MALLOC(int32_t, mc_problem.l);
 	for (int32_t i=0; i<num_vectors; i++)
-		mc_problem.y[i] = m_labels->get_int_label(i);
+		mc_problem.y[i] = ((CMulticlassLabels*) m_labels)->get_int_label(i);
 
 	mc_problem.x = m_features;
 	mc_problem.use_bias = m_use_bias;

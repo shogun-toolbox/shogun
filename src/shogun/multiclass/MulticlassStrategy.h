@@ -12,7 +12,7 @@
 #define MULTICLASSSTRATEGY_H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/multiclass/RejectionStrategy.h>
 
 namespace shogun

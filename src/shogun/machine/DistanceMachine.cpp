@@ -214,7 +214,7 @@ CLabels* CDistanceMachine::apply(CFeatures* data)
 	SG_UNREF(lhs);
 
 	/* build result labels and classify all elements of procedure */
-	CLabels* result=new CLabels(data->get_num_vectors());
+	CRealLabels* result=new CRealLabels(data->get_num_vectors());
 	for (index_t i=0; i<data->get_num_vectors(); ++i)
 		result->set_label(i, apply(i));
 

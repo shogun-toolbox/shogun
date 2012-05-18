@@ -13,6 +13,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/lib/Cache.h>
+#include <shogun/labels/BinaryLabels.h>
 
 namespace shogun
 {
@@ -60,7 +61,8 @@ class CMPDSVM : public CSVM
 		 */
 		inline float64_t compute_H(int32_t i, int32_t j)
 		{
-			return m_labels->get_label(i)*m_labels->get_label(j)*kernel->kernel(i,j);
+			return ((CBinaryLabels*) m_labels)->get_label(i)*
+				((CBinaryLabels*) m_labels)->get_label(j)*kernel->kernel(i,j);
 		}
 
 		/** lock kernel row
@@ -84,7 +86,7 @@ class CMPDSVM : public CSVM
 				ASSERT(line);
 
 				for (int32_t j=0; j<m_labels->get_num_labels(); j++)
-					line[j]=(KERNELCACHE_ELEM) m_labels->get_label(i)*m_labels->get_label(j)*kernel->kernel(i,j);
+					line[j]=(KERNELCACHE_ELEM) ((CBinaryLabels*) m_labels)->get_label(i)*((CBinaryLabels*) m_labels)->get_label(j)*kernel->kernel(i,j);
 			}
 
 			return line;

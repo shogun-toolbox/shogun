@@ -24,6 +24,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/loss/HingeLoss.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -94,6 +95,7 @@ bool CSGDQN::train(CFeatures* data)
 {
 
 	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 
 	if (data)
 	{
@@ -103,7 +105,6 @@ bool CSGDQN::train(CFeatures* data)
 	}
 
 	ASSERT(features);
-	ASSERT(m_labels->is_two_class_labeling());
 
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();
@@ -153,7 +154,7 @@ bool CSGDQN::train(CFeatures* data)
 			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
 			ASSERT(w.vlen==v.vlen);
 			float64_t eta = 1.0/t;
-			float64_t y = m_labels->get_label(i);
+			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
 			float64_t z = y * features->dense_dot(i, w.vector, w.vlen);
 			if(updateB==true)
 			{

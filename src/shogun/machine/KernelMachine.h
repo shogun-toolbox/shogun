@@ -16,7 +16,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/machine/Machine.h>
 
 #include <stdio.h>

@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include <shogun/evaluation/ClusteringEvaluation.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/munkres.h>
 
 using namespace shogun;
@@ -39,11 +40,14 @@ int32_t CClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t
 void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
-	SGVector<float64_t> label_p=predicted->get_unique_labels();
-	SGVector<float64_t> label_g=ground_truth->get_unique_labels();
+	ASSERT(predicted->get_label_type() == LT_MULTICLASS);
+	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS);
 
-	SGVector<int32_t> predicted_ilabels=predicted->get_int_labels();
-	SGVector<int32_t> groundtruth_ilabels=ground_truth->get_int_labels();
+	SGVector<float64_t> label_p=((CMulticlassLabels*) predicted)->get_unique_labels();
+	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_unique_labels();
+
+	SGVector<int32_t> predicted_ilabels=((CMulticlassLabels*) predicted)->get_int_labels();
+	SGVector<int32_t> groundtruth_ilabels=((CMulticlassLabels*) ground_truth)->get_int_labels();
 
 	int32_t n_class=max(label_p.vlen, label_g.vlen);
 	SGMatrix<float64_t> G(n_class, n_class);
@@ -76,5 +80,5 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 	}
 
 	for (int32_t i= 0; i < predicted_ilabels.vlen; ++i)
-		predicted->set_int_label(i, label_map[predicted_ilabels[i]]);
+		((CMulticlassLabels*) predicted)->set_int_label(i, label_map[predicted_ilabels[i]]);
 }

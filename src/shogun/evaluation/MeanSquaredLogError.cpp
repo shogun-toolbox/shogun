@@ -9,20 +9,25 @@
  */
 
 #include <shogun/evaluation/MeanSquaredLogError.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
+	ASSERT(predicted && ground_truth);
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
+	ASSERT(predicted->get_label_type()==LT_REAL);
+	ASSERT(ground_truth->get_label_type()==LT_REAL);
+
 	int32_t length=predicted->get_num_labels();
 	float64_t msle=0.0;
 	for (int32_t i=0; i<length; i++)
 	{
-		float64_t prediction=predicted->get_label(i);
-		float64_t truth=ground_truth->get_label(i);
+		float64_t prediction=((CRealLabels*) predicted)->get_label(i);
+		float64_t truth=((CRealLabels*) ground_truth)->get_label(i);
 
 		if (prediction<=-1.0 || truth<=-1.0)
 		{

@@ -9,6 +9,7 @@
  */
 
 #include <shogun/machine/LinearMachine.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
@@ -54,7 +55,7 @@ CLabels* CLinearMachine::apply()
 	float64_t* out=SG_MALLOC(float64_t, num);
 	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);
 
-	return new CLabels(SGVector<float64_t>(out,num));
+	return new CRealLabels(SGVector<float64_t>(out,num));
 }
 
 CLabels* CLinearMachine::apply(CFeatures* data)

@@ -18,7 +18,12 @@
 #include <shogun/features/Alphabet.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/DenseLabels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RealLabels.h>
+#include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/FKFeatures.h>
 #include <shogun/features/TOPFeatures.h>

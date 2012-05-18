@@ -14,7 +14,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -165,7 +165,7 @@ class CMachine : public CSGObject
 		 * @param i index of label to get
 		 * @return value of label at index i
 		 */
-		virtual float64_t get_label(int32_t i);
+		//virtual float64_t get_label(int32_t i);
 
 		/** set maximum training time
 		 *

@@ -20,6 +20,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/regression/LeastAngleRegression.h>
+#include <shogun/labels/RealLabels.h>
 
 using namespace shogun;
 using namespace std;
@@ -91,6 +92,8 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 {
 	if (!m_labels)
 		SG_ERROR("No labels set\n");
+	if (m_labels->get_label_type() != LT_REAL)
+		SG_ERROR("Expected RealLabels\n");
 
 	if (!data)
 		data=features;
@@ -122,7 +125,7 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	m_is_active.resize(n_fea);
 	fill(m_is_active.begin(), m_is_active.end(), false);
 
-	SGVector<float64_t> y = m_labels->get_labels();
+	SGVector<float64_t> y = ((CRealLabels*) m_labels)->get_labels();
 	SGMatrix<float64_t> Xorig = feats->get_feature_matrix();
 
 	// transpose(X) is more convenient to work with since we care

@@ -15,7 +15,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Cplex.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 using namespace shogun;
 

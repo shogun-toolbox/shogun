@@ -29,6 +29,8 @@
 #include <shogun/features/PolyFeatures.h>
 #include <shogun/preprocessor/SortWordString.h>
 
+#include <shogun/labels/BinaryLabels.h>
+
 #include <shogun/structure/Plif.h>
 #include <shogun/structure/PlifArray.h>
 #include <shogun/structure/PlifBase.h>
@@ -2480,7 +2482,8 @@ bool CSGInterface::cmd_set_labels()
 	int32_t len=0;
 	get_vector(lab, len);
 
-	CLabels* labels=new CLabels(SGVector<float64_t>(lab, len));
+	//FIXME
+	CBinaryLabels* labels=new CBinaryLabels(SGVector<float64_t>(lab, len));
 	SG_INFO("num labels: %d\n", labels->get_num_labels());
 
 	if (strmatch(target, "TRAIN"))
@@ -2520,7 +2523,8 @@ bool CSGInterface::cmd_get_labels()
 	if (!labels)
 		SG_ERROR("No labels.\n");
 
-	SGVector<float64_t> lab=labels->get_labels();
+	//FIXME
+	SGVector<float64_t> lab=((CBinaryLabels*) labels)->get_labels();
 
 	set_vector(lab.vector, lab.vlen);
 	return true;
@@ -4194,7 +4198,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 	int32_t len=0;
 	get_vector(lab, len);
 
-	CLabels* labels=new CLabels(len);
+	CRealLabels* labels=new CRealLabels(len);
 	for (int32_t i=0; i<len; i++)
 	{
 		if (!labels->set_label(i, lab[i]))
@@ -4597,7 +4601,7 @@ bool CSGInterface::cmd_classify()
 	int32_t num_vec=labels->get_num_labels();
 	float64_t* result=SG_MALLOC(float64_t, num_vec);
 	for (int32_t i=0; i<num_vec; i++)
-		result[i]=labels->get_label(i);
+		result[i]=((CRealLabels*) labels)->get_label(i);
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
@@ -5402,7 +5406,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 	float64_t* result=SG_MALLOC(float64_t, num_vec);
 	CLabels* labels=ui_pluginestimate->apply();
 	for (int32_t i=0; i<num_vec; i++)
-		result[i]=labels->get_label(i);
+		result[i]=((CRealLabels*) labels)->get_label(i);
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
@@ -5578,7 +5582,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 		return false;
 
 	int32_t num_vec=feat->get_num_vectors();
-	CLabels* labels=NULL;
+	CRealLabels* labels=NULL;
 
 	if (linear) // must be one_class as well
 	{

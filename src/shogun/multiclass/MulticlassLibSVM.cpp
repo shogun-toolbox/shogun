@@ -10,6 +10,7 @@
 
 #include <shogun/multiclass/MulticlassLibSVM.h>
 #include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -35,20 +36,11 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	problem = svm_problem();
 
 	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	problem.l=m_labels->get_num_labels();
 	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
 
-	/* ensure that there are only positive labels, otherwise, train_machine
-	 * will produce memory errors since svm index gets wrong */
-	for (index_t i=0; i<m_labels->get_num_labels(); ++i)
-	{
-		if (m_labels->get_label(i)<0)
-		{
-			SG_ERROR("Only labels >= 0 allowed for %s::train_machine!\n",
-					get_name());
-		}
-	}
 
 	if (data)
 	{
@@ -70,7 +62,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.pv[i]=-1.0;
-		problem.y[i]=m_labels->get_label(i);
+		problem.y[i]=((CMulticlassLabels*) m_labels)->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;

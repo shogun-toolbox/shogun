@@ -23,6 +23,7 @@
 #include <shogun/classifier/svm/SVMSGD.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/loss/HingeLoss.h>
 
 using namespace shogun;
@@ -70,6 +71,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
 	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 
 	if (data)
 	{
@@ -79,7 +81,6 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	}
 
 	ASSERT(features);
-	ASSERT(m_labels->is_two_class_labeling());
 
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();
@@ -121,7 +122,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			float64_t eta = 1.0 / (lambda * t);
-			float64_t y = m_labels->get_label(i);
+			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
 			float64_t z = y * (features->dense_dot(i, w.vector, w.vlen) + bias);
 
 			if (z < 1 || is_log_loss)

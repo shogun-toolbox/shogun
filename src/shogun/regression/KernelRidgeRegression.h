@@ -128,28 +128,20 @@ class CKernelRidgeRegression : public CKernelMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+	private:
+		void init();
+
 		/** train regression using Gauss-Seidel iterative method
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based regressors are used and distance/kernels are
-		 * initialized with train data)
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine_gs(CFeatures* data=NULL);
+		bool train_machine_gs();
 
 		/** train regression using pinv
 		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based regressors are used and distance/kernels are
-		 * initialized with train data)
-		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine_pinv(CFeatures* data=NULL);
-
-	private:
-		void init();
+		bool train_machine_pinv();
 
 	private:
 		/** regularization parameter tau */

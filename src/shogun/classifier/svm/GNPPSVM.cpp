@@ -11,6 +11,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/classifier/svm/GNPPSVM.h>
 #include <shogun/classifier/svm/GNPPLib.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW)) 
@@ -33,6 +34,7 @@ bool CGNPPSVM::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 
 	if (data)
 	{
@@ -47,12 +49,13 @@ bool CGNPPSVM::train_machine(CFeatures* data)
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)
 	{
-		if (get_labels()->get_label(i)==+1)
+		float64_t lab=((CBinaryLabels*) m_labels)->get_label(i);
+		if (lab==+1)
 			vector_y[i]=1;
-		else if (get_labels()->get_label(i)==-1)
+		else if (lab==-1)
 			vector_y[i]=2;
 		else
-			SG_ERROR("label unknown (%f)\n", get_labels()->get_label(i));
+			SG_ERROR("label unknown (%f)\n", lab);
 	}
 
 	float64_t C=get_C1();

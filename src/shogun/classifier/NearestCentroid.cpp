@@ -8,6 +8,7 @@
  */
 
 #include <shogun/classifier/NearestCentroid.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/FeatureTypes.h>
 
@@ -48,6 +49,7 @@ namespace shogun{
 	bool CNearestCentroid::train_machine(CFeatures* data)
 	{
 		ASSERT(m_labels);
+		ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
 		ASSERT(distance);
 		ASSERT( data->get_feature_class() == C_DENSE)
 		if (data)
@@ -61,8 +63,8 @@ namespace shogun{
 			data = distance->get_lhs();
 		}
 		int32_t num_vectors = data->get_num_vectors();
-		int32_t num_classes = m_labels->get_num_classes();
-		int32_t num_feats = ((CDenseFeatures<float64_t>*)data)->get_num_features();
+		int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
+		int32_t num_feats = ((CDenseFeatures<float64_t>*) data)->get_num_features();
 		SGMatrix<float64_t> centroids(num_feats,num_classes);
 		centroids.zero();
 
@@ -79,7 +81,7 @@ namespace shogun{
 		{
 			int32_t current_len;
 			bool current_free;
-			int32_t current_class = m_labels->get_label(idx);
+			int32_t current_class = ((CMulticlassLabels*) m_labels)->get_label(idx);
 			float64_t* target = centroids.matrix + num_feats*current_class;
 			float64_t* current = ((CDenseFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
 			CMath::add(target,1.0,target,1.0,current,current_len);

@@ -15,7 +15,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
 
 #include <unistd.h>
 
@@ -144,7 +145,7 @@ bool CGUIHMM::linear_train(char align)
 	return true;
 }
 
-CLabels* CGUIHMM::classify(CLabels* result)
+CRealLabels* CGUIHMM::classify(CRealLabels* result)
 {
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
@@ -158,7 +159,7 @@ CLabels* CGUIHMM::classify(CLabels* result)
 	neg->set_observations(obs);
 
 	if (!result)
-		result=new CLabels(num_vec);
+		result=new CRealLabels(num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, pos->model_probability(i) - neg->model_probability(i));
@@ -186,7 +187,7 @@ float64_t CGUIHMM::classify_example(int32_t idx)
 	return result;
 }
 
-CLabels* CGUIHMM::one_class_classify(CLabels* result)
+CRealLabels* CGUIHMM::one_class_classify(CRealLabels* result)
 {
 	ASSERT(working);
 
@@ -199,7 +200,7 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 	working->set_observations(obs);
 
 	if (!result)
-		result=new CLabels(num_vec);
+		result=new CRealLabels(num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, working->model_probability(i));
@@ -208,7 +209,7 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 	return result;
 }
 
-CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
+CRealLabels* CGUIHMM::linear_one_class_classify(CRealLabels* result)
 {
 	ASSERT(working);
 
@@ -221,7 +222,7 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 	working->set_observations(obs);
 
 	if (!result)
-		result=new CLabels(num_vec);
+		result=new CRealLabels(num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, working->linear_model_probability(i));

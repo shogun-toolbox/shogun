@@ -14,7 +14,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/lapack.h>
 
 //#define DEBUG_NEWTON
@@ -48,6 +49,7 @@ CNewtonSVM::~CNewtonSVM()
 bool CNewtonSVM::train_machine(CFeatures* data)
 {
 	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 
 	if (data)
 	{
@@ -58,7 +60,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 
 	ASSERT(features);
 
-	SGVector<float64_t> train_labels=m_labels->get_labels();
+	SGVector<float64_t> train_labels=((CBinaryLabels*) m_labels)->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -227,7 +229,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 		out, float64_t* tx)
 {
-	SGVector<float64_t> Y=m_labels->get_labels();
+	SGVector<float64_t> Y=((CBinaryLabels*) m_labels)->get_labels();
 	float64_t* outz=SG_MALLOC(float64_t, x_n);
 	float64_t* temp1=SG_MALLOC(float64_t, x_n);
 	float64_t* temp1forout=SG_MALLOC(float64_t, x_n);
@@ -323,7 +325,7 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 		float64_t* obj, int32_t* sv, int32_t* numsv, float64_t* grad)
 {
-	SGVector<float64_t> v=m_labels->get_labels();
+	SGVector<float64_t> v=((CBinaryLabels*) m_labels)->get_labels();
 
 	for (int32_t i=0; i<x_n; i++)
 	{

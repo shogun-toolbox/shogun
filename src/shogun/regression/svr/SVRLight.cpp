@@ -19,6 +19,7 @@
 #include <shogun/regression/svr/SVRLight.h>
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/kernel/CombinedKernel.h>
+#include <shogun/labels/RealLabels.h>
 
 #include <unistd.h>
 
@@ -177,10 +178,10 @@ void CSVRLight::svr_learn()
 	  docs[i]=i;
 	  j=2*totdoc-1-i;
 	  label[i]=+1;
-	  c[i]=m_labels->get_label(i);
+	  c[i]=((CRealLabels*) m_labels)->get_label(i);
 	  docs[j]=j;
 	  label[j]=-1;
-	  c[j]=m_labels->get_label(i);
+	  c[j]=((CRealLabels*) m_labels)->get_label(i);
   }
   totdoc*=2;
 

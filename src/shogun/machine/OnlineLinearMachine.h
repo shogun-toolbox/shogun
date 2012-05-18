@@ -12,7 +12,8 @@
 #define _ONLINELINEARCLASSIFIER_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/features/StreamingDotFeatures.h>
 #include <shogun/machine/Machine.h>
 
@@ -151,14 +152,14 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* apply();
+		virtual CRealLabels* apply();
 
 		/** apply linear machine to data
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CRealLabels* apply(CFeatures* data);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)

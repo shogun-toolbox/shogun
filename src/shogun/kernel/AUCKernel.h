@@ -15,7 +15,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 namespace shogun
 {

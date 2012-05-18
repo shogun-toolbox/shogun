@@ -9,7 +9,9 @@
  */
 
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -26,20 +28,38 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 	 * if there are of a class less labels than num_subsets, the class will not
 	 * appear in every subset, leading to subsets of only one class in the
 	 * extreme case of a two class labeling. */
-	SGVector<index_t> labels_per_class(labels->get_num_classes());
-	SGVector<float64_t> classes=labels->get_unique_labels();
+	SGVector<float64_t> classes;
 
-	for (index_t i=0; i<labels->get_num_classes(); ++i)
+	int32_t num_classes=2;
+	if (labels->get_label_type() == LT_MULTICLASS)
+	{
+		num_classes=((CMulticlassLabels*) labels)->get_num_classes();
+		classes=((CMulticlassLabels*) labels)->get_unique_labels();
+	}
+	else if (labels->get_label_type() == LT_BINARY)
+	{
+		classes=SGVector<float64_t>(2);
+		classes[0]=-1;
+		classes[1]=+1;
+	}
+	else
+	{
+		SG_ERROR("Multiclass or binary labels required for stratified crossvalidation\n");
+	}
+
+	SGVector<index_t> labels_per_class(num_classes);
+
+	for (index_t i=0; i<num_classes; ++i)
 	{
 		labels_per_class.vector[i]=0;
 		for (index_t j=0; j<labels->get_num_labels(); ++j)
 		{
-			if (classes.vector[i]==labels->get_label(j))
+			if (classes.vector[i]==((CDenseLabels*) labels)->get_label(j))
 				labels_per_class.vector[i]++;
 		}
 	}
 
-	for (index_t i=0; i<labels->get_num_classes(); ++i)
+	for (index_t i=0; i<num_classes; ++i)
 	{
 		if (labels_per_class.vector[i]<num_subsets)
 		{
@@ -56,7 +76,22 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	reset_subsets();
 	m_is_filled=true;
 
-	SGVector<float64_t> unique_labels=m_labels->get_unique_labels();
+	SGVector<float64_t> unique_labels;
+
+	if (m_labels->get_label_type() == LT_MULTICLASS)
+	{
+		unique_labels=((CMulticlassLabels*) m_labels)->get_unique_labels();
+	}
+	else if (m_labels->get_label_type() == LT_BINARY)
+	{
+		unique_labels=SGVector<float64_t>(2);
+		unique_labels[0]=-1;
+		unique_labels[1]=+1;
+	}
+	else
+	{
+		SG_ERROR("Multiclass or binary labels required for stratified crossvalidation\n");
+	}
 
 	/* for every label, build set for indices */
 	CDynamicObjectArray label_indices;
@@ -69,7 +104,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 		/* ... iterate over all labels and add indices with same label to set */
 		for (index_t j=0; j<m_labels->get_num_labels(); ++j)
 		{
-			if (m_labels->get_label(j)==unique_labels.vector[i])
+			if (((CDenseLabels*) m_labels)->get_label(j)==unique_labels.vector[i])
 			{
 				CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
 						label_indices.get_element(i);

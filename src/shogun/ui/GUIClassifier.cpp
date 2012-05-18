@@ -16,7 +16,7 @@
 
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/RealFileFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 #include <shogun/kernel/AUCKernel.h>
 

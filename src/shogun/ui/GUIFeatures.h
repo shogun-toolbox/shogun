@@ -14,7 +14,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/TOPFeatures.h>

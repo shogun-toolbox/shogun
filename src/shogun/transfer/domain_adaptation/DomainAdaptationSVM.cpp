@@ -14,6 +14,9 @@
 
 #include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RealLabels.h>
 #include <iostream>
 #include <vector>
 
@@ -88,8 +91,11 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	int32_t num_training_points = get_labels()->get_num_labels();
+	if (m_labels->get_label_type() != LT_BINARY)
+		SG_ERROR("DomainAdaptationSVM requires binary labels\n");
 
+	int32_t num_training_points = get_labels()->get_num_labels();
+	CBinaryLabels* labels = (CBinaryLabels*) get_labels();
 
 	float64_t* lin_term = SG_MALLOC(float64_t, num_training_points);
 
@@ -97,12 +103,12 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	CFeatures* train_data = get_kernel()->get_lhs();
 
 	// bias of parent SVM was set to zero in constructor, already contains B
-	CLabels* parent_svm_out = presvm->apply(train_data);
+	CRealLabels* parent_svm_out = (CRealLabels*) presvm->apply(train_data);
 
 	// pre-compute linear term
 	for (int32_t i=0; i<num_training_points; i++)
 	{
-		lin_term[i] = train_factor * B * get_label(i) * parent_svm_out->get_label(i) - 1.0;
+		lin_term[i] = train_factor * B * labels->get_label(i) * parent_svm_out->get_label(i) - 1.0;
 	}
 
 	//set linear term for QP
@@ -110,6 +116,7 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 
 	//train SVM
 	bool success = CSVMLight::train_machine();
+	SG_UNREF(labels);
 
 	ASSERT(presvm)
 
@@ -150,10 +157,10 @@ CLabels* CDomainAdaptationSVM::apply(CFeatures* data)
 
     int32_t num_examples = data->get_num_vectors();
 
-    CLabels* out_current = CSVMLight::apply(data);
+    CRealLabels* out_current = (CRealLabels*) CSVMLight::apply(data);
 
     // recursive call if used on DomainAdaptationSVM object
-    CLabels* out_presvm = presvm->apply(data);
+    CRealLabels* out_presvm = (CRealLabels*) presvm->apply(data);
 
 
     // combine outputs

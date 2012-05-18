@@ -14,7 +14,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 
 namespace shogun
 {

@@ -15,6 +15,7 @@
 #include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/labels/RealLabels.h>
 
 using namespace shogun;
 
@@ -43,19 +44,8 @@ void CKernelRidgeRegression::init()
 	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
 }
 
-bool CKernelRidgeRegression::train_machine_pinv(CFeatures* data)
+bool CKernelRidgeRegression::train_machine_pinv()
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n");
-
-	if (data)
-	{
-		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
-		kernel->init(data, data);
-	}
-	ASSERT(kernel && kernel->has_features());
-
 	// Get kernel matrix
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix<float64_t>();
 	int32_t n = kernel_matrix.num_cols;
@@ -66,7 +56,7 @@ bool CKernelRidgeRegression::train_machine_pinv(CFeatures* data)
 		kernel_matrix.matrix[i+i*n]+=m_tau;
 
 	/* re-set alphas of kernel machine */
-	m_alpha=m_labels->get_labels_copy();
+	m_alpha=((CRealLabels*) m_labels)->get_labels_copy();
 
 	/* tell kernel machine that all alphas are needed as'support vectors' */
 	m_svs=SGVector<index_t>(m_alpha.vlen);
@@ -84,19 +74,8 @@ bool CKernelRidgeRegression::train_machine_pinv(CFeatures* data)
 	return true;
 }
 
-bool CKernelRidgeRegression::train_machine_gs(CFeatures* data)
+bool CKernelRidgeRegression::train_machine_gs()
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n");
-
-	if (data)
-	{
-		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
-		kernel->init(data, data);
-	}
-	ASSERT(kernel && kernel->has_features());
-
 	int32_t n = kernel->get_num_vec_rhs();
 	int32_t m = kernel->get_num_vec_lhs();
 	ASSERT(m>0 && n>0);
@@ -105,8 +84,8 @@ bool CKernelRidgeRegression::train_machine_gs(CFeatures* data)
 	SGVector<float64_t> b;
 	float64_t alpha_old;
 
-	b=m_labels->get_labels_copy();
-	m_alpha=m_labels->get_labels_copy();
+	b=((CRealLabels*) m_labels)->get_labels_copy();
+	m_alpha=((CRealLabels*) m_labels)->get_labels_copy();
 	m_alpha.zero();
 
 	// tell kernel machine that all alphas are needed as 'support vectors'
@@ -146,16 +125,30 @@ bool CKernelRidgeRegression::train_machine_gs(CFeatures* data)
 
 bool CKernelRidgeRegression::train_machine(CFeatures *data)
 {
+	if (!m_labels)
+		SG_ERROR("No labels set\n");
+
+	if (m_labels->get_label_type() != LT_REAL)
+		SG_ERROR("Real labels needed for kernel ridge regression.\n");
+
+	if (data)
+	{
+		if (m_labels->get_num_labels() != data->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		kernel->init(data, data);
+	}
+	ASSERT(kernel && kernel->has_features());
+
 	switch (m_train_func)
 	{
 		case PINV:
-			return train_machine_pinv(data);
+			return train_machine_pinv();
 			break;
 		case GS:
-			return train_machine_gs(data);
+			return train_machine_gs();
 			break;
 		default:
-			return train_machine_pinv(data);
+			return train_machine_pinv();
 			break;
 	}
 }

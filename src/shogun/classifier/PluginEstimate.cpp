@@ -11,7 +11,9 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/distributions/LinearHMM.h>
 #include <shogun/classifier/PluginEstimate.h>
 
@@ -46,6 +48,7 @@ CPluginEstimate::~CPluginEstimate()
 bool CPluginEstimate::train_machine(CFeatures* data)
 {
 	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 	if (data)
 	{
 		if (data->get_feature_class() != C_STRING ||
@@ -77,7 +80,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 
 	for (int32_t i=0; i<m_labels->get_num_labels(); i++)
 	{
-		if (m_labels->get_label(i) > 0)
+		if (((CBinaryLabels*) m_labels)->get_label(i) > 0)
 			pos_indizes[pos_idx++]=i;
 		else
 			neg_indizes[neg_idx++]=i;
@@ -96,7 +99,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 CLabels* CPluginEstimate::apply()
 {
 	ASSERT(features);
-	CLabels* result=new CLabels(features->get_num_vectors());
+	CRealLabels* result=new CRealLabels(features->get_num_vectors());
 	ASSERT(result->get_num_labels()==features->get_num_vectors());
 
 	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)

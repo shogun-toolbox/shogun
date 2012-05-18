@@ -9,6 +9,7 @@
  */
 
 #include <shogun/regression/svr/LibSVR.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -44,6 +45,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(m_labels->get_label_type() == LT_REAL);
 
 	if (data)
 	{
@@ -65,7 +67,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 
 	for (int32_t i=0; i<problem.l; i++)
 	{
-		problem.y[i]=m_labels->get_label(i);
+		problem.y[i]=((CRealLabels*) m_labels)->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;

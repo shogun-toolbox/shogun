@@ -19,6 +19,7 @@
 #include <shogun/lib/external/shogun_liblinear.h>
 #include <shogun/lib/external/tron.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -78,6 +79,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 {
 	CSignal::clear_cancel();
 	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
 
 	if (data)
 	{
@@ -87,7 +89,6 @@ bool CLibLinear::train_machine(CFeatures* data)
 		set_features((CDotFeatures*) data);
 	}
 	ASSERT(features);
-	ASSERT(m_labels->is_two_class_labeling());
 
 
 	int32_t num_train_labels=m_labels->get_num_labels();
@@ -138,7 +139,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	prob.use_bias=use_bias;
 
 	for (int32_t i=0; i<prob.l; i++)
-		prob.y[i]=m_labels->get_int_label(i);
+		prob.y[i]=((CBinaryLabels*) m_labels)->get_int_label(i);
 
 	int pos = 0;
 	int neg = 0;
