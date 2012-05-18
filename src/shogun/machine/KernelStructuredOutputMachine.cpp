@@ -20,7 +20,7 @@ CKernelStructuredOutputMachine::CKernelStructuredOutputMachine()
 
 CKernelStructuredOutputMachine::CKernelStructuredOutputMachine(
 		CStructuredModel*  model,
-		CStructuredLoss*   loss,
+		CLossFunction*     loss,
 		CStructuredLabels* labs,
 		CKernel*           kernel)
 : CStructuredOutputMachine(model, loss, labs), m_kernel(NULL)

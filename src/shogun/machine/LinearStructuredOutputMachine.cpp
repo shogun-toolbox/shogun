@@ -20,7 +20,7 @@ CLinearStructuredOutputMachine::CLinearStructuredOutputMachine()
 
 CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
 		CStructuredModel*  model, 
-		CStructuredLoss*   loss, 
+		CLossFunction*     loss, 
 		CStructuredLabels* labs, 
 		CFeatures*         features)
 : CStructuredOutputMachine(model, loss, labs), m_features(NULL)

@@ -11,6 +11,7 @@
   (at your option) any later version.
 
   Modifications (w) 2011 Shashwat Lal Das
+  Modifications (w) 2012 Fernando José Iglesias García
 */
 
 #include <shogun/mathematics/Math.h>
@@ -20,17 +21,32 @@ using namespace shogun;
 
 float64_t CSquaredLoss::loss(float64_t prediction, float64_t label)
 {
-	float64_t example_loss = (prediction - label) * (prediction - label);
+	float64_t z = (prediction - label) * (prediction - label);
+	return loss(z);
+}
 
-	return example_loss;
+float64_t CSquaredLoss::loss(float64_t z)
+{
+	return z*z;
 }
 
 float64_t CSquaredLoss::first_derivative(float64_t prediction, float64_t label)
 {
-	return 2. * (prediction - label);
+	float64_t z = prediction - label;
+	return first_derivative(z);
+}
+
+float64_t CSquaredLoss::first_derivative(float64_t z)
+{
+	return 2. * z;
 }
 
 float64_t CSquaredLoss::second_derivative(float64_t prediction, float64_t label)
+{
+	return 2;
+}
+
+float64_t CSquaredLoss::second_derivative(float64_t z)
 {
 	return 2;
 }
