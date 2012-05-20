@@ -33,14 +33,6 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 	labels=SGVector<float64_t>(num_lab);
 }
 
-CDenseLabels::CDenseLabels(SGVector<float64_t> src)
-: CLabels()
-{
-	init();
-
-	set_labels(src);
-}
-
 CDenseLabels::CDenseLabels(CFile* loader)
 : CLabels()
 {
@@ -54,9 +46,7 @@ CDenseLabels::~CDenseLabels()
 
 void CDenseLabels::init()
 {
-	CDenseLabels::init();
 	SG_ADD(&labels, "labels", "The labels.", MS_NOT_AVAILABLE);
-	labels=SGVector<float64_t>();
 }
 
 void CDenseLabels::set_to_one()

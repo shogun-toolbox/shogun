@@ -12,8 +12,9 @@ CMulticlassLabels::CMulticlassLabels(int32_t num_labels) : CDenseLabels(num_labe
 {
 }
 
-CMulticlassLabels::CMulticlassLabels(const SGVector<float64_t> src) : CDenseLabels(src)
+CMulticlassLabels::CMulticlassLabels(const SGVector<float64_t> src) : CDenseLabels()
 {
+	set_labels(src);
 }
 
 CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)

@@ -11,8 +11,9 @@ CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels)
 {
 }
 
-CBinaryLabels::CBinaryLabels(const SGVector<float64_t> src) : CDenseLabels(src)
+CBinaryLabels::CBinaryLabels(const SGVector<float64_t> src) : CDenseLabels()
 {
+	set_labels(src);
 }
 
 CBinaryLabels::CBinaryLabels(CFile* loader) : CDenseLabels(loader)
