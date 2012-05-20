@@ -34,6 +34,7 @@
 %rename(ECOCIHDDecoder) CECOCIHDDecoder;
 %rename(ECOCEDDecoder) CECOCEDDecoder;
 %rename(ECOCAEDDecoder) CECOCAEDDecoder;
+%rename(ECOCLLBDecoder) CECOCLLBDecoder;
 
 %rename(MulticlassLibLinear) CMulticlassLibLinear;
 %rename(MulticlassOCAS) CMulticlassOCAS;
@@ -69,6 +70,7 @@
 %include <shogun/multiclass/ecoc/ECOCIHDDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCEDDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCAEDDecoder.h>
+%include <shogun/multiclass/ecoc/ECOCLLBDecoder.h>
 %include <shogun/multiclass/ecoc/ECOCStrategy.h>
 
 %include <shogun/multiclass/MulticlassLibLinear.h>

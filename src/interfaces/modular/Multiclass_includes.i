@@ -23,6 +23,7 @@
  #include <shogun/multiclass/ecoc/ECOCIHDDecoder.h>
  #include <shogun/multiclass/ecoc/ECOCEDDecoder.h>
  #include <shogun/multiclass/ecoc/ECOCAEDDecoder.h>
+ #include <shogun/multiclass/ecoc/ECOCLLBDecoder.h>
 
  #include <shogun/multiclass/MulticlassLibLinear.h>
  #include <shogun/multiclass/MulticlassOCAS.h>
