@@ -11,8 +11,9 @@ CRealLabels::CRealLabels(int32_t num_labels) : CDenseLabels(num_labels)
 {
 }
 
-CRealLabels::CRealLabels(const SGVector<float64_t> src) : CDenseLabels(src)
+CRealLabels::CRealLabels(const SGVector<float64_t> src) : CDenseLabels()
 {
+	set_labels(src);
 }
 
 CRealLabels::CRealLabels(CFile* loader) : CDenseLabels(loader)

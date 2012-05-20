@@ -44,12 +44,6 @@ class CDenseLabels : public CLabels
 
 		/** constructor
 		 *
-		 * @param src labels to set
-		 */
-		CDenseLabels(const SGVector<float64_t> src);
-
-		/** constructor
-		 *
 		 * @param loader File object via which to load data
 		 */
 		CDenseLabels(CFile* loader);

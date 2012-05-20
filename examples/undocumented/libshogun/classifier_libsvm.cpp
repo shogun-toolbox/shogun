@@ -8,6 +8,8 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RealLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/mathematics/Math.h>
@@ -66,7 +68,7 @@ int main()
 	gen_rand_data();
 
 	// create train labels
-	CLabels* labels=new CLabels(SGVector<float64_t>(lab, NUM));
+	CLabels* labels=new CBinaryLabels(SGVector<float64_t>(lab, NUM));
 
 	// create train features
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(feature_cache);
@@ -87,7 +89,7 @@ int main()
 	printf("num_sv:%d b:%f\n", svm->get_num_support_vectors(), svm->get_bias());
 
 	// classify + display output
-	CLabels* out_labels=svm->apply();
+	CRealLabels* out_labels=(CRealLabels*) svm->apply();
 
 	for (int32_t i=0; i<NUM; i++)
 		printf("out[%d]=%f\n", i, out_labels->get_label(i));
