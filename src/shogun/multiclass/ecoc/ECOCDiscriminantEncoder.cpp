@@ -89,9 +89,9 @@ void CECOCDiscriminantEncoder::binary_partition(const vector<int32_t>& classes)
         vector<int32_t> part1(classes.begin(), classes.begin()+isplit);
         vector<int32_t> part2(classes.begin()+isplit, classes.end());
         run_sffs(part1, part2);
-        for (int32_t i=0; i < part1.size(); ++i)
+        for (index_t i=0; i < part1.size(); ++i)
             m_codebook(m_code_idx, part1[i]) = +1;
-        for (int32_t i=0; i < part2.size(); ++i)
+        for (index_t i=0; i < part2.size(); ++i)
             m_codebook(m_code_idx, part2[i]) = -1;
         m_code_idx++;
 
