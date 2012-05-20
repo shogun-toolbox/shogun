@@ -194,7 +194,7 @@ class CDenseLabels : public CLabels
 
 	protected:
 		/** the label vector */
-		SGVector<float64_t> labels;
+		SGVector<float64_t> m_labels;
 };
 }
 #endif

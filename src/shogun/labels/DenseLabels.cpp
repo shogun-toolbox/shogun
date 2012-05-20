@@ -30,7 +30,7 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 : CLabels()
 {
 	init();
-	labels=SGVector<float64_t>(num_lab);
+	m_labels = SGVector<float64_t>(num_lab);
 }
 
 CDenseLabels::CDenseLabels(CFile* loader)
@@ -46,7 +46,7 @@ CDenseLabels::~CDenseLabels()
 
 void CDenseLabels::init()
 {
-	SG_ADD(&labels, "labels", "The labels.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_labels, "labels", "The labels.", MS_NOT_AVAILABLE);
 }
 
 void CDenseLabels::set_to_one()
@@ -61,10 +61,10 @@ void CDenseLabels::zero()
 
 void CDenseLabels::set_to_const(float64_t c)
 {
-	ASSERT(labels.vector);
+	ASSERT(m_labels.vector);
 	index_t subset_size=get_num_labels();
 	for (int32_t i=0; i<subset_size; i++)
-		labels.vector[m_subset_stack->subset_idx_conversion(i)]=c;
+		m_labels.vector[m_subset_stack->subset_idx_conversion(i)]=c;
 }
 
 void CDenseLabels::set_labels(SGVector<float64_t> v)
@@ -72,7 +72,7 @@ void CDenseLabels::set_labels(SGVector<float64_t> v)
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot set labels\n");
 
-	labels=v;
+	m_labels = v;
 
 	is_valid();
 }
@@ -82,30 +82,30 @@ SGVector<float64_t> CDenseLabels::get_labels()
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("get_labels() is not possible on subset");
 
-	return labels;
+	return m_labels;
 }
 
 SGVector<float64_t> CDenseLabels::get_labels_copy()
 {
 	if (!m_subset_stack->has_subsets())
-		return labels.clone();
+		return m_labels.clone();
 
-	index_t num_labels=get_num_labels();
-	SGVector<float64_t> result(SG_MALLOC(float64_t, num_labels), num_labels);
+	index_t num_labels = get_num_labels();
+	SGVector<float64_t> result(num_labels);
 
 	/* copy element wise because of possible subset */
 	for (index_t i=0; i<num_labels; i++)
-		result[i]=get_label(i);
+		result[i] = get_label(i);
 
 	return result;
 }
 
 SGVector<int32_t> CDenseLabels::get_int_labels()
 {
-	SGVector<int32_t> intlab(get_num_labels(), true);
+	SGVector<int32_t> intlab(get_num_labels());
 
 	for (int32_t i=0; i<get_num_labels(); i++)
-		intlab.vector[i]= get_int_label(i);
+		intlab.vector[i] = get_int_label(i);
 
 	return intlab;
 }
@@ -115,7 +115,7 @@ void CDenseLabels::set_int_labels(SGVector<int32_t> lab)
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("set_int_labels() is not possible on subset");
 
-	labels = SGVector<float64_t>(lab.vlen);
+	m_labels = SGVector<float64_t>(lab.vlen);
 
 	for (int32_t i=0; i<lab.vlen; i++)
 		set_int_label(i, lab.vector[i]);
@@ -126,9 +126,9 @@ void CDenseLabels::load(CFile* loader)
 	remove_subset();
 
 	SG_SET_LOCALE_C;
-	labels=SGVector<float64_t>();
+	m_labels = SGVector<float64_t>();
 	ASSERT(loader);
-	loader->get_vector(labels.vector, labels.vlen);
+	loader->get_vector(m_labels.vector, m_labels.vlen);
 	SG_RESET_LOCALE;
 }
 
@@ -139,17 +139,17 @@ void CDenseLabels::save(CFile* writer)
 
 	SG_SET_LOCALE_C;
 	ASSERT(writer);
-	ASSERT(labels.vector && labels.vlen>0);
-	writer->set_vector(labels.vector, labels.vlen);
+	ASSERT(m_labels.vector && m_labels.vlen>0);
+	writer->set_vector(m_labels.vector, m_labels.vlen);
 	SG_RESET_LOCALE;
 }
 
 bool CDenseLabels::set_label(int32_t idx, float64_t label)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	if (labels.vector && real_num<get_num_labels())
+	if (m_labels.vector && real_num<get_num_labels())
 	{
-		labels.vector[real_num]=label;
+		m_labels.vector[real_num]=label;
 		return true;
 	}
 	else
@@ -159,9 +159,9 @@ bool CDenseLabels::set_label(int32_t idx, float64_t label)
 bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	if (labels.vector && real_num<get_num_labels())
+	if (m_labels.vector && real_num<get_num_labels())
 	{
-		labels.vector[real_num]= (float64_t) label;
+		m_labels.vector[real_num] = (float64_t)label;
 		return true;
 	}
 	else
@@ -171,22 +171,22 @@ bool CDenseLabels::set_int_label(int32_t idx, int32_t label)
 float64_t CDenseLabels::get_label(int32_t idx)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	ASSERT(labels.vector && idx<get_num_labels());
-	return labels.vector[real_num];
+	ASSERT(m_labels.vector && idx<get_num_labels());
+	return m_labels.vector[real_num];
 }
 
 int32_t CDenseLabels::get_int_label(int32_t idx)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	ASSERT(labels.vector && idx<get_num_labels());
-	if (labels.vector[real_num] != float64_t((int32_t(labels.vector[real_num]))))
-		SG_ERROR("label[%d]=%g is not an integer\n", labels.vector[real_num]);
+	ASSERT(m_labels.vector && idx<get_num_labels());
+	if (m_labels.vector[real_num] != float64_t((int32_t(m_labels.vector[real_num]))))
+		SG_ERROR("label[%d]=%g is not an integer\n", m_labels.vector[real_num]);
 
-	return int32_t(labels.vector[real_num]);
+	return int32_t(m_labels.vector[real_num]);
 }
 
 int32_t CDenseLabels::get_num_labels()
 {
 	return m_subset_stack->has_subsets()
-			? m_subset_stack->get_size() : labels.vlen;
+			? m_subset_stack->get_size() : m_labels.vlen;
 }
