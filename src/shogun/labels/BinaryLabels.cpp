@@ -3,26 +3,33 @@
 
 using namespace shogun;
 
-CBinaryLabels::CBinaryLabels() : CDenseLabels()
+CBinaryLabels::CBinaryLabels() : CDenseLabels(), m_threshold(0.0)
 {
 }
 
-CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels)
+CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels),
+	m_threshold(0.0)
 {
 }
 
-CBinaryLabels::CBinaryLabels(const SGVector<float64_t> src) : CDenseLabels()
+CBinaryLabels::CBinaryLabels(SGVector<float64_t> src) : CDenseLabels(),
+	m_threshold(0.0)
 {
-	set_labels(src);
+	SGVector<float64_t> labels(src.vlen);
+	for (int32_t i=0; i<labels.vlen; i++)
+		labels[i] = CMath::sign(src[i]+m_threshold);
+	set_labels(labels);
+	set_confidences(src);
 }
 
-CBinaryLabels::CBinaryLabels(CFile* loader) : CDenseLabels(loader)
+CBinaryLabels::CBinaryLabels(CFile* loader) : CDenseLabels(loader),
+	m_threshold(0.0)
 {
 }
 
 bool CBinaryLabels::is_valid()
 {       
-    ASSERT(labels.vector);
+    ASSERT(m_labels.vector);
     bool found_plus_one=false;
     bool found_minus_one=false;
 
@@ -30,14 +37,14 @@ bool CBinaryLabels::is_valid()
     for (int32_t i=0; i<subset_size; i++)
     {
         int32_t real_i=m_subset_stack->subset_idx_conversion(i);
-        if (labels.vector[real_i]==+1.0)
+        if (m_labels[real_i]==+1.0)
             found_plus_one=true;
-        else if (labels.vector[real_i]==-1.0)
+        else if (m_labels[real_i]==-1.0)
             found_minus_one=true;
         else
         {
             SG_ERROR("Not a two class labeling label[%d]=%f (only +1/-1 "
-                    "allowed)\n", i, labels.vector[real_i]);
+                    "allowed)\n", i, m_labels[real_i]);
         }
     }
     

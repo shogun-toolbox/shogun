@@ -22,8 +22,8 @@ CRealLabels::CRealLabels(CFile* loader) : CDenseLabels(loader)
 
 bool CRealLabels::is_valid()
 {       
-    ASSERT(labels.vector);
-    return true;
+	ASSERT(m_labels.vector);
+	return true;
 }
 
 ELabelType CRealLabels::get_label_type()

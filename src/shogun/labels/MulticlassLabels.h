@@ -46,7 +46,7 @@ class CMulticlassLabels : public CDenseLabels
 		 *
 		 * @param src labels to set
 		 */
-		CMulticlassLabels(const SGVector<float64_t> src);
+		CMulticlassLabels(SGVector<float64_t> src);
 
 		/** constructor
 		 *

@@ -23,15 +23,15 @@ CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 
 bool CMulticlassLabels::is_valid()
 {       
-    ASSERT(labels.vector);
+    ASSERT(m_labels.vector);
 
     int32_t subset_size=get_num_labels();
     for (int32_t i=0; i<subset_size; i++)
     {
-        int32_t real_i=m_subset_stack->subset_idx_conversion(i);
-        int32_t label= int32_t(labels.vector[real_i]);
+        int32_t real_i = m_subset_stack->subset_idx_conversion(i);
+        int32_t label = int32_t(m_labels[real_i]);
 
-        if (label<0 || float64_t(label)!=labels.vector[real_i])
+        if (label<0 || float64_t(label)!=m_labels[real_i])
 		{
 			SG_ERROR("Multiclass Labels must be in range 0...<nr_classes-1> and integers!\n");
 			return false;

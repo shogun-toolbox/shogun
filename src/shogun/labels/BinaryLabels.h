@@ -43,7 +43,7 @@ class CBinaryLabels : public CDenseLabels
 		 *
 		 * @param src labels to set
 		 */
-		CBinaryLabels(const SGVector<float64_t> src);
+		CBinaryLabels(SGVector<float64_t> src);
 
 		/** constructor
 		 *
@@ -64,6 +64,11 @@ class CBinaryLabels : public CDenseLabels
 		 * @return label type binary
 		 */
 		virtual ELabelType get_label_type();
+
+protected:
+
+		/** threshold */
+		float64_t m_threshold;
 };
 }
 #endif
