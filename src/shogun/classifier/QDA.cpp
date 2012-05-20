@@ -46,11 +46,11 @@ CQDA::~CQDA()
 
 void CQDA::init()
 {
-	m_parameters->add(&m_tolerance, "m_tolerance", "Tolerance member.");
-	m_parameters->add(&m_store_covs, "m_store_covs", "Store covariances member");
-	m_parameters->add((CSGObject**) &m_features, "m_features", "Feature object.");
-	m_parameters->add(&m_means, "m_means", "Mean vectors list");
-	m_parameters->add(&m_slog, "m_slog", "Vector used in classification");
+	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", MS_AVAILABLE);
+	SG_ADD(&m_store_covs, "m_store_covs", "Store covariances member", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_means, "m_means", "Mean vectors list", MS_NOT_AVAILABLE);
+	SG_ADD(&m_slog, "m_slog", "Vector used in classification", MS_NOT_AVAILABLE);
 
 	//TODO include SGNDArray objects for serialization
 
