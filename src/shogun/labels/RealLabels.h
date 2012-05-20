@@ -25,9 +25,11 @@ namespace shogun
 	class CRealLabels;
 	class CDenseLabels;
 
-/** @brief Real Labels for multi-class classification 
+/** @brief Real Labels are real-valued labels
  *
- * valid values for labels are 0...nr_classes-1
+ * They are used for regression problems and as outputs of classifiers.
+ *
+ * valid values for labels are all real-valued numbers.
  */
 class CRealLabels : public CDenseLabels
 {
