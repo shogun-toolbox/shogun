@@ -11,6 +11,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_LAPACK
 #include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -90,7 +91,7 @@ CDomainAdaptationMulticlassLibLinear::~CDomainAdaptationMulticlassLibLinear()
 SGMatrix<float64_t> CDomainAdaptationMulticlassLibLinear::obtain_regularizer_matrix() const
 {
 	ASSERT(get_use_bias()==false);
-	int32_t n_classes = m_source_machine->get_labels()->get_num_classes();
+	int32_t n_classes = ((CMulticlassLabels*)m_source_machine->get_labels())->get_num_classes();
 	int32_t n_features = ((CDotFeatures*)m_source_machine->get_features())->get_dim_feature_space();
 	SGMatrix<float64_t> w0(n_classes,n_features);
 
@@ -104,10 +105,10 @@ SGMatrix<float64_t> CDomainAdaptationMulticlassLibLinear::obtain_regularizer_mat
 	return w0;
 }
 
-CLabels* CDomainAdaptationMulticlassLibLinear::get_submachine_outputs(int32_t i)
+CRealLabels* CDomainAdaptationMulticlassLibLinear::get_submachine_outputs(int32_t i)
 {
-	CLabels* target_outputs = CMulticlassMachine::get_submachine_outputs(i);
-	CLabels* source_outputs = m_source_machine->get_submachine_outputs(i);
+	CRealLabels* target_outputs = CMulticlassMachine::get_submachine_outputs(i);
+	CRealLabels* source_outputs = m_source_machine->get_submachine_outputs(i);
 	int32_t n_target_outputs = target_outputs->get_num_labels();
 	ASSERT(n_target_outputs==source_outputs->get_num_labels());
 	SGVector<float64_t> result(n_target_outputs);
@@ -117,6 +118,6 @@ CLabels* CDomainAdaptationMulticlassLibLinear::get_submachine_outputs(int32_t i)
 	SG_UNREF(target_outputs);
 	SG_UNREF(source_outputs);
 
-	return new CLabels(result);
+	return new CRealLabels(result);
 }
 #endif /* HAVE_LAPACK */

@@ -85,7 +85,7 @@ class CMulticlassMachine : public CMachine
 		 * @param i number of submachine
 		 * @return outputs
 		 */
-		virtual CLabels* get_submachine_outputs(int32_t i);
+		virtual CRealLabels* get_submachine_outputs(int32_t i);
 
 		/** get output of i-th submachine for num-th vector
 		 * @param i number of submachine

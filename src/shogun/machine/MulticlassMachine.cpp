@@ -75,11 +75,11 @@ CRealLabels* CMulticlassMachine::apply(CFeatures* features)
 	return apply();
 }
 
-CLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
+CRealLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 {
 	CMachine *machine = (CMachine*)m_machines->get_element(i);
 	ASSERT(machine);
-	CLabels* output = machine->apply();
+	CRealLabels* output = (CRealLabels*)machine->apply();
 	SG_UNREF(machine);
 	return output;
 }
