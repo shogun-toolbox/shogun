@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/classifier/QDA.h>
+#include <shogun/multiclass/QDA.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>

@@ -1,6 +1,6 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/GaussianNaiveBayes.h>
+#include <shogun/multiclass/GaussianNaiveBayes.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>

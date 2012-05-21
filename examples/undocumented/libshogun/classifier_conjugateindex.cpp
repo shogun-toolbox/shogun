@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 
 	// classify on training examples
 	for (int32_t i=0; i<3; i++)
-		SG_SPRINT("output[%d]=%f\n", i, ci->apply(i));
+		SG_SPRINT("output[%d]=%f\n", i, ci->apply_one(i));
 
 	// free up memory
 	SG_UNREF(ci);
