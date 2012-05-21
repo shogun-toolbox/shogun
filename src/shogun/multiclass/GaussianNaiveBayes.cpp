@@ -9,7 +9,6 @@
  */
 
 #include <shogun/multiclass/GaussianNaiveBayes.h>
-#include <shogun/machine/Machine.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -19,7 +18,7 @@
 
 using namespace shogun;
 
-CGaussianNaiveBayes::CGaussianNaiveBayes() : CMachine(), m_features(NULL),
+CGaussianNaiveBayes::CGaussianNaiveBayes() : CNativeMulticlassMachine(), m_features(NULL),
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(), m_variances(),
 	m_label_prob(), m_rates()
 {
@@ -27,7 +26,7 @@ CGaussianNaiveBayes::CGaussianNaiveBayes() : CMachine(), m_features(NULL),
 };
 
 CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
-	CLabels* train_labels) : CMachine(), m_features(NULL),
+	CLabels* train_labels) : CNativeMulticlassMachine(), m_features(NULL),
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
 	m_variances(), m_label_prob(), m_rates()
 {
@@ -61,7 +60,7 @@ void CGaussianNaiveBayes::set_features(CFeatures* features)
 	m_features = (CDotFeatures*)features;
 }
 
-bool CGaussianNaiveBayes::train(CFeatures* data)
+bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
@@ -173,7 +172,7 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
+CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 {
 	if (data)
 		set_features(data);
@@ -184,20 +183,20 @@ CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 	int32_t num_vectors = m_features->get_num_vectors();
 
 	// init result labels
-	CRegressionLabels* result = new CRegressionLabels(num_vectors);
+	CMulticlassLabels* result = new CMulticlassLabels(num_vectors);
 
 	// classify each example of data
 	SG_PROGRESS(0, 0, num_vectors);
 	for (int i = 0; i < num_vectors; i++)
 	{
-		result->set_label(i,apply(i));
+		result->set_label(i,apply_one(i));
 		SG_PROGRESS(i + 1, 0, num_vectors);
 	}
 	SG_DONE();
 	return result;
 };
 
-float64_t CGaussianNaiveBayes::apply(int32_t idx)
+float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 {
 	// get [idx] feature vector
 	SGVector<float64_t> feature_vector = m_features->get_computed_dot_feature_vector(idx);
