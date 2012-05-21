@@ -48,6 +48,8 @@ namespace shogun
 class CLPBoost : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		CLPBoost();
 		virtual ~CLPBoost();
 

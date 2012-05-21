@@ -35,6 +35,8 @@ class CConjugateIndex : public CMachine
 {
 
 public:
+	MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+
 	/** default constructor
 	 *
 	 */

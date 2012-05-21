@@ -23,6 +23,8 @@ namespace shogun
 class CMulticlassOCAS : public CLinearMulticlassMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+
 		/** default constructor  */
 		CMulticlassOCAS();
 
