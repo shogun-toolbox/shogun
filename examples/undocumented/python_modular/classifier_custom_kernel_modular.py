@@ -1,7 +1,7 @@
 parameter_list = [[1,7],[2,8]]
 
 def classifier_custom_kernel_modular(C=1,dim=7):
-	from shogun.Features import RealFeatures, Labels
+	from shogun.Features import RealFeatures, BinaryLabels
 	from shogun.Kernel import CustomKernel
 	from shogun.Classifier import LibSVM
 
@@ -16,7 +16,7 @@ def classifier_custom_kernel_modular(C=1,dim=7):
     
 	kernel=CustomKernel()
 	kernel.set_full_kernel_matrix_from_full(data)
-	labels=Labels(lab)
+	labels=BinaryLabels(lab)
 	svm=LibSVM(C, kernel, labels)
 	svm.train()
 	predictions =svm.apply() 

@@ -1,6 +1,6 @@
 import numpy
 
-from shogun.Features import StringCharFeatures, Labels, DNA
+from shogun.Features import StringCharFeatures, BinaryLabels, DNA
 from shogun.Kernel import WeightedDegreeStringKernel
 from shogun.Classifier import SVMLight, DomainAdaptationSVM, MSG_DEBUG
 
@@ -66,7 +66,7 @@ def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=tes
 	feats_train = StringCharFeatures(fm_train_dna, DNA)
 	feats_test = StringCharFeatures(fm_test_dna, DNA)
 	kernel = WeightedDegreeStringKernel(feats_train, feats_train, degree)
-	labels = Labels(label_train_dna)
+	labels = BinaryLabels(label_train_dna)
 	svm = SVMLight(C, kernel, labels)
 	svm.train()
 	#svm.io.set_loglevel(MSG_DEBUG)
@@ -78,7 +78,7 @@ def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=tes
 	feats_train2 = StringCharFeatures(fm_train_dna, DNA)
 	feats_test2 = StringCharFeatures(fm_test_dna, DNA)
 	kernel2 = WeightedDegreeStringKernel(feats_train, feats_train, degree)
-	labels2 = Labels(label_train_dna)
+	labels2 = BinaryLabels(label_train_dna)
 
 	# we regularize against the previously obtained solution
 	dasvm = DomainAdaptationSVM(C, kernel2, labels2, svm, 1.0)

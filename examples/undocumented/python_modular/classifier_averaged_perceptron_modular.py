@@ -8,13 +8,13 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat,1.,1000,1],[traindat,testdat,label_traindat,1.,1000,1]]
 
 def classifier_averaged_perceptron_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,learn_rate=1.,max_iter=1000,num_threads=1):
-	from shogun.Features import RealFeatures, Labels
+	from shogun.Features import RealFeatures, BinaryLabels
 	from shogun.Classifier import AveragedPerceptron
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 
-	labels=Labels(label_train_twoclass)
+	labels=BinaryLabels(label_train_twoclass)
 
 	perceptron=AveragedPerceptron(feats_train, labels)
 	perceptron.set_learn_rate(learn_rate)
