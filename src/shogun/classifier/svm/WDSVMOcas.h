@@ -160,7 +160,7 @@ class CWDSVMOcas : public CMachine
 		 * @param num number of example to classify
 		 * @return classified result
 		 */
-		inline virtual float64_t apply(int32_t num)
+		inline virtual float64_t apply_one(int32_t num)
 		{
 			ASSERT(features);
 			if (!wd_weights)

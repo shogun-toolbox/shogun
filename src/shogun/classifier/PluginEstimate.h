@@ -66,7 +66,7 @@ class CPluginEstimate: public CMachine
 		virtual CStringFeatures<uint16_t>* get_features() { SG_REF(features); return features; }
 
 		/// classify the test feature vector indexed by vec_idx
-		float64_t apply(int32_t vec_idx);
+		float64_t apply_one(int32_t vec_idx);
 
 		/** obsolete posterior log odds
 		 *
