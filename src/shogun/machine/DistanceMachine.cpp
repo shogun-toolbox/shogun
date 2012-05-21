@@ -216,7 +216,7 @@ CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
 		/* build result labels and classify all elements of procedure */
 		CMulticlassLabels* result=new CMulticlassLabels(data->get_num_vectors());
 		for (index_t i=0; i<data->get_num_vectors(); ++i)
-			result->set_label(i, apply(i));
+			result->set_label(i, apply_one(i));
 		return result;
 	}
 	else
@@ -230,7 +230,7 @@ CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
 	return NULL;
 }
 
-float64_t CDistanceMachine::apply(int32_t num)
+float64_t CDistanceMachine::apply_one(int32_t num)
 {
 	/* number of clusters */
 	CFeatures* lhs=distance->get_lhs();
