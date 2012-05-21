@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 	}
 
 	/* create n labels (+1,-1,+1,-1,...) */
-	CLabels* labels=new CLabels(n);
+	CBinaryLabels* labels=new CBinaryLabels(n);
 	for (int32_t i=0; i<n; ++i)
 		labels->set_label(i, i%2==0 ? +1 : -1);
 
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 		svm->train();
 		for (int32_t i=0; i<n; ++i)
 			SG_SPRINT("output[%d]=%f\treal[%d]=%f\n", i,
-					svm->apply(i), i, labels->get_label(i));
+					svm->apply_one(i), i, labels->get_label(i));
 	}
 
 	/* free up memory: delete all Parameter instances */

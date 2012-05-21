@@ -12,7 +12,7 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 
@@ -63,7 +63,7 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 	SG_REF(features);
 
 	/* create three labels, will be handed to svm and automaticall deleted */
-	CLabels* labels=new CLabels(3);
+	CBinaryLabels* labels=new CBinaryLabels(3);
 	SG_REF(labels);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
@@ -92,7 +92,7 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 
 		/* classify on training examples */
 		for (index_t i=0; i<3; i++)
-			SG_SPRINT("output[%d]=%f\n", i, svm->apply(i));
+			SG_SPRINT("output[%d]=%f\n", i, svm->apply_one(i));
 
 		/* unset features and SG_UNREF kernel */
 		kernel->cleanup();

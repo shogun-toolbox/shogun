@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/classifier/QDA.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
@@ -52,7 +53,7 @@ int main(int argc, char ** argv)
 	gen_rand_data(lab, feat);
 
 	// Create train labels
-	CLabels* labels = new CLabels(lab);
+	CMulticlassLabels* labels = new CMulticlassLabels(lab);
 
 	// Create train features
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
@@ -63,7 +64,7 @@ int main(int argc, char ** argv)
 	qda->train();
 
 	// Classify and display output
-	CLabels* out_labels = qda->apply();
+	CMulticlassLabels* out_labels = CMulticlassLabels::obtain_from_generic(qda->apply());
 	SG_REF(out_labels);
 
 	// Free memory

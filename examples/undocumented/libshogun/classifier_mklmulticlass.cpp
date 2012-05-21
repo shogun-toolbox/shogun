@@ -10,6 +10,7 @@
 #include <iostream>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/ShogunException.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/mkl/MKLMulticlass.h>
@@ -51,7 +52,7 @@ void getgauss(float64_t & y1, float64_t & y2)
 
 
 void gendata(std::vector<float64_t> & x,std::vector<float64_t> & y,
-		CLabels*& lab)
+		CMulticlassLabels*& lab)
 {
 	int32_t totalsize=240;
 	int32_t class1size=80;
@@ -83,7 +84,7 @@ void gendata(std::vector<float64_t> & x,std::vector<float64_t> & y,
 	}
 
 	//set labels
-	lab=new CLabels(x.size());
+	lab=new CMulticlassLabels(x.size());
 	for(size_t i=0; i< x.size();++i)
 	{
 		if((int32_t)i < class1size)
@@ -194,7 +195,7 @@ void gentestkernel(float64_t * & ker1 ,float64_t * & ker2,float64_t * & ker3,
 
 void tester()
 {
-	CLabels* lab=NULL;
+	CMulticlassLabels* lab=NULL;
 	std::vector<float64_t> x,y;
 
 	gendata(x,y, lab);
@@ -242,7 +243,7 @@ void tester()
 	SG_SPRINT("finished svm training\n");
 
 	//starting svm testing on training data
-	CLabels* res=tsvm->apply();
+	CMulticlassLabels* res=CMulticlassLabels::obtain_from_generic(tsvm->apply());
 	ASSERT(res);
 
 	float64_t err=0;
@@ -261,7 +262,7 @@ void tester()
 	SG_FREE(ker3);
 
 	//generate test data
-	CLabels* tlab=NULL;
+	CMulticlassLabels* tlab=NULL;
 
 	std::vector<float64_t> tx,ty;
 
@@ -304,7 +305,7 @@ void tester()
 	tsvm->set_kernel(tker);
 
 	//compute classification error, check mem
-	CLabels* tres=tsvm->apply();
+	CMulticlassLabels* tres=CMulticlassLabels::obtain_from_generic(tsvm->apply());
 
 	float64_t terr=0;
 	for(int32_t i=0; i<numdatatest;++i)

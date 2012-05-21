@@ -2,7 +2,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 /* Example mean prediction from a Gaussian Kernel adapted from 
  * classifier_minimal_svm.cpp
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 		matrix.matrix[i]=i;
 	
 	//Labels
-	CLabels* labels = new CLabels(3);
+	CRegressionLabels* labels = new CRegressionLabels(3);
 	SG_REF(labels);
 	
 	labels->set_label(0, -1);
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 	
 	regressor.train(features);
 	//Get mean predictions
-	CLabels* result = regressor.apply();
+	CRegressionLabels* result = CRegressionLabels::obtain_from_generic(regressor.apply());
 	SG_REF(result);
 	
 	SGMatrix<float64_t> cov = regressor.getCovarianceMatrix(features);

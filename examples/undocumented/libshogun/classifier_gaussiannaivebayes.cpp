@@ -1,4 +1,4 @@
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/GaussianNaiveBayes.h>
 #include <shogun/base/init.h>
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
 	// create three labels
-	CLabels* labels=new CLabels(3);
+	CMulticlassLabels* labels=new CMulticlassLabels(3);
 	labels->set_label(0, 0);
 	labels->set_label(1, +1);
 	labels->set_label(2, +2);
@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 
 	// classify on training examples
 	for (int32_t i=0; i<3; i++)
-		SG_SPRINT("output[%d]=%f\n", i, ci->apply(i));
+		SG_SPRINT("output[%d]=%f\n", i, ci->apply_one(i));
 
 	// free up memory
 	SG_UNREF(ci);

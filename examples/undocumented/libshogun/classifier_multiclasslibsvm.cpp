@@ -1,4 +1,4 @@
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/multiclass/MulticlassLibSVM.h>
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	// create three labels
-	CLabels* labels=new CLabels(num_vec);
+	CMulticlassLabels* labels=new CMulticlassLabels(num_vec);
 	for (index_t i=0; i<num_vec; ++i)
 		labels->set_label(i, i%num_class);
 
@@ -40,14 +40,14 @@ int main(int argc, char** argv)
 	svm->train();
 
 	// classify on training examples
-	CLabels* output=svm->apply();
+	CMulticlassLabels* output=CMulticlassLabels::obtain_from_generic(svm->apply());
 	CMath::display_vector(output->get_labels().vector, output->get_num_labels(),
 			"batch output");
 
 	/* assert that batch apply and apply(index_t) give same result */
 	for (index_t i=0; i<output->get_num_labels(); ++i)
 	{
-		float64_t label=svm->apply(i);
+		float64_t label=svm->apply_one(i);
 		SG_SPRINT("single output[%d]=%f\n", i, label);
 		ASSERT(output->get_label(i)==label);
 	}
