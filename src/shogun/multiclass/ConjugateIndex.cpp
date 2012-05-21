@@ -159,7 +159,7 @@ CLabels* CConjugateIndex::apply(CFeatures* data)
 	for (int32_t i=0; i<num_vectors;i++)
 	{
 		SG_PROGRESS(i,0,num_vectors-1);
-		predicted_labels->set_label(i,apply(i));
+		predicted_labels->set_label(i,apply_one(i));
 	}
 	SG_DONE();
 
@@ -183,7 +183,7 @@ float64_t CConjugateIndex::conjugate_index(SGVector<float64_t> feature_vector, i
 	return product/norm;
 };
 
-float64_t CConjugateIndex::apply(int32_t index)
+float64_t CConjugateIndex::apply_one(int32_t index)
 {
 	int32_t predicted_label = 0;
 	float64_t max_conjugate_index = 0.0;
