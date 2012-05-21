@@ -15,6 +15,6 @@ enum ELabelType
 	/// multi-class labels 0,1,...
 	LT_MULTICLASS = 1,
 	/// real valued labels (e.g. for regression, classifier outputs)
-	LT_REAL = 3
+	LT_REGRESSION = 3
 };
 #endif

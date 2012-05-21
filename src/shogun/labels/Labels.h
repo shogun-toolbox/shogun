@@ -59,7 +59,7 @@ class CLabels : public CSGObject
 		 * @return label type (binary, multiclass, ...)
 		 */
 		//virtual ELabelType get_label_type()=0;
-		virtual ELabelType get_label_type() { return LT_REAL; }
+		virtual ELabelType get_label_type() { return LT_REGRESSION; }
 
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset of subset. Calls subset_changed_post() afterwards

@@ -16,8 +16,8 @@ using namespace shogun;
 
 float64_t CMeanAbsoluteError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted && predicted->get_label_type() == LT_REAL);
-	ASSERT(ground_truth && ground_truth->get_label_type() == LT_REAL);
+	ASSERT(predicted && predicted->get_label_type() == LT_REGRESSION);
+	ASSERT(ground_truth && ground_truth->get_label_type() == LT_REGRESSION);
 
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
 	int32_t length = predicted->get_num_labels();
