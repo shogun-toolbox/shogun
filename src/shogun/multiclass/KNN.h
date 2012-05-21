@@ -55,6 +55,8 @@ class CDistanceMachine;
 class CKNN : public CDistanceMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+
 		/** default constructor */
 		CKNN();
 

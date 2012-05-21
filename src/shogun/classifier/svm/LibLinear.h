@@ -45,6 +45,8 @@ namespace shogun
 class CLibLinear : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** default constructor  */
 		CLibLinear();
 

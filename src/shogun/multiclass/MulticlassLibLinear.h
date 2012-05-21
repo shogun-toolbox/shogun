@@ -37,6 +37,8 @@ namespace shogun
 class CMulticlassLibLinear : public CLinearMulticlassMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+
 		/** default constructor  */
 		CMulticlassLibLinear();
 
