@@ -114,12 +114,12 @@ CLabels* CPluginEstimate::apply(CFeatures* data)
 	ASSERT(result->get_num_labels()==features->get_num_vectors());
 
 	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)
-		result->set_label(vec, apply(vec));
+		result->set_label(vec, apply_one(vec));
 
 	return result;
 }
 
-float64_t CPluginEstimate::apply(int32_t vec_idx)
+float64_t CPluginEstimate::apply_one(int32_t vec_idx)
 {
 	ASSERT(features);
 

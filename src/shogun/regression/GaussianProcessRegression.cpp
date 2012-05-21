@@ -100,15 +100,6 @@ CLabels* CGaussianProcessRegression::apply(CFeatures* data)
 	return mean_prediction(features);
 }
 
-float64_t CGaussianProcessRegression::apply(int32_t num)
-{
-	SG_ERROR("apply(int32_t num) is not yet implemented "
-	"for %s\n", get_name());
-	
-	return 0;
-}
-
-
 bool CGaussianProcessRegression::train_machine(CFeatures* data)
 {
   	if (!data->has_property(FP_DOT))

@@ -116,13 +116,6 @@ class CGaussianProcessRegression : public CMachine
 		*/
 		virtual CLabels* apply(CFeatures* data=NULL);
 		
-		/** apply regression to one example
-		*
-		* @param num which example to apply to
-		* @return classified value
-		*/
-		virtual float64_t apply(int32_t num);
-		
 		/** get classifier type
 		*
 		* @return classifier type GaussianProcessRegression

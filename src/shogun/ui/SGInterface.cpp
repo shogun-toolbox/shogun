@@ -5387,7 +5387,7 @@ bool CSGInterface::cmd_plugin_estimate_classify_example()
 		return false;
 
 	int32_t idx=get_int();
-	float64_t result=ui_pluginestimate->apply(idx);
+	float64_t result=ui_pluginestimate->apply_one(idx);
 
 	set_vector(&result, 1);
 	return true;

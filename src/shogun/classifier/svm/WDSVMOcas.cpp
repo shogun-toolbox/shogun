@@ -124,7 +124,7 @@ CLabels* CWDSVMOcas::apply(CFeatures* data)
 		SG_REF(output);
 
 		for (int32_t i=0; i<num; i++)
-			output->set_label(i, apply(i));
+			output->set_label(i, apply_one(i));
 
 		return output;
 	}
