@@ -93,18 +93,6 @@ class CDistanceMachine : public CMachine
 		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL)
-		{
-			SG_ERROR("Not supported");
-			return NULL;
-		}
-
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL)
-		{
-			SG_ERROR("Not supported");
-			return NULL;
-		}
-
 		/** Apply machine to one example.
 		 * Cluster index with smallest distance to to be classified element is
 		 * returned
