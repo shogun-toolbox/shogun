@@ -54,7 +54,7 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CMulticlassLabels(CFile* loader);
 
-		/** helper method used to specialize a base class instance 
+		/** helper method used to specialize a base class instance
 		 *
 		 * @param base_labels its dynamic type must be CMulticlassLabels
 		 */

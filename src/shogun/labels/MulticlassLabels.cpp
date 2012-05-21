@@ -27,6 +27,8 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
 		return (CMulticlassLabels*) base_labels;
 	else
 		SG_ERROR("base_labels must be of dynamic type CMulticlassLabels");
+
+	return NULL;
 }
 
 bool CMulticlassLabels::is_valid()
