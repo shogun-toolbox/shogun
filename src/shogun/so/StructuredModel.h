@@ -73,8 +73,17 @@ class CStructuredModel : public CSGObject
 		/** destructor */
 		virtual ~CStructuredModel();
 
-		/** initialize the optimization problem */
-		virtual void init();
+		/** initialize the optimization problem
+		 *
+		 * @param A
+		 * @param a
+		 * @param B
+		 * @param b
+		 * @param lb
+		 * @param ub
+		 * @param C
+		 */
+		virtual void init_opt(SGMatrix< float64_t > A, SGVector< float64_t > a, SGMatrix< float64_t > B, SGVector< float64_t > b, SGVector< float64_t > lb, SGVector< float64_t > ub, SGMatrix < float64_t > C);
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e. the dimension of the
@@ -102,6 +111,10 @@ class CStructuredModel : public CSGObject
 		/** @return name of SGSerializable */
 		inline virtual const char* get_name() const { return "StructuredModel"; }
 	
+	private:
+		/** internal initialization */
+		void init();
+
 	protected:
 		/** structured labels */
 		CStructuredLabels* m_labels;
@@ -117,8 +130,6 @@ class CStructuredModel : public CSGObject
 
 		/** \f$\Delta\f$ loss function */
 		FDeltaLoss m_compute_delta_loss;
-
-		//TODO add A, a, B, b, lb, ub, C - these are set by init
 
 }; /* class CStructuredModel */
 
