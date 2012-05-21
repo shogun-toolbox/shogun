@@ -12,7 +12,7 @@
 #define BINARYCLASSEVALUATION_H_
 
 #include <shogun/evaluation/Evaluation.h>
-#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 
 namespace shogun
 {

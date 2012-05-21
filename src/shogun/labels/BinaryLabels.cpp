@@ -3,27 +3,24 @@
 
 using namespace shogun;
 
-CBinaryLabels::CBinaryLabels() : CDenseLabels(), m_threshold(0.0)
+CBinaryLabels::CBinaryLabels() : CDenseLabels()
 {
 }
 
-CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels),
-	m_threshold(0.0)
+CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels)
 {
 }
 
-CBinaryLabels::CBinaryLabels(SGVector<float64_t> src) : CDenseLabels(),
-	m_threshold(0.0)
+CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDenseLabels()
 {
 	SGVector<float64_t> labels(src.vlen);
 	for (int32_t i=0; i<labels.vlen; i++)
-		labels[i] = CMath::sign(src[i]+m_threshold);
+		labels[i] = src[i]+threshold>=0 ? +1.0 : -1.0;
 	set_labels(labels);
 	set_confidences(src);
 }
 
-CBinaryLabels::CBinaryLabels(CFile* loader) : CDenseLabels(loader),
-	m_threshold(0.0)
+CBinaryLabels::CBinaryLabels(CFile* loader) : CDenseLabels(loader)
 {
 }
 

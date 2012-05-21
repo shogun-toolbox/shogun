@@ -15,7 +15,9 @@ using namespace shogun;
 
 float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	compute_scores(predicted,ground_truth);
+	ASSERT(predicted->get_label_type()==LT_BINARY);
+	ASSERT(ground_truth->get_label_type()==LT_BINARY);
+	compute_scores((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
 	switch (m_type)
 	{
 		case ACCURACY:
@@ -71,7 +73,7 @@ inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_directio
 	return ED_MINIMIZE;
 }
 
-void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* ground_truth)
+void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
 {
 	ASSERT(ground_truth->get_label_type() == LT_BINARY);
 	ASSERT(predicted->get_label_type() == LT_BINARY);
@@ -85,16 +87,16 @@ void CContingencyTableEvaluation::compute_scores(CLabels* predicted, CLabels* gr
 
 	for (int i=0; i<predicted->get_num_labels(); i++)
 	{
-		if (((CBinaryLabels*) ground_truth)->get_label(i)==1)
+		if (ground_truth->get_label(i)==1)
 		{
-			if (CMath::sign(((CBinaryLabels*) predicted)->get_label(i))==1)
+			if (predicted->get_confidence(i)>=1)
 				m_TP += 1.0;
 			else
 				m_FN += 1.0;
 		}
 		else
 		{
-			if (CMath::sign(((CBinaryLabels*) predicted)->get_label(i))==1)
+			if (predicted->get_confidence(i)>=1)
 				m_FP += 1.0;
 			else
 				m_TN += 1.0;

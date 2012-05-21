@@ -19,7 +19,7 @@ namespace shogun
 class CLabels;
 
 /** @brief Class ROCEvalution used to evaluate ROC
- * (Receiver Operator Characteristic) and an area
+ * (Receiver Operating Characteristic) and an area
  * under ROC curve (auROC).
  *
  * Implementation is based on the efficient ROC algorithm as described in
