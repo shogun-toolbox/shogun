@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 				num_labels, num_classes, num_subsets);
 
 		/* build labels */
-		CLabels* labels=new CLabels(num_labels);
+		CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
 			labels->set_label(i, CMath::random()%num_classes);

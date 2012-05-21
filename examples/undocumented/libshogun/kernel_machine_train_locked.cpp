@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
@@ -63,7 +63,7 @@ void test()
 
 	CMath::display_vector(lab.vector, lab.vlen, "training labels");
 
-	CLabels* labels=new CLabels(lab);
+	CBinaryLabels* labels=new CBinaryLabels(lab);
 	SG_REF(labels);
 
 	/* evaluation instance */
@@ -91,7 +91,7 @@ void test()
 	indices.vector[3]=4;
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	CLabels* output=svm->apply();
+	CBinaryLabels* output=CBinaryLabels::obtain_from_generic(svm->apply());
 	ASSERT(eval->evaluate(output, labels)==1);
 	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SG_UNREF(output);
@@ -102,7 +102,7 @@ void test()
 	indices.vector[1]=2;
 	indices.vector[2]=3;
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
-	output=svm->apply();
+	output=CBinaryLabels::obtain_from_generic(svm->apply());
 	ASSERT(eval->evaluate(output, labels)==1);
 	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SG_UNREF(output);
@@ -112,7 +112,7 @@ void test()
 	indices.range_fill();
 	CMath::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
-	output=svm->apply();
+	output=CBinaryLabels::obtain_from_generic(svm->apply());
 	ASSERT(eval->evaluate(output, labels)==1);
 	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
 	SG_UNREF(output);
@@ -120,7 +120,7 @@ void test()
 	SG_SPRINT("normal train\n");
 	svm->data_unlock();
 	svm->train();
-	output=svm->apply();
+	output=CBinaryLabels::obtain_from_generic(svm->apply());
 	ASSERT(eval->evaluate(output, labels)==1);
 	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
 	SG_UNREF(output);

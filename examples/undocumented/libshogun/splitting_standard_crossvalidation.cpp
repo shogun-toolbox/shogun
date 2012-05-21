@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 		SG_SPRINT("num_labels=%d\nnum_subsets=%d\n\n", num_labels, num_subsets);
 
 		/* build labels */
-		CLabels* labels=new CLabels(num_labels);
+		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
 			labels->set_label(i, CMath::random(-10.0, 10.0));

@@ -9,7 +9,6 @@
  */
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RealLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/mathematics/Math.h>
@@ -89,10 +88,10 @@ int main()
 	printf("num_sv:%d b:%f\n", svm->get_num_support_vectors(), svm->get_bias());
 
 	// classify + display output
-	CRealLabels* out_labels=(CRealLabels*) svm->apply();
+	CBinaryLabels* out_labels=(CBinaryLabels*) svm->apply();
 
 	for (int32_t i=0; i<NUM; i++)
-		printf("out[%d]=%f\n", i, out_labels->get_label(i));
+		printf("out[%d]=%f (%f)\n", i, out_labels->get_label(i), out_labels->get_confidence(i));
 
 	SG_UNREF(out_labels);
 	SG_UNREF(kernel);

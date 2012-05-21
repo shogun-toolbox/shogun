@@ -15,7 +15,7 @@
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclidianDistance.h>
@@ -70,9 +70,9 @@ int main(int argc, char **argv)
 	SG_REF(features);
 
 	/* create labels for cluster centers */
-	CLabels* labels=new CLabels(num_features);
+	CMulticlassLabels* labels=new CMulticlassLabels(num_features);
 	for (index_t i=0; i<num_features; ++i)
-		labels->set_label(i, i%2==0 ? 1 : -1);
+		labels->set_label(i, i%2==0 ? 0 : 1);
 
 	/* create distance */
 	CEuclidianDistance* distance=new CEuclidianDistance(features, features);
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 	clustering->train(features);
 
 	/* build clusters */
-	CLabels* result=clustering->apply();
+	CMulticlassLabels* result=CMulticlassLabels::obtain_from_generic(clustering->apply());
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
