@@ -54,11 +54,11 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CMulticlassLabels(CFile* loader);
 
-		/** constructor (can be used to downcast CLabels) 
+		/** helper method used to specialize a base class instance 
 		 *
-		 * @param labs its dynamic type must be CMulticlassLabels
+		 * @param base_labels its dynamic type must be CMulticlassLabels
 		 */
-		CMulticlassLabels(CLabels* const base_labels);
+		CMulticlassLabels* obtain_from_generic(CLabels* base_labels);
 
 		/** is_valid checks if labeling is a multi-class labeling
 		 *
