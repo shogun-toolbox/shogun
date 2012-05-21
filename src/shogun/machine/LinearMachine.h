@@ -116,18 +116,32 @@ class CLinearMachine : public CMachine
 			SG_REF(feat);
 			features=feat;
 		}
-
+		
 		/** apply linear machine to data
+		 * for binary classification problem
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
 
-		/// get output for example "vec_idx"
-		virtual float64_t apply(int32_t vec_idx)
+		/** apply linear machine to data
+		 * for regression problem
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CRealLabels* apply_regression(CFeatures* data=NULL);
+
+		virtual float64_t apply_one(int32_t vec_idx)
 		{
 			return features->dense_dot(vec_idx, w.vector, w.vlen) + bias;
+		}
+
+		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL)
+		{
+			SG_ERROR("Use LinearMulticlassMachine");
+			return NULL;
 		}
 
 		/** get features
@@ -144,6 +158,9 @@ class CLinearMachine : public CMachine
 		virtual const char* get_name() const { return "LinearMachine"; }
 
 	protected:
+
+		SGVector<float64_t> apply_get_outputs(CFeatures* data);
+
 		/** Stores feature data of underlying model. Does nothing because
 		 * Linear machines store the normal vector of the separating hyperplane
 		 * and therefore the model anyway

@@ -66,7 +66,7 @@ bool CAveragedPerceptron::train(CFeatures* data)
 		converged=true;
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			output[i]=apply(i);
+			output[i]=apply_one(i);
 
 			if (CMath::sign<float64_t>(output[i]) != train_labels.vector[i])
 			{

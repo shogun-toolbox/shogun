@@ -205,18 +205,33 @@ class CKernelMachine : public CMachine
 		bool init_kernel_optimization();
 
 		/** apply kernel machine to data
+		 * for regression task
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual CRealLabels* apply_regression(CFeatures* data=NULL);
+		
+		/** apply kernel machine to data
+		 * for binary classification task
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+
+		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL)
+		{
+			SG_ERROR("Not supported");
+			return NULL;
+		}
 
 		/** apply kernel machine to one example
 		 *
 		 * @param num which example to apply to
 		 * @return classified value
 		 */
-		virtual float64_t apply(int32_t num);
+		virtual float64_t apply_one(int32_t num);
 
 		/** apply example helper, used in threads
 		 *
@@ -256,7 +271,11 @@ class CKernelMachine : public CMachine
 		/** @return whether machine supports locking */
 		virtual bool supports_locking() const { return true; }
 
+
 	protected:
+
+		SGVector<float64_t> apply_get_outputs(CFeatures* data);
+
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
 		 *

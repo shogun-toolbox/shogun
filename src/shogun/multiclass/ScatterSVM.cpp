@@ -532,11 +532,11 @@ float64_t CScatterSVM::apply(int32_t num)
 #endif //USE_SVMLIGHT
 	else
 	{
-		float64_t max_out=get_svm(0)->apply(num)/norm_wc[0];
+		float64_t max_out=get_svm(0)->apply_one(num)/norm_wc[0];
 
 		for (int32_t i=1; i<m_machines->get_num_elements(); i++)
 		{
-			outputs[i]=get_svm(i)->apply(num)/norm_wc[i];
+			outputs[i]=get_svm(i)->apply_one(num)/norm_wc[i];
 			if (outputs[i]>max_out)
 			{
 				winner=i;

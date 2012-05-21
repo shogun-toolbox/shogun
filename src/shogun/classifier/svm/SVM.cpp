@@ -289,7 +289,7 @@ float64_t CSVM::compute_svm_primal_objective()
 				regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
 			}
 
-			loss-=(C1*(-((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 + C2_tmp*(((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-((CBinaryLabels*) m_labels)->get_label(ii)*apply(ii));
+			loss-=(C1*(-((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 + C2_tmp*(((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-((CBinaryLabels*) m_labels)->get_label(ii)*apply_one(ii));
 		}
 
 	}

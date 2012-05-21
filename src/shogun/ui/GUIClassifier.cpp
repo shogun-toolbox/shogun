@@ -1519,7 +1519,7 @@ bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
 	((CKernelMachine*) classifier)->set_kernel(
 		ui->ui_kernel->get_kernel());
 
-	result=classifier->apply(idx);
+	result=((CKernelMachine*)classifier)->apply_one(idx);
 	return true ;
 }
 

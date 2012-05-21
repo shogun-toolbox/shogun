@@ -60,7 +60,7 @@ class CDomainAdaptationSVM : public CSVMLight
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
 
 		/** returns SVM that is used as prior information
 		 *

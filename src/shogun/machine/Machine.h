@@ -15,6 +15,9 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -89,6 +92,13 @@ enum ESolverType
 	ST_BLOCK_NORM=6
 };
 
+enum EProblemType
+{
+	PT_BINARY = 0,
+	PT_REGRESSION = 1,
+	PT_MULTICLASS = 2
+};
+
 /** @brief A generic learning machine interface.
  *
  * A machine takes as input CFeatures and (optionally) CLabels.
@@ -132,17 +142,11 @@ class CMachine : public CSGObject
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL) = 0;
+		virtual CLabels* apply(CFeatures* data=NULL);
 
-		/** apply machine to one example
-		 *
-		 * abstract base method
-		 *
-		 * @param num which example to apply machine to
-		 * @return infinite float value
-		 */
-		virtual float64_t apply(int32_t num);
-
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual CRealLabels* apply_regression(CFeatures* data=NULL);
+		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 		/** set labels
 		 *
 		 * @param lab labels
@@ -239,6 +243,13 @@ class CMachine : public CSGObject
 
 		/** @return whether this machine is locked */
 		bool is_data_locked() const { return m_data_locked; }
+
+		virtual EProblemType get_machine_problem_type() const 
+		{
+			return PT_BINARY;
+		}
+		
+		virtual const char* get_name() const { return "Machine"; }
 
 	protected:
 		/** train machine
