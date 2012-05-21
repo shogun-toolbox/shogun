@@ -45,7 +45,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 {
 	ASSERT(kernel);
 	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_REAL);
+	ASSERT(m_labels->get_label_type() == LT_REGRESSION);
 
 	if (data)
 	{

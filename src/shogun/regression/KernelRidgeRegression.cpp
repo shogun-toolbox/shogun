@@ -128,7 +128,7 @@ bool CKernelRidgeRegression::train_machine(CFeatures *data)
 	if (!m_labels)
 		SG_ERROR("No labels set\n");
 
-	if (m_labels->get_label_type() != LT_REAL)
+	if (m_labels->get_label_type() != LT_REGRESSION)
 		SG_ERROR("Real labels needed for kernel ridge regression.\n");
 
 	if (data)
