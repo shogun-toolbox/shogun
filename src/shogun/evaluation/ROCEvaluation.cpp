@@ -9,8 +9,6 @@
  */
 
 #include <shogun/evaluation/ROCEvaluation.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -23,7 +21,8 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted && ground_truth);
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
-	ASSERT(predicted->get_label_type()==LT_REAL && ground_truth->get_label_type()==LT_BINARY);
+	ASSERT(predicted->get_label_type()==LT_BINARY);
+	ASSERT(ground_truth->get_label_type()==LT_BINARY);
 
 	// assume threshold as negative infinity
 	float64_t threshold = CMath::ALMOST_NEG_INFTY;
@@ -69,7 +68,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	// get total numbers of positive and negative labels
 	for(i=0; i<length; i++)
 	{
-		if (((CBinaryLabels*) ground_truth)->get_label(i) > 0)
+		if (ground_truth->get_confidence(i) >= 0)
 			pos_count++;
 		else
 			neg_count++;
@@ -84,7 +83,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	// create ROC curve and calculate auROC
 	for(i=0; i<length; i++)
 	{
-		label = ((CRegressionLabels*) predicted)->get_label(idxs[i]);
+		label = predicted->get_confidence(idxs[i]);
 
 		if (label != threshold)
 		{
@@ -96,7 +95,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 		m_thresholds[i]=threshold;
 
-		if (((CBinaryLabels*) ground_truth)->get_label(idxs[i]) > 0)
+		if (ground_truth->get_confidence(idxs[i]) > 0)
 			tp+=1.0;
 		else
 			fp+=1.0;

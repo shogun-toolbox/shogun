@@ -23,7 +23,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
 	ASSERT(predicted && ground_truth);
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
-	ASSERT(predicted->get_label_type()==LT_REAL);
+	ASSERT(predicted->get_label_type()==LT_BINARY);
 	ASSERT(ground_truth->get_label_type()==LT_BINARY);
 
 	// number of true positive examples
@@ -34,7 +34,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	int32_t pos_count=0;
 
 	// initialize number of labels and labels
-	SGVector<float64_t> orig_labels = ((CRegressionLabels*) predicted)->get_labels();
+	SGVector<float64_t> orig_labels = predicted->get_confidences();
 	int32_t length = orig_labels.vlen;
 	float64_t* labels = CMath::clone_vector(orig_labels.vector, length);
 
@@ -55,7 +55,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	// get total numbers of positive and negative labels
 	for (i=0; i<length; i++)
 	{
-		if (((CBinaryLabels*) ground_truth)->get_label(i) > 0)
+		if (ground_truth->get_confidence(i) > 0)
 			pos_count++;
 	}
 
@@ -66,7 +66,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	for (i=0; i<length; i++)
 	{
 		// update number of true positive examples
-		if (((CBinaryLabels*) ground_truth)->get_label(idxs[i]) > 0)
+		if (ground_truth->get_confidence(idxs[i]) > 0)
 			tp += 1.0;
 
 		// precision (x)
@@ -74,7 +74,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 		// recall (y)
 		m_PRC_graph[2*i+1] = tp/float64_t(pos_count);
 
-		m_thresholds[i]= ((CRegressionLabels*) predicted)->get_label(idxs[i]);
+		m_thresholds[i]= predicted->get_confidence(idxs[i]);
 	}
 
 	// calc auRPC using area under curve

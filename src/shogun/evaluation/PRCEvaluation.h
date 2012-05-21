@@ -66,6 +66,7 @@ public:
 	 * @return thresholds
 	 */
 	SGVector<float64_t> get_thresholds();
+
 protected:
 
 	/** 2-d array used to store PRC graph */

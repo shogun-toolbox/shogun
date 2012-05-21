@@ -40,10 +40,13 @@ class CBinaryLabels : public CDenseLabels
 		CBinaryLabels(int32_t num_labels);
 
 		/** constructor
+		 * sets confidences from src vector
+		 * sets labels with sign of src elements with added threshold
 		 *
 		 * @param src labels to set
+		 * @param threshold threshold
 		 */
-		CBinaryLabels(SGVector<float64_t> src);
+		CBinaryLabels(SGVector<float64_t> src, float64_t threshold=0.0);
 
 		/** constructor
 		 *
@@ -71,10 +74,6 @@ class CBinaryLabels : public CDenseLabels
 		 */
 		virtual ELabelType get_label_type();
 
-protected:
-
-		/** threshold */
-		float64_t m_threshold;
 };
 }
 #endif
