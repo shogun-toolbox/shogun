@@ -25,7 +25,7 @@ CRealLabels* CRealLabels::obtain_from_generic(CLabels* base_labels)
 	if ( base_labels->get_label_type() == LT_REAL )
 		return (CRealLabels*) base_labels;
 	else
-		SG_ERROR("base_labels must be of dynamic type CRealLabels");
+		SG_SERROR("base_labels must be of dynamic type CRealLabels");
 
 	return NULL;
 }

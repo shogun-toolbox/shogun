@@ -61,6 +61,7 @@
 %include "Multiclass_includes.i"
 %include "Transfer_includes.i"
 
+%include "Machine.i"
 %include "SGBase.i"
 %include "IO.i"
 %include "Library.i"

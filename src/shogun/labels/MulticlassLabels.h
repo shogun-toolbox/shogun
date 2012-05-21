@@ -58,7 +58,7 @@ class CMulticlassLabels : public CDenseLabels
 		 *
 		 * @param base_labels its dynamic type must be CMulticlassLabels
 		 */
-		CMulticlassLabels* obtain_from_generic(CLabels* base_labels);
+		static CMulticlassLabels* obtain_from_generic(CLabels* base_labels);
 
 		/** is_valid checks if labeling is a multi-class labeling
 		 *

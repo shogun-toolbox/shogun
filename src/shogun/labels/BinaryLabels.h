@@ -55,7 +55,7 @@ class CBinaryLabels : public CDenseLabels
 		 *
 		 * @param base_labels its dynamic type must be CBinaryLabels
 		 */
-		CBinaryLabels* obtain_from_generic(CLabels* base_labels);
+		static CBinaryLabels* obtain_from_generic(CLabels* base_labels);
 
 		/** is_valid checks if labeling is a two-class labeling
 		 *
