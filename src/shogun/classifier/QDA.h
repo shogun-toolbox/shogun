@@ -54,18 +54,12 @@ class CQDA : public CMachine
 
 		virtual ~CQDA();
 
-		/** apply QDA to all examples
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* apply();
-
 		/** apply QDA to data
 		 *
 		 * @param data (test) data to be classified
 		 * @return labels result of classification
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 
 		/** set store_covs
 		 *

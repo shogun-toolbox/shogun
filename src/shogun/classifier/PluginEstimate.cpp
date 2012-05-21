@@ -96,8 +96,19 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 	return true;
 }
 
-CLabels* CPluginEstimate::apply()
+CLabels* CPluginEstimate::apply(CFeatures* data)
 {
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+			data->get_feature_type() != F_WORD)
+		{
+			SG_ERROR("Features not of class string type word\n");
+		}
+
+		set_features((CStringFeatures<uint16_t>*) data);
+	}
+
 	ASSERT(features);
 	CRealLabels* result=new CRealLabels(features->get_num_vectors());
 	ASSERT(result->get_num_labels()==features->get_num_vectors());
@@ -106,21 +117,6 @@ CLabels* CPluginEstimate::apply()
 		result->set_label(vec, apply(vec));
 
 	return result;
-}
-
-CLabels* CPluginEstimate::apply(CFeatures* data)
-{
-	if (!data)
-		SG_ERROR("No features specified\n");
-
-	if (data->get_feature_class() != C_STRING ||
-			data->get_feature_type() != F_WORD)
-	{
-		SG_ERROR("Features not of class string type word\n");
-	}
-
-	set_features((CStringFeatures<uint16_t>*) data);
-	return apply();
 }
 
 float64_t CPluginEstimate::apply(int32_t vec_idx)

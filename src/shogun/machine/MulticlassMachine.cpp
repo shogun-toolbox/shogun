@@ -69,12 +69,6 @@ void CMulticlassMachine::init_strategy()
     m_multiclass_strategy->set_num_classes(num_classes);
 }
 
-CRealLabels* CMulticlassMachine::apply(CFeatures* features)
-{
-	init_machines_for_apply(features);
-	return apply();
-}
-
 CRealLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 {
 	CMachine *machine = (CMachine*)m_machines->get_element(i);
@@ -92,8 +86,10 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 	return output;
 }
 
-CRealLabels* CMulticlassMachine::apply()
+CRealLabels* CMulticlassMachine::apply(CFeatures* data)
 {
+	if (data)
+		init_machines_for_apply(data);
 	/** Ensure that m_machines have the features set */
 	init_machines_for_apply(NULL);
 

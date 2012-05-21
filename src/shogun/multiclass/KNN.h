@@ -74,18 +74,12 @@ class CKNN : public CDistanceMachine
 		virtual inline EClassifierType get_classifier_type() { return CT_KNN; }
 		//inline EDistanceType get_distance_type() { return DT_KNN;}
 
-		/** classify all examples
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* apply();
-
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)

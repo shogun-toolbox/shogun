@@ -108,8 +108,15 @@ bool CKNN::train_machine(CFeatures* data)
 	return true;
 }
 
-CLabels* CKNN::apply()
+CLabels* CKNN::apply(CFeatures* data)
 {
+	if (data)
+		init_distance(data);
+
+	// redirecting to fast (without sorting) classify if k==1
+	if (m_k == 1)
+		return classify_NN();
+
 	ASSERT(m_num_classes>0);
 	ASSERT(distance);
 	ASSERT(distance->get_num_vec_rhs());
@@ -264,17 +271,6 @@ CLabels* CKNN::apply()
 		SG_FREE(dists);
 
 	return output;
-}
-
-CLabels* CKNN::apply(CFeatures* data)
-{
-	init_distance(data);
-
-	// redirecting to fast (without sorting) classify if k==1
-	if (m_k == 1)
-		return classify_NN();
-
-	return apply();
 }
 
 CLabels* CKNN::classify_NN()

@@ -31,8 +31,16 @@ COnlineLinearMachine::~COnlineLinearMachine()
 	SG_UNREF(features);
 }
 
-CRealLabels* COnlineLinearMachine::apply()
+CRealLabels* COnlineLinearMachine::apply(CFeatures* data)
 {
+	if (data)
+	{
+		if (!data->has_property(FP_STREAMING_DOT))
+			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
+
+		set_features((CStreamingDotFeatures*) data);
+	}
+
 	ASSERT(features);
 	ASSERT(features->has_property(FP_STREAMING_DOT));
 
@@ -56,16 +64,6 @@ CRealLabels* COnlineLinearMachine::apply()
 		labels_array.vector[i]=(*labels_dynarray)[i];
 
 	return new CRealLabels(labels_array);
-}
-
-CRealLabels* COnlineLinearMachine::apply(CFeatures* data)
-{
-	if (!data)
-		SG_ERROR("No features specified\n");
-	if (!data->has_property(FP_STREAMING_DOT))
-		SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
-	set_features((CStreamingDotFeatures*) data);
-	return apply();
 }
 
 float32_t COnlineLinearMachine::apply(float32_t* vec, int32_t len)

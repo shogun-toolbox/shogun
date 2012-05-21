@@ -119,10 +119,7 @@ class CHierarchical : public CDistanceMachine
 		virtual void store_model_features();
 
 		/** NOT IMPLEMENTED */
-		virtual CLabels* apply();
-
-		/** NOT IMPLEMENTED */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 
 		/** NOT IMPLEMENTED */
 		virtual float64_t apply(int32_t num);

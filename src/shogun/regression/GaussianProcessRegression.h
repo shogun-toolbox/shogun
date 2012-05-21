@@ -109,18 +109,12 @@ class CGaussianProcessRegression : public CMachine
 		*/
 		CKernel* get_kernel();
 		
-		/** apply regression to all objects
-		*
-		* @return result labels
-		*/
-		virtual CLabels* apply();
-		
 		/** apply regression to data
 		*
 		* @param data (test)data to be classified
 		* @return classified labels
 		*/
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 		
 		/** apply regression to one example
 		*

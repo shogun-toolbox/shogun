@@ -117,18 +117,12 @@ class CLinearMachine : public CMachine
 			features=feat;
 		}
 
-		/** apply linear machine to all examples
-		 *
-		 * @return resulting labels
-		 */
-		virtual CLabels* apply();
-
 		/** apply linear machine to data
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)

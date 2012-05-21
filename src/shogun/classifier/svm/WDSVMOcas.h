@@ -148,18 +148,12 @@ class CWDSVMOcas : public CMachine
 		 */
 		inline int32_t get_degree() { return degree; }
 
-		/** classify all examples
-		 *
-		 * @return resulting labels
-		 */
-		CLabels* apply();
-
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 
 		/** classify one example
 		 *

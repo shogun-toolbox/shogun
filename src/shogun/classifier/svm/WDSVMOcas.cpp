@@ -98,8 +98,20 @@ CWDSVMOcas::~CWDSVMOcas()
 {
 }
 
-CLabels* CWDSVMOcas::apply()
+CLabels* CWDSVMOcas::apply(CFeatures* data)
 {
+	if (data)
+	{
+		if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_BYTE)
+		{
+			SG_ERROR("Features not of class string type byte\n");
+		}
+
+		set_features((CStringFeatures<uint8_t>*) data);
+	}
+	ASSERT(features);
+
 	set_wd_weights();
 	set_normalization_const();
 
@@ -118,21 +130,6 @@ CLabels* CWDSVMOcas::apply()
 	}
 
 	return NULL;
-}
-
-CLabels* CWDSVMOcas::apply(CFeatures* data)
-{
-	if (!data)
-		SG_ERROR("No features specified\n");
-
-	if (data->get_feature_class() != C_STRING ||
-			data->get_feature_type() != F_BYTE)
-	{
-		SG_ERROR("Features not of class string type byte\n");
-	}
-
-	set_features((CStringFeatures<uint8_t>*) data);
-	return apply();
 }
 
 int32_t CWDSVMOcas::set_wd_weights()

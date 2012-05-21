@@ -126,18 +126,13 @@ class CMachine : public CSGObject
 		 */
 		virtual bool train(CFeatures* data=NULL);
 
-		/** apply machine to the currently set features
-		 *
-		 * @return output 'labels'
-		 */
-		virtual CLabels* apply()=0;
-
 		/** apply machine to data
+		 * if data is not specified apply to the current features
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data)=0;
+		virtual CLabels* apply(CFeatures* data=NULL) = 0;
 
 		/** apply machine to one example
 		 *
@@ -159,13 +154,6 @@ class CMachine : public CSGObject
 		 * @return labels
 		 */
 		virtual CLabels* get_labels();
-
-		/** get one specific label
-		 *
-		 * @param i index of label to get
-		 * @return value of label at index i
-		 */
-		//virtual float64_t get_label(int32_t i);
 
 		/** set maximum training time
 		 *

@@ -198,11 +198,6 @@ void CHierarchical::store_model_features()
 
 CLabels* CHierarchical::apply(CFeatures* data)
 {
-	return apply();
-}
-
-CLabels* CHierarchical::apply()
-{
 	SG_ERROR("apply(...) not implemented for %s!\n", get_name());
 	return NULL;
 }

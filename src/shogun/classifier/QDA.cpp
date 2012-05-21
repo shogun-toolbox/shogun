@@ -68,8 +68,16 @@ void CQDA::cleanup()
 	m_num_classes = 0;
 }
 
-CLabels* CQDA::apply()
+CLabels* CQDA::apply(CFeatures* data)
 {
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+		set_features((CDotFeatures*) data);
+	}
+
 	if ( !m_features )
 		return NULL;
 
@@ -133,17 +141,6 @@ CLabels* CQDA::apply()
 #endif
 
 	return out;
-}
-
-CLabels* CQDA::apply(CFeatures* data)
-{
-	if ( !data )
-		SG_ERROR("No features specified\n");
-	if ( !data->has_property(FP_DOT) )
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
-
-	set_features((CDotFeatures*) data);
-	return apply();
 }
 
 bool CQDA::train_machine(CFeatures* data)
