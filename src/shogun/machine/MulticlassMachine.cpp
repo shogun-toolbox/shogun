@@ -175,3 +175,18 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 
 	return true;
 }
+
+float64_t CMulticlassMachine::apply_one(int32_t vec_idx)
+{
+	init_machines_for_apply(NULL);
+
+	ASSERT(m_machines->get_num_elements()>0);
+	SGVector<float64_t> outputs(m_machines->get_num_elements());
+
+	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+		outputs[i] = get_submachine_output(i, vec_idx);
+
+	float64_t result = m_multiclass_strategy->decide_label(outputs);
+
+	return result;
+}

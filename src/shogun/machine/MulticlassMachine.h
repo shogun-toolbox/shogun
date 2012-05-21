@@ -100,6 +100,12 @@ class CMulticlassMachine : public CMachine
 		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
+		/** classify one example
+		 * @param vec_idx
+		 * @return label
+		 */
+		virtual float64_t apply_one(int32_t vec_idx);
+
 		/** get the type of multiclass'ness
 		 *
 		 * @return multiclass type one vs one etc
