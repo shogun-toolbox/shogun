@@ -21,7 +21,7 @@ using namespace shogun;
 struct S_THREAD_PARAM
 {
 	CKernelMachine* kernel_machine;
-	CRealLabels* result;
+	float64_t* result;
 	int32_t start;
 	int32_t end;
 
@@ -236,7 +236,19 @@ bool CKernelMachine::init_kernel_optimization()
 	return false;
 }
 
-CLabels* CKernelMachine::apply(CFeatures* data)
+CRealLabels* CKernelMachine::apply_regression(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CRealLabels(outputs);
+}
+
+CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CBinaryLabels(outputs);
+}
+
+SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
 	if (is_data_locked())
 	{
@@ -264,13 +276,13 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 
 	SG_UNREF(lhs);
 
-	CRealLabels* lab=NULL;
+	int32_t num_vectors=kernel->get_num_vec_rhs();
+
+	SGVector<float64_t> output(num_vectors);
 
 	if (kernel->get_num_vec_rhs()>0)
 	{
-		int32_t num_vectors=kernel->get_num_vec_rhs();
 
-		lab=new CRealLabels(num_vectors);
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		CSignal::clear_cancel();
@@ -283,9 +295,6 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
 		{
-			float64_t* output=SG_MALLOC(float64_t, num_vectors);
-			memset(output, 0, sizeof(float64_t)*num_vectors);
-
 			if (get_num_support_vectors()>0)
 			{
 				int32_t* sv_idx=SG_MALLOC(int32_t, get_num_support_vectors());
@@ -303,16 +312,15 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 				}
 
 				kernel->compute_batch(num_vectors, idx,
-						output, get_num_support_vectors(), sv_idx, sv_weight);
+						output.vector, get_num_support_vectors(), sv_idx, sv_weight);
 				SG_FREE(sv_idx);
 				SG_FREE(sv_weight);
 				SG_FREE(idx);
 			}
 
 			for (int32_t i=0; i<num_vectors; i++)
-				lab->set_label(i, get_bias()+output[i]);
+				output[i] = get_bias() + output[i];
 
-			SG_FREE(output);
 		}
 		else
 		{
@@ -323,7 +331,7 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 			{
 				S_THREAD_PARAM params;
 				params.kernel_machine=this;
-				params.result=lab;
+				params.result = output.vector;
 				params.start=0;
 				params.end=num_vectors;
 				params.verbose=true;
@@ -343,7 +351,7 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 				for (t=0; t<num_threads-1; t++)
 				{
 					params[t].kernel_machine = this;
-					params[t].result = lab;
+					params[t].result = output.vector;
 					params[t].start = t*step;
 					params[t].end = (t+1)*step;
 					params[t].verbose = false;
@@ -354,7 +362,7 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 				}
 
 				params[t].kernel_machine = this;
-				params[t].result = lab;
+				params[t].result = output.vector;
 				params[t].start = t*step;
 				params[t].end = num_vectors;
 				params[t].verbose = true;
@@ -379,10 +387,10 @@ CLabels* CKernelMachine::apply(CFeatures* data)
 			SG_DONE();
 	}
 
-	return lab;
+	return output;
 }
 
-float64_t CKernelMachine::apply(int32_t num)
+float64_t CKernelMachine::apply_one(int32_t num)
 {
 	ASSERT(kernel);
 
@@ -403,9 +411,9 @@ float64_t CKernelMachine::apply(int32_t num)
 
 void* CKernelMachine::apply_helper(void* p)
 {
-	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
-	CRealLabels* result=params->result;
-	CKernelMachine* kernel_machine=params->kernel_machine;
+	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	float64_t* result = params->result;
+	CKernelMachine* kernel_machine = params->kernel_machine;
 
 #ifdef WIN32
 	for (int32_t vec=params->start; vec<params->end; vec++)
@@ -424,7 +432,7 @@ void* CKernelMachine::apply_helper(void* p)
 
 		/* eventually use index mapping if exists */
 		index_t idx=params->indices ? params->indices[vec] : vec;
-		result->set_label(vec, kernel_machine->apply(idx));
+		result[vec] = kernel_machine->apply_one(idx);
 	}
 
 	return NULL;
@@ -499,7 +507,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 	ASSERT(m_custom_kernel==kernel);
 
 	int32_t num_inds=indices.vlen;
-	CRealLabels* lab=new CRealLabels(num_inds);
+	SGVector<float64_t> output(num_inds);
 
 	CSignal::clear_cancel();
 
@@ -516,7 +524,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 	{
 		S_THREAD_PARAM params;
 		params.kernel_machine=this;
-		params.result=lab;
+		params.result=output.vector;
 
 		/* use the parameter index vector */
 		params.start=0;
@@ -538,7 +546,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 		for (t=0; t<num_threads-1; t++)
 		{
 			params[t].kernel_machine=this;
-			params[t].result=lab;
+			params[t].result=output.vector;
 
 			/* use the parameter index vector */
 			params[t].start=t*step;
@@ -552,7 +560,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 		}
 
 		params[t].kernel_machine=this;
-		params[t].result=lab;
+		params[t].result=output.vector;
 
 		/* use the parameter index vector */
 		params[t].start=t*step;
@@ -578,7 +586,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 #endif
 		SG_DONE();
 
-	return lab;
+	return new CRealLabels(output);
 }
 
 void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)

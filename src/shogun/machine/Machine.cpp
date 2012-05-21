@@ -64,12 +64,6 @@ bool CMachine::train(CFeatures* data)
 	return result;
 }
 
-float64_t CMachine::apply(int32_t num)
-{
-	SG_NOTIMPLEMENTED;
-	return CMath::INFTY;
-}
-
 void CMachine::set_labels(CLabels* lab)
 {
 	SG_UNREF(m_labels);
@@ -82,14 +76,6 @@ CLabels* CMachine::get_labels()
 	SG_REF(m_labels);
 	return m_labels;
 }
-
-//float64_t CMachine::get_label(int32_t i)
-//{
-//	if (!m_labels)
-//		SG_ERROR("No Labels assigned\n");
-//
-//	return m_labels->get_label(i);
-//}
 
 void CMachine::set_max_train_time(float64_t t)
 {
@@ -159,3 +145,38 @@ void CMachine::data_unlock()
 
 	SG_DEBUG("leaving %s::data_lock\n", get_name());
 }
+
+CLabels* CMachine::apply(CFeatures* data)
+{
+	switch (get_machine_problem_type())
+	{
+		case PT_BINARY:
+			return apply_binary(data);
+		case PT_REGRESSION:
+			return apply_regression(data);
+		case PT_MULTICLASS:
+			return apply_multiclass(data);
+		default: SG_ERROR("Unknown problem type");
+	}
+	return NULL;
+}
+
+CBinaryLabels* CMachine::apply_binary(CFeatures* data)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+CRealLabels* CMachine::apply_regression(CFeatures* data)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
+{
+	SG_NOTIMPLEMENTED;
+	return NULL;
+}
+
+

@@ -98,14 +98,19 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual CRealLabels* apply(CFeatures* features=NULL);
+		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
-		/** classify one example
-		 *
-		 * @param num number of example to classify
-		 * @return resulting classification
-		 */
-		virtual float64_t apply(int32_t num);
+		virtual CRealLabels* apply_regression(CFeatures* data=NULL)
+		{
+			SG_ERROR("Use Linear or Kernel machine");
+			return NULL;
+		}
+
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL)
+		{
+			SG_ERROR("Use Linear or Kernel machine");
+			return NULL;
+		}
 
 		/** get the type of multiclass'ness
 		 *

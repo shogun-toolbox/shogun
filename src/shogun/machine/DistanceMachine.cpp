@@ -204,7 +204,7 @@ void* CDistanceMachine::run_distance_thread_rhs(void* p)
     return NULL;
 }
 
-CLabels* CDistanceMachine::apply(CFeatures* data)
+CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
 {
 	if (data)
 	{
@@ -214,7 +214,7 @@ CLabels* CDistanceMachine::apply(CFeatures* data)
 		SG_UNREF(lhs);
 
 		/* build result labels and classify all elements of procedure */
-		CRealLabels* result=new CRealLabels(data->get_num_vectors());
+		CMulticlassLabels* result=new CMulticlassLabels(data->get_num_vectors());
 		for (index_t i=0; i<data->get_num_vectors(); ++i)
 			result->set_label(i, apply(i));
 		return result;
@@ -223,7 +223,7 @@ CLabels* CDistanceMachine::apply(CFeatures* data)
 	{
 		/* call apply on complete right hand side */
 		CFeatures* all=distance->get_rhs();
-		CLabels* result=apply(all);
+		CMulticlassLabels* result = apply_multiclass(all);
 		SG_UNREF(all);
 		return result;
 	}

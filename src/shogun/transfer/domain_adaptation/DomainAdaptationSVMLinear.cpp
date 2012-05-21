@@ -130,7 +130,7 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
     	ASSERT(presvm->get_bias() == 0.0);
 
         // bias of parent SVM was set to zero in constructor, already contains B
-        CRealLabels* parent_svm_out = (CRealLabels*) presvm->apply(tmp_data);
+        CBinaryLabels* parent_svm_out = presvm->apply_binary(tmp_data);
 
         SG_DEBUG("pre-computing linear term from presvm\n");
 
@@ -210,18 +210,18 @@ void CDomainAdaptationSVMLinear::set_train_factor(float64_t factor)
 }
 
 
-CLabels* CDomainAdaptationSVMLinear::apply(CFeatures* data)
+CBinaryLabels* CDomainAdaptationSVMLinear::apply_binary(CFeatures* data)
 {
     ASSERT(presvm->get_bias()==0.0);
 
     int32_t num_examples = data->get_num_vectors();
 
-    CRealLabels* out_current = (CRealLabels*) CLibLinear::apply(data);
+    CBinaryLabels* out_current = CLibLinear::apply_binary(data);
 
     if (presvm)
     {
         // recursive call if used on DomainAdaptationSVM object
-        CRealLabels* out_presvm = (CRealLabels*) presvm->apply(data);
+        CBinaryLabels* out_presvm = presvm->apply_binary(data);
 
 
         // combine outputs

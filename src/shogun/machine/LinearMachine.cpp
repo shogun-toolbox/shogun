@@ -43,7 +43,19 @@ CLinearMachine::~CLinearMachine()
 	SG_UNREF(features);
 }
 
-CLabels* CLinearMachine::apply(CFeatures* data)
+CRealLabels* CLinearMachine::apply_regression(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CRealLabels(outputs);
+}
+
+CBinaryLabels* CLinearMachine::apply_binary(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CBinaryLabels(outputs);
+}
+
+SGVector<float64_t> CLinearMachine::apply_get_outputs(CFeatures* data)
 {
 	if (data)
 	{
@@ -54,7 +66,7 @@ CLabels* CLinearMachine::apply(CFeatures* data)
 	}
 
 	if (!features)
-		return NULL;
+		return SGVector<float64_t>();
 
 	int32_t num=features->get_num_vectors();
 	ASSERT(num>0);
@@ -62,6 +74,5 @@ CLabels* CLinearMachine::apply(CFeatures* data)
 
 	float64_t* out=SG_MALLOC(float64_t, num);
 	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);
-
-	return new CRealLabels(SGVector<float64_t>(out,num));
+	return SGVector<float64_t>(out,num);
 }

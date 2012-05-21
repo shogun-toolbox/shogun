@@ -10,6 +10,8 @@
  */
 
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
+#include <shogun/machine/LinearMachine.h>
+#include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/MulticlassMachine.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -81,12 +83,17 @@ CRealLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 {
 	CMachine *machine = get_machine(i);
-	float64_t output = machine->apply(num);
+	float64_t output;
+	// dirty hack
+	if (dynamic_cast<CLinearMachine*>(machine))
+		output = ((CLinearMachine*)machine)->apply(num);
+	if (dynamic_cast<CKernelMachine*>(machine))
+		output = ((CKernelMachine*)machine)->apply(num);
 	SG_UNREF(machine);
 	return output;
 }
 
-CRealLabels* CMulticlassMachine::apply(CFeatures* data)
+CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 {
 	if (data)
 		init_machines_for_apply(data);
@@ -100,7 +107,7 @@ CRealLabels* CMulticlassMachine::apply(CFeatures* data)
 		if (num_machines <= 0)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
 
-		CRealLabels* result=new CRealLabels(num_vectors);
+		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
 		CRealLabels** outputs=SG_MALLOC(CRealLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
@@ -167,19 +174,4 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	SG_UNREF(train_labels);
 
 	return true;
-}
-
-float64_t CMulticlassMachine::apply(int32_t num)
-{
-	init_machines_for_apply(NULL);
-
-	ASSERT(m_machines->get_num_elements()>0);
-	SGVector<float64_t> outputs(m_machines->get_num_elements());
-
-	for (int32_t i=0; i < m_machines->get_num_elements(); i++)
-		outputs[i] = get_submachine_output(i, num);
-
-	float64_t result=m_multiclass_strategy->decide_label(outputs);
-
-	return result;
 }
