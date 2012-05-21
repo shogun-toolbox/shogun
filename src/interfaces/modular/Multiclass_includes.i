@@ -36,4 +36,5 @@
  #include <shogun/multiclass/KNN.h>
  #include <shogun/multiclass/ConjugateIndex.h>
  #include <shogun/multiclass/GaussianNaiveBayes.h>
+ #include <shogun/multiclass/QDA.h>
 %}
