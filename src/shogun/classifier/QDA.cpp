@@ -15,7 +15,6 @@
 #include <shogun/classifier/QDA.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Math.h>
@@ -123,7 +122,7 @@ CLabels* CQDA::apply()
 			norm2[i + k*num_vecs] *= -0.5;
 		}
 
-	CRealLabels* out = new CRealLabels(num_vecs);
+	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
 	for ( i = 0 ; i < num_vecs ; ++i )
 		out->set_label(i, CMath::arg_max(norm2.vector+i, num_vecs, m_num_classes));
