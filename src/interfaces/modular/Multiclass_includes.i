@@ -34,4 +34,5 @@
  #include <shogun/multiclass/ScatterSVM.h>
  #include <shogun/multiclass/KNN.h>
  #include <shogun/multiclass/ConjugateIndex.h>
+ #include <shogun/multiclass/GaussianNaiveBayes.h>
 %}
