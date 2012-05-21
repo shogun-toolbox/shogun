@@ -18,6 +18,15 @@ namespace shogun {
             return CMulticlassLabels::obtain_from_generic($self->apply_multiclass(data));
         }
     }
+    
+    %extend CLinearMulticlassMachine
+    {
+        CMulticlassLabels* apply(CFeatures* data=NULL)
+        {
+            return CMulticlassLabels::obtain_from_generic($self->apply_multiclass(data));
+        }
+    }
+
 
     /*%extend COnlineLinearMachine
     {
@@ -29,17 +38,17 @@ namespace shogun {
 
     %extend CLinearMachine
     {
-        CRealLabels* apply(CFeatures* data=NULL)
+        CRegressionLabels* apply(CFeatures* data=NULL)
         {
-            return CRealLabels::obtain_from_generic($self->apply_regression(data));
+            return CRegressionLabels::obtain_from_generic($self->apply_regression(data));
         }
     }
 
     %extend CKernelMachine
     {
-        CRealLabels* apply(CFeatures* data=NULL)
+        CRegressionLabels* apply(CFeatures* data=NULL)
         {
-            return CRealLabels::obtain_from_generic($self->apply_regression(data));
+            return CRegressionLabels::obtain_from_generic($self->apply_regression(data));
         }
     }
 

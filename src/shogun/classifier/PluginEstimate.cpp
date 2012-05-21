@@ -13,7 +13,7 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/distributions/LinearHMM.h>
 #include <shogun/classifier/PluginEstimate.h>
 
@@ -110,7 +110,7 @@ CLabels* CPluginEstimate::apply(CFeatures* data)
 	}
 
 	ASSERT(features);
-	CRealLabels* result=new CRealLabels(features->get_num_vectors());
+	CRegressionLabels* result=new CRegressionLabels(features->get_num_vectors());
 	ASSERT(result->get_num_labels()==features->get_num_vectors());
 
 	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)

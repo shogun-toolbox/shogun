@@ -16,7 +16,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <iostream>
 #include <vector>
 

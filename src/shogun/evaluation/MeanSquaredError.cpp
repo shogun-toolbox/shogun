@@ -10,7 +10,7 @@
 
 #include <shogun/evaluation/MeanSquaredError.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -24,7 +24,7 @@ float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
 	int32_t length = predicted->get_num_labels();
 	float64_t mse = 0.0;
 	for (int32_t i=0; i<length; i++)
-		mse += CMath::sq(((CRealLabels*) predicted)->get_label(i) - ((CRealLabels*) ground_truth)->get_label(i));
+		mse += CMath::sq(((CRegressionLabels*) predicted)->get_label(i) - ((CRegressionLabels*) ground_truth)->get_label(i));
 	mse /= length;
 	return mse;
 }

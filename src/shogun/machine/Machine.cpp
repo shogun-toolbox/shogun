@@ -167,7 +167,7 @@ CBinaryLabels* CMachine::apply_binary(CFeatures* data)
 	return NULL;
 }
 
-CRealLabels* CMachine::apply_regression(CFeatures* data)
+CRegressionLabels* CMachine::apply_regression(CFeatures* data)
 {
 	SG_ERROR("This machine does not support apply_regression()\n");
 	return NULL;

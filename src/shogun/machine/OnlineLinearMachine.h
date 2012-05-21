@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/StreamingDotFeatures.h>
 #include <shogun/machine/Machine.h>
 
@@ -153,7 +153,7 @@ class COnlineLinearMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CRealLabels* apply(CFeatures* data=NULL);
+		virtual CRegressionLabels* apply(CFeatures* data=NULL);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply(int32_t vec_idx)

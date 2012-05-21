@@ -9,7 +9,7 @@
  */
 
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
@@ -48,10 +48,10 @@ float64_t CLinearMachine::apply_one(int32_t vec_idx)
 	return features->dense_dot(vec_idx, w.vector, w.vlen) + bias;
 }
 
-CRealLabels* CLinearMachine::apply_regression(CFeatures* data)
+CRegressionLabels* CLinearMachine::apply_regression(CFeatures* data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRealLabels(outputs);
+	return new CRegressionLabels(outputs);
 }
 
 CBinaryLabels* CLinearMachine::apply_binary(CFeatures* data)

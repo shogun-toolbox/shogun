@@ -15,7 +15,7 @@
 #include <shogun/machine/MulticlassMachine.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -71,11 +71,11 @@ void CMulticlassMachine::init_strategy()
     m_multiclass_strategy->set_num_classes(num_classes);
 }
 
-CRealLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
+CRegressionLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 {
 	CMachine *machine = (CMachine*)m_machines->get_element(i);
 	ASSERT(machine);
-	CRealLabels* output = (CRealLabels*)machine->apply();
+	CRegressionLabels* output = (CRegressionLabels*)machine->apply();
 	SG_UNREF(machine);
 	return output;
 }
@@ -108,10 +108,10 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
-		CRealLabels** outputs=SG_MALLOC(CRealLabels*, num_machines);
+		CRegressionLabels** outputs=SG_MALLOC(CRegressionLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
-			outputs[i] = (CRealLabels*) get_submachine_outputs(i);
+			outputs[i] = (CRegressionLabels*) get_submachine_outputs(i);
 
 		SGVector<float64_t> output_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)

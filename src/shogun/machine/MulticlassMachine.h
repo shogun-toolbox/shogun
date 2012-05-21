@@ -15,7 +15,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 namespace shogun
 {
@@ -85,7 +85,7 @@ class CMulticlassMachine : public CMachine
 		 * @param i number of submachine
 		 * @return outputs
 		 */
-		virtual CRealLabels* get_submachine_outputs(int32_t i);
+		virtual CRegressionLabels* get_submachine_outputs(int32_t i);
 
 		/** get output of i-th submachine for num-th vector
 		 * @param i number of submachine

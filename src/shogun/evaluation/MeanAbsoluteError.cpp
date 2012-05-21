@@ -9,7 +9,7 @@
 
 #include <shogun/evaluation/MeanAbsoluteError.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -23,7 +23,7 @@ float64_t CMeanAbsoluteError::evaluate(CLabels* predicted, CLabels* ground_truth
 	int32_t length = predicted->get_num_labels();
 	float64_t mae = 0.0;
 	for (int32_t i=0; i<length; i++)
-		mae += CMath::abs(((CRealLabels*) predicted)->get_label(i) - ((CRealLabels*) ground_truth)->get_label(i));
+		mae += CMath::abs(((CRegressionLabels*) predicted)->get_label(i) - ((CRegressionLabels*) ground_truth)->get_label(i));
 	mae /= length;
 	return mae;
 }

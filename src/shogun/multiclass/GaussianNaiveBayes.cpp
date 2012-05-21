@@ -12,7 +12,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
@@ -184,7 +184,7 @@ CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 	int32_t num_vectors = m_features->get_num_vectors();
 
 	// init result labels
-	CRealLabels* result = new CRealLabels(num_vectors);
+	CRegressionLabels* result = new CRegressionLabels(num_vectors);
 
 	// classify each example of data
 	SG_PROGRESS(0, 0, num_vectors);

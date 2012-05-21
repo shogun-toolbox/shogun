@@ -15,7 +15,7 @@
 #include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -56,7 +56,7 @@ bool CKernelRidgeRegression::train_machine_pinv()
 		kernel_matrix.matrix[i+i*n]+=m_tau;
 
 	/* re-set alphas of kernel machine */
-	m_alpha=((CRealLabels*) m_labels)->get_labels_copy();
+	m_alpha=((CRegressionLabels*) m_labels)->get_labels_copy();
 
 	/* tell kernel machine that all alphas are needed as'support vectors' */
 	m_svs=SGVector<index_t>(m_alpha.vlen);
@@ -84,8 +84,8 @@ bool CKernelRidgeRegression::train_machine_gs()
 	SGVector<float64_t> b;
 	float64_t alpha_old;
 
-	b=((CRealLabels*) m_labels)->get_labels_copy();
-	m_alpha=((CRealLabels*) m_labels)->get_labels_copy();
+	b=((CRegressionLabels*) m_labels)->get_labels_copy();
+	m_alpha=((CRegressionLabels*) m_labels)->get_labels_copy();
 	m_alpha.zero();
 
 	// tell kernel machine that all alphas are needed as 'support vectors'

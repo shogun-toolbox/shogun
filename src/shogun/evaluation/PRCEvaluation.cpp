@@ -9,7 +9,7 @@
  */
 
 #include <shogun/evaluation/PRCEvaluation.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 
@@ -34,7 +34,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	int32_t pos_count=0;
 
 	// initialize number of labels and labels
-	SGVector<float64_t> orig_labels = ((CRealLabels*) predicted)->get_labels();
+	SGVector<float64_t> orig_labels = ((CRegressionLabels*) predicted)->get_labels();
 	int32_t length = orig_labels.vlen;
 	float64_t* labels = CMath::clone_vector(orig_labels.vector, length);
 
@@ -74,7 +74,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 		// recall (y)
 		m_PRC_graph[2*i+1] = tp/float64_t(pos_count);
 
-		m_thresholds[i]= ((CRealLabels*) predicted)->get_label(idxs[i]);
+		m_thresholds[i]= ((CRegressionLabels*) predicted)->get_label(idxs[i]);
 	}
 
 	// calc auRPC using area under curve

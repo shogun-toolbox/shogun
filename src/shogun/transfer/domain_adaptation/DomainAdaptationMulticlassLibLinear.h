@@ -40,7 +40,7 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 		virtual ~CDomainAdaptationMulticlassLibLinear();
 
 		/** get submachine outputs */
-		virtual CRealLabels* get_submachine_outputs(int32_t);
+		virtual CRegressionLabels* get_submachine_outputs(int32_t);
 
 		/** get name */
 		virtual const char* get_name() const

@@ -22,7 +22,7 @@
 namespace shogun
 {
 	class CFile;
-	class CRealLabels;
+	class CRegressionLabels;
 	class CDenseLabels;
 
 /** @brief Real Labels are real-valued labels
@@ -31,35 +31,35 @@ namespace shogun
  *
  * valid values for labels are all real-valued numbers.
  */
-class CRealLabels : public CDenseLabels
+class CRegressionLabels : public CDenseLabels
 {
 	public:
 		/** default constructor */
-		CRealLabels();
+		CRegressionLabels();
 
 		/** constructor
 		 *
 		 * @param num_labels number of labels
 		 */
-		CRealLabels(int32_t num_labels);
+		CRegressionLabels(int32_t num_labels);
 
 		/** constructor
 		 *
 		 * @param src labels to set
 		 */
-		CRealLabels(const SGVector<float64_t> src);
+		CRegressionLabels(const SGVector<float64_t> src);
 
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CRealLabels(CFile* loader);
+		CRegressionLabels(CFile* loader);
 
 		/** helper method used to specialize a base class instance
 		 *
-		 * @param base_labels its dynamic type must be CRealLabels
+		 * @param base_labels its dynamic type must be CRegressionLabels
 		 */
-		static CRealLabels* obtain_from_generic(CLabels* base_labels);
+		static CRegressionLabels* obtain_from_generic(CLabels* base_labels);
 
 		/** is_valid checks if labeling is a multi-class labeling
 		 *

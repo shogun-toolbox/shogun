@@ -16,7 +16,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 #include <unistd.h>
 
@@ -145,7 +145,7 @@ bool CGUIHMM::linear_train(char align)
 	return true;
 }
 
-CRealLabels* CGUIHMM::classify(CRealLabels* result)
+CRegressionLabels* CGUIHMM::classify(CRegressionLabels* result)
 {
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
@@ -159,7 +159,7 @@ CRealLabels* CGUIHMM::classify(CRealLabels* result)
 	neg->set_observations(obs);
 
 	if (!result)
-		result=new CRealLabels(num_vec);
+		result=new CRegressionLabels(num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, pos->model_probability(i) - neg->model_probability(i));
@@ -187,7 +187,7 @@ float64_t CGUIHMM::classify_example(int32_t idx)
 	return result;
 }
 
-CRealLabels* CGUIHMM::one_class_classify(CRealLabels* result)
+CRegressionLabels* CGUIHMM::one_class_classify(CRegressionLabels* result)
 {
 	ASSERT(working);
 
@@ -200,7 +200,7 @@ CRealLabels* CGUIHMM::one_class_classify(CRealLabels* result)
 	working->set_observations(obs);
 
 	if (!result)
-		result=new CRealLabels(num_vec);
+		result=new CRegressionLabels(num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, working->model_probability(i));
@@ -209,7 +209,7 @@ CRealLabels* CGUIHMM::one_class_classify(CRealLabels* result)
 	return result;
 }
 
-CRealLabels* CGUIHMM::linear_one_class_classify(CRealLabels* result)
+CRegressionLabels* CGUIHMM::linear_one_class_classify(CRegressionLabels* result)
 {
 	ASSERT(working);
 
@@ -222,7 +222,7 @@ CRealLabels* CGUIHMM::linear_one_class_classify(CRealLabels* result)
 	working->set_observations(obs);
 
 	if (!result)
-		result=new CRealLabels(num_vec);
+		result=new CRegressionLabels(num_vec);
 
 	for (int32_t i=0; i<num_vec; i++)
 		result->set_label(i, working->linear_model_probability(i));

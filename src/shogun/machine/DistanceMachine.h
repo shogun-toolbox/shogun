@@ -15,7 +15,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/Machine.h>
 
 #include <stdio.h>
@@ -23,7 +23,7 @@
 namespace shogun
 {
 	class CLabels;
-	class CRealLabels;
+	class CRegressionLabels;
 	class CDistance;
 	class CMachine;
 
@@ -93,7 +93,7 @@ class CDistanceMachine : public CMachine
 		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
-		virtual CRealLabels* apply_regression(CFeatures* data=NULL)
+		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL)
 		{
 			SG_ERROR("Not supported");
 			return NULL;

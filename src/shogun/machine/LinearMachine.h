@@ -131,7 +131,7 @@ class CLinearMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CRealLabels* apply_regression(CFeatures* data=NULL);
+		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 
 		virtual float64_t apply_one(int32_t vec_idx);
 
