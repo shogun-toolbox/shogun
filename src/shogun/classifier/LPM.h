@@ -46,7 +46,7 @@ class CLPM : public CLinearMachine
 		CLPM();
 		virtual ~CLPM();
 
-		inline virtual EClassifierType get_classifier_type()
+		inline virtual EMachineType get_classifier_type()
 		{
 			return CT_LPM;
 		}

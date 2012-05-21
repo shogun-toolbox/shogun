@@ -52,7 +52,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return classifier type HIERARCHICAL
 		 */
-		virtual EClassifierType get_classifier_type();
+		virtual EMachineType get_classifier_type();
 
 		/** load distance machine from file
 		 *

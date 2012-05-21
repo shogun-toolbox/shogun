@@ -74,7 +74,7 @@ class CScatterSVM : public CMulticlassSVM
 		 *
 		 * @return classifier type LIBSVM
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SCATTERSVM; }
+		virtual inline EMachineType get_classifier_type() { return CT_SCATTERSVM; }
 
 		/** classify one example
 		 *

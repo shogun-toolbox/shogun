@@ -59,7 +59,7 @@ class CSVMSGD : public CLinearMachine
 		 *
 		 * @return classifier type SVMOCAS
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SVMSGD; }
+		virtual inline EMachineType get_classifier_type() { return CT_SVMSGD; }
 
 		/** set C
 		 *

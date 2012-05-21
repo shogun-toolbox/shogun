@@ -36,7 +36,7 @@ CLibSVR::~CLibSVR()
 	SG_FREE(model);
 }
 
-EClassifierType CLibSVR::get_classifier_type()
+EMachineType CLibSVR::get_classifier_type()
 {
 	return CT_LIBSVR;
 }

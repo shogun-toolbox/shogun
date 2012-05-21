@@ -41,7 +41,7 @@ class CSubGradientSVM : public CLinearMachine
 		 *
 		 * @return classifier type SUBGRADIENTSVM
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTSVM; }
+		virtual inline EMachineType get_classifier_type() { return CT_SUBGRADIENTSVM; }
 
 		/** set C
 		 *

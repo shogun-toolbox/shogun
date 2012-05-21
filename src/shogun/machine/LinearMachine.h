@@ -133,16 +133,7 @@ class CLinearMachine : public CMachine
 		 */
 		virtual CRealLabels* apply_regression(CFeatures* data=NULL);
 
-		virtual float64_t apply_one(int32_t vec_idx)
-		{
-			return features->dense_dot(vec_idx, w.vector, w.vlen) + bias;
-		}
-
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL)
-		{
-			SG_ERROR("Use LinearMulticlassMachine");
-			return NULL;
-		}
+		virtual float64_t apply_one(int32_t vec_idx);
 
 		/** get features
 		 *

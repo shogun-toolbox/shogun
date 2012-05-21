@@ -81,7 +81,7 @@ class CLibLinear : public CLinearMachine
 		 *
 		 * @return the classifier type
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_LIBLINEAR; }
+		virtual inline EMachineType get_classifier_type() { return CT_LIBLINEAR; }
 
 		/** set C
 		 *

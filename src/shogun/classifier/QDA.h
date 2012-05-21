@@ -89,7 +89,7 @@ class CQDA : public CMachine
 		 *
 		 * @return classifier type QDA
 		 */
-		inline virtual EClassifierType get_classifier_type() { return CT_QDA; }
+		inline virtual EMachineType get_classifier_type() { return CT_QDA; }
 
 		/** set features
 		 *

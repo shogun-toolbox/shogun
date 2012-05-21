@@ -88,7 +88,7 @@ public:
 	/** get classifier type
 	 * @return classifier type
 	 */
-	virtual inline EClassifierType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
+	virtual inline EMachineType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
 
 protected:
 

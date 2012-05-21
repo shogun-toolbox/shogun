@@ -551,7 +551,7 @@ bool CGUIClassifier::train_mkl()
 
 bool CGUIClassifier::train_svm()
 {
-	EClassifierType type = classifier->get_classifier_type();
+	EMachineType type = classifier->get_classifier_type();
 	
 	if (!classifier)
 		SG_ERROR("No SVM available.\n");
@@ -658,7 +658,7 @@ bool CGUIClassifier::train_clustering(int32_t k, int32_t max_iter)
 
 	((CDistanceMachine*) classifier)->set_distance(distance);
 
-	EClassifierType type=classifier->get_classifier_type();
+	EMachineType type=classifier->get_classifier_type();
 	switch (type)
 	{
 		case CT_KMEANS:
@@ -748,7 +748,7 @@ bool CGUIClassifier::train_krr()
 bool CGUIClassifier::train_linear(float64_t gamma)
 {
 	ASSERT(classifier);
-	EClassifierType ctype = classifier->get_classifier_type();
+	EMachineType ctype = classifier->get_classifier_type();
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	CLabels* trainlabels=ui->ui_labels->get_train_labels();
 	bool result=false;
@@ -1202,7 +1202,7 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 	if (!success || !ui->ui_kernel->is_initialized())
 		SG_ERROR("Kernel not initialized.\n");
 
-	EClassifierType type = classifier->get_classifier_type();
+	EMachineType type = classifier->get_classifier_type();
 	if (type==CT_LARANK || type==CT_GMNPSVM || type==CT_LIBSVMMULTICLASS ||
 		type==CT_MKLMULTICLASS)
 	{

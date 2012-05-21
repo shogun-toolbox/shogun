@@ -87,7 +87,7 @@ float64_t CMachine::get_max_train_time()
 	return m_max_train_time;
 }
 
-EClassifierType CMachine::get_classifier_type()
+EMachineType CMachine::get_classifier_type()
 {
 	return CT_NONE;
 }

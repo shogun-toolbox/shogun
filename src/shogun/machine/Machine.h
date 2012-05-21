@@ -28,7 +28,7 @@ class CLabels;
 class CMath;
 
 /** classifier type */
-enum EClassifierType
+enum EMachineType
 {
 	CT_NONE = 0,
 	CT_LIGHT = 10,
@@ -175,7 +175,7 @@ class CMachine : public CSGObject
 		 *
 		 * @return classifier type NONE
 		 */
-		virtual EClassifierType get_classifier_type();
+		virtual EMachineType get_classifier_type();
 
 		/** set solver type
 		 *

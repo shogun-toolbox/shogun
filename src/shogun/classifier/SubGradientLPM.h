@@ -54,7 +54,7 @@ class CSubGradientLPM : public CLinearMachine
 			CLabels* trainlab);
 		virtual ~CSubGradientLPM();
 
-		virtual inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTLPM; }
+		virtual inline EMachineType get_classifier_type() { return CT_SUBGRADIENTLPM; }
 
 		/** set C
 		 *

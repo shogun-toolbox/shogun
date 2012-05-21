@@ -54,7 +54,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return classifier type KMEANS
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
+		virtual inline EMachineType get_classifier_type() { return CT_KMEANS; }
 
 		/** load distance machine from file
 		 *

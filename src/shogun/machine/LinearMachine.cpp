@@ -43,6 +43,11 @@ CLinearMachine::~CLinearMachine()
 	SG_UNREF(features);
 }
 
+float64_t CLinearMachine::apply_one(int32_t vec_idx)
+{
+	return features->dense_dot(vec_idx, w.vector, w.vlen) + bias;
+}
+
 CRealLabels* CLinearMachine::apply_regression(CFeatures* data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);

@@ -81,7 +81,7 @@ class CSVRLight: public CSVMLight
 		 *
 		 * @return classifier type SVRLIGHT
 		 */
-		virtual EClassifierType get_classifier_type();
+		virtual EMachineType get_classifier_type();
 
 		/** SVR learn */
 		void   svr_learn();

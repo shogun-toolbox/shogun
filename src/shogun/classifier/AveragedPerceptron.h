@@ -45,7 +45,7 @@ class CAveragedPerceptron : public CLinearMachine
 		 *
 		 * @return classifier type AVERAGEDPERCEPTRON
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_AVERAGEDPERCEPTRON; }
+		virtual inline EMachineType get_classifier_type() { return CT_AVERAGEDPERCEPTRON; }
 
 		/** train classifier
 		 *

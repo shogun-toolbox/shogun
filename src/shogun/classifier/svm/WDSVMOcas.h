@@ -52,7 +52,7 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @return classifier type WDSVMOCAS
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_WDSVMOCAS; }
+		virtual inline EMachineType get_classifier_type() { return CT_WDSVMOCAS; }
 
 		/** set C
 		 *

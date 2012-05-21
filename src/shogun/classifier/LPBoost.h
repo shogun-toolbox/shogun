@@ -51,7 +51,7 @@ class CLPBoost : public CLinearMachine
 		CLPBoost();
 		virtual ~CLPBoost();
 
-		inline virtual EClassifierType get_classifier_type()
+		inline virtual EMachineType get_classifier_type()
 		{
 			return CT_LPBOOST;
 		}

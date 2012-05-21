@@ -55,7 +55,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @return classifier type OnlineSVMSGD
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SVMSGD; }
+		virtual inline EMachineType get_classifier_type() { return CT_SVMSGD; }
 
 		/** train classifier
 		 *
