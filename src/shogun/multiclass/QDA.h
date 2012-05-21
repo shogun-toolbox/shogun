@@ -36,6 +36,8 @@ namespace shogun
 class CQDA : public CNativeMulticlassMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+
 		/** constructor
 		 *
 		 * @param tolerance tolerance used in training

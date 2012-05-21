@@ -99,6 +99,8 @@ enum EProblemType
 	PT_MULTICLASS = 2
 };
 
+#define MACHINE_PROBLEM_TYPE(PT) virtual EProblemType get_machine_problem_type() const { return PT; }
+
 /** @brief A generic learning machine interface.
  *
  * A machine takes as input CFeatures and (optionally) CLabels.
