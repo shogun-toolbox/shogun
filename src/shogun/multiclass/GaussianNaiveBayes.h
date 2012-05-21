@@ -11,7 +11,7 @@
 #ifndef GAUSSIANNAIVEBAYES_H_
 #define GAUSSIANNAIVEBAYES_H_
 
-#include <shogun/machine/Machine.h>
+#include <shogun/machine/NativeMulticlassMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/DotFeatures.h>
 
@@ -32,7 +32,7 @@ class CFeatures;
  * \f]
  *
  */
-class CGaussianNaiveBayes : public CMachine
+class CGaussianNaiveBayes : public CNativeMulticlassMachine
 {
 
 public:
@@ -62,23 +62,17 @@ public:
 	 */
 	virtual CFeatures* get_features();
 
-	/** train classifier
-	 * @param data train examples
-	 * @return true if successful
-	 */
-	virtual bool train(CFeatures* data=NULL);
-
 	/** classify specified examples
 	 * @param data examples to be classified
 	 * @return labels corresponding to data
 	 */
-	virtual CLabels* apply(CFeatures* data=NULL);
+	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** classifiy specified example
 	 * @param idx example index
 	 * @return label
 	 */
-	virtual float64_t apply(int32_t idx);
+	virtual float64_t apply_one(int32_t idx);
 
 	/** get name
 	 * @return classifier name
@@ -91,6 +85,14 @@ public:
 	virtual inline EMachineType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
 
 protected:
+
+	/** train classifier
+	 * @param data train examples
+	 * @return true if successful
+	 */
+	virtual bool train_machine(CFeatures* data=NULL);
+
+protected: 
 
 	/// features for training or classifying
 	CDotFeatures* m_features;

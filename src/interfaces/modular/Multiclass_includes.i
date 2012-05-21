@@ -4,6 +4,7 @@
  #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
  #include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
  #include <shogun/machine/MulticlassMachine.h>
+ #include <shogun/machine/NativeMulticlassMachine.h>
  #include <shogun/machine/LinearMulticlassMachine.h>
  #include <shogun/machine/KernelMulticlassMachine.h>
  #include <shogun/multiclass/MulticlassSVM.h>
