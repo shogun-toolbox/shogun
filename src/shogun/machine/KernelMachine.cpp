@@ -11,7 +11,7 @@
 
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/lib/Signal.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 
@@ -236,10 +236,10 @@ bool CKernelMachine::init_kernel_optimization()
 	return false;
 }
 
-CRealLabels* CKernelMachine::apply_regression(CFeatures* data)
+CRegressionLabels* CKernelMachine::apply_regression(CFeatures* data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRealLabels(outputs);
+	return new CRegressionLabels(outputs);
 }
 
 CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
@@ -586,7 +586,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 #endif
 		SG_DONE();
 
-	return new CRealLabels(output);
+	return new CRegressionLabels(output);
 }
 
 void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)

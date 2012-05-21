@@ -16,7 +16,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/distributions/HMM.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 namespace shogun
 {
@@ -135,7 +135,7 @@ class CGUIHMM : public CSGObject
 		/** classify
 		 * @param output
 		 */
-		CRealLabels* classify(CRealLabels* output=NULL);
+		CRegressionLabels* classify(CRegressionLabels* output=NULL);
 		/** classify example
 		 * @param idx
 		 */
@@ -143,11 +143,11 @@ class CGUIHMM : public CSGObject
 		/** one class classify
 		 * @param output
 		 */
-		CRealLabels* one_class_classify(CRealLabels* output=NULL);
+		CRegressionLabels* one_class_classify(CRegressionLabels* output=NULL);
 		/** linear one class classify
 		 * @param output
 		 */
-		CRealLabels* linear_one_class_classify(CRealLabels* output=NULL);
+		CRegressionLabels* linear_one_class_classify(CRegressionLabels* output=NULL);
 		/** one class classfiy example
 		 * @param idx
 		 */

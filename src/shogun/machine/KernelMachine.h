@@ -210,7 +210,7 @@ class CKernelMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CRealLabels* apply_regression(CFeatures* data=NULL);
+		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 		
 		/** apply kernel machine to data
 		 * for binary classification task

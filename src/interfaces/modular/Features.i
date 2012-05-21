@@ -364,7 +364,7 @@ namespace shogun
 %include <shogun/labels/DenseLabels.h>
 %include <shogun/labels/BinaryLabels.h>
 %include <shogun/labels/MulticlassLabels.h>
-%include <shogun/labels/RealLabels.h>
+%include <shogun/labels/RegressionLabels.h>
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>
 %include <shogun/features/TOPFeatures.h>

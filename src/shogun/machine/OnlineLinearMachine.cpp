@@ -31,7 +31,7 @@ COnlineLinearMachine::~COnlineLinearMachine()
 	SG_UNREF(features);
 }
 
-CRealLabels* COnlineLinearMachine::apply(CFeatures* data)
+CRegressionLabels* COnlineLinearMachine::apply(CFeatures* data)
 {
 	if (data)
 	{
@@ -63,7 +63,7 @@ CRealLabels* COnlineLinearMachine::apply(CFeatures* data)
 	for (int32_t i=0; i<num_labels; i++)
 		labels_array.vector[i]=(*labels_dynarray)[i];
 
-	return new CRealLabels(labels_array);
+	return new CRegressionLabels(labels_array);
 }
 
 float32_t COnlineLinearMachine::apply(float32_t* vec, int32_t len)

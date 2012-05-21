@@ -16,7 +16,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/Features.h>
 
@@ -145,7 +145,7 @@ class CMachine : public CSGObject
 		virtual CLabels* apply(CFeatures* data=NULL);
 
 		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
-		virtual CRealLabels* apply_regression(CFeatures* data=NULL);
+		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 		/** set labels
 		 *

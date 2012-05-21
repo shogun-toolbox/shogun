@@ -105,10 +105,10 @@ SGMatrix<float64_t> CDomainAdaptationMulticlassLibLinear::obtain_regularizer_mat
 	return w0;
 }
 
-CRealLabels* CDomainAdaptationMulticlassLibLinear::get_submachine_outputs(int32_t i)
+CRegressionLabels* CDomainAdaptationMulticlassLibLinear::get_submachine_outputs(int32_t i)
 {
-	CRealLabels* target_outputs = CMulticlassMachine::get_submachine_outputs(i);
-	CRealLabels* source_outputs = m_source_machine->get_submachine_outputs(i);
+	CRegressionLabels* target_outputs = CMulticlassMachine::get_submachine_outputs(i);
+	CRegressionLabels* source_outputs = m_source_machine->get_submachine_outputs(i);
 	int32_t n_target_outputs = target_outputs->get_num_labels();
 	ASSERT(n_target_outputs==source_outputs->get_num_labels());
 	SGVector<float64_t> result(n_target_outputs);
@@ -118,6 +118,6 @@ CRealLabels* CDomainAdaptationMulticlassLibLinear::get_submachine_outputs(int32_
 	SG_UNREF(target_outputs);
 	SG_UNREF(source_outputs);
 
-	return new CRealLabels(result);
+	return new CRegressionLabels(result);
 }
 #endif /* HAVE_LAPACK */

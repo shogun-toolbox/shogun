@@ -4198,7 +4198,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 	int32_t len=0;
 	get_vector(lab, len);
 
-	CRealLabels* labels=new CRealLabels(len);
+	CRegressionLabels* labels=new CRegressionLabels(len);
 	for (int32_t i=0; i<len; i++)
 	{
 		if (!labels->set_label(i, lab[i]))
@@ -4601,7 +4601,7 @@ bool CSGInterface::cmd_classify()
 	int32_t num_vec=labels->get_num_labels();
 	float64_t* result=SG_MALLOC(float64_t, num_vec);
 	for (int32_t i=0; i<num_vec; i++)
-		result[i]=((CRealLabels*) labels)->get_label(i);
+		result[i]=((CRegressionLabels*) labels)->get_label(i);
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
@@ -5406,7 +5406,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 	float64_t* result=SG_MALLOC(float64_t, num_vec);
 	CLabels* labels=ui_pluginestimate->apply();
 	for (int32_t i=0; i<num_vec; i++)
-		result[i]=((CRealLabels*) labels)->get_label(i);
+		result[i]=((CRegressionLabels*) labels)->get_label(i);
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
@@ -5582,7 +5582,7 @@ bool CSGInterface::do_hmm_classify(bool linear, bool one_class)
 		return false;
 
 	int32_t num_vec=feat->get_num_vectors();
-	CRealLabels* labels=NULL;
+	CRegressionLabels* labels=NULL;
 
 	if (linear) // must be one_class as well
 	{

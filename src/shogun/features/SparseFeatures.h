@@ -20,7 +20,7 @@
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>
 
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
@@ -29,7 +29,7 @@ namespace shogun
 {
 
 class CFile;
-class CRealLabels;
+class CRegressionLabels;
 class CFeatures;
 class CDotFeatures;
 template <class ST> class CDenseFeatures;
@@ -418,7 +418,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * 		 are in ascending order
 		 * @return label object with corresponding labels
 		 */
-		CRealLabels* load_svmlight_file(char* fname, bool do_sort_features=true);
+		CRegressionLabels* load_svmlight_file(char* fname, bool do_sort_features=true);
 
 		/** ensure that features occur in ascending order, only call when no
 		 * preprocessors are attached
@@ -435,7 +435,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param label Label object (number of labels must correspond to number of features)
 		 * @return true if successful
 		 */
-		bool write_svmlight_file(char* fname, CRealLabels* label);
+		bool write_svmlight_file(char* fname, CRegressionLabels* label);
 
 		/** obtain the dimensionality of the feature space
 		 *

@@ -10,7 +10,7 @@
 
 #include <shogun/evaluation/MeanSquaredLogError.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -26,8 +26,8 @@ float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_tru
 	float64_t msle=0.0;
 	for (int32_t i=0; i<length; i++)
 	{
-		float64_t prediction=((CRealLabels*) predicted)->get_label(i);
-		float64_t truth=((CRealLabels*) ground_truth)->get_label(i);
+		float64_t prediction=((CRegressionLabels*) predicted)->get_label(i);
+		float64_t truth=((CRegressionLabels*) ground_truth)->get_label(i);
 
 		if (prediction<=-1.0 || truth<=-1.0)
 		{

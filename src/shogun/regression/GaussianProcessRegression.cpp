@@ -16,7 +16,7 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -74,7 +74,7 @@ CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
 		    kernel_test_matrix.num_cols, m_alpha.vector, 1, 0.0, 
 		    result_vector.vector, 1);
 	
-	CRealLabels* result = new CRealLabels(result_vector);
+	CRegressionLabels* result = new CRegressionLabels(result_vector);
 	
 	return result;
 }
@@ -159,7 +159,7 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	memcpy(m_L.matrix, temp1.matrix,
 		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
 		
-	SGVector<float64_t> label_vector = ((CRealLabels*) m_labels)->get_labels();
+	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
 	
 	m_alpha = SGVector<float64_t>(label_vector.vlen);
 	memcpy(m_alpha.vector, label_vector.vector,

@@ -459,11 +459,11 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			int32_t winner=0;
-			float64_t max_out=((CRealLabels*) outputs[0])->get_label(i)/norm_wc[0];
+			float64_t max_out=((CRegressionLabels*) outputs[0])->get_label(i)/norm_wc[0];
 
 			for (int32_t j=1; j<m_machines->get_num_elements(); j++)
 			{
-				float64_t out=((CRealLabels*) outputs[j])->get_label(i)/norm_wc[j];
+				float64_t out=((CRegressionLabels*) outputs[j])->get_label(i)/norm_wc[j];
 
 				if (out>max_out)
 				{

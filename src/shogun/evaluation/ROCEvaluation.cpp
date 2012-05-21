@@ -9,7 +9,7 @@
  */
 
 #include <shogun/evaluation/ROCEvaluation.h>
-#include <shogun/labels/RealLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 
@@ -38,7 +38,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	int32_t neg_count=0;
 
 	// initialize number of labels and labels
-	SGVector<float64_t> orig_labels = ((CRealLabels*) predicted)->get_labels();
+	SGVector<float64_t> orig_labels = predicted->get_confidences();
 	int32_t length = orig_labels.vlen;
 	float64_t* labels = CMath::clone_vector(orig_labels.vector, length);
 
@@ -84,7 +84,7 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	// create ROC curve and calculate auROC
 	for(i=0; i<length; i++)
 	{
-		label = ((CRealLabels*) predicted)->get_label(idxs[i]);
+		label = ((CRegressionLabels*) predicted)->get_label(idxs[i]);
 
 		if (label != threshold)
 		{
