@@ -55,6 +55,12 @@ class CRealLabels : public CDenseLabels
 		 */
 		CRealLabels(CFile* loader);
 
+		/** helper method used to specialize a base class instance
+		 *
+		 * @param base_labels its dynamic type must be CRealLabels
+		 */
+		CRealLabels* obtain_from_generic(CLabels* base_labels);
+
 		/** is_valid checks if labeling is a multi-class labeling
 		 *
 		 * possible with subset
@@ -65,7 +71,7 @@ class CRealLabels : public CDenseLabels
 
 		/** get label type
 		 *
-		 * @return label type multiclass
+		 * @return label type real
 		 */
 		virtual ELabelType get_label_type();
 };
