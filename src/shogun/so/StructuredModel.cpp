@@ -22,15 +22,18 @@ CStructuredModel::~CStructuredModel()
 	SG_UNREF(m_features);
 }
 
-void CStructuredModel::init()
+/* TODO */
+void CStructuredModel::init_opt(
+		SGMatrix< float64_t > A,
+		SGVector< float64_t > a,
+		SGMatrix< float64_t > B,
+		SGVector< float64_t > b,
+		SGVector< float64_t > lb,
+		SGVector< float64_t > ub,
+		SGMatrix< float64_t > C)
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", MS_NOT_AVAILABLE);
-	//TODO add rest of members when function pointers removed
-
-	m_features = NULL;
-	m_labels   = NULL;
 }
+
 
 /* TODO */
 int32_t CStructuredModel::get_dim()
@@ -65,4 +68,14 @@ CResultSet* CStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 float64_t CStructuredModel::compute_delta_loss(CStructuredLabels* labels, CStructuredData ypred, int32_t ytrue_id)
 {
 	return m_compute_delta_loss(labels, ypred, ytrue_id);
+}
+
+void CStructuredModel::init()
+{
+	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", MS_NOT_AVAILABLE);
+	//TODO add rest of members when function pointers removed
+
+	m_features = NULL;
+	m_labels   = NULL;
 }
