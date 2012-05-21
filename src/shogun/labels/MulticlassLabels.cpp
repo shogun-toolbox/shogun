@@ -21,6 +21,11 @@ CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 {
 }
 
+CMulticlassLabels::CMulticlassLabels(CLabels* const base_labels) : CDenseLabels()
+{
+	m_labels = ((CMulticlassLabels*) base_labels)->m_labels; 
+}
+
 bool CMulticlassLabels::is_valid()
 {       
     ASSERT(m_labels.vector);

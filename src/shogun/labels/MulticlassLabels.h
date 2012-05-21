@@ -54,6 +54,12 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CMulticlassLabels(CFile* loader);
 
+		/** constructor (can be used to downcast CLabels) 
+		 *
+		 * @param labs its dynamic type must be CMulticlassLabels
+		 */
+		CMulticlassLabels(CLabels* const base_labels);
+
 		/** is_valid checks if labeling is a multi-class labeling
 		 *
 		 * possible with subset
