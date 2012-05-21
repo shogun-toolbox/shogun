@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/evaluation/CrossValidation.h>
@@ -61,7 +61,7 @@ void test_cross_validation()
 	for (index_t i=0; i<num_vectors; ++i)
 		lab.vector[i]=i<num_vectors/2 ? -1.0 : 1.0;
 
-	CLabels* labels=new CLabels(lab);
+	CBinaryLabels* labels=new CBinaryLabels(lab);
 
 	/* gaussian kernel */
 	int32_t kernel_cache=100;
@@ -77,7 +77,7 @@ void test_cross_validation()
 
 	/* train and output */
 	svm->train(features);
-	CLabels* output=svm->apply(features);
+	CBinaryLabels* output=CBinaryLabels::obtain_from_generic(svm->apply(features));
 	for (index_t i=0; i<num_vectors; ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 

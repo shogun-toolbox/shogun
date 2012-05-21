@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/regression/KernelRidgeRegression.h>
 #include <shogun/evaluation/CrossValidation.h>
@@ -49,7 +49,7 @@ void test_cross_validation()
 	SG_REF(features);
 
 	/* training labels */
-	CLabels* labels=new CLabels(lab);
+	CRegressionLabels* labels=new CRegressionLabels(lab);
 
 	/* kernel */
 	CLinearKernel* kernel=new CLinearKernel();
@@ -65,7 +65,7 @@ void test_cross_validation()
 
 	/* train and output */
 	krr->train(features);
-	CLabels* output=krr->apply();
+	CRegressionLabels* output= CRegressionLabels::obtain_from_generic(krr->apply());
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		SG_SPRINT("x=%f, train=%f, predict=%f\n", train_dat.matrix[i],

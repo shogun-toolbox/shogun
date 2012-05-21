@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/io/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
@@ -70,7 +70,7 @@ void test_cross_validation()
 	// Create features with the useful values from mat
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 
-	CLabels* labels = new CLabels(num_vectors);
+	CMulticlassLabels* labels = new CMulticlassLabels(num_vectors);
 	SG_REF(features);
 	SG_REF(labels);
 
@@ -92,7 +92,7 @@ void test_cross_validation()
 
 	/* train and output */
 	svm->train(features);
-	CLabels* output=svm->apply(features);
+	CMulticlassLabels* output=CMulticlassLabels::obtain_from_generic(svm->apply(features));
 	for (index_t i=0; i<num_vectors; ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 

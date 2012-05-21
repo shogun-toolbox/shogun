@@ -15,7 +15,7 @@
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
-	CLabels* labels=new CLabels(num_vectors);
+	CBinaryLabels* labels=new CBinaryLabels(num_vectors);
 
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
 		matrix.matrix[i]=CMath::randn_double();
