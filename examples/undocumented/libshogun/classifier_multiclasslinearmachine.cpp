@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 	mc_svm->train();
 
 	// Classify the training examples and show the results
-	CMulticlassLabels* output = mc_svm->apply();
+	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
 
 	SGVector< int32_t > out_labels = output->get_int_labels();
 	CMath::display_vector(out_labels.vector, out_labels.vlen);
