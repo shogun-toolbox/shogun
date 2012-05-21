@@ -163,19 +163,19 @@ CLabels* CMachine::apply(CFeatures* data)
 
 CBinaryLabels* CMachine::apply_binary(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED;
+	SG_ERROR("This machine does not support apply_binary()\n");
 	return NULL;
 }
 
 CRealLabels* CMachine::apply_regression(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED;
+	SG_ERROR("This machine does not support apply_regression()\n");
 	return NULL;
 }
 
 CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED;
+	SG_ERROR("This machine does not support apply_multiclass()\n");
 	return NULL;
 }
 
