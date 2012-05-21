@@ -21,6 +21,16 @@ CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 {
 }
 
+CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
+{
+	if ( base_labels->get_label_type() == LT_MULTICLASS )
+		return (CMulticlassLabels*) base_labels;
+	else
+		SG_ERROR("base_labels must be of dynamic type CMulticlassLabels");
+
+	return NULL;
+}
+
 bool CMulticlassLabels::is_valid()
 {       
     ASSERT(m_labels.vector);
