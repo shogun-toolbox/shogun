@@ -36,9 +36,10 @@ bool CVanillaStructuredOutputMachine::train_machine(CFeatures* data)
 	// Dimensionality of the joint feature space
 	int32_t N = m_model->get_dim();
 
-	//TODO return A, a, B, b, lb, ub, C
-	SGMatrix< float64_t > C(1, 1);
-	m_model->init();
+	// Initialize the terms of the optimization problem
+	SGMatrix< float64_t > A, B, C;
+	SGVector< float64_t > a, b, lb, ub;
+	m_model->init_opt(A, a, B, b, lb, ub, C);
 
 	// Assume diagonal regularization matrix with just one value
 	float64_t lambda = C(0, 0);
@@ -103,6 +104,9 @@ bool CVanillaStructuredOutputMachine::train_machine(CFeatures* data)
 		}
 
 	} while ( old_length != result_list->get_num_elements() );
+
+	// Free resources
+	// TODO
 
 	return true;
 }
