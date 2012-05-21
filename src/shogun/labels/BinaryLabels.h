@@ -51,6 +51,12 @@ class CBinaryLabels : public CDenseLabels
 		 */
 		CBinaryLabels(CFile* loader);
 
+		/** helper method used to specialize a base class instance
+		 *
+		 * @param base_labels its dynamic type must be CBinaryLabels
+		 */
+		CBinaryLabels* obtain_from_generic(CLabels* base_labels);
+
 		/** is_valid checks if labeling is a two-class labeling
 		 *
 		 * possible with subset
