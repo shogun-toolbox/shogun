@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/classifier/GaussianNaiveBayes.h>
+#include <shogun/multiclass/GaussianNaiveBayes.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
