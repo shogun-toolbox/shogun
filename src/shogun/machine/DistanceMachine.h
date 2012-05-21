@@ -91,6 +91,18 @@ class CDistanceMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
+		virtual CLabels* apply(CFeatures* data=NULL)
+        {
+            return apply_multiclass(data);
+        }
+
+		/** Classify all provided features.
+		 * Cluster index with smallest distance to to be classified element is
+		 * returned
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 		virtual CRealLabels* apply_regression(CFeatures* data=NULL)

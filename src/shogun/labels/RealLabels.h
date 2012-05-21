@@ -59,7 +59,7 @@ class CRealLabels : public CDenseLabels
 		 *
 		 * @param base_labels its dynamic type must be CRealLabels
 		 */
-		CRealLabels* obtain_from_generic(CLabels* base_labels);
+		static CRealLabels* obtain_from_generic(CLabels* base_labels);
 
 		/** is_valid checks if labeling is a multi-class labeling
 		 *
