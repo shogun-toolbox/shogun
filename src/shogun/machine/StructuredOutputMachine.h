@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#ifndef _STRUCTUREDOUTPUTMACHINE_H__
-#define _STRUCTUREDOUTPUTMACHINE_H__
+#ifndef _STRUCTURED_OUTPUT_MACHINE__H__
+#define _STRUCTURED_OUTPUT_MACHINE__H__
 
-#include <shogun/features/StructuredLabels.h>
+#include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/loss/LossFunction.h>
@@ -90,4 +90,4 @@ class CStructuredOutputMachine : public CMachine
 
 } /* namespace shogun */
 
-#endif /* _STRUCTUREDOUTPUTMACHINE_H__ */
+#endif /* _STRUCTURED_OUTPUT_MACHINE__H__ */

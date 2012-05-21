@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#ifndef _LINEARSTRUCTUREDOUTPUTMACHINE_H__
-#define _LINEARSTRUCTUREDOUTPUTMACHINE_H__
+#ifndef _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
+#define _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 
 #include <shogun/features/Features.h>
 #include <shogun/machine/StructuredOutputMachine.h>
@@ -66,4 +66,4 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 
 } /* namespace shogun */
 
-#endif /* _LINEARSTRUCTUREDOUTPUTMACHINE_H__ */
+#endif /* _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__ */
