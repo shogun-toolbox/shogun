@@ -15,7 +15,7 @@
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/DistantSegmentsKernel.h>
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 	CStringFeatures<char>* features=new CStringFeatures<char>(strings, ALPHANUM);
 
 	/* create labels, two classes */
-	CLabels* labels=new CLabels(num_strings);
+	CBinaryLabels* labels=new CBinaryLabels(num_strings);
 	for (index_t i=0; i<num_strings; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 

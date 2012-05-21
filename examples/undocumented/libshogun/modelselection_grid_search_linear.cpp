@@ -16,7 +16,7 @@
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibLinear.h>
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
 	/* create three labels */
-	CLabels* labels=new CLabels(num_vectors);
+	CBinaryLabels* labels=new CBinaryLabels(num_vectors);
 	for (index_t i=0; i<num_vectors; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
 

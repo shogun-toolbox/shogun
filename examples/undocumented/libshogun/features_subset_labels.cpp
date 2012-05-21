@@ -9,7 +9,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 	const int32_t num_subset_idx=CMath::random(1, num_labels);
 
 	/* create labels */
-	CLabels* labels=new CLabels(num_labels);
+	CMulticlassLabels* labels=new CMulticlassLabels(num_labels);
 	for (index_t i=0; i<num_labels; ++i)
 		labels->set_label(i, i%num_classes);
 

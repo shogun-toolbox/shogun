@@ -88,7 +88,7 @@ int main()
 	printf("num_sv:%d b:%f\n", svm->get_num_support_vectors(), svm->get_bias());
 
 	// classify + display output
-	CBinaryLabels* out_labels=(CBinaryLabels*) svm->apply();
+	CBinaryLabels* out_labels=CBinaryLabels::obtain_from_generic(svm->apply());
 
 	for (int32_t i=0; i<NUM; i++)
 		printf("out[%d]=%f (%f)\n", i, out_labels->get_label(i), out_labels->get_confidence(i));
