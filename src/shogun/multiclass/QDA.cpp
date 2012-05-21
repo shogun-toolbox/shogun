@@ -12,24 +12,25 @@
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/classifier/QDA.h>
+#include <shogun/multiclass/QDA.h>
+#include <shogun/machine/NativeMulticlassMachine.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
 using namespace shogun;
 
 CQDA::CQDA(float64_t tolerance, bool store_covs)
-: CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
+: CNativeMulticlassMachine(), m_tolerance(tolerance), 
+	m_store_covs(store_covs), m_num_classes(0), m_dim(0)
 {
 	init();
 }
 
 CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
-: CMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
+: CNativeMulticlassMachine(), m_tolerance(tolerance), m_store_covs(store_covs), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
@@ -68,7 +69,7 @@ void CQDA::cleanup()
 	m_num_classes = 0;
 }
 
-CLabels* CQDA::apply(CFeatures* data)
+CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 {
 	if (data)
 	{

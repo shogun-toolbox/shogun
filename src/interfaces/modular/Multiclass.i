@@ -47,6 +47,7 @@
 %rename(KNN) CKNN;
 %rename(ConjugateIndex) CConjugateIndex;
 %rename(GaussianNaiveBayes) CGaussianNaiveBayes;
+%rename(QDA) CQDA;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/multiclass/RejectionStrategy.h>
@@ -86,4 +87,5 @@
 %include <shogun/multiclass/KNN.h>
 %include <shogun/multiclass/ConjugateIndex.h>
 %include <shogun/multiclass/GaussianNaiveBayes.h>
+%include <shogun/multiclass/QDA.h>
 

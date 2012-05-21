@@ -17,7 +17,7 @@
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/machine/Machine.h>
+#include <shogun/machine/NativeMulticlassMachine.h>
 #include <shogun/lib/SGNDArray.h>
 
 namespace shogun
@@ -33,7 +33,7 @@ namespace shogun
  *  the classes are distributed with equal co-variance.
  *  TODO
  */
-class CQDA : public CMachine
+class CQDA : public CNativeMulticlassMachine
 {
 	public:
 		/** constructor
@@ -59,7 +59,7 @@ class CQDA : public CMachine
 		 * @param data (test) data to be classified
 		 * @return labels result of classification
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 		/** set store_covs
 		 *
