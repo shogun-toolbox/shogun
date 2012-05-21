@@ -50,7 +50,7 @@ class CMKLRegression : public CMKL
 		 *
 		 * @return classifier type MKL_REGRESSION
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_MKLREGRESSION; }
+		virtual inline EMachineType get_classifier_type() { return CT_MKLREGRESSION; }
 
 		/** compute mkl dual objective
 		 *

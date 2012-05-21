@@ -44,7 +44,7 @@ class CNewtonSVM : public CLinearMachine
 		 *
 		 * @return classifier type NewtonSVM
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_NEWTONSVM; }
+		virtual inline EMachineType get_classifier_type() { return CT_NEWTONSVM; }
 
 		/**
 		 * set C

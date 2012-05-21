@@ -87,7 +87,7 @@ public:
 	/** get classifier type
 	 * @return classifier type
 	 */
-	virtual EClassifierType get_classifier_type() { return CT_CONJUGATEINDEX; };
+	virtual EMachineType get_classifier_type() { return CT_CONJUGATEINDEX; };
 
 protected:
 

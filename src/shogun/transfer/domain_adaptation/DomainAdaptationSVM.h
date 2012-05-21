@@ -53,7 +53,7 @@ class CDomainAdaptationSVM : public CSVMLight
 		 *
 		 * @return classifier type
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_DASVM; }
+		virtual inline EMachineType get_classifier_type() { return CT_DASVM; }
 
 		/** classify objects
 		 *

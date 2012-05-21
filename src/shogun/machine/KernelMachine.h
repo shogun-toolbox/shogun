@@ -220,12 +220,6 @@ class CKernelMachine : public CMachine
 		 */
 		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
 
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL)
-		{
-			SG_ERROR("Not supported");
-			return NULL;
-		}
-
 		/** apply kernel machine to one example
 		 *
 		 * @param num which example to apply to

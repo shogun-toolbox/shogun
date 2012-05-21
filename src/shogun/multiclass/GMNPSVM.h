@@ -44,7 +44,7 @@ class CGMNPSVM : public CMulticlassSVM
 		 *
 		 * @return classifier type GMNPSVM
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_GMNPSVM; }
+		virtual inline EMachineType get_classifier_type() { return CT_GMNPSVM; }
 
 		/** required for CMKLMulticlass constraint computation
 		 *

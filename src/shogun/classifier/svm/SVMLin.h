@@ -40,7 +40,7 @@ class CSVMLin : public CLinearMachine
 		 *
 		 * @return classifier type SVMLIN
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SVMLIN; }
+		virtual inline EMachineType get_classifier_type() { return CT_SVMLIN; }
 
 		/** set C
 		 *

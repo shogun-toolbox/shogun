@@ -56,7 +56,7 @@ class CSVMOcas : public CLinearMachine
 		 *
 		 * @return classifier type SVMOCAS
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SVMOCAS; }
+		virtual inline EMachineType get_classifier_type() { return CT_SVMOCAS; }
 
 		/** set C
 		 *

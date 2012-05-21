@@ -250,7 +250,7 @@ class CSVMLight : public CSVM
    *
    * @return classifier type LIGHT
    */
-  virtual inline EClassifierType get_classifier_type() { return CT_LIGHT; }
+  virtual inline EMachineType get_classifier_type() { return CT_LIGHT; }
 
   /** get runtime
    *

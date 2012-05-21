@@ -51,7 +51,7 @@ CHierarchical::~CHierarchical()
 	SG_FREE(pairs);
 }
 
-EClassifierType CHierarchical::get_classifier_type()
+EMachineType CHierarchical::get_classifier_type()
 {
 	return CT_HIERARCHICAL;
 }

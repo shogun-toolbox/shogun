@@ -54,7 +54,7 @@ public:
 	 *
 	 * @return classifier type GMNPMKL
 	 */
-	virtual inline EClassifierType get_classifier_type()
+	virtual inline EMachineType get_classifier_type()
 		{ return CT_MKLMULTICLASS; }
 
 

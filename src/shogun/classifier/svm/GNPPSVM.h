@@ -37,7 +37,7 @@ class CGNPPSVM : public CSVM
 		 *
 		 * @return classifier type GNPPSVM
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_GNPPSVM; }
+		virtual inline EMachineType get_classifier_type() { return CT_GNPPSVM; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GNPPSVM"; }

@@ -59,7 +59,7 @@ class CSGDQN : public CLinearMachine
 		 *
 		 * @return classifier type SVMSGDQN
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_SGDQN; }
+		virtual inline EMachineType get_classifier_type() { return CT_SGDQN; }
 
 		/** train classifier
 		 *

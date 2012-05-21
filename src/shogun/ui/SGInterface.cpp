@@ -4905,7 +4905,7 @@ bool CSGInterface::cmd_train_classifier()
 	if (!classifier)
 		SG_ERROR("No classifier available.\n");
 
-	EClassifierType type=classifier->get_classifier_type();
+	EMachineType type=classifier->get_classifier_type();
 	switch (type)
 	{
 		case CT_LIGHT:

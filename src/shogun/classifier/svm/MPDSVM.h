@@ -37,7 +37,7 @@ class CMPDSVM : public CSVM
 		 *
 		 * @return classifier type MPD
 		 */
-		virtual inline EClassifierType get_classifier_type() { return CT_MPD; }
+		virtual inline EMachineType get_classifier_type() { return CT_MPD; }
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MPDSVM"; }

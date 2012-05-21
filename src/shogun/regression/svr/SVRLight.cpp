@@ -65,7 +65,7 @@ CSVRLight::~CSVRLight()
 {
 }
 
-EClassifierType CSVRLight::get_classifier_type()
+EMachineType CSVRLight::get_classifier_type()
 {
 	return CT_SVRLIGHT;
 }

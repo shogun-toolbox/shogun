@@ -26,7 +26,7 @@ IGNORE_IN_CLASSLIST class CCPLEXSVM : public CSVM
 		CCPLEXSVM();
 		virtual ~CCPLEXSVM();
 
-		virtual inline EClassifierType get_classifier_type() { return CT_CPLEXSVM; }
+		virtual inline EMachineType get_classifier_type() { return CT_CPLEXSVM; }
 
 	protected:
 		/** train SVM classifier
