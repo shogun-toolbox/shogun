@@ -86,9 +86,9 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 	float64_t output;
 	// dirty hack
 	if (dynamic_cast<CLinearMachine*>(machine))
-		output = ((CLinearMachine*)machine)->apply(num);
+		output = ((CLinearMachine*)machine)->apply_one(num);
 	if (dynamic_cast<CKernelMachine*>(machine))
-		output = ((CKernelMachine*)machine)->apply(num);
+		output = ((CKernelMachine*)machine)->apply_one(num);
 	SG_UNREF(machine);
 	return output;
 }
