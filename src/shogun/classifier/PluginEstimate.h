@@ -41,18 +41,12 @@ class CPluginEstimate: public CMachine
 		CPluginEstimate(float64_t pos_pseudo=1e-10, float64_t neg_pseudo=1e-10);
 		virtual ~CPluginEstimate();
 
-		/** classify objects using the currently set features
-		 *
-		 * @return classified labels
-		 */
-		CLabels* apply();
-
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 
 		/** set features
 		 *

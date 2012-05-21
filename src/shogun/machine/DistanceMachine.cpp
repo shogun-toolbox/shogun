@@ -206,28 +206,28 @@ void* CDistanceMachine::run_distance_thread_rhs(void* p)
 
 CLabels* CDistanceMachine::apply(CFeatures* data)
 {
-	ASSERT(data);
+	if (data)
+	{
+		/* set distance features to given ones and apply to all */
+		CFeatures* lhs=distance->get_lhs();
+		distance->init(lhs, data);
+		SG_UNREF(lhs);
 
-	/* set distance features to given ones and apply to all */
-	CFeatures* lhs=distance->get_lhs();
-	distance->init(lhs, data);
-	SG_UNREF(lhs);
-
-	/* build result labels and classify all elements of procedure */
-	CRealLabels* result=new CRealLabels(data->get_num_vectors());
-	for (index_t i=0; i<data->get_num_vectors(); ++i)
-		result->set_label(i, apply(i));
-
-	return result;
-}
-
-CLabels* CDistanceMachine::apply()
-{
-	/* call apply on complete right hand side */
-	CFeatures* all=distance->get_rhs();
-	CLabels* result=apply(all);
-	SG_UNREF(all);
-	return result;
+		/* build result labels and classify all elements of procedure */
+		CRealLabels* result=new CRealLabels(data->get_num_vectors());
+		for (index_t i=0; i<data->get_num_vectors(); ++i)
+			result->set_label(i, apply(i));
+		return result;
+	}
+	else
+	{
+		/* call apply on complete right hand side */
+		CFeatures* all=distance->get_rhs();
+		CLabels* result=apply(all);
+		SG_UNREF(all);
+		return result;
+	}
+	return NULL;
 }
 
 float64_t CDistanceMachine::apply(int32_t num)

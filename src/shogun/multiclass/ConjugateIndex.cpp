@@ -141,17 +141,13 @@ bool CConjugateIndex::train(CFeatures* train_features)
 	return true;
 };
 
-CLabels* CConjugateIndex::apply(CFeatures* test_features)
+CLabels* CConjugateIndex::apply(CFeatures* data)
 {
-	set_features(test_features);
+	if (data)
+		set_features(data);
 
-	CLabels* predicted_labels = apply();
+	ASSERT(m_features);
 
-	return predicted_labels;
-};
-
-CLabels* CConjugateIndex::apply()
-{
 	ASSERT(m_classes);
 	ASSERT(m_num_classes>1);
 	ASSERT(m_features->get_num_features()==m_feature_vector.vlen);

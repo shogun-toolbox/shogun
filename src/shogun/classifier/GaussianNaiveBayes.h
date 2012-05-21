@@ -66,18 +66,13 @@ public:
 	 * @param data train examples
 	 * @return true if successful
 	 */
-	virtual bool train(CFeatures* data = NULL);
-
-	/** classify all examples
-	 * @return labels
-	 */
-	virtual CLabels* apply();
+	virtual bool train(CFeatures* data=NULL);
 
 	/** classify specified examples
 	 * @param data examples to be classified
 	 * @return labels corresponding to data
 	 */
-	virtual CLabels* apply(CFeatures* data);
+	virtual CLabels* apply(CFeatures* data=NULL);
 
 	/** classifiy specified example
 	 * @param idx example index

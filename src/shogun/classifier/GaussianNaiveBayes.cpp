@@ -173,8 +173,13 @@ bool CGaussianNaiveBayes::train(CFeatures* data)
 	return true;
 }
 
-CLabels* CGaussianNaiveBayes::apply()
+CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
 {
+	if (data)
+		set_features(data);
+
+	ASSERT(m_features);
+
 	// init number of vectors
 	int32_t num_vectors = m_features->get_num_vectors();
 
@@ -190,19 +195,6 @@ CLabels* CGaussianNaiveBayes::apply()
 	}
 	SG_DONE();
 	return result;
-};
-
-CLabels* CGaussianNaiveBayes::apply(CFeatures* data)
-{
-	// check data correctness
-	if (!data)
-		SG_ERROR("No features specified\n");
-
-	// set features to classify
-	set_features(data);
-
-	// classify using features
-	return apply();
 };
 
 float64_t CGaussianNaiveBayes::apply(int32_t idx)

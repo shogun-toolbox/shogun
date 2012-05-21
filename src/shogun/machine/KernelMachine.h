@@ -204,18 +204,12 @@ class CKernelMachine : public CMachine
 		 */
 		bool init_kernel_optimization();
 
-		/** apply kernel machine to all objects
-		 *
-		 * @return result labels
-		 */
-		virtual CLabels* apply();
-
 		/** apply kernel machine to data
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data);
+		virtual CLabels* apply(CFeatures* data=NULL);
 
 		/** apply kernel machine to one example
 		 *

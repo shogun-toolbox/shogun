@@ -98,13 +98,7 @@ class CMulticlassMachine : public CMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual CRealLabels* apply();
-
-		/** classify all examples
-		 *
-		 * @return resulting labels
-		 */
-		virtual CRealLabels* apply(CFeatures* features);
+		virtual CRealLabels* apply(CFeatures* features=NULL);
 
 		/** classify one example
 		 *

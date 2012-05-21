@@ -43,8 +43,16 @@ CLinearMachine::~CLinearMachine()
 	SG_UNREF(features);
 }
 
-CLabels* CLinearMachine::apply()
+CLabels* CLinearMachine::apply(CFeatures* data)
 {
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+		set_features((CDotFeatures*) data);
+	}
+
 	if (!features)
 		return NULL;
 
@@ -56,14 +64,4 @@ CLabels* CLinearMachine::apply()
 	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);
 
 	return new CRealLabels(SGVector<float64_t>(out,num));
-}
-
-CLabels* CLinearMachine::apply(CFeatures* data)
-{
-	if (!data)
-		SG_ERROR("No features specified\n");
-	if (!data->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
-	set_features((CDotFeatures*) data);
-	return apply();
 }

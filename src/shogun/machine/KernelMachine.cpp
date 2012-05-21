@@ -236,14 +236,37 @@ bool CKernelMachine::init_kernel_optimization()
 	return false;
 }
 
-CLabels* CKernelMachine::apply()
+CLabels* CKernelMachine::apply(CFeatures* data)
 {
-	CRealLabels* lab=NULL;
+	if (is_data_locked())
+	{
+		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
+				"data_lock was called before. Call data_unlock to allow.");
+	}
 
 	if (!kernel)
-		SG_ERROR( "Kernelmachine can not proceed without kernel!\n");
+		SG_ERROR("No kernel assigned!\n");
 
-	if ( kernel && kernel->get_num_vec_rhs()>0 )
+	CFeatures* lhs=kernel->get_lhs();
+	if (!lhs)
+		SG_ERROR("%s: No left hand side specified\n", get_name());
+
+	if (!lhs->get_num_vectors())
+	{
+		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
+				" an implementation error in %s, where it was forgotten to set "
+				"the data (m_svs) indices\n", get_name(),
+				data->get_name());
+	}
+
+	if (data)
+		kernel->init(lhs, data);
+
+	SG_UNREF(lhs);
+
+	CRealLabels* lab=NULL;
+
+	if (kernel->get_num_vec_rhs()>0)
 	{
 		int32_t num_vectors=kernel->get_num_vec_rhs();
 
@@ -376,36 +399,6 @@ float64_t CKernelMachine::apply(int32_t num)
 
 		return score+get_bias();
 	}
-}
-
-
-CLabels* CKernelMachine::apply(CFeatures* data)
-{
-	if (is_data_locked())
-	{
-		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
-				"data_lock was called before. Call data_unlock to allow.");
-	}
-
-	if (!kernel)
-		SG_ERROR("No kernel assigned!\n");
-
-	CFeatures* lhs=kernel->get_lhs();
-	if (!lhs)
-		SG_ERROR("%s: No left hand side specified\n", get_name());
-
-	if (!lhs->get_num_vectors())
-	{
-		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
-				" an implementation error in %s, where it was forgotten to set "
-				"the data (m_svs) indices\n", get_name(),
-				data->get_name());
-	}
-
-	kernel->init(lhs, data);
-	SG_UNREF(lhs);
-
-	return apply();
 }
 
 void* CKernelMachine::apply_helper(void* p)

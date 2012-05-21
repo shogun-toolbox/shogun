@@ -642,24 +642,6 @@ void Solver_MCSVM_CS::solve()
 	if (iter >= max_iter)
 		SG_SINFO("Warning: reaching max number of iterations\n");
 
-	// calculate objective value
-	/*
-	double v = 0;
-	int nSV = 0;
-	for(i=0;i<w_size*nr_class;i++)
-		v += w[i]*w[i];
-	v = 0.5*v;
-	for(i=0;i<l*nr_class;i++)
-	{
-		v += alpha[i];
-		if(fabs(alpha[i]) > 0)
-			nSV++;
-	}
-	for(i=0;i<l;i++)
-		v -= alpha[i*nr_class+prob->y[i]];
-	SG_SINFO("Objective value = %f\n",v);
-	SG_SINFO("nSV = %d\n",nSV);
-	*/
 	SG_FREE(tx);
 }
 

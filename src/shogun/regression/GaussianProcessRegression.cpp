@@ -79,30 +79,25 @@ CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
 	return result;
 }
 
-CLabels* CGaussianProcessRegression::apply()
-{
-	if (!features)
-		return NULL;
-	
-	return mean_prediction(features);
-}
-
 CLabels* CGaussianProcessRegression::apply(CFeatures* data)
 {
-	if (!data)
-		SG_ERROR("No features specified\n");
-	if (!data->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
-	if (m_labels->get_num_labels() != features->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n");
-	if (data->get_feature_class() != C_DENSE)
-		SG_ERROR("Expected Simple Features\n");
-	if (data->get_feature_type() != F_DREAL)
-		SG_ERROR("Expected Real Features\n");
-	if (!kernel)
-		SG_ERROR( "No kernel assigned!\n");
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		if (m_labels->get_num_labels() != features->get_num_vectors())
+			SG_ERROR("Number of training vectors does not match number of labels\n");
+		if (data->get_feature_class() != C_DENSE)
+			SG_ERROR("Expected Simple Features\n");
+		if (data->get_feature_type() != F_DREAL)
+			SG_ERROR("Expected Real Features\n");
+		if (!kernel)
+			SG_ERROR( "No kernel assigned!\n");
 
-	return mean_prediction(data);
+		set_features((CDotFeatures*)data);
+	}
+
+	return mean_prediction(features);
 }
 
 float64_t CGaussianProcessRegression::apply(int32_t num)
