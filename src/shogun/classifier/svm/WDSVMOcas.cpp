@@ -21,7 +21,6 @@
 #include <shogun/features/Alphabet.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -120,7 +119,7 @@ CLabels* CWDSVMOcas::apply(CFeatures* data)
 		int32_t num=features->get_num_vectors();
 		ASSERT(num>0);
 
-		CRegressionLabels* output=new CRegressionLabels(num);
+		CBinaryLabels* output=new CBinaryLabels(num);
 		SG_REF(output);
 
 		for (int32_t i=0; i<num; i++)
