@@ -128,6 +128,8 @@ int main(int argc, char **argv)
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 	cross->set_num_runs(1);
+	/* note that this automatically is not necessary since done automatically */
+	cross->set_autolock(true);
 
 	/* print all parameter available for modelselection
 	 * Dont worry if yours is not included, simply write to the mailing list */
@@ -144,7 +146,6 @@ int main(int argc, char **argv)
 	bool print_state=true;
 	CParameterCombination* best_combination=grid_search->select_model(
 			print_state);
-	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 
 	best_combination->apply_to_machine(classifier);
@@ -155,6 +156,14 @@ int main(int argc, char **argv)
 	CrossValidationResult result=cross->evaluate();
 	SG_SPRINT("result: ");
 	result.print_result();
+
+	/* now again but unlocked */
+	SG_UNREF(best_combination);
+	cross->set_autolock(true);
+	best_combination=grid_search->select_model(print_state);
+	best_combination->apply_to_machine(classifier);
+	result=cross->evaluate();
+	SG_SPRINT("result (unlocked): ");
 
 	/* clean up destroy result parameter */
 	SG_UNREF(best_combination);
