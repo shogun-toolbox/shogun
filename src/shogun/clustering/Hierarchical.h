@@ -48,6 +48,8 @@ class CHierarchical : public CDistanceMachine
 		CHierarchical(int32_t merges, CDistance* d);
 		virtual ~CHierarchical();
 
+		MACHINE_PROBLEM_TYPE(PT_MULTICLASS);
+
 		/** get classifier type
 		 *
 		 * @return classifier type HIERARCHICAL
