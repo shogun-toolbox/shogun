@@ -20,14 +20,14 @@
 using namespace shogun;
 
 CFeatures::CFeatures(int32_t size)
-: CSGObject()
+: CSGObject(), titles()
 {
 	init();
 	cache_size = size;
 }
 
 CFeatures::CFeatures(const CFeatures& orig)
-: CSGObject(orig)
+: CSGObject(orig), titles()
 {
 	init();
 
@@ -39,7 +39,7 @@ CFeatures::CFeatures(const CFeatures& orig)
 }
 
 CFeatures::CFeatures(CFile* loader)
-: CSGObject()
+: CSGObject(), titles()
 {
 	init();
 
@@ -346,6 +346,16 @@ void CFeatures::set_property(EFeatureProperty p)
 void CFeatures::unset_property(EFeatureProperty p)
 {
 	properties &= (properties | p) ^ p;
+}
+
+void CFeatures::set_title(int32_t index, const char* title)
+{
+	titles.set_element(index, title);
+}
+
+const char* CFeatures::get_title(int32_t index)
+{
+	titles.get_element(index);
 }
 
 void CFeatures::add_subset(SGVector<index_t> subset)
