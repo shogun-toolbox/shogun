@@ -354,6 +354,7 @@ void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 {
 	ASSERT(labels);
 	ASSERT(labels->get_label_type() == LT_BINARY);
+	labels->ensure_valid();
 
 	int32_t num_pos=0, num_neg=0;
 	for (int32_t i=0; i<labels->get_num_labels(); i++)
