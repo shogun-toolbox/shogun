@@ -1,5 +1,6 @@
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
+#if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
 %rename(apply_generic) shogun::CMachine::apply(CFeatures*);
 %rename(apply_generic) shogun::CMulticlassMachine::apply(CFeatures*);
 %rename(apply_generic) shogun::CKernelMulticlassMachine::apply(CFeatures*);
@@ -74,11 +75,4 @@ APPLY_REGRESSION(CGaussianProcessRegression);
 #undef APPLY_MULTICLASS
 #undef APPLY_BINARY
 #undef APPLY_REGRESSION
-
-    /*%extend COnlineLinearMachine
-    {
-        CRegressionLabels* apply(CFeatures* data=NULL)
-        {
-            return CRegressionLabels::obtain_from_generic($self->apply_binary(data));
-        }
-    }*/
+#endif
