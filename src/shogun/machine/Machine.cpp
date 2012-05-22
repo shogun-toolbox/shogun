@@ -56,9 +56,13 @@ bool CMachine::train(CFeatures* data)
 				get_name());
 	}
 
-    if (m_labels == NULL)
-        SG_ERROR("%s@%p: No labels given", get_name(), this);
-    m_labels->ensure_valid(get_name());
+	if (train_require_labels())
+	{
+		if (m_labels == NULL)
+			SG_ERROR("%s@%p: No labels given", get_name(), this);
+
+		m_labels->ensure_valid(get_name());
+	}
 
 	bool result = train_machine(data);
 

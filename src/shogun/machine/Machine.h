@@ -104,7 +104,7 @@ enum EProblemType
 
 /** @brief A generic learning machine interface.
  *
- * A machine takes as input CFeatures and (optionally) CLabels.
+ * A machine takes as input CFeatures and CLabels (by default).
  * Later subclasses may specialize the machine to e.g. require labels
  * and a kernel or labels and (real-valued) features.
  *
@@ -253,7 +253,7 @@ class CMachine : public CSGObject
 			SG_NOTIMPLEMENTED;
 			return PT_BINARY;
 		}
-		
+
 		virtual const char* get_name() const { return "Machine"; }
 
 	protected:
@@ -291,16 +291,18 @@ class CMachine : public CSGObject
 					" work though.\n", get_name());
 		}
 
-        /** check whether the labels is valid.
-         *
-         * Subclasses can override this to implement their check of label types.
-         *
-         * @param lab the labels being checked, guaranteed to be non-NULL
-         */
-        virtual bool is_label_valid(CLabels *lab) const
-        {
-            return true;
-        }
+		/** check whether the labels is valid.
+		 *
+		 * Subclasses can override this to implement their check of label types.
+		 *
+		 * @param lab the labels being checked, guaranteed to be non-NULL
+		 */
+		virtual bool is_label_valid(CLabels *lab) const
+		{
+			return true;
+		}
+
+		virtual bool train_require_labels() const { return true; }
 
 	protected:
 		/** maximum training time */

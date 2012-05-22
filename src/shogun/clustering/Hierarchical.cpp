@@ -195,16 +195,3 @@ void CHierarchical::store_model_features()
 {
 	/* TODO. Currently does nothing since apply methods are not implemented. */
 }
-
-CLabels* CHierarchical::apply(CFeatures* data)
-{
-	SG_ERROR("apply(...) not implemented for %s!\n", get_name());
-	return NULL;
-}
-
-float64_t CHierarchical::apply(int32_t num)
-{
-	apply();
-	return 0;
-}
-
