@@ -81,7 +81,7 @@ class CKNN : public CDistanceMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)
@@ -168,7 +168,7 @@ class CKNN : public CDistanceMachine
 		/** classify all examples with nearest neighbor (k=1)
 		 * @return classified labels
 		 */
-		virtual CLabels* classify_NN();
+		virtual CMulticlassLabels* classify_NN();
 
 		/** init distances to test examples
 		 * @param data test examples
