@@ -25,6 +25,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
 	ASSERT(predicted->get_label_type()==LT_BINARY);
 	ASSERT(ground_truth->get_label_type()==LT_BINARY);
+	ground_truth->ensure_valid();
 
 	// number of true positive examples
 	float64_t tp = 0.0;
