@@ -47,7 +47,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		/** set C
 		 * @param C C value
 		 */
-		inline void set_C(int32_t C)
+		inline void set_C(float64_t C)
 		{
 			ASSERT(C>0);
 			m_C = C;
@@ -55,7 +55,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		/** get C
 		 * @return C value
 		 */
-		inline int32_t get_C() const { return m_C; }
+		inline float64_t get_C() const { return m_C; }
 
 		/** set epsilon
 		 * @param epsilon epsilon value
