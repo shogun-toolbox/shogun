@@ -47,6 +47,7 @@ public:
 		SG_REF(labels);
 		m_labels=labels;
 		ASSERT(labels->get_label_type()==LT_MULTICLASS);
+        labels->ensure_valid();
 
 		if (normalizer==NULL)
 			normalizer=new CIdentityKernelNormalizer();
