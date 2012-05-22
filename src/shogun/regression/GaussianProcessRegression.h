@@ -115,7 +115,7 @@ class CGaussianProcessRegression : public CMachine
 		* @param data (test)data to be classified
 		* @return classified labels
 		*/
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 		
 		/** get classifier type
 		*
@@ -144,19 +144,19 @@ class CGaussianProcessRegression : public CMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 	private:
-	  	
+
 		/** function for initialization*/
 		void init();
-		
+
 		/** apply mean prediction from data
 		*
 		* @param data (test)data to be classified
 		* @return classified labels
 		*/
-		virtual CLabels* mean_prediction(CFeatures* data);
-				
+		virtual CRegressionLabels* mean_prediction(CFeatures* data);
+
 	private:
-				
+
 		/** Observation noise alpha */
 		float64_t m_sigma;
 		
