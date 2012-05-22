@@ -108,7 +108,7 @@ bool CKNN::train_machine(CFeatures* data)
 	return true;
 }
 
-CLabels* CKNN::apply(CFeatures* data)
+CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 {
 	if (data)
 		init_distance(data);
@@ -124,7 +124,7 @@ CLabels* CKNN::apply(CFeatures* data)
 	int32_t num_lab=distance->get_num_vec_rhs();
 	ASSERT(m_k<=distance->get_num_vec_lhs());
 
-	CRegressionLabels* output=new CRegressionLabels(num_lab);
+	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
 
 	float64_t* dists   = NULL;
 	int32_t* train_lab = NULL;
@@ -273,7 +273,7 @@ CLabels* CKNN::apply(CFeatures* data)
 	return output;
 }
 
-CLabels* CKNN::classify_NN()
+CMulticlassLabels* CKNN::classify_NN()
 {
 	ASSERT(distance);
 	ASSERT(m_num_classes>0);
@@ -281,7 +281,7 @@ CLabels* CKNN::classify_NN()
 	int32_t num_lab = distance->get_num_vec_rhs();
 	ASSERT(num_lab);
 
-	CRegressionLabels* output = new CRegressionLabels(num_lab);
+	CMulticlassLabels* output = new CMulticlassLabels(num_lab);
 	float64_t* distances = SG_MALLOC(float64_t, m_train_labels.vlen);
 
 	SG_INFO("%d test examples\n", num_lab);
