@@ -168,12 +168,12 @@ int32_t CLBPPyrDotFeatures::get_nnz_features_for_vector(int32_t num)
 	return vec_nDim;
 }
 
-EFeatureType CLBPPyrDotFeatures::get_feature_type()
+EFeatureType CLBPPyrDotFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CLBPPyrDotFeatures::get_feature_class()
+EFeatureClass CLBPPyrDotFeatures::get_feature_class() const
 {
 	return C_POLY;
 }
@@ -187,7 +187,7 @@ int32_t CLBPPyrDotFeatures::get_num_vectors() const
 
 }
 
-int32_t CLBPPyrDotFeatures::get_size()
+int32_t CLBPPyrDotFeatures::get_size() const
 {
 	return sizeof(float64_t);
 }

@@ -308,12 +308,12 @@ int32_t CWDFeatures::get_nnz_features_for_vector(int32_t num)
 	return degree*vlen;
 }
 
-EFeatureType CWDFeatures::get_feature_type()
+EFeatureType CWDFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CWDFeatures::get_feature_class()
+EFeatureClass CWDFeatures::get_feature_class() const
 {
 	return C_WD;
 }
@@ -323,7 +323,7 @@ int32_t CWDFeatures::get_num_vectors() const
 	return num_strings;
 }
 
-int32_t CWDFeatures::get_size()
+int32_t CWDFeatures::get_size() const
 {
 	return sizeof(float64_t);
 }

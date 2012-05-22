@@ -29,7 +29,7 @@ int32_t CDummyFeatures::get_num_vectors() const
 	return num_vectors;
 }
 
-int32_t CDummyFeatures::get_size()
+int32_t CDummyFeatures::get_size() const 
 {
 	return 1;
 }
@@ -39,12 +39,12 @@ CFeatures* CDummyFeatures::duplicate() const
 	return new CDummyFeatures(*this);
 }
 
-inline EFeatureType CDummyFeatures::get_feature_type()
+inline EFeatureType CDummyFeatures::get_feature_type() const
 {
 	return F_ANY;
 }
 
-EFeatureClass CDummyFeatures::get_feature_class()
+EFeatureClass CDummyFeatures::get_feature_class() const
 {
 	return C_ANY;
 }

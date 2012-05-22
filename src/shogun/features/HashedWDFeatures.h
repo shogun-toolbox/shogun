@@ -156,7 +156,7 @@ public:
 	 *
 	 * @return templated feature type
 	 */
-	inline virtual EFeatureType get_feature_type()
+	inline virtual EFeatureType get_feature_type() const
 	{
 		return F_UNKNOWN;
 	}
@@ -165,7 +165,7 @@ public:
 	 *
 	 * @return feature class
 	 */
-	inline virtual EFeatureClass get_feature_class()
+	inline virtual EFeatureClass get_feature_class() const
 	{
 		return C_WD;
 	}
@@ -175,7 +175,7 @@ public:
 		return num_strings;
 	}
 
-	inline virtual int32_t get_size()
+	inline virtual int32_t get_size() const
 	{
 		return sizeof(float64_t);
 	}

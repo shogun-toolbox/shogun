@@ -397,7 +397,7 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 	}
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_size() { return sizeof(ST); }
+template<class ST> int32_t CDenseFeatures<ST>::get_size() const  { return sizeof(ST); }
 
 template<class ST> int32_t CDenseFeatures<ST>::get_num_vectors() const
 {
@@ -435,7 +435,7 @@ template<class ST> void CDenseFeatures<ST>::initialize_cache()
 	}
 }
 
-template<class ST> EFeatureClass CDenseFeatures<ST>::get_feature_class() { return C_DENSE; }
+template<class ST> EFeatureClass CDenseFeatures<ST>::get_feature_class() const  { return C_DENSE; }
 
 template<class ST> bool CDenseFeatures<ST>::reshape(int32_t p_num_features, int32_t p_num_vectors)
 {
@@ -586,7 +586,7 @@ template<class ST> void CDenseFeatures<ST>::init()
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)	\
-template<> EFeatureType CDenseFeatures<sg_type>::get_feature_type() \
+template<> EFeatureType CDenseFeatures<sg_type>::get_feature_type() const \
 { 																			\
 	return f_type; 															\
 }

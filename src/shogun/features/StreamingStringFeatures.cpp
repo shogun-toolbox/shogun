@@ -94,7 +94,7 @@ int32_t CStreamingStringFeatures<T>::get_num_vectors() const
 }
 
 template <class T>
-int32_t CStreamingStringFeatures<T>::get_size()
+int32_t CStreamingStringFeatures<T>::get_size() const
 {
 	return sizeof(T);
 }
@@ -117,7 +117,7 @@ template <class T> void CStreamingStringFeatures<T>::set_vector_and_label_reader
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)				\
-template<> EFeatureType CStreamingStringFeatures<sg_type>::get_feature_type() \
+template<> EFeatureType CStreamingStringFeatures<sg_type>::get_feature_type() const \
 {									\
 	return f_type;							\
 }
@@ -255,7 +255,7 @@ int32_t CStreamingStringFeatures<T>::get_vector_length()
 }
 
 template <class T>
-EFeatureClass CStreamingStringFeatures<T>::get_feature_class()
+EFeatureClass CStreamingStringFeatures<T>::get_feature_class() const
 {
 	return C_STREAMING_STRING;
 }

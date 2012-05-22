@@ -186,14 +186,14 @@ public:
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual EFeatureType get_feature_type();
+	virtual EFeatureType get_feature_type() const;
 
 	/**
 	 * Return the feature class
 	 *
 	 * @return C_STREAMING_STRING
 	 */
-	virtual EFeatureClass get_feature_class();
+	virtual EFeatureClass get_feature_class() const;
 
 	/**
 	 * Duplicate the object.
@@ -221,7 +221,7 @@ public:
 	 *
 	 * @return Size of T.
 	 */
-	virtual int32_t get_size();
+	virtual int32_t get_size() const;
 
 	/**
 	 * Return the number of features in the current vector.

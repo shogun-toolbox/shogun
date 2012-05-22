@@ -609,7 +609,7 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 	}
 }
 
-template<class ST> int32_t CSparseFeatures<ST>::get_size()
+template<class ST> int32_t CSparseFeatures<ST>::get_size() const
 {
 	return sizeof(ST);
 }
@@ -640,7 +640,7 @@ template<class ST> int32_t CSparseFeatures<ST>::set_num_features(int32_t num)
 	return num_features;
 }
 
-template<class ST> EFeatureClass CSparseFeatures<ST>::get_feature_class()
+template<class ST> EFeatureClass CSparseFeatures<ST>::get_feature_class() const
 {
 	return C_SPARSE;
 }
@@ -1126,7 +1126,7 @@ template<class ST> void CSparseFeatures<ST>::init()
 }
 
 #define GET_FEATURE_TYPE(sg_type, f_type)									\
-template<> EFeatureType CSparseFeatures<sg_type>::get_feature_type()	\
+template<> EFeatureType CSparseFeatures<sg_type>::get_feature_type() const	\
 {																			\
 	return f_type;															\
 }
