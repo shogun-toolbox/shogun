@@ -126,13 +126,13 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type() const;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		virtual EFeatureClass get_feature_class();
+		virtual EFeatureClass get_feature_class() const;
 
 		/** get number of vectors
 		 *
@@ -144,7 +144,7 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual int32_t get_size();
+		virtual int32_t get_size() const;
 
 		/** set normalization constant
 		 * @param n n=0 means automagic */

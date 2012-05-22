@@ -192,9 +192,9 @@ template<class ST> void CStringFeatures<ST>::cleanup_feature_vectors(int32_t sta
 	}
 }
 
-template<class ST> EFeatureClass CStringFeatures<ST>::get_feature_class() { return C_STRING; }
+template<class ST> EFeatureClass CStringFeatures<ST>::get_feature_class() const { return C_STRING; }
 
-template<class ST> EFeatureType CStringFeatures<ST>::get_feature_type() { return F_UNKNOWN; }
+template<class ST> EFeatureType CStringFeatures<ST>::get_feature_type() const { return F_UNKNOWN; }
 
 template<class ST> CAlphabet* CStringFeatures<ST>::get_alphabet()
 {
@@ -1152,7 +1152,7 @@ template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPR
 	return true;
 }
 
-template<class ST> int32_t CStringFeatures<ST>::get_size() { return sizeof(ST); }
+template<class ST> int32_t CStringFeatures<ST>::get_size() const { return sizeof(ST); }
 
 template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
@@ -1678,7 +1678,7 @@ template<class ST> void CStringFeatures<ST>::init()
  *
  * @return feature type char
  */
-template<> EFeatureType CStringFeatures<bool>::get_feature_type()
+template<> EFeatureType CStringFeatures<bool>::get_feature_type() const
 {
 	return F_BOOL;
 }
@@ -1687,7 +1687,7 @@ template<> EFeatureType CStringFeatures<bool>::get_feature_type()
  *
  * @return feature type char
  */
-template<> EFeatureType CStringFeatures<char>::get_feature_type()
+template<> EFeatureType CStringFeatures<char>::get_feature_type() const
 {
 	return F_CHAR;
 }
@@ -1696,7 +1696,7 @@ template<> EFeatureType CStringFeatures<char>::get_feature_type()
  *
  * @return feature type BYTE
  */
-template<> EFeatureType CStringFeatures<uint8_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<uint8_t>::get_feature_type() const
 {
 	return F_BYTE;
 }
@@ -1705,7 +1705,7 @@ template<> EFeatureType CStringFeatures<uint8_t>::get_feature_type()
  *
  * @return feature type SHORT
  */
-template<> EFeatureType CStringFeatures<int16_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<int16_t>::get_feature_type() const
 {
 	return F_SHORT;
 }
@@ -1714,7 +1714,7 @@ template<> EFeatureType CStringFeatures<int16_t>::get_feature_type()
  *
  * @return feature type WORD
  */
-template<> EFeatureType CStringFeatures<uint16_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<uint16_t>::get_feature_type() const
 {
 	return F_WORD;
 }
@@ -1723,7 +1723,7 @@ template<> EFeatureType CStringFeatures<uint16_t>::get_feature_type()
  *
  * @return feature type INT
  */
-template<> EFeatureType CStringFeatures<int32_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<int32_t>::get_feature_type() const
 {
 	return F_INT;
 }
@@ -1732,7 +1732,7 @@ template<> EFeatureType CStringFeatures<int32_t>::get_feature_type()
  *
  * @return feature type INT
  */
-template<> EFeatureType CStringFeatures<uint32_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<uint32_t>::get_feature_type() const
 {
 	return F_UINT;
 }
@@ -1741,7 +1741,7 @@ template<> EFeatureType CStringFeatures<uint32_t>::get_feature_type()
  *
  * @return feature type LONG
  */
-template<> EFeatureType CStringFeatures<int64_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<int64_t>::get_feature_type() const
 {
 	return F_LONG;
 }
@@ -1750,7 +1750,7 @@ template<> EFeatureType CStringFeatures<int64_t>::get_feature_type()
  *
  * @return feature type ULONG
  */
-template<> EFeatureType CStringFeatures<uint64_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<uint64_t>::get_feature_type() const
 {
 	return F_ULONG;
 }
@@ -1759,7 +1759,7 @@ template<> EFeatureType CStringFeatures<uint64_t>::get_feature_type()
  *
  * @return feature type SHORTREAL
  */
-template<> EFeatureType CStringFeatures<float32_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<float32_t>::get_feature_type() const
 {
 	return F_SHORTREAL;
 }
@@ -1768,7 +1768,7 @@ template<> EFeatureType CStringFeatures<float32_t>::get_feature_type()
  *
  * @return feature type DREAL
  */
-template<> EFeatureType CStringFeatures<float64_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<float64_t>::get_feature_type() const
 {
 	return F_DREAL;
 }
@@ -1777,7 +1777,7 @@ template<> EFeatureType CStringFeatures<float64_t>::get_feature_type()
  *
  * @return feature type LONGREAL
  */
-template<> EFeatureType CStringFeatures<floatmax_t>::get_feature_type()
+template<> EFeatureType CStringFeatures<floatmax_t>::get_feature_type() const
 {
 	return F_LONGREAL;
 }

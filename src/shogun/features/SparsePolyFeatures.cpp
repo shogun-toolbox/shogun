@@ -71,12 +71,12 @@ int32_t CSparsePolyFeatures::get_nnz_features_for_vector(int32_t num)
 	return vlen*(vlen+1)/2;
 }
 
-EFeatureType CSparsePolyFeatures::get_feature_type()
+EFeatureType CSparsePolyFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CSparsePolyFeatures::get_feature_class()
+EFeatureClass CSparsePolyFeatures::get_feature_class() const
 {
 	return C_POLY;
 }
@@ -90,7 +90,7 @@ int32_t CSparsePolyFeatures::get_num_vectors() const
 
 }
 
-int32_t CSparsePolyFeatures::get_size()
+int32_t CSparsePolyFeatures::get_size() const
 {
 	return sizeof(float64_t);
 }

@@ -322,12 +322,12 @@ int32_t CImplicitWeightedSpecFeatures::get_nnz_features_for_vector(int32_t num)
 	return nnz;
 }
 
-EFeatureType CImplicitWeightedSpecFeatures::get_feature_type()
+EFeatureType CImplicitWeightedSpecFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CImplicitWeightedSpecFeatures::get_feature_class()
+EFeatureClass CImplicitWeightedSpecFeatures::get_feature_class() const
 {
 	return C_WEIGHTEDSPEC;
 }
@@ -337,7 +337,7 @@ int32_t CImplicitWeightedSpecFeatures::get_num_vectors() const
 	return num_strings;
 }
 
-int32_t CImplicitWeightedSpecFeatures::get_size()
+int32_t CImplicitWeightedSpecFeatures::get_size() const
 {
 	return sizeof(float64_t);
 }

@@ -291,7 +291,7 @@ public:
 	 *
 	 * @return memory footprint of one feature
 	 */
-	virtual int32_t get_size();
+	virtual int32_t get_size() const;
 
 	/** get number of feature vectors
 	 *
@@ -329,13 +329,13 @@ public:
 	 *
 	 * @return feature class DENSE
 	 */
-	virtual EFeatureClass get_feature_class();
+	virtual EFeatureClass get_feature_class() const;
 
 	/** get feature type
 	 *
 	 * @return templated feature type
 	 */
-	virtual EFeatureType get_feature_type();
+	virtual EFeatureType get_feature_type() const;
 
 	/** reshape
 	 *
