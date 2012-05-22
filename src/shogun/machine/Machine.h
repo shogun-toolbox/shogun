@@ -217,16 +217,15 @@ class CMachine : public CSGObject
 		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
-		 * NOT IMPLEMENTED
-		 *
 		 * @param indices index vector (of locked features) that is predicted
 		 */
-		virtual CLabels* apply_locked(SGVector<index_t> indices)
-		{
-			SG_ERROR("apply_locked(SGVector<index_t>) is not yet implemented "
-					"for %s\n", get_name());
-			return NULL;
-		}
+		virtual CLabels* apply_locked(SGVector<index_t> indices);
+
+		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
+		virtual CRegressionLabels* apply_locked_regression(
+				SGVector<index_t> indices);
+		virtual CMulticlassLabels* apply_locked_multiclass(
+				SGVector<index_t> indices);
 
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called
