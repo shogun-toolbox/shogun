@@ -30,12 +30,6 @@ CRegressionLabels* CRegressionLabels::obtain_from_generic(CLabels* base_labels)
 	return NULL;
 }
 
-bool CRegressionLabels::is_valid()
-{       
-	ASSERT(m_labels.vector);
-	return true;
-}
-
 ELabelType CRegressionLabels::get_label_type()
 {
 	return LT_REGRESSION;

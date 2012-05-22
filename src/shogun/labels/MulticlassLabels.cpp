@@ -31,9 +31,9 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
 	return NULL;
 }
 
-bool CMulticlassLabels::is_valid()
+void CMulticlassLabels::ensure_valid(const char* context)
 {       
-    ASSERT(m_labels.vector);
+    CDenseLabels::ensure_valid(context);
 
     int32_t subset_size=get_num_labels();
     for (int32_t i=0; i<subset_size; i++)
@@ -43,12 +43,10 @@ bool CMulticlassLabels::is_valid()
 
         if (label<0 || float64_t(label)!=m_labels[real_i])
 		{
-			SG_ERROR("Multiclass Labels must be in range 0...<nr_classes-1> and integers!\n");
-			return false;
+			SG_ERROR("%s%sMulticlass Labels must be in range 0...<nr_classes-1> and integers!\n",
+                    context?context:"", context?": ":"");
 		}
 	}
-
-    return true;
 }
 
 ELabelType CMulticlassLabels::get_label_type()

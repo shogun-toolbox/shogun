@@ -61,14 +61,6 @@ class CRegressionLabels : public CDenseLabels
 		 */
 		static CRegressionLabels* obtain_from_generic(CLabels* base_labels);
 
-		/** is_valid checks if labeling is a multi-class labeling
-		 *
-		 * possible with subset
-		 *
-		 * @return if this is multi-class labeling
-		 */
-		virtual bool is_valid();
-
 		/** get label type
 		 *
 		 * @return label type real
