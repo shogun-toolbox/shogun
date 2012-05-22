@@ -65,10 +65,10 @@ void CConjugateIndex::clean_classes()
 	}
 }
 
-bool CConjugateIndex::train(CFeatures* train_features)
+bool CConjugateIndex::train_machine(CFeatures* data)
 {
-	if (train_features)
-		set_features(train_features);
+	if (data)
+		set_features(data);
 
 	ASSERT(m_labels);
 	ASSERT(m_labels->get_label_type()==LT_MULTICLASS);
@@ -141,7 +141,7 @@ bool CConjugateIndex::train(CFeatures* train_features)
 	return true;
 };
 
-CLabels* CConjugateIndex::apply(CFeatures* data)
+CMulticlassLabels* CConjugateIndex::apply_multiclass(CFeatures* data)
 {
 	if (data)
 		set_features(data);

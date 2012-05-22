@@ -63,17 +63,11 @@ public:
 	 */
 	virtual CDenseFeatures<float64_t>* get_features();
 
-	/** train classifier
-	 * @param data train examples
-	 * @return true if successful
-	 */
-	virtual bool train(CFeatures* data=NULL);
-
 	/** classify specified examples
 	 * @param data examples to be classified
 	 * @return labels corresponding to data
 	 */
-	virtual CLabels* apply(CFeatures* data=NULL);
+	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** classifiy specified example
 	 * @param idx example index
@@ -92,6 +86,12 @@ public:
 	virtual EMachineType get_classifier_type() { return CT_CONJUGATEINDEX; };
 
 protected:
+
+	/** train classifier
+	 * @param data train examples
+	 * @return true if successful
+	 */
+	virtual bool train_machine(CFeatures* data=NULL);
 
 	/** clean-up class matrices */
 	void clean_classes();
