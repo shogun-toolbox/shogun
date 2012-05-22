@@ -265,7 +265,6 @@ class CKernelMachine : public CMachine
 		/** @return whether machine supports locking */
 		virtual bool supports_locking() const { return true; }
 
-
 	protected:
 
 		SGVector<float64_t> apply_get_outputs(CFeatures* data);
