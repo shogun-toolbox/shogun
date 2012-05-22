@@ -96,7 +96,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 	return true;
 }
 
-CLabels* CPluginEstimate::apply(CFeatures* data)
+CBinaryLabels* CPluginEstimate::apply_binary(CFeatures* data)
 {
 	if (data)
 	{
@@ -110,13 +110,12 @@ CLabels* CPluginEstimate::apply(CFeatures* data)
 	}
 
 	ASSERT(features);
-	CRegressionLabels* result=new CRegressionLabels(features->get_num_vectors());
-	ASSERT(result->get_num_labels()==features->get_num_vectors());
+	SGVector<float64_t> result(features->get_num_vectors());
 
 	for (int32_t vec=0; vec<features->get_num_vectors(); vec++)
-		result->set_label(vec, apply_one(vec));
+		result[vec] = apply_one(vec);
 
-	return result;
+	return new CBinaryLabels(result);
 }
 
 float64_t CPluginEstimate::apply_one(int32_t vec_idx)

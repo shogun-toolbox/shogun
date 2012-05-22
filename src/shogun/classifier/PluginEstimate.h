@@ -13,7 +13,7 @@
 
 #include <shogun/machine/Machine.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/distributions/LinearHMM.h>
 
 namespace shogun
@@ -48,7 +48,7 @@ class CPluginEstimate: public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
 
 		/** set features
 		 *
