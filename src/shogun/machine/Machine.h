@@ -291,6 +291,17 @@ class CMachine : public CSGObject
 					" work though.\n", get_name());
 		}
 
+        /** check whether the labels is valid.
+         *
+         * Subclasses can override this to implement their check of label types.
+         *
+         * @param lab the labels being checked, guaranteed to be non-NULL
+         */
+        virtual bool is_label_valid(CLabels *lab) const
+        {
+            return true;
+        }
+
 	protected:
 		/** maximum training time */
 		float64_t m_max_train_time;

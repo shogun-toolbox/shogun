@@ -66,6 +66,10 @@ bool CMachine::train(CFeatures* data)
 
 void CMachine::set_labels(CLabels* lab)
 {
+    if (lab != NULL)
+        if (!is_label_valid(lab))
+            SG_ERROR("Invalid label for %s", get_name());
+
 	SG_UNREF(m_labels);
 	SG_REF(lab);
 	m_labels = lab;
