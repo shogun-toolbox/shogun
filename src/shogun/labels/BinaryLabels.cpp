@@ -35,9 +35,9 @@ CBinaryLabels* CBinaryLabels::obtain_from_generic(CLabels* base_labels)
 }
 
 
-bool CBinaryLabels::is_valid()
-{       
-    ASSERT(m_labels.vector);
+void CBinaryLabels::ensure_valid(const char* context)
+{
+    CDenseLabels::ensure_valid(context);
     bool found_plus_one=false;
     bool found_minus_one=false;
 
@@ -51,17 +51,22 @@ bool CBinaryLabels::is_valid()
             found_minus_one=true;
         else
         {
-            SG_ERROR("Not a two class labeling label[%d]=%f (only +1/-1 "
-                    "allowed)\n", i, m_labels[real_i]);
+            SG_ERROR("%s%sNot a two class labeling label[%d]=%f (only +1/-1 "
+                    "allowed)\n", context?context:"", context?": ":"", i, m_labels[real_i]);
         }
     }
     
     if (!found_plus_one)
-        SG_ERROR("Not a two class labeling - no positively labeled examples found\n");
-    if (!found_minus_one)
-        SG_ERROR("Not a two class labeling - no negatively labeled examples found\n");
+    {
+        SG_ERROR("%s%sNot a two class labeling - no positively labeled examples found\n",
+                context?context:"", context?": ":"");
+    }
 
-    return true;
+    if (!found_minus_one)
+    {
+        SG_ERROR("%s%sNot a two class labeling - no negatively labeled examples found\n",
+                context?context:"", context?": ":"");
+    }
 }
 
 ELabelType CBinaryLabels::get_label_type()

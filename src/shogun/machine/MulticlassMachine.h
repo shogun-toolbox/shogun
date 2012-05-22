@@ -134,6 +134,15 @@ class CMulticlassMachine : public CMachine
             return CT_MULTICLASS;
         }
 
+        /** check whether the labels is valid.
+         *
+         * @param lab the labels being checked, guaranteed to be non-NULL
+         */
+        virtual bool is_label_valid(CLabels *lab) const
+        {
+            return lab->get_label_type() == LT_MULTICLASS;
+        }
+
 	protected:
 		/** init strategy */
 		void init_strategy();

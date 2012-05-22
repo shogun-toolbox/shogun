@@ -52,8 +52,6 @@ CMulticlassMachine::~CMulticlassMachine()
 
 void CMulticlassMachine::set_labels(CLabels* lab)
 {
-    if (lab)
-        ASSERT(lab->get_label_type() == LT_MULTICLASS);
     CMachine::set_labels(lab);
     if (lab)
         init_strategy();
