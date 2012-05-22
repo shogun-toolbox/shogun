@@ -24,7 +24,7 @@
     {
         CMulticlassLabels* apply(CFeatures* data=NULL)
         {
-            return CMulticlassLabels::obtain_from_generic($self->apply_multiclass(data));
+            return $self->apply_multiclass(data);
         }
     }
 %enddef
@@ -34,7 +34,7 @@
     {
         CBinaryLabels* apply(CFeatures* data=NULL)
         {
-            return CBinaryLabels::obtain_from_generic($self->apply_binary(data));
+            return $self->apply_binary(data);
         }
     }
 %enddef
@@ -44,7 +44,7 @@
     {
         CRegressionLabels* apply(CFeatures* data=NULL)
         {
-            return CRegressionLabels::obtain_from_generic($self->apply_regression(data));
+            return $self->apply_regression(data);
         }
     }
 %enddef
