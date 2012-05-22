@@ -73,8 +73,6 @@ void CDenseLabels::set_labels(SGVector<float64_t> v)
 		SG_ERROR("A subset is set, cannot set labels\n");
 
 	m_labels = v;
-
-	is_valid();
 }
 
 SGVector<float64_t> CDenseLabels::get_labels()
@@ -119,6 +117,12 @@ void CDenseLabels::set_int_labels(SGVector<int32_t> lab)
 
 	for (int32_t i=0; i<lab.vlen; i++)
 		set_int_label(i, lab.vector[i]);
+}
+
+void CDenseLabels::ensure_valid(const char* context)
+{
+    if (m_labels.vector == NULL)
+        SG_ERROR("%s%sempty content (NULL) for labels\n", context?context:"", context?": ":"");
 }
 
 void CDenseLabels::load(CFile* loader)

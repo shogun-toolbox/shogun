@@ -40,13 +40,13 @@ class CLabels : public CSGObject
 		/** destructor */
 		virtual ~CLabels();
 
-		/** check if labeling is valid 
+		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset
-		 *
-		 * @return if labeling is valid (e.g. binary labeling)
+         *
+         * @param context optional message to convey the context
 		 */
-		virtual bool is_valid()=0;
+		virtual void ensure_valid(const char* context=NULL)=0;
 
 		/** get number of labels, depending on whether a subset is set
 		 *
