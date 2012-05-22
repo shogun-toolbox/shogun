@@ -43,7 +43,7 @@ CCombinedFeatures::~CCombinedFeatures()
 	SG_UNREF(feature_list);
 }
 
-int32_t CCombinedFeatures::get_size()
+int32_t CCombinedFeatures::get_size() const
 {
 	CFeatures* f=(CFeatures*) feature_list
 		->get_current_element();

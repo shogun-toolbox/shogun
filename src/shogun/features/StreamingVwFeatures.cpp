@@ -129,12 +129,12 @@ int32_t CStreamingVwFeatures::get_num_vectors() const
 		return 0;
 }
 
-int32_t CStreamingVwFeatures::get_size()
+int32_t CStreamingVwFeatures::get_size() const
 {
 	return sizeof(VwExample);
 }
 
-EFeatureType CStreamingVwFeatures::get_feature_type()
+EFeatureType CStreamingVwFeatures::get_feature_type() const
 {
 	return F_DREAL;
 }
@@ -377,7 +377,7 @@ int32_t CStreamingVwFeatures::get_num_features()
 	return current_length;
 }
 
-EFeatureClass CStreamingVwFeatures::get_feature_class()
+EFeatureClass CStreamingVwFeatures::get_feature_class() const
 {
 	return C_STREAMING_VW;
 }

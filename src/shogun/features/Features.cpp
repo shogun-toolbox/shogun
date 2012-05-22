@@ -108,7 +108,7 @@ int32_t CFeatures::add_preprocessor(CPreprocessor* p)
 }
 
 /// get current preprocessor
-CPreprocessor* CFeatures::get_preprocessor(int32_t num)
+CPreprocessor* CFeatures::get_preprocessor(int32_t num) const
 {
 	if (num<num_preproc)
 	{
@@ -120,7 +120,7 @@ CPreprocessor* CFeatures::get_preprocessor(int32_t num)
 }
 
 /// get whether specified preprocessor (or all if num=1) was/were already applied
-int32_t CFeatures::get_num_preprocessed()
+int32_t CFeatures::get_num_preprocessed() const
 {
 	int32_t num=0;
 
@@ -190,7 +190,7 @@ void CFeatures::set_preprocessed(int32_t num)
 	preprocessed[num]=true;
 }
 
-bool CFeatures::is_preprocessed(int32_t num)
+bool CFeatures::is_preprocessed(int32_t num) const
 {
 	return preprocessed[num];
 }
@@ -200,7 +200,7 @@ int32_t CFeatures::get_num_preprocessors() const
 	return num_preproc;
 }
 
-int32_t CFeatures::get_cache_size()
+int32_t CFeatures::get_cache_size() const
 {
 	return cache_size;
 }
@@ -211,7 +211,7 @@ bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
 	return false;
 }
 
-void CFeatures::list_feature_obj()
+void CFeatures::list_feature_obj() const
 {
 	SG_INFO( "%p - ", this);
 	switch (get_feature_class())
@@ -323,7 +323,7 @@ void CFeatures::save(CFile* writer)
 	SG_RESET_LOCALE;
 }
 
-bool CFeatures::check_feature_compatibility(CFeatures* f)
+bool CFeatures::check_feature_compatibility(CFeatures* f) const
 {
 	bool result=false;
 
@@ -333,7 +333,7 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 	return result;
 }
 
-bool CFeatures::has_property(EFeatureProperty p)
+bool CFeatures::has_property(EFeatureProperty p) const
 {
 	return (properties & p) != 0;
 }

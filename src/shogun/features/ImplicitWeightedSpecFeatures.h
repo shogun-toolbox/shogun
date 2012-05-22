@@ -99,13 +99,13 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type() const;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		virtual EFeatureClass get_feature_class();
+		virtual EFeatureClass get_feature_class() const;
 
 		/** get number of strings
 		 *
@@ -117,7 +117,7 @@ class CImplicitWeightedSpecFeatures : public CDotFeatures
 		 *
 		 * @return size of one element
 		 */
-		virtual int32_t get_size();
+		virtual int32_t get_size() const;
 
 		/** set weighted degree weights
 		 *

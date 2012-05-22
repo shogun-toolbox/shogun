@@ -314,13 +314,13 @@ CFeatures* CBinnedDotFeatures::duplicate() const
 	return new CBinnedDotFeatures(*this);
 }
 
-EFeatureType CBinnedDotFeatures::get_feature_type()
+EFeatureType CBinnedDotFeatures::get_feature_type() const
 {
 	return F_DREAL;
 }
 
 
-EFeatureClass CBinnedDotFeatures::get_feature_class()
+EFeatureClass CBinnedDotFeatures::get_feature_class() const
 {
 	return C_BINNED_DOT;
 }
@@ -331,7 +331,7 @@ int32_t CBinnedDotFeatures::get_num_vectors() const
 	return m_features->get_num_vectors();
 }
 
-int32_t CBinnedDotFeatures::get_size()
+int32_t CBinnedDotFeatures::get_size() const
 {
 	return sizeof(float64_t);
 }

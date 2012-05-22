@@ -42,16 +42,16 @@ class CDummyFeatures : public CFeatures
 		virtual int32_t get_num_vectors() const;
 
 		/** get size of features (always 1) */
-		virtual int32_t get_size();
+		virtual int32_t get_size() const;
 
 		/** duplicate features */
 		virtual CFeatures* duplicate() const;
 
 		/** get feature type (ANY) */
-		inline EFeatureType get_feature_type();
+		inline EFeatureType get_feature_type() const;
 
 		/** get feature class (ANY) */
-		inline virtual EFeatureClass get_feature_class();
+		inline virtual EFeatureClass get_feature_class() const;
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "DummyFeatures"; }

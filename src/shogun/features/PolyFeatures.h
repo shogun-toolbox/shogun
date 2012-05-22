@@ -63,13 +63,13 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @return feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type() const;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		virtual EFeatureClass get_feature_class();
+		virtual EFeatureClass get_feature_class() const;
 
 		/** get number of vectors
 		 *
@@ -90,7 +90,7 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @return size
 		 */
-		virtual int32_t get_size();
+		virtual int32_t get_size() const;
 
 		/** duplicate feature object
 		 *
