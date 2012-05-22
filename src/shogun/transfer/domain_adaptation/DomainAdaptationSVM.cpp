@@ -152,25 +152,26 @@ void CDomainAdaptationSVM::set_train_factor(float64_t factor)
 
 CBinaryLabels* CDomainAdaptationSVM::apply_binary(CFeatures* data)
 {
+	ASSERT(data);
+	ASSERT(presvm->get_bias()==0.0);
 
-    ASSERT(presvm->get_bias()==0.0);
+	int32_t num_examples = data->get_num_vectors();
 
-    int32_t num_examples = data->get_num_vectors();
+	CBinaryLabels* out_current = CSVMLight::apply_binary(data);
 
-    CBinaryLabels* out_current = CSVMLight::apply_binary(data);
+	// recursive call if used on DomainAdaptationSVM object
+	CBinaryLabels* out_presvm = presvm->apply_binary(data);
 
-    // recursive call if used on DomainAdaptationSVM object
-    CBinaryLabels* out_presvm = presvm->apply_binary(data);
+	// combine outputs
+	SGVector<float64_t> out_combined(num_examples);
+	for (int32_t i=0; i<num_examples; i++)
+	{
+		out_combined[i] = out_current->get_confidence(i) + B*out_presvm->get_confidence(i);
+	}
+	SG_UNREF(out_current);
+	SG_UNREF(out_presvm);
 
-
-    // combine outputs
-    for (int32_t i=0; i!=num_examples; i++)
-    {
-        float64_t out_combined = out_current->get_label(i) + B*out_presvm->get_label(i);
-        out_current->set_label(i, out_combined);
-    }
-
-    return out_current;
+	return new CBinaryLabels(out_combined);
 
 }
 

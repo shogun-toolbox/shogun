@@ -137,7 +137,7 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
         // pre-compute linear term
         for (int32_t i=0; i!=num_training_points; i++)
         {
-            lin_term[i] = train_factor * B * labels->get_label(i) * parent_svm_out->get_label(i) - 1.0;
+            lin_term[i] = train_factor * B * labels->get_confidence(i) * parent_svm_out->get_confidence(i) - 1.0;
         }
 
     	// set linear term for QP
@@ -212,27 +212,29 @@ void CDomainAdaptationSVMLinear::set_train_factor(float64_t factor)
 
 CBinaryLabels* CDomainAdaptationSVMLinear::apply_binary(CFeatures* data)
 {
-    ASSERT(presvm->get_bias()==0.0);
+	ASSERT(presvm->get_bias()==0.0);
 
-    int32_t num_examples = data->get_num_vectors();
+	int32_t num_examples = data->get_num_vectors();
 
-    CBinaryLabels* out_current = CLibLinear::apply_binary(data);
+	CBinaryLabels* out_current = CLibLinear::apply_binary(data);
 
-    if (presvm)
-    {
-        // recursive call if used on DomainAdaptationSVM object
-        CBinaryLabels* out_presvm = presvm->apply_binary(data);
+	SGVector<float64_t> out_combined(num_examples);
+	if (presvm)
+	{
+		// recursive call if used on DomainAdaptationSVM object
+		CBinaryLabels* out_presvm = presvm->apply_binary(data);
 
 
-        // combine outputs
-        for (int32_t i=0; i!=num_examples; i++)
-        {
-            float64_t out_combined = out_current->get_label(i) + B*out_presvm->get_label(i);
-            out_current->set_label(i, out_combined);
-        }
-    }
+		// combine outputs
+		for (int32_t i=0; i!=num_examples; i++)
+			out_combined[i] = out_current->get_confidence(i) + B*out_presvm->get_confidence(i);
 
-    return out_current;
+		SG_UNREF(out_presvm);
+	}
+
+	SG_UNREF(out_current);
+
+	return new CBinaryLabels(out_combined);
 }
 
 #endif //HAVE_LAPACK
