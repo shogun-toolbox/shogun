@@ -40,6 +40,8 @@ namespace shogun
 class CLeastSquaresRegression : public CLinearRidgeRegression
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
 		/** default constructor */
 		CLeastSquaresRegression();
 

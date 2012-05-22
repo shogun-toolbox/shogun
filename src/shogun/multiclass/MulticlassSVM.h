@@ -26,6 +26,8 @@ class CSVM;
 class CMulticlassSVM : public CKernelMulticlassMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_MULTICLASS);
+
 		/** default constructor  */
 		CMulticlassSVM();
 

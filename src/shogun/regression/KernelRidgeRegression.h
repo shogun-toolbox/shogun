@@ -64,6 +64,8 @@ enum ETrainingType
 class CKernelRidgeRegression : public CKernelMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
 		/** default constructor */
 		CKernelRidgeRegression();
 

@@ -42,6 +42,8 @@ namespace shogun
 class CLinearRidgeRegression : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
 		/** default constructor */
 		CLinearRidgeRegression();
 

@@ -25,6 +25,8 @@ namespace shogun
 class CMKLRegression : public CMKL
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
 		/** Constructor
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
