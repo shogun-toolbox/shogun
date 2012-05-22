@@ -15,7 +15,7 @@ parameter_list = [[traindat,testdat,label_traindat,0.8,1e-6],[traindat,testdat,l
 
 def regression_kernel_ridge_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,width=0.8,tau=1e-6):
 
-	from shogun.Features import Labels, RealFeatures
+	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Regression import KernelRidgeRegression
 
@@ -24,7 +24,7 @@ def regression_kernel_ridge_modular (fm_train=traindat,fm_test=testdat,label_tra
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
-	labels=Labels(label_train)
+	labels=RegressionLabels(label_train)
 
 	krr=KernelRidgeRegression(tau, kernel, labels)
 	krr.train(feats_train)
@@ -36,12 +36,12 @@ def regression_kernel_ridge_modular (fm_train=traindat,fm_test=testdat,label_tra
 # equivialent shorter version
 def krr_short ():
 	print('KRR_short')
-	from shogun.Features import Labels, RealFeatures
+	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Regression import KernelRidgeRegression
 
 	width=0.8; tau=1e-6
-	krr=KernelRidgeRegression(tau, GaussianKernel(0, width), Labels(label_train))
+	krr=KernelRidgeRegression(tau, GaussianKernel(0, width), RegressionLabels(label_train))
 	krr.train(RealFeatures(fm_train))
 	out = krr.apply(RealFeatures(fm_test)).get_labels()
 

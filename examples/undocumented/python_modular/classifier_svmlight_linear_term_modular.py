@@ -29,7 +29,7 @@ def classifier_svmlight_linear_term_modular(fm_train_dna=traindna,fm_test_dna=te
                                                 label_train_dna=label_traindna,degree=3, \
                                                 C=10,epsilon=1e-5,num_threads=1):
     
-    from shogun.Features import StringCharFeatures, Labels, DNA
+    from shogun.Features import StringCharFeatures, BinaryLabels, DNA
     from shogun.Kernel import WeightedDegreeStringKernel
     from shogun.Classifier import SVMLight
     
@@ -40,7 +40,7 @@ def classifier_svmlight_linear_term_modular(fm_train_dna=traindna,fm_test_dna=te
     
     kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
     
-    labels=Labels(label_train_dna)
+    labels=BinaryLabels(label_train_dna)
     
     svm=SVMLight(C, kernel, labels)
     svm.set_qpsize(3)

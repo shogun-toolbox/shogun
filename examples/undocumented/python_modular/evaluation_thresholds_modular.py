@@ -1,7 +1,7 @@
 parameter_list = [[1000]]
 
 def evaluation_thresholds_modular(index):
-	from modshogun import Labels, ROCEvaluation
+	from modshogun import BinaryLabels, ROCEvaluation
 	import numpy
 	numpy.random.seed(17)
 	output=numpy.arange(-1,1,0.001)
@@ -10,8 +10,8 @@ def evaluation_thresholds_modular(index):
 	label.extend([1.0]*(len(output)//2))
 	label=numpy.array(label)
 
-	pred=Labels(output)
-	truth=Labels(label)
+	pred=BinaryLabels(output)
+	truth=BinaryLabels(label)
 
 	evaluator=ROCEvaluation()
 	evaluator.evaluate(pred, truth)

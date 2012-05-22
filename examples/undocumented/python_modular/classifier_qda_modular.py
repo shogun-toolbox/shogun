@@ -9,13 +9,13 @@ parameter_list = [[traindat, testdat, label_traindat, 1e-4, False], \
 		  [traindat, testdat, label_traindat, 1e-4, True]]
 
 def classifier_qda_modular (fm_train_real=traindat, fm_test_real=testdat, label_train_twoclass=label_traindat, tolerance=1e-4, store_covs=False):
-	from shogun.Features import RealFeatures, Labels
+	from shogun.Features import RealFeatures, MulticlassLabels
 	from shogun.Classifier import QDA
 
 	feats_train = RealFeatures(fm_train_real)
 	feats_test  = RealFeatures(fm_test_real)
 
-	labels = Labels(label_train_twoclass)
+	labels = MulticlassLabels(label_train_twoclass)
 
 	qda = QDA(feats_train, labels, tolerance, store_covs)
 	qda.train()

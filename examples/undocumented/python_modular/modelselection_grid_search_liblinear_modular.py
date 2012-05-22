@@ -27,7 +27,7 @@ def modelselection_grid_search_liblinear_modular(traindat=traindat, label_traind
     from shogun.ModelSelection import GridSearchModelSelection
     from shogun.ModelSelection import ModelSelectionParameters, R_EXP
     from shogun.ModelSelection import ParameterCombination
-    from shogun.Features import Labels
+    from shogun.Features import BinaryLabels
     from shogun.Features import RealFeatures
     from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
 
@@ -43,7 +43,7 @@ def modelselection_grid_search_liblinear_modular(traindat=traindat, label_traind
 
     # training data
     features=RealFeatures(traindat)
-    labels=Labels(label_traindat)
+    labels=BinaryLabels(label_traindat)
 
     # classifier
     classifier=LibLinear(L2R_L2LOSS_SVC)

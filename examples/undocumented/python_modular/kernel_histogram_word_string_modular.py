@@ -8,7 +8,7 @@ parameter_list=[[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,la
 
 def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,gap=0,reverse=False):
 
-	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, Labels
+	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
 	from shogun.Kernel import HistogramWordStringKernel
 	from shogun.Classifier import PluginEstimate#, MSG_DEBUG
 
@@ -25,7 +25,7 @@ def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=test
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
 	pie=PluginEstimate()
-	labels=Labels(label_train_dna)
+	labels=BinaryLabels(label_train_dna)
 	pie.set_labels(labels)
 	pie.set_features(feats_train)
 	pie.train()

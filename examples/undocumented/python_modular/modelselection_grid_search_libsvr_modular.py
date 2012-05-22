@@ -26,7 +26,7 @@ def modelselection_grid_search_libsvr_modular(fm_train=traindat,fm_test=testdat,
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import MeanSquaredError
     from shogun.Evaluation import CrossValidationSplitting
-    from shogun.Features import Labels
+    from shogun.Features import RegressionLabels
     from shogun.Features import RealFeatures
     from shogun.Kernel import GaussianKernel
     from shogun.Regression import LibSVR
@@ -36,7 +36,7 @@ def modelselection_grid_search_libsvr_modular(fm_train=traindat,fm_test=testdat,
 
     # training data
     features_train=RealFeatures(traindat)
-    labels=Labels(label_traindat)
+    labels=RegressionLabels(label_traindat)
 
     # kernel
     kernel=GaussianKernel(features_train, features_train, width)
@@ -45,7 +45,7 @@ def modelselection_grid_search_libsvr_modular(fm_train=traindat,fm_test=testdat,
     # Dont worry if yours is not included but, write to the mailing list
     #kernel.print_modsel_params()
     
-    labels=Labels(label_train)
+    labels=RegressionLabels(label_train)
 
     # predictor
     predictor=LibSVR(C, tube_epsilon, kernel, labels)

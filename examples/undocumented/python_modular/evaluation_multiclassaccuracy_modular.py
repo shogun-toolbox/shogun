@@ -9,11 +9,11 @@ predicted = lm.load_labels('../data/label_train_multiclass.dat') * 2
 parameter_list = [[ground_truth,predicted]]
 
 def evaluation_multiclassaccuracy_modular(ground_truth, predicted):
-	from shogun.Features import Labels
+	from shogun.Features import MulticlassLabels
 	from shogun.Evaluation import MulticlassAccuracy
 
-	ground_truth_labels = Labels(ground_truth)
-	predicted_labels = Labels(predicted)
+	ground_truth_labels = MulticlassLabels(ground_truth)
+	predicted_labels = MulticlassLabels(predicted)
 	
 	evaluator = MulticlassAccuracy()
 	accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)

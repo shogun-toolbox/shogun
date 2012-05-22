@@ -8,7 +8,7 @@ parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_train
 
 
 def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = testdat,fm_label_twoclass=label_traindat):
-    from shogun.Features import CombinedFeatures, RealFeatures, Labels
+    from shogun.Features import CombinedFeatures, RealFeatures, BinaryLabels
     from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
     from shogun.Classifier import LibSVM
    
@@ -28,7 +28,7 @@ def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = 
 
     kernel.init(feats_train, feats_train)
     
-    labels = Labels(fm_label_twoclass)
+    labels = BinaryLabels(fm_label_twoclass)
     svm = LibSVM(1.0, kernel, labels)
     svm.train()
 

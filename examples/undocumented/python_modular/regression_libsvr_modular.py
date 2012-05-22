@@ -15,7 +15,7 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 def regression_libsvr_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
 
-	from shogun.Features import Labels, RealFeatures
+	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Regression import LibSVR
 
@@ -23,7 +23,7 @@ def regression_libsvr_modular (fm_train=traindat,fm_test=testdat,label_train=lab
 	feats_test=RealFeatures(fm_test)
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
-	labels=Labels(label_train)
+	labels=RegressionLabels(label_train)
 
 	svr=LibSVR(C, tube_epsilon, kernel, labels)
 	svr.set_epsilon(epsilon)

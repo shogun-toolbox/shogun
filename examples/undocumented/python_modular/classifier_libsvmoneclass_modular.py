@@ -7,7 +7,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list = [[traindat,testdat,2.2,1,1e-7],[traindat,testdat,2.1,1,1e-5]]
 
 def classifier_libsvmoneclass_modular (fm_train_real=traindat,fm_test_real=testdat,width=2.1,C=1,epsilon=1e-5):
-	from shogun.Features import RealFeatures, Labels
+	from shogun.Features import RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Classifier import LibSVMOneClass
 

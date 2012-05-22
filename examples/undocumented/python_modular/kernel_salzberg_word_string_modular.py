@@ -7,7 +7,7 @@ label_traindat = lm.load_labels('../data/label_train_dna.dat')
 parameter_list = [[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,label_traindat,3,0,False]]
 def kernel_salzberg_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,
 order=3,gap=0,reverse=False):
-	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, Labels
+	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
 	from shogun.Kernel import SalzbergWordStringKernel
 	from shogun.Classifier import PluginEstimate
 
@@ -20,7 +20,7 @@ order=3,gap=0,reverse=False):
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 
 	pie=PluginEstimate()
-	labels=Labels(label_train_dna)
+	labels=BinaryLabels(label_train_dna)
 	pie.set_labels(labels)
 	pie.set_features(feats_train)
 	pie.train()

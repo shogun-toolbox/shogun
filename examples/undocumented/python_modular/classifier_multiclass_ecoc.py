@@ -7,7 +7,7 @@ import classifier_multiclass_shared
 
 import shogun.Classifier as Classifier
 from shogun.Classifier import ECOCStrategy
-from shogun.Features import RealFeatures, Labels
+from shogun.Features import RealFeatures, MulticlassLabels
 from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
 from shogun.Evaluation import MulticlassAccuracy
 
@@ -19,11 +19,11 @@ decoders = [x for x in dir(Classifier)
 
 fea_train = RealFeatures(traindat)
 fea_test  = RealFeatures(testdat)
-gnd_train = Labels(label_traindat)
+gnd_train = MulticlassLabels(label_traindat)
 if label_testdat is None:
     gnd_test = None
 else:
-    gnd_test = Labels(label_testdat)
+    gnd_test = MulticlassLabels(label_testdat)
 
 base_classifier = LibLinear(L2R_L2LOSS_SVC)
 base_classifier.set_bias_enabled(True)

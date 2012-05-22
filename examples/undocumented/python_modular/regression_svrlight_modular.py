@@ -16,7 +16,7 @@ def regression_svrlight_modular(fm_train=traindat,fm_test=testdat,label_train=la
 				    width=1.2,C=1,epsilon=1e-5,tube_epsilon=1e-2,num_threads=3):
 
 
-	from shogun.Features import Labels, RealFeatures
+	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	try:
 		from shogun.Regression import SVRLight
@@ -29,7 +29,7 @@ def regression_svrlight_modular(fm_train=traindat,fm_test=testdat,label_train=la
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
-	labels=Labels(label_train)
+	labels=RegressionLabels(label_train)
 
 	svr=SVRLight(C, epsilon, kernel, labels)
 	svr.set_tube_epsilon(tube_epsilon)

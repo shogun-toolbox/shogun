@@ -22,14 +22,14 @@ else:
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
 def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
-    from shogun.Features import RealFeatures, Labels
+    from shogun.Features import RealFeatures, MulticlassLabels
     from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
     from shogun.Classifier import ECOCStrategy, ECOCRandomSparseEncoder, ECOCRandomDenseEncoder, ECOCHDDecoder
 
     feats_train = RealFeatures(fm_train_real)
     feats_test  = RealFeatures(fm_test_real)
 
-    labels = Labels(label_train_multiclass)
+    labels = MulticlassLabels(label_train_multiclass)
 
     classifier = LibLinear(L2R_L2LOSS_SVC)
     classifier.set_epsilon(epsilon)
@@ -50,7 +50,7 @@ def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_r
 
     if label_test_multiclass is not None:
         from shogun.Evaluation import MulticlassAccuracy
-        labels_test = Labels(label_test_multiclass)
+        labels_test = MulticlassLabels(label_test_multiclass)
         evaluator = MulticlassAccuracy()
         acc_dense = evaluator.evaluate(label_dense, labels_test)
         acc_sparse = evaluator.evaluate(label_sparse, labels_test)

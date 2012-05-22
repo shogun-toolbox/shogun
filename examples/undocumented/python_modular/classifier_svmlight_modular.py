@@ -8,7 +8,7 @@ label_traindat = lm.load_labels('../data/label_train_dna.dat')
 parameter_list = [[traindat,testdat,label_traindat,1.1,1e-5,1],[traindat,testdat,label_traindat,1.2,1e-5,1]]
 
 def classifier_svmlight_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,C=1.2,epsilon=1e-5,num_threads=1):
-	from shogun.Features import StringCharFeatures, Labels, DNA
+	from shogun.Features import StringCharFeatures, BinaryLabels, DNA
 	from shogun.Kernel import WeightedDegreeStringKernel
 	try:
 		from shogun.Classifier import SVMLight
@@ -24,7 +24,7 @@ def classifier_svmlight_modular (fm_train_dna=traindat,fm_test_dna=testdat,label
 
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
-	labels=Labels(label_train_dna)
+	labels=BinaryLabels(label_train_dna)
 
 	svm=SVMLight(C, kernel, labels)
 	svm.set_epsilon(epsilon)

@@ -26,7 +26,7 @@ def modelselection_grid_search_krr_modular(fm_train=traindat,fm_test=testdat,lab
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import MeanSquaredError
     from shogun.Evaluation import CrossValidationSplitting
-    from shogun.Features import Labels
+    from shogun.Features import RegressionLabels
     from shogun.Features import RealFeatures
     from shogun.Regression import KernelRidgeRegression
     from shogun.ModelSelection import GridSearchModelSelection
@@ -35,10 +35,10 @@ def modelselection_grid_search_krr_modular(fm_train=traindat,fm_test=testdat,lab
     # training data
     features_train=RealFeatures(traindat)
     features_test=RealFeatures(testdat)
-    labels=Labels(label_traindat)
+    labels=RegressionLabels(label_traindat)
 
     # labels
-    labels=Labels(label_train)
+    labels=RegressionLabels(label_train)
 
     # predictor, set tau=0 here, doesnt matter
     predictor=KernelRidgeRegression()

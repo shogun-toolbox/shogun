@@ -3,7 +3,7 @@
 
 from shogun.Distance import EuclidianDistance
 from shogun.Features import RealFeatures
-from shogun.Features import Labels
+from shogun.Features import MulticlassLabels
 from shogun.Evaluation import ClusteringAccuracy
 from shogun.Evaluation import ClusteringMutualInformation
 
@@ -49,7 +49,7 @@ def assign_labels(data, centroids):
     from shogun.Classifier import KNN
     from numpy import arange
 
-    labels = Labels(arange(1.,11.))
+    labels = MulticlassLabels(arange(0.,11.))
     fea = RealFeatures(data)
     fea_centroids = RealFeatures(centroids)
     distance = EuclidianDistance(fea_centroids, fea_centroids)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     (fea, gnd_raw) = prepare_data()
     centroids = run_clustering(fea, 10)
     gnd_hat = assign_labels(fea, centroids)
-    gnd = Labels(gnd_raw)
+    gnd = MulticlassLabels(gnd_raw)
 
     AccuracyEval = ClusteringAccuracy()
     AccuracyEval.best_map(gnd_hat, gnd)
