@@ -37,7 +37,7 @@ protected:
     virtual bool binary_decoding() { return false; }
 
     /** compute distance */
-    virtual float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code)=0;
+    virtual float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code);
 };
 
 } /* shogun */ 

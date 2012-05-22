@@ -31,6 +31,7 @@
 %rename(ECOCRandomDenseEncoder) CECOCRandomDenseEncoder;
 %rename(ECOCDiscriminantEncoder) CECOCDiscriminantEncoder;
 %rename(ECOCForestEncoder) CECOCForestEncoder;
+%rename(ECOCSimpleDecoder) CECOCSimpleDecoder;
 %rename(ECOCHDDecoder) CECOCHDDecoder;
 %rename(ECOCIHDDecoder) CECOCIHDDecoder;
 %rename(ECOCEDDecoder) CECOCEDDecoder;
