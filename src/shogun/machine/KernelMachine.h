@@ -243,11 +243,30 @@ class CKernelMachine : public CMachine
 		virtual bool train_locked(SGVector<index_t> indices);
 
 		/** Applies a locked machine on a set of indices. Error if machine is
+		 * not locked. Binary case
+		 *
+		 * @param indices index vector (of locked features) that is predicted
+		 * @return resulting labels
+		 */
+		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
+
+		/** Applies a locked machine on a set of indices. Error if machine is
+		 * not locked. Binary case
+		 *
+		 * @param indices index vector (of locked features) that is predicted
+		 * @return resulting labels
+		 */
+		virtual CRegressionLabels* apply_locked_regression(
+				SGVector<index_t> indices);
+
+		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
 		 * @param indices index vector (of locked features) that is predicted
+		 * @return raw output of machine
 		 */
-		virtual CLabels* apply_locked(SGVector<index_t> indices);
+		virtual SGVector<float64_t> apply_locked_get_output(
+				SGVector<index_t> indices);
 
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called.

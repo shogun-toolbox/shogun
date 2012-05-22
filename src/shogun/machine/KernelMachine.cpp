@@ -250,12 +250,6 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
-	if (is_data_locked())
-	{
-		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
-				"data_lock was called before. Call data_unlock to allow.");
-	}
-
 	if (!kernel)
 		SG_ERROR("No kernel assigned!\n");
 
@@ -498,7 +492,21 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	return result;
 }
 
-CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
+CBinaryLabels* CKernelMachine::apply_locked_binary(SGVector<index_t> indices)
+{
+	SGVector<float64_t> outputs = apply_locked_get_output(indices);
+	return new CBinaryLabels(outputs);
+}
+
+CRegressionLabels* CKernelMachine::apply_locked_regression(
+		SGVector<index_t> indices)
+{
+	SGVector<float64_t> outputs = apply_locked_get_output(indices);
+	return new CRegressionLabels(outputs);
+}
+
+SGVector<float64_t> CKernelMachine::apply_locked_get_output(
+		SGVector<index_t> indices)
 {
 	if (!is_data_locked())
 		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n");
@@ -586,7 +594,7 @@ CLabels* CKernelMachine::apply_locked(SGVector<index_t> indices)
 #endif
 		SG_DONE();
 
-	return new CRegressionLabels(output);
+	return output;
 }
 
 void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
