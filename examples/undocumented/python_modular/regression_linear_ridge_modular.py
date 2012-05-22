@@ -15,10 +15,10 @@ parameter_list = [[traindat,testdat,label_traindat,1e-6],[traindat,testdat,label
 
 def regression_linear_ridge_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,tau=1e-6):
 
-	from shogun.Features import Labels, RealFeatures
+	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Regression import LinearRidgeRegression
 
-	rr=LinearRidgeRegression(tau, RealFeatures(traindat), Labels(label_train))
+	rr=LinearRidgeRegression(tau, RealFeatures(traindat), RegressionLabels(label_train))
 	rr.train()
 	out = rr.apply(RealFeatures(fm_test)).get_labels()
 	return out,rr

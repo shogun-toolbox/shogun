@@ -2,7 +2,7 @@ parameter_list=[[10, 1, 2.1, 2.0]]
 
 def serialization_svmlight_modular(num, dist, width, C):
 	from shogun.IO import MSG_DEBUG
-	from shogun.Features import RealFeatures, Labels, DNA, Alphabet
+	from shogun.Features import RealFeatures, BinaryLabels, DNA, Alphabet
 	from shogun.Kernel import WeightedDegreeStringKernel, GaussianKernel
 	from shogun.Classifier import SVMLight
 	from numpy import concatenate, ones
@@ -75,7 +75,7 @@ def serialization_svmlight_modular(num, dist, width, C):
 	kernel=GaussianKernel(feats_train, feats_train, width);
 	#kernel.io.set_loglevel(MSG_DEBUG)
 
-	labels=Labels(trainlab);
+	labels=BinaryLabels(trainlab);
 
 	svm=SVMLight(C, kernel, labels)
 	svm.train()

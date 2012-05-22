@@ -12,7 +12,7 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
 	from numpy import concatenate, zeros, ones
 	from numpy.random import randn, seed
-	from shogun.Features import RealFeatures, Labels
+	from shogun.Features import RealFeatures, MulticlassLabels
 	from shogun.Classifier import GMNPSVM
 	from shogun.Kernel import GaussianKernel
 	from shogun.IO import SerializableHdf5File,SerializableAsciiFile, \
@@ -30,7 +30,7 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 	#feats.io.set_loglevel(MSG_DEBUG)
 	kernel=GaussianKernel(feats, feats, width)
 
-	labels=Labels(lab)
+	labels=MulticlassLabels(lab)
 
 	svm = GMNPSVM(C, kernel, labels)
 

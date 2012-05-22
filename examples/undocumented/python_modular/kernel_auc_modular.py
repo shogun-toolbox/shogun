@@ -14,14 +14,14 @@ def kernel_auc_modular(fm_train_real=traindat,label_train_real=testdat,width=1.7
 
 
 	from shogun.Kernel import GaussianKernel, AUCKernel
-	from shogun.Features import RealFeatures, Labels
+	from shogun.Features import RealFeatures, BinaryLabels
 
 	feats_train=RealFeatures(fm_train_real)
 
 	subkernel=GaussianKernel(feats_train, feats_train, width)
 
 	kernel=AUCKernel(0, subkernel)
-	kernel.setup_auc_maximization( Labels(label_train_real) )
+	kernel.setup_auc_maximization( BinaryLabels(label_train_real) )
 	km_train=kernel.get_kernel_matrix()
 	return kernel
 

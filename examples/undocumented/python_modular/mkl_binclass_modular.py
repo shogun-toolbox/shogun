@@ -1,4 +1,4 @@
-from shogun.Features import CombinedFeatures, RealFeatures, Labels
+from shogun.Features import CombinedFeatures, RealFeatures, BinaryLabels
 from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
 from shogun.Classifier import MKLClassification
 from tools.load import LoadMatrix
@@ -39,7 +39,7 @@ def mkl_binclass_modular (fm_train_real=traindat,fm_test_real=testdat,fm_label_t
     kernel.init(feats_train, feats_train)
 
     # train mkl
-    labels = Labels(fm_label_twoclass)
+    labels = BinaryLabels(fm_label_twoclass)
     mkl = MKLClassification()
 
     # which norm to use for MKL

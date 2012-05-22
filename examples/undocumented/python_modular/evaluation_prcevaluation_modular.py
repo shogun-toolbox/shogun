@@ -9,11 +9,11 @@ predicted = random.randn(len(ground_truth))
 parameter_list = [[ground_truth,predicted]]
 
 def evaluation_prcevaluation_modular(ground_truth, predicted):
-	from shogun.Features import Labels
+	from shogun.Features import BinaryLabels
 	from shogun.Evaluation import PRCEvaluation
 
-	ground_truth_labels = Labels(ground_truth)
-	predicted_labels = Labels(predicted)
+	ground_truth_labels = BinaryLabels(ground_truth)
+	predicted_labels = BinaryLabels(predicted)
 	
 	evaluator = PRCEvaluation()
 	evaluator.evaluate(predicted_labels,ground_truth_labels)

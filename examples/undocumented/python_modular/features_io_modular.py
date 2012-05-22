@@ -7,7 +7,7 @@ parameter_list=[[data,label]]
 
 def features_io_modular(fm_train_real, label_train_twoclass):
 	import numpy
-	from shogun.Features import SparseRealFeatures, RealFeatures, Labels
+	from shogun.Features import SparseRealFeatures, RealFeatures, MulticlassLabels
 	from shogun.Kernel import GaussianKernel
 	from shogun.IO import AsciiFile, BinaryFile, HDF5File
 
@@ -46,8 +46,8 @@ def features_io_modular(fm_train_real, label_train_twoclass):
 	feats2.load(f)
 	#print("diff ascii", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten())))
 
-	lab=Labels(numpy.array([1.0,2.0,3.0]))
-	lab2=Labels()
+	lab=MulticlassLabels(numpy.array([0.0,1.0,2.0,3.0]))
+	lab2=MulticlassLabels()
 	f=AsciiFile("label_train_twoclass.ascii","w")
 	lab.save(f)
 

@@ -1,5 +1,5 @@
 #import numpy
-#from _modshogun import DirectorKernel,Labels,CombinedKernel
+#from _modshogun import DirectorKernel,BinaryLabels,CombinedKernel
 #
 #class MyKernel(DirectorKernel):
 #	def init(self, f1,f2):
@@ -22,7 +22,7 @@
 ##parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat,label_traindat,2.2,1,1e-5]]
 ##
 ##def classifier_libsvm_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
-##	from shogun.Features import RealFeatures, Labels
+##	from shogun.Features import RealFeatures, BinaryLabels
 ##	from shogun.Kernel import GaussianKernel
 ##	from shogun.Classifier import LibSVM
 ##
@@ -31,7 +31,7 @@
 ##	feats_test=RealFeatures(fm_test_real)
 ##	
 ##	kernel=MyKernel()
-##	labels=Labels(label_train_twoclass)
+##	labels=BinaryLabels(label_train_twoclass)
 ##
 ##	svm=LibSVM(C, kernel, labels)
 ##	svm.set_epsilon(epsilon)
@@ -48,7 +48,7 @@
 ##	print('LibSVM')
 ##	classifier_libsvm_modular(*parameter_list[0])
 #
-#labels=Labels(label_traindat)
+#labels=BinaryLabels(label_traindat)
 ##kernel=DirectorKernel()
 #kernel=MyKernel()
 #print(kernel.get_cache_size())

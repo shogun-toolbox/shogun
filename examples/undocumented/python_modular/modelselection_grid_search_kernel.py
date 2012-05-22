@@ -13,7 +13,7 @@ from numpy.random import rand
 from shogun.Evaluation import CrossValidation, CrossValidationResult
 from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
 from shogun.Evaluation import StratifiedCrossValidationSplitting
-from shogun.Features import Labels
+from shogun.Features import BinaryLabels
 from shogun.Features import RealFeatures
 from shogun.Kernel import GaussianKernel, PowerKernel
 from shogun.Classifier import LibSVM
@@ -88,7 +88,7 @@ def modelselection_grid_search_kernel():
 	features.set_feature_matrix(matrix)
 
 	# create labels, two classes
-	labels=Labels(num_vectors)
+	labels=BinaryLabels(num_vectors)
 	for i in range(num_vectors):
 		labels.set_label(i, 1 if i%2==0 else -1)
 

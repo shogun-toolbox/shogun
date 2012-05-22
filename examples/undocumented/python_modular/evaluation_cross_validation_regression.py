@@ -23,13 +23,13 @@ def evaluation_cross_validation_regression(fm_train=traindat,fm_test=testdat,lab
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import MeanSquaredError
     from shogun.Evaluation import CrossValidationSplitting
-    from shogun.Features import Labels, RealFeatures
+    from shogun.Features import RegressionLabels, RealFeatures
     from shogun.Kernel import GaussianKernel
     from shogun.Regression import KernelRidgeRegression
 
     # training data
     features=RealFeatures(fm_train)
-    labels=Labels(label_train)
+    labels=RegressionLabels(label_train)
 
     # kernel and predictor
     kernel=GaussianKernel()
