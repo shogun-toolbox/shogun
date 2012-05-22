@@ -185,6 +185,12 @@ class CDenseLabels : public CLabels
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Labels"; }
 
+		/** get label type
+		 *
+		 * @return label type (binary, multiclass, ...)
+		 */
+		virtual ELabelType get_label_type()=0;
+
 	public:
 		/** label designates classify reject */
 		static const int32_t REJECTION_LABEL = -2;
