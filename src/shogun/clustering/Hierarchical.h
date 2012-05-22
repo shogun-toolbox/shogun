@@ -117,12 +117,8 @@ class CHierarchical : public CDistanceMachine
 		 * Currently: does nothing.
 		 * */
 		virtual void store_model_features();
-
-		/** NOT IMPLEMENTED */
-		virtual CLabels* apply(CFeatures* data=NULL);
-
-		/** NOT IMPLEMENTED */
-		virtual float64_t apply(int32_t num);
+		
+		virtual bool train_require_labels() const { return false; }
 
 	protected:
 		/// the number of merges in hierarchical clustering
