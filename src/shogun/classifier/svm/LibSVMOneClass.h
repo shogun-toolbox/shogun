@@ -44,6 +44,9 @@ class CLibSVMOneClass : public CSVM
 		inline virtual const char* get_name() const { return "LibSVMOneClass"; }
 
 	protected:
+
+		virtual bool train_require_labels() const { return false; }
+
 		/** train SVM
 		 *
 		 * @param data training data (parameter can be avoided if distance or
