@@ -77,7 +77,8 @@ enum EMachineType
 	CT_QDA = 430,
 	CT_NEWTONSVM = 440,
 	CT_GAUSSIANPROCESSREGRESSION = 450,
-	CT_LARS = 460
+	CT_LARS = 460,
+	CT_MULTICLASS = 470
 };
 
 /** solver type */

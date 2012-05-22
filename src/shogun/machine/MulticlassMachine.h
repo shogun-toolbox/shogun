@@ -122,6 +122,18 @@ class CMulticlassMachine : public CMachine
 			return "MulticlassMachine";
 		}
 
+		virtual EProblemType get_machine_problem_type() const 
+		{
+			return PT_MULTICLASS;
+		}
+
+		/** get classifier type
+		 */
+		virtual EMachineType get_classifier_type()
+        {
+            return CT_MULTICLASS;
+        }
+
 	protected:
 		/** init strategy */
 		void init_strategy();
