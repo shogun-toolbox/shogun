@@ -91,14 +91,14 @@ void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBina
 	{
 		if (ground_truth->get_label(i)==1)
 		{
-			if (predicted->get_confidence(i)>=1)
+			if (predicted->get_label(i)>=1)
 				m_TP += 1.0;
 			else
 				m_FN += 1.0;
 		}
 		else
 		{
-			if (predicted->get_confidence(i)>=1)
+			if (predicted->get_label(i)>=1)
 				m_FP += 1.0;
 			else
 				m_TN += 1.0;
