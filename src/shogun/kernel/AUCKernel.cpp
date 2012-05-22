@@ -48,9 +48,9 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 	SG_INFO( "setting up AUC maximization\n") ;
 	ASSERT(labels);
 	ASSERT(labels->get_label_type() == LT_BINARY);
+	labels->ensure_valid();
 
 	// get the original labels
-	ASSERT(labels);
 	SGVector<int32_t> int_labels=((CBinaryLabels*) labels)->get_int_labels();
 	ASSERT(subkernel->get_num_vec_rhs()==int_labels.vlen);
 
