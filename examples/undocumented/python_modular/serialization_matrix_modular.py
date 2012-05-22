@@ -10,7 +10,7 @@ def serialization_matrix_modular(m):
 	fstream = SerializableAsciiFile("foo.asc", "w")
 	feats.save_serializable(fstream)
 
-	l=MulticlassLabels(array([0.0,1.0,2,3]))
+	l=MulticlassLabels(array([1.0,2,3]))
 	fstream = SerializableAsciiFile("foo2.asc", "w")
 	l.save_serializable(fstream)
 
