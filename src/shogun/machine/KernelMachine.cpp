@@ -250,12 +250,6 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
-	if (is_data_locked())
-	{
-		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
-				"data_lock was called before. Call data_unlock to allow.");
-	}
-
 	if (!kernel)
 		SG_ERROR("No kernel assigned!\n");
 
