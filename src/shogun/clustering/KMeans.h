@@ -50,6 +50,9 @@ class CKMeans : public CDistanceMachine
 		CKMeans(int32_t k, CDistance* d);
 		virtual ~CKMeans();
 
+
+		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+
 		/** get classifier type
 		 *
 		 * @return classifier type KMEANS
