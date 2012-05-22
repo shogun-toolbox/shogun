@@ -222,10 +222,18 @@ class CFeatures : public CSGObject
 		 */
 		void unset_property(EFeatureProperty p);
 
-		/** */
+		/** set title
+		 * 
+		 * @param index index of feature
+		 * @param title name for feature
+		 */
 		void set_title(int32_t index, const char* title);
 
-		/** */
+		/** get title
+		 * 
+		 * @param index index of feature
+		 * @return name of feature
+		 */
 		const char* get_title(int32_t index);
 
 		/** adds a subset of indices on top of the current subsets (possibly
