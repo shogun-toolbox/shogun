@@ -56,6 +56,10 @@ bool CMachine::train(CFeatures* data)
 				get_name());
 	}
 
+    if (m_labels == NULL)
+        SG_ERROR("%s@%p: No labels given", get_name(), this);
+    m_labels->ensure_valid(get_name());
+
 	bool result = train_machine(data);
 
 	if (m_store_model_features)
@@ -66,6 +70,10 @@ bool CMachine::train(CFeatures* data)
 
 void CMachine::set_labels(CLabels* lab)
 {
+    if (lab != NULL)
+        if (!is_label_valid(lab))
+            SG_ERROR("Invalid label for %s", get_name());
+
 	SG_UNREF(m_labels);
 	SG_REF(lab);
 	m_labels = lab;

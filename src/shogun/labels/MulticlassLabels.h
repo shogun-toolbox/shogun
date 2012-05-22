@@ -60,13 +60,13 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		static CMulticlassLabels* obtain_from_generic(CLabels* base_labels);
 
-		/** is_valid checks if labeling is a multi-class labeling
+		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset
-		 *
-		 * @return if this is multi-class labeling
+         *
+         * @param context optional message to convey the context
 		 */
-		virtual bool is_valid();
+		virtual void ensure_valid(const char* context=NULL);
 
 		/** get label type
 		 *
