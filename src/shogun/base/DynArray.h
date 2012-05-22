@@ -63,7 +63,7 @@ template <class T> class DynArray
 		 * @param p_copy_array if array must be copied
 		 * @param tracable
 		 */
-		DynArray(T* p_array, int32_t p_array_size, bool p_free_array=true, bool p_copy_array=false, bool tracable=true)
+		DynArray(T* p_array, int32_t p_array_size, bool p_free_array, bool p_copy_array, bool tracable=true)
 		{
 			resize_granularity=p_array_size;
 			free_array=false;
@@ -387,7 +387,7 @@ template <class T> class DynArray
 		 * @param p_copy_array if array must be copied
 		 */
 		inline void set_array(T* p_array, int32_t p_num_elements,
-							  int32_t p_array_size, bool p_free_array=true, bool copy_array=false)
+							  int32_t p_array_size, bool p_free_array, bool copy_array)
 		{
 			if (array!=NULL && free_array)
 				SG_FREE(array);

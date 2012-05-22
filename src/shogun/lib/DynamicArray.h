@@ -82,7 +82,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CDynamicArray(T* p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
+		CDynamicArray(T* p_array, int32_t p_dim1_size, bool p_free_array, bool p_copy_array)
 		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array), name("Array")
 		{
 			set_generic<T>();
@@ -110,7 +110,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_copy_array if array must be copied
 		 */
 		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
-						bool p_free_array=true, bool p_copy_array=false)
+						bool p_free_array, bool p_copy_array)
 		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array), name("Array")
 		{
 			set_generic<T>();
@@ -140,7 +140,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_copy_array if array must be copied
 		 */
 		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
-						int32_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
+						int32_t p_dim3_size, bool p_free_array, bool p_copy_array)
 		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array), name("Array")
 		{
 			set_generic<T>();
@@ -469,13 +469,25 @@ template <class T> class CDynamicArray :public CSGObject
 
 		/** set the array pointer and free previously allocated memory
 		 *
+		 * @param p_array new array
+		 * @param p_num_elements last element index + 1
+		 * @param array_size number of elements in array
+		 */
+		inline void set_array(T* p_array, int32_t p_num_elements,
+							  int32_t array_size)
+		{
+			m_array.set_array(p_array, p_num_elements, array_size);
+		}
+
+		/** set the array pointer and free previously allocated memory
+		 *
 		 * @param p_array another array
 		 * @param dim1 dimension 1
 		 * @param p_free_array if array must be freed
 		 * @param copy_array if array must be copied
 		 */
 		inline void set_array(T* p_array, int32_t dim1,
-						bool p_free_array=true, bool copy_array=false)
+						bool p_free_array, bool copy_array)
 		{
 			dim1_size=dim1;
 			dim2_size=1;
@@ -492,7 +504,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param copy_array if array must be copied
 		 */
 		inline void set_array(T* p_array, int32_t dim1,
-						int32_t dim2, bool p_free_array=true, bool copy_array=false)
+						int32_t dim2, bool p_free_array, bool copy_array)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -511,7 +523,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param copy_array if array must be copied
 		 */
 		inline void set_array(T* p_array, int32_t dim1,
-						int32_t dim2, int32_t dim3, bool p_free_array=true, bool copy_array=false)
+						int32_t dim2, int32_t dim3, bool p_free_array, bool copy_array)
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
