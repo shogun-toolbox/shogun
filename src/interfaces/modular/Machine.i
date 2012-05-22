@@ -22,9 +22,13 @@
 %define APPLY_MULTICLASS(CLASS)
     %extend CLASS
     {
-        CMulticlassLabels* apply(CFeatures* data=NULL)
+        CMulticlassLabels* apply(CFeatures* data)
         {
             return $self->apply_multiclass(data);
+        }
+        CMulticlassLabels* apply()
+        {
+            return $self->apply_multiclass();
         }
     }
 %enddef
@@ -32,9 +36,13 @@
 %define APPLY_BINARY(CLASS)
     %extend CLASS
     {
-        CBinaryLabels* apply(CFeatures* data=NULL)
+        CBinaryLabels* apply(CFeatures* data)
         {
             return $self->apply_binary(data);
+        }
+        CBinaryLabels* apply()
+        {
+            return $self->apply_binary();
         }
     }
 %enddef
@@ -42,9 +50,13 @@
 %define APPLY_REGRESSION(CLASS)
     %extend CLASS
     {
-        CRegressionLabels* apply(CFeatures* data=NULL)
+        CRegressionLabels* apply(CFeatures* data)
         {
             return $self->apply_regression(data);
+        }
+        CRegressionLabels* apply()
+        {
+            return $self->apply_regression();
         }
     }
 %enddef
