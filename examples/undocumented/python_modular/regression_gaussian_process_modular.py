@@ -22,7 +22,7 @@ feats_train=RealFeatures(traindata_real);
 feats_test=RealFeatures(testdata_real);
 kernel=GaussianKernel(feats_train, feats_train, width);
 
-labels=Labels(trainlab);
+labels=BinaryLabels(trainlab);
 gp=GaussianProcessRegression(1.0, kernel, feats_train, labels);
 gp.train(feats_train);
 out=gp.apply(feats_test).get_labels();

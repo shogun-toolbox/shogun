@@ -17,6 +17,7 @@
 %rename(apply_generic) shogun::CLeastSquaresRegression::apply(CFeatures*);
 %rename(apply_generic) shogun::CLeastAngleRegression::apply(CFeatures*);
 %rename(apply_generic) shogun::CGaussianProcessRegression::apply(CFeatures*);
+%rename(apply_generic) shogun::CConjugateIndex::apply(CFeatures*);
 
 %define APPLY_MULTICLASS(CLASS)
     %extend CLASS
@@ -53,6 +54,7 @@ APPLY_MULTICLASS(CMulticlassMachine);
 APPLY_MULTICLASS(CKernelMulticlassMachine);
 APPLY_MULTICLASS(CLinearMulticlassMachine);
 APPLY_MULTICLASS(CDistanceMachine);
+APPLY_MULTICLASS(CConjugateIndex);
 
 APPLY_BINARY(CLinearMachine);
 APPLY_BINARY(CKernelMachine);
