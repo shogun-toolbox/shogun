@@ -151,11 +151,20 @@ class CWDSVMOcas : public CMachine
 		inline int32_t get_degree() { return degree; }
 
 		/** classify objects
+		 * for binary classification problems
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		
+		/** classify objects
+		 * for regression problems
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 
 		/** classify one example
 		 *
@@ -210,6 +219,9 @@ class CWDSVMOcas : public CMachine
 
 
 	protected:
+
+		SGVector<float64_t> apply_get_outputs(CFeatures* data);
+
 		/** set wd weights
 		 *
 		 * @return w_dim_single_c
