@@ -91,7 +91,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type()=0;
+		virtual EFeatureType get_feature_type() const=0;
 
 		/** get feature class
 		 *
@@ -99,7 +99,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return feature class like STRING, SIMPLE, SPARSE...
 		 */
-		virtual EFeatureClass get_feature_class()=0;
+		virtual EFeatureClass get_feature_class() const=0;
 
 		/** add preprocessor
 		 *
@@ -119,7 +119,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		CPreprocessor* get_preprocessor(int32_t num);
+		CPreprocessor* get_preprocessor(int32_t num) const;
 
 		/** set applied flag for preprocessor
 		 *
@@ -131,13 +131,13 @@ class CFeatures : public CSGObject
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		bool is_preprocessed(int32_t num);
+		bool is_preprocessed(int32_t num) const;
 
 		/** get the number of applied preprocs
 		 *
 		 * @return number of applied preprocessors
 		 */
-		int32_t get_num_preprocessed();
+		int32_t get_num_preprocessed() const;
 
 		/** get number of preprocessors
 		 *
@@ -152,7 +152,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return cache size
 		 */
-		int32_t get_cache_size();
+		int32_t get_cache_size() const;
 
 		/** get number of examples/vectors, possibly corresponding to the current subset
 		 *
@@ -178,10 +178,10 @@ class CFeatures : public CSGObject
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual int32_t get_size()=0;
+		virtual int32_t get_size() const=0;
 
 		/** list feature object */
-		void list_feature_obj();
+		void list_feature_obj() const;
 
 		/** load features from file
 		 *
@@ -200,14 +200,14 @@ class CFeatures : public CSGObject
 		 * @param f features to check for compatibility
 		 * @return if features are compatible
 		 */
-		bool check_feature_compatibility(CFeatures* f);
+		bool check_feature_compatibility(CFeatures* f) const;
 
 		/** check if features have given property
 		 *
 		 * @param p feature property
 		 * @return if features have given property
 		 */
-		bool has_property(EFeatureProperty p);
+		bool has_property(EFeatureProperty p) const;
 
 		/** set property
 		 *
@@ -257,16 +257,16 @@ class CFeatures : public CSGObject
 		/** feature properties */
 		uint64_t  properties;
 
-		/// size of cache in MB
+		/** size of cache in MB */
 		int32_t cache_size;
 
-		/// list of preprocessors
+		/** list of preprocessors */
 		CPreprocessor** preproc;
 
-		/// number of preprocs in list
+		/** number of preprocs in list */
 		int32_t num_preproc;
 
-		/// i'th entry is true if features were already preprocessed with preproc i
+		/** i'th entry is true if features were already preprocessed with preproc i */
 		bool* preprocessed;
 
 	protected:

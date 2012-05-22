@@ -312,14 +312,14 @@ public:
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual inline EFeatureType get_feature_type();
+	virtual inline EFeatureType get_feature_type() const;
 
 	/**
 	 * Return the feature class
 	 *
 	 * @return C_STREAMING_VW
 	 */
-	virtual EFeatureClass get_feature_class();
+	virtual EFeatureClass get_feature_class() const;
 
 	/**
 	 * Return the name.
@@ -340,7 +340,7 @@ public:
 	 *
 	 * @return Size of T.
 	 */
-	virtual int32_t get_size();
+	virtual int32_t get_size() const;
 
 private:
 	/**

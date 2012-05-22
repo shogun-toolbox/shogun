@@ -302,7 +302,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual int32_t get_size();
+		virtual int32_t get_size() const;
 
 		/** obtain sparse features from simple features
 		 *
@@ -342,13 +342,13 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return feature class SPARSE
 		 */
-		virtual EFeatureClass get_feature_class();
+		virtual EFeatureClass get_feature_class() const;
 
 		/** get feature type
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type() const;
 
 		/** free feature vector
 		 *

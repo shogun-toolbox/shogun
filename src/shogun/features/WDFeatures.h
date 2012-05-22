@@ -158,17 +158,17 @@ class CWDFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type() const;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		virtual EFeatureClass get_feature_class();
+		virtual EFeatureClass get_feature_class() const;
 
 		inline virtual int32_t get_num_vectors() const;
 
-		inline virtual int32_t get_size();
+		inline virtual int32_t get_size() const;
 
 		/** set normalization constant
 		 * @param n n=0 means automagic */

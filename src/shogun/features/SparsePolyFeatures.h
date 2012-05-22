@@ -64,13 +64,13 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return feature type
 		 */
-		inline virtual EFeatureType get_feature_type();
+		inline virtual EFeatureType get_feature_type() const;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class();
+		inline virtual EFeatureClass get_feature_class() const;
 
 		/** get number of vectors
 		 *
@@ -91,7 +91,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return size
 		 */
-		inline virtual int32_t get_size();
+		inline virtual int32_t get_size() const;
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */

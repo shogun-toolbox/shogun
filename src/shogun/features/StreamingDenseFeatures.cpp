@@ -137,7 +137,7 @@ template <class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
 	return 0;
 }
 
-template <class T> int32_t CStreamingDenseFeatures<T>::get_size()
+template <class T> int32_t CStreamingDenseFeatures<T>::get_size() const
 {
 	return sizeof(T);
 }
@@ -155,7 +155,7 @@ void CStreamingDenseFeatures<T>::set_vector_and_label_reader()
 }
 
 #define GET_FEATURE_TYPE(f_type, sg_type)				\
-template<> EFeatureType CStreamingDenseFeatures<sg_type>::get_feature_type() \
+template<> EFeatureType CStreamingDenseFeatures<sg_type>::get_feature_type() const \
 {									\
 	return f_type;							\
 }
@@ -285,7 +285,7 @@ int32_t CStreamingDenseFeatures<T>::get_num_features()
 }
 
 template <class T>
-EFeatureClass CStreamingDenseFeatures<T>::get_feature_class()
+EFeatureClass CStreamingDenseFeatures<T>::get_feature_class() const
 {
 	return C_STREAMING_DENSE;
 }

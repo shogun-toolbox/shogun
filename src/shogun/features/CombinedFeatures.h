@@ -49,7 +49,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return feature type UNKNOWN
 		 */
-		inline virtual EFeatureType get_feature_type()
+		inline virtual EFeatureType get_feature_type() const
 		{
 			return F_UNKNOWN;
 		}
@@ -58,7 +58,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class()
+		inline virtual EFeatureClass get_feature_class() const
 		{
 			return C_COMBINED;
 		}
@@ -76,7 +76,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return memory footprint of one feature
 		 */
-		virtual int32_t get_size();
+		virtual int32_t get_size() const;
 
 		/** list feature objects */
 		void list_feature_objs();

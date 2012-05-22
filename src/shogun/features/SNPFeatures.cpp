@@ -82,12 +82,12 @@ int32_t CSNPFeatures::get_nnz_features_for_vector(int32_t num)
 	return w_dim/3;
 }
 
-EFeatureType CSNPFeatures::get_feature_type()
+EFeatureType CSNPFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CSNPFeatures::get_feature_class()
+EFeatureClass CSNPFeatures::get_feature_class() const
 {
 	return C_WD;
 }
@@ -97,7 +97,7 @@ int32_t CSNPFeatures::get_num_vectors() const
 	return num_strings;
 }
 
-int32_t CSNPFeatures::get_size()
+int32_t CSNPFeatures::get_size() const
 {
 	return sizeof(float64_t);
 }
