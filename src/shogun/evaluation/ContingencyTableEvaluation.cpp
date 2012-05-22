@@ -17,7 +17,11 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 {
 	ASSERT(predicted->get_label_type()==LT_BINARY);
 	ASSERT(ground_truth->get_label_type()==LT_BINARY);
-	predicted->ensure_valid();
+
+	/* commented out: what if a machine only returns +1 in apply() ??
+	 * Heiko Strathamn */
+//	predicted->ensure_valid();
+
 	ground_truth->ensure_valid();
 	compute_scores((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
 	switch (m_type)
