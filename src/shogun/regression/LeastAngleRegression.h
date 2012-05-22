@@ -72,6 +72,8 @@ class CFeatures;
 class CLeastAngleRegression: public CLinearMachine
 {
 public:
+	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
 	/** default constructor
 	 *
 	 * @param lasso - when true, it runs the LASSO, when false, it runs LARS
