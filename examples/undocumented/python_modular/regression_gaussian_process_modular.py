@@ -25,6 +25,6 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 labels=BinaryLabels(trainlab);
 gp=GaussianProcessRegression(1.0, kernel, feats_train, labels);
 gp.train(feats_train);
-out=gp.apply(feats_test).get_labels();
+out=gp.apply_regression(feats_test).get_labels();
 testerr=mean(sign(out)!=testlab)
 print(testerr)

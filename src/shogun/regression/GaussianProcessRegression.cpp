@@ -52,7 +52,7 @@ void CGaussianProcessRegression::init()
 	SG_ADD(&m_sigma, "sigma", "Sigma.", MS_AVAILABLE);
 }
 
-CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
+CRegressionLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
 {
 	if (!kernel)
 		SG_ERROR( "No kernel assigned!\n");
@@ -79,7 +79,7 @@ CLabels* CGaussianProcessRegression::mean_prediction(CFeatures* data)
 	return result;
 }
 
-CLabels* CGaussianProcessRegression::apply(CFeatures* data)
+CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 {
 	if (data)
 	{
