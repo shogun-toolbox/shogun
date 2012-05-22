@@ -22,6 +22,8 @@ namespace shogun
 class CSVMLin : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** default constructor */
 		CSVMLin();
 

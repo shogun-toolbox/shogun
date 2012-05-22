@@ -38,6 +38,8 @@ namespace shogun
 class CVowpalWabbit: public COnlineLinearMachine
 {
 public:
+	MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 	/**
 	 * Default constructor
 	 */

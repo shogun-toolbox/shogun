@@ -34,6 +34,8 @@ namespace shogun
 class CPluginEstimate: public CMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** default constructor
 		 * @param pos_pseudo pseudo for positive model
 		 * @param neg_pseudo pseudo for negative model

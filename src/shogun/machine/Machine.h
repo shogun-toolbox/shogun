@@ -99,6 +99,8 @@ enum EProblemType
 	PT_MULTICLASS = 2
 };
 
+#define MACHINE_PROBLEM_TYPE(PT) inline virtual EProblemType get_machine_problem_type() const { return PT; }
+
 /** @brief A generic learning machine interface.
  *
  * A machine takes as input CFeatures and (optionally) CLabels.
@@ -244,8 +246,10 @@ class CMachine : public CSGObject
 		/** @return whether this machine is locked */
 		bool is_data_locked() const { return m_data_locked; }
 
-		virtual EProblemType get_machine_problem_type() const 
+		//TODO change to pure virtual
+		inline virtual EProblemType get_machine_problem_type() const
 		{
+			SG_NOTIMPLEMENTED;
 			return PT_BINARY;
 		}
 		

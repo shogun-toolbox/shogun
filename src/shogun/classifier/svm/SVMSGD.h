@@ -34,6 +34,8 @@ namespace shogun
 class CSVMSGD : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** default constructor  */
 		CSVMSGD();
 

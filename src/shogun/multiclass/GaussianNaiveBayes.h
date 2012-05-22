@@ -36,6 +36,8 @@ class CGaussianNaiveBayes : public CNativeMulticlassMachine
 {
 
 public:
+	MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+
 	/** default constructor
 	 *
 	 */

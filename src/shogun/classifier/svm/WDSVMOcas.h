@@ -26,6 +26,8 @@ template <class ST> class CStringFeatures;
 class CWDSVMOcas : public CMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** default constructor  */
 		CWDSVMOcas();
 
