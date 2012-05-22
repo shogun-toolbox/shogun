@@ -31,7 +31,19 @@ COnlineLinearMachine::~COnlineLinearMachine()
 	SG_UNREF(features);
 }
 
-CRegressionLabels* COnlineLinearMachine::apply(CFeatures* data)
+CBinaryLabels* COnlineLinearMachine::apply_binary(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CBinaryLabels(outputs);
+}
+
+CRegressionLabels* COnlineLinearMachine::apply_regression(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CRegressionLabels(outputs);
+}
+
+SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 {
 	if (data)
 	{
@@ -63,10 +75,10 @@ CRegressionLabels* COnlineLinearMachine::apply(CFeatures* data)
 	for (int32_t i=0; i<num_labels; i++)
 		labels_array.vector[i]=(*labels_dynarray)[i];
 
-	return new CRegressionLabels(labels_array);
+	return labels_array;
 }
 
-float32_t COnlineLinearMachine::apply(float32_t* vec, int32_t len)
+float32_t COnlineLinearMachine::apply_one(float32_t* vec, int32_t len)
 {
 		return CMath::dot(vec, w, len)+bias;
 }

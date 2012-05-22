@@ -149,14 +149,23 @@ class COnlineLinearMachine : public CMachine
 		}
 
 		/** apply linear machine to data
+		 * for regression problems
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CRegressionLabels* apply(CFeatures* data=NULL);
+		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		
+		/** apply linear machine to data
+		 * for binary classification problems
+		 *
+		 * @param data (test)data to be classified
+		 * @return classified labels
+		 */
+		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
 
 		/// get output for example "vec_idx"
-		virtual float64_t apply(int32_t vec_idx)
+		virtual float64_t apply_one(int32_t vec_idx)
 		{
 			SG_NOTIMPLEMENTED;
 			return CMath::INFTY;
@@ -170,7 +179,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return classified label
 		 */
-		virtual float32_t apply(float32_t* vec, int32_t len);
+		virtual float32_t apply_one(float32_t* vec, int32_t len);
 
 		/**
 		 * apply linear machine to vector currently being processed
@@ -191,6 +200,12 @@ class COnlineLinearMachine : public CMachine
 		 * @return name of the SGSerializable
 		 */
 		virtual const char* get_name() const { return "OnlineLinearMachine"; }
+
+	protected:
+
+		SGVector<float64_t> apply_get_outputs(CFeatures* data);
+
+		virtual bool train_require_labels() const { return false; }
 
 	protected:
 		/** dimension of w */
