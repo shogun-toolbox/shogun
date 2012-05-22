@@ -61,12 +61,12 @@ int32_t CPolyFeatures::get_nnz_features_for_vector(int32_t num)
 	return m_output_dimensions;
 }
 
-EFeatureType CPolyFeatures::get_feature_type()
+EFeatureType CPolyFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CPolyFeatures::get_feature_class()
+EFeatureClass CPolyFeatures::get_feature_class() const
 {
 	return C_POLY;
 }
@@ -80,7 +80,7 @@ int32_t CPolyFeatures::get_num_vectors() const
 
 }
 
-int32_t CPolyFeatures::get_size()
+int32_t CPolyFeatures::get_size() const
 {
 	return sizeof(float64_t);
 }

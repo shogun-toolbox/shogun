@@ -140,7 +140,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type()
+		inline virtual EFeatureType get_feature_type() const
 		{
 			return F_DREAL;
 		}
@@ -149,7 +149,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class()
+		inline virtual EFeatureClass get_feature_class() const
 		{
 			return C_COMBINED_DOT;
 		}
@@ -158,7 +158,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return size of a element
 		 */
-		inline virtual int32_t get_size()
+		inline virtual int32_t get_size() const
 		{
 			return sizeof(float64_t);
 		}
