@@ -26,6 +26,8 @@ namespace shogun
 class COnlineLibLinear : public COnlineLinearMachine
 {
 public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** Default constructor */
 		COnlineLibLinear();
 

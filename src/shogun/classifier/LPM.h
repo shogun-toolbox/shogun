@@ -43,6 +43,8 @@ namespace shogun
 class CLPM : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		CLPM();
 		virtual ~CLPM();
 

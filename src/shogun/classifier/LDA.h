@@ -52,6 +52,8 @@ namespace shogun
 class CLDA : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** constructor
 		 *
 		 * @param gamma gamma

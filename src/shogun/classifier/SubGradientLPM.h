@@ -48,6 +48,8 @@ namespace shogun
 class CSubGradientLPM : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		CSubGradientLPM();
 		CSubGradientLPM(
 			float64_t C, CDotFeatures* traindat,

@@ -27,6 +27,8 @@ namespace shogun
 class CNewtonSVM : public CLinearMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** default constructor */
 		CNewtonSVM();
 

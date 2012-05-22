@@ -47,6 +47,8 @@ class CMulticlassSVM;
 class CSVM : public CKernelMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_BINARY);
+
 		/** Create an empty Support Vector Machine Object
 		 * @param num_sv with num_sv support vectors
 		 */

@@ -51,6 +51,8 @@ namespace shogun
 class CLibSVR : public CSVM
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
 		/** default constructor */
 		CLibSVR();
 
