@@ -224,5 +224,185 @@ protected:
 	/** number of false negative examples */
 	float64_t m_FN;
 };
+
+/** @brief class AccuracyMeasure
+ * used to measure accuracy of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CAccuracyMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CAccuracyMeasure() : CContingencyTableEvaluation(ACCURACY) {};
+	/* virtual destructor */
+	virtual ~CAccuracyMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "AccuracyMeasure"; };
+};
+
+/** @brief class ErrorRateMeasure
+ * used to measure error rate of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CErrorRateMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CErrorRateMeasure() : CContingencyTableEvaluation(ERROR_RATE) {};
+	/* virtual destructor */
+	virtual ~CErrorRateMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "ErrorRateMeasure"; };
+};
+
+/** @brief class BALMeasure
+ * used to measure balanced error of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CBALMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CBALMeasure() : CContingencyTableEvaluation(BAL) {};
+	/* virtual destructor */
+	virtual ~CBALMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "BALMeasure"; };
+};
+
+/** @brief class WRACCMeasure
+ * used to measure weighted relative accuracy of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CWRACCMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CWRACCMeasure() : CContingencyTableEvaluation(WRACC) {};
+	/* virtual destructor */
+	virtual ~CWRACCMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "WRACCMeasure"; };
+};
+
+/** @brief class F1Measure
+ * used to measure F1 score of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CF1Measure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CF1Measure() : CContingencyTableEvaluation(F1) {};
+	/* virtual destructor */
+	virtual ~CF1Measure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "F1Measure"; };
+};
+
+/** @brief class CrossCorrelationMeasure
+ * used to measure cross correlation coefficient of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CCrossCorrelationMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CCrossCorrelationMeasure() : CContingencyTableEvaluation(CROSS_CORRELATION) {};
+	/* virtual destructor */
+	virtual ~CCrossCorrelationMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "CrossCorrelationMeasure"; };
+};
+
+/** @brief class RecallMeasure
+ * used to measure recall of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CRecallMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CRecallMeasure() : CContingencyTableEvaluation(RECALL) {};
+	/* virtual destructor */
+	virtual ~CRecallMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "RecallMeasure"; };
+};
+
+/** @brief class PrecisionMeasure
+ * used to measure precision of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CPrecisionMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CPrecisionMeasure() : CContingencyTableEvaluation(PRECISION) {};
+	/* virtual destructor */
+	virtual ~CPrecisionMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "PrecisionMeasure"; };
+};
+
+/** @brief class SpecificityMeasure
+ * used to measure specificity of 2-class classifier.
+ *
+ * This class is also capable of measuring
+ * any other rate using get_[measure name] methods
+ * of CContingencyTableEvaluation class.
+ *
+ * Note that evaluate() should be called first.
+ */
+class CSpecificityMeasure: public CContingencyTableEvaluation
+{
+public:
+	/* constructor */
+	CSpecificityMeasure() : CContingencyTableEvaluation(SPECIFICITY) {};
+	/* virtual destructor */
+	virtual ~CSpecificityMeasure() {};
+	/* name */
+	virtual inline const char* get_name() const { return "SpecificityMeasure"; };
+};
 }
 #endif /* CONTINGENCYTABLEEVALUATION_H_ */
