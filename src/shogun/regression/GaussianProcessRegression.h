@@ -38,16 +38,17 @@ namespace shogun
 class CGaussianProcessRegression : public CMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
-	/** constructor
-	 *
-	 * @param sigma variance of the Gaussian observation noise
-	 * @param k Kernel for covariance matrix
-	 * @param data training data
-	 * @param lab labels
-	 */
-	CGaussianProcessRegression(float64_t sigma, CKernel* k, 
-				   CDenseFeatures<float64_t>* data, CLabels* lab);
+		/** constructor
+		 *
+		 * @param sigma variance of the Gaussian observation noise
+		 * @param k Kernel for covariance matrix
+		 * @param data training data
+		 * @param lab labels
+		 */
+		CGaussianProcessRegression(float64_t sigma, CKernel* k, 
+					   CDenseFeatures<float64_t>* data, CLabels* lab);
 
 		  /** default constructor */
 		CGaussianProcessRegression();

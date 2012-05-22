@@ -62,6 +62,8 @@ namespace shogun
 class CSVRLight: public CSVMLight
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
 		/** default constructor */
 		CSVRLight();
 
