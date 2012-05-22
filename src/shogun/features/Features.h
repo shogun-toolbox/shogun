@@ -20,6 +20,7 @@
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/SubsetStack.h>
 #include <shogun/lib/List.h>
+#include <shogun/lib/Map.h>
 
 namespace shogun
 {
@@ -221,6 +222,20 @@ class CFeatures : public CSGObject
 		 */
 		void unset_property(EFeatureProperty p);
 
+		/** set title
+		 * 
+		 * @param index index of feature
+		 * @param title name for feature
+		 */
+		void set_title(int32_t index, const char* title);
+
+		/** get title
+		 * 
+		 * @param index index of feature
+		 * @return name of feature
+		 */
+		const char* get_title(int32_t index);
+
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards
 		 *
@@ -257,21 +272,24 @@ class CFeatures : public CSGObject
 		/** feature properties */
 		uint64_t  properties;
 
-		/// size of cache in MB
+		/** size of cache in MB */
 		int32_t cache_size;
 
-		/// list of preprocessors
+		/** list of preprocessors */
 		CPreprocessor** preproc;
 
-		/// number of preprocs in list
+		/** number of preprocs in list */
 		int32_t num_preproc;
 
-		/// i'th entry is true if features were already preprocessed with preproc i
+		/** i'th entry is true if features were already preprocessed with preproc i */
 		bool* preprocessed;
 
 	protected:
 		/** subset used for index transformations */
 		CSubsetStack* m_subset_stack;
+
+		/** titles for features */
+		CMap<int32_t, const char*> titles;
 };
 }
 #endif
