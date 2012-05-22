@@ -71,11 +71,11 @@ void CMulticlassMachine::init_strategy()
     m_multiclass_strategy->set_num_classes(num_classes);
 }
 
-CRegressionLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
+CBinaryLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 {
 	CMachine *machine = (CMachine*)m_machines->get_element(i);
 	ASSERT(machine);
-	CRegressionLabels* output = (CRegressionLabels*)machine->apply();
+	CBinaryLabels* output = machine->apply_binary();
 	SG_UNREF(machine);
 	return output;
 }
@@ -108,16 +108,16 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
-		CRegressionLabels** outputs=SG_MALLOC(CRegressionLabels*, num_machines);
+		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
-			outputs[i] = (CRegressionLabels*) get_submachine_outputs(i);
+			outputs[i] = (CBinaryLabels*) get_submachine_outputs(i);
 
 		SGVector<float64_t> output_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			for (int32_t j=0; j<num_machines; j++)
-				output_for_i[j] = outputs[j]->get_label(i);
+				output_for_i[j] = outputs[j]->get_confidence(i);
 
 			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
 		}
@@ -146,7 +146,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 		init_machine_for_train(data);
 
 	m_machines->clear_array();
-	CMulticlassLabels* train_labels = new CMulticlassLabels(get_num_rhs_vectors());
+	CBinaryLabels* train_labels = new CBinaryLabels(get_num_rhs_vectors());
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
