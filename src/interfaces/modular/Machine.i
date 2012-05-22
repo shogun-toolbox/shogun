@@ -1,6 +1,22 @@
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
-%rename(apply_generic) apply(CFeatures*);
+%rename(apply_generic) shogun::CMachine::apply(CFeatures*);
+%rename(apply_generic) shogun::CMulticlassMachine::apply(CFeatures*);
+%rename(apply_generic) shogun::CKernelMulticlassMachine::apply(CFeatures*);
+%rename(apply_generic) shogun::CLinearMulticlassMachine::apply(CFeatures*);
+%rename(apply_generic) shogun::CCDistanceMachineMachine::apply(CFeatures*);
+%rename(apply_generic) shogun::CLinearMachine::apply(CFeatures*);
+%rename(apply_generic) shogun::CKernelMachine::apply(CFeatures*);
+%rename(apply_generic) shogun::CWDSVMOcas::apply(CFeatures*);
+%rename(apply_generic) shogun::CPluginEstimate::apply(CFeatures*);
+%rename(apply_generic) shogun::CKernelRidgeRegression::apply(CFeatures*);
+%rename(apply_generic) shogun::CSVRLight::apply(CFeatures*);
+%rename(apply_generic) shogun::CMKLRegression::apply(CFeatures*);
+%rename(apply_generic) shogun::CKernelRidgeRegression::apply(CFeatures*);
+%rename(apply_generic) shogun::CLinearRidgeRegression::apply(CFeatures*);
+%rename(apply_generic) shogun::CLeastSquaresRegression::apply(CFeatures*);
+%rename(apply_generic) shogun::CLeastAngleRegression::apply(CFeatures*);
+%rename(apply_generic) shogun::CGaussianProcessRegression::apply(CFeatures*);
 
 %define APPLY_MULTICLASS(CLASS)
     %extend CLASS
