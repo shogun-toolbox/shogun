@@ -97,7 +97,19 @@ CWDSVMOcas::~CWDSVMOcas()
 {
 }
 
-CLabels* CWDSVMOcas::apply(CFeatures* data)
+CBinaryLabels* CWDSVMOcas::apply_binary(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CBinaryLabels(outputs);
+}
+
+CRegressionLabels* CWDSVMOcas::apply_regression(CFeatures* data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return new CRegressionLabels(outputs);
+}
+
+SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 {
 	if (data)
 	{
@@ -114,21 +126,19 @@ CLabels* CWDSVMOcas::apply(CFeatures* data)
 	set_wd_weights();
 	set_normalization_const();
 
+	SGVector<float64_t> outputs;
 	if (features)
 	{
 		int32_t num=features->get_num_vectors();
 		ASSERT(num>0);
 
-		CBinaryLabels* output=new CBinaryLabels(num);
-		SG_REF(output);
+		outputs = SGVector<float64_t>(num);
 
 		for (int32_t i=0; i<num; i++)
-			output->set_label(i, apply_one(i));
-
-		return output;
+			outputs[i] = apply_one(i);
 	}
 
-	return NULL;
+	return outputs;
 }
 
 int32_t CWDSVMOcas::set_wd_weights()
