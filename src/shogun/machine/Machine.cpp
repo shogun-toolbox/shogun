@@ -173,6 +173,23 @@ CLabels* CMachine::apply(CFeatures* data)
 	return NULL;
 }
 
+CLabels* CMachine::apply_locked(SGVector<index_t> indices)
+{
+	switch (get_machine_problem_type())
+	{
+		case PT_BINARY:
+			return apply_locked_binary(indices);
+		case PT_REGRESSION:
+			return apply_locked_regression(indices);
+		case PT_MULTICLASS:
+			return apply_locked_multiclass(indices);
+		default:
+			SG_ERROR("Unknown problem type");
+			break;
+	}
+	return NULL;
+}
+
 CBinaryLabels* CMachine::apply_binary(CFeatures* data)
 {
 	SG_ERROR("This machine does not support apply_binary()\n");
@@ -188,6 +205,27 @@ CRegressionLabels* CMachine::apply_regression(CFeatures* data)
 CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
 {
 	SG_ERROR("This machine does not support apply_multiclass()\n");
+	return NULL;
+}
+
+CBinaryLabels* CMachine::apply_locked_binary(SGVector<index_t> indices)
+{
+	SG_ERROR("apply_locked_binary(SGVector<index_t>) is not yet implemented "
+			"for %s\n", get_name());
+	return NULL;
+}
+
+CRegressionLabels* CMachine::apply_locked_regression(SGVector<index_t> indices)
+{
+	SG_ERROR("apply_locked_regression(SGVector<index_t>) is not yet implemented "
+			"for %s\n", get_name());
+	return NULL;
+}
+
+CMulticlassLabels* CMachine::apply_locked_multiclass(SGVector<index_t> indices)
+{
+	SG_ERROR("apply_locked_multiclass(SGVector<index_t>) is not yet implemented "
+			"for %s\n", get_name());
 	return NULL;
 }
 
