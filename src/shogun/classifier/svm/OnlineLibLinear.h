@@ -50,16 +50,6 @@ public:
 		virtual ~COnlineLibLinear();
 
 		/**
-		 * Train classifier
-		 *
-		 * @param data Training data, can be avoided if already
-		 * initialized with it
-		 *
-		 * @return Whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
-		/**
 		 * Set C1 and C2 constants
 		 *
 		 * @param c_neg C1 value
@@ -97,6 +87,18 @@ public:
 
 		/** @return Object name */
 		inline virtual const char* get_name() const { return "OnlineLibLinear"; }
+
+protected:
+
+		/**
+		 * Train classifier
+		 *
+		 * @param data Training data, can be avoided if already
+		 * initialized with it
+		 *
+		 * @return Whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 private:
 		/** Set up parameters */

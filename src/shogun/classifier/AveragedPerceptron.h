@@ -49,16 +49,6 @@ class CAveragedPerceptron : public CLinearMachine
 		 */
 		virtual inline EMachineType get_classifier_type() { return CT_AVERAGEDPERCEPTRON; }
 
-		/** train classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(CFeatures* data=NULL);
-
 		/// set learn rate of gradient descent training algorithm
 		inline void set_learn_rate(float64_t r)
 		{
@@ -73,6 +63,18 @@ class CAveragedPerceptron : public CLinearMachine
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "AveragedPerceptron"; }
+
+protected:
+
+		/** train classifier
+		 *
+		 * @param data training data (parameter can be avoided if distance or
+		 * kernel-based classifiers are used and distance/kernels are
+		 * initialized with train data)
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 	protected:
 		/** learning rate */

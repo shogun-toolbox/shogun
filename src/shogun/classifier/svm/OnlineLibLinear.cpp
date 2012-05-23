@@ -56,7 +56,7 @@ COnlineLibLinear::~COnlineLibLinear()
 {
 }
 
-bool COnlineLibLinear::train(CFeatures* data)
+bool COnlineLibLinear::train_machine(CFeatures* data)
 {
 		if (data)
 		{

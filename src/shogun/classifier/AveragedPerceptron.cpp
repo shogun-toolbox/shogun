@@ -30,7 +30,7 @@ CAveragedPerceptron::~CAveragedPerceptron()
 {
 }
 
-bool CAveragedPerceptron::train(CFeatures* data)
+bool CAveragedPerceptron::train_machine(CFeatures* data)
 {
 	ASSERT(m_labels);
 	ASSERT(m_labels->get_label_type() == LT_BINARY);
