@@ -1,7 +1,8 @@
-%ignore operator[];
-%ignore operator=;
-%ignore operator==;
-%ignore operator!=;
+%ignore *::operator[];
+%ignore *::operator();
+%ignore *::operator=;
+%ignore *::operator==;
+%ignore *::operator!=;
 
 #ifdef SWIGJAVA
 %ignore SGIO;
