@@ -12,13 +12,14 @@
 
 using namespace shogun;
 
-CLinearTimeMMD::CLinearTimeMMD() : CTwoSampleTestStatistic()
+CLinearTimeMMD::CLinearTimeMMD() : CKernelTwoSampleTestStatistic()
 {
 	init();
 }
 
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
-		index_t q_start) :CTwoSampleTestStatistic(p_and_q, q_start)
+		index_t q_start) :
+		CKernelTwoSampleTestStatistic(kernel, p_and_q, q_start)
 {
 	init();
 
@@ -27,22 +28,16 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 		SG_ERROR("CLinearTimeMMD: Only features with equal number of vectors "
 				"are currently possible\n");
 	}
-
-	m_kernel=kernel;
-	SG_REF(kernel);
 }
 
 CLinearTimeMMD::~CLinearTimeMMD()
 {
-	SG_UNREF(m_kernel);
+
 }
 
 void CLinearTimeMMD::init()
 {
 	/* TODO register parameters*/
-
-	m_kernel=NULL;
-	m_threshold_method=MMD_NONE;
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
@@ -52,6 +47,7 @@ float64_t CLinearTimeMMD::compute_statistic()
 
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
+	// TODO here is something wrong! (possibly)
 	index_t m=m_q_start;
 	index_t m_2=m/2;
 
@@ -99,16 +95,10 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 
 	switch (m_threshold_method)
 	{
-		case MMD_NONE:
-			/* use super-class method for bootstrapping */
-			result=CTwoSampleTestStatistic::compute_p_value(statistic);
-			break;
-
+		/* TODO implement new null distribution approximations here */
 		default:
-			SG_ERROR("%s::compute_threshold(): Unknown method to compute"
-					" threshold!\n");
+			result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
 			break;
-
 	}
 
 	return result;
