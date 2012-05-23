@@ -129,7 +129,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		CLinearMachine* machine = new CLinearMachine();
-		SGVector<float64_t> cw(mc_problem.n);
+		SGVector<float64_t> cw(mc_problem.n-bias_n);
 
 		for (int32_t j=0; j<mc_problem.n-bias_n; j++)
 			cw[j] = m_train_state->w[j*num_classes+i];
