@@ -49,7 +49,7 @@ def assign_labels(data, centroids):
     from shogun.Classifier import KNN
     from numpy import arange
 
-    labels = MulticlassLabels(arange(0.,11.))
+    labels = MulticlassLabels(arange(0.,10.))
     fea = RealFeatures(data)
     fea_centroids = RealFeatures(centroids)
     distance = EuclidianDistance(fea_centroids, fea_centroids)
