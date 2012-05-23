@@ -11,11 +11,18 @@ from shogun.Features import RealFeatures, MulticlassLabels
 from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
 from shogun.Evaluation import MulticlassAccuracy
 
+def nonabstract_class(name):
+    try:
+        getattr(Classifier, name)()
+    except TypeError:
+        return False
+    return True
+
 import re
 encoders = [x for x in dir(Classifier)
-        if re.match(r'ECOC.+Encoder', x)]
+        if re.match(r'ECOC.+Encoder', x) and nonabstract_class(x)]
 decoders = [x for x in dir(Classifier)
-        if re.match(r'ECOC.+Decoder', x)]
+        if re.match(r'ECOC.+Decoder', x) and nonabstract_class(x)]
 
 fea_train = RealFeatures(traindat)
 fea_test  = RealFeatures(testdat)
