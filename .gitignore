@@ -34,16 +34,7 @@ configure.log
 /src/shogun/lib/config.h
 /src/shogun/base/class_list.cpp
 /src/shogun/Makefile
-/src/cmdline/Makefile
-/src/elwms/Makefile
-/src/shogun/Makefile
-/src/interfaces/matlab/Makefile
-/src/interfaces/octave/Makefile
-/src/interfaces/octave_modular/Makefile
-/src/interfaces/python/Makefile
-/src/interfaces/python_modular/Makefile
-/src/interfaces/r/Makefile
-/src/interfaces/r_modular/Makefile
+/src/interfaces/*/Makefile
 /src/examples
 /src/shogun/.clang_complete
 
