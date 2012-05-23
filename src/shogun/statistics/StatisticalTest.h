@@ -32,6 +32,9 @@ class CStatisticalTest : public CSGObject
 		 * @return p-value of test result */
 		virtual float64_t perform_test();
 
+		/** sets a new test statistic, replacing the old one */
+		void set_statistic(CTestStatistic* statistic);
+
 		inline virtual const char* get_name() const { return "StatisticalTest"; }
 
 	private:

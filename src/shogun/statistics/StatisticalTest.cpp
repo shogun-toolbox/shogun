@@ -48,3 +48,10 @@ void CStatisticalTest::init()
 
 	m_statistic=NULL;
 }
+
+void CStatisticalTest::set_statistic(CTestStatistic* statistic)
+{
+	SG_UNREF(m_statistic);
+	m_statistic=statistic;
+	SG_REF(statistic);
+}
