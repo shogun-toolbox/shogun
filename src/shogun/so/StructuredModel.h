@@ -13,7 +13,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
-#include <shogun/features/StructuredLabels.h>
+#include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/StructuredData.h>
 

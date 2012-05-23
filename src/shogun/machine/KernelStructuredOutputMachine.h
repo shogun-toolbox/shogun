@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#ifndef _KERNELSTRUCTUREDOUTPUTMACHINE_H__
-#define _KERNELSTRUCTUREDOUTPUTMACHINE_H__
+#ifndef _KERNEL_STRUCTURED_OUTPUT_MACHINE__H__
+#define _KERNEL_STRUCTURED_OUTPUT_MACHINE__H__
 
 #include <shogun/machine/StructuredOutputMachine.h>
 #include <shogun/kernel/Kernel.h>
@@ -66,4 +66,4 @@ class CKernelStructuredOutputMachine : public CStructuredOutputMachine
 
 } /* namespace shogun */
 
-#endif /* _KERNELSTRUCTUREDOUTPUTMACHINE_H__ */
+#endif /* _KERNEL_STRUCTURED_OUTPUT_MACHINE__H__ */

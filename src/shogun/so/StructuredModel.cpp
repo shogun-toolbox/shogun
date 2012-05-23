@@ -38,6 +38,7 @@ void CStructuredModel::init_opt(
 /* TODO */
 int32_t CStructuredModel::get_dim()
 {
+	return 0;
 }
 
 void CStructuredModel::set_labels(CStructuredLabels* labs)

@@ -42,7 +42,7 @@ bool CVanillaStructuredOutputMachine::train_machine(CFeatures* data)
 	m_model->init_opt(A, a, B, b, lb, ub, C);
 
 	// Assume diagonal regularization matrix with just one value
-	float64_t lambda = C(0, 0);
+	// float64_t lambda = C(0, 0);
 
 	// Initialize the weight vector
 	m_w = SGVector< float64_t >(N);
