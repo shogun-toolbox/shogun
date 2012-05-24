@@ -342,7 +342,7 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 // To support weights for instances, use GETI(i) (i)
 
 Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class,
-                                 double *weighted_C, double *w0,
+                                 double *weighted_C, double *w0_reg,
                                  double epsilon, int max_it, double max_time,
                                  mcsvm_state* given_state)
 {
@@ -353,7 +353,7 @@ Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class,
 	this->max_iter = max_it;
 	this->prob = p;
 	this->C = weighted_C;
-	this->w0 = w0;
+	this->w0 = w0_reg;
 	this->max_train_time = max_time;
 	this->state = given_state;
 }

@@ -82,7 +82,7 @@ CBinaryLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 {
 	CMachine *machine = get_machine(i);
-	float64_t output;
+	float64_t output = 0.0;
 	// dirty hack
 	if (dynamic_cast<CLinearMachine*>(machine))
 		output = ((CLinearMachine*)machine)->apply_one(num);
