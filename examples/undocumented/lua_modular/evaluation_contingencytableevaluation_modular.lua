@@ -12,8 +12,8 @@ parameter_list = {{ground_truth,predicted}}
 
 function evaluation_contingencytableevaluation_modular(ground_truth, predicted)
 
-	ground_truth_labels = modshogun.Labels(ground_truth)
-	predicted_labels = modshogun.Labels(predicted)
+	ground_truth_labels = modshogun.BinaryLabels(ground_truth)
+	predicted_labels = modshogun.BinaryLabels(predicted)
 	
 	base_evaluator = modshogun.ContingencyTableEvaluation()
 	base_evaluator:evaluate(predicted_labels,ground_truth_labels)

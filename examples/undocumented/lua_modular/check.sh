@@ -2,7 +2,7 @@
 
 rm -f error.log
 
-#export LUA_CPATH=../../../src/interfaces/lua_modular/?.so
+export LUA_CPATH=../../../src/interfaces/lua_modular/?.so
 
 for e in $(ls -1 *.lua | grep -v load.lua)
 do

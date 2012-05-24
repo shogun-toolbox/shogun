@@ -14,7 +14,7 @@ function regression_krr_modular (fm_train,fm_test,label_train,width,tau)
 
 	kernel=modshogun.GaussianKernel(feats_train, feats_train, width)
 
-	labels=modshogun.Labels(label_train)
+	labels=modshogun.RegressionLabels(label_train)
 
 	krr=modshogun.KernelRidgeRegression(tau, kernel, labels)
 	krr:train(feats_train)

@@ -64,7 +64,7 @@ function serialization_complex_example(num, dist, dim, C, width)
 	feats=modshogun.RealFeatures(data)
 	kernel=modshogun.GaussianKernel(feats, feats, width)
 
-	labels=modshogun.Labels(lab)
+	labels=modshogun.MulticlassLabels(lab)
 
 	svm = modshogun.GMNPSVM(C, kernel, labels)
 

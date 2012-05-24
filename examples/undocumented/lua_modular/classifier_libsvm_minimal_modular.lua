@@ -57,7 +57,7 @@ feats_train=modshogun.RealFeatures(traindata_real)
 feats_test=modshogun.RealFeatures(testdata_real)
 kernel=modshogun.GaussianKernel(feats_train, feats_train, width)
 
-labels=modshogun.Labels(trainlab)
+labels=modshogun.BinaryLabels(trainlab)
 svm=modshogun.LibSVM(C, kernel, labels)
 svm:train()
 

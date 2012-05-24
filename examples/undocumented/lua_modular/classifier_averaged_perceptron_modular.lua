@@ -12,7 +12,7 @@ function classifier_averaged_perceptron_modular (fm_train_real,fm_test_real,labe
 	feats_train=modshogun.RealFeatures(fm_train_real)
 	feats_test=modshogun.RealFeatures(fm_test_real)
 
-	labels=modshogun.Labels(label_train_twoclass)
+	labels=modshogun.BinaryLabels(label_train_twoclass)
 
 	perceptron=modshogun.AveragedPerceptron(feats_train, labels)
 	perceptron:set_learn_rate(learn_rate)
