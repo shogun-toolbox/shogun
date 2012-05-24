@@ -14,7 +14,7 @@ feats_test=RealFeatures(fm_test_real);
 learn_rate=1.;
 max_iter=1000;
 num_threads=1;
-labels=Labels(label_train_twoclass);
+labels=BinaryLabels(label_train_twoclass);
 
 perceptron=Perceptron(feats_train, labels);
 perceptron.set_learn_rate(learn_rate);

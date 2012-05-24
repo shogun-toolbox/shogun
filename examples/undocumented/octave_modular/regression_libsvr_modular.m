@@ -17,7 +17,7 @@ C=1.2;
 epsilon=1e-5;
 tube_epsilon=1e-2;
 num_threads=3;
-labels=Labels(label_train);
+labels=RegressionLabels(label_train);
 
 svr=LibSVR(C, epsilon, kernel, labels);
 svr.set_tube_epsilon(tube_epsilon);

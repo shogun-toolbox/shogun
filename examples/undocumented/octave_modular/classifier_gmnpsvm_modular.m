@@ -16,7 +16,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=1.2;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_multiclass);
+labels=MulticlassLabels(label_train_multiclass);
 
 svm=GMNPSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);

@@ -16,7 +16,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=1.2;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_twoclass);
+labels=BinaryLabels(label_train_twoclass);
 
 svm=MPDSVM(C, kernel, labels);
 svm.set_epsilon(epsilon);

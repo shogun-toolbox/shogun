@@ -41,7 +41,7 @@ kernel.init(feats_train, feats_train);
 C=1.2;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_multiclass);
+labels=MulticlassLabels(label_train_multiclass);
 
 % MKL_MULTICLASS
 disp('MKL_MULTICLASS')

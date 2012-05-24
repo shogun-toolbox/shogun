@@ -14,7 +14,7 @@ distance=EuclidianDistance(feats_train, feats_train);
 
 k=3;
 num_threads=1;
-labels=Labels(label_train_multiclass);
+labels=MulticlassLabels(label_train_multiclass);
 
 knn=KNN(k, distance, labels);
 knn.parallel.set_num_threads(num_threads);

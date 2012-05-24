@@ -23,7 +23,7 @@ fm_test_dna2=tmp(:,50:92);
 	feats_train.set_features(fm_train_dna);
 	feats_test.set_features(fm_test_dna);
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree);
-	labels=Labels(label_train_dna);
+	labels=BinaryLabels(label_train_dna);
 	svm=SVMLight(C, kernel, labels);
 	svm.train();
 
@@ -39,7 +39,7 @@ fm_test_dna2=tmp(:,50:92);
 
 	kernel2=WeightedDegreeStringKernel(feats_train, feats_train, degree);
 
-	labels2=Labels(label_train_dna);
+	labels2=BinaryLabels(label_train_dna);
 
 	% we regularize versus the previously obtained solution
 	dasvm = DomainAdaptationSVM(C, kernel2, labels2, svm, 1.0);

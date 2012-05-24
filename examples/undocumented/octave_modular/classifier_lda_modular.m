@@ -13,7 +13,7 @@ feats_test=RealFeatures(fm_test_real);
 
 gamma=3;
 num_threads=1;
-labels=Labels(label_train_twoclass);
+labels=BinaryLabels(label_train_twoclass);
 
 lda=LDA(gamma, feats_train, labels);
 lda.parallel.set_num_threads(num_threads);

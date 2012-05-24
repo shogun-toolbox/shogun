@@ -22,7 +22,7 @@ try
 	C=1.2;
 	epsilon=1e-5;
 	num_threads=3;
-	labels=Labels(label_train_dna);
+	labels=BinaryLabels(label_train_dna);
 
 	svm=SVMLight(C, kernel, labels);
 	svm.set_epsilon(epsilon);

@@ -21,7 +21,7 @@ fm_test_labels = load_matrix('../data/label_train_twoclass.dat');
 % create feature and label objects
 feats_train = RealFeatures(fm_train_real);
 feats_test = RealFeatures(fm_test_real);
-labels = Labels(fm_train_labels);
+labels = BinaryLabels(fm_train_labels);
 
 % create kernel
 kernel = GaussianKernel(feats_train, feats_train, width);

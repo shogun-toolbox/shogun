@@ -18,7 +18,7 @@ try
 	epsilon=1e-5;
 	tube_epsilon=1e-2;
 	num_threads=3;
-	labels=Labels(label_train);
+	labels=RegressioLabels(label_train);
 
 	svr=SVRLight(C, epsilon, kernel, labels);
 	svr.set_tube_epsilon(tube_epsilon);

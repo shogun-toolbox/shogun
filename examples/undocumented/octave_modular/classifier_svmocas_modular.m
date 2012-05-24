@@ -18,7 +18,7 @@ feats_test.obtain_from_simple(realfeat);
 C=0.9;
 epsilon=1e-5;
 num_threads=1;
-labels=Labels(label_train_twoclass);
+labels=BinaryLabels(label_train_twoclass);
 
 svm=SVMOcas(C, feats_train, labels);
 svm.set_epsilon(epsilon);

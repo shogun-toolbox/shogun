@@ -23,7 +23,7 @@ feats_test=StringWordFeatures(charfeat.get_alphabet());
 feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
 
 pie=PluginEstimate();
-labels=Labels(label_train_dna);
+labels=BinaryLabels(label_train_dna);
 pie.set_labels(labels);
 pie.set_features(feats_train);
 pie.train();

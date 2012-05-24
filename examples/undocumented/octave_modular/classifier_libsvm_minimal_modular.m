@@ -15,7 +15,7 @@ feats_train=RealFeatures(traindata_real);
 feats_test=RealFeatures(testdata_real);
 kernel=GaussianKernel(feats_train, feats_train, width);
 
-labels=Labels(trainlab);
+labels=BinaryLabels(trainlab);
 svm=LibSVM(C, kernel, labels);
 svm.parallel.set_num_threads(8);
 svm.train();

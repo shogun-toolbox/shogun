@@ -16,7 +16,7 @@ kernel=GaussianKernel(feats_train, feats_train, width);
 C=0.9;
 tau=1e-6;
 num_threads=1;
-labels=Labels(label_train);
+labels=RegressionLabels(label_train);
 
 krr=KernelRidgeRegression(tau, kernel, labels);
 krr.parallel.set_num_threads(num_threads);

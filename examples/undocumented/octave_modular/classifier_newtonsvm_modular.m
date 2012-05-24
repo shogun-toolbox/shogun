@@ -21,7 +21,7 @@ C=1.0;
 epsilon=1e-5;
 num_threads=1;
 label=double(label);
-labels=Labels(label);
+labels=BinaryLabels(label);
 
 svm=NewtonSVM(C, feats_train, labels);
 svm.set_epsilon(epsilon);

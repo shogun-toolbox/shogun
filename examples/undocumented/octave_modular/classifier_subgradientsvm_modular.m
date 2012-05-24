@@ -19,7 +19,7 @@ C=0.9;
 epsilon=1e-3;
 num_threads=1;
 max_train_time=1.;
-labels=Labels(label_train_twoclass);
+labels=BinaryLabels(label_train_twoclass);
 
 svm=SubGradientSVM(C, feats_train, labels);
 svm.set_epsilon(epsilon);
