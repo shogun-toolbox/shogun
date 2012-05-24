@@ -4,7 +4,7 @@ C=1.2;
 tube_epsilon=1e-2;
 
 addpath('tools');
-label_train=load_matrix('../data/label_train_twoclass.dat');
+label_train=load_matrix('../data/label_train_regression.dat');
 fm_train=load_matrix('../data/fm_train_real.dat');
 fm_test=load_matrix('../data/fm_test_real.dat');
 

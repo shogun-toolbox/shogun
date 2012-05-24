@@ -4,7 +4,7 @@ lm=LoadMatrix()
 
 traindat=lm.load_numbers('../data/fm_train_real.dat')
 testdat=lm.load_numbers('../data/fm_test_real.dat')
-trainlabel=lm.load_labels('../data/label_train_twoclass.dat')
+trainlabel=lm.load_labels('../data/label_train_regression.dat')
 parameter_list=[[traindat,testdat,trainlabel,10,2.1,1.2,1e-5,1e-2],
 		[traindat,testdat,trainlabel,11,2.3,1.3,1e-6,1e-3]]
 

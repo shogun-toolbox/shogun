@@ -16,6 +16,8 @@
 #include <shogun/io/AsciiFile.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/RegressionLabels.h>
 
 #include <string.h>
 
@@ -47,8 +49,10 @@ bool CGUILabels::load(char* filename, char* target)
 	{
 		SG_UNREF(labels);
 		CAsciiFile* file=new CAsciiFile(filename);
-		//FIXME
-		labels=new CBinaryLabels(file);
+		labels=new CRegressionLabels(file);
+		SGVector<float64_t> labs = ((CRegressionLabels*) labels)->get_labels();
+		float64_t* lab=CMath::clone_vector(labs.vector, labs.vlen);
+		labels=infer_labels(lab, labs.vlen);
 
 		if (labels)
 		{
@@ -72,4 +76,33 @@ bool CGUILabels::save(char* param)
 {
 	bool result=false;
 	return result;
+}
+
+CLabels* CGUILabels::infer_labels(float64_t* lab, int32_t len)
+{
+	CLabels* labels=NULL;
+
+	bool binary=true;
+	bool multiclass=true;
+	for (int32_t i=0; i<len; i++)
+	{
+		if (lab[i]!=-1 && lab[i]!=+1)
+			binary=false;
+
+		if (lab[i]<0 || lab[i]!=int(lab[i]))
+			multiclass=false;
+
+		if (binary == false && multiclass == false)
+		{
+			labels=new CRegressionLabels(SGVector<float64_t>(lab, len));
+			break;
+		}
+	}
+
+	if (multiclass)
+		labels=new CMulticlassLabels(SGVector<float64_t>(lab, len));
+	if (binary)
+		labels=new CBinaryLabels(SGVector<float64_t>(lab, len));
+
+	return labels;
 }

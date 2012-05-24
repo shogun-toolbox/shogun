@@ -2482,8 +2482,8 @@ bool CSGInterface::cmd_set_labels()
 	int32_t len=0;
 	get_vector(lab, len);
 
-	//FIXME
-	CBinaryLabels* labels=new CBinaryLabels(SGVector<float64_t>(lab, len));
+	CLabels* labels=ui_labels->infer_labels(lab, len);
+
 	SG_INFO("num labels: %d\n", labels->get_num_labels());
 
 	if (strmatch(target, "TRAIN"))
@@ -4198,7 +4198,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 	int32_t len=0;
 	get_vector(lab, len);
 
-	CRegressionLabels* labels=new CRegressionLabels(len);
+	CBinaryLabels* labels=new CBinaryLabels(len);
 	for (int32_t i=0; i<len; i++)
 	{
 		if (!labels->set_label(i, lab[i]))

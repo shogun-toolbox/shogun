@@ -3,7 +3,7 @@ print GMNPSVM
 
 set_kernel GAUSSIAN REAL 10 1.2
 set_features TRAIN ../data/fm_train_real.dat
-set_labels TRAIN ../data/label_train_twoclass.dat
+set_labels TRAIN ../data/label_train_multiclass.dat
 new_classifier GMNPSVM
 svm_epsilon 1e-5
 svm_use_bias 0
