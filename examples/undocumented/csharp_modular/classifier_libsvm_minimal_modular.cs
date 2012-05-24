@@ -43,11 +43,11 @@ public class classifier_libsvm_minimal_modular {
 		RealFeatures feats_train = new RealFeatures(traindata_real);
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 		LibSVM svm = new LibSVM(C, kernel, labels);
 		svm.train();
 
-		double[] result = svm.apply(feats_test).get_labels();
+		double[] result = BinaryLabels.obtain_from_generic(svm.apply(feats_test)).get_labels();
 
 		int err_num = 0;
 		for (int i = 0; i < num; i++) {
