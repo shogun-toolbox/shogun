@@ -1,24 +1,6 @@
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
-%rename(apply_generic) shogun::CMachine::apply();
-%rename(apply_generic) shogun::CMulticlassMachine::apply();
-%rename(apply_generic) shogun::CKernelMulticlassMachine::apply();
-%rename(apply_generic) shogun::CLinearMulticlassMachine::apply();
-%rename(apply_generic) shogun::CCDistanceMachineMachine::apply();
-%rename(apply_generic) shogun::CLinearMachine::apply();
-%rename(apply_generic) shogun::CKernelMachine::apply();
-%rename(apply_generic) shogun::CWDSVMOcas::apply();
-%rename(apply_generic) shogun::CPluginEstimate::apply();
-%rename(apply_generic) shogun::CKernelRidgeRegression::apply();
-%rename(apply_generic) shogun::CSVRLight::apply();
-%rename(apply_generic) shogun::CMKLRegression::apply();
-%rename(apply_generic) shogun::CKernelRidgeRegression::apply();
-%rename(apply_generic) shogun::CLinearRidgeRegression::apply();
-%rename(apply_generic) shogun::CLeastSquaresRegression::apply();
-%rename(apply_generic) shogun::CLeastAngleRegression::apply();
-%rename(apply_generic) shogun::CGaussianProcessRegression::apply();
-%rename(apply_generic) shogun::CConjugateIndex::apply();
 
 %define APPLY_MULTICLASS(CLASS)
     %extend CLASS
@@ -71,6 +53,25 @@ APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
 APPLY_REGRESSION(CGaussianProcessRegression);
 }
+
+%rename(apply_generic) CMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CMulticlassMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CKernelMulticlassMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CLinearMulticlassMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CCDistanceMachineMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CLinearMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CKernelMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CWDSVMOcas::apply(CFeatures* data=NULL);
+%rename(apply_generic) CPluginEstimate::apply(CFeatures* data=NULL);
+%rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
+%rename(apply_generic) CSVRLight::apply(CFeatures* data=NULL);
+%rename(apply_generic) CMKLRegression::apply(CFeatures* data=NULL);
+%rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
+%rename(apply_generic) CLinearRidgeRegression::apply(CFeatures* data=NULL);
+%rename(apply_generic) CLeastSquaresRegression::apply(CFeatures* data=NULL);
+%rename(apply_generic) CLeastAngleRegression::apply(CFeatures* data=NULL);
+%rename(apply_generic) CGaussianProcessRegression::apply(CFeatures* data=NULL);
+%rename(apply_generic) CConjugateIndex::apply(CFeatures* data=NULL);
 
 #undef APPLY_MULTICLASS
 #undef APPLY_BINARY
