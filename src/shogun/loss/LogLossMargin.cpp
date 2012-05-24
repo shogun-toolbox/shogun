@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Shashwat Lal Das
+ * Written (W) 2012 Fernando José Iglesias García
  * Copyright (c) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
@@ -12,26 +13,25 @@
 
 using namespace shogun;
 
-float64_t CLogLossMargin::loss(float64_t prediction, float64_t label)
+float64_t CLogLossMargin::loss(float64_t z)
 {
-	float64_t z = prediction * label;
 	if (z >= 1)
 		return log(1+exp(1-z));
+
 	return 1-z + log(1+exp(z-1));
 }
 
-float64_t CLogLossMargin::first_derivative(float64_t prediction, float64_t label)
+float64_t CLogLossMargin::first_derivative(float64_t z)
 {
-	float64_t z = prediction * label;
 	if (z < 1)
 		return -1 / (exp(z-1) + 1);
+
 	float64_t ez = exp(1-z);
 	return -ez / (ez + 1);
 }
 
-float64_t CLogLossMargin::second_derivative(float64_t prediction, float64_t label)
+float64_t CLogLossMargin::second_derivative(float64_t z)
 {
-	float64_t z = prediction * label;
 	float64_t ez = exp(z-1);
 
 	return ez / (ez + 1)*(ez + 1);

@@ -15,6 +15,8 @@ enum ELabelType
 	/// multi-class labels 0,1,...
 	LT_MULTICLASS = 1,
 	/// real valued labels (e.g. for regression, classifier outputs)
-	LT_REGRESSION = 3
+	LT_REGRESSION = 3,
+	/// structured labels (e.g. sequences, trees) used in Structured Output problems
+	LT_STRUCTURED = 4
 };
 #endif

@@ -11,6 +11,7 @@
   (at your option) any later version.
 
   Modifications (w) 2011 Shashwat Lal Das
+  Modifications (w) 2012 Fernando José Iglesias García
 */
 
 #ifndef _LOSSFUNCTION_H__
@@ -71,7 +72,19 @@ public:
 	 *
 	 * @return loss
 	 */
-	virtual float64_t loss(float64_t prediction, float64_t label) = 0;
+	virtual float64_t loss(float64_t prediction, float64_t label)
+	{
+		return loss(prediction * label);
+	}
+
+	/**
+	 * Get loss for an example
+	 *
+	 * @param z where to evaluate the loss 
+	 *
+	 * @return loss
+	 */
+	virtual float64_t loss(float64_t z) = 0;
 
 	/**
 	 * Get first derivative of the loss function
@@ -81,7 +94,19 @@ public:
 	 *
 	 * @return first derivative
 	 */
-	virtual float64_t first_derivative(float64_t prediction, float64_t label) = 0;
+	virtual float64_t first_derivative(float64_t prediction, float64_t label)
+	{
+		return loss(prediction * label);
+	}
+
+	/**
+	 * Get first derivative of the loss function
+	 *
+	 * @param z where to evaluate the derivative of the loss
+	 *
+	 * @return first derivative
+	 */
+	virtual float64_t first_derivative(float64_t z) = 0;
 
 	/**
 	 * Get second derivative of the loss function
@@ -91,7 +116,19 @@ public:
 	 *
 	 * @return second derivative
 	 */
-	virtual float64_t second_derivative(float64_t prediction, float64_t label) = 0;
+	virtual float64_t second_derivative(float64_t prediction, float64_t label)
+	{
+		return loss(prediction * label);
+	}
+
+	/**
+	 * Get second derivative of the loss function
+	 *
+	 * @param z where to evaluate the second derivative of the loss
+	 *
+	 * @return second derivative
+	 */
+	virtual float64_t second_derivative(float64_t z) = 0;
 
 	/**
 	 * Get importance aware weight update for this loss function
