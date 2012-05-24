@@ -182,9 +182,6 @@ class CDenseLabels : public CLabels
 		 */
 		virtual int32_t get_num_labels();
 
-		/** @return object name */
-		inline virtual const char* get_name() const { return "Labels"; }
-
 		/** get label type
 		 *
 		 * @return label type (binary, multiclass, ...)

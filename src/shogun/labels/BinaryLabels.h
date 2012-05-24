@@ -74,6 +74,10 @@ class CBinaryLabels : public CDenseLabels
 		 */
 		virtual ELabelType get_label_type();
 
+		/** @return object name */
+		inline virtual const char* get_name() const { return "BinaryLabels"; }
+
+
 };
 }
 #endif

@@ -96,6 +96,9 @@ class CMulticlassLabels : public CDenseLabels
 		 * @return number of classes
 		 */
 		int32_t get_num_classes();
+
+		/** @return object name */
+		inline virtual const char* get_name() const { return "MulticlassLabels"; }
 };
 }
 #endif
