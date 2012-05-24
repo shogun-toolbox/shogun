@@ -67,10 +67,13 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	}
 	ASSERT(features);
 
-	lab=((CBinaryLabels*) m_labels)->get_labels();
+	int32_t num_vec=features->get_num_vectors();
+	lab = SGVector<float64_t>(num_vec);
+	for (int32_t i=0; i<num_vec; i++)
+		lab[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+
 	w=SGVector<float64_t>(features->get_dim_feature_space());
 	w.zero();
-	int32_t num_vec=features->get_num_vectors();
 
 	if (num_vec!=lab.vlen || num_vec<=0)
 		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen);
