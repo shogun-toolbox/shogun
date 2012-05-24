@@ -5,6 +5,8 @@ import static org.jblas.DoubleMatrix.concatHorizontally;
 import static org.jblas.DoubleMatrix.ones;
 import static org.jblas.DoubleMatrix.randn;
 
+import static org.shogun.BinaryLabels.obtain_from_generic;
+
 public class classifier_libsvm_minimal_modular {
 	static {
 		System.loadLibrary("modshogun");
@@ -34,11 +36,11 @@ public class classifier_libsvm_minimal_modular {
 		RealFeatures feats_train = new RealFeatures(traindata_real);
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 		LibSVM svm = new LibSVM(C, kernel, labels);
 		svm.train();
 
-		DoubleMatrix out = svm.apply(feats_test).get_labels();
+		DoubleMatrix out = obtain_from_generic(svm.apply(feats_test)).get_labels();
 
 		System.out.println("Mean Error = " + signum(out).ne(testlab).mean());
 		modshogun.exit_shogun();
