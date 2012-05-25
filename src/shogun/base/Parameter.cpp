@@ -1580,7 +1580,7 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 
 TParameter::~TParameter()
 {
-	SG_SDEBUG("entering ~TParameter for \"%s\"\n", m_name);
+//	SG_SDEBUG("entering ~TParameter for \"%s\"\n", m_name);
 	SG_FREE(m_description);
 	SG_FREE(m_name);
 
@@ -1616,7 +1616,7 @@ TParameter::~TParameter()
 			SG_FREE(m_datatype.m_length_y);
 	}
 
-	SG_SDEBUG("leaving ~TParameter\n");
+//	SG_SDEBUG("leaving ~TParameter\n");
 }
 
 char*

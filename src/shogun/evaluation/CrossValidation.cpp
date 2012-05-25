@@ -126,6 +126,8 @@ CMachine* CCrossValidation::get_machine() const
 
 CrossValidationResult CCrossValidation::evaluate()
 {
+	SG_DEBUG("entering %s::evaluate()\n", get_name());
+
 	/* if for some reason the do_unlock_frag is set, unlock */
 	if (m_do_unlock)
 	{
@@ -159,8 +161,13 @@ CrossValidationResult CCrossValidation::evaluate()
 	SGVector<float64_t> results(m_num_runs);
 
 	/* perform all the x-val runs */
+	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs);
 	for (index_t i=0; i <m_num_runs; ++i)
+	{
+		SG_DEBUG("entering cross-validation run %d \n", i);
 		results[i]=evaluate_one_run();
+		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i]);
+	}
 
 	/* construct evaluation result */
 	CrossValidationResult result;
@@ -187,6 +194,7 @@ CrossValidationResult CCrossValidation::evaluate()
 		m_do_unlock=false;
 	}
 
+	SG_DEBUG("leaving %s::evaluate()\n", get_name());
 	return result;
 }
 
@@ -216,7 +224,10 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 
 float64_t CCrossValidation::evaluate_one_run()
 {
+	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name());
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
+
+	SG_DEBUG("building index sets for %d-fold cross-validation\n", num_subsets);
 
 	/* build index sets */
 	m_splitting_strategy->build_subsets();
@@ -275,6 +286,13 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set label subset for training */
 			m_labels->add_subset(inverse_subset_indices);
 
+			SG_DEBUG("training set %d:\n", i);
+			if (io->get_loglevel()==MSG_DEBUG)
+			{
+				CMath::display_vector(inverse_subset_indices.vector,
+						inverse_subset_indices.vlen, "indices");
+			}
+
 			/* train machine on training features and remove subset */
 			m_machine->train(m_features);
 			m_features->remove_subset();
@@ -288,6 +306,13 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set label subset for testing */
 			m_labels->add_subset(subset_indices);
 
+			SG_DEBUG("test set %d:\n", i);
+			if (io->get_loglevel()==MSG_DEBUG)
+			{
+				CMath::display_vector(inverse_subset_indices.vector,
+						inverse_subset_indices.vlen, "indices");
+			}
+
 			/* apply machine to test features and remove subset */
 			CLabels* result_labels=m_machine->apply(m_features);
 			m_features->remove_subset();
@@ -295,6 +320,7 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* evaluate */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
+			SG_DEBUG("result on fold %d is %f\n", i, results[i]);
 
 			/* clean up, remove subsets */
 			SG_UNREF(result_labels);
@@ -305,5 +331,6 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* build arithmetic mean of results */
 	float64_t mean=CStatistics::mean(results);
 
+	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name());
 	return mean;
 }
