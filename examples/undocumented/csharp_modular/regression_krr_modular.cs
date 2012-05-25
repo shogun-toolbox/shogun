@@ -15,13 +15,13 @@ public class regression_krr_modular {
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		GaussianKernel kernel= new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab);
+		RegressionLabels labels = new RegressionLabels(trainlab);
 
 		KernelRidgeRegression krr = new KernelRidgeRegression(tau, kernel, labels);
 		krr.train(feats_train);
 
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = krr.apply().get_labels();
+		double[] out_labels = RegressionLabels.obtain_from_generic(krr.apply()).get_labels();
 		
 		foreach(double item in out_labels) {
 			Console.Write(item);

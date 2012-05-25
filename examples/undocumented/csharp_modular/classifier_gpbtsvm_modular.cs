@@ -19,13 +19,13 @@ public class classifier_gpbtsvm_modular {
 
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 
 		GPBTSVM svm = new GPBTSVM(C, kernel, labels);
 		svm.set_epsilon(epsilon);
 		svm.train();
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = svm.apply().get_labels();
+		double[] out_labels = BinaryLabels.obtain_from_generic(svm.apply()).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

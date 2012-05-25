@@ -22,7 +22,7 @@ def regression_krr_modular(fm_train=traindat,fm_test=testdat,label_train=label_t
 
 	kernel=Modshogun::GaussianKernel.new(feats_train, feats_train, width)
 
-	labels=Modshogun::Labels.new(label_train)
+	labels=Modshogun::RegressionLabels.new(label_train)
 
 	krr=Modshogun::KernelRidgeRegression.new(tau, kernel, labels)
 	krr.train(feats_train)
@@ -39,11 +39,11 @@ def krr_short()
 	puts 'KRR_short'
 
 	width=0.8; tau=1e-6
-# *** 	krr=KernelRidgeRegression(tau, GaussianKernel(0, width), Labels(label_train))
-	krr=Modshogun::KernelRidgeRegression.new(tau, GaussianKernel(0, width), Labels(label_train))
-	#krr.set_features(tau, GaussianKernel(0, width), Labels(label_train))
+# *** 	krr=KernelRidgeRegression(tau, GaussianKernel(0, width), RegressionLabels(label_train))
+	krr=Modshogun::KernelRidgeRegression.new(tau, GaussianKernel(0, width), RegressionLabels(label_train))
+	#krr.set_features(tau, GaussianKernel(0, width), RegressionLabels(label_train))
 	krr.train(RealFeatures(fm_train))
-	out = krr.apply(RealFeatures(fm_test)).get_labels()
+	out = Modshogun::RegressionLabels.obtain_from_generic(krr.apply(RealFeatures(fm_test)).get_labels())
 
 	return krr,out
 

@@ -17,7 +17,7 @@ public class classifier_perceptron_modular {
 		RealFeatures feats_test = new RealFeatures();
 		feats_test.set_feature_matrix(testdata_real);
 
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 
 		Perceptron perceptron = new Perceptron(feats_train, labels);
 		perceptron.set_learn_rate(learn_rate);
@@ -26,7 +26,7 @@ public class classifier_perceptron_modular {
 
 		perceptron.set_features(feats_test);
 		//  already tried double[][]
-		double[] out_labels = perceptron.apply().get_labels();
+		double[] out_labels = BinaryLabels.obtain_from_generic(perceptron.apply()).get_labels();
 		
 		foreach (double item in out_labels)
 		    Console.Write(item);

@@ -14,11 +14,11 @@ public class classifier_knn_modular {
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		EuclidianDistance distance = new EuclidianDistance(feats_train, feats_train);
 
-		Labels labels = new Labels(trainlab);
+		MulticlassLabels labels = new MulticlassLabels(trainlab);
 
 		KNN knn = new KNN(k, distance, labels);
 		knn.train();
-		double[] out_labels = knn.apply(feats_test).get_labels();
+		double[] out_labels = MulticlassLabels.obtain_from_generic(knn.apply(feats_test)).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

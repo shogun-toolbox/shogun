@@ -19,13 +19,13 @@ public class classifier_larank_modular {
 
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab);
+		MulticlassLabels labels = new MulticlassLabels(trainlab);
 
 		LaRank svm = new LaRank(C, kernel, labels);
 		svm.set_batch_mode(false);
 		svm.set_epsilon(epsilon);
 		svm.train();
-		double[] out_labels = svm.apply(feats_train).get_labels();
+		double[] out_labels = MulticlassLabels.obtain_from_generic(svm.apply(feats_train)).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

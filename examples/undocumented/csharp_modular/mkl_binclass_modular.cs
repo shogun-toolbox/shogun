@@ -30,7 +30,7 @@ public class mkl_binclass_modular {
 		kernel.append_kernel(new PolyKernel(10,2));
 		kernel.init(feats_train, feats_train);
 
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 
 		MKLClassification mkl = new MKLClassification();
 		mkl.set_mkl_norm(1);

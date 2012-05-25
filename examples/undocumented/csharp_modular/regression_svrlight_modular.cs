@@ -18,7 +18,7 @@ public class regression_svrlight_modular {
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		GaussianKernel kernel= new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab);
+		RegressionLabels labels = new RegressionLabels(trainlab);
 
 		SVRLight svr = new SVRLight(C, epsilon, kernel, labels);
 		svr.set_tube_epsilon(tube_epsilon);
@@ -26,7 +26,7 @@ public class regression_svrlight_modular {
 		svr.train();
 
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = svr.apply().get_labels();
+		double[] out_labels = RegressionLabels.obtain_from_generic(svr.apply()).get_labels();
 		
 		foreach (double item in out_labels)
 		    Console.Write(item);

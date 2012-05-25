@@ -17,7 +17,7 @@ public class classifier_liblinear_modular {
 		RealFeatures feats_test = new RealFeatures();
 		feats_test.set_feature_matrix(testdata_real);
 
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 
 		LibLinear svm = new LibLinear(C, feats_train, labels);
 		svm.set_liblinear_solver_type(LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL);
@@ -25,7 +25,7 @@ public class classifier_liblinear_modular {
 		svm.set_bias_enabled(true);
 		svm.train();
 		svm.set_features(feats_test);
-		double[] out_labels = svm.apply().get_labels();
+		double[] out_labels = BinaryLabels.obtain_from_generic(svm.apply()).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

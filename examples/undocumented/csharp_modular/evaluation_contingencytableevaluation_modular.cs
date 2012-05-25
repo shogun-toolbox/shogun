@@ -11,8 +11,8 @@ public class evaluation_contingencytableevaluation_modular {
 			predicted[i] = RandomNumber.NextDouble();
 		}
 
-		Labels ground_truth_labels = new Labels(ground_truth);
-		Labels predicted_labels = new Labels(predicted);
+		BinaryLabels ground_truth_labels = new BinaryLabels(ground_truth);
+		BinaryLabels predicted_labels = new BinaryLabels(predicted);
 
 		ContingencyTableEvaluation base_evaluator = new ContingencyTableEvaluation();
 		base_evaluator.evaluate(predicted_labels,ground_truth_labels);

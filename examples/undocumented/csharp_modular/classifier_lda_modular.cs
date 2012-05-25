@@ -15,7 +15,7 @@ public class classifier_lda_modular {
 		RealFeatures feats_test = new RealFeatures();
 		feats_test.set_feature_matrix(testdata_real);
 
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 
 		LDA lda = new LDA(gamma, feats_train, labels);
 		lda.train();
@@ -29,7 +29,7 @@ public class classifier_lda_modular {
 
 
 		lda.set_features(feats_test);
-		double[] out_labels = lda.apply().get_labels();
+		double[] out_labels = BinaryLabels.obtain_from_generic(lda.apply()).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

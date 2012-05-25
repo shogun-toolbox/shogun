@@ -19,7 +19,7 @@ public class kernel_salzberg_word_string_modular {
 		StringWordFeatures feats_test = new StringWordFeatures(charfeat.get_alphabet());
 		feats_test.obtain_from_char(charfeat, order-1, order, gap, false);
 
-		Labels labels = new Labels(Load.load_labels("../data/label_train_dna.dat"));
+		BinaryLabels labels = new BinaryLabels(Load.load_labels("../data/label_train_dna.dat"));
 
 		PluginEstimate pie = new PluginEstimate();
 		pie.set_labels(labels);
@@ -30,7 +30,7 @@ public class kernel_salzberg_word_string_modular {
 		double[,] km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		pie.set_features(feats_test);
-		pie.apply().get_labels();
+		BinaryLabels.obtain_from_generic(pie.apply()).get_labels();
 		double[,] km_test=kernel.get_kernel_matrix();
 
 		modshogun.exit_shogun();

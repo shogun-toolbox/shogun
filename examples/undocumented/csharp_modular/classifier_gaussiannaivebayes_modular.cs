@@ -13,11 +13,11 @@ public class classifier_gaussiannaivebayes_modular {
 		feats_train.set_feature_matrix(traindata_real);
 		RealFeatures feats_test = new RealFeatures();
 		feats_test.set_feature_matrix(testdata_real);
-		Labels labels = new Labels(trainlab);
+		MulticlassLabels labels = new MulticlassLabels(trainlab);
 
 		GaussianNaiveBayes gnb = new GaussianNaiveBayes(feats_train, labels);
 		gnb.train();
-		double[] out_labels = gnb.apply(feats_test).get_labels();
+		double[] out_labels = MulticlassLabels.obtain_from_generic(gnb.apply(feats_test)).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

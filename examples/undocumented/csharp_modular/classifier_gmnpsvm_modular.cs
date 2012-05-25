@@ -19,13 +19,13 @@ public class classifier_gmnpsvm_modular {
 
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab);
+		MulticlassLabels labels = new MulticlassLabels(trainlab);
 
 		GMNPSVM svm = new GMNPSVM(C, kernel, labels);
 		svm.set_epsilon(epsilon);
 		svm.train();
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = svm.apply(feats_test).get_labels();
+		double[] out_labels = MulticlassLabels.obtain_from_generic(svm.apply(feats_test)).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);
