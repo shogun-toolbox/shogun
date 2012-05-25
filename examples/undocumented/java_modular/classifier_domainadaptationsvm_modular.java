@@ -2,6 +2,8 @@ import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.DNA;
 
+import static org.shogun.BinaryLabels.obtain_from_generic;
+
 public class classifier_domainadaptationsvm_modular {
 	static {
 		System.loadLibrary("modshogun");
@@ -38,7 +40,7 @@ public class classifier_domainadaptationsvm_modular {
 
 		WeightedDegreeStringKernel kernel = new WeightedDegreeStringKernel(feats_train, feats_train, degree);
 		double label_train_dna[][] = {{-1,-1,-1,-1,-1,1,1,1,1,1}};
-		Labels labels = new Labels(new DoubleMatrix(label_train_dna));
+		BinaryLabels labels = new BinaryLabels(new DoubleMatrix(label_train_dna));
 
 		SVMLight svm = new SVMLight(C, kernel, labels);
 		svm.train();
@@ -46,7 +48,7 @@ public class classifier_domainadaptationsvm_modular {
 		DomainAdaptationSVM dasvm = new DomainAdaptationSVM(C, kernel, labels, svm, 1.0);
 		dasvm.train();
 
-		DoubleMatrix out = dasvm.apply(feats_test).get_labels();
+		DoubleMatrix out = obtain_from_generic(dasvm.apply(feats_test)).get_labels();
 		modshogun.exit_shogun();
 	}
 }

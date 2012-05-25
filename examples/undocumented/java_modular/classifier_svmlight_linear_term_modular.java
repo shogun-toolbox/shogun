@@ -1,9 +1,11 @@
 import org.shogun.*;
 import org.jblas.*;
-import static org.shogun.EAlphabet.DNA;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.shogun.EAlphabet.DNA;
+import static org.shogun.BinaryLabels.obtain_from_generic;
 
 public class classifier_svmlight_linear_term_modular {
 	static {
@@ -43,7 +45,7 @@ public class classifier_svmlight_linear_term_modular {
 
 		WeightedDegreeStringKernel kernel = new WeightedDegreeStringKernel(feats_train, feats_train, degree);
 		double label_train_dna[][] = {{-1,-1,-1,-1,-1,1,1,1,1,1}};
-		Labels labels = new Labels(new DoubleMatrix(label_train_dna));
+		BinaryLabels labels = new BinaryLabels(new DoubleMatrix(label_train_dna));
 
 		SVMLight svm = new SVMLight(C, kernel, labels);
 		svm.set_qpsize(3);
@@ -53,7 +55,7 @@ public class classifier_svmlight_linear_term_modular {
 		svm.train();
 
 		kernel.init(feats_train, feats_test);
-		svm.apply().get_labels();
+		obtain_from_generic(svm.apply()).get_labels();
 
 		modshogun.exit_shogun();
 	}

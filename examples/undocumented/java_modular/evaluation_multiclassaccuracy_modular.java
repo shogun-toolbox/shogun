@@ -14,8 +14,8 @@ public class evaluation_multiclassaccuracy_modular {
 		DoubleMatrix ground_truth = Load.load_labels("../data/label_train_multiclass.dat");
 		DoubleMatrix predicted = Load.load_labels("../data/label_train_multiclass.dat").mmul(mul);
 
-		Labels ground_truth_labels = new Labels(ground_truth);
-		Labels predicted_labels = new Labels(predicted);
+		MulticlassLabels ground_truth_labels = new MulticlassLabels(ground_truth);
+		MulticlassLabels predicted_labels = new MulticlassLabels(predicted);
 
 		MulticlassAccuracy evaluator = new MulticlassAccuracy();
 		double accuracy = evaluator.evaluate(predicted_labels, ground_truth_labels);

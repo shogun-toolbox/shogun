@@ -14,8 +14,8 @@ public class evaluation_meansquarederror_modular {
 		DoubleMatrix ground_truth = randn(1, N);
 		DoubleMatrix predicted = randn(1, N);
 
-		Labels ground_truth_labels = new Labels(ground_truth);
-		Labels predicted_labels = new Labels(predicted);
+		RegressionLabels ground_truth_labels = new RegressionLabels(ground_truth);
+		RegressionLabels predicted_labels = new RegressionLabels(predicted);
 
 		MeanSquaredError evaluator = new MeanSquaredError();
 		double mse = evaluator.evaluate(predicted_labels, ground_truth_labels);

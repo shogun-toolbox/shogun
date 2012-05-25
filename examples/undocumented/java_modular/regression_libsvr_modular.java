@@ -1,6 +1,8 @@
 import org.shogun.*;
 import org.jblas.*;
 
+import static org.shogun.RegressionLabels.obtain_from_generic;
+
 public class regression_libsvr_modular {
 	static {
 		System.loadLibrary("modshogun");
@@ -22,14 +24,14 @@ public class regression_libsvr_modular {
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		GaussianKernel kernel= new GaussianKernel(feats_train, feats_train, width);
 
-		Labels labels = new Labels(trainlab);
+		RegressionLabels labels = new RegressionLabels(trainlab);
 
 		LibSVR svr = new LibSVR(C, tube_epsilon, kernel, labels);
 		svr.set_epsilon(epsilon);
 		svr.train();
 
 		kernel.init(feats_train, feats_test);
-		DoubleMatrix out_labels = svr.apply().get_labels();
+		DoubleMatrix out_labels = obtain_from_generic(svr.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
 		modshogun.exit_shogun();

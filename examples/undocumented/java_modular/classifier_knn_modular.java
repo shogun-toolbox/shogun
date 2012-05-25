@@ -1,6 +1,8 @@
 import org.shogun.*;
 import org.jblas.*;
 
+import static org.shogun.MulticlassLabels.obtain_from_generic;
+
 public class classifier_knn_modular {
 	static {
 		System.loadLibrary("modshogun");
@@ -19,11 +21,11 @@ public class classifier_knn_modular {
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		EuclidianDistance distance = new EuclidianDistance(feats_train, feats_train);
 
-		Labels labels = new Labels(trainlab);
+		MulticlassLabels labels = new MulticlassLabels(trainlab);
 
 		KNN knn = new KNN(k, distance, labels);
 		knn.train();
-		DoubleMatrix out_labels = knn.apply(feats_test).get_labels();
+		DoubleMatrix out_labels = obtain_from_generic(knn.apply(feats_test)).get_labels();
 		System.out.println(out_labels.toString());
 
 		modshogun.exit_shogun();

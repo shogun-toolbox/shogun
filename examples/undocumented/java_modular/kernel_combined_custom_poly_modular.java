@@ -1,6 +1,8 @@
 import org.shogun.*;
 import org.jblas.*;
 
+import static org.shogun.BinaryLabels.obtain_from_generic;
+
 public class kernel_combined_custom_poly_modular {
 	static {
 		System.loadLibrary("modshogun");
@@ -33,7 +35,7 @@ public class kernel_combined_custom_poly_modular {
 
 		kernel.init(feats_train, feats_train);
 
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 
 		LibSVM svm = new LibSVM(C, kernel, labels);
 		svm.train();
@@ -55,7 +57,7 @@ public class kernel_combined_custom_poly_modular {
 		kernel_pred.init(feats_train, feats_pred);
 
 		svm.set_kernel(kernel_pred);
-		svm.apply();
+		obtain_from_generic(svm.apply());
 		DoubleMatrix km_train=kernel.get_kernel_matrix();
 		System.out.println(km_train.toString());
 

@@ -60,7 +60,7 @@ public class serialization_svmlight_modular {
 		RealFeatures feats_train = new RealFeatures(traindata_real);
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_train, width);
-		Labels labels = new Labels(trainlab);
+		BinaryLabels labels = new BinaryLabels(trainlab);
 		SVMLight svm = new SVMLight(C, kernel, labels);
 		svm.train();
 
