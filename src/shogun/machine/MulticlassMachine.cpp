@@ -96,8 +96,8 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 {
 	if (data)
 		init_machines_for_apply(data);
-	/** Ensure that m_machines have the features set */
-	init_machines_for_apply(NULL);
+	else
+		init_machines_for_apply(NULL);
 
 	if (is_ready())
 	{
@@ -144,7 +144,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	else
 		init_machine_for_train(data);
 
-	m_machines->clear_array();
+	m_machines->reset_array();
 	CBinaryLabels* train_labels = new CBinaryLabels(get_num_rhs_vectors());
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);

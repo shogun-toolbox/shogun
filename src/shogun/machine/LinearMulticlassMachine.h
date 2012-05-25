@@ -106,6 +106,8 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 			{
 				CLinearMachine* machine = (CLinearMachine*)m_machines->get_element(i);
+				ASSERT(m_features);
+				ASSERT(machine);
 				machine->set_features(m_features);
 				SG_UNREF(machine);
 			}
