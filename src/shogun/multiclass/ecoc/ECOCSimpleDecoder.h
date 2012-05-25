@@ -17,6 +17,10 @@
 namespace shogun
 {
 
+/** A decoder that computes some simple distances between
+ * the binary classification results and the codes to select
+ * the class with the smallest distance.
+ */
 class CECOCSimpleDecoder: public CECOCDecoder
 {
 public:

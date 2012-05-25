@@ -40,7 +40,7 @@ CECOCStrategy::~CECOCStrategy()
     SG_UNREF(m_decoder);
 }
 
-void CECOCStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)
+void CECOCStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
 {
     CMulticlassStrategy::train_start(orig_labels, train_labels);
 

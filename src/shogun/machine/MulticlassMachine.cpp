@@ -149,7 +149,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
-	m_multiclass_strategy->train_start(m_labels, train_labels);
+	m_multiclass_strategy->train_start(CMulticlassLabels::obtain_from_generic(m_labels), train_labels);
 	while (m_multiclass_strategy->train_has_more())
 	{
 		SGVector<index_t> subset=m_multiclass_strategy->train_prepare_next();

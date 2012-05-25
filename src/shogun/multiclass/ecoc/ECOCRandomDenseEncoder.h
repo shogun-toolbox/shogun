@@ -16,6 +16,9 @@
 namespace shogun
 {
 
+/** Generate random ECOC codebook containing +1 and -1, and
+ * select the best one.
+ */
 class CECOCRandomDenseEncoder: public CECOCEncoder
 {
 public:
@@ -60,9 +63,9 @@ public:
     }
 
 protected:
-    int32_t   m_maxiter; // max number of iterations
-    int32_t   m_codelen; // code length
-    float64_t m_pposone; // probability of +1
+    int32_t   m_maxiter; ///< max number of iterations
+    int32_t   m_codelen; ///< code length
+    float64_t m_pposone; ///< probability of +1
 
 private:
     /** ensure probability sum to one
