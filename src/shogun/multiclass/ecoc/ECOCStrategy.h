@@ -18,6 +18,7 @@
 namespace shogun
 {
 
+/** Multiclass Strategy that uses ECOC coding */
 class CECOCStrategy: public CMulticlassStrategy
 {
 public:
@@ -37,7 +38,7 @@ public:
     }
 
     /** start training */
-    virtual void train_start(CLabels *orig_labels, CLabels *train_labels);
+    virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels);
 
     /** has more training phase */
     virtual bool train_has_more();
@@ -66,6 +67,7 @@ protected:
     SGMatrix<int32_t> m_codebook;
 
 private:
+	/** init parameters */
     void init();
 };
 

@@ -20,7 +20,7 @@ CMulticlassStrategy::CMulticlassStrategy()
     SG_ADD(&m_num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
 }
 
-void CMulticlassStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)
+void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
 {
 	if (m_train_labels != NULL)
 		SG_ERROR("Stop the previous training task before starting a new one!");

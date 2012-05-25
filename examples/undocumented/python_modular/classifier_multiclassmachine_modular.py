@@ -15,7 +15,7 @@ def classifier_multiclassmachine_modular (fm_train_real=traindat,fm_test_real=te
 
 	labels=MulticlassLabels(label_train_multiclass)
 
-	classifier = LibSVM(C, kernel, labels)
+	classifier = LibSVM()
 	classifier.set_epsilon(epsilon)
 	print labels.get_labels()
 	mc_classifier = KernelMulticlassMachine(MulticlassOneVsRestStrategy(),kernel,classifier,labels)

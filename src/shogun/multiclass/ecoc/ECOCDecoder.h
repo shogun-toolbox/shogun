@@ -18,6 +18,11 @@
 namespace shogun
 {
 
+/** An ECOC decoder describe how to decode the
+ * classification results of the binary classifiers
+ * into a multiclass label according to the ECOC
+ * codebook.
+ */
 class CECOCDecoder: public CSGObject
 {
 public:

@@ -19,7 +19,7 @@ CMulticlassOneVsOneStrategy::CMulticlassOneVsOneStrategy()
 {
 }
 
-void CMulticlassOneVsOneStrategy::train_start(CLabels *orig_labels, CLabels *train_labels)
+void CMulticlassOneVsOneStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
 {
 	CMulticlassStrategy::train_start(orig_labels, train_labels);
 	m_num_machines=m_num_classes*(m_num_classes-1)/2;
