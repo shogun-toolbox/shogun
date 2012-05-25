@@ -12,7 +12,8 @@
 #define MULTICLASSSTRATEGY_H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/RejectionStrategy.h>
 
 namespace shogun
@@ -46,7 +47,7 @@ public:
     }
 
 	/** start training */
-	virtual void train_start(CLabels *orig_labels, CLabels *train_labels);
+	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels);
 
 	/** has more training phase */
 	virtual bool train_has_more()=0;
@@ -69,10 +70,10 @@ public:
 	virtual int32_t get_num_machines()=0;
 
 protected:
-	CLabels *m_train_labels;
-	CLabels *m_orig_labels;
-	int32_t m_train_iter;
-    int32_t m_num_classes;
+	CBinaryLabels *m_train_labels;    ///< labels used to train the submachines
+	CMulticlassLabels *m_orig_labels; ///< original multiclass labels
+	int32_t m_train_iter;             ///< index of current iterations
+    int32_t m_num_classes;            ///< number of classes in this problem
 };
 
 } // namespace shogun

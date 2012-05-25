@@ -46,7 +46,7 @@ public:
 	}
 
 	/** start training */
-	virtual void train_start(CLabels *orig_labels, CLabels *train_labels)
+	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
 	{
 		CMulticlassStrategy::train_start(orig_labels, train_labels);
 	}
@@ -81,7 +81,7 @@ public:
 	};
 
 protected:
-	CRejectionStrategy *m_rejection_strategy;
+	CRejectionStrategy *m_rejection_strategy; ///< rejection strategy
 };
 
 } // namespace shogun

@@ -23,7 +23,7 @@ public:
 	virtual ~CMulticlassOneVsOneStrategy() {}
 
 	/** start training */
-	virtual void train_start(CLabels *orig_labels, CLabels *train_labels);
+	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels);
 
 	/** has more training phase */
 	virtual bool train_has_more();
@@ -52,9 +52,9 @@ public:
 	};
 
 protected:
-	int32_t m_num_machines;
-	int32_t m_train_pair_idx_1;
-	int32_t m_train_pair_idx_2;
+	int32_t m_num_machines;     ///< number of machines
+	int32_t m_train_pair_idx_1; ///< 1st index of current submachine being trained
+	int32_t m_train_pair_idx_2; ///< 2nd index of current submachine being trained
 };
 
 } // namespace shogun

@@ -63,9 +63,10 @@ public:
     virtual SGMatrix<int32_t> create_codebook(int32_t num_classes);
 
 protected:
+	/** init parameters */
     void init();
 
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void binary_partition(const std::vector<int32_t>& classes);
     void run_sffs(std::vector<int32_t>& part1, std::vector<int32_t>& part2);
     float64_t sffs_iteration(float64_t MI, std::vector<int32_t>& part1, std::set<int32_t>& idata1,
@@ -82,6 +83,7 @@ protected:
     CLabels *m_labels;
     CDenseFeatures<float64_t> *m_features;
     SGMatrix<float64_t> m_feats;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 };
 
 } /* shogun */ 

@@ -16,6 +16,7 @@
 namespace shogun
 {
 
+/** A helper class for some ECOC related procedures. */
 class CECOCUtil
 {
 public:
