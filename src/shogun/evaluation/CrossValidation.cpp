@@ -290,7 +290,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			if (io->get_loglevel()==MSG_DEBUG)
 			{
 				CMath::display_vector(inverse_subset_indices.vector,
-						inverse_subset_indices.vlen, "indices");
+						inverse_subset_indices.vlen, "training indices");
 			}
 
 			/* train machine on training features and remove subset */
@@ -309,8 +309,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			SG_DEBUG("test set %d:\n", i);
 			if (io->get_loglevel()==MSG_DEBUG)
 			{
-				CMath::display_vector(inverse_subset_indices.vector,
-						inverse_subset_indices.vlen, "indices");
+				CMath::display_vector(subset_indices.vector,
+						subset_indices.vlen, "test indices");
 			}
 
 			/* apply machine to test features and remove subset */
