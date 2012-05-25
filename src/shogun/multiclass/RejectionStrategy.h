@@ -94,12 +94,12 @@ static const float64_t Q_test_statistic_values[10][8] =
  * rejection strategy. Statistic values are taken from
  * http://www.vias.org/tmdatanaleng/cc_outlier_tests_dixon.html
  * */
-class CDixonQRejectionStrategy : public CRejectionStrategy
+class CDixonQTestRejectionStrategy : public CRejectionStrategy
 {
 	public:
 
 		/** constructor */
-		CDixonQRejectionStrategy() :
+		CDixonQTestRejectionStrategy() :
 			CRejectionStrategy()
 		{
 			s_index = 3;
@@ -109,7 +109,7 @@ class CDixonQRejectionStrategy : public CRejectionStrategy
 		 * @param significance_level either 0.001,0.002,0.005,
 		 * 0.01,0.02,0.05,0.1 or 0.2 
 		 */
-		CDixonQRejectionStrategy(float64_t significance_level) :
+		CDixonQTestRejectionStrategy(float64_t significance_level) :
 			CRejectionStrategy()
 		{	
 			if (significance_level==0.001)
@@ -131,7 +131,7 @@ class CDixonQRejectionStrategy : public CRejectionStrategy
 			else SG_ERROR("Given significance level is not supported");
 		}
 
-		virtual ~CDixonQRejectionStrategy() 
+		virtual ~CDixonQTestRejectionStrategy() 
 		{
 		}
 
@@ -150,7 +150,8 @@ class CDixonQRejectionStrategy : public CRejectionStrategy
 
 			int32_t Ni = N/10 - 1;
 
-			CMath::qsort(outputs.vector,N);
+			SGVector<float64_t> outputs_local = outputs.clone();
+			CMath::qsort(outputs_local.vector,N);
 
 			float64_t Q = 0.0;
 			if (N==10)
