@@ -116,6 +116,24 @@ class CMulticlassMachine : public CMachine
 			return m_multiclass_strategy;
 		}
 
+		/** returns rejection strategy
+		 *
+		 * @return rejection strategy
+		 */
+		inline CRejectionStrategy* get_rejection_strategy() const
+		{
+			return m_multiclass_strategy->get_rejection_strategy();
+		}
+
+		/** sets rejection strategy
+		 *
+		 * @param rejection_strategy rejection strategy to be set
+		 */
+		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
+		{
+			m_multiclass_strategy->set_rejection_strategy(rejection_strategy);
+		}
+
 		/** get name */
 		virtual const char* get_name() const
 		{

@@ -15,14 +15,8 @@
 using namespace shogun;
 
 CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy()
-	:CMulticlassStrategy(), m_rejection_strategy(NULL)
+	: CMulticlassStrategy()
 {
-}
-
-CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(CRejectionStrategy *rejection_strategy)
-	:CMulticlassStrategy(), m_rejection_strategy(rejection_strategy)
-{
-	SG_REF(m_rejection_strategy);
 }
 
 SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()

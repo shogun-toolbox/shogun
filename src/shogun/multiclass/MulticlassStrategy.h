@@ -34,17 +34,32 @@ public:
 		return "MulticlassStrategy";
 	};
 
-    /** set number of classes */
-    void set_num_classes(int32_t num_classes)
-    {
-        m_num_classes = num_classes;
-    }
+	/** set number of classes */
+	void set_num_classes(int32_t num_classes)
+	{
+		m_num_classes = num_classes;
+	}
 
-    /** get number of classes */
-    int32_t get_num_classes() const
-    {
-        return m_num_classes;
-    }
+	/** get number of classes */
+	int32_t get_num_classes() const
+	{
+		return m_num_classes;
+	}
+
+	/** get rejection strategy */
+	CRejectionStrategy *get_rejection_strategy()
+	{
+		SG_REF(m_rejection_strategy);
+		return m_rejection_strategy;
+	}
+
+	/** set rejection strategy */
+	void set_rejection_strategy(CRejectionStrategy *rejection_strategy)
+	{
+		SG_REF(rejection_strategy);
+		SG_UNREF(m_rejection_strategy);
+		m_rejection_strategy = rejection_strategy;
+	}
 
 	/** start training */
 	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels);
@@ -70,6 +85,8 @@ public:
 	virtual int32_t get_num_machines()=0;
 
 protected:
+
+	CRejectionStrategy* m_rejection_strategy; ///< rejection strategy
 	CBinaryLabels *m_train_labels;    ///< labels used to train the submachines
 	CMulticlassLabels *m_orig_labels; ///< original multiclass labels
 	int32_t m_train_iter;             ///< index of current iterations

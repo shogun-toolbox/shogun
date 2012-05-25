@@ -16,34 +16,14 @@
 namespace shogun
 {
 
-class CRejectionStrategy;
-
 class CMulticlassOneVsRestStrategy: public CMulticlassStrategy
 {
 public:
 	/** constructor */
 	CMulticlassOneVsRestStrategy();
 
-	/** constructor with rejection strategy */
-	CMulticlassOneVsRestStrategy(CRejectionStrategy *rejection_strategy);
-
 	/** destructor */
 	virtual ~CMulticlassOneVsRestStrategy() {}
-
-	/** get rejection strategy */
-	CRejectionStrategy *get_rejection_strategy()
-	{
-		SG_REF(m_rejection_strategy);
-		return m_rejection_strategy;
-	}
-
-	/** set rejection strategy */
-	void set_rejection_strategy(CRejectionStrategy *rejection_strategy)
-	{
-		SG_REF(rejection_strategy);
-		SG_UNREF(m_rejection_strategy);
-		m_rejection_strategy = rejection_strategy;
-	}
 
 	/** start training */
 	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
@@ -80,8 +60,6 @@ public:
 		return "MulticlassOneVsRestStrategy";
 	};
 
-protected:
-	CRejectionStrategy *m_rejection_strategy; ///< rejection strategy
 };
 
 } // namespace shogun
