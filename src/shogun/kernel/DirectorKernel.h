@@ -61,6 +61,12 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		{
 		}
 
+		virtual float64_t kernel_function(int32_t idx_a, int32_t idx_b)
+		{
+			SG_ERROR("Kernel function of Director Kernel needs to be overridden.\n");
+			return 0;
+		}
+
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type DIRECTOR
@@ -241,8 +247,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
-			SG_ERROR("Compute method of Director Kernel needs to be overridden.\n");
-			return 0;
+			return kernel_function(idx_a, idx_b);
 		}
 
 		virtual void register_params()
