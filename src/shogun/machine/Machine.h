@@ -100,7 +100,11 @@ enum EProblemType
 	PT_MULTICLASS = 2
 };
 
-#define MACHINE_PROBLEM_TYPE(PT) inline virtual EProblemType get_machine_problem_type() const { return PT; }
+#define MACHINE_PROBLEM_TYPE(PT) \
+	/** returns default problem type machine solves \
+	 * @return problem type\
+	 */ \
+	virtual EProblemType get_machine_problem_type() const { return PT; }
 
 /** @brief A generic learning machine interface.
  *
@@ -147,9 +151,13 @@ class CMachine : public CSGObject
 		 */
 		virtual CLabels* apply(CFeatures* data=NULL);
 
+		/** apply machine to data in means of binary classification problem */
 		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		/** apply machine to data in means of regression problem */
 		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		/** apply machine to data in means of multiclass classification problem */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+
 		/** set labels
 		 *
 		 * @param lab labels
