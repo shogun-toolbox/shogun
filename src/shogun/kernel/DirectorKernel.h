@@ -67,6 +67,34 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 			return 0;
 		}
 
+		virtual void set_num_vec_lhs(int32_t num)
+		{
+			num_lhs=num;
+		}
+
+		virtual void set_num_vec_rhs(int32_t num)
+		{
+			num_rhs=num;
+		}
+		
+		virtual bool has_features()
+		{
+			return true;
+		}
+
+		SGMatrix<float64_t> get_km()
+		{
+			SGMatrix<float64_t> km(num_lhs, num_rhs);
+
+			for (int32_t i=0; i<num_lhs; i++)
+			{
+				for (int32_t j=0; j<num_rhs; j++)
+					km[j*num_rhs+i]=kernel(i,j);
+			}
+
+			return km;
+		}
+
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type DIRECTOR

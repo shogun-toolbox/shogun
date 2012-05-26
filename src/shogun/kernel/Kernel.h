@@ -438,7 +438,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual inline int32_t get_num_vec_lhs()
+		virtual int32_t get_num_vec_lhs()
 		{
 			return num_lhs;
 		}
@@ -447,7 +447,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual inline int32_t get_num_vec_rhs()
+		virtual int32_t get_num_vec_rhs()
 		{
 			return num_rhs;
 		}
@@ -456,7 +456,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual inline bool has_features()
+		virtual bool has_features()
 		{
 			return lhs && rhs;
 		}
