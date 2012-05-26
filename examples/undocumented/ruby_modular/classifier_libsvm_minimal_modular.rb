@@ -25,7 +25,7 @@ kernel = Modshogun::GaussianKernel.new feats_train, feats_train, @width
 puts "labeling stuff"
 labels = Modshogun::BinaryLabels.new
 labels.set_labels trainlab
-svm = Modshogun::BinaryLibSVM.new C, kernel, labels
+svm = Modshogun::LibSVM.new C, kernel, labels
 svm.train
 
 puts "the grand finale"
