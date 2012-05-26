@@ -380,6 +380,7 @@ namespace shogun
 
 /* Include Class Headers to make them visible from within the target language */
 /* Template Class DynamicArray */
+%feature("director") DynamicArray::dset_element;
 %include <shogun/lib/DynamicArray.h>
 %include <shogun/base/DynArray.h>
 namespace shogun

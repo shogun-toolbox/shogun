@@ -365,6 +365,12 @@ template <class T> class CDynamicArray :public CSGObject
 			return m_array.set_element(e, idx1+dim1_size*(idx2+dim2_size*idx3));
 		}
 
+		/** director setter */
+		virtual bool dset_element(T e, int32_t idx1, int32_t idx2=0, int32_t idx3=0)
+		{
+			return set_element(e, idx1, idx2, idx3);
+		}
+
 		/** insert array element at index
 		 *
 		 * @param e element to insert
