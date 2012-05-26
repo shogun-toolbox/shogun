@@ -15,7 +15,7 @@ def classifier_custom_kernel_modular(c=1,dim=7)
     
 	kernel=Modshogun::CustomKernel.new
 	kernel.set_full_kernel_matrix_from_full(data)
-	labels=Modshogun::Labels.new(lab)
+	labels=Modshogun::BinaryLabels.new(lab)
 	svm=Modshogun::LibSVM.new(c, kernel, labels)
 	svm.train()
 	predictions =svm.apply() 
