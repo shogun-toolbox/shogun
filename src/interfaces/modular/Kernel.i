@@ -34,6 +34,7 @@
 %rename(CircularKernel) CCircularKernel;
 %rename(Chi2Kernel) CChi2Kernel;
 %rename(CombinedKernel) CCombinedKernel;
+%rename(ProductKernel) CProductKernel;
 %rename(CommUlongStringKernel) CCommUlongStringKernel;
 %rename(CommWordStringKernel) CCommWordStringKernel;
 %rename(ConstKernel) CConstKernel;
@@ -146,6 +147,7 @@ namespace shogun
 %include <shogun/kernel/CircularKernel.h>
 %include <shogun/kernel/Chi2Kernel.h>
 %include <shogun/kernel/CombinedKernel.h>
+%include <shogun/kernel/ProductKernel.h>
 %include <shogun/kernel/CommUlongStringKernel.h>
 %include <shogun/kernel/CommWordStringKernel.h>
 %include <shogun/kernel/ConstKernel.h>
