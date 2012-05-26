@@ -106,7 +106,8 @@ enum EKernelType
 	K_DISTANTSEGMENTS = 450,
 	K_BESSEL = 460,
 	K_JENSENSHANNON = 470,
-	K_DIRECTOR = 480
+	K_DIRECTOR = 480,
+	K_PRODUCT = 490
 };
 
 /** kernel property */

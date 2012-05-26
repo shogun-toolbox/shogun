@@ -10,6 +10,7 @@
 #include <shogun/kernel/CauchyKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/ProductKernel.h>
 #include <shogun/kernel/CommUlongStringKernel.h>
 #include <shogun/kernel/CommWordStringKernel.h>
 #include <shogun/kernel/CircularKernel.h>
