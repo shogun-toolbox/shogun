@@ -1,5 +1,11 @@
 import numpy
-from shogun.Kernel import DirectorKernel
+try:
+	from shogun.Kernel import DirectorKernel
+except ImportError:
+	print "recompile shogun with --enable-swig-directors"
+	import sys
+	sys.exit(0)
+
 
 class DirectorLinearKernel(DirectorKernel):
 	def __init__(self):
