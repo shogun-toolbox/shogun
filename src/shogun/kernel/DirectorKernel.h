@@ -40,7 +40,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		/** default constructor
 		 *
 		 */
-		virtual ~CDirectorKernel()
+		virtual ~CDirectorKernel()	
 		{
 			cleanup();
 		}
@@ -53,12 +53,44 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
-			return false;
+			return CKernel::init(l, r);
 		}
 
-		/** clean up kernel */
+		/** set the current kernel normalizer
+		 *
+		 * @return if successful
+		 */
+		virtual bool set_normalizer(CKernelNormalizer* normalizer)
+		{
+			return CKernel::set_normalizer(normalizer);
+		}
+
+		/** obtain the current kernel normalizer
+		 *
+		 * @return the kernel normalizer
+		 */
+		virtual CKernelNormalizer* get_normalizer()
+		{
+			return CKernel::get_normalizer();
+		}
+
+		/** initialize the current kernel normalizer
+		 *  @return if init was successful
+		 */
+		virtual bool init_normalizer()
+		{
+			return CKernel::init_normalizer();
+		}
+
+		/** clean up your kernel
+		 *
+		 * base method only removes lhs and rhs
+		 * overload to add further cleanup but make sure CKernel::cleanup() is
+		 * called
+		 */
 		virtual void cleanup()
 		{
+			CKernel::cleanup();
 		}
 
 		virtual float64_t kernel_function(int32_t idx_a, int32_t idx_b)
@@ -67,32 +99,67 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 			return 0;
 		}
 
+		/** get number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
+		virtual int32_t get_num_vec_lhs()
+		{
+			return CKernel::get_num_vec_lhs();
+		}
+
+		/** get number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
+		virtual int32_t get_num_vec_rhs()
+		{
+			return CKernel::get_num_vec_rhs();
+		}
+
+		/** set number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
 		virtual void set_num_vec_lhs(int32_t num)
 		{
 			num_lhs=num;
 		}
 
+		/** set number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
 		virtual void set_num_vec_rhs(int32_t num)
 		{
 			num_rhs=num;
 		}
 		
+		/** test whether features have been assigned to lhs and rhs
+		 *
+		 * @return true if features are assigned
+		 */
 		virtual bool has_features()
 		{
-			return true;
+			return CKernel::has_features();
 		}
 
-		SGMatrix<float64_t> get_km()
+		/** remove lhs and rhs from kernel */
+		virtual void remove_lhs_and_rhs()
 		{
-			SGMatrix<float64_t> km(num_lhs, num_rhs);
+			CKernel::remove_lhs_and_rhs();
+		}
 
-			for (int32_t i=0; i<num_lhs; i++)
-			{
-				for (int32_t j=0; j<num_rhs; j++)
-					km[j*num_rhs+i]=kernel(i,j);
-			}
+		/** remove lhs from kernel */
+		virtual void remove_lhs()
+		{
+			CKernel::remove_lhs();
+		}
 
-			return km;
+		/** remove rhs from kernel */
+		virtual void remove_rhs()
+		{
+			CKernel::remove_rhs();
 		}
 
 		/** return what type of kernel we are
@@ -137,26 +204,6 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		{
 			CKernel::set_subkernel_weights(weights);
 		}
-
-		/**
-		 * get row i
-		 *
-		 * @return the ith row of the kernel matrix
-		 */
-		virtual SGVector<float64_t> get_kernel_row(int32_t i)
-		{
-			return CKernel::get_kernel_row(i);
-		}
-
-		/**
-		 * get column j
-		 *
-		 * @return the jth column of the kernel matrix
-		 */
-		virtual SGVector<float64_t> get_kernel_col(int32_t j)
-        {
-			return CKernel::get_kernel_col(j);
-        }
 
 	protected:
 		/** creates a new TParameter instance, which contains migrated data from
