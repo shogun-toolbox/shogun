@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from shogun.Features import Labels, RealFeatures
+from shogun.Features import RegressionLabels, RealFeatures
 from shogun.Regression import LeastAngleRegression, LinearRidgeRegression, LeastSquaresRegression
 
 # we compare LASSO with ordinary least-squares (OLE)
@@ -43,7 +43,7 @@ y -= np.mean(y)
 
 # train LASSO
 LeastAngleRegression = LeastAngleRegression()
-LeastAngleRegression.set_labels(Labels(y))
+LeastAngleRegression.set_labels(RegressionLabels(y))
 LeastAngleRegression.train(RealFeatures(X.T))
 
 # train ordinary LSR
@@ -52,7 +52,7 @@ if use_ridge:
     lsr.train()
 else:
     lsr = LeastSquaresRegression()
-    lsr.set_labels(Labels(y))
+    lsr.set_labels(RegressionLabels(y))
     lsr.train(RealFeatures(X.T))
 
 # gather LASSO path

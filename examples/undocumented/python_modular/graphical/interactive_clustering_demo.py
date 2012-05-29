@@ -98,7 +98,7 @@ class Form(QMainWindow):
         # train svm
         labels = self.data.get_labels()
         print type(labels)
-        lab = Labels(labels)
+        lab = BinaryLabels(labels)
         features = self.data.get_examples()
         train = RealFeatures(features)
 

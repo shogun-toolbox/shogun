@@ -11,7 +11,7 @@ X, Y=util.get_sinedata()
 width=1
 
 feat=RealFeatures(X)
-lab=Labels(Y.flatten())
+lab=RegressionLabels(Y.flatten())
 gk=GaussianKernel(feat, feat, width)
 krr=KernelRidgeRegression()
 krr.set_labels(lab)
@@ -23,7 +23,7 @@ plot(X, Y, '.', label='train data')
 plot(X[0], krr.apply().get_labels(), hold=True, label='train output')
 
 XE, YE=util.compute_output_plot_isolines_sine(krr, gk, feat)
-YE200=krr.apply(200)
+YE200=krr.apply_one(200)
 
 plot(XE[0], YE, hold=True, label='test output')
 plot([XE[0,200]], [YE200], '+', hold=True)

@@ -4,7 +4,7 @@ import pylab
 from numpy import ones, array, double, meshgrid, reshape, linspace, \
 	concatenate, ravel, pi, sinc
 from numpy.random import randn, rand
-from shogun.Features import Labels, RealFeatures, SparseRealFeatures
+from shogun.Features import BinaryLabels, RegressionLabels, RealFeatures, SparseRealFeatures
 
 QUITKEY='q'
 NUM_EXAMPLES=100
@@ -42,17 +42,21 @@ def get_realfeatures(pos, neg):
 	return RealFeatures(features)
 
 
-def get_labels(raw=False):
+def get_labels(raw=False, type='binary'):
 	data = concatenate(array(
 		(-ones(NUM_EXAMPLES, dtype=double), ones(NUM_EXAMPLES, dtype=double))
 	))
 	if raw:
 		return data
 	else:
-		return Labels(data)
+		if type == 'binary':
+			return BinaryLabels(data)
+		if type == 'regression':
+			return RegressionLabels(data)
+		return None
 
 
-def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=False, pos=None, neg=None):
+def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=False, pos=None, neg=None, regression=False):
 	size=100
 	if pos is not None and neg is not None:
 		x1_max=max(1.2*pos[0,:])
@@ -79,7 +83,11 @@ def compute_output_plot_isolines(classifier, kernel=None, train=None, sparse=Fal
 	else:
 		classifier.set_features(test)
 
-	labels=classifier.apply().get_labels()
+	labels = None
+	if regression:
+		labels=classifier.apply().get_labels()
+	else:
+		labels=classifier.apply().get_confidences()
 	z=labels.reshape((size, size))
 
 	return x, y, z
@@ -98,6 +106,6 @@ def compute_output_plot_isolines_sine(classifier, kernel, train):
 	x.sort()
 	test=RealFeatures(x)
 	kernel.init(train, test)
-	y=classifier.apply().get_labels()
+	y=classifier.apply().get_confidences()
 
 	return x, y
