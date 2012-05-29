@@ -494,6 +494,17 @@ class CMath : public CSGObject
 		}
 
 #ifdef HAVE_LAPACK
+		/** compute eigenvalues and eigenvectors of symmetric matrix using
+		 * LAPACK
+		 *
+		 * @param matrix symmetric matrix to compute eigenproblem. Is
+		 * overwritten and contains orthonormal eigenvectors afterwards
+		 * @return eigenvalues vector with eigenvalues equal to number of rows
+		 * in matrix
+		 * */
+		static SGVector<float64_t> compute_eigenvectors(
+				SGMatrix<float64_t> matrix);
+
 		/** compute eigenvalues and eigenvectors of symmetric matrix
 		 *
 		 * @param matrix  overwritten and contains n orthonormal eigenvectors
