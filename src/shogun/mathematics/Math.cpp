@@ -546,6 +546,22 @@ void CMath::inverse(SGMatrix<float64_t> matrix)
 	SG_FREE(ipiv);
 }
 
+SGVector<float64_t> CMath::compute_eigenvectors(SGMatrix<float64_t> matrix)
+{
+	if (matrix.num_rows!=matrix.num_rows)
+	{
+		SG_SERROR("CMath::compute_eigenvectors(SGMatrix<float64_t>): matrix"
+				" rows and columns are not equal!\n");
+	}
+
+	/* use reference counting for SGVector */
+	SGVector<float64_t> result(NULL, 0, true);
+	result.vlen=matrix.num_rows;
+	result.vector=compute_eigenvectors(matrix.matrix, matrix.num_rows,
+			matrix.num_rows);
+	return result;
+}
+
 double* CMath::compute_eigenvectors(double* matrix, int n, int m)
 {
 	ASSERT(n == m);
