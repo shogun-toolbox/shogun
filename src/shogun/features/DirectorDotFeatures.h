@@ -12,6 +12,9 @@
 #ifndef _DIRECTORDOTFEATURES_H___
 #define _DIRECTORDOTFEATURES_H___
 
+#include <shogun/lib/config.h>
+
+#ifdef USE_SWIG_DIRECTORS
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DotFeatures.h>
@@ -374,4 +377,5 @@ class CDirectorDotFeatures : public CDotFeatures
 		inline virtual const char* get_name() const { return "DirectorDotFeatures"; }
 };
 }
+#endif // USE_SWIG_DIRECTORS
 #endif // _DIRECTORDOTFEATURES_H___

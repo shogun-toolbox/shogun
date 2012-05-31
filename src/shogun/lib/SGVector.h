@@ -88,7 +88,7 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 		/** clone vector */
-		SGVector<T> clone()
+		SGVector<T> clone() const
 		{
 			return SGVector<T>(clone_vector(vector, vlen), vlen);
 		}
@@ -200,6 +200,31 @@ template<class T> class SGVector : public SGReferencedData
 		inline T& operator[](index_t index)
 		{
 			return vector[index];
+		}
+
+		void add(const SGVector<T> x)
+		{
+			ASSERT(x.vector && vector);
+			ASSERT(x.vlen == vlen);
+
+			for (int32_t i=0; i<vlen; i++)
+				vector[i]+=x.vector[i];
+		}
+
+		SGVector<T> operator+ (SGVector<T> x)
+		{
+			ASSERT(x.vector && vector);
+			ASSERT(x.vlen == vlen);
+
+			SGVector<T> result=clone();
+			result.add(x);
+			return result;
+		}
+
+		SGVector<T> operator+= (SGVector<T> x)
+		{
+			add(x);
+			return *this;
 		}
 
 		/** display array size */
