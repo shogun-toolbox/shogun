@@ -41,28 +41,28 @@ static bool array_is_contiguous(PyObject* a) { return PyArray_ISCONTIGUOUS(a); }
  */
 static const char* typecode_string(PyObject* py_obj) {
   if (py_obj == NULL          ) return "C NULL value";
-  if (PyCallable_Check(py_obj)) return "callable"    ;
+  if (PyCallable_Check(py_obj)) return "callable";
 
 #if PY_VERSION_HEX >= 0x03000000
-  if (PyUnicode_Check( py_obj)) return "unicode"	 ;
+  if (PyUnicode_Check( py_obj)) return "unicode";
 #else
-  if (PyString_Check(  py_obj)) return "string"      ;
+  if (PyString_Check(  py_obj)) return "string";
 #endif  
 
 #if PY_VERSION_HEX >= 0x03000000
-  if (PyLong_Check(    py_obj)) return "int"		 ;
+  if (PyLong_Check(    py_obj)) return "int";
 #else
-  if (PyInt_Check(     py_obj)) return "int"         ;
+  if (PyInt_Check(     py_obj)) return "int";
 #endif  
-  if (PyFloat_Check(   py_obj)) return "float"       ;
-  if (PyDict_Check(    py_obj)) return "dict"        ;
-  if (PyList_Check(    py_obj)) return "list"        ;
-  if (PyTuple_Check(   py_obj)) return "tuple"       ;
-  if (PyModule_Check(  py_obj)) return "module"      ;
+  if (PyFloat_Check(   py_obj)) return "float";
+  if (PyDict_Check(    py_obj)) return "dict";
+  if (PyList_Check(    py_obj)) return "list";
+  if (PyTuple_Check(   py_obj)) return "tuple";
+  if (PyModule_Check(  py_obj)) return "module";
 
 #if PY_VERSION_HEX < 0x03000000
-  if (PyFile_Check(    py_obj)) return "file"        ;
-  if (PyInstance_Check(py_obj)) return "instance"    ;
+  if (PyFile_Check(    py_obj)) return "file";
+  if (PyInstance_Check(py_obj)) return "instance";
 #endif
 
   return "unknown type";
@@ -567,7 +567,7 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
 
     /* get array dimensions */
 #if PY_VERSION_HEX >= 0x03000000
-	int32_t num_feat=PyLong_AsLong(PyTuple_GetItem(shape, 0));
+    int32_t num_feat=PyLong_AsLong(PyTuple_GetItem(shape, 0));
     int32_t num_vec=PyLong_AsLong(PyTuple_GetItem(shape, 1));
 #else
     int32_t num_feat=PyInt_AsLong(PyTuple_GetItem(shape, 0));
@@ -781,11 +781,10 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 
 %typemap(in) const char* 
 {
-	if(PyUnicode_Check($input))
-	{
+	if (PyUnicode_Check($input))
     	$1 = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>($input)));
-	}
-	else { SWIG_fail; }
+    else
+        SWIG_fail;
 }
 
 %typemap(freearg) const char* 
