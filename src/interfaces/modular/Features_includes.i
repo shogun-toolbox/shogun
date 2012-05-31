@@ -7,6 +7,7 @@
 #include <shogun/features/StreamingStringFeatures.h>
 #include <shogun/features/StringFileFeatures.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/features/DirectorDotFeatures.h>
 #include <shogun/features/BinnedDotFeatures.h>
 #include <shogun/features/StreamingDotFeatures.h>
 #include <shogun/features/SparseFeatures.h>
