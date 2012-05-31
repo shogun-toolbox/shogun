@@ -20,6 +20,15 @@
 /* These functions return new Objects */
 %newobject get_transposed();
 
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorDotFeatures;
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+#endif
+
 /* Remove C Prefix */
 %rename(Alphabet) CAlphabet;
 %rename(Features) CFeatures;
