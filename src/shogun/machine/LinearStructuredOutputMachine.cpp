@@ -50,4 +50,5 @@ CFeatures* CLinearStructuredOutputMachine::get_features() const
 void CLinearStructuredOutputMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_features, "m_features", "Feature object", MS_NOT_AVAILABLE);
+	SG_ADD(&m_w, "m_w", "Weight vector", MS_NOT_AVAILABLE);
 }

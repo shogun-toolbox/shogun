@@ -62,6 +62,10 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		/** feature vectors */
 		CFeatures* m_features;
 
+	protected:
+		/** weight vector */
+		SGVector< float64_t > m_w;
+
 }; /* class CLinearStructuredOutputMachine */
 
 } /* namespace shogun */
