@@ -4145,9 +4145,9 @@ test_octave()
 	if test "$_octave_static" != no || test "$_octave_modular" != no
 	then
 		echocheck "Octave"
-		if echo version | octave --no-history >/dev/null 2>&1
+		if octave --version >/dev/null 2>&1
 		then
-			_octave_version="`echo version | octave --no-history 2>&1 | grep ans | cut -f 3- -d ' '`"
+			_octave_version="`octave --version 2>&1 | grep version | cut -f 4- -d ' '`"
 			if test "`echo $_octave_version | cut -f 1 -d '.'`" -ge 3
 			then
 				echores "$_octave_version"
