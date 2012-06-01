@@ -55,26 +55,36 @@ void CStructuredModel::set_features(CFeatures* feats)
 	m_features = feats;
 }
 
-SGVector< float64_t > CStructuredModel::compute_combined_feature(int32_t feat_idx, int32_t lab_idx)
+/** TODO */
+SGVector< float64_t > CStructuredModel::compute_joint_feature(
+		int32_t feat_idx, 
+		int32_t lab_idx)
 {
-	return m_compute_combined_feature(m_features, m_labels, feat_idx, lab_idx);
+	SG_ERROR("CStructuredModel::compute_combined_feature not implemented "
+		 "yet");
+	return SGVector< float64_t >();
 }
 
 CResultSet* CStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 {
-	return m_argmax(m_features, m_labels, w, feat_idx);
+	return m_argmax->argmax(m_features, feat_idx, m_labels, w);
 }
 
 
-float64_t CStructuredModel::compute_delta_loss(CStructuredLabels* labels, CStructuredData ypred, int32_t ytrue_id)
+float64_t CStructuredModel::compute_delta_loss(
+		CStructuredLabels* labels, 
+		int32_t ytrue_id, 
+		CStructuredData ypred)
 {
-	return m_compute_delta_loss(labels, ypred, ytrue_id);
+	return m_loss->loss(labels, ytrue_id, ypred);
 }
 
 void CStructuredModel::init()
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels", 
+			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", 
+			MS_NOT_AVAILABLE);
 	//TODO add rest of members when function pointers removed
 
 	m_features = NULL;
