@@ -16,6 +16,7 @@
 %rename(GaussianProcessRegression) CGaussianProcessRegression;
 %rename(LeastAngleRegression) CLeastAngleRegression;
 %rename(LibSVR) CLibSVR;
+%rename(LibLinearRegression) CLibLinearRegression;
 %rename(MKL) CMKL;
 %rename(MKLRegression) CMKLRegression;
 #ifdef USE_SVMLIGHT
@@ -30,6 +31,7 @@
 %include <shogun/regression/GaussianProcessRegression.h>
 %include <shogun/regression/LeastAngleRegression.h>
 %include <shogun/regression/svr/LibSVR.h>
+%include <shogun/regression/svr/LibLinearRegression.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/regression/svr/MKLRegression.h>
 

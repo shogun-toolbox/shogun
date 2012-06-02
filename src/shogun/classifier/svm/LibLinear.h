@@ -36,7 +36,9 @@ namespace shogun
 		/// L1 regularized SVM with L2-loss using dual coordinate descent
 		L1R_L2LOSS_SVC,
 		/// L1 regularized logistic regression
-		L1R_LR
+		L1R_LR,
+		/// L2 regularized linear logistic regression via dual
+		L2R_LR_DUAL
 	};
 
 #ifdef HAVE_LAPACK
