@@ -733,9 +733,9 @@ test_ruby()
 cat >$TMPRUBY << EOF
 require('mkmf')
 if RUBY_VERSION[0,3] == '1.8'
-puts "-I#{RbConfig::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
+	puts "-I#{RbConfig::expand(CONFIG['vendorlibdir'])}/#{RbConfig::expand(CONFIG['arch'])} -I#{RbConfig::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
 else
-puts "-I#{RbConfig::expand(CONFIG['vendorlibdir'])}/#{RbConfig::expand(CONFIG['arch'])} -I#{RbConfig::expand(CONFIG['archdir'])} -I#{RbConfig::expand(CONFIG['rubyhdrdir'])} -I#{RbConfig::expand(CONFIG['rubyhdrdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
+	puts "-I#{RbConfig::expand(CONFIG['vendorlibdir'])}/#{RbConfig::expand(CONFIG['arch'])} -I#{RbConfig::expand(CONFIG['archdir'])} -I#{RbConfig::expand(CONFIG['rubyhdrdir'])} -I#{RbConfig::expand(CONFIG['rubyhdrdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['rubyhdrdir']
 end
 EOF
 		echocheck "Ruby Developer Files"
@@ -759,21 +759,13 @@ EOF
 
 cat >$TMPRUBY << EOF
 require('mkmf')
-if RUBY_VERSION[0,3] == '1.8'
-	puts "#{RbConfig::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
-else
-	puts "#{RbConfig::expand(CONFIG['rubylibdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['rubylibdir']
-end
+puts "#{RbConfig::expand(CONFIG['rubylibdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['rubylibdir']
 EOF
 			RUBY_LIBRARY_DIR=`$RUBY "$TMPRUBY" 2>/dev/null`
 
 cat >$TMPRUBY << EOF
 require('mkmf')
-if RUBY_VERSION[0,3] == '1.8'
-	puts "#{RbConfig::expand(CONFIG["archdir"])}" if CONFIG["archdir"]
-else
-	puts "#{RbConfig::expand(CONFIG['vendorlibdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['vendorlibdir']
-end
+puts "#{RbConfig::expand(CONFIG['vendorlibdir'])}/#{RbConfig::expand(CONFIG['arch'])}" if CONFIG['vendorlibdir']
 EOF
 			RUBY_VENDOR_LIBRARY_DIR=`$RUBY "$TMPRUBY" 2>/dev/null`
 			RUBY_EXTENSIONS_INSTALL_DIR=$_libdir/$_rubydir/`$RUBY -e 'require "mkmf"; puts RbConfig::expand("$(ruby_version)") + "/" + RbConfig::expand("$(arch)")'`
@@ -817,7 +809,7 @@ int main(void)
 {
 	VALUE cNArray;
     volatile VALUE obj;
-    VALUE x = NULL; //na_make_scalar(obj, NA_DFLOAT);
+    VALUE x = na_make_scalar(obj, NA_DFLOAT);
     return IsNArray(x) ? 1 : 0;
 }
 EOF
@@ -833,11 +825,9 @@ EOF
 		fi
 
 		echocheck "Ruby NArray Developer Files"
-		if cc_check $INCLUDES_RUBY $POSTLINKFLAGS_RUBY && test -f $NARRAY
+		if cc_check $INCLUDES_RUBY $POSTLINKFLAGS_RUBY $NARRAY && test -f $NARRAY
 		then
 			echores "yes"
-			DEFINES="$DEFINES -DHAVE_RUBY_NARRAY"
-			HAVE_NARRAY='#define HAVE_RUBY_NARRAY 1'
 			NARRAY_LIB="#define NARRAY_LIB \"$NARRAY\""
 		else
 			if test "$_ruby_modular" = yes
@@ -4898,7 +4888,6 @@ $HAVE_SQRTL
 $HAVE_LOG2
 $HAVE_JBLAS
 $HAVE_UJMP
-$HAVE_RUBY_NARRAY
 $USE_SPINLOCKS
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
