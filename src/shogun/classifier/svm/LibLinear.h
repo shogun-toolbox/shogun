@@ -175,6 +175,7 @@ class CLibLinear : public CLinearMachine
 
 		void solve_l1r_l2_svc(problem *prob_col, double eps, double Cp, double Cn);
 		void solve_l1r_lr(const problem *prob_col, double eps, double Cp, double Cn);
+		void solve_l2r_lr_dual(const problem *prob, double eps, double Cp, double Cn);
 
 
 	protected:

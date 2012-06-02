@@ -136,10 +136,21 @@ bool CLibLinear::train_machine(CFeatures* data)
 	prob.l=num_vec;
 	prob.x=features;
 	prob.y=SG_MALLOC(int, prob.l);
+	float64_t* Cs=SG_MALLOC(double, prob.l);
 	prob.use_bias=use_bias;
+	double Cp=C1;
+	double Cn=C2;
 
 	for (int32_t i=0; i<prob.l; i++)
+	{
 		prob.y[i]=((CBinaryLabels*) m_labels)->get_int_label(i);
+		if (prob.y[i] == +1)
+			Cs[i]=C1;
+		else if (prob.y[i] == -1)
+			Cs[i]=C2;
+		else
+			SG_ERROR("labels should be +1/-1 only\n");
+	}
 
 	int pos = 0;
 	int neg = 0;
@@ -153,13 +164,11 @@ bool CLibLinear::train_machine(CFeatures* data)
 	SG_INFO("%d training points %d dims\n", prob.l, prob.n);
 
 	function *fun_obj=NULL;
-	double Cp=C1;
-	double Cn=C2;
 	switch (liblinear_solver_type)
 	{
 		case L2R_LR:
 		{
-			fun_obj=new l2r_lr_fun(&prob, Cp, Cn);
+			fun_obj=new l2r_lr_fun(&prob, Cs);
 			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
 			SG_DEBUG("starting L2R_LR training via tron\n");
 			tron_obj.tron(w.vector, m_max_train_time);
@@ -169,7 +178,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		}
 		case L2R_L2LOSS_SVC:
 		{
-			fun_obj=new l2r_l2_svc_fun(&prob, Cp, Cn);
+			fun_obj=new l2r_l2_svc_fun(&prob, Cs);
 			CTron tron_obj(fun_obj, epsilon*CMath::min(pos,neg)/prob.l, max_iterations);
 			tron_obj.tron(w.vector, m_max_train_time);
 			delete fun_obj;
@@ -193,6 +202,11 @@ bool CLibLinear::train_machine(CFeatures* data)
 			solve_l1r_lr(&prob, epsilon*CMath::min(pos,neg)/prob.l, Cp, Cn);
 			break;
 		}
+		case L2R_LR_DUAL:
+		{
+			solve_l2r_lr_dual(&prob, epsilon, Cp, Cn);
+			break;
+		}
 		default:
 			SG_ERROR("Error: unknown solver_type\n");
 			break;
@@ -204,6 +218,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		set_bias(0);
 
     SG_FREE(prob.y);
+    SG_FREE(Cs);
 
 	return true;
 }
@@ -1130,6 +1145,187 @@ void CLibLinear::solve_l1r_lr(
 	SG_FREE(xjneg_sum);
 	SG_FREE(xjpos_sum);
 }
+
+// A coordinate descent algorithm for 
+// the dual of L2-regularized logistic regression problems
+//
+//  min_\alpha  0.5(\alpha^T Q \alpha) + \sum \alpha_i log (\alpha_i) + (upper_bound_i - \alpha_i) log (upper_bound_i - \alpha_i),
+//    s.t.      0 <= \alpha_i <= upper_bound_i,
+// 
+//  where Qij = yi yj xi^T xj and 
+//  upper_bound_i = Cp if y_i = 1
+//  upper_bound_i = Cn if y_i = -1
+//
+// Given: 
+// x, y, Cp, Cn
+// eps is the stopping tolerance
+//
+// solution will be put in w
+//
+// See Algorithm 5 of Yu et al., MLJ 2010
+
+#undef GETI
+#define GETI(i) (y[i]+1)
+// To support weights for instances, use GETI(i) (i)
+
+void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, double Cn)
+{
+	int l = prob->l;
+	int w_size = prob->n;
+	int i, s, iter = 0;
+	double *xTx = new double[l];
+	int max_iter = 1000;
+	int *index = new int[l];		
+	double *alpha = new double[2*l]; // store alpha and C - alpha
+	int32_t *y = SG_MALLOC(int32_t, l);
+	int max_inner_iter = 100; // for inner Newton
+	double innereps = 1e-2; 
+	double innereps_min = CMath::min(1e-8, eps);
+	double upper_bound[3] = {Cn, 0, Cp};
+	double Gmax_init = 0;
+
+	for(i=0; i<l; i++)
+	{
+		if(prob->y[i] > 0)
+		{
+			y[i] = +1; 
+		}
+		else
+		{
+			y[i] = -1;
+		}
+	}
+		
+	// Initial alpha can be set here. Note that
+	// 0 < alpha[i] < upper_bound[GETI(i)]
+	// alpha[2*i] + alpha[2*i+1] = upper_bound[GETI(i)]
+	for(i=0; i<l; i++)
+	{
+		alpha[2*i] = CMath::min(0.001*upper_bound[GETI(i)], 1e-8);
+		alpha[2*i+1] = upper_bound[GETI(i)] - alpha[2*i];
+	}
+
+	for(i=0; i<w_size; i++)
+		w[i] = 0;
+	for(i=0; i<l; i++)
+	{
+		xTx[i] = prob->x->dot(i, prob->x,i);
+		prob->x->add_to_dense_vec(y[i]*alpha[2*i], i, w.vector, w_size);
+
+		if (prob->use_bias)
+		{
+			w.vector[w_size]+=y[i]*alpha[2*i];
+			xTx[i]+=1;
+		}
+		index[i] = i;
+	}
+
+	while (iter < max_iter)
+	{
+		for (i=0; i<l; i++)
+		{
+			int j = i+rand()%(l-i);
+			CMath::swap(index[i], index[j]);
+		}
+		int newton_iter = 0;
+		double Gmax = 0;
+		for (s=0; s<l; s++)
+		{
+			i = index[s];
+			int32_t yi = y[i];
+			double C = upper_bound[GETI(i)];
+			double ywTx = 0, xisq = xTx[i];
+
+			ywTx = prob->x->dense_dot(i, w.vector, w_size);
+			if (prob->use_bias)
+				ywTx+=w.vector[w_size];
+
+			ywTx *= y[i];
+			double a = xisq, b = ywTx;
+
+			// Decide to minimize g_1(z) or g_2(z)
+			int ind1 = 2*i, ind2 = 2*i+1, sign = 1;
+			if(0.5*a*(alpha[ind2]-alpha[ind1])+b < 0) 
+			{
+				ind1 = 2*i+1;
+				ind2 = 2*i;
+				sign = -1;
+			}
+
+			//  g_t(z) = z*log(z) + (C-z)*log(C-z) + 0.5a(z-alpha_old)^2 + sign*b(z-alpha_old)
+			double alpha_old = alpha[ind1];
+			double z = alpha_old;
+			if(C - z < 0.5 * C) 
+				z = 0.1*z;
+			double gp = a*(z-alpha_old)+sign*b+CMath::log(z/(C-z));
+			Gmax = CMath::max(Gmax, CMath::abs(gp));
+
+			// Newton method on the sub-problem
+			const double eta = 0.1; // xi in the paper
+			int inner_iter = 0;
+			while (inner_iter <= max_inner_iter) 
+			{
+				if(fabs(gp) < innereps)
+					break;
+				double gpp = a + C/(C-z)/z;
+				double tmpz = z - gp/gpp;
+				if(tmpz <= 0) 
+					z *= eta;
+				else // tmpz in (0, C)
+					z = tmpz;
+				gp = a*(z-alpha_old)+sign*b+log(z/(C-z));
+				newton_iter++;
+				inner_iter++;
+			}
+
+			if(inner_iter > 0) // update w
+			{
+				alpha[ind1] = z;
+				alpha[ind2] = C-z;
+
+				prob->x->add_to_dense_vec(sign*(z-alpha_old)*yi, i, w.vector, w_size);
+
+				if (prob->use_bias)
+					w.vector[w_size]+=sign*(z-alpha_old)*yi;
+			}
+		}
+
+		iter++;
+		if(iter == 0)
+			Gmax_init = Gmax;
+
+		SG_SABS_PROGRESS(Gmax, -CMath::log10(Gmax), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6);
+
+		if(Gmax < eps) 
+			break;
+
+		if(newton_iter <= l/10) 
+			innereps = CMath::max(innereps_min, 0.1*innereps);
+
+	}
+
+	SG_DONE();
+	SG_INFO("optimization finished, #iter = %d\n",iter);
+	if (iter >= max_iter)
+		SG_WARNING("reaching max number of iterations\nUsing -s 0 may be faster (also see FAQ)\n\n");
+
+	// calculate objective value
+	
+	double v = 0;
+	for(i=0; i<w_size; i++)
+		v += w[i] * w[i];
+	v *= 0.5;
+	for(i=0; i<l; i++)
+		v += alpha[2*i] * log(alpha[2*i]) + alpha[2*i+1] * log(alpha[2*i+1]) 
+			- upper_bound[GETI(i)] * log(upper_bound[GETI(i)]);
+	SG_INFO("Objective value = %lf\n", v);
+
+	delete [] xTx;
+	delete [] alpha;
+	delete [] y;
+	delete [] index;
+}
+
 
 void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 {

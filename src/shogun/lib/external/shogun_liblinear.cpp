@@ -46,32 +46,21 @@
 
 using namespace shogun;
 
-l2r_lr_fun::l2r_lr_fun(const problem *p, float64_t Cp, float64_t Cn)
+l2r_lr_fun::l2r_lr_fun(const problem *p, float64_t* Cs)
 {
-	int i;
 	int l=p->l;
-	int *y=p->y;
 
 	this->prob = p;
 
 	z = SG_MALLOC(double, l);
 	D = SG_MALLOC(double, l);
-	C = SG_MALLOC(double, l);
-
-	for (i=0; i<l; i++)
-	{
-		if (y[i] == 1)
-			C[i] = Cp;
-		else
-			C[i] = Cn;
-	}
+	C = Cs;
 }
 
 l2r_lr_fun::~l2r_lr_fun()
 {
 	SG_FREE(z);
 	SG_FREE(D);
-	SG_FREE(C);
 }
 
 
@@ -172,33 +161,23 @@ void l2r_lr_fun::XTv(double *v, double *res_XTv)
 	}
 }
 
-l2r_l2_svc_fun::l2r_l2_svc_fun(const problem *p, double Cp, double Cn)
+l2r_l2_svc_fun::l2r_l2_svc_fun(const problem *p, double* Cs)
 {
-	int i;
 	int l=p->l;
-	int *y=p->y;
 
 	this->prob = p;
 
 	z = SG_MALLOC(double, l);
 	D = SG_MALLOC(double, l);
-	C = SG_MALLOC(double, l);
 	I = SG_MALLOC(int, l);
+	C=Cs;
 
-	for (i=0; i<l; i++)
-	{
-		if (y[i] == 1)
-			C[i] = Cp;
-		else
-			C[i] = Cn;
-	}
 }
 
 l2r_l2_svc_fun::~l2r_l2_svc_fun()
 {
 	SG_FREE(z);
 	SG_FREE(D);
-	SG_FREE(C);
 	SG_FREE(I);
 }
 

@@ -169,7 +169,7 @@ public:
 	 * @param Cp Cp
 	 * @param Cn Cn
 	 */
-	l2r_lr_fun(const problem *prob, float64_t Cp, float64_t Cn);
+	l2r_lr_fun(const problem *prob, float64_t* C);
 	~l2r_lr_fun();
 
 	/** fun
@@ -208,7 +208,7 @@ private:
 class l2r_l2_svc_fun : public function
 {
 public:
-	l2r_l2_svc_fun(const problem *prob, double Cp, double Cn);
+	l2r_l2_svc_fun(const problem *prob, float64_t* C);
 	~l2r_l2_svc_fun();
 
 	double fun(double *w);
