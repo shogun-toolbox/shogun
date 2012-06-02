@@ -20,6 +20,7 @@
 
 namespace shogun
 {
+#define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 {
 	public:

@@ -23,6 +23,7 @@ namespace shogun
 {
 /** @brief DirectorDotFeatures that support dot products among other operations and can be overloaded in modular interfaces.
  */
+#define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 {
 	public:
