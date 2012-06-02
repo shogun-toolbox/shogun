@@ -4,9 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009-2010 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Copyright (C) 2012 Soeren Sonnenburg
  */
 
 #ifndef _DIRECTORDOTFEATURES_H___

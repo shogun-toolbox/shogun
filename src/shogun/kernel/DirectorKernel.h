@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Soeren Sonnenburg
- * Copyright (C) 2011 Soeren Sonnenburg
+ * Copyright (C) 2012 Soeren Sonnenburg
+ * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
 #ifndef _DIRECTORKERNEL_H___
