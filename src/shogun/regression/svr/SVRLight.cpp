@@ -607,9 +607,6 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	// restore old weights
 	kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights));
 
-	SG_FREE(w_backup);
-	SG_FREE(w1);
-
 	call_mkl_callback(a, label, lin, c, totdoc);
 }
 
