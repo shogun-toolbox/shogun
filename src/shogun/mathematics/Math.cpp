@@ -305,6 +305,20 @@ SGMatrix<int32_t> CMath::create_identity_matrix(index_t size, int32_t scale)
 	return I;
 }
 
+template <>
+SGMatrix<float64_t> CMath::create_centering_matrix(index_t size)
+{
+	SGMatrix<float64_t> H=CMath::create_identity_matrix(size, 1.0);
+
+	float64_t subtract=1.0/size;
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<0; ++j)
+			H(i,j)-=subtract;
+	}
+
+	return H;
+}
 }
 
 SGVector<float64_t> CMath::fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables)
