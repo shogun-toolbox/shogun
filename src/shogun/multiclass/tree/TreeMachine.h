@@ -11,13 +11,13 @@
 #ifndef TREEMACHINE_H__
 #define TREEMACHINE_H__
 
-#include <shogun/machine/MulticlassMachine.h>
+#include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/multiclass/tree/TreeMachineNode.h>
 
 namespace shogun
 {
 
-class CTreeMachine: public CMulticlassMachine
+class CTreeMachine: public CBaseMulticlassMachine
 {
 public:
     /** constructor */
