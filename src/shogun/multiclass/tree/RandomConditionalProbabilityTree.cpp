@@ -8,18 +8,14 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
 
 using namespace shogun;
 
-
-bool CRandomConditionalProbabilityTree::train_machine(CFeatures* data)
+bool CRandomConditionalProbabilityTree::which_subtree(node_t *node, VwExample *ex)
 {
-	if (!data)
-		SG_ERROR("No data provided\n");
-	if (data->get_feature_class() != C_STREAMING_VW)
-		SG_ERROR("Expected StreamingVwFeatures\n");
-
-	
+	if (CMath::random(0.0, 1.0) > 0.5)
+		return true;
+	return false;
 }
-

@@ -29,17 +29,12 @@ public:
     virtual const char* get_name() const { return "RandomConditionalProbabilityTree"; }
 
 protected:
-	/** train machine
-	 *
-	 * @param data training data 
-	 *
-	 * @return whether training was successful
+	/** decide which subtree to go, when training the tree structure.
+	 * @param node the node being decided
+	 * @param ex the example being decided
+	 * @return true if should go left, false otherwise
 	 */
-	virtual bool train_machine(CFeatures* data);
-
-private:
-	/** to prevent compile error of class_list.cpp */
-	virtual void __placeholder__()=0;
+	virtual bool which_subtree(node_t *node, VwExample *ex);
 };
 
 } /* shogun */ 

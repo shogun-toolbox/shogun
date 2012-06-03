@@ -18,7 +18,8 @@ namespace shogun
 {
 
 template <typename data_t>
-class CTreeMachine: public CBaseMulticlassMachine
+class CTreeMachine
+	: public CBaseMulticlassMachine
 {
 public:
     /** constructor */
@@ -39,9 +40,6 @@ public:
 
 protected:
 	CTreeMachineNode<data_t> *m_root;
-
-	/** to prevent compile error of class_list.cpp */
-	virtual void __placeholder__()=0;
 };
 
 } /* shogun */ 
