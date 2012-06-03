@@ -266,6 +266,45 @@ void CMath::display_matrix(
 			name, prefix);
 }
 
+template <>
+SGMatrix<float64_t> CMath::create_identity_matrix(index_t size, float64_t scale)
+{
+	SGMatrix<float64_t> I(size, size);
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<size; ++j)
+			I(i,j)=i==j ? scale : 0.0;
+	}
+
+	return I;
+}
+
+template <>
+SGMatrix<float32_t> CMath::create_identity_matrix(index_t size, float32_t scale)
+{
+	SGMatrix<float32_t> I(size, size);
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<size; ++j)
+			I(i,j)=i==j ? scale : 0.0;
+	}
+
+	return I;
+}
+
+template <>
+SGMatrix<int32_t> CMath::create_identity_matrix(index_t size, int32_t scale)
+{
+	SGMatrix<int32_t> I(size, size);
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<size; ++j)
+			I(i,j)=i==j ? scale : 0;
+	}
+
+	return I;
+}
+
 }
 
 SGVector<float64_t> CMath::fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables)

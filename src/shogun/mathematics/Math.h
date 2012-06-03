@@ -493,6 +493,14 @@ class CMath : public CSGObject
 			}
 		}
 
+		/** returns the identity matrix, scaled by a factor
+		 *
+		 * @param size size of square idenity matrix
+		 * @param scale (optional) scaling factor
+		 */
+		template <class T>
+		static SGMatrix<T> create_identity_matrix(index_t size, T scale);
+
 #ifdef HAVE_LAPACK
 		/** compute eigenvalues and eigenvectors of symmetric matrix using
 		 * LAPACK
