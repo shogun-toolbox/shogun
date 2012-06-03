@@ -514,6 +514,19 @@ class CMath : public CSGObject
 		 * */
 		static double* compute_eigenvectors(double* matrix, int n, int m);
 
+		/* Computes scale* A*B, where A and B may be transposed.
+		 * Asserts for matching inner dimensions.
+		 * @param A matrix A
+		 * @param transpose_A optional whether A should be transposed before
+		 * @param B matrix B
+		 * @param transpose_B optional whether B should be transposed before
+		 * @param scale optional scaling factor for result
+		 */
+		static SGMatrix<float64_t> matrix_multiply(
+				SGMatrix<float64_t> A, SGMatrix<float64_t> B,
+				bool transpose_A=false, bool transpose_B=false,
+				float64_t scale=1.0);
+
 		/// inverses square matrix in-place
 		static void inverse(SGMatrix<float64_t> matrix);
 
@@ -1260,10 +1273,18 @@ class CMath : public CSGObject
 			const T* vector, int32_t n, const char* name="vector",
 			const char* prefix="");
 
+		template <class T> static void display_vector(
+			const SGVector<T>, const char* name="vector",
+			const char* prefix="");
+
 		/// display matrix (useful for debugging)
 		template <class T> static void display_matrix(
 			const T* matrix, int32_t rows, int32_t cols,
 			const char* name="matrix", const char* prefix="");
+
+		template <class T> static void display_matrix(
+			const SGMatrix<T> matrix, const char* name="matrix",
+			const char* prefix="");
 
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
