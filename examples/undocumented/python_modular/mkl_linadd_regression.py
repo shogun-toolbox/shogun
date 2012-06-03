@@ -60,7 +60,7 @@ def mkl_binclass_modular (fm_train_real=traindat,fm_test_real=testdat,fm_label_t
 
 	mkl.io.enable_file_and_line()
 	mkl.io.set_loglevel(MSG_DEBUG)
-	mkl.train()
+	#mkl.train()
 
 if __name__=='__main__':
 	mkl_binclass_modular (*parameter_list[0])
