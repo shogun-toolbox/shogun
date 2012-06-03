@@ -34,6 +34,9 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 			return "QuadraticTimeMMD";
 		};
 
+	protected:
+		SGVector<float64_t> sample_null_spectrum(index_t num_samples);
+
 	private:
 		void init();
 };
