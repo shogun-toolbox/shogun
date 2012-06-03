@@ -8,78 +8,95 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
-#include <shogun/lib/slep/slep_tree_lsr.h>
+#include <shogun/lib/slep/slep_tree_mt_lsr.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/slep/tree/altra.h>
 #include <shogun/lib/slep/tree/general_altra.h>
+#include <shogun/mathematics/lapack.h>
 
 namespace shogun
 {
 
-SGVector<double> slep_tree_lsr(
+SGMatrix<double> slep_tree_mt_lsr(
 		CDotFeatures* features,
 		double* y,
 		double z,
 		const slep_options& options)
 {
-	int i;
+	int i,j,t;
 	int n_feats = features->get_dim_feature_space();
 	int n_vecs = features->get_num_vectors();
 	double lambda, lambda_max, beta;
 	double funcp = 0.0, func = 0.0;
 
+	int n_tasks;
+
 	int iter = 1;
 	bool done = false;
 	bool gradient_break = false;
 
-	double* ATy = SG_CALLOC(double, n_feats);
-	for (i=0; i<n_vecs; i++)
-		features->add_to_dense_vec(y[i],i,ATy,n_feats);
+	double* ATy = SG_CALLOC(double, n_feats*n_tasks);
+	for (t=0; t<n_tasks; t++)
+	{
+		int task_ind_start = options.ind[t]+1;
+		int task_ind_end = options.ind[t+1];
+		for (i=task_ind_start; i<task_ind_end; i++)
+			features->add_to_dense_vec(y[i],i,ATy+t*n_feats,n_feats);
+	}
 
 	if (options.regularization!=0)
 	{
 		if (options.general)
-			lambda_max = findLambdaMax(ATy, n_vecs, options.ind, options.n_nodes);
+			lambda_max = findLambdaMax_mt(ATy, n_vecs, n_tasks, options.ind, options.n_nodes);
 		else
-			lambda_max = general_findLambdaMax(ATy, n_vecs, options.G, 
+			lambda_max = general_findLambdaMax_mt(ATy, n_vecs, n_tasks, options.G, 
 			                                   options.ind, options.n_nodes);
 		lambda = z*lambda_max;
 	}
 	else 
 		lambda = z;
 
-	SGVector<double> w(n_feats);
+	SGMatrix<double> w(n_feats,n_tasks);
 	if (options.initial_w)
 	{
-		for (i=0; i<n_feats; i++)
-			w[i] = options.initial_w[i];
+		for (j=0; j<n_tasks; j++)
+			for (i=0; i<n_feats; i++)
+				w(i,j) = options.initial_w[j*n_feats+i];
 	}
 	else
 	{
-		for (i=0; i<n_feats; i++)
-			w[i] = 0.0;
+		for (j=0; j<n_tasks*n_feats; j++)
+				w[j] = 0.0;
 	}
 
-	double* s = SG_CALLOC(double, n_feats);
-	double* g = SG_CALLOC(double, n_feats);
-	double* v = SG_CALLOC(double, n_feats);
+	double* s = SG_CALLOC(double, n_feats*n_tasks);
+	double* g = SG_CALLOC(double, n_feats*n_tasks);
+	double* v = SG_CALLOC(double, n_feats*n_tasks);
 
 	double* Aw = SG_CALLOC(double, n_vecs);
-	features->dense_dot_range(Aw,0,n_vecs,NULL,w.vector,n_feats,0.0);
+	for (t=0; t<n_tasks; t++)
+	{
+		int task_ind_start = options.ind[t]+1;
+		int task_ind_end = options.ind[t+1];
+		for (i=task_ind_start; i<task_ind_end; i++)
+			Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
+	}
 	double* Av = SG_MALLOC(double, n_vecs);
 	double* As = SG_MALLOC(double, n_vecs);
-	double* ATAs = SG_MALLOC(double, n_feats);
-	double* resid = SG_MALLOC(double, n_vecs);
+	double* ATAs = SG_MALLOC(double, n_feats*n_tasks);
+	double* resid = SG_MALLOC(double, n_vecs*n_tasks);
 
 	double L = 1.0;
 
-	double* wp = SG_CALLOC(double, n_feats);
-	for (i=0; i<n_feats; i++)
+	double* wp = SG_CALLOC(double, n_feats*n_tasks);
+	for (i=0; i<n_feats*n_tasks; i++)
 		wp[i] = w[i];
 	double* Awp = SG_MALLOC(double, n_vecs);
 	for (i=0; i<n_vecs; i++)
 		Awp[i] = Aw[i];
-	double* wwp = SG_CALLOC(double, n_feats);
+	double* wwp = SG_CALLOC(double, n_feats*n_tasks);
+
+	double* w_row = SG_MALLOC(double, n_tasks);
 
 	double alphap = 0.0;
 	double alpha = 1.0;
@@ -88,50 +105,66 @@ SGVector<double> slep_tree_lsr(
 	{
 		beta = (alphap-1.0)/alpha;
 
-		for (i=0; i<n_feats; i++)
+		for (i=0; i<n_feats*n_tasks; i++)
 			s[i] = w[i] + beta*wwp[i];
 
 		for (i=0; i<n_vecs; i++)
 			As[i] = Aw[i] + beta*(Aw[i]-Awp[i]);
 
 		// ATAs = A'*As
-		for (i=0; i<n_feats; i++)
+		for (i=0; i<n_feats*n_tasks; i++)
 			ATAs[i] = 0.0;
-		for (i=0; i<n_vecs; i++)
-			features->add_to_dense_vec(As[i],i,ATAs,n_feats);
+
+		for (t=0; t<n_tasks; t++)
+		{
+			int task_ind_start = options.ind[t]+1;
+			int task_ind_end = options.ind[t+1];
+			for (i=task_ind_start; i<task_ind_end; i++)
+				features->add_to_dense_vec(As[i],i,ATAs+t*n_feats,n_feats);
+		}
 		
 		// g = ATAs - ATy
-		for (i=0; i<n_feats; i++)
+		for (i=0; i<n_feats*n_tasks; i++)
 			g[i] = ATAs[i] - ATy[i];
 
-		for (i=0; i<n_feats; i++)
+		for (i=0; i<n_feats*n_tasks; i++)
 			wp[i] = w[i];
 
-		for (i=0; i<n_vecs; i++)
+		for (i=0; i<n_vecs*n_tasks; i++)
 			Awp[i] = Aw[i];
 
 		while (true)
 		{
 			// v = s - g / L
-			for (i=0; i<n_feats; i++)
+			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = s[i] - g[i]*(1.0/L);
 
 			if (options.general)
-				general_altra(w.vector, v, n_feats, options.G, options.ind, options.n_nodes, lambda/L);
+				general_altra_mt(w.matrix, v, n_feats, n_tasks, options.G, options.ind, options.n_nodes, lambda/L);
 			else
-				altra(w.vector, v, n_feats, options.ind, options.n_nodes, lambda/L);
+				altra_mt(w.matrix, v, n_feats, n_tasks, options.ind, options.n_nodes, lambda/L);
 
 			// v = x - s
-			for (i=0; i<n_feats; i++)
+			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = w[i] - s[i];
-
-			features->dense_dot_range(Aw,0,n_vecs,NULL,w.vector,n_feats,0.0);
+	
+			for (t=0; t<n_tasks; t++)
+			{
+				int task_ind_start = options.ind[t]+1;
+				int task_ind_end = options.ind[t+1];
+				for (i=task_ind_start; i<task_ind_end; i++)
+					Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
+			}
 
 			for (i=0; i<n_vecs; i++)
 				Av[i] = Aw[i] - As[i];
 
-			double r_sum = SGVector<float64_t>::dot(v,v,n_feats);
-			double l_sum = SGVector<float64_t>::dot(Av,Av,n_vecs);
+			double r_sum = 0.0;
+			// frobenius norm of r
+			for (i=0; i<n_feats*n_tasks; i++)
+				r_sum += v[i]*v[i];
+
+			double l_sum = CMath::dot(Av,Av,n_vecs);
 
 			if (r_sum <= 1e-20)
 			{
@@ -144,12 +177,13 @@ SGVector<double> slep_tree_lsr(
 			else 
 				L = CMath::max(2*L, l_sum/r_sum);
 
+			SG_SPRINT("L=%.3f\n",L);
 		}
 
 		alphap = alpha;
 		alpha = 0.5*(1+CMath::sqrt(4*alpha*alpha+1));
 
-		for (i=0; i<n_feats; i++)
+		for (i=0; i<n_feats*n_tasks; i++)
 			wwp[i] = w[i] - wp[i];
 
 		// Aw - y
@@ -157,14 +191,24 @@ SGVector<double> slep_tree_lsr(
 			resid[i] = Aw[i] - y[i];
 
 		double tree_norm; 
-		if (options.general)
-			tree_norm = general_treeNorm(w.vector,n_feats,options.G,
-			                             options.ind,options.n_nodes);
-		else
-			tree_norm = treeNorm(w.vector,n_feats,options.ind,options.n_nodes);
+		for (i=0; i<n_feats; i++)
+		{
+			for (j=0; j<n_tasks; j++)
+				w_row[j] = w(i,j);
+
+			if (options.general)
+			{
+				tree_norm += general_treeNorm(w_row,n_tasks,options.G,
+											 options.ind,options.n_nodes);
+			}
+			else
+			{
+				tree_norm += treeNorm(w_row,n_tasks,options.ind,options.n_nodes);
+			}
+		}
 
 		funcp = func;
-		func = 0.5*SGVector<float64_t>::dot(resid,resid,n_vecs) + lambda*tree_norm;
+		func = 0.5*CMath::dot(resid,resid,n_vecs) + lambda*tree_norm;
 
 		if (gradient_break)
 			break;
@@ -177,7 +221,7 @@ SGVector<double> slep_tree_lsr(
 				if (iter>=2)
 				{
 					step = CMath::abs(func-funcp);
-					SG_SPRINT("STEP=%.9f\n",step);
+
 					if (step <= options.tolerance)
 						done = true;
 				}
@@ -195,13 +239,13 @@ SGVector<double> slep_tree_lsr(
 					done = true;
 				break;
 			case 3:
-				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats));
+				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats));
 				if (norm_wwp <= options.tolerance)
 					done = true;
 				break;
 			case 4:
-				norm_wp = CMath::sqrt(SGVector<float64_t>::dot(wp,wp,n_feats));
-				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats));
+				norm_wp = CMath::sqrt(CMath::dot(wp,wp,n_feats));
+				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats));
 				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
 					done = true;
 				break;
@@ -243,6 +287,7 @@ SGVector<double> slep_tree_lsr(
 	SG_FREE(As);
 	SG_FREE(ATAs);
 	SG_FREE(resid);
+	SG_FREE(w_row);
 
 	return w;
 };

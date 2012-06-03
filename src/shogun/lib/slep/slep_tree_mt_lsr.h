@@ -8,8 +8,8 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye 
  */
 
-#ifndef  SLEP_TREE_LSR_H_
-#define  SLEP_TREE_LSR_H_
+#ifndef  SLEP_TREE_MT_LSR_H_
+#define  SLEP_TREE_MT_LSR_H_
 
 #include <shogun/lib/slep/slep_options.h>
 #include <shogun/features/DotFeatures.h>
@@ -17,12 +17,12 @@
 namespace shogun 
 {
 
-SGVector<double> slep_tree_lsr(
+SGMatrix<double> slep_tree_mt_lsr(
 		CDotFeatures* features,
 		double* y,
 		double z,
 		const slep_options& options);
 
 };
-#endif   /* ----- #ifndef SLEP_TREE_LSR_H_  ----- */
+#endif   /* ----- #ifndef SLEP_TREE_MT_LSR_H_  ----- */
 
