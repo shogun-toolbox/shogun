@@ -930,6 +930,14 @@ class CMath : public CSGObject
 				return result;
 			}
 
+		/// return sum(vec)
+		template <class T>
+			static inline T sum(SGVector<T> vec)
+			{
+				CMath::sum(vec.vector, vec.vlen);
+			}
+
+
 		/** @return min(vec) */
 		template <class T>
 			static inline T min(T* vec, int32_t len)
