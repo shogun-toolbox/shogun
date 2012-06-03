@@ -23,8 +23,6 @@ bool is_equal(float64_t a, float64_t b, float64_t eps)
 
 void test_ev()
 {
-#ifdef HAVE_LAPACK
-
 	SGMatrix<float64_t> A(3,3);
 	A(0,0)=0;
 	A(0,1)=1;
@@ -60,13 +58,69 @@ void test_ev()
 	ASSERT(is_equal(ev[0], -sqrt22*2, eps));
 	ASSERT(is_equal(ev[1], 0, eps));
 	ASSERT(is_equal(ev[2], sqrt22*2, eps));
+}
 
-#endif /* HAVE_LAPACK */
+void test_matrix_multiply()
+{
+	index_t n=10;
+	SGMatrix<float64_t> I=CMath::create_identity_matrix(n,1.0);
+
+	index_t m=4;
+	SGMatrix<float64_t> A(n, m);
+	CMath::range_fill_vector(A.matrix, m*n);
+	CMath::display_matrix(I, "I");
+	CMath::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
+	CMath::display_matrix(A, "A transposed");
+	CMath::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
+	CMath::display_matrix(A, "A");
+
+	SG_SPRINT("multiply A by I and check result\n");
+	SGMatrix<float64_t> A2=CMath::matrix_multiply(I, A);
+	ASSERT(A2.num_rows==A.num_rows);
+	ASSERT(A2.num_cols==A.num_cols);
+	CMath::display_matrix(A2);
+	for (index_t i=0; i<A2.num_rows; ++i)
+	{
+		for (index_t j=0; j<A2.num_cols; ++j)
+			ASSERT(A(i,j)==A2(i,j));
+	}
+
+	SG_SPRINT("multiply A by transposed I and check result\n");
+	SGMatrix<float64_t> A3=CMath::matrix_multiply(I, A, true);
+	ASSERT(A3.num_rows==I.num_rows);
+	ASSERT(A3.num_cols==A.num_cols);
+	CMath::display_matrix(A3);
+	for (index_t i=0; i<A2.num_rows; ++i)
+	{
+		for (index_t j=0; j<A2.num_cols; ++j)
+			ASSERT(A(i,j)==A3(i,j));
+	}
+
+	SG_SPRINT("multiply transposed A by I and check result\n");
+	SGMatrix<float64_t> A4=CMath::matrix_multiply(A, I, true, false);
+	ASSERT(A4.num_rows==A.num_cols);
+	ASSERT(A4.num_cols==I.num_cols);
+	CMath::display_matrix(A4);
+	for (index_t i=0; i<A.num_rows; ++i)
+	{
+		for (index_t j=0; j<A.num_cols; ++j)
+			ASSERT(A(i,j)==A4(j,i));
+	}
+
+	SG_SPRINT("multiply A by scaled I and check result\n");
+	SGMatrix<float64_t> A5=CMath::matrix_multiply(I, A, false, false, n);
+	ASSERT(A5.num_rows==I.num_rows);
+	ASSERT(A5.num_cols==A.num_cols);
+	CMath::display_matrix(A5);
+	for (index_t i=0; i<A2.num_rows; ++i)
+	{
+		for (index_t j=0; j<A2.num_cols; ++j)
+			ASSERT(n*A(i,j)==A5(i,j));
+	}
 }
 
 void test_lapack()
 {
-#ifdef HAVE_LAPACK
 	// size of square matrix
 	int N = 100;
 
@@ -93,10 +147,8 @@ void test_lapack()
 	status = 0;
 	wrap_dsygvx(1,'V','U',N,double_matrix,N,double_matrix,N,1,3,double_eigenvalues,double_eigenvectors,&status);
 	if (status!=0)
-	{
-		printf("DSYGVX/SSYGVX failed with code %d\n",status);
-		ASSERT(false);
-	}
+		SG_SERROR("DSYGVX/SSYGVX failed with code %d\n",status);
+
 	delete[] double_eigenvectors;
 
 	// DGEQRF+DORGQR
@@ -105,10 +157,8 @@ void test_lapack()
 	wrap_dgeqrf(N,N,double_matrix,N,double_tau,&status);
 	wrap_dorgqr(N,N,N,double_matrix,N,double_tau,&status);
 	if (status!=0)
-	{
-		printf("DGEQRF/DORGQR failed with code %d\n",status);
-		ASSERT(false);
-	}
+		SG_SERROR("DGEQRF/DORGQR failed with code %d\n",status);
+
 	delete[] double_tau;
 
 	// DGESVD
@@ -120,10 +170,8 @@ void test_lapack()
 	status = 0;
 	wrap_dgesvd('A','A',N,N,double_matrix,N,double_s,double_U,N,double_Vt,N,&status);
 	if (status!=0)
-	{
-		printf("DGESVD failed with code %d\n",status);
-		ASSERT(false);
-	}
+		SG_SERROR("DGESVD failed with code %d\n",status);
+
 	delete[] double_s;
 	delete[] double_U;
 	delete[] double_Vt;
@@ -132,24 +180,29 @@ void test_lapack()
 	status = 0;
 	wrap_dsyev('V','U',N,double_matrix,N,double_eigenvalues,&status);
 	if (status!=0)
-	{
-		printf("DSYEV failed with code %d\n",status);
-		ASSERT(false);
-	}
+		SG_SERROR("DSYEV failed with code %d\n",status);
+
 	delete[] double_eigenvalues;
 	delete[] double_matrix;
-
-	#endif // HAVE_LAPACK
 }
 
 int main(int argc, char** argv)
 {
-	init_shogun();
+	init_shogun_with_defaults();
 
+#ifdef HAVE_LAPACK
+	SG_SPRINT("checking lapack\n");
 	test_lapack();
+
+	SG_SPRINT("compute_eigenvectors\n");
 	test_ev();
+
+	SG_SPRINT("matrix_multiply\n");
+	test_matrix_multiply();
+#endif
 
 	exit_shogun();
 	return 0;
 }
+
 

@@ -165,6 +165,27 @@ void CMath::display_vector(const floatmax_t* vector, int32_t n,
 }
 
 template <>
+void CMath::display_vector(const SGVector<float64_t> vector, const char* name,
+		const char* prefix)
+{
+	CMath::display_vector(vector.vector, vector.vlen, name, prefix);
+}
+
+template <>
+void CMath::display_vector(const SGVector<float32_t> vector, const char* name,
+		const char* prefix)
+{
+	CMath::display_vector(vector.vector, vector.vlen, name, prefix);
+}
+
+template <>
+void CMath::display_vector(const SGVector<int32_t> vector, const char* name,
+		const char* prefix)
+{
+	CMath::display_vector(vector.vector, vector.vlen, name, prefix);
+}
+
+template <>
 void CMath::display_matrix(
 	const int32_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
@@ -216,6 +237,72 @@ void CMath::display_matrix(
 		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
 	}
 	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void CMath::display_matrix(
+	const SGMatrix<float64_t> matrix, const char* name,
+	const char* prefix)
+{
+	CMath::display_matrix(matrix.matrix, matrix.num_rows, matrix.num_cols,
+			name, prefix);
+}
+
+template <>
+void CMath::display_matrix(
+	const SGMatrix<float32_t> matrix, const char* name,
+	const char* prefix)
+{
+	CMath::display_matrix(matrix.matrix, matrix.num_rows, matrix.num_cols,
+			name, prefix);
+}
+
+template <>
+void CMath::display_matrix(
+	const SGMatrix<int32_t> matrix, const char* name,
+	const char* prefix)
+{
+	CMath::display_matrix(matrix.matrix, matrix.num_rows, matrix.num_cols,
+			name, prefix);
+}
+
+template <>
+SGMatrix<float64_t> CMath::create_identity_matrix(index_t size, float64_t scale)
+{
+	SGMatrix<float64_t> I(size, size);
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<size; ++j)
+			I(i,j)=i==j ? scale : 0.0;
+	}
+
+	return I;
+}
+
+template <>
+SGMatrix<float32_t> CMath::create_identity_matrix(index_t size, float32_t scale)
+{
+	SGMatrix<float32_t> I(size, size);
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<size; ++j)
+			I(i,j)=i==j ? scale : 0.0;
+	}
+
+	return I;
+}
+
+template <>
+SGMatrix<int32_t> CMath::create_identity_matrix(index_t size, int32_t scale)
+{
+	SGMatrix<int32_t> I(size, size);
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<size; ++j)
+			I(i,j)=i==j ? scale : 0;
+	}
+
+	return I;
 }
 
 }
@@ -488,7 +575,6 @@ float64_t CMath::entropy(float64_t* p, int32_t len)
 	return (float64_t) e;
 }
 
-
 //Howto construct the pseudo inverse (from "The Matrix Cookbook")
 //
 //Assume A does not have full rank, i.e. A is n \times m and rank(A) = r < min(n;m).
@@ -582,6 +668,38 @@ double* CMath::compute_eigenvectors(double* matrix, int n, int m)
 
 	return eigenvalues;
 }
+
+SGMatrix<float64_t> CMath::matrix_multiply(
+		SGMatrix<float64_t> A, SGMatrix<float64_t> B,
+		bool transpose_A, bool transpose_B, float64_t scale)
+{
+	/* these variables store size of transposed matrices*/
+	index_t cols_A=transpose_A ? A.num_rows : A.num_cols;
+	index_t rows_A=transpose_A ? A.num_cols : A.num_rows;
+	index_t rows_B=transpose_B ? B.num_cols : B.num_rows;
+	index_t cols_B=transpose_B ? B.num_rows : B.num_cols;
+
+	/* do a dimension check */
+	if (cols_A!=rows_B)
+	{
+		SG_SERROR("CMath::matrix_multiply(): Dimension mismatch: "
+				"A(%dx%d)*B(%dx%D)\n", rows_A, cols_A, rows_B, cols_B);
+	}
+
+	/* allocate result matrix */
+	SGMatrix<float64_t> C(rows_A, cols_B);
+
+	/* multiply */
+	cblas_dgemm(CblasColMajor,
+			transpose_A ? CblasTrans : CblasNoTrans,
+			transpose_B ? CblasTrans : CblasNoTrans,
+			rows_A, cols_B, cols_A, scale,
+			A.matrix, A.num_rows, B.matrix, B.num_rows,
+			0.0, C.matrix, C.num_rows);
+
+	return C;
+}
+
 #endif //HAVE_LAPACK
 
 float64_t CMath::dot(const float64_t* v1, const float64_t* v2, int32_t n)
