@@ -105,7 +105,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	problem mc_problem;
 	mc_problem.l = num_vectors;
 	mc_problem.n = m_features->get_dim_feature_space() + bias_n;
-	mc_problem.y = SG_MALLOC(int32_t, mc_problem.l);
+	mc_problem.y = SG_MALLOC(float64_t, mc_problem.l);
 	for (int32_t i=0; i<num_vectors; i++)
 		mc_problem.y[i] = ((CMulticlassLabels*) m_labels)->get_int_label(i);
 

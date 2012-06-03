@@ -135,7 +135,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	}
 	prob.l=num_vec;
 	prob.x=features;
-	prob.y=SG_MALLOC(int, prob.l);
+	prob.y=SG_MALLOC(double, prob.l);
 	float64_t* Cs=SG_MALLOC(double, prob.l);
 	prob.use_bias=use_bias;
 	double Cp=C1;
@@ -734,7 +734,8 @@ void CLibLinear::solve_l1r_l2_svc(
 			Gmax_init = Gmax_new;
 		iter++;
 
-		SG_SABS_PROGRESS(Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6);
+		SG_SABS_PROGRESS(Gmax_new, -CMath::log10(Gmax_new),
+				-CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6);
 
 		if(Gmax_new <= eps*Gmax_init)
 		{

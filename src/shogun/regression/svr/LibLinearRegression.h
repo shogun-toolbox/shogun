@@ -18,6 +18,16 @@
 
 namespace shogun
 {
+	/** liblinar regression solver type */
+	enum LIBLINEAR_REGRESSION_TYPE
+	{
+		///L2 regularized support vector regression with L2 epsilon tube loss
+		L2R_L2LOSS_SVR,
+		///L2 regularized support vector regression with L1 epsilon tube loss
+		L2R_L1LOSS_SVR_DUAL,
+		///L2 regularized support vector regression with L2 epsilon tube loss (dual)
+		L2R_L2LOSS_SVR_DUAL
+	};
 
 /** @brief LibLinear for regression
  */
@@ -38,6 +48,16 @@ class CLibLinearRegression : public CLinearMachine
 
 		/** destructor */
 		virtual ~CLibLinearRegression();
+
+		inline LIBLINEAR_REGRESSION_TYPE get_liblinear_regression_type()
+		{
+			return m_liblinear_regression_type;
+		}
+
+		inline void set_liblinear_regression_type(LIBLINEAR_REGRESSION_TYPE st)
+		{
+			m_liblinear_regression_type=st;
+		}
 
 		/** get name */
 		virtual const char* get_name() const
@@ -120,6 +140,8 @@ protected:
 		virtual bool train_machine(CFeatures* data = NULL);
 
 private:
+		/** solve svr with l1 or l2 loss */
+		void solve_l2r_l1l2_svr(const problem *prob);
 
 		/** init defaults */
 		void init_defaults();
@@ -143,6 +165,9 @@ protected:
 
 		/** use bias */
 		bool m_use_bias;
+
+		/** which solver to use for regression */
+		LIBLINEAR_REGRESSION_TYPE m_liblinear_regression_type;
 };
 }
 #endif /* HAVE_LAPACK */
