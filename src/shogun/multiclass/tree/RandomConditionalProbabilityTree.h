@@ -28,6 +28,15 @@ public:
     /** get name */
     virtual const char* get_name() const { return "RandomConditionalProbabilityTree"; }
 
+protected:
+	/** train machine
+	 *
+	 * @param data training data 
+	 *
+	 * @return whether training was successful
+	 */
+	virtual bool train_machine(CFeatures* data);
+
 private:
 	/** to prevent compile error of class_list.cpp */
 	virtual void __placeholder__()=0;

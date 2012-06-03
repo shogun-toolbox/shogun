@@ -29,7 +29,7 @@ public:
     /** get name */
     virtual const char* get_name() const { return "TreeMachine"; }
 
-private:
+protected:
 	CTreeMachineNode *m_root;
 
 	/** to prevent compile error of class_list.cpp */

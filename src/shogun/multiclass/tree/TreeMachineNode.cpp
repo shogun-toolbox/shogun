@@ -13,10 +13,11 @@
 using namespace shogun;
 
 CTreeMachineNode::CTreeMachineNode()
-	:m_left(NULL), m_right(NULL), m_machine(-1)
+	:m_left(NULL), m_right(NULL), m_parent(NULL), m_machine(-1)
 {
 	SG_ADD((CSGObject**)&m_left,"m_left", "Left subtree", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_right,"m_right", "Right subtree", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_parent,"m_right", "Parent node", MS_NOT_AVAILABLE);
 	SG_ADD(&m_machine,"m_machine", "Index of associated machine", MS_NOT_AVAILABLE);
 }
 

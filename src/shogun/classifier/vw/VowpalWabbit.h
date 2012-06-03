@@ -188,6 +188,12 @@ public:
 	 */
 	virtual const char* get_name() const { return "VowpalWabbit"; }
 
+	/**
+	 * Sets the train/update methods depending on parameters
+	 * set, eg. adaptive or not
+	 */
+	virtual void set_learner();
+
 private:
 	/**
 	 * Initialize members
@@ -195,12 +201,6 @@ private:
 	 * @param feat Features object
 	 */
 	virtual void init(CStreamingVwFeatures* feat = NULL);
-
-	/**
-	 * Sets the train/update methods depending on parameters
-	 * set, eg. adaptive or not
-	 */
-	virtual void set_learner();
 
 	/**
 	 * Predict with l1 regularization

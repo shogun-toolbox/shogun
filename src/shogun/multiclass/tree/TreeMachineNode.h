@@ -42,6 +42,19 @@ public:
 		return m_machine;
 	}
 
+	/** set parent node
+	 * @param par parent node
+	 */
+	void parent(CTreeMachineNode *par)
+	{
+		m_parent = par;
+	}
+	/** get parent node */
+	CTreeMachineNode *parent()
+	{
+		return m_parent;
+	}
+
 	/** set left subtree 
 	 * @param l left subtree
 	 */
@@ -50,6 +63,7 @@ public:
 		SG_REF(l);
 		SG_UNREF(m_left);
 		m_left = l;
+		m_left->parent(this);
 	}
 	/** get left subtree */
 	CTreeMachineNode *left()
@@ -65,6 +79,7 @@ public:
 		SG_REF(r);
 		SG_UNREF(m_right);
 		m_right = r;
+		m_right->parent(this);
 	}
 	/** get right subtree */
 	CTreeMachineNode *right()
@@ -75,6 +90,7 @@ public:
 private:
 	CTreeMachineNode *m_left;    ///< left subtree
 	CTreeMachineNode *m_right;   ///< right subtree
+	CTreeMachineNode *m_parent;  ///< parent node
 	int32_t           m_machine; ///< machine index associated with this node
 };
 
