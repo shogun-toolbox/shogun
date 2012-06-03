@@ -17,14 +17,28 @@
 namespace shogun
 {
 
-class CTreeMachineNode: public CSGObject
+template <typename data_t>
+class CTreeMachineNode
+	: public CSGObject
 {
 public:
     /** constructor */
-	CTreeMachineNode();
+	CTreeMachineNode()
+		:m_left(NULL), m_right(NULL), m_parent(NULL), m_machine(-1)
+	{
+		SG_ADD((CSGObject**)&m_left,"m_left", "Left subtree", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject**)&m_right,"m_right", "Right subtree", MS_NOT_AVAILABLE);
+		SG_ADD((CSGObject**)&m_parent,"m_right", "Parent node", MS_NOT_AVAILABLE);
+		SG_ADD(&m_machine,"m_machine", "Index of associated machine", MS_NOT_AVAILABLE);
+	}
+
 
     /** destructor */
-	virtual ~CTreeMachineNode();
+	virtual ~CTreeMachineNode()
+	{
+		SG_UNREF(m_left);
+		SG_UNREF(m_right);
+	}
 
     /** get name */
     virtual const char* get_name() const { return "TreeMachineNode"; }
@@ -86,6 +100,9 @@ public:
 	{
 		return m_right;
 	}
+
+	/** extra data carried by the tree node */
+	data_t data;
 
 private:
 	CTreeMachineNode *m_left;    ///< left subtree

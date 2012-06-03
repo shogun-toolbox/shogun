@@ -17,20 +17,28 @@
 namespace shogun
 {
 
+template <typename data_t>
 class CTreeMachine: public CBaseMulticlassMachine
 {
 public:
     /** constructor */
-	CTreeMachine();
+	CTreeMachine()
+		:m_root(NULL) 
+	{
+		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure", MS_NOT_AVAILABLE);
+	}
 
     /** destructor */
-	virtual ~CTreeMachine();
+	virtual ~CTreeMachine()
+	{
+		SG_UNREF(m_root);
+	}
 
     /** get name */
     virtual const char* get_name() const { return "TreeMachine"; }
 
 protected:
-	CTreeMachineNode *m_root;
+	CTreeMachineNode<data_t> *m_root;
 
 	/** to prevent compile error of class_list.cpp */
 	virtual void __placeholder__()=0;

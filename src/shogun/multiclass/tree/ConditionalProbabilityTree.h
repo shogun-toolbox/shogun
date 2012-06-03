@@ -19,9 +19,18 @@
 namespace shogun
 {
 
-class CConditionalProbabilityTree: public CTreeMachine
+struct ConditionalProbabilityTreeNodeData
+{
+	int32_t label;
+
+	ConditionalProbabilityTreeNodeData():label(-1) {}
+};
+
+class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
 {
 public:
+	typedef CTreeMachineNode<ConditionalProbabilityTreeNodeData> node_t;
+
     /** constructor */
 	CConditionalProbabilityTree(int32_t num_passes=2)
 		:m_num_passes(num_passes), m_feats(NULL)
@@ -74,13 +83,13 @@ protected:
 	 * @param ex VwExample instance of the training example
 	 * @param node the leaf node
 	 */
-	void train_path(VwExample *ex, CTreeMachineNode *node);
+	void train_path(VwExample *ex, node_t *node);
 
 	/** train a single node 
 	 * @param ex VwExample instance of the training example
 	 * @param node the node
 	 */
-	void train_node(VwExample *ex, CTreeMachineNode *node);
+	void train_node(VwExample *ex, node_t *node);
 
 	/** create a new VW machine for a node 
 	 * @param ex the VwExample instance for training the new machine
@@ -92,10 +101,10 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(CTreeMachineNode *node, VwExample *ex)=0;
+	virtual bool which_subtree(node_t *node, VwExample *ex)=0;
 
 	int32_t m_num_passes; ///< number of passes for online training
-	std::map<int32_t, CTreeMachineNode*> m_leaves; ///< class => leaf mapping
+	std::map<int32_t, node_t*> m_leaves; ///< class => leaf mapping
 	CStreamingVwFeatures *m_feats; ///< online features
 };
 

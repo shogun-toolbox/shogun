@@ -53,7 +53,8 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 
 	if (m_root == NULL)
 	{
-		m_root = new CTreeMachineNode();
+		m_root = new node_t();
+		m_root->data.label = label;
 		m_leaves.insert(make_pair(label, m_root));
 		m_root->machine(create_machine(ex));
 		return;
@@ -65,8 +66,8 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 	}
 	else
 	{
-		CTreeMachineNode *node = m_root;
-		while (m_root->left() != NULL)
+		node_t *node = m_root;
+		while (node->left() != NULL)
 		{
 			// not a leaf
 			bool is_left = which_subtree(node, ex);
@@ -82,21 +83,34 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 				node = node->right();
 		}
 
-		// TODO: node->left should be a clone of node
-		// TODO: remove node from m_leaves, replace it with left
-		CTreeMachineNode *new_node = new CTreeMachineNode();
-		new_node->machine(create_machine(ex));
-		m_leaves.insert(make_pair(label, new_node));
-		node->right(new_node);
+		m_leaves.erase(node->data.label);
+
+		node_t *left_node = new node_t();
+		left_node->data.label = node->data.label;
+		node->data.label = -1;
+		CVowpalWabbit *node_vw = dynamic_cast<CVowpalWabbit *>(m_machines->get_element(node->machine()));
+		CVowpalWabbit *vw = new CVowpalWabbit(node_vw);
+		SG_UNREF(node_vw);
+		vw->set_learner();
+		m_machines->push_back(vw);
+		left_node->machine(m_machines->get_num_elements()-1);
+		m_leaves.insert(make_pair(left_node->data.label, left_node));
+		node->left(left_node);
+
+		node_t *right_node = new node_t();
+		right_node->data.label = label;
+		right_node->machine(create_machine(ex));
+		m_leaves.insert(make_pair(label, right_node));
+		node->right(right_node);
 	}
 }
 
-void CConditionalProbabilityTree::train_path(VwExample *ex, CTreeMachineNode *node)
+void CConditionalProbabilityTree::train_path(VwExample *ex, node_t *node)
 {
 	ex->ld->label = 0;
 	train_node(ex, node);
 
-	CTreeMachineNode *par = node->parent();
+	node_t *par = node->parent();
 	while (par != NULL)
 	{
 		if (par->left() == node)
@@ -110,7 +124,7 @@ void CConditionalProbabilityTree::train_path(VwExample *ex, CTreeMachineNode *no
 	}
 }
 
-void CConditionalProbabilityTree::train_node(VwExample *ex, CTreeMachineNode *node)
+void CConditionalProbabilityTree::train_node(VwExample *ex, node_t *node)
 {
 	CVowpalWabbit *vw = dynamic_cast<CVowpalWabbit*>(m_machines->get_element(node->machine()));
 	ASSERT(vw);
@@ -125,5 +139,5 @@ int32_t CConditionalProbabilityTree::create_machine(VwExample *ex)
 	ex->ld->label = 0;
 	vw->predict_and_finalize(ex);
 	m_machines->push_back(vw);
-	return m_machines->get_num_elements();
+	return m_machines->get_num_elements()-1;
 }
