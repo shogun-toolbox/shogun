@@ -17,7 +17,7 @@ CTreeMachineNode::CTreeMachineNode()
 {
 	SG_ADD((CSGObject**)&m_left,"m_left", "Left subtree", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_right,"m_right", "Right subtree", MS_NOT_AVAILABLE);
-	SG_ADD((&m_machine,"m_machine", "Index of associated machine", MS_NOT_AVAILABLE);
+	SG_ADD(&m_machine,"m_machine", "Index of associated machine", MS_NOT_AVAILABLE);
 }
 
 CTreeMachineNode::~CTreeMachineNode()

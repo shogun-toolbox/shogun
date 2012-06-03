@@ -12,7 +12,7 @@
 #define TREEMACHINE_H__
 
 #include <shogun/machine/MulticlassMachine.h>
-#include <shogun/machine/tree/TreeMachineNode.h>
+#include <shogun/multiclass/tree/TreeMachineNode.h>
 
 namespace shogun
 {
@@ -29,9 +29,11 @@ public:
     /** get name */
     virtual const char* get_name() const { return "TreeMachine"; }
 
-	
 private:
 	CTreeMachineNode *m_root;
+
+	/** to prevent compile error of class_list.cpp */
+	virtual void __placeholder__()=0;
 };
 
 } /* shogun */ 

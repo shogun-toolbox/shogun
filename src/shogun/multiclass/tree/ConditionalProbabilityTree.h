@@ -11,6 +11,8 @@
 #ifndef CONDITIONALPROBABILITYTREE_H__
 #define CONDITIONALPROBABILITYTREE_H__
 
+#include <shogun/multiclass/tree/TreeMachine.h>
+
 namespace shogun
 {
 
@@ -26,7 +28,9 @@ public:
     /** get name */
     virtual const char* get_name() const { return "ConditionalProbabilityTree"; }
 
-	
+private:
+	/** to prevent compile error of class_list.cpp */
+	virtual void __placeholder__()=0;
 };
 
 } /* shogun */ 
