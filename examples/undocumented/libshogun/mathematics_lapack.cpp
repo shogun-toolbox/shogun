@@ -63,10 +63,7 @@ void test_ev()
 void test_matrix_multiply()
 {
 	index_t n=10;
-	SGMatrix<float64_t> I(n, n);
-	CMath::fill_vector(I.matrix, n*n, 0.0);
-	for (index_t i=0; i<n; ++i)
-		I(i,i)=1.0;
+	SGMatrix<float64_t> I=CMath::create_identity_matrix(n,1.0);
 
 	index_t m=4;
 	SGMatrix<float64_t> A(n, m);
