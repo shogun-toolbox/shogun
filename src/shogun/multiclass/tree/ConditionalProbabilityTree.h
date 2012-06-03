@@ -24,7 +24,7 @@ class CConditionalProbabilityTree: public CTreeMachine
 public:
     /** constructor */
 	CConditionalProbabilityTree(int32_t num_passes=2)
-		:m_num_passes(num_passes)
+		:m_num_passes(num_passes), m_feats(NULL)
 	{
 	}
 
@@ -44,6 +44,16 @@ public:
 	int32_t get_num_passes() const
 	{
 		return m_num_passes;
+	}
+
+	/** set features 
+	 * @param feats features
+	 */
+	void set_features(CStreamingVwFeatures *feats)
+	{
+		SG_REF(feats);
+		SG_UNREF(m_feats);
+		m_feats = feats;
 	}
 
 protected:
@@ -85,7 +95,8 @@ protected:
 	virtual bool which_subtree(CTreeMachineNode *node, VwExample *ex)=0;
 
 	int32_t m_num_passes; ///< number of passes for online training
-	std::map<int32_t, CTreeMachineNode*> m_leaves;
+	std::map<int32_t, CTreeMachineNode*> m_leaves; ///< class => leaf mapping
+	CStreamingVwFeatures *m_feats; ///< online features
 };
 
 } /* shogun */ 

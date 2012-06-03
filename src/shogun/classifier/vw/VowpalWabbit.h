@@ -53,6 +53,11 @@ public:
 	 */
 	CVowpalWabbit(CStreamingVwFeatures* feat);
 
+	/** copy constructor
+	 * @param vw another VowpalWabbit object
+	 */
+	CVowpalWabbit(CVowpalWabbit *vw);
+
 	/**
 	 * Destructor
 	 */

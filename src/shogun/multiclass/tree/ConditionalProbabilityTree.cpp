@@ -15,12 +15,17 @@ using namespace std;
 
 bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 {
-	if (!data)
-		SG_ERROR("No data provided\n");
-	if (data->get_feature_class() != C_STREAMING_VW)
-		SG_ERROR("Expected StreamingVwFeatures\n");
-
-	CStreamingVwFeatures *feats = dynamic_cast<CStreamingVwFeatures*>(data);
+	if (data)
+	{
+		if (data->get_feature_class() != C_STREAMING_VW)
+			SG_ERROR("Expected StreamingVwFeatures\n");
+		set_features(dynamic_cast<CStreamingVwFeatures*>(data));
+	}
+	else
+	{
+		if (!m_feats)
+			SG_ERROR("No data features provided\n");
+	}
 
 	m_machines->reset_array();
 	SG_UNREF(m_root);
@@ -28,15 +33,18 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 
 	m_leaves.clear();
 
-	feats->start_parser();
+	m_feats->start_parser();
 	for (int32_t ipass=0; ipass < m_num_passes; ++ipass)
 	{
-		while (feats->get_next_example())
-			train_example(feats->get_example());
+		while (m_feats->get_next_example())
+		{
+			train_example(m_feats->get_example());
+			m_feats->release_example();
+		}
 
-		feats->reset_stream();
+		m_feats->reset_stream();
 	}
-	feats->end_parser();
+	m_feats->end_parser();
 }
 
 void CConditionalProbabilityTree::train_example(VwExample *ex)
@@ -112,7 +120,7 @@ void CConditionalProbabilityTree::train_node(VwExample *ex, CTreeMachineNode *no
 
 int32_t CConditionalProbabilityTree::create_machine(VwExample *ex)
 {
-	CVowpalWabbit *vw = new CVowpalWabbit();
+	CVowpalWabbit *vw = new CVowpalWabbit(m_feats);
 	vw->set_learner();
 	ex->ld->label = 0;
 	vw->predict_and_finalize(ex);
