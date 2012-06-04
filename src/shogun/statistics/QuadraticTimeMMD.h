@@ -38,6 +38,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * using the Eigen-spectrum of the centered kernel matrix of the merged
 		 * samples of p and q.
 		 *
+		 * Works well if the kernel matrix is NOT diagonal dominant.
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
 		 * A fast, consistent kernel two-sample test.
 		 *
