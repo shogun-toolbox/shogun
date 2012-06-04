@@ -38,7 +38,7 @@ public:
 	 * @param fname file name
 	 * @param rw read/write mode
 	 */
-	CStreamingVwFile(char* fname, char rw='r');
+	CStreamingVwFile(const char* fname, char rw='r');
 
 	/**
 	 * Destructor
