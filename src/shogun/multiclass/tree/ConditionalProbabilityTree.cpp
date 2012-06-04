@@ -46,8 +46,8 @@ int32_t CConditionalProbabilityTree::apply_multiclass_example(VwExample* ex)
 
 	compute_conditional_probabilities(ex);
 	SGVector<float64_t> probs(m_leaves.size());
-	for (index_t i=0; i < probs.vlen; ++i)
-		probs[i] = accumulate_conditional_probability(m_leaves[i]);
+	for (map<int32_t,node_t*>::iterator it = m_leaves.begin(); it != m_leaves.end(); ++it)
+		probs[it->first] = accumulate_conditional_probability(it->second);
 	return CMath::arg_max(probs.vector, 1, probs.vlen);
 }
 
@@ -118,7 +118,8 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 			m_feats->release_example();
 		}
 
-		m_feats->reset_stream();
+		if (ipass < m_num_passes-1)
+			m_feats->reset_stream();
 	}
 	m_feats->end_parser();
 }
@@ -131,6 +132,7 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 	{
 		m_root = new node_t();
 		m_root->data.label = label;
+		printf("  insert %d %p\n", label, m_root);
 		m_leaves.insert(make_pair(label, m_root));
 		m_root->machine(create_machine(ex));
 		return;
@@ -159,23 +161,26 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 				node = node->right();
 		}
 
+		printf("  remove %d %p\n", node->data.label, m_leaves[node->data.label]);
 		m_leaves.erase(node->data.label);
 
 		node_t *left_node = new node_t();
 		left_node->data.label = node->data.label;
-		node->data.label = -1;
+		node->data.label = FLT_MAX;
 		CVowpalWabbit *node_vw = dynamic_cast<CVowpalWabbit *>(m_machines->get_element(node->machine()));
 		CVowpalWabbit *vw = new CVowpalWabbit(node_vw);
 		SG_UNREF(node_vw);
 		vw->set_learner();
 		m_machines->push_back(vw);
 		left_node->machine(m_machines->get_num_elements()-1);
+		printf("  insert %d %p\n", left_node->data.label, left_node);
 		m_leaves.insert(make_pair(left_node->data.label, left_node));
 		node->left(left_node);
 
 		node_t *right_node = new node_t();
 		right_node->data.label = label;
 		right_node->machine(create_machine(ex));
+		printf("  insert %d %p\n", label, right_node);
 		m_leaves.insert(make_pair(label, right_node));
 		node->right(right_node);
 	}
