@@ -13,6 +13,8 @@
 
 #ifdef USE_MOSEK
 
+#define DEBUG_PRIMAL_MOSEK_SOSVM
+
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 
 namespace shogun
@@ -76,17 +78,14 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 *
 		 * @param lb lower bound for 
 		 */
-		bool solve_qd(SGVector< float64_t > lb, SGVector< float64_t > ub) const;
+		bool solve_qp(SGMatrix< float64_t > A, SGMatrix< float64_t > C,
+				SGVector< float64_t > lb, 
+				SGVector< float64_t > ub) const;
 
 		/** TODO doc
 		 *
 		 */
-		void design_A_row(int32_t row_idx, int32_t& nzi, SGVector< int32_t > nzi_idxs, SGVector< int32_t > nzi_values) const;
-	
-		/** TODO doc
-		 *
-		 */
-		double predited_delta_loss(int32_t idx) const;
+		double predicted_delta_loss(int32_t idx) const;
 
 	private:
 		/** weight vector */
