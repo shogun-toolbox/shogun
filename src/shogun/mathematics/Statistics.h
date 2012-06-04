@@ -52,7 +52,7 @@ public:
 
 	/** Calculates the sample mean of a given set of samples and also computes
 	 * the confidence interval for the actual mean for a given p-value,
-	 * asuming that the actual variance and mean are unknown (These are
+	 * assuming that the actual variance and mean are unknown (These are
 	 * estimated by the samples)
 	 *
 	 * Only for normally distributed data
@@ -130,6 +130,59 @@ public:
 	 * Taken from ALGLIB under GPL2+
 	 */
 	static float64_t inverse_normal_distribution(float64_t y0);
+
+	/** Inverse of complemented imcomplete gamma integral
+	 *
+	 * Given p, the function finds x such that
+	 *
+	 * igamc( a, x ) = p.
+	 *
+	 * Starting with the approximate value
+	 *
+	 *        3
+	 * x = a t
+	 *
+	 * where
+	 *
+	 * t = 1 - d - ndtri(p) sqrt(d)
+	 *
+	 * and
+	 *
+	 * d = 1/9a,
+	 *
+	 * the routine performs up to 10 Newton iterations to find the
+	 * root of igamc(a,x) - p = 0.
+	 *
+	 * Taken from ALGLIB under GPL2+
+	 */
+	static float64_t inverse_incomplete_gamma(float64_t a, float64_t y0);
+
+	/**
+	 *
+	 * Complemented incomplete gamma integral
+	 *
+	 * The function is defined by
+	 *
+	 *
+	 * igamc(a,x)   =   1 - igam(a,x)
+	 *
+	 *                         inf.
+	 *                           -
+	 *                  1       | |  -t  a-1
+	 *            =   -----     |   e   t   dt.
+	 *                 -      | |
+	 *                | (a)    -
+	 *                          x
+	 *
+	 *
+	 * In this implementation both arguments must be positive.
+	 * The integral is evaluated by either a power series or
+	 * continued fraction expansion, depending on the relative
+	 * values of a and x.
+	 *
+	 * Taken from ALGLIB under GPL2+
+	 */
+	static float64_t incomplete_gamma(float64_t a, float64_t x);
 
 	/** @return object name */
 	inline virtual const char* get_name() const
