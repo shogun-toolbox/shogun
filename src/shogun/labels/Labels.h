@@ -84,7 +84,7 @@ class CLabels : public CSGObject
 
 		/** get confidence value for a particular label
 		 *
-		 * @param label index
+		 * @param idx label index
 		 * @return confidence value of label with index idx
 		 */
 		virtual float64_t get_confidence(int32_t idx);
