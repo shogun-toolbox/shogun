@@ -34,8 +34,23 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 			return "QuadraticTimeMMD";
 		};
 
-	protected:
-		SGVector<float64_t> sample_null_spectrum(index_t num_samples);
+		/* returns a set of samples of an estimate of the null distribution
+		 * using the Eigen-spectrum of the centered kernel matrix of the merged
+		 * samples of p and q.
+		 *
+		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
+		 * A fast, consistent kernel two-sample test.
+		 *
+		 * @param num_samples number of samples to draw
+		 * @param num_eigenvalues number of eigenvalues to use to draw samples
+		 * Maximum number of 2m-1 where m is the size of both sets of samples.
+		 * It is usually safe to use a smaller number since they decay very
+		 * fast, however, a conservative approach would be to use all (-1 does
+		 * this). See paper for details.
+		 * @return samples from the estimated null distribution
+		 */
+		SGVector<float64_t> sample_null_spectrum(index_t num_samples,
+				index_t num_eigenvalues=-1);
 
 	private:
 		void init();
