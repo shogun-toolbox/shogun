@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  * Written (W) 2012 Victor Sadkov
  * Copyright (C) 2011 Moscow State University
@@ -16,17 +16,12 @@
 
 using namespace shogun;
 
-const int DATA_SIZE=100;
-
-int main(int argc, char **argv)
+void test_confidence_intervals()
 {
-	init_shogun_with_defaults();
+	int32_t data_size=100;
+	SGVector<float64_t> data(data_size);
 
-	SGVector<float64_t> data(DATA_SIZE);
 	CMath::random_vector(data.vector, data.vlen, 0.0, 1.0);
-
-	// for (int32_t i=0; i<DATA_SIZE; i++)
-		// SG_SPRINT("data[%02d] = %.5lf%s", i, data[i], (i+1)%4?"\t":"\n");
 
 	float64_t low, up, mean;
 	float64_t error_prob=0.1;
@@ -37,8 +32,32 @@ int main(int argc, char **argv)
 
 	SG_SPRINT("variance: %f\n", CStatistics::variance(data));
 	SG_SPRINT("deviation: %f\n", CStatistics::std_deviation(data));
+}
 
-	SG_SPRINT("\nEND\n");
+void test_inverse_incomplete_gamma()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::inverse_incomplete_gamma(1, 1-0.95)*2;
+	difference-=5.991464547107981;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-15);
+
+	difference=CStatistics::inverse_incomplete_gamma(0, 1-0.95)*3;
+	ASSERT(difference==0);
+
+	difference=CStatistics::inverse_incomplete_gamma(2, 1-0.95)*0.1;
+	difference-=0.474386451839058;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-15)
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+
+	test_confidence_intervals();
+	test_inverse_incomplete_gamma();
+
 	exit_shogun();
 
 	return 0;
