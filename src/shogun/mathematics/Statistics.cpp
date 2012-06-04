@@ -419,7 +419,7 @@ float64_t CStatistics::ibetaf_incomplete_beta_fe2(float64_t a, float64_t b,
 			qkm2=qkm2*biginv;
 			qkm1=qkm1*biginv;
 		}
-		if (CMath::abs(qk)<biginv||CMath::abs(pk)<biginv)
+		if (CMath::abs(qk)<biginv || CMath::abs(pk)<biginv)
 		{
 			pkm2=pkm2*big;
 			pkm1=pkm1*big;
@@ -521,7 +521,7 @@ float64_t CStatistics::ibetaf_incomplete_beta_fe(float64_t a, float64_t b,
 			qkm2=qkm2*biginv;
 			qkm1=qkm1*biginv;
 		}
-		if (CMath::abs(qk)<biginv||CMath::abs(pk)<biginv)
+		if (CMath::abs(qk)<biginv || CMath::abs(pk)<biginv)
 		{
 			pkm2=pkm2*big;
 			pkm1=pkm1*big;
@@ -668,7 +668,7 @@ float64_t CStatistics::inverse_incomplete_beta(float64_t a, float64_t b,
 		 */
 		if (mainlooppos==0)
 		{
-			if (a<=1.0||b<=1.0)
+			if (a<=1.0 || b<=1.0)
 			{
 				dithresh=1.0e-6;
 				rflg=0;
@@ -943,7 +943,7 @@ float64_t CStatistics::inverse_incomplete_beta(float64_t a, float64_t b,
 						}
 					}
 				}
-				if (x==1.0||x==0.0)
+				if (x==1.0 || x==0.0)
 				{
 					mainlooppos=breaknewtcycle;
 					continue;
@@ -1140,5 +1140,247 @@ float64_t CStatistics::inverse_normal_distribution(float64_t y0)
 		x=-x;
 	}
 	result=x;
+	return result;
+}
+
+float64_t CStatistics::inverse_incomplete_gamma(float64_t a, float64_t y0)
+{
+	float64_t igammaepsilon;
+	float64_t iinvgammabignumber;
+	float64_t x0;
+	float64_t x1;
+	float64_t x;
+	float64_t yl;
+	float64_t yh;
+	float64_t y;
+	float64_t d;
+	float64_t lgm;
+	float64_t dithresh;
+	int32_t i;
+	int32_t dir;
+	float64_t result;
+
+	igammaepsilon=0.000000000000001;
+	iinvgammabignumber=4503599627370496.0;
+	x0=iinvgammabignumber;
+	yl=0;
+	x1=0;
+	yh=1;
+	dithresh=5*igammaepsilon;
+	d=1/(9*a);
+	y=1-d-inverse_normal_distribution(y0)*CMath::sqrt(d);
+	x=a*y*y*y;
+	lgm=CMath::lgamma(a);
+	i=0;
+	while (i<10)
+	{
+		if (x>x0  ||  x<x1)
+		{
+			d=0.0625;
+			break;
+		}
+		y=CStatistics::incomplete_gamma(a, x);
+		if (y<yl  ||  y>yh)
+		{
+			d=0.0625;
+			break;
+		}
+		if (y<y0)
+		{
+			x0=x;
+			yl=y;
+		}
+		else
+		{
+			x1=x;
+			yh=y;
+		}
+		d=(a-1)*CMath::log(x)-x-lgm;
+		if (d<-709.78271289338399)
+		{
+			d=0.0625;
+			break;
+		}
+		d=-CMath::exp(d);
+		d=(y-y0)/d;
+		if (CMath::abs(d/x)<igammaepsilon)
+		{
+			result=x;
+			return result;
+		}
+		x=x-d;
+		i=i+1;
+	}
+	if (x0==iinvgammabignumber)
+	{
+		if (x<0)
+		{
+			x=1;
+		}
+		while (x0==iinvgammabignumber)
+		{
+			x=(1+d)*x;
+			y=CStatistics::incomplete_gamma(a, x);
+			if (y<y0)
+			{
+				x0=x;
+				yl=y;
+				break;
+			}
+			d=d+d;
+		}
+	}
+	d=0.5;
+	dir=0;
+	i=0;
+	while (i<400)
+	{
+		x=x1+d*(x0-x1);
+		y=CStatistics::incomplete_gamma(a, x);
+		lgm=(x0-x1)/(x1+x0);
+		if (CMath::abs(lgm)<dithresh)
+		{
+			break;
+		}
+		lgm=(y-y0)/y0;
+		if (CMath::abs(lgm)<dithresh)
+		{
+			break;
+		}
+		if (x<0.0)
+		{
+			break;
+		}
+		if (y>y0)
+		{
+			x1=x;
+			yh=y;
+			if (dir<0)
+			{
+				dir=0;
+				d=0.5;
+			}
+			else
+			{
+				if (dir>1)
+				{
+					d=0.5*d+0.5;
+				}
+				else
+				{
+					d=(y0-yl)/(yh-yl);
+				}
+			}
+			dir=dir+1;
+		}
+		else
+		{
+			x0=x;
+			yl=y;
+			if (dir>0)
+			{
+				dir=0;
+				d=0.5;
+			}
+			else
+			{
+				if (dir<-1)
+				{
+					d=0.5*d;
+				}
+				else
+				{
+					d=(y0-yl)/(yh-yl);
+				}
+			}
+			dir=dir-1;
+		}
+		i=i+1;
+	}
+	result=x;
+	return result;
+}
+
+float64_t CStatistics::incomplete_gamma(float64_t a, float64_t x)
+{
+	float64_t igammaepsilon;
+	float64_t igammabignumber;
+	float64_t igammabignumberinv;
+	float64_t ans;
+	float64_t ax;
+	float64_t c;
+	float64_t yc;
+	float64_t r;
+	float64_t t;
+	float64_t y;
+	float64_t z;
+	float64_t pk;
+	float64_t pkm1;
+	float64_t pkm2;
+	float64_t qk;
+	float64_t qkm1;
+	float64_t qkm2;
+	float64_t result;
+
+	igammaepsilon=0.000000000000001;
+	igammabignumber=4503599627370496.0;
+	igammabignumberinv=2.22044604925031308085*0.0000000000000001;
+	if (x<=0 || a<=0)
+	{
+		result=1;
+		return result;
+	}
+	if (x<1 || x<a)
+	{
+		result=1-CStatistics::incomplete_gamma(a, x);
+		return result;
+	}
+	ax=a*CMath::log(x)-x-CMath::lgamma(a);
+	if (ax<-709.78271289338399)
+	{
+		result=0;
+		return result;
+	}
+	ax=CMath::exp(ax);
+	y=1-a;
+	z=x+y+1;
+	c=0;
+	pkm2=1;
+	qkm2=x;
+	pkm1=x+1;
+	qkm1=z*x;
+	ans=pkm1/qkm1;
+	do
+	{
+		c=c+1;
+		y=y+1;
+		z=z+2;
+		yc=y*c;
+		pk=pkm1*z-pkm2*yc;
+		qk=qkm1*z-qkm2*yc;
+		if (qk!=0)
+		{
+			r=pk/qk;
+			t=CMath::abs((ans-r)/r);
+			ans=r;
+		}
+		else
+		{
+			t=1;
+		}
+		pkm2=pkm1;
+		pkm1=pk;
+		qkm2=qkm1;
+		qkm1=qk;
+		if (CMath::abs(pk)>igammabignumber)
+		{
+			pkm2=pkm2*igammabignumberinv;
+			pkm1=pkm1*igammabignumberinv;
+			qkm2=qkm2*igammabignumberinv;
+			qkm1=qkm1*igammabignumberinv;
+		}
+	}
+	while (t>igammaepsilon);
+	result=ans*ax;
 	return result;
 }
