@@ -35,6 +35,9 @@ struct CResultSet : public CSGObject
 
 	/** delta loss for the prediction vs. truth */
 	float64_t delta;
+
+	/** @return name of SGSerializable */
+	virtual const char* get_name() const { return "ResultSet"; }
 };
 
 /** @brief Class CArgMaxFunction is the case class of all the argmax

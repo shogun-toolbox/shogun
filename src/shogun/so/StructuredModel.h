@@ -39,7 +39,12 @@ class CStructuredModel : public CSGObject
 		/** default constructor */
 		CStructuredModel();
 
-		/** TODO constructor with members */
+		/** constructor
+		 *
+		 * @param argmax arg max function
+		 * @param loss  delta loss function
+		 */
+		CStructuredModel(CArgMaxFunction* argmax, CStructuredLossFunction* loss);
 
 		/** destructor */
 		virtual ~CStructuredModel();
@@ -88,7 +93,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return structure with the predicted output
 		 */
-		CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx);
+		CResultSet* get_argmax(SGVector< float64_t > w, int32_t feat_idx);
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *

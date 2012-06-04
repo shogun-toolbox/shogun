@@ -14,6 +14,18 @@ using namespace shogun;
 
 CStructuredModel::CStructuredModel() : CSGObject()
 {
+	init();
+}
+
+CStructuredModel::CStructuredModel(
+		CArgMaxFunction* argmax,
+		CStructuredLossFunction* loss)
+: CSGObject()
+{
+	init();
+
+	m_argmax = argmax;
+	m_loss   = loss;
 }
 
 CStructuredModel::~CStructuredModel()
@@ -65,7 +77,7 @@ SGVector< float64_t > CStructuredModel::compute_joint_feature(
 	return SGVector< float64_t >();
 }
 
-CResultSet* CStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
+CResultSet* CStructuredModel::get_argmax(SGVector< float64_t > w, int32_t feat_idx)
 {
 	return m_argmax->argmax(m_features, feat_idx, m_labels, w);
 }
@@ -85,8 +97,13 @@ void CStructuredModel::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", 
 			MS_NOT_AVAILABLE);
-	//TODO add rest of members when function pointers removed
+	SG_ADD((CSGObject**) &m_argmax, "m_argmax", "Argmax function",
+			MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_loss, "m_loss", "Structured loss function",
+			MS_NOT_AVAILABLE);
 
 	m_features = NULL;
 	m_labels   = NULL;
+	m_argmax   = NULL;
+	m_loss     = NULL;
 }
