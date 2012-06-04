@@ -72,6 +72,9 @@ public:
 	/** apply machine one single example */
 	virtual int32_t apply_multiclass_example(VwExample* ex);
 protected:
+	/** the labels will be embedded in the streaming features */
+	virtual bool train_require_labels() const { return false; }
+
 	/** train machine
 	 *
 	 * @param data training data 
