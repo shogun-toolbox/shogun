@@ -23,7 +23,6 @@
 %rename(LinearHMM) CLinearHMM;
 %rename(PositionalPWM) CPositionalPWM;
 %rename(Gaussian) CGaussian;
-%rename(GMM) CGMM;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distributions/Distribution.h>
@@ -33,4 +32,3 @@
 %include <shogun/distributions/LinearHMM.h>
 %include <shogun/distributions/PositionalPWM.h>
 %include <shogun/distributions/Gaussian.h>
-%include <shogun/clustering/GMM.h>
