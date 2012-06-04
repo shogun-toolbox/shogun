@@ -23,75 +23,47 @@ template<class T> class SGVector : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGVector() : SGReferencedData(false)
-		{
-			init_data();
-		}
+		SGVector();
 
 		/** constructor for setting params */
-		SGVector(T* v, index_t len, bool ref_counting=true)
-			: SGReferencedData(ref_counting), vector(v), vlen(len)
-		{
-		}
+		SGVector(T* v, index_t len, bool ref_counting=true);
 
 		/** constructor to create new vector in memory */
-		SGVector(index_t len, bool ref_counting=true)
-			: SGReferencedData(ref_counting), vlen(len)
-		{
-			vector=SG_MALLOC(T, len);
-		}
+		SGVector(index_t len, bool ref_counting=true);
 
 		/** copy constructor */
-		SGVector(const SGVector &orig) : SGReferencedData(orig)
-		{
-			copy_data(orig);
-		}
+		SGVector(const SGVector &orig);
 
 		/** empty destructor */
-		virtual ~SGVector()
-		{
-			unref();
-		}
+		virtual ~SGVector();
 
 		/** fill vector with zeros */
-		void zero()
-		{
-			if (vector && vlen)
-				set_const(0);
-		}
+		void zero();
 
-		/** set vector to a constant */
-		void set_const(T const_elem)
-		{
-			for (index_t i=0; i<vlen; i++)
-				vector[i]=const_elem ;
-		}
+		/** set vector to a constant
+		 *
+		 * @param const_elem - value to set vector to
+		 */
+		void set_const(T const_elem);
 
-		/** range fill */
-		void range_fill(T start=0)
-		{
-			range_fill_vector(vector, vlen, start);
-		}
+		/** range fill a vector with start...start+len-1
+		 * 
+		 * @param start - value to be assigned to first element of vector
+		 */
+		void range_fill(T start=0);
 
-		/** random */
-		void random(T min_value, T max_value)
-		{
-			random_vector(vector, vlen, min_value, max_value);
-		}
+		/** create random vector
+		 *
+		 * @param min_value [min_value,max_value]
+		 * @param max_value
+		 */
+		void random(T min_value, T max_value);
 
 		/** random permutate */
-		void randperm()
-		{
-			/* this does not work. Heiko Strathmann */
-			SG_SNOTIMPLEMENTED;
-			randperm(vector, vlen);
-		}
+		void randperm();
 
 		/** clone vector */
-		SGVector<T> clone() const
-		{
-			return SGVector<T>(clone_vector(vector, vlen), vlen);
-		}
+		SGVector<T> clone() const;
 
 		/** clone vector */
 		template <class VT>
@@ -150,11 +122,7 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param index index
 		 * @return vector element at index
 		 */
-		const T& get_element(index_t index)
-		{
-			ASSERT(vector && (index>=0) && (index<vlen));
-			return vector[index];
-		}
+		const T& get_element(index_t index);
 
 		/** set vector element at index 'index' return false in case of trouble
 		 *
@@ -162,25 +130,14 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		void set_element(const T& p_element, index_t index)
-		{
-			ASSERT(vector && (index>=0) && (index<vlen));
-			vector[index]=p_element;
-		}
+		void set_element(const T& p_element, index_t index);
 
 		/** resize vector
 		 *
 		 * @param n new size
 		 * @return if resizing was successful
 		 */
-		void resize_vector(int32_t n)
-		{
-			vector=SG_REALLOC(T, vector, n);
-
-			if (n > vlen)
-				memset(&vector[vlen], 0, (n-vlen)*sizeof(T));
-			vlen=n;
-		}
+		void resize_vector(int32_t n);
 
 		/** operator overload for vector read only access
 		 *
@@ -202,14 +159,11 @@ template<class T> class SGVector : public SGReferencedData
 			return vector[index];
 		}
 
-		void add(const SGVector<T> x)
-		{
-			ASSERT(x.vector && vector);
-			ASSERT(x.vlen == vlen);
-
-			for (int32_t i=0; i<vlen; i++)
-				vector[i]+=x.vector[i];
-		}
+		/** add vector to current vector
+		 *
+		 * @param x add vector x to current vector
+		 */
+		void add(const SGVector<T> x);
 
 		SGVector<T> operator+ (SGVector<T> x)
 		{
@@ -228,42 +182,20 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 		/** display array size */
-		void display_size() const
-		{
-			SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen);
-		}
+		void display_size() const;
 
 		/** display array */
-		void display_vector() const
-		{
-			display_size();
-			for (int32_t i=0; i<vlen; i++)
-				SG_SPRINT("%10.10g,", (float64_t) vector[i]);
-			SG_SPRINT("\n");
-		}
+		void display_vector() const;
 
 	protected:
 		/** needs to be overridden to copy data */
-		virtual void copy_data(const SGReferencedData &orig)
-		{
-			vector=((SGVector*)(&orig))->vector;
-			vlen=((SGVector*)(&orig))->vlen;
-		}
+		virtual void copy_data(const SGReferencedData &orig);
 
 		/** needs to be overridden to initialize empty data */
-		virtual void init_data()
-		{
-			vector=NULL;
-			vlen=0;
-		}
+		virtual void init_data();
 
 		/** needs to be overridden to free data */
-		virtual void free_data()
-		{
-			SG_FREE(vector);
-			vector=NULL;
-			vlen=0;
-		}
+		virtual void free_data();
 
 	public:
 		/** vector  */
