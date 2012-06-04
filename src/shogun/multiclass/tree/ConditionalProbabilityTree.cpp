@@ -8,10 +8,86 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <vector>
+#include <stack>
 #include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
 
 using namespace shogun;
 using namespace std;
+
+CMulticlassLabels* CConditionalProbabilityTree::apply_multiclass(CFeatures* data)
+{
+	if (data)
+	{
+		if (data->get_feature_class() != C_STREAMING_VW)
+			SG_ERROR("Expected StreamingVwFeatures\n");
+		set_features(dynamic_cast<CStreamingVwFeatures*>(data));
+	}
+
+	vector<int32_t> predicts;
+
+	m_feats->start_parser();
+	while (m_feats->get_next_example())
+	{
+		predicts.push_back(apply_multiclass_example(m_feats->get_example()));
+		m_feats->release_example();
+	}
+	m_feats->end_parser();
+
+	CMulticlassLabels *labels = new CMulticlassLabels(predicts.size());
+	for (size_t i=0; i < predicts.size(); ++i)
+		labels->set_int_label(i, predicts[i]);
+	return labels;
+}
+
+int32_t CConditionalProbabilityTree::apply_multiclass_example(VwExample* ex)
+{
+	ex->ld->label = FLT_MAX; // this will disable VW learning from this example
+
+	compute_conditional_probabilities(ex);
+	SGVector<float64_t> probs(m_leaves.size());
+	for (index_t i=0; i < probs.vlen; ++i)
+		probs[i] = accumulate_conditional_probability(m_leaves[i]);
+	return CMath::arg_max(probs.vector, 1, probs.vlen);
+}
+
+void CConditionalProbabilityTree::compute_conditional_probabilities(VwExample *ex)
+{
+	stack<node_t *> nodes;
+	nodes.push(m_root);
+
+	while (!nodes.empty())
+	{
+		node_t *node = nodes.top();
+		nodes.pop();
+		if (node->left())
+		{
+			nodes.push(node->left());
+			nodes.push(node->right());
+
+			// don't calculate for leaf
+			node->data.p_right = train_node(ex, node);
+		}
+	}
+}
+
+float64_t CConditionalProbabilityTree::accumulate_conditional_probability(node_t *leaf)
+{
+	float64_t prob = 1;
+	node_t *par = leaf->parent();
+	while (par != NULL)
+	{
+		if (leaf == par->left())
+			prob *= (1-par->data.p_right);
+		else
+			prob *= par->data.p_right;
+
+		leaf = par;
+		par = leaf->parent();
+	}
+
+	return prob;
+}
 
 bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 {
@@ -124,12 +200,13 @@ void CConditionalProbabilityTree::train_path(VwExample *ex, node_t *node)
 	}
 }
 
-void CConditionalProbabilityTree::train_node(VwExample *ex, node_t *node)
+float64_t CConditionalProbabilityTree::train_node(VwExample *ex, node_t *node)
 {
 	CVowpalWabbit *vw = dynamic_cast<CVowpalWabbit*>(m_machines->get_element(node->machine()));
 	ASSERT(vw);
-	vw->predict_and_finalize(ex);
+	float64_t pred = vw->predict_and_finalize(ex);
 	SG_UNREF(vw);
+	return pred;
 }
 
 int32_t CConditionalProbabilityTree::create_machine(VwExample *ex)

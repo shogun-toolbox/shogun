@@ -22,8 +22,9 @@ namespace shogun
 struct ConditionalProbabilityTreeNodeData
 {
 	int32_t label;
+	float64_t p_right; // prob of right subtree, used in prediction
 
-	ConditionalProbabilityTreeNodeData():label(-1) {}
+	ConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
 };
 
 class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
@@ -65,6 +66,11 @@ public:
 		m_feats = feats;
 	}
 
+	/** apply machine to data in means of multiclass classification problem */
+	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+
+	/** apply machine one single example */
+	virtual int32_t apply_multiclass_example(VwExample* ex);
 protected:
 	/** train machine
 	 *
@@ -88,8 +94,9 @@ protected:
 	/** train a single node 
 	 * @param ex VwExample instance of the training example
 	 * @param node the node
+	 * @return the predicted value for the example
 	 */
-	void train_node(VwExample *ex, node_t *node);
+	float64_t train_node(VwExample *ex, node_t *node);
 
 	/** create a new VW machine for a node 
 	 * @param ex the VwExample instance for training the new machine
@@ -102,6 +109,14 @@ protected:
 	 * @return true if should go left, false otherwise
 	 */
 	virtual bool which_subtree(node_t *node, VwExample *ex)=0;
+
+	/** compute conditional probabilities for ex along the whole tree for predicting */
+	void compute_conditional_probabilities(VwExample *ex);
+
+	/** accumulate along the path to the root the conditional probability for a
+	 * particular leaf node. 
+	 */
+	float64_t accumulate_conditional_probability(node_t *leaf);
 
 	int32_t m_num_passes; ///< number of passes for online training
 	std::map<int32_t, node_t*> m_leaves; ///< class => leaf mapping
