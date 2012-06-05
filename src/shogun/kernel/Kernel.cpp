@@ -943,10 +943,3 @@ void CKernel::init()
 
 	set_normalizer(new CIdentityKernelNormalizer());
 }
-
-SGMatrix<float64_t> CKernel::get_parameter_gradient(const char* param_name)
-{
-	SG_ERROR("Derivative with respect to parameter %s not implemented for kernel (%s). Returning Empty Matrix.\n",
-                  param_name, get_name());
-	return SGMatrix<float64_t>(0,0);
-}

@@ -127,14 +127,6 @@ class CGaussianKernel: public CDotKernel
 			return m_compact;
 		}
 
-		/** get kernel derivative with respect to parameters
-		 *
-		 * @param name of parameter used to take derivative
-		 * @return kernel gradient with respect to parameter  
-		 */
-		virtual SGMatrix<float64_t> get_parameter_gradient(const char* param_name);
-
-
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors
