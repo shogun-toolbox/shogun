@@ -49,7 +49,7 @@ void gen_ints(uint256_t* &a, uint32_t* &b, uint32_t len)
 	}
 }
 
-const int LEN = 5*1024*1024;
+const int LEN = 5*1024;
 
 int main()
 {
@@ -82,9 +82,10 @@ int main()
 
 		SG_SPRINT("\n\n");
 
-		a[0]=(uint64_t[4]) {1,2,3,4};
-		uint64_t val[4]={5,6,7,8};
-		a[1]=val;
+		uint64_t val1[4]={1,2,3,4};
+		uint64_t val2[4]={5,6,7,8};
+		a[0]=val1;
+		a[1]=val2;
 		a[2]=a[0];
 		CMath::swap(a[0],a[1]);
 
