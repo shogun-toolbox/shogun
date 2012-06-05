@@ -37,13 +37,13 @@ namespace shogun
 
       CDynamicObjectArray<CLatentData>* get_labels() const;
 
-      CLatentData* get_label (int32_t idx) const;
+      using CLabels::get_label;
+      CLatentData* get_latent_label (int32_t idx) const;
 
-      void add_label (CLatentData* label);
+      void add_latent_label (CLatentData* label);
 
       using CLabels::set_label;
-
-      bool set_label (int32_t idx, CLatentData* label);
+      bool set_latent_label (int32_t idx, CLatentData* label);
 
       int32_t get_num_labels() const;
 

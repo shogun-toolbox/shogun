@@ -53,7 +53,7 @@ CDynamicObjectArray<CLatentData>* CLatentLabels::get_labels () const
   return m_labels;
 }
 
-CLatentData* CLatentLabels::get_label (int32_t idx) const
+CLatentData* CLatentLabels::get_latent_label (int32_t idx) const
 {
   ASSERT (m_labels != NULL);
   if (idx < 0 || idx >= get_num_labels())
@@ -62,17 +62,17 @@ CLatentData* CLatentLabels::get_label (int32_t idx) const
   return (CLatentData*) m_labels->get_element (idx);
 }
 
-void CLatentLabels::add_label (CLatentData* label)
+void CLatentLabels::add_latent_label (CLatentData* label)
 {
   ASSERT (m_labels != NULL);
   m_labels->push_back (label);
 }
 
-bool CLatentLabels::set_label (int32_t idx, CLatentData* label)
+bool CLatentLabels::set_latent_label (int32_t idx, CLatentData* label)
 {
   if (idx < get_num_labels ())
   {
-    return m_labels->insert_element (label, idx);
+    return m_labels->set_element (label, idx);
   }
   else
   {
