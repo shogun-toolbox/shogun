@@ -14,12 +14,12 @@ using namespace shogun;
 
 CLatentLabels::CLatentLabels ()
 {
-	
+
 }
 
 CLatentLabels::~CLatentLabels ()
 {
-	
+
 }
 
 

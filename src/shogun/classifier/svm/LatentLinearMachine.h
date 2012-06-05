@@ -145,7 +145,7 @@ namespace shogun
       /** C1 */
       float64_t m_C1;
       /** C2 */
-      float64_t m_C2;			
+      float64_t m_C2;
       /** epsilon */
       float64_t m_epsilon;
       /** max iterations */

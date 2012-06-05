@@ -15,13 +15,13 @@
 
 namespace shogun
 {
-	class CLatentLabels : public CLabels
-	{
-		public:
-			CLatentLabels ();
-			
-			virtual ~CLatentLabels ();
-	};
+  class CLatentLabels : public CLabels
+  {
+    public:
+      CLatentLabels ();
+
+      virtual ~CLatentLabels ();
+  };
 }
 
 #endif /* __LATENTLABELS_H__ */
