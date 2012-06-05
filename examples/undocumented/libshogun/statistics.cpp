@@ -42,8 +42,10 @@ void test_inverse_incomplete_gamma()
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-15);
 
-	difference=CStatistics::inverse_incomplete_gamma(0, 1-0.95)*3;
-	ASSERT(difference==0);
+	difference=CStatistics::inverse_incomplete_gamma(0.1, 1-0.95)*3;
+	difference-=1.741305315969402;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-15)
 
 	difference=CStatistics::inverse_incomplete_gamma(2, 1-0.95)*0.1;
 	difference-=0.474386451839058;
