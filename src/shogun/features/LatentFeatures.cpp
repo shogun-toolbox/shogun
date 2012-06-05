@@ -14,12 +14,19 @@ using namespace shogun;
 
 CLatentFeatures::CLatentFeatures ()
 {
+  init ();
+}
 
+CLatentFeatures::CLatentFeatures (int32_t num_samples)
+{
+  init ();
+  m_samples = new CDynamicObjectArray<CLatentData> (num_samples);
+  SG_REF (m_samples);
 }
 
 CLatentFeatures::~CLatentFeatures ()
 {
-
+  SG_UNREF (m_samples);
 }
 
 CFeatures* CLatentFeatures::duplicate () const
@@ -29,7 +36,6 @@ CFeatures* CLatentFeatures::duplicate () const
 
 EFeatureType CLatentFeatures::get_feature_type ()
 {
-
   return F_ANY;
 }
 
@@ -42,53 +48,36 @@ EFeatureClass CLatentFeatures::get_feature_class ()
 
 int32_t CLatentFeatures::get_num_vectors () const
 {
-
-  return 0;
+  if (m_samples == NULL)
+    return 0;
+  else
+    return m_samples->get_num_elements ();
 }
 
 int32_t CLatentFeatures::get_size ()
 {
-
-  return 0;
+  return sizeof (float64_t);
 }
 
-int32_t CLatentFeatures::get_dim_feature_space () const
+bool CLatentFeatures::add_sample (CLatentData* example)
 {
-  return 0;
+  ASSERT (m_samples != NULL);
+  m_samples->push_back (example);
+
 }
 
-float64_t CLatentFeatures::dot (int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+CLatentData* CLatentFeatures::get_sample (index_t idx)
 {
+  ASSERT (m_samples != NULL);
+  if (idx < 0 || idx >= this->get_num_vectors ())
+    SG_ERROR("Out of index!\n");
 
-  return 0.0;
+  return (CLatentData*) m_samples->get_element (idx);
+
 }
 
-float64_t CLatentFeatures::dense_dot (int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
+void CLatentFeatures::init ()
 {
-  return 0.0;
+  m_parameters->add ((CSGObject**) &m_samples, "samples", "Array of examples");
 }
 
-void CLatentFeatures::add_to_dense_vec (float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
-{
-
-}
-
-int32_t CLatentFeatures::get_nnz_features_for_vector (int32_t num)
-{
-  return 0;
-}
-
-bool CLatentFeatures::get_next_feature (int32_t& index, float64_t& value, void* iterator)
-{
-  return false;
-}
-
-void CLatentFeatures::free_feature_iterator (void* iterator)
-{
-
-}
-
-void* CLatentFeatures::get_feature_iterator (int32_t vector_index)
-{
-  return NULL;
-}
