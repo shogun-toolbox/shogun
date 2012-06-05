@@ -21,9 +21,9 @@ namespace shogun
 {	
   class CLatentLinearMachine;
 
-  typedef void (*argMaxLatent) (CLatentLinearMachine&, void* userData);
-  typedef void (*psi) (CLatentLinearMachine&, CLatentData* x, CLatentData* h, float64_t*);
-  typedef CLatentData* (*infer_latent_var) (CLatentLinearMachine&, CLatentData* x);
+  typedef void (*argmax_func) (CLatentLinearMachine&, void* userData);
+  typedef void (*psi_func) (CLatentLinearMachine&, CLatentData* x, CLatentData* h, float64_t*);
+  typedef CLatentData* (*infer_func) (CLatentLinearMachine&, CLatentData* x);
 
   class CLatentLinearMachine: public CLinearMachine
   {
@@ -31,8 +31,6 @@ namespace shogun
     public:
       /** default contstructor */
       CLatentLinearMachine ();
-
-      CLatentLinearMachine (argMaxLatent usrArgMaxFunc);
 
       /** constructor
        *
@@ -142,11 +140,11 @@ namespace shogun
        */
       inline int32_t get_max_iterations () { return m_max_iter; }
 
-      void setArgmax (argMaxLatent usrFunc);
+      void set_argmax (argmax_func usr_argmax);
 
-      void setPsi (psi usrFunc);
+      void set_psi (psi_func usr_psi);
 
-      void setInfer (infer_latent_var usrFunc);
+      void set_infer (infer_func usr_infer);
 
       index_t get_psi_size () const { return m_psi_size; }
       void set_psi_size (index_t psi_size) { m_psi_size = psi_size; }
@@ -156,15 +154,15 @@ namespace shogun
       virtual void compute_psi ();
 
     private:
-      static void defaultArgMaxH (CLatentLinearMachine&, void* userData);
+      static void default_argmax_h (CLatentLinearMachine&, void* userData);
 
       /** initalize the values to default values */
       void init ();
 
     private:
-      argMaxLatent argMaxH;
-      psi psi_func;
-      infer_latent_var infer;
+      argmax_func argmax_h;
+      psi_func psi;
+      infer_func infer;
       /** C1 */
       float64_t m_C1;
       /** C2 */

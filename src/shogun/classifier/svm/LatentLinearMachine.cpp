@@ -18,17 +18,10 @@
 using namespace shogun;
 
 CLatentLinearMachine::CLatentLinearMachine ()
-  : argMaxH (NULL),
-    psi_func (NULL)
+  : argmax_h (NULL),
+    psi (NULL),
+    infer (NULL)
 {
-  init ();
-}
-
-CLatentLinearMachine::CLatentLinearMachine (argMaxLatent usrArgMaxFunc)
-  : argMaxH (NULL),
-    psi_func (NULL)
-{
-  setArgmax (usrArgMaxFunc);
   init ();
 }
 
@@ -41,8 +34,9 @@ CLatentLinearMachine::CLatentLinearMachine (float64_t C,
     CLatentFeatures* traindat,
     CLabels* trainlab,
     index_t psi_size)
-  : argMaxH (NULL),
-    psi_func (NULL),
+  : argmax_h (NULL),
+    psi (NULL),
+    infer (NULL),
     m_latent_feats (traindat)
 {
   ASSERT (traindat != NULL);
@@ -66,7 +60,6 @@ CLatentLabels* CLatentLinearMachine::apply ()
   if (!features)
     return NULL;
 
-  
   return NULL;
 }
 
@@ -77,7 +70,7 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
     CLatentFeatures* lf = dynamic_cast<CLatentFeatures*> (data);
     int32_t num_examples = lf->get_num_vectors ();
     SGMatrix<float64_t> psi_matrix (m_psi_size, num_examples);
-    CSimpleFeatures<float64_t> psi (psi_matrix);
+    CSimpleFeatures<float64_t> psi_feats (psi_matrix);
     CLatentLabels* labels = new CLatentLabels (num_examples);
 
     for (int i = 0; i < num_examples; ++i)
@@ -85,9 +78,9 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
       CLatentData* x = lf->get_sample (i);
       CLatentData* h = infer (*this, x);
       labels->set_latent_label (i, h);
-      SGVector<float64_t> psi_feat = psi.get_feature_vector (i);
+      SGVector<float64_t> psi_feat = psi_feats.get_feature_vector (i);
 
-      psi_func (*this, x, h, psi_feat.vector);
+      psi (*this, x, h, psi_feat.vector);
 
       float64_t y = CMath::dot (w, psi_feat.vector, w_dim);
       labels->set_label (i, y);
@@ -103,19 +96,19 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
   return NULL;
 }
 
-void CLatentLinearMachine::setArgmax (argMaxLatent usrArgMaxFunc)
+void CLatentLinearMachine::set_argmax (argmax_func usr_argmax)
 {
-  ASSERT (usrArgMaxFunc != NULL);
-  argMaxH = usrArgMaxFunc;
+  ASSERT (usr_argmax != NULL);
+  argmax_h = usr_argmax;
 }
 
-void CLatentLinearMachine::setPsi (psi usrFunc)
+void CLatentLinearMachine::set_psi (psi_func usr_psi)
 {
-  ASSERT (usrFunc != NULL);
-  this->psi_func = usrFunc;
+  ASSERT (usr_psi != NULL);
+  psi = usr_psi;
 }
 
-void CLatentLinearMachine::defaultArgMaxH (CLatentLinearMachine& llm,
+void CLatentLinearMachine::default_argmax_h (CLatentLinearMachine& llm,
     void* userData)
 {
   SGVector<float64_t> w = llm.get_w ();
@@ -140,10 +133,10 @@ void CLatentLinearMachine::defaultArgMaxH (CLatentLinearMachine& llm,
   SG_UNREF (features);
 }
 
-void CLatentLinearMachine::setInfer (infer_latent_var usrFunc)
+void CLatentLinearMachine::set_infer (infer_func usr_infer)
 {
-  ASSERT (usrFunc != NULL);
-  infer = usrFunc;
+  ASSERT (usr_infer != NULL);
+  infer = usr_infer;
 }
 
 void CLatentLinearMachine::compute_psi ()
@@ -155,19 +148,20 @@ void CLatentLinearMachine::compute_psi ()
     SGVector<float64_t> psi_feat = dynamic_cast<CSimpleFeatures<float64_t>*>(features)->get_feature_vector (i);
     CLatentData* label = (dynamic_cast<CLatentLabels*> (m_labels))->get_latent_label (i);
     CLatentData* x = m_latent_feats->get_sample (i);
-    psi_func (*this, x, label, psi_feat.vector);
+    psi (*this, x, label, psi_feat.vector);
   }
 }
 
 bool CLatentLinearMachine::train_machine (CFeatures* data)
 {
-  if (psi_func == NULL)
+  if (psi == NULL)
     SG_ERROR ("The PSI function is not implemented!\n");
+
+  if (infer == NULL)
+    SG_ERROR ("The Infer function is not implemented!\n");
 
   try
   {
-    CLatentFeatures* lf = dynamic_cast<CLatentFeatures*> (data);
-
     SG_DEBUG ("Initialise PSI (x,h)\n");
     compute_psi ();
 
@@ -205,7 +199,7 @@ bool CLatentLinearMachine::train_machine (CFeatures* data)
       SG_DEBUG ("Find and set h_i = argmax_h (w, psi(x_i,h))\n");
       SGVector<float64_t> cur_w = svm.get_w ();
       memcpy (w, cur_w.vector, cur_w.vlen*sizeof (float64_t));
-      argMaxH (*this, NULL);
+      argmax_h (*this, NULL);
 
       SG_DEBUG ("Recalculating PSI (x,h) with the new h variables\n");
       compute_psi ();
@@ -235,8 +229,8 @@ void CLatentLinearMachine::init ()
   features = new CSimpleFeatures<float64_t> ();
   SG_REF (features);
 
-  if (argMaxH == NULL)
-    setArgmax (defaultArgMaxH);
+  if (argmax_h == NULL)
+    set_argmax (default_argmax_h);
 
   m_parameters->add(&m_C1, "C1",  "Cost constant 1.");
   m_parameters->add(&m_C2, "C2",  "Cost constant 2.");
