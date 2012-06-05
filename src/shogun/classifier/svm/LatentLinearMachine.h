@@ -15,12 +15,15 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/features/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
+#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {	
   class CLatentLinearMachine;
 
-  typedef CFeatures* (*argMaxLatent) (CLatentLinearMachine&, void* userData);
+  typedef void (*argMaxLatent) (CLatentLinearMachine&, void* userData);
+  typedef void (*psi) (CLatentLinearMachine&, CLatentData* x, CLatentData* h, float64_t*);
+  typedef CLatentData* (*infer_latent_var) (CLatentLinearMachine&, CLatentData* x);
 
   class CLatentLinearMachine: public CLinearMachine
   {
@@ -39,7 +42,8 @@ namespace shogun
        */
       CLatentLinearMachine (float64_t C,
           CLatentFeatures* traindat,
-          CLabels* trainlab);
+          CLabels* trainlab,
+          index_t psi_size);
 
       virtual ~CLatentLinearMachine ();
 
@@ -60,14 +64,23 @@ namespace shogun
        *
        * @return features
        */
-      virtual CDotFeatures* get_features () 
+      virtual CDotFeatures* get_features ()
       { 
         SG_REF(features);
         return features;
       }
 
-      /** Returns the name of the SGSerializable instance.  It MUST BE
-       *  the CLASS NAME without the prefixed `C'.
+      /** get latent features
+       *
+       * @return features
+       */
+      virtual CLatentFeatures* get_latent_features ()
+      {
+        SG_REF (m_latent_feats);
+        return m_latent_feats;
+      }
+
+      /** Returns the name of the SGSerializable instance.
        *
        * @return name of the SGSerializable
        */
@@ -93,10 +106,10 @@ namespace shogun
        * Note that not all SVMs support this (however at least CLibSVM and
        * CSVMLight do)
        */
-      inline void set_C (float64_t c_neg, float64_t c_pos) 
-      { 
-        m_C1=c_neg; 
-        m_C2=c_pos; 
+      inline void set_C (float64_t c_neg, float64_t c_pos)
+      {
+        m_C1=c_neg;
+        m_C2=c_pos;
       }
 
       /** get C1
@@ -131,17 +144,27 @@ namespace shogun
 
       void setArgmax (argMaxLatent usrFunc);
 
+      void setPsi (psi usrFunc);
+
+      void setInfer (infer_latent_var usrFunc);
+
+      index_t get_psi_size () const { return m_psi_size; }
+      void set_psi_size (index_t psi_size) { m_psi_size = psi_size; }
+
     protected:
       virtual bool train_machine (CFeatures* data=NULL);
+      virtual void compute_psi ();
 
     private:
-      static CFeatures* defaultArgMaxH (CLatentLinearMachine&, void* userData);
+      static void defaultArgMaxH (CLatentLinearMachine&, void* userData);
 
       /** initalize the values to default values */
       void init ();
 
     private:
       argMaxLatent argMaxH;
+      psi psi_func;
+      infer_latent_var infer;
       /** C1 */
       float64_t m_C1;
       /** C2 */
@@ -150,7 +173,12 @@ namespace shogun
       float64_t m_epsilon;
       /** max iterations */
       int32_t m_max_iter;
+      /** psi size */
+      index_t m_psi_size;
+      /** Latent Features */
+      CLatentFeatures* m_latent_feats;
   };
 }
 
 #endif /* __LATENTLINEARMACHINE_H__ */
+
