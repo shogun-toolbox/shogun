@@ -759,6 +759,12 @@ class CKernel : public CSGObject
 		 */
 		virtual void set_subkernel_weights(SGVector<float64_t> weights);
 
+		/** get kernel derivative with respect to parameters
+		 *
+		 * @param name of parameter used to take derivative
+		 * @return kernel gradient with respect to parameter  
+		 */
+		virtual SGMatrix<float64_t> get_parameter_gradient(const char* param_name);
 	protected:
 		/** set property
 		 *
