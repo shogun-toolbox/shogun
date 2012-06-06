@@ -79,7 +79,7 @@ float64_t CLPBoost::find_max_violator(int32_t& max_dim)
 		for (int32_t j=0; j<sfeat[i].num_feat_entries; j++)
 		{
 			int32_t idx=sfeat[i].features[j].feat_index;
-			float64_t v=u[idx]*m_labels->get_label(idx)*sfeat[i].features[j].entry;
+			float64_t v=u[idx]*((CBinaryLabels*)m_labels)->get_confidence(idx)*sfeat[i].features[j].entry;
 			valplus+=v;
 			valminus-=v;
 		}
@@ -110,10 +110,8 @@ bool CLPBoost::train_machine(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
-	SG_FREE(w);
-	w=SG_MALLOC(float64_t, num_feat);
-	memset(w,0,sizeof(float64_t)*num_feat);
-	w_dim=num_feat;
+	w = SGVector<float64_t>(num_feat);
+	memset(w.vector,0,sizeof(float64_t)*num_feat);
 
 	CCplex solver;
 	solver.init(E_LINEAR);

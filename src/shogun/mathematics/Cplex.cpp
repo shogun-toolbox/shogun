@@ -85,7 +85,7 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 }
 
 bool CCplex::setup_subgradientlpm_QP(
-	float64_t C, CLabels* labels, CSparseFeatures<float64_t>* features,
+	float64_t C, CBinaryLabels* labels, CSparseFeatures<float64_t>* features,
 	int32_t* idx_bound, int32_t num_bound, int32_t* w_zero, int32_t num_zero,
 	float64_t* vee, int32_t num_dim, bool use_bias)
 {
@@ -156,7 +156,7 @@ bool CCplex::setup_subgradientlpm_QP(
 			cmatbeg[i]=offs;
 			cmatcnt[i]=vlen;
 
-			float64_t val= -C*labels->get_label(idx);
+			float64_t val= -C*labels->get_confidence(idx);
 
 			if (vlen>0)
 			{
@@ -291,7 +291,7 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 
 bool CCplex::add_lpboost_constraint(
 	float64_t factor, SGSparseVectorEntry<float64_t>* h, int32_t len, int32_t ulen,
-	CLabels* label)
+	CBinaryLabels* label)
 {
 	int amatbeg[1]; /* for calling external lib */
 	int amatind[len+1]; /* for calling external lib */
@@ -308,7 +308,7 @@ bool CCplex::add_lpboost_constraint(
 		int32_t idx=h[i].feat_index;
 		float64_t val=factor*h[i].entry;
 		amatind[i]=idx;
-		amatval[i]=label->get_label(idx)*val;
+		amatval[i]=label->get_confidence(idx)*val;
 	}
 
 	int32_t status = CPXaddrows (env, lp, 0, 1, len, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
@@ -320,7 +320,7 @@ bool CCplex::add_lpboost_constraint(
 }
 
 bool CCplex::setup_lpm(
-	float64_t C, CSparseFeatures<float64_t>* x, CLabels* y, bool use_bias)
+	float64_t C, CSparseFeatures<float64_t>* x, CBinaryLabels* y, bool use_bias)
 {
 	ASSERT(x);
 	ASSERT(y);
@@ -391,7 +391,7 @@ bool CCplex::setup_lpm(
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		amatind[offs]=i;
-		amatval[offs]=-y->get_label(i);
+		amatval[offs]=-y->get_confidence(i);
 		offs++;
 	}
 
@@ -412,7 +412,7 @@ bool CCplex::setup_lpm(
 			float64_t val=sfeat[i].features[j].entry;
 
 			amatind[offs]=row;
-			amatval[offs]=-y->get_label(row)*val;
+			amatval[offs]=-y->get_confidence(row)*val;
 			offs++;
 		}
 	}
@@ -428,9 +428,9 @@ bool CCplex::setup_lpm(
 			float64_t val=sfeat[i].features[j].entry;
 
 			amatind[offs]=row;
-			amatval[offs]=y->get_label(row)*val;
+			amatval[offs]=y->get_confidence(row)*val;
 			offs++;
-		}
+		
 	}
 
 	x->clean_tsparse(sfeat, num_svec);
