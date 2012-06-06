@@ -13,9 +13,8 @@
 
 #ifdef USE_MOSEK
 
-#define DEBUG_PRIMAL_MOSEK_SOSVM
-
 #include <shogun/machine/LinearStructuredOutputMachine.h>
+#include <shogun/mathematics/Mosek.h>
 
 namespace shogun
 {
@@ -74,13 +73,36 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 */
 		bool insert_result(CList* result_list, CResultSet* result) const;
 
+		/** introduces a new constraint of type Ax <= b in the 
+		 * optimization problem. Remember that each row i in A takes the
+		 * form
+		 *
+		 * \f[
+		 * \Psi(\vec{x}_i,{\hat{y}_i}) - \Psi(\vec{x}_i,y_i) ~|~-\delta_{ji}
+		 *\f]
+		 *
+		 * and the corresponding element in b is
+		 *
+		 * \f[
+		 * -\Delta(y, \hat{y}_i)
+		 *\f]
+		 *
+		 * @param mosek MOSEK optimization problem instance
+		 * @param result structure with numerical information of the
+		 * constraint
+		 * @param con_idx row index in A for this new constraint
+		 * @param train_idx training example associated to this 
+		 * constraint
+		 *
+		 * @return whether the new constraint has been succesfully added
+		 */
+		bool add_constraint(CMosek* mosek, CResultSet* result, index_t con_idx, index_t train_idx) const;
+
 		/** TODO doc
 		 *
 		 * @param lb lower bound for 
 		 */
-		bool solve_qp(SGMatrix< float64_t > A, SGMatrix< float64_t > C,
-				SGVector< float64_t > lb, 
-				SGVector< float64_t > ub) const;
+		bool solve_qp() const;
 
 		/** TODO doc
 		 *

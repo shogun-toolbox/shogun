@@ -10,18 +10,50 @@
 
 #ifdef USE_MOSEK
 
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Mosek.h>
 #include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
-//TODO
 CMosek::CMosek()
 : CSGObject()
 {
 }
 
-//TODO
+CMosek::CMosek(int32_t num_con, int32_t num_var)
+: CSGObject()
+{
+	// Create MOSEK environment
+	m_rescode = MSK_makeenv(&m_env, NULL, NULL, NULL, NULL);
+
+	// Direct the environment's log stream to SG_PRINT
+	if ( m_rescode == MSK_RES_OK )
+	{
+		m_rescode = MSK_linkfunctoenvstream(m_env, MSK_STREAM_LOG,
+				NULL, CMosek::print);
+	}
+
+	// Initialize the environment
+	if ( m_rescode == MSK_RES_OK )
+	{
+		m_rescode = MSK_initenv(m_env);
+	}
+
+	// Create an optimization task
+	if ( m_rescode == MSK_RES_OK )
+	{
+		m_rescode = MSK_maketask(m_env, num_con, num_var, &m_task);
+	}
+
+	// Direct the task's log stream to SG_PRINT
+	if ( m_rescode == MSK_RES_OK )
+	{
+		m_rescode = MSK_linkfunctotaskstream(m_task, MSK_STREAM_LOG,
+				NULL, CMosek::print);
+	}
+}
+
 CMosek::~CMosek()
 {
 }
@@ -29,6 +61,94 @@ CMosek::~CMosek()
 void MSKAPI CMosek::print(void* handle, char str[])
 {
 	SG_SPRINT("%s", str);
+}
+
+MSKrescodee CMosek::init_sosvm(
+		int32_t M, int32_t N,
+		SGMatrix< float64_t > C,
+		SGVector< float64_t > lb,
+		SGVector< float64_t > ub)
+{
+	// Give an estimate of the size of the input data to increase the
+	// speed of inputting
+	int32_t num_var = M+N;
+	int32_t num_con = N*N;
+	// NOTE: However, to input this step is completely optional and MOSEK
+	// will automatically allocate more resources if necessary
+	m_rescode = MSK_putmaxnumvar(m_task, num_var);
+	// Neither the number of constraints nor the number of non-zero elements
+	// is known a priori, rough estimates are given here
+	m_rescode = MSK_putmaxnumcon(m_task, num_con);
+	// A = [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row
+	m_rescode = MSK_putmaxnumanz(m_task, (M+1)*num_con);
+
+	// Append optimization variables initialized to zero
+	m_rescode = MSK_append(m_task, MSK_ACC_VAR, num_var);
+	// Append empty constraints initialized with no bounds
+	m_rescode = MSK_append(m_task, MSK_ACC_CON, num_con);
+	// Set the constant term in the objective equal to zero
+	m_rescode = MSK_putcfix(m_task, 0.0);
+
+	for ( int32_t j = 0 ; j < num_var && m_rescode == MSK_RES_OK ; ++j )
+	{
+		// Set the linear term c_j in the objective
+		if ( j < M )
+			m_rescode = MSK_putcj(m_task, j, 0.0);
+		else
+			m_rescode = MSK_putcj(m_task, j, 1.0);
+
+		// Set the bounds on x_j: blx[j] <= x_j <= bux[j]
+		if ( j < M )
+		{
+			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j, MSK_BK_RA, 
+						 lb[j], ub[j]);
+		}
+	}
+
+	return m_rescode;
+}
+
+MSKrescodee CMosek::add_constraint_sosvm(
+		SGVector< float64_t > dPsi,
+		index_t con_idx,
+		index_t train_idx,
+		float64_t bi)
+{
+	// Count the number of non-zero element in dPsi
+	int32_t nnz = CMath::get_num_nonzero(dPsi.vector, dPsi.vlen);
+
+	// Indices of the non-zero elements in the row of A to add
+	SGVector< index_t > asub(nnz+1); // +1 because of the -1 element
+	// Values of the non-zero elements
+	SGVector< float64_t > aval(nnz+1);
+	// Nex element to add in asub and aval
+	index_t idx = 0;
+
+	for ( int32_t i = 0 ; i < dPsi.vlen ; ++i )
+	{
+		if ( dPsi[i] != 0 )
+		{
+			asub[idx] = i;
+			aval[idx] = dPsi[i];
+			++idx;
+		}
+	}
+
+	ASSERT(idx == nnz);
+
+	asub[idx] = dPsi.vlen + train_idx;
+	aval[idx] = -1;
+
+	m_rescode = MSK_putavec(m_task, MSK_ACC_CON, con_idx, nnz+1,
+			asub.vector, aval.vector);
+
+	if ( m_rescode == MSK_RES_OK )
+	{
+		m_rescode = MSK_putbound(m_task, MSK_ACC_CON, con_idx, 
+				MSK_BK_UP, -MSK_INFINITY, bi);
+	}
+
+	return m_rescode;
 }
 
 MSKrescodee CMosek::wrapper_putaveclist(
@@ -96,7 +216,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 			asub.vector, aval.vector);
 }
 
-MSKrescodee CMosek::wrapper_putqobj(MSKtask_t & task, SGMatrix< float64_t > Q0)
+MSKrescodee CMosek::wrapper_putqobj(SGMatrix< float64_t > Q0) const
 {
 	// Shorthands for the dimensions of the matrix
 	index_t N = Q0.num_rows;
@@ -131,8 +251,85 @@ MSKrescodee CMosek::wrapper_putqobj(MSKtask_t & task, SGMatrix< float64_t > Q0)
 			}
 		}
 
-	return MSK_putqobj(task, nnz, qosubi.vector, 
+	return MSK_putqobj(m_task, nnz, qosubi.vector,
 			qosubj.vector, qoval.vector);
+}
+
+MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
+{
+	m_rescode = MSK_optimize(m_task);
+
+#ifdef DEBUG_MOSEK
+	// Print a summary containing information about the solution
+	MSK_solutionsummary(m_task, MSK_STREAM_LOG);
+#endif
+
+	// Read the solution
+	if ( m_rescode == MSK_RES_OK )
+	{
+		// Solution status
+		MSKsolstae solsta;
+		// FIXME posible solutions are:
+		// MSK_SOL_ITR: the interior solution
+		// MSK_SOL_BAS: the basic solution
+		// MSK_SOL_ITG: the integer solution
+		MSK_getsolutionstatus(m_task, MSK_SOL_ITR, NULL, &solsta);
+
+		switch (solsta)
+		{
+		case MSK_SOL_STA_OPTIMAL:
+		case MSK_SOL_STA_NEAR_OPTIMAL:
+			MSK_getsolutionslice(m_task,
+					// Request the interior solution
+					MSK_SOL_ITR,
+					// of the optimization vector
+					MSK_SOL_ITEM_XX,
+					0,
+					sol.vlen,
+					sol.vector);
+			break;
+		case MSK_SOL_STA_DUAL_INFEAS_CER:
+		case MSK_SOL_STA_PRIM_INFEAS_CER:
+		case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
+		case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:
+#ifdef DEBUG_MOSEK
+			SG_PRINT("Primal or dual infeasibility "
+				 "certificate found\n");
+#endif
+			break;
+		case MSK_SOL_STA_UNKNOWN:
+#ifdef DEBUG_MOSEK
+			SG_PRINT("Undetermined solution status\n");
+#endif
+			break;
+		default:
+#ifdef DEBUG_MOSEK
+			SG_PRINT("Other solution status\n");
+#endif
+			break; 	// to avoid compile error when DEBUG_MOSEK
+				// is not defined
+		}
+	}
+
+	// In case any error occurred, print the appropriate error message
+	if ( m_rescode != MSK_RES_OK )
+	{
+		char symname[MSK_MAX_STR_LEN];
+		char desc[MSK_MAX_STR_LEN];
+
+		MSK_getcodedesc(m_rescode, symname, desc);
+
+		SG_PRINT("An error occurred optimizing with MOSEK\n");
+		SG_PRINT("ERROR %s - '%s'\n", symname, desc);
+	}
+
+	return m_rescode;
+}
+
+void CMosek::delete_problem()
+{
+	MSK_deletetask(&m_task);
+	MSK_deleteenv(&m_env);
 }
 
 #endif /* USE_MOSEK */

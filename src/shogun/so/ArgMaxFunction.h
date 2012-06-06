@@ -64,7 +64,7 @@ class CArgMaxFunction : public CSGObject
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(CFeatures* features, int32_t feat_idx, CStructuredLabels* labels, SGVector< float64_t> w) = 0;
+		virtual CResultSet* argmax(CFeatures* features, int32_t feat_idx, CStructuredLabels* labels, SGVector< float64_t > w) = 0;
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "ArgMaxFunction"; }
