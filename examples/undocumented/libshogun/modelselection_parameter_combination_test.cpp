@@ -32,27 +32,23 @@ void test_parameter_set_multiplication()
 	SGVector<float64_t> param_vector(8);
 	CMath::range_fill_vector(param_vector.vector, param_vector.vlen);
 
-	SGVector<Parameter*> parameters(4);
+	Parameter parameters[4];
 
-	parameters.vector[0]=new Parameter();
-	parameters.vector[0]->add(&param_vector.vector[0], "0");
-	parameters.vector[0]->add(&param_vector.vector[1], "1");
-	set1.append_element(parameters.vector[0]);
+	parameters[0].add(&param_vector.vector[0], "0");
+	parameters[0].add(&param_vector.vector[1], "1");
+	set1.append_element(&parameters[0]);
 
-	parameters.vector[1]=new Parameter();
-	parameters.vector[1]->add(&param_vector.vector[2], "2");
-	parameters.vector[1]->add(&param_vector.vector[3], "3");
-	set1.append_element(parameters.vector[1]);
+	parameters[1].add(&param_vector.vector[2], "2");
+	parameters[1].add(&param_vector.vector[3], "3");
+	set1.append_element(&parameters[1]);
 
-	parameters.vector[2]=new Parameter();
-	parameters.vector[2]->add(&param_vector.vector[4], "4");
-	parameters.vector[2]->add(&param_vector.vector[5], "5");
-	set2.append_element(parameters.vector[2]);
+	parameters[2].add(&param_vector.vector[4], "4");
+	parameters[2].add(&param_vector.vector[5], "5");
+	set2.append_element(&parameters[2]);
 
-	parameters.vector[3]=new Parameter();
-	parameters.vector[3]->add(&param_vector.vector[6], "6");
-	parameters.vector[3]->add(&param_vector.vector[7], "7");
-	set2.append_element(parameters.vector[3]);
+	parameters[3].add(&param_vector.vector[6], "6");
+	parameters[3].add(&param_vector.vector[7], "7");
+	set2.append_element(&parameters[3]);
 
 	DynArray<Parameter*>* result=new DynArray<Parameter*>();//CParameterCombination::parameter_set_multiplication(set1, set2);
 
@@ -66,9 +62,6 @@ void test_parameter_set_multiplication()
 		delete p;
 	}
 	delete result;
-
-	for (index_t i=0; i<4; ++i)
-		delete parameters.vector[i];
 }
 
 void test_leaf_sets_multiplication()

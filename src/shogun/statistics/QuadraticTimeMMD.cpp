@@ -106,30 +106,55 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	return result;
 }
 
-SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples)
+SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
+		index_t num_eigenvalues)
 {
-	SGVector<float64_t> null_samples(num_samples);
+	/* the whole procedure is already checked against MATLAB implementation */
 
-	/* compute kernel matrix for XX, YY, XY */
+	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
+	{
+		/* TODO support different numbers of samples */
+		SG_ERROR("%s::sample_null_spectrum(): Currently, only equal "
+				"sample sizes are supported\n", get_name());
+	}
 
-	/* imaginary matrix Kz=[K KL; KL' L] (MATLAB notation) */
+	if (num_eigenvalues>2*m_q_start-1)
+	{
+		SG_ERROR("%s::sample_null_spectrum(): Number of Eigenvalues too large\n",
+				get_name());
+	}
 
-	/* centering matrix */
+	/* 2m-1 is the maximum number of used eigenvalues */
+	if (num_eigenvalues==-1)
+		num_eigenvalues=2*m_q_start-1;
 
-	/* centering of matrix Kz=H*Kz*H */
+	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
+	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
+	 * works since X and Y are concatenated here */
+	m_kernel->init(m_p_and_q, m_p_and_q);
+	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
 
-	/* compute eigenvalues */
-	/*kEigs = eigs(Kz,params.numEigs); %note: this retains only largest magnitude eigenvalues
-	        %empirical eigenvalues scaled by 1/2/m: see p. 2 Shawe-Tayor
-	        %et al. (2005)
-	kEigs = 1/2/m * abs(kEigs);
-	numEigs = length(kEigs);  */
+	/* center matrix K=H*K*H */
+	CMath::center_matrix(K.matrix, K.num_rows, K.num_cols);
+
+	/* compute eigenvalues and select num_eigenvalues largest ones */
+	SGVector<float64_t> eigenvalues=CMath::compute_eigenvectors(K);
+	SGVector<float64_t> largest_ev(num_eigenvalues);
+
+	/* scale by 1/2/m on the fly and take abs value*/
+	for (index_t i=0; i<num_eigenvalues; ++i)
+		largest_ev[i]=CMath::abs(1.0/2/m_q_start*eigenvalues[eigenvalues.vlen-1-i]);
 
 	/* finally, sample from null distribution */
+	SGVector<float64_t> null_samples(num_samples);
 	for (index_t i=0; i<num_samples; ++i)
 	{
 		/* 2*sum(kEigs.*(randn(length(kEigs),1)).^2); */
 		null_samples[i]=0;
+		for (index_t j=0; j<largest_ev.vlen; ++j)
+			null_samples[i]+=largest_ev[j]*CMath::pow(2.0, 2);
+
+		null_samples[i]*=2;
 	}
 
 	return null_samples;
