@@ -12,6 +12,15 @@
 %feature("autodoc", "get_distance_matrix(self) -> numpy 2dim array of float") get_distance_matrix;
 #endif
 
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorDistance;
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+#endif
+
 /* Remove C Prefix */
 %rename(Distance) CDistance;
 %rename(CustomDistance) CCustomDistance;
@@ -33,6 +42,7 @@
 %rename(CosineDistance) CCosineDistance;
 %rename(TanimotoDistance) CTanimotoDistance;
 %rename(MahalanobisDistance) CMahalanobisDistance;
+%rename(DirectorDistance) CDirectorDistance;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distance/Distance.h>
@@ -114,3 +124,4 @@ namespace shogun
 %include <shogun/distance/CosineDistance.h>
 %include <shogun/distance/TanimotoDistance.h>
 %include <shogun/distance/MahalanobisDistance.h>
+%include <shogun/distance/DirectorDistance.h>
