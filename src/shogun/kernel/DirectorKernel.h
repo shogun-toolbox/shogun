@@ -27,14 +27,24 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		/** default constructor
 		 *
 		 */
-		CDirectorKernel() : CKernel()
+		CDirectorKernel() 
+		: CKernel(), external_features(false)
 		{
+		}
+
+		/**
+		 */
+		CDirectorKernel(bool is_external_features) 
+		: CKernel(), external_features(is_external_features)
+		{
+
 		}
 
 		/** constructor
 		 *
 		 */
-		CDirectorKernel(int32_t size) : CKernel(size)
+		CDirectorKernel(int32_t size, bool is_external_features) 
+		: CKernel(size), external_features(is_external_features)
 		{
 		}
 
@@ -142,7 +152,10 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual bool has_features()
 		{
-			return CKernel::has_features();
+			if (!external_features)
+				return CKernel::has_features();
+			else
+				return true;
 		}
 
 		/** remove lhs and rhs from kernel */
@@ -330,6 +343,10 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		{
 			CKernel::register_params();
 		}
+
+	protected:
+		/* is external features */
+		bool external_features;
 };
 }
 #endif /* USE_SWIG_DIRECTORS */

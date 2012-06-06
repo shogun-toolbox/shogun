@@ -9,9 +9,7 @@ except ImportError:
 
 class DirectorLinearKernel(DirectorKernel):
 	def __init__(self):
-		DirectorKernel.__init__(self)
-	def has_features(self):
-		return True
+		DirectorKernel.__init__(self, True)
 	def kernel_function(self, idx_a, idx_b):
 		return numpy.dot(traindat[:,idx_a], traindat[:,idx_b])
 
