@@ -36,7 +36,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 
 		/* returns a set of samples of an estimate of the null distribution
 		 * using the Eigen-spectrum of the centered kernel matrix of the merged
-		 * samples of p and q.
+		 * samples of p and q. May be used to compute p_value (easy)
 		 *
 		 * Works well if the kernel matrix is NOT diagonal dominant.
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
@@ -53,6 +53,19 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		SGVector<float64_t> sample_null_spectrum(index_t num_samples,
 				index_t num_eigenvalues=-1);
 
+		/** Approximates the null-distribution by the two parameter gamma
+		 * distribution. It works in O(m^2) where m is the number of samples
+		 * from each distribution. Its very fast, but may be inaccurate.
+		 * However, there are cases where it performs very well.
+		 * Returns the p-value for a given statistic value in the
+		 * null-distribution.
+		 *
+		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
+		 * A fast, consistent kernel two-sample test.
+		 *
+		 * @param statistic MMD value to compute the p-value for.
+		 * @return p-value of the given statistic
+		 */
 		float64_t compute_p_value_gamma(float64_t statistic);
 
 	private:
