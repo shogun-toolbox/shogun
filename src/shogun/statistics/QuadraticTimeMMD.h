@@ -53,6 +53,8 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		SGVector<float64_t> sample_null_spectrum(index_t num_samples,
 				index_t num_eigenvalues=-1);
 
+		float64_t compute_p_value_gamma(float64_t statistic);
+
 	private:
 		void init();
 };
