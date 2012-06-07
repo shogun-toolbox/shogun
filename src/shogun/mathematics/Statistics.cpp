@@ -62,7 +62,7 @@ float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 	int32_t deg=values.vlen-1;
 
 	/* compute absolute value of t-value */
-	float64_t t=CMath::abs(inverse_student_t_distribution(deg, alpha));
+	float64_t t=CMath::abs(inverse_student_t(deg, alpha));
 
 	/* values for calculating confidence interval */
 	float64_t std_dev=std_deviation(values);
@@ -76,7 +76,7 @@ float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 	return mean;
 }
 
-float64_t CStatistics::inverse_student_t_distribution(int32_t k, float64_t p)
+float64_t CStatistics::inverse_student_t(int32_t k, float64_t p)
 {
 	float64_t t;
 	float64_t rk;
@@ -87,7 +87,7 @@ float64_t CStatistics::inverse_student_t_distribution(int32_t k, float64_t p)
 	if (!(k>0 && greater(p, 0)) && less(p, 1))
 	{
 		SG_SERROR("CStatistics::inverse_student_t_distribution(): "
-		"Domain error in InvStudentTDistribution\n");
+		"Domain error\n");
 	}
 	rk=k;
 	if (greater(p, 0.25) && less(p, 0.75))
@@ -159,7 +159,7 @@ float64_t CStatistics::inverse_incomplete_beta(float64_t a, float64_t b,
 	if (!(greater_equal(y, 0) && less_equal(y, 1)))
 	{
 		SG_SERROR("CStatistics::inverse_incomplete_beta(): "
-		"Domain error in InvIncompleteBeta\n");
+		"Domain error\n");
 	}
 
 	/*
@@ -599,13 +599,13 @@ float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
 	if (!(greater(a, 0) && greater(b, 0)))
 	{
 		SG_SERROR("CStatistics::incomplete_beta(): "
-		"Domain error in IncompleteBeta\n");
+		"Domain error\n");
 	}
 
 	if (!(greater_equal(x, 0) && less_equal(x, 1)))
 	{
 		SG_SERROR("CStatistics::incomplete_beta(): "
-		"Domain error in IncompleteBeta\n");
+		"Domain error\n");
 	}
 
 	if (equal(x, 0))
@@ -1214,4 +1214,10 @@ float64_t CStatistics::incomplete_gamma_completed(float64_t a, float64_t x)
 	while (greater(t, igammaepsilon));
 	result=ans*ax;
 	return result;
+}
+
+float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
+{
+	/* definition of wikipedia: incomplete gamma devised by true gamma */
+	return incomplete_gamma(a,x/b);
 }

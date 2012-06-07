@@ -77,7 +77,7 @@ public:
 	 *
 	 * Taken from ALGOLIB under gpl2+
 	 */
-	static float64_t inverse_student_t_distribution(int32_t k, float64_t p);
+	static float64_t inverse_student_t(int32_t k, float64_t p);
 
 	/** Inverse of imcomplete beta integral
 	 *
@@ -184,7 +184,16 @@ public:
 	 */
 	static float64_t incomplete_gamma_completed(float64_t a, float64_t x);
 
-	protected:
+	/** Evaluates the CDF of the gamma distribution with given parameters a, b
+	 * at x. Based on Wikipedia definition and ALGOLIB routines.
+	 *
+	 * @param x position to evaluate
+	 * @param a shape parameter
+	 * @param b scale parameter
+	 */
+	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
+
+protected:
 	/** Power series for incomplete beta integral.
 	 * Use when b*x is small and x not too close to 1.
 	 *
