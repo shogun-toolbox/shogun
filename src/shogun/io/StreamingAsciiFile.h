@@ -35,7 +35,7 @@ public:
 	 * @param fname file name
 	 * @param rw read/write mode
 	 */
-	CStreamingAsciiFile(char* fname, char rw='r');
+	CStreamingAsciiFile(const char* fname, char rw='r');
 
 	/**
 	 * Destructor

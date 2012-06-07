@@ -21,7 +21,7 @@ CStreamingAsciiFile::CStreamingAsciiFile()
 		SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n");
 }
 
-CStreamingAsciiFile::CStreamingAsciiFile(char* fname, char rw)
+CStreamingAsciiFile::CStreamingAsciiFile(const char* fname, char rw)
 		: CStreamingFile(fname, rw)
 {
 }
