@@ -163,6 +163,8 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 
 float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 {
+	/* the whole procedure is already checked against MATLAB implementation */
+
 	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
 	{
 		/* TODO support different numbers of samples */
@@ -175,7 +177,6 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	 * works since X and Y are concatenated here */
 	m_kernel->init(m_p_and_q, m_p_and_q);
 	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
-	CMath::display_matrix(K, "kernel matrix");
 
 	/* compute mean under H0 of MMD, which is
 	 * meanMMD  = 2/m * ( 1  - 1/m*sum(diag(KL))  );
@@ -194,7 +195,6 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 		K(m_q_start+i, i)=0;
 	}
 	mean_mmd=2.0/m_q_start*(1.0-1.0/m_q_start*mean_mmd);
-	SG_PRINT("mean mmd: %f\n", mean_mmd);
 
 	/* compute variance under H0 of MMD, which is
 	 * varMMD = 2/m/(m-1) * 1/m/(m-1) * sum(sum( (K + L - KL - KL').^2 ));
@@ -213,14 +213,12 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 		}
 	}
 	var_mmd*=2.0/m_q_start/(m_q_start-1)*1.0/m_q_start/(m_q_start-1);
-	SG_PRINT("var mmd: %f\n", var_mmd);
 
+	/* parameters for gamma distribution */
 	float64_t a=CMath::pow(mean_mmd, 2)/var_mmd;
 	float64_t b=var_mmd*m_q_start / mean_mmd;
 
-	SG_PRINT("a=%f, b=%f\n", a,b);
-
 	/* return: cdf('gam',statistic,al,bet) (MATLAB)
 	 * which will get the position in the null distribution */
-
+	return CStatistics::gamma_cdf(statistic, a, b);
 }
