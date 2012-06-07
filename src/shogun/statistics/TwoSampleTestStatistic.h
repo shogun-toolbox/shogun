@@ -18,9 +18,9 @@ namespace shogun
 /** enum for different method to compute p-value of test. To estimate p-value
  * the null distribution somehow needs to be approximated. This enum defines
  * the used method */
-enum EThresholdMethod
+enum EPValueMethod
 {
-	BOOTSTRAP
+	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA
 };
 
 class CFeatures;
@@ -45,9 +45,9 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		void set_bootstrap_iterations(index_t bootstrap_iterations);
 
 		/** sets the method how to approximate the null-distribution
-		 * @param threshold_method method to use
+		 * @param p-value method to use
 		 */
-		void set_threshold_method(EThresholdMethod threshold_method);
+		virtual void set_p_value_method(EPValueMethod p_value_method);
 
 		/** computes a p-value based on bootstrapping the null-distribution.
 		 * This method should be overridden for different methods
@@ -75,8 +75,8 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		/** number of iterations for bootstrapping null-distributions */
 		index_t m_bootstrap_iterations;
 
-		/** Defines how the threshold for the null distribution is computed */
-		EThresholdMethod m_threshold_method;
+		/** Defines how the p-value for the null distribution is computed */
+		EPValueMethod m_p_value_method;
 };
 
 }

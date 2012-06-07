@@ -39,6 +39,8 @@ CQuadraticTimeMMD::~CQuadraticTimeMMD()
 void CQuadraticTimeMMD::init()
 {
 	/* TODO register parameters*/
+	m_num_samples_spectrum=0;
+	m_num_eigenvalues_spectrum=0;
 }
 
 float64_t CQuadraticTimeMMD::compute_statistic()
@@ -96,12 +98,24 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
-	switch (m_threshold_method)
+	switch (m_p_value_method)
 	{
-		/* TODO implement new null distribution approximations here */
-		default:
-			result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
-			break;
+	case MMD2_SPECTRUM:
+	{
+		/* get samples from null-distribution and compute p-value of statistic */
+		SGVector<float64_t> null_samples=sample_null_spectrum(
+				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
+		CMath::qsort(null_samples);
+		float64_t pos=CMath::find_position_to_insert(null_samples, statistic);
+		result=1.0-pos/null_samples.vlen;
+		break;
+	}
+	case MMD2_GAMMA:
+		result=compute_p_value_gamma(statistic);
+		break;
+	default:
+		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
+		break;
 	}
 
 	return result;
@@ -119,15 +133,23 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 				"sample sizes are supported\n", get_name());
 	}
 
+	if (num_samples<=2)
+	{
+		SG_ERROR("%s::sample_null_spectrum(): Number of samples has to be at"
+				" least 2, better in the hundrets", get_name());
+	}
+
 	if (num_eigenvalues>2*m_q_start-1)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Number of Eigenvalues too large\n",
 				get_name());
 	}
 
-	/* 2m-1 is the maximum number of used eigenvalues */
-	if (num_eigenvalues==-1)
-		num_eigenvalues=2*m_q_start-1;
+	if (num_eigenvalues<1)
+	{
+		SG_ERROR("%s::sample_null_spectrum(): Number of Eigenvalues too small\n",
+				get_name());
+	}
 
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
@@ -221,4 +243,15 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	/* return: cdf('gam',statistic,al,bet) (MATLAB)
 	 * which will get the position in the null distribution */
 	return CStatistics::gamma_cdf(statistic, a, b);
+}
+
+void CQuadraticTimeMMD::set_num_samples_sepctrum(index_t num_samples_spectrum)
+{
+	m_num_samples_spectrum=num_samples_spectrum;
+}
+
+void CQuadraticTimeMMD::set_num_eigenvalues_spectrum(
+		index_t num_eigenvalues_spectrum)
+{
+	m_num_eigenvalues_spectrum=num_eigenvalues_spectrum;
 }

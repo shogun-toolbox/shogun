@@ -51,7 +51,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * @return samples from the estimated null distribution
 		 */
 		SGVector<float64_t> sample_null_spectrum(index_t num_samples,
-				index_t num_eigenvalues=-1);
+				index_t num_eigenvalues);
 
 		/** Approximates the null-distribution by the two parameter gamma
 		 * distribution. It works in O(m^2) where m is the number of samples
@@ -68,8 +68,28 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 */
 		float64_t compute_p_value_gamma(float64_t statistic);
 
+		/** setter for number of samples to use in spectrum based p-value
+		 * computation
+		 *
+		 * @param num_samples_spectrum number of samples to draw from
+		 * approximate null-distributrion
+		 */
+		void set_num_samples_sepctrum(index_t num_samples_spectrum);
+
+		/** setter for number of eigenvalues to use in spectrum based p-value
+		 * computation
+		 *
+		 * @param num_eigenvalues_spectrum number of eigenvalues to use to
+		 * approximate null-distributrion
+		 */
+		void set_num_eigenvalues_spectrum(index_t num_eigenvalues_spectrum);
+
 	private:
 		void init();
+
+	protected:
+		index_t m_num_samples_spectrum;
+		index_t m_num_eigenvalues_spectrum;
 };
 
 }
