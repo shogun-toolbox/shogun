@@ -199,6 +199,11 @@ public:
 	 */
 	virtual void set_learner();
 
+	/**
+	 * Get learner
+	 */
+	CVwLearner* get_learner() { return learner; }
+
 private:
 	/**
 	 * Initialize members

@@ -47,7 +47,9 @@ int32_t CConditionalProbabilityTree::apply_multiclass_example(VwExample* ex)
 	compute_conditional_probabilities(ex);
 	SGVector<float64_t> probs(m_leaves.size());
 	for (map<int32_t,node_t*>::iterator it = m_leaves.begin(); it != m_leaves.end(); ++it)
+	{
 		probs[it->first] = accumulate_conditional_probability(it->second);
+	}
 	return CMath::arg_max(probs.vector, 1, probs.vlen);
 }
 
@@ -166,7 +168,7 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 
 		node_t *left_node = new node_t();
 		left_node->data.label = node->data.label;
-		node->data.label = FLT_MAX;
+		node->data.label = -1;
 		CVowpalWabbit *node_vw = dynamic_cast<CVowpalWabbit *>(m_machines->get_element(node->machine()));
 		CVowpalWabbit *vw = new CVowpalWabbit(node_vw);
 		SG_UNREF(node_vw);
@@ -210,6 +212,8 @@ float64_t CConditionalProbabilityTree::train_node(VwExample *ex, node_t *node)
 	CVowpalWabbit *vw = dynamic_cast<CVowpalWabbit*>(m_machines->get_element(node->machine()));
 	ASSERT(vw);
 	float64_t pred = vw->predict_and_finalize(ex);
+	if (ex->ld->label != FLT_MAX)
+		vw->get_learner()->train(ex, ex->eta_round);
 	SG_UNREF(vw);
 	return pred;
 }

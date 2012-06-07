@@ -38,9 +38,27 @@ int main()
 	SG_SPRINT("Weights have been output in text form to vw_regressor_text.dat.\n");
 	train_file->close();
 
+	CStreamingVwFile* test_file = new CStreamingVwFile(train_file_name);
+	test_file->set_parser_type(T_SVMLIGHT); // Treat the file as SVMLight format
+	CStreamingVwFeatures* test_features = new CStreamingVwFeatures(test_file, true, 1024);
+
+	test_features->start_parser();
+	while (test_features->get_next_example())
+	{
+		VwExample *example = test_features->get_example();
+
+		float64_t pred = vw->predict_and_finalize(example);
+		printf("%.2lf\n", pred);
+		test_features->release_example();
+	}
+	test_features->end_parser();
+	test_file->close();
+
 	SG_UNREF(train_features);
 	SG_UNREF(train_file);
 	SG_UNREF(vw);
+	SG_UNREF(test_features);
+	SG_UNREF(test_file);
 
 	exit_shogun();
 
