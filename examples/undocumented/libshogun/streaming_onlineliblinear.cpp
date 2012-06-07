@@ -51,7 +51,7 @@ int main()
 	SG_REF(test_features);
 
 	// Apply on all examples and return a CLabels*
-	CBinaryLabels* test_labels = svm->apply_binary(test_features);
+	CRegressionLabels* test_labels = svm->apply_regression(test_features);
 
 	for (int32_t i=0; i<test_labels->get_num_labels(); i++)
 		SG_SPRINT("For example %d, predicted label is %f.\n", i, test_labels->get_label(i));

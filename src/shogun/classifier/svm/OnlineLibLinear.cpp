@@ -56,6 +56,110 @@ COnlineLibLinear::~COnlineLibLinear()
 {
 }
 
+void COnlineLibLinear::start_train()
+{
+	Cp = C1;
+	Cn = C2;
+	PGmax_old = CMath::INFTY;
+	PGmin_old = -CMath::INFTY;
+	PGmax_new = -CMath::INFTY;
+	PGmin_new = CMath::INFTY;
+
+	diag[0]=0;diag[1]=0;diag[2]=0;
+	upper_bound[0]=Cn;upper_bound[1]=0;upper_bound[2]=Cp;
+
+	bias = 0;
+
+	PGmax_new = -CMath::INFTY;
+	PGmin_new = CMath::INFTY;
+
+	v = 0;
+	nSV = 0;
+}
+
+void COnlineLibLinear::stop_train()
+{
+	float64_t gap = PGmax_new - PGmin_new;
+
+	SG_DONE();
+	SG_INFO("Optimization finished.\n");
+
+	// calculate objective value
+	for (int32_t i=0; i<w_dim; i++)
+		v += w[i]*w[i];
+	v += bias*bias;
+
+	SG_INFO("Objective value = %lf\n", v/2);
+	SG_INFO("nSV = %d\n", nSV);
+	SG_INFO("gap = %g\n", gap);
+}
+
+void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t label)
+{
+	alpha_current = 0;
+	if (label > 0)
+		y_current = +1;
+	else
+		y_current = -1;
+
+	QD = diag[y_current + 1];
+	// Dot product of vector with itself
+	QD += feature->dot(feature);
+
+	feature->expand_if_required(w, w_dim);
+
+	G = feature->dense_dot(w, w_dim);
+	if (use_bias)
+		G += bias;
+	G = G*y_current - 1;
+	// LINEAR TERM PART?
+
+	C = upper_bound[y_current + 1];
+	G += alpha_current*diag[y_current + 1]; // Can be eliminated, since diag = 0 vector
+
+	PG = 0;
+	if (alpha_current == 0) // This condition will always be true in the online version
+	{
+		if (G > PGmax_old)
+		{
+			return;
+		}
+		else if (G < 0)
+			PG = G;
+	}
+	else if (alpha_current == C)
+	{
+		if (G < PGmin_old)
+		{
+			return;
+		}
+		else if (G > 0)
+			PG = G;
+	}
+	else
+		PG = G;
+
+	PGmax_new = CMath::max(PGmax_new, PG);
+	PGmin_new = CMath::min(PGmin_new, PG);
+
+	if (fabs(PG) > 1.0e-12)
+	{
+		float64_t alpha_old = alpha_current;
+		alpha_current = CMath::min(CMath::max(alpha_current - G/QD, 0.0), C);
+		d = (alpha_current - alpha_old) * y_current;
+
+		feature->add_to_dense_vec(d, w, w_dim);
+
+		if (use_bias)
+			bias += d;
+	}
+
+	v += alpha_current*(alpha_current*diag[y_current + 1] - 2);
+	if (alpha_current > 0)
+		nSV++;
+}
+
+/*
 bool COnlineLibLinear::train_machine(CFeatures* data)
 {
 		if (data)
@@ -189,3 +293,4 @@ bool COnlineLibLinear::train_machine(CFeatures* data)
 
 		return true;
 }
+*/
