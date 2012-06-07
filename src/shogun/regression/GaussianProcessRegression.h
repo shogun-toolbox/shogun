@@ -17,22 +17,12 @@
 #include <shogun/regression/Regression.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/regression/gp/InferenceMethod.h>
 
 namespace shogun
 {
 /** @brief Class GaussianProcessRegression implements Gaussian Process Regression.
  * Instead of a distribution over weights, the GP specifies a distribution over functions.
- * Here we assume noisy observations y:
- *
- * \f[
- *  y = f(x) + \mathcal{N}(0, \sigma^{2})
- * \f]
- * 
- * 
- * In this simple implementation, the regression predicts 
- * using the mean prediction function = K_{test,train} {(K_{train,train} + sigma*I)}^-1 y
- * Where K is the kernel matrix.
- * 
  */
 
 class CGaussianProcessRegression : public CMachine
@@ -42,12 +32,11 @@ class CGaussianProcessRegression : public CMachine
 
 		/** constructor
 		 *
-		 * @param sigma variance of the Gaussian observation noise
-		 * @param k Kernel for covariance matrix
+		 * @param inf Chosen Inference Method
 		 * @param data training data
 		 * @param lab labels
 		 */
-		CGaussianProcessRegression(float64_t sigma, CKernel* k, 
+		CGaussianProcessRegression(CInferenceMethod* inf,
 					   CDenseFeatures<float64_t>* data, CLabels* lab);
 
 		  /** default constructor */
@@ -72,17 +61,17 @@ class CGaussianProcessRegression : public CMachine
 		*/
 		virtual CDotFeatures* get_features() { SG_REF(features); return features; }
 		
-		/** set sigma
+		/** set Inference Method
 		*
-		* @param sigma observation noise
+		* @param inf Inference Method
 		*/
-		inline void set_sigma(float64_t sigma) { m_sigma = sigma; };
+		inline void set_method(CInferenceMethod* inf) { m_method = inf; };
 		
-		/** get sigma
+		/** get Inference Method
 		*
-		* @return sigma observation noise
+		* @return Inference Method
 		*/
-		inline float64_t get_sigma() { return m_sigma; };
+		inline CInferenceMethod* get_method() { SG_REF(m_method); return m_method; };
 			
 		/** load from file
 		*
@@ -157,24 +146,11 @@ class CGaussianProcessRegression : public CMachine
 
 	private:
 
-		/** Observation noise alpha */
-		float64_t m_sigma;
-		
 		/** features */
 		CDotFeatures* features;
 		
-		/** kernel */
-		CKernel* kernel;
-		
-		/** Lower triangle Cholesky decomposition of 
-		 *  feature matrix
-		 */
-		SGMatrix<float64_t> m_L;
-		
-		/** Alpha used for calculation of mean predictions,
-		 * solves the equation (K(train,train)+sigma^2*I) alpha = labels.
-		 */
-		SGVector< float64_t > m_alpha;
+		/** Inference Method */
+		CInferenceMethod* m_method;
 
 		
 };
