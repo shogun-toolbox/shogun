@@ -40,13 +40,12 @@ void CTwoSampleTestStatistic::init()
 	m_p_and_q=NULL;
 	m_q_start=0;
 	m_bootstrap_iterations=100;
-	m_threshold_method=BOOTSTRAP;
+	m_p_value_method=BOOTSTRAP;
 }
 
-void CTwoSampleTestStatistic::set_threshold_method(
-		EThresholdMethod threshold_method)
+void CTwoSampleTestStatistic::set_p_value_method(EPValueMethod p_value_method)
 {
-	m_threshold_method=threshold_method;
+	m_p_value_method=p_value_method;
 }
 
 SGVector<float64_t> CTwoSampleTestStatistic::bootstrap_null()
@@ -88,24 +87,22 @@ float64_t CTwoSampleTestStatistic::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
-	if (m_threshold_method==BOOTSTRAP)
+	if (m_p_value_method==BOOTSTRAP)
 	{
-
 		/* bootstrap a bunch of MMD values from null distribution */
 		SGVector<float64_t> values=bootstrap_null();
 
 		/* find out percentile of parameter "statistic" in null distribution */
-		CMath::qsort(values.vector, values.vlen);
-		index_t i;
-		for (i=0; i<values.vlen && values[i]<=statistic; ++i) {}
+		CMath::qsort(values);
+		float64_t i=CMath::find_position_to_insert(values, statistic);
 
 		/* return corresponding p-value */
-		result=1.0-((float64_t)i)/values.vlen;
+		result=1.0-i/values.vlen;
 	}
 	else
 	{
-		SG_ERROR("%s::compute_threshold(): Unknown method to compute"
-				" threshold!\n");
+		SG_ERROR("%s::compute_p_value(): Unknown method to compute"
+				" p-value!\n");
 	}
 
 	return result;
