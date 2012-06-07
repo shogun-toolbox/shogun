@@ -1188,6 +1188,35 @@ class CMath : public CSGObject
 				}
 			}
 
+		/** For a sorted (ascending) vector, gets the index after the first
+		 * element that is smaller than the given one
+		 *
+		 * @param vector vector to find position in
+		 * @param element element to find index for
+		 * @return index of the first element smaller than given one plus 1
+		 */
+		template <class T>
+			static index_t find_position_to_insert(SGVector<T> vector, T element)
+		{
+			index_t i;
+			for (i=0; i<vector.vlen; ++i)
+			{
+				if (vector[i]<element)
+					break;
+			}
+			return ++i;
+		}
+
+		/** performs a quicksort on the given vector
+		 * it is sorted from in ascending (for type T)
+		 *
+		 * @param vector vector to sort
+		 */
+		template <class T>
+			static void qsort(SGVector<T> vector)
+		{
+			qsort(vector.vector, vector.vlen);
+		}
 
 		/** performs a quicksort on an array output of length size
 		 * it is sorted from in ascending (for type T) */
