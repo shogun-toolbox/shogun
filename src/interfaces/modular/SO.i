@@ -10,8 +10,6 @@
 
 /* SO renames */
 %rename(StructuredModel) CStructuredModel;
-%rename(StructuredLossFunction) CStructuredLossFunction;
-%rename(ArgMaxFunction) CArgMaxFunction;
 
 #ifdef USE_MOSEK
 %rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
@@ -19,8 +17,6 @@
 
 /* SO includes */
 %include <shogun/so/StructuredModel.h>
-%include <shogun/so/StructuredLossFunction.h>
-%include <shogun/so/ArgMaxFunction.h>
 
 #ifdef USE_MOSEK
 %include <shogun/so/PrimalMosekSOSVM.h>

@@ -106,7 +106,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		for ( int32_t i = 0 ; i < N ; ++i )
 		{
 			// Predict the result of the ith training example
-			result = m_model->get_argmax(m_w, i);
+			result = m_model->argmax(m_w, i);
 
 			// Compute the loss associated with the prediction
 			slack = m_loss->loss( compute_loss_arg(result) );

@@ -18,14 +18,14 @@ CStructuredModel::CStructuredModel() : CSGObject()
 }
 
 CStructuredModel::CStructuredModel(
-		CArgMaxFunction* argmax,
-		CStructuredLossFunction* loss)
+		CFeatures*         features,
+		CStructuredLabels* labels)
 : CSGObject()
 {
 	init();
 
-	m_argmax = argmax;
-	m_loss   = loss;
+	m_features = features;
+	m_labels   = labels;
 }
 
 CStructuredModel::~CStructuredModel()
@@ -34,7 +34,6 @@ CStructuredModel::~CStructuredModel()
 	SG_UNREF(m_features);
 }
 
-/* TODO */
 void CStructuredModel::init_opt(
 		SGMatrix< float64_t > A,
 		SGVector< float64_t > a,
@@ -44,51 +43,38 @@ void CStructuredModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > C)
 {
+	SG_ERROR("init_opt is not implemented for %s!", get_name());
 }
 
-
-/* TODO */
-int32_t CStructuredModel::get_dim()
-{
-	return 0;
-}
-
-void CStructuredModel::set_labels(CStructuredLabels* labs)
+void CStructuredModel::set_labels(CStructuredLabels* labels)
 {
 	SG_UNREF(m_labels);
-	SG_REF(labs);
-	m_labels = labs;
+	SG_REF(labels);
+	m_labels = labels;
 }
 
-void CStructuredModel::set_features(CFeatures* feats)
+void CStructuredModel::set_features(CFeatures* features)
 {
 	SG_UNREF(m_features);
-	SG_REF(feats);
-	m_features = feats;
+	SG_REF(features);
+	m_features = features;
 }
 
-/** TODO */
-SGVector< float64_t > CStructuredModel::compute_joint_feature(
+SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx, 
 		int32_t lab_idx)
 {
-	SG_ERROR("CStructuredModel::compute_combined_feature not implemented "
-		 "yet");
+	return get_joint_feature_vector(feat_idx, m_labels->get_label(lab_idx));
+}
+
+SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
+		int32_t feat_idx, 
+		CStructuredData* y)
+{
+	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
+		 "implemented for %s!", get_name());
+
 	return SGVector< float64_t >();
-}
-
-CResultSet* CStructuredModel::get_argmax(SGVector< float64_t > w, int32_t feat_idx)
-{
-	return m_argmax->argmax(m_features, feat_idx, m_labels, w);
-}
-
-
-float64_t CStructuredModel::compute_delta_loss(
-		CStructuredLabels* labels, 
-		int32_t ytrue_id, 
-		CStructuredData ypred)
-{
-	return m_loss->loss(labels, ytrue_id, ypred);
 }
 
 void CStructuredModel::init()
@@ -97,13 +83,7 @@ void CStructuredModel::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", 
 			MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_argmax, "m_argmax", "Argmax function",
-			MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_loss, "m_loss", "Structured loss function",
-			MS_NOT_AVAILABLE);
 
 	m_features = NULL;
 	m_labels   = NULL;
-	m_argmax   = NULL;
-	m_loss     = NULL;
 }

@@ -8,19 +8,38 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#ifndef _STRUCTUREDMODEL_H__
-#define _STRUCTUREDMODEL_H__
+#ifndef _STRUCTURED_MODEL__H__
+#define _STRUCTURED_MODEL__H__
 
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/StructuredData.h>
-#include <shogun/so/ArgMaxFunction.h>
-#include <shogun/so/StructuredLossFunction.h>
 
 namespace shogun
 {
+
+class CStructuredModel;
+
+/** output of the argmax function */
+struct CResultSet : public CSGObject
+{
+	/** joint feature vector for the given truth */
+	SGVector< float64_t > psi_truth;
+
+	/** joint feature vector for the prediction */
+	SGVector< float64_t > psi_pred;
+
+	/** corresponding score */
+	float64_t score;
+
+	/** delta loss for the prediction vs. truth */
+	float64_t delta;
+
+	/** @return name of SGSerializable */
+	virtual const char* get_name() const { return "ResultSet"; }
+};
 
 /** 
  * @brief Class CStructuredModel that represents the application specific model 
@@ -41,10 +60,10 @@ class CStructuredModel : public CSGObject
 
 		/** constructor
 		 *
-		 * @param argmax arg max function
-		 * @param loss  delta loss function
+		 * @param features the feature vectors
+		 * @param labels structured labels
 		 */
-		CStructuredModel(CArgMaxFunction* argmax, CStructuredLossFunction* loss);
+		CStructuredModel(CFeatures* features, CStructuredLabels* labels);
 
 		/** destructor */
 		virtual ~CStructuredModel();
@@ -69,7 +88,7 @@ class CStructuredModel : public CSGObject
 		 * return the dimensionality of the joint feature space, i.e. 
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim();
+		virtual int32_t get_dim() const = 0;
 
 		/** set labels
 		 *
@@ -83,8 +102,33 @@ class CStructuredModel : public CSGObject
 		 */
 		void set_features(CFeatures* feats);
 
-		/** computes \f$ \Psi(\bf{x}, \bf{y}) \f$ */
-		SGVector< float64_t > compute_joint_feature(int32_t feat_idx, int32_t lab_idx);
+		/** 
+		 * gets joint feature vector 
+		 *
+		 * \f[
+		 * \vec{\Psi}(\bf{x}_\text{feat\_idx}, \bf{y}_\text{lab\_idx})
+		 * \f]
+		 *
+		 * @param feat_idx index of the feature vector to use
+		 * @param lab_idx index of the structured label to use
+		 *
+		 * @return the joint feature vector
+		 */
+		SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, int32_t lab_idx);
+
+		/**
+		 * get joint feature vector
+		 *
+		 * \f[
+		 * \vec{\Psi}(\bf{x}_\text{feat\_idx}, \bf{y})
+		 * \f]
+		 *
+		 * @param feat_idx index of the feature vector to use
+		 * @param y structured label to use
+		 *
+		 * @return the joint feature vector
+		 */
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
 
 		/** obtains the argmax
 		 *
@@ -93,7 +137,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return structure with the predicted output
 		 */
-		CResultSet* get_argmax(SGVector< float64_t > w, int32_t feat_idx);
+		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx) = 0;
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *
@@ -103,10 +147,10 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		float64_t compute_delta_loss(CStructuredLabels* labels, int32_t ytrue_idx, CStructuredData ypred);
+		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred) = 0;
 
 		/** @return name of SGSerializable */
-		inline virtual const char* get_name() const { return "StructuredModel"; }
+		virtual const char* get_name() const { return "StructuredModel"; }
 	
 	private:
 		/** internal initialization */
@@ -119,14 +163,8 @@ class CStructuredModel : public CSGObject
 		/** feature vectors */
 		CFeatures* m_features;
 
-		/** argmax function */
-		CArgMaxFunction* m_argmax;
-
-		/** \f$\Delta\f$ loss function */
-		CStructuredLossFunction* m_loss;
-
 }; /* class CStructuredModel */
 
 } /* namespace shogun */
 
-#endif /* _STRUCTUREDMODEL_H__ */
+#endif /* _STRUCTURED_MODEL__H__ */
