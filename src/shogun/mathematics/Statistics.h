@@ -32,9 +32,6 @@ class CStatistics: public CSGObject
 
 public:
 
-	/** @return object name */
-	inline virtual const char* get_name() const { return "CStatistics"; }
-
 	/** Calculates mean of given values
 	 *
 	 * @param values vector of values
@@ -140,9 +137,6 @@ public:
 	 */
 	static float64_t inverse_normal_distribution(float64_t y0);
 
-<<<<<<< HEAD
-	/** Incomplete gamma integral
-=======
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)
 	{
@@ -158,18 +152,15 @@ public:
 #endif // HAVE_LGAMMAL
 	}
 
-
 	/** @return gamma function of input */
 	static inline float64_t tgamma(float64_t x)
 	{
 		return ::tgamma((double) x);
 	}
 
-
-	/** Inverse of complemented imcomplete gamma integral
+	/** Incomplete gamma integral
 	 *
 	 * Given p, the function finds x such that
->>>>>>> Clean up CMath: move respective functions to CStatistics, SGVector and SGMatrix
 	 *
 	 * The function is defined by
 	 *
@@ -246,8 +237,6 @@ public:
 	 * @param table
 	 */
 	static float64_t fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table);
-
-
 
 	/** @return object name */
 	inline virtual const char* get_name() const
