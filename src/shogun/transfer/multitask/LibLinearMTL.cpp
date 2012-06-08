@@ -19,7 +19,7 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/classifier/svm/LibLinearMTL.h>
+#include <shogun/transfer/multitask/LibLinearMTL.h>
 #include <shogun/lib/external/tron.h>
 #include <shogun/features/DotFeatures.h>
 

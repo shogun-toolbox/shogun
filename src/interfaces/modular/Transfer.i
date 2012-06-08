@@ -16,6 +16,8 @@
 %rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
 %rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 
+%rename(LibLinearMTL) CLibLinearMTL;
+
 /* Domain adaptation renames */
 #ifdef USE_SVMLIGHT
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
@@ -30,6 +32,8 @@
 %include <shogun/transfer/multitask/MultitaskKernelMaskNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelMaskPairNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
+
+%include <shogun/transfer/multitask/LibLinearMTL.h>
 
 /* Domain adaptation includes */
 #ifdef USE_SVMLIGHT

@@ -289,7 +289,6 @@ class CLibLinearMTL : public CLinearMachine
         /** duality gap */
         float64_t duality_gap;
 
-
 };
 
 #endif //HAVE_LAPACK

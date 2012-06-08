@@ -27,7 +27,6 @@ deps=dict();
 deps['enumtypeunsafe.swg']=[]
 deps['exception.i']=[]
 deps['stdint.i']=[]
-deps['std_vector.i']=[]
 deps['modshogun_doxygen.i']=[]
 
 modular_deps=['modshogun_doxygen.i']

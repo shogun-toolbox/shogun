@@ -21,7 +21,6 @@
 %rename(GPBTSVM) CGPBTSVM;
 %rename(LDA) CLDA;
 %rename(LibLinear) CLibLinear;
-%rename(LibLinearMTL) CLibLinearMTL;
 %rename(LibSVM) CLibSVM;
 %rename(LibSVMOneClass) CLibSVMOneClass;
 %rename(LinearMachine) CLinearMachine;
@@ -72,7 +71,6 @@
 %include <shogun/classifier/svm/GPBTSVM.h>
 %include <shogun/classifier/LDA.h>
 %include <shogun/classifier/svm/LibLinear.h>
-%include <shogun/classifier/svm/LibLinearMTL.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
 %include <shogun/classifier/LPBoost.h> 
