@@ -4,7 +4,6 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Sergey Lisitsyn
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
@@ -18,6 +17,7 @@ namespace shogun
 CMultitaskLeastSquaresRegression::CMultitaskLeastSquaresRegression() :
 	CSLEPMachine(), m_task_tree(NULL)
 {
+	register_parameters();
 }
 
 CMultitaskLeastSquaresRegression::CMultitaskLeastSquaresRegression(
@@ -26,6 +26,7 @@ CMultitaskLeastSquaresRegression::CMultitaskLeastSquaresRegression(
 	CSLEPMachine(z,train_features,(CLabels*)train_labels), m_task_tree(NULL)
 {
 	set_task_tree(task_tree);
+	register_parameters();
 }
 
 CMultitaskLeastSquaresRegression::~CMultitaskLeastSquaresRegression()
@@ -36,6 +37,22 @@ CMultitaskLeastSquaresRegression::~CMultitaskLeastSquaresRegression()
 void CMultitaskLeastSquaresRegression::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_task_tree, "feature_tree", "feature tree", MS_NOT_AVAILABLE);
+}
+
+int32_t CMultitaskLeastSquaresRegression::get_current_task() const
+{
+	return m_current_task;
+}
+
+void CMultitaskLeastSquaresRegression::set_current_task(int32_t task)
+{
+	ASSERT(task>0);
+	ASSERT(task<m_tasks_w.num_cols);
+	m_current_task = task;
+	int32_t n_feats = ((CDotFeatures*)features)->get_dim_feature_space();
+	w = SGVector<float64_t>(n_feats);
+	for (int32_t i=0; i<n_feats; i++)
+		w[i] = m_tasks_w(i,task);
 }
 
 CIndicesTree* CMultitaskLeastSquaresRegression::get_task_tree() const
@@ -73,11 +90,12 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 	options.restart_num = 10000;
 	options.n_nodes = 1;
 	options.regularization = 0;
-	options.ind = m_task_tree->get_ind();
+	SGVector<float64_t> ind = m_task_tree->get_ind();
+	options.ind = ind.vector;
 	options.G = NULL;
 	options.initial_w = NULL;
 
-	//w = slep_tree_mt_lsr(features,y,m_z,options);
+	m_tasks_w = slep_tree_mt_lsr(features,y,m_z,options);
 
 	SG_FREE(y);
 

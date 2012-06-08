@@ -19,6 +19,7 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** @brief indices tree node */
 class CIndicesTreeNode
 {
@@ -27,12 +28,14 @@ public:
 	{
 		node_indices = SGVector<index_t>();
 		child_nodes = v_array<CIndicesTreeNode*>();
+		weight = 0.0;
 	}
 
-	CIndicesTreeNode(SGVector<index_t> indices)
+	CIndicesTreeNode(SGVector<index_t> indices, float64_t w)
 	{
 		node_indices = indices;
 		child_nodes = v_array<CIndicesTreeNode*>();
+		weight = w;
 	}
 
 	~CIndicesTreeNode()
@@ -40,7 +43,6 @@ public:
 		int32_t len_child_nodes = child_nodes.index();
 		for (int32_t i; i<len_child_nodes; i++)
 			delete child_nodes[i];
-
 	}
 
 	void add_child(CIndicesTreeNode* child)
@@ -55,56 +57,104 @@ public:
 
 	SGVector<index_t> node_indices;
 
+	float64_t weight;
+
 	v_array<CIndicesTreeNode*> child_nodes;
 
 };
+#endif
 
-
+/** @brief indices tree
+ *
+ */
 class CIndicesTree : public CSGObject
 {
 public:
+	
+	/** constructor */
 	CIndicesTree() : CSGObject()
 	{
-		root_node = new CIndicesTreeNode();
-		current_node = root_node;
-		last_node = current_node;
+		SGVector<int32_t> supernode(2);
+		supernode[0] = -1;
+		supernode[1] = -1;
+		m_root_node = new CIndicesTreeNode(supernode,1.0);
+		m_current_node = m_root_node;
+		m_last_node = m_root_node;
 	}
 
+	/** destructor */
 	virtual ~CIndicesTree()
 	{
-		delete root_node;
+		delete m_root_node;
 	}
 
-	float64_t* get_ind() const;
+	/** get indices in SLEP format 
+	 * @return indices
+	 */
+	SGVector<float64_t> get_ind() const;
 
-	void add_child(SGVector<index_t> indices)
+	/** add child
+	 *
+	 * @param indices indices to add to the tree as child
+	 */
+	void add_child(SGVector<index_t> indices, float64_t weight)
 	{
-		current_node->add_child(new CIndicesTreeNode(indices));
+		m_current_node->add_child(new CIndicesTreeNode(indices,weight));
 	}
 
+	/** move to specific child of current node
+	 *
+	 * @param child_index index of child
+	 */
 	void go_child(int32_t child_index)
 	{
-		last_node = current_node;
-		current_node = current_node->child_nodes[child_index];
+		m_last_node = m_current_node;
+		m_current_node = m_current_node->child_nodes[child_index];
 	}
 
+	/** move back
+	 *
+	 */
 	void go_back()
 	{
-		current_node = last_node;
+		CIndicesTreeNode* current_node = m_current_node;
+		m_current_node = m_last_node;
+		m_last_node = current_node;
 	}
 
+	/** move to root
+	 *
+	 */
+	void go_root()
+	{
+		m_last_node = m_current_node;
+		m_current_node = m_root_node;
+	}
+
+	/** print tree */
+	void print_tree() const;
+
+	/** get name */
 	virtual const char* get_name() const 
 	{
 		return "IndicesTree";
 	}
 
+protected:
+
+	/** print tree recursive */
+	void print_tree_recursive(CIndicesTreeNode* node, int32_t level) const;
+
 private:
 
-	CIndicesTreeNode* root_node;
+	/** root node */
+	CIndicesTreeNode* m_root_node;
 
-	CIndicesTreeNode* current_node;
+	/** current node */
+	CIndicesTreeNode* m_current_node;
 
-	CIndicesTreeNode* last_node;
+	/** last node */
+	CIndicesTreeNode* m_last_node;
 
 };
 }

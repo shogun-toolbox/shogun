@@ -73,7 +73,8 @@ bool CFeatureTreeLeastSquaresRegression::train_machine(CFeatures* data)
 	options.restart_num = 10000;
 	options.n_nodes = 1;
 	options.regularization = 0;
-	options.ind = m_feature_tree->get_ind();
+	SGVector<float64_t> ind = m_feature_tree->get_ind();
+	options.ind = ind.vector;
 	options.G = NULL;
 	options.initial_w = NULL;
 

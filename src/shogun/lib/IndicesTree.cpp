@@ -12,10 +12,10 @@
 
 using namespace shogun;
 
-float64_t* CIndicesTree::get_ind() const
+SGVector<float64_t> CIndicesTree::get_ind() const
 {
 	SG_WARNING("Not implemented, uses one supernode\n");
-	float64_t* ind = SG_MALLOC(float64_t, 3);
+	SGVector<float64_t> ind(3);
 	ind[0] = -1;
 	ind[1] = -1;
 	ind[2] = 1.0;
@@ -23,3 +23,21 @@ float64_t* CIndicesTree::get_ind() const
 	return ind;
 }
 
+void CIndicesTree::print_tree() const
+{
+	print_tree_recursive(m_root_node,0);
+}
+
+void CIndicesTree::print_tree_recursive(CIndicesTreeNode* node, int32_t level) const
+{
+	for (int32_t i=0; i<level; i++)
+		SG_PRINT("\t");
+
+	SG_PRINT("[ ");
+	for (int32_t i=0; i<node->node_indices.vlen; i++)
+		SG_PRINT(" %d ",node->node_indices[i]);
+	SG_PRINT("] %f \n", node->weight);
+
+	for (int32_t i=0; i<node->child_nodes.index(); i++)
+		print_tree_recursive(node->child_nodes[i],level+1);
+}

@@ -4,7 +4,6 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Sergey Lisitsyn
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
@@ -47,7 +46,24 @@ class CMultitaskLeastSquaresRegression : public CSLEPMachine
 			return "MultitaskLeastSquaresRegression";
 		}
 
+		/** getter for current task
+		 * @return current task index
+		 */
+		int32_t get_current_task() const;
+
+		/** setter for current task
+		 * @param task task index
+		 */
+		void set_current_task(int32_t task);
+
+		/** getter for task tree
+		 * @return task tree
+		 */
 		CIndicesTree* get_task_tree() const;
+
+		/** setter for task tree
+		 * @param task_tree task tree
+		 */
 		void set_task_tree(CIndicesTree* task_tree);
 		
 	protected:
@@ -62,8 +78,14 @@ class CMultitaskLeastSquaresRegression : public CSLEPMachine
 
 	protected:
 
+		/** current task index */
+		int32_t m_current_task;
+
 		/** feature tree */
 		CIndicesTree* m_task_tree;
+
+		/** tasks w's */
+		SGMatrix<float64_t> m_tasks_w;
 
 };
 }
