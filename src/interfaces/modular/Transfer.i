@@ -21,7 +21,10 @@
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
 #endif //USE_SVMLIGHT
 %rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
-%rename(DomainAdaptationMulticlassLibLinear) CDomainAdaptationMulticlassLibLinear;
+
+
+/* Includes */
+%include <shogun/lib/IndicesTree.h>
 
 /* Multitask includes */
 %include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>
@@ -36,4 +39,3 @@
 %include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
 #endif // USE_SVMLIGHT
 %include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
-%include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
