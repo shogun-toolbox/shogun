@@ -110,6 +110,26 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 			return 0;
 		}
 
+		/**
+		 * get column j
+		 *
+		 * @return the jth column of the kernel matrix
+		 */
+		virtual SGVector<float64_t> get_kernel_col(int32_t j)
+ 		{
+			return CKernel::get_kernel_col(j);
+		}
+
+		/**
+		 * get row i
+		 *
+		 * @return the ith row of the kernel matrix
+		 */
+		virtual SGVector<float64_t> get_kernel_row(int32_t i)
+		{
+			return CKernel::get_kernel_row(i);
+		}
+
 		/** get number of vectors of lhs features
 		 *
 		 * @return number of vectors of left-hand side
@@ -199,6 +219,101 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @return name Director
 		 */
 		inline virtual const char* get_name() const { return "DirectorKernel"; }
+
+		/** for optimizable kernels, i.e. kernels where the weight
+		 * vector can be computed explicitly (if it fits into memory)
+		 */
+		virtual void clear_normal()
+		{
+			CKernel::clear_normal();
+		}
+
+		/** add vector*factor to 'virtual' normal vector
+		 *
+		 * @param vector_idx index
+		 * @param weight weight
+		 */
+		virtual void add_to_normal(int32_t vector_idx, float64_t weight)
+		{
+			CKernel::add_to_normal(vector_idx, weight);
+		}
+
+		/** set optimization type
+		 *
+		 * @param t optimization type to set
+		 */
+		virtual inline void set_optimization_type(EOptimizationType t)
+		{
+			CKernel::set_optimization_type(t);
+		}
+
+		/** initialize optimization
+		 *
+		 * @param count count
+		 * @param IDX index
+		 * @param weights weights
+		 * @return if initializing was successful
+		 */
+		virtual bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t *weights)
+		{
+			return CKernel::init_optimization(count, IDX, weights);
+		}
+
+		/** delete optimization
+		 *
+		 * @return if deleting was successful
+		 */
+		virtual bool delete_optimization()
+		{
+			return CKernel::delete_optimization();
+		}
+
+		/** compute optimized
+		 *
+		 * @param vector_idx index to compute
+		 * @return optimized value at given index
+		 */
+		virtual float64_t compute_optimized(int32_t vector_idx)
+		{
+			return CKernel::compute_optimized(vector_idx);
+		}
+
+		/** computes output for a batch of examples in an optimized fashion
+		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
+		 * the outputvector target (of length num_vec elements) the output for
+		 * the examples enumerated in vec_idx are added. therefore make sure
+		 * that it is initialized with ZERO. the following num_suppvec, IDX,
+		 * alphas arguments are the number of support vectors, their indices
+		 * and weights
+		 */
+		virtual void compute_batch(
+			int32_t num_vec, int32_t* vec_idx, float64_t* target,
+			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
+			float64_t factor=1.0)
+		{
+			CKernel::compute_batch(num_vec, vec_idx, target, num_suppvec, IDX, alphas, factor);
+		}
+
+		/** get number of subkernels
+		 *
+		 * @return number of subkernels
+		 */
+		virtual int32_t get_num_subkernels()
+		{
+			return CKernel::get_num_subkernels();
+		}
+
+		/** compute by subkernel
+		 *
+		 * @param vector_idx index
+		 * @param subkernel_contrib subkernel contribution
+		 */
+		virtual void compute_by_subkernel(
+			int32_t vector_idx, float64_t * subkernel_contrib)
+		{
+			CKernel::compute_by_subkernel(vector_idx, subkernel_contrib);
+		}
 
 		/** get subkernel weights
 		 *
