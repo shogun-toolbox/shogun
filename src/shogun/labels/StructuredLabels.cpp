@@ -34,13 +34,22 @@ CStructuredLabels::~CStructuredLabels()
 void CStructuredLabels::ensure_valid(const char* context)
 {
 	if ( m_labels == NULL )
-		SG_ERROR("Non-valid StructuredLabels");
+		SG_ERROR("Non-valid StructuredLabels in %s", context);
 }
 
 CDynamicObjectArray* CStructuredLabels::get_labels() const
 {
 	SG_REF(m_labels);
 	return m_labels;
+}
+
+CStructuredData* CStructuredLabels::get_label(int32_t idx)
+{
+	ensure_valid("CStructuredLabels::get_label(int32_t)");	
+	if ( idx < 0 || idx >= get_num_labels() )
+		SG_ERROR("Index must be inside [0, num_labels-1]");
+
+	return (CStructuredData*) m_labels->get_element(idx);
 }
 
 int32_t CStructuredLabels::get_num_labels()

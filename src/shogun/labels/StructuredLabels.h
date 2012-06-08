@@ -32,7 +32,7 @@ class CStructuredLabels : public CLabels
 		CStructuredLabels(int32_t num_labels);
 
 		/** destructor */
-		~CStructuredLabels();
+		virtual ~CStructuredLabels();
 
 		/** check if labeling is valid
 		 *
@@ -50,6 +50,14 @@ class CStructuredLabels : public CLabels
 		 */
 		CDynamicObjectArray* get_labels() const;
 		
+		/** get label object for specified index
+		 *
+		 * @param idx index of tha label
+		 *
+		 * @return label object
+		 */
+		CStructuredData* get_label(int32_t idx);
+
 		/** get number of labels, depending on wheter a subset is set
 		 *
 		 * @return number of labels
@@ -69,7 +77,7 @@ class CStructuredLabels : public CLabels
 		/** internal initialization */
 		void init();
 
-	private:
+	protected:
 		/** the vector of labels */
 		CDynamicObjectArray* m_labels;
 

@@ -24,10 +24,10 @@ class CStructuredData : public CSGObject
 		CStructuredData();
 
 		/** destructor */
-		~CStructuredData(); 
+		virtual ~CStructuredData(); 
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "StructuredData"; }
+		virtual const char* get_name() const { return "StructuredData"; }
 
 }; 
 
