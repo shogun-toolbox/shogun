@@ -175,12 +175,10 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 		/// || x ||_2
-		static T twonorm(T* x, int32_t len);
+		static T twonorm(const T* x, int32_t len);
 
 		/// || x ||_1
 		static float64_t onenorm(T* x, int32_t len);
-
-		static float64_t twonorm(const float64_t* v, int32_t n);
 
 		/// || x ||_q^q
 		static T qsq(T* x, int32_t len, float64_t q);

@@ -319,18 +319,6 @@ float32_t SGVector<T>::dot(const float32_t* v1, const float32_t* v2, int32_t n)
 	return r;
 }
 
-template <class T>
-float64_t SGVector<T>::twonorm(const float64_t* v, int32_t n)
-{
-	float64_t norm = 0.0;
-#ifdef HAVE_LAPACK
-	norm = cblas_dnrm2(n, v, 1);
-#else
-	norm = CMath::sqrt(SGVector::dot(v, v, n));
-#endif
-	return norm;
-}
-
 /** random vector */
 template <class T>
 	void SGVector<T>::random_vector(T* vec, int32_t len, T min_value, T max_value)
@@ -366,9 +354,22 @@ void SGVector<T>::permute_vector(SGVector<T> vec)
 	}
 }
 
-/// || x ||_2
-template <class T>
-T SGVector<T>::twonorm(T* x, int32_t len)
+template <>
+bool SGVector<bool>::twonorm(const bool* x, int32_t len)
+{
+	SG_SNOTIMPLEMENTED;
+	return false;
+}
+
+template <>
+char SGVector<char>::twonorm(const char* x, int32_t len)
+{
+	SG_SNOTIMPLEMENTED;
+	return '\0';
+}
+
+template <>
+int8_t SGVector<int8_t>::twonorm(const int8_t* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
@@ -376,6 +377,109 @@ T SGVector<T>::twonorm(T* x, int32_t len)
 
 	return CMath::sqrt(result);
 }
+
+template <>
+uint8_t SGVector<uint8_t>::twonorm(const uint8_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+int16_t SGVector<int16_t>::twonorm(const int16_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+uint16_t SGVector<uint16_t>::twonorm(const uint16_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+int32_t SGVector<int32_t>::twonorm(const int32_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+uint32_t SGVector<uint32_t>::twonorm(const uint32_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+int64_t SGVector<int64_t>::twonorm(const int64_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+uint64_t SGVector<uint64_t>::twonorm(const uint64_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+float32_t SGVector<float32_t>::twonorm(const float32_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
+template <>
+float64_t SGVector<float64_t>::twonorm(const float64_t* v, int32_t n)
+{
+	float64_t norm = 0.0;
+#ifdef HAVE_LAPACK
+	norm = cblas_dnrm2(n, v, 1);
+#else
+	norm = CMath::sqrt(SGVector::dot(v, v, n));
+#endif
+	return norm;
+}
+
+template <>
+floatmax_t SGVector<floatmax_t>::twonorm(const floatmax_t* x, int32_t len)
+{
+	float64_t result=0;
+	for (int32_t i=0; i<len; i++)
+		result+=x[i]*x[i];
+
+	return CMath::sqrt(result);
+}
+
 
 template <class T>
 float64_t SGVector<T>::onenorm(T* x, int32_t len)
