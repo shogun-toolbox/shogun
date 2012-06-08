@@ -427,7 +427,7 @@ float64_t LaRankOutput::computeScore (int32_t x_id)
 	else
 	{
 		float32_t *row = larank_kcache_query_row (kernel, x_id, l);
-		return CMath::dot (beta, row, l);
+		return SGVector<float32_t>::dot (beta, row, l);
 	}
 }
 
@@ -457,8 +457,8 @@ void LaRankOutput::update (int32_t x_id, float64_t lambda, float64_t gp)
 	else
 	{
 		larank_kcache_swap_ri (kernel, l, x_id);
-		CMath::resize(g, l, l+1);
-		CMath::resize(beta, l, l+1);
+		SGVector<float32_t>::resize(g, l, l+1);
+		SGVector<float32_t>::resize(beta, l, l+1);
 		g[l]=gp;
 		beta[l]=lambda;
 		l++;
@@ -504,8 +504,8 @@ int32_t LaRankOutput::cleanup ()
 			g[r]=g[r + 1];
 		}
 	}
-	CMath::resize(beta, l, new_l+1);
-	CMath::resize(g, l, new_l+1);
+	SGVector<float32_t>::resize(beta, l, new_l+1);
+	SGVector<float32_t>::resize(g, l, new_l+1);
 	beta[new_l]=0;
 	g[new_l]=0;
 	l = new_l;
@@ -521,7 +521,7 @@ float64_t LaRankOutput::getW2 ()
 	for (int32_t r = 0; r < l; r++)
 	{
 		float32_t *row_r = larank_kcache_query_row (kernel, r2i[r], l);
-		sum += beta[r] * CMath::dot (beta, row_r, l);
+		sum += beta[r] * SGVector<float32_t>::dot (beta, row_r, l);
 	}
 	return sum;
 }

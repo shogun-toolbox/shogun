@@ -81,7 +81,7 @@ double l2r_lr_fun::fun(double *w)
 		else
 			f += C[i]*(-yz+log(1 + exp(yz)));
 	}
-	f += 0.5 *CMath::dot(w,w,n);
+	f += 0.5 *SGVector<float64_t>::dot(w,w,n);
 
 	return(f);
 }
@@ -197,7 +197,7 @@ double l2r_l2_svc_fun::fun(double *w)
 		if (d > 0)
 			f += C[i]*d*d;
 	}
-	f += 0.5*CMath::dot(w, w, w_size);
+	f += 0.5*SGVector<float64_t>::dot(w, w, w_size);
 
 	return(f);
 }
@@ -420,7 +420,7 @@ int compare_double(const void *a, const void *b)
 void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new)
 {
 	int r;
-	double *D=CMath::clone_vector(state->B, active_i);
+	double *D=SGVector<float64_t>::clone_vector(state->B, active_i);
 
 	if(yi < active_i)
 		D[yi] += A_i*C_yi;

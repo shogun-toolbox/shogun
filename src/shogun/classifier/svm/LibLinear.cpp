@@ -1359,7 +1359,7 @@ void CLibLinear::init_linear_term()
 		SG_ERROR("Please assign labels first!\n");
 
 	m_linear_term=SGVector<float64_t>(m_labels->get_num_labels());
-	CMath::fill_vector(m_linear_term.vector, m_linear_term.vlen, -1.0);
+	SGVector<float64_t>::fill_vector(m_linear_term.vector, m_linear_term.vlen, -1.0);
 }
 
 #endif //HAVE_LAPACK

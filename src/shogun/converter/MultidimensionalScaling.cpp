@@ -161,7 +161,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::classic_embedding(SGMatrix<float64
 		for (j=0; j<N; j++)
 			distance_matrix(i,j) = CMath::sq(distance_matrix(i,j));
 	}
-	CMath::center_matrix(distance_matrix.matrix,N,N);
+	SGMatrix<float64_t>::center_matrix(distance_matrix.matrix,N,N);
 	for (i=0; i<N; i++)
 	{
 		for (j=0; j<N; j++)

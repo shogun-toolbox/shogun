@@ -134,7 +134,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
 	for ( i = 0 ; i < num_vecs ; ++i )
-		out->set_label(i, CMath::arg_max(norm2.vector+i, num_vecs, m_num_classes));
+		out->set_label(i, SGVector<float64_t>::arg_max(norm2.vector+i, num_vecs, m_num_classes));
 
 #ifdef DEBUG_QDA
 	CMath::display_matrix(norm2.vector, num_vecs, m_num_classes, "norm2");
@@ -263,15 +263,15 @@ bool CQDA::train_machine(CFeatures* data)
 		ASSERT(info == 0);
 		buffer=SGMatrix<float64_t>();
 
-		CMath::vector_multiply(col, col, col, m_dim);
-		CMath::scale_vector(1.0/(m-1), col, m_dim);
+		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
+		SGVector<float64_t>::scale_vector(1.0/(m-1), col, m_dim);
 		rotations.transpose_matrix(k);
 
 		if ( m_store_covs )
 		{
 			SGMatrix< float64_t > M(n ,n);
 
-			M.matrix = CMath::clone_vector(rot_mat, n*n);
+			M.matrix = SGVector<float64_t>::clone_vector(rot_mat, n*n);
 			for ( i = 0 ; i < m_dim ; ++i )
 				for ( j = 0 ; j < m_dim ; ++j )
 					M[i + j*m_dim] *= scalings[k*m_dim + j];

@@ -47,7 +47,7 @@ SGMatrix<float64_t> CLinearLocalTangentSpaceAlignment::construct_embedding(CFeat
 	float64_t* XTM = SG_MALLOC(float64_t, dim*N);
 	float64_t* lhs_M = SG_MALLOC(float64_t, dim*dim);
 	float64_t* rhs_M = SG_MALLOC(float64_t, dim*dim);
-	CMath::center_matrix(matrix.matrix,N,N);
+	SGMatrix<float64_t>::center_matrix(matrix.matrix,N,N);
 
 	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,dim,N,N,1.0,feature_matrix.matrix,dim,matrix.matrix,N,0.0,XTM,dim);
 	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,XTM,dim,feature_matrix.matrix,dim,0.0,lhs_M,dim);

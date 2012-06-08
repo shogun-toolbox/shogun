@@ -136,8 +136,8 @@ double* slep_tree_lsr(
 			for (i=0; i<n_vecs; i++)
 				Av[i] = Aw[i] - As[i];
 
-			double r_sum = CMath::dot(v,v,n_feats);
-			double l_sum = CMath::dot(Av,Av,n_vecs);
+			double r_sum = SGVector<float64_t>::dot(v,v,n_feats);
+			double l_sum = SGVector<float64_t>::dot(Av,Av,n_vecs);
 
 			if (r_sum <= 1e-20)
 			{
@@ -171,7 +171,7 @@ double* slep_tree_lsr(
 			tree_norm = treeNorm(w,n_feats,options.ind,options.n_nodes);
 
 		funcp = func;
-		func = 0.5*CMath::dot(resid,resid,n_vecs) + lambda*tree_norm;
+		func = 0.5*SGVector<float64_t>::dot(resid,resid,n_vecs) + lambda*tree_norm;
 
 		if (gradient_break)
 			break;
@@ -202,13 +202,13 @@ double* slep_tree_lsr(
 					done = true;
 				break;
 			case 3:
-				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats));
+				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats));
 				if (norm_wwp <= options.tolerance)
 					done = true;
 				break;
 			case 4:
-				norm_wp = CMath::sqrt(CMath::dot(wp,wp,n_feats));
-				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats));
+				norm_wp = CMath::sqrt(SGVector<float64_t>::dot(wp,wp,n_feats));
+				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats));
 				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
 					done = true;
 				break;

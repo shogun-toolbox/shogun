@@ -133,7 +133,7 @@ SGMatrix<float64_t> CIsomap::isomap_distance(SGMatrix<float64_t> D_matrix)
 	int32_t* edges_idx_matrix = SG_MALLOC(int32_t, N*m_k);
 	float64_t* edges_matrix = SG_MALLOC(float64_t, N*m_k);
 
-	float64_t max_dist = CMath::max(D_matrix.matrix,N*N);
+	float64_t max_dist = SGVector<float64_t>::max(D_matrix.matrix,N*N);
 	CoverTree<ISOMAP_COVERTREE_POINT>* coverTree = new CoverTree<ISOMAP_COVERTREE_POINT>(max_dist);
 
 	for (i=0; i<N; i++)

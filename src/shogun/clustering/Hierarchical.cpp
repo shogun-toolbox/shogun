@@ -73,15 +73,15 @@ bool CHierarchical::train_machine(CFeatures* data)
 
 	SG_FREE(merge_distance);
 	merge_distance=SG_MALLOC(float64_t, num);
-	CMath::fill_vector(merge_distance, num, -1.0);
+	SGVector<float64_t>::fill_vector(merge_distance, num, -1.0);
 
 	SG_FREE(assignment);
 	assignment=SG_MALLOC(int32_t, num);
-	CMath::range_fill_vector(assignment, num);
+	SGVector<int32_t>::range_fill_vector(assignment, num);
 
 	SG_FREE(pairs);
 	pairs=SG_MALLOC(int32_t, 2*num);
-	CMath::fill_vector(pairs, 2*num, -1);
+	SGVector<int32_t>::fill_vector(pairs, 2*num, -1);
 
 	pair* index=SG_MALLOC(pair, num_pairs);
 	float64_t* distances=SG_MALLOC(float64_t, num_pairs);

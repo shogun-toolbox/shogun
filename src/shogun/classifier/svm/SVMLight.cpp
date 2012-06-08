@@ -300,7 +300,7 @@ void CSVMLight::svm_learn()
 	SGVector<int32_t> lab=((CBinaryLabels*) m_labels)->get_int_labels();
 	int32_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen);
-	int32_t* label=CMath::clone_vector(lab.vector, lab.vlen);
+	int32_t* label=SGVector<int32_t>::clone_vector(lab.vector, lab.vlen);
 
 	int32_t* docs=SG_MALLOC(int32_t, totdoc);
 	SG_FREE(W);
@@ -349,7 +349,7 @@ void CSVMLight::svm_learn()
 	else
 	{
 		learn_parm->eps=SG_MALLOC(float64_t, totdoc);      /* equivalent regression epsilon for classification */
-		CMath::fill_vector(learn_parm->eps, totdoc, -1.0);
+		SGVector<float64_t>::fill_vector(learn_parm->eps, totdoc, -1.0);
 	}
 
 	learn_parm->svm_cost = SG_MALLOC(float64_t, totdoc);

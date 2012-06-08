@@ -16,10 +16,13 @@
 #ifndef __STATISTICS_H_
 #define __STATISTICS_H_
 
+#include <math.h>
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun
 {
+template<class T> class SGMatrix;
 
 /** @brief Class that contains certain functions related to statistics, such as
  * the student's t distribution.
@@ -137,7 +140,36 @@ public:
 	 */
 	static float64_t inverse_normal_distribution(float64_t y0);
 
+<<<<<<< HEAD
 	/** Incomplete gamma integral
+=======
+	/** @return natural logarithm of the gamma function of input */
+	static inline float64_t lgamma(float64_t x)
+	{
+		return ::lgamma((double) x);
+	}
+
+	static inline floatmax_t lgammal(floatmax_t x)
+	{
+#ifdef HAVE_LGAMMAL
+		return ::lgammal((long double) x);
+#else
+		return ::lgamma((double) x);
+#endif // HAVE_LGAMMAL
+	}
+
+
+	/** @return gamma function of input */
+	static inline float64_t tgamma(float64_t x)
+	{
+		return ::tgamma((double) x);
+	}
+
+
+	/** Inverse of complemented imcomplete gamma integral
+	 *
+	 * Given p, the function finds x such that
+>>>>>>> Clean up CMath: move respective functions to CStatistics, SGVector and SGMatrix
 	 *
 	 * The function is defined by
 	 *
@@ -192,6 +224,36 @@ public:
 	 * @param b scale parameter
 	 */
 	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
+
+	/// returns the mutual information of p which is given in logspace
+	/// where p,q are given in logspace
+	static float64_t mutual_info(float64_t* p1, float64_t* p2, int32_t len);
+
+	/// returns the relative entropy H(P||Q),
+	/// where p,q are given in logspace
+	static float64_t relative_entropy(
+			float64_t* p, float64_t* q, int32_t len);
+
+	/// returns entropy of p which is given in logspace
+	static float64_t entropy(float64_t* p, int32_t len);
+
+	/** fisher's test for multiple 2x3 tables
+	 * @param tables
+	 */
+	static SGVector<float64_t> fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables);
+
+	/** fisher's test for 2x3 table
+	 * @param table
+	 */
+	static float64_t fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table);
+
+
+
+	/** @return object name */
+	inline virtual const char* get_name() const
+	{
+		return "Statistics";
+	}
 
 protected:
 	/** Power series for incomplete beta integral.

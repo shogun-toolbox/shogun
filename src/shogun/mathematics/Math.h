@@ -18,13 +18,10 @@
 #ifndef __MATHEMATICS_H_
 #define __MATHEMATICS_H_
 
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/SGObject.h>
 #include <shogun/base/Parallel.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
 
 #include <math.h>
 #include <stdio.h>
@@ -44,7 +41,6 @@
 #define cygwin_log2 log2
 #undef log2
 #endif
-
 
 
 /// workaround a bug in std cmath
@@ -133,6 +129,7 @@ template <class T1, class T2> struct thread_qsort
 
 namespace shogun
 {
+	class CSGObject;
 /** @brief Class which collects generic mathematical functions
  */
 class CMath : public CSGObject
@@ -228,64 +225,6 @@ class CMath : public CSGObject
 				T c=a;
 				a=b;
 				b=c;
-			}
-
-		/** resize array from old_size to new_size (keeping as much array
-		 * content as possible intact)
-		 */
-		template <class T>
-			static inline void resize(T* &data, int64_t old_size, int64_t new_size)
-			{
-				if (old_size==new_size)
-					return;
-				T* new_data = SG_MALLOC(T, new_size);
-				for (int64_t i=0; i<old_size && i<new_size; i++)
-					new_data[i]=data[i];
-				SG_FREE(data);
-				data=new_data;
-			}
-
-		/// || x ||_2
-		template <class T>
-			static inline T twonorm(T* x, int32_t len)
-			{
-				float64_t result=0;
-				for (int32_t i=0; i<len; i++)
-					result+=x[i]*x[i];
-
-				return CMath::sqrt(result);
-			}
-
-		/// || x ||_1
-		template <class T>
-			static inline float64_t onenorm(T* x, int32_t len)
-			{
-				float64_t result=0;
-				for (int32_t i=0;i<len; ++i)
-					result+=CMath::abs(x[i]);
-
-				return result;
-			}
-
-		static float64_t twonorm(const float64_t* v, int32_t n);
-
-		/// || x ||_q^q
-		template <class T>
-			static inline T qsq(T* x, int32_t len, float64_t q)
-			{
-				float64_t result=0;
-				for (int32_t i=0; i<len; i++)
-					result+=CMath::pow(fabs(x[i]), q);
-
-				return result;
-			}
-
-		/// || x ||_q
-		template <class T>
-			static inline T qnorm(T* x, int32_t len, float64_t q)
-			{
-				ASSERT(q!=0);
-				return CMath::pow(qsq(x, len, q), 1/q);
 			}
 
 		/// x^2
@@ -386,31 +325,10 @@ class CMath : public CSGObject
 			return ::exp((double) x);
 		}
 
-		/** @return natural logarithm of the gamma function of input */
-		static inline float64_t lgamma(float64_t x)
-		{
-			return ::lgamma((double) x);
-		}
-
-		/** @return gamma function of input */
-		static inline float64_t tgamma(float64_t x)
-		{
-			return ::tgamma((double) x);
-		}
-
 		/** @return arcus tangens of input */
 		static inline float64_t atan(float64_t x)
 		{
 			return ::atan((double) x);
-		}
-
-		static inline floatmax_t lgammal(floatmax_t x)
-		{
-#ifdef HAVE_LGAMMAL
-			return ::lgammal((long double) x);
-#else
-			return ::lgamma((double) x);
-#endif // HAVE_LGAMMAL
 		}
 
 		static inline float64_t log10(float64_t v)
@@ -462,104 +380,6 @@ class CMath : public CSGObject
 			return area;
 		}
 
-		template <class T>
-		static void transpose_matrix(
-			T*& matrix, int32_t& num_feat, int32_t& num_vec)
-		{
-			T* transposed=SG_MALLOC(T, num_vec*num_feat);
-			for (int32_t i=0; i<num_vec; i++)
-			{
-				for (int32_t j=0; j<num_feat; j++)
-					transposed[i+j*num_vec]=matrix[i*num_feat+j];
-			}
-
-			SG_FREE(matrix);
-			matrix=transposed;
-
-			CMath::swap(num_feat, num_vec);
-		}
-		template <class T>
-		static void create_diagonal_matrix(T* matrix,T* v,int32_t size)
-		{
-			for(int32_t i=0;i<size;i++)
-			{
-				for(int32_t j=0;j<size;j++)
-				{
-					if(i==j)
-						matrix[j*size+i]=v[i];
-					else
-						matrix[j*size+i]=0;
-				}
-			}
-		}
-
-		/** returns the identity matrix, scaled by a factor
-		 *
-		 * @param size size of square identity matrix
-		 * @param scale (optional) scaling factor
-		 */
-		template <class T>
-		static SGMatrix<T> create_identity_matrix(index_t size, T scale);
-
-		/** returns the centering matrix, given by H=I-1/n*O, where
-		 * I is the identity matrix, O is a square matrix of ones of size n
-		 * Multiplied from the left hand side, subtracts from each column
-		 * its mean.
-		 * Multiplied from the right hand side, subtracts from each row
-		 * its mean (so from each dimension of a SHOGUN feature)
-		 *
-		 * Note that H*H=H=H^T
-		 *
-		 * @param size size of centering matrix
-		 */
-		template <class T>
-		static SGMatrix<T> create_centering_matrix(index_t size);
-
-#ifdef HAVE_LAPACK
-		/** compute eigenvalues and eigenvectors of symmetric matrix using
-		 * LAPACK
-		 *
-		 * @param matrix symmetric matrix to compute eigenproblem. Is
-		 * overwritten and contains orthonormal eigenvectors afterwards
-		 * @return eigenvalues vector with eigenvalues equal to number of rows
-		 * in matrix
-		 * */
-		static SGVector<float64_t> compute_eigenvectors(
-				SGMatrix<float64_t> matrix);
-
-		/** compute eigenvalues and eigenvectors of symmetric matrix
-		 *
-		 * @param matrix  overwritten and contains n orthonormal eigenvectors
-		 * @param n
-		 * @param m
-		 * @return eigenvalues (array of length n, to be deleted[])
-		 * */
-		static double* compute_eigenvectors(double* matrix, int n, int m);
-
-		/* Computes scale* A*B, where A and B may be transposed.
-		 * Asserts for matching inner dimensions.
-		 * @param A matrix A
-		 * @param transpose_A optional whether A should be transposed before
-		 * @param B matrix B
-		 * @param transpose_B optional whether B should be transposed before
-		 * @param scale optional scaling factor for result
-		 */
-		static SGMatrix<float64_t> matrix_multiply(
-				SGMatrix<float64_t> A, SGMatrix<float64_t> B,
-				bool transpose_A=false, bool transpose_B=false,
-				float64_t scale=1.0);
-
-		/// inverses square matrix in-place
-		static void inverse(SGMatrix<float64_t> matrix);
-
-		/// return the pseudo inverse for matrix
-		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
-		static float64_t* pinv(
-			float64_t* matrix, int32_t rows, int32_t cols,
-			float64_t* target=NULL);
-
-#endif
-
 		static inline int64_t factorial(int32_t n)
 		{
 			int64_t res=1;
@@ -594,6 +414,27 @@ class CMath : public CSGObject
 #endif
 		}
 
+		static inline uint64_t random(uint64_t min_value, uint64_t max_value)
+		{
+			uint64_t ret = min_value + (uint64_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+			ASSERT(ret>=min_value && ret<=max_value);
+			return ret ;
+		}
+
+		static inline int64_t random(int64_t min_value, int64_t max_value)
+		{
+			int64_t ret = min_value + (int64_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+			ASSERT(ret>=min_value && ret<=max_value);
+			return ret ;
+		}
+
+		static inline uint32_t random(uint32_t min_value, uint32_t max_value)
+		{
+			uint32_t ret = min_value + (uint32_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+			ASSERT(ret>=min_value && ret<=max_value);
+			return ret ;
+		}
+
 		static inline int32_t random(int32_t min_value, int32_t max_value)
 		{
 			int32_t ret = min_value + (int32_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
@@ -614,6 +455,16 @@ class CMath : public CSGObject
 		static inline float64_t random(float64_t min_value, float64_t max_value)
 		{
 			float64_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
+
+			if (ret<min_value || ret>max_value)
+				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
+			ASSERT(ret>=min_value && ret<=max_value);
+			return ret;
+		}
+
+		static inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
+		{
+			floatmax_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
@@ -679,44 +530,6 @@ class CMath : public CSGObject
 			return normal_random(0.0, 1.0);
 		}
 
-		template <class T>
-			static T* clone_vector(const T* vec, int32_t len)
-			{
-				T* result = SG_MALLOC(T, len);
-				memcpy(result, vec, sizeof(T)*len);
-				return result;
-			}
-		template <class T>
-			static void fill_vector(T* vec, int32_t len, T value)
-			{
-				for (index_t i=0; i<len; ++i)
-					vec[i]=value;
-			}
-
-		template <class T>
-			static void range_fill_vector(T* vec, int32_t len, T start=0)
-			{
-				for (int32_t i=0; i<len; i++)
-					vec[i]=i+start;
-			}
-
-		template <class T>
-			static void random_vector(T* vec, int32_t len, T min_value, T max_value)
-			{
-				for (int32_t i=0; i<len; i++)
-					vec[i]=CMath::random(min_value, max_value);
-			}
-
-		template <class T>
-			static void permute_vector(SGVector<T> vec)
-		{
-			for (index_t i=0; i<vec.vlen; ++i)
-			{
-				CMath::swap(vec.vector[i],
-						vec.vector[CMath::random(i, vec.vlen-1)]);
-			}
-		}
-
 		static inline int32_t* randperm(int32_t n)
 		{
 			int32_t* perm = SG_MALLOC(int32_t, n);
@@ -738,312 +551,6 @@ class CMath : public CSGObject
 				res*=i;
 
 			return res/factorial(k);
-		}
-
-		/// x=x+alpha*y
-		template <class T>
-			static inline void vec1_plus_scalar_times_vec2(T* vec1,
-					T scalar, const T* vec2, int32_t n)
-			{
-				for (int32_t i=0; i<n; i++)
-					vec1[i]+=scalar*vec2[i];
-			}
-
-		/// compute dot product between v1 and v2 (blas optimized)
-		static inline float64_t dot(const bool* v1, const bool* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((v1[i]) ? 1 : 0) * ((v2[i]) ? 1 : 0);
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (blas optimized)
-		static inline floatmax_t dot(const floatmax_t* v1, const floatmax_t* v2, int32_t n)
-		{
-			floatmax_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=v1[i]*v2[i];
-			return r;
-		}
-
-
-		/// compute dot product between v1 and v2 (blas optimized)
-		static float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n);
-
-		/// compute dot product between v1 and v2 (blas optimized)
-		static float32_t dot(const float32_t* v1, const float32_t* v2, int32_t n);
-
-		/// compute dot product between v1 and v2 (for 64bit unsigned ints)
-		static inline float64_t dot(
-			const uint64_t* v1, const uint64_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-		/// compute dot product between v1 and v2 (for 64bit ints)
-		static inline float64_t dot(
-			const int64_t* v1, const int64_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (for 32bit ints)
-		static inline float64_t dot(
-			const int32_t* v1, const int32_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (for 32bit unsigned ints)
-		static inline float64_t dot(
-			const uint32_t* v1, const uint32_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (for 16bit unsigned ints)
-		static inline float64_t dot(
-			const uint16_t* v1, const uint16_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (for 16bit unsigned ints)
-		static inline float64_t dot(
-			const int16_t* v1, const int16_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
-		static inline float64_t dot(
-			const char* v1, const char* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
-		static inline float64_t dot(
-			const uint8_t* v1, const uint8_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
-		static inline float64_t dot(
-			const int8_t* v1, const int8_t* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute dot product between v1 and v2
-		static inline float64_t dot(
-			const float64_t* v1, const char* v2, int32_t n)
-		{
-			float64_t r=0;
-			for (int32_t i=0; i<n; i++)
-				r+=((float64_t) v1[i])*v2[i];
-
-			return r;
-		}
-
-		/// compute vector multiplication
-		template <class T>
-			static inline void vector_multiply(
-				T* target, const T* v1, const T* v2,int32_t len)
-			{
-				for (int32_t i=0; i<len; i++)
-					target[i]=v1[i]*v2[i];
-			}
-
-
-		/// target=alpha*vec1 + beta*vec2
-		template <class T>
-			static inline void add(
-				T* target, T alpha, const T* v1, T beta, const T* v2,
-				int32_t len)
-			{
-				for (int32_t i=0; i<len; i++)
-					target[i]=alpha*v1[i]+beta*v2[i];
-			}
-
-		/// add scalar to vector inplace
-		template <class T>
-			static inline void add_scalar(T alpha, T* vec, int32_t len)
-			{
-				for (int32_t i=0; i<len; i++)
-					vec[i]+=alpha;
-			}
-
-		/// scale vector inplace
-		template <class T>
-			static inline void scale_vector(T alpha, T* vec, int32_t len)
-			{
-				for (int32_t i=0; i<len; i++)
-					vec[i]*=alpha;
-			}
-
-		/// return sum(vec)
-		template <class T>
-			static inline T sum(T* vec, int32_t len)
-			{
-				T result=0;
-				for (int32_t i=0; i<len; i++)
-					result+=vec[i];
-
-				return result;
-			}
-
-		/// return sum(vec)
-		template <class T>
-			static inline T sum(SGVector<T> vec)
-			{
-				CMath::sum(vec.vector, vec.vlen);
-			}
-
-
-		/** @return min(vec) */
-		template <class T>
-			static inline T min(T* vec, int32_t len)
-			{
-				ASSERT(len>0);
-				T minv=vec[0];
-
-				for (int32_t i=1; i<len; i++)
-					minv=CMath::min(vec[i], minv);
-
-				return minv;
-			}
-
-		/** @return max(vec) */
-		template <class T>
-			static inline T max(T* vec, int32_t len)
-			{
-				ASSERT(len>0);
-				T maxv=vec[0];
-
-				for (int32_t i=1; i<len; i++)
-					maxv=CMath::max(vec[i], maxv);
-
-				return maxv;
-			}
-
-		/// return arg_max(vec)
-		template <class T>
-			static inline int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL)
-			{
-				ASSERT(len > 0 || inc > 0);
-
-				T maxv = vec[0];
-				int32_t maxIdx = 0;
-
-				for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
-				{
-					if (vec[j] > maxv)
-						maxv = vec[j], maxIdx = i;
-				}
-
-				if (maxv_ptr != NULL)
-					*maxv_ptr = maxv;
-
-				return maxIdx;
-			}
-
-		/// return arg_min(vec)
-		template <class T>
-			static inline int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL)
-			{
-				ASSERT(len > 0 || inc > 0);
-
-				T minv = vec[0];
-				int32_t minIdx = 0;
-
-				for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
-				{
-					if (vec[j] < minv)
-						minv = vec[j], minIdx = i;
-				}
-
-				if (minv_ptr != NULL)
-					*minv_ptr = minv;
-
-				return minIdx;
-			}
-
-		/// return sum(abs(vec))
-		template <class T>
-			static inline T sum_abs(T* vec, int32_t len)
-			{
-				T result=0;
-				for (int32_t i=0; i<len; i++)
-					result+=CMath::abs(vec[i]);
-
-				return result;
-			}
-
-		/// return sum(abs(vec))
-		template <class T>
-			static inline bool fequal(T x, T y, float64_t precision=1e-6)
-			{
-				return CMath::abs(x-y)<precision;
-			}
-
-		/** @deprecated use CStatistics::mean() instead */
-		static inline float64_t mean(float64_t* vec, int32_t len)
-		{
-			SG_SDEPRECATED;
-			ASSERT(vec);
-			ASSERT(len>0);
-
-			float64_t mean=0;
-			for (int32_t i=0; i<len; i++)
-				mean+=vec[i];
-			return mean/len;
-		}
-
-		static inline float64_t trace(
-			float64_t* mat, int32_t cols, int32_t rows)
-		{
-			float64_t trace=0;
-			for (int32_t i=0; i<rows; i++)
-				trace+=mat[i*cols+i];
-			return trace;
 		}
 
 		/** performs a bubblesort on a given matrix a.
@@ -1327,24 +834,6 @@ class CMath : public CSGObject
 			}
 		}
 
-		/// display vector (useful for debugging)
-		template <class T> static void display_vector(
-			const T* vector, int32_t n, const char* name="vector",
-			const char* prefix="");
-
-		template <class T> static void display_vector(
-			const SGVector<T>, const char* name="vector",
-			const char* prefix="");
-
-		/// display matrix (useful for debugging)
-		template <class T> static void display_matrix(
-			const T* matrix, int32_t rows, int32_t cols,
-			const char* name="matrix", const char* prefix="");
-
-		template <class T> static void display_matrix(
-			const SGMatrix<T> matrix, const char* name="matrix",
-			const char* prefix="");
-
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
@@ -1399,76 +888,8 @@ class CMath : public CSGObject
 			static void nmin(
 				float64_t* output, T* index, int32_t size, int32_t n);
 
-		/* performs a inplace unique of a vector of type T using quicksort
-		 * returns the new number of elements */
-		template <class T>
-			static int32_t unique(T* output, int32_t size)
-			{
-				qsort(output, size);
-				int32_t j=0;
-
-				for (int32_t i=0; i<size; i++)
-				{
-					if (i==0 || output[i]!=output[i-1])
-						output[j++]=output[i];
-				}
-				return j;
-			}
 
 
-		/* Sums up all rows of a matrix and returns the resulting rowvector */
-		template <class T>
-			static T* get_row_sum(T* matrix, int32_t m, int32_t n)
-			{
-				T* rowsums=SG_CALLOC(T, n);
-
-				for (int32_t i=0; i<n; i++)
-				{
-					for (int32_t j=0; j<m; j++)
-						rowsums[i]+=matrix[j+int64_t(i)*m];
-				}
-				return rowsums;
-			}
-
-		/* Sums up all columns of a matrix and returns the resulting columnvector */
-		template <class T>
-			static T* get_column_sum(T* matrix, int32_t m, int32_t n)
-			{
-				T* colsums=SG_CALLOC(T, m);
-
-				for (int32_t i=0; i<n; i++)
-				{
-					for (int32_t j=0; j<m; j++)
-						colsums[j]+=matrix[j+int64_t(i)*m];
-				}
-				return colsums;
-			}
-
-		/* Centers  matrix (e.g. kernel matrix in feature space INPLACE */
-		template <class T>
-			static void center_matrix(T* matrix, int32_t m, int32_t n)
-			{
-				float64_t num_data=n;
-
-				T* colsums=get_column_sum(matrix, m,n);
-				T* rowsums=get_row_sum(matrix, m,n);
-
-				for (int32_t i=0; i<m; i++)
-					colsums[i]/=num_data;
-				for (int32_t j=0; j<n; j++)
-					rowsums[j]/=num_data;
-
-				T s=sum(rowsums, n)/num_data;
-
-				for (int32_t i=0; i<n; i++)
-				{
-					for (int32_t j=0; j<m; j++)
-						matrix[int64_t(i)*m+j]+=s-colsums[j]-rowsums[i];
-				}
-
-				SG_FREE(rowsums);
-				SG_FREE(colsums);
-			}
 
 		/* finds an element in a sorted array via binary search
 		 * returns -1 if not found */
@@ -1566,18 +987,6 @@ class CMath : public CSGObject
 
 		//@}
 
-		/// returns the mutual information of p which is given in logspace
-		/// where p,q are given in logspace
-		static float64_t mutual_info(float64_t* p1, float64_t* p2, int32_t len);
-
-		/// returns the relative entropy H(P||Q),
-		/// where p,q are given in logspace
-		static float64_t relative_entropy(
-			float64_t* p, float64_t* q, int32_t len);
-
-		/// returns entropy of p which is given in logspace
-		static float64_t entropy(float64_t* p, int32_t len);
-
 		/// returns number generator seed
 		inline static uint32_t get_seed()
 		{
@@ -1630,16 +1039,6 @@ class CMath : public CSGObject
             return isnan(f);
 #endif
 		}
-
-		/** fisher's test for multiple 2x3 tables
-		 * @param tables
-		 */
-		static SGVector<float64_t> fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables);
-
-		/** fisher's test for 2x3 table
-		 * @param table
-		 */
-		static float64_t fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table);
 
 		/**@name summing functions */
 		//@{

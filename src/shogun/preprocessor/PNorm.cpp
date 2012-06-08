@@ -79,7 +79,7 @@ SGMatrix<float64_t> CPNorm::apply_to_feature_matrix (CFeatures* features)
 	{
 		float64_t* vec= &(feature_matrix.matrix[i*feature_matrix.num_rows]);
 		float64_t norm = get_pnorm (vec, feature_matrix.num_rows);
-		CMath::scale_vector(1.0/norm, vec, feature_matrix.num_rows);
+		SGVector<float64_t>::scale_vector(1.0/norm, vec, feature_matrix.num_rows);
 	}
 	return feature_matrix;
 }
@@ -124,11 +124,11 @@ inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const
 	}
 	else if (m_p == 2.0)
 	{
-		norm = CMath::twonorm (vec, vec_len);
+		norm = SGVector<float64_t>::twonorm(vec, vec_len);
 	}
 	else
 	{
-		norm = CMath::qnorm (vec, vec_len, m_p);
+		norm = SGVector<float64_t>::qnorm(vec, vec_len, m_p);
 	}
 		
 	return norm;

@@ -127,10 +127,10 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	kernel_train_matrix.num_cols);
 	
 	SGVector<float64_t> diagonal(temp1.num_rows);
-	CMath::fill_vector(diagonal.vector, temp1.num_rows, 1.0);
+	SGVector<float64_t>::fill_vector(diagonal.vector, temp1.num_rows, 1.0);
 	
-	CMath::create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
-	CMath::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
+	SGMatrix<float64_t>::create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
+	SGMatrix<float64_t>::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
 		
 	//Calculate first (K(X_train, X_train)+sigma*I)
 	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, 
@@ -215,8 +215,8 @@ SGMatrix<float64_t> CGaussianProcessRegression::getCovarianceMatrix(CFeatures* d
 
 	//Set temp2 to identity matrix
 	SGVector<float64_t> diagonal(temp2.num_rows);
-	CMath::fill_vector(diagonal.vector, temp2.num_rows, 1.0);
-	CMath::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
+	SGVector<float64_t>::fill_vector(diagonal.vector, temp2.num_rows, 1.0);
+	SGMatrix<float64_t>::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
 	
 	//Calculate Covariance Matrix = K(X_test, X_test) - v^t*v
 	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, kernel_star_matrix.num_rows, 

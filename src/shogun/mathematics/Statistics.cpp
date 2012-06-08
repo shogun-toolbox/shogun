@@ -15,6 +15,8 @@
 
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -76,7 +78,469 @@ float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 	return mean;
 }
 
+<<<<<<< HEAD
 float64_t CStatistics::inverse_student_t(int32_t k, float64_t p)
+=======
+float64_t CStatistics::student_t_distribution(int32_t k, float64_t t)
+{
+	float64_t x;
+	float64_t rk;
+	float64_t z;
+	float64_t f;
+	float64_t tz;
+	float64_t p;
+	float64_t xsqk;
+	int32_t j;
+	float64_t result;
+
+	ASSERT(k>0);
+	if (t==0)
+	{
+		result=0.5;
+		return result;
+	}
+	if (t<-2.0)
+	{
+		rk=k;
+		z=rk/(rk+t*t);
+		result=0.5*incomplete_beta(0.5*rk, 0.5, z);
+		return result;
+	}
+	if (t<0)
+	{
+		x=-t;
+	}
+	else
+	{
+		x=t;
+	}
+	rk=k;
+	z=1.0+x*x/rk;
+	if (k%2!=0)
+	{
+		xsqk=x/CMath::sqrt(rk);
+		p=CMath::atan(xsqk);
+		if (k>1)
+		{
+			f=1.0;
+			tz=1.0;
+			j=3;
+			while (j<=k-2&&tz/f>CMath::MACHINE_EPSILON)
+			{
+				tz=tz*((j-1)/(z*j));
+				f=f+tz;
+				j=j+2;
+			}
+			p=p+f*xsqk/z;
+		}
+		p=p*2.0/CMath::PI;
+	}
+	else
+	{
+		f=1.0;
+		tz=1.0;
+		j=2;
+		while (j<=k-2&&tz/f>CMath::MACHINE_EPSILON)
+		{
+			tz=tz*((j-1)/(z*j));
+			f=f+tz;
+			j=j+2;
+		}
+		p=f*x/CMath::sqrt(z*rk);
+	}
+	if (t<0)
+	{
+		p=-p;
+	}
+	result=0.5+0.5*p;
+	return result;
+}
+
+float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
+{
+	float64_t t;
+	float64_t xc;
+	float64_t w;
+	float64_t y;
+	int32_t flag;
+	float64_t big;
+	float64_t biginv;
+	float64_t maxgam;
+	float64_t minlog;
+	float64_t maxlog;
+	float64_t result;
+
+	big=4.503599627370496e15;
+	biginv=2.22044604925031308085e-16;
+	maxgam=171.624376956302725;
+	minlog=CMath::log(CMath::MIN_REAL_NUMBER);
+	maxlog=CMath::log(CMath::MAX_REAL_NUMBER);
+	ASSERT(a>0&&b>0);
+	ASSERT(x>=0&&x<=1);
+	if (x==0)
+	{
+		result=0;
+		return result;
+	}
+	if (x==1)
+	{
+		result=1;
+		return result;
+	}
+	flag=0;
+	if (b*x<=1.0&&x<=0.95)
+	{
+		result=ibetaf_incomplete_beta_ps(a, b, x, maxgam);
+		return result;
+	}
+	w=1.0-x;
+	if (x>a/(a+b))
+	{
+		flag=1;
+		t=a;
+		a=b;
+		b=t;
+		xc=x;
+		x=w;
+	}
+	else
+	{
+		xc=w;
+	}
+	if ((flag==1&&b*x<=1.0)&&x<=0.95)
+	{
+		t=ibetaf_incomplete_beta_ps(a, b, x, maxgam);
+		if (t<=CMath::MACHINE_EPSILON)
+		{
+			result=1.0-CMath::MACHINE_EPSILON;
+		}
+		else
+		{
+			result=1.0-t;
+		}
+		return result;
+	}
+	y=x*(a+b-2.0)-(a-1.0);
+	if (y<0.0)
+	{
+		w=ibetaf_incomplete_beta_fe(a, b, x, big, biginv);
+	}
+	else
+	{
+		w=ibetaf_incomplete_beta_fe2(a, b, x, big, biginv)/xc;
+	}
+	y=a*CMath::log(x);
+	t=b*CMath::log(xc);
+	if ((a+b<maxgam&&CMath::abs(y)<maxlog)&&CMath::abs(t)<maxlog)
+	{
+		t=CMath::pow(xc, b);
+		t=t*CMath::pow(x, a);
+		t=t/a;
+		t=t*w;
+		t=t*(tgamma(a+b)/(tgamma(a)*tgamma(b)));
+		if (flag==1)
+		{
+			if (t<=CMath::MACHINE_EPSILON)
+			{
+				result=1.0-CMath::MACHINE_EPSILON;
+			}
+			else
+			{
+				result=1.0-t;
+			}
+		}
+		else
+		{
+			result=t;
+		}
+		return result;
+	}
+	y=y+t+lgamma(a+b)-lgamma(a)-lgamma(b);
+	y=y+CMath::log(w/a);
+	if (y<minlog)
+	{
+		t=0.0;
+	}
+	else
+	{
+		t=CMath::exp(y);
+	}
+	if (flag==1)
+	{
+		if (t<=CMath::MACHINE_EPSILON)
+		{
+			t=1.0-CMath::MACHINE_EPSILON;
+		}
+		else
+		{
+			t=1.0-t;
+		}
+	}
+	result=t;
+	return result;
+}
+
+float64_t CStatistics::ibetaf_incomplete_beta_ps(float64_t a, float64_t b,
+		float64_t x, float64_t maxgam)
+{
+	float64_t s;
+	float64_t t;
+	float64_t u;
+	float64_t v;
+	float64_t n;
+	float64_t t1;
+	float64_t z;
+	float64_t ai;
+	float64_t result;
+
+	ai=1.0/a;
+	u=(1.0-b)*x;
+	v=u/(a+1.0);
+	t1=v;
+	t=u;
+	n=2.0;
+	s=0.0;
+	z=CMath::MACHINE_EPSILON*ai;
+	while (CMath::abs(v)>z)
+	{
+		u=(n-b)*x/n;
+		t=t*u;
+		v=t/(a+n);
+		s=s+v;
+		n=n+1.0;
+	}
+	s=s+t1;
+	s=s+ai;
+	u=a*CMath::log(x);
+	if (a+b<maxgam&&CMath::abs(u)<CMath::log(CMath::MAX_REAL_NUMBER))
+	{
+		t=tgamma(a+b)/(tgamma(a)*tgamma(b));
+		s=s*t*CMath::pow(x, a);
+	}
+	else
+	{
+		t=lgamma(a+b)-lgamma(a)-lgamma(b)+u+CMath::log(s);
+		if (t<CMath::log(CMath::MIN_REAL_NUMBER))
+		{
+			s=0.0;
+		}
+		else
+		{
+			s=CMath::exp(t);
+		}
+	}
+	result=s;
+	return result;
+}
+
+float64_t CStatistics::ibetaf_incomplete_beta_fe2(float64_t a, float64_t b,
+		float64_t x, float64_t big, float64_t biginv)
+{
+	float64_t xk;
+	float64_t pk;
+	float64_t pkm1;
+	float64_t pkm2;
+	float64_t qk;
+	float64_t qkm1;
+	float64_t qkm2;
+	float64_t k1;
+	float64_t k2;
+	float64_t k3;
+	float64_t k4;
+	float64_t k5;
+	float64_t k6;
+	float64_t k7;
+	float64_t k8;
+	float64_t r;
+	float64_t t;
+	float64_t ans;
+	float64_t z;
+	float64_t thresh;
+	int32_t n;
+	float64_t result;
+
+	k1=a;
+	k2=b-1.0;
+	k3=a;
+	k4=a+1.0;
+	k5=1.0;
+	k6=a+b;
+	k7=a+1.0;
+	k8=a+2.0;
+	pkm2=0.0;
+	qkm2=1.0;
+	pkm1=1.0;
+	qkm1=1.0;
+	z=x/(1.0-x);
+	ans=1.0;
+	r=1.0;
+	n=0;
+	thresh=3.0*CMath::MACHINE_EPSILON;
+	do
+	{
+		xk=-z*k1*k2/(k3*k4);
+		pk=pkm1+pkm2*xk;
+		qk=qkm1+qkm2*xk;
+		pkm2=pkm1;
+		pkm1=pk;
+		qkm2=qkm1;
+		qkm1=qk;
+		xk=z*k5*k6/(k7*k8);
+		pk=pkm1+pkm2*xk;
+		qk=qkm1+qkm2*xk;
+		pkm2=pkm1;
+		pkm1=pk;
+		qkm2=qkm1;
+		qkm1=qk;
+		if (qk!=0)
+		{
+			r=pk/qk;
+		}
+		if (r!=0)
+		{
+			t=CMath::abs((ans-r)/r);
+			ans=r;
+		}
+		else
+		{
+			t=1.0;
+		}
+		if (t<thresh)
+		{
+			break;
+		}
+		k1=k1+1.0;
+		k2=k2-1.0;
+		k3=k3+2.0;
+		k4=k4+2.0;
+		k5=k5+1.0;
+		k6=k6+1.0;
+		k7=k7+2.0;
+		k8=k8+2.0;
+		if (CMath::abs(qk)+CMath::abs(pk)>big)
+		{
+			pkm2=pkm2*biginv;
+			pkm1=pkm1*biginv;
+			qkm2=qkm2*biginv;
+			qkm1=qkm1*biginv;
+		}
+		if (CMath::abs(qk)<biginv || CMath::abs(pk)<biginv)
+		{
+			pkm2=pkm2*big;
+			pkm1=pkm1*big;
+			qkm2=qkm2*big;
+			qkm1=qkm1*big;
+		}
+		n=n+1;
+	} while (n!=300);
+	result=ans;
+	return result;
+}
+
+float64_t CStatistics::ibetaf_incomplete_beta_fe(float64_t a, float64_t b,
+		float64_t x, float64_t big, float64_t biginv)
+{
+	float64_t xk;
+	float64_t pk;
+	float64_t pkm1;
+	float64_t pkm2;
+	float64_t qk;
+	float64_t qkm1;
+	float64_t qkm2;
+	float64_t k1;
+	float64_t k2;
+	float64_t k3;
+	float64_t k4;
+	float64_t k5;
+	float64_t k6;
+	float64_t k7;
+	float64_t k8;
+	float64_t r;
+	float64_t t;
+	float64_t ans;
+	float64_t thresh;
+	int32_t n;
+	float64_t result;
+
+	k1=a;
+	k2=a+b;
+	k3=a;
+	k4=a+1.0;
+	k5=1.0;
+	k6=b-1.0;
+	k7=k4;
+	k8=a+2.0;
+	pkm2=0.0;
+	qkm2=1.0;
+	pkm1=1.0;
+	qkm1=1.0;
+	ans=1.0;
+	r=1.0;
+	n=0;
+	thresh=3.0*CMath::MACHINE_EPSILON;
+	do
+	{
+		xk=-x*k1*k2/(k3*k4);
+		pk=pkm1+pkm2*xk;
+		qk=qkm1+qkm2*xk;
+		pkm2=pkm1;
+		pkm1=pk;
+		qkm2=qkm1;
+		qkm1=qk;
+		xk=x*k5*k6/(k7*k8);
+		pk=pkm1+pkm2*xk;
+		qk=qkm1+qkm2*xk;
+		pkm2=pkm1;
+		pkm1=pk;
+		qkm2=qkm1;
+		qkm1=qk;
+		if (qk!=0)
+		{
+			r=pk/qk;
+		}
+		if (r!=0)
+		{
+			t=CMath::abs((ans-r)/r);
+			ans=r;
+		}
+		else
+		{
+			t=1.0;
+		}
+		if (t<thresh)
+		{
+			break;
+		}
+		k1=k1+1.0;
+		k2=k2+1.0;
+		k3=k3+2.0;
+		k4=k4+2.0;
+		k5=k5+1.0;
+		k6=k6-1.0;
+		k7=k7+2.0;
+		k8=k8+2.0;
+		if (CMath::abs(qk)+CMath::abs(pk)>big)
+		{
+			pkm2=pkm2*biginv;
+			pkm1=pkm1*biginv;
+			qkm2=qkm2*biginv;
+			qkm1=qkm1*biginv;
+		}
+		if (CMath::abs(qk)<biginv || CMath::abs(pk)<biginv)
+		{
+			pkm2=pkm2*big;
+			pkm1=pkm1*big;
+			qkm2=qkm2*big;
+			qkm1=qkm1*big;
+		}
+		n=n+1;
+	} while (n!=300);
+	result=ans;
+	return result;
+}
+
+float64_t CStatistics::inverse_student_t_distribution(int32_t k, float64_t p)
+>>>>>>> Clean up CMath: move respective functions to CStatistics, SGVector and SGMatrix
 {
 	float64_t t;
 	float64_t rk;
@@ -450,7 +914,7 @@ float64_t CStatistics::inverse_incomplete_beta(float64_t a, float64_t b,
 				break;
 			}
 			nflg=1;
-			lgm=CMath::lgamma(aaa+bbb)-CMath::lgamma(aaa)-CMath::lgamma(bbb);
+			lgm=lgamma(aaa+bbb)-lgamma(aaa)-lgamma(bbb);
 			i=0;
 			mainlooppos=newtcycle;
 			continue;
@@ -908,6 +1372,7 @@ float64_t CStatistics::ibetaf_incompletebetafe(float64_t a, float64_t b,
 	int32_t n;
 	float64_t result;
 
+<<<<<<< HEAD
 	k1=a;
 	k2=a+b;
 	k3=a;
@@ -925,6 +1390,21 @@ float64_t CStatistics::ibetaf_incompletebetafe(float64_t a, float64_t b,
 	n=0;
 	thresh=3.0*CMath::MACHINE_EPSILON;
 	do
+=======
+	igammaepsilon=0.000000000000001;
+	iinvgammabignumber=4503599627370496.0;
+	x0=iinvgammabignumber;
+	yl=0;
+	x1=0;
+	yh=1;
+	dithresh=5*igammaepsilon;
+	d=1/(9*a);
+	y=1-d-inverse_normal_distribution(y0)*CMath::sqrt(d);
+	x=a*y*y*y;
+	lgm=lgamma(a);
+	i=0;
+	while (i<10)
+>>>>>>> Clean up CMath: move respective functions to CStatistics, SGVector and SGMatrix
 	{
 		xk=-x*k1*k2/(k3*k4);
 		pk=pkm1+pkm2*xk;
@@ -1166,8 +1646,13 @@ float64_t CStatistics::incomplete_gamma_completed(float64_t a, float64_t x)
 		result=1-incomplete_gamma(a, x);
 		return result;
 	}
+<<<<<<< HEAD
 	ax=a*CMath::log(x)-x-CMath::lgamma(a);
 	if (less(ax, -709.78271289338399))
+=======
+	ax=a*CMath::log(x)-x-lgamma(a);
+	if (ax<-709.78271289338399)
+>>>>>>> Clean up CMath: move respective functions to CStatistics, SGVector and SGMatrix
 	{
 		result=0;
 		return result;
@@ -1220,4 +1705,158 @@ float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
 	/* definition of wikipedia: incomplete gamma devised by true gamma */
 	return incomplete_gamma(a,x/b);
+}
+
+SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables)
+{
+	SGMatrix<float64_t> table(NULL,2,3,false);
+	int32_t len=tables.num_cols/3;
+
+	SGVector<float64_t> v(len);
+	for (int32_t i=0; i<len; i++)
+	{
+		table.matrix=&tables.matrix[2*3*i];
+		v.vector[i]=fishers_exact_test_for_2x3_table(table);
+	}
+	return v;
+}
+
+float64_t CStatistics::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
+{
+	ASSERT(table.num_rows==2);
+	ASSERT(table.num_cols==3);
+
+	int32_t m_len=3+2;
+	float64_t* m=SG_MALLOC(float64_t, 3+2);
+	m[0]=table.matrix[0]+table.matrix[2]+table.matrix[4];
+	m[1]=table.matrix[1]+table.matrix[3]+table.matrix[5];
+	m[2]=table.matrix[0]+table.matrix[1];
+	m[3]=table.matrix[2]+table.matrix[3];
+	m[4]=table.matrix[4]+table.matrix[5];
+
+	float64_t n = SGVector<float64_t>::sum(m, m_len) / 2.0;
+	int32_t x_len=2*3* CMath::sq(SGVector<float64_t>::max(m, m_len));
+	float64_t* x = SG_MALLOC(float64_t, x_len);
+	SGVector<float64_t>::fill_vector(x, x_len, 0.0);
+
+	float64_t log_nom=0.0;
+	for (int32_t i=0; i<3+2; i++)
+		log_nom+=lgamma(m[i]+1);
+	log_nom-=lgamma(n+1.0);
+
+	float64_t log_denomf=0;
+	floatmax_t log_denom=0;
+
+	for (int32_t i=0; i<3*2; i++)
+	{
+		log_denom+=lgammal((floatmax_t) table.matrix[i]+1);
+		log_denomf+=lgammal((floatmax_t) table.matrix[i]+1);
+	}
+
+	floatmax_t prob_table_log=log_nom - log_denom;
+
+	int32_t dim1 = CMath::min(m[0], m[2]);
+
+	//traverse all possible tables with given m
+	int32_t counter = 0;
+	for (int32_t k=0; k<=dim1; k++)
+	{
+		for (int32_t l=CMath::max(0.0,m[0]-m[4]-k); l<=CMath::min(m[0]-k, m[3]); l++)
+		{
+			x[0 + 0*2 + counter*2*3] = k;
+			x[0 + 1*2 + counter*2*3] = l;
+			x[0 + 2*2 + counter*2*3] = m[0] - x[0 + 0*2 + counter*2*3] - x[0 + 1*2 + counter*2*3];
+			x[1 + 0*2 + counter*2*3] = m[2] - x[0 + 0*2 + counter*2*3];
+			x[1 + 1*2 + counter*2*3] = m[3] - x[0 + 1*2 + counter*2*3];
+			x[1 + 2*2 + counter*2*3] = m[4] - x[0 + 2*2 + counter*2*3];
+
+			counter++;
+		}
+	}
+
+//#define DEBUG_FISHER_TABLE
+#ifdef DEBUG_FISHER_TABLE
+	SG_SPRINT("counter=%d\n", counter);
+	SG_SPRINT("dim1=%d\n", dim1);
+	SG_SPRINT("l=%g...%g\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]));
+	SG_SPRINT("n=%g\n", n);
+	SG_SPRINT("prob_table_log=%.18Lg\n", prob_table_log);
+	SG_SPRINT("log_denomf=%.18g\n", log_denomf);
+	SG_SPRINT("log_denom=%.18Lg\n", log_denom);
+	SG_SPRINT("log_nom=%.18g\n", log_nom);
+	display_vector(m, m_len, "marginals");
+	display_vector(x, 2*3*counter, "x");
+#endif // DEBUG_FISHER_TABLE
+
+
+	floatmax_t* log_denom_vec=SG_MALLOC(floatmax_t, counter);
+	SGVector<floatmax_t>::fill_vector(log_denom_vec, counter, (floatmax_t) 0.0);
+
+	for (int32_t k=0; k<counter; k++)
+	{
+		for (int32_t j=0; j<3; j++)
+		{
+			for (int32_t i=0; i<2; i++)
+				log_denom_vec[k]+=lgammal(x[i + j*2 + k*2*3]+1.0);
+		}
+	}
+
+	for (int32_t i=0; i<counter; i++)
+		log_denom_vec[i]=log_nom-log_denom_vec[i];
+
+#ifdef DEBUG_FISHER_TABLE
+	display_vector(log_denom_vec, counter, "log_denom_vec");
+#endif // DEBUG_FISHER_TABLE
+
+
+	float64_t nonrand_p=-CMath::INFTY;
+	for (int32_t i=0; i<counter; i++)
+	{
+		if (log_denom_vec[i]<=prob_table_log)
+			nonrand_p=CMath::logarithmic_sum(nonrand_p, log_denom_vec[i]);
+	}
+
+#ifdef DEBUG_FISHER_TABLE
+	SG_SPRINT("nonrand_p=%.18g\n", nonrand_p);
+	SG_SPRINT("exp_nonrand_p=%.18g\n", CMath::exp(nonrand_p));
+#endif // DEBUG_FISHER_TABLE
+
+	nonrand_p=CMath::exp(nonrand_p);
+
+	SG_FREE(log_denom_vec);
+	SG_FREE(x);
+	SG_FREE(m);
+
+	return nonrand_p;
+}
+
+float64_t CStatistics::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
+{
+	double e=0;
+
+	for (int32_t i=0; i<len; i++)
+		for (int32_t j=0; j<len; j++)
+			e+=exp(p2[j*len+i])*(p2[j*len+i]-p1[i]-p1[j]);
+
+	return (float64_t) e;
+}
+
+float64_t CStatistics::relative_entropy(float64_t* p, float64_t* q, int32_t len)
+{
+	double e=0;
+
+	for (int32_t i=0; i<len; i++)
+		e+=exp(p[i])*(p[i]-q[i]);
+
+	return (float64_t) e;
+}
+
+float64_t CStatistics::entropy(float64_t* p, int32_t len)
+{
+	double e=0;
+
+	for (int32_t i=0; i<len; i++)
+		e-=exp(p[i])*p[i];
+
+	return (float64_t) e;
 }

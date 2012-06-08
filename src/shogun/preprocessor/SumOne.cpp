@@ -64,8 +64,8 @@ SGMatrix<float64_t> CSumOne::apply_to_feature_matrix(CFeatures* features)
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 	{
 		float64_t* vec= &(feature_matrix.matrix[i*feature_matrix.num_rows]);
-		float64_t sum = CMath::sum(vec,feature_matrix.num_rows);
-		CMath::scale_vector(1.0/sum, vec, feature_matrix.num_rows);
+		float64_t sum = SGVector<float64_t>::sum(vec,feature_matrix.num_rows);
+		SGVector<float64_t>::scale_vector(1.0/sum, vec, feature_matrix.num_rows);
 	}
 	return feature_matrix;
 }
@@ -75,7 +75,7 @@ SGMatrix<float64_t> CSumOne::apply_to_feature_matrix(CFeatures* features)
 SGVector<float64_t> CSumOne::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	float64_t* normed_vec = SG_MALLOC(float64_t, vector.vlen);
-	float64_t sum = CMath::sum(vector.vector, vector.vlen);
+	float64_t sum = SGVector<float64_t>::sum(vector.vector, vector.vlen);
 
 	for (int32_t i=0; i<vector.vlen; i++)
 		normed_vec[i]=vector.vector[i]/sum;

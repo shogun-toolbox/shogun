@@ -7711,10 +7711,10 @@ bool CSGInterface::cmd_pr_loqo()
 	ASSERT(lenu==n);
 
 	float64_t* x=SG_MALLOC(float64_t, 3*n);
-	CMath::fill_vector(x, 3*n, 0.0);
+	SGVector<float64_t>::fill_vector(x, 3*n, 0.0);
 
 	float64_t* y=SG_MALLOC(float64_t, m+2*n);
-	CMath::fill_vector(y, m+2*n, 0.0);
+	SGVector<float64_t>::fill_vector(y, m+2*n, 0.0);
 
 	pr_loqo(n,m, c, H, A, b, l, u, x, y, 0, 5, 50, 0.05, 100, 0);
 

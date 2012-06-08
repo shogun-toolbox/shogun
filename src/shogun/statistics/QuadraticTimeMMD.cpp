@@ -158,10 +158,10 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
 
 	/* center matrix K=H*K*H */
-	CMath::center_matrix(K.matrix, K.num_rows, K.num_cols);
+	K.center();
 
 	/* compute eigenvalues and select num_eigenvalues largest ones */
-	SGVector<float64_t> eigenvalues=CMath::compute_eigenvectors(K);
+	SGVector<float64_t> eigenvalues=SGMatrix<float64_t>::compute_eigenvectors(K);
 	SGVector<float64_t> largest_ev(num_eigenvalues);
 
 	/* scale by 1/2/m on the fly and take abs value*/

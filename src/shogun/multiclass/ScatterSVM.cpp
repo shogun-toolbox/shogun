@@ -61,7 +61,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 	}
 
 	int32_t* numc=SG_MALLOC(int32_t, m_num_classes);
-	CMath::fill_vector(numc, m_num_classes, 0);
+	SGVector<int32_t>::fill_vector(numc, m_num_classes, 0);
 
 	for (int32_t i=0; i<num_vectors; i++)
 		numc[(int32_t) ((CMulticlassLabels*) m_labels)->get_int_label(i)]++;
@@ -371,7 +371,7 @@ void CScatterSVM::compute_norm_wc()
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 		norm_wc[i]=CMath::sqrt(norm_wc[i]);
 
-	CMath::display_vector(norm_wc, m_machines->get_num_elements(), "norm_wc");
+	SGVector<float64_t>::display_vector(norm_wc, m_machines->get_num_elements(), "norm_wc");
 }
 
 CLabels* CScatterSVM::classify_one_vs_rest()
@@ -401,7 +401,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	else if (scatter_type == NO_BIAS_SVMLIGHT)
 	{
 		float64_t* outputs=SG_MALLOC(float64_t, num_vectors*m_num_classes);
-		CMath::fill_vector(outputs,num_vectors*m_num_classes,0.0);
+		SGVector<float64_t>::fill_vector(outputs,num_vectors*m_num_classes,0.0);
 
 		for (int32_t i=0; i<num_vectors; i++)
 		{

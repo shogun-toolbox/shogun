@@ -238,7 +238,7 @@ void CSVRLight::svr_learn()
 	else
 	{
 		learn_parm->eps=SG_MALLOC(float64_t, totdoc);      /* equivalent regression epsilon for classification */
-		CMath::fill_vector(learn_parm->eps, totdoc, tube_epsilon);
+		SGVector<float64_t>::fill_vector(learn_parm->eps, totdoc, tube_epsilon);
 	}
 
 	SG_FREE(model->supvec);

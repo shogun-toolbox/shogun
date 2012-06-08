@@ -64,7 +64,7 @@ SGVector<float64_t> CTwoSampleTestStatistic::bootstrap_null()
 
 		/* create index permutation and add as subset. This will mix samples
 		 * from p and q */
-		CMath::permute_vector(ind_permutation);
+		SGVector<int32_t>::permute_vector(ind_permutation);
 		m_p_and_q->add_subset(ind_permutation);
 
 		/* compute statistic for this permutation of mixed samples */

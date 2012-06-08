@@ -17,6 +17,7 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/Statistics.h>
 
 #include <unistd.h>
 
@@ -586,7 +587,7 @@ bool CGUIHMM::relative_entropy(float64_t*& values, int32_t& len)
 			q[j]=neg->get_b(i, j);
 		}
 
-		values[i]=CMath::relative_entropy(p, q, pos_M);
+		values[i]=CStatistics::relative_entropy(p, q, pos_M);
 	}
 	SG_FREE(p);
 	SG_FREE(q);
@@ -612,7 +613,7 @@ bool CGUIHMM::entropy(float64_t*& values, int32_t& len)
 		for (int32_t j=0; j<m; j++)
 			p[j]=working->get_b(i, j);
 
-		values[i]=CMath::entropy(p, m);
+		values[i]=CStatistics::entropy(p, m);
 	}
 	SG_FREE(p);
 

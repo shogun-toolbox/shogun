@@ -203,7 +203,7 @@ void CCompressor::compress(uint8_t* uncompressed, uint64_t uncompressed_size,
 	}
 
 	if (compressed)
-		CMath::resize(compressed, initial_buffer_size, compressed_size);
+		SGVector<uint8_t>::resize(compressed, initial_buffer_size, compressed_size);
 }
 
 void CCompressor::decompress(uint8_t* compressed, uint64_t compressed_size,

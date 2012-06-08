@@ -52,7 +52,7 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 		icov = CDotFeatures::compute_cov((CDotFeatures*) lhs, (CDotFeatures*) rhs);
 	}
 
-	CMath::inverse(icov);
+	SGMatrix<float64_t>::inverse(icov);
 
 	return true;
 }

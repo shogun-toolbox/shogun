@@ -45,7 +45,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) 
 {
 	k_spectrum= SG_MALLOC(float64_t*, num_strings);
 	for (int32_t i=0; i<num_strings; i++)
-		k_spectrum[i]=CMath::clone_vector(k_spectrum[i], spec_size);
+		k_spectrum[i]=SGVector<float64_t>::clone_vector(k_spectrum[i], spec_size);
 }
 
 CExplicitSpecFeatures::~CExplicitSpecFeatures()
@@ -70,7 +70,7 @@ float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	float64_t* vec1=k_spectrum[vec_idx1];
 	float64_t* vec2=sf->k_spectrum[vec_idx2];
 
-	return CMath::dot(vec1, vec2, spec_size);
+	return SGVector<float64_t>::dot(vec1, vec2, spec_size);
 }
 
 float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)

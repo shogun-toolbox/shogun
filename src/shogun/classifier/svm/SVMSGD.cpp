@@ -143,14 +143,14 @@ bool CSVMSGD::train_machine(CFeatures* data)
 				float64_t r = 1 - eta * lambda * skip;
 				if (r < 0.8)
 					r = pow(1 - eta * lambda, skip);
-				CMath::scale_vector(r, w.vector, w.vlen);
+				SGVector<float64_t>::scale_vector(r, w.vector, w.vlen);
 				count = skip;
 			}
 			t++;
 		}
 	}
 
-	float64_t wnorm =  CMath::dot(w.vector,w.vector, w.vlen);
+	float64_t wnorm =  SGVector<float64_t>::dot(w.vector,w.vector, w.vlen);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
 
 	return true;
@@ -182,7 +182,7 @@ void CSVMSGD::calibrate()
 
 		//waste cpu cycles for readability
 		//(only changed dims need checking)
-		m=CMath::max(c, c_dim);
+		m=SGVector<float64_t>::max(c, c_dim);
 	}
 
 	// bias update scaling

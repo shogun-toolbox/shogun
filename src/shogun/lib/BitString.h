@@ -223,7 +223,7 @@ class CBitString : public CSGObject
 			cleanup();
 			uint64_t stream_len=len/sizeof(uint64_t)+1;
 			string=SG_MALLOC(uint64_t, stream_len);
-			CMath::fill_vector(string, (int32_t) stream_len, (uint64_t) 0);
+			SGVector<uint64_t>::fill_vector(string, (int32_t) stream_len, (uint64_t) 0);
 			length=len;
 		}
 

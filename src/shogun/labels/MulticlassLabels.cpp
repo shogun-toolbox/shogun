@@ -71,7 +71,7 @@ SGVector<float64_t> CMulticlassLabels::get_unique_labels()
 {
 	/* extract all labels (copy because of possible subset) */
 	SGVector<float64_t> unique_labels=get_labels_copy();
-	unique_labels.vlen=CMath::unique(unique_labels.vector, unique_labels.vlen);
+	unique_labels.vlen=SGVector<float64_t>::unique(unique_labels.vector, unique_labels.vlen);
 
 	SGVector<float64_t> result(unique_labels.vlen);
 	memcpy(result.vector, unique_labels.vector,

@@ -83,7 +83,7 @@ int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
 		}
 	}
 
-	int32_t result=CMath::arg_max(votes.vector, 1, votes.vlen);
+	int32_t result=SGVector<int32_t>::arg_max(votes.vector, 1, votes.vlen);
 
 	return result;
 }

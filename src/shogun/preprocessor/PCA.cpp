@@ -109,7 +109,7 @@ bool CPCA::init(CFeatures* features)
 
 		SG_INFO("Computing Eigenvalues ... ") ;
 
-		m_eigenvalues_vector.vector = CMath::compute_eigenvectors(cov,num_features,num_features);
+		m_eigenvalues_vector.vector = SGMatrix<float64_t>::compute_eigenvectors(cov,num_features,num_features);
 		m_eigenvalues_vector.vlen = num_features;
 		num_dim=0;
 

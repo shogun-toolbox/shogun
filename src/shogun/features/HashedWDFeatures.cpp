@@ -136,7 +136,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 			val[i]=CHash::MurmurHash2(&vec[i], start_degree, 0xDEADBEAF);
 	}
 	else
-		CMath::fill_vector(val, len, 0xDEADBEAF);
+		SGVector<uint32_t>::fill_vector(val, len, 0xDEADBEAF);
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{
@@ -181,7 +181,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 			val[i]=CHash::MurmurHash2(&vec[i], start_degree, 0xDEADBEAF);
 	}
 	else
-		CMath::fill_vector(val, len, 0xDEADBEAF);
+		SGVector<uint32_t>::fill_vector(val, len, 0xDEADBEAF);
 
 	for (int32_t k=start_degree; k<lim; k++)
 	{

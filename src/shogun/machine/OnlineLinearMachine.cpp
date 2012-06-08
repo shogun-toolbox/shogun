@@ -80,7 +80,7 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 
 float32_t COnlineLinearMachine::apply_one(float32_t* vec, int32_t len)
 {
-		return CMath::dot(vec, w, len)+bias;
+		return SGVector<float32_t>::dot(vec, w, len)+bias;
 }
 
 float32_t COnlineLinearMachine::apply_to_current_example()
