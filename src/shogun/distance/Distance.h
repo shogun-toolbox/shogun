@@ -48,7 +48,8 @@ enum EDistanceType
 	D_BRAYCURTIS = 150,
 	D_CUSTOM = 160,
 	D_ATTENUATEDEUCLIDIAN = 170,
-	D_MAHALANOBIS = 180
+	D_MAHALANOBIS = 180,
+	D_DIRECTOR = 190
 };
 
 
@@ -97,7 +98,7 @@ class CDistance : public CSGObject
 		  * @param idx_b feature vector b at idx_b
 		  * @return distance value
 		 */
-		inline float64_t distance(int32_t idx_a, int32_t idx_b)
+		virtual float64_t distance(int32_t idx_a, int32_t idx_b)
 		{
 			if (idx_a < 0 || idx_b <0)
 				return 0;
@@ -299,31 +300,25 @@ class CDistance : public CSGObject
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		inline int32_t get_num_vec_lhs()
+		virtual int32_t get_num_vec_lhs()
 		{
-			if (!lhs)
-				return 0;
-			else
-				return lhs->get_num_vectors();
+			return num_lhs;
 		}
 
 		/** get number of vectors of rhs features
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		inline int32_t get_num_vec_rhs()
+		virtual int32_t get_num_vec_rhs()
 		{
-			if (!rhs)
-				return 0;
-			else
-				return rhs->get_num_vectors();
+			return num_rhs;
 		}
 
 		/** test whether features have been assigned to lhs and rhs
 		 *
 		 * @return true if features are assigned
 		 */
-		inline bool has_features()
+		virtual bool has_features()
 		{
 			return lhs && rhs;
 		}
@@ -368,6 +363,11 @@ class CDistance : public CSGObject
 		CFeatures* lhs;
 		/// feature vectors to occur on right hand side
 		CFeatures* rhs;
+
+		/* number of feature vectors on left hand side */
+		int32_t num_lhs;
+		/* number of feature vectors on right hand side */
+		int32_t num_rhs;
 
 };
 } // namespace shogun

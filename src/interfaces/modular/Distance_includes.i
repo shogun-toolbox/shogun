@@ -23,5 +23,6 @@
 #include <shogun/distance/CosineDistance.h>
 #include <shogun/distance/TanimotoDistance.h>
 #include <shogun/distance/MahalanobisDistance.h>
+#include <shogun/distance/DirectorDistance.h>
 %}
 

@@ -93,6 +93,9 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	lhs=l;
 	rhs=r;
 
+	num_lhs=l->get_num_vectors();
+	num_rhs=r->get_num_vectors();
+
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=NULL ;
 
@@ -115,15 +118,18 @@ void CDistance::remove_lhs_and_rhs()
 {
 	SG_UNREF(rhs);
 	rhs = NULL;
+	num_rhs=0;
 
 	SG_UNREF(lhs);
 	lhs = NULL;
+	num_lhs=0;
 }
 
 void CDistance::remove_lhs()
 {
 	SG_UNREF(lhs);
 	lhs = NULL;
+	num_lhs=0;
 }
 
 /// takes all necessary steps if the rhs is removed from kernel
@@ -131,48 +137,51 @@ void CDistance::remove_rhs()
 {
 	SG_UNREF(rhs);
 	rhs = NULL;
+	num_rhs=0;
 }
 
 CFeatures* CDistance::replace_rhs(CFeatures* r)
 {
-     //make sure features were indeed supplied
-     ASSERT(r);
+	//make sure features were indeed supplied
+	ASSERT(r);
 
-     //make sure features are compatible
-     ASSERT(lhs->get_feature_class()==r->get_feature_class());
-     ASSERT(lhs->get_feature_type()==r->get_feature_type());
+	//make sure features are compatible
+	ASSERT(lhs->get_feature_class()==r->get_feature_class());
+	ASSERT(lhs->get_feature_type()==r->get_feature_type());
 
-     //remove references to previous rhs features
-     CFeatures* tmp=rhs;
+	//remove references to previous rhs features
+	CFeatures* tmp=rhs;
 
-     rhs=r;
+	rhs=r;
+	num_rhs=r->get_num_vectors();
 
-     SG_FREE(precomputed_matrix);
-     precomputed_matrix=NULL ;
+	SG_FREE(precomputed_matrix);
+	precomputed_matrix=NULL ;
 
-	 // return old features including reference count
-     return tmp;
+	// return old features including reference count
+	return tmp;
 }
 
 CFeatures* CDistance::replace_lhs(CFeatures* l)
 {
-     //make sure features were indeed supplied
-     ASSERT(l);
+	//make sure features were indeed supplied
+	ASSERT(l);
 
-     //make sure features are compatible
-     ASSERT(rhs->get_feature_class()==l->get_feature_class());
-     ASSERT(rhs->get_feature_type()==l->get_feature_type());
+	//make sure features are compatible
+	ASSERT(rhs->get_feature_class()==l->get_feature_class());
+	ASSERT(rhs->get_feature_type()==l->get_feature_type());
 
-     //remove references to previous rhs features
-     CFeatures* tmp=lhs;
+	//remove references to previous rhs features
+	CFeatures* tmp=lhs;
 
-     lhs=l;
+	lhs=l;
+	num_lhs=l->get_num_vectors();
 
-     SG_FREE(precomputed_matrix);
-     precomputed_matrix=NULL ;
+	SG_FREE(precomputed_matrix);
+	precomputed_matrix=NULL ;
 
-	 // return old features including reference count
-     return tmp;
+	// return old features including reference count
+	return tmp;
 }
 
 void CDistance::do_precompute_matrix()
@@ -213,13 +222,13 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 	CFeatures* f1 = lhs;
 	CFeatures* f2 = rhs;
 
-	if (f1 && f2)
+	if (has_features())
 	{
-		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()))
+		if (target && (num_vec1!=get_num_vec_lhs() || num_vec2!=get_num_vec_rhs()))
 			SG_ERROR("distance matrix does not fit into target\n");
 
-		num_vec1=f1->get_num_vectors();
-		num_vec2=f2->get_num_vectors();
+		num_vec1=get_num_vec_lhs();
+		num_vec2=get_num_vec_rhs();
 		int64_t total_num=num_vec1*num_vec2;
 		int32_t num_done=0;
 
@@ -230,7 +239,7 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 		else
 			result=SG_MALLOC(float32_t, total_num);
 
-		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		if ( (f1 == f2) && (num_vec1 == num_vec2) && (f1!=NULL && f2!=NULL) )
 		{
 			for (int32_t i=0; i<num_vec1; i++)
 			{
@@ -283,17 +292,17 @@ float64_t* CDistance::get_distance_matrix_real(
 	CFeatures* rhs_features = rhs;
 
 	// check for errors
-	if (!lhs_features || !rhs_features)
+	if (!has_features())
 		SG_ERROR("No features assigned to the distance.\n");
 
 	if (target &&
-	    (lhs_vectors_number!=lhs_features->get_num_vectors() ||
-	     rhs_vectors_number!=rhs_features->get_num_vectors()))
+	    (lhs_vectors_number!=get_num_vec_lhs() ||
+	     rhs_vectors_number!=get_num_vec_rhs()))
 		SG_ERROR("Distance matrix does not fit into the given target.\n");
 
 	// init numbers of vectors and total number of distances
-	lhs_vectors_number = lhs_features->get_num_vectors();
-	rhs_vectors_number = rhs_features->get_num_vectors();
+	lhs_vectors_number = get_num_vec_lhs();
+	rhs_vectors_number = get_num_vec_rhs();
 	int64_t total_distances_number = lhs_vectors_number*rhs_vectors_number;
 
 	SG_DEBUG("Calculating distance matrix of size %dx%d.\n", lhs_vectors_number, rhs_vectors_number);
@@ -366,6 +375,8 @@ void CDistance::init()
 	precompute_matrix = false;
 	lhs = NULL;
 	rhs = NULL;
+	num_lhs=0;
+	num_rhs=0;
 
 	m_parameters->add((CSGObject**) &lhs, "lhs",
 					  "Feature vectors to occur on left hand side.");

@@ -14,6 +14,7 @@
  * Written (W) 2006-2009,2011 Soeren Sonnenburg
  * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2011 Berlin Institute of Technology
+ * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 #ifdef HAVE_PYTHON
 %{
@@ -772,6 +773,133 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 
 %}
 
+/* CFeatures to ... */
+%define FEATURES_BY_TYPECODE(obj, f, type, typecode)
+	switch (typecode) {
+	case F_BOOL:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<bool> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_CHAR:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<char> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_BYTE:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<uint8_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_SHORT:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<int16_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_WORD:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<uint16_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_INT:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<int32_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_UINT:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<uint32_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_LONG:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<int64_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_ULONG:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<uint64_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_SHORTREAL:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<float32_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_DREAL:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<float64_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	case F_LONGREAL:
+		obj=SWIG_NewPointerObj(f, $descriptor(type<floatmax_t> *), SWIG_POINTER_EXCEPTION);
+		break;
+	default:
+		obj=SWIG_NewPointerObj(f, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+	}
+%enddef
+
+%typemap(out) shogun::CFeatures*
+{
+	int feats_class=$1->get_feature_class();
+	int feats_type=$1->get_feature_type();
+
+	switch (feats_class){
+	case C_DENSE:
+	{
+		FEATURES_BY_TYPECODE($result, $1, shogun::CDenseFeatures, feats_type)
+		break;
+	}
+
+	case C_SPARSE:
+	{
+		FEATURES_BY_TYPECODE($result, $1, shogun::CSparseFeatures, feats_type)
+		break;
+	}
+
+	case C_STRING:
+	{
+		FEATURES_BY_TYPECODE($result, $1, shogun::CStringFeatures, feats_type)
+		break;
+	}
+
+	case C_COMBINED:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CCombinedFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_COMBINED_DOT:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CCombinedDotFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_WD:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CWDFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_SPEC:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CExplicitSpecFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_WEIGHTEDSPEC:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CImplicitWeightedSpecFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_POLY:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CPolyFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_STREAMING_DENSE:
+	{
+		FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingDenseFeatures, feats_type)
+		break;
+	}
+
+	case C_STREAMING_SPARSE:
+	{
+		FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingSparseFeatures, feats_type)
+		break;
+	}
+
+	case C_STREAMING_STRING:
+	{
+		FEATURES_BY_TYPECODE($result, $1, shogun::CStreamingStringFeatures, feats_type)
+		break;
+	}
+	case C_STREAMING_VW:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CStreamingVwFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_BINNED_DOT:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CBinnedDotFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	case C_DIRECTOR_DOT:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CDirectorDotFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+
+	default:
+		$result=SWIG_NewPointerObj($1, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
+		break;
+	}
+}
 
 #ifdef PYTHON3
 %typemap(typecheck) const char* 
@@ -782,9 +910,9 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 %typemap(in) const char* 
 {
 	if (PyUnicode_Check($input))
-    	$1 = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>($input)));
-    else
-        SWIG_fail;
+		$1 = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>($input)));
+    	else
+		SWIG_fail;
 }
 
 %typemap(freearg) const char* 
