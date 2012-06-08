@@ -5,6 +5,7 @@
  #include <shogun/machine/DistanceMachine.h>
  #include <shogun/classifier/LDA.h>
  #include <shogun/classifier/svm/LibLinear.h>
+ #include <shogun/classifier/svm/LibLinearMTL.h>
  #include <shogun/classifier/svm/LibSVM.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
  #include <shogun/machine/LinearMachine.h>
