@@ -34,7 +34,7 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(node_t *node, VwExample *ex);
+	virtual bool which_subtree(node_t *node, SGVector<float32_t> ex);
 };
 
 } /* shogun */ 

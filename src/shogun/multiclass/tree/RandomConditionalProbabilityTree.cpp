@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-bool CRandomConditionalProbabilityTree::which_subtree(node_t *node, VwExample *ex)
+bool CRandomConditionalProbabilityTree::which_subtree(node_t *node, SGVector<float32_t> ex)
 {
 	if (CMath::random(0.0, 1.0) > 0.5)
 		return true;
