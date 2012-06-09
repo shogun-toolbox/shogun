@@ -22,7 +22,7 @@ extern "C" {
 #include <shogun/base/SGObject.h>
 
 #include <shogun/features/SparseFeatures.h>
-#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 
 namespace shogun
 {

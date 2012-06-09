@@ -436,11 +436,11 @@ bool CCplex::setup_lpm(
 	x->clean_tsparse(sfeat, num_svec);
 
 	//xi part of A
-	for (int32_t i=0; i<num_vec; i++)
+	for (int32_t k=0; k<num_vec; k++)
 	{
-		amatbeg[1+2*num_feat+i]=offs;
-		amatcnt[1+2*num_feat+i]=1;
-		amatind[offs]=i;
+		amatbeg[1+2*num_feat+k]=offs;
+		amatcnt[1+2*num_feat+k]=1;
+		amatind[offs]=k;
 		amatval[offs]=-1;
 		offs++;
 	}
