@@ -87,7 +87,7 @@ void general_altra(double *x, double *v, int n, double *G, double *ind, int node
 	}
 }
 
-void general_altra_mt(double *X, double *V, int n, int k, double *G, double *ind, int nodes)
+void general_altra_mt(double *X, double *V, int n, int k, double *G, double *ind, int nodes, double mult)
 {
 	int i, j;
 
@@ -102,7 +102,7 @@ void general_altra_mt(double *X, double *V, int n, int k, double *G, double *ind
 		for(j=0;j<k;j++)
 			v[j]=V[j*n + i];
 
-		general_altra(x, v, k, G, ind, nodes);
+		general_altra(x, v, k, G, ind, nodes, mult);
 
 		/*
 		 * copy the solution to X         
@@ -361,14 +361,14 @@ double general_findLambdaMax(double *v, int n, double *G, double *ind, int nodes
 	return lambda2;
 }
 
-void general_findLambdaMax_mt(double *lambdaMax, double *V, int n, int k, double *G, double *ind, int nodes)
+double general_findLambdaMax_mt(double *V, int n, int k, double *G, double *ind, int nodes)
 {
 	int i, j;
 
 	double *v=(double *)malloc(sizeof(double)*k);
 	double lambda;
 
-	*lambdaMax=0;
+	double lambdaMax=0;
 
 	for (i=0;i<n;i++){
 		/*
@@ -385,8 +385,8 @@ void general_findLambdaMax_mt(double *lambdaMax, double *V, int n, int k, double
 		   */
 
 
-		if (lambda>*lambdaMax)
-			*lambdaMax=lambda;
+		if (lambda>lambdaMax)
+			lambdaMax=lambda;
 	}
 
 	/*
