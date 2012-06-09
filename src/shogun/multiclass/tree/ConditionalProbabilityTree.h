@@ -89,7 +89,7 @@ protected:
 	 * @param ex the example being trained
 	 * @param label the label of this training example
 	 */
-	void train_example(SGVector<float32_t> ex, float64_t label);
+	void train_example(SGVector<float32_t> ex, int32_t label);
 
 	/** train on a path from a node up to the root
 	 * @param ex the instance of the training example

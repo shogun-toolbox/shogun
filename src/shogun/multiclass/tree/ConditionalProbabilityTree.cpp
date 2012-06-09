@@ -121,7 +121,7 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	{
 		while (m_feats->get_next_example())
 		{
-			train_example(m_feats->get_vector(), m_feats->get_label());
+			train_example(m_feats->get_vector(), static_cast<int32_t>(m_feats->get_label()));
 			m_feats->release_example();
 		}
 
@@ -139,7 +139,7 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	return true;
 }
 
-void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, float64_t label)
+void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t label)
 {
 	if (m_root == NULL)
 	{
