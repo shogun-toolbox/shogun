@@ -430,7 +430,7 @@ bool CCplex::setup_lpm(
 			amatind[offs]=row;
 			amatval[offs]=y->get_confidence(row)*val;
 			offs++;
-		
+		}
 	}
 
 	x->clean_tsparse(sfeat, num_svec);
