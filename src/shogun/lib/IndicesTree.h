@@ -80,6 +80,7 @@ public:
 		m_root_node = new CIndicesTreeNode(supernode,1.0);
 		m_current_node = m_root_node;
 		m_last_node = m_root_node;
+		m_num_nodes = 1;
 	}
 
 	/** destructor */
@@ -99,6 +100,7 @@ public:
 	 */
 	void add_child(SGVector<index_t> indices, float64_t weight)
 	{
+		m_num_nodes++;
 		m_current_node->add_child(new CIndicesTreeNode(indices,weight));
 	}
 
@@ -131,6 +133,14 @@ public:
 		m_current_node = m_root_node;
 	}
 
+	/** get number of nodes
+	 *
+	 */
+	inline int32_t get_num_nodes() const
+	{
+		return m_num_nodes;
+	}
+
 	/** print tree */
 	void print_tree() const;
 
@@ -155,6 +165,9 @@ private:
 
 	/** last node */
 	CIndicesTreeNode* m_last_node;
+
+	/** number of nodes */
+	int32_t m_num_nodes;
 
 };
 }

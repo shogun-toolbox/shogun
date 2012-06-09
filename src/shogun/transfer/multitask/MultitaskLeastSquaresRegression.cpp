@@ -88,7 +88,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
 	options.restart_num = 10000;
-	options.n_nodes = 1;
+	options.n_nodes = m_task_tree->get_num_nodes();
 	options.regularization = 0;
 	SGVector<float64_t> ind = m_task_tree->get_ind();
 	options.ind = ind.vector;
