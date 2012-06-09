@@ -88,6 +88,22 @@ public:
 		/** @return Object name */
 		inline virtual const char* get_name() const { return "OnlineLibLinear"; }
 
+		/** start training */
+		virtual void start_train();
+
+		/** stop training */
+		virtual void stop_train();
+
+		/** train on one example
+		 * @param feature the feature object containing the current example. Note that get_next_example
+		 *        is already called so relevalent methods like dot() and dense_dot() can be directly 
+		 *        called. WARN: this function should only process ONE example, and get_next_example() 
+		 *        should NEVER be called here. Use the label passed in the 2nd parameter, instead of 
+		 *		  get_label() from feature, because sometimes the features might not have associated
+		 *		  labels or the caller might want to provide some other labels.
+		 * @param label label of this example
+		 */
+		virtual void train_example(CStreamingDotFeatures *feature, float64_t label);
 protected:
 
 		/**
@@ -98,7 +114,7 @@ protected:
 		 *
 		 * @return Whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		//virtual bool train_machine(CFeatures* data=NULL);
 
 private:
 		/** Set up parameters */
@@ -111,6 +127,37 @@ private:
 		float64_t C1;
 		/// C2 value
 		float64_t C2;
+
+protected:
+		//========================================
+		// "local" variables used during training
+
+		float64_t C, d, G;
+		float64_t QD;
+
+		// y and alpha for example being processed
+		int32_t y_current;
+		float64_t alpha_current;
+
+		// Cost constants
+		float64_t Cp;
+		float64_t Cn;
+
+		// PG: projected gradient, for shrinking and stopping
+		float64_t PG;
+		float64_t PGmax_old;
+		float64_t PGmin_old;
+		float64_t PGmax_new;
+		float64_t PGmin_new;
+
+		// Diag is probably unnecessary
+		float64_t diag[3];
+		float64_t upper_bound[3];
+
+		// Objective value = v/2
+		float64_t v;
+		// Number of support vectors
+		int32_t nSV;
 };
 }
 #endif // _ONLINELIBLINEAR_H__
