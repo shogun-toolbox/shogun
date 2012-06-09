@@ -10,3 +10,5 @@
 
 %rename(Math) CMath;
 %include <shogun/mathematics/Math.h>
+%rename(Statistics) CStatistics;
+%include <shogun/mathematics/Statistics.h>
