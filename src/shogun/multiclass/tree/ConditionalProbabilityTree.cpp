@@ -231,7 +231,8 @@ float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, node
 	ASSERT(mch);
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 	SG_UNREF(mch);
-	return pred;
+	// use sigmoid function to turn the decision value into valid probability
+	return 1.0/(1+CMath::exp(-pred));
 }
 
 int32_t CConditionalProbabilityTree::create_machine(SGVector<float32_t> ex)
