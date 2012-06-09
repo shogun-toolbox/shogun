@@ -18,7 +18,7 @@ CStreamingVwFile::CStreamingVwFile()
 	init();
 }
 
-CStreamingVwFile::CStreamingVwFile(char* fname, char rw)
+CStreamingVwFile::CStreamingVwFile(const char* fname, char rw)
 	: CStreamingFile(fname, rw)
 {
 	init();

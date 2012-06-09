@@ -87,3 +87,25 @@ float32_t COnlineLinearMachine::apply_to_current_example()
 {
 		return features->dense_dot(w, w_dim)+bias;
 }
+
+bool COnlineLinearMachine::train_machine(CFeatures *data)
+{
+	if (data)
+	{
+		if (!data->has_property(FP_STREAMING_DOT))
+			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
+		set_features((CStreamingDotFeatures*) data);
+	}
+	start_train();
+	features->start_parser();
+	while (features->get_next_example())
+	{
+		train_example(features, features->get_label());
+		features->release_example();
+	}
+
+	features->end_parser();
+	stop_train();
+
+	return true;
+}

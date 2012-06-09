@@ -20,8 +20,8 @@
 using namespace shogun;
 
 CMulticlassMachine::CMulticlassMachine()
-: CMachine(), m_multiclass_strategy(new CMulticlassOneVsRestStrategy()),
-	m_machine(NULL), m_machines(new CDynamicObjectArray())
+: CBaseMulticlassMachine(), m_multiclass_strategy(new CMulticlassOneVsRestStrategy()),
+	m_machine(NULL)
 {
 	SG_REF(m_multiclass_strategy);
 	register_parameters();
@@ -30,8 +30,7 @@ CMulticlassMachine::CMulticlassMachine()
 CMulticlassMachine::CMulticlassMachine(
 		CMulticlassStrategy *strategy,
 		CMachine* machine, CLabels* labs)
-: CMachine(), m_multiclass_strategy(strategy),
-	m_machines(new CDynamicObjectArray())
+: CBaseMulticlassMachine(), m_multiclass_strategy(strategy)
 {
 	SG_REF(strategy);
 	set_labels(labs);
@@ -47,7 +46,6 @@ CMulticlassMachine::~CMulticlassMachine()
 {
 	SG_UNREF(m_multiclass_strategy);
 	SG_UNREF(m_machine);
-	SG_UNREF(m_machines);
 }
 
 void CMulticlassMachine::set_labels(CLabels* lab)
@@ -61,7 +59,6 @@ void CMulticlassMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_multiclass_strategy,"m_multiclass_type", "Multiclass strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_machine, "m_machine", "The base machine", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_machines, "machines", "Machines that jointly make up the multi-class machine.", MS_NOT_AVAILABLE);
 }
 
 void CMulticlassMachine::init_strategy()

@@ -23,7 +23,7 @@ int main()
 {
 	init_shogun_with_defaults();
 
-	char* train_file_name = "../data/train_sparsereal.light";
+	const char* train_file_name = "../data/train_sparsereal.light";
 	CStreamingVwFile* train_file = new CStreamingVwFile(train_file_name);
 	train_file->set_parser_type(T_SVMLIGHT); // Treat the file as SVMLight format
 	SG_REF(train_file);
@@ -39,7 +39,7 @@ int main()
 	train_file->close();
 
 	// Now we want to test on other data
-	char* test_file_name = "../data/fm_test_sparsereal.dat";
+	const char* test_file_name = "../data/fm_test_sparsereal.dat";
 	CStreamingVwFile* test_file = new CStreamingVwFile(test_file_name);
 	test_file->set_parser_type(T_SVMLIGHT);
 	SG_REF(test_file);
@@ -49,7 +49,7 @@ int main()
 	SG_REF(test_features);
 
 	// Apply on all examples and return a CLabels*
-	CLabels* test_labels = sgd->apply(test_features);
+	CBinaryLabels* test_labels = sgd->apply_binary(test_features);
 
 	for (int32_t i=0; i<test_labels->get_num_labels(); i++)
 		SG_SPRINT("For example %d, predicted label is %f.\n", i, test_labels->get_label(i));
