@@ -13,8 +13,10 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
+#include <algorithm>
 #include <shogun/classifier/vw/VowpalWabbit.h>
 
+using namespace std;
 using namespace shogun;
 
 CVowpalWabbit::CVowpalWabbit()
@@ -31,6 +33,30 @@ CVowpalWabbit::CVowpalWabbit(CStreamingVwFeatures* feat)
 	reg=NULL;
 	learner=NULL;
 	init(feat);
+}
+
+CVowpalWabbit::CVowpalWabbit(CVowpalWabbit *vw)
+	: COnlineLinearMachine()
+{
+	features = vw->features;
+	env = vw->env;
+	reg = new CVwRegressor(env);
+	SG_REF(env);
+	SG_REF(reg);
+
+	quiet = vw->quiet;
+	no_training = vw->no_training;
+	dump_interval = vw->dump_interval;
+	sum_loss_since_last_dump = 0.;
+	reg_name = vw->reg_name;
+	reg_dump_text = vw->reg_dump_text;
+	save_predictions = vw->save_predictions;
+	prediction_fd = vw->prediction_fd;
+
+	w = reg->weight_vectors[0];
+	copy(vw->w, vw->w+vw->w_dim, w);
+	w_dim = vw->w_dim;
+	bias = vw->bias;
 }
 
 CVowpalWabbit::~CVowpalWabbit()
