@@ -11,6 +11,7 @@
  */
 
 #include <shogun/classifier/svm/OnlineLibLinear.h>
+#include <shogun/features/StreamingDenseFeatures.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
@@ -38,6 +39,28 @@ COnlineLibLinear::COnlineLibLinear(
 		use_bias=true;
 
 		set_features(traindat);
+}
+
+COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
+{
+	init();
+	C1 = mch->C1;
+	C2 = mch->C2;
+	use_bias = mch->use_bias;
+
+	set_features(mch->features);
+
+	w_dim = mch->w_dim;
+	if (w_dim > 0)
+	{
+		w = SG_MALLOC(float32_t, w_dim);
+		memcpy(w, mch->w, w_dim*sizeof(float32_t));
+	}
+	else
+	{
+		w = NULL;
+	}
+	bias = mch->bias;
 }
 
 
@@ -94,7 +117,7 @@ void COnlineLibLinear::stop_train()
 	SG_INFO("gap = %g\n", gap);
 }
 
-void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t label)
+void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 {
 	alpha_current = 0;
 	if (label > 0)
@@ -104,11 +127,16 @@ void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t l
 
 	QD = diag[y_current + 1];
 	// Dot product of vector with itself
-	QD += feature->dot(feature);
+	QD += SGVector<float32_t>::dot(ex.vector, ex.vector, ex.vlen);
 
-	feature->expand_if_required(w, w_dim);
+	if (ex.vlen > w_dim)
+	{
+		w = SG_REALLOC(float32_t, w, ex.vlen);
+		memset(&w[w_dim], 0, (ex.vlen - w_dim)*sizeof(float32_t));
+		w_dim = ex.vlen;
+	}
 
-	G = feature->dense_dot(w, w_dim);
+	G = SGVector<float32_t>::dot(ex.vector, w, w_dim);
 	if (use_bias)
 		G += bias;
 	G = G*y_current - 1;
@@ -148,7 +176,9 @@ void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t l
 		alpha_current = CMath::min(CMath::max(alpha_current - G/QD, 0.0), C);
 		d = (alpha_current - alpha_old) * y_current;
 
-		feature->add_to_dense_vec(d, w, w_dim);
+		for (int32_t i=0; i < w_dim; ++i)
+			w[i] += d*ex[i];
+
 
 		if (use_bias)
 			bias += d;
@@ -157,5 +187,15 @@ void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t l
 	v += alpha_current*(alpha_current*diag[y_current + 1] - 2);
 	if (alpha_current > 0)
 		nSV++;
+}
+
+void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t label)
+{
+	CStreamingDenseFeatures<float32_t> *feat =
+		dynamic_cast<CStreamingDenseFeatures<float32_t> *>(feature);
+	if (feat == NULL)
+		SG_ERROR("Expected streaming dense feature <float32_t>\n");
+
+	train_one(feat->get_vector(), label);
 }
 

@@ -15,6 +15,7 @@
 
 #include <shogun/lib/config.h>
 
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/OnlineLinearMachine.h>
@@ -45,6 +46,12 @@ public:
 		 * @param traindat Training examples
 		 */
 		COnlineLibLinear(float64_t C, CStreamingDotFeatures* traindat);
+
+		/**
+		 * Copy Constructor
+		 * @param mch another COnlineLibLinear machine
+		 */
+		COnlineLibLinear(COnlineLibLinear *mch);
 
 		/** Destructor */
 		virtual ~COnlineLibLinear();
@@ -104,6 +111,12 @@ public:
 		 * @param label label of this example
 		 */
 		virtual void train_example(CStreamingDotFeatures *feature, float64_t label);
+
+		/** train on one vector
+		 * @param ex the example being trained
+		 * @param label label of this example
+		 */
+		virtual void train_one(SGVector<float32_t> ex, float64_t label);
 protected:
 
 		/**
