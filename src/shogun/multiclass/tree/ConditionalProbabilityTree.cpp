@@ -130,7 +130,12 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	}
 	m_feats->end_parser();
 
-	// TODO: call stop_train for each sub-machine
+	for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
+	{
+		COnlineLibLinear *lll = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(i));
+		lll->stop_train();
+		SG_UNREF(lll);
+	}
 	return true;
 }
 
