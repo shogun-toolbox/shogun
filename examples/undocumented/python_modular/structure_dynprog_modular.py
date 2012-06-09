@@ -22,7 +22,14 @@ try:
 except ImportError:
 	from io import StringIO
 
-if scipy.__version__ >= '0.7.0':
+def get_ver(ver_str):
+	scipy_ver=[int(i) for i in scipy.__version__.split('.')]
+	v=0
+	for i in xrange(len(scipy_ver)):
+		v+=10**(len(scipy_ver)-i)*scipy_ver[i]
+	return v
+
+if get_ver(scipy.__version__) >= get_ver('0.7.0'):
 	renametable = {
 			'scipy.io.mio5': 'scipy.io.matlab.mio5',
 			'scipy.sparse.sparse' : 'scipy.sparse',
