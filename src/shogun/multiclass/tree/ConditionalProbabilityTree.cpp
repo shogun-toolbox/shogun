@@ -50,7 +50,7 @@ int32_t CConditionalProbabilityTree::apply_multiclass_example(VwExample* ex)
 	{
 		probs[it->first] = accumulate_conditional_probability(it->second);
 	}
-	return CMath::arg_max(probs.vector, 1, probs.vlen);
+	return SGVector<float64_t>::arg_max(probs.vector, 1, probs.vlen);
 }
 
 void CConditionalProbabilityTree::compute_conditional_probabilities(VwExample *ex)
