@@ -125,9 +125,9 @@ private:
 			printf("  ");
 		data_print_func(node->data);
 		if (node->left())
-			debug_print_impl(node->left(), data_print_func, depth+1);
+			debug_print_impl(data_print_func, node->left(), depth+1);
 		if (node->right())
-			debug_print_impl(node->right(), data_print_func, depth+1);
+			debug_print_impl(data_print_func, node->right(), depth+1);
 	}
 };
 

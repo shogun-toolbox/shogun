@@ -25,6 +25,11 @@ struct ConditionalProbabilityTreeNodeData
 	float64_t p_right; // prob of right subtree, used in prediction
 
 	ConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
+
+	static void print(const ConditionalProbabilityTreeNodeData &data)
+	{
+		printf("label=%d\n", data.label);
+	}
 };
 
 class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>

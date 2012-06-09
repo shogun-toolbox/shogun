@@ -41,10 +41,36 @@ int main()
 	SG_REF(test_features);
 
 	CMulticlassLabels *pred = cpt->apply_multiclass(test_features);
+	test_features->reset_stream();
+	printf("num_labels = %d\n", pred->get_num_labels());
 
+	SG_UNREF(test_features);
+	SG_UNREF(test_file);
+	test_file = new CStreamingAsciiFile(test_file_name);
+	SG_REF(test_file);
+	test_features = new CStreamingDenseFeatures<float32_t>(test_file, true, 1024);
+	SG_REF(test_features);
+
+	CMulticlassLabels *gnd = new CMulticlassLabels(pred->get_num_labels());
+	test_features->start_parser();
+	for (int32_t i=0; i < pred->get_num_labels(); ++i)
+	{
+		test_features->get_next_example();
+		gnd->set_int_label(i, test_features->get_label());
+		test_features->release_example();
+	}
+	test_features->end_parser();
+
+	int32_t n_correct = 0;
 	for (index_t i=0; i < pred->get_num_labels(); ++i)
-		printf("%d ", pred->get_int_label(i));
+	{
+		if (pred->get_int_label(i) == gnd->get_int_label(i))
+			n_correct++;
+		//printf("%d-%d ", pred->get_int_label(i), gnd->get_int_label(i));
+	}
 	printf("\n");
+
+	printf("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
 
 	SG_UNREF(train_features);
 	SG_UNREF(test_features);

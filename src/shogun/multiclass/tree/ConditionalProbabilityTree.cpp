@@ -136,6 +136,9 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 		lll->stop_train();
 		SG_UNREF(lll);
 	}
+
+	m_root->debug_print(ConditionalProbabilityTreeNodeData::print);
+
 	return true;
 }
 
