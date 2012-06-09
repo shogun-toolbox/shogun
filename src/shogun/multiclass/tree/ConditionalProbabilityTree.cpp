@@ -10,7 +10,9 @@
 
 #include <vector>
 #include <stack>
+
 #include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+#include <shogun/classifier/svm/OnlineLibLinear.h>
 
 using namespace shogun;
 using namespace std;
@@ -19,9 +21,12 @@ CMulticlassLabels* CConditionalProbabilityTree::apply_multiclass(CFeatures* data
 {
 	if (data)
 	{
-		if (data->get_feature_class() != C_STREAMING_VW)
-			SG_ERROR("Expected StreamingVwFeatures\n");
-		set_features(dynamic_cast<CStreamingVwFeatures*>(data));
+		if (data->get_feature_class() != C_STREAMING_DENSE)
+			SG_ERROR("Expected StreamingDenseFeatures\n");
+		if (data->get_feature_type() != F_SHORTREAL)
+			SG_ERROR("Expected float32_t feature type\n");
+
+		set_features(dynamic_cast<CStreamingDenseFeatures<float32_t>* >(data));
 	}
 
 	vector<int32_t> predicts;
@@ -29,7 +34,7 @@ CMulticlassLabels* CConditionalProbabilityTree::apply_multiclass(CFeatures* data
 	m_feats->start_parser();
 	while (m_feats->get_next_example())
 	{
-		predicts.push_back(apply_multiclass_example(m_feats->get_example()));
+		predicts.push_back(apply_multiclass_example(m_feats->get_vector()));
 		m_feats->release_example();
 	}
 	m_feats->end_parser();
@@ -40,10 +45,8 @@ CMulticlassLabels* CConditionalProbabilityTree::apply_multiclass(CFeatures* data
 	return labels;
 }
 
-int32_t CConditionalProbabilityTree::apply_multiclass_example(VwExample* ex)
+int32_t CConditionalProbabilityTree::apply_multiclass_example(SGVector<float32_t> ex)
 {
-	ex->ld->label = FLT_MAX; // this will disable VW learning from this example
-
 	compute_conditional_probabilities(ex);
 	SGVector<float64_t> probs(m_leaves.size());
 	for (map<int32_t,node_t*>::iterator it = m_leaves.begin(); it != m_leaves.end(); ++it)
@@ -53,7 +56,7 @@ int32_t CConditionalProbabilityTree::apply_multiclass_example(VwExample* ex)
 	return SGVector<float64_t>::arg_max(probs.vector, 1, probs.vlen);
 }
 
-void CConditionalProbabilityTree::compute_conditional_probabilities(VwExample *ex)
+void CConditionalProbabilityTree::compute_conditional_probabilities(SGVector<float32_t> ex)
 {
 	stack<node_t *> nodes;
 	nodes.push(m_root);
@@ -68,7 +71,7 @@ void CConditionalProbabilityTree::compute_conditional_probabilities(VwExample *e
 			nodes.push(node->right());
 
 			// don't calculate for leaf
-			node->data.p_right = train_node(ex, node);
+			node->data.p_right = predict_node(ex, node);
 		}
 	}
 }
@@ -95,9 +98,11 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 {
 	if (data)
 	{
-		if (data->get_feature_class() != C_STREAMING_VW)
-			SG_ERROR("Expected StreamingVwFeatures\n");
-		set_features(dynamic_cast<CStreamingVwFeatures*>(data));
+		if (data->get_feature_class() != C_STREAMING_DENSE)
+			SG_ERROR("Expected StreamingDenseFeatures\n");
+		if (data->get_feature_type() != F_SHORTREAL)
+			SG_ERROR("Expected float32_t features\n");
+		set_features(dynamic_cast<CStreamingDenseFeatures<float32_t> *>(data));
 	}
 	else
 	{
@@ -116,7 +121,7 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	{
 		while (m_feats->get_next_example())
 		{
-			train_example(m_feats->get_example());
+			train_example(m_feats->get_vector(), m_feats->get_label());
 			m_feats->release_example();
 		}
 
@@ -124,17 +129,17 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 			m_feats->reset_stream();
 	}
 	m_feats->end_parser();
+
+	// TODO: call stop_train for each sub-machine
+	return true;
 }
 
-void CConditionalProbabilityTree::train_example(VwExample *ex)
+void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, float64_t label)
 {
-	int32_t label = static_cast<int32_t>(ex->ld->label);
-
 	if (m_root == NULL)
 	{
 		m_root = new node_t();
 		m_root->data.label = label;
-		printf("  insert %d %p\n", label, m_root);
 		m_leaves.insert(make_pair(label, m_root));
 		m_root->machine(create_machine(ex));
 		return;
@@ -151,11 +156,12 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 		{
 			// not a leaf
 			bool is_left = which_subtree(node, ex);
+			float64_t node_label;
 			if (is_left)
-				ex->ld->label = 0;
+				node_label = 0;
 			else
-				ex->ld->label = 1;
-			train_node(ex, node);
+				node_label = 1;
+			train_node(ex, node_label, node);
 
 			if (is_left)
 				node = node->left();
@@ -163,17 +169,16 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 				node = node->right();
 		}
 
-		printf("  remove %d %p\n", node->data.label, m_leaves[node->data.label]);
 		m_leaves.erase(node->data.label);
 
 		node_t *left_node = new node_t();
 		left_node->data.label = node->data.label;
 		node->data.label = -1;
-		CVowpalWabbit *node_vw = dynamic_cast<CVowpalWabbit *>(m_machines->get_element(node->machine()));
-		CVowpalWabbit *vw = new CVowpalWabbit(node_vw);
-		SG_UNREF(node_vw);
-		vw->set_learner();
-		m_machines->push_back(vw);
+		COnlineLibLinear *node_mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
+		COnlineLibLinear *mch = new COnlineLibLinear(node_mch);
+		SG_UNREF(node_mch);
+		mch->start_train();
+		m_machines->push_back(mch);
 		left_node->machine(m_machines->get_num_elements()-1);
 		printf("  insert %d %p\n", left_node->data.label, left_node);
 		m_leaves.insert(make_pair(left_node->data.label, left_node));
@@ -188,42 +193,47 @@ void CConditionalProbabilityTree::train_example(VwExample *ex)
 	}
 }
 
-void CConditionalProbabilityTree::train_path(VwExample *ex, node_t *node)
+void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, node_t *node)
 {
-	ex->ld->label = 0;
-	train_node(ex, node);
+	float64_t node_label = 0;
+	train_node(ex, node_label, node);
 
 	node_t *par = node->parent();
 	while (par != NULL)
 	{
 		if (par->left() == node)
-			ex->ld->label = 0;
+			node_label = 0;
 		else
-			ex->ld->label = 1;
+			node_label = 1;
 
-		train_node(ex, par);
+		train_node(ex, node_label, par);
 		node = par;
 		par = node->parent();
 	}
 }
 
-float64_t CConditionalProbabilityTree::train_node(VwExample *ex, node_t *node)
+void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t label, node_t *node)
 {
-	CVowpalWabbit *vw = dynamic_cast<CVowpalWabbit*>(m_machines->get_element(node->machine()));
-	ASSERT(vw);
-	float64_t pred = vw->predict_and_finalize(ex);
-	if (ex->ld->label != FLT_MAX)
-		vw->get_learner()->train(ex, ex->eta_round);
-	SG_UNREF(vw);
+	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
+	ASSERT(mch);
+	mch->train_one(ex, label);
+	SG_UNREF(mch);
+}
+
+float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, node_t *node)
+{
+	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
+	ASSERT(mch);
+	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
+	SG_UNREF(mch);
 	return pred;
 }
 
-int32_t CConditionalProbabilityTree::create_machine(VwExample *ex)
+int32_t CConditionalProbabilityTree::create_machine(SGVector<float32_t> ex)
 {
-	CVowpalWabbit *vw = new CVowpalWabbit(m_feats);
-	vw->set_learner();
-	ex->ld->label = 0;
-	vw->predict_and_finalize(ex);
-	m_machines->push_back(vw);
+	COnlineLibLinear *mch = new COnlineLibLinear();
+	mch->start_train();
+	mch->train_one(ex, 0);
+	m_machines->push_back(mch);
 	return m_machines->get_num_elements()-1;
 }

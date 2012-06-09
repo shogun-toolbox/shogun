@@ -13,8 +13,8 @@
 
 #include <map>
 
+#include <shogun/features/StreamingDenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/classifier/vw/VowpalWabbit.h>
 
 namespace shogun
 {
@@ -59,7 +59,7 @@ public:
 	/** set features 
 	 * @param feats features
 	 */
-	void set_features(CStreamingVwFeatures *feats)
+	void set_features(CStreamingDenseFeatures<float32_t> *feats)
 	{
 		SG_REF(feats);
 		SG_UNREF(m_feats);
@@ -69,8 +69,10 @@ public:
 	/** apply machine to data in means of multiclass classification problem */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
-	/** apply machine one single example */
-	virtual int32_t apply_multiclass_example(VwExample* ex);
+	/** apply machine one single example.
+	 * @param ex a vector to be applied
+	 */
+	virtual int32_t apply_multiclass_example(SGVector<float32_t> ex);
 protected:
 	/** the labels will be embedded in the streaming features */
 	virtual bool train_require_labels() const { return false; }
@@ -84,37 +86,44 @@ protected:
 	virtual bool train_machine(CFeatures* data);
 
 	/** train on a single example (online learning)
-	 * @param ex VwExample instance
+	 * @param ex the example being trained
+	 * @param label the label of this training example
 	 */
-	void train_example(VwExample *ex);
+	void train_example(SGVector<float32_t> ex, float64_t label);
 
 	/** train on a path from a node up to the root
-	 * @param ex VwExample instance of the training example
+	 * @param ex the instance of the training example
 	 * @param node the leaf node
 	 */
-	void train_path(VwExample *ex, node_t *node);
+	void train_path(SGVector<float32_t> ex, node_t *node);
 
 	/** train a single node 
-	 * @param ex VwExample instance of the training example
+	 * @param ex the example being trained
 	 * @param node the node
-	 * @return the predicted value for the example
 	 */
-	float64_t train_node(VwExample *ex, node_t *node);
+	void train_node(SGVector<float32_t> ex, float64_t label, node_t *node);
 
-	/** create a new VW machine for a node 
-	 * @param ex the VwExample instance for training the new machine
+
+	/** predict a single node
+	 * @param ex the example being predicted
+	 * @param node the node
 	 */
-	int32_t create_machine(VwExample *ex);
+	float64_t predict_node(SGVector<float32_t> ex, node_t *node);
+
+	/** create a new OnlineLinear machine for a node 
+	 * @param ex the Example instance for training the new machine
+	 */
+	int32_t create_machine(SGVector<float32_t> ex);
 
 	/** decide which subtree to go, when training the tree structure.
 	 * @param node the node being decided
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(node_t *node, VwExample *ex)=0;
+	virtual bool which_subtree(node_t *node, SGVector<float32_t> ex)=0;
 
 	/** compute conditional probabilities for ex along the whole tree for predicting */
-	void compute_conditional_probabilities(VwExample *ex);
+	void compute_conditional_probabilities(SGVector<float32_t> ex);
 
 	/** accumulate along the path to the root the conditional probability for a
 	 * particular leaf node. 
@@ -123,7 +132,7 @@ protected:
 
 	int32_t m_num_passes; ///< number of passes for online training
 	std::map<int32_t, node_t*> m_leaves; ///< class => leaf mapping
-	CStreamingVwFeatures *m_feats; ///< online features
+	CStreamingDenseFeatures<float32_t> *m_feats; ///< online features
 };
 
 } /* shogun */ 
