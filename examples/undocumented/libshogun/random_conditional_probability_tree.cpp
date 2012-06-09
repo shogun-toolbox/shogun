@@ -12,8 +12,8 @@
 
 #include <shogun/lib/common.h>
 
-#include <shogun/io/StreamingVwFile.h>
-#include <shogun/features/StreamingVwFeatures.h>
+#include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/features/StreamingDenseFeatures.h>
 #include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
 
 using namespace shogun;
@@ -22,13 +22,12 @@ int main()
 {
 	init_shogun_with_defaults();
 
-	const char* train_file_name = "../data/7class_example4_train.light";
-	const char* test_file_name = "../data/7class_example4_test.light";
-	CStreamingVwFile* train_file = new CStreamingVwFile(train_file_name);
-	train_file->set_parser_type(T_SVMLIGHT); // Treat the file as SVMLight format
+	const char* train_file_name = "../data/7class_example4_train.dense";
+	const char* test_file_name = "../data/7class_example4_test.dense";
+	CStreamingAsciiFile* train_file = new CStreamingAsciiFile(train_file_name);
 	SG_REF(train_file);
 
-	CStreamingVwFeatures* train_features = new CStreamingVwFeatures(train_file, true, 1024);
+	CStreamingDenseFeatures<float32_t>* train_features = new CStreamingDenseFeatures<float32_t>(train_file, true, 1024);
 	SG_REF(train_features);
 
 	CRandomConditionalProbabilityTree *cpt = new CRandomConditionalProbabilityTree();
@@ -36,10 +35,9 @@ int main()
 	cpt->set_features(train_features);
 	cpt->train();
 
-	CStreamingVwFile* test_file = new CStreamingVwFile(test_file_name);
-	test_file->set_parser_type(T_SVMLIGHT); // Treat the file as SVMLight format
+	CStreamingAsciiFile* test_file = new CStreamingAsciiFile(test_file_name);
 	SG_REF(test_file);
-	CStreamingVwFeatures* test_features = new CStreamingVwFeatures(test_file, true, 1024);
+	CStreamingDenseFeatures<float32_t>* test_features = new CStreamingDenseFeatures<float32_t>(test_file, true, 1024);
 	SG_REF(test_features);
 
 	CMulticlassLabels *pred = cpt->apply_multiclass(test_features);
