@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	for(int32_t i=0; i<n*n; ++i)
 		matrix.matrix[i]=CMath::random((float64_t)-n,(float64_t)n);
 
-	CMath::display_matrix(matrix.matrix, n, n);
+	SGMatrix<float64_t>::display_matrix(matrix.matrix, n, n);
 
 	/* create n n-dimensional feature vectors */
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);

@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
 		/* print classes */
 		SGVector<float64_t> classes=labels->get_unique_labels();
-		CMath::display_vector(classes.vector, classes.vlen, "classes");
+		SGVector<float64_t>::display_vector(classes.vector, classes.vlen, "classes");
 
 		/* build splitting strategy */
 		CStratifiedCrossValidationSplitting* splitting=

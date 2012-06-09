@@ -54,12 +54,12 @@ bool test_float_vector()
 
 	Parameter* original_parameter_list=new Parameter();
 	float64_t* original_parameter=SG_MALLOC(float64_t, max);
-	CMath::fill_vector(original_parameter, max, initial_value);
+	SGVector<float64_t>::fill_vector(original_parameter, max, initial_value);
 
 	original_parameter_list->add_vector(&original_parameter, &max, "param", "");
 
 	float64_t* new_parameter=SG_MALLOC(float64_t, max);
-	CMath::fill_vector(new_parameter, max, another_value);
+	SGVector<float64_t>::fill_vector(new_parameter, max, another_value);
 
 	Parameter* new_parameter_list=new Parameter();
 	new_parameter_list->add_vector(&new_parameter, &max, "param", "");
@@ -83,12 +83,12 @@ bool test_float_matrix()
 
 	Parameter* original_parameter_list=new Parameter();
 	float64_t* original_parameter=SG_MALLOC(float64_t, max*max);
-	CMath::fill_vector(original_parameter, max*max, initial_value);
+	SGVector<float64_t>::fill_vector(original_parameter, max*max, initial_value);
 
 	original_parameter_list->add_matrix(&original_parameter, &max, &max, "param", "");
 
 	float64_t* new_parameter=SG_MALLOC(float64_t, max*max);
-	CMath::fill_vector(new_parameter, max*max, another_value);
+	SGVector<float64_t>::fill_vector(new_parameter, max*max, another_value);
 
 	Parameter* new_parameter_list=new Parameter();
 	new_parameter_list->add_matrix(&new_parameter, &max, &max, "param", "");

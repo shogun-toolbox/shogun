@@ -35,7 +35,7 @@ void test_cross_validation()
 
 	/* fill data matrix and labels */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
-	CMath::range_fill_vector(train_dat.matrix, num_vectors);
+	SGVector<float64_t>::range_fill_vector(train_dat.matrix, num_vectors);
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */

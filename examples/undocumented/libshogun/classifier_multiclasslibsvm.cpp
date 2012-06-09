@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
 	// create some data
 	SGMatrix<float64_t> matrix(num_feat, num_vec);
-	CMath::range_fill_vector(matrix.matrix, num_feat*num_vec);
+	SGVector<float64_t>::range_fill_vector(matrix.matrix, num_feat*num_vec);
 
 	// create vectors
 	// shogun will now own the matrix created
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 
 	// classify on training examples
 	CMulticlassLabels* output=CMulticlassLabels::obtain_from_generic(svm->apply());
-	CMath::display_vector(output->get_labels().vector, output->get_num_labels(),
+	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(),
 			"batch output");
 
 	/* assert that batch apply and apply(index_t) give same result */

@@ -31,19 +31,19 @@ public:
 
 		m_vector_length=3;
 		m_vector=SG_MALLOC(int32_t, m_vector_length);
-		CMath::fill_vector(m_vector, m_vector_length, 10);
+		SGVector<int32_t>::fill_vector(m_vector, m_vector_length, 10);
 		m_parameters->add_vector(&m_vector, &m_vector_length, "vector",
 				"Test vector");
 
 		m_matrix_rows=2;
 		m_matrix_cols=3;
 		m_matrix=SG_MALLOC(int32_t, m_matrix_rows*m_matrix_cols);
-		CMath::range_fill_vector(m_matrix, m_matrix_rows*m_matrix_cols);
+		SGVector<int32_t>::range_fill_vector(m_matrix, m_matrix_rows*m_matrix_cols);
 		m_parameters->add_matrix(&m_matrix, &m_matrix_rows, &m_matrix_cols,
 				"matrix", "Test matrix");
 
 		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
-		CMath::range_fill_vector(features.matrix,
+		SGVector<int32_t>::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 3);
 		m_features=new CDenseFeatures<int32_t>(10);
 		m_features->set_feature_matrix(features);
@@ -80,10 +80,10 @@ public:
 	{
 		m_number=3.2;
 		m_vector=SGVector<float64_t>(10);
-		CMath::fill_vector(m_vector.vector, m_vector.vlen, 0.0);
+		SGVector<float64_t>::fill_vector(m_vector.vector, m_vector.vlen, 0.0);
 
 		m_matrix=SGMatrix<float64_t>(3, 3);
-		CMath::range_fill_vector(m_matrix.matrix,
+		SGVector<float64_t>::range_fill_vector(m_matrix.matrix,
 				m_matrix.num_rows*m_matrix.num_cols, 0.0);
 
 		m_parameters->add(&m_number, "number", "Test number");
@@ -91,7 +91,7 @@ public:
 		m_parameters->add(&m_matrix, "matrix", "Test matrix");
 
 		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
-		CMath::range_fill_vector(features.matrix,
+		SGVector<int32_t>::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 0);
 		m_features=new CDenseFeatures<int32_t>(features);
 		SG_REF(m_features);
@@ -269,9 +269,9 @@ void check_equalness(CTestClassInt* int_instance,
 	SG_SPRINT("\tlength: %d==%d\n", int_instance->m_vector_length,
 			float_instance->m_vector.vlen);
 	ASSERT(int_instance->m_vector_length==float_instance->m_vector.vlen);
-	CMath::display_vector(int_instance->m_vector, int_instance->m_vector_length,
+	SGVector<int32_t>::display_vector(int_instance->m_vector, int_instance->m_vector_length,
 			"oiginal", "\t");
-	CMath::display_vector(float_instance->m_vector.vector,
+	SGVector<float64_t>::display_vector(float_instance->m_vector.vector,
 			float_instance->m_vector.vlen, "migrated", "\t");
 	for (index_t i=0; i<int_instance->m_vector_length; ++i)
 		ASSERT(int_instance->m_vector[i]==float_instance->m_vector.vector[i]);
@@ -284,9 +284,9 @@ void check_equalness(CTestClassInt* int_instance,
 	SG_SPRINT("\tcols: %d==%d\n", int_instance->m_matrix_cols,
 			float_instance->m_matrix.num_cols);
 	ASSERT(int_instance->m_matrix_cols==float_instance->m_matrix.num_cols);
-	CMath::display_matrix(int_instance->m_matrix, int_instance->m_matrix_rows,
+	SGMatrix<int32_t>::display_matrix(int_instance->m_matrix, int_instance->m_matrix_rows,
 			int_instance->m_matrix_cols, "original", "\t");
-	CMath::display_matrix(float_instance->m_matrix.matrix,
+	SGMatrix<float64_t>::display_matrix(float_instance->m_matrix.matrix,
 			float_instance->m_matrix.num_rows,
 			float_instance->m_matrix.num_cols, "migrated", "\t");
 	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
@@ -309,9 +309,9 @@ void check_equalness(CTestClassInt* int_instance,
 	SG_SPRINT("\t\tcols: %d==%d\n", original_matrix.num_cols,
 			migrated_matrix.num_cols);
 	ASSERT(original_matrix.num_cols==migrated_matrix.num_cols);
-	CMath::display_matrix(original_matrix.matrix, original_matrix.num_rows,
+	SGMatrix<int32_t>::display_matrix(original_matrix.matrix, original_matrix.num_rows,
 			original_matrix.num_cols, "original", "\t\t");
-	CMath::display_matrix(migrated_matrix.matrix, migrated_matrix.num_rows,
+	SGMatrix<int32_t>::display_matrix(migrated_matrix.matrix, migrated_matrix.num_rows,
 			migrated_matrix.num_cols, "migrated", "\t\t");
 	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
 			++i)

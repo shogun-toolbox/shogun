@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 	
 	SGMatrix<float64_t> cov = regressor.getCovarianceMatrix(features);
 	
-	CMath::display_matrix(cov.matrix, cov.num_rows, cov.num_cols, "Covariance Matrix");
+	SGMatrix<float64_t>::display_matrix(cov.matrix, cov.num_rows, cov.num_cols, "Covariance Matrix");
 
 	// output predictions
 	for (int32_t i=0; i<3; i++)

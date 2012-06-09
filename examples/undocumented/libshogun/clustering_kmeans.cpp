@@ -42,9 +42,9 @@ int main(int argc, char **argv)
 
 	/* build random cluster centers */
 	SGMatrix<float64_t> cluster_centers(dim_features, num_clusters);
-	CMath::random_vector(cluster_centers.matrix, dim_features*num_clusters,
+	SGVector<float64_t>::random_vector(cluster_centers.matrix, dim_features*num_clusters,
 			-10.0, 10.0);
-	CMath::display_matrix(cluster_centers.matrix, cluster_centers.num_rows,
+	SGMatrix<float64_t>::display_matrix(cluster_centers.matrix, cluster_centers.num_rows,
 			cluster_centers.num_cols, "cluster centers");
 
 	/* create data around clusters */
@@ -92,10 +92,10 @@ int main(int argc, char **argv)
 
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
 
-	CMath::display_matrix(centers_matrix.matrix, centers_matrix.num_rows,
+	SGMatrix<float64_t>::display_matrix(centers_matrix.matrix, centers_matrix.num_rows,
 			centers_matrix.num_cols, "learned centers");
 
-	CMath::display_matrix(cluster_centers.matrix, cluster_centers.num_rows,
+	SGMatrix<float64_t>::display_matrix(cluster_centers.matrix, cluster_centers.num_rows,
 			cluster_centers.num_cols, "real centers");
 
 	/* clean up */

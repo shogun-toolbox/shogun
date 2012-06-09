@@ -64,8 +64,8 @@ int main(int argc, char **argv)
 			SGVector<index_t> subset=splitting->generate_subset_indices(i);
 			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
 
-			CMath::display_vector(subset.vector, subset.vlen, "subset indices");
-			CMath::display_vector(inverse.vector, inverse.vlen, "inverse indices");
+			SGVector<index_t>::display_vector(subset.vector, subset.vlen, "subset indices");
+			SGVector<index_t>::display_vector(inverse.vector, inverse.vlen, "inverse indices");
 
 			SG_SPRINT("checking subset size: %d vs subset desired size %d\n",
 					subset.vlen, desired_size);

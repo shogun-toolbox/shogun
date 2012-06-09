@@ -28,14 +28,14 @@ public:
 	{
 		m_number=number;
 		m_vec=SGVector<float64_t>(10);
-		CMath::range_fill_vector(m_vec.vector, m_vec.vlen, vec_start);
+		SGVector<float64_t>::range_fill_vector(m_vec.vector, m_vec.vlen, vec_start);
 
 		m_mat=SGMatrix<float64_t>(3,3);
-		CMath::range_fill_vector(m_mat.matrix, m_mat.num_cols*m_mat.num_rows,
+		SGVector<float64_t>::range_fill_vector(m_mat.matrix, m_mat.num_cols*m_mat.num_rows,
 				vec_start);
 
 		SGMatrix<int32_t> data=SGMatrix<int32_t>(3, 2);
-		CMath::range_fill_vector(data.matrix, data.num_rows*data.num_cols,
+		SGVector<int32_t>::range_fill_vector(data.matrix, data.num_rows*data.num_cols,
 				features_start);
 		m_features=new CDenseFeatures<int32_t>(data);
 		SG_REF(m_features);
@@ -55,12 +55,12 @@ public:
 	void print()
 	{
 		SG_PRINT("m_number=%f\n", m_number);
-		CMath::display_vector(m_vec.vector, m_vec.vlen, "m_vec");
-		CMath::display_vector(m_mat.matrix, m_mat.num_cols*m_mat.num_rows,
+		SGVector<float64_t>::display_vector(m_vec.vector, m_vec.vlen, "m_vec");
+		SGVector<float64_t>::display_vector(m_mat.matrix, m_mat.num_cols*m_mat.num_rows,
 				"m_mat");
 
 		SGMatrix<int32_t> features=m_features->get_feature_matrix();
-		CMath::display_matrix(features.matrix, features.num_rows,
+		SGMatrix<int32_t>::display_matrix(features.matrix, features.num_rows,
 				features.num_cols, "m_features");
 	}
 

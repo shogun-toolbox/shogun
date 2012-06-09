@@ -11,6 +11,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
@@ -34,9 +35,9 @@ void test_ev()
 	A(2,1)=1;
 	A(2,2)=0;
 
-	SGVector<float64_t> ev=CMath::compute_eigenvectors(A);
-	CMath::display_matrix(A.matrix, A.num_rows, A.num_cols, "A");
-	CMath::display_vector(ev.vector, ev.vlen, "eigenvalues");
+	SGVector<float64_t> ev=SGMatrix<float64_t>::compute_eigenvectors(A);
+	SGMatrix<float64_t>::display_matrix(A.matrix, A.num_rows, A.num_cols, "A");
+	SGVector<float64_t>::display_vector(ev.vector, ev.vlen, "eigenvalues");
 
 	float64_t sqrt22=CMath::sqrt(2.0)/2.0;
 	float64_t eps=10E-16;
@@ -63,22 +64,22 @@ void test_ev()
 void test_matrix_multiply()
 {
 	index_t n=10;
-	SGMatrix<float64_t> I=CMath::create_identity_matrix(n,1.0);
+	SGMatrix<float64_t> I=SGMatrix<float64_t>::create_identity_matrix(n,1.0);
 
 	index_t m=4;
 	SGMatrix<float64_t> A(n, m);
-	CMath::range_fill_vector(A.matrix, m*n);
-	CMath::display_matrix(I, "I");
-	CMath::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
-	CMath::display_matrix(A, "A transposed");
-	CMath::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
-	CMath::display_matrix(A, "A");
+	SGVector<float64_t>::range_fill_vector(A.matrix, m*n);
+	SGMatrix<float64_t>::display_matrix(I, "I");
+	SGMatrix<float64_t>::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
+	SGMatrix<float64_t>::display_matrix(A, "A transposed");
+	SGMatrix<float64_t>::transpose_matrix(A.matrix, A.num_rows, A.num_cols);
+	SGMatrix<float64_t>::display_matrix(A, "A");
 
 	SG_SPRINT("multiply A by I and check result\n");
-	SGMatrix<float64_t> A2=CMath::matrix_multiply(I, A);
+	SGMatrix<float64_t> A2=SGMatrix<float64_t>::matrix_multiply(I, A);
 	ASSERT(A2.num_rows==A.num_rows);
 	ASSERT(A2.num_cols==A.num_cols);
-	CMath::display_matrix(A2);
+	SGMatrix<float64_t>::display_matrix(A2);
 	for (index_t i=0; i<A2.num_rows; ++i)
 	{
 		for (index_t j=0; j<A2.num_cols; ++j)
@@ -86,10 +87,10 @@ void test_matrix_multiply()
 	}
 
 	SG_SPRINT("multiply A by transposed I and check result\n");
-	SGMatrix<float64_t> A3=CMath::matrix_multiply(I, A, true);
+	SGMatrix<float64_t> A3=SGMatrix<float64_t>::matrix_multiply(I, A, true);
 	ASSERT(A3.num_rows==I.num_rows);
 	ASSERT(A3.num_cols==A.num_cols);
-	CMath::display_matrix(A3);
+	SGMatrix<float64_t>::display_matrix(A3);
 	for (index_t i=0; i<A2.num_rows; ++i)
 	{
 		for (index_t j=0; j<A2.num_cols; ++j)
@@ -97,10 +98,10 @@ void test_matrix_multiply()
 	}
 
 	SG_SPRINT("multiply transposed A by I and check result\n");
-	SGMatrix<float64_t> A4=CMath::matrix_multiply(A, I, true, false);
+	SGMatrix<float64_t> A4=SGMatrix<float64_t>::matrix_multiply(A, I, true, false);
 	ASSERT(A4.num_rows==A.num_cols);
 	ASSERT(A4.num_cols==I.num_cols);
-	CMath::display_matrix(A4);
+	SGMatrix<float64_t>::display_matrix(A4);
 	for (index_t i=0; i<A.num_rows; ++i)
 	{
 		for (index_t j=0; j<A.num_cols; ++j)
@@ -108,10 +109,10 @@ void test_matrix_multiply()
 	}
 
 	SG_SPRINT("multiply A by scaled I and check result\n");
-	SGMatrix<float64_t> A5=CMath::matrix_multiply(I, A, false, false, n);
+	SGMatrix<float64_t> A5=SGMatrix<float64_t>::matrix_multiply(I, A, false, false, n);
 	ASSERT(A5.num_rows==I.num_rows);
 	ASSERT(A5.num_cols==A.num_cols);
-	CMath::display_matrix(A5);
+	SGMatrix<float64_t>::display_matrix(A5);
 	for (index_t i=0; i<A2.num_rows; ++i)
 	{
 		for (index_t j=0; j<A2.num_cols; ++j)

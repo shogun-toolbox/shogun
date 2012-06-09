@@ -34,8 +34,8 @@ void test_cross_validation()
 	/* data means -1, 1 in all components, std deviation of sigma */
 	SGVector<float64_t> mean_1(num_features);
 	SGVector<float64_t> mean_2(num_features);
-	CMath::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
-	CMath::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
+	SGVector<float64_t>::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
+	SGVector<float64_t>::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
 	float64_t sigma=1.5;
 
 	/* fill data matrix around mean */
