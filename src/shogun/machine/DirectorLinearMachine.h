@@ -53,7 +53,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		virtual bool train_function(CFeatures* data=NULL)
 		{
 			SG_ERROR("Train function of Director Linear Machine needs to be overridden.\n");
-			return 0;
+			return false;
 		}
 
 		/** set features

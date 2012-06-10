@@ -66,7 +66,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		virtual bool train_function(CFeatures* data=NULL)
 		{
 			SG_ERROR("Train function of Director Kernel Machine needs to be overridden.\n");
-			return 0;
+			return false;
 		}
 
 		/** apply machine to data
