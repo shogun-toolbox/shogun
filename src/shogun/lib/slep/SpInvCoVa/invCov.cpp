@@ -158,7 +158,7 @@ int lassoCD(double *Theta, double *W, double *S, double lambda, int n, int ith, 
 }
 
 
-void invConv(double *Theta, double *W, double *S, double lambda, double sum_S, int n,  
+void invCov(double *Theta, double *W, double *S, double lambda, double sum_S, int n,  
 		int LassoMaxIter, double fGap, double xGap, /*for the Lasso (inner iteration)*/
 		int maxIter, double xtol)  /*for the outer iteration*/
 {

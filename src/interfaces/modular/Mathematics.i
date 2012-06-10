@@ -12,3 +12,5 @@
 %include <shogun/mathematics/Math.h>
 %rename(Statistics) CStatistics;
 %include <shogun/mathematics/Statistics.h>
+%rename(SparseInverseCovariance) CSparseInverseCovariance;
+%include <shogun/mathematics/SparseInverseCovariance.h>
