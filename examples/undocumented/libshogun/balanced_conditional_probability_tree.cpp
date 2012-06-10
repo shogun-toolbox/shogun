@@ -43,6 +43,7 @@ int main(int argc, char **argv)
 	}
 
 	cpt->train();
+	cpt->print_tree();
 
 	CStreamingAsciiFile* test_file = new CStreamingAsciiFile(test_file_name);
 	SG_REF(test_file);

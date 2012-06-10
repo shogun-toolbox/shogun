@@ -137,9 +137,15 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 		SG_UNREF(lll);
 	}
 
-	m_root->debug_print(ConditionalProbabilityTreeNodeData::print);
-
 	return true;
+}
+
+void CConditionalProbabilityTree::print_tree()
+{
+	if (m_root)
+		m_root->debug_print(ConditionalProbabilityTreeNodeData::print);
+	else
+		printf("Empty Tree\n");
 }
 
 void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t label)
@@ -188,14 +194,12 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 		mch->start_train();
 		m_machines->push_back(mch);
 		left_node->machine(m_machines->get_num_elements()-1);
-		printf("  insert %d %p\n", left_node->data.label, left_node);
 		m_leaves.insert(make_pair(left_node->data.label, left_node));
 		node->left(left_node);
 
 		node_t *right_node = new node_t();
 		right_node->data.label = label;
 		right_node->machine(create_machine(ex));
-		printf("  insert %d %p\n", label, right_node);
 		m_leaves.insert(make_pair(label, right_node));
 		node->right(right_node);
 	}

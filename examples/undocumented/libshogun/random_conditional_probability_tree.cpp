@@ -34,6 +34,7 @@ int main()
 	cpt->set_num_passes(1);
 	cpt->set_features(train_features);
 	cpt->train();
+	cpt->print_tree();
 
 	CStreamingAsciiFile* test_file = new CStreamingAsciiFile(test_file_name);
 	SG_REF(test_file);

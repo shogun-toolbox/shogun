@@ -78,6 +78,9 @@ public:
 	 * @param ex a vector to be applied
 	 */
 	virtual int32_t apply_multiclass_example(SGVector<float32_t> ex);
+
+	/** print the tree structure for debug purpose */
+	void print_tree();
 protected:
 	/** the labels will be embedded in the streaming features */
 	virtual bool train_require_labels() const { return false; }
