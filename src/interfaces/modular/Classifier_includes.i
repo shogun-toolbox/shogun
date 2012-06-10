@@ -36,4 +36,7 @@
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
 #endif //USE_SVMLIGHT
+
+ #include <shogun/machine/DirectorLinearMachine.h>
+ #include <shogun/machine/DirectorKernelMachine.h>
 %}
