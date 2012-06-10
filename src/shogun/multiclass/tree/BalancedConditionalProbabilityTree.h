@@ -27,7 +27,10 @@ namespace shogun
  * * when alpha = 0, the balance of tree is complete ignored
  * 
  * more balanced tree means better computational efficiency, but usually worse
- * performance.
+ * performance. See the following paper for more details:
+ * 
+ *   Alina Beygelzimer, John Langford, Yuri Lifshits, Gregory Sorkin, Alex
+ *   Strehl. Conditional Probability Tree Estimation Analysis and Algorithms. UAI 2009.
  */
 class CBalancedConditionalProbabilityTree: public CConditionalProbabilityTree
 {

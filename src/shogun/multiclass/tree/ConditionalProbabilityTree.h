@@ -32,6 +32,14 @@ struct ConditionalProbabilityTreeNodeData
 	}
 };
 
+/**
+ * Conditional Probability Tree.
+ * 
+ * See reference:
+ * 
+ *   Alina Beygelzimer, John Langford, Yuri Lifshits, Gregory Sorkin, Alex
+ *   Strehl. Conditional Probability Tree Estimation Analysis and Algorithms. UAI 2009.
+ */
 class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
 {
 public:
