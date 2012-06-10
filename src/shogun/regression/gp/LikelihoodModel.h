@@ -43,4 +43,4 @@ public:
 };
 }
 
-#endif /* LIKELIHOODMODEL_H_ */
+#endif /* CLIKELIHOODMODEL_H_ */

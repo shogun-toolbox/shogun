@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#ifndef EXACTINFERENCEMETHOD_H_
-#define EXACTINFERENCEMETHOD_H_
+#ifndef CEXACTINFERENCEMETHOD_H_
+#define CEXACTINFERENCEMETHOD_H_
 
 #include <shogun/regression/gp/InferenceMethod.h>
 
@@ -93,6 +93,8 @@ public:
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
+	virtual SGMatrix<float64_t> get_cholesky() {get_alpha(); return m_L;}
+
 	/** get Diagonal Vector
 	 *
 	 * @return Diagonal of matrix used to calculate posterior covariance matrix
@@ -117,4 +119,4 @@ private:
 
 }
 
-#endif /* EXACTINFERENCEMETHOD_H_ */
+#endif /* CEXACTINFERENCEMETHOD_H_ */

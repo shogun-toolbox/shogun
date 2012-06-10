@@ -15,6 +15,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/regression/gp/LikelihoodModel.h>
+#include <shogun/regression/gp/MeanFunction.h>
 
 namespace shogun {
 
@@ -39,7 +40,7 @@ public:
 	 * @param model Likelihood model to use
 	 */
 	CInferenceMethod(CKernel* kernel, CDotFeatures* features,
-			CLabels* labels, CLikelihoodModel* model);
+			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
 	virtual ~CInferenceMethod();
 
@@ -75,6 +76,8 @@ public:
 	 * 	where \mu is the mean and K is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha() = 0;
+
+	virtual SGMatrix<float64_t> get_cholesky() = 0;
 
 	/** get Diagonal Vector
 	 *
@@ -122,6 +125,23 @@ public:
 		kernel=kern;
 	}
 
+	/**get kernel
+	 *
+	 * @return kernel
+	 */
+	virtual CMeanFunction* get_mean() { SG_REF(mean); return mean; }
+
+	/**set kernel
+	 *
+	 * @param kern kernel to set
+	 */
+	virtual inline void set_mean(CMeanFunction* m)
+	{
+		SG_UNREF(mean);
+		SG_REF(m);
+		mean=m;
+	}
+
 	/**get labels
 	 *
 	 * @return labels
@@ -166,6 +186,9 @@ protected:
 
 	/*Labels of those features*/
 	CLabels* m_labels;
+
+	/*Mean Function*/
+	CMeanFunction* mean;
 
 	/*Likelihood function to use
 	 * \f[

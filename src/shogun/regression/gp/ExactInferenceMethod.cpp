@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include "ExactInferenceMethod.h"
-#include "GaussianLikelihood.h"
+#include <shogun/regression/gp/ExactInferenceMethod.h>
+#include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -56,7 +56,7 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 	kernel->init(features, features);
 
 	//This will be the vector we return
-	SGVector<float64_t> gradient(2);
+	SGVector<float64_t> gradient(2+mean->m_parameters->get_num_parameters());
 
 	//Get the sigma variable from the likelihood model
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
@@ -126,6 +126,14 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 	sum = m_sigma*m_sigma*CMath::trace(Q.matrix, Q.num_rows, Q.num_cols);
 
 	gradient[1] = sum;
+
+	for(int i = 0; i < mean->m_parameters->get_num_parameters(); i++)
+	{
+		TParameter* param = mean->m_parameters->get_parameter(i);
+		SGVector<float64_t> data_means = mean->get_parameter_derivative(
+				features->get_computed_dot_feature_matrix(), param->m_name);
+		gradient[i+1] = CMath::dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
+	}
 
 	return gradient;
 

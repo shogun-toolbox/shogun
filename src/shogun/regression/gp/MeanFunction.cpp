@@ -7,16 +7,16 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/regression/gp/MeanFunction.h>
 
 namespace shogun {
 
-CGaussianLikelihood::CGaussianLikelihood() {
+CMeanFunction::CMeanFunction() {
 	// TODO Auto-generated constructor stub
 
 }
 
-CGaussianLikelihood::~CGaussianLikelihood() {
+CMeanFunction::~CMeanFunction() {
 	// TODO Auto-generated destructor stub
 }
 

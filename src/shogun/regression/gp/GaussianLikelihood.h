@@ -7,10 +7,10 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#ifndef GAUSSIANLIKELIHOOD_H_
-#define GAUSSIANLIKELIHOOD_H_
+#ifndef CGAUSSIANLIKELIHOOD_H_
+#define CGAUSSIANLIKELIHOOD_H_
 
-#include "LikelihoodModel.h"
+#include <shogun/regression/gp/LikelihoodModel.h>
 
 namespace shogun {
 
@@ -22,6 +22,8 @@ namespace shogun {
  */
 class CGaussianLikelihood: public CLikelihoodModel {
 public:
+
+	/*Constructor*/
 	CGaussianLikelihood();
 	virtual ~CGaussianLikelihood();
 
@@ -51,4 +53,4 @@ private:
 
 }
 
-#endif /* GAUSSIANLIKELIHOOD_H_ */
+#endif /* CGAUSSIANLIKELIHOOD_H_ */

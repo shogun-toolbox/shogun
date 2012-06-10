@@ -21,15 +21,17 @@ CInferenceMethod::CInferenceMethod() {
 	m_model = NULL;
 	m_labels = NULL;
 	features = NULL;
+	mean = NULL;
 }
 
 CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
-		CLabels* lab, CLikelihoodModel* mod)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
 {
 	set_kernel(kern);
 	set_features(feat);
 	set_labels(lab);
 	set_model(mod);
+	set_mean(m);
 }
 
 CInferenceMethod::~CInferenceMethod() {

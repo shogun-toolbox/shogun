@@ -103,11 +103,74 @@ SGMatrix<float64_t> CGaussianProcessRegression::getCovarianceMatrix(CFeatures* d
 
 
 	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();
-	CKernel* kernel = m_method->get_kernel();
+	SGVector<float64_t> diagonal2(data->get_num_vectors());
 	
+	SGMatrix<float64_t> temp1(diagonal.vlen, data->get_num_vectors());
+
+	SGMatrix<float64_t> m_L = m_method->get_cholesky();
+
+	SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
+
+	CKernel* kernel = m_method->get_kernel();
+
+	kernel->init(data, features);
+
+	//K(X_test, X_train)
+	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
+
+
+	for(int i = 0; i < diagonal.vlen; i++)
+	{
+		for(int j = 0; j < data->get_num_vectors(); j++)
+		{
+			temp1(i,j) = diagonal[i]*kernel_test_matrix(i,j);
+		}
+	}
+
+	for(int i = 0; i < diagonal2.vlen; i++)
+	{
+		diagonal2[i] = 0;
+	}
+
+	memcpy(temp2.matrix, m_L.matrix,
+			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
+
+	clapack_dpotrs(CblasColMajor, CblasLower,
+			temp1.num_rows, temp2.num_cols, temp1.matrix, temp1.num_cols,
+		  temp2.matrix, temp2.num_cols);
+
+	for(int i = 0; i < temp2.num_rows; i++)
+	{
+		for(int j = 0; j < temp2.num_cols; j++)
+		{
+			temp2(i,j) = temp2(i,j)*temp2(i,j);
+		}
+	}
+
+	for(int i = 0; i < temp2.num_cols; i++)
+	{
+		diagonal2[i] = 0;
+
+		for(int j = 0; j < temp2.num_rows; j++)
+		{
+			diagonal2[i] += temp2(j,i);
+		}
+	}
+
+	kernel->init(data, data);
+
+	//K(X_test, X_train)
+	SGMatrix<float64_t> kernel_test_matrix2 = kernel->get_kernel_matrix();
+
+	for(int i = 0; i < kernel_test_matrix2.num_cols; i++)
+	{
+		kernel_test_matrix2(i,i) -= diagonal2[i];
+	}
+
+
 	/*do some matrix algebra here to recover posterior covariance*/
 	
-	return SGMatrix<float64_t>(0,0);
+	return kernel_test_matrix2;
 }
 
 

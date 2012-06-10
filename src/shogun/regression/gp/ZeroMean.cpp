@@ -7,17 +7,24 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/regression/gp/ZeroMean.h>
 
 namespace shogun {
 
-CGaussianLikelihood::CGaussianLikelihood() {
+CZeroMean::CZeroMean() {
 	// TODO Auto-generated constructor stub
 
 }
 
-CGaussianLikelihood::~CGaussianLikelihood() {
+CZeroMean::~CZeroMean() {
 	// TODO Auto-generated destructor stub
+}
+
+SGVector<float64_t> CZeroMean::get_mean_vector(SGMatrix<float64_t> data)
+{
+	SGVector<float64_t> result(data.num_rows);
+	for(int i = 0; i < result.vlen; i++) result[i] = 0;
+	return result;
 }
 
 }
