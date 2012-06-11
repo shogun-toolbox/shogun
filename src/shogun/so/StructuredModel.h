@@ -25,6 +25,12 @@ class CStructuredModel;
 /** output of the argmax function */
 struct CResultSet : public CSGObject
 {
+	/** destructor */
+	~CResultSet() { SG_UNREF(argmax) };
+
+	/** argmax */
+	CStructuredData* argmax;
+
 	/** joint feature vector for the given truth */
 	SGVector< float64_t > psi_truth;
 
@@ -82,7 +88,7 @@ class CStructuredModel : public CSGObject
 				SGMatrix< float64_t > A,  SGVector< float64_t > a, 
 				SGMatrix< float64_t > B,  SGVector< float64_t > b, 
 				SGVector< float64_t > lb, SGVector< float64_t > ub, 
-				SGMatrix < float64_t > C);
+				SGMatrix < float64_t >  & C);
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e. 

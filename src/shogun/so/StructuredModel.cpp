@@ -26,6 +26,9 @@ CStructuredModel::CStructuredModel(
 
 	m_features = features;
 	m_labels   = labels;
+
+	SG_REF(features);
+	SG_REF(labels);
 }
 
 CStructuredModel::~CStructuredModel()
@@ -41,9 +44,9 @@ void CStructuredModel::init_opt(
 		SGVector< float64_t > b,
 		SGVector< float64_t > lb,
 		SGVector< float64_t > ub,
-		SGMatrix< float64_t > C)
+		SGMatrix< float64_t > & C)
 {
-	SG_ERROR("init_opt is not implemented for %s!", get_name());
+	SG_ERROR("init_opt is not implemented for %s!\n", get_name());
 }
 
 void CStructuredModel::set_labels(CStructuredLabels* labels)
@@ -72,7 +75,7 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		CStructuredData* y)
 {
 	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
-		 "implemented for %s!", get_name());
+		 "implemented for %s!\n", get_name());
 
 	return SGVector< float64_t >();
 }
