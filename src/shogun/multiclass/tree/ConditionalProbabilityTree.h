@@ -28,10 +28,18 @@ struct ConditionalProbabilityTreeNodeData
 
 	static void print(const ConditionalProbabilityTreeNodeData &data)
 	{
-		printf("label=%d\n", data.label);
+		SG_SPRINT("label=%d\n", data.label);
 	}
 };
 
+/**
+ * Conditional Probability Tree.
+ * 
+ * See reference:
+ * 
+ *   Alina Beygelzimer, John Langford, Yuri Lifshits, Gregory Sorkin, Alex
+ *   Strehl. Conditional Probability Tree Estimation Analysis and Algorithms. UAI 2009.
+ */
 class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
 {
 public:
@@ -78,6 +86,9 @@ public:
 	 * @param ex a vector to be applied
 	 */
 	virtual int32_t apply_multiclass_example(SGVector<float32_t> ex);
+
+	/** print the tree structure for debug purpose */
+	void print_tree();
 protected:
 	/** the labels will be embedded in the streaming features */
 	virtual bool train_require_labels() const { return false; }
