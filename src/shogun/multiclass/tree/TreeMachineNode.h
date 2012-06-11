@@ -122,7 +122,7 @@ private:
 	static void debug_print_impl(data_print_func_t data_print_func, CTreeMachineNode<data_t> *node, int32_t depth)
 	{
 		for (int32_t i=0; i < depth; ++i)
-			printf("  ");
+			SG_SPRINT("  ");
 		data_print_func(node->data);
 		if (node->left())
 			debug_print_impl(data_print_func, node->left(), depth+1);

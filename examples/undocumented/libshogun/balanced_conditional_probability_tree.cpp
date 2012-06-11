@@ -14,11 +14,11 @@
 
 #include <shogun/io/StreamingAsciiFile.h>
 #include <shogun/features/StreamingDenseFeatures.h>
-#include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
+#include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
 
 using namespace shogun;
 
-int main()
+int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
 
@@ -30,9 +30,18 @@ int main()
 	CStreamingDenseFeatures<float32_t>* train_features = new CStreamingDenseFeatures<float32_t>(train_file, true, 1024);
 	SG_REF(train_features);
 
-	CRandomConditionalProbabilityTree *cpt = new CRandomConditionalProbabilityTree();
+	CBalancedConditionalProbabilityTree *cpt = new CBalancedConditionalProbabilityTree();
 	cpt->set_num_passes(1);
 	cpt->set_features(train_features);
+
+	if (argc > 1)
+	{
+		float64_t alpha = 0.5;
+		sscanf(argv[1], "%lf", &alpha);
+		SG_SPRINT("Setting alpha to %.2lf\n", alpha);
+		cpt->set_alpha(alpha);
+	}
+
 	cpt->train();
 	cpt->print_tree();
 
