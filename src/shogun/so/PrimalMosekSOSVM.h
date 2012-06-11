@@ -13,6 +13,7 @@
 
 #ifdef USE_MOSEK
 
+#include <shogun/loss/LossFunction.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/mathematics/Mosek.h>
 
@@ -42,10 +43,13 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @param labs structured labels
 		 * @param features features
 		 */
-		CPrimalMosekSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CFeatures* features);
+		CPrimalMosekSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features);
 
 		/** destructor */
 		~CPrimalMosekSOSVM();
+
+		/** @return name of SGSerializable */
+		virtual const char* get_name() const { return "PrimalMosekSOSVM"; }
 
 	protected:
 		/** train primal SO-SVM
@@ -53,12 +57,9 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @param data training data
 		 * @return whether the training was successful
 		 */
-		bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(CFeatures* data = NULL);
 
 	private:
-		/** register class members */
-		void register_parameters();
-
 		/** computes the result of TODO equation
 		 *
 		 * @param result CResultSet structure with any argmax output
@@ -108,10 +109,6 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 *
 		 */
 		double predicted_delta_loss(int32_t idx) const;
-
-	private:
-		/** weight vector */
-		SGVector< float64_t > m_w;
 
 }; /* class CPrimalMosekSOSVM */
 

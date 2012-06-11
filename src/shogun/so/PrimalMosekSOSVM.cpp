@@ -26,7 +26,7 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 		CStructuredModel*  model,
 		CLossFunction*     loss,
 		CStructuredLabels* labs,
-		CFeatures*         features)
+		CDotFeatures*      features)
 : CLinearStructuredOutputMachine(model, loss, labs, features)
 {
 }
@@ -56,14 +56,10 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Initialize the terms of the optimization problem
 	SGMatrix< float64_t > A, B, C;
 	SGVector< float64_t > a, b, lb, ub;
+	//TODO take into acount these possible constraints
 	m_model->init_opt(A, a, B, b, lb, ub, C);
 
-	// Input terms of the problem that do not change between
-	// iterations Input matrix C (denoted as Q^0 in MOSEK)
-	//
-	// NOTE: In MOSEK we minimize w'*Q^0*w. C != Q0 but Q0 is 
-	// just an extended version of C with zeros that make no 
-	// difference in MOSEK's sparse representation
+	// Input terms of the problem that do not change between iterations
 	if ( mosek->init_sosvm(M, N, C, lb, ub) != MSK_RES_OK )
 	{
 		SG_PRINT("Problem occurred writing constraints in MOSEK object..."
@@ -80,8 +76,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	m_w.zero();
 
 	// Initialize the list of constraints
-	// Each element in results is a list of CResultSet with the 
-	// constraints associated to each training example
+	// Each element in results is a list of CResultSet with the constraints 
+	// associated to each training example
 	CDynamicObjectArray* results = new CDynamicObjectArray(N);
 	SG_REF(results);
 	for ( int32_t i = 0 ; i < N ; ++i )
@@ -116,23 +112,23 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			// Update the list of constraints
 			if ( cur_list->get_num_elements() > 0 )
 			{
-				// Find the maximum loss within the elements of the list
-				// of constraints
+				// Find the maximum loss within the elements of
+				// the list of constraints
 				cur_res = (CResultSet*) cur_list->get_first_element();
-				max_slack = m_loss->loss( compute_loss_arg(cur_res) );
+				max_slack = -CMath::INFTY;
 
 				while ( cur_res != NULL )
 				{
-					cur_res = (CResultSet*) cur_list->get_next_element();
-
 					max_slack = CMath::max(max_slack, 
 							m_loss->loss( compute_loss_arg(cur_res) ));
+
+					cur_res = (CResultSet*) cur_list->get_next_element();
 				}
 
 				if ( slack > max_slack )
 				{
-					// The current training example is a violated
-					// constraint
+					// The current training example is a
+					// violated constraint
 					if ( ! insert_result(cur_list, result) )
 					{
 						exception = true;
@@ -156,9 +152,11 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 				++numcon;
 			}
 
-			// Solve the QP
-			mosek->optimize(m_w);
+			SG_UNREF(result);
 		}
+
+		// Solve the QP
+		mosek->optimize(m_w);
 
 	} while ( old_numcon != numcon && ! exception);
 
@@ -167,11 +165,6 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	SG_UNREF(results);
 
 	return true;
-}
-
-void CPrimalMosekSOSVM::register_parameters()
-{
-	SG_ADD(&m_w, "m_w", "Weight vector", MS_NOT_AVAILABLE);
 }
 
 float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
@@ -210,7 +203,7 @@ bool CPrimalMosekSOSVM::add_constraint(
 		dPsi[i] = result->psi_pred[i] - result->psi_truth[i];
 
 	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx, 
-			result->delta) == MSK_RES_OK );
+			-result->delta) == MSK_RES_OK );
 }
 
 #endif /* USE_MOSEK */
