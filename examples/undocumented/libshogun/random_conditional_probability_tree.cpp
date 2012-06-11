@@ -43,7 +43,7 @@ int main()
 
 	CMulticlassLabels *pred = cpt->apply_multiclass(test_features);
 	test_features->reset_stream();
-	printf("num_labels = %d\n", pred->get_num_labels());
+	SG_SPRINT("num_labels = %d\n", pred->get_num_labels());
 
 	SG_UNREF(test_features);
 	SG_UNREF(test_file);
@@ -67,11 +67,11 @@ int main()
 	{
 		if (pred->get_int_label(i) == gnd->get_int_label(i))
 			n_correct++;
-		//printf("%d-%d ", pred->get_int_label(i), gnd->get_int_label(i));
+		//SG_SPRINT("%d-%d ", pred->get_int_label(i), gnd->get_int_label(i));
 	}
-	printf("\n");
+	SG_SPRINT("\n");
 
-	printf("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
+	SG_SPRINT("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
 
 	SG_UNREF(train_features);
 	SG_UNREF(test_features);

@@ -35,14 +35,14 @@ namespace shogun
 class CBalancedConditionalProbabilityTree: public CConditionalProbabilityTree
 {
 public:
-    /** constructor */
+	/** constructor */
 	CBalancedConditionalProbabilityTree();
 
-    /** destructor */
+	/** destructor */
 	virtual ~CBalancedConditionalProbabilityTree() {}
 
-    /** get name */
-    virtual const char* get_name() const { return "BalancedConditionalProbabilityTree"; }
+	/** get name */
+	virtual const char* get_name() const { return "BalancedConditionalProbabilityTree"; }
 
 	/** set alpha */
 	void set_alpha(float64_t alpha);

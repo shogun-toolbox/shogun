@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	{
 		float64_t alpha = 0.5;
 		sscanf(argv[1], "%lf", &alpha);
-		printf("Setting alpha to %.2lf\n", alpha);
+		SG_SPRINT("Setting alpha to %.2lf\n", alpha);
 		cpt->set_alpha(alpha);
 	}
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
 	CMulticlassLabels *pred = cpt->apply_multiclass(test_features);
 	test_features->reset_stream();
-	printf("num_labels = %d\n", pred->get_num_labels());
+	SG_SPRINT("num_labels = %d\n", pred->get_num_labels());
 
 	SG_UNREF(test_features);
 	SG_UNREF(test_file);
@@ -76,11 +76,11 @@ int main(int argc, char **argv)
 	{
 		if (pred->get_int_label(i) == gnd->get_int_label(i))
 			n_correct++;
-		//printf("%d-%d ", pred->get_int_label(i), gnd->get_int_label(i));
+		//SG_SPRINT("%d-%d ", pred->get_int_label(i), gnd->get_int_label(i));
 	}
-	printf("\n");
+	SG_SPRINT("\n");
 
-	printf("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
+	SG_SPRINT("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
 
 	SG_UNREF(train_features);
 	SG_UNREF(test_features);
