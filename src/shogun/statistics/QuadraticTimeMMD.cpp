@@ -227,14 +227,11 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	{
 		for (index_t j=0; j<m_q_start; ++j)
 		{
-			float64_t to_add=0;
-
-
 			/* dont add diagonal of all pairs of imaginary kernel matrices */
 			if (i==j || m_q_start+i==j || m_q_start+j==i)
 				continue;
 
-			to_add+=m_kernel->kernel(i, j);
+			float64_t to_add=m_kernel->kernel(i, j);
 			to_add+=m_kernel->kernel(m_q_start+i, m_q_start+j);
 			to_add-=m_kernel->kernel(i, m_q_start+j);
 			to_add-=m_kernel->kernel(m_q_start+i, j);
