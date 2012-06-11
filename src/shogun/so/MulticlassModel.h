@@ -73,6 +73,22 @@ class CMulticlassModel : public CStructuredModel
 		 */
 		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
 
+		/** initialize the optimization problem
+		 *
+		 * @param A
+		 * @param a
+		 * @param B
+		 * @param b
+		 * @param lb
+		 * @param ub
+		 * @param C
+		 */
+		virtual void init_opt(
+				SGMatrix< float64_t > A,  SGVector< float64_t > a,
+				SGMatrix< float64_t > B,  SGVector< float64_t > b,
+				SGVector< float64_t > lb, SGVector< float64_t > ub,
+				SGMatrix < float64_t > & C);
+
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "MulticlassModel"; }
 

@@ -29,7 +29,7 @@ CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > src)
 		if ( src[i] < 0 || src[i] >= m_num_classes )
 			SG_ERROR("Found label out of {0, 1, 2, ..., num_classes-1}");
 		else
-			m_labels->push_back( new CRealNumber(src[i]) );
+			add_label( new CRealNumber(src[i]) );
 	}
 
 	//TODO check that every class has at least one example

@@ -9,6 +9,7 @@
  */
 
 #include <shogun/features/DotFeatures.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/so/MulticlassModel.h>
 #include <shogun/so/MulticlassSOLabels.h>
 
@@ -67,7 +68,7 @@ CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 	float64_t score = 0, ypred = 0;
 	float64_t max_score = df->dense_dot(feat_idx, w.vector, feats_dim);
 	
-	for ( int32_t c = 0 ; c < num_classes ; ++c )
+	for ( int32_t c = 1 ; c < num_classes ; ++c )
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
 
@@ -88,8 +89,7 @@ CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 	ret->psi_pred  = get_joint_feature_vector(feat_idx, y);
 	ret->score     = score; 
 	ret->delta     = delta_loss(feat_idx, y);
-
-	SG_UNREF(y);
+	ret->argmax    = y;
 
 	return ret;
 }
@@ -97,11 +97,23 @@ CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 float64_t CMulticlassModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
 {
 	if ( ytrue_idx < 0 || ytrue_idx >= m_labels->get_num_labels() )
-		SG_ERROR("The label index must be inside [0, num_labels-1]");
+		SG_ERROR("The label index must be inside [0, num_labels-1]\n");
 
 	/* TODO add checks for the castings!! */
 	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
 	return ( ((CRealNumber*) ytrue)->value == ((CRealNumber*) ypred)->value) ? 0 : 1;
 
 	return 0;
+}
+
+void CMulticlassModel::init_opt(
+		SGMatrix< float64_t > A,
+		SGVector< float64_t > a,
+		SGMatrix< float64_t > B,
+		SGVector< float64_t > b,
+		SGVector< float64_t > lb,
+		SGVector< float64_t > ub,
+		SGMatrix< float64_t > & C)
+{
+	C = CMath::create_identity_matrix(get_dim(), 1.0);
 }
