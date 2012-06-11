@@ -199,7 +199,7 @@ void invCov(double *Theta, double *W, double *S, double lambda, double sum_S, in
 				W_old[i*n+j]=W[i*n+j];
 			}
 
-		printf("\n Outer Loop: %d, gap %e\n",iter_step,gap);
+		/* printf("\n Outer Loop: %d, gap %e\n",iter_step,gap); */
 
 
 		if ( (gap <= xtol) || (iter_step==maxIter-1) ){
