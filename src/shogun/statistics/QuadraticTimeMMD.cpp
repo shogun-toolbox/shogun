@@ -121,6 +121,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	return result;
 }
 
+#ifdef HAVE_LAPACK
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		index_t num_eigenvalues)
 {
@@ -182,6 +183,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 
 	return null_samples;
 }
+#endif // HAVE_LAPACK
 
 float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 {
