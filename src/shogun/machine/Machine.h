@@ -18,6 +18,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/StructuredLabels.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -99,7 +100,8 @@ enum EProblemType
 {
 	PT_BINARY = 0,
 	PT_REGRESSION = 1,
-	PT_MULTICLASS = 2
+	PT_MULTICLASS = 2,
+	PT_STRUCTURED = 3
 };
 
 #define MACHINE_PROBLEM_TYPE(PT) \
@@ -159,6 +161,8 @@ class CMachine : public CSGObject
 		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 		/** apply machine to data in means of multiclass classification problem */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		/** apply machine to data in means of SO classification problem */
+		virtual CStructuredLabels* apply_structured(CFeatures* data=NULL);
 
 		/** set labels
 		 *
