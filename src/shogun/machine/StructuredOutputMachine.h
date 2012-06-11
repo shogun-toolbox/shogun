@@ -19,6 +19,8 @@
 
 namespace shogun
 {
+class CStructuredModel;
+class CLossFunction;
 
 /** TODO doc */
 class CStructuredOutputMachine : public CMachine
