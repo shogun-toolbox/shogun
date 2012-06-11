@@ -100,6 +100,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 
 	switch (m_p_value_method)
 	{
+#ifdef HAVE_LAPACK
 	case MMD2_SPECTRUM:
 	{
 		/* get samples from null-distribution and compute p-value of statistic */
@@ -110,6 +111,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		result=1.0-pos/null_samples.vlen;
 		break;
 	}
+#endif // HAVE_LAPACK
 	case MMD2_GAMMA:
 		result=compute_p_value_gamma(statistic);
 		break;
