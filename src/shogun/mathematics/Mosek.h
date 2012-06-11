@@ -131,6 +131,16 @@ class CMosek : public CSGObject
 		/** free resources associated to MOSEK task and environment */
 		void delete_problem();
 
+		/**
+		 * prints the terms involved in the problem that have been given
+		 * to the task. Currently this method shows the terms that appear
+		 * in the QP that takes the form
+		 *
+		 * min_x 0.5*x'*Q^0*x + c'*x
+		 * s.t. A*x <= b, lb <= x <= ub
+		 */
+		void display_problem();
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Mosek"; }
 

@@ -10,6 +10,9 @@
 
 #ifdef USE_MOSEK
 
+//#define DEBUG_MOSEK
+//#define DEBUG_SOLUTION
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Mosek.h>
 #include <shogun/lib/SGVector.h>
@@ -27,12 +30,14 @@ CMosek::CMosek(int32_t num_con, int32_t num_var)
 	// Create MOSEK environment
 	m_rescode = MSK_makeenv(&m_env, NULL, NULL, NULL, NULL);
 
+#ifdef DEBUG_MOSEK
 	// Direct the environment's log stream to SG_PRINT
 	if ( m_rescode == MSK_RES_OK )
 	{
 		m_rescode = MSK_linkfunctoenvstream(m_env, MSK_STREAM_LOG,
 				NULL, CMosek::print);
 	}
+#endif
 
 	// Initialize the environment
 	if ( m_rescode == MSK_RES_OK )
@@ -46,12 +51,14 @@ CMosek::CMosek(int32_t num_con, int32_t num_var)
 		m_rescode = MSK_maketask(m_env, num_con, num_var, &m_task);
 	}
 
+#ifdef DEBUG_MOSEK
 	// Direct the task's log stream to SG_PRINT
 	if ( m_rescode == MSK_RES_OK )
 	{
 		m_rescode = MSK_linkfunctotaskstream(m_task, MSK_STREAM_LOG,
 				NULL, CMosek::print);
 	}
+#endif
 }
 
 CMosek::~CMosek()
@@ -98,12 +105,26 @@ MSKrescodee CMosek::init_sosvm(
 			m_rescode = MSK_putcj(m_task, j, 1.0);
 
 		// Set the bounds on x_j: blx[j] <= x_j <= bux[j]
+		// TODO set bounds lb and ub given by init_opt for w
 		if ( j < M )
 		{
-			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j, MSK_BK_RA, 
-						 lb[j], ub[j]);
+			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
+					MSK_BK_FR, 0.0, 0.0);
+		}
+		// The slack variables are required to be positive
+		if ( j >= M )
+		{
+			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
+					MSK_BK_LO, 0.0, +MSK_INFINITY);
 		}
 	}
+
+	// Input the matrix Q^0 for the objective
+	//
+	// NOTE: In MOSEK we minimize w'*Q^0*w. C != Q0 but Q0 is
+	// just an extended version of C with zeros that make no
+	// difference in MOSEK's sparse representation
+	wrapper_putqobj(C);
 
 	return m_rescode;
 }
@@ -116,7 +137,6 @@ MSKrescodee CMosek::add_constraint_sosvm(
 {
 	// Count the number of non-zero element in dPsi
 	int32_t nnz = CMath::get_num_nonzero(dPsi.vector, dPsi.vlen);
-
 	// Indices of the non-zero elements in the row of A to add
 	SGVector< index_t > asub(nnz+1); // +1 because of the -1 element
 	// Values of the non-zero elements
@@ -287,6 +307,9 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 					0,
 					sol.vlen,
 					sol.vector);
+#ifdef DEBUG_SOLUTION
+			CMath::display_vector(sol.vector, sol.vlen, "Solution");
+#endif
 			break;
 		case MSK_SOL_STA_DUAL_INFEAS_CER:
 		case MSK_SOL_STA_PRIM_INFEAS_CER:
@@ -331,5 +354,64 @@ void CMosek::delete_problem()
 	MSK_deletetask(&m_task);
 	MSK_deleteenv(&m_env);
 }
+
+void CMosek::display_problem()
+{
+	int32_t num_var, num_con;
+	m_rescode = MSK_getnumvar(m_task, &num_var);
+	m_rescode = MSK_getnumcon(m_task, &num_con);
+
+	SG_PRINT("\nMatrix Q^0:\n");
+	for ( int32_t i = 0 ; i < num_var ; ++i )
+	{
+		for ( int32_t j = 0 ; j < num_var ; ++j )
+		{
+			float64_t qij;
+			m_rescode = MSK_getqobjij(m_task, i, j, &qij);
+			SG_PRINT("%f ", qij);
+		}
+		SG_PRINT("\n");
+	}
+	SG_PRINT("\n");
+
+	SG_PRINT("\nVector c:\n");
+	SGVector< float64_t > c(num_var);
+	m_rescode = MSK_getc(m_task, c.vector);
+	CMath::display_vector(c.vector, c.vlen, "");
+
+	SG_PRINT("\n\nMatrix A:\n");
+	for ( int32_t i = 0 ; i < num_con ; ++i )
+	{
+		for ( int32_t j = 0 ; j < num_var ; ++j )
+		{
+			float64_t aij;
+			m_rescode = MSK_getaij(m_task, i, j, &aij);
+			SG_PRINT("%f ", aij);
+		}
+		SG_PRINT("\n");
+	}
+
+	SG_PRINT("\nConstraint Bounds, vector b:\n");
+	for ( int32_t i = 0 ; i < num_con ; ++i )
+	{
+		MSKboundkeye bk;
+		float64_t bl, bu;
+		m_rescode = MSK_getbound(m_task, MSK_ACC_CON, i, &bk, &bl, &bu);
+
+		SG_PRINT("%f %f\n", bl, bu);
+	}
+
+	SG_PRINT("\nVariable Bounds, vectors lb and ub:\n");
+	for ( int32_t i = 0 ; i < num_var ; ++i )
+	{
+		MSKboundkeye bk;
+		float64_t bl, bu;
+		m_rescode = MSK_getbound(m_task, MSK_ACC_VAR, i, &bk, &bl, &bu);
+
+		SG_PRINT("%f %f\n", bl, bu);
+	}
+	SG_PRINT("\n");
+}
+
 
 #endif /* USE_MOSEK */
