@@ -115,5 +115,5 @@ void CMulticlassModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	C = CMath::create_identity_matrix(get_dim(), 1.0);
+	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1.0);
 }

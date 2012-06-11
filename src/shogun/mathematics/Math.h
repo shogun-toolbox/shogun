@@ -531,14 +531,6 @@ class CMath : public CSGObject
 		}
 
 		template <class T>
-			static T* clone_vector(const T* vec, int32_t len)
-			{
-				T* result = SG_MALLOC(T, len);
-				memcpy(result, vec, sizeof(T)*len);
-				return result;
-			}
-
-		template <class T>
 			static int32_t get_num_nonzero(T* vec, int32_t len)
 			{
 				int32_t nnz = 0;
@@ -547,37 +539,6 @@ class CMath : public CSGObject
 
 				return nnz;
 			}
-
-		template <class T>
-			static void fill_vector(T* vec, int32_t len, T value)
-			{
-				for (index_t i=0; i<len; ++i)
-					vec[i]=value;
-			}
-
-		template <class T>
-			static void range_fill_vector(T* vec, int32_t len, T start=0)
-			{
-				for (int32_t i=0; i<len; i++)
-					vec[i]=i+start;
-			}
-
-		template <class T>
-			static void random_vector(T* vec, int32_t len, T min_value, T max_value)
-			{
-				for (int32_t i=0; i<len; i++)
-					vec[i]=CMath::random(min_value, max_value);
-			}
-
-		template <class T>
-			static void permute_vector(SGVector<T> vec)
-		{
-			for (index_t i=0; i<vec.vlen; ++i)
-			{
-				CMath::swap(vec.vector[i],
-						vec.vector[CMath::random(i, vec.vlen-1)]);
-			}
-		}
 
 		static inline int32_t* randperm(int32_t n)
 		{

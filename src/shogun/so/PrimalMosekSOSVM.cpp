@@ -172,9 +172,9 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 	// Dimensionality of the joint feature space
 	int32_t M = m_w.vlen;
 
-	return 	CMath::dot(m_w.vector, result->psi_pred.vector, M) +
+	return 	SGVector< float64_t >::dot(m_w.vector, result->psi_pred.vector, M) +
 		result->delta -
-		CMath::dot(m_w.vector, result->psi_truth.vector, M);
+		SGVector< float64_t >::dot(m_w.vector, result->psi_truth.vector, M);
 }
 
 bool CPrimalMosekSOSVM::insert_result(CList* result_list, CResultSet* result) const

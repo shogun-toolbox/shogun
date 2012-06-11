@@ -308,7 +308,7 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 					sol.vlen,
 					sol.vector);
 #ifdef DEBUG_SOLUTION
-			CMath::display_vector(sol.vector, sol.vlen, "Solution");
+			sol.display_vector("Solution");
 #endif
 			break;
 		case MSK_SOL_STA_DUAL_INFEAS_CER:
@@ -377,7 +377,7 @@ void CMosek::display_problem()
 	SG_PRINT("\nVector c:\n");
 	SGVector< float64_t > c(num_var);
 	m_rescode = MSK_getc(m_task, c.vector);
-	CMath::display_vector(c.vector, c.vlen, "");
+	c.display_vector();
 
 	SG_PRINT("\n\nMatrix A:\n");
 	for ( int32_t i = 0 ; i < num_con ; ++i )
