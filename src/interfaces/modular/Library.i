@@ -14,6 +14,7 @@
 %rename(Signal) CSignal;
 %rename(Time) CTime;
 %rename(Hash) CHash;
+%rename(StructuredData) CStructuredData;
 
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
@@ -444,3 +445,4 @@ namespace shogun
 %include <shogun/lib/Time.h>
 %include <shogun/lib/Trie.h>
 %include <shogun/lib/Compressor.h>
+%include <shogun/lib/StructuredData.h>

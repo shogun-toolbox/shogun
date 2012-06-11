@@ -47,6 +47,7 @@
 %rename(BinaryLabels) CBinaryLabels;
 %rename(MulticlassLabels) CMulticlassLabels;
 %rename(RegressionLabels) CRegressionLabels;
+%rename(StructuredLabels) CStructuredLabels;
 %rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
@@ -376,6 +377,7 @@ namespace shogun
 %include <shogun/labels/BinaryLabels.h>
 %include <shogun/labels/MulticlassLabels.h>
 %include <shogun/labels/RegressionLabels.h>
+%include <shogun/labels/StructuredLabels.h>
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>
 %include <shogun/features/TOPFeatures.h>
