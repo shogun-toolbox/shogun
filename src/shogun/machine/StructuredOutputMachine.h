@@ -24,6 +24,8 @@ namespace shogun
 class CStructuredOutputMachine : public CMachine
 {
 	public:
+		MACHINE_PROBLEM_TYPE(PT_STRUCTURED);
+
 		/** deafult constructor */
 		CStructuredOutputMachine();
 
@@ -38,41 +40,23 @@ class CStructuredOutputMachine : public CMachine
 		/** destructor */
 		virtual ~CStructuredOutputMachine();
 
-		/** set labels
+		/** set structured model
 		 *
-		 * @param labs labels
+		 * @param model structured model to set
 		 */
-		virtual void set_labels(CStructuredLabels* labs);
+		void set_model(CStructuredModel* model);
+
+		/** set loss function
+		 *
+		 * @param loss loss function to set
+		 */
+		void set_loss(CLossFunction* loss);
 
 		/** @return object name */
-		inline virtual const char* get_name() const 
+		virtual const char* get_name() const 
 		{ 
 			return "StructuredOutputMachine"; 
 		}
-
-		/** apply machine to the currently set features
-		 *
-		 * @return output 'labels'
-		 */
-		/* TODO change this to StructuredLabels when hierarchy fixed */
-		CLabels* apply();
-
-		/** apply machine to data
-		 *
-		 * @param data (test)data to be classified
-		 * @return classified labels
-		 */
-		/* TODO change this to StructuredLabels when hierarchy fixed */
-		CLabels* apply(CFeatures* data);
-
-		/** apply machine to one example
-		 *
-		 * @param num which example to apply machine to
-		 * @return classified structured label
-		 */
-		/* TODO change this to StructuredData when hierarchy fixed */
-		float64_t apply(int32_t num);
-
 
 	private:
 		/** register class members */

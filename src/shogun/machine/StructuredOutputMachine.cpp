@@ -36,35 +36,18 @@ CStructuredOutputMachine::~CStructuredOutputMachine()
 	SG_UNREF(m_loss);
 }
 
-// TODO
-void CStructuredOutputMachine::set_labels(CStructuredLabels* labs)
+void CStructuredOutputMachine::set_model(CStructuredModel* model)
 {
-	SG_ERROR("CStructuredOutputMachine::set_labels not implemented yet."
-		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
+	SG_UNREF(m_model);
+	SG_REF(model);
+	m_model = model;
 }
 
-// TODO
-CLabels* CStructuredOutputMachine::apply()
+void CStructuredOutputMachine::set_loss(CLossFunction* loss)
 {
-	SG_ERROR("CStructuredOutputMachine::apply not implemented yet."
-		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
-	return NULL;
-}
-
-// TODO
-CLabels* CStructuredOutputMachine::apply(CFeatures* data)
-{
-	SG_ERROR("CStructuredOutputMachine::apply not implemented yet."
-		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
-	return NULL;
-}
-
-// TODO
-float64_t CStructuredOutputMachine::apply(int32_t num)
-{
-	SG_ERROR("CStructuredOutputMachine::apply not implemented yet."
-		 " Cause: CLabels and CStructuredLabels hierarchy.\n");
-	return 0;
+	SG_UNREF(m_loss);
+	SG_REF(loss);
+	m_loss = loss;
 }
 
 void CStructuredOutputMachine::register_parameters()
