@@ -100,18 +100,22 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 
 	switch (m_p_value_method)
 	{
-#ifdef HAVE_LAPACK
 	case MMD2_SPECTRUM:
 	{
+#ifdef HAVE_LAPACK
 		/* get samples from null-distribution and compute p-value of statistic */
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
 		float64_t pos=CMath::find_position_to_insert(null_samples, statistic);
 		result=1.0-pos/null_samples.vlen;
+#else // HAVE_LAPACK
+		SG_ERROR("CQuadraticTimeMMD::compute_p_value(): Only possible if "
+				"shogun is compiled with LAPACK enabled\n");
+#endif // HAVE_LAPACK
 		break;
 	}
-#endif // HAVE_LAPACK
+
 	case MMD2_GAMMA:
 		result=compute_p_value_gamma(statistic);
 		break;
