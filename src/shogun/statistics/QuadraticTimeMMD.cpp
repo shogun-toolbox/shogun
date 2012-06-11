@@ -206,7 +206,6 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
 	m_kernel->init(m_p_and_q, m_p_and_q);
-	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
 
 	/* compute mean under H0 of MMD, which is
 	 * meanMMD  = 2/m * ( 1  - 1/m*sum(diag(KL))  );
@@ -216,13 +215,7 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	{
 		/* virtual KL matrix is in upper right corner of SHOGUN K matrix
 		 * so this sums the diagonal of the matrix between X and Y*/
-		mean_mmd+=K(i, m_q_start+i);
-
-		/* remove diagonal of all pairs of kernel matrices on the fly */
-		K(i, i)=0;
-		K(m_q_start+i, m_q_start+i)=0;
-		K(i, m_q_start+i)=0;
-		K(m_q_start+i, i)=0;
+		mean_mmd+=m_kernel->kernel(i, m_q_start+i);
 	}
 	mean_mmd=2.0/m_q_start*(1.0-1.0/m_q_start*mean_mmd);
 
@@ -235,10 +228,16 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 		for (index_t j=0; j<m_q_start; ++j)
 		{
 			float64_t to_add=0;
-			to_add+=K(i, j);
-			to_add+=K(m_q_start+i, m_q_start+j);
-			to_add-=K(i, m_q_start+j);
-			to_add-=K(m_q_start+i, j);
+
+
+			/* dont add diagonal of all pairs of imaginary kernel matrices */
+			if (i==j || m_q_start+i==j || m_q_start+j==i)
+				continue;
+
+			to_add+=m_kernel->kernel(i, j);
+			to_add+=m_kernel->kernel(m_q_start+i, m_q_start+j);
+			to_add-=m_kernel->kernel(i, m_q_start+j);
+			to_add-=m_kernel->kernel(m_q_start+i, j);
 			var_mmd+=CMath::pow(to_add, 2);
 		}
 	}
