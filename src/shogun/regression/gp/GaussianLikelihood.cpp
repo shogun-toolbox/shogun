@@ -20,4 +20,17 @@ CGaussianLikelihood::~CGaussianLikelihood() {
 	// TODO Auto-generated destructor stub
 }
 
+
+SGVector<float64_t> CGaussianLikelihood::evaluate_means(SGVector<float64_t> means)
+{
+	return means;
+}
+
+SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t> vars)
+{
+	for(int i = 0; i < vars.vlen; i++) vars[i] += (m_sigma*m_sigma);
+	return vars;
+}
+
+
 }

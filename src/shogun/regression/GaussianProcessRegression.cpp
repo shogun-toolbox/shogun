@@ -17,6 +17,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <iostream>
 
 using namespace shogun;
 
@@ -83,6 +84,10 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 		    kernel_test_matrix.num_cols, m_alpha.vector, 1, 0.0, 
 		    result_vector.vector, 1);
 	
+	CLikelihoodModel* lik = m_method->get_model();
+
+	result_vector = lik->evaluate_means(result_vector);
+
 	CRegressionLabels* result = new CRegressionLabels(result_vector);
 	
 	return result;
@@ -101,8 +106,8 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 
 	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();
 	SGVector<float64_t> diagonal2(data->get_num_vectors());
-	
-	SGMatrix<float64_t> temp1(diagonal.vlen, data->get_num_vectors());
+
+	SGMatrix<float64_t> temp1(data->get_num_vectors(), diagonal.vlen);
 
 	SGMatrix<float64_t> m_L = m_method->get_cholesky();
 
@@ -110,6 +115,7 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 
 	CKernel* kernel = m_method->get_kernel();
 
+	SG_REF(data);
 	kernel->init(features, data);
 
 	//K(X_test, X_train)
@@ -132,30 +138,32 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 	memcpy(temp2.matrix, m_L.matrix,
 			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
 
+
 	CMath::transpose_matrix(temp2.matrix, temp2.num_rows, temp2.num_cols);
 
-	clapack_dpotrs(CblasColMajor, CblasUpper,
-			temp2.num_rows, temp1.num_cols, temp2.matrix, temp1.num_cols,
-		  temp2.matrix, temp2.num_cols);
+	SGVector<int32_t> ipiv(temp2.num_cols);
+	clapack_dgetrf(CblasColMajor, temp2.num_rows, temp2.num_cols,
+			temp2.matrix, temp2.num_cols, ipiv.vector);
 
-	CMath::display_matrix(temp2.matrix, temp2.num_rows, temp2.num_cols);
+	clapack_dgetrs(CblasColMajor, CblasNoTrans,
+	                   temp2.num_rows, temp1.num_cols, temp2.matrix, temp2.num_cols,
+	                   ipiv.vector, temp1.matrix, temp1.num_cols);
 
-
-	for(int i = 0; i < temp2.num_rows; i++)
+	for(int i = 0; i < temp1.num_rows; i++)
 	{
-		for(int j = 0; j < temp2.num_cols; j++)
+		for(int j = 0; j < temp1.num_cols; j++)
 		{
-			temp2(i,j) = temp2(i,j)*temp2(i,j);
+			temp1(i,j) = temp1(i,j)*temp1(i,j);
 		}
 	}
 
-	for(int i = 0; i < temp2.num_cols; i++)
+	for(int i = 0; i < temp1.num_cols; i++)
 	{
 		diagonal2[i] = 0;
 
-		for(int j = 0; j < temp2.num_rows; j++)
+		for(int j = 0; j < temp1.num_rows; j++)
 		{
-			diagonal2[i] += temp2(j,i);
+			diagonal2[i] += temp1(j,i);
 		}
 	}
 
@@ -172,7 +180,9 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 		result[i] = kernel_test_matrix2(i,i);
 	}
 
-	return result;
+	CLikelihoodModel* lik = m_method->get_model();
+
+	return lik->evaluate_variances(result);
 }
 
 

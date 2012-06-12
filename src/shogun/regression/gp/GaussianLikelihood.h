@@ -46,6 +46,20 @@ public:
 	 */
 	void set_sigma(float64_t s) {m_sigma = s;}
 
+	/** Evaluate means
+	 *
+	 * @param Vector of means calculated by inference method
+	 * @return Final means evaluated by likelihood function
+	 */
+	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t> means);
+
+	/** Evaluate variances
+	 *
+	 * @param Vector of variances calculated by inference method
+	 * @return Final variances evaluated by likelihood function
+	 */
+	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t> vars);
+
 private:
 	/** Observation noise sigma */
 	float64_t m_sigma;

@@ -40,6 +40,20 @@ public:
 	 * @return likelihood derivative with respect to parameter
 	 */
 	virtual float64_t get_parameter_derivative(const char* param_name);
+
+	/** Evaluate means
+	 *
+	 * @param Vector of means calculated by inference method
+	 * @return Final means evaluated by likelihood function
+	 */
+	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t> means) = 0;
+
+	/** Evaluate variances
+	 *
+	 * @param Vector of variances calculated by inference method
+	 * @return Final variances evaluated by likelihood function
+	 */
+	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t> vars) = 0;
 };
 }
 

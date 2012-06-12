@@ -258,6 +258,14 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 
 	m_L = SGMatrix<float64_t>(temp1.num_rows, temp1.num_cols);
 
+	for(int i = 0; i < temp1.num_rows; i++)
+	{
+		for(int j = 0; j < temp1.num_cols; j++)
+		{
+			if(i > j) temp1(i,j) = 0;
+		}
+	}
+
 	memcpy(m_L.matrix, temp1.matrix,
 		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
 
