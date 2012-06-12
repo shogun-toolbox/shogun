@@ -44,6 +44,16 @@ public:
 	/*Default Constructor*/
 	CExactInferenceMethod();
 
+	/* Constructor
+	 * @param kernel covariance function
+	 * @param features features to use in inference
+	 * @param labels labels of the features
+	 * @param model Likelihood model to use
+	 */
+	CExactInferenceMethod(CKernel* kernel, CDotFeatures* features,
+			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+
+
 	~CExactInferenceMethod();
 
 	/* Constructor

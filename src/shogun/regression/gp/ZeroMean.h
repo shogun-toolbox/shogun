@@ -39,22 +39,7 @@ public:
 	 *
 	 * @return Mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t> data) = 0;
-
-	/** Returns the mean of the specified data
-	 *
-	 * @param data points arranged in a matrix with rows representing the number of features
-	 *
-	 * @param param_name Name of parameters
-	 *
-	 * @return derivative of mean function with respect to parameter
-	 */
-	virtual float64_t get_parameter_derivative(SGMatrix<float64_t> data, const char* param_name)
-	{
-		SG_ERROR("Zero Mean has no parameters to take derivatives.");
-		SG_ERROR(" Returning zero.\n");
-		return 0;
-	}
+	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t> data);
 
 };
 

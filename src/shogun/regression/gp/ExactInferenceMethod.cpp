@@ -22,6 +22,14 @@ CExactInferenceMethod::CExactInferenceMethod() {
 
 }
 
+CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
+			CInferenceMethod(kern, feat, m, lab, mod)
+{
+
+
+}
+
 CExactInferenceMethod::~CExactInferenceMethod() {
 	// TODO Auto-generated destructor stub
 }
@@ -38,7 +46,7 @@ void CExactInferenceMethod::check_members()
 		SG_ERROR("Expected Real Features\n");
 	if (!kernel)
 		SG_ERROR( "No kernel assigned!\n");
-	if(!strcmp(m_model->get_name(), "GaussianLikelihood"))
+	if(strcmp(m_model->get_name(), "GaussianLikelihood") != 0)
 	{
 		SG_ERROR("Exact Inference Method can only use Gaussian ");
 		SG_ERROR("Likelihood Function. Setting m_model to NULL.\n");
@@ -88,9 +96,9 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
 
 	//Solve (L) Q = Identity for Q.
-	clapack_dpotrs(CblasColMajor, CblasLower,
+	clapack_dpotrs(CblasColMajor, CblasUpper,
 			temp1.num_rows, Q.num_cols, temp1.matrix, temp1.num_cols,
-		  Q.matrix, Q.num_cols);
+			  Q.matrix, Q.num_cols);
 
 	//Calculate alpha*alpha'
 	cblas_dger(CblasColMajor, m_alpha.vlen, m_alpha.vlen,
@@ -174,14 +182,21 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
 	SGVector<float64_t> result = SGVector<float64_t>(features->get_num_vectors());
-	CMath::fill_vector(result.vector, features->get_num_vectors(), 1.0/(sqrt(m_sigma)));
+	CMath::fill_vector(result.vector, features->get_num_vectors(), 1.0/m_sigma);
+
 	return result;
 }
 
 float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 {
+	get_alpha();
 	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
 	float64_t result;
+	SGVector<float64_t> data_means = mean->get_mean_vector(
+			features->get_computed_dot_feature_matrix());
+
+	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
+
 	result = CMath::dot(label_vector.vector, m_alpha.vector, label_vector.vlen)/2.0;
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
@@ -203,6 +218,10 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
 	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
+
+	SGVector<float64_t> data_means = mean->get_mean_vector(features->get_computed_dot_feature_matrix());
+
+	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
 
 	kernel->init(features, features);
 
@@ -234,8 +253,8 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 		temp2.num_cols*temp2.num_rows*sizeof(float64_t));
 
 	//Get Lower triangle cholesky decomposition of K(X, X)+sigma*I)
-	clapack_dpotrf(CblasColMajor, CblasLower,
-		temp1.num_cols, temp1.matrix, temp1.num_cols);
+	clapack_dpotrf(CblasColMajor, CblasUpper,
+		temp1.num_rows, temp1.matrix, temp1.num_cols);
 
 	m_L = SGMatrix<float64_t>(temp1.num_rows, temp1.num_cols);
 

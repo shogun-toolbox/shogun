@@ -12,7 +12,7 @@
 namespace shogun {
 
 CGaussianLikelihood::CGaussianLikelihood() {
-	// TODO Auto-generated constructor stub
+	m_sigma = 0.01;
 
 }
 

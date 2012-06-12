@@ -115,11 +115,11 @@ class CGaussianProcessRegression : public CMachine
 		  return CT_GAUSSIANPROCESSREGRESSION;
 		}
 		
-		/** get covariance matrix
+		/** get covariance vector
 		*
-		* @return covariance matrix
+		* @return covariance vector
 		*/
-		SGMatrix<float64_t> getCovarianceMatrix(CFeatures* data);
+		SGVector<float64_t> getCovarianceVector(CFeatures* data);
 		
 		/** @return object name */
 		inline virtual const char* get_name() const { return "GaussianProcessRegression"; }

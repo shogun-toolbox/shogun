@@ -124,7 +124,7 @@ void CGaussianKernel::precompute_squared()
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const char* param_name)
 {
 
-	if(strcmp(param_name, "width"))
+	if(strcmp(param_name, "width") == 0)
 	{
 		SGMatrix<float64_t> derivative = SGMatrix<float64_t>(num_lhs, num_rhs);
 		for(int j = 0; j < num_lhs; j++)
