@@ -47,7 +47,7 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 {
 	/* split computations into three terms from JLMR paper (see documentation )*/
 	index_t m=m_q_start;
-	index_t n=m_p_and_q->get_num_vectors();
+	index_t n=m_p_and_q->get_num_vectors()-m_q_start;
 
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
@@ -56,29 +56,19 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 	float64_t first=0;
 	for (index_t i=0; i<m; ++i)
 	{
+		/* ensure i!=j while adding up */
 		for (index_t j=0; j<m; ++j)
-		{
-			/* ensure i!=j */
-			if (i==j)
-				continue;
-
-			first+=m_kernel->kernel(i,j);
-		}
+			first+=i==j ? 0 :m_kernel->kernel(i,j);
 	}
 	first/=m*(m-1);
 
 	/* second term */
 	float64_t second=0;
-	for (index_t i=m_q_start; i<n; ++i)
+	for (index_t i=m_q_start; i<m_q_start+n; ++i)
 	{
-		for (index_t j=m_q_start; j<n; ++j)
-		{
-			/* ensure i!=j */
-			if (i==j)
-				continue;
-
-			second+=m_kernel->kernel(i,j);
-		}
+		/* ensure i!=j while adding up */
+		for (index_t j=m_q_start; j<m_q_start+n; ++j)
+			second+=i==j ? 0 :m_kernel->kernel(i,j);
 	}
 	second/=n*(n-1);
 
@@ -86,10 +76,10 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 	float64_t third=0;
 	for (index_t i=0; i<m; ++i)
 	{
-		for (index_t j=m_q_start; j<n; ++j)
+		for (index_t j=m_q_start; j<m_q_start+n; ++j)
 			third+=m_kernel->kernel(i,j);
 	}
-	third*=-2.0/(m*n);
+	third*=2.0/(m*n);
 
 	return first+second-third;
 }
