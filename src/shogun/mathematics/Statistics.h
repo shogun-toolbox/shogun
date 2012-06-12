@@ -75,7 +75,7 @@ public:
 	 * Given probability p, finds the argument t such that stdtr(k,t)
 	 * is equal to p.
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t inverse_student_t(int32_t k, float64_t p);
 
@@ -88,7 +88,7 @@ public:
 	 * The routine performs interval halving or Newton iterations to find the
 	 * root of incbet(a,b,x) - y = 0.
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t inverse_incomplete_beta(float64_t a, float64_t b,
 			float64_t y);
@@ -115,7 +115,7 @@ public:
 	 * The integral is evaluated by a continued fraction expansion
 	 * or, when b*x is small, by a power series.
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t incomplete_beta(float64_t a, float64_t b, float64_t x);
 
@@ -133,7 +133,7 @@ public:
 	 * and the other for y up to exp(-2).  For larger arguments,
 	 * w = y - 0.5, and  x/sqrt(2pi) = w + w**3 R(w**2)/S(w**2)).
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t inverse_normal_distribution(float64_t y0);
 
@@ -178,7 +178,7 @@ public:
 	 * continued fraction expansion, depending on the relative
 	 * values of a and x.
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t incomplete_gamma(float64_t a, float64_t x);
 
@@ -203,12 +203,12 @@ public:
 	 * continued fraction expansion, depending on the relative
 	 * values of a and x.
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t incomplete_gamma_completed(float64_t a, float64_t x);
 
 	/** Evaluates the CDF of the gamma distribution with given parameters a, b
-	 * at x. Based on Wikipedia definition and ALGOLIB routines.
+	 * at x. Based on Wikipedia definition and ALGLIB routines.
 	 *
 	 * @param x position to evaluate
 	 * @param a shape parameter
@@ -248,21 +248,21 @@ protected:
 	/** Power series for incomplete beta integral.
 	 * Use when b*x is small and x not too close to 1.
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t ibetaf_incompletebetaps(float64_t a, float64_t b,
 			float64_t x, float64_t maxgam);
 
 	/** Continued fraction expansion #1 for incomplete beta integral
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t ibetaf_incompletebetafe(float64_t a, float64_t b,
 			float64_t x, float64_t big, float64_t biginv);
 
 	/** Continued fraction expansion #2 for incomplete beta integral
 	 *
-	 * Taken from ALGOLIB under gpl2+
+	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t ibetaf_incompletebetafe2(float64_t a, float64_t b,
 			float64_t x, float64_t big, float64_t biginv);

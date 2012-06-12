@@ -39,6 +39,8 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * using the Eigen-spectrum of the centered kernel matrix of the merged
 		 * samples of p and q. May be used to compute p_value (easy)
 		 *
+		 * kernel matrix needs to be stored in memory
+		 *
 		 * Works well if the kernel matrix is NOT diagonal dominant.
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
 		 * A fast, consistent kernel two-sample test.
@@ -61,6 +63,8 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * However, there are cases where it performs very well.
 		 * Returns the p-value for a given statistic value in the
 		 * null-distribution.
+		 *
+		 * Works for arbritarily large kernel matrices (is not precomputed)
 		 *
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
 		 * A fast, consistent kernel two-sample test.
