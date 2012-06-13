@@ -700,7 +700,7 @@ class CMath : public CSGObject
 		 *
 		 * @param vector vector to find position in
 		 * @param element element to find index for
-		 * @return index of the first element smaller than given one plus 1
+		 * @return index of the first element greater than given one
 		 */
 		template <class T>
 			static index_t find_position_to_insert(SGVector<T> vector, T element)
@@ -708,10 +708,10 @@ class CMath : public CSGObject
 			index_t i;
 			for (i=0; i<vector.vlen; ++i)
 			{
-				if (vector[i]<element)
+				if (vector[i]>element)
 					break;
 			}
-			return ++i;
+			return i;
 		}
 
 		/** performs a quicksort on the given vector
