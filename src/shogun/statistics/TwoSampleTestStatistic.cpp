@@ -68,7 +68,7 @@ SGVector<float64_t> CTwoSampleTestStatistic::bootstrap_null()
 		SGVector<int32_t>::permute_vector(ind_permutation);
 
 		/* compute statistic for this permutation of mixed samples */
-		results.vector[i]=compute_statistic();
+		results[i]=compute_statistic();
 	}
 
 	/* clean up */

@@ -55,12 +55,15 @@ void test_quadratic_mmd_fixed()
 	SG_UNREF(mmd);
 }
 
+/** tests the quadratic mmd statistic bootstrapping for a random data case and
+ * ensures equality with matlab implementation */
 void test_quadratic_mmd_bootstrap()
 {
 	index_t dimension=3;
-	index_t m=300;
+	index_t m=100;
 	float64_t difference=0.5;
 	float64_t sigma=2;
+	index_t num_iterations=1000;
 
 	SGMatrix<float64_t> data(dimension, 2*m);
 	create_mean_data(data, difference);
@@ -69,28 +72,88 @@ void test_quadratic_mmd_bootstrap()
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
-	mmd->set_bootstrap_iterations(100);
+	mmd->set_bootstrap_iterations(num_iterations);
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 
-	null_samples.display_vector();
-	SG_SPRINT("mean %f, var %f\n", CStatistics::mean(null_samples),
-			CStatistics::variance(null_samples));
+	float64_t mean=CStatistics::mean(null_samples);
+	float64_t var=CStatistics::variance(null_samples);
+
+	/* MATLAB mean 2-sigma confidence interval for 1000 repretitions is
+	 * [-3.169406734013459e-04, 3.296399498466372e-04] */
+	ASSERT(mean>-3.169406734013459e-04);
+	ASSERT(mean<3.296399498466372e-04);
+
+	/* MATLAB variance 2-sigma confidence interval for 1000 repretitions is
+	 * [2.194192869469228e-05,2.936672859339959e-05] */
+	ASSERT(var>2.194192869469228e-05);
+	ASSERT(var<2.936672859339959e-05);
 
 	SG_UNREF(mmd);
 }
 
-void test_spectrum(CQuadraticTimeMMD* mmd)
+#ifdef HAVE_LAPACK
+/** tests the quadratic mmd statistic threshold method spectrum for radnom data
+ * case and ensures equality with matlab implementation */
+void test_quadratic_mmd_spectrum()
 {
-	mmd->set_num_samples_sepctrum(250);
-	mmd->set_num_eigenvalues_spectrum(2);
-	mmd->set_p_value_method(MMD2_SPECTRUM);
-	SG_SPRINT("spectrum: %f\n", mmd->compute_p_value(2));
-}
+	index_t dimension=3;
+	index_t m=100;
+	float64_t difference=0.5;
+	float64_t sigma=2;
 
-void test_gamma(CQuadraticTimeMMD* mmd)
+	SGMatrix<float64_t> data(dimension, 2*m);
+	create_mean_data(data, difference);
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
+	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
+
+	mmd->set_num_samples_sepctrum(1000);
+	mmd->set_num_eigenvalues_spectrum(m);
+	mmd->set_p_value_method(MMD2_SPECTRUM);
+
+	/* compute p-value for a fixed statistic value */
+	float64_t p=mmd->compute_p_value(2);
+
+	/* MATLAB 1000 iterations 3 sigma confidence interval is
+	 * [0.021240218376709, 0.060875781623291] */
+	ASSERT(p>0.021240218376709);
+	ASSERT(p<0.060875781623291);
+
+	SG_UNREF(mmd);
+}
+#endif // HAVE_LAPACK
+
+/** tests the quadratic mmd statistic threshold method gamma for fixed data
+ * case and ensures equality with matlab implementation */
+void test_quadratic_mmd_gamma()
 {
+	index_t dimension=3;
+	index_t m=100;
+	float64_t sigma=4;
+
+	/* note: fixed data this time */
+	SGMatrix<float64_t> data(dimension, 2*m);
+	for (index_t i=0; i<2*dimension*m; ++i)
+		data.matrix[i]=i;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
+	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
+
 	mmd->set_p_value_method(MMD2_GAMMA);
-	SG_SPRINT("gamma: %f\n", mmd->compute_p_value(2));
+
+	/* compute p-value for a fixed statistic value */
+	float64_t p=mmd->compute_p_value(2);
+
+	/* MATLAB 1000 iterations mean: 0.511547577996229 with variance 10E-15 */
+	ASSERT(CMath::abs(p-0.511547577996229)<10E-14);
+
+	SG_UNREF(mmd);
 }
 
 /** tests the quadratic mmd statistic for a random data case (fixed distribution
@@ -135,7 +198,11 @@ int main(int argc, char** argv)
 
 	test_quadratic_mmd_fixed();
 	test_quadratic_mmd_random();
-//	test_quadratic_mmd_bootstrap();
+	test_quadratic_mmd_bootstrap();
+#ifdef HAVE_LAPACK
+	test_quadratic_mmd_spectrum();
+#endif
+	test_quadratic_mmd_gamma();
 
 	exit_shogun();
 	return 0;
