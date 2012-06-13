@@ -121,8 +121,6 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		index_t num_eigenvalues)
 {
-	/* the whole procedure is already checked against MATLAB implementation */
-
 	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
 	{
 		/* TODO support different numbers of samples */
@@ -183,8 +181,6 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 
 float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 {
-	/* the whole procedure is already checked against MATLAB implementation */
-
 	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
 	{
 		/* TODO support different numbers of samples */
