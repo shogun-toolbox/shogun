@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 	test_quadratic_mmd_random();
 	test_quadratic_mmd_bootstrap();
 #ifdef HAVE_LAPACK
-	test_quadratic_mmd_spectrum(),
+	test_quadratic_mmd_spectrum();
 #endif
 
 	exit_shogun();
