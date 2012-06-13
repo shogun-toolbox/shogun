@@ -91,13 +91,39 @@ void test_quadratic_mmd_bootstrap()
 	SG_UNREF(mmd);
 }
 
-void test_spectrum(CQuadraticTimeMMD* mmd)
+#ifdef HAVE_LAPACK
+void test_quadratic_mmd_spectrum()
 {
-	mmd->set_num_samples_sepctrum(250);
-	mmd->set_num_eigenvalues_spectrum(2);
+	index_t dimension=3;
+	index_t m=1;
+	float64_t difference=0.5;
+	float64_t sigma=2;
+
+	SGMatrix<float64_t> data(dimension, 2*m);
+	create_mean_data(data, difference);
+	for (index_t i=0; i<2*dimension*m; ++i)
+		data.matrix[i]=i;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
+	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
+
+	mmd->set_num_samples_sepctrum(1000);
+	mmd->set_num_eigenvalues_spectrum(m);
 	mmd->set_p_value_method(MMD2_SPECTRUM);
-	SG_SPRINT("spectrum: %f\n", mmd->compute_p_value(2));
+
+	/* compute p-value for a fixed statistic value */
+	float64_t p=mmd->compute_p_value(2);
+
+	/* MATLAB 3 sigma confidence interval is [0.1135, 0.1841] */
+	ASSERT(p>0.1135);
+	ASSERT(p<0.1841);
+
+	SG_UNREF(mmd);
 }
+#endif
 
 void test_gamma(CQuadraticTimeMMD* mmd)
 {
@@ -148,6 +174,9 @@ int main(int argc, char** argv)
 	test_quadratic_mmd_fixed();
 	test_quadratic_mmd_random();
 	test_quadratic_mmd_bootstrap();
+#ifdef HAVE_LAPACK
+	test_quadratic_mmd_spectrum(),
+#endif
 
 	exit_shogun();
 	return 0;
