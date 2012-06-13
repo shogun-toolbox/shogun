@@ -35,12 +35,12 @@ class CRiskFunction : public CSGObject
 		 *
 		 */
 		//virtual void risk(void* data, float64_t* R, SGVector< float64_t > subgrad, SGVector< float64_t > w) = 0;
-        virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W) = 0;
+		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W) = 0;
 
-        /** get the dimension of joint feature vector w
+		/** get the dimension of joint feature vector w
 		 *
 		 */
-        //virtual uint32_t get_dim(void* data) = 0; //TODO: Delete, will be accessible from StructuredModel
+		//virtual uint32_t get_dim(void* data) = 0; //TODO: Delete, will be accessible from StructuredModel
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "RiskFunction"; }

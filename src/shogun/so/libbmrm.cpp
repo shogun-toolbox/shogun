@@ -30,7 +30,7 @@ static uint32_t BufSize;
   ----------------------------------------------------------------------*/
 static const float64_t *get_col( uint32_t i)
 {
-    return( &H[ BufSize*i ] );
+	return( &H[ BufSize*i ] );
 }
 
 bmrm_return_value_T svm_bmrm_solver(
@@ -42,7 +42,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		uint32_t _BufSize,
 		uint32_t nDim,
 		CRiskFunction* risk_function)
-        //void (*risk_function)(void*, float64_t*, float64_t*, float64_t*))
+	//void (*risk_function)(void*, float64_t*, float64_t*, float64_t*))
 {
 	bmrm_return_value_T bmrm = {0, 0, 0, 0, 0, 0};
 	libqp_state_T qp_exitflag;
@@ -205,7 +205,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		if (bmrm.Fp - bmrm.Fd <= TolAbs) bmrm.exitflag = 2;
 		if (bmrm.nCP >= BufSize) bmrm.exitflag = -1;
 
-    } /* end of main loop */
+	} /* end of main loop */
 
 cleanup:
 

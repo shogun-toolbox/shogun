@@ -34,8 +34,26 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** set lambda */
 		inline void set_lambda(float64_t lambda) { m_lambda=lambda; }
 
-		/** set solver options */
-		void set_opitons(float64_t TolRel, float64_t TolAbs, uint32_t BufSize);
+		/** get lambda */
+		inline float64_t get_lambda() { return m_lambda; }
+
+		/** set relative tolerance */
+		inline void set_TolRel(float64_t TolRel) { m_TolRel=TolRel; }
+
+		/** get relative tolerance */
+		inline float64_t get_TolRel() { return m_TolRel; }
+
+		/** set absolute tolerance */
+		inline void set_TolAbs(float64_t TolAbs) { m_TolAbs=TolAbs; }
+
+		/** get absolute tolerance */
+		inline float64_t get_TolAbs() { return m_TolAbs; }
+
+		/** set size of cutting plane buffer */
+		inline void set_BufSize(uint32_t BufSize) { m_BufSize=BufSize; }
+
+		/** get size of cutting plane buffer */
+		inline uint32_t get_BufSize() { return m_BufSize; }
 
 	protected:
 		/** train dual SO-SVM
