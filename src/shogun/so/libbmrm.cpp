@@ -48,7 +48,6 @@ bmrm_return_value_T svm_bmrm_solver(
 	libqp_state_T qp_exitflag;
 	float64_t *b, *beta, *diag_H, sq_norm_W;
 	float64_t R, *subgrad, *A, QPSolverTolRel, rsum, C = 1.0;
-	//uint32_t nDim;
 	uint32_t *I;
 	uint8_t S = 1;
 

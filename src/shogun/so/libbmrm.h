@@ -47,7 +47,6 @@ namespace shogun
 			float64_t lambda,
 			uint32_t _BufSize,
 			uint32_t nDim,
-			//uint32_t (*get_dim)(void*),
 			CRiskFunction* risk_function
 			//void (*risk_function)(void*, float64_t*, float64_t*, float64_t*)
 			);

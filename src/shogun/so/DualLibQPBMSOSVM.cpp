@@ -43,8 +43,8 @@ void CDualLibQPBMSOSVM::set_opitons(float64_t TolRel, float64_t TolAbs, uint32_t
 
 bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 {
-	// get dimension of w
-	uint32_t nDim=m_risk_function->get_w_dim(data);
+    // get dimension of w
+    //uint32_t nDim=m_risk_function->get_dim(data);   //TODO: get_dim function accessible trough StructuredModel
 
 	// call the BMRM solver
 	bmrm_return_value_T result = svm_bmrm_solver(data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
