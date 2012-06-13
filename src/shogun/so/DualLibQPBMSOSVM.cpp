@@ -26,7 +26,9 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		float64_t           lambda)
 :CLinearStructuredOutputMachine(model, loss, labs, features)
 {
-	set_opitons(0.001, 0.0, 100);
+	set_TolRel(0.001);
+	set_TolAbs(0.0);
+	set_BufSize(100);
 	set_lambda(lambda);
 }
 
@@ -34,17 +36,11 @@ CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
 {
 }
 
-void CDualLibQPBMSOSVM::set_opitons(float64_t TolRel, float64_t TolAbs, uint32_t BufSize)
-{
-	m_TolRel=TolRel;
-	m_TolAbs=TolAbs;
-	m_BufSize=BufSize;
-}
-
 bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 {
-    // get dimension of w
-    //uint32_t nDim=m_risk_function->get_dim(data);   //TODO: get_dim function accessible trough StructuredModel
+	// get dimension of w
+	uint32_t nDim=0;
+	//uint32_t nDim=m_risk_function->get_dim(data);   //TODO: get_dim function accessible trough StructuredModel
 
 	// call the BMRM solver
 	bmrm_return_value_T result = svm_bmrm_solver(data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
