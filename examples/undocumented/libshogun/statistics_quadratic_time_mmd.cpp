@@ -55,12 +55,15 @@ void test_quadratic_mmd_fixed()
 	SG_UNREF(mmd);
 }
 
+/** tests the quadratic mmd statistic bootstrapping for a random data case and
+ * ensures equality with matlab implementation */
 void test_quadratic_mmd_bootstrap()
 {
 	index_t dimension=3;
-	index_t m=300;
+	index_t m=100;
 	float64_t difference=0.5;
 	float64_t sigma=2;
+	index_t num_iterations=1000;
 
 	SGMatrix<float64_t> data(dimension, 2*m);
 	create_mean_data(data, difference);
@@ -69,12 +72,21 @@ void test_quadratic_mmd_bootstrap()
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
-	mmd->set_bootstrap_iterations(100);
+	mmd->set_bootstrap_iterations(num_iterations);
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 
-	null_samples.display_vector();
-	SG_SPRINT("mean %f, var %f\n", CStatistics::mean(null_samples),
-			CStatistics::variance(null_samples));
+	float64_t mean=CStatistics::mean(null_samples);
+	float64_t var=CStatistics::variance(null_samples);
+
+	/* MATLAB mean 2-sigma confidence interval for 1000 repretitions is
+	 * [-3.169406734013459e-04, 3.296399498466372e-04] */
+	ASSERT(mean>-3.169406734013459e-04);
+	ASSERT(mean<3.296399498466372e-04);
+
+	/* MATLAB variance 2-sigma confidence interval for 1000 repretitions is
+	 * [2.194192869469228e-05,2.936672859339959e-05] */
+	ASSERT(var>2.194192869469228e-05);
+	ASSERT(var<2.936672859339959e-05);
 
 	SG_UNREF(mmd);
 }
@@ -135,7 +147,7 @@ int main(int argc, char** argv)
 
 	test_quadratic_mmd_fixed();
 	test_quadratic_mmd_random();
-//	test_quadratic_mmd_bootstrap();
+	test_quadratic_mmd_bootstrap();
 
 	exit_shogun();
 	return 0;
