@@ -97,8 +97,8 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		CMath::qsort(null_samples);
-		float64_t pos=CMath::find_position_to_insert(null_samples, statistic);
-		result=1.0-pos/null_samples.vlen;
+		index_t pos=CMath::find_position_to_insert(null_samples, statistic);
+		result=1.0-((float64_t)pos)/null_samples.vlen;
 #else // HAVE_LAPACK
 		SG_ERROR("CQuadraticTimeMMD::compute_p_value(): Only possible if "
 				"shogun is compiled with LAPACK enabled\n");
@@ -161,7 +161,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	SGVector<float64_t> eigenvalues=SGMatrix<float64_t>::compute_eigenvectors(K);
 	SGVector<float64_t> largest_ev(num_eigenvalues);
 
-	/* scale by 1/2/m on the fly and take abs value*/
+	/* take largest EV, scale by 1/2/m on the fly and take abs value*/
 	for (index_t i=0; i<num_eigenvalues; ++i)
 		largest_ev[i]=CMath::abs(1.0/2/m_q_start*eigenvalues[eigenvalues.vlen-1-i]);
 
@@ -172,7 +172,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		/* 2*sum(kEigs.*(randn(length(kEigs),1)).^2); */
 		null_samples[i]=0;
 		for (index_t j=0; j<largest_ev.vlen; ++j)
-			null_samples[i]+=largest_ev[j]*CMath::pow(2.0, 2);
+			null_samples[i]+=largest_ev[j]*CMath::pow(CMath::randn_double(), 2);
 
 		null_samples[i]*=2;
 	}
