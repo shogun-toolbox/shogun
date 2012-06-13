@@ -92,17 +92,17 @@ void test_quadratic_mmd_bootstrap()
 }
 
 #ifdef HAVE_LAPACK
+/** tests the quadratic mmd statistic threshold method spectrum for radnom data
+ * case and ensures equality with matlab implementation */
 void test_quadratic_mmd_spectrum()
 {
 	index_t dimension=3;
-	index_t m=1;
+	index_t m=100;
 	float64_t difference=0.5;
 	float64_t sigma=2;
 
 	SGMatrix<float64_t> data(dimension, 2*m);
 	create_mean_data(data, difference);
-	for (index_t i=0; i<2*dimension*m; ++i)
-		data.matrix[i]=i;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 
@@ -117,18 +117,43 @@ void test_quadratic_mmd_spectrum()
 	/* compute p-value for a fixed statistic value */
 	float64_t p=mmd->compute_p_value(2);
 
-	/* MATLAB 3 sigma confidence interval is [0.1135, 0.1841] */
-	ASSERT(p>0.1135);
-	ASSERT(p<0.1841);
+	/* MATLAB 1000 iterations 3 sigma confidence interval is
+	 * [0.021240218376709, 0.060875781623291] */
+	ASSERT(p>0.021240218376709);
+	ASSERT(p<0.060875781623291);
 
 	SG_UNREF(mmd);
 }
-#endif
+#endif // HAVE_LAPACK
 
-void test_gamma(CQuadraticTimeMMD* mmd)
+/** tests the quadratic mmd statistic threshold method gamma for fixed data
+ * case and ensures equality with matlab implementation */
+void test_quadratic_mmd_gamma()
 {
+	index_t dimension=3;
+	index_t m=100;
+	float64_t sigma=4;
+
+	/* note: fixed data this time */
+	SGMatrix<float64_t> data(dimension, 2*m);
+	for (index_t i=0; i<2*dimension*m; ++i)
+		data.matrix[i]=i;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
+	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
+
 	mmd->set_p_value_method(MMD2_GAMMA);
-	SG_SPRINT("gamma: %f\n", mmd->compute_p_value(2));
+
+	/* compute p-value for a fixed statistic value */
+	float64_t p=mmd->compute_p_value(2);
+
+	/* MATLAB 1000 iterations mean: 0.511547577996229 with variance 10E-15 */
+	ASSERT(CMath::abs(p-0.511547577996229)<10E-14);
+
+	SG_UNREF(mmd);
 }
 
 /** tests the quadratic mmd statistic for a random data case (fixed distribution
@@ -177,6 +202,7 @@ int main(int argc, char** argv)
 #ifdef HAVE_LAPACK
 	test_quadratic_mmd_spectrum();
 #endif
+	test_quadratic_mmd_gamma();
 
 	exit_shogun();
 	return 0;
