@@ -30,6 +30,9 @@ CCPLEXSVM::~CCPLEXSVM()
 
 bool CCPLEXSVM::train_machine(CFeatures* data)
 {
+	ASSERT(m_labels);
+	ASSERT(m_labels->get_label_type() == LT_BINARY);
+
 	bool result = false;
 	CCplex cplex;
 
@@ -44,7 +47,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 	{
 		int32_t n,m;
 		int32_t num_label=0;
-		SGVector<float64_t> y=m_labels->get_labels();
+		SGVector<float64_t> y=((CBinaryLabels*)m_labels)->get_labels();
 		SGMatrix<float64_t> H=kernel->get_kernel_matrix();
 		m=H.num_rows;
 		n=H.num_cols;
@@ -72,7 +75,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 			if (alphas[i]>0)
 			{
 				//set_alpha(j, alphas[i]*labels->get_label(i)/etas[1]);
-				set_alpha(j, alphas[i]*m_labels->get_label(i));
+				set_alpha(j, alphas[i]*((CBinaryLabels*) m_labels)->get_int_label(i));
 				set_support_vector(j, i);
 				j++;
 			}
@@ -84,7 +87,6 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 		SG_FREE(alphas);
 		SG_FREE(lb);
 		SG_FREE(ub);
-		H.destroy_matrix();
 
 		result = true;
 	}

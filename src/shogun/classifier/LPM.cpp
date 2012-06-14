@@ -14,6 +14,7 @@
 
 #include <shogun/classifier/LPM.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Cplex.h>
 
@@ -44,9 +45,8 @@ bool CLPM::train_machine(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
-	SG_FREE(w);
-	w=SG_MALLOC(float64_t, num_feat);
-	w_dim=num_feat;
+
+	w = SGVector<float64_t>(num_feat);
 
 	int32_t num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
 	float64_t* params=SG_MALLOC(float64_t, num_params);
@@ -55,7 +55,7 @@ bool CLPM::train_machine(CFeatures* data)
 	CCplex solver;
 	solver.init(E_LINEAR);
 	SG_INFO("C=%f\n", C1);
-	solver.setup_lpm(C1, (CSparseFeatures<float64_t>*) features, m_labels, get_bias_enabled());
+	solver.setup_lpm(C1, (CSparseFeatures<float64_t>*) features, (CBinaryLabels*)m_labels, get_bias_enabled());
 	if (get_max_train_time()>0)
 		solver.set_time_limit(get_max_train_time());
 	bool result=solver.optimize(params);
