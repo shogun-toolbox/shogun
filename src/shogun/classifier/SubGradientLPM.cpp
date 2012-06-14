@@ -222,17 +222,18 @@ void CSubGradientLPM::update_active(int32_t num_feat, int32_t num_vec)
 {
 	for (int32_t i=0; i<num_vec; i++)
 	{
+		int32_t lab = ((CBinaryLabels*) m_labels)->get_int_label(i);
 		if (active[i]==1 && old_active[i]!=1)
 		{
-			features->add_to_dense_vec(C1*get_label(i), i, sum_CXy_active, num_feat);
+			features->add_to_dense_vec(C1*lab, i, sum_CXy_active, num_feat);
 			if (use_bias)
-				sum_Cy_active+=C1*get_label(i);
+				sum_Cy_active+=C1*lab;
 		}
 		else if (old_active[i]==1 && active[i]!=1)
 		{
-			features->add_to_dense_vec(-C1*get_label(i), i, sum_CXy_active, num_feat);
+			features->add_to_dense_vec(-C1*lab, i, sum_CXy_active, num_feat);
 			if (use_bias)
-				sum_Cy_active-=C1*get_label(i);
+				sum_Cy_active-=C1*lab;
 		}
 	}
 
