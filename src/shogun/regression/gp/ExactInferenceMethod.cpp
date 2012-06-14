@@ -107,12 +107,12 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 	SGVector<float64_t> diagonal(temp1.num_rows);
 	SGVector<float64_t> diagonal2(temp2.num_rows);
 
-	CMath::fill_vector(diagonal.vector, temp1.num_rows, 1.0);
-	CMath::fill_vector(diagonal2.vector, temp2.num_rows, 0.0);
+	diagonal.fill_vector(diagonal.vector, temp1.num_rows, 1.0);
+	diagonal2.fill_vector(diagonal2.vector, temp2.num_rows, 0.0);
 
-	CMath::create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
-	CMath::create_diagonal_matrix(Q.matrix, diagonal.vector, temp2.num_rows);
-	CMath::create_diagonal_matrix(temp2.matrix, diagonal2.vector, temp2.num_rows);
+	temp1.create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
+	Q.create_diagonal_matrix(Q.matrix, diagonal.vector, temp2.num_rows);
+	temp2.create_diagonal_matrix(temp2.matrix, diagonal2.vector, temp2.num_rows);
 
 	memcpy(temp1.matrix, m_L.matrix,
 			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
@@ -127,7 +127,7 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 			1.0, m_alpha.vector, 1, m_alpha.vector, 1,
 			temp2.matrix, m_alpha.vlen);
 
-	CMath::create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
+	temp1.create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
 
 	//Subtracct alpha*alpha' from Q.
 	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper,
@@ -154,7 +154,7 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 
 	gradient[0] = sum;
 
-	sum = m_sigma*m_sigma*CMath::trace(Q.matrix, Q.num_rows, Q.num_cols);
+	sum = m_sigma*m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
 
 	gradient[1] = sum;
 
@@ -163,7 +163,7 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 		TParameter* param = mean->m_parameters->get_parameter(i);
 		SGVector<float64_t> data_means = mean->get_parameter_derivative(
 				feature_matrix, param->m_name);
-		gradient[i+1] = CMath::dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
+		gradient[i+1] = data_means.dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
 	}
 
 	return gradient;
@@ -189,7 +189,7 @@ void CExactInferenceMethod::learn_parameters()
 		m_sigma -= step*gradient[1];
 		if(m_sigma < 0) m_sigma = .0001;
 		dynamic_cast<CGaussianLikelihood*>(m_model)->set_sigma(m_sigma);
-		length = sqrt(CMath::dot(gradient.vector, gradient.vector, gradient.vlen));
+		length = sqrt(gradient.dot(gradient.vector, gradient.vector, gradient.vlen));
 	}
 
 	std::cerr << "Learned Hyperparameters" << std::endl;
@@ -205,7 +205,7 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 	SGVector<float64_t> result = SGVector<float64_t>(features->get_num_vectors());
-	CMath::fill_vector(result.vector, features->get_num_vectors(), 1.0/m_sigma);
+	result.fill_vector(result.vector, features->get_num_vectors(), 1.0/m_sigma);
 
 	return result;
 }
@@ -221,7 +221,7 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 
 	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
 
-	result = CMath::dot(label_vector.vector, m_alpha.vector, label_vector.vlen)/2.0;
+	result = label_vector.dot(label_vector.vector, m_alpha.vector, label_vector.vlen)/2.0;
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
 	for(int i = 0; i < m_L.num_rows; i++)
@@ -278,10 +278,10 @@ void CExactInferenceMethod::update_alpha_and_chol()
 
 	//Vector to fill matrix diagonals
 	SGVector<float64_t> diagonal(temp1.num_rows);
-	CMath::fill_vector(diagonal.vector, temp1.num_rows, 1.0);
+	diagonal.fill_vector(diagonal.vector, temp1.num_rows, 1.0);
 
-	CMath::create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
-	CMath::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
+	temp1.create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
+	temp2.create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
 
 	//Calculate first (K(X, X)+sigma*I)
 	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper,

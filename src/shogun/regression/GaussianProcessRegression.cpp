@@ -70,51 +70,9 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	SGVector<float64_t> m_alpha = m_method->get_alpha();
 	CKernel* kernel = m_method->get_kernel();
 
-bool CGaussianProcessRegression::train_machine(CFeatures* data)
-{
-  	if (!data->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
-  	if (m_labels->get_num_labels() != data->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n");
-	if (data->get_feature_class() != C_DENSE)
-		SG_ERROR("Expected Simple Features\n");
-	if (data->get_feature_type() != F_DREAL)
-		SG_ERROR("Expected Real Features\n");
-	if (!kernel)
-		SG_ERROR( "No kernel assigned!\n");
+	kernel->cleanup();
 	
-	set_features((CDotFeatures*)data);
-	
-	kernel->init(features, features);
-	
-	//K(X_train, X_train)
-	SGMatrix<float64_t> kernel_train_matrix = kernel->get_kernel_matrix();
-	
-	SGMatrix<float64_t> temp1(kernel_train_matrix.num_rows,
-	kernel_train_matrix.num_cols);
-	
-	SGMatrix<float64_t> temp2(kernel_train_matrix.num_rows,
-	kernel_train_matrix.num_cols);
-	
-	SGVector<float64_t> diagonal(temp1.num_rows);
-	SGVector<float64_t>::fill_vector(diagonal.vector, temp1.num_rows, 1.0);
-	
-	SGMatrix<float64_t>::create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
-	SGMatrix<float64_t>::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
-		
-	//Calculate first (K(X_train, X_train)+sigma*I)
-	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper, 
-		kernel_train_matrix.num_rows, temp2.num_cols, 1.0, 
-		kernel_train_matrix.matrix, kernel_train_matrix.num_cols,
-		temp2.matrix, temp2.num_cols, m_sigma*m_sigma, 
-		temp1.matrix, temp1.num_cols);
-		
-	memcpy(temp2.matrix, temp1.matrix, 
-		temp2.num_cols*temp2.num_rows*sizeof(float64_t));
-	
-	//Get Lower triangle cholesky decomposition of K(X_train, X_train)+sigma*I)
-	clapack_dpotrf(CblasColMajor, CblasLower, 
-		temp1.num_cols, temp1.matrix, temp1.num_cols);
+	kernel->init(features, data);
 	
 	//K(X_test, X_train)
 	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
@@ -184,7 +142,7 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
 
 
-	CMath::transpose_matrix(temp2.matrix, temp2.num_rows, temp2.num_cols);
+	temp2.transpose_matrix(temp2.matrix, temp2.num_rows, temp2.num_cols);
 
 	SGVector<int32_t> ipiv(temp2.num_cols);
 
@@ -219,7 +177,7 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 	kernel->init(data, data);
 
 	//K(X_test, X_test)
-<<<<<<< HEAD
+
 	SGMatrix<float64_t> kernel_test_matrix2 = kernel->get_kernel_matrix();
 
 	SGVector<float64_t> result(kernel_test_matrix2.num_cols);
@@ -238,52 +196,6 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 	SG_UNREF(lik);
 
 	return lik->evaluate_variances(result);
-=======
-	SGMatrix<float64_t> kernel_star_matrix = kernel->get_kernel_matrix();
-	
-	SGMatrix<float64_t> temp1(kernel_test_matrix.num_rows,
-		    kernel_test_matrix.num_cols);
-
-	SGMatrix<float64_t> temp2(kernel_test_matrix.num_rows,
-		    kernel_test_matrix.num_cols);
-		
-	SGMatrix<float64_t> temp3(kernel_test_matrix.num_rows,
-		    kernel_test_matrix.num_cols);
-	
-	//Indices used to solve Lv=K(X_test, X_train) for v
-	SGVector< int32_t > ipiv(CMath::min(m_L.num_rows, m_L.num_cols));
-	
-	memcpy(temp1.matrix, kernel_test_matrix.matrix, 
-		kernel_test_matrix.num_cols*kernel_test_matrix.num_rows*sizeof(float64_t));
-	
-	//Get indices used to solve Lv=K(X_test, X_train) for v
-	clapack_dgetrf(CblasColMajor, m_L.num_rows, m_L.num_cols, m_L.matrix, m_L.num_cols, ipiv.vector);
-	
-	//Solve Lv=K(X_test, X_train) for v
-	clapack_dgetrs(CblasColMajor, CblasNoTrans,
-		    m_L.num_rows, kernel_test_matrix.num_cols, m_L.matrix, m_L.num_cols,
-		    ipiv.vector, temp1.matrix, temp1.num_cols);
-	
-	memcpy(temp2.matrix, temp1.matrix, temp1.num_cols*temp1.num_rows*sizeof(float64_t));
-	
-	//Store v^t*v in temp3
-	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, temp1.num_rows, 
-		    temp1.num_cols, temp1.num_cols, 1.0, temp1.matrix, temp1.num_cols, 
-		    temp2.matrix, temp2.num_cols, 0.0, temp3.matrix, temp3.num_cols);
-
-	//Set temp2 to identity matrix
-	SGVector<float64_t> diagonal(temp2.num_rows);
-	SGVector<float64_t>::fill_vector(diagonal.vector, temp2.num_rows, 1.0);
-	SGMatrix<float64_t>::create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
-	
-	//Calculate Covariance Matrix = K(X_test, X_test) - v^t*v
-	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, kernel_star_matrix.num_rows, 
-		    kernel_star_matrix.num_cols, kernel_star_matrix.num_cols, 1.0,
-		    kernel_star_matrix.matrix, kernel_star_matrix.num_cols, 
-		    temp2.matrix, temp2.num_cols, -1.0, temp3.matrix, temp3.num_cols);
-	
-	return temp3;
->>>>>>> upstream/master
 }
 
 
