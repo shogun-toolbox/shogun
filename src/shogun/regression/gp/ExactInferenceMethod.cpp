@@ -5,6 +5,10 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
+ *
+ * Code adapted from Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ *
  */
 
 #include <shogun/regression/gp/ExactInferenceMethod.h>
@@ -17,8 +21,7 @@
 
 namespace shogun {
 
-CExactInferenceMethod::CExactInferenceMethod() {
-	// TODO Auto-generated constructor stub
+CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod() {
 
 }
 
@@ -31,21 +34,37 @@ CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
 }
 
 CExactInferenceMethod::~CExactInferenceMethod() {
-	// TODO Auto-generated destructor stub
 }
 
 void CExactInferenceMethod::check_members()
 {
+	if (!m_labels)
+		SG_ERROR("No labels set\n");
+
+	if (m_labels->get_label_type() != LT_REGRESSION)
+		SG_ERROR("Expected RegressionLabels\n");
+
+	if(!features)
+		SG_ERROR("No features set!\n");
+
   	if (!features->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
+
   	if (m_labels->get_num_labels() != features->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
+
 	if (features->get_feature_class() != C_DENSE)
 		SG_ERROR("Expected Simple Features\n");
+
 	if (features->get_feature_type() != F_DREAL)
 		SG_ERROR("Expected Real Features\n");
+
 	if (!kernel)
 		SG_ERROR( "No kernel assigned!\n");
+
+	if (!mean)
+		SG_ERROR( "No mean function assigned!\n");
+
 	if(strcmp(m_model->get_name(), "GaussianLikelihood") != 0)
 	{
 		SG_ERROR("Exact Inference Method can only use Gaussian ");
@@ -56,9 +75,12 @@ void CExactInferenceMethod::check_members()
 
 SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 {
-
 	check_members();
-	get_alpha();
+	update_alpha_and_chol();
+
+	kernel->cleanup();
+
+	SGMatrix<float64_t> feature_matrix = features->get_computed_dot_feature_matrix();
 
 	//Initialize Kernel with Features
 	kernel->init(features, features);
@@ -114,7 +136,8 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 			temp1.matrix, temp1.num_cols, -1.0,
 			temp2.matrix, temp2.num_cols);
 
-	Q = temp2;
+	memcpy(Q.matrix, temp2.matrix,
+		temp2.num_cols*temp2.num_rows*sizeof(float64_t));
 
 	SGMatrix<float64_t> deriv = kernel->get_parameter_gradient("width");
 
@@ -139,7 +162,7 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 	{
 		TParameter* param = mean->m_parameters->get_parameter(i);
 		SGVector<float64_t> data_means = mean->get_parameter_derivative(
-				features->get_computed_dot_feature_matrix(), param->m_name);
+				feature_matrix, param->m_name);
 		gradient[i+1] = CMath::dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
 	}
 
@@ -179,8 +202,8 @@ void CExactInferenceMethod::learn_parameters()
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 {
 	check_members();
-	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
+	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 	SGVector<float64_t> result = SGVector<float64_t>(features->get_num_vectors());
 	CMath::fill_vector(result.vector, features->get_num_vectors(), 1.0/m_sigma);
 
@@ -189,11 +212,12 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 
 float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 {
-	get_alpha();
+	update_alpha_and_chol();
+
 	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
 	float64_t result;
-	SGVector<float64_t> data_means = mean->get_mean_vector(
-			features->get_computed_dot_feature_matrix());
+	SGMatrix<float64_t> feature_matrix = features->get_computed_dot_feature_matrix();
+	SGVector<float64_t> data_means = mean->get_mean_vector(feature_matrix);
 
 	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
 
@@ -208,10 +232,23 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 	result += m_L.num_rows * CMath::log(2*CMath::PI*m_sigma*m_sigma)/2.0;
 
 	return result;
-
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_alpha()
+{
+	update_alpha_and_chol();
+	SGVector<float64_t> result(m_alpha);
+	return result;
+}
+
+SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
+{
+	update_alpha_and_chol();
+	SGMatrix<float64_t> result(m_L);
+	return result;
+}
+
+void CExactInferenceMethod::update_alpha_and_chol()
 {
 	check_members();
 
@@ -219,9 +256,13 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 
 	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
 
-	SGVector<float64_t> data_means = mean->get_mean_vector(features->get_computed_dot_feature_matrix());
+	SGMatrix<float64_t> feature_matrix = features->get_computed_dot_feature_matrix();
+
+	SGVector<float64_t> data_means = mean->get_mean_vector(feature_matrix);
 
 	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
+
+	kernel->cleanup();
 
 	kernel->init(features, features);
 
@@ -250,7 +291,7 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 		temp1.matrix, temp1.num_cols);
 
 	memcpy(temp2.matrix, temp1.matrix,
-		temp2.num_cols*temp2.num_rows*sizeof(float64_t));
+		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
 
 	//Get Lower triangle cholesky decomposition of K(X, X)+sigma*I)
 	clapack_dpotrf(CblasColMajor, CblasUpper,
@@ -258,6 +299,10 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 
 	m_L = SGMatrix<float64_t>(temp1.num_rows, temp1.num_cols);
 
+	/* lapack for some reason wants only to calculate the upper triangle
+	 * and leave the lower triangle with junk data. Finishing the job
+	 * by filling the lower triangle with zero entries.
+	 */
 	for(int i = 0; i < temp1.num_rows; i++)
 	{
 		for(int j = 0; j < temp1.num_cols; j++)
@@ -269,7 +314,9 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 	memcpy(m_L.matrix, temp1.matrix,
 		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
 
+
 	m_alpha = SGVector<float64_t>(label_vector.vlen);
+
 	memcpy(m_alpha.vector, label_vector.vector,
 		label_vector.vlen*sizeof(float64_t));
 
@@ -280,7 +327,6 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 
 	for(int i = 0; i < m_alpha.vlen; i++) m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);
 
-	return m_alpha;
 }
 
 }

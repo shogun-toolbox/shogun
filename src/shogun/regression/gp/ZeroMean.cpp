@@ -12,15 +12,14 @@
 namespace shogun {
 
 CZeroMean::CZeroMean() {
-	// TODO Auto-generated constructor stub
 
 }
 
 CZeroMean::~CZeroMean() {
-	// TODO Auto-generated destructor stub
+
 }
 
-SGVector<float64_t> CZeroMean::get_mean_vector(SGMatrix<float64_t> data)
+SGVector<float64_t> CZeroMean::get_mean_vector(SGMatrix<float64_t>& data)
 {
 	SGVector<float64_t> result(data.num_rows);
 	for(int i = 0; i < result.vlen; i++) result[i] = 0;

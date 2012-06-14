@@ -22,9 +22,13 @@ namespace shogun {
  *
  */
 class CLikelihoodModel : public CSGObject {
+
 public:
+
 	/*Constructor*/
 	CLikelihoodModel();
+
+	/*Destructor*/
 	virtual ~CLikelihoodModel();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
@@ -46,14 +50,14 @@ public:
 	 * @param Vector of means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
-	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t> means) = 0;
+	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means) = 0;
 
 	/** Evaluate variances
 	 *
 	 * @param Vector of variances calculated by inference method
 	 * @return Final variances evaluated by likelihood function
 	 */
-	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t> vars) = 0;
+	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars) = 0;
 };
 }
 

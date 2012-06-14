@@ -946,7 +946,6 @@ void CKernel::init()
 
 SGMatrix<float64_t> CKernel::get_parameter_gradient(const char* param_name)
 {
-	SG_ERROR("Derivative with respect to parameter %s not implemented in", param_name);
-	SG_ERROR("kernel (%s). Returning empty matrix.", get_name());
-	return SGMatrix<float64_t>(0,0);
+	SG_ERROR("Derivative with respect to parameter %s not implemented in kernel (%s).",
+			param_name, get_name());
 }

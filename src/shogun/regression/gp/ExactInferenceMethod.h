@@ -32,15 +32,15 @@ namespace shogun {
  *  Where L is the matrix mentioned above, $\boldsymbol{y}$ are the labels, and
  *  $\backslash$ is an operator ($x = A \backslash B$ means Ax=B.)
  *
- *  \f[
- *  \f]
  *
  *
- *  function must be used for this inference method.
+ *  The Gaussian Likelihood Function must be used for this inference method.
  *
  */
 class CExactInferenceMethod: public CInferenceMethod {
+
 public:
+
 	/*Default Constructor*/
 	CExactInferenceMethod();
 
@@ -53,17 +53,8 @@ public:
 	CExactInferenceMethod(CKernel* kernel, CDotFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-
-	~CExactInferenceMethod();
-
-	/* Constructor
-	 * @param kernel covariance function
-	 * @param features features to use in inference
-	 * @param labels labels of the features
-	 * @param model Likelihood model to use
-	 */
-	CExactInferenceMethod(CKernel* kernel, CDotFeatures* features,
-			CLabels* labels, CLikelihoodModel* model);
+	/*Destructor*/
+	virtual ~CExactInferenceMethod();
 
 	/*Temporary Function for learning parameters
 	 * this will eventually be incorporated into
@@ -103,7 +94,18 @@ public:
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
-	virtual SGMatrix<float64_t> get_cholesky() {get_alpha(); return m_L;}
+
+	/** get Cholesky Decomposition Matrix
+	 *
+	 * @return Cholesky Decomposition of Matrix:
+	 * \f[
+	 *		 L = Cholesky(sW*K*sW+I)
+	 * \f]
+	 *
+	 * 	Where K is the prior covariance matrix, sW is the matrix returned by
+	 * 	get_cholesky(), and I is the identity matrix.
+	 */
+	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get Diagonal Vector
 	 *
@@ -117,7 +119,17 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
+	/** Returns the name of the SGSerializable instance.  It MUST BE
+	 *  the CLASS NAME without the prefixed `C'.
+	 *
+	 * @return name of the SGSerializable
+	 */
 	inline virtual const char* get_name() const { return "ExactInferenceMethod"; }
+
+protected:
+	/** Update Alpha and Cholesky Matrices.
+	 */
+	virtual void update_alpha_and_chol();
 
 private:
 

@@ -12,18 +12,16 @@
 namespace shogun {
 
 CMeanFunction::CMeanFunction() {
-	// TODO Auto-generated constructor stub
 
 }
 
 CMeanFunction::~CMeanFunction() {
-	// TODO Auto-generated destructor stub
+
 }
 
-float64_t CMeanFunction::get_parameter_derivative(SGMatrix<float64_t> data, const char* param_name)
+float64_t CMeanFunction::get_parameter_derivative(SGMatrix<float64_t>& data, const char* param_name)
 {
-	SG_ERROR("%s has no implementation for derivitive with respect to %s", get_name(), param_name);
-	SG_ERROR(" Returning zero.\n");
+	SG_ERROR("%s has no implementation for derivative with respect to %s", get_name(), param_name);
 	return 0;
 }
 

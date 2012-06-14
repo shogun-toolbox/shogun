@@ -77,6 +77,16 @@ public:
 	 */
 	virtual SGVector<float64_t> get_alpha() = 0;
 
+	/** get Cholesky Decomposition Matrix
+	 *
+	 * @return Cholesky Decomposition of Matrix:
+	 * \f[
+	 *		 L = Cholesky(sW*K*sW+I)
+	 * \f]
+	 *
+	 * 	Where K is the prior covariance matrix, sW is the matrix returned by
+	 * 	get_cholesky(), and I is the identity matrix.
+	 */
 	virtual SGMatrix<float64_t> get_cholesky() = 0;
 
 	/** get Diagonal Vector
@@ -175,6 +185,11 @@ public:
 		SG_REF(mod);
 		m_model=mod;
 	}
+
+protected:
+	/** Update Alpha and Cholesky Matrices.
+	 */
+	virtual void update_alpha_and_chol() = 0;
 
 protected:
 

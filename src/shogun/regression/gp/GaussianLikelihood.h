@@ -25,6 +25,8 @@ public:
 
 	/*Constructor*/
 	CGaussianLikelihood();
+
+	/*Destructor*/
 	virtual ~CGaussianLikelihood();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
@@ -51,14 +53,14 @@ public:
 	 * @param Vector of means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
-	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t> means);
+	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
 
 	/** Evaluate variances
 	 *
 	 * @param Vector of variances calculated by inference method
 	 * @return Final variances evaluated by likelihood function
 	 */
-	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t> vars);
+	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
 
 private:
 	/** Observation noise sigma */

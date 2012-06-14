@@ -12,17 +12,15 @@
 using namespace shogun;
 
 CLikelihoodModel::CLikelihoodModel() {
-	// TODO Auto-generated constructor stub
 
 }
 
 CLikelihoodModel::~CLikelihoodModel() {
-	// TODO Auto-generated destructor stub
 }
 
 float64_t CLikelihoodModel::get_parameter_derivative(const char* param_name)
 {
-	SG_ERROR("Derivative with respect to parameter %s not implemented in", param_name);
-	SG_ERROR("likelihood model (%s). Returning zero.", get_name());
+	SG_ERROR("Derivative with respect to parameter %s not implemented in likelihood model (%s).",
+			param_name, get_name());
 	return 0;
 }

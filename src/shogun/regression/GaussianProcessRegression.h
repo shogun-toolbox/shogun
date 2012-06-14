@@ -137,13 +137,6 @@ class CGaussianProcessRegression : public CMachine
 		/** function for initialization*/
 		void init();
 
-		/** apply mean prediction from data
-		*
-		* @param data (test)data to be classified
-		* @return classified labels
-		*/
-		virtual CRegressionLabels* mean_prediction(CFeatures* data);
-
 	private:
 
 		/** features */

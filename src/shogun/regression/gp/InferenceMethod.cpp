@@ -25,7 +25,8 @@ CInferenceMethod::CInferenceMethod() {
 }
 
 CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) : kernel(NULL),
+		features(NULL), mean(NULL), m_labels(NULL), m_model(NULL)
 {
 	set_kernel(kern);
 	set_features(feat);
@@ -39,7 +40,7 @@ CInferenceMethod::~CInferenceMethod() {
 	SG_UNREF(features);
 	SG_UNREF(m_labels);
 	SG_UNREF(m_model);
-
+	SG_UNREF(mean);
 }
 
 

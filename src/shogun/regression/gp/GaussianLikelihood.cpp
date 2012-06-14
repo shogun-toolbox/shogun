@@ -21,15 +21,16 @@ CGaussianLikelihood::~CGaussianLikelihood() {
 }
 
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_means(SGVector<float64_t> means)
+SGVector<float64_t> CGaussianLikelihood::evaluate_means(SGVector<float64_t>& means)
 {
-	return means;
+	return SGVector<float64_t>(means);
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t> vars)
+SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t>& vars)
 {
-	for(int i = 0; i < vars.vlen; i++) vars[i] += (m_sigma*m_sigma);
-	return vars;
+	SGVector<float64_t> result(vars);
+	for(int i = 0; i < result.vlen; i++) result[i] += (m_sigma*m_sigma);
+	return result;
 }
 
 

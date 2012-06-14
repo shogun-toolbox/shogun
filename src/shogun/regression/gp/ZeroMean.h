@@ -23,7 +23,11 @@ namespace shogun {
 class CZeroMean: public shogun::CMeanFunction {
 
 public:
+
+	/*Constructor*/
 	CZeroMean();
+
+	/*Destructor*/
 	virtual ~CZeroMean();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
@@ -39,7 +43,7 @@ public:
 	 *
 	 * @return Mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t> data);
+	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t>& data);
 
 };
 
