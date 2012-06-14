@@ -59,7 +59,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		}
 
 		/* check for range of indices */
-		index_t max_index=CMath::max(subset.vector, subset.vlen);
+		index_t max_index=SGVector<index_t>::max(subset.vector, subset.vlen);
 		if (max_index>=latest->m_subset_idx.vlen)
 		{
 			SG_ERROR("Error in %s::add_subset(): Provided index vector contains"
@@ -81,7 +81,6 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 
 		/* get latest current subset */
 		CSubset* latest=(CSubset*)m_active_subsets_stack->get_last_element();
-		CMath::display_vector(latest->m_subset_idx.vector, latest->m_subset_idx.vlen, "latest");
 
 		/* create new index vector */
 		SGVector<index_t> new_active_subset=SGVector<index_t>(subset.vlen);

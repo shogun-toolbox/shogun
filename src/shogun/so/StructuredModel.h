@@ -46,7 +46,7 @@ typedef CResultSet* (*FArgmax) (CFeatures* features, CStructuredLabels* labels, 
 
 /** 
  * function type to compute the application specific loss 
- * f$\Delta(y_{\text{true}}, y_{\text{pred}})\f$
+ * \f$\Delta(y_{\text{true}}, y_{\text{pred}})\f$
  */
 typedef float64_t (*FDeltaLoss) (CStructuredLabels* labels, CStructuredData ypred, int32_t ytrue_id);
 

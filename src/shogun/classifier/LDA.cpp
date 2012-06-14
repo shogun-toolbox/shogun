@@ -154,7 +154,7 @@ bool CLDA::train_machine(CFeatures* data)
 		1.0/(train_labels.vlen-1), buffer, nf, buffer, nf,
 		1.0/(train_labels.vlen-1), scatter, nf);
 
-	float64_t trace=CMath::trace((float64_t*) scatter, num_feat, num_feat);
+	float64_t trace=SGMatrix<float64_t>::trace((float64_t*) scatter, num_feat, num_feat);
 
 	double s=1.0-m_gamma; /* calling external lib; indirectly */
 	for (i=0; i<num_feat*num_feat; i++)
@@ -163,7 +163,7 @@ bool CLDA::train_machine(CFeatures* data)
 	for (i=0; i<num_feat; i++)
 		scatter[i*num_feat+i]+= trace*m_gamma/num_feat;
 
-	double* inv_scatter= (double*) CMath::pinv(
+	double* inv_scatter= (double*) SGMatrix<float64_t>::pinv(
 		scatter, num_feat, num_feat, NULL);
 
 	float64_t* w_pos=buffer;
@@ -174,17 +174,17 @@ bool CLDA::train_machine(CFeatures* data)
 	cblas_dsymv(CblasColMajor, CblasUpper, nf, 1.0, inv_scatter, nf,
 		(double*) mean_neg, 1, 0, (double*) w_neg, 1);
 
-	bias=0.5*(CMath::dot(w_neg, mean_neg, num_feat)-CMath::dot(w_pos, mean_pos, num_feat));
+	bias=0.5*(SGVector<float64_t>::dot(w_neg, mean_neg, num_feat)-SGVector<float64_t>::dot(w_pos, mean_pos, num_feat));
 	for (i=0; i<num_feat; i++)
 		w.vector[i]=w_pos[i]-w_neg[i];
 
 #ifdef DEBUG_LDA
 	SG_PRINT("bias: %f\n", bias);
-	CMath::display_vector(w.vector, num_feat, "w");
-	CMath::display_vector(w_pos, num_feat, "w_pos");
-	CMath::display_vector(w_neg, num_feat, "w_neg");
-	CMath::display_vector(mean_pos, num_feat, "mean_pos");
-	CMath::display_vector(mean_neg, num_feat, "mean_neg");
+	SGVector<float64_t>::display_vector(w.vector, num_feat, "w");
+	SGVector<float64_t>::display_vector(w_pos, num_feat, "w_pos");
+	SGVector<float64_t>::display_vector(w_neg, num_feat, "w_neg");
+	SGVector<float64_t>::display_vector(mean_pos, num_feat, "mean_pos");
+	SGVector<float64_t>::display_vector(mean_neg, num_feat, "mean_neg");
 #endif
 
 	SG_FREE(mean_neg);

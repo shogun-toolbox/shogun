@@ -15,6 +15,7 @@
 %rename(MulticlassStrategy) CMulticlassStrategy;
 %rename(MulticlassOneVsRestStrategy) CMulticlassOneVsRestStrategy;
 %rename(MulticlassOneVsOneStrategy) CMulticlassOneVsOneStrategy;
+%rename(BaseMulticlassMachine) CBaseMulticlassMachine;
 %rename(MulticlassMachine) CMulticlassMachine;
 %rename(NativeMulticlassMachine) CNativeMulticlassMachine;
 %rename(LinearMulticlassMachine) CLinearMulticlassMachine;
@@ -55,6 +56,7 @@
 %include <shogun/multiclass/MulticlassStrategy.h>
 %include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 %include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
+%include <shogun/machine/BaseMulticlassMachine.h>
 %include <shogun/machine/MulticlassMachine.h>
 %include <shogun/machine/NativeMulticlassMachine.h>
 %include <shogun/machine/LinearMulticlassMachine.h>

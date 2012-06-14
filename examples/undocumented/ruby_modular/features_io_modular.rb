@@ -53,8 +53,8 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	feats2.load(f)
 	f.close()
 
-	lab=Modshogun::Labels.new([1.0,2.0,3.0])
-	lab2=Modshogun::Labels.new
+	lab=Modshogun::MulticlassLabels.new([0.0,1.0,2.0,3.0])
+	lab2=Modshogun::MulticlassLabels.new
 
 	f=Modshogun::AsciiFile.new("label_train_twoclass.ascii","w")
 	lab.save(f)

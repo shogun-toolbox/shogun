@@ -279,13 +279,13 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 		// early stopping on max l1-norm
 		if (m_max_l1_norm > 0)
 		{
-			float64_t l1 = CMath::onenorm(&beta[0], n_fea);
+			float64_t l1 = SGVector<float64_t>::onenorm(&beta[0], n_fea);
 			if (l1 > m_max_l1_norm)
 			{
 				// stopping with interpolated beta
 				stop_cond = true;
 				lasso_cond = false;
-				float64_t l1_prev = CMath::onenorm(&m_beta_path[nloop][0], n_fea);
+				float64_t l1_prev = SGVector<float64_t>::onenorm(&m_beta_path[nloop][0], n_fea);
 				float64_t s = (m_max_l1_norm-l1_prev)/(l1-l1_prev);
 
 				// beta = beta_prev + s*(beta-beta_prev)

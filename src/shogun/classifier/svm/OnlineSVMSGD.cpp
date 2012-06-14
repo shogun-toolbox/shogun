@@ -140,7 +140,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 				float32_t r = 1 - eta * lambda * skip;
 				if (r < 0.8)
 					r = pow(1 - eta * lambda, skip);
-				CMath::scale_vector(r, w, w_dim);
+				SGVector<float32_t>::scale_vector(r, w, w_dim);
 				count = skip;
 			}
 			t++;
@@ -158,7 +158,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	}
 
 	features->end_parser();
-	float64_t wnorm =  CMath::dot(w,w, w_dim);
+	float64_t wnorm =  SGVector<float32_t>::dot(w,w, w_dim);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
 
 	return true;
@@ -184,7 +184,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 
 		//waste cpu cycles for readability
 		//(only changed dims need checking)
-		m=CMath::max(c, c_dim);
+		m=SGVector<float32_t>::max(c, c_dim);
 		n++;
 
 		features->release_example();

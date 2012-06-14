@@ -223,7 +223,7 @@ bool CMKL::train_machine(CFeatures* data)
 	int32_t num_kernels = kernel->get_num_subkernels();
 	SG_INFO("num_kernels = %d\n", num_kernels);
 	const float64_t* beta_const   = kernel->get_subkernel_weights(num_weights);
-	float64_t* beta =  CMath::clone_vector(beta_const, num_weights);
+	float64_t* beta = SGVector<float64_t>::clone_vector(beta_const, num_weights);
 	ASSERT(num_weights==num_kernels);
 
 	if (get_solver_type()==ST_BLOCK_NORM &&
@@ -238,16 +238,16 @@ bool CMKL::train_machine(CFeatures* data)
 	if (get_solver_type()==ST_ELASTICNET)
 	{
 	  // -- Initialize subkernel weights for Elasticnet MKL
-	  CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, 1.0), beta, num_kernels);
+	  SGVector<float64_t>::scale_vector(1/SGVector<float64_t>::qnorm(beta, num_kernels, 1.0), beta, num_kernels);
 
 	  SG_FREE(beta_local);
-	  beta_local = CMath::clone_vector(beta, num_kernels);
+	  beta_local = SGVector<float64_t>::clone_vector(beta, num_kernels);
 
 	  elasticnet_transform(beta, ent_lambda, num_kernels);
 	}
 	else
 	{
-		CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm),
+		SGVector<float64_t>::scale_vector(1/SGVector<float64_t>::qnorm(beta, num_kernels, mkl_norm),
 				beta, num_kernels); //q-norm = 1
 	}
 
@@ -489,7 +489,7 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 	}
 
 	// --- normalize
-	CMath::scale_vector(1.0/Z, beta, num_kernels);
+	SGVector<float64_t>::scale_vector(1.0/Z, beta, num_kernels);
 
 	// --- regularize & renormalize
 

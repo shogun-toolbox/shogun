@@ -121,9 +121,9 @@ float64_t CVanillaStructuredOutputMachine::compute_loss_arg(CResultSet* result) 
 	// Dimensionality of the joint feature space
 	int32_t N = m_w.vlen;
 
-	return 	CMath::dot(m_w.vector, result->psi_pred.vector, N) +
+	return 	SGVector<float64_t>::dot(m_w.vector, result->psi_pred.vector, N) +
 		result->delta -
-		CMath::dot(m_w.vector, result->psi_truth.vector, N);
+		SGVector<float64_t>::dot(m_w.vector, result->psi_truth.vector, N);
 }
 
 bool CVanillaStructuredOutputMachine::insert_result(CList* result_list, CResultSet* result) const

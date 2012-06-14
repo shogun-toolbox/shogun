@@ -117,17 +117,6 @@ protected:
 	/// a priori probabilities of labels
 	SGVector<float64_t> m_label_prob;
 
-	/** computes gaussian exponent by x, indexes, m_means and m_variances
-	 * @param x feature value
-	 * @param l_idx index of label
-	 * @param f_idx index of feature
-	 * @return exponent value
-	 */
-	float64_t inline normal_exp(float64_t x, int32_t l_idx, int32_t f_idx)
-	{
-		return CMath::exp(-CMath::sq(x-m_means(f_idx, l_idx))/(2*m_variances(f_idx, l_idx)));
-	}
-
 	/// label rates
 	SGVector<float64_t> m_rates;
 };

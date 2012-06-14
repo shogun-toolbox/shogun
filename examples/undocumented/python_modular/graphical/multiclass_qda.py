@@ -11,7 +11,7 @@ import util
 
 from scipy import linalg
 from shogun.Classifier import QDA
-from shogun.Features import RealFeatures, Labels
+from shogun.Features import RealFeatures, MulticlassLabels
 
 # colormap
 cmap = mpl.colors.LinearSegmentedColormap('color_classes',
@@ -102,7 +102,7 @@ pylab.title('Quadratic Discrimant Analysis')
 
 X, y = gen_data()
 
-labels = Labels(y)
+labels = MulticlassLabels(y)
 features = RealFeatures(X.T)
 qda = QDA(features, labels, 1e-4, True)
 qda.train()

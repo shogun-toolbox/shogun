@@ -49,8 +49,8 @@ void gen_rand_data()
 				feat.matrix[i*DIMS+j]=CMath::random(0.0,1.0)-DIST;
 		}
 	}
-	CMath::display_vector(lab,NUM);
-	CMath::display_matrix(feat.matrix,DIMS, NUM);
+	SGVector<float64_t>::display_vector(lab,NUM);
+	SGMatrix<float64_t>::display_matrix(feat.matrix,DIMS, NUM);
 }
 
 int main()

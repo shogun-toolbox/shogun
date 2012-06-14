@@ -119,8 +119,13 @@ class CHash : public CSGObject
 			uint32_t buf[4];
 			/** 8 byte buffer */
 			uint32_t bits[2];
-			/** 64 byte buffer */
-			unsigned char in[64];
+			union
+			{
+				/** 64 byte buffer */
+				unsigned char in[64];
+				/** and equivalently 16 uint32's */
+				uint32_t uin[16];
+			};
 		};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 

@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	SG_REF(features);
 
 	/* print feature matrix */
-	CMath::display_matrix(data.matrix, data.num_rows, data.num_cols,
+	SGMatrix<int32_t>::display_matrix(data.matrix, data.num_rows, data.num_cols,
 			"feature matrix");
 
 	/* create subset indices */
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 			num_subset_idx);
 
 	/* print subset indices */
-	CMath::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
+	SGVector<index_t>::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
 
 	/* apply subset to features */
 	SG_SPRINT("\n\n-------------------\n"
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 	{
 		SGVector<int32_t> vec=features->get_feature_vector(i);
 		SG_SPRINT("vector %d: ", i);
-		CMath::display_vector(vec.vector, vec.vlen);
+		SGVector<int32_t>::display_vector(vec.vector, vec.vlen);
 
 		for (index_t j=0; j<dim_features; ++j)
 			ASSERT(vec.vector[j]==data.matrix[subset_idx.vector[i]*num_vectors+j]);
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 	{
 		SGVector<int32_t> vec=features->get_feature_vector(i);
 		SG_SPRINT("vector %d: ", i);
-		CMath::display_vector(vec.vector, vec.vlen);
+		SGVector<int32_t>::display_vector(vec.vector, vec.vlen);
 
 		for (index_t j=0; j<dim_features; ++j)
 			ASSERT(vec.vector[j]==data.matrix[i*num_vectors+j]);

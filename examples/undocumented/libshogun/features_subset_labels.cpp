@@ -36,14 +36,14 @@ int main(int argc, char **argv)
 
 	/* print labels */
 	SGVector<float64_t> labels_data=labels->get_labels();
-	CMath::display_vector(labels_data.vector, labels_data.vlen, "labels");
+	SGVector<float64_t>::display_vector(labels_data.vector, labels_data.vlen, "labels");
 
 	/* create subset indices */
 	SGVector<index_t> subset_idx(CMath::randperm(num_subset_idx),
 			num_subset_idx);
 
 	/* print subset indices */
-	CMath::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
+	SGVector<index_t>::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
 
 	/* apply subset to features */
 	SG_SPRINT("\n\n-------------------\n"

@@ -17,7 +17,7 @@
 namespace shogun 
 {
 
-double* slep_tree_lsr(
+SGVector<double> slep_tree_lsr(
 		CDotFeatures* features,
 		double* y,
 		double z,

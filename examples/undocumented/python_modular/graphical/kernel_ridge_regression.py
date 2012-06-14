@@ -19,7 +19,7 @@ neg=util.get_realdata(False)
 plot(neg[0,:], neg[1,:], "b.")
 
 # train svm
-labels = util.get_labels()
+labels = util.get_labels(type='regression')
 train = util.get_realfeatures(pos, neg)
 gk=GaussianKernel(train, train, width)
 krr = KernelRidgeRegression()
@@ -29,7 +29,7 @@ krr.set_tau(1e-3)
 krr.train()
 
 # compute output plot iso-lines
-x, y, z=util.compute_output_plot_isolines(krr, gk, train)
+x, y, z=util.compute_output_plot_isolines(krr, gk, train, regression=True)
 
 pcolor(x, y, z, shading='interp')
 contour(x, y, z, linewidths=1, colors='black', hold=True)

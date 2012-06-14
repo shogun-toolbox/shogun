@@ -23,138 +23,85 @@ template<class T> class SGVector : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGVector() : SGReferencedData(false)
-		{
-			init_data();
-		}
+		SGVector();
 
 		/** constructor for setting params */
-		SGVector(T* v, index_t len, bool ref_counting=true)
-			: SGReferencedData(ref_counting), vector(v), vlen(len)
-		{
-		}
+		SGVector(T* v, index_t len, bool ref_counting=true);
 
 		/** constructor to create new vector in memory */
-		SGVector(index_t len, bool ref_counting=true)
-			: SGReferencedData(ref_counting), vlen(len)
-		{
-			vector=SG_MALLOC(T, len);
-		}
+		SGVector(index_t len, bool ref_counting=true);
 
 		/** copy constructor */
-		SGVector(const SGVector &orig) : SGReferencedData(orig)
-		{
-			copy_data(orig);
-		}
+		SGVector(const SGVector &orig);
 
 		/** empty destructor */
-		virtual ~SGVector()
-		{
-			unref();
-		}
+		virtual ~SGVector();
 
 		/** fill vector with zeros */
-		void zero()
-		{
-			if (vector && vlen)
-				set_const(0);
-		}
+		void zero();
 
-		/** set vector to a constant */
-		void set_const(T const_elem)
-		{
-			for (index_t i=0; i<vlen; i++)
-				vector[i]=const_elem ;
-		}
+		/** set vector to a constant
+		 *
+		 * @param const_elem - value to set vector to
+		 */
+		void set_const(T const_elem);
 
-		/** range fill */
-		void range_fill(T start=0)
-		{
-			range_fill_vector(vector, vlen, start);
-		}
+		/** range fill a vector with start...start+len-1
+		 * 
+		 * @param start - value to be assigned to first element of vector
+		 */
+		void range_fill(T start=0);
 
-		/** random */
-		void random(T min_value, T max_value)
-		{
-			random_vector(vector, vlen, min_value, max_value);
-		}
+		/** create random vector
+		 *
+		 * @param min_value [min_value,max_value]
+		 * @param max_value
+		 */
+		void random(T min_value, T max_value);
 
 		/** random permutate */
-		void randperm()
-		{
-			/* this does not work. Heiko Strathmann */
-			SG_SNOTIMPLEMENTED;
-			randperm(vector, vlen);
-		}
+		void randperm();
 
 		/** clone vector */
-		SGVector<T> clone()
-		{
-			return SGVector<T>(clone_vector(vector, vlen), vlen);
-		}
+		SGVector<T> clone() const;
 
 		/** clone vector */
-		template <class VT>
-		static VT* clone_vector(const VT* vec, int32_t len)
+		static T* clone_vector(const T* vec, int32_t len)
 		{
-			VT* result = SG_MALLOC(VT, len);
-			for (int32_t i=0; i<len; i++)
-				result[i]=vec[i];
-
+			T* result = SG_MALLOC(T, len);
+			memcpy(result, vec, sizeof(T)*len);
 			return result;
 		}
 
 		/** fill vector */
-		template <class VT>
-		static void fill_vector(VT* vec, int32_t len, VT value)
+		static void fill_vector(T* vec, int32_t len, T value)
 		{
 			for (int32_t i=0; i<len; i++)
 				vec[i]=value;
 		}
 
 		/** range fill vector */
-		template <class VT>
-		static void range_fill_vector(VT* vec, int32_t len, VT start=0)
+		static void range_fill_vector(T* vec, int32_t len, T start=0)
 		{
 			for (int32_t i=0; i<len; i++)
 				vec[i]=i+start;
 		}
 
 		/** random vector */
-		template <class VT>
-		static void random_vector(VT* vec, int32_t len, VT min_value, VT max_value)
-		{
-			//FIXME for (int32_t i=0; i<len; i++)
-			//FIXME 	vec[i]=CMath::random(min_value, max_value);
-		}
+		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
 
 		/** random permatutaion */
-		template <class VT>
-		static void randperm(VT* perm, int32_t n)
-		{
-			for (int32_t i = 0; i < n; i++)
-				perm[i] = i;
-			permute(perm,n);
-		}
+		static void randperm(T* perm, int32_t n);
 
 		/** permute */
-		template <class VT>
-		static void permute(VT* perm, int32_t n)
-		{
-			//FIXME for (int32_t i = 0; i < n; i++)
-			//FIXME 	CMath::swap(perm[random(0, n - 1)], perm[i]);
-		}
+		static void permute(T* vec, int32_t n);
 
 		/** get vector element at index
 		 *
 		 * @param index index
 		 * @return vector element at index
 		 */
-		const T& get_element(index_t index)
-		{
-			ASSERT(vector && (index>=0) && (index<vlen));
-			return vector[index];
-		}
+		const T& get_element(index_t index);
 
 		/** set vector element at index 'index' return false in case of trouble
 		 *
@@ -162,25 +109,14 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		void set_element(const T& p_element, index_t index)
-		{
-			ASSERT(vector && (index>=0) && (index<vlen));
-			vector[index]=p_element;
-		}
+		void set_element(const T& p_element, index_t index);
 
 		/** resize vector
 		 *
 		 * @param n new size
 		 * @return if resizing was successful
 		 */
-		void resize_vector(int32_t n)
-		{
-			vector=SG_REALLOC(T, vector, n);
-
-			if (n > vlen)
-				memset(&vector[vlen], 0, (n-vlen)*sizeof(T));
-			vlen=n;
-		}
+		void resize_vector(int32_t n);
 
 		/** operator overload for vector read only access
 		 *
@@ -202,43 +138,326 @@ template<class T> class SGVector : public SGReferencedData
 			return vector[index];
 		}
 
-		/** display array size */
-		void display_size() const
+		/** add vector to current vector
+		 *
+		 * @param x add vector x to current vector
+		 */
+		void add(const SGVector<T> x);
+
+		SGVector<T> operator+ (SGVector<T> x)
 		{
-			SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen);
+			ASSERT(x.vector && vector);
+			ASSERT(x.vlen == vlen);
+
+			SGVector<T> result=clone();
+			result.add(x);
+			return result;
 		}
 
-		/** display array */
-		void display_vector() const
+		SGVector<T> operator+= (SGVector<T> x)
 		{
-			display_size();
-			for (int32_t i=0; i<vlen; i++)
-				SG_SPRINT("%10.10g,", (float64_t) vector[i]);
-			SG_SPRINT("\n");
+			add(x);
+			return *this;
 		}
+
+		static void permute_vector(SGVector<T> vec);
+
+
+		/** resize array from old_size to new_size (keeping as much array
+		 * content as possible intact)
+		 */
+		static inline void resize(T* &data, int64_t old_size, int64_t new_size)
+		{
+			if (old_size==new_size)
+				return;
+
+			data = SG_REALLOC(T, data, new_size);
+		}
+
+		/// || x ||_2
+		static T twonorm(const T* x, int32_t len);
+
+		/// || x ||_1
+		static float64_t onenorm(T* x, int32_t len);
+
+		/// || x ||_q^q
+		static T qsq(T* x, int32_t len, float64_t q);
+
+		/// || x ||_q
+		static T qnorm(T* x, int32_t len, float64_t q);
+
+		/// x=x+alpha*y
+		static inline void vec1_plus_scalar_times_vec2(T* vec1,
+				T scalar, const T* vec2, int32_t n)
+		{
+			for (int32_t i=0; i<n; i++)
+				vec1[i]+=scalar*vec2[i];
+		}
+
+		/// compute dot product between v1 and v2 (blas optimized)
+		static inline float64_t dot(const bool* v1, const bool* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((v1[i]) ? 1 : 0) * ((v2[i]) ? 1 : 0);
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (blas optimized)
+		static inline floatmax_t dot(const floatmax_t* v1, const floatmax_t* v2, int32_t n)
+		{
+			floatmax_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=v1[i]*v2[i];
+			return r;
+		}
+
+
+		/// compute dot product between v1 and v2 (blas optimized)
+		static float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n);
+
+		/// compute dot product between v1 and v2 (blas optimized)
+		static float32_t dot(const float32_t* v1, const float32_t* v2, int32_t n);
+
+		/// compute dot product between v1 and v2 (for 64bit unsigned ints)
+		static inline float64_t dot(
+			const uint64_t* v1, const uint64_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+		/// compute dot product between v1 and v2 (for 64bit ints)
+		static inline float64_t dot(
+			const int64_t* v1, const int64_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 32bit ints)
+		static inline float64_t dot(
+			const int32_t* v1, const int32_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 32bit unsigned ints)
+		static inline float64_t dot(
+			const uint32_t* v1, const uint32_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 16bit unsigned ints)
+		static inline float64_t dot(
+			const uint16_t* v1, const uint16_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 16bit unsigned ints)
+		static inline float64_t dot(
+			const int16_t* v1, const int16_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const char* v1, const char* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const uint8_t* v1, const uint8_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const int8_t* v1, const int8_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute dot product between v1 and v2
+		static inline float64_t dot(
+			const float64_t* v1, const char* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// compute vector multiplication
+		static inline void vector_multiply(
+				T* target, const T* v1, const T* v2,int32_t len)
+			{
+				for (int32_t i=0; i<len; i++)
+					target[i]=v1[i]*v2[i];
+			}
+
+
+		/// target=alpha*vec1 + beta*vec2
+		static inline void add(
+			T* target, T alpha, const T* v1, T beta, const T* v2,
+			int32_t len)
+		{
+			for (int32_t i=0; i<len; i++)
+				target[i]=alpha*v1[i]+beta*v2[i];
+		}
+
+		/// add scalar to vector inplace
+		static inline void add_scalar(T alpha, T* vec, int32_t len)
+		{
+			for (int32_t i=0; i<len; i++)
+				vec[i]+=alpha;
+		}
+
+		/// scale vector inplace
+		static inline void scale_vector(T alpha, T* vec, int32_t len)
+		{
+			for (int32_t i=0; i<len; i++)
+				vec[i]*=alpha;
+		}
+
+		/// return sum(vec)
+		static inline T sum(T* vec, int32_t len)
+		{
+			T result=0;
+			for (int32_t i=0; i<len; i++)
+				result+=vec[i];
+
+			return result;
+		}
+
+		/// return sum(vec)
+		static inline T sum(SGVector<T> vec)
+		{
+			return sum(vec.vector, vec.vlen);
+		}
+
+
+		/** @return min(vec) */
+		static T min(T* vec, int32_t len);
+
+		/** @return max(vec) */
+		static T max(T* vec, int32_t len);
+
+		/// return arg_max(vec)
+		static inline int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL)
+		{
+			ASSERT(len > 0 || inc > 0);
+
+			T maxv = vec[0];
+			int32_t maxIdx = 0;
+
+			for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+			{
+				if (vec[j] > maxv)
+					maxv = vec[j], maxIdx = i;
+			}
+
+			if (maxv_ptr != NULL)
+				*maxv_ptr = maxv;
+
+			return maxIdx;
+		}
+
+		/// return arg_min(vec)
+		static inline int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL)
+		{
+			ASSERT(len > 0 || inc > 0);
+
+			T minv = vec[0];
+			int32_t minIdx = 0;
+
+			for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+			{
+				if (vec[j] < minv)
+					minv = vec[j], minIdx = i;
+			}
+
+			if (minv_ptr != NULL)
+				*minv_ptr = minv;
+
+			return minIdx;
+		}
+
+		/// return sum(abs(vec))
+		static T sum_abs(T* vec, int32_t len);
+
+		/// return sum(abs(vec))
+		static bool fequal(T x, T y, float64_t precision=1e-6);
+
+		/* performs a inplace unique of a vector of type T using quicksort
+		 * returns the new number of elements */
+		static int32_t unique(T* output, int32_t size);
+
+		/** display array size */
+		void display_size() const;
+
+		/** display vector */
+		void display_vector(const char* name="vector") const;
+
+		/// display vector (useful for debugging)
+		static void display_vector(
+			const T* vector, int32_t n, const char* name="vector",
+			const char* prefix="");
+
+		static void display_vector(
+			const SGVector<T>, const char* name="vector",
+			const char* prefix="");
+
 
 	protected:
 		/** needs to be overridden to copy data */
-		virtual void copy_data(const SGReferencedData &orig)
-		{
-			vector=((SGVector*)(&orig))->vector;
-			vlen=((SGVector*)(&orig))->vlen;
-		}
+		virtual void copy_data(const SGReferencedData &orig);
 
 		/** needs to be overridden to initialize empty data */
-		virtual void init_data()
-		{
-			vector=NULL;
-			vlen=0;
-		}
+		virtual void init_data();
 
 		/** needs to be overridden to free data */
-		virtual void free_data()
-		{
-			SG_FREE(vector);
-			vector=NULL;
-			vlen=0;
-		}
+		virtual void free_data();
 
 	public:
 		/** vector  */

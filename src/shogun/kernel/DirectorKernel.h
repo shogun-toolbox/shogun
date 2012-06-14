@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Soeren Sonnenburg
- * Copyright (C) 2011 Soeren Sonnenburg
+ * Copyright (C) 2012 Soeren Sonnenburg
+ * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
 #ifndef _DIRECTORKERNEL_H___
@@ -20,27 +20,38 @@
 
 namespace shogun
 {
+#define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 {
 	public:
 		/** default constructor
 		 *
 		 */
-		CDirectorKernel() : CKernel()
+		CDirectorKernel() 
+		: CKernel(), external_features(false)
 		{
+		}
+
+		/**
+		 */
+		CDirectorKernel(bool is_external_features) 
+		: CKernel(), external_features(is_external_features)
+		{
+
 		}
 
 		/** constructor
 		 *
 		 */
-		CDirectorKernel(int32_t size) : CKernel(size)
+		CDirectorKernel(int32_t size, bool is_external_features) 
+		: CKernel(size), external_features(is_external_features)
 		{
 		}
 
 		/** default constructor
 		 *
 		 */
-		virtual ~CDirectorKernel()
+		virtual ~CDirectorKernel()	
 		{
 			cleanup();
 		}
@@ -53,12 +64,136 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
-			return false;
+			return CKernel::init(l, r);
 		}
 
-		/** clean up kernel */
+		/** set the current kernel normalizer
+		 *
+		 * @return if successful
+		 */
+		virtual bool set_normalizer(CKernelNormalizer* normalizer)
+		{
+			return CKernel::set_normalizer(normalizer);
+		}
+
+		/** obtain the current kernel normalizer
+		 *
+		 * @return the kernel normalizer
+		 */
+		virtual CKernelNormalizer* get_normalizer()
+		{
+			return CKernel::get_normalizer();
+		}
+
+		/** initialize the current kernel normalizer
+		 *  @return if init was successful
+		 */
+		virtual bool init_normalizer()
+		{
+			return CKernel::init_normalizer();
+		}
+
+		/** clean up your kernel
+		 *
+		 * base method only removes lhs and rhs
+		 * overload to add further cleanup but make sure CKernel::cleanup() is
+		 * called
+		 */
 		virtual void cleanup()
 		{
+			CKernel::cleanup();
+		}
+
+		virtual float64_t kernel_function(int32_t idx_a, int32_t idx_b)
+		{
+			SG_ERROR("Kernel function of Director Kernel needs to be overridden.\n");
+			return 0;
+		}
+
+		/**
+		 * get column j
+		 *
+		 * @return the jth column of the kernel matrix
+		 */
+		virtual SGVector<float64_t> get_kernel_col(int32_t j)
+ 		{
+			return CKernel::get_kernel_col(j);
+		}
+
+		/**
+		 * get row i
+		 *
+		 * @return the ith row of the kernel matrix
+		 */
+		virtual SGVector<float64_t> get_kernel_row(int32_t i)
+		{
+			return CKernel::get_kernel_row(i);
+		}
+
+		/** get number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
+		virtual int32_t get_num_vec_lhs()
+		{
+			return CKernel::get_num_vec_lhs();
+		}
+
+		/** get number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
+		virtual int32_t get_num_vec_rhs()
+		{
+			return CKernel::get_num_vec_rhs();
+		}
+
+		/** set number of vectors of lhs features
+		 *
+		 * @return number of vectors of left-hand side
+		 */
+		virtual void set_num_vec_lhs(int32_t num)
+		{
+			num_lhs=num;
+		}
+
+		/** set number of vectors of rhs features
+		 *
+		 * @return number of vectors of right-hand side
+		 */
+		virtual void set_num_vec_rhs(int32_t num)
+		{
+			num_rhs=num;
+		}
+		
+		/** test whether features have been assigned to lhs and rhs
+		 *
+		 * @return true if features are assigned
+		 */
+		virtual bool has_features()
+		{
+			if (!external_features)
+				return CKernel::has_features();
+			else
+				return true;
+		}
+
+		/** remove lhs and rhs from kernel */
+		virtual void remove_lhs_and_rhs()
+		{
+			CKernel::remove_lhs_and_rhs();
+		}
+
+		/** remove lhs from kernel */
+		virtual void remove_lhs()
+		{
+			CKernel::remove_lhs();
+		}
+
+		/** remove rhs from kernel */
+		virtual void remove_rhs()
+		{
+			CKernel::remove_rhs();
 		}
 
 		/** return what type of kernel we are
@@ -85,6 +220,101 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		inline virtual const char* get_name() const { return "DirectorKernel"; }
 
+		/** for optimizable kernels, i.e. kernels where the weight
+		 * vector can be computed explicitly (if it fits into memory)
+		 */
+		virtual void clear_normal()
+		{
+			CKernel::clear_normal();
+		}
+
+		/** add vector*factor to 'virtual' normal vector
+		 *
+		 * @param vector_idx index
+		 * @param weight weight
+		 */
+		virtual void add_to_normal(int32_t vector_idx, float64_t weight)
+		{
+			CKernel::add_to_normal(vector_idx, weight);
+		}
+
+		/** set optimization type
+		 *
+		 * @param t optimization type to set
+		 */
+		virtual inline void set_optimization_type(EOptimizationType t)
+		{
+			CKernel::set_optimization_type(t);
+		}
+
+		/** initialize optimization
+		 *
+		 * @param count count
+		 * @param IDX index
+		 * @param weights weights
+		 * @return if initializing was successful
+		 */
+		virtual bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t *weights)
+		{
+			return CKernel::init_optimization(count, IDX, weights);
+		}
+
+		/** delete optimization
+		 *
+		 * @return if deleting was successful
+		 */
+		virtual bool delete_optimization()
+		{
+			return CKernel::delete_optimization();
+		}
+
+		/** compute optimized
+		 *
+		 * @param vector_idx index to compute
+		 * @return optimized value at given index
+		 */
+		virtual float64_t compute_optimized(int32_t vector_idx)
+		{
+			return CKernel::compute_optimized(vector_idx);
+		}
+
+		/** computes output for a batch of examples in an optimized fashion
+		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
+		 * the outputvector target (of length num_vec elements) the output for
+		 * the examples enumerated in vec_idx are added. therefore make sure
+		 * that it is initialized with ZERO. the following num_suppvec, IDX,
+		 * alphas arguments are the number of support vectors, their indices
+		 * and weights
+		 */
+		virtual void compute_batch(
+			int32_t num_vec, int32_t* vec_idx, float64_t* target,
+			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
+			float64_t factor=1.0)
+		{
+			CKernel::compute_batch(num_vec, vec_idx, target, num_suppvec, IDX, alphas, factor);
+		}
+
+		/** get number of subkernels
+		 *
+		 * @return number of subkernels
+		 */
+		virtual int32_t get_num_subkernels()
+		{
+			return CKernel::get_num_subkernels();
+		}
+
+		/** compute by subkernel
+		 *
+		 * @param vector_idx index
+		 * @param subkernel_contrib subkernel contribution
+		 */
+		virtual void compute_by_subkernel(
+			int32_t vector_idx, float64_t * subkernel_contrib)
+		{
+			CKernel::compute_by_subkernel(vector_idx, subkernel_contrib);
+		}
+
 		/** get subkernel weights
 		 *
 		 * @param num_weights number of weights will be stored here
@@ -103,26 +333,6 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		{
 			CKernel::set_subkernel_weights(weights);
 		}
-
-		/**
-		 * get row i
-		 *
-		 * @return the ith row of the kernel matrix
-		 */
-		virtual SGVector<float64_t> get_kernel_row(int32_t i)
-		{
-			return CKernel::get_kernel_row(i);
-		}
-
-		/**
-		 * get column j
-		 *
-		 * @return the jth column of the kernel matrix
-		 */
-		virtual SGVector<float64_t> get_kernel_col(int32_t j)
-        {
-			return CKernel::get_kernel_col(j);
-        }
 
 	protected:
 		/** creates a new TParameter instance, which contains migrated data from
@@ -241,14 +451,17 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
-			SG_ERROR("Compute method of Director Kernel needs to be overridden.\n");
-			return 0;
+			return kernel_function(idx_a, idx_b);
 		}
 
 		virtual void register_params()
 		{
 			CKernel::register_params();
 		}
+
+	protected:
+		/* is external features */
+		bool external_features;
 };
 }
 #endif /* USE_SWIG_DIRECTORS */

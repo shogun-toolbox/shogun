@@ -13,6 +13,8 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/base/DynArray.h>
 

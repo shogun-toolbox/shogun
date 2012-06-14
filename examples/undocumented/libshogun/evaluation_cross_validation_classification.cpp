@@ -33,12 +33,12 @@ void test_cross_validation()
 	/* data means -1, 1 in all components, std deviation of 3 */
 	SGVector<float64_t> mean_1(num_features);
 	SGVector<float64_t> mean_2(num_features);
-	CMath::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
-	CMath::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
+	SGVector<float64_t>::fill_vector(mean_1.vector, mean_1.vlen, -1.0);
+	SGVector<float64_t>::fill_vector(mean_2.vector, mean_2.vlen, 1.0);
 	float64_t sigma=3;
 
-	CMath::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
-	CMath::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
+	SGVector<float64_t>::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
+	SGVector<float64_t>::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
 
 	/* fill data matrix around mean */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);

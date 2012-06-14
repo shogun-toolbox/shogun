@@ -36,10 +36,10 @@ void m_Ax(double *Ax, double  *A, double *x, int n, int ith);
 int lassoCD(double *Theta, double *W, double *S, double lambda, int n, 
             int ith, int flag, int maxIter, double fGap, double xGap);
 
-void invConv(double *Theta, double *W, double *S, double lambda, 
-             double sum_S, int n,
-             int LassoMaxIter, double fGap, 
-             double xGap, /*for the Lasso (inner iteration)*/
-             int maxIter, double xtol);  /*for the outer iteration*/
+void invCov(double *Theta, double *W, double *S, double lambda, 
+            double sum_S, int n,
+            int LassoMaxIter, double fGap, 
+            double xGap, /*for the Lasso (inner iteration)*/
+            int maxIter, double xtol);  /*for the outer iteration*/
 
 #endif   /* ----- #ifndef INVCOV_SLEP  ----- */

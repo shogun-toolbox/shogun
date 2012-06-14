@@ -260,9 +260,7 @@ template <class T>
 
 	SGVector<T> other_vector=sf->get_vector();
 
-	float32_t result = CMath::dot(current_vector, other_vector.vector, current_length);
-
-	return result;
+	return SGVector<T>::dot(current_vector, other_vector.vector, current_length);
 }
 
 template <class T>
@@ -274,8 +272,7 @@ float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 	if (len1 != current_length)
 		SG_ERROR("Lengths %d and %d not equal while computing dot product!\n", len1, current_length);
 
-	float32_t result=CMath::dot(current_vector, sgvec1.vector, len1);
-	return result;
+	return SGVector<T>::dot(current_vector, sgvec1.vector, len1);
 }
 
 template <class T>

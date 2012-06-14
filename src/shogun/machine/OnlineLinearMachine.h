@@ -201,7 +201,37 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual const char* get_name() const { return "OnlineLinearMachine"; }
 
+		/** Start training of the online machine, sub-class should override
+		 * this if some preparations are to be done
+		 */
+		virtual void start_train() { }
+
+		/** Stop training of the online machine, sub-class should override
+		 * this if some clean up is needed
+		 */
+		virtual void stop_train() { }
+
+		/** train on one example
+		 * @param feature the feature object containing the current example. Note that get_next_example
+		 *        is already called so relevalent methods like dot() and dense_dot() can be directly 
+		 *        called. WARN: this function should only process ONE example, and get_next_example() 
+		 *        should NEVER be called here. Use the label passed in the 2nd parameter, instead of 
+		 *		  get_label() from feature, because sometimes the features might not have associated
+		 *		  labels or the caller might want to provide some other labels.
+		 * @param label label of this example
+		 */
+		virtual void train_example(CStreamingDotFeatures *feature, float64_t label) { SG_NOTIMPLEMENTED; }
+
 	protected:
+		/**
+		 * Train classifier
+		 *
+		 * @param data Training data, can be avoided if already
+		 * initialized with it
+		 *
+		 * @return Whether training was successful
+		 */
+		virtual bool train_machine(CFeatures* data=NULL);
 
 		SGVector<float64_t> apply_get_outputs(CFeatures* data);
 

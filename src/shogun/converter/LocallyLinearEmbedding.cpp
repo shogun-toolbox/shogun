@@ -554,7 +554,7 @@ SGMatrix<int32_t> CLocallyLinearEmbedding::get_neighborhood_matrix(SGMatrix<floa
 
 	int32_t* neighborhood_matrix = SG_MALLOC(int32_t, N*k);
 
-	float64_t max_dist = CMath::max(distance_matrix.matrix,N*N);
+	float64_t max_dist = SGVector<float64_t>::max(distance_matrix.matrix,N*N);
 
 	CoverTree<LLE_COVERTREE_POINT>* coverTree = new CoverTree<LLE_COVERTREE_POINT>(max_dist);
 

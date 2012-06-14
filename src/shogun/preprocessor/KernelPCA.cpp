@@ -79,14 +79,14 @@ bool CKernelPCA::init(CFeatures* features)
 		int32_t m = kernel_matrix.num_rows;
 		ASSERT(n==m);
 
-		float64_t* bias_tmp = CMath::get_column_sum(kernel_matrix.matrix, n,n);
-		CMath::scale_vector(-1.0/n, bias_tmp, n);
-		float64_t s = CMath::sum(bias_tmp, n)/n;
-		CMath::add_scalar(-s, bias_tmp, n);
+		float64_t* bias_tmp = SGMatrix<float64_t>::get_column_sum(kernel_matrix.matrix, n,n);
+		SGVector<float64_t>::scale_vector(-1.0/n, bias_tmp, n);
+		float64_t s = SGVector<float64_t>::sum(bias_tmp, n)/n;
+		SGVector<float64_t>::add_scalar(-s, bias_tmp, n);
 
-		CMath::center_matrix(kernel_matrix.matrix, n, m);
+		SGMatrix<float64_t>::center_matrix(kernel_matrix.matrix, n, m);
 
-		float64_t* eigenvalues=CMath::compute_eigenvectors(kernel_matrix.matrix, n, n);
+		float64_t* eigenvalues=SGMatrix<float64_t>::compute_eigenvectors(kernel_matrix.matrix, n, n);
 
 		for (int32_t i=0; i<n; i++)
 		{
@@ -100,14 +100,14 @@ bool CKernelPCA::init(CFeatures* features)
 		m_transformation_matrix = SGMatrix<float64_t>(kernel_matrix.matrix,n,n);
 		kernel_matrix.matrix = NULL;
 		m_bias_vector = SGVector<float64_t>(n);
-		CMath::fill_vector(m_bias_vector.vector, m_bias_vector.vlen, 0.0);
+		SGVector<float64_t>::fill_vector(m_bias_vector.vector, m_bias_vector.vlen, 0.0);
 
 		cblas_dgemv(CblasColMajor, CblasTrans,
 				n, n, 1.0, m_transformation_matrix.matrix, n,
 				bias_tmp, 1, 0.0, m_bias_vector.vector, 1);
 
-		float64_t* rowsum = CMath::get_row_sum(m_transformation_matrix.matrix, n, n);
-		CMath::scale_vector(1.0/n, rowsum, n);
+		float64_t* rowsum = SGMatrix<float64_t>::get_row_sum(m_transformation_matrix.matrix, n, n);
+		SGVector<float64_t>::scale_vector(1.0/n, rowsum, n);
 
 		for (int32_t i=0; i<n; i++)
 		{

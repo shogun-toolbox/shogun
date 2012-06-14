@@ -16,12 +16,17 @@
 %rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
 %rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 
+%rename(LibLinearMTL) CLibLinearMTL;
+
 /* Domain adaptation renames */
 #ifdef USE_SVMLIGHT
 %rename(DomainAdaptationSVM) CDomainAdaptationSVM;
 #endif //USE_SVMLIGHT
 %rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
-%rename(DomainAdaptationMulticlassLibLinear) CDomainAdaptationMulticlassLibLinear;
+
+
+/* Includes */
+%include <shogun/lib/IndicesTree.h>
 
 /* Multitask includes */
 %include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>
@@ -31,9 +36,10 @@
 %include <shogun/transfer/multitask/MultitaskKernelMaskPairNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
 
+%include <shogun/transfer/multitask/LibLinearMTL.h>
+
 /* Domain adaptation includes */
 #ifdef USE_SVMLIGHT
 %include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
 #endif // USE_SVMLIGHT
 %include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
-%include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>

@@ -129,7 +129,7 @@ bool CSGDQN::train(CFeatures* data)
 
 
 	float64_t* Bc=SG_MALLOC(float64_t, w.vlen);
-	CMath::fill_vector(Bc, w.vlen, 1/lambda);
+	SGVector<float64_t>::fill_vector(Bc, w.vlen, 1/lambda);
 
 	float64_t* result=SG_MALLOC(float64_t, w.vlen);
 	float64_t* B=SG_MALLOC(float64_t, w.vlen);
@@ -162,8 +162,8 @@ bool CSGDQN::train(CFeatures* data)
 				{
 					SGVector<float64_t> w_1=w.clone();
 					float64_t loss_1=-loss->first_derivative(z,1);
-					CMath::vector_multiply(result,Bc,v.vector,w.vlen);
-					CMath::add(w.vector,eta*loss_1*y,result,1.0,w.vector,w.vlen);
+					SGVector<float64_t>::vector_multiply(result,Bc,v.vector,w.vlen);
+					SGVector<float64_t>::add(w.vector,eta*loss_1*y,result,1.0,w.vector,w.vlen);
 					float64_t z2 = y * features->dense_dot(i, w.vector, w.vlen);
 					float64_t diffloss = -loss->first_derivative(z2,1) - loss_1;
 					if(diffloss)
@@ -181,16 +181,16 @@ bool CSGDQN::train(CFeatures* data)
 			{
 				if(--count<=0)
 				{
-					CMath::vector_multiply(result,Bc,w.vector,w.vlen);
-					CMath::add(w.vector,-skip*lambda*eta,result,1.0,w.vector,w.vlen);
+					SGVector<float64_t>::vector_multiply(result,Bc,w.vector,w.vlen);
+					SGVector<float64_t>::add(w.vector,-skip*lambda*eta,result,1.0,w.vector,w.vlen);
 					count = skip;
 					updateB=true;
 				}
 
 				if (z < 1 || is_log_loss)
 				{
-					CMath::vector_multiply(result,Bc,v.vector,w.vlen);
-					CMath::add(w.vector,eta*-loss->first_derivative(z,1)*y,result,1.0,w.vector,w.vlen);
+					SGVector<float64_t>::vector_multiply(result,Bc,v.vector,w.vlen);
+					SGVector<float64_t>::add(w.vector,eta*-loss->first_derivative(z,1)*y,result,1.0,w.vector,w.vlen);
 				}
 			}
 			t++;

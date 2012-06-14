@@ -84,7 +84,7 @@ bool CKNN::train_machine(CFeatures* data)
 
 	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	m_train_labels.vlen=lab.vlen;
-	m_train_labels.vector=CMath::clone_vector(lab.vector, lab.vlen);
+	m_train_labels.vector=SGVector<int32_t>::clone_vector(lab.vector, lab.vlen);
 	ASSERT(m_train_labels.vlen>0);
 
 	int32_t max_class=m_train_labels.vector[0];

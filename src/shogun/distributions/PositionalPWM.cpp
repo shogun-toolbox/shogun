@@ -106,7 +106,7 @@ void CPositionalPWM::compute_w(int32_t num_pos)
 	m_w = SGMatrix<float64_t>(m_w_cols,m_w_rows);
 
 	uint8_t* window=SG_MALLOC(uint8_t, m_pwm.num_cols);
-	CMath::fill_vector(window, m_pwm.num_cols, (uint8_t) 0);
+	SGVector<uint8_t>::fill_vector(window, m_pwm.num_cols, (uint8_t) 0);
 
 	const int32_t last_idx=m_pwm.num_cols-1;
 	for (int32_t i=0; i<m_w_rows; i++)

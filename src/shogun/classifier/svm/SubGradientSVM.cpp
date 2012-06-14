@@ -223,8 +223,8 @@ void CSubGradientSVM::update_active(int32_t num_feat, int32_t num_vec)
 float64_t CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 {
 	float64_t sum_B = 0;
-	float64_t A_zero = 0.5*CMath::dot(grad_w, grad_w, num_feat);
-	float64_t B_zero = -CMath::dot(w.vector, grad_w, num_feat);
+	float64_t A_zero = 0.5*SGVector<float64_t>::dot(grad_w, grad_w, num_feat);
+	float64_t B_zero = -SGVector<float64_t>::dot(w.vector, grad_w, num_feat);
 
 	int32_t num_hinge=0;
 
@@ -295,7 +295,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 	{
 
 		CTime t2;
-		CMath::add(v, 1.0, w.vector, -1.0, sum_CXy_active, num_feat);
+		SGVector<float64_t>::add(v, 1.0, w.vector, -1.0, sum_CXy_active, num_feat);
 
 		if (num_bound>=qpsize_max && num_it_noimprovement!=10) // if qp gets to large, lets just choose a random beta
 		{
@@ -362,7 +362,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 			//SG_PRINT("grad_b:%f\n", grad_b);
 		}
 
-		CMath::add(grad_w, 1.0, w.vector, -1.0, sum_CXy_active, num_feat);
+		SGVector<float64_t>::add(grad_w, 1.0, w.vector, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
 
 		for (int32_t i=0; i<num_bound; i++)
@@ -372,7 +372,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 				grad_b -=  C1 * ((CBinaryLabels*) m_labels)->get_label(idx_bound[i])*beta[i];
 		}
 
-		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
+		dir_deriv = SGVector<float64_t>::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
 		for (int32_t i=0; i<num_bound; i++)
 		{
 			float64_t val= C1*((CBinaryLabels*) m_labels)->get_label(idx_bound[i])*(features->dense_dot(idx_bound[i], grad_w, num_feat)+grad_b);
@@ -381,10 +381,10 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 	}
 	else
 	{
-		CMath::add(grad_w, 1.0, w.vector, -1.0, sum_CXy_active, num_feat);
+		SGVector<float64_t>::add(grad_w, 1.0, w.vector, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
 
-		dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
+		dir_deriv = SGVector<float64_t>::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
 	}
 
 	return dir_deriv;
@@ -392,7 +392,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 
 float64_t CSubGradientSVM::compute_objective(int32_t num_feat, int32_t num_vec)
 {
-	float64_t result= 0.5 * CMath::dot(w.vector,w.vector, num_feat);
+	float64_t result= 0.5 * SGVector<float64_t>::dot(w.vector,w.vector, num_feat);
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
@@ -411,7 +411,7 @@ void CSubGradientSVM::compute_projection(int32_t num_feat, int32_t num_vec)
 
 void CSubGradientSVM::update_projection(float64_t alpha, int32_t num_vec)
 {
-	CMath::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
+	SGVector<float64_t>::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
 }
 
 void CSubGradientSVM::init(int32_t num_vec, int32_t num_feat)
@@ -599,7 +599,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 
 		if (num_it_noimprovement==10 || num_bound<qpsize_max)
 		{
-			float64_t norm_grad=CMath::dot(grad_w, grad_w, num_feat) +
+			float64_t norm_grad=SGVector<float64_t>::dot(grad_w, grad_w, num_feat) +
 				grad_b*grad_b;
 
 #ifdef DEBUG_SUBGRADIENTSVM
@@ -629,7 +629,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 			last_it_noimprovement=num_iterations;
 		}
 
-		CMath::vec1_plus_scalar_times_vec2(w.vector, -alpha, grad_w, num_feat);
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(w.vector, -alpha, grad_w, num_feat);
 		bias-=alpha*grad_b;
 
 		update_projection(alpha, num_vec);

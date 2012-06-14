@@ -167,7 +167,7 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 
 	uint32_t offs=0;
 
-	CMath::fill_vector(val, len, 0xDEADBEAF);
+	SGVector<uint32_t>::fill_vector(val, len, 0xDEADBEAF);
 
 	for (int32_t i=0; i < len; i++)
 	{
@@ -430,7 +430,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 	}
 	else
 	{
-		CMath::fill_vector(&output[start], stop-start, 0.0);
+		SGVector<float64_t>::fill_vector(&output[start], stop-start, 0.0);
 
 		uint32_t offs=0;
 		for (int32_t i=0; i<string_length; i++)
@@ -486,7 +486,7 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 	if (abs_val)
 		factor=CMath::abs(factor);
 
-	CMath::fill_vector(val, len, 0xDEADBEAF);
+	SGVector<uint32_t>::fill_vector(val, len, 0xDEADBEAF);
 
 	for (int32_t i=0; i<len; i++)
 	{

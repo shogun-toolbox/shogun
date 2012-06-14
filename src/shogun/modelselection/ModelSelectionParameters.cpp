@@ -429,11 +429,11 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 				switch (m_value_type)
 				{
 				case MSPT_FLOAT64:
-					CMath::display_vector((float64_t*)m_values,
+					SGVector<float64_t>::display_vector((float64_t*)m_values,
 							m_values_length);
 					break;
 				case MSPT_INT32:
-					CMath::display_vector((int32_t*)m_values,
+					SGVector<int32_t>::display_vector((int32_t*)m_values,
 							m_values_length);;
 					break;
 				case MSPT_NONE:

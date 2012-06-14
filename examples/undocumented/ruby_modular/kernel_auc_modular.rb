@@ -18,7 +18,7 @@ def kernel_auc_modular(fm_train_real=traindat,label_train_real=testdat,width=1.7
 
 # *** 	kernel=AUCKernel(0, subkernel)
 	kernel=Modshogun::AUCKernel.new(0, subkernel)
-	kernel.setup_auc_maximization( Modshogun::Labels.new(label_train_real) )
+	kernel.setup_auc_maximization( Modshogun::BinaryLabels.new(label_train_real) )
 	km_train=kernel.get_kernel_matrix()
 	return kernel
 end

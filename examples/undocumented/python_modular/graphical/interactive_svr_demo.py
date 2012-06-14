@@ -101,7 +101,7 @@ class Form(QMainWindow):
         # train svm
         labels = self.data.get_labels()
         print type(labels)
-        lab = Labels(labels)
+        lab = RegressionLabels(labels)
         features = self.data.get_examples()
         train = RealFeatures(features)
 
@@ -126,7 +126,7 @@ class Form(QMainWindow):
         svm.set_epsilon(1e-2)
 
         x=numpy.linspace(-5.0,5.0,100)
-        y=svm.apply(RealFeatures(numpy.array([x]))).get_labels()
+        y=svm.apply(RealFeatures(numpy.array([x]))).get_confidences()
 
         self.axes.plot(x,y,'r-')
 

@@ -11,6 +11,7 @@
  */
 
 #include <shogun/classifier/svm/OnlineLibLinear.h>
+#include <shogun/features/StreamingDenseFeatures.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
@@ -40,6 +41,28 @@ COnlineLibLinear::COnlineLibLinear(
 		set_features(traindat);
 }
 
+COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
+{
+	init();
+	C1 = mch->C1;
+	C2 = mch->C2;
+	use_bias = mch->use_bias;
+
+	set_features(mch->features);
+
+	w_dim = mch->w_dim;
+	if (w_dim > 0)
+	{
+		w = SG_MALLOC(float32_t, w_dim);
+		memcpy(w, mch->w, w_dim*sizeof(float32_t));
+	}
+	else
+	{
+		w = NULL;
+	}
+	bias = mch->bias;
+}
+
 
 void COnlineLibLinear::init()
 {
@@ -56,136 +79,123 @@ COnlineLibLinear::~COnlineLibLinear()
 {
 }
 
-bool COnlineLibLinear::train_machine(CFeatures* data)
+void COnlineLibLinear::start_train()
 {
-		if (data)
-		{
-				if (!data->has_property(FP_STREAMING_DOT))
-						SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
-				set_features((CStreamingDotFeatures*) data);
-		}
+	Cp = C1;
+	Cn = C2;
+	PGmax_old = CMath::INFTY;
+	PGmin_old = -CMath::INFTY;
+	PGmax_new = -CMath::INFTY;
+	PGmin_new = CMath::INFTY;
 
-		float64_t C, d, G;
-		float64_t QD;
+	diag[0]=0;diag[1]=0;diag[2]=0;
+	upper_bound[0]=Cn;upper_bound[1]=0;upper_bound[2]=Cp;
 
-		// y and alpha for example being processed
-		int32_t y_current;
-		float64_t alpha_current;
+	bias = 0;
 
-		// Cost constants
-		float64_t Cp=C1;
-		float64_t Cn=C2;
+	PGmax_new = -CMath::INFTY;
+	PGmin_new = CMath::INFTY;
 
-		// PG: projected gradient, for shrinking and stopping
-		float64_t PG;
-		float64_t PGmax_old = CMath::INFTY;
-		float64_t PGmin_old = -CMath::INFTY;
-		float64_t PGmax_new = -CMath::INFTY;
-		float64_t PGmin_new = CMath::INFTY;
-
-		// Diag is probably unnecessary
-		float64_t diag[3] = {0, 0, 0};
-		float64_t upper_bound[3] = {Cn, 0, Cp};
-
-		// Bias
-		bias = 0;
-
-		PGmax_new = -CMath::INFTY;
-		PGmin_new = CMath::INFTY;
-
-		// Objective value = v/2
-		float64_t v = 0;
-		// Number of support vectors
-		int32_t nSV = 0;
-
-		// Start reading the examples
-		features->start_parser();
-
-		CTime start_time;
-		while (features->get_next_example())
-		{
-				alpha_current = 0;
-				if (features->get_label() > 0)
-						y_current = +1;
-				else
-						y_current = -1;
-
-				QD = diag[y_current + 1];
-				// Dot product of vector with itself
-				QD += features->dot(features);
-
-				features->expand_if_required(w, w_dim);
-
-				G = features->dense_dot(w, w_dim);
-				if (use_bias)
-						G += bias;
-				G = G*y_current - 1;
-				// LINEAR TERM PART?
-
-				C = upper_bound[y_current + 1];
-				G += alpha_current*diag[y_current + 1]; // Can be eliminated, since diag = 0 vector
-
-				PG = 0;
-				if (alpha_current == 0) // This condition will always be true in the online version
-				{
-						if (G > PGmax_old)
-						{
-								features->release_example();
-								continue;
-						}
-						else if (G < 0)
-								PG = G;
-				}
-				else if (alpha_current == C)
-				{
-						if (G < PGmin_old)
-						{
-								features->release_example();
-								continue;
-						}
-						else if (G > 0)
-								PG = G;
-				}
-				else
-						PG = G;
-
-				PGmax_new = CMath::max(PGmax_new, PG);
-				PGmin_new = CMath::min(PGmin_new, PG);
-
-				if (fabs(PG) > 1.0e-12)
-				{
-						float64_t alpha_old = alpha_current;
-						alpha_current = CMath::min(CMath::max(alpha_current - G/QD, 0.0), C);
-						d = (alpha_current - alpha_old) * y_current;
-
-						features->add_to_dense_vec(d, w, w_dim);
-
-						if (use_bias)
-								bias += d;
-				}
-
-				v += alpha_current*(alpha_current*diag[y_current + 1] - 2);
-				if (alpha_current > 0)
-						nSV++;
-
-				features->release_example();
-		}
-
-		features->end_parser();
-
-		float64_t gap = PGmax_new - PGmin_new;
-
-		SG_DONE();
-		SG_INFO("Optimization finished.\n");
-
-		// calculate objective value
-		for (int32_t i=0; i<w_dim; i++)
-				v += w[i]*w[i];
-		v += bias*bias;
-
-		SG_INFO("Objective value = %lf\n", v/2);
-		SG_INFO("nSV = %d\n", nSV);
-		SG_INFO("gap = %g\n", gap);
-
-		return true;
+	v = 0;
+	nSV = 0;
 }
+
+void COnlineLibLinear::stop_train()
+{
+	float64_t gap = PGmax_new - PGmin_new;
+
+	SG_DONE();
+	SG_INFO("Optimization finished.\n");
+
+	// calculate objective value
+	for (int32_t i=0; i<w_dim; i++)
+		v += w[i]*w[i];
+	v += bias*bias;
+
+	SG_INFO("Objective value = %lf\n", v/2);
+	SG_INFO("nSV = %d\n", nSV);
+	SG_INFO("gap = %g\n", gap);
+}
+
+void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
+{
+	alpha_current = 0;
+	if (label > 0)
+		y_current = +1;
+	else
+		y_current = -1;
+
+	QD = diag[y_current + 1];
+	// Dot product of vector with itself
+	QD += SGVector<float32_t>::dot(ex.vector, ex.vector, ex.vlen);
+
+	if (ex.vlen > w_dim)
+	{
+		w = SG_REALLOC(float32_t, w, ex.vlen);
+		memset(&w[w_dim], 0, (ex.vlen - w_dim)*sizeof(float32_t));
+		w_dim = ex.vlen;
+	}
+
+	G = SGVector<float32_t>::dot(ex.vector, w, w_dim);
+	if (use_bias)
+		G += bias;
+	G = G*y_current - 1;
+	// LINEAR TERM PART?
+
+	C = upper_bound[y_current + 1];
+	G += alpha_current*diag[y_current + 1]; // Can be eliminated, since diag = 0 vector
+
+	PG = 0;
+	if (alpha_current == 0) // This condition will always be true in the online version
+	{
+		if (G > PGmax_old)
+		{
+			return;
+		}
+		else if (G < 0)
+			PG = G;
+	}
+	else if (alpha_current == C)
+	{
+		if (G < PGmin_old)
+		{
+			return;
+		}
+		else if (G > 0)
+			PG = G;
+	}
+	else
+		PG = G;
+
+	PGmax_new = CMath::max(PGmax_new, PG);
+	PGmin_new = CMath::min(PGmin_new, PG);
+
+	if (fabs(PG) > 1.0e-12)
+	{
+		float64_t alpha_old = alpha_current;
+		alpha_current = CMath::min(CMath::max(alpha_current - G/QD, 0.0), C);
+		d = (alpha_current - alpha_old) * y_current;
+
+		for (int32_t i=0; i < w_dim; ++i)
+			w[i] += d*ex[i];
+
+
+		if (use_bias)
+			bias += d;
+	}
+
+	v += alpha_current*(alpha_current*diag[y_current + 1] - 2);
+	if (alpha_current > 0)
+		nSV++;
+}
+
+void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t label)
+{
+	CStreamingDenseFeatures<float32_t> *feat =
+		dynamic_cast<CStreamingDenseFeatures<float32_t> *>(feature);
+	if (feat == NULL)
+		SG_ERROR("Expected streaming dense feature <float32_t>\n");
+
+	train_one(feat->get_vector(), label);
+}
+

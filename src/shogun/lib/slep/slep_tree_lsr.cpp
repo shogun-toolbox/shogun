@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-double* slep_tree_lsr(
+SGVector<double> slep_tree_lsr(
 		CDotFeatures* features,
 		double* y,
 		double z,
@@ -48,7 +48,7 @@ double* slep_tree_lsr(
 	else 
 		lambda = z;
 
-	double* w = SG_CALLOC(double, n_feats);
+	SGVector<double> w(n_feats);
 	if (options.initial_w)
 	{
 		for (i=0; i<n_feats; i++)
@@ -65,7 +65,7 @@ double* slep_tree_lsr(
 	double* v = SG_CALLOC(double, n_feats);
 
 	double* Aw = SG_CALLOC(double, n_vecs);
-	features->dense_dot_range(Aw,0,n_vecs,NULL,w,n_feats,0.0);
+	features->dense_dot_range(Aw,0,n_vecs,NULL,w.vector,n_feats,0.0);
 	double* Av = SG_MALLOC(double, n_vecs);
 	double* As = SG_MALLOC(double, n_vecs);
 	double* ATAs = SG_MALLOC(double, n_feats);
@@ -86,13 +86,10 @@ double* slep_tree_lsr(
 	
 	while (!done && iter < options.max_iter) 
 	{
-		//CMath::display_vector(w,n_feats,"w");
-
 		beta = (alphap-1.0)/alpha;
 
 		for (i=0; i<n_feats; i++)
 			s[i] = w[i] + beta*wwp[i];
-
 
 		for (i=0; i<n_vecs; i++)
 			As[i] = Aw[i] + beta*(Aw[i]-Awp[i]);
@@ -120,24 +117,21 @@ double* slep_tree_lsr(
 				v[i] = s[i] - g[i]*(1.0/L);
 
 			if (options.general)
-				general_altra(w, v, n_feats, options.G, options.ind, options.n_nodes, lambda/L);
+				general_altra(w.vector, v, n_feats, options.G, options.ind, options.n_nodes, lambda/L);
 			else
-				altra(w, v, n_feats, options.ind, options.n_nodes, lambda/L);
-
-			//CMath::display_vector(w,n_feats,"w_inner");
-			//SG_SPRINT("\n");
+				altra(w.vector, v, n_feats, options.ind, options.n_nodes, lambda/L);
 
 			// v = x - s
 			for (i=0; i<n_feats; i++)
 				v[i] = w[i] - s[i];
 
-			features->dense_dot_range(Aw,0,n_vecs,NULL,w,n_feats,0.0);
+			features->dense_dot_range(Aw,0,n_vecs,NULL,w.vector,n_feats,0.0);
 
 			for (i=0; i<n_vecs; i++)
 				Av[i] = Aw[i] - As[i];
 
-			double r_sum = CMath::dot(v,v,n_feats);
-			double l_sum = CMath::dot(Av,Av,n_vecs);
+			double r_sum = SGVector<float64_t>::dot(v,v,n_feats);
+			double l_sum = SGVector<float64_t>::dot(Av,Av,n_vecs);
 
 			if (r_sum <= 1e-20)
 			{
@@ -150,7 +144,6 @@ double* slep_tree_lsr(
 			else 
 				L = CMath::max(2*L, l_sum/r_sum);
 
-			SG_SPRINT("L=%.3f\n",L);
 		}
 
 		alphap = alpha;
@@ -165,13 +158,13 @@ double* slep_tree_lsr(
 
 		double tree_norm; 
 		if (options.general)
-			tree_norm = general_treeNorm(w,n_feats,options.G,
+			tree_norm = general_treeNorm(w.vector,n_feats,options.G,
 			                             options.ind,options.n_nodes);
 		else
-			tree_norm = treeNorm(w,n_feats,options.ind,options.n_nodes);
+			tree_norm = treeNorm(w.vector,n_feats,options.ind,options.n_nodes);
 
 		funcp = func;
-		func = 0.5*CMath::dot(resid,resid,n_vecs) + lambda*tree_norm;
+		func = 0.5*SGVector<float64_t>::dot(resid,resid,n_vecs) + lambda*tree_norm;
 
 		if (gradient_break)
 			break;
@@ -202,13 +195,13 @@ double* slep_tree_lsr(
 					done = true;
 				break;
 			case 3:
-				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats));
+				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats));
 				if (norm_wwp <= options.tolerance)
 					done = true;
 				break;
 			case 4:
-				norm_wp = CMath::sqrt(CMath::dot(wp,wp,n_feats));
-				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats));
+				norm_wp = CMath::sqrt(SGVector<float64_t>::dot(wp,wp,n_feats));
+				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats));
 				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
 					done = true;
 				break;

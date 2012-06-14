@@ -1,5 +1,5 @@
 from shogun.Features import RealFeatures
-from shogun.Features import Labels
+from shogun.Features import MulticlassLabels
 from shogun.Classifier import QDA
 from pylab import pcolor, contour, colorbar, connect, show, plot, axis
 
@@ -25,7 +25,7 @@ x_neg, y_neg = np.random.multivariate_normal(mean_neg, cov_neg, 500).T
 plot(x_neg, y_neg, 'ro');
 
 # train qda
-labels = Labels( np.concatenate([np.zeros(N), np.ones(N)]) )
+labels = MulticlassLabels( np.concatenate([np.zeros(N), np.ones(N)]) )
 pos = np.array([x_pos, y_pos])
 neg = np.array([x_neg, y_neg])
 features = RealFeatures( np.array(np.concatenate([pos, neg], 1)) )

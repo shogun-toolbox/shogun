@@ -300,7 +300,7 @@ void CSVMLight::svm_learn()
 	SGVector<int32_t> lab=((CBinaryLabels*) m_labels)->get_int_labels();
 	int32_t totdoc=lab.vlen;
 	ASSERT(lab.vector && lab.vlen);
-	int32_t* label=CMath::clone_vector(lab.vector, lab.vlen);
+	int32_t* label=SGVector<int32_t>::clone_vector(lab.vector, lab.vlen);
 
 	int32_t* docs=SG_MALLOC(int32_t, totdoc);
 	SG_FREE(W);
@@ -349,7 +349,7 @@ void CSVMLight::svm_learn()
 	else
 	{
 		learn_parm->eps=SG_MALLOC(float64_t, totdoc);      /* equivalent regression epsilon for classification */
-		CMath::fill_vector(learn_parm->eps, totdoc, -1.0);
+		SGVector<float64_t>::fill_vector(learn_parm->eps, totdoc, -1.0);
 	}
 
 	learn_parm->svm_cost = SG_MALLOC(float64_t, totdoc);
@@ -559,6 +559,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
      /* heldout: marks held-out example for leave-one-out (or -1) */
      /* retrain: selects training mode (1=regular / 2=holdout) */
 {
+
   int32_t *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
   int32_t inconsistentnum,choosenum,already_chosen=0,iteration;
   int32_t misclassified,supvecnum=0,*active2dnum,inactivenum;
@@ -612,6 +613,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   worstmaxdiff=1e-10;
   terminate=0;
 
+
   kernel->set_time(iteration);  /* for lru cache */
 
   for (i=0;i<totdoc;i++) {    /* various inits */
@@ -628,6 +630,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   /* repeat this loop until we have convergence */
   CTime start_time;
   mkl_converged=false;
+
 
 #ifdef CYGWIN
   for (;((iteration<100 || (!mkl_converged && callback) ) || (retrain && (!terminate))); iteration++){
@@ -812,6 +815,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  terminate=1;
 		  retrain=0;
 		  SG_WARNING( "Relaxing KT-Conditions due to slow progress! Terminating!\n");
+		  SG_DEBUG("(iteration :%d, bestmaxdiffiter: %d, lean_param->maxiter: %d)\n", iteration, bestmaxdiffiter, learn_parm->maxiter );
 	  }
 
 	  noshrink= (get_shrinking_enabled()) ? 0 : 1;
@@ -897,6 +901,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 	      terminate = 1;
 	      retrain = 0;
 	  }
+
   } /* end of loop */
 
   SG_DEBUG( "inactive:%d\n", inactivenum);
@@ -917,6 +922,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
       bestmaxdiffiter=iteration;
   }
 
+  //use this for our purposes!
   criterion=compute_objective_function(a,lin,c,learn_parm->eps,label,totdoc);
   CSVM::set_objective(criterion);
 
@@ -2250,7 +2256,8 @@ void CSVMLight::reactivate_inactive_examples(
 		  compute_index(changed,totdoc,changed2dnum);
 
 
-		  int32_t num_threads=parallel->get_num_threads();
+		  //TODO: PUT THIS BACK IN!!!!!!!! int32_t num_threads=parallel->get_num_threads();
+		  int32_t num_threads=1;
 		  ASSERT(num_threads>0);
 
 		  if (num_threads < 2)
@@ -2510,7 +2517,8 @@ float64_t* CSVMLight::optimize_qp(
 		}
 	}
 
-	if(precision_violations > 500) {
+	// TODO: add parameter for this (e.g. for MTL experiments)
+	if(precision_violations > 5000) {
 		(*epsilon_crit)*=10.0;
 		precision_violations=0;
 		SG_SINFO("Relaxing epsilon on KT-Conditions.\n");

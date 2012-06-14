@@ -13,6 +13,7 @@
 
 #ifdef SWIGCSHARP
 %ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
+%ignore shogun::SGMatrix::matrix_multiply;
 #endif
 
 %ignore cleanup;

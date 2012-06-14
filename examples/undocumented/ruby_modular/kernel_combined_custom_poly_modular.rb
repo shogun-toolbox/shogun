@@ -30,7 +30,7 @@ def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = 
 
     kernel.init(feats_train, feats_train)
     
-    labels = Modshogun::Labels.new(fm_label_twoclass)
+    labels = Modshogun::BinaryLabels.new(fm_label_twoclass)
     svm = Modshogun::LibSVM.new(1.0, kernel, labels)
     svm.train()
 

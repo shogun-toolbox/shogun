@@ -48,13 +48,31 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 			return "DomainAdaptationMulticlassLibLinear";
 		}
 
+		/** getter for source bias 
+		 * @return source bias
+		 */
 		float64_t get_source_bias() const;
+		/** setter for source bias
+		 * @param source_bias source bias
+		 */
 		void set_source_bias(float64_t source_bias);
 
+		/** getter for train factor
+		 * @return train factor
+		 */
 		float64_t get_train_factor() const;
+		/** setter for train factor
+		 * @param train_factor train factor
+		 */
 		void set_train_factor(float64_t train_factor);
 
+		/** getter for source machine
+		 * @return source machine
+		 */
 		CLinearMulticlassMachine* get_source_machine() const;
+		/** setter for source machine
+		 * @param source_machine source machine
+		 */
 		void set_source_machine(CLinearMulticlassMachine* source_machine);
 
 protected:

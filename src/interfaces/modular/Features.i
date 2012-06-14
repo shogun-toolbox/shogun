@@ -20,11 +20,21 @@
 /* These functions return new Objects */
 %newobject get_transposed();
 
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorDotFeatures;
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+#endif
+
 /* Remove C Prefix */
 %rename(Alphabet) CAlphabet;
 %rename(Features) CFeatures;
 %rename(StreamingFeatures) CStreamingFeatures;
 %rename(DotFeatures) CDotFeatures;
+%rename(DirectorDotFeatures) CDirectorDotFeatures;
 %rename(BinnedDotFeatures) CBinnedDotFeatures;
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
 %rename(StreamingVwFeatures) CStreamingVwFeatures;
@@ -56,6 +66,7 @@
 %include <shogun/lib/Compressor.h>
 %include <shogun/features/Features.h>
 %include <shogun/features/DotFeatures.h>
+%include <shogun/features/DirectorDotFeatures.h>
 %include <shogun/features/BinnedDotFeatures.h>
 %include <shogun/features/StreamingFeatures.h>
 %include <shogun/features/StreamingDotFeatures.h>

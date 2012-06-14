@@ -36,7 +36,9 @@ namespace shogun
 		/// L1 regularized SVM with L2-loss using dual coordinate descent
 		L1R_L2LOSS_SVC,
 		/// L1 regularized logistic regression
-		L1R_LR
+		L1R_LR,
+		/// L2 regularized linear logistic regression via dual
+		L2R_LR_DUAL
 	};
 
 #ifdef HAVE_LAPACK
@@ -173,6 +175,7 @@ class CLibLinear : public CLinearMachine
 
 		void solve_l1r_l2_svc(problem *prob_col, double eps, double Cp, double Cn);
 		void solve_l1r_lr(const problem *prob_col, double eps, double Cp, double Cn);
+		void solve_l2r_lr_dual(const problem *prob, double eps, double Cp, double Cn);
 
 
 	protected:

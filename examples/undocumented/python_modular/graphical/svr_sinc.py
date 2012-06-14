@@ -12,14 +12,14 @@ width=0.5
 epsilon=0.01
 
 feat = RealFeatures(X)
-lab = Labels(Y.flatten())
+lab = RegressionLabels(Y.flatten())
 gk=GaussianKernel(feat,feat, width)
 #svr = SVRLight(C, epsilon, gk, lab)
 svr = LibSVR(C, epsilon, gk, lab)
 svr.train()
 
 plot(X, Y, '.', label='train data')
-plot(X[0], svr.apply().get_labels(), hold=True, label='train output')
+plot(X[0], svr.apply().get_confidences(), hold=True, label='train output')
 
 XE, YE=util.compute_output_plot_isolines_sine(svr, gk, feat)
 plot(XE[0], YE, hold=True, label='test output')

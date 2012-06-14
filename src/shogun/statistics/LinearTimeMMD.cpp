@@ -93,7 +93,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
-	switch (m_threshold_method)
+	switch (m_p_value_method)
 	{
 		/* TODO implement new null distribution approximations here */
 		default:

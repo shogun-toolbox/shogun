@@ -31,19 +31,19 @@ public:
 
 		m_vector_length=3;
 		m_vector=SG_MALLOC(int32_t, m_vector_length);
-		CMath::fill_vector(m_vector, m_vector_length, 10);
+		SGVector<int32_t>::fill_vector(m_vector, m_vector_length, 10);
 		m_parameters->add_vector(&m_vector, &m_vector_length, "vector",
 				"Test vector");
 
 		m_matrix_rows=2;
 		m_matrix_cols=3;
 		m_matrix=SG_MALLOC(int32_t, m_matrix_rows*m_matrix_cols);
-		CMath::range_fill_vector(m_matrix, m_matrix_rows*m_matrix_cols);
+		SGVector<int32_t>::range_fill_vector(m_matrix, m_matrix_rows*m_matrix_cols);
 		m_parameters->add_matrix(&m_matrix, &m_matrix_rows, &m_matrix_cols,
 				"matrix", "Test matrix");
 
 		SGMatrix<int32_t> features=SGMatrix<int32_t>(2, 3);
-		CMath::range_fill_vector(features.matrix,
+		SGVector<int32_t>::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 3);
 		m_features=new CDenseFeatures<int32_t>(features);
 		SG_REF(m_features);
@@ -85,7 +85,7 @@ public:
 		m_parameters->add(&m_matrix, "matrix", "Test matrix");
 
 		SGMatrix<float64_t> features=SGMatrix<float64_t>(2, 3);
-		CMath::range_fill_vector(features.matrix,
+		SGVector<float64_t>::range_fill_vector(features.matrix,
 				features.num_rows*features.num_cols, 3.0);
 		m_features=new CDenseFeatures<float64_t>(features);
 		SG_REF(m_features);
@@ -219,14 +219,14 @@ void test_load_file_parameters()
 	/* same for the vector */
 	current=file_loaded_vector->get_element(0);
 	int32_t* value_vector=*((int32_t**)current->m_parameter);
-	CMath::display_vector(value_vector, int_instance->m_vector_length);
+	SGVector<int32_t>::display_vector(value_vector, int_instance->m_vector_length);
 	for (index_t i=0; i<int_instance->m_vector_length; ++i)
 		ASSERT(value_vector[i]=int_instance->m_vector[i]);
 
 	/* and for the matrix */
 	current=file_loaded_matrix->get_element(0);
 	int32_t* value_matrix=*((int32_t**)current->m_parameter);
-	CMath::display_matrix(value_matrix, int_instance->m_matrix_rows,
+	SGMatrix<int32_t>::display_matrix(value_matrix, int_instance->m_matrix_rows,
 			int_instance->m_matrix_cols);
 	for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
 			++i)
@@ -243,7 +243,7 @@ void test_load_file_parameters()
 	SGMatrix<int32_t> feature_matrix_original=
 			int_instance->m_features->get_feature_matrix();
 
-	CMath::display_matrix(feature_matrix_loaded.matrix,
+	SGMatrix<int32_t>::display_matrix(feature_matrix_loaded.matrix,
 			feature_matrix_loaded.num_rows,
 			feature_matrix_loaded.num_cols,
 			"features");

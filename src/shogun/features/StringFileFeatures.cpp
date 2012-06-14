@@ -81,7 +81,7 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 	ASSERT(granularity>=1);
 	ASSERT(CStringFeatures<ST>::alphabet);
 
-	uint64_t buffer_size=granularity;
+	int64_t buffer_size=granularity;
 	CStringFeatures<ST>::features=SG_MALLOC(SGString<ST>, buffer_size);
 
 	uint64_t offs=0;
@@ -95,9 +95,9 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 
 		if (line)
 		{
-			if (uint64_t(CStringFeatures<ST>::num_vectors) > buffer_size)
+			if (CStringFeatures<ST>::num_vectors > buffer_size)
 			{
-				CMath::resize(CStringFeatures<ST>::features, buffer_size, buffer_size+granularity);
+				CStringFeatures<ST>::features = SG_REALLOC(SGString<ST>, CStringFeatures<ST>::features, buffer_size+granularity);
 				buffer_size+=granularity;
 			}
 
@@ -117,7 +117,7 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 	if (!CStringFeatures<ST>::alphabet->check_alphabet_size() || !CStringFeatures<ST>::alphabet->check_alphabet())
 		CStringFileFeatures<ST>::cleanup();
 
-	CMath::resize(CStringFeatures<ST>::features, buffer_size, CStringFeatures<ST>::num_vectors);
+	CStringFeatures<ST>::features=SG_REALLOC(SGString<ST>, CStringFeatures<ST>::features, CStringFeatures<ST>::num_vectors);
 }
 
 template class CStringFileFeatures<bool>;

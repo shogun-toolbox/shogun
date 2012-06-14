@@ -84,7 +84,7 @@ namespace shogun{
 			int32_t current_class = ((CMulticlassLabels*) m_labels)->get_label(idx);
 			float64_t* target = centroids.matrix + num_feats*current_class;
 			float64_t* current = ((CDenseFeatures<float64_t>*)data)->get_feature_vector(idx,current_len,current_free);
-			CMath::add(target,1.0,target,1.0,current,current_len);
+			SGVector<float64_t>::add(target,1.0,target,1.0,current,current_len);
 			num_per_class[current_class]++;
 			((CDenseFeatures<float64_t>*)data)->free_feature_vector(current, current_len, current_free);
 		}
@@ -100,7 +100,7 @@ namespace shogun{
 			else
 				scale = 1.0/(float64_t)total;
 				
-			CMath::scale_vector(scale,target,num_feats);
+			SGVector<float64_t>::scale_vector(scale,target,num_feats);
 		}
 				
 		m_centroids->free_feature_matrix();

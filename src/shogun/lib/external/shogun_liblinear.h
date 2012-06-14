@@ -57,7 +57,7 @@ struct problem
 	/** n */
 	int32_t n;
 	/** y */
-	int32_t *y;
+	float64_t* y;
 	/** sparse features x */
 	CDotFeatures* x;
 	/** if bias shall be used */
@@ -169,7 +169,7 @@ public:
 	 * @param Cp Cp
 	 * @param Cn Cn
 	 */
-	l2r_lr_fun(const problem *prob, float64_t Cp, float64_t Cn);
+	l2r_lr_fun(const problem *prob, float64_t* C);
 	~l2r_lr_fun();
 
 	/** fun
@@ -202,13 +202,13 @@ private:
 	float64_t *C;
 	float64_t *z;
 	float64_t *D;
-	const problem *prob;
+	const problem *m_prob;
 };
 
 class l2r_l2_svc_fun : public function
 {
 public:
-	l2r_l2_svc_fun(const problem *prob, double Cp, double Cn);
+	l2r_l2_svc_fun(const problem *prob, float64_t* Cs);
 	~l2r_l2_svc_fun();
 
 	double fun(double *w);
@@ -217,7 +217,7 @@ public:
 
 	int get_nr_variable();
 
-private:
+protected:
 	void Xv(double *v, double *Xv);
 	void subXv(double *v, double *Xv);
 	void subXTv(double *v, double *XTv);
@@ -227,8 +227,21 @@ private:
 	double *D;
 	int *I;
 	int sizeI;
-	const problem *prob;
+	const problem *m_prob;
 };
+
+class l2r_l2_svr_fun: public l2r_l2_svc_fun
+{
+public:
+	l2r_l2_svr_fun(const problem *prob, double *Cs, double p);
+
+	double fun(double *w);
+	void grad(double *w, double *g);
+
+private:
+	double m_p;
+};
+
 
 struct mcsvm_state
 {

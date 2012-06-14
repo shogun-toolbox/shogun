@@ -262,8 +262,8 @@ template<class ST> void CStringFeatures<ST>::disable_on_the_fly_preprocessing()
 template<class ST> ST* CStringFeatures<ST>::get_feature_vector(int32_t num, int32_t& len, bool& dofree)
 {
 	ASSERT(features);
-	ASSERT(num<get_num_vectors());
-
+	if (num>=get_num_vectors())
+		SG_ERROR("Requested feature vector with index %d while total num is", num, get_num_vectors());
 
 	int32_t real_num=m_subset_stack->subset_idx_conversion(num);
 
@@ -1496,7 +1496,7 @@ template<class ST> void CStringFeatures<ST>::create_random(float64_t* hist, int3
 		sf[i].string=SG_MALLOC(ST, cols);
 		sf[i].slen=cols;
 
-		CMath::random_vector(randoms, cols, 0.0, 1.0);
+		SGVector<float64_t>::random_vector(randoms, cols, 0.0, 1.0);
 
 		for (int32_t j=0; j<cols; j++)
 		{

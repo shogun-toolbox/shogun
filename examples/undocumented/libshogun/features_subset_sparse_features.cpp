@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
 
 	/* print dense feature matrix */
-	CMath::display_matrix(data.matrix, data.num_rows, data.num_cols,
+	SGMatrix<int32_t>::display_matrix(data.matrix, data.num_rows, data.num_cols,
 			"dense feature matrix");
 
 	/* create subset indices */
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 			num_subset_idx);
 
 	/* print subset indices */
-	CMath::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
+	SGVector<index_t>::display_vector(subset_idx.vector, subset_idx.vlen, "subset indices");
 
 	/* apply subset to features */
 	SG_SPRINT("\n-------------------\n"

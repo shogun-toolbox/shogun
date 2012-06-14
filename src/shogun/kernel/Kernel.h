@@ -245,15 +245,15 @@ class CKernel : public CSGObject
 		 * @return the jth column of the kernel matrix
 		 */
 		virtual SGVector<float64_t> get_kernel_col(int32_t j)
-        {
+ 		{
 
-            SGVector<float64_t> col = SGVector<float64_t>(num_rhs);
+			SGVector<float64_t> col = SGVector<float64_t>(num_rhs);
 
-            for (int32_t i=0; i!=num_rhs; i++)
-                col[i] = kernel(i,j);
+			for (int32_t i=0; i!=num_rhs; i++)
+				col[i] = kernel(i,j);
 
-        	return col;
-        }
+			return col;
+		}
 
 
 		/**
@@ -262,14 +262,14 @@ class CKernel : public CSGObject
 		 * @return the ith row of the kernel matrix
 		 */
 		virtual SGVector<float64_t> get_kernel_row(int32_t i)
-        {
-            SGVector<float64_t> row = SGVector<float64_t>(num_lhs);
+		{
+			SGVector<float64_t> row = SGVector<float64_t>(num_lhs);
 
-            for (int32_t j=0; j!=num_lhs; j++)
-                row[j] = kernel(i,j);
+			for (int32_t j=0; j!=num_lhs; j++)
+				row[j] = kernel(i,j);
 
-        	return row;
-        }
+			return row;
+		}
 
 		/** get kernel matrix real
 		 *
@@ -438,7 +438,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual inline int32_t get_num_vec_lhs()
+		virtual int32_t get_num_vec_lhs()
 		{
 			return num_lhs;
 		}
@@ -447,7 +447,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual inline int32_t get_num_vec_rhs()
+		virtual int32_t get_num_vec_rhs()
 		{
 			return num_rhs;
 		}
@@ -456,7 +456,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual inline bool has_features()
+		virtual bool has_features()
 		{
 			return lhs && rhs;
 		}

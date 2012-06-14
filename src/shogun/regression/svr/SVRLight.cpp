@@ -238,7 +238,7 @@ void CSVRLight::svr_learn()
 	else
 	{
 		learn_parm->eps=SG_MALLOC(float64_t, totdoc);      /* equivalent regression epsilon for classification */
-		CMath::fill_vector(learn_parm->eps, totdoc, tube_epsilon);
+		SGVector<float64_t>::fill_vector(learn_parm->eps, totdoc, tube_epsilon);
 	}
 
 	SG_FREE(model->supvec);
@@ -573,6 +573,10 @@ void CSVRLight::update_linear_component_mkl_linadd(
 {
 	// kernel with LP_LINADD property is assumed to have
 	// compute_by_subkernel functions
+	// FIXME
+	// Divided totdoc by 2 to avoid out of bounds problem. Totdoc seems
+	// to be always multiplied by 2 in regression MKL problems 
+	// SVRLight solve (Sergey Lisitsyn)
 	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
@@ -601,14 +605,11 @@ void CSVRLight::update_linear_component_mkl_linadd(
 	}
 
 	// determine contributions of different kernels
-	for (int32_t i=0; i<num; i++)
+	for (int32_t i=0; i<num_vectors; i++)
 		kernel->compute_by_subkernel(i,&W[i*num_kernels]) ;
 
 	// restore old weights
 	kernel->set_subkernel_weights(SGVector<float64_t>(w_backup,num_weights));
-
-	SG_FREE(w_backup);
-	SG_FREE(w1);
 
 	call_mkl_callback(a, label, lin, c, totdoc);
 }

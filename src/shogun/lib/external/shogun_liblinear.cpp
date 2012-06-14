@@ -46,32 +46,21 @@
 
 using namespace shogun;
 
-l2r_lr_fun::l2r_lr_fun(const problem *p, float64_t Cp, float64_t Cn)
+l2r_lr_fun::l2r_lr_fun(const problem *p, float64_t* Cs)
 {
-	int i;
 	int l=p->l;
-	int *y=p->y;
 
-	this->prob = p;
+	this->m_prob = p;
 
 	z = SG_MALLOC(double, l);
 	D = SG_MALLOC(double, l);
-	C = SG_MALLOC(double, l);
-
-	for (i=0; i<l; i++)
-	{
-		if (y[i] == 1)
-			C[i] = Cp;
-		else
-			C[i] = Cn;
-	}
+	C = Cs;
 }
 
 l2r_lr_fun::~l2r_lr_fun()
 {
 	SG_FREE(z);
 	SG_FREE(D);
-	SG_FREE(C);
 }
 
 
@@ -79,9 +68,9 @@ double l2r_lr_fun::fun(double *w)
 {
 	int i;
 	double f=0;
-	int *y=prob->y;
-	int l=prob->l;
-	int32_t n=prob->n;
+	float64_t *y=m_prob->y;
+	int l=m_prob->l;
+	int32_t n=m_prob->n;
 
 	Xv(w, z);
 	for(i=0;i<l;i++)
@@ -92,7 +81,7 @@ double l2r_lr_fun::fun(double *w)
 		else
 			f += C[i]*(-yz+log(1 + exp(yz)));
 	}
-	f += 0.5 *CMath::dot(w,w,n);
+	f += 0.5 *SGVector<float64_t>::dot(w,w,n);
 
 	return(f);
 }
@@ -100,8 +89,8 @@ double l2r_lr_fun::fun(double *w)
 void l2r_lr_fun::grad(double *w, double *g)
 {
 	int i;
-	int *y=prob->y;
-	int l=prob->l;
+	float64_t *y=m_prob->y;
+	int l=m_prob->l;
 	int w_size=get_nr_variable();
 
 	for(i=0;i<l;i++)
@@ -118,13 +107,13 @@ void l2r_lr_fun::grad(double *w, double *g)
 
 int l2r_lr_fun::get_nr_variable()
 {
-	return prob->n;
+	return m_prob->n;
 }
 
 void l2r_lr_fun::Hv(double *s, double *Hs)
 {
 	int i;
-	int l=prob->l;
+	int l=m_prob->l;
 	int w_size=get_nr_variable();
 	double *wa = SG_MALLOC(double, l);
 
@@ -140,65 +129,55 @@ void l2r_lr_fun::Hv(double *s, double *Hs)
 
 void l2r_lr_fun::Xv(double *v, double *res_Xv)
 {
-	int32_t l=prob->l;
-	int32_t n=prob->n;
+	int32_t l=m_prob->l;
+	int32_t n=m_prob->n;
 	float64_t bias=0;
 
-	if (prob->use_bias)
+	if (m_prob->use_bias)
 	{
 		n--;
 		bias=v[n];
 	}
 
-	prob->x->dense_dot_range(res_Xv, 0, l, NULL, v, n, bias);
+	m_prob->x->dense_dot_range(res_Xv, 0, l, NULL, v, n, bias);
 }
 
 void l2r_lr_fun::XTv(double *v, double *res_XTv)
 {
-	int l=prob->l;
-	int32_t n=prob->n;
+	int l=m_prob->l;
+	int32_t n=m_prob->n;
 
-	memset(res_XTv, 0, sizeof(double)*prob->n);
+	memset(res_XTv, 0, sizeof(double)*m_prob->n);
 
-	if (prob->use_bias)
+	if (m_prob->use_bias)
 		n--;
 
 	for (int32_t i=0;i<l;i++)
 	{
-		prob->x->add_to_dense_vec(v[i], i, res_XTv, n);
+		m_prob->x->add_to_dense_vec(v[i], i, res_XTv, n);
 
-		if (prob->use_bias)
+		if (m_prob->use_bias)
 			res_XTv[n]+=v[i];
 	}
 }
 
-l2r_l2_svc_fun::l2r_l2_svc_fun(const problem *p, double Cp, double Cn)
+l2r_l2_svc_fun::l2r_l2_svc_fun(const problem *p, double* Cs)
 {
-	int i;
 	int l=p->l;
-	int *y=p->y;
 
-	this->prob = p;
+	this->m_prob = p;
 
 	z = SG_MALLOC(double, l);
 	D = SG_MALLOC(double, l);
-	C = SG_MALLOC(double, l);
 	I = SG_MALLOC(int, l);
+	C=Cs;
 
-	for (i=0; i<l; i++)
-	{
-		if (y[i] == 1)
-			C[i] = Cp;
-		else
-			C[i] = Cn;
-	}
 }
 
 l2r_l2_svc_fun::~l2r_l2_svc_fun()
 {
 	SG_FREE(z);
 	SG_FREE(D);
-	SG_FREE(C);
 	SG_FREE(I);
 }
 
@@ -206,8 +185,8 @@ double l2r_l2_svc_fun::fun(double *w)
 {
 	int i;
 	double f=0;
-	int *y=prob->y;
-	int l=prob->l;
+	float64_t *y=m_prob->y;
+	int l=m_prob->l;
 	int w_size=get_nr_variable();
 
 	Xv(w, z);
@@ -218,7 +197,7 @@ double l2r_l2_svc_fun::fun(double *w)
 		if (d > 0)
 			f += C[i]*d*d;
 	}
-	f += 0.5*CMath::dot(w, w, w_size);
+	f += 0.5*SGVector<float64_t>::dot(w, w, w_size);
 
 	return(f);
 }
@@ -226,8 +205,8 @@ double l2r_l2_svc_fun::fun(double *w)
 void l2r_l2_svc_fun::grad(double *w, double *g)
 {
 	int i;
-	int *y=prob->y;
-	int l=prob->l;
+	float64_t *y=m_prob->y;
+	int l=m_prob->l;
 	int w_size=get_nr_variable();
 
 	sizeI = 0;
@@ -246,13 +225,13 @@ void l2r_l2_svc_fun::grad(double *w, double *g)
 
 int l2r_l2_svc_fun::get_nr_variable()
 {
-	return prob->n;
+	return m_prob->n;
 }
 
 void l2r_l2_svc_fun::Hv(double *s, double *Hs)
 {
 	int i;
-	int l=prob->l;
+	int l=m_prob->l;
 	int w_size=get_nr_variable();
 	double *wa = SG_MALLOC(double, l);
 
@@ -268,57 +247,124 @@ void l2r_l2_svc_fun::Hv(double *s, double *Hs)
 
 void l2r_l2_svc_fun::Xv(double *v, double *res_Xv)
 {
-	int32_t l=prob->l;
-	int32_t n=prob->n;
+	int32_t l=m_prob->l;
+	int32_t n=m_prob->n;
 	float64_t bias=0;
 
-	if (prob->use_bias)
+	if (m_prob->use_bias)
 	{
 		n--;
 		bias=v[n];
 	}
 
-	prob->x->dense_dot_range(res_Xv, 0, l, NULL, v, n, bias);
+	m_prob->x->dense_dot_range(res_Xv, 0, l, NULL, v, n, bias);
 }
 
 void l2r_l2_svc_fun::subXv(double *v, double *res_Xv)
 {
-	int32_t n=prob->n;
+	int32_t n=m_prob->n;
 	float64_t bias=0;
 
-	if (prob->use_bias)
+	if (m_prob->use_bias)
 	{
 		n--;
 		bias=v[n];
 	}
 
-	prob->x->dense_dot_range_subset(I, sizeI, res_Xv, NULL, v, n, bias);
+	m_prob->x->dense_dot_range_subset(I, sizeI, res_Xv, NULL, v, n, bias);
 
 	/*for (int32_t i=0;i<sizeI;i++)
 	{
-		res_Xv[i]=prob->x->dense_dot(I[i], v, n);
+		res_Xv[i]=m_prob->x->dense_dot(I[i], v, n);
 
-		if (prob->use_bias)
+		if (m_prob->use_bias)
 			res_Xv[i]+=bias;
 	}*/
 }
 
 void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 {
-	int32_t n=prob->n;
+	int32_t n=m_prob->n;
 
-	if (prob->use_bias)
+	if (m_prob->use_bias)
 		n--;
 
-	memset(XTv, 0, sizeof(float64_t)*prob->n);
+	memset(XTv, 0, sizeof(float64_t)*m_prob->n);
 	for (int32_t i=0;i<sizeI;i++)
 	{
-		prob->x->add_to_dense_vec(v[i], I[i], XTv, n);
+		m_prob->x->add_to_dense_vec(v[i], I[i], XTv, n);
 
-		if (prob->use_bias)
+		if (m_prob->use_bias)
 			XTv[n]+=v[i];
 	}
 }
+
+l2r_l2_svr_fun::l2r_l2_svr_fun(const problem *prob, double *Cs, double p):
+	l2r_l2_svc_fun(prob, Cs)
+{
+	m_p = p;
+}
+
+double l2r_l2_svr_fun::fun(double *w)
+{
+	int i;
+	double f=0;
+	double *y=m_prob->y;
+	int l=m_prob->l;
+	int w_size=get_nr_variable();
+	double d;
+	
+	Xv(w, z);
+
+	for(i=0;i<w_size;i++)
+		f += w[i]*w[i];
+	f /= 2;	
+	for(i=0;i<l;i++)
+	{
+		d = z[i] - y[i];
+		if(d < -m_p)
+			f += C[i]*(d+m_p)*(d+m_p);
+		else if(d > m_p)
+			f += C[i]*(d-m_p)*(d-m_p);
+	}
+
+	return(f);
+}
+
+void l2r_l2_svr_fun::grad(double *w, double *g)
+{
+	int i;
+	double *y=m_prob->y;
+	int l=m_prob->l;
+	int w_size=get_nr_variable();
+	double d;
+
+	sizeI = 0;
+	for(i=0;i<l;i++)
+	{
+		d = z[i] - y[i];
+		
+		// generate index set I
+		if(d < -m_p)
+		{
+			z[sizeI] = C[i]*(d+m_p);
+			I[sizeI] = i;
+			sizeI++;
+		}
+		else if(d > m_p)
+		{
+			z[sizeI] = C[i]*(d-m_p);
+			I[sizeI] = i;
+			sizeI++;
+		}
+	
+	}
+	subXTv(z, g);
+
+	for(i=0;i<w_size;i++)
+		g[i] = w[i] + 2*g[i];
+}
+
 
 // A coordinate descent algorithm for
 // multi-class support vector machines by Crammer and Singer
@@ -374,7 +420,7 @@ int compare_double(const void *a, const void *b)
 void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new)
 {
 	int r;
-	double *D=CMath::clone_vector(state->B, active_i);
+	double *D=SGVector<float64_t>::clone_vector(state->B, active_i);
 
 	if(yi < active_i)
 		D[yi] += A_i*C_yi;
@@ -399,7 +445,7 @@ bool Solver_MCSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double min
 {
 	double bound = 0;
 	if(m == yi)
-		bound = C[GETI(i)];
+		bound = C[int32_t(GETI(i))];
 	if(alpha_i == bound && state->G[m] < minG)
 		return true;
 	return false;
@@ -530,7 +576,7 @@ void Solver_MCSVM_CS::solve()
 						maxG = G[m];
 				}
 				if(y_index[i] < active_size_i[i])
-					if(alpha_i[prob->y[i]] < C[GETI(i)] && G[y_index[i]] < minG)
+					if(alpha_i[int32_t(prob->y[i])] < C[int32_t(GETI(i))] && G[y_index[i]] < minG)
 						minG = G[y_index[i]];
 
 				for(m=0;m<active_size_i[i];m++)
@@ -572,7 +618,7 @@ void Solver_MCSVM_CS::solve()
 				for(m=0;m<active_size_i[i];m++)
 					B[m] = G[m] - Ai*alpha_i[alpha_index_i[m]] ;
 
-				solve_sub_problem(Ai, y_index[i], C[GETI(i)], active_size_i[i], alpha_new);
+				solve_sub_problem(Ai, y_index[i], C[int32_t(GETI(i))], active_size_i[i], alpha_new);
 				int nz_d = 0;
 				for(m=0;m<active_size_i[i];m++)
 				{

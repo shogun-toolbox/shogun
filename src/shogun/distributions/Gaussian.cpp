@@ -232,7 +232,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 			m_u=SGMatrix<float64_t>(cov.num_rows,cov.num_rows);
 			memcpy(m_u.matrix, cov.matrix, sizeof(float64_t)*cov.num_rows*cov.num_rows);
 
-			m_d.vector=CMath::compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);
+			m_d.vector=SGMatrix<float64_t>::compute_eigenvectors(m_u.matrix, cov.num_rows, cov.num_rows);
 			m_d.vlen=cov.num_rows;
 			m_u.num_rows=cov.num_rows;
 			m_u.num_cols=cov.num_rows;

@@ -12,7 +12,7 @@
 #ifndef _MULTICLASSMACHINE_H___
 #define _MULTICLASSMACHINE_H___
 
-#include <shogun/machine/Machine.h>
+#include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -24,7 +24,7 @@ class CFeatures;
 class CLabels;
 
 /** @brief experimental abstract generic multiclass machine class */
-class CMulticlassMachine : public CMachine
+class CMulticlassMachine : public CBaseMulticlassMachine
 {
 	public:
 		/** default constructor  */
@@ -70,15 +70,6 @@ class CMulticlassMachine : public CMachine
 		inline CMachine* get_machine(int32_t num) const
 		{
 			return (CMachine*)m_machines->get_element_safe(num);
-		}
-
-		/** get number of machines
-		 *
-		 * @return number of machines
-		 */
-		inline int32_t get_num_machines() const
-		{
-			return m_machines->get_num_elements();
 		}
 
 		/** get outputs of i-th submachine
@@ -140,27 +131,6 @@ class CMulticlassMachine : public CMachine
 			return "MulticlassMachine";
 		}
 
-		virtual EProblemType get_machine_problem_type() const 
-		{
-			return PT_MULTICLASS;
-		}
-
-		/** get classifier type
-		 */
-		virtual EMachineType get_classifier_type()
-        {
-            return CT_MULTICLASS;
-        }
-
-        /** check whether the labels is valid.
-         *
-         * @param lab the labels being checked, guaranteed to be non-NULL
-         */
-        virtual bool is_label_valid(CLabels *lab) const
-        {
-            return lab->get_label_type() == LT_MULTICLASS;
-        }
-
 	protected:
 		/** init strategy */
 		void init_strategy();
@@ -212,9 +182,6 @@ class CMulticlassMachine : public CMachine
 
 		/** machine */
 		CMachine* m_machine;
-
-		/** machines */
-		CDynamicObjectArray *m_machines;
 };
 }
 #endif

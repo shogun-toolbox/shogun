@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
 
 	SGVector< int32_t > out_labels = output->get_int_labels();
-	CMath::display_vector(out_labels.vector, out_labels.vlen);
+	SGVector<int32_t>::display_vector(out_labels.vector, out_labels.vlen);
 
 	// Free resources
 	SG_UNREF(mc_svm);

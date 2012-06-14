@@ -253,7 +253,7 @@ namespace shogun
 				ASSERT (!empty ());
 				while (true)
 				{
-					uint32_t r = CMath::random(0, patterns.size ()-1);
+					uint32_t r = CMath::random(uint32_t(0), uint32_t(patterns.size ()-1));
 					if (patterns[r].exists ())
 						return patterns[r];
 				}

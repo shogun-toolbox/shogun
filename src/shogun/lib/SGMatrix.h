@@ -18,6 +18,7 @@
 
 namespace shogun
 {
+	template<class T> class SGVector;
 /** @brief shogun matrix */
 template<class T> class SGMatrix : public SGReferencedData
 {
@@ -116,15 +117,151 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/** clone vector */
-		template <class VT>
-		static VT* clone_matrix(const VT* matrix, int32_t nrows, int32_t ncols)
+		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
 		{
-			VT* result = SG_MALLOC(VT, int64_t(nrows)*ncols);
+			T* result = SG_MALLOC(T, int64_t(nrows)*ncols);
 			for (int64_t i=0; i<int64_t(nrows)*ncols; i++)
 				result[i]=matrix[i];
 
 			return result;
 		}
+
+		static void transpose_matrix(
+			T*& matrix, int32_t& num_feat, int32_t& num_vec);
+
+		static void create_diagonal_matrix(T* matrix, T* v,int32_t size)
+		{
+			for(int32_t i=0;i<size;i++)
+			{
+				for(int32_t j=0;j<size;j++)
+				{
+					if(i==j)
+						matrix[j*size+i]=v[i];
+					else
+						matrix[j*size+i]=0;
+				}
+			}
+		}
+
+		/** returns the identity matrix, scaled by a factor
+		 *
+		 * @param size size of square identity matrix
+		 * @param scale (optional) scaling factor
+		 */
+		static SGMatrix<T> create_identity_matrix(index_t size, T scale);
+
+		/** returns the centering matrix, given by H=I-1/n*O, where
+		 * I is the identity matrix, O is a square matrix of ones of size n
+		 * Multiplied from the left hand side, subtracts from each column
+		 * its mean.
+		 * Multiplied from the right hand side, subtracts from each row
+		 * its mean (so from each dimension of a SHOGUN feature)
+		 *
+		 * Note that H*H=H=H^T
+		 *
+		 * @param size size of centering matrix
+		 */
+		static SGMatrix<float64_t> create_centering_matrix(index_t size);
+
+#ifdef HAVE_LAPACK
+		/** compute eigenvalues and eigenvectors of symmetric matrix using
+		 * LAPACK
+		 *
+		 * @param matrix symmetric matrix to compute eigenproblem. Is
+		 * overwritten and contains orthonormal eigenvectors afterwards
+		 * @return eigenvalues vector with eigenvalues equal to number of rows
+		 * in matrix
+		 * */
+		static SGVector<float64_t> compute_eigenvectors(
+				SGMatrix<float64_t> matrix);
+
+		/** compute eigenvalues and eigenvectors of symmetric matrix
+		 *
+		 * @param matrix  overwritten and contains n orthonormal eigenvectors
+		 * @param n
+		 * @param m
+		 * @return eigenvalues (array of length n, to be deleted[])
+		 * */
+		static double* compute_eigenvectors(double* matrix, int n, int m);
+
+		/* Computes scale* A*B, where A and B may be transposed.
+		 * Asserts for matching inner dimensions.
+		 * @param A matrix A
+		 * @param transpose_A optional whether A should be transposed before
+		 * @param B matrix B
+		 * @param transpose_B optional whether B should be transposed before
+		 * @param scale optional scaling factor for result
+		 */
+		static SGMatrix<float64_t> matrix_multiply(
+				SGMatrix<float64_t> A, SGMatrix<float64_t> B,
+				bool transpose_A=false, bool transpose_B=false,
+				float64_t scale=1.0);
+
+		/// inverses square matrix in-place
+		static void inverse(SGMatrix<float64_t> matrix);
+
+		/// return the pseudo inverse for matrix
+		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
+		static float64_t* pinv(
+			float64_t* matrix, int32_t rows, int32_t cols,
+			float64_t* target=NULL);
+
+#endif
+
+		static inline float64_t trace(
+			float64_t* mat, int32_t cols, int32_t rows)
+		{
+			float64_t trace=0;
+			for (int32_t i=0; i<rows; i++)
+				trace+=mat[i*cols+i];
+			return trace;
+		}
+
+		/* Sums up all rows of a matrix and returns the resulting rowvector */
+		static T* get_row_sum(T* matrix, int32_t m, int32_t n)
+		{
+			T* rowsums=SG_CALLOC(T, n);
+
+			for (int32_t i=0; i<n; i++)
+			{
+				for (int32_t j=0; j<m; j++)
+					rowsums[i]+=matrix[j+int64_t(i)*m];
+			}
+			return rowsums;
+		}
+
+		/* Sums up all columns of a matrix and returns the resulting columnvector */
+		static T* get_column_sum(T* matrix, int32_t m, int32_t n)
+		{
+			T* colsums=SG_CALLOC(T, m);
+
+			for (int32_t i=0; i<n; i++)
+			{
+				for (int32_t j=0; j<m; j++)
+					colsums[j]+=matrix[j+int64_t(i)*m];
+			}
+			return colsums;
+		}
+
+		void center()
+		{
+			center_matrix(matrix, num_rows, num_cols);
+		}
+
+		/* Centers  matrix (e.g. kernel matrix in feature space INPLACE */
+		static void center_matrix(T* matrix, int32_t m, int32_t n);
+
+		/** display matrix */
+		void display_matrix(const char* name="matrix") const;
+
+		/// display matrix (useful for debugging)
+		static void display_matrix(
+			const T* matrix, int32_t rows, int32_t cols,
+			const char* name="matrix", const char* prefix="");
+
+		static void display_matrix(
+			const SGMatrix<T> matrix, const char* name="matrix",
+			const char* prefix="");
 
 	protected:
 		/** needs to be overridden to copy data */

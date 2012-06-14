@@ -51,7 +51,7 @@ bool CGUILabels::load(char* filename, char* target)
 		CAsciiFile* file=new CAsciiFile(filename);
 		labels=new CRegressionLabels(file);
 		SGVector<float64_t> labs = ((CRegressionLabels*) labels)->get_labels();
-		float64_t* lab=CMath::clone_vector(labs.vector, labs.vlen);
+		float64_t* lab=SGVector<float64_t>::clone_vector(labs.vector, labs.vlen);
 		labels=infer_labels(lab, labs.vlen);
 
 		if (labels)

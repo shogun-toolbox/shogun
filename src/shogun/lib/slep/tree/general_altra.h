@@ -127,7 +127,7 @@ void general_altra(double *x, double *v, int n, double *G, double *ind, int node
  * It applies altra for each row (1xk) of X and V
  *
  */
-void general_altra_mt(double *X, double *V, int n, int k, double *G, double *ind, int nodes);
+void general_altra_mt(double *X, double *V, int n, int k, double *G, double *ind, int nodes, double mult=1.0);
 
 /*
  * compute
@@ -191,6 +191,6 @@ double general_findLambdaMax(double *v, int n, double *G, double *ind, int nodes
  * It applies findLambdaMax for each row (1xk) of X and V
  *
  */
-void general_findLambdaMax_mt(double *lambdaMax, double *V, int n, int k, double *G, double *ind, int nodes);
+double general_findLambdaMax_mt(double *V, int n, int k, double *G, double *ind, int nodes);
 #endif   /* ----- #ifndef GENERAL_ALTRA_SLEP  ----- */
 

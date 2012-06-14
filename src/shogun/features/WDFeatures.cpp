@@ -116,7 +116,7 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 	int32_t* val=SG_MALLOC(int32_t, len);
-	CMath::fill_vector(val, len, 0);
+	SGVector<int32_t>::fill_vector(val, len, 0);
 
 	int32_t asize=alphabet_size;
 	int32_t asizem1=1;
@@ -153,7 +153,7 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 	bool free_vec1;
 	uint8_t* vec = strings->get_feature_vector(vec_idx1, len, free_vec1);
 	int32_t* val=SG_MALLOC(int32_t, len);
-	CMath::fill_vector(val, len, 0);
+	SGVector<int32_t>::fill_vector(val, len, 0);
 
 	int32_t asize=alphabet_size;
 	int32_t asizem1=1;
@@ -230,7 +230,7 @@ void* CWDFeatures::get_feature_iterator(int32_t vector_index)
 
 	it->vec = strings->get_feature_vector(vector_index, it->vlen, it->vfree);
 	it->val=SG_MALLOC(int32_t, it->vlen);
-	CMath::fill_vector(it->val, it->vlen, 0);
+	SGVector<int32_t>::fill_vector(it->val, it->vlen, 0);
 
 	it->asize=alphabet_size;
 	it->asizem1=1;

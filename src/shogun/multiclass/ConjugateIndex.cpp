@@ -120,7 +120,7 @@ bool CConjugateIndex::train_machine(CFeatures* data)
 		            class_feature_matrix.matrix,num_features,
 		            0.0,matrix.matrix,count);
 
-		CMath::inverse(matrix);
+		SGMatrix<float64_t>::inverse(matrix);
 
 		cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,
 		            count,num_features,count,

@@ -14,6 +14,7 @@
 #include <shogun/mathematics/arpack.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/Distance.h>
@@ -173,7 +174,7 @@ void* CKernelLocalTangentSpaceAlignment::run_kltsa_thread(void* p)
 				local_gram_matrix[j*m_k+k] = kernel_matrix[neighborhood_matrix[i*m_k+j]*N+neighborhood_matrix[i*m_k+k]];
 		}
 
-		CMath::center_matrix(local_gram_matrix,m_k,m_k);
+		SGMatrix<float64_t>::center_matrix(local_gram_matrix,m_k,m_k);
 
 		int32_t info = 0;
 		wrap_dsyevr('V','U',m_k,local_gram_matrix,m_k,m_k-target_dim+1,m_k,ev_vector,G_matrix+m_k,&info);

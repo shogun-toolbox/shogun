@@ -58,9 +58,9 @@ int main(int argc, char **argv)
 
 	index_t offset_subset=1;
 	SGVector<index_t> feature_subset(8);
-	CMath::range_fill_vector(feature_subset.vector, feature_subset.vlen,
+	SGVector<index_t>::range_fill_vector(feature_subset.vector, feature_subset.vlen,
 			offset_subset);
-	CMath::display_vector(feature_subset.vector, feature_subset.vlen,
+	SGVector<index_t>::display_vector(feature_subset.vector, feature_subset.vlen,
 			"feature subset");
 
 	f->add_subset(feature_subset);
@@ -81,9 +81,9 @@ int main(int argc, char **argv)
 
 	index_t offset_copy=2;
 	SGVector<index_t> feature_copy_subset(4);
-	CMath::range_fill_vector(feature_copy_subset.vector,
+	SGVector<index_t>::range_fill_vector(feature_copy_subset.vector,
 			feature_copy_subset.vlen, offset_copy);
-	CMath::display_vector(feature_copy_subset.vector, feature_copy_subset.vlen,
+	SGVector<index_t>::display_vector(feature_copy_subset.vector, feature_copy_subset.vlen,
 			"indices that are to be copied");
 
 	CStringFeatures<char>* subset_copy=(CStringFeatures<char>*)f->copy_subset(

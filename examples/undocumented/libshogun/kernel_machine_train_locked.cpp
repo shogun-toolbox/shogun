@@ -31,12 +31,12 @@ void test()
 	/* data means -1, 1 in all components, small std deviation */
 	SGVector<float64_t> mean_1(num_features);
 	SGVector<float64_t> mean_2(num_features);
-	CMath::fill_vector(mean_1.vector, mean_1.vlen, -10.0);
-	CMath::fill_vector(mean_2.vector, mean_2.vlen, 10.0);
+	SGVector<float64_t>::fill_vector(mean_1.vector, mean_1.vlen, -10.0);
+	SGVector<float64_t>::fill_vector(mean_2.vector, mean_2.vlen, 10.0);
 	float64_t sigma=0.5;
 
-	CMath::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
-	CMath::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
+	SGVector<float64_t>::display_vector(mean_1.vector, mean_1.vlen, "mean 1");
+	SGVector<float64_t>::display_vector(mean_2.vector, mean_2.vlen, "mean 2");
 
 	/* fill data matrix around mean */
 	SGMatrix<float64_t> train_dat(num_features, num_vectors);
@@ -49,7 +49,7 @@ void test()
 		}
 	}
 
-	CMath::display_matrix(train_dat.matrix, train_dat.num_rows, train_dat.num_cols, "training data");
+	SGMatrix<float64_t>::display_matrix(train_dat.matrix, train_dat.num_rows, train_dat.num_cols, "training data");
 
 	/* training features */
 	CDenseFeatures<float64_t>* features=
@@ -61,7 +61,7 @@ void test()
 	for (index_t i=0; i<num_vectors; ++i)
 		lab.vector[i]=i<num_vectors/2 ? -1.0 : 1.0;
 
-	CMath::display_vector(lab.vector, lab.vlen, "training labels");
+	SGVector<float64_t>::display_vector(lab.vector, lab.vlen, "training labels");
 
 	CBinaryLabels* labels=new CBinaryLabels(lab);
 	SG_REF(labels);
@@ -90,11 +90,11 @@ void test()
 	indices.vector[2]=3;
 	indices.vector[3]=4;
 	indices.vector[4]=5;
-	CMath::display_vector(indices.vector, indices.vlen, "training indices");
+	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
 	CBinaryLabels* output=CBinaryLabels::obtain_from_generic(svm->apply());
-	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
-	CMath::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
+	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
+	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
 	ASSERT(eval->evaluate(output, labels)==1);
 	SG_UNREF(output);
@@ -104,10 +104,10 @@ void test()
 	indices.vector[0]=1;
 	indices.vector[1]=2;
 	indices.vector[2]=3;
-	CMath::display_vector(indices.vector, indices.vlen, "training indices");
+	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	output=CBinaryLabels::obtain_from_generic(svm->apply());
-	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
-	CMath::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
+	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
+	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
 	ASSERT(eval->evaluate(output, labels)==1);
 	SG_UNREF(output);
@@ -115,11 +115,11 @@ void test()
 	SG_SPRINT("\n\n");
 	indices=SGVector<index_t>(4);
 	indices.range_fill();
-	CMath::display_vector(indices.vector, indices.vlen, "training indices");
+	SGVector<index_t>::display_vector(indices.vector, indices.vlen, "training indices");
 	svm->train_locked(indices);
 	output=CBinaryLabels::obtain_from_generic(svm->apply());
-	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
-	CMath::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
+	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "apply() output");
+	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_SPRINT("accuracy: %f\n", eval->evaluate(output, labels));
 	ASSERT(eval->evaluate(output, labels)==1);
 	SG_UNREF(output);
@@ -129,8 +129,8 @@ void test()
 	svm->train();
 	output=CBinaryLabels::obtain_from_generic(svm->apply());
 	ASSERT(eval->evaluate(output, labels)==1);
-	CMath::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
-	CMath::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
+	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(), "output");
+	SGVector<float64_t>::display_vector(labels->get_labels().vector, labels->get_labels().vlen, "training labels");
 	SG_UNREF(output);
 
 	/* clean up */

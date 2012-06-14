@@ -158,7 +158,7 @@ int lassoCD(double *Theta, double *W, double *S, double lambda, int n, int ith, 
 }
 
 
-void invConv(double *Theta, double *W, double *S, double lambda, double sum_S, int n,  
+void invCov(double *Theta, double *W, double *S, double lambda, double sum_S, int n,  
 		int LassoMaxIter, double fGap, double xGap, /*for the Lasso (inner iteration)*/
 		int maxIter, double xtol)  /*for the outer iteration*/
 {
@@ -199,7 +199,7 @@ void invConv(double *Theta, double *W, double *S, double lambda, double sum_S, i
 				W_old[i*n+j]=W[i*n+j];
 			}
 
-		printf("\n Outer Loop: %d, gap %e\n",iter_step,gap);
+		/* printf("\n Outer Loop: %d, gap %e\n",iter_step,gap); */
 
 
 		if ( (gap <= xtol) || (iter_step==maxIter-1) ){

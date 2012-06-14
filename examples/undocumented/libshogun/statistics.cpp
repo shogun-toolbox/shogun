@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  * Written (W) 2012 Victor Sadkov
  * Copyright (C) 2011 Moscow State University
@@ -16,17 +16,11 @@
 
 using namespace shogun;
 
-const int DATA_SIZE=100;
-
-int main(int argc, char **argv)
+void test_confidence_intervals()
 {
-	init_shogun_with_defaults();
-
-	SGVector<float64_t> data(DATA_SIZE);
-	CMath::random_vector(data.vector, data.vlen, 0.0, 1.0);
-
-	// for (int32_t i=0; i<DATA_SIZE; i++)
-		// SG_SPRINT("data[%02d] = %.5lf%s", i, data[i], (i+1)%4?"\t":"\n");
+	int32_t data_size=100;
+	SGVector<float64_t> data(data_size);
+	data.range_fill();
 
 	float64_t low, up, mean;
 	float64_t error_prob=0.1;
@@ -37,8 +31,95 @@ int main(int argc, char **argv)
 
 	SG_SPRINT("variance: %f\n", CStatistics::variance(data));
 	SG_SPRINT("deviation: %f\n", CStatistics::std_deviation(data));
+}
 
-	SG_SPRINT("\nEND\n");
+void test_inverse_student_t()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::inverse_student_t(1, 0.99);
+	SG_SPRINT("inverse_student_t(0.99, 1)=%f\n", difference);
+	difference-=31.820515953773953;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-14);
+
+	difference=CStatistics::inverse_student_t(2, 0.99);
+	SG_SPRINT("inverse_student_t(0.99, 2)=%f\n", difference);
+	difference-= 6.964556734283233;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-14);
+
+	difference=CStatistics::inverse_student_t(3, 0.99);
+	SG_SPRINT("inverse_student_t(0.99, 3)=%f\n", difference);
+	difference-=4.540702858568132;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-20);
+
+	difference=CStatistics::inverse_student_t(4, 0.99);
+	SG_SPRINT("inverse_student_t(0.99, 4)=%f\n", difference);
+	difference-=3.746947387979196;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-20);
+}
+
+void test_incomplete_gamma()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::incomplete_gamma(2, 1);
+	SG_SPRINT("incomplete_gamma(1, 2)=%f\n", difference);
+	difference-= 0.264241117657115;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::incomplete_gamma(3, 2);
+	SG_SPRINT("incomplete_gamma(3, 2)=%f\n", difference);
+	difference-= 0.323323583816937;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::incomplete_gamma(1, 0.1);
+	SG_SPRINT("incomplete_gamma(1, 0.1)=%f\n", difference);
+	difference-=0.095162581964040;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+}
+
+void test_gamma_cdf()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::gamma_cdf(0.95, 1, 2);
+	SG_SPRINT("gamma_cdf(0.95, 1, 2)=%f\n", difference);
+	difference-=0.378114943534980;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::gamma_cdf(0.95, 2, 2);
+	SG_SPRINT("gamma_cdf(0.95, 2, 2)=%f\n", difference);
+	difference-= 0.082719541714095;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-15);
+
+	difference=CStatistics::gamma_cdf(1, 1, 1);
+	SG_SPRINT("gamma_cdf(1, 1, 1)=%f\n", difference);
+	difference-= 0.632120558828558;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-15);
+
+	difference=CStatistics::gamma_cdf(0.95, 0.9, 1.1);
+	SG_SPRINT("gamma_cdf(0.95, 0.9, 1.1=%f\n", difference);
+	difference-= 0.624727614394445;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-15);
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+
+	test_confidence_intervals();
+	test_inverse_student_t();
+	test_incomplete_gamma();
+	test_gamma_cdf();
+
 	exit_shogun();
 
 	return 0;

@@ -213,7 +213,7 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 	// Initialize vectors in the embedded space randomly, Y is the short for
 	// new_feature_matrix
 	SGMatrix< float64_t > Y(m_target_dim, N);
-	CMath::random_vector(Y.matrix, m_target_dim*N, 0.0, 1.0);
+	SGVector<float64_t>::random_vector(Y.matrix, m_target_dim*N, 0.0, 1.0);
 
 	// SPE's loop
 	

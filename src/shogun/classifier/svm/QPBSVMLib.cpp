@@ -571,7 +571,7 @@ int32_t CQPBSVMLib::qpbsvm_prloqo(float64_t *x,
 
 	float64_t b=0;
 
-	CMath::display_vector(m_f, m_dim, "m_f");
+	SGVector<float64_t>::display_vector(m_f, m_dim, "m_f");
 	int32_t result=pr_loqo(m_dim, 1, m_f, m_H, a, &b, lb, ub, primal, dual,
 			2, 5, 1, -0.95, 10,0);
 
@@ -599,7 +599,7 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
 	{
 		for (int32_t i=0; i<m_dim; i++)
 		{
-			x[i]= (-m_f[i]-(CMath::dot(x,&m_H[m_dim*i], m_dim) -
+			x[i]= (-m_f[i]-(SGVector<float64_t>::dot(x,&m_H[m_dim*i], m_dim) -
 						m_H[m_dim*i+i]*x[i]))/m_H[m_dim*i+i];
 			x[i]=CMath::clamp(x[i], 0.0, 1.0);
 		}
@@ -630,7 +630,7 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
 	{
 		for (int32_t i=0; i<m_dim; i++)
 		{
-			x[i]-=0.001*(CMath::dot(x,&m_H[m_dim*i], m_dim)+m_f[i]);
+			x[i]-=0.001*(SGVector<float64_t>::dot(x,&m_H[m_dim*i], m_dim)+m_f[i]);
 			x[i]=CMath::clamp(x[i], 0.0, 1.0);
 		}
 	}

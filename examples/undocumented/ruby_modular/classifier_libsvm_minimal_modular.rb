@@ -23,7 +23,7 @@ feats_test.set_feature_matrix testdata_real
 kernel = Modshogun::GaussianKernel.new feats_train, feats_train, @width
 
 puts "labeling stuff"
-labels = Modshogun::Labels.new
+labels = Modshogun::BinaryLabels.new
 labels.set_labels trainlab
 svm = Modshogun::LibSVM.new C, kernel, labels
 svm.train

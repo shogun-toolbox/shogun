@@ -14,6 +14,16 @@
 %feature("autodoc", "get_alphas(self) -> [] of float") get_alphas;
 #endif
 
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorLinearMachine;
+%feature("director") shogun::CDirectorKernelMachine;
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+#endif
+
 /* Remove C Prefix */
 %rename(Machine) CMachine;
 %rename(KernelMachine) CKernelMachine;
@@ -52,6 +62,8 @@
 %rename(SVMLight) CSVMLight;
 %rename(SVMLightOneClass) CSVMLightOneClass;
 #endif //USE_SVMLIGHT
+%rename(DirectorLinearMachine) CDirectorLinearMachine;
+%rename(DirectorKernelMachine) CDirectorKernelMachine;
 
 /* These functions return new Objects */
 %newobject apply();
@@ -93,6 +105,8 @@
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
+%include <shogun/machine/DirectorLinearMachine.h>
+%include <shogun/machine/DirectorKernelMachine.h>
 
 #ifdef USE_SVMLIGHT
 
