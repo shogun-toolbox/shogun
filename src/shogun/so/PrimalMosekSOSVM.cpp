@@ -31,6 +31,11 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 {
 }
 
+void CPrimalMosekSOSVM::init()
+{
+	SG_ADD(&m_slacks, "m_slacks", "Slacks vector", MS_NOT_AVAILABLE);
+}
+
 CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
 {
 }
@@ -43,7 +48,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	int32_t N = m_features->get_num_vectors();
 
 	// Interface with MOSEK
-	CMosek* mosek = new CMosek(M+N, 0);
+	CMosek* mosek = new CMosek(0, M+N);
 	SG_REF(mosek);
 	if ( mosek->get_rescode() != MSK_RES_OK )
 	{
@@ -75,6 +80,9 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	m_w = SGVector< float64_t >(M);
 	m_w.zero();
 
+	m_slacks = SGVector< float64_t >(N);
+	m_slacks.zero();
+
 	// Initialize the list of constraints
 	// Each element in results is a list of CResultSet with the constraints 
 	// associated to each training example
@@ -94,6 +102,9 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	CResultSet* cur_res    = NULL;
 	CList*      cur_list   = NULL;
 	bool        exception  = false;
+
+	SGVector< float64_t > sol(M+N);
+	sol.zero();
 
 	do 
 	{
@@ -156,7 +167,14 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		}
 
 		// Solve the QP
-		mosek->optimize(m_w);
+		mosek->optimize(sol);
+		for ( int32_t i = 0 ; i < M+N ; ++i )
+		{
+			if ( i < M )
+				m_w[i] = sol[i];
+			else
+				m_slacks[i-M] = sol[i];
+		}
 
 	} while ( old_numcon != numcon && ! exception);
 

@@ -48,6 +48,12 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		/** destructor */
 		~CPrimalMosekSOSVM();
 
+		/** get slacks
+		 *
+		 * @return slacks
+		 */
+		inline SGVector< float64_t > get_slacks() const { return m_slacks; }
+
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "PrimalMosekSOSVM"; }
 
@@ -60,6 +66,8 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		virtual bool train_machine(CFeatures* data = NULL);
 
 	private:
+		void init();
+
 		/** computes the result of TODO equation
 		 *
 		 * @param result CResultSet structure with any argmax output
@@ -99,16 +107,9 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 */
 		bool add_constraint(CMosek* mosek, CResultSet* result, index_t con_idx, index_t train_idx) const;
 
-		/** TODO doc
-		 *
-		 * @param lb lower bound for 
-		 */
-		bool solve_qp() const;
-
-		/** TODO doc
-		 *
-		 */
-		double predicted_delta_loss(int32_t idx) const;
+	private:
+		/** slack variables associated to each training example */
+		SGVector< float64_t > m_slacks;
 
 }; /* class CPrimalMosekSOSVM */
 
