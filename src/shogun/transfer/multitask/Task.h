@@ -26,9 +26,11 @@ public:
 	/** constructor
 	 * @param min_index smallest index of vector in task
 	 * @param max_index largest index of vector in task
+	 * @param weight weight (optional)
 	 * @param name name of task (optional)
 	 */
-	CTask(index_t min_index, index_t max_index, const char* name="task");
+	CTask(index_t min_index, index_t max_index, 
+	      float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
 	~CTask();
@@ -41,11 +43,16 @@ public:
 	/** get min index */
 	index_t get_min_index() const { return m_min_index; }
 	/** set max index */
-	index_t set_min_index(index_t min_index) { m_min_index = min_index; }
+	void set_min_index(index_t min_index) { m_min_index = min_index; }
 	/** get min index */
 	index_t get_max_index() const { return m_max_index; }
 	/** set max index */
-	index_t set_max_index(index_t max_index) { m_max_index = max_index; }
+	void set_max_index(index_t max_index) { m_max_index = max_index; }
+	/** get weight */
+	float64_t get_weight() const { return m_weight; }
+	/** set weight */
+	void set_weight(float64_t weight) { m_weight = weight; }
+
 
 	/** get name */
 	virtual const char* get_name() const { return "Task"; };
@@ -63,6 +70,9 @@ private:
 
 	/** rind */
 	index_t m_max_index;
+
+	/** weight */
+	float64_t m_weight;
 
 	/** subtasks */
 	CList* m_subtasks;

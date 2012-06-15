@@ -31,6 +31,12 @@ public:
 	/** destructor */
 	virtual ~CTaskTree();
 
+	/** get root task */
+	CTask* get_root_task() const;
+
+	/** set root task */
+	void set_root_task(CTask* root_task);
+
 	/** returns information about tasks in 
 	 * SLEP "ind" format
 	 */
