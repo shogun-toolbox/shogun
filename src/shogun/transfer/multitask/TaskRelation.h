@@ -1,0 +1,44 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Copyright (C) 2012 Sergey Lisitsyn
+ */
+
+#ifndef TASKRELATION_H_
+#define TASKRELATION_H_
+
+#include <shogun/base/SGObject.h>
+
+namespace shogun
+{
+
+/** @brief
+ *
+ */
+class CTaskRelation : public CSGObject
+{
+public:
+
+	/** default constructor */
+	CTaskRelation()
+	{
+	}
+
+	/** destructor */
+	virtual ~CTaskRelation()
+	{
+	}
+
+	/** get name */
+	const char* get_name() const { return "TaskRelation"; };
+
+	virtual bool is_valid() const = 0;
+
+};
+
+}
+#endif
+

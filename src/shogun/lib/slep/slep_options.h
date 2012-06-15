@@ -29,6 +29,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 	double* ind;
 	double* G;
 	double* initial_w;
+	double q;
 
 	static bool get_default_general() { return false; }
 	static int get_default_termination() { return 2; }
@@ -36,6 +37,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 	static int get_default_max_iter() { return 1000; }
 	static int get_default_restart_num() { return 100; }
 	static int get_default_regularization() { return 0; }
+	static double get_default_q() { return 2.0; }
 };
 #endif
 }

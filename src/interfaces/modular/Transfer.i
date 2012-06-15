@@ -16,6 +16,11 @@
 %rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
 %rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 
+%rename(Task) CTask;
+%rename(TaskGroup) CTaskGroup;
+%rename(TaskTree) CTaskTree;
+%rename(MultitaskLSRegression) CMultitaskLSRegression;
+
 %rename(LibLinearMTL) CLibLinearMTL;
 
 /* Domain adaptation renames */
@@ -25,9 +30,6 @@
 %rename(DomainAdaptationSVMLinear) CDomainAdaptationSVMLinear;
 
 
-/* Includes */
-%include <shogun/lib/IndicesTree.h>
-
 /* Multitask includes */
 %include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
@@ -35,6 +37,12 @@
 %include <shogun/transfer/multitask/MultitaskKernelMaskNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelMaskPairNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
+
+%include <shogun/transfer/multitask/TaskRelation.h>
+%include <shogun/transfer/multitask/Task.h>
+%include <shogun/transfer/multitask/TaskGroup.h>
+%include <shogun/transfer/multitask/TaskTree.h>
+%include <shogun/transfer/multitask/MultitaskLSRegression.h>
 
 %include <shogun/transfer/multitask/LibLinearMTL.h>
 
