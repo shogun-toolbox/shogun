@@ -87,7 +87,7 @@ CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 
 	ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
 	ret->psi_pred  = get_joint_feature_vector(feat_idx, y);
-	ret->score     = score; 
+	ret->score     = max_score;
 	ret->delta     = delta_loss(feat_idx, y);
 	ret->argmax    = y;
 
@@ -101,7 +101,7 @@ float64_t CMulticlassModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred
 
 	/* TODO add checks for the castings!! */
 	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
-	return ( ((CRealNumber*) ytrue)->value == ((CRealNumber*) ypred)->value) ? 0 : 1;
+	return ( ((CRealNumber*) ytrue)->value == ((CRealNumber*) ypred)->value ) ? 0 : 1;
 
 	return 0;
 }
@@ -115,5 +115,5 @@ void CMulticlassModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1.0);
+	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1);
 }
