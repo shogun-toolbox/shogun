@@ -461,11 +461,11 @@ template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseM
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("set_sparse_feature_matrix() not allowed with subset\n");
 
+	SGSparseVector<ST>* sparse_matrix = SG_MALLOC(SGSparseVector<ST>, sm.num_vectors);
+	for (int32_t i=0; i<sm.num_vectors; i++)
+		sparse_matrix[i] = sm[i];
 
-	free_sparse_feature_matrix();
-	sm.own_matrix();
-
-	sparse_feature_matrix=sm.sparse_matrix;
+	sparse_feature_matrix=sparse_matrix;
 	num_features=sm.num_features;
 	num_vectors=sm.num_vectors;
 }

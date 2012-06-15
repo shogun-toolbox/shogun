@@ -152,12 +152,10 @@ class CLibLinearMTL : public CLinearMachine
 		}
 
 		/** set task similarity matrix */
-        /*
-		inline void set_task_similarity_matrix(SGMatrix<float64_t> tsm)
+		inline void set_task_similarity_matrix(SGSparseMatrix<float64_t> tsm)
 		{
 			task_similarity_matrix = tsm;
 		}
-        */
 
 		/** set graph laplacian */
 		inline void set_graph_laplacian(SGMatrix<float64_t> lap)

@@ -1689,12 +1689,10 @@ bool CSGInterface::cmd_get_features()
 				{
 					int64_t nnz=((CSparseFeatures<float64_t>*) feat)->
 						get_num_nonzero_entries();
-					int32_t num_feat=0;
-					int32_t num_vec=0;
-					SGSparseVector<float64_t>* fmatrix=((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix(num_feat, num_vec);
-					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", num_feat, num_vec, nnz);
+					SGSparseMatrix<float64_t> fmatrix = ((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix();
+					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", fmatrix.num_features, fmatrix.num_vectors, nnz);
 
-					set_sparse_matrix(fmatrix, num_feat, num_vec, nnz);
+					set_sparse_matrix(fmatrix.sparse_matrix, fmatrix.num_features, fmatrix.num_vectors, nnz);
 					break;
 				}
 
