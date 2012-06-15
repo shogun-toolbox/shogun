@@ -1,6 +1,4 @@
 %{
- #include <shogun/lib/IndicesTree.h>
-
  #include <shogun/transfer/multitask/MultitaskKernelNormalizer.h>
  #include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
  #include <shogun/transfer/multitask/MultitaskKernelTreeNormalizer.h>
@@ -9,6 +7,12 @@
  #include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
 
  #include <shogun/transfer/multitask/LibLinearMTL.h>
+
+ #include <shogun/transfer/multitask/TaskRelation.h>
+ #include <shogun/transfer/multitask/Task.h>
+ #include <shogun/transfer/multitask/TaskGroup.h>
+ #include <shogun/transfer/multitask/TaskTree.h>
+ #include <shogun/transfer/multitask/MultitaskLSRegression.h>
 
 #ifdef USE_SVMLIGHT
  #include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>

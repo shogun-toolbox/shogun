@@ -7,43 +7,43 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifndef  MULTITASKLEASTSQUARESREGRESSION_H_
-#define  MULTITASKLEASTSQUARESREGRESSION_H_
+#ifndef  MULTITASKLSREGRESSION_H_
+#define  MULTITASKLSREGRESSION_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/IndicesTree.h>
+#include <shogun/transfer/multitask/TaskRelation.h>
 #include <shogun/machine/SLEPMachine.h>
 
 namespace shogun
 {
 /** @brief  */
-class CMultitaskLeastSquaresRegression : public CSLEPMachine
+class CMultitaskLSRegression : public CSLEPMachine
 {
 
 	public:
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION)
 
 		/** default constructor */
-		CMultitaskLeastSquaresRegression();
+		CMultitaskLSRegression();
 
 		/** constructor
 		 *
 		 * @param z regularization coefficient
 		 * @param training_data training features
 		 * @param training_labels training labels
-		 * @param task_tree task tree 
+		 * @param task_relation task relation
 		 */
-		CMultitaskLeastSquaresRegression(
+		CMultitaskLSRegression(
 		     float64_t z, CDotFeatures* training_data, 
-		     CRegressionLabels* training_labels, CIndicesTree* task_tree);
+		     CRegressionLabels* training_labels, CTaskRelation* task_relation);
 
 		/** destructor */
-		virtual ~CMultitaskLeastSquaresRegression();
+		virtual ~CMultitaskLSRegression();
 
 		/** get name */
 		virtual const char* get_name() const 
 		{
-			return "MultitaskLeastSquaresRegression";
+			return "MultitaskLSRegression";
 		}
 
 		/** getter for current task
@@ -59,12 +59,12 @@ class CMultitaskLeastSquaresRegression : public CSLEPMachine
 		/** getter for task tree
 		 * @return task tree
 		 */
-		CIndicesTree* get_task_tree() const;
+		CTaskRelation* get_task_relation() const;
 
 		/** setter for task tree
 		 * @param task_tree task tree
 		 */
-		void set_task_tree(CIndicesTree* task_tree);
+		void set_task_relation(CTaskRelation* task_relation);
 		
 	protected:
 
@@ -82,11 +82,11 @@ class CMultitaskLeastSquaresRegression : public CSLEPMachine
 		int32_t m_current_task;
 
 		/** feature tree */
-		CIndicesTree* m_task_tree;
+		CTaskRelation* m_task_relation;
 
 		/** tasks w's */
 		SGMatrix<float64_t> m_tasks_w;
 
 };
 }
-#endif   /* ----- #ifndef MULTITASKLEASTSQUARESREGRESSION_H_  ----- */
+#endif
