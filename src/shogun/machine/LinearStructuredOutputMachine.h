@@ -48,6 +48,12 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 */
 		CDotFeatures* get_features() const;
 
+		/** get w
+		 *
+		 * @return w
+		 */
+		SGVector< float64_t > get_w() const;
+
 		/**
 		 * apply structured machine to data for Structured Output (SO)
 		 * problem

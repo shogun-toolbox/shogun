@@ -51,6 +51,11 @@ CDotFeatures* CLinearStructuredOutputMachine::get_features() const
 	return m_features;
 }
 
+SGVector< float64_t > CLinearStructuredOutputMachine::get_w() const
+{
+	return m_w;
+}
+
 CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* data)
 {
 	if (data)
