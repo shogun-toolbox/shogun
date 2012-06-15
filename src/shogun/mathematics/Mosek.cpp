@@ -121,7 +121,7 @@ MSKrescodee CMosek::init_sosvm(
 
 	// Input the matrix Q^0 for the objective
 	//
-	// NOTE: In MOSEK we minimize w'*Q^0*w. C != Q0 but Q0 is
+	// NOTE: In MOSEK we minimize x'*Q^0*x. C != Q0 but Q0 is
 	// just an extended version of C with zeros that make no
 	// difference in MOSEK's sparse representation
 	wrapper_putqobj(C);
