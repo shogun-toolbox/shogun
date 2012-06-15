@@ -20,6 +20,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/lib/external/shogun_liblinear.h>
+#include <shogun/lib/SGSparseMatrix.h>
 
 
 namespace shogun
@@ -141,8 +142,6 @@ class CLibLinearMTL : public CLinearMachine
 		/** set task indicator for lhs */
 		inline void set_task_indicator_lhs(SGVector<int32_t> ti)
 		{
-			// dear god, this is super verbose, isn't there a way to shorten this?
-			// yes we can! -- Sergey
 			task_indicator_lhs = ti;
 		}
 
@@ -153,10 +152,12 @@ class CLibLinearMTL : public CLinearMachine
 		}
 
 		/** set task similarity matrix */
+        /*
 		inline void set_task_similarity_matrix(SGMatrix<float64_t> tsm)
 		{
 			task_similarity_matrix = tsm;
 		}
+        */
 
 		/** set graph laplacian */
 		inline void set_graph_laplacian(SGMatrix<float64_t> lap)
@@ -193,11 +194,14 @@ class CLibLinearMTL : public CLinearMachine
                 float64_t* v_s = V.get_column_vector(s);
                 for (int32_t t=0; t<num_tasks; t++)
                 {
+                    //TODO: same interface for SparseMatrix!
+                    /*
                     float64_t sim_ts = task_similarity_matrix.matrix[s*num_tasks+t];
                     for(int32_t i=0; i<w_size; i++)
                     {
                         W.matrix[t*w_size + i] += sim_ts * v_s[i];
                     }
+                    */
                 }
             }
 
@@ -278,7 +282,8 @@ class CLibLinearMTL : public CLinearMachine
 		SGVector<int32_t> task_indicator_rhs;
 
 		/** task similarity matrix */
-		SGMatrix<float64_t> task_similarity_matrix;
+		//SGMatrix<float64_t> task_similarity_matrix;
+		SGSparseMatrix<float64_t> task_similarity_matrix;
 
 		/** task similarity matrix */
 		SGMatrix<float64_t> graph_laplacian;

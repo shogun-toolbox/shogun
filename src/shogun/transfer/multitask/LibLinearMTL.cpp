@@ -280,12 +280,20 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 
 			// we compute the inner sum by looping over tasks
 			// this update is the main result of MTL_DCD
+            SGSparseVector<float64_t> ts_row = task_similarity_matrix.sparse_matrix[ti];
+
 			float64_t inner_sum = 0;
-			for (int32_t k=0; k!=num_tasks; k++)
+			for (int32_t k=0; k!=ts_row.num_feat_entries; k++)
 			{
-				//inner_sum += M[t,ti] * all_lt[i] * np.dot(V[t,:], all_xt[i])
-				float64_t* tmp_w = V.get_column_vector(k);
-				inner_sum += task_similarity_matrix.matrix[k*num_tasks+ti] * yi * prob->x->dense_dot(i, tmp_w, n);
+				
+				// get data from sparse matrix
+				SGSparseVectorEntry<float64_t> e = ts_row.features[k];
+				int32_t e_i = e.feat_index;
+                float64_t sim = e.entry;
+
+				// fetch vector
+				float64_t* tmp_w = V.get_column_vector(e_i);
+				inner_sum += sim * yi * prob->x->dense_dot(i, tmp_w, n);
 
 				//possibly deal with bias
 				//if (prob->use_bias)
@@ -511,11 +519,15 @@ return obj
 		{
 			// look up task similarity
 			int32_t ti_j = task_indicator_lhs[j];
+
+            //TODO: same interface for sparse matrix
+            /*
 			float64_t ts = task_similarity_matrix.matrix[ti_i*num_tasks+ti_j];
 
 			// compute objective
 			obj -= 0.5 * ts * alphas[i] * alphas[j] * ((CBinaryLabels*)m_labels)->get_label(i) * 
 				((CBinaryLabels*)m_labels)->get_label(j) * features->dot(i, features,j);
+            */
 		}
 	}
 
