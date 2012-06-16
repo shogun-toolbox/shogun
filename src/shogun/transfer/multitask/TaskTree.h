@@ -49,6 +49,8 @@ public:
 
 	virtual bool is_valid() const;
 
+	virtual ETaskRelationType get_relation_type() const { return TREE; }
+
 	/** get name */
 	const char* get_name() const { return "TaskTree"; };
 

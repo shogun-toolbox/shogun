@@ -81,6 +81,7 @@ TARGETS = basic_minimal \
 		  kernel_machine_train_locked \
 		  statistics \
 		  statistics_quadratic_time_mmd \
+		  transfer_multitasklsregression
 
 all: $(TARGETS)
 
