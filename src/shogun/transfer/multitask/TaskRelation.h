@@ -15,6 +15,12 @@
 namespace shogun
 {
 
+enum ETaskRelationType
+{
+	GROUP,
+	TREE
+};
+
 /** @brief
  *
  */
@@ -35,8 +41,11 @@ public:
 	/** get name */
 	const char* get_name() const { return "TaskRelation"; };
 
+	/** check validity of relation */
 	virtual bool is_valid() const = 0;
 
+	/** get relation type */
+	virtual ETaskRelationType get_relation_type() const = 0;
 };
 
 }

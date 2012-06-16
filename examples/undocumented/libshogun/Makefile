@@ -80,6 +80,7 @@ TARGETS = basic_minimal \
 		  library_cover_tree \
 		  kernel_machine_train_locked \
 		  statistics \
+		  transfer_multitasklsregression
 
 all: $(TARGETS)
 

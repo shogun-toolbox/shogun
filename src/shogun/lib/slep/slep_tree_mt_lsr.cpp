@@ -47,10 +47,10 @@ SGMatrix<double> slep_tree_mt_lsr(
 	if (options.regularization!=0)
 	{
 		if (options.general)
-			lambda_max = findLambdaMax_mt(ATy, n_vecs, n_tasks, options.ind, options.n_nodes);
+			lambda_max = findLambdaMax_mt(ATy, n_vecs, n_tasks, options.ind_t, options.n_nodes);
 		else
 			lambda_max = general_findLambdaMax_mt(ATy, n_vecs, n_tasks, options.G, 
-			                                   options.ind, options.n_nodes);
+			                                   options.ind_t, options.n_nodes);
 		lambda = z*lambda_max;
 	}
 	else 
@@ -140,9 +140,9 @@ SGMatrix<double> slep_tree_mt_lsr(
 				v[i] = s[i] - g[i]*(1.0/L);
 
 			if (options.general)
-				general_altra_mt(w.matrix, v, n_feats, n_tasks, options.G, options.ind, options.n_nodes, lambda/L);
+				general_altra_mt(w.matrix, v, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes, lambda/L);
 			else
-				altra_mt(w.matrix, v, n_feats, n_tasks, options.ind, options.n_nodes, lambda/L);
+				altra_mt(w.matrix, v, n_feats, n_tasks, options.ind_t, options.n_nodes, lambda/L);
 
 			// v = x - s
 			for (i=0; i<n_feats*n_tasks; i++)
@@ -192,11 +192,11 @@ SGMatrix<double> slep_tree_mt_lsr(
 			for (j=0; j<n_tasks; j++)
 				w_row[j] = w(i,j);
 
-			if (options.general)
-				tree_norm += general_treeNorm(w_row,n_tasks,options.G,
-											 options.ind,options.n_nodes);
-			else
-				tree_norm += treeNorm(w_row,n_tasks,options.ind,options.n_nodes);
+			//if (options.general)
+			//	tree_norm += general_treeNorm(w_row,n_tasks,options.G,
+			//								 options.ind,options.n_nodes);
+			//else
+			//	tree_norm += treeNorm(w_row,n_tasks,options.ind,options.n_nodes);
 		}
 
 		funcp = func;

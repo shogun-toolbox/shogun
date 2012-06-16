@@ -25,12 +25,13 @@ CSLEPMachine::CSLEPMachine(
 	CLinearMachine(), m_z(1.0)
 {
 	set_z(z);
+	set_q(2.0);
 	set_features(train_features);
 	set_labels(train_labels);
-	set_termination(slep_options::get_default_termination());
-	set_regularization(slep_options::get_default_regularization());
-	set_tolerance(slep_options::get_default_tolerance());
-	set_max_iter(slep_options::get_default_max_iter());
+	set_termination(2);
+	set_regularization(0);
+	set_tolerance(1e-3);
+	set_max_iter(1000);
 }
 
 CSLEPMachine::~CSLEPMachine()
@@ -40,6 +41,7 @@ CSLEPMachine::~CSLEPMachine()
 void CSLEPMachine::register_parameters()
 {
 	SG_ADD(&m_z, "z", "regularization coefficient", MS_AVAILABLE);
+	SG_ADD(&m_q, "q", "q of L1/Lq", MS_AVAILABLE);
 	SG_ADD(&m_termination, "termination", "termination", MS_NOT_AVAILABLE);
 	SG_ADD(&m_regularization, "regularization", "regularization", MS_NOT_AVAILABLE);
 	SG_ADD(&m_tolerance, "tolerance", "tolerance", MS_NOT_AVAILABLE);
@@ -66,6 +68,10 @@ float64_t CSLEPMachine::get_z() const
 {
 	return m_z;
 }
+float64_t CSLEPMachine::get_q() const
+{
+	return m_q;
+}
 
 void CSLEPMachine::set_max_iter(int32_t max_iter)
 {
@@ -91,4 +97,9 @@ void CSLEPMachine::set_z(float64_t z)
 {
 	m_z = z;
 }
+void CSLEPMachine::set_q(float64_t q)
+{
+	m_q = q;
+}
+
 }

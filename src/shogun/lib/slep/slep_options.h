@@ -13,6 +13,8 @@
 
 #define IGNORE_IN_CLASSLIST
 
+#include <stdlib.h>
+
 namespace shogun
 {
 
@@ -26,18 +28,28 @@ IGNORE_IN_CLASSLIST struct slep_options
 	int restart_num;
 	int n_nodes;
 	int regularization;
-	double* ind;
+	int* ind;
+	double* ind_t;
 	double* G;
 	double* initial_w;
 	double q;
 
-	static bool get_default_general() { return false; }
-	static int get_default_termination() { return 2; }
-	static double get_default_tolerance() { return 1e-3; }
-	static int get_default_max_iter() { return 1000; }
-	static int get_default_restart_num() { return 100; }
-	static int get_default_regularization() { return 0; }
-	static double get_default_q() { return 2.0; }
+	static slep_options default_options()
+	{
+		slep_options opts;
+		opts.general = false;
+		opts.termination = 2;
+		opts.tolerance = 1e-3;
+		opts.max_iter = 1000;
+		opts.restart_num = 100;
+		opts.regularization = 0;
+		opts.q = 2.0;
+		opts.initial_w = NULL;
+		opts.ind = NULL;
+		opts.ind_t = NULL;
+		opts.G = NULL;
+		return opts;
+	}
 };
 #endif
 }

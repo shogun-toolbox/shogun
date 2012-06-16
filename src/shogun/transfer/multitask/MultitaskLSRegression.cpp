@@ -9,13 +9,18 @@
 
 #include <shogun/transfer/multitask/MultitaskLSRegression.h>
 #include <shogun/lib/slep/slep_tree_mt_lsr.h>
+#include <shogun/lib/slep/slep_mt_lsr.h>
 #include <shogun/lib/slep/slep_options.h>
+
+#include <shogun/transfer/multitask/TaskGroup.h>
+#include <shogun/transfer/multitask/TaskTree.h>
 
 namespace shogun
 {
 
 CMultitaskLSRegression::CMultitaskLSRegression() :
-	CSLEPMachine(), m_task_relation(NULL)
+	CSLEPMachine(), m_current_task(0), 
+	m_task_relation(NULL)
 {
 	register_parameters();
 }
@@ -23,7 +28,8 @@ CMultitaskLSRegression::CMultitaskLSRegression() :
 CMultitaskLSRegression::CMultitaskLSRegression(
      float64_t z, CDotFeatures* train_features, 
      CRegressionLabels* train_labels, CTaskRelation* task_relation) :
-	CSLEPMachine(z,train_features,(CLabels*)train_labels), m_task_relation(NULL)
+	CSLEPMachine(z,train_features,(CLabels*)train_labels), 
+	m_current_task(0), m_task_relation(NULL)
 {
 	set_task_relation(task_relation);
 	register_parameters();
@@ -46,10 +52,10 @@ int32_t CMultitaskLSRegression::get_current_task() const
 
 void CMultitaskLSRegression::set_current_task(int32_t task)
 {
-	ASSERT(task>0);
+	ASSERT(task>=0);
 	ASSERT(task<m_tasks_w.num_cols);
 	m_current_task = task;
-	int32_t n_feats = ((CDotFeatures*)features)->get_dim_feature_space();
+	int32_t n_feats = m_tasks_w.num_rows;
 	w = SGVector<float64_t>(n_feats);
 	for (int32_t i=0; i<n_feats; i++)
 		w[i] = m_tasks_w(i,task);
@@ -76,17 +82,40 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 	ASSERT(features);
 	ASSERT(m_labels);
 
-	int32_t n_vectors = features->get_num_vectors();
+	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
+	
+	slep_options options = slep_options::default_options();
+	options.q = m_q;
+	options.regularization = m_regularization;
+	options.termination = m_termination;
+	options.tolerance = m_tolerance;
 
-	float64_t* y = SG_MALLOC(float64_t, n_vectors);
-	for (int32_t i=0; i<n_vectors; i++)
-		y[i] = ((CRegressionLabels*)m_labels)->get_label(i);
+	ETaskRelationType relation_type = m_task_relation->get_relation_type();
+	switch (relation_type)
+	{
+		case GROUP:
+		{
+			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
+			SGVector<index_t> ind = task_group->get_SLEP_ind();
+			options.ind = ind.vector;
+			options.n_nodes = ind.vlen-1;
 
-	slep_options options;
+			m_tasks_w = slep_mt_lsr(features, y.vector, m_z, options);
+		}
+		break;
+		case TREE: 
+		{
+			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+			SGVector<index_t> ind = task_tree->get_SLEP_ind();
+			options.ind = ind.vector;
+			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
+			options.ind_t = ind_t.vector;
 
-	SG_NOTIMPLEMENTED;
-
-	SG_FREE(y);
+			m_tasks_w = slep_tree_mt_lsr(features, y.vector, m_z, options);
+		}
+		default: 
+			SG_ERROR("Not supported task relation type\n");
+	}
 
 	return true;
 }

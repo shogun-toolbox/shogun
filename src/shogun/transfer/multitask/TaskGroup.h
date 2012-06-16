@@ -34,12 +34,19 @@ public:
 	 */
 	void add_task(CTask* task);
 
+	/** remove task from group
+	 * @param task task to remove
+	 */
+	void remove_task(CTask* task);
+
 	/** returns information about tasks in 
 	 * SLEP "ind" format
 	 */
 	SGVector<index_t> get_SLEP_ind();
 
 	virtual bool is_valid() const;
+
+	virtual ETaskRelationType get_relation_type() const { return GROUP; }
 
 	/** get name */
 	const char* get_name() const { return "TaskGroup"; };

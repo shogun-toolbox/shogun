@@ -28,7 +28,7 @@ SGMatrix<double> slep_mt_lsr(
 	double lambda, lambda_max, beta;
 	double funcp = 0.0, func = 0.0;
 
-	int n_tasks;
+	int n_tasks = options.n_nodes;
 
 	int iter = 1;
 	bool done = false;
@@ -37,7 +37,7 @@ SGMatrix<double> slep_mt_lsr(
 	double* ATy = SG_CALLOC(double, n_feats*n_tasks);
 	for (t=0; t<n_tasks; t++)
 	{
-		int task_ind_start = options.ind[t]+1;
+		int task_ind_start = options.ind[t];
 		int task_ind_end = options.ind[t+1];
 		for (i=task_ind_start; i<task_ind_end; i++)
 			features->add_to_dense_vec(y[i],i,ATy+t*n_feats,n_feats);
@@ -45,39 +45,47 @@ SGMatrix<double> slep_mt_lsr(
 
 	if (options.regularization!=0)
 	{
-		/*
-		if (options.general)
-			lambda_max = findLambdaMax_mt(ATy, n_vecs, n_tasks, options.ind, options.n_nodes);
+		if (z<0 || z>1)
+			SG_SERROR("z is not in range [0,1]");
+
+		double q_bar = 0.0;
+		if (options.q==1)
+			q_bar = CMath::ALMOST_INFTY;
+		else if (options.q>1e-6)
+			q_bar = 1;
 		else
-			lambda_max = general_findLambdaMax_mt(ATy, n_vecs, n_tasks, options.G, 
-			                                   options.ind, options.n_nodes);
+			q_bar = options.q/(options.q-1);
+		lambda_max = 0.0;
+
+		for (t=0; t<n_tasks; t++)
+		{
+			lambda_max = 
+				CMath::max(lambda_max, 
+						SGVector<float64_t>::qnorm(ATy+t*n_feats, n_feats, q_bar));
+		}
+
 		lambda = z*lambda_max;
-		*/
 	}
 	else 
 		lambda = z;
 
 	SGMatrix<double> w(n_feats,n_tasks);
+	w.zero();
 	if (options.initial_w)
 	{
 		for (j=0; j<n_tasks; j++)
 			for (i=0; i<n_feats; i++)
 				w(i,j) = options.initial_w[j*n_feats+i];
 	}
-	else
-	{
-		for (j=0; j<n_tasks*n_feats; j++)
-				w[j] = 0.0;
-	}
 
 	double* s = SG_CALLOC(double, n_feats*n_tasks);
-	double* g = SG_CALLOC(double, n_feats*n_tasks);
-	double* v = SG_CALLOC(double, n_feats*n_tasks);
+	double* g = SG_CALLOC(double, n_feats*n_tasks*2);
+	double* v = SG_CALLOC(double, n_feats*n_tasks*2);
 
 	double* Aw = SG_CALLOC(double, n_vecs);
 	for (t=0; t<n_tasks; t++)
 	{
-		int task_ind_start = options.ind[t]+1;
+		int task_ind_start = options.ind[t];
 		int task_ind_end = options.ind[t+1];
 		for (i=task_ind_start; i<task_ind_end; i++)
 			Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
@@ -118,7 +126,7 @@ SGMatrix<double> slep_mt_lsr(
 
 		for (t=0; t<n_tasks; t++)
 		{
-			int task_ind_start = options.ind[t]+1;
+			int task_ind_start = options.ind[t];
 			int task_ind_end = options.ind[t+1];
 			for (i=task_ind_start; i<task_ind_end; i++)
 				features->add_to_dense_vec(As[i],i,ATAs+t*n_feats,n_feats);
@@ -131,7 +139,7 @@ SGMatrix<double> slep_mt_lsr(
 		for (i=0; i<n_feats*n_tasks; i++)
 			wp[i] = w[i];
 
-		for (i=0; i<n_vecs*n_tasks; i++)
+		for (i=0; i<n_vecs; i++)
 			Awp[i] = Aw[i];
 
 		while (true)
@@ -140,7 +148,7 @@ SGMatrix<double> slep_mt_lsr(
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = s[i] - g[i]*(1.0/L);
 
-			eppMatrix(w.matrix, v, n_vecs, n_tasks, lambda/L, options.q);
+			eppMatrix(w.matrix, v, n_feats, n_tasks, lambda/L, options.q);
 
 			// v = x - s
 			for (i=0; i<n_feats*n_tasks; i++)
@@ -148,7 +156,7 @@ SGMatrix<double> slep_mt_lsr(
 
 			for (t=0; t<n_tasks; t++)
 			{
-				int task_ind_start = options.ind[t]+1;
+				int task_ind_start = options.ind[t];
 				int task_ind_end = options.ind[t+1];
 				for (i=task_ind_start; i<task_ind_end; i++)
 					Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
@@ -185,10 +193,10 @@ SGMatrix<double> slep_mt_lsr(
 			resid[i] = Aw[i] - y[i];
 
 		double w_norm = 0.0;
-		for (i=0; i<n_vecs; i++)
+		for (i=0; i<n_feats; i++)
 		{
 			double w_row_norm = 0.0;
-			for (t=0; t<n_tasks; i++)
+			for (t=0; t<n_tasks; t++)
 				w_row_norm += CMath::pow(w(i,t),options.q);
 			w_norm += CMath::pow(w_row_norm,1.0/options.q);
 		}
@@ -261,6 +269,7 @@ SGMatrix<double> slep_mt_lsr(
 		iter++;
 	}
 
+	// SG_SPRINT("Iteration = %d\n", iter);
 	// TODO Nemirovsky, Nesterov methods
 
 	SG_FREE(ATy);
