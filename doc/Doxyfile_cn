@@ -31,7 +31,7 @@ PROJECT_NAME           = SHOGUN
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = v1.1.0
+PROJECT_NUMBER         = v2.0.0
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -1022,7 +1022,7 @@ PAPER_TYPE             = a4wide
 # The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX 
 # packages that should be included in the LaTeX output.
 
-EXTRA_PACKAGES         = 
+EXTRA_PACKAGES         = amsmath amscd amsxtra amsfonts amssymb amsthm
 
 # The LATEX_HEADER tag can be used to specify a personal LaTeX header for 
 # the generated latex document. The header should contain everything until 
@@ -1049,7 +1049,7 @@ USE_PDFLATEX           = YES
 # running if errors occur, instead of asking the user for help. 
 # This option is also used when generating formulas in HTML.
 
-LATEX_BATCHMODE        = NO
+LATEX_BATCHMODE        = YES
 
 # If LATEX_HIDE_INDICES is set to YES then doxygen will not 
 # include the index chapters (such as File Index, Compound Index, etc.) 
