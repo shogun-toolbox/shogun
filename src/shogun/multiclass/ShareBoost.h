@@ -11,6 +11,8 @@
 #ifndef SHAREBOOST_H__
 #define SHAREBOOST_H__
 
+#include <shogun/machine/LinearMulticlassMachine.h>
+#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 
@@ -24,7 +26,7 @@ public:
 	CShareBoost();
 
 	/** constructor */
-	CShareBoost(CDenseFeatures *features, CMulticlassLabels *labs);
+	CShareBoost(CDenseFeatures<float64_t> *features, CMulticlassLabels *labs, int32_t num_nonzero_feas);
 
     /** destructor */
 	virtual ~CShareBoost() {}
@@ -46,7 +48,7 @@ protected:
 	virtual bool train_machine(CFeatures* data = NULL);
 
 private:
-	init_sb_params();
+	void init_sb_params();
 
 	int32_t m_nonzero_feas;
 

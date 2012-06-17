@@ -8,18 +8,17 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/ShareBoost.h>
 
 using namespace shogun;
 
 CShareBoost::CShareBoost()
-	:CLinearMulticlassMachine(), :m_nonzero_feas(0)
+	:CLinearMulticlassMachine(), m_nonzero_feas(0)
 {
 	init_sb_params();
 }
 
-CShareBoost::CShareBoost(CDenseFeatures *features, CMulticlassLabels *labs, int32_t num_nonzero_feas)
+CShareBoost::CShareBoost(CDenseFeatures<float64_t> *features, CMulticlassLabels *labs, int32_t num_nonzero_feas)
 	:CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), features, NULL, labs), m_nonzero_feas(num_nonzero_feas)
 {
 	init_sb_params();
@@ -42,20 +41,22 @@ bool CShareBoost::train_machine(CFeatures* data)
 
 	if (m_nonzero_feas <= 0)
 		SG_ERROR("Set a valid (> 0) number of non-zero features to seek before training\n");
-	if (m_nonzero_feas >= m_features->get_num_features())
+	if (m_nonzero_feas >= dynamic_cast<CDenseFeatures<float64_t>*>(m_features)->get_num_features())
 		SG_ERROR("It doesn't make sense to use ShareBoost with num non-zero features >= num features in the data\n");
 
 	m_fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features)->get_feature_matrix();
-	m_rho = SGMatrix<float64_t>(m_strategy->get_num_classes(), m_fea.num_cols);
+	m_rho = SGMatrix<float64_t>(m_multiclass_strategy->get_num_classes(), m_fea.num_cols);
 
 	// release memory
 	m_fea = SGMatrix<float64_t>();
 	m_rho = SGMatrix<float64_t>();
+
+	return true;
 }
 
 void CShareBoost::set_features(CFeatures *f)
 {
-	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(f)
+	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(f);
 	if (fea == NULL)
 		SG_ERROR("Require DenseFeatures<float64_t>\n");
 	CLinearMulticlassMachine::set_features(fea);
