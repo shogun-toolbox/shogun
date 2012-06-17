@@ -1,0 +1,34 @@
+from numpy import array
+from numpy.random import seed, rand
+from tools.load import LoadMatrix
+lm=LoadMatrix()
+
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+
+parameter_list = [[traindat,testdat,label_traindat]]
+
+def transfer_multitask_group_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat):
+
+	from modshogun import RegressionLabels, RealFeatures, Task, TaskGroup, MultitaskLSRegression
+
+	features = RealFeatures(traindat)
+	labels = RegressionLabels(label_train)
+
+	n_vectors = features.get_num_vectors()
+	task_one = Task(0,n_vectors/2)
+	task_two = Task(n_vectors/2,n_vectors)
+	task_group = TaskGroup()
+	task_group.add_task(task_one)
+	task_group.add_task(task_two)
+
+	mtlsr = MultitaskLSRegression(0.1,features,labels,task_group)
+	mtlsr.train()
+	mtlsr.set_current_task(0)
+	out = mtlsr.apply_regression().get_labels()
+	return out
+
+if __name__=='__main__':
+	print('TransferMultitaskGroupRegression')
+	transfer_multitask_group_regression(*parameter_list[0])
