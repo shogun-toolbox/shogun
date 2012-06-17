@@ -79,8 +79,8 @@ SGMatrix<double> slep_mt_lsr(
 	}
 
 	double* s = SG_CALLOC(double, n_feats*n_tasks);
-	double* g = SG_CALLOC(double, n_feats*n_tasks*2);
-	double* v = SG_CALLOC(double, n_feats*n_tasks*2);
+	double* g = SG_CALLOC(double, n_feats*n_tasks);
+	double* v = SG_CALLOC(double, n_feats*n_tasks);
 
 	double* Aw = SG_CALLOC(double, n_vecs);
 	for (t=0; t<n_tasks; t++)
@@ -165,7 +165,6 @@ SGMatrix<double> slep_mt_lsr(
 			for (i=0; i<n_vecs; i++)
 				Av[i] = Aw[i] - As[i];
 
-			// squared frobenius norm of r
 			double r_sum = SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
 
 			double l_sum = SGVector<float64_t>::dot(Av,Av,n_vecs);
@@ -192,17 +191,17 @@ SGMatrix<double> slep_mt_lsr(
 		for (i=0; i<n_vecs; i++)
 			resid[i] = Aw[i] - y[i];
 
-		double w_norm = 0.0;
+		double regularizer = 0.0;
 		for (i=0; i<n_feats; i++)
 		{
 			double w_row_norm = 0.0;
 			for (t=0; t<n_tasks; t++)
 				w_row_norm += CMath::pow(w(i,t),options.q);
-			w_norm += CMath::pow(w_row_norm,1.0/options.q);
+			regularizer += CMath::pow(w_row_norm,1.0/options.q);
 		}
 
 		funcp = func;
-		func = 0.5*SGVector<float64_t>::dot(resid,resid,n_vecs) + lambda*w_norm;
+		func = 0.5*SGVector<float64_t>::dot(resid,resid,n_vecs) + lambda*regularizer;
 
 		if (gradient_break)
 			break;
@@ -251,26 +250,8 @@ SGMatrix<double> slep_mt_lsr(
 				done = true;
 		}
 
-		if (iter%options.restart_num==0)
-		{
-			alphap = 0.0;
-			alpha = 1.0;
-			L = 0.5*L;
-			for (i=0; i<n_feats; i++)
-				wp[i] = w[i];
-
-			for (i=0; i<n_vecs; i++)
-				Awp[i] = Aw[i];
-
-			for (i=0; i<n_feats; i++)
-				wwp[i] = 0.0;
-		}
-
 		iter++;
 	}
-
-	// SG_SPRINT("Iteration = %d\n", iter);
-	// TODO Nemirovsky, Nesterov methods
 
 	SG_FREE(ATy);
 	SG_FREE(wp);
