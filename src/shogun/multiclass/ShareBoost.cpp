@@ -1,0 +1,62 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2012 Chiyuan Zhang
+ * Copyright (C) 2012 Chiyuan Zhang
+ */
+
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/multiclass/ShareBoost.h>
+
+using namespace shogun;
+
+CShareBoost::CShareBoost()
+	:CLinearMulticlassMachine(), :m_nonzero_feas(0)
+{
+	init_sb_params();
+}
+
+CShareBoost::CShareBoost(CDenseFeatures *features, CMulticlassLabels *labs, int32_t num_nonzero_feas)
+	:CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), features, NULL, labs), m_nonzero_feas(num_nonzero_feas)
+{
+	init_sb_params();
+}
+
+void CShareBoost::init_sb_params()
+{
+	SG_ADD(&m_nonzero_feas, "m_nonzero_feas", "Number of non-zero features", MS_NOT_AVAILABLE);
+}
+
+bool CShareBoost::train_machine(CFeatures* data)
+{
+	if (data)
+		set_features(data);
+
+	if (m_features == NULL)
+		SG_ERROR("No features given for training\n");
+	if (m_labels == NULL)
+		SG_ERROR("No labels given for training\n");
+
+	if (m_nonzero_feas <= 0)
+		SG_ERROR("Set a valid (> 0) number of non-zero features to seek before training\n");
+	if (m_nonzero_feas >= m_features->get_num_features())
+		SG_ERROR("It doesn't make sense to use ShareBoost with num non-zero features >= num features in the data\n");
+
+	m_fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features)->get_feature_matrix();
+	m_rho = SGMatrix<float64_t>(m_strategy->get_num_classes(), m_fea.num_cols);
+
+	// release memory
+	m_fea = SGMatrix<float64_t>();
+	m_rho = SGMatrix<float64_t>();
+}
+
+void CShareBoost::set_features(CFeatures *f)
+{
+	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(f)
+	if (fea == NULL)
+		SG_ERROR("Require DenseFeatures<float64_t>\n");
+	CLinearMulticlassMachine::set_features(fea);
+}
