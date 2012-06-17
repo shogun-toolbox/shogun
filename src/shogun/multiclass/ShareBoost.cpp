@@ -46,12 +46,40 @@ bool CShareBoost::train_machine(CFeatures* data)
 
 	m_fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features)->get_feature_matrix();
 	m_rho = SGMatrix<float64_t>(m_multiclass_strategy->get_num_classes(), m_fea.num_cols);
+	m_activeset = SGVector<int32_t>(m_fea.num_rows);
+	m_activeset.vlen = 0;
+
+	m_machines->reset_array();
+	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
+		m_machines->push_back(new CLinearMachine());
+
+	for (int32_t t=0; t < m_nonzero_feas; ++t)
+	{
+		compute_rho();
+		int32_t i_fea = choose_feature();
+		m_activeset.vector[m_activeset.vlen] = i_fea;
+		m_activeset.vlen += 1;
+		optimize_coefficients();
+	}
 
 	// release memory
 	m_fea = SGMatrix<float64_t>();
 	m_rho = SGMatrix<float64_t>();
 
 	return true;
+}
+
+void CShareBoost::compute_rho()
+{
+}
+
+int32_t CShareBoost::choose_feature()
+{
+	return 0;
+}
+
+void CShareBoost::optimize_coefficients()
+{
 }
 
 void CShareBoost::set_features(CFeatures *f)

@@ -19,6 +19,14 @@
 namespace shogun
 {
 
+/** ShareBoost is a linear multiclass algorithm that efficiently
+ * learns a subset of features shared by all classes.
+ *
+ * See the following paper for details:
+ *
+ *     Shai Shalev-Shwartz, Yonatan Wexler, Amnon Shashua. ShareBoost: Efficient
+ *     Multiclass Learning with Feature Sharing. NIPS 2011.
+ */
 class CShareBoost: public CLinearMulticlassMachine
 {
 public:
@@ -48,9 +56,14 @@ protected:
 	virtual bool train_machine(CFeatures* data = NULL);
 
 private:
-	void init_sb_params();
+	void init_sb_params(); ///< init machine parameters
 
-	int32_t m_nonzero_feas;
+	void compute_rho(); ///< compute the rho matrix
+	int32_t choose_feature(); ///< choose next feature greedily
+	void optimize_coefficients(); ///< optimize coefficients with gradient descent
+
+	int32_t m_nonzero_feas; ///< number of non-zero features to seek
+	SGVector<int32_t> m_activeset; ///< selected features
 
 	SGMatrix<float64_t> m_fea; ///< feature matrix used during training
 	SGMatrix<float64_t> m_rho; ///< cache_matrix for rho
