@@ -61,12 +61,14 @@ private:
 	void compute_rho(); ///< compute the rho matrix
 	int32_t choose_feature(); ///< choose next feature greedily
 	void optimize_coefficients(); ///< optimize coefficients with gradient descent
+	void compute_pred(); ///< compute predictions on training data
 
 	int32_t m_nonzero_feas; ///< number of non-zero features to seek
 	SGVector<int32_t> m_activeset; ///< selected features
 
 	SGMatrix<float64_t> m_fea; ///< feature matrix used during training
 	SGMatrix<float64_t> m_rho; ///< cache_matrix for rho
+	SGMatrix<float64_t> m_pred; ///< predictions, used in training
 };
 
 } /* shogun */ 

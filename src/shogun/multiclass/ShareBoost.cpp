@@ -8,6 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/ShareBoost.h>
 
 using namespace shogun;
@@ -46,6 +47,8 @@ bool CShareBoost::train_machine(CFeatures* data)
 
 	m_fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features)->get_feature_matrix();
 	m_rho = SGMatrix<float64_t>(m_multiclass_strategy->get_num_classes(), m_fea.num_cols);
+	m_pred = SGMatrix<float64_t>(m_fea.num_cols, m_multiclass_strategy->get_num_classes());
+
 	m_activeset = SGVector<int32_t>(m_fea.num_rows);
 	m_activeset.vlen = 0;
 
@@ -60,6 +63,7 @@ bool CShareBoost::train_machine(CFeatures* data)
 		m_activeset.vector[m_activeset.vlen] = i_fea;
 		m_activeset.vlen += 1;
 		optimize_coefficients();
+		compute_pred();
 	}
 
 	// release memory
@@ -69,8 +73,34 @@ bool CShareBoost::train_machine(CFeatures* data)
 	return true;
 }
 
+void CShareBoost::compute_pred()
+{
+
+}
+
 void CShareBoost::compute_rho()
 {
+	CMulticlassLabels *lab = dynamic_cast<CMulticlassLabels *>(m_labels);
+	for (int32_t i=0; i < m_rho.num_rows; ++i)
+	{ // i loop classes
+		for (int32_t j=0; j < m_rho.num_cols; ++j)
+		{ // j loop samples
+			int32_t label = lab->get_int_label(j);
+
+			m_rho(i,j) = CMath::exp((label == i) - m_pred(j, label) + m_pred(j, i));
+		}
+	}
+
+	// normalize
+	for (int32_t j=0; j < m_rho.num_cols; ++j)
+	{
+		float64_t sum = 0;
+		for (int32_t i=0; i < m_rho.num_rows; ++i)
+			sum += m_rho(i,j);
+
+		for (int32_t i=0; i < m_rho.num_rows; ++i)
+			m_rho(i,j) /= sum;
+	}
 }
 
 int32_t CShareBoost::choose_feature()
