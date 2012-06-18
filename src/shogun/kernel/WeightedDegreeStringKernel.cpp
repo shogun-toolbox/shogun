@@ -17,7 +17,7 @@
 #include <shogun/base/Parallel.h>
 
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
-#include <shogun/kernel/FirstElementKernelNormalizer.h>
+#include <shogun/kernel/normalize/FirstElementKernelNormalizer.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 
