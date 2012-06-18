@@ -93,6 +93,7 @@ _swig=auto
 _lapack=auto
 _superlu=auto
 _arpack=auto
+_nlopt=auto
 _bigstates=yes
 _hmmcache=yes
 _debug=yes
@@ -1257,6 +1258,7 @@ Optional features:
   --enable-lapack                enable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --enable-arpack                enable arpack [auto]
   --enable-superlu               enable SuperLU [auto]
+  --enable-nlopt                 enable NLOPT [auto]
   --enable-cplex                 enable code using CPLEX  [auto]
   --enable-lpsolve               enable code using lpsolve  [auto]
   --enable-glpk                  enable code using GLPK [auto]
@@ -1280,7 +1282,8 @@ Optional features:
   --disable-largefile            disable large file support (64bit file acces routines) [enabled]
   --disable-lapack               disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-arpack               disable arpack [auto]
-  --disable-superlu              disable superlu [auto]
+  --disable-superlu              disable SuperLU [auto]
+  --disable-nlopt                disable NLOP [auto]
   --disable-cplex                disable code using CPLEX  [auto]
   --disable-lpsolve              disable code using lpsolve  [auto]
   --disable-glpk                 disable code using GLPK [auto]
@@ -1481,8 +1484,10 @@ EOF
 	  --enable-lapack)		_lapack=yes	;;
 	  --disable-arpack)		_arpack=no	;;
 	  --enable-arpack)		_arpack=yes	;;
-	  --disable-superlu)		_superlu=no	;;
-	  --enable-superlu)		_superlu=yes	;;
+	  --disable-superlu)	_superlu=no	;;
+	  --enable-superlu)		_superlu=yes;;
+	  --disable-nlopt)		_nlopt=no	;;
+	  --enable-nlopt)		_nlopt=yes	;;
 	  --disable-cplex)		_cplex=no	;;
 	  --enable-cplex)		_cplex=yes	;;
 	  --disable-spinlocks)	_spinlocks=no	;;
@@ -3324,6 +3329,36 @@ EOF
 	fi
 }
 
+check_nlopt()
+{
+	if test "$_nlopt" = yes || test "$_nlopt" = auto
+	then
+		cat > $TMPCXX << EOF
+#include <nlopt.h>
+int main(int argc, char **argv)
+{
+	nlopt_opt opt;
+	return 0;
+}
+EOF
+		echocheck "NLOPT support"
+		if cxx_check -lnlopt
+		then
+			echores "yes"
+			HAVE_ARPACK='#define HAVE_NLOPT 1'
+			DEFINES="$DEFINES -DHAVE_NLOPT"
+			POSTLINKFLAGS="$POSTLINKFLAGS -lnlopt"
+		else
+			if test "$_nlopt" = yes
+			then
+				die "nlopt not found"
+			else
+				echores "no"
+			fi
+		fi
+	fi
+}
+
 check_arpack()
 {
 	if test "$_arpack" = yes || test "$_arpack" = auto
@@ -4877,6 +4912,8 @@ $HAVE_DOXYGEN
 $HAVE_LAPACK
 $HAVE_MVEC
 $HAVE_ARPACK
+$HAVE_SUPERLU
+$HAVE_NLOPT
 $HAVE_ATLAS
 $HAVE_PTHREAD
 $HAVE_ACML
@@ -5022,6 +5059,7 @@ check_xml
 check_lapack
 check_superlu
 check_arpack
+check_nlopt
 check_cplex
 check_glpk
 check_lzo
