@@ -61,7 +61,6 @@
 %include "Structure_includes.i"
 %include "Multiclass_includes.i"
 %include "Transfer_includes.i"
-%include "SO_includes.i"
 %include "Loss_includes.i"
 
 %include "Machine.i"
@@ -83,5 +82,4 @@
 %include "Structure.i"
 %include "Multiclass.i"
 %include "Transfer.i"
-%include "SO.i"
 %include "Loss.i"

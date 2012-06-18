@@ -15,7 +15,7 @@
 #include <shogun/lib/StructuredData.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/loss/LossFunction.h>
-#include <shogun/so/StructuredModel.h>
+#include <shogun/structure/StructuredModel.h>
 
 namespace shogun
 {

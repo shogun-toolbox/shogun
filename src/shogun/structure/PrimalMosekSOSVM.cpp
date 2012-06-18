@@ -13,7 +13,7 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/List.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/so/PrimalMosekSOSVM.h>
+#include <shogun/structure/PrimalMosekSOSVM.h>
 
 using namespace shogun;
 

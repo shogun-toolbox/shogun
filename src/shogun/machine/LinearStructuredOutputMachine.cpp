@@ -9,7 +9,7 @@
  */
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/so/MulticlassSOLabels.h>
+#include <shogun/structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 

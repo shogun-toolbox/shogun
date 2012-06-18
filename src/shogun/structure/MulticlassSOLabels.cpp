@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/so/MulticlassSOLabels.h>
+#include <shogun/structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 

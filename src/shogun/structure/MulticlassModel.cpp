@@ -10,8 +10,8 @@
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/so/MulticlassModel.h>
-#include <shogun/so/MulticlassSOLabels.h>
+#include <shogun/structure/MulticlassModel.h>
+#include <shogun/structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 
