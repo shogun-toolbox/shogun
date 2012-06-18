@@ -43,6 +43,7 @@
 #include <shogun/lib/external/shogun_liblinear.h>
 #include <shogun/lib/external/tron.h>
 #include <shogun/lib/Time.h>
+#include <shogun/lib/Signal.h>
 
 using namespace shogun;
 
@@ -513,7 +514,7 @@ void Solver_MCSVM_CS::solve()
 		state->inited = true;
 	}
 
-	while(iter < max_iter)
+	while(iter < max_iter && !CSignal::cancel_computations())
 	{
 		double stopping = -CMath::INFTY;
 		for(i=0;i<active_size;i++)

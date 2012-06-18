@@ -14,6 +14,7 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/v_array.h>
+#include <shogun/lib/Signal.h>
 #include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
@@ -120,6 +121,8 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	float64_t* C = SG_MALLOC(float64_t, num_vectors);
 	for (int32_t i=0; i<num_vectors; i++)
 		C[i] = m_C;
+
+	CSignal::clear_cancel();
 
 	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,w0.matrix,m_epsilon,
 	                       m_max_iter,m_max_train_time,m_train_state);
