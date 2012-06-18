@@ -65,11 +65,9 @@ void CExactInferenceMethod::check_members()
 	if (!mean)
 		SG_ERROR( "No mean function assigned!\n");
 
-	if(strcmp(m_model->get_name(), "GaussianLikelihood") != 0)
+	if(m_model->get_model_type() != LT_GAUSSIAN)
 	{
-		SG_ERROR("Exact Inference Method can only use Gaussian ");
-		SG_ERROR("Likelihood Function. Setting m_model to NULL.\n");
-		set_model(NULL);
+		SG_ERROR("Exact Inference Method can only use Gaussian Likelihood Function.\n");
 	}
 }
 

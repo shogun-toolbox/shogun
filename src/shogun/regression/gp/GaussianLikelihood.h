@@ -21,6 +21,7 @@ namespace shogun {
  *
  */
 class CGaussianLikelihood: public CLikelihoodModel {
+  
 public:
 
 	/*Constructor*/
@@ -61,6 +62,12 @@ public:
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
+	
+	/** get model type
+	  *
+	  * @return model type Gaussian
+	 */
+	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
 
 private:
 	/** Observation noise sigma */

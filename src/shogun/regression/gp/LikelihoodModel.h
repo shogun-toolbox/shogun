@@ -13,6 +13,14 @@
 #include <shogun/base/SGObject.h>
 
 namespace shogun {
+  
+/*Type of likelihood model*/
+enum ELikelihoodModelType
+{
+	LT_NONE = 0,
+	LT_GAUSSIAN = 10
+};
+	
 
 /** @brief The Likelihood Model base class.
  *
@@ -24,7 +32,7 @@ namespace shogun {
 class CLikelihoodModel : public CSGObject {
 
 public:
-
+  
 	/*Constructor*/
 	CLikelihoodModel();
 
@@ -58,6 +66,12 @@ public:
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars) = 0;
+	
+	/** get model type
+	  *
+	  * @return model type NONE
+	 */
+	virtual ELikelihoodModelType get_model_type() {return LT_NONE;}
 };
 }
 
