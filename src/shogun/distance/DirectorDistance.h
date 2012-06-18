@@ -112,6 +112,11 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 */
 		virtual bool init(CFeatures* lhs, CFeatures* rhs)
 		{
+			if (this->parallel->get_num_threads()!=1)
+			{
+				SG_WARNING("Enforcing to use only one thread due to restrictions of directors\n");
+				this->parallel->set_num_threads(1);
+			}
 			return CDistance::init(lhs, rhs);
 		}
 

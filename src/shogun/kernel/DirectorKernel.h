@@ -37,7 +37,6 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		CDirectorKernel(bool is_external_features) 
 		: CKernel(), external_features(is_external_features)
 		{
-
 		}
 
 		/** constructor
@@ -64,6 +63,11 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
+			if (this->parallel->get_num_threads()!=1)
+			{
+				SG_WARNING("Enforcing to use only one thread due to restrictions of directors\n");
+				this->parallel->set_num_threads(1);
+			}
 			return CKernel::init(l, r);
 		}
 
