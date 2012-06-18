@@ -14,7 +14,7 @@
 #include <shogun/base/Parameter.h>
 
 #include <shogun/kernel/CommWordStringKernel.h>
-#include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/kernel/normalize/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/StringFeatures.h>
 
 using namespace shogun;

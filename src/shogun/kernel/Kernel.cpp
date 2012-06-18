@@ -22,7 +22,7 @@
 #include <shogun/base/Parallel.h>
 
 #include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/IdentityKernelNormalizer.h>
+#include <shogun/kernel/normalize/IdentityKernelNormalizer.h>
 #include <shogun/features/Features.h>
 #include <shogun/base/Parameter.h>
 
