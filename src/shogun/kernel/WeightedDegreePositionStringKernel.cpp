@@ -16,7 +16,7 @@
 #include <shogun/base/Parallel.h>
 
 #include <shogun/kernel/WeightedDegreePositionStringKernel.h>
-#include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/kernel/normalize/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 

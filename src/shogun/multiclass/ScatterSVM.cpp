@@ -14,7 +14,7 @@
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/multiclass/ScatterSVM.h>
-#include <shogun/kernel/ScatterKernelNormalizer.h>
+#include <shogun/kernel/normalize/ScatterKernelNormalizer.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/io/SGIO.h>
 

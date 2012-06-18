@@ -12,7 +12,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/MatchWordStringKernel.h>
-#include <shogun/kernel/AvgDiagKernelNormalizer.h>
+#include <shogun/kernel/normalize/AvgDiagKernelNormalizer.h>
 #include <shogun/features/StringFeatures.h>
 
 using namespace shogun;
