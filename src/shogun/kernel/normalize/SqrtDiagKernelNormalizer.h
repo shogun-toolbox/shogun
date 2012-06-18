@@ -11,7 +11,7 @@
 #ifndef _SQRTDIAGKERNELNORMALIZER_H___
 #define _SQRTDIAGKERNELNORMALIZER_H___
 
-#include <shogun/kernel/KernelNormalizer.h>
+#include <shogun/kernel/normalize/KernelNormalizer.h>
 #include <shogun/kernel/CommWordStringKernel.h>
 
 namespace shogun

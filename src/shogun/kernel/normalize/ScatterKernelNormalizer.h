@@ -11,8 +11,8 @@
 #ifndef _SCATTERKERNELNORMALIZER_H___
 #define _SCATTERKERNELNORMALIZER_H___
 
-#include <shogun/kernel/KernelNormalizer.h>
-#include <shogun/kernel/IdentityKernelNormalizer.h>
+#include <shogun/kernel/normalize/KernelNormalizer.h>
+#include <shogun/kernel/normalize/IdentityKernelNormalizer.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>

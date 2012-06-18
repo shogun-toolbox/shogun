@@ -8,64 +8,44 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _RIDGEKERNELNORMALIZER_H___
-#define _RIDGEKERNELNORMALIZER_H___
+#ifndef _AVGDIAGKERNELNORMALIZER_H___
+#define _AVGDIAGKERNELNORMALIZER_H___
 
-#include <shogun/kernel/KernelNormalizer.h>
-
+#include <shogun/kernel/normalize/KernelNormalizer.h>
 namespace shogun
 {
-/** @brief Normalize the kernel by adding a constant term to its diagonal.
- * This aids kernels to become positive definite (even though they are
- * not - often caused by numerical problems).
+/** @brief Normalize the kernel by either a constant or the average value of the
+ * diagonal elements (depending on argument c of the constructor).
  *
- * Formally,
- *
- * \f[
- * k'(x,x')= \frac{k(x,x')}+ R\cdot {\bf E}
- * \f]
- *
- * where E is a matrix with ones on the diagonal and R is the scalar
- * ridge term. The ridge term R is computed as \f$R=r\dot c\f$.
- *
- * Typically,
- *
- * - r=1e-10 and c=0.0 will add mean(diag(K))*1e-10 to the diagonal
- * - r=0.1 and c=1 will add 0.1 to the diagonal
- *
- *
- * In case c <= 0, c is compute as the mean of the kernel diagonal
- * \f[
- * \mbox{c} = \frac{1}{N}\sum_{i=1}^N k(x_i,x_i)
- * \f]
- *
- */
-class CRidgeKernelNormalizer : public CKernelNormalizer
+ * In case c <= 0 compute scale as
+* \f[
+* \mbox{scale} = \frac{1}{N}\sum_{i=1}^N k(x_i,x_i)
+* \f]
+*
+* otherwise use scale=c and normalize the kernel via
+*
+* \f[
+* k'(x,x')= \frac{k(x,x')}{scale}
+* \f]
+*/
+class CAvgDiagKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** constructor
 		 *
-		 * @param r ridge parameter
-		 * @param c scale parameter, if <= 0 scaling will be computed
-		 * from the avg of the kernel diagonal elements
-		 *
-		 * the scalar r*c will be added to the kernel diagonal, typical use cases:
-		 * - r=1e-10 and c=0.0 will add mean(diag(K))*1e-10 to the diagonal
-		 * - r=0.1 and c=1 will add 0.1 to the diagonal
+		 * @param c scale parameter, if <= 0 scaling will be computed from the
+		 * avg of the kernel diagonal elements
 		 */
-		CRidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
-			: CKernelNormalizer()
+		CAvgDiagKernelNormalizer(float64_t c=0.0) : CKernelNormalizer()
 		{
+			scale=c;
+
 			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
 			    MS_AVAILABLE);
-			SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", MS_AVAILABLE);
-
-			scale=c;
-			ridge=r;
 		}
 
 		/** default destructor */
-		virtual ~CRidgeKernelNormalizer()
+		virtual ~CAvgDiagKernelNormalizer()
 		{
 		}
 
@@ -93,7 +73,6 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 				k->rhs=old_rhs;
 			}
 
-			ridge*=scale;
 			return true;
 		}
 
@@ -105,10 +84,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		inline virtual float64_t normalize(
 			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
-			if (idx_lhs==idx_rhs)
-				return value+ridge;
-			else
-				return value;
+			return value/scale;
 		}
 
 		/** normalize only the left hand side vector
@@ -117,8 +93,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
-			SG_ERROR("linadd not supported with Ridge normalization.\n");
-			return 0;
+			return value/sqrt(scale);
 		}
 
 		/** normalize only the right hand side vector
@@ -127,18 +102,15 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
-			SG_ERROR("linadd not supported with Ridge normalization.\n");
-			return 0;
+			return value/sqrt(scale);
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "RidgeKernelNormalizer"; }
+		inline virtual const char* get_name() const { return "AvgDiagKernelNormalizer"; }
 
 	protected:
-		/// the constant ridge to be added to the kernel diagonal
-		float64_t ridge;
-		/// scaling parameter (avg of diagonal)
+		/// the constant scaling factor (avg of diagonal or user given const)
 		float64_t scale;
 };
 }
-#endif // _RIDGEKERNELNORMALIZER_H___
+#endif

@@ -11,7 +11,6 @@
 #ifndef _MULTITASKKERNELPLIFNORMALIZER_H___
 #define _MULTITASKKERNELPLIFNORMALIZER_H___
 
-#include <shogun/kernel/KernelNormalizer.h>
 #include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
 #include <shogun/kernel/Kernel.h>
 #include <algorithm>

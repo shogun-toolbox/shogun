@@ -1,12 +1,12 @@
 %{
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/KernelNormalizer.h>
+#include <shogun/kernel/normalize/KernelNormalizer.h>
 #include <shogun/kernel/PyramidChi2.h>
 #include <shogun/kernel/ANOVAKernel.h>
 #include <shogun/kernel/AUCKernel.h>
-#include <shogun/kernel/AvgDiagKernelNormalizer.h>
-#include <shogun/kernel/RidgeKernelNormalizer.h>
+#include <shogun/kernel/normalize/AvgDiagKernelNormalizer.h>
+#include <shogun/kernel/normalize/RidgeKernelNormalizer.h>
 #include <shogun/kernel/CauchyKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
@@ -18,10 +18,10 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/DiagKernel.h>
 #include <shogun/kernel/DistantSegmentsKernel.h>
-#include <shogun/kernel/DiceKernelNormalizer.h>
+#include <shogun/kernel/normalize/DiceKernelNormalizer.h>
 #include <shogun/kernel/ExponentialKernel.h>
-#include <shogun/kernel/ScatterKernelNormalizer.h>
-#include <shogun/kernel/VarianceKernelNormalizer.h>
+#include <shogun/kernel/normalize/ScatterKernelNormalizer.h>
+#include <shogun/kernel/normalize/VarianceKernelNormalizer.h>
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/FixedDegreeStringKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -30,7 +30,7 @@
 #include <shogun/kernel/GaussianShortRealKernel.h>
 #include <shogun/kernel/HistogramIntersectionKernel.h>
 #include <shogun/kernel/HistogramWordStringKernel.h>
-#include <shogun/kernel/IdentityKernelNormalizer.h>
+#include <shogun/kernel/normalize/IdentityKernelNormalizer.h>
 #include <shogun/kernel/InverseMultiQuadricKernel.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/kernel/LinearKernel.h>
@@ -55,9 +55,9 @@
 #include <shogun/kernel/SparseKernel.h>
 #include <shogun/kernel/SphericalKernel.h>
 #include <shogun/kernel/SplineKernel.h>
-#include <shogun/kernel/SqrtDiagKernelNormalizer.h>
+#include <shogun/kernel/normalize/SqrtDiagKernelNormalizer.h>
 #include <shogun/kernel/StringKernel.h>
-#include <shogun/kernel/TanimotoKernelNormalizer.h>
+#include <shogun/kernel/normalize/TanimotoKernelNormalizer.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
 #include <shogun/kernel/TStudentKernel.h>
 #include <shogun/kernel/WaveletKernel.h>
@@ -67,7 +67,7 @@
 #include <shogun/kernel/WeightedDegreeStringKernel.h>
 #include <shogun/kernel/WeightedDegreeRBFKernel.h>
 #include <shogun/kernel/SpectrumMismatchRBFKernel.h>
-#include <shogun/kernel/ZeroMeanCenterKernelNormalizer.h>
+#include <shogun/kernel/normalize/ZeroMeanCenterKernelNormalizer.h>
 #include <shogun/kernel/RationalQuadraticKernel.h>
 #include <shogun/kernel/CircularKernel.h>
 #include <shogun/kernel/JensenShannonKernel.h>

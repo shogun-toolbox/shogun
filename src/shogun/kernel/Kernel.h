@@ -22,7 +22,7 @@
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
-#include <shogun/kernel/KernelNormalizer.h>
+#include <shogun/kernel/normalize/KernelNormalizer.h>
 
 namespace shogun
 {

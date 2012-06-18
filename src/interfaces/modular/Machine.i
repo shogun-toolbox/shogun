@@ -33,6 +33,7 @@
 %enddef
 
 namespace shogun {
+/*
 APPLY_MULTICLASS(CMulticlassMachine);
 APPLY_MULTICLASS(CKernelMulticlassMachine);
 APPLY_MULTICLASS(CLinearMulticlassMachine);
@@ -52,8 +53,10 @@ APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
 APPLY_REGRESSION(CGaussianProcessRegression);
+*/
 }
 
+/*
 %rename(apply_generic) CMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CMulticlassMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CKernelMulticlassMachine::apply(CFeatures* data=NULL);
@@ -72,6 +75,7 @@ APPLY_REGRESSION(CGaussianProcessRegression);
 %rename(apply_generic) CLeastAngleRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CGaussianProcessRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CConjugateIndex::apply(CFeatures* data=NULL);
+*/
 
 #undef APPLY_MULTICLASS
 #undef APPLY_BINARY
