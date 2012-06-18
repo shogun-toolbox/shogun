@@ -119,6 +119,11 @@ MSKrescodee CMosek::init_sosvm(
 		}
 	}
 
+	if ( m_rescode != MSK_RES_OK )
+	{
+		SG_ERROR("Problem occurred in CMosek::init_sosvm()\n");
+	}
+
 	// Input the matrix Q^0 for the objective
 	//
 	// NOTE: In MOSEK we minimize x'*Q^0*x. C != Q0 but Q0 is
@@ -141,7 +146,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 	SGVector< index_t > asub(nnz+1); // +1 because of the -1 element
 	// Values of the non-zero elements
 	SGVector< float64_t > aval(nnz+1);
-	// Nex element to add in asub and aval
+	// Next element to add in asub and aval
 	index_t idx = 0;
 
 	for ( int32_t i = 0 ; i < dPsi.vlen ; ++i )
@@ -368,7 +373,7 @@ void CMosek::display_problem()
 		{
 			float64_t qij;
 			m_rescode = MSK_getqobjij(m_task, i, j, &qij);
-			SG_PRINT("%f ", qij);
+			SG_PRINT("%6.2f ", qij);
 		}
 		SG_PRINT("\n");
 	}
@@ -386,7 +391,7 @@ void CMosek::display_problem()
 		{
 			float64_t aij;
 			m_rescode = MSK_getaij(m_task, i, j, &aij);
-			SG_PRINT("%f ", aij);
+			SG_PRINT("%6.2f ", aij);
 		}
 		SG_PRINT("\n");
 	}
@@ -398,7 +403,7 @@ void CMosek::display_problem()
 		float64_t bl, bu;
 		m_rescode = MSK_getbound(m_task, MSK_ACC_CON, i, &bk, &bl, &bu);
 
-		SG_PRINT("%f %f\n", bl, bu);
+		SG_PRINT("%6.2f %6.2f\n", bl, bu);
 	}
 
 	SG_PRINT("\nVariable Bounds, vectors lb and ub:\n");
@@ -408,7 +413,7 @@ void CMosek::display_problem()
 		float64_t bl, bu;
 		m_rescode = MSK_getbound(m_task, MSK_ACC_VAR, i, &bk, &bl, &bu);
 
-		SG_PRINT("%f %f\n", bl, bu);
+		SG_PRINT("%6.2f %6.2f\n", bl, bu);
 	}
 	SG_PRINT("\n");
 }
