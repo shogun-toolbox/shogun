@@ -397,7 +397,6 @@ TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
 	sm.cidx(num_vec) = offset;
 	ASSERT(offset=nnz);
 
-	$1.free_matrix();
 	$result = sm;
 }
 %enddef
