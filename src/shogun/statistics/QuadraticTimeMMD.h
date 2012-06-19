@@ -18,6 +18,11 @@ namespace shogun
 
 class CFeatures;
 
+enum EQuadraticMMDType
+{
+	BIASED, UNBIASED
+};
+
 class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 {
 	public:
@@ -26,7 +31,23 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 
 		virtual ~CQuadraticTimeMMD();
 
+		/** Computes the squared quadratic time MMD for the current data. Note
+		 * that the type (biased/unbiased) can be specified with
+		 * set_statistic_type() method.
+		 *
+		 * @return (biased or unbiased) squared quadratic time MMD
+		 */
 		virtual float64_t compute_statistic();
+
+		/** Computes the p-value for a given statistic. The method for computing
+		 * the p-value can be set via set_p_value_method() method. Not all
+		 * method for computing the p-value are compatible with all methods of
+		 * computing the statistic (biased/unbiased).
+		 *
+		 * @param statistic statistic to compute the p-value for
+		 *
+		 * @return p-value of the given statistic
+		 */
 		virtual float64_t compute_p_value(float64_t statistic);
 
 		inline virtual const char* get_name() const
@@ -40,6 +61,9 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * samples of p and q. May be used to compute p_value (easy)
 		 *
 		 * kernel matrix needs to be stored in memory
+		 *
+		 * Note that the provided statistic HAS to be the biased version
+		 * (see paper for details)
 		 *
 		 * Works well if the kernel matrix is NOT diagonal dominant.
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
@@ -63,6 +87,9 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * However, there are cases where it performs very well.
 		 * Returns the p-value for a given statistic value in the
 		 * null-distribution.
+		 *
+		 * Note that the provided statistic HAS to be the biased version
+		 * (see paper for details)
 		 *
 		 * Works for arbritarily large kernel matrices (is not precomputed)
 		 *
@@ -90,12 +117,20 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 */
 		void set_num_eigenvalues_spectrum(index_t num_eigenvalues_spectrum);
 
+		void set_statistic_type(EQuadraticMMDType statistic_type);
+
+	protected:
+		virtual float64_t compute_unbiased_statistic();
+		virtual float64_t compute_biased_statistic();
+
 	private:
 		void init();
 
 	protected:
 		index_t m_num_samples_spectrum;
 		index_t m_num_eigenvalues_spectrum;
+
+		EQuadraticMMDType m_statistic_type;
 };
 
 }

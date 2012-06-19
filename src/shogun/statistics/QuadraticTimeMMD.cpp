@@ -41,9 +41,11 @@ void CQuadraticTimeMMD::init()
 	/* TODO register parameters*/
 	m_num_samples_spectrum=0;
 	m_num_eigenvalues_spectrum=0;
+
+	m_statistic_type=UNBIASED;
 }
 
-float64_t CQuadraticTimeMMD::compute_statistic()
+float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 {
 	/* split computations into three terms from JLMR paper (see documentation )*/
 	index_t m=m_q_start;
@@ -84,6 +86,64 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 	return first+second-third;
 }
 
+float64_t CQuadraticTimeMMD::compute_biased_statistic()
+{
+	/* split computations into three terms from JLMR paper (see documentation )*/
+	index_t m=m_q_start;
+	index_t n=m_p_and_q->get_num_vectors()-m_q_start;
+
+	/* init kernel with features */
+	m_kernel->init(m_p_and_q, m_p_and_q);
+
+	/* first term */
+	float64_t first=0;
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<m; ++j)
+			first+=m_kernel->kernel(i,j);
+	}
+	first/=(m*m);
+
+	/* second term */
+	float64_t second=0;
+	for (index_t i=m_q_start; i<m_q_start+n; ++i)
+	{
+		for (index_t j=m_q_start; j<m_q_start+n; ++j)
+			second+=m_kernel->kernel(i,j);
+	}
+	second/=(n*n);
+
+	/* third term */
+	float64_t third=0;
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=m_q_start; j<m_q_start+n; ++j)
+			third+=m_kernel->kernel(i,j);
+	}
+	third*=2.0/(m*n);
+
+	return first+second-third;
+}
+
+float64_t CQuadraticTimeMMD::compute_statistic()
+{
+	float64_t result=0;
+	switch (m_statistic_type)
+	{
+	case UNBIASED:
+		result=compute_unbiased_statistic();
+		break;
+	case BIASED:
+		result=compute_biased_statistic();
+		break;
+	default:
+		SG_ERROR("CQuadraticTimeMMD::compute_statistic(): Unknown type!\n");
+		break;
+	}
+
+	return result;
+}
+
 float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
@@ -99,6 +159,15 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		CMath::qsort(null_samples);
 		index_t pos=CMath::find_position_to_insert(null_samples, statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
+
+		/* evtl. warn user not to use wrong statistic type */
+		if (m_statistic_type!=BIASED)
+		{
+			SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
+					"to be BIASED. Please ensure that! To get rid of warning,"
+					"call %s::set_statistic_type(BIASED)\n", get_name(),
+					get_name());
+		}
 #else // HAVE_LAPACK
 		SG_ERROR("CQuadraticTimeMMD::compute_p_value(): Only possible if "
 				"shogun is compiled with LAPACK enabled\n");
@@ -108,6 +177,15 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 
 	case MMD2_GAMMA:
 		result=compute_p_value_gamma(statistic);
+
+		/* evtl. warn user not to use wrong statistic type */
+		if (m_statistic_type!=BIASED)
+		{
+			SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
+					"to be BIASED. Please ensure that! To get rid of warning,"
+					"call %s::set_statistic_type(BIASED)\n", get_name(),
+					get_name());
+		}
 		break;
 	default:
 		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
@@ -184,7 +262,7 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
 	{
 		/* TODO support different numbers of samples */
-		SG_ERROR("%s::compute_threshold_gamma(): Currently, only equal "
+		SG_ERROR("%s::compute_p_value_gamma(): Currently, only equal "
 				"sample sizes are supported\n", get_name());
 	}
 
@@ -244,4 +322,9 @@ void CQuadraticTimeMMD::set_num_eigenvalues_spectrum(
 		index_t num_eigenvalues_spectrum)
 {
 	m_num_eigenvalues_spectrum=num_eigenvalues_spectrum;
+}
+
+void CQuadraticTimeMMD::set_statistic_type(EQuadraticMMDType statistic_type)
+{
+	m_statistic_type=statistic_type;
 }
