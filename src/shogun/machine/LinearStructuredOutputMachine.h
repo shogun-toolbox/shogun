@@ -11,7 +11,7 @@
 #ifndef _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 #define _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 
-#include <shogun/features/Features.h>
+#include <shogun/features/DotFeatures.h>
 #include <shogun/machine/StructuredOutputMachine.h>
 
 namespace shogun
@@ -31,7 +31,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 * @param labs structured labels
 		 * @param features features
 		 */
-		CLinearStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CFeatures* features);
+		CLinearStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features);
 
 		/** destructor */
 		virtual ~CLinearStructuredOutputMachine();
@@ -40,13 +40,29 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 *
 		 * @param f features
 		 */
-		void set_features(CFeatures* f);
+		void set_features(CDotFeatures* f);
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		CFeatures* get_features() const;
+		CDotFeatures* get_features() const;
+
+		/** get w
+		 *
+		 * @return w
+		 */
+		SGVector< float64_t > get_w() const;
+
+		/**
+		 * apply structured machine to data for Structured Output (SO)
+		 * problem
+		 *
+		 * @param data (test)data to be classified
+		 *
+		 * @return classified 'labels'
+		 */
+		virtual CStructuredLabels* apply_structured(CFeatures* data = NULL);
 
 		/** @return object name */
 		inline virtual const char* get_name() const 
@@ -60,7 +76,10 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 
 	protected:
 		/** feature vectors */
-		CFeatures* m_features;
+		CDotFeatures* m_features;
+
+		/** weight vector */
+		SGVector< float64_t > m_w;
 
 }; /* class CLinearStructuredOutputMachine */
 

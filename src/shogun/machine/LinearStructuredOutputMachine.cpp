@@ -9,6 +9,7 @@
  */
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
+#include <shogun/structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 
@@ -22,9 +23,12 @@ CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
 		CStructuredModel*  model, 
 		CLossFunction*     loss, 
 		CStructuredLabels* labs, 
-		CFeatures*         features)
+		CDotFeatures*      features)
 : CStructuredOutputMachine(model, loss, labs), m_features(NULL)
 {
+	if ( !features->has_property(FP_DOT) )
+		SG_ERROR("Specified features are not of type CDotFeatures\n");
+
 	set_features(features);
 	register_parameters();
 }
@@ -34,20 +38,57 @@ CLinearStructuredOutputMachine::~CLinearStructuredOutputMachine()
 	SG_UNREF(m_features)
 }
 
-void CLinearStructuredOutputMachine::set_features(CFeatures* f)
+void CLinearStructuredOutputMachine::set_features(CDotFeatures* f)
 {
 	SG_REF(f);
 	SG_UNREF(m_features);
 	m_features = f;
 }
 
-CFeatures* CLinearStructuredOutputMachine::get_features() const
+CDotFeatures* CLinearStructuredOutputMachine::get_features() const
 {
 	SG_REF(m_features);
 	return m_features;
 }
 
+SGVector< float64_t > CLinearStructuredOutputMachine::get_w() const
+{
+	return m_w;
+}
+
+CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* data)
+{
+	if (data)
+	{
+		if ( !data->has_property(FP_DOT) )
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+		set_features((CDotFeatures*) data);
+	}
+
+	CStructuredLabels* out;
+	if ( !m_features )
+	{
+		out = new CStructuredLabels();
+	}
+	else
+	{
+		out = new CStructuredLabels( m_features->get_num_vectors() );
+		for ( int32_t i = 0 ; i < m_features->get_num_vectors() ; ++i )
+		{
+			CResultSet* result = m_model->argmax(m_w, i);
+			out->add_label(result->argmax);
+
+			SG_UNREF(result);
+		}
+	}
+
+	SG_REF(out);
+	return out;
+}
+
 void CLinearStructuredOutputMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_features, "m_features", "Feature object", MS_NOT_AVAILABLE);
+	SG_ADD(&m_w, "m_w", "Weight vector", MS_NOT_AVAILABLE);
 }

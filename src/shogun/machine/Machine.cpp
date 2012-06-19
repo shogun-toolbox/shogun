@@ -168,6 +168,8 @@ CLabels* CMachine::apply(CFeatures* data)
 			return apply_regression(data);
 		case PT_MULTICLASS:
 			return apply_multiclass(data);
+		case PT_STRUCTURED:
+			return apply_structured(data);
 		default: SG_ERROR("Unknown problem type");
 	}
 	return NULL;
@@ -203,6 +205,12 @@ CRegressionLabels* CMachine::apply_regression(CFeatures* data)
 }
 
 CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
+{
+	SG_ERROR("This machine does not support apply_multiclass()\n");
+	return NULL;
+}
+
+CStructuredLabels* CMachine::apply_structured(CFeatures* data)
 {
 	SG_ERROR("This machine does not support apply_multiclass()\n");
 	return NULL;
