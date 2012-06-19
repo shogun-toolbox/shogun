@@ -8,16 +8,16 @@
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/so/MulticlassSOLabels.h>
-#include <shogun/so/MulticlassModel.h>
-#include <shogun/so/PrimalMosekSOSVM.h>
+#include <shogun/structure/MulticlassSOLabels.h>
+#include <shogun/structure/MulticlassModel.h>
+#include <shogun/structure/PrimalMosekSOSVM.h>
 
 using namespace shogun;
 
 #define	DIMS		2
 #define EPSILON  	0
-#define	NUM_SAMPLES	10
-#define NUM_CLASSES	3
+#define	NUM_SAMPLES	100
+#define NUM_CLASSES	10
 
 char FNAME[] = "data.out";
 
@@ -73,6 +73,7 @@ int main(int argc, char ** argv)
 
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
+	model->set_use_bias(true);
 
 	// Create loss function
 	CHingeLoss* loss = new CHingeLoss();
@@ -90,7 +91,7 @@ int main(int argc, char ** argv)
 
 	// Add some configuration to the svm
 	svm->set_epsilon(EPSILON);
-	svm->set_bias_enabled(false);
+	svm->set_bias_enabled(true);
 
 	// Create a multiclass svm classifier that consists of several of the previous one
 	CLinearMulticlassMachine* mc_svm = 
@@ -103,12 +104,16 @@ int main(int argc, char ** argv)
 	CMulticlassLabels* mout = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
 	SG_REF(mout);
 
+	int32_t sosvm_ncorrect = 0, mc_ncorrect = 0;
 	SGVector< float64_t > slacks = sosvm->get_slacks();
 	for ( int i = 0 ; i < out->get_num_labels() ; ++i )
 	{
 		SG_SPRINT("%.0f %.0f %.2E %.0f\n", mlabels->get_label(i), 
 				( (CRealNumber*) out->get_label(i) )->value,
 				slacks[i], mout->get_label(i));
+
+		sosvm_ncorrect += mlabels->get_label(i) == ( (CRealNumber*) out->get_label(i) )->value;
+		mc_ncorrect    += mlabels->get_label(i) == mout->get_label(i);
 	}
 
 	SG_SPRINT("\n");
@@ -125,6 +130,9 @@ int main(int argc, char ** argv)
 			SG_SPRINT("%10f ", mw[j]);
 	}
 	SG_SPRINT("\n");
+
+	SG_SPRINT("SO-SVM: %5.2f%\n", 100.0*sosvm_ncorrect/mlabels->get_num_labels());
+	SG_SPRINT("MC:     %5.2f%\n\n",  100.0*mc_ncorrect/mlabels->get_num_labels());
 
 	// Free memory
 	SG_UNREF(mout);
