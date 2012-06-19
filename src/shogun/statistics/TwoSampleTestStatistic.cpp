@@ -108,3 +108,12 @@ float64_t CTwoSampleTestStatistic::compute_p_value(float64_t statistic)
 	return result;
 }
 
+bool CTwoSampleTestStatistic::perform_test(float64_t alpha)
+{
+	/* compute p-value and test statistic */
+	float64_t statistic=compute_statistic();
+	float64_t p_value=compute_p_value(statistic);
+
+	/* null hypothesis is rejected if computed p-value is smaller than alpha */
+	return p_value<alpha;
+}

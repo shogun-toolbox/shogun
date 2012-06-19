@@ -58,6 +58,15 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		 */
 		virtual float64_t compute_p_value(float64_t statistic);
 
+		/** Performs a two-sample test with the current settings on the current
+		 * data. Computes test statistic and compares its p-value against the
+		 * desired one and returns true if the p-value is at least as good.
+		 *
+		 * @param alpha test niveau alpha
+		 * @return true if null-hypothesis (p==q) is rejected, false otherwise
+		 */
+		virtual bool perform_test(float64_t alpha);
+
 		virtual ~CTwoSampleTestStatistic();
 
 		inline virtual const char* get_name() const=0;
