@@ -36,6 +36,7 @@ CKernelTwoSampleTestStatistic::~CKernelTwoSampleTestStatistic()
 
 void CKernelTwoSampleTestStatistic::init()
 {
-	/* TODO register params */
+	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel for two sample test",
+			MS_AVAILABLE);
 	m_kernel=NULL;
 }

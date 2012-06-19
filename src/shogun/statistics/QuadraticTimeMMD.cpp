@@ -38,10 +38,17 @@ CQuadraticTimeMMD::~CQuadraticTimeMMD()
 
 void CQuadraticTimeMMD::init()
 {
-	/* TODO register parameters*/
+	SG_ADD(&m_num_samples_spectrum, "num_samples_spectrum", "Number of samples"
+			" for spectrum method null-distribution approximation",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_eigenvalues_spectrum, "num_eigenvalues_spectrum", "Number of "
+			" Eigenvalues for spectrum method null-distribution approximation",
+			MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*)&m_statistic_type, "statistic_type",
+			"Biased or unbiased MMD", MS_NOT_AVAILABLE);
+
 	m_num_samples_spectrum=0;
 	m_num_eigenvalues_spectrum=0;
-
 	m_statistic_type=UNBIASED;
 }
 

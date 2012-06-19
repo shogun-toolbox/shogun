@@ -36,10 +36,18 @@ CTwoSampleTestStatistic::~CTwoSampleTestStatistic()
 
 void CTwoSampleTestStatistic::init()
 {
-	/* TODO register parameters */
+	SG_ADD((CSGObject**)&m_p_and_q, "p_and_q", "Concatenated samples p and q",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_q_start, "q_start", "Index of first sample of q",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_bootstrap_iterations, "bootstrap_iterations",
+			"Number of iterations for bootstrapping", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*)&m_p_value_method, "p_value_method",
+			"Method for computing p-value", MS_NOT_AVAILABLE);
+
 	m_p_and_q=NULL;
 	m_q_start=0;
-	m_bootstrap_iterations=100;
+	m_bootstrap_iterations=250;
 	m_p_value_method=BOOTSTRAP;
 }
 
