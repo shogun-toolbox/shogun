@@ -12,12 +12,11 @@
 
 using namespace shogun;
 
-/* TODO */
 CStructuredData::CStructuredData()
+: CSGObject()
 {
 }
 
-/* TODO */
 CStructuredData::~CStructuredData()
 {
 }

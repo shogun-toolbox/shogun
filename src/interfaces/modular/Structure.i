@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2009 Soeren Sonnenburg, 2012 Fernando José Iglesias García
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
@@ -17,6 +17,14 @@
 %rename(SegmentLoss) CSegmentLoss;
 %rename(IntronList) CIntronList;
 
+%rename(StructuredOutputMachine) CStructuredOutputMachine;
+%rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
+%rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
+%rename(StructuredModel) CStructuredModel;
+%rename(MulticlassModel) CMulticlassModel;
+%rename(MulticlassSOLabels) CMulticlassSOLabels;
+%rename(RealNumber) CRealNumber;
+
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>
@@ -25,3 +33,15 @@
 %include <shogun/structure/PlifMatrix.h>
 %include <shogun/structure/IntronList.h>
 %include <shogun/structure/SegmentLoss.h>
+
+%include <shogun/machine/StructuredOutputMachine.h>
+%include <shogun/machine/LinearStructuredOutputMachine.h>
+%include <shogun/machine/KernelStructuredOutputMachine.h>
+
+%include <shogun/structure/StructuredModel.h>
+%include <shogun/structure/MulticlassModel.h>
+%include <shogun/structure/MulticlassSOLabels.h>
+
+#ifdef USE_MOSEK
+%include <shogun/structure/PrimalMosekSOSVM.h>
+#endif /* USE_MOSEK */

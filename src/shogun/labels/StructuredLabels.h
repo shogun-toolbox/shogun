@@ -32,7 +32,13 @@ class CStructuredLabels : public CLabels
 		CStructuredLabels(int32_t num_labels);
 
 		/** destructor */
-		~CStructuredLabels();
+		virtual ~CStructuredLabels();
+
+		/** helper method used to specialize a base class instance
+		 *
+		 * @param base_labels its dynamic type must be CStructuredLabels
+		 */
+		static CStructuredLabels* obtain_from_generic(CLabels* base_labels);
 
 		/** check if labeling is valid
 		 *
@@ -42,6 +48,16 @@ class CStructuredLabels : public CLabels
 		 */
 		virtual void ensure_valid(const char* context = NULL);
 
+		/**
+		 * add a new label to the vector of labels, effectively
+		 * increasing the number of elements of the structure. This
+		 * method should be used when inserting labels for the first
+		 * time.
+		 *
+		 * @param label label to add
+		 */
+		void add_label(CStructuredData* label);
+
 		/** get labels
 		 *
 		 * not possible with subset
@@ -50,6 +66,26 @@ class CStructuredLabels : public CLabels
 		 */
 		CDynamicObjectArray* get_labels() const;
 		
+		/** get label object for specified index
+		 *
+		 * @param idx index of tha label
+		 *
+		 * @return label object
+		 */
+		CStructuredData* get_label(int32_t idx);
+
+		/**
+		 * set label, possible with subset. This method should be used
+		 * when substituting labels previously inserted. To insert new
+		 * labels, use the method add_label.
+		 *
+		 * @param idx index of label to set
+		 * @param label value of label
+		 *
+		 * @return if setting was successful
+		 */
+		bool set_label(int32_t idx, CStructuredData* label);
+
 		/** get number of labels, depending on wheter a subset is set
 		 *
 		 * @return number of labels
@@ -69,7 +105,7 @@ class CStructuredLabels : public CLabels
 		/** internal initialization */
 		void init();
 
-	private:
+	protected:
 		/** the vector of labels */
 		CDynamicObjectArray* m_labels;
 

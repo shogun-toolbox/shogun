@@ -172,3 +172,5 @@
 %ignore shogun::CSerializableFile::write_stringentry_end;
 %ignore shogun::CSerializableFile::write_type_begin;
 %ignore shogun::CSerializableFile::write_type_end;
+
+%ignore shogun::CMosek;

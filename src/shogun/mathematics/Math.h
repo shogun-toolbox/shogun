@@ -530,6 +530,16 @@ class CMath : public CSGObject
 			return normal_random(0.0, 1.0);
 		}
 
+		template <class T>
+			static int32_t get_num_nonzero(T* vec, int32_t len)
+			{
+				int32_t nnz = 0;
+				for (index_t i=0; i<len; ++i)
+					nnz += vec[i] != 0;
+
+				return nnz;
+			}
+
 		static inline int32_t* randperm(int32_t n)
 		{
 			int32_t* perm = SG_MALLOC(int32_t, n);
