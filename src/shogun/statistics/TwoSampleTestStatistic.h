@@ -25,6 +25,17 @@ enum EPValueMethod
 
 class CFeatures;
 
+/** @brief Two sample test base class. Provides an interface for performing a
+ * two-sample test, i.e. Given samples from two distributions p and q, the
+ * null-hypothesis is: H0: p==q, the alternative hypothesis: H1: p!=q.
+ *
+ * It is possible to define multiple ways to compute the p-value.
+ *
+ * Provides code for sampling the null-distribution via bootstrapping.
+ *
+ * Abstract base class.
+ *
+ */
 class CTwoSampleTestStatistic : public CTestStatistic
 {
 	public:
@@ -57,15 +68,6 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		 * null distribution
 		 */
 		virtual float64_t compute_p_value(float64_t statistic);
-
-		/** Performs a two-sample test with the current settings on the current
-		 * data. Computes test statistic and compares its p-value against the
-		 * desired one and returns true if the p-value is at least as good.
-		 *
-		 * @param alpha test niveau alpha
-		 * @return true if null-hypothesis (p==q) is rejected, false otherwise
-		 */
-		virtual bool perform_test(float64_t alpha);
 
 		virtual ~CTwoSampleTestStatistic();
 
