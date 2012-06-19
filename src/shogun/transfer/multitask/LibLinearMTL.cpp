@@ -521,8 +521,6 @@ return obj
 			int32_t ti_j = task_indicator_lhs[j];
 
 			const float64_t ts = task_similarity_matrix.sparse_matrix[ti_i][ti_j];
-			//SG_INFO("task sim (%i,%i): %d\n", ti_i, ti_j, ts);
-			
 
 			// compute objective
 			obj -= 0.5 * ts * alphas[i] * alphas[j] * ((CBinaryLabels*)m_labels)->get_label(i) * 

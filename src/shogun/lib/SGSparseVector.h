@@ -17,7 +17,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
 #include <map>
-#include <iostream>
 
 namespace shogun
 {
@@ -84,7 +83,6 @@ public:
 	}
 
 	/** create mapping from dense idx to sparse idx */
-	//TODO a call to this was added to type map for python modular ONLY, needs to be added to others
 	void create_idx_map()
 	{
 		dense_to_sparse_idx.clear();
@@ -157,10 +155,5 @@ template <typename T>
 const T SGSparseVector<T>::zero = T(0);
 
 }
-
-/*
-template<class T>
-const T typename SGSparseVector<T>::zero = 0;
-*/
 
 #endif // __SGSPARSEVECTOR_H__
