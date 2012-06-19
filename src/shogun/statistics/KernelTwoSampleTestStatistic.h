@@ -36,6 +36,7 @@ class CKernelTwoSampleTestStatistic : public CTwoSampleTestStatistic
 		void init();
 
 	protected:
+		/** underlying kernel */
 		CKernel* m_kernel;
 };
 

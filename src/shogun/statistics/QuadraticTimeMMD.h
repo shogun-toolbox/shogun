@@ -164,9 +164,13 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		void init();
 
 	protected:
+		/** number of samples for spectrum null-dstribution-approximation */
 		index_t m_num_samples_spectrum;
+
+		/** number of Eigenvalues for spectrum null-dstribution-approximation */
 		index_t m_num_eigenvalues_spectrum;
 
+		/** type of statistic (biased/unbiased) */
 		EQuadraticMMDType m_statistic_type;
 };
 
