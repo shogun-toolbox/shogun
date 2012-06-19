@@ -192,14 +192,11 @@ class CLibLinearMTL : public CLinearMachine
                 float64_t* v_s = V.get_column_vector(s);
                 for (int32_t t=0; t<num_tasks; t++)
                 {
-                    //TODO: same interface for SparseMatrix!
-                    /*
-                    float64_t sim_ts = task_similarity_matrix.matrix[s*num_tasks+t];
+                    float64_t sim_ts = task_similarity_matrix.sparse_matrix[s][t];
                     for(int32_t i=0; i<w_size; i++)
                     {
                         W.matrix[t*w_size + i] += sim_ts * v_s[i];
                     }
-                    */
                 }
             }
 

@@ -520,14 +520,11 @@ return obj
 			// look up task similarity
 			int32_t ti_j = task_indicator_lhs[j];
 
-            //TODO: same interface for sparse matrix
-            /*
-			float64_t ts = task_similarity_matrix.matrix[ti_i*num_tasks+ti_j];
+			const float64_t ts = task_similarity_matrix.sparse_matrix[ti_i][ti_j];
 
 			// compute objective
 			obj -= 0.5 * ts * alphas[i] * alphas[j] * ((CBinaryLabels*)m_labels)->get_label(i) * 
 				((CBinaryLabels*)m_labels)->get_label(j) * features->dot(i, features,j);
-            */
 		}
 	}
 
