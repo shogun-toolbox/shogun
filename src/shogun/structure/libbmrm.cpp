@@ -15,7 +15,7 @@
 #include <string.h>
 #include <math.h>
 
-#include <shogun/so/libbmrm.h>
+#include <shogun/structure/libbmrm.h>
 #include <shogun/lib/external/libqp.h>
 
 namespace shogun

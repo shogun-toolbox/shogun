@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Michal Uricar
  */
 
-#include <shogun/so/RiskFunction.h>
+#include <shogun/structure/RiskFunction.h>
 
 using namespace shogun;
 

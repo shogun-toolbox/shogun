@@ -12,7 +12,7 @@
  *--------------------------------------------------------------------- */
 
 #include <shogun/lib/common.h>
-#include <shogun/so/RiskFunction.h>
+#include <shogun/structure/RiskFunction.h>
 
 #ifndef libbmrm_h
 #define libbmrm_h

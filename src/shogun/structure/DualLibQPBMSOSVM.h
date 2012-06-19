@@ -12,7 +12,7 @@
 #define _DUALLIBQPBMSOSVM__H__
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/so/RiskFunction.h>
+#include <shogun/structure/RiskFunction.h>
 
 namespace shogun
 {
@@ -26,7 +26,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** standard constructor
 		 *
 		 */
-		CDualLibQPBMSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CFeatures* features, float64_t lambda);
+		CDualLibQPBMSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features, float64_t lambda);
 
 		/** destructor */
 		~CDualLibQPBMSOSVM();

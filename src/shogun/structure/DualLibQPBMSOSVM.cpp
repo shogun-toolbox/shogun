@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Michal Uricar
  */
 
-#include <shogun/so/DualLibQPBMSOSVM.h>
-#include <shogun/so/libbmrm.h>
+#include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <shogun/structure/libbmrm.h>
 
 using namespace shogun;
 
@@ -22,7 +22,7 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		CStructuredModel* 	model,
 		CLossFunction* 		loss,
 		CStructuredLabels*	labs,
-		CFeatures*			features,
+		CDotFeatures*			features,
 		float64_t           lambda)
 :CLinearStructuredOutputMachine(model, loss, labs, features)
 {
