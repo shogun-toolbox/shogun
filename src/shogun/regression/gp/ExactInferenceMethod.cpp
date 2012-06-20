@@ -17,7 +17,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <iostream>
+
 
 namespace shogun {
 
@@ -179,8 +179,6 @@ void CExactInferenceMethod::learn_parameters()
 	while(length > .001 && get_negative_marginal_likelihood() > 0 )
 	{
 		get_alpha();
-		std::cerr << length << std::endl;
-		std::cerr << get_negative_marginal_likelihood() << std::endl;
 		width = ((CGaussianKernel*)kernel)->get_width();
 		SGVector<float64_t> gradient = get_marginal_likelihood_derivatives();
 		((CGaussianKernel*)kernel)->set_width(width - step*gradient[0]);
@@ -189,12 +187,6 @@ void CExactInferenceMethod::learn_parameters()
 		dynamic_cast<CGaussianLikelihood*>(m_model)->set_sigma(m_sigma);
 		length = sqrt(gradient.dot(gradient.vector, gradient.vector, gradient.vlen));
 	}
-
-	std::cerr << "Learned Hyperparameters" << std::endl;
-	std::cerr << ((CGaussianKernel*)kernel)->get_width() << std::endl;
-	//std::cerr << kernel->m_parameters[1] << std::endl;
-	std::cerr << m_sigma << std::endl;
-	std::cerr << get_negative_marginal_likelihood() << std::endl;
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()

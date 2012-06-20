@@ -5,6 +5,10 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
+ * 
+ * Code adapted from Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ * 
  */
 
 #include <shogun/lib/config.h>
@@ -17,7 +21,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <iostream>
 
 using namespace shogun;
 

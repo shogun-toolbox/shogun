@@ -12,7 +12,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <iostream>
 
 using namespace shogun;
 
