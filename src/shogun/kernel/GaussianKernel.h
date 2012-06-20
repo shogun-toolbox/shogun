@@ -126,6 +126,14 @@ class CGaussianKernel: public CDotKernel
 		{
 			return m_compact;
 		}
+		
+		/** return derivative with respect to specified parameter
+		 * 
+		 * @param name of parameter
+		 * @return gradient with respect to parameter
+		 */
+		virtual SGMatrix<float64_t> get_parameter_gradient(const char* param_name);
+
 
 	protected:
 		/** compute kernel function for features a and b

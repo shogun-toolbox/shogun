@@ -121,10 +121,37 @@ void CGaussianKernel::precompute_squared()
 		precompute_squared_helper(sq_rhs, (CDotFeatures*) rhs);
 }
 
+SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const char* param_name)
+{
+
+	if(strcmp(param_name, "width") == 0)
+	{
+		SGMatrix<float64_t> derivative = SGMatrix<float64_t>(num_lhs, num_rhs);
+		for(int j = 0; j < num_lhs; j++)
+		{
+			for(int k = 0; k < num_rhs; k++)
+			{
+				float64_t element = sq_lhs[j]+sq_rhs[k]-2*CDotKernel::compute(j,k);
+				derivative(j,k) = exp(-element/width)*element/(width*width);
+			}
+		}
+		
+		return derivative;
+	}
+
+	else
+	{
+		SG_ERROR("Gradient calculation not implemented for parameter %s.",
+			param_name);
+		SG_ERROR("Returning Empty Matrix\n");
+		return SGMatrix<float64_t>(0,0);
+	}
+}
+
 void CGaussianKernel::init()
 {
 	set_width(1.0);
-	set_compact_enabled(false);
+	set_compact_enabled(false);	
 	sq_lhs=NULL;
 	sq_rhs=NULL;
 	SG_ADD(&width, "width", "Kernel width.", MS_AVAILABLE);
