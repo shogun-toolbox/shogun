@@ -216,6 +216,68 @@ public:
 	 */
 	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
 
+	/** Normal distribution function
+	 *
+	 * Returns the area under the Gaussian probability density
+	 * function, integrated from minus infinity to x:
+	 *
+	 *                            x
+	 *                             -
+	 *                   1        | |          2
+	 *    ndtr(x)  = ---------    |    exp( - t /2 ) dt
+	 *               sqrt(2pi)  | |
+	 *                           -
+	 *                          -inf.
+	 *
+	 *             =  ( 1 + erf(z) ) / 2
+	 *             =  erfc(z) / 2
+	 *
+	 * where z = x/sqrt(2). Computation is via the functions
+	 * erf and erfc.
+	 *
+	 * Taken from ALGLIB under gpl2+
+	 */
+	float64_t normal_distribution(float64_t x);
+
+	/** Error function
+	 *
+	 * The integral is
+	 *
+	 *                           x
+	 *                            -
+	 *                 2         | |          2
+	 *   erf(x)  =  --------     |    exp( - t  ) dt.
+	 *              sqrt(pi)   | |
+	 *                          -
+	 *                           0
+	 *
+	 * For 0 <= |x| < 1, erf(x) = x * P4(x**2)/Q5(x**2); otherwise
+	 * erf(x) = 1 - erfc(x).
+	 *
+	 * Taken from ALGLIB under gpl2+
+	 */
+	float64_t error_function(float64_t x);
+
+	/** Complementary error function
+	 *
+	 * 1 - erf(x) =
+	 *
+	 *                           inf.
+	 *                             -
+	 *                  2         | |          2
+	 *   erfc(x)  =  --------     |    exp( - t  ) dt
+	 *               sqrt(pi)   | |
+	 *                           -
+	 *                            x
+	 *
+	 *
+	 * For small x, erfc(x) = 1 - erf(x); otherwise rational
+	 * approximations are computed.
+	 *
+	 * Taken from ALGLIB under gpl2+
+	 */
+	float64_t error_function_complement(float64_t x);
+
 	/// returns the mutual information of p which is given in logspace
 	/// where p,q are given in logspace
 	static float64_t mutual_info(float64_t* p1, float64_t* p2, int32_t len);
@@ -267,11 +329,22 @@ protected:
 	static float64_t ibetaf_incompletebetafe2(float64_t a, float64_t b,
 			float64_t x, float64_t big, float64_t biginv);
 
+	/** method to make ALGLIB integration easier */
 	static inline bool equal(float64_t a, float64_t b) { return a==b; }
+
+	/** method to make ALGLIB integration easier */
 	static inline bool not_equal(float64_t a, float64_t b) { return a!=b; }
+
+	/** method to make ALGLIB integration easier */
 	static inline bool less(float64_t a, float64_t b) { return a<b; }
+
+	/** method to make ALGLIB integration easier */
 	static inline bool less_equal(float64_t a, float64_t b) { return a<=b; }
+
+	/** method to make ALGLIB integration easier */
 	static inline bool greater(float64_t a, float64_t b) { return a>b; }
+
+	/** method to make ALGLIB integration easier */
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
