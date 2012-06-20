@@ -47,15 +47,15 @@
 #include <shogun/kernel/OligoStringKernel.h>
 #include <shogun/kernel/DistanceKernel.h>
 #include <shogun/kernel/TensorProductPairKernel.h>
-#include <shogun/kernel/normalize/AvgDiagKernelNormalizer.h>
-#include <shogun/kernel/normalize/RidgeKernelNormalizer.h>
-#include <shogun/kernel/normalize/FirstElementKernelNormalizer.h>
-#include <shogun/kernel/normalize/IdentityKernelNormalizer.h>
-#include <shogun/kernel/normalize/SqrtDiagKernelNormalizer.h>
-#include <shogun/kernel/normalize/VarianceKernelNormalizer.h>
-#include <shogun/kernel/normalize/ScatterKernelNormalizer.h>
+#include <shogun/kernel/normalizer/AvgDiagKernelNormalizer.h>
+#include <shogun/kernel/normalizer/RidgeKernelNormalizer.h>
+#include <shogun/kernel/normalizer/FirstElementKernelNormalizer.h>
+#include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
+#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <shogun/kernel/normalizer/VarianceKernelNormalizer.h>
+#include <shogun/kernel/normalizer/ScatterKernelNormalizer.h>
 #include <shogun/classifier/svm/SVM.h>
-#include <shogun/kernel/normalize/ZeroMeanCenterKernelNormalizer.h>
+#include <shogun/kernel/normalizer/ZeroMeanCenterKernelNormalizer.h>
 #include <shogun/kernel/WaveletKernel.h>
 
 #include <string.h>

@@ -4,48 +4,40 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg
- * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2008-2009 Soeren Sonnenburg
+ * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _AVGDIAGKERNELNORMALIZER_H___
-#define _AVGDIAGKERNELNORMALIZER_H___
+#ifndef _FIRSTELEMENTKERNELNORMALIZER_H___
+#define _FIRSTELEMENTKERNELNORMALIZER_H___
 
-#include <shogun/kernel/normalize/KernelNormalizer.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
+
 namespace shogun
 {
-/** @brief Normalize the kernel by either a constant or the average value of the
- * diagonal elements (depending on argument c of the constructor).
+/** @brief Normalize the kernel by a constant obtained from the first element of the
+ * kernel matrix, i.e. \f$ c=k({\bf x},{\bf x})\f$
  *
- * In case c <= 0 compute scale as
-* \f[
-* \mbox{scale} = \frac{1}{N}\sum_{i=1}^N k(x_i,x_i)
-* \f]
-*
-* otherwise use scale=c and normalize the kernel via
-*
-* \f[
-* k'(x,x')= \frac{k(x,x')}{scale}
-* \f]
-*/
-class CAvgDiagKernelNormalizer : public CKernelNormalizer
+ * \f[
+ * k'(x,x')= \frac{k(x,x')}{c}
+ * \f]
+ *
+ * useful if the kernel returns constant elements along the diagonal anyway and
+ * all one wants is to scale the kernel down to 1 on the diagonal.
+ */
+class CFirstElementKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** constructor
-		 *
-		 * @param c scale parameter, if <= 0 scaling will be computed from the
-		 * avg of the kernel diagonal elements
 		 */
-		CAvgDiagKernelNormalizer(float64_t c=0.0) : CKernelNormalizer()
+		CFirstElementKernelNormalizer() : CKernelNormalizer(), scale(1.0)
 		{
-			scale=c;
-
 			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
 			    MS_AVAILABLE);
 		}
 
 		/** default destructor */
-		virtual ~CAvgDiagKernelNormalizer()
+		virtual ~CFirstElementKernelNormalizer()
 		{
 		}
 
@@ -53,25 +45,15 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
-			if (scale<=0)
-			{
-				ASSERT(k);
-				int32_t num=k->get_num_vec_lhs();
-				ASSERT(num>0);
+			CFeatures* old_lhs=k->lhs;
+			CFeatures* old_rhs=k->rhs;
+			k->lhs=old_lhs;
+			k->rhs=old_lhs;
 
-				CFeatures* old_lhs=k->lhs;
-				CFeatures* old_rhs=k->rhs;
-				k->lhs=old_lhs;
-				k->rhs=old_lhs;
+			scale=k->compute(0, 0);
 
-				float64_t sum=0;
-				for (int32_t i=0; i<num; i++)
-					sum+=k->compute(i, i);
-
-				scale=sum/num;
-				k->lhs=old_lhs;
-				k->rhs=old_rhs;
-			}
+			k->lhs=old_lhs;
+			k->rhs=old_rhs;
 
 			return true;
 		}
@@ -106,10 +88,10 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "AvgDiagKernelNormalizer"; }
+		inline virtual const char* get_name() const { return "FirstElementKernelNormalizer"; }
 
 	protected:
-		/// the constant scaling factor (avg of diagonal or user given const)
+		/// scale constant obtained from k(0,0)
 		float64_t scale;
 };
 }

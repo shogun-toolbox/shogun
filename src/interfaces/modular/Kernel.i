@@ -137,16 +137,16 @@ namespace shogun
 #endif
 }
 
-%include <shogun/kernel/normalize/KernelNormalizer.h>
-%include <shogun/kernel/normalize/AvgDiagKernelNormalizer.h>
-%include <shogun/kernel/normalize/RidgeKernelNormalizer.h>
-%include <shogun/kernel/normalize/DiceKernelNormalizer.h>
-%include <shogun/kernel/normalize/ScatterKernelNormalizer.h>
-%include <shogun/kernel/normalize/VarianceKernelNormalizer.h>
-%include <shogun/kernel/normalize/IdentityKernelNormalizer.h>
-%include <shogun/kernel/normalize/SqrtDiagKernelNormalizer.h>
-%include <shogun/kernel/normalize/TanimotoKernelNormalizer.h>
-%include <shogun/kernel/normalize/ZeroMeanCenterKernelNormalizer.h>
+%include <shogun/kernel/normalizer/KernelNormalizer.h>
+%include <shogun/kernel/normalizer/AvgDiagKernelNormalizer.h>
+%include <shogun/kernel/normalizer/RidgeKernelNormalizer.h>
+%include <shogun/kernel/normalizer/DiceKernelNormalizer.h>
+%include <shogun/kernel/normalizer/ScatterKernelNormalizer.h>
+%include <shogun/kernel/normalizer/VarianceKernelNormalizer.h>
+%include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
+%include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
+%include <shogun/kernel/normalizer/TanimotoKernelNormalizer.h>
+%include <shogun/kernel/normalizer/ZeroMeanCenterKernelNormalizer.h>
 
 %include <shogun/kernel/PyramidChi2.h>
 %include <shogun/kernel/ANOVAKernel.h>

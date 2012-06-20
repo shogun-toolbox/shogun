@@ -8,50 +8,46 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SQRTDIAGKERNELNORMALIZER_H___
-#define _SQRTDIAGKERNELNORMALIZER_H___
+#ifndef _DICEKERNELNORMALIZER_H___
+#define _DICEKERNELNORMALIZER_H___
 
-#include <shogun/kernel/normalize/KernelNormalizer.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <shogun/kernel/CommWordStringKernel.h>
 
 namespace shogun
 {
-/** @brief SqrtDiagKernelNormalizer divides by the Square Root of the product of
- * the diagonal elements.
- *
- * This effectively normalizes the vectors in feature space to norm 1 (see
- * CSqrtDiagKernelNormalizer)
+/** @brief DiceKernelNormalizer performs kernel normalization inspired by the Dice
+ * coefficient (see http://en.wikipedia.org/wiki/Dice's_coefficient)
  *
  * \f[
- * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\sqrt{k({\bf x},{\bf x})k({\bf x'},{\bf x'})}}
+ * k'({\bf x},{\bf x'}) = \frac{2k({\bf x},{\bf x'})}{k({\bf x},{\bf x})+k({\bf x'},{\bf x'}}
  * \f]
  */
-class CSqrtDiagKernelNormalizer : public CKernelNormalizer
+class CDiceKernelNormalizer : public CKernelNormalizer
 {
 	public:
 		/** default constructor
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CSqrtDiagKernelNormalizer(bool use_opt_diag=false): CKernelNormalizer(),
-			sqrtdiag_lhs(NULL), num_sqrtdiag_lhs(0),
-			sqrtdiag_rhs(NULL), num_sqrtdiag_rhs(0),
+		CDiceKernelNormalizer(bool use_opt_diag=false) : CKernelNormalizer(),
+			diag_lhs(NULL), num_diag_lhs(0), diag_rhs(NULL), num_diag_rhs(0),
 			use_optimized_diagonal_computation(use_opt_diag)
 		{
-			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
-							  "sqrt(K(x,x)) for left hand side examples.");
-			m_parameters->add_vector(&sqrtdiag_rhs, &num_sqrtdiag_rhs, "sqrtdiag_rhs",
-							  "sqrt(K(x,x)) for right hand side examples.");
+			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
+							  "K(x,x) for left hand side examples.");
+			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
+							  "K(x,x) for right hand side examples.");
 			SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
 					"flat if optimized diagonal computation is used", MS_NOT_AVAILABLE);
 		}
 
 		/** default destructor */
-		virtual ~CSqrtDiagKernelNormalizer()
+		virtual ~CDiceKernelNormalizer()
 		{
-			SG_FREE(sqrtdiag_lhs);
-			SG_FREE(sqrtdiag_rhs);
+			SG_FREE(diag_lhs);
+			SG_FREE(diag_rhs);
 		}
 
 		/** initialization of the normalizer
@@ -59,21 +55,21 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		virtual bool init(CKernel* k)
 		{
 			ASSERT(k);
-			num_sqrtdiag_lhs=k->get_num_vec_lhs();
-			num_sqrtdiag_rhs=k->get_num_vec_rhs();
-			ASSERT(num_sqrtdiag_lhs>0);
-			ASSERT(num_sqrtdiag_rhs>0);
+			num_diag_lhs=k->get_num_vec_lhs();
+			num_diag_rhs=k->get_num_vec_rhs();
+			ASSERT(num_diag_lhs>0);
+			ASSERT(num_diag_rhs>0);
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
-			bool r1=alloc_and_compute_diag(k, sqrtdiag_lhs, num_sqrtdiag_lhs);
+			bool r1=alloc_and_compute_diag(k, diag_lhs, num_diag_lhs);
 
 			k->lhs=old_rhs;
 			k->rhs=old_rhs;
-			bool r2=alloc_and_compute_diag(k, sqrtdiag_rhs, num_sqrtdiag_rhs);
+			bool r2=alloc_and_compute_diag(k, diag_rhs, num_diag_rhs);
 
 			k->lhs=old_lhs;
 			k->rhs=old_rhs;
@@ -89,8 +85,8 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		inline virtual float64_t normalize(
 			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
-			float64_t sqrt_both=sqrtdiag_lhs[idx_lhs]*sqrtdiag_rhs[idx_rhs];
-			return value/sqrt_both;
+			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
+			return 2*value/diag_sum;
 		}
 
 		/** normalize only the left hand side vector
@@ -99,7 +95,8 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
-			return value/sqrtdiag_lhs[idx_lhs];
+			SG_ERROR("linadd not supported with Dice normalization.\n");
+			return 0;
 		}
 
 		/** normalize only the right hand side vector
@@ -108,8 +105,17 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 */
 		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
-			return value/sqrtdiag_rhs[idx_rhs];
+			SG_ERROR("linadd not supported with Dice normalization.\n");
+			return 0;
 		}
+
+		/** Returns the name of the SGSerializable instance.  It MUST BE
+		 *  the CLASS NAME without the prefixed `C'.
+		 *
+		 * @return name of the SGSerializable
+		 */
+		virtual const char* get_name() const {
+			return "DiceKernelNormalizer"; }
 
     public:
 		/**
@@ -126,12 +132,12 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
 					if (use_optimized_diagonal_computation)
-						v[i]=sqrt(((CCommWordStringKernel*) k)->compute_diag(i));
+						v[i]=((CCommWordStringKernel*) k)->compute_diag(i);
 					else
-						v[i]=sqrt(((CCommWordStringKernel*) k)->compute_helper(i,i, true));
+						v[i]=((CCommWordStringKernel*) k)->compute_helper(i,i, true);
 				}
 				else
-					v[i]=sqrt(k->compute(i,i));
+					v[i]=k->compute(i,i);
 
 				if (v[i]==0.0)
 					v[i]=1e-16; /* avoid divide by zero exception */
@@ -140,23 +146,18 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			return (v!=NULL);
 		}
 
-		/** @return object name */
-		inline virtual const char* get_name() const { return "SqrtDiagKernelNormalizer"; }
-
     protected:
-		/** sqrt diagonal left-hand side */
-		float64_t* sqrtdiag_lhs;
+		/** diagonal left-hand side */
+		float64_t* diag_lhs;
+		/** num diag lhs */
+		int32_t num_diag_lhs;
 
-		/** num sqrt diagonal left-hand side */
-		int32_t num_sqrtdiag_lhs;
+		/** diagonal right-hand side */
+		float64_t* diag_rhs;
+		/** num diag rhs */
+		int32_t num_diag_rhs;
 
-		/** sqrt diagonal right-hand side */
-		float64_t* sqrtdiag_rhs;
-
-		/** num sqrt diagonal right-hand side */
-		int32_t num_sqrtdiag_rhs;
-
-		/** f optimized diagonal computation is used */
+		/** flat if optimized diagonal computation is used */
 		bool use_optimized_diagonal_computation;
 };
 }

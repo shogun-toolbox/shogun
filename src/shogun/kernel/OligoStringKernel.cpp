@@ -12,7 +12,7 @@
  *
  */
 #include <shogun/kernel/OligoStringKernel.h>
-#include <shogun/kernel/normalize/SqrtDiagKernelNormalizer.h>
+#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/StringFeatures.h>
 
 #include <map>
