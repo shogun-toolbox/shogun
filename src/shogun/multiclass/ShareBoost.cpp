@@ -8,8 +8,12 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <algorithm>
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/ShareBoost.h>
+#include <shogun/features/DenseSubsetFeatures.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -69,13 +73,28 @@ bool CShareBoost::train_machine(CFeatures* data)
 	// release memory
 	m_fea = SGMatrix<float64_t>();
 	m_rho = SGMatrix<float64_t>();
+	m_pred = SGMatrix<float64_t>();
 
 	return true;
 }
 
 void CShareBoost::compute_pred()
 {
+	CDenseSubsetFeatures *subset_fea = new CDenseSubsetFeatures(m_features, m_activeset);
+	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
+	{
+		CLinearMachine *machine = dynamic_cast<CLinearMachine *>(m_machines->get_element(i));
+		CRegressionLabels *lab = machine->apply_regression(subset_fea);
+		SGVector<float64_t> lab_raw = lab->get_labels();
+		std::copy(lab_raw.vector, lab_raw.vector + lab_raw.vlen, m_pred.get_column_vector(i));
+		SG_UNREF(machine);
+		SG_UNREF(lab);
+	}
+}
 
+void compute_pred(float64_t *W)
+{
+	
 }
 
 void CShareBoost::compute_rho()

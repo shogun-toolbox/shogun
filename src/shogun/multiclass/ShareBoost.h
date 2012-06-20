@@ -50,6 +50,8 @@ public:
 
 	/** assign features */
 	void set_features(CFeatures *f);
+
+	friend class ShareBoostOptimizer;
 protected:
 
 	/** train machine */
@@ -61,7 +63,8 @@ private:
 	void compute_rho(); ///< compute the rho matrix
 	int32_t choose_feature(); ///< choose next feature greedily
 	void optimize_coefficients(); ///< optimize coefficients with gradient descent
-	void compute_pred(); ///< compute predictions on training data
+	void compute_pred(); ///< compute predictions on training data, according to W in m_machines
+	void compute_pred(float64_t *W); ///< compute predictions on training data, according to given W
 
 	int32_t m_nonzero_feas; ///< number of non-zero features to seek
 	SGVector<int32_t> m_activeset; ///< selected features
