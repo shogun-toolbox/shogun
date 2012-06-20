@@ -23,12 +23,12 @@ class CMulticlassRiskFunction : public CRiskFunction
 {
 	public:
 		/** default constructor  */
-        CMulticlassRiskFunction();
+		CMulticlassRiskFunction();
 
 		/** destructor  */
 		~CMulticlassRiskFunction();
 
-        virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W);
+		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W);
 
 		virtual const char* get_name() const { return "MulticlassRiskFunction"; }
 

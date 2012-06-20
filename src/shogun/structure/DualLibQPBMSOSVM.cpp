@@ -22,16 +22,16 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		CStructuredModel* 	model,
 		CLossFunction* 		loss,
 		CStructuredLabels*	labs,
-        CDotFeatures*		features,
-        float64_t           lambda,
-        CRiskFunction*      risk_function)
+		CDotFeatures*		features,
+		float64_t           lambda,
+		CRiskFunction*      risk_function)
 :CLinearStructuredOutputMachine(model, loss, labs, features)
 {
 	set_TolRel(0.001);
 	set_TolAbs(0.0);
-    set_BufSize(1000);
+	set_BufSize(1000);
 	set_lambda(lambda);
-    m_risk_function=risk_function;
+	m_risk_function=risk_function;
 }
 
 CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
@@ -40,21 +40,21 @@ CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
 
 bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 {
-    // get dimension of w
-    uint32_t nDim=this->m_model->get_dim();
+	// get dimension of w
+	uint32_t nDim=this->m_model->get_dim();
 
-    // Initialize the weight vector
-    m_w = SGVector< float64_t >(nDim);
-    m_w.zero();
+	// Initialize the weight vector
+	m_w = SGVector< float64_t >(nDim);
+	m_w.zero();
 
-    bmrm_data_T bmrm_data;
-    bmrm_data.X=this->m_features;
-    bmrm_data.y=this->m_labels;
-    bmrm_data.w_dim=nDim;
+	bmrm_data_T bmrm_data;
+	bmrm_data.X=this->m_features;
+	bmrm_data.y=this->m_labels;
+	bmrm_data.w_dim=nDim;
 
 	// call the BMRM solver
-    bmrm_return_value_T result = svm_bmrm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
-            m_BufSize, m_risk_function);
+	bmrm_return_value_T result = svm_bmrm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
+			m_BufSize, m_risk_function);
 
 	if (result.exitflag==1)
 	{

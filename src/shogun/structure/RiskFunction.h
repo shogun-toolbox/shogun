@@ -23,15 +23,15 @@ class CRiskFunction : public CSGObject
 {
 	public:
 		/** default constructor */
-        CRiskFunction();
+		CRiskFunction();
 
 		/** destructor */
 		virtual ~CRiskFunction();
 
 		/** computes the value of the risk function and sub-gradient at given point
 		 *
-         */
-        virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W) = 0;
+		 */
+		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W) = 0;
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "RiskFunction"; }

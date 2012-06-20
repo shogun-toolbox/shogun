@@ -26,7 +26,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** standard constructor
 		 *
 		 */
-        CDualLibQPBMSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features, float64_t lambda, CRiskFunction* risk_function);
+		CDualLibQPBMSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features, float64_t lambda, CRiskFunction* risk_function);
 
 		/** destructor */
 		~CDualLibQPBMSOSVM();
@@ -63,9 +63,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 	private:
 		/** register class parameters */
-        //void register_parameters();
+		//void register_parameters();
 
-    private:
+	private:
 
 		/** lambda */
 		float64_t m_lambda;
