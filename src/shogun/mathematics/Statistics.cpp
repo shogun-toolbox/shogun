@@ -1224,12 +1224,9 @@ float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 	return incomplete_gamma(a,x/b);
 }
 
-float64_t CStatistics::normal_cdf(float64_t x)
+float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
 {
-	float64_t result;
-
-	result=0.5*(error_function(x/1.41421356237309504880)+1);
-	return result;
+	return 0.5*(error_function(x/std_dev/1.41421356237309504880)+1);
 }
 
 float64_t CStatistics::error_function(float64_t x)

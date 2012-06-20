@@ -230,14 +230,14 @@ public:
 	 *                          -inf.
 	 *
 	 *             =  ( 1 + erf(z) ) / 2
-	 *             =  erfc(z) / 2
 	 *
-	 * where z = x/sqrt(2). Computation is via the functions
+	 * where z = x/sqrt(2)/std_dev. Computation is via the functions
 	 * erf and erfc.
 	 *
 	 * Taken from ALGLIB under gpl2+
+	 * Custom variance added by Heiko Strathmann
 	 */
-	static float64_t normal_cdf(float64_t x);
+	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
 
 	/** Error function
 	 *
