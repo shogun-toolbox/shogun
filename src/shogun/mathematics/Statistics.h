@@ -237,7 +237,7 @@ public:
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
-	float64_t normal_distribution(float64_t x);
+	static float64_t normal_cdf(float64_t x);
 
 	/** Error function
 	 *
@@ -256,7 +256,7 @@ public:
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
-	float64_t error_function(float64_t x);
+	static float64_t error_function(float64_t x);
 
 	/** Complementary error function
 	 *
@@ -276,7 +276,7 @@ public:
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
-	float64_t error_function_complement(float64_t x);
+	static float64_t error_function_complement(float64_t x);
 
 	/// returns the mutual information of p which is given in logspace
 	/// where p,q are given in logspace

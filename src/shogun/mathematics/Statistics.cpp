@@ -1224,7 +1224,7 @@ float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 	return incomplete_gamma(a,x/b);
 }
 
-float64_t CStatistics::normal_distribution(float64_t x)
+float64_t CStatistics::normal_cdf(float64_t x)
 {
 	float64_t result;
 
@@ -1279,7 +1279,7 @@ float64_t CStatistics::error_function_complement(float64_t x)
 
 	if (less(x, 0))
 	{
-		result=2-error_function(-x);
+		result=2-error_function_complement(-x);
 		return result;
 	}
 	if (less(x, 0.5))
@@ -1310,7 +1310,7 @@ float64_t CStatistics::error_function_complement(float64_t x)
 	q=6089.5424232724435504633068+x*q;
 	q=4958.82756472114071495438422+x*q;
 	q=1826.3348842295112595576438+x*q;
-	result=CMath::exp(-CMath::sqrt(x))*p/q;
+	result=CMath::exp(-x*x)*p/q;
 	return result;
 }
 
