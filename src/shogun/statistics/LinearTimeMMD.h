@@ -18,27 +18,28 @@ namespace shogun
 
 class CFeatures;
 
-
-class CLinearTimeMMD : public CKernelTwoSampleTestStatistic
+class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
-	public:
-		CLinearTimeMMD();
-		CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t q_start);
+public:
+	CLinearTimeMMD();
+	CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t q_start);
 
-		virtual ~CLinearTimeMMD();
+	virtual ~CLinearTimeMMD();
 
-		virtual float64_t compute_statistic();
-		virtual float64_t compute_p_value(float64_t statistic);
+	virtual float64_t compute_statistic();
+	virtual float64_t compute_p_value(float64_t statistic);
 
-		inline virtual const char* get_name() const
-		{
-			return "LinearTimeMMD";
-		};
+	inline virtual const char* get_name() const
+	{
+		return "LinearTimeMMD";
+	}
+	;
 
-	private:
-		void init();
+private:
+	void init();
 };
 
 }
 
 #endif /* __LINEARTIMEMMD_H_ */
+

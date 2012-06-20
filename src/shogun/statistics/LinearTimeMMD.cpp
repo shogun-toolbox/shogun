@@ -12,7 +12,8 @@
 
 using namespace shogun;
 
-CLinearTimeMMD::CLinearTimeMMD() : CKernelTwoSampleTestStatistic()
+CLinearTimeMMD::CLinearTimeMMD() :
+		CKernelTwoSampleTestStatistic()
 {
 	init();
 }
@@ -37,56 +38,37 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 void CLinearTimeMMD::init()
 {
-	/* TODO register parameters*/
+
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
 {
-	/* TODO maybe add parallelized kernel matrix trace method to CKernel? */
 	/* TODO features with a different number of vectors should be allowed */
 
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
-	// TODO here is something wrong! (possibly)
 	index_t m=m_q_start;
 	index_t m_2=m/2;
-
-	/* allocate memory */
-	SGVector<float64_t> tr_K_x(m_2);
-	SGVector<float64_t> tr_K_y(m_2);
-	SGVector<float64_t> tr_K_xy(m);
 
 	/* compute traces of kernel matrices for linear MMD */
 	m_kernel->init(m_p_and_q, m_p_and_q);
 
-	/* p and p */
-	for (index_t i=0; i<m_2; ++i)
-		tr_K_x.vector[i]=m_kernel->kernel(i, m_2+i);
+	float64_t pp=0;
+	float64_t qq=0;
+	float64_t pq=0;
+	float64_t qp=0;
 
-	/* q and q */
-	for (index_t i=m_q_start; i<m+m_2; ++i)
-		tr_K_y.vector[i-m_q_start]=m_kernel->kernel(i, m_2+i);
-
-	/* p and q */
-	for (index_t i=0; i<m; ++i)
-		tr_K_xy.vector[i]=m_kernel->kernel(i, m+i);
-
-	/* compute result */
-	float64_t first=0;
-	float64_t second=0;
-	float64_t third=0;
-
+	/* p and p, q and q, p and q first half */
 	for (index_t i=0; i<m_2; ++i)
 	{
-		first+=tr_K_x.vector[i];
-		second+=tr_K_y.vector[i];
-		third+=tr_K_xy.vector[i];
+		pp+=m_kernel->kernel(i, m_2+i);
+		qq+=m_kernel->kernel(m+i, m+m_2+i);
+		pq+=m_kernel->kernel(i, m+m_2+i);
+		qp+=m_kernel->kernel(m_2+i, m+i);
 	}
 
-	for (index_t i=m_2; i<m; ++i)
-		third+=tr_K_xy.vector[i-m_2];
-
-	return 1.0/m_2*(first+second)+1.0/m*third;
+	/* mean of sum all traces is linear time mmd */
+	return 1.0/m_2*(pp+qq-pq-qp);
 }
 
 float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
@@ -95,10 +77,10 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 
 	switch (m_p_value_method)
 	{
-		/* TODO implement new null distribution approximations here */
-		default:
-			result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
-			break;
+	/* TODO implement new null distribution approximations here */
+	default:
+		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
+		break;
 	}
 
 	return result;
