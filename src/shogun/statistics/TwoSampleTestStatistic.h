@@ -20,7 +20,7 @@ namespace shogun
  * the used method */
 enum EPValueMethod
 {
-	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA
+	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN
 };
 
 class CFeatures;

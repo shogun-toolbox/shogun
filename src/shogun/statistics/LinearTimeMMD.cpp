@@ -9,6 +9,7 @@
 
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/features/Features.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -58,7 +59,7 @@ float64_t CLinearTimeMMD::compute_statistic()
 	float64_t pq=0;
 	float64_t qp=0;
 
-	/* p and p, q and q, p and q first half */
+	/* compute traces */
 	for (index_t i=0; i<m_2; ++i)
 	{
 		pp+=m_kernel->kernel(i, m_2+i);
@@ -77,12 +78,60 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 
 	switch (m_p_value_method)
 	{
-	/* TODO implement new null distribution approximations here */
+	case MMD1_GAUSSIAN:
+		if (m_p_and_q->get_num_vectors()<5000)
+		{
+			SG_WARNING("CLinearTimeMMD::compute_p_value: The number of samples"
+					" should be at least 5000 (better 10000) in order to get a"
+					" good Gaussian approximation using MMD1_GAUSSIAN.\n");
+		}
+
+		{
+			/* compute variance and use to estimate Gaussian distribution */
+			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
+			result=CStatistics::normal_cdf(statistic, std_dev);
+		}
+		break;
 	default:
 		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
 		break;
 	}
 
 	return result;
+}
+
+float64_t CLinearTimeMMD::compute_variance_estimate()
+{
+	/* this corresponds to computing the statistic itself, however, the
+	 * difference is that all terms (of the traces) have to be stored */
+	index_t m=m_q_start;
+	index_t m_2=m/2;
+
+	m_kernel->init(m_p_and_q, m_p_and_q);
+
+	/* allocate memory for traces */
+	SGVector<float64_t> traces(m_2);
+
+	/* sum up diagonals of all kernel matrices */
+	for (index_t i=0; i<m_2; ++i)
+	{
+		/* init for code beauty :) */
+		traces[i]=0;
+
+		/* p and p */
+		traces[i]+=m_kernel->kernel(i, m_2+i);
+
+		/* q and q */
+		traces[i]+=m_kernel->kernel(m+i, m+m_2+i);
+
+		/* p and q */
+		traces[i]-=m_kernel->kernel(i, m+m_2+i);
+
+		/* q and p */
+		traces[i]-=m_kernel->kernel(m_2+i, m+i);
+	}
+
+	/* return linear time variance estimate */
+	return CStatistics::variance(traces);
 }
 
