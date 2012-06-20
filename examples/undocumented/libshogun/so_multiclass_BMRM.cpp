@@ -32,75 +32,75 @@ using namespace shogun;
 
 void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 {
-    float64_t means[DIMS];
-    float64_t  stds[DIMS];
+	float64_t means[DIMS];
+	float64_t  stds[DIMS];
 
-    for ( int32_t c = 0 ; c < NUM_CLASSES ; ++c )
-    {
-        for ( int32_t j = 0 ; j < DIMS ; ++j )
-        {
-            means[j] = CMath::random(-1, 1);
-             stds[j] = CMath::random( 1, 5);
-        }
+	for ( int32_t c = 0 ; c < NUM_CLASSES ; ++c )
+	{
+		for ( int32_t j = 0 ; j < DIMS ; ++j )
+		{
+			means[j] = CMath::random(-1, 1);
+			stds[j] = CMath::random( 1, 5);
+		}
 
-        for ( int32_t i = 0 ; i < NUM_SAMPLES ; ++i )
-        {
-            labs[c*NUM_SAMPLES+i] = c;
+		for ( int32_t i = 0 ; i < NUM_SAMPLES ; ++i )
+		{
+			labs[c*NUM_SAMPLES+i] = c;
 
-            for ( int32_t j = 0 ; j < DIMS ; ++j )
-            {
-                feats[(c*NUM_SAMPLES+i)*DIMS + j] =
-                    CMath::normal_random(means[j], stds[j]);
-            }
-        }
-    }
+			for ( int32_t j = 0 ; j < DIMS ; ++j )
+			{
+				feats[(c*NUM_SAMPLES+i)*DIMS + j] =
+					CMath::normal_random(means[j], stds[j]);
+			}
+		}
+	}
 }
 
 void print_message(FILE* target, const char* str)
 {
-    fprintf(target, "%s", str);
+	fprintf(target, "%s", str);
 }
 
 int main(int argc, char * argv[])
 {
-    init_shogun_with_defaults();
+	init_shogun_with_defaults();
 
-    SGVector< float64_t > labs(NUM_CLASSES*NUM_SAMPLES);
-    SGMatrix< float64_t > feats(DIMS, NUM_CLASSES*NUM_SAMPLES);
+	SGVector< float64_t > labs(NUM_CLASSES*NUM_SAMPLES);
+	SGMatrix< float64_t > feats(DIMS, NUM_CLASSES*NUM_SAMPLES);
 
-    gen_rand_data(labs, feats);
+	gen_rand_data(labs, feats);
 
-    // Create train labels
-    CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
+	// Create train labels
+	CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
 
-    // Create train features
-    CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feats);
+	// Create train features
+	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feats);
 
-    // Create structured model
-    CMulticlassModel* model = new CMulticlassModel(features, labels);
+	// Create structured model
+	CMulticlassModel* model = new CMulticlassModel(features, labels);
 
-    // Create loss function
-    CHingeLoss* loss = new CHingeLoss();
+	// Create loss function
+	CHingeLoss* loss = new CHingeLoss();
 
-    // Create risk function
-    CMulticlassRiskFunction* risk = new CMulticlassRiskFunction();
+	// Create risk function
+	CMulticlassRiskFunction* risk = new CMulticlassRiskFunction();
 
-    // Create SO-SVM
-    CDualLibQPBMSOSVM* sosvm = new CDualLibQPBMSOSVM(model, loss, labels, features, 0.01, risk);
-    SG_REF(sosvm);
+	// Create SO-SVM
+	CDualLibQPBMSOSVM* sosvm = new CDualLibQPBMSOSVM(model, loss, labels, features, 0.01, risk);
+	SG_REF(sosvm);
 
-    sosvm->train();
+	sosvm->train();
 
-    SG_SPRINT("\n");
-    SGVector< float64_t > w = sosvm->get_w();
-    for ( int32_t i = 0 ; i < w.vlen ; ++i )
-        SG_SPRINT("%10f ", w[i]);
-    SG_SPRINT("\n\n");
+	SG_SPRINT("\n");
+	SGVector< float64_t > w = sosvm->get_w();
+	for ( int32_t i = 0 ; i < w.vlen ; ++i )
+		SG_SPRINT("%10f ", w[i]);
+	SG_SPRINT("\n\n");
 
-    // Free memory
-    SG_UNREF(sosvm);
+	// Free memory
+	SG_UNREF(sosvm);
 
-    exit_shogun();
+	exit_shogun();
 
 	return 0;
 }
