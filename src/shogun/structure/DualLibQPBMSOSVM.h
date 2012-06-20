@@ -61,6 +61,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 */
 		bool train_machine(CFeatures* data=NULL);
 
+		/** register class parameters */
+		//void register_parameters();
+
 	private:
 
 		/** lambda */
