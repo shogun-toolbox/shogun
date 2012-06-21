@@ -79,10 +79,10 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 	switch (m_p_value_method)
 	{
 	case MMD1_GAUSSIAN:
-		if (m_p_and_q->get_num_vectors()<5000)
+		if (m_p_and_q->get_num_vectors()<10000)
 		{
 			SG_WARNING("CLinearTimeMMD::compute_p_value: The number of samples"
-					" should be at least 5000 (better 10000) in order to get a"
+					" should be very large (at least 10000)  in order to get a"
 					" good Gaussian approximation using MMD1_GAUSSIAN.\n");
 		}
 
@@ -132,6 +132,6 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 	}
 
 	/* return linear time variance estimate */
-	return CStatistics::variance(traces);
+	return CStatistics::variance(traces)/m_2;
 }
 
