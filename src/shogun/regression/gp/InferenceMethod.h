@@ -16,6 +16,8 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/regression/gp/LikelihoodModel.h>
 #include <shogun/regression/gp/MeanFunction.h>
+#include <shogun/evaluation/DifferentiableFunction.h>
+
 
 namespace shogun {
 
@@ -25,7 +27,8 @@ namespace shogun {
  *  posterior distribution for a given Gaussian Process.
  *
  */
-class CInferenceMethod : public CSGObject {
+class CInferenceMethod : public CDifferentiableFunction {
+  
 public:
 
 	/* Default Constructor
@@ -64,7 +67,7 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual SGVector<float64_t> get_marginal_likelihood_derivatives() = 0;
+	virtual CMap<SGString<char>, float64_t> get_marginal_likelihood_derivatives() = 0;
 
 	/** get Alpha Matrix
 	 *

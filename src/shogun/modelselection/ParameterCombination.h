@@ -107,6 +107,10 @@ public:
 			const CDynamicObjectArray& sets,
 			const CParameterCombination* new_root);
 
+	void set_parameter(char* name, float64_t value);
+
+	TParameter* get_parameter(char* name);
+
 	/** checks whether this node has children
 	 *
 	 * @return true if node has children

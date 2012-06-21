@@ -81,7 +81,7 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual SGVector<float64_t> get_marginal_likelihood_derivatives();
+	virtual CMap<SGString<char>, float64_t> get_marginal_likelihood_derivatives();
 
 	/** get Alpha Matrix
 	 *
@@ -125,6 +125,13 @@ public:
 	 * @return name of the SGSerializable
 	 */
 	inline virtual const char* get_name() const { return "ExactInferenceMethod"; }
+	
+	
+	virtual CMap<SGString<char>, float64_t> get_gradient() {return get_marginal_likelihood_derivatives();};
+	virtual SGVector<float64_t> get_quantity() {SGVector<float64_t> result(1);
+	result[0] = get_negative_marginal_likelihood();
+	return result;
+	}
 
 protected:
 	/** Update Alpha and Cholesky Matrices.

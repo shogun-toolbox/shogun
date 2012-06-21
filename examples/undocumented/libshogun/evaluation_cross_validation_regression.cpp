@@ -95,14 +95,15 @@ void test_cross_validation()
 	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
-	CrossValidationResult result=cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
 	SG_SPRINT("cross_validation estimate:\n");
-	result.print_result();
+	result->print_result();
 
 	/* same crude assertion as for above evaluation */
-	ASSERT(result.mean<2);
+	ASSERT(result->mean<2);
 
 	/* clean up */
+	SG_UNREF(result);
 	SG_UNREF(cross);
 	SG_UNREF(features);
 }

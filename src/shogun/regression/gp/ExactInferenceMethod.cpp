@@ -71,7 +71,7 @@ void CExactInferenceMethod::check_members()
 	}
 }
 
-SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
+CMap<SGString<char>, float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 {
 	check_members();
 	update_alpha_and_chol();
@@ -85,6 +85,10 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 
 	//This will be the vector we return
 	SGVector<float64_t> gradient(2+mean->m_parameters->get_num_parameters());
+	
+	CMap<SGString<char>, float64_t> better_gradient(2+mean->m_parameters->get_num_parameters(),
+			2+mean->m_parameters->get_num_parameters());
+
 
 	//Get the sigma variable from the likelihood model
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
@@ -152,9 +156,14 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 
 	gradient[0] = sum;
 
+	better_gradient.add(SGString<char>("width", strlen("width"), true), sum);
+
 	sum = m_sigma*m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
 
 	gradient[1] = sum;
+	
+	better_gradient.add(SGString<char>("sigma", strlen("sigma"), true), sum);
+
 
 	for(int i = 0; i < mean->m_parameters->get_num_parameters(); i++)
 	{
@@ -162,9 +171,11 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 		SGVector<float64_t> data_means = mean->get_parameter_derivative(
 				feature_matrix, param->m_name);
 		gradient[i+1] = data_means.dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
+		better_gradient.add(SGString<char>(param->m_name, strlen(param->m_name), true), sum);
+
 	}
 
-	return gradient;
+	return better_gradient;
 
 }
 
@@ -176,7 +187,7 @@ void CExactInferenceMethod::learn_parameters()
 	float64_t step = .1;
 	float64_t width;
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
-	while(length > .001 && get_negative_marginal_likelihood() > 0 )
+	/*while(length > .001 && get_negative_marginal_likelihood() > 0 )
 	{
 		get_alpha();
 		width = ((CGaussianKernel*)kernel)->get_width();
@@ -186,7 +197,7 @@ void CExactInferenceMethod::learn_parameters()
 		if(m_sigma < 0) m_sigma = .0001;
 		dynamic_cast<CGaussianLikelihood*>(m_model)->set_sigma(m_sigma);
 		length = sqrt(gradient.dot(gradient.vector, gradient.vector, gradient.vlen));
-	}
+	}*/
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()

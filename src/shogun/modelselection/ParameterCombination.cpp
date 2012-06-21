@@ -47,6 +47,62 @@ void CParameterCombination::append_child(CParameterCombination* child)
 	m_child_nodes->append_element(child);
 }
 
+void CParameterCombination::set_parameter(char* name, float64_t value)
+{
+	if (m_param)
+	{
+		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
+		{
+				void* param=m_param->get_parameter(i)->m_parameter;
+				if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_FLOAT64 &&
+						!strcmp(m_param->get_parameter(i)->m_name, name))
+				{
+						*((float64_t*)(param)) = value;
+				}
+		}
+
+	}
+
+	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+	{
+		CParameterCombination* child=(CParameterCombination*)
+				m_child_nodes->get_element(i);
+		child->set_parameter(name, value);
+		SG_UNREF(child);
+	}
+}
+
+TParameter* CParameterCombination::get_parameter(char* name)
+{
+	if (m_param)
+	{
+		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
+		{
+				void* param=m_param->get_parameter(i)->m_parameter;
+				if (!strcmp(m_param->get_parameter(i)->m_name, name))
+				{
+						return m_param->get_parameter(i);
+				}
+		}
+
+	}
+
+	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
+	{
+		CParameterCombination* child=(CParameterCombination*)
+				m_child_nodes->get_element(i);
+		TParameter* p = child->get_parameter(name);
+		if(p)
+		{
+			return p;
+		}
+		SG_UNREF(child);
+	}
+
+	return NULL;
+}
+
+
 void CParameterCombination::print_tree(int prefix_num) const
 {
 	/* prefix is enlarged */

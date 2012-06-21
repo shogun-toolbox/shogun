@@ -108,10 +108,11 @@ void test_cross_validation()
 	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
-	CrossValidationResult result=cross->evaluate();
-	result.print_result();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+	result->print_result();
 
 	/* clean up */
+	SG_UNREF(result);
 	SG_UNREF(cross);
 	SG_UNREF(features);
 }

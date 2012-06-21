@@ -16,23 +16,23 @@
 using namespace shogun;
 
 CModelSelection::CModelSelection(CModelSelectionParameters* model_parameters,
-		CCrossValidation* cross_validation) :
-	m_model_parameters(model_parameters), m_cross_validation(cross_validation)
+		CMachineEvaluation* machine_eval) :
+	m_model_parameters(model_parameters), m_machine_eval(machine_eval)
 {
 	SG_REF(m_model_parameters);
-	SG_REF(m_cross_validation);
+	SG_REF(m_machine_eval);
 
 	m_parameters->add((CSGObject**) &m_model_parameters, "model_parameters",
 			"Parameter tree for model selection");
 
-	m_parameters->add((CSGObject**) &m_cross_validation, "cross_validation",
-			"Cross validation strategy");
+	m_parameters->add((CSGObject**) &m_machine_eval, "machine_evaluation",
+			"Machine evaluation strategy");
 
 }
 
 CModelSelection::~CModelSelection()
 {
 	SG_UNREF(m_model_parameters);
-	SG_UNREF(m_cross_validation);
+	SG_UNREF(m_machine_eval);
 }
 

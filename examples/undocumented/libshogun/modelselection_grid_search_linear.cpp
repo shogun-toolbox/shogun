@@ -98,10 +98,11 @@ int main(int argc, char **argv)
 	best_combination->print_tree();
 
 	best_combination->apply_to_machine(classifier);
-	CrossValidationResult result=cross->evaluate();
-	result.print_result();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+	result->print_result();
 
 	/* clean up */
+	SG_UNREF(result);
 	SG_UNREF(best_combination);
 	SG_UNREF(grid_search);
 #endif // HAVE_LAPACK

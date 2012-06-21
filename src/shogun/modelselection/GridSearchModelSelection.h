@@ -34,7 +34,7 @@ public:
 	 * @param cross_validation
 	 */
 	CGridSearchModelSelection(CModelSelectionParameters* model_parameters,
-				CCrossValidation* cross_validation);
+			CMachineEvaluation* machine_eval);
 
 	/** destructor */
 	virtual ~CGridSearchModelSelection();

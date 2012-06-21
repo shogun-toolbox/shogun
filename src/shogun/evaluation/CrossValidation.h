@@ -11,17 +11,13 @@
 #ifndef __CROSSVALIDATION_H_
 #define __CROSSVALIDATION_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/evaluation/Evaluation.h>
+#include <shogun/evaluation/EvaluationResult.h>
+#include <shogun/evaluation/MachineEvaluation.h>
+
 
 namespace shogun
 {
 
-class CMachine;
-class CFeatures;
-class CLabels;
-class CSplittingStrategy;
-class CEvaluation;
 
 /** @brief type to encapsulate the results of an evaluation run.
  * May contain confidence interval (if conf_int_alpha!=0).
@@ -29,7 +25,7 @@ class CEvaluation;
  * in the confidence interval.
  */
 
-class CrossValidationResult
+class CrossValidationResult : public CEvaluationResult
 {
 	public:
 		/** print result */
@@ -42,6 +38,15 @@ class CrossValidationResult
 			}
 			else
 				SG_SPRINT("%f\n", mean);
+		}
+
+		CrossValidationResult()
+		{
+			mean = 0;
+			has_conf_int = 0;
+			conf_int_low = 0;
+			conf_int_up = 0;
+			conf_int_alpha = 0;
 		}
 
 	public:
@@ -83,7 +88,7 @@ class CrossValidationResult
  * Locking in general may speed up things (eg for kernel machines the kernel
  * matrix is precomputed), however, it is not always supported.
  */
-class CCrossValidation: public CSGObject
+class CCrossValidation: public CMachineEvaluation
 {
 public:
 	/** constructor */
@@ -115,30 +120,13 @@ public:
 	/** destructor */
 	virtual ~CCrossValidation();
 
-	/** @return in which direction is the best evaluation value? */
-	EEvaluationDirection get_evaluation_direction();
-
-	/** method for evaluation. Performs cross-validation.
-	 * Is repeated m_num_runs. If this number is larger than one, a confidence
-	 * interval is calculated if m_conf_int_alpha is (0<p<1).
-	 * By default m_num_runs=1 and m_conf_int_alpha=0
-	 *
-	 * @return result of evaluation
-	 */
-	CrossValidationResult evaluate();
-
-	/** @return underlying learning machine */
-	CMachine* get_machine() const;
-
 	/** setter for the number of runs to use for evaluation */
 	void set_num_runs(int32_t num_runs);
 
 	/** setter for the number of runs to use for evaluation */
 	void set_conf_int_alpha(float64_t m_conf_int_alpha);
 
-	/** setter for the autolock property. If true, machine will tried to be
-	 * locked before evaluation */
-	void set_autolock(bool autolock) { m_autolock=autolock; }
+	virtual CEvaluationResult* evaluate();
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
@@ -163,18 +151,6 @@ protected:
 private:
 	int32_t m_num_runs;
 	float64_t m_conf_int_alpha;
-
-	CMachine* m_machine;
-	CFeatures* m_features;
-	CLabels* m_labels;
-	CSplittingStrategy* m_splitting_strategy;
-	CEvaluation* m_evaluation_criterion;
-
-	/** whether machine will automaticall be locked before evaluation */
-	bool m_autolock;
-
-	/** whether machine should be unlocked after evaluation */
-	bool m_do_unlock;
 };
 
 }
