@@ -45,7 +45,7 @@ class CStatisticalTest : public CSGObject
 		 * @param alpha test niveau alpha
 		 * @return true if null-hypothesis (p==q) is rejected, false otherwise
 		 */
-		virtual bool perform_test(float64_t alpha);
+		virtual bool perform_binary_test(float64_t alpha);
 
 		/** sets a new test statistic, replacing the old one */
 		void set_statistic(CTestStatistic* statistic);

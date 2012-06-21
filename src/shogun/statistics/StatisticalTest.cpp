@@ -43,7 +43,7 @@ float64_t CStatisticalTest::perform_test()
 	return m_statistic->compute_p_value(statistic);
 }
 
-bool CStatisticalTest::perform_test(float64_t alpha)
+bool CStatisticalTest::perform_binary_test(float64_t alpha)
 {
 	if (!m_statistic)
 	{
