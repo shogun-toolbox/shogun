@@ -126,9 +126,9 @@ void test_linear_mmd_variance_estimate()
 	float64_t var=CStatistics::variance(vars);
 
 	/* MATLAB 100-run 3 sigma interval for mean is
-	 * [ 0.123885458486624, 0.141193400629945] */
-	ASSERT(mean>0.123885458486624);
-	ASSERT(mean<0.141193400629945);
+	 * [2.487949168976897e-05, 2.816652377191562e-05] */
+	ASSERT(mean>2.487949168976897e-05);
+	ASSERT(mean<2.816652377191562e-05);
 
 	/* MATLAB 100-run variance is  8.321246145460274e-06 quite stable */
 	ASSERT(CMath::abs(var- 8.321246145460274e-06)<10E-6);
@@ -142,9 +142,6 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 	index_t m=50000;
 	float64_t difference=0.5;
 	float64_t sigma=2;
-
-	index_t num_runs=100;
-	SGVector<float64_t> vars(num_runs);
 
 	SGMatrix<float64_t> data(dimension, 2*m);
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
@@ -172,6 +169,47 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 	SG_UNREF(mmd);
 }
 
+void test_linear_mmd_type2_error()
+{
+	index_t dimension=3;
+	index_t m=10000;
+	float64_t difference=0.4;
+	float64_t sigma=2;
+
+	index_t num_runs=500;
+	index_t num_errors=0;
+
+	SGMatrix<float64_t> data(dimension, 2*m);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
+
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features, m);
+	mmd->set_p_value_method(MMD1_GAUSSIAN);
+
+	for (index_t i=0; i<num_runs; ++i)
+	{
+		create_mean_data(data, difference);
+		float64_t statistic=mmd->compute_statistic();
+
+		float64_t p_value_est=mmd->compute_p_value(statistic);
+
+		/* lets allow a 5% type 1 error */
+		num_errors+=p_value_est<0.05 ? 0 : 1;
+	}
+
+	float64_t type_2_error=(float64_t)num_errors/(float64_t)num_runs;
+	SG_SPRINT("type2 error est: %f\n", type_2_error);
+
+	/* for 100 MATLAB runs, 3*sigma error range lies in
+	 * [0.024568646859226, 0.222231353140774] */
+	ASSERT(type_2_error>0.024568646859226);
+	ASSERT(type_2_error<0.222231353140774);
+
+	SG_UNREF(mmd);
+}
+
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
@@ -180,6 +218,7 @@ int main(int argc, char** argv)
 	test_linear_mmd_random();
 	test_linear_mmd_variance_estimate();
 	test_linear_mmd_variance_estimate_vs_bootstrap();
+	test_linear_mmd_type2_error();
 
 	exit_shogun();
 	return 0;
