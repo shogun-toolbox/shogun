@@ -89,7 +89,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 		{
 			/* compute variance and use to estimate Gaussian distribution */
 			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
-			result=CStatistics::normal_cdf(statistic, std_dev);
+			result=1.0-CStatistics::normal_cdf(statistic, std_dev);
 		}
 		break;
 	default:
