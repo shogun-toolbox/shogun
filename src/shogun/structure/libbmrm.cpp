@@ -17,10 +17,12 @@
 
 #include <shogun/structure/libbmrm.h>
 #include <shogun/lib/external/libqp.h>
+#include <shogun/lib/Time.h>
 
 namespace shogun
 {
 static const uint32_t QPSolverMaxIter = 10000000;
+static const float64_t epsilon = 0.0000000001;
 
 static float64_t *H;
 static uint32_t BufSize;
@@ -34,22 +36,25 @@ static const float64_t *get_col( uint32_t i)
 }
 
 bmrm_return_value_T svm_bmrm_solver(
-		void *data,
-		float64_t *W,
-		float64_t TolRel,
-		float64_t TolAbs,
-		float64_t lambda,
-		uint32_t _BufSize,
-		uint32_t nDim,
-		CRiskFunction* risk_function)
-	//void (*risk_function)(void*, float64_t*, float64_t*, float64_t*))
+		bmrm_data_T*    data,
+		float64_t*      W,
+		float64_t       TolRel,
+		float64_t       TolAbs,
+		float64_t       lambda,
+		uint32_t        _BufSize,
+		CRiskFunction*  risk_function)
 {
-	bmrm_return_value_T bmrm = {0, 0, 0, 0, 0, 0};
+	bmrm_return_value_T bmrm = {0, 0, 0, 0, 0, 0, 0};
 	libqp_state_T qp_exitflag;
 	float64_t *b, *beta, *diag_H, sq_norm_W;
 	float64_t R, *subgrad, *A, QPSolverTolRel, rsum, C = 1.0;
 	uint32_t *I;
 	uint8_t S = 1;
+	uint32_t nDim=data->w_dim;
+	CTime ttime;
+	float64_t tstart, tstop;
+
+	tstart=ttime.cur_time_diff(false);
 
 	BufSize = _BufSize;
 	QPSolverTolRel = TolRel*0.5;
@@ -61,9 +66,6 @@ bmrm_return_value_T svm_bmrm_solver(
 	subgrad=NULL;
 	diag_H = NULL;
 	I = NULL;
-
-	LIBBMRM_FREE(W);
-	W = NULL;
 
 	H = (float64_t*)LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
 	if (H == NULL)
@@ -114,15 +116,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		goto cleanup;
 	}
 
-	/* initial solution */
-	W = (float64_t*)LIBBMRM_CALLOC(nDim, sizeof(float64_t));
-	if (W == NULL)
-	{
-		bmrm.exitflag = -2;
-		goto cleanup;
-	}
-
-	//risk_function(data, &R, subgrad, NULL);
+	/* Iinitial solution */
 	risk_function->risk(data, &R, subgrad, W);
 
 	bmrm.nCP = 0;
@@ -130,41 +124,49 @@ bmrm_return_value_T svm_bmrm_solver(
 	bmrm.exitflag = 0;
 
 	b[0] = -R;
-	LIBBMRM_MEMCPY(subgrad, A, nDim*sizeof(float64_t));
+	LIBBMRM_MEMCPY(A, subgrad, nDim*sizeof(float64_t));
 
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
 	sq_norm_W = 0;
 	bmrm.Fp = R + 0.5*lambda*sq_norm_W;
 	bmrm.Fd = -LIBBMRM_PLUS_INF;
 
+	tstop=ttime.cur_time_diff(false);
+
+	/* Verbose output */
+	SG_SPRINT("%4d: tim=%.3f, Fp=%f, Fd=%f, R=%f\n",
+			bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
+
 	/* main loop */
 	while (bmrm.exitflag == 0)
 	{
+		tstart=ttime.cur_time_diff(false);
 		bmrm.nIter++;
 
 		/* Update H */
 		if (bmrm.nCP > 0)
 		{
-			for (uint32_t i = 0; i < bmrm.nCP - 1; i++)
+			for (uint32_t i = 0; i < bmrm.nCP; i++)
 			{
 				rsum = 0.0;
 				for (uint32_t j = 0; j < nDim; j++)
 				{
-					rsum += A[LIBBMRM_INDEX(j, i, nDim)]*A[LIBBMRM_INDEX(j, bmrm.nCP, nDim)]/lambda;
+					rsum += A[LIBBMRM_INDEX(j, i, nDim)]*A[LIBBMRM_INDEX(j, bmrm.nCP, nDim)];
 				}
-				H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)] = rsum;
+				H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)] = rsum/lambda;
 			}
-			for (uint32_t i = 0; i < bmrm.nCP - 1; i++)
+			for (uint32_t i = 0; i < bmrm.nCP; i++)
 			{
 				H[LIBBMRM_INDEX(bmrm.nCP, i, BufSize)] = H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)];
 			}
 		}
-		H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)] = 0.0;
+		//H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)] = 0.0;
+
 		for (uint32_t i = 0; i < nDim; i++)
 			H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)] += A[LIBBMRM_INDEX(i, bmrm.nCP, nDim)]*A[LIBBMRM_INDEX(i, bmrm.nCP, nDim)]/lambda;
 
-
 		diag_H[bmrm.nCP] = H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)];
+		I[bmrm.nCP] = 1;
 
 		bmrm.nCP++;
 
@@ -175,20 +177,24 @@ bmrm_return_value_T svm_bmrm_solver(
 		bmrm.qp_exitflag = qp_exitflag.exitflag;
 
 		/* W update */
-		for (uint32_t i = 0; i < nDim; i++)
+		for (uint32_t i = 0; i < nDim; ++i)
 		{
 			rsum = 0.0;
-			for (uint32_t j = 0; j < bmrm.nCP; j++)
+			for (uint32_t j = 0; j < bmrm.nCP; ++j)
 			{
-				rsum += A[LIBBMRM_INDEX(i, j, nDim)]*beta[j]/lambda;
+				rsum += A[LIBBMRM_INDEX(i, j, nDim)]*beta[j];
 			}
-			W[i] = -rsum;
+			W[i] = -rsum/lambda;
 		}
 
+		/* compute number of active cutting planes */
+		bmrm.nzA = 0;
+		for (uint32_t aaa=0; aaa<bmrm.nCP; ++aaa)
+			bmrm.nzA += (beta[aaa] > epsilon) ? 1 : 0;
+
 		/* risk and subgradient computation */
-		//risk_function(data, &R, subgrad, W);
 		risk_function->risk(data, &R, subgrad, W);
-		LIBBMRM_MEMCPY(subgrad, A+bmrm.nCP*nDim, nDim*sizeof(float64_t));
+		LIBBMRM_MEMCPY(A+bmrm.nCP*nDim, subgrad, nDim*sizeof(float64_t));
 		b[bmrm.nCP] = -R;
 		for (uint32_t j = 0; j < nDim; j++)
 			b[bmrm.nCP] += subgrad[j]*W[j];
@@ -204,6 +210,12 @@ bmrm_return_value_T svm_bmrm_solver(
 		if (bmrm.Fp - bmrm.Fd <= TolRel*LIBBMRM_ABS(bmrm.Fp)) bmrm.exitflag = 1;
 		if (bmrm.Fp - bmrm.Fd <= TolAbs) bmrm.exitflag = 2;
 		if (bmrm.nCP >= BufSize) bmrm.exitflag = -1;
+
+		tstop=ttime.cur_time_diff(false);
+
+		/* Verbose output */
+		SG_SPRINT("%4d: tim=%.3f, Fp=%f, Fd=%f, (Fp-Fd)=%f, (Fp-Fd)/Fp=%f, R=%f, nCP=%d, nzA=%d\n",
+				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd, (bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA);
 
 	} /* end of main loop */
 
