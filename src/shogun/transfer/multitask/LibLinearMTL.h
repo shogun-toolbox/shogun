@@ -35,6 +35,28 @@ class MappedSparseMatrix
 
     public:
 
+    /** operator overload for matrix read only access
+     * @param i_row
+     * @param i_col
+     */
+    inline const float64_t operator()(index_t i_row, index_t i_col) const
+    {
+
+		// lookup complexity is O(log n)
+		std::map<index_t, float64_t>::const_iterator it = data[i_row].find(i_col);
+
+		if (it != data[i_row].end())
+		{
+			// use mapping for lookup
+			return it->second;
+		} else {
+			return 0.0;
+		}
+	}
+
+    /** set matrix from SGSparseMatrix
+     * @param sgm
+     */
     void set_from_sparse(const SGSparseMatrix<float64_t> &sgm)
     {
         data.clear();
@@ -55,33 +77,9 @@ class MappedSparseMatrix
 
         }
     }
-
-    /** operator overload for matrix read only access
-     * @param i_row
-     * @param i_col
-     */
-    inline const float64_t operator()(index_t i_row, index_t i_col) const
-    {
-
-		// lookup complexity is O(log n)
-		std::map<index_t, float64_t>::const_iterator it = data[i_row].find(i_col);
-
-		if (it != data[i_row].end())
-		{
-			// use mapping for lookup
-			return it->second;
-		} else {
-			return 0.0;
-		}
-	}
-
-    void set_from_dense(SGMatrix<float64_t>* sgm)
-    {
-        data.clear();
-    }
     
+	/** under-the-hood data structure  */
     std::vector< std::map<index_t, float64_t> > data;
-    static const float64_t zero = 0.0;
 
 };
 
