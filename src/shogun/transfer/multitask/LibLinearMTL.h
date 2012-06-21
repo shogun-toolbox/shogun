@@ -29,6 +29,63 @@ namespace shogun
 #ifdef HAVE_LAPACK
 
 
+
+class MappedSparseMatrix
+{
+
+    public:
+
+    void set_from_sparse(const SGSparseMatrix<float64_t> &sgm)
+    {
+        data.clear();
+
+        // deep copy sparse matrix
+        for (int32_t i=0; i!=sgm.num_vectors; i++)
+        {
+
+            SGSparseVector<float64_t> ts_row = sgm.sparse_matrix[i];
+            data.push_back(std::map<index_t, float64_t>());
+
+            for (int32_t k=0; k!=ts_row.num_feat_entries; k++)
+            {
+				// get data from sparse matrix
+				SGSparseVectorEntry<float64_t> e = ts_row.features[k];
+                data[i][e.feat_index] = e.entry;
+            }
+
+        }
+    }
+
+    /** operator overload for matrix read only access
+     * @param i_row
+     * @param i_col
+     */
+    inline const float64_t operator()(index_t i_row, index_t i_col) const
+    {
+
+		// lookup complexity is O(log n)
+		std::map<index_t, float64_t>::const_iterator it = data[i_row].find(i_col);
+
+		if (it != data[i_row].end())
+		{
+			// use mapping for lookup
+			return it->second;
+		} else {
+			return 0.0;
+		}
+	}
+
+    void set_from_dense(SGMatrix<float64_t>* sgm)
+    {
+        data.clear();
+    }
+    
+    std::vector< std::map<index_t, float64_t> > data;
+    static const float64_t zero = 0.0;
+
+};
+
+
 /** @brief class to implement LibLinear */
 class CLibLinearMTL : public CLinearMachine
 {
@@ -154,7 +211,7 @@ class CLibLinearMTL : public CLinearMachine
 		/** set task similarity matrix */
 		inline void set_task_similarity_matrix(SGSparseMatrix<float64_t> tsm)
 		{
-			task_similarity_matrix = tsm;
+			task_similarity_matrix.set_from_sparse(tsm);
 		}
 
 		/** set graph laplacian */
@@ -192,7 +249,7 @@ class CLibLinearMTL : public CLinearMachine
                 float64_t* v_s = V.get_column_vector(s);
                 for (int32_t t=0; t<num_tasks; t++)
                 {
-                    float64_t sim_ts = task_similarity_matrix.sparse_matrix[s][t];
+                    float64_t sim_ts = task_similarity_matrix(s,t);
                     for(int32_t i=0; i<w_size; i++)
                     {
                         W.matrix[t*w_size + i] += sim_ts * v_s[i];
@@ -278,7 +335,8 @@ class CLibLinearMTL : public CLinearMachine
 
 		/** task similarity matrix */
 		//SGMatrix<float64_t> task_similarity_matrix;
-		SGSparseMatrix<float64_t> task_similarity_matrix;
+		//SGSparseMatrix<float64_t> task_similarity_matrix;
+		MappedSparseMatrix task_similarity_matrix;
 
 		/** task similarity matrix */
 		SGMatrix<float64_t> graph_laplacian;
