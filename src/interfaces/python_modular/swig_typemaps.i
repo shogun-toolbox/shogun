@@ -625,7 +625,7 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
             }
             sfm[i-1].num_feat_entries=num;
             sfm[i-1].features=features;
-            sfm[i-1].create_idx_map();
+            //sfm[i-1].create_idx_map();
         }
     }
 
