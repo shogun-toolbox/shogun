@@ -29,6 +29,7 @@ namespace shogun
 	typedef struct {
 		uint32_t nIter;         /* number of iterations  */
 		uint32_t nCP;           /* number of cutting planes */
+		uint32_t nzA;           /* number of active cutting planes */
 		float64_t Fp;           /* primal objective value  */
 		float64_t Fd;           /* reduced (dual) objective value */
 		int8_t qp_exitflag;     /* exitflag from the last call of the inner QP solver  */
@@ -38,17 +39,21 @@ namespace shogun
 								   -2 .. not enough memory for the solver */
 	} bmrm_return_value_T;
 
+	typedef struct {
+		void*     X;     /* features */
+		void*     y;     /* labels */
+		uint32_t  w_dim; /* dimension of joint parameter vector w */
+	} bmrm_data_T;
+
 	/* standard BMRM solver */
 	bmrm_return_value_T svm_bmrm_solver(
-			void *data,
+			bmrm_data_T *data,
 			float64_t *W,
 			float64_t TolRel,
 			float64_t TolAbs,
 			float64_t lambda,
 			uint32_t _BufSize,
-			uint32_t nDim,
 			CRiskFunction* risk_function
-			//void (*risk_function)(void*, float64_t*, float64_t*, float64_t*)
 			);
 }
 
