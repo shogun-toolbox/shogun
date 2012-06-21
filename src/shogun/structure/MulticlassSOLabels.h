@@ -14,6 +14,7 @@
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/StructuredData.h>
+#include <shogun/lib/StructuredDataTypes.h>
 
 namespace shogun
 {
@@ -27,6 +28,8 @@ class CMulticlassSOLabels;
  * labels needs to inherit from CStructuredData. */
 struct CRealNumber : public CStructuredData
 {
+	STRUCTURED_DATA_TYPE(SDT_REAL);
+
 	/** constructor
 	 *
 	 * @param val value of the real number
@@ -35,6 +38,20 @@ struct CRealNumber : public CStructuredData
 
 	/** value of the real number */
 	float64_t value;
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param base_data its dynamic type must be CRealNumber
+	 */
+	static CRealNumber* obtain_from_generic(CStructuredData* base_data)
+	{
+		if ( base_data->get_structured_data_type() == SDT_REAL )
+			return (CRealNumber*) base_data;
+		else
+			SG_SERROR("base_data must be of dynamic type CRealNumber\n");
+
+		return NULL;
+	}
 
 	/** @return mae of SGSerializable */
 	virtual const char* get_name() const { return "RealNumber"; }

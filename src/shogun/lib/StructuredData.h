@@ -12,6 +12,7 @@
 #define _STRUCTUREDDATA_H__
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/StructuredDataTypes.h>
 
 namespace shogun
 {
@@ -28,6 +29,12 @@ class CStructuredData : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StructuredData"; }
+
+		/** get structured data type
+		 *
+		 * @return structured data type (a sequence, a tree, a graph, ...)
+		 */
+		virtual EStructuredDataType get_structured_data_type() const;
 
 }; 
 
