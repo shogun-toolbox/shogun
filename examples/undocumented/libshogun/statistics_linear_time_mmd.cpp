@@ -94,7 +94,80 @@ void test_linear_mmd_random()
 
 	/* MATLAB 100-run variance is 2.997887292969012e-05 quite stable */
 	ASSERT(CMath::abs(var-2.997887292969012e-05)<10E-5);
-	SG_SPRINT("%f\n", var);
+
+	SG_UNREF(mmd);
+}
+
+void test_linear_mmd_variance_estimate()
+{
+	index_t dimension=3;
+	index_t m=10000;
+	float64_t difference=0.5;
+	float64_t sigma=2;
+
+	index_t num_runs=100;
+	SGVector<float64_t> vars(num_runs);
+
+	SGMatrix<float64_t> data(dimension, 2*m);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
+
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features, m);
+
+	for (index_t i=0; i<num_runs; ++i)
+	{
+		create_mean_data(data, difference);
+		vars[i]=mmd->compute_variance_estimate();
+	}
+
+	float64_t mean=CStatistics::mean(vars);
+	float64_t var=CStatistics::variance(vars);
+
+	/* MATLAB 100-run 3 sigma interval for mean is
+	 * [ 0.123885458486624, 0.141193400629945] */
+	ASSERT(mean>0.123885458486624);
+	ASSERT(mean<0.141193400629945);
+
+	/* MATLAB 100-run variance is  8.321246145460274e-06 quite stable */
+	ASSERT(CMath::abs(var- 8.321246145460274e-06)<10E-6);
+
+	SG_UNREF(mmd);
+}
+
+void test_linear_mmd_variance_estimate_vs_bootstrap()
+{
+	index_t dimension=3;
+	index_t m=50000;
+	float64_t difference=0.5;
+	float64_t sigma=2;
+
+	index_t num_runs=100;
+	SGVector<float64_t> vars(num_runs);
+
+	SGMatrix<float64_t> data(dimension, 2*m);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	create_mean_data(data, difference);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
+
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features, m);
+
+	SGVector<float64_t> null_samples=mmd->bootstrap_null();
+	float64_t bootstrap_variance=CStatistics::variance(null_samples);
+	float64_t estimated_variance=mmd->compute_variance_estimate();
+	float64_t statistic=mmd->compute_statistic();
+	float64_t variance_error=CMath::abs(bootstrap_variance-estimated_variance);
+
+	/* assert that variances error is less than 10E-5 of statistic */
+	SG_SPRINT("null distribution variance: %f\n", bootstrap_variance);
+	SG_SPRINT("estimated variance: %f\n", estimated_variance);
+	SG_SPRINT("linear mmd itself: %f\n", statistic);
+	SG_SPRINT("variance error: %f\n", variance_error);
+	SG_SPRINT("error/statistic: %f\n", variance_error/statistic);
+	ASSERT(variance_error/statistic<10E-5);
 
 	SG_UNREF(mmd);
 }
@@ -105,9 +178,10 @@ int main(int argc, char** argv)
 
 	test_linear_mmd_fixed();
 	test_linear_mmd_random();
+	test_linear_mmd_variance_estimate();
+	test_linear_mmd_variance_estimate_vs_bootstrap();
 
 	exit_shogun();
 	return 0;
 }
-
 
