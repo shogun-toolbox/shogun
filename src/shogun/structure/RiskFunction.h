@@ -12,9 +12,6 @@
 #define _RISK_FUNCTION__H__
 
 #include <shogun/base/SGObject.h>
-//#include <shogun/features/Features.h>
-//#include <shogun/labels/StructuredLabels.h>
-//#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -34,13 +31,7 @@ class CRiskFunction : public CSGObject
 		/** computes the value of the risk function and sub-gradient at given point
 		 *
 		 */
-		//virtual void risk(void* data, float64_t* R, SGVector< float64_t > subgrad, SGVector< float64_t > w) = 0;
 		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W) = 0;
-
-		/** get the dimension of joint feature vector w
-		 *
-		 */
-		//virtual uint32_t get_dim(void* data) = 0; //TODO: Delete, will be accessible from StructuredModel
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "RiskFunction"; }
