@@ -45,24 +45,6 @@ class CTestStatistic : public CSGObject
 			return 0.0;
 		}
 
-		/** Performs a two-sample test with the current settings on the current
-		 * data. Computes test statistic and compares its p-value against the
-		 * desired one and returns true if the p-value is at least as good.
-		 *
-		 * @param alpha test niveau alpha
-		 * @return true if null-hypothesis (p==q) is rejected, false otherwise
-		 */
-		virtual bool perform_test(float64_t alpha)
-		{
-			/* compute p-value and test statistic */
-			float64_t statistic=compute_statistic();
-			float64_t p_value=compute_p_value(statistic);
-
-			/* null hypothesis is rejected if computed p-value is smaller than
-			 * alpha */
-			return p_value<alpha;
-		}
-
 		inline virtual const char* get_name() const=0;
 };
 

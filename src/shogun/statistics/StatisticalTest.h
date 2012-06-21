@@ -17,6 +17,12 @@ namespace shogun
 
 class CTestStatistic;
 
+/** @brief Class for statistical hypothesis tests.
+ *
+ * Given a test statistic, this class provides interfaces for performing
+ * statistical tests which includes computing p-values as well as boolean
+ * results.
+ */
 class CStatisticalTest : public CSGObject
 {
 	public:
@@ -31,6 +37,15 @@ class CStatisticalTest : public CSGObject
 		 *
 		 * @return p-value of test result */
 		virtual float64_t perform_test();
+
+		/** Performs a test with the current statistic and settings on current
+		 * data. Computes test statistic and compares its p-value against the
+		 * desired one and returns true if the p-value is at least as good.
+		 *
+		 * @param alpha test niveau alpha
+		 * @return true if null-hypothesis (p==q) is rejected, false otherwise
+		 */
+		virtual bool perform_test(float64_t alpha);
 
 		/** sets a new test statistic, replacing the old one */
 		void set_statistic(CTestStatistic* statistic);
