@@ -15,7 +15,7 @@
 using namespace shogun;
 
 #define	DIMS		2
-#define EPSILON  	0
+#define EPSILON  	10e-5
 #define	NUM_SAMPLES	100
 #define NUM_CLASSES	10
 
@@ -73,7 +73,6 @@ int main(int argc, char ** argv)
 
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
-	model->set_use_bias(true);
 
 	// Create loss function
 	CHingeLoss* loss = new CHingeLoss();
@@ -91,7 +90,7 @@ int main(int argc, char ** argv)
 
 	// Add some configuration to the svm
 	svm->set_epsilon(EPSILON);
-	svm->set_bias_enabled(true);
+	svm->set_bias_enabled(false);
 
 	// Create a multiclass svm classifier that consists of several of the previous one
 	CLinearMulticlassMachine* mc_svm = 
@@ -108,15 +107,10 @@ int main(int argc, char ** argv)
 	SGVector< float64_t > slacks = sosvm->get_slacks();
 	for ( int i = 0 ; i < out->get_num_labels() ; ++i )
 	{
-		SG_SPRINT("%.0f %.0f %.2E %.0f\n", mlabels->get_label(i), 
-				( (CRealNumber*) out->get_label(i) )->value,
-				slacks[i], mout->get_label(i));
-
 		sosvm_ncorrect += mlabels->get_label(i) == ( (CRealNumber*) out->get_label(i) )->value;
 		mc_ncorrect    += mlabels->get_label(i) == mout->get_label(i);
 	}
 
-	SG_SPRINT("\n");
 	SGVector< float64_t > w = sosvm->get_w();
 	for ( int32_t i = 0 ; i < w.vlen ; ++i )
 		SG_SPRINT("%10f ", w[i]);
