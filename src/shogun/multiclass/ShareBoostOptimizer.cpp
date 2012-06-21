@@ -8,6 +8,9 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <algorithm>
+
+#include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/multiclass/ShareBoostOptimizer.h>
 
@@ -15,20 +18,64 @@ using namespace shogun;
 
 void ShareBoostOptimizer::optimize()
 {
-	int32_t N = m_sb->m_multiclass_strategy->get_num_classes() * m_sb->m_fea.num_rows;
+	int32_t N = m_sb->m_multiclass_strategy->get_num_classes() * m_sb->m_activeset.vlen;
 	float64_t *W = lbfgs_malloc(N); // should use this function, if sse is enabled for liblbfgs
+	float64_t objval;
 	lbfgs_parameter_t param;
 	lbfgs_parameter_init(&param);
 
-	for (int32_t i=0; i < N; ++I)
-		W[i] = 0;
+	std::fill(W, W+N, 0);
 
+	lbfgs(N, W, &objval, &ShareBoostOptimizer::lbfgs_evaluate, NULL, this, &param);
 
-	lbfgs(N, W, &ShareBoostOptimizer::lbfgs_evaluate, NULL, this, &param);
-	// TODO: assign W to each machines in m_sb
+	int32_t w_len = m_sb->m_activeset.vlen;
+	for (int32_t i=0; i < m_sb->m_multiclass_strategy->get_num_classes(); ++i)
+	{
+		CLinearMachine *machine = dynamic_cast<CLinearMachine *>(m_sb->m_machines->get_element(i));
+		SGVector<float64_t> w(w_len);
+		std::copy(W + i*w_len, W + (i+1)*w_len, w.vector);
+		machine->set_w(w);
+		SG_UNREF(machine);
+	}
 }
 
-float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, float64_t *W, 
+float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W, 
 		float64_t *grad, const int32_t n, const float64_t step)
 {
+	ShareBoostOptimizer *optimizer = static_cast<ShareBoostOptimizer *>(userdata);
+
+	optimizer->m_sb->compute_pred(W);
+	optimizer->m_sb->compute_rho();
+
+	int32_t m = optimizer->m_sb->m_activeset.vlen;
+	int32_t k = optimizer->m_sb->m_multiclass_strategy->get_num_classes();
+
+	SGMatrix<float64_t> fea = optimizer->m_sb->m_fea;
+	CMulticlassLabels *lab = dynamic_cast<CMulticlassLabels *>(optimizer->m_sb->m_labels);
+
+	// compute gradient
+	for (int32_t i=0; i < m; ++i)
+	{
+		for (int32_t j=0; j < k; ++j)
+		{
+			int32_t idx = i*m + j;
+			float64_t g=0;
+			for (int32_t ii=0; ii < fea.num_cols; ++ii)
+				g += fea(optimizer->m_sb->m_activeset[i], ii) *
+					(optimizer->m_sb->m_rho(j,ii)/optimizer->m_sb->m_rho_norm[ii] - 
+					 (j == lab->get_int_label(ii)));
+			g /= fea.num_cols;
+			grad[idx] = g;
+		}
+	}
+
+	// compute objective function
+	float64_t objval = 0;
+	for (int32_t ii=0; ii < fea.num_cols; ++ii)
+	{
+		objval += CMath::log(optimizer->m_sb->m_rho_norm[ii]);
+	}
+	objval /= fea.num_cols;
+
+	return objval;
 }

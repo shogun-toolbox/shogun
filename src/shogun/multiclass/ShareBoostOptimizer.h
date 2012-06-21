@@ -29,7 +29,7 @@ public:
 	void optimize();
 private:
 	/** the callback for l-bfgs */
-	static float64_t lbfgs_evaluate(void *userdata, float64_t *W, float64_t *grad, const int32_t n, const float64_t step);
+	static float64_t lbfgs_evaluate(void *userdata, const float64_t *W, float64_t *grad, const int32_t n, const float64_t step);
 
 	CShareBoost *m_sb;
 };

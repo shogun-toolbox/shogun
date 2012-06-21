@@ -64,13 +64,14 @@ private:
 	int32_t choose_feature(); ///< choose next feature greedily
 	void optimize_coefficients(); ///< optimize coefficients with gradient descent
 	void compute_pred(); ///< compute predictions on training data, according to W in m_machines
-	void compute_pred(float64_t *W); ///< compute predictions on training data, according to given W
+	void compute_pred(const float64_t *W); ///< compute predictions on training data, according to given W
 
 	int32_t m_nonzero_feas; ///< number of non-zero features to seek
 	SGVector<int32_t> m_activeset; ///< selected features
 
 	SGMatrix<float64_t> m_fea; ///< feature matrix used during training
 	SGMatrix<float64_t> m_rho; ///< cache_matrix for rho
+	SGVector<float64_t> m_rho_norm; ///< column sum of m_rho
 	SGMatrix<float64_t> m_pred; ///< predictions, used in training
 };
 
