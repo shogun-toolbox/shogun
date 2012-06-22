@@ -51,6 +51,9 @@ public:
 	/** assign features */
 	void set_features(CFeatures *f);
 
+	/** get active set */
+	SGVector<int32_t> get_activeset();
+
 	friend class ShareBoostOptimizer;
 protected:
 

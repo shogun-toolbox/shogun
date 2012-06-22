@@ -34,6 +34,11 @@ void CShareBoost::init_sb_params()
 	SG_ADD(&m_nonzero_feas, "m_nonzero_feas", "Number of non-zero features", MS_NOT_AVAILABLE);
 }
 
+SGVector<int32_t> CShareBoost::get_activeset()
+{
+	return m_activeset.clone();
+}
+
 bool CShareBoost::train_machine(CFeatures* data)
 {
 	if (data)
