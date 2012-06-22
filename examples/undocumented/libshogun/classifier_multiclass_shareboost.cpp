@@ -27,8 +27,7 @@ int main(int argc, char** argv)
 	SG_REF(stream_features);
 
 	SGMatrix<float64_t> mat;
-	CMulticlassLabels* labels = new CMulticlassLabels(num_vectors);
-	SG_REF(labels);
+	SGVector<float64_t> labvec(1000);
 
 	stream_features->start_parser();
 	SGVector< float64_t > vec;
@@ -41,16 +40,22 @@ int main(int argc, char** argv)
 			mat = SGMatrix<float64_t>(num_feats, 1000);
 		}
 		std::copy(vec.vector, vec.vector+vec.vlen, mat.get_column_vector(num_vectors));
-		labels->set_int_label(num_vectors, static_cast<int32_t>(stream_features->get_label()));
+		labvec[num_vectors] = stream_features->get_label();
 		num_vectors++;
 		stream_features->release_example();
 	}
 	stream_features->end_parser();
 	mat.num_cols = num_vectors;
+	labvec.vlen = num_vectors;
 	
+	CMulticlassLabels* labels = new CMulticlassLabels(labvec);
+	SG_REF(labels);
+
 	// Create features with the useful values from mat
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 	SG_REF(features);
+
+	SG_SPRINT("Performing ShareBoost on a %d-class problem\n", labels->get_num_classes());
 
 	// Create ShareBoost Machine
 	CShareBoost *machine = new CShareBoost(features, labels, 10);

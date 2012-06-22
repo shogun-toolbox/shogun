@@ -12,6 +12,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/ShareBoost.h>
+#include <shogun/multiclass/ShareBoostOptimizer.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
 
@@ -170,6 +171,8 @@ int32_t CShareBoost::choose_feature()
 
 void CShareBoost::optimize_coefficients()
 {
+	ShareBoostOptimizer optimizer(this);
+	optimizer.optimize();
 }
 
 void CShareBoost::set_features(CFeatures *f)
