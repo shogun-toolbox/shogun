@@ -66,7 +66,6 @@ public:
 		if (do_free)
 			SG_FREE(features);
 
-		dense_to_sparse_idx.clear();
 		features=NULL;
 		do_free=false;
 		num_feat_entries=0;
