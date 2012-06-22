@@ -32,6 +32,16 @@
     }
 %enddef
 
+%define APPLY_STRUCTURED(CLASS)
+    %extend CLASS
+    {
+        CStructuredLabels* apply(CFeatures* data=NULL)
+        {
+            return $self->apply_structured(data);
+        }
+    }
+%enddef
+
 namespace shogun {
 APPLY_MULTICLASS(CMulticlassMachine);
 APPLY_MULTICLASS(CKernelMulticlassMachine);
@@ -52,6 +62,11 @@ APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
 APPLY_REGRESSION(CGaussianProcessRegression);
+
+APPLY_STRUCTURED(CStructuredOutputMachine);
+APPLY_STRUCTURED(CLinearStructuredOutputMachine);
+APPLY_STRUCTURED(CKernelStructuredOutputMachine);
+APPLY_STRUCTURED(CPrimalMosekSOSVM);
 }
 
 %rename(apply_generic) CMachine::apply(CFeatures* data=NULL);
@@ -73,7 +88,13 @@ APPLY_REGRESSION(CGaussianProcessRegression);
 %rename(apply_generic) CGaussianProcessRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CConjugateIndex::apply(CFeatures* data=NULL);
 
+%rename(apply_generic) CStructuredOutputMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CLinearStructuredOutputMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CKernelStructuredOutputMachine::apply(CFeatures* data=NULL);
+%rename(apply_generic) CPrimalMosekSOSVM::apply(CFeatures* data=NULL);
+
 #undef APPLY_MULTICLASS
 #undef APPLY_BINARY
 #undef APPLY_REGRESSION
+#undef APPLY_STRUCTURED
 #endif

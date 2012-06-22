@@ -15,6 +15,7 @@
 */
 
 #include <shogun/loss/HingeLoss.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -27,7 +28,7 @@ float64_t CHingeLoss::loss(float64_t prediction, float64_t label)
 
 float64_t CHingeLoss::loss(float64_t z)
 {
-	return (z < 1) ? 1-z : 0;
+	return CMath::max(0.0, z);
 }
 
 float64_t CHingeLoss::first_derivative(float64_t prediction, float64_t label)
@@ -37,7 +38,7 @@ float64_t CHingeLoss::first_derivative(float64_t prediction, float64_t label)
 
 float64_t CHingeLoss::first_derivative(float64_t z)
 {
-	return (z < 1) ? -1 : 0;
+	return z > 0.0 ? 1.0 : 0.0;
 }
 
 float64_t CHingeLoss::second_derivative(float64_t prediction, float64_t label)
