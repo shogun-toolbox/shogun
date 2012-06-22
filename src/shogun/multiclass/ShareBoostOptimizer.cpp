@@ -60,7 +60,7 @@ float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W
 	{
 		for (int32_t j=0; j < k; ++j)
 		{
-			int32_t idx = i*m + j;
+			int32_t idx = j*m + i;
 			float64_t g=0;
 			for (int32_t ii=0; ii < fea.num_cols; ++ii)
 				g += fea(optimizer->m_sb->m_activeset[i], ii) *
@@ -95,6 +95,9 @@ int ShareBoostOptimizer::lbfgs_progress(
 		int ls
 		)
 {
+	if (k % 100 != 0)
+		return 0;
+
     SG_SPRINT("Iteration %d:\n", k);
     SG_SPRINT("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
     SG_SPRINT("  xnorm = %f, gnorm = %f, step = %f\n", xnorm, gnorm, step);
