@@ -171,7 +171,7 @@ int32_t CShareBoost::choose_feature()
 
 void CShareBoost::optimize_coefficients()
 {
-	ShareBoostOptimizer optimizer(this);
+	ShareBoostOptimizer optimizer(this, true);
 	optimizer.optimize();
 }
 

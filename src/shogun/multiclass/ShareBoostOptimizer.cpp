@@ -26,7 +26,9 @@ void ShareBoostOptimizer::optimize()
 
 	std::fill(W, W+N, 0);
 
-	lbfgs(N, W, &objval, &ShareBoostOptimizer::lbfgs_evaluate, NULL, this, &param);
+	lbfgs_progress_t progress = m_verbose ? &ShareBoostOptimizer::lbfgs_progress : NULL;
+
+	lbfgs(N, W, &objval, &ShareBoostOptimizer::lbfgs_evaluate, progress, this, &param);
 
 	int32_t w_len = m_sb->m_activeset.vlen;
 	for (int32_t i=0; i < m_sb->m_multiclass_strategy->get_num_classes(); ++i)
@@ -78,4 +80,24 @@ float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W
 	objval /= fea.num_cols;
 
 	return objval;
+}
+
+int ShareBoostOptimizer::lbfgs_progress(
+		void *instance,
+		const float64_t *x,
+		const float64_t *g,
+		const float64_t fx,
+		const float64_t xnorm,
+		const float64_t gnorm,
+		const float64_t step,
+		int n,
+		int k,
+		int ls
+		)
+{
+    SG_SPRINT("Iteration %d:\n", k);
+    SG_SPRINT("  fx = %f, x[0] = %f, x[1] = %f\n", fx, x[0], x[1]);
+    SG_SPRINT("  xnorm = %f, gnorm = %f, step = %f\n", xnorm, gnorm, step);
+    SG_SPRINT("\n");
+    return 0;
 }
