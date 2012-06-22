@@ -346,7 +346,6 @@ TYPEMAP_STRINGFEATURES_OUT(float64_t,     Matrix)
 		}
 		else
 			matrix[i].features=NULL;
-	    matrix[i].create_idx_map();
 	}
 	ASSERT(offset=nnz);
 	$1 = shogun::SGSparseMatrix<type>(matrix, num_feat, num_vec, true);

@@ -280,16 +280,15 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 
 			// we compute the inner sum by looping over tasks
 			// this update is the main result of MTL_DCD
-            SGSparseVector<float64_t> ts_row = task_similarity_matrix.sparse_matrix[ti];
+		    typedef std::map<index_t, float64_t>::const_iterator map_iter;
 
 			float64_t inner_sum = 0;
-			for (int32_t k=0; k!=ts_row.num_feat_entries; k++)
+			for (map_iter it=task_similarity_matrix.data[ti].begin(); it!=task_similarity_matrix.data[ti].end(); it++)
 			{
 				
 				// get data from sparse matrix
-				SGSparseVectorEntry<float64_t> e = ts_row.features[k];
-				int32_t e_i = e.feat_index;
-                float64_t sim = e.entry;
+				int32_t e_i = it->first;
+                float64_t sim = it->second;
 
 				// fetch vector
 				float64_t* tmp_w = V.get_column_vector(e_i);
@@ -520,7 +519,7 @@ return obj
 			// look up task similarity
 			int32_t ti_j = task_indicator_lhs[j];
 
-			const float64_t ts = task_similarity_matrix.sparse_matrix[ti_i][ti_j];
+			const float64_t ts = task_similarity_matrix(ti_i, ti_j);
 
 			// compute objective
 			obj -= 0.5 * ts * alphas[i] * alphas[j] * ((CBinaryLabels*)m_labels)->get_label(i) * 
