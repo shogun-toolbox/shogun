@@ -80,28 +80,7 @@ public:
 	/** Default destructor */
 	virtual ~CMap()
 	{
-		if (array!=NULL)
-		{
-			for(int32_t i=0; i<array->get_num_elements(); i++)
-			{
-				if (array->get_element(i)!=NULL)
-				{
-					if (use_sg_mallocs)
-						SG_FREE(array->get_element(i));
-					else
-						free(array->get_element(i));
-				}
-			}
-			delete array;
-		}
-
-		if (hash_array!=NULL)
-		{
-			if (use_sg_mallocs)
-				SG_FREE(hash_array);
-			else
-				free(hash_array);
-		}
+		destroy_map();
 	}
 
 	/** @return object name */
@@ -264,6 +243,34 @@ public:
 		return array->get_array();
 	}
 
+	CMap& operator =(const CMap& orig)
+	{
+
+		destroy_map();
+		use_sg_mallocs = orig.use_sg_mallocs;
+
+		hash_size = orig.hash_size;
+
+		if (use_sg_mallocs)
+			hash_array=SG_CALLOC(MapNode*, hash_size);
+		else
+			hash_array=(CMapNode<K, T>**) calloc(hash_size,
+					sizeof(CMapNode<K, T>*));
+
+		for (int32_t i=0; i<hash_size; i++)
+		{
+			hash_array[i]=NULL;
+		}
+
+		array=new DynArray<CMapNode<K, T>*>(128, use_sg_mallocs);
+
+		for(int i = 0; i < orig.num_elements; i++)
+		{
+			CMapNode<K, T>* node = orig.array->get_element(i);
+			add(node->key, node->data);
+		}
+	}
+
 private:
 	/** Returns hash of key
 	 * MurmurHash used
@@ -383,6 +390,31 @@ private:
 		free_index=temp;		
 	}
 
+	void destroy_map()
+	{
+		if (array!=NULL)
+		{
+			for(int32_t i=0; i<array->get_num_elements(); i++)
+			{
+				if (array->get_element(i)!=NULL)
+				{
+					if (use_sg_mallocs)
+						SG_FREE(array->get_element(i));
+					else
+						free(array->get_element(i));
+				}
+			}
+			delete array;
+		}
+
+		if (hash_array!=NULL)
+		{
+			if (use_sg_mallocs)
+				SG_FREE(hash_array);
+			else
+				free(hash_array);
+		}
+	}
 
 protected:
 	/** whether SG_MALLOC or just malloc etc shall be used */

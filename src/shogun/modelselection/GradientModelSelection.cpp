@@ -101,10 +101,65 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 
 	CDynamicObjectArray* combinations=
-			(CDynamicObjectArray*)m_model_parameters->get_random_combination();
+			(CDynamicObjectArray*)m_model_parameters->get_combinations();
 
-	current_combination=(CParameterCombination*)
-			combinations->get_last_element();
+/*	for (index_t i=0; i<combinations->get_num_elements(); ++i)
+	{
+		CParameterCombination* current_combination=(CParameterCombination*)
+				combinations->get_element(i);
+		SG_PRINT("trying combination:\n");
+		current_combination->print_tree();
+
+	}*/
+//	current_combination=(CParameterCombination*)
+//			combinations->
+
+
+
+	Parameter* p=new Parameter();
+
+	Parameter* q=new Parameter();
+
+	Parameter* z=new Parameter();
+
+	Parameter* d=new Parameter();
+
+	Parameter* e=new Parameter();
+
+
+	CModelSelectionParameters* pp = (CModelSelectionParameters*)m_model_parameters->m_child_nodes->get_element(0);
+	q->add(&pp->m_sgobject, "Inference Method");
+    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(0);
+
+	p->add(&pp->m_sgobject, "Likelihood Model");
+
+    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(0);
+
+	z->add(&((float64_t*)pp->m_values)[0], "sigma");
+
+    pp = (CModelSelectionParameters*)m_model_parameters->m_child_nodes->get_element(0);
+    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(1);
+
+	d->add(&pp->m_sgobject, "Kernel");
+
+    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(0);
+
+    e->add(&((float64_t*)pp->m_values)[0], "width");
+
+	CParameterCombination* fool = new CParameterCombination(p);
+	CParameterCombination* fool2 = new CParameterCombination(q);
+	CParameterCombination* fool3 = new CParameterCombination(z);
+	CParameterCombination* fool4 = new CParameterCombination(d);
+	CParameterCombination* fool5 = new CParameterCombination(e);
+
+	fool4->append_child(fool5);
+	fool4->print_tree();
+	fool->append_child(fool3);
+	fool2->append_child(fool);
+	fool2->append_child(fool4);
+
+	current_combination=new CParameterCombination();
+	current_combination->append_child(fool2);
 
 	best_combination=NULL;
 	/*if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
@@ -122,17 +177,37 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 //	{
 
 		/* eventually print */
-		if (print_state)
-		{
+	//	if (print_state)
+	//	{
 			SG_PRINT("trying combination:\n");
 			current_combination->print_tree();
-		}
+	//	}
 
 		current_combination->apply_to_modsel_parameter(
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
 		CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
+
+
+		int n = result->gradient.get_num_elements();
+
+		double* lb = new double[n];
+		double* x = new double[n];
+
+		for(int i = 0; i < n; i++) lb[i] = 0;
+
+		SG_SPRINT("%i\n", n);
+
+		for(int i = 0; i < n; i++)
+		{
+			CMapNode<SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
+			SG_SPRINT("%s\n", node->key.string);
+			SG_SPRINT("%i\n", node->key.slen);
+			SG_SPRINT("%f\n", node->data);
+			x[i] = *((float64_t*)(current_combination->get_parameter(node->key.string)->m_parameter));
+			current_combination->set_parameter(node->key.string, (float64_t) node->data + 0.5);
+		}
 
 		if (print_state)
 			result->print_result();
@@ -142,22 +217,26 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 		best_combination=current_combination;
 
-		best_result = (*result);
+		current_combination->apply_to_modsel_parameter(
+				machine->m_model_selection_parameters);
 
-		int n = result->gradient.get_num_elements();
+		//best_result = (*result);
+
+
+
+
 /*
-		double* lb = new double[n];
-		double* x = new double[n];
-
-		for(int i = 0; i < n; i++) lb[i] = 0;
-
 		for(int i = 0; i < n; i++)
 		{
 			CMapNode<SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
-			char* name = node->key.string;
-			x[i] = *((float64_t*)(current_combination->get_parameter(name)->m_parameter));
-		}
+			//char* name = node->key.;
+			//SG_SPRINT("%s\n", node->key.string);
+			SG_SPRINT("%i\n", node->key.slen);
+			SG_SPRINT("%f\n", node->data);
 
+			//x[i] = *((float64_t*)(current_combination->get_parameter(name)->m_parameter));
+		}*/
+/*
 		nlopt_opt opt;
 
 		opt = nlopt_create(NLOPT_LD_MMA, n); /* algorithm and dimensionality 
@@ -174,12 +253,12 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		}*/
 
 
-		SG_UNREF(result);
-		SG_UNREF(current_combination);
+//		SG_UNREF(result);
+//		SG_UNREF(current_combination);
 //	}
 
-	SG_UNREF(machine);
-	SG_UNREF(combinations);
+//	SG_UNREF(machine);
+//	SG_UNREF(combinations);
 
 
 	return best_combination;

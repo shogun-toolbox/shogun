@@ -162,7 +162,7 @@ protected:
 		return m_child_nodes->get_num_elements()>0;
 	}
 
-private:
+public:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
 	void* m_values;

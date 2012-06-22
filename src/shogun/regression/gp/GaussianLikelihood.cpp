@@ -8,12 +8,14 @@
  */
 
 #include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/modelselection/ParameterCombination.h>
+
 
 namespace shogun {
 
 CGaussianLikelihood::CGaussianLikelihood() {
 	m_sigma = 0.01;
-
+	SG_ADD(&m_sigma, "sigma", "Sigma.", MS_AVAILABLE);
 }
 
 CGaussianLikelihood::~CGaussianLikelihood() {

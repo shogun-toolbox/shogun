@@ -165,6 +165,7 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 
 CDynamicObjectArray* CModelSelectionParameters::get_random_combination()
 {
+	return get_combinations();
 	CDynamicObjectArray* result=new CDynamicObjectArray();
 
 	/* value case: node with values and no children.

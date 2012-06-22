@@ -29,8 +29,10 @@ CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
-
-
+	SG_ADD((CSGObject**) &m_model, "Likelihood Model", "Likelihood Model",
+	    MS_AVAILABLE);
+	SG_ADD((CSGObject**) &kernel, "Kernel", "Kernel",
+	    MS_AVAILABLE);
 }
 
 CExactInferenceMethod::~CExactInferenceMethod() {
