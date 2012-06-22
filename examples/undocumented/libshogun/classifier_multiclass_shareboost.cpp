@@ -5,6 +5,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/features/StreamingDenseFeatures.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/base/init.h>
 #include <shogun/multiclass/ShareBoost.h>
 
@@ -68,15 +69,20 @@ int main(int argc, char** argv)
 	for (int32_t i=0; i < activeset.vlen; ++i)
 		SG_SPRINT("activeset[%02d] = %d\n", i, activeset[i]);
 
-	// Classify the training examples and show the results
-	//CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
+	CDenseSubsetFeatures<float64_t> *subset_fea = new CDenseSubsetFeatures<float64_t>(features, machine->get_activeset());
+	SG_REF(subset_fea);
+	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(machine->apply(subset_fea));
 
-	//SGVector< int32_t > out_labels = output->get_int_labels();
-	//SGVector<int32_t>::display_vector(out_labels.vector, out_labels.vlen);
+	int32_t correct = 0;
+	for (int32_t i=0; i < output->get_num_labels(); ++i)
+		if (output->get_int_label(i) == labels->get_int_label(i))
+			correct++;
+	SG_SPRINT("Accuracy = %.4f\n", float64_t(correct)/labels->get_num_labels());
 
 	// Free resources
 	SG_UNREF(machine);
-	//SG_UNREF(output);
+	SG_UNREF(output);
+	SG_UNREF(subset_fea);
 	SG_UNREF(features);
 	SG_UNREF(labels);
 	SG_UNREF(train_file);
