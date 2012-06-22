@@ -19,4 +19,5 @@
 #include <shogun/lib/GCArray.h>
 #include <shogun/lib/Compressor.h>
 #include <shogun/lib/StructuredData.h>
+#include <shogun/lib/DynamicObjectArray.h>
 %}

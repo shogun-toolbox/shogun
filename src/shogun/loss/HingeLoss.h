@@ -48,7 +48,8 @@ public:
 	float64_t loss(float64_t prediction, float64_t label);
 
 	/**
-	 * Get loss for an example
+	 * Get loss for an example. The definition used for the
+	 * hinge loss computed by this method is f(x) = max(0, x).
 	 *
 	 * @param z where to evaluate the loss 
 	 *
