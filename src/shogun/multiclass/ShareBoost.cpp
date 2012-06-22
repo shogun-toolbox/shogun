@@ -59,6 +59,7 @@ bool CShareBoost::train_machine(CFeatures* data)
 	m_rho = SGMatrix<float64_t>(m_multiclass_strategy->get_num_classes(), m_fea.num_cols);
 	m_rho_norm = SGVector<float64_t>(m_fea.num_cols);
 	m_pred = SGMatrix<float64_t>(m_fea.num_cols, m_multiclass_strategy->get_num_classes());
+	m_pred.zero();
 
 	m_activeset = SGVector<int32_t>(m_fea.num_rows);
 	m_activeset.vlen = 0;
@@ -89,16 +90,18 @@ bool CShareBoost::train_machine(CFeatures* data)
 void CShareBoost::compute_pred()
 {
 	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features);
-	CDenseSubsetFeatures<float64_t> subset_fea(fea, m_activeset);
+	CDenseSubsetFeatures<float64_t> *subset_fea = new CDenseSubsetFeatures<float64_t>(fea, m_activeset);
+	SG_REF(subset_fea);
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 	{
 		CLinearMachine *machine = dynamic_cast<CLinearMachine *>(m_machines->get_element(i));
-		CRegressionLabels *lab = machine->apply_regression(&subset_fea);
+		CRegressionLabels *lab = machine->apply_regression(subset_fea);
 		SGVector<float64_t> lab_raw = lab->get_labels();
 		std::copy(lab_raw.vector, lab_raw.vector + lab_raw.vlen, m_pred.get_column_vector(i));
 		SG_UNREF(machine);
 		SG_UNREF(lab);
 	}
+	SG_UNREF(subset_fea);
 }
 
 void CShareBoost::compute_pred(const float64_t *W)

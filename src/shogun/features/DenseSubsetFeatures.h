@@ -32,7 +32,7 @@ public:
 		:m_fea(fea), m_idx(idx) { SG_REF(m_fea); }
 
     /** destructor */
-	virtual ~CDenseSubsetFeatures() {}
+	virtual ~CDenseSubsetFeatures() { SG_UNREF(m_fea); }
 
     /** get name */
     virtual const char* get_name() const { return "DenseSubsetFeatures"; }
