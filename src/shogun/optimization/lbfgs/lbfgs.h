@@ -467,27 +467,6 @@ int lbfgs(
  */
 void lbfgs_parameter_init(lbfgs_parameter_t *param);
 
-/**
- * Allocate an array for variables.
- *
- *  This function allocates an array of variables for the convenience of
- *  ::lbfgs function; the function has a requreiemt for a variable array
- *  when libLBFGS is built with SSE/SSE2 optimization routines. A user does
- *  not have to use this function for libLBFGS built without SSE/SSE2
- *  optimization.
- *  
- *  @param  n           The number of variables.
- */
-float64_t* lbfgs_malloc(int32_t n);
-
-/**
- * Free an array of variables.
- *  
- *  @param  x           The array of variables allocated by ::lbfgs_malloc
- *                      function.
- */
-void lbfgs_free(float64_t *x);
-
 /** @} */
 
 } // namespace shogun

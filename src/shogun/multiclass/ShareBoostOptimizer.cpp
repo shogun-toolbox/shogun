@@ -19,7 +19,7 @@ using namespace shogun;
 void ShareBoostOptimizer::optimize()
 {
 	int32_t N = m_sb->m_multiclass_strategy->get_num_classes() * m_sb->m_activeset.vlen;
-	float64_t *W = lbfgs_malloc(N); // should use this function, if sse is enabled for liblbfgs
+	float64_t *W = SG_CALLOC(float64_t, N); // should use this function, if sse is enabled for liblbfgs
 	float64_t objval;
 	lbfgs_parameter_t param;
 	lbfgs_parameter_init(&param);
@@ -40,7 +40,7 @@ void ShareBoostOptimizer::optimize()
 		SG_UNREF(machine);
 	}
 
-	// TODO: free memory of W
+	SG_FREE(W);
 }
 
 float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W, 

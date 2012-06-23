@@ -195,16 +195,6 @@ static void owlqn_project(
     );
 
 
-float64_t* lbfgs_malloc(int32_t n)
-{
-	return SG_CALLOC(float64_t, n);
-}
-
-void lbfgs_free(float64_t *x)
-{
-    SG_FREE(x);
-}
-
 void lbfgs_parameter_init(lbfgs_parameter_t *param)
 {
     memcpy(param, &_defparam, sizeof(*param));
