@@ -8,12 +8,13 @@
  */
 
 #include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/base/Parameter.h>
 
-namespace shogun {
+using namespace shogun;
 
-CGaussianLikelihood::CGaussianLikelihood() {
-	m_sigma = 0.01;
-
+CGaussianLikelihood::CGaussianLikelihood()
+{
+	init();
 }
 
 CGaussianLikelihood::~CGaussianLikelihood() {
@@ -33,5 +34,10 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t>&
 	return result;
 }
 
+void CGaussianLikelihood::init()
+{
+	/* TODO register all parameters. Heiko Strathmann */
+	SG_ADD(&m_sigma, "sigma", "Width parameter of Gaussian", MS_AVAILABLE);
 
+	m_sigma = 0.01;
 }
