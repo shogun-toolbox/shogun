@@ -533,7 +533,7 @@ int32_t lbfgs(
             vecdot(&it->alpha, it->s, d, n);
             it->alpha /= it->ys;
             /* q_{i} = q_{i+1} - \alpha_{i} y_{i}. */
-            vecadd(d, it->y, -it->alpha, n);
+			SGVector<float64_t>::add(d, 1, d, -it->alpha, it->y, n);
         }
 
         vecscale(d, ys / yy, n);
@@ -544,7 +544,7 @@ int32_t lbfgs(
             vecdot(&beta, it->y, d, n);
             beta /= it->ys;
             /* \gamma_{i+1} = \gamma_{i} + (\alpha_{j} - \beta_{j}) s_{j}. */
-            vecadd(d, it->s, it->alpha - beta, n);
+			SGVector<float64_t>::add(d, 1, d, it->alpha-beta, it->s, n);
             j = (j + 1) % m;        /* if (++j == m) j = 0; */
         }
 
@@ -631,7 +631,7 @@ static int32_t line_search_backtracking(
 
     for (;;) {
 		std::copy(xp,xp+n,x);
-        vecadd(x, s, *stp, n);
+		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
@@ -717,7 +717,7 @@ static int32_t line_search_backtracking_owlqn(
     for (;;) {
         /* Update the current point. */
 		std::copy(xp,xp+n,x);
-        vecadd(x, s, *stp, n);
+		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* The current point is projected onto the orthant. */
         owlqn_project(x, wp, param->orthantwise_start, param->orthantwise_end);
@@ -848,7 +848,7 @@ static int32_t line_search_morethuente(
                 x <- x + (*stp) * s.
          */
 		std::copy(xp,xp+n,x);
-        vecadd(x, s, *stp, n);
+		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
