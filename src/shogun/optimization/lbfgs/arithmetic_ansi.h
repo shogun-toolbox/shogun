@@ -28,15 +28,6 @@
 
 #define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
 
-inline static void* vecalloc(size_t size)
-{
-    void *memblock = malloc(size);
-    if (memblock) {
-        memset(memblock, 0, size);
-    }
-    return memblock;
-}
-
 inline static void vecfree(void *memblock)
 {
     free(memblock);

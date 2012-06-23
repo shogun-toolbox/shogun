@@ -197,7 +197,7 @@ static void owlqn_project(
 
 float64_t* lbfgs_malloc(int32_t n)
 {
-    return (float64_t*)vecalloc(sizeof(float64_t) * n);
+	return SG_CALLOC(float64_t, n);
 }
 
 void lbfgs_free(float64_t *x)
@@ -319,11 +319,11 @@ int32_t lbfgs(
     }
 
     /* Allocate working space. */
-    xp = (float64_t*)vecalloc(n * sizeof(float64_t));
-    g = (float64_t*)vecalloc(n * sizeof(float64_t));
-    gp = (float64_t*)vecalloc(n * sizeof(float64_t));
-    d = (float64_t*)vecalloc(n * sizeof(float64_t));
-    w = (float64_t*)vecalloc(n * sizeof(float64_t));
+    xp = SG_CALLOC(float64_t, n);
+    g = SG_CALLOC(float64_t, n);
+    gp = SG_CALLOC(float64_t, n);
+    d = SG_CALLOC(float64_t, n);
+    w = SG_CALLOC(float64_t, n);
     if (xp == NULL || g == NULL || gp == NULL || d == NULL || w == NULL) {
         ret = LBFGSERR_OUTOFMEMORY;
         goto lbfgs_exit;
@@ -331,7 +331,7 @@ int32_t lbfgs(
 
     if (param.orthantwise_c != 0.) {
         /* Allocate working space for OW-LQN. */
-        pg = (float64_t*)vecalloc(n * sizeof(float64_t));
+        pg = SG_CALLOC(float64_t, n);
         if (pg == NULL) {
             ret = LBFGSERR_OUTOFMEMORY;
             goto lbfgs_exit;
@@ -339,7 +339,7 @@ int32_t lbfgs(
     }
 
     /* Allocate limited memory storage. */
-    lm = (iteration_data_t*)vecalloc(m * sizeof(iteration_data_t));
+    lm = SG_CALLOC(iteration_data_t, m);
     if (lm == NULL) {
         ret = LBFGSERR_OUTOFMEMORY;
         goto lbfgs_exit;
@@ -350,8 +350,8 @@ int32_t lbfgs(
         it = &lm[i];
         it->alpha = 0;
         it->ys = 0;
-        it->s = (float64_t*)vecalloc(n * sizeof(float64_t));
-        it->y = (float64_t*)vecalloc(n * sizeof(float64_t));
+        it->s = SG_CALLOC(float64_t, n);
+        it->y = SG_CALLOC(float64_t, n);
         if (it->s == NULL || it->y == NULL) {
             ret = LBFGSERR_OUTOFMEMORY;
             goto lbfgs_exit;
@@ -360,7 +360,7 @@ int32_t lbfgs(
 
     /* Allocate an array for storing previous values of the objective function. */
     if (0 < param.past) {
-        pf = (float64_t*)vecalloc(param.past * sizeof(float64_t));
+        pf = SG_CALLOC(float64_t, param.past);
     }
 
     /* Evaluate the function value and its gradient. */
