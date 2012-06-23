@@ -61,6 +61,7 @@ distributing the effieicnt and explanatory implementation in an open source
 licence.
 */
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -404,8 +405,8 @@ int32_t lbfgs(
     end = 0;
     for (;;) {
         /* Store the current position and gradient vectors. */
-        veccpy(xp, x, n);
-        veccpy(gp, g, n);
+		std::copy(x,x+n,xp);
+		std::copy(g,g+n,gp);
 
         /* Search for an optimal step. */
         if (param.orthantwise_c == 0.) {
@@ -419,8 +420,8 @@ int32_t lbfgs(
         }
         if (ls < 0) {
             /* Revert to the previous point. */
-            veccpy(x, xp, n);
-            veccpy(g, gp, n);
+			std::copy(xp,xp+n,x);
+			std::copy(gp,gp+n,g);
             ret = ls;
             goto lbfgs_exit;
         }
@@ -624,7 +625,7 @@ static int32_t line_search_backtracking(
     dgtest = param->ftol * dginit;
 
     for (;;) {
-        veccpy(x, xp, n);
+		std::copy(xp,xp+n,x);
         vecadd(x, s, *stp, n);
 
         /* Evaluate the function and gradient values. */
@@ -710,7 +711,7 @@ static int32_t line_search_backtracking_owlqn(
 
     for (;;) {
         /* Update the current point. */
-        veccpy(x, xp, n);
+		std::copy(xp,xp+n,x);
         vecadd(x, s, *stp, n);
 
         /* The current point is projected onto the orthant. */
@@ -841,7 +842,7 @@ static int32_t line_search_morethuente(
             Compute the current value of x:
                 x <- x + (*stp) * s.
          */
-        veccpy(x, xp, n);
+		std::copy(xp,xp+n,x);
         vecadd(x, s, *stp, n);
 
         /* Evaluate the function and gradient values. */
