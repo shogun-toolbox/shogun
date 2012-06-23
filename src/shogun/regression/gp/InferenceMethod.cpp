@@ -15,18 +15,16 @@
 
 using namespace shogun;
 
-CInferenceMethod::CInferenceMethod() {
-	kernel = NULL;
-	m_model = NULL;
-	m_labels = NULL;
-	features = NULL;
-	mean = NULL;
+CInferenceMethod::CInferenceMethod()
+{
+	init();
 }
 
 CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) : kernel(NULL),
-		features(NULL), mean(NULL), m_labels(NULL), m_model(NULL)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
 {
+	init();
+
 	set_kernel(kern);
 	set_features(feat);
 	set_labels(lab);
@@ -42,6 +40,15 @@ CInferenceMethod::~CInferenceMethod() {
 	SG_UNREF(mean);
 }
 
+void CInferenceMethod::init()
+{
+	/* TODO: add all parameters needed for model selection (Heiko Strathmann) */
+	SG_ADD((CSGObject**)&kernel, "kernel", "Kernel to use", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_model, "model", "Likelihood model", MS_AVAILABLE);
 
-
-
+	kernel = NULL;
+	m_model = NULL;
+	m_labels = NULL;
+	features = NULL;
+	mean = NULL;
+}
