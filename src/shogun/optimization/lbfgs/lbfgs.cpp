@@ -68,6 +68,7 @@ licence.
 
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/optimization/lbfgs/arithmetic_ansi.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -376,9 +377,11 @@ int32_t lbfgs(
         we assume the initial hessian matrix H_0 as the identity matrix.
      */
     if (param.orthantwise_c == 0.) {
-        vecncpy(d, g, n);
+		std::copy(g,g+n,d);
+		SGVector<float64_t>::scale_vector(-1, d, n);
     } else {
-        vecncpy(d, pg, n);
+		std::copy(pg,pg+n,d);
+		SGVector<float64_t>::scale_vector(-1, d, n);
     }
 
     /*
@@ -515,9 +518,11 @@ int32_t lbfgs(
         /* Compute the steepest direction. */
         if (param.orthantwise_c == 0.) {
             /* Compute the negative of gradients. */
-            vecncpy(d, g, n);
+			std::copy(g, g+n, d);
+			SGVector<float64_t>::scale_vector(-1, d, n);
         } else {
-            vecncpy(d, pg, n);
+			std::copy(pg, pg+n, d);
+			SGVector<float64_t>::scale_vector(-1, d, n);
         }
 
         j = end;

@@ -28,24 +28,6 @@
 
 #define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
 
-inline static void veccpy(float64_t *y, const float64_t *x, const int n)
-{
-    int i;
-
-    for (i = 0;i < n;++i) {
-        y[i] = x[i];
-    }
-}
-
-inline static void vecncpy(float64_t *y, const float64_t *x, const int n)
-{
-    int i;
-
-    for (i = 0;i < n;++i) {
-        y[i] = -x[i];
-    }
-}
-
 inline static void vecadd(float64_t *y, const float64_t *x, const float64_t c, const int n)
 {
     int i;
