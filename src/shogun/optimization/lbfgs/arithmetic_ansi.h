@@ -28,15 +28,6 @@
 
 #define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
 
-inline static void vecdiff(float64_t *z, const float64_t *x, const float64_t *y, const int n)
-{
-    int i;
-
-    for (i = 0;i < n;++i) {
-        z[i] = x[i] - y[i];
-    }
-}
-
 inline static void vecscale(float64_t *y, const float64_t c, const int n)
 {
     int i;

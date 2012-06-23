@@ -490,8 +490,8 @@ int32_t lbfgs(
                 y_{k+1} = g_{k+1} - g_{k}.
          */
         it = &lm[end];
-        vecdiff(it->s, x, xp, n);
-        vecdiff(it->y, g, gp, n);
+		SGVector<float64_t>::add(it->s, 1, x, -1, xp, n);
+		SGVector<float64_t>::add(it->y, 1, g, -1, gp, n);
 
         /*
             Compute scalars ys and yy:
