@@ -111,6 +111,72 @@ void test_gamma_cdf()
 	ASSERT(difference<=10E-15);
 }
 
+void test_normal()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::normal_cdf(1);
+	SG_SPRINT("normal_cdf(1)=%f\n", difference);
+	difference-=0.841344746068543;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::normal_cdf(2);
+	SG_SPRINT("normal_cdf(2)=%f\n", difference);
+	difference-=0.977249868051821;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::normal_cdf(0.1);
+	SG_SPRINT("normal_cdf(0.1)=%f\n", difference);
+	difference-=0.539827837277029;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+}
+
+void test_error_function()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::error_function(1);
+	SG_SPRINT("error_function(1)=%f\n", difference);
+	difference-=0.842700792949715;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::error_function(2);
+	SG_SPRINT("error_function(2)=%f\n", difference);
+	difference-=0.995322265018953;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::error_function(0.1);
+	SG_SPRINT("error_function(0.1)=%f\n", difference);
+	difference-=0.112462916018285;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+}
+
+void test_error_function_complement()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::error_function_complement(1);
+	SG_SPRINT("error_function_complement(1)=%f\n", difference);
+	difference-=0.157299207050285;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::error_function_complement(2);
+	SG_SPRINT("error_function_complement(2)=%f\n", difference);
+	difference-=0.004677734981047;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::error_function_complement(0.1);
+	SG_SPRINT("error_function_complement(0.1)=%f\n", difference);
+	difference-=0.887537083981715;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+}
+
 int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
@@ -119,6 +185,9 @@ int main(int argc, char **argv)
 	test_inverse_student_t();
 	test_incomplete_gamma();
 	test_gamma_cdf();
+	test_normal();
+	test_error_function();
+	test_error_function_complement();
 
 	exit_shogun();
 

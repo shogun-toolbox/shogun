@@ -25,6 +25,7 @@ aux_source_directory(regression REGRESSION)
 aux_source_directory(regression/svr REGRESSION_SVR)
 aux_source_directory(structure STRUCTURE)
 aux_source_directory(ui UI)
+aux_source_directory(statistics STATISTICS)
 
 add_library(shogun SHARED
                    ${BASE}
@@ -51,5 +52,6 @@ add_library(shogun SHARED
                    ${REGRESSION}
                      ${REGRESSION_SVR}
                    ${STRUCTURE}
-                   ${UI})
+                   ${UI}
+                   ${STATISTICS})
 
