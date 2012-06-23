@@ -191,6 +191,9 @@ protected:
 	 */
 	virtual void update_alpha_and_chol() = 0;
 
+private:
+	void init();
+
 protected:
 
 	/*Covariance Function*/
