@@ -67,7 +67,6 @@ licence.
 #include <cmath>
 
 #include <shogun/optimization/lbfgs/lbfgs.h>
-#include <shogun/optimization/lbfgs/arithmetic_ansi.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun
@@ -387,11 +386,11 @@ int32_t lbfgs(
     /*
        Make sure that the initial variables are not a minimizer.
      */
-    vec2norm(&xnorm, x, n);
+	xnorm = SGVector<float64_t>::twonorm(x, n);
     if (param.orthantwise_c == 0.) {
-        vec2norm(&gnorm, g, n);
+		gnorm = SGVector<float64_t>::twonorm(g, n);
     } else {
-        vec2norm(&gnorm, pg, n);
+		gnorm = SGVector<float64_t>::twonorm(pg, n);
     }
     if (xnorm < 1.0) xnorm = 1.0;
     if (gnorm / xnorm <= param.epsilon) {
@@ -402,7 +401,7 @@ int32_t lbfgs(
     /* Compute the initial step:
         step = 1.0 / sqrt(vecdot(d, d, n))
      */
-    vec2norminv(&step, d, n);
+	step = 1.0 / SGVector<float64_t>::twonorm(d, n);
 
     k = 1;
     end = 0;
@@ -430,11 +429,11 @@ int32_t lbfgs(
         }
 
         /* Compute x and g norms. */
-        vec2norm(&xnorm, x, n);
+		xnorm = SGVector<float64_t>::twonorm(x, n);
         if (param.orthantwise_c == 0.) {
-            vec2norm(&gnorm, g, n);
+			gnorm = SGVector<float64_t>::twonorm(g, n);
         } else {
-            vec2norm(&gnorm, pg, n);
+			gnorm = SGVector<float64_t>::twonorm(pg, n);
         }
 
         /* Report the progress. */
@@ -499,8 +498,8 @@ int32_t lbfgs(
                 yy = y^t \cdot y.
             Notice that yy is used for scaling the hessian matrix H_0 (Cholesky factor).
          */
-        vecdot(&ys, it->y, it->s, n);
-        vecdot(&yy, it->y, it->y, n);
+		ys = SGVector<float64_t>::dot(it->y, it->s, n);
+		yy = SGVector<float64_t>::dot(it->y, it->y, n);
         it->ys = ys;
 
         /*
@@ -530,18 +529,18 @@ int32_t lbfgs(
             j = (j + m - 1) % m;    /* if (--j == -1) j = m-1; */
             it = &lm[j];
             /* \alpha_{j} = \rho_{j} s^{t}_{j} \cdot q_{k+1}. */
-            vecdot(&it->alpha, it->s, d, n);
+			it->alpha = SGVector<float64_t>::dot(it->s, d, n);
             it->alpha /= it->ys;
             /* q_{i} = q_{i+1} - \alpha_{i} y_{i}. */
 			SGVector<float64_t>::add(d, 1, d, -it->alpha, it->y, n);
         }
 
-        vecscale(d, ys / yy, n);
+		SGVector<float64_t>::scale_vector(ys / yy, d, n);
 
         for (i = 0;i < bound;++i) {
             it = &lm[j];
             /* \beta_{j} = \rho_{j} y^t_{j} \cdot \gamma_{i}. */
-            vecdot(&beta, it->y, d, n);
+			beta = SGVector<float64_t>::dot(it->y, d, n);
             beta /= it->ys;
             /* \gamma_{i+1} = \gamma_{i} + (\alpha_{j} - \beta_{j}) s_{j}. */
 			SGVector<float64_t>::add(d, 1, d, it->alpha-beta, it->s, n);
@@ -618,7 +617,7 @@ static int32_t line_search_backtracking(
     }
 
     /* Compute the initial gradient in the search direction. */
-    vecdot(&dginit, g, s, n);
+	dginit = SGVector<float64_t>::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -648,7 +647,7 @@ static int32_t line_search_backtracking(
 	        }
 
 	        /* Check the Wolfe condition. */
-	        vecdot(&dg, g, s, n);
+			dg = SGVector<float64_t>::dot(g, s, n);
 	        if (dg < param->wolfe * dginit) {
     		    width = inc;
 	        } else {
@@ -790,7 +789,7 @@ static int32_t line_search_morethuente(
     }
 
     /* Compute the initial gradient in the search direction. */
-    vecdot(&dginit, g, s, n);
+	dginit = SGVector<float64_t>::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -852,7 +851,7 @@ static int32_t line_search_morethuente(
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
-        vecdot(&dg, g, s, n);
+		dg = SGVector<float64_t>::dot(g, s, n);
 
         ftest1 = finit + *stp * dgtest;
         ++count;
@@ -1043,6 +1042,8 @@ static int32_t line_search_morethuente(
 #define QUARD_MINIMIZER2(qm, u, du, v, dv) \
     a = (u) - (v); \
     (qm) = (v) + (dv) / ((dv) - (du)) * a;
+
+#define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
 
 /**
  * Update a safeguarded trial value and interval for line search.
