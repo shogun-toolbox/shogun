@@ -61,38 +61,20 @@ distributing the effieicnt and explanatory implementation in an open source
 licence.
 */
 
-#ifdef  HAVE_CONFIG_H
-#include <config.h>
-#endif/*HAVE_CONFIG_H*/
+#include <algorithm>
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 
 #include <shogun/optimization/lbfgs/lbfgs.h>
-
-#ifdef  _MSC_VER
-#define inline  __inline
-#endif/*_MSC_VER*/
-
-#if     defined(USE_SSE) && defined(__SSE2__) && LBFGS_FLOAT == 64
-/* Use SSE2 optimization for 64bit double precision. */
-#include <shogun/optimization/lbfgs/arithmetic_sse_double.h>
-
-#elif   defined(USE_SSE) && defined(__SSE__) && LBFGS_FLOAT == 32
-/* Use SSE optimization for 32bit float precision. */
-#include <shogun/optimization/lbfgs/arithmetic_sse_float.h>
-
-#else
-/* No CPU specific optimization. */
 #include <shogun/optimization/lbfgs/arithmetic_ansi.h>
 
-#endif
+using namespace std;
+using namespace shogun;
 
-#define min2(a, b)      ((a) <= (b) ? (a) : (b))
-#define max2(a, b)      ((a) >= (b) ? (a) : (b))
-#define max3(a, b, c)   max2(max2((a), (b)), (c));
+#define max3(a, b, c)   max(max((a), (b)), (c));
 
 struct tag_callback_data {
     int n;
@@ -103,10 +85,10 @@ struct tag_callback_data {
 typedef struct tag_callback_data callback_data_t;
 
 struct tag_iteration_data {
-    lbfgsfloatval_t alpha;
-    lbfgsfloatval_t *s;     /* [n] */
-    lbfgsfloatval_t *y;     /* [n] */
-    lbfgsfloatval_t ys;     /* vecdot(y, s) */
+    float64_t alpha;
+    float64_t *s;     /* [n] */
+    float64_t *y;     /* [n] */
+    float64_t ys;     /* vecdot(y, s) */
 };
 typedef struct tag_iteration_data iteration_data_t;
 
@@ -121,118 +103,105 @@ static const lbfgs_parameter_t _defparam = {
 
 typedef int (*line_search_proc)(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *f,
-    lbfgsfloatval_t *g,
-    lbfgsfloatval_t *s,
-    lbfgsfloatval_t *stp,
-    const lbfgsfloatval_t* xp,
-    const lbfgsfloatval_t* gp,
-    lbfgsfloatval_t *wa,
+    float64_t *x,
+    float64_t *f,
+    float64_t *g,
+    float64_t *s,
+    float64_t *stp,
+    const float64_t* xp,
+    const float64_t* gp,
+    float64_t *wa,
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     );
     
 static int line_search_backtracking(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *f,
-    lbfgsfloatval_t *g,
-    lbfgsfloatval_t *s,
-    lbfgsfloatval_t *stp,
-    const lbfgsfloatval_t* xp,
-    const lbfgsfloatval_t* gp,
-    lbfgsfloatval_t *wa,
+    float64_t *x,
+    float64_t *f,
+    float64_t *g,
+    float64_t *s,
+    float64_t *stp,
+    const float64_t* xp,
+    const float64_t* gp,
+    float64_t *wa,
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     );
 
 static int line_search_backtracking_owlqn(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *f,
-    lbfgsfloatval_t *g,
-    lbfgsfloatval_t *s,
-    lbfgsfloatval_t *stp,
-    const lbfgsfloatval_t* xp,
-    const lbfgsfloatval_t* gp,
-    lbfgsfloatval_t *wp,
+    float64_t *x,
+    float64_t *f,
+    float64_t *g,
+    float64_t *s,
+    float64_t *stp,
+    const float64_t* xp,
+    const float64_t* gp,
+    float64_t *wp,
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     );
 
 static int line_search_morethuente(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *f,
-    lbfgsfloatval_t *g,
-    lbfgsfloatval_t *s,
-    lbfgsfloatval_t *stp,
-    const lbfgsfloatval_t* xp,
-    const lbfgsfloatval_t* gp,
-    lbfgsfloatval_t *wa,
+    float64_t *x,
+    float64_t *f,
+    float64_t *g,
+    float64_t *s,
+    float64_t *stp,
+    const float64_t* xp,
+    const float64_t* gp,
+    float64_t *wa,
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     );
 
 static int update_trial_interval(
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *fx,
-    lbfgsfloatval_t *dx,
-    lbfgsfloatval_t *y,
-    lbfgsfloatval_t *fy,
-    lbfgsfloatval_t *dy,
-    lbfgsfloatval_t *t,
-    lbfgsfloatval_t *ft,
-    lbfgsfloatval_t *dt,
-    const lbfgsfloatval_t tmin,
-    const lbfgsfloatval_t tmax,
+    float64_t *x,
+    float64_t *fx,
+    float64_t *dx,
+    float64_t *y,
+    float64_t *fy,
+    float64_t *dy,
+    float64_t *t,
+    float64_t *ft,
+    float64_t *dt,
+    const float64_t tmin,
+    const float64_t tmax,
     int *brackt
     );
 
-static lbfgsfloatval_t owlqn_x1norm(
-    const lbfgsfloatval_t* x,
+static float64_t owlqn_x1norm(
+    const float64_t* x,
     const int start,
     const int n
     );
 
 static void owlqn_pseudo_gradient(
-    lbfgsfloatval_t* pg,
-    const lbfgsfloatval_t* x,
-    const lbfgsfloatval_t* g,
+    float64_t* pg,
+    const float64_t* x,
+    const float64_t* g,
     const int n,
-    const lbfgsfloatval_t c,
+    const float64_t c,
     const int start,
     const int end
     );
 
 static void owlqn_project(
-    lbfgsfloatval_t* d,
-    const lbfgsfloatval_t* sign,
+    float64_t* d,
+    const float64_t* sign,
     const int start,
     const int end
     );
 
 
-#if     defined(USE_SSE) && (defined(__SSE__) || defined(__SSE2__))
-static int round_out_variables(int n)
+float64_t* lbfgs_malloc(int n)
 {
-    n += 7;
-    n /= 8;
-    n *= 8;
-    return n;
-}
-#endif/*defined(USE_SSE)*/
-
-lbfgsfloatval_t* lbfgs_malloc(int n)
-{
-#if     defined(USE_SSE) && (defined(__SSE__) || defined(__SSE2__))
-    n = round_out_variables(n);
-#endif/*defined(USE_SSE)*/
-    return (lbfgsfloatval_t*)vecalloc(sizeof(lbfgsfloatval_t) * n);
+    return (float64_t*)vecalloc(sizeof(float64_t) * n);
 }
 
-void lbfgs_free(lbfgsfloatval_t *x)
+void lbfgs_free(float64_t *x)
 {
     vecfree(x);
 }
@@ -244,8 +213,8 @@ void lbfgs_parameter_init(lbfgs_parameter_t *param)
 
 int lbfgs(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *ptr_fx,
+    float64_t *x,
+    float64_t *ptr_fx,
     lbfgs_evaluate_t proc_evaluate,
     lbfgs_progress_t proc_progress,
     void *instance,
@@ -254,20 +223,20 @@ int lbfgs(
 {
     int ret;
     int i, j, k, ls, end, bound;
-    lbfgsfloatval_t step;
+    float64_t step;
 
     /* Constant parameters and their default values. */
     lbfgs_parameter_t param = (_param != NULL) ? (*_param) : _defparam;
     const int m = param.m;
 
-    lbfgsfloatval_t *xp = NULL;
-    lbfgsfloatval_t *g = NULL, *gp = NULL, *pg = NULL;
-    lbfgsfloatval_t *d = NULL, *w = NULL, *pf = NULL;
+    float64_t *xp = NULL;
+    float64_t *g = NULL, *gp = NULL, *pg = NULL;
+    float64_t *d = NULL, *w = NULL, *pf = NULL;
     iteration_data_t *lm = NULL, *it = NULL;
-    lbfgsfloatval_t ys, yy;
-    lbfgsfloatval_t xnorm, gnorm, beta;
-    lbfgsfloatval_t fx = 0.;
-    lbfgsfloatval_t rate = 0.;
+    float64_t ys, yy;
+    float64_t xnorm, gnorm, beta;
+    float64_t fx = 0.;
+    float64_t rate = 0.;
     line_search_proc linesearch = line_search_morethuente;
 
     /* Construct a callback data. */
@@ -277,23 +246,10 @@ int lbfgs(
     cd.proc_evaluate = proc_evaluate;
     cd.proc_progress = proc_progress;
 
-#if     defined(USE_SSE) && (defined(__SSE__) || defined(__SSE2__))
-    /* Round out the number of variables. */
-    n = round_out_variables(n);
-#endif/*defined(USE_SSE)*/
-
     /* Check the input parameters for errors. */
     if (n <= 0) {
         return LBFGSERR_INVALID_N;
     }
-#if     defined(USE_SSE) && (defined(__SSE__) || defined(__SSE2__))
-    if (n % 8 != 0) {
-        return LBFGSERR_INVALID_N_SSE;
-    }
-    if ((uintptr_t)(const void*)x % 16 != 0) {
-        return LBFGSERR_INVALID_X_SSE;
-    }
-#endif/*defined(USE_SSE)*/
     if (param.epsilon < 0.) {
         return LBFGSERR_INVALID_EPSILON;
     }
@@ -364,11 +320,11 @@ int lbfgs(
     }
 
     /* Allocate working space. */
-    xp = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
-    g = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
-    gp = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
-    d = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
-    w = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
+    xp = (float64_t*)vecalloc(n * sizeof(float64_t));
+    g = (float64_t*)vecalloc(n * sizeof(float64_t));
+    gp = (float64_t*)vecalloc(n * sizeof(float64_t));
+    d = (float64_t*)vecalloc(n * sizeof(float64_t));
+    w = (float64_t*)vecalloc(n * sizeof(float64_t));
     if (xp == NULL || g == NULL || gp == NULL || d == NULL || w == NULL) {
         ret = LBFGSERR_OUTOFMEMORY;
         goto lbfgs_exit;
@@ -376,7 +332,7 @@ int lbfgs(
 
     if (param.orthantwise_c != 0.) {
         /* Allocate working space for OW-LQN. */
-        pg = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
+        pg = (float64_t*)vecalloc(n * sizeof(float64_t));
         if (pg == NULL) {
             ret = LBFGSERR_OUTOFMEMORY;
             goto lbfgs_exit;
@@ -395,8 +351,8 @@ int lbfgs(
         it = &lm[i];
         it->alpha = 0;
         it->ys = 0;
-        it->s = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
-        it->y = (lbfgsfloatval_t*)vecalloc(n * sizeof(lbfgsfloatval_t));
+        it->s = (float64_t*)vecalloc(n * sizeof(float64_t));
+        it->y = (float64_t*)vecalloc(n * sizeof(float64_t));
         if (it->s == NULL || it->y == NULL) {
             ret = LBFGSERR_OUTOFMEMORY;
             goto lbfgs_exit;
@@ -405,7 +361,7 @@ int lbfgs(
 
     /* Allocate an array for storing previous values of the objective function. */
     if (0 < param.past) {
-        pf = (lbfgsfloatval_t*)vecalloc(param.past * sizeof(lbfgsfloatval_t));
+        pf = (float64_t*)vecalloc(param.past * sizeof(float64_t));
     }
 
     /* Evaluate the function value and its gradient. */
@@ -644,22 +600,22 @@ lbfgs_exit:
 
 static int line_search_backtracking(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *f,
-    lbfgsfloatval_t *g,
-    lbfgsfloatval_t *s,
-    lbfgsfloatval_t *stp,
-    const lbfgsfloatval_t* xp,
-    const lbfgsfloatval_t* gp,
-    lbfgsfloatval_t *wp,
+    float64_t *x,
+    float64_t *f,
+    float64_t *g,
+    float64_t *s,
+    float64_t *stp,
+    const float64_t* xp,
+    const float64_t* gp,
+    float64_t *wp,
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     )
 {
     int count = 0;
-    lbfgsfloatval_t width, dg;
-    lbfgsfloatval_t finit, dginit = 0., dgtest;
-    const lbfgsfloatval_t dec = 0.5, inc = 2.1;
+    float64_t width, dg;
+    float64_t finit, dginit = 0., dgtest;
+    const float64_t dec = 0.5, inc = 2.1;
 
     /* Check the input parameters for errors. */
     if (*stp <= 0.) {
@@ -737,21 +693,21 @@ static int line_search_backtracking(
 
 static int line_search_backtracking_owlqn(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *f,
-    lbfgsfloatval_t *g,
-    lbfgsfloatval_t *s,
-    lbfgsfloatval_t *stp,
-    const lbfgsfloatval_t* xp,
-    const lbfgsfloatval_t* gp,
-    lbfgsfloatval_t *wp,
+    float64_t *x,
+    float64_t *f,
+    float64_t *g,
+    float64_t *s,
+    float64_t *stp,
+    const float64_t* xp,
+    const float64_t* gp,
+    float64_t *wp,
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     )
 {
     int i, count = 0;
-    lbfgsfloatval_t width = 0.5, norm = 0.;
-    lbfgsfloatval_t finit = *f, dgtest;
+    float64_t width = 0.5, norm = 0.;
+    float64_t finit = *f, dgtest;
 
     /* Check the input parameters for errors. */
     if (*stp <= 0.) {
@@ -811,27 +767,27 @@ static int line_search_backtracking_owlqn(
 
 static int line_search_morethuente(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *f,
-    lbfgsfloatval_t *g,
-    lbfgsfloatval_t *s,
-    lbfgsfloatval_t *stp,
-    const lbfgsfloatval_t* xp,
-    const lbfgsfloatval_t* gp,
-    lbfgsfloatval_t *wa,
+    float64_t *x,
+    float64_t *f,
+    float64_t *g,
+    float64_t *s,
+    float64_t *stp,
+    const float64_t* xp,
+    const float64_t* gp,
+    float64_t *wa,
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     )
 {
     int count = 0;
     int brackt, stage1, uinfo = 0;
-    lbfgsfloatval_t dg;
-    lbfgsfloatval_t stx, fx, dgx;
-    lbfgsfloatval_t sty, fy, dgy;
-    lbfgsfloatval_t fxm, dgxm, fym, dgym, fm, dgm;
-    lbfgsfloatval_t finit, ftest1, dginit, dgtest;
-    lbfgsfloatval_t width, prev_width;
-    lbfgsfloatval_t stmin, stmax;
+    float64_t dg;
+    float64_t stx, fx, dgx;
+    float64_t sty, fy, dgy;
+    float64_t fxm, dgxm, fym, dgym, fm, dgm;
+    float64_t finit, ftest1, dginit, dgtest;
+    float64_t width, prev_width;
+    float64_t stmin, stmax;
 
     /* Check the input parameters for errors. */
     if (*stp <= 0.) {
@@ -873,8 +829,8 @@ static int line_search_morethuente(
             present interval of uncertainty.
          */
         if (brackt) {
-            stmin = min2(stx, sty);
-            stmax = max2(stx, sty);
+            stmin = min(stx, sty);
+            stmax = max(stx, sty);
         } else {
             stmin = stx;
             stmax = *stp + 4.0 * (*stp - stx);
@@ -936,7 +892,7 @@ static int line_search_morethuente(
             In the first stage we seek a step for which the modified
             function has a nonpositive value and nonnegative derivative.
          */
-        if (stage1 && *f <= ftest1 && min2(param->ftol, param->gtol) * dginit <= dg) {
+        if (stage1 && *f <= ftest1 && min(param->ftol, param->gtol) * dginit <= dg) {
             stage1 = 0;
         }
 
@@ -1006,7 +962,7 @@ static int line_search_morethuente(
  * Define the local variables for computing minimizers.
  */
 #define USES_MINIMIZER \
-    lbfgsfloatval_t a, d, gamma, theta, p, q, r, s;
+    float64_t a, d, gamma, theta, p, q, r, s;
 
 /**
  * Find a minimizer of an interpolated cubic function.
@@ -1055,7 +1011,7 @@ static int line_search_morethuente(
     s = max3(p, q, r); \
     /* gamma = s*sqrt((theta/s)**2 - (du/s) * (dv/s)) */ \
     a = theta / s; \
-    gamma = s * sqrt(max2(0, a * a - ((du) / s) * ((dv) / s))); \
+    gamma = s * sqrt(max(0, a * a - ((du) / s) * ((dv) / s))); \
     if ((u) < (v)) gamma = -gamma; \
     p = gamma - (dv) + theta; \
     q = gamma - (dv) + gamma + (du); \
@@ -1123,30 +1079,30 @@ static int line_search_morethuente(
  *      Software (TOMS), Vol 20, No 3, pp. 286-307, 1994.
  */
 static int update_trial_interval(
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *fx,
-    lbfgsfloatval_t *dx,
-    lbfgsfloatval_t *y,
-    lbfgsfloatval_t *fy,
-    lbfgsfloatval_t *dy,
-    lbfgsfloatval_t *t,
-    lbfgsfloatval_t *ft,
-    lbfgsfloatval_t *dt,
-    const lbfgsfloatval_t tmin,
-    const lbfgsfloatval_t tmax,
+    float64_t *x,
+    float64_t *fx,
+    float64_t *dx,
+    float64_t *y,
+    float64_t *fy,
+    float64_t *dy,
+    float64_t *t,
+    float64_t *ft,
+    float64_t *dt,
+    const float64_t tmin,
+    const float64_t tmax,
     int *brackt
     )
 {
     int bound;
     int dsign = fsigndiff(dt, dx);
-    lbfgsfloatval_t mc; /* minimizer of an interpolated cubic. */
-    lbfgsfloatval_t mq; /* minimizer of an interpolated quadratic. */
-    lbfgsfloatval_t newt;   /* new trial value. */
+    float64_t mc; /* minimizer of an interpolated cubic. */
+    float64_t mq; /* minimizer of an interpolated quadratic. */
+    float64_t newt;   /* new trial value. */
     USES_MINIMIZER;     /* for CUBIC_MINIMIZER and QUARD_MINIMIZER. */
 
     /* Check the input parameters for errors. */
     if (*brackt) {
-        if (*t <= min2(*x, *y) || max2(*x, *y) <= *t) {
+        if (*t <= min(*x, *y) || max(*x, *y) <= *t) {
             /* The trival value t is out of the interval. */
             return LBFGSERR_OUTOFINTERVAL;
         }
@@ -1295,14 +1251,14 @@ static int update_trial_interval(
 
 
 
-static lbfgsfloatval_t owlqn_x1norm(
-    const lbfgsfloatval_t* x,
+static float64_t owlqn_x1norm(
+    const float64_t* x,
     const int start,
     const int n
     )
 {
     int i;
-    lbfgsfloatval_t norm = 0.;
+    float64_t norm = 0.;
 
     for (i = start;i < n;++i) {
         norm += fabs(x[i]);
@@ -1312,11 +1268,11 @@ static lbfgsfloatval_t owlqn_x1norm(
 }
 
 static void owlqn_pseudo_gradient(
-    lbfgsfloatval_t* pg,
-    const lbfgsfloatval_t* x,
-    const lbfgsfloatval_t* g,
+    float64_t* pg,
+    const float64_t* x,
+    const float64_t* g,
     const int n,
-    const lbfgsfloatval_t c,
+    const float64_t c,
     const int start,
     const int end
     )
@@ -1355,8 +1311,8 @@ static void owlqn_pseudo_gradient(
 }
 
 static void owlqn_project(
-    lbfgsfloatval_t* d,
-    const lbfgsfloatval_t* sign,
+    float64_t* d,
+    const float64_t* sign,
     const int start,
     const int end
     )

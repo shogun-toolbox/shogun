@@ -24,40 +24,11 @@
  * THE SOFTWARE.
  */
 
-/* $Id$ */
-
 #ifndef __LBFGS_H__
 #define __LBFGS_H__
 
-#ifdef  __cplusplus
-extern "C" {
-#endif/*__cplusplus*/
-
-/*
- * The default precision of floating point values is 64bit (double).
- */
-#ifndef LBFGS_FLOAT
-#define LBFGS_FLOAT     64
-#endif/*LBFGS_FLOAT*/
-
-/*
- * Activate optimization routines for IEEE754 floating point values.
- */
-#ifndef LBFGS_IEEE_FLOAT
-#define LBFGS_IEEE_FLOAT    1
-#endif/*LBFGS_IEEE_FLOAT*/
-
-#if     LBFGS_FLOAT == 32
-typedef float lbfgsfloatval_t;
-
-#elif   LBFGS_FLOAT == 64
-typedef double lbfgsfloatval_t;
-
-#else
-#error "libLBFGS supports single (float; LBFGS_FLOAT = 32) or double (double; LBFGS_FLOAT=64) precision only."
-
-#endif
-
+namespace shogun
+{
 
 /** 
  * \addtogroup liblbfgs_api libLBFGS API
@@ -214,7 +185,7 @@ typedef struct {
      *  where ||.|| denotes the Euclidean (L2) norm. The default value is
      *  \c 1e-5.
      */
-    lbfgsfloatval_t epsilon;
+    float64_t epsilon;
 
     /**
      * Distance for delta-based convergence test.
@@ -235,7 +206,7 @@ typedef struct {
      *  the objective value of the current iteration.
      *  The default value is \c 0.
      */
-    lbfgsfloatval_t delta;
+    float64_t delta;
 
     /**
      * The maximum number of iterations.
@@ -268,7 +239,7 @@ typedef struct {
      *  problem is extremely badly scaled (in which case the exponents should
      *  be increased).
      */
-    lbfgsfloatval_t min_step;
+    float64_t min_step;
 
     /**
      * The maximum step of the line search.
@@ -277,14 +248,14 @@ typedef struct {
      *  problem is extremely badly scaled (in which case the exponents should
      *  be increased).
      */
-    lbfgsfloatval_t max_step;
+    float64_t max_step;
 
     /**
      * A parameter to control the accuracy of the line search routine.
      *  The default value is \c 1e-4. This parameter should be greater
      *  than zero and smaller than \c 0.5.
      */
-    lbfgsfloatval_t ftol;
+    float64_t ftol;
 
     /**
      * A coefficient for the Wolfe condition.
@@ -295,7 +266,7 @@ typedef struct {
      *  The default value is \c 0.9. This parameter should be greater
      *  the \ref ftol parameter and smaller than \c 1.0.
      */
-    lbfgsfloatval_t wolfe;
+    float64_t wolfe;
 
     /**
      * A parameter to control the accuracy of the line search routine.
@@ -307,7 +278,7 @@ typedef struct {
      *  greater than the \ref ftol parameter (\c 1e-4) and smaller than
      *  \c 1.0.
      */
-    lbfgsfloatval_t gtol;
+    float64_t gtol;
 
     /**
      * The machine precision for floating-point values.
@@ -316,7 +287,7 @@ typedef struct {
      *  with the status code (::LBFGSERR_ROUNDING_ERROR) if the relative width
      *  of the interval of uncertainty is less than this parameter.
      */
-    lbfgsfloatval_t xtol;
+    float64_t xtol;
 
     /**
      * Coeefficient for the L1 norm of variables.
@@ -331,7 +302,7 @@ typedef struct {
      *  the function value F(x) and gradients G(x) as usual. The default value
      *  is zero.
      */
-    lbfgsfloatval_t orthantwise_c;
+    float64_t orthantwise_c;
 
     /**
      * Start index for computing L1 norm of the variables.
@@ -372,15 +343,15 @@ typedef struct {
  *                      the gradient values for the current variables.
  *  @param  n           The number of variables.
  *  @param  step        The current step of the line search routine.
- *  @retval lbfgsfloatval_t The value of the objective function for the current
+ *  @retval float64_t The value of the objective function for the current
  *                          variables.
  */
-typedef lbfgsfloatval_t (*lbfgs_evaluate_t)(
+typedef float64_t (*lbfgs_evaluate_t)(
     void *instance,
-    const lbfgsfloatval_t *x,
-    lbfgsfloatval_t *g,
+    const float64_t *x,
+    float64_t *g,
     const int n,
-    const lbfgsfloatval_t step
+    const float64_t step
     );
 
 /**
@@ -405,12 +376,12 @@ typedef lbfgsfloatval_t (*lbfgs_evaluate_t)(
  */
 typedef int (*lbfgs_progress_t)(
     void *instance,
-    const lbfgsfloatval_t *x,
-    const lbfgsfloatval_t *g,
-    const lbfgsfloatval_t fx,
-    const lbfgsfloatval_t xnorm,
-    const lbfgsfloatval_t gnorm,
-    const lbfgsfloatval_t step,
+    const float64_t *x,
+    const float64_t *g,
+    const float64_t fx,
+    const float64_t xnorm,
+    const float64_t gnorm,
+    const float64_t step,
     int n,
     int k,
     int ls
@@ -476,8 +447,8 @@ In this formula, ||.|| denotes the Euclidean norm.
  */
 int lbfgs(
     int n,
-    lbfgsfloatval_t *x,
-    lbfgsfloatval_t *ptr_fx,
+    float64_t *x,
+    float64_t *ptr_fx,
     lbfgs_evaluate_t proc_evaluate,
     lbfgs_progress_t proc_progress,
     void *instance,
@@ -505,7 +476,7 @@ void lbfgs_parameter_init(lbfgs_parameter_t *param);
  *  
  *  @param  n           The number of variables.
  */
-lbfgsfloatval_t* lbfgs_malloc(int n);
+float64_t* lbfgs_malloc(int n);
 
 /**
  * Free an array of variables.
@@ -513,14 +484,9 @@ lbfgsfloatval_t* lbfgs_malloc(int n);
  *  @param  x           The array of variables allocated by ::lbfgs_malloc
  *                      function.
  */
-void lbfgs_free(lbfgsfloatval_t *x);
+void lbfgs_free(float64_t *x);
 
 /** @} */
-
-#ifdef  __cplusplus
-}
-#endif/*__cplusplus*/
-
 
 
 /**
