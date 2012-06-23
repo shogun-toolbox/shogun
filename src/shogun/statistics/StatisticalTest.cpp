@@ -9,6 +9,7 @@
 
 #include <shogun/statistics/StatisticalTest.h>
 #include <shogun/statistics/TestStatistic.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
@@ -42,9 +43,27 @@ float64_t CStatisticalTest::perform_test()
 	return m_statistic->compute_p_value(statistic);
 }
 
+bool CStatisticalTest::perform_binary_test(float64_t alpha)
+{
+	if (!m_statistic)
+	{
+		SG_ERROR("CStatisticalTest::perform_test(): No object to compute test "
+				"statistic!\n");
+	}
+
+	/* compute p-value and test statistic */
+	float64_t statistic=m_statistic->compute_statistic();
+	float64_t p_value=m_statistic->compute_p_value(statistic);
+
+	/* null hypothesis is rejected if computed p-value is smaller than
+	 * alpha */
+	return p_value<alpha;
+}
+
 void CStatisticalTest::init()
 {
-	/* TODO register parameters*/
+	SG_ADD((CSGObject**)&m_statistic, "statistic", "Test statistic instance",
+			MS_NOT_AVAILABLE);
 
 	m_statistic=NULL;
 }

@@ -49,14 +49,21 @@ void test_quadratic_mmd_fixed()
 
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, n);
 
+	/* unbiased statistic */
+	mmd->set_statistic_type(UNBIASED);
 	float64_t difference=CMath::abs(mmd->compute_statistic()-0.051325806508381);
+	ASSERT(difference<=10E-16);
+
+	/* biased statistic */
+	mmd->set_statistic_type(BIASED);
+	difference=CMath::abs(mmd->compute_statistic()-1.017107688196714);
 	ASSERT(difference<=10E-16);
 
 	SG_UNREF(mmd);
 }
 
 /** tests the quadratic mmd statistic bootstrapping for a random data case and
- * ensures equality with matlab implementation */
+ * ensures equality with matlab implementation (unbiased statistic) */
 void test_quadratic_mmd_bootstrap()
 {
 	index_t dimension=3;
@@ -72,6 +79,7 @@ void test_quadratic_mmd_bootstrap()
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
+	mmd->set_statistic_type(UNBIASED);
 	mmd->set_bootstrap_iterations(num_iterations);
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 
@@ -113,6 +121,7 @@ void test_quadratic_mmd_spectrum()
 	mmd->set_num_samples_sepctrum(1000);
 	mmd->set_num_eigenvalues_spectrum(m);
 	mmd->set_p_value_method(MMD2_SPECTRUM);
+	mmd->set_statistic_type(BIASED);
 
 	/* compute p-value for a fixed statistic value */
 	float64_t p=mmd->compute_p_value(2);
@@ -146,6 +155,7 @@ void test_quadratic_mmd_gamma()
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
 
 	mmd->set_p_value_method(MMD2_GAMMA);
+	mmd->set_statistic_type(BIASED);
 
 	/* compute p-value for a fixed statistic value */
 	float64_t p=mmd->compute_p_value(2);
@@ -157,7 +167,7 @@ void test_quadratic_mmd_gamma()
 }
 
 /** tests the quadratic mmd statistic for a random data case (fixed distribution
- * and ensures equality with matlab implementation */
+ * and ensures equality with matlab implementation (unbiased case) */
 void test_quadratic_mmd_random()
 {
 	index_t dimension=3;
@@ -175,6 +185,7 @@ void test_quadratic_mmd_random()
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
+	mmd->set_statistic_type(UNBIASED);
 	for (index_t i=0; i<num_runs; ++i)
 	{
 		create_mean_data(data, difference);

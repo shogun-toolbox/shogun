@@ -15,6 +15,17 @@
 namespace shogun
 {
 
+/** @brief Test statistic base class. Provides an interface for statistical
+ * tests via two methods: compute_statistic() and compute_p_value(). The second
+ * computes a p-value for the statistic computed by the first method.
+ * The p-value represents the position of the statistic in the null-distribution,
+ * i.e. the distribution of the statistic population given the null-hypothesis
+ * is true. (1-position = p-value).
+ *
+ * Method perform_test performs the underlying test for a given niveau alpha.
+ *
+ * Abstract base class.
+ */
 class CTestStatistic : public CSGObject
 {
 	public:
