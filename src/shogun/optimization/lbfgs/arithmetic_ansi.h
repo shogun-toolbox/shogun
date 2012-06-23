@@ -28,11 +28,6 @@
 
 #define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
 
-inline static void vecfree(void *memblock)
-{
-    free(memblock);
-}
-
 inline static void vecset(float64_t *x, const float64_t c, const int n)
 {
     int i;

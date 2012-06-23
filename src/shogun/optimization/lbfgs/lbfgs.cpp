@@ -202,7 +202,7 @@ float64_t* lbfgs_malloc(int32_t n)
 
 void lbfgs_free(float64_t *x)
 {
-    vecfree(x);
+    SG_FREE(x);
 }
 
 void lbfgs_parameter_init(lbfgs_parameter_t *param)
@@ -575,22 +575,22 @@ lbfgs_exit:
         *ptr_fx = fx;
     }
 
-    vecfree(pf);
+    SG_FREE(pf);
 
     /* Free memory blocks used by this function. */
     if (lm != NULL) {
         for (i = 0;i < m;++i) {
-            vecfree(lm[i].s);
-            vecfree(lm[i].y);
+            SG_FREE(lm[i].s);
+            SG_FREE(lm[i].y);
         }
-        vecfree(lm);
+        SG_FREE(lm);
     }
-    vecfree(pg);
-    vecfree(w);
-    vecfree(d);
-    vecfree(gp);
-    vecfree(g);
-    vecfree(xp);
+    SG_FREE(pg);
+    SG_FREE(w);
+    SG_FREE(d);
+    SG_FREE(gp);
+    SG_FREE(g);
+    SG_FREE(xp);
 
     return ret;
 }
