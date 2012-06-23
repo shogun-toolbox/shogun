@@ -27,6 +27,8 @@
 #ifndef __LBFGS_H__
 #define __LBFGS_H__
 
+#include <shogun/lib/common.h>
+
 namespace shogun
 {
 
@@ -476,7 +478,7 @@ void lbfgs_parameter_init(lbfgs_parameter_t *param);
  *  
  *  @param  n           The number of variables.
  */
-float64_t* lbfgs_malloc(int n);
+float64_t* lbfgs_malloc(int32_t n);
 
 /**
  * Free an array of variables.
@@ -488,6 +490,7 @@ void lbfgs_free(float64_t *x);
 
 /** @} */
 
+} // namespace shogun
 
 /**
 @mainpage libLBFGS: a library of Limited-memory Broyden-Fletcher-Goldfarb-Shanno (L-BFGS)

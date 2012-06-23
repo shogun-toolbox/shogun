@@ -61,9 +61,6 @@ distributing the effieicnt and explanatory implementation in an open source
 licence.
 */
 
-#include <algorithm>
-
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -71,13 +68,15 @@ licence.
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/optimization/lbfgs/arithmetic_ansi.h>
 
-using namespace std;
-using namespace shogun;
+namespace shogun
+{
 
-#define max3(a, b, c)   max(max((a), (b)), (c));
+#define min2(a, b)      ((a) <= (b) ? (a) : (b))
+#define max2(a, b)      ((a) >= (b) ? (a) : (b))
+#define max3(a, b, c)   max2(max2((a), (b)), (c));
 
 struct tag_callback_data {
-    int n;
+    int32_t n;
     void *instance;
     lbfgs_evaluate_t proc_evaluate;
     lbfgs_progress_t proc_progress;
@@ -101,8 +100,8 @@ static const lbfgs_parameter_t _defparam = {
 
 /* Forward function declarations. */
 
-typedef int (*line_search_proc)(
-    int n,
+typedef int32_t (*line_search_proc)(
+    int32_t n,
     float64_t *x,
     float64_t *f,
     float64_t *g,
@@ -115,8 +114,8 @@ typedef int (*line_search_proc)(
     const lbfgs_parameter_t *param
     );
     
-static int line_search_backtracking(
-    int n,
+static int32_t line_search_backtracking(
+    int32_t n,
     float64_t *x,
     float64_t *f,
     float64_t *g,
@@ -129,8 +128,8 @@ static int line_search_backtracking(
     const lbfgs_parameter_t *param
     );
 
-static int line_search_backtracking_owlqn(
-    int n,
+static int32_t line_search_backtracking_owlqn(
+    int32_t n,
     float64_t *x,
     float64_t *f,
     float64_t *g,
@@ -143,8 +142,8 @@ static int line_search_backtracking_owlqn(
     const lbfgs_parameter_t *param
     );
 
-static int line_search_morethuente(
-    int n,
+static int32_t line_search_morethuente(
+    int32_t n,
     float64_t *x,
     float64_t *f,
     float64_t *g,
@@ -157,7 +156,7 @@ static int line_search_morethuente(
     const lbfgs_parameter_t *param
     );
 
-static int update_trial_interval(
+static int32_t update_trial_interval(
     float64_t *x,
     float64_t *fx,
     float64_t *dx,
@@ -169,34 +168,34 @@ static int update_trial_interval(
     float64_t *dt,
     const float64_t tmin,
     const float64_t tmax,
-    int *brackt
+    int32_t *brackt
     );
 
 static float64_t owlqn_x1norm(
     const float64_t* x,
-    const int start,
-    const int n
+    const int32_t start,
+    const int32_t n
     );
 
 static void owlqn_pseudo_gradient(
     float64_t* pg,
     const float64_t* x,
     const float64_t* g,
-    const int n,
+    const int32_t n,
     const float64_t c,
-    const int start,
-    const int end
+    const int32_t start,
+    const int32_t end
     );
 
 static void owlqn_project(
     float64_t* d,
     const float64_t* sign,
-    const int start,
-    const int end
+    const int32_t start,
+    const int32_t end
     );
 
 
-float64_t* lbfgs_malloc(int n)
+float64_t* lbfgs_malloc(int32_t n)
 {
     return (float64_t*)vecalloc(sizeof(float64_t) * n);
 }
@@ -211,8 +210,8 @@ void lbfgs_parameter_init(lbfgs_parameter_t *param)
     memcpy(param, &_defparam, sizeof(*param));
 }
 
-int lbfgs(
-    int n,
+int32_t lbfgs(
+    int32_t n,
     float64_t *x,
     float64_t *ptr_fx,
     lbfgs_evaluate_t proc_evaluate,
@@ -221,13 +220,13 @@ int lbfgs(
     lbfgs_parameter_t *_param
     )
 {
-    int ret;
-    int i, j, k, ls, end, bound;
+    int32_t ret;
+    int32_t i, j, k, ls, end, bound;
     float64_t step;
 
     /* Constant parameters and their default values. */
     lbfgs_parameter_t param = (_param != NULL) ? (*_param) : _defparam;
-    const int m = param.m;
+    const int32_t m = param.m;
 
     float64_t *xp = NULL;
     float64_t *g = NULL, *gp = NULL, *pg = NULL;
@@ -454,7 +453,7 @@ int lbfgs(
         /*
             Convergence test.
             The criterion is given by the following formula:
-                |g(x)| / \max(1, |x|) < \epsilon
+                |g(x)| / \max2(1, |x|) < \epsilon
          */
         if (xnorm < 1.0) xnorm = 1.0;
         if (gnorm / xnorm <= param.epsilon) {
@@ -598,8 +597,8 @@ lbfgs_exit:
 
 
 
-static int line_search_backtracking(
-    int n,
+static int32_t line_search_backtracking(
+    int32_t n,
     float64_t *x,
     float64_t *f,
     float64_t *g,
@@ -612,7 +611,7 @@ static int line_search_backtracking(
     const lbfgs_parameter_t *param
     )
 {
-    int count = 0;
+    int32_t count = 0;
     float64_t width, dg;
     float64_t finit, dginit = 0., dgtest;
     const float64_t dec = 0.5, inc = 2.1;
@@ -691,8 +690,8 @@ static int line_search_backtracking(
 
 
 
-static int line_search_backtracking_owlqn(
-    int n,
+static int32_t line_search_backtracking_owlqn(
+    int32_t n,
     float64_t *x,
     float64_t *f,
     float64_t *g,
@@ -705,7 +704,7 @@ static int line_search_backtracking_owlqn(
     const lbfgs_parameter_t *param
     )
 {
-    int i, count = 0;
+    int32_t i, count = 0;
     float64_t width = 0.5, norm = 0.;
     float64_t finit = *f, dgtest;
 
@@ -765,8 +764,8 @@ static int line_search_backtracking_owlqn(
 
 
 
-static int line_search_morethuente(
-    int n,
+static int32_t line_search_morethuente(
+    int32_t n,
     float64_t *x,
     float64_t *f,
     float64_t *g,
@@ -779,8 +778,8 @@ static int line_search_morethuente(
     const lbfgs_parameter_t *param
     )
 {
-    int count = 0;
-    int brackt, stage1, uinfo = 0;
+    int32_t count = 0;
+    int32_t brackt, stage1, uinfo = 0;
     float64_t dg;
     float64_t stx, fx, dgx;
     float64_t sty, fy, dgy;
@@ -829,8 +828,8 @@ static int line_search_morethuente(
             present interval of uncertainty.
          */
         if (brackt) {
-            stmin = min(stx, sty);
-            stmax = max(stx, sty);
+            stmin = min2(stx, sty);
+            stmax = max2(stx, sty);
         } else {
             stmin = stx;
             stmax = *stp + 4.0 * (*stp - stx);
@@ -892,7 +891,7 @@ static int line_search_morethuente(
             In the first stage we seek a step for which the modified
             function has a nonpositive value and nonnegative derivative.
          */
-        if (stage1 && *f <= ftest1 && min(param->ftol, param->gtol) * dginit <= dg) {
+        if (stage1 && *f <= ftest1 && min2(param->ftol, param->gtol) * dginit <= dg) {
             stage1 = 0;
         }
 
@@ -1011,7 +1010,7 @@ static int line_search_morethuente(
     s = max3(p, q, r); \
     /* gamma = s*sqrt((theta/s)**2 - (du/s) * (dv/s)) */ \
     a = theta / s; \
-    gamma = s * sqrt(max(0, a * a - ((du) / s) * ((dv) / s))); \
+    gamma = s * sqrt(max2(0, a * a - ((du) / s) * ((dv) / s))); \
     if ((u) < (v)) gamma = -gamma; \
     p = gamma - (dv) + theta; \
     q = gamma - (dv) + gamma + (du); \
@@ -1071,14 +1070,14 @@ static int line_search_morethuente(
  *  @param  tmax    The maximum value for the trial value, t.
  *  @param  brackt  The pointer to the predicate if the trial value is
  *                  bracketed.
- *  @retval int     Status value. Zero indicates a normal termination.
+ *  @retval int32_t     Status value. Zero indicates a normal termination.
  *  
  *  @see
  *      Jorge J. More and David J. Thuente. Line search algorithm with
  *      guaranteed sufficient decrease. ACM Transactions on Mathematical
  *      Software (TOMS), Vol 20, No 3, pp. 286-307, 1994.
  */
-static int update_trial_interval(
+static int32_t update_trial_interval(
     float64_t *x,
     float64_t *fx,
     float64_t *dx,
@@ -1090,11 +1089,11 @@ static int update_trial_interval(
     float64_t *dt,
     const float64_t tmin,
     const float64_t tmax,
-    int *brackt
+    int32_t *brackt
     )
 {
-    int bound;
-    int dsign = fsigndiff(dt, dx);
+    int32_t bound;
+    int32_t dsign = fsigndiff(dt, dx);
     float64_t mc; /* minimizer of an interpolated cubic. */
     float64_t mq; /* minimizer of an interpolated quadratic. */
     float64_t newt;   /* new trial value. */
@@ -1102,7 +1101,7 @@ static int update_trial_interval(
 
     /* Check the input parameters for errors. */
     if (*brackt) {
-        if (*t <= min(*x, *y) || max(*x, *y) <= *t) {
+        if (*t <= min2(*x, *y) || max2(*x, *y) <= *t) {
             /* The trival value t is out of the interval. */
             return LBFGSERR_OUTOFINTERVAL;
         }
@@ -1253,11 +1252,11 @@ static int update_trial_interval(
 
 static float64_t owlqn_x1norm(
     const float64_t* x,
-    const int start,
-    const int n
+    const int32_t start,
+    const int32_t n
     )
 {
-    int i;
+    int32_t i;
     float64_t norm = 0.;
 
     for (i = start;i < n;++i) {
@@ -1271,13 +1270,13 @@ static void owlqn_pseudo_gradient(
     float64_t* pg,
     const float64_t* x,
     const float64_t* g,
-    const int n,
+    const int32_t n,
     const float64_t c,
-    const int start,
-    const int end
+    const int32_t start,
+    const int32_t end
     )
 {
-    int i;
+    int32_t i;
 
     /* Compute the negative of gradients. */
     for (i = 0;i < start;++i) {
@@ -1313,15 +1312,17 @@ static void owlqn_pseudo_gradient(
 static void owlqn_project(
     float64_t* d,
     const float64_t* sign,
-    const int start,
-    const int end
+    const int32_t start,
+    const int32_t end
     )
 {
-    int i;
+    int32_t i;
 
     for (i = start;i < end;++i) {
         if (d[i] * sign[i] <= 0) {
             d[i] = 0;
         }
     }
+}
+
 }

@@ -39,6 +39,8 @@ void ShareBoostOptimizer::optimize()
 		machine->set_w(w);
 		SG_UNREF(machine);
 	}
+
+	// TODO: free memory of W
 }
 
 float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W, 

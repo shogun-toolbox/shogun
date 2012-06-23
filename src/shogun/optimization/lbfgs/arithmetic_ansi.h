@@ -24,7 +24,7 @@
  */
 
 #include <cstdlib>
-#include <cmemory>
+#include <cstring>
 
 #define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
 
@@ -125,3 +125,4 @@ inline static void vec2norminv(float64_t* s, const float64_t *x, const int n)
     vec2norm(s, x, n);
     *s = (float64_t)(1.0 / *s);
 }
+
