@@ -451,7 +451,10 @@ template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseM
 
 	SGSparseVector<ST>* sparse_matrix = SG_MALLOC(SGSparseVector<ST>, sm.num_vectors);
 	for (int32_t i=0; i<sm.num_vectors; i++)
+	{
+		new (&sparse_matrix[i]) SGSparseVector<ST>();
 		sparse_matrix[i] = sm[i];
+	}
 
 	sparse_feature_matrix=sparse_matrix;
 	num_features=sm.num_features;
