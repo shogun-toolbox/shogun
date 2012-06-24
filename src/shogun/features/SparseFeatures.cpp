@@ -97,8 +97,10 @@ template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 }
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
 {
-	clean_tsparse(sparse_feature_matrix, num_vectors);
-	sparse_feature_matrix = NULL;
+	for (int32_t i=0; i<num_vectors; i++)
+		(&sparse_feature_matrix[i])->~SGSparseVector();
+
+	SG_FREE(sparse_feature_matrix);
 	num_vectors=0;
 	num_features=0;
 	remove_all_subsets();
@@ -385,17 +387,6 @@ template<class ST> SGSparseMatrix<ST> CSparseFeatures<ST>::get_sparse_feature_ma
 	return sm;
 }
 
-template<class ST> void CSparseFeatures<ST>::clean_tsparse(SGSparseVector<ST>* sfm, int32_t num_vec)
-{
-	if (sfm)
-	{
-		for (int32_t i=0; i<num_vec; i++)
-			SG_FREE(sfm[i].features);
-
-		SG_FREE(sfm);
-	}
-}
-
 template<class ST> CSparseFeatures<ST>* CSparseFeatures<ST>::get_transposed()
 {
 	int32_t num_feat;
@@ -530,33 +521,20 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 			{
 				for (int32_t i=0; i< num_vec; i++)
 				{
-					sparse_feature_matrix[i].num_feat_entries=0;
-					sparse_feature_matrix[i].features= NULL;
+					new(&sparse_feature_matrix[i]) SGSparseVector<ST>();
+					sparse_feature_matrix[i] = SGSparseVector<ST>(num_feat_entries[i]);
+					int32_t sparse_feat_idx=0;
 
-					if (num_feat_entries[i]>0)
+					for (int32_t j=0; j< num_feat; j++)
 					{
-						sparse_feature_matrix[i].features= SG_MALLOC(SGSparseVectorEntry<ST>, num_feat_entries[i]);
+						int64_t pos= i*num_feat + j;
 
-						if (!sparse_feature_matrix[i].features)
+						if (src[pos] != 0)
 						{
-							SG_INFO( "allocation of features failed\n");
-							return false;
-						}
-
-						sparse_feature_matrix[i].num_feat_entries=num_feat_entries[i];
-						int32_t sparse_feat_idx=0;
-
-						for (int32_t j=0; j< num_feat; j++)
-						{
-							int64_t pos= i*num_feat + j;
-
-							if (src[pos] != 0)
-							{
-								sparse_feature_matrix[i].features[sparse_feat_idx].entry=src[pos];
-								sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
-								sparse_feat_idx++;
-								num_total_entries++;
-							}
+							sparse_feature_matrix[i].features[sparse_feat_idx].entry=src[pos];
+							sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
+							sparse_feat_idx++;
+							num_total_entries++;
 						}
 					}
 				}

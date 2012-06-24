@@ -232,13 +232,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
         SGSparseMatrix<ST> get_sparse_feature_matrix();
 
-		/** clean SGSparseVector
-		 *
-		 * @param sfm sparse feature matrix
-		 * @param num_vec number of vectors in matrix
-		 */
-		static void clean_tsparse(SGSparseVector<ST>* sfm, int32_t num_vec);
-
 		/** get a transposed copy of the features
 		 *
 		 * possible with subset
