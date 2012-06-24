@@ -15,6 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGReferencedData.h>
 #include <map>
 
 namespace shogun
@@ -31,53 +32,62 @@ template <class T> struct SGSparseVectorEntry
 };
 
 /** @brief template class SGSparseVector */
-template <class T> class SGSparseVector
+template <class T> class SGSparseVector : public SGReferencedData
 {
 public:
 	/** default constructor */
-	SGSparseVector() :
-		num_feat_entries(0), features(NULL), do_free(false) {}
+	SGSparseVector() : SGReferencedData(false)
+	{
+		init_data();
+	}
 
 	/** constructor for setting params */
 	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
-			index_t index, bool free_v=false) :
-			num_feat_entries(num_entries), features(feats),
-			do_free(free_v)
+			bool ref_counting=true) :
+			SGReferencedData(ref_counting),
+			num_feat_entries(num_entries), features(feats)
 	{
 	}
 
 	/** constructor to create new vector in memory */
-	SGSparseVector(index_t num_entries, index_t index, bool free_v=false) :
-		num_feat_entries(num_entries), do_free(free_v)
+	SGSparseVector(index_t num_entries, bool ref_counting=true) :
+		SGReferencedData(ref_counting),
+		num_feat_entries(num_entries)
 	{
-		features=SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
+		features = SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
 	}
 
 	/** copy constructor */
 	SGSparseVector(const SGSparseVector& orig) :
-			num_feat_entries(orig.num_feat_entries),
-			features(orig.features), do_free(orig.do_free)
+		SGReferencedData(orig)
 	{
+		copy_data(orig);
 	}
 
-	/** free vector */
-	void free_vector()
+	virtual ~SGSparseVector()
 	{
-		if (do_free)
-			SG_FREE(features);
-
-		features=NULL;
-		do_free=false;
-		num_feat_entries=0;
+		unref();
 	}
 
-	/** destroy vector */
-	void destroy_vector()
+protected:
+
+	virtual void copy_data(const SGReferencedData& orig)
 	{
-		do_free=true;
-		free_vector();
+		num_feat_entries = ((SGSparseVector*)(&orig))->num_feat_entries;
+		features = ((SGSparseVector*)(&orig))->features;
 	}
 
+	virtual void init_data()
+	{
+		num_feat_entries = 0;
+		features = NULL;
+	}
+
+	virtual void free_data()
+	{
+		num_feat_entries = 0;
+		SG_FREE(features);
+	}
 
 public:
 	/** number of feature entries */
@@ -85,10 +95,6 @@ public:
 
 	/** features */
 	SGSparseVectorEntry<T>* features;
-
-	/** whether vector needs to be freed */
-	bool do_free;
-
 
 };
 

@@ -67,7 +67,7 @@ int32_t CSparsePolyFeatures::get_nnz_features_for_vector(int32_t num)
 	int32_t vlen;
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(num);
 	vlen=vec.num_feat_entries;
-	m_feat->free_feature_vector(vec, num);
+	m_feat->free_feature_vector(num);
 	return vlen*(vlen+1)/2;
 }
 
@@ -128,8 +128,8 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 			vec1.num_feat_entries, vec2.features, vec2.num_feat_entries);
 	result=CMath::pow(result, m_degree);
 
-	m_feat->free_feature_vector(vec1, vec_idx1);
-	pf->m_feat->free_feature_vector(vec2, vec_idx2);
+	m_feat->free_feature_vector(vec_idx1);
+	pf->m_feat->free_feature_vector(vec_idx2);
 
 	return result;
 }
@@ -179,7 +179,7 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 	if (m_normalize)
 		result/=m_normalization_values[vec_idx1];
 
-	m_feat->free_feature_vector(vec, vec_idx1);
+	m_feat->free_feature_vector(vec_idx1);
 	return result;
 }
 
@@ -228,7 +228,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 	else if (m_degree==3)
 		SG_NOTIMPLEMENTED;
 
-	m_feat->free_feature_vector(vec, vec_idx1);
+	m_feat->free_feature_vector(vec_idx1);
 }
 
 void CSparsePolyFeatures::store_normalization_values()
