@@ -158,6 +158,8 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::get_marginal_likelihood_d
 
 	gradient[0] = sum;
 
+
+
 	better_gradient.add(SGString<char>("width", strlen("width"), true), sum);
 
 	sum = m_sigma*m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
@@ -257,13 +259,22 @@ void CExactInferenceMethod::update_alpha_and_chol()
 
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> label_vector=((CRegressionLabels*) m_labels)->get_labels().clone();
+
+//	label_vector.display_vector(label_vector.vector, label_vector.vlen, "blah1");
+
 
 	SGMatrix<float64_t> feature_matrix = features->get_computed_dot_feature_matrix();
 
+
 	SGVector<float64_t> data_means = mean->get_mean_vector(feature_matrix);
 
-	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
+
+	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] = label_vector[i] - data_means[i];
+//	label_vector.display_vector(label_vector.vector, label_vector.vlen, "blah3");
+
+
+//	data_means.display_vector(data_means.vector, data_means.vlen, "blah2");
 
 	kernel->cleanup();
 

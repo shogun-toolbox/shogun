@@ -10,6 +10,7 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/Map.h>
+#include <nlopt.h>
 
 struct nlopt_package
 {
@@ -35,6 +36,7 @@ double nlopt_function(unsigned n, const double *x, double *grad, void *my_func_d
 	{
 		shogun::CMapNode<shogun::SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
 		char* name = node->key.string;
+		printf("%s, %f, %f\n", node->key.string, node->data, x[i]);
 		current_combination->set_parameter(name, x[i]);
 	}
 
@@ -49,13 +51,14 @@ double nlopt_function(unsigned n, const double *x, double *grad, void *my_func_d
 	for(int i = 0; i < n; i++)
 	{
 		shogun::CMapNode<shogun::SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
+		//printf("%s, %f\n", node->key.string, node->data);
 		grad[i] = node->data;
 	}
 
 	best_combination=current_combination;
 
-	SG_UNREF(result);
-	SG_UNREF(current_combination);
+//	SG_UNREF(result);
+//	SG_UNREF(current_combination);
 
 	return result->quantity[0];
 }
@@ -74,12 +77,12 @@ CGradientModelSelection::CGradientModelSelection(CModelSelectionParameters* mode
 
 double CGradientModelSelection::nlopt_const(unsigned n, const double *x, double *grad, void *data)
 {
-	/*for(int i = 0; i < n; i++)
+/*	for(int i = 0; i < n; i++)
 	{
 		grad[i] = 0;
 	}
 
-	return nlopt_func(n, x, grad, NULL);*/
+	return nlopt_func(n, x, grad, data);*/
 }
 
 CGradientModelSelection::CGradientModelSelection() : CModelSelection(NULL,
@@ -94,14 +97,12 @@ CGradientModelSelection::~CGradientModelSelection() {
 
 CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 {
-	int num_iterations = 1000;
 
 	//Get Random Combination here
 
 
 
-	CDynamicObjectArray* combinations=
-			(CDynamicObjectArray*)m_model_parameters->get_combinations();
+	current_combination = m_model_parameters->get_random_combination();
 
 /*	for (index_t i=0; i<combinations->get_num_elements(); ++i)
 	{
@@ -115,7 +116,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 //			combinations->
 
 
-
+/*
 	Parameter* p=new Parameter();
 
 	Parameter* q=new Parameter();
@@ -151,7 +152,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	CParameterCombination* fool3 = new CParameterCombination(z);
 	CParameterCombination* fool4 = new CParameterCombination(d);
 	CParameterCombination* fool5 = new CParameterCombination(e);
-
+for(int i = 0; i < n; i++) lb[i] = 0.01;
 	fool4->append_child(fool5);
 	fool4->print_tree();
 	fool->append_child(fool3);
@@ -195,7 +196,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		double* lb = new double[n];
 		double* x = new double[n];
 
-		for(int i = 0; i < n; i++) lb[i] = 0;
+		for(int i = 0; i < n; i++) lb[i] = 1e-7;
 
 		SG_SPRINT("%i\n", n);
 
@@ -206,7 +207,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 			SG_SPRINT("%i\n", node->key.slen);
 			SG_SPRINT("%f\n", node->data);
 			x[i] = *((float64_t*)(current_combination->get_parameter(node->key.string)->m_parameter));
-			current_combination->set_parameter(node->key.string, (float64_t) node->data + 0.5);
+			printf("%f\n", x[i]);
+			//current_combination->set_parameter(node->key.string, (float64_t) node->data);
 		}
 
 		if (print_state)
@@ -215,18 +217,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		if (best_combination)
 			SG_UNREF(best_combination);
 
-		best_combination=current_combination;
-
-		current_combination->apply_to_modsel_parameter(
-				machine->m_model_selection_parameters);
-
-		//best_result = (*result);
-
-
-
-
-/*
-		for(int i = 0; i < n; i++)
+/*		for(int i = 0; i < n; i++)
 		{
 			CMapNode<SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
 			//char* name = node->key.;
@@ -236,22 +227,32 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 			//x[i] = *((float64_t*)(current_combination->get_parameter(name)->m_parameter));
 		}*/
-/*
+
 		nlopt_opt opt;
 
-		opt = nlopt_create(NLOPT_LD_MMA, n); /* algorithm and dimensionality 
-		nlopt_set_lower_bounds(opt, lb);
-		nlopt_set_min_objective(opt, nlopt_function, NULL);
+		nlopt_package foo;
 
-		double minf; the minimum objective value, upon return 
+		foo.best_combination = best_combination;
+		foo.current_combination = current_combination;
+		foo.m_machine_eval = m_machine_eval;
+
+		nlopt_set_xtol_rel(opt, 1e-4);
+
+		opt = nlopt_create(NLOPT_LD_MMA, n); // algorithm and dimensionality
+		nlopt_set_maxeval(opt, 1000);
+		nlopt_set_lower_bounds(opt, lb);
+		nlopt_set_min_objective(opt, nlopt_function, &foo);
+
+		double minf; //the minimum objective value, upon return
 
 		if (nlopt_optimize(opt, x, &minf) < 0) {
 		    printf("nlopt failed!\n");
 		}
 		else {
 		    printf("found minimum at f(%g,%g) = %0.10g\n", x[0], x[1], minf);
-		}*/
+		}
 
+		best_combination = foo.best_combination;
 
 //		SG_UNREF(result);
 //		SG_UNREF(current_combination);
@@ -261,7 +262,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 //	SG_UNREF(combinations);
 
 
-	return best_combination;
+	return current_combination;
 }
 
 }

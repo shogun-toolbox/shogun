@@ -110,7 +110,7 @@ public:
 	 */
 	CDynamicObjectArray* get_combinations();
 
-	CDynamicObjectArray* get_random_combination();
+	CParameterCombination* get_random_combination();
 
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,

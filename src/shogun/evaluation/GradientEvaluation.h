@@ -10,12 +10,28 @@
 
 #include "MachineEvaluation.h"
 #include <shogun/evaluation/DifferentiableFunction.h>
+#include <shogun/evaluation/GradientResult.h>
+
 
 namespace shogun {
 
 class CGradientEvaluation: public shogun::CMachineEvaluation {
 public:
 	CGradientEvaluation();
+
+	/** constructor
+	 * @param machine learning machine to use
+	 * @param features features to use for cross-validation
+	 * @param labels labels that correspond to the features
+	 * @param splitting_strategy splitting strategy to use
+	 * @param evaluation_criterion evaluation criterion to use
+	 * @param autolock whether machine should be auto-locked before evaluation
+	 */
+	CGradientEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
+			CSplittingStrategy* splitting_strategy,
+			CEvaluation* evaluation_criterion, bool autolock=true);
+
+
 	virtual ~CGradientEvaluation();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
@@ -30,7 +46,6 @@ public:
 
 	virtual CEvaluationResult* evaluate();
 
-private:
 	CDifferentiableFunction* diff;
 };
 
