@@ -61,11 +61,11 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				combinations->get_element(i);
 
 		/* eventually print */
-//		if (print_state)
-//		{
+		if (print_state)
+		{
 			SG_PRINT("trying combination:\n");
 			current_combination->print_tree();
-//		}
+		}
 
 		current_combination->apply_to_modsel_parameter(
 				machine->m_model_selection_parameters);

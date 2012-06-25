@@ -110,6 +110,12 @@ public:
 	 */
 	CDynamicObjectArray* get_combinations();
 
+	/** Instead of generating an array of combinations, get_random_combination
+	 * generates a single random combination of parameters. The choice of
+	 * values is constrained by the value arrays built by build_values.
+	 *
+	 * @return parameter tree of random parameter values.
+	 */
 	CParameterCombination* get_random_combination();
 
 	/** float64_t wrapper for build_values() */

@@ -24,7 +24,6 @@ namespace shogun
  * m_conf_int_alpha is the probability for an error, i.e. the value does not lie
  * in the confidence interval.
  */
-
 class CrossValidationResult : public CEvaluationResult
 {
 	public:

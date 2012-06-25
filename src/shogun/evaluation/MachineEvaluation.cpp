@@ -1,8 +1,10 @@
 /*
- * MachineEvaluation.cpp
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 15, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
 
 #include "MachineEvaluation.h"
@@ -14,7 +16,7 @@
 #include <shogun/base/ParameterMap.h>
 #include <shogun/mathematics/Statistics.h>
 
-namespace shogun {
+using namespace shogun;
 
 CMachineEvaluation::CMachineEvaluation()
 {
@@ -115,6 +117,3 @@ EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
 {
 	return m_evaluation_criterion->get_evaluation_direction();
 }
-
-
-} /* namespace shogun */

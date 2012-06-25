@@ -1,8 +1,10 @@
 /*
- * GradientModelSelection.cpp
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 15, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
 
 #include <shogun/modelselection/GradientModelSelection.h>
@@ -10,259 +12,169 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/Map.h>
+
+using namespace shogun;
+
+#ifdef HAVE_NLOPT
+
 #include <nlopt.h>
 
-struct nlopt_package
-{
-	shogun::CMachineEvaluation* m_machine_eval;
-	shogun::CParameterCombination* current_combination;
-	shogun::CParameterCombination* best_combination;
-};
-
-double nlopt_function(unsigned n, const double *x, double *grad, void *my_func_data)
+double CGradientModelSelection::nlopt_function(unsigned n,
+		const double *x, double *grad, void *my_func_data)
 {
 	nlopt_package* pack = (nlopt_package*)my_func_data;
 
 	shogun::CMachineEvaluation* m_machine_eval = pack->m_machine_eval;
-	shogun::CParameterCombination* current_combination = pack->current_combination;
-	shogun::CParameterCombination* best_combination = pack->best_combination;
 
-	/* note that this may implicitly lock and unlockthe machine */
-	shogun::CGradientResult* result = (shogun::CGradientResult*)(m_machine_eval->evaluate());
+	shogun::CParameterCombination* current_combination =
+			pack->current_combination;
+
+	bool print_state = pack->print_state;
+
+	/* Get result vector first to get names of parameters*/
+	shogun::CGradientResult* result =
+			(shogun::CGradientResult*)(m_machine_eval->evaluate());
 
 	shogun::CMachine* machine=m_machine_eval->get_machine();
 
-	for(int i = 0; i < n; i++)
+	if(print_state)
+		result->print_result();
+
+	/*Set parameter values from x vector*/
+	for(unsigned int i = 0; i < n; i++)
 	{
-		shogun::CMapNode<shogun::SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
+		shogun::CMapNode<shogun::SGString<char>, float64_t>* node =
+				result->gradient.get_node_ptr(i);
+
 		char* name = node->key.string;
-		printf("%s, %f, %f\n", node->key.string, node->data, x[i]);
+
 		current_combination->set_parameter(name, x[i]);
 	}
 
+	/*Apply them to the machine*/
 	current_combination->apply_to_modsel_parameter(
-					machine->m_model_selection_parameters);
+			machine->m_model_selection_parameters);
 
-			/* note that this may implicitly lock and unlockthe machine */
+	/*Get rid of this first result*/
 	SG_UNREF(result);
 
+	/*Get a result based on updated parameter values*/
 	result = (shogun::CGradientResult*)(m_machine_eval->evaluate());
 
-	for(int i = 0; i < n; i++)
+	/*Store the gradient into the grad vector*/
+	for(unsigned int i = 0; i < n; i++)
 	{
-		shogun::CMapNode<shogun::SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
-		//printf("%s, %f\n", node->key.string, node->data);
+		shogun::CMapNode<shogun::SGString<char>, float64_t>* node =
+				result->gradient.get_node_ptr(i);
 		grad[i] = node->data;
 	}
 
-	best_combination=current_combination;
+	/*Get function value*/
+	float64_t function_value = result->quantity[0];
 
-//	SG_UNREF(result);
-//	SG_UNREF(current_combination);
+	SG_UNREF(result);
 
-	return result->quantity[0];
+	return function_value;
 }
 
+#endif
 
-
-
-namespace shogun {
-
-CGradientModelSelection::CGradientModelSelection(CModelSelectionParameters* model_parameters,
+CGradientModelSelection::CGradientModelSelection(
+		CModelSelectionParameters* model_parameters,
 		CMachineEvaluation* machine_eval) : CModelSelection(model_parameters,
 				machine_eval) {
-	// TODO Auto-generated constructor stub
-
-}
-
-double CGradientModelSelection::nlopt_const(unsigned n, const double *x, double *grad, void *data)
-{
-/*	for(int i = 0; i < n; i++)
-	{
-		grad[i] = 0;
-	}
-
-	return nlopt_func(n, x, grad, data);*/
+	m_max_evaluations = 1000;
+	m_grad_tolerance = 1e-4;
+	current_combination = NULL;
 }
 
 CGradientModelSelection::CGradientModelSelection() : CModelSelection(NULL,
-				NULL) {
-	// TODO Auto-generated constructor stub
-
+		NULL) {
 }
 
 CGradientModelSelection::~CGradientModelSelection() {
-	// TODO Auto-generated destructor stub
 }
 
 CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 {
 
-	//Get Random Combination here
+#ifdef HAVE_NLOPT
 
-
-
+	//Get a random initial combination
 	current_combination = m_model_parameters->get_random_combination();
-
-/*	for (index_t i=0; i<combinations->get_num_elements(); ++i)
-	{
-		CParameterCombination* current_combination=(CParameterCombination*)
-				combinations->get_element(i);
-		SG_PRINT("trying combination:\n");
-		current_combination->print_tree();
-
-	}*/
-//	current_combination=(CParameterCombination*)
-//			combinations->
-
-
-/*
-	Parameter* p=new Parameter();
-
-	Parameter* q=new Parameter();
-
-	Parameter* z=new Parameter();
-
-	Parameter* d=new Parameter();
-
-	Parameter* e=new Parameter();
-
-
-	CModelSelectionParameters* pp = (CModelSelectionParameters*)m_model_parameters->m_child_nodes->get_element(0);
-	q->add(&pp->m_sgobject, "Inference Method");
-    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(0);
-
-	p->add(&pp->m_sgobject, "Likelihood Model");
-
-    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(0);
-
-	z->add(&((float64_t*)pp->m_values)[0], "sigma");
-
-    pp = (CModelSelectionParameters*)m_model_parameters->m_child_nodes->get_element(0);
-    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(1);
-
-	d->add(&pp->m_sgobject, "Kernel");
-
-    pp = (CModelSelectionParameters*)pp->m_child_nodes->get_element(0);
-
-    e->add(&((float64_t*)pp->m_values)[0], "width");
-
-	CParameterCombination* fool = new CParameterCombination(p);
-	CParameterCombination* fool2 = new CParameterCombination(q);
-	CParameterCombination* fool3 = new CParameterCombination(z);
-	CParameterCombination* fool4 = new CParameterCombination(d);
-	CParameterCombination* fool5 = new CParameterCombination(e);
-for(int i = 0; i < n; i++) lb[i] = 0.01;
-	fool4->append_child(fool5);
-	fool4->print_tree();
-	fool->append_child(fool3);
-	fool2->append_child(fool);
-	fool2->append_child(fool4);
-
-	current_combination=new CParameterCombination();
-	current_combination->append_child(fool2);
-
-	best_combination=NULL;
-	/*if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
-		b=CMath::ALMOST_NEG_INFTY;
-	else
-		best_result.mean=CMath::ALMOST_INFTY;*/
 
 	CMachine* machine=m_machine_eval->get_machine();
 
+	if(print_state)
+	{
+		SG_PRINT("trying combination:\n");
+		current_combination->print_tree();
+	}
 
-	/* underlying learning machine */
+	current_combination->apply_to_modsel_parameter(
+			machine->m_model_selection_parameters);
 
-	/* apply all combinations and search for best one */
-//	for (index_t i=0; i<num_iterations; ++i)
-//	{
+	/*How many of these parameters have derivatives?*/
+	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
 
-		/* eventually print */
-	//	if (print_state)
-	//	{
-			SG_PRINT("trying combination:\n");
-			current_combination->print_tree();
-	//	}
+	int n = result->gradient.get_num_elements();
 
-		current_combination->apply_to_modsel_parameter(
-				machine->m_model_selection_parameters);
+	double* lb = new double[n];
+	double* x = new double[n];
 
-		/* note that this may implicitly lock and unlockthe machine */
-		CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
+	//Set lower bounds for parameters
+	for(int i = 0; i < n; i++) lb[i] = 1e-10;
 
+	//Update x with initial values
+	for(int i = 0; i < n; i++)
+	{
+		CMapNode<SGString<char>, float64_t>* node =
+				result->gradient.get_node_ptr(i);
 
-		int n = result->gradient.get_num_elements();
+		TParameter* param =
+				current_combination->get_parameter(node->key.string);
 
-		double* lb = new double[n];
-		double* x = new double[n];
+		x[i] = *((float64_t*)(param->m_parameter));
+	}
 
-		for(int i = 0; i < n; i++) lb[i] = 1e-7;
+	//Setting up nlopt
+	nlopt_opt opt;
 
-		SG_SPRINT("%i\n", n);
+	nlopt_package pack;
 
-		for(int i = 0; i < n; i++)
-		{
-			CMapNode<SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
-			SG_SPRINT("%s\n", node->key.string);
-			SG_SPRINT("%i\n", node->key.slen);
-			SG_SPRINT("%f\n", node->data);
-			x[i] = *((float64_t*)(current_combination->get_parameter(node->key.string)->m_parameter));
-			printf("%f\n", x[i]);
-			//current_combination->set_parameter(node->key.string, (float64_t) node->data);
-		}
+	pack.current_combination = current_combination;
+	pack.m_machine_eval = m_machine_eval;
+	pack.print_state = print_state;
 
-		if (print_state)
-			result->print_result();
+	opt = nlopt_create(NLOPT_LD_MMA, n); // algorithm and dimensionality
+	nlopt_set_maxeval(opt, m_max_evaluations);
+	nlopt_set_xtol_rel(opt, m_grad_tolerance);
+	nlopt_set_lower_bounds(opt, lb);
+	nlopt_set_min_objective(opt, nlopt_function, &pack);
 
-		if (best_combination)
-			SG_UNREF(best_combination);
+	double minf; //the minimum objective value, upon return
 
-/*		for(int i = 0; i < n; i++)
-		{
-			CMapNode<SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
-			//char* name = node->key.;
-			//SG_SPRINT("%s\n", node->key.string);
-			SG_SPRINT("%i\n", node->key.slen);
-			SG_SPRINT("%f\n", node->data);
+	//Optimize our function!
+	if (nlopt_optimize(opt, x, &minf) < 0) {
+		SG_ERROR("nlopt failed!\n");
+	}
 
-			//x[i] = *((float64_t*)(current_combination->get_parameter(name)->m_parameter));
-		}*/
+	//Clean up.
+	delete[] lb;
+	delete[] x;
 
-		nlopt_opt opt;
-
-		nlopt_package foo;
-
-		foo.best_combination = best_combination;
-		foo.current_combination = current_combination;
-		foo.m_machine_eval = m_machine_eval;
-
-		nlopt_set_xtol_rel(opt, 1e-4);
-
-		opt = nlopt_create(NLOPT_LD_MMA, n); // algorithm and dimensionality
-		nlopt_set_maxeval(opt, 1000);
-		nlopt_set_lower_bounds(opt, lb);
-		nlopt_set_min_objective(opt, nlopt_function, &foo);
-
-		double minf; //the minimum objective value, upon return
-
-		if (nlopt_optimize(opt, x, &minf) < 0) {
-		    printf("nlopt failed!\n");
-		}
-		else {
-		    printf("found minimum at f(%g,%g) = %0.10g\n", x[0], x[1], minf);
-		}
-
-		best_combination = foo.best_combination;
-
-//		SG_UNREF(result);
-//		SG_UNREF(current_combination);
-//	}
-
-//	SG_UNREF(machine);
-//	SG_UNREF(combinations);
-
+	//Admittedly weird, but I am unreferencing
+	//current_combination from this stack and
+	//passing it on to another.
+	SG_REF(current_combination);
+	SG_UNREF(current_combination);
 
 	return current_combination;
-}
 
+#endif
+
+	//If we don't have NLOPT then return nothing.
+	SG_PRINT("Shogun not configured for NLOPT. Returning NULL combination\n");
+
+	return NULL;
 }

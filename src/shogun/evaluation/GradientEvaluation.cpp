@@ -1,21 +1,21 @@
 /*
- * GradientEvaluation.cpp
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 15, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
 
-#include "GradientEvaluation.h"
+#include <shogun/evaluation/GradientEvaluation.h>
 #include <shogun/evaluation/GradientResult.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/EvaluationResult.h>
 
 
-namespace shogun {
+using namespace shogun;
 
 CGradientEvaluation::CGradientEvaluation() {
-	// TODO Auto-generated constructor stub
-
 }
 
 CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
@@ -27,33 +27,19 @@ CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features,
 }
 
 CGradientEvaluation::~CGradientEvaluation() {
-	// TODO Auto-generated destructor stub
 }
 
 CEvaluationResult* CGradientEvaluation::evaluate()
 {
 	CGradientResult* result = new CGradientResult();
 
-	SGVector<float64_t> quan = diff->get_quantity();
-	result->gradient = diff->get_gradient();
+	SGVector<float64_t> quan = m_diff->get_quantity();
+
+	result->gradient = m_diff->get_gradient();
 
 	result->quantity = quan.clone();
-	//result->gradient = grad.c;
-
-	//CEvaluationResult* stupid = result;
-	//result = (CGradientResult*)stupid;
-/*	for(int i = 0; i < 2; i++)
-	{
-		CMapNode<SGString<char>, float64_t>* node = result->gradient.get_node_ptr(i);
-
-		//char* name = node->key.;
-		SG_SPRINT("%s\n", node->key.string);
-		SG_SPRINT("%i\n", node->key.slen);
-		SG_SPRINT("%f\n", node->data);
-	}*/
 
 	SG_REF(result);
 	return result;
 }
 
-} /* namespace shogun */

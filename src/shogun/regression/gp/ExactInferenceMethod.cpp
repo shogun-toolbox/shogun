@@ -86,9 +86,7 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::get_marginal_likelihood_d
 	kernel->init(features, features);
 
 	//This will be the vector we return
-	SGVector<float64_t> gradient(2+mean->m_parameters->get_num_parameters());
-	
-	CMap<SGString<char>, float64_t> better_gradient(2+mean->m_parameters->get_num_parameters(),
+	CMap<SGString<char>, float64_t> gradient(2+mean->m_parameters->get_num_parameters(),
 			2+mean->m_parameters->get_num_parameters());
 
 
@@ -156,30 +154,21 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::get_marginal_likelihood_d
 
 	sum /= 2.0;
 
-	gradient[0] = sum;
-
-
-
-	better_gradient.add(SGString<char>("width", strlen("width"), true), sum);
+	gradient.add(SGString<char>("width", strlen("width"), true), sum);
 
 	sum = m_sigma*m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
-
-	gradient[1] = sum;
 	
-	better_gradient.add(SGString<char>("sigma", strlen("sigma"), true), sum);
-
+	gradient.add(SGString<char>("sigma", strlen("sigma"), true), sum);
 
 	for(int i = 0; i < mean->m_parameters->get_num_parameters(); i++)
 	{
 		TParameter* param = mean->m_parameters->get_parameter(i);
 		SGVector<float64_t> data_means = mean->get_parameter_derivative(
 				feature_matrix, param->m_name);
-		gradient[i+1] = data_means.dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
-		better_gradient.add(SGString<char>(param->m_name, strlen(param->m_name), true), sum);
-
+		gradient.add(SGString<char>(param->m_name, strlen(param->m_name), true), sum);
 	}
 
-	return better_gradient;
+	return gradient;
 
 }
 

@@ -165,34 +165,29 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 
 CParameterCombination* CModelSelectionParameters::get_random_combination()
 {
-	/* value case: node with values and no children.
-	 * build trees of Parameter instances which each contain one value
-	 */
-
+	/* If this is a value node, then randomly pick a value from the built
+	 * range */
 	if (m_values)
 	{
-		index_t i = (m_values_length-1)*(float64_t(rand())/float64_t(RAND_MAX));
-		//for (index_t i=0; i<m_values_length; ++i)
-		//{
-			// create tree with only one parameter element //
-			Parameter* p=new Parameter();
+		index_t i =
+				(m_values_length-1)*(float64_t(rand())/float64_t(RAND_MAX));
 
-			switch (m_value_type)
-			{
-			case MSPT_FLOAT64:
-				p->add(&((float64_t*)m_values)[i], m_node_name);
-				break;
-			case MSPT_INT32:
-				p->add(&((int32_t*)m_values)[i], m_node_name);;
-				break;
-			case MSPT_NONE:
-				SG_ERROR("Value node has no type!\n");
-				break;
-			default:
-				SG_ERROR("Unknown type for model selection parameter!\n");
-				break;
-		//	}
+		Parameter* p=new Parameter();
 
+		switch (m_value_type)
+		{
+		case MSPT_FLOAT64:
+			p->add(&((float64_t*)m_values)[i], m_node_name);
+			break;
+		case MSPT_INT32:
+			p->add(&((int32_t*)m_values)[i], m_node_name);;
+			break;
+		case MSPT_NONE:
+			SG_ERROR("Value node has no type!\n");
+			break;
+		default:
+			SG_ERROR("Unknown type for model selection parameter!\n");
+			break;
 		}
 
 		return new CParameterCombination(p);
@@ -200,16 +195,11 @@ CParameterCombination* CModelSelectionParameters::get_random_combination()
 
 	CParameterCombination* new_root=NULL;
 
-	/* two cases here, similar
-	 * -case CSGObject:
-	 * -case root node (no name, no values, but children
-	 * build all permutations of the result trees of children with values and
-	 * combine them iteratively children which are something different
-	 */
+	/*Complain if we have a bad node*/
 	if (!((m_sgobject && m_node_name) || (!m_node_name && !m_sgobject)))
 		SG_ERROR("Illegal CModelSelectionParameters node type.\n");
 
-	/* only consider combinations if this node has children */
+	/* Incorporate SGObject and root nodes with children*/
 	if (m_child_nodes->get_num_elements())
 	{
 		Parameter* p=new Parameter();
@@ -237,11 +227,10 @@ CParameterCombination* CModelSelectionParameters::get_random_combination()
 		return new_root;
 	}
 
+	/*Incorporate childless nodes*/
 	else
 	{
-		/* if there are no children of a sgobject or root node, result is
-		 * only one element (sgobject node) or empty (root node)
-		 */
+
 		if (m_sgobject)
 		{
 			Parameter* p=new Parameter();

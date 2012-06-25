@@ -1,12 +1,14 @@
 /*
- * MachineEvaluation.h
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 15, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
 
-#ifndef MACHINEEVALUATION_H_
-#define MACHINEEVALUATION_H_
+#ifndef CMACHINEEVALUATION_H_
+#define CMACHINEEVALUATION_H_
 
 #include <shogun/base/SGObject.h>
 #include <shogun/base/SGObject.h>
@@ -22,7 +24,13 @@ class CLabels;
 class CSplittingStrategy;
 class CEvaluation;
 
-class CMachineEvaluation: public shogun::CSGObject {
+class CMachineEvaluation: public CSGObject {
+
+/* @brief Machine Evaluation is an abstract class
+ * that evaluates a machine according to some criterion.
+ *
+ */
+
 public:
 
 	CMachineEvaluation();
@@ -102,4 +110,5 @@ protected:
 };
 
 } /* namespace shogun */
-#endif /* MACHINEEVALUATION_H_ */
+
+#endif /* CMACHINEEVALUATION_H_ */

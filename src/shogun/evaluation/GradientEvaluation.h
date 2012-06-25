@@ -1,22 +1,34 @@
 /*
- * GradientEvaluation.h
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 15, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
 
-#ifndef GRADIENTEVALUATION_H_
-#define GRADIENTEVALUATION_H_
 
-#include "MachineEvaluation.h"
+#ifndef CGRADIENTEVALUATION_H_
+#define CGRADIENTEVALUATION_H_
+
+#include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/GradientResult.h>
 
 
-namespace shogun {
+namespace shogun
+{
+/** @brief GradientEvaluation evaluates a machine using
+ * its associated differentiable function for the function
+ * value and its gradient with respect to parameters.
+ */
 
-class CGradientEvaluation: public shogun::CMachineEvaluation {
+class CGradientEvaluation: public CMachineEvaluation
+{
+
 public:
+
+	/*Constructor*/
 	CGradientEvaluation();
 
 	/** constructor
@@ -31,7 +43,7 @@ public:
 			CSplittingStrategy* splitting_strategy,
 			CEvaluation* evaluation_criterion, bool autolock=true);
 
-
+	/*Destructor*/
 	virtual ~CGradientEvaluation();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
@@ -44,10 +56,35 @@ public:
 		return "GradientEvaluation";
 	}
 
+	/*Evaluates differentiable function for value
+	 * and derivative.
+	 *
+	 * @return GradientResult containing value and
+	 * gradient
+	 */
 	virtual CEvaluationResult* evaluate();
 
-	CDifferentiableFunction* diff;
+	/** set Differentiable Function
+	*
+	* @param d Differentiable Function
+	*/
+	inline void set_function(CDifferentiableFunction* d) {m_diff = d;};
+
+	/** get Differentiable Function
+	*
+	* @return Differentiable Function
+	*/
+	inline CDifferentiableFunction* get_function()
+	{
+		SG_REF(m_diff);
+		return m_diff;
+	};
+
+private:
+
+	CDifferentiableFunction* m_diff;
 };
 
 } /* namespace shogun */
-#endif /* GRADIENTEVALUATION_H_ */
+
+#endif /* CGRADIENTEVALUATION_H_ */

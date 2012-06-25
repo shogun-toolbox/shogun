@@ -54,11 +54,16 @@ void CParameterCombination::set_parameter(char* name, float64_t value)
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
 		{
 				void* param=m_param->get_parameter(i)->m_parameter;
-				if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_FLOAT64 &&
-						!strcmp(m_param->get_parameter(i)->m_name, name))
+
+				if(!strcmp(m_param->get_parameter(i)->m_name, name))
 				{
+					if(m_param->get_parameter(i)->m_datatype.m_ptype
+							!= PT_FLOAT64)
+						SG_ERROR("Paramater %s not a float parameter", name);
+
 						*((float64_t*)(param)) = value;
 				}
+
 		}
 
 	}

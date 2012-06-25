@@ -1,22 +1,36 @@
 /*
- * GradientResult.h
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 15, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
 
-#ifndef GRADIENTRESULT_H_
-#define GRADIENTRESULT_H_
+#ifndef CGRADIENTRESULT_H_
+#define CGRADIENTRESULT_H_
 
-#include "EvaluationResult.h"
+#include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGString.h>
 
-namespace shogun {
+namespace shogun
+{
 
-class CGradientResult: public shogun::CEvaluationResult {
+/** @brief GradientResult is a container class
+ * that returns results from GradientEvaluation.
+ * It contains the function value as well as its
+ * gradient.
+ *  */
+class CGradientResult: public CEvaluationResult
+{
+
 public:
+
+	/*Constructor*/
 	CGradientResult();
+
+	/*Destructor*/
 	virtual ~CGradientResult();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
@@ -24,14 +38,20 @@ public:
 	 *
 	 *  @return name of the SGSerializable
 	 */
-	virtual const char* get_name() const
+	inline virtual const char* get_name() const
 	{
 		return "GradientResult";
 	}
 
+	/*Function value*/
 	SGVector<float64_t> quantity;
+
+	/*Function Gradient*/
 	CMap<SGString<char>, float64_t> gradient;
 
+	/** Returns the function value
+	 * and gradient contained in the object.
+	 */
 	void print_result()
 	{
 		SG_SPRINT("Quantity: [");
@@ -55,4 +75,5 @@ public:
 };
 
 } /* namespace shogun */
-#endif /* GRADIENTRESULT_H_ */
+
+#endif /* CGRADIENTRESULT_H_ */

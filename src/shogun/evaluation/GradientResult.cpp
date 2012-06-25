@@ -1,24 +1,26 @@
 /*
- * GradientResult.cpp
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 15, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
+
 
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/GradientResult.h>
 
+using namespace shogun;
 
-namespace shogun {
-
-CGradientResult::CGradientResult() {
-	// TODO Auto-generated constructor stub
+CGradientResult::CGradientResult()
+{
 
 }
 
-CGradientResult::~CGradientResult() {
-	// TODO Auto-generated destructor stub
+CGradientResult::~CGradientResult()
+{
+
 }
 
-} /* namespace shogun */
