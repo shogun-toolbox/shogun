@@ -88,6 +88,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	options.regularization = m_regularization;
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
+	options.max_iter = m_max_iter;
 
 	ETaskRelationType relation_type = m_task_relation->get_relation_type();
 	switch (relation_type)

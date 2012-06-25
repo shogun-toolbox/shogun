@@ -171,10 +171,9 @@ SGMatrix<double> slep_mt_lr(
 			for (i=task_ind_start; i<task_ind_end; i++)
 			{
 				double aa = -y[i]*(As[i]+sc[t]);
-				if (aa>0)
-					fun_s += CMath::log(1.0+CMath::exp(-aa)) + aa;
-				else
-					fun_s += CMath::log(1.0+CMath::exp(aa));
+				double bb = CMath::max(aa,0.0);
+
+				fun_s += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
 				
 				double prob = 1.0/(1.0+CMath::exp(aa));
 				b[i] = -y[i]*(1.0-prob) / n_vecs;
@@ -201,7 +200,7 @@ SGMatrix<double> slep_mt_lr(
 				v[i] = s[i] - g[i]*(1.0/L);
 
 			for (t=0; t<n_tasks; t++)
-				c[t] = sc[t] - gc[t]/L;
+				c[t] = sc[t] - gc[t]*(1.0/L);
 
 			eppMatrix(w.matrix, v, n_feats, n_tasks, lambda/L, options.q);
 
@@ -218,20 +217,22 @@ SGMatrix<double> slep_mt_lr(
 				{
 					Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
 					double aa = -y[i]*(Aw[i]+c[t]);
-					if (aa>0)
-						fun_x += CMath::log(1.0+CMath::exp(-aa)) + aa;
-					else
-						fun_x += CMath::log(1.0+CMath::exp(aa));
+					double bb = CMath::max(aa,0.0);
+
+					fun_x += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
 				}
 			}
+			fun_x /= n_vecs;
 
-			double r_sum = 2*SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
+			double r_sum = SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
+			double l_sum = fun_x - fun_s - SGVector<float64_t>::dot(v,g,n_feats*n_tasks);
+
 			for (t=0; t<n_tasks; t++)
-				r_sum += CMath::sq(c[t]-sc[t]);
+			{
+				r_sum += CMath::sq(c[t] - sc[t]);
+				l_sum -= (c[t] - sc[t])*gc[t];
+			}
 			r_sum /= 2.0;
-
-			double l_sum = fun_x - fun_s - SGVector<float64_t>::dot(v,g,n_feats*n_tasks) - 
-				SGVector<float64_t>::dot(c,gc,n_tasks) + SGVector<float64_t>::dot(sc,gc,n_tasks);
 
 			if (r_sum <= 1e-20)
 			{
@@ -265,9 +266,10 @@ SGMatrix<double> slep_mt_lr(
 
 		funcp = func;
 		func = fun_x + lambda*regularizer;
+		SG_SPRINT("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
 
-		if (gradient_break)
-			break;
+		//if (gradient_break)
+		//	break;
 
 		double norm_wp, norm_wwp;
 		double step;
