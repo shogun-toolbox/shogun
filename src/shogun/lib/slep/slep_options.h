@@ -27,6 +27,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 	int max_iter;
 	int restart_num;
 	int n_nodes;
+	int n_tasks;
 	int regularization;
 	int* ind;
 	double* ind_t;

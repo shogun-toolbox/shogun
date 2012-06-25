@@ -394,4 +394,5 @@ double general_findLambdaMax_mt(double *V, int n, int k, double *G, double *ind,
 	   */
 
 	free(v);
+	return lambdaMax;
 }

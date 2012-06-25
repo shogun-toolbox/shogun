@@ -29,7 +29,7 @@ SGMatrix<double> slep_tree_mt_lsr(
 	double lambda, lambda_max, beta;
 	double funcp = 0.0, func = 0.0;
 
-	int n_tasks;
+	int n_tasks = options.n_tasks;
 
 	int iter = 1;
 	bool done = false;
@@ -186,17 +186,17 @@ SGMatrix<double> slep_tree_mt_lsr(
 		for (i=0; i<n_vecs; i++)
 			resid[i] = Aw[i] - y[i];
 
-		double tree_norm; 
+		double tree_norm = 0.0; 
 		for (i=0; i<n_feats; i++)
 		{
 			for (j=0; j<n_tasks; j++)
 				w_row[j] = w(i,j);
 
-			//if (options.general)
-			//	tree_norm += general_treeNorm(w_row,n_tasks,options.G,
-			//								 options.ind,options.n_nodes);
-			//else
-			//	tree_norm += treeNorm(w_row,n_tasks,options.ind,options.n_nodes);
+			if (options.general)
+				tree_norm += general_treeNorm(w_row,n_tasks,options.G,
+											 options.ind_t,options.n_nodes);
+			else
+				tree_norm += treeNorm(w_row,n_tasks,options.ind_t,options.n_nodes);
 		}
 
 		funcp = func;
