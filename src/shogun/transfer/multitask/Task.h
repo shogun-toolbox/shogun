@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+/** @brief used to represent tasks in multitask learning
+ */
 class CTask : public CSGObject
 {
 public:
