@@ -14,6 +14,8 @@
 #define IGNORE_IN_CLASSLIST
 
 #include <stdlib.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -50,6 +52,18 @@ IGNORE_IN_CLASSLIST struct slep_options
 		opts.ind_t = NULL;
 		opts.G = NULL;
 		return opts;
+	}
+};
+
+IGNORE_IN_CLASSLIST struct slep_result_t
+{
+	SGMatrix<double> w;
+	SGVector<double> c;
+
+	slep_result_t(SGMatrix<double> w_, SGVector<double> c_)
+	{
+		w = w_;
+		c = c_;
 	}
 };
 #endif

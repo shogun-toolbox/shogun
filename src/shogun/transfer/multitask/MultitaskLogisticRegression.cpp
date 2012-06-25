@@ -58,6 +58,8 @@ void CMultitaskLogisticRegression::set_current_task(int32_t task)
 	w = SGVector<float64_t>(n_feats);
 	for (int32_t i=0; i<n_feats; i++)
 		w[i] = m_tasks_w(i,task);
+
+	bias = m_tasks_c[task];
 }
 
 CTaskRelation* CMultitaskLogisticRegression::get_task_relation() const
@@ -100,7 +102,9 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			options.ind = ind.vector;
 			options.n_nodes = ind.vlen-1;
 
-			m_tasks_w = slep_mt_lr(features, y.vector, m_z, options);
+			slep_result_t result = slep_mt_lr(features, y.vector, m_z, options);
+			m_tasks_w = result.w;
+			m_tasks_c = result.c;
 		}
 		break;
 		case TREE: 

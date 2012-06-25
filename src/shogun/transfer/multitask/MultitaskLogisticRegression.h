@@ -86,6 +86,9 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 
 		/** tasks w's */
 		SGMatrix<float64_t> m_tasks_w;
+		
+		/** tasks interceptss */
+		SGVector<float64_t> m_tasks_c;
 
 };
 }

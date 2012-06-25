@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-SGMatrix<double> slep_mt_lr(
+slep_result_t slep_mt_lr(
 		CDotFeatures* features,
 		double* y,
 		double z,
@@ -104,7 +104,7 @@ SGMatrix<double> slep_mt_lr(
 			for (i=0; i<n_feats; i++)
 				w(i,j) = options.initial_w[j*n_feats+i];
 	}
-	double* c = SG_CALLOC(double, n_tasks);
+	SGVector<double> c(n_tasks);
 	for (t=0; t<n_tasks; t++)
 		c[t] = CMath::log(m1[t]/m2[t]);
 
@@ -266,10 +266,10 @@ SGMatrix<double> slep_mt_lr(
 
 		funcp = func;
 		func = fun_x + lambda*regularizer;
-		SG_SPRINT("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
+		//SG_SPRINT("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
 
-		//if (gradient_break)
-		//	break;
+		if (gradient_break)
+			break;
 
 		double norm_wp, norm_wwp;
 		double step;
@@ -334,6 +334,6 @@ SGMatrix<double> slep_mt_lr(
 	SG_FREE(m2);
 	SG_FREE(ATb);
 
-	return w;
+	return slep_result_t(w,c);
 };
 };

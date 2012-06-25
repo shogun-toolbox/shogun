@@ -17,7 +17,7 @@
 namespace shogun 
 {
 
-SGMatrix<double> slep_mt_lr(
+slep_result_t slep_mt_lr(
 		CDotFeatures* features,
 		double* y,
 		double z,
