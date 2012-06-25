@@ -13,6 +13,7 @@
  #include <shogun/transfer/multitask/TaskGroup.h>
  #include <shogun/transfer/multitask/TaskTree.h>
  #include <shogun/transfer/multitask/MultitaskLSRegression.h>
+ #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 
 #ifdef USE_SVMLIGHT
  #include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
