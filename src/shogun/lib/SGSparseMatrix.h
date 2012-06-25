@@ -95,7 +95,6 @@ protected:
 				(&sparse_matrix[i])->~SGSparseVector<T>();
 
 			SG_FREE(sparse_matrix);
-			sparse_matrix = NULL;
 			num_vectors = 0;
 			num_features = 0;
 		}
