@@ -30,6 +30,7 @@
 #endif /* USE_MOSEK */
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/lib/StructuredDataTypes.h>
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>
 %include <shogun/structure/PlifArray.h>
