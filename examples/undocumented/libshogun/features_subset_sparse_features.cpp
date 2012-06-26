@@ -37,8 +37,8 @@ void check_transposed(CSparseFeatures<int32_t>* features)
 			ASSERT(orig_vec.features[j].entry==new_vec.features[j].entry);
 
 		/* not necessary since feature matrix is in memory. for documentation */
-		features->free_sparse_feature_vector(orig_vec, i);
-		double_transposed->free_sparse_feature_vector(new_vec, i);
+		features->free_sparse_feature_vector(i);
+		double_transposed->free_sparse_feature_vector(i);
 	}
 
 	SG_UNREF(transposed);
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 			ASSERT(a==b);
 		}
 
-		features->free_sparse_feature_vector(vec, i);
+		features->free_sparse_feature_vector(i);
 	}
 
 	/* remove features subset */
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 		for (index_t j=0; j<vec.num_feat_entries; ++j)
 			ASSERT(vec.features[j].entry==data.matrix[i*num_vectors+j]);
 
-		features->free_sparse_feature_vector(vec, i);
+		features->free_sparse_feature_vector(i);
 	}
 
 	SG_UNREF(features);

@@ -8,7 +8,7 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
