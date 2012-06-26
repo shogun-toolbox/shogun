@@ -83,7 +83,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	ASSERT(features);
 	ASSERT(m_labels);
 
-	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
+	SGVector<float64_t> y = ((CBinaryLabels*)m_labels)->get_labels();
 	
 	slep_options options = slep_options::default_options();
 	options.q = m_q;
@@ -100,7 +100,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
 			SGVector<index_t> ind = task_group->get_SLEP_ind();
 			options.ind = ind.vector;
-			options.n_nodes = ind.vlen-1;
+			options.n_tasks = ind.vlen-1;
 
 			slep_result_t result = slep_mt_lr(features, y.vector, m_z, options);
 			m_tasks_w = result.w;
