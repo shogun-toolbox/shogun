@@ -102,7 +102,10 @@ TParameter* CParameterCombination::get_parameter(char* name)
 		TParameter* p = child->get_parameter(name);
 
 		if(p)
+		{
+			SG_UNREF(child);
 			return p;
+		}
 
 		SG_UNREF(child);
 	}

@@ -243,6 +243,7 @@ public:
 		return array->get_array();
 	}
 
+	/*Assignment operator that copies map*/
 	CMap& operator =(const CMap& orig)
 	{
 
@@ -392,6 +393,7 @@ private:
 		free_index=temp;		
 	}
 
+	/*cleans up map*/
 	void destroy_map()
 	{
 		if (array!=NULL)
@@ -416,6 +418,7 @@ private:
 			else
 				free(hash_array);
 		}
+
 	}
 
 protected:

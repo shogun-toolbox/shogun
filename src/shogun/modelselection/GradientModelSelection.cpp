@@ -137,10 +137,14 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 				result->gradient.get_node_ptr(i);
 
 	//Getting Bizarre memory leaks with this function. Don't know why.
-	//	TParameter* param =
-	//			m_current_combination->get_parameter(node->key.string);
+	    TParameter* param =
+	    		m_current_combination->get_parameter(node->key.string);
 
-		x[i] = 0.5;//*((float64_t*)(param->m_parameter));
+	    if(!param)
+	    	SG_ERROR("Could not find parameter %s"\
+	    			"in Parameter Combination", node->key.string);
+
+		x[i] = *((float64_t*)(param->m_parameter));
 	}
 
 	//Setting up nlopt

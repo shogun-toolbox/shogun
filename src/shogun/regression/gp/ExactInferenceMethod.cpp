@@ -266,7 +266,6 @@ void CExactInferenceMethod::update_alpha_and_chol()
 	SGVector<float64_t> data_means =
 			m_mean->get_mean_vector(feature_matrix);
 
-
 	for(int i = 0; i < label_vector.vlen; i++)
 		label_vector[i] = label_vector[i] - data_means[i];
 
