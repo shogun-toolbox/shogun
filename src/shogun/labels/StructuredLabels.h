@@ -15,6 +15,7 @@
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/StructuredData.h>
+#include <shogun/lib/StructuredDataTypes.h>
 
 namespace shogun {
 
@@ -68,7 +69,7 @@ class CStructuredLabels : public CLabels
 		
 		/** get label object for specified index
 		 *
-		 * @param idx index of tha label
+		 * @param idx index of the label
 		 *
 		 * @return label object
 		 */

@@ -18,6 +18,9 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
+/** @brief Base class for kernel based two-sample testing. Extends the standard
+ * two sample class with a kernel.
+ */
 class CKernelTwoSampleTestStatistic : public CTwoSampleTestStatistic
 {
 	public:
@@ -33,6 +36,7 @@ class CKernelTwoSampleTestStatistic : public CTwoSampleTestStatistic
 		void init();
 
 	protected:
+		/** underlying kernel */
 		CKernel* m_kernel;
 };
 

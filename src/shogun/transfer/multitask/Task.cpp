@@ -11,20 +11,19 @@
 
 using namespace shogun;
 
-CTask::CTask() : CSGObject(), 
+CTask::CTask() : CSGObject(),
+	m_task_name("task"),
 	m_min_index(0), m_max_index(0),
-	m_weight(1.0), m_task_name("task")
+	m_weight(1.0), m_subtasks(NULL)
 {
 	m_subtasks = new CList();
 }
 
 CTask::CTask(index_t min_index, index_t max_index, 
              float64_t weight, const char* name) :
-	CSGObject(), 
-	m_min_index(min_index),
-	m_max_index(max_index),
-	m_weight(weight),
-	m_task_name(name)
+	CSGObject(), m_task_name(name),
+	m_min_index(min_index), m_max_index(max_index),
+	m_weight(weight), m_subtasks(NULL)
 {
 	m_subtasks = new CList();
 }

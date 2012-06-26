@@ -18,6 +18,44 @@ namespace shogun
 
 class CFeatures;
 
+enum EQuadraticMMDType
+{
+	BIASED, UNBIASED
+};
+
+/** @brief Class for the quadratic time MMD.
+ *
+ * Allows to perform a kernel based two-sample test using empirical estimates of
+ * the quadratic time MMD, which is
+ *
+ * TODO when I have internet :)
+ *
+ * It is possible to use two types:
+ * Biased, that is: TODO
+ * Unbiased, that is: TODO
+ *
+ * See
+ * ﻿Gretton, A., Borgwardt, K. M., Rasch, M. J., Schölkopf, B., & Smola, A. (2012).
+ * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
+ *
+ * To choose, use set_statistic_type()
+ *
+ * To approximate the null-distribution in order to compute a p-value, currenlty,
+ * in addition to bootstrapping (see CTwoSampleTestStatistic), two methods are
+ * available (both based on the biased squared MMD):
+ *
+ * 1. A method that is based on the Eigenspectrum of the gram matrix of the
+ * underlying data. (Only supported if LAPACK is installed)
+ *
+ * 2. A method that is based on moment matching of a Gamma distribution
+ *
+ * Both methods are described in
+ * Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
+ * A fast, consistent kernel two-sample test.
+ *
+ * To choose, use CTwoSampleTestStatistic::set_p_value_method()
+ *
+ */
 class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 {
 	public:
@@ -26,7 +64,23 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 
 		virtual ~CQuadraticTimeMMD();
 
+		/** Computes the squared quadratic time MMD for the current data. Note
+		 * that the type (biased/unbiased) can be specified with
+		 * set_statistic_type() method.
+		 *
+		 * @return (biased or unbiased) squared quadratic time MMD
+		 */
 		virtual float64_t compute_statistic();
+
+		/** Computes the p-value for a given statistic. The method for computing
+		 * the p-value can be set via set_p_value_method() method. Not all
+		 * method for computing the p-value are compatible with all methods of
+		 * computing the statistic (biased/unbiased).
+		 *
+		 * @param statistic statistic to compute the p-value for
+		 *
+		 * @return p-value of the given statistic
+		 */
 		virtual float64_t compute_p_value(float64_t statistic);
 
 		inline virtual const char* get_name() const
@@ -40,6 +94,9 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * samples of p and q. May be used to compute p_value (easy)
 		 *
 		 * kernel matrix needs to be stored in memory
+		 *
+		 * Note that the provided statistic HAS to be the biased version
+		 * (see paper for details)
 		 *
 		 * Works well if the kernel matrix is NOT diagonal dominant.
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
@@ -63,6 +120,9 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * However, there are cases where it performs very well.
 		 * Returns the p-value for a given statistic value in the
 		 * null-distribution.
+		 *
+		 * Note that the provided statistic HAS to be the biased version
+		 * (see paper for details)
 		 *
 		 * Works for arbritarily large kernel matrices (is not precomputed)
 		 *
@@ -90,12 +150,28 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 */
 		void set_num_eigenvalues_spectrum(index_t num_eigenvalues_spectrum);
 
+		/** @param statistic_type statistic type (biased/unboased) to use */
+		void set_statistic_type(EQuadraticMMDType statistic_type);
+
+	protected:
+		/** helper method to compute unbiased squared quadratic time MMD */
+		virtual float64_t compute_unbiased_statistic();
+
+		/** helper method to compute biased squared quadratic time MMD */
+		virtual float64_t compute_biased_statistic();
+
 	private:
 		void init();
 
 	protected:
+		/** number of samples for spectrum null-dstribution-approximation */
 		index_t m_num_samples_spectrum;
+
+		/** number of Eigenvalues for spectrum null-dstribution-approximation */
 		index_t m_num_eigenvalues_spectrum;
+
+		/** type of statistic (biased/unbiased) */
+		EQuadraticMMDType m_statistic_type;
 };
 
 }

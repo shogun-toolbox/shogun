@@ -25,9 +25,10 @@ CInferenceMethod::CInferenceMethod()
 }
 
 CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) : m_kernel(NULL),
-		m_features(NULL), m_labels(NULL), m_mean(NULL), m_model(NULL)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
 {
+	init();
+
 	set_kernel(kern);
 	set_features(feat);
 	set_labels(lab);
@@ -43,6 +44,14 @@ CInferenceMethod::~CInferenceMethod() {
 	SG_UNREF(m_mean);
 }
 
+void CInferenceMethod::init()
+{
+	SG_ADD((CSGObject**)&m_kernel, "Kernel", "Kernel", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_model, "Likelihood Model", "Likelihood model", MS_AVAILABLE);
 
-
-
+	m_kernel = NULL;
+	m_model = NULL;
+	m_labels = NULL;
+	m_features = NULL;
+	m_mean = NULL;
+}

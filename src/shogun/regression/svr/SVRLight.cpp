@@ -573,11 +573,6 @@ void CSVRLight::update_linear_component_mkl_linadd(
 {
 	// kernel with LP_LINADD property is assumed to have
 	// compute_by_subkernel functions
-	// FIXME
-	// Divided totdoc by 2 to avoid out of bounds problem. Totdoc seems
-	// to be always multiplied by 2 in regression MKL problems 
-	// SVRLight solve (Sergey Lisitsyn)
-	int32_t num         = totdoc;
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels() ;
 	const float64_t* old_beta   = kernel->get_subkernel_weights(num_weights);

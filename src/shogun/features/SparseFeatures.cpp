@@ -97,8 +97,10 @@ template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 }
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
 {
-	clean_tsparse(sparse_feature_matrix, num_vectors);
-	sparse_feature_matrix = NULL;
+	for (int32_t i=0; i<num_vectors; i++)
+		(&sparse_feature_matrix[i])->~SGSparseVector();
+
+	SG_FREE(sparse_feature_matrix);
 	num_vectors=0;
 	num_features=0;
 	remove_all_subsets();
@@ -130,7 +132,7 @@ template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t inde
 				ret+=sv.features[i].entry ;
 	}
 
-	free_sparse_feature_vector(sv, num);
+	free_sparse_feature_vector(num);
 
 	return ret ;
 }
@@ -154,7 +156,7 @@ template<class ST> ST* CSparseFeatures<ST>::get_full_feature_vector(int32_t num,
 			fv[sv.features[i].feat_index]= sv.features[i].entry;
 	}
 
-	free_sparse_feature_vector(sv, num);
+	free_sparse_feature_vector(num);
 
 	return fv;
 }
@@ -180,7 +182,7 @@ template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int
 			dense.vector[sv.features[i].feat_index]= sv.features[i].entry;
 	}
 
-	free_sparse_feature_vector(sv, num);
+	free_sparse_feature_vector(num);
 
 	return dense;
 }
@@ -189,7 +191,7 @@ template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int3
 {
 	SGSparseVector<ST> sv = get_sparse_feature_vector(num);
 	int32_t len=sv.num_feat_entries;
-	free_sparse_feature_vector(sv, num);
+	free_sparse_feature_vector(num);
 	return len;
 }
 
@@ -204,13 +206,10 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 	if (sparse_feature_matrix)
 	{
 		result=sparse_feature_matrix[real_num];
-		result.do_free=false;
 		return result;
 	}
 	else
 	{
-		result.do_free=false;
-
 		if (feature_cache)
 		{
 			result.features=feature_cache->lock_entry(num);
@@ -223,8 +222,8 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 			}
 		}
 
-		if (!result.features)
-			result.do_free=true;
+		//if (!result.features)
+		//	result.do_free=true;
 
 		result.features=compute_sparse_feature_vector(num,
 			result.num_feat_entries, result.features);
@@ -321,7 +320,7 @@ template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* 
 		}
 	}
 
-	free_sparse_feature_vector(sv, num);
+	free_sparse_feature_vector(num);
 	return result;
 }
 
@@ -356,15 +355,15 @@ template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, i
 		}
 	}
 
-	free_sparse_feature_vector(sv, num);
+	free_sparse_feature_vector(num);
 }
 
-template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(SGSparseVector<ST> vec, int32_t num)
+template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t num)
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
 
-	vec.free_vector();
+	//vec.free_vector();
 }
 
 template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_sparse_feature_matrix(int32_t &num_feat, int32_t &num_vec)
@@ -386,17 +385,6 @@ template<class ST> SGSparseMatrix<ST> CSparseFeatures<ST>::get_sparse_feature_ma
 	SGSparseMatrix<ST> sm;
 	sm.sparse_matrix=get_sparse_feature_matrix(sm.num_features, sm.num_vectors);
 	return sm;
-}
-
-template<class ST> void CSparseFeatures<ST>::clean_tsparse(SGSparseVector<ST>* sfm, int32_t num_vec)
-{
-	if (sfm)
-	{
-		for (int32_t i=0; i<num_vec; i++)
-			SG_FREE(sfm[i].features);
-
-		SG_FREE(sfm);
-	}
 }
 
 template<class ST> CSparseFeatures<ST>* CSparseFeatures<ST>::get_transposed()
@@ -423,7 +411,7 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
 			hist[sv.features[i].feat_index]++;
 
-		free_sparse_feature_vector(sv, v);
+		free_sparse_feature_vector(v);
 	}
 
 	// allocate room for future feature vectors
@@ -449,7 +437,7 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 			hist[vidx]++;
 		}
 
-		free_sparse_feature_vector(sv, v);
+		free_sparse_feature_vector(v);
 	}
 
 	SG_FREE(hist);
@@ -463,7 +451,10 @@ template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseM
 
 	SGSparseVector<ST>* sparse_matrix = SG_MALLOC(SGSparseVector<ST>, sm.num_vectors);
 	for (int32_t i=0; i<sm.num_vectors; i++)
+	{
+		new (&sparse_matrix[i]) SGSparseVector<ST>();
 		sparse_matrix[i] = sm[i];
+	}
 
 	sparse_feature_matrix=sparse_matrix;
 	num_features=sm.num_features;
@@ -533,33 +524,20 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 			{
 				for (int32_t i=0; i< num_vec; i++)
 				{
-					sparse_feature_matrix[i].num_feat_entries=0;
-					sparse_feature_matrix[i].features= NULL;
+					new(&sparse_feature_matrix[i]) SGSparseVector<ST>();
+					sparse_feature_matrix[i] = SGSparseVector<ST>(num_feat_entries[i]);
+					int32_t sparse_feat_idx=0;
 
-					if (num_feat_entries[i]>0)
+					for (int32_t j=0; j< num_feat; j++)
 					{
-						sparse_feature_matrix[i].features= SG_MALLOC(SGSparseVectorEntry<ST>, num_feat_entries[i]);
+						int64_t pos= i*num_feat + j;
 
-						if (!sparse_feature_matrix[i].features)
+						if (src[pos] != 0)
 						{
-							SG_INFO( "allocation of features failed\n");
-							return false;
-						}
-
-						sparse_feature_matrix[i].num_feat_entries=num_feat_entries[i];
-						int32_t sparse_feat_idx=0;
-
-						for (int32_t j=0; j< num_feat; j++)
-						{
-							int64_t pos= i*num_feat + j;
-
-							if (src[pos] != 0)
-							{
-								sparse_feature_matrix[i].features[sparse_feat_idx].entry=src[pos];
-								sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
-								sparse_feat_idx++;
-								num_total_entries++;
-							}
+							sparse_feature_matrix[i].features[sparse_feat_idx].entry=src[pos];
+							sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
+							sparse_feat_idx++;
+							num_total_entries++;
 						}
 					}
 				}
@@ -645,12 +623,12 @@ template<class ST> EFeatureClass CSparseFeatures<ST>::get_feature_class() const
 	return C_SPARSE;
 }
 
-template<class ST> void CSparseFeatures<ST>::free_feature_vector(SGSparseVector<ST> vec, int32_t num)
+template<class ST> void CSparseFeatures<ST>::free_feature_vector(int32_t num)
 {
 	if (feature_cache)
 		feature_cache->unlock_entry(m_subset_stack->subset_idx_conversion(num));
 
-	vec.free_vector();
+	//vec.free_vector();
 }
 
 template<class ST> int64_t CSparseFeatures<ST>::get_num_nonzero_entries()
@@ -676,7 +654,7 @@ template<class ST> float64_t* CSparseFeatures<ST>::compute_squared(float64_t* sq
 		for (int32_t j=0; j<vec.num_feat_entries; j++)
 			sq[i]+=vec.features[j].entry*vec.features[j].entry;
 
-		free_feature_vector(vec, i);
+		free_feature_vector(i);
 	}
 
 	return sq;
@@ -736,8 +714,8 @@ template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
 		}
 	}
 
-	((CSparseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a);
-	((CSparseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b);
+	((CSparseFeatures<float64_t>*) lhs)->free_feature_vector(idx_a);
+	((CSparseFeatures<float64_t>*) rhs)->free_feature_vector(idx_b);
 
 	return CMath::abs(result);
 }
@@ -1008,8 +986,8 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 	float64_t result=sparse_dot(1, avec.features, avec.num_feat_entries,
 		bvec.features, bvec.num_feat_entries);
 
-	free_sparse_feature_vector(avec, vec_idx1);
-	sf->free_sparse_feature_vector(bvec, vec_idx2);
+	free_sparse_feature_vector(vec_idx1);
+	sf->free_sparse_feature_vector(vec_idx2);
 
 	return result;
 }
@@ -1031,7 +1009,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 			result+=vec2[sv.features[i].feat_index]*sv.features[i].entry;
 	}
 
-	free_sparse_feature_vector(sv, vec_idx1);
+	free_sparse_feature_vector(vec_idx1);
 
 	return result;
 }
@@ -1075,7 +1053,7 @@ template<class ST> void CSparseFeatures<ST>::free_feature_iterator(void* iterato
 		return;
 
 	sparse_feature_iterator* it=(sparse_feature_iterator*) iterator;
-	free_sparse_feature_vector(it->sv, it->vector_index);
+	free_sparse_feature_vector(it->vector_index);
 	SG_FREE(it);
 }
 
@@ -1099,7 +1077,7 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 		memcpy(matrix_copy.sparse_matrix[i].features, current.features,
 			sizeof(SGSparseVectorEntry<ST>)*current.num_feat_entries);
 
-		free_sparse_feature_vector(current, index);
+		free_sparse_feature_vector(index);
 	}
 
 	return new CSparseFeatures<ST>(matrix_copy);

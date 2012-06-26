@@ -208,10 +208,9 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * possible with subset
 		 *
-		 * @param vec feature vector to free
 		 * @param num index of this vector in the cache
 		 */
-		void free_sparse_feature_vector(SGSparseVector<ST> vec, int32_t num);
+		void free_sparse_feature_vector(int32_t num);
 
 		/** get the pointer to the sparse feature matrix
 		 * num_feat,num_vectors are returned by reference
@@ -232,13 +231,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 */
         SGSparseMatrix<ST> get_sparse_feature_matrix();
-
-		/** clean SGSparseVector
-		 *
-		 * @param sfm sparse feature matrix
-		 * @param num_vec number of vectors in matrix
-		 */
-		static void clean_tsparse(SGSparseVector<ST>* sfm, int32_t num_vec);
 
 		/** get a transposed copy of the features
 		 *
@@ -357,7 +349,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param vec feature vector to free
 		 * @param num index of vector in cache
 		 */
-		void free_feature_vector(SGSparseVector<ST> vec, int32_t num);
+		void free_feature_vector(int32_t num);
 
 		/** get number of non-zero entries in sparse feature matrix
 		 *

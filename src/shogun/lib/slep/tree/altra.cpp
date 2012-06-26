@@ -390,4 +390,5 @@ double findLambdaMax_mt(double *V, int n, int k, double *ind, int nodes)
 	   */
 
 	free(v);
+	return lambdaMax;
 }

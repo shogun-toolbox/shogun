@@ -73,9 +73,6 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		return false;
 	}
 
-	// Assume diagonal regularization matrix with just one value
-	// float64_t lambda = C(0, 0);
-
 	// Initialize the weight vector
 	m_w = SGVector< float64_t >(M);
 	m_w.zero();
@@ -116,8 +113,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			result = m_model->argmax(m_w, i);
 
 			// Compute the loss associated with the prediction
-			//slack = m_loss->loss( compute_loss_arg(result) );
-			slack = compute_loss_arg(result);
+			slack = m_loss->loss( compute_loss_arg(result) );
 			cur_list = (CList*) results->get_element(i);
 
 			// Update the list of constraints
@@ -130,15 +126,11 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 				while ( cur_res != NULL )
 				{
-					//max_slack = CMath::max(max_slack,
-					//		m_loss->loss( compute_loss_arg(cur_res) ));
-					max_slack = CMath::max(max_slack, 
-							compute_loss_arg(cur_res));
+					max_slack = CMath::max(max_slack,
+							m_loss->loss( compute_loss_arg(cur_res) ));
 
 					cur_res = (CResultSet*) cur_list->get_next_element();
 				}
-
-				max_slack = CMath::max(max_slack, 0.0);
 
 				if ( slack > max_slack )
 				{

@@ -11,6 +11,8 @@
 #include <shogun/modelselection/ParameterCombination.h>
 
 
+#include <shogun/base/Parameter.h>
+
 using namespace shogun;
 
 CGaussianLikelihood::CGaussianLikelihood()
@@ -21,7 +23,7 @@ CGaussianLikelihood::CGaussianLikelihood()
 void CGaussianLikelihood::init()
 {
 	m_sigma = 0.01;
-	SG_ADD(&m_sigma, "sigma", "Sigma.", MS_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
 }
 
 CGaussianLikelihood::~CGaussianLikelihood()

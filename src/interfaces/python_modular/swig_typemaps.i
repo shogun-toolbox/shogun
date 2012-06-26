@@ -602,10 +602,7 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
     shogun::SGSparseVector<type>* sfm = SG_MALLOC(shogun::SGSparseVector<type>, num_vec);
 
     for (int32_t i=0; i<num_vec; i++)
-    {
-        sfm[i].num_feat_entries = 0;
-        sfm[i].features = NULL;
-    }
+        new (&sfm[i]) SGSparseVector<type>();
 
     for (int32_t i=1; i<len_indptr; i++)
     {
@@ -625,7 +622,6 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
             }
             sfm[i-1].num_feat_entries=num;
             sfm[i-1].features=features;
-            sfm[i-1].create_idx_map();
         }
     }
 

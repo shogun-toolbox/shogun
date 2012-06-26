@@ -20,11 +20,22 @@ namespace shogun
  * the used method */
 enum EPValueMethod
 {
-	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA
+	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN
 };
 
 class CFeatures;
 
+/** @brief Two sample test base class. Provides an interface for performing a
+ * two-sample test, i.e. Given samples from two distributions p and q, the
+ * null-hypothesis is: H0: p==q, the alternative hypothesis: H1: p!=q.
+ *
+ * It is possible to define multiple ways to compute the p-value.
+ *
+ * Provides code for sampling the null-distribution via bootstrapping.
+ *
+ * Abstract base class.
+ *
+ */
 class CTwoSampleTestStatistic : public CTestStatistic
 {
 	public:

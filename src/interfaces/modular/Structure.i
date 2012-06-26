@@ -25,6 +25,10 @@
 %rename(MulticlassSOLabels) CMulticlassSOLabels;
 %rename(RealNumber) CRealNumber;
 
+#ifdef USE_MOSEK
+%rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
+#endif /* USE_MOSEK */
+
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>

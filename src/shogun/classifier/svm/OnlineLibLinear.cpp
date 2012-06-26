@@ -22,20 +22,20 @@ COnlineLibLinear::COnlineLibLinear()
 		init();
 }
 
-COnlineLibLinear::COnlineLibLinear(float64_t C)
+COnlineLibLinear::COnlineLibLinear(float64_t C_reg)
 {
 		init();
-		C1=C;
-		C2=C;
+		C1=C_reg;
+		C2=C_reg;
 		use_bias=true;
 }
 
 COnlineLibLinear::COnlineLibLinear(
-		float64_t C, CStreamingDotFeatures* traindat)
+		float64_t C_reg, CStreamingDotFeatures* traindat)
 {
 		init();
-		C1=C;
-		C2=C;
+		C1=C_reg;
+		C2=C_reg;
 		use_bias=true;
 
 		set_features(traindat);

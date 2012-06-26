@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2012 Fernando José Iglesias García
- * Written (W) 2012 Christian Widmer
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  * Copyright (C) 2012 Soeren Sonnenburg
@@ -16,6 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGReferencedData.h>
 #include <map>
 
 namespace shogun
@@ -32,104 +32,62 @@ template <class T> struct SGSparseVectorEntry
 };
 
 /** @brief template class SGSparseVector */
-template <class T> class SGSparseVector
+template <class T> class SGSparseVector : public SGReferencedData
 {
 public:
 	/** default constructor */
-	SGSparseVector() :
-		num_feat_entries(0), features(NULL), do_free(false) {}
+	SGSparseVector() : SGReferencedData(false)
+	{
+		init_data();
+	}
 
 	/** constructor for setting params */
 	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
-			index_t index, bool free_v=false) :
-			num_feat_entries(num_entries), features(feats),
-			do_free(free_v)
+			bool ref_counting=true) :
+			SGReferencedData(ref_counting),
+			num_feat_entries(num_entries), features(feats)
 	{
-		create_idx_map();
 	}
 
 	/** constructor to create new vector in memory */
-	SGSparseVector(index_t num_entries, index_t index, bool free_v=false) :
-		num_feat_entries(num_entries), do_free(free_v)
+	SGSparseVector(index_t num_entries, bool ref_counting=true) :
+		SGReferencedData(ref_counting),
+		num_feat_entries(num_entries)
 	{
-		features=SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
+		features = SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
 	}
 
 	/** copy constructor */
 	SGSparseVector(const SGSparseVector& orig) :
-			num_feat_entries(orig.num_feat_entries),
-			features(orig.features), do_free(orig.do_free)
+		SGReferencedData(orig)
 	{
-		create_idx_map();
+		copy_data(orig);
 	}
 
-	/** free vector */
-	void free_vector()
+	virtual ~SGSparseVector()
 	{
-		if (do_free)
-			SG_FREE(features);
-
-		dense_to_sparse_idx.clear();
-		features=NULL;
-		do_free=false;
-		num_feat_entries=0;
+		unref();
 	}
 
-	/** destroy vector */
-	void destroy_vector()
+protected:
+
+	virtual void copy_data(const SGReferencedData& orig)
 	{
-		do_free=true;
-		free_vector();
+		num_feat_entries = ((SGSparseVector*)(&orig))->num_feat_entries;
+		features = ((SGSparseVector*)(&orig))->features;
 	}
 
-	/** create mapping from dense idx to sparse idx */
-	void create_idx_map()
+	virtual void init_data()
 	{
-		dense_to_sparse_idx.clear();
-		for (int32_t i=0; i!=num_feat_entries; i++)
-		{
-			dense_to_sparse_idx[features[i].feat_index] = i;
-		}
+		num_feat_entries = 0;
+		features = NULL;
 	}
 
-	/** operator overload for vector read only access
-	 *
-	 * @param index dimension to access
-	 *
-	 */
-	inline const T& operator[](index_t index) const
+	virtual void free_data()
 	{
-		// lookup complexity is O(log n)
-		std::map<index_t, index_t>::const_iterator it = dense_to_sparse_idx.find(index);
-
-		if (it != dense_to_sparse_idx.end())
-		{
-			// use mapping for lookup
-			return features[it->second].entry;
-		} else {
-			return zero;
-		}
+		num_feat_entries = 0;
+		SG_FREE(features);
 	}
-
-		
-	/** TODO: operator overload for vector r/w access
-	 *
-	 * @param index dimension to access
-	 *
-	inline T& operator[](index_t index)
-	{
-		return dense_to_sparse_idx[index];
-		// lookup complexity is O(log n)
-		typename std::map<index_t, T>::iterator it = dense_to_sparse_idx.find(index);
-
-		if (it != dense_to_sparse_idx.end())
-		{
-			return it->second;
-		} else {
-			return dense_to_sparse_idx.insert(index, 0);
-		}
-	}
-		*/
 
 public:
 	/** number of feature entries */
@@ -138,21 +96,7 @@ public:
 	/** features */
 	SGSparseVectorEntry<T>* features;
 
-	/** whether vector needs to be freed */
-	bool do_free;
-
-protected:	
-	/** store mapping of indices */
-	std::map<index_t, index_t> dense_to_sparse_idx;
-
-	/** zero element */
-	static const T zero;
-
 };
-
-// inititalize static member in template class
-template <typename T>
-const T SGSparseVector<T>::zero = T(0);
 
 }
 

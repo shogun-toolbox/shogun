@@ -46,7 +46,10 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		{
 			sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
 			for (int32_t i=0; i<num_vectors; i++)
-				sparse_matrix[i] = SGSparseVector<T>();
+			{
+				new (&sparse_matrix[i]) SGSparseVector<T>();
+				sparse_matrix[i] = SGSparseVector<T>(num_feat);
+			}
 		}
 
 		/** copy constructor */
@@ -88,8 +91,10 @@ protected:
 
 		virtual void free_data()
 		{
+			for (int32_t i=0; i<num_vectors; i++)
+				(&sparse_matrix[i])->~SGSparseVector<T>();
+
 			SG_FREE(sparse_matrix);
-			sparse_matrix = NULL;
 			num_vectors = 0;
 			num_features = 0;
 		}
