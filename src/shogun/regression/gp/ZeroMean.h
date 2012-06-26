@@ -12,7 +12,8 @@
 
 #include "MeanFunction.h"
 
-namespace shogun {
+namespace shogun
+{
 
 /** @brief Zero Mean Function
  *
@@ -20,7 +21,8 @@ namespace shogun {
  *	of zero.
  *
  */
-class CZeroMean: public shogun::CMeanFunction {
+class CZeroMean: public shogun::CMeanFunction
+{
 
 public:
 
@@ -39,7 +41,8 @@ public:
 
 	/** Returns the mean of the specified data
 	 *
-	 * @param data points arranged in a matrix with rows representing the number of features
+	 * @param data points arranged in a matrix with rows representing
+	 * the number of features
 	 *
 	 * @return Mean of feature vectors
 	 */

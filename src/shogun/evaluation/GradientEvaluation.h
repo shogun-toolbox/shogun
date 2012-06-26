@@ -68,7 +68,12 @@ public:
 	*
 	* @param d Differentiable Function
 	*/
-	inline void set_function(CDifferentiableFunction* d) {m_diff = d;};
+	inline void set_function(CDifferentiableFunction* d)
+	{
+		SG_UNREF(m_diff);
+		SG_REF(d);
+		m_diff = d;
+	};
 
 	/** get Differentiable Function
 	*

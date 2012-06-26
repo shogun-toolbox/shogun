@@ -44,10 +44,10 @@ CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf,
 void CGaussianProcessRegression::init()
 {
 
-	features = NULL;
+	m_features = NULL;
 	m_method = NULL;
 
-	SG_ADD((CSGObject**) &features, "features", "Feature object.",
+	SG_ADD((CSGObject**) &m_features, "Features", "Feature object.",
 	    MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_method, "Inference Method", "Inference Method.",
 	    MS_AVAILABLE);
@@ -75,7 +75,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 	kernel->cleanup();
 	
-	kernel->init(features, data);
+	kernel->init(m_features, data);
 	
 	//K(X_test, X_train)
 	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
@@ -106,7 +106,8 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	return false;
 }
 
-SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* data)
+SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(
+		CFeatures* data)
 {
 
 	SG_REF(data);
@@ -123,7 +124,7 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 
 	kernel->cleanup();
 
-	kernel->init(features, data);
+	kernel->init(m_features, data);
 
 	//K(X_test, X_train)
 	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
@@ -154,8 +155,9 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 			temp2.matrix, temp2.num_cols, ipiv.vector);
 
 	clapack_dgetrs(CblasColMajor, CblasNoTrans,
-	                   temp2.num_rows, temp1.num_cols, temp2.matrix, temp2.num_cols,
-	                   ipiv.vector, temp1.matrix, temp1.num_cols);
+	                   temp2.num_rows, temp1.num_cols, temp2.matrix,
+	                   temp2.num_cols, ipiv.vector, temp1.matrix,
+	                   temp1.num_cols);
 
 	for(int i = 0; i < temp1.num_rows; i++)
 	{
@@ -204,7 +206,7 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(CFeatures* d
 
 CGaussianProcessRegression::~CGaussianProcessRegression()
 {
-	SG_UNREF(features);
+	SG_UNREF(m_features);
 	SG_UNREF(m_method);
 }
 

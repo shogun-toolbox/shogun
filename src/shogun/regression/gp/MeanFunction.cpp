@@ -9,20 +9,24 @@
 
 #include <shogun/regression/gp/MeanFunction.h>
 
-namespace shogun {
+using namespace shogun;
 
-CMeanFunction::CMeanFunction() {
-
-}
-
-CMeanFunction::~CMeanFunction() {
-
-}
-
-float64_t CMeanFunction::get_parameter_derivative(SGMatrix<float64_t>& data, const char* param_name)
+CMeanFunction::CMeanFunction()
 {
-	SG_ERROR("%s has no implementation for derivative with respect to %s", get_name(), param_name);
+
+}
+
+CMeanFunction::~CMeanFunction()
+{
+
+}
+
+float64_t CMeanFunction::get_parameter_derivative(
+		SGMatrix<float64_t>& data, const char* param_name)
+{
+	SG_ERROR("%s has no implementation for derivative with respect to %s",
+			get_name(), param_name);
+
 	return 0;
 }
 
-}

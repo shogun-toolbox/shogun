@@ -19,7 +19,8 @@
 #include <shogun/evaluation/DifferentiableFunction.h>
 
 
-namespace shogun {
+namespace shogun
+{
 
 /** @brief The Inference Method base class.
  *
@@ -27,7 +28,8 @@ namespace shogun {
  *  posterior distribution for a given Gaussian Process.
  *
  */
-class CInferenceMethod : public CDifferentiableFunction {
+class CInferenceMethod : public CDifferentiableFunction
+{
   
 public:
 
@@ -67,7 +69,8 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual CMap<SGString<char>, float64_t> get_marginal_likelihood_derivatives() = 0;
+	virtual CMap<SGString<char>, float64_t>
+		get_marginal_likelihood_derivatives() = 0;
 
 	/** get Alpha Matrix
 	 *
@@ -110,22 +113,26 @@ public:
 	*/
 	virtual inline void set_features(CDotFeatures* feat)
 	{
-		SG_UNREF(features);
+		SG_UNREF(m_features);
 		SG_REF(feat);
-		features=feat;
+		m_features=feat;
 	}
 
 	/** get features
 	*
 	* @return features
 	*/
-	virtual CDotFeatures* get_features() { SG_REF(features); return features; }
+	virtual CDotFeatures* get_features()
+	{
+		SG_REF(m_features);
+		return m_features;
+	}
 
 	/**get kernel
 	 *
 	 * @return kernel
 	 */
-	virtual CKernel* get_kernel() { SG_REF(kernel); return kernel; }
+	virtual CKernel* get_kernel() { SG_REF(m_kernel); return m_kernel; }
 
 	/**set kernel
 	 *
@@ -133,16 +140,16 @@ public:
 	 */
 	virtual inline void set_kernel(CKernel* kern)
 	{
-		SG_UNREF(kernel);
+		SG_UNREF(m_kernel);
 		SG_REF(kern);
-		kernel=kern;
+		m_kernel=kern;
 	}
 
 	/**get kernel
 	 *
 	 * @return kernel
 	 */
-	virtual CMeanFunction* get_mean() { SG_REF(mean); return mean; }
+	virtual CMeanFunction* get_mean() { SG_REF(m_mean); return m_mean; }
 
 	/**set kernel
 	 *
@@ -150,9 +157,9 @@ public:
 	 */
 	virtual inline void set_mean(CMeanFunction* m)
 	{
-		SG_UNREF(mean);
+		SG_UNREF(m_mean);
 		SG_REF(m);
-		mean=m;
+		m_mean=m;
 	}
 
 	/**get labels
@@ -197,16 +204,16 @@ protected:
 protected:
 
 	/*Covariance Function*/
-	CKernel* kernel;
+	CKernel* m_kernel;
 
 	/*Features to use*/
-	CDotFeatures* features;
+	CDotFeatures* m_features;
 
 	/*Labels of those features*/
 	CLabels* m_labels;
 
 	/*Mean Function*/
-	CMeanFunction* mean;
+	CMeanFunction* m_mean;
 
 	/*Likelihood function to use
 	 * \f[

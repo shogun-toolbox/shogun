@@ -21,8 +21,9 @@
 
 namespace shogun
 {
-/** @brief Class GaussianProcessRegression implements Gaussian Process Regression.
- * Instead of a distribution over weights, the GP specifies a distribution over functions.
+/** @brief Class GaussianProcessRegression implements Gaussian Process
+ * Regression.vInstead of a distribution over weights, the GP specifies
+ * a distribution over functions.
  */
 
 class CGaussianProcessRegression : public CMachine
@@ -50,28 +51,41 @@ class CGaussianProcessRegression : public CMachine
 		*/
 		virtual inline void set_features(CDotFeatures* feat)
 		{
-			SG_UNREF(features);
+			SG_UNREF(m_features);
 			SG_REF(feat);
-			features=feat;
+			m_features=feat;
 		}
 		
 		/** get features
 		*
 		* @return features
 		*/
-		virtual CDotFeatures* get_features() { SG_REF(features); return features; }
+		virtual CDotFeatures* get_features()
+		{
+			SG_REF(m_features);
+			return m_features;
+		}
 		
 		/** set Inference Method
 		*
 		* @param inf Inference Method
 		*/
-		inline void set_method(CInferenceMethod* inf) { m_method = inf; };
+		inline void set_method(CInferenceMethod* inf)
+		{
+			SG_UNREF(m_method);
+			SG_REF(inf);
+			m_method = inf;
+		};
 		
 		/** get Inference Method
 		*
 		* @return Inference Method
 		*/
-		inline CInferenceMethod* get_method() { SG_REF(m_method); return m_method; };
+		inline CInferenceMethod* get_method()
+		{
+			SG_REF(m_method);
+			return m_method;
+		};
 			
 		/** load from file
 		*
@@ -122,7 +136,10 @@ class CGaussianProcessRegression : public CMachine
 		SGVector<float64_t> getCovarianceVector(CFeatures* data);
 		
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GaussianProcessRegression"; }
+		inline virtual const char* get_name() const
+		{
+			return "GaussianProcessRegression";
+		}
 	
 	protected:
   		/** train regression
@@ -140,13 +157,16 @@ class CGaussianProcessRegression : public CMachine
 	private:
 
 		/** features */
-		CDotFeatures* features;
+		CDotFeatures* m_features;
 		
 		/** Inference Method */
 		CInferenceMethod* m_method;
 
 		
 };
+
 }
+
 #endif 
+
 #endif /* _GAUSSIANPROCESSREGRESSION_H__ */

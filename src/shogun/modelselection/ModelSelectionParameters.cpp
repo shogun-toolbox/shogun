@@ -202,18 +202,19 @@ CParameterCombination* CModelSelectionParameters::get_random_combination()
 	/* Incorporate SGObject and root nodes with children*/
 	if (m_child_nodes->get_num_elements())
 	{
-		Parameter* p=new Parameter();
 
 		if (m_sgobject)
 		{
+			Parameter* p=new Parameter();
 			p->add(&m_sgobject, m_node_name);
-			new_root=new CParameterCombination(p);
+	     	new_root=new CParameterCombination(p);
 		}
 
 		else
+		{
 			new_root=new CParameterCombination();
+		}
 
-		SG_REF(new_root);
 
 
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
@@ -221,7 +222,10 @@ CParameterCombination* CModelSelectionParameters::get_random_combination()
 			CModelSelectionParameters* current=
 					(CModelSelectionParameters*)m_child_nodes->get_element(i);
 
-			new_root->append_child(current->get_random_combination());
+			CParameterCombination* c = current->get_random_combination();
+			new_root->append_child(c);
+
+			SG_UNREF(current);
 		}
 
 		return new_root;
@@ -239,7 +243,8 @@ CParameterCombination* CModelSelectionParameters::get_random_combination()
 		}
 
 		else
-			return new CParameterCombination();
+			new_root = new CParameterCombination();
+			return new_root;
 	}
 
 }

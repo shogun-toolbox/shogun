@@ -16,7 +16,8 @@
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 
-namespace shogun {
+namespace shogun
+{
 
 class CMachine;
 class CFeatures;
@@ -24,7 +25,8 @@ class CLabels;
 class CSplittingStrategy;
 class CEvaluation;
 
-class CMachineEvaluation: public CSGObject {
+class CMachineEvaluation: public CSGObject
+{
 
 /* @brief Machine Evaluation is an abstract class
  * that evaluates a machine according to some criterion.

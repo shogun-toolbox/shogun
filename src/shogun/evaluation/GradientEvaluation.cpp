@@ -15,18 +15,23 @@
 
 using namespace shogun;
 
-CGradientEvaluation::CGradientEvaluation() {
+CGradientEvaluation::CGradientEvaluation()
+{
+
 }
 
-CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
-		CSplittingStrategy* splitting_strategy, CEvaluation* evaluation_crit, bool autolock) :
+CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features,
+		CLabels* labels, CSplittingStrategy* splitting_strategy,
+		CEvaluation* evaluation_crit, bool autolock) :
 		CMachineEvaluation(machine, features, labels, NULL, NULL, true)
 {
 
 
 }
 
-CGradientEvaluation::~CGradientEvaluation() {
+CGradientEvaluation::~CGradientEvaluation()
+{
+	SG_UNREF(m_diff);
 }
 
 CEvaluationResult* CGradientEvaluation::evaluate()

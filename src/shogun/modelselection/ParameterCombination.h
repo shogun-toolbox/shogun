@@ -112,7 +112,7 @@ public:
 	 * @param name Name of parameter
 	 * @param value value to be set
 	 */
-	void set_parameter(char* name, float64_t value);
+	bool set_parameter(char* name, float64_t value);
 
 	/** Gets specific parameter by name.
 	 *

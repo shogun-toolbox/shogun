@@ -269,6 +269,8 @@ public:
 			CMapNode<K, T>* node = orig.array->get_element(i);
 			add(node->key, node->data);
 		}
+
+		return *this;
 	}
 
 private:

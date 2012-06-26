@@ -12,7 +12,8 @@
 
 #include <shogun/regression/gp/LikelihoodModel.h>
 
-namespace shogun {
+namespace shogun
+{
 
 /** @brief This is the class that models a Gaussian Likelihood
  *
@@ -20,7 +21,8 @@ namespace shogun {
  * variance $\sigma$.
  *
  */
-class CGaussianLikelihood: public CLikelihoodModel {
+class CGaussianLikelihood: public CLikelihoodModel
+{
   
 public:
 
@@ -72,6 +74,9 @@ public:
 private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
+
+	/*Initialize function*/
+	void init();
 };
 
 }

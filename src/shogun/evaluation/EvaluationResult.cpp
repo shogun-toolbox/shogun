@@ -11,10 +11,12 @@
 
 using namespace shogun;
 
-CEvaluationResult::CEvaluationResult() {
+CEvaluationResult::CEvaluationResult()
+{
 
 }
 
-CEvaluationResult::~CEvaluationResult() {
+CEvaluationResult::~CEvaluationResult()
+{
 
 }

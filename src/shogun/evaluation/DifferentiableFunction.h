@@ -14,7 +14,8 @@
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGString.h>
 
-namespace shogun {
+namespace shogun
+{
 
 /** @brief DifferentiableFunction.
  *
@@ -22,7 +23,8 @@ namespace shogun {
  * used for GradientEvaluation.
  *
  */
-class CDifferentiableFunction: public CSGObject {
+class CDifferentiableFunction: public CSGObject
+{
 
 public:
 
@@ -33,12 +35,15 @@ public:
 	virtual ~CDifferentiableFunction();
 
 	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const	{ return "DifferentiableFunction"; }
+	inline virtual const char* get_name() const
+	{
+		return "DifferentiableFunction";
+	}
 
 	/*Get the gradient
 	 *
 	 * @return Map of gradient. Keys are names of parameters, values are
-	 * values of deriviative with respect to that parameter.
+	 * values of derivative with respect to that parameter.
 	 */
 	virtual CMap<SGString<char>, float64_t> get_gradient() = 0;
 

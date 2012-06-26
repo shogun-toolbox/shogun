@@ -12,7 +12,8 @@
 
 #include <shogun/base/SGObject.h>
 
-namespace shogun {
+namespace shogun
+{
   
 /*Type of likelihood model*/
 enum ELikelihoodModelType
@@ -29,7 +30,8 @@ enum ELikelihoodModelType
  *  is the prediction function.
  *
  */
-class CLikelihoodModel : public CSGObject {
+class CLikelihoodModel : public CSGObject
+{
 
 public:
   
@@ -72,7 +74,9 @@ public:
 	  * @return model type NONE
 	 */
 	virtual ELikelihoodModelType get_model_type() {return LT_NONE;}
+
 };
+
 }
 
 #endif /* CLIKELIHOODMODEL_H_ */

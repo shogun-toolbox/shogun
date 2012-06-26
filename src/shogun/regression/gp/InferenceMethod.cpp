@@ -15,17 +15,18 @@
 
 using namespace shogun;
 
-CInferenceMethod::CInferenceMethod() {
-	kernel = NULL;
+CInferenceMethod::CInferenceMethod()
+{
+	m_kernel = NULL;
 	m_model = NULL;
 	m_labels = NULL;
-	features = NULL;
-	mean = NULL;
+	m_features = NULL;
+	m_mean = NULL;
 }
 
 CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) : kernel(NULL),
-		features(NULL), mean(NULL), m_labels(NULL), m_model(NULL)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) : m_kernel(NULL),
+		m_features(NULL), m_labels(NULL), m_mean(NULL), m_model(NULL)
 {
 	set_kernel(kern);
 	set_features(feat);
@@ -35,11 +36,11 @@ CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
 }
 
 CInferenceMethod::~CInferenceMethod() {
-	SG_UNREF(kernel);
-	SG_UNREF(features);
+	SG_UNREF(m_kernel);
+	SG_UNREF(m_features);
 	SG_UNREF(m_labels);
 	SG_UNREF(m_model);
-	SG_UNREF(mean);
+	SG_UNREF(m_mean);
 }
 
 

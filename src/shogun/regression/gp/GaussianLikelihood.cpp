@@ -11,29 +11,38 @@
 #include <shogun/modelselection/ParameterCombination.h>
 
 
-namespace shogun {
+using namespace shogun;
 
-CGaussianLikelihood::CGaussianLikelihood() {
+CGaussianLikelihood::CGaussianLikelihood()
+{
+	init();
+}
+
+void CGaussianLikelihood::init()
+{
 	m_sigma = 0.01;
 	SG_ADD(&m_sigma, "sigma", "Sigma.", MS_AVAILABLE);
 }
 
-CGaussianLikelihood::~CGaussianLikelihood() {
-	// TODO Auto-generated destructor stub
+CGaussianLikelihood::~CGaussianLikelihood()
+{
 }
 
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_means(SGVector<float64_t>& means)
+SGVector<float64_t> CGaussianLikelihood::evaluate_means(
+		SGVector<float64_t>& means)
 {
 	return SGVector<float64_t>(means);
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t>& vars)
+SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
+		SGVector<float64_t>& vars)
 {
 	SGVector<float64_t> result(vars);
-	for(int i = 0; i < result.vlen; i++) result[i] += (m_sigma*m_sigma);
+
+	for(int i = 0; i < result.vlen; i++)
+		result[i] += (m_sigma*m_sigma);
+
 	return result;
 }
 
-
-}

@@ -47,7 +47,7 @@ void CParameterCombination::append_child(CParameterCombination* child)
 	m_child_nodes->append_element(child);
 }
 
-void CParameterCombination::set_parameter(char* name, float64_t value)
+bool CParameterCombination::set_parameter(char* name, float64_t value)
 {
 	if (m_param)
 	{
@@ -62,6 +62,7 @@ void CParameterCombination::set_parameter(char* name, float64_t value)
 						SG_ERROR("Paramater %s not a float parameter", name);
 
 						*((float64_t*)(param)) = value;
+						return true;
 				}
 
 		}
@@ -75,6 +76,8 @@ void CParameterCombination::set_parameter(char* name, float64_t value)
 		child->set_parameter(name, value);
 		SG_UNREF(child);
 	}
+
+	return false;
 }
 
 TParameter* CParameterCombination::get_parameter(char* name)
@@ -83,7 +86,6 @@ TParameter* CParameterCombination::get_parameter(char* name)
 	{
 		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
 		{
-				void* param=m_param->get_parameter(i)->m_parameter;
 				if (!strcmp(m_param->get_parameter(i)->m_name, name))
 				{
 						return m_param->get_parameter(i);
@@ -96,11 +98,12 @@ TParameter* CParameterCombination::get_parameter(char* name)
 	{
 		CParameterCombination* child=(CParameterCombination*)
 				m_child_nodes->get_element(i);
+
 		TParameter* p = child->get_parameter(name);
+
 		if(p)
-		{
 			return p;
-		}
+
 		SG_UNREF(child);
 	}
 

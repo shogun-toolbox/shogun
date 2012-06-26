@@ -143,7 +143,6 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(const char* param_na
 	{
 		SG_ERROR("Gradient calculation not implemented for parameter %s.",
 			param_name);
-		SG_ERROR("Returning Empty Matrix\n");
 		return SGMatrix<float64_t>(0,0);
 	}
 }

@@ -16,13 +16,15 @@
 #include <shogun/evaluation/GradientResult.h>
 
 
-namespace shogun {
+namespace shogun
+{
 
 /**
  * @brief Model selection class which searches for the best model by a gradient-
  * search.
  */
-class CGradientModelSelection: public CModelSelection {
+class CGradientModelSelection: public CModelSelection
+{
 
 public:
 
@@ -105,7 +107,7 @@ protected:
 	struct nlopt_package
 	{
 		shogun::CMachineEvaluation* m_machine_eval;
-		shogun::CParameterCombination* current_combination;
+		shogun::CParameterCombination* m_current_combination;
 		bool print_state;
 	};
 
@@ -116,7 +118,7 @@ protected:
 	float64_t m_grad_tolerance;
 
 	/*Parameter combination tree*/
-	CParameterCombination* current_combination;
+	CParameterCombination* m_current_combination;
 
 };
 

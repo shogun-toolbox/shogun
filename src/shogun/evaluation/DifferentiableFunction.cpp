@@ -11,10 +11,13 @@
 
 using namespace shogun;
 
-CDifferentiableFunction::CDifferentiableFunction() {
+CDifferentiableFunction::CDifferentiableFunction()
+{
 
 }
 
-CDifferentiableFunction::~CDifferentiableFunction() {
+CDifferentiableFunction::~CDifferentiableFunction()
+{
+
 }
 

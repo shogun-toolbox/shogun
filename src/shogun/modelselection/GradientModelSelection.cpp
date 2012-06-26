@@ -26,8 +26,8 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 
 	shogun::CMachineEvaluation* m_machine_eval = pack->m_machine_eval;
 
-	shogun::CParameterCombination* current_combination =
-			pack->current_combination;
+	shogun::CParameterCombination* m_current_combination =
+			pack->m_current_combination;
 
 	bool print_state = pack->print_state;
 
@@ -48,11 +48,11 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 
 		char* name = node->key.string;
 
-		current_combination->set_parameter(name, x[i]);
+		m_current_combination->set_parameter(name, x[i]);
 	}
 
 	/*Apply them to the machine*/
-	current_combination->apply_to_modsel_parameter(
+	m_current_combination->apply_to_modsel_parameter(
 			machine->m_model_selection_parameters);
 
 	/*Get rid of this first result*/
@@ -73,6 +73,7 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	float64_t function_value = result->quantity[0];
 
 	SG_UNREF(result);
+	SG_UNREF(machine);
 
 	return function_value;
 }
@@ -85,14 +86,16 @@ CGradientModelSelection::CGradientModelSelection(
 				machine_eval) {
 	m_max_evaluations = 1000;
 	m_grad_tolerance = 1e-4;
-	current_combination = NULL;
+	m_current_combination = NULL;
 }
 
 CGradientModelSelection::CGradientModelSelection() : CModelSelection(NULL,
 		NULL) {
 }
 
-CGradientModelSelection::~CGradientModelSelection() {
+CGradientModelSelection::~CGradientModelSelection()
+{
+	SG_UNREF(m_current_combination);
 }
 
 CParameterCombination* CGradientModelSelection::select_model(bool print_state)
@@ -101,17 +104,19 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 #ifdef HAVE_NLOPT
 
 	//Get a random initial combination
-	current_combination = m_model_parameters->get_random_combination();
+	SG_UNREF(m_current_combination);
+	m_current_combination = m_model_parameters->get_random_combination();
+	SG_REF(m_current_combination);
 
 	CMachine* machine=m_machine_eval->get_machine();
 
 	if(print_state)
 	{
 		SG_PRINT("trying combination:\n");
-		current_combination->print_tree();
+		m_current_combination->print_tree();
 	}
 
-	current_combination->apply_to_modsel_parameter(
+	m_current_combination->apply_to_modsel_parameter(
 			machine->m_model_selection_parameters);
 
 	/*How many of these parameters have derivatives?*/
@@ -131,10 +136,11 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		CMapNode<SGString<char>, float64_t>* node =
 				result->gradient.get_node_ptr(i);
 
-		TParameter* param =
-				current_combination->get_parameter(node->key.string);
+	//Getting Bizarre memory leaks with this function. Don't know why.
+	//	TParameter* param =
+	//			m_current_combination->get_parameter(node->key.string);
 
-		x[i] = *((float64_t*)(param->m_parameter));
+		x[i] = 0.5;//*((float64_t*)(param->m_parameter));
 	}
 
 	//Setting up nlopt
@@ -142,7 +148,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	nlopt_package pack;
 
-	pack.current_combination = current_combination;
+	pack.m_current_combination = m_current_combination;
 	pack.m_machine_eval = m_machine_eval;
 	pack.print_state = print_state;
 
@@ -150,26 +156,34 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	nlopt_set_maxeval(opt, m_max_evaluations);
 	nlopt_set_xtol_rel(opt, m_grad_tolerance);
 	nlopt_set_lower_bounds(opt, lb);
-	nlopt_set_min_objective(opt, nlopt_function, &pack);
+
+	//if(m_machine_eval->get_evaluation_direction() == ED_MINIMIZE)
+		nlopt_set_min_objective(opt, nlopt_function, &pack);
+
+	//else
+	//	nlopt_set_max_objective(opt, nlopt_function, &pack);
 
 	double minf; //the minimum objective value, upon return
 
 	//Optimize our function!
-	if (nlopt_optimize(opt, x, &minf) < 0) {
+	if (nlopt_optimize(opt, x, &minf) < 0)
+	{
 		SG_ERROR("nlopt failed!\n");
 	}
 
 	//Clean up.
 	delete[] lb;
-	delete[] x;
+    delete[] x;
+    nlopt_destroy(opt);
 
 	//Admittedly weird, but I am unreferencing
-	//current_combination from this stack and
+	//m_current_combination from this stack and
 	//passing it on to another.
-	SG_REF(current_combination);
-	SG_UNREF(current_combination);
+	SG_UNREF(machine);
+	SG_UNREF(result);
+	SG_REF(m_current_combination);
 
-	return current_combination;
+	return m_current_combination;
 
 #endif
 
