@@ -106,9 +106,11 @@ public:
 	 * structure, a set of trees which contain all combinations of parameters
 	 * that are implied by this tree is generated.
 	 *
+	 * @param prefix_num a number of tabs that is put before each output
+	 * to have a more readable print layout
 	 * @return result all trees of parameter combinations are put into here
 	 */
-	CDynamicObjectArray* get_combinations();
+	CDynamicObjectArray* get_combinations(index_t prefix_num=1);
 
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,
