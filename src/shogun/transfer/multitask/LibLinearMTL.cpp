@@ -55,10 +55,6 @@ void CLibLinearMTL::init()
 	set_max_iterations();
 	epsilon=1e-5;
 
-	// take care of MTL stuff
-	//num_task
-	//task_similarity_matrix = SGMatrix<float64_t>(W_matrix,N,N);
-
 	SG_ADD(&C1, "C1", "C Cost constant 1.", MS_AVAILABLE);
 	SG_ADD(&C2, "C2", "C Cost constant 2.", MS_AVAILABLE);
 	SG_ADD(&use_bias, "use_bias", "Indicates if bias is used.",
@@ -435,6 +431,8 @@ obj = reg_obj + C * loss_obj
 
 return obj
 */
+
+	SG_INFO("DONE to compute Primal OBJ\n");
 	// calculate objective value
 	SGMatrix<float64_t> W = get_W();
 
@@ -481,6 +479,8 @@ return obj
 
 	}
 
+	SG_INFO("DONE to compute Primal OBJ, obj=%f\n",obj);
+
 	return obj;
 }
 
@@ -501,8 +501,11 @@ obj -= 0.5 * M[s,t] * alphas[i] * alphas[j] * lt[i] * lt[j] * np.dot(xt[i], xt[j
 return obj
 */
 
-	float64_t obj = 0;
+	SG_INFO("starting to compute DUAL OBJ\n");
+
 	int32_t num_vec=features->get_num_vectors();
+
+	float64_t obj = 0;
 
 	// compute linear term
 	for(int32_t i=0; i<num_vec; i++)
@@ -511,6 +514,29 @@ return obj
 	}
 
 	// compute quadratic term
+
+	int32_t v_size = features->get_dim_feature_space();
+
+	// efficient computation
+	for (int32_t s=0; s<num_tasks; s++)
+	{
+		float64_t* v_s = V.get_column_vector(s);
+		for (int32_t t=0; t<num_tasks; t++)
+		{
+			float64_t* v_t = V.get_column_vector(t);
+			const float64_t ts = task_similarity_matrix(s, t);
+
+			for(int32_t i=0; i<v_size; i++)
+			{
+				obj -= 0.5 * ts * v_s[i]*v_t[i];
+			}
+		}
+	}
+
+	/*
+	// naiive implementation
+	float64_t tmp_val2 = 0;
+
 	for(int32_t i=0; i<num_vec; i++)
 	{
 		int32_t ti_i = task_indicator_lhs[i];
@@ -522,13 +548,16 @@ return obj
 			const float64_t ts = task_similarity_matrix(ti_i, ti_j);
 
 			// compute objective
-			obj -= 0.5 * ts * alphas[i] * alphas[j] * ((CBinaryLabels*)m_labels)->get_label(i) * 
+			tmp_val2 -= 0.5 * alphas[i] * alphas[j] * ts * ((CBinaryLabels*)m_labels)->get_label(i) * 
 				((CBinaryLabels*)m_labels)->get_label(j) * features->dot(i, features,j);
 		}
 	}
+	*/
+
 
 	return obj;
 }
+
 
 float64_t CLibLinearMTL::compute_duality_gap()
 {
