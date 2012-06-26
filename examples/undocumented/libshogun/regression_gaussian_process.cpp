@@ -1,7 +1,4 @@
 /*
- * Model selections parameters can now be manipulated flawlessly.
-Added assignment operator for CMap. Still some prototype code lurking around.
-
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -89,9 +86,9 @@ int main(int argc, char **argv)
 	CGaussianLikelihood* lik = new CGaussianLikelihood();
 	lik->set_sigma(0.01);
 	CExactInferenceMethod* inf = new CExactInferenceMethod(test_kernel, features, mean, labels, lik);
+	SG_REF(inf);
+	
 	CGaussianProcessRegression* gp = new CGaussianProcessRegression(inf, features, labels);
-	
-	
 	
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 	
@@ -103,7 +100,7 @@ int main(int argc, char **argv)
 
 	CModelSelectionParameters* c1=new CModelSelectionParameters("sigma");
 	c3->append_child(c1);
-	c1->build_values(-2.0, 2.0, R_EXP);
+	c1->build_values(2.0, 2.0, R_EXP);
 	
 	CModelSelectionParameters* c4=new CModelSelectionParameters("Kernel", test_kernel);
 	c2->append_child(c4);
@@ -112,39 +109,32 @@ int main(int argc, char **argv)
 	c4->append_child(c5);
 	c5->build_values(-2.0, 2.0, R_EXP);
 	
-/*		CModelSelectionParameters* c6 =new CModelSelectionParameters("stupid");
-	c2->append_child(c6);
-	c6->build_values(-2.0, 2.0, R_EXP);*/
-	
-	
 	/* cross validation class for evaluation in model selection */
-	CGradientEvaluation* cross=new CGradientEvaluation(gp, features, labels,
+	SG_REF(gp);
+	CGradientEvaluation* grad=new CGradientEvaluation(gp, features, labels,
 			NULL, NULL);
 	
-	cross->diff = inf;
+	grad->set_function(inf);
 	
 	gp->print_modsel_params();
 	
 	root->print_tree();
 	
-		/* handles all of the above structures in memory */
-	CGradientModelSelection* grid_search=new CGradientModelSelection(
-			root, cross);
+	/* handles all of the above structures in memory */
+	CGradientModelSelection* grad_search=new CGradientModelSelection(
+			root, grad);
 
 	/* set autolocking to false to get rid of warnings */
-	cross->set_autolock(false);
+	grad->set_autolock(false);
 
-		SG_SPRINT("verdict: %f\n", lik->get_sigma());
+	CParameterCombination* best_combination=grad_search->select_model(true);
 
-	CParameterCombination* best_combination=grid_search->select_model();
-//	SG_SPRINT("best parameter(s):\n");
-//	best_combination->print_tree();
+	SG_SPRINT("best parameter(s):\n");
+	best_combination->print_tree();
 
 	best_combination->apply_to_machine(gp);
-//	CGradientResult* result=(CGradientResult*)cross->evaluate();
-//	result->print_result();
-//	SG_SPRINT("verdict: %f\n", lik->get_sigma());
-//	SG_SPRINT("verdict: %f\n", test_kernel->get_width());
+	CGradientResult* result=(CGradientResult*)grad->evaluate();
+	result->print_result();
 
 
 	SGVector<float64_t> alpha = inf->get_alpha();
@@ -162,15 +152,20 @@ int main(int argc, char **argv)
 	SGMatrix<float64_t>::display_matrix(cholesky.matrix, cholesky.num_rows, cholesky.num_cols, "Cholesky Matrix L");
 	SGMatrix<float64_t>::display_matrix(matrix.matrix, matrix.num_rows, matrix.num_cols, "Training Features");
 	SGMatrix<float64_t>::display_matrix(matrix2.matrix, matrix2.num_rows, matrix2.num_cols, "Testing Features");
-	SG_SPRINT("%f\n", inf->get_negative_marginal_likelihood());
+	
 	/*free memory*/
 	SG_UNREF(features);
 	SG_UNREF(features2);
-//	SG_UNREF(predictions);
+	SG_UNREF(predictions);
 	SG_UNREF(labels);
+	SG_UNREF(inf);
 	SG_UNREF(gp);
-		
+	SG_UNREF(grad_search);
+	SG_UNREF(best_combination);
+	SG_UNREF(result);
+	
 	exit_shogun();
 
 	return 0;
 }
+
