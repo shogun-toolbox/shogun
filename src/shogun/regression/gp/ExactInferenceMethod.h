@@ -158,8 +158,6 @@ private:
 	 */
 	void check_members();
 
-	/*Initialize object*/
-	void init();
 };
 
 }

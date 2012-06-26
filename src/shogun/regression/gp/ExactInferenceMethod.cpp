@@ -23,22 +23,12 @@ using namespace shogun;
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
-	init();
 }
 
 CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
-	init();
-}
-
-void CExactInferenceMethod::init()
-{
-	SG_ADD((CSGObject**) &m_model, "Likelihood Model", "Likelihood Model",
-	    MS_AVAILABLE);
-	SG_ADD((CSGObject**) &m_kernel, "Kernel", "Kernel",
-	    MS_AVAILABLE);
 }
 
 CExactInferenceMethod::~CExactInferenceMethod()

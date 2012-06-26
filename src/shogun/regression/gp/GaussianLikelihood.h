@@ -72,9 +72,6 @@ public:
 	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
 
 private:
-	void init();
-
-private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 

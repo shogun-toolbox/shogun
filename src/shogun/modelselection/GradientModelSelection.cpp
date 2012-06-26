@@ -136,7 +136,6 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		CMapNode<SGString<char>, float64_t>* node =
 				result->gradient.get_node_ptr(i);
 
-	//Getting Bizarre memory leaks with this function. Don't know why.
 	    TParameter* param =
 	    		m_current_combination->get_parameter(node->key.string);
 
