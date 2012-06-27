@@ -37,7 +37,7 @@ void CParameterCombination::init()
 	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 
-	SG_ADD((CSGObject**)&m_child_nodes, "child nodes",
+	SG_ADD((CSGObject**)&m_child_nodes, "child_nodes",
 			"children of this node", MS_NOT_AVAILABLE);
 }
 
