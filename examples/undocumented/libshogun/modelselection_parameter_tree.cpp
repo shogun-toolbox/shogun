@@ -204,11 +204,11 @@ CModelSelectionParameters* create_param_tree_4a()
 	CGaussianKernel* gaussian_kernel_svm=new CGaussianKernel(10, 2);
 
 	CModelSelectionParameters* param_inf=new CModelSelectionParameters(
-			"Inference Method", inf);
+			"inference_method", inf);
 	root->append_child(param_inf);
 
 	CModelSelectionParameters* param_inf_gaussian=new CModelSelectionParameters(
-			"model", lik);
+			"likelihood_model", lik);
 	param_inf->append_child(param_inf_gaussian);
 
 	CModelSelectionParameters* param_inf_kernel_1=new CModelSelectionParameters(
@@ -259,11 +259,11 @@ CModelSelectionParameters* create_param_tree_4b()
 	param_c->build_values(1,2,R_EXP);
 
 	CModelSelectionParameters* param_inf=new CModelSelectionParameters(
-			"Inference Method", inf);
+			"inference_method", inf);
 	root->append_child(param_inf);
 
 	CModelSelectionParameters* param_inf_gaussian=new CModelSelectionParameters(
-			"model", lik);
+			"likelihood_model", lik);
 	param_inf->append_child(param_inf_gaussian);
 
 	CModelSelectionParameters* param_inf_kernel_1=new CModelSelectionParameters(
@@ -307,11 +307,11 @@ CModelSelectionParameters* create_param_tree_5()
 			mean, labels, lik);
 
 	CModelSelectionParameters* param_inf=new CModelSelectionParameters(
-			"Inference Method", inf);
+			"inference_method", inf);
 	root->append_child(param_inf);
 
 	CModelSelectionParameters* param_inf_gaussian=new CModelSelectionParameters(
-			"model", lik);
+			"likelihood_model", lik);
 	param_inf->append_child(param_inf_gaussian);
 
 	CModelSelectionParameters* param_inf_gaussian_sigma=
