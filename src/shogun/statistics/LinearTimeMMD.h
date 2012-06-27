@@ -20,7 +20,7 @@ class CFeatures;
 
 /** @brief This class implements the linear time Maximum Mean Statistic as
  * described in
- * Gretton, A., Borgwardt, K. M., Rasch, M. J., Schölkopf, B., & Smola, A. (2012).
+ * Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  *
  * Along with the statistic comes a method to compute a p-value based on a
