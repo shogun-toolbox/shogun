@@ -48,6 +48,24 @@ class CrossValidationResult : public CEvaluationResult
 			conf_int_alpha = 0;
 		}
 
+		/** return what type of result we are.
+		 *
+		 *
+		 * @return result type
+		 */
+		virtual EEvaluationResultType get_result_type()
+		{
+			return CROSSVALIDATION_RESULT;
+		}
+
+		/** Returns the name of the SGSerializable instance.  It MUST BE
+		 *  the CLASS NAME without the prefixed `C'.
+		 *
+		 *  @return name of the SGSerializable
+		 */
+		virtual const char* get_name() const { return "CrossValidationResult"; }
+
+
 	public:
 		/** mean */
 		float64_t mean;

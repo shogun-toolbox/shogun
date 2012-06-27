@@ -99,6 +99,10 @@ int main(int argc, char **argv)
 
 	best_combination->apply_to_machine(classifier);
 	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+
 	result->print_result();
 
 	/* clean up */

@@ -43,6 +43,16 @@ public:
 		return "GradientResult";
 	}
 
+	/** return what type of result we are.
+	 *
+	 *
+	 * @return result type
+	 */
+	virtual EEvaluationResultType get_result_type()
+	{
+		return GRADIENTEVALUATION_RESULT;
+	}
+
 	/*Function value*/
 	SGVector<float64_t> quantity;
 
@@ -55,19 +65,16 @@ public:
 	void print_result()
 	{
 		SG_SPRINT("Quantity: [");
-		for(int i = 0; i < quantity.vlen; i++)
-		{
+
+		for (int i = 0; i < quantity.vlen; i++)
 			SG_SPRINT("%f, ", quantity[i]);
-		}
 
 		SG_SPRINT("] ");
 
 		SG_SPRINT("Gradient: [");
 
-		for(int i = 0; i < gradient.get_num_elements(); i++)
-		{
+		for (int i = 0; i < gradient.get_num_elements(); i++)
 			SG_SPRINT("%f, ", *(gradient.get_element_ptr(i)));
-		}
 
 		SG_SPRINT("]\n");
 

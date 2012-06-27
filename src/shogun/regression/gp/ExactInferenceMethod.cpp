@@ -43,7 +43,7 @@ void CExactInferenceMethod::check_members()
 	if (m_labels->get_label_type() != LT_REGRESSION)
 		SG_ERROR("Expected RegressionLabels\n");
 
-	if(!m_features)
+	if (!m_features)
 		SG_ERROR("No features set!\n");
 
   	if (!m_features->has_property(FP_DOT))
@@ -64,7 +64,7 @@ void CExactInferenceMethod::check_members()
 	if (!m_mean)
 		SG_ERROR( "No mean function assigned!\n");
 
-	if(m_model->get_model_type() != LT_GAUSSIAN)
+	if (m_model->get_model_type() != LT_GAUSSIAN)
 	{
 		SG_ERROR("Exact Inference Method can only use " \
 				"Gaussian Likelihood Function.\n");
@@ -145,12 +145,10 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::
 	SGMatrix<float64_t> deriv = m_kernel->get_parameter_gradient("width");
 
 	float64_t sum = 0;
-	for(int i = 0; i < Q.num_rows; i++)
+	for (int i = 0; i < Q.num_rows; i++)
 	{
-		for(int j = 0; j < Q.num_cols; j++)
-		{
+		for (int j = 0; j < Q.num_cols; j++)
 			sum += Q(i,j)*deriv(i,j);
-		}
 	}
 
 	sum /= 2.0;
@@ -161,7 +159,7 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::
 	
 	gradient.add(SGString<char>("sigma", strlen("sigma"), true), sum);
 
-	for(int i = 0; i < m_mean->m_parameters->get_num_parameters(); i++)
+	for (int i = 0; i < m_mean->m_parameters->get_num_parameters(); i++)
 	{
 		TParameter* param = m_mean->m_parameters->get_parameter(i);
 
@@ -208,7 +206,7 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 	SGVector<float64_t> data_means =
 			m_mean->get_mean_vector(feature_matrix);
 
-	for(int i = 0; i < label_vector.vlen; i++)
+	for (int i = 0; i < label_vector.vlen; i++)
 		label_vector[i] -= data_means[i];
 
 	result = label_vector.dot(label_vector.vector, m_alpha.vector,
@@ -217,7 +215,7 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 	float64_t m_sigma =
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	for(int i = 0; i < m_L.num_rows; i++)
+	for (int i = 0; i < m_L.num_rows; i++)
 		result += CMath::log(m_L(i,i));
 
 	result += m_L.num_rows * CMath::log(2*CMath::PI*m_sigma*m_sigma)/2.0;
@@ -256,7 +254,7 @@ void CExactInferenceMethod::update_alpha_and_chol()
 	SGVector<float64_t> data_means =
 			m_mean->get_mean_vector(feature_matrix);
 
-	for(int i = 0; i < label_vector.vlen; i++)
+	for (int i = 0; i < label_vector.vlen; i++)
 		label_vector[i] = label_vector[i] - data_means[i];
 
 	m_kernel->cleanup();
@@ -300,11 +298,12 @@ void CExactInferenceMethod::update_alpha_and_chol()
 	 * and leave the lower triangle with junk data. Finishing the job
 	 * by filling the lower triangle with zero entries.
 	 */
-	for(int i = 0; i < temp1.num_rows; i++)
+	for (int i = 0; i < temp1.num_rows; i++)
 	{
-		for(int j = 0; j < temp1.num_cols; j++)
+		for (int j = 0; j < temp1.num_cols; j++)
 		{
-			if(i > j) temp1(i,j) = 0;
+			if (i > j)
+				temp1(i,j) = 0;
 		}
 	}
 
@@ -322,7 +321,7 @@ void CExactInferenceMethod::update_alpha_and_chol()
 		  temp2.num_cols, 1, temp2.matrix, temp2.num_cols,
 		  m_alpha.vector, temp2.num_cols);
 
-	for(int i = 0; i < m_alpha.vlen; i++)
+	for (int i = 0; i < m_alpha.vlen; i++)
 		m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);
 
 }

@@ -40,8 +40,7 @@ public:
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
 	CGradientEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
-			CSplittingStrategy* splitting_strategy,
-			CEvaluation* evaluation_criterion, bool autolock=true);
+			CEvaluation* evaluation_criterion, bool autolock = true);
 
 	/*Destructor*/
 	virtual ~CGradientEvaluation();
@@ -84,6 +83,11 @@ public:
 		SG_REF(m_diff);
 		return m_diff;
 	};
+
+private:
+
+	/*Initializer*/
+	void init();
 
 private:
 

@@ -54,7 +54,7 @@ public:
 	 *
 	 *  @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() {return "GradientModelSelection";}
+	inline virtual const char* get_name() const {return "GradientModelSelection";}
 
 	/* Set the maximum evaluations used in the optimization algorithm
 	 *
@@ -100,6 +100,9 @@ private:
 	 */
 	static double nlopt_function(unsigned n, const double *x, double *grad,
 			void *func_data);
+
+	/*Initialize object*/
+	void init();
 
 protected:
 

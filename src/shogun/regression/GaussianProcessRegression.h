@@ -53,7 +53,7 @@ class CGaussianProcessRegression : public CMachine
 		{
 			SG_UNREF(m_features);
 			SG_REF(feat);
-			m_features=feat;
+			m_features = feat;
 		}
 		
 		/** get features
@@ -118,7 +118,7 @@ class CGaussianProcessRegression : public CMachine
 		* @param data (test)data to be classified
 		* @return classified labels
 		*/
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		virtual CRegressionLabels* apply_regression(CFeatures* data = NULL);
 		
 		/** get classifier type
 		*
@@ -148,7 +148,7 @@ class CGaussianProcessRegression : public CMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(CFeatures* data = NULL);
 	private:
 
 		/** function for initialization*/

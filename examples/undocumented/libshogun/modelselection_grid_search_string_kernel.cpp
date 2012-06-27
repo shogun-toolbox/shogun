@@ -147,6 +147,10 @@ int main(int argc, char **argv)
 	cross->set_conf_int_alpha(0.01);
 	classifier->data_lock(labels, features);
 	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+
 	SG_SPRINT("result: ");
 	result->print_result();
 

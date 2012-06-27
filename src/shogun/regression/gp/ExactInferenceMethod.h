@@ -157,7 +157,6 @@ private:
 	 * for inference
 	 */
 	void check_members();
-
 };
 
 }

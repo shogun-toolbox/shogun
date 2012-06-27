@@ -41,13 +41,6 @@ public:
 	/*Destructor*/
 	virtual ~CLikelihoodModel();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
-	inline virtual const char* get_name() const { return "LikelihoodModel"; }
-
 	/** get likelihood function derivative with respect to parameters
 	 *
 	 * @param name of parameter used to take derivative

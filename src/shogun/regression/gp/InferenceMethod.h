@@ -142,7 +142,7 @@ public:
 	{
 		SG_UNREF(m_kernel);
 		SG_REF(kern);
-		m_kernel=kern;
+		m_kernel = kern;
 	}
 
 	/**get kernel
@@ -159,7 +159,7 @@ public:
 	{
 		SG_UNREF(m_mean);
 		SG_REF(m);
-		m_mean=m;
+		m_mean = m;
 	}
 
 	/**get labels
@@ -176,7 +176,7 @@ public:
 	{
 		SG_UNREF(m_labels);
 		SG_REF(lab);
-		m_labels=lab;
+		m_labels = lab;
 	}
 
 	/**get likelihood model
@@ -193,7 +193,7 @@ public:
 	{
 		SG_UNREF(m_model);
 		SG_REF(mod);
-		m_model=mod;
+		m_model = mod;
 	}
 
 protected:

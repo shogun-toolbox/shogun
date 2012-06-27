@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando Jos�� Iglesias Garc��a
+ * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2010,2012 Soeren Sonnenburg
+ * Written (W) 2012 Jacob Walker
  * Copyright (C) 2010 Berlin Institute of Technology
  * Copyright (C) 2012 Soeren Sonnenburg
  */
@@ -47,11 +48,13 @@ public:
 
 	bool operator==(const SGString & other) const
 	{
-		if(other.slen != slen) return false;
+		if (other.slen != slen)
+			return false;
 
-		for(int i = 0; i < slen; i++)
+		for (int i = 0; i < slen; i++)
 		{
-			if(other.string[i] != string[i]) return false;
+			if (other.string[i] != string[i])
+				return false;
 		}
 
 		return true;

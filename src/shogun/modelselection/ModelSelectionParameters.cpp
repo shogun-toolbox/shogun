@@ -5,6 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2012 Jacob Walker
+ *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -163,14 +165,18 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 	}
 }
 
-CParameterCombination* CModelSelectionParameters::get_random_combination()
+CParameterCombination* CModelSelectionParameters::get_single_combination(
+		bool is_rand)
 {
 	/* If this is a value node, then randomly pick a value from the built
 	 * range */
 	if (m_values)
 	{
-		index_t i =
-				(m_values_length-1)*(float64_t(rand())/float64_t(RAND_MAX));
+
+		index_t i = 0;
+
+		if (is_rand)
+			i = CMath::random(0, m_values_length-1);
 
 		Parameter* p=new Parameter();
 
@@ -207,22 +213,19 @@ CParameterCombination* CModelSelectionParameters::get_random_combination()
 		{
 			Parameter* p=new Parameter();
 			p->add(&m_sgobject, m_node_name);
-	     	new_root=new CParameterCombination(p);
+	     	new_root = new CParameterCombination(p);
 		}
 
 		else
+			new_root = new CParameterCombination();
+
+		for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
 		{
-			new_root=new CParameterCombination();
-		}
-
-
-
-		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
-		{
-			CModelSelectionParameters* current=
+			CModelSelectionParameters* current =
 					(CModelSelectionParameters*)m_child_nodes->get_element(i);
 
-			CParameterCombination* c = current->get_random_combination();
+			CParameterCombination* c = current->get_single_combination(is_rand);
+
 			new_root->append_child(c);
 
 			SG_UNREF(current);
@@ -237,14 +240,16 @@ CParameterCombination* CModelSelectionParameters::get_random_combination()
 
 		if (m_sgobject)
 		{
-			Parameter* p=new Parameter();
+			Parameter* p = new Parameter();
 			p->add(&m_sgobject, m_node_name);
 			return new CParameterCombination(p);
 		}
 
 		else
+		{
 			new_root = new CParameterCombination();
 			return new_root;
+		}
 	}
 
 }

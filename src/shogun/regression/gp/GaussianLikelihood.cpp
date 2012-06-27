@@ -15,7 +15,7 @@
 
 using namespace shogun;
 
-CGaussianLikelihood::CGaussianLikelihood()
+CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
 {
 	init();
 }
@@ -42,7 +42,7 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
 {
 	SGVector<float64_t> result(vars);
 
-	for(int i = 0; i < result.vlen; i++)
+	for (int i = 0; i < result.vlen; i++)
 		result[i] += (m_sigma*m_sigma);
 
 	return result;

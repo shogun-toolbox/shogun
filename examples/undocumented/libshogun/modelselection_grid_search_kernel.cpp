@@ -154,6 +154,10 @@ int main(int argc, char **argv)
 	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
 	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+
 	SG_SPRINT("result: ");
 	result->print_result();
 
@@ -164,6 +168,10 @@ int main(int argc, char **argv)
 	best_combination->apply_to_machine(classifier);
 	SG_UNREF(result);
 	result=(CrossValidationResult*)cross->evaluate();
+	
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+	
 	SG_SPRINT("result (unlocked): ");
 
 	/* clean up destroy result parameter */

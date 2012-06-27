@@ -51,10 +51,10 @@ void CCrossValidation::init()
 	m_num_runs=1;
 	m_conf_int_alpha=0;
 
-	m_parameters->add(&m_num_runs, "num_runs", "Number of repetitions");
-	m_parameters->add(&m_conf_int_alpha, "conf_int_alpha",
-			"alpha-value of confidence "
-					"interval");
+	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_conf_int_alpha, "conf_int_alpha", "alpha-value " \
+			"of confidence interval", MS_NOT_AVAILABLE);
 }
 
 

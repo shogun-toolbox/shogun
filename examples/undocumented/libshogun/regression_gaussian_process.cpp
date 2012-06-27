@@ -20,7 +20,7 @@
 #include <shogun/modelselection/GradientModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
-
+#include <shogun/evaluation/GradientCriterion.h>
 
 using namespace shogun;
 
@@ -100,19 +100,22 @@ int main(int argc, char **argv)
 
 	CModelSelectionParameters* c1=new CModelSelectionParameters("sigma");
 	c3->append_child(c1);
-	c1->build_values(2.0, 2.0, R_EXP);
+	c1->build_values(-10.0, 2.0, R_EXP);
 	
 	CModelSelectionParameters* c4=new CModelSelectionParameters("Kernel", test_kernel);
 	c2->append_child(c4);
 
 	CModelSelectionParameters* c5=new CModelSelectionParameters("width");
 	c4->append_child(c5);
-	c5->build_values(-2.0, 2.0, R_EXP);
+	c5->build_values(-10.0, 2.0, R_EXP);
 	
 	/* cross validation class for evaluation in model selection */
 	SG_REF(gp);
+
+	CGradientCriterion* crit = new CGradientCriterion();
+
 	CGradientEvaluation* grad=new CGradientEvaluation(gp, features, labels,
-			NULL, NULL);
+			crit);
 	
 	grad->set_function(inf);
 	
@@ -134,6 +137,10 @@ int main(int argc, char **argv)
 
 	best_combination->apply_to_machine(gp);
 	CGradientResult* result=(CGradientResult*)grad->evaluate();
+
+	if(result->get_result_type() != GRADIENTEVALUATION_RESULT)
+		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
+
 	result->print_result();
 
 

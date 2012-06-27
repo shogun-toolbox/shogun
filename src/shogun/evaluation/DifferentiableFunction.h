@@ -34,12 +34,6 @@ public:
 	/*Destructor*/
 	virtual ~CDifferentiableFunction();
 
-	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const
-	{
-		return "DifferentiableFunction";
-	}
-
 	/*Get the gradient
 	 *
 	 * @return Map of gradient. Keys are names of parameters, values are

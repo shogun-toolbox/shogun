@@ -111,8 +111,28 @@ public:
 	 *
 	 * @param name Name of parameter
 	 * @param value value to be set
+	 *
+	 * @return bool true if value succesfully set.
 	 */
 	bool set_parameter(char* name, float64_t value);
+
+	/** Sets specific parameter to specified value.
+	 *
+	 * @param name Name of parameter
+	 * @param value value to be set
+	 *
+	 * @return bool true if value succesfully set.
+	 */
+	bool set_parameter(char* name, int32_t value);
+
+	/** Sets specific parameter to specified value.
+	 *
+	 * @param name Name of parameter
+	 * @param value value to be set
+	 *
+	 * @return bool true if value succesfully set.
+	 */
+	bool set_parameter(char* name, bool value);
 
 	/** Gets specific parameter by name.
 	 *

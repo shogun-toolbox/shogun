@@ -96,6 +96,10 @@ void test_cross_validation()
 
 	/* actual evaluation */
 	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+
 	SG_SPRINT("cross_validation estimate:\n");
 	result->print_result();
 

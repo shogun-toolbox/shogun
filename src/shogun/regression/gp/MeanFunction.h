@@ -56,13 +56,6 @@ public:
 	virtual float64_t get_parameter_derivative(SGMatrix<float64_t>& data,
 			const char* param_name);
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
-	inline virtual const char* get_name() const { return "MeanFunction"; }
-
 };
 
 }

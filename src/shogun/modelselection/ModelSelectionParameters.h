@@ -110,13 +110,17 @@ public:
 	 */
 	CDynamicObjectArray* get_combinations();
 
-	/** Instead of generating an array of combinations, get_random_combination
-	 * generates a single random combination of parameters. The choice of
+	/** Instead of generating an array of combinations, get_single_combination
+	 * generates a single  combination of parameters. The choice of
 	 * values is constrained by the value arrays built by build_values.
+	 * The choice of values may be random. If not, the lowest possible
+	 * values are chosen.
+	 *
+	 * @param bool Is our choice random?
 	 *
 	 * @return parameter tree of random parameter values.
 	 */
-	CParameterCombination* get_random_combination();
+	CParameterCombination* get_single_combination(bool rand = true);
 
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,
@@ -168,7 +172,7 @@ protected:
 		return m_child_nodes->get_num_elements()>0;
 	}
 
-public:
+private:
 	CSGObject* m_sgobject;
 	const char* m_node_name;
 	void* m_values;

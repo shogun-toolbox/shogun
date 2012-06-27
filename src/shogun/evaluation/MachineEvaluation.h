@@ -5,6 +5,9 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
+ *
+ * Some code adapted from CrossValidation class by
+ * Heiko Strathmann
  */
 
 #ifndef CMACHINEEVALUATION_H_
@@ -47,7 +50,7 @@ public:
 	 */
 	CMachineEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CEvaluation* evaluation_criterion, bool autolock=true);
+			CEvaluation* evaluation_criterion, bool autolock = true);
 
 	/** constructor, for use with custom kernels (no features)
 	 * @param machine learning machine to use
@@ -58,20 +61,10 @@ public:
 	 */
 	CMachineEvaluation(CMachine* machine, CLabels* labels,
 			CSplittingStrategy* splitting_strategy,
-			CEvaluation* evaluation_criterion, bool autolock=true);
+			CEvaluation* evaluation_criterion, bool autolock = true);
 
 
 	virtual ~CMachineEvaluation();
-
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 *  @return name of the SGSerializable
-	 */
-	virtual const char* get_name() const
-	{
-		return "MachineEvaluation";
-	}
 
 	/** @return in which direction is the best evaluation value? */
 	EEvaluationDirection get_evaluation_direction();
@@ -90,7 +83,7 @@ public:
 
 	/** setter for the autolock property. If true, machine will tried to be
 	 * locked before evaluation */
-	void set_autolock(bool autolock) { m_autolock=autolock; }
+	void set_autolock(bool autolock) { m_autolock = autolock; }
 
 protected:
 

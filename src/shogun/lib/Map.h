@@ -253,19 +253,19 @@ public:
 		hash_size = orig.hash_size;
 
 		if (use_sg_mallocs)
-			hash_array=SG_CALLOC(MapNode*, hash_size);
+			hash_array = SG_CALLOC(MapNode*, hash_size);
 		else
-			hash_array=(CMapNode<K, T>**) calloc(hash_size,
+			hash_array = (CMapNode<K, T>**) calloc(hash_size,
 					sizeof(CMapNode<K, T>*));
 
-		for (int32_t i=0; i<hash_size; i++)
+		for (int32_t i = 0; i<hash_size; i++)
 		{
-			hash_array[i]=NULL;
+			hash_array[i] = NULL;
 		}
 
-		array=new DynArray<CMapNode<K, T>*>(128, use_sg_mallocs);
+		array = new DynArray<CMapNode<K, T>*>(128, use_sg_mallocs);
 
-		for(int i = 0; i < orig.num_elements; i++)
+		for (int i = 0; i < orig.num_elements; i++)
 		{
 			CMapNode<K, T>* node = orig.array->get_element(i);
 			add(node->key, node->data);

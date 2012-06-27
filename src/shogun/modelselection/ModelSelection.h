@@ -49,8 +49,10 @@ public:
 	 */
 	virtual CParameterCombination* select_model(bool print_state=false)=0;
 
-	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const	{ return "ModelSelection"; }
+private:
+
+	/*Initializer*/
+	void init();
 
 protected:
 	/** model parameters */

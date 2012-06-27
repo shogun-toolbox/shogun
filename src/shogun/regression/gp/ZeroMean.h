@@ -21,7 +21,7 @@ namespace shogun
  *	of zero.
  *
  */
-class CZeroMean: public shogun::CMeanFunction
+class CZeroMean: public CMeanFunction
 {
 
 public:

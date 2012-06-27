@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CGradientResult::CGradientResult()
+CGradientResult::CGradientResult() : CEvaluationResult()
 {
 
 }
