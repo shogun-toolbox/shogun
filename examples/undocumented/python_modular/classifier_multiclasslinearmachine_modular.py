@@ -2,9 +2,9 @@ import classifier_multiclass_shared
 
 [traindat, label_traindat, testdat, label_testdat] = classifier_multiclass_shared.prepare_data(False)
 
-parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat,label_traindat,2.2,1,1e-5]]
+parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
-def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,width=2.1,C=1,epsilon=1e-5):
+def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,width=2.1,C=1,epsilon=1e-5):
 	from shogun.Features import RealFeatures, MulticlassLabels
 	from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine, MulticlassOneVsOneStrategy, MulticlassOneVsRestStrategy
 
@@ -19,7 +19,16 @@ def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_r
 	mc_classifier = LinearMulticlassMachine(MulticlassOneVsOneStrategy(), feats_train, classifier, labels)
 
 	mc_classifier.train()
-	out = mc_classifier.apply().get_labels()
+	label_pred = mc_classifier.apply()
+	out = label_pred.get_labels()
+
+	if label_test_multiclass is not None:
+		from shogun.Evaluation import MulticlassAccuracy
+		labels_test = MulticlassLabels(label_test_multiclass)
+		evaluator = MulticlassAccuracy()
+		acc = evaluator.evaluate(label_pred, labels_test)
+		print('Accuracy = %.4f' % acc)
+
 	return out
 
 if __name__=='__main__':
