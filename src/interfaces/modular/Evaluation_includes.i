@@ -1,4 +1,5 @@
 %{
+ #include <shogun/evaluation/EvaluationResult.h>
  #include <shogun/evaluation/Evaluation.h>
  #include <shogun/evaluation/BinaryClassEvaluation.h>
  #include <shogun/evaluation/ClusteringEvaluation.h>
@@ -11,6 +12,7 @@
  #include <shogun/evaluation/MeanSquaredLogError.h>
  #include <shogun/evaluation/ROCEvaluation.h>
  #include <shogun/evaluation/PRCEvaluation.h>
+ #include <shogun/evaluation/MachineEvaluation.h>
  #include <shogun/evaluation/CrossValidation.h>
  #include <shogun/evaluation/SplittingStrategy.h>
  #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>

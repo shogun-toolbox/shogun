@@ -66,7 +66,9 @@ APPLY_REGRESSION(CGaussianProcessRegression);
 APPLY_STRUCTURED(CStructuredOutputMachine);
 APPLY_STRUCTURED(CLinearStructuredOutputMachine);
 APPLY_STRUCTURED(CKernelStructuredOutputMachine);
+#ifdef USE_MOSEK
 APPLY_STRUCTURED(CPrimalMosekSOSVM);
+#endif
 }
 
 %rename(apply_generic) CMachine::apply(CFeatures* data=NULL);
@@ -91,7 +93,9 @@ APPLY_STRUCTURED(CPrimalMosekSOSVM);
 %rename(apply_generic) CStructuredOutputMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLinearStructuredOutputMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CKernelStructuredOutputMachine::apply(CFeatures* data=NULL);
+#ifdef USE_MOSEK
 %rename(apply_generic) CPrimalMosekSOSVM::apply(CFeatures* data=NULL);
+#endif
 
 #undef APPLY_MULTICLASS
 #undef APPLY_BINARY
