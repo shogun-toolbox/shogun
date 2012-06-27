@@ -35,6 +35,17 @@ public:
 	CLinearTimeMMD();
 	CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t q_start);
 
+	/** Constructor.
+	 * This is a convienience constructor which copies both features to one
+	 * element and then calls the other constructor. Needs twice the memory
+	 * for a short time
+	 *
+	 * @param kernel kernel for MMD
+	 * @param p samples from distribution p
+	 * @param q samples from distribution q
+	 */
+	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
+
 	virtual ~CLinearTimeMMD();
 
 	/** Computes the squared linear time MMD for the current data. his is an

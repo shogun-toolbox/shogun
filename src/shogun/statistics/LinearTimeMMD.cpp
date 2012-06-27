@@ -32,6 +32,11 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 	}
 }
 
+CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q)
+{
+	init();
+}
+
 CLinearTimeMMD::~CLinearTimeMMD()
 {
 
