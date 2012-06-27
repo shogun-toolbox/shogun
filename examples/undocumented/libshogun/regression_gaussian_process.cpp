@@ -7,6 +7,7 @@
  * Written (W) 2012 Jacob Walker
  */
 
+#include <shogun/lib/config.h>
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -32,6 +33,7 @@ void print_message(FILE* target, const char* str)
 
 int main(int argc, char **argv)
 {
+#ifdev HAVE_NLOPT
 	init_shogun(&print_message, &print_message, &print_message);
 
 	int32_t num_vectors=4;
@@ -173,5 +175,6 @@ int main(int argc, char **argv)
 	
 	exit_shogun();
 
+#endif
 	return 0;
 }
