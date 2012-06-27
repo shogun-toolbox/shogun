@@ -96,7 +96,7 @@ protected:
 	CSplittingStrategy* m_splitting_strategy;
 	CEvaluation* m_evaluation_criterion;
 
-	/** whether machine will automaticall be locked before evaluation */
+	/** whether machine will automatically be locked before evaluation */
 	bool m_autolock;
 
 	/** whether machine should be unlocked after evaluation */
