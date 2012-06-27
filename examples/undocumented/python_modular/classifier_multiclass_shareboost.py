@@ -12,7 +12,7 @@ def classifier_multiclass_shareboost (fm_train_real=traindat,fm_test_real=testda
 
     labels = MulticlassLabels(label_train_multiclass)
 
-    shareboost = ShareBoost(feats_train, labels, min(fm_train_real.shape[0]-1, 10))
+    shareboost = ShareBoost(feats_train, labels, min(fm_train_real.shape[0]-1, 20))
     shareboost.train();
     print(shareboost.get_activeset())
 
