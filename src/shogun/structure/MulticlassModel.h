@@ -91,10 +91,6 @@ class CMulticlassModel : public CStructuredModel
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "MulticlassModel"; }
 
-	private:
-		/** internal initilization */
-		void init();
-
 }; /* MulticlassModel */
 
 } /* namespace shogun */
