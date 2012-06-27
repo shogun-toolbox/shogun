@@ -20,24 +20,18 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(int32_t size)
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseVector<ST>* src,
 		int32_t num_feat, int32_t num_vec, bool copy)
-: CDotFeatures(0), num_vectors(0), num_features(0),
+: CDotFeatures(0), num_vectors(num_vec), num_features(num_feat),
 	sparse_feature_matrix(NULL), feature_cache(NULL)
 {
 	init();
 
-	if (!copy)
-		set_sparse_feature_matrix(SGSparseMatrix<ST>(src, num_feat, num_vec));
-	else
-	{
-		sparse_feature_matrix = SG_MALLOC(SGSparseVector<ST>, num_vec);
-		memcpy(sparse_feature_matrix, src, sizeof(SGSparseVector<ST>)*num_vec);
-		for (int32_t i=0; i< num_vec; i++)
-		{
-			sparse_feature_matrix[i].features = SG_MALLOC(SGSparseVectorEntry<ST>, sparse_feature_matrix[i].num_feat_entries);
-			memcpy(sparse_feature_matrix[i].features, src[i].features, sizeof(SGSparseVectorEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
-
-		}
-	}
+	sparse_feature_matrix = src;
+	//SG_MALLOC(SGSparseVector<ST>, num_vec);
+	//for (int32_t i=0; i< num_vec; i++)
+	//{
+	//	new (&sparse_feature_matrix[i]) SGSparseVector<ST>();
+	//	sparse_feature_matrix[i] = src[i];
+	//}
 }
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseMatrix<ST> sparse)
@@ -97,10 +91,13 @@ template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 }
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
 {
-	for (int32_t i=0; i<num_vectors; i++)
-		(&sparse_feature_matrix[i])->~SGSparseVector();
+	if (sparse_feature_matrix)
+	{
+		for (int32_t i=0; i<num_vectors; i++)
+			(&sparse_feature_matrix[i])->~SGSparseVector();
 
-	SG_FREE(sparse_feature_matrix);
+		SG_FREE(sparse_feature_matrix);
+	}
 	num_vectors=0;
 	num_features=0;
 	remove_all_subsets();
@@ -392,6 +389,7 @@ template<class ST> CSparseFeatures<ST>* CSparseFeatures<ST>::get_transposed()
 	int32_t num_feat;
 	int32_t num_vec;
 	SGSparseVector<ST>* s=get_transposed(num_feat, num_vec);
+	//SG_PRINT("num_feat = %d , num_vec = %d \n", num_feat, num_vec);
 	return new CSparseFeatures<ST>(s, num_feat, num_vec);
 }
 
@@ -399,6 +397,7 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 {
 	num_feat=get_num_vectors();
 	num_vec=num_features;
+	//SG_PRINT("get transposed num_feat = %d , num_vec = %d \n", num_feat, num_vec);
 
 	int32_t* hist=SG_MALLOC(int32_t, num_features);
 	memset(hist, 0, sizeof(int32_t)*num_features);
@@ -410,17 +409,12 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
 			hist[sv.features[i].feat_index]++;
-
-		free_sparse_feature_vector(v);
 	}
 
 	// allocate room for future feature vectors
 	SGSparseVector<ST>* sfm=SG_MALLOC(SGSparseVector<ST>, num_vec);
 	for (int32_t v=0; v<num_vec; v++)
-	{
-		sfm[v].features= SG_MALLOC(SGSparseVectorEntry<ST>, hist[v]);
-		sfm[v].num_feat_entries=hist[v];
-	}
+		new (&sfm[v]) SGSparseVector<ST>(hist[v]);
 
 	// fill future feature vectors with content
 	memset(hist,0,sizeof(int32_t)*num_features);
@@ -437,7 +431,6 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 			hist[vidx]++;
 		}
 
-		free_sparse_feature_vector(v);
 	}
 
 	SG_FREE(hist);
