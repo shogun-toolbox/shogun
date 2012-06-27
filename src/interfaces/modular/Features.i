@@ -367,6 +367,48 @@ namespace shogun
 #endif
 }
 
+/* Templated Class DenseSubsetFeatures */
+%include <shogun/features/DenseSubsetFeatures.h>
+namespace shogun
+{
+#ifdef USE_BOOL
+    %template(BoolSubsetFeatures) CDenseSubsetFeatures<bool>;
+#endif
+#ifdef USE_CHAR
+    %template(CharSubsetFeatures) CDenseSubsetFeatures<char>;
+#endif
+#ifdef USE_UINT8
+    %template(ByteSubsetFeatures) CDenseSubsetFeatures<uint8_t>;
+#endif
+#ifdef USE_UINT16
+    %template(WordSubsetFeatures) CDenseSubsetFeatures<uint16_t>;
+#endif
+#ifdef USE_INT16
+    %template(ShortSubsetFeatures) CDenseSubsetFeatures<int16_t>;
+#endif
+#ifdef USE_INT32
+    %template(IntSubsetFeatures)  CDenseSubsetFeatures<int32_t>;
+#endif
+#ifdef USE_UINT32
+    %template(UIntSubsetFeatures)  CDenseSubsetFeatures<uint32_t>;
+#endif
+#ifdef USE_INT64
+    %template(LongIntSubsetFeatures)  CDenseSubsetFeatures<int64_t>;
+#endif
+#ifdef USE_UINT64
+    %template(ULongIntSubsetFeatures)  CDenseSubsetFeatures<uint64_t>;
+#endif
+#ifdef USE_FLOATMAX
+    %template(LongRealSubsetFeatures) CDenseSubsetFeatures<floatmax_t>;
+#endif
+#ifdef USE_FLOAT32
+    %template(ShortRealSubsetFeatures) CDenseSubsetFeatures<float32_t>;
+#endif
+#ifdef USE_FLOAT64
+    %template(RealSubsetFeatures) CDenseSubsetFeatures<float64_t>;
+#endif
+}
+
 %include <shogun/features/DummyFeatures.h>
 %include <shogun/features/AttributeFeatures.h>
 %include <shogun/features/CombinedFeatures.h>

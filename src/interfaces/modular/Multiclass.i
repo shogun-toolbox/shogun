@@ -51,6 +51,8 @@
 %rename(GaussianNaiveBayes) CGaussianNaiveBayes;
 %rename(QDA) CQDA;
 
+%rename(ShareBoost) CShareBoost;
+
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/multiclass/RejectionStrategy.h>
 %include <shogun/multiclass/MulticlassStrategy.h>
@@ -91,4 +93,5 @@
 %include <shogun/multiclass/ConjugateIndex.h>
 %include <shogun/multiclass/GaussianNaiveBayes.h>
 %include <shogun/multiclass/QDA.h>
+%include <shogun/multiclass/ShareBoost.h>
 

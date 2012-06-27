@@ -14,6 +14,7 @@
 #include <shogun/features/StreamingSparseFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/features/DummyFeatures.h>
 #include <shogun/features/AttributeFeatures.h>
 #include <shogun/features/Alphabet.h>
