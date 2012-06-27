@@ -134,10 +134,14 @@ int main(int argc, char **argv)
 
 	CParameterCombination* best_combination=grad_search->select_model(true);
 
-	SG_SPRINT("best parameter(s):\n");
-	best_combination->print_tree();
+	if (best_combination)
+	{
+		SG_SPRINT("best parameter(s):\n");
+		best_combination->print_tree();
 
-	best_combination->apply_to_machine(gp);
+		best_combination->apply_to_machine(gp);
+	}
+
 	CGradientResult* result=(CGradientResult*)grad->evaluate();
 
 	if(result->get_result_type() != GRADIENTEVALUATION_RESULT)
