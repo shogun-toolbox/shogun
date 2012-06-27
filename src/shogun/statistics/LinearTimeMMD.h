@@ -33,6 +33,17 @@ class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
 public:
 	CLinearTimeMMD();
+
+	/** Constructor
+	 *
+	 * @param p_and_q feature data. Is assumed to contain samples from both
+	 * p and q. First all samples from p, then from index q_start all
+	 * samples from q
+	 *
+	 * @param kernel kernel to use
+	 * @param p_and_q samples from p and q, appended
+	 * @param q_start index of first sample of q
+	 */
 	CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t q_start);
 
 	/** Constructor.
@@ -41,8 +52,10 @@ public:
 	 * for a short time
 	 *
 	 * @param kernel kernel for MMD
-	 * @param p samples from distribution p
-	 * @param q samples from distribution q
+	 * @param p samples from distribution p, will be copied and NOT
+	 * SG_REF'ed
+	 * @@param q samples from distribution q, will be copied and NOT
+	 * SG_REF'ed
 	 */
 	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
 

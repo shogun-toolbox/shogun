@@ -18,8 +18,7 @@ CTwoSampleTestStatistic::CTwoSampleTestStatistic() : CTestStatistic()
 }
 
 CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p_and_q,
-		index_t q_start) :
-		CTestStatistic()
+		index_t q_start) : CTestStatistic()
 {
 	init();
 
@@ -27,6 +26,14 @@ CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p_and_q,
 	SG_REF(m_p_and_q);
 
 	m_q_start=q_start;
+}
+
+CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p, CFeatures* q) :
+		CTestStatistic()
+{
+	init();
+
+	/* TODO append features */
 }
 
 CTwoSampleTestStatistic::~CTwoSampleTestStatistic()
