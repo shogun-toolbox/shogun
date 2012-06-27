@@ -112,6 +112,18 @@ public:
 	 */
 	CDynamicObjectArray* get_combinations(index_t prefix_num=1);
 
+	/** Instead of generating an array of combinations, get_single_combination
+	 * generates a single  combination of parameters. The choice of
+	 * values is constrained by the value arrays built by build_values.
+	 * The choice of values may be random. If not, the lowest possible
+	 * values are chosen.
+	 *
+	 * @param bool Is our choice random?
+	 *
+	 * @return parameter tree of random parameter values.
+	 */
+	CParameterCombination* get_single_combination(bool rand = true);
+
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,
 			float64_t step=1.0, float64_t type_base=2.0);

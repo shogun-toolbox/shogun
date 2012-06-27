@@ -103,6 +103,7 @@ void test_cross_validation()
 	cross->set_num_runs(5);
 	cross->set_conf_int_alpha(0.05);
 
+	CrossValidationResult* tmp;
 	/* no locking */
 	index_t repetitions=5;
 	SG_SPRINT("unlocked x-val\n");
@@ -111,7 +112,11 @@ void test_cross_validation()
 	CTime time;
 	time.start();
 	for (index_t i=0; i<repetitions; ++i)
-		cross->evaluate();
+	{
+		tmp = (CrossValidationResult*)cross->evaluate();
+		SG_UNREF(tmp);
+	}
+
 	time.stop();
 	SG_SPRINT("%f sec\n", time.cur_time_diff());
 
@@ -119,8 +124,13 @@ void test_cross_validation()
 	SG_SPRINT("locked in every iteration x-val\n");
 	cross->set_autolock(true);
 	time.start();
+	
 	for (index_t i=0; i<repetitions; ++i)
-		cross->evaluate();
+        {
+                tmp = (CrossValidationResult*)cross->evaluate();
+                SG_UNREF(tmp);
+        }
+
 	time.stop();
 	SG_SPRINT("%f sec\n", time.cur_time_diff());
 
@@ -128,8 +138,13 @@ void test_cross_validation()
 	svm->data_lock(labels, features);
 	SG_SPRINT("locked x-val\n");
 	time.start();
-	for (index_t i=0; i<repetitions; ++i)
-		cross->evaluate();
+	
+        for (index_t i=0; i<repetitions; ++i)
+        {
+                tmp = (CrossValidationResult*)cross->evaluate();
+                SG_UNREF(tmp);
+        }
+
 	time.stop();
 	SG_SPRINT("%f sec\n", time.cur_time_diff());
 

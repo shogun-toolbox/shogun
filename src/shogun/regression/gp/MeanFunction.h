@@ -24,7 +24,8 @@ namespace shogun {
  *  specified function.
  *
  */
-class CMeanFunction: public shogun::CSGObject {
+class CMeanFunction: public shogun::CSGObject
+{
 
 public:
 
@@ -36,7 +37,8 @@ public:
 
 	/** Returns the mean of the specified data
 	 *
-	 * @param data points arranged in a matrix with rows representing the number of features
+	 * @param data points arranged in a matrix with rows
+	 * representing the number of features
 	 *
 	 * @return Mean of feature vectors
 	 */
@@ -44,20 +46,15 @@ public:
 
 	/** Returns the mean of the specified data
 	 *
-	 * @param data points arranged in a matrix with rows representing the number of features
+	 * @param data points arranged in a matrix with rows representing the
+	 * number of features
 	 *
 	 * @param param_name Name of parameters
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual float64_t get_parameter_derivative(SGMatrix<float64_t>& data, const char* param_name);
-
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
-	inline virtual const char* get_name() const { return "MeanFunction"; }
+	virtual float64_t get_parameter_derivative(SGMatrix<float64_t>& data,
+			const char* param_name);
 
 };
 

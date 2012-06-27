@@ -25,106 +25,40 @@ CCrossValidation::CCrossValidation()
 
 CCrossValidation::CCrossValidation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterion, bool autolock)
+		CEvaluation* evaluation_criterion, bool autolock) :
+		CMachineEvaluation(machine, features, labels, splitting_strategy,
+		evaluation_criterion, autolock)
 {
 	init();
-
-	m_machine=machine;
-	m_features=features;
-	m_labels=labels;
-	m_splitting_strategy=splitting_strategy;
-	m_evaluation_criterion=evaluation_criterion;
-	m_autolock=autolock;
-
-	SG_REF(m_machine);
-	SG_REF(m_features);
-	SG_REF(m_labels);
-	SG_REF(m_splitting_strategy);
-	SG_REF(m_evaluation_criterion);
 }
 
 CCrossValidation::CCrossValidation(CMachine* machine, CLabels* labels,
 		CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterion, bool autolock)
+		CEvaluation* evaluation_criterion, bool autolock) :
+		CMachineEvaluation(machine, labels, splitting_strategy, evaluation_criterion,
+		autolock)
 {
 	init();
-
-	m_machine=machine;
-	m_labels=labels;
-	m_splitting_strategy=splitting_strategy;
-	m_evaluation_criterion=evaluation_criterion;
-	m_autolock=autolock;
-
-	SG_REF(m_machine);
-	SG_REF(m_labels);
-	SG_REF(m_splitting_strategy);
-	SG_REF(m_evaluation_criterion);
 }
 
 CCrossValidation::~CCrossValidation()
 {
-	SG_UNREF(m_machine);
-	SG_UNREF(m_features);
-	SG_UNREF(m_labels);
-	SG_UNREF(m_splitting_strategy);
-	SG_UNREF(m_evaluation_criterion);
-}
 
-EEvaluationDirection CCrossValidation::get_evaluation_direction()
-{
-	return m_evaluation_criterion->get_evaluation_direction();
 }
 
 void CCrossValidation::init()
 {
-	m_machine=NULL;
-	m_features=NULL;
-	m_labels=NULL;
-	m_splitting_strategy=NULL;
-	m_evaluation_criterion=NULL;
 	m_num_runs=1;
 	m_conf_int_alpha=0;
-	m_do_unlock=false;
-	m_autolock=true;
 
-	m_parameters->add((CSGObject**) &m_machine, "machine",
-			"Used learning machine");
-	m_parameters->add((CSGObject**) &m_features, "features", "Used features");
-	m_parameters->add((CSGObject**) &m_labels, "labels", "Used labels");
-	m_parameters->add((CSGObject**) &m_splitting_strategy, "splitting_strategy",
-			"Used splitting strategy");
-	m_parameters->add((CSGObject**) &m_evaluation_criterion,
-			"evaluation_criterion", "Used evaluation criterion");
-	m_parameters->add(&m_num_runs, "num_runs", "Number of repetitions");
-	m_parameters->add(&m_conf_int_alpha, "conf_int_alpha",
-			"alpha-value of confidence "
-					"interval");
-	m_parameters->add(&m_do_unlock, "do_unlock",
-			"Whether machine should be unlocked after evaluation");
-	m_parameters->add(&m_autolock, "m_autolock",
-			"Whether machine should automatically try to be locked before "
-			"evaluation");
-
-	/* new parameter from param version 0 to 1 */
-	m_parameter_map->put(
-			new SGParamInfo("m_do_unlock", CT_SCALAR, ST_NONE, PT_BOOL, 1),
-			new SGParamInfo()
-	);
-
-	/* new parameter from param version 0 to 1 */
-	m_parameter_map->put(
-			new SGParamInfo("m_autolock", CT_SCALAR, ST_NONE, PT_BOOL, 1),
-			new SGParamInfo()
-	);
+	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_conf_int_alpha, "conf_int_alpha", "alpha-value " \
+			"of confidence interval", MS_NOT_AVAILABLE);
 }
 
-CMachine* CCrossValidation::get_machine() const
-{
-	SG_REF(m_machine);
-	return m_machine;
-}
 
-CrossValidationResult CCrossValidation::evaluate()
+CEvaluationResult* CCrossValidation::evaluate()
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name());
 
@@ -170,21 +104,21 @@ CrossValidationResult CCrossValidation::evaluate()
 	}
 
 	/* construct evaluation result */
-	CrossValidationResult result;
-	result.has_conf_int=m_conf_int_alpha != 0;
-	result.conf_int_alpha=m_conf_int_alpha;
+	CrossValidationResult* result = new CrossValidationResult();
+	result->has_conf_int=m_conf_int_alpha != 0;
+	result->conf_int_alpha=m_conf_int_alpha;
 
-	if (result.has_conf_int)
+	if (result->has_conf_int)
 	{
-		result.conf_int_alpha=m_conf_int_alpha;
-		result.mean=CStatistics::confidence_intervals_mean(results,
-				result.conf_int_alpha, result.conf_int_low, result.conf_int_up);
+		result->conf_int_alpha=m_conf_int_alpha;
+		result->mean=CStatistics::confidence_intervals_mean(results,
+				result->conf_int_alpha, result->conf_int_low, result->conf_int_up);
 	}
 	else
 	{
-		result.mean=CStatistics::mean(results);
-		result.conf_int_low=0;
-		result.conf_int_up=0;
+		result->mean=CStatistics::mean(results);
+		result->conf_int_low=0;
+		result->conf_int_up=0;
 	}
 
 	/* unlock machine if it was locked in this method */
@@ -195,6 +129,8 @@ CrossValidationResult CCrossValidation::evaluate()
 	}
 
 	SG_DEBUG("leaving %s::evaluate()\n", get_name());
+
+	SG_REF(result);
 	return result;
 }
 

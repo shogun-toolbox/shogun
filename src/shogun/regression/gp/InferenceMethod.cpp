@@ -17,7 +17,11 @@ using namespace shogun;
 
 CInferenceMethod::CInferenceMethod()
 {
-	init();
+	m_kernel = NULL;
+	m_model = NULL;
+	m_labels = NULL;
+	m_features = NULL;
+	m_mean = NULL;
 }
 
 CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
@@ -33,22 +37,25 @@ CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
 }
 
 CInferenceMethod::~CInferenceMethod() {
-	SG_UNREF(kernel);
-	SG_UNREF(features);
+	SG_UNREF(m_kernel);
+	SG_UNREF(m_features);
 	SG_UNREF(m_labels);
 	SG_UNREF(m_model);
-	SG_UNREF(mean);
+	SG_UNREF(m_mean);
 }
 
 void CInferenceMethod::init()
 {
-	/* TODO: add all parameters needed for model selection (Heiko Strathmann) */
-	SG_ADD((CSGObject**)&kernel, "kernel", "Kernel to use", MS_AVAILABLE);
-	SG_ADD((CSGObject**)&m_model, "model", "Likelihood model", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_kernel, "Kernel", "Kernel", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_model, "Likelihood Model", "Likelihood model",
+			MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_mean, "Mean", "Mean Function", MS_NOT_AVAILABLE);
 
-	kernel = NULL;
+	m_kernel = NULL;
 	m_model = NULL;
 	m_labels = NULL;
-	features = NULL;
-	mean = NULL;
+	m_features = NULL;
+	m_mean = NULL;
 }

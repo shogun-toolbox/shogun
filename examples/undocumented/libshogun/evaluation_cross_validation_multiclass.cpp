@@ -122,10 +122,15 @@ void test_cross_validation()
 	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */
-	CrossValidationResult result=cross->evaluate();
-	result.print_result();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+
+	result->print_result();
 
 	/* clean up */
+	SG_UNREF(result);
 	SG_UNREF(cross);
 	SG_UNREF(features);
 	SG_UNREF(labels);

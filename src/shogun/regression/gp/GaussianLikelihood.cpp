@@ -8,36 +8,43 @@
  */
 
 #include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/modelselection/ParameterCombination.h>
+
+
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
-CGaussianLikelihood::CGaussianLikelihood()
+CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
 {
 	init();
 }
 
-CGaussianLikelihood::~CGaussianLikelihood() {
-	// TODO Auto-generated destructor stub
+void CGaussianLikelihood::init()
+{
+	m_sigma = 0.01;
+	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
+}
+
+CGaussianLikelihood::~CGaussianLikelihood()
+{
 }
 
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_means(SGVector<float64_t>& means)
+SGVector<float64_t> CGaussianLikelihood::evaluate_means(
+		SGVector<float64_t>& means)
 {
 	return SGVector<float64_t>(means);
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t>& vars)
+SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
+		SGVector<float64_t>& vars)
 {
 	SGVector<float64_t> result(vars);
-	for(int i = 0; i < result.vlen; i++) result[i] += (m_sigma*m_sigma);
+
+	for (int i = 0; i < result.vlen; i++)
+		result[i] += (m_sigma*m_sigma);
+
 	return result;
 }
 
-void CGaussianLikelihood::init()
-{
-	/* TODO register all parameters. Heiko Strathmann */
-	SG_ADD(&m_sigma, "sigma", "Width parameter of Gaussian", MS_AVAILABLE);
-
-	m_sigma = 0.01;
-}

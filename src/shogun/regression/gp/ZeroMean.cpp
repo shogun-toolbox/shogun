@@ -9,21 +9,25 @@
 
 #include <shogun/regression/gp/ZeroMean.h>
 
-namespace shogun {
+using namespace shogun;
 
-CZeroMean::CZeroMean() {
+CZeroMean::CZeroMean() : CMeanFunction()
+{
 
 }
 
-CZeroMean::~CZeroMean() {
+CZeroMean::~CZeroMean()
+{
 
 }
 
 SGVector<float64_t> CZeroMean::get_mean_vector(SGMatrix<float64_t>& data)
 {
-	SGVector<float64_t> result(data.num_rows);
-	for(int i = 0; i < result.vlen; i++) result[i] = 0;
+	SGVector<float64_t> result(data.num_cols);
+
+	for (int i = 0; i < result.vlen; i++)
+		result[i] = 0;
+
 	return result;
 }
 
-}

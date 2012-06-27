@@ -24,8 +24,8 @@ CGridSearchModelSelection::CGridSearchModelSelection() :
 
 CGridSearchModelSelection::CGridSearchModelSelection(
 		CModelSelectionParameters* model_parameters,
-		CCrossValidation* cross_validation) :
-	CModelSelection(model_parameters, cross_validation)
+		CMachineEvaluation* machine_eval) :
+	CModelSelection(model_parameters, machine_eval)
 {
 
 }
@@ -43,16 +43,16 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 	CDynamicObjectArray* combinations=
 			(CDynamicObjectArray*)m_model_parameters->get_combinations();
 
-	CrossValidationResult best_result;
+	CrossValidationResult* best_result = new CrossValidationResult();
 
 	CParameterCombination* best_combination=NULL;
-	if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
-		best_result.mean=CMath::ALMOST_NEG_INFTY;
+	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
+		best_result->mean=CMath::ALMOST_NEG_INFTY;
 	else
-		best_result.mean=CMath::ALMOST_INFTY;
+		best_result->mean=CMath::ALMOST_INFTY;
 
 	/* underlying learning machine */
-	CMachine* machine=m_cross_validation->get_machine();
+	CMachine* machine=m_machine_eval->get_machine();
 
 	/* apply all combinations and search for best one */
 	for (index_t i=0; i<combinations->get_num_elements(); ++i)
@@ -71,22 +71,29 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
-		CrossValidationResult result=m_cross_validation->evaluate();
+		CrossValidationResult* result =
+				(CrossValidationResult*)(m_machine_eval->evaluate());
+
+		if (result->get_result_type() != CROSSVALIDATION_RESULT)
+			SG_ERROR("Evaluation result is not of type CrossValidationResult!");
 
 		if (print_state)
-			result.print_result();
+			result->print_result();
 
 		/* check if current result is better, delete old combinations */
-		if (m_cross_validation->get_evaluation_direction()==ED_MAXIMIZE)
+		if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 		{
-			if (result.mean>best_result.mean)
+			if (result->mean>best_result->mean)
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
 
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
-				best_result=result;
+
+				SG_UNREF(best_result);
+				SG_REF(result);
+				best_result = result;
 			}
 			else
 			{
@@ -97,14 +104,17 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 		}
 		else
 		{
-			if (result.mean<best_result.mean)
+			if (result->mean<best_result->mean)
 			{
 				if (best_combination)
 					SG_UNREF(best_combination);
 
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
-				best_result=result;
+
+				SG_UNREF(best_result);
+				SG_REF(result);
+				best_result = result;
 			}
 			else
 			{
@@ -114,9 +124,11 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 			}
 		}
 
+		SG_UNREF(result);
 		SG_UNREF(current_combination);
 	}
 
+	SG_UNREF(best_result);
 	SG_UNREF(machine);
 	SG_UNREF(combinations);
 

@@ -19,21 +19,20 @@
 #include <shogun/kernel/GaussianKernel.h>
 
 
-namespace shogun {
+using namespace shogun;
 
-CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod() {
-
+CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
+{
 }
 
 CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
-
-
 }
 
-CExactInferenceMethod::~CExactInferenceMethod() {
+CExactInferenceMethod::~CExactInferenceMethod()
+{
 }
 
 void CExactInferenceMethod::check_members()
@@ -44,53 +43,59 @@ void CExactInferenceMethod::check_members()
 	if (m_labels->get_label_type() != LT_REGRESSION)
 		SG_ERROR("Expected RegressionLabels\n");
 
-	if(!features)
+	if (!m_features)
 		SG_ERROR("No features set!\n");
 
-  	if (!features->has_property(FP_DOT))
+  	if (!m_features->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n");
 
-  	if (m_labels->get_num_labels() != features->get_num_vectors())
+  	if (m_labels->get_num_labels() != m_features->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
 
-	if (features->get_feature_class() != C_DENSE)
+	if (m_features->get_feature_class() != C_DENSE)
 		SG_ERROR("Expected Simple Features\n");
 
-	if (features->get_feature_type() != F_DREAL)
+	if (m_features->get_feature_type() != F_DREAL)
 		SG_ERROR("Expected Real Features\n");
 
-	if (!kernel)
+	if (!m_kernel)
 		SG_ERROR( "No kernel assigned!\n");
 
-	if (!mean)
+	if (!m_mean)
 		SG_ERROR( "No mean function assigned!\n");
 
-	if(m_model->get_model_type() != LT_GAUSSIAN)
+	if (m_model->get_model_type() != LT_GAUSSIAN)
 	{
-		SG_ERROR("Exact Inference Method can only use Gaussian Likelihood Function.\n");
+		SG_ERROR("Exact Inference Method can only use " \
+				"Gaussian Likelihood Function.\n");
 	}
 }
 
-SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
+CMap<SGString<char>, float64_t> CExactInferenceMethod::
+	get_marginal_likelihood_derivatives()
 {
 	check_members();
 	update_alpha_and_chol();
 
-	kernel->cleanup();
+	m_kernel->cleanup();
 
-	SGMatrix<float64_t> feature_matrix = features->get_computed_dot_feature_matrix();
+	SGMatrix<float64_t> feature_matrix =
+			m_features->get_computed_dot_feature_matrix();
 
 	//Initialize Kernel with Features
-	kernel->init(features, features);
+	m_kernel->init(m_features, m_features);
 
 	//This will be the vector we return
-	SGVector<float64_t> gradient(2+mean->m_parameters->get_num_parameters());
+	CMap<SGString<char>, float64_t> gradient(
+			2+m_mean->m_parameters->get_num_parameters(),
+			2+m_mean->m_parameters->get_num_parameters());
+
 
 	//Get the sigma variable from the likelihood model
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
 	//Kernel Matrix
-	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
+	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
 
 	//Placeholder Matrix
 	SGMatrix<float64_t> temp1(kernel_matrix.num_rows, kernel_matrix.num_cols);
@@ -137,65 +142,52 @@ SGVector<float64_t> CExactInferenceMethod::get_marginal_likelihood_derivatives()
 	memcpy(Q.matrix, temp2.matrix,
 		temp2.num_cols*temp2.num_rows*sizeof(float64_t));
 
-	SGMatrix<float64_t> deriv = kernel->get_parameter_gradient("width");
+	SGMatrix<float64_t> deriv = m_kernel->get_parameter_gradient("width");
 
 	float64_t sum = 0;
-	for(int i = 0; i < Q.num_rows; i++)
+	for (int i = 0; i < Q.num_rows; i++)
 	{
-		for(int j = 0; j < Q.num_cols; j++)
-		{
+		for (int j = 0; j < Q.num_cols; j++)
 			sum += Q(i,j)*deriv(i,j);
-		}
 	}
 
 	sum /= 2.0;
 
-	gradient[0] = sum;
+	gradient.add(SGString<char>("width", strlen("width"), true), sum);
 
 	sum = m_sigma*m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
+	
+	gradient.add(SGString<char>("sigma", strlen("sigma"), true), sum);
 
-	gradient[1] = sum;
-
-	for(int i = 0; i < mean->m_parameters->get_num_parameters(); i++)
+	for (int i = 0; i < m_mean->m_parameters->get_num_parameters(); i++)
 	{
-		TParameter* param = mean->m_parameters->get_parameter(i);
-		SGVector<float64_t> data_means = mean->get_parameter_derivative(
+		TParameter* param = m_mean->m_parameters->get_parameter(i);
+
+		SGVector<float64_t> data_means = m_mean->get_parameter_derivative(
 				feature_matrix, param->m_name);
-		gradient[i+1] = data_means.dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
+
+		sum = data_means.dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
+
+		gradient.add(SGString<char>(param->m_name,
+				strlen(param->m_name), true), sum);
 	}
 
 	return gradient;
 
 }
 
-void CExactInferenceMethod::learn_parameters()
-{
-	//This is currently prototype code. As such it's
-	//quite crude and messy.
-	float64_t length = 5;
-	float64_t step = .1;
-	float64_t width;
-	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
-	while(length > .001 && get_negative_marginal_likelihood() > 0 )
-	{
-		get_alpha();
-		width = ((CGaussianKernel*)kernel)->get_width();
-		SGVector<float64_t> gradient = get_marginal_likelihood_derivatives();
-		((CGaussianKernel*)kernel)->set_width(width - step*gradient[0]);
-		m_sigma -= step*gradient[1];
-		if(m_sigma < 0) m_sigma = .0001;
-		dynamic_cast<CGaussianLikelihood*>(m_model)->set_sigma(m_sigma);
-		length = sqrt(gradient.dot(gradient.vector, gradient.vector, gradient.vlen));
-	}
-}
-
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 {
 	check_members();
 
-	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
-	SGVector<float64_t> result = SGVector<float64_t>(features->get_num_vectors());
-	result.fill_vector(result.vector, features->get_num_vectors(), 1.0/m_sigma);
+	float64_t m_sigma =
+			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+
+	SGVector<float64_t> result =
+			SGVector<float64_t>(m_features->get_num_vectors());
+
+	result.fill_vector(result.vector, m_features->get_num_vectors(),
+			1.0/m_sigma);
 
 	return result;
 }
@@ -204,20 +196,27 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 {
 	update_alpha_and_chol();
 
-	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> label_vector =
+			((CRegressionLabels*) m_labels)->get_labels();
 	float64_t result;
-	SGMatrix<float64_t> feature_matrix = features->get_computed_dot_feature_matrix();
-	SGVector<float64_t> data_means = mean->get_mean_vector(feature_matrix);
 
-	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
+	SGMatrix<float64_t> feature_matrix =
+			m_features->get_computed_dot_feature_matrix();
 
-	result = label_vector.dot(label_vector.vector, m_alpha.vector, label_vector.vlen)/2.0;
-	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	SGVector<float64_t> data_means =
+			m_mean->get_mean_vector(feature_matrix);
 
-	for(int i = 0; i < m_L.num_rows; i++)
-	{
+	for (int i = 0; i < label_vector.vlen; i++)
+		label_vector[i] -= data_means[i];
+
+	result = label_vector.dot(label_vector.vector, m_alpha.vector,
+			label_vector.vlen)/2.0;
+
+	float64_t m_sigma =
+			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+
+	for (int i = 0; i < m_L.num_rows; i++)
 		result += CMath::log(m_L(i,i));
-	}
 
 	result += m_L.num_rows * CMath::log(2*CMath::PI*m_sigma*m_sigma)/2.0;
 
@@ -242,22 +241,28 @@ void CExactInferenceMethod::update_alpha_and_chol()
 {
 	check_members();
 
-	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	float64_t m_sigma =
+			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	SGVector<float64_t> label_vector = ((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> label_vector =
+			((CRegressionLabels*) m_labels)->get_labels().clone();
 
-	SGMatrix<float64_t> feature_matrix = features->get_computed_dot_feature_matrix();
+	SGMatrix<float64_t> feature_matrix =
+			m_features->get_computed_dot_feature_matrix();
 
-	SGVector<float64_t> data_means = mean->get_mean_vector(feature_matrix);
 
-	for(int i = 0; i < label_vector.vlen; i++) label_vector[i] -= data_means[i];
+	SGVector<float64_t> data_means =
+			m_mean->get_mean_vector(feature_matrix);
 
-	kernel->cleanup();
+	for (int i = 0; i < label_vector.vlen; i++)
+		label_vector[i] = label_vector[i] - data_means[i];
 
-	kernel->init(features, features);
+	m_kernel->cleanup();
+
+	m_kernel->init(m_features, m_features);
 
 	//K(X, X)
-	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
+	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
 
 	//Placeholder Matrices
 	SGMatrix<float64_t> temp1(kernel_matrix.num_rows,
@@ -293,11 +298,12 @@ void CExactInferenceMethod::update_alpha_and_chol()
 	 * and leave the lower triangle with junk data. Finishing the job
 	 * by filling the lower triangle with zero entries.
 	 */
-	for(int i = 0; i < temp1.num_rows; i++)
+	for (int i = 0; i < temp1.num_rows; i++)
 	{
-		for(int j = 0; j < temp1.num_cols; j++)
+		for (int j = 0; j < temp1.num_cols; j++)
 		{
-			if(i > j) temp1(i,j) = 0;
+			if (i > j)
+				temp1(i,j) = 0;
 		}
 	}
 
@@ -315,8 +321,7 @@ void CExactInferenceMethod::update_alpha_and_chol()
 		  temp2.num_cols, 1, temp2.matrix, temp2.num_cols,
 		  m_alpha.vector, temp2.num_cols);
 
-	for(int i = 0; i < m_alpha.vlen; i++) m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);
-
-}
+	for (int i = 0; i < m_alpha.vlen; i++)
+		m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);
 
 }
