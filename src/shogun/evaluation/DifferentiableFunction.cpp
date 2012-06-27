@@ -7,26 +7,17 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/regression/gp/MeanFunction.h>
+#include <shogun/evaluation/DifferentiableFunction.h>
 
 using namespace shogun;
 
-CMeanFunction::CMeanFunction()
+CDifferentiableFunction::CDifferentiableFunction()
 {
 
 }
 
-CMeanFunction::~CMeanFunction()
+CDifferentiableFunction::~CDifferentiableFunction()
 {
 
-}
-
-float64_t CMeanFunction::get_parameter_derivative(
-		SGMatrix<float64_t>& data, const char* param_name)
-{
-	SG_ERROR("%s has no implementation for derivative with respect to %s",
-			get_name(), param_name);
-
-	return 0;
 }
 

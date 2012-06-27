@@ -5,6 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2012 Jacob Walker
+ *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -163,6 +165,97 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 		SG_ERROR("Unknown type for model selection parameter!\n");
 	}
 }
+
+CParameterCombination* CModelSelectionParameters::get_single_combination(
+		bool is_rand)
+{
+	/* If this is a value node, then randomly pick a value from the built
+	 * range */
+	if (m_values)
+	{
+
+		index_t i = 0;
+
+		if (is_rand)
+			i = CMath::random(0, m_values_length-1);
+
+		Parameter* p=new Parameter();
+
+		switch (m_value_type)
+		{
+		case MSPT_FLOAT64:
+			p->add(&((float64_t*)m_values)[i], m_node_name);
+			break;
+		case MSPT_INT32:
+			p->add(&((int32_t*)m_values)[i], m_node_name);;
+			break;
+		case MSPT_NONE:
+			SG_ERROR("Value node has no type!\n");
+			break;
+		default:
+			SG_ERROR("Unknown type for model selection parameter!\n");
+			break;
+		}
+
+		return new CParameterCombination(p);
+	}
+
+	CParameterCombination* new_root=NULL;
+
+	/*Complain if we have a bad node*/
+	if (!((m_sgobject && m_node_name) || (!m_node_name && !m_sgobject)))
+		SG_ERROR("Illegal CModelSelectionParameters node type.\n");
+
+	/* Incorporate SGObject and root nodes with children*/
+	if (m_child_nodes->get_num_elements())
+	{
+
+		if (m_sgobject)
+		{
+			Parameter* p=new Parameter();
+			p->add(&m_sgobject, m_node_name);
+	     	new_root = new CParameterCombination(p);
+		}
+
+		else
+			new_root = new CParameterCombination();
+
+		for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+		{
+			CModelSelectionParameters* current =
+					(CModelSelectionParameters*)m_child_nodes->get_element(i);
+
+			CParameterCombination* c = current->get_single_combination(is_rand);
+
+			new_root->append_child(c);
+
+			SG_UNREF(current);
+		}
+
+		return new_root;
+	}
+
+	/*Incorporate childless nodes*/
+	else
+	{
+
+		if (m_sgobject)
+		{
+			Parameter* p = new Parameter();
+			p->add(&m_sgobject, m_node_name);
+			return new CParameterCombination(p);
+		}
+
+		else
+		{
+			new_root = new CParameterCombination();
+			return new_root;
+		}
+	}
+
+}
+
+
 
 CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		index_t num_prefix)

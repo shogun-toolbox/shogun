@@ -12,7 +12,8 @@
 
 #include <shogun/regression/gp/InferenceMethod.h>
 
-namespace shogun {
+namespace shogun
+{
 
 /** @brief The Gaussian Exact Form Inference Method
  *
@@ -37,7 +38,8 @@ namespace shogun {
  *  The Gaussian Likelihood Function must be used for this inference method.
  *
  */
-class CExactInferenceMethod: public CInferenceMethod {
+class CExactInferenceMethod: public CInferenceMethod
+{
 
 public:
 
@@ -55,12 +57,6 @@ public:
 
 	/*Destructor*/
 	virtual ~CExactInferenceMethod();
-
-	/*Temporary Function for learning parameters
-	 * this will eventually be incorporated into
-	 * the model selection framework.
-	 */
-	void learn_parameters();
 
 	/** get Negative Log Marginal Likelihood
 	 *
@@ -81,7 +77,7 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual SGVector<float64_t> get_marginal_likelihood_derivatives();
+	virtual CMap<SGString<char>, float64_t> get_marginal_likelihood_derivatives();
 
 	/** get Alpha Matrix
 	 *
@@ -124,7 +120,31 @@ public:
 	 *
 	 * @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() const { return "ExactInferenceMethod"; }
+	inline virtual const char* get_name() const
+	{
+		return "ExactInferenceMethod";
+	}
+	
+	/*Get the gradient
+	 *
+	 * @return Map of gradient. Keys are names of parameters, values are
+	 * values of derivative with respect to that parameter.
+	 */
+	virtual CMap<SGString<char>, float64_t> get_gradient()
+	{
+		return get_marginal_likelihood_derivatives();
+	};
+
+	/*Get the function value
+	 *
+	 * @return Vector that represents the function value
+	 */
+	virtual SGVector<float64_t> get_quantity()
+	{
+		SGVector<float64_t> result(1);
+		result[0] = get_negative_marginal_likelihood();
+		return result;
+	}
 
 protected:
 	/** Update Alpha and Cholesky Matrices.

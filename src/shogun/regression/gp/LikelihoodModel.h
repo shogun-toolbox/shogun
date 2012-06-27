@@ -12,7 +12,8 @@
 
 #include <shogun/base/SGObject.h>
 
-namespace shogun {
+namespace shogun
+{
   
 /*Type of likelihood model*/
 enum ELikelihoodModelType
@@ -29,7 +30,8 @@ enum ELikelihoodModelType
  *  is the prediction function.
  *
  */
-class CLikelihoodModel : public CSGObject {
+class CLikelihoodModel : public CSGObject
+{
 
 public:
   
@@ -38,13 +40,6 @@ public:
 
 	/*Destructor*/
 	virtual ~CLikelihoodModel();
-
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
-	 *
-	 * @return name of the SGSerializable
-	 */
-	inline virtual const char* get_name() const { return "LikelihoodModel"; }
 
 	/** get likelihood function derivative with respect to parameters
 	 *
@@ -72,7 +67,9 @@ public:
 	  * @return model type NONE
 	 */
 	virtual ELikelihoodModelType get_model_type() {return LT_NONE;}
+
 };
+
 }
 
 #endif /* CLIKELIHOODMODEL_H_ */

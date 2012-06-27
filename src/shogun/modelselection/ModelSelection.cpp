@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Heiko Strathmann
+ *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -16,23 +17,28 @@
 using namespace shogun;
 
 CModelSelection::CModelSelection(CModelSelectionParameters* model_parameters,
-		CCrossValidation* cross_validation) :
-	m_model_parameters(model_parameters), m_cross_validation(cross_validation)
+		CMachineEvaluation* machine_eval) :
+	m_model_parameters(model_parameters), m_machine_eval(machine_eval)
 {
+	init();
+}
+
+void CModelSelection::init()
+{
+
 	SG_REF(m_model_parameters);
-	SG_REF(m_cross_validation);
+	SG_REF(m_machine_eval);
 
-	m_parameters->add((CSGObject**) &m_model_parameters, "model_parameters",
-			"Parameter tree for model selection");
+	SG_ADD((CSGObject**)&m_model_parameters, "model_parameters",
+			"Parameter tree for model selection", MS_NOT_AVAILABLE);
 
-	m_parameters->add((CSGObject**) &m_cross_validation, "cross_validation",
-			"Cross validation strategy");
-
+	SG_ADD((CSGObject**)&m_machine_eval, "machine_evaluation",
+			"Machine evaluation strategy", MS_NOT_AVAILABLE);
 }
 
 CModelSelection::~CModelSelection()
 {
 	SG_UNREF(m_model_parameters);
-	SG_UNREF(m_cross_validation);
+	SG_UNREF(m_machine_eval);
 }
 

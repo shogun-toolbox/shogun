@@ -5,6 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2012 Jacob Walker
+ *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -35,8 +37,8 @@ void CParameterCombination::init()
 	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 
-	m_parameters->add((CSGObject**)m_child_nodes, "child nodes",
-			"children of this node");
+	SG_ADD((CSGObject**)&m_child_nodes, "child nodes",
+			"children of this node", MS_NOT_AVAILABLE);
 }
 
 CParameterCombination::~CParameterCombination()
@@ -49,6 +51,152 @@ void CParameterCombination::append_child(CParameterCombination* child)
 {
 	m_child_nodes->append_element(child);
 }
+
+bool CParameterCombination::set_parameter(char* name, float64_t value)
+{
+	if (m_param)
+	{
+		for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
+		{
+				void* param = m_param->get_parameter(i)->m_parameter;
+
+				if (!strcmp(m_param->get_parameter(i)->m_name, name))
+				{
+					if (m_param->get_parameter(i)->m_datatype.m_ptype
+							!= PT_FLOAT64)
+						SG_ERROR("Paramater %s not a float parameter", name);
+
+					*((float64_t*)(param)) = value;
+					return true;
+				}
+
+		}
+
+	}
+
+	bool result = false;
+
+	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+	{
+		CParameterCombination* child = (CParameterCombination*)
+				m_child_nodes->get_element(i);
+
+		result |= child->set_parameter(name, value);
+
+		SG_UNREF(child);
+
+	}
+
+	return result;
+}
+
+bool CParameterCombination::set_parameter(char* name, int32_t value)
+{
+	if (m_param)
+	{
+		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
+		{
+				void* param=m_param->get_parameter(i)->m_parameter;
+
+				if (!strcmp(m_param->get_parameter(i)->m_name, name))
+				{
+					if (m_param->get_parameter(i)->m_datatype.m_ptype
+							!= PT_INT32)
+						SG_ERROR("Paramater %s not an int parameter", name);
+
+					*((int32_t*)(param)) = value;
+					return true;
+				}
+
+		}
+
+	}
+
+	bool result = false;
+
+	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+	{
+		CParameterCombination* child = (CParameterCombination*)
+				m_child_nodes->get_element(i);
+
+		result |= child->set_parameter(name, value);
+
+		SG_UNREF(child);
+
+	}
+
+	return result;
+}
+
+bool CParameterCombination::set_parameter(char* name, bool value)
+{
+	if (m_param)
+	{
+		for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
+		{
+				void* param = m_param->get_parameter(i)->m_parameter;
+
+				if (!strcmp(m_param->get_parameter(i)->m_name, name))
+				{
+					if (m_param->get_parameter(i)->m_datatype.m_ptype
+							!= PT_BOOL)
+						SG_ERROR("Paramater %s not a boolean parameter", name);
+
+					*((bool*)(param)) = value;
+					return true;
+				}
+
+		}
+
+	}
+
+	bool result = false;
+
+	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+	{
+		CParameterCombination* child = (CParameterCombination*)
+				m_child_nodes->get_element(i);
+
+		result |= child->set_parameter(name, value);
+
+		SG_UNREF(child);
+
+	}
+
+	return result;
+}
+
+TParameter* CParameterCombination::get_parameter(char* name)
+{
+	if (m_param)
+	{
+		for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
+		{
+			if (!strcmp(m_param->get_parameter(i)->m_name, name))
+				return m_param->get_parameter(i);
+		}
+
+	}
+
+	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+	{
+		CParameterCombination* child = (CParameterCombination*)
+				m_child_nodes->get_element(i);
+
+		TParameter* p = child->get_parameter(name);
+
+		if (p)
+		{
+			SG_UNREF(child);
+			return p;
+		}
+
+		SG_UNREF(child);
+	}
+
+	return NULL;
+}
+
 
 void CParameterCombination::merge_with(CParameterCombination* node)
 {

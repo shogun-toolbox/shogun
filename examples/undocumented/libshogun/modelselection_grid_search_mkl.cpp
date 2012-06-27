@@ -138,7 +138,11 @@ int main(int argc, char **argv)
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
-	CrossValidationResult result=cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_ERROR("Evaluation result is not of type CrossValidationResult!");
+
 	SG_SPRINT("result: ");
 	result.print_result();
 

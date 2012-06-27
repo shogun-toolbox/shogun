@@ -16,7 +16,11 @@
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/regression/gp/ZeroMean.h>
 #include <shogun/regression/GaussianProcessRegression.h>
-
+#include <shogun/evaluation/GradientEvaluation.h>
+#include <shogun/modelselection/GradientModelSelection.h>
+#include <shogun/modelselection/ModelSelectionParameters.h>
+#include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/evaluation/GradientCriterion.h>
 
 using namespace shogun;
 
@@ -75,15 +79,71 @@ int main(int argc, char **argv)
 	
 	SG_REF(labels);
 	CGaussianKernel* test_kernel = new CGaussianKernel(10, 2);
-		
+	
 	test_kernel->init(features, features);
 
 	CZeroMean* mean = new CZeroMean();
 	CGaussianLikelihood* lik = new CGaussianLikelihood();
 	lik->set_sigma(0.01);
 	CExactInferenceMethod* inf = new CExactInferenceMethod(test_kernel, features, mean, labels, lik);
+	SG_REF(inf);
+	
 	CGaussianProcessRegression* gp = new CGaussianProcessRegression(inf, features, labels);
 	
+	CModelSelectionParameters* root=new CModelSelectionParameters();
+	
+	CModelSelectionParameters* c2=new CModelSelectionParameters("Inference Method", inf);
+	root->append_child(c2);
+	
+	CModelSelectionParameters* c3=new CModelSelectionParameters("Likelihood Model", lik);
+	c2->append_child(c3); 
+
+	CModelSelectionParameters* c1=new CModelSelectionParameters("sigma");
+	c3->append_child(c1);
+	c1->build_values(-10.0, 2.0, R_EXP);
+	
+	CModelSelectionParameters* c4=new CModelSelectionParameters("Kernel", test_kernel);
+	c2->append_child(c4);
+
+	CModelSelectionParameters* c5=new CModelSelectionParameters("width");
+	c4->append_child(c5);
+	c5->build_values(-10.0, 2.0, R_EXP);
+	
+	/* cross validation class for evaluation in model selection */
+	SG_REF(gp);
+
+	CGradientCriterion* crit = new CGradientCriterion();
+
+	CGradientEvaluation* grad=new CGradientEvaluation(gp, features, labels,
+			crit);
+	
+	grad->set_function(inf);
+	
+	gp->print_modsel_params();
+	
+	root->print_tree();
+	
+	/* handles all of the above structures in memory */
+	CGradientModelSelection* grad_search=new CGradientModelSelection(
+			root, grad);
+
+	/* set autolocking to false to get rid of warnings */
+	grad->set_autolock(false);
+
+	CParameterCombination* best_combination=grad_search->select_model(true);
+
+	SG_SPRINT("best parameter(s):\n");
+	best_combination->print_tree();
+
+	best_combination->apply_to_machine(gp);
+	CGradientResult* result=(CGradientResult*)grad->evaluate();
+
+	if(result->get_result_type() != GRADIENTEVALUATION_RESULT)
+		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
+
+	result->print_result();
+
+
 	SGVector<float64_t> alpha = inf->get_alpha();
 	SGVector<float64_t> labe = labels->get_labels();
 	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
@@ -105,8 +165,12 @@ int main(int argc, char **argv)
 	SG_UNREF(features2);
 	SG_UNREF(predictions);
 	SG_UNREF(labels);
+	SG_UNREF(inf);
 	SG_UNREF(gp);
-		
+	SG_UNREF(grad_search);
+	SG_UNREF(best_combination);
+	SG_UNREF(result);
+	
 	exit_shogun();
 
 	return 0;

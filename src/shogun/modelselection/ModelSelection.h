@@ -12,12 +12,12 @@
 #define __MODELSELECTION_H_
 
 #include <shogun/base/SGObject.h>
+#include <shogun/evaluation/MachineEvaluation.h>
 
 namespace shogun
 {
 
 class CModelSelectionParameters;
-class CCrossValidation;
 class CParameterCombination;
 
 /**
@@ -36,7 +36,7 @@ public:
 	 * of a certain combination of parameters
 	 */
 	CModelSelection(CModelSelectionParameters* model_parameters,
-			CCrossValidation* cross_validation);
+			CMachineEvaluation* machine_eval);
 
 	/** destructor */
 	virtual ~CModelSelection();
@@ -49,14 +49,16 @@ public:
 	 */
 	virtual CParameterCombination* select_model(bool print_state=false)=0;
 
-	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const	{ return "ModelSelection"; }
+private:
+
+	/*Initializer*/
+	void init();
 
 protected:
 	/** model parameters */
 	CModelSelectionParameters* m_model_parameters;
 	/** cross validation */
-	CCrossValidation* m_cross_validation;
+	CMachineEvaluation* m_machine_eval;
 };
 
 }

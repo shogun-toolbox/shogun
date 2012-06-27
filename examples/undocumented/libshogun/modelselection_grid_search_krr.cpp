@@ -139,13 +139,18 @@ void test_cross_validation()
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
-	CrossValidationResult result=cross->evaluate();
+	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+
+	if (result->get_result_type() != CROSSVALIDATION_RESULT)
+		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+	
 	SG_SPRINT("result: ");
-	result.print_result();
+	result->print_result();
 
 	/* clean up */
 	SG_UNREF(features);
 	SG_UNREF(best_combination);
+	SG_UNREF(result);
 	SG_UNREF(grid_search);
 }
 
