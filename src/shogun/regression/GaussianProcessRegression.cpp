@@ -47,9 +47,9 @@ void CGaussianProcessRegression::init()
 	m_features = NULL;
 	m_method = NULL;
 
-	SG_ADD((CSGObject**) &m_features, "Features", "Feature object.",
+	SG_ADD((CSGObject**) &m_features, "features", "Feature object.",
 	    MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_method, "Inference Method", "Inference Method.",
+	SG_ADD((CSGObject**) &m_method, "inference_method", "Inference Method.",
 	    MS_AVAILABLE);
 }
 

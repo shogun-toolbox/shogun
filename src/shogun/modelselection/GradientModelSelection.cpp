@@ -101,11 +101,11 @@ void CGradientModelSelection::init()
 	m_grad_tolerance = 1e-4;
 	m_current_combination = NULL;
 
-	SG_ADD((CSGObject**)&m_current_combination, "Current Combination",
+	SG_ADD((CSGObject**)&m_current_combination, "current_combination",
 			"Current Combination", MS_NOT_AVAILABLE);
-	SG_ADD(&m_grad_tolerance, "Gradient Tolerance",
-			"Gradient Tolerance", MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_evaluations, "Max Evaluations", "Max Evaluations",
+	SG_ADD(&m_grad_tolerance, "gradient_tolerance",
+			"gradient_tolerance", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_evaluations, "max_evaluations", "Max Evaluations",
 			MS_NOT_AVAILABLE);
 }
 

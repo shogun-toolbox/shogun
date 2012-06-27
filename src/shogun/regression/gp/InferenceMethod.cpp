@@ -46,12 +46,12 @@ CInferenceMethod::~CInferenceMethod() {
 
 void CInferenceMethod::init()
 {
-	SG_ADD((CSGObject**)&m_kernel, "Kernel", "Kernel", MS_AVAILABLE);
-	SG_ADD((CSGObject**)&m_model, "Likelihood Model", "Likelihood model",
+	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_model, "likelihood_model", "Likelihood model",
 			MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_mean, "Mean", "Mean Function", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean Function", MS_NOT_AVAILABLE);
 
 	m_kernel = NULL;
 	m_model = NULL;

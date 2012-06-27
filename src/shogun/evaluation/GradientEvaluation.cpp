@@ -30,7 +30,7 @@ CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features,
 
 void CGradientEvaluation::init()
 {
-	SG_ADD((CSGObject**)&m_diff, "Differentiable Function",
+	SG_ADD((CSGObject**)&m_diff, "differentiable_function",
 			"Differentiable Function", MS_NOT_AVAILABLE);
 }
 

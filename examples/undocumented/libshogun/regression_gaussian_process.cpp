@@ -92,17 +92,17 @@ int main(int argc, char **argv)
 	
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 	
-	CModelSelectionParameters* c2=new CModelSelectionParameters("Inference Method", inf);
+	CModelSelectionParameters* c2=new CModelSelectionParameters("inference_method", inf);
 	root->append_child(c2);
 	
-	CModelSelectionParameters* c3=new CModelSelectionParameters("Likelihood Model", lik);
+	CModelSelectionParameters* c3=new CModelSelectionParameters("likelihood_model", lik);
 	c2->append_child(c3); 
 
 	CModelSelectionParameters* c1=new CModelSelectionParameters("sigma");
 	c3->append_child(c1);
 	c1->build_values(-10.0, 2.0, R_EXP);
 	
-	CModelSelectionParameters* c4=new CModelSelectionParameters("Kernel", test_kernel);
+	CModelSelectionParameters* c4=new CModelSelectionParameters("kernel", test_kernel);
 	c2->append_child(c4);
 
 	CModelSelectionParameters* c5=new CModelSelectionParameters("width");
