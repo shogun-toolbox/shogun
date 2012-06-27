@@ -1,5 +1,4 @@
 %{
- #include <shogun/lib/StructuredDataTypes.h>
  #include <shogun/structure/PlifBase.h>
  #include <shogun/structure/Plif.h>
  #include <shogun/structure/PlifArray.h>

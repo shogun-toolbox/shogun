@@ -18,6 +18,7 @@
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/GCArray.h>
 #include <shogun/lib/Compressor.h>
+#include <shogun/lib/StructuredDataTypes.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/lib/DynamicObjectArray.h>
 %}
