@@ -16,7 +16,8 @@ CTask::CTask() : CSGObject(),
 	m_min_index(0), m_max_index(0),
 	m_weight(1.0), m_subtasks(NULL)
 {
-	m_subtasks = new CList();
+	m_subtasks = new CList(true);
+	SG_REF(m_subtasks);
 }
 
 CTask::CTask(index_t min_index, index_t max_index, 
@@ -25,7 +26,8 @@ CTask::CTask(index_t min_index, index_t max_index,
 	m_min_index(min_index), m_max_index(max_index),
 	m_weight(weight), m_subtasks(NULL)
 {
-	m_subtasks = new CList();
+	m_subtasks = new CList(true);
+	SG_REF(m_subtasks);
 }
 
 CTask::~CTask()
@@ -42,5 +44,6 @@ void CTask::add_subtask(CTask* subtask)
 
 CList* CTask::get_subtasks()
 {
+	SG_REF(m_subtasks);
 	return m_subtasks;
 }
