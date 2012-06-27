@@ -106,9 +106,11 @@ public:
 	 * structure, a set of trees which contain all combinations of parameters
 	 * that are implied by this tree is generated.
 	 *
+	 * @param prefix_num a number of tabs that is put before each output
+	 * to have a more readable print layout
 	 * @return result all trees of parameter combinations are put into here
 	 */
-	CDynamicObjectArray* get_combinations();
+	CDynamicObjectArray* get_combinations(index_t prefix_num=1);
 
 	/** Instead of generating an array of combinations, get_single_combination
 	 * generates a single  combination of parameters. The choice of

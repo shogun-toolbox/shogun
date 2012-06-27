@@ -15,6 +15,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/lib/Set.h>
 
 using namespace shogun;
 
@@ -256,8 +257,16 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 
 
 
-CDynamicObjectArray* CModelSelectionParameters::get_combinations()
+CDynamicObjectArray* CModelSelectionParameters::get_combinations(
+		index_t num_prefix)
 {
+	char* prefix=SG_MALLOC(char, num_prefix+1);
+	prefix[num_prefix]='\0';
+	for (index_t i=0; i<num_prefix; ++i)
+		prefix[i]='\t';
+
+	SG_DEBUG("%s------>entering CModelSelectionParameters::get_combinations() "
+			"for \"%s\"\n", prefix, m_node_name ? m_node_name : "root");
 	CDynamicObjectArray* result=new CDynamicObjectArray();
 
 	/* value case: node with values and no children.
@@ -280,16 +289,21 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 				p->add(&((int32_t*)m_values)[i], m_node_name);;
 				break;
 			case MSPT_NONE:
-				SG_ERROR("Value node has no type!\n");
+				SG_ERROR("%sValue node has no type!\n", prefix);
 				break;
 			default:
-				SG_ERROR("Unknown type for model selection parameter!\n");
+				SG_ERROR("%sUnknown type for model selection parameter!\n",
+						prefix);
 				break;
 			}
 
 			result->append_element(new CParameterCombination(p));
 		}
 
+		SG_DEBUG("%s------>leaving CModelSelectionParameters::get_combinations()"
+				"for \"%s\"\n", prefix, m_node_name ? m_node_name : "root");
+
+		SG_FREE(prefix);
 		return result;
 	}
 
@@ -301,7 +315,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 	 * combine them iteratively children which are something different
 	 */
 	if (!((m_sgobject && m_node_name) || (!m_node_name && !m_sgobject)))
-		SG_ERROR("Illegal CModelSelectionParameters node type.\n");
+		SG_ERROR("%sIllegal CModelSelectionParameters node type.\n", prefix);
 
 	/* only consider combinations if this node has children */
 	if (m_child_nodes->get_num_elements())
@@ -331,7 +345,8 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 			/* recursively get all combinations in a new array */
 			CModelSelectionParameters* value_child=
 					(CModelSelectionParameters*)value_children.get_element(i);
-			value_node_sets.append_element(value_child->get_combinations());
+			value_node_sets.append_element(value_child->get_combinations(
+					num_prefix+1));
 			SG_UNREF(value_child);
 		}
 
@@ -356,7 +371,6 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 
 		SG_UNREF(new_root);
 
-		/* if there are no non-value sets, just use the above result */
 		if (!non_value_children.get_num_elements())
 			*result=*value_combinations;
 		/* in the other case, the non-values have also to be treated, but
@@ -364,57 +378,95 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 		else
 		{
 			/* extract all tree sets of non-value nodes */
-			CDynamicObjectArray non_value_combinations;
+//			SG_PRINT("%sextracting combinations of non-value nodes\n", prefix);
+			CDynamicObjectArray* non_value_combinations=
+					new CDynamicObjectArray();
 			for (index_t i=0; i<non_value_children.get_num_elements(); ++i)
 			{
 				/* recursively get all combinations in a new array */
 				CModelSelectionParameters* non_value_child=
 						(CModelSelectionParameters*)
 						non_value_children.get_element(i);
-				non_value_combinations.append_element(
-						non_value_child->get_combinations());
-				SG_UNREF(non_value_child);
-			}
 
-			/* combine combinations of value and non-value nodes */
+//				SG_PRINT("%s\tcurrent non-value child\n", prefix);
+//				non_value_child->print_tree(num_prefix+1);
+
+				CDynamicObjectArray* current_combination=
+						non_value_child->get_combinations(num_prefix+2);
+				non_value_combinations->append_element(current_combination);
+				SG_UNREF(non_value_child);
+
+//				SG_PRINT("%s\tcombinations of non-value nodes:\n", prefix);
+//				for (index_t j=0; j<current_combination->get_num_elements(); ++j)
+//				{
+//					CParameterCombination* c=(CParameterCombination*)
+//							current_combination->get_element(j);
+//					c->print_tree(num_prefix+2);
+//					SG_UNREF(c);
+//				}
+			}
+//			SG_PRINT("%sdone extracting combinations of non-value nodes\n",
+//					prefix);
+
+			/* Now, combine combinations of value and non-value nodes */
 
 			/* if there are only non-value children, nothing is combined */
 			if (!value_combinations->get_num_elements())
 			{
-				/* non-value children are only pasted together. However, the
-				 * new root node is to put as root in front of all trees.
-				 * If there were value children before, this is done by
-				 * value_node_sets_multiplication. In this case it has to be done
-				 * by hand. */
+				/* non-value children have to be multipied first, then, all
+				 * these products are just appended */
 
-				for (index_t j=0;
-						j<non_value_combinations.get_num_elements(); ++j)
+				/* temporary new root is needed to put fron all product trees */
+				if (m_sgobject)
 				{
-					CDynamicObjectArray* current_non_value_set=
-							(CDynamicObjectArray*)
-							non_value_combinations.get_element(j);
+					Parameter* p=new Parameter();
+					p->add(&m_sgobject, m_node_name);
+					new_root=new CParameterCombination(p);
+				}
+				else
+					new_root=new CParameterCombination();
 
-					for (index_t k=0; k
-							<current_non_value_set->get_num_elements(); ++k)
-					{
-						CParameterCombination* current_non_value_tree=
-								(CParameterCombination*)
-								current_non_value_set->get_element(k);
+				CDynamicObjectArray* non_value_products=
+						CParameterCombination::non_value_tree_multiplication(
+								non_value_combinations, new_root);
 
-						/* append new root with rest of tree to current
-						 * tree. re-use of new_root variable, safe here */
-						new_root=new CParameterCombination();
-						new_root->append_child(current_non_value_tree);
-						result->append_element(new_root);
+				SG_UNREF(new_root);
 
-						SG_UNREF(current_non_value_tree);
-					}
+				SG_UNREF(non_value_combinations);
+				non_value_combinations=non_value_products;
 
-					SG_UNREF(current_non_value_set);
+				/* append all non-value combinations to result */
+				for (index_t i=0; i<non_value_combinations->get_num_elements(); ++i)
+				{
+					CParameterCombination* current=(CParameterCombination*)
+							non_value_combinations->get_element(i);
+					result->append_element(current);
+					SG_UNREF(current);
 				}
 			}
 			else
 			{
+				/* before combinations are built, produce products of non-value
+				 * combinations. new root is temporarily needed to put front
+				 * all new trees */
+				if (m_sgobject)
+				{
+					Parameter* p=new Parameter();
+					p->add(&m_sgobject, m_node_name);
+					new_root=new CParameterCombination(p);
+				}
+				else
+					new_root=new CParameterCombination();
+
+				CDynamicObjectArray* non_value_products=
+						CParameterCombination::non_value_tree_multiplication(
+								non_value_combinations, new_root);
+
+				SG_UNREF(new_root);
+
+				SG_UNREF(non_value_combinations);
+				non_value_combinations=non_value_products;
+
 				for (index_t i=0; i<value_combinations->get_num_elements(); ++i)
 				{
 					CParameterCombination* current_value_tree=
@@ -422,41 +474,29 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 							value_combinations->get_element(i);
 
 					for (index_t j=0; j
-							<non_value_combinations.get_num_elements(); ++j)
-					{
-						CDynamicObjectArray* current_non_value_set=
-								(CDynamicObjectArray*)
-								non_value_combinations.get_element(j);
+							<non_value_combinations->get_num_elements(); ++j)
+				{
+						CParameterCombination* current_non_value_tree=
+								(CParameterCombination*)
+								non_value_combinations->get_element(j);
 
-						for (index_t k=0; k
-								<current_non_value_set->get_num_elements(); ++k)
-						{
-							CParameterCombination* current_non_value_tree=
-									(CParameterCombination*)
-									current_non_value_set->get_element(k);
+						/* copy current value tree and add all childs of non-
+						 * value combination. Then add new node to result */
+						CParameterCombination* value_copy=
+								current_value_tree->copy_tree();
 
-							/* copy the current trees and append non-value
-							 * tree to value tree. Note that the root in the
-							 * non-value tree is already the current
-							 * CSGObject and therefore the non-value tree
-							 * copy may just be appended as child */
-							CParameterCombination* value_copy=
-									current_value_tree->copy_tree();
-							CParameterCombination* non_value_copy=
-									current_non_value_tree->copy_tree();
+						value_copy->merge_with(current_non_value_tree);
+						result->append_element(value_copy);
 
-							value_copy->append_child(non_value_copy);
-							result->append_element(value_copy);
-
-							SG_UNREF(current_non_value_tree);
-						}
-
-						SG_UNREF(current_non_value_set);
+						SG_UNREF(current_non_value_tree);
 					}
 
 					SG_UNREF(current_value_tree);
 				}
 			}
+
+			/* clean up*/
+			SG_UNREF(non_value_combinations);
 		}
 
 		SG_UNREF(value_combinations);
@@ -474,6 +514,19 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations()
 		}
 	}
 
+//	SG_PRINT("%sresult is a set of %d elements:\n", prefix,
+//			result->get_num_elements());
+//	for (index_t i=0; i<result->get_num_elements(); ++i)
+//	{
+//		CParameterCombination* current=(CParameterCombination*)
+//				result->get_element(i);
+//		current->print_tree(num_prefix+1);
+//		SG_UNREF(current);
+//	}
+
+	SG_DEBUG("%s------>leaving CModelSelectionParameters::get_combinations()"
+			"for \"%s\"\n", prefix, m_node_name ? m_node_name : "root");
+	SG_FREE(prefix);
 	return result;
 }
 

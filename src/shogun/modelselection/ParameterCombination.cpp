@@ -13,8 +13,11 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/Machine.h>
+#include <set>
+#include <string>
 
 using namespace shogun;
+using namespace std;
 
 CParameterCombination::CParameterCombination()
 {
@@ -195,6 +198,17 @@ TParameter* CParameterCombination::get_parameter(char* name)
 }
 
 
+void CParameterCombination::merge_with(CParameterCombination* node)
+{
+	for (index_t i=0; i<node->m_child_nodes->get_num_elements(); ++i)
+	{
+		CParameterCombination* child=
+				(CParameterCombination*)node->m_child_nodes->get_element(i);
+		append_child(child->copy_tree());
+		SG_UNREF(child);
+	}
+}
+
 void CParameterCombination::print_tree(int prefix_num) const
 {
 	/* prefix is enlarged */
@@ -259,6 +273,22 @@ void CParameterCombination::print_tree(int prefix_num) const
 DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
 		const DynArray<Parameter*>& set_1, const DynArray<Parameter*>& set_2)
 {
+	SG_SDEBUG("entering CParameterCombination::parameter_set_multiplication()\n");
+
+	SG_SDEBUG("set 1:\n");
+	for (index_t i=0; i<set_1.get_num_elements(); ++i)
+	{
+		for (index_t j=0; j<set_1.get_element(i)->get_num_parameters(); ++j)
+			SG_SDEBUG("\t%s\n", set_1.get_element(i)->get_parameter(j)->m_name);
+	}
+
+	SG_SDEBUG("set 2:\n");
+	for (index_t i=0; i<set_2.get_num_elements(); ++i)
+	{
+		for (index_t j=0; j<set_2.get_element(i)->get_num_parameters(); ++j)
+			SG_SDEBUG("\t%s\n", set_2.get_element(i)->get_parameter(j)->m_name);
+	}
+
 	DynArray<Parameter*>* result=new DynArray<Parameter*>();
 
 	for (index_t i=0; i<set_1.get_num_elements(); ++i)
@@ -272,6 +302,7 @@ DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
 		}
 	}
 
+	SG_SDEBUG("leaving CParameterCombination::parameter_set_multiplication()\n");
 	return result;
 }
 
@@ -391,6 +422,148 @@ CDynamicObjectArray* CParameterCombination::leaf_sets_multiplication(
 		/* this is not needed anymore, because the Parameter instances are now
 		 * in the resulting tree sets */
 		delete param_product;
+	}
+
+	return result;
+}
+
+CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
+				const CDynamicObjectArray* sets,
+				const CParameterCombination* new_root)
+{
+	SG_SDEBUG("entering CParameterCombination::non_value_tree_multiplication()\n");
+	CDynamicObjectArray* result=new CDynamicObjectArray();
+
+	/* first step: get all names in the sets */
+	set<string> names;
+
+	for (index_t j=0;
+			j<sets->get_num_elements(); ++j)
+	{
+		CDynamicObjectArray* current_set=
+				(CDynamicObjectArray*)
+				sets->get_element(j);
+
+		for (index_t k=0; k
+				<current_set->get_num_elements(); ++k)
+		{
+			CParameterCombination* current_tree=(CParameterCombination*)
+					current_set->get_element(k);
+
+			names.insert(string(current_tree->m_param->get_parameter(0)->m_name));
+
+			SG_UNREF(current_tree);
+		}
+
+		SG_UNREF(current_set);
+	}
+
+	SG_SDEBUG("all names\n");
+	for (set<string>::iterator it=names.begin(); it!=names.end(); ++it)
+		SG_SDEBUG("\"%s\"\n", (*it).c_str());
+
+	/* only do stuff if there are names */
+	if (!names.empty())
+	{
+		/* next step, build temporary structure where all elements with first
+		 * name are put. Elements of that structure will be extend iteratively
+		 * per name */
+
+
+		/* extract all trees with first name */
+		const char* first_name=(*(names.begin())).c_str();
+		CDynamicObjectArray* trees=
+				CParameterCombination::extract_trees_with_name(sets, first_name);
+
+		SG_SDEBUG("adding trees for first name \"%s\":\n", first_name);
+		for (index_t i=0; i<trees->get_num_elements(); ++i)
+		{
+			CParameterCombination* current_tree=
+					(CParameterCombination*)trees->get_element(i);
+
+			CParameterCombination* current_root=new_root->copy_tree();
+			current_root->append_child(current_tree);
+			result->append_element(current_root);
+
+//			current_tree->print_tree(1);
+			SG_UNREF(current_tree);
+		}
+		SG_UNREF(trees);
+
+		/* now iterate over the remaining names and build products */
+		SG_SDEBUG("building products with remaining trees:\n");
+		set<string>::iterator it=names.begin();
+		for (++it; it!=names.end(); ++it)
+		{
+			SG_SDEBUG("processing \"%s\"\n", (*it).c_str());
+
+			/* extract all trees with current name */
+			const char* current_name=(*it).c_str();
+			trees=CParameterCombination::extract_trees_with_name(sets,
+					current_name);
+
+			/* create new set of trees where each element is put once for each
+			 * of the just generated trees */
+			CDynamicObjectArray* new_result=new CDynamicObjectArray();
+			for (index_t i=0; i<result->get_num_elements(); ++i)
+			{
+				for (index_t j=0; j<trees->get_num_elements(); ++j)
+				{
+					CParameterCombination* to_copy=
+							(CParameterCombination*)result->get_element(i);
+
+					/* create a copy of current element */
+					CParameterCombination* new_element=to_copy->copy_tree();
+					SG_UNREF(to_copy);
+
+					CParameterCombination* to_add=
+							(CParameterCombination*)trees->get_element(j);
+					new_element->append_child(to_add);
+					SG_UNREF(to_add);
+					new_result->append_element(new_element);
+//					SG_SDEBUG("added:\n");
+//					new_element->print_tree();
+				}
+			}
+
+			/* clean up */
+			SG_UNREF(trees);
+
+			/* replace result by new_result */
+			SG_UNREF(result);
+			result=new_result;
+		}
+	}
+
+	SG_SDEBUG("leaving CParameterCombination::non_value_tree_multiplication()\n");
+	return result;
+}
+
+CDynamicObjectArray* CParameterCombination::extract_trees_with_name(
+		const CDynamicObjectArray* sets, const char* desired_name)
+{
+	CDynamicObjectArray* result=new CDynamicObjectArray();
+
+	for (index_t j=0;
+			j<sets->get_num_elements(); ++j)
+	{
+		CDynamicObjectArray* current_set=
+				(CDynamicObjectArray*) sets->get_element(j);
+
+		for (index_t k=0; k<current_set->get_num_elements(); ++k)
+		{
+			CParameterCombination* current_tree=(CParameterCombination*)
+					current_set->get_element(k);
+
+			char* current_name=current_tree->m_param->get_parameter(0)->m_name;
+
+			if (!strcmp(current_name, desired_name))
+				result->append_element(current_tree);
+
+			SG_UNREF(current_tree);
+		}
+
+		SG_UNREF(current_set);
 	}
 
 	return result;

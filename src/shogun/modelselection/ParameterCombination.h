@@ -83,6 +83,12 @@ public:
 	 */
 	void append_child(CParameterCombination* child);
 
+	/** Adds (copies of) all children of given node
+	 *
+	 * @param node (copies of) children of given node are added to this one
+	 */
+	void merge_with(CParameterCombination* node);
+
 	/** Copies the complete tree of this node. Note that nodes are actually
 	 * copied. If this is a parameter node, a NEW Parameter instance to the same
 	 * data is created in the copy
@@ -167,10 +173,36 @@ public:
 		return "ParameterCombination";
 	}
 
+protected:
+	/** Takes a set of sets of (non-value) trees and returns a set with all
+	 * combinations of the elements, where only combinations of trees with
+	 * different names are built.
+	 *
+	 * @param sets set of sets of CParameterCombination instances which
+	 * represent the trees to be multiplied
+	 * @new_root this new root is put in front of all products
+	 * @return set of trees with the given root as root and all combinations
+	 * of the trees in the sets as children
+	 */
+	static CDynamicObjectArray* non_value_tree_multiplication(
+				const CDynamicObjectArray* sets,
+				const CParameterCombination* new_root);
+
+	/** Takes a set of sets of trees and extracts all trees with a given name.
+	 * Assumes that in a (inner) set, all trees have the same name on their
+	 * single parameter. Used by get_combinations
+	 *
+	 * @param sets set of sets of CParameterCombination instances to search in
+	 * @param desired_name tree with this name is searched
+	 * @return set of trees with the desired name
+	 */
+	static CDynamicObjectArray* extract_trees_with_name(
+			const CDynamicObjectArray* sets, const char* desired_name);
+
 private:
 	void init();
 
-private:
+protected:
 	Parameter* m_param;
 	CDynamicObjectArray* m_child_nodes;
 };

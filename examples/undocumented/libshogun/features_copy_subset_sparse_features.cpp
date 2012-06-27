@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 			SG_SPRINT("%f, ", vec.features[j].entry);
 
 		SG_SPRINT("]\n");
-		f->free_sparse_feature_vector(vec, i);
+		f->free_sparse_feature_vector(i);
 	}
 
 	/* indices that are to copy */
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 			SG_SPRINT("%f, ", vec.features[j].entry);
 
 		SG_SPRINT("]\n");
-		subset_copy->free_sparse_feature_vector(vec, i);
+		subset_copy->free_sparse_feature_vector(i);
 	}
 
 	/* test if all elements are copied correctly */
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 			ASSERT(a_idx==b_idx);
 		}
 
-		subset_copy->free_sparse_feature_vector(vec, i);
+		subset_copy->free_sparse_feature_vector(i);
 	}
 
 	SG_UNREF(f);

@@ -187,7 +187,7 @@ public:
 	T* get_element_ptr(int32_t index)
 	{
 		if (array->get_element(index)!=NULL)
-			return &(array->get_element(index)->data);
+			return &(array->get_element(index)->element);
 		return NULL;
 	}
 

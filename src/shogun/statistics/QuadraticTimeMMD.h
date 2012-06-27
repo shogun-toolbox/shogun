@@ -35,7 +35,7 @@ enum EQuadraticMMDType
  * Unbiased, that is: TODO
  *
  * See
- * ﻿Gretton, A., Borgwardt, K. M., Rasch, M. J., Schölkopf, B., & Smola, A. (2012).
+ * Gretton, A., Borgwardt, K. M., Rasch, M. J., Schölkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  *
  * To choose, use set_statistic_type()
