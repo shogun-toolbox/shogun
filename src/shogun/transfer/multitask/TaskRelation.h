@@ -11,6 +11,7 @@
 #define TASKRELATION_H_
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/List.h>
 
 namespace shogun
 {
@@ -46,6 +47,11 @@ public:
 
 	/** get relation type */
 	virtual ETaskRelationType get_relation_type() const = 0;
+
+protected:
+
+	bool check_task_list(CList* tasks);
+
 };
 
 }
