@@ -29,6 +29,15 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 	SG_REF(kernel);
 }
 
+CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
+		CFeatures* p, CFeatures* q) : CTwoSampleTestStatistic(p, q)
+{
+	init();
+
+	m_kernel=kernel;
+	SG_REF(kernel);
+}
+
 CKernelTwoSampleTestStatistic::~CKernelTwoSampleTestStatistic()
 {
 	SG_UNREF(m_kernel);
