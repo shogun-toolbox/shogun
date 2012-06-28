@@ -48,6 +48,7 @@ TARGETS = basic_minimal \
 		  features_copy_subset_simple_features \
 		  features_copy_subset_string_features \
 		  features_copy_subset_sparse_features \
+		  features_create_merged_copy \
 		  mathematics_confidence_intervals \
 		  clustering_kmeans base_parameter_map \
 		  base_load_file_parameters \
@@ -82,7 +83,7 @@ TARGETS = basic_minimal \
 		  statistics \
 		  statistics_quadratic_time_mmd \
 		  statistics_linear_time_mmd \
-		  transfer_multitasklsregression
+		  transfer_multitasklsregression \
 
 all: $(TARGETS)
 
