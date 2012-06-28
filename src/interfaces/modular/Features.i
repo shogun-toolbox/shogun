@@ -19,6 +19,7 @@
 
 /* These functions return new Objects */
 %newobject get_transposed();
+%newobject create_merged_copy(CFeatures* other);
 
 #ifdef USE_SWIG_DIRECTORS
 %feature("director") shogun::CDirectorDotFeatures;
