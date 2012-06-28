@@ -897,6 +897,53 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 	return true;
 }
 
+template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
+		CFeatures* other)
+{
+	SG_DEBUG("entering %s::create_merged_copy()\n");
+	if (get_feature_type()!=other->get_feature_type() ||
+			get_feature_class()!=other->get_feature_class() ||
+			strcmp(get_name(), other->get_name()))
+	{
+		SG_ERROR("%s::create_merged_copy(): Features are of different type!\n",
+				get_name());
+	}
+
+	CDenseFeatures<ST>* casted=dynamic_cast<CDenseFeatures<ST>* >(other);
+
+	if (!casted)
+	{
+		SG_ERROR("%s::create_merged_copy(): Could not cast object of %s to "
+				"same type as %s\n",get_name(), other->get_name(), get_name());
+	}
+
+	if (num_features!=casted->num_features)
+	{
+		SG_ERROR("%s::create_merged_copy(): Provided feature object has "
+				"different dimension than this one\n");
+	}
+
+	/* create new feature matrix and copy both instances data into it */
+	SGMatrix<ST> data(num_features, num_vectors+casted->get_num_vectors());
+
+	/* copy data of this instance */
+	SG_DEBUG("copying matrix of this instance\n");
+	memcpy(data.matrix, feature_matrix.matrix,
+			num_features*num_vectors*sizeof(ST));
+
+	/* copy data of provided instance */
+	SG_DEBUG("copying matrix of provided instance\n");
+	memcpy(&data.matrix[num_vectors*num_features+1],
+			casted->feature_matrix.matrix,
+			casted->num_features*casted->num_vectors*sizeof(ST));
+
+	/* create new instance and return */
+	CDenseFeatures<ST>* result=new CDenseFeatures<ST>(data);
+
+	SG_DEBUG("leaving %s::create_merged_copy()\n");
+	return result;
+}
+
 #define LOAD(f_load, sg_type)												\
 template<> void CDenseFeatures<sg_type>::load(CFile* loader)				\
 { 																			\
