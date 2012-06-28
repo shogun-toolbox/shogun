@@ -169,7 +169,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
 	double d, G, H;
 	double Gmax_old = CMath::INFTY;
 	double Gmax_new, Gnorm1_new;
-	double Gnorm1_init;
+	double Gnorm1_init = 0.0;
 	double *beta = new double[l];
 	double *QD = new double[l];
 	double *y = prob->y;

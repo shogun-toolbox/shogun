@@ -124,6 +124,8 @@ bool CVwConditionalProbabilityTree::train_machine(CFeatures* data)
 			m_feats->reset_stream();
 	}
 	m_feats->end_parser();
+
+	return true;
 }
 
 void CVwConditionalProbabilityTree::train_example(VwExample *ex)
