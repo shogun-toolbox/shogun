@@ -223,7 +223,7 @@ class CFeatures : public CSGObject
 
 		/** Takes another feature instance and returns a new instance which is
 		 * a concatenation of a copy if this instace's data and the given
-		 * instance's data.
+		 * instance's data. Note that the feature types have to be equal.
 		 *
 		 * NOT IMPLEMENTED!
 		 *
