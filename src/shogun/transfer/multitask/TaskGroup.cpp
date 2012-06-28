@@ -40,21 +40,21 @@ SGVector<index_t> CTaskGroup::get_SLEP_ind()
 {
 	check_task_list(m_tasks);
 	int32_t n_subtasks = m_tasks->get_num_elements();
+	SG_PRINT("Number of subtasks = %d\n", n_subtasks);
 	SGVector<index_t> ind(n_subtasks+1);
 
-	CTask* iter_task = (CTask*)(m_tasks->get_first_element());
+	CTask* iterator = (CTask*)(m_tasks->get_first_element());
 	ind[0] = 0;
-	for (int32_t i=0; i<n_subtasks; i++)
+	int32_t i = 0;
+	do
 	{
-		SG_UNREF(iter_task);
-		iter_task = (CTask*)(m_tasks->get_next_element());
-
-		ind[i+1] = iter_task->get_max_index();
+		ind[i+1] = iterator->get_max_index();
+		SG_UNREF(iterator);
+		i++;
 	}
+	while ((iterator = (CTask*)m_tasks->get_next_element()) != NULL);
 
-#ifdef DEBUG_SLEP
 	ind.display_vector();
-#endif
 
 	return ind;
 }
