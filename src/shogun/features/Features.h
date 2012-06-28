@@ -221,6 +221,22 @@ class CFeatures : public CSGObject
 		 */
 		void unset_property(EFeatureProperty p);
 
+		/** Takes another feature instance and returns a new instance which is
+		 * a concatenation of a copy if this instace's data and the given
+		 * instance's data.
+		 *
+		 * NOT IMPLEMENTED!
+		 *
+		 * @param other feature object to append
+		 * @return new feature object which contains copy of data of this
+		 * instance and of given one
+		 */
+		CFeatures* create_merged_copy(CFeatures* other)
+		{
+			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n");
+			return NULL;
+		}
+
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards
 		 *
