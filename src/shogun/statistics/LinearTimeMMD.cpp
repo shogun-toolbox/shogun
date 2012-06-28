@@ -32,6 +32,18 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 	}
 }
 
+CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q) :
+		CKernelTwoSampleTestStatistic(kernel, p, q)
+{
+	init();
+
+	if (p->get_num_vectors()!=q->get_num_vectors())
+	{
+		SG_ERROR("CLinearTimeMMD: Only features with equal number of vectors "
+				"are currently possible\n");
+	}
+}
+
 CLinearTimeMMD::~CLinearTimeMMD()
 {
 

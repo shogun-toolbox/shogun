@@ -482,6 +482,16 @@ public:
 	 */
 	virtual bool is_equal(CDenseFeatures* rhs);
 
+	/** Takes another feature instance and returns a new instance which is
+	 * a concatenation of a copy if this instace's data and the given
+	 * instance's data. Note that the feature types have to be equal.
+	 *
+	 * @param other feature object to append
+	 * @return new feature object which contains copy of data of this
+	 * instance and of given one
+	 */
+	CFeatures* create_merged_copy(CFeatures* other);
+
 	/** @return object name */
 	inline virtual const char* get_name() const { return "DenseFeatures"; }
 
