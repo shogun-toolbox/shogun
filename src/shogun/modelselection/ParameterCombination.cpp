@@ -52,7 +52,8 @@ void CParameterCombination::append_child(CParameterCombination* child)
 	m_child_nodes->append_element(child);
 }
 
-bool CParameterCombination::set_parameter(char* name, float64_t value)
+bool CParameterCombination::set_parameter(const char* name,
+		float64_t value)
 {
 	if (m_param)
 	{
@@ -90,7 +91,8 @@ bool CParameterCombination::set_parameter(char* name, float64_t value)
 	return result;
 }
 
-bool CParameterCombination::set_parameter(char* name, int32_t value)
+bool CParameterCombination::set_parameter(const char* name,
+		int32_t value)
 {
 	if (m_param)
 	{
@@ -128,7 +130,8 @@ bool CParameterCombination::set_parameter(char* name, int32_t value)
 	return result;
 }
 
-bool CParameterCombination::set_parameter(char* name, bool value)
+bool CParameterCombination::set_parameter(const char* name,
+		bool value)
 {
 	if (m_param)
 	{
@@ -166,7 +169,7 @@ bool CParameterCombination::set_parameter(char* name, bool value)
 	return result;
 }
 
-TParameter* CParameterCombination::get_parameter(char* name)
+TParameter* CParameterCombination::get_parameter(const char* name)
 {
 	if (m_param)
 	{

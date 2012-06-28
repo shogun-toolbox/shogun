@@ -69,6 +69,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 		SG_ERROR("Null data vector!\n");
 
 	SGVector<float64_t> m_alpha = m_method->get_alpha();
+	float64_t m_scale = m_method->get_scale();
 	CKernel* kernel = m_method->get_kernel();
 
 	kernel->cleanup();
@@ -77,6 +78,12 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	
 	//K(X_test, X_train)
 	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
+
+	for (int i = 0; i < kernel_test_matrix.num_rows; i++)
+	{
+		for (int j = 0; j < kernel_test_matrix.num_cols; j++)
+			kernel_test_matrix(i,j) *= (m_scale*m_scale);
+	}
 
 	SGVector< float64_t > result_vector(m_labels->get_num_labels());
 	
@@ -120,12 +127,20 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(
 
 	CKernel* kernel = m_method->get_kernel();
 
+	float64_t m_scale = m_method->get_scale();
+
 	kernel->cleanup();
 
 	kernel->init(m_features, data);
 
 	//K(X_test, X_train)
 	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
+
+	for (int i = 0; i < kernel_test_matrix.num_rows; i++)
+	{
+		for (int j = 0; j < kernel_test_matrix.num_cols; j++)
+			kernel_test_matrix(i,j) *= (m_scale*m_scale);
+	}
 
 	for (int i = 0; i < diagonal.vlen; i++)
 	{
@@ -174,6 +189,12 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(
 	//K(X_test, X_test)
 
 	SGMatrix<float64_t> kernel_test_matrix2 = kernel->get_kernel_matrix();
+
+	for (int i = 0; i < kernel_test_matrix2.num_rows; i++)
+	{
+		for (int j = 0; j < kernel_test_matrix2.num_cols; j++)
+			kernel_test_matrix2(i,j) *= (m_scale*m_scale);
+	}
 
 	SGVector<float64_t> result(kernel_test_matrix2.num_cols);
 
