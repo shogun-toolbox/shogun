@@ -33,7 +33,10 @@ CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p, CFeatures* q) :
 {
 	init();
 
-	/* TODO append features */
+	m_p_and_q=p->create_merged_copy(q);
+	SG_REF(m_p_and_q);
+
+	m_q_start=p->get_num_vectors();
 }
 
 CTwoSampleTestStatistic::~CTwoSampleTestStatistic()
