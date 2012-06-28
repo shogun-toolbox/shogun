@@ -900,7 +900,7 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 		CFeatures* other)
 {
-	SG_DEBUG("entering %s::create_merged_copy()\n");
+	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
 	if (get_feature_type()!=other->get_feature_type() ||
 			get_feature_class()!=other->get_feature_class() ||
 			strcmp(get_name(), other->get_name()))
@@ -933,14 +933,14 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 
 	/* copy data of provided instance */
 	SG_DEBUG("copying matrix of provided instance\n");
-	memcpy(&data.matrix[num_vectors*num_features+1],
+	memcpy(&data.matrix[num_vectors*num_features],
 			casted->feature_matrix.matrix,
 			casted->num_features*casted->num_vectors*sizeof(ST));
 
 	/* create new instance and return */
 	CDenseFeatures<ST>* result=new CDenseFeatures<ST>(data);
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n");
+	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
 	return result;
 }
 
