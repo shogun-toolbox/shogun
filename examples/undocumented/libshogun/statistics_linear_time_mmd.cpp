@@ -186,7 +186,7 @@ void test_linear_mmd_type2_error()
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features, m);
-	mmd->set_p_value_method(MMD1_GAUSSIAN);
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
