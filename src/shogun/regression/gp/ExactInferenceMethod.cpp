@@ -10,6 +10,9 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  *
  */
+#include <shogun/lib/config.h>
+
+#ifdef HAVE_LAPACK
 
 #include <shogun/regression/gp/ExactInferenceMethod.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
@@ -325,3 +328,5 @@ void CExactInferenceMethod::update_alpha_and_chol()
 		m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);
 
 }
+
+#endif // HAVE_LAPACK

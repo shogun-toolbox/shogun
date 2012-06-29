@@ -10,8 +10,10 @@
 #ifndef CEXACTINFERENCEMETHOD_H_
 #define CEXACTINFERENCEMETHOD_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/regression/gp/InferenceMethod.h>
 
+#ifdef HAVE_LAPACK
 namespace shogun
 {
 
@@ -160,5 +162,6 @@ private:
 };
 
 }
+#endif // HAVE_LAPACK
 
 #endif /* CEXACTINFERENCEMETHOD_H_ */
