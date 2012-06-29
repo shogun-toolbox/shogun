@@ -39,7 +39,7 @@ public:
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
-	virtual CMap<SGString<char>, float64_t> get_gradient() = 0;
+	virtual CMap<SGString<const char>, float64_t> get_gradient() = 0;
 
 	/*Get the function value
 	 *

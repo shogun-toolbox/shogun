@@ -69,7 +69,7 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual CMap<SGString<char>, float64_t>
+	virtual CMap<SGString<const char>, float64_t>
 		get_marginal_likelihood_derivatives() = 0;
 
 	/** get Alpha Matrix
@@ -196,6 +196,18 @@ public:
 		m_model = mod;
 	}
 
+	/*set kernel scale
+	 *
+	 * @param s scale to be set
+	 */
+	void set_scale(float64_t s) { m_scale = s; }
+
+	/*get kernel scale
+	 *
+	 * @return kernel scale
+	 */
+	float64_t get_scale() { return m_scale; }
+
 protected:
 	/** Update Alpha and Cholesky Matrices.
 	 */
@@ -236,6 +248,9 @@ protected:
 	 *  feature matrix
 	 */
 	SGMatrix<float64_t> m_L;
+
+	/*Kernel Scale*/
+	float64_t m_scale;
 };
 
 }

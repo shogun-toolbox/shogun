@@ -92,22 +92,27 @@ int main(int argc, char **argv)
 	
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 	
-	CModelSelectionParameters* c2=new CModelSelectionParameters("inference_method", inf);
-	root->append_child(c2);
+	CModelSelectionParameters* c1=new CModelSelectionParameters("inference_method", inf);
+	root->append_child(c1);
+
+        CModelSelectionParameters* c2=new CModelSelectionParameters("scale");
+        c1 ->append_child(c2);
+        c2->build_values(0.001, 4.0, R_LINEAR);
+
 	
 	CModelSelectionParameters* c3=new CModelSelectionParameters("likelihood_model", lik);
-	c2->append_child(c3); 
+	c1->append_child(c3); 
 
-	CModelSelectionParameters* c1=new CModelSelectionParameters("sigma");
-	c3->append_child(c1);
-	c1->build_values(-10.0, 2.0, R_EXP);
+	CModelSelectionParameters* c4=new CModelSelectionParameters("sigma");
+	c3->append_child(c4);
+	c4->build_values(0.001, 4.0, R_LINEAR);
 	
-	CModelSelectionParameters* c4=new CModelSelectionParameters("kernel", test_kernel);
-	c2->append_child(c4);
+	CModelSelectionParameters* c5=new CModelSelectionParameters("kernel", test_kernel);
+	c1->append_child(c5);
 
-	CModelSelectionParameters* c5=new CModelSelectionParameters("width");
-	c4->append_child(c5);
-	c5->build_values(-10.0, 2.0, R_EXP);
+	CModelSelectionParameters* c6=new CModelSelectionParameters("width");
+	c5->append_child(c6);
+	c6->build_values(0.01, 4.0, R_LINEAR);
 	
 	/* cross validation class for evaluation in model selection */
 	SG_REF(gp);
@@ -147,13 +152,12 @@ int main(int argc, char **argv)
 
 	result->print_result();
 
-
 	SGVector<float64_t> alpha = inf->get_alpha();
 	SGVector<float64_t> labe = labels->get_labels();
 	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
 	SGMatrix<float64_t> cholesky = inf->get_cholesky();
-	SGVector<float64_t> covariance = gp->getCovarianceVector(features2);
-	CRegressionLabels* predictions = gp->apply_regression(features2);
+	SGVector<float64_t> covariance = gp->getCovarianceVector(features);
+	CRegressionLabels* predictions = gp->apply_regression(features);
 	
 	SGVector<float64_t>::display_vector(alpha.vector, alpha.vlen, "Alpha Vector");
 	SGVector<float64_t>::display_vector(labe.vector, labe.vlen, "Labels");
