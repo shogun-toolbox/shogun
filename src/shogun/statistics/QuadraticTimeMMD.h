@@ -159,7 +159,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		float64_t compute_p_value_gamma(float64_t statistic);
 
 		/** setter for number of samples to use in spectrum based p-value
-		 * computation
+		 * computation.
 		 *
 		 * @param num_samples_spectrum number of samples to draw from
 		 * approximate null-distributrion
@@ -167,7 +167,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		void set_num_samples_sepctrum(index_t num_samples_spectrum);
 
 		/** setter for number of eigenvalues to use in spectrum based p-value
-		 * computation
+		 * computation. Maximum is 2*m_q_start-1
 		 *
 		 * @param num_eigenvalues_spectrum number of eigenvalues to use to
 		 * approximate null-distributrion
