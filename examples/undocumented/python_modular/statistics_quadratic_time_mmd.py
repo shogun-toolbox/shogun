@@ -59,16 +59,18 @@ def statistics_linear_time_mmd():
 	print "p_value:", p_value
 	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
 	
-	print "computing p-value using spectrum method"
-	mmd.set_null_approximation_method(MMD2_SPECTRUM)
-	# normally, at least 250 iterations should be done, but that takes long
-	mmd.set_num_samples_sepctrum(50)
-	mmd.set_num_eigenvalues_spectrum(n-10)
-	# spectrum method computes p-value for biased statistics only
-	mmd.set_statistic_type(BIASED)
-	p_value=mmd.compute_p_value(statistic)
-	print "p_value:", p_value
-	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
+	# only can do this if SHOGUN was compiled with LAPACK so check
+	if "sample_null_spectrum" in dir(QuadraticTimeMMD):
+		print "computing p-value using spectrum method"
+		mmd.set_null_approximation_method(MMD2_SPECTRUM)
+		# normally, at least 250 iterations should be done, but that takes long
+		mmd.set_num_samples_sepctrum(50)
+		mmd.set_num_eigenvalues_spectrum(n-10)
+		# spectrum method computes p-value for biased statistics only
+		mmd.set_statistic_type(BIASED)
+		p_value=mmd.compute_p_value(statistic)
+		print "p_value:", p_value
+		print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
 	
 	print "computing p-value using gamma method"
 	mmd.set_null_approximation_method(MMD2_GAMMA)
