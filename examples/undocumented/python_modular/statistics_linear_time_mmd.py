@@ -15,7 +15,7 @@ def statistics_linear_time_mmd():
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import LinearTimeMMD
-	from shogun.Statistics import BOOTSTRAP
+	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
 
 	import matplotlib.pyplot as plt
 
@@ -60,8 +60,20 @@ def statistics_linear_time_mmd():
 	features_y=RealFeatures(Y)
 	mmd=LinearTimeMMD(kernel,features_x, features_y)
 	
-	p_value=mmd.compute_p_value(statistic)
+	# do the same thing using two different way to approximate null-dstribution
+	# bootstrapping and gaussian approximation (ony for really large samples)
 	alpha=0.05
+
+	print "computing p-value using bootstrapping"
+	mmd.set_null_approximation_method(BOOTSTRAP)
+	mmd.set_bootstrap_iterations(500)
+	p_value=mmd.compute_p_value(statistic)
+	print "p_value:", p_value
+	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
+	
+	print "computing p-value using gaussian approximation"
+	mmd.set_null_approximation_method(MMD1_GAUSSIAN)
+	p_value=mmd.compute_p_value(statistic)
 	print "p_value:", p_value
 	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
 	
