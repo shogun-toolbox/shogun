@@ -76,7 +76,8 @@ public:
 	/** Computes the p-value for a given statistic. The method for computing
 	 * the p-value can be set via set_p_value_method() method. Since the null-
 	 * distribution is normal, a Gaussian approximation is available along with
-	 * bootstrapping
+	 * bootstrapping. For Gaussian approximation, training and test data have
+	 * to be DIFFERENT samples from same distribution
 	 *
 	 * @param statistic statistic to compute the p-value for
 	 *
