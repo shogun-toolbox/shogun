@@ -231,7 +231,7 @@ class CFeatures : public CSGObject
 		 * @return new feature object which contains copy of data of this
 		 * instance and of given one
 		 */
-		CFeatures* create_merged_copy(CFeatures* other)
+		virtual CFeatures* create_merged_copy(CFeatures* other)
 		{
 			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n");
 			return NULL;
