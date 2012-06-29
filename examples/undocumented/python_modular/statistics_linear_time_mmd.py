@@ -14,7 +14,7 @@ gen_data=TwoDistributionsData()
 def statistics_linear_time_mmd():
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import GaussianKernel
-	from shogun.Statistics import LinearTimeMMD, QuadraticTimeMMD
+	from shogun.Statistics import LinearTimeMMD
 	from shogun.Statistics import BOOTSTRAP
 
 	import matplotlib.pyplot as plt
@@ -40,7 +40,7 @@ def statistics_linear_time_mmd():
 	# use a kernel width of sigma=2, which is 8 in SHOGUN's parametrization
 	# which is k(x,y)=exp(-||x-y||^2 / tau), in constrast to the standard
 	# k(x,y)=exp(-||x-y||^2 / (2*sigma^2)), so tau=2*sigma^2
-	kernel=GaussianKernel(10,0.125)
+	kernel=GaussianKernel(10,8)
 
 	mmd=LinearTimeMMD(kernel,features_x, features_y)
 
@@ -52,6 +52,7 @@ def statistics_linear_time_mmd():
 	# this annoying property is since the null-distribution should stay normal
 	# which is not the case if "training/test" data would be the same
 	statistic=mmd.compute_statistic()
+	print "test statistic:", statistic
 	
 	# generate new data (same distributions as old) and new statistic object
 	(X,Y)=gen_data.create_mean_data(n,dim,difference)
