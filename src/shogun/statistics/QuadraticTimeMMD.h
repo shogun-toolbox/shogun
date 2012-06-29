@@ -53,7 +53,7 @@ enum EQuadraticMMDType
  * Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
  * A fast, consistent kernel two-sample test.
  *
- * To choose, use CTwoSampleTestStatistic::set_p_value_method()
+ * To choose, use CTwoSampleTestStatistic::set_null_approximation_method()
  *
  */
 class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic

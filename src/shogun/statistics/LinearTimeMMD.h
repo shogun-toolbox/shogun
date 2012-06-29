@@ -27,7 +27,12 @@ class CFeatures;
  * Gaussian approximation of the null-distribution which is also possible in
  * linear time and constant space. Bootstrapping, of course, is also possible.
  *
- * To choose, use set_p_value_method(MMD1_GAUSSIAN). *
+ * To choose, use
+ * CTwoSampleTestStatistic::set_null_approximation_method(MMD1_GAUSSIAN).
+ *
+ * IMPORTANT: In order to use the gaussian approximation, the p-value has to
+ * be computed on other data than the statistic. Otherwise the null-distribution
+ * is not normal.
  */
 class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
