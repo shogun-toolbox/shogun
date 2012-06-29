@@ -191,6 +191,11 @@ void test_linear_mmd_type2_error()
 	for (index_t i=0; i<num_runs; ++i)
 	{
 		create_mean_data(data, difference);
+		
+		/* technically, this leads to a wrong result since training (statistic)
+		 * and testing (p-value) have to happen on different data, but this
+		 * is only to compare against MATLAB, where I did the same "mistake"
+		 * See for example python_modular example how to do this correct */
 		float64_t statistic=mmd->compute_statistic();
 
 		float64_t p_value_est=mmd->compute_p_value(statistic);
