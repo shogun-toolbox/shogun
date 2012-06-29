@@ -120,7 +120,7 @@ void test_quadratic_mmd_spectrum()
 
 	mmd->set_num_samples_sepctrum(1000);
 	mmd->set_num_eigenvalues_spectrum(m);
-	mmd->set_p_value_method(MMD2_SPECTRUM);
+	mmd->set_null_approximation_method(MMD2_SPECTRUM);
 	mmd->set_statistic_type(BIASED);
 
 	/* compute p-value for a fixed statistic value */
@@ -154,7 +154,7 @@ void test_quadratic_mmd_gamma()
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
 
-	mmd->set_p_value_method(MMD2_GAMMA);
+	mmd->set_null_approximation_method(MMD2_GAMMA);
 	mmd->set_statistic_type(BIASED);
 
 	/* compute p-value for a fixed statistic value */
