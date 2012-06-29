@@ -52,18 +52,21 @@ void CTwoSampleTestStatistic::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_bootstrap_iterations, "bootstrap_iterations",
 			"Number of iterations for bootstrapping", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*)&m_p_value_method, "p_value_method",
-			"Method for computing p-value", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*)&m_null_approximation_method,
+			"null_approximation_method",
+			"Method for approximating null distribution",
+			MS_NOT_AVAILABLE);
 
 	m_p_and_q=NULL;
 	m_q_start=0;
 	m_bootstrap_iterations=250;
-	m_p_value_method=BOOTSTRAP;
+	m_null_approximation_method=BOOTSTRAP;
 }
 
-void CTwoSampleTestStatistic::set_p_value_method(EPValueMethod p_value_method)
+void CTwoSampleTestStatistic::set_null_approximation_method(
+		ENullApproximationMethod null_approximation_method)
 {
-	m_p_value_method=p_value_method;
+	m_null_approximation_method=null_approximation_method;
 }
 
 SGVector<float64_t> CTwoSampleTestStatistic::bootstrap_null()
@@ -105,7 +108,7 @@ float64_t CTwoSampleTestStatistic::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
-	if (m_p_value_method==BOOTSTRAP)
+	if (m_null_approximation_method==BOOTSTRAP)
 	{
 		/* bootstrap a bunch of MMD values from null distribution */
 		SGVector<float64_t> values=bootstrap_null();

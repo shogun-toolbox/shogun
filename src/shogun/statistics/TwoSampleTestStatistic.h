@@ -15,10 +15,8 @@
 namespace shogun
 {
 
-/** enum for different method to compute p-value of test. To estimate p-value
- * the null distribution somehow needs to be approximated. This enum defines
- * the used method */
-enum EPValueMethod
+/** enum for different method to approximate null-distibution */
+enum ENullApproximationMethod
 {
 	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN
 };
@@ -79,9 +77,10 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		void set_bootstrap_iterations(index_t bootstrap_iterations);
 
 		/** sets the method how to approximate the null-distribution
-		 * @param p-value method to use
+		 * @param null_approximation_method method to use
 		 */
-		virtual void set_p_value_method(EPValueMethod p_value_method);
+		virtual void set_null_approximation_method(
+				ENullApproximationMethod null_approximation_method);
 
 		/** computes a p-value based on bootstrapping the null-distribution.
 		 * This method should be overridden for different methods
@@ -109,8 +108,8 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		/** number of iterations for bootstrapping null-distributions */
 		index_t m_bootstrap_iterations;
 
-		/** Defines how the p-value for the null distribution is computed */
-		EPValueMethod m_p_value_method;
+		/** Defines how the the null distribution is approximated */
+		ENullApproximationMethod m_null_approximation_method;
 };
 
 }

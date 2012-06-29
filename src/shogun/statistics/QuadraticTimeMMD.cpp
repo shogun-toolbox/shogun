@@ -167,7 +167,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
-	switch (m_p_value_method)
+	switch (m_null_approximation_method)
 	{
 	case MMD2_SPECTRUM:
 	{
