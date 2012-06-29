@@ -91,13 +91,10 @@ template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 }
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
 {
-	if (sparse_feature_matrix)
-	{
-		for (int32_t i=0; i<num_vectors; i++)
-			(&sparse_feature_matrix[i])->~SGSparseVector();
+	for (int32_t i=0; i<num_vectors; i++)
+		(&sparse_feature_matrix[i])->~SGSparseVector();
 
-		SG_FREE(sparse_feature_matrix);
-	}
+	SG_FREE(sparse_feature_matrix);
 	num_vectors=0;
 	num_features=0;
 	remove_all_subsets();
