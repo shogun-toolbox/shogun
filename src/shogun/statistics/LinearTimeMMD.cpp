@@ -56,12 +56,15 @@ void CLinearTimeMMD::init()
 
 float64_t CLinearTimeMMD::compute_statistic()
 {
+	SG_DEBUG("entering CLinearTimeMMD::compute_statistic()\n");
 	/* TODO features with a different number of vectors should be allowed */
 
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
 	index_t m=m_q_start;
 	index_t m_2=m/2;
+
+	SG_DEBUG("m_q_start=%d\n", m_q_start);
 
 	/* compute traces of kernel matrices for linear MMD */
 	m_kernel->init(m_p_and_q, m_p_and_q);
@@ -80,7 +83,10 @@ float64_t CLinearTimeMMD::compute_statistic()
 		qp+=m_kernel->kernel(m_2+i, m+i);
 	}
 
+	SG_DEBUG("returning: 1/%d*(%f+%f-%f-%f)\n", m_2, pp, qq, pq, qp);
+
 	/* mean of sum all traces is linear time mmd */
+	SG_DEBUG("leaving CLinearTimeMMD::compute_statistic()\n");
 	return 1.0/m_2*(pp+qq-pq-qp);
 }
 
@@ -88,7 +94,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
-	switch (m_p_value_method)
+	switch (m_null_approximation_method)
 	{
 	case MMD1_GAUSSIAN:
 		if (m_p_and_q->get_num_vectors()<10000)

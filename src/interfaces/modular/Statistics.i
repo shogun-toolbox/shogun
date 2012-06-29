@@ -8,7 +8,6 @@
  */
  
 /* Remove C Prefix */
-%rename(StatisticalTest) CStatisticalTest;
 %rename(TestStatistic) CTestStatistic;
 %rename(TwoSampleTestStatistic) CTwoSampleTestStatistic;
 %rename(KernelTwoSampleTestStatistic) CKernelTwoSampleTestStatistic;
@@ -16,7 +15,6 @@
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/statistics/StatisticalTest.h>
 %include <shogun/statistics/TestStatistic.h>
 %include <shogun/statistics/TwoSampleTestStatistic.h>
 %include <shogun/statistics/KernelTwoSampleTestStatistic.h>
