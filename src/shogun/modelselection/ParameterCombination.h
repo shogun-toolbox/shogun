@@ -120,7 +120,7 @@ public:
 	 *
 	 * @return bool true if value succesfully set.
 	 */
-	bool set_parameter(char* name, float64_t value);
+	bool set_parameter(const char* name, float64_t value);
 
 	/** Sets specific parameter to specified value.
 	 *
@@ -129,7 +129,7 @@ public:
 	 *
 	 * @return bool true if value succesfully set.
 	 */
-	bool set_parameter(char* name, int32_t value);
+	bool set_parameter(const char* name, int32_t value);
 
 	/** Sets specific parameter to specified value.
 	 *
@@ -138,14 +138,14 @@ public:
 	 *
 	 * @return bool true if value succesfully set.
 	 */
-	bool set_parameter(char* name, bool value);
+	bool set_parameter(const char* name, bool value);
 
 	/** Gets specific parameter by name.
 	 *
 	 * @param name Name of parameter
 	 * return specified parameter
 	 */
-	TParameter* get_parameter(char* name);
+	TParameter* get_parameter(const char* name);
 
 	/** checks whether this node has children
 	 *

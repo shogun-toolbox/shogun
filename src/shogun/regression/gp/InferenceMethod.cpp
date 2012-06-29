@@ -47,6 +47,7 @@ CInferenceMethod::~CInferenceMethod() {
 void CInferenceMethod::init()
 {
 	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel", MS_AVAILABLE);
+	SG_ADD(&m_scale, "scale", "Kernel Scale", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_model, "likelihood_model", "Likelihood model",
 			MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
@@ -58,4 +59,5 @@ void CInferenceMethod::init()
 	m_labels = NULL;
 	m_features = NULL;
 	m_mean = NULL;
+	m_scale = 1.0;
 }

@@ -57,7 +57,7 @@ public:
 	SGVector<float64_t> quantity;
 
 	/*Function Gradient*/
-	CMap<SGString<char>, float64_t> gradient;
+	CMap<SGString<const char>, float64_t> gradient;
 
 	/** Returns the function value
 	 * and gradient contained in the object.

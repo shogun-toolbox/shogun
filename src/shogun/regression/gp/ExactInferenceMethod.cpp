@@ -74,7 +74,7 @@ void CExactInferenceMethod::check_members()
 	}
 }
 
-CMap<SGString<char>, float64_t> CExactInferenceMethod::
+CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 	get_marginal_likelihood_derivatives()
 {
 	check_members();
@@ -89,10 +89,9 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::
 	m_kernel->init(m_features, m_features);
 
 	//This will be the vector we return
-	CMap<SGString<char>, float64_t> gradient(
-			2+m_mean->m_parameters->get_num_parameters(),
-			2+m_mean->m_parameters->get_num_parameters());
-
+	CMap<SGString<const char>, float64_t> gradient(
+			3+m_mean->m_parameters->get_num_parameters(),
+			3+m_mean->m_parameters->get_num_parameters());
 
 	//Get the sigma variable from the likelihood model
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
@@ -151,16 +150,28 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::
 	for (int i = 0; i < Q.num_rows; i++)
 	{
 		for (int j = 0; j < Q.num_cols; j++)
-			sum += Q(i,j)*deriv(i,j);
+			sum += Q(i,j)*deriv(i,j)*m_scale*m_scale;
 	}
 
 	sum /= 2.0;
 
-	gradient.add(SGString<char>("width", strlen("width"), true), sum);
+	gradient.add(SGString<const char>("width", strlen("width"), true), sum);
 
-	sum = m_sigma*m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
+	sum = 0;
+
+	for (int i = 0; i < Q.num_rows; i++)
+	{
+		for (int j = 0; j < Q.num_cols; j++)
+			sum += Q(i,j)*kernel_matrix(i,j)*m_scale*2.0;
+	}
+
+	sum /= 2.0;
+
+	gradient.add(SGString<const char>("scale", strlen("scale"), true), sum);
+
+	sum = m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
 	
-	gradient.add(SGString<char>("sigma", strlen("sigma"), true), sum);
+	gradient.add(SGString<const char>("sigma", strlen((char*)"sigma"), true), sum);
 
 	for (int i = 0; i < m_mean->m_parameters->get_num_parameters(); i++)
 	{
@@ -171,7 +182,7 @@ CMap<SGString<char>, float64_t> CExactInferenceMethod::
 
 		sum = data_means.dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
 
-		gradient.add(SGString<char>(param->m_name,
+		gradient.add(SGString<const char>(param->m_name,
 				strlen(param->m_name), true), sum);
 	}
 
@@ -266,6 +277,12 @@ void CExactInferenceMethod::update_alpha_and_chol()
 
 	//K(X, X)
 	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
+
+	for (int i = 0; i < kernel_matrix.num_rows; i++)
+	{
+		for (int j = 0; j < kernel_matrix.num_cols; j++)
+			kernel_matrix(i,j) *= (m_scale*m_scale);
+	}
 
 	//Placeholder Matrices
 	SGMatrix<float64_t> temp1(kernel_matrix.num_rows,

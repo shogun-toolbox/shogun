@@ -79,7 +79,7 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual CMap<SGString<char>, float64_t> get_marginal_likelihood_derivatives();
+	virtual CMap<SGString<const char>, float64_t> get_marginal_likelihood_derivatives();
 
 	/** get Alpha Matrix
 	 *
@@ -132,7 +132,7 @@ public:
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
-	virtual CMap<SGString<char>, float64_t> get_gradient()
+	virtual CMap<SGString<const char>, float64_t> get_gradient()
 	{
 		return get_marginal_likelihood_derivatives();
 	};
