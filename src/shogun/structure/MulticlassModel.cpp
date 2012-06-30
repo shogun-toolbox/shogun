@@ -99,11 +99,11 @@ float64_t CMulticlassModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred
 	if ( ytrue_idx < 0 || ytrue_idx >= m_labels->get_num_labels() )
 		SG_ERROR("The label index must be inside [0, num_labels-1]\n");
 
-	/* TODO add checks for the castings!! */
+	if ( ypred->get_structured_data_type() != SDT_REAL )
+		SG_ERROR("ypred must be a CRealNumber\n");
+
 	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
 	return ( ((CRealNumber*) ytrue)->value == ((CRealNumber*) ypred)->value ) ? 0 : 1;
-
-	return 0;
 }
 
 void CMulticlassModel::init_opt(

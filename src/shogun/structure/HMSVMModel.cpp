@@ -9,6 +9,7 @@
  */
 
 #include <shogun/structure/HMSVMModel.h>
+#include <shogun/structure/HMSVMLabels.h>
 
 using namespace shogun;
 
@@ -33,7 +34,9 @@ int32_t CHMSVMModel::get_dim() const
 }
 
 /* TODO */
-SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
+SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
+		int32_t feat_idx,
+		CStructuredData* y)
 {
 	return SGVector< float64_t >();
 }
@@ -44,10 +47,28 @@ CResultSet* CHMSVMModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 	return NULL;
 }
 
-/* TODO */
 float64_t CHMSVMModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
 {
-	return 0.0;
+	if ( ytrue_idx < 0 || ytrue_idx >= m_labels->get_num_labels() )
+		SG_ERROR("The label index must be inside [0, num_labels-1]\n");
+
+	if ( ypred->get_structured_data_type() != SDT_SEQUENCE )
+		SG_ERROR("ypred must be a CSequence\n");
+
+	// Shorthand for ypred with the correct structured data type
+	CSequence* yhat  = CSequence::obtain_from_generic(ypred);
+	// The same for ytrue
+	CSequence* ytrue = CSequence::obtain_from_generic(
+			m_labels->get_label(ytrue_idx));
+
+	// Compute the Hamming loss, number of distinct elements in the sequences
+	ASSERT( yhat->data.vlen == ytrue->data.vlen );
+
+	float64_t out = 0.0;
+	for ( int32_t i = 0 ; i < yhat->data.vlen ; ++i )
+		out += yhat->data[i] != ytrue->data[i];
+
+	return out;
 }
 
 /* TODO */

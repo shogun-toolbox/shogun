@@ -12,7 +12,6 @@
 #define _HMSVM_LABELS__H__
 
 #include <shogun/labels/StructuredLabels.h>
-#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/lib/StructuredDataTypes.h>
@@ -67,15 +66,25 @@ class CHMSVMLabels : public CStructuredLabels
 
 		/** constructor
 		 *
-		 * @param src labels to set
+		 * @param num_labels number of labels
 		 */
-		CHMSVMLabels(SGMatrix< int32_t > const src);
+		CHMSVMLabels(int32_t num_labels);
 
 		/** destructor */
 		virtual ~CHMSVMLabels();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "HMSVMLabels"; }
+
+		/**
+		 * add a new label to the vector of labels, effectively
+		 * increasing the number of elements of the structure. This
+		 * method should be used when inserting labels for the first
+		 * time.
+		 *
+		 * @param label label to add
+		 */
+		void add_label(SGVector< int32_t > label);
 
 }; /* CHMSVMLabels */
 

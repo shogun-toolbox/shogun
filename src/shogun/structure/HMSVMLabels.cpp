@@ -17,12 +17,16 @@ CHMSVMLabels::CHMSVMLabels()
 {
 }
 
-/* TODO */
-CHMSVMLabels::CHMSVMLabels(SGMatrix< int32_t > const src)
-// call to CStructuredLabels constructor with number of elements constructor
+CHMSVMLabels::CHMSVMLabels(int32_t num_labels)
+: CStructuredLabels(num_labels)
 {
 }
 
 CHMSVMLabels::~CHMSVMLabels()
 {
+}
+
+void CHMSVMLabels::add_label(SGVector< int32_t > label)
+{
+	CStructuredLabels::add_label( new CSequence(label) );
 }
