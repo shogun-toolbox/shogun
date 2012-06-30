@@ -377,6 +377,8 @@ protected:
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
+	virtual bool update_parameter_hash();
+
 private:
 	void set_global_objects();
 	void unset_global_objects();
@@ -424,6 +426,8 @@ public:
 
 	/** map for different parameter versions */
 	ParameterMap* m_parameter_map;
+
+	unsigned char* m_model_selection_parameter_hash;
 
 private:
 

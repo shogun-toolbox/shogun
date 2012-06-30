@@ -17,6 +17,7 @@
 #include <shogun/regression/gp/LikelihoodModel.h>
 #include <shogun/regression/gp/MeanFunction.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
+#include <shogun/labels/RegressionLabels.h>
 
 
 namespace shogun
@@ -116,6 +117,14 @@ public:
 		SG_UNREF(m_features);
 		SG_REF(feat);
 		m_features=feat;
+
+		m_feature_matrix =
+			m_features->get_computed_dot_feature_matrix();
+
+		update_data_means();
+		update_train_kernel();
+		update_chol();
+		update_alpha();
 	}
 
 	/** get features
@@ -143,6 +152,9 @@ public:
 		SG_UNREF(m_kernel);
 		SG_REF(kern);
 		m_kernel = kern;
+		update_train_kernel();
+		update_chol();
+		update_alpha();
 	}
 
 	/**get kernel
@@ -160,6 +172,10 @@ public:
 		SG_UNREF(m_mean);
 		SG_REF(m);
 		m_mean = m;
+
+		update_data_means();
+		update_chol();
+		update_alpha();
 	}
 
 	/**get labels
@@ -177,6 +193,13 @@ public:
 		SG_UNREF(m_labels);
 		SG_REF(lab);
 		m_labels = lab;
+
+		m_label_vector =
+			((CRegressionLabels*) m_labels)->get_labels().clone();
+
+		update_data_means();
+		update_alpha();
+	//	update_chol();
 	}
 
 	/**get likelihood model
@@ -194,24 +217,50 @@ public:
 		SG_UNREF(m_model);
 		SG_REF(mod);
 		m_model = mod;
+		update_train_kernel();
+		update_chol();
+		update_alpha();
 	}
 
 	/*set kernel scale
 	 *
 	 * @param s scale to be set
 	 */
-	void set_scale(float64_t s) { m_scale = s; }
+	inline void set_scale(float64_t s)
+	{
+		update_train_kernel();
+		m_scale = s;
+		update_chol();
+		update_alpha();
+	}
 
 	/*get kernel scale
 	 *
 	 * @return kernel scale
 	 */
-	float64_t get_scale() { return m_scale; }
+	inline float64_t get_scale() { return m_scale; }
 
 protected:
 	/** Update Alpha and Cholesky Matrices.
 	 */
-	virtual void update_alpha_and_chol() = 0;
+	virtual void update_alpha() {}
+	virtual void update_chol() {}
+	virtual void update_train_kernel() {}
+	virtual void update_data_means()
+	{
+		if (m_mean)
+		{
+			m_data_means =
+				m_mean->get_mean_vector(m_feature_matrix);
+
+
+			if (m_label_vector.vlen == m_data_means.vlen)
+			{
+				for (int i = 0; i < m_label_vector.vlen; i++)
+					m_label_vector[i] -= m_data_means[i];
+			}
+		}
+	}
 
 private:
 	void init();
@@ -223,6 +272,13 @@ protected:
 
 	/*Features to use*/
 	CDotFeatures* m_features;
+
+	SGMatrix<float64_t> m_feature_matrix;
+
+	SGVector<float64_t> m_data_means;
+
+	SGVector<float64_t> m_label_vector;
+
 
 	/*Labels of those features*/
 	CLabels* m_labels;
@@ -251,6 +307,15 @@ protected:
 
 	/*Kernel Scale*/
 	float64_t m_scale;
+
+	SGMatrix<float64_t> m_ktrtr;
+
+	SGMatrix<float64_t> m_ktsts;
+
+	SGMatrix<float64_t> m_ktrts;
+
+
+
 };
 
 }

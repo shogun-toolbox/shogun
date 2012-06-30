@@ -26,12 +26,19 @@ using namespace shogun;
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
+	update_train_kernel();
+	update_chol();
+	update_alpha();
+	update_parameter_hash();
 }
 
 CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
+	update_train_kernel();
+	update_chol();
+	update_alpha();
 }
 
 CExactInferenceMethod::~CExactInferenceMethod()
@@ -78,15 +85,22 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 	get_marginal_likelihood_derivatives()
 {
 	check_members();
-	update_alpha_and_chol();
+	if(update_parameter_hash())
+	{
+		m_label_vector =
+			((CRegressionLabels*) m_labels)->get_labels().clone();
 
-	m_kernel->cleanup();
-
-	SGMatrix<float64_t> feature_matrix =
+		m_feature_matrix =
 			m_features->get_computed_dot_feature_matrix();
 
-	//Initialize Kernel with Features
-	m_kernel->init(m_features, m_features);
+		SG_SPRINT("Change\n");
+		update_data_means();
+		update_train_kernel();
+		update_chol();
+		update_alpha();
+	}
+
+//	update_alpha_and_chol();
 
 	//This will be the vector we return
 	CMap<SGString<const char>, float64_t> gradient(
@@ -96,11 +110,8 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 	//Get the sigma variable from the likelihood model
 	float64_t m_sigma = dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	//Kernel Matrix
-	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
-
 	//Placeholder Matrix
-	SGMatrix<float64_t> temp1(kernel_matrix.num_rows, kernel_matrix.num_cols);
+	SGMatrix<float64_t> temp1(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	//Placeholder Matrix
 	SGMatrix<float64_t> temp2(m_alpha.vlen, m_alpha.vlen);
@@ -162,7 +173,7 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 	for (int i = 0; i < Q.num_rows; i++)
 	{
 		for (int j = 0; j < Q.num_cols; j++)
-			sum += Q(i,j)*kernel_matrix(i,j)*m_scale*2.0;
+			sum += Q(i,j)*m_ktrtr(i,j)*m_scale*2.0;
 	}
 
 	sum /= 2.0;
@@ -178,7 +189,7 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 		TParameter* param = m_mean->m_parameters->get_parameter(i);
 
 		SGVector<float64_t> data_means = m_mean->get_parameter_derivative(
-				feature_matrix, param->m_name);
+				m_feature_matrix, param->m_name);
 
 		sum = data_means.dot(data_means.vector, m_alpha.vector, m_alpha.vlen);
 
@@ -192,6 +203,22 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 {
+	if(update_parameter_hash())
+	{
+		m_label_vector =
+			((CRegressionLabels*) m_labels)->get_labels().clone();
+
+		m_feature_matrix =
+			m_features->get_computed_dot_feature_matrix();
+
+		SG_SPRINT("Change\n");
+
+		update_data_means();
+		update_train_kernel();
+		update_chol();
+		update_alpha();
+	}
+
 	check_members();
 
 	float64_t m_sigma =
@@ -208,23 +235,26 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 
 float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 {
-	update_alpha_and_chol();
+	if(update_parameter_hash())
+	{
+		m_label_vector =
+			((CRegressionLabels*) m_labels)->get_labels().clone();
 
-	SGVector<float64_t> label_vector =
-			((CRegressionLabels*) m_labels)->get_labels();
-	float64_t result;
-
-	SGMatrix<float64_t> feature_matrix =
+		m_feature_matrix =
 			m_features->get_computed_dot_feature_matrix();
 
-	SGVector<float64_t> data_means =
-			m_mean->get_mean_vector(feature_matrix);
+		SG_SPRINT("Change\n");
 
-	for (int i = 0; i < label_vector.vlen; i++)
-		label_vector[i] -= data_means[i];
+		update_data_means();
+		update_train_kernel();
+		update_chol();
+		update_alpha();
+	}
 
-	result = label_vector.dot(label_vector.vector, m_alpha.vector,
-			label_vector.vlen)/2.0;
+	float64_t result;
+
+	result = m_label_vector.dot(m_label_vector.vector, m_alpha.vector,
+			m_label_vector.vlen)/2.0;
 
 	float64_t m_sigma =
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
@@ -239,38 +269,20 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 
 SGVector<float64_t> CExactInferenceMethod::get_alpha()
 {
-	update_alpha_and_chol();
+	//update_alpha_and_chol();
 	SGVector<float64_t> result(m_alpha);
 	return result;
 }
 
 SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 {
-	update_alpha_and_chol();
+	//update_alpha_and_chol();
 	SGMatrix<float64_t> result(m_L);
 	return result;
 }
 
-void CExactInferenceMethod::update_alpha_and_chol()
+void CExactInferenceMethod::update_train_kernel()
 {
-	check_members();
-
-	float64_t m_sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
-
-	SGVector<float64_t> label_vector =
-			((CRegressionLabels*) m_labels)->get_labels().clone();
-
-	SGMatrix<float64_t> feature_matrix =
-			m_features->get_computed_dot_feature_matrix();
-
-
-	SGVector<float64_t> data_means =
-			m_mean->get_mean_vector(feature_matrix);
-
-	for (int i = 0; i < label_vector.vlen; i++)
-		label_vector[i] = label_vector[i] - data_means[i];
-
 	m_kernel->cleanup();
 
 	m_kernel->init(m_features, m_features);
@@ -278,18 +290,26 @@ void CExactInferenceMethod::update_alpha_and_chol()
 	//K(X, X)
 	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
 
-	for (int i = 0; i < kernel_matrix.num_rows; i++)
-	{
-		for (int j = 0; j < kernel_matrix.num_cols; j++)
-			kernel_matrix(i,j) *= (m_scale*m_scale);
-	}
+	m_ktrtr=kernel_matrix.clone();
+}
+
+
+void CExactInferenceMethod::update_chol()
+{
+	check_members();
+
+	float64_t m_sigma =
+			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
 	//Placeholder Matrices
-	SGMatrix<float64_t> temp1(kernel_matrix.num_rows,
-	kernel_matrix.num_cols);
+	SGMatrix<float64_t> temp1(m_ktrtr.num_rows,
+			m_ktrtr.num_cols);
 
-	SGMatrix<float64_t> temp2(kernel_matrix.num_rows,
-	kernel_matrix.num_cols);
+	blah = SGMatrix<float64_t>(m_ktrtr.num_rows,
+			m_ktrtr.num_cols);
+
+	SGMatrix<float64_t> temp2(m_ktrtr.num_rows,
+			m_ktrtr.num_cols);
 
 	//Vector to fill matrix diagonals
 	SGVector<float64_t> diagonal(temp1.num_rows);
@@ -300,12 +320,12 @@ void CExactInferenceMethod::update_alpha_and_chol()
 
 	//Calculate first (K(X, X)+sigma*I)
 	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper,
-		kernel_matrix.num_rows, temp2.num_cols, 1.0/(m_sigma*m_sigma),
-		kernel_matrix.matrix, kernel_matrix.num_cols,
+			m_ktrtr.num_rows, temp2.num_cols, (m_scale*m_scale)/(m_sigma*m_sigma),
+			m_ktrtr.matrix, m_ktrtr.num_cols,
 		temp2.matrix, temp2.num_cols, 1.0,
 		temp1.matrix, temp1.num_cols);
 
-	memcpy(temp2.matrix, temp1.matrix,
+	memcpy(blah.matrix, temp1.matrix,
 		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
 
 	//Get Lower triangle cholesky decomposition of K(X, X)+sigma*I)
@@ -329,17 +349,32 @@ void CExactInferenceMethod::update_alpha_and_chol()
 
 	memcpy(m_L.matrix, temp1.matrix,
 		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
+}
 
+void CExactInferenceMethod::update_alpha()
+{
+	float64_t m_sigma =
+			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	m_alpha = SGVector<float64_t>(label_vector.vlen);
+	//Placeholder Matrices
+	SGMatrix<float64_t> temp1(m_L.num_rows,
+			m_L.num_cols);
 
-	memcpy(m_alpha.vector, label_vector.vector,
-		label_vector.vlen*sizeof(float64_t));
+	for (int i = 0; i < m_label_vector.vlen; i++)
+		m_label_vector[i] = m_label_vector[i] - m_data_means[i];
+
+	m_alpha = SGVector<float64_t>(m_label_vector.vlen);
+
+	memcpy(temp1.matrix, m_L.matrix,
+		m_L.num_cols*m_L.num_rows*sizeof(float64_t));
+
+	memcpy(m_alpha.vector, m_label_vector.vector,
+		m_label_vector.vlen*sizeof(float64_t));
 
 	//Solve (K(X, X)+sigma*I) alpha = labels for alpha.
 	clapack_dposv(CblasColMajor, CblasLower,
-		  temp2.num_cols, 1, temp2.matrix, temp2.num_cols,
-		  m_alpha.vector, temp2.num_cols);
+		  blah.num_cols, 1, blah.matrix, blah.num_cols,
+		  m_alpha.vector, blah.num_cols);
 
 	for (int i = 0; i < m_alpha.vlen; i++)
 		m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);

@@ -130,6 +130,7 @@ CSGObject::~CSGObject()
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_parameter_map;
+	delete m_model_selection_parameter_hash;
 }
 
 #ifdef USE_REFERENCE_COUNTING
@@ -229,6 +230,24 @@ void CSGObject::set_global_parallel(Parallel* new_parallel)
 	SG_UNREF(sg_parallel);
 	sg_parallel=new_parallel;
 	SG_REF(sg_parallel);
+}
+
+bool CSGObject::update_parameter_hash()
+{
+	bool changed = false;
+
+	unsigned char* tmp = m_model_selection_parameters->get_md5_sum();
+
+	for(int i = 0; i < 16; i++)
+	{
+		if(tmp[i] != m_model_selection_parameter_hash[i])
+			changed = true;
+		m_model_selection_parameter_hash[i] = tmp[i];
+	}
+
+	delete[] tmp;
+
+	return changed;
 }
 
 Parallel* CSGObject::get_global_parallel()
@@ -1053,6 +1072,7 @@ void CSGObject::init()
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
+	m_model_selection_parameter_hash = new unsigned char[16];
 }
 
 void CSGObject::print_modsel_params()

@@ -89,7 +89,11 @@ int main(int argc, char **argv)
 	SG_REF(inf);
 	
 	CGaussianProcessRegression* gp = new CGaussianProcessRegression(inf, features, labels);
-	
+
+	//unsigned char* blah = gp->m_model_selection_parameters->get_md5_sum();
+	//delete[] blah;
+	//SG_SPRINT("%s\n", gp->m_model_selection_parameters->get_md5_sum());	
+
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 	
 	CModelSelectionParameters* c1=new CModelSelectionParameters("inference_method", inf);
@@ -97,7 +101,7 @@ int main(int argc, char **argv)
 
         CModelSelectionParameters* c2=new CModelSelectionParameters("scale");
         c1 ->append_child(c2);
-        c2->build_values(0.001, 4.0, R_LINEAR);
+        c2->build_values(1.00, 1.0, R_LINEAR);
 
 	
 	CModelSelectionParameters* c3=new CModelSelectionParameters("likelihood_model", lik);
@@ -112,7 +116,7 @@ int main(int argc, char **argv)
 
 	CModelSelectionParameters* c6=new CModelSelectionParameters("width");
 	c5->append_child(c6);
-	c6->build_values(0.01, 4.0, R_LINEAR);
+	c6->build_values(0.001, 4.0, R_LINEAR);
 	
 	/* cross validation class for evaluation in model selection */
 	SG_REF(gp);
@@ -130,12 +134,13 @@ int main(int argc, char **argv)
 	
 	/* handles all of the above structures in memory */
 	CGradientModelSelection* grad_search=new CGradientModelSelection(
-			root, grad);
+	  root, grad);
 
 	/* set autolocking to false to get rid of warnings */
 	grad->set_autolock(false);
 
 	CParameterCombination* best_combination=grad_search->select_model(true);
+	grad_search->set_max_evaluations(5);
 
 	if (best_combination)
 	{

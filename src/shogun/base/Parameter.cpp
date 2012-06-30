@@ -11,6 +11,7 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/base/class_list.h>
+#include <shogun/lib/Hash.h>
 
 using namespace shogun;
 
@@ -2580,6 +2581,159 @@ bool Parameter::contains_parameter(const char* name)
 
 	return false;
 }
+
+unsigned char* Parameter::get_char_description(Parameter* param, unsigned int& len)
+{
+	unsigned int length = get_char_description_length(param);
+
+	unsigned char* big_name = new unsigned char[length+1];
+
+	big_name[0] = 0;
+
+	length = 0;
+
+	for (index_t i=0; i<param->m_params.get_num_elements(); i++)
+	{
+		unsigned int size = strlen(param->m_params[i]->m_name);
+
+		for(unsigned int j = 0; j < size; j++)
+			big_name[length+j] = param->m_params[i]->m_name[j];
+
+		length += size;
+
+		if (param->m_params[i]->m_datatype.m_ptype == PT_FLOAT64)
+		{
+			size = sizeof(float64_t);
+
+	/*		SG_SPRINT("%i\n", size);
+
+			for(int i = 0; i < length; i++)
+				SG_SPRINT("%c", big_name[i]);
+
+			SG_SPRINT("7\n");*/
+
+			for(unsigned int j = 0; j < size; j++)
+			{
+				big_name[length+j] = ((unsigned char*)param->m_params[i]->m_parameter)[j];
+		//		SG_SPRINT("%i|", big_name[length+j]);
+			}
+
+			length += size;
+
+		//	for(int i = 0; i < length; i++)
+	//			SG_SPRINT("%c", big_name[i]);
+
+		//	SG_SPRINT("7\n");
+		}
+
+		else if (param->m_params[i]->m_datatype.m_ptype == PT_INT32)
+		{
+			size = sizeof(int32_t);
+			for(unsigned int j = 0; j < size; j++)
+			{
+				big_name[length+j] = ((unsigned char*)param->m_params[i]->m_parameter)[j];
+			}
+
+			length += size;
+		}
+
+		else if (param->m_params[i]->m_datatype.m_ptype == PT_BOOL)
+		{
+			size = sizeof(bool);
+			for(unsigned int j = 0; j < size; j++)
+			{
+				big_name[length+j] = ((unsigned char*)param->m_params[i]->m_parameter)[j];
+			}
+
+			length += size;
+		}
+
+		if (param->m_params[i]->m_datatype.m_ptype == PT_SGOBJECT)
+		{
+			unsigned int size;
+
+			CSGObject* child = *((CSGObject**)(param->m_params[i]->m_parameter));
+
+			unsigned char* sub_name = get_char_description(child->m_model_selection_parameters, size);
+
+			for(unsigned int j = 0; j < size; j++)
+				big_name[length+j] = sub_name[j];
+
+			length += size;
+			delete[] sub_name;
+		}
+	}
+
+	//unsigned char* buffer = new unsigned char[16];
+
+	//CHash::MD5(big_name, length, buffer);
+
+	//delete[] big_name;
+
+	len = length;
+
+	return big_name;
+
+}
+
+unsigned int Parameter::get_char_description_length(Parameter* param)
+{
+	unsigned int length = 0;
+
+
+	for (index_t i=0; i<param->m_params.get_num_elements(); i++)
+	{
+
+		length += strlen(param->m_params[i]->m_name);
+
+		if (param->m_params[i]->m_datatype.m_ptype == PT_FLOAT64)
+		{
+			length += sizeof(float64_t);
+		}
+
+		else if (param->m_params[i]->m_datatype.m_ptype == PT_INT32)
+		{
+			length += sizeof(int32_t);
+		}
+
+		else if (param->m_params[i]->m_datatype.m_ptype == PT_BOOL)
+		{
+			length += sizeof(bool);
+		}
+
+		 if (param->m_params[i]->m_datatype.m_ptype == PT_SGOBJECT)
+		{
+			CSGObject* child = *((CSGObject**)(param->m_params[i]->m_parameter));
+
+			length += get_char_description_length(child->m_model_selection_parameters);
+		}
+	}
+
+	return length;
+}
+
+
+unsigned char * Parameter::get_md5_sum()
+{
+
+	unsigned int length;
+	unsigned char* big_name = get_char_description(this, length);
+
+	for(int i = 0; i < length; i++)
+		SG_SPRINT("%c", big_name[i]);
+
+	SG_SPRINT("7\n");
+
+	unsigned char* buffer = new unsigned char[16];
+
+	CHash::MD5(big_name, length, buffer);
+
+	delete[] big_name;
+
+	return buffer;
+
+}
+
 
 bool TParameter::operator==(const TParameter& other) const
 {

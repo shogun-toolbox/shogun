@@ -46,6 +46,7 @@ void CGaussianProcessRegression::init()
 
 	m_features = NULL;
 	m_method = NULL;
+	m_return = GP_RETURN_MEANS;
 
 	SG_ADD((CSGObject**) &m_features, "features", "Feature object.",
 	    MS_NOT_AVAILABLE);
@@ -54,6 +55,59 @@ void CGaussianProcessRegression::init()
 }
 
 CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
+{
+	if (m_return == GP_RETURN_COV)
+	{
+		CRegressionLabels* result =
+				new CRegressionLabels(getCovarianceVector(data));
+
+		return result;
+	}
+
+	if (m_return == GP_RETURN_MEANS)
+	{
+		CRegressionLabels* result =
+				new CRegressionLabels(getMeanVector(data));
+
+		return result;
+	}
+
+	else
+	{
+		SG_REF(data);
+		SGVector<float64_t> mean_vector = getMeanVector(data);
+		SGVector<float64_t> cov_vector = getCovarianceVector(data);
+
+		int size = mean_vector.vlen+cov_vector.vlen;
+
+		SGVector<float64_t> result_vector(size);
+
+		for (int i = 0; i < size; i++)
+		{
+			if (i < mean_vector.vlen)
+				result_vector[i] = mean_vector[i];
+			else
+				result_vector[i] = cov_vector[i-mean_vector.vlen];
+		}
+
+		CRegressionLabels* result =
+				new CRegressionLabels(result_vector);
+
+		SG_UNREF(data);
+
+		return result;
+	}
+
+}
+
+bool CGaussianProcessRegression::train_machine(CFeatures* data)
+{
+	return false;
+}
+
+
+SGVector<float64_t> CGaussianProcessRegression::getMeanVector(
+		CFeatures* data)
 {
 	if (data)
 	{
@@ -97,23 +151,30 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 	result_vector = lik->evaluate_means(result_vector);
 
-	CRegressionLabels* result = new CRegressionLabels(result_vector);
 	
 	SG_UNREF(kernel);
 	SG_UNREF(lik);
-	SG_REF(result);
+//	SG_REF(result);
 
-	return result;
+	return result_vector;
 }
 
-bool CGaussianProcessRegression::train_machine(CFeatures* data)
-{
-	return false;
-}
 
 SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(
 		CFeatures* data)
 {
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		if (data->get_feature_class() != C_DENSE)
+			SG_ERROR("Expected Simple Features\n");
+		if (data->get_feature_type() != F_DREAL)
+			SG_ERROR("Expected Real Features\n");
+	}
+
+	else
+		SG_ERROR("Null data vector!\n");
 
 	SG_REF(data);
 	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();

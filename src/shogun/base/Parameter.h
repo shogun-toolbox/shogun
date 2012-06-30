@@ -1770,6 +1770,13 @@ public:
 	void add(SGMatrix<SGSparseVector<floatmax_t> >* param,
 					const char* name, const char* description="");
 
+	unsigned char *get_md5_sum();
+
+	unsigned int get_char_description_length(Parameter* param);
+
+	unsigned char * get_char_description(Parameter* param, unsigned int& len);
+
+
 protected:
 
 	/** array of parameters */
