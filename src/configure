@@ -94,6 +94,7 @@ _lapack=auto
 _superlu=auto
 _arpack=auto
 _nlopt=auto
+_eigen3=auto
 _bigstates=yes
 _hmmcache=yes
 _debug=yes
@@ -1259,6 +1260,7 @@ Optional features:
   --enable-arpack                enable arpack [auto]
   --enable-superlu               enable SuperLU [auto]
   --enable-nlopt                 enable NLOPT [auto]
+  --enable-eigen3                enable Eigen3 [auto]
   --enable-cplex                 enable code using CPLEX  [auto]
   --enable-lpsolve               enable code using lpsolve  [auto]
   --enable-glpk                  enable code using GLPK [auto]
@@ -1283,7 +1285,8 @@ Optional features:
   --disable-lapack               disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-arpack               disable arpack [auto]
   --disable-superlu              disable SuperLU [auto]
-  --disable-nlopt                disable NLOP [auto]
+  --disable-nlopt                disable NLOPT [auto]
+  --disable-eigen3               disable Eigen3 [auto]
   --disable-cplex                disable code using CPLEX  [auto]
   --disable-lpsolve              disable code using lpsolve  [auto]
   --disable-glpk                 disable code using GLPK [auto]
@@ -1488,6 +1491,8 @@ EOF
 	  --enable-superlu)		_superlu=yes;;
 	  --disable-nlopt)		_nlopt=no	;;
 	  --enable-nlopt)		_nlopt=yes	;;
+	  --disable-eigen3)		_eigen3=no	;;
+	  --enable-eigen3)		_eigen3=yes	;;
 	  --disable-cplex)		_cplex=no	;;
 	  --enable-cplex)		_cplex=yes	;;
 	  --disable-spinlocks)	_spinlocks=no	;;
@@ -3359,6 +3364,34 @@ EOF
 	fi
 }
 
+check_eigen3()
+{
+	if test "$_eigen3" = yes || test "$_eigen3" = auto
+	then
+		cat > $TMPCXX << EOF
+#include <eigen3/Eigen/Dense>
+int main(int argc, char **argv)
+{
+	return 0;
+}
+EOF
+		echocheck "Eigen3 support"
+		if cxx_check
+		then
+			echores "yes"
+			HAVE_ARPACK='#define HAVE_EIGEN3 1'
+			DEFINES="$DEFINES -DHAVE_EIGEN3"
+		else
+			if test "$_eigen3" = yes
+			then
+				die "Eigen3 not found"
+			else
+				echores "no"
+			fi
+		fi
+	fi
+}
+
 check_arpack()
 {
 	if test "$_arpack" = yes || test "$_arpack" = auto
@@ -4914,6 +4947,7 @@ $HAVE_MVEC
 $HAVE_ARPACK
 $HAVE_SUPERLU
 $HAVE_NLOPT
+$HAVE_EIGEN3
 $HAVE_ATLAS
 $HAVE_PTHREAD
 $HAVE_ACML
@@ -5060,6 +5094,7 @@ check_lapack
 check_superlu
 check_arpack
 check_nlopt
+check_eigen3
 check_cplex
 check_glpk
 check_lzo
