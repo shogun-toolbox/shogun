@@ -320,7 +320,6 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 		matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec);	\
 		for (int i=0; i<num_vec; i++) \ 
 			new (&matrix[i]) SGSparseVector<sg_type>(); \
-		\
 		rewind(file);	\
 		sz=blocksize;	\
 		int32_t lines=0;	\
