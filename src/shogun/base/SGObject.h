@@ -377,6 +377,11 @@ protected:
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
+	/*Updates the MD5 Sum of current parameter combination.
+	 *
+	 * @return bool if parameter combination has changed since last
+	 * update.
+	 */
 	virtual bool update_parameter_hash();
 
 private:

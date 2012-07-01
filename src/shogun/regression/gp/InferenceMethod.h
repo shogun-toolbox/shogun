@@ -112,20 +112,7 @@ public:
 	*
 	* @param feat features to set
 	*/
-	virtual inline void set_features(CDotFeatures* feat)
-	{
-		SG_UNREF(m_features);
-		SG_REF(feat);
-		m_features=feat;
-
-		m_feature_matrix =
-			m_features->get_computed_dot_feature_matrix();
-
-		update_data_means();
-		update_train_kernel();
-		update_chol();
-		update_alpha();
-	}
+	virtual void set_features(CDotFeatures* feat);
 
 	/** get features
 	*
@@ -147,15 +134,7 @@ public:
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual inline void set_kernel(CKernel* kern)
-	{
-		SG_UNREF(m_kernel);
-		SG_REF(kern);
-		m_kernel = kern;
-		update_train_kernel();
-		update_chol();
-		update_alpha();
-	}
+	virtual void set_kernel(CKernel* kern);
 
 	/**get kernel
 	 *
@@ -167,16 +146,7 @@ public:
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual inline void set_mean(CMeanFunction* m)
-	{
-		SG_UNREF(m_mean);
-		SG_REF(m);
-		m_mean = m;
-
-		update_data_means();
-		update_chol();
-		update_alpha();
-	}
+	virtual void set_mean(CMeanFunction* m);
 
 	/**get labels
 	 *
@@ -188,19 +158,7 @@ public:
 	 *
 	 * @param lab label to set
 	 */
-	virtual inline void set_labels(CLabels* lab)
-	{
-		SG_UNREF(m_labels);
-		SG_REF(lab);
-		m_labels = lab;
-
-		m_label_vector =
-			((CRegressionLabels*) m_labels)->get_labels().clone();
-
-		update_data_means();
-		update_alpha();
-	//	update_chol();
-	}
+	virtual void set_labels(CLabels* lab);
 
 	/**get likelihood model
 	 *
@@ -212,27 +170,13 @@ public:
 	 *
 	 * @param mod model to set
 	 */
-	inline void set_model(CLikelihoodModel* mod)
-	{
-		SG_UNREF(m_model);
-		SG_REF(mod);
-		m_model = mod;
-		update_train_kernel();
-		update_chol();
-		update_alpha();
-	}
+	virtual void set_model(CLikelihoodModel* mod);
 
 	/*set kernel scale
 	 *
 	 * @param s scale to be set
 	 */
-	inline void set_scale(float64_t s)
-	{
-		update_train_kernel();
-		m_scale = s;
-		update_chol();
-		update_alpha();
-	}
+	virtual void set_scale(float64_t s);
 
 	/*get kernel scale
 	 *
@@ -246,21 +190,7 @@ protected:
 	virtual void update_alpha() {}
 	virtual void update_chol() {}
 	virtual void update_train_kernel() {}
-	virtual void update_data_means()
-	{
-		if (m_mean)
-		{
-			m_data_means =
-				m_mean->get_mean_vector(m_feature_matrix);
-
-
-			if (m_label_vector.vlen == m_data_means.vlen)
-			{
-				for (int i = 0; i < m_label_vector.vlen; i++)
-					m_label_vector[i] -= m_data_means[i];
-			}
-		}
-	}
+	virtual void update_data_means();
 
 private:
 	void init();
@@ -308,14 +238,8 @@ protected:
 	/*Kernel Scale*/
 	float64_t m_scale;
 
+	/*Kernel matrix from features*/
 	SGMatrix<float64_t> m_ktrtr;
-
-	SGMatrix<float64_t> m_ktsts;
-
-	SGMatrix<float64_t> m_ktrts;
-
-
-
 };
 
 }

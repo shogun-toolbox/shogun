@@ -154,6 +154,7 @@ protected:
 	virtual void update_alpha();
 	virtual void update_chol();
 	virtual void update_train_kernel();
+	virtual void update_all();
 
 private:
 
@@ -162,7 +163,7 @@ private:
 	 */
 	void check_members();
 
-	SGMatrix<float64_t> blah;
+	SGMatrix<float64_t> m_kern_with_noise;
 };
 
 }

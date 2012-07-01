@@ -238,9 +238,9 @@ bool CSGObject::update_parameter_hash()
 
 	unsigned char* tmp = m_model_selection_parameters->get_md5_sum();
 
-	for(int i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++)
 	{
-		if(tmp[i] != m_model_selection_parameter_hash[i])
+		if (tmp[i] != m_model_selection_parameter_hash[i])
 			changed = true;
 		m_model_selection_parameter_hash[i] = tmp[i];
 	}

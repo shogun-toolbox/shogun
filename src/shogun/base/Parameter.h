@@ -1770,12 +1770,12 @@ public:
 	void add(SGMatrix<SGSparseVector<floatmax_t> >* param,
 					const char* name, const char* description="");
 
+	/** Get MD5 checksum of parameter including those
+	 *  of SGObject Children.
+	 *
+	 *  @result MD5 checksum
+	 */
 	unsigned char *get_md5_sum();
-
-	unsigned int get_char_description_length(Parameter* param);
-
-	unsigned char * get_char_description(Parameter* param, unsigned int& len);
-
 
 protected:
 
@@ -1791,6 +1791,27 @@ protected:
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
 						  const char* description);
+
+	/** Get length of array needed to allocate a character
+	 *  array description of parameter as well of those
+	 *  of SGObject children.
+	 *
+	 *  @param param root Parameter to obtain description
+	 *
+	 *  @return length needed to allocate character array description
+	 */
+	unsigned int get_char_description_length(Parameter* param);
+
+
+	/** Get character array description of parameters
+	 * and those of SGObject children.
+	 *
+	 *  @param param root Parameter to obtain description
+	 *  @param len length of array
+	 *
+	 *  @return array description of parameter and children
+	 */
+	unsigned char * get_char_description(Parameter* param, unsigned int& len);
 };
 }
 #endif //__PARAMETER_H__

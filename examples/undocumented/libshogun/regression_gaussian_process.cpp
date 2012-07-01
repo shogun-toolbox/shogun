@@ -90,10 +90,6 @@ int main(int argc, char **argv)
 	
 	CGaussianProcessRegression* gp = new CGaussianProcessRegression(inf, features, labels);
 
-	//unsigned char* blah = gp->m_model_selection_parameters->get_md5_sum();
-	//delete[] blah;
-	//SG_SPRINT("%s\n", gp->m_model_selection_parameters->get_md5_sum());	
-
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 	
 	CModelSelectionParameters* c1=new CModelSelectionParameters("inference_method", inf);
@@ -101,7 +97,7 @@ int main(int argc, char **argv)
 
         CModelSelectionParameters* c2=new CModelSelectionParameters("scale");
         c1 ->append_child(c2);
-        c2->build_values(1.00, 1.0, R_LINEAR);
+        c2->build_values(0.01, 4.0, R_LINEAR);
 
 	
 	CModelSelectionParameters* c3=new CModelSelectionParameters("likelihood_model", lik);
@@ -161,13 +157,17 @@ int main(int argc, char **argv)
 	SGVector<float64_t> labe = labels->get_labels();
 	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
 	SGMatrix<float64_t> cholesky = inf->get_cholesky();
-	SGVector<float64_t> covariance = gp->getCovarianceVector(features);
-	CRegressionLabels* predictions = gp->apply_regression(features);
+	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_COV);
+	
+	CRegressionLabels* covariance = gp->apply_regression(features);
+	
+	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
+	CRegressionLabels* predictions = gp->apply_regression();
 	
 	SGVector<float64_t>::display_vector(alpha.vector, alpha.vlen, "Alpha Vector");
 	SGVector<float64_t>::display_vector(labe.vector, labe.vlen, "Labels");
 	SGVector<float64_t>::display_vector(diagonal.vector, diagonal.vlen, "sW Matrix");
-	SGVector<float64_t>::display_vector(covariance.vector, covariance.vlen, "Predicted Variances");
+	SGVector<float64_t>::display_vector(covariance->get_labels().vector, covariance->get_labels().vlen, "Predicted Variances");
 	SGVector<float64_t>::display_vector(predictions->get_labels().vector, predictions->get_labels().vlen, "Mean Predictions");
 	SGMatrix<float64_t>::display_matrix(cholesky.matrix, cholesky.num_rows, cholesky.num_cols, "Cholesky Matrix L");
 	SGMatrix<float64_t>::display_matrix(matrix.matrix, matrix.num_rows, matrix.num_cols, "Training Features");
@@ -177,6 +177,7 @@ int main(int argc, char **argv)
 	SG_UNREF(features);
 	SG_UNREF(features2);
 	SG_UNREF(predictions);
+	SG_UNREF(covariance);
 	SG_UNREF(labels);
 	SG_UNREF(inf);
 	SG_UNREF(gp);

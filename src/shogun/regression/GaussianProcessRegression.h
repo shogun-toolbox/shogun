@@ -62,6 +62,7 @@ class CGaussianProcessRegression : public CMachine
 			SG_UNREF(m_features);
 			SG_REF(feat);
 			m_features = feat;
+			update_kernel_matrices();
 		}
 		
 		/** get features
@@ -142,14 +143,14 @@ class CGaussianProcessRegression : public CMachine
 		* @param data (test)data to be classified
 		* @return covariance vector
 		*/
-		SGVector<float64_t> getCovarianceVector(CFeatures* data);
+		SGVector<float64_t> getCovarianceVector();
 		
 		/** get predicted mean vector
 		 *
 		* @param data (test)data to be classified
 		* @return predicted mean vector
 		*/
-		SGVector<float64_t> getMeanVector(CFeatures* data);
+		SGVector<float64_t> getMeanVector();
 
 		/** @return object name */
 		inline virtual const char* get_name() const
@@ -190,11 +191,27 @@ class CGaussianProcessRegression : public CMachine
 		/** function for initialization*/
 		void init();
 
+		/* Update kernel matrices */
+		void update_kernel_matrices();
+
 	private:
 
-		/** features */
+		/** training features */
 		CDotFeatures* m_features;
 		
+		/** testing features */
+		CDotFeatures* m_data;
+
+		/*Kernel matrix from testing and training
+		 * features
+		 */
+		SGMatrix<float64_t> m_k_trts;
+
+		/*Kernel matrix from testing
+		 * features
+		 */
+		SGMatrix<float64_t> m_k_tsts;
+
 		/** Inference Method */
 		CInferenceMethod* m_method;
 
