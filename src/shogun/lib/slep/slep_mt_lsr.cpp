@@ -28,7 +28,7 @@ SGMatrix<double> slep_mt_lsr(
 	double lambda, lambda_max, beta;
 	double funcp = 0.0, func = 0.0;
 
-	int n_tasks = options.n_nodes;
+	int n_tasks = options.n_tasks;
 
 	int iter = 1;
 	bool done = false;
@@ -51,17 +51,20 @@ SGMatrix<double> slep_mt_lsr(
 		double q_bar = 0.0;
 		if (options.q==1)
 			q_bar = CMath::ALMOST_INFTY;
-		else if (options.q>1e-6)
+		else if (options.q>1e6)
 			q_bar = 1;
 		else
 			q_bar = options.q/(options.q-1);
+
 		lambda_max = 0.0;
 
-		for (t=0; t<n_tasks; t++)
+		for (i=0; i<n_feats; i++)
 		{
+			double sum = 0.0;
+			for (t=0; t<n_tasks; t++)
+				sum += CMath::pow(fabs(ATy[t*n_feats+i]),q_bar);
 			lambda_max = 
-				CMath::max(lambda_max, 
-						SGVector<float64_t>::qnorm(ATy+t*n_feats, n_feats, q_bar));
+				CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar));
 		}
 
 		lambda = z*lambda_max;
@@ -110,7 +113,7 @@ SGMatrix<double> slep_mt_lsr(
 	double alphap = 0.0;
 	double alpha = 1.0;
 	
-	while (!done && iter < options.max_iter) 
+	while (!done && iter <= options.max_iter) 
 	{
 		beta = (alphap-1.0)/alpha;
 

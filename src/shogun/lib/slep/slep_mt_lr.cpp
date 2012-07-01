@@ -29,7 +29,6 @@ slep_result_t slep_mt_lr(
 	double funcp = 0.0, func = 0.0;
 
 	int n_tasks = options.n_tasks;
-	//SG_SPRINT("N tasks = %d \n", n_tasks);
 
 	int iter = 1;
 	bool done = false;
@@ -77,10 +76,10 @@ slep_result_t slep_mt_lr(
 		double q_bar = 0.0;
 		if (options.q==1)
 			q_bar = CMath::ALMOST_INFTY;
-		if (options.q>1e-6)
+		else if (options.q>1e-6)
 			q_bar = 1;
-		
-		q_bar = options.q/(options.q-1);
+		else 
+			q_bar = options.q/(options.q-1);
 		lambda_max = 0.0;
 
 		for (i=0; i<n_feats; i++)
@@ -155,7 +154,6 @@ slep_result_t slep_mt_lr(
 	while (!done && iter <= options.max_iter) 
 	{
 		beta = (alphap-1.0)/alpha;
-		//SG_SPRINT("beta = %f \n", beta);
 
 		for (i=0; i<n_feats*n_tasks; i++)
 			s[i] = w[i] + beta*wwp[i];
@@ -164,8 +162,6 @@ slep_result_t slep_mt_lr(
 
 		for (i=0; i<n_vecs; i++)
 			As[i] = Aw[i] + beta*(Aw[i]-Awp[i]);
-
-		//SG_SPRINT("As = %f\n",SGVector<float64_t>::dot(As,As,n_vecs));
 
 		double fun_s = 0.0;
 		for (i=0; i<n_tasks*n_feats; i++)
@@ -192,10 +188,6 @@ slep_result_t slep_mt_lr(
 		}
 		fun_s /= n_vecs;
 		
-		//SG_SPRINT("fun_s = %f\n", fun_s);
-
-		//SG_SPRINT("g = %f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
-	
 		for (i=0; i<n_feats*n_tasks; i++)
 			wp[i] = w[i];
 		
@@ -217,11 +209,6 @@ slep_result_t slep_mt_lr(
 			
 			eppMatrix(w.matrix, v, n_feats, n_tasks, lambda/L, options.q);
 
-			//SG_SPRINT("params [%d,%d,%f,%f]\n", n_feats, n_tasks, lambda/L, options.q);
-
-			//w.display_matrix();
-			//SG_SPRINT("w = %f \n", SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats*n_tasks));
-
 			// v = x - s
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = w[i] - s[i];
@@ -242,9 +229,6 @@ slep_result_t slep_mt_lr(
 			}
 			fun_x /= n_vecs;
 
-			//SG_SPRINT("Aw = %f\n", SGVector<float64_t>::dot(Aw,Aw,n_vecs));
-			//c.display_vector();
-
 			double r_sum = SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
 			double l_sum = fun_x - fun_s - SGVector<float64_t>::dot(v,g,n_feats*n_tasks);
 
@@ -254,8 +238,6 @@ slep_result_t slep_mt_lr(
 				l_sum -= (c[t] - sc[t])*gc[t];
 			}
 			r_sum /= 2.0;
-
-			//SG_SPRINT("sums = [%f, %f, %f]\n", r_sum, l_sum, fun_x);
 
 			if (r_sum <= 1e-20)
 			{

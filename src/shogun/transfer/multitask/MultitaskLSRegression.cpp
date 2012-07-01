@@ -89,6 +89,7 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 	options.regularization = m_regularization;
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
+	options.max_iter = m_max_iter;
 
 	ETaskRelationType relation_type = m_task_relation->get_relation_type();
 	switch (relation_type)
@@ -98,7 +99,7 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
 			SGVector<index_t> ind = task_group->get_SLEP_ind();
 			options.ind = ind.vector;
-			options.n_nodes = ind.vlen-1;
+			options.n_tasks = ind.vlen-1;
 
 			m_tasks_w = slep_mt_lsr(features, y.vector, m_z, options);
 		}
