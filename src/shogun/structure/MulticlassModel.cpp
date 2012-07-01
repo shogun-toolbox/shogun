@@ -31,6 +31,7 @@ CMulticlassModel::~CMulticlassModel()
 
 int32_t CMulticlassModel::get_dim() const
 {
+	// TODO make the casts safe!
 	int32_t num_classes = ((CMulticlassSOLabels*) m_labels)->get_num_classes();
 	int32_t feats_dim   = ((CDotFeatures*) m_features)->get_dim_feature_space();
 

@@ -64,11 +64,12 @@ class CHMSVMLabels : public CStructuredLabels
 		/** default constructor */
 		CHMSVMLabels();
 
-		/** constructor
+		/** standard constructor
 		 *
 		 * @param num_labels number of labels
+		 * @param num_states number of states
 		 */
-		CHMSVMLabels(int32_t num_labels);
+		CHMSVMLabels(int32_t num_labels, int32_t num_states);
 
 		/** destructor */
 		virtual ~CHMSVMLabels();
@@ -80,11 +81,29 @@ class CHMSVMLabels : public CStructuredLabels
 		 * add a new label to the vector of labels, effectively
 		 * increasing the number of elements of the structure. This
 		 * method should be used when inserting labels for the first
-		 * time.
+		 * time. NOTE: the elements of the labels have to be in the
+		 * interval [0, 1, ..., num_states-1].
 		 *
 		 * @param label label to add
 		 */
 		void add_label(SGVector< int32_t > label);
+
+		/** get the number of states
+		 *
+		 * @return the number of states
+		 */
+		int32_t get_num_states() const { return m_num_states; };
+
+	private:
+		/** internal initialization */
+		void init();
+
+	private:
+		/**
+		 * the number of possible values taken by the elements of
+		 * the sequences
+		 */
+		int32_t m_num_states;
 
 }; /* CHMSVMLabels */
 

@@ -157,6 +157,15 @@ class CStructuredModel : public CSGObject
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }
 	
+		/**
+		 * method to be called from a SO machine before training
+		 * to ensure that the training data is valid (e.g. check that
+		 * there is at least one example for every class). In this class
+		 * the method is empty and it can be re-implemented for any
+		 * application (e.g. HM-SVM).
+		 */
+		virtual bool check_training_setup() const;
+
 	private:
 		/** internal initialization */
 		void init();

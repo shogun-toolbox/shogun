@@ -42,6 +42,9 @@ CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
 
 bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 {
+	// Check that the scenary is correct to start with training
+	m_model->check_training_setup();
+
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples

@@ -90,3 +90,9 @@ void CStructuredModel::init()
 	m_features = NULL;
 	m_labels   = NULL;
 }
+
+bool CStructuredModel::check_training_setup() const
+{
+	// Nothing to do here
+	return true;
+}
