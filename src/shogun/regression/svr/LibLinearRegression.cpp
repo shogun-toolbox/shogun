@@ -13,7 +13,7 @@
 #include <shogun/regression/svr/LibLinearRegression.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/lib/external/tron.h>
+#include <shogun/optimization/liblinear/tron.h>
 #include <shogun/lib/Signal.h>
 
 using namespace shogun;

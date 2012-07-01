@@ -20,7 +20,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/transfer/multitask/LibLinearMTL.h>
-#include <shogun/lib/external/tron.h>
+#include <shogun/optimization/liblinear/tron.h>
 #include <shogun/features/DotFeatures.h>
 
 using namespace shogun;
