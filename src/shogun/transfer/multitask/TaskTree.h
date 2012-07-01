@@ -54,12 +54,6 @@ public:
 	/** get name */
 	const char* get_name() const { return "TaskTree"; };
 
-protected:
-
-	void collect_tasks_recursive(CTask* subtree_root_node, CList* list);
-	
-	void collect_leaf_tasks_recursive(CTask* subtree_root_node, CList* list);
-
 private:
 
 	/** root task */

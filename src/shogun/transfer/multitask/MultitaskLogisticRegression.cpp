@@ -9,6 +9,7 @@
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 #include <shogun/lib/slep/slep_mt_lr.h>
+#include <shogun/lib/slep/slep_tree_mt_lr.h>
 #include <shogun/lib/slep/slep_options.h>
 
 #include <shogun/transfer/multitask/TaskGroup.h>
@@ -101,6 +102,8 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			SGVector<index_t> ind = task_group->get_SLEP_ind();
 			options.ind = ind.vector;
 			options.n_tasks = ind.vlen-1;
+			if (ind[ind.vlen-1] > features->get_num_vectors())
+				SG_ERROR("Group of tasks covers more vectors than available\n");
 
 			slep_result_t result = slep_mt_lr(features, y.vector, m_z, options);
 			m_tasks_w = result.w;
@@ -109,8 +112,25 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 		break;
 		case TREE: 
 		{
-			SG_ERROR("Not supported task relation type\n");
+			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+
+			CTask* root_task = task_tree->get_root_task();
+			 if (root_task->get_max_index() > features->get_num_vectors())
+				SG_ERROR("Root task covers more vectors than available\n");
+			SG_UNREF(root_task);
+
+			SGVector<index_t> ind = task_tree->get_SLEP_ind();
+			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
+			options.ind = ind.vector;
+			options.ind_t = ind_t.vector;
+			options.n_tasks = ind.vlen-1;
+			options.n_nodes = ind_t.vlen / 3;
+
+			slep_result_t result = slep_tree_mt_lr(features, y.vector, m_z, options);
+			m_tasks_w = result.w;
+			m_tasks_c = result.c;
 		}
+		break;
 		default: 
 			SG_ERROR("Not supported task relation type\n");
 	}

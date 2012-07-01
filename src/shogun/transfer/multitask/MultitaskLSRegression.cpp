@@ -111,9 +111,12 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 			options.ind = ind.vector;
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
 			options.ind_t = ind_t.vector;
+			options.n_tasks = ind.vlen-1;
+			options.n_nodes = ind_t.vlen/3;
 
 			m_tasks_w = slep_tree_mt_lsr(features, y.vector, m_z, options);
 		}
+		break;
 		default: 
 			SG_ERROR("Not supported task relation type\n");
 	}
