@@ -47,10 +47,9 @@ SGMatrix<double> slep_tree_mt_lsr(
 	if (options.regularization!=0)
 	{
 		if (options.general)
-			lambda_max = findLambdaMax_mt(ATy, n_vecs, n_tasks, options.ind_t, options.n_nodes);
+			lambda_max = general_findLambdaMax_mt(ATy, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes);
 		else
-			lambda_max = general_findLambdaMax_mt(ATy, n_vecs, n_tasks, options.G, 
-			                                   options.ind_t, options.n_nodes);
+			lambda_max = findLambdaMax_mt(ATy, n_feats, n_tasks, options.ind_t, options.n_nodes);
 		lambda = z*lambda_max;
 	}
 	else 
@@ -130,7 +129,7 @@ SGMatrix<double> slep_tree_mt_lsr(
 		for (i=0; i<n_feats*n_tasks; i++)
 			wp[i] = w[i];
 
-		for (i=0; i<n_vecs*n_tasks; i++)
+		for (i=0; i<n_vecs; i++)
 			Awp[i] = Aw[i];
 
 		while (true)

@@ -62,6 +62,9 @@ public:
 	/** get subtasks */
 	CList* get_subtasks();
 
+	/** get num subtasks */
+	int32_t get_num_subtasks();
+
 private:
 
 	/** name of task */

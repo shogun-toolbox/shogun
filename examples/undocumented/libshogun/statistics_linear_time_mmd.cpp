@@ -186,11 +186,17 @@ void test_linear_mmd_type2_error()
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features, m);
-	mmd->set_p_value_method(MMD1_GAUSSIAN);
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
 		create_mean_data(data, difference);
+		
+		/* technically, this leads to a wrong result since training (statistic)
+		 * and testing (p-value) have to happen on different data, but this
+		 * is only to compare against MATLAB, where I did the same "mistake"
+		 * See for example python_modular example how to do this correct
+		 * Note that this is only when using Gaussian approximation */
 		float64_t statistic=mmd->compute_statistic();
 
 		float64_t p_value_est=mmd->compute_p_value(statistic);

@@ -15,7 +15,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
-#include <shogun/lib/external/shogun_liblinear.h>
+#include <shogun/optimization/liblinear/shogun_liblinear.h>
 
 namespace shogun
 {

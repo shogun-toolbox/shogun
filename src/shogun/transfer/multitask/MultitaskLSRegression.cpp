@@ -89,6 +89,7 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 	options.regularization = m_regularization;
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
+	options.max_iter = m_max_iter;
 
 	ETaskRelationType relation_type = m_task_relation->get_relation_type();
 	switch (relation_type)
@@ -98,7 +99,7 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
 			SGVector<index_t> ind = task_group->get_SLEP_ind();
 			options.ind = ind.vector;
-			options.n_nodes = ind.vlen-1;
+			options.n_tasks = ind.vlen-1;
 
 			m_tasks_w = slep_mt_lsr(features, y.vector, m_z, options);
 		}
@@ -110,9 +111,12 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 			options.ind = ind.vector;
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
 			options.ind_t = ind_t.vector;
+			options.n_tasks = ind.vlen-1;
+			options.n_nodes = ind_t.vlen/3;
 
 			m_tasks_w = slep_tree_mt_lsr(features, y.vector, m_z, options);
 		}
+		break;
 		default: 
 			SG_ERROR("Not supported task relation type\n");
 	}

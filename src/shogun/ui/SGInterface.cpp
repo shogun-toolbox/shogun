@@ -1811,9 +1811,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			SGSparseVector<float64_t>* fmatrix=NULL;
 			get_sparse_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSparseFeatures<float64_t>();
-			((CSparseFeatures<float64_t>*) feat)->
-				set_sparse_feature_matrix(SGSparseMatrix<float64_t>(fmatrix, num_feat, num_vec));
+			feat=new CSparseFeatures<float64_t>(fmatrix, num_feat, num_vec);
 			break;
 		}
 

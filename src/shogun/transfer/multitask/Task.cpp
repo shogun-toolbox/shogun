@@ -47,3 +47,8 @@ CList* CTask::get_subtasks()
 	SG_REF(m_subtasks);
 	return m_subtasks;
 }
+
+int32_t CTask::get_num_subtasks()
+{
+	return m_subtasks->get_num_elements();
+}
