@@ -16,7 +16,16 @@
 namespace shogun
 {
 
-/** @brief
+/** @brief contains a few of tasks of multitask context
+ *
+ * For proper numbering of tasks in multitask-kind machine
+ * please add tasks to the group in well-ordered fashion.
+ *
+ * Example of usage: with 10 vectors available consider
+ * first 5 vectors belong to the first task and latter 5
+ * vectors belong to the second task - task group should
+ * be constructed via two CTask instances - CTask(0,5) and 
+ * CTask(5,10).
  *
  */
 class CTaskGroup : public CTaskRelation
