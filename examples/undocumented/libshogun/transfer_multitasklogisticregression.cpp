@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
 	// create three labels
-	CRegressionLabels* labels=new CRegressionLabels(4);
+	CBinaryLabels* labels=new CBinaryLabels(4);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
 	labels->set_label(2, -1);
