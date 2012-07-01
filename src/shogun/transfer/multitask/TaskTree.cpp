@@ -167,7 +167,7 @@ SGVector<float64_t> CTaskTree::get_SLEP_ind_t()
 	ind_t[1] = -1;
 	ind_t[2] = 1.0;
 
-	for (int32_t i=0; i<tree_nodes.size(); i++)
+	for (int32_t i=0; i<(int32_t)tree_nodes.size(); i++)
 	{
 		ind_t[3+i*3] = tree_nodes[i].t_min_index;
 		ind_t[3+i*3+1] = tree_nodes[i].t_max_index;
