@@ -3379,7 +3379,7 @@ EOF
 		if cxx_check
 		then
 			echores "yes"
-			HAVE_ARPACK='#define HAVE_EIGEN3 1'
+			HAVE_EIGEN3='#define HAVE_EIGEN3 1'
 			DEFINES="$DEFINES -DHAVE_EIGEN3"
 		else
 			if test "$_eigen3" = yes
