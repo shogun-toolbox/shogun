@@ -10,13 +10,14 @@
 
 #include <shogun/lib/slep/slep_mt_lr.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/slep/q1/eppMatrix.h>
+#include <shogun/lib/slep/tree/altra.h>
+#include <shogun/lib/slep/tree/general_altra.h>
 #include <shogun/mathematics/lapack.h>
 
 namespace shogun
 {
 
-slep_result_t slep_mt_lr(
+slep_result_t slep_tree_mt_lr(
 		CDotFeatures* features,
 		double* y,
 		double z,
@@ -25,7 +26,7 @@ slep_result_t slep_mt_lr(
 	int i,j,t;
 	int n_feats = features->get_dim_feature_space();
 	int n_vecs = features->get_num_vectors();
-	double lambda, lambda_max, beta;
+	double lambda, beta;
 	double funcp = 0.0, func = 0.0;
 
 	int n_tasks = options.n_tasks;
@@ -73,25 +74,13 @@ slep_result_t slep_mt_lr(
 			
 		}
 
-		double q_bar = 0.0;
-		if (options.q==1)
-			q_bar = CMath::ALMOST_INFTY;
-		else if (options.q>1e-6)
-			q_bar = 1;
-		else 
-			q_bar = options.q/(options.q-1);
-		lambda_max = 0.0;
+		double lambda_max = 0.0;
+		if (options.general)
+			lambda_max = general_findLambdaMax_mt(ATb, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes);
+		else
+			lambda_max = findLambdaMax_mt(ATb, n_feats, n_tasks, options.ind_t, options.n_nodes);
 
-		for (i=0; i<n_feats; i++)
-		{
-			double sum = 0.0;
-			for (t=0; t<n_tasks; t++)
-				sum += CMath::pow(fabs(ATb[t*n_feats+i]),q_bar);
-			lambda_max = 
-				CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar)); 
-		}
-
-		lambda_max /= n_vecs;
+		lambda_max /= n_vecs*n_tasks;
 		
 		lambda = z*lambda_max;
 	}
@@ -198,7 +187,7 @@ slep_result_t slep_mt_lr(
 			Awp[i] = Aw[i];
 
 		int inner_iter = 1;
-		while (inner_iter < 100)
+		while (inner_iter < 1000)
 		{
 			// v = s - g / L
 			for (i=0; i<n_feats*n_tasks; i++)
@@ -207,9 +196,12 @@ slep_result_t slep_mt_lr(
 			for (t=0; t<n_tasks; t++)
 				c[t] = sc[t] - gc[t]*(1.0/L);
 			
-			eppMatrix(w.matrix, v, n_feats, n_tasks, lambda/L, options.q);
 
-			// v = x - s
+			if (options.general)
+				general_altra_mt(w.matrix, v, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes, lambda/L);
+			else
+				altra_mt(w.matrix, v, n_feats, n_tasks, options.ind_t, options.n_nodes, lambda/L);
+
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = w[i] - s[i];
 
@@ -264,15 +256,21 @@ slep_result_t slep_mt_lr(
 		double regularizer = 0.0;
 		for (i=0; i<n_feats; i++)
 		{
-			double w_row_norm = 0.0;
+			double tree_norm = 0.0;
+
 			for (t=0; t<n_tasks; t++)
-				w_row_norm += CMath::pow(w(i,t),options.q);
-			regularizer += CMath::pow(w_row_norm,1.0/options.q);
+				w_row[t] = w(i,t);
+
+			if (options.general)
+				tree_norm = general_treeNorm(w_row, n_tasks, options.G, options.ind_t, options.n_nodes);
+			else
+				tree_norm = treeNorm(w_row, n_tasks, options.ind_t, options.n_nodes);
+
+			regularizer += tree_norm;
 		}
 
 		funcp = func;
 		func = fun_x + lambda*regularizer;
-		//SG_SPRINT("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
 
 		if (gradient_break)
 			break;
@@ -327,6 +325,9 @@ slep_result_t slep_mt_lr(
 	SG_FREE(wp);
 	SG_FREE(wwp);
 	SG_FREE(s);
+	SG_FREE(sc);
+	SG_FREE(cp);
+	SG_FREE(ccp);
 	SG_FREE(g);
 	SG_FREE(v);
 	SG_FREE(Aw);

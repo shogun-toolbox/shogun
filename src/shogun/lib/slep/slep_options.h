@@ -21,12 +21,6 @@ namespace shogun
 {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-IGNORE_IN_CLASSLIST enum slep_mode
-{
-	MULTITASK_GROUP,
-	MULTITASK_TREE
-};
-
 IGNORE_IN_CLASSLIST struct slep_options
 {
 	bool general;
@@ -42,7 +36,6 @@ IGNORE_IN_CLASSLIST struct slep_options
 	double* G;
 	double* initial_w;
 	double q;
-	slep_mode mode;
 
 	static slep_options default_options()
 	{
@@ -58,7 +51,6 @@ IGNORE_IN_CLASSLIST struct slep_options
 		opts.ind = NULL;
 		opts.ind_t = NULL;
 		opts.G = NULL;
-		opts.mode = MULTITASK_GROUP;
 		return opts;
 	}
 };
