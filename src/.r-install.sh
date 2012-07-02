@@ -46,8 +46,8 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		Depends=\"R (>= $RVERSION)\", \
 		Built=\"R $RVERSION; ; $DATE\"),\
 		Built = list(R=\"$RVERSION\", Platform=\"$PLATFORM\", Date=\"$DATE\", OStype=\"$OSTYPE\"),\
-		Rdepends = list(name='R', op='>=', version='2.13'),\
-		Rdepends2 = list(list(name='R', op='>=', version='2.13')),\
+		Rdepends = list(name='R', op='>=', version='2.10'),\
+		Rdepends2 = list(list(name='R', op='>=', version='2.10')),\
 		Depends = list(),\
 		Suggests = list(),\
 		Imports = list()),\

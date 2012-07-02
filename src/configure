@@ -319,6 +319,8 @@ assert_version() {
 				echores "`echo $is_ver` ... too old version $wanted_ver or later required"
 				return 1
 			fi
+
+			return 1
 		fi
 
 		if test ${is[i]} -lt ${wanted[i]}; then
