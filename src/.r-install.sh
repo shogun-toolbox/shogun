@@ -7,6 +7,7 @@ PLATFORM=`R --slave -e "cat(R.version\\$platform)"`
 OSTYPE=`R --slave -e "cat(.Platform\\$OS.type)"`
 DATE="`date '+%Y-%m-%d %H:%M:%S'`"
 PKGFILE="$1/$2/Meta/package.rds"
+SAVERDS="$4"
 
 cat >"$1/$2/DESCRIPTION" <<EOF
 Package: $2
