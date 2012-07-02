@@ -144,7 +144,7 @@ void computeLambda2Max(double *lambda2_max, double *x, int n, double *ind, int n
  *
  * tree_norm=treeNorm(x, n, ind,nodes);
  */
-double treeNorm(double *x, int n, double *ind, int nodes);
+double treeNorm(double *x, int ldx, int n, double *ind, int nodes);
 
 /*
  * -------------------------------------------------------------------

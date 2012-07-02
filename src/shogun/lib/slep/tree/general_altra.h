@@ -159,7 +159,7 @@ void general_computeLambda2Max(double *lambda2_max, double *x, int n, double *G,
  *
  * tree_norm=general_treeNorm(x, n, G, ind,nodes);
  */
-double general_treeNorm(double *x, int n, double *G, double *ind, int nodes);
+double general_treeNorm(double *x, int ldx, int n, double *G, double *ind, int nodes);
 
 /*
  * -------------------------------------------------------------------
