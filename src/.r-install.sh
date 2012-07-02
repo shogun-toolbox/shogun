@@ -5,7 +5,6 @@ DATE=`head -n 1 ../../NEWS | cut -f 1 -d ' '`
 RVERSION=`R --slave -e "with(R.version, cat(sprintf('%s.%s', major, minor)))"`
 PLATFORM=`R --slave -e "cat(R.version\\$platform)"`
 OSTYPE=`R --slave -e "cat(.Platform\\$OS.type)"`
-#OSTYPE="`uname -o`"
 DATE="`date '+%Y-%m-%d %H:%M:%S'`"
 PKGFILE="$1/$2/Meta/package.rds"
 
@@ -16,7 +15,7 @@ Date: $DATE
 Title: The SHOGUN Machine Learning Toolbox
 Author: Soeren Sonnenburg, Gunnar Raetsch
 Maintainer: Soeren Sonnenburg <sonne@debian.org>
-Depends: R (>= 2.13.0)
+Depends: R (>= 2.10.0)
 Suggests:
 Description: SHOGUN - is a new machine learning toolbox with focus on large
         scale kernel methods and especially on Support Vector Machines (SVM) with focus
@@ -53,7 +52,7 @@ echo "x=structure(list(DESCRIPTION = c(Package='$2',\
 		Suggests = list(),\
 		Imports = list()),\
 		class = 'packageDescription2');\
-		saveRDS(x, \"$PKGFILE\")" | R --no-save
+		$SAVERDS(x, \"$PKGFILE\")" | R --no-save
 
 # R STATIC
 if test "$2" = "sg" || test "$2" = "elwms"

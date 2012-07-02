@@ -4488,7 +4488,16 @@ test_r()
 		echocheck "R"
 		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1
 		then
-			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
+			r_version="`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
+			echores "$r_version"
+			assert_version "R" "$_r" "$r_version" "2.10"
+
+			SAVERDS=".saveRDS"
+			if assert_version "R" "no" "$r_version" "2.13"
+			then
+				SAVERDS="saveRDS"
+			fi
+
 			test -n "$_rdir" || _rdir=`echo '.libPaths()[1]' | R --no-save 2>/dev/null | grep '^\[1\]' | cut -f 2 -d '"'`
 			if cygwin
 			then
@@ -4838,7 +4847,8 @@ INCLUDES_R_MODULAR		= ${INCLUDES_R}
 PRELINKFLAGS_R_MODULAR	= ${PRELINKFLAGS_R}
 LINKFLAGS_R_MODULAR 	= ${LINKFLAGS_R}
 POSTLINKFLAGS_R_MODULAR	= ${POSTLINKFLAGS_R}
-SWIGFLAGS_R_MODULAR = ${SWIGFLAGS_R_MODULAR}
+SWIGFLAGS_R_MODULAR		= ${SWIGFLAGS_R_MODULAR}
+SAVERDS					= ${SAVERDS}
 
 PRE_LIB_SWIG_PYTHON_MODULAR	= ${PRE_LIB_SWIG_PYTHON_MODULAR}
 EXT_LIB_SWIG_PYTHON_MODULAR	= ${EXT_LIB_SWIG_PYTHON_MODULAR}
