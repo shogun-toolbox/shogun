@@ -199,8 +199,7 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 
 	if (sparse_feature_matrix)
 	{
-		result=sparse_feature_matrix[real_num];
-		return result;
+		return sparse_feature_matrix[real_num];
 	}
 	else
 	{

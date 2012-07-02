@@ -17,6 +17,7 @@
 %ignore shogun::CStructuredModel::init_opt;
 #endif
 
+%ignore refcount_t; 
 %ignore cleanup;
 %ignore QP;
 %ignore ConsensusEntry;
