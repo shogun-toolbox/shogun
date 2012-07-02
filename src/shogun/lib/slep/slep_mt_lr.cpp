@@ -11,10 +11,149 @@
 #include <shogun/lib/slep/slep_mt_lr.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
-#include <shogun/mathematics/lapack.h>
+
+#include <shogun/lib/slep/tree/altra.h>
+#include <shogun/lib/slep/tree/general_altra.h>
 
 namespace shogun
 {
+
+double compute_regularizer(double* w, int n_vecs, int n_feats, 
+                           int n_tasks, const slep_options& options)
+{
+	double regularizer = 0.0;
+	switch (options.mode)
+	{
+		case MULTITASK_GROUP:
+		{
+			for (int i=0; i<n_feats; i++)
+			{
+				double w_row_norm = 0.0;
+				for (int t=0; t<n_tasks; t++)
+					w_row_norm += CMath::pow(w[i+t*n_feats],options.q);
+				regularizer += CMath::pow(w_row_norm,1.0/options.q);
+			}
+		}
+		break;
+		case MULTITASK_TREE:
+		{
+			for (int i=0; i<n_feats; i++)
+			{
+				double tree_norm = 0.0;
+
+				if (options.general)
+					tree_norm = general_treeNorm(w+i, n_tasks, n_tasks, options.G, options.ind_t, options.n_nodes);
+				else
+					tree_norm = treeNorm(w+i, n_tasks, n_tasks, options.ind_t, options.n_nodes);
+
+				regularizer += tree_norm;
+			}
+		}
+		break;
+		default:
+			SG_SERROR("WHOA?\n");
+	}
+	return regularizer;
+}
+
+double compute_lambda(double z, CDotFeatures* features, double* y, int n_vecs, 
+                      int n_feats, int n_tasks, const slep_options& options)
+{
+	double lambda_max = 0.0;
+	double* ATb = SG_CALLOC(double, n_feats*n_tasks);
+	if (z<0 || z>1)
+		SG_SERROR("z is not in range [0,1]");
+
+	int* m1 = SG_CALLOC(int, n_tasks);
+	int* m2 = SG_CALLOC(int, n_tasks);
+	for (int t=0; t<n_tasks; t++)
+	{
+		int task_ind_start = options.ind[t];
+		int task_ind_end = options.ind[t+1];
+		for (int i=task_ind_start; i<task_ind_end; i++)
+		{
+			if (y[i]>0)
+				m1[t]++;
+			else
+				m2[t]++;
+		}
+	}
+
+	switch (options.mode)
+	{
+		case MULTITASK_GROUP:
+		{
+			for (int t=0; t<n_tasks; t++)
+			{
+				int task_ind_start = options.ind[t];
+				int task_ind_end = options.ind[t+1];
+				double b = 0.0;
+				for (int i=task_ind_start; i<task_ind_end; i++)
+				{
+					if (y[i]>0)
+						b = double(m1[t])/(m1[t]+m2[t]);
+					else
+						b = -double(m2[t])/(m1[t]+m2[t]);
+					features->add_to_dense_vec(b,i,ATb+t*n_feats,n_feats);
+				}
+			}
+			
+			double q_bar = 0.0;
+			if (options.q==1)
+				q_bar = CMath::ALMOST_INFTY;
+			else if (options.q>1e-6)
+				q_bar = 1;
+			else 
+				q_bar = options.q/(options.q-1);
+			lambda_max = 0.0;
+
+			for (int i=0; i<n_feats; i++)
+			{
+				double sum = 0.0;
+				for (int t=0; t<n_tasks; t++)
+					sum += CMath::pow(fabs(ATb[t*n_feats+i]),q_bar);
+				lambda_max = 
+					CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar)); 
+			}
+
+			lambda_max /= n_vecs;
+		}
+		break;
+		case MULTITASK_TREE:
+		{
+			for (int t=0; t<n_tasks; t++)
+			{
+				int task_ind_start = options.ind[t];
+				int task_ind_end = options.ind[t+1];
+				double b = 0.0;
+				for (int i=task_ind_start; i<task_ind_end; i++)
+				{
+					if (y[i]>0)
+						b = double(m1[t])/(m1[t]+m2[t]);
+					else
+						b = -double(m2[t])/(m1[t]+m2[t]);
+
+					features->add_to_dense_vec(b,i,ATb+t*n_feats,n_feats);
+				}
+			}
+
+			if (options.general)
+				lambda_max = general_findLambdaMax_mt(ATb, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes);
+			else
+				lambda_max = findLambdaMax_mt(ATb, n_feats, n_tasks, options.ind_t, options.n_nodes);
+
+			lambda_max /= n_vecs*n_tasks;
+		}
+		break;
+		default: 
+			SG_SERROR("WHOAA!\n");
+	}
+
+	SG_FREE(ATb);
+	SG_FREE(m1);
+	SG_FREE(m2);
+	return z*lambda_max;
+}
 
 slep_result_t slep_mt_lr(
 		CDotFeatures* features,
@@ -22,10 +161,10 @@ slep_result_t slep_mt_lr(
 		double z,
 		const slep_options& options)
 {
-	int i,j,t;
+	int i,t;
 	int n_feats = features->get_dim_feature_space();
 	int n_vecs = features->get_num_vectors();
-	double lambda, lambda_max, beta;
+	double lambda, beta;
 	double funcp = 0.0, func = 0.0;
 
 	int n_tasks = options.n_tasks;
@@ -34,78 +173,13 @@ slep_result_t slep_mt_lr(
 	bool done = false;
 	bool gradient_break = false;
 
-	int* m1 = SG_CALLOC(int, n_tasks);
-	int* m2 = SG_CALLOC(int, n_tasks);
-	for (t=0; t<n_tasks; t++)
-	{
-		int task_ind_start = options.ind[t];
-		int task_ind_end = options.ind[t+1];
-		for (i=task_ind_start; i<task_ind_end; i++)
-		{
-			if (y[i]>0)
-				m1[t]++;
-			else
-				m2[t]++;
-		}
-	}
-	
-	double* ATb = SG_CALLOC(double, n_feats*n_tasks);
-
 	if (options.regularization!=0)
-	{
-		if (z<0 || z>1)
-			SG_SERROR("z is not in range [0,1]");
-
-		for (t=0; t<n_tasks; t++)
-		{
-			int task_ind_start = options.ind[t];
-			int task_ind_end = options.ind[t+1];
-			double b = 0.0;
-			for (i=task_ind_start; i<task_ind_end; i++)
-			{
-				if (y[i]>0)
-					b = double(m1[t])/(m1[t]+m2[t]);
-				else
-					b = -double(m2[t])/(m1[t]+m2[t]);
-
-				features->add_to_dense_vec(b,i,ATb+t*n_feats,n_feats);
-			}
-			
-		}
-
-		double q_bar = 0.0;
-		if (options.q==1)
-			q_bar = CMath::ALMOST_INFTY;
-		else if (options.q>1e-6)
-			q_bar = 1;
-		else 
-			q_bar = options.q/(options.q-1);
-		lambda_max = 0.0;
-
-		for (i=0; i<n_feats; i++)
-		{
-			double sum = 0.0;
-			for (t=0; t<n_tasks; t++)
-				sum += CMath::pow(fabs(ATb[t*n_feats+i]),q_bar);
-			lambda_max = 
-				CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar)); 
-		}
-
-		lambda_max /= n_vecs;
-		
-		lambda = z*lambda_max;
-	}
+		lambda = compute_lambda(z, features, y, n_vecs, n_feats, n_tasks, options);
 	else 
 		lambda = z;
 
 	SGMatrix<double> w(n_feats,n_tasks);
 	w.zero();
-	if (options.initial_w)
-	{
-		for (j=0; j<n_tasks; j++)
-			for (i=0; i<n_feats; i++)
-				w(i,j) = options.initial_w[j*n_feats+i];
-	}
 	SGVector<double> c(n_tasks);
 	c.zero();
 
@@ -140,8 +214,6 @@ slep_result_t slep_mt_lr(
 	for (t=0; t<n_tasks; t++)
 		cp[t] = c[t];
 	double* ccp = SG_CALLOC(double, n_tasks);
-
-	double* w_row = SG_MALLOC(double, n_tasks);
 
 	double* gc = SG_MALLOC(double, n_tasks);
 	double* b = SG_MALLOC(double, n_vecs);
@@ -198,18 +270,29 @@ slep_result_t slep_mt_lr(
 			Awp[i] = Aw[i];
 
 		int inner_iter = 1;
-		while (inner_iter < 100)
+		while (inner_iter <= 100)
 		{
-			// v = s - g / L
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = s[i] - g[i]*(1.0/L);
 
 			for (t=0; t<n_tasks; t++)
 				c[t] = sc[t] - gc[t]*(1.0/L);
 			
-			eppMatrix(w.matrix, v, n_feats, n_tasks, lambda/L, options.q);
+			switch (options.mode)
+			{
+				case MULTITASK_GROUP:
+					eppMatrix(w.matrix, v, n_feats, n_tasks, lambda/L, options.q);
+				break;
+				case MULTITASK_TREE:
+					if (options.general)
+						general_altra_mt(w.matrix, v, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes, lambda/L);
+					else
+						altra_mt(w.matrix, v, n_feats, n_tasks, options.ind_t, options.n_nodes, lambda/L);
+				break;
+				default:
+					SG_SERROR("WHOA!!!\n");
+			}
 
-			// v = x - s
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = w[i] - s[i];
 
@@ -261,15 +344,8 @@ slep_result_t slep_mt_lr(
 		for (t=0; t<n_tasks; t++)
 			ccp[t] = c[t] - cp[t];
 
-		double regularizer = 0.0;
-		for (i=0; i<n_feats; i++)
-		{
-			double w_row_norm = 0.0;
-			for (t=0; t<n_tasks; t++)
-				w_row_norm += CMath::pow(w(i,t),options.q);
-			regularizer += CMath::pow(w_row_norm,1.0/options.q);
-		}
-
+		double regularizer = compute_regularizer(w.matrix, n_vecs, n_feats, n_tasks, options);
+		
 		funcp = func;
 		func = fun_x + lambda*regularizer;
 		//SG_SPRINT("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
@@ -327,18 +403,17 @@ slep_result_t slep_mt_lr(
 	SG_FREE(wp);
 	SG_FREE(wwp);
 	SG_FREE(s);
+	SG_FREE(sc);
+	SG_FREE(cp);
+	SG_FREE(ccp);
 	SG_FREE(g);
 	SG_FREE(v);
 	SG_FREE(Aw);
 	SG_FREE(Awp);
 	SG_FREE(Av);
 	SG_FREE(As);
-	SG_FREE(w_row);
 	SG_FREE(gc);
 	SG_FREE(b);
-	SG_FREE(m1);
-	SG_FREE(m2);
-	SG_FREE(ATb);
 
 	return slep_result_t(w,c);
 };
