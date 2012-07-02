@@ -6,6 +6,7 @@
 # but is largely deviated in all parts except cpu detection
 # due to the different focus of shogun.
 #
+exit 1
 VERSION=`grep "SHOGUN Release version" NEWS 2>&1 | cut -c 27- | cut -f 1 -d ' ' | head -n 1`
 LIBSHOGUNSO=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',)' | head -n 1 | cut -f 1 -d '.'`
 LIBSHOGUNVER=`grep "SHOGUN Release version" NEWS 2>&1 | cut -f 2 -d '(' | cut -f 2 -d ' ' | tr -d ',)' | head -n 1`
