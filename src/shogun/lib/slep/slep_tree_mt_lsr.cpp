@@ -38,10 +38,12 @@ SGMatrix<double> slep_tree_mt_lsr(
 	double* ATy = SG_CALLOC(double, n_feats*n_tasks);
 	for (t=0; t<n_tasks; t++)
 	{
-		int task_ind_start = options.ind[t]+1;
+		int task_ind_start = options.ind[t];
 		int task_ind_end = options.ind[t+1];
 		for (i=task_ind_start; i<task_ind_end; i++)
+		{
 			features->add_to_dense_vec(y[i],i,ATy+t*n_feats,n_feats);
+		}
 	}
 
 	if (options.regularization!=0)
@@ -75,7 +77,7 @@ SGMatrix<double> slep_tree_mt_lsr(
 	double* Aw = SG_CALLOC(double, n_vecs);
 	for (t=0; t<n_tasks; t++)
 	{
-		int task_ind_start = options.ind[t]+1;
+		int task_ind_start = options.ind[t];
 		int task_ind_end = options.ind[t+1];
 		for (i=task_ind_start; i<task_ind_end; i++)
 			Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
@@ -100,7 +102,7 @@ SGMatrix<double> slep_tree_mt_lsr(
 	double alphap = 0.0;
 	double alpha = 1.0;
 	
-	while (!done && iter < options.max_iter) 
+	while (!done && iter <= options.max_iter) 
 	{
 		beta = (alphap-1.0)/alpha;
 
@@ -116,7 +118,7 @@ SGMatrix<double> slep_tree_mt_lsr(
 
 		for (t=0; t<n_tasks; t++)
 		{
-			int task_ind_start = options.ind[t]+1;
+			int task_ind_start = options.ind[t];
 			int task_ind_end = options.ind[t+1];
 			for (i=task_ind_start; i<task_ind_end; i++)
 				features->add_to_dense_vec(As[i],i,ATAs+t*n_feats,n_feats);
@@ -149,7 +151,7 @@ SGMatrix<double> slep_tree_mt_lsr(
 	
 			for (t=0; t<n_tasks; t++)
 			{
-				int task_ind_start = options.ind[t]+1;
+				int task_ind_start = options.ind[t];
 				int task_ind_end = options.ind[t+1];
 				for (i=task_ind_start; i<task_ind_end; i++)
 					Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
