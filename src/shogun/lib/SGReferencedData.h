@@ -36,7 +36,6 @@ class SGReferencedData
 			if (ref_counting)
 			{
 				m_refcount = SG_CALLOC(refcount_t, 1);
-				m_refcount->rc = 0;
 				PTHREAD_LOCK_INIT(&m_refcount->lock);
 			}
 
@@ -105,11 +104,11 @@ class SGReferencedData
 			}
 
 #ifdef HAVE_PTHREAD
+			PTHREAD_LOCK(&m_refcount->lock);
+#endif
 			++(m_refcount->rc);
-#else
-			PTHREAD_LOCK(m_refcount->lock);
-			++(m_refcount->rc);
-			PTHREAD_UNLOCK(m_refcount->lock);
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(&m_refcount->lock);
 #endif 
 #ifdef DEBUG_SGVECTOR
 			SG_SGCDEBUG("ref() refcount %ld data %p increased\n", m_refcount->rc, this);
@@ -135,10 +134,14 @@ class SGReferencedData
 			PTHREAD_LOCK(&m_refcount->lock);
 #endif
 			--(m_refcount->rc);
-			if (m_refcount->rc<=0)
+			int32_t c = m_refcount->rc;
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(&m_refcount->lock);
+#endif 
+			if (c<=0)
 			{
 #ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d data %p destroying\n", m_refcount->rc, this);
+				SG_SGCDEBUG("unref() refcount %d data %p destroying\n", c, this);
 #endif
 				free_data();
 				SG_FREE(m_refcount);
@@ -148,16 +151,12 @@ class SGReferencedData
 			else
 			{
 #ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d data %p decreased\n", m_refcount->rc, this);
+				SG_SGCDEBUG("unref() refcount %d data %p decreased\n", c, this);
 #endif
 				init_data();
-				int c = m_refcount->rc;
 				m_refcount=NULL;
 				return c;
 			}
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
 		}
 
 		/** needs to be overridden to copy data */
