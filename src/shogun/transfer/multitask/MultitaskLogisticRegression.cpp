@@ -9,7 +9,6 @@
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 #include <shogun/lib/slep/slep_mt_lr.h>
-#include <shogun/lib/slep/slep_tree_mt_lr.h>
 #include <shogun/lib/slep/slep_options.h>
 
 #include <shogun/transfer/multitask/TaskGroup.h>
@@ -104,7 +103,8 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			options.n_tasks = ind.vlen-1;
 			if (ind[ind.vlen-1] > features->get_num_vectors())
 				SG_ERROR("Group of tasks covers more vectors than available\n");
-
+			
+			options.mode = MULTITASK_GROUP;
 			slep_result_t result = slep_mt_lr(features, y.vector, m_z, options);
 			m_tasks_w = result.w;
 			m_tasks_c = result.c;
@@ -125,8 +125,9 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			options.ind_t = ind_t.vector;
 			options.n_tasks = ind.vlen-1;
 			options.n_nodes = ind_t.vlen / 3;
+			options.mode = MULTITASK_TREE;
 
-			slep_result_t result = slep_tree_mt_lr(features, y.vector, m_z, options);
+			slep_result_t result = slep_mt_lr(features, y.vector, m_z, options);
 			m_tasks_w = result.w;
 			m_tasks_c = result.c;
 		}

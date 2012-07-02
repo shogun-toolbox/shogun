@@ -138,7 +138,7 @@ void computeLambda2Max(double *lambda2_max, double *x, int n, double *ind, int n
 	}
 }
 
-double treeNorm(double *x, int n, double *ind, int nodes){
+double treeNorm(double *x, int ldx, int n, double *ind, int nodes){
 
 	int i, j;
 	double twoNorm, lambda;
@@ -160,7 +160,7 @@ double treeNorm(double *x, int n, double *ind, int nodes){
 
 		lambda=ind[2];
 
-		for(j=0;j<n;j++){
+		for(j=0;j<n;j+=ldx){
 			tree_norm+=fabs(x[j]);
 		}
 
@@ -181,7 +181,9 @@ double treeNorm(double *x, int n, double *ind, int nodes){
 		 * compute the L2 norm of this group         
 		 */
 		twoNorm=0;
-		for(j=(int) ind[3*i]-1;j< (int) ind[3*i+1];j++)
+
+		int n_in_node = (int) ind[3*i+1] - (int) ind[3*i]-1;
+		for(j=(int) ind[3*i]-1;j< (int) ind[3*i]-1 + n_in_node*ldx;j+=ldx)
 			twoNorm += x[j] * x[j];        
 		twoNorm=sqrt(twoNorm);
 
