@@ -35,6 +35,8 @@ all:  $(PARTDEPS) examples $(LIBSHOGUN_TARGET)
 	@echo 
 endif
 
+partdeps: $(PARTDEPS)
+
 ctags: shogun/Makefile
 	$(MAKE) -C shogun ctags
 	ln -s shogun/tags
