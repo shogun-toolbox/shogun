@@ -39,6 +39,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 	int n_nodes;
 	int n_tasks;
 	int regularization;
+	int n_feature_blocks;
 	int* ind;
 	double* ind_t;
 	double* G;
