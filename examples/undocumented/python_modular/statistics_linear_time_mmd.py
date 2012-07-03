@@ -64,7 +64,7 @@ def statistics_linear_time_mmd():
 
 	print "computing p-value using bootstrapping"
 	mmd.set_null_approximation_method(BOOTSTRAP)
-	mmd.set_bootstrap_iterations(500)
+	mmd.set_bootstrap_iterations(50) # normally, far more iterations are needed
 	p_value=mmd.compute_p_value(statistic)
 	print "p_value:", p_value
 	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
@@ -78,7 +78,7 @@ def statistics_linear_time_mmd():
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
 	mmd.set_null_approximation_method(BOOTSTRAP)
-	mmd.set_bootstrap_iterations(100)
+	mmd.set_bootstrap_iterations(10) # normally, far more iterations are needed
 	null_samples=mmd.bootstrap_null()
 	print "null mean:", mean(null_samples)
 	print "null variance:", var(null_samples)

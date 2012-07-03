@@ -71,6 +71,7 @@ void test_quadratic_mmd_bootstrap()
 	float64_t difference=0.5;
 	float64_t sigma=2;
 	index_t num_iterations=1000;
+	num_iterations=10; //speed up
 
 	SGMatrix<float64_t> data(dimension, 2*m);
 	create_mean_data(data, difference);
@@ -121,6 +122,7 @@ void test_quadratic_mmd_spectrum()
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
 
 	mmd->set_num_samples_sepctrum(1000);
+	mmd->set_num_samples_sepctrum(10); //speed up
 	mmd->set_num_eigenvalues_spectrum(m);
 	mmd->set_null_approximation_method(MMD2_SPECTRUM);
 	mmd->set_statistic_type(BIASED);
@@ -179,6 +181,7 @@ void test_quadratic_mmd_random()
 	float64_t sigma=2;
 
 	index_t num_runs=100;
+	num_runs=10; //speed up
 	SGVector<float64_t> mmds(num_runs);
 
 	SGMatrix<float64_t> data(dimension, 2*m);
@@ -210,6 +213,10 @@ void test_quadratic_mmd_random()
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
+
+	/* all tests have been "speed up" by reducing the number of runs/samples.
+	 * If you have any doubts in the results, set all num_runs to original
+	 * numbers and activate asserts. If they fail, something is wrong. */
 
 	test_quadratic_mmd_fixed();
 	test_quadratic_mmd_random();

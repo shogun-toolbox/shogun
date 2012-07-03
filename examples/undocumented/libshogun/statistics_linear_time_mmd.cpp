@@ -68,6 +68,7 @@ void test_linear_mmd_random()
 	float64_t sigma=2;
 
 	index_t num_runs=100;
+	num_runs=10; //speed up
 	SGVector<float64_t> mmds(num_runs);
 
 	SGMatrix<float64_t> data(dimension, 2*m);
@@ -108,6 +109,7 @@ void test_linear_mmd_variance_estimate()
 	float64_t sigma=2;
 
 	index_t num_runs=100;
+	num_runs=10; //speed up
 	SGVector<float64_t> vars(num_runs);
 
 	SGMatrix<float64_t> data(dimension, 2*m);
@@ -144,6 +146,7 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 {
 	index_t dimension=3;
 	index_t m=50000;
+	m=1000; //speed up
 	float64_t difference=0.5;
 	float64_t sigma=2;
 
@@ -156,6 +159,9 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features, m);
 
+	/* for checking results, set to 100 */
+	mmd->set_bootstrap_iterations(100);
+	mmd->set_bootstrap_iterations(10); // speed up
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 	float64_t bootstrap_variance=CStatistics::variance(null_samples);
 	float64_t estimated_variance=mmd->compute_variance_estimate();
@@ -181,6 +187,7 @@ void test_linear_mmd_type2_error()
 	float64_t sigma=2;
 
 	index_t num_runs=500;
+	num_runs=50; // speed up
 	index_t num_errors=0;
 
 	SGMatrix<float64_t> data(dimension, 2*m);
@@ -224,6 +231,10 @@ int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 
+	/* all tests have been "speed up" by reducing the number of runs/samples.
+	 * If you have any doubts in the results, set all num_runs to original
+	 * numbers and activate asserts. If they fail, something is wrong.
+	 */
 	test_linear_mmd_fixed();
 	test_linear_mmd_random();
 	test_linear_mmd_variance_estimate();

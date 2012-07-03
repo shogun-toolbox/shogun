@@ -96,7 +96,7 @@ def statistics_linear_time_mmd():
 	mmd.set_null_approximation_method(MMD2_SPECTRUM)
 	mmd.set_statistic_type(BIASED)
 	# 200 samples using 100 eigenvalues
-	null_samples=mmd.sample_null_spectrum(200,100)
+	null_samples=mmd.sample_null_spectrum(50,10)
 	print "null mean:", mean(null_samples)
 	print "null variance:", var(null_samples)
 	
