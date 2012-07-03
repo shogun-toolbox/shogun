@@ -758,7 +758,8 @@ template<class ST> CRegressionLabels* CSparseFeatures<ST>::load_svmlight_file(ch
 
 		lab=new CRegressionLabels(num_vectors);
 		sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
-
+		for (int32_t i=0; i<num_vectors; i++)
+			new (&sparse_feature_matrix[i]) SGSparseVector<ST>();
 		rewind(f);
 		sz=blocksize;
 		int32_t lines=0;

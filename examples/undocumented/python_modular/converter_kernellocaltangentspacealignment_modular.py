@@ -12,6 +12,7 @@ def converter_kernellocaltangentspacealignment_modular(data,k):
 	features = RealFeatures(data)
 		
 	converter = KernelLocalTangentSpaceAlignment()
+	converter.set_nullspace_shift(-1e-3)
 	converter.set_target_dim(1)
 	converter.set_k(k)
 	converter.apply(features)

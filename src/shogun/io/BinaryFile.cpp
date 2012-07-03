@@ -142,6 +142,7 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 																						\
 	for (int32_t i=0; i<num_vec; i++)													\
 	{																					\
+		new (&matrix[i]) SGSparseVector<sg_type>();										\
 		int32_t len=0;																	\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)									\
 			SG_ERROR("Failed to read sparse vector length of vector idx=%d\n", i);		\
