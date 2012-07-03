@@ -10,6 +10,7 @@
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/kernel/Kernel.h>
 
 using namespace shogun;
 
@@ -146,6 +147,9 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 
 float64_t CQuadraticTimeMMD::compute_statistic()
 {
+	if (!m_kernel)
+		SG_ERROR("%s::compute_statistic(): No kernel specified!\n", get_name());
+
 	float64_t result=0;
 	switch (m_statistic_type)
 	{
@@ -213,6 +217,13 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 
 	return result;
 }
+
+float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
+{
+	SG_ERROR("%s::compute_threshold is not yet implemented!\n");
+	return 0;
+}
+
 
 #ifdef HAVE_LAPACK
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
