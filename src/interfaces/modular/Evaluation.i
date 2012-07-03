@@ -34,6 +34,12 @@
 %rename(SplittingStrategy) CSplittingStrategy;
 %rename(StratifiedCrossValidationSplitting) CStratifiedCrossValidationSplitting;
 %rename(CrossValidationSplitting) CCrossValidationSplitting;
+%rename(DifferentiableFunction) CDifferentiableFunction;
+%rename(GradientCriterion) CGradientCriterion;
+%rename(GradientEvaluation) CGradientEvaluation;
+
+
+
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/EvaluationResult.h>
@@ -52,5 +58,9 @@
 %include <shogun/evaluation/MachineEvaluation.h>
 %include <shogun/evaluation/CrossValidation.h>
 %include <shogun/evaluation/SplittingStrategy.h>
+%include <shogun/evaluation/DifferentiableFunction.h>
+%include <shogun/evaluation/GradientCriterion.h>
+%include <shogun/evaluation/GradientEvaluation.h>
+%include <shogun/evaluation/GradientResult.h>
 %include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 %include <shogun/evaluation/CrossValidationSplitting.h>

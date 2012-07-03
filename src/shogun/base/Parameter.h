@@ -108,6 +108,13 @@ struct TParameter
 	 * its parameter, but from scratch using allocate_data_from_scratch */
 	bool m_was_allocated_from_scratch;
 
+	/*Incrementally get a hash from parameter value*
+	 *
+	 * @param hash current hash value
+	 * @return new hash value including this parameter
+	 */
+	uint32_t get_hash(uint32_t hash);
+
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont();
@@ -123,6 +130,7 @@ private:
 					const char* prefix);
 	bool load_stype(CSerializableFile* file, void* param,
 					const char* prefix);
+
 };
 
 /** @brief Parameter class
@@ -1770,13 +1778,6 @@ public:
 	void add(SGMatrix<SGSparseVector<floatmax_t> >* param,
 					const char* name, const char* description="");
 
-	/** Get MD5 checksum of parameter including those
-	 *  of SGObject Children.
-	 *
-	 *  @result MD5 checksum
-	 */
-	unsigned char *get_md5_sum();
-
 protected:
 
 	/** array of parameters */
@@ -1791,27 +1792,6 @@ protected:
 	virtual void add_type(const TSGDataType* type, void* param,
 						  const char* name,
 						  const char* description);
-
-	/** Get length of array needed to allocate a character
-	 *  array description of parameter as well of those
-	 *  of SGObject children.
-	 *
-	 *  @param param root Parameter to obtain description
-	 *
-	 *  @return length needed to allocate character array description
-	 */
-	unsigned int get_char_description_length(Parameter* param);
-
-
-	/** Get character array description of parameters
-	 * and those of SGObject children.
-	 *
-	 *  @param param root Parameter to obtain description
-	 *  @param len length of array
-	 *
-	 *  @return array description of parameter and children
-	 */
-	unsigned char * get_char_description(Parameter* param, unsigned int& len);
 };
 }
 #endif //__PARAMETER_H__

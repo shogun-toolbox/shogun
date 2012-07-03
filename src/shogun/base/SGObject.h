@@ -377,7 +377,7 @@ protected:
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
-	/*Updates the MD5 Sum of current parameter combination.
+	/*Updates the hash of current parameter combination.
 	 *
 	 * @return bool if parameter combination has changed since last
 	 * update.
@@ -413,6 +413,17 @@ private:
 	int32_t load_parameter_version(CSerializableFile* file,
 			const char* prefix="");
 
+	/*Gets an incremental hash of all parameters as well as the parameters
+	 * of CSGObject children of the current object's parameters.
+	 *
+	 * @param param Parameter to hash
+	 * @param current hash
+	 *
+	 * @return hash including parameter
+	 */
+	uint32_t get_parameter_hash(Parameter* param,
+		uint32_t hash);
+
 public:
 	/** io */
 	SGIO* io;
@@ -432,7 +443,8 @@ public:
 	/** map for different parameter versions */
 	ParameterMap* m_parameter_map;
 
-	unsigned char* m_model_selection_parameter_hash;
+	/*Hash of parameter values*/
+	uint32_t m_hash;
 
 private:
 

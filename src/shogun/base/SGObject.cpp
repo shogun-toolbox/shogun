@@ -130,7 +130,6 @@ CSGObject::~CSGObject()
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_parameter_map;
-	delete m_model_selection_parameter_hash;
 }
 
 #ifdef USE_REFERENCE_COUNTING
@@ -234,20 +233,18 @@ void CSGObject::set_global_parallel(Parallel* new_parallel)
 
 bool CSGObject::update_parameter_hash()
 {
-	bool changed = false;
+	uint32_t new_hash = 0;
 
-	unsigned char* tmp = m_model_selection_parameters->get_md5_sum();
+	new_hash = get_parameter_hash(m_parameters, new_hash);
 
-	for (int i = 0; i < 16; i++)
+	if(new_hash != m_hash)
 	{
-		if (tmp[i] != m_model_selection_parameter_hash[i])
-			changed = true;
-		m_model_selection_parameter_hash[i] = tmp[i];
+		m_hash = new_hash;
+		return true;
 	}
 
-	delete[] tmp;
-
-	return changed;
+	else
+		return false;
 }
 
 Parallel* CSGObject::get_global_parallel()
@@ -1072,7 +1069,6 @@ void CSGObject::init()
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
-	m_model_selection_parameter_hash = new unsigned char[16];
 }
 
 void CSGObject::print_modsel_params()
@@ -1168,3 +1164,29 @@ bool CSGObject::is_param_new(const SGParamInfo param_info) const
 
 	return result;
 }
+
+uint32_t CSGObject::get_parameter_hash(Parameter* param,
+		uint32_t hash)
+{
+	if (param)
+	{
+		for (index_t i=0; i<param->get_num_parameters(); i++)
+		{
+			TParameter* p = param->get_parameter(i);
+
+			if (p->m_datatype.m_ptype == PT_SGOBJECT)
+			{
+				CSGObject* child =
+						*((CSGObject**)(p->m_parameter));
+
+				if (child)
+					hash = get_parameter_hash(child->m_parameters, hash);
+			}
+
+			else
+				hash = p->get_hash(hash);
+		}
+	}
+	return hash;
+}
+

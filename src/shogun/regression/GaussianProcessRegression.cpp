@@ -31,7 +31,7 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 }
 
 CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf,
-		   CDenseFeatures<float64_t>* data, CLabels* lab)
+		CDotFeatures* data, CLabels* lab)
 : CMachine()
 {
 	init();

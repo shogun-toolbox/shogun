@@ -2189,6 +2189,71 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 	return true;
 }
 
+uint32_t TParameter::get_hash(uint32_t hash)
+{
+	switch (m_datatype.m_ctype)
+	{
+	case CT_NDARRAY:
+		SG_SNOTIMPLEMENTED;
+	case CT_SCALAR:
+	{
+		for (size_t i = 0; i < m_datatype.sizeof_stype(); i++)
+			hash = CHash::IncrementalMurmurHash2(((uint8_t*)m_parameter)[i], hash);
+		break;
+	}
+	case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
+		index_t len_real_y = 0, len_real_x = 0;
+
+		len_real_y = *m_datatype.m_length_y;
+		if (*(void**) m_parameter == NULL && len_real_y != 0) {
+			SG_SWARNING("Inconsistency between data structure and "
+					"len_y during hashing `%s'!  Continuing with "
+					"len_y=0.\n",
+					m_name);
+			len_real_y = 0;
+		}
+
+		switch (m_datatype.m_ctype) {
+		case CT_NDARRAY:
+			SG_SNOTIMPLEMENTED;
+			break;
+		case CT_VECTOR: case CT_SGVECTOR:
+			len_real_x = 1;
+			break;
+		case CT_MATRIX: case CT_SGMATRIX:
+			len_real_x = *m_datatype.m_length_x;
+			if (*(void**) m_parameter == NULL && len_real_x != 0) {
+				SG_SWARNING("Inconsistency between data structure and "
+						"len_x during hashing %s'!  Continuing "
+						"with len_x=0.\n",
+						m_name);
+				len_real_x = 0;
+			}
+
+			if (len_real_x *len_real_y == 0)
+				len_real_x = len_real_y = 0;
+
+			break;
+
+		case CT_SCALAR: break;
+		}
+
+		for (index_t x=0; x<len_real_x; x++)
+		{
+			for (index_t y=0; y<len_real_y; y++)
+			{
+				uint8_t* add = ((*(uint8_t**)m_parameter)
+						+ (x*len_real_y + y)*m_datatype.sizeof_stype());
+				for (size_t z = 0; z<m_datatype.sizeof_stype(); z++)
+					hash = CHash::IncrementalMurmurHash2(add[z], hash);
+			}
+		}
+		break;
+	}
+
+	return hash;
+}
+
 bool
 TParameter::save(CSerializableFile* file, const char* prefix)
 {
@@ -2581,141 +2646,6 @@ bool Parameter::contains_parameter(const char* name)
 
 	return false;
 }
-
-unsigned char* Parameter::get_char_description(Parameter* param,
-		unsigned int& len)
-{
-	unsigned int length = get_char_description_length(param);
-
-	unsigned char* big_name = new unsigned char[length+1];
-
-	length = 0;
-
-	for (index_t i=0; i<param->m_params.get_num_elements(); i++)
-	{
-		unsigned int size = strlen(param->m_params[i]->m_name);
-
-		for (unsigned int j = 0; j < size; j++)
-			big_name[length+j] = param->m_params[i]->m_name[j];
-
-		length += size;
-
-		if (param->m_params[i]->m_datatype.m_ptype == PT_FLOAT64)
-		{
-			size = sizeof(float64_t);
-
-			for (unsigned int j = 0; j < size; j++)
-			{
-				big_name[length+j] =
-						((unsigned char*)param->m_params[i]->m_parameter)[j];
-			}
-
-			length += size;
-		}
-
-		else if (param->m_params[i]->m_datatype.m_ptype == PT_INT32)
-		{
-			size = sizeof(int32_t);
-
-			for (unsigned int j = 0; j < size; j++)
-			{
-				big_name[length+j] =
-						((unsigned char*)param->m_params[i]->m_parameter)[j];
-			}
-
-			length += size;
-		}
-
-		else if (param->m_params[i]->m_datatype.m_ptype == PT_BOOL)
-		{
-			size = sizeof(bool);
-
-			for (unsigned int j = 0; j < size; j++)
-			{
-				big_name[length+j] =
-						((unsigned char*)param->m_params[i]->m_parameter)[j];
-			}
-
-			length += size;
-		}
-
-		if (param->m_params[i]->m_datatype.m_ptype == PT_SGOBJECT)
-		{
-			unsigned int size;
-
-			CSGObject* child =
-					*((CSGObject**)(param->m_params[i]->m_parameter));
-
-			unsigned char* sub_name = get_char_description(
-					child->m_model_selection_parameters, size);
-
-			for (unsigned int j = 0; j < size; j++)
-				big_name[length+j] = sub_name[j];
-
-			length += size;
-
-			delete[] sub_name;
-		}
-	}
-
-	len = length;
-
-	return big_name;
-}
-
-unsigned int Parameter::get_char_description_length(Parameter* param)
-{
-	unsigned int length = 0;
-
-	for (index_t i=0; i<param->m_params.get_num_elements(); i++)
-	{
-
-		length += strlen(param->m_params[i]->m_name);
-
-		if (param->m_params[i]->m_datatype.m_ptype == PT_FLOAT64)
-		{
-			length += sizeof(float64_t);
-		}
-
-		else if (param->m_params[i]->m_datatype.m_ptype == PT_INT32)
-		{
-			length += sizeof(int32_t);
-		}
-
-		else if (param->m_params[i]->m_datatype.m_ptype == PT_BOOL)
-		{
-			length += sizeof(bool);
-		}
-
-		 if (param->m_params[i]->m_datatype.m_ptype == PT_SGOBJECT)
-		{
-			CSGObject* child =
-					*((CSGObject**)(param->m_params[i]->m_parameter));
-
-			length += get_char_description_length(
-					child->m_model_selection_parameters);
-		}
-	}
-
-	return length;
-}
-
-
-unsigned char * Parameter::get_md5_sum()
-{
-
-	unsigned int length;
-	unsigned char* big_name = get_char_description(this, length);
-
-	unsigned char* buffer = new unsigned char[16];
-
-	CHash::MD5(big_name, length, buffer);
-
-	delete[] big_name;
-
-	return buffer;
-}
-
 
 bool TParameter::operator==(const TParameter& other) const
 {

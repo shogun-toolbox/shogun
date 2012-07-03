@@ -19,6 +19,7 @@ SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 
 /* Remove C Prefix */
 %rename(GridSearchModelSelection) CGridSearchModelSelection;
+%rename(GradientModelSelection) CGradientModelSelection;
 %rename(ModelSelectionBase) CModelSelection;
 %rename(ModelSelectionParameters) CModelSelectionParameters;
 %rename(ParameterCombination) CParameterCombination;
@@ -27,3 +28,4 @@ SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 %include <shogun/modelselection/GridSearchModelSelection.h>
 %include <shogun/modelselection/ParameterCombination.h>
 %include <shogun/modelselection/ModelSelectionParameters.h>
+%include <shogun/modelselection/GradientModelSelection.h>

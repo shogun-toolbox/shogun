@@ -46,7 +46,7 @@ class CGaussianProcessRegression : public CMachine
 		 * @param lab labels
 		 */
 		CGaussianProcessRegression(CInferenceMethod* inf,
-					   CDenseFeatures<float64_t>* data, CLabels* lab);
+					   CDotFeatures* data, CLabels* lab);
 
 		  /** default constructor */
 		CGaussianProcessRegression();
