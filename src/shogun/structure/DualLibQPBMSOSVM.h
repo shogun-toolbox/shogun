@@ -55,6 +55,30 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** get size of cutting plane buffer */
 		inline uint32_t get_BufSize() { return m_BufSize; }
 
+		/** set ICP removal flag */
+		inline void set_cleanICP(bool cleanICP) { m_cleanICP=cleanICP; }
+
+		/** get ICP removal flag */
+		inline bool get_cleanICP() { return m_cleanICP; }
+
+		/** set number of iterations for cleaning ICP */
+		inline void set_cleanAfter(uint32_t cleanAfter) { m_cleanAfter=cleanAfter; }
+
+		/** get number of iterations for cleaninng ICP */
+		inline uint32_t get_cleanAfter() { return m_cleanAfter; }
+
+		/** set K */
+		inline void set_K(float64_t K) { m_K=K; }
+
+		/** get K */
+		inline float64_t get_K() { return m_K; }
+
+		/** set Tmax */
+		inline void set_Tmax(uint32_t Tmax) { m_Tmax=Tmax; }
+
+		/** get Tmax */
+		inline uint32_t get_Tmax() { return m_Tmax; }
+
 	protected:
 		/** train dual SO-SVM
 		 *
@@ -74,6 +98,18 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** BufSize */
 		uint32_t m_BufSize;
+
+		/** Clean ICP */
+		bool m_cleanICP;
+
+		/** Clean ICP after n-th iteration */
+		uint32_t m_cleanAfter;
+
+		/** K */
+		float64_t m_K;
+
+		/** Tmax */
+		uint32_t m_Tmax;
 
 		/** Risk function */
 		CRiskFunction* m_risk_function;
