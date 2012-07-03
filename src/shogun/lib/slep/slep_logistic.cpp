@@ -8,9 +8,10 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
-#include <shogun/lib/slep/slep_mt_lr.h>
+#include <shogun/lib/slep/slep_logistic.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
+#include <shogun/lib/slep/q1/eppVector.h>
 
 #include <shogun/lib/slep/tree/altra.h>
 #include <shogun/lib/slep/tree/general_altra.h>
@@ -19,7 +20,7 @@ namespace shogun
 {
 
 double compute_regularizer(double* w, int n_vecs, int n_feats, 
-                           int n_tasks, const slep_options& options)
+                           int n_blocks, const slep_options& options)
 {
 	double regularizer = 0.0;
 	switch (options.mode)
@@ -29,7 +30,7 @@ double compute_regularizer(double* w, int n_vecs, int n_feats,
 			for (int i=0; i<n_feats; i++)
 			{
 				double w_row_norm = 0.0;
-				for (int t=0; t<n_tasks; t++)
+				for (int t=0; t<n_blocks; t++)
 					w_row_norm += CMath::pow(w[i+t*n_feats],options.q);
 				regularizer += CMath::pow(w_row_norm,1.0/options.q);
 			}
@@ -42,120 +43,196 @@ double compute_regularizer(double* w, int n_vecs, int n_feats,
 				double tree_norm = 0.0;
 
 				if (options.general)
-					tree_norm = general_treeNorm(w+i, n_tasks, n_tasks, options.G, options.ind_t, options.n_nodes);
+					tree_norm = general_treeNorm(w+i, n_blocks, n_blocks, options.G, options.ind_t, options.n_nodes);
 				else
-					tree_norm = treeNorm(w+i, n_tasks, n_tasks, options.ind_t, options.n_nodes);
+					tree_norm = treeNorm(w+i, n_blocks, n_blocks, options.ind_t, options.n_nodes);
 
 				regularizer += tree_norm;
 			}
+		}
+		break;
+		case FEATURE_GROUP:
+		{
+			for (int t=0; t<n_blocks; t++)
+			{
+				double group_qpow_sum = 0.0;
+				int group_ind_start = options.ind[t];
+				int group_ind_end = options.ind[t+1];
+				for (int i=group_ind_start; i<group_ind_end; i++)
+					group_qpow_sum += CMath::pow(w[i], options.q);
+
+				regularizer += options.gWeight[t]*CMath::pow(group_qpow_sum, 1.0/options.q);
+			}
+		}
+		break;
+		case FEATURE_TREE:
+		{
+			SG_SNOTIMPLEMENTED;
 		}
 		break;
 		default:
 			SG_SERROR("WHOA?\n");
 	}
 	return regularizer;
-}
+};
 
-double compute_lambda(double z, CDotFeatures* features, double* y, int n_vecs, 
-                      int n_feats, int n_tasks, const slep_options& options)
+double compute_lambda_logistic(
+		double z, 
+		CDotFeatures* features, 
+		double* y, 
+		int n_vecs, int n_feats, 
+		int n_blocks,
+		const slep_options& options)
 {
 	double lambda_max = 0.0;
-	double* ATb = SG_CALLOC(double, n_feats*n_tasks);
 	if (z<0 || z>1)
 		SG_SERROR("z is not in range [0,1]");
 
-	int* m1 = SG_CALLOC(int, n_tasks);
-	int* m2 = SG_CALLOC(int, n_tasks);
-	for (int t=0; t<n_tasks; t++)
-	{
-		int task_ind_start = options.ind[t];
-		int task_ind_end = options.ind[t+1];
-		for (int i=task_ind_start; i<task_ind_end; i++)
-		{
-			if (y[i]>0)
-				m1[t]++;
-			else
-				m2[t]++;
-		}
-	}
+	double q_bar = 0.0;
+	if (options.q==1)
+		q_bar = CMath::ALMOST_INFTY;
+	else if (options.q>1e-6)
+		q_bar = 1;
+	else 
+		q_bar = options.q/(options.q-1);
 
 	switch (options.mode)
 	{
 		case MULTITASK_GROUP:
 		{
-			for (int t=0; t<n_tasks; t++)
+			double* ATb = SG_CALLOC(double, n_feats*n_blocks);
+			for (int t=0; t<n_blocks; t++)
 			{
 				int task_ind_start = options.ind[t];
 				int task_ind_end = options.ind[t+1];
 				double b = 0.0;
+				int m1 = 0;
+				int m2 = 0;
 				for (int i=task_ind_start; i<task_ind_end; i++)
 				{
 					if (y[i]>0)
-						b = double(m1[t])/(m1[t]+m2[t]);
+						m1++;
 					else
-						b = -double(m2[t])/(m1[t]+m2[t]);
+						m2++;
+				}
+				for (int i=task_ind_start; i<task_ind_end; i++)
+				{
+					if (y[i]>0)
+						b = double(m1)/(m1+m2);
+					else
+						b = -double(m2)/(m1+m2);
+
 					features->add_to_dense_vec(b,i,ATb+t*n_feats,n_feats);
 				}
 			}
-			
-			double q_bar = 0.0;
-			if (options.q==1)
-				q_bar = CMath::ALMOST_INFTY;
-			else if (options.q>1e-6)
-				q_bar = 1;
-			else 
-				q_bar = options.q/(options.q-1);
-			lambda_max = 0.0;
 
 			for (int i=0; i<n_feats; i++)
 			{
 				double sum = 0.0;
-				for (int t=0; t<n_tasks; t++)
+				for (int t=0; t<n_blocks; t++)
 					sum += CMath::pow(fabs(ATb[t*n_feats+i]),q_bar);
 				lambda_max = 
 					CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar)); 
 			}
+
+			SG_FREE(ATb);
 
 			lambda_max /= n_vecs;
 		}
 		break;
 		case MULTITASK_TREE:
 		{
-			for (int t=0; t<n_tasks; t++)
+			double* ATb = SG_CALLOC(double, n_feats*n_blocks);
+			for (int t=0; t<n_blocks; t++)
 			{
 				int task_ind_start = options.ind[t];
 				int task_ind_end = options.ind[t+1];
 				double b = 0.0;
+				int m1 = 0;
+				int m2 = 0;
 				for (int i=task_ind_start; i<task_ind_end; i++)
 				{
 					if (y[i]>0)
-						b = double(m1[t])/(m1[t]+m2[t]);
+						m1++;
 					else
-						b = -double(m2[t])/(m1[t]+m2[t]);
+						m2++;
+				}
+				for (int i=task_ind_start; i<task_ind_end; i++)
+				{
+					if (y[i]>0)
+						b = double(m1)/(m1+m2);
+					else
+						b = -double(m2)/(m1+m2);
 
 					features->add_to_dense_vec(b,i,ATb+t*n_feats,n_feats);
 				}
 			}
 
 			if (options.general)
-				lambda_max = general_findLambdaMax_mt(ATb, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes);
+				lambda_max = general_findLambdaMax_mt(ATb, n_feats, n_blocks, options.G, options.ind_t, options.n_nodes);
 			else
-				lambda_max = findLambdaMax_mt(ATb, n_feats, n_tasks, options.ind_t, options.n_nodes);
+				lambda_max = findLambdaMax_mt(ATb, n_feats, n_blocks, options.ind_t, options.n_nodes);
 
-			lambda_max /= n_vecs*n_tasks;
+			SG_FREE(ATb);
+
+			lambda_max /= n_vecs*n_blocks;
+		}
+		break;
+		case FEATURE_GROUP:
+		{
+			double* ATb = SG_CALLOC(double, n_feats);
+
+			int m1 = 0;
+			int m2 = 0;
+			double b = 0.0;
+			for (int i=0; i<n_vecs; i++)
+			{
+				if (y[i]>0)
+					m1++;
+				else
+					m2++;
+			}
+
+			for (int i=0; i<n_vecs; i++)
+			{
+				if (y[i]>0)
+					b = m2;
+				else
+					b = -m1;
+				
+				features->add_to_dense_vec(b,i,ATb,n_feats);
+			}
+			
+			for (int t=0; t<n_blocks; t++)
+			{
+				int group_ind_start = options.ind[t];
+				int group_ind_end = options.ind[t+1];
+				double sum = 0.0;
+				for (int i=group_ind_start; i<group_ind_end; i++)
+					sum += CMath::pow(fabs(ATb[i]),q_bar);
+				
+				sum = CMath::pow(sum, 1.0/q_bar);
+				sum /= options.gWeight[t];
+				if (sum>lambda_max)
+					lambda_max = sum;
+			}
+
+			SG_FREE(ATb);
+		}
+		break;
+		case FEATURE_TREE:
+		{
+			SG_SNOTIMPLEMENTED;
 		}
 		break;
 		default: 
 			SG_SERROR("WHOAA!\n");
 	}
 
-	SG_FREE(ATb);
-	SG_FREE(m1);
-	SG_FREE(m2);
 	return z*lambda_max;
 }
 
-slep_result_t slep_mt_lr(
+slep_result_t slep_logistic(
 		CDotFeatures* features,
 		double* y,
 		double z,
@@ -174,7 +251,7 @@ slep_result_t slep_mt_lr(
 	bool gradient_break = false;
 
 	if (options.regularization!=0)
-		lambda = compute_lambda(z, features, y, n_vecs, n_feats, n_tasks, options);
+		lambda = compute_lambda_logistic(z, features, y, n_vecs, n_feats, n_tasks, options);
 	else 
 		lambda = z;
 
@@ -236,27 +313,57 @@ slep_result_t slep_mt_lr(
 			As[i] = Aw[i] + beta*(Aw[i]-Awp[i]);
 
 		double fun_s = 0.0;
+
 		for (i=0; i<n_tasks*n_feats; i++)
 			g[i] = 0.0;
-		for (t=0; t<n_tasks; t++)
+
+		switch (options.mode)
 		{
-			int task_ind_start = options.ind[t];
-			int task_ind_end = options.ind[t+1];
-
-			gc[t] = 0.0;
-			for (i=task_ind_start; i<task_ind_end; i++)
+			case MULTITASK_GROUP:
+			case MULTITASK_TREE:
 			{
-				double aa = -y[i]*(As[i]+sc[t]);
-				double bb = CMath::max(aa,0.0);
+				for (t=0; t<n_tasks; t++)
+				{
+					int task_ind_start = options.ind[t];
+					int task_ind_end = options.ind[t+1];
 
-				fun_s += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
-				
-				double prob = 1.0/(1.0+CMath::exp(aa));
-				b[i] = -y[i]*(1.0-prob) / n_vecs;
-				gc[t] += b[i];
-				
-				features->add_to_dense_vec(b[i],i,g+t*n_feats,n_feats);
+					gc[t] = 0.0;
+					for (i=task_ind_start; i<task_ind_end; i++)
+					{
+						double aa = -y[i]*(As[i]+sc[t]);
+						double bb = CMath::max(aa,0.0);
+
+						fun_s += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+
+						double prob = 1.0/(1.0+CMath::exp(aa));
+						b[i] = -y[i]*(1.0-prob) / n_vecs;
+						gc[t] += b[i];
+
+						features->add_to_dense_vec(b[i],i,g+t*n_feats,n_feats);
+					}
+				}
 			}
+			break;
+			case FEATURE_GROUP:
+			case FEATURE_TREE:
+			{
+				gc[0] = 0.0;
+
+				for (i=0; i<n_vecs; i++)
+				{
+					double aa = -y[i]*(As[i]+sc[0]);
+					double bb = CMath::max(aa,0.0);
+
+					fun_s += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+
+					double prob = 1.0/(1.0+CMath::exp(aa));
+					b[i] = -y[i]*(1.0-prob) / n_vecs;
+					gc[0] += b[i];
+
+					features->add_to_dense_vec(b[i],i,g+t*n_feats,n_feats);
+				}
+			}
+			break;
 		}
 		fun_s /= n_vecs;
 		
@@ -281,14 +388,27 @@ slep_result_t slep_mt_lr(
 			switch (options.mode)
 			{
 				case MULTITASK_GROUP:
+				{
 					eppMatrix(w.matrix, v, n_feats, n_tasks, lambda/L, options.q);
+				}
 				break;
 				case MULTITASK_TREE:
+				{
 					if (options.general)
 						general_altra_mt(w.matrix, v, n_feats, n_tasks, options.G, options.ind_t, options.n_nodes, lambda/L);
 					else
 						altra_mt(w.matrix, v, n_feats, n_tasks, options.ind_t, options.n_nodes, lambda/L);
+				}
 				break;
+				case FEATURE_GROUP:
+				{
+					eppVector(w.matrix, v, options.ind, n_tasks, n_feats, options.gWeight, lambda/L, CMath::max(options.q,1e6));
+				}
+				break;
+				case FEATURE_TREE:
+				{
+					SG_SNOTIMPLEMENTED;
+				}
 				default:
 					SG_SERROR("WHOA!!!\n");
 			}
@@ -297,20 +417,42 @@ slep_result_t slep_mt_lr(
 				v[i] = w[i] - s[i];
 
 			fun_x = 0.0;
-			for (t=0; t<n_tasks; t++)
+			switch (options.mode)
 			{
-				int task_ind_start = options.ind[t];
-				int task_ind_end = options.ind[t+1];
-				for (i=task_ind_start; i<task_ind_end; i++)
+				case MULTITASK_GROUP:
+				case MULTITASK_TREE:
 				{
-					Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
-					double aa = -y[i]*(Aw[i]+c[t]);
-					double bb = CMath::max(aa,0.0);
+					for (t=0; t<n_tasks; t++)
+					{
+						int task_ind_start = options.ind[t];
+						int task_ind_end = options.ind[t+1];
+						for (i=task_ind_start; i<task_ind_end; i++)
+						{
+							Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
+							double aa = -y[i]*(Aw[i]+c[t]);
+							double bb = CMath::max(aa,0.0);
 
-					fun_x += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+							fun_x += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+						}
+					}
+					fun_x /= n_vecs;
 				}
+				case FEATURE_GROUP:
+				case FEATURE_TREE:
+				{
+					for (i=0; i<n_vecs; i++)
+					{
+						Aw[i] = features->dense_dot(i, w.matrix, n_feats);
+						double aa = -y[i]*(Aw[i]+c[0]);
+						double bb = CMath::max(aa,0.0);
+						
+						fun_x += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+					}
+				}
+				break;
+				default:
+					SG_SERROR("WHOAAA!!\n");
 			}
-			fun_x /= n_vecs;
 
 			double r_sum = SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
 			double l_sum = fun_x - fun_s - SGVector<float64_t>::dot(v,g,n_feats*n_tasks);

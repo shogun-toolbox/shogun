@@ -8,8 +8,8 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye 
  */
 
-#ifndef  SLEP_MT_LR_H_
-#define  SLEP_MT_LR_H_
+#ifndef  SLEP_MT_LOGISTIC_H_
+#define  SLEP_MT_LOGISTIC_H_
 
 #include <shogun/lib/slep/slep_options.h>
 #include <shogun/features/DotFeatures.h>
@@ -17,12 +17,12 @@
 namespace shogun 
 {
 
-slep_result_t slep_mt_lr(
+slep_result_t slep_logistic(
 		CDotFeatures* features,
 		double* y,
 		double z,
 		const slep_options& options);
 
 };
-#endif   /* ----- #ifndef SLEP_MT_LR_H_  ----- */
+#endif   /* ----- #ifndef SLEP_LOGISTIC_H_  ----- */
 
