@@ -285,6 +285,7 @@ class CLibLinearMTL : public CLinearMachine
 		 */
 		virtual float64_t compute_duality_gap();
 
+
 	protected:
 		/** train linear SVM classifier
 		 *

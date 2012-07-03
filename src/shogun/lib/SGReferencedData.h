@@ -10,6 +10,19 @@
 #define __SGREFERENCED_DATA_H__
 
 #include <shogun/io/SGIO.h>
+#include <shogun/base/Parallel.h>
+
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+#endif
+
+struct refcount_t 
+{
+	int32_t rc;
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T lock;
+#endif
+};
 
 namespace shogun
 {
@@ -21,14 +34,17 @@ class SGReferencedData
 		SGReferencedData(bool ref_counting=true) : m_refcount(NULL)
 		{ 
 			if (ref_counting)
-				m_refcount=SG_CALLOC(int32_t, 1); 
+			{
+				m_refcount = SG_CALLOC(refcount_t, 1);
+				PTHREAD_LOCK_INIT(&m_refcount->lock);
+			}
 
 			ref();
 		}
 
 		/** copy constructor */
 		SGReferencedData(const SGReferencedData &orig)
-			: m_refcount(orig.m_refcount) 
+			: m_refcount(orig.m_refcount)
 		{
 			ref();
 		}
@@ -64,10 +80,18 @@ class SGReferencedData
 			if (m_refcount == NULL)
 				return -1;
 
-#ifdef DEBUG_SGVECTOR
-			SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", *m_refcount, this);
+#ifdef HAVE_PTHREAD
+			PTHREAD_LOCK(&m_refcount->lock);
 #endif
-			return *m_refcount;
+			int32_t c = m_refcount->rc;
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(&m_refcount->lock);
+#endif 
+
+#ifdef DEBUG_SGVECTOR
+			SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this);
+#endif
+			return c;
 		}
 
 	protected:
@@ -87,11 +111,17 @@ class SGReferencedData
 				return -1;
 			}
 
-			++(*m_refcount);
-#ifdef DEBUG_SGVECTOR
-			SG_SGCDEBUG("ref() refcount %ld data %p increased\n", *m_refcount, this);
+#ifdef HAVE_PTHREAD
+			PTHREAD_LOCK(&m_refcount->lock);
 #endif
-			return *m_refcount;
+			int32_t c = ++(m_refcount->rc);
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(&m_refcount->lock);
+#endif 
+#ifdef DEBUG_SGVECTOR
+			SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this);
+#endif
+			return c;
 		}
 
 		/** decrement reference counter and deallocate object if refcount is zero
@@ -108,12 +138,22 @@ class SGReferencedData
 				return -1;
 			}
 
-			if (*m_refcount==0 || --(*m_refcount)==0)
+#ifdef HAVE_PTHREAD
+			PTHREAD_LOCK(&m_refcount->lock);
+#endif
+			int32_t c = --(m_refcount->rc);
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(&m_refcount->lock);
+#endif 
+			if (c<=0)
 			{
 #ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d data %p destroying\n", *m_refcount, this);
+				SG_SGCDEBUG("unref() refcount %d data %p destroying\n", c, this);
 #endif
 				free_data();
+#ifdef HAVE_PTHREAD
+			PTHREAD_LOCK_DESTROY(&m_refcount->lock);
+#endif
 				SG_FREE(m_refcount);
 				m_refcount=NULL;
 				return 0;
@@ -121,10 +161,9 @@ class SGReferencedData
 			else
 			{
 #ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d data %p decreased\n", *m_refcount, this);
+				SG_SGCDEBUG("unref() refcount %d data %p decreased\n", c, this);
 #endif
 				init_data();
-				int c=*m_refcount;
 				m_refcount=NULL;
 				return c;
 			}
@@ -140,8 +179,9 @@ class SGReferencedData
 		virtual void free_data()=0;
 
 	private:
+
 		/** reference counter */
-		int32_t* m_refcount;
+		refcount_t* m_refcount;
 };
 }
 #endif // __SGREFERENCED_DATA_H__

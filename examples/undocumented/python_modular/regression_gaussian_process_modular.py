@@ -38,25 +38,23 @@ gp.set_return_type(GaussianProcessRegression.GP_RETURN_MEANS);
 
 predictions = gp.apply_regression();
 
-testerr=mean(sign(out)!=testlab)
-
 print("Alpha Vector\n");
-alpha
+print(alpha);
 
 print("Labels\n");
-labels.get_labels()
+print(labels.get_labels())
 
 print("sW Matrix");
-diagonal
+print(diagonal)
 
 print("Covariances");
-covariance.get_labels()
+print(covariance.get_labels())
 
 print("Mean Predictions");
-predictions.get_labels()
+print(predictions.get_labels())
 
 print("Cholesky Matrix L");
-cholesky
+print(cholesky)
 
 
 

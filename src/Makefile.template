@@ -217,7 +217,7 @@ install-r_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/sg/R
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(RDIR)/sg/libs
 	install -m644 $(CONFIGPATH)/../examples/documented/r_static/*.R $(CONFIGPATH)/../examples/documented/r_static/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
-	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB)
+	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB) $(SAVERDS)
 
 install-elwms_static: $(TEMPLATE_TARGET)
 	#one .so file
@@ -264,7 +264,7 @@ install-python_modular: $(TEMPLATE_TARGET)
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)"
 	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 	for i in Kernel Distance Features Classifier Regression Converter \
-		Features Clustering Evaluation IO Library Mathematics \
+		Loss Clustering Evaluation IO Library Mathematics \
 		ModelSelection Preprocessor Structure Distribution Statistics;\
 	do \
 		install -d -m755 "$(DESTDIR)$(PYDIR)/shogun/$$i" ;\
@@ -313,6 +313,10 @@ install-csharp_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(LIBDIR)/cli/shogun"
 	install -m644 modshogun.dll "$(DESTDIR)$(LIBDIR)/cli/shogun"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/cli/shogun"
+
+tests: 
+	$(MAKE) check-examples
+	$(MAKE) run-testsuite
 
 run-testsuite: run-testsuite-template
 check-examples: check-examples-template

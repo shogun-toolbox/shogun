@@ -16,7 +16,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/lib/external/tron.h>
+#include <shogun/optimization/liblinear/tron.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
 

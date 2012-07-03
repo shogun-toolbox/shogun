@@ -33,7 +33,7 @@ TARGETS = basic_minimal \
 		  evaluation_cross_validation_classification \
 		  evaluation_cross_validation_regression \
 		  evaluation_cross_validation_locked_comparison \
-			evaluation_cross_validation_multiclass \
+		  evaluation_cross_validation_multiclass \
 		  modelselection_parameter_combination_test \
 		  regression_gaussian_process \
 		  modelselection_model_selection_parameters_test \
@@ -81,9 +81,10 @@ TARGETS = basic_minimal \
 		  library_cover_tree \
 		  kernel_machine_train_locked \
 		  statistics \
+		  transfer_multitasklsregression \
+		  transfer_multitasklogisticregression \
 		  statistics_quadratic_time_mmd \
 		  statistics_linear_time_mmd \
-		  transfer_multitasklsregression \
 
 all: $(TARGETS)
 

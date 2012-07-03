@@ -3,7 +3,7 @@ from tools.load import LoadMatrix
 lm=LoadMatrix()
 data = lm.load_numbers('../data/fm_train_real.dat')
 
-parameter_list = [[data,10],[data,20]]
+parameter_list = [[data,60],[data,70]]
 
 def converter_kernellocaltangentspacealignment_modular(data,k):
 	from shogun.Features import RealFeatures
@@ -14,7 +14,7 @@ def converter_kernellocaltangentspacealignment_modular(data,k):
 	converter = KernelLocalTangentSpaceAlignment()
 	converter.set_target_dim(1)
 	converter.set_k(k)
-	converter.apply(features)
+	#converter.apply(features)
 
 	return features
 

@@ -2,9 +2,14 @@
 
 import numpy as np
 
-from shogun.Features 	import RealFeatures
-from shogun.Loss     	import HingeLoss
-from shogun.Structure	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
+try:
+	from shogun.Features 	import RealFeatures
+	from shogun.Loss     	import HingeLoss
+	from shogun.Structure	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
+except ImportError:
+	print "Mosek not available"
+	import sys
+	sys.exit(0)
 
 def gen_data():
 	np.random.seed(0)

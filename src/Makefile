@@ -35,6 +35,8 @@ all:  $(PARTDEPS) examples $(LIBSHOGUN_TARGET)
 	@echo 
 endif
 
+partdeps: shogun/Makefile $(PARTDEPS)
+
 ctags: shogun/Makefile
 	$(MAKE) -C shogun ctags
 	ln -s shogun/tags
@@ -50,7 +52,7 @@ examples:
 	$(MAKE) -C../examples
 	touch $@
 
-install:  $(PARTDEPS)
+install:  $(PARTDEPS) examples
 	$(MAKE) -C shogun install
 	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) install-$(part) &&) true
 
