@@ -18,7 +18,7 @@ namespace shogun
 /** TODO
  *
  */
-class CHSIC : CKernelIndependenceTestStatistic
+class CHSIC : public CKernelIndependenceTestStatistic
 {
 public:
 	/** TODO */
