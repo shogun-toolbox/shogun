@@ -17,8 +17,6 @@ def statistics_linear_time_mmd():
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
 
-	import matplotlib.pyplot as plt
-
 	# note that the quadratic time mmd has sometimes to store kernel matrices
 	# which upper bounds the sample size massively
 	n=500

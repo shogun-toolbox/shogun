@@ -17,8 +17,6 @@ def statistics_linear_time_mmd():
 	from shogun.Statistics import LinearTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
 
-	import matplotlib.pyplot as plt
-
 	# note that the linear time statistic is designed for much larger datasets
 	n=10000
 	dim=2
