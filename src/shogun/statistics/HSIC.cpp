@@ -22,6 +22,12 @@ CHSIC::CHSIC() : CKernelIndependenceTestStatistic()
 CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p,CFeatures* q) :
 		CKernelIndependenceTestStatistic(kernel_p, kernel_q, p, q)
 {
+	if (p->get_num_vectors()!=q->get_num_vectors())
+	{
+		SG_ERROR("%s: Only features with equal number of vectors "
+				"are currently possible\n", get_name());
+	}
+
 	init();
 }
 
@@ -44,7 +50,29 @@ float64_t CHSIC::compute_statistic()
 				get_name());
 	}
 
-	return 0;
+	/* compute kernel matrices (these have to be stored unfortunately */
+	m_kernel_p->init(m_p, m_p);
+	m_kernel_q->init(m_q, m_q);
+
+	SGMatrix<float64_t> K=m_kernel_p->get_kernel_matrix();
+	SGMatrix<float64_t> L=m_kernel_p->get_kernel_matrix();
+
+	/* center matrices (replaces this H matrix from the paper) */
+	K.center();
+	L.center();
+
+	/* compute MATLAB: sum(sum((H*K)' .* (H*L))), which is biased HSIC */
+	index_t m=K.num_rows;
+	float64_t result=0;
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<m; ++j)
+			result+=K(j,i)*L(i,j);
+	}
+
+	result/=m*m;
+
+	return result;
 }
 
 float64_t CHSIC::compute_p_value(float64_t statistic)

@@ -35,7 +35,7 @@ public:
 
 	virtual ~CHSIC();
 
-	/** TODO */
+	/** Computes the biased HSIC TODO */
 	virtual float64_t compute_statistic();
 
 	/** computes a p-value based on current method for approximating the
