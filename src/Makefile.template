@@ -314,6 +314,10 @@ install-csharp_modular: $(TEMPLATE_TARGET)
 	install -m644 modshogun.dll "$(DESTDIR)$(LIBDIR)/cli/shogun"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/cli/shogun"
 
+tests: 
+	$(MAKE) check-examples
+	$(MAKE) run-testsuite
+
 run-testsuite: run-testsuite-template
 check-examples: check-examples-template
 
