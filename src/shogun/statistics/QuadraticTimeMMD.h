@@ -11,12 +11,12 @@
 #define __QUADRACTIMEMMD_H_
 
 #include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {
 
 class CFeatures;
-class CKernel;
 
 enum EQuadraticMMDType
 {
@@ -96,30 +96,16 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 */
 		virtual float64_t compute_statistic();
 
-		/** computes a p-value based on current method for approximating the
-		 * null-distribution. The p-value is the 1-p quantile of the null-
-		 * distribution where the given statistic lies in.
+		/** Computes the p-value for a given statistic. The method for computing
+		 * the p-value can be set via set_p_value_method() method. Not all
+		 * method for computing the p-value are compatible with all methods of
+		 * computing the statistic (biased/unbiased).
 		 *
-		 * Not all methods for computing the p-value are compatible with all
-		 * methods of computing the statistic (biased/unbiased).
+		 * @param statistic statistic to compute the p-value for
 		 *
-		 * @param statistic statistic value to compute the p-value for
-		 * @return p-value parameter statistic is the (1-p) percentile of the
-		 * null distribution
+		 * @return p-value of the given statistic
 		 */
 		virtual float64_t compute_p_value(float64_t statistic);
-
-		/** computes a threshold based on current method for approximating the
-		 * null-distribution. The threshold is the value that a statistic has
-		 * to have in ordner to reject the null-hypothesis.
-		 *
-		 * Not all methods for computing the p-value are compatible with all
-		 * methods of computing the statistic (biased/unbiased).
-		 *
-		 * @param alpha test level to reject null-hypothesis
-		 * @return threshold for statistics to reject null-hypothesis
-		 */
-		virtual float64_t compute_threshold(float64_t alpha);
 
 		inline virtual const char* get_name() const
 		{

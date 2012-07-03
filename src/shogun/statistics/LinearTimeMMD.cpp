@@ -57,10 +57,6 @@ void CLinearTimeMMD::init()
 float64_t CLinearTimeMMD::compute_statistic()
 {
 	SG_DEBUG("entering CLinearTimeMMD::compute_statistic()\n");
-
-	if (!m_kernel)
-		SG_ERROR("%s::compute_statistic(): No kernel specified!\n", get_name());
-
 	/* TODO features with a different number of vectors should be allowed */
 
 	/* m is number of samples from each distribution, m_2 is half of it
@@ -120,12 +116,6 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 	}
 
 	return result;
-}
-
-float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
-{
-	SG_ERROR("%s::compute_threshold is not yet implemented!\n");
-	return 0;
 }
 
 float64_t CLinearTimeMMD::compute_variance_estimate()
