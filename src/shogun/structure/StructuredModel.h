@@ -152,7 +152,16 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred) = 0;
+		float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+
+		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
+		 *
+		 * @param y1 an instance of structured data
+		 * @param y2 another instance of structured data
+		 *
+		 * @return loss value
+		 */
+		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }

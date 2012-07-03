@@ -9,28 +9,34 @@
  */
 
 #include <shogun/structure/HMSVMModel.h>
-#include <shogun/features/VLMatrixFeatures.h>
+#include <shogun/features/MatrixFeatures.h>
 
 using namespace shogun;
 
 CHMSVMModel::CHMSVMModel()
 : CStructuredModel()
 {
+	init();
 }
 
 CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels)
 : CStructuredModel(features, labels)
 {
+	init();
 }
 
 CHMSVMModel::~CHMSVMModel()
 {
 }
 
-/* TODO */
 int32_t CHMSVMModel::get_dim() const
 {
-	return 0;
+	// Shorthand for the number of states
+	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	// Shorthand for the number of features of the feature vector
+	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+
+	return S*(S+D);
 }
 
 SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
@@ -39,22 +45,31 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 {
 	// Shorthand for the number of states
 	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
-	// Shorthand for the number of features of the feature vector x
-	SGStringList< float64_t > x = ((CVLMatrixFeatures< float64_t >*)
-			m_features)->get_feature_vector(feat_idx);
-	int32_t D = x.num_strings;
-	// Shorthand for the length of the states sequence y
+	// Shorthand for the number of features of the feature vector
+	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+
+	// Get the sequence of states sequence
 	CSequence* yseq = CSequence::obtain_from_generic(y);
-	int32_t T = yseq->data.vlen;
+	// Ensure that length of the sequence of states and the one of the features
+	// of x are the same
+	ASSERT( ((CMatrixFeatures< float64_t >*) m_features)->
+			get_feature_vector(feat_idx).num_cols == yseq->data.vlen);
 
 	// Initialize psi
-	SGVector< float64_t > psi( S*(S+D) ); // substitute this for get_dim()?
+	SGVector< float64_t > psi( S*(S+D) );
 	psi.zero();
 
-	for ( int32_t i = 1 ; i < T ; ++i )
+	// TODO(just to prove correctness - to be removed when checked)
+	ASSERT( psi.vlen == get_dim() );
+
+	SGVector< float64_t > x_i(D);
+	for ( int32_t i = 0 ; i < yseq->data.vlen ; ++i )
 	{
+		((CMatrixFeatures< float64_t >*) m_features)->
+			get_feature_vector_col(x_i, feat_idx, i);
+
 		add_transmission(psi.vector, yseq, i, S);
-		add_emission(psi.vector+S*S, x.strings[i], yseq, i, D);
+		add_emission(psi.vector+S*S, x_i.vector, yseq, i, D);
 	}
 
 	return psi;
@@ -66,15 +81,19 @@ void CHMSVMModel::add_transmission(
 		int32_t i,
 		int32_t S) const
 {
-	int32_t cur_state  = y->data[i];
-	int32_t prev_state = y->data[i-1];
+	int32_t cur_state = y->data[i];
+	int32_t prev_state;
+	if ( i == 0 )
+		prev_state = m_p[0];
+	else
+		prev_state = y->data[i-1];
 
 	psi_trans[prev_state*S + cur_state] += 1;
 }
 
 void CHMSVMModel::add_emission(
 		float64_t* psi_em,
-		SGString< float64_t > x_i,
+		float64_t* x_i,
 		CSequence* y,
 		int32_t i,
 		int32_t D) const
@@ -84,35 +103,138 @@ void CHMSVMModel::add_emission(
 	int32_t start     = cur_state*D;
 
 	for ( int32_t j = 0 ; j < D ; ++j )
-		psi_em[start++] += x_i.string[j];
+		psi_em[start++] += x_i[j];
 }
 
-/* TODO */
 CResultSet* CHMSVMModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 {
-	return NULL;
+	// Shorthand for the number of states
+	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	// Shorthand for the number of features of the feature vector
+	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+
+	ASSERT( w.vlen == S*(S+D) );
+
+	// Compute the loss-augmented emission matrix:
+	// (E)s,i = Delta(y_i, s) + w^em_s*x_i
+
+	CSequence* y = CSequence::obtain_from_generic( m_labels->get_label(feat_idx) );
+	int32_t T = y->data.vlen;
+	SGMatrix< float64_t > E(S, T);
+	SGVector< float64_t > x_i(D);
+
+	// One element sequences for the state and an element of y
+	CSequence* seq1 = new CSequence( SGVector< int32_t >(1) );
+	CSequence* seq2 = new CSequence( SGVector< int32_t >(1) );
+
+	float64_t partial_score;
+	float64_t* w_em = w.vector + S*S;
+
+	for ( int32_t i = 0 ; i < T ; ++i )
+	{
+		((CMatrixFeatures< float64_t >*) m_features)->
+			get_feature_vector_col(x_i, feat_idx, i);
+
+		for ( int32_t s = 0 ; s < S ; ++s )
+		{
+			partial_score = SGVector< float64_t >::dot(
+					w_em + s*D, x_i.vector, D);
+
+			seq1->data[0] = s;
+			seq2->data[0] = y->data[i];
+
+			E[s*T + i] = partial_score + delta_loss(seq1, seq2);
+		}
+	}
+
+	// Initialize the dynamic programming table and the traceback matrix
+	SGMatrix< float64_t >  dp(T, S);
+	SGMatrix< float64_t > trb(T, S);
+
+	for ( int32_t s = 0 ; s < S ; ++s )
+	{
+		if ( m_p[s] > -CMath::INFTY )
+			dp[s] = E[s];
+		else
+			dp[s] = -CMath::INFTY;
+	}
+
+	// Viterbi algorithm
+	int32_t idx;
+	float64_t aij, tmp_score;
+
+	for ( int32_t i = 1 ; i < T ; ++i )
+		for ( int32_t cur = 0 ; cur < S ; ++cur )
+		{
+			idx = i*S + cur;
+
+			 dp[idx] = -CMath::INFTY;
+			trb[idx] = -1;
+
+			for ( int32_t prev = 0 ; prev < S ; ++prev )
+			{
+				aij = w[cur*S + prev];
+
+				if ( aij > -CMath::INFTY )
+				{
+					tmp_score = E[idx] + aij + dp[(i-1)*S + prev];
+
+					if ( tmp_score > dp[idx] )
+					{
+						 dp[idx] = tmp_score;
+						trb[idx] = prev;
+					}
+				}
+			}
+		}
+
+	// Trace back the most likely sequence of states
+	SGVector< int32_t > opt_path(T);
+	CResultSet* ret = new CResultSet();
+	SG_REF(ret);
+	ret->score = -CMath::INFTY;
+	opt_path[T-1] = -1;
+
+	for ( int32_t s = 0 ; s < S ; ++s )
+	{
+		idx = (T-1)*S + s;
+
+		if ( m_q[s] > -CMath::INFTY && dp[idx] > ret->score )
+		{
+			ret->score = dp[idx];
+			opt_path[T-1] = s;
+		}
+	}
+
+	for ( int32_t i = T-1 ; i > 0 ; --i )
+	{
+		opt_path[i-1] = trb[i*S + opt_path[i]];
+	}
+
+	// Populate the CResultSet object to return
+	CSequence* ypred = new CSequence(opt_path);
+	SG_REF(y);
+
+	ret->psi_truth = CStructuredModel::get_joint_feature_vector(
+			feat_idx, feat_idx);
+	ret->psi_pred  = get_joint_feature_vector(feat_idx, ypred);
+	ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
+	ret->argmax    = ypred;
+
+	return ret;
 }
 
-float64_t CHMSVMModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
+float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
-	if ( ytrue_idx < 0 || ytrue_idx >= m_labels->get_num_labels() )
-		SG_ERROR("The label index must be inside [0, num_labels-1]\n");
-
-	if ( ypred->get_structured_data_type() != SDT_SEQUENCE )
-		SG_ERROR("ypred must be a CSequence\n");
-
-	// Shorthand for ypred with the correct structured data type
-	CSequence* yhat  = CSequence::obtain_from_generic(ypred);
-	// The same for ytrue
-	CSequence* ytrue = CSequence::obtain_from_generic(
-			m_labels->get_label(ytrue_idx));
+	CSequence* seq1 = CSequence::obtain_from_generic(y1);
+	CSequence* seq2 = CSequence::obtain_from_generic(y2);
 
 	// Compute the Hamming loss, number of distinct elements in the sequences
-	ASSERT( yhat->data.vlen == ytrue->data.vlen );
+	ASSERT( seq1->data.vlen == seq2->data.vlen );
 
 	float64_t out = 0.0;
-	for ( int32_t i = 0 ; i < yhat->data.vlen ; ++i )
-		out += yhat->data[i] != ytrue->data[i];
+	for ( int32_t i = 0 ; i < seq1->data.vlen ; ++i )
+		out += seq1->data[i] != seq2->data[i];
 
 	return out;
 }
@@ -170,4 +292,10 @@ bool CHMSVMModel::check_training_setup() const
 	}
 
 	return true;
+}
+
+void CHMSVMModel::init()
+{
+	SG_ADD(&m_p, "m_p", "Distribution of start states", MS_NOT_AVAILABLE);
+	SG_ADD(&m_q, "m_q", "Distribution of end states", MS_NOT_AVAILABLE);
 }

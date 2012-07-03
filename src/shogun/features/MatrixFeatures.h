@@ -8,32 +8,35 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#ifndef _VL_MATRIX_FEATURES__H__
-#define _VL_MATRIX_FEATURES__H__
+#ifndef _MATRIX_FEATURES__H__
+#define _MATRIX_FEATURES__H__
 
 #include <shogun/features/Features.h>
-#include <shogun/lib/SGStringList.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
 
 /**
- * @brief Class CVLMatrixFeatures used to represent data whose features are
+ * @brief Class CMatrixFeatures used to represent data whose features are
  * better represented with variable length matrices than with unidimensional
  * arrays or vectors. Each of the vectors or examples has the same number of
  * features and these are represented as sequences. The length of the sequences
  * does NOT require to be the same, neither among the features of the same
  * vector nor among features of different vectors.
  */
-template< class ST > class CVLMatrixFeatures : public CFeatures
+template< class ST > class CMatrixFeatures : public CFeatures
 {
 	public:
-		/** constructor
+		/** default constructor */
+		CMatrixFeatures();
+
+		/** standard constructor
 		 *
 		 * @param num_vec number of vectors
 		 * @param num_feat number of features per vector
 		 */
-		CVLMatrixFeatures(int32_t num_vec = 0, int32_t num_feat = 0);
+		CMatrixFeatures(int32_t num_vec, int32_t num_feat);
 
 		/** duplicate feature object
 		 *
@@ -42,7 +45,7 @@ template< class ST > class CVLMatrixFeatures : public CFeatures
 		virtual CFeatures* duplicate() const;
 
 		/** destructor */
-		virtual ~CVLMatrixFeatures();
+		virtual ~CMatrixFeatures();
 
 		/** get feature type
 		 *
@@ -76,34 +79,51 @@ template< class ST > class CVLMatrixFeatures : public CFeatures
 		 *
 		 * @return feature vector
 		 */
-		SGStringList< ST > get_feature_vector(int32_t num) const;
+		SGMatrix< ST > get_feature_vector(int32_t num) const;
+
+		/** TODO doc */
+		void get_feature_vector_col(SGVector< ST > out, int32_t num, int32_t col) const;
 
 		/** set feature vector num
 		 *
 		 * @param vec feature vector
 		 * @param num index of vector to set
 		 */
-		void set_feature_vector(SGStringList< ST > const & vec, int32_t num);
+		void set_feature_vector(SGMatrix< ST > const & vec, int32_t num);
 
 		/** get features
 		 *
+		 * @param num_vec number of feature vectors
+		 *
 		 * @return features
 		 */
-		SGStringList< ST >* get_features() const;
+		SGMatrix< ST >* get_features(int32_t& num_vec) const;
 
 		/** set features
 		 *
 		 * @param features to set
 		 * @param num_vec number of vectors
 		 */
-		void set_features(SGStringList< ST >* features, int32_t num_vec);
+		void set_features(SGMatrix< ST >* features, int32_t num_vec);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "VLMatrixFeatures"; }
+		virtual const char* get_name() const { return "MatrixFeatures"; }
+
+		inline int32_t get_num_features() const { return m_num_features; }
 
 	private:
 		/** internal initialization */
 		void init();
+
+		/** cleanup matrix features */
+		void cleanup();
+
+		/** cleanup multiple feature vectors
+		 *
+		 * @param start index of first vector to be cleaned
+		 * @param stop index of the last vector to be cleaned
+		 * */
+		virtual void cleanup_feature_vectors(int32_t start, int32_t stop);
 
 	private:
 		/** number of vectors or examples */
@@ -112,14 +132,11 @@ template< class ST > class CVLMatrixFeatures : public CFeatures
 		/** number of features for each vector or example */
 		int32_t m_num_features;
 
-		/**
-		 * array (better thought as a matrix) of features lists
-		 * It constains m_num_vectors lists
-		 */
-		SGStringList< ST >* m_features;
+		/** list of m_num_vectors matrices (the so-called feature vectors) */
+		SGMatrix< ST >* m_features;
 
-}; /* class CVLMatrixFeatures */
+}; /* class CMatrixFeatures */
 
 } /* namespace shogun */
 
-#endif /* _VL_MATRIX_FEATURES__H__ */
+#endif /* _MATRIX_FEATURES__H__ */

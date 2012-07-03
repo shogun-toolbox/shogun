@@ -63,14 +63,14 @@ class CMulticlassModel : public CStructuredModel
 		 */
 		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx);
 
-		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
+		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
-		 * @param ytrue_idx index of the true label in labels
-		 * @param ypred the predicted label
+		 * @param y1 an instance of structured data
+		 * @param y2 another instance of structured data
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
 
 		/** initialize the optimization problem
 		 *

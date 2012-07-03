@@ -65,15 +65,14 @@ class CHMSVMModel : public CStructuredModel
 		 */
 		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx);
 
-		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
+		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
-		 * @param labels true labels
-		 * @param ytrue_idx index of the true label in labels
-		 * @param ypred the predicted label
+		 * @param y1 an instance of structured data
+		 * @param y2 another instance of structured data
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
 
 		/** initialize the optimization problem
 		 *
@@ -98,6 +97,9 @@ class CHMSVMModel : public CStructuredModel
 		virtual bool check_training_setup() const;
 
 	private:
+		/* internal initialization */
+		void init();
+
 		/**
 		 * helper method for the computation of psi(x,y) performed in
 		 * get_joint_feature_vector. In particular, it is in charge of
@@ -125,7 +127,14 @@ class CHMSVMModel : public CStructuredModel
 		 * @param i index of the current state
 		 * @param D number of features of the feature vector x
 		 */
-		void add_emission(float64_t* psi_em, SGString< float64_t > x_i, CSequence* y, int32_t i, int32_t D) const;
+		void add_emission(float64_t* psi_em, float64_t* x_i, CSequence* y, int32_t i, int32_t D) const;
+
+	private:
+		/* distribution of start states*/
+		SGVector< float64_t > m_p;
+
+		/* distribution of end states */
+		SGVector< float64_t > m_q;
 
 }; /* class CHMSVMModel */
 
