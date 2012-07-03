@@ -66,24 +66,43 @@ public:
 
 	virtual ~CLinearTimeMMD();
 
-	/** Computes the squared linear time MMD for the current data. his is an
+	/** Computes the squared linear time MMD for the current data. This is an
 	 * unbiased estimate
 	 *
 	 * @return squared linear time MMD
 	 */
 	virtual float64_t compute_statistic();
 
-	/** Computes the p-value for a given statistic. The method for computing
-	 * the p-value can be set via set_p_value_method() method. Since the null-
-	 * distribution is normal, a Gaussian approximation is available along with
-	 * bootstrapping. For Gaussian approximation, training and test data have
+	/** computes a p-value based on current method for approximating the
+	 * null-distribution. The p-value is the 1-p quantile of the null-
+	 * distribution where the given statistic lies in.
+	 *
+	 * The method for computing the p-value can be set via
+	 * set_null_approximation_method().
+	 * Since the null- distribution is normal, a Gaussian approximation
+	 * is available. For Gaussian approximation, training and test data have
 	 * to be DIFFERENT samples from same distribution
 	 *
-	 * @param statistic statistic to compute the p-value for
-	 *
-	 * @return p-value of the given statistic
+	 * @param statistic statistic value to compute the p-value for
+	 * @return p-value parameter statistic is the (1-p) percentile of the
+	 * null distribution
 	 */
 	virtual float64_t compute_p_value(float64_t statistic);
+
+	/** computes a threshold based on current method for approximating the
+	 * null-distribution. The threshold is the value that a statistic has
+	 * to have in ordner to reject the null-hypothesis.
+	 *
+	 * The method for computing the p-value can be set via
+	 * set_null_approximation_method().
+	 * Since the null- distribution is normal, a Gaussian approximation
+	 * is available. For Gaussian approximation, training and test data have
+	 * to be DIFFERENT samples from same distribution
+	 *
+	 * @param alpha test level to reject null-hypothesis
+	 * @return threshold for statistics to reject null-hypothesis
+	 */
+	virtual float64_t compute_threshold(float64_t alpha);
 
 	/** computes a linear time estimate of the variance of the squared linear
 	 * time mmd, which may be used for an approximation of the null-distribution
