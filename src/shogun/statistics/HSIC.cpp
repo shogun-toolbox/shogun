@@ -44,7 +44,7 @@ void CHSIC::init()
 
 float64_t CHSIC::compute_statistic()
 {
-	if (!m_kernel_p || m_kernel_q)
+	if (!m_kernel_p || !m_kernel_q)
 	{
 		SG_ERROR("%s::compute_statistic(): No or only one kernel specified!\n",
 				get_name());
@@ -55,13 +55,12 @@ float64_t CHSIC::compute_statistic()
 	m_kernel_q->init(m_q, m_q);
 
 	SGMatrix<float64_t> K=m_kernel_p->get_kernel_matrix();
-	SGMatrix<float64_t> L=m_kernel_p->get_kernel_matrix();
+	SGMatrix<float64_t> L=m_kernel_q->get_kernel_matrix();
 
-	/* center matrices (replaces this H matrix from the paper) */
+	/* center matrices (MATLAB: Kc=H*K*H) */
 	K.center();
-	L.center();
 
-	/* compute MATLAB: sum(sum((H*K)' .* (H*L))), which is biased HSIC */
+	/* compute MATLAB: sum(sum(Kc' .* (L))), which is biased HSIC */
 	index_t m=K.num_rows;
 	float64_t result=0;
 	for (index_t i=0; i<m; ++i)
