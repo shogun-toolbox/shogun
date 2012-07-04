@@ -13,7 +13,7 @@
 %rename(KernelTwoSampleTestStatistic) CKernelTwoSampleTestStatistic;
 %rename(LinearTimeMMD) CLinearTimeMMD;
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
-%rename(IndependenceTestStatistic) CIndependenceStatistic;
+%rename(IndependenceTestStatistic) CIndependenceTestStatistic;
 %rename(KernelIndependenceTestStatistic) CKernelIndependenceTestStatistic;
 %rename(HSIC) CHSIC;
 
