@@ -17,6 +17,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/FeatureTypes.h>
@@ -221,11 +222,9 @@ class CKernel : public CSGObject
 		 */
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
-			if (idx_a<0 || idx_b<0 || idx_a>=num_lhs || idx_b>=num_rhs)
-			{
-				SG_ERROR("Index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
-						idx_a,num_lhs, idx_b,num_rhs);
-			}
+			REQUIRE(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
+				"Index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
+				idx_a,num_lhs, idx_b,num_rhs);
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 		}
@@ -280,8 +279,7 @@ class CKernel : public CSGObject
 		{
 			T* result = NULL;
 
-			if (!has_features())
-				SG_ERROR( "no features assigned to kernel\n");
+			REQUIRE(has_features(), "no features assigned to kernel\n");
 
 			int32_t m=get_num_vec_lhs();
 			int32_t n=get_num_vec_rhs();

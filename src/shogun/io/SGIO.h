@@ -100,7 +100,7 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_SDEPRECATED sg_io->deprecated(__FILE__, __LINE__)
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
-#define REQUIRE(x, msg) { if (!(x)) SG_SERROR(msg); }
+#define REQUIRE(x, ...) { if (!(x)) SG_SERROR(__VA_ARGS__); }
 
 
 /** @brief Class SGIO, used to do input output operations throughout shogun.
