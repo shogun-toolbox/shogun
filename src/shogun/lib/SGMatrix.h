@@ -243,6 +243,7 @@ template<class T> class SGMatrix : public SGReferencedData
 			return colsums;
 		}
 
+		/** Centers the matrix, i.e. removes column/row mean from columns/rows */
 		void center()
 		{
 			center_matrix(matrix, num_rows, num_cols);
