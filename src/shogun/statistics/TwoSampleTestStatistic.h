@@ -21,10 +21,6 @@ class CFeatures;
  * two-sample test, i.e. Given samples from two distributions p and q, the
  * null-hypothesis is: H0: p==q, the alternative hypothesis: H1: p!=q.
  *
- * It is possible to define multiple ways to compute the p-value.
- *
- * Provides code for sampling the null-distribution via bootstrapping.
- *
  * Abstract base class.
  *
  */

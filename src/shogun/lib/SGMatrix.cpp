@@ -11,6 +11,7 @@ template <class T>
 void SGMatrix<T>::transpose_matrix(
 	T*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
+	/* this should be done in-place! Heiko */
 	T* transposed=SG_MALLOC(T, num_vec*num_feat);
 	for (int32_t i=0; i<num_vec; i++)
 	{

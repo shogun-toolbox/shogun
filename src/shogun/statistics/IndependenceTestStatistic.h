@@ -16,19 +16,13 @@ namespace shogun
 {
 
 class CFeatures;
-/** TODO
- *
- * @brief Test statistic base class. Provides an interface for statistical
- * tests via three methods: compute_statistic(), compute_p_value() and
- * compute_threshold(). The second computes a p-value for the statistic computed
- * by the first method.
- * The p-value represents the position of the statistic in the null-distribution,
- * i.e. the distribution of the statistic population given the null-hypothesis
- * is true. (1-position = p-value).
- * The third method,  compute_threshold(), computes a threshold for a given
- * test level which is needed to reject the null-hypothesis
+/** @brief Independence test base class. Provides an interface for performing an
+ * independence test, i.e. Given samples from two distributions p_x and p_y, the
+ * null-hypothesis is: H0: p_xy=p_x*p_y, the alternative hypothesis:
+ * H1: p_xy!=p_x*p_y
  *
  * Abstract base class.
+ *
  */
 class CIndependenceTestStatistic : public CTestStatistic
 {
