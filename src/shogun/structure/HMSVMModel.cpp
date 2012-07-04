@@ -299,3 +299,94 @@ void CHMSVMModel::init()
 	SG_ADD(&m_p, "m_p", "Distribution of start states", MS_NOT_AVAILABLE);
 	SG_ADD(&m_q, "m_q", "Distribution of end states", MS_NOT_AVAILABLE);
 }
+
+CHMSVMModel* CHMSVMModel::simulate_two_state_model()
+{
+	// Number of examples
+	int32_t num_exm = 1000;
+	// Length of each example sequence
+	int32_t exm_len = 250;
+	// Number of different states
+	int32_t num_states = 2;
+	// Total number of features
+	int32_t num_features = 10;
+	// Number of features to be pure noise
+	int32_t num_noise_features = 3;
+	// Min and max length of positive block
+	int32_t block_len[] = {10, 100};
+	// Min and max number of positive blocks per example
+	int32_t num_blocks[] = {0, 6};
+	// Number of subsets for cross-validation
+	int32_t num_subsets = 5;
+
+	// Proportion of wrong labels
+	float64_t prop_distort = 0.2;
+	// Standard deviation of Gaussian noise
+	float64_t noise_std = 4;
+
+	// Generate label sequence randomly containing from num_blocks[0] to
+	// num_blocks[1] blocks of positive labels each of length between
+	// block_len[0] and block_len[1]
+
+	CHMSVMLabels* labels = new CHMSVMLabels(num_exm, num_states);
+	int32_t rnb, rl, rp;
+
+	for ( int32_t i = 0 ; i < num_exm ; ++i)
+	{
+		SGVector< int32_t > l(exm_len);
+		l.set_const(0);
+		rnb = num_blocks[0] + CMath::ceil((num_blocks[1]-num_blocks[0])*
+			CMath::random(0.0, 1.0)) - 1;
+
+		for ( int32_t j = 0 ; j < rnb ; ++j )
+		{
+			rl = block_len[0] + CMath::ceil((block_len[1]-block_len[0])*
+				CMath::random(0.0, 1.0)) - 1;
+			rp = CMath::ceil((exm_len-rl)*CMath::random(0.0, 1.0));
+
+			for ( int32_t idx = rp ; idx < rp+rl ; ++idx )
+				l[idx] = 1;
+		}
+
+		labels->add_label(l);
+	}
+
+	// Generate features by
+	// i) introducing label noise, i.e. flipping a propotion prop_distort
+	// of labels and
+	// ii) adding Gaussian noise to the (distorted) label sequence
+
+	SGVector< int32_t >   distort(num_exm*exm_len);
+	SGVector< int32_t >   d1(CMath::round(distort.vlen*prop_distort));
+	SGVector< int32_t >   d2(d1.vlen);
+	SGVector< float64_t > l = labels->to_double_vector();
+	SGVector< float64_t > random(distort.vlen);
+
+	CMatrixFeatures< float64_t >* features =
+		new CMatrixFeatures< float64_t >(num_exm, num_features);
+
+	for ( int32_t i = 0 ; i < num_features ; ++i )
+	{
+		distort.randperm();
+
+		for ( int j = 0 ; j < d1.vlen ; ++j )
+			d1[j] = distort[j];
+
+		for ( int j = 0 ; j < d2.vlen ; ++j )
+			d2[j] = distort[ distort.vlen-d2.vlen+j ];
+
+		for ( int j = 0 ; j < d1.vlen ; ++j )
+			labels->set_element(d1[j], labels->get_element(d2[j]));
+
+		random.normal_random();
+		random.scale(noise_std);
+		SGVector< float64_t > signal = l + random;
+		// TODO store the feautres properly in the CMatrixFeatures
+	}
+
+	// Substitute some features by pure noise
+	// TODO
+
+
+	return NULL;
+}

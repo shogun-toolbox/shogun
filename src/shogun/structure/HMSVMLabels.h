@@ -94,6 +94,21 @@ class CHMSVMLabels : public CStructuredLabels
 		 */
 		int32_t get_num_states() const { return m_num_states; };
 
+		/**
+		 * TODO doc
+		 */
+		SGVector< float64_t > to_double_vector() const;
+
+		/**
+		 * TODO doc
+		 */
+		int32_t get_element(int32_t idx) const { return 0; }
+
+		/**
+		 * TODO doc
+		 */
+		void set_element(int32_t idx, int32_t val) { return; }
+
 	private:
 		/** internal initialization */
 		void init();

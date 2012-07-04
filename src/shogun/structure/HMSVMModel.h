@@ -96,6 +96,11 @@ class CHMSVMModel : public CStructuredModel
 		 */
 		virtual bool check_training_setup() const;
 
+		/**
+		 * TODO DOC
+		 */
+		static CHMSVMModel* simulate_two_state_model();
+
 	private:
 		/* internal initialization */
 		void init();
