@@ -27,6 +27,7 @@
 
 namespace shogun
 {
+	/* BMRM result */
 	typedef struct {
 		uint32_t nIter;         /* number of iterations  */
 		uint32_t nCP;           /* number of cutting planes */
@@ -40,6 +41,7 @@ namespace shogun
 								   -2 .. not enough memory for the solver */
 	} bmrm_return_value_T;
 
+	/* BMRM input data */
 	typedef struct {
 		void*     X;     /* features */
 		void*     y;     /* labels */

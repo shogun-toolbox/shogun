@@ -180,7 +180,7 @@ bmrm_return_value_T svm_bmrm_solver(
 	tstop=ttime.cur_time_diff(false);
 
 	/* Verbose output */
-	SG_SPRINT("%4d: tim=%.3f, Fp=%f, Fd=%f, R=%f\n",
+	SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
 			bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
 
 	/* main loop */
@@ -268,7 +268,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		tstop=ttime.cur_time_diff(false);
 
 		/* Verbose output */
-		SG_SPRINT("%4d: tim=%.3f, Fp=%f, Fd=%f, (Fp-Fd)=%f, (Fp-Fd)/Fp=%f, R=%f, nCP=%d, nzA=%d\n",
+		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d\n",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd, (bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA);
 
 		/* Check size of Buffer */
@@ -369,10 +369,19 @@ cleanup:
 	LIBBMRM_FREE(b);
 	LIBBMRM_FREE(beta);
 	LIBBMRM_FREE(A);
+	LIBBMRM_FREE(subgrad);
 	LIBBMRM_FREE(diag_H);
 	LIBBMRM_FREE(I);
 	LIBBMRM_FREE(ICPcounter);
 	LIBBMRM_FREE(ICPs);
+
+	LIBBMRM_FREE(H2);
+	LIBBMRM_FREE(b2);
+	LIBBMRM_FREE(beta2);
+	LIBBMRM_FREE(A2);
+	LIBBMRM_FREE(diag_H2);
+	LIBBMRM_FREE(I2);
+	LIBBMRM_FREE(ICPcounter2);
 
 	return(bmrm);
 }

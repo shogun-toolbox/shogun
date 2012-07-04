@@ -13,6 +13,7 @@
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/structure/RiskFunction.h>
+#include <shogun/structure/libbmrm.h>
 
 namespace shogun
 {
@@ -79,6 +80,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** get Tmax */
 		inline uint32_t get_Tmax() { return m_Tmax; }
 
+		/** get bmrm result */
+		inline bmrm_return_value_T get_bmrm_result() { return m_bmrm_result; }
+
 	protected:
 		/** train dual SO-SVM
 		 *
@@ -113,6 +117,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** Risk function */
 		CRiskFunction* m_risk_function;
+
+		/** BMRM result */
+		bmrm_return_value_T m_bmrm_result;
 
 }; /* class CDualLibQPBMSOSVM */
 
