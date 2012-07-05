@@ -44,7 +44,7 @@ void CHSIC::init()
 
 float64_t CHSIC::compute_statistic()
 {
-	if (!m_kernel_p||!m_kernel_q)
+	if (!m_kernel_p || !m_kernel_q)
 	{
 		SG_ERROR("%s::compute_statistic(): No or only one kernel specified!\n",
 				get_name());
@@ -98,7 +98,7 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 
 float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
 {
-	if (!m_kernel_p||!m_kernel_q)
+	if (!m_kernel_p || !m_kernel_q)
 	{
 		SG_ERROR("%s::compute_statistic(): No or only one kernel specified!\n",
 				get_name());
