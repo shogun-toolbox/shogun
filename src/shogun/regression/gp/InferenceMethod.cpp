@@ -64,8 +64,8 @@ void CInferenceMethod::init()
 
 void CInferenceMethod::set_features(CDotFeatures* feat)
 {
-	SG_UNREF(m_features);
 	SG_REF(feat);
+	SG_UNREF(m_features);
 	m_features=feat;
 
 	m_feature_matrix =
@@ -79,8 +79,8 @@ void CInferenceMethod::set_features(CDotFeatures* feat)
 
 void CInferenceMethod::set_kernel(CKernel* kern)
 {
-	SG_UNREF(m_kernel);
 	SG_REF(kern);
+	SG_UNREF(m_kernel);
 	m_kernel = kern;
 	update_train_kernel();
 	update_chol();
@@ -89,8 +89,8 @@ void CInferenceMethod::set_kernel(CKernel* kern)
 
 void CInferenceMethod::set_mean(CMeanFunction* m)
 {
-	SG_UNREF(m_mean);
 	SG_REF(m);
+	SG_UNREF(m_mean);
 	m_mean = m;
 
 	update_data_means();
@@ -100,8 +100,8 @@ void CInferenceMethod::set_mean(CMeanFunction* m)
 
 void CInferenceMethod::set_labels(CLabels* lab)
 {
-	SG_UNREF(m_labels);
 	SG_REF(lab);
+	SG_UNREF(m_labels);
 	m_labels = lab;
 
 	m_label_vector =
@@ -113,8 +113,8 @@ void CInferenceMethod::set_labels(CLabels* lab)
 
 void CInferenceMethod::set_model(CLikelihoodModel* mod)
 {
-	SG_UNREF(m_model);
 	SG_REF(mod);
+	SG_UNREF(m_model);
 	m_model = mod;
 	update_train_kernel();
 	update_chol();

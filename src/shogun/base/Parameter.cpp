@@ -2189,23 +2189,33 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 	return true;
 }
 
-uint32_t TParameter::get_hash(uint32_t hash)
+void TParameter::get_incremental_hash(
+		uint32_t& hash, uint32_t& carry, uint32_t& total_length)
 {
+
 	switch (m_datatype.m_ctype)
 	{
 	case CT_NDARRAY:
 		SG_SNOTIMPLEMENTED;
 	case CT_SCALAR:
 	{
-		for (size_t i = 0; i < m_datatype.sizeof_stype(); i++)
-			hash = CHash::IncrementalMurmurHash2(((uint8_t*)m_parameter)[i], hash);
+		uint32_t size = m_datatype.sizeof_stype();
+		total_length += size;
+		CHash::IncrementalMurmurHash3(
+				&hash, &carry, (uint8_t*)m_parameter, size);
 		break;
 	}
 	case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
 		index_t len_real_y = 0, len_real_x = 0;
 
-		len_real_y = *m_datatype.m_length_y;
-		if (*(void**) m_parameter == NULL && len_real_y != 0) {
+		if (m_datatype.m_length_y)
+			len_real_y = *m_datatype.m_length_y;
+
+		else
+			len_real_y = 1;
+
+		if (*(void**) m_parameter == NULL && len_real_y != 0)
+		{
 			SG_SWARNING("Inconsistency between data structure and "
 					"len_y during hashing `%s'!  Continuing with "
 					"len_y=0.\n",
@@ -2213,7 +2223,8 @@ uint32_t TParameter::get_hash(uint32_t hash)
 			len_real_y = 0;
 		}
 
-		switch (m_datatype.m_ctype) {
+		switch (m_datatype.m_ctype)
+		{
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED;
 			break;
@@ -2222,7 +2233,9 @@ uint32_t TParameter::get_hash(uint32_t hash)
 			break;
 		case CT_MATRIX: case CT_SGMATRIX:
 			len_real_x = *m_datatype.m_length_x;
-			if (*(void**) m_parameter == NULL && len_real_x != 0) {
+
+			if (*(void**) m_parameter == NULL && len_real_x != 0)
+			{
 				SG_SWARNING("Inconsistency between data structure and "
 						"len_x during hashing %s'!  Continuing "
 						"with len_x=0.\n",
@@ -2237,21 +2250,12 @@ uint32_t TParameter::get_hash(uint32_t hash)
 
 		case CT_SCALAR: break;
 		}
-
-		for (index_t x=0; x<len_real_x; x++)
-		{
-			for (index_t y=0; y<len_real_y; y++)
-			{
-				uint8_t* add = ((*(uint8_t**)m_parameter)
-						+ (x*len_real_y + y)*m_datatype.sizeof_stype());
-				for (size_t z = 0; z<m_datatype.sizeof_stype(); z++)
-					hash = CHash::IncrementalMurmurHash2(add[z], hash);
-			}
-		}
+		uint32_t size = (len_real_x*len_real_y)*m_datatype.sizeof_stype();
+		total_length += size;
+		CHash::IncrementalMurmurHash3(
+				&hash, &carry, (uint8_t*)m_parameter, size);
 		break;
 	}
-
-	return hash;
 }
 
 bool

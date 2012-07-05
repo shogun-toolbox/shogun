@@ -111,9 +111,13 @@ struct TParameter
 	/*Incrementally get a hash from parameter value*
 	 *
 	 * @param hash current hash value
-	 * @return new hash value including this parameter
+	 * @param carry value for incremental murmur hashing
+	 * @param total byte length of parameters. Function will
+	 * add byte length to received value
+	 *
 	 */
-	uint32_t get_hash(uint32_t hash);
+	void get_incremental_hash(
+			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
 
 private:
 	char* new_prefix(const char* s1, const char* s2);

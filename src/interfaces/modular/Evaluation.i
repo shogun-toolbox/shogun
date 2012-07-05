@@ -8,6 +8,11 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
  
+/* These functions return new Objects */
+%newobject CGradientEvaluation::evaluate();
+%newobject CCrossValidation::evaluate();
+
+
 /* Remove C Prefix */
 %rename(Evaluation) CEvaluation;
 %rename(BinaryClassEvaluation) CBinaryClassEvaluation;

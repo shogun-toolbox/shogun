@@ -163,6 +163,7 @@ private:
 	 */
 	void check_members();
 
+	/*Kernel matrix with noise*/
 	SGMatrix<float64_t> m_kern_with_noise;
 };
 

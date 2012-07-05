@@ -418,11 +418,13 @@ private:
 	 *
 	 * @param param Parameter to hash
 	 * @param current hash
-	 *
-	 * @return hash including parameter
+	 * @param carry value for Murmur3 incremental hash
+	 * @param total_length total byte length of all hashed
+	 * parameters so far. Byte length of parameters will be added
+	 * to the total length
 	 */
-	uint32_t get_parameter_hash(Parameter* param,
-		uint32_t hash);
+	void get_parameter_incremental_hash(Parameter* param,
+			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
 
 public:
 	/** io */

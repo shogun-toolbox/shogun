@@ -12,9 +12,12 @@ SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 
 /* These functions return new Objects */
 %newobject CGridSearchModelSelection::select_model();
+%newobject CGradientModelSelection::select_model();
 %newobject CParameterCombination::copy_tree();
 %newobject CParameterCombination::leaf_sets_multiplication();
 %newobject CModelSelectionParameters::get_combinations();
+%newobject CModelSelectionParameters::get_single_combination();
+
 /* what about parameter_set_multiplication returns new DynArray<Parameter*>? */
 
 /* Remove C Prefix */

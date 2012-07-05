@@ -203,13 +203,17 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	if (m_machine_eval->get_evaluation_direction() == ED_MINIMIZE)
 	{
-		SG_SPRINT("Minimizing Objective Function\n");
+		if (print_state)
+			SG_SPRINT("Minimizing Objective Function\n");
+
 		nlopt_set_min_objective(opt, nlopt_function, &pack);
 	}
 
 	else
 	{
-		SG_SPRINT("Maximizing Objective Function\n");
+		if (print_state)
+			SG_SPRINT("Maximizing Objective Function\n");
+
 		nlopt_set_max_objective(opt, nlopt_function, &pack);
 	}
 
