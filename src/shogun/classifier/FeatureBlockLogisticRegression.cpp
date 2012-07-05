@@ -103,11 +103,6 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 		{
 			CIndexBlockTree* feature_tree = (CIndexBlockTree*)m_feature_relation;
 
-			CIndexBlock* root_block = feature_tree->get_root_block();
-			if (root_block->get_max_index() > features->get_dim_feature_space())
-				SG_ERROR("Root block covers more vectors than available\n");
-			SG_UNREF(root_block);
-
 			SGVector<float64_t> ind_t = feature_tree->get_SLEP_ind_t();
 			options.ind_t = ind_t.vector;
 			options.n_nodes = ind_t.vlen/3;

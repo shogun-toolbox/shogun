@@ -28,6 +28,11 @@ public:
 	 */
 	CIndexBlockTree(CIndexBlock* root_block);
 
+	/** constructor
+	 * @param adjacency_matrix adjacency matrix
+	 */
+	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix);
+
 	/** destructor */
 	virtual ~CIndexBlockTree();
 
@@ -56,6 +61,9 @@ protected:
 
 	/** root block */
 	CIndexBlock* m_root_block;
+
+	/** precomputed ind_t */
+	SGVector<float64_t> m_precomputed_ind_t;
 };
 
 }
