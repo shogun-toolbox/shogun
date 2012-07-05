@@ -16,6 +16,8 @@
 %rename(MultitaskKernelMaskPairNormalizer) CMultitaskKernelMaskPairNormalizer;
 %rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 
+%rename(Task) CTask;
+%rename(TaskTree) CTaskTree;
 %rename(MultitaskLSRegression) CMultitaskLSRegression;
 %rename(MultitaskLogisticRegression) CMultitaskLogisticRegression;
 
@@ -36,6 +38,8 @@
 %include <shogun/transfer/multitask/MultitaskKernelMaskPairNormalizer.h>
 %include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
 
+%include <shogun/transfer/multitask/Task.h>
+%include <shogun/transfer/multitask/TaskTree.h>
 %include <shogun/transfer/multitask/MultitaskLSRegression.h>
 %include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 

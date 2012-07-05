@@ -25,71 +25,20 @@ struct block_tree_node_t
 	float64_t weight;
 };
 
-int32_t count_leaf_blocks_recursive(CIndexBlock* subtree_root_block)
+void collect_tree_nodes_recursive(CIndexBlock* subtree_root_block, vector<block_tree_node_t>* tree_nodes)
 {
-	CList* sub_blocks = subtree_root_block->get_sub_blocks();
-	int32_t n_sub_blocks = sub_blocks->get_num_elements();
-	if (n_sub_blocks==0)
-	{
-		SG_UNREF(sub_blocks);
-		return 1;
-	}
-	else
-	{
-		int32_t sum = 0;
-		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
-		do
-		{
-			sum += count_leaf_blocks_recursive(iterator);
-		}
-		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
-
-		SG_UNREF(sub_blocks);
-		return sum;
-	}
-}
-
-void collect_tree_nodes_recursive(CIndexBlock* subtree_root_block, vector<block_tree_node_t>* tree_nodes, int low)
-{
-	int32_t lower = low;
 	CList* sub_blocks = subtree_root_block->get_sub_blocks();
 	if (sub_blocks->get_num_elements()>0)
 	{
 		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
 		do
 		{
+			SG_SDEBUG("Block [%d %d] \n",iterator->get_min_index(), iterator->get_max_index());
+			tree_nodes->push_back(block_tree_node_t(iterator->get_min_index(),iterator->get_max_index(),iterator->get_weight()));
 			if (iterator->get_num_sub_blocks()>0)
-			{
-				int32_t n_leaves = count_leaf_blocks_recursive(iterator);
-				SG_SDEBUG("Block [%d %d] has %d leaf childs \n",iterator->get_min_index(), iterator->get_max_index(), n_leaves);
-				tree_nodes->push_back(block_tree_node_t(lower,lower+n_leaves-1,iterator->get_weight()));
-				collect_tree_nodes_recursive(iterator, tree_nodes, lower);
-				lower = lower + n_leaves;
-			}
-			else
-				lower++;
+				collect_tree_nodes_recursive(iterator, tree_nodes);
 			SG_UNREF(iterator);
 		}
-		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
-	}
-	SG_UNREF(sub_blocks);
-}
-
-void collect_leaf_blocks_recursive(CIndexBlock* subtree_root_block, CList* list)
-{
-	CList* sub_blocks = subtree_root_block->get_sub_blocks();
-	if (sub_blocks->get_num_elements() == 0)
-	{
-		list->append_element(subtree_root_block);
-	}
-	else
-	{
-		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
-		do
-		{
-			collect_leaf_blocks_recursive(iterator, list);
-			SG_UNREF(iterator);
-		} 
 		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
 	}
 	SG_UNREF(sub_blocks);
@@ -126,40 +75,17 @@ void CIndexBlockTree::set_root_block(CIndexBlock* root_block)
 
 SGVector<index_t> CIndexBlockTree::get_SLEP_ind()
 {
-	CList* blocks = new CList(true);
-	collect_leaf_blocks_recursive(m_root_block, blocks);
-	SG_DEBUG("Collected %d leaf blocks\n", blocks->get_num_elements());
-	check_blocks_list(blocks);
-
-
-	SGVector<index_t> ind(blocks->get_num_elements()+1);
-
-	int t_i = 0;
-	ind[0] = 0;
-	CIndexBlock* iterator = (CIndexBlock*)blocks->get_first_element();
-	do
-	{
-		ind[t_i+1] = iterator->get_max_index();
-		SG_DEBUG("Blocks = [%d,%d]\n", iterator->get_min_index(), iterator->get_max_index());
-		SG_UNREF(iterator);
-		t_i++;
-	} 
-	while ((iterator = (CIndexBlock*)blocks->get_next_element()) != NULL);
-
-	SG_UNREF(blocks);
-
-	return ind;
+	SG_SNOTIMPLEMENTED;
+	return SGVector<index_t>();
 }
 
 SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t()
 {
 	CList* blocks = new CList(true);
-	int n_blocks = get_SLEP_ind().vlen;
-	SG_DEBUG("Number of blocks = %d \n", n_blocks);
 
 	vector<block_tree_node_t> tree_nodes = vector<block_tree_node_t>();
 	
-	collect_tree_nodes_recursive(m_root_block, &tree_nodes,1);
+	collect_tree_nodes_recursive(m_root_block, &tree_nodes);
 
 	SGVector<float64_t> ind_t(3+3*tree_nodes.size());
 	// supernode
@@ -167,9 +93,9 @@ SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t()
 	ind_t[1] = -1;
 	ind_t[2] = 1.0;
 
-	for (int32_t i=0; i<tree_nodes.size(); i++)
+	for (int32_t i=0; i<(int32_t)tree_nodes.size(); i++)
 	{
-		ind_t[3+i*3] = tree_nodes[i].t_min_index;
+		ind_t[3+i*3] = tree_nodes[i].t_min_index + 1;
 		ind_t[3+i*3+1] = tree_nodes[i].t_max_index;
 		ind_t[3+i*3+2] = tree_nodes[i].weight;
 	}

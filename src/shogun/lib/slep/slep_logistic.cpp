@@ -241,13 +241,13 @@ double compute_lambda_logistic(
 			for (int i=0; i<n_vecs; i++)
 			{
 				if (y[i]>0)
-					b = m2;
+					b = double(m2) / (n_vecs*n_vecs);
 				else
-					b = -m1;
+					b = -double(m1) / (n_vecs*n_vecs);
 				
 				features->add_to_dense_vec(b,i,ATb,n_feats);
 			}
-			
+
 			if (options.general)
 				lambda_max = general_findLambdaMax(ATb, n_feats, options.G, options.ind_t, options.n_nodes);
 			else
@@ -303,6 +303,20 @@ slep_result_t slep_logistic(
 	w.zero();
 	SGVector<double> c(n_blocks);
 	c.zero();
+
+	if (options.mode == FEATURE_TREE)
+	{
+		int m1=0;
+		int m2=0;
+		for (i=0; i<n_vecs; i++)
+		{
+			if (y[i]>0)
+				m1++;
+			else
+				m2++;
+		}
+		c[0] = CMath::log(double(m1)/m2);
+	}
 
 	double* s = SG_CALLOC(double, n_feats*n_tasks);
 	double* sc = SG_CALLOC(double, n_tasks);
@@ -512,7 +526,7 @@ slep_result_t slep_logistic(
 						double aa = -y[i]*(Aw[i]+c[0]);
 						double bb = CMath::max(aa,0.0);
 						
-						fun_x += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+						fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
 					}
 				}
 				break;

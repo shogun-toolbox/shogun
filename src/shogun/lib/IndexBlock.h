@@ -59,8 +59,6 @@ public:
 	/** get num subtasks */
 	int32_t get_num_sub_blocks();
 
-protected:
-
 	/** adds sub-block
 	 * @param sub_block subtask to add
 	 */

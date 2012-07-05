@@ -95,6 +95,8 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 				new_w[i] = result.w[i];
 
 			set_bias(result.c[0]);
+
+			w = new_w;
 		}
 		break;
 		case TREE: 
@@ -102,16 +104,14 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			CIndexBlockTree* feature_tree = (CIndexBlockTree*)m_feature_relation;
 
 			CIndexBlock* root_block = feature_tree->get_root_block();
-			if (root_block->get_max_index() > features->get_num_vectors())
+			if (root_block->get_max_index() > features->get_dim_feature_space())
 				SG_ERROR("Root block covers more vectors than available\n");
 			SG_UNREF(root_block);
 
-			SGVector<index_t> ind = feature_tree->get_SLEP_ind();
 			SGVector<float64_t> ind_t = feature_tree->get_SLEP_ind_t();
-			options.ind = ind.vector;
 			options.ind_t = ind_t.vector;
-			options.n_feature_blocks = ind.vlen-1;
-			options.n_nodes = ind_t.vlen / 3;
+			options.n_nodes = ind_t.vlen/3;
+			options.n_feature_blocks = ind_t.vlen/3;
 			options.mode = FEATURE_TREE;
 
 			slep_result_t result = slep_logistic(features, y.vector, m_z, options);
@@ -122,6 +122,8 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 				new_w[i] = result.w[i];
 
 			set_bias(result.c[0]);
+
+			w = new_w;
 		}
 		break;
 		default: 
