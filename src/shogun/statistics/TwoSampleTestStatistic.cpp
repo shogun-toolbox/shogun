@@ -104,7 +104,7 @@ float64_t CTwoSampleTestStatistic::compute_p_value(float64_t statistic)
 	else
 	{
 		SG_ERROR("%s::compute_p_value(): Unknown method to approximate null-"
-				"distirbution!\n", get_name());
+				"distribution!\n", get_name());
 	}
 
 	return result;
