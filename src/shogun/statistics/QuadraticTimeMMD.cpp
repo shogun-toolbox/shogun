@@ -160,7 +160,8 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 		result=compute_biased_statistic();
 		break;
 	default:
-		SG_ERROR("CQuadraticTimeMMD::compute_statistic(): Unknown type!\n");
+		SG_ERROR("CQuadraticTimeMMD::compute_statistic(): Unknown statistic "
+				"type!\n");
 		break;
 	}
 
