@@ -25,8 +25,8 @@ CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p, CFeatures* q) :
 {
 	if (p->get_num_vectors()!=q->get_num_vectors())
 	{
-		SG_ERROR("%s: Only features with equal number of vectors "
-		"are currently possible\n", get_name());
+		SG_ERROR("%s: Only features with equal number of vectors are currently "
+				"possible\n", get_name());
 	}
 
 	init();
