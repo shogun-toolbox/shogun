@@ -250,14 +250,9 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
-	if (!kernel)
-		SG_ERROR("No kernel assigned!\n");
+	REQUIRE(kernel, "No kernel assigned!\n");
 
-	CFeatures* lhs=kernel->get_lhs();
-	if (!lhs)
-		SG_ERROR("%s: No left hand side specified\n", get_name());
-
-	if (!lhs->get_num_vectors())
+	if (!kernel->get_num_vec_lhs())
 	{
 		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
 				" an implementation error in %s, where it was forgotten to set "
@@ -266,9 +261,13 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	}
 
 	if (data)
+	{
+		CFeatures* lhs=kernel->get_lhs();
+		REQUIRE(lhs, "%s: No left hand side specified\n", get_name());
 		kernel->init(lhs, data);
+		SG_UNREF(lhs);
+	}
 
-	SG_UNREF(lhs);
 
 	int32_t num_vectors=kernel->get_num_vec_rhs();
 
