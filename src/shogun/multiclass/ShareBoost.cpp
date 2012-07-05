@@ -9,6 +9,7 @@
  */
 
 #include <algorithm>
+#include <ctime>
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/ShareBoost.h>
@@ -68,14 +69,24 @@ bool CShareBoost::train_machine(CFeatures* data)
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 		m_machines->push_back(new CLinearMachine());
 
+	clock_t t_compute_pred = 0;
 	for (int32_t t=0; t < m_nonzero_feas; ++t)
 	{
+		clock_t t_start = clock();
 		compute_rho();
 		int32_t i_fea = choose_feature();
 		m_activeset.vector[m_activeset.vlen] = i_fea;
 		m_activeset.vlen += 1;
+		clock_t t_choose_feature = clock();
 		optimize_coefficients();
+		clock_t t_optimize = clock();
+
+		SG_SPRINT(" SB[round %03d]: (%8.4f + %8.4f) sec.\n", t,
+				float64_t(t_compute_pred + t_choose_feature-t_start)/CLOCKS_PER_SEC,
+				float64_t(t_optimize - t_choose_feature)/CLOCKS_PER_SEC);
+
 		compute_pred();
+		t_compute_pred = clock() - t_optimize;
 	}
 
 	// release memory
@@ -174,7 +185,7 @@ int32_t CShareBoost::choose_feature()
 
 void CShareBoost::optimize_coefficients()
 {
-	ShareBoostOptimizer optimizer(this, true);
+	ShareBoostOptimizer optimizer(this, false);
 	optimizer.optimize();
 }
 
