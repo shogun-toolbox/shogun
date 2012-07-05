@@ -127,7 +127,7 @@ def modelselection_grid_search_kernel():
 	cross.set_conf_int_alpha(0.01)
 	result=cross.evaluate()
 	print("result: ")
-	result.print_result()
+	#result.print_result()
 
 	return 0
 	

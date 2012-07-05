@@ -40,8 +40,8 @@
 #include <stdarg.h>
 
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/external/shogun_liblinear.h>
-#include <shogun/lib/external/tron.h>
+#include <shogun/optimization/liblinear/shogun_liblinear.h>
+#include <shogun/optimization/liblinear/tron.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/Signal.h>
 

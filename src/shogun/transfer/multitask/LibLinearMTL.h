@@ -19,7 +19,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/lib/external/shogun_liblinear.h>
+#include <shogun/optimization/liblinear/shogun_liblinear.h>
 #include <shogun/lib/SGSparseMatrix.h>
 
 
@@ -284,6 +284,7 @@ class CLibLinearMTL : public CLinearMachine
 		 * @return duality gap
 		 */
 		virtual float64_t compute_duality_gap();
+
 
 	protected:
 		/** train linear SVM classifier

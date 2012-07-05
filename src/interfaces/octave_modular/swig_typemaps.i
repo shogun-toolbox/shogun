@@ -326,6 +326,8 @@ TYPEMAP_STRINGFEATURES_OUT(float64_t,     Matrix)
 	int64_t nnz=sm.nelem();
 
 	SGSparseVector<type>* matrix = SG_MALLOC(SGSparseVector<type>, num_vec);
+	for (int32_t i=0; i<num_vec; i++)
+		new (&matrix[i]) SGSparseVector<type>();
 
 	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)

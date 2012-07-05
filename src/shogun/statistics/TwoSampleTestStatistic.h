@@ -15,21 +15,11 @@
 namespace shogun
 {
 
-/** enum for different method to approximate null-distibution */
-enum ENullApproximationMethod
-{
-	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN
-};
-
 class CFeatures;
 
 /** @brief Two sample test base class. Provides an interface for performing a
  * two-sample test, i.e. Given samples from two distributions p and q, the
  * null-hypothesis is: H0: p==q, the alternative hypothesis: H1: p!=q.
- *
- * It is possible to define multiple ways to compute the p-value.
- *
- * Provides code for sampling the null-distribution via bootstrapping.
  *
  * Abstract base class.
  *
@@ -70,20 +60,9 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		 */
 		virtual SGVector<float64_t> bootstrap_null();
 
-		/** sets the number of bootstrap iterations for bootstrap_null()
-		 *
-		 * @param bootstrap_iterations how often bootstrapping shall be done
-		 */
-		void set_bootstrap_iterations(index_t bootstrap_iterations);
-
-		/** sets the method how to approximate the null-distribution
-		 * @param null_approximation_method method to use
-		 */
-		virtual void set_null_approximation_method(
-				ENullApproximationMethod null_approximation_method);
-
-		/** computes a p-value based on bootstrapping the null-distribution.
-		 * This method should be overridden for different methods
+		/** computes a p-value based on current method for approximating the
+		 * null-distribution. The p-value is the 1-p quantile of the null-
+		 * distribution where the given statistic lies in.
 		 *
 		 * @param statistic statistic value to compute the p-value for
 		 * @return p-value parameter statistic is the (1-p) percentile of the
@@ -104,12 +83,6 @@ class CTwoSampleTestStatistic : public CTestStatistic
 
 		/** defines the first index of samples of q */
 		index_t m_q_start;
-
-		/** number of iterations for bootstrapping null-distributions */
-		index_t m_bootstrap_iterations;
-
-		/** Defines how the the null distribution is approximated */
-		ENullApproximationMethod m_null_approximation_method;
 };
 
 }

@@ -35,20 +35,20 @@ sg('set_labels', 'TRAIN', trainlab);
 sg('set_kernel', 'SLIK', 'CHAR', cache, l, d1, d2);
 sg('new_classifier', 'LIBSVM');
 sg('c', C);
-tic;sg('train_classifier');toc;
+%tic;sg('train_classifier');toc;
 
 %evaluate svm on test data
-sg('set_features', 'TEST', testdat, 'DNA');
-sg('set_labels', 'TEST', testlab);
-out1=sg('classify');
-fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
+%sg('set_features', 'TEST', testdat, 'DNA');
+%sg('set_labels', 'TEST', testlab);
+%out1=sg('classify');
+%fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
 
-out2=sg('classify');
-fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
+%out2=sg('classify');
+%fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
 
 
-tic;out3=sg('classify');toc;
-fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
+%tic;out3=sg('classify');toc;
+%fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
 
-max(abs(out1-out2))
-max(abs(out1-out3))
+%max(abs(out1-out2))
+%max(abs(out1-out3))
