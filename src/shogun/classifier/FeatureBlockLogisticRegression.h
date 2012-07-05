@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifndef  MULTITASKLOGISTICREGRESSION_H_
-#define  MULTITASKLOGISTICREGRESSION_H_
+#ifndef  FEATUREBLOCKLOGISTICREGRESSION_H_
+#define  FEATUREBLOCKLOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/IndexBlockRelation.h>
@@ -17,14 +17,14 @@
 namespace shogun
 {
 /** @brief  */
-class CMultitaskLogisticRegression : public CSLEPMachine
+class CFeatureBlockLogisticRegression : public CSLEPMachine
 {
 
 	public:
-		MACHINE_PROBLEM_TYPE(PT_REGRESSION)
+		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
-		CMultitaskLogisticRegression();
+		CFeatureBlockLogisticRegression();
 
 		/** constructor
 		 *
@@ -33,38 +33,28 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		 * @param training_labels training labels
 		 * @param task_relation task relation
 		 */
-		CMultitaskLogisticRegression(
+		CFeatureBlockLogisticRegression(
 		     float64_t z, CDotFeatures* training_data, 
 		     CBinaryLabels* training_labels, CIndexBlockRelation* task_relation);
 
 		/** destructor */
-		virtual ~CMultitaskLogisticRegression();
+		virtual ~CFeatureBlockLogisticRegression();
 
 		/** get name */
 		virtual const char* get_name() const 
 		{
-			return "MultitaskLogisticRegression";
+			return "FeatureBlockLogisticRegression";
 		}
 
-		/** getter for current task
-		 * @return current task index
+		/** getter for feature tree
+		 * @return feature tree
 		 */
-		int32_t get_current_task() const;
+		CIndexBlockRelation* get_feature_relation() const;
 
-		/** setter for current task
-		 * @param task task index
+		/** setter for feature tree
+		 * @param feature_tree feature tree
 		 */
-		void set_current_task(int32_t task);
-
-		/** getter for task tree
-		 * @return task tree
-		 */
-		CIndexBlockRelation* get_task_relation() const;
-
-		/** setter for task tree
-		 * @param task_tree task tree
-		 */
-		void set_task_relation(CIndexBlockRelation* task_relation);
+		void set_feature_relation(CIndexBlockRelation* feature_relation);
 		
 	protected:
 
@@ -78,17 +68,8 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 
 	protected:
 
-		/** current task index */
-		int32_t m_current_task;
-
 		/** feature tree */
-		CIndexBlockRelation* m_task_relation;
-
-		/** tasks w's */
-		SGMatrix<float64_t> m_tasks_w;
-		
-		/** tasks interceptss */
-		SGVector<float64_t> m_tasks_c;
+		CIndexBlockRelation* m_feature_relation;
 
 };
 }

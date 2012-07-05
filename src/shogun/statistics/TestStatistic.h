@@ -18,7 +18,7 @@ namespace shogun
 /** enum for different method to approximate null-distibution */
 enum ENullApproximationMethod
 {
-	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN
+	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN, HSIC_GAMMA
 };
 
 /** @brief Test statistic base class. Provides an interface for statistical

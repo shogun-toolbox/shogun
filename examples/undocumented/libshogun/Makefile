@@ -85,6 +85,9 @@ TARGETS = basic_minimal \
 		  transfer_multitasklogisticregression \
 		  statistics_quadratic_time_mmd \
 		  statistics_linear_time_mmd \
+		  statistics_hsic \
+		  transfer_multitasklsregression \
+		  transfer_multitasklogisticregression \
 
 all: $(TARGETS)
 

@@ -18,7 +18,7 @@ namespace shogun
 /** TODO
  *
  */
-class CHSIC : CKernelIndependenceTestStatistic
+class CHSIC : public CKernelIndependenceTestStatistic
 {
 public:
 	/** TODO */
@@ -35,7 +35,7 @@ public:
 
 	virtual ~CHSIC();
 
-	/** TODO */
+	/** Computes the biased HSIC TODO */
 	virtual float64_t compute_statistic();
 
 	/** computes a p-value based on current method for approximating the
@@ -61,6 +61,20 @@ public:
 	{
 		return "HSIC";
 	}
+
+	/** Approximates the null-distribution by the two parameter gamma
+	 * distribution. TODO
+	 *
+	 * NOTE: the gamma distribution is fitted to m*HSIC_b. Therefore, the
+	 * parameter statistic value is multiplied by m before anything is done.
+	 * You can safely call this with values from compute_statistic().
+	 * However, the attached features have to be the SAME size, as these, the
+	 * statistic was computed on.
+	 *
+	 * Called by compute_p_value() if null approximation method is set to
+	 * MMD2_GAMMA.
+	 */
+	float64_t compute_p_value_gamma(float64_t statistic);
 
 private:
 	void init();

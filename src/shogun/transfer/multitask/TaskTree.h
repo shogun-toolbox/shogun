@@ -10,13 +10,12 @@
 #ifndef TASKTREE_H_
 #define TASKTREE_H_
 
-#include <shogun/transfer/multitask/Task.h>
-#include <shogun/transfer/multitask/TaskRelation.h>
+#include <shogun/lib/IndexBlockTree.h>
 
 namespace shogun
 {
 
-class CTaskTree : public CTaskRelation
+class CTaskTree : public CIndexBlockTree
 {
 public:
 
@@ -24,40 +23,28 @@ public:
 	CTaskTree();
 
 	/** constructor
-	 * @param root_task root task of task tree
+	 * @param root_task root task of the tree
 	 */
-	CTaskTree(CTask* root_task);
+	CTaskTree(CIndexBlock* root_task);
 
 	/** destructor */
 	virtual ~CTaskTree();
 
-	/** get root task */
-	CTask* get_root_task() const;
-
-	/** set root task */
-	void set_root_task(CTask* root_task);
-
-	/** returns information about tasks in 
+	/** returns information about blocks in 
 	 * SLEP "ind" format
 	 */
-	SGVector<index_t> get_SLEP_ind();
+	virtual SGVector<index_t> get_SLEP_ind();
 
-	/** returns information about tasks relationships
+	/** returns information about blocks relations
 	 * in SLEP "ind_t" format
 	 */
-	SGVector<float64_t> get_SLEP_ind_t();
+	virtual SGVector<float64_t> get_SLEP_ind_t();
 
-	virtual bool is_valid() const;
-
-	virtual ETaskRelationType get_relation_type() const { return TREE; }
+	virtual EIndexBlockRelationType get_relation_type() const { return TREE; }
 
 	/** get name */
 	const char* get_name() const { return "TaskTree"; };
 
-private:
-
-	/** root task */
-	CTask* m_root_task;
 };
 
 }

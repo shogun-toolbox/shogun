@@ -8,11 +8,11 @@
  */
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
-#include <shogun/lib/slep/slep_mt_lr.h>
+#include <shogun/lib/slep/slep_logistic.h>
 #include <shogun/lib/slep/slep_options.h>
 
-#include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/transfer/multitask/TaskTree.h>
+#include <shogun/lib/IndexBlockGroup.h>
+#include <shogun/lib/IndexBlockTree.h>
 
 namespace shogun
 {
@@ -26,7 +26,7 @@ CMultitaskLogisticRegression::CMultitaskLogisticRegression() :
 
 CMultitaskLogisticRegression::CMultitaskLogisticRegression(
      float64_t z, CDotFeatures* train_features, 
-     CBinaryLabels* train_labels, CTaskRelation* task_relation) :
+     CBinaryLabels* train_labels, CIndexBlockRelation* task_relation) :
 	CSLEPMachine(z,train_features,(CLabels*)train_labels), 
 	m_current_task(0), m_task_relation(NULL)
 {
@@ -62,13 +62,13 @@ void CMultitaskLogisticRegression::set_current_task(int32_t task)
 	bias = m_tasks_c[task];
 }
 
-CTaskRelation* CMultitaskLogisticRegression::get_task_relation() const
+CIndexBlockRelation* CMultitaskLogisticRegression::get_task_relation() const
 {
 	SG_REF(m_task_relation);
 	return m_task_relation;
 }
 
-void CMultitaskLogisticRegression::set_task_relation(CTaskRelation* task_relation)
+void CMultitaskLogisticRegression::set_task_relation(CIndexBlockRelation* task_relation)
 {
 	SG_UNREF(m_task_relation);
 	SG_REF(task_relation);
@@ -92,12 +92,12 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
 
-	ETaskRelationType relation_type = m_task_relation->get_relation_type();
+	EIndexBlockRelationType relation_type = m_task_relation->get_relation_type();
 	switch (relation_type)
 	{
 		case GROUP:
 		{
-			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
+			CIndexBlockGroup* task_group = (CIndexBlockGroup*)m_task_relation;
 			SGVector<index_t> ind = task_group->get_SLEP_ind();
 			options.ind = ind.vector;
 			options.n_tasks = ind.vlen-1;
@@ -105,16 +105,16 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 				SG_ERROR("Group of tasks covers more vectors than available\n");
 			
 			options.mode = MULTITASK_GROUP;
-			slep_result_t result = slep_mt_lr(features, y.vector, m_z, options);
+			slep_result_t result = slep_logistic(features, y.vector, m_z, options);
 			m_tasks_w = result.w;
 			m_tasks_c = result.c;
 		}
 		break;
 		case TREE: 
 		{
-			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+			CIndexBlockTree* task_tree = (CIndexBlockTree*)m_task_relation;
 
-			CTask* root_task = task_tree->get_root_task();
+			CIndexBlock* root_task = task_tree->get_root_block();
 			 if (root_task->get_max_index() > features->get_num_vectors())
 				SG_ERROR("Root task covers more vectors than available\n");
 			SG_UNREF(root_task);
@@ -127,7 +127,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			options.n_nodes = ind_t.vlen / 3;
 			options.mode = MULTITASK_TREE;
 
-			slep_result_t result = slep_mt_lr(features, y.vector, m_z, options);
+			slep_result_t result = slep_logistic(features, y.vector, m_z, options);
 			m_tasks_w = result.w;
 			m_tasks_c = result.c;
 		}

@@ -24,7 +24,9 @@ namespace shogun
 IGNORE_IN_CLASSLIST enum slep_mode
 {
 	MULTITASK_GROUP,
-	MULTITASK_TREE
+	MULTITASK_TREE,
+	FEATURE_GROUP,
+	FEATURE_TREE
 };
 
 IGNORE_IN_CLASSLIST struct slep_options
@@ -37,10 +39,11 @@ IGNORE_IN_CLASSLIST struct slep_options
 	int n_nodes;
 	int n_tasks;
 	int regularization;
+	int n_feature_blocks;
 	int* ind;
 	double* ind_t;
 	double* G;
-	double* initial_w;
+	double* gWeight;
 	double q;
 	slep_mode mode;
 
@@ -54,7 +57,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 		opts.restart_num = 100;
 		opts.regularization = 0;
 		opts.q = 2.0;
-		opts.initial_w = NULL;
+		opts.gWeight = NULL;
 		opts.ind = NULL;
 		opts.ind_t = NULL;
 		opts.G = NULL;

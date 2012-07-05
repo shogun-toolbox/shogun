@@ -17,6 +17,11 @@
 %rename(StructuredData) CStructuredData;
 %rename(DynamicObjectArray) CDynamicObjectArray;
 
+%rename(IndexBlock) CIndexBlock;
+%rename(IndexBlockRelation) CIndexBlockRelation;
+%rename(IndexBlockGroup) CIndexBlockGroup;
+%rename(IndexBlockTree) CIndexBlockTree;
+
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
 %ignore TRIE_TERMINAL_CHARACTER;
@@ -449,3 +454,7 @@ namespace shogun
 %include <shogun/lib/StructuredDataTypes.h>
 %include <shogun/lib/StructuredData.h>
 %include <shogun/lib/DynamicObjectArray.h>
+%include <shogun/lib/IndexBlock.h>
+%include <shogun/lib/IndexBlockRelation.h>
+%include <shogun/lib/IndexBlockGroup.h>
+%include <shogun/lib/IndexBlockTree.h>
