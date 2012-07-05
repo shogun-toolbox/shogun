@@ -11,8 +11,8 @@
 #include <shogun/lib/slep/slep_mt_lsr.h>
 #include <shogun/lib/slep/slep_options.h>
 
-#include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/transfer/multitask/TaskTree.h>
+#include <shogun/lib/IndexBlockGroup.h>
+#include <shogun/lib/IndexBlockTree.h>
 
 namespace shogun
 {
@@ -26,7 +26,7 @@ CMultitaskLSRegression::CMultitaskLSRegression() :
 
 CMultitaskLSRegression::CMultitaskLSRegression(
      float64_t z, CDotFeatures* train_features, 
-     CRegressionLabels* train_labels, CTaskRelation* task_relation) :
+     CRegressionLabels* train_labels, CIndexBlockRelation* task_relation) :
 	CSLEPMachine(z,train_features,(CLabels*)train_labels), 
 	m_current_task(0), m_task_relation(NULL)
 {
@@ -60,13 +60,13 @@ void CMultitaskLSRegression::set_current_task(int32_t task)
 		w[i] = m_tasks_w(i,task);
 }
 
-CTaskRelation* CMultitaskLSRegression::get_task_relation() const
+CIndexBlockRelation* CMultitaskLSRegression::get_task_relation() const
 {
 	SG_REF(m_task_relation);
 	return m_task_relation;
 }
 
-void CMultitaskLSRegression::set_task_relation(CTaskRelation* task_relation)
+void CMultitaskLSRegression::set_task_relation(CIndexBlockRelation* task_relation)
 {
 	SG_UNREF(m_task_relation);
 	SG_REF(task_relation);
@@ -90,12 +90,12 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
 
-	ETaskRelationType relation_type = m_task_relation->get_relation_type();
+	EIndexBlockRelationType relation_type = m_task_relation->get_relation_type();
 	switch (relation_type)
 	{
 		case GROUP:
 		{
-			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
+			CIndexBlockGroup* task_group = (CIndexBlockGroup*)m_task_relation;
 			SGVector<index_t> ind = task_group->get_SLEP_ind();
 			options.ind = ind.vector;
 			options.n_tasks = ind.vlen-1;
@@ -106,7 +106,7 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 		break;
 		case TREE: 
 		{
-			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+			CIndexBlockTree* task_tree = (CIndexBlockTree*)m_task_relation;
 			SGVector<index_t> ind = task_tree->get_SLEP_ind();
 			options.ind = ind.vector;
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();

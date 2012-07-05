@@ -11,7 +11,7 @@
 #define  MULTITASKLOGISTICREGRESSION_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/transfer/multitask/TaskRelation.h>
+#include <shogun/lib/IndexBlockRelation.h>
 #include <shogun/machine/SLEPMachine.h>
 
 namespace shogun
@@ -35,7 +35,7 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		 */
 		CMultitaskLogisticRegression(
 		     float64_t z, CDotFeatures* training_data, 
-		     CBinaryLabels* training_labels, CTaskRelation* task_relation);
+		     CBinaryLabels* training_labels, CIndexBlockRelation* task_relation);
 
 		/** destructor */
 		virtual ~CMultitaskLogisticRegression();
@@ -59,12 +59,12 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		/** getter for task tree
 		 * @return task tree
 		 */
-		CTaskRelation* get_task_relation() const;
+		CIndexBlockRelation* get_task_relation() const;
 
 		/** setter for task tree
 		 * @param task_tree task tree
 		 */
-		void set_task_relation(CTaskRelation* task_relation);
+		void set_task_relation(CIndexBlockRelation* task_relation);
 		
 	protected:
 
@@ -82,7 +82,7 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		int32_t m_current_task;
 
 		/** feature tree */
-		CTaskRelation* m_task_relation;
+		CIndexBlockRelation* m_task_relation;
 
 		/** tasks w's */
 		SGMatrix<float64_t> m_tasks_w;

@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifndef TASKRELATION_H_
-#define TASKRELATION_H_
+#ifndef INDEXBLOCKRELATION_H_
+#define INDEXBLOCKRELATION_H_
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/List.h>
@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-enum ETaskRelationType
+enum EIndexBlockRelationType
 {
 	GROUP,
 	TREE
@@ -25,35 +25,31 @@ enum ETaskRelationType
 /** @brief
  *
  */
-class CTaskRelation : public CSGObject
+class CIndexBlockRelation : public CSGObject
 {
 public:
 
 	/** default constructor */
-	CTaskRelation()
+	CIndexBlockRelation()
 	{
 	}
 
 	/** destructor */
-	virtual ~CTaskRelation()
+	virtual ~CIndexBlockRelation()
 	{
 	}
 
 	/** get name */
-	const char* get_name() const { return "TaskRelation"; };
-
-	/** check validity of relation */
-	virtual bool is_valid() const = 0;
+	const char* get_name() const { return "IndexBlockRelation"; };
 
 	/** get relation type */
-	virtual ETaskRelationType get_relation_type() const = 0;
+	virtual EIndexBlockRelationType get_relation_type() const = 0;
 
 protected:
 
-	bool check_task_list(CList* tasks);
+	bool check_blocks_list(CList* blocks);
 
 };
 
 }
 #endif
-

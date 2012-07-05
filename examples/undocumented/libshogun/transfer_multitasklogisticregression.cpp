@@ -1,7 +1,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/transfer/multitask/Task.h>
-#include <shogun/transfer/multitask/TaskGroup.h>
+#include <shogun/lib/IndexBlock.h>
+#include <shogun/lib/IndexBlockGroup.h>
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
@@ -26,18 +26,18 @@ int main(int argc, char** argv)
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
 	// create three labels
-	CRegressionLabels* labels=new CRegressionLabels(4);
+	CBinaryLabels* labels=new CBinaryLabels(4);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
 	labels->set_label(2, -1);
 	labels->set_label(3, +1);
 
-	CTask* first_task = new CTask(0,2);
-	CTask* second_task = new CTask(2,4);
+	CIndexBlock* first_task = new CIndexBlock(0,2);
+	CIndexBlock* second_task = new CIndexBlock(2,4);
 
-	CTaskGroup* task_group = new CTaskGroup();
-	task_group->add_task(first_task);
-	task_group->add_task(second_task);
+	CIndexBlockGroup* task_group = new CIndexBlockGroup();
+	task_group->add_block(first_task);
+	task_group->add_block(second_task);
 
 	CMultitaskLogisticRegression* regressor = new CMultitaskLogisticRegression(0.5,features,labels,task_group);
 	regressor->train();

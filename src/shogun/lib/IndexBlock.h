@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifndef TASK_H_
-#define TASK_H_
+#ifndef INDEXBLOCK_H_
+#define INDEXBLOCK_H_
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/List.h>
@@ -18,29 +18,24 @@ namespace shogun
 
 /** @brief used to represent tasks in multitask learning
  */
-class CTask : public CSGObject
+class CIndexBlock : public CSGObject
 {
 public:
 
 	/** default constructor */
-	CTask();
+	CIndexBlock();
 
 	/** constructor
-	 * @param min_index smallest index of vector in task
-	 * @param max_index largest index of vector in task
+	 * @param min_index smallest index of the index block
+	 * @param max_index largest index of the index block
 	 * @param weight weight (optional)
 	 * @param name name of task (optional)
 	 */
-	CTask(index_t min_index, index_t max_index, 
+	CIndexBlock(index_t min_index, index_t max_index, 
 	      float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
-	~CTask();
-
-	/** adds subtask
-	 * @param subtask subtask to add
-	 */
-	void add_subtask(CTask* subtask);
+	~CIndexBlock();
 
 	/** get min index */
 	index_t get_min_index() const { return m_min_index; }
@@ -55,32 +50,38 @@ public:
 	/** set weight */
 	void set_weight(float64_t weight) { m_weight = weight; }
 
-
 	/** get name */
 	virtual const char* get_name() const { return "Task"; };
 
 	/** get subtasks */
-	CList* get_subtasks();
+	CList* get_sub_blocks();
 
 	/** get num subtasks */
-	int32_t get_num_subtasks();
+	int32_t get_num_sub_blocks();
+
+protected:
+
+	/** adds sub-block
+	 * @param sub_block subtask to add
+	 */
+	void add_sub_block(CIndexBlock* sub_block);
 
 private:
 
-	/** name of task */
-	const char* m_task_name;
+	/** name of the block */
+	const char* m_block_name;
 
-	/** lind */
+	/** min index */
 	index_t m_min_index;
 
-	/** rind */
+	/** max index */
 	index_t m_max_index;
 
 	/** weight */
 	float64_t m_weight;
 
 	/** subtasks */
-	CList* m_subtasks;
+	CList* m_sub_blocks;
 
 };
 
