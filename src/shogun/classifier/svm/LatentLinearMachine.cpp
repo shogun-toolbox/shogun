@@ -82,7 +82,7 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
       psi (*this, x, h, psi_feat.vector);
 
       float64_t y = w.dot (w.vector, psi_feat.vector, w.vlen);
-      labels->set_confidence (i, y);
+      labels->set_label (i, y);
     }
 
     return labels;
@@ -121,7 +121,7 @@ void CLatentLinearMachine::default_argmax_h (CLatentLinearMachine& llm,
   /* argmax_h only for positive examples */
   for (int i = 0; i < num; ++i)
   {
-    if (labels->get_confidence (i) == 1)
+    if (labels->get_label (i) == 1)
     {
       /* infer h and set it for the argmax_h <w,psi(x,h)> */
       CLatentData* latent_data = llm.infer (llm, features->get_sample (i));
