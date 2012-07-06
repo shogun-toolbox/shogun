@@ -51,12 +51,6 @@ namespace shogun
        */
       virtual void ensure_valid (const char* context=NULL);
 
-      /** get number of labels, depending on whether a subset is set
-       *
-       * @return number of labels
-       */
-      virtual int32_t get_num_labels ();
-
       /** get label type
        *
        * @return label type (binary, multiclass, ...)
@@ -67,7 +61,7 @@ namespace shogun
 
     protected:
       /** the vector of labels */
-      CDynamicObjectArray* m_labels;
+      CDynamicObjectArray* m_latent_labels;
 
     private:
       void init ();

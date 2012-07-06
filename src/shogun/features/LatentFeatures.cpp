@@ -41,7 +41,6 @@ EFeatureType CLatentFeatures::get_feature_type () const
 
 EFeatureClass CLatentFeatures::get_feature_class () const
 {
-
   return C_LATENT;
 }
 
@@ -51,7 +50,7 @@ int32_t CLatentFeatures::get_num_vectors () const
   if (m_samples == NULL)
     return 0;
   else
-    return m_samples->get_num_elements ();
+    return m_samples->get_array_size ();
 }
 
 int32_t CLatentFeatures::get_size () const
@@ -62,8 +61,13 @@ int32_t CLatentFeatures::get_size () const
 bool CLatentFeatures::add_sample (CLatentData* example)
 {
   ASSERT (m_samples != NULL);
-  m_samples->push_back (example);
-
+  if (m_samples != NULL)
+  {
+    m_samples->push_back (example);
+    return true;
+  }
+  else
+    return false;
 }
 
 CLatentData* CLatentFeatures::get_sample (index_t idx)
