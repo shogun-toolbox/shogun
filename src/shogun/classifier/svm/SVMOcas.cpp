@@ -58,7 +58,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
 
 	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+  ASSERT(m_labels->get_label_type() == LT_BINARY || m_labels->get_label_type() == LT_LATENT);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -117,6 +117,8 @@ bool CSVMOcas::train_machine(CFeatures* data)
 
 	SG_FREE(tmp_a_buf);
 
+	primal_objective = result.Q_P;
+	
 	uint32_t num_cut_planes = result.nCutPlanes;
 
 	SG_DEBUG("num_cut_planes=%d\n", num_cut_planes);
@@ -127,7 +129,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index);
 		SG_FREE(cp_index[i]);
 	}
-
+	
 	SG_FREE(cp_value);
 	cp_value=NULL;
 	SG_FREE(cp_index);
@@ -344,6 +346,8 @@ void CSVMOcas::init()
 	cp_nz_dims=NULL;
 	cp_bias=NULL;
 
+	primal_objective = 0.0;
+
     m_parameters->add(&C1, "C1",  "Cost constant 1.");
     m_parameters->add(&C2, "C2",  "Cost constant 2.");
     m_parameters->add(&use_bias, "use_bias",
@@ -352,4 +356,10 @@ void CSVMOcas::init()
     m_parameters->add(&bufsize, "bufsize", "Maximum number of cutting planes.");
     m_parameters->add((machine_int_t*) &method, "method",
 			"SVMOcas solver type.");
+}
+
+float64_t CSVMOcas::compute_primal_objective () const
+{
+	
+	return primal_objective;
 }
