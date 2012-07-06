@@ -360,6 +360,6 @@ void CSVMOcas::init()
 
 float64_t CSVMOcas::compute_primal_objective () const
 {
-	
 	return primal_objective;
 }
+
