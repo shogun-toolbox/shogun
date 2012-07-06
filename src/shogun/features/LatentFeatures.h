@@ -32,13 +32,13 @@ namespace shogun
        *
        * @return templated feature type
        */
-      virtual EFeatureType get_feature_type ();
+      virtual EFeatureType get_feature_type () const;
 
       /** get feature class
        *
        * @return feature class
        */
-      virtual EFeatureClass get_feature_class ();
+      virtual EFeatureClass get_feature_class () const;
 
       /** get number of examples
        *
@@ -52,7 +52,7 @@ namespace shogun
        *
        * @return memory footprint of one feature
        */
-      virtual int32_t get_size ();
+      virtual int32_t get_size () const;
 
       virtual const char* get_name () const { return "LatentFeatures"; }
 

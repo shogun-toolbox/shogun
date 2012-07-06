@@ -34,12 +34,12 @@ CFeatures* CLatentFeatures::duplicate () const
   return new CLatentFeatures (*this);
 }
 
-EFeatureType CLatentFeatures::get_feature_type ()
+EFeatureType CLatentFeatures::get_feature_type () const
 {
   return F_ANY;
 }
 
-EFeatureClass CLatentFeatures::get_feature_class ()
+EFeatureClass CLatentFeatures::get_feature_class () const
 {
 
   return C_LATENT;
@@ -54,7 +54,7 @@ int32_t CLatentFeatures::get_num_vectors () const
     return m_samples->get_num_elements ();
 }
 
-int32_t CLatentFeatures::get_size ()
+int32_t CLatentFeatures::get_size () const
 {
   return sizeof (float64_t);
 }
