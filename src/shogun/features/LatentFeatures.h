@@ -12,7 +12,7 @@
 #define __LATENTFEATURES_H__
 
 #include <shogun/features/Features.h>
-#include <shogun/features/LatentLabels.h>
+#include <shogun/labels/LatentLabels.h>
 
 namespace shogun
 {
@@ -60,7 +60,7 @@ namespace shogun
       CLatentData* get_sample (index_t idx);
 
     protected:
-      CDynamicObjectArray<CLatentData>* m_samples;
+      CDynamicObjectArray* m_samples;
 
     private:
       void init ();

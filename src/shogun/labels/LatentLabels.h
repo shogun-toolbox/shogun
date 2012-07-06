@@ -11,7 +11,7 @@
 #ifndef __LATENTLABELS_H__
 #define __LATENTLABELS_H__
 
-#include <shogun/features/Labels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
@@ -35,23 +35,27 @@ namespace shogun
 
       virtual ~CLatentLabels ();
 
-      CDynamicObjectArray<CLatentData>* get_labels() const;
+      CDynamicObjectArray* get_labels() const;
 
-      using CLabels::get_label;
       CLatentData* get_latent_label (int32_t idx) const;
 
       void add_latent_label (CLatentData* label);
 
-      using CLabels::set_label;
       bool set_latent_label (int32_t idx, CLatentData* label);
 
       int32_t get_num_labels() const;
 
       virtual const char* get_name() const { return "LatentLabels"; }
 
+      /** get label type
+       *
+       * @return label type LT_LATENT
+       */
+      virtual ELabelType get_label_type() { return LT_LATENT; }
+
     protected:
       /** the vector of labels */
-      CDynamicObjectArray<CLatentData>* m_labels;
+      CDynamicObjectArray* m_labels;
 
     private:
       void init ();

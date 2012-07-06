@@ -17,6 +17,8 @@ enum ELabelType
 	/// real valued labels (e.g. for regression, classifier outputs)
 	LT_REGRESSION = 3,
 	/// structured labels (e.g. sequences, trees) used in Structured Output problems
-	LT_STRUCTURED = 4
+	LT_STRUCTURED = 4,
+  /// latent latent labels
+  LT_LATENT = 5
 };
 #endif

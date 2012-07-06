@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/features/LatentLabels.h>
+#include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/SimpleFeatures.h>
 
