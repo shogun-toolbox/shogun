@@ -15,7 +15,6 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
 
 namespace shogun
 {	

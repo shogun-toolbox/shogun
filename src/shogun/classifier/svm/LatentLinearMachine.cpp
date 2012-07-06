@@ -13,7 +13,7 @@
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/classifier/svm/LatentLinearMachine.h>
 #include <shogun/features/LatentFeatures.h>
-#include <shogun/features/SimpleFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 
@@ -52,7 +52,7 @@ CLatentLinearMachine::CLatentLinearMachine (float64_t C,
 
   /* create the temporal storage for PSI features */
   SGMatrix<float64_t> psi_m (m_psi_size, m_latent_feats->get_num_vectors ());
-  ((CSimpleFeatures<float64_t>*)features)->set_feature_matrix (psi_m);
+  ((CDenseFeatures<float64_t>*)features)->set_feature_matrix (psi_m);
 }
 
 CLatentLabels* CLatentLinearMachine::apply ()
@@ -70,7 +70,7 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
     CLatentFeatures* lf = dynamic_cast<CLatentFeatures*> (data);
     int32_t num_examples = lf->get_num_vectors ();
     SGMatrix<float64_t> psi_matrix (m_psi_size, num_examples);
-    CSimpleFeatures<float64_t> psi_feats (psi_matrix);
+    CDenseFeatures<float64_t> psi_feats (psi_matrix);
     CLatentLabels* labels = new CLatentLabels (num_examples);
 
     for (int i = 0; i < num_examples; ++i)
@@ -145,7 +145,7 @@ void CLatentLinearMachine::compute_psi ()
   int32_t num_vectors = features->get_num_vectors ();
   for (int i = 0; i < num_vectors; ++i)
   {
-    SGVector<float64_t> psi_feat = dynamic_cast<CSimpleFeatures<float64_t>*>(features)->get_feature_vector (i);
+    SGVector<float64_t> psi_feat = dynamic_cast<CDenseFeatures<float64_t>*>(features)->get_feature_vector (i);
     CLatentData* label = (dynamic_cast<CLatentLabels*> (m_labels))->get_latent_label (i);
     CLatentData* x = m_latent_feats->get_sample (i);
     psi (*this, x, label, psi_feat.vector);
@@ -226,7 +226,7 @@ void CLatentLinearMachine::init ()
   m_C1 = m_C2 = 10.0;
   m_epsilon = 1E-3;
   m_max_iter = 400;
-  features = new CSimpleFeatures<float64_t> ();
+  features = new CDenseFeatures<float64_t> ();
   SG_REF (features);
 
   if (argmax_h == NULL)
