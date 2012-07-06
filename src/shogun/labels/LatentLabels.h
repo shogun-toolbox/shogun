@@ -11,7 +11,7 @@
 #ifndef __LATENTLABELS_H__
 #define __LATENTLABELS_H__
 
-#include <shogun/labels/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
@@ -26,7 +26,7 @@ namespace shogun
       virtual const char* get_name() const { return "LatentData"; }
   };
 
-  class CLatentLabels : public CLabels
+  class CLatentLabels : public CBinaryLabels
   {
     public:
       CLatentLabels ();
@@ -37,21 +37,33 @@ namespace shogun
 
       CDynamicObjectArray* get_labels() const;
 
-      CLatentData* get_latent_label (int32_t idx) const;
+      CLatentData* get_latent_label (int32_t idx);
 
       void add_latent_label (CLatentData* label);
 
       bool set_latent_label (int32_t idx, CLatentData* label);
 
-      int32_t get_num_labels() const;
+      /** Make sure the label is valid, otherwise raise SG_ERROR.
+       *
+       * possible with subset
+       *
+       * @param context optional message to convey the context
+       */
+      virtual void ensure_valid (const char* context=NULL);
 
-      virtual const char* get_name() const { return "LatentLabels"; }
+      /** get number of labels, depending on whether a subset is set
+       *
+       * @return number of labels
+       */
+      virtual int32_t get_num_labels ();
 
       /** get label type
        *
-       * @return label type LT_LATENT
+       * @return label type (binary, multiclass, ...)
        */
-      virtual ELabelType get_label_type() { return LT_LATENT; }
+      virtual ELabelType get_label_type () { return LT_LATENT; }
+
+      virtual const char* get_name() const { return "LatentLabels"; }
 
     protected:
       /** the vector of labels */
