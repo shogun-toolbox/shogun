@@ -28,6 +28,8 @@ namespace shogun
   {
 
     public:
+      MACHINE_PROBLEM_TYPE (PT_LATENT);
+
       /** default contstructor */
       CLatentLinearMachine ();
 
@@ -120,12 +122,6 @@ namespace shogun
        * @return C2
        */
       inline float64_t get_C2 () { return m_C2; }
-
-      /** get classifier type
-       *
-       * @return classifier type CT_LATENTSVM
-       */
-      virtual EClassifierType get_classifier_type ();
 
       /** set maximum iterations
        *

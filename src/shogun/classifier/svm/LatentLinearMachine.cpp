@@ -41,7 +41,6 @@ CLatentLinearMachine::CLatentLinearMachine (float64_t C,
 {
   ASSERT (traindat != NULL);
   ASSERT (trainlab != NULL);
-  ASSERT (trainlab->is_two_class_labeling () == true);
 
   init ();
   m_C1 = m_C2 = C;
@@ -82,7 +81,7 @@ CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
 
       psi (*this, x, h, psi_feat.vector);
 
-      float64_t y = CMath::dot (w, psi_feat.vector, w_dim);
+      float64_t y = w.dot (w.vector, psi_feat.vector, w.vlen);
       labels->set_confidence (i, y);
     }
 
@@ -118,7 +117,6 @@ void CLatentLinearMachine::default_argmax_h (CLatentLinearMachine& llm,
 
   int32_t num = features->get_num_vectors ();
   ASSERT (num > 0);
-  ASSERT (labels->is_two_class_labeling () == true);
 
   /* argmax_h only for positive examples */
   for (int i = 0; i < num; ++i)
@@ -198,7 +196,7 @@ bool CLatentLinearMachine::train_machine (CFeatures* data)
       /* find argmaxH */
       SG_DEBUG ("Find and set h_i = argmax_h (w, psi(x_i,h))\n");
       SGVector<float64_t> cur_w = svm.get_w ();
-      memcpy (w, cur_w.vector, cur_w.vlen*sizeof (float64_t));
+      memcpy (w.vector, cur_w.vector, cur_w.vlen*sizeof (float64_t));
       argmax_h (*this, NULL);
 
       SG_DEBUG ("Recalculating PSI (x,h) with the new h variables\n");
@@ -214,11 +212,6 @@ bool CLatentLinearMachine::train_machine (CFeatures* data)
   }
 
   return true;
-}
-
-EClassifierType CLatentLinearMachine::get_classifier_type ()
-{
-  return CT_LATENTSVM;
 }
 
 void CLatentLinearMachine::init ()
