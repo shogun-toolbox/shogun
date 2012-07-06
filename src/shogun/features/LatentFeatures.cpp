@@ -20,7 +20,7 @@ CLatentFeatures::CLatentFeatures ()
 CLatentFeatures::CLatentFeatures (int32_t num_samples)
 {
   init ();
-  m_samples = new CDynamicObjectArray<CLatentData> (num_samples);
+  m_samples = new CDynamicObjectArray (num_samples);
   SG_REF (m_samples);
 }
 
