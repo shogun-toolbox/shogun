@@ -39,6 +39,7 @@ CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
 	update_train_kernel();
 	update_chol();
 	update_alpha();
+	update_parameter_hash();
 }
 
 CExactInferenceMethod::~CExactInferenceMethod()

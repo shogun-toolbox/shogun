@@ -91,6 +91,7 @@ int main(int argc, char **argv)
 	
 	CExactInferenceMethod* inf =
 		 new CExactInferenceMethod(test_kernel, features, mean, labels, lik);
+
 	
 	SG_REF(inf);
 	

@@ -2199,10 +2199,11 @@ void TParameter::get_incremental_hash(
 		SG_SNOTIMPLEMENTED;
 	case CT_SCALAR:
 	{
+	        uint8_t* data = ((uint8_t*) m_parameter);
 		uint32_t size = m_datatype.sizeof_stype();
 		total_length += size;
 		CHash::IncrementalMurmurHash3(
-				&hash, &carry, (uint8_t*)m_parameter, size);
+				&hash, &carry, data, size);
 		break;
 	}
 	case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
@@ -2251,9 +2252,13 @@ void TParameter::get_incremental_hash(
 		case CT_SCALAR: break;
 		}
 		uint32_t size = (len_real_x*len_real_y)*m_datatype.sizeof_stype();
+		
 		total_length += size;
+
+	        uint8_t* data = (*(uint8_t**) m_parameter);
+		
 		CHash::IncrementalMurmurHash3(
-				&hash, &carry, (uint8_t*)m_parameter, size);
+				&hash, &carry, data, size);
 		break;
 	}
 }
