@@ -64,35 +64,27 @@ CLatentLabels* CLatentLinearMachine::apply ()
 
 CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
 {
-  try
+  CLatentFeatures* lf = CLatentFeatures::obtain_from_generic (data);
+  int32_t num_examples = lf->get_num_vectors ();
+  SGMatrix<float64_t> psi_matrix (m_psi_size, num_examples);
+  CDenseFeatures<float64_t> psi_feats (psi_matrix);
+  CLatentLabels* labels = new CLatentLabels (num_examples);
+
+  for (int i = 0; i < num_examples; ++i)
   {
-    CLatentFeatures* lf = dynamic_cast<CLatentFeatures*> (data);
-    int32_t num_examples = lf->get_num_vectors ();
-    SGMatrix<float64_t> psi_matrix (m_psi_size, num_examples);
-    CDenseFeatures<float64_t> psi_feats (psi_matrix);
-    CLatentLabels* labels = new CLatentLabels (num_examples);
+    /* find h for the example */
+    CLatentData* x = lf->get_sample (i);
+    CLatentData* h = infer (*this, x);
+    labels->set_latent_label (i, h);
+    SGVector<float64_t> psi_feat = psi_feats.get_feature_vector (i);
 
-    for (int i = 0; i < num_examples; ++i)
-    {
-      CLatentData* x = lf->get_sample (i);
-      CLatentData* h = infer (*this, x);
-      labels->set_latent_label (i, h);
-      SGVector<float64_t> psi_feat = psi_feats.get_feature_vector (i);
-
-      psi (*this, x, h, psi_feat.vector);
-
-      float64_t y = w.dot (w.vector, psi_feat.vector, w.vlen);
-      labels->set_label (i, y);
-    }
-
-    return labels;
-  }
-  catch (const std::bad_cast& e)
-  {
-    SG_ERROR ("This object is not a LatentFeatures object: %s\n", e.what ());
+    /* calculate and set y for the example */
+    psi (*this, x, h, psi_feat.vector);
+    float64_t y = w.dot (w.vector, psi_feat.vector, w.vlen);
+    labels->set_label (i, y);
   }
 
-  return NULL;
+  return labels;
 }
 
 void CLatentLinearMachine::set_argmax (argmax_func usr_argmax)
@@ -112,8 +104,7 @@ void CLatentLinearMachine::default_argmax_h (CLatentLinearMachine& llm,
 {
   SGVector<float64_t> w = llm.get_w ();
   CLatentFeatures* features = llm.get_latent_features ();
-  CLatentLabels* labels =
-    dynamic_cast<CLatentLabels*> (llm.get_labels ());
+  CLatentLabels* labels = CLatentLabels::obtain_from_generic (llm.get_labels ());
 
   int32_t num = features->get_num_vectors ();
   ASSERT (num > 0);
@@ -141,12 +132,13 @@ void CLatentLinearMachine::compute_psi ()
 {
   ASSERT (features != NULL);
   int32_t num_vectors = features->get_num_vectors ();
+  CLatentLabels* labels = CLatentLabels::obtain_from_generic (m_labels);
   for (int i = 0; i < num_vectors; ++i)
   {
     SGVector<float64_t> psi_feat = dynamic_cast<CDenseFeatures<float64_t>*>(features)->get_feature_vector (i);
-    CLatentData* label = (dynamic_cast<CLatentLabels*> (m_labels))->get_latent_label (i);
+    CLatentData* h = labels->get_latent_label (i);
     CLatentData* x = m_latent_feats->get_sample (i);
-    psi (*this, x, label, psi_feat.vector);
+    psi (*this, x, h, psi_feat.vector);
   }
 }
 
@@ -158,57 +150,50 @@ bool CLatentLinearMachine::train_machine (CFeatures* data)
   if (infer == NULL)
     SG_ERROR ("The Infer function is not implemented!\n");
 
-  try
+  SG_DEBUG ("Initialise PSI (x,h)\n");
+  compute_psi ();
+
+  /* do CCCP */
+  SG_DEBUG ("Starting CCCP\n");
+  float64_t decrement = 0.0, primal_obj = 0.0, prev_po = 0.0;
+  float64_t inner_eps = 0.5*m_C1*m_epsilon;
+  bool stop = false;
+  int32_t iter = 0;
+  while ((iter < 2)||(!stop&&(iter < m_max_iter)))
   {
-    SG_DEBUG ("Initialise PSI (x,h)\n");
+    SG_DEBUG ("iteration: %d\n", iter);
+    /* do the SVM optimisation with fixed h* */
+    SG_DEBUG ("Do the inner loop of CCCP: optimize for w for fixed h*\n");
+    /* TODO: change code that it can support structural SVM! */
+    CSVMOcas svm (m_C1, features, m_labels);
+    svm.set_epsilon (inner_eps);
+    svm.train ();
+
+    /* calculate the decrement */
+    primal_obj = svm.compute_primal_objective ();
+    decrement = prev_po - primal_obj;
+    prev_po = primal_obj;
+    SG_DEBUG ("decrement: %f\n", decrement);
+    SG_DEBUG ("primal objective: %f\n", primal_obj);
+
+    /* check the stopping criterion */
+    stop = (inner_eps < (0.5*m_C1*m_epsilon+1E-8)) && (decrement < m_C1*m_epsilon);
+
+    inner_eps = -decrement*0.01;
+    inner_eps = CMath::max (inner_eps, 0.5*m_C1*m_epsilon);
+    SG_DEBUG ("inner epsilon: %f\n", inner_eps);
+
+    /* find argmaxH */
+    SG_DEBUG ("Find and set h_i = argmax_h (w, psi(x_i,h))\n");
+    SGVector<float64_t> cur_w = svm.get_w ();
+    memcpy (w.vector, cur_w.vector, cur_w.vlen*sizeof (float64_t));
+    argmax_h (*this, NULL);
+
+    SG_DEBUG ("Recalculating PSI (x,h) with the new h variables\n");
     compute_psi ();
 
-    /* do CCCP */
-    SG_DEBUG ("Starting CCCP\n");
-    float64_t decrement = 0.0, primal_obj = 0.0, prev_po = 0.0;
-    float64_t inner_eps = 0.5*m_C1*m_epsilon;
-    bool stop = false;
-    int32_t iter = 0;
-    while ((iter < 2)||(!stop&&(iter < m_max_iter)))
-    {
-      SG_DEBUG ("iteration: %d\n", iter);
-      /* do the SVM optimisation with fixed h* */
-      SG_DEBUG ("Do the inner loop of CCCP: optimize for w for fixed h*\n");
-      /* TODO: change code that it can support structural SVM! */
-      CSVMOcas svm (m_C1, features, m_labels);
-      svm.set_epsilon (inner_eps);
-      svm.train ();
-
-      /* calculate the decrement */
-      primal_obj = svm.compute_primal_objective ();
-      decrement = prev_po - primal_obj;
-      prev_po = primal_obj;
-      SG_DEBUG ("decrement: %f\n", decrement);
-      SG_DEBUG ("primal objective: %f\n", primal_obj);
-
-      /* check the stopping criterion */
-      stop = (inner_eps < (0.5*m_C1*m_epsilon+1E-8)) && (decrement < m_C1*m_epsilon);
-
-      inner_eps = -decrement*0.01;
-      inner_eps = CMath::max (inner_eps, 0.5*m_C1*m_epsilon);
-      SG_DEBUG ("inner epsilon: %f\n", inner_eps);
-
-      /* find argmaxH */
-      SG_DEBUG ("Find and set h_i = argmax_h (w, psi(x_i,h))\n");
-      SGVector<float64_t> cur_w = svm.get_w ();
-      memcpy (w.vector, cur_w.vector, cur_w.vlen*sizeof (float64_t));
-      argmax_h (*this, NULL);
-
-      SG_DEBUG ("Recalculating PSI (x,h) with the new h variables\n");
-      compute_psi ();
-
-      /* increment iteration counter */
-      iter++;
-    }
-  }
-  catch (const std::bad_cast& e)
-  {
-    SG_ERROR ("This object is not a LatentFeatures object: %s\n", e.what ());
+    /* increment iteration counter */
+    iter++;
   }
 
   return true;

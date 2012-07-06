@@ -57,6 +57,12 @@ namespace shogun
        */
       virtual ELabelType get_label_type () { return LT_LATENT; }
 
+      /** helper method used to specialize a base class instance
+       *
+       * @param base_labels its dynamic type must be CLatentLabels
+       */
+      static CLatentLabels* obtain_from_generic (CLabels* base_labels);
+
       virtual const char* get_name() const { return "LatentLabels"; }
 
     protected:

@@ -56,9 +56,24 @@ namespace shogun
 
       virtual const char* get_name () const { return "LatentFeatures"; }
 
+      /** add latent example
+       *
+       * @param example the user defined CLatentData
+       */
       bool add_sample (CLatentData* example);
+
+      /** get latent example
+       *
+       * @param idx index of the required example
+       * @return the user defined LatentData at the given index
+       */
       CLatentData* get_sample (index_t idx);
 
+      /** helper method used to specialize a base class instance
+       *
+       * @param base_feats its dynamic type must be CLatentFeatures
+       */
+      static CLatentFeatures* obtain_from_generic (CFeatures* base_feats);
     protected:
       CDynamicObjectArray* m_samples;
 

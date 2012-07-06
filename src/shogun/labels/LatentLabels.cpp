@@ -86,3 +86,14 @@ void CLatentLabels::ensure_valid (const char* context)
     SG_ERROR("Non-valid LatentLabels in %s", context);
 }
 
+CLatentLabels* CLatentLabels::obtain_from_generic (CLabels* base_labels)
+{
+  ASSERT (base_labels != NULL);
+  if (base_labels->get_label_type() == LT_LATENT)
+    return (CLatentLabels*) base_labels;
+  else
+    SG_SERROR("base_labels must be of dynamic type CLatentLabels\n");
+
+  return NULL;
+}
+

@@ -85,3 +85,15 @@ void CLatentFeatures::init ()
   m_parameters->add ((CSGObject**) &m_samples, "samples", "Array of examples");
 }
 
+CLatentFeatures* CLatentFeatures::obtain_from_generic (CFeatures* base_feats)
+{
+  ASSERT (base_feats != NULL);
+  if (base_feats->get_feature_class () == C_LATENT)
+    return (CLatentFeatures*) base_feats;
+  else
+    SG_SERROR("base_labels must be of dynamic type CLatentLabels\n");
+
+  return NULL;
+
+}
+
