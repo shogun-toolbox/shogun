@@ -37,7 +37,6 @@ static void psi_hog (CLatentLinearMachine& llm, CLatentData* f, CLatentData* l, 
 {
   CHOGFeatures* hf = (CHOGFeatures*) f;
   CBoundingBox* bb = (CBoundingBox*) l;
- // printf ("%d %d <-> %d %d\n", hf->width, hf->height, bb->x_pos, bb->y_pos);
   for (int i = 0; i < llm.get_psi_size (); ++i)
   {
     psi[i] = hf->hog[bb->x_pos][bb->y_pos][i];
@@ -83,10 +82,7 @@ static void read_dataset (char* fname, CLatentFeatures*& feats, CLatentLabels*& 
   char* path = dirname (fname);
 
   if (fd == NULL)
-  {
-    fprintf (stderr, "Cannot open input file %s!\n", fname);
-    exit (1);
-  }
+    SG_SERROR ("Cannot open input file %s!\n", fname);
 
   fgets (line, MAX_LINE_LENGTH, fd);
   num_examples = atoi(line);
@@ -114,8 +110,8 @@ static void read_dataset (char* fname, CLatentFeatures*& feats, CLatentLabels*& 
     label = (atoi(last_pchar) % 2 == 0) ? 1 : -1;
     pchar++;
 
-    //printf ("%d\n", label);
-    labels->set_label (i, label);
+    if (labels->set_label (i, label) == false)
+      SG_SERROR ("Couldn't set label for element %d\n", i);
 
     last_pchar = pchar;
     while ((*pchar)!=' ') pchar++;
@@ -134,7 +130,6 @@ static void read_dataset (char* fname, CLatentFeatures*& feats, CLatentLabels*& 
     CBoundingBox* bb = new CBoundingBox (x,y);
     labels->add_latent_label (bb);
 
-    //SG_SPRINT ("\nLoading HOG features of size %d\n", HOG_SIZE);
     SG_SPROGRESS (i, 0, num_examples);
     CHOGFeatures* hog = new CHOGFeatures (width, height);
     hog->hog = SG_CALLOC (float64_t**, hog->width);
@@ -170,8 +165,7 @@ int main (int argc, char** argv)
   /* check whether the train/test args are given */
   if (argc < 3)
   {
-    fprintf (stderr, "not enough arguements given\n");
-    exit (1);
+    SG_SERROR ("not enough arguements given\n");
   }
 
   CLatentFeatures* train_feats = NULL;
