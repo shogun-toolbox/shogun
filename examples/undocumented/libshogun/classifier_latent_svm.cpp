@@ -1,4 +1,4 @@
-#include <shogun/features/LatentLabels.h>
+#include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/classifier/svm/LatentLinearMachine.h>
 #include <shogun/base/init.h>
@@ -47,17 +47,16 @@ static void psi_hog (CLatentLinearMachine& llm, CLatentData* f, CLatentData* l, 
 static CLatentData* infer_latent_variable (CLatentLinearMachine& llm, CLatentData* f)
 {
   int32_t pos_x = 0, pos_y = 0;
-  float64_t* w;
   int32_t w_dim;
   float64_t max_score;
 
-  llm.get_w (w, w_dim);
+  SGVector<float64_t> w = llm.get_w ();
   CHOGFeatures* hf = dynamic_cast<CHOGFeatures*> (f);
   for (int i = 0; i < hf->width; ++i)
   {
     for (int j = 0; j < hf->height; ++j)
     {
-      float64_t score = CMath::dot (w, hf->hog[i][j], w_dim);
+      float64_t score = w.dot (w.vector, hf->hog[i][j], w.vlen);
 
       if (score > max_score)
       {
@@ -67,7 +66,7 @@ static CLatentData* infer_latent_variable (CLatentLinearMachine& llm, CLatentDat
       }
     }
   }
-  printf ("%d %d %f\n", pos_x, pos_y, max_score);
+  SG_SDEBUG ("%d %d %f\n", pos_x, pos_y, max_score);
   CBoundingBox* h = new CBoundingBox (pos_x, pos_y);
   SG_REF (h);
 
