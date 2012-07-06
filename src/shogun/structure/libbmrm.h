@@ -19,6 +19,7 @@
 
 #define LIBBMRM_PLUS_INF (-log(0.0))
 #define LIBBMRM_CALLOC(x, y) calloc(x, y)
+#define LIBBMRM_REALLOC(x, y) realloc(x, y)
 #define LIBBMRM_FREE(x) SG_FREE(x)
 #define LIBBMRM_MEMCPY(x, y, z) memcpy(x, y, z)
 #define LIBBMRM_INDEX(ROW, COL, NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
@@ -26,6 +27,7 @@
 
 namespace shogun
 {
+	/* BMRM result */
 	typedef struct {
 		uint32_t nIter;         /* number of iterations  */
 		uint32_t nCP;           /* number of cutting planes */
@@ -39,20 +41,25 @@ namespace shogun
 								   -2 .. not enough memory for the solver */
 	} bmrm_return_value_T;
 
+	/* BMRM input data */
 	typedef struct {
 		void*     X;     /* features */
 		void*     y;     /* labels */
 		uint32_t  w_dim; /* dimension of joint parameter vector w */
 	} bmrm_data_T;
 
-	/* standard BMRM solver */
+	/* Bundle Methods Solver for Structured Output Learning */
 	bmrm_return_value_T svm_bmrm_solver(
 			bmrm_data_T *data,
-			float64_t *W,
-			float64_t TolRel,
-			float64_t TolAbs,
-			float64_t lambda,
-			uint32_t _BufSize,
+			float64_t   *W,
+			float64_t   TolRel,
+			float64_t   TolAbs,
+			float64_t   lambda,
+			uint32_t    _BufSize,
+			bool        cleanICP,
+			uint32_t    cleanAfter,
+			float64_t   K,
+			uint32_t    Tmax,
 			CRiskFunction* risk_function
 			);
 }

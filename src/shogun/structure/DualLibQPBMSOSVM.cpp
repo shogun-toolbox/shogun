@@ -9,7 +9,6 @@
  */
 
 #include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/structure/libbmrm.h>
 
 using namespace shogun;
 
@@ -31,6 +30,10 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	set_TolAbs(0.0);
 	set_BufSize(1000);
 	set_lambda(lambda);
+	set_cleanICP(true);
+	set_cleanAfter(10);
+	set_K(0.4);
+	set_Tmax(100);
 	m_risk_function=risk_function;
 }
 
@@ -53,10 +56,10 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	bmrm_data.w_dim=nDim;
 
 	// call the BMRM solver
-	bmrm_return_value_T result = svm_bmrm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
-			m_BufSize, m_risk_function);
+	m_bmrm_result = svm_bmrm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
+			m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,  m_risk_function);
 
-	if (result.exitflag==1)
+	if (m_bmrm_result.exitflag==1)
 	{
 		return true;
 	} else {
