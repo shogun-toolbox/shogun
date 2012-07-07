@@ -50,6 +50,7 @@ namespace shogun
 		C_STREAMING_VW = 140,
 		C_BINNED_DOT = 150,
         C_DIRECTOR_DOT = 160,
+    C_LATENT = 170,
 		C_ANY = 1000
 	};
 
