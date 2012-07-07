@@ -47,7 +47,7 @@ EFeatureClass CLatentFeatures::get_feature_class() const
 
 int32_t CLatentFeatures::get_num_vectors() const
 {
-  if(m_samples == NULL)
+  if (m_samples == NULL)
     return 0;
   else
     return m_samples->get_array_size();
@@ -61,7 +61,7 @@ int32_t CLatentFeatures::get_size() const
 bool CLatentFeatures::add_sample(CLatentData* example)
 {
   ASSERT(m_samples != NULL);
-  if(m_samples != NULL)
+  if (m_samples != NULL)
   {
     m_samples->push_back(example);
     return true;
@@ -73,7 +73,7 @@ bool CLatentFeatures::add_sample(CLatentData* example)
 CLatentData* CLatentFeatures::get_sample(index_t idx)
 {
   ASSERT(m_samples != NULL);
-  if(idx < 0 || idx >= this->get_num_vectors())
+  if (idx < 0 || idx >= this->get_num_vectors())
     SG_ERROR("Out of index!\n");
 
   return (CLatentData*) m_samples->get_element(idx);
@@ -88,7 +88,7 @@ void CLatentFeatures::init()
 CLatentFeatures* CLatentFeatures::obtain_from_generic(CFeatures* base_feats)
 {
   ASSERT(base_feats != NULL);
-  if(base_feats->get_feature_class() == C_LATENT)
+  if (base_feats->get_feature_class() == C_LATENT)
     return (CLatentFeatures*) base_feats;
   else
     SG_SERROR("base_labels must be of dynamic type CLatentLabels\n");

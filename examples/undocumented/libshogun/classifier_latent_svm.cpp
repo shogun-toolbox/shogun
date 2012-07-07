@@ -37,7 +37,7 @@ static void psi_hog(CLatentLinearMachine& llm, CLatentData* f, CLatentData* l, f
 {
   CHOGFeatures* hf = (CHOGFeatures*) f;
   CBoundingBox* bb = (CBoundingBox*) l;
-  for(int i = 0; i < llm.get_psi_size(); ++i)
+  for (int i = 0; i < llm.get_psi_size(); ++i)
   {
     psi[i] = hf->hog[bb->x_pos][bb->y_pos][i];
   }
@@ -51,13 +51,13 @@ static CLatentData* infer_latent_variable(CLatentLinearMachine& llm, CLatentData
 
   SGVector<float64_t> w = llm.get_w();
   CHOGFeatures* hf = dynamic_cast<CHOGFeatures*> (f);
-  for(int i = 0; i < hf->width; ++i)
+  for (int i = 0; i < hf->width; ++i)
   {
-    for(int j = 0; j < hf->height; ++j)
+    for (int j = 0; j < hf->height; ++j)
     {
       float64_t score = w.dot(w.vector, hf->hog[i][j], w.vlen);
 
-      if(score > max_score)
+      if (score > max_score)
       {
         pos_x = i;
         pos_y = j;
@@ -81,7 +81,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 
   char* path = dirname(fname);
 
-  if(fd == NULL)
+  if (fd == NULL)
     SG_SERROR("Cannot open input file %s!\n", fname);
 
   fgets(line, MAX_LINE_LENGTH, fd);
@@ -94,33 +94,33 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
   SG_REF(feats);
 
   CMath::init_random();
-  for(int i = 0; (!feof(fd)) && (i < num_examples); ++i)
+  for (int i = 0; (!feof(fd)) && (i < num_examples); ++i)
   {
     fgets(line, MAX_LINE_LENGTH, fd);
 
     pchar = line;
-    while((*pchar)!=' ') pchar++;
+    while ((*pchar)!=' ') pchar++;
     *pchar = '\0';
     pchar++;
 
     /* label: {-1, 1} */
     last_pchar = pchar;
-    while((*pchar)!=' ') pchar++;
+    while ((*pchar)!=' ') pchar++;
     *pchar = '\0';
     label = (atoi(last_pchar) % 2 == 0) ? 1 : -1;
     pchar++;
 
-    if(labels->set_label(i, label) == false)
+    if (labels->set_label(i, label) == false)
       SG_SERROR("Couldn't set label for element %d\n", i);
 
     last_pchar = pchar;
-    while((*pchar)!=' ') pchar++;
+    while ((*pchar)!=' ') pchar++;
     *pchar = '\0';
     width = atoi(last_pchar);
     pchar++;
 
     last_pchar = pchar;
-    while((*pchar)!='\n') pchar++;
+    while ((*pchar)!='\n') pchar++;
     *pchar = '\0';
     height = atoi(last_pchar);
 
@@ -133,19 +133,19 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
     SG_SPROGRESS(i, 0, num_examples);
     CHOGFeatures* hog = new CHOGFeatures(width, height);
     hog->hog = SG_CALLOC(float64_t**, hog->width);
-    for(int j = 0; j < width; ++j)
+    for (int j = 0; j < width; ++j)
     {
       hog->hog[j] = SG_CALLOC(float64_t*, hog->height);
-      for(int k = 0; k < height; ++k)
+      for (int k = 0; k < height; ++k)
       {
         char filename[MAX_LINE_LENGTH];
         hog->hog[j][k] = SG_CALLOC(float64_t, HOG_SIZE);
 
         sprintf(filename,"%s/%s.%03d.%03d.txt",path,line,j,k);
         FILE* f = fopen(filename, "r");
-        if(f == NULL)
+        if (f == NULL)
           SG_SERROR("Could not open file: %s\n", filename);
-        for(int l = 0; l < HOG_SIZE; ++l)
+        for (int l = 0; l < HOG_SIZE; ++l)
           fscanf(f,"%lf",&hog->hog[j][k][l]);
         fclose(f);
       }
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
   sg_io->set_loglevel(MSG_DEBUG);
 
   /* check whether the train/test args are given */
-  if(argc < 3)
+  if (argc < 3)
   {
     SG_SERROR("not enough arguements given\n");
   }

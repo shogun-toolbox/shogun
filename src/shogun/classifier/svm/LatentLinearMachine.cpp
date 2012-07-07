@@ -56,7 +56,7 @@ CLatentLinearMachine::CLatentLinearMachine(float64_t C,
 
 CLatentLabels* CLatentLinearMachine::apply()
 {
-  if(!features)
+  if (!features)
     return NULL;
 
   return NULL;
@@ -70,7 +70,7 @@ CLatentLabels* CLatentLinearMachine::apply(CFeatures* data)
   CDenseFeatures<float64_t> psi_feats(psi_matrix);
   CLatentLabels* labels = new CLatentLabels(num_examples);
 
-  for(int i = 0; i < num_examples; ++i)
+  for (int i = 0; i < num_examples; ++i)
   {
     /* find h for the example */
     CLatentData* x = lf->get_sample(i);
@@ -110,9 +110,9 @@ void CLatentLinearMachine::default_argmax_h(CLatentLinearMachine& llm,
   ASSERT(num > 0);
 
   /* argmax_h only for positive examples */
-  for(int i = 0; i < num; ++i)
+  for (int i = 0; i < num; ++i)
   {
-    if(labels->get_label(i) == 1)
+    if (labels->get_label(i) == 1)
     {
       /* infer h and set it for the argmax_h <w,psi(x,h)> */
       CLatentData* latent_data = llm.infer(llm, features->get_sample(i));
@@ -133,7 +133,7 @@ void CLatentLinearMachine::compute_psi()
   ASSERT(features != NULL);
   int32_t num_vectors = features->get_num_vectors();
   CLatentLabels* labels = CLatentLabels::obtain_from_generic(m_labels);
-  for(int i = 0; i < num_vectors; ++i)
+  for (int i = 0; i < num_vectors; ++i)
   {
     SGVector<float64_t> psi_feat = dynamic_cast<CDenseFeatures<float64_t>*>(features)->get_feature_vector(i);
     CLatentData* h = labels->get_latent_label(i);
@@ -144,10 +144,10 @@ void CLatentLinearMachine::compute_psi()
 
 bool CLatentLinearMachine::train_machine(CFeatures* data)
 {
-  if(psi == NULL)
+  if (psi == NULL)
     SG_ERROR("The PSI function is not implemented!\n");
 
-  if(infer == NULL)
+  if (infer == NULL)
     SG_ERROR("The Infer function is not implemented!\n");
 
   SG_DEBUG("Initialise PSI (x,h)\n");
@@ -164,7 +164,7 @@ bool CLatentLinearMachine::train_machine(CFeatures* data)
 
   /* do CCCP */
   SG_DEBUG("Starting CCCP\n");
-  while((iter < 2)||(!stop&&(iter < m_max_iter)))
+  while ((iter < 2)||(!stop&&(iter < m_max_iter)))
   {
     SG_DEBUG("iteration: %d\n", iter);
     /* do the SVM optimisation with fixed h* */
@@ -212,7 +212,7 @@ void CLatentLinearMachine::init()
   features = new CDenseFeatures<float64_t> ();
   SG_REF(features);
 
-  if(argmax_h == NULL)
+  if (argmax_h == NULL)
     set_argmax(default_argmax_h);
 
   m_parameters->add(&m_C1, "C1",  "Cost constant 1.");

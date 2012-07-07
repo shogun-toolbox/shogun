@@ -56,7 +56,7 @@ CDynamicObjectArray* CLatentLabels::get_labels() const
 CLatentData* CLatentLabels::get_latent_label(int32_t idx)
 {
   ASSERT(m_latent_labels != NULL);
-  if(idx < 0 || idx >= get_num_labels())
+  if (idx < 0 || idx >= get_num_labels())
     SG_ERROR("Out of index!\n");
 
   return (CLatentData*) m_latent_labels->get_element(idx);
@@ -70,7 +70,7 @@ void CLatentLabels::add_latent_label(CLatentData* label)
 
 bool CLatentLabels::set_latent_label(int32_t idx, CLatentData* label)
 {
-  if(idx < get_num_labels())
+  if (idx < get_num_labels())
   {
     return m_latent_labels->set_element(label, idx);
   }
@@ -82,14 +82,14 @@ bool CLatentLabels::set_latent_label(int32_t idx, CLatentData* label)
 
 void CLatentLabels::ensure_valid(const char* context)
 {
-  if(m_latent_labels == NULL)
+  if (m_latent_labels == NULL)
     SG_ERROR("Non-valid LatentLabels in %s", context);
 }
 
 CLatentLabels* CLatentLabels::obtain_from_generic(CLabels* base_labels)
 {
   ASSERT(base_labels != NULL);
-  if(base_labels->get_label_type() == LT_LATENT)
+  if (base_labels->get_label_type() == LT_LATENT)
     return (CLatentLabels*) base_labels;
   else
     SG_SERROR("base_labels must be of dynamic type CLatentLabels\n");
