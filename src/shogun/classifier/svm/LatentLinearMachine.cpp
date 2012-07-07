@@ -153,12 +153,17 @@ bool CLatentLinearMachine::train_machine(CFeatures* data)
   SG_DEBUG("Initialise PSI (x,h)\n");
   compute_psi();
 
-  /* do CCCP */
-  SG_DEBUG("Starting CCCP\n");
+  /*
+   * define variables for calculating the stopping
+   * criterion for the outer loop
+   */
   float64_t decrement = 0.0, primal_obj = 0.0, prev_po = 0.0;
   float64_t inner_eps = 0.5*m_C1*m_epsilon;
   bool stop = false;
   int32_t iter = 0;
+
+  /* do CCCP */
+  SG_DEBUG("Starting CCCP\n");
   while((iter < 2)||(!stop&&(iter < m_max_iter)))
   {
     SG_DEBUG("iteration: %d\n", iter);
