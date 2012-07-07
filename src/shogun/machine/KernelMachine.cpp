@@ -275,7 +275,6 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 	if (kernel->get_num_vec_rhs()>0)
 	{
-
 		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		CSignal::clear_cancel();
@@ -288,6 +287,8 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		if (kernel->has_property(KP_BATCHEVALUATION) &&
 				get_batch_computation_enabled())
 		{
+			output.zero();
+			SG_DEBUG("Batch evaluation enabled\n");
 			if (get_num_support_vectors()>0)
 			{
 				int32_t* sv_idx=SG_MALLOC(int32_t, get_num_support_vectors());
