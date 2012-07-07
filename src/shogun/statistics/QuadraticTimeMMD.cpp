@@ -25,7 +25,7 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 {
 	init();
 
-	if (q_start!=p_and_q->get_num_vectors()/2)
+	if (p_and_q && q_start!=p_and_q->get_num_vectors()/2)
 	{
 		SG_ERROR("CQuadraticTimeMMD: Only features with equal number of vectors "
 				"are currently possible\n");
@@ -37,7 +37,7 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p,
 {
 	init();
 
-	if (p->get_num_vectors()!=q->get_num_vectors())
+	if (p && q && p->get_num_vectors()!=q->get_num_vectors())
 	{
 		SG_ERROR("CQuadraticTimeMMD: Only features with equal number of vectors "
 				"are currently possible\n");
