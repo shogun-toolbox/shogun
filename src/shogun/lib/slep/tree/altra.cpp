@@ -160,7 +160,7 @@ double treeNorm(double *x, int ldx, int n, double *ind, int nodes){
 
 		lambda=ind[2];
 
-		for(j=0;j<n;j+=ldx){
+		for(j=0;j<n*ldx;j+=ldx){
 			tree_norm+=fabs(x[j]);
 		}
 

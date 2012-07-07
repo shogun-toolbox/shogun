@@ -25,7 +25,7 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 {
 	init();
 
-	if (q_start!=p_and_q->get_num_vectors()/2)
+	if (p_and_q && q_start!=p_and_q->get_num_vectors()/2)
 	{
 		SG_ERROR("CLinearTimeMMD: Only features with equal number of vectors "
 				"are currently possible\n");

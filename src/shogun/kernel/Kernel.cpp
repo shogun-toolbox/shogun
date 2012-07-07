@@ -102,8 +102,11 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	SG_REF(r);
 
 	//make sure features were indeed supplied
-	ASSERT(l);
-	ASSERT(r);
+	if (!l)
+		SG_ERROR("%s::init(): Features on left side are NULL\n", get_name());
+
+	if (!r)
+		SG_ERROR("%s::init(): Features on right side are NULL\n", get_name());
 
 	//make sure features are compatible
 	ASSERT(l->get_feature_class()==r->get_feature_class());
