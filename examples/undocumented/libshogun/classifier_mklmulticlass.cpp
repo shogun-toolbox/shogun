@@ -219,9 +219,13 @@ void tester()
 	CCustomKernel* kernel2=new CCustomKernel();
 	CCustomKernel* kernel3=new CCustomKernel();
 
-	kernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker1, numdata,numdata));
-	kernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker2, numdata,numdata));
-	kernel3->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker3, numdata,numdata));
+	kernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker1, numdata,numdata,false));
+	kernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker2, numdata,numdata,false));
+	kernel3->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(ker3, numdata,numdata,false));
+
+	SG_FREE(ker1);
+	SG_FREE(ker2);
+	SG_FREE(ker3);
 
 	ker->append_kernel(kernel1);
 	ker->append_kernel(kernel2);
@@ -257,10 +261,6 @@ void tester()
 	SG_SPRINT("prediction error on training data (3 classes): %f ",err);
 	SG_SPRINT("random guess error would be: %f \n",2/3.0);
 
-	SG_FREE(ker1);
-	SG_FREE(ker2);
-	SG_FREE(ker3);
-
 	//generate test data
 	CMulticlassLabels* tlab=NULL;
 
@@ -282,9 +282,13 @@ void tester()
 	CCustomKernel* tkernel2=new CCustomKernel();
 	CCustomKernel* tkernel3=new CCustomKernel();
 
-	tkernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker1,numdata, numdatatest));
-	tkernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker2,numdata, numdatatest));
-	tkernel3->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker2,numdata, numdatatest));
+	tkernel1->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker1,numdata, numdatatest, false));
+	tkernel2->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker2,numdata, numdatatest, false));
+	tkernel3->set_full_kernel_matrix_from_full(SGMatrix<float64_t>(tker2,numdata, numdatatest, false));
+
+	SG_FREE(tker1);
+	SG_FREE(tker2);
+	SG_FREE(tker3);
 
 	tker->append_kernel(tkernel1);
 	tker->append_kernel(tkernel2);
@@ -318,18 +322,12 @@ void tester()
 	SG_SPRINT("prediction error on test data (3 classes): %f ",terr);
 	SG_SPRINT("random guess error would be: %f \n",2/3.0);
 
-	SG_FREE(tker1);
-	SG_FREE(tker2);
-	SG_FREE(tker3);
 	SG_UNREF(tsvm);
 	SG_UNREF(res);
 	SG_UNREF(tres);
 	SG_UNREF(lab);
 	SG_UNREF(tlab);
 	SG_UNREF(tker);
-
-	SG_FREE(weights);
-	weights=NULL;
 
 	SG_SPRINT( "finished \n");
 }
