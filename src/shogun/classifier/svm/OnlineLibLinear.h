@@ -141,7 +141,7 @@ private:
 		/// C2 value
 		float64_t C2;
 
-protected:
+private:
 		//========================================
 		// "local" variables used during training
 
