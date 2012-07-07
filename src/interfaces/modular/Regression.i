@@ -13,6 +13,9 @@
 %rename(KernelRidgeRegression) CKernelRidgeRegression;
 %rename(LinearRidgeRegression) CLinearRidgeRegression;
 %rename(LeastSquaresRegression) CLeastSquaresRegression;
+%rename(ExactInferenceMethod) CExactInferenceMethod;
+%rename(GaussianLikelihood) CGaussianLikelihood;
+%rename(ZeroMean) CZeroMean;
 %rename(GaussianProcessRegression) CGaussianProcessRegression;
 %rename(LeastAngleRegression) CLeastAngleRegression;
 %rename(LibSVR) CLibSVR;
@@ -24,10 +27,16 @@
 #endif //USE_SVMLIGHT
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/regression/gp/LikelihoodModel.h>
+%include <shogun/regression/gp/GaussianLikelihood.h>
+%include <shogun/regression/gp/MeanFunction.h>
+%include <shogun/regression/gp/ZeroMean.h>
 %include <shogun/regression/Regression.h>
 %include <shogun/regression/KernelRidgeRegression.h>
 %include <shogun/regression/LinearRidgeRegression.h>
 %include <shogun/regression/LeastSquaresRegression.h>
+%include <shogun/regression/gp/InferenceMethod.h>
+%include <shogun/regression/gp/ExactInferenceMethod.h>
 %include <shogun/regression/GaussianProcessRegression.h>
 %include <shogun/regression/LeastAngleRegression.h>
 %include <shogun/regression/svr/LibSVR.h>

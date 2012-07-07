@@ -11,6 +11,7 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/base/class_list.h>
+#include <shogun/lib/Hash.h>
 
 using namespace shogun;
 
@@ -2186,6 +2187,80 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 	}
 
 	return true;
+}
+
+void TParameter::get_incremental_hash(
+		uint32_t& hash, uint32_t& carry, uint32_t& total_length)
+{
+
+	switch (m_datatype.m_ctype)
+	{
+	case CT_NDARRAY:
+		SG_SNOTIMPLEMENTED;
+	case CT_SCALAR:
+	{
+	        uint8_t* data = ((uint8_t*) m_parameter);
+		uint32_t size = m_datatype.sizeof_stype();
+		total_length += size;
+		CHash::IncrementalMurmurHash3(
+				&hash, &carry, data, size);
+		break;
+	}
+	case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
+		index_t len_real_y = 0, len_real_x = 0;
+
+		if (m_datatype.m_length_y)
+			len_real_y = *m_datatype.m_length_y;
+
+		else
+			len_real_y = 1;
+
+		if (*(void**) m_parameter == NULL && len_real_y != 0)
+		{
+			SG_SWARNING("Inconsistency between data structure and "
+					"len_y during hashing `%s'!  Continuing with "
+					"len_y=0.\n",
+					m_name);
+			len_real_y = 0;
+		}
+
+		switch (m_datatype.m_ctype)
+		{
+		case CT_NDARRAY:
+			SG_SNOTIMPLEMENTED;
+			break;
+		case CT_VECTOR: case CT_SGVECTOR:
+			len_real_x = 1;
+			break;
+		case CT_MATRIX: case CT_SGMATRIX:
+			len_real_x = *m_datatype.m_length_x;
+
+			if (*(void**) m_parameter == NULL && len_real_x != 0)
+			{
+				SG_SWARNING("Inconsistency between data structure and "
+						"len_x during hashing %s'!  Continuing "
+						"with len_x=0.\n",
+						m_name);
+				len_real_x = 0;
+			}
+
+			if (len_real_x *len_real_y == 0)
+				len_real_x = len_real_y = 0;
+
+			break;
+
+		case CT_SCALAR: break;
+		}
+		uint32_t size = (len_real_x*len_real_y)*m_datatype.sizeof_stype();
+		
+		total_length += size;
+
+	        uint8_t* data = (*(uint8_t**) m_parameter);
+		
+		CHash::IncrementalMurmurHash3(
+				&hash, &carry, data, size);
+		break;
+	}
 }
 
 bool

@@ -7,8 +7,8 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  *
- * The MD5 and Murmur hashing functions were integrated from public sources.
- * Their respective copyrights follow.
+ * The MD5 hashing function was integrated from public sources.
+ * Its copyright follows.
  *
  * MD5
  *
@@ -27,15 +27,6 @@
  * needed on buffers full of bytes, and then call MD5Final, which
  * will fill a supplied 16-byte array with the digest.
  *
- * MurmurHash2
- *
- * (C) Austin Appleby, released under the MIT License
- *
- *  Note - This code makes a few assumptions about how your machine behaves -
- *
- *  1. We can read a 4-byte value from any address without crashing
- *  2. It will not produce the same results on little-endian and big-endian
- *     machines.
  */
 
 #ifndef HASH_H
@@ -43,6 +34,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/external/PMurHash.h>
 
 namespace shogun
 {
@@ -76,7 +68,8 @@ class CHash : public CSGObject
 		 */
 		static void MD5(unsigned char *x, unsigned l, unsigned char *buf);
 
-		/** Murmur Hash2
+		/** Murmur Hash3
+		 * Wrapper for function in PMurHash.c
 		 *
 		 * @param data data to checksum (needs to be 32bit aligned on some archs)
 		 * @param len length in number of bytes
@@ -84,16 +77,34 @@ class CHash : public CSGObject
 		 *
 		 * @return hash
 		 */
-		static uint32_t MurmurHash2(uint8_t* data, int32_t len, uint32_t seed);
+		static uint32_t MurmurHash3(uint8_t* data, int32_t len, uint32_t seed);
 
-		/** Incremental Murmur like Hash
+		/** Incremental Murmur3 Hash. Wrapper for function in PMurHash.c
+		 * FinalizeIncrementalMurmurHash3 must be called
+		 * at the end of all incremental hashing to
+		 * obtain final hash.
 		 *
-		 * @param data byte to hash
-		 * @param h initial seed / hash on subsequent calls
+		 * @param hash value. (The value returned is not the final hash).
+		 * @param carry value for incremental hash. See PMurHash.c for details.
+		 * @param data data to checksum (needs to be 32bit aligned on some archs)
+		 * @param len length in number of bytes
 		 *
-		 * @return hash
 		 */
-		static uint32_t IncrementalMurmurHash2(uint8_t data, uint32_t h);
+		static void IncrementalMurmurHash3(uint32_t *hash, uint32_t *carry,
+				uint8_t* data, int32_t len);
+
+		/** Finalize Incremental Murmur Hash. Called when all
+		 * incremental hashing is done to get final hash value.
+		 *
+		 * Wrapper for function in PMurHash.c
+		 *
+		 * @param h hash returned by IncrementalMurmurHash3
+		 * @param carry returned by IncrementalMurmurHash3
+		 * @param total_length total length of all bytes hashed.
+		 *
+		 */
+		static uint32_t FinalizeIncrementalMurmurHash3(uint32_t h,
+				uint32_t carry, uint32_t total_length);
 
 		/** Apply Murmur Hash on the non-numeric part of
 		 * a substring.

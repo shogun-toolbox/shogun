@@ -202,10 +202,20 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	nlopt_set_lower_bounds(opt, lb);
 
 	if (m_machine_eval->get_evaluation_direction() == ED_MINIMIZE)
+	{
+		if (print_state)
+			SG_SPRINT("Minimizing Objective Function\n");
+
 		nlopt_set_min_objective(opt, nlopt_function, &pack);
+	}
 
 	else
+	{
+		if (print_state)
+			SG_SPRINT("Maximizing Objective Function\n");
+
 		nlopt_set_max_objective(opt, nlopt_function, &pack);
+	}
 
 	double minf; //the minimum objective value, upon return
 

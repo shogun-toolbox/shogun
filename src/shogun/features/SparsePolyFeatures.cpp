@@ -151,14 +151,14 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 			for (int32_t i=0; i<vec.num_feat_entries; i++)
 			{
 				float64_t v1=vec.features[i].entry;
-				uint32_t seed=CHash::MurmurHash2(
+				uint32_t seed=CHash::MurmurHash3(
 						(uint8_t*)&(vec.features[i].feat_index),
 						sizeof(int32_t), 0xDEADBEAF);
 
 				for (int32_t j=i; j<vec.num_feat_entries; j++)
 				{
 					float64_t v2=vec.features[j].entry;
-					uint32_t h=CHash::MurmurHash2(
+					uint32_t h=CHash::MurmurHash3(
 							(uint8_t*)&(vec.features[j].feat_index),
 							sizeof(int32_t), seed)&mask;
 					float64_t v;
@@ -201,14 +201,14 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 		for (int32_t i=0; i<vec.num_feat_entries; i++)
 		{
 			float64_t v1=vec.features[i].entry;
-			uint32_t seed=CHash::MurmurHash2(
+			uint32_t seed=CHash::MurmurHash3(
 					(uint8_t*)&(vec.features[i].feat_index), sizeof(int32_t),
 					0xDEADBEAF);
 
 			for (int32_t j=i; j<vec.num_feat_entries; j++)
 			{
 				float64_t v2=vec.features[j].entry;
-				uint32_t h=CHash::MurmurHash2(
+				uint32_t h=CHash::MurmurHash3(
 						(uint8_t*)&(vec.features[j].feat_index),
 						sizeof(int32_t), seed)&mask;
 				float64_t v;

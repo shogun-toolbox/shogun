@@ -108,6 +108,17 @@ struct TParameter
 	 * its parameter, but from scratch using allocate_data_from_scratch */
 	bool m_was_allocated_from_scratch;
 
+	/*Incrementally get a hash from parameter value*
+	 *
+	 * @param hash current hash value
+	 * @param carry value for incremental murmur hashing
+	 * @param total byte length of parameters. Function will
+	 * add byte length to received value
+	 *
+	 */
+	void get_incremental_hash(
+			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
+
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont();
@@ -123,6 +134,7 @@ private:
 					const char* prefix);
 	bool load_stype(CSerializableFile* file, void* param,
 					const char* prefix);
+
 };
 
 /** @brief Parameter class

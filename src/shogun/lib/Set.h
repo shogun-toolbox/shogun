@@ -215,7 +215,7 @@ private:
 	 */
 	int32_t hash(const T& element)
 	{
-		return CHash::MurmurHash2((uint8_t*)(&element), sizeof(element), 0xDEADBEEF) % hash_size;
+		return CHash::MurmurHash3((uint8_t*)(&element), sizeof(element), 0xDEADBEEF) % hash_size;
 	}
 
 	/** is free? */

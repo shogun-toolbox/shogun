@@ -280,7 +280,7 @@ private:
 	 */
 	int32_t hash(const K& key)
 	{
-		return CHash::MurmurHash2((uint8_t*)(&key), sizeof(key), 0xDEADBEEF) % hash_size;
+		return CHash::MurmurHash3((uint8_t*)(&key), sizeof(key), 0xDEADBEEF) % hash_size;
 	}
 
 	/** is free? */
