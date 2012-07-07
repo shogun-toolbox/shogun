@@ -10,6 +10,7 @@
 
 #include <algorithm>
 
+#include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/ShareBoost.h>
 #include <shogun/multiclass/ShareBoostOptimizer.h>
@@ -68,15 +69,30 @@ bool CShareBoost::train_machine(CFeatures* data)
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 		m_machines->push_back(new CLinearMachine());
 
+	CTime *timer = new CTime();
+
+	float64_t t_compute_pred = 0; // t of 1st round is 0, since no pred to compute
 	for (int32_t t=0; t < m_nonzero_feas; ++t)
 	{
+		timer->start();
 		compute_rho();
 		int32_t i_fea = choose_feature();
 		m_activeset.vector[m_activeset.vlen] = i_fea;
 		m_activeset.vlen += 1;
+		float64_t t_choose_feature = timer->cur_time_diff();
+		timer->start();
 		optimize_coefficients();
+		float64_t t_optimize = timer->cur_time_diff();
+
+		SG_SPRINT(" SB[round %03d]: (%8.4f + %8.4f) sec.\n", t,
+				t_compute_pred + t_choose_feature, t_optimize);
+
+		timer->start();
 		compute_pred();
+		t_compute_pred = timer->cur_time_diff();
 	}
+
+	SG_UNREF(timer);
 
 	// release memory
 	m_fea = SGMatrix<float64_t>();
@@ -174,7 +190,7 @@ int32_t CShareBoost::choose_feature()
 
 void CShareBoost::optimize_coefficients()
 {
-	ShareBoostOptimizer optimizer(this, true);
+	ShareBoostOptimizer optimizer(this, false);
 	optimizer.optimize();
 }
 

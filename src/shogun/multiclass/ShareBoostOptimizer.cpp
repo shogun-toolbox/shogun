@@ -97,7 +97,7 @@ int ShareBoostOptimizer::lbfgs_progress(
 		int ls
 		)
 {
-	if (k % 100 != 0)
+	if (k != 1 && k % 100 != 0)
 		return 0;
 
     SG_SPRINT("Iteration %d:\n", k);
