@@ -85,8 +85,7 @@ bool CShareBoost::train_machine(CFeatures* data)
 		float64_t t_optimize = timer->cur_time_diff();
 
 		SG_SPRINT(" SB[round %03d]: (%8.4f + %8.4f) sec.\n", t,
-				float64_t(t_compute_pred + t_choose_feature),
-				float64_t(t_optimize));
+				t_compute_pred + t_choose_feature, t_optimize);
 
 		timer->start();
 		compute_pred();
