@@ -71,24 +71,26 @@ bool CShareBoost::train_machine(CFeatures* data)
 
 	CTime *timer = new CTime();
 
-	clock_t t_compute_pred = 0;
+	float64_t t_compute_pred = 0; // t of 1st round is 0, since no pred to compute
 	for (int32_t t=0; t < m_nonzero_feas; ++t)
 	{
-		clock_t t_start = timer->cur_runtime();
+		timer->start();
 		compute_rho();
 		int32_t i_fea = choose_feature();
 		m_activeset.vector[m_activeset.vlen] = i_fea;
 		m_activeset.vlen += 1;
-		clock_t t_choose_feature = timer->cur_runtime();
+		float64_t t_choose_feature = timer->cur_time_diff();
+		timer->start();
 		optimize_coefficients();
-		clock_t t_optimize = timer->cur_runtime();
+		float64_t t_optimize = timer->cur_time_diff();
 
 		SG_SPRINT(" SB[round %03d]: (%8.4f + %8.4f) sec.\n", t,
-				float64_t(t_compute_pred + t_choose_feature-t_start)/CLOCKS_PER_SEC,
-				float64_t(t_optimize - t_choose_feature)/CLOCKS_PER_SEC);
+				float64_t(t_compute_pred + t_choose_feature),
+				float64_t(t_optimize));
 
+		timer->start();
 		compute_pred();
-		t_compute_pred = timer->cur_runtime() - t_optimize;
+		t_compute_pred = timer->cur_time_diff();
 	}
 
 	SG_UNREF(timer);
