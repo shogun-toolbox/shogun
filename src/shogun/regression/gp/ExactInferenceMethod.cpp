@@ -26,9 +26,7 @@ using namespace shogun;
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
-	update_train_kernel();
-	update_chol();
-	update_alpha();
+	update_all();
 	update_parameter_hash();
 }
 
@@ -36,9 +34,7 @@ CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
-	update_train_kernel();
-	update_chol();
-	update_alpha();
+	update_all();
 	update_parameter_hash();
 }
 
@@ -48,16 +44,29 @@ CExactInferenceMethod::~CExactInferenceMethod()
 
 void CExactInferenceMethod::update_all()
 {
-	m_label_vector =
-			((CRegressionLabels*) m_labels)->get_labels().clone();
 
-	m_feature_matrix =
-			m_features->get_computed_dot_feature_matrix();
+        if (m_labels)
+        {
+                m_label_vector =
+                        ((CRegressionLabels*) m_labels)->
+                        get_labels().clone();
+	}
+
+        if (m_features && m_features->get_num_vectors())
+        {
+                m_feature_matrix =
+                        m_features->get_computed_dot_feature_matrix();
 
 	update_data_means();
-	update_train_kernel();
-	update_chol();
-	update_alpha();
+
+		if (m_kernel) 
+			update_train_kernel();
+		if (m_ktrtr.num_cols && m_ktrtr.num_rows)
+		{	
+			update_chol();
+			update_alpha();
+		}
+	}
 }
 
 void CExactInferenceMethod::check_members()
