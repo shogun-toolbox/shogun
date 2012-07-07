@@ -68,8 +68,11 @@ void CInferenceMethod::set_features(CDotFeatures* feat)
 	SG_UNREF(m_features);
 	m_features=feat;
 
-	m_feature_matrix =
-		m_features->get_computed_dot_feature_matrix();
+	if (m_features && m_features->get_num_vectors())
+	{
+		m_feature_matrix =
+			m_features->get_computed_dot_feature_matrix();
+	}
 
 	update_data_means();
 	update_train_kernel();
@@ -104,8 +107,12 @@ void CInferenceMethod::set_labels(CLabels* lab)
 	SG_UNREF(m_labels);
 	m_labels = lab;
 
-	m_label_vector =
-		((CRegressionLabels*) m_labels)->get_labels().clone();
+	if (m_labels)
+	{
+		m_label_vector =
+			((CRegressionLabels*) m_labels)->
+			get_labels().clone();
+	}
 
 	update_data_means();
 	update_alpha();
