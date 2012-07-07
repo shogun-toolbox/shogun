@@ -319,7 +319,7 @@ bmrm_return_value_T svm_bmrm_solver(
 						flag2=true;
 						for (uint32_t j=0; j<bmrm.nCP; ++j)
 						{
-							if ((uint32_t)j != idx_icp2)
+							if ((int32_t)j != idx_icp2)
 							{
 								H2[LIBBMRM_INDEX(idx, idx2, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)];
 								idx2++;
