@@ -12,67 +12,67 @@
 
 using namespace shogun;
 
-CLatentData::CLatentData ()
+CLatentData::CLatentData()
 {
 
 }
 
-CLatentData::~CLatentData ()
+CLatentData::~CLatentData()
 {
 
 }
 
-CLatentLabels::CLatentLabels ()
-  : CBinaryLabels ()
+CLatentLabels::CLatentLabels()
+  : CBinaryLabels()
 {
-  init ();
+  init();
 }
 
-CLatentLabels::CLatentLabels (int32_t num_labels)
-  : CBinaryLabels (num_labels)
+CLatentLabels::CLatentLabels(int32_t num_labels)
+  : CBinaryLabels(num_labels)
 {
-  init ();
-  m_latent_labels = new CDynamicObjectArray (num_labels);
-  SG_REF (m_latent_labels);
+  init();
+  m_latent_labels = new CDynamicObjectArray(num_labels);
+  SG_REF(m_latent_labels);
 }
 
-CLatentLabels::~CLatentLabels ()
+CLatentLabels::~CLatentLabels()
 {
-  SG_UNREF (m_latent_labels);
+  SG_UNREF(m_latent_labels);
 }
 
-void CLatentLabels::init ()
+void CLatentLabels::init()
 {
   SG_ADD((CSGObject**) &m_latent_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
   m_latent_labels = NULL;
 }
 
-CDynamicObjectArray* CLatentLabels::get_labels () const
+CDynamicObjectArray* CLatentLabels::get_labels() const
 {
-  SG_REF (m_latent_labels);
+  SG_REF(m_latent_labels);
   return m_latent_labels;
 }
 
-CLatentData* CLatentLabels::get_latent_label (int32_t idx)
+CLatentData* CLatentLabels::get_latent_label(int32_t idx)
 {
-  ASSERT (m_latent_labels != NULL);
-  if (idx < 0 || idx >= get_num_labels())
+  ASSERT(m_latent_labels != NULL);
+  if(idx < 0 || idx >= get_num_labels())
     SG_ERROR("Out of index!\n");
 
-  return (CLatentData*) m_latent_labels->get_element (idx);
+  return (CLatentData*) m_latent_labels->get_element(idx);
 }
 
-void CLatentLabels::add_latent_label (CLatentData* label)
+void CLatentLabels::add_latent_label(CLatentData* label)
 {
-  ASSERT (m_latent_labels != NULL);
-  m_latent_labels->push_back (label);
+  ASSERT(m_latent_labels != NULL);
+  m_latent_labels->push_back(label);
 }
 
-bool CLatentLabels::set_latent_label (int32_t idx, CLatentData* label)
+bool CLatentLabels::set_latent_label(int32_t idx, CLatentData* label)
 {
-  if (idx < get_num_labels ())
+  if(idx < get_num_labels())
   {
-    return m_latent_labels->set_element (label, idx);
+    return m_latent_labels->set_element(label, idx);
   }
   else
   {
@@ -80,16 +80,16 @@ bool CLatentLabels::set_latent_label (int32_t idx, CLatentData* label)
   }
 }
 
-void CLatentLabels::ensure_valid (const char* context)
+void CLatentLabels::ensure_valid(const char* context)
 {
-  if (m_latent_labels == NULL)
+  if(m_latent_labels == NULL)
     SG_ERROR("Non-valid LatentLabels in %s", context);
 }
 
-CLatentLabels* CLatentLabels::obtain_from_generic (CLabels* base_labels)
+CLatentLabels* CLatentLabels::obtain_from_generic(CLabels* base_labels)
 {
-  ASSERT (base_labels != NULL);
-  if (base_labels->get_label_type() == LT_LATENT)
+  ASSERT(base_labels != NULL);
+  if(base_labels->get_label_type() == LT_LATENT)
     return (CLatentLabels*) base_labels;
   else
     SG_SERROR("base_labels must be of dynamic type CLatentLabels\n");

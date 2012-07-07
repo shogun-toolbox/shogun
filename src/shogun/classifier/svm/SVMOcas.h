@@ -120,7 +120,7 @@ class CSVMOcas : public CLinearMachine
 		 *
 		 * @return the primal objective
 		 */
-		virtual float64_t compute_primal_objective () const;
+		virtual float64_t compute_primal_objective() const;
 
 	protected:
 		/** compute W
@@ -225,7 +225,7 @@ class CSVMOcas : public CLinearMachine
 		/** bias dimensions */
 		float64_t* cp_bias;
 		
-		/** */
+		/** primal objective */
 		float64_t primal_objective;
 };
 }

@@ -28,10 +28,10 @@ namespace shogun
   {
 
     public:
-      MACHINE_PROBLEM_TYPE (PT_LATENT);
+      MACHINE_PROBLEM_TYPE(PT_LATENT);
 
       /** default contstructor */
-      CLatentLinearMachine ();
+      CLatentLinearMachine();
 
       /** constructor
        *
@@ -39,31 +39,31 @@ namespace shogun
        * @param traindat training features
        * @param trainlab labels for training features
        */
-      CLatentLinearMachine (float64_t C,
+      CLatentLinearMachine(float64_t C,
           CLatentFeatures* traindat,
           CLabels* trainlab,
           index_t psi_size);
 
-      virtual ~CLatentLinearMachine ();
+      virtual ~CLatentLinearMachine();
 
       /** apply linear machine to all examples
        *
        * @return resulting labels
        */
-      virtual CLatentLabels* apply ();
+      virtual CLatentLabels* apply();
 
       /** apply linear machine to data
        *
        * @param data (test)data to be classified
        * @return classified labels
        */
-      virtual CLatentLabels* apply (CFeatures* data);
+      virtual CLatentLabels* apply(CFeatures* data);
 
       /** get features
        *
        * @return features
        */
-      virtual CDotFeatures* get_features ()
+      virtual CDotFeatures* get_features()
       { 
         SG_REF(features);
         return features;
@@ -73,9 +73,9 @@ namespace shogun
        *
        * @return features
        */
-      virtual CLatentFeatures* get_latent_features ()
+      virtual CLatentFeatures* get_latent_features()
       {
-        SG_REF (m_latent_feats);
+        SG_REF(m_latent_feats);
         return m_latent_feats;
       }
 
@@ -83,19 +83,19 @@ namespace shogun
        *
        * @return name of the SGSerializable
        */
-      virtual const char* get_name () const { return "LatentLinearMachine"; }
+      virtual const char* get_name() const { return "LatentLinearMachine"; }
 
       /** set epsilon
        *
        * @param eps new epsilon
        */
-      inline void set_epsilon (float64_t eps) { m_epsilon=eps; }
+      inline void set_epsilon(float64_t eps) { m_epsilon=eps; }
 
       /** get epsilon
        *
        * @return epsilon
        */
-      inline float64_t get_epsilon () { return m_epsilon; }
+      inline float64_t get_epsilon() { return m_epsilon; }
 
       /** set C
        *
@@ -105,7 +105,7 @@ namespace shogun
        * Note that not all SVMs support this (however at least CLibSVM and
        * CSVMLight do)
        */
-      inline void set_C (float64_t c_neg, float64_t c_pos)
+      inline void set_C(float64_t c_neg, float64_t c_pos)
       {
         m_C1=c_neg;
         m_C2=c_pos;
@@ -127,32 +127,32 @@ namespace shogun
        *
        * @param iter new maximum iteration value
        */
-      inline void set_max_iterations (int32_t iter) { m_max_iter = iter; }
+      inline void set_max_iterations(int32_t iter) { m_max_iter = iter; }
 
       /** get maximum iterations value
        *
        * @return maximum iterations
        */
-      inline int32_t get_max_iterations () { return m_max_iter; }
+      inline int32_t get_max_iterations() { return m_max_iter; }
 
-      void set_argmax (argmax_func usr_argmax);
+      void set_argmax(argmax_func usr_argmax);
 
-      void set_psi (psi_func usr_psi);
+      void set_psi(psi_func usr_psi);
 
-      void set_infer (infer_func usr_infer);
+      void set_infer(infer_func usr_infer);
 
-      index_t get_psi_size () const { return m_psi_size; }
-      void set_psi_size (index_t psi_size) { m_psi_size = psi_size; }
+      index_t get_psi_size() const { return m_psi_size; }
+      void set_psi_size(index_t psi_size) { m_psi_size = psi_size; }
 
     protected:
-      virtual bool train_machine (CFeatures* data=NULL);
-      virtual void compute_psi ();
+      virtual bool train_machine(CFeatures* data=NULL);
+      virtual void compute_psi();
 
     private:
-      static void default_argmax_h (CLatentLinearMachine&, void* userData);
+      static void default_argmax_h(CLatentLinearMachine&, void* userData);
 
       /** initalize the values to default values */
-      void init ();
+      void init();
 
     private:
       argmax_func argmax_h;

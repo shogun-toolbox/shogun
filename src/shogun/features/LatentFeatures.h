@@ -20,31 +20,31 @@ namespace shogun
   {
     public:
       /** default constructor */
-      CLatentFeatures ();
+      CLatentFeatures();
 
-      CLatentFeatures (int32_t num_samples);
+      CLatentFeatures(int32_t num_samples);
 
-      virtual ~CLatentFeatures ();
+      virtual ~CLatentFeatures();
 
-      virtual CFeatures* duplicate () const;
+      virtual CFeatures* duplicate() const;
 
       /** get feature type
        *
        * @return templated feature type
        */
-      virtual EFeatureType get_feature_type () const;
+      virtual EFeatureType get_feature_type() const;
 
       /** get feature class
        *
        * @return feature class
        */
-      virtual EFeatureClass get_feature_class () const;
+      virtual EFeatureClass get_feature_class() const;
 
       /** get number of examples
        *
        * @return number of examples/vectors (possibly of subset, if implemented)
        */
-      virtual int32_t get_num_vectors () const;
+      virtual int32_t get_num_vectors() const;
 
       /** get memory footprint of one feature
        *
@@ -52,34 +52,35 @@ namespace shogun
        *
        * @return memory footprint of one feature
        */
-      virtual int32_t get_size () const;
+      virtual int32_t get_size() const;
 
-      virtual const char* get_name () const { return "LatentFeatures"; }
+      virtual const char* get_name() const { return "LatentFeatures"; }
 
       /** add latent example
        *
        * @param example the user defined CLatentData
        */
-      bool add_sample (CLatentData* example);
+      bool add_sample(CLatentData* example);
 
       /** get latent example
        *
        * @param idx index of the required example
        * @return the user defined LatentData at the given index
        */
-      CLatentData* get_sample (index_t idx);
+      CLatentData* get_sample(index_t idx);
 
       /** helper method used to specialize a base class instance
        *
        * @param base_feats its dynamic type must be CLatentFeatures
        */
-      static CLatentFeatures* obtain_from_generic (CFeatures* base_feats);
+      static CLatentFeatures* obtain_from_generic(CFeatures* base_feats);
     protected:
       CDynamicObjectArray* m_samples;
 
     private:
-      void init ();
+      void init();
   };
 }
 
 #endif /* __LATENTFEATURES_H__ */
+

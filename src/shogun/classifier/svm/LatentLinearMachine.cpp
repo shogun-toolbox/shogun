@@ -17,180 +17,180 @@
 
 using namespace shogun;
 
-CLatentLinearMachine::CLatentLinearMachine ()
-  : argmax_h (NULL),
-    psi (NULL),
-    infer (NULL)
+CLatentLinearMachine::CLatentLinearMachine()
+  : argmax_h(NULL),
+    psi(NULL),
+    infer(NULL)
 {
-  init ();
+  init();
 }
 
-CLatentLinearMachine::~CLatentLinearMachine ()
+CLatentLinearMachine::~CLatentLinearMachine()
 {
-  SG_UNREF (m_latent_feats);
+  SG_UNREF(m_latent_feats);
 }
 
-CLatentLinearMachine::CLatentLinearMachine (float64_t C,
+CLatentLinearMachine::CLatentLinearMachine(float64_t C,
     CLatentFeatures* traindat,
     CLabels* trainlab,
     index_t psi_size)
-  : argmax_h (NULL),
-    psi (NULL),
-    infer (NULL),
-    m_latent_feats (traindat)
+  : argmax_h(NULL),
+    psi(NULL),
+    infer(NULL),
+    m_latent_feats(traindat)
 {
-  ASSERT (traindat != NULL);
-  ASSERT (trainlab != NULL);
+  ASSERT(traindat != NULL);
+  ASSERT(trainlab != NULL);
 
-  init ();
+  init();
   m_C1 = m_C2 = C;
   m_psi_size = psi_size;
 
-  set_labels (trainlab);
-  set_w (SGVector<float64_t> (m_psi_size));
+  set_labels(trainlab);
+  set_w(SGVector<float64_t> (m_psi_size));
 
   /* create the temporal storage for PSI features */
-  SGMatrix<float64_t> psi_m (m_psi_size, m_latent_feats->get_num_vectors ());
-  ((CDenseFeatures<float64_t>*)features)->set_feature_matrix (psi_m);
+  SGMatrix<float64_t> psi_m(m_psi_size, m_latent_feats->get_num_vectors());
+  ((CDenseFeatures<float64_t>*)features)->set_feature_matrix(psi_m);
 }
 
-CLatentLabels* CLatentLinearMachine::apply ()
+CLatentLabels* CLatentLinearMachine::apply()
 {
-  if (!features)
+  if(!features)
     return NULL;
 
   return NULL;
 }
 
-CLatentLabels* CLatentLinearMachine::apply (CFeatures* data)
+CLatentLabels* CLatentLinearMachine::apply(CFeatures* data)
 {
-  CLatentFeatures* lf = CLatentFeatures::obtain_from_generic (data);
-  int32_t num_examples = lf->get_num_vectors ();
-  SGMatrix<float64_t> psi_matrix (m_psi_size, num_examples);
-  CDenseFeatures<float64_t> psi_feats (psi_matrix);
-  CLatentLabels* labels = new CLatentLabels (num_examples);
+  CLatentFeatures* lf = CLatentFeatures::obtain_from_generic(data);
+  int32_t num_examples = lf->get_num_vectors();
+  SGMatrix<float64_t> psi_matrix(m_psi_size, num_examples);
+  CDenseFeatures<float64_t> psi_feats(psi_matrix);
+  CLatentLabels* labels = new CLatentLabels(num_examples);
 
-  for (int i = 0; i < num_examples; ++i)
+  for(int i = 0; i < num_examples; ++i)
   {
     /* find h for the example */
-    CLatentData* x = lf->get_sample (i);
-    CLatentData* h = infer (*this, x);
-    labels->set_latent_label (i, h);
-    SGVector<float64_t> psi_feat = psi_feats.get_feature_vector (i);
+    CLatentData* x = lf->get_sample(i);
+    CLatentData* h = infer(*this, x);
+    labels->set_latent_label(i, h);
+    SGVector<float64_t> psi_feat = psi_feats.get_feature_vector(i);
 
     /* calculate and set y for the example */
-    psi (*this, x, h, psi_feat.vector);
-    float64_t y = w.dot (w.vector, psi_feat.vector, w.vlen);
-    labels->set_label (i, y);
+    psi(*this, x, h, psi_feat.vector);
+    float64_t y = w.dot(w.vector, psi_feat.vector, w.vlen);
+    labels->set_label(i, y);
   }
 
   return labels;
 }
 
-void CLatentLinearMachine::set_argmax (argmax_func usr_argmax)
+void CLatentLinearMachine::set_argmax(argmax_func usr_argmax)
 {
-  ASSERT (usr_argmax != NULL);
+  ASSERT(usr_argmax != NULL);
   argmax_h = usr_argmax;
 }
 
-void CLatentLinearMachine::set_psi (psi_func usr_psi)
+void CLatentLinearMachine::set_psi(psi_func usr_psi)
 {
-  ASSERT (usr_psi != NULL);
+  ASSERT(usr_psi != NULL);
   psi = usr_psi;
 }
 
-void CLatentLinearMachine::default_argmax_h (CLatentLinearMachine& llm,
+void CLatentLinearMachine::default_argmax_h(CLatentLinearMachine& llm,
     void* userData)
 {
-  SGVector<float64_t> w = llm.get_w ();
-  CLatentFeatures* features = llm.get_latent_features ();
-  CLatentLabels* labels = CLatentLabels::obtain_from_generic (llm.get_labels ());
+  SGVector<float64_t> w = llm.get_w();
+  CLatentFeatures* features = llm.get_latent_features();
+  CLatentLabels* labels = CLatentLabels::obtain_from_generic(llm.get_labels());
 
-  int32_t num = features->get_num_vectors ();
-  ASSERT (num > 0);
+  int32_t num = features->get_num_vectors();
+  ASSERT(num > 0);
 
   /* argmax_h only for positive examples */
-  for (int i = 0; i < num; ++i)
+  for(int i = 0; i < num; ++i)
   {
-    if (labels->get_label (i) == 1)
+    if(labels->get_label(i) == 1)
     {
       /* infer h and set it for the argmax_h <w,psi(x,h)> */
-      CLatentData* latent_data = llm.infer (llm, features->get_sample (i));
-      labels->set_latent_label (i, latent_data);
+      CLatentData* latent_data = llm.infer(llm, features->get_sample(i));
+      labels->set_latent_label(i, latent_data);
     }
   }
-  SG_UNREF (features);
+  SG_UNREF(features);
 }
 
-void CLatentLinearMachine::set_infer (infer_func usr_infer)
+void CLatentLinearMachine::set_infer(infer_func usr_infer)
 {
-  ASSERT (usr_infer != NULL);
+  ASSERT(usr_infer != NULL);
   infer = usr_infer;
 }
 
-void CLatentLinearMachine::compute_psi ()
+void CLatentLinearMachine::compute_psi()
 {
-  ASSERT (features != NULL);
-  int32_t num_vectors = features->get_num_vectors ();
-  CLatentLabels* labels = CLatentLabels::obtain_from_generic (m_labels);
-  for (int i = 0; i < num_vectors; ++i)
+  ASSERT(features != NULL);
+  int32_t num_vectors = features->get_num_vectors();
+  CLatentLabels* labels = CLatentLabels::obtain_from_generic(m_labels);
+  for(int i = 0; i < num_vectors; ++i)
   {
-    SGVector<float64_t> psi_feat = dynamic_cast<CDenseFeatures<float64_t>*>(features)->get_feature_vector (i);
-    CLatentData* h = labels->get_latent_label (i);
-    CLatentData* x = m_latent_feats->get_sample (i);
-    psi (*this, x, h, psi_feat.vector);
+    SGVector<float64_t> psi_feat = dynamic_cast<CDenseFeatures<float64_t>*>(features)->get_feature_vector(i);
+    CLatentData* h = labels->get_latent_label(i);
+    CLatentData* x = m_latent_feats->get_sample(i);
+    psi(*this, x, h, psi_feat.vector);
   }
 }
 
-bool CLatentLinearMachine::train_machine (CFeatures* data)
+bool CLatentLinearMachine::train_machine(CFeatures* data)
 {
-  if (psi == NULL)
-    SG_ERROR ("The PSI function is not implemented!\n");
+  if(psi == NULL)
+    SG_ERROR("The PSI function is not implemented!\n");
 
-  if (infer == NULL)
-    SG_ERROR ("The Infer function is not implemented!\n");
+  if(infer == NULL)
+    SG_ERROR("The Infer function is not implemented!\n");
 
-  SG_DEBUG ("Initialise PSI (x,h)\n");
-  compute_psi ();
+  SG_DEBUG("Initialise PSI (x,h)\n");
+  compute_psi();
 
   /* do CCCP */
-  SG_DEBUG ("Starting CCCP\n");
+  SG_DEBUG("Starting CCCP\n");
   float64_t decrement = 0.0, primal_obj = 0.0, prev_po = 0.0;
   float64_t inner_eps = 0.5*m_C1*m_epsilon;
   bool stop = false;
   int32_t iter = 0;
-  while ((iter < 2)||(!stop&&(iter < m_max_iter)))
+  while((iter < 2)||(!stop&&(iter < m_max_iter)))
   {
-    SG_DEBUG ("iteration: %d\n", iter);
+    SG_DEBUG("iteration: %d\n", iter);
     /* do the SVM optimisation with fixed h* */
-    SG_DEBUG ("Do the inner loop of CCCP: optimize for w for fixed h*\n");
+    SG_DEBUG("Do the inner loop of CCCP: optimize for w for fixed h*\n");
     /* TODO: change code that it can support structural SVM! */
-    CSVMOcas svm (m_C1, features, m_labels);
-    svm.set_epsilon (inner_eps);
-    svm.train ();
+    CSVMOcas svm(m_C1, features, m_labels);
+    svm.set_epsilon(inner_eps);
+    svm.train();
 
     /* calculate the decrement */
-    primal_obj = svm.compute_primal_objective ();
+    primal_obj = svm.compute_primal_objective();
     decrement = prev_po - primal_obj;
     prev_po = primal_obj;
-    SG_DEBUG ("decrement: %f\n", decrement);
-    SG_DEBUG ("primal objective: %f\n", primal_obj);
+    SG_DEBUG("decrement: %f\n", decrement);
+    SG_DEBUG("primal objective: %f\n", primal_obj);
 
     /* check the stopping criterion */
     stop = (inner_eps < (0.5*m_C1*m_epsilon+1E-8)) && (decrement < m_C1*m_epsilon);
 
     inner_eps = -decrement*0.01;
-    inner_eps = CMath::max (inner_eps, 0.5*m_C1*m_epsilon);
-    SG_DEBUG ("inner epsilon: %f\n", inner_eps);
+    inner_eps = CMath::max(inner_eps, 0.5*m_C1*m_epsilon);
+    SG_DEBUG("inner epsilon: %f\n", inner_eps);
 
     /* find argmaxH */
-    SG_DEBUG ("Find and set h_i = argmax_h (w, psi(x_i,h))\n");
-    SGVector<float64_t> cur_w = svm.get_w ();
-    memcpy (w.vector, cur_w.vector, cur_w.vlen*sizeof (float64_t));
-    argmax_h (*this, NULL);
+    SG_DEBUG("Find and set h_i = argmax_h (w, psi(x_i,h))\n");
+    SGVector<float64_t> cur_w = svm.get_w();
+    memcpy(w.vector, cur_w.vector, cur_w.vlen*sizeof(float64_t));
+    argmax_h(*this, NULL);
 
-    SG_DEBUG ("Recalculating PSI (x,h) with the new h variables\n");
-    compute_psi ();
+    SG_DEBUG("Recalculating PSI (x,h) with the new h variables\n");
+    compute_psi();
 
     /* increment iteration counter */
     iter++;
@@ -199,16 +199,16 @@ bool CLatentLinearMachine::train_machine (CFeatures* data)
   return true;
 }
 
-void CLatentLinearMachine::init ()
+void CLatentLinearMachine::init()
 {
   m_C1 = m_C2 = 10.0;
   m_epsilon = 1E-3;
   m_max_iter = 400;
   features = new CDenseFeatures<float64_t> ();
-  SG_REF (features);
+  SG_REF(features);
 
-  if (argmax_h == NULL)
-    set_argmax (default_argmax_h);
+  if(argmax_h == NULL)
+    set_argmax(default_argmax_h);
 
   m_parameters->add(&m_C1, "C1",  "Cost constant 1.");
   m_parameters->add(&m_C2, "C2",  "Cost constant 2.");

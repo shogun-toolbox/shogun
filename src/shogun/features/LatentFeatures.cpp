@@ -12,83 +12,83 @@
 
 using namespace shogun;
 
-CLatentFeatures::CLatentFeatures ()
+CLatentFeatures::CLatentFeatures()
 {
-  init ();
+  init();
 }
 
-CLatentFeatures::CLatentFeatures (int32_t num_samples)
+CLatentFeatures::CLatentFeatures(int32_t num_samples)
 {
-  init ();
-  m_samples = new CDynamicObjectArray (num_samples);
-  SG_REF (m_samples);
+  init();
+  m_samples = new CDynamicObjectArray(num_samples);
+  SG_REF(m_samples);
 }
 
-CLatentFeatures::~CLatentFeatures ()
+CLatentFeatures::~CLatentFeatures()
 {
-  SG_UNREF (m_samples);
+  SG_UNREF(m_samples);
 }
 
-CFeatures* CLatentFeatures::duplicate () const
+CFeatures* CLatentFeatures::duplicate() const
 {
-  return new CLatentFeatures (*this);
+  return new CLatentFeatures(*this);
 }
 
-EFeatureType CLatentFeatures::get_feature_type () const
+EFeatureType CLatentFeatures::get_feature_type() const
 {
   return F_ANY;
 }
 
-EFeatureClass CLatentFeatures::get_feature_class () const
+EFeatureClass CLatentFeatures::get_feature_class() const
 {
   return C_LATENT;
 }
 
 
-int32_t CLatentFeatures::get_num_vectors () const
+int32_t CLatentFeatures::get_num_vectors() const
 {
-  if (m_samples == NULL)
+  if(m_samples == NULL)
     return 0;
   else
-    return m_samples->get_array_size ();
+    return m_samples->get_array_size();
 }
 
-int32_t CLatentFeatures::get_size () const
+int32_t CLatentFeatures::get_size() const
 {
-  return sizeof (float64_t);
+  return sizeof(float64_t);
 }
 
-bool CLatentFeatures::add_sample (CLatentData* example)
+bool CLatentFeatures::add_sample(CLatentData* example)
 {
-  ASSERT (m_samples != NULL);
-  if (m_samples != NULL)
+  ASSERT(m_samples != NULL);
+  if(m_samples != NULL)
   {
-    m_samples->push_back (example);
+    m_samples->push_back(example);
     return true;
   }
   else
     return false;
 }
 
-CLatentData* CLatentFeatures::get_sample (index_t idx)
+CLatentData* CLatentFeatures::get_sample(index_t idx)
 {
-  ASSERT (m_samples != NULL);
-  if (idx < 0 || idx >= this->get_num_vectors ())
+  ASSERT(m_samples != NULL);
+  if(idx < 0 || idx >= this->get_num_vectors())
     SG_ERROR("Out of index!\n");
 
-  return (CLatentData*) m_samples->get_element (idx);
+  return (CLatentData*) m_samples->get_element(idx);
 
 }
 
-void CLatentFeatures::init ()
+void CLatentFeatures::init()
 {
-  m_parameters->add ((CSGObject**) &m_samples, "samples", "Array of examples");
+  m_parameters->add((CSGObject**) &m_samples, "samples", "Array of examples");
 }
 
-CLatentFeatures* CLatentFeatures::obtain_from_generic (CFeatures* base_feats)
+CLatentFeatures* CLatentFeatures::obtain_from_generic(CFeatures* base_feats)
 {
-  ASSERT (base_feats != NULL);
-  if (base_feats->get_feature_class () == C_LATENT)
+  ASSERT(base_feats != NULL);
+  if(base_feats->get_feature_class() == C_LATENT)
     return (CLatentFeatures*) base_feats;
   else
     SG_SERROR("base_labels must be of dynamic type CLatentLabels\n");

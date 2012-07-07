@@ -358,7 +358,7 @@ void CSVMOcas::init()
 			"SVMOcas solver type.");
 }
 
-float64_t CSVMOcas::compute_primal_objective () const
+float64_t CSVMOcas::compute_primal_objective() const
 {
 	return primal_objective;
 }
