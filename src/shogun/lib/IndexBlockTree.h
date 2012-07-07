@@ -32,6 +32,12 @@ public:
 	 * @param adjacency_matrix adjacency matrix
 	 */
 	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix);
+	
+	/** constructor
+	 * @param G custom G
+	 * @param ind_t custom ind_t
+	 */
+	CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
 
 	/** destructor */
 	virtual ~CIndexBlockTree();
@@ -45,14 +51,18 @@ public:
 	/** returns information about blocks in 
 	 * SLEP "ind" format
 	 */
-	virtual SGVector<index_t> get_SLEP_ind();
+	virtual SGVector<index_t> get_SLEP_ind() const;
+
+	virtual SGVector<float64_t> get_SLEP_G() const;
 
 	/** returns information about blocks relations
 	 * in SLEP "ind_t" format
 	 */
-	virtual SGVector<float64_t> get_SLEP_ind_t();
+	virtual SGVector<float64_t> get_SLEP_ind_t() const;
 
 	virtual EIndexBlockRelationType get_relation_type() const { return TREE; }
+
+	bool is_general() const;
 
 	/** get name */
 	const char* get_name() const { return "IndexBlockTree"; };
@@ -62,8 +72,14 @@ protected:
 	/** root block */
 	CIndexBlock* m_root_block;
 
+	/** general */
+	bool m_general;
+
 	/** precomputed ind_t */
 	SGVector<float64_t> m_precomputed_ind_t;
+	
+	/** precomputed G */
+	SGVector<float64_t> m_precomputed_G;
 };
 
 }

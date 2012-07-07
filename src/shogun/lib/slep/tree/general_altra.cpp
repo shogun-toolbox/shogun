@@ -35,7 +35,7 @@ void general_altra(double *x, double *v, int n, double *G, double *ind, int node
 			exit(1);
 		}        
 
-		lambda=ind[2];
+		lambda=mult*ind[2];
 
 		for(j=0;j<n;j++){
 			if (v[j]>lambda)

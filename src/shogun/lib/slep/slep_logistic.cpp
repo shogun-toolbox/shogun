@@ -252,6 +252,8 @@ double compute_lambda_logistic(
 				lambda_max = general_findLambdaMax(ATb, n_feats, options.G, options.ind_t, options.n_nodes);
 			else
 				lambda_max = findLambdaMax(ATb, n_feats, options.ind_t, options.n_nodes);
+
+			SG_FREE(ATb);
 		}
 		break;
 		default: 
@@ -456,7 +458,7 @@ slep_result_t slep_logistic(
 		{
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = s[i] - g[i]*(1.0/L);
-
+			
 			for (t=0; t<n_tasks; t++)
 				c[t] = sc[t] - gc[t]*(1.0/L);
 			
