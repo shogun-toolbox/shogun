@@ -104,7 +104,14 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			CIndexBlockTree* feature_tree = (CIndexBlockTree*)m_feature_relation;
 
 			SGVector<float64_t> ind_t = feature_tree->get_SLEP_ind_t();
+			SGVector<float64_t> G;
+			if (feature_tree->is_general())
+			{
+				G = feature_tree->get_SLEP_G();
+				options.general = true;
+			}
 			options.ind_t = ind_t.vector;
+			options.G = G.vector;
 			options.n_nodes = ind_t.vlen/3;
 			options.n_feature_blocks = ind_t.vlen/3;
 			options.mode = FEATURE_TREE;
