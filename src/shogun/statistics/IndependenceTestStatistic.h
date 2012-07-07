@@ -60,12 +60,6 @@ class CIndependenceTestStatistic : public CTestStatistic
 
 		/** samples from q */
 		CFeatures* m_q;
-
-		/** number of iterations for bootstrapping null-distributions */
-		index_t m_bootstrap_iterations;
-
-		/** Defines how the the null distribution is approximated */
-		ENullApproximationMethod m_null_approximation_method;
 };
 
 }
