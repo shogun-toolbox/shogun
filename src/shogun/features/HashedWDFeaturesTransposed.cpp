@@ -172,17 +172,23 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 	for (int32_t i=0; i < len; i++)
 	{
 		uint32_t o=offs;
+		uint32_t carry = 0;
+		uint32_t chunk = 0;
+
 		for (int32_t k=0; k<degree && i+k<len; k++)
 		{
 			const float64_t wd = wd_weights[k];
-			const uint32_t h=CHash::IncrementalMurmurHash2(vec[i+k], val[i]);
-			val[i]=h;
+			chunk++;
+			CHash::IncrementalMurmurHash3(&(val[i]), &carry, &(vec[i+k]), 1);
+			uint32_t h =
+					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
 #endif
 			sum+=vec2[o+(h & mask)]*wd;
 			o+=partial_w_dim;
 		}
+		val[i] = CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 		offs+=partial_w_dim*degree;
 	}
 	SG_FREE(val);
@@ -400,18 +406,28 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			{
 				const float64_t wd = wd_weights[k];
 				uint8_t* dim=transposed_strings[i+k].string;
-				uint32_t h;
-
+				uint32_t carry = 0;
+				uint32_t chunk = 0;
 				for (int32_t j=start; j<stop; j++)
 				{
 					uint8_t bval=dim[sub_index[j]];
 					if (k==0)
-						h=CHash::IncrementalMurmurHash2(bval, 0xDEADBEAF);
-					else
-						h=CHash::IncrementalMurmurHash2(bval, index[j]);
-					index[j]=h;
+						index[j] = 0xDEADBEAF;
+
+					CHash::IncrementalMurmurHash3(&index[j], &carry, &bval, 1);
+
+					chunk++;
+					uint32_t h =
+							CHash::FinalizeIncrementalMurmurHash3(
+									index[j], carry, chunk);
+
 					output[j]+=vec[o + (h & mask)]*wd;
 				}
+
+				index[stop-1] =
+						CHash::FinalizeIncrementalMurmurHash3(
+								index[stop-1], carry, chunk);
+
 				o+=partial_w_dim;
 			}
 			offs+=partial_w_dim*degree;
@@ -440,17 +456,28 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 			{
 				const float64_t wd = wd_weights[k];
 				uint8_t* dim=transposed_strings[i+k].string;
-				uint32_t h;
+				uint32_t carry = 0;
+				uint32_t chunk = 0;
 
 				for (int32_t j=start; j<stop; j++)
 				{
+					uint8_t bval=dim[sub_index[j]];
 					if (k==0)
-						h=CHash::IncrementalMurmurHash2(dim[j], 0xDEADBEAF);
-					else
-						h=CHash::IncrementalMurmurHash2(dim[j], index[j]);
-					index[j]=h;
+						index[j] = 0xDEADBEAF;
+
+					CHash::IncrementalMurmurHash3(&index[j], &carry, &bval, 1);
+
+					chunk++;
+					uint32_t h =
+							CHash::FinalizeIncrementalMurmurHash3(
+									index[j], carry, chunk);
+
 					output[j]+=vec[o + (h & mask)]*wd;
 				}
+
+				index[stop-1] = CHash::FinalizeIncrementalMurmurHash3(
+						index[stop-1], carry, chunk);
+
 				o+=partial_w_dim;
 			}
 			offs+=partial_w_dim*degree;
@@ -491,20 +518,25 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 	for (int32_t i=0; i<len; i++)
 	{
 		uint32_t o=offs;
+		uint32_t carry = 0;
+		uint32_t chunk = 0;
+
 		for (int32_t k=0; k<degree && i+k<len; k++)
 		{
 			float64_t wd = wd_weights[k]*factor;
-
-			const uint32_t h=CHash::IncrementalMurmurHash2(vec[i+k], val[i]);
-			val[i]=h;
-
+			chunk++;
+			CHash::IncrementalMurmurHash3(&(val[i]), &carry, &(vec[i+k]), 1);
+			uint32_t h =
+					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
 			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h);
-			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
+			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o);
 #endif
 			vec2[o+(h & mask)]+=wd;
 			o+=partial_w_dim;
 		}
+
+		val[i] = CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 		offs+=partial_w_dim*degree;
 	}
 

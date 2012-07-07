@@ -61,3 +61,87 @@ void CInferenceMethod::init()
 	m_mean = NULL;
 	m_scale = 1.0;
 }
+
+void CInferenceMethod::set_features(CDotFeatures* feat)
+{
+	SG_REF(feat);
+	SG_UNREF(m_features);
+	m_features=feat;
+
+	m_feature_matrix =
+		m_features->get_computed_dot_feature_matrix();
+
+	update_data_means();
+	update_train_kernel();
+	update_chol();
+	update_alpha();
+}
+
+void CInferenceMethod::set_kernel(CKernel* kern)
+{
+	SG_REF(kern);
+	SG_UNREF(m_kernel);
+	m_kernel = kern;
+	update_train_kernel();
+	update_chol();
+	update_alpha();
+}
+
+void CInferenceMethod::set_mean(CMeanFunction* m)
+{
+	SG_REF(m);
+	SG_UNREF(m_mean);
+	m_mean = m;
+
+	update_data_means();
+	update_chol();
+	update_alpha();
+}
+
+void CInferenceMethod::set_labels(CLabels* lab)
+{
+	SG_REF(lab);
+	SG_UNREF(m_labels);
+	m_labels = lab;
+
+	m_label_vector =
+		((CRegressionLabels*) m_labels)->get_labels().clone();
+
+	update_data_means();
+	update_alpha();
+}
+
+void CInferenceMethod::set_model(CLikelihoodModel* mod)
+{
+	SG_REF(mod);
+	SG_UNREF(m_model);
+	m_model = mod;
+	update_train_kernel();
+	update_chol();
+	update_alpha();
+}
+
+void CInferenceMethod::set_scale(float64_t s)
+{
+	update_train_kernel();
+	m_scale = s;
+	update_chol();
+	update_alpha();
+}
+
+void CInferenceMethod::update_data_means()
+{
+	if (m_mean)
+	{
+		m_data_means =
+			m_mean->get_mean_vector(m_feature_matrix);
+
+
+		if (m_label_vector.vlen == m_data_means.vlen)
+		{
+			for (int i = 0; i < m_label_vector.vlen; i++)
+				m_label_vector[i] -= m_data_means[i];
+		}
+	}
+}
+

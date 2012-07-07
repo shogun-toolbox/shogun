@@ -31,11 +31,11 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 }
 
 CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf,
-		   CDenseFeatures<float64_t>* data, CLabels* lab)
+		CDotFeatures* data, CLabels* lab)
 : CMachine()
 {
 	init();
-	
+
 	set_labels(lab);
 	set_features(data);
 	set_method(inf);
@@ -46,6 +46,8 @@ void CGaussianProcessRegression::init()
 
 	m_features = NULL;
 	m_method = NULL;
+	m_data = NULL;
+	m_return = GP_RETURN_MEANS;
 
 	SG_ADD((CSGObject**) &m_features, "features", "Feature object.",
 	    MS_NOT_AVAILABLE);
@@ -53,8 +55,49 @@ void CGaussianProcessRegression::init()
 	    MS_AVAILABLE);
 }
 
+void CGaussianProcessRegression::update_kernel_matrices()
+{
+	CKernel* kernel = NULL;
+
+	if (m_method)
+		kernel = m_method->get_kernel();
+
+	if (kernel)
+	{
+		float64_t m_scale = m_method->get_scale();
+
+		kernel->cleanup();
+
+		kernel->init(m_features, m_data);
+
+		//K(X_test, X_train)
+		m_k_trts = kernel->get_kernel_matrix();
+
+		for (int i = 0; i < m_k_trts.num_rows; i++)
+		{
+			for (int j = 0; j < m_k_trts.num_cols; j++)
+				m_k_trts(i,j) *= (m_scale*m_scale);
+		}
+
+		kernel->cleanup();
+
+		kernel->init(m_data, m_data);
+
+		m_k_tsts = kernel->get_kernel_matrix();
+
+		for (int i = 0; i < m_k_tsts.num_rows; i++)
+		{
+			for (int j = 0; j < m_k_tsts.num_cols; j++)
+				m_k_tsts(i,j) *= (m_scale*m_scale);
+		}
+
+		SG_UNREF(kernel);
+	}
+}
+
 CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 {
+
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -63,47 +106,59 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 			SG_ERROR("Expected Simple Features\n");
 		if (data->get_feature_type() != F_DREAL)
 			SG_ERROR("Expected Real Features\n");
+
+			SG_UNREF(m_data);
+			SG_REF(data);
+			m_data = (CDotFeatures*)data;
+			update_kernel_matrices();
+	}
+
+	else if (!m_data)
+		SG_ERROR("No testing features!\n");
+
+	else if (update_parameter_hash())
+		update_kernel_matrices();
+
+	if (m_return == GP_RETURN_COV)
+	{
+		CRegressionLabels* result =
+				new CRegressionLabels(getCovarianceVector());
+
+		return result;
+	}
+
+	if (m_return == GP_RETURN_MEANS)
+	{
+		CRegressionLabels* result =
+				new CRegressionLabels(getMeanVector());
+
+		return result;
 	}
 
 	else
-		SG_ERROR("Null data vector!\n");
-
-	SGVector<float64_t> m_alpha = m_method->get_alpha();
-	float64_t m_scale = m_method->get_scale();
-	CKernel* kernel = m_method->get_kernel();
-
-	kernel->cleanup();
-	
-	kernel->init(m_features, data);
-	
-	//K(X_test, X_train)
-	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
-
-	for (int i = 0; i < kernel_test_matrix.num_rows; i++)
 	{
-		for (int j = 0; j < kernel_test_matrix.num_cols; j++)
-			kernel_test_matrix(i,j) *= (m_scale*m_scale);
+
+		SGVector<float64_t> mean_vector = getMeanVector();
+		SGVector<float64_t> cov_vector = getCovarianceVector();
+
+		int size = mean_vector.vlen+cov_vector.vlen;
+
+		SGVector<float64_t> result_vector(size);
+
+		for (int i = 0; i < size; i++)
+		{
+			if (i < mean_vector.vlen)
+				result_vector[i] = mean_vector[i];
+			else
+				result_vector[i] = cov_vector[i-mean_vector.vlen];
+		}
+
+		CRegressionLabels* result =
+				new CRegressionLabels(result_vector);
+
+		return result;
 	}
 
-	SGVector< float64_t > result_vector(m_labels->get_num_labels());
-	
-	//Here we multiply K*^t by alpha to receive the mean predictions.
-	cblas_dgemv(CblasColMajor, CblasTrans, kernel_test_matrix.num_rows,
-		    m_alpha.vlen, 1.0, kernel_test_matrix.matrix, 
-		    kernel_test_matrix.num_cols, m_alpha.vector, 1, 0.0, 
-		    result_vector.vector, 1);
-	
-	CLikelihoodModel* lik = m_method->get_model();
-
-	result_vector = lik->evaluate_means(result_vector);
-
-	CRegressionLabels* result = new CRegressionLabels(result_vector);
-	
-	SG_UNREF(kernel);
-	SG_UNREF(lik);
-	SG_REF(result);
-
-	return result;
 }
 
 bool CGaussianProcessRegression::train_machine(CFeatures* data)
@@ -111,41 +166,49 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	return false;
 }
 
-SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(
-		CFeatures* data)
+
+SGVector<float64_t> CGaussianProcessRegression::getMeanVector()
 {
 
-	SG_REF(data);
-	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();
-	SGVector<float64_t> diagonal2(data->get_num_vectors());
+	SGVector<float64_t> m_alpha = m_method->get_alpha();
 
-	SGMatrix<float64_t> temp1(data->get_num_vectors(), diagonal.vlen);
+	SGVector< float64_t > result_vector(m_labels->get_num_labels());
+	
+	//Here we multiply K*^t by alpha to receive the mean predictions.
+	cblas_dgemv(CblasColMajor, CblasTrans, m_k_trts.num_rows,
+		    m_alpha.vlen, 1.0, m_k_trts.matrix,
+		    m_k_trts.num_cols, m_alpha.vector, 1, 0.0,
+		    result_vector.vector, 1);
+	
+	CLikelihoodModel* lik = m_method->get_model();
+
+	result_vector = lik->evaluate_means(result_vector);
+
+	SG_UNREF(lik);
+
+	return result_vector;
+}
+
+
+SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
+{
+
+	if (!m_data)
+		SG_ERROR("No testing features!\n");
+
+	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();
+	SGVector<float64_t> diagonal2(m_data->get_num_vectors());
+
+	SGMatrix<float64_t> temp1(m_data->get_num_vectors(), diagonal.vlen);
 
 	SGMatrix<float64_t> m_L = m_method->get_cholesky();
 
 	SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
 
-	CKernel* kernel = m_method->get_kernel();
-
-	float64_t m_scale = m_method->get_scale();
-
-	kernel->cleanup();
-
-	kernel->init(m_features, data);
-
-	//K(X_test, X_train)
-	SGMatrix<float64_t> kernel_test_matrix = kernel->get_kernel_matrix();
-
-	for (int i = 0; i < kernel_test_matrix.num_rows; i++)
-	{
-		for (int j = 0; j < kernel_test_matrix.num_cols; j++)
-			kernel_test_matrix(i,j) *= (m_scale*m_scale);
-	}
-
 	for (int i = 0; i < diagonal.vlen; i++)
 	{
-		for (int j = 0; j < data->get_num_vectors(); j++)
-			temp1(j,i) = diagonal[i]*kernel_test_matrix(j,i);
+		for (int j = 0; j < m_data->get_num_vectors(); j++)
+			temp1(j,i) = diagonal[i]*m_k_trts(j,i);
 	}
 
 	for (int i = 0; i < diagonal2.vlen; i++)
@@ -182,33 +245,15 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector(
 			diagonal2[i] += temp1(j,i);
 	}
 
-	kernel->cleanup();
 
-	kernel->init(data, data);
-
-	//K(X_test, X_test)
-
-	SGMatrix<float64_t> kernel_test_matrix2 = kernel->get_kernel_matrix();
-
-	for (int i = 0; i < kernel_test_matrix2.num_rows; i++)
-	{
-		for (int j = 0; j < kernel_test_matrix2.num_cols; j++)
-			kernel_test_matrix2(i,j) *= (m_scale*m_scale);
-	}
-
-	SGVector<float64_t> result(kernel_test_matrix2.num_cols);
+	SGVector<float64_t> result(m_k_tsts.num_cols);
 
 	//Subtract V from K(Test,Test) to get covariances.
-	for (int i = 0; i < kernel_test_matrix2.num_cols; i++)
-	{
-		kernel_test_matrix2(i,i) -= diagonal2[i];
-		result[i] = kernel_test_matrix2(i,i);
-	}
+	for (int i = 0; i < m_k_tsts.num_cols; i++)
+		result[i] = m_k_tsts(i,i) - diagonal2[i];
 
 	CLikelihoodModel* lik = m_method->get_model();
 
-	SG_UNREF(data);
-	SG_UNREF(kernel);
 	SG_UNREF(lik);
 
 	return lik->evaluate_variances(result);
@@ -219,6 +264,7 @@ CGaussianProcessRegression::~CGaussianProcessRegression()
 {
 	SG_UNREF(m_features);
 	SG_UNREF(m_method);
+	SG_UNREF(m_data);
 }
 
 void CGaussianProcessRegression::set_kernel(CKernel* k)

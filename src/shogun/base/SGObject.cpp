@@ -18,6 +18,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/lib/Hash.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -229,6 +230,28 @@ void CSGObject::set_global_parallel(Parallel* new_parallel)
 	SG_UNREF(sg_parallel);
 	sg_parallel=new_parallel;
 	SG_REF(sg_parallel);
+}
+
+bool CSGObject::update_parameter_hash()
+{
+	uint32_t new_hash = 0;
+	uint32_t carry = 0;
+	uint32_t length = 0;
+
+	get_parameter_incremental_hash(m_parameters, new_hash,
+			carry, length);
+
+	new_hash = CHash::FinalizeIncrementalMurmurHash3(new_hash,
+			carry, length);
+
+	if(new_hash != m_hash)
+	{
+		m_hash = new_hash;
+		return true;
+	}
+
+	else
+		return false;
 }
 
 Parallel* CSGObject::get_global_parallel()
@@ -1053,6 +1076,7 @@ void CSGObject::init()
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
+	m_hash = 0;
 }
 
 void CSGObject::print_modsel_params()
@@ -1148,3 +1172,30 @@ bool CSGObject::is_param_new(const SGParamInfo param_info) const
 
 	return result;
 }
+
+void CSGObject::get_parameter_incremental_hash(Parameter* param,
+		uint32_t& hash, uint32_t& carry, uint32_t& total_length)
+{
+	if (param)
+	{
+		for (index_t i=0; i<param->get_num_parameters(); i++)
+		{
+			TParameter* p = param->get_parameter(i);
+
+			if (p->m_datatype.m_ptype == PT_SGOBJECT)
+			{
+				CSGObject* child =
+						*((CSGObject**)(p->m_parameter));
+
+				if (child)
+					get_parameter_incremental_hash(
+							child->m_parameters, hash,
+							carry, total_length);
+			}
+
+			else
+				p->get_incremental_hash(hash, carry, total_length);
+		}
+	}
+}
+

@@ -17,6 +17,7 @@
 #include <shogun/regression/gp/LikelihoodModel.h>
 #include <shogun/regression/gp/MeanFunction.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
+#include <shogun/labels/RegressionLabels.h>
 
 
 namespace shogun
@@ -111,12 +112,7 @@ public:
 	*
 	* @param feat features to set
 	*/
-	virtual inline void set_features(CDotFeatures* feat)
-	{
-		SG_UNREF(m_features);
-		SG_REF(feat);
-		m_features=feat;
-	}
+	virtual void set_features(CDotFeatures* feat);
 
 	/** get features
 	*
@@ -138,12 +134,7 @@ public:
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual inline void set_kernel(CKernel* kern)
-	{
-		SG_UNREF(m_kernel);
-		SG_REF(kern);
-		m_kernel = kern;
-	}
+	virtual void set_kernel(CKernel* kern);
 
 	/**get kernel
 	 *
@@ -155,12 +146,7 @@ public:
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual inline void set_mean(CMeanFunction* m)
-	{
-		SG_UNREF(m_mean);
-		SG_REF(m);
-		m_mean = m;
-	}
+	virtual void set_mean(CMeanFunction* m);
 
 	/**get labels
 	 *
@@ -172,12 +158,7 @@ public:
 	 *
 	 * @param lab label to set
 	 */
-	virtual inline void set_labels(CLabels* lab)
-	{
-		SG_UNREF(m_labels);
-		SG_REF(lab);
-		m_labels = lab;
-	}
+	virtual void set_labels(CLabels* lab);
 
 	/**get likelihood model
 	 *
@@ -189,29 +170,27 @@ public:
 	 *
 	 * @param mod model to set
 	 */
-	inline void set_model(CLikelihoodModel* mod)
-	{
-		SG_UNREF(m_model);
-		SG_REF(mod);
-		m_model = mod;
-	}
+	virtual void set_model(CLikelihoodModel* mod);
 
 	/*set kernel scale
 	 *
 	 * @param s scale to be set
 	 */
-	void set_scale(float64_t s) { m_scale = s; }
+	virtual void set_scale(float64_t s);
 
 	/*get kernel scale
 	 *
 	 * @return kernel scale
 	 */
-	float64_t get_scale() { return m_scale; }
+	inline float64_t get_scale() { return m_scale; }
 
 protected:
 	/** Update Alpha and Cholesky Matrices.
 	 */
-	virtual void update_alpha_and_chol() = 0;
+	virtual void update_alpha() {}
+	virtual void update_chol() {}
+	virtual void update_train_kernel() {}
+	virtual void update_data_means();
 
 private:
 	void init();
@@ -223,6 +202,13 @@ protected:
 
 	/*Features to use*/
 	CDotFeatures* m_features;
+
+	SGMatrix<float64_t> m_feature_matrix;
+
+	SGVector<float64_t> m_data_means;
+
+	SGVector<float64_t> m_label_vector;
+
 
 	/*Labels of those features*/
 	CLabels* m_labels;
@@ -251,6 +237,9 @@ protected:
 
 	/*Kernel Scale*/
 	float64_t m_scale;
+
+	/*Kernel matrix from features*/
+	SGMatrix<float64_t> m_ktrtr;
 };
 
 }

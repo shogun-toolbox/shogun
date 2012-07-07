@@ -28,8 +28,16 @@ namespace shogun
 
 class CGaussianProcessRegression : public CMachine
 {
+
 	public:
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
+
+		enum EGPReturnType
+		{
+			GP_RETURN_MEANS,
+			GP_RETURN_COV,
+			GP_RETURN_BOTH
+		};
 
 		/** constructor
 		 *
@@ -38,7 +46,7 @@ class CGaussianProcessRegression : public CMachine
 		 * @param lab labels
 		 */
 		CGaussianProcessRegression(CInferenceMethod* inf,
-					   CDenseFeatures<float64_t>* data, CLabels* lab);
+					   CDotFeatures* data, CLabels* lab);
 
 		  /** default constructor */
 		CGaussianProcessRegression();
@@ -54,6 +62,7 @@ class CGaussianProcessRegression : public CMachine
 			SG_UNREF(m_features);
 			SG_REF(feat);
 			m_features = feat;
+			update_kernel_matrices();
 		}
 		
 		/** get features
@@ -131,15 +140,43 @@ class CGaussianProcessRegression : public CMachine
 		
 		/** get covariance vector
 		*
+		* @param data (test)data to be classified
 		* @return covariance vector
 		*/
-		SGVector<float64_t> getCovarianceVector(CFeatures* data);
+		SGVector<float64_t> getCovarianceVector();
 		
+		/** get predicted mean vector
+		 *
+		* @param data (test)data to be classified
+		* @return predicted mean vector
+		*/
+		SGVector<float64_t> getMeanVector();
+
 		/** @return object name */
 		inline virtual const char* get_name() const
 		{
 			return "GaussianProcessRegression";
 		}
+
+		/** set return type
+		*
+		* @param t return type
+		*/
+		inline void set_return_type(EGPReturnType t)
+		{
+			m_return = t;
+		};
+
+		/** get return type
+		*
+		* @return return type
+		*/
+
+		inline EGPReturnType get_return_type()
+		{
+			return m_return;
+		};
+
 	
 	protected:
   		/** train regression
@@ -154,15 +191,32 @@ class CGaussianProcessRegression : public CMachine
 		/** function for initialization*/
 		void init();
 
+		/* Update kernel matrices */
+		void update_kernel_matrices();
+
 	private:
 
-		/** features */
+		/** training features */
 		CDotFeatures* m_features;
 		
+		/** testing features */
+		CDotFeatures* m_data;
+
+		/*Kernel matrix from testing and training
+		 * features
+		 */
+		SGMatrix<float64_t> m_k_trts;
+
+		/*Kernel matrix from testing
+		 * features
+		 */
+		SGMatrix<float64_t> m_k_tsts;
+
 		/** Inference Method */
 		CInferenceMethod* m_method;
 
-		
+		/*What should apply_regression return?*/
+		EGPReturnType m_return;
 };
 
 }

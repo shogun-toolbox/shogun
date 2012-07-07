@@ -377,6 +377,13 @@ protected:
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
+	/*Updates the hash of current parameter combination.
+	 *
+	 * @return bool if parameter combination has changed since last
+	 * update.
+	 */
+	virtual bool update_parameter_hash();
+
 private:
 	void set_global_objects();
 	void unset_global_objects();
@@ -406,6 +413,19 @@ private:
 	int32_t load_parameter_version(CSerializableFile* file,
 			const char* prefix="");
 
+	/*Gets an incremental hash of all parameters as well as the parameters
+	 * of CSGObject children of the current object's parameters.
+	 *
+	 * @param param Parameter to hash
+	 * @param current hash
+	 * @param carry value for Murmur3 incremental hash
+	 * @param total_length total byte length of all hashed
+	 * parameters so far. Byte length of parameters will be added
+	 * to the total length
+	 */
+	void get_parameter_incremental_hash(Parameter* param,
+			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
+
 public:
 	/** io */
 	SGIO* io;
@@ -424,6 +444,9 @@ public:
 
 	/** map for different parameter versions */
 	ParameterMap* m_parameter_map;
+
+	/*Hash of parameter values*/
+	uint32_t m_hash;
 
 private:
 

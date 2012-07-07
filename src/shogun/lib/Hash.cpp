@@ -7,8 +7,8 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  *
- * The MD5 and Murmor hashing functions were integrated from public sources.
- * Their respective copyrights follow.
+ * The MD5 hashing function was integrated from public sources.
+ * Its copyright follows.
  *
  * MD5
  *
@@ -26,16 +26,6 @@
  * MD5Context structure, pass it to MD5Init, call MD5Update as
  * needed on buffers full of bytes, and then call MD5Final, which
  * will fill a supplied 16-byte array with the digest.
- *
- * MurmurHash2
- *
- * (C) Austin Appleby, released under the MIT License
- *
- *  Note - This code makes a few assumptions about how your machine behaves -
- *
- *  1. We can read a 4-byte value from any address without crashing
- *  2. It will not produce the same results on little-endian and big-endian
- *     machines.
  */
 
 #include <shogun/lib/common.h>
@@ -372,73 +362,19 @@ void CHash::MD5Transform(uint32_t buf[4], uint32_t const in[16])
 }
 #endif
 
-uint32_t CHash::MurmurHash2(uint8_t* data, int32_t len, uint32_t seed)
+uint32_t CHash::MurmurHash3(uint8_t* data, int32_t len, uint32_t seed)
 {
-	// 'm' and 'r' are mixing constants generated offline.
-	// They're not really 'magic', they just happen to work well.
-
-	const uint32_t m = 0x5bd1e995;
-	const int32_t r = 24;
-
-	// Initialize the hash to a 'random' value
-
-	uint32_t h = seed ^ len;
-
-	// Mix 4 bytes at a time into the hash
-
-	while(len >= 4)
-	{
-		uint32_t k = *(uint32_t *)data;
-
-		k *= m;
-		k ^= k >> r;
-		k *= m;
-
-		h *= m;
-		h ^= k;
-
-		data += 4;
-		len -= 4;
-	}
-
-	// Handle the last few bytes of the input array
-
-	switch(len)
-	{
-		case 3: h ^= data[2] << 16;
-		case 2: h ^= data[1] << 8;
-		case 1: h ^= data[0];
-				h *= m;
-	};
-
-	// Do a few final mixes of the hash to ensure the last few
-	// bytes are well-incorporated.
-
-	h ^= h >> 13;
-	h *= m;
-	h ^= h >> 15;
-
-	return h;
+	return PMurHash32(seed, data, len);
 }
 
-uint32_t CHash::IncrementalMurmurHash2(uint8_t data, uint32_t h)
+void CHash::IncrementalMurmurHash3(uint32_t *ph1, uint32_t *pcarry, uint8_t* data, int32_t len)
 {
-	// 'm' and 'r' are mixing constants generated offline.
-	// They're not really 'magic', they just happen to work well.
+	PMurHash32_Process(ph1, pcarry, data, len);
+}
 
-	const uint32_t m = 0x5bd1e995;
-
-	h ^= data;
-	h *= m;
-
-	// Do a few final mixes of the hash to ensure the last few
-	// bytes are well-incorporated.
-
-	h ^= h >> 13;
-	h *= m;
-	h ^= h >> 15;
-
-	return h;
+uint32_t CHash::FinalizeIncrementalMurmurHash3(uint32_t h, uint32_t carry, uint32_t total_length)
+{
+	return PMurHash32_Result(h, carry, total_length);
 }
 
 uint32_t CHash::MurmurHashString(substring s, uint32_t h)
@@ -456,7 +392,7 @@ uint32_t CHash::MurmurHashString(substring s, uint32_t h)
 		if (isdigit(*p))
 			ret = 10*ret + *(p++) - '0';
 		else
-			return MurmurHash2((uint8_t *)s.start, s.end - s.start, h);
+			return MurmurHash3((uint8_t *)s.start, s.end - s.start, h);
 
 	return ret + h;
 }

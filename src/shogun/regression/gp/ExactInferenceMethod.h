@@ -151,7 +151,10 @@ public:
 protected:
 	/** Update Alpha and Cholesky Matrices.
 	 */
-	virtual void update_alpha_and_chol();
+	virtual void update_alpha();
+	virtual void update_chol();
+	virtual void update_train_kernel();
+	virtual void update_all();
 
 private:
 
@@ -159,6 +162,9 @@ private:
 	 * for inference
 	 */
 	void check_members();
+
+	/*Kernel matrix with noise*/
+	SGMatrix<float64_t> m_kern_with_noise;
 };
 
 }
