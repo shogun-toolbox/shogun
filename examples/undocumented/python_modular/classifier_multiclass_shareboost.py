@@ -8,11 +8,13 @@ def classifier_multiclass_shareboost (fm_train_real=traindat,fm_test_real=testda
     from shogun.Features import RealFeatures, RealSubsetFeatures, MulticlassLabels
     from shogun.Classifier import ShareBoost
 
+    print('Working on a problem of %d features and %d samples' % fm_train_real.shape)
+
     feats_train = RealFeatures(fm_train_real)
 
     labels = MulticlassLabels(label_train_multiclass)
 
-    shareboost = ShareBoost(feats_train, labels, min(fm_train_real.shape[0]-1, 20))
+    shareboost = ShareBoost(feats_train, labels, min(fm_train_real.shape[0]-1, 30))
     shareboost.train();
     print(shareboost.get_activeset())
 
