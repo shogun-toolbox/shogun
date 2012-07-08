@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This configure script is based on the one from mplayer
 #   http://mplayer.hu
@@ -375,6 +375,10 @@ EOF
 						cc_version="$cc_version, bad"
 						cc_found=no
 						;;
+						4.[0-2]*)
+							cc_version="$cc_version, bad"
+							cc_found=no
+							;;
 						*)
 						_cc_major=`echo $cc_version | cut -d '.' -f 1`
 						_cc_minor=`echo $cc_version | cut -d '.' -f 2`
@@ -450,6 +454,10 @@ EOF
 					cxx_version=`$COMP_CPP -dumpversion 2>&1`
 					case $cxx_version in
 						2.96*)
+							cxx_version="$cxx_version, bad"
+							cxx_found=no
+							;;
+						4.[0-2]*)
 							cxx_version="$cxx_version, bad"
 							cxx_found=no
 							;;
@@ -3218,6 +3226,13 @@ EOF
 						HAVE_LAPACK='#define HAVE_LAPACK 1'
 						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
 						POSTLINKFLAGS="$POSTLINKFLAGS -L${ALTERNATIVE_ATLASDIR} -llapack -lcblas -llapack_atlas"
+					elif bsd && cc_check -I/usr/local/include -L/usr/local/lib -lalapack -lf77blas -lcblas
+					then
+						echores "yes"
+						HAVE_ATLAS='#define HAVE_ATLAS 1'
+						HAVE_LAPACK='#define HAVE_LAPACK 1'
+						DEFINES="$DEFINES -DHAVE_ATLAS -DHAVE_LAPACK"
+						POSTLINKFLAGS="$POSTLINKFLAGS -L/usr/local/lib -lalapack -lf77blas -lcblas"
 					else
 						if cc_check -llapack -lcblas -latlas
 						then
