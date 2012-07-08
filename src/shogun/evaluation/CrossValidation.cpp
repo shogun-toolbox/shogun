@@ -174,6 +174,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* different behavior whether data is locked or not */
 	if (m_machine->is_data_locked())
 	{
+		SG_DEBUG("starting locked evaluation\n", get_name());
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
@@ -203,10 +204,13 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* clean up */
 			SG_UNREF(result_labels);
+
+			SG_DEBUG("done locked evaluation\n", get_name());
 		}
 	}
 	else
 	{
+		SG_DEBUG("starting unlocked evaluation\n", get_name());
 		/* tell machine to store model internally
 		 * (otherwise changing subset of features will kaboom the classifier) */
 		m_machine->set_store_model_features(true);
@@ -262,6 +266,8 @@ float64_t CCrossValidation::evaluate_one_run()
 			SG_UNREF(result_labels);
 			m_labels->remove_subset();
 		}
+
+		SG_DEBUG("done unlocked evaluation\n", get_name());
 	}
 
 	/* build arithmetic mean of results */
