@@ -17,9 +17,6 @@
 #include <shogun/io/AsciiFile.h>
 #include <shogun/mathematics/Math.h>
 #include <ctype.h>
-#if FREEBSD
-#define _WITH_GETLINE
-#endif
 #include <stdio.h>
 
 using namespace shogun;
@@ -1016,7 +1013,7 @@ template <class T> void CAsciiFile::append_item(
 	items->append_element(item);
 }
 
-#ifdef __MACH__
+#if defined(__MACH__) || defined(FREEBSD)
 ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
 {
 	int32_t total_bytes_read=0;
@@ -1085,11 +1082,7 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 
 ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
 {
-#if FREEBSD
-	return getline(lineptr, n, stream);
-#else
 	return ::getline(lineptr, n, stream);
-#endif
 }
 #endif
 
