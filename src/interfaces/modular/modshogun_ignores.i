@@ -15,6 +15,7 @@
 %ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
 %ignore shogun::SGMatrix::matrix_multiply;
 %ignore shogun::CStructuredModel::init_opt;
+%ignore shogun::CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
 #endif
 
 %ignore refcount_t; 
