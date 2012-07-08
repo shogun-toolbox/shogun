@@ -84,7 +84,12 @@ void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBina
 	ASSERT(ground_truth->get_label_type() == LT_BINARY);
 	ASSERT(predicted->get_label_type() == LT_BINARY);
 
-	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
+	if (predicted->get_num_labels()!=ground_truth->get_num_labels())
+	{
+		SG_ERROR("%s::compute_scores(): Number of predicted labels (%d) is not "
+				"equal to number of ground truth labels (%d)!\n", get_name(),
+				predicted->get_num_labels(), ground_truth->get_num_labels());
+	}
 	m_TP = 0.0;
 	m_FP = 0.0;
 	m_TN = 0.0;
