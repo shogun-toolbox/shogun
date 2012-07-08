@@ -1029,7 +1029,7 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 	}
 
 	int32_t bytes_read, pos=-1;
-	int32_t threshold_size=100000;
+	size_t threshold_size=100000;
 
 	while (1)
 	{
