@@ -47,9 +47,15 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 
 	CParameterCombination* best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
+	{
+		if (print_state) SG_PRINT("Direction is maximize\n");
 		best_result->mean=CMath::ALMOST_NEG_INFTY;
+	}
 	else
+	{
+		if (print_state) SG_PRINT("Direction is maximize\n");
 		best_result->mean=CMath::ALMOST_INFTY;
+	}
 
 	/* underlying learning machine */
 	CMachine* machine=m_machine_eval->get_machine();
