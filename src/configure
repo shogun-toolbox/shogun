@@ -375,6 +375,10 @@ EOF
 						cc_version="$cc_version, bad"
 						cc_found=no
 						;;
+						4.[0-2]*)
+							cc_version="$cc_version, bad"
+							cc_found=no
+							;;
 						*)
 						_cc_major=`echo $cc_version | cut -d '.' -f 1`
 						_cc_minor=`echo $cc_version | cut -d '.' -f 2`
@@ -450,6 +454,10 @@ EOF
 					cxx_version=`$COMP_CPP -dumpversion 2>&1`
 					case $cxx_version in
 						2.96*)
+							cxx_version="$cxx_version, bad"
+							cxx_found=no
+							;;
+						4.[0-2]*)
 							cxx_version="$cxx_version, bad"
 							cxx_found=no
 							;;
