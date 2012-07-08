@@ -155,7 +155,7 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix) :
 	vector<int32_t> G;
 	vector<int32_t> ind_t;
 	int current_l_idx = 1;
-	for (int32_t i=0; i<n_features; i++)
+	for (int32_t i=1; i<n_features; i++)
 	{
 		if (nodes[i].n_desc > 0)
 		{
