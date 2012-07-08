@@ -69,7 +69,8 @@ float64_t CHSIC::compute_statistic()
 			result+=K(j, i)*L(i, j);
 	}
 
-	result/=m*m;
+	/* return m times statistic */
+	result/=m;
 
 	return result;
 }
@@ -107,22 +108,12 @@ float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
 
 	index_t m=m_p->get_num_vectors();
 
-	/* NOTE: the gamma distribution is fitted to m*HSIC_b. Therefore, the
-	 * parameter statistic value is multiplied by m before anything is done.
-	 * This assumes that the feature data size is NOT changed after statistics
-	 * call */
-	statistic*=m;
-	SG_WARNING("check this! Gamma test uses different statistic!\n");
-
 	/* compute kernel matrices (these have to be stored unfortunately) */
 	m_kernel_p->init(m_p, m_p);
 	m_kernel_q->init(m_q, m_q);
 
 	SGMatrix<float64_t> K=m_kernel_p->get_kernel_matrix();
 	SGMatrix<float64_t> L=m_kernel_q->get_kernel_matrix();
-
-	K.display_matrix("K");
-	L.display_matrix("L");
 
 	/* compute sum and trace of uncentered kernel matrices, needed later */
 	float64_t trace_K=0;
@@ -145,9 +136,6 @@ float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
 	/* center both matrices: K=H*K*H, L=H*L*H in MATLAB */
 	K.center();
 	L.center();
-
-	K.display_matrix("K_centered");
-	L.display_matrix("L_centered");
 
 	/* compute the trace of MATLAB: (1/6 * Kc.*Lc).^2 Ü */
 	float64_t trace=0;
@@ -174,7 +162,7 @@ float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
 
 	/* finally, compute variance of hsic under H0
 	 * MATLAB: varHSIC = 72*(m-4)*(m-5)/m/(m-1)/(m-2)/(m-3)  *  varHSIC */
-	var_hsic=72.0*(m-4)*(m-5)/m/(m-1)/(m-2)/(m-2)*var_hsic;
+	var_hsic=72.0*(m-4)*(m-5)/m/(m-1)/(m-2)/(m-3)*var_hsic;
 	SG_DEBUG("var_hsic: %f\n", var_hsic);
 
 	/* compute mean of matrices with diagonal elements zero on the base of sums
@@ -195,7 +183,7 @@ float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
 	/* return: cdf('gam',statistic,al,bet) (MATLAB)
 	 * which will get the position in the null distribution */
 	float64_t result=CStatistics::gamma_cdf(statistic, a, b);
-	SG_DEBUG("result: %f\n", result);
+	SG_DEBUG("gamma_cdf(%f, %f, %f): %f\n", statistic, a, b, result);
 
 	SG_DEBUG(("leaving %s::compute_p_value_gamma()\n"), get_name());
 	return result;
