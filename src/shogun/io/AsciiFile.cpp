@@ -17,6 +17,9 @@
 #include <shogun/io/AsciiFile.h>
 #include <shogun/mathematics/Math.h>
 #include <ctype.h>
+#if FREEBSD
+#define _WITH_GETLINE
+#endif
 #include <stdio.h>
 
 using namespace shogun;
@@ -1082,7 +1085,11 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 
 ssize_t CAsciiFile::getline(char **lineptr, size_t *n, FILE *stream)
 {
+#if FREEBSD
+	return getline(lineptr, n, stream);
+#else
 	return ::getline(lineptr, n, stream);
+#endif
 }
 #endif
 
