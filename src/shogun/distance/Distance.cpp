@@ -22,42 +22,14 @@
 
 #include <string.h>
 #include <unistd.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
+#include <omp.h>
 
 using namespace shogun;
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct DISTANCE_THREAD_PARAM
-{
-	// CDistance instance used by thread to compute distance
-	CDistance* distance;
-	// distance matrix to store computed distances
-	float64_t* distance_matrix;
-	// starting index of the main loop
-	int32_t idx_start;
-	// end index of the main loop
-	int32_t idx_stop;
-	// step of the main loop
-	int32_t idx_step;
-	// number of lhs vectors
-	int32_t lhs_vectors_number;
-	// number of rhs vectors
-	int32_t rhs_vectors_number;
-	// whether matrix distance is symmetric
-	bool symmetric;
-	// chunking method
-	bool chunk_by_lhs;
-};
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CDistance::CDistance() : CSGObject()
 {
 	init();
 }
-
 
 CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs) : CSGObject()
 {
@@ -318,54 +290,48 @@ float64_t* CDistance::get_distance_matrix_real(
 	// select chunking method according to greatest dimension
 	bool chunk_by_lhs = (lhs_vectors_number >= rhs_vectors_number);
 
-#ifdef HAVE_PTHREAD
-	// init parallel to work
-	int32_t num_threads = parallel->get_num_threads();
-	ASSERT(num_threads>0);
-	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	DISTANCE_THREAD_PARAM* parameters = SG_MALLOC(DISTANCE_THREAD_PARAM,num_threads);
-	pthread_attr_t attr;
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	// run threads
-	for (int32_t t=0; t<num_threads; t++)
+	int32_t i,j;
+	if (symmetric)
 	{
-		parameters[t].idx_start = t;
-		parameters[t].idx_stop = chunk_by_lhs ? lhs_vectors_number : rhs_vectors_number;
-		parameters[t].idx_step = num_threads;
-		parameters[t].distance_matrix = distance_matrix;
-		parameters[t].symmetric = symmetric;
-		parameters[t].lhs_vectors_number = lhs_vectors_number;
-		parameters[t].rhs_vectors_number = rhs_vectors_number;
-		parameters[t].chunk_by_lhs = chunk_by_lhs;
-		parameters[t].distance = this;
-		pthread_create(&threads[t], &attr, run_distance_thread, (void*)&parameters[t]);
+#pragma omp parallel private(i,j)
+#pragma omp for schedule(dynamic) nowait
+		for (i=0; i<lhs_vectors_number; i++)
+		{
+			for (j=i; j<rhs_vectors_number; j++)
+			{
+				float64_t ij_distance = compute(i,j);
+				distance_matrix[i*rhs_vectors_number+j] = ij_distance;
+				distance_matrix[j*rhs_vectors_number+i] = ij_distance;
+			}
+		}
 	}
-	// join, i.e. wait threads for finish
-	for (int32_t t=0; t<num_threads; t++)
+	else
 	{
-		pthread_join(threads[t], NULL);
+		if (chunk_by_lhs)
+		{
+#pragma omp parallel private(i,j)
+#pragma omp for schedule(dynamic) nowait
+			for (i=0; i<lhs_vectors_number; i++)
+			{
+				for (j=0; j<rhs_vectors_number; j++)
+				{
+					distance_matrix[j*lhs_vectors_number+i] = compute(i,j);
+				}
+			}
+		}
+		else
+		{
+#pragma omp parallel private(i,j)
+#pragma omp for schedule(dynamic) nowait
+			for (j=0; j<rhs_vectors_number; j++)
+			{
+				for (i=0; i<lhs_vectors_number; i++)
+				{
+					distance_matrix[j*lhs_vectors_number+i] = compute(i,j);
+				}
+			}
+		}
 	}
-	// cleanup
-	pthread_attr_destroy(&attr);
-	SG_FREE(parameters);
-	SG_FREE(threads);
-#else
-	// init one-threaded parameters
-	DISTANCE_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_stop = chunk_by_lhs ? lhs_vectors_number : rhs_vectors_number;
-	single_thread_param.idx_step = 1;
-	single_thread_param.distance_matrix = distance_matrix;
-	single_thread_param.symmetric = symmetric;
-	single_thread_param.lhs_vectors_number = lhs_vectors_number;
-	single_thread_param.rhs_vectors_number = rhs_vectors_number;
-	single_thread_param.chunk_by_lhs = chunk_by_lhs;
-	single_thread_param.distance = this;
-	// run thread
-	run_distance_thread((void*)&single_thread_param);
-#endif
-
 	return distance_matrix;
 }
 
@@ -382,56 +348,4 @@ void CDistance::init()
 					  "Feature vectors to occur on left hand side.");
 	m_parameters->add((CSGObject**) &rhs, "rhs",
 					  "Feature vectors to occur on right hand side.");
-}
-
-void* CDistance::run_distance_thread(void* p)
-{
-	DISTANCE_THREAD_PARAM* parameters = (DISTANCE_THREAD_PARAM*)p;
-	float64_t* distance_matrix = parameters->distance_matrix;
-	CDistance* distance = parameters->distance;
-	int32_t idx_start = parameters->idx_start;
-	int32_t idx_stop = parameters->idx_stop;
-	int32_t idx_step = parameters->idx_step;
-	int32_t lhs_vectors_number = parameters->lhs_vectors_number;
-	int32_t rhs_vectors_number = parameters->rhs_vectors_number;
-	bool symmetric = parameters->symmetric;
-	bool chunk_by_lhs = parameters->chunk_by_lhs;
-
-	if (symmetric)
-	{
-		for (int32_t i=idx_start; i<idx_stop; i+=idx_step)
-		{
-			for (int32_t j=i; j<rhs_vectors_number; j++)
-			{
-				float64_t ij_distance = distance->compute(i,j);
-				distance_matrix[i*rhs_vectors_number+j] = ij_distance;
-				distance_matrix[j*rhs_vectors_number+i] = ij_distance;
-			}
-		}
-	}
-	else
-	{
-		if (chunk_by_lhs)
-		{
-			for (int32_t i=idx_start; i<idx_stop; i+=idx_step)
-			{
-				for (int32_t j=0; j<rhs_vectors_number; j++)
-				{
-					distance_matrix[j*lhs_vectors_number+i] = distance->compute(i,j);
-				}
-			}
-		}
-		else
-		{
-			for (int32_t j=idx_start; j<idx_stop; j+=idx_step)
-			{
-				for (int32_t i=0; i<lhs_vectors_number; i++)
-				{
-					distance_matrix[j*lhs_vectors_number+i] = distance->compute(i,j);
-				}
-			}
-		}
-	}
-
-	return NULL;
 }

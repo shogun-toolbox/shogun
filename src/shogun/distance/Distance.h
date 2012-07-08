@@ -334,9 +334,6 @@ class CDistance : public CSGObject
 
 	protected:
 
-		/// run distance thread
-		static void* run_distance_thread(void* p);
-
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
