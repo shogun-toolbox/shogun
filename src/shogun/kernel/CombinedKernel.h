@@ -302,18 +302,6 @@ class CCombinedKernel : public CKernel
 			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
 			float64_t factor=1.0);
 
-		/** helper for compute optimized kernel
-		 *
-		 * @param p thread parameter
-		 */
-		static void* compute_optimized_kernel_helper(void* p);
-
-		/** helper for compute kernel
-		 *
-		 * @param p thread parameter
-		 */
-		static void* compute_kernel_helper(void* p);
-
 		/** emulates batch computation, via linadd optimization w^t x or even down to sum_i alpha_i K(x_i,x)
 		 *
 		 * @param k kernel
