@@ -72,8 +72,8 @@ float64_t CIndependenceTestStatistic::compute_p_value(float64_t statistic)
 	}
 	else
 	{
-		SG_ERROR("%s::compute_p_value(): Unknown method to approximate null-"
-				"distirbution!\n", get_name());
+		SG_ERROR("%CIndependenceTestStatistic::compute_p_value(): Unknown "
+				"method to approximate null-distirbution!\n");
 	}
 
 	return result;
