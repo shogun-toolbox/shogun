@@ -17,6 +17,7 @@ namespace shogun
 CSLEPMachine::CSLEPMachine() :
 	CLinearMachine(), m_z(1.0)
 {
+	register_parameters();
 }
 
 CSLEPMachine::CSLEPMachine(
@@ -32,6 +33,7 @@ CSLEPMachine::CSLEPMachine(
 	set_regularization(0);
 	set_tolerance(1e-3);
 	set_max_iter(1000);
+	register_parameters();
 }
 
 CSLEPMachine::~CSLEPMachine()

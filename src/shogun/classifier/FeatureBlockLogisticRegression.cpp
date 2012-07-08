@@ -65,7 +65,10 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 	ASSERT(features);
 	ASSERT(m_labels);
 
-	SGVector<float64_t> y = ((CBinaryLabels*)m_labels)->get_labels();
+	int32_t n_vecs = m_labels->get_num_labels();
+	SGVector<float64_t> y(n_vecs);
+	for (int32_t i=0; i<n_vecs; i++)
+		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
 	
 	slep_options options = slep_options::default_options();
 	options.q = m_q;
