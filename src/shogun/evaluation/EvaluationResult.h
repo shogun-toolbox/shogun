@@ -44,6 +44,8 @@ public:
 	 */
 	virtual EEvaluationResultType get_result_type() = 0;
 
+	/** print result */
+	virtual void print_result() = 0;
 };
 
 } /* namespace shogun */

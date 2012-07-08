@@ -45,7 +45,6 @@
 %rename(SubGradientLPM) CSubGradientLPM;
 %rename(SubGradientSVM) CSubGradientSVM;
 %rename(NewtonSVM) CNewtonSVM;
-%rename(PegasosSVM) CPegasosSVM;
 #ifndef HAVE_PYTHON
 %rename(SVM) CSVM;
 #endif
@@ -107,7 +106,6 @@
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
-%include <shogun/classifier/svm/PegasosSVM.h>
 %include <shogun/machine/SLEPMachine.h>
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
 %include <shogun/machine/DirectorLinearMachine.h>

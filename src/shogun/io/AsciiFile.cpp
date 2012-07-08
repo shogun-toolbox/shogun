@@ -1013,7 +1013,7 @@ template <class T> void CAsciiFile::append_item(
 	items->append_element(item);
 }
 
-#ifdef __MACH__
+#if defined(__MACH__) || defined(FREEBSD)
 ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *stream)
 {
 	int32_t total_bytes_read=0;
@@ -1029,7 +1029,7 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 	}
 
 	int32_t bytes_read, pos=-1;
-	int32_t threshold_size=100000;
+	size_t threshold_size=100000;
 
 	while (1)
 	{

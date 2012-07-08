@@ -28,7 +28,7 @@ class CrossValidationResult : public CEvaluationResult
 {
 	public:
 		/** print result */
-		void print_result()
+		virtual void print_result()
 		{
 			if (has_conf_int)
 			{

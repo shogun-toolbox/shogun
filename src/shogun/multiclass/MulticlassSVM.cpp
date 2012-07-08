@@ -79,10 +79,10 @@ bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 		SG_ERROR("No kernel assigned!\n");
 
 	CFeatures* lhs=m_kernel->get_lhs();
-	if (!lhs)
+	if (!lhs && m_kernel->get_kernel_type()!=K_COMBINED)
 		SG_ERROR("%s: No left hand side specified\n", get_name());
 
-	if (!lhs->get_num_vectors())
+	if (m_kernel->get_kernel_type()!=K_COMBINED && !lhs->get_num_vectors())
 	{
 		SG_ERROR("%s: No vectors on left hand side (%s). This is probably due to"
 				" an implementation error in %s, where it was forgotten to set "
@@ -90,7 +90,7 @@ bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 				data->get_name());
 	}
 
-	if (data)
+	if (data && m_kernel->get_kernel_type()!=K_COMBINED)
 		m_kernel->init(lhs, data);
 	SG_UNREF(lhs);
 
