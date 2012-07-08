@@ -440,7 +440,7 @@ slep_result_t slep_logistic(
 			}
 			break;
 		}
-		SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
+		//SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
 		
 		fun_s /= n_vecs;
 		
@@ -572,7 +572,7 @@ slep_result_t slep_logistic(
 		
 		funcp = func;
 		func = fun_x + lambda*regularizer;
-		SG_SDEBUG("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
+		//SG_SDEBUG("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
 
 		if (gradient_break)
 			break;
