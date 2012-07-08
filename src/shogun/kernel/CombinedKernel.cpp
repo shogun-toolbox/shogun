@@ -19,27 +19,9 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <string.h>
-
-#ifndef WIN32
-#include <pthread.h>
-#endif
+#include <omp.h>
 
 using namespace shogun;
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
-{
-	CKernel* kernel;
-	float64_t* result;
-	int32_t* vec_idx;
-	int32_t start;
-	int32_t end;
-	/// required only for non optimized kernels
-	float64_t* weights;
-	int32_t* IDX;
-	int32_t num_suppvec;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 : CKernel(size), append_subkernel_weights(asw)
@@ -366,41 +348,6 @@ void CCombinedKernel::compute_batch(
 	delete_optimization();
 }
 
-void* CCombinedKernel::compute_optimized_kernel_helper(void* p)
-{
-	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
-	int32_t* vec_idx=params->vec_idx;
-	CKernel* k=params->kernel;
-	float64_t* result=params->result;
-
-	for (int32_t i=params->start; i<params->end; i++)
-		result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
-
-	return NULL;
-}
-
-void* CCombinedKernel::compute_kernel_helper(void* p)
-{
-	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
-	int32_t* vec_idx=params->vec_idx;
-	CKernel* k=params->kernel;
-	float64_t* result=params->result;
-	float64_t* weights=params->weights;
-	int32_t* IDX=params->IDX;
-	int32_t num_suppvec=params->num_suppvec;
-
-	for (int32_t i=params->start; i<params->end; i++)
-	{
-		float64_t sub_result=0;
-		for (int32_t j=0; j<num_suppvec; j++)
-			sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]);
-
-		result[i] += k->get_combined_kernel_weight()*sub_result;
-	}
-
-	return NULL;
-}
-
 void CCombinedKernel::emulate_compute_batch(
 	CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* result,
 	int32_t num_suppvec, int32_t* IDX, float64_t* weights)
@@ -414,52 +361,11 @@ void CCombinedKernel::emulate_compute_batch(
 		{
 			k->init_optimization(num_suppvec, IDX, weights);
 
-			int32_t num_threads=parallel->get_num_threads();
-			ASSERT(num_threads>0);
-
-			if (num_threads < 2)
-			{
-				S_THREAD_PARAM params;
-				params.kernel=k;
-				params.result=result;
-				params.start=0;
-				params.end=num_vec;
-				params.vec_idx = vec_idx;
-				compute_optimized_kernel_helper((void*) &params);
-			}
-#ifdef HAVE_PTHREAD
-			else
-			{
-				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
-				int32_t step= num_vec/num_threads;
-
-				int32_t t;
-
-				for (t=0; t<num_threads-1; t++)
-				{
-					params[t].kernel = k;
-					params[t].result = result;
-					params[t].start = t*step;
-					params[t].end = (t+1)*step;
-					params[t].vec_idx = vec_idx;
-					pthread_create(&threads[t], NULL, CCombinedKernel::compute_optimized_kernel_helper, (void*)&params[t]);
-				}
-
-				params[t].kernel = k;
-				params[t].result = result;
-				params[t].start = t*step;
-				params[t].end = num_vec;
-				params[t].vec_idx = vec_idx;
-				compute_optimized_kernel_helper((void*) &params[t]);
-
-				for (t=0; t<num_threads-1; t++)
-					pthread_join(threads[t], NULL);
-
-				SG_FREE(params);
-				SG_FREE(threads);
-			}
-#endif /* HAVE_PTHREAD */
+			int32_t i;
+#pragma omp parallel private(i)
+#pragma omp for schedule(dynamic) nowait
+			for (i=0; i<num_vec; i++)
+				result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
 
 			k->delete_optimization();
 		}
@@ -474,58 +380,18 @@ void CCombinedKernel::emulate_compute_batch(
 			int32_t num_threads=parallel->get_num_threads();
 			ASSERT(num_threads>0);
 
-			if (num_threads < 2)
+			int32_t i,j;
+			float64_t sub_result;
+#pragma omp parallel private(i,j,sub_result)
+#pragma omp for schedule(dynamic) nowait
+			for (i=0; i<num_vec; i++)
 			{
-				S_THREAD_PARAM params;
-				params.kernel=k;
-				params.result=result;
-				params.start=0;
-				params.end=num_vec;
-				params.vec_idx = vec_idx;
-				params.IDX = IDX;
-				params.weights = weights;
-				params.num_suppvec = num_suppvec;
-				compute_kernel_helper((void*) &params);
+				sub_result = 0;
+				for (j=0; j<num_suppvec; j++)
+					sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]);
+
+				result[i] += k->get_combined_kernel_weight()*sub_result;
 			}
-#ifdef HAVE_PTHREAD
-			else
-			{
-				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
-				int32_t step= num_vec/num_threads;
-
-				int32_t t;
-
-				for (t=0; t<num_threads-1; t++)
-				{
-					params[t].kernel = k;
-					params[t].result = result;
-					params[t].start = t*step;
-					params[t].end = (t+1)*step;
-					params[t].vec_idx = vec_idx;
-					params[t].IDX = IDX;
-					params[t].weights = weights;
-					params[t].num_suppvec = num_suppvec;
-					pthread_create(&threads[t], NULL, CCombinedKernel::compute_kernel_helper, (void*)&params[t]);
-				}
-
-				params[t].kernel = k;
-				params[t].result = result;
-				params[t].start = t*step;
-				params[t].end = num_vec;
-				params[t].vec_idx = vec_idx;
-				params[t].IDX = IDX;
-				params[t].weights = weights;
-				params[t].num_suppvec = num_suppvec;
-				compute_kernel_helper(&params[t]);
-
-				for (t=0; t<num_threads-1; t++)
-					pthread_join(threads[t], NULL);
-
-				SG_FREE(params);
-				SG_FREE(threads);
-			}
-#endif /* HAVE_PTHREAD */
 		}
 	}
 }
