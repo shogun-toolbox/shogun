@@ -18,6 +18,10 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
+#ifdef HAVE_LAPACK
+#include <shogun/mathematics/lapack.h>
+#endif //HAVE_LAPACK
+
 using namespace shogun;
 
 float64_t CStatistics::mean(SGVector<float64_t> values)
@@ -45,6 +49,28 @@ float64_t CStatistics::variance(SGVector<float64_t> values)
 
 	return sum_squared_diff/(values.vlen-1);
 }
+
+#ifdef HAVE_LAPACK
+SGMatrix<float64_t> CStatistics::covariance_matrix(
+		SGMatrix<float64_t> observations, bool in_place)
+{
+	SGMatrix<float64_t> centered=in_place ? observations :
+			SGMatrix<float64_t>(observations.num_rows, observations.num_cols);
+
+	if (!in_place)
+	{
+		memcpy(centered.matrix, observations.matrix,
+				sizeof(float64_t)*observations.num_rows*observations.num_cols);
+	}
+	centered.remove_column_mean();
+
+	/* compute 1/m/(m-1) * X' * X */
+	SGMatrix<float64_t> cov=SGMatrix<float64_t>::matrix_multiply(centered,
+			centered, true, false);
+
+	return cov;
+}
+#endif //HAVE_LAPACK
 
 float64_t CStatistics::std_deviation(SGVector<float64_t> values)
 {
