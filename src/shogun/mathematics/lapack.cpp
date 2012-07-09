@@ -169,9 +169,9 @@ int clapack_dgetri(const CBLAS_ORDER Order, const int N, double *A,
 	double work1 = 0;
 	DGETRI(&n,A,&LDA,ipiv,&work1,&lwork,&info);
 	lwork = (int) work1;
-	work = (double*)malloc(sizeof(double)*lwork);
+	work = SG_MALLOC(double, lwork);
 	DGETRI(&n,A,&LDA,ipiv,work,&lwork,&info);
-	free(work);
+	SG_FREE(work);
 #endif
 	return info;
 }
@@ -240,9 +240,9 @@ void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int 
 	ASSERT(*info==0);
 	ASSERT(work1>0);
 	lwork=(int) work1;
-	double* work=(double*)malloc(sizeof(double)*lwork);
+	double* work=SG_MALLOC(double, lwork);
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, work, &lwork, info);
-	free(work);
+	SG_FREE(work);
 #endif
 }
 #undef DSYEV
@@ -258,9 +258,9 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, &work1, &lworka, info);
 	ASSERT(*info==0);
 	lworka = (int) work1;
-	double* worka = (double*)malloc(sizeof(double)*lworka);
+	double* worka = SG_MALLOC(double, lworka);
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, worka, &lworka, info);
-	free(worka);
+	SG_FREE(worka);
 #endif
 }
 #undef DGESVD
@@ -276,9 +276,9 @@ void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info)
 	ASSERT(*info==0);
 	lwork = (int)work1;
 	ASSERT(lwork>0)
-	double* work = (double*)malloc(sizeof(double)*lwork);
+	double* work = SG_MALLOC(double, lwork);
 	DGEQRF(&m, &n, a, &lda, tau, work, &lwork, info);
-	free(work);
+	SG_FREE(work);
 #endif
 }
 #undef DGEQRF
@@ -294,9 +294,9 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 	ASSERT(*info==0);
 	lwork = (int)work1;
 	ASSERT(lwork>0);
-	double* work = (double*)malloc(sizeof(double)*lwork);
+	double* work = SG_MALLOC(double, lwork);
 	DORGQR(&m, &n, &k, a, &lda, tau, work, &lwork, info);
-	free(work);
+	SG_FREE(work);
 #endif
 }
 #undef DORGQR
@@ -308,7 +308,7 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
 	double vl,vu;
 	double abstol = 0.0;
 	char I = 'I';
-	int* isuppz = (int*)malloc(sizeof(int)*n);
+	int* isuppz = SG_MALLOC(int, n);
 #ifdef HAVE_ACML
 	DSYEVR(jobz,I,uplo,n,a,lda,vl,vu,il,iu,abstol,m,
 	       eigenvalues,eigenvectors,n,isuppz,info);
@@ -323,15 +323,15 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
 	ASSERT(*info==0);
 	lwork = (int)work1;
 	liwork = work2;
-	double* work = (double*)malloc(sizeof(double)*lwork);
-	int* iwork = (int*)malloc(sizeof(int)*liwork);
+	double* work = SG_MALLOC(double, lwork);
+	int* iwork = SG_MALLOC(int, liwork);
 	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
                &m,eigenvalues,eigenvectors,&n,isuppz,
                work,&lwork,iwork,&liwork,info);
 	ASSERT(*info==0);
-	free(work);
-	free(iwork);
-	free(isuppz);
+	SG_FREE(work);
+	SG_FREE(iwork);
+	SG_FREE(isuppz);
 #endif
 }
 #undef DSYEVR
@@ -342,7 +342,7 @@ void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, dou
 	int m;
 	double abstol = 0.0;
 	double vl,vu;
-	int* ifail = (int*)malloc(sizeof(int)*n);
+	int* ifail = SG_MALLOC(int, n);
 	char I = 'I';
 #ifdef HAVE_ACML
 	DSYGVX(itype,jobz,I,uplo,n,a,lda,b,ldb,vl,vu,
@@ -351,18 +351,18 @@ void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, dou
 #else
 	int lwork = -1;
 	double work1 = 0;
-	int* iwork = (int*)malloc(sizeof(int)*5*n);
+	int* iwork = SG_MALLOC(int, 5*n);
 	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
                &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
                &n,&work1,&lwork,iwork,ifail,info);
 	lwork = (int)work1;
-	double* work = (double*)malloc(sizeof(double)*lwork);
+	double* work = SG_MALLOC(double, lwork);
 	DSYGVX(&itype,&jobz,&I,&uplo,&n,a,&lda,b,&ldb,&vl,&vu,
                &il,&iu,&abstol,&m,eigenvalues,eigenvectors,
                &n,work,&lwork,iwork,ifail,info);
-	free(work);
-	free(iwork);
-	free(ifail);
+	SG_FREE(work);
+	SG_FREE(iwork);
+	SG_FREE(ifail);
 #endif
 }
 #undef DSYGVX
