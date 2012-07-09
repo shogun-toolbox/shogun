@@ -31,7 +31,7 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 }
 
 CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf,
-		CDotFeatures* data, CLabels* lab)
+		CFeatures* data, CLabels* lab)
 : CMachine()
 {
 	init();
@@ -100,16 +100,16 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 	if (data)
 	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+		/*if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CFeatures\n");
 		if (data->get_feature_class() != C_DENSE)
 			SG_ERROR("Expected Simple Features\n");
 		if (data->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
+			SG_ERROR("Expected Real Features\n");*/
 
 			SG_UNREF(m_data);
 			SG_REF(data);
-			m_data = (CDotFeatures*)data;
+			m_data = (CFeatures*)data;
 			update_kernel_matrices();
 	}
 

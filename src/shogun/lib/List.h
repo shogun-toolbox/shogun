@@ -59,6 +59,9 @@ class CListElement :public CSGObject
 			m_parameters->add(&data, "data", "Data of this element.");
 			m_parameters->add((CSGObject**) &next, "next",
 					"Next element in list.");
+			m_model_selection_parameters->add((CSGObject**) &next, "next",
+					"Next element in list.");
+			m_model_selection_parameters->add(&data, "data", "Data of this element.");
 		}
 
 	public:
@@ -91,6 +94,8 @@ class CList : public CSGObject
 							  "Number of elements.");
 			m_parameters->add((CSGObject**) &first, "first",
 							  "First element in list.");
+			m_model_selection_parameters->add((CSGObject**) &first, "first",
+								  "First element in list.");
 
 			first  = NULL;
 			current = NULL;
@@ -535,7 +540,7 @@ class CList : public CSGObject
 		/** @return object name */
 		inline virtual const char* get_name() const { return "List"; }
 
-	private:
+	public:
 		/** if data is to be deleted on object destruction */
 		bool delete_data;
 		/** first element in list */

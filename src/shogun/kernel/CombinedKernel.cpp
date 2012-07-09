@@ -18,7 +18,7 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/CombinedFeatures.h>
-
+#include <iostream>
 #include <string.h>
 
 #ifndef WIN32
@@ -793,4 +793,94 @@ void CCombinedKernel::init()
 	    "If subkernel weights are appended.", MS_AVAILABLE);
 	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
 	    MS_NOT_AVAILABLE);
+}
+
+SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(TParameter* param,
+		CSGObject* obj, index_t index)
+{
+
+	if (strcmp(param->m_name, "combined_kernel_weight") == 0)
+	{
+		if (append_subkernel_weights)
+		{
+			int32_t j=0 ;
+			CListElement* current = NULL ;
+			CKernel* k = get_first_kernel(current);
+			while(k)
+			{
+				int32_t num = k->get_num_subkernels() ;
+				//ASSERT(j<subkernel_weights_number);
+
+				if (j <= index && (j+num) > index)
+					k->get_parameter_gradient(param, obj, index-j);
+
+				SG_UNREF(k);
+				k = get_next_kernel(current);
+				j += num ;
+			}
+		}
+		else
+		{
+			int32_t j=0 ;
+			CListElement* current = NULL ;
+			CKernel* k = get_first_kernel(current);
+			while(k)
+			{
+			//	ASSERT(j<subkernel_weights_number);
+				if(obj == k)
+					return k->get_kernel_matrix();
+
+				SG_UNREF(k);
+				k = get_next_kernel(current);
+				j++ ;
+			}
+		}
+	}
+
+	else
+	{
+		int32_t j=0 ;
+		CListElement* current = NULL ;
+		CKernel* k = get_first_kernel(current);
+		SGMatrix<float64_t> result(0,0);
+
+		while(k)
+		{
+			int32_t num = k->get_num_subkernels() ;
+//			ASSERT(j<subkernel_weights_number);
+
+
+			SGMatrix<float64_t> derivative = k->get_parameter_gradient(param, obj, index);
+
+
+			if (!append_subkernel_weights)
+			{
+				for (int g = 0; g < derivative.num_rows; g++)
+				{
+					for (int h = 0; h < derivative.num_cols; h++)
+						derivative(g,h) *= k->get_combined_kernel_weight();
+				}
+			}
+
+			if (derivative.num_cols > 0 && derivative.num_rows > 0)
+			{
+				if (result.num_cols == 0 && result.num_rows == 0)
+					result = derivative;
+				else
+				{
+					for (int g = 0; g < derivative.num_rows; g++)
+					{
+						for (int h = 0; h < derivative.num_cols; h++)
+							result(g,h) += derivative(g,h);
+					}
+				}
+			}
+
+			SG_UNREF(k);
+			k = get_next_kernel(current);
+			j += num ;
+		}
+
+		return result;
+	}
 }

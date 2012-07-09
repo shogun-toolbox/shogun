@@ -382,6 +382,11 @@ class CCombinedKernel : public CKernel
 			return dynamic_cast<CCombinedKernel*>(n);
 		}
 
+		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+				CSGObject* obj, index_t index);
+
+		CList* get_list() {SG_REF(kernel_list); return kernel_list;}
+
 	protected:
 		/** compute kernel function
 		 *

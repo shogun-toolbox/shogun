@@ -251,6 +251,9 @@ class CProductKernel : public CKernel
 			return dynamic_cast<CProductKernel*>(n);
 		}
 
+		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+				CSGObject* obj, index_t index);
+
 	protected:
 		/** compute kernel function
 		 *

@@ -52,131 +52,126 @@ void CParameterCombination::append_child(CParameterCombination* child)
 	m_child_nodes->append_element(child);
 }
 
-bool CParameterCombination::set_parameter(const char* name,
-		float64_t value)
+
+
+bool CParameterCombination::set_parameter_helper(const char* name, bool value, index_t index)
 {
 	if (m_param)
 	{
 		for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
 		{
-				void* param = m_param->get_parameter(i)->m_parameter;
+			void* param = m_param->get_parameter(i)->m_parameter;
 
-				if (!strcmp(m_param->get_parameter(i)->m_name, name))
-				{
-					if (m_param->get_parameter(i)->m_datatype.m_ptype
-							!= PT_FLOAT64)
-						SG_ERROR("Paramater %s not a float parameter", name);
+			if (!strcmp(m_param->get_parameter(i)->m_name, name))
+			{
+				if (m_param->get_parameter(i)->m_datatype.m_ptype
+						!= PT_BOOL)
+					SG_ERROR("Paramater %s not a boolean parameter", name);
 
-					*((float64_t*)(param)) = value;
-					return true;
-				}
-
-		}
-
-	}
-
-	bool result = false;
-
-	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
-	{
-		CParameterCombination* child = (CParameterCombination*)
-				m_child_nodes->get_element(i);
-
-		result |= child->set_parameter(name, value);
-
-		SG_UNREF(child);
-
-	}
-
-	return result;
-}
-
-bool CParameterCombination::set_parameter(const char* name,
-		int32_t value)
-{
-	if (m_param)
-	{
-		for (index_t i=0; i<m_param->get_num_parameters(); ++i)
-		{
-				void* param=m_param->get_parameter(i)->m_parameter;
-
-				if (!strcmp(m_param->get_parameter(i)->m_name, name))
-				{
-					if (m_param->get_parameter(i)->m_datatype.m_ptype
-							!= PT_INT32)
-						SG_ERROR("Paramater %s not an int parameter", name);
-
-					*((int32_t*)(param)) = value;
-					return true;
-				}
-
-		}
-
-	}
-
-	bool result = false;
-
-	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
-	{
-		CParameterCombination* child = (CParameterCombination*)
-				m_child_nodes->get_element(i);
-
-		result |= child->set_parameter(name, value);
-
-		SG_UNREF(child);
-
-	}
-
-	return result;
-}
-
-bool CParameterCombination::set_parameter(const char* name,
-		bool value)
-{
-	if (m_param)
-	{
-		for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
-		{
-				void* param = m_param->get_parameter(i)->m_parameter;
-
-				if (!strcmp(m_param->get_parameter(i)->m_name, name))
-				{
-					if (m_param->get_parameter(i)->m_datatype.m_ptype
-							!= PT_BOOL)
-						SG_ERROR("Paramater %s not a boolean parameter", name);
-
+				if (index < 0)
 					*((bool*)(param)) = value;
-					return true;
-				}
 
+				else
+					(*((bool**)(param)))[index] = value;
+
+				return true;
+			}
 		}
 
 	}
 
-	bool result = false;
-
-	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
-	{
-		CParameterCombination* child = (CParameterCombination*)
-				m_child_nodes->get_element(i);
-
-		result |= child->set_parameter(name, value);
-
-		SG_UNREF(child);
-
-	}
-
-	return result;
+	return false;
 }
 
-TParameter* CParameterCombination::get_parameter(const char* name)
+bool CParameterCombination::set_parameter_helper(const char* name, int32_t value, index_t index)
 {
 	if (m_param)
 	{
 		for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
+		{
+			void* param = m_param->get_parameter(i)->m_parameter;
+
+			if (!strcmp(m_param->get_parameter(i)->m_name, name))
+			{
+				if (m_param->get_parameter(i)->m_datatype.m_ptype
+						!= PT_INT32)
+					SG_ERROR("Paramater %s not a boolean parameter", name);
+
+				if (index < 0)
+					*((int32_t*)(param)) = value;
+
+				else
+					(*((int32_t**)(param)))[index] = value;
+
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool CParameterCombination::set_parameter_helper(const char* name, float64_t value, index_t index)
+{
+	if (m_param)
+	{
+		for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
+		{
+			void* param = m_param->get_parameter(i)->m_parameter;
+
+			if (!strcmp(m_param->get_parameter(i)->m_name, name))
+			{
+				if (m_param->get_parameter(i)->m_datatype.m_ptype
+						!= PT_FLOAT64)
+					SG_ERROR("Paramater %s not a boolean parameter", name);
+
+				if (index < 0)
+					*((float64_t*)(param)) = value;
+
+				else
+					(*((float64_t**)(param)))[index] = value;
+
+				return true;
+			}
+		}
+
+	}
+
+	return false;
+}
+
+
+TParameter* CParameterCombination::get_parameter_helper(const char* name)
+{
+	if (m_param)
+	{
+		for (index_t i = 0; i < m_param->get_num_parameters(); i++)
 		{
 			if (!strcmp(m_param->get_parameter(i)->m_name, name))
-				return m_param->get_parameter(i);
+					return m_param->get_parameter(i);
+		}
+
+	}
+
+	return NULL;
+}
+
+
+TParameter* CParameterCombination::get_parameter(const char* name,
+		CSGObject* parent)
+{
+	bool match = false;
+
+	if (m_param)
+	{
+		for (index_t i = 0; i < m_param->get_num_parameters(); i++)
+		{
+			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
+			{
+				CSGObject* obj = (*((CSGObject**)m_param->get_parameter(i)->m_parameter));
+				if (parent == obj)
+					match = true;
+			}
 		}
 
 	}
@@ -186,7 +181,13 @@ TParameter* CParameterCombination::get_parameter(const char* name)
 		CParameterCombination* child = (CParameterCombination*)
 				m_child_nodes->get_element(i);
 
-		TParameter* p = child->get_parameter(name);
+		TParameter* p;
+
+		if (!match)
+			 p = child->get_parameter(name, parent);
+
+		else
+			 p = child->get_parameter_helper(name);
 
 		if (p)
 		{

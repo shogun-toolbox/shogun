@@ -117,35 +117,59 @@ public:
 	 *
 	 * @param name Name of parameter
 	 * @param value value to be set
+	 * @param parent The CSObject that directly holds this parameter
 	 *
 	 * @return bool true if value succesfully set.
 	 */
-	bool set_parameter(const char* name, float64_t value);
+	template <typename T>
+	bool set_parameter(const char* name,
+			T value, CSGObject* parent, index_t index = -1)
+	{
+		bool match = false;
 
-	/** Sets specific parameter to specified value.
-	 *
-	 * @param name Name of parameter
-	 * @param value value to be set
-	 *
-	 * @return bool true if value succesfully set.
-	 */
-	bool set_parameter(const char* name, int32_t value);
+		if (m_param)
+		{
+			for (index_t i = 0; i < m_param->get_num_parameters(); ++i)
+			{
+					void* param = m_param->get_parameter(i)->m_parameter;
 
-	/** Sets specific parameter to specified value.
-	 *
-	 * @param name Name of parameter
-	 * @param value value to be set
-	 *
-	 * @return bool true if value succesfully set.
-	 */
-	bool set_parameter(const char* name, bool value);
+					if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
+					{
+						if (parent == (*((CSGObject**)param)))
+							match = true;
+					}
 
+			}
+
+		}
+
+		bool result = false;
+
+		for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
+		{
+			CParameterCombination* child = (CParameterCombination*)
+					m_child_nodes->get_element(i);
+
+			if (!match)
+				 result |= child->set_parameter(name, value, parent, index);
+
+			else
+				 result |= child->set_parameter_helper(name, value, index);
+
+			SG_UNREF(child);
+
+		}
+
+		return result;
+	}
 	/** Gets specific parameter by name.
 	 *
 	 * @param name Name of parameter
+	 * @param parent The CSObject that directly holds this parameter
+	 *
 	 * return specified parameter
 	 */
-	TParameter* get_parameter(const char* name);
+	TParameter* get_parameter(const char* name, CSGObject* parent);
 
 	/** checks whether this node has children
 	 *
@@ -198,6 +222,12 @@ protected:
 	 */
 	static CDynamicObjectArray* extract_trees_with_name(
 			const CDynamicObjectArray* sets, const char* desired_name);
+
+	TParameter* get_parameter_helper(const char* name);
+
+	bool set_parameter_helper(const char* name, bool value, index_t index);
+	bool set_parameter_helper(const char* name, int32_t value, index_t index);
+	bool set_parameter_helper(const char* name, float64_t value, index_t index);
 
 private:
 	void init();

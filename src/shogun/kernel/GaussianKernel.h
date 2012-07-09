@@ -132,7 +132,8 @@ class CGaussianKernel: public CDotKernel
 		 * @param name of parameter
 		 * @return gradient with respect to parameter
 		 */
-		virtual SGMatrix<float64_t> get_parameter_gradient(const char* param_name);
+		virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+				CSGObject* obj, index_t index = -1);
 
 
 	protected:

@@ -45,7 +45,7 @@ CEvaluationResult* CGradientEvaluation::evaluate()
 
 	SGVector<float64_t> quan = m_diff->get_quantity();
 
-	result->gradient = m_diff->get_gradient();
+	result->gradient = m_diff->get_gradient(result->parameter_dictionary);
 
 	result->quantity = quan.clone();
 

@@ -12,6 +12,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/features/CombinedFeatures.h>
 
 using namespace shogun;
 
@@ -24,7 +25,7 @@ CInferenceMethod::CInferenceMethod()
 	m_mean = NULL;
 }
 
-CInferenceMethod::CInferenceMethod(CKernel* kern, CDotFeatures* feat,
+CInferenceMethod::CInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
 {
 	init();
@@ -62,16 +63,20 @@ void CInferenceMethod::init()
 	m_scale = 1.0;
 }
 
-void CInferenceMethod::set_features(CDotFeatures* feat)
+void CInferenceMethod::set_features(CFeatures* feat)
 {
 	SG_REF(feat);
 	SG_UNREF(m_features);
 	m_features=feat;
 
-	if (m_features && m_features->get_num_vectors())
-	{
+	if(m_features->has_property(FP_DOT))
 		m_feature_matrix =
-			m_features->get_computed_dot_feature_matrix();
+				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
+
+	else if(m_features->get_feature_class() == C_COMBINED)
+	{
+		CDotFeatures* feat = (CDotFeatures*)((CCombinedFeatures*)m_features)->get_first_feature_obj();
+		m_feature_matrix = feat->get_computed_dot_feature_matrix();
 	}
 
 	update_data_means();
@@ -107,12 +112,8 @@ void CInferenceMethod::set_labels(CLabels* lab)
 	SG_UNREF(m_labels);
 	m_labels = lab;
 
-	if (m_labels)
-	{
-		m_label_vector =
-			((CRegressionLabels*) m_labels)->
-			get_labels().clone();
-	}
+	m_label_vector =
+		((CRegressionLabels*) m_labels)->get_labels().clone();
 
 	update_data_means();
 	update_alpha();

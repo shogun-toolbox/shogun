@@ -10,6 +10,7 @@
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/CombinedDotFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/regression/gp/ExactInferenceMethod.h>
@@ -21,6 +22,8 @@
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/evaluation/GradientCriterion.h>
+#include <shogun/kernel/CombinedKernel.h>
+
 
 using namespace shogun;
 
@@ -64,10 +67,30 @@ int main(int argc, char **argv)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
 	features->set_feature_matrix(matrix);
 	
+	CCombinedFeatures* comb_features=new CCombinedFeatures();
+	comb_features->append_feature_obj(features);
+	comb_features->append_feature_obj(features);
+	comb_features->append_feature_obj(features);
+
 	/* create testing features */
 	CDenseFeatures<float64_t>* features2=new CDenseFeatures<float64_t> ();
 	features2->set_feature_matrix(matrix2);
 	
+/*	CCombinedFeatures* comb_features2=new CCombinedFeatures();
+	comb_features2->append_feature_obj(features2);
+	comb_features2->append_feature_obj(features2);
+	comb_features2->append_feature_obj(features2);*/
+
+	CGaussianKernel* sub_kernel1 = new CGaussianKernel(10, 2);
+	CGaussianKernel* sub_kernel2 = new CGaussianKernel(10, 2);
+	CGaussianKernel* sub_kernel3 = new CGaussianKernel(10, 2);
+	
+	CCombinedKernel* kernel1=new CCombinedKernel();
+	kernel1->append_kernel(sub_kernel1);
+	kernel1->append_kernel(sub_kernel2);
+	kernel1->append_kernel(sub_kernel3);
+
+
 	SG_REF(features);
 	SG_REF(features2);
 	
@@ -84,19 +107,20 @@ int main(int argc, char **argv)
 	CGaussianKernel* test_kernel = new CGaussianKernel(10, 2);
 	
 	test_kernel->init(features, features);
+	 
+	kernel1->init(comb_features, comb_features);
 
 	CZeroMean* mean = new CZeroMean();
 	CGaussianLikelihood* lik = new CGaussianLikelihood();
 	lik->set_sigma(0.01);
 	
 	CExactInferenceMethod* inf =
-		 new CExactInferenceMethod(test_kernel, features, mean, labels, lik);
-
+		 new CExactInferenceMethod(kernel1, comb_features, mean, labels, lik);
 	
 	SG_REF(inf);
 	
 	CGaussianProcessRegression* gp = 
-		new CGaussianProcessRegression(inf, features, labels);
+		new CGaussianProcessRegression(inf, comb_features, labels);
 
 	CModelSelectionParameters* root=new CModelSelectionParameters();
 	
@@ -118,20 +142,69 @@ int main(int argc, char **argv)
 	c4->build_values(0.001, 4.0, R_LINEAR);
 	
 	CModelSelectionParameters* c5 = 
-		new CModelSelectionParameters("kernel", test_kernel);
+		new CModelSelectionParameters("kernel", kernel1);
 	c1->append_child(c5);
+	
+	CModelSelectionParameters* cc1 = new CModelSelectionParameters("kernel_list", kernel1->get_list());
+	c5->append_child(cc1);
+	
+	CModelSelectionParameters* cc2 = new CModelSelectionParameters("first", kernel1->get_list()->first);
+	cc1->append_child(cc2);
+	
+	CListElement* cl = (CListElement*)kernel1->get_list()->first;
+	
+	CModelSelectionParameters* cc3 = new CModelSelectionParameters("data", sub_kernel1);
+	cc2->append_child(cc3);
 
+	CModelSelectionParameters* cc4 = new CModelSelectionParameters("next", cl->next);
+	cc2->append_child(cc4);
+	
+	CModelSelectionParameters* cc5 = new CModelSelectionParameters("data", sub_kernel2);
+	cc4->append_child(cc5);
+	
+	CModelSelectionParameters* cc6 = new CModelSelectionParameters("next", cl->next->next);
+	cc4->append_child(cc6);
+	
+	CModelSelectionParameters* cc7 = new CModelSelectionParameters("data", sub_kernel3);
+	cc6->append_child(cc7);
+	
 	CModelSelectionParameters* c6 = 
 		new CModelSelectionParameters("width");
-	c5->append_child(c6);
+	cc3->append_child(c6);
 	c6->build_values(0.001, 4.0, R_LINEAR);
+	
+		CModelSelectionParameters* c66 = 
+		new CModelSelectionParameters("combined_kernel_weight");
+	cc3->append_child(c66);
+	c66->build_values(0.001, 4.0, R_LINEAR);
+	
+		CModelSelectionParameters* c7 = 
+		new CModelSelectionParameters("width");
+	cc5->append_child(c7);
+	c7->build_values(0.001, 4.0, R_LINEAR);
+	
+			CModelSelectionParameters* c77 = 
+		new CModelSelectionParameters("combined_kernel_weight");
+	cc5->append_child(c77);
+	c77->build_values(0.001, 4.0, R_LINEAR);
+	
+		CModelSelectionParameters* c8 = 
+		new CModelSelectionParameters("width");
+	cc7->append_child(c8);
+	c8->build_values(0.001, 4.0, R_LINEAR);
+	
+			CModelSelectionParameters* c88 = 
+		new CModelSelectionParameters("combined_kernel_weight");
+	cc7->append_child(c88);
+	c88->build_values(0.001, 4.0, R_LINEAR);
+	
 	
 	/* cross validation class for evaluation in model selection */
 	SG_REF(gp);
 
 	CGradientCriterion* crit = new CGradientCriterion();
 
-	CGradientEvaluation* grad=new CGradientEvaluation(gp, features, labels,
+	CGradientEvaluation* grad=new CGradientEvaluation(gp, comb_features, labels,
 			crit);
 	
 	grad->set_function(inf);
@@ -148,7 +221,6 @@ int main(int argc, char **argv)
 	grad->set_autolock(false);
 
 	CParameterCombination* best_combination=grad_search->select_model(true);
-	grad_search->set_max_evaluations(5);
 
 	if (best_combination)
 	{
@@ -171,7 +243,7 @@ int main(int argc, char **argv)
 	SGMatrix<float64_t> cholesky = inf->get_cholesky();
 	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_COV);
 	
-	CRegressionLabels* covariance = gp->apply_regression(features);
+	CRegressionLabels* covariance = gp->apply_regression(comb_features);
 	
 	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
 	CRegressionLabels* predictions = gp->apply_regression();

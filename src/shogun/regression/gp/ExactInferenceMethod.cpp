@@ -20,22 +20,26 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
-
+#include <shogun/features/CombinedFeatures.h>
+#include <iostream>
 
 using namespace shogun;
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
-	update_all();
+	update_train_kernel();
+	update_chol();
+	update_alpha();
 	update_parameter_hash();
 }
 
-CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CDotFeatures* feat,
+CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
-	update_all();
-	update_parameter_hash();
+	update_train_kernel();
+	update_chol();
+	update_alpha();
 }
 
 CExactInferenceMethod::~CExactInferenceMethod()
@@ -44,29 +48,23 @@ CExactInferenceMethod::~CExactInferenceMethod()
 
 void CExactInferenceMethod::update_all()
 {
+	m_label_vector =
+			((CRegressionLabels*) m_labels)->get_labels().clone();
 
-        if (m_labels)
-        {
-                m_label_vector =
-                        ((CRegressionLabels*) m_labels)->
-                        get_labels().clone();
+	if(m_features->has_property(FP_DOT))
+		m_feature_matrix =
+				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
+
+	else if(m_features->get_feature_class() == C_COMBINED)
+	{
+		CDotFeatures* feat = (CDotFeatures*)((CCombinedFeatures*)m_features)->get_first_feature_obj();
+		m_feature_matrix = feat->get_computed_dot_feature_matrix();
 	}
-
-        if (m_features && m_features->get_num_vectors())
-        {
-                m_feature_matrix =
-                        m_features->get_computed_dot_feature_matrix();
 
 	update_data_means();
-
-		if (m_kernel) 
-			update_train_kernel();
-		if (m_ktrtr.num_cols && m_ktrtr.num_rows)
-		{	
-			update_chol();
-			update_alpha();
-		}
-	}
+	update_train_kernel();
+	update_chol();
+	update_alpha();
 }
 
 void CExactInferenceMethod::check_members()
@@ -80,17 +78,17 @@ void CExactInferenceMethod::check_members()
 	if (!m_features)
 		SG_ERROR("No features set!\n");
 
-  	if (!m_features->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
+//  	if (!m_features->has_property(FP_DOT))
+//		SG_ERROR("Specified features are not of type CFeatures\n");
 
   	if (m_labels->get_num_labels() != m_features->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
 
-	if (m_features->get_feature_class() != C_DENSE)
-		SG_ERROR("Expected Simple Features\n");
+//	if (m_features->get_feature_class() != C_DENSE)
+//		SG_ERROR("Expected Simple Features\n");
 
-	if (m_features->get_feature_type() != F_DREAL)
-		SG_ERROR("Expected Real Features\n");
+//	if (m_features->get_feature_type() != F_DREAL)
+//		SG_ERROR("Expected Real Features\n");
 
 	if (!m_kernel)
 		SG_ERROR( "No kernel assigned!\n");
@@ -105,8 +103,8 @@ void CExactInferenceMethod::check_members()
 	}
 }
 
-CMap<SGString<const char>, float64_t> CExactInferenceMethod::
-	get_marginal_likelihood_derivatives()
+CMap<TParameter*, float64_t> CExactInferenceMethod::
+	get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 {
 	check_members();
 
@@ -114,7 +112,7 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 		update_all();
 
 	//This will be the vector we return
-	CMap<SGString<const char>, float64_t> gradient(
+	CMap<TParameter*, float64_t> gradient(
 			3+m_mean->m_parameters->get_num_parameters(),
 			3+m_mean->m_parameters->get_num_parameters());
 
@@ -166,7 +164,7 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 	memcpy(Q.matrix, temp2.matrix,
 		temp2.num_cols*temp2.num_rows*sizeof(float64_t));
 
-	SGMatrix<float64_t> deriv = m_kernel->get_parameter_gradient("width");
+/*	SGMatrix<float64_t> deriv = m_kernel->get_parameter_gradient("width");
 
 	float64_t sum = 0;
 	for (int i = 0; i < Q.num_rows; i++)
@@ -177,7 +175,55 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 
 	sum /= 2.0;
 
-	gradient.add(SGString<const char>("width", strlen("width"), true), sum);
+	gradient.add(SGString<const char>("width", strlen("width"), true), sum);*/
+
+	float64_t sum = 0;
+
+	m_kernel->build_parameter_dictionary(para_dict);
+
+	for (int i = 0; i < para_dict.get_num_elements(); i++)
+	{
+		shogun::CMapNode<TParameter*, CSGObject*>* node =
+						para_dict.get_node_ptr(i);
+
+		TParameter* param = node->key;
+		CSGObject* obj = node->data;
+
+		index_t length = 1;
+
+		if (param->m_datatype.m_ctype== CT_VECTOR || param->m_datatype.m_ctype == CT_SGVECTOR &&
+				param->m_datatype.m_length_y != NULL)
+			length = *(param->m_datatype.m_length_y);
+
+		for (int g = 0; g < length; g++)
+		{
+			SGMatrix<float64_t> deriv;
+			if (param->m_datatype.m_ctype == CT_VECTOR || param->m_datatype.m_ctype == CT_SGVECTOR)
+				 deriv = m_kernel->get_parameter_gradient(param, obj, g);
+
+			else
+				 deriv = m_kernel->get_parameter_gradient(param, obj);
+			sum = 0;
+
+			if(deriv.num_cols > 0)
+			{
+				for (int k = 0; k < Q.num_rows; k++)
+				{
+					for (int j = 0; j < Q.num_cols; j++)
+						sum += Q(k,j)*deriv(k,j)*m_scale*m_scale;
+				}
+
+				sum /= 2.0;
+				gradient.add(param, sum);
+
+			}
+		}
+		para_dict.add(param, m_kernel);
+	}
+
+	TParameter* param;
+	index_t index = get_modsel_param_index("scale");
+	param = m_model_selection_parameters->get_parameter(index);
 
 	sum = 0;
 
@@ -189,13 +235,19 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 
 	sum /= 2.0;
 
-	gradient.add(SGString<const char>("scale", strlen("scale"), true), sum);
+	gradient.add(param, sum);
+	para_dict.add(param, this);
+
+	index = m_model->get_modsel_param_index("sigma");
+	param = m_model->m_model_selection_parameters->get_parameter(index);
 
 	sum = m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
 	
-	gradient.add(SGString<const char>("sigma", strlen((char*)"sigma"), true), sum);
+	gradient.add(param, sum);
+	para_dict.add(param, m_model);
 
-	for (int i = 0; i < m_mean->m_parameters->get_num_parameters(); i++)
+
+/*	for (int i = 0; i < m_mean->m_parameters->get_num_parameters(); i++)
 	{
 		TParameter* param = m_mean->m_parameters->get_parameter(i);
 
@@ -206,7 +258,7 @@ CMap<SGString<const char>, float64_t> CExactInferenceMethod::
 
 		gradient.add(SGString<const char>(param->m_name,
 				strlen(param->m_name), true), sum);
-	}
+	}*/
 
 	return gradient;
 

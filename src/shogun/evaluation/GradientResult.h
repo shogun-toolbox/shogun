@@ -57,7 +57,10 @@ public:
 	SGVector<float64_t> quantity;
 
 	/*Function Gradient*/
-	CMap<SGString<const char>, float64_t> gradient;
+	CMap<TParameter*, float64_t> gradient;
+
+	/*Which objects do the gradient parameters belong to?*/
+	CMap<TParameter*, CSGObject*>  parameter_dictionary;
 
 	/** Returns the function value
 	 * and gradient contained in the object.

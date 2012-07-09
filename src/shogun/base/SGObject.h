@@ -21,6 +21,7 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif //HAVE_PTHREAD
@@ -37,6 +38,9 @@ class Parameter;
 class ParameterMap;
 class SGParamInfo;
 class CSerializableFile;
+
+template <class T, class K> class CMap;
+
 struct TParameter;
 template <class T> class DynArray;
 
@@ -281,6 +285,11 @@ public:
 	 */
 	index_t get_modsel_param_index(const char* param_name);
 
+	inline void build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
+	{
+		build_parameter_dictionary(m_parameters, dict);
+	}
+
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs()
 	{
@@ -383,6 +392,8 @@ protected:
 	 * update.
 	 */
 	virtual bool update_parameter_hash();
+
+	void build_parameter_dictionary(Parameter* param, CMap<TParameter*, CSGObject*>& dict);
 
 private:
 	void set_global_objects();
