@@ -13,6 +13,7 @@
 #include <shogun/base/init.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGMatrix.h>
 
 using namespace shogun;
 
@@ -177,6 +178,24 @@ void test_error_function_complement()
 	ASSERT(difference<=10E-16);
 }
 
+#ifdef HAVE_LAPACK
+void test_covariance_matrix()
+{
+	SGMatrix<float64_t> X(2,3);
+	for (index_t i=0; i<X.num_cols*X.num_rows; ++i)
+		X.matrix[i]=i;
+
+	X.display_matrix("X");
+	SGMatrix<float64_t> cov=CStatistics::covariance_matrix(X);
+	cov.display_matrix("cov");
+
+	/* all entries of this covariance matrix will be 0.5 */
+	for (index_t i=0; i<cov.num_rows*cov.num_cols; ++i)
+		ASSERT(cov.matrix[i]==0.5);
+
+}
+#endif //HAVE_LAPACK
+
 int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
@@ -188,6 +207,10 @@ int main(int argc, char **argv)
 	test_normal();
 	test_error_function();
 	test_error_function_complement();
+
+#ifdef HAVE_LAPACK
+	test_covariance_matrix();
+#endif //HAVE_LAPACK
 
 	exit_shogun();
 
