@@ -19,6 +19,13 @@
 
 #include <cstdio>
 
+#include <shogun/io/SGIO.h>
+#include <shogun/base/Parallel.h>
+
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+#endif
+
 namespace shogun
 {
 
@@ -75,11 +82,16 @@ public:
 		}
 
 		array=new DynArray<CMapNode<K, T>*>(reserved, tracable);
+
+		PTHREAD_LOCK_INIT(&lock);
 	}
 
 	/** Default destructor */
 	virtual ~CMap()
 	{
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK_DESTROY(&lock);
+#endif
 		destroy_map();
 	}
 
@@ -97,8 +109,14 @@ public:
 		int32_t index=hash(key);
 		if (chain_search(index, key)==NULL)
 		{
+#ifdef HAVE_PTHREAD
+			PTHREAD_LOCK(&lock);
+#endif
 			int32_t added_index=insert_key(index, key, data);
 			num_elements++;
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(&lock);
+#endif
 
 			return added_index;
 		}
@@ -131,8 +149,14 @@ public:
 
 		if (result!=NULL)		
 		{
+#ifdef HAVE_PTHREAD
+			PTHREAD_LOCK(&lock);
+#endif
 			delete_key(index, result);
 			num_elements--;
+#ifdef HAVE_PTHREAD
+			PTHREAD_UNLOCK(&lock);
+#endif
 		}
 	}
 
@@ -163,6 +187,9 @@ public:
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 		
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(&lock);
+#endif
 		if (result!=NULL)		
 			return result->data;
 		else
@@ -172,6 +199,10 @@ public:
 
 			return result->data;
 		}
+
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(&lock);
+#endif
 	}
 
 	/** Set element by key
@@ -183,13 +214,20 @@ public:
 	{
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
-		
+
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(&lock);
+#endif		
 		if (result!=NULL)		
 			result->data=data;
 		else
 		{
 			add(key, data);
 		}
+
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(&lock);
+#endif
 	}
 
 	/** Get number of elements
@@ -390,7 +428,7 @@ private:
 		node->left=NULL;
 		node->right=NULL;
 
-		free_index=temp;		
+		free_index=temp;	
 	}
 
 	/*cleans up map*/
@@ -439,6 +477,10 @@ protected:
 
 	/** array for index permission */
 	DynArray<CMapNode<K, T>*>* array;
+
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T lock;
+#endif
 };
 
 }
