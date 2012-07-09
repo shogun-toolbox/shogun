@@ -163,3 +163,21 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 	return CStatistics::variance(traces)/m_2;
 }
 
+void CLinearTimeMMD::optimize_kernel_weights()
+{
+	if (m_kernel->get_kernel_type()!=K_COMBINED)
+	{
+		SG_ERROR("CLinearTimeMMD::optimize_kernel_weights() Only possible "
+				"with a combined kernel!\n");
+	}
+
+	if (m_p_and_q->get_feature_class()!=C_COMBINED &&
+			m_p_and_q->get_feature_class()!=C_COMBINED_DOT)
+	{
+		SG_ERROR("CLinearTimeMMD::optimize_kernel_weights() Only possible "
+				"with a combined features!\n");
+	}
+
+	/* compute covariance matrix of h vector */
+}
+

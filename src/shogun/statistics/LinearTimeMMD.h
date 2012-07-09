@@ -113,6 +113,9 @@ public:
 	 */
 	virtual float64_t compute_variance_estimate();
 
+	/** TODO */
+	virtual void optimize_kernel_weights();
+
 	inline virtual const char* get_name() const
 	{
 		return "LinearTimeMMD";
