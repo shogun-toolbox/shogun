@@ -55,6 +55,8 @@ public:
 	 * Data is centered before matrix is computed. May be done in place.
 	 * In this case, the observation matrix is changed (centered).
 	 *
+	 * Needs SHOGUN to be compiled with LAPACK.
+	 *
 	 * @param observations data matrix organized as one variable per column
 	 * @param in_place optional, if set to true, observations matrix will be
 	 * centered, if false, a copy will be created an centered.
