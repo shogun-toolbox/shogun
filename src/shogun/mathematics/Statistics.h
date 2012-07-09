@@ -46,6 +46,26 @@ public:
 	 */
 	static float64_t variance(SGVector<float64_t> values);
 
+#ifdef HAVE_LAPACK
+	/** Computes the empirical estimate of the covariance matrix of the given
+	 * data which is organized as num_cols variables with num_rows observations.
+	 *
+	 * TODO latex
+	 *
+	 * Data is centered before matrix is computed. May be done in place.
+	 * In this case, the observation matrix is changed (centered).
+	 *
+	 * Needs SHOGUN to be compiled with LAPACK.
+	 *
+	 * @param observations data matrix organized as one variable per column
+	 * @param in_place optional, if set to true, observations matrix will be
+	 * centered, if false, a copy will be created an centered.
+	 * @return covariance matrix empirical estimate
+	 */
+	static SGMatrix<float64_t> covariance_matrix(
+			SGMatrix<float64_t> observations, bool in_place=false);
+#endif //HAVE_LAPACK
+
 	/** Calculates standard deviation of given values
 	 *
 	 * @param values vector of values
