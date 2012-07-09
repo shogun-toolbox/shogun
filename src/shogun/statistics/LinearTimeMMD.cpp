@@ -10,6 +10,9 @@
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/features/CombinedFeatures.h>
+#include <shogun/kernel/CombinedKernel.h>
+
 
 using namespace shogun;
 
@@ -161,5 +164,68 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 
 	/* return linear time variance estimate */
 	return CStatistics::variance(traces)/m_2;
+}
+
+void CLinearTimeMMD::optimize_kernel_weights()
+{
+	if (m_kernel->get_kernel_type()!=K_COMBINED)
+	{
+		SG_ERROR("CLinearTimeMMD::optimize_kernel_weights(): Only possible "
+				"with a combined kernel!\n");
+	}
+
+	if (m_p_and_q->get_feature_class()!=C_COMBINED)
+	{
+		SG_ERROR("CLinearTimeMMD::optimize_kernel_weights(): Only possible "
+				"with combined features!\n");
+	}
+
+	/* TODO think about casting and types here */
+	CCombinedFeatures* combined_p_and_q=
+			dynamic_cast<CCombinedFeatures*>(m_p_and_q);
+	CCombinedKernel* combined_kernel=dynamic_cast<CCombinedKernel*>(m_kernel);
+	ASSERT(combined_p_and_q);
+	ASSERT(combined_kernel);
+
+	if (combined_kernel->get_num_subkernels()!=
+			combined_p_and_q->get_num_feature_obj())
+	{
+		SG_ERROR("CLinearTimeMMD::optimize_kernel_weights(): Only possible "
+				"when number of sub-kernels (%d) equal number of sub-features "
+				"(%d)\n", combined_kernel->get_num_subkernels(),
+				combined_p_and_q->get_num_feature_obj());
+	}
+
+	/* init kernel with features */
+	m_kernel->init(m_p_and_q, m_p_and_q);
+
+	/* number of kernels and data */
+	index_t num_kernels=combined_kernel->get_num_subkernels();
+
+	/* matrix with all h entries for all kernels and data */
+	SGMatrix<float64_t> hs(m_q_start, num_kernels);
+
+	/* compute all h entries */
+	for (index_t i=0; i<num_kernels; ++i)
+	{
+		CKernel* current=combined_kernel->get_kernel(i);
+		for (index_t j=0; j<m_q_start; ++j)
+		{
+			hs(j, i)=0;
+			hs(j, i)+=current->kernel(j,j);
+			hs(j, i)+=current->kernel(m_q_start+j,m_q_start+j);
+			hs(j, i)-=current->kernel(j,m_q_start+j);
+			hs(j, i)-=current->kernel(m_q_start+j,j);
+		}
+
+		SG_UNREF(current);
+	}
+
+	hs.display_matrix("hs");
+
+	/* compute covariance matrix of h vector, in place is safe now since h
+	 * is not needed anymore */
+	SGMatrix<float64_t> Q=CStatistics::covariance_matrix(hs, true);
+	Q.display_matrix("Q");
 }
 

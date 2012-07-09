@@ -14,7 +14,6 @@
 #define CMACHINEEVALUATION_H_
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/SGObject.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
