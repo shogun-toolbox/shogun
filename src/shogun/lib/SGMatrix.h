@@ -252,6 +252,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		/* Centers  matrix (e.g. kernel matrix in feature space INPLACE */
 		static void center_matrix(T* matrix, int32_t m, int32_t n);
 
+		void remove_column_mean();
+
 		/** display matrix */
 		void display_matrix(const char* name="matrix") const;
 

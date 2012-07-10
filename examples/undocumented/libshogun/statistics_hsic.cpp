@@ -15,7 +15,6 @@
 
 using namespace shogun;
 
-
 void create_mean_data(SGMatrix<float64_t> target, float64_t difference)
 {
 	/* create data matrix for P and Q. P is a standard normal, Q is the same but
@@ -139,10 +138,6 @@ int main(int argc, char** argv)
 
 //	sg_io->set_loglevel(MSG_DEBUG);
 
-	/* all tests have been "speed up" by reducing the number of runs/samples.
-	 * If you have any doubts in the results, set all num_runs to original
-	 * numbers and activate asserts. If they fail, something is wrong.
-	 */
 	test_hsic_fixed();
 	test_hsic_gamma();
 

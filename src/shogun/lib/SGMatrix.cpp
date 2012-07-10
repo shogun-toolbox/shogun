@@ -50,6 +50,24 @@ void SGMatrix<T>::center_matrix(T* matrix, int32_t m, int32_t n)
 	SG_FREE(colsums);
 }
 
+template <class T>
+void SGMatrix<T>::remove_column_mean()
+{
+	/* compute "row" sums (which I would call column sums), i.e. sum of all
+	 * elements in a fixed column */
+	T* means=get_row_sum(matrix, num_rows, num_cols);
+
+	/* substract column mean from every corresponding entry */
+	for (index_t i=0; i<num_cols; ++i)
+	{
+		means[i]/=num_rows;
+		for (index_t j=0; j<num_rows; ++j)
+			matrix[i*num_rows+j]-=means[i];
+	}
+
+	SG_FREE(means);
+}
+
 template<class T> void SGMatrix<T>::display_matrix(const char* name) const
 {
 	display_matrix(matrix, num_rows, num_cols, name);
