@@ -119,7 +119,7 @@ public:
 	 * @param value value to be set
 	 * @param parent The CSObject that directly holds this parameter
 	 *
-	 * @return bool true if value succesfully set.
+	 * @return bool true if value successfully set.
 	 */
 	template <typename T>
 	bool set_parameter(const char* name,
@@ -133,7 +133,8 @@ public:
 			{
 					void* param = m_param->get_parameter(i)->m_parameter;
 
-					if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
+					if (m_param->get_parameter(i)->m_datatype.m_ptype
+							==PT_SGOBJECT)
 					{
 						if (parent == (*((CSGObject**)param)))
 							match = true;
@@ -167,7 +168,7 @@ public:
 	 * @param name Name of parameter
 	 * @param parent The CSObject that directly holds this parameter
 	 *
-	 * return specified parameter
+	 * return specified parameter. NULL if not found.
 	 */
 	TParameter* get_parameter(const char* name, CSGObject* parent);
 
@@ -223,10 +224,41 @@ protected:
 	static CDynamicObjectArray* extract_trees_with_name(
 			const CDynamicObjectArray* sets, const char* desired_name);
 
+	/* Gets parameter by name in current node.
+	 *
+	 * @param name name of parameter
+	 * @return parameter. Null if not found.
+	 */
 	TParameter* get_parameter_helper(const char* name);
 
+	/* Sets parameter by name in current node.
+	 *
+	 * @param name name of parameter
+	 * @param value of parameter
+	 * @param index index if parameter is a vector
+	 *
+	 * @return true if found.
+	 */
 	bool set_parameter_helper(const char* name, bool value, index_t index);
+
+	/* Sets parameter by name in current node.
+	 *
+	 * @param name name of parameter
+	 * @param value of parameter
+	 * @param index index if parameter is a vector
+	 *
+	 * @return true if found.
+	 */
 	bool set_parameter_helper(const char* name, int32_t value, index_t index);
+
+	/* Sets parameter by name in current node.
+	 *
+	 * @param name name of parameter
+	 * @param value of parameter
+	 * @param index index if parameter is a vector
+	 *
+	 * @return true if found.
+	 */
 	bool set_parameter_helper(const char* name, float64_t value, index_t index);
 
 private:

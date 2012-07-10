@@ -21,6 +21,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/features/CombinedFeatures.h>
 
 using namespace shogun;
 
@@ -100,17 +101,40 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 	if (data)
 	{
-		/*if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n");
-		if (data->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
-		if (data->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");*/
+		if(data->get_feature_class() == C_COMBINED)
+		{
+			CDotFeatures* feat =
+					(CDotFeatures*)((CCombinedFeatures*)data)->
+					get_first_feature_obj();
 
-			SG_UNREF(m_data);
-			SG_REF(data);
-			m_data = (CFeatures*)data;
-			update_kernel_matrices();
+			if (!feat->has_property(FP_DOT))
+				SG_ERROR("Specified features are not of type CFeatures\n");
+
+			if (feat->get_feature_class() != C_DENSE)
+				SG_ERROR("Expected Simple Features\n");
+
+			if (feat->get_feature_type() != F_DREAL)
+				SG_ERROR("Expected Real Features\n");
+
+			SG_UNREF(feat);
+		}
+
+		else
+		{
+			if (!data->has_property(FP_DOT))
+				SG_ERROR("Specified features are not of type CFeatures\n");
+
+			if (data->get_feature_class() != C_DENSE)
+				SG_ERROR("Expected Simple Features\n");
+
+			if (data->get_feature_type() != F_DREAL)
+				SG_ERROR("Expected Real Features\n");
+		}
+
+		SG_UNREF(m_data);
+		SG_REF(data);
+		m_data = (CFeatures*)data;
+		update_kernel_matrices();
 	}
 
 	else if (!m_data)

@@ -540,7 +540,7 @@ class CList : public CSGObject
 		/** @return object name */
 		inline virtual const char* get_name() const { return "List"; }
 
-	public:
+	private:
 		/** if data is to be deleted on object destruction */
 		bool delete_data;
 		/** first element in list */

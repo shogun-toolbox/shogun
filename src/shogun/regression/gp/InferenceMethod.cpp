@@ -69,14 +69,19 @@ void CInferenceMethod::set_features(CFeatures* feat)
 	SG_UNREF(m_features);
 	m_features=feat;
 
-	if(m_features->has_property(FP_DOT))
+	if (m_features && m_features->has_property(FP_DOT))
 		m_feature_matrix =
 				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
 
-	else if(m_features->get_feature_class() == C_COMBINED)
+	else if(m_features && m_features->get_feature_class() == C_COMBINED)
 	{
-		CDotFeatures* feat = (CDotFeatures*)((CCombinedFeatures*)m_features)->get_first_feature_obj();
-		m_feature_matrix = feat->get_computed_dot_feature_matrix();
+		CDotFeatures* subfeat =
+				(CDotFeatures*)((CCombinedFeatures*)m_features)->
+				get_first_feature_obj();
+
+		m_feature_matrix = subfeat->get_computed_dot_feature_matrix();
+
+		SG_UNREF(subfeat);
 	}
 
 	update_data_means();

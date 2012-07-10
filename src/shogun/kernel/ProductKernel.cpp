@@ -264,13 +264,13 @@ SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
 		CSGObject* obj, index_t index)
 {
 
-		int32_t j=0 ;
 		CListElement* current = NULL ;
 		CKernel* k = get_first_kernel(current);
 		SGMatrix<float64_t> temp_kernel = k->get_kernel_matrix();
+
 		bool found_derivative = false;
 
-		for (int g = 0; g < temp_kernel.num_rows; g++)
+		for (index_t g = 0; g < temp_kernel.num_rows; g++)
 		{
 			for (int h = 0; h < temp_kernel.num_cols; h++)
 				temp_kernel(g,h) = 1.0;
@@ -278,18 +278,16 @@ SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
 
 		while(k)
 		{
-			int32_t num = k->get_num_subkernels() ;
-//			ASSERT(j<subkernel_weights_number);
-
 			SGMatrix<float64_t> cur_matrix = k->get_kernel_matrix();
-			SGMatrix<float64_t> derivative = k->get_parameter_gradient(param, obj, index);
+			SGMatrix<float64_t> derivative =
+					k->get_parameter_gradient(param, obj, index);
 
-			if (derivative.num_cols > 0 && derivative.num_rows > 0)
+			if (derivative.num_cols*derivative.num_rows > 0)
 			{
 					found_derivative = true;
-					for (int g = 0; g < derivative.num_rows; g++)
+					for (index_t g = 0; g < derivative.num_rows; g++)
 					{
-						for (int h = 0; h < derivative.num_cols; h++)
+						for (index_t h = 0; h < derivative.num_cols; h++)
 							temp_kernel(g,h) *= derivative(g,h);
 					}
 
@@ -297,9 +295,9 @@ SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
 
 			else
 			{
-				for (int g = 0; g < cur_matrix.num_rows; g++)
+				for (index_t g = 0; g < cur_matrix.num_rows; g++)
 				{
-					for (int h = 0; h < cur_matrix.num_cols; h++)
+					for (index_t h = 0; h < cur_matrix.num_cols; h++)
 						temp_kernel(g,h) *= cur_matrix(g,h);
 				}
 
@@ -307,7 +305,6 @@ SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
 
 			SG_UNREF(k);
 			k = get_next_kernel(current);
-			j += num ;
 		}
 
 		if (found_derivative)

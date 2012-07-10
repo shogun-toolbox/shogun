@@ -218,7 +218,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		case MSPT_INT32_VECTOR:
 		{
 			int32_t* param_vect = new int32_t[m_vector_length];
-			for (int j = 0; j < m_vector_length; j++)
+			for (index_t j = 0; j < m_vector_length; j++)
 			{
 				i = CMath::random(0, m_values_length-1);
 				param_vect[j] = ((int32_t*)m_values)[i];
@@ -229,7 +229,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		case MSPT_FLOAT64_VECTOR:
 		{
 			float64_t* param_vect = new float64_t[m_vector_length];
-			for (int j = 0; j < m_vector_length; j++)
+			for (index_t j = 0; j < m_vector_length; j++)
 			{
 				i = CMath::random(0, m_values_length-1);
 				param_vect[j] = ((float64_t*)m_values)[i];
@@ -240,7 +240,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		case MSPT_INT32_SGVECTOR:
 		{
 			SGVector<int32_t>* param_vect = new SGVector<int32_t>(m_vector_length);
-			for (int j = 0; j < m_vector_length; j++)
+			for (index_t j = 0; j < m_vector_length; j++)
 			{
 				i = CMath::random(0, m_values_length-1);
 				param_vect[j] = ((int32_t*)m_values)[i];
@@ -251,7 +251,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		case MSPT_FLOAT64_SGVECTOR:
 		{
 			SGVector<float64_t>* param_vect = new SGVector<float64_t>(m_vector_length);
-			for (int j = 0; j < m_vector_length; j++)
+			for (index_t j = 0; j < m_vector_length; j++)
 			{
 				i = CMath::random(0, m_values_length-1);
 				param_vect[j] = ((float64_t*)m_values)[i];

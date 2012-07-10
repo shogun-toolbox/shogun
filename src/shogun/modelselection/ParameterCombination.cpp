@@ -54,7 +54,8 @@ void CParameterCombination::append_child(CParameterCombination* child)
 
 
 
-bool CParameterCombination::set_parameter_helper(const char* name, bool value, index_t index)
+bool CParameterCombination::set_parameter_helper(
+		const char* name, bool value, index_t index)
 {
 	if (m_param)
 	{
@@ -83,7 +84,8 @@ bool CParameterCombination::set_parameter_helper(const char* name, bool value, i
 	return false;
 }
 
-bool CParameterCombination::set_parameter_helper(const char* name, int32_t value, index_t index)
+bool CParameterCombination::set_parameter_helper(
+		const char* name, int32_t value, index_t index)
 {
 	if (m_param)
 	{
@@ -111,7 +113,8 @@ bool CParameterCombination::set_parameter_helper(const char* name, int32_t value
 	return false;
 }
 
-bool CParameterCombination::set_parameter_helper(const char* name, float64_t value, index_t index)
+bool CParameterCombination::set_parameter_helper(
+		const char* name, float64_t value, index_t index)
 {
 	if (m_param)
 	{
@@ -168,7 +171,8 @@ TParameter* CParameterCombination::get_parameter(const char* name,
 		{
 			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
 			{
-				CSGObject* obj = (*((CSGObject**)m_param->get_parameter(i)->m_parameter));
+				CSGObject* obj =
+						(*((CSGObject**)m_param->get_parameter(i)->m_parameter));
 				if (parent == obj)
 					match = true;
 			}

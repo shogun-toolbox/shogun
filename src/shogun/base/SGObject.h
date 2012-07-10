@@ -285,10 +285,14 @@ public:
 	 */
 	index_t get_modsel_param_index(const char* param_name);
 
-	inline void build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
-	{
-		build_parameter_dictionary(m_parameters, dict);
-	}
+	/** Builds a dictionary of all parameters in SGObject as well of those
+	 *  of SGObjects that are parameters of this object. Dictionary maps
+	 *  parameters to the objects that own them.
+	 *
+	 * @param dict dictionary of parameters to be built.
+	 *
+	 */
+	void build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict);
 
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs()
@@ -392,8 +396,6 @@ protected:
 	 * update.
 	 */
 	virtual bool update_parameter_hash();
-
-	void build_parameter_dictionary(Parameter* param, CMap<TParameter*, CSGObject*>& dict);
 
 private:
 	void set_global_objects();

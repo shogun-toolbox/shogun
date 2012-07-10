@@ -44,17 +44,18 @@ public:
 	 */
 	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t>& data) = 0;
 
-	/** Returns the mean of the specified data
+	/** Returns the derivative of the mean function
 	 *
+	 * @param param parameter
+	 * @param obj object that owns parameter
 	 * @param data points arranged in a matrix with rows representing the
 	 * number of features
-	 *
-	 * @param param_name Name of parameters
+	 * @param index of value if parameter is a vector
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual float64_t get_parameter_derivative(SGMatrix<float64_t>& data,
-			const char* param_name);
+	virtual SGVector<float64_t> get_parameter_derivative(TParameter* param,
+			CSGObject* obj, SGMatrix<float64_t>& data, index_t index = -1);
 
 };
 

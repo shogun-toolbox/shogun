@@ -1201,13 +1201,13 @@ void CSGObject::get_parameter_incremental_hash(Parameter* param,
 	}
 }
 
-void CSGObject::build_parameter_dictionary(Parameter* param, CMap<TParameter*, CSGObject*>& dict)
+void CSGObject::build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
 {
-	if (param)
+	if (m_parameters)
 	{
-		for (index_t i=0; i<param->get_num_parameters(); i++)
+		for (index_t i=0; i<m_parameters->get_num_parameters(); i++)
 		{
-			TParameter* p = param->get_parameter(i);
+			TParameter* p = m_parameters->get_parameter(i);
 
 			dict.add(p, this);
 
@@ -1216,7 +1216,7 @@ void CSGObject::build_parameter_dictionary(Parameter* param, CMap<TParameter*, C
 				CSGObject* child =
 						*((CSGObject**)(p->m_parameter));
 				if (child)
-					child->build_parameter_dictionary(child->m_parameters, dict);
+					child->build_parameter_dictionary(dict);
 			}
 
 		}

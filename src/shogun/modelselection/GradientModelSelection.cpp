@@ -55,10 +55,11 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 
 	    if (param->m_datatype.m_ctype == CT_VECTOR)
 	    {
-	    	int length = *(param->m_datatype.m_length_y);
-	    	for (int j = 0; j < length; j++)
+	    	index_t length = *(param->m_datatype.m_length_y);
+	    	for (index_t j = 0; j < length; j++)
 	    	{
-	    		if (!parent || !m_current_combination->set_parameter(param->m_name, (float64_t)x[i+j], parent, j))
+	    		if (!parent || !m_current_combination->set_parameter(
+	    				param->m_name, (float64_t)x[i+j], parent, j))
 	    					SG_SERROR("Parameter %s not found in combination tree.\n",
 	    							param->m_name);
 	    	}
@@ -67,17 +68,19 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 
 	    else if (param->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
-	    	int length = *(param->m_datatype.m_length_y);
-	    	for (int j = 0; j < length; j++)
+	    	index_t length = *(param->m_datatype.m_length_y);
+	    	for (index_t j = 0; j < length; j++)
 	    	{
-	    		if (!parent || !m_current_combination->set_parameter(param->m_name, (float64_t)x[i+j], parent, j))
+	    		if (!parent || !m_current_combination->set_parameter(
+	    				param->m_name, (float64_t)x[i+j], parent, j))
 	    					SG_SERROR("Parameter %s not found in combination tree.\n",
 	    							param->m_name);
 	    	}
 	    	i += length;
 	    }
 
-	    else if (!parent || !m_current_combination->set_parameter(param->m_name, (float64_t)x[i], parent))
+	    else if (!parent || !m_current_combination->set_parameter(
+	    		param->m_name, (float64_t)x[i], parent))
 			SG_SERROR("Parameter %s not found in combination tree.\n",
 					param->m_name);
 	}
@@ -158,6 +161,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	CMachine* machine = m_machine_eval->get_machine();
 
+
 	if (print_state)
 	{
 		SG_PRINT("trying combination:\n");
@@ -167,11 +171,14 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	m_current_combination->apply_to_modsel_parameter(
 			machine->m_model_selection_parameters);
 
+
 	/*How many of these parameters have derivatives?*/
 	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
 
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
 		SG_ERROR("Evaluation result not a GradientEvaluationResult!");
+
+
 
 	int n = result->gradient.get_num_elements();
 
@@ -182,11 +189,12 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 			m_model_parameters->get_single_combination(false);
 
 	//Set lower bounds for parameters
-	for (int i = 0; i < n; i++)
+	for (index_t i = 0; i < n; i++)
 	{
 		shogun::CMapNode<TParameter*, float64_t>* node =
 				result->gradient.get_node_ptr(i);
 	    TParameter* param = node->key;
+
 
 	    CSGObject* parent = result->parameter_dictionary.get_element(param);
 
@@ -199,8 +207,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	    if (final->m_datatype.m_ctype == CT_VECTOR)
 	    {
-	    	int length = *(final->m_datatype.m_length_y);
-	    	for (int j = 0; j < length; j++)
+	    	index_t length = *(final->m_datatype.m_length_y);
+	    	for (index_t j = 0; j < length; j++)
 	    	{
 	    		lb[i+j] = *((float64_t**)(final->m_parameter))[j];
 	    	}
@@ -209,8 +217,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
-	    	int length = *(final->m_datatype.m_length_y);
-	    	for (int j = 0; j < length; j++)
+	    	index_t length = *(final->m_datatype.m_length_y);
+	    	for (index_t j = 0; j < length; j++)
 	    	{
 	    		lb[i+j] = *((float64_t**)(final->m_parameter))[j];
 	    	}
@@ -222,7 +230,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	}
 
 	//Update x with initial values
-	for (int i = 0; i < n; i++)
+	for (index_t i = 0; i < n; i++)
 	{
 		shogun::CMapNode<TParameter*, float64_t>* node =
 				result->gradient.get_node_ptr(i);
@@ -239,8 +247,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	    if (final->m_datatype.m_ctype == CT_VECTOR)
 	    {
-	    	int length = *(final->m_datatype.m_length_y);
-	    	for (int j = 0; j < length; j++)
+	    	index_t length = *(final->m_datatype.m_length_y);
+	    	for (index_t j = 0; j < length; j++)
 	    	{
 	    		x[i+j] = *((float64_t**)(final->m_parameter))[j];
 	    	}
@@ -249,8 +257,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
-	    	int length = *(final->m_datatype.m_length_y);
-	    	for (int j = 0; j < length; j++)
+	    	index_t length = *(final->m_datatype.m_length_y);
+	    	for (index_t j = 0; j < length; j++)
 	    	{
 	    		x[i+j] = *((float64_t**)(final->m_parameter))[j];
 	    	}
@@ -260,6 +268,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    else
 	    	x[i] = *((float64_t*)(final->m_parameter));
 	}
+
 
 	//Setting up nlopt
 	nlopt_opt opt;

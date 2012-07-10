@@ -125,9 +125,10 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(TParameter* param,
 		CSGObject* obj, index_t index)
 {
 
-	if (strcmp(param->m_name, "width") == 0)
+	if (strcmp(param->m_name, "width") == 0 && obj == this)
 	{
 		SGMatrix<float64_t> derivative = SGMatrix<float64_t>(num_lhs, num_rhs);
+
 		for (int j = 0; j < num_lhs; j++)
 		{
 			for (int k = 0; k < num_rhs; k++)
@@ -142,8 +143,6 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(TParameter* param,
 
 	else
 	{
-		//SG_ERROR("Gradient calculation not implemented for parameter %s.",
-		//	param_name);
 		return SGMatrix<float64_t>(0,0);
 	}
 }
