@@ -55,8 +55,12 @@ class CFeatureBlockLogisticRegression : public CSLEPMachine
 		 * @param feature_tree feature tree
 		 */
 		void set_feature_relation(CIndexBlockRelation* feature_relation);
-		
+
+		virtual float64_t apply_one(int32_t vec_idx);
+
 	protected:
+		
+		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
 		/** train machine */
 		virtual bool train_machine(CFeatures* data=NULL);
