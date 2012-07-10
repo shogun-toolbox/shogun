@@ -83,7 +83,9 @@ public:
 
 		array=new DynArray<CMapNode<K, T>*>(reserved, tracable);
 
+#ifdef HAVE_PTHREAD
 		PTHREAD_LOCK_INIT(&lock);
+#endif	
 	}
 
 	/** Default destructor */
@@ -186,10 +188,7 @@ public:
 	{
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
-		
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(&lock);
-#endif
+
 		if (result!=NULL)		
 			return result->data;
 		else
@@ -199,10 +198,6 @@ public:
 
 			return result->data;
 		}
-
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&lock);
-#endif
 	}
 
 	/** Set element by key
