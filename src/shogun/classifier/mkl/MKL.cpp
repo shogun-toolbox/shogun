@@ -1505,7 +1505,7 @@ void CMKL::compute_sum_beta(float64_t* sumw)
 	}
 
 	mkl_iterations++;
-	kernel->set_subkernel_weights(SGVector<float64_t>( (float64_t*) old_beta, num_kernels));
+	kernel->set_subkernel_weights(SGVector<float64_t>( (float64_t*) old_beta, num_kernels, false));
 }
 
 
