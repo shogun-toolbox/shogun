@@ -13,6 +13,8 @@
 #include <shogun/statistics/KernelTwoSampleTestStatistic.h>
 #include <shogun/kernel/Kernel.h>
 
+#include <shogun/lib/external/libqp.h>
+
 namespace shogun
 {
 
@@ -113,8 +115,11 @@ public:
 	 */
 	virtual float64_t compute_variance_estimate();
 
+#ifdef HAVE_LAPACK
 	/** TODO */
 	virtual void optimize_kernel_weights();
+#endif //HAVE_LAPACK
+
 
 	inline virtual const char* get_name() const
 	{
@@ -123,6 +128,31 @@ public:
 
 private:
 	void init();
+
+public:
+	/** return pointer to i-th column of m_Q. Helper for libqp */
+	static const float64_t* get_Q_col(uint32_t i);
+
+	/** helper functions that prints current state */
+	static void print_state(libqp_state_T state);
+
+protected:
+	/** maximum number of iterations of qp solver */
+	index_t m_opt_max_iterations;
+
+	/** stopping accuracy of qp solver */
+	float64_t m_opt_epsilon;
+
+	/** low cut for weights, if weights are under this value, are set to zero */
+	float64_t m_opt_low_cut;
+
+	/** regularization epsilon that is added to diagonal of Q matrix */
+	float64_t m_opt_regularization_eps;
+
+#ifdef HAVE_LAPACK
+	/** matrix for selection of kernel weights (static because of libqp) */
+	static SGMatrix<float64_t> m_Q;
+#endif //HAVE_LAPACK
 };
 
 }

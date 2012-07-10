@@ -224,7 +224,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 		SG_SERROR("unable build values: max=%f < min=%f\n", max, min);
 
 	/* create value vector, no ref-counting */
-	index_t num_values=CMath::round(max-min)/step+1;
+	index_t num_values=CMath::round((max-min)/step)+1;
 	SGVector<T> result(num_values, false);
 
 	/* fill array */

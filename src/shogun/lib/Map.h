@@ -85,7 +85,7 @@ public:
 
 #ifdef HAVE_PTHREAD
 		PTHREAD_LOCK_INIT(&lock);
-#endif
+#endif	
 	}
 
 	/** Default destructor */
@@ -189,7 +189,7 @@ public:
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
-		if (result!=NULL)
+		if (result!=NULL)		
 			return result->data;
 		else
 		{

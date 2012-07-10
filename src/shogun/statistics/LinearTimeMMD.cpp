@@ -13,6 +13,7 @@
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/kernel/CombinedKernel.h>
 
+#include <shogun/lib/external/libqp.h>
 
 using namespace shogun;
 
@@ -54,7 +55,19 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 void CLinearTimeMMD::init()
 {
+	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
+			"iterations for qp solver", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_low_cut, "opt_low_cut", "Low cut value for optimization "
+			"kernel weights", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_regularization_eps, "opt_regularization_eps", "Regularization"
+			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
 
+	m_opt_max_iterations=10000;
+	m_opt_epsilon=10E-15;
+	m_opt_low_cut=10E-7;
+	m_opt_regularization_eps=10E-5;
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
@@ -166,6 +179,7 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 	return CStatistics::variance(traces)/m_2;
 }
 
+#ifdef HAVE_LAPACK
 void CLinearTimeMMD::optimize_kernel_weights()
 {
 	if (m_kernel->get_kernel_type()!=K_COMBINED)
@@ -201,31 +215,155 @@ void CLinearTimeMMD::optimize_kernel_weights()
 
 	/* number of kernels and data */
 	index_t num_kernels=combined_kernel->get_num_subkernels();
+	index_t m2=m_q_start/2;
 
 	/* matrix with all h entries for all kernels and data */
-	SGMatrix<float64_t> hs(m_q_start, num_kernels);
+	SGMatrix<float64_t> hs(m2, num_kernels);
 
+	/* mmds are needed and are means of columns of hs */
+	SGVector<float64_t> mmds(num_kernels);
+
+	float64_t pp;
+	float64_t qq;
+	float64_t pq;
+	float64_t qp;
 	/* compute all h entries */
 	for (index_t i=0; i<num_kernels; ++i)
 	{
 		CKernel* current=combined_kernel->get_kernel(i);
-		for (index_t j=0; j<m_q_start; ++j)
+		mmds[i]=0;
+		for (index_t j=0; j<m2; ++j)
 		{
-			hs(j, i)=0;
-			hs(j, i)+=current->kernel(j,j);
-			hs(j, i)+=current->kernel(m_q_start+j,m_q_start+j);
-			hs(j, i)-=current->kernel(j,m_q_start+j);
-			hs(j, i)-=current->kernel(m_q_start+j,j);
+			pp=current->kernel(j, m2+j);
+			qq=current->kernel(m_q_start+j, m_q_start+m2+j);
+			pq=current->kernel(j, m_q_start+m2+j);
+			qp=current->kernel(m2+j, m_q_start+j);
+			hs(j, i)=pp+qq-pq-qp;
+			mmds[i]+=hs(j, i);
 		}
+
+		/* mmd is simply mean. This is the unbiased linear time estimate */
+		mmds[i]/=m2;
 
 		SG_UNREF(current);
 	}
 
-	hs.display_matrix("hs");
-
 	/* compute covariance matrix of h vector, in place is safe now since h
 	 * is not needed anymore */
-	SGMatrix<float64_t> Q=CStatistics::covariance_matrix(hs, true);
-	Q.display_matrix("Q");
+	m_Q=CStatistics::covariance_matrix(hs, true);
+
+	/* evtl regularize to avoid numerical problems (ratio of MMD and std-dev
+	 * blows up when variance is small */
+	if (m_opt_regularization_eps)
+	{
+		SG_DEBUG("regularizing matrix Q by adding %f to diagonal\n",
+				m_opt_regularization_eps);
+		for (index_t i=0; i<num_kernels; ++i)
+			m_Q(i,i)+=m_opt_regularization_eps;
+	}
+
+	if (sg_io->get_loglevel()==MSG_DEBUG)
+	{
+		m_Q.display_matrix("(evtl. regularized) Q");
+		mmds.display_vector("mmds");
+	}
+
+	/* compute sum of mmds to generate feasible point for convex program */
+	float64_t sum_mmds=0;
+	for (index_t i=0; i<mmds.vlen; ++i)
+		sum_mmds+=mmds[i];
+
+	/* QP: 0.5*x'*Q*x + f'*x
+	 * subject to
+	 * mmds'*x = b
+	 * LB[i] <= x[i] <= UB[i]   for all i=1..n */
+	SGVector<float64_t> Q_diag(num_kernels);
+	SGVector<float64_t> f(num_kernels);
+	SGVector<float64_t> lb(num_kernels);
+	SGVector<float64_t> ub(num_kernels);
+	SGVector<float64_t> x(num_kernels);
+
+	/* init everything, there are two cases possible: i) at least one mmd is
+	 * is positive, ii) all mmds are negative */
+	bool one_pos;
+	for (index_t i=0; i<mmds.vlen; ++i)
+	{
+		if (mmds[i]>0)
+		{
+			SG_DEBUG("found at least one positive MMD\n");
+			one_pos=true;
+			break;
+		}
+		one_pos=false;
+	}
+
+	if (!one_pos)
+	{
+		SG_WARNING("All mmd estimates are negative. This is techical possible,"
+				" although extremely rare. Current problem might bad\n");
+
+		/* if no element is positive, Q has to be replaced by -Q */
+		for (index_t i=0; i<num_kernels*num_kernels; ++i)
+			m_Q.matrix[i]*=-1;
+	}
+
+	/* init vectors */
+	for (index_t i=0; i<num_kernels; ++i)
+	{
+		Q_diag[i]=m_Q(i,i);
+		f[i]=0;
+		lb[i]=0;
+		ub[i]=CMath::INFTY;
+
+		/* initial point has to be feasible, i.e. mmds'*x = b */
+		x[i]=1.0/sum_mmds;
+	}
+
+	/* start libqp solver with desired parameters */
+	SG_DEBUG("starting libqp\n");
+	libqp_state_T qp_exitflag=libqp_gsmo_solver(&get_Q_col, Q_diag.vector,
+			f.vector, mmds.vector,
+			one_pos ? 1 : -1,
+			lb.vector, ub.vector,
+			x.vector, num_kernels, m_opt_max_iterations,
+			m_opt_regularization_eps, &print_state);
+
+	SG_DEBUG("libqp returns: nIts=%d, exit_flag: %d\n", qp_exitflag.nIter,
+			qp_exitflag.exitflag);
+
+	/* set really small entries to zero and sum up for normalization */
+	float64_t sum_weights=0;
+	for (index_t i=0; i<x.vlen; ++i)
+	{
+		if (x[i]<m_opt_low_cut)
+		{
+			SG_DEBUG("lowcut: weight[%i]=%f<%f; setting to zero\n", i, x[i],
+					m_opt_low_cut);
+			x[i]=0;
+		}
+
+		sum_weights+=x[i];
+	}
+
+	/* normalize (allowed since problem is scale invariant) */
+	for (index_t i=0; i<x.vlen; ++i)
+		x[i]/=sum_weights;
+
+	/* set weights to kernel */
+	m_kernel->set_subkernel_weights(x);
 }
+
+SGMatrix<float64_t> CLinearTimeMMD::m_Q=SGMatrix<float64_t>();
+
+const float64_t* CLinearTimeMMD::get_Q_col(uint32_t i)
+{
+	return &m_Q[m_Q.num_rows*i];
+}
+
+void CLinearTimeMMD::print_state(libqp_state_T state)
+{
+	SG_SDEBUG("libqp state: primal=%f\n", state.QP);
+}
+
+#endif //HAVE_LAPACK
 

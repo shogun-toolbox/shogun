@@ -150,7 +150,7 @@ class CLinearMachine : public CMachine
 
 	protected:
 
-		SGVector<float64_t> apply_get_outputs(CFeatures* data);
+		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
 		/** Stores feature data of underlying model. Does nothing because
 		 * Linear machines store the normal vector of the separating hyperplane

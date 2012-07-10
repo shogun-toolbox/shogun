@@ -64,9 +64,9 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 	}
 	centered.remove_column_mean();
 
-	/* compute 1/m/(m-1) * X' * X */
+	/* compute 1/(m-1) * X' * X */
 	SGMatrix<float64_t> cov=SGMatrix<float64_t>::matrix_multiply(centered,
-			centered, true, false);
+			centered, true, false, 1.0/(observations.num_rows-1));
 
 	return cov;
 }
