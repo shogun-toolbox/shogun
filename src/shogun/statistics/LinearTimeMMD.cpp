@@ -13,7 +13,6 @@
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/kernel/CombinedKernel.h>
 
-
 using namespace shogun;
 
 CLinearTimeMMD::CLinearTimeMMD() :
@@ -166,6 +165,7 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 	return CStatistics::variance(traces)/m_2;
 }
 
+#ifdef HAVE_LAPACK
 void CLinearTimeMMD::optimize_kernel_weights()
 {
 	if (m_kernel->get_kernel_type()!=K_COMBINED)
@@ -201,31 +201,49 @@ void CLinearTimeMMD::optimize_kernel_weights()
 
 	/* number of kernels and data */
 	index_t num_kernels=combined_kernel->get_num_subkernels();
+	index_t m2=m_q_start/2;
 
 	/* matrix with all h entries for all kernels and data */
-	SGMatrix<float64_t> hs(m_q_start, num_kernels);
+	SGMatrix<float64_t> hs(m2, num_kernels);
 
+	/* mmds are needed and are means of columns of hs */
+	SGVector<float64_t> mmds(num_kernels);
+
+	float64_t pp;
+	float64_t qq;
+	float64_t pq;
+	float64_t qp;
 	/* compute all h entries */
 	for (index_t i=0; i<num_kernels; ++i)
 	{
 		CKernel* current=combined_kernel->get_kernel(i);
-		for (index_t j=0; j<m_q_start; ++j)
+		mmds[i]=0;
+		for (index_t j=0; j<m2; ++j)
 		{
-			hs(j, i)=0;
-			hs(j, i)+=current->kernel(j,j);
-			hs(j, i)+=current->kernel(m_q_start+j,m_q_start+j);
-			hs(j, i)-=current->kernel(j,m_q_start+j);
-			hs(j, i)-=current->kernel(m_q_start+j,j);
+			pp=current->kernel(j, m2+j);
+			qq=current->kernel(m_q_start+j, m_q_start+m2+j);
+			pq=current->kernel(j, m_q_start+m2+j);
+			qp=current->kernel(m2+j, m_q_start+j);
+			hs(j, i)=pp+qq-pq-qp;
+			mmds[i]+=hs(j, i);
+//			SG_DEBUG("hs(%d,%d)=%f+%f-%f-%f\n", j, i, pp, qq, pq, qp);
 		}
+
+		/* mmd is simply mean. This is the unbiased linear time estimate */
+		mmds[i]/=m2;
 
 		SG_UNREF(current);
 	}
 
-	hs.display_matrix("hs");
+	mmds.display_vector("mmds");
+//	hs.display_matrix("hs");
 
 	/* compute covariance matrix of h vector, in place is safe now since h
 	 * is not needed anymore */
 	SGMatrix<float64_t> Q=CStatistics::covariance_matrix(hs, true);
 	Q.display_matrix("Q");
+
+	/* TODO form here solve QP */
 }
+#endif //HAVE_LAPACK
 

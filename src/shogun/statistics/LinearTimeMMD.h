@@ -113,8 +113,10 @@ public:
 	 */
 	virtual float64_t compute_variance_estimate();
 
+#ifdef HAVE_LAPACK
 	/** TODO */
 	virtual void optimize_kernel_weights();
+#endif //HAVE_LAPACK
 
 	inline virtual const char* get_name() const
 	{
