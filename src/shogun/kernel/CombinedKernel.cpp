@@ -18,7 +18,6 @@
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/CombinedFeatures.h>
-
 #include <string.h>
 
 #ifndef WIN32
@@ -793,4 +792,92 @@ void CCombinedKernel::init()
 	    "If subkernel weights are appended.", MS_AVAILABLE);
 	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
 	    MS_NOT_AVAILABLE);
+}
+
+SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(TParameter* param,
+		CSGObject* obj, index_t index)
+{
+	SGMatrix<float64_t> result(0,0);
+
+	if (strcmp(param->m_name, "combined_kernel_weight") == 0)
+	{
+		CListElement* current = NULL ;
+		CKernel* k = get_first_kernel(current);
+
+		if (append_subkernel_weights)
+		{
+			while(k)
+			{
+				result = k->get_parameter_gradient(param, obj, index);
+
+				SG_UNREF(k);
+
+				if (result.num_cols*result.num_rows > 0)
+					return result;
+
+				k = get_next_kernel(current);
+			}
+		}
+
+		else
+		{
+			while(k)
+			{
+				if(obj == k)
+				{
+					result = k->get_kernel_matrix();
+					SG_UNREF(k);
+					return result;
+				}
+
+				SG_UNREF(k);
+
+				k = get_next_kernel(current);
+			}
+		}
+	}
+
+	else
+	{
+		CListElement* current = NULL ;
+		CKernel* k = get_first_kernel(current);
+		float64_t coeff;
+		while(k)
+		{
+			SGMatrix<float64_t> derivative =
+					k->get_parameter_gradient(param, obj, index);
+
+			coeff = 1.0;
+
+			if (!append_subkernel_weights)
+				coeff = k->get_combined_kernel_weight();
+
+
+			for (index_t g = 0; g < derivative.num_rows; g++)
+			{
+				for (index_t h = 0; h < derivative.num_cols; h++)
+					derivative(g,h) *= coeff;
+			}
+
+			if (derivative.num_cols*derivative.num_rows > 0)
+			{
+				if (result.num_cols == 0 && result.num_rows == 0)
+					result = derivative;
+
+				else
+				{
+					for (index_t g = 0; g < derivative.num_rows; g++)
+					{
+						for (index_t h = 0; h < derivative.num_cols; h++)
+							result(g,h) += derivative(g,h);
+					}
+				}
+			}
+
+			SG_UNREF(k);
+			k = get_next_kernel(current);
+		}
+	}
+
+	return result;
 }

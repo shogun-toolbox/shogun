@@ -422,6 +422,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 									index[j], carry, chunk);
 
 					output[j]+=vec[o + (h & mask)]*wd;
+					index[j] = h;
 				}
 
 				index[stop-1] =
@@ -472,6 +473,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 							CHash::FinalizeIncrementalMurmurHash3(
 									index[j], carry, chunk);
 
+					index[j] = h;
 					output[j]+=vec[o + (h & mask)]*wd;
 				}
 
@@ -533,6 +535,7 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o);
 #endif
 			vec2[o+(h & mask)]+=wd;
+			val[i] = h;
 			o+=partial_w_dim;
 		}
 

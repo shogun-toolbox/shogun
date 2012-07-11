@@ -21,12 +21,9 @@ CMeanFunction::~CMeanFunction()
 
 }
 
-float64_t CMeanFunction::get_parameter_derivative(
-		SGMatrix<float64_t>& data, const char* param_name)
+SGVector<float64_t> CMeanFunction::get_parameter_derivative(TParameter* param,
+		CSGObject* obj, SGMatrix<float64_t>& data, index_t index)
 {
-	SG_ERROR("%s has no implementation for derivative with respect to %s",
-			get_name(), param_name);
-
-	return 0;
+	return SGVector<float64_t>();
 }
 

@@ -21,6 +21,7 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif //HAVE_PTHREAD
@@ -37,6 +38,9 @@ class Parameter;
 class ParameterMap;
 class SGParamInfo;
 class CSerializableFile;
+
+template <class T, class K> class CMap;
+
 struct TParameter;
 template <class T> class DynArray;
 
@@ -280,6 +284,15 @@ public:
 	 * -1 if there is no such
 	 */
 	index_t get_modsel_param_index(const char* param_name);
+
+	/** Builds a dictionary of all parameters in SGObject as well of those
+	 *  of SGObjects that are parameters of this object. Dictionary maps
+	 *  parameters to the objects that own them.
+	 *
+	 * @param dict dictionary of parameters to be built.
+	 *
+	 */
+	void build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict);
 
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs()

@@ -36,7 +36,7 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** hashset node */
 IGNORE_IN_CLASSLIST template<class K, class T> struct CMapNode
-{	
+{
 	/** index in hashtable */
 	int32_t index;
 
@@ -65,7 +65,7 @@ IGNORE_IN_CLASSLIST template<class K, class T> class CMap: public CSGObject
 public:
 	/** Custom constructor */
 	CMap(int32_t size=41, int32_t reserved=128, bool tracable=true)
-	{	
+	{
 		hash_size=size;
 		free_index=0;
 		num_elements=0;
@@ -135,7 +135,7 @@ public:
 	{
 		int32_t index=hash(key);
 		if (chain_search(index, key)!=NULL)
-			return true; 
+			return true;
 
 		return false;
 	}
@@ -149,7 +149,7 @@ public:
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
-		if (result!=NULL)		
+		if (result!=NULL)
 		{
 #ifdef HAVE_PTHREAD
 			PTHREAD_LOCK(&lock);
@@ -172,16 +172,16 @@ public:
 		int32_t index=hash(key);
 		CMapNode<K ,T>* result=chain_search(index, key);
 
-		if (result!=NULL)		
-			 return result->index;
-		
+		if (result!=NULL)
+			return result->index;
+
 		return -1;
 	}
 
 	/** Get element by key
 	 *
 	 * @param key key to be looked for
-	 * @return exist element or new element 
+	 * @return exist element or new element
 	 * (if key doesn't consist in map)
 	 */
 	T get_element(const K& key)
@@ -202,7 +202,7 @@ public:
 
 	/** Set element by key
 	 *
-	 * @param key key of element 
+	 * @param key key of element
 	 * @param data new data for element
 	 */
 	void set_element(const K& key, const T& data)
@@ -212,8 +212,8 @@ public:
 
 #ifdef HAVE_PTHREAD
 		PTHREAD_LOCK(&lock);
-#endif		
-		if (result!=NULL)		
+#endif
+		if (result!=NULL)
 			result->data=data;
 		else
 		{
@@ -266,15 +266,15 @@ public:
 	 * @return node at index
 	 */
 	CMapNode<K, T>* get_node_ptr(int32_t index)
-	{
+		{
 		return array->get_element(index);
-	}
-		
+		}
+
 	/** @return underlying array of nodes in memory */
 	CMapNode<K, T>** get_array()
-	{
+		{
 		return array->get_array();
-	}
+		}
 
 	/*Assignment operator that copies map*/
 	CMap& operator =(const CMap& orig)
@@ -327,7 +327,7 @@ private:
 
 	/** Searchs key in list(chain) */
 	CMapNode<K, T>* chain_search(int32_t index, const K& key)
-	{
+		{
 		if (hash_array[index]==NULL)
 		{
 			return NULL;
@@ -347,8 +347,8 @@ private:
 
 			return NULL;
 		}
-	}
-	
+		}
+
 	/** Inserts nodes with certain key and data in set */
 	int32_t insert_key(int32_t index, const K& key, const T& data)
 	{
@@ -402,7 +402,7 @@ private:
 
 	/** Deletes key from set */
 	void delete_key(int32_t index, CMapNode<K, T>* node)
-	{		
+	{
 		int32_t temp=0;
 
 		if (node==NULL)
@@ -412,7 +412,7 @@ private:
 			node->right->left = node->left;
 
 		if (node->left!=NULL)
-			node->left->right = node->right;		
+			node->left->right = node->right;
 		else
 			hash_array[index] = node->right;
 
@@ -423,7 +423,7 @@ private:
 		node->left=NULL;
 		node->right=NULL;
 
-		free_index=temp;	
+		free_index=temp;
 	}
 
 	/*cleans up map*/

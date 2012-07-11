@@ -21,6 +21,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/features/CombinedFeatures.h>
 
 using namespace shogun;
 
@@ -31,7 +32,7 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 }
 
 CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf,
-		CDotFeatures* data, CLabels* lab)
+		CFeatures* data, CLabels* lab)
 : CMachine()
 {
 	init();
@@ -73,9 +74,9 @@ void CGaussianProcessRegression::update_kernel_matrices()
 		//K(X_test, X_train)
 		m_k_trts = kernel->get_kernel_matrix();
 
-		for (int i = 0; i < m_k_trts.num_rows; i++)
+		for (index_t i = 0; i < m_k_trts.num_rows; i++)
 		{
-			for (int j = 0; j < m_k_trts.num_cols; j++)
+			for (index_t j = 0; j < m_k_trts.num_cols; j++)
 				m_k_trts(i,j) *= (m_scale*m_scale);
 		}
 
@@ -85,9 +86,9 @@ void CGaussianProcessRegression::update_kernel_matrices()
 
 		m_k_tsts = kernel->get_kernel_matrix();
 
-		for (int i = 0; i < m_k_tsts.num_rows; i++)
+		for (index_t i = 0; i < m_k_tsts.num_rows; i++)
 		{
-			for (int j = 0; j < m_k_tsts.num_cols; j++)
+			for (index_t j = 0; j < m_k_tsts.num_cols; j++)
 				m_k_tsts(i,j) *= (m_scale*m_scale);
 		}
 
@@ -100,17 +101,40 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 	if (data)
 	{
-		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
-		if (data->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
-		if (data->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
+		if(data->get_feature_class() == C_COMBINED)
+		{
+			CDotFeatures* feat =
+					(CDotFeatures*)((CCombinedFeatures*)data)->
+					get_first_feature_obj();
 
-			SG_UNREF(m_data);
-			SG_REF(data);
-			m_data = (CDotFeatures*)data;
-			update_kernel_matrices();
+			if (!feat->has_property(FP_DOT))
+				SG_ERROR("Specified features are not of type CFeatures\n");
+
+			if (feat->get_feature_class() != C_DENSE)
+				SG_ERROR("Expected Simple Features\n");
+
+			if (feat->get_feature_type() != F_DREAL)
+				SG_ERROR("Expected Real Features\n");
+
+			SG_UNREF(feat);
+		}
+
+		else
+		{
+			if (!data->has_property(FP_DOT))
+				SG_ERROR("Specified features are not of type CFeatures\n");
+
+			if (data->get_feature_class() != C_DENSE)
+				SG_ERROR("Expected Simple Features\n");
+
+			if (data->get_feature_type() != F_DREAL)
+				SG_ERROR("Expected Real Features\n");
+		}
+
+		SG_UNREF(m_data);
+		SG_REF(data);
+		m_data = (CFeatures*)data;
+		update_kernel_matrices();
 	}
 
 	else if (!m_data)
@@ -141,11 +165,11 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 		SGVector<float64_t> mean_vector = getMeanVector();
 		SGVector<float64_t> cov_vector = getCovarianceVector();
 
-		int size = mean_vector.vlen+cov_vector.vlen;
+		index_t size = mean_vector.vlen+cov_vector.vlen;
 
 		SGVector<float64_t> result_vector(size);
 
-		for (int i = 0; i < size; i++)
+		for (index_t i = 0; i < size; i++)
 		{
 			if (i < mean_vector.vlen)
 				result_vector[i] = mean_vector[i];
@@ -205,13 +229,13 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 
 	SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
 
-	for (int i = 0; i < diagonal.vlen; i++)
+	for (index_t i = 0; i < diagonal.vlen; i++)
 	{
-		for (int j = 0; j < m_data->get_num_vectors(); j++)
+		for (index_t j = 0; j < m_data->get_num_vectors(); j++)
 			temp1(j,i) = diagonal[i]*m_k_trts(j,i);
 	}
 
-	for (int i = 0; i < diagonal2.vlen; i++)
+	for (index_t i = 0; i < diagonal2.vlen; i++)
 		diagonal2[i] = 0;
 
 	memcpy(temp2.matrix, m_L.matrix,
@@ -231,17 +255,17 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 	                   temp2.num_cols, ipiv.vector, temp1.matrix,
 	                   temp1.num_cols);
 
-	for (int i = 0; i < temp1.num_rows; i++)
+	for (index_t i = 0; i < temp1.num_rows; i++)
 	{
-		for (int j = 0; j < temp1.num_cols; j++)
+		for (index_t j = 0; j < temp1.num_cols; j++)
 			temp1(i,j) = temp1(i,j)*temp1(i,j);
 	}
 
-	for (int i = 0; i < temp1.num_cols; i++)
+	for (index_t i = 0; i < temp1.num_cols; i++)
 	{
 		diagonal2[i] = 0;
 
-		for (int j = 0; j < temp1.num_rows; j++)
+		for (index_t j = 0; j < temp1.num_rows; j++)
 			diagonal2[i] += temp1(j,i);
 	}
 
@@ -249,7 +273,7 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 	SGVector<float64_t> result(m_k_tsts.num_cols);
 
 	//Subtract V from K(Test,Test) to get covariances.
-	for (int i = 0; i < m_k_tsts.num_cols; i++)
+	for (index_t i = 0; i < m_k_tsts.num_cols; i++)
 		result[i] = m_k_tsts(i,i) - diagonal2[i];
 
 	CLikelihoodModel* lik = m_method->get_model();

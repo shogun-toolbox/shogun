@@ -102,11 +102,8 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	SG_REF(r);
 
 	//make sure features were indeed supplied
-	if (!l)
-		SG_ERROR("%s::init(): Features on left side are NULL\n", get_name());
-
-	if (!r)
-		SG_ERROR("%s::init(): Features on right side are NULL\n", get_name());
+	ASSERT(l);
+	ASSERT(r);
 
 	//make sure features are compatible
 	ASSERT(l->get_feature_class()==r->get_feature_class());
@@ -776,7 +773,6 @@ void CKernel::list_kernel()
 		ENUM_CASE(C_POLY)
 		ENUM_CASE(C_BINNED_DOT)
 		ENUM_CASE(C_DIRECTOR_DOT)
-		ENUM_CASE(C_LATENT)
 		ENUM_CASE(C_ANY)
 	}
 
@@ -918,7 +914,7 @@ void CKernel::register_params()   {
 	SG_ADD(&num_rhs, "num_rhs", "Number of feature vectors on right hand side.",
 	    MS_NOT_AVAILABLE);
 	SG_ADD(&combined_kernel_weight, "combined_kernel_weight",
-			"Combined kernel weight.", MS_NOT_AVAILABLE);
+			"Combined kernel weight.", MS_AVAILABLE);
 	SG_ADD(&optimization_initialized, "optimization_initialized",
 		  "Optimization is initialized.", MS_NOT_AVAILABLE);
 	SG_ADD((machine_int_t*) &opt_type, "opt_type",
@@ -950,9 +946,8 @@ void CKernel::init()
 	set_normalizer(new CIdentityKernelNormalizer());
 }
 
-SGMatrix<float64_t> CKernel::get_parameter_gradient(const char* param_name)
+SGMatrix<float64_t> CKernel::get_parameter_gradient(TParameter* param,
+		CSGObject* obj, index_t index)
 {
-	SG_ERROR("Derivative with respect to parameter %s not implemented in kernel (%s).",
-			param_name, get_name());
 	return SGMatrix<float64_t>();
 }

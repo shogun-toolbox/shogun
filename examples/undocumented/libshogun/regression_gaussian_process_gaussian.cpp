@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix =
-		 SGMatrix<float64_t>(dim_vectors, num_vectors);
+			SGMatrix<float64_t>(dim_vectors, num_vectors);
 
 	matrix[0] = -1;
 	matrix[1] = -1;
@@ -53,24 +53,24 @@ int main(int argc, char **argv)
 	matrix[9] = 3;
 	matrix[10] = 2;
 	matrix[11] = 1;
-			
-	SGMatrix<float64_t> matrix2 = 
-		SGMatrix<float64_t>(dim_vectors, num_vectors);
+
+	SGMatrix<float64_t> matrix2 =
+			SGMatrix<float64_t>(dim_vectors, num_vectors);
 
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
 		matrix2[i]=i*sin(i)*.96;
-	
+
 	/* create training features */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
 	features->set_feature_matrix(matrix);
-	
+
 	/* create testing features */
 	CDenseFeatures<float64_t>* features2=new CDenseFeatures<float64_t> ();
 	features2->set_feature_matrix(matrix2);
-	
+
 	SG_REF(features);
 	SG_REF(features2);
-	
+
 	CRegressionLabels* labels=new CRegressionLabels(num_vectors);
 
 	/* create labels, two classes */
@@ -79,53 +79,53 @@ int main(int argc, char **argv)
 		if(i%2 == 0) labels->set_label(i, 1);
 		else labels->set_label(i, -1);
 	}
-	
+
 	SG_REF(labels);
 	CGaussianKernel* test_kernel = new CGaussianKernel(10, 2);
-	
+
 	test_kernel->init(features, features);
 
 	CZeroMean* mean = new CZeroMean();
 	CGaussianLikelihood* lik = new CGaussianLikelihood();
 	lik->set_sigma(0.01);
-	
-	CExactInferenceMethod* inf =
-		 new CExactInferenceMethod(test_kernel, features, mean, labels, lik);
 
-	
+	CExactInferenceMethod* inf =
+			new CExactInferenceMethod(test_kernel, features, mean, labels, lik);
+
+
 	SG_REF(inf);
-	
-	CGaussianProcessRegression* gp = 
-		new CGaussianProcessRegression(inf, features, labels);
+
+	CGaussianProcessRegression* gp =
+			new CGaussianProcessRegression(inf, features, labels);
 
 	CModelSelectionParameters* root=new CModelSelectionParameters();
-	
-	CModelSelectionParameters* c1 = 
-		new CModelSelectionParameters("inference_method", inf);
+
+	CModelSelectionParameters* c1 =
+			new CModelSelectionParameters("inference_method", inf);
 	root->append_child(c1);
 
-        CModelSelectionParameters* c2 = new CModelSelectionParameters("scale");
-        c1 ->append_child(c2);
-        c2->build_values(0.01, 4.0, R_LINEAR);
+	CModelSelectionParameters* c2 = new CModelSelectionParameters("scale");
+	c1 ->append_child(c2);
+	c2->build_values(0.01, 4.0, R_LINEAR);
 
-	
-	CModelSelectionParameters* c3 = 
-		new CModelSelectionParameters("likelihood_model", lik);
-	c1->append_child(c3); 
+
+	CModelSelectionParameters* c3 =
+			new CModelSelectionParameters("likelihood_model", lik);
+	c1->append_child(c3);
 
 	CModelSelectionParameters* c4=new CModelSelectionParameters("sigma");
 	c3->append_child(c4);
 	c4->build_values(0.001, 4.0, R_LINEAR);
-	
-	CModelSelectionParameters* c5 = 
-		new CModelSelectionParameters("kernel", test_kernel);
+
+	CModelSelectionParameters* c5 =
+			new CModelSelectionParameters("kernel", test_kernel);
 	c1->append_child(c5);
 
-	CModelSelectionParameters* c6 = 
-		new CModelSelectionParameters("width");
+	CModelSelectionParameters* c6 =
+			new CModelSelectionParameters("width");
 	c5->append_child(c6);
 	c6->build_values(0.001, 4.0, R_LINEAR);
-	
+
 	/* cross validation class for evaluation in model selection */
 	SG_REF(gp);
 
@@ -133,16 +133,16 @@ int main(int argc, char **argv)
 
 	CGradientEvaluation* grad=new CGradientEvaluation(gp, features, labels,
 			crit);
-	
+
 	grad->set_function(inf);
-	
+
 	gp->print_modsel_params();
-	
+
 	root->print_tree();
-	
+
 	/* handles all of the above structures in memory */
 	CGradientModelSelection* grad_search=new CGradientModelSelection(
-	  root, grad);
+			root, grad);
 
 	/* set autolocking to false to get rid of warnings */
 	grad->set_autolock(false);
@@ -170,12 +170,12 @@ int main(int argc, char **argv)
 	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
 	SGMatrix<float64_t> cholesky = inf->get_cholesky();
 	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_COV);
-	
+
 	CRegressionLabels* covariance = gp->apply_regression(features);
-	
+
 	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
 	CRegressionLabels* predictions = gp->apply_regression();
-	
+
 	alpha.display_vector("Alpha Vector");
 	labe.display_vector("Labels");
 	diagonal.display_vector("sW Matrix");
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 	cholesky.display_matrix("Cholesky Matrix L");
 	matrix.display_matrix("Training Features");
 	matrix2.display_matrix("Testing Features");
-	
+
 	/*free memory*/
 	SG_UNREF(features);
 	SG_UNREF(features2);
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 	SG_UNREF(grad_search);
 	SG_UNREF(best_combination);
 	SG_UNREF(result);
-	
+
 	exit_shogun();
 
 	return 0;
