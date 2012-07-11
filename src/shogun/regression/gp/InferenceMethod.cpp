@@ -69,17 +69,18 @@ void CInferenceMethod::set_features(CFeatures* feat)
 	SG_UNREF(m_features);
 	m_features=feat;
 
-	if (m_features && m_features->has_property(FP_DOT))
+	if (m_features && m_features->has_property(FP_DOT) && m_features->get_num_vectors())
 		m_feature_matrix =
 				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
 
-	else if(m_features && m_features->get_feature_class() == C_COMBINED)
+	else if (m_features && m_features->get_feature_class() == C_COMBINED)
 	{
 		CDotFeatures* subfeat =
 				(CDotFeatures*)((CCombinedFeatures*)m_features)->
 				get_first_feature_obj();
-
-		m_feature_matrix = subfeat->get_computed_dot_feature_matrix();
+		
+		if (m_features->get_num_vectors())
+			m_feature_matrix = subfeat->get_computed_dot_feature_matrix();
 
 		SG_UNREF(subfeat);
 	}
@@ -117,8 +118,11 @@ void CInferenceMethod::set_labels(CLabels* lab)
 	SG_UNREF(m_labels);
 	m_labels = lab;
 
-	m_label_vector =
-		((CRegressionLabels*) m_labels)->get_labels().clone();
+	if (m_labels)
+	{
+		m_label_vector =
+			((CRegressionLabels*) m_labels)->get_labels().clone();
+	}
 
 	update_data_means();
 	update_alpha();
