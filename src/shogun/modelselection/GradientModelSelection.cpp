@@ -182,8 +182,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	int n = result->gradient.get_num_elements();
 
-	double* lb = new double[n];
-	double* x = new double[n];
+	double* lb = SG_MALLOC(double, n);
+	double* x = SG_MALLOC(double, n);
 
 	CParameterCombination* lower_combination =
 			m_model_parameters->get_single_combination(false);
@@ -307,8 +307,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 		SG_ERROR("nlopt failed!\n");
 
 	//Clean up.
-	delete[] lb;
-    delete[] x;
+	SG_FREE(lb);
+    SG_FREE(x);
     nlopt_destroy(opt);
 
 	//Admittedly weird, but I am unreferencing

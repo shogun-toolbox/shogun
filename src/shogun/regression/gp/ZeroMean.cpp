@@ -25,7 +25,7 @@ SGVector<float64_t> CZeroMean::get_mean_vector(SGMatrix<float64_t>& data)
 {
 	SGVector<float64_t> result(data.num_cols);
 
-	for (int i = 0; i < result.vlen; i++)
+	for (index_t i = 0; i < result.vlen; i++)
 		result[i] = 0;
 
 	return result;

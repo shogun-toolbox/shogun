@@ -152,7 +152,7 @@ void CInferenceMethod::update_data_means()
 
 		if (m_label_vector.vlen == m_data_means.vlen)
 		{
-			for (int i = 0; i < m_label_vector.vlen; i++)
+			for (index_t i = 0; i < m_label_vector.vlen; i++)
 				m_label_vector[i] -= m_data_means[i];
 		}
 	}

@@ -67,7 +67,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_BOOL)
-					SG_ERROR("Paramater %s not a boolean parameter", name);
+					SG_ERROR("Parameter %s not a boolean parameter", name);
 
 				if (index < 0)
 					*((bool*)(param)) = value;
@@ -97,7 +97,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_INT32)
-					SG_ERROR("Paramater %s not a boolean parameter", name);
+					SG_ERROR("Parameter %s not a integer parameter", name);
 
 				if (index < 0)
 					*((int32_t*)(param)) = value;
@@ -126,7 +126,7 @@ bool CParameterCombination::set_parameter_helper(
 			{
 				if (m_param->get_parameter(i)->m_datatype.m_ptype
 						!= PT_FLOAT64)
-					SG_ERROR("Paramater %s not a boolean parameter", name);
+					SG_ERROR("Parameter %s not a double parameter", name);
 
 				if (index < 0)
 					*((float64_t*)(param)) = value;

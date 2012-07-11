@@ -215,50 +215,6 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 
 		switch (m_value_type)
 		{
-		case MSPT_INT32_VECTOR:
-		{
-			int32_t* param_vect = new int32_t[m_vector_length];
-			for (index_t j = 0; j < m_vector_length; j++)
-			{
-				i = CMath::random(0, m_values_length-1);
-				param_vect[j] = ((int32_t*)m_values)[i];
-			}
-			p->add_vector(&param_vect, &m_vector_length, m_node_name);
-			break;
-		}
-		case MSPT_FLOAT64_VECTOR:
-		{
-			float64_t* param_vect = new float64_t[m_vector_length];
-			for (index_t j = 0; j < m_vector_length; j++)
-			{
-				i = CMath::random(0, m_values_length-1);
-				param_vect[j] = ((float64_t*)m_values)[i];
-			}
-			p->add_vector(&param_vect, &m_vector_length, m_node_name);
-			break;
-		}
-		case MSPT_INT32_SGVECTOR:
-		{
-			SGVector<int32_t>* param_vect = new SGVector<int32_t>(m_vector_length);
-			for (index_t j = 0; j < m_vector_length; j++)
-			{
-				i = CMath::random(0, m_values_length-1);
-				param_vect[j] = ((int32_t*)m_values)[i];
-			}
-			p->add(param_vect, m_node_name);
-			break;
-		}
-		case MSPT_FLOAT64_SGVECTOR:
-		{
-			SGVector<float64_t>* param_vect = new SGVector<float64_t>(m_vector_length);
-			for (index_t j = 0; j < m_vector_length; j++)
-			{
-				i = CMath::random(0, m_values_length-1);
-				param_vect[j] = ((float64_t*)m_values)[i];
-			}
-			p->add(param_vect, m_node_name);
-			break;
-		}
 		case MSPT_FLOAT64:
 			p->add(&((float64_t*)m_values)[i], m_node_name);
 			break;
