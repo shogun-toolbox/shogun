@@ -47,7 +47,7 @@ void CExactInferenceMethod::update_all()
 		m_label_vector =
 				((CRegressionLabels*) m_labels)->get_labels().clone();
 
-	if (m_features && m_features->has_property(FP_DOT))
+	if (m_features && m_features->has_property(FP_DOT) && m_features->get_num_vectors())
 		m_feature_matrix =
 				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
 
@@ -57,15 +57,22 @@ void CExactInferenceMethod::update_all()
 				(CDotFeatures*)((CCombinedFeatures*)m_features)->
 				get_first_feature_obj();
 
-		m_feature_matrix = feat->get_computed_dot_feature_matrix();
+		if (feat->get_num_vectors())
+			m_feature_matrix = feat->get_computed_dot_feature_matrix();
 
 		SG_UNREF(feat);
 	}
 
 	update_data_means();
-	update_train_kernel();
-	update_chol();
-	update_alpha();
+
+	if (m_kernel)
+		update_train_kernel();
+
+	if (m_ktrtr.num_cols*m_ktrtr.num_rows)
+	{
+		update_chol();
+		update_alpha();
+	}
 }
 
 void CExactInferenceMethod::check_members()
