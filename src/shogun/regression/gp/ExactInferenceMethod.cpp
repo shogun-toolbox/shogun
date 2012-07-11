@@ -26,9 +26,7 @@ using namespace shogun;
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
-	update_train_kernel();
-	update_chol();
-	update_alpha();
+	update_all();
 	update_parameter_hash();
 }
 
@@ -36,9 +34,7 @@ CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
-	update_train_kernel();
-	update_chol();
-	update_alpha();
+	update_all();
 }
 
 CExactInferenceMethod::~CExactInferenceMethod()
@@ -47,14 +43,15 @@ CExactInferenceMethod::~CExactInferenceMethod()
 
 void CExactInferenceMethod::update_all()
 {
-	m_label_vector =
-			((CRegressionLabels*) m_labels)->get_labels().clone();
+	if (m_labels)
+		m_label_vector =
+				((CRegressionLabels*) m_labels)->get_labels().clone();
 
-	if(m_features->has_property(FP_DOT))
+	if (m_features && m_features->has_property(FP_DOT))
 		m_feature_matrix =
 				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
 
-	else if(m_features->get_feature_class() == C_COMBINED)
+	else if (m_features && m_features->get_feature_class() == C_COMBINED)
 	{
 		CDotFeatures* feat =
 				(CDotFeatures*)((CCombinedFeatures*)m_features)->
