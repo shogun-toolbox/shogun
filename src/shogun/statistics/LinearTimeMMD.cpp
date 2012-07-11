@@ -67,7 +67,7 @@ void CLinearTimeMMD::init()
 	m_opt_max_iterations=10000;
 	m_opt_epsilon=10E-15;
 	m_opt_low_cut=10E-7;
-	m_opt_regularization_eps=10E-5;
+	m_opt_regularization_eps=0;
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
@@ -182,6 +182,8 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 #ifdef HAVE_LAPACK
 void CLinearTimeMMD::optimize_kernel_weights()
 {
+	/** TODO check whether other types of combined kernels/features might be
+	 * allowed */
 	if (m_kernel->get_kernel_type()!=K_COMBINED)
 	{
 		SG_ERROR("CLinearTimeMMD::optimize_kernel_weights(): Only possible "
@@ -194,7 +196,7 @@ void CLinearTimeMMD::optimize_kernel_weights()
 				"with combined features!\n");
 	}
 
-	/* TODO think about casting and types here */
+	/* think about casting and types of different kernels/features here */
 	CCombinedFeatures* combined_p_and_q=
 			dynamic_cast<CCombinedFeatures*>(m_p_and_q);
 	CCombinedKernel* combined_kernel=dynamic_cast<CCombinedKernel*>(m_kernel);
@@ -304,7 +306,7 @@ void CLinearTimeMMD::optimize_kernel_weights()
 
 		/* if no element is positive, Q has to be replaced by -Q */
 		for (index_t i=0; i<num_kernels*num_kernels; ++i)
-			m_Q.matrix[i]*=-1;
+			m_Q.matrix[i]=-m_Q.matrix[i];
 	}
 
 	/* init vectors */
@@ -320,7 +322,7 @@ void CLinearTimeMMD::optimize_kernel_weights()
 	}
 
 	/* start libqp solver with desired parameters */
-	SG_DEBUG("starting libqp\n");
+	SG_DEBUG("starting libqp optimization\n");
 	libqp_state_T qp_exitflag=libqp_gsmo_solver(&get_Q_col, Q_diag.vector,
 			f.vector, mmds.vector,
 			one_pos ? 1 : -1,
