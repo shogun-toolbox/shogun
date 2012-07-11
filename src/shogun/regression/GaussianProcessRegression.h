@@ -46,7 +46,7 @@ class CGaussianProcessRegression : public CMachine
 		 * @param lab labels
 		 */
 		CGaussianProcessRegression(CInferenceMethod* inf,
-					   CDotFeatures* data, CLabels* lab);
+					   CFeatures* data, CLabels* lab);
 
 		  /** default constructor */
 		CGaussianProcessRegression();
@@ -57,7 +57,7 @@ class CGaussianProcessRegression : public CMachine
 		*
 		* @param feat features to set
 		*/
-		virtual inline void set_features(CDotFeatures* feat)
+		virtual inline void set_features(CFeatures* feat)
 		{
 			SG_UNREF(m_features);
 			SG_REF(feat);
@@ -69,7 +69,7 @@ class CGaussianProcessRegression : public CMachine
 		*
 		* @return features
 		*/
-		virtual CDotFeatures* get_features()
+		virtual CFeatures* get_features()
 		{
 			SG_REF(m_features);
 			return m_features;
@@ -197,10 +197,10 @@ class CGaussianProcessRegression : public CMachine
 	private:
 
 		/** training features */
-		CDotFeatures* m_features;
+		CFeatures* m_features;
 		
 		/** testing features */
-		CDotFeatures* m_data;
+		CFeatures* m_data;
 
 		/*Kernel matrix from testing and training
 		 * features

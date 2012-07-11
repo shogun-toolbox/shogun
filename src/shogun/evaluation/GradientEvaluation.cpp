@@ -30,6 +30,8 @@ CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features,
 
 void CGradientEvaluation::init()
 {
+	m_diff = NULL;
+
 	SG_ADD((CSGObject**)&m_diff, "differentiable_function",
 			"Differentiable Function", MS_NOT_AVAILABLE);
 }
@@ -45,7 +47,7 @@ CEvaluationResult* CGradientEvaluation::evaluate()
 
 	SGVector<float64_t> quan = m_diff->get_quantity();
 
-	result->gradient = m_diff->get_gradient();
+	result->gradient = m_diff->get_gradient(result->parameter_dictionary);
 
 	result->quantity = quan.clone();
 

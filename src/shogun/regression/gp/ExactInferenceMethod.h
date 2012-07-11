@@ -54,7 +54,7 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CExactInferenceMethod(CKernel* kernel, CDotFeatures* features,
+	CExactInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
 	/*Destructor*/
@@ -79,7 +79,8 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual CMap<SGString<const char>, float64_t> get_marginal_likelihood_derivatives();
+	virtual CMap<TParameter*, float64_t> get_marginal_likelihood_derivatives(
+			CMap<TParameter*, CSGObject*>& para_dict);
 
 	/** get Alpha Matrix
 	 *
@@ -132,10 +133,11 @@ public:
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
-	virtual CMap<SGString<const char>, float64_t> get_gradient()
+	virtual CMap<TParameter*, float64_t> get_gradient(
+			CMap<TParameter*, CSGObject*>& para_dict)
 	{
-		return get_marginal_likelihood_derivatives();
-	};
+		return get_marginal_likelihood_derivatives(para_dict);
+	}
 
 	/*Get the function value
 	 *

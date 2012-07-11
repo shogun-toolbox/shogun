@@ -1,8 +1,10 @@
 /*
- * GradientCriterion.h
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Created on: Jun 27, 2012
- *      Author: jacobw
+ * Copyright (C) 2012 Jacob Walker
  */
 
 #ifndef CGRADIENTCRITERION_H_
@@ -33,11 +35,13 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) { return 0; }
+	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)
+	{ return 0; }
 
 
 	/** @return whether criterium has to be maximized or minimized */
-	virtual EEvaluationDirection get_evaluation_direction() { return m_direction; }
+	virtual EEvaluationDirection get_evaluation_direction()
+	{ return m_direction; }
 
 	/** Set the evaluation direction
 	 * @param evaluation direction to be set.

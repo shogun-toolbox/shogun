@@ -69,8 +69,8 @@ public:
 	*/
 	inline void set_function(CDifferentiableFunction* d)
 	{
-		SG_UNREF(m_diff);
 		SG_REF(d);
+		SG_UNREF(m_diff);
 		m_diff = d;
 	};
 

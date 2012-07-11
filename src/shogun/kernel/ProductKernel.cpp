@@ -259,3 +259,57 @@ void CProductKernel::init()
 	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
 	    MS_NOT_AVAILABLE);
 }
+
+SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
+		CSGObject* obj, index_t index)
+{
+
+		CListElement* current = NULL ;
+		CKernel* k = get_first_kernel(current);
+		SGMatrix<float64_t> temp_kernel = k->get_kernel_matrix();
+
+		bool found_derivative = false;
+
+		for (index_t g = 0; g < temp_kernel.num_rows; g++)
+		{
+			for (int h = 0; h < temp_kernel.num_cols; h++)
+				temp_kernel(g,h) = 1.0;
+		}
+
+		while(k)
+		{
+			SGMatrix<float64_t> cur_matrix = k->get_kernel_matrix();
+			SGMatrix<float64_t> derivative =
+					k->get_parameter_gradient(param, obj, index);
+
+			if (derivative.num_cols*derivative.num_rows > 0)
+			{
+					found_derivative = true;
+					for (index_t g = 0; g < derivative.num_rows; g++)
+					{
+						for (index_t h = 0; h < derivative.num_cols; h++)
+							temp_kernel(g,h) *= derivative(g,h);
+					}
+
+			}
+
+			else
+			{
+				for (index_t g = 0; g < cur_matrix.num_rows; g++)
+				{
+					for (index_t h = 0; h < cur_matrix.num_cols; h++)
+						temp_kernel(g,h) *= cur_matrix(g,h);
+				}
+
+			}
+
+			SG_UNREF(k);
+			k = get_next_kernel(current);
+		}
+
+		if (found_derivative)
+			return temp_kernel;
+
+		else
+			return SGMatrix<float64_t>();
+}

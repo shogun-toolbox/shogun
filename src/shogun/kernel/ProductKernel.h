@@ -251,6 +251,23 @@ class CProductKernel : public CKernel
 			return dynamic_cast<CProductKernel*>(n);
 		}
 
+		/** return derivative with respect to specified parameter
+		 *
+		 * @param  param the parameter
+		 * @param obj the object that owns the parameter
+		 * @index index the index of the element if parameter is a vector
+		 *
+		 * @return gradient with respect to parameter
+		 */
+		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+				CSGObject* obj, index_t index);
+
+		/* Get the Kernel list
+		 *
+		 * @return kernel list
+		 */
+		inline CList* get_list() {SG_REF(kernel_list); return kernel_list;}
+
 	protected:
 		/** compute kernel function
 		 *

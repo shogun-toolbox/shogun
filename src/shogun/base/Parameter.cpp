@@ -2199,7 +2199,7 @@ void TParameter::get_incremental_hash(
 		SG_SNOTIMPLEMENTED;
 	case CT_SCALAR:
 	{
-	        uint8_t* data = ((uint8_t*) m_parameter);
+	    uint8_t* data = ((uint8_t*) m_parameter);
 		uint32_t size = m_datatype.sizeof_stype();
 		total_length += size;
 		CHash::IncrementalMurmurHash3(

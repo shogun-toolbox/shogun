@@ -156,6 +156,7 @@ float64_t CHashedWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, 
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o);
 #endif
 			sum+=vec2[o+(h & mask)]*wd;
+			val[i] = h;
 			o+=partial_w_dim;
 		}
 		val[len-k-1] =
@@ -212,6 +213,7 @@ void CHashedWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, floa
 			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o);
 #endif
 			vec2[o+(h & mask)]+=wd;
+			val[i] = h;
 			o+=partial_w_dim;
 		}
 		val[len-k-1] =

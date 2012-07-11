@@ -18,7 +18,9 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
-#include <shogun/lib/Hash.h>
+#include <shogun/lib/Map.h>
+
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -1195,6 +1197,28 @@ void CSGObject::get_parameter_incremental_hash(Parameter* param,
 
 			else
 				p->get_incremental_hash(hash, carry, total_length);
+		}
+	}
+}
+
+void CSGObject::build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
+{
+	if (m_parameters)
+	{
+		for (index_t i=0; i<m_parameters->get_num_parameters(); i++)
+		{
+			TParameter* p = m_parameters->get_parameter(i);
+
+			dict.add(p, this);
+
+			if (p->m_datatype.m_ptype == PT_SGOBJECT)
+			{
+				CSGObject* child =
+						*((CSGObject**)(p->m_parameter));
+				if (child)
+					child->build_parameter_dictionary(dict);
+			}
+
 		}
 	}
 }

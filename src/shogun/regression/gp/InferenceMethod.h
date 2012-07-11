@@ -45,7 +45,7 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CInferenceMethod(CKernel* kernel, CDotFeatures* features,
+	CInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
 	virtual ~CInferenceMethod();
@@ -70,8 +70,9 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual CMap<SGString<const char>, float64_t>
-		get_marginal_likelihood_derivatives() = 0;
+	virtual CMap<TParameter*, float64_t>
+		get_marginal_likelihood_derivatives(
+		CMap<TParameter*, CSGObject*>& para_dict) = 0;
 
 	/** get Alpha Matrix
 	 *
@@ -112,13 +113,13 @@ public:
 	*
 	* @param feat features to set
 	*/
-	virtual void set_features(CDotFeatures* feat);
+	virtual void set_features(CFeatures* feat);
 
 	/** get features
 	*
 	* @return features
 	*/
-	virtual CDotFeatures* get_features()
+	virtual CFeatures* get_features()
 	{
 		SG_REF(m_features);
 		return m_features;
@@ -201,7 +202,7 @@ protected:
 	CKernel* m_kernel;
 
 	/*Features to use*/
-	CDotFeatures* m_features;
+	CFeatures* m_features;
 
 	SGMatrix<float64_t> m_feature_matrix;
 

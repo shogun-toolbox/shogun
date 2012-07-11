@@ -110,10 +110,38 @@ void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 			(void*)&type_base);
 }
 
+void CModelSelectionParameters::build_values_vector(float64_t min, float64_t max,
+		ERangeType type, float64_t step, float64_t type_base)
+{
+	build_values(MSPT_FLOAT64_VECTOR, (void*)&min, (void*)&max, type, (void*)&step,
+			(void*)&type_base);
+}
+
+void CModelSelectionParameters::build_values_sgvector(float64_t min, float64_t max,
+		ERangeType type, float64_t step, float64_t type_base)
+{
+	build_values(MSPT_FLOAT64_SGVECTOR, (void*)&min, (void*)&max, type, (void*)&step,
+			(void*)&type_base);
+}
+
 void CModelSelectionParameters::build_values(int32_t min, int32_t max,
 		ERangeType type, int32_t step, int32_t type_base)
 {
 	build_values(MSPT_INT32, (void*)&min, (void*)&max, type, (void*)&step,
+			(void*)&type_base);
+}
+
+void CModelSelectionParameters::build_values_vector(int32_t min, int32_t max,
+		ERangeType type, int32_t step, int32_t type_base)
+{
+	build_values(MSPT_INT32_VECTOR, (void*)&min, (void*)&max, type, (void*)&step,
+			(void*)&type_base);
+}
+
+void CModelSelectionParameters::build_values_sgvector(int32_t min, int32_t max,
+		ERangeType type, int32_t step, int32_t type_base)
+{
+	build_values(MSPT_INT32_SGVECTOR, (void*)&min, (void*)&max, type, (void*)&step,
 			(void*)&type_base);
 }
 
@@ -132,7 +160,9 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 	/* save new type */
 	m_value_type=value_type;
 
-	if (value_type==MSPT_FLOAT64)
+	if (value_type==MSPT_FLOAT64 ||
+			value_type==MSPT_FLOAT64_VECTOR
+			|| value_type==MSPT_FLOAT64_SGVECTOR)
 	{
 		SGVector<float64_t> values=create_range_array<float64_t>(
 				*((float64_t*)min),
@@ -144,7 +174,9 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 		m_values=values.vector;
 		m_values_length=values.vlen;
 	}
-	else if (value_type==MSPT_INT32)
+	else if (value_type==MSPT_INT32 ||
+			value_type==MSPT_INT32_VECTOR
+			|| value_type==MSPT_INT32_SGVECTOR)
 	{
 		SGVector<int32_t> values=create_range_array<int32_t>(
 				*((int32_t*)min),
@@ -574,11 +606,15 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 
 				switch (m_value_type)
 				{
-				case MSPT_FLOAT64:
+				case MSPT_FLOAT64: case MSPT_FLOAT64_VECTOR:
+					case MSPT_FLOAT64_SGVECTOR:
+
 					SGVector<float64_t>::display_vector((float64_t*)m_values,
 							m_values_length);
 					break;
-				case MSPT_INT32:
+				case MSPT_INT32: case MSPT_INT32_VECTOR:
+					case MSPT_INT32_SGVECTOR:
+
 					SGVector<int32_t>::display_vector((int32_t*)m_values,
 							m_values_length);;
 					break;
@@ -604,10 +640,14 @@ void CModelSelectionParameters::delete_values()
 	{
 		switch (m_value_type)
 		{
-		case MSPT_FLOAT64:
+		case MSPT_FLOAT64: case MSPT_FLOAT64_VECTOR:
+			case MSPT_FLOAT64_SGVECTOR:
+
 			SG_FREE((float64_t*)m_values);
 			break;
-		case MSPT_INT32:
+		case MSPT_INT32: case MSPT_INT32_VECTOR:
+			case MSPT_INT32_SGVECTOR:
+
 			SG_FREE((int32_t*)m_values);
 			break;
 		case MSPT_NONE:
