@@ -196,3 +196,45 @@ void CCombinedFeatures::init()
 	m_parameters->add((CSGObject**) &feature_list,
 					  "feature_list", "Feature list.");
 }
+
+CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
+{
+	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
+	if (get_feature_type()!=other->get_feature_type() ||
+			get_feature_class()!=other->get_feature_class() ||
+			strcmp(get_name(), other->get_name()))
+	{
+		SG_ERROR("%s::create_merged_copy(): Features are of different type!\n",
+				get_name());
+	}
+
+	CCombinedFeatures* casted=dynamic_cast<CCombinedFeatures*>(other);
+
+	if (!casted)
+	{
+		SG_ERROR("%s::create_merged_copy(): Could not cast object of %s to "
+				"same type as %s\n",get_name(), other->get_name(), get_name());
+	}
+
+	if (get_num_feature_obj()!=casted->get_num_feature_obj())
+	{
+		SG_ERROR("%s::create_merged_copy(): Only possible if both instances "
+				"have the same number of sub-feature-objects\n", get_name());
+	}
+
+	CCombinedFeatures* result=new CCombinedFeatures();
+	CFeatures* current_this=get_first_feature_obj();
+	CFeatures* current_other=casted->get_first_feature_obj();
+	while (current_this)
+	{
+		result->append_feature_obj(
+				current_this->create_merged_copy(current_other));
+		SG_UNREF(current_this);
+		SG_UNREF(current_other);
+		current_this=get_next_feature_obj();
+		current_other=get_next_feature_obj();
+	}
+
+	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
+	return result;
+}
