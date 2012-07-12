@@ -68,7 +68,13 @@ void test_linear_mmd_optimize_weights()
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features, m);
 	mmd->optimize_kernel_weights();
 
-	kernel->get_subkernel_weights().display_vector("weights");
+	SGVector<float64_t> weights=kernel->get_subkernel_weights();
+	weights.display_vector("weights");
+
+	/* MATLAB program returns these weights: */
+	ASSERT(CMath::abs(weights[0]-0.622266982205087)<10E-16);
+	ASSERT(weights[1]==0);
+	ASSERT(CMath::abs(weights[2]-0.377733017794913)<10E-16);
 
 	SG_UNREF(mmd);
 }
@@ -77,7 +83,7 @@ int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 
-	sg_io->set_loglevel(MSG_DEBUG);
+//	sg_io->set_loglevel(MSG_DEBUG);
 
 	test_linear_mmd_optimize_weights();
 
