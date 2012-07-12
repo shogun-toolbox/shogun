@@ -20,9 +20,16 @@ namespace shogun
 class CFeatures;
 
 /** @brief This class implements the linear time Maximum Mean Statistic as
- * described in
- * Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
- * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
+ * described in [1].
+ * Given two sets of samples \f$\{x_i\}_{i=1}^m\sim p\f$ and
+ * \f$\{y_i\}_{i=1}^n\sim q\f$
+ * the (unbiased) statistic is computed as
+ * \f[
+ * \text{MMD}_l^2[\mathcal{F},X,Y]=\frac{1}{m(m-1)}\sum_{i=1}^m\sum_{j\neq i}^m
+ * k(x_i,x_j) + \frac{1}{n(n-1)}\sum_{i=1}^n\sum_{j\neq i}^nk(y_i,y_j)
+ *  - \frac{2}{mn}\sum_{i=1}^m\sum_{j=1}^nk(x_i,y_j)
+ * \f]
+ * in a RKHS \f$\mathcal{F}\f$
  *
  * Along with the statistic comes a method to compute a p-value based on a
  * Gaussian approximation of the null-distribution which is also possible in
@@ -33,6 +40,9 @@ class CFeatures;
  *
  * Comes with a method for selecting kernel weights, if a combined kernel on
  * combined features is used. See optimize_kernel_weights().
+ *
+ * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
+ * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  */
 class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
@@ -112,11 +122,13 @@ public:
 	virtual float64_t compute_variance_estimate();
 
 #ifdef HAVE_LAPACK
-	/** TODO */
-	/** Selects optimal kernel weights (if the underlying kernel and features)
+	/** Selects optimal kernel weights (if the underlying kernel and features
 	 * are combined ones) using the ratio of the squared MMD by its standard
 	 * deviation as a criterion, i.e.
-	 * TODO latex
+	 * \f[
+	 * \frac{\text{MMD}_l^2[\mathcal{F},X,Y]}{\sigma_l}
+	 * \f]
+	 * where both expressions are estimated in linear time.
 	 * This comes down to solving a convex program which is quadratic in the
 	 * number of kernels.
 	 *
