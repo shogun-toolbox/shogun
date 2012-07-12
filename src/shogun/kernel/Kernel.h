@@ -291,78 +291,71 @@ class CKernel : public CSGObject
 
 			SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n);
 
+			bool verbose = false;
 			result=SG_MALLOC(T, total_num);
 
-			int32_t num_threads=parallel->get_num_threads();
-			if (num_threads < 2)
+			int64_t total = 0;
+			if (symmetric)
 			{
-				K_THREAD_PARAM<T> params;
-				params.kernel=this;
-				params.result=result;
-				params.start=0;
-				params.end=m;
-				params.total_start=0;
-				params.total_end=total_num;
-				params.n=n;
-				params.m=m;
-				params.symmetric=symmetric;
-				params.verbose=true;
-				get_kernel_matrix_helper<T>((void*) &params);
-			}
-			else
-			{
-				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				K_THREAD_PARAM<T>* params = SG_MALLOC(K_THREAD_PARAM<T>, num_threads);
-				int64_t step= total_num/num_threads;
-
-				int32_t t;
-
-				num_threads--;
-				for (t=0; t<num_threads; t++)
+				int32_t i,j;
+				float64_t v;
+#pragma omp parallel private(i,j,v)
+#pragma omp for schedule(dynamic) nowait
+				for (i=0; i<m; i++)
 				{
-					params[t].kernel = this;
-					params[t].result = result;
-					params[t].start = compute_row_start(t*step, n, symmetric);
-					params[t].end = compute_row_start((t+1)*step, n, symmetric);
-					params[t].total_start=t*step;
-					params[t].total_end=(t+1)*step;
-					params[t].n=n;
-					params[t].m=m;
-					params[t].symmetric=symmetric;
-					params[t].verbose=false;
-
-					int code=pthread_create(&threads[t], NULL,
-							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]);
-
-					if (code != 0)
+					for (j=i; j<n; j++)
 					{
-						SG_WARNING("Thread creation failed (thread %d of %d) "
-								"with error:'%s'\n",t, num_threads, strerror(code));
-						num_threads=t;
-						break;
+						v=kernel(i,j);
+						result[i+j*m]=v;
+
+						// TODO likely?
+						if (i!=j)
+							result[j+i*m]=v;
+
+						if (verbose)
+						{
+							total++;
+
+							if (symmetric && i!=j)
+								total++;
+
+							if (total%100 == 0)
+								SG_PROGRESS(total, 0, total_num);
+
+							if (CSignal::cancel_computations())
+								break;
+						}
 					}
 				}
-
-				params[t].kernel = this;
-				params[t].result = result;
-				params[t].start = compute_row_start(t*step, n, symmetric);
-				params[t].end = m;
-				params[t].total_start=t*step;
-				params[t].total_end=total_num;
-				params[t].n=n;
-				params[t].m=m;
-				params[t].symmetric=symmetric;
-				params[t].verbose=true;
-				get_kernel_matrix_helper<T>(&params[t]);
-
-				for (t=0; t<num_threads; t++)
+			}
+			else 
+			{
+				int32_t i,j;
+				float64_t v;
+#pragma omp parallel private(i,j,v)
+#pragma omp for schedule(dynamic) nowait
+				for (i=0; i<m; i++)
 				{
-					if (pthread_join(threads[t], NULL) != 0)
-						SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
-				}
+					for (j=0; j<n; j++)
+					{
+						v=kernel(i,j);
+						result[i+j*m]=v;
 
-				SG_FREE(params);
-				SG_FREE(threads);
+						if (verbose)
+						{
+							total++;
+
+							if (symmetric && i!=j)
+								total++;
+
+							if (total%100 == 0)
+								SG_PROGRESS(total, 0, total_num);
+
+							if (CSignal::cancel_computations())
+								break;
+						}
+					}
+				}
 			}
 
 			SG_DONE();
@@ -816,61 +809,6 @@ class CKernel : public CSGObject
 				i_start=(int32_t) (offs/int64_t(n));
 
 			return i_start;
-		}
-
-		/** helper for computing the kernel matrix in a parallel way
-		 *
-		 * @param p thread parameters
-		 */
-		template <class T>
-		static void* get_kernel_matrix_helper(void* p)
-		{
-			K_THREAD_PARAM<T>* params= (K_THREAD_PARAM<T>*) p;
-			int32_t i_start=params->start;
-			int32_t i_end=params->end;
-			CKernel* k=params->kernel;
-			T* result=params->result;
-			bool symmetric=params->symmetric;
-			int32_t n=params->n;
-			int32_t m=params->m;
-			bool verbose=params->verbose;
-			int64_t total_start=params->total_start;
-			int64_t total_end=params->total_end;
-			int64_t total=total_start;
-
-			for (int32_t i=i_start; i<i_end; i++)
-			{
-				int32_t j_start=0;
-
-				if (symmetric)
-					j_start=i;
-
-				for (int32_t j=j_start; j<n; j++)
-				{
-					float64_t v=k->kernel(i,j);
-					result[i+j*m]=v;
-
-					if (symmetric && i!=j)
-						result[j+i*m]=v;
-
-					if (verbose)
-					{
-						total++;
-
-						if (symmetric && i!=j)
-							total++;
-
-						if (total%100 == 0)
-							k->SG_PROGRESS(total, total_start, total_end);
-
-						if (CSignal::cancel_computations())
-							break;
-					}
-				}
-
-			}
-
-			return NULL;
 		}
 
 		/** Can (optionally) be overridden to post-initialize some member
