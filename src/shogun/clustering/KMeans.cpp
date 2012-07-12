@@ -16,10 +16,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parallel.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 #define MUSRECALC
 
 #define PAR_THRESH  10

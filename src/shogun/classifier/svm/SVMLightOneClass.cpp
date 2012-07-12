@@ -31,10 +31,6 @@ extern "C" {
 
 #include <shogun/base/Parallel.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
 using namespace shogun;
 
 CSVMLightOneClass::CSVMLightOneClass(float64_t C, CKernel* k)
