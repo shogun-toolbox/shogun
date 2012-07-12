@@ -753,6 +753,8 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_JENSENSHANNON)
 		ENUM_CASE(K_DIRECTOR)
 		ENUM_CASE(K_PRODUCT)
+		ENUM_CASE(K_LINEARARD)
+		ENUM_CASE(K_GAUSSIANARD)
 	}
 
 	switch (get_feature_class())

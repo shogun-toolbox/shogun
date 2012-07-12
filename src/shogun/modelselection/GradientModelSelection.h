@@ -101,6 +101,8 @@ private:
 	static double nlopt_function(unsigned n, const double *x, double *grad,
 			void *func_data);
 
+	void test_gradients();
+
 	/*Initialize object*/
 	void init();
 

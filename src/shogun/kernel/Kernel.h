@@ -108,7 +108,9 @@ enum EKernelType
 	K_BESSEL = 460,
 	K_JENSENSHANNON = 470,
 	K_DIRECTOR = 480,
-	K_PRODUCT = 490
+	K_PRODUCT = 490,
+	K_LINEARARD = 500,
+	K_GAUSSIANARD = 510
 };
 
 /** kernel property */
