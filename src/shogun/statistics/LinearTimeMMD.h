@@ -12,7 +12,6 @@
 
 #include <shogun/statistics/KernelTwoSampleTestStatistic.h>
 #include <shogun/kernel/Kernel.h>
-
 #include <shogun/lib/external/libqp.h>
 
 namespace shogun
@@ -32,9 +31,8 @@ class CFeatures;
  * To choose, use
  * CTwoSampleTestStatistic::set_null_approximation_method(MMD1_GAUSSIAN).
  *
- * IMPORTANT: In order to use the gaussian approximation, the p-value has to
- * be computed on other data than the statistic. Otherwise the null-distribution
- * is not normal.
+ * Comes with a method for selecting kernel weights, if a combined kernel on
+ * combined features is used. See optimize_kernel_weights().
  */
 class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
@@ -82,8 +80,7 @@ public:
 	 * The method for computing the p-value can be set via
 	 * set_null_approximation_method().
 	 * Since the null- distribution is normal, a Gaussian approximation
-	 * is available. For Gaussian approximation, training and test data have
-	 * to be DIFFERENT samples from same distribution
+	 * is available.
 	 *
 	 * @param statistic statistic value to compute the p-value for
 	 * @return p-value parameter statistic is the (1-p) percentile of the
@@ -98,8 +95,7 @@ public:
 	 * The method for computing the p-value can be set via
 	 * set_null_approximation_method().
 	 * Since the null- distribution is normal, a Gaussian approximation
-	 * is available. For Gaussian approximation, training and test data have
-	 * to be DIFFERENT samples from same distribution
+	 * is available.
 	 *
 	 * @param alpha test level to reject null-hypothesis
 	 * @return threshold for statistics to reject null-hypothesis
@@ -117,9 +113,47 @@ public:
 
 #ifdef HAVE_LAPACK
 	/** TODO */
+	/** Selects optimal kernel weights (if the underlying kernel and features)
+	 * are combined ones) using the ratio of the squared MMD by its standard
+	 * deviation as a criterion, i.e.
+	 * TODO latex
+	 * This comes down to solving a convex program which is quadratic in the
+	 * number of kernels.
+	 *
+	 * SHOGUN has to be compiled with LAPACK to make this available. See
+	 * set_opt* methods for optimization parameters.
+	 *
+	 * IMPORTANT: Kernel weights have to be learned on different data than is
+	 * used for testing/evaluation!
+	 */
 	virtual void optimize_kernel_weights();
-#endif //HAVE_LAPACK
 
+	/** Sets the max. number of iterations for optimizing kernel weights */
+	void set_opt_max_iterations(index_t opt_max_iterations)
+	{
+		m_opt_max_iterations=opt_max_iterations;
+	}
+
+	/** Sets the stopping criterion epsilon for optimizing kernel weights */
+	void set_opt_epsilon(float64_t opt_epsilon) {
+		m_opt_epsilon=opt_epsilon;
+	}
+
+	/** Sets the low cut for optimizing kernel weights (weight below are set
+	 * to zero */
+	void set_opt_low_cut(float64_t opt_low_cut)
+	{
+		m_opt_low_cut=opt_low_cut;
+	}
+
+	/** Sets regularization constant. This value is added on diagonal of
+	 * matrix for optimizing kernel weights */
+	void set_opt_regularization_eps(float64_t opt_regularization_eps)
+	{
+		m_opt_regularization_eps=opt_regularization_eps;
+	}
+
+#endif //HAVE_LAPACK
 
 	inline virtual const char* get_name() const
 	{
@@ -137,6 +171,7 @@ public:
 	static void print_state(libqp_state_T state);
 
 protected:
+#ifdef HAVE_LAPACK
 	/** maximum number of iterations of qp solver */
 	index_t m_opt_max_iterations;
 
@@ -149,7 +184,6 @@ protected:
 	/** regularization epsilon that is added to diagonal of Q matrix */
 	float64_t m_opt_regularization_eps;
 
-#ifdef HAVE_LAPACK
 	/** matrix for selection of kernel weights (static because of libqp) */
 	static SGMatrix<float64_t> m_Q;
 #endif //HAVE_LAPACK
