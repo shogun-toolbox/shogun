@@ -7,6 +7,7 @@
 # Written (C) 2012 Heiko Strathmann
 #
 from numpy import *
+#from matplotlib import pyplot
 from tools.two_distributions_data import TwoDistributionsData
 
 gen_data=TwoDistributionsData()
@@ -26,8 +27,6 @@ def statistics_linear_time_mmd_kernel_choice():
 
 	# data is standard normal distributed. only one dimension of Y has a mean
 	# shift of difference
-	# in pratice, this generate data function could be replaced by a method
-	# that obtains data from a stream
 	(X,Y)=gen_data.create_mean_data(n,dim,difference)
 	
 	# concatenate since MMD class takes data as one feature object
@@ -50,6 +49,7 @@ def statistics_linear_time_mmd_kernel_choice():
 	# two separate feature objects here, could also be one with appended data
 	features=CombinedFeatures()
 	
+	# all kernels work on same features
 	for i in range(len(sigmas)):
 		kernel.append_kernel(GaussianKernel(10, shogun_sigmas[i]))
 		features.append_feature_obj(RealFeatures(Z))
@@ -57,9 +57,16 @@ def statistics_linear_time_mmd_kernel_choice():
 	mmd=LinearTimeMMD(kernel,features, n)
 	
 	print "start learning kernel weights"
-	#mmd.set_log_level(MSG_DEBUG)
+	mmd.set_opt_regularization_eps(10E-5)
+	mmd.set_opt_low_cut(10E-5)
+	mmd.set_opt_max_iterations(1000)
+	mmd.set_opt_epsilon(10E-7)
 	mmd.optimize_kernel_weights()
-	print "learned weights:", kernel.get_subkernel_weights()
+	weights=kernel.get_subkernel_weights()
+	print "learned weights:", weights
+	#pyplot.plot(array(range(len(sigmas))), weights)
+	#pyplot.show()
+	print "index of max weight", weights.argmax()
 
 if __name__=='__main__':
 	print('LinearTimeMMDKernelChoice')
