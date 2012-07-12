@@ -30,7 +30,7 @@ public:
 	 * @param num_classes number of classes
 	 * @return num_classes-by-num_classes confusion matrix.
 	 */
-	SGMatrix<float64_t> estimate_confusion_matrix(CMulticlassMachine *machine, CDenseFeatures<float64_t> *X, CMulticlassLabels *Y, int32_t num_classes);
+	SGMatrix<float64_t> estimate_confusion_matrix(CMulticlassMachine *machine, CFeatures *X, CMulticlassLabels *Y, int32_t num_classes);
 
 	/**
 	 * Get confusion matrix.

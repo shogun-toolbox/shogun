@@ -13,7 +13,6 @@
 
 using namespace shogun;
 
-// TODO: here we accept a kernel instead of X?
 SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CMulticlassMachine *machine, CFeatures *X, CMulticlassLabels *Y, int32_t num_classes)
 {
 	const int32_t N_splits = 5;
@@ -23,11 +22,45 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CMulticlassMachin
 	SGMatrix<float64_t> conf_mat(num_classes, num_classes), tmp_mat(num_classes, num_classes);
 	conf_mat.zero();
 
+	machine->set_labels(Y);
+	machine->set_store_model_features(true);
+
 	for (int32_t i=0; i < N_splits; ++i)
 	{
+		// subset for training
+		SGVector<index_t> inverse_subset_indices = split->generate_subset_inverse(i);
+		X->add_subset(inverse_subset_indices);
+		Y->add_subset(inverse_subset_indices);
+
+		machine->train(X);
+		X->remove_subset();
+		Y->remove_subset();
+
+		// subset for predicting
+		SGVector<index_t> subset_indices = split->generate_subset_indices(i);
+		X->add_subset(subset_indices);
+		Y->add_subset(subset_indices);
+
+		CMulticlassLabels *pred = machine->apply_multiclass(X);
+
+		get_confusion_matrix(tmp_mat, Y, pred);
+
+		for (index_t j=0; j < tmp_mat.num_rows; ++j)
+			for (index_t k=0; k < tmp_mat.num_cols; ++k)
+				conf_mat(j, k) += tmp_mat(j, k);
+
+		SG_UNREF(pred);
+
+		X->remove_subset();
+		Y->remove_subset();
 	}
 
 	SG_UNREF(split);
+
+	for (index_t j=0; j < tmp_mat.num_rows; ++j)
+		for (index_t k=0; k < tmp_mat.num_cols; ++k)
+			conf_mat(j, k) /= N_splits;
+	return conf_mat;
 }
 
 void RelaxedTreeUtil::get_confusion_matrix(SGMatrix<float64_t> &conf_mat, CMulticlassLabels *gt, CMulticlassLabels *pred)
