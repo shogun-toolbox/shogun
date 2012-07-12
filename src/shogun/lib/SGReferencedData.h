@@ -12,16 +12,12 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
+#include <omp.h>
 
 struct refcount_t 
 {
 	int32_t rc;
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_T lock;
-#endif
+	omp_lock_t lock;
 };
 
 namespace shogun
@@ -36,7 +32,7 @@ class SGReferencedData
 			if (ref_counting)
 			{
 				m_refcount = SG_CALLOC(refcount_t, 1);
-				PTHREAD_LOCK_INIT(&m_refcount->lock);
+				omp_init_lock(&m_refcount->lock);
 			}
 
 			ref();
@@ -80,13 +76,9 @@ class SGReferencedData
 			if (m_refcount == NULL)
 				return -1;
 
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&m_refcount->lock);
-#endif
+			omp_set_lock(&m_refcount->lock);
 			int32_t c = m_refcount->rc;
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
+			omp_unset_lock(&m_refcount->lock);
 
 #ifdef DEBUG_SGVECTOR
 			SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this);
@@ -111,13 +103,9 @@ class SGReferencedData
 				return -1;
 			}
 
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&m_refcount->lock);
-#endif
+			omp_set_lock(&m_refcount->lock);
 			int32_t c = ++(m_refcount->rc);
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
+			omp_unset_lock(&m_refcount->lock);
 #ifdef DEBUG_SGVECTOR
 			SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this);
 #endif
@@ -138,22 +126,16 @@ class SGReferencedData
 				return -1;
 			}
 
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&m_refcount->lock);
-#endif
+			omp_set_lock(&m_refcount->lock);
 			int32_t c = --(m_refcount->rc);
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
+			omp_unset_lock(&m_refcount->lock);
 			if (c<=0)
 			{
 #ifdef DEBUG_SGVECTOR
 				SG_SGCDEBUG("unref() refcount %d data %p destroying\n", c, this);
 #endif
 				free_data();
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK_DESTROY(&m_refcount->lock);
-#endif
+				omp_destroy_lock(&m_refcount->lock);
 				SG_FREE(m_refcount);
 				m_refcount=NULL;
 				return 0;

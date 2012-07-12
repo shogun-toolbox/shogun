@@ -21,9 +21,7 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif //HAVE_PTHREAD
+#include <omp.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -457,10 +455,7 @@ private:
 	bool m_save_post_called;
 
 	int32_t m_refcount;
-
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_T m_ref_lock;
-#endif //HAVE_PTHREAD
+	omp_lock_t m_ref_lock;
 };
 }
 #endif // __SGOBJECT_H__
