@@ -17,9 +17,7 @@
 namespace shogun
 {
 
-template <typename data_t>
-class CTreeMachine
-	: public CBaseMulticlassMachine
+template <class data_t> class CTreeMachine: public CBaseMulticlassMachine
 {
 public:
     /** constructor */
