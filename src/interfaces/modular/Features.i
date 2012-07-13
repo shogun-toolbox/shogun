@@ -297,7 +297,7 @@ namespace shogun
 #endif
 
 #ifdef USE_CHAR
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(CharFeatures, char, char, "c\0")
 	#endif
 
@@ -305,7 +305,7 @@ namespace shogun
 #endif
 
 #ifdef USE_UINT8
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(ByteFeatures, uint8_t, unsigned char, "B\0")
 	#endif
 
@@ -313,7 +313,7 @@ namespace shogun
 #endif
 
 #ifdef USE_UINT16
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(WordFeatures, uint16_t, unsigned short, "H\0")
 	#endif
 
@@ -321,7 +321,7 @@ namespace shogun
 #endif
 
 #ifdef USE_INT16
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(ShortFeatures, int16_t, short, "h\0")
 	#endif
 
@@ -329,7 +329,7 @@ namespace shogun
 #endif
 
 #ifdef USE_INT32
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(IntFeatures, int32_t, int, "i\0")
 	#endif
 
@@ -337,7 +337,7 @@ namespace shogun
 #endif
 
 #ifdef USE_UINT32
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(UIntFeatures, uint32_t, unsigned int, "I\0")
 	#endif
 
@@ -345,7 +345,7 @@ namespace shogun
 #endif
 
 #ifdef USE_INT64
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(LongIntFeatures, int64_t, long, "l\0")
 	#endif
 
@@ -353,7 +353,7 @@ namespace shogun
 #endif
 
 #ifdef USE_UINT64
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(ULongIntFeatures, uint64_t, unsigned long , "L\0")
 	#endif
 
@@ -365,7 +365,7 @@ namespace shogun
 #endif
 
 #ifdef USE_FLOAT32
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(ShortRealFeatures, float64_t, double, "f\0")
 	#endif
 
@@ -373,7 +373,7 @@ namespace shogun
 #endif
 
 #ifdef USE_FLOAT64
-	#ifdef HAVE_PYTHON
+	#ifdef SWIGPYTHON
 	BUFFER_DENSEFEATURES(RealFeatures, float64_t, double, "d\0")
 	#endif
     
