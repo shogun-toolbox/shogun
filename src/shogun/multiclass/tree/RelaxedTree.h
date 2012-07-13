@@ -49,6 +49,30 @@ public:
 		SG_UNREF(m_feats);
 		m_feats = feats;
 	}
+
+	/** set labels
+	 *
+	 * @param lab labels
+	 */
+	virtual void set_labels(CLabels* lab)
+	{
+		CMulticlassLabels *mlab = dynamic_cast<CMulticlassLabels *>(lab);
+		if (lab == NULL)
+			SG_ERROR("requires MulticlassLabes\n");
+
+		CMachine::set_labels(mlab);
+		m_num_classes = mlab->get_num_classes();
+	}
+
+	/** set machine for confusion matrix
+	 * @param machine the multiclass machine for initializing the confusion matrix
+	 */
+	void set_machine_for_confusion_matrix(CMulticlassMachine *machine)
+	{
+		SG_REF(machine);
+		SG_UNREF(m_machine_for_confusion_matrix);
+		m_machine_for_confusion_matrix = machine;
+	}
 protected:
 	/** train machine
 	 *
@@ -59,6 +83,8 @@ protected:
 	virtual bool train_machine(CFeatures* data);
 
 	CDenseFeatures<float64_t> *m_feats;
+	CMulticlassMachine *m_machine_for_confusion_matrix;
+	int32_t m_num_classes;
 };
 
 } /* shogun */ 
