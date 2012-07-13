@@ -284,117 +284,100 @@ namespace shogun
 #endif
 }
 
-/* Buffer protocol stuff for DenseFeatures */
-%define BUFFER_DENSEFEATURES(name, type_name, type)
-
-%wrapper 
-%{
-	static int name ## _getbuffer(PyObject *exporter, Py_buffer *view, int flags)
-	{
-		CDenseFeatures< type > * self = 0;
-		void *argp1 = 0 ;
-		int res1 = 0 ;
-
-		int num_feat = 0, num_vec = 0;
-
-		Py_ssize_t* shape;
-		Py_ssize_t* stride;
-
-		// TODO validate argp1
-		res1 = SWIG_ConvertPtr(exporter, &argp1, SWIGTYPE_p_shogun__CDenseFeaturesT_ ## type ## _t, 0 |  0 );
-		self = reinterpret_cast< CDenseFeatures < type > * >(argp1);
-
-		view->buf = self->get_feature_matrix(num_feat, num_vec);
-
-		shape = new Py_ssize_t[2];
-		shape[0]=num_feat;
-		shape[1]=num_vec;
-
-		stride = new Py_ssize_t[2];
-		stride[0]=sizeof( type );
-		stride[1]=sizeof( type ) * num_feat;
-		
-		view->len = shape[0]*stride[0];
-		view->itemsize = stride[0];
-		view->readonly=0;
-
-		// TODO add formats for more types
-		view->format="d\0";
-		
-		view->ndim = 2;
-		view->shape = shape;
-		view->strides = stride;
-		view->suboffsets = NULL;
-		view->internal = NULL;
-
-		view->obj=(PyObject*) exporter;
-		Py_INCREF(exporter);
-
-		return 0;
-	}
-
-	static void name ## _releasebuffer(PyObject *exporter, Py_buffer *view)
-	{
-		if(view->shape != NULL)
-			delete[] view->shape;
-		
-		if(view->strides != NULL)
-			delete[] view->strides;
-	}
-
-	static long name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFER | Py_TPFLAGS_BASETYPE;
-%}
-
-%init
-%{
-	SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags = name ## _flags;
-%}
-
-%feature("python:bf_getbuffer") CDenseFeatures< type_name > #name "_getbuffer"
-%feature("python:bf_releasebuffer") CDenseFeatures< type_name > #name "_releasebuffer"
-
-%enddef
-
 /* Templated Class DenseFeatures */
 %include <shogun/features/DenseFeatures.h>
 namespace shogun
 {
 #ifdef USE_BOOL
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(BoolFeatures, bool, bool, "?\0")
+	#endif
+
     %template(BoolFeatures) CDenseFeatures<bool>;
 #endif
+
 #ifdef USE_CHAR
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(CharFeatures, char, char, "c\0")
+	#endif
+
     %template(CharFeatures) CDenseFeatures<char>;
 #endif
+
 #ifdef USE_UINT8
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(ByteFeatures, uint8_t, unsigned char, "B\0")
+	#endif
+
     %template(ByteFeatures) CDenseFeatures<uint8_t>;
 #endif
+
 #ifdef USE_UINT16
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(WordFeatures, uint16_t, unsigned short, "H\0")
+	#endif
+
     %template(WordFeatures) CDenseFeatures<uint16_t>;
 #endif
+
 #ifdef USE_INT16
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(ShortFeatures, int16_t, short, "h\0")
+	#endif
+
     %template(ShortFeatures) CDenseFeatures<int16_t>;
 #endif
+
 #ifdef USE_INT32
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(IntFeatures, int32_t, int, "i\0")
+	#endif
+
     %template(IntFeatures)  CDenseFeatures<int32_t>;
 #endif
+
 #ifdef USE_UINT32
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(UIntFeatures, uint32_t, unsigned int, "I\0")
+	#endif
+
     %template(UIntFeatures)  CDenseFeatures<uint32_t>;
 #endif
+
 #ifdef USE_INT64
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(LongIntFeatures, int64_t, long, "l\0")
+	#endif
+
     %template(LongIntFeatures)  CDenseFeatures<int64_t>;
 #endif
+
 #ifdef USE_UINT64
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(ULongIntFeatures, uint64_t, unsigned long , "L\0")
+	#endif
+
     %template(ULongIntFeatures)  CDenseFeatures<uint64_t>;
 #endif
+
 #ifdef USE_FLOATMAX
     %template(LongRealFeatures) CDenseFeatures<floatmax_t>;
 #endif
+
 #ifdef USE_FLOAT32
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(ShortRealFeatures, float64_t, double, "f\0")
+	#endif
+
     %template(ShortRealFeatures) CDenseFeatures<float32_t>;
 #endif
+
 #ifdef USE_FLOAT64
-	BUFFER_DENSEFEATURES(RealFeatures, float64_t, double)
-    %template(RealFeatures) CDenseFeatures<float64_t>;
+	#ifdef HAVE_PYTHON
+	BUFFER_DENSEFEATURES(RealFeatures, float64_t, double, "d\0")
+	#endif
+    
+	%template(RealFeatures) CDenseFeatures<float64_t>;
 #endif
 }
 

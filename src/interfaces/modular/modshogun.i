@@ -44,6 +44,11 @@
 
 %include "modshogun_ignores.i"
 
+/* Include helper functions for python buffer protocol */
+#ifdef HAVE_PYTHON
+%include "buffer_helpers.i"
+#endif
+
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"
 %include "Distance_includes.i"
