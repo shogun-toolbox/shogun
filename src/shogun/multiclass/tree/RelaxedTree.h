@@ -11,6 +11,7 @@
 #ifndef RELAXEDTREE_H__
 #define RELAXEDTREE_H__
 
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
 
@@ -28,16 +29,26 @@ class CRelaxedTree: public CTreeMachine<RelaxedTreeNodeData>
 {
 public:
     /** constructor */
-	CRelaxedTree() {}
+	CRelaxedTree();
 
     /** destructor */
-	virtual ~CRelaxedTree() {}
+	virtual ~CRelaxedTree();
 
     /** get name */
     virtual const char* get_name() const { return "RelaxedTree"; }
 
 	/** apply machine to data in means of multiclass classification problem */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+
+	/** set features
+	 * @param feats features
+	 */
+	void set_features(CDenseFeatures<float64_t> *feats)
+	{
+		SG_REF(feats);
+		SG_UNREF(m_feats);
+		m_feats = feats;
+	}
 protected:
 	/** train machine
 	 *
@@ -47,6 +58,7 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data);
 
+	CDenseFeatures<float64_t> *m_feats;
 };
 
 } /* shogun */ 

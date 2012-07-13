@@ -12,9 +12,25 @@
 
 using namespace shogun;
 
+CRelaxedTree::CRelaxedTree()
+	:m_feats(NULL)
+{
+}
+
+CRelaxedTree::~CRelaxedTree()
+{
+	SG_UNREF(m_feats);
+}
 
 CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 {
+	if (data)
+	{
+		CDenseFeatures<float64_t> feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
+		if (feats == NULL)
+			SG_ERROR("Require non-NULL dense features of float64_t\n");
+		set_features(feats);
+	}
 	return NULL;
 }
 
