@@ -46,7 +46,7 @@
 
 /* Include helper functions for python buffer protocol */
 #ifdef HAVE_PYTHON
-%include "buffer_helpers.i"
+%include "python_buffer_protocol.i"
 #endif
 
 %include "Classifier_includes.i"
