@@ -11,7 +11,7 @@
 #ifndef RELAXEDTREEUTIL_H__
 #define RELAXEDTREEUTIL_H__
 
-#include <shogun/machine/MulticlassMachine.h>
+#include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/SGMatrix.h>
@@ -30,7 +30,7 @@ public:
 	 * @param num_classes number of classes
 	 * @return num_classes-by-num_classes confusion matrix.
 	 */
-	SGMatrix<float64_t> estimate_confusion_matrix(CMulticlassMachine *machine, CFeatures *X, CMulticlassLabels *Y, int32_t num_classes);
+	SGMatrix<float64_t> estimate_confusion_matrix(CBaseMulticlassMachine *machine, CFeatures *X, CMulticlassLabels *Y, int32_t num_classes);
 
 	/**
 	 * Get confusion matrix.
