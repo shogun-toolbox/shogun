@@ -18,14 +18,14 @@
 using namespace shogun;
 
 CLinearARDKernel::CLinearARDKernel()
-: CDotKernel(), m_dimension(1), m_weights(0)
+: CDotKernel()
 {
 	init();
 }
 
 
 CLinearARDKernel::CLinearARDKernel(int32_t size)
-: CDotKernel(size), m_dimension(0), m_weights(0)
+: CDotKernel(size)
 {
 	init();
 }
@@ -33,7 +33,7 @@ CLinearARDKernel::CLinearARDKernel(int32_t size)
 CLinearARDKernel::CLinearARDKernel(CDenseFeatures<float64_t>* l,
 		CDenseFeatures<float64_t>* r,
 		int32_t size)
-: CDotKernel(size), m_weights(0)
+: CDotKernel(size)
 {
 	init();
 	init(l,r);
@@ -41,15 +41,12 @@ CLinearARDKernel::CLinearARDKernel(CDenseFeatures<float64_t>* l,
 
 void CLinearARDKernel::init()
 {
-	m_weights = NULL;
-	m_dimension = 0;
-	m_parameters->add_vector(&m_weights, &m_dimension, "weights");
+	m_weights = SGVector<float64_t>();
+	SG_ADD(&m_weights, "weights", "Feature Weights", MS_AVAILABLE);
 }
 
 CLinearARDKernel::~CLinearARDKernel()
 {
-	SG_FREE(m_weights);
-	m_weights=NULL;
 	CKernel::cleanup();
 }
 
@@ -57,72 +54,64 @@ bool CLinearARDKernel::init(CFeatures* l, CFeatures* r)
 {
 	CDotKernel::init(l, r);
 
+	init_ft_weights();
+
+	return init_normalizer();
+}
+
+void CLinearARDKernel::init_ft_weights()
+{
 	int32_t alen, blen;
 
 	alen = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
 	blen = ((CDenseFeatures<float64_t>*) rhs)->get_num_features();
 
-	ASSERT(alen==blen);
+	REQUIRE(alen==blen, "Number of Right and Left Hand "\
+			"Features Must be the Same./n");
 
-	m_dimension = alen;
+	m_weights = SGVector<float64_t>(alen);
 
-	SG_DEBUG("Initialized LinearARDKernel (%p).\n", this);
+	for (int32_t i=0; i < alen; i++)
+		m_weights[i]=1.0;
 
-	return (init_normalizer() && init_ft_weights());
-}
-
-bool CLinearARDKernel::init_ft_weights()
-{
-	ASSERT(m_dimension>0);
-
-	if (m_weights!=0)
-		SG_FREE(m_weights);
-
-	m_weights=SG_MALLOC(float64_t, m_dimension);
-
-	if (m_weights)
-	{
-		for (index_t i=0; i<m_dimension; i++)
-			m_weights[i]=1.0;
-
-		SG_DEBUG("Initialized weights for LinearARDKernel (%p).\n", this);
-		return true;
-	}
-
-	else
-		return false;
+	SG_DEBUG("Initialized weights for LinearARDKernel (%p).\n", this);
 }
 
 void CLinearARDKernel::set_weight(float64_t w, index_t i)
 {
-	if (i > m_dimension-1)
+	if (i > m_weights.vlen-1)
+	{
 		SG_ERROR("Index %i out of range for LinearARDKernel."\
-				 "Number of features is %i.\n", i, m_dimension);
+				 "Number of features is %i.\n", i, m_weights.vlen);
+	}
+
 	m_weights[i]=w;
 }
 
 float64_t CLinearARDKernel::get_weight(index_t i)
 {
-	if (i > m_dimension-1)
+	if (i > m_weights.vlen-1)
+	{
 		SG_ERROR("Index %i out of range for LinearARDKernel."\
-				 "Number of features is %i.\n", i, m_dimension);
+				 "Number of features is %i.\n", i, m_weights.vlen);
+	}
+
 	return m_weights[i];
 }
 
 float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	int32_t alen, blen;
-	bool afree, bfree;
+	SGVector<float64_t> avec
+		= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
+	SGVector<float64_t> bvec
+		= ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b);
 
-	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->
-			get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
-			get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
+	REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
+			"Features Must be the Same./n");
 
 	float64_t result=0;
 
-	for (index_t i = 0; i < m_dimension; i++)
+	for (index_t i = 0; i < avec.vlen; i++)
 		result += avec[i]*bvec[i]*m_weights[i]*m_weights[i];
 
 	return result;

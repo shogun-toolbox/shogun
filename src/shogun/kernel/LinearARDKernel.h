@@ -17,9 +17,11 @@
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>
 
-namespace shogun {
+namespace shogun
+{
 
-class CLinearARDKernel: public CDotKernel {
+class CLinearARDKernel: public CDotKernel
+{
 
 public:
 	/** default constructor
@@ -108,7 +110,7 @@ public:
 	 *
 	 * @return if initialization was successful
 	 */
-	bool init_ft_weights();
+	void init_ft_weights();
 
 private:
 
@@ -116,11 +118,8 @@ private:
 
 protected:
 
-	/** dimension */
-	index_t m_dimension;
-
 	/** weights */
-	float64_t* m_weights;
+	SGVector<float64_t> m_weights;
 };
 
 } /* namespace shogun */
