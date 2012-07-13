@@ -17,21 +17,6 @@
 
 using namespace shogun;
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
-{
-	CKernelMachine* kernel_machine;
-	float64_t* result;
-	int32_t start;
-	int32_t end;
-
-	/* if non-null, start and end correspond to indices in this vector */
-	index_t* indices;
-	index_t indices_len;
-	bool verbose;
-};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 CKernelMachine::CKernelMachine() : CMachine()
 {
     init();
@@ -330,59 +315,22 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		}
 		else
 		{
-			int32_t num_threads=parallel->get_num_threads();
-			ASSERT(num_threads>0);
-
-			if (num_threads < 2)
+			bool verbose = false;
+#ifdef WIN32
+			for (int32_t vec=0; vec<num_vectors; vec++)
+#else
+			for (int32_t vec=0; vec<num_vectors &&
+					!CSignal::cancel_computations(); vec++)
+#endif
 			{
-				S_THREAD_PARAM params;
-				params.kernel_machine=this;
-				params.result = output.vector;
-				params.start=0;
-				params.end=num_vectors;
-				params.verbose=true;
-				params.indices = NULL;
-				params.indices_len = 0;
-				apply_helper((void*) &params);
-			}
-#ifdef HAVE_PTHREAD
-			else
-			{
-				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
-				int32_t step= num_vectors/num_threads;
-
-				int32_t t;
-
-				for (t=0; t<num_threads-1; t++)
+				if (verbose)
 				{
-					params[t].kernel_machine = this;
-					params[t].result = output.vector;
-					params[t].start = t*step;
-					params[t].end = (t+1)*step;
-					params[t].verbose = false;
-					params[t].indices = NULL;
-					params[t].indices_len = 0;
-					pthread_create(&threads[t], NULL,
-							CKernelMachine::apply_helper, (void*)&params[t]);
+					if ( (vec% (num_vectors/100+1))== 0)
+						SG_SPROGRESS(vec, 0.0, num_vectors-1);
 				}
 
-				params[t].kernel_machine = this;
-				params[t].result = output.vector;
-				params[t].start = t*step;
-				params[t].end = num_vectors;
-				params[t].verbose = true;
-				params[t].indices = NULL;
-				params[t].indices_len = 0;
-				apply_helper((void*) &params[t]);
-
-				for (t=0; t<num_threads-1; t++)
-					pthread_join(threads[t], NULL);
-
-				SG_FREE(params);
-				SG_FREE(threads);
+				output[vec] = apply_one(vec);
 			}
-#endif
 		}
 
 #ifndef WIN32
@@ -416,35 +364,6 @@ float64_t CKernelMachine::apply_one(int32_t num)
 
 		return score+get_bias();
 	}
-}
-
-void* CKernelMachine::apply_helper(void* p)
-{
-	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
-	float64_t* result = params->result;
-	CKernelMachine* kernel_machine = params->kernel_machine;
-
-#ifdef WIN32
-	for (int32_t vec=params->start; vec<params->end; vec++)
-#else
-	for (int32_t vec=params->start; vec<params->end &&
-			!CSignal::cancel_computations(); vec++)
-#endif
-	{
-		if (params->verbose)
-		{
-			int32_t num_vectors=params->end - params->start;
-			int32_t v=vec-params->start;
-			if ( (v% (num_vectors/100+1))== 0)
-				SG_SPROGRESS(v, 0.0, num_vectors-1);
-		}
-
-		/* eventually use index mapping if exists */
-		index_t idx=params->indices ? params->indices[vec] : vec;
-		result[vec] = kernel_machine->apply_one(idx);
-	}
-
-	return NULL;
 }
 
 void CKernelMachine::store_model_features()
@@ -537,6 +456,23 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	int32_t num_inds=indices.vlen;
 	SGVector<float64_t> output(num_inds);
 
+	bool verbose = false;
+#ifdef WIN32
+	for (int32_t vec=0; vec<num_inds; vec++)
+#else
+	for (int32_t vec=0; vec<num_inds &&
+			!CSignal::cancel_computations(); vec++)
+#endif
+	{
+		if (verbose)
+		{
+			if ( (vec% (num_inds/100+1))== 0)
+				SG_SPROGRESS(vec, 0.0, num_inds-1);
+		}
+
+		output[vec] = apply_one(indices[vec]);
+	}
+
 	CSignal::clear_cancel();
 
 	if (io->get_show_progress())
@@ -548,64 +484,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	int32_t num_threads=parallel->get_num_threads();
 	ASSERT(num_threads>0);
 
-	if (num_threads<2)
-	{
-		S_THREAD_PARAM params;
-		params.kernel_machine=this;
-		params.result=output.vector;
 
-		/* use the parameter index vector */
-		params.start=0;
-		params.end=num_inds;
-		params.indices=indices.vector;
-		params.indices_len=indices.vlen;
-
-		params.verbose=true;
-		apply_helper((void*) &params);
-	}
-#ifdef HAVE_PTHREAD
-	else
-	{
-		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		S_THREAD_PARAM* params=SG_MALLOC(S_THREAD_PARAM, num_threads);
-		int32_t step= num_inds/num_threads;
-
-		int32_t t;
-		for (t=0; t<num_threads-1; t++)
-		{
-			params[t].kernel_machine=this;
-			params[t].result=output.vector;
-
-			/* use the parameter index vector */
-			params[t].start=t*step;
-			params[t].end=(t+1)*step;
-			params[t].indices=indices.vector;
-			params[t].indices_len=indices.vlen;
-
-			params[t].verbose=false;
-			pthread_create(&threads[t], NULL, CKernelMachine::apply_helper,
-					(void*)&params[t]);
-		}
-
-		params[t].kernel_machine=this;
-		params[t].result=output.vector;
-
-		/* use the parameter index vector */
-		params[t].start=t*step;
-		params[t].end=num_inds;
-		params[t].indices=indices.vector;
-		params[t].indices_len=indices.vlen;
-
-		params[t].verbose=true;
-		apply_helper((void*) &params[t]);
-
-		for (t=0; t<num_threads-1; t++)
-			pthread_join(threads[t], NULL);
-
-		SG_FREE(params);
-		SG_FREE(threads);
-	}
-#endif
 
 #ifndef WIN32
 	if ( CSignal::cancel_computations() )
