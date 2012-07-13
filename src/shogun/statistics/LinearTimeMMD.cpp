@@ -55,6 +55,7 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 void CLinearTimeMMD::init()
 {
+#ifdef HAVE_LAPACK
 	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
 			"iterations for qp solver", MS_NOT_AVAILABLE);
 	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
@@ -68,6 +69,7 @@ void CLinearTimeMMD::init()
 	m_opt_epsilon=10E-15;
 	m_opt_low_cut=10E-7;
 	m_opt_regularization_eps=0;
+#endif //HAVE_LAPACK
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
