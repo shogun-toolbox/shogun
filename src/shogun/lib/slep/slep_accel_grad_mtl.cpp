@@ -8,6 +8,7 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/slep/slep_accel_grad_mtl.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/io/SGIO.h>
@@ -16,6 +17,7 @@
 
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
 void compute_QP(double* Wp, double& P, double& sval,
 		double* W1, double* delta_W, CDotFeatures* features,
 		double* Y, double* W, int n_vecs, int n_feats, int* ind, int n_tasks, 
@@ -73,6 +75,7 @@ void compute_QP(double* Wp, double& P, double& sval,
 			P += delta_W[t*n_feats+i]*(W[t*n_feats+i]-Wp[t*n_feats+i]);
 	}
 }
+#endif
 
 namespace shogun
 {
@@ -83,6 +86,7 @@ SGMatrix<double> slep_accel_grad_mtl(
 		double lambda,
 		const slep_options& options)
 {
+#ifdef HAVE_LAPACK
 	SG_SWARNING("SLEP trace norm regularized MTL is not fully tested yet.\n");
 	int i,t;
 	int n_feats = features->get_dim_feature_space();
@@ -164,5 +168,8 @@ SGMatrix<double> slep_accel_grad_mtl(
 	SG_FREE(Z_old);
 
 	return SGMatrix<float64_t>(Wp,n_feats,n_tasks);
+#else //HAVE_LAPACK
+	SG_SERROR("Lapack not enabled at compile time - slep_accel_grad_mtl() not available\n");
+#endif //HAVE_LAPACK
 };
 };

@@ -176,14 +176,15 @@ private:
 	void init();
 
 public:
+#ifdef HAVE_LAPACK
 	/** return pointer to i-th column of m_Q. Helper for libqp */
 	static const float64_t* get_Q_col(uint32_t i);
 
 	/** helper functions that prints current state */
 	static void print_state(libqp_state_T state);
+#endif //HAVE_LAPACK
 
 protected:
-#ifdef HAVE_LAPACK
 	/** maximum number of iterations of qp solver */
 	index_t m_opt_max_iterations;
 
@@ -198,7 +199,6 @@ protected:
 
 	/** matrix for selection of kernel weights (static because of libqp) */
 	static SGMatrix<float64_t> m_Q;
-#endif //HAVE_LAPACK
 };
 
 }
