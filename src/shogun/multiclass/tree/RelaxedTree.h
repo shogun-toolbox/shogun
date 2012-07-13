@@ -11,6 +11,9 @@
 #ifndef RELAXEDTREE_H__
 #define RELAXEDTREE_H__
 
+#include <utility>
+#include <vector>
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
@@ -73,6 +76,8 @@ public:
 		SG_UNREF(m_machine_for_confusion_matrix);
 		m_machine_for_confusion_matrix = machine;
 	}
+
+	typedef std::pair<std::pair<int32_t, int32_t>, float64_t> entry_t;
 protected:
 	/** train machine
 	 *
@@ -81,6 +86,9 @@ protected:
 	 * @return whether training was successful
 	 */
 	virtual bool train_machine(CFeatures* data);
+
+	void train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
+	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
 
 	CDenseFeatures<float64_t> *m_feats;
 	CBaseMulticlassMachine *m_machine_for_confusion_matrix;

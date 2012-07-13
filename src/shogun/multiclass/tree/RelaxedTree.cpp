@@ -8,6 +8,9 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
+#include <limits>
+#include <algorithm>
+
 #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 
@@ -50,4 +53,43 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 			m_feats, lab, m_num_classes);
 
 	return false;
+}
+
+void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
+{
+
+}
+
+struct EntryComparator
+{
+	bool operator() (const CRelaxedTree::entry_t& e1, const CRelaxedTree::entry_t& e2)
+	{
+		return e1.second < e2.second;
+	}
+};
+std::vector<CRelaxedTree::entry_t> CRelaxedTree::init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes)
+{
+	// local confusion matrix
+	SGMatrix<float64_t> conf_mat(classes.vlen, classes.vlen);
+	for (index_t i=0; i < conf_mat.num_rows; ++i)
+		for (index_t j=0; j < conf_mat.num_cols; ++j)
+			conf_mat(i, j) = global_conf_mat(classes[i], classes[j]);
+
+	// make conf matrix symmetry
+	for (index_t i=0; i < conf_mat.num_rows; ++i)
+		for (index_t j=0; j < conf_mat.num_cols; ++j)
+			conf_mat(i,j) += conf_mat(j,i);
+
+	int32_t num_entries = classes.vlen*(classes.vlen-1)/2;
+	std::vector<CRelaxedTree::entry_t> entries;
+	for (index_t i=0; i < classes.vlen; ++i)
+		for (index_t j=i+1; j < classes.vlen; ++j)
+			entries.push_back(std::make_pair(std::make_pair(i, j), conf_mat(i,j)));
+
+	std::sort(entries.begin(), entries.end(), EntryComparator());
+
+	const size_t max_n_samples = 30;
+	int32_t n_samples = std::min(max_n_samples, entries.size());
+
+	return std::vector<CRelaxedTree::entry_t>(entries.begin(), entries.begin() + n_samples);
 }

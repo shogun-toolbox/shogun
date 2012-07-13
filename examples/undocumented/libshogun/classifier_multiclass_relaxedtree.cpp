@@ -8,6 +8,7 @@
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/base/init.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
+#include <shogun/multiclass/MulticlassLibLinear.h>
 
 #define  EPSILON  1e-5
 
@@ -56,13 +57,15 @@ int main(int argc, char** argv)
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 	SG_REF(features);
 
-	SG_SPRINT("Performing ShareBoost on a %d-class problem\n", labels->get_num_classes());
-
 	// Create RelaxedTree Machine
 	CRelaxedTree *machine = new CRelaxedTree();
 	SG_REF(machine);
 	machine->set_labels(labels);
 
+	CMulticlassLibLinear *svm = new CMulticlassLibLinear();
+	SG_REF(svm);
+
+	machine->set_machine_for_confusion_matrix(svm);
 	machine->train(features);
 
 	/*
@@ -76,6 +79,7 @@ int main(int argc, char** argv)
 
 	// Free resources
 	SG_UNREF(machine);
+	SG_UNREF(svm);
 	SG_UNREF(output);
 	SG_UNREF(subset_fea);
 	SG_UNREF(features);
