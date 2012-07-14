@@ -38,6 +38,12 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		 */
 		CMatrixFeatures(int32_t num_vec, int32_t num_feat);
 
+		/** constructor
+		 *
+		 * @param features list of feature matrices
+		 */
+		CMatrixFeatures(SGMatrix< ST >* feats, int32_t num);
+
 		/** duplicate feature object
 		 *
 		 * @return feature object

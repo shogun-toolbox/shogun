@@ -28,6 +28,15 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 	m_features = SG_MALLOC(SGMatrix< ST >, num_vec);
 }
 
+template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
+		SGMatrix< ST >* feats,
+		int32_t num)
+: CFeatures(0)
+{
+	init();
+	set_features(feats, num);
+}
+
 /* TODO */
 template< class ST > CFeatures* CMatrixFeatures< ST >::duplicate() const
 {
@@ -80,8 +89,9 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 			 "0 and %d (get_num_vectors()-1)\n", get_num_vectors()-1);
 	}
 
-	// Shorthand for the number of columns of the feature vector to get
+	// Shorthands for the dimensions of the feature vector to get
 	int32_t num_cols = m_features[num].num_cols;
+	int32_t num_rows = m_features[num].num_rows;
 
 	if ( col < 0 || col >= num_cols )
 	{
@@ -95,10 +105,11 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 			 "%d (get_num_features()) elements\n", get_num_features());
 	}
 
-
-	int32_t start = col*num_cols;
+	int32_t start = col*num_rows;
 	for ( int32_t i = 0 ; i < get_num_features(); ++i )
+	{
 		out[i] = m_features[num][start + i];
+	}
 }
 
 template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
@@ -179,10 +190,9 @@ template< class ST > void CMatrixFeatures< ST >::cleanup_feature_vectors(
 
 		for ( int32_t i = start ; i <= stop ; ++i )
 		{
-			SG_FREE(m_features[i].matrix);
-			m_features[i].matrix   = NULL;
-			m_features[i].num_rows = 0;
-			m_features[i].num_cols = 0;
+			// Explicit call to the destructor in case
+			// an in-place constructor was used
+			m_features[i].~SGMatrix();
 		}
 	}
 }
