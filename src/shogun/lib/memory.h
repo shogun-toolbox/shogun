@@ -60,6 +60,9 @@ namespace shogun
 class MemoryBlock
 {
 	public:
+		/** default constructor
+		 */
+		MemoryBlock();
 		/** constructor
 		 * @param p p
 		 */

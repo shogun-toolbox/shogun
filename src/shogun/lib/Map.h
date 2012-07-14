@@ -363,6 +363,9 @@ private:
 			else
 				new_node=(CMapNode<K, T>*) calloc(1, sizeof(CMapNode<K, T>));
 
+			new (&new_node->key) K();
+			new (&new_node->data) T();
+	
 			array->append_element(new_node);
 
 			new_index=free_index;
