@@ -15,7 +15,7 @@
 		Py_ssize_t* shape;
 		Py_ssize_t* stride;
 
-		static char* format = format_str;
+		static char* format = (char *) format_str;
 
 		res1 = SWIG_ConvertPtr(exporter, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type>"), 0 |  0 );
 		if (!SWIG_IsOK(res1)) 
@@ -38,8 +38,6 @@
 		view->len = shape[0]*stride[0];
 		view->itemsize = stride[0];
 		view->readonly = 0;
-
-		/* TODO fix warnings related to const char* -> char* */
 		view->format = format;		
 		view->ndim = 2;
 		view->shape = shape;

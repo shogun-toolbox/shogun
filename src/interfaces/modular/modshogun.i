@@ -28,6 +28,9 @@
     static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
 %}
 
+/* Include helper functions for python buffer protocol */
+%include "python_buffer_protocol.i"
+
 %feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
 %feature("python:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
 /*%feature("python:slot", "tp_hash", functype="hashfunc") shogun::CSGObject::myHashFunc;*/
@@ -43,11 +46,6 @@
 #endif
 
 %include "modshogun_ignores.i"
-
-/* Include helper functions for python buffer protocol */
-#ifdef HAVE_PYTHON
-%include "python_buffer_protocol.i"
-#endif
 
 %include "Classifier_includes.i"
 %include "Clustering_includes.i"
