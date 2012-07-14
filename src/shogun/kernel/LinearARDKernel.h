@@ -112,6 +112,9 @@ public:
 	 */
 	void init_ft_weights();
 
+	SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+			CSGObject* obj, index_t index);
+
 private:
 
 	void init();

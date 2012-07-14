@@ -57,10 +57,12 @@ public:
 	SGVector<float64_t> quantity;
 
 	/*Function Gradient*/
-	CMap<TParameter*, float64_t> gradient;
+	CMap<TParameter*, SGVector<float64_t> > gradient;
 
 	/*Which objects do the gradient parameters belong to?*/
 	CMap<TParameter*, CSGObject*>  parameter_dictionary;
+
+	index_t total_variables;
 
 	/** Returns the function value
 	 * and gradient contained in the object.
@@ -69,17 +71,22 @@ public:
 	{
 		SG_SPRINT("Quantity: [");
 
-		for (int i = 0; i < quantity.vlen; i++)
+		for (index_t i = 0; i < quantity.vlen; i++)
 			SG_SPRINT("%f, ", quantity[i]);
 
 		SG_SPRINT("] ");
 
 		SG_SPRINT("Gradient: [");
 
-		for (int i = 0; i < gradient.get_num_elements(); i++)
-			SG_SPRINT("%f, ", *(gradient.get_element_ptr(i)));
-
+		for (index_t i = 0; i < gradient.get_num_elements(); i++)
+		{
+			char* name = gradient.get_node_ptr(i)->key->m_name;
+			for (index_t j = 0; j < gradient.get_element_ptr(i)->vlen; j++)
+				SG_SPRINT("%s: %f, ", (*gradient.get_element_ptr(i))[j], name);
+		}
 		SG_SPRINT("]\n");
+
+		SG_SPRINT("Total Variables: %i\n", total_variables);
 
 	}
 };
