@@ -771,14 +771,14 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 %}
 
 /* Buffer protocol stuff for DenseFeatures */
-%define BUFFER_DENSEFEATURES(class_name, type_name, type, format_str)
+%define BUFFER_DENSEFEATURES(class_name, type_name, format_str)
 
 %wrapper 
 %{
 
 static int class_name ## _getbuffer(PyObject *exporter, Py_buffer *view, int flags)
 {
-	CDenseFeatures< type > * self = (CDenseFeatures< type > *) 0;
+	CDenseFeatures< type_name > * self = (CDenseFeatures< type_name > *) 0;
 	void *argp1 = 0 ;
 	int res1 = 0 ;
 
@@ -788,13 +788,13 @@ static int class_name ## _getbuffer(PyObject *exporter, Py_buffer *view, int fla
 
 	static char* format = (char *) format_str;
 
-	res1 = SWIG_ConvertPtr(exporter, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(exporter, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1)) 
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" " class_name _getbuffer" "', argument " "1"" of type '" "CDenseFeatures< type > *""'"); 
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" " class_name _getbuffer" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'"); 
 	}
 
-	self = reinterpret_cast< CDenseFeatures < type > * >(argp1);
+	self = reinterpret_cast< CDenseFeatures < type_name > * >(argp1);
 
 	view->buf = self->get_feature_matrix(num_feat, num_vec);
 
@@ -803,8 +803,8 @@ static int class_name ## _getbuffer(PyObject *exporter, Py_buffer *view, int fla
 	shape[1] = num_vec;
 
 	stride = new Py_ssize_t[2];
-	stride[0] = sizeof( type );
-	stride[1] = sizeof( type ) * num_feat;
+	stride[0] = sizeof( type_name );
+	stride[1] = sizeof( type_name ) * num_feat;
 		
 	view->len = shape[0]*stride[0];
 	view->itemsize = stride[0];
