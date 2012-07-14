@@ -14,15 +14,18 @@ def features_dense_real_modular(in_data=data):
 
 	f_real=RealFeatures(m_real)
 	f_long=LongIntFeatures(m_long)
-
-	mem_real=memoryview(f_real)
-	mem_long=memoryview(f_long)
+	try:
+		mem_real=memoryview(f_real)
+		mem_long=memoryview(f_long)
+	except NameError:
+#		print "Python2.7 is needed for memoryview class"
+		pass
 
 	ret_real=array(f_real)
 	ret_long=array(f_long)
 
-	print ret_real
-	print ret_long
+#	print ret_real
+#	print ret_long
 
 if __name__=='__main__':
 	print('dense_real')
