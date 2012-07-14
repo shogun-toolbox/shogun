@@ -74,10 +74,13 @@ void CGaussianARDKernel::init_ft_weights()
 	REQUIRE(alen==blen, "Number of Right and Left Hand "\
 			"Features Must be the Same./n");
 
-	m_weights = SGVector<float64_t>(alen);
+	if (m_weights.vlen != alen)
+	{
+		m_weights = SGVector<float64_t>(alen);
 
-	for (int32_t i=0; i < alen; i++)
-		m_weights[i]=1.0;
+		for (int32_t i=0; i < alen; i++)
+			m_weights[i]=1.0;
+	}
 
 	SG_DEBUG("Initialized weights for LinearARDKernel (%p).\n", this);
 }
@@ -121,3 +124,71 @@ float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	return CMath::exp(-result/m_width);
 }
+
+SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param,
+		CSGObject* obj, index_t index)
+{
+
+	SGMatrix<float64_t> result();
+
+	if(!strcmp(param->m_name, "weights") && obj == this)
+	{
+		SGMatrix<float64_t> derivative = get_kernel_matrix();
+
+		for (int j = 0; j < num_lhs; j++)
+		{
+			for (int k = 0; k < num_rhs; k++)
+			{
+				SGVector<float64_t> avec
+					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
+				SGVector<float64_t> bvec
+					= ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
+
+				REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
+						"Features Must be the Same./n");
+
+				float64_t element = compute(j,k);
+				float64_t product =
+						CMath::pow((avec[index]-bvec[index]), 2)
+						*(m_weights[index]/m_width);
+
+				derivative(j,k) = -element*product;
+			}
+		}
+
+		return derivative;
+	}
+
+	else if (!strcmp(param->m_name, "width") && obj == this)
+	{
+		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
+
+		for (int j = 0; j < num_lhs; j++)
+		{
+			for (int k = 0; k < num_rhs; k++)
+			{
+				SGVector<float64_t> avec
+					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
+				SGVector<float64_t> bvec
+					= ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
+
+				REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
+						"Features Must be the Same./n");
+
+				float64_t result=0;
+
+				for (index_t i = 0; i < avec.vlen; i++)
+					result += CMath::pow((avec[i]-bvec[i])*m_weights[i], 2);
+
+				derivative(j,k) = -CMath::exp(-result/m_width)*result/(m_width*m_width);
+			}
+		}
+	}
+
+
+	else
+	{
+		return SGMatrix<float64_t>();
+	}
+}
+

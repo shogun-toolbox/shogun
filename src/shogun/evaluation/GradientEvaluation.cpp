@@ -51,6 +51,17 @@ CEvaluationResult* CGradientEvaluation::evaluate()
 
 	result->quantity = quan.clone();
 
+	result->total_variables = 0;
+
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
+	{
+		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
+				result->gradient.get_node_ptr(i);
+
+		result->total_variables += node->data.vlen;
+	}
+
+
 	SG_REF(result);
 	return result;
 }
