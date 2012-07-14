@@ -28,9 +28,6 @@
     static int print_sgobject(PyObject *pyobj, FILE *f, int flags);
 %}
 
-/* Include helper functions for python buffer protocol */
-%include "python_buffer_protocol.i"
-
 %feature("python:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
 %feature("python:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
 /*%feature("python:slot", "tp_hash", functype="hashfunc") shogun::CSGObject::myHashFunc;*/
