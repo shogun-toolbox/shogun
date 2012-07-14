@@ -132,7 +132,7 @@ void CExactInferenceMethod::check_members()
 	}
 }
 
-CMap<TParameter*, float64_t> CExactInferenceMethod::
+CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 	get_marginal_likelihood_derivatives(CMap<TParameter*,
 			CSGObject*>& para_dict)
 {
@@ -140,12 +140,6 @@ CMap<TParameter*, float64_t> CExactInferenceMethod::
 
 	if(update_parameter_hash())
 		update_all();
-
-	//This will be the vector we return
-	CMap<TParameter*, float64_t> gradient(
-			3+m_mean->m_parameters->get_num_parameters(),
-			3+m_mean->m_parameters->get_num_parameters());
-
 
 	//Get the sigma variable from the likelihood model
 	float64_t m_sigma =
@@ -201,6 +195,10 @@ CMap<TParameter*, float64_t> CExactInferenceMethod::
 	m_kernel->build_parameter_dictionary(para_dict);
 	m_mean->build_parameter_dictionary(para_dict);
 
+	//This will be the vector we return
+	CMap<TParameter*, SGVector<float64_t> > gradient(
+			3+para_dict.get_num_elements(),
+			3+para_dict.get_num_elements());
 
 	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
 	{
@@ -216,6 +214,10 @@ CMap<TParameter*, float64_t> CExactInferenceMethod::
 				param->m_datatype.m_ctype == CT_SGVECTOR) &&
 				param->m_datatype.m_length_y != NULL)
 			length = *(param->m_datatype.m_length_y);
+
+		SGVector<float64_t> variables(length);
+
+		bool deriv_found = false;
 
 		for (index_t g = 0; g < length; g++)
 		{
@@ -251,16 +253,24 @@ CMap<TParameter*, float64_t> CExactInferenceMethod::
 				}
 
 				sum /= 2.0;
-				gradient.add(param, sum);
+				variables[g] = sum;
+				deriv_found = true;
 			}
 
 			else if (mean_derivatives.vlen > 0)
 			{
 				sum = mean_derivatives.dot(mean_derivatives.vector,
 						m_alpha.vector, m_alpha.vlen);
-				gradient.add(param, sum);
+				variables[g] = sum;
+				deriv_found = true;
 			}
+
+
 		}
+
+		if (deriv_found)
+			gradient.add(param, variables);
+
 	}
 
 	TParameter* param;
@@ -277,7 +287,11 @@ CMap<TParameter*, float64_t> CExactInferenceMethod::
 
 	sum /= 2.0;
 
-	gradient.add(param, sum);
+	SGVector<float64_t> scale(1);
+
+	scale[0] = sum;
+
+	gradient.add(param, scale);
 	para_dict.add(param, this);
 
 	index = m_model->get_modsel_param_index("sigma");
@@ -285,7 +299,10 @@ CMap<TParameter*, float64_t> CExactInferenceMethod::
 
 	sum = m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
 	
-	gradient.add(param, sum);
+	SGVector<float64_t> sigma(1);
+
+	sigma[0] = sum;
+	gradient.add(param, sigma);
 	para_dict.add(param, m_model);
 
 	return gradient;
