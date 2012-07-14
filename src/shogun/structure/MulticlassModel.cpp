@@ -18,11 +18,13 @@ using namespace shogun;
 CMulticlassModel::CMulticlassModel()
 : CStructuredModel()
 {
+	init();
 }
 
 CMulticlassModel::CMulticlassModel(CFeatures* features, CStructuredLabels* labels)
 : CStructuredModel(features, labels)
 {
+	init();
 }
 
 CMulticlassModel::~CMulticlassModel()
@@ -54,22 +56,33 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 	return psi;
 }
 
-CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
+CResultSet* CMulticlassModel::argmax(
+		SGVector< float64_t > w,
+		int32_t feat_idx,
+		bool const training)
 {
 	CDotFeatures* df = (CDotFeatures*) m_features;
-	CMulticlassSOLabels* ml = (CMulticlassSOLabels*) m_labels;
-
 	int32_t feats_dim   = df->get_dim_feature_space();
-	int32_t num_classes = ml->get_num_classes();
 
-	ASSERT(feats_dim*num_classes == w.vlen);
+	if ( training )
+	{
+		CMulticlassSOLabels* ml = (CMulticlassSOLabels*) m_labels;
+		m_num_classes = ml->get_num_classes();
+	}
+	else
+	{
+		REQUIRE(m_num_classes > 0, "The model needs to be trained before "
+			"using it for prediction\n");
+	}
+
+	ASSERT(feats_dim*m_num_classes == w.vlen);
 
 	// Find the class that gives the maximum score
 
 	float64_t score = 0, ypred = 0;
 	float64_t max_score = df->dense_dot(feat_idx, w.vector, feats_dim);
 	
-	for ( int32_t c = 1 ; c < num_classes ; ++c )
+	for ( int32_t c = 1 ; c < m_num_classes ; ++c )
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
 
@@ -86,11 +99,14 @@ CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 	SG_REF(ret);
 	SG_REF(y);
 
-	ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
-	ret->psi_pred  = get_joint_feature_vector(feat_idx, y);
-	ret->score     = max_score;
-	ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
-	ret->argmax    = y;
+	ret->psi_pred = get_joint_feature_vector(feat_idx, y);
+	ret->score    = max_score;
+	ret->argmax   = y;
+	if ( training )
+	{
+		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
+		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
+	}
 
 	return ret;
 }
@@ -113,4 +129,12 @@ void CMulticlassModel::init_opt(
 		SGMatrix< float64_t > & C)
 {
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1);
+}
+
+void CMulticlassModel::init()
+{
+	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes",
+			MS_NOT_AVAILABLE);
+
+	m_num_classes = 0;
 }

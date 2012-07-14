@@ -643,7 +643,7 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 				C(i,j) += A(i,k)*B(k,j);
 		}
 	}
-#endif
+#endif //HAVE_LAPACK
 
 	return C;
 }
@@ -678,6 +678,31 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 	return result;
 }
 
+template <class T>
+SGMatrix<T>* SGMatrix<T>::split(int32_t num_components)
+{
+	REQUIRE((num_cols % num_components) == 0,
+		"The number of columns (%d) must be multiple of the number "
+		"of components (%d).\n",
+		num_cols, num_components);
+
+	int32_t new_num_cols = num_cols / num_components;
+	SGMatrix<T>* out = SG_MALLOC(SGMatrix<T>, num_components);
+
+	for ( int32_t i = 0 ; i < num_components ; ++i )
+	{
+		new (&out[i]) SGMatrix<T>(num_rows, new_num_cols);
+
+		for ( int32_t row = 0 ; row < num_rows ; ++row )
+			for ( int32_t col = 0 ; col < new_num_cols ; ++col )
+			{
+				out[i][row*new_num_cols + col] =
+					matrix[i*new_num_cols + row*num_cols + col];
+			}
+	}
+
+	return out;
+}
 
 template class SGMatrix<bool>;
 template class SGMatrix<char>;

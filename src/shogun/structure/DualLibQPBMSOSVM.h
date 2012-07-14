@@ -14,6 +14,7 @@
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/structure/RiskFunction.h>
 #include <shogun/structure/libbmrm.h>
+#include <shogun/features/DotFeatures.h>
 
 namespace shogun
 {

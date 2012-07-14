@@ -36,9 +36,3 @@ void CHMSVMLabels::init()
 {
 	SG_ADD(&m_num_states, "m_num_states", "Number of states", MS_NOT_AVAILABLE);
 }
-
-/** TODO */
-SGVector< float64_t > CHMSVMLabels::to_double_vector() const
-{
-	return SGVector< float64_t >();
-}

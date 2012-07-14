@@ -299,6 +299,17 @@ template<class T> class SGMatrix : public SGReferencedData
 		static SGMatrix<T> get_allocated_matrix(index_t num_rows,
 				index_t num_cols, SGMatrix<T> pre_allocated=SGMatrix<T>());
 
+		/**
+		 * divide the matrix into a list of matrices. Each of the new
+		 * matrices has the same number of rows as the original so the
+		 * splits to the original matrix are done column-wise.
+		 *
+		 * @param num_components number of new matrices
+		 *
+		 * @return list of matrices
+		 */
+		SGMatrix<T>* split(int32_t num_components);
+
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig)

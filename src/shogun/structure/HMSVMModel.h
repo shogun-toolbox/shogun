@@ -60,10 +60,14 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @param w weight vector
 		 * @param feat_idx index of the feature to compute the argmax
+		 * @param training true if argmax is called during training.
+		 * Then, it is assumed that the label indexed by feat_idx in
+		 * m_labels corresponds to the true label of the corresponding
+		 * feature vector.
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx);
+		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -99,7 +103,7 @@ class CHMSVMModel : public CStructuredModel
 		/**
 		 * TODO DOC
 		 */
-		static CHMSVMModel* simulate_two_state_model();
+		static CHMSVMModel* simulate_two_state_data();
 
 	private:
 		/* internal initialization */
@@ -135,11 +139,15 @@ class CHMSVMModel : public CStructuredModel
 		void add_emission(float64_t* psi_em, float64_t* x_i, CSequence* y, int32_t i, int32_t D) const;
 
 	private:
-		/* distribution of start states*/
-		SGVector< float64_t > m_p;
+		/** distribution of start states*/
+		SGVector< int32_t > m_p;
 
-		/* distribution of end states */
-		SGVector< float64_t > m_q;
+		/** distribution of end states */
+		SGVector< int32_t > m_q;
+
+		/** the number of states */
+		int32_t m_num_states;
+
 
 }; /* class CHMSVMModel */
 

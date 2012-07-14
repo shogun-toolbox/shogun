@@ -16,6 +16,8 @@
  #include <shogun/structure/StructuredModel.h>
  #include <shogun/structure/MulticlassModel.h>
  #include <shogun/structure/MulticlassSOLabels.h>
+ #include <shogun/structure/HMSVMModel.h>
+ #include <shogun/structure/HMSVMLabels.h>
 
  #include <shogun/structure/libbmrm.h>
  #include <shogun/structure/libppbm.h>

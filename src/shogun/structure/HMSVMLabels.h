@@ -33,6 +33,9 @@ struct CSequence : public CStructuredData
 	 */
 	CSequence(SGVector< int32_t > seq) : CStructuredData(), data(seq) { }
 
+	/** destructor */
+	~CSequence() { }
+
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param base_data its dynamic type must be CSequence
@@ -92,22 +95,7 @@ class CHMSVMLabels : public CStructuredLabels
 		 *
 		 * @return the number of states
 		 */
-		int32_t get_num_states() const { return m_num_states; };
-
-		/**
-		 * TODO doc
-		 */
-		SGVector< float64_t > to_double_vector() const;
-
-		/**
-		 * TODO doc
-		 */
-		int32_t get_element(int32_t idx) const { return 0; }
-
-		/**
-		 * TODO doc
-		 */
-		void set_element(int32_t idx, int32_t val) { return; }
+		inline int32_t get_num_states() const { return m_num_states; };
 
 	private:
 		/** internal initialization */

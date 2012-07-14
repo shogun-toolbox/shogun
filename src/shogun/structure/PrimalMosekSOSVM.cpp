@@ -26,7 +26,7 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 		CStructuredModel*  model,
 		CLossFunction*     loss,
 		CStructuredLabels* labs,
-		CDotFeatures*      features)
+		CFeatures*      features)
 : CLinearStructuredOutputMachine(model, loss, labs, features)
 {
 }
@@ -90,7 +90,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	SG_REF(results);
 	for ( int32_t i = 0 ; i < N ; ++i )
 	{
-		results->push_back( new CList(true) );
+		CList* list = new CList(true);
+		results->push_back(list);
 	}
 
 	// Initialize variables used in the loop
@@ -132,6 +133,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 					max_slack = CMath::max(max_slack,
 							m_loss->loss( compute_loss_arg(cur_res) ));
 
+					SG_UNREF(cur_res);
 					cur_res = (CResultSet*) cur_list->get_next_element();
 				}
 
@@ -162,6 +164,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 				++numcon;
 			}
 
+			SG_UNREF(cur_list);
 			SG_UNREF(result);
 		}
 

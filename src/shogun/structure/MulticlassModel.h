@@ -58,10 +58,14 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @param w weight vector
 		 * @param feat_idx index of the feature to compute the argmax
+		 * @param training true if argmax is called during training.
+		 * Then, it is assumed that the label indexed by feat_idx in
+		 * m_labels corresponds to the true label of the corresponding
+		 * feature vector.
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx);
+		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -90,6 +94,13 @@ class CMulticlassModel : public CStructuredModel
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "MulticlassModel"; }
+
+	private:
+		void init();
+
+	private:
+		/** number of classes */
+		int32_t m_num_classes;
 
 }; /* MulticlassModel */
 

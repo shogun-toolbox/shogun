@@ -59,7 +59,6 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 	SGVector< float64_t > psi( S*(S+D) );
 	psi.zero();
 
-	// TODO(just to prove correctness - to be removed when checked)
 	ASSERT( psi.vlen == get_dim() );
 
 	SGVector< float64_t > x_i(D);
@@ -106,22 +105,49 @@ void CHMSVMModel::add_emission(
 		psi_em[start++] += x_i[j];
 }
 
-CResultSet* CHMSVMModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
+CResultSet* CHMSVMModel::argmax(
+		SGVector< float64_t > w,
+		int32_t feat_idx,
+		bool const training)
 {
-	// Shorthand for the number of states
-	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
 	// Shorthand for the number of features of the feature vector
-	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	int32_t D = mf->get_num_features();
+
+	// Shorthand for the number of states
+	int32_t S;
+	if ( training )
+	{
+		S = ((CHMSVMLabels*) m_labels)->get_num_states();
+		m_num_states = S;
+	}
+	else
+	{
+		REQUIRE(m_num_states > 0, "The model needs to be trained before "
+			"using it for prediction\n");
+		S = m_num_states;
+	}
 
 	ASSERT( w.vlen == S*(S+D) );
 
 	// Compute the loss-augmented emission matrix:
 	// (E)s,i = Delta(y_i, s) + w^em_s*x_i
 
-	CSequence* y = CSequence::obtain_from_generic( m_labels->get_label(feat_idx) );
-	int32_t T = y->data.vlen;
+	SGMatrix< float64_t > x = mf->get_feature_vector(feat_idx);
+	int32_t T = x.num_cols;
 	SGMatrix< float64_t > E(S, T);
 	SGVector< float64_t > x_i(D);
+
+	CSequence* ytrue = NULL;
+	if ( training )
+	{
+		ytrue = CSequence::obtain_from_generic(
+				m_labels->get_label(feat_idx) );
+
+		REQUIRE(ytrue->data.vlen == T, "T, the length of the feature "
+			"x^i (%d) and the length of its corresponding label y^i "
+			"(%d) must be the same.\n", T, ytrue->data.vlen);
+	}
 
 	// One element sequences for the state and an element of y
 	CSequence* seq1 = new CSequence( SGVector< int32_t >(1) );
@@ -132,8 +158,7 @@ CResultSet* CHMSVMModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 
 	for ( int32_t i = 0 ; i < T ; ++i )
 	{
-		((CMatrixFeatures< float64_t >*) m_features)->
-			get_feature_vector_col(x_i, feat_idx, i);
+		mf->get_feature_vector_col(x_i, feat_idx, i);
 
 		for ( int32_t s = 0 ; s < S ; ++s )
 		{
@@ -141,10 +166,29 @@ CResultSet* CHMSVMModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 					w_em + s*D, x_i.vector, D);
 
 			seq1->data[0] = s;
-			seq2->data[0] = y->data[i];
 
-			E[s*T + i] = partial_score + delta_loss(seq1, seq2);
+			// The matrix is different in training and prediction
+			if ( training )
+			{
+				seq2->data[0] = ytrue->data[i];
+				E[s*T + i] = partial_score + delta_loss(seq1, seq2);
+
+			}
+			else
+			{
+				E[s*T + i] = partial_score;
+			}
 		}
+	}
+
+	// Free resources
+	SG_UNREF(seq1);
+	SG_UNREF(seq2);
+
+	if ( training )
+	{
+		// Decrement the reference count corresponding to get_label above
+		SG_UNREF(ytrue);
 	}
 
 	// Initialize the dynamic programming table and the traceback matrix
@@ -213,13 +257,16 @@ CResultSet* CHMSVMModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 
 	// Populate the CResultSet object to return
 	CSequence* ypred = new CSequence(opt_path);
-	SG_REF(y);
+	SG_REF(ypred);
 
-	ret->psi_truth = CStructuredModel::get_joint_feature_vector(
-			feat_idx, feat_idx);
 	ret->psi_pred  = get_joint_feature_vector(feat_idx, ypred);
-	ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
 	ret->argmax    = ypred;
+	if ( training )
+	{
+		ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
+		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
+					feat_idx, feat_idx);
+	}
 
 	return ret;
 }
@@ -239,7 +286,6 @@ float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 	return out;
 }
 
-/* TODO */
 void CHMSVMModel::init_opt(
 		SGMatrix< float64_t > A,
 		SGVector< float64_t > a,
@@ -249,6 +295,20 @@ void CHMSVMModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
+	// Shorthand for the number of states
+	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+
+	m_p = SGVector< int32_t >(S);
+	m_q = SGVector< int32_t >(S);
+
+	// All the states are allowed to be start/stop states
+	for ( int32_t s = 0 ; s < S ; ++s )
+	{
+		m_p[s] = 0;
+		m_q[s] = 0;
+	}
+
+	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1);
 }
 
 bool CHMSVMModel::check_training_setup() const
@@ -280,6 +340,9 @@ bool CHMSVMModel::check_training_setup() const
 				++state_freq[state];
 			}
 		}
+
+		// Decrement the reference count increased by get_label
+		SG_UNREF(seq);
 	}
 
 	for ( int32_t i = 0 ; i < hmsvm_labels->get_num_states() ; ++i )
@@ -298,9 +361,12 @@ void CHMSVMModel::init()
 {
 	SG_ADD(&m_p, "m_p", "Distribution of start states", MS_NOT_AVAILABLE);
 	SG_ADD(&m_q, "m_q", "Distribution of end states", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_states, "m_num_states", "The number of states", MS_NOT_AVAILABLE);
+
+	m_num_states = 0;
 }
 
-CHMSVMModel* CHMSVMModel::simulate_two_state_model()
+CHMSVMModel* CHMSVMModel::simulate_two_state_data()
 {
 	// Number of examples
 	int32_t num_exm = 1000;
@@ -311,13 +377,11 @@ CHMSVMModel* CHMSVMModel::simulate_two_state_model()
 	// Total number of features
 	int32_t num_features = 10;
 	// Number of features to be pure noise
-	int32_t num_noise_features = 3;
+	int32_t num_noise_features = 2;
 	// Min and max length of positive block
 	int32_t block_len[] = {10, 100};
 	// Min and max number of positive blocks per example
-	int32_t num_blocks[] = {0, 6};
-	// Number of subsets for cross-validation
-	int32_t num_subsets = 5;
+	int32_t num_blocks[] = {0, 3};
 
 	// Proportion of wrong labels
 	float64_t prop_distort = 0.2;
@@ -329,12 +393,14 @@ CHMSVMModel* CHMSVMModel::simulate_two_state_model()
 	// block_len[0] and block_len[1]
 
 	CHMSVMLabels* labels = new CHMSVMLabels(num_exm, num_states);
+	SGVector< int32_t > ll(num_exm*exm_len);
+	ll.zero();
 	int32_t rnb, rl, rp;
 
 	for ( int32_t i = 0 ; i < num_exm ; ++i)
 	{
-		SGVector< int32_t > l(exm_len);
-		l.set_const(0);
+		SGVector< int32_t > lab(exm_len);
+		lab.zero();
 		rnb = num_blocks[0] + CMath::ceil((num_blocks[1]-num_blocks[0])*
 			CMath::random(0.0, 1.0)) - 1;
 
@@ -344,11 +410,14 @@ CHMSVMModel* CHMSVMModel::simulate_two_state_model()
 				CMath::random(0.0, 1.0)) - 1;
 			rp = CMath::ceil((exm_len-rl)*CMath::random(0.0, 1.0));
 
-			for ( int32_t idx = rp ; idx < rp+rl ; ++idx )
-				l[idx] = 1;
+			for ( int32_t idx = rp-1 ; idx < rp+rl ; ++idx )
+			{
+				lab[idx] = 1;
+				ll[i*exm_len + idx] = 1;
+			}
 		}
 
-		labels->add_label(l);
+		labels->add_label(lab);
 	}
 
 	// Generate features by
@@ -359,34 +428,40 @@ CHMSVMModel* CHMSVMModel::simulate_two_state_model()
 	SGVector< int32_t >   distort(num_exm*exm_len);
 	SGVector< int32_t >   d1(CMath::round(distort.vlen*prop_distort));
 	SGVector< int32_t >   d2(d1.vlen);
-	SGVector< float64_t > l = labels->to_double_vector();
-	SGVector< float64_t > random(distort.vlen);
-
-	CMatrixFeatures< float64_t >* features =
-		new CMatrixFeatures< float64_t >(num_exm, num_features);
+	SGVector< int32_t >   lf;
+	SGMatrix< float64_t > signal(num_features, distort.vlen);
 
 	for ( int32_t i = 0 ; i < num_features ; ++i )
 	{
+		lf = ll;
 		distort.randperm();
 
-		for ( int j = 0 ; j < d1.vlen ; ++j )
+		for ( int32_t j = 0 ; j < d1.vlen ; ++j )
 			d1[j] = distort[j];
 
-		for ( int j = 0 ; j < d2.vlen ; ++j )
+		for ( int32_t j = 0 ; j < d2.vlen ; ++j )
 			d2[j] = distort[ distort.vlen-d2.vlen+j ];
 
-		for ( int j = 0 ; j < d1.vlen ; ++j )
-			labels->set_element(d1[j], labels->get_element(d2[j]));
+		for ( int32_t j = 0 ; j < d1.vlen ; ++j )
+			lf[ d1[j] ] = lf[ d2[j] ];
 
-		random.normal_random();
-		random.scale(noise_std);
-		SGVector< float64_t > signal = l + random;
-		// TODO store the feautres properly in the CMatrixFeatures
+		int32_t idx = i*signal.num_cols;
+		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
+			signal[idx++] = CMath::round ( lf[j] + noise_std*CMath::randn_float() );
 	}
 
 	// Substitute some features by pure noise
-	// TODO
+	SGVector< int32_t > ridx(num_features);
+	ridx.randperm();
+	for ( int32_t i = 0 ; i < num_noise_features ; ++i )
+	{
+		int32_t idx = i*signal.num_cols;
+		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
+			signal[idx++] = CMath::round( noise_std*CMath::randn_float() );
+	}
 
+	CMatrixFeatures< float64_t >* features =
+		new CMatrixFeatures< float64_t >(signal.split(num_exm), num_exm);
 
-	return NULL;
+	return new CHMSVMModel(features, labels);
 }

@@ -87,7 +87,7 @@ class CMosek : public CSGObject
 		 * the type used in SO-SVM.
 		 *
 		 * @param dPsi leftmost part of the constraint
-		 * @param con_idx row index in A of the constrain
+		 * @param con_idx row index in A of the constraint
 		 * @param train_idx index of the training example
 		 * associated to the new constraint
 		 * @param bi upper bound of the constraint

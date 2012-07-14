@@ -102,11 +102,23 @@ class CStructuredModel : public CSGObject
 		 */
 		void set_labels(CStructuredLabels* labs);
 
+		/** get labels
+		 *
+		 * @return labels
+		 */
+		CStructuredLabels* get_labels();
+
 		/** set features
 		 *
 		 * @param feats features
 		 */
 		void set_features(CFeatures* feats);
+
+		/** get features
+		 *
+		 * @return features
+		 */
+		CFeatures* get_features();
 
 		/** 
 		 * gets joint feature vector 
@@ -140,10 +152,14 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @param w weight vector
 		 * @param feat_idx index of the feature to compute the argmax
+		 * @param training true if argmax is called during training.
+		 * Then, it is assumed that the label indexed by feat_idx in
+		 * m_labels corresponds to the true label of the corresponding
+		 * feature vector.
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx) = 0;
+		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) = 0;
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *
