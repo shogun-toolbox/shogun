@@ -14,7 +14,7 @@
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/GradientResult.h>
-
+#include <shogun/modelselection/ModelSelectionOutput.h>
 
 namespace shogun
 {
@@ -61,7 +61,7 @@ public:
 	 * @return GradientResult containing value and
 	 * gradient
 	 */
-	virtual CEvaluationResult* evaluate();
+	virtual CEvaluationResult* evaluate(CModelSelectionOutput* ms_output=NULL);
 
 	/** set Differentiable Function
 	*

@@ -14,7 +14,6 @@
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 
-
 namespace shogun
 {
 
@@ -143,7 +142,7 @@ public:
 	/** setter for the number of runs to use for evaluation */
 	void set_conf_int_alpha(float64_t m_conf_int_alpha);
 
-	virtual CEvaluationResult* evaluate();
+	virtual CEvaluationResult* evaluate(CModelSelectionOutput* ms_output=NULL);
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
@@ -163,7 +162,7 @@ protected:
 	 *
 	 * @return evaluation result of one cross-validation run
 	 */
-	virtual float64_t evaluate_one_run();
+	virtual float64_t evaluate_one_run(CModelSelectionOutput* ms_output=NULL);
 
 private:
 	int32_t m_num_runs;

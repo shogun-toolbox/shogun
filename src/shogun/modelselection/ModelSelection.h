@@ -13,6 +13,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/evaluation/MachineEvaluation.h>
+#include <shogun/modelselection/ModelSelectionOutput.h>
 
 namespace shogun
 {
@@ -49,6 +50,9 @@ public:
 	 */
 	virtual CParameterCombination* select_model(bool print_state=false)=0;
 
+	/** set model selection output */
+	void set_ms_output(CModelSelectionOutput* ms_output);
+
 private:
 
 	/*Initializer*/
@@ -59,6 +63,8 @@ protected:
 	CModelSelectionParameters* m_model_parameters;
 	/** cross validation */
 	CMachineEvaluation* m_machine_eval;
+	/** output */
+	CModelSelectionOutput* m_ms_output;
 };
 
 }

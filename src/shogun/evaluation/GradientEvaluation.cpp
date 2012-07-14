@@ -41,7 +41,7 @@ CGradientEvaluation::~CGradientEvaluation()
 	SG_UNREF(m_diff);
 }
 
-CEvaluationResult* CGradientEvaluation::evaluate()
+CEvaluationResult* CGradientEvaluation::evaluate(CModelSelectionOutput* ms_output)
 {
 	CGradientResult* result = new CGradientResult();
 

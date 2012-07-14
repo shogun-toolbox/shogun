@@ -18,7 +18,8 @@ using namespace shogun;
 
 CModelSelection::CModelSelection(CModelSelectionParameters* model_parameters,
 		CMachineEvaluation* machine_eval) :
-	m_model_parameters(model_parameters), m_machine_eval(machine_eval)
+	m_model_parameters(model_parameters), m_machine_eval(machine_eval),
+	m_ms_output(NULL)
 {
 	init();
 }
@@ -36,9 +37,17 @@ void CModelSelection::init()
 			"Machine evaluation strategy", MS_NOT_AVAILABLE);
 }
 
+void CModelSelection::set_ms_output(CModelSelectionOutput* ms_output)
+{
+	SG_REF(ms_output);
+	SG_UNREF(m_ms_output);
+	m_ms_output = ms_output;
+}
+
 CModelSelection::~CModelSelection()
 {
 	SG_UNREF(m_model_parameters);
 	SG_UNREF(m_machine_eval);
+	SG_UNREF(m_ms_output);
 }
 

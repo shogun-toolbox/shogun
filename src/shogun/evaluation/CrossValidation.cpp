@@ -12,6 +12,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/modelselection/ModelSelectionOutput.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/mathematics/Statistics.h>
@@ -58,7 +59,7 @@ void CCrossValidation::init()
 }
 
 
-CEvaluationResult* CCrossValidation::evaluate()
+CEvaluationResult* CCrossValidation::evaluate(CModelSelectionOutput* ms_output)
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name());
 
@@ -99,7 +100,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 	for (index_t i=0; i <m_num_runs; ++i)
 	{
 		SG_DEBUG("entering cross-validation run %d \n", i);
-		results[i]=evaluate_one_run();
+		results[i]=evaluate_one_run(ms_output);
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i]);
 	}
 
@@ -158,7 +159,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs=num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run()
+float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 {
 	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name());
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
@@ -189,17 +190,31 @@ float64_t CCrossValidation::evaluate_one_run()
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
 
+			if (ms_output)
+			{
+				ms_output->output_train_indices(inverse_subset_indices);
+				ms_output->output_trained_machine(m_machine);
+			}
+
 			/* produce output for desired indices */
 			CLabels* result_labels=m_machine->apply_locked(subset_indices);
 			SG_REF(result_labels);
 
-			/* set subset for training labels */
+			/* set subset for testing labels */
 			m_labels->add_subset(subset_indices);
 
 			/* evaluate against own labels */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
-			/* remove subset to prevent side efects */
+			if (ms_output)
+			{
+				ms_output->output_test_indices(subset_indices);
+				ms_output->output_test_result(result_labels);
+				ms_output->output_test_true_result(m_labels);
+				ms_output->output_evaluate_result(results[i]);
+			}
+
+			/* remove subset to prevent side effects */
 			m_labels->remove_subset();
 
 			/* clean up */
@@ -221,6 +236,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
+			ms_output->output_train_indices(inverse_subset_indices);
 			m_features->add_subset(inverse_subset_indices);
 
 			/* set label subset for training */
@@ -235,6 +251,12 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* train machine on training features and remove subset */
 			m_machine->train(m_features);
+			if (ms_output)
+			{
+				ms_output->output_train_indices(inverse_subset_indices);
+				ms_output->output_trained_machine(m_machine);
+			}
+
 			m_features->remove_subset();
 			m_labels->remove_subset();
 
@@ -260,6 +282,13 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* evaluate */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
+			if (ms_output)
+			{
+				ms_output->output_test_indices(subset_indices);
+				ms_output->output_test_result(result_labels);
+				ms_output->output_test_true_result(m_labels);
+				ms_output->output_evaluate_result(results[i]);
+			}
 			SG_DEBUG("result on fold %d is %f\n", i, results[i]);
 
 			/* clean up, remove subsets */
