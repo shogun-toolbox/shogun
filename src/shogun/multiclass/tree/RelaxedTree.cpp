@@ -19,8 +19,10 @@
 using namespace shogun;
 
 CRelaxedTree::CRelaxedTree()
-	:m_svm_C(1), m_svm_epsilon(0.001), m_kernel(NULL), m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
+	:m_max_num_iter(3), m_svm_C(1), m_svm_epsilon(0.001), 
+	m_kernel(NULL), m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
 {
+	SG_ADD(&m_max_num_iter, "m_max_num_iter", "max number of iterations in alternating optimization", MS_NOT_AVAILABLE);
 	SG_ADD(&m_svm_C, "m_svm_C", "C for svm", MS_AVAILABLE);
 	SG_ADD(&m_svm_epsilon, "m_svm_epsilon", "epsilon for svm", MS_AVAILABLE);
 }
@@ -74,42 +76,63 @@ void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int3
 
 CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry)
 {
-	SGVector<int32_t> subset(m_feats->get_num_vectors());
-	SGVector<float64_t> binlab(m_feats->get_num_vectors());
-	int32_t k=0;
+	SGVector<int32_t> mu(m_num_classes), prev_mu(m_num_classes);
+	mu.zero();
+	mu[mu_entry.first.first] = 1;
+	mu[mu_entry.first.second] = -1;
 
-	CMulticlassLabels *labs = dynamic_cast<CMulticlassLabels *>(m_labels);
-	for (int32_t i=0; i < binlab.vlen; ++i)
-	{
-		int32_t lab = labs->get_int_label(i);
-		if (lab == mu_entry.first.first)
-		{
-			binlab[i] = 1;
-			subset[k++] = i;
-		}
-		else if (lab == mu_entry.first.second)
-		{
-			binlab[i] = -1;
-			subset[k++] = i;
-		}
-	}
-
-	subset.vlen = k;
-
-	CBinaryLabels *binary_labels = new CBinaryLabels(binlab);
-	SG_REF(binary_labels);
-	binary_labels->add_subset(subset);
-	m_feats->add_subset(subset);
-
-	m_kernel->init(m_feats, m_feats);
-	CLibSVM *svm = new CLibSVM(m_svm_C, m_kernel, binary_labels);
+	CLibSVM *svm = new CLibSVM();
 	SG_REF(svm);
+	svm->set_C(m_svm_C, m_svm_C);
 	svm->set_epsilon(m_svm_epsilon);
-	svm->train();
 
-	binary_labels->remove_subset();
-	m_feats->remove_subset();
-	SG_UNREF(binary_labels);
+	for (int32_t iiter=0; iiter < m_max_num_iter; ++iiter)
+	{
+		SGVector<int32_t> subset(m_feats->get_num_vectors());
+		SGVector<float64_t> binlab(m_feats->get_num_vectors());
+		int32_t k=0;
+
+		CMulticlassLabels *labs = dynamic_cast<CMulticlassLabels *>(m_labels);
+		for (int32_t i=0; i < binlab.vlen; ++i)
+		{
+			int32_t lab = labs->get_int_label(i);
+			binlab[i] = mu[lab];
+			if (mu[lab] != 0)
+				subset[k++] = i;
+		}
+
+		subset.vlen = k;
+
+		CBinaryLabels *binary_labels = new CBinaryLabels(binlab);
+		SG_REF(binary_labels);
+		binary_labels->add_subset(subset);
+		m_feats->add_subset(subset);
+
+		m_kernel->init(m_feats, m_feats);
+		svm->set_kernel(m_kernel);
+		svm->set_labels(binary_labels);
+		svm->train();
+
+		binary_labels->remove_subset();
+		m_feats->remove_subset();
+		SG_UNREF(binary_labels);
+
+		std::copy(&mu[0], &mu[mu.vlen], &prev_mu[0]);
+
+		// TODO: color label space
+		bool bbreak = true;
+		for (int32_t i=0; i < mu.vlen; ++i)
+		{
+			if (mu[i] != prev_mu[i])
+			{
+				bbreak = true;
+				break;
+			}
+		}
+
+		if (bbreak)
+			break;
+	}
 
 	return svm;
 }

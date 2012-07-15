@@ -88,6 +88,51 @@ public:
 		m_machine_for_confusion_matrix = machine;
 	}
 
+	/** set SVM C
+	 * @param C svm C
+	 */
+	void set_svm_C(float64_t C)
+	{
+		m_svm_C = C;
+	}
+	/** get SVM C
+	 * @return svm C
+	 */
+	float64_t get_svm_C() const
+	{
+		return m_svm_C;
+	}
+
+	/** set SVM epsilon
+	 * @param epsilon SVM epsilon
+	 */
+	void set_svm_epsilon(float64_t epsilon)
+	{
+		m_svm_epsilon = epsilon;
+	}
+	/** get SVM epsilon
+	 * @return svm epsilon
+	 */
+	float64_t get_svm_epsilon() const
+	{
+		return m_svm_epsilon;
+	}
+
+	/** set max number of iteration in alternating optimization
+	 * @param n_iter number of iterations
+	 */
+	void set_max_num_iter(int32_t n_iter)
+	{
+		m_max_num_iter = n_iter;
+	}
+	/** get max number of iteration in alternating optimization
+	 * @return number of iterations
+	 */
+	int32_t get_max_num_iter() const
+	{
+		return m_max_num_iter;
+	}
+
 	typedef std::pair<std::pair<int32_t, int32_t>, float64_t> entry_t;
 protected:
 	/** train machine
@@ -102,6 +147,7 @@ protected:
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
 	CLibSVM *train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry);
 
+	int32_t m_max_num_iter;
 	float64_t m_svm_C;
 	float64_t m_svm_epsilon;
 	CKernel *m_kernel;
