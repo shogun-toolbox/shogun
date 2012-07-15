@@ -11,6 +11,7 @@
 #include <limits>
 #include <algorithm>
 
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 
@@ -18,12 +19,15 @@
 using namespace shogun;
 
 CRelaxedTree::CRelaxedTree()
-	:m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
+	:m_svm_C(1), m_svm_epsilon(0.001), m_kernel(NULL), m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
 {
+	SG_ADD(&m_svm_C, "m_svm_C", "C for svm", MS_AVAILABLE);
+	SG_ADD(&m_svm_epsilon, "m_svm_epsilon", "epsilon for svm", MS_AVAILABLE);
 }
 
 CRelaxedTree::~CRelaxedTree()
 {
+	SG_UNREF(m_kernel);
 	SG_UNREF(m_feats);
 	SG_UNREF(m_machine_for_confusion_matrix);
 }
@@ -37,6 +41,9 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 {
 	if (m_machine_for_confusion_matrix == NULL)
 		SG_ERROR("Call set_machine_for_confusion_matrix before training");
+
+	if (m_kernel == NULL)
+		SG_ERROR("Assign a valid kernel before training");
 
 	if (data)
 	{
@@ -57,7 +64,54 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 
 void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
 {
+	std::vector<CRelaxedTree::entry_t> mu_init = init_node(conf_mat, classes);
+	for (std::vector<CRelaxedTree::entry_t>::const_iterator it = mu_init.begin(); it != mu_init.end(); ++it)
+	{
+		CLibSVM *svm = train_node_with_initialization(*it);
+		SG_UNREF(svm);
+	}
+}
 
+CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry)
+{
+	SGVector<int32_t> subset(m_feats->get_num_vectors());
+	SGVector<float64_t> binlab(m_feats->get_num_vectors());
+	int32_t k=0;
+
+	CMulticlassLabels *labs = dynamic_cast<CMulticlassLabels *>(m_labels);
+	for (int32_t i=0; i < binlab.vlen; ++i)
+	{
+		int32_t lab = labs->get_int_label(i);
+		if (lab == mu_entry.first.first)
+		{
+			binlab[i] = 1;
+			subset[k++] = i;
+		}
+		else if (lab == mu_entry.first.second)
+		{
+			binlab[i] = -1;
+			subset[k++] = i;
+		}
+	}
+
+	subset.vlen = k;
+
+	CBinaryLabels *binary_labels = new CBinaryLabels(binlab);
+	SG_REF(binary_labels);
+	binary_labels->add_subset(subset);
+	m_feats->add_subset(subset);
+
+	m_kernel->init(m_feats, m_feats);
+	CLibSVM *svm = new CLibSVM(m_svm_C, m_kernel, binary_labels);
+	SG_REF(svm);
+	svm->set_epsilon(m_svm_epsilon);
+	svm->train();
+
+	binary_labels->remove_subset();
+	m_feats->remove_subset();
+	SG_UNREF(binary_labels);
+
+	return svm;
 }
 
 struct EntryComparator

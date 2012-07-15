@@ -15,6 +15,7 @@
 #include <vector>
 
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
 
@@ -53,6 +54,16 @@ public:
 		m_feats = feats;
 	}
 
+	/** set kernel
+	 * @param ker kernel
+	 */
+	virtual void set_kernel(CKernel *ker)
+	{
+		SG_REF(ker);
+		SG_UNREF(m_kernel);
+		m_kernel = ker;
+	}
+
 	/** set labels
 	 *
 	 * @param lab labels
@@ -89,7 +100,11 @@ protected:
 
 	void train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
+	CLibSVM *train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry);
 
+	float64_t m_svm_C;
+	float64_t m_svm_epsilon;
+	CKernel *m_kernel;
 	CDenseFeatures<float64_t> *m_feats;
 	CBaseMulticlassMachine *m_machine_for_confusion_matrix;
 	int32_t m_num_classes;
