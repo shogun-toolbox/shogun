@@ -67,10 +67,10 @@ bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)
 #ifdef HAVE_EIGEN3
 	slep_result_t model = malsar_joint_feature_learning(
 		features, y.vector, m_rho1, m_rho2, options);
-#endif
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
+#endif
 
 	ASSERT(m_task_relation);
 
