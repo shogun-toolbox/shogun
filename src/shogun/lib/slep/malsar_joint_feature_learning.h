@@ -10,6 +10,8 @@
 
 #ifndef  MALSAR_JOINT_FEATURE_LEARNING_H_
 #define  MALSAR_JOINT_FEATURE_LEARNING_H_
+#include <shogun/lib/config.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/lib/slep/slep_options.h>
 #include <shogun/features/DotFeatures.h>
 
@@ -24,5 +26,6 @@ slep_result_t malsar_joint_feature_learning(
 		const slep_options& options);
 
 };
+#endif
 #endif   /* ----- #ifndef MALSAR_JOINT_FEATURE_LEARNING_H_  ----- */
 

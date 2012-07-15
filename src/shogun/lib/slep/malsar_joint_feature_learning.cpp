@@ -9,6 +9,7 @@
  */
 
 #include <shogun/lib/slep/malsar_joint_feature_learning.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <iostream>
 
@@ -213,3 +214,4 @@ slep_result_t malsar_joint_feature_learning(
 	return slep_result_t(tasks_w, tasks_c);
 };
 };
+#endif
