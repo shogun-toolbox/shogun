@@ -20,6 +20,7 @@
 %rename(TaskTree) CTaskTree;
 %rename(MultitaskLSRegression) CMultitaskLSRegression;
 %rename(MultitaskLogisticRegression) CMultitaskLogisticRegression;
+%rename(MultitaskL1L2LogisticRegression) CMultitaskL1L2LogisticRegression;
 
 %rename(LibLinearMTL) CLibLinearMTL;
 
@@ -42,6 +43,7 @@
 %include <shogun/transfer/multitask/TaskTree.h>
 %include <shogun/transfer/multitask/MultitaskLSRegression.h>
 %include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
+%include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>
 
 %include <shogun/transfer/multitask/LibLinearMTL.h>
 
