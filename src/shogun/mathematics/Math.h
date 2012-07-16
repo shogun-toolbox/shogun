@@ -36,6 +36,9 @@
 #include <ieeefp.h>
 #endif
 
+#define EIGEN_RUNTIME_NO_MALLOC
+#include <eigen3/Eigen/Dense>
+
 /// workaround for log2 being a define on cygwin
 #ifdef log2
 #define cygwin_log2 log2
