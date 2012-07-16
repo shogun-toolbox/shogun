@@ -156,6 +156,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 						*(m_weights[index]/m_width);
 
 				derivative(j,k) = -2*element*product;
+
 			}
 		}
 
@@ -183,14 +184,17 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 				for (index_t i = 0; i < avec.vlen; i++)
 					result += CMath::pow((avec[i]-bvec[i])*m_weights[i], 2);
 
-				derivative(j,k) = CMath::exp(-result/m_width)*
-						result/(m_width*m_width);
+				derivative(j,k) = -CMath::exp(-result/m_width)*
+					result/(m_width*m_width);
 			}
 		}
+		
+		return derivative;
 	}
 
 
 	else
 		return SGMatrix<float64_t>();
+
 }
 

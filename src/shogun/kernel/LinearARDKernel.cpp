@@ -151,6 +151,7 @@ SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(TParameter* param,
 
 	else
 		return SGMatrix<float64_t>();
+
 }
 
 

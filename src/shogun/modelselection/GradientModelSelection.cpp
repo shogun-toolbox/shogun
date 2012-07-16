@@ -110,7 +110,6 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	    		SG_SERROR("Parameter %s not found in combination tree.\n",
 	    				param->m_name);
 	    	}
-
 	    	curr_index++;
 	    }
 	}
@@ -187,7 +186,7 @@ CGradientModelSelection::~CGradientModelSelection()
 
 void CGradientModelSelection::test_gradients()
 {
-	float64_t delta = 0.001;
+  	float64_t delta = 0.001;
 	float64_t error_tol = 0.1;
 	float64_t orig_value, new_value;
 	float64_t orig_eval, new_eval;
@@ -396,7 +395,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    	for (index_t j = 0; j < length; j++)
 	    		lb[cur_index+j] = *((float64_t**)(final->m_parameter))[j];
 
-	    	cur_index += length;
+		cur_index += length;
 	    }
 
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
@@ -462,8 +461,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	//Clean up.
 	SG_FREE(lb);
-    SG_FREE(x);
-    nlopt_destroy(opt);
+	SG_FREE(x);
+	nlopt_destroy(opt);
 
 	//Admittedly weird, but I am unreferencing
 	//m_current_combination from this stack and
