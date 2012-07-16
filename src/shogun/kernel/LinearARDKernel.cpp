@@ -61,6 +61,9 @@ bool CLinearARDKernel::init(CFeatures* l, CFeatures* r)
 
 void CLinearARDKernel::init_ft_weights()
 {
+	if (!lhs || !rhs)
+		return;
+
 	int32_t alen, blen;
 
 	alen = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
@@ -83,7 +86,7 @@ void CLinearARDKernel::init_ft_weights()
 
 void CLinearARDKernel::set_weight(float64_t w, index_t i)
 {
-	if (i > m_weights.vlen-1)
+	if (i >= m_weights.vlen)
 	{
 		SG_ERROR("Index %i out of range for LinearARDKernel."\
 				 "Number of features is %i.\n", i, m_weights.vlen);
@@ -94,7 +97,7 @@ void CLinearARDKernel::set_weight(float64_t w, index_t i)
 
 float64_t CLinearARDKernel::get_weight(index_t i)
 {
-	if (i > m_weights.vlen-1)
+	if (i >= m_weights.vlen)
 	{
 		SG_ERROR("Index %i out of range for LinearARDKernel."\
 				 "Number of features is %i.\n", i, m_weights.vlen);
@@ -124,16 +127,13 @@ float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(TParameter* param,
 		CSGObject* obj, index_t index)
 {
-
-	SGMatrix<float64_t> result();
-
-	if(!strcmp(param->m_name, "weights") && obj == this)
+	if (!strcmp(param->m_name, "weights") && obj == this)
 	{
-		SGMatrix<float64_t> derivative = get_kernel_matrix();
+		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
 
-		for (int j = 0; j < num_lhs; j++)
+		for (index_t j = 0; j < num_lhs; j++)
 		{
-			for (int k = 0; k < num_rhs; k++)
+			for (index_t k = 0; k < num_rhs; k++)
 			{
 				SGVector<float64_t> avec
 					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
@@ -150,9 +150,7 @@ SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(TParameter* param,
 	}
 
 	else
-	{
 		return SGMatrix<float64_t>();
-	}
 }
 
 

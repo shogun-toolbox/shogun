@@ -204,10 +204,13 @@ protected:
 	/*Features to use*/
 	CFeatures* m_features;
 
+	/*Feature Matrix*/
 	SGMatrix<float64_t> m_feature_matrix;
 
+	/*Means of Features*/
 	SGVector<float64_t> m_data_means;
 
+	/*Vector of labels*/
 	SGVector<float64_t> m_label_vector;
 
 

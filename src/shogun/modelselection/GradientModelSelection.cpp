@@ -38,6 +38,12 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
 		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
 
+	if ((unsigned)result->total_variables != n)
+	{
+		SG_SERROR("Mismatch between total variables in result and variables in " \
+				"NLOPT!\n");
+	}
+
 	shogun::CMachine* machine = m_machine_eval->get_machine();
 
 	if (print_state)
@@ -46,7 +52,7 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	index_t curr_index = 0;
 
 	/*Set parameter values from x vector*/
-	for (unsigned int i = 0; i < result->gradient.get_num_elements(); i++)
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
 	{
 		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
 				result->gradient.get_node_ptr(i);
@@ -104,6 +110,7 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	    		SG_SERROR("Parameter %s not found in combination tree.\n",
 	    				param->m_name);
 	    	}
+
 	    	curr_index++;
 	    }
 	}
@@ -124,12 +131,14 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	curr_index = 0;
 
 	/*Store the gradient into the grad vector*/
-	for (unsigned int i = 0; i < result->gradient.get_num_elements(); i++)
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
 	{
 		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
 				result->gradient.get_node_ptr(i);
-		for(unsigned int j = 0; j < node->data.vlen; j++)
+
+		for(index_t j = 0; j < node->data.vlen; j++)
 			grad[curr_index+j] = node->data[j];
+
 		curr_index += node->data.vlen;
 	}
 
@@ -178,71 +187,92 @@ CGradientModelSelection::~CGradientModelSelection()
 
 void CGradientModelSelection::test_gradients()
 {
-/*	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
-
-	float64_t delta = 0.01;
+	float64_t delta = 0.001;
+	float64_t error_tol = 0.1;
 	float64_t orig_value, new_value;
 	float64_t orig_eval, new_eval;
 	float64_t approx_grad, true_grad;
 
 	CMachine* machine = m_machine_eval->get_machine();
 
+	m_current_combination->apply_to_modsel_parameter(
+				machine->m_model_selection_parameters);
+
+	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
+
 	/*Set parameter values from x vector*/
-/*	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, float64_t>* node =
+		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
 				result->gradient.get_node_ptr(i);
 
 		orig_eval = result->quantity[0];
 
 		TParameter* param = node->key;
-		true_grad = node->data;
 
-		orig_value = *((float64_t*)param->m_parameter);
-		new_value = orig_value+delta;
-
-	    CSGObject* parent = result->parameter_dictionary.get_element(param);
-
-	    if (!parent || !m_current_combination->set_parameter(
-	    		param->m_name, new_value, parent))
-	    {
-			SG_SERROR("Parameter %s not found in combination tree.\n",
-					param->m_name);
-	    }
-
-		m_current_combination->apply_to_modsel_parameter(
-				machine->m_model_selection_parameters);
-
-		CGradientResult* new_result =
-				(CGradientResult*)(m_machine_eval->evaluate());
-
-		new_eval = new_result->quantity[0];
-
-		approx_grad = (new_eval-orig_eval)/delta;
-
-		if (abs(approx_grad - true_grad) > 0.1)
+		for (index_t j = 0; j < node->data.vlen; j++)
 		{
-			SG_ERROR("Gradient of function with respect to %s incorrect.\n" \
-					  "True value is approximately %f, but calculated value is" \
-					  "%f", param->m_name,
-					  approx_grad, true_grad);
+			true_grad = node->data[j];
+
+			index_t index = -1;
+
+			if (param->m_datatype.m_ctype == CT_VECTOR ||
+				param->m_datatype.m_ctype == CT_SGVECTOR)
+			{
+				index = j;
+				orig_value = (*((float64_t**)param->m_parameter))[j];
+			}
+
+			else
+				orig_value = *((float64_t*)param->m_parameter);
+
+			new_value = orig_value+delta;
+
+		    CSGObject* parent = result->parameter_dictionary.get_element(param);
+
+
+		    if (!parent || !m_current_combination->set_parameter(
+		    		param->m_name, new_value, parent, index))
+		    {
+				SG_SERROR("Parameter %s not found in combination tree.\n",
+						param->m_name);
+		    }
+
+			m_current_combination->apply_to_modsel_parameter(
+					machine->m_model_selection_parameters);
+
+			CGradientResult* new_result =
+					(CGradientResult*)(m_machine_eval->evaluate());
+
+			new_eval = new_result->quantity[0];
+
+			approx_grad = (new_eval-orig_eval)/delta;
+
+			if (abs(approx_grad - true_grad) > error_tol)
+			{
+				SG_ERROR("Gradient of function with respect to variable %i of %s" \
+						  " is incorrect.\n" \
+						  "True value is approximately %f, but calculated value is" \
+						  " %f\n", j, param->m_name,
+						  approx_grad, true_grad);
+			}
+
+			if (!parent || !m_current_combination->set_parameter(
+		    		param->m_name, orig_value, parent, index))
+			{
+				SG_SERROR("Parameter %s not found in combination tree.\n",
+						param->m_name);
+			}
+
+			m_current_combination->apply_to_modsel_parameter(
+					machine->m_model_selection_parameters);
+
+			SG_UNREF(new_result);
 		}
-
-		if (!parent || !m_current_combination->set_parameter(
-	    		param->m_name, orig_value, parent))
-		{
-			SG_SERROR("Parameter %s not found in combination tree.\n",
-					param->m_name);
-		}
-
-		m_current_combination->apply_to_modsel_parameter(
-				machine->m_model_selection_parameters);
-
-		SG_UNREF(new_result);
 	}
 
 	SG_UNREF(machine);
-	SG_UNREF(result);*/
+	SG_UNREF(result);
 }
 
 CParameterCombination* CGradientModelSelection::select_model(bool print_state)
@@ -257,7 +287,6 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	CMachine* machine = m_machine_eval->get_machine();
 
-
 	if (print_state)
 	{
 		SG_PRINT("trying combination:\n");
@@ -267,16 +296,13 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	m_current_combination->apply_to_modsel_parameter(
 			machine->m_model_selection_parameters);
 
-
 	/*How many of these parameters have derivatives?*/
 	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
 
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
 		SG_ERROR("Evaluation result not a GradientEvaluationResult!");
 
-
-
-	int n = result->total_variables;
+	index_t n = result->total_variables;
 
 	double* lb = SG_MALLOC(double, n);
 	double* x = SG_MALLOC(double, n);
@@ -311,6 +337,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	    	for (index_t j = 0; j < length; j++)
 	    		x[cur_index+j] = *((float64_t**)(final->m_parameter))[j];
+
 	    	cur_index += length;
 	    }
 
@@ -368,6 +395,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	    	for (index_t j = 0; j < length; j++)
 	    		lb[cur_index+j] = *((float64_t**)(final->m_parameter))[j];
+
 	    	cur_index += length;
 	    }
 
@@ -424,13 +452,13 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	double minf; //the minimum objective value, upon return
 
-//	test_gradients();
+	test_gradients();
 
 	//Optimize our function!
 	if (nlopt_optimize(opt, x, &minf) < 0)
 		SG_ERROR("nlopt failed!\n");
 
-//	test_gradients();
+	test_gradients();
 
 	//Clean up.
 	SG_FREE(lb);

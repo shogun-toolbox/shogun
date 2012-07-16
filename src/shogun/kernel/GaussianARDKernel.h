@@ -56,20 +56,20 @@ public:
 
 	/** return what type of kernel we are
 	 *
-	 * @return kernel type LINEARARD
+	 * @return kernel type GAUSSIANARD
 	 */
 	virtual EKernelType get_kernel_type() { return K_GAUSSIANARD; }
 
 	/** return the kernel's name
 	 *
-	 * @return name LinearARDKernel
+	 * @return name GaussianARDKernel
 	 */
 	inline virtual const char* get_name() const { return "GaussianARDKernel"; }
 
 
 	/** return feature class the kernel can deal with
 	 *
-	 * @return feature class SIMPLE
+	 * @return feature class DENSE
 	 */
 	inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
@@ -137,7 +137,6 @@ public:
 
 	/** init feature weights
 	 *
-	 * @return if initialization was successful
 	 */
 	void init_ft_weights();
 
