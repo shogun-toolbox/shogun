@@ -66,6 +66,9 @@ bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
 
 void CGaussianARDKernel::init_ft_weights()
 {
+	if (!lhs || !rhs)
+		return;
+
 	int32_t alen, blen;
 
 	alen = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
@@ -82,14 +85,14 @@ void CGaussianARDKernel::init_ft_weights()
 			m_weights[i]=1.0;
 	}
 
-	SG_DEBUG("Initialized weights for LinearARDKernel (%p).\n", this);
+	SG_DEBUG("Initialized weights for GaussianARDKernel (%p).\n", this);
 }
 
 void CGaussianARDKernel::set_weight(float64_t w, index_t i)
 {
-	if (i > m_weights.vlen-1)
+	if (i >= m_weights.vlen)
 	{
-		SG_ERROR("Index %i out of range for LinearARDKernel."\
+		SG_ERROR("Index %i out of range for GaussianARDKernel."\
 				 "Number of features is %i.\n", i, m_weights.vlen);
 	}
 
@@ -98,9 +101,9 @@ void CGaussianARDKernel::set_weight(float64_t w, index_t i)
 
 float64_t CGaussianARDKernel::get_weight(index_t i)
 {
-	if (i > m_weights.vlen-1)
+	if (i >= m_weights.vlen)
 	{
-		SG_ERROR("Index %i out of range for LinearARDKernel."\
+		SG_ERROR("Index %i out of range for GaussianARDKernel."\
 				 "Number of features is %i.\n", i, m_weights.vlen);
 	}
 
@@ -131,13 +134,13 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 
 	SGMatrix<float64_t> result();
 
-	if(!strcmp(param->m_name, "weights") && obj == this)
+	if (!strcmp(param->m_name, "weights") && obj == this)
 	{
 		SGMatrix<float64_t> derivative = get_kernel_matrix();
 
-		for (int j = 0; j < num_lhs; j++)
+		for (index_t j = 0; j < num_lhs; j++)
 		{
-			for (int k = 0; k < num_rhs; k++)
+			for (index_t k = 0; k < num_rhs; k++)
 			{
 				SGVector<float64_t> avec
 					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
@@ -152,7 +155,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 						CMath::pow((avec[index]-bvec[index]), 2)
 						*(m_weights[index]/m_width);
 
-				derivative(j,k) = -element*product;
+				derivative(j,k) = -2*element*product;
 			}
 		}
 
@@ -163,9 +166,9 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 	{
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
 
-		for (int j = 0; j < num_lhs; j++)
+		for (index_t j = 0; j < num_lhs; j++)
 		{
-			for (int k = 0; k < num_rhs; k++)
+			for (index_t k = 0; k < num_rhs; k++)
 			{
 				SGVector<float64_t> avec
 					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
@@ -180,15 +183,14 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 				for (index_t i = 0; i < avec.vlen; i++)
 					result += CMath::pow((avec[i]-bvec[i])*m_weights[i], 2);
 
-				derivative(j,k) = -CMath::exp(-result/m_width)*result/(m_width*m_width);
+				derivative(j,k) = CMath::exp(-result/m_width)*
+						result/(m_width*m_width);
 			}
 		}
 	}
 
 
 	else
-	{
 		return SGMatrix<float64_t>();
-	}
 }
 

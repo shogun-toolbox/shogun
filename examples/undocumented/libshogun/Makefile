@@ -38,6 +38,7 @@ TARGETS = basic_minimal \
 		  regression_gaussian_process_gaussian \
 		  regression_gaussian_process_sum \
 		  regression_gaussian_process_product \
+		  regression_gaussian_process_ard \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \

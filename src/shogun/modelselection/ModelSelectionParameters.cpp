@@ -111,10 +111,12 @@ void CModelSelectionParameters::build_values(float64_t min, float64_t max,
 }
 
 void CModelSelectionParameters::build_values_vector(float64_t min, float64_t max,
-		ERangeType type, float64_t step, float64_t type_base)
+		ERangeType type, void* vector, index_t* size, float64_t step, float64_t type_base)
 {
 	build_values(MSPT_FLOAT64_VECTOR, (void*)&min, (void*)&max, type, (void*)&step,
 			(void*)&type_base);
+	m_vector_length = size;
+	m_vector = vector;
 }
 
 void CModelSelectionParameters::build_values_sgvector(float64_t min, float64_t max,
@@ -122,7 +124,7 @@ void CModelSelectionParameters::build_values_sgvector(float64_t min, float64_t m
 {
 	build_values(MSPT_FLOAT64_SGVECTOR, (void*)&min, (void*)&max, type, (void*)&step,
 			(void*)&type_base);
-	m_sg_vector = vector;
+	m_vector = vector;
 }
 
 void CModelSelectionParameters::build_values(int32_t min, int32_t max,
@@ -133,10 +135,12 @@ void CModelSelectionParameters::build_values(int32_t min, int32_t max,
 }
 
 void CModelSelectionParameters::build_values_vector(int32_t min, int32_t max,
-		ERangeType type, int32_t step, int32_t type_base)
+		ERangeType type, void* vector, index_t* size, int32_t step, int32_t type_base)
 {
 	build_values(MSPT_INT32_VECTOR, (void*)&min, (void*)&max, type, (void*)&step,
 			(void*)&type_base);
+	m_vector_length = size;
+	m_vector = vector;
 }
 
 void CModelSelectionParameters::build_values_sgvector(int32_t min, int32_t max,
@@ -144,7 +148,7 @@ void CModelSelectionParameters::build_values_sgvector(int32_t min, int32_t max,
 {
 	build_values(MSPT_INT32_SGVECTOR, (void*)&min, (void*)&max, type, (void*)&step,
 			(void*)&type_base);
-	m_sg_vector = vector;
+	m_vector = vector;
 }
 
 void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
@@ -219,7 +223,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		{
 		case MSPT_FLOAT64_SGVECTOR:
 		{
-			SGVector<float64_t>* param_vect = (SGVector<float64_t>*)m_sg_vector;
+			SGVector<float64_t>* param_vect = (SGVector<float64_t>*)m_vector;
 
 			for (index_t j = 0; j < param_vect->vlen; j++)
 			{
@@ -228,6 +232,45 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 				(*param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add(param_vect, m_node_name);
+			break;
+		}
+		case MSPT_FLOAT64_VECTOR:
+		{
+			float64_t* param_vect = (float64_t*)m_vector;
+
+			for (index_t j = 0; j < *m_vector_length; j++)
+			{
+				if (is_rand)
+					i = CMath::random(0, m_values_length-1);
+				(param_vect)[j] = ((float64_t*)m_values)[i];
+			}
+			p->add_vector(&param_vect, m_vector_length, m_node_name);
+			break;
+		}
+		case MSPT_INT32_SGVECTOR:
+		{
+			SGVector<int32_t>* param_vect = (SGVector<int32_t>*)m_vector;
+
+			for (index_t j = 0; j < param_vect->vlen; j++)
+			{
+				if (is_rand)
+					i = CMath::random(0, m_values_length-1);
+				(*param_vect)[j] = ((int32_t*)m_values)[i];
+			}
+			p->add(param_vect, m_node_name);
+			break;
+		}
+		case MSPT_INT32_VECTOR:
+		{
+			int32_t* param_vect = (int32_t*)m_vector;
+
+			for (index_t j = 0; j < *m_vector_length; j++)
+			{
+				if (is_rand)
+					i = CMath::random(0, m_values_length-1);
+				(param_vect)[j] = ((int32_t*)m_values)[i];
+			}
+			p->add_vector(&param_vect, m_vector_length, m_node_name);
 			break;
 		}
 		case MSPT_FLOAT64:
