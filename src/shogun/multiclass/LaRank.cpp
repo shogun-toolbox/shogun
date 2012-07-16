@@ -793,6 +793,7 @@ void CLaRank::destroy ()
 {
 	for (outputhash_t::iterator it = outputs.begin (); it != outputs.end ();++it)
 		it->second.destroy ();
+	outputs.clear();
 }
 
 
