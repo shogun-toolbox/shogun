@@ -770,6 +770,92 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 
 %}
 
+/* Numeric operators for DenseFeatures */
+%define NUMERIC_DENSEFEATURES(class_name, type_name, format_str, operator_name, operator)
+
+PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *o2)
+{
+	CDenseFeatures< type_name > * arg1 = 0;
+
+	void *argp1 = 0 ;
+	int res1 = 0;
+	int res2 = 0;
+	int res3 = 0;
+
+	PyObject* resultobj = 0;
+	Py_buffer view;
+
+	int num_feat, num_vec;
+	int shape[2];
+
+	type_name *lhs;
+	type_name *buf;
+
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	arg1 = reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+		
+	res2 = PyObject_CheckBuffer(o2);
+	if (!res2)
+	{ 
+		SWIG_exception_fail(SWIG_ArgError(res1), "this object don't support buffer protocol");
+	}
+
+	res3 = PyObject_GetBuffer(o2, &view, PyBUF_F_CONTIGUOUS | PyBUF_ND | PyBUF_STRIDES | 0);
+	if (res3 != 0 || view.buf==NULL)
+	{
+		SWIG_exception_fail(SWIG_ArgError(res1), "bad buffer");
+	}
+
+	// checking that buffer is right
+	if (view.ndim != 2)
+	{
+		printf("%d\n", view.ndim);
+		SWIG_exception_fail(SWIG_ArgError(res1), "same dimension is needed");
+	}
+
+	if (view.itemsize != sizeof(type_name))
+	{
+		SWIG_exception_fail(SWIG_ArgError(res1), "same type is needed");
+	}
+
+	if (view.shape == NULL)
+	{
+		SWIG_exception_fail(SWIG_ArgError(res1), "same shape is needed");
+	}
+
+	shape[0] = view.shape[0];
+	shape[1] = view.shape[1];
+	if (shape[0] != arg1->get_num_features() || shape[1] != arg1->get_num_vectors())
+		SWIG_exception_fail(SWIG_ArgError(res1), "same size is needed");
+
+	if (view.len != (shape[0]*shape[1])*view.itemsize)
+		SWIG_exception_fail(SWIG_ArgError(res1), "bad buffer length");
+
+	// result calculation
+	lhs = arg1->get_feature_matrix(num_feat, num_vec);
+
+	// TODO strides support!
+	buf = (type_name*) view.buf;
+	for (int i = 0; i < num_vec; i++)
+	{
+		for (int j = 0; j < num_feat; j++)
+		{
+			lhs[num_feat*i + j] ## operator ## = buf[num_feat*i + j];
+		}
+	}
+
+	resultobj = self;
+	PyBuffer_Release(&view);
+
+	Py_INCREF(resultobj);
+	return resultobj;
+
+fail:
+	return NULL;	
+}
+
+%enddef
+
 /* Buffer protocol stuff for DenseFeatures */
 %define BUFFER_DENSEFEATURES(class_name, type_name, format_str)
 
@@ -805,14 +891,17 @@ static int class_name ## _getbuffer(PyObject *exporter, Py_buffer *view, int fla
 	stride = new Py_ssize_t[2];
 	stride[0] = sizeof( type_name );
 	stride[1] = sizeof( type_name ) * num_feat;
-		
-	view->len = shape[0]*stride[0];
-	view->itemsize = stride[0];
-	view->readonly = 0;
-	view->format = format;		
-	view->ndim = 2;
+
+	view->ndim = 2;		
+
+    view->format = format;
+    view->itemsize = stride[0];
+
+	view->len = (shape[0]*shape[1])*view->itemsize;
 	view->shape = shape;
 	view->strides = stride;
+
+	view->readonly = 0;	
 	view->suboffsets = NULL;
 	view->internal = NULL;
 
@@ -834,6 +923,10 @@ static void class_name ## _releasebuffer(PyObject *exporter, Py_buffer *view)
 		delete[] view->strides;
 }
 
+NUMERIC_DENSEFEATURES(class_name, type_name, format_str, add, +)
+NUMERIC_DENSEFEATURES(class_name, type_name, format_str, sub, -)
+NUMERIC_DENSEFEATURES(class_name, type_name, format_str, mul, *)
+
 static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFER | Py_TPFLAGS_BASETYPE;
 %}
 
@@ -845,6 +938,10 @@ SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags
 
 %feature("python:bf_getbuffer") CDenseFeatures< type_name > #class_name "_getbuffer"
 %feature("python:bf_releasebuffer") CDenseFeatures< type_name > #class_name "_releasebuffer"
+
+%feature("python:nb_inplace_add") CDenseFeatures< type_name > #class_name "_inplaceadd"
+%feature("python:nb_inplace_subtract") CDenseFeatures< type_name > #class_name "_inplacesub"
+%feature("python:nb_inplace_multiply") CDenseFeatures< type_name > #class_name "_inplacemul"
 
 %enddef
 
