@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 VERSION=`head -n 3 ../../NEWS | tail -n 1| awk '{ print $5 }'`
 DATE=`head -n 1 ../../NEWS | cut -f 1 -d ' '`

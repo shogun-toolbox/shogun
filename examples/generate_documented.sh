@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 static_dirs="cmdline_static elwms_static matlab_and_octave python_static r_static"
 modular_dirs="octave_modular python_modular r_modular lua_modular csharp_modular ruby_modular java_modular"
