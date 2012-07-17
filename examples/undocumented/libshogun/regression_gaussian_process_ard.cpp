@@ -93,7 +93,6 @@ int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
 
-
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix =
 			SGMatrix<float64_t>(dim_vectors, num_vectors);
@@ -196,7 +195,6 @@ int main(int argc, char **argv)
 	CRegressionLabels* covariance = gp->apply_regression(features);
 
 	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
-	
 	CRegressionLabels* predictions = gp->apply_regression();
 
 	alpha.display_vector("Alpha Vector");

@@ -142,4 +142,3 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 	else
 		return SGMatrix<float64_t>();
 }
-

@@ -110,7 +110,6 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	    		SG_SERROR("Parameter %s not found in combination tree.\n",
 	    				param->m_name);
 	    	}
-
 	    	curr_index++;
 	    }
 	}
@@ -463,8 +462,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	//Clean up.
 	SG_FREE(lb);
-    SG_FREE(x);
-    nlopt_destroy(opt);
+	SG_FREE(x);
+	nlopt_destroy(opt);
 
 	//Admittedly weird, but I am unreferencing
 	//m_current_combination from this stack and

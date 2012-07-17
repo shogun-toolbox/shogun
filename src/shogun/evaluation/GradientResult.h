@@ -85,7 +85,6 @@ public:
 			for (index_t j = 0; j < gradient.get_element_ptr(i)->vlen; j++)
 				SG_SPRINT("%s: %f, ", (*gradient.get_element_ptr(i))[j], name);
 		}
-
 		SG_SPRINT("]\n");
 
 		SG_SPRINT("Total Variables: %i\n", total_variables);
