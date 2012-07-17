@@ -19,8 +19,8 @@
 namespace shogun
 {
 
-double compute_regularizer(double* w, int n_vecs, int n_feats, 
-                           int n_blocks, const slep_options& options)
+double compute_regularizer_logistic(double* w, int n_vecs, int n_feats, 
+                                    int n_blocks, const slep_options& options)
 {
 	double regularizer = 0.0;
 	switch (options.mode)
@@ -73,6 +73,11 @@ double compute_regularizer(double* w, int n_vecs, int n_feats,
 				regularizer = treeNorm(w, 1, n_feats, options.ind_t, options.n_nodes);
 		}
 		break;
+		case PLAIN:
+		{
+			for (int i=0; i<n_feats; i++)
+				regularizer += CMath::abs(w[i]);
+		}
 		default:
 			SG_SERROR("WHOA?\n");
 	}
@@ -256,6 +261,39 @@ double compute_lambda_logistic(
 			SG_FREE(ATb);
 		}
 		break;
+		case PLAIN:
+		{
+			double* ATb = SG_CALLOC(double, n_feats);
+
+			int m1 = 0;
+			int m2 = 0;
+			double b = 0.0;
+			for (int i=0; i<n_vecs; i++)
+			{
+				if (y[i]>0)
+					m1++;
+				else
+					m2++;
+			}
+
+			for (int i=0; i<n_vecs; i++)
+			{
+				if (y[i]>0)
+					b = double(m2) / (n_vecs*n_vecs);
+				else
+					b = -double(m1) / (n_vecs*n_vecs);
+				
+				features->add_to_dense_vec(b,i,ATb,n_feats);
+			}
+			double max = 0.0;
+			for (int i=0; i<n_feats; i++)
+			{
+				if (CMath::abs(ATb[i]) > max)
+					max = CMath::abs(ATb[i]);
+			}
+			lambda_max = max;
+		}
+		break;
 		default: 
 			SG_SERROR("WHOAA!\n");
 	}
@@ -287,6 +325,7 @@ slep_result_t slep_logistic(
 		break;
 		case FEATURE_GROUP:
 		case FEATURE_TREE:
+		case PLAIN:
 			n_tasks = 1;
 			n_blocks = options.n_feature_blocks;
 		break;
@@ -296,8 +335,13 @@ slep_result_t slep_logistic(
 	bool done = false;
 	bool gradient_break = false;
 
+	double rsL2 = options.rsL2;
+
 	if (options.regularization!=0)
+	{
 		lambda = compute_lambda_logistic(z, features, y, n_vecs, n_feats, n_blocks, options);
+		rsL2*= lambda;
+	}
 	else 
 		lambda = z;
 
@@ -342,6 +386,7 @@ slep_result_t slep_logistic(
 		break;
 		case FEATURE_GROUP:
 		case FEATURE_TREE:
+		case PLAIN:
 		{
 			for (i=0; i<n_vecs; i++)
 				Aw[i] = features->dense_dot(i,w.matrix,n_feats);
@@ -421,6 +466,7 @@ slep_result_t slep_logistic(
 			break;
 			case FEATURE_GROUP:
 			case FEATURE_TREE:
+			case PLAIN:
 			{
 				gc[0] = 0.0;
 
@@ -443,6 +489,11 @@ slep_result_t slep_logistic(
 		//SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
 		
 		fun_s /= n_vecs;
+
+		if (options.mode==PLAIN)
+		{
+			fun_s += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
+		}
 		
 		for (i=0; i<n_feats*n_tasks; i++)
 			wp[i] = w[i];
@@ -490,6 +541,11 @@ slep_result_t slep_logistic(
 						altra(w.matrix, v, n_feats, options.ind_t, options.n_nodes, lambda/L);
 				}
 				break;
+				case PLAIN:
+				{
+					for (i=0; i<n_feats; i++)
+						w[i] = CMath::sign(v[i])*CMath::max(0.0,CMath::abs(v[i])-lambda/L);
+				}
 				default:
 					SG_SERROR("WHOA!!!\n");
 			}
@@ -521,6 +577,7 @@ slep_result_t slep_logistic(
 				break;
 				case FEATURE_GROUP:
 				case FEATURE_TREE:
+				case PLAIN:
 				{
 					for (i=0; i<n_vecs; i++)
 					{
@@ -528,13 +585,17 @@ slep_result_t slep_logistic(
 						double aa = -y[i]*(Aw[i]+c[0]);
 						double bb = CMath::max(aa,0.0);
 						
-						fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
+						fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
 					}
+					fun_x /= n_vecs;
 				}
 				break;
 				default:
 					SG_SERROR("WHOAAA!!\n");
 			}
+			
+			if (options.mode==PLAIN)
+				fun_x += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
 
 			double r_sum = SGVector<float64_t>::dot(v,v,n_feats*n_tasks);
 			double l_sum = fun_x - fun_s - SGVector<float64_t>::dot(v,g,n_feats*n_tasks);
@@ -568,7 +629,7 @@ slep_result_t slep_logistic(
 		for (t=0; t<n_tasks; t++)
 			ccp[t] = c[t] - cp[t];
 
-		double regularizer = compute_regularizer(w.matrix, n_vecs, n_feats, n_blocks, options);
+		double regularizer = compute_regularizer_logistic(w.matrix, n_vecs, n_feats, n_blocks, options);
 		
 		funcp = func;
 		func = fun_x + lambda*regularizer;

@@ -38,6 +38,7 @@
 #endif //USE_SVMLIGHT
 
  #include <shogun/classifier/FeatureBlockLogisticRegression.h>
+ #include <shogun/classifier/L1LogisticRegression.h>
  #include <shogun/machine/DirectorLinearMachine.h>
  #include <shogun/machine/DirectorKernelMachine.h>
 %}

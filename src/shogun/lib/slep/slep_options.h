@@ -26,7 +26,8 @@ IGNORE_IN_CLASSLIST enum slep_mode
 	MULTITASK_GROUP,
 	MULTITASK_TREE,
 	FEATURE_GROUP,
-	FEATURE_TREE
+	FEATURE_TREE,
+	PLAIN
 };
 
 IGNORE_IN_CLASSLIST struct slep_options
@@ -41,6 +42,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 	int regularization;
 	int n_feature_blocks;
 	int* ind;
+	double rsL2;
 	double* ind_t;
 	double* G;
 	double* gWeight;
@@ -61,6 +63,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 		opts.ind = NULL;
 		opts.ind_t = NULL;
 		opts.G = NULL;
+		opts.rsL2 = 0.0;
 		opts.mode = MULTITASK_GROUP;
 		return opts;
 	}
