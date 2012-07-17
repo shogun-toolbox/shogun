@@ -186,13 +186,21 @@ template<class T> class SGVector : public SGReferencedData
 		/// || x ||_q
 		static T qnorm(T* x, int32_t len, float64_t q);
 
-		/// x=x+alpha*y
-		static inline void vec1_plus_scalar_times_vec2(T* vec1,
-				T scalar, const T* vec2, int32_t n)
-		{
-			for (int32_t i=0; i<n; i++)
-				vec1[i]+=scalar*vec2[i];
-		}
+//		/// x=x+alpha*y
+//		static inline void vec1_plus_scalar_times_vec2(T* vec1,
+//				T scalar, const T* vec2, int32_t n)
+//		{
+//			for (int32_t i=0; i<n; i++)
+//				vec1[i]+=scalar*vec2[i];
+//		}
+
+		/// x=x+alpha*y (blas optimized)
+		static void vec1_plus_scalar_times_vec2(float64_t* vec1,
+				const float64_t scalar, const float64_t* vec2, int32_t n);
+
+		/// x=x+alpha*y (blas optimized)
+		static void vec1_plus_scalar_times_vec2(float32_t* vec1,
+				const float32_t scalar, const float32_t* vec2, int32_t n);
 
 		/// compute dot product between v1 and v2 (blas optimized)
 		static inline float64_t dot(const bool* v1, const bool* v2, int32_t n)
