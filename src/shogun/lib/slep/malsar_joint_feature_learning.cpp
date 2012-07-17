@@ -203,7 +203,7 @@ slep_result_t malsar_joint_feature_learning(
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);
 	for (int i=0; i<n_feats; i++)
 	{
-		for (int task=0; task<n_tasks; task++)
+		for (task=0; task<n_tasks; task++)
 			tasks_w[i] = Wzp(i,task);
 	}
 	SGVector<float64_t> tasks_c(n_tasks);
