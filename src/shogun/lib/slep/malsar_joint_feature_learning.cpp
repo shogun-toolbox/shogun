@@ -97,8 +97,9 @@ slep_result_t malsar_joint_feature_learning(
 
 		double Fzp = 0.0;
 
+		int inner_iter = 0;
 		// line search, Armijo-Goldstein scheme
-		while (true)
+		while (inner_iter <= 1000)
 		{
 			// compute lasso projection of Ws - gWs/gamma
 			for (task=0; task<n_tasks; task++)
@@ -109,6 +110,7 @@ slep_result_t malsar_joint_feature_learning(
 			}
 			// walk in direction of antigradient 
 			Czp = Cs - gCs/gamma;
+			std::cout << Czp;
 			
 			// compute objective at line search point
 			Fzp = 0.0;
@@ -151,6 +153,8 @@ slep_result_t malsar_joint_feature_learning(
 				break;
 			else
 				gamma *= gamma_inc;
+
+			inner_iter++;
 		}
 
 		Wz_old = Wz;

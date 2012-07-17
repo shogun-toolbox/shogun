@@ -96,8 +96,9 @@ slep_result_t malsar_low_rank(
 
 		double Fzp = 0.0;
 
+		int inner_iter = 0;
 		// line search, Armijo-Goldstein scheme
-		while (true)
+		while (inner_iter <= 1000)
 		{
 			// compute trace projection of Ws - gWs/gamma with 2*rho/gamma
 			internal::set_is_malloc_allowed(true);
