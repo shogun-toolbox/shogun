@@ -18,14 +18,15 @@ void CKernelMulticlassMachine::store_model_features()
 {
 	CKernel *kernel=((CKernelMachine *)m_machine)->get_kernel();
 	if (!kernel)
-		SG_ERROR("kernel is needed to store SV features.\n");
+		SG_ERROR("%s::store_model_features(): kernel is needed to store SV "
+				"features.\n", get_name());
 
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
 	if (!lhs)
 	{
 		SG_ERROR("%s::store_model_features(): kernel lhs is needed to store "
-		"SV features.\n");
+		"SV features.\n", get_name());
 	}
 
 	/* this map will be abused as a map */
