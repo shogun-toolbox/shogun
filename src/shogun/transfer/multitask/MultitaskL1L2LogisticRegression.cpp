@@ -70,8 +70,12 @@ bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
+#else
+	SG_WARNING("Please install Eigen3 to use MultitaskL1L2LogisticRegression\n");
+	m_tasks_w = SGMatrix<float64_t>(features->get_dim_features_space(), options.n_tasks); 
+	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
 #endif
-
+	
 	ASSERT(m_task_relation);
 
 	return true;
