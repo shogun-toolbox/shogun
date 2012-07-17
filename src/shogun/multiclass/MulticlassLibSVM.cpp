@@ -135,6 +135,8 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 				int32_t sv_idx=0;
 				for (k=0; k<model->nSV[i]; k++)
 				{
+					SG_DEBUG("setting SV[%d] to %d\n", sv_idx,
+							model->SV[offsets[i]+k]->index);
 					svm->set_support_vector(sv_idx, model->SV[offsets[i]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[j-1][offsets[i]+k]);
 					sv_idx++;
@@ -142,6 +144,8 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 
 				for (k=0; k<model->nSV[j]; k++)
 				{
+					SG_DEBUG("setting SV[%d] to %d\n", sv_idx,
+							model->SV[offsets[i]+k]->index);
 					svm->set_support_vector(sv_idx, model->SV[offsets[j]+k]->index);
 					svm->set_alpha(sv_idx, sgn*model->sv_coef[i][offsets[j]+k]);
 					sv_idx++;
@@ -172,7 +176,11 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 //				else
 //					idx=((num_classes-1)*model->label[j]+model->label[i])/2;
 //
-				SG_DEBUG("svm[%d] has %d sv (total: %d), b=%f label:(%d,%d) -> svm[%d]\n", s, num_sv, model->l, bias, model->label[i], model->label[j], idx);
+				SG_DEBUG("svm[%d] has %d sv (total: %d), b=%f "
+						"label:(%d,%d) -> svm[%d]\n",
+						s, num_sv, model->l, bias, model->label[i],
+						model->label[j], idx);
+
 				set_svm(idx, svm);
 				s++;
 			}
@@ -189,13 +197,6 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 
 		svm_destroy_model(model);
 		model=NULL;
-
-		/* the features needed for the model are all support vectors for now,
-		 * which  means that a copy of the features is stored in lhs */
-		/* TODO this can be done better, ie only store sv of underlying svms
-		 * and map indices */
-		svm_svs()=SGVector<index_t>(m_kernel->get_num_vec_lhs());
-		svm_svs().range_fill();
 
 		return true;
 	}
