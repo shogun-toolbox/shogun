@@ -16,7 +16,7 @@ def features_dense_real_modular(in_data=data):
 	f_real=RealFeatures(m_real)
 	f_long=LongIntFeatures(m_long)
 
-	if numpy.__version__ >= 1.5:
+	if numpy.__version__ >= '1.5':
 		f_real+=m_real
 		f_long+=m_long
 
