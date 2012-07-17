@@ -21,28 +21,45 @@ class CFeatures;
 
 /** @brief This class implements the linear time Maximum Mean Statistic as
  * described in [1].
+ * The MMD is the distance of two probability distributions \f$p\f$ and \f$q\f$
+ * in a RKHS.
+ * \f[
+ * \text{MMD}}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
+ * 2\textbf{E}_{x,y}\left[ k(x,y)\right]
+ * +\textbf{E}_{y,y'}\left[ k(y,y')\right]=||\mu_p - \mu_q||^2_\mathcal{F}
+ * \f]
+ *
  * Given two sets of samples \f$\{x_i\}_{i=1}^m\sim p\f$ and
  * \f$\{y_i\}_{i=1}^n\sim q\f$
  * the (unbiased) statistic is computed as
  * \f[
- * \text{MMD}_l^2[\mathcal{F},X,Y]=\frac{1}{m(m-1)}\sum_{i=1}^m\sum_{j\neq i}^m
- * k(x_i,x_j) + \frac{1}{n(n-1)}\sum_{i=1}^n\sum_{j\neq i}^nk(y_i,y_j)
- *  - \frac{2}{mn}\sum_{i=1}^m\sum_{j=1}^nk(x_i,y_j)
+ * \text{MMD}_l^2[\mathcal{F},X,Y]=\frac{1}{m_2}\sum_{i=1}^{m_2}
+ * h(z_{2i},z_{2i+1})
  * \f]
- * in a RKHS \f$\mathcal{F}\f$
+ * where
+ * \f[
+ * h(z_{2i},z_{2i+1})=k(x_{2i},x_{2i+1})+k(y_{2i},y_{2i+1})-k(x_{2i},y_{2i+1})-
+ * k(x_{2i+1},y_{2i})
+ * \f]
+ * and \f$ m_2=\lfloor\frac{m}{2} \rfloor\f$.
  *
  * Along with the statistic comes a method to compute a p-value based on a
  * Gaussian approximation of the null-distribution which is also possible in
- * linear time and constant space. Bootstrapping, of course, is also possible.
+ * linear time and constant space. Bootstrapping, is also possible.
  *
- * To choose, use
- * CTwoSampleTestStatistic::set_null_approximation_method(MMD1_GAUSSIAN).
+ * To choose, use set_null_approximation_method() and choose from
+ * MMD1_GAUSSIAN: Approximates the null-distribution with a Gaussian. Only use
+ * from at least 1000 samples.
+ *
+ * BOOTSTRAPPING: For permuting available samples to sample null-distribution
  *
  * Comes with a method for selecting kernel weights, if a combined kernel on
- * combined features is used. See optimize_kernel_weights().
+ * combined features is used. See optimize_kernel_weights(). See [2]
  *
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
+ *
+ * [2]: TODO, not yet published
  */
 class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
