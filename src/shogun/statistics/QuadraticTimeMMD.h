@@ -23,37 +23,53 @@ enum EQuadraticMMDType
 	BIASED, UNBIASED
 };
 
-/** @brief Class for the quadratic time MMD.
+/** @brief This class implements the quadratic time Maximum Mean Statistic as
+ * described in [1].
+ * The MMD is the distance of two probability distributions \f$p\f$ and \f$q\f$
+ * in a RKHS
+ * \f[
+ * \text{MMD}}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
+ * 2\textbf{E}_{x,y}\left[ k(x,y)\right]
+ * +\textbf{E}_{y,y'}\left[ k(y,y')\right]=||\mu_p - \mu_q||^2_\mathcal{F}
+ * \f]
  *
- * Allows to perform a kernel based two-sample test using empirical estimates of
- * the quadratic time MMD, which is
+ * Given two sets of samples \f$\{x_i\}_{i=1}^m\sim p\f$ and
+ * \f$\{y_i\}_{i=1}^n\sim q\f$
+ * the (unbiased) statistic is computed as
  *
- * TODO when I have internet :)
+ * \f[
+ * \text{MMD}_u^2[\mathcal{F},X,Y]=\frac{1}{m(m-1)}\sum_{i=1}^m\sum_{j\neq i}^m
+ * k(x_i,x_j) + \frac{1}{n(n-1)}\sum_{i=1}^n\sum_{j\neq i}^nk(y_i,y_j) - \frac{2}{mn}\sum_{i=1}^m\sum_{j=1}^nk(x_i,y_j)
+ * \f]
  *
- * It is possible to use two types:
- * Biased, that is: TODO
- * Unbiased, that is: TODO
+ * A biased version is
  *
- * See
- * Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
+ * \f[
+ * \text{MMD}_b^2[\mathcal{F},X,Y]=\frac{1}{m^2}\sum_{i=1}^m\sum_{j=1}^m
+ * k(x_i,x_j) + \frac{1}{n^2}\sum_{i=1}^n\sum_{j=1}^nk(y_i,y_j) -
+ * \frac{2}{mn}\sum_{i=1}^m\sum_{j=1}^nk(x_i,y_j)
+ * \f]
+ *
+ * The type (biased/unbiased) can be selected via set_statistic_type().
+ *
+ * Along with the statistic comes a method to compute a p-value based on
+ * different methods. Bootstrapping, is also possible.
+ *
+ * To choose, use set_null_approximation_method() and choose from
+ *
+ * MMD2_SPECTRUM: for a fast, consisten test based on the spectrum of the kernel
+ * matrix, as described in [2]. Only supported if LAPACK is installed.
+ *
+ * MMD2_GAMMA: for a very fast, but not consisten test based on moment matching
+ * of a Gamma distribution, as described in [2].
+ *
+ * BOOTSTRAPPING: For permuting available samples to sample null-distribution
+ *
+ * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  *
- * To choose, use set_statistic_type()
- *
- * To approximate the null-distribution in order to compute a p-value, currenlty,
- * in addition to bootstrapping (see CTwoSampleTestStatistic), two methods are
- * available (both based on the biased squared MMD):
- *
- * 1. A method that is based on the Eigenspectrum of the gram matrix of the
- * underlying data. (Only supported if LAPACK is installed)
- *
- * 2. A method that is based on moment matching of a Gamma distribution
- *
- * Both methods are described in
- * Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
+ * [2]: Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
  * A fast, consistent kernel two-sample test.
- *
- * To choose, use CTwoSampleTestStatistic::set_null_approximation_method()
  *
  */
 class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
@@ -168,7 +184,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 */
 		void set_num_eigenvalues_spectrum(index_t num_eigenvalues_spectrum);
 
-		/** @param statistic_type statistic type (biased/unboased) to use */
+		/** @param statistic_type statistic type (biased/unbiased) to use */
 		void set_statistic_type(EQuadraticMMDType statistic_type);
 
 	protected:

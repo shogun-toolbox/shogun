@@ -24,7 +24,7 @@ configure.log
 *.mex*
 *.oct
 
-# /doc/
+/doc/
 /doc/html
 /doc/doxygen
 /doc/manual
