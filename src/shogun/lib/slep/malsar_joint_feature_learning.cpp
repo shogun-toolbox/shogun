@@ -110,7 +110,6 @@ slep_result_t malsar_joint_feature_learning(
 			}
 			// walk in direction of antigradient 
 			Czp = Cs - gCs/gamma;
-			std::cout << Czp;
 			
 			// compute objective at line search point
 			Fzp = 0.0;
