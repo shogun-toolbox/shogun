@@ -48,6 +48,7 @@ class CFeatures;
  * linear time and constant space. Bootstrapping, is also possible.
  *
  * To choose, use set_null_approximation_method() and choose from
+ *
  * MMD1_GAUSSIAN: Approximates the null-distribution with a Gaussian. Only use
  * from at least 1000 samples.
  *
