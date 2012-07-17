@@ -16,11 +16,12 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/LinearARDKernel.h>
 
 namespace shogun
 {
 
-class CGaussianARDKernel: public CDotKernel
+class CGaussianARDKernel: public CLinearARDKernel
 {
 
 public:
@@ -66,52 +67,6 @@ public:
 	 */
 	inline virtual const char* get_name() const { return "GaussianARDKernel"; }
 
-
-	/** return feature class the kernel can deal with
-	 *
-	 * @return feature class DENSE
-	 */
-	inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
-
-	/** return feature type the kernel can deal with
-	 *
-	 * @return float64_t feature type
-	 */
-	virtual EFeatureType get_feature_type() { return F_DREAL; }
-
-	/*Set weight of particular feature
-	 *
-	 * @param w weight to set
-	 * @param i index of feature
-	 */
-	virtual void set_weight(float64_t w, index_t i);
-
-	/*Get weight of particular feature
-	 *
-	 * @param i index of feature
-	 *
-	 * @return weight of feature
-	 */
-	virtual float64_t get_weight(index_t i);
-
-	/** set the kernel's width
-	 *
-	 * @param w kernel width
-	 */
-	inline virtual void set_width(float64_t w)
-	{
-		m_width = w;
-	}
-
-	/** return the kernel's width
-	 *
-	 * @return kernel width
-	 */
-	inline virtual float64_t get_width() const
-	{
-		return m_width;
-	}
-
 	/** return derivative with respect to specified parameter
 	 *
 	 * @param  param the parameter
@@ -135,19 +90,11 @@ public:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-	/** init feature weights
-	 *
-	 */
-	void init_ft_weights();
-
 private:
 
 	void init();
 
 protected:
-
-	/** weights */
-	SGVector<float64_t> m_weights;
 
 	/* kernel width */
 	float64_t m_width;

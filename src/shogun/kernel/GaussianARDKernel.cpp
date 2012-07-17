@@ -18,14 +18,14 @@
 using namespace shogun;
 
 CGaussianARDKernel::CGaussianARDKernel()
-: CDotKernel()
+: CLinearARDKernel()
 {
 	init();
 }
 
 
 CGaussianARDKernel::CGaussianARDKernel(int32_t size, float64_t width)
-: CDotKernel(size), m_width(width)
+: CLinearARDKernel(size), m_width(width)
 {
 	init();
 }
@@ -33,85 +33,32 @@ CGaussianARDKernel::CGaussianARDKernel(int32_t size, float64_t width)
 CGaussianARDKernel::CGaussianARDKernel(CDenseFeatures<float64_t>* l,
 		CDenseFeatures<float64_t>* r,
 		int32_t size, float64_t width)
-: CDotKernel(size), m_width(width)
+: CLinearARDKernel(size), m_width(width)
 {
 	init();
-	init(l,r);
+}
+
+bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
+{
+	return CLinearARDKernel::init(l,r);
 }
 
 void CGaussianARDKernel::init()
 {
 	m_width = 2.0;
-	m_weights = SGVector<float64_t>();
 
-	SG_ADD(&m_weights, "weights", "Feature Weights", MS_AVAILABLE);
 	SG_ADD(&m_width, "width", "Kernel Width", MS_AVAILABLE);
 }
 
 CGaussianARDKernel::~CGaussianARDKernel()
 {
-	CKernel::cleanup();
-}
-
-bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
-{
-	CDotKernel::init(l, r);
-
-	init_ft_weights();
-
-	SG_DEBUG("Initialized GaussianARDKernel (%p).\n", this);
-
-	return init_normalizer();
-}
-
-void CGaussianARDKernel::init_ft_weights()
-{
-	if (!lhs || !rhs)
-		return;
-
-	int32_t alen, blen;
-
-	alen = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
-	blen = ((CDenseFeatures<float64_t>*) rhs)->get_num_features();
-
-	REQUIRE(alen==blen, "Number of Right and Left Hand "\
-			"Features Must be the Same./n");
-
-	if (m_weights.vlen != alen)
-	{
-		m_weights = SGVector<float64_t>(alen);
-
-		for (int32_t i=0; i < alen; i++)
-			m_weights[i]=1.0;
-	}
-
-	SG_DEBUG("Initialized weights for GaussianARDKernel (%p).\n", this);
-}
-
-void CGaussianARDKernel::set_weight(float64_t w, index_t i)
-{
-	if (i >= m_weights.vlen)
-	{
-		SG_ERROR("Index %i out of range for GaussianARDKernel."\
-				 "Number of features is %i.\n", i, m_weights.vlen);
-	}
-
-	m_weights[i]=w;
-}
-
-float64_t CGaussianARDKernel::get_weight(index_t i)
-{
-	if (i >= m_weights.vlen)
-	{
-		SG_ERROR("Index %i out of range for GaussianARDKernel."\
-				 "Number of features is %i.\n", i, m_weights.vlen);
-	}
-
-	return m_weights[i];
 }
 
 float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	if (!lhs || !rhs)
+		SG_ERROR("Features not set!\n");
+
 	SGVector<float64_t> avec
 		= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
 	SGVector<float64_t> bvec
@@ -131,8 +78,8 @@ float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param,
 		CSGObject* obj, index_t index)
 {
-
-	SGMatrix<float64_t> result();
+	if (!lhs || !rhs)
+		SG_ERROR("Features not set!\n");
 
 	if (!strcmp(param->m_name, "weights") && obj == this)
 	{
@@ -187,6 +134,8 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 						result/(m_width*m_width);
 			}
 		}
+
+		return derivative;
 	}
 
 

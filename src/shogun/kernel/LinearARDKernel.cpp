@@ -108,6 +108,9 @@ float64_t CLinearARDKernel::get_weight(index_t i)
 
 float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	if (!lhs || !rhs)
+		SG_ERROR("Features not set!\n");
+
 	SGVector<float64_t> avec
 		= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
 	SGVector<float64_t> bvec
@@ -127,6 +130,9 @@ float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(TParameter* param,
 		CSGObject* obj, index_t index)
 {
+	if (!lhs || !rhs)
+		SG_ERROR("Features not set!\n");
+
 	if (!strcmp(param->m_name, "weights") && obj == this)
 	{
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);

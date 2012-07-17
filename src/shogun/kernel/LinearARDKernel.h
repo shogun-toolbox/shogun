@@ -120,7 +120,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+	virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
 			CSGObject* obj, index_t index);
 
 private:

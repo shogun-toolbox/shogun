@@ -187,6 +187,7 @@ CGradientModelSelection::~CGradientModelSelection()
 
 void CGradientModelSelection::test_gradients()
 {
+
 	float64_t delta = 0.001;
 	float64_t error_tol = 0.1;
 	float64_t orig_value, new_value;
@@ -234,7 +235,7 @@ void CGradientModelSelection::test_gradients()
 		    if (!parent || !m_current_combination->set_parameter(
 		    		param->m_name, new_value, parent, index))
 		    {
-				SG_SERROR("Parameter %s not found in combination tree.\n",
+				SG_ERROR("Parameter %s not found in combination tree.\n",
 						param->m_name);
 		    }
 
@@ -260,7 +261,7 @@ void CGradientModelSelection::test_gradients()
 			if (!parent || !m_current_combination->set_parameter(
 		    		param->m_name, orig_value, parent, index))
 			{
-				SG_SERROR("Parameter %s not found in combination tree.\n",
+				SG_ERROR("Parameter %s not found in combination tree.\n",
 						param->m_name);
 			}
 
@@ -331,7 +332,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    if (final->m_datatype.m_ctype == CT_VECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
@@ -344,7 +345,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
@@ -389,7 +390,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    if (final->m_datatype.m_ctype == CT_VECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
@@ -402,7 +403,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
