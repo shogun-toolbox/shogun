@@ -48,7 +48,9 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 			CMulticlassStrategy *strategy, float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CMulticlassSVM();
 
-		/** create multiclass SVM
+		/** create multiclass SVM. Appends the appropriate number of svm pointer
+		 * (depending on multiclass strategy) to m_machines. All pointers are
+		 * initialized with NULL.
 		 *
 		 * @param num_classes number of classes in SVM
 		 * @return if creation was successful
