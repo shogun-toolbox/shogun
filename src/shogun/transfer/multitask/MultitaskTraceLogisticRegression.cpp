@@ -66,7 +66,7 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	m_tasks_c = model.c;
 #else
 	SG_WARNING("Please install Eigen3 to use MultitaskTraceLogisticRegression\n");
-	m_tasks_w = SGMatrix<float64_t>((((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
 	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
 #endif
 
