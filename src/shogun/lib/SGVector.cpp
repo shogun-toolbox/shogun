@@ -292,6 +292,32 @@ void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
 }
 
 template <class T>
+void SGVector<T>::vec1_plus_scalar_times_vec2(float64_t* vec1,
+		const float64_t scalar, const float64_t* vec2, int32_t n)
+{
+#ifdef HAVE_LAPACK
+	int32_t skip=1;
+	cblas_daxpy(n, scalar, vec2, skip, vec1, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		vec1[i]+=scalar*vec2[i];
+#endif
+}
+
+template <class T>
+void SGVector<T>::vec1_plus_scalar_times_vec2(float32_t* vec1,
+		const float32_t scalar, const float32_t* vec2, int32_t n)
+{
+#ifdef HAVE_LAPACK
+	int32_t skip=1;
+	cblas_saxpy(n, scalar, vec2, skip, vec1, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		vec1[i]+=scalar*vec2[i];
+#endif
+}
+
+template <class T>
 float64_t SGVector<T>::dot(const float64_t* v1, const float64_t* v2, int32_t n)
 {
 	float64_t r=0;
