@@ -1,3 +1,4 @@
+import numpy
 from shogun.Features import RealFeatures
 from shogun.Features import LongIntFeatures
 
@@ -15,14 +16,17 @@ def features_dense_real_modular(in_data=data):
 	f_real=RealFeatures(m_real)
 	f_long=LongIntFeatures(m_long)
 
-	f_real+=m_real
-	f_long+=m_long
+	if numpy.__version__ >= 1.5:
+		f_real+=m_real
+		f_long+=m_long
 
-	f_real*=m_real
-	f_long*=m_long
+		f_real*=m_real
+		f_long*=m_long
 
-	f_real-=m_real
-	f_long-=m_long
+		f_real-=m_real
+		f_long-=m_long
+	else:
+		print "numpy version >= 1.5 is needed"
 
 	f_real+=f_real
 	f_long+=f_long
@@ -33,8 +37,8 @@ def features_dense_real_modular(in_data=data):
 	f_real-=f_real
 	f_long-=f_long
 
-	print f_real
-	print f_long
+#	print f_real
+#	print f_long
 
 	try:
 		mem_real=memoryview(f_real)
