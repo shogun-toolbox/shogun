@@ -321,13 +321,19 @@ template <class T>
 float64_t SGVector<T>::dot(const float64_t* v1, const float64_t* v2, int32_t n)
 {
 	float64_t r=0;
+#ifdef HAVE_EIGEN3
+	Eigen::Map<const Eigen::VectorXd> ev1(v1,n);
+	Eigen::Map<const Eigen::VectorXd> ev2(v2,n);
+	r = ev1.dot(ev2);
+#else
 #ifdef HAVE_LAPACK
 	int32_t skip=1;
 	r = cblas_ddot(n, v1, skip, v2, skip);
 #else
 	for (int32_t i=0; i<n; i++)
 		r+=v1[i]*v2[i];
-#endif
+#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 	return r;
 }
 
@@ -335,13 +341,19 @@ template <class T>
 float32_t SGVector<T>::dot(const float32_t* v1, const float32_t* v2, int32_t n)
 {
 	float32_t r=0;
+#ifdef HAVE_EIGEN3
+	Eigen::Map<const Eigen::VectorXf> ev1(v1,n);
+	Eigen::Map<const Eigen::VectorXf> ev2(v2,n);
+	r = ev1.dot(ev2);
+#else
 #ifdef HAVE_LAPACK
 	int32_t skip=1;
 	r = cblas_sdot(n, v1, skip, v2, skip);
 #else
 	for (int32_t i=0; i<n; i++)
 		r+=v1[i]*v2[i];
-#endif
+#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 	return r;
 }
 
