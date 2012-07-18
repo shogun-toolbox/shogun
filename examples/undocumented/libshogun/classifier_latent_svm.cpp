@@ -33,44 +33,56 @@ struct CHOGFeatures : public CLatentData
 	virtual const char* get_name() const { return "HOGFeatures"; }
 };
 
-static void psi_hog(CLatentLinearMachine& llm, CLatentData* f, CLatentData* l, float64_t* psi)
+class CObjectDetector: public CLatentModel
 {
-	CHOGFeatures* hf = (CHOGFeatures*) f;
-	CBoundingBox* bb = (CBoundingBox*) l;
-	for (int i = 0; i < llm.get_psi_size(); ++i)
-	{
-		psi[i] = hf->hog[bb->x_pos][bb->y_pos][i];
-	}
-}
+	public:
+		CObjectDetector() {}
+		CObjectDetector(CLatentFeatures* feat, CLatentLabels* labels) : CLatentModel(feat, labels) {}
 
-static CLatentData* infer_latent_variable(CLatentLinearMachine& llm, CLatentData* f)
-{
-	int32_t pos_x = 0, pos_y = 0;
-	int32_t w_dim;
-	float64_t max_score;
+		virtual ~CObjectDetector() {}
 
-	SGVector<float64_t> w = llm.get_w();
-	CHOGFeatures* hf = dynamic_cast<CHOGFeatures*> (f);
-	for (int i = 0; i < hf->width; ++i)
-	{
-		for (int j = 0; j < hf->height; ++j)
+		virtual int32_t get_dim() const { return HOG_SIZE; }
+
+		virtual SGVector<float64_t> get_psi_feature_vector(index_t idx)
 		{
-			float64_t score = w.dot(w.vector, hf->hog[i][j], w.vlen);
-
-			if (score > max_score)
+			CHOGFeatures* hf = (CHOGFeatures*)m_features->get_sample(idx);
+			CBoundingBox* bb = (CBoundingBox*)m_labels->get_latent_label(idx);
+			SGVector<float64_t> psi_v(get_dim());
+			for (int i = 0; i < psi_v.vlen; ++i)
 			{
-				pos_x = i;
-				pos_y = j;
-				max_score = score;
+				psi_v.vector[i] = hf->hog[bb->x_pos][bb->y_pos][i];
 			}
+			return psi_v;
 		}
-	}
-	SG_SDEBUG("%d %d %f\n", pos_x, pos_y, max_score);
-	CBoundingBox* h = new CBoundingBox(pos_x, pos_y);
-	SG_REF(h);
 
-	return h;
-}
+		virtual CLatentData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
+		{
+			int32_t pos_x = 0, pos_y = 0;
+			float64_t max_score;
+
+			CHOGFeatures* hf = (CHOGFeatures*)m_features->get_sample(idx);
+			for (int i = 0; i < hf->width; ++i)
+			{
+				for (int j = 0; j < hf->height; ++j)
+				{
+					float64_t score = w.dot(w.vector, hf->hog[i][j], w.vlen);
+
+					if (score > max_score)
+					{
+						pos_x = i;
+						pos_y = j;
+						max_score = score;
+					}
+				}
+			}
+			SG_SDEBUG("%d %d %f\n", pos_x, pos_y, max_score);
+			CBoundingBox* h = new CBoundingBox(pos_x, pos_y);
+			SG_REF(h);
+
+			return h;
+		}
+
+};
 
 static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& labels)
 {
@@ -176,9 +188,8 @@ int main(int argc, char** argv)
 	/* train the classifier */
 	float64_t C = 10.0;
 
-	CLatentLinearMachine llm(C, train_feats, train_labels, HOG_SIZE);
-	llm.set_psi(psi_hog);
-	llm.set_infer(infer_latent_variable);
+	CObjectDetector* od = new CObjectDetector(train_feats, train_labels);
+	CLatentLinearMachine llm(od, C);
 	llm.train();
 
 	//  CLatentFeatures* test_feats = NULL;

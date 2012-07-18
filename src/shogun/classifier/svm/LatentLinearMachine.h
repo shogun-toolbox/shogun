@@ -13,17 +13,10 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/labels/LatentLabels.h>
-#include <shogun/features/LatentFeatures.h>
+#include <shogun/latent/LatentModel.h>
 
 namespace shogun
 {
-	class CLatentLinearMachine;
-
-	typedef void (*argmax_func) (CLatentLinearMachine&, void* userData);
-	typedef void (*psi_func) (CLatentLinearMachine&, CLatentData* x, CLatentData* h, float64_t*);
-	typedef CLatentData* (*infer_func) (CLatentLinearMachine&, CLatentData* x);
-
 	class CLatentLinearMachine: public CLinearMachine
 	{
 
@@ -39,10 +32,7 @@ namespace shogun
 			 * @param traindat training features
 			 * @param trainlab labels for training features
 			 */
-			CLatentLinearMachine(float64_t C,
-					CLatentFeatures* traindat,
-					CLabels* trainlab,
-					index_t psi_size);
+			CLatentLinearMachine(CLatentModel* model, float64_t C);
 
 			virtual ~CLatentLinearMachine();
 
@@ -62,22 +52,22 @@ namespace shogun
 			/** get features
 			 *
 			 * @return features
-			 */
 			virtual CDotFeatures* get_features()
 			{ 
 				SG_REF(features);
 				return features;
 			}
+			*/
 
 			/** get latent features
 			 *
 			 * @return features
-			 */
 			virtual CLatentFeatures* get_latent_features()
 			{
 				SG_REF(m_latent_feats);
 				return m_latent_feats;
 			}
+			*/
 
 			/** Returns the name of the SGSerializable instance.
 			 *
@@ -115,13 +105,13 @@ namespace shogun
 			 *
 			 * @return C1
 			 */
-			inline float64_t get_C1 () { return m_C1; }
+			inline float64_t get_C1() { return m_C1; }
 
 			/** get C2
 			 *
 			 * @return C2
 			 */
-			inline float64_t get_C2 () { return m_C2; }
+			inline float64_t get_C2() { return m_C2; }
 
 			/** set maximum iterations
 			 *
@@ -135,29 +125,27 @@ namespace shogun
 			 */
 			inline int32_t get_max_iterations() { return m_max_iter; }
 
-			void set_argmax(argmax_func usr_argmax);
+			/** set latent model
+			 *
+			 * @param latent_model user defined latent model
+			 */
+			void set_model(CLatentModel* latent_model);
 
-			void set_psi(psi_func usr_psi);
-
-			void set_infer(infer_func usr_infer);
-
-			index_t get_psi_size() const { return m_psi_size; }
-			void set_psi_size(index_t psi_size) { m_psi_size = psi_size; }
+			virtual bool train_require_labels() const { return false; }
 
 		protected:
 			virtual bool train_machine(CFeatures* data=NULL);
-			virtual void compute_psi();
+
+			/** cache PSI vectors */
+			virtual void cache_psi_vectors();
 
 		private:
-			static void default_argmax_h(CLatentLinearMachine&, void* userData);
-
 			/** initalize the values to default values */
 			void init();
 
 		private:
-			argmax_func argmax_h;
-			psi_func psi;
-			infer_func infer;
+			/** Latent model */
+			CLatentModel* m_model;
 			/** C1 */
 			float64_t m_C1;
 			/** C2 */
@@ -166,10 +154,6 @@ namespace shogun
 			float64_t m_epsilon;
 			/** max iterations */
 			int32_t m_max_iter;
-			/** psi size */
-			index_t m_psi_size;
-			/** Latent Features */
-			CLatentFeatures* m_latent_feats;
 	};
 }
 
