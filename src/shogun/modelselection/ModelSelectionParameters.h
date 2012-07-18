@@ -137,20 +137,22 @@ public:
 			float64_t step=1.0, float64_t type_base=2.0);
 
 	void build_values_vector(float64_t min, float64_t max, ERangeType type,
-			float64_t step=1.0, float64_t type_base=2.0);
+			void* vector, index_t* size, float64_t step=1.0,
+			float64_t type_base=2.0);
 
 	void build_values_sgvector(float64_t min, float64_t max, ERangeType type,
-			float64_t step=1.0, float64_t type_base=2.0);
+			void* vector, float64_t step=1.0, float64_t type_base=2.0);
 
 	/** int32_t wrapper for build_values() */
 	void build_values(int32_t min, int32_t max, ERangeType type, int32_t step=1,
 			int32_t type_base=2);
 
-	void build_values_vector(int32_t min, int32_t max, ERangeType type, int32_t step=1,
+	void build_values_vector(int32_t min, int32_t max, ERangeType type,
+			void* vector, index_t* size, int32_t step=1,
 			int32_t type_base=2);
 
-	void build_values_sgvector(int32_t min, int32_t max, ERangeType type, int32_t step=1,
-			int32_t type_base=2);
+	void build_values_sgvector(int32_t min, int32_t max, ERangeType type, void* vector,
+			int32_t step=1, int32_t type_base=2);
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
@@ -199,9 +201,10 @@ private:
 	const char* m_node_name;
 	void* m_values;
 	index_t m_values_length;
-	index_t m_vector_length;
+	index_t* m_vector_length;
 	CDynamicObjectArray* m_child_nodes;
 	EMSParamType m_value_type;
+	void*	m_vector;
 };
 
 /** Creates an array of values specified by the parameters.

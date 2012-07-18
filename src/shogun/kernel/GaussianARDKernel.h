@@ -16,11 +16,12 @@
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/LinearARDKernel.h>
 
 namespace shogun
 {
 
-class CGaussianARDKernel: public CDotKernel
+class CGaussianARDKernel: public CLinearARDKernel
 {
 
 public:
@@ -56,61 +57,26 @@ public:
 
 	/** return what type of kernel we are
 	 *
-	 * @return kernel type LINEARARD
+	 * @return kernel type GAUSSIANARD
 	 */
 	virtual EKernelType get_kernel_type() { return K_GAUSSIANARD; }
 
 	/** return the kernel's name
 	 *
-	 * @return name LinearARDKernel
+	 * @return name GaussianARDKernel
 	 */
 	inline virtual const char* get_name() const { return "GaussianARDKernel"; }
 
-
-	/** return feature class the kernel can deal with
+	/** return derivative with respect to specified parameter
 	 *
-	 * @return feature class SIMPLE
+	 * @param  param the parameter
+	 * @param obj the object that owns the parameter
+	 * @index index the index of the element if parameter is a vector
+	 *
+	 * @return gradient with respect to parameter
 	 */
-	inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
-
-	/** return feature type the kernel can deal with
-	 *
-	 * @return float64_t feature type
-	 */
-	virtual EFeatureType get_feature_type() { return F_DREAL; }
-
-	/*Set weight of particular feature
-	 *
-	 * @param w weight to set
-	 * @param i index of feature
-	 */
-	virtual void set_weight(float64_t w, index_t i);
-
-	/*Get weight of particular feature
-	 *
-	 * @param i index of feature
-	 *
-	 * @return weight of feature
-	 */
-	virtual float64_t get_weight(index_t i);
-
-	/** set the kernel's width
-	 *
-	 * @param w kernel width
-	 */
-	inline virtual void set_width(float64_t w)
-	{
-		m_width = w;
-	}
-
-	/** return the kernel's width
-	 *
-	 * @return kernel width
-	 */
-	inline virtual float64_t get_width() const
-	{
-		return m_width;
-	}
+	virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+			CSGObject* obj, index_t index = -1);
 
 	protected:
 
@@ -124,20 +90,11 @@ public:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-	/** init feature weights
-	 *
-	 * @return if initialization was successful
-	 */
-	void init_ft_weights();
-
 private:
 
 	void init();
 
 protected:
-
-	/** weights */
-	SGVector<float64_t> m_weights;
 
 	/* kernel width */
 	float64_t m_width;

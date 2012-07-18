@@ -69,7 +69,7 @@ public:
 
 	/** return feature class the kernel can deal with
 	 *
-	 * @return feature class SIMPLE
+	 * @return feature class DENSE
 	 */
 	inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
@@ -111,6 +111,17 @@ public:
 	 * @return if initialization was successful
 	 */
 	void init_ft_weights();
+
+	/** return derivative with respect to specified parameter
+	 *
+	 * @param  param the parameter
+	 * @param obj the object that owns the parameter
+	 * @index index the index of the element if parameter is a vector
+	 *
+	 * @return gradient with respect to parameter
+	 */
+	virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+			CSGObject* obj, index_t index);
 
 private:
 

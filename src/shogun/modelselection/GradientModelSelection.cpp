@@ -38,15 +38,23 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
 		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
 
+	if ((unsigned)result->total_variables != n)
+	{
+		SG_SERROR("Mismatch between total variables in result and variables in " \
+				"NLOPT!\n");
+	}
+
 	shogun::CMachine* machine = m_machine_eval->get_machine();
 
 	if (print_state)
 		result->print_result();
 
+	index_t curr_index = 0;
+
 	/*Set parameter values from x vector*/
-	for (unsigned int i = 0; i < n; i++)
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, float64_t>* node =
+		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
 				result->gradient.get_node_ptr(i);
 
 		TParameter* param = node->key;
@@ -55,41 +63,54 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 
 	    if (param->m_datatype.m_ctype == CT_VECTOR)
 	    {
+	    	if (!param->m_datatype.m_length_y)
+	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+
 	    	index_t length = *(param->m_datatype.m_length_y);
+
 	    	for (index_t j = 0; j < length; j++)
 	    	{
 	    		if (!parent || !m_current_combination->set_parameter(
-	    				param->m_name, (float64_t)x[i+j], parent, j))
+	    				param->m_name, (float64_t)x[curr_index+j], parent, j))
 	    		{
 	    					SG_SERROR("Parameter %s not found in combination \
 	    							tree.\n",
 	    							param->m_name);
 	    		}
 	    	}
-	    	i += length;
+
+	    	curr_index += length;
 	    }
 
 	    else if (param->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
+	    	if (!param->m_datatype.m_length_y)
+	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+
 	    	index_t length = *(param->m_datatype.m_length_y);
+
 	    	for (index_t j = 0; j < length; j++)
 	    	{
 	    		if (!parent || !m_current_combination->set_parameter(
-	    				param->m_name, (float64_t)x[i+j], parent, j))
+	    				param->m_name, (float64_t)x[curr_index+j], parent, j))
 	    		{
 	    					SG_SERROR("Parameter %s not found in combination \
 	    							tree.\n",
 	    							param->m_name);
 	    		}
 	    	}
-	    	i += length;
+	    	curr_index += length;
 	    }
 
-	    else if (!parent || !m_current_combination->set_parameter(
-	    		param->m_name, (float64_t)x[i], parent))
+	    else
 	    {
-			SG_SERROR("Parameter %s not found in combination tree.\n",
-					param->m_name);
+	    	if (!parent || !m_current_combination->set_parameter(
+	    			param->m_name, (float64_t)x[curr_index], parent))
+	    	{
+	    		SG_SERROR("Parameter %s not found in combination tree.\n",
+	    				param->m_name);
+	    	}
+	    	curr_index++;
 	    }
 	}
 
@@ -106,12 +127,18 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
 		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
 
+	curr_index = 0;
+
 	/*Store the gradient into the grad vector*/
-	for (unsigned int i = 0; i < n; i++)
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, float64_t>* node =
+		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
 				result->gradient.get_node_ptr(i);
-		grad[i] = node->data;
+
+		for(index_t j = 0; j < node->data.vlen; j++)
+			grad[curr_index+j] = node->data[j];
+
+		curr_index += node->data.vlen;
 	}
 
 	/*Get function value*/
@@ -159,67 +186,89 @@ CGradientModelSelection::~CGradientModelSelection()
 
 void CGradientModelSelection::test_gradients()
 {
-	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
 
-	float64_t delta = 0.01;
+	float64_t delta = 0.001;
+	float64_t error_tol = 0.1;
 	float64_t orig_value, new_value;
 	float64_t orig_eval, new_eval;
 	float64_t approx_grad, true_grad;
 
 	CMachine* machine = m_machine_eval->get_machine();
 
+	m_current_combination->apply_to_modsel_parameter(
+				machine->m_model_selection_parameters);
+
+	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
+
 	/*Set parameter values from x vector*/
 	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, float64_t>* node =
+		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
 				result->gradient.get_node_ptr(i);
 
 		orig_eval = result->quantity[0];
 
 		TParameter* param = node->key;
-		true_grad = node->data;
 
-		orig_value = *((float64_t*)param->m_parameter);
-		new_value = orig_value+delta;
-
-	    CSGObject* parent = result->parameter_dictionary.get_element(param);
-
-	    if (!parent || !m_current_combination->set_parameter(
-	    		param->m_name, new_value, parent))
-	    {
-			SG_SERROR("Parameter %s not found in combination tree.\n",
-					param->m_name);
-	    }
-
-		m_current_combination->apply_to_modsel_parameter(
-				machine->m_model_selection_parameters);
-
-		CGradientResult* new_result =
-				(CGradientResult*)(m_machine_eval->evaluate());
-
-		new_eval = new_result->quantity[0];
-
-		approx_grad = (new_eval-orig_eval)/delta;
-
-		if (abs(approx_grad - true_grad) > 0.1)
+		for (index_t j = 0; j < node->data.vlen; j++)
 		{
-			SG_ERROR("Gradient of function with respect to %s incorrect.\n" \
-					  "True value is approximately %f, but calculated value is" \
-					  "%f", param->m_name,
-					  approx_grad, true_grad);
+			true_grad = node->data[j];
+
+			index_t index = -1;
+
+			if (param->m_datatype.m_ctype == CT_VECTOR ||
+				param->m_datatype.m_ctype == CT_SGVECTOR)
+			{
+				index = j;
+				orig_value = (*((float64_t**)param->m_parameter))[j];
+			}
+
+			else
+				orig_value = *((float64_t*)param->m_parameter);
+
+			new_value = orig_value+delta;
+
+		    CSGObject* parent = result->parameter_dictionary.get_element(param);
+
+
+		    if (!parent || !m_current_combination->set_parameter(
+		    		param->m_name, new_value, parent, index))
+		    {
+				SG_ERROR("Parameter %s not found in combination tree.\n",
+						param->m_name);
+		    }
+
+			m_current_combination->apply_to_modsel_parameter(
+					machine->m_model_selection_parameters);
+
+			CGradientResult* new_result =
+					(CGradientResult*)(m_machine_eval->evaluate());
+
+			new_eval = new_result->quantity[0];
+
+			approx_grad = (new_eval-orig_eval)/delta;
+
+			if (abs(approx_grad - true_grad) > error_tol)
+			{
+				SG_ERROR("Gradient of function with respect to variable %i of %s" \
+						  " is incorrect.\n" \
+						  "True value is approximately %f, but calculated value is" \
+						  " %f\n", j, param->m_name,
+						  approx_grad, true_grad);
+			}
+
+			if (!parent || !m_current_combination->set_parameter(
+		    		param->m_name, orig_value, parent, index))
+			{
+				SG_ERROR("Parameter %s not found in combination tree.\n",
+						param->m_name);
+			}
+
+			m_current_combination->apply_to_modsel_parameter(
+					machine->m_model_selection_parameters);
+
+			SG_UNREF(new_result);
 		}
-
-		if (!parent || !m_current_combination->set_parameter(
-	    		param->m_name, orig_value, parent))
-		{
-			SG_SERROR("Parameter %s not found in combination tree.\n",
-					param->m_name);
-		}
-
-		m_current_combination->apply_to_modsel_parameter(
-				machine->m_model_selection_parameters);
-
-		SG_UNREF(new_result);
 	}
 
 	SG_UNREF(machine);
@@ -238,7 +287,6 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	CMachine* machine = m_machine_eval->get_machine();
 
-
 	if (print_state)
 	{
 		SG_PRINT("trying combination:\n");
@@ -248,72 +296,26 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	m_current_combination->apply_to_modsel_parameter(
 			machine->m_model_selection_parameters);
 
-
 	/*How many of these parameters have derivatives?*/
 	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
 
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
 		SG_ERROR("Evaluation result not a GradientEvaluationResult!");
 
-
-
-	int n = result->gradient.get_num_elements();
+	index_t n = result->total_variables;
 
 	double* lb = SG_MALLOC(double, n);
 	double* x = SG_MALLOC(double, n);
 
-	CParameterCombination* lower_combination =
-			m_model_parameters->get_single_combination(false);
-
-	//Set lower bounds for parameters
-	for (index_t i = 0; i < n; i++)
-	{
-		shogun::CMapNode<TParameter*, float64_t>* node =
-				result->gradient.get_node_ptr(i);
-	    TParameter* param = node->key;
-
-
-	    CSGObject* parent = result->parameter_dictionary.get_element(param);
-
-	    TParameter* final = lower_combination->get_parameter(
-	    		param->m_name, parent);
-
-	    if (!final)
-	    {
-	    	SG_ERROR("Could not find parameter %s "\
-	    			"in Parameter Combination\n", param->m_name);
-	    }
-
-	    if (final->m_datatype.m_ctype == CT_VECTOR)
-	    {
-	    	index_t length = *(final->m_datatype.m_length_y);
-	    	for (index_t j = 0; j < length; j++)
-	    	{
-	    		lb[i+j] = *((float64_t**)(final->m_parameter))[j];
-	    	}
-	    	i += length;
-	    }
-
-	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
-	    {
-	    	index_t length = *(final->m_datatype.m_length_y);
-	    	for (index_t j = 0; j < length; j++)
-	    	{
-	    		lb[i+j] = *((float64_t**)(final->m_parameter))[j];
-	    	}
-	    	i += length;
-	    }
-
-	    else
-	    	lb[i] = *((float64_t*)(final->m_parameter));
-	}
+	index_t cur_index = 0;
 
 	//Update x with initial values
-	for (index_t i = 0; i < n; i++)
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, float64_t>* node =
+		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
 				result->gradient.get_node_ptr(i);
-	    TParameter* param = node->key;
+
+		TParameter* param = node->key;
 
 	    CSGObject* parent = result->parameter_dictionary.get_element(param);
 
@@ -328,24 +330,95 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	    if (final->m_datatype.m_ctype == CT_VECTOR)
 	    {
+	    	if (!param->m_datatype.m_length_y)
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+
 	    	index_t length = *(final->m_datatype.m_length_y);
+
 	    	for (index_t j = 0; j < length; j++)
-	    		x[i+j] = *((float64_t**)(final->m_parameter))[j];
-	    	i += length;
+	    		x[cur_index+j] = *((float64_t**)(final->m_parameter))[j];
+
+	    	cur_index += length;
 	    }
 
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
+	    	if (!param->m_datatype.m_length_y)
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+
 	    	index_t length = *(final->m_datatype.m_length_y);
+
 	    	for (index_t j = 0; j < length; j++)
-	    		x[i+j] = *((float64_t**)(final->m_parameter))[j];
-	    	i += length;
+	    		x[cur_index+j] = (*(float64_t**)(final->m_parameter))[j];
+
+	    	cur_index += length;
 	    }
 
 	    else
-	    	x[i] = *((float64_t*)(final->m_parameter));
+	    {
+	    	x[cur_index] = *((float64_t*)(final->m_parameter));
+	    	cur_index++;
+	    }
+
 	}
 
+	cur_index = 0;
+
+	CParameterCombination* lower_combination =
+			m_model_parameters->get_single_combination(false);
+
+	//Update x with initial values
+	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
+	{
+		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
+				result->gradient.get_node_ptr(i);
+
+		TParameter* param = node->key;
+
+	    CSGObject* parent = result->parameter_dictionary.get_element(param);
+
+	    TParameter* final = lower_combination->get_parameter(
+	    		param->m_name, parent);
+
+	    if (!final)
+	    {
+	    	SG_ERROR("Could not find parameter %s "\
+	    			"in Parameter Combination\n", param->m_name);
+	    }
+
+	    if (final->m_datatype.m_ctype == CT_VECTOR)
+	    {
+	    	if (!param->m_datatype.m_length_y)
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+
+	    	index_t length = *(final->m_datatype.m_length_y);
+
+	    	for (index_t j = 0; j < length; j++)
+	    		lb[cur_index+j] = *((float64_t**)(final->m_parameter))[j];
+
+	    	cur_index += length;
+	    }
+
+	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
+	    {
+	    	if (!param->m_datatype.m_length_y)
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+
+	    	index_t length = *(final->m_datatype.m_length_y);
+
+	    	for (index_t j = 0; j < length; j++)
+	    		lb[cur_index+j] = (*(float64_t**)(final->m_parameter))[j];
+
+	    	cur_index += length;
+	    }
+
+	    else
+	    {
+	    	lb[cur_index] = *((float64_t*)(final->m_parameter));
+	    	cur_index++;
+	    }
+
+	}
 
 	//Setting up nlopt
 	nlopt_opt opt;
@@ -389,8 +462,8 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	//Clean up.
 	SG_FREE(lb);
-    SG_FREE(x);
-    nlopt_destroy(opt);
+	SG_FREE(x);
+	nlopt_destroy(opt);
 
 	//Admittedly weird, but I am unreferencing
 	//m_current_combination from this stack and

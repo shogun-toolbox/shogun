@@ -61,6 +61,9 @@ bool CLinearARDKernel::init(CFeatures* l, CFeatures* r)
 
 void CLinearARDKernel::init_ft_weights()
 {
+	if (!lhs || !rhs)
+		return;
+
 	int32_t alen, blen;
 
 	alen = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
@@ -69,17 +72,21 @@ void CLinearARDKernel::init_ft_weights()
 	REQUIRE(alen==blen, "Number of Right and Left Hand "\
 			"Features Must be the Same./n");
 
-	m_weights = SGVector<float64_t>(alen);
+	if (m_weights.vlen != alen)
+	{
+		m_weights = SGVector<float64_t>(alen);
 
-	for (int32_t i=0; i < alen; i++)
-		m_weights[i]=1.0;
+		for (int32_t i=0; i < alen; i++)
+			m_weights[i]=1.0;
+	}
 
 	SG_DEBUG("Initialized weights for LinearARDKernel (%p).\n", this);
+
 }
 
 void CLinearARDKernel::set_weight(float64_t w, index_t i)
 {
-	if (i > m_weights.vlen-1)
+	if (i >= m_weights.vlen)
 	{
 		SG_ERROR("Index %i out of range for LinearARDKernel."\
 				 "Number of features is %i.\n", i, m_weights.vlen);
@@ -90,7 +97,7 @@ void CLinearARDKernel::set_weight(float64_t w, index_t i)
 
 float64_t CLinearARDKernel::get_weight(index_t i)
 {
-	if (i > m_weights.vlen-1)
+	if (i >= m_weights.vlen)
 	{
 		SG_ERROR("Index %i out of range for LinearARDKernel."\
 				 "Number of features is %i.\n", i, m_weights.vlen);
@@ -101,6 +108,9 @@ float64_t CLinearARDKernel::get_weight(index_t i)
 
 float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	if (!lhs || !rhs)
+		SG_ERROR("Features not set!\n");
+
 	SGVector<float64_t> avec
 		= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
 	SGVector<float64_t> bvec
@@ -116,3 +126,37 @@ float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	return result;
 }
+
+SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(TParameter* param,
+		CSGObject* obj, index_t index)
+{
+	if (!lhs || !rhs)
+		SG_ERROR("Features not set!\n");
+
+	if (!strcmp(param->m_name, "weights") && obj == this)
+	{
+		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
+
+		for (index_t j = 0; j < num_lhs; j++)
+		{
+			for (index_t k = 0; k < num_rhs; k++)
+			{
+				SGVector<float64_t> avec
+					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
+				SGVector<float64_t> bvec
+					= ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
+
+				REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
+						"Features Must be the Same./n");
+
+				derivative(j,k) = avec[index]*bvec[index]*m_weights[index];
+			}
+		}
+		return derivative;
+	}
+
+	else
+		return SGMatrix<float64_t>();
+}
+
+
