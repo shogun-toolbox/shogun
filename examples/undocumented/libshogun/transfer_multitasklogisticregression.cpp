@@ -2,6 +2,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/IndexBlock.h>
 #include <shogun/lib/IndexBlockGroup.h>
+#include <shogun/lib/IndexBlockTree.h>
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
@@ -34,7 +35,6 @@ int main(int argc, char** argv)
 
 	CIndexBlock* first_task = new CIndexBlock(0,2);
 	CIndexBlock* second_task = new CIndexBlock(2,4);
-
 	CIndexBlockGroup* task_group = new CIndexBlockGroup();
 	task_group->add_block(first_task);
 	task_group->add_block(second_task);
@@ -44,6 +44,18 @@ int main(int argc, char** argv)
 
 	regressor->set_current_task(0);
 	regressor->get_w().display_vector();
+
+	CIndexBlock* root_task = new CIndexBlock(0,4);
+	root_task->add_sub_block(first_task);
+	root_task->add_sub_block(second_task);
+	CIndexBlockTree* task_tree = new CIndexBlockTree(root_task);
+
+	regressor->set_task_relation(task_tree);
+	regressor->train();
+	
+	regressor->set_current_task(0);
+	regressor->get_w().display_vector();
+
 	SG_UNREF(regressor);
 	exit_shogun();
 	return 0;

@@ -8,7 +8,7 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
-#include <shogun/lib/slep/slep_logistic.h>
+#include <shogun/lib/slep/slep_solver.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
 #include <shogun/lib/slep/q1/eppVector.h>
