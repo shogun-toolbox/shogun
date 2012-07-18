@@ -8,7 +8,7 @@
  */
 
 #include <shogun/classifier/FeatureBlockLogisticRegression.h>
-#include <shogun/lib/slep/slep_logistic.h>
+#include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 
 #include <shogun/lib/IndexBlockGroup.h>
@@ -76,6 +76,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
+	options.loss = LOGISTIC;
 
 	EIndexBlockRelationType relation_type = m_feature_relation->get_relation_type();
 	switch (relation_type)

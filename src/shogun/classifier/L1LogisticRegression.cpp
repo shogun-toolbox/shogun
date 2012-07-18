@@ -8,7 +8,7 @@
  */
 
 #include <shogun/classifier/L1LogisticRegression.h>
-#include <shogun/lib/slep/slep_logistic.h>
+#include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 
 namespace shogun
@@ -45,6 +45,7 @@ bool CL1LogisticRegression::train_machine(CFeatures* data)
 	
 	slep_options options = slep_options::default_options();
 	options.mode = PLAIN;
+	options.loss = LOGISTIC;
 	options.regularization = m_regularization;
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
