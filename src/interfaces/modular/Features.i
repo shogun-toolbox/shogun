@@ -20,6 +20,7 @@
 /* These functions return new Objects */
 %newobject get_transposed();
 %newobject create_merged_copy(CFeatures* other);
+%newobject copy_subset(SGVector<index_t> indices);
 
 #ifdef USE_SWIG_DIRECTORS
 %feature("director") shogun::CDirectorDotFeatures;

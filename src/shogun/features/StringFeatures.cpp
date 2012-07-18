@@ -1611,6 +1611,8 @@ template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(SGVector<index_t>
 	/* max string length may have changed */
 	result->determine_maximum_string_length();
 
+	SG_REF(result);
+
 	return result;
 }
 
