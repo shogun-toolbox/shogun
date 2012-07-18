@@ -1070,7 +1070,9 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 		free_sparse_feature_vector(index);
 	}
 
-	return new CSparseFeatures<ST>(matrix_copy);
+	CFeatures* result=new CSparseFeatures<ST>(matrix_copy);
+	SG_REF(result);
+	return result;
 }
 
 template<class ST> SGSparseVectorEntry<ST>* CSparseFeatures<ST>::compute_sparse_feature_vector(int32_t num,
