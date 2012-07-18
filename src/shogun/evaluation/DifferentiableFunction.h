@@ -40,7 +40,7 @@ public:
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
-	virtual CMap<TParameter*, float64_t> get_gradient(
+	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict) = 0;
 
 	/*Get the function value

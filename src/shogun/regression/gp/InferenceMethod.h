@@ -70,7 +70,7 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual CMap<TParameter*, float64_t>
+	virtual CMap<TParameter*, SGVector<float64_t> >
 		get_marginal_likelihood_derivatives(
 		CMap<TParameter*, CSGObject*>& para_dict) = 0;
 
@@ -204,10 +204,13 @@ protected:
 	/*Features to use*/
 	CFeatures* m_features;
 
+	/*Feature Matrix*/
 	SGMatrix<float64_t> m_feature_matrix;
 
+	/*Means of Features*/
 	SGVector<float64_t> m_data_means;
 
+	/*Vector of labels*/
 	SGVector<float64_t> m_label_vector;
 
 
