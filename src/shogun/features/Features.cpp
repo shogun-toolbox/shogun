@@ -368,8 +368,8 @@ void CFeatures::remove_all_subsets()
 
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
 {
-	SG_ERROR("copy_subset and therefore model storage of CMachine "
-			"(required for cross-validation and model-selection is ",
-			"not yet implemented for feature type %s\n", get_name());
+	SG_ERROR("%s::copy_subset(): copy_subset and therefore model storage of "
+			"CMachine (required for cross-validation and model-selection is "
+			"not yet implemented yet. Ask developers!\n", get_name());
 	return NULL;
 }
