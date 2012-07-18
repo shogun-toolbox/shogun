@@ -207,6 +207,7 @@ bool CSVMLight::train_machine(CFeatures* data)
 
 	if (data)
 	{
+		if (m_labels->get_num_labels() != data->get_num_vectors())
 		{
 			SG_ERROR("%s::train_machine(): Number of training vectors (%d) does"
 					" not match number of labels (%d)\n", get_name(),
