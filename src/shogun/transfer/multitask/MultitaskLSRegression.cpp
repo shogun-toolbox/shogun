@@ -8,7 +8,7 @@
  */
 
 #include <shogun/transfer/multitask/MultitaskLSRegression.h>
-#include <shogun/lib/slep/slep_mt_lsr.h>
+#include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 
 #include <shogun/lib/IndexBlockGroup.h>
@@ -100,8 +100,8 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 			options.ind = ind.vector;
 			options.n_tasks = ind.vlen-1;
 			options.mode = MULTITASK_GROUP;
-
-			m_tasks_w = slep_mt_lsr(features, y.vector, m_z, options);
+			options.loss = LEAST_SQUARES;
+			m_tasks_w = slep_solver(features, y.vector, m_z, options).w;
 		}
 		break;
 		case TREE: 
@@ -114,8 +114,8 @@ bool CMultitaskLSRegression::train_machine(CFeatures* data)
 			options.n_tasks = ind.vlen-1;
 			options.n_nodes = ind_t.vlen/3;
 			options.mode = MULTITASK_TREE;
-
-			m_tasks_w = slep_mt_lsr(features, y.vector, m_z, options);
+			options.loss = LEAST_SQUARES;
+			m_tasks_w = slep_solver(features, y.vector, m_z, options).w;
 		}
 		break;
 		default: 

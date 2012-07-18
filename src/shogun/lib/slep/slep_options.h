@@ -30,6 +30,12 @@ IGNORE_IN_CLASSLIST enum slep_mode
 	PLAIN
 };
 
+IGNORE_IN_CLASSLIST enum slep_loss
+{
+	LOGISTIC,
+	LEAST_SQUARES
+};
+
 IGNORE_IN_CLASSLIST struct slep_options
 {
 	bool general;
@@ -47,6 +53,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 	double* G;
 	double* gWeight;
 	double q;
+	slep_loss loss;
 	slep_mode mode;
 
 	static slep_options default_options()
@@ -64,6 +71,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 		opts.ind_t = NULL;
 		opts.G = NULL;
 		opts.rsL2 = 0.0;
+		opts.loss = LOGISTIC;
 		opts.mode = MULTITASK_GROUP;
 		return opts;
 	}

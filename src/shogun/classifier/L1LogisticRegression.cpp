@@ -51,7 +51,7 @@ bool CL1LogisticRegression::train_machine(CFeatures* data)
 	options.max_iter = m_max_iter;
 	options.rsL2 = 0.0;
 
-	slep_result_t result = slep_logistic(features, y.vector, m_z, options);
+	slep_result_t result = slep_solver(features, y.vector, m_z, options);
 
 	int32_t n_feats = features->get_dim_feature_space();
 	SGVector<float64_t> new_w(n_feats);

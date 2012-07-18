@@ -17,7 +17,7 @@
 namespace shogun 
 {
 
-slep_result_t slep_logistic(
+slep_result_t slep_solver(
 		CDotFeatures* features,
 		double* y,
 		double z,
