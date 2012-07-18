@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -27,6 +28,11 @@ class CListElement;
  * It keeps pointers to the added sub-features and is especially useful to
  * combine kernels working on different domains (c.f. CCombinedKernel) and to
  * combine kernels looking at independent features.
+ *
+ * Subsets are supported: All actions will just be given through to all
+ * sub-features. Only once per sub-feature instance, i.e. if there are two
+ * sub-features that are the same instance, the subset action will only be
+ * performed once.
  */
 class CCombinedFeatures : public CFeatures
 {
@@ -69,7 +75,8 @@ class CCombinedFeatures : public CFeatures
 		 */
 		inline virtual int32_t get_num_vectors() const
 		{
-			return num_vec;
+			return m_subset_stack->has_subsets()
+					? m_subset_stack->get_size() : num_vec;
 		}
 
 		/** get memory footprint of one feature
@@ -157,6 +164,38 @@ class CCombinedFeatures : public CFeatures
 		 * instance and of given one
 		 */
 		CFeatures* create_merged_copy(CFeatures* other);
+
+		/** adds a subset of indices on top of the current subsets (possibly
+		 * subset o subset. Calls subset_changed_post() afterwards.
+		 * Adds the subset to all sub-features
+		 *
+		 * @param subset subset of indices to add
+		 * */
+		virtual void add_subset(SGVector<index_t> subset);
+
+		/** removes that last added subset from subset stack, if existing
+		 * Calls subset_changed_post() afterwards
+		 *
+		 * Removes the subset from all sub-features
+		 * */
+		virtual void remove_subset();
+
+		/** removes all subsets
+		 * Calls subset_changed_post() afterwards
+		 *
+		 * Removes all subsets of all sub-features
+		 * */
+		virtual void remove_all_subsets();
+
+		/** Creates a new CFeatures instance containing copies of the elements
+		 * which are specified by the provided indices.
+		 * Simply creates a combined features instance where all sub-features
+		 * are the results of their copy_subset calls
+		 *
+		 * @param indices indices of feature elements to copy
+		 * @return new CFeatures instance with copies of feature data
+		 */
+		virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
 		/** @return object name */
 		inline virtual const char* get_name() const { return "CombinedFeatures"; }

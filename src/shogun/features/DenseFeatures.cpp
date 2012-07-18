@@ -557,7 +557,9 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 				num_features*sizeof(ST));
 	}
 
-	return new CDenseFeatures(feature_matrix_copy);
+	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
+	SG_REF(result);
+	return result;
 }
 
 template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
