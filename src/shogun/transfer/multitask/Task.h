@@ -12,14 +12,13 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/List.h>
-#include <shogun/lib/IndexBlock.h>
 
 namespace shogun
 {
 
 /** @brief used to represent tasks in multitask learning
  */
-class CTask : public CIndexBlock
+class CTask : public CSGObject
 {
 public:
 
@@ -36,10 +35,51 @@ public:
 	      float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
-	~CTask();
+	virtual ~CTask();
+	
+	/** get min index */
+	index_t get_min_index() const { return m_min_index; }
+	/** set max index */
+	void set_min_index(index_t min_index) { m_min_index = min_index; }
+	/** get min index */
+	index_t get_max_index() const { return m_max_index; }
+	/** set max index */
+	void set_max_index(index_t max_index) { m_max_index = max_index; }
+	/** get weight */
+	float64_t get_weight() const { return m_weight; }
+	/** set weight */
+	void set_weight(float64_t weight) { m_weight = weight; }
+	/** get task name */
+	const char* get_task_name() const { return m_name; }
+	/** set task name */
+	void set_task_name(const char* name) { m_name = name; }
+
+	/** add sub task */
+	void add_subtask(CTask* sub_task);
+	/** get subtasks */
+	CList* get_subtasks();
+	/** get num subtasks */
+	int32_t get_num_subtasks();
 
 	/** get name */
 	virtual const char* get_name() const { return "Task"; };
+	
+protected:
+
+	/** subtasks */
+	CList* m_subtasks;
+
+	/** name of the block */
+	const char* m_name;
+
+	/** min index */
+	index_t m_min_index;
+
+	/** max index */
+	index_t m_max_index;
+
+	/** weight */
+	float64_t m_weight;
 
 };
 

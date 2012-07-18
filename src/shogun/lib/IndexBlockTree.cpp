@@ -237,13 +237,13 @@ void CIndexBlockTree::set_root_block(CIndexBlock* root_block)
 	m_root_block = root_block;
 }
 
-SGVector<index_t> CIndexBlockTree::get_SLEP_ind() const
+SGVector<index_t> CIndexBlockTree::get_SLEP_ind()
 {
 	SG_SNOTIMPLEMENTED;
 	return SGVector<index_t>();
 }
 
-SGVector<float64_t> CIndexBlockTree::get_SLEP_G() const
+SGVector<float64_t> CIndexBlockTree::get_SLEP_G()
 {
 	return m_precomputed_G;
 }

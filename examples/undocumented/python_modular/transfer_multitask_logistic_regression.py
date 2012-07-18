@@ -11,24 +11,24 @@ parameter_list = [[traindat,testdat,label_traindat]]
 
 def transfer_multitask_logistic_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat):
 
-	from modshogun import BinaryLabels, RealFeatures, IndexBlock, IndexBlockGroup, MultitaskLogisticRegression
+	from modshogun import BinaryLabels, RealFeatures, Task, TaskGroup, MultitaskLogisticRegression
 
 	features = RealFeatures(hstack((traindat,traindat)))
 	labels = BinaryLabels(hstack((label_train,label_train)))
 
 	n_vectors = features.get_num_vectors()
-	task_one = IndexBlock(0,n_vectors/2)
-	task_two = IndexBlock(n_vectors/2,n_vectors)
-	task_group = IndexBlockGroup()
-	task_group.add_block(task_one)
-	task_group.add_block(task_two)
+	task_one = Task(0,n_vectors/2)
+	task_two = Task(n_vectors/2,n_vectors)
+	task_group = TaskGroup()
+	task_group.append_task(task_one)
+	task_group.append_task(task_two)
 
 	mtlr = MultitaskLogisticRegression(0.1,features,labels,task_group)
 	mtlr.set_regularization(1) # use regularization ratio
 	mtlr.set_tolerance(1e-2) # use 1e-2 tolerance
 	mtlr.train()
 	mtlr.set_current_task(0)
-	out = mtlr.apply_regression().get_labels()
+	out = mtlr.apply().get_labels()
 
 	return out
 

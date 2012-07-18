@@ -11,16 +11,47 @@
 
 using namespace shogun;
 
-CTask::CTask() : CIndexBlock()
+CTask::CTask() : CSGObject()
 {
+	m_subtasks = new CList(true);
+	SG_REF(m_subtasks);
+	m_min_index = 0;
+	m_max_index = 0;
+	m_weight = 0.0;
+	m_name = "task";
 }
 
 CTask::CTask(index_t min_index, index_t max_index, 
              float64_t weight, const char* name) :
-	CIndexBlock(min_index, max_index, weight, name)
+	CSGObject()
 {
+	m_subtasks = new CList(true);
+	SG_REF(m_subtasks);
+	m_min_index = min_index;
+	m_max_index = max_index;
+	m_weight = weight;
+	m_name = name;
 }
 
 CTask::~CTask()
 {
+	SG_UNREF(m_subtasks);
+}
+
+void CTask::add_subtask(CTask* subtask)
+{
+	ASSERT(subtask->get_min_index()>=m_min_index);
+	ASSERT(subtask->get_max_index()<=m_max_index);
+	m_subtasks->append_element(subtask);
+}
+
+CList* CTask::get_subtasks()
+{
+	SG_REF(m_subtasks);
+	return m_subtasks;
+}
+
+int32_t CTask::get_num_subtasks()
+{
+	return m_subtasks->get_num_elements();
 }

@@ -33,7 +33,7 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 		 */
 		CMultitaskTraceLogisticRegression(
 		     float64_t rho, CDotFeatures* training_data, 
-		     CBinaryLabels* training_labels, CIndexBlockRelation* task_relation);
+		     CBinaryLabels* training_labels, CTaskGroup* task_relation);
 
 		/** destructor */
 		virtual ~CMultitaskTraceLogisticRegression();

@@ -10,7 +10,6 @@
 #include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>
 #include <shogun/lib/slep/malsar_joint_feature_learning.h>
 #include <shogun/lib/slep/slep_options.h>
-#include <shogun/lib/IndexBlockGroup.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun
@@ -23,8 +22,8 @@ CMultitaskL1L2LogisticRegression::CMultitaskL1L2LogisticRegression() :
 
 CMultitaskL1L2LogisticRegression::CMultitaskL1L2LogisticRegression(
      float64_t rho1, float64_t rho2, CDotFeatures* train_features, 
-     CBinaryLabels* train_labels, CIndexBlockRelation* task_relation) :
-	CMultitaskLogisticRegression(0.0,train_features,train_labels,task_relation)
+     CBinaryLabels* train_labels, CTaskGroup* task_group) :
+	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {
 	set_rho1(rho1);
 	set_rho2(rho2);
@@ -60,7 +59,7 @@ bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
-	SGVector<index_t> ind = ((CIndexBlockGroup*)m_task_relation)->get_SLEP_ind();
+	SGVector<index_t> ind = ((CTaskGroup*)m_task_relation)->get_SLEP_ind();
 	options.ind = ind.vector;
 	options.n_tasks = ind.vlen-1;
 

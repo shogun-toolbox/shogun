@@ -17,7 +17,9 @@
 %rename(MultitaskKernelPlifNormalizer) CMultitaskKernelPlifNormalizer;
 
 %rename(Task) CTask;
+%rename(TaskRelationBase) CTaskRelation;
 %rename(TaskTree) CTaskTree;
+%rename(TaskGroup) CTaskGroup;
 %rename(MultitaskLSRegression) CMultitaskLSRegression;
 %rename(MultitaskLogisticRegression) CMultitaskLogisticRegression;
 %rename(MultitaskL1L2LogisticRegression) CMultitaskL1L2LogisticRegression;
@@ -41,7 +43,9 @@
 %include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
 
 %include <shogun/transfer/multitask/Task.h>
+%include <shogun/transfer/multitask/TaskRelation.h>
 %include <shogun/transfer/multitask/TaskTree.h>
+%include <shogun/transfer/multitask/TaskGroup.h>
 %include <shogun/transfer/multitask/MultitaskLSRegression.h>
 %include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>

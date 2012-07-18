@@ -11,9 +11,6 @@
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 
-#include <shogun/lib/IndexBlockGroup.h>
-#include <shogun/lib/IndexBlockTree.h>
-
 namespace shogun
 {
 
@@ -26,7 +23,7 @@ CMultitaskLogisticRegression::CMultitaskLogisticRegression() :
 
 CMultitaskLogisticRegression::CMultitaskLogisticRegression(
      float64_t z, CDotFeatures* train_features, 
-     CBinaryLabels* train_labels, CIndexBlockRelation* task_relation) :
+     CBinaryLabels* train_labels, CTaskRelation* task_relation) :
 	CSLEPMachine(z,train_features,(CLabels*)train_labels), 
 	m_current_task(0), m_task_relation(NULL)
 {
@@ -62,13 +59,13 @@ void CMultitaskLogisticRegression::set_current_task(int32_t task)
 	bias = m_tasks_c[task];
 }
 
-CIndexBlockRelation* CMultitaskLogisticRegression::get_task_relation() const
+CTaskRelation* CMultitaskLogisticRegression::get_task_relation() const
 {
 	SG_REF(m_task_relation);
 	return m_task_relation;
 }
 
-void CMultitaskLogisticRegression::set_task_relation(CIndexBlockRelation* task_relation)
+void CMultitaskLogisticRegression::set_task_relation(CTaskRelation* task_relation)
 {
 	SG_UNREF(m_task_relation);
 	SG_REF(task_relation);
@@ -92,12 +89,12 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
 
-	EIndexBlockRelationType relation_type = m_task_relation->get_relation_type();
+	ETaskRelationType relation_type = m_task_relation->get_relation_type();
 	switch (relation_type)
 	{
-		case GROUP:
+		case TASK_GROUP:
 		{
-			CIndexBlockGroup* task_group = (CIndexBlockGroup*)m_task_relation;
+			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
 			SGVector<index_t> ind = task_group->get_SLEP_ind();
 			options.ind = ind.vector;
 			options.n_tasks = ind.vlen-1;
@@ -111,11 +108,11 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			m_tasks_c = result.c;
 		}
 		break;
-		case TREE: 
+		case TASK_TREE: 
 		{
-			CIndexBlockTree* task_tree = (CIndexBlockTree*)m_task_relation;
+			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
 
-			CIndexBlock* root_task = task_tree->get_root_block();
+			CTask* root_task = (CTask*)task_tree->get_root_task();
 			 if (root_task->get_max_index() > features->get_num_vectors())
 				SG_ERROR("Root task covers more vectors than available\n");
 			SG_UNREF(root_task);

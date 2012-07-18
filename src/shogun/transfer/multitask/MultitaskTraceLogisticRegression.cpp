@@ -23,8 +23,8 @@ CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression() :
 
 CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression(
      float64_t rho, CDotFeatures* train_features, 
-     CBinaryLabels* train_labels, CIndexBlockRelation* task_relation) :
-	CMultitaskLogisticRegression(0.0,train_features,train_labels,task_relation)
+     CBinaryLabels* train_labels, CTaskGroup* task_group) :
+	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {
 	set_rho(rho);
 }
@@ -54,7 +54,7 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
-	SGVector<index_t> ind = ((CIndexBlockGroup*)m_task_relation)->get_SLEP_ind();
+	SGVector<index_t> ind = ((CTaskGroup*)m_task_relation)->get_SLEP_ind();
 	options.ind = ind.vector;
 	options.n_tasks = ind.vlen-1;
 

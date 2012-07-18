@@ -18,7 +18,6 @@
 
 void altra(double *x, double *v, int n, double *ind, int nodes, double mult)
 {
-
 	int i, j;
 	double lambda,twoNorm, ratio;
 

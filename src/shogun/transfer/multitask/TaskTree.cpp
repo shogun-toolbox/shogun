@@ -25,40 +25,40 @@ struct task_tree_node_t
 	float64_t weight;
 };
 
-int32_t count_leaf_tasks_recursive(CIndexBlock* subtree_root_block)
+int32_t count_leaf_tasks_recursive(CTask* subtree_root_block)
 {
-	CList* sub_blocks = subtree_root_block->get_sub_blocks();
-	int32_t n_sub_blocks = sub_blocks->get_num_elements();
-	if (n_sub_blocks==0)
+	CList* sub_tasks = subtree_root_block->get_subtasks();
+	int32_t n_sub_tasks = sub_tasks->get_num_elements();
+	if (n_sub_tasks==0)
 	{
-		SG_UNREF(sub_blocks);
+		SG_UNREF(sub_tasks);
 		return 1;
 	}
 	else
 	{
 		int32_t sum = 0;
-		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
+		CTask* iterator = (CTask*)sub_tasks->get_first_element();
 		do
 		{
 			sum += count_leaf_tasks_recursive(iterator);
 		}
-		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
+		while ((iterator = (CTask*)sub_tasks->get_next_element()) != NULL);
 
-		SG_UNREF(sub_blocks);
+		SG_UNREF(sub_tasks);
 		return sum;
 	}
 }
 
-void collect_tree_tasks_recursive(CIndexBlock* subtree_root_block, vector<task_tree_node_t>* tree_nodes, int low)
+void collect_tree_tasks_recursive(CTask* subtree_root_block, vector<task_tree_node_t>* tree_nodes, int low)
 {
 	int32_t lower = low;
-	CList* sub_blocks = subtree_root_block->get_sub_blocks();
+	CList* sub_blocks = subtree_root_block->get_subtasks();
 	if (sub_blocks->get_num_elements()>0)
 	{
-		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
+		CTask* iterator = (CTask*)sub_blocks->get_first_element();
 		do
 		{
-			if (iterator->get_num_sub_blocks()>0)
+			if (iterator->get_num_subtasks()>0)
 			{
 				int32_t n_leaves = count_leaf_tasks_recursive(iterator);
 				SG_SDEBUG("Block [%d %d] has %d leaf childs \n",iterator->get_min_index(), iterator->get_max_index(), n_leaves);
@@ -70,64 +70,68 @@ void collect_tree_tasks_recursive(CIndexBlock* subtree_root_block, vector<task_t
 				lower++;
 			SG_UNREF(iterator);
 		}
-		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
+		while ((iterator = (CTask*)sub_blocks->get_next_element()) != NULL);
 	}
 	SG_UNREF(sub_blocks);
 }
 
-void collect_leaf_tasks_recursive(CIndexBlock* subtree_root_block, CList* list)
+void collect_leaf_tasks_recursive(CTask* subtree_root_block, CList* list)
 {
-	CList* sub_blocks = subtree_root_block->get_sub_blocks();
+	CList* sub_blocks = subtree_root_block->get_subtasks();
 	if (sub_blocks->get_num_elements() == 0)
 	{
 		list->append_element(subtree_root_block);
 	}
 	else
 	{
-		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
+		CTask* iterator = (CTask*)sub_blocks->get_first_element();
 		do
 		{
 			collect_leaf_tasks_recursive(iterator, list);
 			SG_UNREF(iterator);
 		} 
-		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
+		while ((iterator = (CTask*)sub_blocks->get_next_element()) != NULL);
 	}
 	SG_UNREF(sub_blocks);
 }
 
-CTaskTree::CTaskTree() : CIndexBlockTree()
+CTaskTree::CTaskTree() : CTaskRelation(),
+	m_root_task(NULL)
 {
 
 }
 
-CTaskTree::CTaskTree(CIndexBlock* root_task) : CIndexBlockTree(root_task)
+CTaskTree::CTaskTree(CTask* root_task) : CTaskRelation(),
+	m_root_task(NULL)
 {
+	set_root_task(root_task);
 }
 
 CTaskTree::~CTaskTree()
 {
+	SG_UNREF(m_root_task);
 }
 
 SGVector<index_t> CTaskTree::get_SLEP_ind()
 {
 	CList* blocks = new CList(true);
-	collect_leaf_tasks_recursive(m_root_block, blocks);
+	collect_leaf_tasks_recursive(m_root_task, blocks);
 	SG_DEBUG("Collected %d leaf blocks\n", blocks->get_num_elements());
-	check_blocks_list(blocks);
+	//check_blocks_list(blocks);
 
 	SGVector<index_t> ind(blocks->get_num_elements()+1);
 
 	int t_i = 0;
 	ind[0] = 0;
-	CIndexBlock* iterator = (CIndexBlock*)blocks->get_first_element();
+	CTask* iterator = (CTask*)blocks->get_first_element();
 	do
 	{
 		ind[t_i+1] = iterator->get_max_index();
-		SG_DEBUG("Blocks = [%d,%d]\n", iterator->get_min_index(), iterator->get_max_index());
+		SG_DEBUG("Block = [%d,%d]\n", iterator->get_min_index(), iterator->get_max_index());
 		SG_UNREF(iterator);
 		t_i++;
 	} 
-	while ((iterator = (CIndexBlock*)blocks->get_next_element()) != NULL);
+	while ((iterator = (CTask*)blocks->get_next_element()) != NULL);
 
 	SG_UNREF(blocks);
 
@@ -136,13 +140,12 @@ SGVector<index_t> CTaskTree::get_SLEP_ind()
 
 SGVector<float64_t> CTaskTree::get_SLEP_ind_t()
 {
-	CList* blocks = new CList(true);
-	int n_blocks = get_SLEP_ind().vlen;
+	int n_blocks = get_SLEP_ind().vlen - 1;
 	SG_DEBUG("Number of blocks = %d \n", n_blocks);
 
 	vector<task_tree_node_t> tree_nodes = vector<task_tree_node_t>();
 	
-	collect_tree_tasks_recursive(m_root_block, &tree_nodes,1);
+	collect_tree_tasks_recursive(m_root_task, &tree_nodes,1);
 
 	SGVector<float64_t> ind_t(3+3*tree_nodes.size());
 	// supernode
@@ -156,8 +159,6 @@ SGVector<float64_t> CTaskTree::get_SLEP_ind_t()
 		ind_t[3+i*3+1] = tree_nodes[i].t_max_index;
 		ind_t[3+i*3+2] = tree_nodes[i].weight;
 	}
-
-	SG_UNREF(blocks);
 
 	return ind_t;
 }

@@ -51,9 +51,9 @@ public:
 	/** returns information about blocks in 
 	 * SLEP "ind" format
 	 */
-	virtual SGVector<index_t> get_SLEP_ind() const;
+	virtual SGVector<index_t> get_SLEP_ind();
 
-	virtual SGVector<float64_t> get_SLEP_G() const;
+	virtual SGVector<float64_t> get_SLEP_G();
 
 	/** returns information about blocks relations
 	 * in SLEP "ind_t" format

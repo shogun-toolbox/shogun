@@ -34,7 +34,7 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 		 */
 		CMultitaskL1L2LogisticRegression(
 		     float64_t rho1, float64_t rho2, CDotFeatures* training_data, 
-		     CBinaryLabels* training_labels, CIndexBlockRelation* task_relation);
+		     CBinaryLabels* training_labels, CTaskGroup* task_group);
 
 		/** destructor */
 		virtual ~CMultitaskL1L2LogisticRegression();

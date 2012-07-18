@@ -275,6 +275,8 @@ slep_result_t slep_solver(
 			n_blocks = options.n_feature_blocks;
 		break;
 	}
+	SG_SDEBUG("n_tasks = %d, n_blocks = %d\n",n_tasks,n_blocks);
+	SG_SDEBUG("n_nodes = %d\n",options.n_nodes);
 
 	int iter = 1;
 	bool done = false;
