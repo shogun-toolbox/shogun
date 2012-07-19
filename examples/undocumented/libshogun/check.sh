@@ -7,7 +7,7 @@ test -n "$LIB_PATH" && LIB_PATH="LIB_PATH=${LIB_PATH}"
 test -n "$INC_PATH" && INC_PATH="INC_PATH=${INC_PATH}"
 test -n "$LIBS" && LIBS="LIBS=${LIBS}"
 test -n "$INCLUDES" && INCLUDES="INCLUDES=${INCLUDES}"
-test -n "$MAKE" && MAKE="make"
+test -z "$MAKE" && MAKE="make"
 
 for e in `$MAKE print_targets | grep -v ^make`
 do
