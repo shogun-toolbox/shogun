@@ -118,6 +118,36 @@ public:
 		return m_svm_epsilon;
 	}
 
+	/** set parameter A
+	 * @param A
+	 */
+	void set_A(float64_t A)
+	{
+		m_A = A;
+	}
+	/** get parameter A
+	 * @return A
+	 */
+	float64_t get_A() const
+	{
+		return m_A;
+	}
+
+	/** set parameter B
+	 * @param B
+	 */
+	void set_B(float64_t B)
+	{
+		m_B = B;
+	}
+	/** get parameter B
+	 * @return B
+	 */
+	float64_t get_B() const
+	{
+		return m_B;
+	}
+
 	/** set max number of iteration in alternating optimization
 	 * @param n_iter number of iterations
 	 */
@@ -145,9 +175,14 @@ protected:
 
 	void train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
-	CLibSVM *train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry);
+	CLibSVM *train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes);
+
+	void color_label_space(CLibSVM *svm, SGVector<int32_t> classes);
+	SGVector<float64_t> eval_binary_model_K(CLibSVM *svm);
 
 	int32_t m_max_num_iter;
+	float64_t m_A;
+	float64_t m_B;
 	float64_t m_svm_C;
 	float64_t m_svm_epsilon;
 	CKernel *m_kernel;

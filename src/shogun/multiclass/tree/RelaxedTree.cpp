@@ -19,11 +19,13 @@
 using namespace shogun;
 
 CRelaxedTree::CRelaxedTree()
-	:m_max_num_iter(3), m_svm_C(1), m_svm_epsilon(0.001), 
+	:m_max_num_iter(3), m_svm_C(1), m_svm_epsilon(0.001), m_A(0.5), m_B(5),
 	m_kernel(NULL), m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
 {
 	SG_ADD(&m_max_num_iter, "m_max_num_iter", "max number of iterations in alternating optimization", MS_NOT_AVAILABLE);
 	SG_ADD(&m_svm_C, "m_svm_C", "C for svm", MS_AVAILABLE);
+	SG_ADD(&m_A, "m_A", "parameter A", MS_AVAILABLE);
+	SG_ADD(&m_B, "m_B", "parameter B", MS_AVAILABLE);
 	SG_ADD(&m_svm_epsilon, "m_svm_epsilon", "epsilon for svm", MS_AVAILABLE);
 }
 
@@ -69,18 +71,19 @@ void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int3
 	std::vector<CRelaxedTree::entry_t> mu_init = init_node(conf_mat, classes);
 	for (std::vector<CRelaxedTree::entry_t>::const_iterator it = mu_init.begin(); it != mu_init.end(); ++it)
 	{
-		CLibSVM *svm = train_node_with_initialization(*it);
+		CLibSVM *svm = train_node_with_initialization(*it, classes);
 		SG_UNREF(svm);
 	}
 }
 
-CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry)
+CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes)
 {
-	SGVector<int32_t> mu(m_num_classes), prev_mu(m_num_classes);
+	SGVector<int32_t> mu(classes.vlen), prev_mu(classes.vlen);
 	mu.zero();
 	mu[mu_entry.first.first] = 1;
 	mu[mu_entry.first.second] = -1;
 
+	SGVector<int32_t> long_mu(m_num_classes);
 	CLibSVM *svm = new CLibSVM();
 	SG_REF(svm);
 	svm->set_C(m_svm_C, m_svm_C);
@@ -88,6 +91,13 @@ CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_
 
 	for (int32_t iiter=0; iiter < m_max_num_iter; ++iiter)
 	{
+		long_mu.zero();
+		for (int32_t i=0; i < classes.vlen; ++i)
+			if (mu[i] == 1)
+				long_mu[classes[i]] = 1;
+			else if (mu[i] == -1)
+				long_mu[classes[i]] = -1;
+
 		SGVector<int32_t> subset(m_feats->get_num_vectors());
 		SGVector<float64_t> binlab(m_feats->get_num_vectors());
 		int32_t k=0;
@@ -96,8 +106,8 @@ CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_
 		for (int32_t i=0; i < binlab.vlen; ++i)
 		{
 			int32_t lab = labs->get_int_label(i);
-			binlab[i] = mu[lab];
-			if (mu[lab] != 0)
+			binlab[i] = long_mu[lab];
+			if (long_mu[lab] != 0)
 				subset[k++] = i;
 		}
 
@@ -120,6 +130,8 @@ CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_
 		std::copy(&mu[0], &mu[mu.vlen], &prev_mu[0]);
 
 		// TODO: color label space
+		
+
 		bool bbreak = true;
 		for (int32_t i=0; i < mu.vlen; ++i)
 		{
@@ -169,4 +181,58 @@ std::vector<CRelaxedTree::entry_t> CRelaxedTree::init_node(const SGMatrix<float6
 	int32_t n_samples = std::min(max_n_samples, entries.size());
 
 	return std::vector<CRelaxedTree::entry_t>(entries.begin(), entries.begin() + n_samples);
+}
+
+void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
+{
+	SGVector<int32_t> mu(classes.vlen);
+	CMulticlassLabels *labels = dynamic_cast<CMulticlassLabels *>(m_labels);
+
+	SGVector<float64_t> resp = eval_binary_model_K(svm);
+	ASSERT(resp.vlen == labels->get_num_labels());
+
+	SGVector<float64_t> xi_pos_class(classes.vlen), xi_neg_class(classes.vlen);
+	SGVector<float64_t> delta_pos(classes.vlen), delta_neg(classes.vlen);
+
+	for (int32_t i=0; i < classes.vlen; ++i)
+	{
+		// find number of instances from this class
+		int32_t ni=0;
+		for (int32_t j=0; j < labels->get_num_labels(); ++j)
+			if (labels->get_int_label(j) == classes[i])
+				ni++;
+
+		xi_pos_class[i] = 0;
+		xi_neg_class[i] = 0;
+		for (int32_t j=0; j < resp.vlen; ++j)
+		{
+			if (labels->get_int_label(j) == classes[i])
+			{
+				xi_pos_class[i] += std::max(0.0, 1 - resp[j]);
+				xi_neg_class[i] += std::max(0.0, 1 + resp[j]);
+			}
+		}
+
+		delta_pos[i] = 1/ni * xi_pos_class[i] - m_A/m_svm_C;
+		delta_neg[i] = 1/ni * xi_neg_class[i] - m_A/m_svm_C;
+
+		if (delta_pos[i] > 0 && delta_neg[i] > 0)
+		{
+			mu[i] = 0;
+		}
+		else
+		{
+			if (delta_pos[i] < delta_neg[i])
+				mu[i] = 1;
+			else
+				mu[i] = -1;
+		}
+
+	}
+}
+
+SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CLibSVM *svm)
+{
+	// TODO
+	return SGVector<float64_t>();
 }
