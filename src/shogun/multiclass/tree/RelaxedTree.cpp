@@ -233,6 +233,10 @@ void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 
 SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CLibSVM *svm)
 {
-	// TODO
-	return SGVector<float64_t>();
+	CRegressionLabels *lab = svm->apply_regression(m_feats);
+	SGVector<float64_t> resp(lab->get_num_labels());
+	for (int32_t i=0; i < resp.vlen; ++i)
+		resp[i] = lab->get_label(i) - m_A/m_svm_C;
+	SG_UNREF(lab);
+	return resp;
 }
