@@ -8,24 +8,23 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
-#ifndef  MALSAR_JOINT_FEATURE_LEARNING_H_
-#define  MALSAR_JOINT_FEATURE_LEARNING_H_
+#ifndef  MALSAR_CLUSTERED_H_
+#define  MALSAR_CLUSTERED_H_
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/slep/slep_options.h>
+#include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/features/DotFeatures.h>
 
 namespace shogun 
 {
 
-slep_result_t malsar_joint_feature_learning(
+malsar_result_t malsar_clustered(
 		CDotFeatures* features,
 		double* y,
 		double rho1,
 		double rho2,
-		const slep_options& options);
+		const malsar_options& options);
 
 };
 #endif
-#endif   /* ----- #ifndef MALSAR_JOINT_FEATURE_LEARNING_H_  ----- */
-
+#endif   /* ----- #ifndef MALSAR_CLUSTERED_H_  ----- */

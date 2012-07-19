@@ -12,17 +12,17 @@
 #define  MALSAR_LOW_RANK_H_
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/slep/slep_options.h>
+#include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/features/DotFeatures.h>
 
 namespace shogun 
 {
 
-slep_result_t malsar_low_rank(
+malsar_result_t malsar_low_rank(
 		CDotFeatures* features,
 		double* y,
 		double rho,
-		const slep_options& options);
+		const malsar_options& options);
 
 };
 #endif

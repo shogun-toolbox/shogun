@@ -8,8 +8,8 @@
  */
 
 #include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
-#include <shogun/lib/slep/malsar_low_rank.h>
-#include <shogun/lib/slep/slep_options.h>
+#include <shogun/lib/malsar/malsar_low_rank.h>
+#include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/IndexBlockGroup.h>
 #include <shogun/lib/SGVector.h>
 
@@ -50,7 +50,7 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
 	
-	slep_options options = slep_options::default_options();
+	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
@@ -59,7 +59,7 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	options.n_tasks = ind.vlen-1;
 
 #ifdef HAVE_EIGEN3
-	slep_result_t model = malsar_low_rank(
+	malsar_result_t model = malsar_low_rank(
 		features, y.vector, m_rho, options);
 
 	m_tasks_w = model.w;

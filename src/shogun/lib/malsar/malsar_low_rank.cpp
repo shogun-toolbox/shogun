@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
-#include <shogun/lib/slep/malsar_joint_feature_learning.h>
+#include <shogun/lib/malsar/malsar_low_rank.h>
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <iostream>
@@ -18,12 +18,11 @@ using namespace Eigen;
 namespace shogun
 {
 
-slep_result_t malsar_joint_feature_learning(
+malsar_result_t malsar_low_rank(
 		CDotFeatures* features,
 		double* y,
-		double rho1,
-		double rho2,
-		const slep_options& options)
+		double rho,
+		const malsar_options& options)
 {
 	int task;
 	int n_feats = features->get_dim_feature_space();
@@ -90,10 +89,10 @@ slep_result_t malsar_joint_feature_learning(
 				features->add_to_dense_vec(b, i, gWs.col(task).data(), n_feats);
 			}
 		}
-		gWs.noalias() += 2*rho2*Ws;
+		gWs.noalias() += 2*rho*Ws;
 		
 		// add regularizer
-		Fs += Ws.squaredNorm();
+		Fs += rho*Ws.squaredNorm();
 
 		double Fzp = 0.0;
 
@@ -101,13 +100,18 @@ slep_result_t malsar_joint_feature_learning(
 		// line search, Armijo-Goldstein scheme
 		while (inner_iter <= 1000)
 		{
-			// compute lasso projection of Ws - gWs/gamma
-			for (task=0; task<n_tasks; task++)
+			// compute trace projection of Ws - gWs/gamma with 2*rho/gamma
+			internal::set_is_malloc_allowed(true);
+			Wzp.setZero();
+			JacobiSVD<MatrixXd> svd(Ws - gWs/gamma,ComputeThinU | ComputeThinV);
+			for (int i=0; i<svd.singularValues().size(); i++)
 			{
-				Wzp.col(task) = Ws.col(task) - gWs.col(task)/gamma;
-				double norm = Wzp.col(task).lpNorm<2>();
-				Wzp.col(task) *= CMath::max(0.0,norm-rho1/gamma)/norm;
+				if (svd.singularValues()[i] > 2*rho/gamma)
+					Wzp += svd.matrixU().col(i)*
+					       svd.singularValues()[i]*
+					       svd.matrixV().col(i).transpose();
 			}
+			internal::set_is_malloc_allowed(false);
 			// walk in direction of antigradient 
 			Czp = Cs - gCs/gamma;
 			
@@ -123,7 +127,7 @@ slep_result_t malsar_joint_feature_learning(
 					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
 				}
 			}
-			Fzp += Wzp.squaredNorm();
+			Fzp += rho*Wzp.squaredNorm();
 
 			// compute delta between line search point and search point
 			delta_Wzp = Wzp - Ws;
@@ -152,8 +156,6 @@ slep_result_t malsar_joint_feature_learning(
 				break;
 			else
 				gamma *= gamma_inc;
-
-			inner_iter++;
 		}
 
 		Wz_old = Wz;
@@ -164,8 +166,10 @@ slep_result_t malsar_joint_feature_learning(
 		// compute objective value
 		obj_old = obj;
 		obj = Fzp;
-		for (task=0; task<n_tasks; task++)
-			obj += rho1*(Wz.col(task).norm());
+		internal::set_is_malloc_allowed(true);
+		JacobiSVD<MatrixXd> svd(Wzp, EigenvaluesOnly);
+		obj += rho*svd.singularValues().sum();
+		internal::set_is_malloc_allowed(false);
 
 		// check if process should be terminated 
 		switch (options.termination)
@@ -208,7 +212,7 @@ slep_result_t malsar_joint_feature_learning(
 	}
 	SGVector<float64_t> tasks_c(n_tasks);
 	for (int i=0; i<n_tasks; i++) tasks_c[i] = Czp[i];
-	return slep_result_t(tasks_w, tasks_c);
+	return malsar_result_t(tasks_w, tasks_c);
 };
 };
 #endif

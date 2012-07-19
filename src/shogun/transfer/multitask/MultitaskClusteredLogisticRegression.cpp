@@ -7,43 +7,64 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>
-#include <shogun/lib/malsar/malsar_joint_feature_learning.h>
+#include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
+#include <shogun/lib/malsar/malsar_clustered.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
 
-CMultitaskL1L2LogisticRegression::CMultitaskL1L2LogisticRegression() :
+CMultitaskClusteredLogisticRegression::CMultitaskClusteredLogisticRegression() :
 	CMultitaskLogisticRegression(), m_rho1(0.0), m_rho2(0.0)
 {
 }
 
-CMultitaskL1L2LogisticRegression::CMultitaskL1L2LogisticRegression(
+CMultitaskClusteredLogisticRegression::CMultitaskClusteredLogisticRegression(
      float64_t rho1, float64_t rho2, CDotFeatures* train_features, 
-     CBinaryLabels* train_labels, CTaskGroup* task_group) :
+     CBinaryLabels* train_labels, CTaskGroup* task_group, int32_t n_clusters) :
 	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {
 	set_rho1(rho1);
 	set_rho2(rho2);
+	set_num_clusters(n_clusters);
 }
 
-void CMultitaskL1L2LogisticRegression::set_rho1(float64_t rho1)
+int32_t CMultitaskClusteredLogisticRegression::get_rho1() const
+{
+	return m_rho1;
+}
+
+int32_t CMultitaskClusteredLogisticRegression::get_rho2() const
+{
+	return m_rho2;
+}
+
+void CMultitaskClusteredLogisticRegression::set_rho1(float64_t rho1)
 {
 	m_rho1 = rho1;
 }
 
-void CMultitaskL1L2LogisticRegression::set_rho2(float64_t rho2)
+void CMultitaskClusteredLogisticRegression::set_rho2(float64_t rho2)
 {
 	m_rho2 = rho2;
 }
 
-CMultitaskL1L2LogisticRegression::~CMultitaskL1L2LogisticRegression()
+int32_t CMultitaskClusteredLogisticRegression::get_num_clusters() const
+{
+	return m_num_clusters;
+}
+
+void CMultitaskClusteredLogisticRegression::set_num_clusters(int32_t num_clusters)
+{
+	m_num_clusters = num_clusters;
+}
+
+CMultitaskClusteredLogisticRegression::~CMultitaskClusteredLogisticRegression()
 {
 }
 
-bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)
+bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 {
 	if (data && (CDotFeatures*)data)
 		set_features((CDotFeatures*)data);
@@ -62,15 +83,16 @@ bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)
 	SGVector<index_t> ind = ((CTaskGroup*)m_task_relation)->get_SLEP_ind();
 	options.ind = ind.vector;
 	options.n_tasks = ind.vlen-1;
+	options.n_clusters = m_num_clusters;
 
 #ifdef HAVE_EIGEN3
-	malsar_result_t model = malsar_joint_feature_learning(
+	malsar_result_t model = malsar_clustered(
 		features, y.vector, m_rho1, m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
 #else
-	SG_WARNING("Please install Eigen3 to use MultitaskL1L2LogisticRegression\n");
+	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n");
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
 	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
 #endif

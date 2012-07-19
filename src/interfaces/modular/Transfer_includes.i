@@ -15,6 +15,7 @@
  #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
+ #include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 
 #ifdef USE_SVMLIGHT
  #include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
