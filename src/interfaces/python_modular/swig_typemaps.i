@@ -857,7 +857,7 @@ fail:
 %enddef
 
 /* Buffer protocol stuff for DenseFeatures */
-%define BUFFER_DENSEFEATURES(class_name, type_name, format_str)
+%define BUFFER_DENSEFEATURES(class_name, type_name, format_str, typecode)
 
 %wrapper 
 %{
@@ -923,6 +923,125 @@ static void class_name ## _releasebuffer(PyObject *exporter, Py_buffer *view)
 		delete[] view->strides;
 }
 
+static PyObject * class_name ## _get_item(PyObject *self, Py_ssize_t i)
+{
+	CDenseFeatures< type_name > * arg1 = 0;
+
+	void *argp1 = 0;
+	int num_feat = 0, num_vec = 0;
+	int res1 = 0 ;
+
+	PyObject* resultobj = 0;
+	Py_buffer view;
+	
+	Py_ssize_t* shape;
+	Py_ssize_t* strides;
+
+	char* data = 0;
+
+	PyArrayObject* ret;
+	PyArray_Descr* descr = PyArray_DescrFromType(typecode);
+
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	arg1 = reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+
+	data = (char *)arg1->get_feature_matrix(num_feat, num_vec);
+
+	// TODO index checking
+
+	data += i * sizeof( type_name );
+
+	shape = new Py_ssize_t[2];
+	shape[0] = 1;
+	shape[1] = num_vec;
+
+	strides = new Py_ssize_t[2];
+	strides[0] = sizeof( type_name );
+	strides[1] = sizeof( type_name ) * num_feat;
+
+    ret = (PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
+                             1, shape+1,
+                             strides+1, data,
+                             NPY_FARRAY | NPY_WRITEABLE,
+                             (PyObject *)self);
+    if (ret == NULL) {
+        return NULL;
+    }
+	
+    Py_INCREF(self);	
+	return (PyObject*)ret;
+}
+
+static PyObject * class_name ## _slice(PyObject *self, Py_ssize_t ilow, Py_ssize_t ihigh)
+{
+	CDenseFeatures< type_name > * arg1 = 0;
+
+	void *argp1 = 0;
+	int num_feat = 0, num_vec = 0;
+	int res1 = 0 ;
+
+	PyObject* resultobj = 0;
+	Py_buffer view;
+	
+	Py_ssize_t* shape;
+	Py_ssize_t* strides;
+
+	char* data = 0;
+
+	PyArrayObject* ret;
+	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	arg1 = reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+
+	data = (char *)arg1->get_feature_matrix(num_feat, num_vec);
+
+    if (ilow < 0) {
+        ilow = 0;
+    }
+    else if (ilow > num_feat) {
+        ilow = num_feat;
+    }
+    if (ihigh < ilow) {
+        ihigh = ilow;
+    }
+    else if (ihigh > num_feat) {
+        ihigh = num_feat;
+    }
+
+    if (ilow < ihigh) {
+        data += ilow * sizeof( type_name );
+    }
+
+	shape = new Py_ssize_t[2];
+	shape[0] = ihigh - ilow;
+	shape[1] = num_vec;
+
+	strides = new Py_ssize_t[2];
+	strides[0] = sizeof( type_name );
+	strides[1] = sizeof( type_name ) * num_feat;
+
+//	Py_INCREF(descr);
+    ret = (PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
+                             2, shape,
+                             strides, data,
+                             NPY_FARRAY | NPY_WRITEABLE,
+                             (PyObject *)self);
+    if (ret == NULL) {
+        return NULL;
+    }
+	
+    Py_INCREF(self);
+
+//    if (PyArray_SetBaseObject(ret, (PyObject *)self) < 0) {
+//        Py_DECREF(ret);
+//        return NULL;
+//    }
+
+//    PyArray_UpdateFlags(ret, NPY_ARRAY_UPDATE_ALL);
+    return (PyObject *)ret;
+}
+
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, add, +)
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, sub, -)
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, mul, *)
@@ -932,7 +1051,7 @@ static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFE
 
 %init
 %{
-/* TODO less "hacked" */
+/* hack! */
 SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags = class_name ## _flags;
 %}
 
@@ -942,6 +1061,9 @@ SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags
 %feature("python:nb_inplace_add") CDenseFeatures< type_name > #class_name "_inplaceadd"
 %feature("python:nb_inplace_subtract") CDenseFeatures< type_name > #class_name "_inplacesub"
 %feature("python:nb_inplace_multiply") CDenseFeatures< type_name > #class_name "_inplacemul"
+
+%feature("python:sq_item") CDenseFeatures< type_name > #class_name "_get_item"
+%feature("python:sq_slice") CDenseFeatures< type_name > #class_name "_slice"
 
 %enddef
 
