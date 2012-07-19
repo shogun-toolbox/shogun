@@ -13,7 +13,7 @@ test -z "$MAKE" && MAKE="make"
 for e in `$MAKE print_targets | grep -v ^make`
 do
 	echo -n "running $e .."
-	if $MAKE "$e" $CC $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS $INCLUDES >/dev/null 2>&1 && "./$e" >/dev/null 2>&1
+	if $MAKE "$e" "$CC" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" "$INCLUDES" >/dev/null 2>&1 && "./$e" >/dev/null 2>&1
 	then
 		echo " OK"
 	else
@@ -22,7 +22,7 @@ do
 		echo "error in $MAKE $e $CC $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS" >>error.log
 		echo "error in ./$e" >>error.log 2>&1
 		echo "================================================================================" >>error.log
-		$MAKE "$e" $CC $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS >>error.log 2>&1 && "./$e" >>error.log
+		$MAKE "$e" "$CC" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" >>error.log 2>&1 && "./$e" >>error.log
 		echo "================================================================================" >>error.log
 		echo >>error.log
 		echo >>error.log
