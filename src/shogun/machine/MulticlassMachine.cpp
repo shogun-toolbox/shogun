@@ -91,6 +91,11 @@ float64_t CMulticlassMachine::get_submachine_output(int32_t i, int32_t num)
 
 CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 {
+	SG_DEBUG("entering %s::apply_multiclass(%s at %p)\n",
+			get_name(), data ? data->get_name() : "NULL", data);
+
+	CMulticlassLabels* return_labels=NULL;
+
 	if (data)
 		init_machines_for_apply(data);
 	else
@@ -98,7 +103,10 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 
 	if (is_ready())
 	{
-		int32_t num_vectors=get_num_rhs_vectors();
+		/* num vectors depends on whether data is provided */
+		int32_t num_vectors=data ? data->get_num_vectors() :
+				get_num_rhs_vectors();
+
 		int32_t num_machines=m_machines->get_num_elements();
 		if (num_machines <= 0)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
@@ -123,13 +131,15 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 
 		SG_FREE(outputs);
 
-		return result;
+		return_labels=result;
 	}
 	else
-	{
 		SG_ERROR("Not ready");
-		return NULL;
-	}
+
+
+	SG_DEBUG("leaving %s::apply_multiclass(%s at %p)\n",
+				get_name(), data ? data->get_name() : "NULL", data);
+	return return_labels;
 }
 
 bool CMulticlassMachine::train_machine(CFeatures* data)
