@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <algorithm>
+#include <functional>
 
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
@@ -243,8 +244,65 @@ void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 	}
 }
 
-void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu)
+void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos)
 {
+	SGVector<index_t> index_zero = mu.find(0);
+	SGVector<index_t> index_pos = mu.find_if(std::bind1st(std::less<int32_t>(), 0)); 
+
+	int32_t num_zero = index_zero.vlen;
+	int32_t num_pos  = index_pos.vlen;
+
+	SGVector<index_t> class_index(num_zero+2*num_pos);
+	std::copy(&index_zero[0], &index_zero[num_zero], &class_index[0]);
+	std::copy(&index_pos[0], &index_pos[num_pos], &class_index[num_zero]);
+	std::copy(&index_pos[0], &index_pos[num_pos], &class_index[num_pos+num_zero]);
+
+	SGVector<int32_t> orig_mu(num_zero + 2*num_pos);
+	orig_mu.zero();
+	std::fill(&orig_mu[num_zero], &orig_mu[orig_mu.vlen], 1);
+
+	SGVector<int32_t> delta_steps(num_zero+2*num_pos);
+	std::fill(&delta_steps[0], &delta_steps[delta_steps.vlen], 1);
+
+	SGVector<int32_t> new_mu(num_zero + 2*num_pos);
+	new_mu.zero();
+	std::fill(&new_mu[0], &new_mu[num_zero], -1);
+
+	SGVector<float64_t> S_delta(num_zero + 2*num_pos);
+	S_delta.zero();
+	for (index_t i=0; i < num_zero; ++i)
+		S_delta[i] = delta_neg[index_zero[i]];
+
+	for (int32_t i=0; i < num_pos; ++i)
+	{
+		float64_t delta_k = delta_neg[index_pos[i]];
+		float64_t delta_k_0 = -delta_pos[index_pos[i]];
+
+		index_t tmp_index = num_zero + i*2;
+		if (delta_k_0 <= delta_k)
+		{
+			new_mu[tmp_index] = 0;
+			new_mu[tmp_index+1] = -1;
+
+			S_delta[tmp_index] = delta_k_0;
+			S_delta[tmp_index+1] = delta_k;
+
+			delta_steps[tmp_index] = 1;
+			delta_steps[tmp_index+1] = 1;
+		}
+		else
+		{
+			new_mu[tmp_index] = -1;
+			new_mu[tmp_index+1] = 0;
+
+			S_delta[tmp_index] = (delta_k_0+delta_k)/2;
+			S_delta[tmp_index+1] = delta_k_0;
+
+			delta_steps[tmp_index] = 2;
+			delta_steps[tmp_index+1] = 1;
+		}
+	}
+
 }
 
 SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CLibSVM *svm)

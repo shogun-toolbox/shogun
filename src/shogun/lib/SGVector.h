@@ -471,7 +471,27 @@ template<class T> class SGVector : public SGReferencedData
 			const SGVector<T>, const char* name="vector",
 			const char* prefix="");
 
+		/** find index for occurance of an element
+		 * @param elem the element to find
+		 */
 		SGVector<index_t> find(T elem);
+
+		/** find index for elements where the predicate returns true
+		 * @param p the predicate, it should accept the value of the element and return a bool
+		 */
+		template <typename Predicate>
+			SGVector<index_t> find_if(Predicate p)
+			{
+				SGVector<index_t> idx(vlen);
+				index_t k=0; 
+
+				for (index_t i=0; i < vlen; ++i)
+					if (p(vector[i]))
+						idx[k++] = i;
+
+				idx.vlen = k;
+				return idx;
+			}
 
 	protected:
 		/** needs to be overridden to copy data */

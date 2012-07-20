@@ -636,7 +636,6 @@ SGVector<index_t> SGVector<T>::find(T elem)
 	return idx;
 }
 
-
 template class SGVector<bool>;
 template class SGVector<char>;
 template class SGVector<int8_t>;
