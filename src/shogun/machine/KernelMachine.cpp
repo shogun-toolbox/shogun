@@ -462,13 +462,18 @@ void CKernelMachine::store_model_features()
 	CFeatures* sv_features=lhs->copy_subset(m_svs);
 	SG_UNREF(lhs);
 
-	/* now sv indices are just the identity */
-	m_svs.range_fill();
-
 	/* set new lhs to kernel */
 	kernel->init(sv_features, rhs);
 
+	/* unref rhs */
 	SG_UNREF(rhs);
+
+	/* was SG_REF'ed by copy_subset */
+	SG_UNREF(sv_features);
+
+	/* now sv indices are just the identity */
+	m_svs.range_fill();
+
 }
 
 bool CKernelMachine::train_locked(SGVector<index_t> indices)
