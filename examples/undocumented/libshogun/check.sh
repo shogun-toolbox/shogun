@@ -10,7 +10,7 @@ test -n "$INCLUDES" && INCLUDES="INCLUDES=${INCLUDES}"
 test -n "$CC" && CC="CC=${CC}"
 test -z "$MAKE" && MAKE="make"
 
-for e in `$MAKE print_targets | grep -v ^make`
+for e in `$MAKE print_targets | grep -v ^$MAKE`
 do
 	echo -n "running $e .."
 	if $MAKE "$e" "$CC" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" "$INCLUDES" >/dev/null 2>&1 && "./$e" >/dev/null 2>&1
