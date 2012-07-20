@@ -127,6 +127,9 @@ void test_multiclass_mkl_cv()
 	SG_SPRINT("mean of %d %d-fold x-val runs: %f\n", n_runs, n_folds,
 			result->mean);
 
+	/* assert high accuracy */
+	ASSERT(result->mean>0.9);
+
 	/* clean up */
 	SG_UNREF(ffeats_train);
 	SG_UNREF(flabels_train);
