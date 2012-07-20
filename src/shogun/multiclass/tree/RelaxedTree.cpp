@@ -303,6 +303,7 @@ void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<f
 		}
 	}
 
+	SGVector<index_t> sorted_index = S_delta.sorted_index();
 }
 
 SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CLibSVM *svm)

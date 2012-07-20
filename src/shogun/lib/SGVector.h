@@ -12,6 +12,8 @@
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
 
+#include <algorithm>
+
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGReferencedData.h>
@@ -492,6 +494,36 @@ template<class T> class SGVector : public SGReferencedData
 				idx.vlen = k;
 				return idx;
 			}
+
+		/** Helper functor for the function sorted_index */
+		struct IndexSorter
+		{
+			IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
+
+			bool operator() (index_t i, index_t j) const
+			{
+				return data[i] < data[j];
+			}
+
+			const T* data;
+		};
+		/** get sorted index.
+		 *
+		 * idx = v.sorted_index() is similar to Matlab [~, idx] = sort(v)
+		 *
+		 * @return sorted index for this vector
+		 */
+		SGVector<index_t> sorted_index()
+		{
+			IndexSorter cmp(this);
+			SGVector<index_t> idx(vlen);
+			for (index_t i=0; i < vlen; ++i)
+				idx[i] = i;
+
+			std::sort(idx.vector, idx.vector+vlen, cmp);
+
+			return idx;
+		}
 
 	protected:
 		/** needs to be overridden to copy data */
