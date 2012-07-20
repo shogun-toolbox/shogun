@@ -63,6 +63,15 @@ CEvaluationResult* CCrossValidation::evaluate(CModelSelectionOutput* ms_output)
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name());
 
+	REQUIRE(m_machine, "%s::evaluate() is only possible if a machine is "
+			"attached\n", get_name());
+
+	REQUIRE(m_features, "%s::evaluate() is only possible if features are "
+			"attached\n", get_name());
+
+	REQUIRE(m_labels, "%s::evaluate() is only possible if labels are "
+			"attached\n", get_name());
+
 	/* if for some reason the do_unlock_frag is set, unlock */
 	if (m_do_unlock)
 	{
@@ -250,7 +259,9 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 			}
 
 			/* train machine on training features and remove subset */
+			SG_DEBUG("starting training\n");
 			m_machine->train(m_features);
+			SG_DEBUG("finished training\n");
 			if (ms_output)
 			{
 				ms_output->output_train_indices(inverse_subset_indices);
@@ -276,7 +287,10 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 			}
 
 			/* apply machine to test features and remove subset */
+			SG_DEBUG("starting evaluation\n");
+			SG_DEBUG("%p\n", m_features);
 			CLabels* result_labels=m_machine->apply(m_features);
+			SG_DEBUG("finished evaluation\n");
 			m_features->remove_subset();
 			SG_REF(result_labels);
 
