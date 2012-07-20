@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -54,8 +54,8 @@ void CLabels::remove_all_subsets()
 
 float64_t CLabels::get_confidence(int32_t idx)
 {
-	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_confidences.vector && idx<get_num_labels());
+	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	return m_confidences.vector[real_num];
 }
 
