@@ -238,13 +238,15 @@ void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 
 	if (B_prime > m_B)
 	{
+		enforce_balance_constraints_upper(mu, delta_neg, delta_pos, B_prime, xi_neg_class);
 	}
 	if (B_prime < -m_B)
 	{
+		enforce_balance_constraints_lower(mu, delta_neg, delta_pos, B_prime, xi_neg_class);
 	}
 }
 
-void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 
+void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 
 		SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class)
 {
 	SGVector<index_t> index_zero = mu.find(0);
@@ -409,7 +411,197 @@ void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<f
 							Delta_k_minus - Delta_i_max <= Delta_k_minus - Delta_l_max)
 					{
 						mu[class_index[ctr]] = -1;
-						if (i >= 0)
+						if (i > 0)
+						{
+							mu[class_index[i]] = orig_mu[i];
+							d++;
+						}
+						else
+						{
+							d += 2;
+						}
+					}
+					else
+					{
+						ASSERT(l > 0);
+						mu[class_index[l]] = 0;
+						mu[class_index[ctr]] = -1;
+						d++;
+					}
+				}
+
+			}
+		}
+	}
+}
+
+void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 
+		SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class)
+{
+	SGVector<index_t> index_zero = mu.find(0);
+	SGVector<index_t> index_neg = mu.find_if(std::bind1st(std::greater<int32_t>(), 0)); 
+
+	int32_t num_zero = index_zero.vlen;
+	int32_t num_neg  = index_neg.vlen;
+
+	SGVector<index_t> class_index(num_zero+2*num_neg);
+	std::copy(&index_zero[0], &index_zero[num_zero], &class_index[0]);
+	std::copy(&index_neg[0], &index_neg[num_neg], &class_index[num_zero]);
+	std::copy(&index_neg[0], &index_neg[num_neg], &class_index[num_neg+num_zero]);
+
+	SGVector<int32_t> orig_mu(num_zero + 2*num_neg);
+	orig_mu.zero();
+	std::fill(&orig_mu[num_zero], &orig_mu[orig_mu.vlen], -1);
+
+	SGVector<int32_t> delta_steps(num_zero+2*num_neg);
+	std::fill(&delta_steps[0], &delta_steps[delta_steps.vlen], 1);
+
+	SGVector<int32_t> new_mu(num_zero + 2*num_neg);
+	new_mu.zero();
+	std::fill(&new_mu[0], &new_mu[num_zero], 1);
+
+	SGVector<float64_t> S_delta(num_zero + 2*num_neg);
+	S_delta.zero();
+	for (index_t i=0; i < num_zero; ++i)
+		S_delta[i] = delta_pos[index_zero[i]];
+
+	for (int32_t i=0; i < num_neg; ++i)
+	{
+		float64_t delta_k = delta_pos[index_neg[i]];
+		float64_t delta_k_0 = -delta_neg[index_neg[i]];
+
+		index_t tmp_index = num_zero + i*2;
+		if (delta_k_0 <= delta_k)
+		{
+			new_mu[tmp_index] = 0;
+			new_mu[tmp_index+1] = 1;
+
+			S_delta[tmp_index] = delta_k_0;
+			S_delta[tmp_index+1] = delta_k;
+
+			delta_steps[tmp_index] = 1;
+			delta_steps[tmp_index+1] = 1;
+		}
+		else
+		{
+			new_mu[tmp_index] = 1;
+			new_mu[tmp_index+1] = 0;
+
+			S_delta[tmp_index] = (delta_k_0+delta_k)/2;
+			S_delta[tmp_index+1] = delta_k_0;
+
+			delta_steps[tmp_index] = 2;
+			delta_steps[tmp_index+1] = 1;
+		}
+	}
+
+	SGVector<index_t> sorted_index = S_delta.sorted_index();
+	SGVector<float64_t> S_delta_sorted(S_delta.vlen);
+	for (index_t i=0; i < sorted_index.vlen; ++i)
+	{
+		S_delta_sorted[i] = S_delta[sorted_index[i]];
+		new_mu[i] = new_mu[sorted_index[i]];
+		orig_mu[i] = orig_mu[sorted_index[i]];
+		class_index = class_index[sorted_index[i]];
+		delta_steps = delta_steps[sorted_index[i]];
+	}
+
+	SGVector<int32_t> valid_flag(S_delta.vlen);
+	std::fill(&valid_flag[0], &valid_flag[valid_flag.vlen], 1);
+
+	int32_t d=0;
+	int32_t ctr=0;
+
+	while (true)
+	{
+		if (d == -m_B - B_prime || d == -m_B - B_prime + 1)
+			break;
+
+		while (!valid_flag[ctr])
+			ctr++;
+
+		if (delta_steps[ctr] == 1)
+		{
+			mu[class_index[ctr]] = new_mu[ctr];
+			d++;
+		}
+		else
+		{
+			// this case should happen only when rho >= 1
+			if (d >= -m_B - B_prime - 2)
+			{
+				mu[class_index[ctr]] = new_mu[ctr];
+				ASSERT(new_mu[ctr] == 1);
+				d += 2;
+
+				for (index_t i=0; i < class_index.vlen; ++i)
+				{
+					if (class_index[i] == class_index[ctr])
+						valid_flag[i] = 0;
+				}
+			}
+			else
+			{
+				float64_t Delta_k_minus = 2*S_delta_sorted[ctr];
+
+				// find the next smallest Delta_j or Delta_{j,0}
+				float64_t Delta_j_min=0;
+				int32_t j=0;
+				for (int32_t itr=ctr+1; itr < S_delta_sorted.vlen; ++itr)
+				{
+					if (valid_flag[itr] == 0)
+						continue;
+
+					if (delta_steps[itr] == 1)
+					{
+						int32_t j=itr;
+						Delta_j_min = S_delta_sorted[j];
+					}
+				}
+
+				// find the largest Delta_i or Delta_{i,0}
+				float64_t Delta_i_max = 0;
+				int32_t i=-1;
+				for (int32_t itr=ctr-1; itr >= 0; --itr)
+				{
+					if (delta_steps[itr] == 1 && valid_flag[itr] == 1)
+					{
+						i = itr;
+						Delta_i_max = S_delta_sorted[i];
+					}
+				}
+
+				// find the l with the largest Delta_l_minus - Delta_l_0
+				float64_t Delta_l_max = std::numeric_limits<float64_t>::min();
+				int32_t l=-1;
+				for (int32_t itr=ctr-1; itr >= 0; itr--)
+				{
+					if (delta_steps[itr] == 2)
+					{
+						float64_t delta_tmp = xi_neg_class[class_index[itr]];
+						if (delta_tmp > Delta_l_max)
+						{
+							l = itr;
+							Delta_l_max = delta_tmp;
+						}
+					}
+				}
+
+				// one-step-min = j
+				if (Delta_j_min <= Delta_k_minus - Delta_i_max &&
+						Delta_j_min <= Delta_k_minus - Delta_l_max)
+				{
+					mu[class_index[j]] = new_mu[j];
+					d++;
+				}
+				else
+				{
+					// one-step-min = Delta_k_minus - Delta_i_max
+					if (Delta_k_minus - Delta_i_max <= Delta_j_min &&
+							Delta_k_minus - Delta_i_max <= Delta_k_minus - Delta_l_max)
+					{
+						mu[class_index[ctr]] = -1;
+						if (i > 0)
 						{
 							mu[class_index[i]] = orig_mu[i];
 							d++;
