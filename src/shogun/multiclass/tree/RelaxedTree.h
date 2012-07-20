@@ -180,7 +180,7 @@ protected:
 	void color_label_space(CLibSVM *svm, SGVector<int32_t> classes);
 	SGVector<float64_t> eval_binary_model_K(CLibSVM *svm);
 
-	void enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos);
+	void enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);
 
 	int32_t m_max_num_iter;
 	float64_t m_A;

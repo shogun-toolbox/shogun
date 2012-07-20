@@ -244,7 +244,8 @@ void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 	}
 }
 
-void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos)
+void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 
+		SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class)
 {
 	SGVector<index_t> index_zero = mu.find(0);
 	SGVector<index_t> index_pos = mu.find_if(std::bind1st(std::less<int32_t>(), 0)); 
@@ -304,6 +305,132 @@ void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu, SGVector<f
 	}
 
 	SGVector<index_t> sorted_index = S_delta.sorted_index();
+	SGVector<float64_t> S_delta_sorted(S_delta.vlen);
+	for (index_t i=0; i < sorted_index.vlen; ++i)
+	{
+		S_delta_sorted[i] = S_delta[sorted_index[i]];
+		new_mu[i] = new_mu[sorted_index[i]];
+		orig_mu[i] = orig_mu[sorted_index[i]];
+		class_index = class_index[sorted_index[i]];
+		delta_steps = delta_steps[sorted_index[i]];
+	}
+
+	SGVector<int32_t> valid_flag(S_delta.vlen);
+	std::fill(&valid_flag[0], &valid_flag[valid_flag.vlen], 1);
+
+	int32_t d=0;
+	int32_t ctr=0;
+
+	while (true)
+	{
+		if (d == B_prime - m_B || d == B_prime - m_B + 1)
+			break;
+
+		while (!valid_flag[ctr])
+			ctr++;
+
+		if (delta_steps[ctr] == 1)
+		{
+			mu[class_index[ctr]] = new_mu[ctr];
+			d++;
+		}
+		else
+		{
+			// this case should happen only when rho >= 1
+			if (d <= B_prime - m_B - 2)
+			{
+				mu[class_index[ctr]] = new_mu[ctr];
+				ASSERT(new_mu[ctr] == -1);
+				d += 2;
+				for (index_t i=0; i < class_index.vlen; ++i)
+				{
+					if (class_index[i] == class_index[ctr])
+						valid_flag[i] = 0;
+				}
+			}
+			else
+			{
+				float64_t Delta_k_minus = 2*S_delta_sorted[ctr];
+
+				// find the next smallest Delta_j or Delta_{j,0}
+				float64_t Delta_j_min=0;
+				int32_t j=0;
+				for (int32_t itr=ctr+1; itr < S_delta_sorted.vlen; ++itr)
+				{
+					if (valid_flag[itr] == 0)
+						continue;
+
+					if (delta_steps[itr] == 1)
+					{
+						int32_t j=itr;
+						Delta_j_min = S_delta_sorted[j];
+					}
+				}
+
+				// find the largest Delta_i or Delta_{i,0}
+				float64_t Delta_i_max = 0;
+				int32_t i=-1;
+				for (int32_t itr=ctr-1; itr >= 0; --itr)
+				{
+					if (delta_steps[itr] == 1 && valid_flag[itr] == 1)
+					{
+						i = itr;
+						Delta_i_max = S_delta_sorted[i];
+					}
+				}
+
+				// find the l with the largest Delta_l_minus - Delta_l_0
+				float64_t Delta_l_max = std::numeric_limits<float64_t>::min();
+				int32_t l=-1;
+				for (int32_t itr=ctr-1; itr >= 0; itr--)
+				{
+					if (delta_steps[itr] == 2)
+					{
+						float64_t delta_tmp = xi_neg_class[class_index[itr]];
+						if (delta_tmp > Delta_l_max)
+						{
+							l = itr;
+							Delta_l_max = delta_tmp;
+						}
+					}
+				}
+
+				// one-step-min = j
+				if (Delta_j_min <= Delta_k_minus - Delta_i_max &&
+						Delta_j_min <= Delta_k_minus - Delta_l_max)
+				{
+					mu[class_index[j]] = new_mu[j];
+					d++;
+				}
+				else
+				{
+					// one-step-min = Delta_k_minus - Delta_i_max
+					if (Delta_k_minus - Delta_i_max <= Delta_j_min &&
+							Delta_k_minus - Delta_i_max <= Delta_k_minus - Delta_l_max)
+					{
+						mu[class_index[ctr]] = -1;
+						if (i >= 0)
+						{
+							mu[class_index[i]] = orig_mu[i];
+							d++;
+						}
+						else
+						{
+							d += 2;
+						}
+					}
+					else
+					{
+						ASSERT(l > 0);
+						mu[class_index[l]] = 0;
+						mu[class_index[ctr]] = -1;
+						d++;
+					}
+				}
+
+			}
+		}
+	}
 }
 
 SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CLibSVM *svm)
