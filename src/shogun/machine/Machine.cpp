@@ -160,19 +160,34 @@ void CMachine::data_unlock()
 
 CLabels* CMachine::apply(CFeatures* data)
 {
+	SG_DEBUG("entering %s::apply(%s at %p)\n",
+			get_name(), data ? data->get_name() : "NULL", data);
+
+	CLabels* result=NULL;
+
 	switch (get_machine_problem_type())
 	{
 		case PT_BINARY:
-			return apply_binary(data);
+			result=apply_binary(data);
+			break;
 		case PT_REGRESSION:
-			return apply_regression(data);
+			result=apply_regression(data);
+			break;
 		case PT_MULTICLASS:
-			return apply_multiclass(data);
+			result=apply_multiclass(data);
+			break;
 		case PT_STRUCTURED:
-			return apply_structured(data);
-		default: SG_ERROR("Unknown problem type");
+			result=apply_structured(data);
+			break;
+		default:
+			SG_ERROR("Unknown problem type");
+			break;
 	}
-	return NULL;
+
+	SG_DEBUG("leaving %s::apply(%s at %p)\n",
+			get_name(), data ? data->get_name() : "NULL", data);
+
+	return result;
 }
 
 CLabels* CMachine::apply_locked(SGVector<index_t> indices)
