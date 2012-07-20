@@ -229,6 +229,22 @@ void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 		}
 
 	}
+
+	// enforce balance constraints
+	int32_t B_prime = 0;
+	for (int32_t i=0; i < mu.vlen; ++i)
+		B_prime += mu[i];
+
+	if (B_prime > m_B)
+	{
+	}
+	if (B_prime < -m_B)
+	{
+	}
+}
+
+void CRelaxedTree::enforce_balance_constraints(SGVector<int32_t> &mu)
+{
 }
 
 SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CLibSVM *svm)

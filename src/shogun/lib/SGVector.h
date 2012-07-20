@@ -471,6 +471,7 @@ template<class T> class SGVector : public SGReferencedData
 			const SGVector<T>, const char* name="vector",
 			const char* prefix="");
 
+		SGVector<index_t> find(T elem);
 
 	protected:
 		/** needs to be overridden to copy data */

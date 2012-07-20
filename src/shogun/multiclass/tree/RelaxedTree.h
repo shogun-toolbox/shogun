@@ -136,14 +136,14 @@ public:
 	/** set parameter B
 	 * @param B
 	 */
-	void set_B(float64_t B)
+	void set_B(int32_t B)
 	{
 		m_B = B;
 	}
 	/** get parameter B
 	 * @return B
 	 */
-	float64_t get_B() const
+	int32_t get_B() const
 	{
 		return m_B;
 	}
@@ -180,9 +180,11 @@ protected:
 	void color_label_space(CLibSVM *svm, SGVector<int32_t> classes);
 	SGVector<float64_t> eval_binary_model_K(CLibSVM *svm);
 
+	void enforce_balance_constraints(SGVector<int32_t> &mu);
+
 	int32_t m_max_num_iter;
 	float64_t m_A;
-	float64_t m_B;
+	int32_t m_B;
 	float64_t m_svm_C;
 	float64_t m_svm_epsilon;
 	CKernel *m_kernel;
