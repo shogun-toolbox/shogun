@@ -250,7 +250,10 @@ CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
 
 SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 {
-	REQUIRE(kernel, "No kernel assigned!\n");
+	SG_DEBUG("entering %s::apply_get_outputs(%s at %p)\n",
+			get_name(), data ? data->get_name() : "NULL", data);
+
+	REQUIRE(kernel, "%s::apply_get_outputs(): No kernel assigned!\n");
 
 	if (!kernel->get_num_vec_lhs())
 	{
@@ -263,12 +266,22 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		CFeatures* lhs=kernel->get_lhs();
-		REQUIRE(lhs, "%s: No left hand side specified\n", get_name());
+		REQUIRE(lhs, "%s::apply_get_outputs(): No left hand side specified\n",
+				get_name());
 		kernel->init(lhs, data);
 		SG_UNREF(lhs);
 	}
 
-	int32_t num_vectors=kernel->get_num_vec_rhs();
+	/* using the features to get num vectors is far safer than using the kernel
+	 * since SHOGUNs kernel num_rhs/num_lhs is buggy (CombinedKernel for ex.)
+	 * Might be worth investigating why
+	 * kernel->get_num_rhs() != rhs->get_num_vectors()
+	 * However, the below version works
+	 * TODO Heiko Strathmann
+	 */
+	CFeatures* rhs=kernel->get_rhs();
+	int32_t num_vectors=rhs->get_num_vectors();
+	SG_UNREF(rhs)
 
 	SGVector<float64_t> output(num_vectors);
 
@@ -379,6 +392,9 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 #endif
 			SG_DONE();
 	}
+
+	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
+			get_name(), data ? data->get_name() : "NULL", data);
 
 	return output;
 }

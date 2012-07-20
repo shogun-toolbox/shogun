@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2012 Soeren Sonnenburg and Sergey Lisitsyn
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2012 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -104,14 +105,22 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		virtual bool init_machines_for_apply(CFeatures* data)
 		{
 			if (data)
-				m_kernel->init(m_kernel->get_lhs(),data);
+			{
+				/* set data to rhs for this kernel */
+				CFeatures* lhs=m_kernel->get_lhs();
+				m_kernel->init(lhs, data);
+				SG_UNREF(lhs);
+			}
 
+			/* set kernel to all sub-machines */
 			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 			{
-				CKernelMachine *machine = (CKernelMachine*)m_machines->get_element(i);
+				CKernelMachine *machine=
+						(CKernelMachine*)m_machines->get_element(i);
 				machine->set_kernel(m_kernel);
 				SG_UNREF(machine);
 			}
+
 			return true;
 		}
 
