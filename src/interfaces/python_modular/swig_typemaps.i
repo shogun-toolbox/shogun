@@ -1042,6 +1042,81 @@ static PyObject * class_name ## _slice(PyObject *self, Py_ssize_t ilow, Py_ssize
     return (PyObject *)ret;
 }
 
+PyObject* class_name ## _subscript(PyObject *self, PyObject *key)
+{
+	CDenseFeatures< type_name > * arg1 = 0;
+
+	void *argp1 = 0;
+	int num_feat = 0, num_vec = 0;
+	int res1 = 0 ;
+
+	PyObject* resultobj = 0;
+	Py_buffer view;
+	
+	Py_ssize_t* shape;
+	Py_ssize_t* strides;
+
+	char* data = 0;
+
+	PyArrayObject* ret;
+	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	arg1 = reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+
+	data = (char *)arg1->get_feature_matrix(num_feat, num_vec);
+
+	int i, n;
+
+	Py_ssize_t slice[2][4];
+
+	if(PyTuple_Check(key))
+	{
+		n = PyTuple_GET_SIZE(key);
+
+		shape = new Py_ssize_t[2];
+		shape[0] = num_feat;
+		shape[1] = num_vec;
+
+		strides = new Py_ssize_t[2];
+		strides[0] = sizeof( type_name );
+		strides[1] = sizeof( type_name ) * num_feat;
+
+		if (n != 2)
+		{
+			// TODO exeptions
+			return NULL;
+		}
+
+       	for (i = 0; i < n; i++) 
+		{
+			PyObject *obj = PyTuple_GET_ITEM(key,i);
+			if (PySlice_Check(obj)) 
+			{
+            	PySlice_GetIndicesEx((PySliceObject*)obj, shape[i], &slice[i][0], &slice[i][1], &slice[i][2], &slice[i][3]);
+				printf("%d %d\n", slice[i][0], slice[i][1]);   
+            }
+        }
+
+		shape[0] = slice[0][1]-slice[0][0];
+		shape[1] = slice[1][1]-slice[1][0];
+
+		data+=slice[0][0]*strides[0]+slice[1][0]*strides[1];
+
+    	ret = (PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
+                             	2, shape,
+                             	strides, data,
+                             	NPY_FARRAY | NPY_WRITEABLE,
+                             	(PyObject *)self);	
+		
+		Py_INCREF(self);
+		return (PyObject*) ret;	
+	}
+
+	// TODO exeptions
+	return NULL;
+}
+
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, add, +)
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, sub, -)
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, mul, *)
@@ -1064,6 +1139,8 @@ SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags
 
 %feature("python:sq_item") CDenseFeatures< type_name > #class_name "_get_item"
 %feature("python:sq_slice") CDenseFeatures< type_name > #class_name "_slice"
+
+%feature("python:mp_subscript") CDenseFeatures< type_name > #class_name "_subscript"
 
 %enddef
 
