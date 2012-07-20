@@ -50,6 +50,9 @@ void CKernelMulticlassMachine::store_model_features()
 	/* now, features are replaced by concatenated SV features */
 	kernel->init(sv_features, rhs);
 
+	/* was SG_REF'ed by copy_subset */
+	SG_UNREF(sv_features);
+
 	/* now the old SV indices have to be mapped to the new features */
 
 	/* update SV of all machines */

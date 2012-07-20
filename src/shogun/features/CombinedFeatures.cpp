@@ -355,10 +355,18 @@ CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)
 			processed->add(current, new_element);
 		}
 		else
+		{
 			new_element=processed->get_element(current);
+
+			/* has to be SG_REF'ed since it will be unrefed afterwards */
+			SG_REF(new_element);
+		}
 
 		/* add to result */
 		result->append_feature_obj(new_element);
+
+		/* clean up: copy_subset of SG_REF has to be undone */
+		SG_UNREF(new_element);
 
 		SG_UNREF(current);
 		current=get_next_feature_obj();
