@@ -280,7 +280,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	 * TODO Heiko Strathmann
 	 */
 	CFeatures* rhs=kernel->get_rhs();
-	int32_t num_vectors=rhs->get_num_vectors();
+	int32_t num_vectors=rhs ? rhs->get_num_vectors() : kernel->get_num_vec_rhs();
 	SG_UNREF(rhs)
 
 	SGVector<float64_t> output(num_vectors);
