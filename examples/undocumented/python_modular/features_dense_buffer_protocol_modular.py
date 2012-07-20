@@ -16,6 +16,9 @@ def features_dense_real_modular(in_data=data):
 	f_real=RealFeatures(m_real)
 	f_long=LongIntFeatures(m_long)
 
+#	print m_real[2, 1:3]
+#	print f_real[2, 1:3]
+
 	if numpy.__version__ >= '1.5':
 		f_real+=m_real
 		f_long+=m_long
@@ -40,6 +43,9 @@ def features_dense_real_modular(in_data=data):
 #	print f_real
 #	print f_long
 
+#	print m_real
+#	print f_real.get_feature_matrix()
+
 	try:
 		mem_real=memoryview(f_real)
 		mem_long=memoryview(f_long)
@@ -50,8 +56,8 @@ def features_dense_real_modular(in_data=data):
 	ret_real=array(f_real)
 	ret_long=array(f_long)
 
-	print ret_real
-	print ret_long
+#	print ret_real
+#	print ret_long
 
 if __name__=='__main__':
 	print('dense_real')

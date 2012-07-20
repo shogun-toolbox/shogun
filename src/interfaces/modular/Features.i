@@ -294,7 +294,7 @@ namespace shogun
 {
 #ifdef USE_BOOL
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(BoolFeatures, bool, "?\0", NPY_BOOL)
+	NICE_DENSEFEATURES(BoolFeatures, bool, "?\0", NPY_BOOL)
 	#endif
 
     %template(BoolFeatures) CDenseFeatures<bool>;
@@ -303,7 +303,7 @@ namespace shogun
 #ifdef USE_CHAR
 	// TODO python3 support!
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(CharFeatures, char, "c\0", NPY_STRING)
+	NICE_DENSEFEATURES(CharFeatures, char, "c\0", NPY_STRING)
 	#endif
 
     %template(CharFeatures) CDenseFeatures<char>;
@@ -311,7 +311,7 @@ namespace shogun
 
 #ifdef USE_UINT8
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ByteFeatures, uint8_t, "B\0", NPY_UINT8)
+	NICE_DENSEFEATURES(ByteFeatures, uint8_t, "B\0", NPY_UINT8)
 	#endif
 
     %template(ByteFeatures) CDenseFeatures<uint8_t>;
@@ -319,7 +319,7 @@ namespace shogun
 
 #ifdef USE_UINT16
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(WordFeatures, uint16_t, "H\0", NPY_UINT16)
+	NICE_DENSEFEATURES(WordFeatures, uint16_t, "H\0", NPY_UINT16)
 	#endif
 
     %template(WordFeatures) CDenseFeatures<uint16_t>;
@@ -327,7 +327,7 @@ namespace shogun
 
 #ifdef USE_INT16
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ShortFeatures, int16_t, "h\0", NPY_INT16)
+	NICE_DENSEFEATURES(ShortFeatures, int16_t, "h\0", NPY_INT16)
 	#endif
 
     %template(ShortFeatures) CDenseFeatures<int16_t>;
@@ -335,7 +335,7 @@ namespace shogun
 
 #ifdef USE_INT32
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(IntFeatures, int32_t, "i\0", NPY_INT32)
+	NICE_DENSEFEATURES(IntFeatures, int32_t, "i\0", NPY_INT32)
 	#endif
 
     %template(IntFeatures)  CDenseFeatures<int32_t>;
@@ -343,7 +343,7 @@ namespace shogun
 
 #ifdef USE_UINT32
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(UIntFeatures, uint32_t, "I\0", NPY_UINT32)
+	NICE_DENSEFEATURES(UIntFeatures, uint32_t, "I\0", NPY_UINT32)
 	#endif
 
     %template(UIntFeatures)  CDenseFeatures<uint32_t>;
@@ -351,7 +351,7 @@ namespace shogun
 
 #ifdef USE_INT64
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(LongIntFeatures, int64_t, "l\0", NPY_INT64)
+	NICE_DENSEFEATURES(LongIntFeatures, int64_t, "l\0", NPY_INT64)
 	#endif
 
     %template(LongIntFeatures) CDenseFeatures<int64_t>;
@@ -359,7 +359,7 @@ namespace shogun
 
 #ifdef USE_UINT64
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ULongIntFeatures, uint64_t, "L\0", NPY_UINT64)
+	NICE_DENSEFEATURES(ULongIntFeatures, uint64_t, "L\0", NPY_UINT64)
 	#endif
 
     %template(ULongIntFeatures) CDenseFeatures<uint64_t>;
@@ -371,7 +371,7 @@ namespace shogun
 
 #ifdef USE_FLOAT32
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ShortRealFeatures, float64_t, "f\0", NPY_FLOAT32)
+	NICE_DENSEFEATURES(ShortRealFeatures, float64_t, "f\0", NPY_FLOAT32)
 	#endif
 
     %template(ShortRealFeatures) CDenseFeatures<float32_t>;
@@ -379,7 +379,7 @@ namespace shogun
 
 #ifdef USE_FLOAT64
 	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(RealFeatures, float64_t, "d\0", NPY_FLOAT64)
+	NICE_DENSEFEATURES(RealFeatures, float64_t, "d\0", NPY_FLOAT64)
 	#endif
     
 	%template(RealFeatures) CDenseFeatures<float64_t>;

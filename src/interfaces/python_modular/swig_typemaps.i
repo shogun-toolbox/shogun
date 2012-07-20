@@ -856,57 +856,72 @@ fail:
 
 %enddef
 
-/* Buffer protocol stuff for DenseFeatures */
-%define BUFFER_DENSEFEATURES(class_name, type_name, format_str, typecode)
+/* Python protocols for DenseFeatures */
+%define NICE_DENSEFEATURES(class_name, type_name, format_str, typecode)
 
 %wrapper 
 %{
 
-static int class_name ## _getbuffer(PyObject *exporter, Py_buffer *view, int flags)
+/* used by PyObject_GetBuffer */
+static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 {
-	CDenseFeatures< type_name > * self = (CDenseFeatures< type_name > *) 0;
-	void *argp1 = 0 ;
-	int res1 = 0 ;
+	CDenseFeatures< type_name > * arg1=(CDenseFeatures< type_name > *) 0; // self in c++ repr
+	void *argp1=0; // pointer to self
+	int res1=0; // result for self's casting
 
-	int num_feat = 0, num_vec = 0;
+	int num_feat=0, num_vec=0;
 	Py_ssize_t* shape;
-	Py_ssize_t* stride;
+	Py_ssize_t* strides;
 
-	static char* format = (char *) format_str;
+	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
-	res1 = SWIG_ConvertPtr(exporter, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1)) 
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" " class_name _getbuffer" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'"); 
+		SWIG_exception_fail(SWIG_ArgError(res1), 
+					"in method '" " class_name _getbuffer" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'"); 
 	}
 
-	self = reinterpret_cast< CDenseFeatures < type_name > * >(argp1);
+	if ((flags & PyBUF_C_CONTIGUOUS)==PyBUF_C_CONTIGUOUS) 
+	{
+        PyErr_SetString(PyExc_ValueError, "class_name is not C-contiguous");
+        goto fail;
+    }
 
-	view->buf = self->get_feature_matrix(num_feat, num_vec);
+    if ((flags & PyBUF_STRIDES)!=PyBUF_STRIDES &&
+      	(flags & PyBUF_ND)==PyBUF_ND) 
+	{
+        PyErr_SetString(PyExc_ValueError, "class_name is not C-contiguous");
+        goto fail;
+    }
 
-	shape = new Py_ssize_t[2];
-	shape[0] = num_feat;
-	shape[1] = num_vec;
+	arg1=reinterpret_cast< CDenseFeatures < type_name >* >(argp1);
 
-	stride = new Py_ssize_t[2];
-	stride[0] = sizeof( type_name );
-	stride[1] = sizeof( type_name ) * num_feat;
+	view->buf=arg1->get_feature_matrix(num_feat, num_vec);
 
-	view->ndim = 2;		
+	shape=new Py_ssize_t[2];
+	shape[0]=num_feat;
+	shape[1]=num_vec;
 
-    view->format = format;
-    view->itemsize = stride[0];
+	strides=new Py_ssize_t[2];
+	strides[0]=sizeof( type_name );
+	strides[1]=sizeof( type_name ) * num_feat;
 
-	view->len = (shape[0]*shape[1])*view->itemsize;
-	view->shape = shape;
-	view->strides = stride;
+	view->ndim=2;		
 
-	view->readonly = 0;	
-	view->suboffsets = NULL;
-	view->internal = NULL;
+    view->format=format;
+    view->itemsize=strides[0];
 
-	view->obj = (PyObject*) exporter;
-	Py_INCREF(exporter);
+	view->len=(shape[0]*shape[1])*view->itemsize;
+	view->shape=shape;
+	view->strides=strides;
+
+	view->readonly=0;	
+	view->suboffsets=NULL;
+	view->internal=NULL;
+
+	view->obj=(PyObject*) self;
+	Py_INCREF(self);
 
 	return 0;
 
@@ -914,165 +929,185 @@ fail:
 	return -1;
 }
 
+/* used by PyBuffer_Release */
 static void class_name ## _releasebuffer(PyObject *exporter, Py_buffer *view)
 {
-	if(view->shape != NULL)
+	if (view->shape!=NULL)
 		delete[] view->shape;
 		
-	if(view->strides != NULL)
+	if (view->strides!=NULL)
 		delete[] view->strides;
 }
 
-static PyObject * class_name ## _get_item(PyObject *self, Py_ssize_t i)
+/* used by PySequence_GetItem */
+static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 {
-	CDenseFeatures< type_name > * arg1 = 0;
+	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	void* argp1=0; // pointer to self
+	int res1=0; // result for self's casting
 
-	void *argp1 = 0;
-	int num_feat = 0, num_vec = 0;
-	int res1 = 0 ;
+	char* data=0; // internal data of self
+	int num_feat=0, num_vec=0;
 
-	PyObject* resultobj = 0;
-	Py_buffer view;
-	
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
 
-	char* data = 0;
-
 	PyArrayObject* ret;
-	PyArray_Descr* descr = PyArray_DescrFromType(typecode);
+	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
 	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
-	arg1 = reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+	if (!SWIG_IsOK(res1)) 
+	{
+		SWIG_exception_fail(SWIG_ArgError(res1), 
+					"in method '" " class_name _getitem" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'"); 
+	}
+	
+	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	data=(char*)arg1->get_feature_matrix(num_feat, num_vec);
 
-	data = (char *)arg1->get_feature_matrix(num_feat, num_vec);
+	if (idx>num_feat || idx<-num_feat)
+	{
+		PyErr_SetString(PyExc_IndexError, "index out of bounds");
+		goto fail;
+	}
+	else if (idx<0)
+		idx+=num_feat; // used for [-idx]
 
-	// TODO index checking
+	data+=idx * sizeof( type_name );
 
-	data += i * sizeof( type_name );
+	shape=new Py_ssize_t[2];
+	shape[0]=1;
+	shape[1]=num_vec;
 
-	shape = new Py_ssize_t[2];
-	shape[0] = 1;
-	shape[1] = num_vec;
+	strides=new Py_ssize_t[2];
+	strides[0]=sizeof( type_name );
+	strides[1]=sizeof( type_name ) * num_feat;
 
-	strides = new Py_ssize_t[2];
-	strides[0] = sizeof( type_name );
-	strides[1] = sizeof( type_name ) * num_feat;
-
-    ret = (PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
+    ret=(PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
                              1, shape+1,
                              strides+1, data,
                              NPY_FARRAY | NPY_WRITEABLE,
                              (PyObject *)self);
-    if (ret == NULL) {
-        return NULL;
-    }
+    if (ret==NULL) 
+        goto fail;
 	
     Py_INCREF(self);	
 	return (PyObject*)ret;
+
+fail:
+	return NULL;
 }
 
-static PyObject * class_name ## _slice(PyObject *self, Py_ssize_t ilow, Py_ssize_t ihigh)
+/* used by PySequence_GetSlice */
+static PyObject* class_name ## _slice(PyObject *self, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
-	CDenseFeatures< type_name > * arg1 = 0;
+	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	void* argp1=0; // pointer to self
+	int res1=0 ; // result for self's casting
 
-	void *argp1 = 0;
-	int num_feat = 0, num_vec = 0;
-	int res1 = 0 ;
-
-	PyObject* resultobj = 0;
-	Py_buffer view;
+	int num_feat=0, num_vec=0;
+	char* data = 0; // internal data of self
 	
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
 
-	char* data = 0;
-
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
-	arg1 = reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	if (!SWIG_IsOK(res1)) 
+	{
+		SWIG_exception_fail(SWIG_ArgError(res1), 
+					"in method '" " class_name _slice" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'"); 
+	}
 
-	data = (char *)arg1->get_feature_matrix(num_feat, num_vec);
+	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	data=(char*)arg1->get_feature_matrix(num_feat, num_vec);
 
-    if (ilow < 0) {
-        ilow = 0;
+    if (ilow<0) 
+	{
+        ilow=0;
     }
-    else if (ilow > num_feat) {
+    else if (ilow>num_feat) 
+	{
         ilow = num_feat;
     }
-    if (ihigh < ilow) {
-        ihigh = ilow;
+    if (ihigh<ilow) 
+	{
+        ihigh=ilow;
     }
-    else if (ihigh > num_feat) {
-        ihigh = num_feat;
-    }
-
-    if (ilow < ihigh) {
-        data += ilow * sizeof( type_name );
+    else if (ihigh>num_feat) 
+	{
+        ihigh=num_feat;
     }
 
-	shape = new Py_ssize_t[2];
-	shape[0] = ihigh - ilow;
-	shape[1] = num_vec;
+    if (ilow < ihigh) 
+	{
+        data+=ilow * sizeof( type_name );
+    }
 
-	strides = new Py_ssize_t[2];
-	strides[0] = sizeof( type_name );
-	strides[1] = sizeof( type_name ) * num_feat;
+	shape=new Py_ssize_t[2];
+	shape[0]=ihigh - ilow;
+	shape[1]=num_vec;
 
-//	Py_INCREF(descr);
-    ret = (PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
+	strides=new Py_ssize_t[2];
+	strides[0]=sizeof( type_name );
+	strides[1]=sizeof( type_name ) * num_feat;
+
+    ret=(PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
                              2, shape,
                              strides, data,
                              NPY_FARRAY | NPY_WRITEABLE,
                              (PyObject *)self);
-    if (ret == NULL) {
-        return NULL;
-    }
+    if (ret==NULL) 
+        goto fail;
 	
     Py_INCREF(self);
-
-//    if (PyArray_SetBaseObject(ret, (PyObject *)self) < 0) {
-//        Py_DECREF(ret);
-//        return NULL;
-//    }
-
-//    PyArray_UpdateFlags(ret, NPY_ARRAY_UPDATE_ALL);
     return (PyObject *)ret;
+
+fail:
+	return NULL;
 }
 
+/* used for numpy style slicing */
 PyObject* class_name ## _subscript(PyObject *self, PyObject *key)
 {
-	CDenseFeatures< type_name > * arg1 = 0;
+	// key is tuple, like (PySlice or PyLong, PySlice or PyLong)
 
-	void *argp1 = 0;
-	int num_feat = 0, num_vec = 0;
-	int res1 = 0 ;
+	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	void* argp1=0; // pointer to self
+	int res1=0 ; // result for self's casting
 
-	PyObject* resultobj = 0;
-	Py_buffer view;
-	
+	int num_feat=0, num_vec=0;
+	char* data = 0; // internal data of self
+
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
-
-	char* data = 0;
 
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
+	int n; // size of tuple
+
+	Py_ssize_t feat_high=0, feat_low=0;
+	Py_ssize_t vec_high=0, vec_low=0;
+
+	Py_ssize_t feat_step=0, vec_step=0;
+	Py_ssize_t feat_slicelength=0, vec_slicelength=0;
+
 	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
-	arg1 = reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+	if (!SWIG_IsOK(res1)) 
+	{
+		SWIG_exception_fail(SWIG_ArgError(res1), 
+					"in method '" " class_name _subscript" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'"); 
+	}
 
-	data = (char *)arg1->get_feature_matrix(num_feat, num_vec);
-
-	int i, n;
-
-	Py_ssize_t slice[2][4];
+	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	data=(char*)arg1->get_feature_matrix(num_feat, num_vec);
 
 	if(PyTuple_Check(key))
 	{
-		n = PyTuple_GET_SIZE(key);
+		n=PyTuple_GET_SIZE(key);
 
 		shape = new Py_ssize_t[2];
 		shape[0] = num_feat;
@@ -1082,38 +1117,118 @@ PyObject* class_name ## _subscript(PyObject *self, PyObject *key)
 		strides[0] = sizeof( type_name );
 		strides[1] = sizeof( type_name ) * num_feat;
 
-		if (n != 2)
+		if (n != 2) // FIX magic number
 		{
-			// TODO exeptions
-			return NULL;
+			PyErr_SetString(PyExc_IndexError, "index should have same size of ndims or smaller");
+			goto fail;
 		}
 
-       	for (i = 0; i < n; i++) 
+		// FIX do it in loop, stupid!
+		// get slice for feat's dim
+		PyObject *obj1=PyTuple_GET_ITEM(key, 0); // second element of tuple
+		if (PySlice_Check(obj1)) 
 		{
-			PyObject *obj = PyTuple_GET_ITEM(key,i);
-			if (PySlice_Check(obj)) 
+			PySlice_GetIndicesEx((PySliceObject*)obj1, shape[0], &feat_low, &feat_high, &feat_step, &feat_slicelength); 
+
+			if (feat_low<0)
 			{
-            	PySlice_GetIndicesEx((PySliceObject*)obj, shape[i], &slice[i][0], &slice[i][1], &slice[i][2], &slice[i][3]);
-				printf("%d %d\n", slice[i][0], slice[i][1]);   
-            }
-        }
+				feat_low=0;
+			}
+			else if (feat_low>num_feat)
+			{
+				feat_low=num_feat;
+			}
 
-		shape[0] = slice[0][1]-slice[0][0];
-		shape[1] = slice[1][1]-slice[1][0];
+			if (feat_high<feat_low)
+			{
+				feat_high=feat_low;
+			}
+			else if (feat_high>num_feat)
+			{
+				feat_high=num_feat;
+			}
+		}
+		else if (PyInt_Check(obj1) || PyArray_IsScalar(obj1, Integer) ||
+        		PyLong_Check(obj1) || (PyIndex_Check(obj1) && !PySequence_Check(obj1)))
+		{
+        	npy_intp idx;
+        	idx = PyArray_PyIntAsIntp(obj1);
 
-		data+=slice[0][0]*strides[0]+slice[1][0]*strides[1];
+			if (idx>num_feat || idx<-num_feat)
+			{
+				PyErr_SetString(PyExc_IndexError, "index out of bounds");
+				goto fail;
+			}
+			else if (idx<0)
+				idx+=num_feat; // used for [-idx]
+
+			feat_low=idx;
+			feat_high=idx+1;
+		}
+		else { goto fail; }
+
+		// get slice for vector's dim
+		PyObject *obj2=PyTuple_GET_ITEM(key, 1); // second element of tuple
+		if (PySlice_Check(obj2)) 
+		{
+			PySlice_GetIndicesEx((PySliceObject*)obj2, shape[1], &vec_low, &vec_high, &vec_step, &vec_slicelength); 
+
+			if (vec_low<0)
+			{
+				vec_low=0;
+			}
+			else if (vec_low>num_vec)
+			{
+				vec_low=num_vec;
+			}
+
+			if (vec_high<vec_low)
+			{
+				vec_high=vec_low;
+			}
+			else if (vec_high>num_vec)
+			{
+				vec_high=num_vec;
+			}
+		}
+		else if (PyInt_Check(obj2) || PyArray_IsScalar(obj2, Integer) ||
+        		PyLong_Check(obj2) || (PyIndex_Check(obj2) && !PySequence_Check(obj2)))
+		{
+        	npy_intp idx;
+        	idx = PyArray_PyIntAsIntp(obj2);
+
+			if (idx>num_vec || idx<-num_vec)
+			{
+				PyErr_SetString(PyExc_IndexError, "index out of bounds");
+				goto fail;
+			}
+			else if (idx<0)
+				idx+=num_vec; // used for [-idx]
+
+			vec_low=idx;
+			vec_high=idx+1;
+		}
+		else { goto fail; }
+
+		shape[0]=feat_high-feat_low;
+		shape[1]=vec_high-vec_low;
+
+		data+=feat_low*strides[0]+vec_low*strides[1];
 
     	ret = (PyArrayObject *)PyArray_NewFromDescr(&PyArray_Type, descr,
                              	2, shape,
                              	strides, data,
                              	NPY_FARRAY | NPY_WRITEABLE,
                              	(PyObject *)self);	
+
+		if (ret==NULL)
+			goto fail;
 		
 		Py_INCREF(self);
 		return (PyObject*) ret;	
 	}
 
-	// TODO exeptions
+fail:
 	return NULL;
 }
 
@@ -1137,7 +1252,7 @@ SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags
 %feature("python:nb_inplace_subtract") CDenseFeatures< type_name > #class_name "_inplacesub"
 %feature("python:nb_inplace_multiply") CDenseFeatures< type_name > #class_name "_inplacemul"
 
-%feature("python:sq_item") CDenseFeatures< type_name > #class_name "_get_item"
+%feature("python:sq_item") CDenseFeatures< type_name > #class_name "_getitem"
 %feature("python:sq_slice") CDenseFeatures< type_name > #class_name "_slice"
 
 %feature("python:mp_subscript") CDenseFeatures< type_name > #class_name "_subscript"
