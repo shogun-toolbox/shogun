@@ -244,6 +244,32 @@ void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 	{
 		enforce_balance_constraints_lower(mu, delta_neg, delta_pos, B_prime, xi_neg_class);
 	}
+
+	int32_t npos = 0;
+	for (index_t i=0; i < mu.vlen; ++i)
+	{
+		if (mu[i] == 1)
+			npos++;
+	}
+	if (npos == 0)
+	{
+		// no positive class
+		index_t min_idx = SGVector<float64_t>::arg_min(xi_pos_class.vector, 1, xi_pos_class.vlen);
+		mu[min_idx] = 1;
+	}
+
+	int32_t nneg = 0;
+	for (index_t i=0; i < mu.vlen; ++i)
+	{
+		if (mu[i] == -1)
+			nneg++;
+	}
+	if (nneg == 0)
+	{
+		// no negative class
+		index_t min_idx = SGVector<float64_t>::arg_min(xi_neg_class.vector, 1, xi_neg_class.vlen);
+		mu[min_idx] = -1;
+	}
 }
 
 void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 
