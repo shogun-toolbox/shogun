@@ -23,6 +23,8 @@
 %rename(MulticlassSVM) CMulticlassSVM;
 %rename(MKLMulticlass) CMKLMulticlass;
 
+%newobject apply_multiclass_multiple_output();
+
 %rename(ECOCStrategy) CECOCStrategy;
 %rename(ECOCEncoder) CECOCEncoder;
 %rename(ECOCDecoder) CECOCDecoder;

@@ -18,7 +18,9 @@ enum ELabelType
 	LT_REGRESSION = 3,
 	/// structured labels (e.g. sequences, trees) used in Structured Output problems
 	LT_STRUCTURED = 4,
-  /// latent latent labels
-  LT_LATENT = 5
+	/// latent latent labels
+	LT_LATENT = 5,
+	/// multiple output multiclass
+	LT_MULTICLASS_MULTIPLE_OUTPUT = 6
 };
 #endif

@@ -15,7 +15,8 @@
 #include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <shogun/labels/MulticlassLabels.h>
+#include <shogun/labels/MulticlassMultipleOutputLabels.h>
 
 namespace shogun
 {
@@ -90,6 +91,12 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @return resulting labels
 		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		
+		/** classify all examples with multiple output
+		 *
+		 * @return resulting labels
+		 */
+		virtual CMulticlassMultipleOutputLabels* apply_multiclass_multiple_output(CFeatures* data=NULL, int32_t n_outputs=5);
 
 		/** classify one example
 		 * @param vec_idx

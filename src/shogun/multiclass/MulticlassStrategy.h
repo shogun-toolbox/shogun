@@ -79,6 +79,16 @@ public:
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
 	virtual int32_t decide_label(SGVector<float64_t> outputs)=0;
+	
+	/** decide the final label.
+	 * @param outputs a vector of output from each machine (in that order)
+	 * @param n_outputs number of outputs
+	 */
+	virtual SGVector<index_t> decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs)
+	{
+		SG_NOTIMPLEMENTED;
+		return SGVector<index_t>();
+	}
 
 	/** get number of machines used in this strategy.
 	 */

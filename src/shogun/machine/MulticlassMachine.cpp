@@ -142,6 +142,54 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 	return return_labels;
 }
 
+CMulticlassMultipleOutputLabels* CMulticlassMachine::apply_multiclass_multiple_output(CFeatures* data, int32_t n_outputs)
+{
+	CMulticlassMultipleOutputLabels* return_labels=NULL;
+
+	if (data)
+		init_machines_for_apply(data);
+	else
+		init_machines_for_apply(NULL);
+
+	if (is_ready())
+	{
+		/* num vectors depends on whether data is provided */
+		int32_t num_vectors=data ? data->get_num_vectors() :
+				get_num_rhs_vectors();
+
+		int32_t num_machines=m_machines->get_num_elements();
+		if (num_machines <= 0)
+			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
+		REQUIRE(n_outputs<=num_machines,"You request more outputs than machines available");
+
+		CMulticlassMultipleOutputLabels* result=new CMulticlassMultipleOutputLabels(num_vectors);
+		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
+
+		for (int32_t i=0; i < num_machines; ++i)
+			outputs[i] = (CBinaryLabels*) get_submachine_outputs(i);
+
+		SGVector<float64_t> output_for_i(num_machines);
+		for (int32_t i=0; i<num_vectors; i++)
+		{
+			for (int32_t j=0; j<num_machines; j++)
+				output_for_i[j] = outputs[j]->get_confidence(i);
+
+			result->set_label(i, m_multiclass_strategy->decide_label_multiple_output(output_for_i, n_outputs));
+		}
+
+		for (int32_t i=0; i < num_machines; ++i)
+			SG_UNREF(outputs[i]);
+
+		SG_FREE(outputs);
+
+		return_labels=result;
+	}
+	else
+		SG_ERROR("Not ready");
+
+	return return_labels;
+}
+
 bool CMulticlassMachine::train_machine(CFeatures* data)
 {
 	ASSERT(m_multiclass_strategy);
