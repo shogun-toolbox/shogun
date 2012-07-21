@@ -113,8 +113,8 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
 
 			CTask* root_task = (CTask*)task_tree->get_root_task();
-			 if (root_task->get_max_index() > features->get_num_vectors())
-				SG_ERROR("Root task covers more vectors than available\n");
+			//if (root_task->get_max_index() > features->get_num_vectors())
+			//	SG_ERROR("Root task covers more vectors than available\n");
 			SG_UNREF(root_task);
 
 			SGVector<index_t> ind = task_tree->get_SLEP_ind();

@@ -33,18 +33,25 @@ public:
 	 */
 	CTask(index_t min_index, index_t max_index, 
 	      float64_t weight=1.0, const char* name="task");
+	
+	/** constructor
+	 * @param indices indices of the task
+	 * @param weight weight (optional)
+	 * @param name name of task (optional)
+	 */
+	CTask(SGVector<index_t> indices, float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
 	virtual ~CTask();
-	
-	/** get min index */
-	index_t get_min_index() const { return m_min_index; }
-	/** set max index */
-	void set_min_index(index_t min_index) { m_min_index = min_index; }
-	/** get min index */
-	index_t get_max_index() const { return m_max_index; }
-	/** set max index */
-	void set_max_index(index_t max_index) { m_max_index = max_index; }
+
+	/** is contiguous */
+	bool is_contiguous();
+
+	/** get indices */
+	SGVector<index_t> get_indices() const { return m_indices; }
+	/** set indices */
+	void set_indices(SGVector<index_t> indices) { m_indices = indices; }
+
 	/** get weight */
 	float64_t get_weight() const { return m_weight; }
 	/** set weight */
@@ -63,7 +70,12 @@ public:
 
 	/** get name */
 	virtual const char* get_name() const { return "Task"; };
-	
+
+private:
+
+	/** init */
+	void init();
+
 protected:
 
 	/** subtasks */
@@ -72,11 +84,8 @@ protected:
 	/** name of the block */
 	const char* m_name;
 
-	/** min index */
-	index_t m_min_index;
-
-	/** max index */
-	index_t m_max_index;
+	/** indices */
+	SGVector<index_t> m_indices;
 
 	/** weight */
 	float64_t m_weight;

@@ -78,6 +78,7 @@ double compute_regularizer(double* w, int n_vecs, int n_feats,
 			for (int i=0; i<n_feats; i++)
 				regularizer += CMath::abs(w[i]);
 		}
+		break;
 		default:
 			SG_SERROR("WHOA?\n");
 	}

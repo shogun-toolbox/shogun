@@ -80,9 +80,8 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
-	SGVector<index_t> ind = ((CTaskGroup*)m_task_relation)->get_SLEP_ind();
-	options.ind = ind.vector;
-	options.n_tasks = ind.vlen-1;
+	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 	options.n_clusters = m_num_clusters;
 
 #ifdef HAVE_EIGEN3

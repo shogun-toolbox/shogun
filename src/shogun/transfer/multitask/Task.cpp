@@ -13,10 +13,8 @@ using namespace shogun;
 
 CTask::CTask() : CSGObject()
 {
-	m_subtasks = new CList(true);
-	SG_REF(m_subtasks);
-	m_min_index = 0;
-	m_max_index = 0;
+	init();
+
 	m_weight = 0.0;
 	m_name = "task";
 }
@@ -25,12 +23,34 @@ CTask::CTask(index_t min_index, index_t max_index,
              float64_t weight, const char* name) :
 	CSGObject()
 {
-	m_subtasks = new CList(true);
-	SG_REF(m_subtasks);
-	m_min_index = min_index;
-	m_max_index = max_index;
+	init();
+
+	REQUIRE(min_index<max_index, "min index should be less than max index");
+	m_indices = SGVector<index_t>(max_index-min_index);
+	int32_t j=0;
+	for (int32_t i=0; i<m_indices.vlen; i++)
+		m_indices[i] = i+min_index;
 	m_weight = weight;
 	m_name = name;
+}
+
+CTask::CTask(SGVector<index_t> indices,
+             float64_t weight, const char* name) :
+	CSGObject()
+{
+	init();
+
+	m_indices = indices;
+}
+
+void CTask::init()
+{
+	m_subtasks = new CList(true);
+	SG_REF(m_subtasks);
+
+	SG_ADD((CSGObject**)&m_subtasks,"subtasks","subtasks of given task", MS_NOT_AVAILABLE);
+	SG_ADD(&m_indices,"indices","indices of task", MS_NOT_AVAILABLE);
+	SG_ADD(&m_weight,"weight","weight of task", MS_NOT_AVAILABLE);
 }
 
 CTask::~CTask()
@@ -38,10 +58,24 @@ CTask::~CTask()
 	SG_UNREF(m_subtasks);
 }
 
+bool CTask::is_contiguous()
+{
+	REQUIRE(m_indices.vlen>1,"Task indices vector must not be empty or contain only one element");
+	bool result = true;
+	for (int32_t i=0; i<m_indices.vlen-1; i++)
+	{
+		if (m_indices[i]!=m_indices[i+1]-1)
+		{
+			result = false;
+			break;
+		}
+	}
+
+	return result;
+}
+
 void CTask::add_subtask(CTask* subtask)
 {
-	ASSERT(subtask->get_min_index()>=m_min_index);
-	ASSERT(subtask->get_max_index()<=m_max_index);
 	m_subtasks->append_element(subtask);
 }
 

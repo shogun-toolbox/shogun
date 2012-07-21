@@ -33,7 +33,7 @@ IGNORE_IN_CLASSLIST struct malsar_options
 	int max_iter;
 	int n_tasks;
 	int n_clusters;
-	int* ind;
+	SGVector<int>* tasks_indices;
 	malsar_loss loss;
 
 	static malsar_options default_options()
@@ -42,7 +42,7 @@ IGNORE_IN_CLASSLIST struct malsar_options
 		opts.termination = 2;
 		opts.tolerance = 1e-3;
 		opts.max_iter = 1000;
-		opts.ind = NULL;
+		opts.tasks_indices = NULL;
 		opts.n_clusters = 2;
 		opts.loss = MALSAR_LOGISTIC;
 		return opts;

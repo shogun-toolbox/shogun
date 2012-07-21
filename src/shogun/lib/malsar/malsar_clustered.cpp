@@ -15,6 +15,7 @@
 #include <shogun/lib/external/libqp.h>
 
 using namespace Eigen;
+using namespace std;
 
 namespace shogun
 {
@@ -47,8 +48,6 @@ malsar_result_t malsar_clustered(
 		H_diag_matrix[i*n_tasks+i] = 2.0;
 	H_diag_matrix_ld = n_tasks;
 
-	//SGMatrix<float64_t>::display_matrix(H_diag_matrix, n_tasks, n_tasks);
-
 	int iter = 0;
 
 	// initialize weight vector and bias for each task
@@ -58,9 +57,10 @@ malsar_result_t malsar_clustered(
 	{
 		int n_pos = 0;
 		int n_neg = 0;
-		for (int i=options.ind[task]; i<options.ind[task+1]; i++)
+		SGVector<index_t> task_idx = options.tasks_indices[task];
+		for (int i=0; i<task_idx.vlen; i++)
 		{
-			if (y[i] > 0)
+			if (y[task_idx[i]] > 0)
 				n_pos++;
 			else
 				n_neg++;
@@ -77,7 +77,7 @@ malsar_result_t malsar_clustered(
 	MatrixXd Mz=Ms, Mzp=Ms, Mz_old=Ms, delta_Mzp=Ms, gMs=Ms;
 	MatrixXd Mzp_Pz;
 
-	double eta = rho1/rho2;
+	double eta = rho2/rho1;
 	double c = rho1*eta*(1+eta);
 
 	double t=1, t_old=0;
@@ -96,6 +96,7 @@ malsar_result_t malsar_clustered(
 	while (!done && iter <= options.max_iter)
 	{
 		double alpha = double(t_old - 1)/t;
+		SG_SDEBUG("alpha=%f\n",alpha);
 
 		// compute search point
 		Ws = (1+alpha)*Wz - alpha*Wz_old;
@@ -106,9 +107,13 @@ malsar_result_t malsar_clustered(
 		gWs.setZero();
 		gCs.setZero();
 		internal::set_is_malloc_allowed(true);
+		SG_SDEBUG("Computing gradient\n");
 		IM = (eta*MatrixXd::Identity(n_tasks,n_tasks)+Ms);
+		// cout << "M" << endl << Ms << endl;
+		// cout << "IM" << endl << IM << endl;
 		IMsqinv = (IM*IM).inverse();
-		invEtaMWt = IM.inverse();
+		invEtaMWt = IM.inverse()*Ws.transpose();
+		//cout << "invEtaMWt" << endl << invEtaMWt << endl;
 		gMs.noalias() = -c*(Ws.transpose()*Ws)*IMsqinv;
 		gWs.noalias() += 2*c*invEtaMWt.transpose();
 		internal::set_is_malloc_allowed(false);
@@ -117,22 +122,27 @@ malsar_result_t malsar_clustered(
 		double Fs = 0;
 		for (task=0; task<n_tasks; task++)
 		{
-			for (int i=options.ind[task]; i<options.ind[task+1]; i++)
+			SGVector<index_t> task_idx = options.tasks_indices[task];
+			int n_vecs_task = task_idx.vlen;
+			for (int i=0; i<n_vecs_task; i++)
 			{
-				double aa = -y[i]*(features->dense_dot(i, Ws.col(task).data(), n_feats)+Cs[task]);
+				double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Ws.col(task).data(), n_feats)+Cs[task]);
 				double bb = CMath::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
-				Fs += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
-				double b = -y[i]*(1 - 1/(1+CMath::exp(aa)))/n_vecs;
-
+				Fs += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs_task;
+				double b = -y[task_idx[i]]*(1 - 1/(1+CMath::exp(aa)))/n_vecs_task;
 				gCs[task] += b;
-				features->add_to_dense_vec(b, i, gWs.col(task).data(), n_feats);
+				features->add_to_dense_vec(b, task_idx[i], gWs.col(task).data(), n_feats);
 			}
 		}
+		//cout << "gWs" << endl << gWs << endl;
+		//cout << "gCs" << endl << gCs << endl;
+		SG_SDEBUG("Computed gradient\n");
 		
 		// add regularizer
 		Fs += c*(Ws*invEtaMWt).trace();
+		SG_SDEBUG("Fs = %f \n", Fs);
 
 		double Fzp = 0.0;
 
@@ -149,13 +159,13 @@ malsar_result_t malsar_clustered(
 			for (int i=0; i<n_tasks; i++) 
 			{
 				diag_H[i] = 2.0;
-				f[i] = 0.0;
+				f[i] = -2*eigensolver.eigenvalues()[i].real();
 				a[i] = 1.0;
-				lb[i] = 0 - eigensolver.eigenvalues()[i].real();
-				ub[i] = 1 - eigensolver.eigenvalues()[i].real();
-				x[i] = ub[i];
+				lb[i] = 0.0;
+				ub[i] = 1.0;
+				x[i] = double(options.n_clusters)/n_tasks;
 			}
-			double b = n_tasks - eigensolver.eigenvalues().sum().real();
+			double b = options.n_clusters;//eigensolver.eigenvalues().sum().real();
 			SG_SDEBUG("b = %f\n", b);
 			SG_SDEBUG("Calling libqp\n");
 			libqp_state_T problem_state = libqp_gsmo_solver(&get_col,diag_H,f,a,b,lb,ub,x,n_tasks,1000,1e-6,NULL);
@@ -164,10 +174,7 @@ malsar_result_t malsar_clustered(
 			SG_SDEBUG("%d iteration passed\n",problem_state.nIter);
 			SG_SDEBUG("Solution is \n [ ");
 			for (int i=0; i<n_tasks; i++)
-			{
 				SG_SDEBUG("%f ", x[i]);
-				x[i] += eigensolver.eigenvalues()[i].real();
-			}
 			SG_SDEBUG("]\n");
 			Map<VectorXd> Mzp_DiagSigz(x,n_tasks);
 			Mzp_Pz = eigensolver.eigenvectors().real();
@@ -188,12 +195,14 @@ malsar_result_t malsar_clustered(
 			Fzp = 0.0;
 			for (task=0; task<n_tasks; task++)
 			{
-				for (int i=options.ind[task]; i<options.ind[task+1]; i++)
+				SGVector<index_t> task_idx = options.tasks_indices[task];
+				int n_vecs_task = task_idx.vlen;
+				for (int i=0; i<n_vecs_task; i++)
 				{
-					double aa = -y[i]*(features->dense_dot(i, Wzp.col(task).data(), n_feats)+Cs[task]);
+					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Cs[task]);
 					double bb = CMath::max(aa,0.0);
 
-					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
+					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs_task;
 				}
 			}
 			Fzp += c*(Wzp*invEtaMWt).trace();
@@ -304,6 +313,7 @@ malsar_result_t malsar_clustered(
 		for (task=0; task<n_tasks; task++)
 			tasks_w[i] = Wzp(i,task);
 	}
+	tasks_w.display_matrix();
 	SGVector<float64_t> tasks_c(n_tasks);
 	for (int i=0; i<n_tasks; i++) tasks_c[i] = Czp[i];
 	return malsar_result_t(tasks_w, tasks_c);

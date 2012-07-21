@@ -13,6 +13,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/transfer/multitask/Task.h>
 #include <shogun/transfer/multitask/TaskRelation.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
@@ -27,13 +28,19 @@ public:
 	/** destructor */
 	virtual ~CTaskGroup();
 
-	/** returns information about blocks in 
-	 * SLEP "ind" format
+	/** returns information about tasks
+	 */
+	virtual SGVector<index_t>* get_tasks_indices();
+
+	/** returns information about tasks in SLEP ind format
 	 */
 	virtual SGVector<index_t> get_SLEP_ind();
 
 	/** append task to the group */
 	void append_task(CTask* task);
+	
+	/** get num tasks */
+	int32_t get_num_tasks();
 
 	/** get name */
 	const char* get_name() const { return "TaskGroup"; };
@@ -41,9 +48,13 @@ public:
 	/** relation type */
 	ETaskRelationType get_relation_type() const { return TASK_GROUP; }
 
+private:
+
+	void init();
+
 protected:
 
-	CList* m_tasks;
+	CDynamicObjectArray* m_tasks;
 
 };
 

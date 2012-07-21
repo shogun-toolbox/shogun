@@ -61,7 +61,7 @@ void collect_tree_tasks_recursive(CTask* subtree_root_block, vector<task_tree_no
 			if (iterator->get_num_subtasks()>0)
 			{
 				int32_t n_leaves = count_leaf_tasks_recursive(iterator);
-				SG_SDEBUG("Block [%d %d] has %d leaf childs \n",iterator->get_min_index(), iterator->get_max_index(), n_leaves);
+				//SG_SDEBUG("Block [%d %d] has %d leaf childs \n",iterator->get_min_index(), iterator->get_max_index(), n_leaves);
 				tree_nodes->push_back(task_tree_node_t(lower,lower+n_leaves-1,iterator->get_weight()));
 				collect_tree_tasks_recursive(iterator, tree_nodes, lower);
 				lower = lower + n_leaves;
@@ -126,8 +126,9 @@ SGVector<index_t> CTaskTree::get_SLEP_ind()
 	CTask* iterator = (CTask*)blocks->get_first_element();
 	do
 	{
-		ind[t_i+1] = iterator->get_max_index();
-		SG_DEBUG("Block = [%d,%d]\n", iterator->get_min_index(), iterator->get_max_index());
+		REQUIRE(iterator->is_contiguous(),"Task is not contiguous");
+		ind[t_i+1] = iterator->get_indices()[iterator->get_indices().vlen-1] + 1;
+		//SG_DEBUG("Block = [%d,%d]\n", iterator->get_min_index(), iterator->get_max_index());
 		SG_UNREF(iterator);
 		t_i++;
 	} 

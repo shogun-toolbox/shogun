@@ -13,7 +13,7 @@ using namespace shogun;
 
 CTaskGroup::CTaskGroup() : CTaskRelation()
 {
-	m_tasks = new CList(true);
+	init();
 }
 
 CTaskGroup::~CTaskGroup()
@@ -21,28 +21,61 @@ CTaskGroup::~CTaskGroup()
 	SG_UNREF(m_tasks);
 }
 
+void CTaskGroup::init()
+{
+	m_tasks = new CDynamicObjectArray();
+}
+
 void CTaskGroup::append_task(CTask* task)
 {
 	m_tasks->append_element(task);
 }
 
+int32_t CTaskGroup::get_num_tasks()
+{
+	return m_tasks->get_num_elements();
+}
+
 SGVector<index_t> CTaskGroup::get_SLEP_ind()
 {
-	//check_blocks_list(m_blocks);
-	int32_t n_subtasks = m_tasks->get_num_elements();
-	SG_DEBUG("Number of subtasks = %d\n", n_subtasks);
-	SGVector<index_t> ind(n_subtasks+1);
-
-	CTask* iterator = (CTask*)(m_tasks->get_first_element());
-	ind[0] = 0;
-	int32_t i = 0;
-	do
+	// glance over tasks to check whether they are non-contiguous
+	for (int32_t i=0; i<m_tasks->get_num_elements(); i++)
 	{
-		ind[i+1] = iterator->get_max_index();
-		SG_UNREF(iterator);
-		i++;
+		CTask* task = (CTask*)m_tasks->get_element(i);
+		REQUIRE(task->is_contiguous(),"SLEP solver doesn't support non-contiguous tasks yet");
+		SG_UNREF(task);
 	}
-	while ((iterator = (CTask*)m_tasks->get_next_element()) != NULL);
 
+	int32_t n_tasks = m_tasks->get_num_elements();
+	SGVector<index_t> ind(n_tasks+1);
+	ind[0] = 0;
+	for (int32_t i=1; i<n_tasks; i++)
+	{
+		CTask* task_previous = (CTask*)m_tasks->get_element(i-1);
+		CTask* task = (CTask*)m_tasks->get_element(i);
+		REQUIRE(task->get_indices()[0]-1==task_previous->get_indices()[task_previous->get_indices().vlen-1],"There is a gap");
+		ind[i] = task->get_indices()[0];
+		SG_UNREF(task);
+	}
+	CTask* task = (CTask*)m_tasks->get_element(n_tasks-1);
+	ind[ind.vlen-1] = task->get_indices()[task->get_indices().vlen-1]+1;
+	SG_UNREF(task);
 	return ind;
+}
+
+SGVector<index_t>* CTaskGroup::get_tasks_indices()
+{
+	int32_t n_tasks = m_tasks->get_num_elements();
+	SG_DEBUG("Number of tasks = %d\n", n_tasks);
+	
+	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
+	for (int32_t i=0; i<n_tasks; i++)
+	{
+		new (&tasks_indices[i]) SGVector<index_t>();
+		CTask* task = (CTask*)m_tasks->get_element(i);
+		tasks_indices[i] = task->get_indices();
+		SG_UNREF(task);
+	}
+
+	return tasks_indices;
 }
