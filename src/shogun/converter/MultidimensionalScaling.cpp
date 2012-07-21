@@ -16,6 +16,7 @@
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Statistics.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclidianDistance.h>
 
@@ -273,7 +274,7 @@ SGMatrix<float64_t> CMultidimensionalScaling::landmark_embedding(SGMatrix<float6
 	}
 
 	// get landmark indexes with random permutation
-	SGVector<int32_t> lmk_idxs = shuffle(lmk_N,total_N);
+	SGVector<int32_t> lmk_idxs = CStatistics::sample_indices(lmk_N,total_N);
 	// compute distances between landmarks
 	float64_t* lmk_dist_matrix = SG_MALLOC(float64_t, lmk_N*lmk_N);
 	for (i=0; i<lmk_N; i++)
@@ -425,30 +426,6 @@ void* CMultidimensionalScaling::run_triangulation_thread(void* p)
 		            0.0,(new_feature_matrix+i*m_target_dim),1);
 	}
 	return NULL;
-}
-
-
-SGVector<int32_t> CMultidimensionalScaling::shuffle(int32_t count, int32_t total_count)
-{
-	int32_t* idxs = SG_MALLOC(int32_t, total_count);
-	int32_t i,rnd;
-	int32_t* permuted_idxs = SG_MALLOC(int32_t, count);
-
-	// reservoir sampling
-	for (i=0; i<total_count; i++)
-		idxs[i] = i;
-	for (i=0; i<count; i++)
-		permuted_idxs[i] = idxs[i];
-	for (i=count; i<total_count; i++)
-	{
-		rnd = CMath::random(1,i);
-		if (rnd<count)
-			permuted_idxs[rnd] = idxs[i];
-	}
-	SG_FREE(idxs);
-
-	CMath::qsort(permuted_idxs,count);
-	return SGVector<int32_t>(permuted_idxs, count);
 }
 
 #endif /* HAVE_LAPACK */

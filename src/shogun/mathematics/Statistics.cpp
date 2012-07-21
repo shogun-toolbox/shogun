@@ -1490,3 +1490,29 @@ float64_t CStatistics::entropy(float64_t* p, int32_t len)
 
 	return (float64_t) e;
 }
+
+SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
+{
+	REQUIRE(sample_size<N, "sample size should be less than number of indices\n");
+	int32_t* idxs = SG_MALLOC(int32_t,N);
+	int32_t i,rnd;
+	int32_t* permuted_idxs = SG_MALLOC(int32_t,sample_size);
+
+	// reservoir sampling
+	for (i=0; i<N; i++)
+		idxs[i] = i;
+	for (i=0; i<sample_size; i++)
+		permuted_idxs[i] = idxs[i];
+	for (i=sample_size; i<N; i++)
+	{
+		rnd = CMath::random(1,i);
+		if (rnd<sample_size)
+			permuted_idxs[rnd] = idxs[i];
+	}
+	SG_FREE(idxs);
+
+	CMath::qsort(permuted_idxs,sample_size);
+	return SGVector<int32_t>(permuted_idxs,sample_size);
+}
+
+

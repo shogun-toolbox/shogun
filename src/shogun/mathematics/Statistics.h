@@ -320,6 +320,12 @@ public:
 	 */
 	static float64_t fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table);
 
+	/** sample indices
+	 * @param sample_size size of sample to pick
+	 * @param N total number of indices
+	 */
+	static SGVector<int32_t> sample_indices(int32_t sample_size, int32_t N);
+
 	/** @return object name */
 	inline virtual const char* get_name() const
 	{

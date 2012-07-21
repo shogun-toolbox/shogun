@@ -11,8 +11,7 @@
 SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 
 /* These functions return new Objects */
-%newobject CGridSearchModelSelection::select_model();
-%newobject CGradientModelSelection::select_model();
+%newobject *::select_model();
 %newobject CParameterCombination::copy_tree();
 %newobject CParameterCombination::leaf_sets_multiplication();
 %newobject CModelSelectionParameters::get_combinations();
@@ -22,6 +21,7 @@ SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 
 /* Remove C Prefix */
 %rename(GridSearchModelSelection) CGridSearchModelSelection;
+%rename(RandomSearchModelSelection) CRandomSearchModelSelection;
 %rename(GradientModelSelection) CGradientModelSelection;
 %rename(ModelSelectionBase) CModelSelection;
 %rename(ModelSelectionOutput) CModelSelectionOutput;
@@ -31,6 +31,7 @@ SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 %include <shogun/modelselection/ModelSelectionOutput.h>
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/GridSearchModelSelection.h>
+%include <shogun/modelselection/RandomSearchModelSelection.h>
 %include <shogun/modelselection/ParameterCombination.h>
 %include <shogun/modelselection/ModelSelectionParameters.h>
 %include <shogun/modelselection/GradientModelSelection.h>
