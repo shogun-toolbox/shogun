@@ -24,6 +24,7 @@ EXT_SRC_HEADER=h
 EXT_SRC_C=c
 EXT_SRC_CPP=cpp
 EXT_SRC_SWIG=_wrap.cxx
+EXT_SRC_TEST=_unittest.cc
 EXT_INP_SWIG=i
 EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
@@ -38,10 +39,12 @@ DOXYGEN=doxygen
 RUBY=ruby
 PYTHON=python
 PYVER=
+GTEST=gtest-config
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
+EXT_OBJ_TEST=_unittest.cc.o
 EXT_CPP_TMP="${EXT_SRC_CPP}.templ"
 EXT_CPP_SH="${EXT_SRC_CPP}.sh"
 EXT_CPP_PY="${EXT_SRC_CPP}.py"
@@ -157,6 +160,7 @@ COMP_NO_OPTS="-Wall -O0"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
 COMPFLAGS_SWIG_CPP="-fPIC -O0"
+COMPFLAGS_GTEST_CPP=""
 SEDMI='sed -i'
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
@@ -497,6 +501,21 @@ EOF
 
 	#as our code is C++ use CPP compiler for linking
 	LINK=$COMP_CPP
+}
+
+check_gtest()
+{
+	echocheck "Google C++ Testing Framework"
+	if $GTEST --version > /dev/null 2>&1
+	then
+		USE_GTEST='yes'
+		COMPFLAGS_GTEST_CPP=`$GTEST --cppflags --cxxflags`
+		LINKFLAGS_GTEST=`$GTEST --ldflags --libs`
+		echores `$GTEST --version`
+	else
+		USE_GTEST='no'
+		echores "no"
+	fi
 }
 
 check_python()
@@ -4753,8 +4772,10 @@ KERNELNAME  	= ${KERNELNAME}
 MACHINE  		= ${MACHINE}
 EXT_OBJ_CPP 	= ${EXT_OBJ_CPP}
 EXT_OBJ_C   	= ${EXT_OBJ_C}
+EXT_OBJ_TEST	= ${EXT_OBJ_TEST}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
 EXT_SRC_C   	= ${EXT_SRC_C}
+EXT_SRC_TEST	= ${EXT_SRC_TEST}
 EXT_CPP_TMP     = ${EXT_CPP_TMP}
 EXT_CPP_SH      = ${EXT_CPP_SH}
 EXT_CPP_PY      = ${EXT_CPP_PY}
@@ -4770,10 +4791,13 @@ DEFINES_SWIG		= ${DEFINES_SWIG}
 COMPFLAGS_C			= ${COMPFLAGS_C}
 COMPFLAGS_CPP		= ${COMPFLAGS_CPP}
 COMPFLAGS_SWIG_CPP	= ${COMPFLAGS_SWIG_CPP}
+COMPFLAGS_GTEST_CPP	= ${COMPFLAGS_GTEST_CPP}
+LINKFLAGS_GTEST = ${LINKFLAGS_GTEST}
 INCLUDES			= ${INCLUDES}
 PRELINKFLAGS		= ${PRELINKFLAGS}
 LINKFLAGS 			= ${LINKFLAGS}
 POSTLINKFLAGS		= ${POSTLINKFLAGS}
+USE_GTEST = ${USE_GTEST}
 
 INCLUDES_STATIC_INTERFACES	= ${INCLUDES_STATIC_INTERFACES}
 LINKFLAGS_STATIC_INTERFACES	= ${LINKFLAGS_STATIC_INTERFACES}
@@ -5105,6 +5129,7 @@ check_python
 check_pkg_config
 check_make
 check_doxygen
+check_gtest
 determine_march_mtune
 check_datatypes
 check_wordsize

@@ -37,6 +37,7 @@ configure.log
 /src/interfaces/*/Makefile
 /src/examples
 /src/shogun/.clang_complete
+/src/shogun/shogun-unit-test
 
 # static interfaces
 /src/interfaces/cmdline_static/shogun
