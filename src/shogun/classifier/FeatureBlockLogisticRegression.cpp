@@ -91,6 +91,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 				SG_ERROR("Group of features covers more vectors than available\n");
 			
 			options.mode = FEATURE_GROUP;
+			options.loss = LOGISTIC;
 			slep_result_t result = slep_solver(features, y.vector, m_z, options);
 
 			int32_t n_feats = features->get_dim_feature_space();
@@ -119,7 +120,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			options.n_nodes = ind_t.vlen/3;
 			options.n_feature_blocks = ind_t.vlen/3;
 			options.mode = FEATURE_TREE;
-			options.loss = LEAST_SQUARES;
+			options.loss = LOGISTIC;
 
 			slep_result_t result = slep_solver(features, y.vector, m_z, options);
 			

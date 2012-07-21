@@ -162,9 +162,11 @@ double compute_lambda(
 					for (int i=0; i<n_vecs; i++)
 						y[i]>0 ? m1++ : m2++;
 
+					SG_SDEBUG("# pos = %d , # neg = %d\n",m1,m2);
+
 					for (int i=0; i<n_vecs; i++)
 					{
-						y[i]>0 ? b=double(m2) / (n_vecs*n_vecs) : b=-double(m1) / (n_vecs*n_vecs);
+						y[i]>0 ? b=double(m2) / CMath::sq(n_vecs) : b=-double(m1) / CMath::sq(n_vecs);
 						features->add_to_dense_vec(b,i,ATx,n_feats);
 					}
 				}
@@ -174,6 +176,7 @@ double compute_lambda(
 					for (int i=0; i<n_vecs; i++)
 						features->add_to_dense_vec(y[i],i,ATx,n_feats);
 				}
+				break;
 			}
 		}
 		break;
@@ -244,6 +247,7 @@ double compute_lambda(
 		break;
 	}
 
+	SG_SDEBUG("Computed lambda = %f\n",z*lambda_max);
 	return z*lambda_max;
 }
 
