@@ -26,7 +26,6 @@ public:
      * @param maxiter max number of iterations
      * @param codelen code length, if set to zero, will be computed automatically via get_default_code_length
      * @param pposone probability of +1
-     * @param pnegone probability of -1
      *
      * @see get_default_code_length
      */

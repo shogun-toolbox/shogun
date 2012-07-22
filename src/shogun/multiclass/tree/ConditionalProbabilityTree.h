@@ -115,10 +115,10 @@ protected:
 
 	/** train a single node 
 	 * @param ex the example being trained
+	 * @param label label
 	 * @param node the node
 	 */
 	void train_node(SGVector<float32_t> ex, float64_t label, node_t *node);
-
 
 	/** predict a single node
 	 * @param ex the example being predicted

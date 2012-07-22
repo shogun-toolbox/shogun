@@ -54,6 +54,7 @@ private:
 
 protected:
 
+	/** tasks */
 	CDynamicObjectArray* m_tasks;
 
 };
