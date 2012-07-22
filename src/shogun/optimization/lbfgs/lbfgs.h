@@ -213,7 +213,7 @@ typedef struct {
     /**
      * The maximum number of iterations.
      *  The lbfgs() function terminates an optimization process with
-     *  ::LBFGSERR_MAXIMUMITERATION status code when the iteration count
+     *  LBFGSERR_MAXIMUMITERATION status code when the iteration count
      *  exceedes this parameter. Setting this parameter to zero continues an
      *  optimization process until a convergence or error. The default value
      *  is \c 0.
@@ -263,8 +263,8 @@ typedef struct {
      * A coefficient for the Wolfe condition.
      *  This parameter is valid only when the backtracking line-search
      *  algorithm is used with the Wolfe condition,
-     *  ::LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE or
-     *  ::LBFGS_LINESEARCH_BACKTRACKING_WOLFE .
+     *  LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE or
+     *  LBFGS_LINESEARCH_BACKTRACKING_WOLFE .
      *  The default value is \c 0.9. This parameter should be greater
      *  the \ref ftol parameter and smaller than \c 1.0.
      */
@@ -286,7 +286,7 @@ typedef struct {
      * The machine precision for floating-point values.
      *  This parameter must be a positive value set by a client program to
      *  estimate the machine precision. The line search routine will terminate
-     *  with the status code (::LBFGSERR_ROUNDING_ERROR) if the relative width
+     *  with the status code (LBFGSERR_ROUNDING_ERROR) if the relative width
      *  of the interval of uncertainty is less than this parameter.
      */
     float64_t xtol;
@@ -417,7 +417,7 @@ In this formula, ||.|| denotes the Euclidean norm.
  *  @param  x           The array of variables. A client program can set
  *                      default values for the optimization and receive the
  *                      optimization result through this array. This array
- *                      must be allocated by ::lbfgs_malloc function
+ *                      must be allocated by lbfgs_malloc function
  *                      for libLBFGS built with SSE/SSE2 optimization routine
  *                      enabled. The library built without SSE/SSE2
  *                      optimization does not have such a requirement.
