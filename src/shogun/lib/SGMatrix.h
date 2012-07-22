@@ -184,6 +184,19 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * */
 		static double* compute_eigenvectors(double* matrix, int n, int m);
 
+		/** compute few eigenpairs of a symmetric matrix using LAPACK DSYEVR method
+		 * (Relatively Robust Representations). 
+		 * Has at least O(n^3/3) complexity
+		 * @param matrix symmetric matrix
+		 * @param eigenvalues contains iu-il+1 eigenvalues in ascending order (to be free'd)
+		 * @param eigenvectors contains iu-il+1 orthonormal eigenvectors of given matrix column-wise (to be free'd)
+		 * @param n dimension of matrix
+		 * @param il low index of requested eigenpairs (1<=il<=n)
+		 * @param iu high index of requested eigenpairs (1<=il<=iu<=n)
+		 */
+		void compute_few_eigenvectors(double* matrix, double*& eigenvalues, double*& eigenvectors,
+                                      int n, int il, int iu);
+
 		/* Computes scale* A*B, where A and B may be transposed.
 		 * Asserts for matching inner dimensions.
 		 * @param A matrix A
