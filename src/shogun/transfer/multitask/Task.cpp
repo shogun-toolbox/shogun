@@ -27,7 +27,6 @@ CTask::CTask(index_t min_index, index_t max_index,
 
 	REQUIRE(min_index<max_index, "min index should be less than max index");
 	m_indices = SGVector<index_t>(max_index-min_index);
-	int32_t j=0;
 	for (int32_t i=0; i<m_indices.vlen; i++)
 		m_indices[i] = i+min_index;
 	m_weight = weight;
