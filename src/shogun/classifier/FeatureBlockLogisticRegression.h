@@ -46,13 +46,13 @@ class CFeatureBlockLogisticRegression : public CSLEPMachine
 			return "FeatureBlockLogisticRegression";
 		}
 
-		/** getter for feature tree
-		 * @return feature tree
+		/** getter for feature relation
+		 * @return feature relation
 		 */
 		CIndexBlockRelation* get_feature_relation() const;
 
-		/** setter for feature tree
-		 * @param feature_tree feature tree
+		/** setter for feature relation
+		 * @param feature_relation feature relation
 		 */
 		void set_feature_relation(CIndexBlockRelation* feature_relation);
 
