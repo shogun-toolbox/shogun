@@ -117,9 +117,6 @@ SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -l
 				  sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1RData=')
 TAR:=$(CONFIGPATH)/shogun-$(shell date +%Y-%m-%d).tar
 
-TESTSRCFILES = $(shell find $(SRCDIR) -name "*$(EXT_SRC_TEST)")
-TESTOBJFILES = $(patsubst %$(EXT_SRC_TEST),%$(EXT_OBJ_TEST), $(TESTSRCFILES))
-
 PRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
 ORELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
 RRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
@@ -316,14 +313,6 @@ install-csharp_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(LIBDIR)/cli/shogun"
 	install -m644 modshogun.dll "$(DESTDIR)$(LIBDIR)/cli/shogun"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(LIBDIR)/cli/shogun"
-
-ifeq (yes, $(USE_GTEST))
-shogun-unit-test: $(LIBSHOGUN_TARGET) $(TESTOBJFILES)
-	$(LINK) -o shogun-unit-test $(TESTOBJFILES) $(LINKFLAGS) -L./ -lshogun $(LINKFLAGS_GTEST)
-
-unit-tests: shogun-unit-test
-	@$(LIBRARY_PATH)=./ ./shogun-unit-test
-endif
 
 tests: 
 	$(MAKE) check-examples
@@ -560,9 +549,6 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	$(COMP_CPP) $(COMPFLAGS_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
 	@test -f $*.$(EXT_CPP_TMP) && test "$(SRCDIR)" != "." \
 	  && rm -f $< || true
-
-%$(EXT_OBJ_TEST): %$(EXT_SRC_TEST)
-	$(COMP_CPP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) $(DEFINES) -c $(INCLUDES) -o $@ $<

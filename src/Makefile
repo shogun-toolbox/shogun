@@ -67,7 +67,9 @@ uninstall:
 	@test -z "$(OCTDIR)" || rm -rf "$(DESTDIR)$(OCTDIR)/shogun"
 
 unit-tests:
-	$(MAKE) -C shogun unit-tests
+ifeq (yes, $(USE_GTEST))
+	$(MAKE) -C ../tests/unit
+endif
 
 tests:
 	$(MAKE) check-examples

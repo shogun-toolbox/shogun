@@ -37,7 +37,6 @@ configure.log
 /src/interfaces/*/Makefile
 /src/examples
 /src/shogun/.clang_complete
-/src/shogun/shogun-unit-test
 
 # static interfaces
 /src/interfaces/cmdline_static/shogun
@@ -92,3 +91,6 @@ examples/undocumented/python_modular/*
 !/examples/undocumented/libshogun/tools/
 !examples/undocumented/python_modular/graphical/
 !examples/undocumented/python_modular/*.py
+
+# /tests
+/tests/unit/shogun-unit-test
