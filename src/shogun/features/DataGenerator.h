@@ -26,17 +26,19 @@ public:
 
 	virtual ~CDataGenerator();
 
-	/** produces a set of vectors, where each dimension is standard normally
-	 * distributed and the mean of the first dimension is shifted by a
-	 * provided value
+	/** Takes each m samples from two distributions p and q, where each element
+	 * is standard normally distributed, except for the first dimension of q,
+	 * where the mean is shifted by a specified value.
 	 *
 	 * @param m number of samples to generate
 	 * @param dim dimension of generated samples
 	 * @param mean_shift is added mean of first dimension
-	 * @return matrix with samples
+	 * @target_data if non-NULL then this is used as matrix data storage. Make
+	 * sure that its dimensions fit
+	 * @return matrix with concatenated samples,first p then q
 	 */
-	SGMatrix<float64_t> generate_mean_data(index_t m, index_t dim,
-			float64_t mean_shift);
+	static SGMatrix<float64_t> generate_mean_data(index_t m, index_t dim,
+			float64_t mean_shift, float64_t* target_data=NULL);
 
 	inline virtual const char* get_name() const { return "DataGenerator"; }
 

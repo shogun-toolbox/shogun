@@ -27,16 +27,29 @@ void CDataGenerator::init()
 }
 
 SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
-		index_t dim, float64_t mean_shift)
+		index_t dim, float64_t mean_shift, float64_t* target_data)
 {
-	SGMatrix<float64_t> result(dim, m);
+	/* evtl use pre-allocated space */
+	SGMatrix<float64_t> result;
 
-	for (index_t i=0; i<m; ++i)
+	if (target_data)
+	{
+		result.matrix=target_data;
+		result.num_rows=dim;
+		result.num_cols=2*m;
+	}
+	else
+		result=SGMatrix<float64_t>(dim, 2*m);
+
+	/* fill matrix with normal data */
+	for (index_t i=0; i<2*m; ++i)
 	{
 		for (index_t j=0; j<dim; ++j)
 			result(j,i)=CMath::randn_double();
 
-		result(0,i)+=mean_shift;
+		/* mean shift for second half */
+		if (i>=m)
+			result(0,i)+=mean_shift;
 	}
 
 	return result;
