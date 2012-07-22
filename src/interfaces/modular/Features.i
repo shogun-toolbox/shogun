@@ -63,6 +63,7 @@
 %rename(LBPPyrDotFeatures) CLBPPyrDotFeatures;
 %rename(ExplicitSpecFeatures) CExplicitSpecFeatures;
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
+%rename(DataGenerator) CDataGenerator;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/FeatureTypes.h>
@@ -75,6 +76,7 @@
 %include <shogun/features/StreamingFeatures.h>
 %include <shogun/features/StreamingDotFeatures.h>
 %include <shogun/features/StreamingVwFeatures.h>
+%include <shogun/features/DataGenerator.h>
 
 /* Templated Class StringFeatures */
 %include <shogun/features/StringFeatures.h>
