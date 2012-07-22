@@ -35,7 +35,7 @@ CLatentLinearMachine::CLatentLinearMachine(CLatentModel* model, float64_t C)
 
 	/* create the temporal storage for PSI features */
 	SGMatrix<float64_t> psi_m(feat_dim, m_model->get_num_vectors());
-	((CDenseFeatures<float64_t>*)features)->set_feature_matrix(psi_m);
+	((CDenseFeatures<float64_t>*) features)->set_feature_matrix(psi_m);
 }
 
 CLatentLinearMachine::~CLatentLinearMachine()
@@ -171,6 +171,6 @@ void CLatentLinearMachine::init()
 	m_parameters->add(&m_C2, "C2",  "Cost constant 2.");
 	m_parameters->add(&m_epsilon, "epsilon", "Convergence precision.");
 	m_parameters->add(&m_max_iter, "max_iter", "Maximum iterations.");
-	m_parameters->add((CSGObject**)&m_model, "latent_model", "Latent Model.");
+	m_parameters->add((CSGObject**) &m_model, "latent_model", "Latent Model.");
 }
 

@@ -45,8 +45,8 @@ class CObjectDetector: public CLatentModel
 
 		virtual SGVector<float64_t> get_psi_feature_vector(index_t idx)
 		{
-			CHOGFeatures* hf = (CHOGFeatures*)m_features->get_sample(idx);
-			CBoundingBox* bb = (CBoundingBox*)m_labels->get_latent_label(idx);
+			CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(idx);
+			CBoundingBox* bb = (CBoundingBox*) m_labels->get_latent_label(idx);
 			SGVector<float64_t> psi_v(get_dim());
 			for (int i = 0; i < psi_v.vlen; ++i)
 			{
@@ -60,7 +60,7 @@ class CObjectDetector: public CLatentModel
 			int32_t pos_x = 0, pos_y = 0;
 			float64_t max_score;
 
-			CHOGFeatures* hf = (CHOGFeatures*)m_features->get_sample(idx);
+			CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(idx);
 			for (int i = 0; i < hf->width; ++i)
 			{
 				for (int j = 0; j < hf->height; ++j)
