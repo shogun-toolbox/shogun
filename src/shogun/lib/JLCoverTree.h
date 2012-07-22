@@ -79,10 +79,10 @@ struct ds_node {
 
 };
 
-float base = 1.3;
+static float base = 1.3;
 
 
-float il2 = 1. / log(base);
+static float il2 = 1. / log(base);
 
 inline float dist_of_scale (int s)
 {
