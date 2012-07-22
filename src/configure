@@ -39,7 +39,7 @@ DOXYGEN=doxygen
 RUBY=ruby
 PYTHON=python
 PYVER=
-GTEST=gtest-config
+GMOCK=gmock-config
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
@@ -160,7 +160,7 @@ COMP_NO_OPTS="-Wall -O0"
 COMPFLAGS_C=-fPIC
 COMPFLAGS_CPP=-fPIC
 COMPFLAGS_SWIG_CPP="-fPIC -O0"
-COMPFLAGS_GTEST_CPP=""
+COMPFLAGS_GMOCK_CPP=""
 SEDMI='sed -i'
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
@@ -503,17 +503,17 @@ EOF
 	LINK=$COMP_CPP
 }
 
-check_gtest()
+check_gmock()
 {
-	echocheck "Google C++ Testing Framework"
-	if $GTEST --version > /dev/null 2>&1
+	echocheck "Google C++ Mocking Framework"
+	if $GMOCK --version > /dev/null 2>&1
 	then
-		USE_GTEST='yes'
-		COMPFLAGS_GTEST_CPP=`$GTEST --cppflags --cxxflags`
-		LINKFLAGS_GTEST=`$GTEST --ldflags --libs`
-		echores `$GTEST --version`
+		USE_GMOCK='yes'
+		COMPFLAGS_GMOCK_CPP=`$GMOCK --cppflags --cxxflags`
+		LINKFLAGS_GMOCK=`$GMOCK --ldflags --libs`
+		echores `$GMOCK --version`
 	else
-		USE_GTEST='no'
+		USE_GMOCK='no'
 		echores "no"
 	fi
 }
@@ -4791,13 +4791,13 @@ DEFINES_SWIG		= ${DEFINES_SWIG}
 COMPFLAGS_C			= ${COMPFLAGS_C}
 COMPFLAGS_CPP		= ${COMPFLAGS_CPP}
 COMPFLAGS_SWIG_CPP	= ${COMPFLAGS_SWIG_CPP}
-COMPFLAGS_GTEST_CPP	= ${COMPFLAGS_GTEST_CPP}
-LINKFLAGS_GTEST = ${LINKFLAGS_GTEST}
+COMPFLAGS_GMOCK_CPP	= ${COMPFLAGS_GMOCK_CPP}
+LINKFLAGS_GMOCK = ${LINKFLAGS_GMOCK}
 INCLUDES			= ${INCLUDES}
 PRELINKFLAGS		= ${PRELINKFLAGS}
 LINKFLAGS 			= ${LINKFLAGS}
 POSTLINKFLAGS		= ${POSTLINKFLAGS}
-USE_GTEST = ${USE_GTEST}
+USE_GMOCK = ${USE_GMOCK}
 
 INCLUDES_STATIC_INTERFACES	= ${INCLUDES_STATIC_INTERFACES}
 LINKFLAGS_STATIC_INTERFACES	= ${LINKFLAGS_STATIC_INTERFACES}
@@ -5129,7 +5129,7 @@ check_python
 check_pkg_config
 check_make
 check_doxygen
-check_gtest
+check_gmock
 determine_march_mtune
 check_datatypes
 check_wordsize

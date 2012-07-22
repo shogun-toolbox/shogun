@@ -16,13 +16,13 @@ shogun-lib:
 	@$(MAKE) -C $(SHOGUNSRCTOP)/shogun
 
 shogun-unit-test: shogun-lib $(TESTOBJFILES)
-	@$(LINK) -o shogun-unit-test $(TESTOBJFILES) $(LINKFLAGS) -L$(SHOGUNSRCTOP)/shogun -lshogun $(LINKFLAGS_GTEST)
+	@$(LINK) -o shogun-unit-test $(TESTOBJFILES) $(LINKFLAGS) -L$(SHOGUNSRCTOP)/shogun -lshogun $(LINKFLAGS_GMOCK)
 
 build: shogun-unit-test
 	@$(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) ./shogun-unit-test
 
 %$(EXT_OBJ_TEST): %$(EXT_SRC_TEST)
-	$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
 
 clean:
 	@rm -f ./shogun-unit-test $(TESTOBJFILES)
