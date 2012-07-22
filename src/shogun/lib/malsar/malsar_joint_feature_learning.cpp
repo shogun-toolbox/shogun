@@ -79,14 +79,15 @@ malsar_result_t malsar_joint_feature_learning(
 		for (task=0; task<n_tasks; task++)
 		{
 			SGVector<index_t> task_idx = options.tasks_indices[task];
-			for (int i=0; i<task_idx.vlen; i++)
+			int n_task_vecs = task_idx.vlen;
+			for (int i=0; i<n_task_vecs; i++)
 			{
 				double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Ws.col(task).data(), n_feats)+Cs[task]);
 				double bb = CMath::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
-				Fs += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
-				double b = -y[task_idx[i]]*(1 - 1/(1+CMath::exp(aa)))/n_vecs;
+				Fs += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
+				double b = -y[task_idx[i]]*(1 - 1/(1+CMath::exp(aa)))/n_task_vecs;
 
 				gCs[task] += b;
 				features->add_to_dense_vec(b, task_idx[i], gWs.col(task).data(), n_feats);
@@ -118,12 +119,13 @@ malsar_result_t malsar_joint_feature_learning(
 			for (task=0; task<n_tasks; task++)
 			{
 				SGVector<index_t> task_idx = options.tasks_indices[task];
-				for (int i=0; i<task_idx.vlen; i++)
+				int n_task_vecs = task_idx.vlen;
+				for (int i=0; i<n_task_vecs; i++)
 				{
 					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Cs[task]);
 					double bb = CMath::max(aa,0.0);
 
-					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
+					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
 				}
 			}
 			Fzp += Wzp.squaredNorm();

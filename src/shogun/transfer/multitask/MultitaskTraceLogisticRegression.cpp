@@ -57,6 +57,11 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
 	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 
+	SG_DEBUG("Starting malsar solver\n");
+	SG_DEBUG("N tasks = %d \n", options.n_tasks);
+	for (int32_t i=0; i<options.n_tasks; i++)
+		options.tasks_indices[i].display_vector();
+
 #ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_low_rank(
 		features, y.vector, m_rho, options);

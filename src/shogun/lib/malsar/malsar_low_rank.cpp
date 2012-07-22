@@ -49,6 +49,7 @@ malsar_result_t malsar_low_rank(
 			else
 				n_neg++;
 		}
+		SG_SDEBUG("There are %d positive and %d negative examples in task %d\n",n_pos,n_neg,task);
 		Cs[task] = CMath::log(double(n_pos)/n_neg);
 	}
 
@@ -58,6 +59,8 @@ malsar_result_t malsar_low_rank(
 	double t=1, t_old=0;
 	double gamma=1, gamma_inc=2;
 	double obj=0.0, obj_old=0.0;
+
+	double rho_L2 = 0.0;
 
 	internal::set_is_malloc_allowed(false);
 	bool done = false;
@@ -78,23 +81,25 @@ malsar_result_t malsar_low_rank(
 		for (task=0; task<n_tasks; task++)
 		{
 			SGVector<index_t> task_idx = options.tasks_indices[task];
-			for (int i=0; i<task_idx.vlen; i++)
+			int n_task_vecs = task_idx.vlen;
+			for (int i=0; i<n_task_vecs; i++)
 			{
 				double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Ws.col(task).data(), n_feats)+Cs[task]);
 				double bb = CMath::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
-				Fs += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
-				double b = -y[task_idx[i]]*(1 - 1/(1+CMath::exp(aa)))/n_vecs;
+				Fs += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
+				double b = -y[task_idx[i]]*(1 - 1/(1+CMath::exp(aa)))/n_task_vecs;
 
 				gCs[task] += b;
 				features->add_to_dense_vec(b, task_idx[i], gWs.col(task).data(), n_feats);
 			}
 		}
-		gWs.noalias() += 2*rho*Ws;
-		
+		gWs.noalias() += 2*rho_L2*Ws;
+		//SG_SDEBUG("gWs=%f\n",gWs.squaredNorm());
+
 		// add regularizer
-		Fs += rho*Ws.squaredNorm();
+		Fs += rho_L2*Ws.squaredNorm();
 
 		double Fzp = 0.0;
 
@@ -105,13 +110,13 @@ malsar_result_t malsar_low_rank(
 			// compute trace projection of Ws - gWs/gamma with 2*rho/gamma
 			internal::set_is_malloc_allowed(true);
 			Wzp.setZero();
-			JacobiSVD<MatrixXd> svd(Ws - gWs/gamma,ComputeThinU | ComputeThinV);
+			JacobiSVD<MatrixXd> svd((Ws - gWs/gamma).transpose(),ComputeThinU | ComputeThinV);
 			for (int i=0; i<svd.singularValues().size(); i++)
 			{
-				if (svd.singularValues()[i] > 2*rho/gamma)
-					Wzp += svd.matrixU().col(i)*
+				if (svd.singularValues()[i] > rho/gamma)
+					Wzp += (svd.matrixU().col(i)*
 					       svd.singularValues()[i]*
-					       svd.matrixV().col(i).transpose();
+					       svd.matrixV().col(i).transpose()).transpose();
 			}
 			internal::set_is_malloc_allowed(false);
 			// walk in direction of antigradient 
@@ -122,15 +127,16 @@ malsar_result_t malsar_low_rank(
 			for (task=0; task<n_tasks; task++)
 			{
 				SGVector<index_t> task_idx = options.tasks_indices[task];
-				for (int i=0; i<task_idx.vlen; i++)
+				int n_task_vecs = task_idx.vlen;
+				for (int i=0; i<n_task_vecs; i++)
 				{
 					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Cs[task]);
 					double bb = CMath::max(aa,0.0);
 
-					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_vecs;
+					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
 				}
 			}
-			Fzp += rho*Wzp.squaredNorm();
+			Fzp += rho_L2*Wzp.squaredNorm();
 
 			// compute delta between line search point and search point
 			delta_Wzp = Wzp - Ws;
