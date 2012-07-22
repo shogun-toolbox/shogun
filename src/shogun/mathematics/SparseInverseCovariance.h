@@ -32,7 +32,7 @@ public:
 	/** estimate inverse covariance matrix 
 	 *
 	 * @param S empirical covariance matrix
-	 * @param lambda_C regularization constant
+	 * @param lambda_c regularization constant
 	 */
 	SGMatrix<float64_t> estimate(SGMatrix<float64_t> S, float64_t lambda_c);
 
