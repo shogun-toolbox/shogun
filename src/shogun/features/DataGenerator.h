@@ -11,6 +11,7 @@
 #define __DATAGENERATOR_H_
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
@@ -24,6 +25,18 @@ public:
 	CDataGenerator();
 
 	virtual ~CDataGenerator();
+
+	/** produces a set of vectors, where each dimension is standard normally
+	 * distributed and the mean of the first dimension is shifted by a
+	 * provided value
+	 *
+	 * @param m number of samples to generate
+	 * @param dim dimension of generated samples
+	 * @param mean_shift is added mean of first dimension
+	 * @return matrix with samples
+	 */
+	SGMatrix<float64_t> generate_mean_data(index_t m, index_t dim,
+			float64_t mean_shift);
 
 	inline virtual const char* get_name() const { return "DataGenerator"; }
 

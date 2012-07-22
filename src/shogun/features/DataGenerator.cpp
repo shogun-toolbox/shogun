@@ -8,6 +8,7 @@
  */
 
 #include <shogun/features/DataGenerator.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -23,4 +24,20 @@ CDataGenerator::~CDataGenerator()
 
 void CDataGenerator::init()
 {
+}
+
+SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
+		index_t dim, float64_t mean_shift)
+{
+	SGMatrix<float64_t> result(dim, m);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<dim; ++j)
+			result(j,i)=CMath::randn_double();
+
+		result(0,i)+=mean_shift;
+	}
+
+	return result;
 }
