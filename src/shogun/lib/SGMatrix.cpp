@@ -593,13 +593,13 @@ double* SGMatrix<T>::compute_eigenvectors(double* matrix, int n, int m)
 }
 
 template <class T>
-void SGMatrix<T>::compute_few_eigenvectors(double* matrix, double*& eigenvalues, double*& eigenvectors,
+void SGMatrix<T>::compute_few_eigenvectors(double* matrix_, double*& eigenvalues, double*& eigenvectors,
                                            int n, int il, int iu)
 {
 	eigenvalues = SG_MALLOC(double, n);
 	eigenvectors = SG_MALLOC(double, (iu-il+1)*n);
 	int status = 0;
-	wrap_dsyevr('V','U',n,matrix,n,il,iu,eigenvalues,eigenvectors,&status);
+	wrap_dsyevr('V','U',n,matrix_,n,il,iu,eigenvalues,eigenvectors,&status);
 	ASSERT(status==0);
 }
 
