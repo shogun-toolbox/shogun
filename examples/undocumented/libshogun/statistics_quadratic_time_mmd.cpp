@@ -12,24 +12,9 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/features/DataGenerator.h>
 
 using namespace shogun;
-
-
-void create_mean_data(SGMatrix<float64_t> target, float64_t difference)
-{
-	/* create data matrix for P and Q. P is a standard normal, Q is the same but
-	 * has a mean difference in one dimension */
-	for (index_t i=0; i<target.num_rows; ++i)
-	{
-		for (index_t j=0; j<target.num_cols/2; ++j)
-			target(i,j)=CMath::randn_double();
-
-		/* add mean difference in first dimension of second half of data */
-		for (index_t j=target.num_cols/2; j<target.num_cols; ++j)
-				target(i,j)=CMath::randn_double() + (i==0 ? difference : 0);
-	}
-}
 
 /** tests the quadratic mmd statistic for a single data case and ensures
  * equality with matlab implementation */
@@ -73,8 +58,8 @@ void test_quadratic_mmd_bootstrap()
 	index_t num_iterations=1000;
 	num_iterations=10; //speed up
 
-	SGMatrix<float64_t> data(dimension, 2*m);
-	create_mean_data(data, difference);
+	SGMatrix<float64_t> data=CDataGenerator::generate_mean_data(m, dimension,
+			difference);
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 
 	/* shoguns kernel width is different */
@@ -112,8 +97,8 @@ void test_quadratic_mmd_spectrum()
 	float64_t difference=0.5;
 	float64_t sigma=2;
 
-	SGMatrix<float64_t> data(dimension, 2*m);
-	create_mean_data(data, difference);
+	SGMatrix<float64_t> data=CDataGenerator::generate_mean_data(m, dimension,
+			difference);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 
@@ -185,8 +170,8 @@ void test_quadratic_mmd_random()
 	num_runs=10; //speed up
 	SGVector<float64_t> mmds(num_runs);
 
+	/* pre-allocate data matrix and features, just change elements later */
 	SGMatrix<float64_t> data(dimension, 2*m);
-
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 
 	/* shoguns kernel width is different */
@@ -195,7 +180,9 @@ void test_quadratic_mmd_random()
 	mmd->set_statistic_type(UNBIASED);
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		create_mean_data(data, difference);
+		/* use pre-allocated space for data generation */
+		CDataGenerator::generate_mean_data(m, dimension,
+					difference, data.matrix);
 		kernel->init(features, features);
 		mmds[i]=mmd->compute_statistic();
 	}
