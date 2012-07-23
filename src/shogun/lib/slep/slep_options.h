@@ -27,13 +27,26 @@ IGNORE_IN_CLASSLIST enum slep_mode
 	MULTITASK_TREE,
 	FEATURE_GROUP,
 	FEATURE_TREE,
-	PLAIN
+	PLAIN,
+	FUSED
 };
 
 IGNORE_IN_CLASSLIST enum slep_loss
 {
 	LOGISTIC,
 	LEAST_SQUARES
+};
+
+IGNORE_IN_CLASSLIST struct slep_result_t
+{
+	SGMatrix<double> w;
+	SGVector<double> c;
+
+	slep_result_t(SGMatrix<double> w_, SGVector<double> c_)
+	{
+		w = w_;
+		c = c_;
+	}
 };
 
 IGNORE_IN_CLASSLIST struct slep_options
@@ -55,12 +68,13 @@ IGNORE_IN_CLASSLIST struct slep_options
 	double q;
 	slep_loss loss;
 	slep_mode mode;
+	slep_result_t* last_result;
 
 	static slep_options default_options()
 	{
 		slep_options opts;
 		opts.general = false;
-		opts.termination = 2;
+		opts.termination = 0;
 		opts.tolerance = 1e-3;
 		opts.max_iter = 1000;
 		opts.restart_num = 100;
@@ -71,25 +85,12 @@ IGNORE_IN_CLASSLIST struct slep_options
 		opts.ind_t = NULL;
 		opts.G = NULL;
 		opts.rsL2 = 0.0;
+		opts.last_result = NULL;
 		opts.loss = LOGISTIC;
 		opts.mode = MULTITASK_GROUP;
 		return opts;
 	}
 };
-
-IGNORE_IN_CLASSLIST struct slep_result_t
-{
-	SGMatrix<double> w;
-	SGVector<double> c;
-
-	slep_result_t(SGMatrix<double> w_, SGVector<double> c_)
-	{
-		w = w_;
-		c = c_;
-	}
-};
 #endif
 }
 #endif   /* ----- #ifndef SLEP_OPTIONS_H_  ----- */
-
-

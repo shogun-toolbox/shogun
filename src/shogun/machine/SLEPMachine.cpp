@@ -29,7 +29,7 @@ CSLEPMachine::CSLEPMachine(
 	set_q(2.0);
 	set_features(train_features);
 	set_labels(train_labels);
-	set_termination(2);
+	set_termination(0);
 	set_regularization(0);
 	set_tolerance(1e-3);
 	set_max_iter(1000);
