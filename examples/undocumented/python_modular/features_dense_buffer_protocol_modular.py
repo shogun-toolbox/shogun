@@ -5,53 +5,78 @@ from shogun.Features import LongIntFeatures
 from numpy import array, float64, int64
 
 # create dense matrice
-data=[[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]]
+data=[[1,2,3],[4,5,6],[7,8,9],[-1,-2,-3]]
 
 parameter_list = [[data]]
 
 def features_dense_real_modular(in_data=data):
 	m_real=array(in_data, dtype=float64, order='F')
-	m_long=array(in_data, dtype=int64, order='F')
-
 	f_real=RealFeatures(m_real)
-	f_long=LongIntFeatures(m_long)
+
+	print m_real
+	print f_real
+
+	print f_real[-1]
+	print f_real[1, 2]
+	print f_real[-1:3]
+	print f_real[2, 0:2]
+	print f_real[0:3, 1]
+	print f_real[0:3, 1:2]
+	print f_real[:,1]
+	print f_real[1,:]
+
+	print m_real[-2]
+	f_real[-1]=m_real[-2]
+	print f_real[-1]
+
+	print m_real[0, 1]
+	f_real[1,2]=m_real[0,1]
+	print f_real[1, 2]
+
+	print m_real[0:2]
+	f_real[1:3]=m_real[0:2]
+	print f_real[1:3]
+
+	print m_real[0, 0:2]
+	f_real[2, 0:2]=m_real[0,0:2]
+	print f_real[2, 0:2]
+
+	print m_real[0:3, 2]
+	f_real[0:3,1]=m_real[0:3, 2]
+	print f_real[0:3, 1]
+
+	print m_real[0:3, 0:1]
+	f_real[0:3,1:2]=m_real[0:3,0:1]
+	print f_real[0:3, 1:2]
+
+	f_real[:,0]=0
+	print f_real.get_feature_matrix()
+
+	f_real[:,0]=(f_real+m_real)[:,0]
+	print f_real.get_feature_matrix()
 
 	if numpy.__version__ >= '1.5':
 		f_real+=m_real
-		f_long+=m_long
-
 		f_real*=m_real
-		f_long*=m_long
-
 		f_real-=m_real
-		f_long-=m_long
 	else:
 		print "numpy version >= 1.5 is needed"
 
 	f_real+=f_real
-	f_long+=f_long
-
 	f_real*=f_real
-	f_long*=f_long
-
 	f_real-=f_real
-	f_long-=f_long
 
-#	print f_real
-#	print f_long
+	print f_real
+	print f_real.get_feature_matrix()
 
 	try:
 		mem_real=memoryview(f_real)
-		mem_long=memoryview(f_long)
 	except NameError:
-#		print "Python2.7 is needed for memoryview class"
+		print "Python2.7 is needed for memoryview class"
 		pass
 
 	ret_real=array(f_real)
-	ret_long=array(f_long)
-
 	print ret_real
-	print ret_long
 
 if __name__=='__main__':
 	print('dense_real')
