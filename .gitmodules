@@ -1,3 +1,6 @@
 [submodule "data"]
 	path = data
 	url = git://github.com/shogun-toolbox/shogun-data.git
+[submodule "doc/tutorial"]
+	path = doc/tutorial
+	url = git://github.com/shogun-toolbox/shogun-tutorial.git
