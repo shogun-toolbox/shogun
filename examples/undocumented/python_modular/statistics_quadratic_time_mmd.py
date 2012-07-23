@@ -7,12 +7,10 @@
 # Written (C) 2012 Heiko Strathmann
 #
 from numpy import *
-from tools.two_distributions_data import TwoDistributionsData
-
-gen_data=TwoDistributionsData()
 
 def statistics_linear_time_mmd():
 	from shogun.Features import RealFeatures
+	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
@@ -23,23 +21,21 @@ def statistics_linear_time_mmd():
 	dim=2
 	difference=0.5
 
-	# data is standard normal distributed. only one dimension of Y has a mean
-	# shift of difference
-	(X,Y)=gen_data.create_mean_data(n,dim,difference)
+	# use data generator class to produce example data
+	data=DataGenerator.generate_mean_data(n,dim,difference)
 	
-	print "dimension means of X", [mean(x) for x in X]
-	print "dimension means of Y", [mean(x) for x in Y]
+	print "dimension means of X", mean(data.T[0:n].T)
+	print "dimension means of Y", mean(data.T[n:2*n+1].T)
 
 	# create shogun feature representation
-	features_x=RealFeatures(X)
-	features_y=RealFeatures(Y)
+	features=RealFeatures(data)
 
 	# use a kernel width of sigma=2, which is 8 in SHOGUN's parametrization
 	# which is k(x,y)=exp(-||x-y||^2 / tau), in constrast to the standard
 	# k(x,y)=exp(-||x-y||^2 / (2*sigma^2)), so tau=2*sigma^2
 	kernel=GaussianKernel(10,8)
 
-	mmd=QuadraticTimeMMD(kernel,features_x, features_y)
+	mmd=QuadraticTimeMMD(kernel,features, n)
 
 	# perform test: compute p-value and test if null-hypothesis is rejected for
 	# a test level of 0.05 using different methods to approximate
