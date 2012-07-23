@@ -17,21 +17,6 @@
 
 using namespace shogun;
 
-void create_mean_data(SGMatrix<float64_t> target, float64_t difference)
-{
-	/* create data matrix for P and Q. P is a standard normal, Q is the same but
-	 * has a mean difference in one dimension */
-	for (index_t i=0; i<target.num_rows; ++i)
-	{
-		for (index_t j=0; j<target.num_cols/2; ++j)
-			target(i,j)=CMath::randn_double();
-
-		/* add mean difference in first dimension of second half of data */
-		for (index_t j=target.num_cols/2; j<target.num_cols; ++j)
-				target(i,j)=CMath::randn_double() + (i==0 ? difference : 0);
-	}
-}
-
 SGMatrix<float64_t> create_fixed_data(index_t m, index_t dim)
 {
 	SGMatrix<float64_t> data(dim,2*m);
