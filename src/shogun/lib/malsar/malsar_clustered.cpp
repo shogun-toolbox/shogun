@@ -53,20 +53,6 @@ malsar_result_t malsar_clustered(
 	// initialize weight vector and bias for each task
 	MatrixXd Ws = MatrixXd::Zero(n_feats, n_tasks);
 	VectorXd Cs = VectorXd::Zero(n_tasks);
-	for (task=0; task<n_tasks; task++)
-	{
-		int n_pos = 0;
-		int n_neg = 0;
-		SGVector<index_t> task_idx = options.tasks_indices[task];
-		for (int i=0; i<task_idx.vlen; i++)
-		{
-			if (y[task_idx[i]] > 0)
-				n_pos++;
-			else
-				n_neg++;
-		}
-		Cs[task] = CMath::log(double(n_pos)/n_neg);
-	}
 	MatrixXd Ms = MatrixXd::Identity(n_tasks, n_tasks)*options.n_clusters/n_tasks;
 	MatrixXd IM = Ms;
 	MatrixXd IMsqinv = Ms;
@@ -148,8 +134,10 @@ malsar_result_t malsar_clustered(
 
 		int inner_iter = 0;
 		// line search, Armijo-Goldstein scheme
-		while (inner_iter <= 100)
+		while (inner_iter <= 1)
 		{
+			Wzp = Ws - gWs/gamma;
+			Czp = Cs - gCs/gamma;
 			// compute singular projection of Ms - gMs/gamma with k
 			internal::set_is_malloc_allowed(true);
 			EigenSolver<MatrixXd> eigensolver(Ms-gMs/gamma);
@@ -160,6 +148,7 @@ malsar_result_t malsar_clustered(
 			{
 				diag_H[i] = 2.0;
 				f[i] = -2*eigensolver.eigenvalues()[i].real();
+				SG_SDEBUG("%dth eigenvalue %f\n",i,eigensolver.eigenvalues()[i].real());
 				a[i] = 1.0;
 				lb[i] = 0.0;
 				ub[i] = 1.0;
@@ -181,10 +170,8 @@ malsar_result_t malsar_clustered(
 			Mzp = Mzp_Pz*Mzp_DiagSigz.asDiagonal()*Mzp_Pz.transpose();
 			internal::set_is_malloc_allowed(false);
 			// walk in direction of antigradient 
-			Czp = Cs - gCs/gamma;
-			
 			for (int i=0; i<n_tasks; i++)
-				Mzp_DiagSigz[i] += 1.0;
+				Mzp_DiagSigz[i] += eta;
 			internal::set_is_malloc_allowed(true);
 			invEtaMWt = (Mzp_Pz*
 			             (Mzp_DiagSigz.cwiseInverse().asDiagonal())*
