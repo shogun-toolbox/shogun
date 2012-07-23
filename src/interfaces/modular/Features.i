@@ -293,74 +293,47 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(BoolFeatures, bool, "?\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(BoolFeatures, bool, "?\0", NPY_BOOL)
     %template(BoolFeatures) CDenseFeatures<bool>;
 #endif
 
 #ifdef USE_CHAR
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(CharFeatures, char, "c\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(CharFeatures, char, "c\0", NPY_STRING)
     %template(CharFeatures) CDenseFeatures<char>;
 #endif
 
 #ifdef USE_UINT8
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ByteFeatures, uint8_t, "B\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(ByteFeatures, uint8_t, "B\0", NPY_UINT8)
     %template(ByteFeatures) CDenseFeatures<uint8_t>;
 #endif
 
 #ifdef USE_UINT16
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(WordFeatures, uint16_t, "H\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(WordFeatures, uint16_t, "H\0", NPY_UINT16)
     %template(WordFeatures) CDenseFeatures<uint16_t>;
 #endif
 
 #ifdef USE_INT16
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ShortFeatures, int16_t, "h\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(ShortFeatures, int16_t, "h\0", NPY_INT16)
     %template(ShortFeatures) CDenseFeatures<int16_t>;
 #endif
 
 #ifdef USE_INT32
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(IntFeatures, int32_t, "i\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(IntFeatures, int32_t, "i\0", NPY_INT32)
     %template(IntFeatures)  CDenseFeatures<int32_t>;
 #endif
 
 #ifdef USE_UINT32
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(UIntFeatures, uint32_t, "I\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(UIntFeatures, uint32_t, "I\0", NPY_UINT32)
     %template(UIntFeatures)  CDenseFeatures<uint32_t>;
 #endif
 
 #ifdef USE_INT64
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(LongIntFeatures, int64_t, "l\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(LongIntFeatures, int64_t, "l\0", NPY_INT64)
     %template(LongIntFeatures) CDenseFeatures<int64_t>;
 #endif
 
 #ifdef USE_UINT64
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ULongIntFeatures, uint64_t, "L\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(ULongIntFeatures, uint64_t, "L\0", NPY_UINT64)
     %template(ULongIntFeatures) CDenseFeatures<uint64_t>;
 #endif
 
@@ -369,18 +342,12 @@ namespace shogun
 #endif
 
 #ifdef USE_FLOAT32
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(ShortRealFeatures, float64_t, "f\0")
-	#endif
-
+	PYPROTO_DENSEFEATURES(ShortRealFeatures, float64_t, "f\0", NPY_FLOAT32)
     %template(ShortRealFeatures) CDenseFeatures<float32_t>;
 #endif
 
 #ifdef USE_FLOAT64
-	#ifdef SWIGPYTHON
-	BUFFER_DENSEFEATURES(RealFeatures, float64_t, "d\0")
-	#endif
-    
+	PYPROTO_DENSEFEATURES(RealFeatures, float64_t, "d\0", NPY_FLOAT64)
 	%template(RealFeatures) CDenseFeatures<float64_t>;
 #endif
 }
