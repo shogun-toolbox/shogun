@@ -11,25 +11,10 @@
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/DataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
-
-
-void create_mean_data(SGMatrix<float64_t> target, float64_t difference)
-{
-	/* create data matrix for P and Q. P is a standard normal, Q is the same but
-	 * has a mean difference in one dimension */
-	for (index_t i=0; i<target.num_rows; ++i)
-	{
-		for (index_t j=0; j<target.num_cols/2; ++j)
-			target(i,j)=CMath::randn_double();
-
-		/* add mean difference in first dimension of second half of data */
-		for (index_t j=target.num_cols/2; j<target.num_cols; ++j)
-				target(i,j)=CMath::randn_double() + (i==0 ? difference : 0);
-	}
-}
 
 /** tests the linear mmd statistic for a single data case and ensures
  * equality with matlab implementation */
@@ -81,7 +66,8 @@ void test_linear_mmd_random()
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		create_mean_data(data, difference);
+		CDataGenerator::generate_mean_data(m, dimension, difference,
+				data.matrix);
 		mmds[i]=mmd->compute_statistic();
 	}
 
@@ -122,7 +108,8 @@ void test_linear_mmd_variance_estimate()
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		create_mean_data(data, difference);
+		CDataGenerator::generate_mean_data(m, dimension, difference,
+				data.matrix);
 		vars[i]=mmd->compute_variance_estimate();
 	}
 
@@ -150,9 +137,9 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 	float64_t difference=0.5;
 	float64_t sigma=2;
 
-	SGMatrix<float64_t> data(dimension, 2*m);
+	SGMatrix<float64_t> data=CDataGenerator::generate_mean_data(m, dimension,
+			difference);;
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	create_mean_data(data, difference);
 
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
@@ -201,7 +188,8 @@ void test_linear_mmd_type2_error()
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		create_mean_data(data, difference);
+		CDataGenerator::generate_mean_data(m, dimension, difference,
+				data.matrix);
 
 		/* technically, this leads to a wrong result since training (statistic)
 		 * and testing (p-value) have to happen on different data, but this
