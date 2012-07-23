@@ -24,10 +24,11 @@ configure.log
 *.mex*
 *.oct
 
-/doc/
+# /doc/
 /doc/html
-/doc/doxygen
-/doc/manual
+/doc/html_cn
+/doc/pages/Configure.generated
+/doc/pages*/Examples*.mainpage
 
 # /src/
 /src/shogun/lib/versionstring.h
