@@ -8,14 +8,12 @@
 #
 from numpy import *
 #from matplotlib import pyplot
-from tools.two_distributions_data import TwoDistributionsData
-
-gen_data=TwoDistributionsData()
 
 # performs learning of optimal non-negative kernel weights for a linear time
 # two sample test using the linear time Maximum Mean Discrepancy
 def statistics_linear_time_mmd_kernel_choice():
 	from shogun.Features import RealFeatures, CombinedFeatures
+	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel, CombinedKernel
 	from shogun.Statistics import LinearTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
@@ -25,15 +23,13 @@ def statistics_linear_time_mmd_kernel_choice():
 	dim=5
 	difference=2
 
-	# data is standard normal distributed. only one dimension of Y has a mean
-	# shift of difference
-	(X,Y)=gen_data.create_mean_data(n,dim,difference)
+	# use data generator class to produce example data
+	# in pratice, this generate data function could be replaced by a method
+	# that obtains data from a stream
+	data=DataGenerator.generate_mean_data(n,dim,difference)
 	
-	# concatenate since MMD class takes data as one feature object
-	# (it is possible to give two, but then data is copied)
-	Z=concatenate((X,Y), axis=1)
-	print "dimension means of X", [mean(x) for x in X]
-	print "dimension means of Y", [mean(x) for x in Y]
+	print "dimension means of X", mean(data.T[0:n].T)
+	print "dimension means of Y", mean(data.T[n:2*n+1].T)
 
 	# create kernels/features to choose from
 	# here: just a bunch of Gaussian Kernels with different widths
@@ -52,7 +48,7 @@ def statistics_linear_time_mmd_kernel_choice():
 	# all kernels work on same features
 	for i in range(len(sigmas)):
 		kernel.append_kernel(GaussianKernel(10, shogun_sigmas[i]))
-		features.append_feature_obj(RealFeatures(Z))
+		features.append_feature_obj(RealFeatures(data))
 	
 	mmd=LinearTimeMMD(kernel,features, n)
 	

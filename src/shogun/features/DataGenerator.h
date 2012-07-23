@@ -32,7 +32,7 @@ public:
 	 *
 	 * @param m number of samples to generate
 	 * @param dim dimension of generated samples
-	 * @param mean_shift is added mean of first dimension
+	 * @param mean_shift is added to mean of first dimension
 	 * @target_data if non-NULL then this is used as matrix data storage. Make
 	 * sure that its dimensions fit
 	 * @return matrix with concatenated samples,first p then q

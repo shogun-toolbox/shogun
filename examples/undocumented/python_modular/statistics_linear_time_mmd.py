@@ -7,12 +7,10 @@
 # Written (C) 2012 Heiko Strathmann
 #
 from numpy import *
-from tools.two_distributions_data import TwoDistributionsData
-
-gen_data=TwoDistributionsData()
 
 def statistics_linear_time_mmd():
 	from shogun.Features import RealFeatures
+	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import LinearTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
@@ -22,41 +20,28 @@ def statistics_linear_time_mmd():
 	dim=2
 	difference=0.5
 
-	# data is standard normal distributed. only one dimension of Y has a mean
-	# shift of difference
+	# use data generator class to produce example data
 	# in pratice, this generate data function could be replaced by a method
 	# that obtains data from a stream
-	(X,Y)=gen_data.create_mean_data(n,dim,difference)
-
-	print "dimension means of X", [mean(x) for x in X]
-	print "dimension means of Y", [mean(x) for x in Y]
+	data=DataGenerator.generate_mean_data(n,dim,difference)
+	
+	print "dimension means of X", mean(data.T[0:n].T)
+	print "dimension means of Y", mean(data.T[n:2*n+1].T)
 
 	# create shogun feature representation
-	features_x=RealFeatures(X)
-	features_y=RealFeatures(Y)
+	features=RealFeatures(data)
 
 	# use a kernel width of sigma=2, which is 8 in SHOGUN's parametrization
 	# which is k(x,y)=exp(-||x-y||^2 / tau), in constrast to the standard
 	# k(x,y)=exp(-||x-y||^2 / (2*sigma^2)), so tau=2*sigma^2
 	kernel=GaussianKernel(10,8)
 
-	mmd=LinearTimeMMD(kernel,features_x, features_y)
+	mmd=LinearTimeMMD(kernel,features, n)
 
 	# perform test: compute p-value and test if null-hypothesis is rejected for
 	# a test level of 0.05
-	# for the linear time mmd, the statistic has to be computed on different
-	# data than the p-value, so first, compute statistic, and then compute
-	# p-value on other data
-	# this annoying property is since the null-distribution should stay normal
-	# which is not the case if "training/test" data would be the same
 	statistic=mmd.compute_statistic()
 	print "test statistic:", statistic
-	
-	# generate new data (same distributions as old) and new statistic object
-	(X,Y)=gen_data.create_mean_data(n,dim,difference)
-	features_x=RealFeatures(X)
-	features_y=RealFeatures(Y)
-	mmd=LinearTimeMMD(kernel,features_x, features_y)
 	
 	# do the same thing using two different way to approximate null-dstribution
 	# bootstrapping and gaussian approximation (ony for really large samples)
