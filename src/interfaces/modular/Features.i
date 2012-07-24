@@ -31,6 +31,10 @@
 }
 #endif
 
+#ifndef SWIGPYTHON
+#define PYPROTO_DENSEFEATURES(class_name, type_name, format_str, typecode)
+#endif
+
 /* Remove C Prefix */
 %rename(Alphabet) CAlphabet;
 %rename(Features) CFeatures;
