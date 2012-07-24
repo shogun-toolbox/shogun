@@ -20,6 +20,8 @@ namespace shogun
 template <class data_t> class CTreeMachine: public CBaseMulticlassMachine
 {
 public:
+	typedef CTreeMachineNode<data_t> node_t;
+
     /** constructor */
 	CTreeMachine()
 		:m_root(NULL) 

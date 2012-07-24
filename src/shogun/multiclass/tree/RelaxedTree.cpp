@@ -64,6 +64,14 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 	SGMatrix<float64_t> conf_mat = util.estimate_confusion_matrix(m_machine_for_confusion_matrix,
 			m_feats, lab, m_num_classes);
 
+	// train root
+	SGVector<int32_t> classes(m_num_classes);
+	for (int32_t i=0; i < m_num_classes; ++i)
+		classes[i] = i;
+	SG_UNREF(m_root);
+	train_node(conf_mat, classes);
+
+
 	return false;
 }
 
@@ -93,6 +101,8 @@ void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int3
 			SG_UNREF(svm);
 		}
 	}
+
+	// TODO: save model for this node
 }
 
 float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CLibSVM *svm)

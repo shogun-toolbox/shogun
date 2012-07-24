@@ -43,8 +43,6 @@ struct ConditionalProbabilityTreeNodeData
 class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
 {
 public:
-	typedef CTreeMachineNode<ConditionalProbabilityTreeNodeData> node_t;
-
     /** constructor */
 	CConditionalProbabilityTree(int32_t num_passes=1)
 		:m_num_passes(num_passes), m_feats(NULL)
