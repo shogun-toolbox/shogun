@@ -181,8 +181,7 @@ void test_quadratic_mmd_random()
 	for (index_t i=0; i<num_runs; ++i)
 	{
 		/* use pre-allocated space for data generation */
-		CDataGenerator::generate_mean_data(m, dimension,
-					difference, data.matrix);
+		CDataGenerator::generate_mean_data(m, dimension, difference, data);
 		kernel->init(features, features);
 		mmds[i]=mmd->compute_statistic();
 	}

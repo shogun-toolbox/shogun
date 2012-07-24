@@ -66,8 +66,7 @@ void test_linear_mmd_random()
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		CDataGenerator::generate_mean_data(m, dimension, difference,
-				data.matrix);
+		CDataGenerator::generate_mean_data(m, dimension, difference, data);
 		mmds[i]=mmd->compute_statistic();
 	}
 
@@ -108,8 +107,7 @@ void test_linear_mmd_variance_estimate()
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		CDataGenerator::generate_mean_data(m, dimension, difference,
-				data.matrix);
+		CDataGenerator::generate_mean_data(m, dimension, difference, data);
 		vars[i]=mmd->compute_variance_estimate();
 	}
 
@@ -188,8 +186,7 @@ void test_linear_mmd_type2_error()
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		CDataGenerator::generate_mean_data(m, dimension, difference,
-				data.matrix);
+		CDataGenerator::generate_mean_data(m, dimension, difference, data);
 
 		/* technically, this leads to a wrong result since training (statistic)
 		 * and testing (p-value) have to happen on different data, but this
