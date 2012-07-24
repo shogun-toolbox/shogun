@@ -78,6 +78,8 @@ def features_dense_real_modular(in_data=data):
 	ret_real=array(f_real)
 	print ret_real
 
+	return f_real[:,0]
+
 if __name__=='__main__':
 	print('dense_real')
 	features_dense_real_modular(*parameter_list[0])
