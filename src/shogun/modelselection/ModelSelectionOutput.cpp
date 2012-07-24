@@ -10,6 +10,9 @@
 #include <shogun/modelselection/ModelSelectionOutput.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/LinearMachine.h>
+#include <shogun/machine/LinearMulticlassMachine.h>
+#include <shogun/machine/KernelMachine.h>
+#include <shogun/machine/KernelMulticlassMachine.h>
 
 using namespace shogun;
 
@@ -33,10 +36,28 @@ void CModelSelectionOutput::output_test_indices(SGVector<index_t> indices)
 
 void CModelSelectionOutput::output_trained_machine(CMachine* machine)
 {
-	if ((CLinearMachine*)machine)
+	if (dynamic_cast<CLinearMachine*>(machine))
 	{
 		CLinearMachine* linear_machine = (CLinearMachine*)machine;
 		linear_machine->get_w().display_vector("learned_w");
+		SG_PRINT("learned_bias=%f\n",linear_machine->get_bias());
+	}
+	if (dynamic_cast<CKernelMachine*>(machine))
+	{
+		CKernelMachine* kernel_machine = (CKernelMachine*)machine;
+		kernel_machine->get_alphas().display_vector("learned_alphas");
+		SG_PRINT("learned_bias=%f\n",kernel_machine->get_bias());
+	}
+	if (dynamic_cast<CLinearMulticlassMachine*>(machine) ||
+	    dynamic_cast<CKernelMulticlassMachine*>(machine))
+	{
+		CMulticlassMachine* mc_machine = (CMulticlassMachine*)machine;
+		for (int i=0; i<mc_machine->get_num_machines(); i++)
+		{
+			CMachine* sub_machine = mc_machine->get_machine(i);
+			this->output_trained_machine(sub_machine);
+			SG_UNREF(sub_machine);
+		}
 	}
 }
 
