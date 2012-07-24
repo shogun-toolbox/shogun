@@ -3385,17 +3385,12 @@ check_eigen3()
 {
 	if test "$_eigen3" = yes || test "$_eigen3" = auto
 	then
-		cat > $TMPCXX << EOF
-#include <eigen3/Eigen/Dense>
-int main(int argc, char **argv)
-{
-	return 0;
-}
-EOF
 		echocheck "Eigen3 support"
-		if cxx_check
+		if pkg-config --exists eigen3
 		then
 			echores "yes"
+			EIGEN3_CFLAGS=`pkg-config --cflags eigen3`
+			INCLUDES="$INCLUDES $EIGEN3_CFLAGS"
 			HAVE_EIGEN3='#define HAVE_EIGEN3 1'
 			DEFINES="$DEFINES -DHAVE_EIGEN3"
 		else
