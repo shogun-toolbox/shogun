@@ -10,24 +10,23 @@
 
 #include <typeinfo>
 
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/classifier/svm/LatentLinearMachine.h>
+#include <shogun/machine/LinearLatentMachine.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
 
-CLatentLinearMachine::CLatentLinearMachine()
+CLinearLatentMachine::CLinearLatentMachine()
 	: CLinearMachine()
 {
 	init();
 }
 
-CLatentLinearMachine::CLatentLinearMachine(CLatentModel* model, float64_t C)
+CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
 	: CLinearMachine()
 {
 	init();
-	m_C1 = m_C2 = C;
+	m_C= C;
 	set_model(model);
 
 	index_t feat_dim = m_model->get_dim();
@@ -38,12 +37,12 @@ CLatentLinearMachine::CLatentLinearMachine(CLatentModel* model, float64_t C)
 	((CDenseFeatures<float64_t>*) features)->set_feature_matrix(psi_m);
 }
 
-CLatentLinearMachine::~CLatentLinearMachine()
+CLinearLatentMachine::~CLinearLatentMachine()
 {
 	SG_UNREF(m_model);
 }
 
-CLatentLabels* CLatentLinearMachine::apply()
+CLatentLabels* CLinearLatentMachine::apply()
 {
 	if (!features)
 		return NULL;
@@ -51,7 +50,7 @@ CLatentLabels* CLatentLinearMachine::apply()
 	return NULL;
 }
 
-CLatentLabels* CLatentLinearMachine::apply(CFeatures* data)
+CLatentLabels* CLinearLatentMachine::apply(CFeatures* data)
 {
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n");
@@ -76,7 +75,7 @@ CLatentLabels* CLatentLinearMachine::apply(CFeatures* data)
 	return labels;
 }
 
-void CLatentLinearMachine::set_model(CLatentModel* latent_model)
+void CLinearLatentMachine::set_model(CLatentModel* latent_model)
 {
 	ASSERT(latent_model != NULL);
 	SG_UNREF(m_model);
@@ -84,7 +83,7 @@ void CLatentLinearMachine::set_model(CLatentModel* latent_model)
 	m_model = latent_model;
 }
 
-void CLatentLinearMachine::cache_psi_vectors()
+void CLinearLatentMachine::cache_psi_vectors()
 {
 	ASSERT(features != NULL);
 	index_t num_vectors = features->get_num_vectors();
@@ -96,7 +95,7 @@ void CLatentLinearMachine::cache_psi_vectors()
 	}
 }
 
-bool CLatentLinearMachine::train_machine(CFeatures* data)
+bool CLinearLatentMachine::train_machine(CFeatures* data)
 {
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n");
@@ -109,7 +108,7 @@ bool CLatentLinearMachine::train_machine(CFeatures* data)
 	 * criterion for the outer loop
 	 */
 	float64_t decrement = 0.0, primal_obj = 0.0, prev_po = 0.0;
-	float64_t inner_eps = 0.5*m_C1*m_epsilon;
+	float64_t inner_eps = 0.5*m_C*m_epsilon;
 	bool stop = false;
 	int32_t iter = 0;
 
@@ -120,32 +119,23 @@ bool CLatentLinearMachine::train_machine(CFeatures* data)
 		SG_DEBUG("iteration: %d\n", iter);
 		/* do the SVM optimisation with fixed h* */
 		SG_DEBUG("Do the inner loop of CCCP: optimize for w for fixed h*\n");
-
-		/* TODO: change code that it can support structural SVM! */
-		CLatentLabels* labels = m_model->get_labels();
-		CSVMOcas svm(m_C1, features, labels);
-		svm.set_epsilon(inner_eps);
-		svm.train();
-		SG_UNREF(labels);
+		primal_obj = do_inner_loop(inner_eps);
 
 		/* calculate the decrement */
-		primal_obj = svm.compute_primal_objective();
 		decrement = prev_po - primal_obj;
 		prev_po = primal_obj;
 		SG_DEBUG("decrement: %f\n", decrement);
 		SG_DEBUG("primal objective: %f\n", primal_obj);
 
 		/* check the stopping criterion */
-		stop = (inner_eps < (0.5*m_C1*m_epsilon+1E-8)) && (decrement < m_C1*m_epsilon);
+		stop = (inner_eps < (0.5*m_C*m_epsilon+1E-8)) && (decrement < m_C*m_epsilon);
 
 		inner_eps = -decrement*0.01;
-		inner_eps = CMath::max(inner_eps, 0.5*m_C1*m_epsilon);
+		inner_eps = CMath::max(inner_eps, 0.5*m_C*m_epsilon);
 		SG_DEBUG("inner epsilon: %f\n", inner_eps);
 
 		/* find argmaxH */
 		SG_DEBUG("Find and set h_i = argmax_h (w, psi(x_i,h))\n");
-		SGVector<float64_t> cur_w = svm.get_w();
-		memcpy(w.vector, cur_w.vector, cur_w.vlen*sizeof(float64_t));
 		m_model->argmax_h(w);
 
 		SG_DEBUG("Recalculating PSI (x,h) with the new h variables\n");
@@ -158,17 +148,16 @@ bool CLatentLinearMachine::train_machine(CFeatures* data)
 	return true;
 }
 
-void CLatentLinearMachine::init()
+void CLinearLatentMachine::init()
 {
-	m_C1 = m_C2 = 10.0;
+	m_C = 10.0;
 	m_epsilon = 1E-3;
 	m_max_iter = 400;
 	features = new CDenseFeatures<float64_t> ();
 	SG_REF(features);
 	m_model = NULL;
 
-	m_parameters->add(&m_C1, "C1",  "Cost constant 1.");
-	m_parameters->add(&m_C2, "C2",  "Cost constant 2.");
+	m_parameters->add(&m_C, "C",  "Cost constant.");
 	m_parameters->add(&m_epsilon, "epsilon", "Convergence precision.");
 	m_parameters->add(&m_max_iter, "max_iter", "Maximum iterations.");
 	m_parameters->add((CSGObject**) &m_model, "latent_model", "Latent Model.");
