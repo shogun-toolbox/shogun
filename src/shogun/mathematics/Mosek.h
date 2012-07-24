@@ -76,11 +76,15 @@ class CMosek : public CSGObject
 		 * @param C regularization matrix for the optimization vector
 		 * @param lb lower bounds for the optimization vector
 		 * @param ub upper bounds for the optimization vector
+		 * @param A constraints matrix
+		 * @param b upper bounds for the constraints
 		 *
 		 * @return MSK result code
 		 */
-		MSKrescodee init_sosvm(int32_t M, int32_t N, SGMatrix< float64_t > C, 
-				SGVector< float64_t > lb, SGVector< float64_t > ub);
+		MSKrescodee init_sosvm(int32_t M, int32_t N, int32_t num_aux,
+				SGMatrix< float64_t > C, SGVector< float64_t > lb,
+				SGVector< float64_t > ub, SGMatrix< float64_t > A,
+				SGVector< float64_t > b);
 
 		/**
 		 * adds a constraint to the MOSEK optimization task of
@@ -95,7 +99,8 @@ class CMosek : public CSGObject
 		 * @return MSK result code
 		 */
 		MSKrescodee add_constraint_sosvm(SGVector< float64_t > dPsi,
-				index_t con_idx, index_t train_idx, float64_t bi);
+				index_t con_idx, index_t train_idx, int32_t num_aux,
+				float64_t bi);
 
 		/**
 		 * wrapper for MOSEK's function MSK_putaveclist used
@@ -106,7 +111,18 @@ class CMosek : public CSGObject
 		 *
 		 * @return MSK result code
 		 */
-		static MSKrescodee wrapper_putaveclist(MSKtask_t & task, SGMatrix< float64_t > A, int32_t nnza);
+		static MSKrescodee wrapper_putaveclist(MSKtask_t & task, SGMatrix< float64_t > A);
+
+		/**
+		 * wrapper for MOSEK's function MSK_putboundlist used
+		 * to set the bounds for either some constraints or variables
+		 *
+		 * @param task an optimization task
+		 * @param b vector with bounds
+		 *
+		 * @return MSK result code
+		 */
+		static MSKrescodee wrapper_putboundlist(MSKtask_t & task, SGVector< float64_t > b);
 
 		/**
 		 * wrapper for MOSEK's function MSK_putqobj used to

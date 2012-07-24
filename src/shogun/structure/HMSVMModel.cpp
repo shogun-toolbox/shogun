@@ -24,6 +24,11 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, int32_t
 {
 	init();
 	m_num_obs = num_obs;
+	// Shorthand for the number of states
+	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	// Shorthand for the number of features of the feature vector
+	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+	m_num_aux = S*D*num_obs;
 }
 
 CHMSVMModel::~CHMSVMModel()
@@ -287,16 +292,18 @@ float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 }
 
 void CHMSVMModel::init_opt(
-		SGMatrix< float64_t > A,
+		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
-		SGVector< float64_t > b,
+		SGVector< float64_t > & b,
 		SGVector< float64_t > lb,
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
 	// Shorthand for the number of states
 	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	// Shorthand for the number of features of the feature vector
+	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
 
 	m_p = SGVector< int32_t >(S);
 	m_q = SGVector< int32_t >(S);
@@ -308,7 +315,79 @@ void CHMSVMModel::init_opt(
 		m_q[s] = 0;
 	}
 
-	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1);
+	// Specify monotonicity constraints for feature scoring functions
+	// TODO the following specification is characteristic of the two-state
+	// model and therefore should be defined in other part of the code
+	SGVector< int32_t > monotonicity(S*D);
+	for ( int32_t i = 0 ; i < D ; ++i )
+		monotonicity[i] = -1;
+	for ( int32_t i = D ; i < 2*D ; ++i )
+		monotonicity[i] = +1;
+
+	// Quadratic regularizer
+
+	float64_t C_small  =  5.0;
+	float64_t C_smooth = 10.0;
+	// TODO change the representation of C to sparse matrix
+	C = SGMatrix< float64_t >(get_dim()+m_num_aux, get_dim()+m_num_aux);
+	C.zero();
+	for ( int32_t i = 0 ; i < get_dim() ; ++i )
+		C(i,i) = C_small;
+	for ( int32_t i = get_dim() ; i < get_dim()+m_num_aux ; ++i )
+		C(i,i) = C_smooth;
+
+	// Smoothness constraints
+
+	// For each auxiliary variable, there are two different constraints
+	// TODO change the representation of A to sparse matrix
+	A = SGMatrix< float64_t >(2*m_num_aux, get_dim()+m_num_aux);
+	A.zero();
+
+	// Indices to the beginning of the blocks of scores. Each block is
+	// formed by the scores of a pair (state, feature)
+	SGVector< int32_t > score_starts(S*D);
+	for ( int32_t idx = S*S, k = 0 ; k < S*D ; idx += m_num_obs, ++k )
+		score_starts[k] = idx;
+
+	// Indices to the beginning of the blocks of variables for smoothness
+	SGVector< int32_t > aux_starts_smooth(S*D);
+	for ( int32_t idx = get_dim(), k = 0 ; k < S*D ; idx += m_num_obs-1, ++k )
+		aux_starts_smooth[k] = idx;
+
+	// Bound the difference between adjacent score values from above and
+	// below by an auxiliary variable (which then is regularized
+	// quadratically)
+
+	int32_t con_idx = 0, scr_idx, aux_idx;
+
+	for ( int32_t i = 0 ; i < score_starts.vlen ; ++i )
+	{
+		scr_idx = score_starts[i];
+		aux_idx = aux_starts_smooth[i];
+
+		for ( int32_t j = 0 ; j < m_num_obs-1 ; ++j )
+		{
+			A(con_idx, scr_idx)   =  1;
+			A(con_idx, scr_idx+1) = -1;
+
+			if ( monotonicity[i] != 1 )
+				A(con_idx, aux_idx) = -1;
+			++con_idx;
+
+			A(con_idx, scr_idx)   = -1;
+			A(con_idx, scr_idx+1) =  1;
+
+			if ( monotonicity[i] != -1 )
+				A(con_idx, aux_idx) = -1;
+			++con_idx;
+
+			++scr_idx, ++aux_idx;
+		}
+	}
+
+	// Bounds for the smoothness constraints
+	b = SGVector< float64_t >(2*m_num_aux);
+	b.zero();
 }
 
 bool CHMSVMModel::check_training_setup() const
@@ -365,6 +444,7 @@ void CHMSVMModel::init()
 
 	m_num_states = 0;
 	m_num_obs    = 0;
+	m_num_aux    = 0;
 }
 
 CHMSVMModel* CHMSVMModel::simulate_two_state_data()
@@ -465,4 +545,14 @@ CHMSVMModel* CHMSVMModel::simulate_two_state_data()
 		new CMatrixFeatures< float64_t >(signal.split(num_exm), num_exm);
 
 	return new CHMSVMModel(features, labels, 10);
+}
+
+int32_t CHMSVMModel::get_num_aux() const
+{
+	return m_num_aux;
+}
+
+int32_t CHMSVMModel::get_num_aux_con() const
+{
+	return 2*m_num_aux;
 }

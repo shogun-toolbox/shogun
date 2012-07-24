@@ -87,8 +87,8 @@ class CMulticlassModel : public CStructuredModel
 		 * @param C
 		 */
 		virtual void init_opt(
-				SGMatrix< float64_t > A,  SGVector< float64_t > a,
-				SGMatrix< float64_t > B,  SGVector< float64_t > b,
+				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
+				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
 				SGMatrix < float64_t > & C);
 

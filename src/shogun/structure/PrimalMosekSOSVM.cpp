@@ -47,11 +47,13 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
+	// Number of auxiliary variables in the optimization vector
+	int32_t num_aux = m_model->get_num_aux();
 	// Number of training examples
 	int32_t N = m_features->get_num_vectors();
 
 	// Interface with MOSEK
-	CMosek* mosek = new CMosek(0, M+N);
+	CMosek* mosek = new CMosek(0, M+num_aux+N);
 	SG_REF(mosek);
 	if ( mosek->get_rescode() != MSK_RES_OK )
 	{
@@ -64,11 +66,10 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Initialize the terms of the optimization problem
 	SGMatrix< float64_t > A, B, C;
 	SGVector< float64_t > a, b, lb, ub;
-	//TODO take into acount these possible constraints
 	m_model->init_opt(A, a, B, b, lb, ub, C);
 
 	// Input terms of the problem that do not change between iterations
-	if ( mosek->init_sosvm(M, N, C, lb, ub) != MSK_RES_OK )
+	if ( mosek->init_sosvm(M, N, num_aux, C, lb, ub, A, b) != MSK_RES_OK )
 	{
 		SG_PRINT("Problem occurred writing constraints in MOSEK object..."
 			 "aborting training of PrimalMosekSOSVM\n");
@@ -95,21 +96,23 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	}
 
 	// Initialize variables used in the loop
-	int32_t     numcon     = 0;	// number of constraints
-	int32_t     old_numcon = 0;
-	float64_t   slack      = 0.0;
-	float64_t   max_slack  = 0.0;
-	CResultSet* result     = NULL;
-	CResultSet* cur_res    = NULL;
-	CList*      cur_list   = NULL;
-	bool        exception  = false;
+	int32_t     num_con     = m_model->get_num_aux_con();	// number of constraints
+	int32_t     old_num_con = num_con;
+	float64_t   slack       = 0.0;
+	float64_t   max_slack   = 0.0;
+	CResultSet* result      = NULL;
+	CResultSet* cur_res     = NULL;
+	CList*      cur_list    = NULL;
+	bool        exception   = false;
 
-	SGVector< float64_t > sol(M+N);
+	SGVector< float64_t > sol(M+num_aux+N);
 	sol.zero();
+
+	SGVector< float64_t > aux(num_aux);
 
 	do 
 	{
-		old_numcon = numcon;
+		old_num_con = num_con;
 
 		for ( int32_t i = 0 ; i < N ; ++i )
 		{
@@ -147,8 +150,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 						break;
 					}
 
-					add_constraint(mosek, result, numcon, i);
-					++numcon;
+					add_constraint(mosek, result, num_con, i);
+					++num_con;
 				}
 			}
 			else
@@ -160,8 +163,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 					break;
 				}
 
-				add_constraint(mosek, result, numcon, i);
-				++numcon;
+				add_constraint(mosek, result, num_con, i);
+				++num_con;
 			}
 
 			SG_UNREF(cur_list);
@@ -170,15 +173,17 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 		// Solve the QP
 		mosek->optimize(sol);
-		for ( int32_t i = 0 ; i < M+N ; ++i )
+		for ( int32_t i = 0 ; i < M+num_aux+N ; ++i )
 		{
 			if ( i < M )
 				m_w[i] = sol[i];
+			else if ( i < M+num_aux )
+				aux[i-M-num_aux] = sol[i];
 			else
 				m_slacks[i-M] = sol[i];
 		}
 
-	} while ( old_numcon != numcon && ! exception);
+	} while ( old_num_con != num_con && ! exception );
 
 	// Free resources
 	SG_UNREF(mosek);
@@ -223,7 +228,7 @@ bool CPrimalMosekSOSVM::add_constraint(
 		dPsi[i] = result->psi_pred[i] - result->psi_truth[i];
 
 	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx, 
-			-result->delta) == MSK_RES_OK );
+			m_model->get_num_aux(), -result->delta) == MSK_RES_OK );
 }
 
 #endif /* USE_MOSEK */

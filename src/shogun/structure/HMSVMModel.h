@@ -90,8 +90,8 @@ class CHMSVMModel : public CStructuredModel
 		 * @param C
 		 */
 		virtual void init_opt(
-				SGMatrix< float64_t > A,  SGVector< float64_t > a,
-				SGMatrix< float64_t > B,  SGVector< float64_t > b,
+				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
+				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
 				SGMatrix < float64_t > & C);
 
@@ -105,6 +105,25 @@ class CHMSVMModel : public CStructuredModel
 		 * TODO DOC
 		 */
 		static CHMSVMModel* simulate_two_state_data();
+
+		/**
+		 * get the number of auxiliary variables to introduce in the
+		 * optimization problem. The auxiliary variables are used to
+		 * implement smoothness regularization between adjacent emission
+		 * scores via constraints.
+		 *
+		 * return the number of auxiliary variables
+		 */
+		virtual int32_t get_num_aux() const;
+
+		/**
+		 * get the number of auxiliary constraints to introduce in the
+		 * optimization problem. These constraints are used to implement
+		 * smoothness regularization between adjacent emission scores.
+		 *
+		 * return the number of auxiliary constraints
+		 */
+		virtual int32_t get_num_aux_con() const;
 
 	private:
 		/* internal initialization */
@@ -151,6 +170,9 @@ class CHMSVMModel : public CStructuredModel
 
 		/** the number of observations */
 		int32_t m_num_obs;
+
+		/** the number of auxiliary variables */
+		int32_t m_num_aux;
 
 }; /* class CHMSVMModel */
 

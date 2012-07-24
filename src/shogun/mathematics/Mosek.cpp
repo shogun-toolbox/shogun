@@ -71,14 +71,17 @@ void MSKAPI CMosek::print(void* handle, char str[])
 }
 
 MSKrescodee CMosek::init_sosvm(
-		int32_t M, int32_t N,
+		int32_t M, int32_t N, int32_t num_aux,
 		SGMatrix< float64_t > C,
 		SGVector< float64_t > lb,
-		SGVector< float64_t > ub)
+		SGVector< float64_t > ub,
+		SGMatrix< float64_t > A,
+		SGVector< float64_t > b)
 {
 	// Give an estimate of the size of the input data to increase the
 	// speed of inputting
-	int32_t num_var = M+N;
+	int32_t num_var = M+N+num_aux;
+	// TODO input auxiliary constraints for the hmsvm
 	int32_t num_con = N*N;
 	// NOTE: However, to input this step is completely optional and MOSEK
 	// will automatically allocate more resources if necessary
@@ -99,7 +102,7 @@ MSKrescodee CMosek::init_sosvm(
 	for ( int32_t j = 0 ; j < num_var && m_rescode == MSK_RES_OK ; ++j )
 	{
 		// Set the linear term c_j in the objective
-		if ( j < M )
+		if ( j < M+num_aux )
 			m_rescode = MSK_putcj(m_task, j, 0.0);
 		else
 			m_rescode = MSK_putcj(m_task, j, 1.0);
@@ -109,9 +112,10 @@ MSKrescodee CMosek::init_sosvm(
 		if ( j < M )
 		{
 			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
-					MSK_BK_FR, 0.0, 0.0);
+					MSK_BK_FR, -MSK_INFINITY, +MSK_INFINITY);
 		}
-		// The slack variables are required to be positive
+
+		// The slack and the auxiliary variables are required to be positive
 		if ( j >= M )
 		{
 			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
@@ -129,7 +133,11 @@ MSKrescodee CMosek::init_sosvm(
 	// NOTE: In MOSEK we minimize x'*Q^0*x. C != Q0 but Q0 is
 	// just an extended version of C with zeros that make no
 	// difference in MOSEK's sparse representation
-	wrapper_putqobj(C);
+	m_rescode = wrapper_putqobj(C);
+
+	// Input the matrix A and the vector b for the contraints A*x <= b
+	m_rescode = wrapper_putaveclist(m_task, A);
+	m_rescode = wrapper_putboundlist(m_task, b);
 
 	return m_rescode;
 }
@@ -138,6 +146,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 		SGVector< float64_t > dPsi,
 		index_t con_idx,
 		index_t train_idx,
+		int32_t num_aux,
 		float64_t bi)
 {
 	// Count the number of non-zero element in dPsi
@@ -161,7 +170,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 
 	ASSERT(idx == nnz);
 
-	asub[idx] = dPsi.vlen + train_idx;
+	asub[idx] = dPsi.vlen + num_aux + train_idx;
 	aval[idx] = -1;
 
 	m_rescode = MSK_putavec(m_task, MSK_ACC_CON, con_idx, nnz+1,
@@ -178,7 +187,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 
 MSKrescodee CMosek::wrapper_putaveclist(
 		MSKtask_t & task, 
-		SGMatrix< float64_t > A, int32_t nnza)
+		SGMatrix< float64_t > A)
 {
 	// Shorthands for A dimensions
 	index_t N = A.num_rows;
@@ -190,6 +199,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 		sub[i] = i;
 
 	// Non-zero elements of A
+	int32_t nnza = CMath::get_num_nonzero(A.matrix, A.num_rows*A.num_cols);
 	SGVector< float64_t > aval(nnza);
 	// For each of the rows, indices to non-zero elements
 	SGVector< index_t > asub(nnza);
@@ -224,6 +234,8 @@ MSKrescodee CMosek::wrapper_putaveclist(
 		}
 
 		// Handle rows whose elements are all zero
+		// TODO does it make sense that a row in A has all its elements
+		// equal to zero?
 		if ( !first_nnz_found )
 			ptrb[i] = ( i ? ptrb[i-1] : 0 );
 	}
@@ -239,6 +251,30 @@ MSKrescodee CMosek::wrapper_putaveclist(
 	return MSK_putaveclist(task, MSK_ACC_CON, N, sub.vector,
 			ptrb.vector, ptre.vector,
 			asub.vector, aval.vector);
+}
+
+MSKrescodee CMosek::wrapper_putboundlist(MSKtask_t & task, SGVector< float64_t > b)
+{
+	// Indices to the bounds that should be replaced, b.vlen bounds starting
+	// from zero
+	SGVector< index_t > sub(b.vlen);
+	for ( index_t i = 0 ; i < b.vlen ; ++i )
+		sub[i] = i;
+
+	// Type of the bounds and lower bound values
+	MSKboundkeye* bk = SG_MALLOC(MSKboundkeye, b.vlen);
+	SGVector< float64_t > bl(b.vlen);
+	for ( index_t i = 0 ; i < b.vlen ; ++i )
+	{
+		bk[i] =  MSK_BK_UP;
+		bl[i] = -MSK_INFINITY;
+	}
+
+	MSKrescodee ret =  MSK_putboundlist(task, MSK_ACC_CON, b.vlen, sub.vector,
+			bk, bl.vector, b.vector);
+
+	SG_FREE(bk);
+	return ret;
 }
 
 MSKrescodee CMosek::wrapper_putqobj(SGMatrix< float64_t > Q0) const

@@ -85,8 +85,8 @@ class CStructuredModel : public CSGObject
 		 * @param C
 		 */
 		virtual void init_opt(
-				SGMatrix< float64_t > A,  SGVector< float64_t > a, 
-				SGMatrix< float64_t > B,  SGVector< float64_t > b, 
+				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
+				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub, 
 				SGMatrix < float64_t >  & C);
 
@@ -190,6 +190,28 @@ class CStructuredModel : public CSGObject
 		 * application (e.g. HM-SVM).
 		 */
 		virtual bool check_training_setup() const;
+
+		/**
+		 * get the number of auxiliary variables to introduce in the
+		 * optimization problem. By default, this class do not impose
+		 * the use of auxiliary variables and it will return zero.
+		 * Re-implement this method subclasses to use auxiliary
+		 * variables.
+		 *
+		 * return the number of auxiliary variables
+		 */
+		virtual int32_t get_num_aux() const;
+
+		/**
+		 * get the number of auxiliary constraints to introduce in the
+		 * optimization problem. By default, this class do not impose
+		 * the use of any auxiliary constraints and it will return zero.
+		 * Re-implement this method in subclasses to use auxiliary
+		 * constraints.
+		 *
+		 * return the number of auxiliary constraints
+		 */
+		virtual int32_t get_num_aux_con() const;
 
 	private:
 		/** internal initialization */

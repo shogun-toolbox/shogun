@@ -38,10 +38,10 @@ CStructuredModel::~CStructuredModel()
 }
 
 void CStructuredModel::init_opt(
-		SGMatrix< float64_t > A,
+		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
-		SGVector< float64_t > b,
+		SGVector< float64_t > & b,
 		SGVector< float64_t > lb,
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
@@ -131,4 +131,14 @@ bool CStructuredModel::check_training_setup() const
 {
 	// Nothing to do here
 	return true;
+}
+
+int32_t CStructuredModel::get_num_aux() const
+{
+	return 0;
+}
+
+int32_t CStructuredModel::get_num_aux_con() const
+{
+	return 0;
 }

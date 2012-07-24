@@ -120,10 +120,10 @@ float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 }
 
 void CMulticlassModel::init_opt(
-		SGMatrix< float64_t > A,
+		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
-		SGVector< float64_t > b,
+		SGVector< float64_t > & b,
 		SGVector< float64_t > lb,
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
