@@ -19,8 +19,6 @@
 /* Helper functions */
 %wrapper
 %{
-#include <Python.h>
-
 void get_slice_in_bounds(Py_ssize_t* ilow, Py_ssize_t* ihigh, Py_ssize_t max_idx)
 {
 	if (*ilow<0)
@@ -621,10 +619,4 @@ SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags
 %feature("python:mp_ass_subscript") CDenseFeatures< type_name > #class_name "_setsubscript"
 
 %enddef /* PYPROTO_DENSEFEATURES */
-
-#else
-
-%define PYPROTO_DENSEFEATURES(class_name, type_name, format_str, typecode)
-%enddef /* PYPROTO_DENSEFEATURES */
-
 #endif /* SWIG_PYTHON */
