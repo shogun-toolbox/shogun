@@ -173,7 +173,7 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data);
 
-	void train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
+	node_t *train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
 	SGVector<int32_t> train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CLibSVM *svm);
 

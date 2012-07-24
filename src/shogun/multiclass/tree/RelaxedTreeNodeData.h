@@ -11,11 +11,14 @@
 #ifndef RELAXEDTREENODEDATA_H__
 #define RELAXEDTREENODEDATA_H__
 
+#include <shogun/lib/SGVector.h>
+
 namespace shogun
 {
 
 struct RelaxedTreeNodeData
 {
+	SGVector<int32_t> mu;
 };
 
 } /* shogun */ 

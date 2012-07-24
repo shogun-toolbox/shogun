@@ -9,6 +9,7 @@
  */
 
 #include <limits>
+#include <queue>
 #include <algorithm>
 #include <functional>
 
@@ -69,13 +70,59 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 	for (int32_t i=0; i < m_num_classes; ++i)
 		classes[i] = i;
 	SG_UNREF(m_root);
-	train_node(conf_mat, classes);
+	m_root = train_node(conf_mat, classes);
 
+	std::queue<node_t *> node_q;
+	node_q.push(m_root);
 
-	return false;
+	while (node_q.size() != 0)
+	{
+		node_t *node = node_q.front();
+
+		// left node
+		SGVector <int32_t> left_classes(m_num_classes);
+		int32_t k=0;
+		for (int32_t i=0; i < m_num_classes; ++i)
+		{
+			// active classes are labeled as -1 or 0
+			// -2 indicate classes that are already pruned away
+			if (node->data.mu[i] <= 0 && node->data.mu[i] > -2)
+				left_classes[k++] = i;
+		}
+		left_classes.vlen = k;
+
+		if (left_classes.vlen >= 2)
+		{
+			node_t *left_node = train_node(conf_mat, left_classes);
+			node->left(left_node);
+			node_q.push(left_node);
+		}
+
+		// right node
+		SGVector <int32_t> right_classes(m_num_classes);
+		k=0;
+		for (int32_t i=0; i < m_num_classes; ++i)
+		{
+			// active classes are labeled as 0 or +1
+			if (node->data.mu[i] >= 0)
+				right_classes[k++] = i;
+		}
+		right_classes.vlen = k;
+
+		if (right_classes.vlen >= 2)
+		{
+			node_t *right_node = train_node(conf_mat, right_classes);
+			node->right(right_node);
+			node_q.push(right_node);
+		}
+
+		node_q.pop();
+	}
+
+	return true;
 }
 
-void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
+CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
 {
 	SGVector<int32_t> best_mu;
 	CLibSVM *best_svm = NULL;
@@ -102,7 +149,24 @@ void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int3
 		}
 	}
 
+	node_t *node = new node_t;
+	SG_REF(node);
+
+	m_machines->push_back(best_svm);
+	node->machine(m_machines->get_num_elements()-1);
+
+	SGVector<int32_t> long_mu(m_num_classes);
+	std::fill(&long_mu[0], &long_mu[m_num_classes], -2);
+	for (int32_t i=0; i < best_mu.vlen; ++i)
+		if (best_mu[i] == 1)
+			long_mu[classes[i]] = 1;
+		else if (best_mu[i] == -1)
+			long_mu[classes[i]] = -1;
+		else if (best_mu[i] == 0)
+			long_mu[classes[i]] = 0;
+	node->data.mu = long_mu;
 	// TODO: save model for this node
+	return node;
 }
 
 float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CLibSVM *svm)
