@@ -52,9 +52,6 @@ def features_dense_real_modular(in_data=data):
 	f_real[:,0]=0
 	print f_real.get_feature_matrix()
 
-	f_real[:,0]=(f_real+m_real)[:,0]
-	print f_real.get_feature_matrix()
-
 	if numpy.__version__ >= '1.5':
 		f_real+=m_real
 		f_real*=m_real
