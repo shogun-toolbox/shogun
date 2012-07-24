@@ -28,10 +28,11 @@ class CHMSVMModel : public CStructuredModel
 
 		/** constructor
 		 *
-		 * @param features
-		 * @param labels
+		 * @param features the feature vectors, must be of type MatrixFeatures
+		 * @param labels HMSVM labels
+		 * @param num_obs number of observations
 		 */
-		CHMSVMModel(CFeatures* features, CStructuredLabels* labels);
+		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, int32_t num_obs);
 
 		/** destructor */
 		virtual ~CHMSVMModel();
@@ -148,6 +149,8 @@ class CHMSVMModel : public CStructuredModel
 		/** the number of states */
 		int32_t m_num_states;
 
+		/** the number of observations */
+		int32_t m_num_obs;
 
 }; /* class CHMSVMModel */
 

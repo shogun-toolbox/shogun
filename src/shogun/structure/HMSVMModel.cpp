@@ -19,10 +19,11 @@ CHMSVMModel::CHMSVMModel()
 	init();
 }
 
-CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels)
+CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, int32_t num_obs)
 : CStructuredModel(features, labels)
 {
 	init();
+	m_num_obs = num_obs;
 }
 
 CHMSVMModel::~CHMSVMModel()
@@ -36,7 +37,7 @@ int32_t CHMSVMModel::get_dim() const
 	// Shorthand for the number of features of the feature vector
 	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
 
-	return S*(S+D);
+	return S*(S + D*m_num_obs);
 }
 
 SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
@@ -56,10 +57,8 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 			get_feature_vector(feat_idx).num_cols == yseq->data.vlen);
 
 	// Initialize psi
-	SGVector< float64_t > psi( S*(S+D) );
+	SGVector< float64_t > psi(get_dim());
 	psi.zero();
-
-	ASSERT( psi.vlen == get_dim() );
 
 	SGVector< float64_t > x_i(D);
 	for ( int32_t i = 0 ; i < yseq->data.vlen ; ++i )
@@ -99,10 +98,16 @@ void CHMSVMModel::add_emission(
 {
 	// Obtain start, the index of the first element in psi_em to update
 	int32_t cur_state = y->data[i];
-	int32_t start     = cur_state*D;
+	int32_t start     = cur_state*D*m_num_obs;
 
 	for ( int32_t j = 0 ; j < D ; ++j )
-		psi_em[start++] += x_i[j];
+	{
+		// TODO do not impose that the observations are in the
+		// interval [0, ..., m_num_obs-1]. Here it affects because
+		// the indexation is done with the value of the observation
+		// directly
+		psi_em[start + (int32_t)CMath::round(x_i[j])] += 1;
+	}
 }
 
 CResultSet* CHMSVMModel::argmax(
@@ -128,7 +133,7 @@ CResultSet* CHMSVMModel::argmax(
 		S = m_num_states;
 	}
 
-	ASSERT( w.vlen == S*(S+D) );
+	ASSERT( w.vlen == get_dim() );
 
 	// Compute the loss-augmented emission matrix:
 	// (E)s,i = Delta(y_i, s) + w^em_s*x_i
@@ -141,8 +146,7 @@ CResultSet* CHMSVMModel::argmax(
 	CSequence* ytrue = NULL;
 	if ( training )
 	{
-		ytrue = CSequence::obtain_from_generic(
-				m_labels->get_label(feat_idx) );
+		ytrue = CSequence::obtain_from_generic(m_labels->get_label(feat_idx));
 
 		REQUIRE(ytrue->data.vlen == T, "T, the length of the feature "
 			"x^i (%d) and the length of its corresponding label y^i "
@@ -153,7 +157,7 @@ CResultSet* CHMSVMModel::argmax(
 	CSequence* seq1 = new CSequence( SGVector< int32_t >(1) );
 	CSequence* seq2 = new CSequence( SGVector< int32_t >(1) );
 
-	float64_t partial_score;
+	float64_t score, loss = 0.0;
 	float64_t* w_em = w.vector + S*S;
 
 	for ( int32_t i = 0 ; i < T ; ++i )
@@ -162,21 +166,17 @@ CResultSet* CHMSVMModel::argmax(
 
 		for ( int32_t s = 0 ; s < S ; ++s )
 		{
-			partial_score = SGVector< float64_t >::dot(
-					w_em + s*D, x_i.vector, D);
-
-			seq1->data[0] = s;
-
-			// The matrix is different in training and prediction
 			if ( training )
 			{
+				seq1->data[0] = s;
 				seq2->data[0] = ytrue->data[i];
-				E[s*T + i] = partial_score + delta_loss(seq1, seq2);
-
+				loss = delta_loss(seq1, seq2);
 			}
-			else
+
+			for ( int32_t j = 0 ; j < D ; ++j )
 			{
-				E[s*T + i] = partial_score;
+				score = w_em[s*D*m_num_obs + (int32_t)CMath::round(x_i[j])];
+				E[s*T + i] += score + loss;
 			}
 		}
 	}
@@ -259,8 +259,8 @@ CResultSet* CHMSVMModel::argmax(
 	CSequence* ypred = new CSequence(opt_path);
 	SG_REF(ypred);
 
-	ret->psi_pred  = get_joint_feature_vector(feat_idx, ypred);
-	ret->argmax    = ypred;
+	ret->psi_pred = get_joint_feature_vector(feat_idx, ypred);
+	ret->argmax   = ypred;
 	if ( training )
 	{
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
@@ -364,6 +364,7 @@ void CHMSVMModel::init()
 	SG_ADD(&m_num_states, "m_num_states", "The number of states", MS_NOT_AVAILABLE);
 
 	m_num_states = 0;
+	m_num_obs    = 0;
 }
 
 CHMSVMModel* CHMSVMModel::simulate_two_state_data()
@@ -463,5 +464,5 @@ CHMSVMModel* CHMSVMModel::simulate_two_state_data()
 	CMatrixFeatures< float64_t >* features =
 		new CMatrixFeatures< float64_t >(signal.split(num_exm), num_exm);
 
-	return new CHMSVMModel(features, labels);
+	return new CHMSVMModel(features, labels, 10);
 }
