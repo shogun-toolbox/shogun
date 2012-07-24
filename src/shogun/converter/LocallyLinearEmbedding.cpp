@@ -60,6 +60,10 @@ struct LINRECONSTRUCTION_THREAD_PARAM
 	int32_t N;
 	/// actual k
 	int32_t actual_k;
+#ifdef HAVE_PTHREAD
+	/// lock
+	PTHREAD_LOCK_T* W_matrix_lock;
+#endif
 };
 
 class LLE_COVERTREE_POINT
@@ -362,6 +366,8 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CDenseFeatu
 	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
 
 #ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T W_matrix_lock;
+	PTHREAD_LOCK_INIT(&W_matrix_lock);
 	for (t=0; t<num_threads; t++)
 	{
 		parameters[t].idx_start = t;
@@ -378,6 +384,7 @@ SGMatrix<float64_t> CLocallyLinearEmbedding::construct_weight_matrix(CDenseFeatu
 		parameters[t].dim = feature_matrix.num_rows;
 		parameters[t].N = feature_matrix.num_cols;
 		parameters[t].actual_k = neighborhood_matrix.num_rows;
+		parameters[t].W_matrix_lock = &W_matrix_lock;
 		pthread_create(&threads[t], &attr, run_linearreconstruction_thread, (void*)&parameters[t]);
 	}
 	for (t=0; t<num_threads; t++)
@@ -477,6 +484,9 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 	float64_t* id_vector = parameters->id_vector;
 	float64_t* W_matrix = parameters->W_matrix;
 	float64_t m_reconstruction_shift = parameters->m_reconstruction_shift;
+#ifdef HAVE_PTHREAD
+	PTHREAD_LOCK_T* W_matrix_lock = parameters->W_matrix_lock;
+#endif
 
 	int32_t i,j,k;
 	int32_t dim = parameters->dim;
@@ -532,6 +542,9 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 
 		// put weights into W matrix
 		W_matrix[N*i+i] += 1.0;
+#ifdef HAVE_PTHREAD
+		PTHREAD_LOCK(W_matrix_lock);
+#endif
 		for (j=0; j<m_k; j++)
 		{
 			W_matrix[N*i+neighborhood_matrix[i*actual_k+j]] -= id_vector[j];
@@ -543,6 +556,9 @@ void* CLocallyLinearEmbedding::run_linearreconstruction_thread(void* p)
 				W_matrix[N*neighborhood_matrix[i*actual_k+j]+neighborhood_matrix[i*actual_k+k]]+=
 				  covariance_matrix[j*m_k+k];
 		}
+#ifdef HAVE_PTHREAD
+		PTHREAD_UNLOCK(W_matrix_lock);
+#endif
 	}
 	return NULL;
 }
