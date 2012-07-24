@@ -69,15 +69,50 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 
 void CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
 {
+	SGVector<int32_t> best_mu;
+	CLibSVM *best_svm = NULL;
+	float64_t best_score = std::numeric_limits<float64_t>::max();
+
 	std::vector<CRelaxedTree::entry_t> mu_init = init_node(conf_mat, classes);
 	for (std::vector<CRelaxedTree::entry_t>::const_iterator it = mu_init.begin(); it != mu_init.end(); ++it)
 	{
-		CLibSVM *svm = train_node_with_initialization(*it, classes);
-		SG_UNREF(svm);
+		CLibSVM *svm = new CLibSVM();
+		SG_REF(svm);
+		
+		SGVector<int32_t> mu = train_node_with_initialization(*it, classes, svm);
+		float64_t score = compute_score(mu, svm);
+		if (score < best_score)
+		{
+			best_score = score;
+			best_mu = mu;
+			SG_UNREF(best_svm);
+			best_svm = svm;
+		}
+		else
+		{
+			SG_UNREF(svm);
+		}
 	}
 }
 
-CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes)
+float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CLibSVM *svm)
+{
+	float64_t num_pos=0, num_neg=0;
+	for (int32_t i=0; i < mu.vlen; ++i)
+	{
+		if (mu[i] == 1)
+			num_pos++;
+		else if (mu[i] == -1)
+			num_neg++;
+	}
+
+	int32_t totalSV = svm->get_svm_model()->l;
+	float64_t score = num_neg/(num_neg+num_pos) * totalSV/num_pos + 
+		num_pos/(num_neg+num_pos)*totalSV/num_neg;
+	return score;
+}
+
+SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CLibSVM *svm)
 {
 	SGVector<int32_t> mu(classes.vlen), prev_mu(classes.vlen);
 	mu.zero();
@@ -85,8 +120,6 @@ CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_
 	mu[mu_entry.first.second] = -1;
 
 	SGVector<int32_t> long_mu(m_num_classes);
-	CLibSVM *svm = new CLibSVM();
-	SG_REF(svm);
 	svm->set_C(m_svm_C, m_svm_C);
 	svm->set_epsilon(m_svm_epsilon);
 
@@ -130,8 +163,7 @@ CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_
 
 		std::copy(&mu[0], &mu[mu.vlen], &prev_mu[0]);
 
-		// TODO: color label space
-		
+		mu = color_label_space(svm, classes);
 
 		bool bbreak = true;
 		for (int32_t i=0; i < mu.vlen; ++i)
@@ -147,7 +179,7 @@ CLibSVM *CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_
 			break;
 	}
 
-	return svm;
+	return mu;
 }
 
 struct EntryComparator
@@ -184,7 +216,7 @@ std::vector<CRelaxedTree::entry_t> CRelaxedTree::init_node(const SGMatrix<float6
 	return std::vector<CRelaxedTree::entry_t>(entries.begin(), entries.begin() + n_samples);
 }
 
-void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
+SGVector<int32_t> CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 {
 	SGVector<int32_t> mu(classes.vlen);
 	CMulticlassLabels *labels = dynamic_cast<CMulticlassLabels *>(m_labels);
@@ -270,6 +302,8 @@ void CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
 		index_t min_idx = SGVector<float64_t>::arg_min(xi_neg_class.vector, 1, xi_neg_class.vlen);
 		mu[min_idx] = -1;
 	}
+
+	return mu;
 }
 
 void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 

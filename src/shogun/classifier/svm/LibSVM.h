@@ -50,6 +50,8 @@ class CLibSVM : public CSVM
 		/** @return object name */
 		inline virtual const char* get_name() const { return "LibSVM"; }
 
+		svm_model *get_svm_model() { return model; }
+
 	protected:
 		/** train SVM classifier
 		 *
