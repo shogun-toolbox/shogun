@@ -11,6 +11,7 @@
 #include <shogun/lib/malsar/malsar_clustered.h>
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <iostream>
 #include <shogun/lib/external/libqp.h>
 
@@ -134,7 +135,7 @@ malsar_result_t malsar_clustered(
 
 		int inner_iter = 0;
 		// line search, Armijo-Goldstein scheme
-		while (inner_iter <= 1)
+		while (inner_iter <= 1000)
 		{
 			Wzp = Ws - gWs/gamma;
 			Czp = Cs - gCs/gamma;
@@ -259,8 +260,8 @@ malsar_result_t malsar_clustered(
 			case 0:
 				if (iter>=2)
 				{
-					if ( CMath::abs(obj-obj_old) <= options.tolerance )
-						done = true;
+				//	if ( CMath::abs(obj-obj_old) <= options.tolerance )
+				//		done = true;
 				}
 			break;
 			case 1:
@@ -300,7 +301,7 @@ malsar_result_t malsar_clustered(
 		for (task=0; task<n_tasks; task++)
 			tasks_w[i] = Wzp(i,task);
 	}
-	tasks_w.display_matrix();
+	//tasks_w.display_matrix();
 	SGVector<float64_t> tasks_c(n_tasks);
 	for (int i=0; i<n_tasks; i++) tasks_c[i] = Czp[i];
 	return malsar_result_t(tasks_w, tasks_c);

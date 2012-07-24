@@ -11,6 +11,7 @@
 #include <shogun/lib/malsar/malsar_joint_feature_learning.h>
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/eigen3.h>
 #include <iostream>
 
 using namespace Eigen;
@@ -171,6 +172,7 @@ malsar_result_t malsar_joint_feature_learning(
 		obj = Fzp;
 		for (task=0; task<n_tasks; task++)
 			obj += rho1*(Wz.col(task).norm());
+		SG_SDEBUG("Obj = %f\n",obj);
 
 		// check if process should be terminated 
 		switch (options.termination)

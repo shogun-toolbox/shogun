@@ -10,6 +10,7 @@
 
 #include <shogun/lib/malsar/malsar_low_rank.h>
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <iostream>
 

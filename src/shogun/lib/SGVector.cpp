@@ -15,6 +15,10 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/mathematics/lapack.h>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
+
 namespace shogun {
 
 template<class T> SGVector<T>::SGVector() : SGReferencedData(false)
