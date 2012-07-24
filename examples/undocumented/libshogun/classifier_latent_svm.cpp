@@ -1,6 +1,6 @@
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
-#include <shogun/classifier/svm/LatentLinearMachine.h>
+#include <shogun/latent/LatentSVM.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 	float64_t C = 10.0;
 
 	CObjectDetector* od = new CObjectDetector(train_feats, train_labels);
-	CLatentLinearMachine llm(od, C);
+	CLatentSVM llm(od, C);
 	llm.train();
 
 	//  CLatentFeatures* test_feats = NULL;

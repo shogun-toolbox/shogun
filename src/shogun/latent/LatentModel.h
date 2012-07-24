@@ -16,26 +16,36 @@
 
 namespace shogun
 {
+	/** @brief TODO
+	 */
 	class CLatentModel: public CSGObject
 	{
 		public:
-			/** constructor */
+			/** default ctor */
 			CLatentModel();
 
-			/** constructor
+			/** ctor
 			 *
-			 * @param feats features to use
-			 * @param labels labels to use
+			 * @param feats Latent features
+			 * @param labels Latent labels
 			 */
 			CLatentModel(CLatentFeatures* feats, CLatentLabels* labels);
 
 			/** destructor */
 			virtual ~CLatentModel();
 
-			/** get number of vectors */
+			/**
+			 * get the number of examples
+			 *
+			 * @return number of examples/vectors in latent features
+			 */
 			virtual int32_t get_num_vectors() const;
 
-			/** get dimensionality of model */
+			/**
+			 * get the dimension of PSI
+			 *
+			 * @return dimension of features, i.e. psi vector
+			 */
 			virtual int32_t get_dim() const=0;
 
 			/** set labels
@@ -56,10 +66,12 @@ namespace shogun
 			 */
 			void set_features(CLatentFeatures* feats);
 
-			/** get psi feature vector
+			/**
+			 * Calculate the PSI vector for a given sample
 			 *
-			 * @param idx index of feature vector
-			 * @return psi feature vector
+			 * @param idx index of the sample
+			 *
+			 * @return PSI vector
 			 */
 			virtual SGVector<float64_t> get_psi_feature_vector(index_t idx)=0;
 
