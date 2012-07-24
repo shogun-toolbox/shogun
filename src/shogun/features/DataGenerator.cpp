@@ -27,19 +27,12 @@ void CDataGenerator::init()
 }
 
 SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
-		index_t dim, float64_t mean_shift, float64_t* target_data)
+		index_t dim, float64_t mean_shift,
+		SGMatrix<float64_t> target)
 {
-	/* evtl use pre-allocated space */
-	SGMatrix<float64_t> result;
-
-	if (target_data)
-	{
-		result.matrix=target_data;
-		result.num_rows=dim;
-		result.num_cols=2*m;
-	}
-	else
-		result=SGMatrix<float64_t>(dim, 2*m);
+	/* evtl. allocate space */
+	SGMatrix<float64_t> result=SGMatrix<float64_t>::get_allocated_matrix(
+			dim, 2*m, target);
 
 	/* fill matrix with normal data */
 	for (index_t i=0; i<2*m; ++i)
@@ -51,6 +44,35 @@ SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
 		if (i>=m)
 			result(0,i)+=mean_shift;
 	}
+
+	return result;
+}
+
+SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
+		float64_t d, float64_t angle, SGMatrix<float64_t> target)
+{
+	/* evtl. allocate space */
+	SGMatrix<float64_t> result=SGMatrix<float64_t>::get_allocated_matrix(
+			2, m, target);
+
+	/* rotation matrix */
+	SGMatrix<float64_t> rot=SGMatrix<float64_t>(2,2);
+	rot(0, 0)=CMath::cos(angle);
+	rot(0, 1)=-CMath::sin(angle);
+	rot(1, 0)=CMath::sin(angle);
+	rot(1, 1)=CMath::cos(angle);
+
+	/* generate signal in each dimension which is an equal mixture of two
+	 * Gaussians */
+	for (index_t i=0; i<m; ++i)
+	{
+		result(0,i)=CMath::randn_double() + (CMath::random(0, 1) ? d : -d);
+		result(1,i)=CMath::randn_double() + (CMath::random(0, 1) ? d : -d);
+	}
+
+	/* rotate result */
+	if (angle)
+		result=SGMatrix<float64_t>::matrix_multiply(rot, result);
 
 	return result;
 }

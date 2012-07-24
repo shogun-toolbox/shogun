@@ -635,6 +635,36 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 	return C;
 }
 
+template<class T>
+SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
+		index_t num_cols, SGMatrix<T> pre_allocated)
+{
+	SGMatrix<T> result;
+
+	/* evtl use pre-allocated space */
+	if (pre_allocated.matrix)
+	{
+		result=pre_allocated;
+
+		/* check dimension consistency */
+		if (pre_allocated.num_rows!=num_rows ||
+				pre_allocated.num_cols!=num_cols)
+		{
+			SG_SERROR("SGMatrix<T>::get_allocated_matrix(). Provided target"
+					"matrix dimensions (%dx%d) do not match passed data "
+					"dimensions (%dx%d)!\n", pre_allocated.num_rows,
+					pre_allocated.num_cols, num_rows, num_cols);
+		}
+	}
+	else
+	{
+		/* otherwise, allocate space */
+		result=SGMatrix<T>(num_rows, num_cols);
+	}
+
+	return result;
+}
+
 #endif //HAVE_LAPACK
 
 template class SGMatrix<bool>;

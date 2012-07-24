@@ -30,15 +30,43 @@ public:
 	 * is standard normally distributed, except for the first dimension of q,
 	 * where the mean is shifted by a specified value.
 	 *
+	 * May be used for a two-sample test.
+	 *
 	 * @param m number of samples to generate
 	 * @param dim dimension of generated samples
 	 * @param mean_shift is added to mean of first dimension
-	 * @target_data if non-NULL then this is used as matrix data storage. Make
-	 * sure that its dimensions fit
+	 * @param target if non-empty then this is used as pre-allocated matrix.
+	 * Make sure that its dimensions fit
 	 * @return matrix with concatenated samples,first p then q
 	 */
 	static SGMatrix<float64_t> generate_mean_data(index_t m, index_t dim,
-			float64_t mean_shift, float64_t* target_data=NULL);
+			float64_t mean_shift,
+			SGMatrix<float64_t> target=SGMatrix<float64_t>());
+
+	/** Produces samples as in source (g) from Table 3 in [1].
+	 * Namely, produces an equal mixture of two independent Gaussians per --
+	 * per dimension, of which there are two. The resulting 4 Gaussian blobs
+	 * are then optionally rotated by the provided angle.
+	 * Distance of means from origin (dimension-wise) can be controlled via
+	 * parameter d
+	 *
+	 * May be used in a independence test to detect dependence in rotation.
+	 * First dimensions can be used as one-dimensional p, second as q
+	 *
+	 * ﻿[1]: Gretton, A., Herbrich, R., Smola, A., Bousquet, O., & Schölkopf, B.
+	 * (2005). Kernel Methods for Measuring Independence.
+	 * Journal of Machine Learning Research, 6, 2075-2129.
+	 *
+	 * @param m number of samples per dimension
+	 * @param d distance of Gaussian means to origin (dimension wise)
+	 * @param angle fraction of \f$\pi\f$ that data is rotated by
+	 * @param target if non-empty then this is used as pre-allocated matrix.
+	 * Make sure that its dimensions fit
+	 * @return TODO
+	 */
+	static SGMatrix<float64_t> generate_sym_mix_gauss(index_t m,
+			float64_t d, float64_t angle,
+			SGMatrix<float64_t> target=SGMatrix<float64_t>());
 
 	inline virtual const char* get_name() const { return "DataGenerator"; }
 

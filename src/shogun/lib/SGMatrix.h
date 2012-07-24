@@ -279,6 +279,20 @@ template<class T> class SGMatrix : public SGReferencedData
 			const SGMatrix<T> matrix, const char* name="matrix",
 			const char* prefix="");
 
+		/** Simple helper method that returns a matrix with allocated memory
+		 * for a given size. A pre_allocated one can optionally be specified
+		 * in order to use that.
+		 * Basically just for having dimension check encapsulated.
+		 *
+		 * @param num_rows rows of returned matrix
+		 * @param num_cols columns of returned matrix
+		 * @param pre_allocated optional matrix that is returned instead of new
+		 * matrix. Make sure dimensions match
+		 * @return matrix with allocated memory of specified size
+		 */
+		static SGMatrix<T> get_allocated_matrix(index_t num_rows,
+				index_t num_cols, SGMatrix<T> pre_allocated=SGMatrix<T>());
+
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig)
