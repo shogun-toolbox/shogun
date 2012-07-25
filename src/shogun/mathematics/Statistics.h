@@ -233,8 +233,46 @@ public:
 	 * @param x position to evaluate
 	 * @param a shape parameter
 	 * @param b scale parameter
+	 * @return gamma CDF at x
 	 */
 	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
+
+	/** Evaluates the inverse CDF of the gamma distribution with given
+	 * parameters a, b at x such that gamma_cdf(x,a,b)=result.
+	 *
+	 * @param p position to evaluate
+	 * @param a shape parameter
+	 * @param b scale parameter
+	 * @return x such that gamma_cdf(x,a,b)=result
+	 */
+	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
+
+	/* Inverse of complemented imcomplete gamma integral
+	 *
+	 * Given p, the function finds x such that
+	 *
+	 * igamc( a, x ) = p.
+	 *
+	 * Starting with the approximate value
+	 *
+	 *         3
+	 *  x = a t
+	 *
+	 *  where
+	 *
+	 * t = 1 - d - ndtri(p) sqrt(d)
+	 *
+	 * and
+	 *
+	 *  d = 1/9a,
+	 *
+	 * the routine performs up to 10 Newton iterations to find the
+	 * root of igamc(a,x) - p = 0.
+	 *
+	 * Taken from ALGLIB under gpl2+
+	 */
+	static float64_t inverse_incomplete_gamma_completed(float64_t a,
+			float64_t y0);
 
 	/** Normal distribution function
 	 *
