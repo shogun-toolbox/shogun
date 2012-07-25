@@ -7,8 +7,8 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#ifndef __TWOSAMPLETESTSTATISTIC_H_
-#define __TWOSAMPLETESTSTATISTIC_H_
+#ifndef __TwoDistributionsTestStatistic_H_
+#define __TwoDistributionsTestStatistic_H_
 
 #include <shogun/statistics/TestStatistic.h>
 
@@ -17,17 +17,20 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief Two sample test base class. Provides an interface for performing a
- * two-sample test, i.e. Given samples from two distributions p and q, the
- * null-hypothesis is: H0: p==q, the alternative hypothesis: H1: p!=q.
+/** @brief Two sample test base class. Provides an interface for performing
+ * statistical tests on two sets of samples from two distributions.
+ * Instances of these tests are the classical two-sample test and the
+ * independence test. This class may be used as base class for both.
  *
- * Abstract base class.
+ * Abstract base class. Provides all interfaces and implements approximating
+ * the null distribution via bootstrapping, i.e. repeatedly merging both samples
+ * and them compute the test statistic on them.
  *
  */
-class CTwoSampleTestStatistic : public CTestStatistic
+class CTwoDistributionsTestStatistic : public CTestStatistic
 {
 	public:
-		CTwoSampleTestStatistic();
+		CTwoDistributionsTestStatistic();
 
 		/** Constructor
 		 *
@@ -38,7 +41,7 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		 * @param p_and_q samples from p and q, appended
 		 * @param q_start index of first sample of q
 		 */
-		CTwoSampleTestStatistic(CFeatures* p_and_q, index_t q_start);
+		CTwoDistributionsTestStatistic(CFeatures* p_and_q, index_t q_start);
 
 		/** Constructor.
 		 * This is a convienience constructor which copies both features to one
@@ -51,7 +54,9 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		 * @param q samples from distribution q, will be copied and NOT
 		 * SG_REF'ed
 		 */
-		CTwoSampleTestStatistic(CFeatures* p, CFeatures* q);
+		CTwoDistributionsTestStatistic(CFeatures* p, CFeatures* q);
+
+		virtual ~CTwoDistributionsTestStatistic();
 
 		/** merges both sets of samples and computes the test statistic
 		 * m_bootstrap_iteration times
@@ -70,8 +75,6 @@ class CTwoSampleTestStatistic : public CTestStatistic
 		 */
 		virtual float64_t compute_p_value(float64_t statistic);
 
-		virtual ~CTwoSampleTestStatistic();
-
 		inline virtual const char* get_name() const=0;
 
 	private:
@@ -87,4 +90,4 @@ class CTwoSampleTestStatistic : public CTestStatistic
 
 }
 
-#endif /* __TWOSAMPLETESTSTATISTIC_H_ */
+#endif /* __TwoDistributionsTestStatistic_H_ */

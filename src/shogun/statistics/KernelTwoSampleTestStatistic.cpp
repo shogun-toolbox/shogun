@@ -14,14 +14,14 @@
 using namespace shogun;
 
 CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic() :
-		CTwoSampleTestStatistic()
+		CTwoDistributionsTestStatistic()
 {
 	init();
 }
 
 CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 		CFeatures* p_and_q, index_t q_start) :
-		CTwoSampleTestStatistic(p_and_q, q_start)
+		CTwoDistributionsTestStatistic(p_and_q, q_start)
 {
 	init();
 
@@ -30,7 +30,7 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 }
 
 CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
-		CFeatures* p, CFeatures* q) : CTwoSampleTestStatistic(p, q)
+		CFeatures* p, CFeatures* q) : CTwoDistributionsTestStatistic(p, q)
 {
 	init();
 

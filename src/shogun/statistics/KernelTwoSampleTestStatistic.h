@@ -10,7 +10,7 @@
 #ifndef __KERNELTWOSAMPLETESTSTATISTIC_H_
 #define __KERNELTWOSAMPLETESTSTATISTIC_H_
 
-#include <shogun/statistics/TwoSampleTestStatistic.h>
+#include <shogun/statistics/TwoDistributionsTestStatistic.h>
 
 namespace shogun
 {
@@ -18,10 +18,15 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief Base class for kernel based two-sample testing. Extends the standard
- * two sample class with a kernel.
+/** @brief Two sample test base class. Provides an interface for performing a
+ * two-sample test, i.e. Given samples from two distributions p and q, the
+ * null-hypothesis is: H0: p==q, the alternative hypothesis: H1: p!=q.
+ *
+ * In this class, this is done using a kernel for the data.
+ *
+ * Abstract base class.
  */
-class CKernelTwoSampleTestStatistic : public CTwoSampleTestStatistic
+class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 {
 	public:
 		CKernelTwoSampleTestStatistic();

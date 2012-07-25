@@ -144,6 +144,12 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void add(const SGVector<T> x);
 
+		/** add scalar to current vector
+		 *
+		 * @param x add vector x to current vector
+		 */
+		void add(const T x);
+
 		SGVector<T> operator+ (SGVector<T> x)
 		{
 			ASSERT(x.vector && vector);

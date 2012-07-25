@@ -9,20 +9,18 @@
  
 /* Remove C Prefix */
 %rename(TestStatistic) CTestStatistic;
-%rename(TwoSampleTestStatistic) CTwoSampleTestStatistic;
+%rename(TwoDistributionsTestStatistic) CTwoDistributionsTestStatistic;
 %rename(KernelTwoSampleTestStatistic) CKernelTwoSampleTestStatistic;
 %rename(LinearTimeMMD) CLinearTimeMMD;
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
-%rename(IndependenceTestStatistic) CIndependenceTestStatistic;
 %rename(KernelIndependenceTestStatistic) CKernelIndependenceTestStatistic;
 %rename(HSIC) CHSIC;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/statistics/TestStatistic.h>
-%include <shogun/statistics/TwoSampleTestStatistic.h>
+%include <shogun/statistics/TwoDistributionsTestStatistic.h>
 %include <shogun/statistics/KernelTwoSampleTestStatistic.h>
 %include <shogun/statistics/LinearTimeMMD.h>
 %include <shogun/statistics/QuadraticTimeMMD.h>
-%include <shogun/statistics/IndependenceTestStatistic.h>
 %include <shogun/statistics/KernelIndependenceTestStatistic.h>
 %include <shogun/statistics/HSIC.h>

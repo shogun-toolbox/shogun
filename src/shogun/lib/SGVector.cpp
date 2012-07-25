@@ -111,6 +111,14 @@ template<class T> void SGVector<T>::add(const SGVector<T> x)
 		vector[i]+=x.vector[i];
 }
 
+template<class T> void SGVector<T>::add(const T x)
+{
+	ASSERT(vector);
+
+	for (int32_t i=0; i<vlen; i++)
+		vector[i]+=x;
+}
+
 template<class T> void SGVector<T>::display_size() const
 {
 	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen);
