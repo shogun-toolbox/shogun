@@ -26,6 +26,8 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 	init();
 
 	m_features = SG_MALLOC(SGMatrix< ST >, num_vec);
+	for ( int32_t i = 0 ; i < num_vec ; ++i )
+		new (&m_features[i]) SGMatrix< ST >();
 }
 
 template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
