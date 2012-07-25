@@ -13,6 +13,7 @@
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/KernelMulticlassMachine.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
 
@@ -75,3 +76,25 @@ void CModelSelectionOutput::output_evaluate_result(float64_t result)
 {
 	SG_PRINT("evaluation result = %f\n",result);
 }
+
+void CModelSelectionOutput::add_custom_evaluation(CEvaluation* evaluation)
+{
+	m_custom_evaluations->append_element(evaluation);
+}
+
+void CModelSelectionOutput::output_custom_evaluations(CLabels* result, CLabels* truth)
+{
+	for (int32_t i=0; i<m_custom_evaluations->get_num_elements(); i++)
+	{
+		CEvaluation* custom_evaluation = (CEvaluation*)m_custom_evaluations->get_element(i);
+		float64_t eval = custom_evaluation->evaluate(result, truth);
+		SG_PRINT("%s evaluation result = %f\n",custom_evaluation->get_name(),eval);
+		// dirty hack for confusion matrix
+		if (dynamic_cast<CMulticlassAccuracy*>(custom_evaluation))
+		{
+			((CMulticlassAccuracy*)custom_evaluation)->get_confusion_matrix(result, truth).display_matrix("confusion_matrix");
+		}
+		SG_UNREF(custom_evaluation);
+	}
+}
+

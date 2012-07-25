@@ -217,6 +217,7 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 
 			if (ms_output)
 			{
+				ms_output->output_custom_evaluations(result_labels, m_labels);
 				ms_output->output_test_indices(subset_indices);
 				ms_output->output_test_result(result_labels);
 				ms_output->output_test_true_result(m_labels);

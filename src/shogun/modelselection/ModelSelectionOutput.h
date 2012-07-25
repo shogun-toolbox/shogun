@@ -14,6 +14,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/evaluation/Evaluation.h>
 
 namespace shogun
 {
@@ -38,6 +39,13 @@ public:
 	void output_test_result(CLabels* results);
 	void output_test_true_result(CLabels* results);
 	void output_evaluate_result(float64_t result);
+
+	void add_custom_evaluation(CEvaluation* evaluation);
+	void output_custom_evaluations(CLabels* results, CLabels* truth);
+
+protected:
+
+	CDynamicObjectArray* m_custom_evaluations;
 
 };
 
