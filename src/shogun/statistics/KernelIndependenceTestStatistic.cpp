@@ -14,20 +14,33 @@
 using namespace shogun;
 
 CKernelIndependenceTestStatistic::CKernelIndependenceTestStatistic() :
-		CIndependenceTestStatistic()
+		CTwoDistributionsTestStatistic()
 {
 	init();
 }
 
 CKernelIndependenceTestStatistic::CKernelIndependenceTestStatistic(
-		CKernel* kernel_p, CKernel* kernel_q, CFeatures* p, CFeatures* q) :
-		CIndependenceTestStatistic(p, q)
+		CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
+		index_t q_start) : CTwoDistributionsTestStatistic(m_p_and_q, q_start)
 {
 	init();
 
 	m_kernel_p=kernel_p;
 	m_kernel_q=kernel_q;
 	SG_REF(kernel_p);
+	SG_REF(kernel_q);
+}
+
+CKernelIndependenceTestStatistic::CKernelIndependenceTestStatistic(
+		CKernel* kernel_p, CKernel* kernel_q, CFeatures* p, CFeatures* q) :
+		CTwoDistributionsTestStatistic(p, q)
+{
+	init();
+
+	m_kernel_p=kernel_p;
+	SG_REF(kernel_p);
+
+	m_kernel_q=kernel_q;
 	SG_REF(kernel_q);
 }
 
