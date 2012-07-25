@@ -155,7 +155,7 @@ public:
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
-	static float64_t inverse_normal_distribution(float64_t y0);
+	static float64_t inverse_normal_cdf(float64_t y0);
 
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)

@@ -110,6 +110,7 @@ float64_t CHSIC::compute_p_value(float64_t statistic)
 	}
 
 	default:
+		/* bootstrapping is handled there */
 		result=CTwoDistributionsTestStatistic::compute_p_value(statistic);
 		break;
 	}
@@ -131,6 +132,7 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 	}
 
 	default:
+		/* bootstrapping is handled there */
 		result=CTwoDistributionsTestStatistic::compute_threshold(alpha);
 		break;
 	}
