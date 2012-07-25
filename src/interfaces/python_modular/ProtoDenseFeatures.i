@@ -4,82 +4,12 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * This code is inspired by the python numpy.i typemaps, from John Hunter
- * and Bill Spotz that in turn is based on enthought/kiva/agg/src/numeric.i,
- * author unknown.
- *
- * It goes further by supporting strings of arbitrary types, sparse matrices
- * and ways to return arbitrariliy shaped matrices.
- *
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
 #ifdef SWIGPYTHON
 
-/* Helper functions */
-%wrapper
-%{
-void get_slice_in_bounds(Py_ssize_t* ilow, Py_ssize_t* ihigh, Py_ssize_t max_idx)
-{
-	if (*ilow<0)
-	{
-		*ilow=0;
-	}
-	else if (*ilow>max_idx)
-	{
-		*ilow = max_idx;
-	}
-	if (*ihigh<*ilow)
-	{
-		*ihigh=*ilow;
-	}
-	else if (*ihigh>max_idx)
-	{
-		*ihigh=max_idx;
-	}
-}
-
-Py_ssize_t get_idx_in_bounds(Py_ssize_t idx, Py_ssize_t max_idx)
-{
-	if (idx>=max_idx || idx<-max_idx)
-	{
-		PyErr_SetString(PyExc_IndexError, "index out of bounds");
-		return -1;
-	}
-	else if (idx<0)
-		return idx+max_idx;
-
-	return idx;
-}
-
-int parse_tuple_item(PyObject* item, Py_ssize_t length,
-						Py_ssize_t* ilow, Py_ssize_t* ihigh,
-						Py_ssize_t* step, Py_ssize_t* slicelength)
-{
-	if (PySlice_Check(item))
-	{
-		PySlice_GetIndicesEx((PySliceObject*) item, length, ilow, ihigh, step, slicelength);
-		get_slice_in_bounds(ilow, ihigh, length);
-
-		return 2;
-	}
-	else if (PyInt_Check(item) || PyArray_IsScalar(item, Integer) ||
-       		PyLong_Check(item) || (PyIndex_Check(item) && !PySequence_Check(item)))
-	{
-		npy_intp idx;
-		idx = PyArray_PyIntAsIntp(item);
-		idx = get_idx_in_bounds(idx, length);
-
-		*ilow=idx;
-		*ihigh=idx+1;
-
-		return 1;
-	}
-
-	return 0;
-}
-
-%}
+%include "ProtoHelper.i"
 
 /* Numeric operators for DenseFeatures */
 %define NUMERIC_DENSEFEATURES(class_name, type_name, format_str, operator_name, operator)
@@ -120,7 +50,6 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	// checking that buffer is right
 	if (view.ndim != 2)
 	{
-		printf("%d\n", view.ndim);
 		SWIG_exception_fail(SWIG_ArgError(res1), "same dimension is needed");
 	}
 

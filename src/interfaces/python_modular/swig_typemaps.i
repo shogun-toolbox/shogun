@@ -17,7 +17,8 @@
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
-%include "python_protocols.i"
+%include "ProtoDenseFeatures.i"
+%include "ProtoSGVector.i"
 
 #ifdef HAVE_PYTHON
 %{
