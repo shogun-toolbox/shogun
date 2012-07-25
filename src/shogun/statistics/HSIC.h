@@ -92,8 +92,11 @@ public:
 	 *
 	 * Called by compute_p_value() if null approximation method is set to
 	 * MMD2_GAMMA.
+	 *
+	 * @return vector with two parameter for gamma distribution. To use:
+	 * call gamma_cdf(statistic, a, b).
 	 */
-	float64_t compute_p_value_gamma(float64_t statistic);
+	SGVector<float64_t> fit_null_gamma();
 
 private:
 	void init();

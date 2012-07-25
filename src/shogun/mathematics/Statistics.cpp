@@ -21,7 +21,6 @@
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
 #endif //HAVE_LAPACK
-
 using namespace shogun;
 
 float64_t CStatistics::mean(SGVector<float64_t> values)
@@ -54,8 +53,11 @@ float64_t CStatistics::variance(SGVector<float64_t> values)
 SGMatrix<float64_t> CStatistics::covariance_matrix(
 		SGMatrix<float64_t> observations, bool in_place)
 {
-	SGMatrix<float64_t> centered=in_place ? observations :
-			SGMatrix<float64_t>(observations.num_rows, observations.num_cols);
+	SGMatrix<float64_t> centered=
+			in_place ?
+					observations :
+					SGMatrix<float64_t>(observations.num_rows,
+							observations.num_cols);
 
 	if (!in_place)
 	{
@@ -71,7 +73,6 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 	return cov;
 }
 #endif //HAVE_LAPACK
-
 float64_t CStatistics::std_deviation(SGVector<float64_t> values)
 {
 	return CMath::sqrt(variance(values));
@@ -1247,7 +1248,174 @@ float64_t CStatistics::incomplete_gamma_completed(float64_t a, float64_t x)
 float64_t CStatistics::gamma_cdf(float64_t x, float64_t a, float64_t b)
 {
 	/* definition of wikipedia: incomplete gamma devised by true gamma */
-	return incomplete_gamma(a,x/b);
+	return incomplete_gamma(a, x/b);
+}
+
+float64_t CStatistics::inverse_gamma_cdf(float64_t p, float64_t a,
+		float64_t b)
+{
+	/* inverse of gamma(a,b) CDF is
+	 * inverse_incomplete_gamma_completed(a, 1. - p) * b */
+	return inverse_incomplete_gamma_completed(a, 1-p)*b;
+}
+
+float64_t CStatistics::inverse_incomplete_gamma_completed(float64_t a,
+		float64_t y0)
+{
+	float64_t igammaepsilon;
+	float64_t iinvgammabignumber;
+	float64_t x0;
+	float64_t x1;
+	float64_t x;
+	float64_t yl;
+	float64_t yh;
+	float64_t y;
+	float64_t d;
+	float64_t lgm;
+	float64_t dithresh;
+	int32_t i;
+	int32_t dir;
+	float64_t result;
+
+	igammaepsilon=0.000000000000001;
+	iinvgammabignumber=4503599627370496.0;
+	x0=iinvgammabignumber;
+	yl=0;
+	x1=0;
+	yh=1;
+	dithresh=5*igammaepsilon;
+	d=1/(9*a);
+	y=1-d-inverse_normal_distribution(y0)*CMath::sqrt(d);
+	x=a*y*y*y;
+	lgm=lgamma(a);
+	i=0;
+	while (i<10)
+	{
+		if (greater(x, x0) || less(x, x1))
+		{
+			d=0.0625;
+			break;
+		}
+		y=incomplete_gamma_completed(a, x);
+		if (less(y, yl) || greater(y, yh))
+		{
+			d=0.0625;
+			break;
+		}
+		if (less(y, y0))
+		{
+			x0=x;
+			yl=y;
+		}
+		else
+		{
+			x1=x;
+			yh=y;
+		}
+		d=(a-1)*CMath::log(x)-x-lgm;
+		if (less(d, -709.78271289338399))
+		{
+			d=0.0625;
+			break;
+		}
+		d=-CMath::exp(d);
+		d=(y-y0)/d;
+		if (less(CMath::abs(d/x), igammaepsilon))
+		{
+			result=x;
+			return result;
+		}
+		x=x-d;
+		i=i+1;
+	}
+	if (equal(x0, iinvgammabignumber))
+	{
+		if (less_equal(x, 0))
+		{
+			x=1;
+		}
+		while (equal(x0, iinvgammabignumber))
+		{
+			x=(1+d)*x;
+			y=incomplete_gamma_completed(a, x);
+			if (less(y, y0))
+			{
+				x0=x;
+				yl=y;
+				break;
+			}
+			d=d+d;
+		}
+	}
+	d=0.5;
+	dir=0;
+	i=0;
+	while (i<400)
+	{
+		x=x1+d*(x0-x1);
+		y=incomplete_gamma_completed(a, x);
+		lgm=(x0-x1)/(x1+x0);
+		if (less(CMath::abs(lgm), dithresh))
+		{
+			break;
+		}
+		lgm=(y-y0)/y0;
+		if (less(CMath::abs(lgm), dithresh))
+		{
+			break;
+		}
+		if (less_equal(x, 0.0))
+		{
+			break;
+		}
+		if (greater_equal(y, y0))
+		{
+			x1=x;
+			yh=y;
+			if (dir<0)
+			{
+				dir=0;
+				d=0.5;
+			}
+			else
+			{
+				if (dir>1)
+				{
+					d=0.5*d+0.5;
+				}
+				else
+				{
+					d=(y0-yl)/(yh-yl);
+				}
+			}
+			dir=dir+1;
+		}
+		else
+		{
+			x0=x;
+			yl=y;
+			if (dir>0)
+			{
+				dir=0;
+				d=0.5;
+			}
+			else
+			{
+				if (dir<-1)
+				{
+					d=0.5*d;
+				}
+				else
+				{
+					d=(y0-yl)/(yh-yl);
+				}
+			}
+			dir=dir-1;
+		}
+		i=i+1;
+	}
+	result=x;
+	return result;
 }
 
 float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
@@ -1337,9 +1505,10 @@ float64_t CStatistics::error_function_complement(float64_t x)
 	return result;
 }
 
-SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(SGMatrix<float64_t> tables)
+SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(
+		SGMatrix<float64_t> tables)
 {
-	SGMatrix<float64_t> table(NULL,2,3,false);
+	SGMatrix<float64_t> table(NULL, 2, 3, false);
 	int32_t len=tables.num_cols/3;
 
 	SGVector<float64_t> v(len);
@@ -1351,7 +1520,8 @@ SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(SGMa
 	return v;
 }
 
-float64_t CStatistics::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> table)
+float64_t CStatistics::fishers_exact_test_for_2x3_table(
+		SGMatrix<float64_t> table)
 {
 	ASSERT(table.num_rows==2);
 	ASSERT(table.num_cols==3);
@@ -1364,9 +1534,9 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> tabl
 	m[3]=table.matrix[2]+table.matrix[3];
 	m[4]=table.matrix[4]+table.matrix[5];
 
-	float64_t n = SGVector<float64_t>::sum(m, m_len) / 2.0;
-	int32_t x_len=2*3* CMath::sq(SGVector<float64_t>::max(m, m_len));
-	float64_t* x = SG_MALLOC(float64_t, x_len);
+	float64_t n=SGVector<float64_t>::sum(m, m_len)/2.0;
+	int32_t x_len=2*3*CMath::sq(SGVector<float64_t>::max(m, m_len));
+	float64_t* x=SG_MALLOC(float64_t, x_len);
 	SGVector<float64_t>::fill_vector(x, x_len, 0.0);
 
 	float64_t log_nom=0.0;
@@ -1379,26 +1549,27 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> tabl
 
 	for (int32_t i=0; i<3*2; i++)
 	{
-		log_denom+=lgammal((floatmax_t) table.matrix[i]+1);
-		log_denomf+=lgammal((floatmax_t) table.matrix[i]+1);
+		log_denom+=lgammal((floatmax_t)table.matrix[i]+1);
+		log_denomf+=lgammal((floatmax_t)table.matrix[i]+1);
 	}
 
-	floatmax_t prob_table_log=log_nom - log_denom;
+	floatmax_t prob_table_log=log_nom-log_denom;
 
-	int32_t dim1 = CMath::min(m[0], m[2]);
+	int32_t dim1=CMath::min(m[0], m[2]);
 
 	//traverse all possible tables with given m
-	int32_t counter = 0;
+	int32_t counter=0;
 	for (int32_t k=0; k<=dim1; k++)
 	{
-		for (int32_t l=CMath::max(0.0,m[0]-m[4]-k); l<=CMath::min(m[0]-k, m[3]); l++)
+		for (int32_t l=CMath::max(0.0, m[0]-m[4]-k);
+				l<=CMath::min(m[0]-k, m[3]); l++)
 		{
-			x[0 + 0*2 + counter*2*3] = k;
-			x[0 + 1*2 + counter*2*3] = l;
-			x[0 + 2*2 + counter*2*3] = m[0] - x[0 + 0*2 + counter*2*3] - x[0 + 1*2 + counter*2*3];
-			x[1 + 0*2 + counter*2*3] = m[2] - x[0 + 0*2 + counter*2*3];
-			x[1 + 1*2 + counter*2*3] = m[3] - x[0 + 1*2 + counter*2*3];
-			x[1 + 2*2 + counter*2*3] = m[4] - x[0 + 2*2 + counter*2*3];
+			x[0+0*2+counter*2*3]=k;
+			x[0+1*2+counter*2*3]=l;
+			x[0+2*2+counter*2*3]=m[0]-x[0+0*2+counter*2*3]-x[0+1*2+counter*2*3];
+			x[1+0*2+counter*2*3]=m[2]-x[0+0*2+counter*2*3];
+			x[1+1*2+counter*2*3]=m[3]-x[0+1*2+counter*2*3];
+			x[1+2*2+counter*2*3]=m[4]-x[0+2*2+counter*2*3];
 
 			counter++;
 		}
@@ -1418,16 +1589,15 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> tabl
 	display_vector(x, 2*3*counter, "x");
 #endif // DEBUG_FISHER_TABLE
 
-
 	floatmax_t* log_denom_vec=SG_MALLOC(floatmax_t, counter);
-	SGVector<floatmax_t>::fill_vector(log_denom_vec, counter, (floatmax_t) 0.0);
+	SGVector<floatmax_t>::fill_vector(log_denom_vec, counter, (floatmax_t)0.0);
 
 	for (int32_t k=0; k<counter; k++)
 	{
 		for (int32_t j=0; j<3; j++)
 		{
 			for (int32_t i=0; i<2; i++)
-				log_denom_vec[k]+=lgammal(x[i + j*2 + k*2*3]+1.0);
+				log_denom_vec[k]+=lgammal(x[i+j*2+k*2*3]+1.0);
 		}
 	}
 
@@ -1437,7 +1607,6 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> tabl
 #ifdef DEBUG_FISHER_TABLE
 	display_vector(log_denom_vec, counter, "log_denom_vec");
 #endif // DEBUG_FISHER_TABLE
-
 
 	float64_t nonrand_p=-CMath::INFTY;
 	for (int32_t i=0; i<counter; i++)
@@ -1450,7 +1619,6 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(SGMatrix<float64_t> tabl
 	SG_SPRINT("nonrand_p=%.18g\n", nonrand_p);
 	SG_SPRINT("exp_nonrand_p=%.18g\n", CMath::exp(nonrand_p));
 #endif // DEBUG_FISHER_TABLE
-
 	nonrand_p=CMath::exp(nonrand_p);
 
 	SG_FREE(log_denom_vec);
@@ -1468,7 +1636,7 @@ float64_t CStatistics::mutual_info(float64_t* p1, float64_t* p2, int32_t len)
 		for (int32_t j=0; j<len; j++)
 			e+=exp(p2[j*len+i])*(p2[j*len+i]-p1[i]-p1[j]);
 
-	return (float64_t) e;
+	return (float64_t)e;
 }
 
 float64_t CStatistics::relative_entropy(float64_t* p, float64_t* q, int32_t len)
@@ -1478,7 +1646,7 @@ float64_t CStatistics::relative_entropy(float64_t* p, float64_t* q, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		e+=exp(p[i])*(p[i]-q[i]);
 
-	return (float64_t) e;
+	return (float64_t)e;
 }
 
 float64_t CStatistics::entropy(float64_t* p, int32_t len)
@@ -1488,31 +1656,31 @@ float64_t CStatistics::entropy(float64_t* p, int32_t len)
 	for (int32_t i=0; i<len; i++)
 		e-=exp(p[i])*p[i];
 
-	return (float64_t) e;
+	return (float64_t)e;
 }
 
 SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 {
-	REQUIRE(sample_size<N, "sample size should be less than number of indices\n");
-	int32_t* idxs = SG_MALLOC(int32_t,N);
-	int32_t i,rnd;
-	int32_t* permuted_idxs = SG_MALLOC(int32_t,sample_size);
+	REQUIRE(sample_size<N,
+			"sample size should be less than number of indices\n");
+	int32_t* idxs=SG_MALLOC(int32_t,N);
+	int32_t i, rnd;
+	int32_t* permuted_idxs=SG_MALLOC(int32_t,sample_size);
 
 	// reservoir sampling
 	for (i=0; i<N; i++)
-		idxs[i] = i;
+		idxs[i]=i;
 	for (i=0; i<sample_size; i++)
-		permuted_idxs[i] = idxs[i];
+		permuted_idxs[i]=idxs[i];
 	for (i=sample_size; i<N; i++)
 	{
-		rnd = CMath::random(1,i);
+		rnd=CMath::random(1, i);
 		if (rnd<sample_size)
-			permuted_idxs[rnd] = idxs[i];
+			permuted_idxs[rnd]=idxs[i];
 	}
 	SG_FREE(idxs);
 
-	CMath::qsort(permuted_idxs,sample_size);
-	return SGVector<int32_t>(permuted_idxs,sample_size);
+	CMath::qsort(permuted_idxs, sample_size);
+	return SGVector<int32_t>(permuted_idxs, sample_size);
 }
-
 
