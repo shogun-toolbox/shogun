@@ -1,0 +1,80 @@
+#
+# This program is free software you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation either version 3 of the License, or
+# (at your option) any later version.
+#
+# Written (C) 2012 Heiko Strathmann
+#
+from numpy import *
+#from pylab import *
+from math import pi
+
+def statistics_hsic():
+	from shogun.Features import RealFeatures
+	from shogun.Features import DataGenerator
+	from shogun.Kernel import GaussianKernel
+	from shogun.Statistics import HSIC
+	from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
+
+	# note that the HSIC has to store kernel matrices
+	# which upper bounds the sample size
+	n=250
+	difference=3
+	angle=pi/3
+
+	# use data generator class to produce example data
+	data=DataGenerator.generate_sym_mix_gauss(n,difference,angle)
+	#plot(data[0], data[1], 'x');show()
+
+	# create shogun feature representation
+	features_x=RealFeatures(array([data[0]]))
+	features_y=RealFeatures(array([data[1]]))
+
+	# use a kernel width of sigma=2, which is 8 in SHOGUN's parametrization
+	# which is k(x,y)=exp(-||x-y||^2 / tau), in constrast to the standard
+	# k(x,y)=exp(-||x-y||^2 / (2*sigma^2)), so tau=2*sigma^2
+	kernel=GaussianKernel(10,8)
+
+	hsic=HSIC(kernel,kernel,features_x,features_y)
+
+	# perform test: compute p-value and test if null-hypothesis is rejected for
+	# a test level of 0.05 using different methods to approximate
+	# null-distribution
+	statistic=hsic.compute_statistic()
+	print "HSIC:", statistic
+	alpha=0.05
+
+	print "computing p-value using bootstrapping"
+	hsic.set_null_approximation_method(BOOTSTRAP)
+	# normally, at least 250 iterations should be done, but that takes long
+	hsic.set_bootstrap_iterations(100)
+	# bootstrapping allows usage of unbiased or biased statistic
+	p_value=hsic.compute_p_value(statistic)
+	thresh=hsic.compute_threshold(alpha)
+	print "p_value:", p_value
+	print "threshold for 0.05 alpha:", thresh
+	print "p_value <", alpha, ", i.e. test sais p and q are dependend:", p_value<alpha
+
+	print "computing p-value using gamma method"
+	hsic.set_null_approximation_method(HSIC_GAMMA)
+	p_value=hsic.compute_p_value(statistic)
+	thresh=hsic.compute_threshold(alpha)
+	print "p_value:", p_value
+	print "threshold for 0.05 alpha:", thresh
+	print "p_value <", alpha, ", i.e. test sais p and q are dependend::", p_value<alpha
+
+	# sample from null distribution (these may be plotted or whatsoever)
+	# mean should be close to zero, variance stronly depends on data/kernel
+	# bootstrapping, biased statistic
+	print "sampling null distribution using bootstrapping"
+	hsic.set_null_approximation_method(BOOTSTRAP)
+	hsic.set_bootstrap_iterations(100)
+	null_samples=hsic.bootstrap_null()
+	print "null mean:", mean(null_samples)
+	print "null variance:", var(null_samples)
+	#hist(null_samples, 100); show()
+
+if __name__=='__main__':
+	print('HSIC')
+	statistics_hsic()
