@@ -8,15 +8,15 @@
 #
 from numpy import *
 
-def statistics_linear_time_mmd():
+def statistics_quadratic_time_mmd():
 	from shogun.Features import RealFeatures
 	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
 
-	# note that the quadratic time mmd has sometimes to store kernel matrices
-	# which upper bounds the sample size massively
+	# note that the quadratic time mmd has to store kernel matrices
+	# which upper bounds the sample size
 	n=500
 	dim=2
 	difference=0.5
@@ -97,5 +97,5 @@ def statistics_linear_time_mmd():
 	print "null variance:", var(null_samples)
 	
 if __name__=='__main__':
-	print('LinearTimeMMD')
-	statistics_linear_time_mmd()
+	print('QuadraticTimeMMD')
+	statistics_quadratic_time_mmd()
