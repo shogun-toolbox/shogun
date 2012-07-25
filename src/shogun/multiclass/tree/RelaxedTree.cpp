@@ -40,7 +40,90 @@ CRelaxedTree::~CRelaxedTree()
 
 CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 {
-	return NULL;
+	if (data != NULL)
+	{
+		CDenseFeatures<float64_t> *feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
+		if (feats == NULL)
+			SG_ERROR("Require non-NULL dense features of float64_t\n");
+		set_features(feats);
+	}
+
+	// init kernels for all sub-machines
+	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	{
+		CLibSVM *machine = (CLibSVM*)m_machines->get_element(i);
+		CKernel *kernel = machine->get_kernel();
+		CFeatures* lhs = kernel->get_lhs();
+		kernel->init(lhs, m_feats);
+		SG_UNREF(machine);
+		SG_UNREF(kernel);
+		SG_UNREF(lhs);
+	}
+
+	CMulticlassLabels *lab = new CMulticlassLabels(m_feats->get_num_vectors());
+	SG_REF(lab);
+	for (int32_t i=0; i < lab->get_num_labels(); ++i)
+	{
+		lab->set_int_label(i, apply_one(i));
+	}
+
+	return lab;
+}
+
+int32_t CRelaxedTree::apply_one(int32_t idx)
+{
+	node_t *node = m_root;
+	int32_t klass = -1;
+	while (node != NULL)
+	{
+		CLibSVM *svm = (CLibSVM *)m_machines->get_element(node->machine());
+		float64_t result = svm->apply_one(idx);
+
+		if (result < 0)
+		{
+			// go lest
+			if (node->left()) // has left subtree
+			{
+				node = node->left();
+			}
+			else // stop here
+			{
+				for (int32_t i=0; i < node->data.mu.vlen; ++i)
+				{
+					if (node->data.mu[i] <= 0 && node->data.mu[i] > -2)
+					{
+						klass = i;
+						break;
+					}
+				}
+				node = NULL;
+			}
+		}
+		else
+		{
+			// go right
+			if (node->right())
+			{
+				node = node->right();
+			}
+			else
+			{
+				for (int32_t i=0; i <node->data.mu.vlen; ++i)
+				{
+					if (node->data.mu[i] >= 0)
+					{
+						klass = i;
+						break;
+					}
+				}
+				node = NULL;
+			}
+		}
+
+		SG_UNREF(svm);
+	}
+
+	return klass;
 }
 
 bool CRelaxedTree::train_machine(CFeatures* data)
@@ -165,7 +248,6 @@ CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_m
 		else if (best_mu[i] == 0)
 			long_mu[classes[i]] = 0;
 	node->data.mu = long_mu;
-	// TODO: save model for this node
 	return node;
 }
 

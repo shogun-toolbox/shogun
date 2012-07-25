@@ -165,6 +165,14 @@ public:
 
 	typedef std::pair<std::pair<int32_t, int32_t>, float64_t> entry_t;
 protected:
+	/** apply to one instance.
+	 * 
+	 * Note this method is not made public so that not be called from
+	 * external source. This is because preparation have to be done
+	 * before calling this (mainly setup the kernel for submachines).
+	 */
+	int32_t apply_one(int32_t idx);
+
 	/** train machine
 	 *
 	 * @param data training data 
