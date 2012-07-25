@@ -9,6 +9,7 @@
 #include <shogun/base/init.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
+#include <shogun/kernel/GaussianKernel.h>
 
 #define  EPSILON  1e-5
 
@@ -57,8 +58,14 @@ int main(int argc, char** argv)
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 	SG_REF(features);
 
+	const int32_t kernel_cache=0;
+	const float64_t rbf_width=10;
+	CGaussianKernel* kernel = new CGaussianKernel(kernel_cache, rbf_width);
+	SG_REF(kernel);
+
 	// Create RelaxedTree Machine
 	CRelaxedTree *machine = new CRelaxedTree();
+	machine->set_kernel(kernel);
 	SG_REF(machine);
 	machine->set_labels(labels);
 

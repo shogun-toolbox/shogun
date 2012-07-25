@@ -144,10 +144,12 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 
 	CMulticlassLabels *lab = dynamic_cast<CMulticlassLabels *>(m_labels);
 
+	SG_PRINT("Estimating confusion matrix...\n");
 	RelaxedTreeUtil util;
 	SGMatrix<float64_t> conf_mat = util.estimate_confusion_matrix(m_machine_for_confusion_matrix,
 			m_feats, lab, m_num_classes);
 
+	SG_PRINT("Training root node...\n");
 	// train root
 	SGVector<int32_t> classes(m_num_classes);
 	for (int32_t i=0; i < m_num_classes; ++i)
@@ -158,6 +160,7 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 	std::queue<node_t *> node_q;
 	node_q.push(m_root);
 
+	SG_PRINT("Training subsequent nodes...\n");
 	while (node_q.size() != 0)
 	{
 		node_t *node = node_q.front();

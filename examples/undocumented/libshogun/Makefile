@@ -4,7 +4,7 @@ VALGRINDOPTS=--tool=memcheck --error-limit=no --trace-children=yes --leak-check=
 
 INCLUDES=-I/usr/include/atlas
 LIBS=
-LIBS_ADD=-lshogun
+LIBS_ADD=-lshogun -lpthread
 
 LINKFLAGS=
 CXXFLAGS=-O0 -g
