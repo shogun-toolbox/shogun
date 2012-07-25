@@ -103,10 +103,30 @@ float64_t CTwoDistributionsTestStatistic::compute_p_value(float64_t statistic)
 	}
 	else
 	{
-		SG_ERROR("CTwoDistributionsTestStatistics::compute_p_value(): Unknown method "
-				"to approximate null-distribution!\n");
+		SG_ERROR("CTwoDistributionsTestStatistics::compute_p_value(): Unknown"
+				"method to approximate null distribution!\n");
 	}
 
 	return result;
 }
 
+float64_t CTwoDistributionsTestStatistic::compute_threshold(float64_t alpha)
+{
+	float64_t result=0;
+
+	if (m_null_approximation_method==BOOTSTRAP)
+	{
+		/* bootstrap a bunch of MMD values from null distribution */
+		SGVector<float64_t> values=bootstrap_null();
+
+		/* return value of (1-alpha) quantile */
+		result=values[CMath::floor(values.vlen*(1-alpha))];
+	}
+	else
+	{
+		SG_ERROR("CTwoDistributionsTestStatistics::compute_threshold():"
+				"Unknown method to approximate null distribution!\n");
+	}
+
+	return result;
+}

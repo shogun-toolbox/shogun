@@ -178,6 +178,28 @@ void test_error_function_complement()
 	ASSERT(difference<=10E-16);
 }
 
+void test_inverse_gamma_cdf()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::inverse_gamma_cdf(0.5, 1.0, 1.0);
+	SG_SPRINT("inverse_gamma_cdf(0.5, 1.0, 1.0)=%f\n", difference);
+	difference-=0.693147180559945;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::inverse_gamma_cdf(0.5, 0.5, 0.3);
+	SG_SPRINT("inverse_gamma_cdf(0.5, 0.5, 0.3)=%f\n", difference);
+	difference-= 0.068240463467936;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::inverse_gamma_cdf(0.8, 0.1, 0.3);
+	SG_SPRINT("inverse_gamma_cdf(0.8, 0.1, 0.3)=%f\n", difference);
+	difference-=0.020816964971992;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+}
+
 #ifdef HAVE_LAPACK
 void test_covariance_matrix()
 {
@@ -204,6 +226,7 @@ int main(int argc, char **argv)
 	test_inverse_student_t();
 	test_incomplete_gamma();
 	test_gamma_cdf();
+	test_inverse_gamma_cdf();
 	test_normal();
 	test_error_function();
 	test_error_function_complement();

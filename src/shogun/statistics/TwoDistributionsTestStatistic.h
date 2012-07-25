@@ -75,6 +75,16 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 */
 		virtual float64_t compute_p_value(float64_t statistic);
 
+		/** computes a threshold based on current method for approximating the
+		 * null-distribution. The threshold is the argument of the \f$1-\alpha\f$
+		 * quantile of the null. \f$\alpha\f$ is provided.
+		 *
+		 * @param alpha \f$\alpha\f$ quantile to get the threshold for
+		 * @return threshold which is the \f$1-\alpha\f$ quantile of the null
+		 * distribution
+		 */
+		virtual float64_t compute_threshold(float64_t alpha);
+
 		inline virtual const char* get_name() const=0;
 
 	private:

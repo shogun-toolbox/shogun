@@ -102,8 +102,12 @@ float64_t CHSIC::compute_p_value(float64_t statistic)
 	switch (m_null_approximation_method)
 	{
 	case HSIC_GAMMA:
-		result=compute_p_value_gamma(statistic);
+	{
+		/* fit gamma and return cdf at statistic */
+		SGVector<float64_t> params=fit_null_gamma();
+		result=CStatistics::gamma_cdf(statistic, params[0], params[1]);
 		break;
+	}
 
 	default:
 		result=CTwoDistributionsTestStatistic::compute_p_value(statistic);
@@ -115,15 +119,31 @@ float64_t CHSIC::compute_p_value(float64_t statistic)
 
 float64_t CHSIC::compute_threshold(float64_t alpha)
 {
-	return 0;
+	float64_t result=0;
+	switch (m_null_approximation_method)
+	{
+	case HSIC_GAMMA:
+	{
+		/* fit gamma and return inverse cdf at statistic */
+		SGVector<float64_t> params=fit_null_gamma();
+		result=CStatistics::inverse_gamma_cdf(alpha, params[0], params[1]);
+		break;
+	}
+
+	default:
+		result=CTwoDistributionsTestStatistic::compute_threshold(alpha);
+		break;
+	}
+
+	return result;
 }
 
-float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
+SGVector<float64_t> CHSIC::fit_null_gamma()
 {
-	SG_DEBUG(("entering %s::compute_p_value_gamma()\n"), get_name());
+	SG_DEBUG(("entering %s::fit_null_gamma()\n"), get_name());
 	if (!m_kernel_p || !m_kernel_q)
 	{
-		SG_ERROR("%s::compute_statistic(): No or only one kernel specified!\n",
+		SG_ERROR("%s::fit_null_gamma(): No or only one kernel specified!\n",
 				get_name());
 	}
 
@@ -208,11 +228,10 @@ float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
 	float64_t b=var_hsic*m/m_hsic;
 	SG_DEBUG("a: %f, b: %f\n", a, b);
 
-	/* return: cdf('gam',statistic,al,bet) (MATLAB)
-	 * which will get the position in the null distribution */
-	float64_t result=CStatistics::gamma_cdf(statistic, a, b);
-	SG_DEBUG("gamma_cdf(%f, %f, %f): %f\n", statistic, a, b, result);
+	SGVector<float64_t> result(2);
+	result[0]=a;
+	result[1]=b;
 
-	SG_DEBUG(("leaving %s::compute_p_value_gamma()\n"), get_name());
+	SG_DEBUG(("leaving %s::fit_null_gamma()\n"), get_name());
 	return result;
 }
