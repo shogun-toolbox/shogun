@@ -20,7 +20,21 @@ CHSIC::CHSIC() :
 	init();
 }
 
-CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p, CFeatures* q) :
+CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
+		index_t q_start) :
+		CKernelIndependenceTestStatistic(kernel_p, kernel_q, m_p_and_q, q_start)
+{
+	if (p_and_q && p_and_q->get_num_vectors()/2!=q_start)
+	{
+		SG_ERROR("%s: Only features with equal number of vectors are currently "
+				"possible\n", get_name());
+	}
+
+	init();
+}
+
+CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p,
+		CFeatures* q) :
 		CKernelIndependenceTestStatistic(kernel_p, kernel_q, p, q)
 {
 	if (p && q && p->get_num_vectors()!=q->get_num_vectors())
@@ -50,18 +64,25 @@ float64_t CHSIC::compute_statistic()
 				get_name());
 	}
 
-	/* compute kernel matrices (these have to be stored unfortunately) */
-	m_kernel_p->init(m_p, m_p);
-	m_kernel_q->init(m_q, m_q);
-
+	/* compute kernel matrices make sure that if one kernel is used, still
+	 * everything works, so compute one after another, using subsets */
+	SGVector<index_t> subset(m_q_start);
+	subset.range_fill();
+	m_p_and_q->add_subset(subset);
+	m_kernel_p->init(m_p_and_q, m_p_and_q);
 	SGMatrix<float64_t> K=m_kernel_p->get_kernel_matrix();
+
+	/* now second half of data subsetting */
+	subset.add(m_q_start);
+	m_kernel_q->init(m_p_and_q, m_p_and_q);
 	SGMatrix<float64_t> L=m_kernel_q->get_kernel_matrix();
+	m_p_and_q->remove_subset();
 
 	/* center matrices (MATLAB: Kc=H*K*H) */
 	K.center();
 
 	/* compute MATLAB: sum(sum(Kc' .* (L))), which is biased HSIC */
-	index_t m=K.num_rows;
+	index_t m=m_q_start;
 	float64_t result=0;
 	for (index_t i=0; i<m; ++i)
 	{
@@ -85,7 +106,7 @@ float64_t CHSIC::compute_p_value(float64_t statistic)
 		break;
 
 	default:
-		result=CIndependenceTestStatistic::compute_p_value(statistic);
+		result=CTwoDistributionsTestStatistic::compute_p_value(statistic);
 		break;
 	}
 
@@ -106,14 +127,21 @@ float64_t CHSIC::compute_p_value_gamma(float64_t statistic)
 				get_name());
 	}
 
-	index_t m=m_p->get_num_vectors();
+	index_t m=m_q_start;
 
-	/* compute kernel matrices (these have to be stored unfortunately) */
-	m_kernel_p->init(m_p, m_p);
-	m_kernel_q->init(m_q, m_q);
-
+	/* compute kernel matrices make sure that if one kernel is used, still
+	 * everything works, so compute one after another, using subsets */
+	SGVector<index_t> subset(m_q_start);
+	subset.range_fill();
+	m_p_and_q->add_subset(subset);
+	m_kernel_p->init(m_p_and_q, m_p_and_q);
 	SGMatrix<float64_t> K=m_kernel_p->get_kernel_matrix();
+
+	/* now second half of data subsetting */
+	subset.add(m_q_start);
+	m_kernel_q->init(m_p_and_q, m_p_and_q);
 	SGMatrix<float64_t> L=m_kernel_q->get_kernel_matrix();
+	m_p_and_q->remove_subset();
 
 	/* compute sum and trace of uncentered kernel matrices, needed later */
 	float64_t trace_K=0;

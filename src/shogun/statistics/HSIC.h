@@ -24,12 +24,31 @@ public:
 	/** TODO */
 	CHSIC();
 
-	/** Constructor.
+	/** Constructor
 	 *
-	 * @param kernel_p kernel samples from p
-	 * @param kernel_q kernel samples from q
-	 * @param p samples from p
-	 * @param q samples from q
+	 * @param p_and_q feature data. Is assumed to contain samples from both
+	 * p and q. First all samples from p, then from index q_start all
+	 * samples from q
+	 *
+	 * @param kernel_p kernel to use on samples from p
+	 * @param kernel_q kernel to use on samples from q
+	 * @param p_and_q samples from p and q, appended
+	 * @param q_start index of first sample of q
+	 */
+	CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
+			index_t q_start);
+
+	/** Constructor.
+	 * This is a convienience constructor which copies both features to one
+	 * element and then calls the other constructor. Needs twice the memory
+	 * for a short time
+	 *
+	 * @param kernel_p kernel to use on samples from p
+	 * @param kernel_q kernel to use on samples from q
+	 * @param p samples from distribution p, will be copied and NOT
+	 * SG_REF'ed
+	 * @param q samples from distribution q, will be copied and NOT
+	 * SG_REF'ed
 	 */
 	CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p, CFeatures* q);
 

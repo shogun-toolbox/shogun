@@ -7,17 +7,17 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/statistics/TwoSampleTestStatistic.h>
+#include <shogun/statistics/TwoDistributionsTestStatistic.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;
 
-CTwoSampleTestStatistic::CTwoSampleTestStatistic() : CTestStatistic()
+CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic() : CTestStatistic()
 {
 	init();
 }
 
-CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p_and_q,
+CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(CFeatures* p_and_q,
 		index_t q_start) : CTestStatistic()
 {
 	init();
@@ -28,7 +28,7 @@ CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p_and_q,
 	m_q_start=q_start;
 }
 
-CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p, CFeatures* q) :
+CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(CFeatures* p, CFeatures* q) :
 		CTestStatistic()
 {
 	init();
@@ -39,12 +39,12 @@ CTwoSampleTestStatistic::CTwoSampleTestStatistic(CFeatures* p, CFeatures* q) :
 	m_q_start=p->get_num_vectors();
 }
 
-CTwoSampleTestStatistic::~CTwoSampleTestStatistic()
+CTwoDistributionsTestStatistic::~CTwoDistributionsTestStatistic()
 {
 	SG_UNREF(m_p_and_q);
 }
 
-void CTwoSampleTestStatistic::init()
+void CTwoDistributionsTestStatistic::init()
 {
 	SG_ADD((CSGObject**)&m_p_and_q, "p_and_q", "Concatenated samples p and q",
 			MS_NOT_AVAILABLE);
@@ -55,7 +55,7 @@ void CTwoSampleTestStatistic::init()
 	m_q_start=0;
 }
 
-SGVector<float64_t> CTwoSampleTestStatistic::bootstrap_null()
+SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 {
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results(m_bootstrap_iterations);
@@ -85,7 +85,7 @@ SGVector<float64_t> CTwoSampleTestStatistic::bootstrap_null()
 	return results;
 }
 
-float64_t CTwoSampleTestStatistic::compute_p_value(float64_t statistic)
+float64_t CTwoDistributionsTestStatistic::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
@@ -103,7 +103,7 @@ float64_t CTwoSampleTestStatistic::compute_p_value(float64_t statistic)
 	}
 	else
 	{
-		SG_ERROR("CTwoSampleTestStatistics::compute_p_value(): Unknown method "
+		SG_ERROR("CTwoDistributionsTestStatistics::compute_p_value(): Unknown method "
 				"to approximate null-distribution!\n");
 	}
 
