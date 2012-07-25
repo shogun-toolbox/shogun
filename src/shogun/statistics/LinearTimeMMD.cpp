@@ -74,10 +74,9 @@ float64_t CLinearTimeMMD::compute_statistic()
 {
 	SG_DEBUG("entering CLinearTimeMMD::compute_statistic()\n");
 
-	if (!m_kernel)
-		SG_ERROR("%s::compute_statistic(): No kernel specified!\n", get_name());
+	REQUIRE(m_p_and_q, "%s::compute_statistic: features needed!\n", get_name());
 
-	/* TODO features with a different number of vectors should be allowed */
+	REQUIRE(m_kernel, "%s::compute_statistic: kernel needed!\n", get_name());
 
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
@@ -117,20 +116,15 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 	switch (m_null_approximation_method)
 	{
 	case MMD1_GAUSSIAN:
-		if (m_p_and_q->get_num_vectors()<10000)
-		{
-			SG_WARNING("CLinearTimeMMD::compute_p_value: The number of samples"
-					" should be very large (at least 10000)  in order to get a"
-					" good Gaussian approximation using MMD1_GAUSSIAN.\n");
-		}
-
 		{
 			/* compute variance and use to estimate Gaussian distribution */
 			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
 			result=1.0-CStatistics::normal_cdf(statistic, std_dev);
 		}
 		break;
+
 	default:
+		/* bootstrapping is handled here */
 		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
 		break;
 	}
@@ -140,12 +134,45 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 
 float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 {
-	SG_ERROR("%s::compute_threshold is not yet implemented!\n");
-	return 0;
+	float64_t result=0;
+
+	switch (m_null_approximation_method)
+	{
+	case MMD1_GAUSSIAN:
+		{
+			/* compute variance and use to estimate Gaussian distribution */
+			SG_WARNING("CLinearTimeMMD::compute_threshold(): not yet"
+					"implemented for MMD1_GAUSSIAN");
+//			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
+//			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, std_dev);
+		}
+		break;
+
+	default:
+		/* bootstrapping is handled here */
+		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
+		break;
+	}
+
+	return result;
 }
 
 float64_t CLinearTimeMMD::compute_variance_estimate()
 {
+	REQUIRE(m_p_and_q, "%s::compute_variance_estimate: features needed!\n",
+			get_name());
+
+	REQUIRE(m_kernel, "%s::compute_variance_estimate: kernel needed!\n",
+			get_name());
+
+	if (m_p_and_q->get_num_vectors()<1000)
+	{
+		SG_WARNING("%s::compute_variance_estimate: The number of samples"
+				" should be very large (at least 1000)  in order to get a"
+				" good Gaussian approximation using MMD1_GAUSSIAN.\n",
+				get_name());
+	}
+
 	/* this corresponds to computing the statistic itself, however, the
 	 * difference is that all terms (of the traces) have to be stored */
 	index_t m=m_q_start;

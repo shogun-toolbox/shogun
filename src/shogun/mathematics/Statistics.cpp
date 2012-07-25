@@ -263,7 +263,7 @@ float64_t CStatistics::inverse_incomplete_beta(float64_t a, float64_t b,
 			{
 				dithresh=1.0e-4;
 			}
-			yp=-inverse_normal_distribution(y);
+			yp=-inverse_normal_cdf(y);
 			if (greater(y, 0.5))
 			{
 				rflg=1;
@@ -741,7 +741,7 @@ float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
 	return result;
 }
 
-float64_t CStatistics::inverse_normal_distribution(float64_t y0)
+float64_t CStatistics::inverse_normal_cdf(float64_t y0)
 {
 	float64_t expm2;
 	float64_t s2pi;
@@ -1285,7 +1285,7 @@ float64_t CStatistics::inverse_incomplete_gamma_completed(float64_t a,
 	yh=1;
 	dithresh=5*igammaepsilon;
 	d=1/(9*a);
-	y=1-d-inverse_normal_distribution(y0)*CMath::sqrt(d);
+	y=1-d-inverse_normal_cdf(y0)*CMath::sqrt(d);
 	x=a*y*y*y;
 	lgm=lgamma(a);
 	i=0;
