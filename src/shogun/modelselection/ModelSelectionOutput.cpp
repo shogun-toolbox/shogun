@@ -17,12 +17,14 @@
 
 using namespace shogun;
 
-CModelSelectionOutput::CModelSelectionOutput() : CSGObject()
+CModelSelectionOutput::CModelSelectionOutput() : CSGObject(),
+	m_custom_evaluations(NULL)
 {
 }
 
 CModelSelectionOutput::~CModelSelectionOutput()
 {
+	SG_UNREF(m_custom_evaluations);
 }
 
 void CModelSelectionOutput::output_train_indices(SGVector<index_t> indices)
@@ -79,6 +81,8 @@ void CModelSelectionOutput::output_evaluate_result(float64_t result)
 
 void CModelSelectionOutput::add_custom_evaluation(CEvaluation* evaluation)
 {
+	if (!m_custom_evaluations)
+		m_custom_evaluations = new CDynamicObjectArray();
 	m_custom_evaluations->append_element(evaluation);
 }
 
