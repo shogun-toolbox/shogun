@@ -532,8 +532,8 @@ void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVe
 		S_delta_sorted[i] = S_delta[sorted_index[i]];
 		new_mu[i] = new_mu[sorted_index[i]];
 		orig_mu[i] = orig_mu[sorted_index[i]];
-		class_index = class_index[sorted_index[i]];
-		delta_steps = delta_steps[sorted_index[i]];
+		class_index[i] = class_index[sorted_index[i]];
+		delta_steps[i] = delta_steps[sorted_index[i]];
 	}
 
 	SGVector<int32_t> valid_flag(S_delta.vlen);
@@ -721,8 +721,8 @@ void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVe
 		S_delta_sorted[i] = S_delta[sorted_index[i]];
 		new_mu[i] = new_mu[sorted_index[i]];
 		orig_mu[i] = orig_mu[sorted_index[i]];
-		class_index = class_index[sorted_index[i]];
-		delta_steps = delta_steps[sorted_index[i]];
+		class_index[i] = class_index[sorted_index[i]];
+		delta_steps[i] = delta_steps[sorted_index[i]];
 	}
 
 	SGVector<int32_t> valid_flag(S_delta.vlen);
