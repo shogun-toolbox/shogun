@@ -39,6 +39,17 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 	set_features(feats, num);
 }
 
+template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
+		SGMatrix< ST > feats, int32_t feat_length, int32_t num_vec)
+: CFeatures(0), m_num_vectors(num_vec), m_num_features(feats.num_rows)
+{
+	REQUIRE(feats.num_cols == feat_length*num_vec, "The number of columns of feats "
+			"must be equal to feat_length times num_vec\n");
+	init();
+	SGMatrix< ST >* feats_list = feats.split(num_vec);
+	set_features(feats_list, num_vec);
+}
+
 /* TODO */
 template< class ST > CFeatures* CMatrixFeatures< ST >::duplicate() const
 {

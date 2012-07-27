@@ -39,6 +39,8 @@
 %rename(HMSVMModel) CHMSVMModel;
 %rename(HMSVMLabels) CHMSVMLabels;
 %rename(Sequence) CSequence;
+%rename(StateModel) CStateModel;
+%rename(TwoStateModel) CTwoStateModel;
 
 %rename(RiskData) CRiskData;
 %rename(MulticlassRiskFunction) CMulticlassRiskFunction;
@@ -71,6 +73,9 @@
 %include <shogun/structure/MulticlassSOLabels.h>
 %include <shogun/structure/HMSVMModel.h>
 %include <shogun/structure/HMSVMLabels.h>
+%include <shogun/structure/StateModelTypes.h>
+%include <shogun/structure/StateModel.h>
+%include <shogun/structure/TwoStateModel.h>
 
 %include <shogun/structure/libbmrm.h>
 %include <shogun/structure/libppbm.h>

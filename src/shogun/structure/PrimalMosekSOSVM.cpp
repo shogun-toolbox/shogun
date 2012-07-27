@@ -49,6 +49,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	int32_t M = m_model->get_dim();
 	// Number of auxiliary variables in the optimization vector
 	int32_t num_aux = m_model->get_num_aux();
+	// Number of auxiliary constraints
+	int32_t num_aux_con = m_model->get_num_aux_con();
 	// Number of training examples
 	int32_t N = m_features->get_num_vectors();
 
@@ -69,11 +71,9 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	m_model->init_opt(A, a, B, b, lb, ub, C);
 
 	// Input terms of the problem that do not change between iterations
-	if ( mosek->init_sosvm(M, N, num_aux, C, lb, ub, A, b) != MSK_RES_OK )
+	if ( mosek->init_sosvm(M, N, num_aux, num_aux_con, C, lb, ub, A, b) != MSK_RES_OK )
 	{
-		SG_PRINT("Problem occurred writing constraints in MOSEK object..."
-			 "aborting training of PrimalMosekSOSVM\n");
-
+		// MOSEK error took place
 		return false;
 	}
 
@@ -96,7 +96,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	}
 
 	// Initialize variables used in the loop
-	int32_t     num_con     = m_model->get_num_aux_con();	// number of constraints
+	int32_t     num_con     = num_aux_con;	// number of constraints
 	int32_t     old_num_con = num_con;
 	float64_t   slack       = 0.0;
 	float64_t   max_slack   = 0.0;
@@ -178,16 +178,16 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			if ( i < M )
 				m_w[i] = sol[i];
 			else if ( i < M+num_aux )
-				aux[i-M-num_aux] = sol[i];
+				aux[i-M] = sol[i];
 			else
-				m_slacks[i-M] = sol[i];
+				m_slacks[i-M-num_aux] = sol[i];
 		}
 
 	} while ( old_num_con != num_con && ! exception );
 
 	// Free resources
-	SG_UNREF(mosek);
 	SG_UNREF(results);
+	SG_UNREF(mosek);
 
 	return true;
 }

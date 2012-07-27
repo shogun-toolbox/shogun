@@ -478,3 +478,46 @@ namespace shogun
 %include <shogun/features/ExplicitSpecFeatures.h>
 %include <shogun/features/ImplicitWeightedSpecFeatures.h>
 %include <shogun/features/LatentFeatures.h>
+%include <shogun/features/MatrixFeatures.h>
+
+/* Templated Class MatrixFeatures */
+%include <shogun/features/MatrixFeatures.h>
+namespace shogun
+{
+#ifdef USE_BOOL
+    %template(BoolMatrixFeatures) CMatrixFeatures<bool>;
+#endif
+#ifdef USE_CHAR
+    %template(CharMatrixFeatures) CMatrixFeatures<char>;
+#endif
+#ifdef USE_UINT8
+    %template(ByteMatrixFeatures) CMatrixFeatures<uint8_t>;
+#endif
+#ifdef USE_UINT16
+    %template(WordMatrixFeatures) CMatrixFeatures<uint16_t>;
+#endif
+#ifdef USE_INT16
+    %template(ShortMatrixFeatures) CMatrixFeatures<int16_t>;
+#endif
+#ifdef USE_INT32
+    %template(IntMatrixFeatures)  CMatrixFeatures<int32_t>;
+#endif
+#ifdef USE_UINT32
+    %template(UIntMatrixFeatures)  CMatrixFeatures<uint32_t>;
+#endif
+#ifdef USE_INT64
+    %template(LongIntMatrixFeatures)  CMatrixFeatures<int64_t>;
+#endif
+#ifdef USE_UINT64
+    %template(ULongIntMatrixFeatures)  CMatrixFeatures<uint64_t>;
+#endif
+#ifdef USE_FLOATMAX
+    %template(LongRealMatrixFeatures) CMatrixFeatures<floatmax_t>;
+#endif
+#ifdef USE_FLOAT32
+    %template(ShortRealMatrixFeatures) CMatrixFeatures<float32_t>;
+#endif
+#ifdef USE_FLOAT64
+    %template(RealMatrixFeatures) CMatrixFeatures<float64_t>;
+#endif
+}

@@ -81,7 +81,8 @@ class CMosek : public CSGObject
 		 *
 		 * @return MSK result code
 		 */
-		MSKrescodee init_sosvm(int32_t M, int32_t N, int32_t num_aux,
+		MSKrescodee init_sosvm(int32_t M, int32_t N,
+				int32_t num_aux, int32_t num_aux_con,
 				SGMatrix< float64_t > C, SGVector< float64_t > lb,
 				SGVector< float64_t > ub, SGMatrix< float64_t > A,
 				SGVector< float64_t > b);

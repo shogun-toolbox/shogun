@@ -54,9 +54,8 @@ struct CResultSet : public CSGObject
  * pointers to the functions that are dependent on the application, i.e. the 
  * combined feature representation \f$\Psi(\bold{x},\bold{y})\f$ and the argmax
  * function \f$ {\arg\max} _{\bold{y} \neq \bold{y}_i} \left \langle { \bold{w}, 
- * \Psi(\bold{x}_i,\bold{y}) }  \right \rangle \f$. See: TODO pointer to an 
- * example of these functions is implemented, e.g. for HM-SVM and TODO reference
- * to the paper.
+ * \Psi(\bold{x}_i,\bold{y}) }  \right \rangle \f$. See: MulticlassModel.h and
+ * .cpp for an example of these functions implemented.
  */
 class CStructuredModel : public CSGObject
 {

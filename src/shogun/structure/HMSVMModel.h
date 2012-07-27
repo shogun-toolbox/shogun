@@ -13,9 +13,13 @@
 
 #include <shogun/structure/StructuredModel.h>
 #include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/StateModelTypes.h>
+#include <shogun/structure/StateModel.h>
 
 namespace shogun
 {
+
+enum EStateModelType;
 
 /**
  * @brief Class CHMSVMModel TODO
@@ -32,7 +36,7 @@ class CHMSVMModel : public CStructuredModel
 		 * @param labels HMSVM labels
 		 * @param num_obs number of observations
 		 */
-		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, int32_t num_obs);
+		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs);
 
 		/** destructor */
 		virtual ~CHMSVMModel();
@@ -102,11 +106,6 @@ class CHMSVMModel : public CStructuredModel
 		virtual bool check_training_setup() const;
 
 		/**
-		 * TODO DOC
-		 */
-		static CHMSVMModel* simulate_two_state_data();
-
-		/**
 		 * get the number of auxiliary variables to introduce in the
 		 * optimization problem. The auxiliary variables are used to
 		 * implement smoothness regularization between adjacent emission
@@ -129,42 +128,7 @@ class CHMSVMModel : public CStructuredModel
 		/* internal initialization */
 		void init();
 
-		/**
-		 * helper method for the computation of psi(x,y) performed in
-		 * get_joint_feature_vector. In particular, it is in charge of
-		 * updating the components of psi associated with the transmission
-		 * (features between the previous state and the current state)
-		 *
-		 * @param psi_trans pointer to the beginning of the transmission
-		 * part of psi
-		 * @param y the complete sequence of states
-		 * @param i index of the current state
-		 * @param S total number of states
-		 */
-		void add_transmission(float64_t* psi_trans, CSequence* y, int32_t i, int32_t S) const;
-
-		/**
-		 * helper method for the computation of psi(x,y) performed in
-		 * get_joint_feature_vector. In particular, it is in charge of
-		 * updating the components of psi associated with the emission
-		 * (features between the state and the observation sequence)
-		 *
-		 * @param psi_em pointer to the beginning of the emission part
-		 * of psi
-		 * @param x_i the current observation sequence
-		 * @param y the complete sequence of states
-		 * @param i index of the current state
-		 * @param D number of features of the feature vector x
-		 */
-		void add_emission(float64_t* psi_em, float64_t* x_i, CSequence* y, int32_t i, int32_t D) const;
-
 	private:
-		/** distribution of start states*/
-		SGVector< int32_t > m_p;
-
-		/** distribution of end states */
-		SGVector< int32_t > m_q;
-
 		/** the number of states */
 		int32_t m_num_states;
 
@@ -173,6 +137,9 @@ class CHMSVMModel : public CStructuredModel
 
 		/** the number of auxiliary variables */
 		int32_t m_num_aux;
+
+		/** the state model */
+		CStateModel* m_state_model;
 
 }; /* class CHMSVMModel */
 

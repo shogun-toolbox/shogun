@@ -290,7 +290,7 @@ void SGMatrix<float64_t>::display_matrix(
 	{
 		SG_SPRINT("%s[", prefix);
 		for (int32_t j=0; j<cols; j++)
-			SG_SPRINT("%s\t%.18g%s", prefix, (double) matrix[j*rows+i],
+			SG_SPRINT("%s\t%.4g%s", prefix, (double) matrix[j*rows+i],
 				j==cols-1? "" : ",");
 		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
 	}
@@ -687,17 +687,19 @@ SGMatrix<T>* SGMatrix<T>::split(int32_t num_components)
 		num_cols, num_components);
 
 	int32_t new_num_cols = num_cols / num_components;
+	int32_t start;
 	SGMatrix<T>* out = SG_MALLOC(SGMatrix<T>, num_components);
 
 	for ( int32_t i = 0 ; i < num_components ; ++i )
 	{
 		new (&out[i]) SGMatrix<T>(num_rows, new_num_cols);
+		start = i*num_rows*new_num_cols;
 
 		for ( int32_t row = 0 ; row < num_rows ; ++row )
 			for ( int32_t col = 0 ; col < new_num_cols ; ++col )
 			{
-				out[i][row*new_num_cols + col] =
-					matrix[i*new_num_cols + row*num_cols + col];
+				out[i][col*num_rows + row] =
+					matrix[start + col*num_rows + row];
 			}
 	}
 

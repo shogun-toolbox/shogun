@@ -44,6 +44,19 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		 */
 		CMatrixFeatures(SGMatrix< ST >* feats, int32_t num);
 
+		/**
+		 * constructor using the data of all the features concatenated in a
+		 * matrix. All the features are assumed to have the same length. The number
+		 * of colums of feats must be equal to feat_length times num_vec. The number
+		 * of features per vector is equal to the number of rows of feats.
+		 *
+		 * @param feats concatenation of the features
+		 * @param feat_length length of each feature
+		 * @param num_vec number of feature vectors
+		 * @param num_feat number of features per vector
+		 */
+		CMatrixFeatures(SGMatrix< ST > feats, int32_t feat_length, int32_t num_vec);
+
 		/** duplicate feature object
 		 *
 		 * @return feature object

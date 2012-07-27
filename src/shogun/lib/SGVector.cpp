@@ -283,7 +283,7 @@ void SGVector<float64_t>::display_vector(const float64_t* vector, int32_t n, con
 	ASSERT(n>=0);
 	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%.18g%s", prefix, vector[i], i==n-1? "" : ",");
+		SG_SPRINT("%s%.4g%s", prefix, vector[i], i==n-1? "" : ",");
 	SG_SPRINT("%s]\n", prefix);
 }
 

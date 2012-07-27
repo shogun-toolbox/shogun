@@ -74,6 +74,18 @@ class CHMSVMLabels : public CStructuredLabels
 		 */
 		CHMSVMLabels(int32_t num_labels, int32_t num_states);
 
+		/**
+		 * constructor using the data of all the labels concatenated. All the
+		 * labels are assumed to have the same length. The length of labels must
+		 * be equal to label_length times num_labels.
+		 *
+		 * @param labels concatenation of the labels
+		 * @param label_length number of elements in each label
+		 * @param num_labels number of labels
+		 * @param num_states number of states
+		 */
+		CHMSVMLabels(SGVector< int32_t > labels, int32_t label_length, int32_t num_labels, int32_t num_states);
+
 		/** destructor */
 		virtual ~CHMSVMLabels();
 
