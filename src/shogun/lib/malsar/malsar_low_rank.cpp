@@ -38,22 +38,6 @@ malsar_result_t malsar_low_rank(
 	// initialize weight vector and bias for each task
 	MatrixXd Ws = MatrixXd::Zero(n_feats, n_tasks);
 	VectorXd Cs = VectorXd::Zero(n_tasks);
-	for (task=0; task<n_tasks; task++)
-	{
-		int n_pos = 0;
-		int n_neg = 0;
-		SGVector<index_t> task_idx = options.tasks_indices[task];
-		for (int i=0; i<task_idx.vlen; i++)
-		{
-			if (y[task_idx[i]] > 0)
-				n_pos++;
-			else
-				n_neg++;
-		}
-		SG_SDEBUG("There are %d positive and %d negative examples in task %d\n",n_pos,n_neg,task);
-		Cs[task] = CMath::log(double(n_pos)/n_neg);
-	}
-
 	MatrixXd Wz=Ws, Wzp=Ws, Wz_old=Ws, delta_Wzp=Ws, gWs=Ws;
 	VectorXd Cz=Cs, Czp=Cs, Cz_old=Cs, delta_Czp=Cs, gCs=Cs;
 
@@ -131,7 +115,7 @@ malsar_result_t malsar_low_rank(
 				int n_task_vecs = task_idx.vlen;
 				for (int i=0; i<n_task_vecs; i++)
 				{
-					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Cs[task]);
+					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Czp[task]);
 					double bb = CMath::max(aa,0.0);
 
 					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
@@ -180,6 +164,7 @@ malsar_result_t malsar_low_rank(
 		JacobiSVD<MatrixXd> svd(Wzp, EigenvaluesOnly);
 		obj += rho*svd.singularValues().sum();
 		internal::set_is_malloc_allowed(false);
+
 
 		// check if process should be terminated 
 		switch (options.termination)

@@ -43,6 +43,9 @@ public:
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "Subset"; }
 
+	/** get subset indices */
+	SGVector<index_t> get_subset_idx() const { return m_subset_idx; }
+
 private:
 	void init();
 

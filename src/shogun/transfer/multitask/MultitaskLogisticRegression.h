@@ -74,6 +74,9 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		/** train machine */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+		/** subset mapped task indices */
+		SGVector<index_t>* get_subset_tasks_indices();
+
 	private:
 
 		/** register parameters */

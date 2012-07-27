@@ -366,6 +366,11 @@ void CFeatures::remove_all_subsets()
 	subset_changed_post();
 }
 
+CSubsetStack* CFeatures::get_subset_stack()
+{
+	return m_subset_stack;
+}
+
 CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
 {
 	SG_ERROR("%s::copy_subset(): copy_subset and therefore model storage of "

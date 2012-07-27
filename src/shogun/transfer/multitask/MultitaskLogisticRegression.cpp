@@ -11,6 +11,11 @@
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 
+#include <map>
+#include <vector>
+
+using namespace std;
+
 namespace shogun
 {
 
@@ -136,5 +141,41 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 
 	return true;
 }
+
+SGVector<index_t>* CMultitaskLogisticRegression::get_subset_tasks_indices()
+{
+	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	SGVector<index_t>* tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
+
+	CSubsetStack* sstack = features->get_subset_stack();
+	map<index_t,index_t> subset_inv_map = map<index_t,index_t>();
+	for (int32_t i=0; i<sstack->get_size(); i++)
+		subset_inv_map[sstack->subset_idx_conversion(i)] = i;
+
+	SGVector<index_t>* subset_tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
+	for (int32_t i=0; i<n_tasks; i++)
+	{
+		new (&subset_tasks_indices[i]) SGVector<index_t>();
+		SGVector<index_t> task = tasks_indices[i];
+		//task.display_vector("task");
+		vector<index_t> cutted = vector<index_t>();
+		for (int32_t j=0; j<task.vlen; j++)
+		{
+			if (subset_inv_map.count(task[j]))
+				cutted.push_back(subset_inv_map[task[j]]);
+		}
+		SGVector<index_t> cutted_task(cutted.size());
+		for (int32_t j=0; j<cutted_task.vlen; j++)
+			cutted_task[j] = cutted[j];
+		//cutted_task.display_vector("cutted");
+		subset_tasks_indices[i] = cutted_task;
+	}
+	for (int32_t i=0; i<n_tasks; i++)
+		tasks_indices[i].~SGVector<index_t>();
+	SG_FREE(tasks_indices);
+	
+	return subset_tasks_indices;
+}
+
 
 }

@@ -71,6 +71,7 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 
 	ASSERT(features);
 	ASSERT(m_labels);
+	ASSERT(m_task_relation);
 
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
@@ -83,6 +84,8 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
 	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 	options.n_clusters = m_num_clusters;
+	SGVector<index_t>* subset_tasks_indices = get_subset_tasks_indices();
+	options.tasks_indices = subset_tasks_indices;
 
 #ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_clustered(
@@ -95,8 +98,10 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
 	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
 #endif
-	
-	ASSERT(m_task_relation);
+
+	for (int32_t i=0; i<options.n_tasks; i++)
+		subset_tasks_indices[i].~SGVector<index_t>();
+	SG_FREE(subset_tasks_indices);
 
 	return true;
 }
