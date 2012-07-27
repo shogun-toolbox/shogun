@@ -265,7 +265,7 @@ float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CLibSVM *svm)
 			num_neg++;
 	}
 
-	int32_t totalSV = svm->get_svm_model()->l;
+	int32_t totalSV = svm->get_support_vectors().vlen;
 	float64_t score = num_neg/(num_neg+num_pos) * totalSV/num_pos + 
 		num_pos/(num_neg+num_pos)*totalSV/num_neg;
 	return score;
