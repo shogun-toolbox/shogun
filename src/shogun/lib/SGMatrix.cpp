@@ -623,7 +623,8 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 
 	/* allocate result matrix */
 	SGMatrix<float64_t> C(rows_A, cols_B);
-
+	C.zero();
+#ifdef HAVE_LAPACK
 	/* multiply */
 	cblas_dgemm(CblasColMajor,
 			transpose_A ? CblasTrans : CblasNoTrans,
@@ -631,6 +632,16 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 			rows_A, cols_B, cols_A, scale,
 			A.matrix, A.num_rows, B.matrix, B.num_rows,
 			0.0, C.matrix, C.num_rows);
+#else
+	for (int32_t i=0; i<rows_A; i++)
+	{
+		for (int32_t j=0; j<cols_B; j++)
+		{
+			for (int32_t k=0; k<cols_A; k++)
+				C(i,j) += A(i,k)*B(k,j);
+		}
+	}
+#endif
 
 	return C;
 }

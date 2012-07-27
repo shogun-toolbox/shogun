@@ -196,7 +196,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		void compute_few_eigenvectors(double* matrix_, double*& eigenvalues, double*& eigenvectors,
                                       int n, int il, int iu);
-
+#endif
 		/* Computes scale* A*B, where A and B may be transposed.
 		 * Asserts for matching inner dimensions.
 		 * @param A matrix A
@@ -209,7 +209,7 @@ template<class T> class SGMatrix : public SGReferencedData
 				SGMatrix<float64_t> A, SGMatrix<float64_t> B,
 				bool transpose_A=false, bool transpose_B=false,
 				float64_t scale=1.0);
-
+#ifdef HAVE_LAPACK
 		/// inverses square matrix in-place
 		static void inverse(SGMatrix<float64_t> matrix);
 
