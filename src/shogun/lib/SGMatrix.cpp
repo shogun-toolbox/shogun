@@ -603,6 +603,8 @@ void SGMatrix<T>::compute_few_eigenvectors(double* matrix_, double*& eigenvalues
 	ASSERT(status==0);
 }
 
+#endif //HAVE_LAPACK
+
 template <class T>
 SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 		SGMatrix<float64_t> A, SGMatrix<float64_t> B,
@@ -676,7 +678,6 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 	return result;
 }
 
-#endif //HAVE_LAPACK
 
 template class SGMatrix<bool>;
 template class SGMatrix<char>;
