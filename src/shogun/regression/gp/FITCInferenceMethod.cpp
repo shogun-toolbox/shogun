@@ -21,6 +21,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <iostream>
 
 using namespace shogun;
 using namespace Eigen;
@@ -44,37 +45,9 @@ CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 void CFITCInferenceMethod::init()
 {
 	m_latent_features = NULL;
-	m_ind_noise = 1e-6;
+	m_ind_noise = 1e-10;
 	SG_ADD((CSGObject**)&m_latent_features, "latent_features",
 			"Latent Features", MS_NOT_AVAILABLE);
-}
-
-void CFITCInferenceMethod::set_latent_features(CFeatures* feat)
-{
-	SG_REF(feat);
-	SG_UNREF(m_latent_features);
-	m_latent_features=feat;
-
-	if (m_latent_features && m_latent_features->has_property(FP_DOT) && m_latent_features->get_num_vectors())
-		m_latent_matrix =
-				((CDotFeatures*)m_latent_features)->get_computed_dot_feature_matrix();
-
-	else if (m_latent_features && m_latent_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* subfeat =
-				(CDotFeatures*)((CCombinedFeatures*)m_latent_features)->
-				get_first_feature_obj();
-
-		if (m_latent_features->get_num_vectors())
-			m_latent_matrix = subfeat->get_computed_dot_feature_matrix();
-
-		SG_UNREF(subfeat);
-	}
-
-	update_data_means();
-	update_train_kernel();
-	update_chol();
-	update_alpha();
 }
 
 CFITCInferenceMethod::~CFITCInferenceMethod()
@@ -245,15 +218,17 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 	for (index_t j = 0; j < m_ktru.rows(); j++)
 	{
 		for (index_t i = 0; i < m_ktru.cols(); i++)
-			W(i,j) = m_ktru(i,j) / m_dg[j];
+			W(i,j) = m_ktru(i,j) / sqrt(m_dg[j]);
 	}
-
 	/*    W = chol(Kuu+W*W'+snu2*eye(nu))'\Ku; % inv(K) = inv(G) - inv(G)*W'*W*inv(G);
  *
  */
 	LLT<MatrixXd> CholW(m_kuu + W*W.transpose() +
 			m_ind_noise*MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 	W = CholW.matrixL();
+
+
+	W = W.colPivHouseholderQr().solve(m_ktru);
 
 	/*    al = (y-m - W'*(W*((y-m)./dg)))./dg;
 	 * */
@@ -269,6 +244,7 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 	al = true_lab - al;
 
 	al = al.cwiseQuotient(m_dg);
+
 
 	//iKuu = solve_chol(Luu,eye(nu));                       % inv(Kuu + snu2*I) = iKuu
 	MatrixXd iKuu = m_kuu.selfadjointView<Eigen::Upper>().llt()
@@ -329,9 +305,12 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 			if (param->m_datatype.m_ctype == CT_VECTOR ||
 					param->m_datatype.m_ctype == CT_SGVECTOR)
 			{
-				 deriv = m_kernel->get_parameter_gradient(param, obj, g);
-				 derivtru = m_kernel->get_parameter_gradient(param, obj, g);
-				 derivuu = m_kernel->get_parameter_gradient(param, obj, g);
+				m_kernel->init(m_features, m_features);
+				deriv = m_kernel->get_parameter_gradient(param, obj);
+				m_kernel->init(m_latent_features, m_features);
+				derivtru = m_kernel->get_parameter_gradient(param, obj);
+				m_kernel->init(m_latent_features, m_latent_features);
+				derivuu = m_kernel->get_parameter_gradient(param, obj);
 				 mean_derivatives = m_mean->get_parameter_derivative(
 				 				param, obj, m_feature_matrix, g);
 				 for (index_t d = 0; d < mean_derivatives.vlen; d++)
@@ -345,10 +324,12 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 				 for (index_t d = 0; d < mean_derivatives.vlen; d++)
 					 mean_dev_temp[d] = mean_derivatives[d];
 
+				m_kernel->init(m_features, m_features);
 				deriv = m_kernel->get_parameter_gradient(param, obj);
+				m_kernel->init(m_latent_features, m_features);
 				derivtru = m_kernel->get_parameter_gradient(param, obj);
+				m_kernel->init(m_latent_features, m_latent_features);
 				derivuu = m_kernel->get_parameter_gradient(param, obj);
-
 			}
 
 			sum[0] = 0;
@@ -385,22 +366,23 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 			    for (index_t d = 0; d < ddiagKi.rows(); d++)
 			    	v(d,d) = v(d,d) - temp.col(d).sum();
 
-			    sum = sum + ddiagKi.transpose()*VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
+			    sum = sum + ddiagKi.diagonal().transpose()*VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
 			    sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
-			    sum = sum - al.transpose()*(v.cwiseProduct(al));
+			    sum = sum - al.transpose()*(v.diagonal().cwiseProduct(al));
 			    MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
 			    VectorXd Wdg_sum(Wdg.rows());
 
 			    for (index_t d = 0; d < Wdg.rows(); d++)
 			    	Wdg_sum[d] = Wdg_temp.col(d).sum();
 
-			    sum = sum - Wdg_sum*v;
+			    sum = sum - v.diagonal().transpose()*Wdg_sum;
 
 			    Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
 
 			    sum[0] = sum[0] - Wdg_temp.sum();
 
 				sum /= 2.0;
+
 				variables[g] = sum[0];
 				deriv_found = true;
 			}
@@ -428,24 +410,23 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 
 	sum[0] = 0;
 
-	sum = al*al.transpose();
 	MatrixXd W_temp = W.cwiseProduct(W);
 	VectorXd W_sum(W_temp.rows());
 
     for (index_t d = 0; d < W_sum.rows(); d++)
     	W_sum[d] = W_temp.col(d).sum();
 
-    W_temp = W_temp.cwiseQuotient(m_dg.cwiseProduct(m_dg));
+    W_sum = W_sum.cwiseQuotient(m_dg.cwiseProduct(m_dg));
 
-    sum[0] = W_temp.sum();
+    sum[0] = W_sum.sum();
 
-    sum = sum - al.transpose()*al;
+    sum = sum + al.transpose()*al;
 
 	sum[0] = VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg).sum() - sum[0];
 
-	sum = sum*m_sigma;
+	sum = sum*m_sigma*m_sigma;
 	float64_t dKuui = 2.0*m_ind_noise;
-	VectorXd R = -dKuui*B;
+	MatrixXd R = -dKuui*B;
 
 	MatrixXd temp = R.cwiseProduct(B);
 	VectorXd v(temp.rows());
@@ -463,7 +444,7 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 	for (index_t d = 0; d < Wdg.rows(); d++)
 	    Wdg_sum[d] = Wdg_temp.col(d).sum();
 
-	sum = sum - Wdg_sum*v/2.0;
+	sum = sum - v.transpose()*Wdg_sum/2.0;
 
 
     Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
@@ -499,16 +480,16 @@ float64_t CFITCInferenceMethod::get_negative_marginal_likelihood()
 		temp[i] = log(m_dg[i]);
 
 	for (index_t j = 0; j < m_chol_utr.rows(); j++)
-		temp2[j] = m_chol_utr(j,j);
+		temp2[j] = log(m_chol_utr(j,j));
 
 	VectorXd sum(1);
 
 	sum[0] = temp.sum();
-	sum[0] += temp2.sum();
 	sum = sum + m_r.transpose()*m_r;
 	sum = sum - m_be.transpose()*m_be;
 	sum[0] += m_label_vector.vlen*log(2*CMath::PI);
 	sum /= 2.0;
+	sum[0] += temp2.sum();
 
 	return sum[0];
 }
@@ -559,7 +540,7 @@ void CFITCInferenceMethod::update_train_kernel()
 
 	m_kernel->cleanup();
 
-	m_kernel->init(m_features, m_latent_features);
+	m_kernel->init(m_latent_features, m_features);
 
 	//K(X, X)
 	kernel_matrix = m_kernel->get_kernel_matrix();
@@ -587,27 +568,29 @@ void CFITCInferenceMethod::update_chol()
 
 	m_chol_uu = Luu.matrixL();
 
-	MatrixXd V = m_ktru.colPivHouseholderQr().solve(m_chol_uu);
+	MatrixXd V = m_chol_uu.colPivHouseholderQr().solve(m_ktru);
 
-	MatrixXd temp_V = V*V.transpose();
+	MatrixXd temp_V = V.cwiseProduct(V);
 
 	m_dg.resize(m_ktrtr.num_cols);
 	VectorXd sqrt_dg(m_ktrtr.num_cols);
 
 	for (index_t i = 0; i < m_ktrtr.num_cols; i++)
 	{
-		m_dg[i] = m_ktrtr(i,i) + m_sigma + temp_V.col(i).sum();
+		m_dg[i] = m_ktrtr(i,i) + m_sigma*m_sigma - temp_V.col(i).sum();
 		sqrt_dg[i] = sqrt(m_dg[i]);
 	}
 
-	for (index_t i = 0; i < V.cols(); i++)
-		V.col(i) = V.col(i).cwiseQuotient(sqrt_dg);
-
+	for (index_t i = 0; i < V.rows(); i++)
+	{
+		for (index_t j = 0; j < V.cols(); j++)
+			V(i,j) /= sqrt_dg[j];
+	}
 
 	LLT<MatrixXd> Lu(V*V.transpose() +
 				MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
-	m_chol_utr = Luu.matrixL();
+	m_chol_utr = Lu.matrixL();
 
 	VectorXd true_lab(m_data_means.vlen);
 
@@ -620,7 +603,11 @@ void CFITCInferenceMethod::update_chol()
 
 	MatrixXd iKuu = m_chol_uu.llt().solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
-	MatrixXd chol = (m_chol_utr*m_chol_uu).llt().solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+	MatrixXd chol = m_chol_utr*m_chol_uu;
+
+	chol *= chol.transpose();
+
+	chol = chol.llt().solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
 	chol = chol - iKuu;
 
@@ -644,7 +631,7 @@ void CFITCInferenceMethod::update_alpha()
 	m_alpha = SGVector<float64_t>(alph.rows());
 
 	for (index_t i = 0; i < alph.rows(); i++)
-		m_alpha[i] = alph(0,i);
+		m_alpha[i] = alph(i,0);
 
 }
 

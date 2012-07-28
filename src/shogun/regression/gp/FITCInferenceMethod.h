@@ -106,22 +106,6 @@ public:
 		return "FITCInferenceMethod";
 	}
 
-	/** set features
-	*
-	* @param feat features to set
-	*/
-	virtual void set_latent_features(CFeatures* feat);
-
-	/** get features
-	*
-	* @return features
-	*/
-	virtual CFeatures* get_latent_features()
-	{
-		SG_REF(m_latent_features);
-		return m_latent_features;
-	}
-
 	/*Get the gradient
 	 *
 	 * @return Map of gradient. Keys are names of parameters, values are
@@ -172,13 +156,9 @@ private:
 
 	Eigen::MatrixXd m_chol_utr;
 
-	SGMatrix<float64_t> m_latent_matrix;
-
 	Eigen::MatrixXd m_kuu;
 
 	Eigen::MatrixXd m_ktru;
-
-	CFeatures* m_latent_features;
 
 	Eigen::VectorXd m_dg;
 

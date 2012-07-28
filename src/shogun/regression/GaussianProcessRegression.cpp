@@ -69,7 +69,11 @@ void CGaussianProcessRegression::update_kernel_matrices()
 
 		kernel->cleanup();
 
-		kernel->init(m_features, m_data);
+		if (m_method->get_latent_features())
+			kernel->init(m_method->get_latent_features(), m_data);
+
+		else
+			kernel->init(m_data, m_data);
 
 		//K(X_test, X_train)
 		m_k_trts = kernel->get_kernel_matrix();
@@ -196,6 +200,15 @@ SGVector<float64_t> CGaussianProcessRegression::getMeanVector()
 
 	SGVector<float64_t> m_alpha = m_method->get_alpha();
 
+	CMeanFunction* mean_function = m_method->get_mean();
+
+	SGMatrix<float64_t> features = ((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
+
+	if (!mean_function)
+		SG_ERROR("Mean function is NULL!\n");
+
+	SGVector<float64_t> means = mean_function->get_mean_vector(features);
+
 	SGVector< float64_t > result_vector(m_labels->get_num_labels());
 	
 	//Here we multiply K*^t by alpha to receive the mean predictions.
@@ -203,7 +216,9 @@ SGVector<float64_t> CGaussianProcessRegression::getMeanVector()
 		    m_alpha.vlen, 1.0, m_k_trts.matrix,
 		    m_k_trts.num_cols, m_alpha.vector, 1, 0.0,
 		    result_vector.vector, 1);
-	
+	result_vector.display_vector("ll");
+	m_k_trts.display_matrix("sdf");
+
 	CLikelihoodModel* lik = m_method->get_model();
 
 	result_vector = lik->evaluate_means(result_vector);
@@ -221,6 +236,9 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 		SG_ERROR("No testing features!\n");
 
 	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();
+
+	if (diagonal.vlen > 0)
+	{
 	SGVector<float64_t> diagonal2(m_data->get_num_vectors());
 
 	SGMatrix<float64_t> temp1(m_data->get_num_vectors(), diagonal.vlen);
@@ -281,6 +299,53 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 	SG_UNREF(lik);
 
 	return lik->evaluate_variances(result);
+	}
+
+	else
+	{
+		SGMatrix<float64_t> m_L = m_method->get_cholesky();
+
+		SGMatrix<float64_t> temp1(m_k_trts.num_rows, m_k_trts.num_cols);
+		SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
+
+		memcpy(temp1.matrix, m_k_trts.matrix,
+				m_k_trts.num_cols*m_k_trts.num_rows*sizeof(float64_t));
+
+		memcpy(temp2.matrix, m_L.matrix,
+				m_L.num_cols*m_L.num_rows*sizeof(float64_t));
+
+		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m_L.num_rows, m_k_trts.num_cols,
+			m_L.num_rows, 1.0, m_L.matrix, m_L.num_cols, m_k_trts.matrix, m_k_trts.num_cols, 0.0,
+			temp1.matrix, temp1.num_cols);
+
+		for (index_t i = 0; i < temp1.num_rows; i++)
+		{
+			for (index_t j = 0; j < temp1.num_cols; j++)
+				temp1(i,j) *= m_k_trts(i,j);
+		}
+
+		SGVector<float64_t> temp3(temp2.num_cols);
+
+		for (index_t i = 0; i < temp1.num_cols; i++)
+		{
+			float64_t sum = 0;
+			for (index_t j = 0; j < temp1.num_rows; j++)
+				sum += temp1(j,i);
+			temp3[i] = sum;
+		}
+
+		SGVector<float64_t> result(m_k_tsts.num_cols);
+
+		//Subtract V from K(Test,Test) to get covariances.
+		for (index_t i = 0; i < m_k_tsts.num_cols; i++)
+			result[i] = m_k_tsts(i,i) + temp3[i];
+
+		CLikelihoodModel* lik = m_method->get_model();
+
+		SG_UNREF(lik);
+
+		return lik->evaluate_variances(result);
+	}
 }
 
 

@@ -185,6 +185,23 @@ public:
 	 */
 	inline float64_t get_scale() { return m_scale; }
 
+	/** set features
+	*
+	* @param feat features to set
+	*/
+	virtual void set_latent_features(CFeatures* feat);
+
+	/** get features
+	*
+	* @return features
+	*/
+	virtual CFeatures* get_latent_features()
+	{
+		SG_REF(m_latent_features);
+		return m_latent_features;
+	}
+
+
 protected:
 	/** Update Alpha and Cholesky Matrices.
 	 */
@@ -220,6 +237,8 @@ protected:
 	/*Mean Function*/
 	CMeanFunction* m_mean;
 
+	CFeatures* m_latent_features;
+
 	/*Likelihood function to use
 	 * \f[
 	 *   p(y|f)
@@ -244,6 +263,9 @@ protected:
 
 	/*Kernel matrix from features*/
 	SGMatrix<float64_t> m_ktrtr;
+
+	SGMatrix<float64_t> m_latent_matrix;
+
 };
 
 }

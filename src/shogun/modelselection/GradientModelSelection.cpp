@@ -452,13 +452,13 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	double minf; //the minimum objective value, upon return
 
-	test_gradients();
+//	test_gradients();
 
 	//Optimize our function!
 	if (nlopt_optimize(opt, x, &minf) < 0)
 		SG_ERROR("nlopt failed!\n");
 
-	test_gradients();
+//	test_gradients();
 
 	//Clean up.
 	SG_FREE(lb);
