@@ -75,14 +75,12 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 
 int32_t CRelaxedTree::apply_one(int32_t idx)
 {
-	//SG_PRINT("Applying one...\n");
 	node_t *node = m_root;
 	int32_t klass = -1;
 	while (node != NULL)
 	{
 		CLibSVM *svm = (CLibSVM *)m_machines->get_element(node->machine());
 		float64_t result = svm->apply_one(idx);
-		//SG_PRINT("  --> %.4lf\n", result);
 
 		if (result < 0)
 		{
@@ -146,20 +144,10 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 
 	CMulticlassLabels *lab = dynamic_cast<CMulticlassLabels *>(m_labels);
 
-	//SG_PRINT("Estimating confusion matrix...\n");
 	RelaxedTreeUtil util;
 	SGMatrix<float64_t> conf_mat = util.estimate_confusion_matrix(m_machine_for_confusion_matrix,
 			m_feats, lab, m_num_classes);
 
-	//SG_PRINT("Confusion Matrix: =====>\n");
-	//for (int32_t i=0; i < conf_mat.num_rows; ++i)
-	//{
-	//	for (int32_t j=0; j < conf_mat.num_cols; ++j)
-	//		SG_PRINT("%6.2f ", conf_mat(i,j));
-	//	SG_PRINT("\n");
-	//}
-
-	//SG_PRINT("Training root node...\n");
 	// train root
 	SGVector<int32_t> classes(m_num_classes);
 	for (int32_t i=0; i < m_num_classes; ++i)
@@ -170,7 +158,6 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 	std::queue<node_t *> node_q;
 	node_q.push(m_root);
 
-	//SG_PRINT("Training subsequent nodes...\n");
 	while (node_q.size() != 0)
 	{
 		node_t *node = node_q.front();
@@ -226,7 +213,6 @@ CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_m
 	CLibSVM *best_svm = NULL;
 	float64_t best_score = std::numeric_limits<float64_t>::max();
 
-	//SG_PRINT("=================\n");
 	std::vector<CRelaxedTree::entry_t> mu_init = init_node(conf_mat, classes);
 	for (std::vector<CRelaxedTree::entry_t>::const_iterator it = mu_init.begin(); it != mu_init.end(); ++it)
 	{
@@ -236,11 +222,6 @@ CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_m
 		
 		SGVector<int32_t> mu = train_node_with_initialization(*it, classes, svm);
 		float64_t score = compute_score(mu, svm);
-		//SG_PRINT("  score = %.2f\n", score);
-		//SG_PRINT("    mu = ");
-		//for (int32_t i=0; i < mu.vlen; ++i)
-		//	SG_PRINT("%3d ", mu[i]);
-		//SG_PRINT("\n");
 
 		if (score < best_score)
 		{
@@ -304,11 +285,6 @@ SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTre
 
 	for (int32_t iiter=0; iiter < m_max_num_iter; ++iiter)
 	{
-		//SG_PRINT("      iiter=%d\n", iiter);
-		//SG_PRINT("      mu = ");
-		//for (int32_t i=0; i < mu.vlen; ++i)
-		//	SG_PRINT("%3d ", mu[i]);
-		//SG_PRINT("\n");
 		long_mu.zero();
 		for (int32_t i=0; i < classes.vlen; ++i)
 			if (mu[i] == 1)
