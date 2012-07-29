@@ -19,6 +19,19 @@ namespace shogun
 struct RelaxedTreeNodeData
 {
 	SGVector<int32_t> mu;
+
+	static void print_data(const RelaxedTreeNodeData &data)
+	{
+		SG_SPRINT("left=(");
+		for (int32_t i=0; i < data.mu.vlen; ++i)
+			if (data.mu[i] == -1)
+				SG_SPRINT("%4d", i);
+		SG_SPRINT("), right=(");
+		for (int32_t i=0; i < data.mu.vlen; ++i)
+			if (data.mu[i] == 1)
+				SG_SPRINT("%4d", i);
+		SG_SPRINT(")\n");
+	}
 };
 
 } /* shogun */ 

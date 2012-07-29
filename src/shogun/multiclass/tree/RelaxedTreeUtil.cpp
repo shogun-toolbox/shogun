@@ -15,7 +15,7 @@ using namespace shogun;
 
 SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMachine *machine, CFeatures *X, CMulticlassLabels *Y, int32_t num_classes)
 {
-	const int32_t N_splits = 5;
+	const int32_t N_splits = 2; // 5
 	CCrossValidationSplitting *split = new CCrossValidationSplitting(Y, N_splits);
 	split->build_subsets();
 

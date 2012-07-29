@@ -9,7 +9,6 @@
 #include <shogun/base/init.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/kernel/GaussianKernel.h>
 
 #define  EPSILON  1e-5
 
@@ -22,7 +21,7 @@ int main(int argc, char** argv)
 
 	init_shogun_with_defaults();
 
-	const char*fname_train = "../data/7class_example4_train.dense";
+	const char*fname_train = "../data/2class_example4_train.dense";
 	CStreamingAsciiFile *train_file = new CStreamingAsciiFile(fname_train);
 	SG_REF(train_file);
 
@@ -34,6 +33,7 @@ int main(int argc, char** argv)
 
 	stream_features->start_parser();
 	SGVector< float64_t > vec;
+	int32_t num_vec=0;
 	while (stream_features->get_next_example())
 	{
 		vec = stream_features->get_vector();
@@ -46,6 +46,10 @@ int main(int argc, char** argv)
 		labvec[num_vectors] = stream_features->get_label();
 		num_vectors++;
 		stream_features->release_example();
+		num_vec++;
+
+		if (num_vec > 200)
+			break;
 	}
 	stream_features->end_parser();
 	mat.num_cols = num_vectors;
@@ -58,14 +62,8 @@ int main(int argc, char** argv)
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 	SG_REF(features);
 
-	const int32_t kernel_cache=0;
-	const float64_t rbf_width=10;
-	CGaussianKernel* kernel = new CGaussianKernel(kernel_cache, rbf_width);
-	SG_REF(kernel);
-
 	// Create RelaxedTree Machine
 	CRelaxedTree *machine = new CRelaxedTree();
-	machine->set_kernel(kernel);
 	SG_REF(machine);
 	machine->set_labels(labels);
 
@@ -75,8 +73,8 @@ int main(int argc, char** argv)
 	machine->set_machine_for_confusion_matrix(svm);
 	machine->train(features);
 
-	/*
-	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(machine->apply(subset_fea));
+	
+	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(machine->apply());
 
 	int32_t correct = 0;
 	for (int32_t i=0; i < output->get_num_labels(); ++i)
@@ -88,12 +86,11 @@ int main(int argc, char** argv)
 	SG_UNREF(machine);
 	SG_UNREF(svm);
 	SG_UNREF(output);
-	SG_UNREF(subset_fea);
 	SG_UNREF(features);
 	SG_UNREF(labels);
 	SG_UNREF(train_file);
 	SG_UNREF(stream_features);
-	*/
+
 	exit_shogun();
 
 	return 0;
