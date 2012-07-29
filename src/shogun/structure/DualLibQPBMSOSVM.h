@@ -65,7 +65,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** set number of iterations for cleaning ICP */
 		inline void set_cleanAfter(uint32_t cleanAfter) { m_cleanAfter=cleanAfter; }
 
-		/** get number of iterations for cleaninng ICP */
+		/** get number of iterations for cleaning ICP */
 		inline uint32_t get_cleanAfter() { return m_cleanAfter; }
 
 		/** set K */
@@ -79,6 +79,12 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** get Tmax */
 		inline uint32_t get_Tmax() { return m_Tmax; }
+
+		/** set verbose */
+		inline void set_verbose(bool verbose) { m_verbose=verbose; }
+
+		/** get verbose */
+		inline bool get_verbose() { return m_verbose; }
 
 		/** get bmrm result */
 		inline bmrm_return_value_T get_bmrm_result() { return m_bmrm_result; }
@@ -114,6 +120,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** Tmax */
 		uint32_t m_Tmax;
+
+		/** verbose */
+		bool m_verbose;
 
 		/** Risk function */
 		CRiskFunction* m_risk_function;

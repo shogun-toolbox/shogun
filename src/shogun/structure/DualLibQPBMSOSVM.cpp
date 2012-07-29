@@ -34,6 +34,7 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	set_cleanAfter(10);
 	set_K(0.4);
 	set_Tmax(100);
+	set_verbose(true);
 	m_risk_function=risk_function;
 }
 
@@ -55,9 +56,13 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	bmrm_data.y=this->m_labels;
 	bmrm_data.w_dim=nDim;
 
+	//TEST
+	SG_SPRINT("I will use lambda = %lf\n", m_lambda);
+	//////
+
 	// call the BMRM solver
 	m_bmrm_result = svm_bmrm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
-			m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,  m_risk_function);
+			m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,  m_verbose, m_risk_function);
 
 	if (m_bmrm_result.exitflag==1)
 	{
