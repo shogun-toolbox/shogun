@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
 	init_shogun_with_defaults();
 
-	const char*fname_train = "../data/2class_example4_train.dense";
+	const char*fname_train = "../data/7class_example4_train.dense";
 	CStreamingAsciiFile *train_file = new CStreamingAsciiFile(fname_train);
 	SG_REF(train_file);
 
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 		stream_features->release_example();
 		num_vec++;
 
-		if (num_vec > 200)
+		if (num_vec > 20000)
 			break;
 	}
 	stream_features->end_parser();
