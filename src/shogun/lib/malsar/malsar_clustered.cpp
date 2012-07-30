@@ -300,7 +300,7 @@ malsar_result_t malsar_clustered(
 	for (int i=0; i<n_feats; i++)
 	{
 		for (task=0; task<n_tasks; task++)
-			tasks_w[i] = Wzp(i,task);
+			tasks_w(i,task) = Wzp(i,task);
 	}
 	//tasks_w.display_matrix();
 	SGVector<float64_t> tasks_c(n_tasks);

@@ -97,11 +97,20 @@ malsar_result_t malsar_joint_feature_learning(
 		while (inner_iter <= 1000)
 		{
 			// compute lasso projection of Ws - gWs/gamma
-			for (task=0; task<n_tasks; task++)
+			for (int i=0; i<n_feats; i++)
 			{
-				Wzp.col(task) = Ws.col(task) - gWs.col(task)/gamma;
-				double norm = Wzp.col(task).lpNorm<2>();
-				Wzp.col(task) *= CMath::max(0.0,norm-rho1/gamma)/norm;
+				Wzp.row(i).noalias() = Ws.row(i) - gWs.row(i)/gamma;
+				double norm = Wzp.row(i).lpNorm<2>();
+				if (norm == 0.0)
+					Wzp.row(i).setZero();
+				else
+				{
+					double threshold = norm - rho1/gamma;
+					if (threshold < 0.0)
+						Wzp.row(i).setZero();
+					else
+						Wzp.row(i) *= threshold/norm;
+				}
 			}
 			// walk in direction of antigradient 
 			Czp = Cs - gCs/gamma;
@@ -210,7 +219,7 @@ malsar_result_t malsar_joint_feature_learning(
 	for (int i=0; i<n_feats; i++)
 	{
 		for (task=0; task<n_tasks; task++)
-			tasks_w[i] = Wzp(i,task);
+			tasks_w(i,task) = Wzp(i,task);
 	}
 	SGVector<float64_t> tasks_c(n_tasks);
 	for (int i=0; i<n_tasks; i++) tasks_c[i] = Czp[i];

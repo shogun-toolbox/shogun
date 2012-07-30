@@ -204,7 +204,7 @@ malsar_result_t malsar_low_rank(
 	for (int i=0; i<n_feats; i++)
 	{
 		for (task=0; task<n_tasks; task++)
-			tasks_w[i] = Wzp(i,task);
+			tasks_w(i,task) = Wzp(i,task);
 	}
 	SGVector<float64_t> tasks_c(n_tasks);
 	for (int i=0; i<n_tasks; i++) tasks_c[i] = Czp[i];

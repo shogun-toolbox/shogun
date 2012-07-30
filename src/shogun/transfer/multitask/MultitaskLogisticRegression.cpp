@@ -207,6 +207,7 @@ CBinaryLabels* CMultitaskLogisticRegression::apply_locked_binary(SGVector<index_
 {
 	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
 	SGVector<float64_t> result(indices.vlen);
+	result.zero();
 	for (int32_t i=0; i<indices.vlen; i++)
 	{
 		for (int32_t j=0; j<n_tasks; j++)
@@ -214,7 +215,7 @@ CBinaryLabels* CMultitaskLogisticRegression::apply_locked_binary(SGVector<index_
 			if (m_tasks_indices[j].count(indices[i]))
 			{
 				set_current_task(j);
-				result[i] = apply_one(i);
+				result[i] = apply_one(indices[i]);
 				break;
 			}
 		}
