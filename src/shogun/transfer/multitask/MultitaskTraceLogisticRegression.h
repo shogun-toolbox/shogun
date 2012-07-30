@@ -49,10 +49,18 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 			return "MultitaskTraceLogisticRegression";
 		}
 
+	private:
+
+		void init();
+
 	protected:
 
 		/** train machine */
 		virtual bool train_machine(CFeatures* data=NULL);
+		
+		/** train locked implementation */
+		virtual bool train_locked_implementation(SGVector<index_t> indices,
+		                                         SGVector<index_t>* tasks);
 
 	protected:
 

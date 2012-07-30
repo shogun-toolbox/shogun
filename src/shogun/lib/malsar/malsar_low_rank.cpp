@@ -197,6 +197,7 @@ malsar_result_t malsar_low_rank(
 		t_old = t;
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
+	internal::set_is_malloc_allowed(true);
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj);
 
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);

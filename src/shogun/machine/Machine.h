@@ -252,6 +252,9 @@ class CMachine : public CSGObject
 		 */
 		virtual void data_lock(CLabels* labs, CFeatures* features);
 
+		/** post lock */
+		virtual void post_lock() { };
+
 		/** Unlocks a locked machine and restores previous state */
 		virtual void data_unlock();
 

@@ -142,6 +142,86 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	return true;
 }
 
+void CMultitaskLogisticRegression::post_lock()
+{
+	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	SGVector<index_t>* tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
+
+	m_tasks_indices.clear();
+	for (int32_t i=0; i<n_tasks; i++)
+	{
+		set<index_t> indices_set;
+		SGVector<index_t> task_indices = tasks_indices[i];
+		for (int32_t j=0; j<task_indices.vlen; j++)
+			indices_set.insert(task_indices[j]);
+
+		m_tasks_indices.push_back(indices_set);
+	}
+
+	for (int32_t i=0; i<n_tasks; i++)
+		tasks_indices[i].~SGVector<index_t>();
+	SG_FREE(tasks_indices);
+}
+
+bool CMultitaskLogisticRegression::train_locked(SGVector<index_t> indices)
+{
+	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	ASSERT((int)m_tasks_indices.size()==n_tasks);
+	vector< vector<index_t> > cutted_task_indices;
+	for (int32_t i=0; i<n_tasks; i++)
+		cutted_task_indices.push_back(vector<index_t>());
+	for (int32_t i=0; i<indices.vlen; i++)
+	{
+		for (int32_t j=0; j<n_tasks; j++)
+		{
+			if (m_tasks_indices[j].count(indices[i]))
+			{
+				cutted_task_indices[j].push_back(indices[i]);
+				break;
+			}
+		}
+	}
+	SGVector<index_t>* tasks = SG_MALLOC(SGVector<index_t>, n_tasks);
+	for (int32_t i=0; i<n_tasks; i++)
+	{
+		new (&tasks[i]) SGVector<index_t>(cutted_task_indices[i].size());
+		for (int32_t j=0; j<(int)cutted_task_indices[i].size(); j++)
+			tasks[i][j] = cutted_task_indices[i][j];
+		//tasks[i].display_vector();
+	}
+	bool res = train_locked_implementation(indices,tasks);
+	for (int32_t i=0; i<n_tasks; i++)
+		tasks[i].~SGVector<index_t>();
+	SG_FREE(tasks);
+	return res;
+}
+
+bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t> indices,
+                                                               SGVector<index_t>* tasks)
+{
+	SG_NOTIMPLEMENTED;
+	return false;
+}
+
+CBinaryLabels* CMultitaskLogisticRegression::apply_locked_binary(SGVector<index_t> indices)
+{
+	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	SGVector<float64_t> result(indices.vlen);
+	for (int32_t i=0; i<indices.vlen; i++)
+	{
+		for (int32_t j=0; j<n_tasks; j++)
+		{
+			if (m_tasks_indices[j].count(indices[i]))
+			{
+				set_current_task(j);
+				result[i] = apply_one(i);
+				break;
+			}
+		}
+	}
+	return new CBinaryLabels(result);
+}
+
 SGVector<index_t>* CMultitaskLogisticRegression::get_subset_tasks_indices()
 {
 	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();

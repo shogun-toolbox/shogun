@@ -64,6 +64,35 @@ CMultitaskClusteredLogisticRegression::~CMultitaskClusteredLogisticRegression()
 {
 }
 
+bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector<index_t> indices,
+                                                                        SGVector<index_t>* tasks)
+{
+	SGVector<float64_t> y(m_labels->get_num_labels());
+	for (int32_t i=0; i<y.vlen; i++)
+		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+	
+	malsar_options options = malsar_options::default_options();
+	options.termination = m_termination;
+	options.tolerance = m_tolerance;
+	options.max_iter = m_max_iter;
+	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	options.tasks_indices = tasks;
+	options.n_clusters = m_num_clusters;
+
+#ifdef HAVE_EIGEN3
+	malsar_result_t model = malsar_clustered(
+		features, y.vector, m_rho1, m_rho2, options);
+
+	m_tasks_w = model.w;
+	m_tasks_c = model.c;
+#else
+	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n");
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
+	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+#endif
+	return true;
+}
+
 bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 {
 	if (data && (CDotFeatures*)data)

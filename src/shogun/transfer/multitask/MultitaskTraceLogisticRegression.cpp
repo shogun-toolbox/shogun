@@ -19,6 +19,7 @@ namespace shogun
 CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression() :
 	CMultitaskLogisticRegression(), m_rho(0.0)
 {
+	init();
 }
 
 CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression(
@@ -27,6 +28,12 @@ CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression(
 	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {
 	set_rho(rho);
+	init();
+}
+
+void CMultitaskTraceLogisticRegression::init()
+{
+	SG_ADD(&m_rho,"rho","rho",MS_AVAILABLE);
 }
 
 void CMultitaskTraceLogisticRegression::set_rho(float64_t rho)
@@ -36,6 +43,34 @@ void CMultitaskTraceLogisticRegression::set_rho(float64_t rho)
 
 CMultitaskTraceLogisticRegression::~CMultitaskTraceLogisticRegression()
 {
+}
+
+bool CMultitaskTraceLogisticRegression::train_locked_implementation(SGVector<index_t> indices,
+                                                                    SGVector<index_t>* tasks)
+{
+	SGVector<float64_t> y(m_labels->get_num_labels());
+	for (int32_t i=0; i<y.vlen; i++)
+		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+	
+	malsar_options options = malsar_options::default_options();
+	options.termination = m_termination;
+	options.tolerance = m_tolerance;
+	options.max_iter = m_max_iter;
+	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	options.tasks_indices = tasks;
+
+#ifdef HAVE_EIGEN3
+	malsar_result_t model = malsar_low_rank(
+		features, y.vector, m_rho, options);
+
+	m_tasks_w = model.w;
+	m_tasks_c = model.c;
+#else
+	SG_WARNING("Please install Eigen3 to use MultitaskTraceLogisticRegression\n");
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
+	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+#endif
+	return true;
 }
 
 bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)

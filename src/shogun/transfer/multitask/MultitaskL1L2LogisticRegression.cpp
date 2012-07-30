@@ -18,6 +18,7 @@ namespace shogun
 CMultitaskL1L2LogisticRegression::CMultitaskL1L2LogisticRegression() :
 	CMultitaskLogisticRegression(), m_rho1(0.0), m_rho2(0.0)
 {
+	init();
 }
 
 CMultitaskL1L2LogisticRegression::CMultitaskL1L2LogisticRegression(
@@ -27,6 +28,13 @@ CMultitaskL1L2LogisticRegression::CMultitaskL1L2LogisticRegression(
 {
 	set_rho1(rho1);
 	set_rho2(rho2);
+	init();
+}
+
+void CMultitaskL1L2LogisticRegression::init()
+{
+	SG_ADD(&m_rho1,"rho1","rho L1/L2 regularization parameter",MS_AVAILABLE);
+	SG_ADD(&m_rho2,"rho2","rho L2 regularization parameter",MS_AVAILABLE);
 }
 
 void CMultitaskL1L2LogisticRegression::set_rho1(float64_t rho1)
@@ -41,6 +49,34 @@ void CMultitaskL1L2LogisticRegression::set_rho2(float64_t rho2)
 
 CMultitaskL1L2LogisticRegression::~CMultitaskL1L2LogisticRegression()
 {
+}
+
+bool CMultitaskL1L2LogisticRegression::train_locked_implementation(SGVector<index_t> indices,
+                                                                   SGVector<index_t>* tasks)
+{
+	SGVector<float64_t> y(m_labels->get_num_labels());
+	for (int32_t i=0; i<y.vlen; i++)
+		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+	
+	malsar_options options = malsar_options::default_options();
+	options.termination = m_termination;
+	options.tolerance = m_tolerance;
+	options.max_iter = m_max_iter;
+	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	options.tasks_indices = tasks;
+#ifdef HAVE_EIGEN3
+	malsar_result_t model = malsar_joint_feature_learning(
+		features, y.vector, m_rho1, m_rho2, options);
+
+	m_tasks_w = model.w;
+	m_tasks_c = model.c;
+#else
+	SG_WARNING("Please install Eigen3 to use MultitaskL1L2LogisticRegression\n");
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
+	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+#endif
+
+	return true;
 }
 
 bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)

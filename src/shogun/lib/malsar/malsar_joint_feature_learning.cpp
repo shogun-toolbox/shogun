@@ -10,6 +10,7 @@
 
 #include <shogun/lib/malsar/malsar_joint_feature_learning.h>
 #ifdef HAVE_EIGEN3
+#include <shogun/lib/Signal.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <iostream>
@@ -49,7 +50,7 @@ malsar_result_t malsar_joint_feature_learning(
 
 	internal::set_is_malloc_allowed(false);
 	bool done = false;
-	while (!done && iter <= options.max_iter)
+	while (!done && iter <= options.max_iter && !CSignal::cancel_computations())
 	{
 		double alpha = double(t_old - 1)/t;
 
@@ -166,7 +167,7 @@ malsar_result_t malsar_joint_feature_learning(
 		//for (task=0; task<n_tasks; task++)
 		//	obj += rho1*(Wz.col(task).norm());
 		SG_SDEBUG("Obj = %f\n",obj);
-
+		//SG_SABS_PROGRESS(obj,0.0);
 		// check if process should be terminated 
 		switch (options.termination)
 		{
@@ -201,6 +202,8 @@ malsar_result_t malsar_joint_feature_learning(
 		t_old = t;
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
+	internal::set_is_malloc_allowed(true);
+	SG_SDONE();
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj);
 
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);

@@ -285,6 +285,7 @@ malsar_result_t malsar_clustered(
 		t_old = t;
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
+	internal::set_is_malloc_allowed(true);
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj);
 	
 	SG_FREE(H_diag_matrix);

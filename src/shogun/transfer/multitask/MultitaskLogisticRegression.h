@@ -17,6 +17,11 @@
 #include <shogun/transfer/multitask/TaskTree.h>
 #include <shogun/transfer/multitask/Task.h>
 
+#include <vector>
+#include <set>
+
+using namespace std;
+
 namespace shogun
 {
 /** @brief  */
@@ -68,11 +73,26 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		 * @param task_tree task tree
 		 */
 		void set_task_relation(CTaskRelation* task_relation);
-		
+
+		/** @return whether machine supports locking */
+		virtual bool supports_locking() const { return true; }
+
+		/** post lock */
+		virtual void post_lock();
+
+		/** train on given indices */
+		virtual bool train_locked(SGVector<index_t> indices);
+
+		/** applies on given indices */
+		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
+
 	protected:
 
 		/** train machine */
 		virtual bool train_machine(CFeatures* data=NULL);
+
+		/** train locked implementation */
+		virtual bool train_locked_implementation(SGVector<index_t> indices, SGVector<index_t>* tasks);
 
 		/** subset mapped task indices */
 		SGVector<index_t>* get_subset_tasks_indices();
@@ -95,6 +115,9 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		
 		/** tasks interceptss */
 		SGVector<float64_t> m_tasks_c;
+
+		/** vector of sets of indices */
+		vector< set<index_t> > m_tasks_indices;
 
 };
 }
