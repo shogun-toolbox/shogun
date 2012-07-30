@@ -141,10 +141,8 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 	case MMD1_GAUSSIAN:
 		{
 			/* compute variance and use to estimate Gaussian distribution */
-			SG_WARNING("CLinearTimeMMD::compute_threshold(): not yet"
-					"implemented for MMD1_GAUSSIAN");
-//			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
-//			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, std_dev);
+			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
+			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, 0, std_dev);
 		}
 		break;
 
