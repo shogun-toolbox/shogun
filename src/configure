@@ -3165,21 +3165,21 @@ int main(int argc, char** argv)
 }
 EOF
 			echocheck "Intel MKL support"
-			if cc_check -lmkl -lguide -lmkl_lapack
+			if cc_check -Wl,--start-group -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -Wl,--end-group
 			then
 				echores "yes"
 				HAVE_MKL='#define HAVE_MKL 1'
 				HAVE_LAPACK='#define HAVE_LAPACK 1'
 				DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
-				POSTLINKFLAGS="$POSTLINKFLAGS -lmkl -lguide -lmkl_lapack"
+				POSTLINKFLAGS="$POSTLINKFLAGS -Wl,--start-group  -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -Wl,--end-group"
 			else
-				if cc_check -lmkl -lguide -lmkl_lapack64
+				if cc_check -Wl,--start-group -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -Wl,--end-group
 				then
 					echores "yes"
 					HAVE_MKL='#define HAVE_MKL 1'
 					HAVE_LAPACK='#define HAVE_LAPACK 1'
 					DEFINES="$DEFINES -DHAVE_MKL -DHAVE_LAPACK"
-					POSTLINKFLAGS="$POSTLINKFLAGS -lmkl -lguide -lmkl_lapack64"
+					POSTLINKFLAGS="$POSTLINKFLAGS -Wl,--start-group -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -Wl,--end-group"
 				else
 					echores "no"
 
