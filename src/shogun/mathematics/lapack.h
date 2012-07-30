@@ -47,7 +47,7 @@ int clapack_dposv(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		double *B, const int ldb);
 int clapack_dpotri(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
 		const int N, double *A, const int LDA);
-int clapack_dpotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+int clapack_dpotrs(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
                    const int N, const int NRHS, double *A, const int lda,
                    double *B, const int ldb);
 int clapack_dgetrf(const CBLAS_ORDER Order, const int M, const int N,
