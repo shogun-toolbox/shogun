@@ -157,6 +157,10 @@ public:
 	 */
 	static float64_t inverse_normal_cdf(float64_t y0);
 
+	/** same as other version, but with custom mean and variance */
+	static float64_t inverse_normal_cdf(float64_t y0, float64_t mean,
+				float64_t std_dev);
+
 	/** @return natural logarithm of the gamma function of input */
 	static inline float64_t lgamma(float64_t x)
 	{

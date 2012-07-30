@@ -112,7 +112,7 @@ void test_gamma_cdf()
 	ASSERT(difference<=10E-15);
 }
 
-void test_normal()
+void test_normal_cdf()
 {
 	/* some tests for high precision MATLAB comparison */
 	float64_t difference=CStatistics::normal_cdf(1);
@@ -130,6 +130,28 @@ void test_normal()
 	difference=CStatistics::normal_cdf(0.1);
 	SG_SPRINT("normal_cdf(0.1)=%f\n", difference);
 	difference-=0.539827837277029;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+}
+
+void test_inverse_normal_cdf()
+{
+	/* some tests for high precision MATLAB comparison */
+	float64_t difference=CStatistics::inverse_normal_cdf(0.4, 0, 1);
+	SG_SPRINT("inverse_normal_cdf(0.4, 0, 1)=%f\n", difference);
+	difference-=-0.253347103135800;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::inverse_normal_cdf(0.8, 0.2, 2.2);
+	SG_SPRINT("inverse_normal_cdf(0.8, 0.2, 2.2)=%f\n", difference);
+	difference-=2.051566713860412;
+	difference=CMath::abs(difference);
+	ASSERT(difference<=10E-16);
+
+	difference=CStatistics::inverse_normal_cdf(0.1, 0.1, 1.2);
+	SG_SPRINT("inverse_normal_cdf(0.1, 0.1, 1.2)=%f\n", difference);
+	difference-=-1.437861878653521;
 	difference=CMath::abs(difference);
 	ASSERT(difference<=10E-16);
 }
@@ -227,7 +249,8 @@ int main(int argc, char **argv)
 	test_incomplete_gamma();
 	test_gamma_cdf();
 	test_inverse_gamma_cdf();
-	test_normal();
+	test_normal_cdf();
+	test_inverse_normal_cdf();
 	test_error_function();
 	test_error_function_complement();
 
