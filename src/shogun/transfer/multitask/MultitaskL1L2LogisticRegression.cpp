@@ -97,8 +97,7 @@ bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
 	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
-	SGVector<index_t>* subset_tasks_indices = get_subset_tasks_indices();
-	options.tasks_indices = subset_tasks_indices;
+	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 
 #ifdef HAVE_EIGEN3
 	malsar_result_t model = malsar_joint_feature_learning(
@@ -113,8 +112,8 @@ bool CMultitaskL1L2LogisticRegression::train_machine(CFeatures* data)
 #endif
 
 	for (int32_t i=0; i<options.n_tasks; i++)
-		subset_tasks_indices[i].~SGVector<index_t>();
-	SG_FREE(subset_tasks_indices);
+		options.tasks_indices[i].~SGVector<index_t>();
+	SG_FREE(options.tasks_indices);
 	
 	return true;
 }
