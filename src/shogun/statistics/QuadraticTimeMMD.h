@@ -187,30 +187,28 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		/** @param statistic_type statistic type (biased/unbiased) to use */
 		void set_statistic_type(EQuadraticMMDType statistic_type);
 
-	protected:
 		/** Approximates the null-distribution by the two parameter gamma
 		 * distribution. It works in O(m^2) where m is the number of samples
 		 * from each distribution. Its very fast, but may be inaccurate.
 		 * However, there are cases where it performs very well.
-		 * Returns the p-value for a given statistic value in the
-		 * null-distribution.
+		 * Returns parameters of gamma distribution that is fitted.
 		 *
 		 * Called by compute_p_value() if null approximation method is set to
 		 * MMD2_GAMMA.
 		 *
-		 * Note that the provided statistic HAS to be the biased version
+		 * Note that when being used for constructing a test, the provided
+		 * statistic HAS to be the biased version
 		 * (see paper for details)
-		 *
-		 * Works for arbritarily large kernel matrices (is not precomputed)
 		 *
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
 		 * A fast, consistent kernel two-sample test.
 		 *
-		 * @param statistic MMD value to compute the p-value for.
-		 * @return p-value of the given statistic
+		 * @return vector with two parameter for gamma distribution. To use:
+		 * call gamma_cdf(statistic, a, b).
 		 */
-		float64_t compute_p_value_gamma(float64_t statistic);
+		SGVector<float64_t> fit_null_gamma();
 
+	protected:
 		/** helper method to compute unbiased squared quadratic time MMD */
 		virtual float64_t compute_unbiased_statistic();
 
