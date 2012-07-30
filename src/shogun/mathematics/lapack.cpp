@@ -202,7 +202,7 @@ int clapack_dgetrs(const CBLAS_ORDER Order, const CBLAS_TRANSPOSE Transpose,
 #undef DGETRS
 
 // order not supported (yet?)
-int clapack_dpotrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+int clapack_dpotrs(const CBLAS_ORDER Order, const CBLAS_UPLO Uplo,
                    const int N, const int NRHS, double *A, const int lda,
                    double *B, const int ldb)
 {
