@@ -221,8 +221,40 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 
 float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 {
-	SG_ERROR("%s::compute_threshold is not yet implemented!\n");
-	return 0;
+	float64_t result=0;
+
+	switch (m_null_approximation_method)
+	{
+	case MMD2_SPECTRUM:
+	{
+#ifdef HAVE_LAPACK
+		/* get samples from null-distribution and compute threshold */
+		SGVector<float64_t> null_samples=sample_null_spectrum(
+				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
+		CMath::qsort(null_samples);
+		result=null_samples[CMath::floor(null_samples.vlen*(1-alpha))];
+#else // HAVE_LAPACK
+		SG_ERROR("CQuadraticTimeMMD::compute_threshold(): Only possible if "
+				"shogun is compiled with LAPACK enabled\n");
+#endif // HAVE_LAPACK
+		break;
+	}
+
+	case MMD2_GAMMA:
+	{
+		/* fit gamma and return inverse cdf at alpha */
+		SGVector<float64_t> params=fit_null_gamma();
+		result=CStatistics::inverse_gamma_cdf(alpha, params[0], params[1]);
+		break;
+	}
+
+	default:
+		/* bootstrapping is handled here */
+		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
+		break;
+	}
+
+	return result;
 }
 
 
