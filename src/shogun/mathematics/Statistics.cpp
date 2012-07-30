@@ -741,6 +741,12 @@ float64_t CStatistics::incomplete_beta(float64_t a, float64_t b, float64_t x)
 	return result;
 }
 
+float64_t CStatistics::inverse_normal_cdf(float64_t y0, float64_t mean,
+		float64_t std_dev)
+{
+	return inverse_normal_cdf(y0)*std_dev+mean;
+}
+
 float64_t CStatistics::inverse_normal_cdf(float64_t y0)
 {
 	float64_t expm2;
