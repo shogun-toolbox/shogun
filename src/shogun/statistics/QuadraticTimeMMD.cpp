@@ -74,13 +74,23 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
 
+	/* precompute kernel matrices: data has to be stored anyway and its fast */
+	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
+
+	/* remove bias terms on diagonals of X,Y with themselves */
+	for (index_t i=0; i<m; ++i)
+	{
+		K(i, i)=0;
+		K(m_q_start+i, m_q_start+i)=0;
+	}
+
 	/* first term */
 	float64_t first=0;
 	for (index_t i=0; i<m; ++i)
 	{
-		/* ensure i!=j while adding up */
+		/* ensure i!=j doesnt matter since its zero */
 		for (index_t j=0; j<m; ++j)
-			first+=i==j ? 0 :m_kernel->kernel(i,j);
+			first+=K(i,j);
 	}
 	first/=m*(m-1);
 
@@ -88,9 +98,9 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	float64_t second=0;
 	for (index_t i=m_q_start; i<m_q_start+n; ++i)
 	{
-		/* ensure i!=j while adding up */
+		/* ensure i!=j doesnt matter since its zero */
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			second+=i==j ? 0 :m_kernel->kernel(i,j);
+			second+=K(i,j);
 	}
 	second/=n*(n-1);
 
@@ -99,7 +109,7 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	for (index_t i=0; i<m; ++i)
 	{
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			third+=m_kernel->kernel(i,j);
+			third+=K(i,j);
 	}
 	third*=2.0/(m*n);
 
@@ -115,12 +125,15 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
 
+	/* precompute kernel matrices: data has to be stored anyway and its fast */
+	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
+
 	/* first term */
 	float64_t first=0;
 	for (index_t i=0; i<m; ++i)
 	{
 		for (index_t j=0; j<m; ++j)
-			first+=m_kernel->kernel(i,j);
+			first+=K(i,j);
 	}
 	first/=(m*m);
 
@@ -129,7 +142,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	for (index_t i=m_q_start; i<m_q_start+n; ++i)
 	{
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			second+=m_kernel->kernel(i,j);
+			second+=K(i,j);
 	}
 	second/=(n*n);
 
@@ -138,7 +151,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	for (index_t i=0; i<m; ++i)
 	{
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			third+=m_kernel->kernel(i,j);
+			third+=K(i,j);
 	}
 	third*=2.0/(m*n);
 
@@ -183,15 +196,6 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		CMath::qsort(null_samples);
 		index_t pos=CMath::find_position_to_insert(null_samples, statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
-
-		/* evtl. warn user not to use wrong statistic type */
-		if (m_statistic_type!=BIASED)
-		{
-			SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
-					"to be BIASED. Please ensure that! To get rid of warning,"
-					"call %s::set_statistic_type(BIASED)\n", get_name(),
-					get_name());
-		}
 #else // HAVE_LAPACK
 		SG_ERROR("CQuadraticTimeMMD::compute_p_value(): Only possible if "
 				"shogun is compiled with LAPACK enabled\n");
@@ -200,17 +204,13 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	}
 
 	case MMD2_GAMMA:
-		result=compute_p_value_gamma(statistic);
-
-		/* evtl. warn user not to use wrong statistic type */
-		if (m_statistic_type!=BIASED)
-		{
-			SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
-					"to be BIASED. Please ensure that! To get rid of warning,"
-					"call %s::set_statistic_type(BIASED)\n", get_name(),
-					get_name());
-		}
+	{
+		/* fit gamma and return cdf at statistic */
+		SGVector<float64_t> params=fit_null_gamma();
+		result=CStatistics::gamma_cdf(statistic, params[0], params[1]);
 		break;
+	}
+
 	default:
 		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
 		break;
@@ -221,8 +221,40 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 
 float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 {
-	SG_ERROR("%s::compute_threshold is not yet implemented!\n");
-	return 0;
+	float64_t result=0;
+
+	switch (m_null_approximation_method)
+	{
+	case MMD2_SPECTRUM:
+	{
+#ifdef HAVE_LAPACK
+		/* get samples from null-distribution and compute threshold */
+		SGVector<float64_t> null_samples=sample_null_spectrum(
+				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
+		CMath::qsort(null_samples);
+		result=null_samples[CMath::floor(null_samples.vlen*(1-alpha))];
+#else // HAVE_LAPACK
+		SG_ERROR("CQuadraticTimeMMD::compute_threshold(): Only possible if "
+				"shogun is compiled with LAPACK enabled\n");
+#endif // HAVE_LAPACK
+		break;
+	}
+
+	case MMD2_GAMMA:
+	{
+		/* fit gamma and return inverse cdf at alpha */
+		SGVector<float64_t> params=fit_null_gamma();
+		result=CStatistics::inverse_gamma_cdf(alpha, params[0], params[1]);
+		break;
+	}
+
+	default:
+		/* bootstrapping is handled here */
+		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
+		break;
+	}
+
+	return result;
 }
 
 
@@ -232,7 +264,6 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 {
 	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
 	{
-		/* TODO support different numbers of samples */
 		SG_ERROR("%s::sample_null_spectrum(): Currently, only equal "
 				"sample sizes are supported\n", get_name());
 	}
@@ -240,7 +271,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	if (num_samples<=2)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Number of samples has to be at"
-				" least 2, better in the hundrets", get_name());
+				" least 2, better in the hundreds", get_name());
 	}
 
 	if (num_eigenvalues>2*m_q_start-1)
@@ -255,6 +286,15 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 				get_name());
 	}
 
+	/* evtl. warn user not to use wrong statistic type */
+	if (m_statistic_type!=BIASED)
+	{
+		SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
+				"to be BIASED. Please ensure that! To get rid of warning,"
+				"call %s::set_statistic_type(BIASED)\n", get_name(),
+				get_name());
+	}
+
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
@@ -265,12 +305,14 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	K.center();
 
 	/* compute eigenvalues and select num_eigenvalues largest ones */
-	SGVector<float64_t> eigenvalues=SGMatrix<float64_t>::compute_eigenvectors(K);
+	SGVector<float64_t> eigenvalues=
+			SGMatrix<float64_t>::compute_eigenvectors(K);
 	SGVector<float64_t> largest_ev(num_eigenvalues);
 
 	/* take largest EV, scale by 1/2/m on the fly and take abs value*/
 	for (index_t i=0; i<num_eigenvalues; ++i)
-		largest_ev[i]=CMath::abs(1.0/2/m_q_start*eigenvalues[eigenvalues.vlen-1-i]);
+		largest_ev[i]=CMath::abs(
+				1.0/2/m_q_start*eigenvalues[eigenvalues.vlen-1-i]);
 
 	/* finally, sample from null distribution */
 	SGVector<float64_t> null_samples(num_samples);
@@ -288,29 +330,45 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 }
 #endif // HAVE_LAPACK
 
-float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
+SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 {
 	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
 	{
-		/* TODO support different numbers of samples */
 		SG_ERROR("%s::compute_p_value_gamma(): Currently, only equal "
 				"sample sizes are supported\n", get_name());
+	}
+
+	/* evtl. warn user not to use wrong statistic type */
+	if (m_statistic_type!=BIASED)
+	{
+		SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
+				"to be BIASED. Please ensure that! To get rid of warning,"
+				"call %s::set_statistic_type(BIASED)\n", get_name(),
+				get_name());
 	}
 
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
 	m_kernel->init(m_p_and_q, m_p_and_q);
+	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
 
 	/* compute mean under H0 of MMD, which is
 	 * meanMMD  = 2/m * ( 1  - 1/m*sum(diag(KL))  );
-	 * in MATLAB */
+	 * in MATLAB.
+	 * Remove diagonals on the fly */
 	float64_t mean_mmd=0;
 	for (index_t i=0; i<m_q_start; ++i)
 	{
 		/* virtual KL matrix is in upper right corner of SHOGUN K matrix
 		 * so this sums the diagonal of the matrix between X and Y*/
-		mean_mmd+=m_kernel->kernel(i, m_q_start+i);
+		mean_mmd+=K(i, m_q_start+i);
+
+		/* remove diagonals; are not needed later on, avoids if in loop */
+		K(i, i)=0;
+		K(m_q_start+i, m_q_start+i)=0;
+		K(m_q_start+i, i)=0;
+		K(i, m_q_start+i)=0;
 	}
 	mean_mmd=2.0/m_q_start*(1.0-1.0/m_q_start*mean_mmd);
 
@@ -322,14 +380,11 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	{
 		for (index_t j=0; j<m_q_start; ++j)
 		{
-			/* dont add diagonal of all pairs of imaginary kernel matrices */
-			if (i==j || m_q_start+i==j || m_q_start+j==i)
-				continue;
-
-			float64_t to_add=m_kernel->kernel(i, j);
-			to_add+=m_kernel->kernel(m_q_start+i, m_q_start+j);
-			to_add-=m_kernel->kernel(i, m_q_start+j);
-			to_add-=m_kernel->kernel(m_q_start+i, j);
+			/* diagonals are not added since they are all zero'ed above */
+			float64_t to_add=K(i, j);
+			to_add+=K(m_q_start+i, m_q_start+j);
+			to_add-=K(i, m_q_start+j);
+			to_add-=K(m_q_start+i, j);
 			var_mmd+=CMath::pow(to_add, 2);
 		}
 	}
@@ -339,12 +394,15 @@ float64_t CQuadraticTimeMMD::compute_p_value_gamma(float64_t statistic)
 	float64_t a=CMath::pow(mean_mmd, 2)/var_mmd;
 	float64_t b=var_mmd*m_q_start / mean_mmd;
 
-	/* return: cdf('gam',statistic,al,bet) (MATLAB)
-	 * which will get the position in the null distribution */
-	return CStatistics::gamma_cdf(statistic, a, b);
+	SGVector<float64_t> result(2);
+	result[0]=a;
+	result[1]=b;
+
+	return result;
 }
 
-void CQuadraticTimeMMD::set_num_samples_sepctrum(index_t num_samples_spectrum)
+void CQuadraticTimeMMD::set_num_samples_sepctrum(index_t
+		num_samples_spectrum)
 {
 	m_num_samples_spectrum=num_samples_spectrum;
 }
@@ -355,7 +413,8 @@ void CQuadraticTimeMMD::set_num_eigenvalues_spectrum(
 	m_num_eigenvalues_spectrum=num_eigenvalues_spectrum;
 }
 
-void CQuadraticTimeMMD::set_statistic_type(EQuadraticMMDType statistic_type)
+void CQuadraticTimeMMD::set_statistic_type(EQuadraticMMDType
+		statistic_type)
 {
 	m_statistic_type=statistic_type;
 }
