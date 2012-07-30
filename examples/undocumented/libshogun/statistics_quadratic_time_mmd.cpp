@@ -151,8 +151,10 @@ void test_quadratic_mmd_gamma()
 	float64_t p=mmd->compute_p_value(2);
 	SG_SPRINT("p: %f\n", p);
 
-	/* MATLAB 1000 iterations mean: 0.511547577996229 with variance 10E-15 */
-//	ASSERT(CMath::abs(p-0.511547577996229)<10E-14);
+	/* MATLAB 1000 iterations mean: 0.511547577996229 with variance 10E-15,
+	 * asserting with only 10-12 to avoid problems. Shold never fail.
+	 */
+	ASSERT(CMath::abs(p-0.511547577996229)<10E-12);
 
 	SG_UNREF(mmd);
 }
