@@ -110,7 +110,8 @@ float64_t CTwoDistributionsTestStatistic::compute_p_value(float64_t statistic)
 	return result;
 }
 
-float64_t CTwoDistributionsTestStatistic::compute_threshold(float64_t alpha)
+float64_t CTwoDistributionsTestStatistic::compute_threshold(
+		float64_t alpha)
 {
 	float64_t result=0;
 
