@@ -81,8 +81,8 @@ public:
 		return "HSIC";
 	}
 
-	/** Approximates the null-distribution by the two parameter gamma
-	 * distribution. TODO
+	/** Approximates the null-distribution by a two parameter gamma
+	 * distribution. Returns parameters.
 	 *
 	 * NOTE: the gamma distribution is fitted to m*HSIC_b. Therefore, the
 	 * parameter statistic value is multiplied by m before anything is done.
@@ -93,7 +93,7 @@ public:
 	 * Called by compute_p_value() if null approximation method is set to
 	 * MMD2_GAMMA.
 	 *
-	 * @return vector with two parameter for gamma distribution. To use:
+	 * @return vector with two parameters for gamma distribution. To use:
 	 * call gamma_cdf(statistic, a, b).
 	 */
 	SGVector<float64_t> fit_null_gamma();
