@@ -164,6 +164,20 @@ public:
 		return m_max_num_iter;
 	}
 
+    /** train machine
+     *
+     * @param data training data (parameter can be avoided if distance or
+     * kernel-based classifiers are used and distance/kernels are
+     * initialized with train data).
+     * If flag is set, model features will be stored after training.
+     *
+     * @return whether training was successful
+     */
+    virtual bool train(CFeatures* data=NULL)
+    {
+        return CMachine::train(data);
+    }
+
 	typedef std::pair<std::pair<int32_t, int32_t>, float64_t> entry_t;
 protected:
 	/** apply to one instance.
