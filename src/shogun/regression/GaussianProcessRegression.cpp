@@ -202,22 +202,25 @@ SGVector<float64_t> CGaussianProcessRegression::getMeanVector()
 
 	CMeanFunction* mean_function = m_method->get_mean();
 
-	SGMatrix<float64_t> features = ((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
+	SGMatrix<float64_t> features = ((CDotFeatures*)m_data)->
+			get_computed_dot_feature_matrix();
 
 	if (!mean_function)
 		SG_ERROR("Mean function is NULL!\n");
 
-	SGVector<float64_t> means = mean_function->get_mean_vector(features);
 
-	SGVector< float64_t > result_vector(m_labels->get_num_labels());
+	SGVector<float64_t> means = mean_function->get_mean_vector(features);
 	
+	SGVector< float64_t > result_vector(features.num_cols);
+
 	//Here we multiply K*^t by alpha to receive the mean predictions.
 	cblas_dgemv(CblasColMajor, CblasTrans, m_k_trts.num_rows,
 		    m_alpha.vlen, 1.0, m_k_trts.matrix,
 		    m_k_trts.num_cols, m_alpha.vector, 1, 0.0,
 		    result_vector.vector, 1);
-	result_vector.display_vector("ll");
-	m_k_trts.display_matrix("sdf");
+
+	for (index_t i = 0; i < result_vector.vlen; i++)
+		result_vector[i] += means[i];
 
 	CLikelihoodModel* lik = m_method->get_model();
 
@@ -239,66 +242,66 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 
 	if (diagonal.vlen > 0)
 	{
-	SGVector<float64_t> diagonal2(m_data->get_num_vectors());
+		SGVector<float64_t> diagonal2(m_data->get_num_vectors());
 
-	SGMatrix<float64_t> temp1(m_data->get_num_vectors(), diagonal.vlen);
+		SGMatrix<float64_t> temp1(m_data->get_num_vectors(), diagonal.vlen);
 
-	SGMatrix<float64_t> m_L = m_method->get_cholesky();
+		SGMatrix<float64_t> m_L = m_method->get_cholesky();
 
-	SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
+		SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
 
-	for (index_t i = 0; i < diagonal.vlen; i++)
-	{
-		for (index_t j = 0; j < m_data->get_num_vectors(); j++)
-			temp1(j,i) = diagonal[i]*m_k_trts(j,i);
-	}
+		for (index_t i = 0; i < diagonal.vlen; i++)
+		{
+			for (index_t j = 0; j < m_data->get_num_vectors(); j++)
+				temp1(j,i) = diagonal[i]*m_k_trts(j,i);
+		}
 
-	for (index_t i = 0; i < diagonal2.vlen; i++)
-		diagonal2[i] = 0;
+		for (index_t i = 0; i < diagonal2.vlen; i++)
+			diagonal2[i] = 0;
 
-	memcpy(temp2.matrix, m_L.matrix,
-			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
-
-
-	temp2.transpose_matrix(temp2.matrix, temp2.num_rows, temp2.num_cols);
-
-	SGVector<int32_t> ipiv(temp2.num_cols);
-
-	//Solve L^T V = K(Train,Test)*Diagonal Vector Entries for V
-	clapack_dgetrf(CblasColMajor, temp2.num_rows, temp2.num_cols,
-			temp2.matrix, temp2.num_cols, ipiv.vector);
-
-	clapack_dgetrs(CblasColMajor, CblasNoTrans,
-	                   temp2.num_rows, temp1.num_cols, temp2.matrix,
-	                   temp2.num_cols, ipiv.vector, temp1.matrix,
-	                   temp1.num_cols);
-
-	for (index_t i = 0; i < temp1.num_rows; i++)
-	{
-		for (index_t j = 0; j < temp1.num_cols; j++)
-			temp1(i,j) = temp1(i,j)*temp1(i,j);
-	}
-
-	for (index_t i = 0; i < temp1.num_cols; i++)
-	{
-		diagonal2[i] = 0;
-
-		for (index_t j = 0; j < temp1.num_rows; j++)
-			diagonal2[i] += temp1(j,i);
-	}
+		memcpy(temp2.matrix, m_L.matrix,
+				m_L.num_cols*m_L.num_rows*sizeof(float64_t));
 
 
-	SGVector<float64_t> result(m_k_tsts.num_cols);
+		temp2.transpose_matrix(temp2.matrix, temp2.num_rows, temp2.num_cols);
 
-	//Subtract V from K(Test,Test) to get covariances.
-	for (index_t i = 0; i < m_k_tsts.num_cols; i++)
-		result[i] = m_k_tsts(i,i) - diagonal2[i];
+		SGVector<int32_t> ipiv(temp2.num_cols);
 
-	CLikelihoodModel* lik = m_method->get_model();
+		//Solve L^T V = K(Train,Test)*Diagonal Vector Entries for V
+		clapack_dgetrf(CblasColMajor, temp2.num_rows, temp2.num_cols,
+				temp2.matrix, temp2.num_cols, ipiv.vector);
 
-	SG_UNREF(lik);
+		clapack_dgetrs(CblasColMajor, CblasNoTrans,
+				temp2.num_rows, temp1.num_cols, temp2.matrix,
+				temp2.num_cols, ipiv.vector, temp1.matrix,
+				temp1.num_cols);
 
-	return lik->evaluate_variances(result);
+		for (index_t i = 0; i < temp1.num_rows; i++)
+		{
+			for (index_t j = 0; j < temp1.num_cols; j++)
+				temp1(i,j) = temp1(i,j)*temp1(i,j);
+		}
+
+		for (index_t i = 0; i < temp1.num_cols; i++)
+		{
+			diagonal2[i] = 0;
+
+			for (index_t j = 0; j < temp1.num_rows; j++)
+				diagonal2[i] += temp1(j,i);
+		}
+
+
+		SGVector<float64_t> result(m_k_tsts.num_cols);
+
+		//Subtract V from K(Test,Test) to get covariances.
+		for (index_t i = 0; i < m_k_tsts.num_cols; i++)
+			result[i] = m_k_tsts(i,i) - diagonal2[i];
+
+		CLikelihoodModel* lik = m_method->get_model();
+
+		SG_UNREF(lik);
+
+		return lik->evaluate_variances(result);
 	}
 
 	else
@@ -314,9 +317,10 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 		memcpy(temp2.matrix, m_L.matrix,
 				m_L.num_cols*m_L.num_rows*sizeof(float64_t));
 
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m_L.num_rows, m_k_trts.num_cols,
-			m_L.num_rows, 1.0, m_L.matrix, m_L.num_cols, m_k_trts.matrix, m_k_trts.num_cols, 0.0,
-			temp1.matrix, temp1.num_cols);
+		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m_L.num_rows,
+				m_k_trts.num_cols, m_L.num_rows, 1.0, m_L.matrix, m_L.num_cols,
+				m_k_trts.matrix, m_k_trts.num_cols, 0.0, temp1.matrix,
+				temp1.num_cols);
 
 		for (index_t i = 0; i < temp1.num_rows; i++)
 		{
@@ -336,7 +340,6 @@ SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
 
 		SGVector<float64_t> result(m_k_tsts.num_cols);
 
-		//Subtract V from K(Test,Test) to get covariances.
 		for (index_t i = 0; i < m_k_tsts.num_cols; i++)
 			result[i] = m_k_tsts(i,i) + temp3[i];
 

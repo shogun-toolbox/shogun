@@ -185,13 +185,13 @@ public:
 	 */
 	inline float64_t get_scale() { return m_scale; }
 
-	/** set features
+	/** set latent features
 	*
 	* @param feat features to set
 	*/
 	virtual void set_latent_features(CFeatures* feat);
 
-	/** get features
+	/** get latent features
 	*
 	* @return features
 	*/
@@ -237,6 +237,7 @@ protected:
 	/*Mean Function*/
 	CMeanFunction* m_mean;
 
+	/*Latent Features for Approximation*/
 	CFeatures* m_latent_features;
 
 	/*Likelihood function to use

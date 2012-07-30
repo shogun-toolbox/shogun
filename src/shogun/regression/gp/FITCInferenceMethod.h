@@ -5,6 +5,10 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
+ *
+ *  * Code adapted from Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ *
  */
 
 #ifndef CFITCINFERENCEMETHOD_H_
@@ -14,9 +18,26 @@
 #include <shogun/regression/gp/InferenceMethod.h>
 
 #ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
+
 namespace shogun
 {
 
+/** @brief The Fully Independent Conditional Training
+ *  Inference Method
+ *
+ *  This inference method computes the Cholesky and
+ *  Alpha vectors approximately with the help of latent
+ *  variables. For more details, see "Sparse Gaussian Process
+ *  using Pseudo-inputs", Edward Snelson, Zoubin Ghahramani,
+ *  NIPS 18, MIT Press, 2005.
+ *
+ *  This specific implementation was inspired by the infFITC.m file
+ *  in the GPML toolbox
+ *
+ *  The Gaussian Likelihood Function must be used for this inference method.
+ *
+ */
 class CFITCInferenceMethod: public CInferenceMethod
 {
 
@@ -28,8 +49,10 @@ public:
 	/* Constructor
 	 * @param kernel covariance function
 	 * @param features features to use in inference
+	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
+	 * @param latent features to use
 	 */
 	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
@@ -150,20 +173,47 @@ private:
 	/*Kernel matrix with noise*/
 	SGMatrix<float64_t> m_kern_with_noise;
 
+	/*noise of the latent variables*/
 	float64_t m_ind_noise;
 
+	/*Cholesky of Covariance of
+	 * latent features
+	 */
 	Eigen::MatrixXd m_chol_uu;
 
+	/*Cholesky of Covariance of
+	 * latent features
+	 * and training features
+	 */
 	Eigen::MatrixXd m_chol_utr;
 
+	/* Covariance matrix of latent
+	 * features
+	 */
 	Eigen::MatrixXd m_kuu;
 
+	/* Covariance matrix of latent
+	 * features and training features
+	 */
 	Eigen::MatrixXd m_ktru;
 
+	/* Diagonal of Training
+	 * kernel matrix + noise
+	 * - diagonal of the matrix
+	 * (m_chol_uu^{-1}*m_ktru)*
+	 * (m_chol_uu^(-1)*m_ktru)'
+	 * = V*V'
+	 */
 	Eigen::VectorXd m_dg;
 
+	/*Labels adjusted for
+	 * noise and means
+	 */
 	Eigen::VectorXd m_r;
 
+	/* Solves the equation
+	 * V*r = m_chol_utr
+	 */
 	Eigen::VectorXd m_be;
 
 
@@ -171,6 +221,7 @@ private:
 };
 
 }
+#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
 
 #endif /* CFITCInferenceMethod_H_ */

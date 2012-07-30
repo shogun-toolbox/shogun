@@ -13,6 +13,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 
 #include <shogun/regression/gp/FITCInferenceMethod.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
@@ -60,9 +61,12 @@ void CFITCInferenceMethod::update_all()
 		m_label_vector =
 				((CRegressionLabels*) m_labels)->get_labels().clone();
 
-	if (m_features && m_features->has_property(FP_DOT) && m_features->get_num_vectors())
+	if (m_features && m_features->has_property(FP_DOT)
+			&& m_features->get_num_vectors())
+	{
 		m_feature_matrix =
 				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
+	}
 
 	else if (m_features && m_features->get_feature_class() == C_COMBINED)
 	{
@@ -76,11 +80,16 @@ void CFITCInferenceMethod::update_all()
 		SG_UNREF(feat);
 	}
 
-	if (m_latent_features && m_latent_features->has_property(FP_DOT) && m_latent_features->get_num_vectors())
+	if (m_latent_features && m_latent_features->has_property(FP_DOT) &&
+			m_latent_features->get_num_vectors())
+	{
 		m_latent_matrix =
-				((CDotFeatures*)m_latent_features)->get_computed_dot_feature_matrix();
+				((CDotFeatures*)m_latent_features)->
+				get_computed_dot_feature_matrix();
+	}
 
-	else if (m_latent_features && m_latent_features->get_feature_class() == C_COMBINED)
+	else if (m_latent_features &&
+			m_latent_features->get_feature_class() == C_COMBINED)
 	{
 		CDotFeatures* subfeat =
 				(CDotFeatures*)((CCombinedFeatures*)m_latent_features)->
@@ -194,7 +203,7 @@ void CFITCInferenceMethod::check_members()
 
 	if (m_model->get_model_type() != LT_GAUSSIAN)
 	{
-		SG_ERROR("Exact Inference Method can only use " \
+		SG_ERROR("FITC Inference Method can only use " \
 				"Gaussian Likelihood Function.\n");
 	}
 }
@@ -214,15 +223,12 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 
 	MatrixXd W = m_ktru;
 
-	/*    W = Ku./repmat(sqrt(dg)',nu,1);*/
 	for (index_t j = 0; j < m_ktru.rows(); j++)
 	{
 		for (index_t i = 0; i < m_ktru.cols(); i++)
 			W(i,j) = m_ktru(i,j) / sqrt(m_dg[j]);
 	}
-	/*    W = chol(Kuu+W*W'+snu2*eye(nu))'\Ku; % inv(K) = inv(G) - inv(G)*W'*W*inv(G);
- *
- */
+
 	LLT<MatrixXd> CholW(m_kuu + W*W.transpose() +
 			m_ind_noise*MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 	W = CholW.matrixL();
@@ -230,8 +236,6 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 
 	W = W.colPivHouseholderQr().solve(m_ktru);
 
-	/*    al = (y-m - W'*(W*((y-m)./dg)))./dg;
-	 * */
 	VectorXd true_lab(m_data_means.vlen);
 
 	for (index_t j = 0; j < m_data_means.vlen; j++)
@@ -245,8 +249,6 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 
 	al = al.cwiseQuotient(m_dg);
 
-
-	//iKuu = solve_chol(Luu,eye(nu));                       % inv(Kuu + snu2*I) = iKuu
 	MatrixXd iKuu = m_kuu.selfadjointView<Eigen::Upper>().llt()
 			.solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
@@ -254,7 +256,6 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 
 	MatrixXd Wdg = W;
 
-	/*    W = Ku./repmat(sqrt(dg)',nu,1);*/
 	for (index_t j = 0; j < m_ktru.rows(); j++)
 	{
 		for (index_t i = 0; i < m_ktru.cols(); i++)
@@ -307,12 +308,16 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 			{
 				m_kernel->init(m_features, m_features);
 				deriv = m_kernel->get_parameter_gradient(param, obj);
+
 				m_kernel->init(m_latent_features, m_features);
 				derivtru = m_kernel->get_parameter_gradient(param, obj);
+
 				m_kernel->init(m_latent_features, m_latent_features);
 				derivuu = m_kernel->get_parameter_gradient(param, obj);
+
 				 mean_derivatives = m_mean->get_parameter_derivative(
 				 				param, obj, m_feature_matrix, g);
+
 				 for (index_t d = 0; d < mean_derivatives.vlen; d++)
 					 mean_dev_temp[d] = mean_derivatives[d];
 			}
@@ -321,13 +326,16 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 			{
 				mean_derivatives = m_mean->get_parameter_derivative(
 				 				param, obj, m_feature_matrix);
-				 for (index_t d = 0; d < mean_derivatives.vlen; d++)
+
+				for (index_t d = 0; d < mean_derivatives.vlen; d++)
 					 mean_dev_temp[d] = mean_derivatives[d];
 
 				m_kernel->init(m_features, m_features);
 				deriv = m_kernel->get_parameter_gradient(param, obj);
+
 				m_kernel->init(m_latent_features, m_features);
 				derivtru = m_kernel->get_parameter_gradient(param, obj);
+
 				m_kernel->init(m_latent_features, m_latent_features);
 				derivuu = m_kernel->get_parameter_gradient(param, obj);
 			}
@@ -366,10 +374,15 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 			    for (index_t d = 0; d < ddiagKi.rows(); d++)
 			    	v(d,d) = v(d,d) - temp.col(d).sum();
 
-			    sum = sum + ddiagKi.diagonal().transpose()*VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
+			    sum = sum + ddiagKi.diagonal().transpose()*
+			    		VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
+
 			    sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
+
 			    sum = sum - al.transpose()*(v.diagonal().cwiseProduct(al));
+
 			    MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
+
 			    VectorXd Wdg_sum(Wdg.rows());
 
 			    for (index_t d = 0; d < Wdg.rows(); d++)
@@ -426,6 +439,7 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 
 	sum = sum*m_sigma*m_sigma;
 	float64_t dKuui = 2.0*m_ind_noise;
+
 	MatrixXd R = -dKuui*B;
 
 	MatrixXd temp = R.cwiseProduct(B);
@@ -542,7 +556,6 @@ void CFITCInferenceMethod::update_train_kernel()
 
 	m_kernel->init(m_latent_features, m_features);
 
-	//K(X, X)
 	kernel_matrix = m_kernel->get_kernel_matrix();
 
 	m_ktru = MatrixXd(kernel_matrix.num_rows, kernel_matrix.num_cols);
@@ -601,7 +614,8 @@ void CFITCInferenceMethod::update_chol()
 
 	m_be = m_chol_utr.colPivHouseholderQr().solve(V*m_r);
 
-	MatrixXd iKuu = m_chol_uu.llt().solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+	MatrixXd iKuu = m_chol_uu.llt().solve(
+			MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
 	MatrixXd chol = m_chol_utr*m_chol_uu;
 
@@ -632,7 +646,7 @@ void CFITCInferenceMethod::update_alpha()
 
 	for (index_t i = 0; i < alph.rows(); i++)
 		m_alpha[i] = alph(i,0);
-
 }
 
+#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK

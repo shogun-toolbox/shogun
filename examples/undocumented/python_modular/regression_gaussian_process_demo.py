@@ -1,5 +1,8 @@
 ###########################################################################
-# Mean prediction from Gaussian Processes based on classifier_libsvm_minimal_modular.py
+# Mean prediction from Gaussian Processes based on 
+# classifier_libsvm_minimal_modular.py
+# plotting functions have been adapted from the pyGP library
+# https://github.com/jameshensman/pyGP
 ###########################################################################
 from numpy import *
 from numpy.random import randn
@@ -10,7 +13,6 @@ from shogun.Regression import *
 import pylab as PL
 import matplotlib
 import logging as LG
-import numpy.random as random
 import scipy as SP
 from shogun.ModelSelection import GradientModelSelection
 from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
@@ -64,9 +66,6 @@ def plot_training_data(x, y,
         Arrows will show the time shift for time points, respectively.
         
     """
-  #  x = SP.array(x).reshape(-1)
-  # y = SP.array(y).reshape(-1)
-
     x_shift = SP.array(x.copy())
 
     if shift is not None and replicate_indices is not None:
@@ -151,9 +150,7 @@ The format of the fill. See http://matplotlib.sourceforge.net/ for details.
 format_line : {format}
 The format of the mean line. See http://matplotlib.sourceforge.net/ for details.
 """
-    print(X)
     X = X.squeeze()
-    print(X)
     Y1 = (mean + 2 * std)
     Y2 = (mean - 2 * std)
     
@@ -200,7 +197,7 @@ def create_toy_data():
     x = SP.arange(xmin,xmax,(xmax-xmin)/100.0)
     
     C = 2       #offset
-    sigma = 5.0
+    sigma = 0.5
    
     b = 0
     
@@ -216,7 +213,7 @@ def create_toy_data():
 
 def run_demo():
     LG.basicConfig(level=LG.INFO)
-    random.seed(1)
+    random.seed(572)
 
     #1. create toy data
     [x,y] = create_toy_data()
@@ -233,18 +230,13 @@ def run_demo():
     likelihood = GaussianLikelihood()
     covar_parms = SP.log([2])
     hyperparams = {'covar':covar_parms,'lik':SP.log([1])}
+    
     #construct covariance function
     SECF = GaussianKernel(feat_train, feat_train,2)
     covar = SECF
     zmean = ZeroMean();
     inf = ExactInferenceMethod(SECF, feat_train, zmean, labels, likelihood);
 
-    #noise
-
-
-        
-
-    
     gp = GaussianProcessRegression(inf, feat_train, labels);
     
     root=ModelSelectionParameters();
@@ -284,11 +276,6 @@ def run_demo():
     grad.set_autolock(0);
 
     best_combination=grad_search.select_model(1);
-
-
-    #opt_model_params = opt.opt_hyper(gp,hyperparams,priors=priors,gradcheck=False)[0]
-    
-    #predict
     
     gp.set_return_type(GaussianProcessRegression.GP_RETURN_COV);
 
@@ -296,21 +283,16 @@ def run_demo():
     
     St = St.get_labels();
     
-    print(St)
-
     gp.set_return_type(GaussianProcessRegression.GP_RETURN_MEANS);
 
     M = gp.apply_regression();
 
     M = M.get_labels();
     
-    print(M)
-    print(y)
-    
     #create plots
-    plot_sausage(transpose(x),transpose(M),transpose(SP.sqrt(St)))
-    plot_training_data(x,y)
-    PL.show()
+    plot_sausage(transpose(x),transpose(M),transpose(SP.sqrt(St)));
+    plot_training_data(x,y);
+    PL.show();
     
 if __name__ == '__main__':
     run_demo()
