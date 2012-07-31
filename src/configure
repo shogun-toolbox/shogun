@@ -3383,14 +3383,29 @@ EOF
 
 check_eigen3()
 {
+	#echo $_incdir #TODO: should this path also be searched?
 	if test "$_eigen3" = yes || test "$_eigen3" = auto
 	then
-		echocheck "Eigen3 support"
 		if pkg-config --exists eigen3
 		then
-			echores "yes"
 			EIGEN3_CFLAGS=`pkg-config --cflags eigen3`
 			INCLUDES="$INCLUDES $EIGEN3_CFLAGS"
+		fi
+		cat > $TMPCXX << EOF
+#include <Eigen/Dense>
+using namespace Eigen;
+int main()
+{
+  MatrixXf m = MatrixXf::Random(3,3);
+  m = (m + MatrixXf::Constant(3,3,1.2)) * 50;
+  VectorXf v(3);
+  v << 1, 2, 3;
+}
+EOF
+		echocheck "Eigen3 support"
+		if cxx_check 
+		then
+			echores "yes"
 			HAVE_EIGEN3='#define HAVE_EIGEN3 1'
 			DEFINES="$DEFINES -DHAVE_EIGEN3"
 		else
