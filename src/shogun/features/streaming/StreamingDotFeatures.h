@@ -11,9 +11,9 @@
 #define _STREAMING_DOTFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/features/StreamingFeatures.h>
+#include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/features/DotFeatures.h>
-#include <shogun/io/StreamingFile.h>
+#include <shogun/io/streaming/StreamingFile.h>
 
 namespace shogun
 {

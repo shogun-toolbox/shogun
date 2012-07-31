@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/io/StreamingVwFile.h>
+#include <shogun/io/streaming/StreamingVwFile.h>
 
 using namespace shogun;
 

@@ -10,7 +10,7 @@
 #ifndef __STREAMING_VWCACHEFILE_H__
 #define __STREAMING_VWCACHEFILE_H__
 
-#include <shogun/io/StreamingFile.h>
+#include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/classifier/vw/vw_common.h>
 #include <shogun/classifier/vw/cache/VwCacheReader.h>
 #include <shogun/classifier/vw/cache/VwNativeCacheReader.h>

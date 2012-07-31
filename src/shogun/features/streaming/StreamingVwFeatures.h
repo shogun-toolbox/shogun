@@ -20,10 +20,10 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/mathematics/Math.h>
 
-#include <shogun/io/InputParser.h>
-#include <shogun/io/StreamingVwFile.h>
-#include <shogun/io/StreamingVwCacheFile.h>
-#include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/io/streaming/InputParser.h>
+#include <shogun/io/streaming/StreamingVwFile.h>
+#include <shogun/io/streaming/StreamingVwCacheFile.h>
+#include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/classifier/vw/vw_common.h>
 #include <shogun/classifier/vw/vw_math.h>
 

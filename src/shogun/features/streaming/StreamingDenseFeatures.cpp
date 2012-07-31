@@ -1,6 +1,6 @@
 #include <shogun/mathematics/Math.h>
-#include <shogun/features/StreamingDenseFeatures.h>
-#include <shogun/io/StreamingFileFromDenseFeatures.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
 
 namespace shogun
 {

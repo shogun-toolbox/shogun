@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/io/StreamingFile.h>
+#include <shogun/io/streaming/StreamingFile.h>
 
 #include <ctype.h>
 

@@ -14,7 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/machine/Machine.h>
 
 #include <stdio.h>

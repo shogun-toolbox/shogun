@@ -11,7 +11,7 @@
 #define __STREAMING_ASCIIFILE_H__
 
 #include <shogun/io/AsciiFile.h>
-#include <shogun/io/StreamingFile.h>
+#include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/features/SparseFeatures.h>
 
 namespace shogun

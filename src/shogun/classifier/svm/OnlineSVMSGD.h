@@ -24,7 +24,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/machine/OnlineLinearMachine.h>
-#include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/loss/LossFunction.h>
 
 namespace shogun

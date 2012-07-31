@@ -77,9 +77,9 @@
 %include <shogun/features/DotFeatures.h>
 %include <shogun/features/DirectorDotFeatures.h>
 %include <shogun/features/BinnedDotFeatures.h>
-%include <shogun/features/StreamingFeatures.h>
-%include <shogun/features/StreamingDotFeatures.h>
-%include <shogun/features/StreamingVwFeatures.h>
+%include <shogun/features/streaming/StreamingFeatures.h>
+%include <shogun/features/streaming/StreamingDotFeatures.h>
+%include <shogun/features/streaming/StreamingVwFeatures.h>
 %include <shogun/features/DataGenerator.h>
 
 /* Templated Class StringFeatures */
@@ -125,7 +125,7 @@ namespace shogun
 }
 
 /* Templated Class StreamingStringFeatures */
-%include <shogun/features/StreamingStringFeatures.h>
+%include <shogun/features/streaming/StreamingStringFeatures.h>
 namespace shogun
 {
 #ifdef USE_BOOL
@@ -251,7 +251,7 @@ namespace shogun
 }
 
 /* Templated Class StreamingSparseFeatures */
-%include <shogun/features/StreamingSparseFeatures.h>
+%include <shogun/features/streaming/StreamingSparseFeatures.h>
 namespace shogun
 {
 #ifdef USE_BOOL
@@ -357,7 +357,7 @@ namespace shogun
 }
 
 /* Templated Class StreamingDenseFeatures */
-%include <shogun/features/StreamingDenseFeatures.h>
+%include <shogun/features/streaming/StreamingDenseFeatures.h>
 namespace shogun
  {
 #ifdef USE_BOOL

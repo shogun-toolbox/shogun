@@ -12,9 +12,9 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/features/StreamingDotFeatures.h>
+#include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/io/InputParser.h>
+#include <shogun/io/streaming/InputParser.h>
 
 namespace shogun
 {

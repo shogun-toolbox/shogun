@@ -11,7 +11,7 @@
  */
 
 #include <shogun/classifier/svm/OnlineLibLinear.h>
-#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;

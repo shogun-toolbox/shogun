@@ -10,7 +10,7 @@
 #ifndef __STREAMING_FILEFROMDENSE_H__
 #define __STREAMING_FILEFROMDENSE_H__
 
-#include <shogun/io/StreamingFileFromFeatures.h>
+#include <shogun/io/streaming/StreamingFileFromFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 
 namespace shogun

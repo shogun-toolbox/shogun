@@ -30,11 +30,11 @@
 %rename(VwParser) CVwParser;
 
 %include <shogun/io/File.h>
-%include <shogun/io/StreamingFile.h>
-%include <shogun/io/StreamingFileFromFeatures.h>
+%include <shogun/io/streaming/StreamingFile.h>
+%include <shogun/io/streaming/StreamingFileFromFeatures.h>
 
 /* Template Class StreamingFileFromSparseFeatures */
-%include <shogun/io/StreamingFileFromSparseFeatures.h>
+%include <shogun/io/streaming/StreamingFileFromSparseFeatures.h>
 namespace shogun
 {
 #ifdef USE_BOOL
@@ -76,7 +76,7 @@ namespace shogun
 }
 
 /* Template Class StreamingFileFromDenseFeatures */
-%include <shogun/io/StreamingFileFromDenseFeatures.h>
+%include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
 namespace shogun
 {
 #ifdef USE_BOOL
@@ -118,10 +118,10 @@ namespace shogun
 }
 
 %include <shogun/io/AsciiFile.h>
-%include <shogun/io/StreamingAsciiFile.h>
+%include <shogun/io/streaming/StreamingAsciiFile.h>
 %include <shogun/classifier/vw/VwParser.h>
-%include <shogun/io/StreamingVwFile.h>
-%include <shogun/io/StreamingVwCacheFile.h>
+%include <shogun/io/streaming/StreamingVwFile.h>
+%include <shogun/io/streaming/StreamingVwCacheFile.h>
 %include <shogun/io/BinaryFile.h>
 %include <shogun/io/HDF5File.h>
 %include <shogun/io/SerializableFile.h>

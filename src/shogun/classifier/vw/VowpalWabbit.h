@@ -21,7 +21,7 @@
 #include <shogun/classifier/vw/learners/VwNonAdaptiveLearner.h>
 #include <shogun/classifier/vw/VwRegressor.h>
 
-#include <shogun/features/StreamingVwFeatures.h>
+#include <shogun/features/streaming/StreamingVwFeatures.h>
 #include <shogun/machine/OnlineLinearMachine.h>
 
 namespace shogun

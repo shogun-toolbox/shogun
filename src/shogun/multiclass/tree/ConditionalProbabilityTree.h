@@ -13,7 +13,7 @@
 
 #include <map>
 
-#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 
 namespace shogun
