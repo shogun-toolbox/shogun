@@ -74,23 +74,13 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
 
-	/* precompute kernel matrices: data has to be stored anyway and its fast */
-	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
-
-	/* remove bias terms on diagonals of X,Y with themselves */
-	for (index_t i=0; i<m; ++i)
-	{
-		K(i, i)=0;
-		K(m_q_start+i, m_q_start+i)=0;
-	}
-
 	/* first term */
 	float64_t first=0;
 	for (index_t i=0; i<m; ++i)
 	{
-		/* ensure i!=j doesnt matter since its zero */
+		/* ensure i!=j while adding up */
 		for (index_t j=0; j<m; ++j)
-			first+=K(i,j);
+			first+=i==j ? 0 :m_kernel->kernel(i,j);
 	}
 	first/=m*(m-1);
 
@@ -98,9 +88,9 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	float64_t second=0;
 	for (index_t i=m_q_start; i<m_q_start+n; ++i)
 	{
-		/* ensure i!=j doesnt matter since its zero */
+		/* ensure i!=j while adding up */
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			second+=K(i,j);
+			second+=i==j ? 0 :m_kernel->kernel(i,j);
 	}
 	second/=n*(n-1);
 
@@ -109,7 +99,7 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	for (index_t i=0; i<m; ++i)
 	{
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			third+=K(i,j);
+			third+=m_kernel->kernel(i,j);
 	}
 	third*=2.0/(m*n);
 
@@ -125,15 +115,12 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
 
-	/* precompute kernel matrices: data has to be stored anyway and its fast */
-	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
-
 	/* first term */
 	float64_t first=0;
 	for (index_t i=0; i<m; ++i)
 	{
 		for (index_t j=0; j<m; ++j)
-			first+=K(i,j);
+			first+=m_kernel->kernel(i,j);
 	}
 	first/=(m*m);
 
@@ -142,7 +129,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	for (index_t i=m_q_start; i<m_q_start+n; ++i)
 	{
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			second+=K(i,j);
+			second+=m_kernel->kernel(i,j);
 	}
 	second/=(n*n);
 
@@ -151,7 +138,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	for (index_t i=0; i<m; ++i)
 	{
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			third+=K(i,j);
+			third+=m_kernel->kernel(i,j);
 	}
 	third*=2.0/(m*n);
 
@@ -271,7 +258,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	if (num_samples<=2)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Number of samples has to be at"
-				" least 2, better in the hundreds", get_name());
+				" least 2, better in the hundrets", get_name());
 	}
 
 	if (num_eigenvalues>2*m_q_start-1)
@@ -351,7 +338,6 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
 	m_kernel->init(m_p_and_q, m_p_and_q);
-	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
 
 	/* compute mean under H0 of MMD, which is
 	 * meanMMD  = 2/m * ( 1  - 1/m*sum(diag(KL))  );
@@ -362,13 +348,7 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 	{
 		/* virtual KL matrix is in upper right corner of SHOGUN K matrix
 		 * so this sums the diagonal of the matrix between X and Y*/
-		mean_mmd+=K(i, m_q_start+i);
-
-		/* remove diagonals; are not needed later on, avoids if in loop */
-		K(i, i)=0;
-		K(m_q_start+i, m_q_start+i)=0;
-		K(m_q_start+i, i)=0;
-		K(i, m_q_start+i)=0;
+		mean_mmd+=m_kernel->kernel(i, m_q_start+i);
 	}
 	mean_mmd=2.0/m_q_start*(1.0-1.0/m_q_start*mean_mmd);
 
@@ -380,11 +360,14 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 	{
 		for (index_t j=0; j<m_q_start; ++j)
 		{
-			/* diagonals are not added since they are all zero'ed above */
-			float64_t to_add=K(i, j);
-			to_add+=K(m_q_start+i, m_q_start+j);
-			to_add-=K(i, m_q_start+j);
-			to_add-=K(m_q_start+i, j);
+			/* dont add diagonal of all pairs of imaginary kernel matrices */
+			if (i==j || m_q_start+i==j || m_q_start+j==i)
+				continue;
+
+			float64_t to_add=m_kernel->kernel(i, j);
+			to_add+=m_kernel->kernel(m_q_start+i, m_q_start+j);
+			to_add-=m_kernel->kernel(i, m_q_start+j);
+			to_add-=m_kernel->kernel(m_q_start+i, j);
 			var_mmd+=CMath::pow(to_add, 2);
 		}
 	}
