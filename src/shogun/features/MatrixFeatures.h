@@ -18,12 +18,12 @@ namespace shogun
 {
 
 /**
- * @brief Class CMatrixFeatures used to represent data whose features are
- * better represented with variable length matrices than with unidimensional
- * arrays or vectors. Each of the vectors or examples has the same number of
- * features and these are represented as sequences. The length of the sequences
- * does NOT require to be the same, neither among the features of the same
- * vector nor among features of different vectors.
+ * @brief Class CMatrixFeatures used to represent data whose feature vectors are
+ * better represented with matrices rather than with unidimensional arrays or
+ * vectors. Each of the feature vectors has the same number of features. The
+ * length of the features must be the same for features within the same feature
+ * vector. However, the length of the features may be different among feature
+ * vectors.
  */
 template< class ST > class CMatrixFeatures : public CFeatures
 {
