@@ -72,7 +72,7 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	index_t n=m_p_and_q->get_num_vectors()-m_q_start;
 
 	/* init kernel with features */
-	m_kernel->init(m_p_and_q, m_p_and_q);
+//	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* first term */
 	float64_t first=0;
@@ -80,7 +80,7 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	{
 		/* ensure i!=j while adding up */
 		for (index_t j=0; j<m; ++j)
-			first+=i==j ? 0 :m_kernel->kernel(i,j);
+			first+=i==j ? 0 : m_kernel->kernel(i,j);
 	}
 	first/=m*(m-1);
 
@@ -90,7 +90,7 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	{
 		/* ensure i!=j while adding up */
 		for (index_t j=m_q_start; j<m_q_start+n; ++j)
-			second+=i==j ? 0 :m_kernel->kernel(i,j);
+			second+=i==j ? 0 : m_kernel->kernel(i,j);
 	}
 	second/=n*(n-1);
 
@@ -113,7 +113,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	index_t n=m_p_and_q->get_num_vectors()-m_q_start;
 
 	/* init kernel with features */
-	m_kernel->init(m_p_and_q, m_p_and_q);
+//	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* first term */
 	float64_t first=0;
@@ -285,7 +285,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
-	m_kernel->init(m_p_and_q, m_p_and_q);
+//	m_kernel->init(m_p_and_q, m_p_and_q);
 	SGMatrix<float64_t> K=m_kernel->get_kernel_matrix();
 
 	/* center matrix K=H*K*H */
@@ -337,7 +337,7 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
 	 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
 	 * works since X and Y are concatenated here */
-	m_kernel->init(m_p_and_q, m_p_and_q);
+//	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* compute mean under H0 of MMD, which is
 	 * meanMMD  = 2/m * ( 1  - 1/m*sum(diag(KL))  );
