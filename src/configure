@@ -92,6 +92,7 @@ _doxygen=auto
 _swig=auto
 _lapack=auto
 _superlu=auto
+_mosek=auto
 _arpack=auto
 _nlopt=auto
 _eigen3=auto
@@ -1268,6 +1269,7 @@ Optional features:
   --enable-spinlocks             enable use of spinlocks instead of mutexes [auto]
   --enable-lapack                enable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --enable-arpack                enable arpack [auto]
+  --enable-mosek                 enable MOSEK [auto]
   --enable-superlu               enable SuperLU [auto]
   --enable-nlopt                 enable NLOPT [auto]
   --enable-eigen3                enable Eigen3 [auto]
@@ -1294,6 +1296,7 @@ Optional features:
   --disable-largefile            disable large file support (64bit file acces routines) [enabled]
   --disable-lapack               disable lapack (fast blas and lapack math routines) and use built in ones (slower!) [auto]
   --disable-arpack               disable arpack [auto]
+  --disable-mosek                disable MOSEK [auto]
   --disable-superlu              disable SuperLU [auto]
   --disable-nlopt                disable NLOPT [auto]
   --disable-eigen3               disable Eigen3 [auto]
@@ -1497,6 +1500,8 @@ EOF
 	  --enable-lapack)		_lapack=yes	;;
 	  --disable-arpack)		_arpack=no	;;
 	  --enable-arpack)		_arpack=yes	;;
+	  --disable-mosek)		_mosek=no	;;
+	  --enable-mosek)		_mosek=yes	;;
 	  --disable-superlu)	_superlu=no	;;
 	  --enable-superlu)		_superlu=yes;;
 	  --disable-nlopt)		_nlopt=no	;;
@@ -3419,6 +3424,37 @@ EOF
 	fi
 }
 
+check_mosek()
+{
+	if test "$_mosek" = yes || test "$_mosek" = auto
+	then
+		cat > $TMPCXX << EOF
+#include <mosek.h>
+
+int main(int argc, char **argv)
+{
+	MSKenv_t m_env;
+	MSK_makeenv(&m_env, NULL, NULL, NULL, NULL);
+}
+EOF
+		echocheck "Mosek support"
+		if cxx_check -lmosek
+		then
+			echores "yes"
+			USE_MOSEK='#define USE_MOSEK 1'
+			DEFINES="$DEFINES -DUSE_MOSEK"
+			POSTLINKFLAGS="$POSTLINKFLAGS -lmosek"
+		else
+			if test "$_mosek" = yes
+			then 
+				die "Mosek not found"
+			else
+				echores "no"
+			fi
+		fi
+	fi
+}
+
 check_arpack()
 {
 	if test "$_arpack" = yes || test "$_arpack" = auto
@@ -4981,6 +5017,7 @@ $HAVE_LARGEFILE
 $HAVE_DOXYGEN
 $HAVE_LAPACK
 $HAVE_MVEC
+$USE_MOSEK
 $HAVE_ARPACK
 $HAVE_SUPERLU
 $HAVE_NLOPT
@@ -5129,6 +5166,7 @@ check_json
 check_xml
 check_lapack
 check_superlu
+check_mosek
 check_arpack
 check_nlopt
 check_eigen3
