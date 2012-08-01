@@ -9,6 +9,7 @@
 #include <shogun/base/init.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
 
 #define  EPSILON  1e-5
 
@@ -76,11 +77,8 @@ int main(int argc, char** argv)
 	
 	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(machine->apply());
 
-	int32_t correct = 0;
-	for (int32_t i=0; i < output->get_num_labels(); ++i)
-		if (output->get_int_label(i) == labels->get_int_label(i))
-			correct++;
-	SG_SPRINT("Accuracy = %.4f\n", float64_t(correct)/labels->get_num_labels());
+	CMulticlassAccuracy *evaluator = new CMulticlassAccuracy();
+	SG_SPRINT("Accuracy = %.4f\n", evaluator->evaluate(output, labels));
 
 	// Free resources
 	SG_UNREF(machine);
@@ -90,6 +88,7 @@ int main(int argc, char** argv)
 	SG_UNREF(labels);
 	SG_UNREF(train_file);
 	SG_UNREF(stream_features);
+	SG_UNREF(evaluator);
 
 	exit_shogun();
 
