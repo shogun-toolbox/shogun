@@ -46,8 +46,7 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 	if (data != NULL)
 	{
 		CDenseFeatures<float64_t> *feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
-		if (feats == NULL)
-			SG_ERROR("Require non-NULL dense features of float64_t\n");
+		REQUIRE(feats != NULL, ("Require non-NULL dense features of float64_t\n"));
 		set_features(feats);
 	}
 
@@ -84,7 +83,7 @@ int32_t CRelaxedTree::apply_one(int32_t idx)
 
 		if (result < 0)
 		{
-			// go lest
+			// go left
 			if (node->left()) // has left subtree
 			{
 				node = node->left();
@@ -132,7 +131,7 @@ int32_t CRelaxedTree::apply_one(int32_t idx)
 bool CRelaxedTree::train_machine(CFeatures* data)
 {
 	if (m_machine_for_confusion_matrix == NULL)
-		SG_ERROR("Call set_machine_for_confusion_matrix before training");
+		SG_ERROR("Call set_machine_for_confusion_matrix before training\n");
 
 	if (data)
 	{
@@ -150,8 +149,10 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 
 	// train root
 	SGVector<int32_t> classes(m_num_classes);
+
 	for (int32_t i=0; i < m_num_classes; ++i)
 		classes[i] = i;
+
 	SG_UNREF(m_root);
 	m_root = train_node(conf_mat, classes);
 
