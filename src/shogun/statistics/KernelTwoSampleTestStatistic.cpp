@@ -28,6 +28,9 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 
 	m_kernel=kernel;
 	SG_REF(kernel);
+
+	/* init kernel once in the beginning */
+	m_kernel->init(m_p_and_q, m_p_and_q);
 }
 
 CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
@@ -37,6 +40,9 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 
 	m_kernel=kernel;
 	SG_REF(kernel);
+
+	/* init kernel once in the beginning */
+	m_kernel->init(m_p_and_q, m_p_and_q);
 }
 
 CKernelTwoSampleTestStatistic::~CKernelTwoSampleTestStatistic()
@@ -66,41 +72,47 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 	if (m_kernel->get_kernel_type()==K_CUSTOM)
 	{
 		custom_kernel=(CCustomKernel*)m_kernel;
-		custom_kernel->add_row_subset(ind_permutation);
-		custom_kernel->add_col_subset(ind_permutation);
+
+		for (index_t i=0; i<m_bootstrap_iterations; ++i)
+		{
+			/* idea: merge features of p and q, shuffle, and compute statistic.
+			 * This is done using subsets here. add to custom kernel since
+			 * it has no features to subset. CustomKernel has not to be
+			 * re-initialised after each subset setting - in fact, this would
+			 * remove all subsets */
+			SGVector<int32_t>::permute_vector(ind_permutation);
+			custom_kernel->add_row_subset(ind_permutation);
+			custom_kernel->add_col_subset(ind_permutation);
+
+			/* compute statistic for this permutation of mixed samples */
+			results[i]=compute_statistic();
+
+			/* remove subsets */
+			custom_kernel->remove_row_subset();
+			custom_kernel->remove_col_subset();
+		}
 	}
 	else
 	{
-		custom_kernel=NULL;
-		m_p_and_q->add_subset(ind_permutation);
+		for (index_t i=0; i<m_bootstrap_iterations; ++i)
+		{
+			/* idea: merge features of p and q, shuffle, and compute statistic.
+			 * This is done using subsets here */
+			SGVector<int32_t>::permute_vector(ind_permutation);
+			m_p_and_q->add_subset(ind_permutation);
+
+			/* kernel has to be re-initialised after each subset setting */
+			m_kernel->init(m_p_and_q, m_p_and_q);
+
+			/* compute statistic for this permutation of mixed samples */
+			results[i]=compute_statistic();
+
+			/* remove subset */
+			m_p_and_q->remove_subset();
+		}
 	}
 
-
-	for (index_t i=0; i<m_bootstrap_iterations; ++i)
-	{
-		/* idea: merge features of p and q, shuffle, and compute statistic.
-		 * This is done using subsets here */
-
-		/* create index permutation and add as subset. This will mix samples
-		 * from p and q */
-		SGVector<int32_t>::permute_vector(ind_permutation);
-
-		/* compute statistic for this permutation of mixed samples */
-		results[i]=compute_statistic();
-	}
-
-	/* clean up */
-	if (custom_kernel)
-	{
-		custom_kernel->remove_row_subset();
-		custom_kernel->remove_col_subset();
-	}
-	else
-	{
-		custom_kernel=NULL;
-		m_p_and_q->remove_subset();
-	}
-
-	/* clean up and return */
+	/* clean up, re-init kernel on original data and return */
+	m_kernel->init(m_p_and_q, m_p_and_q);
 	return results;
 }
