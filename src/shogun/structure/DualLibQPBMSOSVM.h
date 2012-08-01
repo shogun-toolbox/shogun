@@ -18,6 +18,15 @@
 namespace shogun
 {
 
+/** training method selection */
+enum ESolver
+{
+	// standard bmrm
+	BMRM=1,
+	// prox-term (proximal point) bmrm
+	PPBMRM=2
+};
+
 class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 {
 	public:
@@ -87,7 +96,13 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		inline bool get_verbose() { return m_verbose; }
 
 		/** get bmrm result */
-		inline bmrm_return_value_T get_bmrm_result() { return m_bmrm_result; }
+		inline bmrm_return_value_T get_result() { return m_result; }
+
+		/** get training algorithm */
+		inline ESolver get_solver() { return m_solver; }
+
+		/** set training algorithm */
+		inline void set_solver(ESolver solver) { m_solver=solver; }
 
 	protected:
 		/** train dual SO-SVM
@@ -128,7 +143,10 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		CRiskFunction* m_risk_function;
 
 		/** BMRM result */
-		bmrm_return_value_T m_bmrm_result;
+		bmrm_return_value_T m_result;
+
+		/** training algorithm */
+		ESolver m_solver;
 
 }; /* class CDualLibQPBMSOSVM */
 

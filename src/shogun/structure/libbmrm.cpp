@@ -353,7 +353,8 @@ bmrm_return_value_T svm_bmrm_solver(
 		/* Verbose output */
 		if (verbose)
 			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
-					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd, (bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
+					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd, (bmrm.Fp-bmrm.Fd)/bmrm.Fp, R,
+					bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
 		/* Check size of Buffer */
 		if (bmrm.nCP>=BufSize)
