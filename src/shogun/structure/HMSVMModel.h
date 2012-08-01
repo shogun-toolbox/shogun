@@ -22,7 +22,7 @@ namespace shogun
 enum EStateModelType;
 
 /**
- * @brief Class CHMSVMModel TODO
+ * @brief Class CHMSVMModel TODO DOC
  */
 class CHMSVMModel : public CStructuredModel
 {
@@ -140,6 +140,12 @@ class CHMSVMModel : public CStructuredModel
 
 		/** the state model */
 		CStateModel* m_state_model;
+
+		/** transition weights used in Viterbi */
+		SGMatrix< float64_t > m_transmission_weights;
+
+		/** emission weights used in Viterbi */
+		SGVector< float64_t > m_emission_weights;
 
 }; /* class CHMSVMModel */
 

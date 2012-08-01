@@ -71,8 +71,8 @@ class CStateModel : public CSGObject
 		 *
 		 * @return a vector with the emission parameters
 		 */
-		virtual SGVector< float64_t > reshape_emission_params(SGVector< float64_t > w,
-				int32_t num_feats, int32_t num_obs) = 0;
+		virtual void reshape_emission_params(SGVector< float64_t >& emission_weights,
+			SGVector< float64_t > w, int32_t num_feats, int32_t num_obs) = 0;
 
 		/**
 		 * arranges the tranmission parameterss of the weight vector into a matrix
@@ -83,7 +83,9 @@ class CStateModel : public CSGObject
 		 *
 		 * @return a matrix with the transmission parameters
 		 */
-		virtual SGMatrix< float64_t > reshape_transmission_params(SGVector< float64_t > w) = 0;
+		virtual void reshape_transmission_params(
+				SGMatrix< float64_t >& transmission_matrix,
+				SGVector< float64_t > w) = 0;
 
 		/** translates label sequence to state sequence
 		 *
@@ -140,6 +142,40 @@ class CStateModel : public CSGObject
 		virtual SGVector< int32_t > get_monotonicity(int32_t num_free_states,
 				int32_t num_feats) const;
 
+		/**
+		 * return the distribution of start states, i.e. the specification
+		 * of which states may appear in the start of a state sequence and
+		 * which may not. The elements of the vector returned can take one
+		 * out of two values:
+		 *
+		 * - -CMath::INFTY if the state is not allowed to be a start state
+		 * - 0 otherwise
+		 *
+		 * The distrubtion of start states m_p must be initialized in the
+		 * constructor of CStateModel's child classes.
+		 *
+		 * @return the distribution of start states m_p, vector of m_num_states
+		 * elements
+		 */
+		SGVector< float64_t > get_start_states() const;
+
+		/**
+		 * return the distribution of stop states, i.e. the specification
+		 * of which states may appear in the end of a state sequence and
+		 * which may not. The elements of the vector returned can take one
+		 * out of two values:
+		 *
+		 * - -CMath::INFTY if the state is not allowed to be a stop state
+		 * - 0 otherwise
+		 *
+		 * The distrubtion of stop states m_q must be initialized in the
+		 * constructor of CStateModel's child classes.
+		 *
+		 * @return the distribution of start states m_p, vector of m_num_states
+		 * elements
+		 */
+		SGVector< float64_t > get_stop_states() const;
+
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StateModel"; }
 
@@ -156,6 +192,12 @@ class CStateModel : public CSGObject
 
 		/** state loss matrix, loss for every pair of states */
 		SGMatrix< float64_t > m_state_loss_mat;
+
+		/** the distribution of start states */
+		SGVector< float64_t > m_p;
+
+		/** the distribution of stop states */
+		SGVector< float64_t > m_q;
 
 }; /* class CStateModel */
 

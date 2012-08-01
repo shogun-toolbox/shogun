@@ -30,6 +30,13 @@ CTwoStateModel::CTwoStateModel() : CStateModel()
 		m_state_loss_mat(i, m_num_states-1) = 1;
 	}
 
+	// Initialize the start and stop states
+	m_p = SGVector< float64_t >(m_num_states);
+	m_q = SGVector< float64_t >(m_num_states);
+	m_p.set_const(-CMath::INFTY);
+	m_q.set_const(-CMath::INFTY);
+	m_p[0] = 0; // start state
+	m_q[1] = 0; // stop  state
 }
 
 CTwoStateModel::~CTwoStateModel()
@@ -74,7 +81,7 @@ SGVector< int32_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
 	SGVector< int32_t > state_seq(label_seq->data.vlen);
 	for ( int32_t i = 1 ; i < state_seq.vlen-1 ; ++i )
 	{
-		//TODO make independent of values 0-1 in labels
+		//FIXME make independent of values 0-1 in labels
 		state_seq[i] = label_seq->data[i] + 2;
 	}
 
@@ -90,7 +97,7 @@ CSequence* CTwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
 {
 	SGVector< int32_t > label_seq(state_seq.vlen);
 
-	//TODO make independent of values 0-1 in labels
+	//FIXME make independent of values 0-1 in labels
 	// Legend for state indices:
 	// 0 -> start state => label 0
 	// 1 -> stop state => label 0
@@ -108,11 +115,10 @@ CSequence* CTwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
 	return ret;
 }
 
-SGVector< float64_t > CTwoStateModel::reshape_emission_params(
+void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_weights,
 		SGVector< float64_t > w, int32_t num_feats, int32_t num_obs)
 {
-	SGVector< float64_t > emission_scores(m_num_states*num_feats*num_obs);
-	emission_scores.zero();
+	emission_weights.zero();
 
 	// Legend for state indices:
 	// 0 -> start state
@@ -130,18 +136,15 @@ SGVector< float64_t > CTwoStateModel::reshape_emission_params(
 			for ( int32_t o = 0 ; o < num_obs ; ++o )
 			{
 				em_idx = s*num_feats*num_obs + f*num_obs + o;
-				emission_scores[em_idx] = w[w_idx++];
+				emission_weights[em_idx] = w[w_idx++];
 			}
 		}
 	}
-
-	return emission_scores;
 }
 
-SGMatrix< float64_t > CTwoStateModel::reshape_transmission_params(
-		SGVector< float64_t > w)
+void CTwoStateModel::reshape_transmission_params(
+		SGMatrix< float64_t >& transmission_matrix, SGVector< float64_t > w)
 {
-	SGMatrix< float64_t > transmission_matrix(m_num_states, m_num_states);
 	transmission_matrix.set_const(-CMath::INFTY);
 
 	// Legend for state indices:
@@ -161,8 +164,6 @@ SGMatrix< float64_t > CTwoStateModel::reshape_transmission_params(
 	transmission_matrix(3,1) = 0;    // to stop
 	transmission_matrix(3,2) = w[3]; // to positive
 	transmission_matrix(3,3) = w[2]; // to negative
-
-	return transmission_matrix;
 }
 
 void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,

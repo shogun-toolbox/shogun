@@ -62,7 +62,8 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return a vector with the emission parameters
 		 */
-		virtual SGVector< float64_t > reshape_emission_params(SGVector< float64_t > w, int32_t num_feats, int32_t num_obs);
+		virtual void reshape_emission_params(SGVector< float64_t >& emission_weights,
+				SGVector< float64_t > w, int32_t num_feats, int32_t num_obs);
 
 		/**
 		 * arranges the tranmission parameterss of the weight vector into a matrix
@@ -73,7 +74,9 @@ class CTwoStateModel : public CStateModel
 		 *
 		 * @return a matrix with the transmission parameters
 		 */
-		virtual SGMatrix< float64_t > reshape_transmission_params(SGVector< float64_t > w);
+		virtual void reshape_transmission_params(
+				SGMatrix< float64_t >& transmission_matrix,
+				SGVector< float64_t > w);
 
 		/** translates label sequence to state sequence
 		 *

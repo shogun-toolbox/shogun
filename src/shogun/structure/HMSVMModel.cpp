@@ -26,11 +26,11 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 	init();
 
 	m_num_obs = num_obs;
-	// Shorthand for the number of states
-	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	// Shorthand for the number of free states
+	int32_t free_states = ((CHMSVMLabels*) m_labels)->get_num_states();
 	// Shorthand for the number of features of the feature vector
 	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
-	m_num_aux = S*D*(num_obs-1);
+	m_num_aux = free_states*D*(num_obs-1);
 
 	switch (smt)
 	{
@@ -41,6 +41,10 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 		default:
 			SG_ERROR("The EStateModelType given is not valid\n");
 	}
+
+	int32_t S = m_state_model->get_num_states();
+	m_transmission_weights = SGMatrix< float64_t >(S,S);
+	m_emission_weights     = SGVector< float64_t >(S*D*m_num_obs);
 }
 
 CHMSVMModel::~CHMSVMModel()
@@ -65,8 +69,6 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 	// Shorthand for the number of features of the feature vector
 	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
 	int32_t D = mf->get_num_features();
-	// Shorthad for the number of states
-	int32_t S = m_state_model->get_num_states();
 
 	// Get the sequence of labels
 	CSequence* label_seq = CSequence::obtain_from_generic(y);
@@ -77,19 +79,14 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 
 	// Translate from labels sequence to state sequence
 	SGVector< int32_t > state_seq = m_state_model->labels_to_states(label_seq);
-	// TODO prevent to allocate memory for this all the times this function is called
-	SGMatrix< float64_t > transition_weights(S,S);
-	transition_weights.zero();
+	m_transmission_weights.zero();
 
 	for ( int32_t i = 0 ; i < state_seq.vlen-1 ; ++i )
-		transition_weights(state_seq[i],state_seq[i+1]) += 1;
-
-	// TODO prevent to allocate memory for this all the times this function is called
-	SGVector< float64_t > obs_weights(S*D*m_num_obs);
-	obs_weights.zero();
+		m_transmission_weights(state_seq[i],state_seq[i+1]) += 1;
 
 	SGMatrix< float64_t > obs = mf->get_feature_vector(feat_idx);
 	ASSERT(obs.num_rows == D && obs.num_cols == state_seq.vlen);
+	m_emission_weights.zero();
 	index_t aux_idx, weight_idx;
 
 	for ( int32_t f = 0 ; f < D ; ++f )
@@ -99,11 +96,12 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 		for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
 		{
 			weight_idx = aux_idx + state_seq[j]*D*m_num_obs + obs(f,j);
-			obs_weights[weight_idx] += 1;
+			m_emission_weights[weight_idx] += 1;
 		}
 	}
 
-	m_state_model->weights_to_vector(psi, transition_weights, obs_weights, D, m_num_obs);
+	m_state_model->weights_to_vector(psi, m_transmission_weights, m_emission_weights,
+			D, m_num_obs);
 
 	return psi;
 }
@@ -121,16 +119,10 @@ CResultSet* CHMSVMModel::argmax(
 	// Shorthand for the number of states
 	int32_t S = m_state_model->get_num_states();
 
-	// TODO prevent to allocate memory for this all the times argmax is executed
-	// FIXME some model dependent part here
 	// Distribution of start states
-	SGVector< float64_t > p(S);
-	p.set_const(-CMath::INFTY);
-	p[0] = 0;
+	SGVector< float64_t > p = m_state_model->get_start_states();
 	// Distribution of stop states
-	SGVector< float64_t > q(S);
-	q.set_const(-CMath::INFTY);
-	q[1] = 0;
+	SGVector< float64_t > q = m_state_model->get_stop_states();
 
 	// Compute the loss-augmented emission matrix:
 	// E_{s,i} = w^{em}_s \cdot x_i + Delta(y_i, s)
@@ -141,19 +133,17 @@ CResultSet* CHMSVMModel::argmax(
 	SGMatrix< float64_t > E(S, T);
 	E.zero();
 	index_t em_idx;
-	// TODO prevent to allocate memory for this all the times argmax is executed
-	SGVector< float64_t > emission_scores =
-		m_state_model->reshape_emission_params(w, D, m_num_obs);
+	m_state_model->reshape_emission_params(m_emission_weights, w, D, m_num_obs);
 
 	for ( int32_t i = 0 ; i < T ; ++i )
 	{
 		for ( int32_t j = 0 ; j < D ; ++j )
 		{
-			//TODO make independent of observation values
+			//FIXME make independent of observation values
 			em_idx = j*m_num_obs + (index_t)CMath::round(x(j,i));
 
 			for ( int32_t s = 0 ; s < S ; ++s )
-				E(s,i) += emission_scores[s*D*m_num_obs + em_idx];
+				E(s,i) += m_emission_weights[s*D*m_num_obs + em_idx];
 		}
 	}
 
@@ -182,9 +172,7 @@ CResultSet* CHMSVMModel::argmax(
 	// Initialize the dynamic programming table and the traceback matrix
 	SGMatrix< float64_t >  dp(T, S);
 	SGMatrix< float64_t > trb(T, S);
-	// TODO prevent to allocate memory for this all the times argmax is executed
-	SGMatrix< float64_t > transmission_matrix =
-		m_state_model->reshape_transmission_params(w);
+	m_state_model->reshape_transmission_params(m_transmission_weights, w);
 
 	for ( int32_t s = 0 ; s < S ; ++s )
 	{
@@ -217,8 +205,8 @@ CResultSet* CHMSVMModel::argmax(
 
 			for ( int32_t prev = 0 ; prev < S ; ++prev )
 			{
-				// aij = transmission_matrix(prev, cur)
-				a = transmission_matrix[cur*S + prev];
+				// aij = m_transmission_weights(prev, cur)
+				a = m_transmission_weights[cur*S + prev];
 
 				if ( a > -CMath::INFTY )
 				{
@@ -413,6 +401,10 @@ void CHMSVMModel::init()
 {
 	SG_ADD(&m_num_states, "m_num_states", "The number of states", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_state_model, "m_state_model", "The state model", MS_NOT_AVAILABLE);
+	SG_ADD(&m_transmission_weights, "m_transmission_weights",
+			"Transmission weights used in Viterbi", MS_NOT_AVAILABLE);
+	SG_ADD(&m_emission_weights, "m_emission_weights",
+			"Emission weights used in Viterbi", MS_NOT_AVAILABLE);
 
 	m_num_states  = 0;
 	m_num_obs     = 0;

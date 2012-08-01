@@ -38,6 +38,8 @@ void CStateModel::init()
 			"The number of tranmission parameters", MS_NOT_AVAILABLE);
 	SG_ADD(&m_state_loss_mat, "m_state_loss_mat", "The state loss matrix",
 			MS_NOT_AVAILABLE);
+	SG_ADD(&m_p, "m_p", "The distribution of start states", MS_NOT_AVAILABLE);
+	SG_ADD(&m_q, "m_q", "The distribution of stop states", MS_NOT_AVAILABLE);
 
 	m_num_states = 0;
 	m_num_transmission_params = 0;
@@ -49,4 +51,14 @@ SGVector< int32_t > CStateModel::get_monotonicity(int32_t num_free_states,
 	SGVector< int32_t > ret(num_feats*num_free_states);
 	ret.zero();
 	return ret;
+}
+
+SGVector< float64_t > CStateModel::get_start_states() const
+{
+	return m_p;
+}
+
+SGVector< float64_t > CStateModel::get_stop_states() const
+{
+	return m_q;
 }
