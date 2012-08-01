@@ -168,6 +168,9 @@ template<class T> class SGVector : public SGReferencedData
 
 		static void permute_vector(SGVector<T> vec);
 
+		/** create a random permutation in place */
+		void permute();
+
 
 		/** resize array from old_size to new_size (keeping as much array
 		 * content as possible intact)
