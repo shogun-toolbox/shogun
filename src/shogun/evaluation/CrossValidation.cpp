@@ -246,7 +246,6 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
-			ms_output->output_train_indices(inverse_subset_indices);
 			m_features->add_subset(inverse_subset_indices);
 
 			/* set label subset for training */

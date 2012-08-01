@@ -74,7 +74,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @return weight vector
 		 */
-		inline SGVector<float64_t> get_w() const
+		virtual SGVector<float64_t> get_w() const
 		{
 			return w;
 		}
@@ -83,7 +83,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @param src_w new w
 		 */
-		inline void set_w(const SGVector<float64_t> src_w)
+		virtual void set_w(const SGVector<float64_t> src_w)
 		{
 			w=src_w;
 		}
@@ -92,7 +92,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @param b new bias
 		 */
-		inline void set_bias(float64_t b)
+		virtual void set_bias(float64_t b)
 		{
 			bias=b;
 		}
@@ -101,7 +101,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @return bias
 		 */
-		inline float64_t get_bias()
+		virtual float64_t get_bias()
 		{
 			return bias;
 		}

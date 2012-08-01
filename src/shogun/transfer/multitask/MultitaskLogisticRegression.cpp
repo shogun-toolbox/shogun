@@ -56,12 +56,6 @@ void CMultitaskLogisticRegression::set_current_task(int32_t task)
 	ASSERT(task>=0);
 	ASSERT(task<m_tasks_w.num_cols);
 	m_current_task = task;
-	int32_t n_feats = m_tasks_w.num_rows;
-	w = SGVector<float64_t>(n_feats);
-	for (int32_t i=0; i<n_feats; i++)
-		w[i] = m_tasks_w(i,task);
-
-	bias = m_tasks_c[task];
 }
 
 CTaskRelation* CMultitaskLogisticRegression::get_task_relation() const
@@ -221,6 +215,37 @@ CBinaryLabels* CMultitaskLogisticRegression::apply_locked_binary(SGVector<index_
 		}
 	}
 	return new CBinaryLabels(result);
+}
+
+float64_t CMultitaskLogisticRegression::apply_one(int32_t i)
+{
+	float64_t dot = features->dense_dot(i,m_tasks_w.get_column_vector(m_current_task),m_tasks_w.num_rows);
+	float64_t ep = CMath::exp(-(dot + m_tasks_c[m_current_task]));
+	return 2.0/(1.0+ep) - 1.0;
+}
+
+SGVector<float64_t> CMultitaskLogisticRegression::get_w() const
+{
+	SGVector<float64_t> w_(m_tasks_w.num_rows);
+	for (int32_t i=0; i<w.vlen; i++)
+		w_[i] = m_tasks_w(i,m_current_task);
+	return w_;
+}
+
+void CMultitaskLogisticRegression::set_w(const SGVector<float64_t> src_w)
+{
+	for (int32_t i=0; i<m_tasks_w.num_rows; i++)
+		m_tasks_w(i,m_current_task) = src_w[i];
+}
+
+void CMultitaskLogisticRegression::set_bias(float64_t b)
+{
+	m_tasks_c[m_current_task] = b;
+}
+
+float64_t CMultitaskLogisticRegression::get_bias()
+{
+	return m_tasks_c[m_current_task];
 }
 
 SGVector<index_t>* CMultitaskLogisticRegression::get_subset_tasks_indices()

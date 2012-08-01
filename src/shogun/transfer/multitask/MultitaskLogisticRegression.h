@@ -63,6 +63,30 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 		 * @param task task index
 		 */
 		void set_current_task(int32_t task);
+		
+		/** get w
+		 *
+		 * @return weight vector
+		 */
+		virtual SGVector<float64_t> get_w() const;
+
+		/** set w
+		 *
+		 * @param src_w new w
+		 */
+		virtual void set_w(const SGVector<float64_t> src_w);
+
+		/** set bias
+		 *
+		 * @param b new bias
+		 */
+		virtual void set_bias(float64_t b);
+
+		/** get bias
+		 *
+		 * @return bias
+		 */
+		virtual float64_t get_bias();
 
 		/** getter for task tree
 		 * @return task tree
@@ -85,6 +109,9 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 
 		/** applies on given indices */
 		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
+
+		/** applies to one vector */
+		float64_t apply_one(int32_t i);
 
 	protected:
 
