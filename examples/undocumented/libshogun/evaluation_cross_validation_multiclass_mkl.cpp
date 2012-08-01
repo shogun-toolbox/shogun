@@ -8,8 +8,8 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/features/StreamingDenseFeatures.h>
-#include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>

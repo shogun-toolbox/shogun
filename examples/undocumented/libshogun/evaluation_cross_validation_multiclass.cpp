@@ -12,9 +12,9 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
