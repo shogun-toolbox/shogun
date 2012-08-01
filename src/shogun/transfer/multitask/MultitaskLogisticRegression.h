@@ -115,6 +115,9 @@ class CMultitaskLogisticRegression : public CSLEPMachine
 
 	protected:
 
+		/** apply get outputs */
+		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data=NULL);
+
 		/** train machine */
 		virtual bool train_machine(CFeatures* data=NULL);
 

@@ -224,6 +224,28 @@ float64_t CMultitaskLogisticRegression::apply_one(int32_t i)
 	return 2.0/(1.0+ep) - 1.0;
 }
 
+SGVector<float64_t> CMultitaskLogisticRegression::apply_get_outputs(CFeatures* data)
+{
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			SG_ERROR("Specified features are not of type CDotFeatures\n");
+
+		set_features((CDotFeatures*) data);
+	}
+
+	if (!features)
+		return SGVector<float64_t>();
+
+	int32_t num=features->get_num_vectors();
+	ASSERT(num>0);
+	float64_t* out=SG_MALLOC(float64_t, num);
+	for (int32_t i=0; i<num; i++)
+		out[i] = apply_one(i);
+
+	return SGVector<float64_t>(out,num);
+}
+
 SGVector<float64_t> CMultitaskLogisticRegression::get_w() const
 {
 	SGVector<float64_t> w_(m_tasks_w.num_rows);
