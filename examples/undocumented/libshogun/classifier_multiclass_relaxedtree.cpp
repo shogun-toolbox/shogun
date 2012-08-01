@@ -69,7 +69,6 @@ int main(int argc, char** argv)
 	machine->set_labels(labels);
 
 	CMulticlassLibLinear *svm = new CMulticlassLibLinear();
-	SG_REF(svm);
 
 	machine->set_machine_for_confusion_matrix(svm);
 	machine->train(features);
@@ -82,7 +81,6 @@ int main(int argc, char** argv)
 
 	// Free resources
 	SG_UNREF(machine);
-	SG_UNREF(svm);
 	SG_UNREF(output);
 	SG_UNREF(features);
 	SG_UNREF(labels);
