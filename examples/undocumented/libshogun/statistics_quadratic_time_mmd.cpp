@@ -10,6 +10,7 @@
 #include <shogun/base/init.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/DataGenerator.h>
@@ -67,6 +68,9 @@ void test_quadratic_mmd_bootstrap()
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, m);
 	mmd->set_statistic_type(UNBIASED);
 	mmd->set_bootstrap_iterations(num_iterations);
+
+	/* use fixed seed */
+	CMath::init_random(1);
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 
 	float64_t mean=CStatistics::mean(null_samples);
@@ -84,7 +88,26 @@ void test_quadratic_mmd_bootstrap()
 //	ASSERT(var>2.194192869469228e-05);
 //	ASSERT(var<2.936672859339959e-05);
 
+	/* now again but with a precomputed kernel, same features.
+	 * This avoids re-computing the kernel matrix in every bootstrapping
+	 * iteration and should be num_iterations times faster */
+	SG_REF(features);
+	CCustomKernel* precomputed_kernel=new CCustomKernel(kernel);
 	SG_UNREF(mmd);
+	mmd=new CQuadraticTimeMMD(precomputed_kernel, features, m);
+	mmd->set_statistic_type(UNBIASED);
+	mmd->set_bootstrap_iterations(num_iterations);
+	CMath::init_random(1);
+	null_samples=mmd->bootstrap_null();
+
+	/* assert that results do not change */
+	SG_SPRINT("mean %f, var %f\n", CStatistics::mean(null_samples),
+			CStatistics::variance(null_samples));
+	ASSERT(CMath::abs(mean-CStatistics::mean(null_samples))<10E-5);
+	ASSERT(CMath::abs(var-CStatistics::variance(null_samples))<10E-5);
+
+	SG_UNREF(mmd);
+	SG_UNREF(features);
 }
 
 #ifdef HAVE_LAPACK
@@ -203,6 +226,8 @@ void test_quadratic_mmd_random()
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
+
+//	sg_io->set_loglevel(MSG_DEBUG);
 
 	/* all tests have been "speed up" by reducing the number of runs/samples.
 	 * If you have any doubts in the results, set all num_runs to original

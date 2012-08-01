@@ -25,7 +25,7 @@ TARGETS = basic_minimal \
 		  classifier_multiclasslibsvm \
 		  classifier_qda \
 		  classifier_multiclasslinearmachine \
-		  kernel_gaussian kernel_revlin \
+		  kernel_gaussian kernel_revlin kernel_custom\
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
 		  parameter_iterate_float64 parameter_iterate_sgobject \

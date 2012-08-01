@@ -60,6 +60,15 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 
 		virtual ~CKernelTwoSampleTestStatistic();
 
+		/** merges both sets of samples and computes the test statistic
+		 * m_bootstrap_iteration times. This version checks if a precomputed
+		 * custom kernel is used, and, if so, just permutes it instead of re-
+		 * computing it in every iteration.
+		 *
+		 * @return vector of all statistics
+		 */
+		virtual SGVector<float64_t> bootstrap_null();
+
 		inline virtual const char* get_name() const=0;
 
 	private:

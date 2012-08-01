@@ -86,7 +86,7 @@ float64_t CLinearTimeMMD::compute_statistic()
 	SG_DEBUG("m_q_start=%d\n", m_q_start);
 
 	/* compute traces of kernel matrices for linear MMD */
-	m_kernel->init(m_p_and_q, m_p_and_q);
+//	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	float64_t pp=0;
 	float64_t qq=0;
@@ -176,7 +176,7 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 	index_t m=m_q_start;
 	index_t m_2=m/2;
 
-	m_kernel->init(m_p_and_q, m_p_and_q);
+//	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* allocate memory for traces */
 	SGVector<float64_t> traces(m_2);
@@ -238,7 +238,7 @@ void CLinearTimeMMD::optimize_kernel_weights()
 	}
 
 	/* init kernel with features */
-	m_kernel->init(m_p_and_q, m_p_and_q);
+//	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* number of kernels and data */
 	index_t num_kernels=combined_kernel->get_num_subkernels();
