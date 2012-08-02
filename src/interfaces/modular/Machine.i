@@ -55,6 +55,7 @@ APPLY_BINARY(CWDSVMOcas);
 APPLY_BINARY(CPluginEstimate);
 
 APPLY_REGRESSION(CKernelRidgeRegression);
+APPLY_REGRESSION(CLibSVR);
 APPLY_REGRESSION(CSVRLight);
 APPLY_REGRESSION(CMKLRegression);
 APPLY_REGRESSION(CKernelRidgeRegression);
@@ -82,6 +83,7 @@ APPLY_STRUCTURED(CPrimalMosekSOSVM);
 %rename(apply_generic) CPluginEstimate::apply(CFeatures* data=NULL);
 %rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CSVRLight::apply(CFeatures* data=NULL);
+%rename(apply_generic) CLibSVR::apply(CFeatures* data=NULL);
 %rename(apply_generic) CMKLRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLinearRidgeRegression::apply(CFeatures* data=NULL);
