@@ -85,7 +85,7 @@ TARGETS = basic_minimal \
 		  library_cover_tree \
 		  kernel_machine_train_locked \
 		  statistics \
-		  transfer_multitasklsregression \
+		  transfer_multitaskleastsquaresregression \
 		  transfer_multitasklogisticregression \
 		  statistics_quadratic_time_mmd \
 		  statistics_linear_time_mmd \

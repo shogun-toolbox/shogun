@@ -133,6 +133,7 @@ class CLinearMachine : public CMachine
 		 */
 		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 
+		/** applies to one vector */
 		virtual float64_t apply_one(int32_t vec_idx);
 
 		/** get features
@@ -147,6 +148,12 @@ class CLinearMachine : public CMachine
 		 * @return name of the SGSerializable
 		 */
 		virtual const char* get_name() const { return "LinearMachine"; }
+
+		/** clone */
+		virtual CMachine* clone()
+		{
+			return new CLinearMachine(this);
+		}
 
 	protected:
 

@@ -1,6 +1,6 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/transfer/multitask/MultitaskLSRegression.h>
+#include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
 #include <shogun/transfer/multitask/Task.h>
 #include <shogun/transfer/multitask/TaskTree.h>
 #include <shogun/transfer/multitask/TaskGroup.h>
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 	task_group->append_task(first_task);
 	task_group->append_task(second_task);
 
-	CMultitaskLSRegression* regressor = new CMultitaskLSRegression(0.5,features,labels,task_group);
+	CMultitaskLeastSquaresRegression* regressor = new CMultitaskLeastSquaresRegression(0.5,features,labels,task_group);
 	regressor->train();
 
 	regressor->set_current_task(0);

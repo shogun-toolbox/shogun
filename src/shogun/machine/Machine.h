@@ -229,6 +229,13 @@ class CMachine : public CSGObject
 			return false;
 		}
 
+		/** applies to one vector */
+		virtual float64_t apply_one(int32_t i)
+		{
+			SG_NOTIMPLEMENTED;
+			return 0.0;
+		}
+
 		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked
 		 *
@@ -253,7 +260,7 @@ class CMachine : public CSGObject
 		virtual void data_lock(CLabels* labs, CFeatures* features);
 
 		/** post lock */
-		virtual void post_lock() { };
+		virtual void post_lock(CLabels* labs, CFeatures* features) { };
 
 		/** Unlocks a locked machine and restores previous state */
 		virtual void data_unlock();
@@ -269,6 +276,13 @@ class CMachine : public CSGObject
 		{
 			SG_NOTIMPLEMENTED;
 			return PT_BINARY;
+		}
+
+		/** clone */
+		virtual CMachine* clone()
+		{
+			SG_NOTIMPLEMENTED;
+			return NULL;
 		}
 
 		virtual const char* get_name() const { return "Machine"; }

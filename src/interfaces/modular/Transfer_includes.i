@@ -7,11 +7,13 @@
  #include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
 
  #include <shogun/transfer/multitask/LibLinearMTL.h>
+ #include <shogun/transfer/multitask/MultitaskCompositeMachine.h>
  #include <shogun/transfer/multitask/Task.h>
  #include <shogun/transfer/multitask/TaskRelation.h>
  #include <shogun/transfer/multitask/TaskTree.h>
  #include <shogun/transfer/multitask/TaskGroup.h>
- #include <shogun/transfer/multitask/MultitaskLSRegression.h>
+ #include <shogun/transfer/multitask/MultitaskLinearMachine.h>
+ #include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
  #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>

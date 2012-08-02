@@ -7,32 +7,24 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifndef  MULTITASKLOGISTICREGRESSION_H_
-#define  MULTITASKLOGISTICREGRESSION_H_
+#ifndef  MULTITASKLSREGRESSION_H_
+#define  MULTITASKLSREGRESSION_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/transfer/multitask/MultitaskLinearMachine.h>
 #include <shogun/transfer/multitask/TaskRelation.h>
-#include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/transfer/multitask/TaskTree.h>
-#include <shogun/transfer/multitask/Task.h>
-
-#include <vector>
-#include <set>
-
-using namespace std;
+#include <shogun/transfer/multitask/MultitaskLinearMachine.h>
 
 namespace shogun
 {
 /** @brief  */
-class CMultitaskLogisticRegression : public CMultitaskLinearMachine
+class CMultitaskLeastSquaresRegression : public CMultitaskLinearMachine
 {
 
 	public:
-		MACHINE_PROBLEM_TYPE(PT_BINARY)
+		MACHINE_PROBLEM_TYPE(PT_REGRESSION)
 
 		/** default constructor */
-		CMultitaskLogisticRegression();
+		CMultitaskLeastSquaresRegression();
 
 		/** constructor
 		 *
@@ -41,17 +33,17 @@ class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 		 * @param training_labels training labels
 		 * @param task_relation task relation
 		 */
-		CMultitaskLogisticRegression(
+		CMultitaskLeastSquaresRegression(
 		     float64_t z, CDotFeatures* training_data, 
-		     CBinaryLabels* training_labels, CTaskRelation* task_relation);
+		     CRegressionLabels* training_labels, CTaskRelation* task_relation);
 
 		/** destructor */
-		virtual ~CMultitaskLogisticRegression();
+		virtual ~CMultitaskLeastSquaresRegression();
 
 		/** get name */
 		virtual const char* get_name() const 
 		{
-			return "MultitaskLogisticRegression";
+			return "MultitaskLeastSquaresRegression";
 		}
 		
 		/** get max iter */

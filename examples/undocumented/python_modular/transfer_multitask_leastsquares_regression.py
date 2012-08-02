@@ -11,7 +11,7 @@ parameter_list = [[traindat,testdat,label_traindat]]
 
 def transfer_multitask_leastsquares_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat):
 
-	from modshogun import RegressionLabels, RealFeatures, Task, TaskGroup, MultitaskLSRegression
+	from modshogun import RegressionLabels, RealFeatures, Task, TaskGroup, MultitaskLeastSquaresRegression
 
 	features = RealFeatures(traindat)
 	labels = RegressionLabels(label_train)
@@ -23,7 +23,7 @@ def transfer_multitask_leastsquares_regression(fm_train=traindat,fm_test=testdat
 	task_group.append_task(task_one)
 	task_group.append_task(task_two)
 
-	mtlsr = MultitaskLSRegression(0.1,features,labels,task_group)
+	mtlsr = MultitaskLeastSquaresRegression(0.1,features,labels,task_group)
 	mtlsr.set_regularization(1) # use regularization ratio
 	mtlsr.set_tolerance(1e-2) # use 1e-2 tolerance
 	mtlsr.train()

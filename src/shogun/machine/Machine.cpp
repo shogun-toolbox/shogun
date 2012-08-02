@@ -146,7 +146,7 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 	}
 
 	m_data_locked=true;
-	post_lock();
+	post_lock(labs,features);
 	SG_DEBUG("leaving %s::data_lock\n", get_name());
 }
 

@@ -20,11 +20,14 @@
 %rename(TaskRelationBase) CTaskRelation;
 %rename(TaskTree) CTaskTree;
 %rename(TaskGroup) CTaskGroup;
-%rename(MultitaskLSRegression) CMultitaskLSRegression;
+%rename(MultitaskLinearMachineBase) CMultitaskLinearMachine;
+%rename(MultitaskLeastSquaresRegression) CMultitaskLeastSquaresRegression;
 %rename(MultitaskLogisticRegression) CMultitaskLogisticRegression;
 %rename(MultitaskL1L2LogisticRegression) CMultitaskL1L2LogisticRegression;
 %rename(MultitaskTraceLogisticRegression) CMultitaskTraceLogisticRegression;
 %rename(MultitaskClusteredLogisticRegression) CMultitaskClusteredLogisticRegression;
+
+%rename(MultitaskCompositeMachine) CMultitaskCompositeMachine;
 
 %rename(LibLinearMTL) CLibLinearMTL;
 
@@ -47,11 +50,14 @@
 %include <shogun/transfer/multitask/TaskRelation.h>
 %include <shogun/transfer/multitask/TaskTree.h>
 %include <shogun/transfer/multitask/TaskGroup.h>
-%include <shogun/transfer/multitask/MultitaskLSRegression.h>
+%include <shogun/transfer/multitask/MultitaskLinearMachine.h>
+%include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
 %include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
+
+%include <shogun/transfer/multitask/MultitaskCompositeMachine.h>
 
 %include <shogun/transfer/multitask/LibLinearMTL.h>
 
