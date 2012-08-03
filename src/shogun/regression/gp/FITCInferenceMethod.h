@@ -15,10 +15,12 @@
 #define CFITCINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/regression/gp/InferenceMethod.h>
 
 #ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
+
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/regression/gp/InferenceMethod.h>
 
 namespace shogun
 {
