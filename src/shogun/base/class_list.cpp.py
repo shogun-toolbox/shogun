@@ -13,7 +13,7 @@ types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
 		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX"] 
 config_tests=["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK", "USE_CPLEX",
 	"USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP", "USE_BZIP2", "USE_LZMA",
-	"USE_MOSEK"]
+	"USE_MOSEK", "HAVE_EIGEN3"]
 
 def check_class(line):
 	if not (line.find('public')==-1 and
