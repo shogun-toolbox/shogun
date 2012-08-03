@@ -18,6 +18,10 @@
 #include <shogun/distributions/Gaussian.h>
 #include <shogun/lib/common.h>
 
+#include <vector>
+
+using namespace std;
+
 namespace shogun
 {
 /** @brief Gaussian Mixture Model interface.
@@ -50,7 +54,7 @@ class CGMM : public CDistribution
 		 * @param coefficients mixing coefficients
 		 * @param copy true if should be copied
 		 */
-		CGMM(SGVector<CGaussian*> components, SGVector<float64_t> coefficients,
+		CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients,
 				bool copy=false);
 		virtual ~CGMM();
 
@@ -183,13 +187,13 @@ class CGMM : public CDistribution
 		 *
 		 * @return components
 		 */
-		virtual SGVector<CGaussian*> get_comp();
+		virtual vector<CGaussian*> get_comp();
 
 		/** set components
 		 *
 		 * @param components Gaussian components
 		 */
-		virtual void set_comp(SGVector<CGaussian*> components);
+		virtual void set_comp(vector<CGaussian*> components);
 
 		/** sample from model
 		 *
@@ -233,7 +237,7 @@ class CGMM : public CDistribution
 
 	protected:
 		/** Mixture components */
-		SGVector<CGaussian*> m_components;
+		vector<CGaussian*> m_components;
 		/** Mixture coefficients */
 		SGVector<float64_t> m_coefficients;
 };
