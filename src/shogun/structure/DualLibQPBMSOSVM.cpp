@@ -9,6 +9,7 @@
  */
 
 #include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <shogun/structure/libppbm.h>
 
 using namespace shogun;
 
@@ -34,7 +35,16 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	set_cleanAfter(10);
 	set_K(0.4);
 	set_Tmax(100);
+	set_verbose(true);
+	set_solver(BMRM);
 	m_risk_function=risk_function;
+
+	// get dimension of w
+	uint32_t nDim=this->m_model->get_dim();
+
+	// Initialize the weight vector
+	m_w = SGVector< float64_t >(nDim);
+	m_w.zero();
 }
 
 CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
@@ -43,23 +53,25 @@ CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
 
 bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 {
-	// get dimension of w
-	uint32_t nDim=this->m_model->get_dim();
-
-	// Initialize the weight vector
-	m_w = SGVector< float64_t >(nDim);
-	m_w.zero();
-
 	bmrm_data_T bmrm_data;
 	bmrm_data.X=this->m_features;
 	bmrm_data.y=this->m_labels;
-	bmrm_data.w_dim=nDim;
+	bmrm_data.w_dim=m_w.vlen;
 
-	// call the BMRM solver
-	m_bmrm_result = svm_bmrm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
-			m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,  m_risk_function);
+	// call the solver
+	switch(m_solver)
+	{
+		case BMRM:
+			m_result = svm_bmrm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
+					m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,  m_verbose, m_risk_function);
+			break;
+		case PPBMRM:
+			m_result = svm_ppbm_solver(&bmrm_data, m_w.vector, m_TolRel, m_TolAbs, m_lambda,
+					m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,  m_verbose, m_risk_function);
+			break;
+	}
 
-	if (m_bmrm_result.exitflag==1)
+	if (m_result.exitflag==1)
 	{
 		return true;
 	} else {
