@@ -7,7 +7,7 @@
  * Written (W) 2012 Jacob Walker
  */
 
-#include <shogun/base/config.h>
+#include <shogun/lib/config.h>
 
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>

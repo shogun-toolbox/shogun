@@ -8,6 +8,7 @@
  */
 
 #include <shogun/lib/config.h>
+
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
