@@ -91,6 +91,34 @@ void CInferenceMethod::set_features(CFeatures* feat)
 	update_alpha();
 }
 
+void CInferenceMethod::set_latent_features(CFeatures* feat)
+{
+	SG_REF(feat);
+	SG_UNREF(m_latent_features);
+	m_latent_features=feat;
+
+	if (m_latent_features && m_latent_features->has_property(FP_DOT) && m_latent_features->get_num_vectors())
+		m_latent_matrix =
+				((CDotFeatures*)m_latent_features)->get_computed_dot_feature_matrix();
+
+	else if (m_latent_features && m_latent_features->get_feature_class() == C_COMBINED)
+	{
+		CDotFeatures* subfeat =
+				(CDotFeatures*)((CCombinedFeatures*)m_latent_features)->
+				get_first_feature_obj();
+
+		if (m_latent_features->get_num_vectors())
+			m_latent_matrix = subfeat->get_computed_dot_feature_matrix();
+
+		SG_UNREF(subfeat);
+	}
+
+	update_data_means();
+	update_train_kernel();
+	update_chol();
+	update_alpha();
+}
+
 void CInferenceMethod::set_kernel(CKernel* kern)
 {
 	SG_REF(kern);

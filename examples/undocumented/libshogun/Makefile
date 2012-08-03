@@ -36,6 +36,7 @@ TARGETS = basic_minimal \
 		  evaluation_cross_validation_multiclass \
 		  evaluation_cross_validation_multiclass_mkl \
 		  modelselection_parameter_combination_test \
+		  regression_gaussian_process_fitc \
 		  regression_gaussian_process_gaussian \
 		  regression_gaussian_process_sum \
 		  regression_gaussian_process_product \
