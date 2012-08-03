@@ -66,6 +66,11 @@ uninstall:
 	@test -z "$(RDIR)" || rm -rf "$(DESTDIR)$(RDIR)/shogun"
 	@test -z "$(OCTDIR)" || rm -rf "$(DESTDIR)$(OCTDIR)/shogun"
 
+unit-tests:
+ifeq (yes, $(USE_GMOCK))
+	$(MAKE) -C ../tests/unit
+endif
+
 tests:
 	$(MAKE) check-examples
 	$(MAKE) run-testsuite

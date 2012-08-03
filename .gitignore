@@ -92,3 +92,6 @@ examples/undocumented/python_modular/*
 !/examples/undocumented/libshogun/tools/
 !examples/undocumented/python_modular/graphical/
 !examples/undocumented/python_modular/*.py
+
+# /tests
+/tests/unit/shogun-unit-test
