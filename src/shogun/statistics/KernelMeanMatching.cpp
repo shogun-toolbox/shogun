@@ -42,8 +42,8 @@ SGVector<float64_t> CKernelMeanMatching::compute_weights()
 	ASSERT(m_training_indices.vlen);
 	ASSERT(m_test_indices.vlen);
 
-	int32_t n_tr = m_training_indices.size();
-	int32_t n_te = m_test_indices.size();
+	int32_t n_tr = m_training_indices.vlen;
+	int32_t n_te = m_test_indices.vlen;
 	
 	SGVector<float64_t> weights(n_tr);
 	weights.zero();
