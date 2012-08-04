@@ -3,6 +3,15 @@
 %ignore *::operator=;
 %ignore *::operator==;
 %ignore *::operator!=;
+%ignore *::operator bool*
+%ignore *::operator char*
+%ignore *::operator unsigned char*
+%ignore *::operator unsigned short*
+%ignore *::operator int*
+%ignore *::operator long*
+%ignore *::operator unsigned long*
+%ignore *::operator float*
+%ignore *::operator double*
 
 #ifdef SWIGJAVA
 %ignore SGIO;
@@ -16,6 +25,7 @@
 %ignore shogun::SGMatrix::matrix_multiply;
 %ignore shogun::CStructuredModel::init_opt;
 %ignore shogun::CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
+%ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<float64_t> training_indices, SGVector<float64_t> test_indices);
 #endif
 
 %ignore refcount_t; 
