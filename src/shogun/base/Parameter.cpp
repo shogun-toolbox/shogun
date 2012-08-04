@@ -2460,12 +2460,12 @@ Parameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
 	if (name == NULL || *name == '\0')
-		SG_SERROR("FATAL: Parameter::add_type(): `name' is empty!");
+		SG_SERROR("FATAL: Parameter::add_type(): `name' is empty!\n");
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
 			SG_SERROR("FATAL: Parameter::add_type(): "
-					 "Double parameter `%s'!", name);
+					 "Double parameter `%s'!\n", name);
 
 	m_params.append_element(
 		new TParameter(type, param, name, description)
