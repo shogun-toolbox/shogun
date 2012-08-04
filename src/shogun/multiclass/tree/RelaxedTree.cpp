@@ -66,13 +66,13 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 	SG_REF(lab);
 	for (int32_t i=0; i < lab->get_num_labels(); ++i)
 	{
-		lab->set_int_label(i, apply_one(i));
+		lab->set_int_label(i, int32_t(apply_one(i)));
 	}
 
 	return lab;
 }
 
-int32_t CRelaxedTree::apply_one(int32_t idx)
+float64_t CRelaxedTree::apply_one(int32_t idx)
 {
 	node_t *node = m_root;
 	int32_t klass = -1;

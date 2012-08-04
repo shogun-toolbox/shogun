@@ -186,7 +186,7 @@ protected:
 	 * external source. This is because preparation have to be done
 	 * before calling this (mainly setup the kernel for submachines).
 	 */
-	int32_t apply_one(int32_t idx);
+	float64_t apply_one(int32_t idx);
 
 	/** train machine
 	 *
