@@ -10,19 +10,19 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/SparseEuclidianDistance.h>
+#include <shogun/distance/SparseEuclideanDistance.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/SparseFeatures.h>
 
 using namespace shogun;
 
-CSparseEuclidianDistance::CSparseEuclidianDistance()
+CSparseEuclideanDistance::CSparseEuclideanDistance()
 : CSparseDistance<float64_t>()
 {
 	init();
 }
 
-CSparseEuclidianDistance::CSparseEuclidianDistance(
+CSparseEuclideanDistance::CSparseEuclideanDistance(
 	CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r)
 : CSparseDistance<float64_t>()
 {
@@ -30,12 +30,12 @@ CSparseEuclidianDistance::CSparseEuclidianDistance(
 	init(l, r);
 }
 
-CSparseEuclidianDistance::~CSparseEuclidianDistance()
+CSparseEuclideanDistance::~CSparseEuclideanDistance()
 {
 	cleanup();
 }
 
-bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
+bool CSparseEuclideanDistance::init(CFeatures* l, CFeatures* r)
 {
 	CSparseDistance<float64_t>::init(l, r);
 
@@ -55,7 +55,7 @@ bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-void CSparseEuclidianDistance::cleanup()
+void CSparseEuclideanDistance::cleanup()
 {
 	if (sq_lhs != sq_rhs)
 		SG_FREE(sq_rhs);
@@ -65,7 +65,7 @@ void CSparseEuclidianDistance::cleanup()
 	sq_lhs = NULL;
 }
 
-float64_t CSparseEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSparseEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=((CSparseFeatures<float64_t>*) lhs)->compute_squared_norm(
 		(CSparseFeatures<float64_t>*) lhs, sq_lhs, idx_a,
@@ -74,7 +74,7 @@ float64_t CSparseEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 	return CMath::sqrt(result);
 }
 
-void CSparseEuclidianDistance::init()
+void CSparseEuclideanDistance::init()
 {
 	sq_lhs=NULL;
 	sq_rhs=NULL;

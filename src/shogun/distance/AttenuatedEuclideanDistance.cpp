@@ -10,39 +10,39 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/AttenuatedEuclidianDistance.h>
+#include <shogun/distance/AttenuatedEuclideanDistance.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;
 
-CAttenuatedEuclidianDistance::CAttenuatedEuclidianDistance() : CRealDistance()
+CAttenuatedEuclideanDistance::CAttenuatedEuclideanDistance() : CRealDistance()
 {
 	init();
 }
 
-CAttenuatedEuclidianDistance::CAttenuatedEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
+CAttenuatedEuclideanDistance::CAttenuatedEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
 : CRealDistance()
 {
 	init();
 	init(l, r);
 }
 
-CAttenuatedEuclidianDistance::~CAttenuatedEuclidianDistance()
+CAttenuatedEuclideanDistance::~CAttenuatedEuclideanDistance()
 {
 	cleanup();
 }
 
-bool CAttenuatedEuclidianDistance::init(CFeatures* l, CFeatures* r)
+bool CAttenuatedEuclideanDistance::init(CFeatures* l, CFeatures* r)
 {
 	CRealDistance::init(l, r);
 	return true;
 }
 
-void CAttenuatedEuclidianDistance::cleanup()
+void CAttenuatedEuclideanDistance::cleanup()
 {
 }
 
-float64_t CAttenuatedEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CAttenuatedEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -66,7 +66,7 @@ float64_t CAttenuatedEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 	return CMath::sqrt(result);
 }
 
-void CAttenuatedEuclidianDistance::init()
+void CAttenuatedEuclideanDistance::init()
 {
 	disable_sqrt=false;
 

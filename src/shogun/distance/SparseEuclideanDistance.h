@@ -8,8 +8,8 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SPARSEEUCLIDIANDISTANCE_H__
-#define _SPARSEEUCLIDIANDISTANCE_H__
+#ifndef _SPARSEEUCLIDEANDISTANCE_H__
+#define _SPARSEEUCLIDEANDISTANCE_H__
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/SparseDistance.h>
@@ -18,21 +18,21 @@
 namespace shogun
 {
 	template <class T> class CSparseFeatures;
-/** @brief class SparseEucldianDistance */
-class CSparseEuclidianDistance: public CSparseDistance<float64_t>
+/** @brief class SparseEucldeanDistance */
+class CSparseEuclideanDistance: public CSparseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CSparseEuclidianDistance();
+		CSparseEuclideanDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CSparseEuclidianDistance(
+		CSparseEuclideanDistance(
 			CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r);
-		virtual ~CSparseEuclidianDistance();
+		virtual ~CSparseEuclideanDistance();
 
 		/** init distance
 		 *
@@ -59,9 +59,9 @@ class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 
 		/** get name of the distance
 		 *
-		 * @return name SparseEuclidian
+		 * @return name SparseEuclidean
 		 */
-		virtual const char* get_name() const { return "SparseEuclidianDistance"; }
+		virtual const char* get_name() const { return "SparseEuclideanDistance"; }
 
 	protected:
 		/// compute kernel function for features a and b
@@ -82,4 +82,4 @@ class CSparseEuclidianDistance: public CSparseDistance<float64_t>
 };
 
 } // namespace shogun
-#endif /* _SPARSEEUCLIDIANDISTANCE_H__ */
+#endif /* _SPARSEEUCLIDEANDISTANCE_H__ */

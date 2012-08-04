@@ -69,8 +69,8 @@ enum EDistanceType
  * Currently distance inherited from the CDistance class should be
  * symmetric.
  *
- * The simpliest example of a distance function is the euclidian
- * distance: @see CEuclidianDistance
+ * The simpliest example of a distance function is the euclidean
+ * distance: @see CEuclideanDistance
  *
  * In the means of Shogun toolbox the distance function is defined
  * on the 'space' of CFeatures.
@@ -139,7 +139,7 @@ class CDistance : public CSGObject
 		 *  distance stops if the intermediate result is 
 		 *  larger than upper_bound. This is useful to use 
 		 *  with John Langford's Cover Tree and it is ONLY 
-		 *  implemented for Euclidian distance
+		 *  implemented for Euclidean distance
 		 *
 		 *  @param idx_a feature vector a at idx_a
 		 *  @param idx_b feature vector b at idx_b

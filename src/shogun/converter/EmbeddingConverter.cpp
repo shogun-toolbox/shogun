@@ -10,7 +10,7 @@
 
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/kernel/LinearKernel.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 
 using namespace shogun;
 
@@ -20,7 +20,7 @@ CEmbeddingConverter::CEmbeddingConverter()
 : CConverter()
 {
 	m_target_dim = 1;
-	m_distance = new CEuclidianDistance();
+	m_distance = new CEuclideanDistance();
 	m_kernel = new CLinearKernel();
 
 	init();

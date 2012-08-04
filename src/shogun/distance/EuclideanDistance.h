@@ -4,12 +4,12 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Miguel Angel Bautista
- * Copyright (C) 2011 Berlin Institute of Technology and Max Planck Society
+ * Written (W) 2007-2009 Soeren Sonnenburg
+ * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _ATTENUATEDEUCLIDIANDISTANCE_H__
-#define _ATTENUATEDEUCLIDIANDISTANCE_H__
+#ifndef _EUCLIDEANDISTANCE_H__
+#define _EUCLIDEANDISTANCE_H__
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
@@ -17,37 +17,42 @@
 
 namespace shogun
 {
-/** @brief class AttenuatedEuclidianDistance
+/** @brief class EuclideanDistance
  *
- * The adaptation of the familiar Euclidean Distance, to be used in
- * ternary ECOC designs. This adaptation computes the Euclidean distance
- * between two vectors ignoring those positions of either of the vectors
- * valued as 0. Note that this might make sense only in the Decoding
- *  step of the ECOC framework, since the 0 value denotes that a certain category is
- *  ignored.
- *
- * This distance was proposed by
- * S. Escalera, O. Pujol, P.Radeva in On the decoding process in ternary error-correcting output codes,
- * Transactions in Pattern Analysis and Machine Intelligence 99 (1).
+ * The familiar Euclidean distance for real valued features computes
+ * the square root of the sum of squared disparity between the
+ * corresponding feature dimensions of two data points.
  *
  * \f[\displaystyle
- *  d({\bf x},{\bf x'})= \sqrt{\sum_{i=0}^{n}|x_i||x'_i|{\bf x_i}-{\bf x'_i}|^2}
+ *  d({\bf x},{\bf x'})= \sqrt{\sum_{i=0}^{n}|{\bf x_i}-{\bf x'_i}|^2}
  * \f]
  *
+ * This special case of Minkowski metric is invariant to an arbitrary
+ * translation or rotation in feature space.
+ *
+ * The Euclidean Squared distance does not take the square root:
+ *
+ * \f[\displaystyle
+ *  d({\bf x},{\bf x'})= \sum_{i=0}^{n}|{\bf x_i}-{\bf x'_i}|^2
+ * \f]
+ *
+ * @see CMinkowskiMetric
+ * @see <a href="http://en.wikipedia.org/wiki/Distance#Distance_in_Euclidean_space">
+ * Wikipedia: Distance in Euclidean space</a>
  */
-class CAttenuatedEuclidianDistance: public CRealDistance
+class CEuclideanDistance: public CRealDistance
 {
 	public:
 		/** default constructor */
-		CAttenuatedEuclidianDistance();
+		CEuclideanDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CAttenuatedEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CAttenuatedEuclidianDistance();
+		CEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
+		virtual ~CEuclideanDistance();
 
 		/** init distance
 		 *
@@ -64,7 +69,7 @@ class CAttenuatedEuclidianDistance: public CRealDistance
 		 *
 		 * @return distance type EUCLIDIAN
 		 */
-		virtual EDistanceType get_distance_type() { return D_ATTENUATEDEUCLIDIAN; }
+		virtual EDistanceType get_distance_type() { return D_EUCLIDIAN; }
 
 		/** get feature type the distance can deal with
 		 *
@@ -76,7 +81,7 @@ class CAttenuatedEuclidianDistance: public CRealDistance
 		 *
 		 * @return name Euclidian
 		 */
-		virtual const char* get_name() const { return "AttenuatedEuclidianDistance"; }
+		virtual const char* get_name() const { return "EuclideanDistance"; }
 
 		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared
@@ -91,6 +96,20 @@ class CAttenuatedEuclidianDistance: public CRealDistance
 		 * @param state new disable_sqrt
 		 */
 		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
+
+		/** compute the distance between lhs feature vector a
+		 *  and rhs feature vector b. The computation of the
+		 *  distance stops if the intermediate result is 
+		 *  larger than upper_bound. This is useful to use 
+		 *  with John Langford's Cover Tree
+		 *
+		 *  @param idx_a feature vector a at idx_a
+		 *  @param idx_b feature vector b at idx_b
+		 *  @param upper_bound value above which the computation
+		 *  halts
+		 *  @return distance value or upper_bound
+		 */
+		virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound);
 
 	protected:
 		/// compute kernel function for features a and b
@@ -107,4 +126,4 @@ class CAttenuatedEuclidianDistance: public CRealDistance
 };
 
 } // namespace shogun
-#endif /* _ATTENUATEDEUCLIDIANDISTANCE_H__ */
+#endif /* _EUCLIDEANDISTANCE_H__ */

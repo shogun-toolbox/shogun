@@ -55,7 +55,7 @@ enum ESPEStrategy
  * drawback that it is likely that the same distances are computed several times during
  * the process.
  *
- * Only CEuclidianDistance distance is supported for the moment.
+ * Only CEuclideanDistance distance is supported for the moment.
  *
  */
 

@@ -18,7 +18,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

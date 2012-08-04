@@ -29,8 +29,8 @@
 #include <shogun/distance/CanberraWordDistance.h>
 #include <shogun/distance/ManhattanWordDistance.h>
 #include <shogun/distance/HammingWordDistance.h>
-#include <shogun/distance/EuclidianDistance.h>
-#include <shogun/distance/SparseEuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
+#include <shogun/distance/SparseEuclideanDistance.h>
 #include <shogun/distance/TanimotoDistance.h>
 #include <shogun/distance/ChiSquareDistance.h>
 #include <shogun/distance/CosineDistance.h>
@@ -197,9 +197,9 @@ CDistance* CGUIDistance::create_generic(EDistanceType type)
 		case D_JENSEN:
 			dist=new CJensenMetric(); break;
 		case D_EUCLIDIAN:
-			dist=new CEuclidianDistance(); break;
+			dist=new CEuclideanDistance(); break;
 		case D_SPARSEEUCLIDIAN:
-			dist=new CSparseEuclidianDistance(); break;
+			dist=new CSparseEuclideanDistance(); break;
 		case D_CHISQUARE:
 			dist=new CChiSquareDistance(); break;
 		case D_TANIMOTO:
