@@ -22,6 +22,7 @@ CInferenceMethod::CInferenceMethod()
 	m_model = NULL;
 	m_labels = NULL;
 	m_features = NULL;
+	m_latent_features = NULL;
 	m_mean = NULL;
 }
 
@@ -40,6 +41,7 @@ CInferenceMethod::CInferenceMethod(CKernel* kern, CFeatures* feat,
 CInferenceMethod::~CInferenceMethod() {
 	SG_UNREF(m_kernel);
 	SG_UNREF(m_features);
+	SG_UNREF(m_latent_features);
 	SG_UNREF(m_labels);
 	SG_UNREF(m_model);
 	SG_UNREF(m_mean);
@@ -53,12 +55,14 @@ void CInferenceMethod::init()
 			MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "latent Features", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean Function", MS_NOT_AVAILABLE);
 
 	m_kernel = NULL;
 	m_model = NULL;
 	m_labels = NULL;
 	m_features = NULL;
+	m_latent_features = NULL;
 	m_mean = NULL;
 	m_scale = 1.0;
 }
