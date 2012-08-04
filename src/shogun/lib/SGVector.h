@@ -37,6 +37,12 @@ template<class T> class SGVector : public SGReferencedData
 		/** empty destructor */
 		virtual ~SGVector();
 
+		/** size */
+		inline int32_t size() const { return vlen; };
+
+		/** cast to pointer */
+		operator T*() { return vector; };
+
 		/** fill vector with zeros */
 		void zero();
 

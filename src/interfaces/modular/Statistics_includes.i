@@ -6,5 +6,6 @@
  #include <shogun/statistics/QuadraticTimeMMD.h>
  #include <shogun/statistics/KernelIndependenceTestStatistic.h>
  #include <shogun/statistics/HSIC.h>
+ #include <shogun/statistics/KernelMeanMatching.h>
 %}
 

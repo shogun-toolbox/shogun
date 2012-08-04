@@ -120,8 +120,9 @@ libqp_state_T libqp_gsmo_solver(const float64_t* (*get_col)(uint32_t),
 	// check equality constraint
 	for (i=0; i<n; i++)
 		atx += a[i]*x[i];
-	if (b != atx)
+	if (fabs(b-atx)>1e-9)
 	{
+		printf("%f \ne %f\n",b,atx);
 		state.exitflag = -3;
 		goto cleanup;
 	}

@@ -15,6 +15,7 @@
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
 %rename(KernelIndependenceTestStatistic) CKernelIndependenceTestStatistic;
 %rename(HSIC) CHSIC;
+%rename(KernelMeanMatching) CKernelMeanMatching;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/statistics/TestStatistic.h>
@@ -24,3 +25,4 @@
 %include <shogun/statistics/QuadraticTimeMMD.h>
 %include <shogun/statistics/KernelIndependenceTestStatistic.h>
 %include <shogun/statistics/HSIC.h>
+%include <shogun/statistics/KernelMeanMatching.h>
