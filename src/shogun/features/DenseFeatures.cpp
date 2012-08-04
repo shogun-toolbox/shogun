@@ -16,9 +16,9 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(int32_t size) : CDotFeatur
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & orig) :
 		CDotFeatures(orig)
 {
+	init();
 	set_feature_matrix(orig.feature_matrix);
 	initialize_cache();
-	init();
 
 	m_subset_stack=orig.m_subset_stack;
 	SG_REF(m_subset_stack);
