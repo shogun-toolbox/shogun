@@ -340,7 +340,7 @@ check-examples-elwms:
 	true
 
 run-testsuite-python_static:
-	cd $(CONFIGPATH)/../testsuite/python_static && \
+	cd $(CONFIGPATH)/../tests/regression/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples-python_static:
@@ -349,7 +349,7 @@ check-examples-python_static:
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
 run-testsuite-r_static:
-	cd $(CONFIGPATH)/../testsuite/r_static && \
+	cd $(CONFIGPATH)/../tests/regression/r_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_static:
@@ -358,7 +358,7 @@ check-examples-r_static:
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
 run-testsuite-cmdline_static:
-	cd $(CONFIGPATH)/../testsuite/cmdline_static && \
+	cd $(CONFIGPATH)/../tests/regression/cmdline_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./test_all.sh )
 check-examples-cmdline_static:
@@ -367,7 +367,7 @@ check-examples-cmdline_static:
 		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./check.sh )
 
 run-testsuite-octave_static:
-	cd $(CONFIGPATH)/../testsuite/octave_static && \
+	cd $(CONFIGPATH)/../tests/regression/octave_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
 check-examples-octave_static:
@@ -376,7 +376,7 @@ check-examples-octave_static:
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
 run-testsuite-matlab_static:
-	cd $(CONFIGPATH)/../testsuite/matlab_static && \
+	cd $(CONFIGPATH)/../tests/regression/matlab_static && \
 		( ln -sf $(CONFIGPATH)/../src/matlab/$(TEMPLATE_TARGET) ; \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
 
@@ -385,10 +385,10 @@ check-examples-matlab_static:
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
 
 run-testsuite-python_modular:
-	cd $(CONFIGPATH)/../testsuite/python_modular && \
+	cd $(CONFIGPATH)/../tests/regression/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
-	cd $(CONFIGPATH)/../testsuite/python_modular && \
+	cd $(CONFIGPATH)/../tests/regression/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
 check-examples-python_modular:
@@ -409,7 +409,7 @@ check-examples-csharp_modular:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
 
 run-testsuite-r_modular:
-	cd $(CONFIGPATH)/../testsuite/r_modular && \
+	cd $(CONFIGPATH)/../tests/regression/r_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_modular:
@@ -418,7 +418,7 @@ check-examples-r_modular:
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
 run-testsuite-octave_modular:
-	cd $(CONFIGPATH)/../testsuite/octave_modular && \
+	cd $(CONFIGPATH)/../tests/regression/octave_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
 check-examples-octave_modular:
