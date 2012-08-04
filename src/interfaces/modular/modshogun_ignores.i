@@ -3,15 +3,15 @@
 %ignore *::operator=;
 %ignore *::operator==;
 %ignore *::operator!=;
-%ignore *::operator bool*
-%ignore *::operator char*
-%ignore *::operator unsigned char*
-%ignore *::operator unsigned short*
-%ignore *::operator int*
-%ignore *::operator long*
-%ignore *::operator unsigned long*
-%ignore *::operator float*
-%ignore *::operator double*
+%ignore *::operator bool*;
+%ignore *::operator char*;
+%ignore *::operator unsigned char*;
+%ignore *::operator unsigned short*;
+%ignore *::operator int*;
+%ignore *::operator long*;
+%ignore *::operator unsigned long*;
+%ignore *::operator float*;
+%ignore *::operator double*;
 
 #ifdef SWIGJAVA
 %ignore SGIO;
