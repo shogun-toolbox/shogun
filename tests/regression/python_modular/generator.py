@@ -2,8 +2,8 @@ import os
 import sys
 import pickle
 
-example_dir = '../../examples/undocumented/python_modular'
-test_dir = '../../../testsuite/tests'
+example_dir = '../../../examples/undocumented/python_modular'
+test_dir = '../../regression/tests'
 blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.py",
 		"kernel_combined_modular.py",
 		"kernel_distance_modular.py",
