@@ -20,8 +20,12 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & ori
 	set_feature_matrix(orig.feature_matrix);
 	initialize_cache();
 
-	m_subset_stack=orig.m_subset_stack;
-	SG_REF(m_subset_stack);
+	if (orig.m_subset_stack != NULL)
+	{
+		SG_UNREF(m_subset_stack);
+		m_subset_stack=new CSubsetStack(*orig.m_subset_stack);
+		SG_REF(m_subset_stack);
+	}
 }
 
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(SGMatrix<ST> matrix) :
