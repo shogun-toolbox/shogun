@@ -51,7 +51,7 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 	// init kernels for all sub-machines
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 	{
-		CLibSVM *machine = (CLibSVM*)m_machines->get_element(i);
+		CSVM *machine = (CSVM*)m_machines->get_element(i);
 		CKernel *kernel = machine->get_kernel();
 		CFeatures* lhs = kernel->get_lhs();
 		kernel->init(lhs, m_feats);
@@ -76,7 +76,7 @@ float64_t CRelaxedTree::apply_one(int32_t idx)
 	int32_t klass = -1;
 	while (node != NULL)
 	{
-		CLibSVM *svm = (CLibSVM *)m_machines->get_element(node->machine());
+		CSVM *svm = (CSVM *)m_machines->get_element(node->machine());
 		float64_t result = svm->apply_one(idx);
 
 		if (result < 0)
@@ -130,6 +130,8 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 {
 	if (m_machine_for_confusion_matrix == NULL)
 		SG_ERROR("Call set_machine_for_confusion_matrix before training\n");
+	if (m_kernel == NULL)
+		SG_ERROR("assign a valid kernel before training\n");
 
 	if (data)
 	{
@@ -209,13 +211,13 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
 {
 	SGVector<int32_t> best_mu;
-	CLibSVM *best_svm = NULL;
+	CSVM *best_svm = NULL;
 	float64_t best_score = std::numeric_limits<float64_t>::max();
 
 	std::vector<CRelaxedTree::entry_t> mu_init = init_node(conf_mat, classes);
 	for (std::vector<CRelaxedTree::entry_t>::const_iterator it = mu_init.begin(); it != mu_init.end(); ++it)
 	{
-		CLibSVM *svm = new CLibSVM();
+		CSVM *svm = new CLibSVM();
 		SG_REF(svm);
 		svm->set_store_model_features(true);
 		
@@ -254,7 +256,7 @@ CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_m
 	return node;
 }
 
-float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CLibSVM *svm)
+float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CSVM *svm)
 {
 	float64_t num_pos=0, num_neg=0;
 	for (int32_t i=0; i < mu.vlen; ++i)
@@ -271,7 +273,7 @@ float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CLibSVM *svm)
 	return score;
 }
 
-SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CLibSVM *svm)
+SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CSVM *svm)
 {
 	SGVector<int32_t> mu(classes.vlen), prev_mu(classes.vlen);
 	mu.zero();
@@ -376,7 +378,7 @@ std::vector<CRelaxedTree::entry_t> CRelaxedTree::init_node(const SGMatrix<float6
 	return std::vector<CRelaxedTree::entry_t>(entries.begin(), entries.begin() + n_samples);
 }
 
-SGVector<int32_t> CRelaxedTree::color_label_space(CLibSVM *svm, SGVector<int32_t> classes)
+SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> classes)
 {
 	SGVector<int32_t> mu(classes.vlen);
 	CMulticlassLabels *labels = dynamic_cast<CMulticlassLabels *>(m_labels);
@@ -872,7 +874,7 @@ void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVe
 	}
 }
 
-SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CLibSVM *svm)
+SGVector<float64_t> CRelaxedTree::eval_binary_model_K(CSVM *svm)
 {
 	CRegressionLabels *lab = svm->apply_regression(m_feats);
 	SGVector<float64_t> resp(lab->get_num_labels());

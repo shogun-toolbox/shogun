@@ -7,6 +7,7 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[tr
 def classifier_multiclass_relaxedtree (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
 	from shogun.Features import RealFeatures, MulticlassLabels
 	from shogun.Classifier import RelaxedTree, MulticlassLibLinear
+	from shogun.Kernel import GaussianKernel
 
 	print('Working on a problem of %d features and %d samples' % fm_train_real.shape)
 
@@ -16,6 +17,7 @@ def classifier_multiclass_relaxedtree (fm_train_real=traindat,fm_test_real=testd
 
 	machine = RelaxedTree()
 	machine.set_machine_for_confusion_matrix(MulticlassLibLinear())
+	machine.set_kernel(GaussianKernel())
 	machine.set_labels(labels)
 	machine.train(feats_train)
 

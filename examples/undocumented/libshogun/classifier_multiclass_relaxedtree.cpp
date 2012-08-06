@@ -1,15 +1,16 @@
 #include <algorithm>
 
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DenseSubsetFeatures.h>
 #include <shogun/base/init.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/kernel/GaussianKernel.h>
 
 #define  EPSILON  1e-5
 
@@ -67,6 +68,9 @@ int main(int argc, char** argv)
 	CRelaxedTree *machine = new CRelaxedTree();
 	SG_REF(machine);
 	machine->set_labels(labels);
+	CKernel *kernel = new CGaussianKernel();
+	SG_REF(kernel);
+	machine->set_kernel(kernel);
 
 	CMulticlassLibLinear *svm = new CMulticlassLibLinear();
 
@@ -87,6 +91,7 @@ int main(int argc, char** argv)
 	SG_UNREF(train_file);
 	SG_UNREF(stream_features);
 	SG_UNREF(evaluator);
+	SG_UNREF(kernel);
 
 	exit_shogun();
 

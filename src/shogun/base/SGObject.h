@@ -119,7 +119,7 @@ public:
 	/** A shalow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
 	 */
-	CSGObject *shalow_copy() const
+	virtual CSGObject *shalow_copy() const
 	{
 		SG_NOTIMPLEMENTED;
 		return NULL;
@@ -128,7 +128,7 @@ public:
 	/** A deep copy.
 	 * All the instance variables will also be copied.
 	 */
-	CSGObject *deep_copy() const
+	virtual CSGObject *deep_copy() const
 	{
 		SG_NOTIMPLEMENTED;
 		return NULL;

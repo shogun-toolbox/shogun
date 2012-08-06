@@ -69,7 +69,7 @@ class CGaussianKernel: public CDotKernel
 		virtual ~CGaussianKernel();
 
 		/** Make a shalow copy of the kernel */
-		CSGObject *shalow_copy() const;
+		virtual CSGObject *shalow_copy() const;
 
 		/** initialize kernel
 		 *

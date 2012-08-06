@@ -197,11 +197,11 @@ protected:
 
 	node_t *train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
-	SGVector<int32_t> train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CLibSVM *svm);
+	SGVector<int32_t> train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CSVM *svm);
 
-	float64_t compute_score(SGVector<int32_t> mu, CLibSVM *svm);
-	SGVector<int32_t> color_label_space(CLibSVM *svm, SGVector<int32_t> classes);
-	SGVector<float64_t> eval_binary_model_K(CLibSVM *svm);
+	float64_t compute_score(SGVector<int32_t> mu, CSVM *svm);
+	SGVector<int32_t> color_label_space(CSVM *svm, SGVector<int32_t> classes);
+	SGVector<float64_t> eval_binary_model_K(CSVM *svm);
 
 	void enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);
 	void enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);
