@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#ifndef CGAUSSIANLIKELIHOOD_H_
-#define CGAUSSIANLIKELIHOOD_H_
+#ifndef CSTUDENTSTLIKELIHOOD_H_
+#define CSTUDENTSTLIKELIHOOD_H_
 
 #include <shogun/regression/gp/LikelihoodModel.h>
 
@@ -21,16 +21,16 @@ namespace shogun
  * variance $\sigma$.
  *
  */
-class CGaussianLikelihood: public CLikelihoodModel
+class CStudentsTLikelihood: public CLikelihoodModel
 {
-  
+
 public:
 
 	/*Constructor*/
-	CGaussianLikelihood();
+	CStudentsTLikelihood();
 
 	/*Destructor*/
-	virtual ~CGaussianLikelihood();
+	virtual ~CStudentsTLikelihood();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
@@ -64,7 +64,7 @@ public:
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
-	
+
 	/** get model type
 	  *
 	  * @return model type Gaussian
@@ -80,10 +80,12 @@ private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 
+	int32_t m_df;
+
 	/*Initialize function*/
 	void init();
 };
 
 }
 
-#endif /* CGAUSSIANLIKELIHOOD_H_ */
+#endif /* CStudentsTLIKELIHOOD_H_ */
