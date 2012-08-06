@@ -14,6 +14,7 @@
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
 {
@@ -47,4 +48,61 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
 
 	return result;
 }
+
+float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels, Eigen::VectorXd function)
+{
+    VectorXd result(function.rows());
+
+    for (index_t i = 0; i < function.rows(); i++)
+    	result[i] = labels->get_labels()[i] - function[i];
+
+    result = result.cwiseProduct(result);
+
+    result /= 2*m_sigma*m_sigma;
+
+    for (index_t i = 0; i < function.rows(); i++)
+    	result[i] -= log(2*CMath::PI*m_sigma*m_sigma)/2.0;
+
+    return result.sum();
+}
+
+VectorXd CGaussianLikelihood::get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd function, index_t j)
+{
+    VectorXd result(function.rows());
+
+    for (index_t i = 0; i < function.rows(); i++)
+    	result[i] = labels->get_labels()[i] - function[i];
+
+    if (j == 1)
+    	return result/(m_sigma*m_sigma);
+
+    else if (j == 2)
+    	return VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
+
+    else if (j == 3)
+    	return VectorXd::Zero(result.rows());
+}
+
+VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TParameter* param,  CSGObject* obj, Eigen::VectorXd function)
+{
+    VectorXd result(function.rows());
+
+    for (index_t i = 0; i < function.rows(); i++)
+    	result[i] = labels->get_labels()[i] - function[i];
+
+    result = result.cwiseProduct(result);
+
+    result /= m_sigma*m_sigma;
+
+    for (index_t i = 0; i < function.rows(); i++)
+    	result[i] -= 1;
+
+    return result;
+}
+
+VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function)
+{
+    return 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
+}
+
 
