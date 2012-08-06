@@ -132,37 +132,37 @@ double compute_lambda(
 		{
 			for (int t=0; t<n_blocks; t++)
 			{
-				int task_ind_start = options.ind[t];
-				int task_ind_end = options.ind[t+1];
-				
+				SGVector<index_t> task_idx = options.tasks_indices[t];
+				int n_vecs_task = task_idx.vlen;
+			
 				switch (options.loss)
 				{
 					case LOGISTIC:
 					{
 						double b = 0.0;
 						int m1 = 0, m2 = 0;
-						for (int i=task_ind_start; i<task_ind_end; i++)
+						for (int i=0; i<n_vecs_task; i++)
 						{
-							if (y[i]>0)
+							if (y[task_idx[i]]>0)
 								m1++;
 							else
 								m2++;
 						}
-						for (int i=task_ind_start; i<task_ind_end; i++)
+						for (int i=0; i<n_vecs_task; i++)
 						{
-							if (y[i]>0)
+							if (y[task_idx[i]]>0)
 								b = double(m1)/(m1+m2);
 							else
 								b = -double(m2)/(m1+m2);
 
-							features->add_to_dense_vec(b,i,ATx+t*n_feats,n_feats);
+							features->add_to_dense_vec(b,task_idx[i],ATx+t*n_feats,n_feats);
 						}
 					}
 					break;
 					case LEAST_SQUARES:
 					{
-						for (int i=task_ind_start; i<task_ind_end; i++)
-							features->add_to_dense_vec(y[i],i,ATx+t*n_feats,n_feats);
+						for (int i=0; i<n_vecs_task; i++)
+							features->add_to_dense_vec(y[task_idx[i]],task_idx[i],ATx+t*n_feats,n_feats);
 					}
 				}
 			}
@@ -319,11 +319,11 @@ void initial_guess_logistic(double* w, double* c, CDotFeatures* features, double
 			{
 				int n_pos = 0;
 				int n_neg = 0;
-				int task_ind_start = options.ind[t];
-				int task_ind_end = options.ind[t+1];
-				for (int i=task_ind_start; i<task_ind_end; i++)
+				SGVector<index_t> task_idx = options.tasks_indices[t];
+				int n_vecs_task = task_idx.vlen;
+				for (int i=0; i<n_vecs_task; i++)
 				{
-					if (y[i] > 0)
+					if (y[task_idx[i]] > 0)
 						n_pos++;
 					else
 						n_neg++;
@@ -366,29 +366,29 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 		case MULTITASK_TREE:
 			for (int t=0; t<n_tasks; t++)
 			{
-				int task_ind_start = options.ind[t];
-				int task_ind_end = options.ind[t+1];
+				SGVector<index_t> task_idx = options.tasks_indices[t];
+				int n_vecs_task = task_idx.vlen;
 				switch (options.loss)
 				{
 					case LOGISTIC:
 						gc[t] = 0.0;
-						for (int i=task_ind_start; i<task_ind_end; i++)
+						for (int i=0; i<n_vecs_task; i++)
 						{
-							double aa = -y[i]*(As[i]+sc[t]);
+							double aa = -y[task_idx[i]]*(As[task_idx[i]]+sc[t]);
 							double bb = CMath::max(aa,0.0);
 							fun_s += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
 							double prob = 1.0/(1.0+CMath::exp(aa));
 							double b = -y[i]*(1.0-prob) / n_vecs;
 							gc[t] += b;
-							features->add_to_dense_vec(b,i,g+t*n_feats,n_feats);
+							features->add_to_dense_vec(b,task_idx[i],g+t*n_feats,n_feats);
 						}
 						fun_s /= n_vecs;
 					break;
 					case LEAST_SQUARES:
 						for (int i=0; i<n_feats*n_tasks; i++)
 							g[i] = -ATx[i];
-						for (int i=task_ind_start; i<task_ind_end; i++)
-							features->add_to_dense_vec(As[i],i,g+t*n_feats,n_feats);
+						for (int i=0; i<n_vecs_task; i++)
+							features->add_to_dense_vec(As[task_idx[i]],task_idx[i],g+t*n_feats,n_feats);
 					break;
 				}
 			}
@@ -512,10 +512,10 @@ slep_result_t slep_solver(
 		{
 			for (t=0; t<n_blocks; t++)
 			{
-				int task_ind_start = options.ind[t];
-				int task_ind_end = options.ind[t+1];
-				for (i=task_ind_start; i<task_ind_end; i++)
-					Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
+				SGVector<index_t> task_idx = options.tasks_indices[t];
+				int n_vecs_task = task_idx.vlen;
+				for (i=0; i<n_vecs_task; i++)
+					Aw[task_idx[i]] = features->dense_dot(task_idx[i],w.matrix+t*n_feats,n_feats);
 			}
 		}
 		break;
@@ -601,14 +601,14 @@ slep_result_t slep_solver(
 				case MULTITASK_TREE:
 					for (t=0; t<n_blocks; t++)
 					{
-						int task_ind_start = options.ind[t];
-						int task_ind_end = options.ind[t+1];
-						for (i=task_ind_start; i<task_ind_end; i++)
+						SGVector<index_t> task_idx = options.tasks_indices[t];
+						int n_vecs_task = task_idx.vlen;
+						for (i=0; i<n_vecs_task; i++)
 						{
-							Aw[i] = features->dense_dot(i,w.matrix+t*n_feats,n_feats);
+							Aw[task_idx[i]] = features->dense_dot(task_idx[i],w.matrix+t*n_feats,n_feats);
 							if (options.loss==LOGISTIC)
 							{
-								double aa = -y[i]*(Aw[i]+c[t]);
+								double aa = -y[task_idx[i]]*(Aw[task_idx[i]]+c[t]);
 								double bb = CMath::max(aa,0.0);
 								fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
 							}

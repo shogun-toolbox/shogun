@@ -64,8 +64,7 @@ CMultitaskClusteredLogisticRegression::~CMultitaskClusteredLogisticRegression()
 {
 }
 
-bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector<index_t> indices,
-                                                                        SGVector<index_t>* tasks)
+bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)

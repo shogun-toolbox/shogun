@@ -30,17 +30,13 @@ public:
 
 	/** returns information about tasks
 	 */
-	virtual SGVector<index_t>* get_tasks_indices();
-
-	/** returns information about tasks in SLEP ind format
-	 */
-	virtual SGVector<index_t> get_SLEP_ind();
+	virtual SGVector<index_t>* get_tasks_indices() const;
 
 	/** append task to the group */
 	void append_task(CTask* task);
 	
 	/** get num tasks */
-	int32_t get_num_tasks();
+	virtual int32_t get_num_tasks() const;
 
 	/** get name */
 	const char* get_name() const { return "TaskGroup"; };

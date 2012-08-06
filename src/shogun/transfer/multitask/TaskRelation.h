@@ -42,6 +42,12 @@ public:
 
 	/** get relation type */
 	virtual ETaskRelationType get_relation_type() const = 0;
+
+	/** get tasks indices */
+	virtual SGVector<index_t>* get_tasks_indices() const = 0;
+
+	/** get num tasks */
+	virtual int32_t get_num_tasks() const = 0;
 };
 
 }

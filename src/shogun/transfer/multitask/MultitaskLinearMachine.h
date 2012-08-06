@@ -120,7 +120,7 @@ class CMultitaskLinearMachine : public CLinearMachine
 		virtual bool train_machine(CFeatures* data=NULL);
 
 		/** train locked implementation */
-		virtual bool train_locked_implementation(SGVector<index_t> indices, SGVector<index_t>* tasks);
+		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
 
 		/** subset mapped task indices */
 		SGVector<index_t>* get_subset_tasks_indices();

@@ -31,39 +31,12 @@ void CTaskGroup::append_task(CTask* task)
 	m_tasks->append_element(task);
 }
 
-int32_t CTaskGroup::get_num_tasks()
+int32_t CTaskGroup::get_num_tasks() const
 {
 	return m_tasks->get_num_elements();
 }
 
-SGVector<index_t> CTaskGroup::get_SLEP_ind()
-{
-	// glance over tasks to check whether they are non-contiguous
-	for (int32_t i=0; i<m_tasks->get_num_elements(); i++)
-	{
-		CTask* task = (CTask*)m_tasks->get_element(i);
-		REQUIRE(task->is_contiguous(),"SLEP solver doesn't support non-contiguous tasks yet");
-		SG_UNREF(task);
-	}
-
-	int32_t n_tasks = m_tasks->get_num_elements();
-	SGVector<index_t> ind(n_tasks+1);
-	ind[0] = 0;
-	for (int32_t i=1; i<n_tasks; i++)
-	{
-		CTask* task_previous = (CTask*)m_tasks->get_element(i-1);
-		CTask* task = (CTask*)m_tasks->get_element(i);
-		REQUIRE(task->get_indices()[0]-1==task_previous->get_indices()[task_previous->get_indices().vlen-1],"There is a gap");
-		ind[i] = task->get_indices()[0];
-		SG_UNREF(task);
-	}
-	CTask* task = (CTask*)m_tasks->get_element(n_tasks-1);
-	ind[ind.vlen-1] = task->get_indices()[task->get_indices().vlen-1]+1;
-	SG_UNREF(task);
-	return ind;
-}
-
-SGVector<index_t>* CTaskGroup::get_tasks_indices()
+SGVector<index_t>* CTaskGroup::get_tasks_indices() const
 {
 	int32_t n_tasks = m_tasks->get_num_elements();
 	SG_DEBUG("Number of tasks = %d\n", n_tasks);

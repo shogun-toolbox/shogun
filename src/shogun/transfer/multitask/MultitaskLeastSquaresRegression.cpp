@@ -57,8 +57,7 @@ void CMultitaskLeastSquaresRegression::initialize_parameters()
 	set_max_iter(1000);
 }
 
-bool CMultitaskLeastSquaresRegression::train_locked_implementation(SGVector<index_t> indices,
-                                                                   SGVector<index_t>* tasks)
+bool CMultitaskLeastSquaresRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	SG_NOTIMPLEMENTED;
 	return false;
@@ -146,10 +145,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 	{
 		case TASK_GROUP:
 		{
-			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
-			SGVector<index_t> ind = task_group->get_SLEP_ind();
-			options.ind = ind.vector;
-			options.n_tasks = ind.vlen-1;
+			//CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
 			options.mode = MULTITASK_GROUP;
 			options.loss = LEAST_SQUARES;
 			m_tasks_w = slep_solver(features, y.vector, m_z, options).w;
@@ -160,11 +156,8 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 		case TASK_TREE: 
 		{
 			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
-			SGVector<index_t> ind = task_tree->get_SLEP_ind();
-			options.ind = ind.vector;
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
 			options.ind_t = ind_t.vector;
-			options.n_tasks = ind.vlen-1;
 			options.n_nodes = ind_t.vlen/3;
 			options.mode = MULTITASK_TREE;
 			options.loss = LEAST_SQUARES;

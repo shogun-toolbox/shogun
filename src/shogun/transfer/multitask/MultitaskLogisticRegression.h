@@ -89,7 +89,7 @@ class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 		virtual bool train_machine(CFeatures* data=NULL);
 
 		/** train locked implementation */
-		virtual bool train_locked_implementation(SGVector<index_t> indices, SGVector<index_t>* tasks);
+		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
 
 	private:
 

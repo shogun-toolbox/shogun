@@ -66,6 +66,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 	double* G;
 	double* gWeight;
 	double q;
+	SGVector<index_t>* tasks_indices;
 	slep_loss loss;
 	slep_mode mode;
 	slep_result_t* last_result;
@@ -86,6 +87,7 @@ IGNORE_IN_CLASSLIST struct slep_options
 		opts.G = NULL;
 		opts.rsL2 = 0.0;
 		opts.last_result = NULL;
+		opts.tasks_indices = NULL;
 		opts.loss = LOGISTIC;
 		opts.mode = MULTITASK_GROUP;
 		return opts;

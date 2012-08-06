@@ -62,10 +62,14 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 
 	ASSERT(features);
 	ASSERT(m_labels);
-
-	SGVector<float64_t> y = ((CBinaryLabels*)m_labels)->get_labels();
+	
+	SGVector<float64_t> y(m_labels->get_num_labels());
+	for (int32_t i=0; i<y.vlen; i++)
+		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
 	
 	slep_options options = slep_options::default_options();
+	options.n_tasks = m_task_relation->get_num_tasks();
+	options.tasks_indices = m_task_relation->get_tasks_indices();
 	options.q = m_q;
 	options.regularization = m_regularization;
 	options.termination = m_termination;
@@ -77,13 +81,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	{
 		case TASK_GROUP:
 		{
-			CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
-			SGVector<index_t> ind = task_group->get_SLEP_ind();
-			options.ind = ind.vector;
-			options.n_tasks = ind.vlen-1;
-			if (ind[ind.vlen-1] > features->get_num_vectors())
-				SG_ERROR("Group of tasks covers more vectors than available\n");
-			
+			//CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
 			options.mode = MULTITASK_GROUP;
 			options.loss = LOGISTIC;
 			slep_result_t result = slep_solver(features, y.vector, m_z, options);
@@ -94,17 +92,8 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 		case TASK_TREE: 
 		{
 			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
-
-			CTask* root_task = (CTask*)task_tree->get_root_task();
-			//if (root_task->get_max_index() > features->get_num_vectors())
-			//	SG_ERROR("Root task covers more vectors than available\n");
-			SG_UNREF(root_task);
-
-			SGVector<index_t> ind = task_tree->get_SLEP_ind();
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
-			options.ind = ind.vector;
 			options.ind_t = ind_t.vector;
-			options.n_tasks = ind.vlen-1;
 			options.n_nodes = ind_t.vlen / 3;
 			options.mode = MULTITASK_TREE;
 			options.loss = LOGISTIC;
@@ -116,15 +105,61 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 		default: 
 			SG_ERROR("Not supported task relation type\n");
 	}
+	for (int32_t i=0; i<options.n_tasks; i++)
+		options.tasks_indices[i].~SGVector<index_t>();
+	SG_FREE(options.tasks_indices);
 
 	return true;
 }
 
-bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t> indices,
-                                                               SGVector<index_t>* tasks)
+bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
-	SG_NOTIMPLEMENTED;
-	return false;
+	ASSERT(features);
+	ASSERT(m_labels);
+	
+	SGVector<float64_t> y(m_labels->get_num_labels());
+	for (int32_t i=0; i<y.vlen; i++)
+		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+	
+	slep_options options = slep_options::default_options();
+	options.n_tasks = m_task_relation->get_num_tasks();
+	options.tasks_indices = tasks;
+	options.q = m_q;
+	options.regularization = m_regularization;
+	options.termination = m_termination;
+	options.tolerance = m_tolerance;
+	options.max_iter = m_max_iter;
+
+	ETaskRelationType relation_type = m_task_relation->get_relation_type();
+	switch (relation_type)
+	{
+		case TASK_GROUP:
+		{
+			//CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
+			options.mode = MULTITASK_GROUP;
+			options.loss = LOGISTIC;
+			slep_result_t result = slep_solver(features, y.vector, m_z, options);
+			m_tasks_w = result.w;
+			m_tasks_c = result.c;
+		}
+		break;
+		case TASK_TREE: 
+		{
+			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
+			options.ind_t = ind_t.vector;
+			options.n_nodes = ind_t.vlen / 3;
+			options.mode = MULTITASK_TREE;
+			options.loss = LOGISTIC;
+			slep_result_t result = slep_solver(features, y.vector, m_z, options);
+			m_tasks_w = result.w;
+			m_tasks_c = result.c;
+		}
+		break;
+		default: 
+			SG_ERROR("Not supported task relation type\n");
+	}
+	return true;
 }
 
 float64_t CMultitaskLogisticRegression::apply_one(int32_t i)
@@ -187,7 +222,5 @@ void CMultitaskLogisticRegression::set_q(float64_t q)
 {
 	m_q = q;
 }
-
-
 
 }

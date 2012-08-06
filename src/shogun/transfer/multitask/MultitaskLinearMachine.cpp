@@ -126,15 +126,14 @@ bool CMultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 			tasks[i][j] = cutted_task_indices[i][j];
 		//tasks[i].display_vector();
 	}
-	bool res = train_locked_implementation(indices,tasks);
+	bool res = train_locked_implementation(tasks);
 	for (int32_t i=0; i<n_tasks; i++)
 		tasks[i].~SGVector<index_t>();
 	SG_FREE(tasks);
 	return res;
 }
 
-bool CMultitaskLinearMachine::train_locked_implementation(SGVector<index_t> indices,
-                                                               SGVector<index_t>* tasks)
+bool CMultitaskLinearMachine::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	SG_NOTIMPLEMENTED;
 	return false;

@@ -31,10 +31,11 @@ public:
 	/** destructor */
 	virtual ~CTaskTree();
 
-	/** returns information about blocks in 
-	 * SLEP "ind" format
-	 */
-	SGVector<index_t> get_SLEP_ind();
+	/** get tasks indices */
+	virtual SGVector<index_t>* get_tasks_indices() const;
+
+	/** get num tasks */
+	virtual int32_t get_num_tasks() const;
 
 	/** returns information about blocks relations
 	 * in SLEP "ind_t" format

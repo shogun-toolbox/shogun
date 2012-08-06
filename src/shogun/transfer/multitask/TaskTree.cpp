@@ -95,6 +95,28 @@ void collect_leaf_tasks_recursive(CTask* subtree_root_block, CList* list)
 	SG_UNREF(sub_blocks);
 }
 
+int32_t count_leaft_tasks_recursive(CTask* subtree_root_block)
+{
+	CList* sub_blocks = subtree_root_block->get_subtasks();
+	int32_t r = 0;
+	if (sub_blocks->get_num_elements() == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		CTask* iterator = (CTask*)sub_blocks->get_first_element();
+		do
+		{
+			r += count_leaf_tasks_recursive(iterator);
+			SG_UNREF(iterator);
+		} 
+		while ((iterator = (CTask*)sub_blocks->get_next_element()) != NULL);
+	}
+	SG_UNREF(sub_blocks);
+	return r;
+}
+
 CTaskTree::CTaskTree() : CTaskRelation(),
 	m_root_task(NULL)
 {
@@ -112,22 +134,26 @@ CTaskTree::~CTaskTree()
 	SG_UNREF(m_root_task);
 }
 
-SGVector<index_t> CTaskTree::get_SLEP_ind()
+SGVector<index_t>* CTaskTree::get_tasks_indices() const
 {
 	CList* blocks = new CList(true);
 	collect_leaf_tasks_recursive(m_root_task, blocks);
 	SG_DEBUG("Collected %d leaf blocks\n", blocks->get_num_elements());
 	//check_blocks_list(blocks);
 
-	SGVector<index_t> ind(blocks->get_num_elements()+1);
+	//SGVector<index_t> ind(blocks->get_num_elements()+1);
 
 	int t_i = 0;
-	ind[0] = 0;
+	//ind[0] = 0;
+	//
+	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, blocks->get_num_elements());
 	CTask* iterator = (CTask*)blocks->get_first_element();
 	do
 	{
-		REQUIRE(iterator->is_contiguous(),"Task is not contiguous");
-		ind[t_i+1] = iterator->get_indices()[iterator->get_indices().vlen-1] + 1;
+		new (&tasks_indices[t_i]) SGVector<index_t>();
+		tasks_indices[t_i] = iterator->get_indices();
+		//REQUIRE(iterator->is_contiguous(),"Task is not contiguous");
+		//ind[t_i+1] = iterator->get_indices()[iterator->get_indices().vlen-1] + 1;
 		//SG_DEBUG("Block = [%d,%d]\n", iterator->get_min_index(), iterator->get_max_index());
 		SG_UNREF(iterator);
 		t_i++;
@@ -136,12 +162,17 @@ SGVector<index_t> CTaskTree::get_SLEP_ind()
 
 	SG_UNREF(blocks);
 
-	return ind;
+	return tasks_indices;
+}
+
+int32_t CTaskTree::get_num_tasks() const
+{
+	return count_leaf_tasks_recursive(m_root_task);
 }
 
 SGVector<float64_t> CTaskTree::get_SLEP_ind_t()
 {
-	int n_blocks = get_SLEP_ind().vlen - 1;
+	int n_blocks = get_num_tasks() - 1;
 	SG_DEBUG("Number of blocks = %d \n", n_blocks);
 
 	vector<task_tree_node_t> tree_nodes = vector<task_tree_node_t>();
