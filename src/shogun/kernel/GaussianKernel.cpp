@@ -46,8 +46,13 @@ CGaussianKernel::~CGaussianKernel()
 	cleanup();
 }
 
+#include <typeinfo>
 CSGObject *CGaussianKernel::shalow_copy() const
 {
+	// TODO: remove this after all the classes get shalow_copy properly implemented
+	// this assert is to avoid any subclass of CGaussianKernel accidentally called
+	// with the implement here
+	ASSERT(typeid(this) == typeid(CGaussianKernel));
 	return new CGaussianKernel((CDotFeatures*)lhs, (CDotFeatures*)rhs, width, cache_size);
 }
 
