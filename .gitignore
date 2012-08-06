@@ -23,6 +23,7 @@ configure.log
 *.swo
 *.mex*
 *.oct
+.localvimrc
 
 # /doc/
 /doc/html

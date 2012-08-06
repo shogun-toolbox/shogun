@@ -46,6 +46,11 @@ CGaussianKernel::~CGaussianKernel()
 	cleanup();
 }
 
+CSGObject *CGaussianKernel::shalow_copy() const
+{
+	return new CGaussianKernel((CDotFeatures*)lhs, (CDotFeatures*)rhs, width, cache_size);
+}
+
 void CGaussianKernel::cleanup()
 {
 	if (sq_lhs != sq_rhs)
