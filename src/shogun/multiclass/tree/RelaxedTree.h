@@ -18,7 +18,6 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
-#include <shogun/kernel/GenericKernelFactory.h>
 
 namespace shogun
 {
@@ -55,14 +54,14 @@ public:
 		m_feats = feats;
 	}
 
-	/** set kernel factory
-	 * @param factory kernel factory
+	/** set kernel
+	 * @param kernel the kernel to be used
 	 */
-	virtual void set_kernel_factory(CKernelFactory *factory)
+	virtual void set_kernel(CKernel *kernel)
 	{
-		SG_REF(factory);
-		SG_UNREF(m_kernel_factory);
-		m_kernel_factory = factory;
+		SG_REF(kernel);
+		SG_UNREF(m_kernel);
+		m_kernel = kernel;
 	}
 
 	/** set labels
@@ -212,7 +211,7 @@ protected:
 	int32_t m_B;
 	float64_t m_svm_C;
 	float64_t m_svm_epsilon;
-	CKernelFactory *m_kernel_factory;
+	CKernel *m_kernel;
 	CDenseFeatures<float64_t> *m_feats;
 	CBaseMulticlassMachine *m_machine_for_confusion_matrix;
 	int32_t m_num_classes;

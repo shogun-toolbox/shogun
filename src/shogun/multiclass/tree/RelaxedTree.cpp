@@ -23,10 +23,8 @@ using namespace shogun;
 
 CRelaxedTree::CRelaxedTree()
 	:m_max_num_iter(3), m_svm_C(1), m_svm_epsilon(0.001), m_A(0.5), m_B(5),
-	m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
+	m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0), m_kernel(NULL)
 {
-	m_kernel_factory = new CGenericKernelFactory<CGaussianKernel>();
-	SG_REF(m_kernel_factory);
 	SG_ADD(&m_max_num_iter, "m_max_num_iter", "max number of iterations in alternating optimization", MS_NOT_AVAILABLE);
 	SG_ADD(&m_svm_C, "m_svm_C", "C for svm", MS_AVAILABLE);
 	SG_ADD(&m_A, "m_A", "parameter A", MS_AVAILABLE);
@@ -36,7 +34,7 @@ CRelaxedTree::CRelaxedTree()
 
 CRelaxedTree::~CRelaxedTree()
 {
-	SG_UNREF(m_kernel_factory);
+	SG_UNREF(m_kernel);
 	SG_UNREF(m_feats);
 	SG_UNREF(m_machine_for_confusion_matrix);
 }
@@ -313,7 +311,7 @@ SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTre
 		binary_labels->add_subset(subset);
 		m_feats->add_subset(subset);
 
-		CKernel *kernel = m_kernel_factory->make_kernel();
+		CKernel *kernel = (CKernel *)m_kernel->shalow_copy();
 		kernel->init(m_feats, m_feats);
 		svm->set_kernel(kernel);
 		svm->set_labels(binary_labels);
