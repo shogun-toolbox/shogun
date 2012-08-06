@@ -11,6 +11,9 @@
 #define CLIKELIHOODMODEL_H_
 
 #include <shogun/base/SGObject.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/labels/RegressionLabels.h>
+
 
 namespace shogun
 {
@@ -68,6 +71,10 @@ public:
 	 */
 	virtual ELikelihoodModelType get_model_type() {return LT_NONE;}
 
+	virtual float64_t get_log_probability_f(CRegressionLabels* labels, Eigen::VectorXd f) = 0;
+	virtual Eigen::VectorXd get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd f, index_t i) = 0;
+	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
+	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
 };
 
 }

@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#ifndef CGAUSSIANLIKELIHOOD_H_
-#define CGAUSSIANLIKELIHOOD_H_
+#ifndef CSTUDENTSTLIKELIHOOD_H_
+#define CSTUDENTSTLIKELIHOOD_H_
 
 #include <shogun/regression/gp/LikelihoodModel.h>
 
@@ -17,20 +17,20 @@ namespace shogun
 
 /** @brief This is the class that models a Gaussian Likelihood
  *
- * In this case, \f$P(y|f)\f$ is normally distributed with mean \f$f\f$ and
- * variance \f$\sigma\f$.
+ * In this case, P(y|f) is normally distributed with mean f and
+ * variance $\sigma$.
  *
  */
-class CGaussianLikelihood: public CLikelihoodModel
+class CStudentsTLikelihood: public CLikelihoodModel
 {
-  
+
 public:
 
 	/*Constructor*/
-	CGaussianLikelihood();
+	CStudentsTLikelihood();
 
 	/*Destructor*/
-	virtual ~CGaussianLikelihood();
+	virtual ~CStudentsTLikelihood();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
@@ -53,18 +53,18 @@ public:
 
 	/** Evaluate means
 	 *
-	 * @param means means calculated by inference method
+	 * @param Vector of means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
 
 	/** Evaluate variances
 	 *
-	 * @param vars variances calculated by inference method
+	 * @param Vector of variances calculated by inference method
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
-	
+
 	/** get model type
 	  *
 	  * @return model type Gaussian
@@ -80,10 +80,12 @@ private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 
+	int32_t m_df;
+
 	/*Initialize function*/
 	void init();
 };
 
 }
 
-#endif /* CGAUSSIANLIKELIHOOD_H_ */
+#endif /* CStudentsTLIKELIHOOD_H_ */
