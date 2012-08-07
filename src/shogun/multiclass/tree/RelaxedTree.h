@@ -22,6 +22,8 @@
 namespace shogun
 {
 
+class CTreeMachine<RelaxedTreeNodeData>;
+
 /** RelaxedTree refer to a tree-style multiclass classifier proposed in
  * the following paper.
  *
