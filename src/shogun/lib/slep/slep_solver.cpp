@@ -15,6 +15,7 @@
 #include <shogun/lib/slep/flsa/flsa.h>
 #include <shogun/lib/slep/tree/altra.h>
 #include <shogun/lib/slep/tree/general_altra.h>
+#include <shogun/lib/Signal.h>
 
 namespace shogun
 {
@@ -120,10 +121,12 @@ double compute_lambda(
 	double q_bar = 0.0;
 	if (options.q==1)
 		q_bar = CMath::ALMOST_INFTY;
-	else if (options.q>1e-6)
+	else if (options.q>1e6)
 		q_bar = 1;
 	else 
 		q_bar = options.q/(options.q-1);
+
+	SG_SDEBUG("q bar = %f \n",q_bar);
 
 	switch (options.mode)
 	{
@@ -268,7 +271,7 @@ double compute_lambda(
 		break;
 	}
 
-	SG_SDEBUG("Computed lambda = %f\n",z*lambda_max);
+	SG_SINFO("Computed lambda = %f\n",z*lambda_max);
 	return z*lambda_max;
 }
 
@@ -308,51 +311,6 @@ void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, 
 
 }
 
-void initial_guess_logistic(double* w, double* c, CDotFeatures* features, double* y, 
-                            int n_vecs, int n_feats, int n_blocks, const slep_options& options)
-{
-	switch (options.mode)
-	{
-		case MULTITASK_GROUP:
-		case MULTITASK_TREE:
-			for (int t=0; t<n_blocks; t++)
-			{
-				int n_pos = 0;
-				int n_neg = 0;
-				SGVector<index_t> task_idx = options.tasks_indices[t];
-				int n_vecs_task = task_idx.vlen;
-				for (int i=0; i<n_vecs_task; i++)
-				{
-					if (y[task_idx[i]] > 0)
-						n_pos++;
-					else
-						n_neg++;
-				}
-				ASSERT(n_pos>0 && n_neg>0);
-				c[t] = CMath::log(double(n_pos)/n_neg);
-			}
-		break;
-		case FEATURE_GROUP:
-		case FEATURE_TREE:
-		case PLAIN:
-		case FUSED:
-		{
-			int n_pos = 0;
-			int n_neg = 0;
-			for (int i=0; i<n_vecs; i++)
-			{
-				if (y[i] > 0)
-					n_pos++;
-				else
-					n_neg++;
-			}
-			ASSERT(n_pos>0 && n_neg>0);
-			c[0] = CMath::log(double(n_pos)/n_neg);
-		}
-		break;
-	}
-}
-
 double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, double* As, 
                                            double* sc, double* y, int n_vecs, 
                                            int n_feats, int n_tasks,
@@ -360,6 +318,8 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
                                            const slep_options& options)
 {
 	double fun_s = 0.0;
+	SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs));
+	SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks));
 	switch (options.mode)
 	{
 		case MULTITASK_GROUP:
@@ -376,13 +336,12 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 						{
 							double aa = -y[task_idx[i]]*(As[task_idx[i]]+sc[t]);
 							double bb = CMath::max(aa,0.0);
-							fun_s += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
+							fun_s += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/ n_vecs;
 							double prob = 1.0/(1.0+CMath::exp(aa));
-							double b = -y[i]*(1.0-prob) / n_vecs;
+							double b = -y[task_idx[i]]*(1.0-prob) / n_vecs;
 							gc[t] += b;
 							features->add_to_dense_vec(b,task_idx[i],g+t*n_feats,n_feats);
 						}
-						fun_s /= n_vecs;
 					break;
 					case LEAST_SQUARES:
 						for (int i=0; i<n_feats*n_tasks; i++)
@@ -491,11 +450,6 @@ slep_result_t slep_solver(
 		w = options.last_result->w;
 		c = options.last_result->c;
 	}
-	else
-	{
-		if (options.loss == LOGISTIC)
-			initial_guess_logistic(w.matrix,c.vector,features,y,n_vecs,n_feats,n_blocks,options);
-	}
 
 	double* s = SG_CALLOC(double, n_feats*n_tasks);
 	double* sc = SG_CALLOC(double, n_tasks);
@@ -513,6 +467,7 @@ slep_result_t slep_solver(
 			for (t=0; t<n_blocks; t++)
 			{
 				SGVector<index_t> task_idx = options.tasks_indices[t];
+				//task_idx.display_vector("task");
 				int n_vecs_task = task_idx.vlen;
 				for (i=0; i<n_vecs_task; i++)
 					Aw[task_idx[i]] = features->dense_dot(task_idx[i],w.matrix+t*n_feats,n_feats);
@@ -556,7 +511,7 @@ slep_result_t slep_solver(
 	double alphap = 0.0, alpha = 1.0;
 	double fun_x = 0.0;
 	
-	while (!done && iter <= options.max_iter) 
+	while (!done && iter <= options.max_iter && !CSignal::cancel_computations()) 
 	{
 		beta = (alphap-1.0)/alpha;
 
@@ -590,52 +545,10 @@ slep_result_t slep_solver(
 				c[t] = sc[t] - gc[t]*(1.0/L);
 			
 			projection(w.matrix,v,n_feats,n_blocks,lambda,lambda2,L,z_flsa,z0_flsa,options);
-			
+		
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = w[i] - s[i];
 			
-			fun_x = 0.0;
-			switch (options.mode)
-			{
-				case MULTITASK_GROUP:
-				case MULTITASK_TREE:
-					for (t=0; t<n_blocks; t++)
-					{
-						SGVector<index_t> task_idx = options.tasks_indices[t];
-						int n_vecs_task = task_idx.vlen;
-						for (i=0; i<n_vecs_task; i++)
-						{
-							Aw[task_idx[i]] = features->dense_dot(task_idx[i],w.matrix+t*n_feats,n_feats);
-							if (options.loss==LOGISTIC)
-							{
-								double aa = -y[task_idx[i]]*(Aw[task_idx[i]]+c[t]);
-								double bb = CMath::max(aa,0.0);
-								fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
-							}
-						}
-					}
-				break;
-				case FEATURE_GROUP:
-				case FEATURE_TREE:
-				case PLAIN:
-				case FUSED:
-					for (i=0; i<n_vecs; i++)
-					{
-						Aw[i] = features->dense_dot(i, w.matrix, n_feats);
-						if (options.loss==LOGISTIC)
-						{
-							double aa = -y[i]*(Aw[i]+c[0]);
-							double bb = CMath::max(aa,0.0);
-							fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
-						}
-					}
-				break;
-			}
-			if (options.loss==LOGISTIC)
-				fun_x /= n_vecs;
-			if (options.mode==PLAIN || options.mode==FUSED)
-				fun_x += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
-
 			double l_sum = 0.0, r_sum = 0.0;
 			switch (options.loss)
 			{
@@ -692,7 +605,7 @@ slep_result_t slep_solver(
 
 		if (gradient_break)
 		{
-			SG_SDEBUG("Gradient norm is less than 1e-20\n");
+			SG_SINFO("Gradient norm is less than 1e-20\n");
 			break;
 		}
 
@@ -707,7 +620,7 @@ slep_result_t slep_solver(
 
 					if (step <= options.tolerance)
 					{
-						SG_SDEBUG("Objective changes less than tolerance\n");
+						SG_SINFO("Objective changes less than tolerance\n");
 						done = true;
 					}
 				}
@@ -718,7 +631,7 @@ slep_result_t slep_solver(
 					step = CMath::abs(func-funcp);
 					if (step <= step*options.tolerance)
 					{
-						SG_SDEBUG("Objective changes relatively less than tolerance\n");
+						SG_SINFO("Objective changes relatively less than tolerance\n");
 						done = true;
 					}
 				}
@@ -726,7 +639,7 @@ slep_result_t slep_solver(
 			case 2:
 				if (func <= options.tolerance)
 				{
-					SG_SDEBUG("Objective is less than tolerance\n");
+					SG_SINFO("Objective is less than tolerance\n");
 					done = true;
 				}
 			break;
@@ -751,8 +664,9 @@ slep_result_t slep_solver(
 
 		iter++;
 	}
-	SG_SDEBUG("Finished %d iterations, objective = %f\n", iter, func);
+	SG_SINFO("Finished %d iterations, objective = %f\n", iter, func);
 
+cleanup:
 	SG_FREE(ATx);
 	SG_FREE(wp);
 	SG_FREE(wwp);

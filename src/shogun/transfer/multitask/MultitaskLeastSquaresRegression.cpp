@@ -134,6 +134,8 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
 	
 	slep_options options = slep_options::default_options();
+	options.n_tasks = m_task_relation->get_num_tasks();
+	options.tasks_indices = m_task_relation->get_tasks_indices();
 	options.q = m_q;
 	options.regularization = m_regularization;
 	options.termination = m_termination;
