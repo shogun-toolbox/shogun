@@ -53,14 +53,15 @@ enum EQuadraticMMDType
  * The type (biased/unbiased) can be selected via set_statistic_type().
  *
  * Along with the statistic comes a method to compute a p-value based on
- * different methods. Bootstrapping, is also possible.
+ * different methods. Bootstrapping, is also possible. If unsure which one to
+ * use, bootstrapping with 250 iterations always is correct (but slow).
  *
  * To choose, use set_null_approximation_method() and choose from
  *
- * MMD2_SPECTRUM: for a fast, consisten test based on the spectrum of the kernel
+ * MMD2_SPECTRUM: for a fast, consistent test based on the spectrum of the kernel
  * matrix, as described in [2]. Only supported if LAPACK is installed.
  *
- * MMD2_GAMMA: for a very fast, but not consisten test based on moment matching
+ * MMD2_GAMMA: for a very fast, but not consistent test based on moment matching
  * of a Gamma distribution, as described in [2].
  *
  * BOOTSTRAPPING: For permuting available samples to sample null-distribution
