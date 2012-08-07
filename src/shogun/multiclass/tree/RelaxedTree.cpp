@@ -173,6 +173,7 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 			if (node->data.mu[i] <= 0 && node->data.mu[i] > -2)
 				left_classes[k++] = i;
 		}
+
 		left_classes.vlen = k;
 
 		if (left_classes.vlen >= 2)
@@ -191,6 +192,7 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 			if (node->data.mu[i] >= 0)
 				right_classes[k++] = i;
 		}
+
 		right_classes.vlen = k;
 
 		if (right_classes.vlen >= 2)
@@ -246,12 +248,15 @@ CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_m
 	SGVector<int32_t> long_mu(m_num_classes);
 	std::fill(&long_mu[0], &long_mu[m_num_classes], -2);
 	for (int32_t i=0; i < best_mu.vlen; ++i)
+	{
 		if (best_mu[i] == 1)
 			long_mu[classes[i]] = 1;
 		else if (best_mu[i] == -1)
 			long_mu[classes[i]] = -1;
 		else if (best_mu[i] == 0)
 			long_mu[classes[i]] = 0;
+	}
+
 	node->data.mu = long_mu;
 	return node;
 }
@@ -288,10 +293,12 @@ SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTre
 	{
 		long_mu.zero();
 		for (int32_t i=0; i < classes.vlen; ++i)
+		{
 			if (mu[i] == 1)
 				long_mu[classes[i]] = 1;
 			else if (mu[i] == -1)
 				long_mu[classes[i]] = -1;
+		}
 
 		SGVector<int32_t> subset(m_feats->get_num_vectors());
 		SGVector<float64_t> binlab(m_feats->get_num_vectors());
@@ -313,7 +320,7 @@ SGVector<int32_t> CRelaxedTree::train_node_with_initialization(const CRelaxedTre
 		binary_labels->add_subset(subset);
 		m_feats->add_subset(subset);
 
-		CKernel *kernel = (CKernel *)m_kernel->shalow_copy();
+		CKernel *kernel = (CKernel *)m_kernel->shallow_copy();
 		kernel->init(m_feats, m_feats);
 		svm->set_kernel(kernel);
 		svm->set_labels(binary_labels);
@@ -356,19 +363,31 @@ std::vector<CRelaxedTree::entry_t> CRelaxedTree::init_node(const SGMatrix<float6
 	// local confusion matrix
 	SGMatrix<float64_t> conf_mat(classes.vlen, classes.vlen);
 	for (index_t i=0; i < conf_mat.num_rows; ++i)
+	{
 		for (index_t j=0; j < conf_mat.num_cols; ++j)
+		{
 			conf_mat(i, j) = global_conf_mat(classes[i], classes[j]);
+		}
+	}
 
 	// make conf matrix symmetry
 	for (index_t i=0; i < conf_mat.num_rows; ++i)
+	{
 		for (index_t j=0; j < conf_mat.num_cols; ++j)
+		{
 			conf_mat(i,j) += conf_mat(j,i);
+		}
+	}
 
 	int32_t num_entries = classes.vlen*(classes.vlen-1)/2;
 	std::vector<CRelaxedTree::entry_t> entries;
 	for (index_t i=0; i < classes.vlen; ++i)
+	{
 		for (index_t j=i+1; j < classes.vlen; ++j)
+		{
 			entries.push_back(std::make_pair(std::make_pair(i, j), conf_mat(i,j)));
+		}
+	}
 
 	std::sort(entries.begin(), entries.end(), EntryComparator());
 
@@ -394,8 +413,12 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 		// find number of instances from this class
 		int32_t ni=0;
 		for (int32_t j=0; j < labels->get_num_labels(); ++j)
+		{
 			if (labels->get_int_label(j) == classes[i])
+			{
 				ni++;
+			}
+		}
 
 		xi_pos_class[i] = 0;
 		xi_neg_class[i] = 0;
@@ -445,6 +468,7 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 		if (mu[i] == 1)
 			npos++;
 	}
+
 	if (npos == 0)
 	{
 		// no positive class
@@ -458,6 +482,7 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 		if (mu[i] == -1)
 			nneg++;
 	}
+
 	if (nneg == 0)
 	{
 		// no negative class

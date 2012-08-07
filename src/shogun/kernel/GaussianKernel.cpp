@@ -47,9 +47,9 @@ CGaussianKernel::~CGaussianKernel()
 }
 
 #include <typeinfo>
-CSGObject *CGaussianKernel::shalow_copy() const
+CSGObject *CGaussianKernel::shallow_copy() const
 {
-	// TODO: remove this after all the classes get shalow_copy properly implemented
+	// TODO: remove this after all the classes get shallow_copy properly implemented
 	// this assert is to avoid any subclass of CGaussianKernel accidentally called
 	// with the implement here
 	ASSERT(typeid(*this) == typeid(CGaussianKernel));

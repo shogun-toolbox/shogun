@@ -46,8 +46,12 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 		get_confusion_matrix(tmp_mat, Y, pred);
 
 		for (index_t j=0; j < tmp_mat.num_rows; ++j)
+		{
 			for (index_t k=0; k < tmp_mat.num_cols; ++k)
+			{
 				conf_mat(j, k) += tmp_mat(j, k);
+			}
+		}
 
 		SG_UNREF(pred);
 
@@ -58,8 +62,13 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 	SG_UNREF(split);
 
 	for (index_t j=0; j < tmp_mat.num_rows; ++j)
+	{
 		for (index_t k=0; k < tmp_mat.num_cols; ++k)
+		{
 			conf_mat(j, k) /= N_splits;
+		}
+	}
+
 	return conf_mat;
 }
 
@@ -77,8 +86,11 @@ void RelaxedTreeUtil::get_confusion_matrix(SGMatrix<float64_t> &conf_mat, CMulti
 		float64_t n=0;
 		for (index_t j=0; j < conf_mat.num_cols; ++j)
 			n += conf_mat(i, j);
+
 		if (n != 0)
+		{
 			for (index_t j=0; j < conf_mat.num_cols; ++j)
 				conf_mat(i, j) /= n;
+		}
 	}
 }

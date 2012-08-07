@@ -116,10 +116,10 @@ public:
 	int32_t unref();
 #endif //USE_REFERENCE_COUNTING
 
-	/** A shalow copy.
+	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
 	 */
-	virtual CSGObject *shalow_copy() const
+	virtual CSGObject *shallow_copy() const
 	{
 		SG_NOTIMPLEMENTED;
 		return NULL;
