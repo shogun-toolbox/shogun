@@ -46,6 +46,10 @@ class CFeatures;
  * Along with the statistic comes a method to compute a p-value based on a
  * Gaussian approximation of the null-distribution which is also possible in
  * linear time and constant space. Bootstrapping, is also possible.
+ * If unsure which one to use, bootstrapping with 250 iterations always is
+ * correct (but slow). When the sample size is large (>1000) at least,
+ * the Gaussian approximation is an accurate and much faster choice than
+ * bootstrapping.
  *
  * To choose, use set_null_approximation_method() and choose from
  *
