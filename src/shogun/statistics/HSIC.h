@@ -15,13 +15,51 @@
 namespace shogun
 {
 
-/** TODO
+template<class T> class SGMatrix;
+
+
+/** @brief This class implements the Hilbert Schmidtd Independence Criterion
+ * based independence test as described in [1].
+ *
+ * Given samples \f$Z=\{(x_i,y_i)\}_{i=1}^m\f$ from the joint
+ * distribution \f$\textbf{P}_x\textbf{P}_y\f$, does the joint distribution
+ * factorize as \f$\textbf{P}_{xy}=\textbf{P}_x\textbf{P}_y\f$?
+ *
+ * The HSIC is a kernel based independence criterion, which is based on the
+ * largest singular value of a Cross-Covariance Operator in a reproducing
+ * kernel Hilbert space (RKHS). Its population expression is zero if and only
+ * if the two underlying distributions are independent.
+ *
+ * This class can compute empirical biased estimates:
+ * \f[
+ * m\text{HSIC}(Z)[,p,q]^2)=\frac{1}{m^2}\text{trace}\textbf{KHLH}
+ * \f]
+ * where \f$\textbf{H}=\textbf{I}-\frac{1}{m}\textbf{11}^T\f$ is a centering
+ * matrix and \f$\textbf{K}, \textbf{L}\f$ are kernel matrices of both sets
+ * of samples.
+ *
+ * Along with the statistic comes a method to compute a p-value based on
+ * different methods. Bootstrapping, is also possible. If unsure which one to
+ * use, bootstrapping with 250 iterations always is correct (but slow).
+ *
+ * To choose, use set_null_approximation_method() and choose from
+ *
+ * HSIC_GAMMA: for a very fast, but not consistent test based on moment matching
+ * of a Gamma distribution, as described in [1].
+ *
+ * BOOTSTRAPPING: For permuting available samples to sample null-distribution.
+ * Bootstrapping is done on precomputed kernel matrices, since they have to
+ * be stored anyway when the statistic is computed.
+ *
+ * [1]: ﻿Gretton, A., Fukumizu, K., Teo, C., & Song, L. (2008).
+ * A kernel statistical test of independence.
+ * Advances in Neural Information Processing Systems, 1-8.
  *
  */
 class CHSIC : public CKernelIndependenceTestStatistic
 {
 public:
-	/** TODO */
+	/** Constructor */
 	CHSIC();
 
 	/** Constructor
@@ -54,7 +92,15 @@ public:
 
 	virtual ~CHSIC();
 
-	/** Computes the biased m*HSIC TODO */
+	/** Computes the HSIC statistic (see class description) for underlying
+	 * kernels and data. Note that it is multiplied by the number of used
+	 * samples. It is a biased estimator.
+	 *
+	 * Note that since kernel matrices have to be stored, it has quadratic
+	 * space costs.
+	 *
+	 * @return m*HSIC (unbiased estimate)
+	 */
 	virtual float64_t compute_statistic();
 
 	/** computes a p-value based on current method for approximating the
@@ -84,11 +130,14 @@ public:
 	/** Approximates the null-distribution by a two parameter gamma
 	 * distribution. Returns parameters.
 	 *
-	 * NOTE: the gamma distribution is fitted to m*HSIC_b. Therefore, the
-	 * parameter statistic value is multiplied by m before anything is done.
-	 * You can safely call this with values from compute_statistic().
+	 * NOTE: the gamma distribution is fitted to m*HSIC_b. But since
+	 * compute_statistic() returnes the biased estimate, you can safely call
+	 * this with values from compute_statistic().
 	 * However, the attached features have to be the SAME size, as these, the
-	 * statistic was computed on.
+	 * statistic was computed on. If compute_threshold() or compute_p_value()
+	 * are used, this is ensured automatically.
+	 *
+	 * Has quadratic computational costs in terms of samples.
 	 *
 	 * Called by compute_p_value() if null approximation method is set to
 	 * MMD2_GAMMA.
@@ -97,6 +146,22 @@ public:
 	 * call gamma_cdf(statistic, a, b).
 	 */
 	SGVector<float64_t> fit_null_gamma();
+
+	/** merges both sets of samples and computes the test statistic
+	 * m_bootstrap_iteration times. This version precomputes the kenrel matrix
+	 * once by hand, then performs bootstrapping on this one. The matrix has
+	 * to be stored anyway when statistic is computed.
+	 *
+	 * @return vector of all statistics
+	 */
+	virtual SGVector<float64_t> bootstrap_null();
+
+protected:
+	/** @return kernel matrix on samples from p. Distinguishes CustomKernels */
+	SGMatrix<float64_t> get_kernel_matrix_K();
+
+	/** @return kernel matrix on samples from q. Distinguishes CustomKernels */
+	SGMatrix<float64_t> get_kernel_matrix_L();
 
 private:
 	void init();
