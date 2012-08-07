@@ -88,7 +88,7 @@ public:
 		m_machine_for_confusion_matrix = machine;
 	}
 
-	/** set SVM C
+	/** set SVM C: parameter for relax variables. See eq (1) in the paper.
 	 * @param C svm C
 	 */
 	void set_svm_C(float64_t C)
@@ -118,7 +118,9 @@ public:
 		return m_svm_epsilon;
 	}
 
-	/** set parameter A
+	/** set parameter A for controlling the trade-off of encouraging more classes
+	 * to participating the discriminating at each level (i.e. not be ignored). See
+	 * eq (1) in the paper.
 	 * @param A
 	 */
 	void set_A(float64_t A)
@@ -133,7 +135,8 @@ public:
 		return m_A;
 	}
 
-	/** set parameter B
+	/** set parameter B for constraining the inbalance of binary colorization. See
+	 * eq (1) in the paper.
 	 * @param B
 	 */
 	void set_B(int32_t B)
