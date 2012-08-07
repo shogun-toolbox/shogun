@@ -54,6 +54,7 @@
 %rename(QDA) CQDA;
 
 %rename(ShareBoost) CShareBoost;
+%rename(RelaxedTree) CRelaxedTree;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/multiclass/RejectionStrategy.h>
@@ -96,4 +97,4 @@
 %include <shogun/multiclass/GaussianNaiveBayes.h>
 %include <shogun/multiclass/QDA.h>
 %include <shogun/multiclass/ShareBoost.h>
-
+%include <shogun/multiclass/tree/RelaxedTree.h>

@@ -17,11 +17,11 @@
 namespace shogun
 {
 
-template <typename data_t>
-class CTreeMachine
-	: public CBaseMulticlassMachine
+template <class T> class CTreeMachine: public CBaseMulticlassMachine
 {
 public:
+	typedef CTreeMachineNode<T> node_t;
+
     /** constructor */
 	CTreeMachine()
 		:m_root(NULL) 
@@ -39,7 +39,7 @@ public:
     virtual const char* get_name() const { return "TreeMachine"; }
 
 protected:
-	CTreeMachineNode<data_t> *m_root;
+	CTreeMachineNode<T> *m_root;
 };
 
 } /* shogun */ 

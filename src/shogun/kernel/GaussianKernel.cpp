@@ -46,6 +46,21 @@ CGaussianKernel::~CGaussianKernel()
 	cleanup();
 }
 
+#include <typeinfo>
+CSGObject *CGaussianKernel::shallow_copy() const
+{
+	// TODO: remove this after all the classes get shallow_copy properly implemented
+	// this assert is to avoid any subclass of CGaussianKernel accidentally called
+	// with the implement here
+	ASSERT(typeid(*this) == typeid(CGaussianKernel));
+	CGaussianKernel *kernel = new CGaussianKernel(width, cache_size);
+	if (lhs)
+	{
+		kernel->init(lhs, rhs);
+	}
+	return kernel;
+}
+
 void CGaussianKernel::cleanup()
 {
 	if (sq_lhs != sq_rhs)

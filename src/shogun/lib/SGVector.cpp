@@ -623,6 +623,18 @@ int32_t SGVector<T>::unique(T* output, int32_t size)
 	return j;
 }
 
+template <class T>
+SGVector<index_t> SGVector<T>::find(T elem)
+{
+	SGVector<index_t> idx(vlen);
+	index_t k=0;
+
+	for (index_t i=0; i < vlen; ++i)
+		if (vector[i] == elem)
+			idx[k++] = i;
+	idx.vlen = k;
+	return idx;
+}
 
 template class SGVector<bool>;
 template class SGVector<char>;
