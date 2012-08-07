@@ -114,9 +114,6 @@ bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
 
 bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 {
-	remove_all_row_subsets();
-	remove_all_col_subsets();
-
 	/* make it possible to call with NULL values since features are useless
 	 * for custom kernel matrix */
 	if (!l)
