@@ -39,5 +39,7 @@
  #include <shogun/multiclass/GaussianNaiveBayes.h>
  #include <shogun/multiclass/QDA.h>
  #include <shogun/multiclass/ShareBoost.h>
+ #include <shogun/multiclass/tree/TreeMachine.h>
+ #include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
  #include <shogun/multiclass/tree/RelaxedTree.h>
 %}
