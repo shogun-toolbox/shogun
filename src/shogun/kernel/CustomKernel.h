@@ -398,7 +398,6 @@ class CCustomKernel: public CKernel
 			index_t real_row=m_row_subset_stack->subset_idx_conversion(row);
 			index_t real_col=m_col_subset_stack->subset_idx_conversion(col);
 
-
 			if (upper_diagonal)
 			{
 				if (real_row <= real_col)
