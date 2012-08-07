@@ -1348,6 +1348,7 @@ Miscellaneous options:
   --enable-static                build a statically linked binary (to the extend possible);
                                  set further linking options with --enable-static="-lm -lglpk"
   --python=python                use this python executable [python]
+  --gmock=gmock-config           use this gmock-config script [gmock]
   --ruby=ruby                    use this ruby executable [ruby]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
@@ -1448,6 +1449,9 @@ EOF
 		;;
 	  --python=*)
 		PYTHON=`echo $ac_option | cut -d '=' -f 2`
+		;;
+	  --gmock=*)
+		GMOCK=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --ruby=*)
 		RUBY=`echo $ac_option | cut -d '=' -f 2`

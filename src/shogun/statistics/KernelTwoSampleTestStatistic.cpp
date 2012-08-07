@@ -60,17 +60,23 @@ void CKernelTwoSampleTestStatistic::init()
 SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 {
 	/* compute bootstrap statistics for null distribution */
-	SGVector<float64_t> results(m_bootstrap_iterations);
+	SGVector<float64_t> results;
 
-	/* memory for index permutations, (would slow down loop) */
-	SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
-	ind_permutation.range_fill();
-
-	/* check if kernel is a custom kernel. In that case, changing features is
-	 * not what we want but just subsetting the kernel itself */
-	CCustomKernel* custom_kernel;
+	/* only do something if a custom kernel is used: use the power of pre-
+	 * computed kernel matrices
+	 */
 	if (m_kernel->get_kernel_type()==K_CUSTOM)
 	{
+		/* allocate memory */
+		results=SGVector<float64_t>(m_bootstrap_iterations);
+
+		/* memory for index permutations, (would slow down loop) */
+		SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
+		ind_permutation.range_fill();
+
+		/* check if kernel is a custom kernel. In that case, changing features is
+		 * not what we want but just subsetting the kernel itself */
+		CCustomKernel* custom_kernel;
 		custom_kernel=(CCustomKernel*)m_kernel;
 
 		for (index_t i=0; i<m_bootstrap_iterations; ++i)
@@ -81,6 +87,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 			 * re-initialised after each subset setting - in fact, this would
 			 * remove all subsets */
 			SGVector<int32_t>::permute_vector(ind_permutation);
+
 			custom_kernel->add_row_subset(ind_permutation);
 			custom_kernel->add_col_subset(ind_permutation);
 
@@ -94,25 +101,9 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 	}
 	else
 	{
-		for (index_t i=0; i<m_bootstrap_iterations; ++i)
-		{
-			/* idea: merge features of p and q, shuffle, and compute statistic.
-			 * This is done using subsets here */
-			SGVector<int32_t>::permute_vector(ind_permutation);
-			m_p_and_q->add_subset(ind_permutation);
-
-			/* kernel has to be re-initialised after each subset setting */
-			m_kernel->init(m_p_and_q, m_p_and_q);
-
-			/* compute statistic for this permutation of mixed samples */
-			results[i]=compute_statistic();
-
-			/* remove subset */
-			m_p_and_q->remove_subset();
-		}
+		/* in this case, just use superclass method */
+		results=CTwoDistributionsTestStatistic::bootstrap_null();
 	}
 
-	/* clean up, re-init kernel on original data and return */
-	m_kernel->init(m_p_and_q, m_p_and_q);
 	return results;
 }

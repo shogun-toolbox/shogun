@@ -12,12 +12,14 @@
 
 using namespace shogun;
 
-CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic() : CTestStatistic()
+CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic() :
+		CTestStatistic()
 {
 	init();
 }
 
-CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(CFeatures* p_and_q,
+CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
+		CFeatures* p_and_q,
 		index_t q_start) : CTestStatistic()
 {
 	init();
@@ -28,7 +30,8 @@ CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(CFeatures* p_and_
 	m_q_start=q_start;
 }
 
-CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(CFeatures* p, CFeatures* q) :
+CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
+		CFeatures* p, CFeatures* q) :
 		CTestStatistic()
 {
 	init();
@@ -85,7 +88,8 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 	return results;
 }
 
-float64_t CTwoDistributionsTestStatistic::compute_p_value(float64_t statistic)
+float64_t CTwoDistributionsTestStatistic::compute_p_value(
+		float64_t statistic)
 {
 	float64_t result=0;
 

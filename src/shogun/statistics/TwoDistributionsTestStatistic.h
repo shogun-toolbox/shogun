@@ -17,7 +17,7 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief Two sample test base class. Provides an interface for performing
+/** @brief Provides an interface for performing
  * statistical tests on two sets of samples from two distributions.
  * Instances of these tests are the classical two-sample test and the
  * independence test. This class may be used as base class for both.

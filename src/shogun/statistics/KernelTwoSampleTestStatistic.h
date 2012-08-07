@@ -19,10 +19,14 @@ class CFeatures;
 class CKernel;
 
 /** @brief Two sample test base class. Provides an interface for performing a
- * two-sample test, i.e. Given samples from two distributions p and q, the
- * null-hypothesis is: H0: p==q, the alternative hypothesis: H1: p!=q.
+ * two-sample test, i.e. Given samples from two distributions \f$p\f$ and
+ * \fq\f$, the null-hypothesis is: \f$H_0: p=q\f$, the alternative hypothesis:
+ * \f$H_1: p\neq q\f$.
  *
- * In this class, this is done using a kernel for the data.
+ * In this class, this is done using a single kernel for the data.
+ *
+ * The class also re-implements the bootstrap_null() method. If the underlying
+ * kernel is a custom one (precomputed), the
  *
  * Abstract base class.
  */
