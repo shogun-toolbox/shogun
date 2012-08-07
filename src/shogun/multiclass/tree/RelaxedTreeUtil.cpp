@@ -10,6 +10,7 @@
 
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
 
@@ -74,18 +75,16 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 
 void RelaxedTreeUtil::get_confusion_matrix(SGMatrix<float64_t> &conf_mat, CMulticlassLabels *gt, CMulticlassLabels *pred)
 {
-	conf_mat.zero();
-
-	for (index_t i=0; i < gt->get_num_labels(); ++i)
-	{
-		conf_mat(gt->get_int_label(i), pred->get_int_label(i)) += 1;
-	}
+	SGMatrix<int32_t> conf_mat_int = CMulticlassAccuracy::get_confusion_matrix(pred, gt);
 
 	for (index_t i=0; i < conf_mat.num_rows; ++i)
 	{
 		float64_t n=0;
 		for (index_t j=0; j < conf_mat.num_cols; ++j)
+		{
+			conf_mat(i, j) = conf_mat_int(i, j);
 			n += conf_mat(i, j);
+		}
 
 		if (n != 0)
 		{
