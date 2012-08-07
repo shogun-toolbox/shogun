@@ -116,6 +116,24 @@ public:
 	int32_t unref();
 #endif //USE_REFERENCE_COUNTING
 
+	/** A shallow copy.
+	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
+	 */
+	virtual CSGObject *shallow_copy() const
+	{
+		SG_NOTIMPLEMENTED;
+		return NULL;
+	}
+
+	/** A deep copy.
+	 * All the instance variables will also be copied.
+	 */
+	virtual CSGObject *deep_copy() const
+	{
+		SG_NOTIMPLEMENTED;
+		return NULL;
+	}
+
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
