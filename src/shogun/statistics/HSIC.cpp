@@ -11,6 +11,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CustomKernel.h>
 
 using namespace shogun;
 
@@ -58,25 +59,17 @@ void CHSIC::init()
 
 float64_t CHSIC::compute_statistic()
 {
-	if (!m_kernel_p || !m_kernel_q)
-	{
-		SG_ERROR("%s::compute_statistic(): No or only one kernel specified!\n",
-				get_name());
-	}
+	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
+			"kernel specified!\n", get_name());
 
-	/* compute kernel matrices make sure that if one kernel is used, still
-	 * everything works, so compute one after another, using subsets */
-	SGVector<index_t> subset(m_q_start);
-	subset.range_fill();
-	m_p_and_q->add_subset(subset);
-	m_kernel_p->init(m_p_and_q, m_p_and_q);
-	SGMatrix<float64_t> K=m_kernel_p->get_kernel_matrix();
+	REQUIRE(m_p_and_q, "%s::compute_statistic: features needed!\n", get_name());
 
-	/* now second half of data subsetting */
-	subset.add(m_q_start);
+	/* compute kernel matrices */
+	SGMatrix<float64_t> K=get_kernel_matrix_K();
+	SGMatrix<float64_t> L=get_kernel_matrix_L();
+
+	/* init kernel afterwards to ensure that precomputed stuff is updated */
 	m_kernel_q->init(m_p_and_q, m_p_and_q);
-	SGMatrix<float64_t> L=m_kernel_q->get_kernel_matrix();
-	m_p_and_q->remove_subset();
 
 	/* center matrices (MATLAB: Kc=H*K*H) */
 	K.center();
@@ -142,28 +135,16 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 
 SGVector<float64_t> CHSIC::fit_null_gamma()
 {
-	SG_DEBUG(("entering %s::fit_null_gamma()\n"), get_name());
-	if (!m_kernel_p || !m_kernel_q)
-	{
-		SG_ERROR("%s::fit_null_gamma(): No or only one kernel specified!\n",
-				get_name());
-	}
+	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
+			"kernel specified!\n", get_name());
+
+	REQUIRE(m_p_and_q, "%s::fit_null_gamma: features needed!\n", get_name());
 
 	index_t m=m_q_start;
 
-	/* compute kernel matrices make sure that if one kernel is used, still
-	 * everything works, so compute one after another, using subsets */
-	SGVector<index_t> subset(m_q_start);
-	subset.range_fill();
-	m_p_and_q->add_subset(subset);
-	m_kernel_p->init(m_p_and_q, m_p_and_q);
-	SGMatrix<float64_t> K=m_kernel_p->get_kernel_matrix();
-
-	/* now second half of data subsetting */
-	subset.add(m_q_start);
-	m_kernel_q->init(m_p_and_q, m_p_and_q);
-	SGMatrix<float64_t> L=m_kernel_q->get_kernel_matrix();
-	m_p_and_q->remove_subset();
+	/* compute kernel matrices */
+	SGMatrix<float64_t> K=get_kernel_matrix_K();
+	SGMatrix<float64_t> L=get_kernel_matrix_L();
 
 	/* compute sum and trace of uncentered kernel matrices, needed later */
 	float64_t trace_K=0;
@@ -236,4 +217,110 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 
 	SG_DEBUG(("leaving %s::fit_null_gamma()\n"), get_name());
 	return result;
+}
+
+SGMatrix<float64_t> CHSIC::get_kernel_matrix_K()
+{
+	SGMatrix<float64_t> K;
+
+	/* subset for selecting only data from one distribution */
+	SGVector<index_t> subset(m_q_start);
+	subset.range_fill();
+
+	/* distinguish between custom and normal kernels */
+	if (m_kernel_p->get_kernel_type()==K_CUSTOM)
+	{
+		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
+		custom_kernel_p->add_row_subset(subset);
+		custom_kernel_p->add_col_subset(subset);
+
+		K=custom_kernel_p->get_kernel_matrix();
+
+		custom_kernel_p->remove_row_subset();
+		custom_kernel_p->remove_col_subset();
+	}
+	else
+	{
+		m_p_and_q->add_subset(subset);
+		m_kernel_p->init(m_p_and_q, m_p_and_q);
+		K=m_kernel_p->get_kernel_matrix();
+		m_p_and_q->remove_subset();
+
+		/* re-init kernel since subset was changed */
+		m_kernel_p->init(m_p_and_q, m_p_and_q);
+	}
+
+	return K;
+}
+
+SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
+{
+	SGMatrix<float64_t> L;
+
+	/* subset for selecting only data from one distribution */
+	SGVector<index_t> subset(m_q_start);
+	subset.range_fill();
+	subset.add(m_q_start);
+
+	/* now second half of data for L */
+	if (m_kernel_p->get_kernel_type()==K_CUSTOM)
+	{
+		CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
+		custom_kernel_q->add_row_subset(subset);
+		custom_kernel_q->add_col_subset(subset);
+
+		L=custom_kernel_q->get_kernel_matrix();
+
+		custom_kernel_q->remove_row_subset();
+		custom_kernel_q->remove_col_subset();
+	}
+	else
+	{
+		m_p_and_q->add_subset(subset);
+		m_kernel_q->init(m_p_and_q, m_p_and_q);
+		L=m_kernel_q->get_kernel_matrix();
+		m_p_and_q->remove_subset();
+
+		/* re-init kernel since subset was changed */
+		m_kernel_q->init(m_p_and_q, m_p_and_q);
+	}
+
+	return L;
+}
+
+SGVector<float64_t> CHSIC::bootstrap_null()
+{
+	/* replace current kernel via precomputed custom kernel and call superclass
+	 * method */
+
+	/* backup references to old kernels */
+	CKernel* kernel_p=m_kernel_p;
+	CKernel* kernel_q=m_kernel_q;
+
+	/* init kernels before to be sure that everything is fine */
+	m_kernel_p->init(m_p_and_q, m_p_and_q);
+	m_kernel_q->init(m_p_and_q, m_p_and_q);
+
+	/* precompute kernel matrices */
+	CCustomKernel* precomputed_p=new CCustomKernel(m_kernel_p);
+	CCustomKernel* precomputed_q=new CCustomKernel(m_kernel_q);
+	SG_REF(precomputed_p);
+	SG_REF(precomputed_q);
+
+	/* temporarily replace own kernels */
+	m_kernel_p=precomputed_p;
+	m_kernel_q=precomputed_q;
+
+	/* use superclass bootstrapping which permutes custom kernels */
+	SGVector<float64_t> null_samples=
+			CKernelIndependenceTestStatistic::bootstrap_null();
+
+	/* restore kernels */
+	m_kernel_p=kernel_p;
+	m_kernel_q=kernel_q;
+
+	SG_UNREF(precomputed_p);
+	SG_UNREF(precomputed_q);
+
+	return null_samples;
 }

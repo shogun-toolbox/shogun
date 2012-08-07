@@ -76,16 +76,14 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 
 		/* check if kernel is a custom kernel. In that case, changing features is
 		 * not what we want but just subsetting the kernel itself */
-		CCustomKernel* custom_kernel;
-		custom_kernel=(CCustomKernel*)m_kernel;
+		CCustomKernel* custom_kernel=(CCustomKernel*)m_kernel;
 
 		for (index_t i=0; i<m_bootstrap_iterations; ++i)
 		{
 			/* idea: merge features of p and q, shuffle, and compute statistic.
 			 * This is done using subsets here. add to custom kernel since
 			 * it has no features to subset. CustomKernel has not to be
-			 * re-initialised after each subset setting - in fact, this would
-			 * remove all subsets */
+			 * re-initialised after each subset setting */
 			SGVector<int32_t>::permute_vector(ind_permutation);
 
 			custom_kernel->add_row_subset(ind_permutation);
