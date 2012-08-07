@@ -47,6 +47,12 @@ class CrossValidationResult : public CEvaluationResult
 			conf_int_alpha = 0;
 		}
 
+		/** get mean evaluation result */
+		float64_t get_mean() const
+		{
+			return mean;
+		}
+
 		/** return what type of result we are.
 		 *
 		 *
