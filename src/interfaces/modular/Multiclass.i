@@ -54,7 +54,7 @@
 %rename(QDA) CQDA;
 
 %rename(ShareBoost) CShareBoost;
-%rename(BaseRelaxedTree) CTreeMachine<RelaxedTreeNodeData>;
+%template(BaseRelaxedTree) CTreeMachine<RelaxedTreeNodeData>;
 %rename(RelaxedTree) CRelaxedTree;
 
 /* Include Class Headers to make them visible from within the target language */
