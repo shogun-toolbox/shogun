@@ -52,6 +52,9 @@ void test_quadratic_mmd_fixed()
  * ensures equality with matlab implementation (unbiased statistic) */
 void test_quadratic_mmd_bootstrap()
 {
+	/* reproducable results */
+	CMath::init_random(1);
+
 	index_t dimension=3;
 	index_t m=100;
 	float64_t difference=0.5;
@@ -92,6 +95,10 @@ void test_quadratic_mmd_bootstrap()
 	 * This avoids re-computing the kernel matrix in every bootstrapping
 	 * iteration and should be num_iterations times faster */
 	SG_REF(features);
+
+	/* re-init kernel before kernel matrix is computed: this is due to a design
+	 * error in subsets and should be worked on! */
+	kernel->init(features, features);
 	CCustomKernel* precomputed_kernel=new CCustomKernel(kernel);
 	SG_UNREF(mmd);
 	mmd=new CQuadraticTimeMMD(precomputed_kernel, features, m);

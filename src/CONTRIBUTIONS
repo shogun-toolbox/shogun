@@ -60,11 +60,13 @@ We integrated the work of the following people:
 	  StringFeatures, SGD-QN, Online SGD, Online Liblinear, Online Vowpal Vabit
   
  Heiko Strathmann
-	- Model selection framework for arbitrary Machines
+	- Model selection/Cross-validation for arbitrary Machines
 	- Statistics module
 	- Subset support in features
 	- Various bugfixes and structural improvements
-	- Serialization improvements and fixes
+	- Serialization improvements and fixes/ Migration framework
+	- Machine Locking for precomputed kernel matrices
+	- Statistical hypothesis testing framework / Kernel Two-Sample/Independence tests
 	
  Alesis Novik
 	- Gaussian Mixture Models
