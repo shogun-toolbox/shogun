@@ -318,8 +318,8 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
                                            const slep_options& options)
 {
 	double fun_s = 0.0;
-	SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs));
-	SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks));
+	//SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs));
+	//SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks));
 	switch (options.mode)
 	{
 		case MULTITASK_GROUP:
@@ -382,7 +382,7 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 			}
 		break;
 	}
-	SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
+	//SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
 
 	return fun_s;
 }
@@ -526,6 +526,8 @@ slep_result_t slep_solver(
 
 		double fun_s = search_point_gradient_and_objective(features, ATx, As, sc, y, n_vecs, n_feats, n_tasks, g, gc, options);
 
+		//SG_SDEBUG("fun_s = %f\n", fun_s);
+
 		if (options.mode==PLAIN || options.mode==FUSED)
 			fun_s += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
 
@@ -545,9 +547,51 @@ slep_result_t slep_solver(
 				c[t] = sc[t] - gc[t]*(1.0/L);
 			
 			projection(w.matrix,v,n_feats,n_blocks,lambda,lambda2,L,z_flsa,z0_flsa,options);
-		
+
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = w[i] - s[i];
+
+			fun_x = 0.0;
+			switch (options.mode)
+			{
+				case MULTITASK_GROUP:
+				case MULTITASK_TREE:
+					for (t=0; t<n_blocks; t++)
+					{
+						SGVector<index_t> task_idx = options.tasks_indices[t];
+						int n_vecs_task = task_idx.vlen;
+						for (i=0; i<n_vecs_task; i++)
+						{
+							Aw[task_idx[i]] = features->dense_dot(task_idx[i],w.matrix+t*n_feats,n_feats);
+							if (options.loss==LOGISTIC)
+							{
+								double aa = -y[task_idx[i]]*(Aw[task_idx[i]]+c[t]);
+								double bb = CMath::max(aa,0.0);
+								fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
+							}
+						}
+					}
+				break;
+				case FEATURE_GROUP:
+				case FEATURE_TREE:
+				case PLAIN:
+				case FUSED:
+					for (i=0; i<n_vecs; i++)
+					{
+						Aw[i] = features->dense_dot(i, w.matrix, n_feats);
+						if (options.loss==LOGISTIC)
+						{
+							double aa = -y[i]*(Aw[i]+c[0]);
+							double bb = CMath::max(aa,0.0);
+							fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
+						}
+					}
+				break;
+			}
+			if (options.loss==LOGISTIC)
+				fun_x /= n_vecs;
+			if (options.mode==PLAIN || options.mode==FUSED)
+				fun_x += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
 			
 			double l_sum = 0.0, r_sum = 0.0;
 			switch (options.loss)
@@ -652,10 +696,6 @@ slep_result_t slep_solver(
 				norm_wp = CMath::sqrt(SGVector<float64_t>::dot(wp,wp,n_feats*n_tasks));
 				norm_wwp = CMath::sqrt(SGVector<float64_t>::dot(wwp,wwp,n_feats*n_tasks));
 				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
-					done = true;
-			break;
-			case 5:
-				if (iter > options.max_iter)
 					done = true;
 			break;
 			default: 
