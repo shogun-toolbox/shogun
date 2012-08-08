@@ -60,6 +60,18 @@ template<class T> class SGMatrixList : public SGReferencedData
 			return matrix_list[index];
 		}
 
+		/**
+		 * divide the matrix into a list of matrices. Each of the new
+		 * matrices has the same number of rows as the original so the
+		 * splits to the original matrix are done column-wise.
+		 *
+		 * @param matrix matrix to split
+		 * @param num_components number of new matrices
+		 *
+		 * @return list of matrices
+		 */
+		static SGMatrixList<T> split(SGMatrix<T> matrix, int32_t num_components);
+
 	protected:
 		/** copy data */
 		virtual void copy_data(SGReferencedData const & orig);

@@ -42,8 +42,6 @@ int main(int argc, char ** argv)
 	SG_UNREF(labels);   // because model->get_labels() increased the count
 	SG_UNREF(sosvm);
 
-	SG_UNREF(l);
-
 #endif /* USE_MOSEK */
 	exit_shogun();
 

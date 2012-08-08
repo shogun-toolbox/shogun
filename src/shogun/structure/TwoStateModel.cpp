@@ -307,7 +307,7 @@ CHMSVMModel* CTwoStateModel::simulate_two_state_data()
 	}
 
 	CMatrixFeatures< float64_t >* features =
-		new CMatrixFeatures< float64_t >(signal.split(num_exm), num_exm);
+		new CMatrixFeatures< float64_t >(signal, exm_len, num_exm);
 
 	return new CHMSVMModel(features, labels, SMT_TWO_STATE, 3);
 }

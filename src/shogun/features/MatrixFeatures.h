@@ -12,7 +12,8 @@
 #define _MATRIX_FEATURES__H__
 
 #include <shogun/features/Features.h>
-#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGMatrixList.h>
+
 
 namespace shogun
 {
@@ -20,10 +21,10 @@ namespace shogun
 /**
  * @brief Class CMatrixFeatures used to represent data whose feature vectors are
  * better represented with matrices rather than with unidimensional arrays or
- * vectors. Each of the feature vectors has the same number of features. The
- * length of the features must be the same for features within the same feature
- * vector. However, the length of the features may be different among feature
- * vectors.
+ * vectors. Optionally, it can be restricted that all the feature vectors have
+ * the same number of features. Set the attribute num_features different to zero
+ * to use this restriction. Allow feature vectors with different number of
+ * features by setting num_features equal to zero (default behaviour).
  */
 template< class ST > class CMatrixFeatures : public CFeatures
 {
@@ -33,29 +34,29 @@ template< class ST > class CMatrixFeatures : public CFeatures
 
 		/** standard constructor
 		 *
-		 * @param num_vec number of vectors
+		 * @param num_vecs number of vectors
 		 * @param num_feat number of features per vector
 		 */
-		CMatrixFeatures(int32_t num_vec, int32_t num_feat);
+		CMatrixFeatures(int32_t num_vecs, int32_t num_feats = 0);
 
 		/** constructor
 		 *
 		 * @param features list of feature matrices
 		 */
-		CMatrixFeatures(SGMatrix< ST >* feats, int32_t num);
+		CMatrixFeatures(SGMatrixList< ST > feats, int32_t num, int32_t num_feats = 0);
 
 		/**
 		 * constructor using the data of all the features concatenated in a
 		 * matrix. All the features are assumed to have the same length. The number
-		 * of colums of feats must be equal to feat_length times num_vec. The number
+		 * of colums of feats must be equal to feat_length times num_vecs. The number
 		 * of features per vector is equal to the number of rows of feats.
 		 *
 		 * @param feats concatenation of the features
 		 * @param feat_length length of each feature
-		 * @param num_vec number of feature vectors
+		 * @param num_vecs number of feature vectors
 		 * @param num_feat number of features per vector
 		 */
-		CMatrixFeatures(SGMatrix< ST > feats, int32_t feat_length, int32_t num_vec);
+		CMatrixFeatures(SGMatrix< ST > feats, int32_t feat_length, int32_t num_vecs);
 
 		/** duplicate feature object
 		 *
@@ -100,7 +101,12 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		 */
 		SGMatrix< ST > get_feature_vector(int32_t num) const;
 
-		/** TODO doc */
+		/** get a column of a feature vector
+		 *
+		 * @param out where the column will be copied
+		 * @param num index of the feature vector
+		 * @param col index of the column to get
+		 */
 		void get_feature_vector_col(SGVector< ST > out, int32_t num, int32_t col) const;
 
 		/** set feature vector num
@@ -112,18 +118,16 @@ template< class ST > class CMatrixFeatures : public CFeatures
 
 		/** get features
 		 *
-		 * @param num_vec number of feature vectors
-		 *
 		 * @return features
 		 */
-		SGMatrix< ST >* get_features(int32_t& num_vec) const;
+		inline SGMatrixList< ST > get_features() const { return m_features; }
 
 		/** set features
 		 *
 		 * @param features to set
-		 * @param num_vec number of vectors
+		 * @param num_vecs number of vectors
 		 */
-		void set_features(SGMatrix< ST >* features, int32_t num_vec);
+		void set_features(SGMatrixList< ST > features, int32_t num_vecs, int32_t num_feats);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MatrixFeatures"; }
@@ -138,13 +142,6 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		/** cleanup matrix features */
 		void cleanup();
 
-		/** cleanup multiple feature vectors
-		 *
-		 * @param start index of first vector to be cleaned
-		 * @param stop index of the last vector to be cleaned
-		 * */
-		virtual void cleanup_feature_vectors(int32_t start, int32_t stop);
-
 	private:
 		/** number of vectors or examples */
 		int32_t m_num_vectors;
@@ -153,7 +150,7 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		int32_t m_num_features;
 
 		/** list of m_num_vectors matrices (the so-called feature vectors) */
-		SGMatrix< ST >* m_features;
+		SGMatrixList< ST > m_features;
 
 }; /* class CMatrixFeatures */
 

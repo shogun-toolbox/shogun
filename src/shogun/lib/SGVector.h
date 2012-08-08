@@ -532,9 +532,6 @@ template<class T> class SGVector : public SGReferencedData
 			return idx;
 		}
 
-		/// TODO doc
-		void normal_random(float64_t mean = 0.0, float64_t std = 1.0) {}
-
 		/// scale vector inplace
 		void scale(T alpha);
 

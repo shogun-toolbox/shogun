@@ -19,35 +19,33 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures()
 }
 
 template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
-		int32_t num_vec,
-		int32_t num_feat)
-: CFeatures(0), m_num_vectors(num_vec), m_num_features(num_feat)
-{
-	init();
-
-	m_features = SG_MALLOC(SGMatrix< ST >, num_vec);
-	for ( int32_t i = 0 ; i < num_vec ; ++i )
-		new (&m_features[i]) SGMatrix< ST >();
-}
-
-template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
-		SGMatrix< ST >* feats,
-		int32_t num)
+		int32_t num_vecs,
+		int32_t num_feats)
 : CFeatures(0)
 {
 	init();
-	set_features(feats, num);
+	m_features     = SGMatrixList< ST >(num_vecs);
+	m_num_vectors  = num_vecs;
+	m_num_features = num_feats;
 }
 
 template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
-		SGMatrix< ST > feats, int32_t feat_length, int32_t num_vec)
-: CFeatures(0), m_num_vectors(num_vec), m_num_features(feats.num_rows)
+		SGMatrixList< ST > feats, int32_t num_vecs, int32_t num_feats)
+: CFeatures(0)
 {
-	REQUIRE(feats.num_cols == feat_length*num_vec, "The number of columns of feats "
-			"must be equal to feat_length times num_vec\n");
 	init();
-	SGMatrix< ST >* feats_list = feats.split(num_vec);
-	set_features(feats_list, num_vec);
+	set_features(feats, num_vecs, num_feats);
+}
+
+template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
+		SGMatrix< ST > feats, int32_t feat_length, int32_t num_vecs)
+: CFeatures(0)
+{
+	REQUIRE(feats.num_cols == feat_length*num_vecs, "The number of columns of feats "
+			"must be equal to feat_length times num_vecs\n");
+	init();
+	SGMatrixList< ST > feats_list = SGMatrixList< ST >::split(feats, num_vecs);
+	set_features(feats_list, num_vecs, feats.num_rows);
 }
 
 /* TODO */
@@ -135,7 +133,7 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 			 "0 and %d (get_num_vectors()-1)\n", get_num_vectors()-1);
 	}
 
-	if ( vec.num_rows != get_num_features() )
+	if ( get_num_features() != 0 && vec.num_rows != get_num_features() )
 	{
 		SG_ERROR("The feature vector to set must have the same features "
 			 "as the rest of the MatrixFeatures, %d "
@@ -145,71 +143,33 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 	m_features[num] = vec;
 }
 
-template< class ST > SGMatrix< ST >* CMatrixFeatures< ST >::get_features(
-		int32_t& num_vec) const
-{
-	num_vec = get_num_vectors();
-	return m_features;
-}
-
 template< class ST > void CMatrixFeatures< ST >::set_features(
-		SGMatrix< ST >* features,
-		int32_t num_vec)
+		SGMatrixList< ST > features, int32_t num_vecs, int32_t num_feats)
 {
-	cleanup();
-
-	m_features = features;
-
-	m_num_vectors  = num_vec;
-	if ( num_vec > 0 )
-	{
-		m_num_features = features[0].num_rows;
-	}
-	else
-	{
-		SG_ERROR("Cannot set empty features without at least one "
-			  "feature vector\n");
-	}
+	m_features     = features;
+	m_num_vectors  = num_vecs;
+	m_num_features = num_feats;
 }
 
 template< class ST > void CMatrixFeatures< ST >::init()
 {
-	SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors", MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_features, "m_num_features", "Number of features of each vector", MS_NOT_AVAILABLE);
-	//TODO add m_features for serialization
-	
-	m_features = NULL;
+	SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_features, "m_num_features",
+			"Number of features per vector (optional)", MS_NOT_AVAILABLE);
+	//TODO add SG_ADD for SGMatrixList
+	//SG_ADD(&m_features, "m_features", "Matrix features", MS_NOT_AVAILABLE);
+
+	m_num_vectors  = 0;
+	m_num_features = 0;
 }
 
 template< class ST > void CMatrixFeatures< ST >::cleanup()
 {
-	cleanup_feature_vectors(0, get_num_vectors()-1);
-
+	m_features     = SGMatrixList< ST >();
 	m_num_vectors  = 0;
 	m_num_features = 0;
-	SG_FREE(m_features);
-	m_features = NULL;
 }
-
-template< class ST > void CMatrixFeatures< ST >::cleanup_feature_vectors(
-		int32_t start, 
-		int32_t stop)
-{
-	if ( m_features && get_num_vectors() )
-	{
-		ASSERT(0 <= start && start < get_num_vectors());
-		ASSERT(stop < get_num_vectors());
-		ASSERT(stop >= start);
-
-		for ( int32_t i = start ; i <= stop ; ++i )
-		{
-			// Explicit call to the destructor in case
-			// an in-place constructor was used
-			m_features[i].~SGMatrix();
-		}
-	}
-}
-
 
 template class CMatrixFeatures<bool>;
 template class CMatrixFeatures<char>;
