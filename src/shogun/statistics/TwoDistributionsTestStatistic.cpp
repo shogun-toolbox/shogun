@@ -60,6 +60,8 @@ void CTwoDistributionsTestStatistic::init()
 
 SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 {
+	SG_DEBUG("entering CTwoDistributionsTestStatistic::bootstrap_null()\n");
+
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results(m_bootstrap_iterations);
 
@@ -84,7 +86,7 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 	/* clean up */
 	m_p_and_q->remove_subset();
 
-	/* clean up and return */
+	SG_DEBUG("leaving CTwoDistributionsTestStatistic::bootstrap_null()\n");
 	return results;
 }
 
