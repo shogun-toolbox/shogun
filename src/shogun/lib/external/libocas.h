@@ -105,6 +105,31 @@ ocas_return_value_T msvm_ocas_solver(
             int (*sort)(float64_t*, float64_t*, uint32_t),
 			void (*ocas_print)(ocas_return_value_T),
 			void* user_data);
+
+
+/* binary linear SVM solver */
+ocas_return_value_T svm_ocas_solver_nnw(
+         float64_t C,            /* regularizarion constant */
+         uint32_t nData,      /* number of exmaples */
+         uint32_t num_nnw,    /* number of components of W which must non-negative*/
+         uint32_t* nnw_idx,   /* indices of W which must be non-negative */
+         float64_t TolRel,       /* halts if 1-Q_P/Q_D <= TolRel */
+         float64_t TolAbs,       /* halts if Q_P-Q_D <= TolRel */
+         float64_t QPBound,      /* halts if QP <= QPBound */
+         float64_t MaxTime,      /* maximal time in seconds spent in optmization */
+         uint32_t BufSize,    /* maximal number of buffered cutting planes  */
+         uint8_t Method,      /* 0..standard CP (SVM-Perf,BMRM), 1..OCAS */
+         int (*add_pw_constr)(uint32_t, uint32_t, void*),
+         void (*clip_neg_w)(uint32_t, uint32_t*, void*),
+         void (*compute_W)(float64_t*, float64_t*, float64_t*, uint32_t, void*),
+         float64_t (*update_W)(float64_t, void*),
+         int (*add_new_cut)(float64_t*, uint32_t*, uint32_t, uint32_t, void*),
+         int (*compute_output)( float64_t*, void* ),
+         int (*sort)(float64_t*, float64_t*, uint32_t),
+         void (*ocas_print)(ocas_return_value_T),
+         void* user_data);
+
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif /* libocas_h */
+
