@@ -7,7 +7,7 @@ parameter_list=[[traindat,10,3,1000],[traindat,11,4,1500]]
 
 def clustering_kmeans (fm_train=traindat, size_cache=10,k=3,iter=1000):
 	sg('set_features', 'TRAIN', fm_train)
-	sg('set_distance', 'EUCLIDIAN', 'REAL')
+	sg('set_distance', 'EUCLIDEAN', 'REAL')
 	sg('new_clustering', 'KMEANS')
 	sg('train_clustering', k, iter)
 

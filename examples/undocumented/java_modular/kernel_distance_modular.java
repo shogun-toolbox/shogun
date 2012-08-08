@@ -16,7 +16,7 @@ public class kernel_distance_modular {
 		RealFeatures feats_train = new RealFeatures(traindata_real);
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 
-		EuclidianDistance distance = new EuclidianDistance();
+		EuclideanDistance distance = new EuclideanDistance();
 
 		DistanceKernel kernel = new DistanceKernel(feats_train, feats_test, width, distance);
 

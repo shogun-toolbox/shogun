@@ -10,7 +10,7 @@ k <- 3
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dump <- sg('set_labels', 'TRAIN', label_train_multiclass)
-dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
+dump <- sg('set_distance', 'EUCLIDEAN', 'REAL')
 dump <- sg('new_classifier', 'KNN')
 dump <- sg('train_classifier', k)
 

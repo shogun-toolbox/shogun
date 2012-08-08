@@ -18,7 +18,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/distance/MinkowskiMetric.h>
 
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		labels->set_label(i, i%2==0 ? 0 : 1);
 
 	/* create distance */
-	CEuclidianDistance* distance=new CEuclidianDistance(features, features);
+	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 
 	/* create distance machine */
 	CKMeans* clustering=new CKMeans(num_clusters, distance);

@@ -10,12 +10,12 @@ parameter_list=[[traindat,testdat, 2.0],[traindat,testdat, 3.0]]
 def kernel_log_modular (fm_train_real=traindat,fm_test_real=testdat, degree=2.0):
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import LogKernel
-	from shogun.Distance import EuclidianDistance
+	from shogun.Distance import EuclideanDistance
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 	
-	distance=EuclidianDistance(feats_train, feats_train)
+	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=LogKernel(feats_train, feats_train, degree, distance)
 	km_train=kernel.get_kernel_matrix()

@@ -13,7 +13,7 @@ traindat=concatenate((concatenate((randn(1,num)-dist, randn(1,2*num)+dist, randn
 trainlab=concatenate((ones(num), 2*ones(num), 3*ones(num), 4*ones(num)))
 
 feats_train=RealFeatures(traindat)
-distance=EuclidianDistance(feats_train, feats_train)
+distance=EuclideanDistance(feats_train, feats_train)
 kmeans=KMeans(k, distance)
 kmeans.train()
 

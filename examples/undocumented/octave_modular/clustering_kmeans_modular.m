@@ -10,7 +10,7 @@ disp('KMeans')
 
 k=4;
 feats_train=RealFeatures(fm_train);
-distance=EuclidianDistance(feats_train, feats_train);
+distance=EuclideanDistance(feats_train, feats_train);
 
 kmeans=KMeans(k, distance);
 kmeans.train();

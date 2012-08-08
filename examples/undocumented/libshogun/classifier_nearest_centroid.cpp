@@ -1,6 +1,6 @@
 #include <shogun/features/Labels.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/classifier/NearestCentroid.h>
 #include <shogun/base/init.h>
 
@@ -31,8 +31,8 @@ int main(){
 	for (index_t i=0; i<num_vec; ++i)
 		labels->set_label(i, i%num_class);
 
-	//Create Euclidian Distance
-	CEuclidianDistance* distance = new CEuclidianDistance(features,features);
+	//Create Euclidean Distance
+	CEuclideanDistance* distance = new CEuclideanDistance(features,features);
 
 	//Create Nearest Centroid
 	CNearestCentroid* nearest_centroid = new CNearestCentroid(distance, labels);

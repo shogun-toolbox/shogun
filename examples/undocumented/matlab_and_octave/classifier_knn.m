@@ -6,7 +6,7 @@ fm_test_real=load_matrix('../data/fm_test_real.dat');
 % KNN
 disp('KNN');
 
-sg('set_distance', 'EUCLIDIAN', 'REAL');
+sg('set_distance', 'EUCLIDEAN', 'REAL');
 sg('set_features', 'TRAIN', fm_train_real);
 sg('set_labels', 'TRAIN', label_train_twoclass);
 sg('new_classifier', 'KNN');

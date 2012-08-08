@@ -103,8 +103,8 @@ class Form(QMainWindow):
         train = RealFeatures(features)
 
         distance_name = self.distance_combo.currentText()
-        if distance_name == "EuclidianDistance":
-            distance=EuclidianDistance(train, train)
+        if distance_name == "EuclideanDistance":
+            distance=EuclideanDistance(train, train)
         elif distance_name == "ManhattanMetric":
             distance=ManhattanMetric(train, train)
         elif distance_name == "JensenMetric":
@@ -174,7 +174,7 @@ class Form(QMainWindow):
 
         
         self.distance_combo = QComboBox()
-        self.distance_combo.insertItem(-1, "EuclidianDistance")
+        self.distance_combo.insertItem(-1, "EuclideanDistance")
         self.distance_combo.insertItem(-1, "ManhattanMetric")
         self.distance_combo.insertItem(-1, "JensenMetric")
         self.distance_combo.maximumSize = QSize(300, 50)

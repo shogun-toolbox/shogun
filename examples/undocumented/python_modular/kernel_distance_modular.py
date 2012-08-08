@@ -9,12 +9,12 @@ parameter_list=[[traindat,testdat,1.7],[traindat,testdat,1.8]]
 def kernel_distance_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.7):
 	from shogun.Kernel import DistanceKernel
 	from shogun.Features import RealFeatures
-	from shogun.Distance import EuclidianDistance
+	from shogun.Distance import EuclideanDistance
 	
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 	
-	distance=EuclidianDistance()
+	distance=EuclideanDistance()
 
 	kernel=DistanceKernel(feats_train, feats_test, width, distance)
 

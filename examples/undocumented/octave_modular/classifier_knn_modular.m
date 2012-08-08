@@ -10,7 +10,7 @@ disp('KNN')
 
 feats_train=RealFeatures(fm_train_real);
 feats_test=RealFeatures(fm_test_real);
-distance=EuclidianDistance(feats_train, feats_train);
+distance=EuclideanDistance(feats_train, feats_train);
 
 k=3;
 num_threads=1;

@@ -22,8 +22,8 @@
 using namespace shogun;
 
 CRelaxedTree::CRelaxedTree()
-	:m_max_num_iter(3), m_svm_C(1), m_svm_epsilon(0.001), m_A(0.5), m_B(5),
-	m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0), m_kernel(NULL)
+	:m_max_num_iter(3), m_A(0.5), m_B(5), m_svm_C(1), m_svm_epsilon(0.001), 
+	m_kernel(NULL), m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
 {
 	SG_ADD(&m_max_num_iter, "m_max_num_iter", "max number of iterations in alternating optimization", MS_NOT_AVAILABLE);
 	SG_ADD(&m_svm_C, "m_svm_C", "C for svm", MS_AVAILABLE);
@@ -379,7 +379,6 @@ std::vector<CRelaxedTree::entry_t> CRelaxedTree::init_node(const SGMatrix<float6
 		}
 	}
 
-	int32_t num_entries = classes.vlen*(classes.vlen-1)/2;
 	std::vector<CRelaxedTree::entry_t> entries;
 	for (index_t i=0; i < classes.vlen; ++i)
 	{
@@ -490,7 +489,7 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 		if (mu[min_idx] == 1 && (npos == 0 || npos == 1))
 		{
 			// avoid overwritting the only positive class
-			float64_t min_val;
+			float64_t min_val = 0;
 			int32_t i, min_i;
 			for (i=0; i < xi_neg_class.vlen; ++i)
 			{
@@ -638,7 +637,7 @@ void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVe
 
 					if (delta_steps[itr] == 1)
 					{
-						int32_t j=itr;
+						j=itr;
 						Delta_j_min = S_delta_sorted[j];
 					}
 				}
@@ -828,7 +827,7 @@ void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVe
 
 					if (delta_steps[itr] == 1)
 					{
-						int32_t j=itr;
+						j=itr;
 						Delta_j_min = S_delta_sorted[j];
 					}
 				}

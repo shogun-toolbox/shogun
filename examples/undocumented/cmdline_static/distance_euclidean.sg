@@ -1,6 +1,6 @@
-% Euclidian Distance
-print EuclidianDistance
-set_distance EUCLIDIAN REAL
+% Euclidean Distance
+print EuclideanDistance
+set_distance EUCLIDEAN REAL
 
 set_features TRAIN ../data/fm_train_real.dat
 dm_train.txt = get_distance_matrix TRAIN
