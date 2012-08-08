@@ -13,7 +13,7 @@
 
 #include <shogun/clustering/GMM.h>
 #include <shogun/clustering/KMeans.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
@@ -137,7 +137,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 
 	if (m_components[0]->get_mean().vector==NULL)
 	{
-		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclidianDistance());
+		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclideanDistance());
 		init_k_means->train(dotdata);
 		SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
@@ -724,7 +724,7 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 	for (int32_t i=0; i<init_means.num_cols; i++)
 		label_num.vector[i]=i;
 
-	CKNN* knn=new CKNN(1, new CEuclidianDistance(), new CMulticlassLabels(label_num));
+	CKNN* knn=new CKNN(1, new CEuclideanDistance(), new CMulticlassLabels(label_num));
 	knn->train(new CDenseFeatures<float64_t>(init_means));
 	CMulticlassLabels* init_labels=(CMulticlassLabels*) knn->apply(features);
 

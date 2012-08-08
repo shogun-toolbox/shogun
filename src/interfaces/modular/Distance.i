@@ -35,8 +35,8 @@
 %rename(HammingWordDistance) CHammingWordDistance;
 %rename(ManhattanWordDistance) CManhattanWordDistance;
 %rename(CanberraWordDistance) CCanberraWordDistance;
-%rename(EuclidianDistance) CEuclidianDistance;
-%rename(SparseEuclidianDistance) CSparseEuclidianDistance;
+%rename(EuclideanDistance) CEuclideanDistance;
+%rename(SparseEuclideanDistance) CSparseEuclideanDistance;
 %rename(BrayCurtisDistance) CBrayCurtisDistance;
 %rename(ChiSquareDistance) CChiSquareDistance;
 %rename(CosineDistance) CCosineDistance;
@@ -117,8 +117,8 @@ namespace shogun
 %include <shogun/distance/HammingWordDistance.h>
 %include <shogun/distance/ManhattanWordDistance.h>
 %include <shogun/distance/CanberraWordDistance.h>
-%include <shogun/distance/EuclidianDistance.h>
-%include <shogun/distance/SparseEuclidianDistance.h>
+%include <shogun/distance/EuclideanDistance.h>
+%include <shogun/distance/SparseEuclideanDistance.h>
 %include <shogun/distance/BrayCurtisDistance.h>
 %include <shogun/distance/ChiSquareDistance.h>
 %include <shogun/distance/CosineDistance.h>

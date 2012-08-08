@@ -10,39 +10,39 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 
 using namespace shogun;
 
-CEuclidianDistance::CEuclidianDistance() : CRealDistance()
+CEuclideanDistance::CEuclideanDistance() : CRealDistance()
 {
 	init();
 }
 
-CEuclidianDistance::CEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
+CEuclideanDistance::CEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
 : CRealDistance()
 {
 	init();
 	init(l, r);
 }
 
-CEuclidianDistance::~CEuclidianDistance()
+CEuclideanDistance::~CEuclideanDistance()
 {
 	cleanup();
 }
 
-bool CEuclidianDistance::init(CFeatures* l, CFeatures* r)
+bool CEuclideanDistance::init(CFeatures* l, CFeatures* r)
 {
 	CRealDistance::init(l, r);
 
 	return true;
 }
 
-void CEuclidianDistance::cleanup()
+void CEuclideanDistance::cleanup()
 {
 }
 
-float64_t CEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
@@ -66,14 +66,14 @@ float64_t CEuclidianDistance::compute(int32_t idx_a, int32_t idx_b)
 	return CMath::sqrt(result);
 }
 
-void CEuclidianDistance::init()
+void CEuclideanDistance::init()
 {
 	disable_sqrt=false;
 
 	m_parameters->add(&disable_sqrt, "disable_sqrt", "If sqrt shall not be applied.");
 }
 
-float64_t CEuclidianDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
+float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound)
 {
 	int32_t alen, blen;
 	bool afree, bfree;

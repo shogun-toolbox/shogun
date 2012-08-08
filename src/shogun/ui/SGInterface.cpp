@@ -4287,12 +4287,12 @@ bool CSGInterface::cmd_set_distance()
 	{
 		distance=ui_distance->create_generic(D_BRAYCURTIS);
 	}
-	else if (strmatch(type, "EUCLIDIAN"))
+	else if (strmatch(type, "EUCLIDEAN"))
 	{
 		if (strmatch(dtype, "REAL"))
-			distance=ui_distance->create_generic(D_EUCLIDIAN);
+			distance=ui_distance->create_generic(D_EUCLIDEAN);
 		else if (strmatch(dtype, "SPARSEREAL"))
-			distance=ui_distance->create_generic(D_SPARSEEUCLIDIAN);
+			distance=ui_distance->create_generic(D_SPARSEEUCLIDEAN);
 	}
 	else
 		SG_NOTIMPLEMENTED;

@@ -39,6 +39,10 @@ public:
 	 */
 	CSubsetStack();
 
+	/** copy constructor
+	 */
+	CSubsetStack(const CSubsetStack& other);
+
 	/** destructor */
 	virtual ~CSubsetStack();
 
