@@ -67,9 +67,9 @@ class CEuclideanDistance: public CRealDistance
 
 		/** get distance type we are
 		 *
-		 * @return distance type EUCLIDIAN
+		 * @return distance type EUCLIDEAN
 		 */
-		virtual EDistanceType get_distance_type() { return D_EUCLIDIAN; }
+		virtual EDistanceType get_distance_type() { return D_EUCLIDEAN; }
 
 		/** get feature type the distance can deal with
 		 *
@@ -79,7 +79,7 @@ class CEuclideanDistance: public CRealDistance
 
 		/** get name of the distance
 		 *
-		 * @return name Euclidian
+		 * @return name Euclidean
 		 */
 		virtual const char* get_name() const { return "EuclideanDistance"; }
 

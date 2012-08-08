@@ -182,7 +182,7 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 	// Compute distance matrix
 	SG_DEBUG("Computing distance matrix\n");
 
-	if ( distance->get_distance_type() != D_EUCLIDIAN )
+	if ( distance->get_distance_type() != D_EUCLIDEAN )
 		SG_ERROR("SPE only supports Euclidean distance, %s given\n", 
 				distance->get_name());
 

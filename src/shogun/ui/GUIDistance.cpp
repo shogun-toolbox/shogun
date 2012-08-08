@@ -196,9 +196,9 @@ CDistance* CGUIDistance::create_generic(EDistanceType type)
 			dist=new CGeodesicMetric(); break;
 		case D_JENSEN:
 			dist=new CJensenMetric(); break;
-		case D_EUCLIDIAN:
+		case D_EUCLIDEAN:
 			dist=new CEuclideanDistance(); break;
-		case D_SPARSEEUCLIDIAN:
+		case D_SPARSEEUCLIDEAN:
 			dist=new CSparseEuclideanDistance(); break;
 		case D_CHISQUARE:
 			dist=new CChiSquareDistance(); break;

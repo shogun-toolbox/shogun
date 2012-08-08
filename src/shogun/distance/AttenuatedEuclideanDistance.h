@@ -62,9 +62,9 @@ class CAttenuatedEuclideanDistance: public CRealDistance
 
 		/** get distance type we are
 		 *
-		 * @return distance type Euclidian
+		 * @return distance type Euclidean
 		 */
-		virtual EDistanceType get_distance_type() { return D_ATTENUATEDEUCLIDIAN; }
+		virtual EDistanceType get_distance_type() { return D_ATTENUATEDEUCLIDEAN; }
 
 		/** get feature type the distance can deal with
 		 *

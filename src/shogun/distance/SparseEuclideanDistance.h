@@ -47,9 +47,9 @@ class CSparseEuclideanDistance: public CSparseDistance<float64_t>
 
 		/** get distance type we are
 		 *
-		 * @return distance type SPARSEEUCLIDIAN
+		 * @return distance type SPARSEEUCLIDEAN
 		 */
-		virtual EDistanceType get_distance_type() { return D_SPARSEEUCLIDIAN; }
+		virtual EDistanceType get_distance_type() { return D_SPARSEEUCLIDEAN; }
 
 		/** get supported feature type
 		 *
