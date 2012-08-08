@@ -8,8 +8,8 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _EUCLIDIANDISTANCE_H__
-#define _EUCLIDIANDISTANCE_H__
+#ifndef _EUCLIDEANDISTANCE_H__
+#define _EUCLIDEANDISTANCE_H__
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
@@ -17,9 +17,9 @@
 
 namespace shogun
 {
-/** @brief class EuclidianDistance
+/** @brief class EuclideanDistance
  *
- * The familiar Euclidian distance for real valued features computes
+ * The familiar Euclidean distance for real valued features computes
  * the square root of the sum of squared disparity between the
  * corresponding feature dimensions of two data points.
  *
@@ -30,7 +30,7 @@ namespace shogun
  * This special case of Minkowski metric is invariant to an arbitrary
  * translation or rotation in feature space.
  *
- * The Euclidian Squared distance does not take the square root:
+ * The Euclidean Squared distance does not take the square root:
  *
  * \f[\displaystyle
  *  d({\bf x},{\bf x'})= \sum_{i=0}^{n}|{\bf x_i}-{\bf x'_i}|^2
@@ -40,19 +40,19 @@ namespace shogun
  * @see <a href="http://en.wikipedia.org/wiki/Distance#Distance_in_Euclidean_space">
  * Wikipedia: Distance in Euclidean space</a>
  */
-class CEuclidianDistance: public CRealDistance
+class CEuclideanDistance: public CRealDistance
 {
 	public:
 		/** default constructor */
-		CEuclidianDistance();
+		CEuclideanDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CEuclidianDistance();
+		CEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
+		virtual ~CEuclideanDistance();
 
 		/** init distance
 		 *
@@ -67,9 +67,9 @@ class CEuclidianDistance: public CRealDistance
 
 		/** get distance type we are
 		 *
-		 * @return distance type EUCLIDIAN
+		 * @return distance type EUCLIDEAN
 		 */
-		virtual EDistanceType get_distance_type() { return D_EUCLIDIAN; }
+		virtual EDistanceType get_distance_type() { return D_EUCLIDEAN; }
 
 		/** get feature type the distance can deal with
 		 *
@@ -79,9 +79,9 @@ class CEuclidianDistance: public CRealDistance
 
 		/** get name of the distance
 		 *
-		 * @return name Euclidian
+		 * @return name Euclidean
 		 */
-		virtual const char* get_name() const { return "EuclidianDistance"; }
+		virtual const char* get_name() const { return "EuclideanDistance"; }
 
 		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared
@@ -126,4 +126,4 @@ class CEuclidianDistance: public CRealDistance
 };
 
 } // namespace shogun
-#endif /* _EUCLIDIANDISTANCE_H__ */
+#endif /* _EUCLIDEANDISTANCE_H__ */

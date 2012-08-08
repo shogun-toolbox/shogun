@@ -64,7 +64,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 *  distance stops if the intermediate result is 
 		 *  larger than upper_bound. This is useful to use 
 		 *  with John Langford's Cover Tree and it is ONLY 
-		 *  implemented for Euclidian distance
+		 *  implemented for Euclidean distance
 		 *
 		 *  @param idx_a feature vector a at idx_a
 		 *  @param idx_b feature vector b at idx_b

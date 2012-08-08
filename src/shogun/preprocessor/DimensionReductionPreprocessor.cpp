@@ -1,7 +1,7 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/kernel/LinearKernel.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 
 using namespace shogun;
 
@@ -11,7 +11,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor()
 : CDensePreprocessor<float64_t>()
 {
 	m_target_dim = 1;
-	m_distance = new CEuclidianDistance();
+	m_distance = new CEuclideanDistance();
 	m_kernel = new CLinearKernel();
 	m_converter = NULL;
 
@@ -23,7 +23,7 @@ CDimensionReductionPreprocessor::CDimensionReductionPreprocessor(CEmbeddingConve
 {
 	SG_REF(converter);
 	m_target_dim = 1;
-	m_distance = new CEuclidianDistance();
+	m_distance = new CEuclideanDistance();
 	m_kernel = new CLinearKernel();
 	m_converter = converter;
 

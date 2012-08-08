@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max Planck Society
  */
 
-#ifndef _ATTENUATEDEUCLIDIANDISTANCE_H__
-#define _ATTENUATEDEUCLIDIANDISTANCE_H__
+#ifndef _ATTENUATEDEuclideanDISTANCE_H__
+#define _ATTENUATEDEuclideanDISTANCE_H__
 
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-/** @brief class AttenuatedEuclidianDistance
+/** @brief class AttenuatedEuclideanDistance
  *
  * The adaptation of the familiar Euclidean Distance, to be used in
  * ternary ECOC designs. This adaptation computes the Euclidean distance
@@ -35,19 +35,19 @@ namespace shogun
  * \f]
  *
  */
-class CAttenuatedEuclidianDistance: public CRealDistance
+class CAttenuatedEuclideanDistance: public CRealDistance
 {
 	public:
 		/** default constructor */
-		CAttenuatedEuclidianDistance();
+		CAttenuatedEuclideanDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CAttenuatedEuclidianDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
-		virtual ~CAttenuatedEuclidianDistance();
+		CAttenuatedEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
+		virtual ~CAttenuatedEuclideanDistance();
 
 		/** init distance
 		 *
@@ -62,9 +62,9 @@ class CAttenuatedEuclidianDistance: public CRealDistance
 
 		/** get distance type we are
 		 *
-		 * @return distance type EUCLIDIAN
+		 * @return distance type Euclidean
 		 */
-		virtual EDistanceType get_distance_type() { return D_ATTENUATEDEUCLIDIAN; }
+		virtual EDistanceType get_distance_type() { return D_ATTENUATEDEUCLIDEAN; }
 
 		/** get feature type the distance can deal with
 		 *
@@ -74,9 +74,9 @@ class CAttenuatedEuclidianDistance: public CRealDistance
 
 		/** get name of the distance
 		 *
-		 * @return name Euclidian
+		 * @return name Euclidean
 		 */
-		virtual const char* get_name() const { return "AttenuatedEuclidianDistance"; }
+		virtual const char* get_name() const { return "AttenuatedEuclideanDistance"; }
 
 		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared
@@ -107,4 +107,4 @@ class CAttenuatedEuclidianDistance: public CRealDistance
 };
 
 } // namespace shogun
-#endif /* _ATTENUATEDEUCLIDIANDISTANCE_H__ */
+#endif /* _ATTENUATEDEuclideanDISTANCE_H__ */

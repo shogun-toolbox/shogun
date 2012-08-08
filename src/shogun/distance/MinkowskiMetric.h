@@ -29,7 +29,7 @@ namespace shogun
  *
  * special cases:
  * -# \f$\displaystyle L_{1} \f$ norm: Manhattan distance @see CManhattanMetric
- * -# \f$\displaystyle L_{2} \f$ norm: Euclidean distance @see CEuclidianDistance
+ * -# \f$\displaystyle L_{2} \f$ norm: Euclidean distance @see CEuclideanDistance
  *
  * Note that the Minkowski distance tends to the Chebyshew distance for
  * increasing \f$k\f$.

@@ -55,7 +55,7 @@ enum ESPEStrategy
  * drawback that it is likely that the same distances are computed several times during
  * the process.
  *
- * Only CEuclidianDistance distance is supported for the moment.
+ * Only CEuclideanDistance distance is supported for the moment.
  *
  */
 
@@ -144,7 +144,7 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		virtual SGMatrix<int32_t> get_neighborhood_matrix(CDistance* distance, int32_t k, int32_t N, float64_t max_dist);
 
 		/** apply embedding to CDistance
-		 * @param distance TODO Euclidian works fine, check with others
+		 * @param distance TODO Euclidean works fine, check with others
 		 * @return new features in the embedded space
 		 */
 		virtual CDenseFeatures< float64_t >* embed_distance(CDistance* distance);

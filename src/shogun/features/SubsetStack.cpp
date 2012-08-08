@@ -18,6 +18,17 @@ CSubsetStack::CSubsetStack()
 	init();
 }
 
+CSubsetStack::CSubsetStack(const CSubsetStack& other)
+{
+	init();
+
+	for (int32_t i=0; i < other.m_active_subsets_stack->get_num_elements(); ++i)
+	{
+		m_active_subset=(CSubset*)other.m_active_subsets_stack->get_element(i);
+		m_active_subsets_stack->append_element(m_active_subset);
+	}
+}
+
 CSubsetStack::~CSubsetStack()
 {
 	SG_UNREF(m_active_subsets_stack);
