@@ -187,3 +187,7 @@
 %ignore shogun::CSerializableFile::write_type_end;
 
 %ignore shogun::CMosek;
+
+%ignore shogun::ConditionalProbabilityTreeNodeData;
+%ignore shogun::RelaxedTreeNodeData;
+%ignore shogun::RelaxedTreeUtil;
