@@ -36,7 +36,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @param machine machine
 		 * @param labels labels
 		 */
-		CMulticlassMachine(CMulticlassStrategy *strategy, CMachine* machine, CLabels* labels);
+		CMulticlassMachine(CMulticlassStrategy* strategy, CMachine* machine, CLabels* labels);
 
 		/** destructor */
 		virtual ~CMulticlassMachine();
@@ -70,7 +70,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 */
 		inline CMachine* get_machine(int32_t num) const
 		{
-			return (CMachine*)m_machines->get_element_safe(num);
+			return (CMachine*) m_machines->get_element_safe(num);
 		}
 
 		/** get outputs of i-th submachine

@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+class CMachine;
+
 class CBaseMulticlassMachine: public CMachine
 {
 public:
