@@ -104,7 +104,7 @@ public:
 	 *
 	 * @return templated feature type
 	 */
-	virtual EFeatureType get_feature_type()=0;
+	virtual EFeatureType get_feature_type() const=0;
 
 	/** get feature class
 	 *
@@ -112,7 +112,7 @@ public:
 	 *
 	 * @return feature class like STRING, SIMPLE, SPARSE...
 	 */
-	virtual EFeatureClass get_feature_class()=0;
+	virtual EFeatureClass get_feature_class() const=0;
 
 	/** get number of examples/vectors
 	 *
@@ -120,7 +120,7 @@ public:
 	 *
 	 * @return number of examples/vectors
 	 */
-	virtual int32_t get_num_vectors() const=0 ;
+	virtual int32_t get_num_vectors() const=0;
 
 	/** get memory footprint of one feature
 	 *
@@ -128,7 +128,7 @@ public:
 	 *
 	 * @return memory footprint of one feature
 	 */
-	virtual int32_t get_size()=0;
+	virtual int32_t get_size() const=0;
 
 protected:
 	/** find the index of the attribute matching attribute name
