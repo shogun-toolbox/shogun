@@ -7,7 +7,7 @@ disp('Hierarchical');
 merges=3;
 
 sg('set_features', 'TRAIN', fm_train);
-sg('set_distance', 'EUCLIDIAN', 'REAL');
+sg('set_distance', 'EUCLIDEAN', 'REAL');
 sg('new_clustering', 'HIERARCHICAL');
 
 sg('train_clustering', merges);

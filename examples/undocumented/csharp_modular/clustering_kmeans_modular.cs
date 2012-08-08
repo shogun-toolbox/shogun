@@ -13,7 +13,7 @@ public class clustering_kmeans_modular {
 		double[,] fm_train = Load.load_numbers("../data/fm_train_real.dat");
 
 		RealFeatures feats_train = new RealFeatures(fm_train);
-		EuclidianDistance distance = new EuclidianDistance(feats_train, feats_train);
+		EuclideanDistance distance = new EuclideanDistance(feats_train, feats_train);
 
 		KMeans kmeans = new KMeans(k, distance);
 		kmeans.train();

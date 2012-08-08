@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-public class distance_euclidian_modular {
+public class distance_euclidean_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
@@ -15,7 +15,7 @@ public class distance_euclidian_modular {
 		RealFeatures feats_train = new RealFeatures(traindata_real);
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 
-		EuclidianDistance distance = new EuclidianDistance(feats_train, feats_train);
+		EuclideanDistance distance = new EuclideanDistance(feats_train, feats_train);
 		
 		DoubleMatrix dm_train = distance.get_distance_matrix();
 		distance.init(feats_train, feats_test);

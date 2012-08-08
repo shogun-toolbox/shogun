@@ -1,7 +1,7 @@
 % KNN
 print KNN
 
-set_distance EUCLIDIAN REAL
+set_distance EUCLIDEAN REAL
 set_features TRAIN ../data/fm_train_real.dat
 set_labels TRAIN ../data/label_train_twoclass.dat
 new_classifier KNN

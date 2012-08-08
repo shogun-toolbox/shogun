@@ -8,7 +8,7 @@ print('Hierarchical')
 merges=3
 
 dump <- sg('set_features', 'TRAIN', fm_train)
-dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
+dump <- sg('set_distance', 'EUCLIDEAN', 'REAL')
 dump <- sg('new_clustering', 'HIERARCHICAL')
 dump <- sg('train_clustering', merges)
 

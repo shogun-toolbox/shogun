@@ -14,7 +14,7 @@ def kernel_circular_modular(fm_train_real=traindat,fm_test_real=testdat, sigma=1
 	feats_test=Modshogun::RealFeatures.new
 	feats_test.set_feature_matrix(fm_test_real)
 	
-	distance=Modshogun::EuclidianDistance.new(feats_train, feats_train)
+	distance=Modshogun::EuclideanDistance.new(feats_train, feats_train)
 
 	kernel=Modshogun::CircularKernel.new(feats_train, feats_train, sigma, distance)
 	km_train=kernel.get_kernel_matrix()

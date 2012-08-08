@@ -10,12 +10,12 @@ parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 def kernel_exponential_modular (fm_train_real=traindat,fm_test_real=testdat, tau_coef=1.0):
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import ExponentialKernel
-	from shogun.Distance import EuclidianDistance
+	from shogun.Distance import EuclideanDistance
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
 
-	distance = EuclidianDistance(feats_train, feats_train)
+	distance = EuclideanDistance(feats_train, feats_train)
 	
 	kernel=ExponentialKernel(feats_train, feats_train, tau_coef, distance, 10)
 	km_train=kernel.get_kernel_matrix()

@@ -2,7 +2,7 @@
 print KMeans
 
 set_features TRAIN ../data/fm_train_real.dat
-set_distance EUCLIDIAN REAL
+set_distance EUCLIDEAN REAL
 new_clustering KMEANS
 
 train_clustering 3 1000

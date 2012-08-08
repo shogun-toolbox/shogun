@@ -10,7 +10,7 @@ def clustering_hierarchical_modular(fm_train=traindat,merges=3)
 
 	feats_train=Modshogun::RealFeatures.new
 	feats_train.set_feature_matrix(fm_train)
-	distance=Modshogun::EuclidianDistance.new(feats_train, feats_train)
+	distance=Modshogun::EuclideanDistance.new(feats_train, feats_train)
 
 	hierarchical=Modshogun::Hierarchical.new(merges, distance)
 	hierarchical.train()

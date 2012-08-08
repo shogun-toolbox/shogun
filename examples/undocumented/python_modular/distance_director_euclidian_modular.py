@@ -8,7 +8,7 @@ except ImportError:
 	sys.exit(0)
 
 
-class DirectorEuclidianDistance(DirectorDistance):
+class DirectorEuclideanDistance(DirectorDistance):
 	def __init__(self):
 		DirectorDistance.__init__(self, True)
 	def distance_function(self, idx_a, idx_b):
@@ -20,9 +20,9 @@ traindat = numpy.random.random_sample((10,10))
 testdat = numpy.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
-def distance_director_euclidian_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
+def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
 
-	from shogun.Distance import EuclidianDistance
+	from shogun.Distance import EuclideanDistance
 	from modshogun import Time
 
 	feats_train=RealFeatures(fm_train_real)
@@ -30,10 +30,10 @@ def distance_director_euclidian_modular (fm_train_real=traindat,fm_test_real=tes
 	feats_train.parallel.set_num_threads(1)
 	feats_test=RealFeatures(fm_test_real)
 
-	distance=EuclidianDistance()
+	distance=EuclideanDistance()
 	distance.init(feats_train, feats_test)
 
-	ddistance=DirectorEuclidianDistance()
+	ddistance=DirectorEuclideanDistance()
 	ddistance.init(feats_train, feats_test)
 
 	print  "dm_train"
@@ -52,5 +52,5 @@ def distance_director_euclidian_modular (fm_train_real=traindat,fm_test_real=tes
 	return dm_train, ddm_train
 
 if __name__=='__main__':
-	print('DirectorEuclidianDistance')
-	distance_director_euclidian_modular(*parameter_list[0])
+	print('DirectorEuclideanDistance')
+	distance_director_euclidean_modular(*parameter_list[0])

@@ -2,7 +2,7 @@
 print Hierarchical
 
 set_features TRAIN  ../data/fm_train_real.dat
-set_distance EUCLIDIAN REAL
+set_distance EUCLIDEAN REAL
 new_clustering HIERARCHICAL
 
 train_clustering 3

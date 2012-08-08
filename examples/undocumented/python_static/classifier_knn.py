@@ -14,7 +14,7 @@ def classifier_knn (fm_train_real=traindat,fm_test_real=testdat,
 
 	sg('set_features', 'TRAIN', fm_train_real)
 	sg('set_labels', 'TRAIN', label_train_multiclass)
-	sg('set_distance', 'EUCLIDIAN', 'REAL')
+	sg('set_distance', 'EUCLIDEAN', 'REAL')
 	sg('new_classifier', 'KNN')
 	sg('train_classifier', k)
 

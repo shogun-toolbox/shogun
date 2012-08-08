@@ -9,7 +9,7 @@ fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 print('Distance')
 
 width=1.7
-dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
+dump <- sg('set_distance', 'EUCLIDEAN', 'REAL')
 dump <- sg('set_kernel', 'DISTANCE', size_cache, width)
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)

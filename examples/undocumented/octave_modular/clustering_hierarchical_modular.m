@@ -11,7 +11,7 @@ disp('Hierarchical')
 merges=4;
 feats_train=RealFeatures(fm_train);
 feats_test=RealFeatures(fm_train);
-distance=EuclidianDistance(feats_train, feats_train);
+distance=EuclideanDistance(feats_train, feats_train);
 
 hierarchical=Hierarchical(merges, distance);
 hierarchical.train();

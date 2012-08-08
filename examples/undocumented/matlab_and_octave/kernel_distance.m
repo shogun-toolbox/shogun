@@ -9,7 +9,7 @@ disp('Distance');
 
 width=1.7;
 
-sg('set_distance', 'EUCLIDIAN', 'REAL');
+sg('set_distance', 'EUCLIDEAN', 'REAL');
 sg('set_kernel', 'DISTANCE', size_cache, width);
 
 sg('set_features', 'TRAIN', fm_train_real);

@@ -9,11 +9,11 @@ parameter_list = [[traindat,testdat,label_traindat,3],[traindat,testdat,label_tr
 def classifier_knn_modular(fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat, k=3 ):
 	from shogun.Features import RealFeatures, MulticlassLabels
 	from shogun.Classifier import KNN
-	from shogun.Distance import EuclidianDistance
+	from shogun.Distance import EuclideanDistance
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
-	distance=EuclidianDistance(feats_train, feats_train)
+	distance=EuclideanDistance(feats_train, feats_train)
 
 
 	labels=MulticlassLabels(label_train_multiclass)
