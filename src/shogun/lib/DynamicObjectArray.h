@@ -313,7 +313,7 @@ class CDynamicObjectArray : public CSGObject
 		/** STD VECTOR compatible. Append array element to the end
 		 *  of array.
 		 *
-		 * @param element element to append
+		 * @param e element to append
 		 */
 		inline void push_back(CSGObject* e)
 		{
@@ -347,7 +347,7 @@ class CDynamicObjectArray : public CSGObject
 		/** find first occurence of array element and return its index
 		 * or -1 if not available
 		 *
-		 * @param element element to search for
+		 * @param elem element to search for
 		 * @return index of element or -1
 		 */
 		inline int32_t find_element(CSGObject* elem) const
