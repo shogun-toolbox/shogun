@@ -290,6 +290,8 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
 
 SGVector<float64_t> CHSIC::bootstrap_null()
 {
+	SG_DEBUG("entering CHSIC::bootstrap_null()\n");
+
 	/* replace current kernel via precomputed custom kernel and call superclass
 	 * method */
 
@@ -322,5 +324,7 @@ SGVector<float64_t> CHSIC::bootstrap_null()
 	SG_UNREF(precomputed_p);
 	SG_UNREF(precomputed_q);
 
+
+	SG_DEBUG("leaving CHSIC::bootstrap_null()\n");
 	return null_samples;
 }
