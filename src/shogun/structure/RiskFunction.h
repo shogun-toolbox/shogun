@@ -16,6 +16,11 @@
 namespace shogun
 {
 
+typedef struct {
+	uint32_t from;
+	uint32_t N;
+} TMultipleCPinfo;
+
 /** @brief Class CRiskFunction TODO
  *
  */
@@ -31,12 +36,36 @@ class CRiskFunction : public CSGObject
 		/** computes the value of the risk function and sub-gradient at given point
 		 *
 		 */
-		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W) = 0;
+		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0) = 0;
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "RiskFunction"; }
-
 }; /* CRiskFunction */
+
+/** @brief CRiskData TODO
+ *
+ */
+class CRiskData : public CSGObject
+{
+	public:
+		/** default constructor */
+		CRiskData();
+
+		/** constructor */
+		CRiskData(uint32_t w_dim, uint32_t nFeatures);
+
+		/** destructor */
+		virtual ~CRiskData();
+
+		/** @return name of SGSerializable */
+		virtual const char* get_name() const { return "RiskData"; }
+
+	public:
+		/** weight vector dimension */
+		uint32_t m_w_dim;
+		/** number of features */
+		uint32_t m_nFeatures;
+};
 
 }
 

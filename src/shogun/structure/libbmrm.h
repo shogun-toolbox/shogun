@@ -42,13 +42,6 @@ namespace shogun
 								   -2 .. not enough memory for the solver */
 	} bmrm_return_value_T;
 
-	/* BMRM input data */
-	typedef struct {
-		void*     X;     /* features */
-		void*     y;     /* labels */
-		uint32_t  w_dim; /* dimension of joint parameter vector w */
-	} bmrm_data_T;
-
 	/* Linked list for cutting planes buffer management */
 	typedef struct ll {
 		struct ll   *prev;
@@ -71,7 +64,7 @@ namespace shogun
 
 	/* Bundle Methods Solver for Structured Output Learning */
 	bmrm_return_value_T svm_bmrm_solver(
-			bmrm_data_T *data,
+			void        *data,
 			float64_t   *W,
 			float64_t   TolRel,
 			float64_t   TolAbs,

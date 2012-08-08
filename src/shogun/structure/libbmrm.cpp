@@ -83,7 +83,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 bmrm_return_value_T svm_bmrm_solver(
-		bmrm_data_T*    data,
+		void*           data,
 		float64_t*      W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
@@ -97,13 +97,13 @@ bmrm_return_value_T svm_bmrm_solver(
 		CRiskFunction*  risk_function)
 {
 	bmrm_return_value_T bmrm={0, 0, 0, 0, 0, 0, 0};
-	libqp_state_T qp_exitflag;
+	libqp_state_T qp_exitflag={0, 0, 0, 0};
 	float64_t *b, *beta, *diag_H;
 	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0;
 	floatmax_t rsum, sq_norm_W;
 	uint32_t *I, *ICPcounter, *ACPs, cntICP=0, cntACP=0;
 	uint8_t S=1;
-	uint32_t nDim=data->w_dim;
+	uint32_t nDim=((CRiskData*)data)->m_w_dim;
 	float64_t **ICPs;
 
 	CTime ttime;

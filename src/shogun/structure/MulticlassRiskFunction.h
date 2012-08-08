@@ -12,6 +12,8 @@
 #define _MULTICLASSRISK_FUNCITON__H__
 
 #include <shogun/structure/RiskFunction.h>
+#include <shogun/structure/MulticlassSOLabels.h>
+#include <shogun/features/DotFeatures.h>
 
 namespace shogun
 {
@@ -28,11 +30,35 @@ class CMulticlassRiskFunction : public CRiskFunction
 		/** destructor  */
 		~CMulticlassRiskFunction();
 
-		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W);
+		/** function computing risk and subgradient at given point W */
+		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
 
 		virtual const char* get_name() const { return "MulticlassRiskFunction"; }
 
 }; /* CMulticlassRiskFunction */
+
+/** @brief Class CMulticlassRiskData
+ *
+ */
+class CMulticlassRiskData : public CRiskData
+{
+	public:
+		/** default constructor */
+		CMulticlassRiskData();
+
+		/** constructor */
+		CMulticlassRiskData(CDotFeatures *X, CMulticlassSOLabels *y, uint32_t w_dim, uint32_t nFeatures);
+
+		/** destructor */
+		~CMulticlassRiskData();
+
+		/** @return name of SGSerializable */
+		virtual const char* get_name() const { return "MulticlassRiskData"; }
+
+	public:
+		CDotFeatures*           m_X;
+		CMulticlassSOLabels*    m_y;
+};
 
 }
 

@@ -24,7 +24,9 @@ enum ESolver
 	// standard bmrm
 	BMRM=1,
 	// prox-term (proximal point) bmrm
-	PPBMRM=2
+	PPBMRM=2,
+	// prox-term (proximal point) p-bmrm (multiple cutting plane models)
+	P3BMRM=3
 };
 
 class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
@@ -36,7 +38,8 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** standard constructor
 		 *
 		 */
-		CDualLibQPBMSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features, float64_t lambda, CRiskFunction* risk_function);
+		CDualLibQPBMSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features,
+				float64_t lambda, CRiskFunction* risk_function, CRiskData *risk_data, float64_t *W=0);
 
 		/** destructor */
 		~CDualLibQPBMSOSVM();
@@ -89,6 +92,12 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** get Tmax */
 		inline uint32_t get_Tmax() { return m_Tmax; }
 
+		/** set number of cutting plane models */
+		inline void set_nThreads(uint32_t nThreads) { m_nThreads=nThreads; }
+
+		/** get number of cutting plane models */
+		inline uint32_t get_nThreads() { return m_nThreads; }
+
 		/** set verbose */
 		inline void set_verbose(bool verbose) { m_verbose=verbose; }
 
@@ -111,6 +120,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		bool train_machine(CFeatures* data=NULL);
 
 	private:
+
+		/** risk user data */
+		CRiskData* m_risk_data;
 
 		/** lambda */
 		float64_t m_lambda;
@@ -135,6 +147,9 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** Tmax */
 		uint32_t m_Tmax;
+
+		/** number of cutting plane models */
+		uint32_t m_nThreads;
 
 		/** verbose */
 		bool m_verbose;
