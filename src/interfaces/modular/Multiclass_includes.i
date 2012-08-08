@@ -1,4 +1,14 @@
 %{
+ #include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
+ #include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+ #include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
+ #include <shogun/multiclass/tree/RelaxedTree.h>
+ #include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
+ #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
+ #include <shogun/multiclass/tree/TreeMachine.h>
+ #include <shogun/multiclass/tree/TreeMachineNode.h>
+ #include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+
  #include <shogun/multiclass/RejectionStrategy.h>
  #include <shogun/multiclass/MulticlassStrategy.h>
  #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>

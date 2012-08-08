@@ -9,6 +9,16 @@
  */
 
 /* Remove C Prefix */
+%rename(BalancedConditionalProbabilityTree) CBalancedConditionalProbabilityTree;
+%rename(ConditionalProbabilityTree) CConditionalProbabilityTree;
+%rename(RandomConditionalProbabilityTree) CRandomConditionalProbabilityTree;
+%rename(RelaxedTree) CRelaxedTree;
+%rename(RelaxedTreeNodeData) CRelaxedTreeNodeData;
+%rename(RelaxedTreeUtil) CRelaxedTreeUtil;
+%rename(TreeMachine) CTreeMachine;
+%rename(TreeMachineNode) CTreeMachineNode;
+%rename(VwConditionalProbabilityTree) VwConditionalProbabilityTree;
+
 %rename(RejectionStrategy) CRejectionStrategy;
 %rename(ThresholdRejectionStrategy) CThresholdRejectionStrategy;
 %rename(DixonQTestRejectionStrategy) CDixonQTestRejectionStrategy;
@@ -56,6 +66,16 @@
 %rename(ShareBoost) CShareBoost;
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
+%include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+%include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
+%include <shogun/multiclass/tree/RelaxedTree.h>
+%include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
+%include <shogun/multiclass/tree/RelaxedTreeUtil.h>
+%include <shogun/multiclass/tree/TreeMachine.h>
+%include <shogun/multiclass/tree/TreeMachineNode.h>
+%include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+
 %include <shogun/multiclass/RejectionStrategy.h>
 %include <shogun/multiclass/MulticlassStrategy.h>
 %include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
