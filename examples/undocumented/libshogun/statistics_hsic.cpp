@@ -89,12 +89,16 @@ void test_hsic_fixed()
 
 	index_t m=features_p->get_num_vectors();
 
+	/* unref features since convienience constructor is HSIC was used */
 	CHSIC* hsic=new CHSIC(kernel_p, kernel_q, features_p, features_q);
+	SG_UNREF(features_p);
+	SG_UNREF(features_q);
 
 	/* assert matlab result, note that compute statistic computes m*hsic */
 	float64_t difference=hsic->compute_statistic();
 	SG_SPRINT("hsic fixed: %f\n", difference);
 	ASSERT(CMath::abs(difference-m*0.164761446385339)<10E-16);
+
 
 	SG_UNREF(hsic);
 }
@@ -107,12 +111,53 @@ void test_hsic_gamma()
 	CKernel* kernel_q=NULL;
 	create_fixed_data_kernel_big(features_p, features_q, kernel_p, kernel_q);
 
+	/* unref features since convienience constructor is HSIC was used */
 	CHSIC* hsic=new CHSIC(kernel_p, kernel_q, features_p, features_q);
-	hsic->set_null_approximation_method(HSIC_GAMMA);
+	SG_UNREF(features_p);
+	SG_UNREF(features_q);
 
+	hsic->set_null_approximation_method(HSIC_GAMMA);
 	float64_t p=hsic->compute_p_value(0.05);
 	SG_SPRINT("p-value: %f\n", p);
 	ASSERT(CMath::abs(p-0.172182287884256)<10E-15);
+
+	SG_UNREF(hsic);
+}
+
+void test_hsic_bootstrap()
+{
+	CFeatures* features_p=NULL;
+	CFeatures* features_q=NULL;
+	CKernel* kernel_p=NULL;
+	CKernel* kernel_q=NULL;
+	create_fixed_data_kernel_big(features_p, features_q, kernel_p, kernel_q);
+
+	/* unref features since convienience constructor is HSIC was used */
+	CHSIC* hsic=new CHSIC(kernel_p, kernel_q, features_p, features_q);
+	SG_UNREF(features_p);
+	SG_UNREF(features_q);
+
+	/* do bootstrapping */
+	hsic->set_null_approximation_method(BOOTSTRAP);
+	float64_t p=hsic->compute_p_value(0.05);
+	SG_SPRINT("p-value: %f\n", p);
+
+	/* ensure that bootstrapping of hsic leads to same results as using
+	 * CKernelIndependenceTestStatistic */
+	CMath::init_random(1);
+	float64_t mean1=CStatistics::mean(hsic->bootstrap_null());
+	float64_t var1=CStatistics::variance(hsic->bootstrap_null());
+	SG_SPRINT("mean1=%f, var1=%f\n", mean1, var1);
+
+	CMath::init_random(1);
+	float64_t mean2=CStatistics::mean(
+			hsic->CKernelIndependenceTestStatistic::bootstrap_null());
+	float64_t var2=CStatistics::variance(hsic->bootstrap_null());
+	SG_SPRINT("mean2=%f, var2=%f\n", mean2, var2);
+
+	/* assert than results are the same from bot bootstrapping impl. */
+	ASSERT(CMath::abs(mean1-mean2)<10E-8);
+	ASSERT(CMath::abs(var1-var2)<10E-8);
 
 	SG_UNREF(hsic);
 }
@@ -125,6 +170,7 @@ int main(int argc, char** argv)
 
 	test_hsic_fixed();
 	test_hsic_gamma();
+	test_hsic_bootstrap();
 
 	exit_shogun();
 	return 0;
