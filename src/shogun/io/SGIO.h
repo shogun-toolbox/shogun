@@ -58,7 +58,12 @@ enum EMessageType
 #define FBUFSIZE 4096
 
 #ifdef DARWIN
+#include <Availability.h>
+#ifdef __MAC_10_8
+#define CONST_DIRENT_T const struct dirent
+#else
 #define CONST_DIRENT_T struct dirent
+#endif // Mountain Lion or earlier
 #else //DARWIN
 #define CONST_DIRENT_T const struct dirent
 #endif //DARWIN
