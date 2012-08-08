@@ -9,7 +9,7 @@ print('Distance')
 feats_train <- RealFeatures(fm_train_real)
 feats_test <- RealFeatures(fm_test_real)
 width <- 1.7
-distance <- EuclidianDistance()
+distance <- EuclideanDistance()
 
 kernel <- DistanceKernel(feats_train, feats_test, width, distance)
 

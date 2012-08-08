@@ -19,7 +19,7 @@ public class classifier_knn_modular {
 
 		RealFeatures feats_train = new RealFeatures(traindata_real);
 		RealFeatures feats_test = new RealFeatures(testdata_real);
-		EuclidianDistance distance = new EuclidianDistance(feats_train, feats_train);
+		EuclideanDistance distance = new EuclideanDistance(feats_train, feats_train);
 
 		MulticlassLabels labels = new MulticlassLabels(trainlab);
 

@@ -9,11 +9,11 @@ parameter_list = [[data]]
 def converter_multidimensionalscaling_modular(data):
 	from shogun.Features import RealFeatures
 	from shogun.Converter import MultidimensionalScaling
-	from shogun.Distance import EuclidianDistance
+	from shogun.Distance import EuclideanDistance
 	
 	features = RealFeatures(data)
 		
-	distance_before = EuclidianDistance()
+	distance_before = EuclideanDistance()
 	distance_before.init(features,features)
 
 	converter = MultidimensionalScaling()
@@ -21,7 +21,7 @@ def converter_multidimensionalscaling_modular(data):
 	converter.set_landmark(False)
 	embedding =converter.apply(features)
 
-	distance_after = EuclidianDistance()
+	distance_after = EuclideanDistance()
 	distance_after.init(embedding,embedding)
 
 	distance_matrix_after = distance_after.get_distance_matrix()

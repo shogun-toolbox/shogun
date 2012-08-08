@@ -7,13 +7,13 @@ parameter_list = [[traindat,3],[traindat,4]]
 
 def clustering_hierarchical_modular (fm_train=traindat,merges=3):
 
-	from shogun.Distance import EuclidianDistance
+	from shogun.Distance import EuclideanDistance
 	from shogun.Features import RealFeatures
 	from shogun.Clustering import Hierarchical
 
 
 	feats_train=RealFeatures(fm_train)
-	distance=EuclidianDistance(feats_train, feats_train)
+	distance=EuclideanDistance(feats_train, feats_train)
 
 	hierarchical=Hierarchical(merges, distance)
 	hierarchical.train()

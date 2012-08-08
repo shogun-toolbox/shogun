@@ -8,7 +8,7 @@ parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def distance_sparseeuclidean_modular (fm_train_real=traindat,fm_test_real=testdat):
 	from shogun.Features import RealFeatures, SparseRealFeatures
-	from shogun.Distance import SparseEuclidianDistance
+	from shogun.Distance import SparseEuclideanDistance
 
 	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()
@@ -17,7 +17,7 @@ def distance_sparseeuclidean_modular (fm_train_real=traindat,fm_test_real=testda
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
 
-	distance=SparseEuclidianDistance(feats_train, feats_train)
+	distance=SparseEuclideanDistance(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)
@@ -26,5 +26,5 @@ def distance_sparseeuclidean_modular (fm_train_real=traindat,fm_test_real=testda
 	return distance,dm_train,dm_test
 
 if __name__=='__main__':
-	print('SparseEuclidianDistance')
+	print('SparseEuclideanDistance')
 	distance_sparseeuclidean_modular(*parameter_list[0])

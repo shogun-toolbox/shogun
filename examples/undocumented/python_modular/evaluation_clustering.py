@@ -1,7 +1,7 @@
 ##!/usr/bin/env python
 # Example on how to evaluate the clustering performance (given ground-truth)
 
-from shogun.Distance import EuclidianDistance
+from shogun.Distance import EuclideanDistance
 from shogun.Features import RealFeatures
 from shogun.Features import MulticlassLabels
 from shogun.Evaluation import ClusteringAccuracy
@@ -37,7 +37,7 @@ def run_clustering(data, k):
 
     Math_init_random(42)
     fea = RealFeatures(data)
-    distance = EuclidianDistance(fea, fea)
+    distance = EuclideanDistance(fea, fea)
     kmeans=KMeans(k, distance)
 
     print("Running clustering...")
@@ -52,7 +52,7 @@ def assign_labels(data, centroids):
     labels = MulticlassLabels(arange(0.,10.))
     fea = RealFeatures(data)
     fea_centroids = RealFeatures(centroids)
-    distance = EuclidianDistance(fea_centroids, fea_centroids)
+    distance = EuclideanDistance(fea_centroids, fea_centroids)
     knn = KNN(1, distance, labels)
     knn.train()
     return knn.apply(fea)

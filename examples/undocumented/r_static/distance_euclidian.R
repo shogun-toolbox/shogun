@@ -3,10 +3,10 @@ library("sg")
 fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
 fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 
-# Euclidian Distance
-print('EuclidianDistance')
+# Euclidean Distance
+print('EuclideanDistance')
 
-dump <- sg('set_distance', 'EUCLIDIAN', 'REAL')
+dump <- sg('set_distance', 'EUCLIDEAN', 'REAL')
 
 dump <- sg('set_features', 'TRAIN', fm_train_real)
 dm <- sg('get_distance_matrix', 'TRAIN')

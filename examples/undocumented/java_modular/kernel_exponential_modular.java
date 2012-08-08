@@ -20,7 +20,7 @@ public class kernel_exponential_modular {
 		RealFeatures feats_train = new RealFeatures(traindata_real);
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 
-		EuclidianDistance distance = new EuclidianDistance(feats_train, feats_train);
+		EuclideanDistance distance = new EuclideanDistance(feats_train, feats_train);
 		ExponentialKernel kernel= new ExponentialKernel(feats_train, feats_train, tau_coef, distance, 10);
 
 		kernel.init(feats_train, feats_train);

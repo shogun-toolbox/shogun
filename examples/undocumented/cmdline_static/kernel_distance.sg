@@ -1,6 +1,6 @@
 % Distance
 print Distance
-set_distance EUCLIDIAN REAL
+set_distance EUCLIDEAN REAL
 set_kernel DISTANCE 10 1.7
 
 set_features TRAIN ../data/fm_train_real.dat

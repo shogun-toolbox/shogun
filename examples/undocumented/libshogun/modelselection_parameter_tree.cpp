@@ -16,7 +16,7 @@
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/distance/EuclidianDistance.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/kernel/DistantSegmentsKernel.h>
 #include <shogun/regression/gp/ExactInferenceMethod.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
@@ -172,7 +172,7 @@ CModelSelectionParameters* create_param_tree_3()
 			new CModelSelectionParameters("distance", metric);
 	param_power_kernel->append_child(param_power_kernel_metric);
 
-	CEuclidianDistance* euclidean=new CEuclidianDistance();
+	CEuclideanDistance* euclidean=new CEuclideanDistance();
 	CModelSelectionParameters* param_power_kernel_distance=
 			new CModelSelectionParameters("distance", euclidean);
 	param_power_kernel->append_child(param_power_kernel_distance);

@@ -9,7 +9,7 @@ print('KNN')
 
 feats_train <- RealFeatures(fm_train_real)
 feats_test <- RealFeatures(fm_test_real)
-distance <- EuclidianDistance()
+distance <- EuclideanDistance()
 
 k <- as.integer(3)
 num_threads <- as.integer(1)
