@@ -26,18 +26,6 @@ namespace shogun
 class CrossValidationResult : public CEvaluationResult
 {
 	public:
-		/** print result */
-		virtual void print_result()
-		{
-			if (has_conf_int)
-			{
-				SG_SPRINT("[%f,%f] with alpha=%f, mean=%f\n", conf_int_low,
-						conf_int_up, conf_int_alpha, mean);
-			}
-			else
-				SG_SPRINT("%f\n", mean);
-		}
-
 		CrossValidationResult()
 		{
 			mean = 0;
@@ -45,12 +33,6 @@ class CrossValidationResult : public CEvaluationResult
 			conf_int_low = 0;
 			conf_int_up = 0;
 			conf_int_alpha = 0;
-		}
-
-		/** get mean evaluation result */
-		float64_t get_mean() const
-		{
-			return mean;
 		}
 
 		/** return what type of result we are.
@@ -70,6 +52,17 @@ class CrossValidationResult : public CEvaluationResult
 		 */
 		virtual const char* get_name() const { return "CrossValidationResult"; }
 
+		/** print result */
+		virtual void print_result()
+		{
+			if (has_conf_int)
+			{
+				SG_SPRINT("[%f,%f] with alpha=%f, mean=%f\n", conf_int_low,
+						conf_int_up, conf_int_alpha, mean);
+			}
+			else
+				SG_SPRINT("%f\n", mean);
+		}
 
 	public:
 		/** mean */
