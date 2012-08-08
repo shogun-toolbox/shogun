@@ -51,9 +51,9 @@ template <class T> class CDynamicArray :public CSGObject
 
 		/** constructor
 		 *
-		 * @param dim1 dimension 1
-		 * @param dim2 dimension 2
-		 * @param dim3 dimension 3
+		 * @param p_dim1_size dimension 1
+		 * @param p_dim2_size dimension 2
+		 * @param p_dim3_size dimension 3
 		 */
 		CDynamicArray(int32_t p_dim1_size, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
 		: CSGObject(), m_array(p_dim1_size*p_dim2_size*p_dim3_size), name("Array")
@@ -368,7 +368,7 @@ template <class T> class CDynamicArray :public CSGObject
 		/** insert array element at index
 		 *
 		 * @param e element to insert
-		 * @param indx index
+		 * @param index index
 		 * @return if setting was successful
 		 */
 		inline bool insert_element(T e, int32_t index)
@@ -389,7 +389,7 @@ template <class T> class CDynamicArray :public CSGObject
 		/** STD VECTOR compatible. Append array element to the end
 		 *  of array.
 		 *
-		 * @param element element to append
+		 * @param e element to append
 		 */
 		inline void push_back(T e)
 		{ m_array.push_back(e); }

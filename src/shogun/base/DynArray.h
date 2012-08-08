@@ -382,17 +382,17 @@ template <class T> class DynArray
 		 *
 		 * @param p_array new array
 		 * @param p_num_elements last element index + 1
-		 * @param array_size number of elements in array
+		 * @param p_array_size number of elements in array
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
 		inline void set_array(T* p_array, int32_t p_num_elements,
-							  int32_t p_array_size, bool p_free_array, bool copy_array)
+				int32_t p_array_size, bool p_free_array, bool p_copy_array)
 		{
 			if (array!=NULL && free_array)
 				SG_FREE(array);
 
-			if (copy_array)
+			if (p_copy_array)
 			{
 				if (use_sg_mallocs)
 					array=SG_MALLOC(T, p_array_size);
@@ -412,7 +412,7 @@ template <class T> class DynArray
 		 *
 		 * @param p_array new array
 		 * @param p_num_elements last element index + 1
-		 * @param array_size number of elements in array
+		 * @param p_array_size number of elements in array
 		 */
 		inline void set_array(const T* p_array, int32_t p_num_elements,
 							  int32_t p_array_size)

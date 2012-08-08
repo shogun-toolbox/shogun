@@ -147,7 +147,6 @@ class CStructuredModel : public CSGObject
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *
-		 * @param labels true labels
 		 * @param ytrue_idx index of the true label in labels
 		 * @param ypred the predicted label
 		 *
