@@ -20,7 +20,7 @@ class CKernel;
 
 /** @brief Two sample test base class. Provides an interface for performing a
  * two-sample test, i.e. Given samples from two distributions \f$p\f$ and
- * \fq\f$, the null-hypothesis is: \f$H_0: p=q\f$, the alternative hypothesis:
+ * \f$q\f$, the null-hypothesis is: \f$H_0: p=q\f$, the alternative hypothesis:
  * \f$H_1: p\neq q\f$.
  *
  * In this class, this is done using a single kernel for the data.
