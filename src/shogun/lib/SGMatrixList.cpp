@@ -1,0 +1,100 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2012 Fernando José Iglesias García
+ * Copyright (C) 2012 Fernando José Iglesias García
+ */
+
+#include <shogun/lib/SGMatrixList.h>
+
+namespace shogun {
+
+template <class T>
+SGMatrixList<T>::SGMatrixList() : SGReferencedData(false)
+{
+	init_data();
+}
+
+template <class T>
+SGMatrixList<T>::SGMatrixList(SGMatrix<T>* ml, int32_t nmats, bool ref_counting)
+: SGReferencedData(ref_counting), matrix_list(ml), num_matrices(nmats)
+{
+}
+
+template <class T>
+SGMatrixList<T>::SGMatrixList(int32_t nmats, bool ref_counting)
+: SGReferencedData(ref_counting), num_matrices(nmats)
+{
+	matrix_list = SG_MALLOC(SGMatrix<T>, nmats);
+	// Call to SGMatrix default constructor in-place
+	for ( int32_t i = 0 ; i < nmats ; ++i )
+		new (&matrix_list[i]) SGMatrix<T>();
+}
+
+template <class T>
+SGMatrixList<T>::SGMatrixList(SGMatrixList const & orig) : SGReferencedData(orig)
+{
+	copy_data(orig);
+}
+
+template <class T>
+SGMatrixList<T>::~SGMatrixList()
+{
+	unref();
+}
+
+template <class T>
+void SGMatrixList<T>::copy_data(SGReferencedData const & orig)
+{
+	matrix_list  = ((SGMatrixList*) (&orig))->matrix_list;
+	num_matrices = ((SGMatrixList*) (&orig))->num_matrices;
+}
+
+template <class T>
+void SGMatrixList<T>::init_data()
+{
+	matrix_list  = NULL;
+	num_matrices = 0;
+}
+
+template <class T>
+void SGMatrixList<T>::free_data()
+{
+	cleanup_matrices();
+	SG_FREE(matrix_list);
+	num_matrices = 0;
+	matrix_list = NULL;
+}
+
+template <class T>
+void SGMatrixList<T>::cleanup_matrices()
+{
+	if ( matrix_list && num_matrices )
+	{
+		for ( int32_t i = 0 ; i < num_matrices ; ++i )
+		{
+			// Explicit call to the destructor required
+			// due to the use of in-place constructors
+			matrix_list[i].~SGMatrix();
+		}
+	}
+}
+
+template class SGMatrixList<bool>;
+template class SGMatrixList<char>;
+template class SGMatrixList<int8_t>;
+template class SGMatrixList<uint8_t>;
+template class SGMatrixList<int16_t>;
+template class SGMatrixList<uint16_t>;
+template class SGMatrixList<int32_t>;
+template class SGMatrixList<uint32_t>;
+template class SGMatrixList<int64_t>;
+template class SGMatrixList<uint64_t>;
+template class SGMatrixList<float32_t>;
+template class SGMatrixList<float64_t>;
+template class SGMatrixList<floatmax_t>;
+
+} /* namespace shogun */
