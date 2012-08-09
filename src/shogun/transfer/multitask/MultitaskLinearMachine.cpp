@@ -190,7 +190,6 @@ SGVector<float64_t> CMultitaskLinearMachine::apply_get_outputs(CFeatures* data)
 SGVector<float64_t> CMultitaskLinearMachine::get_w() const
 {
 	SGVector<float64_t> w_(m_tasks_w.num_rows);
-	int32_t nnz = 0;
 	for (int32_t i=0; i<w_.vlen; i++)
 		w_[i] = m_tasks_w(i,m_current_task);
 	return w_;
