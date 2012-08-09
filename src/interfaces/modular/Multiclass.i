@@ -67,13 +67,14 @@
 %include <shogun/machine/BaseMulticlassMachine.h>
 %include <shogun/multiclass/tree/TreeMachine.h>
 %include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
-%include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+%include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>
 namespace shogun
 {
     %template(TreeMachineWithConditionalProbabilityTreeNodeData) CTreeMachine<ConditionalProbabilityTreeNodeData>;
     %template(TreeMachineWithRelaxedTreeNodeData) CTreeMachine<RelaxedTreeNodeData>;
 }
 
+%include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RelaxedTree.h>
