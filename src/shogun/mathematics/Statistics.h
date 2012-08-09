@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  *
  * ALGLIB Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier under GPL2+
@@ -25,21 +25,25 @@ namespace shogun
 template<class T> class SGMatrix;
 
 /** @brief Class that contains certain functions related to statistics, such as
- * the student's t distribution.
+ * probability/cumulative distribution functions, different statistics, etc.
  */
 class CStatistics: public CSGObject
 {
 
 public:
 
-	/** Calculates mean of given values
+	/** Calculates mean of given values. Given \f$\{x_1, ..., x_m\}\f$, this
+	 * is \f$\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
 	 * @param values vector of values
-	 * @return variance of given values
+	 * @return mean of given values
 	 */
 	static float64_t mean(SGVector<float64_t> values);
 
-	/** Calculates variance of given values
+	/** Calculates unbiased empirical variance estimator of given values. Given
+	 * \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
 	 * @param values vector of values
 	 * @return variance of given values
@@ -50,10 +54,12 @@ public:
 	/** Computes the empirical estimate of the covariance matrix of the given
 	 * data which is organized as num_cols variables with num_rows observations.
 	 *
-	 * TODO latex
-	 *
 	 * Data is centered before matrix is computed. May be done in place.
 	 * In this case, the observation matrix is changed (centered).
+	 *
+	 * Given sample matrix \f$X\f$, first, column mean is removed to create
+	 * \f$\bar X\f$. Then \f$\text{cov}(X)=(X-\bar X)^T(X - \bar X)\f$ is
+	 * returned.
 	 *
 	 * Needs SHOGUN to be compiled with LAPACK.
 	 *
@@ -66,10 +72,13 @@ public:
 			SGMatrix<float64_t> observations, bool in_place=false);
 #endif //HAVE_LAPACK
 
-	/** Calculates standard deviation of given values
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
 	 * @param values vector of values
-	 * @return standard deviation of given values
+	 * @return variance of given values
 	 */
 	static float64_t std_deviation(SGVector<float64_t> values);
 
@@ -92,8 +101,8 @@ public:
 
 	/** Functional inverse of Student's t distribution
 	 *
-	 * Given probability p, finds the argument t such that stdtr(k,t)
-	 * is equal to p.
+	 * Given probability \f$p\f$, finds the argument \f$t\f$ such that
+	 * \f$\text{student\_t}(k,t)=p\f$
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
@@ -101,12 +110,12 @@ public:
 
 	/** Inverse of imcomplete beta integral
 	 *
-	 * Given y, the function finds x such that
+	 * Given \f$y\f$, the function finds \f$x\f$ such that
 	 *
-	 * incbet( a, b, x ) = y .
+	 * \f$\text{inverse\_incomplete\_beta}( a, b, x ) = y .\f$
 	 *
 	 * The routine performs interval halving or Newton iterations to find the
-	 * root of incbet(a,b,x) - y = 0.
+	 * root of \f$\text{inverse\_incomplete\_beta}( a, b, x )-y=0.\f$
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
@@ -116,24 +125,22 @@ public:
 	/** Incomplete beta integral
 	 *
 	 * Returns incomplete beta integral of the arguments, evaluated
-	 * from zero to x.  The function is defined as
-	 *                  x
-	 *     -            -
-	 *    | (a+b)      | |  a-1     b-1
-	 *  -----------    |   t   (1-t)   dt.
-	 *   -     -     | |
-	 *  | (a) | (b)   -
-	 *                 0
+	 * from zero to \f$x\f$.  The function is defined as
+	 * \f[
+	 * \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)}\int_0^x t^{a-1} (1-t)^{b-1} dt.
+	 * \f]
 	 *
-	 * The domain of definition is 0 <= x <= 1.  In this
-	 * implementation a and b are restricted to positive values.
-	 * The integral from x to 1 may be obtained by the symmetry
+	 * The domain of definition is \f$0 \leq x \leq 1\f$.  In this
+	 * implementation \f$a\f$ and \f$b\f$ are restricted to positive values.
+	 * The integral from \f$x\f$ to \f$1\f$ may be obtained by the symmetry
 	 * relation
 	 *
-	 *    1 - incbet( a, b, x )  =  incbet( b, a, 1-x ).
+	 * \f[
+	 * 1-\text{incomplete\_beta}(a,b,x)=\text{incomplete\_beta}(b,a,1-x).
+	 * \f]
 	 *
 	 * The integral is evaluated by a continued fraction expansion
-	 * or, when b*x is small, by a power series.
+	 * or, when \f$b\cdot x\f$ is small, by a power series.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
@@ -141,17 +148,17 @@ public:
 
 	/** Inverse of Normal distribution function
 	 *
-	 * Returns the argument, x, for which the area under the
+	 * Returns the argument, \f$x\f$, for which the area under the
 	 * Gaussian probability density function (integrated from
-	 * minus infinity to x) is equal to y.
+	 * minus infinity to \f$x\f$) is equal to \f$y\f$.
 	 *
 	 *
-	 * For small arguments 0 < y < exp(-2), the program computes
-	 * z = sqrt( -2.0 * log(y) );  then the approximation is
-	 * x = z - log(z)/z  - (1/z) P(1/z) / Q(1/z).
-	 * There are two rational functions P/Q, one for 0 < y < exp(-32)
-	 * and the other for y up to exp(-2).  For larger arguments,
-	 * w = y - 0.5, and  x/sqrt(2pi) = w + w**3 R(w**2)/S(w**2)).
+	 * For small arguments \f$0 < y < \exp(-2)\f$, the program computes
+	 * \f$z = \sqrt{ -2.0  \log(y) }\f$;  then the approximation is
+	 * \f$x = z - \frac{log(z)}{z}  - \frac{1}{z} \frac{P(\frac{1}{z})}{ Q(\frac{1}{z}}\f$.
+	 * There are two rational functions \f$\frac{P}{Q}\f$, one for \f$0 < y < \exp(-32)\f$
+	 * and the other for \f$y\f$ up to \f$\exp(-2)\f$.  For larger arguments,
+	 * \f$w = y - 0.5\f$, and  \f$\frac{x}{\sqrt{2\pi}} = w + w^3 R(\frac{w^2)}{S(w^2)})\f$.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
@@ -167,6 +174,8 @@ public:
 		return ::lgamma((double) x);
 	}
 
+	/** @return natural logarithm of the gamma function of input for large
+	 * numbers */
 	static inline floatmax_t lgammal(floatmax_t x)
 	{
 #ifdef HAVE_LGAMMAL
@@ -184,23 +193,17 @@ public:
 
 	/** Incomplete gamma integral
 	 *
-	 * Given p, the function finds x such that
+	 * Given \f$p\f$, the function finds \f$x\f$ such that
 	 *
-	 * The function is defined by
-	 *
-	 *                           x
-	 *                            -
-	 *                   1       | |  -t  a-1
-	 *  igam(a,x)  =   -----     |   e   t   dt.
-	 *                  -      | |
-	 *                 | (a)    -
-	 *                           0
+	 * \f[
+	 * \text{incomplete\_gamma}(a,x)=\frac{1}{\Gamma(a)}}\int_0^x e^{-t} t^{a-1} dt.
+	 * \f]
 	 *
 	 *
 	 * In this implementation both arguments must be positive.
 	 * The integral is evaluated by either a power series or
 	 * continued fraction expansion, depending on the relative
-	 * values of a and x.
+	 * values of \f$a\f$ and \f$x\f$.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
@@ -251,7 +254,7 @@ public:
 	 */
 	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
 
-	/* Inverse of complemented imcomplete gamma integral
+	/** Inverse of complemented imcomplete gamma integral
 	 *
 	 * Given p, the function finds x such that
 	 *
