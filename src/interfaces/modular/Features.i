@@ -33,6 +33,7 @@
 
 #ifndef SWIGPYTHON
 #define PYPROTO_DENSEFEATURES(class_name, type_name, format_str, typecode)
+#define PYPROTO_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
 #endif
 
 /* Remove C Prefix */
@@ -52,7 +53,10 @@
 %rename(DenseLabels) CDenseLabels;
 %rename(BinaryLabels) CBinaryLabels;
 %rename(MulticlassLabels) CMulticlassLabels;
+
+PYPROTO_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(RegressionLabels) CRegressionLabels;
+
 %rename(StructuredLabels) CStructuredLabels;
 %rename(MulticlassMultipleOutputLabels) CMulticlassMultipleOutputLabels;
 %rename(RealFileFeatures) CRealFileFeatures;

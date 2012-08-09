@@ -1,6 +1,13 @@
 /* Helper functions */
 %wrapper
 %{
+
+struct buffer_info
+{
+	Py_ssize_t* shape;
+	Py_ssize_t* strides;
+};
+
 void get_slice_in_bounds(Py_ssize_t* ilow, Py_ssize_t* ihigh, Py_ssize_t max_idx)
 {
 	if (*ilow<0)

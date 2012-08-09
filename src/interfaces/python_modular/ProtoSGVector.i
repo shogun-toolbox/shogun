@@ -42,6 +42,9 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	}
 
 	res3 = PyObject_GetBuffer(o2, &view, PyBUF_F_CONTIGUOUS | PyBUF_ND | PyBUF_STRIDES | 0);
+
+	printf("inplace %p %d\n", &view, view.ndim);
+
 	if (res3 != 0 || view.buf==NULL)
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1), "bad buffer");
@@ -50,25 +53,25 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	// checking that buffer is right
 	if (view.ndim != 1)
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "same dimension is needed");
+		SWIG_exception_fail(SWIG_ArgError(res1), "wrong dimension");
 	}
 
 	if (view.itemsize != sizeof(type_name))
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "same type is needed");
+		SWIG_exception_fail(SWIG_ArgError(res1), "wrong type");
 	}
 
 	if (view.shape == NULL)
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "same shape is needed");
+		SWIG_exception_fail(SWIG_ArgError(res1), "wrong shape");
 	}
 
 	shape[0] = view.shape[0];
 	if (shape[0] != arg1->vlen)
-		SWIG_exception_fail(SWIG_ArgError(res1), "same size is needed");
+		SWIG_exception_fail(SWIG_ArgError(res1), "wrong size");
 
 	if (view.len != shape[0]*view.itemsize)
-		SWIG_exception_fail(SWIG_ArgError(res1), "bad buffer length");
+		SWIG_exception_fail(SWIG_ArgError(res1), "bad buffer");
 
 	// result calculation
 	lhs=arg1->vector;
@@ -107,8 +110,8 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 	int res1=0; // result for self's casting
 
 	int vlen=0;
-	Py_ssize_t* shape;
-	Py_ssize_t* strides;
+	Py_ssize_t* shape=NULL;
+	Py_ssize_t* strides=NULL;
 
 	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
@@ -158,20 +161,27 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 	view->obj=(PyObject*) self;
 	Py_INCREF(self);
 
+	printf("getbuffer %p %p %p %p %p\n", self, view, view->obj, view->shape, view->strides, view->ndim);
+
 	return 0;
 
 fail:
+	view->obj=NULL;
 	return -1;
 }
 
 /* used by PyBuffer_Release */
-static void class_name ## _releasebuffer(PyObject *exporter, Py_buffer *view)
+static void class_name ## _releasebuffer(PyObject *self, Py_buffer *view)
 {
-	if (view->shape!=NULL)
-		delete[] view->shape;
+	printf("releasebuffer %p %p %p %p %p\n", self, view, view->obj, view->shape, view->strides);
+	if (view->obj!=NULL)
+	{
+		if (view->shape!=NULL)
+			delete[] view->shape;
 
-	if (view->strides!=NULL)
-		delete[] view->strides;
+		if (view->strides!=NULL)
+			delete[] view->strides;
+	}	
 }
 
 /* used by PySequence_GetItem */
@@ -202,7 +212,7 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx, bool get
 	vlen=arg1->vlen;
 
 	shape=new Py_ssize_t[1];
-	shape[0]=0;
+	shape[0]=1;
 
 	strides=new Py_ssize_t[1];
 	strides[0]=sizeof( type_name );

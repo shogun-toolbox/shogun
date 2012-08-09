@@ -18,7 +18,7 @@
  */
 
 %include "ProtoDenseFeatures.i"
-%include "ProtoSGVector.i"
+%include "ProtoDenseLabels.i"
 
 #ifdef HAVE_PYTHON
 %{
