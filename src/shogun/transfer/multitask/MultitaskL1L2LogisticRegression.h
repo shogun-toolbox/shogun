@@ -14,7 +14,11 @@
 
 namespace shogun
 {
-/** @brief  */
+/** @brief class MultitaskL1L2LogisticRegression, a classifier for multitask problems. 
+ * Supports only task group relations. Based on solver ported from the MALSAR library.
+ *
+ * @see CTaskGroup
+ * */
 class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 {
 
@@ -26,8 +30,8 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 
 		/** constructor
 		 *
-		 * @param rho1 rho1 regularization coefficient
-		 * @param rho2 rho2 regularization coefficient
+		 * @param rho1 rho1 regularization coefficient of L1/L2 term
+		 * @param rho2 rho2 regularization coefficient of L2 term
 		 * @param training_data training features
 		 * @param training_labels training labels
 		 * @param task_relation task relation
@@ -39,17 +43,30 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 		/** destructor */
 		virtual ~CMultitaskL1L2LogisticRegression();
 
-		/** set rho1
+		/** set rho1 regularization coefficient
 		 * @param rho1 value
 		 */
 		void set_rho1(float64_t rho1); 
-		
-		/** set rho1
+
+		/** get rho1 regularization coefficient
+		 * @param rho1 value
+		 */
+		float64_t get_rho1() const; 
+
+		/** set rho2 regularization coefficient
 		 * @param rho2 value
 		 */
 		void set_rho2(float64_t rho2); 
 
-		/** get name */
+		/** get rho2 regularization coefficient
+		 * @return rho2 value
+		 */
+		float64_t get_rho2() const; 
+
+		/** get name 
+		 * 
+		 * @return name of the object
+		 */
 		virtual const char* get_name() const 
 		{
 			return "MultitaskL1L2LogisticRegression";
@@ -57,22 +74,29 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 
 	private:
 
+		/** init */
 		void init();
 
 	protected:
 
-		/** train machine */
+		/** train machine
+		 *
+		 * @param data features to use for training
+		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 		
-		/** train locked implementation */
+		/** train locked implementation 
+		 *
+		 * @param tasks array of tasks indices
+		 */
 		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
 
 	protected:
 
-		/** rho1 */
+		/** rho1, regularization coefficient of L1/L2 term */
 		float64_t m_rho1;
 		
-		/** rho2 */
+		/** rho2, regularization coefficient of L2 term */
 		float64_t m_rho2;
 
 };

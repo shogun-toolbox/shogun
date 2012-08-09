@@ -14,7 +14,11 @@
 
 namespace shogun
 {
-/** @brief  */
+/** @brief class MultitaskTraceLogisticRegression, a classifier for multitask problems.
+ * Supports only task group relations. Based on solver ported from the MALSAR library.
+ *
+ * @see CTaskGroup
+ */
 class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 {
 
@@ -41,9 +45,17 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 		/** set rho
 		 * @param rho value
 		 */
-		void set_rho(float64_t rho); 
+		void set_rho(float64_t rho);
+
+		/** get rho
+		 * @return rho value
+		 */
+		float64_t get_rho() const;
 		
-		/** get name */
+		/** get name
+		 *
+		 * @return name of the object
+		 */
 		virtual const char* get_name() const 
 		{
 			return "MultitaskTraceLogisticRegression";
@@ -51,6 +63,7 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 
 	private:
 
+		/** init */
 		void init();
 
 	protected:

@@ -47,6 +47,16 @@ void CMultitaskL1L2LogisticRegression::set_rho2(float64_t rho2)
 	m_rho2 = rho2;
 }
 
+float64_t CMultitaskL1L2LogisticRegression::get_rho1() const
+{
+	return m_rho1;
+}
+
+float64_t CMultitaskL1L2LogisticRegression::get_rho2() const
+{
+	return m_rho2;
+}
+
 CMultitaskL1L2LogisticRegression::~CMultitaskL1L2LogisticRegression()
 {
 }

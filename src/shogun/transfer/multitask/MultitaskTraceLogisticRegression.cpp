@@ -41,6 +41,11 @@ void CMultitaskTraceLogisticRegression::set_rho(float64_t rho)
 	m_rho = rho;
 }
 
+float64_t CMultitaskTraceLogisticRegression::get_rho() const
+{
+	return m_rho;
+}
+
 CMultitaskTraceLogisticRegression::~CMultitaskTraceLogisticRegression()
 {
 }

@@ -14,7 +14,12 @@
 
 namespace shogun
 {
-/** @brief  */
+/** @brief class MultitaskClusteredLogisticRegression, a classifier for multitask problems. 
+ * Supports only task group relations. Based on solver ported from the MALSAR library.
+ * Assumes task in group are related with a clustered structure.
+ *
+ * @see CTaskGroup
+ */
 class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegression
 {
 
@@ -41,28 +46,41 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		/** destructor */
 		virtual ~CMultitaskClusteredLogisticRegression();
 
-		/** get rho1
+		/** get rho1 regularization coefficient
+		 *
+		 * @return rho1 value
 		 */
 		int32_t get_rho1() const; 
+
 		/** set rho1
 		 * @param rho1 value
 		 */
 		void set_rho1(float64_t rho1); 
+
 		/** get rho1
 		 */
 		int32_t get_rho2() const;
+
 		/** set rho1
 		 * @param rho2 value
 		 */
 		void set_rho2(float64_t rho2);
-		/** get num clusters */
+
+		/** get number of clusters 
+		 *
+		 * @return number of clusters 
+		 */
 		int32_t get_num_clusters() const;
-		/** set num clusters
+
+		/** set number of clusters
 		 * @param num_clusters number of clusters
 		 */
 		void set_num_clusters(int32_t num_clusters);
 
-		/** get name */
+		/** get name
+		 *
+		 * @return name of the object
+		 */
 		virtual const char* get_name() const 
 		{
 			return "MultitaskClusteredLogisticRegression";
@@ -70,10 +88,16 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 
 	protected:
 
-		/** train machine */
+		/** train machine
+		 *
+		 * @param data features to use for training
+		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 		
-		/** train locked implementation */
+		/** train locked implementation 
+		 *
+		 * @param tasks array of tasks indices
+		 */
 		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
 
 	protected:
@@ -84,7 +108,7 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		/** rho2 */
 		float64_t m_rho2;
 
-		/** num clusters */
+		/** number of clusters */
 		int32_t m_num_clusters;
 };
 }
