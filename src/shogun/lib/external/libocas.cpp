@@ -496,7 +496,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1;
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2;
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3;
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
+    if( MaxTime > 0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
 
   } /* end of the main loop */
@@ -563,6 +563,7 @@ ocas_return_value_T svm_ocas_solver(
   ocas.add_time = 0;
   ocas.w_time = 0;
   ocas.print_time = 0;
+  float64_t gap;
 
   BufSize = _BufSize;
 
@@ -687,11 +688,14 @@ ocas_return_value_T svm_ocas_solver(
   for(i=0; i < nData; i++)
     new_cut[i] = i;
 
+	gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
+	SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6);
+
   ocas.trn_err = nData;
   ocas.ocas_time = get_time() - ocas_start_time;
   /*  ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f\n",
           ocas.nIter,cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P));
-  */ 
+  */
   ocas_print(ocas);
 
   /* main loop */
@@ -754,6 +758,8 @@ ocas_return_value_T svm_ocas_solver(
           goto cleanup;
         }
         ocas.output_time += get_time()-start_time;
+				gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
+        SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6);
 
         xi = 0;
         cut_length = 0;
@@ -919,7 +925,7 @@ ocas_return_value_T svm_ocas_solver(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1;
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2;
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3;
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
+    if( MaxTime > 0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
 
   } /* end of the main loop */
@@ -1366,7 +1372,7 @@ ocas_return_value_T svm_ocas_solver_difC(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1;
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2;
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3;
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
+    if( MaxTime > 0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
 
   } /* end of the main loop */
@@ -1934,7 +1940,7 @@ ocas_return_value_T msvm_ocas_solver(
     if( ocas.Q_P - ocas.Q_D <= TolRel*LIBOCAS_ABS(ocas.Q_P)) ocas.exitflag = 1;
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2;
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3;
-    if( ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
+    if( MaxTime > 0 && ocas.ocas_time >= MaxTime) ocas.exitflag = 4;
     if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
 
   } /* end of the main loop */
