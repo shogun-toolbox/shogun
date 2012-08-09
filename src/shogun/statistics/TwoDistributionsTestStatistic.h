@@ -48,7 +48,6 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 * element and then calls the other constructor. Needs twice the memory
 		 * for a short time
 		 *
-		 * @param kernel kernel for MMD
 		 * @param p samples from distribution p, will be copied and NOT
 		 * SG_REF'ed
 		 * @param q samples from distribution q, will be copied and NOT
