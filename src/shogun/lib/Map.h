@@ -276,7 +276,7 @@ public:
 		return array->get_array();
 		}
 
-	/*Assignment operator that copies map*/
+	/** assignment operator that copies map */
 	CMap& operator =(const CMap& orig)
 	{
 
@@ -477,6 +477,7 @@ protected:
 	DynArray<CMapNode<K, T>*>* array;
 
 #ifdef HAVE_PTHREAD
+	/** lock */
 	PTHREAD_LOCK_T lock;
 #endif
 };

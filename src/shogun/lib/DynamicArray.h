@@ -624,7 +624,7 @@ template <class T> class CDynamicArray :public CSGObject
 				}
 		}
 	
-		/* display array's size */
+		/** display array's size */
 		inline void display_size()
 		{
 			SG_PRINT( "DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);

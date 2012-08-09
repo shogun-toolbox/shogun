@@ -157,6 +157,11 @@ class CLinearMachine : public CMachine
 
 	protected:
 
+		/** apply get outputs
+		 * 
+		 * @param data features to compute outputs
+		 * @return outputs
+		 */
 		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
 		/** Stores feature data of underlying model. Does nothing because

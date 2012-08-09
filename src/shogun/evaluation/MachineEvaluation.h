@@ -90,10 +90,15 @@ protected:
 	virtual void init();
 
 protected:
+	/** machine */
 	CMachine* m_machine;
+	/** features */
 	CFeatures* m_features;
+	/** labels */
 	CLabels* m_labels;
+	/** splitting strategy */
 	CSplittingStrategy* m_splitting_strategy;
+	/** evaluation criterion */
 	CEvaluation* m_evaluation_criterion;
 
 	/** whether machine will automatically be locked before evaluation */

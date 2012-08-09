@@ -158,6 +158,7 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void add(const T x);
 
+		/** addition operator */
 		SGVector<T> operator+ (SGVector<T> x)
 		{
 			ASSERT(x.vector && vector);
@@ -168,17 +169,18 @@ template<class T> class SGVector : public SGReferencedData
 			return result;
 		}
 
+		/** inplace addition operator */
 		SGVector<T> operator+= (SGVector<T> x)
 		{
 			add(x);
 			return *this;
 		}
 
+		/** permute vector */
 		static void permute_vector(SGVector<T> vec);
 
 		/** create a random permutation in place */
 		void permute();
-
 
 		/** resize array from old_size to new_size (keeping as much array
 		 * content as possible intact)
@@ -454,8 +456,9 @@ template<class T> class SGVector : public SGReferencedData
 		/// return sum(abs(vec))
 		static bool fequal(T x, T y, float64_t precision=1e-6);
 
-		/* performs a inplace unique of a vector of type T using quicksort
-		 * returns the new number of elements */
+		/** performs a inplace unique of a vector of type T using quicksort
+		 * returns the new number of elements 
+		 */
 		static int32_t unique(T* output, int32_t size);
 
 		/** display array size */
@@ -498,8 +501,10 @@ template<class T> class SGVector : public SGReferencedData
 		/** Helper functor for the function sorted_index */
 		struct IndexSorter
 		{
+			/** constructor */
 			IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
 
+			/** access operator */
 			bool operator() (index_t i, index_t j) const
 			{
 				return data[i] < data[j];

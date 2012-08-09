@@ -243,9 +243,13 @@ class CMachine : public CSGObject
 		 */
 		virtual CLabels* apply_locked(SGVector<index_t> indices);
 
-		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
+		/** applies a locked machine on a set of indices for binary problems */
+		virtual CBinaryLabels* apply_locked_binary(
+				SGVector<index_t> indices);
+		/** applies a locked machine on a set of indices for regression problems */
 		virtual CRegressionLabels* apply_locked_regression(
 				SGVector<index_t> indices);
+		/** applies a locked machine on a set of indices for multiclass problems */
 		virtual CMulticlassLabels* apply_locked_multiclass(
 				SGVector<index_t> indices);
 
@@ -333,6 +337,7 @@ class CMachine : public CSGObject
 			return true;
 		}
 
+		/** returns whether machine require labels for training */
 		virtual bool train_require_labels() const { return true; }
 
 	protected:

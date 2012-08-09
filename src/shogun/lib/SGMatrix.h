@@ -126,9 +126,11 @@ template<class T> class SGMatrix : public SGReferencedData
 			return result;
 		}
 
+		/** transpose matrix */
 		static void transpose_matrix(
 			T*& matrix, int32_t& num_feat, int32_t& num_vec);
 
+		/** create diagonal matrix */
 		static void create_diagonal_matrix(T* matrix, T* v,int32_t size)
 		{
 			for(int32_t i=0;i<size;i++)
@@ -197,8 +199,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		void compute_few_eigenvectors(double* matrix_, double*& eigenvalues, double*& eigenvectors,
                                       int n, int il, int iu);
 #endif
-		/* Computes scale* A*B, where A and B may be transposed.
-		 * Asserts for matching inner dimensions.
+		/** Computes scale* A*B, where A and B may be transposed.
+		 *  Asserts for matching inner dimensions.
 		 * @param A matrix A
 		 * @param transpose_A optional whether A should be transposed before
 		 * @param B matrix B
@@ -210,17 +212,19 @@ template<class T> class SGMatrix : public SGReferencedData
 				bool transpose_A=false, bool transpose_B=false,
 				float64_t scale=1.0);
 #ifdef HAVE_LAPACK
-		/// inverses square matrix in-place
+		/** inverses square matrix in-place */
 		static void inverse(SGMatrix<float64_t> matrix);
 
-		/// return the pseudo inverse for matrix
-		/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
+		/** return the pseudo inverse for matrix
+		 * when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
+		 */
 		static float64_t* pinv(
 			float64_t* matrix, int32_t rows, int32_t cols,
 			float64_t* target=NULL);
 
 #endif
 
+		/** compute trace */
 		static inline float64_t trace(
 			float64_t* mat, int32_t cols, int32_t rows)
 		{
@@ -230,7 +234,7 @@ template<class T> class SGMatrix : public SGReferencedData
 			return trace;
 		}
 
-		/* Sums up all rows of a matrix and returns the resulting rowvector */
+		/** sums up all rows of a matrix and returns the resulting rowvector */
 		static T* get_row_sum(T* matrix, int32_t m, int32_t n)
 		{
 			T* rowsums=SG_CALLOC(T, n);
@@ -243,7 +247,7 @@ template<class T> class SGMatrix : public SGReferencedData
 			return rowsums;
 		}
 
-		/* Sums up all columns of a matrix and returns the resulting columnvector */
+		/** sums up all columns of a matrix and returns the resulting columnvector */
 		static T* get_column_sum(T* matrix, int32_t m, int32_t n)
 		{
 			T* colsums=SG_CALLOC(T, m);
@@ -262,19 +266,21 @@ template<class T> class SGMatrix : public SGReferencedData
 			center_matrix(matrix, num_rows, num_cols);
 		}
 
-		/* Centers  matrix (e.g. kernel matrix in feature space INPLACE */
+		/** Centers  matrix (e.g. kernel matrix in feature space INPLACE */
 		static void center_matrix(T* matrix, int32_t m, int32_t n);
 
+		/** remove column mean */
 		void remove_column_mean();
 
 		/** display matrix */
 		void display_matrix(const char* name="matrix") const;
 
-		/// display matrix (useful for debugging)
+		/** display matrix (useful for debugging) */
 		static void display_matrix(
 			const T* matrix, int32_t rows, int32_t cols,
 			const char* name="matrix", const char* prefix="");
 
+		/** display matrix */
 		static void display_matrix(
 			const SGMatrix<T> matrix, const char* name="matrix",
 			const char* prefix="");

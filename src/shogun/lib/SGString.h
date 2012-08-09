@@ -46,6 +46,7 @@ public:
 	SGString(const SGString &orig)
 		: string(orig.string), slen(orig.slen), do_free(orig.do_free) { }
 
+	/** equality operator */
 	bool operator==(const SGString & other) const
 	{
 		if (other.slen != slen)

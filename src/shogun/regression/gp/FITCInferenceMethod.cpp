@@ -47,8 +47,6 @@ void CFITCInferenceMethod::init()
 {
 	m_latent_features = NULL;
 	m_ind_noise = 1e-10;
-	SG_ADD((CSGObject**)&m_latent_features, "latent_features",
-			"Latent Features", MS_NOT_AVAILABLE);
 }
 
 CFITCInferenceMethod::~CFITCInferenceMethod()

@@ -106,10 +106,11 @@ class CLabels : public CSGObject
 		void init();
 
 	protected:
-		/* subset class to enable subset support for this class */
+
+		/** subset class to enable subset support for this class */
 		CSubsetStack* m_subset_stack;
 
-		/* confidences for labels */
+		/** confidences for labels */
 		SGVector<float64_t> m_confidences;
 };
 }

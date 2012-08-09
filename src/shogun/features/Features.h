@@ -252,6 +252,10 @@ class CFeatures : public CSGObject
 		 * Calls subset_changed_post() afterwards */
 		virtual void remove_all_subsets();
 
+		/** returns subset stack
+		 * 
+		 * @return subset stack
+		 */
 		virtual CSubsetStack* get_subset_stack();
 
 		/** method may be overwritten to update things that depend on subset */

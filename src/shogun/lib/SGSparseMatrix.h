@@ -58,16 +58,19 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 			copy_data(orig);
 		}
 
+		/** destructor */
 		virtual ~SGSparseMatrix()
 		{
 			unref();
 		}
 
+		/** index access operator */
 		inline const SGSparseVector<T>& operator[](index_t index) const
 		{
 			return sparse_matrix[index];
 		}
 
+		/** index access operator */
 		inline SGSparseVector<T>& operator[](index_t index)
 		{
 			return sparse_matrix[index];
@@ -75,6 +78,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 
 protected:
 
+		/** copy data */
 		virtual void copy_data(const SGReferencedData& orig)
 		{
 			sparse_matrix = ((SGSparseMatrix*)(&orig))->sparse_matrix;
@@ -82,6 +86,7 @@ protected:
 			num_features = ((SGSparseMatrix*)(&orig))->num_features;
 		}
 
+		/** init data */
 		virtual void init_data()
 		{
 			sparse_matrix = NULL;
@@ -89,6 +94,7 @@ protected:
 			num_features = 0;
 		}
 
+		/** free data */
 		virtual void free_data()
 		{
 			for (int32_t i=0; i<num_vectors; i++)

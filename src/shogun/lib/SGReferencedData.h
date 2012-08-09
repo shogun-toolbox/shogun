@@ -95,6 +95,7 @@ class SGReferencedData
 		}
 
 	protected:
+		/** copy refcount */
 		void copy_refcount(const SGReferencedData &orig)
 		{
 			m_refcount=orig.m_refcount;
