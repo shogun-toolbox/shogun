@@ -1,6 +1,7 @@
 %{
  #include <shogun/multiclass/tree/TreeMachine.h>
  #include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
+ #include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>
  #include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
  #include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
  #include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>

@@ -15,22 +15,10 @@
 
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
+#include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>
 
 namespace shogun
 {
-
-struct ConditionalProbabilityTreeNodeData
-{
-	int32_t label;
-	float64_t p_right; // prob of right subtree, used in prediction
-
-	ConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
-
-	static void print(const ConditionalProbabilityTreeNodeData &data)
-	{
-		SG_SPRINT("label=%d\n", data.label);
-	}
-};
 
 /**
  * Conditional Probability Tree.
