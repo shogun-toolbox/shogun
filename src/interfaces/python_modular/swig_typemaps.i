@@ -17,8 +17,8 @@
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
-%include "ProtoDenseFeatures.i"
-%include "ProtoDenseLabels.i"
+%include "DenseFeatures_protocols.i"
+%include "DenseLabels_protocols.i"
 
 #ifdef HAVE_PYTHON
 %{
