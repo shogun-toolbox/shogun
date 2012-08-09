@@ -51,7 +51,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction()
+	virtual EEvaluationDirection get_evaluation_direction()
 	{
 		return ED_MAXIMIZE;
 	}
@@ -70,6 +70,15 @@ public:
 	 * @return thresholds
 	 */
 	SGVector<float64_t> get_thresholds();
+
+protected:
+
+	/** evaluate ROC and auROC
+	 * @param predicted labels
+	 * @param ground_truth labels assumed to be correct
+	 * @return auROC
+	 */
+	float64_t evaluate_roc(CLabels* predicted, CLabels* ground_truth);
 
 protected:
 

@@ -19,6 +19,11 @@ CROCEvaluation::~CROCEvaluation()
 
 float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
+	return evaluate_roc(predicted,ground_truth);
+}
+
+float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth)
+{
 	ASSERT(predicted && ground_truth);
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
 	ASSERT(predicted->get_label_type()==LT_BINARY);
@@ -38,8 +43,10 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	int32_t neg_count=0;
 
 	// initialize number of labels and labels
-	SGVector<float64_t> orig_labels = predicted->get_confidences();
+	SGVector<float64_t> orig_labels(predicted->get_num_labels());
 	int32_t length = orig_labels.vlen;
+	for (i=0; i<length; i++)
+		orig_labels[i] = predicted->get_confidence(i);
 	float64_t* labels = SGVector<float64_t>::clone_vector(orig_labels.vector, length);
 
 	// get sorted indexes

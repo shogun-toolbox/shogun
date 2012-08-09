@@ -49,6 +49,15 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
 
+	/** set absolute indices of labels to be evaluated next
+	 * used by multitask evaluations 
+	 *
+	 * @param indices indices
+	 */
+	virtual void set_indices(SGVector<index_t> indices) 
+	{
+	}
+
 	/** @return whether criterium has to be maximized or minimized */
 	virtual EEvaluationDirection get_evaluation_direction()=0;
 };

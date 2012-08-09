@@ -213,6 +213,7 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 			m_labels->add_subset(subset_indices);
 
 			/* evaluate against own labels */
+			m_evaluation_criterion->set_indices(subset_indices);
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
 			if (ms_output)

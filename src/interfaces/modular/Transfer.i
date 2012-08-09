@@ -29,6 +29,8 @@
 
 %rename(MultitaskCompositeMachine) CMultitaskCompositeMachine;
 
+%rename(MultitaskROCEvaluation) CMultitaskROCEvaluation;
+
 %rename(LibLinearMTL) CLibLinearMTL;
 
 /* Domain adaptation renames */
@@ -58,6 +60,8 @@
 %include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 
 %include <shogun/transfer/multitask/MultitaskCompositeMachine.h>
+
+%include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
 
 %include <shogun/transfer/multitask/LibLinearMTL.h>
 
