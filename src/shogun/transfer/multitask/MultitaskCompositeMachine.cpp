@@ -84,8 +84,10 @@ bool CMultitaskCompositeMachine::train_machine(CFeatures* data)
 
 void CMultitaskCompositeMachine::post_lock(CLabels* labels, CFeatures* features)
 {
+	ASSERT(m_task_group);
 	set_features(m_features);
-	m_machine->data_lock(labels,features);
+	if (!m_machine->is_data_locked())
+		m_machine->data_lock(labels,features);
 
 	int n_tasks = m_task_group->get_num_tasks();
 	SGVector<index_t>* tasks_indices = m_task_group->get_tasks_indices();
@@ -124,19 +126,15 @@ bool CMultitaskCompositeMachine::train_locked(SGVector<index_t> indices)
 			}
 		}
 	}
-	SGVector<index_t> task_indices(n_tasks);
-	SG_UNREF(m_task_machines);
+	//SG_UNREF(m_task_machines);
 	m_task_machines = new CDynamicObjectArray();
 	for (int32_t i=0; i<n_tasks; i++)
 	{
+		SGVector<index_t> task_indices(cutted_task_indices[i].size());
 		for (int32_t j=0; j<(int)cutted_task_indices[i].size(); j++)
 			task_indices[j] = cutted_task_indices[i][j];
 
-		m_features->add_subset(task_indices);
-		m_labels->add_subset(task_indices);
-		m_machine->train(m_features);
-		m_features->remove_subset();
-		m_labels->remove_subset();
+		m_machine->train_locked(task_indices);
 		m_task_machines->push_back(m_machine->clone());
 	}
 	return true;
