@@ -46,6 +46,8 @@ namespace shogun
 	 * are particular suitable for data in the format of histograms, which
 	 * encompasses many visual descriptors used.
 	 *
+	 * The implementation is unsafe to work with negative feature values.
+	 *
 	 * Implementation is based on the vlfeat library.
 	 *
 	 */
@@ -53,7 +55,7 @@ namespace shogun
 	{
 		public:
 			/** default constructor */
-			CHomogeneousKernelMap ();
+			CHomogeneousKernelMap();
 
 			/** constructor
 			 *
@@ -63,11 +65,11 @@ namespace shogun
 			 * @param order the approximation order
 			 * @param period the period (use a negative value to use the default period)
 			 */
-			CHomogeneousKernelMap (HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType,
-														float64_t gamma = 1.0, uint64_t order = 1, float64_t period = -1);
+			CHomogeneousKernelMap(HomogeneousKernelType kernel, HomogeneousKernelMapWindowType wType,
+			                      float64_t gamma = 1.0, uint64_t order = 1, float64_t period = -1);
 
 			/** destructor */
-			virtual ~CHomogeneousKernelMap ();
+			virtual ~CHomogeneousKernelMap();
 
 			/** initialize preprocessor from features */
 			virtual bool init(CFeatures* features);
@@ -79,64 +81,64 @@ namespace shogun
 			 * @param features features
 			 * @return feature matrix
 			 */
-			virtual SGMatrix<float64_t> apply_to_feature_matrix (CFeatures* features);
+			virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features);
 
 			/** applies to feature vector
 			 * @param vector features vector
 			 * @return transformed feature vector
 			 */
-			virtual SGVector<float64_t> apply_to_feature_vector (SGVector<float64_t> vector);
+			virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 			/** @return object name */
-			virtual inline const char* get_name () const { return "HomogeneousKernelMap"; }
+			virtual const char* get_name() const { return "HomogeneousKernelMap"; }
 
 			/** @return a type of preprocessor */
-			virtual inline EPreprocessorType get_type () const { return P_HOMOGENEOUSKERNELMAP; }
+			virtual EPreprocessorType get_type() const { return P_HOMOGENEOUSKERNELMAP; }
 
 			/** sets kernel type
 			 * @param k type of homogeneous kernel
 			 */
-			void setKernelType (HomogeneousKernelType k);
+			void set_kernel_type(HomogeneousKernelType k);
 			/** returns kernel type
 			 * @return kernel type
 			 */
-			HomogeneousKernelType getKernelType () const;
+			HomogeneousKernelType get_kernel_type() const;
 
 			/** sets window type
 			 * @param w type of window
 			 */
-			void setWindowType (HomogeneousKernelMapWindowType w);
+			void set_window_type(HomogeneousKernelMapWindowType w);
 			/** returns window type
 			 * @return window type
 			 */
-			HomogeneousKernelMapWindowType getWindowType () const;
+			HomogeneousKernelMapWindowType get_window_type() const;
 
 			/** sets gamma
 			 * @param g gamma value
 			 */
-			void setGamma (float64_t g);
+			void set_gamma(float64_t g);
 			/** returns gamma
 			 * @return gamma value
 			 */
-			float64_t getGamma (float64_t g) const;
+			float64_t get_gamma(float64_t g) const;
 
 			/** sets approximation order
 			 * @param o order
 			 */
-			void setOrder (uint64_t o);
+			void set_order(uint64_t o);
 			/** returns approximation order
 			 * @return approximation order
 			 */
-			uint64_t getOrder () const;
+			uint64_t get_order() const;
 
 			/** sets period
 			 * @param p period value
 			 */
-			void setPeriod (float64_t p);
+			void set_period(float64_t p);
 			/** returns period value
 			 * @return period value
 			 */
-			float64_t getPeriod () const;
+			float64_t get_period() const;
 
 		private:
 			void init ();
