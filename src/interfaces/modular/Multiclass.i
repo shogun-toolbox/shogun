@@ -14,8 +14,6 @@
 %rename(RandomConditionalProbabilityTree) CRandomConditionalProbabilityTree;
 %rename(RelaxedTree) CRelaxedTree;
 %rename(RelaxedTreeNodeData) CRelaxedTreeNodeData;
-%rename(RelaxedTreeUtil) CRelaxedTreeUtil;
-%rename(TreeMachine) CTreeMachine;
 %rename(TreeMachineNode) CTreeMachineNode;
 %rename(VwConditionalProbabilityTree) VwConditionalProbabilityTree;
 
@@ -66,13 +64,19 @@
 %rename(ShareBoost) CShareBoost;
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
+%include <shogun/machine/BaseMulticlassMachine.h>
+%include <shogun/multiclass/tree/TreeMachine.h>
+%include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
 %include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+namespace shogun
+{
+    %template(TreeMachineWithConditionalProbabilityTreeNodeData) CTreeMachine<ConditionalProbabilityTreeNodeData>;
+    %template(TreeMachineWithRelaxedTreeNodeData) CTreeMachine<RelaxedTreeNodeData>;
+}
+
+%include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/RelaxedTree.h>
-%include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
-%include <shogun/multiclass/tree/RelaxedTreeUtil.h>
-%include <shogun/multiclass/tree/TreeMachine.h>
 %include <shogun/multiclass/tree/TreeMachineNode.h>
 %include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
 
@@ -80,7 +84,6 @@
 %include <shogun/multiclass/MulticlassStrategy.h>
 %include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 %include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
-%include <shogun/machine/BaseMulticlassMachine.h>
 %include <shogun/machine/MulticlassMachine.h>
 %include <shogun/machine/NativeMulticlassMachine.h>
 %include <shogun/machine/LinearMulticlassMachine.h>
@@ -116,3 +119,9 @@
 %include <shogun/multiclass/GaussianNaiveBayes.h>
 %include <shogun/multiclass/QDA.h>
 %include <shogun/multiclass/ShareBoost.h>
+
+namespace shogun
+{
+    SERIALIZABLE_DUMMY(ConditionalProbabilityTreeNodeData);
+    SERIALIZABLE_DUMMY(RelaxedTreeNodeData);
+}
