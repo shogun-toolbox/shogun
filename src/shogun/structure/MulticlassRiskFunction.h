@@ -18,8 +18,29 @@
 namespace shogun
 {
 
-/** @brief Class CMulticlassRiskFunction
+/** @brief Class CMulticlassRiskFunction implements risk function for multiclass SO-SVM
  *
+ * Implementation of risk function for structured output multiclass SVM.
+ *
+ * The value of the risk is evaluated as
+ *
+ * \f[
+ * R({\bf w}) = \sum_{i=1}^{m} \max_{y \in \mathcal{Y}} \left[ \ell(y_i, y) + \langle {\bf w}, \Psi(x_i, y) - \Psi(x_i, y_i)  \rangle  \right]
+ * \f]
+ *
+ * The subgradient is by Danskin's theorem given as
+ *
+ * \f[
+ * R'({\bf w}) = \sum_{i=1}^{m} \Psi(x_i, \hat{y}_i) - \Psi(x_i, y_i),
+ * \f]
+ *
+ * where \f$ \hat{y}_i \f$ is the most violated label, i.e.
+ *
+ * \f[
+ * \hat{y}_i = \arg\max_{y \in \mathcal{Y}} \left[ \ell(y_i, y) + \langle {\bf w}, \Psi(x_i, y)  \rangle \right]
+ * \f]
+ *
+ *	\sa CRiskFunction
  */
 class CMulticlassRiskFunction : public CRiskFunction
 {
@@ -37,8 +58,9 @@ class CMulticlassRiskFunction : public CRiskFunction
 
 }; /* CMulticlassRiskFunction */
 
-/** @brief Class CMulticlassRiskData
+/** @brief Class CMulticlassRiskData provides risk data for multiclass SO-SVM
  *
+ * \sa CRiskData
  */
 class CMulticlassRiskData : public CRiskData
 {
@@ -46,7 +68,13 @@ class CMulticlassRiskData : public CRiskData
 		/** default constructor */
 		CMulticlassRiskData();
 
-		/** constructor */
+		/** constructor
+		 *
+		 * @param X			Features
+		 * @param y			Labels
+		 * @param w_dim		Dimension of the weight vector W
+		 * @param nFeatures	Number of features
+		 */
 		CMulticlassRiskData(CDotFeatures *X, CMulticlassSOLabels *y, uint32_t w_dim, uint32_t nFeatures);
 
 		/** destructor */
@@ -56,10 +84,12 @@ class CMulticlassRiskData : public CRiskData
 		virtual const char* get_name() const { return "MulticlassRiskData"; }
 
 	public:
+		/** m_X */
 		CDotFeatures*           m_X;
+		/** m_y */
 		CMulticlassSOLabels*    m_y;
 };
 
 }
 
-#endif /* _MULTICLASSTISK_FUNCTION__H__ */
+#endif /* _MULTICLASSRISK_FUNCTION__H__ */

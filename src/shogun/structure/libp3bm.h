@@ -20,7 +20,23 @@
 
 namespace shogun
 {
-	/* Bundle Methods Solver for Structured Output Learning */
+	/** Proximal Point P-BMRM (multiple cutting plane models) Solver for Structured Output Learning
+	 *
+	 * @param data			Pointer to user data passed to risk function
+	 * @param W				Weight vector
+	 * @param TolRel		Relative tolerance
+	 * @param TolAbs		Absolute tolerance
+	 * @param lambda		Regularization constant
+	 * @param _BufSize		Size of the CP buffer (i.e. maximal number of iterations)
+	 * @param cleanICP		Flag that enables/disables inactive cutting plane removal feature
+	 * @param cleanAfter	Number of iterations that should be cutting plane inactive for to be removed
+	 * @param K				Parameter K
+	 * @param Tmax			Parameter Tmax
+	 * @param nThreads		Count of cutting plane models to be used
+	 * @param verbose		Flag that enables/disables screen output
+	 * @param risk_function	Pointer to risk function
+	 * @return Structure with BMRM algorithm result
+	 */
 	bmrm_return_value_T svm_p3bm_solver(
 			void            *data,
 			float64_t   	*W,

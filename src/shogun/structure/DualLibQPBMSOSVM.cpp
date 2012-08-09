@@ -49,6 +49,7 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	// get dimension of w
 	uint32_t nDim=this->m_model->get_dim();
 
+	// Check for initial solution
 	if (W==0)
 	{
 		m_w=SGVector< float64_t >(nDim);

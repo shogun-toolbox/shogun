@@ -16,12 +16,16 @@
 namespace shogun
 {
 
+/**
+ * \struct TMultipleCPinfo
+ * Multiple cutting plane models helper
+ */
 typedef struct {
 	uint32_t from;
 	uint32_t N;
 } TMultipleCPinfo;
 
-/** @brief Class CRiskFunction TODO
+/** @brief Class CRiskFunction interface for Structured Output Risk functions
  *
  */
 class CRiskFunction : public CSGObject
@@ -35,6 +39,11 @@ class CRiskFunction : public CSGObject
 
 		/** computes the value of the risk function and sub-gradient at given point
 		 *
+		 * @param data		User data passed to risk function
+		 * @param R			Value of the computed risk at given point W
+		 * @param subgrad	Subgradient computed at given point W
+		 * @param W			Given weight vector
+		 * @param info		Helper info for multiple cutting plane models algorithm
 		 */
 		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0) = 0;
 
@@ -42,7 +51,7 @@ class CRiskFunction : public CSGObject
 		virtual const char* get_name() const { return "RiskFunction"; }
 }; /* CRiskFunction */
 
-/** @brief CRiskData TODO
+/** @brief CRiskData interface for user data passed to risk function
  *
  */
 class CRiskData : public CSGObject
@@ -51,7 +60,11 @@ class CRiskData : public CSGObject
 		/** default constructor */
 		CRiskData();
 
-		/** constructor */
+		/** constructor
+		 *
+		 * @param w_dim		Dimension of the weight vector W
+		 * @param nFeatures	Overall number of features
+		 */
 		CRiskData(uint32_t w_dim, uint32_t nFeatures);
 
 		/** destructor */
