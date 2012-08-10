@@ -6,7 +6,12 @@
  *
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (c) 2012 Evgeniy Andreev (gsomix)
  */
+
+#ifndef SWIGPYTHON
+#define PYPROTO_SGVECTOR(class_name, type_name, format_str, typecode)
+#endif
 
 %rename(Cache) CCache;
 %rename(ListElement) CListElement;
@@ -236,6 +241,9 @@ namespace shogun
     SERIALIZABLE_DUMMY(SGString<floatmax_t>);
 #endif
 
+%ignore SGVector<float64_t>::operator+=;
+%ignore SGVector<float64_t>::operator+;
+
 #ifdef USE_BOOL
     %template(BoolVector) SGVector<bool>;
     SERIALIZABLE_DUMMY(SGVector<bool>);
@@ -273,10 +281,12 @@ namespace shogun
     SERIALIZABLE_DUMMY(SGVector<uint64_t>);
 #endif
 #ifdef USE_FLOAT32
+	PYPROTO_SGVECTOR(ShortRealVector, float32_t, "f\0", NPY_FLOAT32)
     %template(ShortRealVector) SGVector<float32_t>;
     SERIALIZABLE_DUMMY(SGVector<float32_t>);
 #endif
 #ifdef USE_FLOAT64
+	PYPROTO_SGVECTOR(RealVector, float64_t, "d\0", NPY_FLOAT64)
     %template(RealVector) SGVector<float64_t>;
     SERIALIZABLE_DUMMY(SGVector<float64_t>);
 #endif
