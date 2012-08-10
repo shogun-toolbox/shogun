@@ -68,6 +68,14 @@ public:
 			float64_t d, float64_t angle,
 			SGMatrix<float64_t> target=SGMatrix<float64_t>());
 
+	/*
+	 *
+	 * @param m number of samples
+	 * @param n number of gaussians
+	 * @
+	 */
+	static SGMatrix<float64_t> generate_gaussians(index_t m, index_t n, index_t dim);
+	
 	inline virtual const char* get_name() const { return "DataGenerator"; }
 
 private:
