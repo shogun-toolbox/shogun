@@ -22,65 +22,111 @@
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/structure/MulticlassRiskFunction.h>
+#include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/features/streaming/StreamingSparseFeatures.h>
 
 using namespace shogun;
 
-#define	DIMS		2
-#define EPSILON  	0
-#define	NUM_SAMPLES	10
-#define NUM_CLASSES	3
-
-char FNAME[] = "data.out";
-
-void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
+/** Reads multiclass trainig data stored in svmlight format (i.e. label nz_idx_1:value1 nz_idx_2:value2 ... nz_idx_N:valueN )
+ *
+ * @param fname    path to file with training data
+ * @param DIM      dimension of features
+ * @param N        number of feature vectors
+ * @param labs     vector with labels
+ * @param feats    matrix with features
+ */
+void read_data(const char fname[], uint32_t DIM, uint32_t N, SGVector< float64_t > *labs, SGMatrix< float64_t > *feats)
 {
-	float64_t means[DIMS];
-	float64_t  stds[DIMS];
+	CStreamingAsciiFile* file=new CStreamingAsciiFile(fname);
+	SG_REF(file);
 
-	FILE* pfile = fopen(FNAME, "w");
+	CStreamingSparseFeatures< float64_t >* stream_features=
+		new CStreamingSparseFeatures< float64_t >(file, true, 1024);
+	SG_REF(stream_features);
 
-	for ( int32_t c = 0 ; c < NUM_CLASSES ; ++c )
+	SGVector<float64_t > vec(DIM);
+
+	stream_features->start_parser();
+
+	uint32_t num_vectors=0;
+
+	while( stream_features->get_next_example() )
 	{
-		for ( int32_t j = 0 ; j < DIMS ; ++j )
+		vec.zero();
+		stream_features->add_to_dense_vec(1.0, vec, DIM);
+
+		(*labs)[num_vectors]=stream_features->get_label();
+
+		for(uint32_t i=0; i<DIM; ++i)
 		{
-			means[j] = CMath::random(-1000, 1000);
-			stds[j] = CMath::random(   1,   5);
+			(*feats)[num_vectors*DIM+i]=vec[i];
 		}
 
-		for ( int32_t i = 0 ; i < NUM_SAMPLES ; ++i )
-		{
-			labs[c*NUM_SAMPLES+i] = c;
-
-			fprintf(pfile, "%d", c);
-
-			for ( int32_t j = 0 ; j < DIMS ; ++j )
-			{
-				feats[(c*NUM_SAMPLES+i)*DIMS + j] =
-					CMath::normal_random(means[j], stds[j]);
-
-				fprintf(pfile, " %f", feats[(c*NUM_SAMPLES+i)*DIMS + j]);
-			}
-
-			fprintf(pfile, "\n");
-		}
+		num_vectors++;
+		stream_features->release_example();
 	}
+
+	stream_features->end_parser();
+
+	SG_UNREF(stream_features);
 }
 
 int main(int argc, char * argv[])
 {
+	// initialization
+	//-------------------------------------------------------------------------
+
+	float64_t lambda=0.01, eps=0.01;
+	bool icp=1;
+	uint32_t cp_models=1;
+	ESolver solver=BMRM;
+	uint32_t feat_dim, num_feat;
+
 	init_shogun_with_defaults();
 
-	SGVector< float64_t > labs(NUM_CLASSES*NUM_SAMPLES);
-	SGMatrix< float64_t > feats(DIMS, NUM_CLASSES*NUM_SAMPLES);
+	if (argc < 8)
+	{
+		SG_SERROR("Usage: so_multiclass_BMRM <data.in> <feat_dim> <num_feat> <lambda> <icp> <epsilon> <solver> [<cp_models>]\n");
+		return -1;
+	}
 
-	gen_rand_data(labs, feats);
+	SG_SPRINT("arg[1] = %s\n", argv[1]);
+
+	feat_dim=::atoi(argv[2]);
+	num_feat=::atoi(argv[3]);
+	lambda=::atof(argv[4]);
+	icp=::atoi(argv[5]);
+	eps=::atof(argv[6]);
+
+	if (strcmp("BMRM", argv[7])==0)
+		solver=BMRM;
+
+	if (strcmp("PPBMRM", argv[7])==0)
+		solver=PPBMRM;
+
+	if (strcmp("P3BMRM", argv[7])==0)
+		solver=P3BMRM;
+
+	if (argc > 8)
+	{
+		cp_models=::atoi(argv[8]);
+	}
+
+	SGVector< float64_t >* labs=
+		new SGVector< float64_t >(num_feat);
+
+	SGMatrix< float64_t >* feats=
+		new SGMatrix< float64_t >(feat_dim, num_feat);
+
+	// read data
+	read_data(argv[1], feat_dim, num_feat, labs, feats);
 
 	// Create train labels
-	CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
-	CMulticlassLabels*  mlabels = new CMulticlassLabels(labs);
+	CMulticlassSOLabels* labels = new CMulticlassSOLabels(*labs);
 
 	// Create train features
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feats);
+	CDenseFeatures< float64_t >* features =
+		new CDenseFeatures< float64_t >(*feats);
 
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
@@ -91,61 +137,64 @@ int main(int argc, char * argv[])
 	// Create risk function
 	CMulticlassRiskFunction* risk = new CMulticlassRiskFunction();
 
+	// Create risk data
+	CMulticlassRiskData* risk_data =
+		new CMulticlassRiskData(
+				features,
+				labels,
+				model->get_dim(),
+				features->get_num_vectors());
+
 	// Create SO-SVM
-	CDualLibQPBMSOSVM* sosvm = new CDualLibQPBMSOSVM(model, loss, labels, features, 0.01, risk);
+	CDualLibQPBMSOSVM* sosvm =
+		new CDualLibQPBMSOSVM(
+				model,
+				loss,
+				labels,
+				features,
+				lambda,
+				risk,
+				risk_data);
 	SG_REF(sosvm);
 
+	sosvm->set_cleanAfter(10);
+	sosvm->set_cleanICP(icp);
+	sosvm->set_TolRel(eps);
+	sosvm->set_cp_models(cp_models);
+	sosvm->set_solver(solver);
+
+	// Train
+	//-------------------------------------------------------------------------
+
+	SG_SPRINT("Train using lambda = %lf ICP removal = %d \n",
+			sosvm->get_lambda(), sosvm->get_cleanICP());
+
 	sosvm->train();
-	CStructuredLabels* out = CStructuredLabels::obtain_from_generic(sosvm->apply());
+
+	bmrm_return_value_T res = sosvm->get_result();
+
+	SG_SPRINT("result = { Fp=%lf, Fd=%lf, nIter=%d, nCP=%d, nzA=%d, exitflag=%d }\n",
+			res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
+
+	CStructuredLabels* out =
+		CStructuredLabels::obtain_from_generic(sosvm->apply());
 	SG_REF(out);
 
-	SG_SPRINT("\nJust after sosvm-train();\n\n");
+	SG_SPRINT("\n");
 
-	// Create liblinear svm classifier with L2-regularized L2-loss
-	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
+	// Compute error
+	//-------------------------------------------------------------------------
+	float64_t error=0.0;
 
-	// Add some configuration to the svm
-	svm->set_epsilon(EPSILON);
-	svm->set_bias_enabled(false);
-
-	// Create a multiclass svm classifier that consists of several of the previous one
-	CLinearMulticlassMachine* mc_svm =
-		new CLinearMulticlassMachine( new CMulticlassOneVsRestStrategy(),
-				(CDotFeatures*) features, svm, mlabels);
-	SG_REF(mc_svm);
-
-	// Train the multiclass machine using the data passed in the constructor
-	mc_svm->train();
-	CMulticlassLabels* mout = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
-	SG_REF(mout);
-
-	//SGVector< float64_t > slacks = sosvm->get_slacks();
-	for ( int i = 0 ; i < out->get_num_labels() ; ++i )
+	for (uint32_t i=0; i<num_feat; ++i)
 	{
-		SG_SPRINT("%.0f %.0f %.0f\n",
-				mlabels->get_label(i),
-				( (CRealNumber*) out->get_label(i) )->value,
-				mout->get_label(i));
+		error+=(( (CRealNumber*) out->get_label(i) )->value==labs->get_element(i)) ? 0.0 : 1.0;
 	}
 
-	SG_SPRINT("\n");
-	SGVector< float64_t > w = sosvm->get_w();
-	for ( int32_t i = 0 ; i < w.vlen ; ++i )
-		SG_SPRINT("%10f ", w[i]);
-	SG_SPRINT("\n\n");
+	SG_SPRINT("Error = %lf %% \n", error/num_feat*100);
 
-	for ( int32_t i = 0 ; i < NUM_CLASSES ; ++i )
-	{
-		SGVector< float64_t > mw =
-			((CLinearMachine*) mc_svm->get_machine(i))->get_w();
-		for ( int32_t j = 0 ; j < mw.vlen ; ++j )
-			SG_SPRINT("%10f ", mw[j]);
-	}
-	SG_SPRINT("\n");
 
 	// Free memory
-	SG_UNREF(mout);
-	SG_UNREF(mc_svm);
 	SG_UNREF(sosvm);
 	SG_UNREF(out);
 
