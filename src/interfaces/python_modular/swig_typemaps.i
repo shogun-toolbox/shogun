@@ -17,7 +17,9 @@
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
 
-%include "python_protocols.i"
+%include "DenseFeatures_protocols.i"
+%include "DenseLabels_protocols.i"
+%include "SGVector_protocols.i"
 
 #ifdef HAVE_PYTHON
 %{
