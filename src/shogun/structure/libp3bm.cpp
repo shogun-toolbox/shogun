@@ -632,14 +632,17 @@ bmrm_return_value_T svm_p3bm_solver(
 			tuneAlpha=false;
 		}
 
-		/* Stopping conditions */
-		if (p3bmrm.Fp - p3bmrm.Fd <= TolRel*LIBBMRM_ABS(p3bmrm.Fp))
-			p3bmrm.exitflag=1;
+		/* Stopping conditions - set only with nonzero alpha */
+		if (alpha==0.0)
+		{
+			if (p3bmrm.Fp-p3bmrm.Fd<=TolRel*LIBBMRM_ABS(p3bmrm.Fp))
+				p3bmrm.exitflag=1;
 
-		if (p3bmrm.Fp - p3bmrm.Fd <= TolAbs)
-			p3bmrm.exitflag=2;
+			if (p3bmrm.Fp-p3bmrm.Fd<=TolAbs)
+				p3bmrm.exitflag=2;
+		}
 
-		if (p3bmrm.nCP >= BufSize)
+		if (p3bmrm.nCP>=BufSize)
 			p3bmrm.exitflag=-1;
 
 		tstop=ttime.cur_time_diff(false);
