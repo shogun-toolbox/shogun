@@ -28,8 +28,10 @@ namespace shogun
 	 * @param TolAbs		Absolute tolerance
 	 * @param lambda		Regularization constant
 	 * @param _BufSize		Size of the CP buffer (i.e. maximal number of iterations)
-	 * @param cleanICP		Flag that enables/disables inactive cutting plane removal feature
-	 * @param cleanAfter	Number of iterations that should be cutting plane inactive for to be removed
+	 * @param cleanICP		Flag that enables/disables inactive cutting plane removal
+	 * 						feature
+	 * @param cleanAfter	Number of iterations that should be cutting plane
+	 * 						inactive for to be removed
 	 * @param K				Parameter K
 	 * @param Tmax			Parameter Tmax
 	 * @param verbose		Flag that enables/disables screen output

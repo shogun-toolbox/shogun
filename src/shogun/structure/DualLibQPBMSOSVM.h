@@ -61,14 +61,14 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 * @param W				initial solution of weight vector
 		 */
 		CDualLibQPBMSOSVM(
-				CStructuredModel* 	model,
-				CLossFunction* 		loss,
-				CStructuredLabels* 	labs,
-				CDotFeatures* 		features,
-				float64_t 			lambda,
-				CRiskFunction* 		risk_function,
-				CRiskData* 			risk_data,
-				float64_t*			W=0);
+				CStructuredModel* 		model,
+				CLossFunction* 			loss,
+				CStructuredLabels* 		labs,
+				CDotFeatures* 			features,
+				float64_t 				lambda,
+				CRiskFunction* 			risk_function,
+				CRiskData* 				risk_data,
+				SGVector< float64_t > 	W=0);
 
 		/** destructor */
 		~CDualLibQPBMSOSVM();
@@ -114,7 +114,8 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** set size of cutting plane buffer
 		 *
-		 * @param BufSize	Size of the cutting plane buffer (i.e. maximal number of iterations)
+		 * @param BufSize	Size of the cutting plane buffer (i.e. maximal number of
+		 * 					iterations)
 		 */
 		inline void set_BufSize(uint32_t BufSize) { m_BufSize=BufSize; }
 
@@ -126,7 +127,8 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** set ICP removal flag
 		 *
-		 * @param cleanICP	Flag that enables/disables inactive cutting plane removal feature
+		 * @param cleanICP	Flag that enables/disables inactive cutting plane removal
+		 * 					feature
 		 */
 		inline void set_cleanICP(bool cleanICP) { m_cleanICP=cleanICP; }
 
@@ -138,13 +140,15 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** set number of iterations for cleaning ICP
 		 *
-		 * @param cleanAfter	Specifies number of iterations that inactive cutting planes has to be inactive for to be removed
+		 * @param cleanAfter	Specifies number of iterations that inactive cutting
+		 * 						planes has to be inactive for to be removed
 		 */
 		inline void set_cleanAfter(uint32_t cleanAfter) { m_cleanAfter=cleanAfter; }
 
 		/** get number of iterations for cleaning ICP
 		 *
-		 * @return Number of iterations that inactive cutting planes has to be inactive for to be removed
+		 * @return Number of iterations that inactive cutting planes has to be
+		 * 			inactive for to be removed
 		 */
 		inline uint32_t get_cleanAfter() { return m_cleanAfter; }
 
@@ -174,15 +178,15 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** set number of cutting plane models
 		 *
-		 * @param nThreads	Number of cutting plane models
+		 * @param cp_models	Number of cutting plane models
 		 */
-		inline void set_nThreads(uint32_t nThreads) { m_nThreads=nThreads; }
+		inline void set_cp_models(uint32_t cp_models) { m_cp_models=cp_models; }
 
 		/** get number of cutting plane models
 		 *
 		 * @return Number of cutting plane models
 		 */
-		inline uint32_t get_nThreads() { return m_nThreads; }
+		inline uint32_t get_cp_models() { return m_cp_models; }
 
 		/** set verbose
 		 *
@@ -221,6 +225,12 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		bool train_machine(CFeatures* data=NULL);
 
 	private:
+		/** init parameters
+		 *
+		 */
+		void init();
+
+	private:
 
 		/** risk user data */
 		CRiskData* m_risk_data;
@@ -250,7 +260,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		uint32_t m_Tmax;
 
 		/** number of cutting plane models */
-		uint32_t m_nThreads;
+		uint32_t m_cp_models;
 
 		/** verbose */
 		bool m_verbose;

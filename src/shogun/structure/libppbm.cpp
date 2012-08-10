@@ -98,36 +98,53 @@ bmrm_return_value_T svm_ppbm_solver(
 
 	alpha=0.0;
 
-	H=(float64_t*)LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
-	A=(float64_t*)LIBBMRM_CALLOC(nDim*BufSize, sizeof(float64_t));
-	b=(float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
-	beta=(float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
-	subgrad=(float64_t*)LIBBMRM_CALLOC(nDim, sizeof(float64_t));
-	diag_H=(float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
-	I=(uint32_t*)LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	ICPcounter=(uint32_t*)LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	ICPs=(float64_t**)LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
-	ACPs=(uint32_t*)LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	cp_list=(bmrm_ll*)LIBBMRM_CALLOC(1, sizeof(bmrm_ll));
-	prevW=(float64_t*)LIBBMRM_CALLOC(nDim, sizeof(float64_t));
-	wt=(float64_t*)LIBBMRM_CALLOC(nDim, sizeof(float64_t));
-	if (H==NULL || A==NULL || b==NULL || beta==NULL || subgrad==NULL || diag_H==NULL || I==NULL || ICPcounter==NULL ||
-			ICPs==NULL || ACPs==NULL || cp_list==NULL || prevW==NULL || wt==NULL)
+	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+
+	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, sizeof(float64_t));
+
+	b= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+
+	beta= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+
+	subgrad= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+
+	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+
+	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+
+	ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+
+	ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
+
+	ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+
+	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, sizeof(bmrm_ll));
+
+	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+
+	wt= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+
+	if (H==NULL || A==NULL || b==NULL || beta==NULL || subgrad==NULL ||
+			diag_H==NULL || I==NULL || ICPcounter==NULL ||	ICPs==NULL ||
+			ACPs==NULL || cp_list==NULL || prevW==NULL || wt==NULL)
 	{
 		ppbmrm.exitflag=-2;
 		goto cleanup;
 	}
 
-	map=(bool*)LIBBMRM_CALLOC(BufSize, sizeof(bool));
+	map= (bool*) LIBBMRM_CALLOC(BufSize, sizeof(bool));
+
 	if (map==NULL)
 	{
 		ppbmrm.exitflag=-2;
 		goto cleanup;
 	}
-	memset((bool*)map, true, BufSize);
+
+	memset( (bool*) map, true, BufSize);
 
 	/* Temporary buffers for ICP removal */
-	H_buff=(float64_t*)LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+
 	if (H_buff==NULL)
 	{
 		ppbmrm.exitflag=-2;
@@ -135,15 +152,24 @@ bmrm_return_value_T svm_ppbm_solver(
 	}
 
 	/* Temporary buffers */
-	beta_start=(float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
-	beta_good=(float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
-	b2=(float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
-	diag_H2=(float64_t*)LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
-	H2=(float64_t*)LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
-	I_start=(uint32_t*)LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	I_good=(uint32_t*)LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	I2=(uint32_t*)LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	if (beta_start==NULL || beta_good==NULL || b2==NULL || diag_H2==NULL || I_start==NULL || I_good==NULL || I2==NULL || H2==NULL)
+	beta_start= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+
+	beta_good= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+
+	b2= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+
+	diag_H2= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+
+	H2= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+
+	I_start= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+
+	I_good= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+
+	I2= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+
+	if (beta_start==NULL || beta_good==NULL || b2==NULL || diag_H2==NULL ||
+			I_start==NULL || I_good==NULL || I2==NULL || H2==NULL)
 	{
 		ppbmrm.exitflag=-2;
 		goto cleanup;
@@ -157,6 +183,7 @@ bmrm_return_value_T svm_ppbm_solver(
 	ppbmrm.exitflag=0;
 
 	b[0]=-R;
+
 	/* Cutting plane auxiliary double linked list */
 	LIBBMRM_MEMCPY(A, subgrad, nDim*sizeof(float64_t));
 	map[0]=false;
@@ -170,12 +197,14 @@ bmrm_return_value_T svm_ppbm_solver(
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
 	sq_norm_W=0.0;
 	sq_norm_Wdiff=0.0;
+
 	for (uint32_t j=0; j<nDim; ++j)
 	{
 		b[0]+=subgrad[j]*W[j];
 		sq_norm_W+=W[j]*W[j];
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 	}
+
 	ppbmrm.Fp=R+0.5*lambda*sq_norm_W + alpha*sq_norm_Wdiff;
 	ppbmrm.Fd=-LIBBMRM_PLUS_INF;
 	lastFp=ppbmrm.Fp;
@@ -187,41 +216,52 @@ bmrm_return_value_T svm_ppbm_solver(
 	tstop=ttime.cur_time_diff(false);
 
 	/* Verbose output */
+
 	if (verbose)
 		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf, K=%lf\n",
 				ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, R, K);
 
 	/* main loop */
+
 	while (ppbmrm.exitflag==0)
 	{
 		tstart=ttime.cur_time_diff(false);
 		ppbmrm.nIter++;
 
 		/* Update H */
+
 		if (ppbmrm.nCP>0)
 		{
 			A_2=get_cutting_plane(CPList_tail);
 			cp_ptr=CPList_head;
+
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 				rsum=0.0;
+
 				for (uint32_t j=0; j<nDim; ++j)
 				{
 					rsum+=A_1[j]*A_2[j];
 				}
+
 				H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)]=rsum;
 			}
+
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
-				H[LIBBMRM_INDEX(ppbmrm.nCP, i, BufSize)]=H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)];
+				H[LIBBMRM_INDEX(ppbmrm.nCP, i, BufSize)]=
+					H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)];
 			}
 		}
+
 		rsum=0.0;
 		A_2=get_cutting_plane(CPList_tail);
+
 		for (uint32_t i=0; i<nDim; ++i)
 			rsum+=A_2[i]*A_2[i];
+
 		H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)]=rsum;
 
 		diag_H[ppbmrm.nCP]=H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)];
@@ -231,13 +271,15 @@ bmrm_return_value_T svm_ppbm_solver(
 		beta[ppbmrm.nCP]=0.0; // [beta; 0]
 
 		/* tune alpha cycle */
-		/* ----------------------------------------------------------------------------------------------- */
+		/* ---------------------------------------------------------------------- */
+
 		flag=true;
 		isThereGoodSolution=false;
 		LIBBMRM_MEMCPY(beta_start, beta, ppbmrm.nCP*sizeof(float64_t));
 		LIBBMRM_MEMCPY(I_start, I, ppbmrm.nCP*sizeof(uint32_t));
 		qp_cnt=0;
 		alpha_good=alpha;
+
 		if (tuneAlpha)
 		{
 			alpha_start=alpha; alpha=0.0;
@@ -247,18 +289,24 @@ bmrm_return_value_T svm_ppbm_solver(
 
 			/* add alpha-dependent terms to H, diag_h and b */
 			cp_ptr=CPList_head;
+
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
 				rsum=0.0;
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
+
 				for (uint32_t j=0; j<nDim; ++j)
 					rsum+=A_1[j]*prevW[j];
+
 				b2[i]=b[i]-((2*alpha)/(lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(lambda+2*alpha);
+
 				for (uint32_t j=0; j<ppbmrm.nCP; ++j)
-					H2[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
+					H2[LIBBMRM_INDEX(i, j, BufSize)]=
+						H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
 			}
+
 			/* solve QP with current alpha */
 			qp_exitflag=libqp_splx_solver(&get_col, diag_H2, b2, &C, I2, &S, beta,
 					ppbmrm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
@@ -271,24 +319,31 @@ bmrm_return_value_T svm_ppbm_solver(
 			{
 				rsum=0.0;
 				cp_ptr=CPList_head;
+
 				for (uint32_t j=0; j<ppbmrm.nCP; ++j)
 				{
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 					rsum+=A_1[i]*beta[j];
 				}
+
 				wt[i]=(2*alpha*prevW[i] - rsum)/(lambda+2*alpha);
 			}
+
 			sq_norm_Wdiff=0.0;
+
 			for (uint32_t i=0; i<nDim; ++i)
 				sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
 			if (::sqrt(sq_norm_Wdiff) <= K)
 			{
 				flag=false;
+
 				if (alpha!=alpha_start)
 					alphaChanged=true;
-			} else {
+			}
+			else
+			{
 				alpha=alpha_start;
 			}
 
@@ -301,18 +356,23 @@ bmrm_return_value_T svm_ppbm_solver(
 
 				/* add alpha-dependent terms to H, diag_h and b */
 				cp_ptr=CPList_head;
+
 				for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 				{
 					rsum=0.0;
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
+
 					for (uint32_t j=0; j<nDim; ++j)
 						rsum+=A_1[j]*prevW[j];
+
 					b2[i]=b[i]-((2*alpha)/(lambda+2*alpha))*rsum;
 					diag_H2[i]=diag_H[i]/(lambda+2*alpha);
+
 					for (uint32_t j=0; j<ppbmrm.nCP; ++j)
 						H2[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
 				}
+
 				/* solve QP with current alpha */
 				qp_exitflag=libqp_splx_solver(&get_col, diag_H2, b2, &C, I2, &S, beta,
 						ppbmrm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
@@ -324,21 +384,26 @@ bmrm_return_value_T svm_ppbm_solver(
 				{
 					rsum=0.0;
 					cp_ptr=CPList_head;
+
 					for (uint32_t j=0; j<ppbmrm.nCP; ++j)
 					{
 						A_1=get_cutting_plane(cp_ptr);
 						cp_ptr=cp_ptr->next;
 						rsum+=A_1[i]*beta[j];
 					}
+
 					wt[i]=(2*alpha*prevW[i] - rsum)/(lambda+2*alpha);
 				}
+
 				sq_norm_Wdiff=0.0;
 				for (uint32_t i=0; i<nDim; ++i)
 					sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
 				if (::sqrt(sq_norm_Wdiff) > K)
 				{
-					/* if there is a record of some good solution (i.e. adjust alpha by division by 2) */
+					/* if there is a record of some good solution
+					 * (i.e. adjust alpha by division by 2) */
+
 					if (isThereGoodSolution)
 					{
 						LIBBMRM_MEMCPY(beta, beta_good, ppbmrm.nCP*sizeof(float64_t));
@@ -346,17 +411,23 @@ bmrm_return_value_T svm_ppbm_solver(
 						alpha=alpha_good;
 						qp_exitflag=qp_exitflag_good;
 						flag=false;
-					} else {
+					}
+					else
+					{
 						if (alpha == 0)
 						{
 							alpha=1.0;
 							alphaChanged=true;
-						} else {
+						}
+						else
+						{
 							alpha*=2;
 							alphaChanged=true;
 						}
 					}
-				} else {
+				}
+				else
+				{
 					if (alpha > 0)
 					{
 						/* keep good solution and try for alpha /= 2 if previous alpha was 1 */
@@ -370,33 +441,44 @@ bmrm_return_value_T svm_ppbm_solver(
 						{
 							alpha/=2.0;
 							alphaChanged=true;
-						} else {
+						}
+						else
+						{
 							alpha=0.0;
 							alphaChanged=true;
 						}
-					} else {
+					}
+					else
+					{
 						flag=false;
 					}
 				}
 			}
-		} else {
+		}
+		else
+		{
 			alphaChanged=false;
 			LIBBMRM_MEMCPY(I2, I_start, ppbmrm.nCP*sizeof(uint32_t));
 			LIBBMRM_MEMCPY(beta, beta_start, ppbmrm.nCP*sizeof(float64_t));
 
 			/* add alpha-dependent terms to H, diag_h and b */
 			cp_ptr=CPList_head;
+
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
 				rsum=0.0;
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
+
 				for (uint32_t j=0; j<nDim; ++j)
 					rsum+=A_1[j]*prevW[j];
+
 				b2[i]=b[i]-((2*alpha)/(lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(lambda+2*alpha);
+
 				for (uint32_t j=0; j<ppbmrm.nCP; ++j)
-					H2[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
+					H2[LIBBMRM_INDEX(i, j, BufSize)]=
+						H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
 			}
 			/* solve QP with current alpha */
 			qp_exitflag=libqp_splx_solver(&get_col, diag_H2, b2, &C, I2, &S, beta,
@@ -409,13 +491,16 @@ bmrm_return_value_T svm_ppbm_solver(
 
 		/* Update ICPcounter (add one to unused and reset used) + compute number of active CPs */
 		ppbmrm.nzA=0;
+
 		for (uint32_t aaa=0; aaa<ppbmrm.nCP; ++aaa)
 		{
 			if (beta[aaa]>epsilon)
 			{
 				++ppbmrm.nzA;
 				ICPcounter[aaa]=0;
-			} else {
+			}
+			else
+			{
 				ICPcounter[aaa]+=1;
 			}
 		}
@@ -425,23 +510,27 @@ bmrm_return_value_T svm_ppbm_solver(
 		{
 			rsum=0.0;
 			cp_ptr=CPList_head;
+
 			for (uint32_t j=0; j<ppbmrm.nCP; ++j)
 			{
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 				rsum+=A_1[i]*beta[j];
 			}
+
 			W[i]=(2*alpha*prevW[i]-rsum)/(lambda+2*alpha);
 		}
 
 		/* risk and subgradient computation */
 		risk_function->risk(data, &R, subgrad, W);
 		b[ppbmrm.nCP]=-R;
-		add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad, nDim);
+		add_cutting_plane(&CPList_tail, map, A,
+				find_free_idx(map, BufSize), subgrad, nDim);
 
 		sq_norm_W=0.0;
 		sq_norm_Wdiff=0.0;
 		sq_norm_prevW=0.0;
+
 		for (uint32_t j=0; j<nDim; ++j)
 		{
 			b[ppbmrm.nCP]+=subgrad[j]*W[j];
@@ -452,7 +541,7 @@ bmrm_return_value_T svm_ppbm_solver(
 
 		/* compute Fp and Fd */
 		ppbmrm.Fp=R+0.5*lambda*sq_norm_W + alpha*sq_norm_Wdiff;
-		ppbmrm.Fd=-qp_exitflag.QP + ((alpha*lambda)/(lambda + 2*alpha))*sq_norm_prevW;
+		ppbmrm.Fd=-qp_exitflag.QP+((alpha*lambda)/(lambda + 2*alpha))*sq_norm_prevW;
 
 		/* gamma + tuneAlpha flag */
 		if (alphaChanged)
@@ -460,32 +549,44 @@ bmrm_return_value_T svm_ppbm_solver(
 			eps=1.0-(ppbmrm.Fd/ppbmrm.Fp);
 			gamma=(lastFp*(1-eps)-Fd_alpha0)/(Tmax*(1-eps));
 		}
+
 		if ((lastFp-ppbmrm.Fp) <= gamma)
 		{
 			tuneAlpha=true;
-		} else {
+		}
+		else
+		{
 			tuneAlpha=false;
 		}
 
 		/* Stopping conditions */
-		if (ppbmrm.Fp - ppbmrm.Fd <= TolRel*LIBBMRM_ABS(ppbmrm.Fp)) ppbmrm.exitflag=1;
-		if (ppbmrm.Fp - ppbmrm.Fd <= TolAbs) ppbmrm.exitflag=2;
-		if (ppbmrm.nCP >= BufSize) ppbmrm.exitflag=-1;
+		if (ppbmrm.Fp - ppbmrm.Fd <= TolRel*LIBBMRM_ABS(ppbmrm.Fp))
+			ppbmrm.exitflag=1;
+
+		if (ppbmrm.Fp - ppbmrm.Fd <= TolAbs)
+			ppbmrm.exitflag=2;
+
+		if (ppbmrm.nCP >= BufSize)
+			ppbmrm.exitflag=-1;
 
 		tstop=ttime.cur_time_diff(false);
 
 		/* compute wdist (= || W_{t+1} - W_{t} || ) */
 		sq_norm_Wdiff=0.0;
+
 		for (uint32_t i=0; i<nDim; ++i)
 		{
 			sq_norm_Wdiff+=(W[i]-prevW[i])*(W[i]-prevW[i]);
 		}
+
 		wdist=::sqrt(sq_norm_Wdiff);
 
 		/* Verbose output */
 		if (verbose)
 			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, wdist=%lf, alpha=%lf, qp_cnt=%d, gamma=%lf, tuneAlpha=%d\n",
-					ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, ppbmrm.Fp-ppbmrm.Fd, (ppbmrm.Fp-ppbmrm.Fd)/ppbmrm.Fp, R, ppbmrm.nCP, ppbmrm.nzA, wdist, alpha, qp_cnt, gamma, tuneAlpha);
+					ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, ppbmrm.Fp-ppbmrm.Fd,
+					(ppbmrm.Fp-ppbmrm.Fd)/ppbmrm.Fp, R, ppbmrm.nCP, ppbmrm.nzA, wdist, alpha,
+					qp_cnt, gamma, tuneAlpha);
 
 		/* Check size of Buffer */
 		if (ppbmrm.nCP>=BufSize)
@@ -506,14 +607,18 @@ bmrm_return_value_T svm_ppbm_solver(
 			cntACP=0;
 			cp_ptr=CPList_head;
 			uint32_t tmp_idx=0;
+
 			while (cp_ptr != CPList_tail)
 			{
 				if (ICPcounter[tmp_idx++]>=cleanAfter)
 				{
 					ICPs[cntICP++]=cp_ptr->address;
-				} else {
+				}
+				else
+				{
 					ACPs[cntACP++]=tmp_idx-1;
 				}
+
 				cp_ptr=cp_ptr->next;
 			}
 
@@ -526,6 +631,7 @@ bmrm_return_value_T svm_ppbm_solver(
 				{
 					tmp_idx=0;
 					cp_ptr=CPList_head;
+
 					while(cp_ptr->address != ICPs[i])
 					{
 						cp_ptr=cp_ptr->next;
@@ -534,11 +640,16 @@ bmrm_return_value_T svm_ppbm_solver(
 
 					remove_cutting_plane(&CPList_head, &CPList_tail, map, ICPs[i]);
 
-					LIBBMRM_MEMMOVE(b+tmp_idx, b+tmp_idx+1, (ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(beta+tmp_idx, beta+tmp_idx+1, (ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(diag_H+tmp_idx, diag_H+tmp_idx+1, (ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(I+tmp_idx, I+tmp_idx+1, (ppbmrm.nCP-tmp_idx)*sizeof(uint32_t));
-					LIBBMRM_MEMMOVE(ICPcounter+tmp_idx, ICPcounter+tmp_idx+1, (ppbmrm.nCP-tmp_idx)*sizeof(uint32_t));
+					LIBBMRM_MEMMOVE(b+tmp_idx, b+tmp_idx+1,
+							(ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
+					LIBBMRM_MEMMOVE(beta+tmp_idx, beta+tmp_idx+1,
+							(ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
+					LIBBMRM_MEMMOVE(diag_H+tmp_idx, diag_H+tmp_idx+1,
+							(ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
+					LIBBMRM_MEMMOVE(I+tmp_idx, I+tmp_idx+1,
+							(ppbmrm.nCP-tmp_idx)*sizeof(uint32_t));
+					LIBBMRM_MEMMOVE(ICPcounter+tmp_idx, ICPcounter+tmp_idx+1,
+							(ppbmrm.nCP-tmp_idx)*sizeof(uint32_t));
 				}
 
 				/* H */
@@ -546,9 +657,11 @@ bmrm_return_value_T svm_ppbm_solver(
 				{
 					for (uint32_t j=0; j < nCP_new; ++j)
 					{
-						H_buff[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(ACPs[i], ACPs[j], BufSize)];
+						H_buff[LIBBMRM_INDEX(i, j, BufSize)]=
+							H[LIBBMRM_INDEX(ACPs[i], ACPs[j], BufSize)];
 					}
 				}
+
 				for (uint32_t i=0; i<nCP_new; ++i)
 					for (uint32_t j=0; j<nCP_new; ++j)
 						H[LIBBMRM_INDEX(i, j, BufSize)]=H_buff[LIBBMRM_INDEX(i, j, BufSize)];
@@ -559,6 +672,7 @@ bmrm_return_value_T svm_ppbm_solver(
 	} /* end of main loop */
 
 	cp_ptr=CPList_head;
+
 	while(cp_ptr != NULL)
 	{
 		cp_ptr2=cp_ptr;
