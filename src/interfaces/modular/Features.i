@@ -50,8 +50,14 @@
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
 %rename(Labels) CLabels;
+
+PYPROTO_DENSELABELS(CDenseLabels, DenseLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(DenseLabels) CDenseLabels;
+
+PYPROTO_DENSELABELS(CBinaryLabels, BinaryLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(BinaryLabels) CBinaryLabels;
+
+PYPROTO_DENSELABELS(CMulticlassLabels, MulticlassLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(MulticlassLabels) CMulticlassLabels;
 
 PYPROTO_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_FLOAT64)
@@ -350,7 +356,7 @@ namespace shogun
 #endif
 
 #ifdef USE_FLOAT32
-	PYPROTO_DENSEFEATURES(ShortRealFeatures, float64_t, "f\0", NPY_FLOAT32)
+	PYPROTO_DENSEFEATURES(ShortRealFeatures, float32_t, "f\0", NPY_FLOAT32)
     %template(ShortRealFeatures) CDenseFeatures<float32_t>;
 #endif
 

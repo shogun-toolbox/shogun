@@ -11,12 +11,12 @@
 
 %include "protocols_helper.i"
 
-/* Numeric operators for DenseLabels */
-%define NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, operator_name, operator)
+/* Numeric operators for SGVector */
+%define NUMERIC_SGVECTOR(class_name, type_name, format_str, operator_name, operator)
 
 PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *o2)
 {
-	class_type* arg1=0; // self in c++ repr
+	SGVector< type_name >* arg1=(SGVector< type_name >*) 0; // self in c++ repr
 
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
@@ -27,15 +27,15 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	Py_buffer view;
 	SGVector< type_name > buf; // internal buffer of self
 
-	int num_labels; // shape of buffer of self
+	int vlen=0; // shape of buffer of self
 	Py_ssize_t shape[1];
 	Py_ssize_t strides[1];
 
 	type_name* lhs;
 	char* rhs;
 
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::class_type"), 0 |  0 );
-	arg1=reinterpret_cast< class_type* >(argp1);
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::SGVector<type_name>"), 0 |  0 );
+	arg1=reinterpret_cast< SGVector< type_name >* >(argp1);
 
 	res2=PyObject_CheckBuffer(o2);
 	if (!res2)
@@ -66,7 +66,7 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	}
 
 	shape[0]=view.shape[0];
-	if (shape[0]!=arg1->get_num_labels())
+	if (shape[0]!=arg1->vlen)
 		SWIG_exception_fail(SWIG_ArgError(0), "wrong size");
 
 	strides[0]=view.strides[0];
@@ -75,13 +75,13 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 		SWIG_exception_fail(SWIG_ArgError(view.len), "bad buffer");
 
 	// calculation
-	buf=arg1->get_labels();
-	num_labels=arg1->get_num_labels();
+	buf=*arg1;
+	vlen=arg1->vlen;
 
 	lhs=buf.vector;
 	rhs=(char*) view.buf;
 
-	for (int i=0; i<num_labels; i++)
+	for (int i=0; i<vlen; i++)
 	{
 		lhs[i] ## operator ## = (*(type_name*) (rhs + strides[0]*i));
 	}
@@ -96,10 +96,10 @@ fail:
 	return NULL;
 }
 
-%enddef // NUMERIC_DENSELABELS
+%enddef // NUMERIC_SGVECTOR
 
-/* Python protocols for DenseLabels */
-%define PYPROTO_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
+/* Python protocols for SGVector */
+%define PYPROTO_SGVECTOR(class_name, type_name, format_str, typecode)
 
 %wrapper
 %{
@@ -107,7 +107,7 @@ fail:
 /* used by PyObject_GetBuffer */
 static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 {
-	class_type* arg1=(class_type*) 0; // self in c++ repr
+	SGVector< type_name >* arg1=(SGVector< type_name >*) 0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
@@ -119,11 +119,11 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::class_type"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::SGVector<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "getbuffer" "', argument " "1"" of type '" "class_type *""'");
+					"in method '" "getbuffer" "', argument " "1"" of type '" "SGVector<type_name> *""'");
 	}
 
 	if ((flags & PyBUF_C_CONTIGUOUS)==PyBUF_C_CONTIGUOUS)
@@ -139,12 +139,12 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 		goto fail;
 	}
 
-	arg1=reinterpret_cast< class_type* >(argp1);
+	arg1=reinterpret_cast< SGVector< type_name >* >(argp1);
 
 	info=new buffer_vector_ ## type_name ## _info;
 
-	info->buf=arg1->get_labels();
-	num_labels=arg1->get_num_labels();
+	info->buf=*arg1;
+	num_labels=arg1->vlen;
 
 	view->buf=info->buf.vector;
 
@@ -201,12 +201,12 @@ static void class_name ## _releasebuffer(PyObject *self, Py_buffer *view)
 /* used by PySequence_GetItem */
 static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx, bool get_scalar=true)
 {
-	class_type* arg1=0; // self in c++ repr
+	SGVector< type_name >* arg1=(SGVector< type_name >*) 0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
 	char* data=0; // internal data of self
-	int num_labels=0;
+	int vlen=0;
 
 	SGVector< type_name > temp;
 
@@ -216,21 +216,21 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx, bool get
 	PyObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::class_type"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::SGVector<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "getitem" "', argument " "1"" of type '" "class_type *""'");
+					"in method '" "getitem" "', argument " "1"" of type '" "SGVector<type_name> *""'");
 	}
 
-	arg1=reinterpret_cast< class_type* >(argp1);
+	arg1=reinterpret_cast< SGVector< type_name >* >(argp1);
 	
-	temp=arg1->get_labels();
-	num_labels=arg1->get_num_labels();
+	temp=*arg1;
+	vlen=arg1->vlen;
 
 	data=(char*) temp.vector;
 
-	idx=get_idx_in_bounds(idx, num_labels);
+	idx=get_idx_in_bounds(idx, vlen);
 	if (idx < 0)
 	{
 		goto fail;
@@ -296,11 +296,11 @@ fail:
 /* used by PySequence_GetSlice */
 static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
-	class_type* arg1=0; // self in c++ repr
+	SGVector< type_name >* arg1=(SGVector< type_name >*) 0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0 ; // result for self's casting
 
-	int num_labels=0;
+	int vlen=0;
 	char* data=0; // internal data of self
 
 	SGVector< type_name > temp;
@@ -311,21 +311,21 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::class_type"), 0 |  0 );
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::SGVector<type_name>*"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "slice" "', argument " "1"" of type '" "class_type *""'");
+					"in method '" "slice" "', argument " "1"" of type '" "SGVector<type_name> *""'");
 	}
 
-	arg1=reinterpret_cast< class_type* >(argp1);
+	arg1=reinterpret_cast< SGVector< type_name >* >(argp1);
 
-	temp=arg1->get_labels();
-	num_labels=arg1->get_num_labels();
+	temp=*arg1;
+	vlen=arg1->vlen;
 
 	data=(char*) temp.vector;
 
-	get_slice_in_bounds(&ilow, &ihigh, num_labels);
+	get_slice_in_bounds(&ilow, &ihigh, vlen);
 	if (ilow < ihigh)
 	{
 		data+=ilow * sizeof( type_name );
@@ -377,29 +377,29 @@ fail:
 	return -1;
 }
 
-NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, add, +)
-NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, sub, -)
-NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, mul, *)
+NUMERIC_SGVECTOR(class_name, type_name, format_str, add, +)
+NUMERIC_SGVECTOR(class_name, type_name, format_str, sub, -)
+NUMERIC_SGVECTOR(class_name, type_name, format_str, mul, *)
 
 static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFER | Py_TPFLAGS_BASETYPE;
 %}
 
 %init
 %{
-SwigPyBuiltin__shogun__ ## class_type ## _type.ht_type.tp_flags = class_name ## _flags;
+SwigPyBuiltin__shogun__SGVectorT_ ## type_name ## _t_type.ht_type.tp_flags = class_name ## _flags;
 %}
 
-%feature("python:bf_getbuffer") class_type #class_name "_getbuffer"
-%feature("python:bf_releasebuffer") class_type #class_name "_releasebuffer"
+%feature("python:bf_getbuffer") SGVector< type_name > #class_name "_getbuffer"
+%feature("python:bf_releasebuffer") SGVector< type_name > #class_name "_releasebuffer"
 
-%feature("python:nb_inplace_add") class_type #class_name "_inplaceadd"
-%feature("python:nb_inplace_subtract") class_type #class_name "_inplacesub"
-%feature("python:nb_inplace_multiply") class_type #class_name "_inplacemul"
+%feature("python:nb_inplace_add") SGVector< type_name > #class_name "_inplaceadd"
+%feature("python:nb_inplace_subtract") SGVector< type_name > #class_name "_inplacesub"
+%feature("python:nb_inplace_multiply") SGVector< type_name > #class_name "_inplacemul"
 
-%feature("python:sq_item") class_type #class_name "_getitem"
-%feature("python:sq_ass_item") class_type #class_name "_setitem"
-%feature("python:sq_slice") class_type #class_name "_getslice"
-%feature("python:sq_ass_slice") class_type #class_name "_setslice"
+%feature("python:sq_item") SGVector< type_name > #class_name "_getitem"
+%feature("python:sq_ass_item") SGVector< type_name > #class_name "_setitem"
+%feature("python:sq_slice") SGVector< type_name > #class_name "_getslice"
+%feature("python:sq_ass_slice") SGVector< type_name > #class_name "_setslice"
 
-%enddef /* PYPROTO_DENSELABELS */
+%enddef /* PYPROTO_SGVECTOR */
 #endif /* SWIG_PYTHON */

@@ -19,6 +19,7 @@
 
 %include "DenseFeatures_protocols.i"
 %include "DenseLabels_protocols.i"
+%include "SGVector_protocols.i"
 
 #ifdef HAVE_PYTHON
 %{

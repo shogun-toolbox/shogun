@@ -16,9 +16,9 @@
 
 PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *o2)
 {
-	CDenseFeatures< type_name > * arg1=0; // self in c++ repr
+	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
 
-	void *argp1=0; // pointer to self
+	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 	int res2=0; // result for checking buffer
 	int res3=0; // result for getting buffer
@@ -31,8 +31,8 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	Py_ssize_t shape[2];
 	Py_ssize_t strides[2];
 
-	type_name *lhs;
-	char *rhs;
+	type_name* lhs;
+	char* rhs;
 
 	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
 	arg1=reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
@@ -76,7 +76,7 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	if (view.len!=(shape[0]*shape[1])*view.itemsize)
 		SWIG_exception_fail(SWIG_ArgError(view.len), "bad buffer");
 
-	// result calculation
+	// calculation
 	buf=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
 	num_vec=arg1->get_num_vectors();
@@ -88,7 +88,7 @@ PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *
 	{
 		for (int j=0; j<num_feat; j++)
 		{
-			lhs[num_feat*i + j] ## operator ## = (*(type_name*) (rhs + strides[0]*i + strides[1]*j));
+			lhs[num_feat*i + j] ## operator ## = (*(type_name*) (rhs + strides[0]*j + strides[1]*i));
 		}
 	}
 
@@ -113,8 +113,8 @@ fail:
 /* used by PyObject_GetBuffer */
 static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 {
-	CDenseFeatures< type_name > * arg1=(CDenseFeatures< type_name > *) 0; // self in c++ repr
-	void *argp1=0; // pointer to self
+	CDenseFeatures< type_name >* arg1=(CDenseFeatures< type_name > *) 0; // self in c++ repr
+	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
 	int num_feat=0, num_vec=0;
@@ -169,7 +169,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 	view->ndim=2;
 
 	view->format=(char*) format_str;
-	view->itemsize=strides[0];
+	view->itemsize=sizeof( type_name );
 
 	view->len=(shape[0]*shape[1])*view->itemsize;
 	view->shape=shape;
@@ -234,14 +234,13 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 
 	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
 	
-	//data=(char*) arg1->get_feature_matrix(num_feat, num_vec);
 	temp=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
 	num_vec=arg1->get_num_vectors();
 
 	data=(char*) temp.matrix;
 
-	idx = get_idx_in_bounds(idx, num_feat);
+	idx=get_idx_in_bounds(idx, num_feat);
 	if (idx < 0)
 	{
 		goto fail;
@@ -280,16 +279,16 @@ static int class_name ## _setitem(PyObject *self, Py_ssize_t idx, PyObject *v)
 
 	if (v==NULL)
 	{
-		// error
-		return -1;
+		// TODO error message
+		goto fail;
 	}
 
-	tmp = (PyArrayObject *) class_name ## _getitem(self, idx);
-	if(tmp == NULL)
+	tmp=(PyArrayObject *) class_name ## _getitem(self, idx);
+	if(tmp==NULL)
 	{
-		return -1;
+		goto fail;
 	}
-	ret = PyArray_CopyObject(tmp, v);
+	ret=PyArray_CopyObject(tmp, v);
 	Py_DECREF(tmp);
 	return ret;
 
@@ -306,7 +305,7 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	int res1=0 ; // result for self's casting
 
 	int num_feat=0, num_vec=0;
-	char* data = 0; // internal data of self
+	char* data=0; // internal data of self
 
 	SGMatrix< type_name > temp;
 
@@ -324,8 +323,7 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	}
 
 	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
-	
-	//data=(char*) arg1->get_feature_matrix(num_feat, num_vec);
+
 	temp=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
 	num_vec=arg1->get_num_vectors();
@@ -369,14 +367,14 @@ static int class_name ## _setslice(PyObject *self, Py_ssize_t ilow, Py_ssize_t i
 
 	if (v==NULL)
 	{
-		// error
-		return -1;
+		// TODO error message
+		goto fail;
 	}
 
-	tmp = (PyArrayObject *) class_name ## _getslice(self, ilow, ihigh);
-	if(tmp == NULL)
+	tmp=(PyArrayObject *) class_name ## _getslice(self, ilow, ihigh);
+	if(tmp==NULL)
 	{
-		return -1;
+		goto fail;
 	}
 	ret = PyArray_CopyObject(tmp, v);
 	Py_DECREF(tmp);
@@ -423,7 +421,7 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 	Py_ssize_t feat_slicelength=0;
 	Py_ssize_t vec_slicelength=0;
 
-	PyObject *tmp; // temporary object for tuple's item
+	PyObject* tmp; // temporary object for tuple's item
 
 	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
@@ -433,8 +431,7 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 	}
 
 	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
-	
-	//data=(char*) arg1->get_feature_matrix(num_feat, num_vec);
+
 	temp=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
 	num_vec=arg1->get_num_vectors();
@@ -513,7 +510,7 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 
 		if (ret==NULL)
 		{
-			// error here
+			// TODO error message
 			goto fail;
 		}
 
@@ -553,14 +550,14 @@ static int class_name ## _setsubscript(PyObject *self, PyObject *key, PyObject* 
 
 	if (v==NULL)
 	{
-		// error
-		return -1;
+		// TODO error message
+		goto fail;
 	}
 
 	tmp = (PyArrayObject *) class_name ## _getsubscript(self, key, false);
 	if(tmp == NULL)
 	{
-		return -1;
+		goto fail;
 	}
 	ret = PyArray_CopyObject(tmp, v);
 	Py_DECREF(tmp);
@@ -579,7 +576,6 @@ static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFE
 
 %init
 %{
-/* hack! */
 SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags = class_name ## _flags;
 %}
 
