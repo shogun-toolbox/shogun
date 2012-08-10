@@ -346,7 +346,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * possible with subset
 		 *
-		 * @param vec feature vector to free
 		 * @param num index of vector in cache
 		 */
 		void free_feature_vector(int32_t num);

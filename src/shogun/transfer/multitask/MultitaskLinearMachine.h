@@ -34,7 +34,6 @@ class CMultitaskLinearMachine : public CLinearMachine
 
 		/** constructor
 		 *
-		 * @param z regularization coefficient
 		 * @param training_data training features
 		 * @param training_labels training labels
 		 * @param task_relation task relation
@@ -86,13 +85,13 @@ class CMultitaskLinearMachine : public CLinearMachine
 		 */
 		virtual float64_t get_bias();
 
-		/** getter for task tree
-		 * @return task tree
+		/** getter for task relation
+		 * @return task relation
 		 */
 		CTaskRelation* get_task_relation() const;
 
-		/** setter for task tree
-		 * @param task_tree task tree
+		/** setter for task relation
+		 * @param task_relation task relation
 		 */
 		void set_task_relation(CTaskRelation* task_relation);
 

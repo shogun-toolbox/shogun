@@ -34,7 +34,7 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 		 * @param rho2 rho2 regularization coefficient of L2 term
 		 * @param training_data training features
 		 * @param training_labels training labels
-		 * @param task_relation task relation
+		 * @param task_group task group
 		 */
 		CMultitaskL1L2LogisticRegression(
 		     float64_t rho1, float64_t rho2, CDotFeatures* training_data, 
@@ -49,7 +49,7 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 		void set_rho1(float64_t rho1); 
 
 		/** get rho1 regularization coefficient
-		 * @param rho1 value
+		 * @return rho1 value
 		 */
 		float64_t get_rho1() const; 
 

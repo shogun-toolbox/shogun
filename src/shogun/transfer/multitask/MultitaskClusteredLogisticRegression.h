@@ -35,8 +35,8 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 * @param rho2 rho2 regularization coefficient
 		 * @param training_data training features
 		 * @param training_labels training labels
-		 * @param task_relation task relation
-		 * @param num_cluster number of task clusters
+		 * @param task_group task group
+		 * @param num_clusters number of task clusters
 		 */
 		CMultitaskClusteredLogisticRegression(
 		     float64_t rho1, float64_t rho2, CDotFeatures* training_data, 

@@ -16,10 +16,13 @@
 #include <pthread.h>
 #endif
 
+/** refcount structure */
 struct refcount_t 
 {
+	/** reference count */
 	int32_t rc;
 #ifdef HAVE_PTHREAD
+	/** lock for thread safety */
 	PTHREAD_LOCK_T lock;
 #endif
 };

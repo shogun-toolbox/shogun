@@ -472,6 +472,7 @@ template<class T> class SGVector : public SGReferencedData
 			const T* vector, int32_t n, const char* name="vector",
 			const char* prefix="");
 
+		/// display vector (useful for debugging)
 		static void display_vector(
 			const SGVector<T>, const char* name="vector",
 			const char* prefix="");
@@ -510,6 +511,7 @@ template<class T> class SGVector : public SGReferencedData
 				return data[i] < data[j];
 			}
 
+			/** data */
 			const T* data;
 		};
 		/** get sorted index.

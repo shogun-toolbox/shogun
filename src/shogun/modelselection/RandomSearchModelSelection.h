@@ -31,9 +31,9 @@ public:
 	CRandomSearchModelSelection();
 
 	/** constructor
-	 * @param model_parameters
-	 * @param cross_validation
-	 * @param ratio
+	 * @param model_parameters model parameters to use
+	 * @param machine_eval machine to use
+	 * @param ratio ratio in range [0,1]
 	 */
 	CRandomSearchModelSelection(CModelSelectionParameters* model_parameters,
 			CMachineEvaluation* machine_eval, float64_t ratio);

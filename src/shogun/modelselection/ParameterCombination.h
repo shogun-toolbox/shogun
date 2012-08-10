@@ -118,6 +118,7 @@ public:
 	 * @param name Name of parameter
 	 * @param value value to be set
 	 * @param parent The CSObject that directly holds this parameter
+	 * @param index index
 	 *
 	 * @return bool true if value successfully set.
 	 */
@@ -205,7 +206,7 @@ protected:
 	 *
 	 * @param sets set of sets of CParameterCombination instances which
 	 * represent the trees to be multiplied
-	 * @new_root this new root is put in front of all products
+	 * @param new_root this new root is put in front of all products
 	 * @return set of trees with the given root as root and all combinations
 	 * of the trees in the sets as children
 	 */

@@ -408,7 +408,7 @@ protected:
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
-	/*Updates the hash of current parameter combination.
+	/** Updates the hash of current parameter combination.
 	 *
 	 * @return bool if parameter combination has changed since last
 	 * update.
@@ -476,7 +476,7 @@ public:
 	/** map for different parameter versions */
 	ParameterMap* m_parameter_map;
 
-	/*Hash of parameter values*/
+	/** * * * * * * * Hash of parameter values*/
 	uint32_t m_hash;
 
 private:
