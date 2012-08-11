@@ -59,7 +59,11 @@ float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels, 
 
     result = result.cwiseProduct(result);
 
+<<<<<<< HEAD
     result /= -2*m_sigma*m_sigma;
+=======
+    result /= 2*m_sigma*m_sigma;
+>>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
 
     for (index_t i = 0; i < function.rows(); i++)
     	result[i] -= log(2*CMath::PI*m_sigma*m_sigma)/2.0;
@@ -78,7 +82,11 @@ VectorXd CGaussianLikelihood::get_log_probability_derivative_f(CRegressionLabels
     	return result/(m_sigma*m_sigma);
 
     else if (j == 2)
+<<<<<<< HEAD
     	return -VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
+=======
+    	return VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
+>>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
 
     else if (j == 3)
     	return VectorXd::Zero(result.rows());
@@ -86,6 +94,7 @@ VectorXd CGaussianLikelihood::get_log_probability_derivative_f(CRegressionLabels
 
 VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TParameter* param,  CSGObject* obj, Eigen::VectorXd function)
 {
+<<<<<<< HEAD
 
     VectorXd result(function.rows());
 
@@ -97,6 +106,10 @@ VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TP
 
 	//(ymmu^2-x^2)/x^3
 
+=======
+    VectorXd result(function.rows());
+
+>>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
     for (index_t i = 0; i < function.rows(); i++)
     	result[i] = labels->get_labels()[i] - function[i];
 
@@ -112,6 +125,7 @@ VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TP
 
 VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function)
 {
+<<<<<<< HEAD
 	//2/x^3
 	if (strcmp(param->m_name, "sigma") || obj != this)
 	{
@@ -119,6 +133,8 @@ VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels, T
 		result(0) = CMath::INFTY;
 		return result;
 	}
+=======
+>>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
     return 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
 }
 

@@ -9,7 +9,7 @@
 
 #include <shogun/regression/gp/StudentsTLikelihood.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <iostream>
+
 
 #include <shogun/base/Parameter.h>
 
@@ -27,6 +27,7 @@ void CStudentsTLikelihood::init()
 	m_df = 3;
 	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
 	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
+
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()
@@ -72,6 +73,7 @@ float64_t CStudentsTLikelihood::get_log_probability_f(CRegressionLabels* labels,
     for (index_t i = 0; i < function.rows(); i++)
     {
     	result[i] = -(m_df+1)*log(1.0+float64_t(result[i]))/2.0;
+
     	result[i] += temp;
     }
 
@@ -193,12 +195,6 @@ VectorXd CStudentsTLikelihood::get_first_derivative(CRegressionLabels* labels, T
 
     return a/(m_sigma);
 }
-	else
-	{
-		result(0) = CMath::INFTY;
-		return result;
-	}
-
 }
 
 VectorXd CStudentsTLikelihood::get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function)
