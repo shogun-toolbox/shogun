@@ -18,7 +18,7 @@ namespace shogun
 class CGradientCriterion: public CEvaluation
 {
 
-/* @brief CGradientCriterion
+/** @brief CGradientCriterion
  *
  * Simple class which specifies the direction
  * of gradient search. Does not provide any

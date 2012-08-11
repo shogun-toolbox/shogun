@@ -225,14 +225,14 @@ protected:
 	static CDynamicObjectArray* extract_trees_with_name(
 			const CDynamicObjectArray* sets, const char* desired_name);
 
-	/* Gets parameter by name in current node.
+	/** Gets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @return parameter. Null if not found.
 	 */
 	TParameter* get_parameter_helper(const char* name);
 
-	/* Sets parameter by name in current node.
+	/** Sets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @param value of parameter
@@ -242,7 +242,7 @@ protected:
 	 */
 	bool set_parameter_helper(const char* name, bool value, index_t index);
 
-	/* Sets parameter by name in current node.
+	/** Sets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @param value of parameter
@@ -252,7 +252,7 @@ protected:
 	 */
 	bool set_parameter_helper(const char* name, int32_t value, index_t index);
 
-	/* Sets parameter by name in current node.
+	/** Sets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @param value of parameter

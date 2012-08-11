@@ -18,6 +18,7 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
+/** Enum to select which statistic type of quadratic time MMD should be computed */
 enum EQuadraticMMDType
 {
 	BIASED, UNBIASED

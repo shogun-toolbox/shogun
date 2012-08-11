@@ -28,13 +28,13 @@ class CLabels;
 class CSplittingStrategy;
 class CEvaluation;
 
-class CMachineEvaluation: public CSGObject
-{
-
-/* @brief Machine Evaluation is an abstract class
+/** @brief Machine Evaluation is an abstract class
  * that evaluates a machine according to some criterion.
  *
  */
+class CMachineEvaluation: public CSGObject
+{
+
 
 public:
 
