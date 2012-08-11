@@ -1,4 +1,6 @@
 %{
+ #include <shogun/structure/RiskFunction.h>
+ #include <shogun/structure/DirectorRiskFunction.h>
  #include <shogun/structure/PlifBase.h>
  #include <shogun/structure/Plif.h>
  #include <shogun/structure/PlifArray.h>

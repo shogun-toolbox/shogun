@@ -7,7 +7,19 @@
  * Written (W) 2009 Soeren Sonnenburg, 2012 Fernando José Iglesias García
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorRiskFunction;
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+#endif
+
+%rename(BaseRiskFunction) CRiskFunction;
+%rename(DirectorRiskFunction) CDirectorRiskFunction;
+
 /* Remove C Prefix */
 %rename(PlifBase) CPlifBase;
 %rename(Plif) CPlif;
@@ -30,6 +42,9 @@
 #endif /* USE_MOSEK */
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/structure/RiskFunction.h>
+%include <shogun/structure/DirectorRiskFunction.h>
+
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>
 %include <shogun/structure/PlifArray.h>
