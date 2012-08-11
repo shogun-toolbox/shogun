@@ -17,7 +17,7 @@
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>
 #include <shogun/distance/EuclideanDistance.h>
-#include <shogun/kernel/DistantSegmentsKernel.h>
+#include <shogun/kernel/string/DistantSegmentsKernel.h>
 #include <shogun/regression/gp/ExactInferenceMethod.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/regression/gp/ZeroMean.h>

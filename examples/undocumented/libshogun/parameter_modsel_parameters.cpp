@@ -11,7 +11,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/kernel/DistantSegmentsKernel.h>
+#include <shogun/kernel/string/DistantSegmentsKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>

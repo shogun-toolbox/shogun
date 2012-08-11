@@ -12,7 +12,7 @@
 #define _DICEKERNELNORMALIZER_H___
 
 #include <shogun/kernel/normalizer/KernelNormalizer.h>
-#include <shogun/kernel/CommWordStringKernel.h>
+#include <shogun/kernel/string/CommWordStringKernel.h>
 
 namespace shogun
 {

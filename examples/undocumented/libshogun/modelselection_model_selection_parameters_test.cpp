@@ -14,7 +14,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/kernel/DistantSegmentsKernel.h>
+#include <shogun/kernel/string/DistantSegmentsKernel.h>
 
 using namespace shogun;
 

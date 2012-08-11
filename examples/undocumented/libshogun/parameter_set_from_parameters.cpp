@@ -12,7 +12,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/kernel/DistantSegmentsKernel.h>
+#include <shogun/kernel/string/DistantSegmentsKernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 
 using namespace shogun;
