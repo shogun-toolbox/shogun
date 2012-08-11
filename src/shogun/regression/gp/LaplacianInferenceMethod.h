@@ -22,6 +22,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/regression/gp/InferenceMethod.h>
 #include <shogun/lib/external/brent.hpp>
+#include <iostream>
 
 
 namespace shogun
@@ -59,8 +60,7 @@ public:
 	 * @param latent features to use
 	 */
 	CLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* latent_features);
+			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
 	/*Destructor*/
 	virtual ~CLaplacianInferenceMethod();
@@ -250,20 +250,23 @@ private:
 	  Eigen::MatrixXd* mW;
 	  Eigen::VectorXd* f;
 	  Eigen::VectorXd* m;
+	  float64_t scale;
 	  CLikelihoodModel* lik;
 	  CRegressionLabels *lab;
 
+	  Eigen::VectorXd start_alpha;
+
 	  virtual double operator() (double x)
 	  {
-			  *alpha = *alpha + x*(*dalpha);
-			  (*f) = (*K)*(*alpha)+(*m);
-			  (*l1) = lik->get_log_probability_f(lab, *f);
+			  *alpha = start_alpha + x*(*dalpha);
+			  (*f) = (*K)*(*alpha)*scale*scale+(*m);
+		//	  (*l1) =
 			  (*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
-			  (*dl2) = lik->get_log_probability_derivative_f(lab, (*f), 2);
-			  (*mW) = *dl2;
-			  Eigen::VectorXd result = (*alpha)*((*f)-(*m))/2.0;
-			  result[0] -= (*l1);
-			  return result[0];
+		//	  (*dl2) = lik->get_log_probability_derivative_f(lab, (*f), 2);
+			  (*mW) = -lik->get_log_probability_derivative_f(lab, (*f), 2);
+			  float64_t result = ((*alpha).dot(((*f)-(*m))))/2.0;
+			  result -= lik->get_log_probability_f(lab, *f);
+			  return result;
 	  }
 	};
 
