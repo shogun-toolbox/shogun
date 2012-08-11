@@ -51,6 +51,8 @@ enum EQuadraticMMDType
  * \f]
  *
  * The type (biased/unbiased) can be selected via set_statistic_type().
+ * Note that computing the statistic returns m*MMD; same holds for the null
+ * distribution samples.
  *
  * Along with the statistic comes a method to compute a p-value based on
  * different methods. Bootstrapping, is also possible. If unsure which one to
@@ -107,7 +109,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 
 		/** Computes the squared quadratic time MMD for the current data. Note
 		 * that the type (biased/unbiased) can be specified with
-		 * set_statistic_type() method.
+		 * set_statistic_type() method. Note that it returns m*MMD.
 		 *
 		 * @return (biased or unbiased) squared quadratic time MMD
 		 */
@@ -151,7 +153,8 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * kernel matrix needs to be stored in memory
 		 *
 		 * Note that the provided statistic HAS to be the biased version
-		 * (see paper for details)
+		 * (see paper for details). Note that m*Null-distribution is returned,
+		 * which is fine since the statistic is also m*MMD:
 		 *
 		 * Works well if the kernel matrix is NOT diagonal dominant.
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
@@ -199,7 +202,8 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 *
 		 * Note that when being used for constructing a test, the provided
 		 * statistic HAS to be the biased version
-		 * (see paper for details)
+		 * (see paper for details). Note that m*Null-distribution is fitted,
+		 * which is fine since the statistic is also m*MMD.
 		 *
 		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
 		 * A fast, consistent kernel two-sample test.
@@ -210,10 +214,10 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		SGVector<float64_t> fit_null_gamma();
 
 	protected:
-		/** helper method to compute unbiased squared quadratic time MMD */
+		/** helper method to compute m*unbiased squared quadratic time MMD */
 		virtual float64_t compute_unbiased_statistic();
 
-		/** helper method to compute biased squared quadratic time MMD */
+		/** helper method to compute m*biased squared quadratic time MMD */
 		virtual float64_t compute_biased_statistic();
 
 	private:
