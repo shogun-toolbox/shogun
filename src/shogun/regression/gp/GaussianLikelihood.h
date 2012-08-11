@@ -72,9 +72,9 @@ public:
 	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
 
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels, Eigen::VectorXd f);
-	virtual Eigen::VectorXd get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd f, index_t i) = 0;
-	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
-	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
+	virtual Eigen::VectorXd get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd f, index_t i);
+	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
+	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
 
 private:
 	/** Observation noise sigma */

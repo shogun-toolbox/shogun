@@ -35,11 +35,10 @@ CLaplacianInferenceMethod::CLaplacianInferenceMethod() : CInferenceMethod()
 }
 
 CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat) :
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 			CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
-	set_latent_features(lat);
 	update_all();
 }
 
@@ -47,8 +46,10 @@ void CLaplacianInferenceMethod::init()
 {
 	m_latent_features = NULL;
 	m_ind_noise = 1e-10;
-	SG_ADD((CSGObject**)&m_latent_features, "latent_features",
-			"Latent Features", MS_NOT_AVAILABLE);
+	m_max_itr = 30;
+	m_opt_tolerance = 1e-4;
+	m_tolerance = 1e-6;
+	m_max = 2;
 }
 
 CLaplacianInferenceMethod::~CLaplacianInferenceMethod()
@@ -107,12 +108,10 @@ void CLaplacianInferenceMethod::update_all()
 	if (m_kernel)
 		update_train_kernel();
 
-	if (m_ktrtr.num_cols*m_ktrtr.num_rows &&
-		m_kuu.rows()*m_kuu.cols() &&
-		m_ktru.cols()*m_ktru.rows())
+	if (m_ktrtr.num_cols*m_ktrtr.num_rows)
 	{
-		update_chol();
 		update_alpha();
+		update_chol();
 	}
 }
 
@@ -126,9 +125,6 @@ void CLaplacianInferenceMethod::check_members()
 
 	if (!m_features)
 		SG_ERROR("No features set!\n");
-
-	if (!m_latent_features)
-		SG_ERROR("No latent features set!\n");
 
   	if (m_labels->get_num_labels() != m_features->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
@@ -162,39 +158,6 @@ void CLaplacianInferenceMethod::check_members()
 		if (m_features->get_feature_type() != F_DREAL)
 			SG_ERROR("Expected Real Features\n");
 	}
-
-	if(m_latent_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_latent_features)->
-				get_first_feature_obj();
-
-		if (!feat->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n");
-
-		if (feat->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
-
-		if (feat->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
-
-		SG_UNREF(feat);
-	}
-
-	else
-	{
-		if (!m_latent_features->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n");
-
-		if (m_latent_features->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
-
-		if (m_latent_features->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
-	}
-
-	if (m_latent_matrix.num_rows != m_feature_matrix.num_rows)
-		SG_ERROR("Regular and Latent Features do not match in dimensionality!\n");
 
 	if (!m_kernel)
 		SG_ERROR( "No kernel assigned!\n");
@@ -230,58 +193,88 @@ CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
 	VectorXd sum(1);
 	sum[0] = 0;
 
-
 	for (index_t i = 0; i < sW.rows(); i++)
 	{
 		for (index_t j = 0; j < m_ktrtr.num_cols; j++)
-			sW_temp(i,j) = sW(i,i);
+			sW_temp(i,j) = sW(i);
 	}
 
 	VectorXd g;
 
-	if (W.maxCoeff() < 0)
+	if (W.minCoeff() < 0)
 	{
 		Z = -Z;
 
 		MatrixXd A = MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-		A = A + (W.diagonal())*temp_kernel;
+		MatrixXd temp_diagonal(sW.rows(), sW.rows());
+		temp_diagonal.setZero(sW.rows(), sW.rows());
+
+		for (index_t s = 0; s < temp_diagonal.rows(); s++)
+		{
+			for (index_t r = 0; r < temp_diagonal.cols(); r++)
+				temp_diagonal(r,s) = W(s);
+		}
+
+
+		A = A + temp_kernel*m_scale*m_scale*temp_diagonal;
 
 		FullPivLU<MatrixXd> lu(A);
 
-		MatrixXd temp_matrix = lu.inverse().cwiseProduct(temp_kernel);
+		MatrixXd temp_matrix = lu.inverse().cwiseProduct(temp_kernel*m_scale*m_scale);
 		VectorXd temp_sum(temp_matrix.rows());
 
 		for (index_t i = 0; i < temp_matrix.rows(); i++)
 		{
 			for (index_t j = 0; j < temp_matrix.cols(); j++)
-				temp_sum[i] += temp_matrix(i,j);
+				temp_sum[i] += temp_matrix(j,i);
 		}
 
+
 	    g = temp_sum/2.0;
+
 	}
 
 	else
 	{
-		MatrixXd C = Z.colPivHouseholderQr().solve(sW_temp.cwiseProduct(temp_kernel));
-	    Z = Z.llt().solve(sW.diagonal());
-	    Z = sW.cwiseProduct(Z);
+		MatrixXd C = Z.transpose().colPivHouseholderQr().solve(sW_temp.cwiseProduct(temp_kernel*m_scale*m_scale));
+		MatrixXd temp_diagonal(sW.rows(), sW.rows());
+		temp_diagonal.setZero(sW.rows(), sW.rows());
+
+		for (index_t s = 0; s < sW.rows(); s++)
+			temp_diagonal(s,s) = sW(s);
+
+		MatrixXd temp = Z.transpose();
+
+		Z = Z.transpose().colPivHouseholderQr().solve(temp_diagonal);
+
+		Z = temp.transpose().colPivHouseholderQr().solve(Z);
+
+		for (index_t s = 0; s < Z.rows(); s++)
+		{
+			for (index_t r = 0; r < Z.cols(); r++)
+				Z(s,r) *= sW(s);
+		}
 
 		VectorXd temp_sum(C.rows());
+
+		temp_sum.setZero(C.rows());
 
 		for (index_t i = 0; i < C.rows(); i++)
 		{
 			for (index_t j = 0; j < C.cols(); j++)
-				temp_sum[i] += C(i,j)*C(i,j);
+				temp_sum[i] += C(j,i)*C(j,i);
 		}
 
-	    g = (temp_kernel.diagonal()-temp_sum)/2.0;
+	    g = (temp_kernel.diagonal()*m_scale*m_scale-temp_sum)/2.0;
+
 	}
 
 	VectorXd dfhat = g.cwiseProduct(d3lp);
 
 	m_kernel->build_parameter_dictionary(para_dict);
 	m_mean->build_parameter_dictionary(para_dict);
+	m_model->build_parameter_dictionary(para_dict);
 
 	//This will be the vector we return
 	CMap<TParameter*, SGVector<float64_t> > gradient(
@@ -355,10 +348,16 @@ CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
 						dK(d,s) = deriv(d,s);
 				}
 
-			    sum[0] = (Z.transpose()*dK).sum();
+
+			    sum[0] = (Z.cwiseProduct(dK)).sum()/2.0;
+
+
 			    sum = sum - temp_alpha.transpose()*dK*temp_alpha/2.0;
+
 			    VectorXd b = dK*dlp;
-			    sum = sum - dfhat.transpose()*(b-temp_kernel*(Z*b));
+
+
+			    sum = sum - dfhat.transpose()*(b-temp_kernel*(Z*b)*m_scale*m_scale);
 				variables[h] = sum[0];
 				deriv_found = true;
 			}
@@ -367,14 +366,14 @@ CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
 			{
 			    sum = -temp_alpha.transpose()*mean_dev_temp;
 			    sum = sum - dfhat.transpose()*(mean_dev_temp-temp_kernel*
-			    		(Z*mean_dev_temp));
+			    		(Z*mean_dev_temp)*m_scale*m_scale);
 				variables[h] = sum[0];
 				deriv_found = true;
 			}
 
-			else if (lik_first_deriv.rows()*lik_second_deriv.rows() > 0)
+			else if (lik_first_deriv[0]+lik_second_deriv[0] != CMath::INFTY)
 			{
-			    sum = -g.transpose()*lik_second_deriv;
+			    sum[0] = -g.dot(lik_second_deriv);
 			    sum[0] = sum[0] - lik_first_deriv.sum();
 				variables[h] = sum[0];
 				deriv_found = true;
@@ -387,6 +386,33 @@ CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
 
 	}
 
+	TParameter* param;
+	index_t index = get_modsel_param_index("scale");
+	param = m_model_selection_parameters->get_parameter(index);
+
+	MatrixXd dK(m_ktrtr.num_cols, m_ktrtr.num_rows);
+
+	for (index_t d = 0; d < m_ktrtr.num_rows; d++)
+	{
+		for (index_t s = 0; s < m_ktrtr.num_cols; s++)
+			dK(d,s) = m_ktrtr(d,s)*m_scale*2.0;;
+	}
+
+    sum[0] = (Z.cwiseProduct(dK)).sum()/2.0;
+
+    sum = sum - temp_alpha.transpose()*dK*temp_alpha/2.0;
+
+    VectorXd b = dK*dlp;
+
+    sum = sum - dfhat.transpose()*(b-temp_kernel*(Z*b)*m_scale*m_scale);
+
+	SGVector<float64_t> scale(1);
+
+	scale[0] = sum[0];
+
+    gradient.add(param, scale);
+    para_dict.add(param, this);
+
 	return gradient;
 }
 
@@ -395,7 +421,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 	SGVector<float64_t> result(sW.rows());
 
 	for (index_t i = 0; i < sW.rows(); i++)
-		result[i] = sW(i,i);
+		result[i] = sW(i);
 
 	return result;
 }
@@ -405,11 +431,17 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 	if(update_parameter_hash())
 		update_all();
 
-	if (W.maxCoeff() < 0)
+	if (W.minCoeff() < 0)
 	{
 		MatrixXd A = MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-		A = A + W.diagonal()*temp_kernel;
+		MatrixXd temp_diagonal(sW.rows(), sW.rows());
+		temp_diagonal.setZero(sW.rows(), sW.rows());
+
+		for (index_t s = 0; s < sW.rows(); s++)
+			temp_diagonal(s,s) = sW(s);
+
+		A = A + temp_kernel*m_scale*m_scale*temp_diagonal;
 
 		FullPivLU<MatrixXd> lu(A);
 
@@ -421,7 +453,7 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 
 	else
 	{
-		LLT<MatrixXd> L((sW*sW.transpose()).cwiseProduct(temp_kernel) +
+		LLT<MatrixXd> L((sW*sW.transpose()).cwiseProduct(temp_kernel*m_scale*m_scale) +
 					MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
 		MatrixXd chol = L.matrixL();
@@ -431,7 +463,7 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 		for (index_t i = 0; i < m_L.num_rows; i++)
 			sum += log(m_L(i,i));
 
-		float64_t result = (temp_alpha.transpose()*(function-m_means))[0]/2.0 -
+		float64_t result = temp_alpha.dot(function-m_means)/2.0 -
 			lp + sum;
 
 		return result;
@@ -482,14 +514,22 @@ void CLaplacianInferenceMethod::update_chol()
 {
 	check_members();
 
-	if (W.maxCoeff() < 0)
+	if (W.minCoeff() < 0)
 	{
-		MatrixXd A = MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)
-						+W.diagonal()*temp_kernel;
+		MatrixXd temp_diagonal(sW.rows(), sW.rows());
+		temp_diagonal.setZero(sW.rows(), sW.rows());
+
+		for (index_t s = 0; s < temp_diagonal.rows(); s++)
+		{
+			for (index_t r = 0; r < temp_diagonal.cols(); r++)
+				temp_diagonal(s,s) = 1.0/W(s);
+		}
+
+		MatrixXd A = temp_kernel*m_scale*m_scale+temp_diagonal;
 
 		FullPivLU<MatrixXd> lu(A);
 
-		MatrixXd chol = -W.diagonal()*lu.inverse();
+		MatrixXd chol = -lu.inverse();
 
 		m_L = SGMatrix<float64_t>(chol.rows(), chol.cols());
 
@@ -503,10 +543,10 @@ void CLaplacianInferenceMethod::update_chol()
 
 	else
 	{
-		LLT<MatrixXd> L((sW*sW.transpose()).cwiseProduct(temp_kernel) +
+		LLT<MatrixXd> L((sW*sW.transpose()).cwiseProduct((temp_kernel*m_scale*m_scale)) +
 					MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
-		MatrixXd chol = L.matrixL();
+		MatrixXd chol = L.matrixU();
 
 		m_L = SGMatrix<float64_t>(chol.rows(), chol.cols());
 
@@ -547,15 +587,18 @@ void CLaplacianInferenceMethod::update_alpha()
 	{
 		temp_alpha = temp_alpha.Zero(m_labels->get_num_labels());
 
-		function = temp_kernel*temp_alpha+m_means;
+		function = temp_kernel*temp_alpha*m_scale*m_scale+m_means;
 
 		W = -m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 2);
+
 		Psi_New = -m_model->get_log_probability_f((CRegressionLabels*)m_labels, function);
 	}
 
+
 	else
 	{
-		function = temp_kernel*temp_alpha+m_means;
+		function = temp_kernel*m_scale*m_scale*temp_alpha+m_means;
+
 
 		W = -m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 2);
 		Psi_New = (temp_alpha.transpose()*(function-m_means))[0]/2.0;
@@ -573,7 +616,11 @@ void CLaplacianInferenceMethod::update_alpha()
 
 	index_t itr = 0;
 
-	first_derivative = m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 1);
+	dlp = m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 1);
+
+	d2lp = m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 2);
+
+	d3lp = m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 3);
 
 	while (Psi_Old - Psi_New > m_tolerance && itr < m_max_itr)
 	{
@@ -581,15 +628,21 @@ void CLaplacianInferenceMethod::update_alpha()
 		itr++;
 		if (W.minCoeff() < 0)
 		{
-			float64_t coeff = W.maxCoeff();
+	//		float64_t coeff = W.maxCoeff();
 
-			if (coeff < 0) coeff = 0;
-			for (index_t  i = 0; i < W.rows(); i++)
-				W(i) = coeff;
+		//	if (coeff < 0)
+			//	coeff = 0;
 
-			m_tolerance = 1e-10;
+			//for (index_t  i = 0; i < W.rows(); i++)
+				//W(i) = coeff;
+
+
+			//m_tolerance = 1e-10;
+
+
+			W = W + 2.0/(3.0)*dlp.cwiseProduct(dlp);
+
 		}
-
 		sW = W;
 
 		for (index_t i = 0; i < sW.rows(); i++)
@@ -598,21 +651,25 @@ void CLaplacianInferenceMethod::update_alpha()
 				sW(i,j) = CMath::sqrt(float64_t(W(i,j)));
 		}
 
-
-		LLT<MatrixXd> L((sW*sW.transpose()).cwiseProduct(temp_kernel) +
+		LLT<MatrixXd> L((sW*sW.transpose()).cwiseProduct(temp_kernel*m_scale*m_scale) +
 					MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
 		MatrixXd chol = L.matrixL();
 
-		VectorXd b = W.cwiseProduct((function - m_means)) + first_derivative;
+		MatrixXd temp = L.matrixL();
 
-		chol = chol.colPivHouseholderQr().solve(sW.cwiseProduct((temp_kernel*b)));
+		VectorXd b = W.cwiseProduct((function - m_means)) + dlp;
+
+		chol = chol.colPivHouseholderQr().solve(sW.cwiseProduct((temp_kernel*b*m_scale*m_scale)));
+
+		chol = temp.transpose().colPivHouseholderQr().solve(chol);
 
 		VectorXd dalpha = b - sW.cwiseProduct(chol) - temp_alpha;
-
 		Psi_line func;
 
+		func.lab = (CRegressionLabels*)m_labels;
 		func.K = &temp_kernel;
+		func.scale = m_scale;
 		func.alpha = &temp_alpha;
 		func.dalpha = &dalpha;
 		func.l1 = &lp;
@@ -622,13 +679,33 @@ void CLaplacianInferenceMethod::update_alpha()
 		func.lik = m_model;
 		func.m = &m_means;
 		func.mW = &W;
-
+		func.start_alpha = temp_alpha;
 		brent::local_min(0, m_max, m_opt_tolerance, func, Psi_New);
-
 	}
+
+	function = temp_kernel*m_scale*m_scale*temp_alpha+m_means;
+
+	lp = m_model->get_log_probability_f((CRegressionLabels*)m_labels, function);
+
+	dlp = m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 1);
+
+	d2lp = m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 2);
+
+	d3lp = m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 3);
 
 	W = -m_model->get_log_probability_derivative_f((CRegressionLabels*)m_labels, function, 2);
 
+	sW.setZero(sW.rows(), sW.cols());
+
+	if (W.minCoeff() > 0)
+	{
+
+	for (index_t i = 0; i < sW.rows(); i++)
+	{
+		for (index_t j = 0; j < sW.cols(); j++)
+			sW(i,j) = CMath::sqrt(float64_t(W(i,j)));
+	}
+	}
 	m_alpha = SGVector<float64_t>(temp_alpha.rows());
 	for (index_t i = 0; i < m_alpha.vlen; i++)
 		m_alpha[i] = temp_alpha[i];
