@@ -45,7 +45,7 @@ class CExactInferenceMethod: public CInferenceMethod
 
 public:
 
-	/*Default Constructor*/
+	/** Default Constructor */
 	CExactInferenceMethod();
 
 	/* Constructor
@@ -57,7 +57,7 @@ public:
 	CExactInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	/*Destructor*/
+	/** Destructor */
 	virtual ~CExactInferenceMethod();
 
 	/** get Negative Log Marginal Likelihood
@@ -128,7 +128,7 @@ public:
 		return "ExactInferenceMethod";
 	}
 	
-	/*Get the gradient
+	/** Get the gradient
 	 *
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
@@ -139,7 +139,7 @@ public:
 		return get_marginal_likelihood_derivatives(para_dict);
 	}
 
-	/*Get the function value
+	/** Get the function value
 	 *
 	 * @return Vector that represents the function value
 	 */
@@ -151,11 +151,16 @@ public:
 	}
 
 protected:
-	/** Update Alpha and Cholesky Matrices.
-	 */
+	/** Update alpha matrix */
 	virtual void update_alpha();
+
+	/** Update Cholesky matrix */
 	virtual void update_chol();
+
+	/** Update kernel matrix */
 	virtual void update_train_kernel();
+
+	/** Update All matrices */
 	virtual void update_all();
 
 private:
@@ -165,7 +170,7 @@ private:
 	 */
 	void check_members();
 
-	/*Kernel matrix with noise*/
+	/** Kernel matrix with noise */
 	SGMatrix<float64_t> m_kern_with_noise;
 };
 
