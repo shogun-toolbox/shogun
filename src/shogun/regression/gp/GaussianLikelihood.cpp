@@ -9,6 +9,7 @@
 
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/modelselection/ParameterCombination.h>
+#include <iostream>
 
 
 #include <shogun/base/Parameter.h>
@@ -58,7 +59,7 @@ float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels, 
 
     result = result.cwiseProduct(result);
 
-    result /= 2*m_sigma*m_sigma;
+    result /= -2*m_sigma*m_sigma;
 
     for (index_t i = 0; i < function.rows(); i++)
     	result[i] -= log(2*CMath::PI*m_sigma*m_sigma)/2.0;
@@ -77,7 +78,7 @@ VectorXd CGaussianLikelihood::get_log_probability_derivative_f(CRegressionLabels
     	return result/(m_sigma*m_sigma);
 
     else if (j == 2)
-    	return VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
+    	return -VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
 
     else if (j == 3)
     	return VectorXd::Zero(result.rows());
@@ -85,7 +86,16 @@ VectorXd CGaussianLikelihood::get_log_probability_derivative_f(CRegressionLabels
 
 VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TParameter* param,  CSGObject* obj, Eigen::VectorXd function)
 {
+
     VectorXd result(function.rows());
+
+	if (strcmp(param->m_name, "sigma") || obj != this)
+	{
+		result(0) = CMath::INFTY;
+		return result;
+	}
+
+	//(ymmu^2-x^2)/x^3
 
     for (index_t i = 0; i < function.rows(); i++)
     	result[i] = labels->get_labels()[i] - function[i];
@@ -102,6 +112,13 @@ VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TP
 
 VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function)
 {
+	//2/x^3
+	if (strcmp(param->m_name, "sigma") || obj != this)
+	{
+	    VectorXd result(function.rows());
+		result(0) = CMath::INFTY;
+		return result;
+	}
     return 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
 }
 

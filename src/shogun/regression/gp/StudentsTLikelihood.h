@@ -72,18 +72,27 @@ public:
 	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
 
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels, Eigen::VectorXd f);
-	virtual Eigen::VectorXd get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd f, index_t i) = 0;
-	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
-	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
+	virtual Eigen::VectorXd get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd f, index_t i);
+	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
+	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
 
 private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 
-	int32_t m_df;
+	float64_t m_df;
 
 	/*Initialize function*/
 	void init();
+
+	float64_t dlgamma(float64_t x)
+	{
+	  x = x+6.0;
+	  float64_t df = 1./(x*x);
+	  df = (((df/240-0.003968253986254)*df+1/120.0)*df-1/120.0)*df;
+	  df = df+log(x)-0.5/x-1.0/(x-1.0)-1.0/(x-2.0)-1.0/(x-3.0)-1.0/(x-4.0)-1.0/(x-5.0)-1.0/(x-6.0);
+	  return df;
+	}
 };
 
 }
