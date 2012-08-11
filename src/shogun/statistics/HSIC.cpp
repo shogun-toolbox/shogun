@@ -68,9 +68,6 @@ float64_t CHSIC::compute_statistic()
 	SGMatrix<float64_t> K=get_kernel_matrix_K();
 	SGMatrix<float64_t> L=get_kernel_matrix_L();
 
-	/* init kernel afterwards to ensure that precomputed stuff is updated */
-	m_kernel_q->init(m_p_and_q, m_p_and_q);
-
 	/* center matrices (MATLAB: Kc=H*K*H) */
 	K.center();
 
@@ -230,6 +227,7 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_K()
 	/* distinguish between custom and normal kernels */
 	if (m_kernel_p->get_kernel_type()==K_CUSTOM)
 	{
+		/* custom kernels need to to be initialised when a subset is added */
 		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
 		custom_kernel_p->add_row_subset(subset);
 		custom_kernel_p->add_col_subset(subset);
@@ -263,8 +261,9 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
 	subset.add(m_q_start);
 
 	/* now second half of data for L */
-	if (m_kernel_p->get_kernel_type()==K_CUSTOM)
+	if (m_kernel_q->get_kernel_type()==K_CUSTOM)
 	{
+		/* custom kernels need to to be initialised when a subset is added */
 		CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
 		custom_kernel_q->add_row_subset(subset);
 		custom_kernel_q->add_col_subset(subset);
