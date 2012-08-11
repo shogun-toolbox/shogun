@@ -58,14 +58,14 @@ null_samples_boot=mmd.bootstrap_null()
 if "sample_null_spectrum" in dir(QuadraticTimeMMD):
 		mmd.set_null_approximation_method(MMD2_SPECTRUM)
 		mmd.set_statistic_type(BIASED)
-		null_samples_spectrum=mmd.sample_null_spectrum(num_bootstrap, m-10)/m
+		null_samples_spectrum=mmd.sample_null_spectrum(num_bootstrap, m-10)
 		
 # fit gamma distribution, biased statistic
 mmd.set_null_approximation_method(MMD2_GAMMA)
 mmd.set_statistic_type(BIASED)
 gamma_params=mmd.fit_null_gamma()
 # sample gamma with parameters
-null_samples_gamma=array([gamma(gamma_params[0], gamma_params[1]) for _ in range(num_bootstrap)])/m
+null_samples_gamma=array([gamma(gamma_params[0], gamma_params[1]) for _ in range(num_bootstrap)])
 
 
 # plot

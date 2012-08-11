@@ -69,7 +69,6 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 {
 	/* split computations into three terms from JLMR paper (see documentation )*/
 	index_t m=m_q_start;
-	index_t n=m_p_and_q->get_num_vectors()-m_q_start;
 
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
@@ -82,26 +81,26 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 		for (index_t j=0; j<m; ++j)
 			first+=i==j ? 0 : m_kernel->kernel(i,j);
 	}
-	first/=m*(m-1);
+	first/=(m-1);
 
 	/* second term */
 	float64_t second=0;
-	for (index_t i=m_q_start; i<m_q_start+n; ++i)
+	for (index_t i=m_q_start; i<m_q_start+m; ++i)
 	{
 		/* ensure i!=j while adding up */
-		for (index_t j=m_q_start; j<m_q_start+n; ++j)
+		for (index_t j=m_q_start; j<m_q_start+m; ++j)
 			second+=i==j ? 0 : m_kernel->kernel(i,j);
 	}
-	second/=n*(n-1);
+	second/=(m-1);
 
 	/* third term */
 	float64_t third=0;
 	for (index_t i=0; i<m; ++i)
 	{
-		for (index_t j=m_q_start; j<m_q_start+n; ++j)
+		for (index_t j=m_q_start; j<m_q_start+m; ++j)
 			third+=m_kernel->kernel(i,j);
 	}
-	third*=2.0/(m*n);
+	third*=2.0/m;
 
 	return first+second-third;
 }
@@ -110,7 +109,6 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 {
 	/* split computations into three terms from JLMR paper (see documentation )*/
 	index_t m=m_q_start;
-	index_t n=m_p_and_q->get_num_vectors()-m_q_start;
 
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
@@ -122,25 +120,25 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 		for (index_t j=0; j<m; ++j)
 			first+=m_kernel->kernel(i,j);
 	}
-	first/=(m*m);
+	first/=m;
 
 	/* second term */
 	float64_t second=0;
-	for (index_t i=m_q_start; i<m_q_start+n; ++i)
+	for (index_t i=m_q_start; i<m_q_start+m; ++i)
 	{
-		for (index_t j=m_q_start; j<m_q_start+n; ++j)
+		for (index_t j=m_q_start; j<m_q_start+m; ++j)
 			second+=m_kernel->kernel(i,j);
 	}
-	second/=(n*n);
+	second/=m;
 
 	/* third term */
 	float64_t third=0;
 	for (index_t i=0; i<m; ++i)
 	{
-		for (index_t j=m_q_start; j<m_q_start+n; ++j)
+		for (index_t j=m_q_start; j<m_q_start+m; ++j)
 			third+=m_kernel->kernel(i,j);
 	}
-	third*=2.0/(m*n);
+	third*=2.0/m;
 
 	return first+second-third;
 }
