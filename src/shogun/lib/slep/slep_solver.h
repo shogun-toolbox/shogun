@@ -17,6 +17,20 @@
 namespace shogun 
 {
 
+/** Learning optimization task solver ported from the 
+ * SLEP (Sparse LEarning Package) library.
+ * 
+ * Based on accelerated projected gradient method.
+ *
+ * Supports two types of losses: logistic and least squares.
+ *
+ * Supports multitask problems (task group [MULTITASK_GROUP] 
+ * and task tree [MULTITASK_TREE] relations),
+ * problems with feature relations (feature group [FEATURE_GROUP]
+ * and feature tree [FEATURE_TREE]),
+ * basic regularized problems [PLAIN] and fused formulation.
+ *
+ */
 slep_result_t slep_solver(
 		CDotFeatures* features,
 		double* y,
