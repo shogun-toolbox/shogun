@@ -213,68 +213,52 @@ public:
 	 *
 	 * The function is defined by
 	 *
-	 *
-	 * igamc(a,x)   =   1 - igam(a,x)
-	 *
-	 *                            inf.
-	 *                              -
-	 *                     1       | |  -t  a-1
-	 *               =   -----     |   e   t   dt.
-	 *                    -      | |
-	 *                   | (a)    -
-	 *                             x
-	 *
+	 * \f[
+	 * \text{incomplete\_gamma\_completed}(a,x)=1-\text{incomplete\_gamma}(a,x) =
+	 * \frac{1}{\Gamma (a)}\int_x^\infty e^{-t} t^{a-1} dt
+	 * \f]
 	 *
 	 * In this implementation both arguments must be positive.
 	 * The integral is evaluated by either a power series or
 	 * continued fraction expansion, depending on the relative
-	 * values of a and x.
+	 * values of \f$a\f$ and \f$x\f$.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t incomplete_gamma_completed(float64_t a, float64_t x);
 
-	/** Evaluates the CDF of the gamma distribution with given parameters a, b
-	 * at x. Based on Wikipedia definition and ALGLIB routines.
+	/** Evaluates the CDF of the gamma distribution with given parameters \f$a, b\f$
+	 * at \f$x\f$. Based on Wikipedia definition and ALGLIB routines.
 	 *
 	 * @param x position to evaluate
 	 * @param a shape parameter
 	 * @param b scale parameter
-	 * @return gamma CDF at x
+	 * @return gamma CDF at \f$x\f$
 	 */
 	static float64_t gamma_cdf(float64_t x, float64_t a, float64_t b);
 
 	/** Evaluates the inverse CDF of the gamma distribution with given
-	 * parameters a, b at x such that gamma_cdf(x,a,b)=result.
+	 * parameters \f$a\f$, \f$b\f$ at \f$x\f$, such that result equals
+	 * \f$\text{gamma\_cdf}(x,a,b)\f$.
 	 *
 	 * @param p position to evaluate
 	 * @param a shape parameter
 	 * @param b scale parameter
-	 * @return x such that gamma_cdf(x,a,b)=result
+	 * @return \f$x\f$ such that result equals \f$\text{gamma\_cdf}(x,a,b)\f$.
 	 */
 	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
 
 	/** Inverse of complemented imcomplete gamma integral
 	 *
-	 * Given p, the function finds x such that
+	 * Given \f$p\f$, the function finds \f$x\f$ such that
 	 *
-	 * igamc( a, x ) = p.
+	 * \f$\text{inverse\_incomplete\_gamma\_completed}( a, x ) = p.\f$
 	 *
-	 * Starting with the approximate value
+	 * Starting with the approximate value \f$ x=a t^3\f$, where
+	 * \f$ t = 1 - d - \text{ndtri}(p) \sqrt{d} \f$ and \f$ d = \frac{1}{9}a \f$
 	 *
-	 *         3
-	 *  x = a t
-	 *
-	 *  where
-	 *
-	 * t = 1 - d - ndtri(p) sqrt(d)
-	 *
-	 * and
-	 *
-	 *  d = 1/9a,
-	 *
-	 * the routine performs up to 10 Newton iterations to find the
-	 * root of igamc(a,x) - p = 0.
+	 * The routine performs up to 10 Newton iterations to find the
+	 * root of \f$ \text{inverse\_incomplete\_gamma\_completed}( a, x )-p=0\f$
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
@@ -284,20 +268,16 @@ public:
 	/** Normal distribution function
 	 *
 	 * Returns the area under the Gaussian probability density
-	 * function, integrated from minus infinity to x:
+	 * function, integrated from minus infinity to \f$x\f$:
 	 *
-	 *                            x
-	 *                             -
-	 *                   1        | |          2
-	 *    ndtr(x)  = ---------    |    exp( - t /2 ) dt
-	 *               sqrt(2pi)  | |
-	 *                           -
-	 *                          -inf.
+	 * \f[
+	 * \text{normal\_cdf}(x)=\frac{1}{\sqrt{2\pi}} \int_{-\infty}^x
+	 * \exp \left( -\frac{t^2}{2} \right) dt = \frac{1+\text{error\_function}(z) }{2}
+	 * \f]
 	 *
-	 *             =  ( 1 + erf(z) ) / 2
-	 *
-	 * where z = x/sqrt(2)/std_dev. Computation is via the functions
-	 * erf and erfc.
+	 * where \f$ z = \frac{x}{\sqrt{2} \sigma}\f$ and \f$ \sigma \f$ is the standard
+	 * deviation. Computation is via the functions \f$\text{error\_function}\f$
+	 * and \f$\text{error\_function\_completement}\f$.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 * Custom variance added by Heiko Strathmann
@@ -308,16 +288,14 @@ public:
 	 *
 	 * The integral is
 	 *
-	 *                           x
-	 *                            -
-	 *                 2         | |          2
-	 *   erf(x)  =  --------     |    exp( - t  ) dt.
-	 *              sqrt(pi)   | |
-	 *                          -
-	 *                           0
+	 * \f[
+	 * \text{error\_function}(x)=
+	 * \frac{2}{\sqrt{pi}}\int_0^x \exp (-t^2) dt
+	 * \f]
 	 *
-	 * For 0 <= |x| < 1, erf(x) = x * P4(x**2)/Q5(x**2); otherwise
-	 * erf(x) = 1 - erfc(x).
+	 * For \f$0 \leq |x| < 1, \text{error\_function}(x) = x \frac{P4(x^2)}{Q5(x^2)}\f$
+	 * otherwise
+	 * \f$\text{error\_function}(x) = 1 - \text{error\_function\_complement}(x)\f$.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
@@ -325,34 +303,30 @@ public:
 
 	/** Complementary error function
 	 *
-	 * 1 - erf(x) =
+	 * \f[
+	 * 1 - \text{error\_function}(x) =
+	 * \text{error\_function\_complement}(x)=
+	 * \frac{2}{\sqrt{\pi}}\int_x^\infty \exp\left(-t^2 \right)dt
+	 * \f]
 	 *
-	 *                           inf.
-	 *                             -
-	 *                  2         | |          2
-	 *   erfc(x)  =  --------     |    exp( - t  ) dt
-	 *               sqrt(pi)   | |
-	 *                           -
-	 *                            x
-	 *
-	 *
-	 * For small x, erfc(x) = 1 - erf(x); otherwise rational
+	 * For small \f$x\f$, \f$\text{error\_function\_complement}(x) =
+	 *  1 - \text{error\_function}(x)\f$; otherwise rational
 	 * approximations are computed.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
 	static float64_t error_function_complement(float64_t x);
 
-	/// returns the mutual information of p which is given in logspace
-	/// where p,q are given in logspace
+	/** @return mutual information of \f$p\f$ which is given in logspace
+	 * where \f$p,q\f$ are given in logspace */
 	static float64_t mutual_info(float64_t* p1, float64_t* p2, int32_t len);
 
-	/// returns the relative entropy H(P||Q),
-	/// where p,q are given in logspace
+	/** @return relative entropy \f$H(P||Q)\f$
+	 * where \f$p,q\f$ are given in logspace */
 	static float64_t relative_entropy(
 			float64_t* p, float64_t* q, int32_t len);
 
-	/// returns entropy of p which is given in logspace
+	/** @return entropy of \f$p\f$ which is given in logspace */
 	static float64_t entropy(float64_t* p, int32_t len);
 
 	/** fisher's test for multiple 2x3 tables
@@ -379,7 +353,7 @@ public:
 
 protected:
 	/** Power series for incomplete beta integral.
-	 * Use when b*x is small and x not too close to 1.
+	 * Use when \f$bx\f$ is small and \f$x\f$ not too close to \f$1\f$.
 	 *
 	 * Taken from ALGLIB under gpl2+
 	 */
