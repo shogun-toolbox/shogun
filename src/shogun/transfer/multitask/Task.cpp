@@ -75,6 +75,21 @@ bool CTask::is_contiguous()
 
 void CTask::add_subtask(CTask* subtask)
 {
+	SGVector<index_t> subtask_indices = subtask->get_indices();
+	for (int32_t i=0; i<subtask_indices.vlen; i++)
+	{
+		bool found = false;
+		for (int32_t j=0; j<m_indices.vlen; j++)
+		{
+			if (subtask_indices[i] == m_indices[j])
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+			SG_ERROR("Subtask contains indices that are not contained in this task\n");
+	}
 	m_subtasks->append_element(subtask);
 }
 
