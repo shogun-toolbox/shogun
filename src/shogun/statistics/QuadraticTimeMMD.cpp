@@ -274,7 +274,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	/* evtl. warn user not to use wrong statistic type */
 	if (m_statistic_type!=BIASED)
 	{
-		SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
+		SG_WARNING("%s::sample_null_spectrum(): Note: provided statistic has "
 				"to be BIASED. Please ensure that! To get rid of warning,"
 				"call %s::set_statistic_type(BIASED)\n", get_name(),
 				get_name());
