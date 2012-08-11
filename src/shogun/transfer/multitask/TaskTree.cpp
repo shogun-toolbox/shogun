@@ -41,6 +41,7 @@ int32_t count_leaf_tasks_recursive(CTask* subtree_root_block)
 		do
 		{
 			sum += count_leaf_tasks_recursive(iterator);
+			SG_UNREF(iterator);
 		}
 		while ((iterator = (CTask*)sub_tasks->get_next_element()) != NULL);
 

@@ -23,7 +23,7 @@ CTaskGroup::~CTaskGroup()
 
 void CTaskGroup::init()
 {
-	m_tasks = new CDynamicObjectArray();
+	m_tasks = new CDynamicObjectArray(true);
 }
 
 void CTaskGroup::append_task(CTask* task)
