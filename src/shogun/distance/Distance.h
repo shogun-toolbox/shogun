@@ -359,14 +359,14 @@ class CDistance : public CSGObject
 		 */
 		bool precompute_matrix;
 
-		/// feature vectors to occur on left hand side
+		/// feature vectors to occur on the left hand side
 		CFeatures* lhs;
-		/// feature vectors to occur on right hand side
+		/// feature vectors to occur on the right hand side
 		CFeatures* rhs;
 
-		/* number of feature vectors on left hand side */
+		/** number of feature vectors on the left hand side */
 		int32_t num_lhs;
-		/* number of feature vectors on right hand side */
+		/** number of feature vectors on the right hand side */
 		int32_t num_rhs;
 
 };

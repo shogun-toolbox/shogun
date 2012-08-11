@@ -19,14 +19,23 @@ namespace shogun
 	class CLatentModel: public CSGObject
 	{
 		public:
+			/** constructor */
 			CLatentModel();
 
+			/** constructor
+			 *
+			 * @param feats features to use
+			 * @param labels labels to use
+			 */
 			CLatentModel(CLatentFeatures* feats, CLatentLabels* labels);
 
+			/** destructor */
 			virtual ~CLatentModel();
 
+			/** get number of vectors */
 			virtual int32_t get_num_vectors() const;
 
+			/** get dimensionality of model */
 			virtual int32_t get_dim() const=0;
 
 			/** set labels
@@ -47,16 +56,34 @@ namespace shogun
 			 */
 			void set_features(CLatentFeatures* feats);
 
+			/** get psi feature vector
+			 *
+			 * @param idx index of feature vector
+			 * @return psi feature vector
+			 */
 			virtual SGVector<float64_t> get_psi_feature_vector(index_t idx)=0;
 
+			/** infer latent variable
+			 *
+			 * @param w weight vector
+			 * @param idx index of feature vector
+			 * @return latent variable data
+			 */
 			virtual CLatentData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)=0;
 
+			/** argmax 
+			 *
+			 * @param w weight vector
+			 */
 			virtual void argmax_h(const SGVector<float64_t>& w);
 
+			/** get name */
 			virtual const char* get_name() const { return "LatentModel"; }
 
 		protected:
+			/** features */
 			CLatentFeatures* m_features;
+			/** labels */
 			CLatentLabels* m_labels;
 
 		private:

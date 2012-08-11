@@ -26,8 +26,10 @@ class CGradientCriterion: public CEvaluation
  */
 public:
 
+	/** constructor */
 	CGradientCriterion();
 
+	/** destructor */
 	virtual ~CGradientCriterion();
 
 	/** evaluate labels (Not really used in this class).
@@ -44,7 +46,7 @@ public:
 	{ return m_direction; }
 
 	/** Set the evaluation direction
-	 * @param evaluation direction to be set.
+	 * @param dir direction to be set.
 	 */
 	virtual void set_evaluation_direction(EEvaluationDirection dir)
 	{

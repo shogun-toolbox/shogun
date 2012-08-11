@@ -16,31 +16,61 @@
 
 namespace shogun
 {
+	/** @brief class LatentData used to store information about latent
+	 * variables.
+	 * TODO
+	 */
 	class CLatentData : public CSGObject
 	{
 		public:
+			/** constructor */
 			CLatentData();
 
+			/** destructor */
 			virtual ~CLatentData();
 
+			/** get name */
 			virtual const char* get_name() const { return "LatentData"; }
 	};
 
+	/** @brief class LatentLabels used to store latent labels 
+	 * TODO
+	 */
 	class CLatentLabels : public CBinaryLabels
 	{
 		public:
+			/** constructor */
 			CLatentLabels();
 
+			/** constructor
+			 *
+			 * @param num_labels number of labels
+			 */
 			CLatentLabels(int32_t num_labels);
 
+			/** destructor */
 			virtual ~CLatentLabels();
 
+			/** get labels */
 			CDynamicObjectArray* get_labels() const;
 
+			/** get latent label
+			 * 
+			 * @param idx index of label
+			 */
 			CLatentData* get_latent_label(int32_t idx);
 
+			/** add latent label
+			 *
+			 * @param label label to add
+			 */
 			void add_latent_label(CLatentData* label);
 
+			/** set latend label
+			 *
+			 * @param idx index of latent label
+			 * @param label value of latent label
+			 */
 			bool set_latent_label(int32_t idx, CLatentData* label);
 
 			/** Make sure the label is valid, otherwise raise SG_ERROR.
@@ -63,6 +93,7 @@ namespace shogun
 			 */
 			static CLatentLabels* obtain_from_generic(CLabels* base_labels);
 
+			/** get name */
 			virtual const char* get_name() const { return "LatentLabels"; }
 
 		protected:

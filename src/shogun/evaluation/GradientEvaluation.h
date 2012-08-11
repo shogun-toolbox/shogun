@@ -35,7 +35,6 @@ public:
 	 * @param machine learning machine to use
 	 * @param features features to use for cross-validation
 	 * @param labels labels that correspond to the features
-	 * @param splitting_strategy splitting strategy to use
 	 * @param evaluation_criterion evaluation criterion to use
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
