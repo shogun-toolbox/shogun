@@ -19,10 +19,12 @@ from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBI
 # parameters, change to get different results
 m=100
 dim=2
+
+# setting the difference of the first dimension smaller makes a harder test
 difference=0.5
 
 # number of samples taken from null and alternative distribution
-num_bootstrap=500
+num_null_samples=500
 
 # use data generator class to produce example data
 data=DataGenerator.generate_mean_data(m,dim,difference)
@@ -40,7 +42,7 @@ mmd=QuadraticTimeMMD(kernel,features, m)
 mmd.set_statistic_type(BIASED)
 
 # sample alternative distribution
-alt_samples=zeros(num_bootstrap)
+alt_samples=zeros(num_null_samples)
 for i in range(len(alt_samples)):
 	data=DataGenerator.generate_mean_data(m,dim,difference)
 	features.set_feature_matrix(data)
@@ -50,7 +52,7 @@ for i in range(len(alt_samples)):
 # bootstrapping, biased statistic
 mmd.set_null_approximation_method(BOOTSTRAP)
 mmd.set_statistic_type(BIASED)
-mmd.set_bootstrap_iterations(num_bootstrap)
+mmd.set_bootstrap_iterations(num_null_samples)
 null_samples_boot=mmd.bootstrap_null()
 
 # sample from null distribution
@@ -58,14 +60,14 @@ null_samples_boot=mmd.bootstrap_null()
 if "sample_null_spectrum" in dir(QuadraticTimeMMD):
 		mmd.set_null_approximation_method(MMD2_SPECTRUM)
 		mmd.set_statistic_type(BIASED)
-		null_samples_spectrum=mmd.sample_null_spectrum(num_bootstrap, m-10)
+		null_samples_spectrum=mmd.sample_null_spectrum(num_null_samples, m-10)
 		
 # fit gamma distribution, biased statistic
 mmd.set_null_approximation_method(MMD2_GAMMA)
 mmd.set_statistic_type(BIASED)
 gamma_params=mmd.fit_null_gamma()
 # sample gamma with parameters
-null_samples_gamma=array([gamma(gamma_params[0], gamma_params[1]) for _ in range(num_bootstrap)])
+null_samples_gamma=array([gamma(gamma_params[0], gamma_params[1]) for _ in range(num_null_samples)])
 
 
 # plot
@@ -77,7 +79,7 @@ subplot(2,3,1)
 plot(data[0][0:m], data[1][0:m], 'ro', label='$x$')
 plot(data[0][m+1:2*m], data[1][m+1:2*m], 'bo', label='$x$')
 legend()
-title('Data')
+title('Data, shift in $x_1$='+str(difference)+'\nm='+str(m))
 xlabel('$x_1, y_1$')
 ylabel('$x_2, y_2$')
 grid(True)
@@ -89,7 +91,7 @@ hist(data[1], bins=50, alpha=0.5, facecolor='b', normed=True)
 xs=linspace(min(data[0])-1,max(data[0])+1, 50)
 plot(xs,normpdf( xs, 0, 1), 'r', linewidth=3)
 plot(xs,normpdf( xs, difference, 1), 'b', linewidth=3)
-title('Data: $x_1, y_1$')
+title('Data PDF in $x_1$')
 grid(True)
 
 # compute threshold for test level
@@ -101,15 +103,15 @@ thresh_boot=null_samples_boot[floor(len(null_samples_boot)*(1-alpha))];
 thresh_spectrum=null_samples_spectrum[floor(len(null_samples_spectrum)*(1-alpha))];
 thresh_gamma=null_samples_gamma[floor(len(null_samples_gamma)*(1-alpha))];
 
-type_one_error_boot=sum(null_samples_boot<thresh_boot)/float(num_bootstrap)
-type_one_error_spectrum=sum(null_samples_spectrum<thresh_boot)/float(num_bootstrap)
-type_one_error_gamma=sum(null_samples_gamma<thresh_boot)/float(num_bootstrap)
+type_one_error_boot=sum(null_samples_boot<thresh_boot)/float(num_null_samples)
+type_one_error_spectrum=sum(null_samples_spectrum<thresh_boot)/float(num_null_samples)
+type_one_error_gamma=sum(null_samples_gamma<thresh_boot)/float(num_null_samples)
 
 # plot alternative distribution with threshold
 subplot(2,3,4)
 hist(alt_samples, 20, normed=True);
 axvline(thresh_boot, 0, 1, linewidth=2, color='red')
-type_two_error=sum(alt_samples<thresh_boot)/float(num_bootstrap)
+type_two_error=sum(alt_samples<thresh_boot)/float(num_null_samples)
 title('Alternative Dist.\n' + 'Type II error is ' + str(type_two_error))
 grid(True)
 
