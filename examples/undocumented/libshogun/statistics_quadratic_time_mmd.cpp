@@ -35,14 +35,14 @@ void test_quadratic_mmd_fixed()
 
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features, n);
 
-	/* unbiased statistic */
+	/* unbiased statistic, shogun return m*MMD */
 	mmd->set_statistic_type(UNBIASED);
-	float64_t difference=CMath::abs(mmd->compute_statistic()-0.051325806508381);
+	float64_t difference=CMath::abs(mmd->compute_statistic()/n-0.051325806508381);
 	ASSERT(difference<=10E-16);
 
 	/* biased statistic */
 	mmd->set_statistic_type(BIASED);
-	difference=CMath::abs(mmd->compute_statistic()-1.017107688196714);
+	difference=CMath::abs(mmd->compute_statistic()/n-1.017107688196714);
 	ASSERT(difference<=10E-16);
 
 	SG_UNREF(mmd);

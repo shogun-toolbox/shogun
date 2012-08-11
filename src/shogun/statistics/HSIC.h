@@ -38,6 +38,9 @@ template<class T> class SGMatrix;
  * matrix and \f$\textbf{K}, \textbf{L}\f$ are kernel matrices of both sets
  * of samples.
  *
+ * Note that computing the statistic returns m*MMD; same holds for the null
+ * distribution samples.
+ *
  * Along with the statistic comes a method to compute a p-value based on
  * different methods. Bootstrapping, is also possible. If unsure which one to
  * use, bootstrapping with 250 iterations always is correct (but slow).
@@ -94,7 +97,7 @@ public:
 
 	/** Computes the HSIC statistic (see class description) for underlying
 	 * kernels and data. Note that it is multiplied by the number of used
-	 * samples. It is a biased estimator.
+	 * samples. It is a biased estimator. Note that it is m*HSIC_b.
 	 *
 	 * Note that since kernel matrices have to be stored, it has quadratic
 	 * space costs.
@@ -135,7 +138,8 @@ public:
 	 * this with values from compute_statistic().
 	 * However, the attached features have to be the SAME size, as these, the
 	 * statistic was computed on. If compute_threshold() or compute_p_value()
-	 * are used, this is ensured automatically.
+	 * are used, this is ensured automatically. Note that m*Null-distribution is
+	 * fitted, which is fine since the statistic is also m*HSIC.
 	 *
 	 * Has quadratic computational costs in terms of samples.
 	 *
