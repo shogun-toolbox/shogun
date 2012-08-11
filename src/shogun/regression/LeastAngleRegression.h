@@ -72,6 +72,7 @@ class CFeatures;
 class CLeastAngleRegression: public CLinearMachine
 {
 public:
+	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 	/** default constructor

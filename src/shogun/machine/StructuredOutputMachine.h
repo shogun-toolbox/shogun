@@ -26,6 +26,7 @@ class CLossFunction;
 class CStructuredOutputMachine : public CMachine
 {
 	public:
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_STRUCTURED);
 
 		/** deafult constructor */

@@ -34,6 +34,8 @@ namespace shogun
 class CPluginEstimate: public CMachine
 {
 	public:
+
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor

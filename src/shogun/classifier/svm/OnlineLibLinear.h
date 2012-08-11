@@ -27,6 +27,8 @@ namespace shogun
 class COnlineLibLinear : public COnlineLinearMachine
 {
 public:
+
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** Default constructor */
@@ -117,17 +119,6 @@ public:
 		 * @param label label of this example
 		 */
 		virtual void train_one(SGVector<float32_t> ex, float64_t label);
-protected:
-
-		/**
-		 * Train classifier
-		 *
-		 * @param data Training data, can be avoided if already
-		 * initialized with it
-		 *
-		 * @return Whether training was successful
-		 */
-		//virtual bool train_machine(CFeatures* data=NULL);
 
 private:
 		/** Set up parameters */

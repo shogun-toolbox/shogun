@@ -25,6 +25,7 @@ namespace shogun
 class CMKLRegression : public CMKL
 {
 	public:
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 		/** Constructor

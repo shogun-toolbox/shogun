@@ -33,6 +33,8 @@ class CDistanceMachine;
 class CNearestCentroid : public CDistanceMachine{
 	
 public:
+
+	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_MULTICLASS);
 
 	/**

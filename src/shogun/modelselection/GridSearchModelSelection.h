@@ -31,8 +31,8 @@ public:
 	CGridSearchModelSelection();
 
 	/** constructor
-	 * @param model_parameters
-	 * @param cross_validation
+	 * @param model_parameters model parameters
+	 * @param machine_eval machine evaluation
 	 */
 	CGridSearchModelSelection(CModelSelectionParameters* model_parameters,
 			CMachineEvaluation* machine_eval);

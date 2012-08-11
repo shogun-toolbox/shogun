@@ -26,6 +26,7 @@ template <class ST> class CStringFeatures;
 class CWDSVMOcas : public CMachine
 {
 	public:
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor  */
@@ -220,6 +221,10 @@ class CWDSVMOcas : public CMachine
 
 	protected:
 
+		/** get real outputs
+		 *
+		 * @param data features to apply for
+		 */
 		SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
 		/** set wd weights

@@ -30,8 +30,10 @@ class CGaussianProcessRegression : public CMachine
 {
 
 	public:
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
+		/** GP return type */
 		enum EGPReturnType
 		{
 			GP_RETURN_MEANS,

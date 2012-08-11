@@ -21,6 +21,8 @@ namespace shogun
 	{
 
 		public:
+
+			/** problem type */
 			MACHINE_PROBLEM_TYPE(PT_LATENT);
 
 			/** default contstructor */
@@ -28,9 +30,8 @@ namespace shogun
 
 			/** constructor
 			 *
-			 * @param C constant C
-			 * @param traindat training features
-			 * @param trainlab labels for training features
+			 * @param model latent model
+			 * @param C regularization coefficient
 			 */
 			CLatentLinearMachine(CLatentModel* model, float64_t C);
 

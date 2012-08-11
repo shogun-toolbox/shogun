@@ -116,7 +116,7 @@ public:
 	 *
 	 * @param  param the parameter
 	 * @param obj the object that owns the parameter
-	 * @index index the index of the element if parameter is a vector
+	 * @param index index the index of the element if parameter is a vector
 	 *
 	 * @return gradient with respect to parameter
 	 */

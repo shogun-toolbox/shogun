@@ -32,6 +32,8 @@ enum E_SVM_TYPE
 class CSVMOcas : public CLinearMachine
 {
 	public:
+
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor  */

@@ -23,6 +23,8 @@ namespace shogun
 class CSubGradientSVM : public CLinearMachine
 {
 	public:
+
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor */
