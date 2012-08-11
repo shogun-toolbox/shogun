@@ -3,7 +3,7 @@ Test Regression
 """
 
 from numpy import double
-from shogun.Features import Labels
+from shogun.Features import RegressionLabels
 from shogun.Kernel import *
 from shogun.Regression import *
 
@@ -25,7 +25,7 @@ def _evaluate (indata):
 		print "%s is disabled/unavailable!"%indata[prefix+'name']
 		return False
 
-	labels=Labels(double(indata[prefix+'labels']))
+	labels=RegressionLabels(double(indata[prefix+'labels']))
 	if indata[prefix+'type']=='svm':
 		regression=rfun(
 			indata[prefix+'C'], indata[prefix+'epsilon'], kernel, labels)

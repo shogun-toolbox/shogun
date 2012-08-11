@@ -2,7 +2,7 @@
 Test Clustering
 """
 
-from shogun.Distance import EuclidianDistance
+from shogun.Distance import EuclideanDistance
 from shogun.Clustering import *
 
 import util

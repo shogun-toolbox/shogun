@@ -141,7 +141,7 @@ def _evaluate_custom (indata, prefix):
 def _evaluate_pie (indata, prefix):
 	pie=PluginEstimate()
 	feats=util.get_features(indata, prefix)
-	labels=Labels(double(indata['classifier_labels']))
+	labels=BinaryLabels(double(indata['classifier_labels']))
 	pie.set_labels(labels)
 	pie.set_features(feats['train'])
 	pie.train()
@@ -156,7 +156,7 @@ def _evaluate_pie (indata, prefix):
 	km_test=max(abs(
 		indata[prefix+'matrix_test']-kernel.get_kernel_matrix()).flat)
 	classified=max(abs(
-		pie.apply().get_labels()-indata['classifier_classified']))
+		pie.apply().get_confidences()-indata['classifier_classified']))
 
 	return util.check_accuracy(indata[prefix+'accuracy'],
 		km_train=km_train, km_test=km_test, classified=classified)

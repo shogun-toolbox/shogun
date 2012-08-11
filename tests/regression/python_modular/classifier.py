@@ -3,7 +3,7 @@ Test Classifier
 """
 
 from numpy import double
-from shogun.Features import Labels
+from shogun.Features import BinaryLabels
 from shogun.Kernel import *
 from shogun.Distance import *
 from shogun.Classifier import *
@@ -87,7 +87,7 @@ def _get_results (indata, prefix, classifier, machine=None, feats=None):
 			classifier.set_features(feats['test'])
 
 	res['classified']=max(abs(
-		classifier.apply().get_labels()-indata[prefix+'classified']))
+		classifier.apply().get_confidences()-indata[prefix+'classified']))
 	return res
 
 
@@ -111,7 +111,7 @@ def _evaluate (indata):
 
 	# cannot refactor into function, because labels is unrefed otherwise
 	if indata.has_key(prefix+'labels'):
-		labels=Labels(double(indata[prefix+'labels']))
+		labels=BinaryLabels(double(indata[prefix+'labels']))
 		if ctype=='kernel':
 			classifier=fun(indata[prefix+'C'], machine, labels)
 		elif ctype=='linear':
