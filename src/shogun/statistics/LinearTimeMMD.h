@@ -91,7 +91,7 @@ public:
 	 * @param kernel kernel for MMD
 	 * @param p samples from distribution p, will be copied and NOT
 	 * SG_REF'ed
-	 * @@param q samples from distribution q, will be copied and NOT
+	 * @param q samples from distribution q, will be copied and NOT
 	 * SG_REF'ed
 	 */
 	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);

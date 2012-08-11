@@ -215,32 +215,32 @@ private:
 
 protected:
 
-	/*Covariance Function*/
+	/** Covariance Function*/
 	CKernel* m_kernel;
 
-	/*Features to use*/
+	/** Features to use*/
 	CFeatures* m_features;
 
-	/*Feature Matrix*/
+	/** Feature Matrix*/
 	SGMatrix<float64_t> m_feature_matrix;
 
-	/*Means of Features*/
+	/** Means of Features*/
 	SGVector<float64_t> m_data_means;
 
-	/*Vector of labels*/
+	/** Vector of labels*/
 	SGVector<float64_t> m_label_vector;
 
 
-	/*Labels of those features*/
+	/** Labels of those features*/
 	CLabels* m_labels;
 
-	/*Mean Function*/
+	/** Mean Function*/
 	CMeanFunction* m_mean;
 
-	/*Latent Features for Approximation*/
+	/** Latent Features for Approximation*/
 	CFeatures* m_latent_features;
 
-	/*Likelihood function to use
+	/** Likelihood function to use
 	 * \f[
 	 *   p(y|f)
 	 * \f]
@@ -251,7 +251,7 @@ protected:
 	 */
 	CLikelihoodModel* m_model;
 
-	/* alpha matrix used in process mean calculation */
+	/** alpha matrix used in process mean calculation */
 	SGVector< float64_t > m_alpha;
 
 	/** Lower triangle Cholesky decomposition of
@@ -259,10 +259,10 @@ protected:
 	 */
 	SGMatrix<float64_t> m_L;
 
-	/*Kernel Scale*/
+	/** Kernel Scale*/
 	float64_t m_scale;
 
-	/*Kernel matrix from features*/
+	/** Kernel matrix from features*/
 	SGMatrix<float64_t> m_ktrtr;
 
 	SGMatrix<float64_t> m_latent_matrix;
