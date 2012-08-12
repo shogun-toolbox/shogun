@@ -17,7 +17,7 @@ def regression_krr (fm_train=traindat,fm_test=testdat,
 
 	sg('set_labels', 'TRAIN', label_train)
 
-	sg('new_regression', 'KRR')
+	sg('new_regression', 'KernelRidgeRegression')
 	sg('krr_tau', tau)
 	sg('c', C)
 	sg('train_regression')
