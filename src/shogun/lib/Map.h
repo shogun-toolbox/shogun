@@ -436,12 +436,16 @@ private:
 		{
 			for(int32_t i=0; i<array->get_num_elements(); i++)
 			{
-				if (array->get_element(i)!=NULL)
+				CMapNode<K, T>* element = array->get_element(i);
+				if (element!=NULL)
 				{
+					element->key = K();
+					element->data = T();
+
 					if (use_sg_mallocs)
-						SG_FREE(array->get_element(i));
+						SG_FREE(element);
 					else
-						free(array->get_element(i));
+						free(element);
 				}
 			}
 			delete array;
