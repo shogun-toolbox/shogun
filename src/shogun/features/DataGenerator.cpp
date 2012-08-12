@@ -9,6 +9,7 @@
 
 #include <shogun/features/DataGenerator.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/distributions/Gaussian.h>
 
 using namespace shogun;
 
@@ -76,3 +77,31 @@ SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
 
 	return result;
 }
+
+SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, index_t dim)
+{
+	/* evtl. allocate space */
+	SGMatrix<float64_t> result =
+		SGMatrix<float64_t>::get_allocated_matrix(dim, n*m);
+
+
+	for (index_t i = 0; i < n; ++i)
+	{
+		SGVector<float64_t> mean(dim);
+		SGMatrix<float64_t> cov = SGMatrix<float64_t>::create_identity_matrix(dim, 1.0);
+
+		mean.random(0.0, 10.0);
+
+		CGaussian* g = new CGaussian(mean, cov, DIAG);
+		for (index_t j = 0; j < m; ++j)
+		{
+			SGVector<float64_t> v = g->sample();
+			memcpy(result.matrix+((i+j)*result.num_rows), v.vector, dim*sizeof(float64_t));
+		}
+
+		SG_UNREF(g);
+	}
+
+	return result;
+}
+
