@@ -37,6 +37,12 @@
 %rename(MulticlassSOLabels) CMulticlassSOLabels;
 %rename(RealNumber) CRealNumber;
 
+%rename(RiskData) CRiskData;
+%rename(MulticlassRiskFunction) CMulticlassRiskFunction;
+%rename(MulticlassRiskData) CMulticlassRiskData;
+%rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
+
+
 #ifdef USE_MOSEK
 %rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
 #endif /* USE_MOSEK */
@@ -60,6 +66,13 @@
 %include <shogun/structure/StructuredModel.h>
 %include <shogun/structure/MulticlassModel.h>
 %include <shogun/structure/MulticlassSOLabels.h>
+
+%include <shogun/structure/libbmrm.h>
+%include <shogun/structure/libppbm.h>
+%include <shogun/structure/libp3bm.h>
+%include <shogun/structure/MulticlassRiskFunction.h>
+%include <shogun/structure/DualLibQPBMSOSVM.h>
+
 
 #ifdef USE_MOSEK
 %include <shogun/structure/PrimalMosekSOSVM.h>
