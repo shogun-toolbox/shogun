@@ -68,6 +68,18 @@ public:
 			float64_t d, float64_t angle,
 			SGMatrix<float64_t> target=SGMatrix<float64_t>());
 
+	/** Produces samples of gaussians
+	 * The functions produces m number of samples of each gaussians (n number) with
+	 * the given dimension.
+	 *
+	 * @param m number of samples
+	 * @param n number of gaussians
+	 * @param dim dimension of the multivariate normal distribution
+	 * @return dim times (m*n) matrix with concatenated samples first m number
+	 * of the first gaussian, m number of second etc.
+	 */
+	static SGMatrix<float64_t> generate_gaussians(index_t m, index_t n, index_t dim);
+	
 	inline virtual const char* get_name() const { return "DataGenerator"; }
 
 private:
