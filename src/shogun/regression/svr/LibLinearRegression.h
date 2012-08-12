@@ -49,11 +49,13 @@ class CLibLinearRegression : public CLinearMachine
 		/** destructor */
 		virtual ~CLibLinearRegression();
 
+		/** returns regression type */
 		inline LIBLINEAR_REGRESSION_TYPE get_liblinear_regression_type()
 		{
 			return m_liblinear_regression_type;
 		}
 
+		/** sets regression type */
 		inline void set_liblinear_regression_type(LIBLINEAR_REGRESSION_TYPE st)
 		{
 			m_liblinear_regression_type=st;

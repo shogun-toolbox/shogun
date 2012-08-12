@@ -57,6 +57,12 @@ class CGUILabels : public CSGObject
 		 */
 		bool save(char* param);
 
+		/** infer labels from array 
+		 *
+		 * @param lab array
+		 * @param len length of array
+		 * @return labels
+		 */
 		CLabels* infer_labels(float64_t* lab, int32_t len);
 
 		/** @return object name */

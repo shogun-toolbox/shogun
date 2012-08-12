@@ -16,13 +16,15 @@
 namespace shogun
 {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EIndexBlockRelationType
 {
 	GROUP,
 	TREE
 };
+#endif
 
-/** @brief
+/** @brief class IndexBlockRelation
  *
  */
 class CIndexBlockRelation : public CSGObject
@@ -47,6 +49,7 @@ public:
 
 protected:
 
+	/** check list of blocks */
 	bool check_blocks_list(CList* blocks);
 
 };

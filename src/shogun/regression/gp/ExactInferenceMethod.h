@@ -26,14 +26,14 @@ namespace shogun
  *  /f]
  *
  *	L is the cholesky decomposition of K, the covariance matrix, plus
- *	a diagonal matrix with entries $\sigma$, the observation noise.
+ *	a diagonal matrix with entries \f$\sigma\f$, the observation noise.
  *
  *  /f[
  *  	\boldsymbol{\alpha} = L^{T} \backslash(L \backslash \boldsymbol{y}})
  *  /f]
  *
- *  Where L is the matrix mentioned above, $\boldsymbol{y}$ are the labels, and
- *  $\backslash$ is an operator ($x = A \backslash B$ means Ax=B.)
+ *  Where \f$L\f$ is the matrix mentioned above, \f$\boldsymbol{y}\f$ are the labels, and
+ *  \f$\backslash\f$ is an operator (\f$x = A \backslash B\f$ means \f$Ax=B\f$.)
  *
  *
  *

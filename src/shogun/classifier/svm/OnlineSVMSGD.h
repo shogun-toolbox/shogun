@@ -33,6 +33,7 @@ namespace shogun
 class COnlineSVMSGD : public COnlineLinearMachine
 {
 	public:
+		/** returns type of problem machine solves */
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor  */

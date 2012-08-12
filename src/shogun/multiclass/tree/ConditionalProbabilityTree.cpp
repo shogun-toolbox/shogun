@@ -143,7 +143,7 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 void CConditionalProbabilityTree::print_tree()
 {
 	if (m_root)
-		m_root->debug_print(ConditionalProbabilityTreeNodeData::print);
+		m_root->debug_print(ConditionalProbabilityTreeNodeData::print_data);
 	else
 		printf("Empty Tree\n");
 }

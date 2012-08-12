@@ -53,6 +53,9 @@ public:
 	 */
 	virtual SGVector<index_t> get_SLEP_ind();
 
+	/** returns information about blocks in
+	 * SLEP "G" format
+	 */
 	virtual SGVector<float64_t> get_SLEP_G();
 
 	/** returns information about blocks relations
@@ -60,8 +63,10 @@ public:
 	 */
 	virtual SGVector<float64_t> get_SLEP_ind_t() const;
 
+	/** returns relation type */
 	virtual EIndexBlockRelationType get_relation_type() const { return TREE; }
 
+	/** whether relation is general, i.e. not well ordered */
 	bool is_general() const;
 
 	/** get name */

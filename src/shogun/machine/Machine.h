@@ -275,8 +275,8 @@ class CMachine : public CSGObject
 		/** @return whether this machine is locked */
 		bool is_data_locked() const { return m_data_locked; }
 
-		//TODO change to pure virtual
-		inline virtual EProblemType get_machine_problem_type() const
+		/** returns type of problem machine solves */
+		virtual EProblemType get_machine_problem_type() const
 		{
 			SG_NOTIMPLEMENTED;
 			return PT_BINARY;

@@ -21,7 +21,7 @@ struct ConditionalProbabilityTreeNodeData
 
 	ConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
 
-	static void print(const ConditionalProbabilityTreeNodeData &data)
+	static void print_data(const ConditionalProbabilityTreeNodeData &data)
 	{
 		SG_SPRINT("label=%d\n", data.label);
 	}

@@ -266,7 +266,9 @@ private:
 	void init();
 
 protected:
+	/** parameter */
 	Parameter* m_param;
+	/** child nodes */
 	CDynamicObjectArray* m_child_nodes;
 };
 }

@@ -33,7 +33,7 @@ class CModelSelection: public CSGObject
 public:
 	/** constructor
 	 * @param model_parameters parameter tree with model parameters to optimize
-	 * @param cross_validation cross-validation instance to use for evaluation
+	 * @param machine_eval machine evaluation instance to use for evaluation
 	 * of a certain combination of parameters
 	 */
 	CModelSelection(CModelSelectionParameters* model_parameters,

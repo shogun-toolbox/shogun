@@ -228,12 +228,12 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		SG_INFO("created SVRlibsvm object\n") ;
 	}
 #ifdef HAVE_LAPACK
-	else if (strcmp(name, "KRR")==0)
+	else if (strcmp(name, "KernelRidgeRegression")==0)
 	{
 		SG_UNREF(classifier);
 		classifier=new CKernelRidgeRegression(krr_tau, ui->ui_kernel->get_kernel(),
 			ui->ui_labels->get_train_labels());
-		SG_INFO("created KRR object %p\n", classifier);
+		SG_INFO("created KernelRidgeRegression object %p\n", classifier);
 	}
 #endif //HAVE_LAPACK
 	else if (strcmp(name,"PERCEPTRON")==0)
