@@ -8,12 +8,11 @@
  */
 
 #include <shogun/structure/DirectorRiskFunction.h>
-#include <shogun/structure/libbmrm.h>
 
 using namespace shogun;
 
 CDirectorRiskFunction::CDirectorRiskFunction()
-: CRiskFunction()
+:CRiskFunction()
 {
 }
 
@@ -21,18 +20,54 @@ CDirectorRiskFunction::~CDirectorRiskFunction()
 {
 }
 
-void CDirectorRiskFunction::risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W)
+	CDirectorRiskData::CDirectorRiskData()
+:CRiskData()
 {
-	CDotFeatures* features = (CDotFeatures*)(((bmrm_data_T*)data)->X);
-	CLabels* labels = (CLabels*)(((bmrm_data_T*)data)->y);
-	int32_t w_dim = ((bmrm_data_T*)data)->w_dim;
-	risk_directed(features,labels,SGVector<float64_t>(R,1,false),
-	              SGVector<float64_t>(subgrad,w_dim,false),
-	              SGVector<float64_t>(W,w_dim,false));
 }
 
-void CDirectorRiskFunction::risk_directed(CDotFeatures* features, CLabels* labels, const SGVector<float64_t> R,
-                                          const SGVector<float64_t> subgrad, const SGVector<float64_t> W)
+CDirectorRiskData::CDirectorRiskData(
+		CDotFeatures    *X,
+		CLabels         *y,
+		uint32_t        w_dim,
+		uint32_t        nFeatures)
+:CRiskData()
+{
+	m_X=X;
+	m_y=y;
+	m_w_dim=w_dim;
+	m_nFeatures=nFeatures;
+}
+
+CDirectorRiskData::~CDirectorRiskData()
+{
+}
+
+void CDirectorRiskFunction::risk(
+		void* 				data,
+		float64_t* 			R,
+		float64_t* 			subgrad,
+		float64_t* 			W,
+		TMultipleCPinfo* 	info)
+{
+	CDirectorRiskData* data_struct=(CDirectorRiskData*)data;
+	CDotFeatures* features=data_struct->m_X;
+	CLabels* labels=data_struct->m_y;
+	uint32_t w_dim=data_struct->m_w_dim;
+
+	risk_directed(
+			features,
+			labels,
+			SGVector< float64_t >(R, 1, false),
+			SGVector< float64_t >(subgrad, w_dim, false),
+			SGVector< float64_t >(W, w_dim, false));
+}
+
+void CDirectorRiskFunction::risk_directed(
+		CDotFeatures*               features,
+		CLabels*                    labels,
+		SGVector<float64_t>         R,
+		SGVector<float64_t>         subgrad,
+		const SGVector<float64_t>   W)
 {
 	SG_NOTIMPLEMENTED;
 }
