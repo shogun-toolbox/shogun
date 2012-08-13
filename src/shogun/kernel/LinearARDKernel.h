@@ -20,6 +20,9 @@
 namespace shogun
 {
 
+/** @brief Linear Kernel with Automatic
+ * Relevance Detection
+ */
 class CLinearARDKernel: public CDotKernel
 {
 
@@ -79,14 +82,14 @@ public:
 	 */
 	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
-	/*Set weight of particular feature
+	/**Set weight of particular feature
 	 *
 	 * @param w weight to set
 	 * @param i index of feature
 	 */
 	virtual void set_weight(float64_t w, index_t i);
 
-	/*Get weight of particular feature
+	/**Get weight of particular feature
 	 *
 	 * @param i index of feature
 	 *
@@ -116,7 +119,7 @@ public:
 	 *
 	 * @param  param the parameter
 	 * @param obj the object that owns the parameter
-	 * @index index the index of the element if parameter is a vector
+	 * @param index the index of the element if parameter is a vector
 	 *
 	 * @return gradient with respect to parameter
 	 */

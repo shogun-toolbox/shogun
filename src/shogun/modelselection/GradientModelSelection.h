@@ -29,16 +29,16 @@ class CGradientModelSelection: public CModelSelection
 public:
 
 	/** constructor
-	 * @param model_parameters
-	 * @param cross_validation
+	 * @param model_parameters Parameters
+	 * @param machine_eval Machine Evaluation Object
 	 */
 	CGradientModelSelection(CModelSelectionParameters* model_parameters,
 			CMachineEvaluation* machine_eval);
 
-	/*Default Constructor*/
+	/**Default Constructor*/
 	CGradientModelSelection();
 
-	/*Destructor*/
+	/**Destructor*/
 	virtual ~CGradientModelSelection();
 
 	/**
@@ -56,26 +56,26 @@ public:
 	 */
 	inline virtual const char* get_name() const {return "GradientModelSelection";}
 
-	/* Set the maximum evaluations used in the optimization algorithm
+	/** Set the maximum evaluations used in the optimization algorithm
 	 *
 	 * @param m max evaluations
 	 */
 	void set_max_evaluations(int m) {m_max_evaluations = m;}
 
-	/* Get the maximum evaluations used in the optimization algorithm
+	/** Get the maximum evaluations used in the optimization algorithm
 	 *
 	 * @return number of maximum evaluations
 	 */
 	int get_max_evaluations() {return m_max_evaluations;}
 
-	/* Set the minimum level of gradient tolerance used in the
+	/** Set the minimum level of gradient tolerance used in the
 	 * optimization algorithm
 	 *
 	 * @param t tolerance level
 	 */
 	void set_grad_tolerance(float64_t t) {m_grad_tolerance = t;}
 
-	/* Get the minimum level of gradient tolerance used in the
+	/** Get the minimum level of gradient tolerance used in the
 	 * optimization algorithm
 	 *
 	 * @return tolerance level
@@ -103,26 +103,32 @@ private:
 
 	void test_gradients();
 
-	/*Initialize object*/
+	/** Initialize object*/
 	void init();
 
 protected:
 
-	/* struct used for nlopt callback function*/
+	/** @brief
+	 *  struct used for nlopt callback function*/
 	struct nlopt_package
 	{
+		/** Pointer to Machine Evaluation */
 		shogun::CMachineEvaluation* m_machine_eval;
+
+		/** Pointer to current combination */
 		shogun::CParameterCombination* m_current_combination;
+
+		/** Do we want to print the state? */
 		bool print_state;
 	};
 
-	/*Maximum number of evaluations used in optimization algorithm */
+	/** Maximum number of evaluations used in optimization algorithm */
 	int m_max_evaluations;
 
-	/*Gradient tolerance used in optimization algorithm */
+	/** Gradient tolerance used in optimization algorithm */
 	float64_t m_grad_tolerance;
 
-	/*Parameter combination tree*/
+	/** Parameter combination tree*/
 	CParameterCombination* m_current_combination;
 
 };

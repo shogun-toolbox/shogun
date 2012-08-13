@@ -18,7 +18,7 @@ namespace shogun
 /** @brief This is the class that models a Gaussian Likelihood
  *
  * In this case, P(y|f) is normally distributed with mean f and
- * variance $\sigma$.
+ * variance \f$\sigma\f$
  *
  */
 class CGaussianLikelihood: public CLikelihoodModel
@@ -53,14 +53,14 @@ public:
 
 	/** Evaluate means
 	 *
-	 * @param Vector of means calculated by inference method
+	 * @param means vector of means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
 
 	/** Evaluate variances
 	 *
-	 * @param Vector of variances calculated by inference method
+	 * @param vars Vector of variances calculated by inference method
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
@@ -71,10 +71,64 @@ public:
 	 */
 	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
 
-	virtual float64_t get_log_probability_f(CRegressionLabels* labels, Eigen::VectorXd f);
-	virtual Eigen::VectorXd get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd f, index_t i);
-	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
-	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
+	/** get log likelihood log(P(y|f)) with respect
+	 *  to location f
+	 *
+	 *  @param labels labels used
+	 *  @param f location
+	 *
+	 *  @return log likelihood
+	 */
+	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
+			Eigen::VectorXd f);
+
+
+	/** get derivative of log likelihood log(P(y|f)) with respect
+	 *  to location f
+	 *
+	 *  @param labels labels used
+	 *  @param f location
+	 *  @param i index, choices are 1, 2, and 3
+	 *  for first, second, and third derivatives
+	 *  respectively
+	 *
+	 *  @return derivative
+	 */
+	virtual Eigen::VectorXd get_log_probability_derivative_f(
+			CRegressionLabels* labels, Eigen::VectorXd f, index_t i);
+
+	/** get derivative of log likelihood log(P(y|f))
+	 *  with respect to given parameter
+	 *
+	 *  @param labels labels used
+	 *  @param param parameter
+	 *  @param obj pointer to object to make sure we
+	 *  have the right parameter
+	 *  @param function function location
+	 *
+	 *  @return derivative
+	 */
+	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels,
+			TParameter* param, CSGObject* obj, Eigen::VectorXd function);
+
+	/** get derivative of the second derivative
+	 *  of log likelihood with respect to function
+	 *  location, i.e.
+	 *
+	 *  \f$\frac{\partial^{2}log(P(y|f))}{\partial{f^{2}}}\f$
+	 *
+	 *  with respect to given parameter
+	 *
+	 *  @param labels labels used
+	 *  @param param parameter
+	 *  @param obj pointer to object to make sure we
+	 *  have the right parameter
+	 *  @param function function location
+	 *
+	 *  @return derivative
+	 */
+	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels,
+			TParameter* param, CSGObject* obj, Eigen::VectorXd function);
 
 private:
 	/** Observation noise sigma */

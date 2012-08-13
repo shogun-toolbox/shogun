@@ -15,6 +15,11 @@
 namespace shogun
 {
 
+/** Type of evaluation result.
+ *  Currently this includes
+ *  Cross Validation and Gradient
+ *  Evaluation
+ */
 enum EEvaluationResultType
 {
 	CROSSVALIDATION_RESULT,

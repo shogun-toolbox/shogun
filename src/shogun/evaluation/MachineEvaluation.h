@@ -28,13 +28,14 @@ class CLabels;
 class CSplittingStrategy;
 class CEvaluation;
 
-class CMachineEvaluation: public CSGObject
-{
-
-/* @brief Machine Evaluation is an abstract class
+/** @brief Machine Evaluation is an abstract class
  * that evaluates a machine according to some criterion.
  *
  */
+class CMachineEvaluation: public CSGObject
+{
+
+
 
 public:
 
@@ -87,13 +88,24 @@ public:
 
 protected:
 
+	/** Initialize Object */
 	virtual void init();
 
 protected:
+
+	/** Machine to be Evaluated */
 	CMachine* m_machine;
+
+	/** Features to be used*/
 	CFeatures* m_features;
+
+	/** Labels for the features */
 	CLabels* m_labels;
+
+	/** Splitting Strategy to be used */
 	CSplittingStrategy* m_splitting_strategy;
+
+	/** Criterion for evaluation */
 	CEvaluation* m_evaluation_criterion;
 
 	/** whether machine will automatically be locked before evaluation */

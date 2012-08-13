@@ -35,15 +35,15 @@ public:
 	/*Destructor*/
 	virtual ~CDifferentiableFunction();
 
-	/*Get the gradient
-	 *
+	/** Get the gradient
+	 * @param para_dict dictionary to be built
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict) = 0;
 
-	/*Get the function value
+	/** Get the function value
 	 *
 	 * @return Vector that represents the function value
 	 */

@@ -126,7 +126,7 @@ public:
 	 * The choice of values may be random. If not, the lowest possible
 	 * values are chosen.
 	 *
-	 * @param bool Is our choice random?
+	 * @param rand Is our choice random?
 	 *
 	 * @return parameter tree of random parameter values.
 	 */

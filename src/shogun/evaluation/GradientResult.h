@@ -53,16 +53,16 @@ public:
 		return GRADIENTEVALUATION_RESULT;
 	}
 
-	/*Function value*/
+	/** Function value*/
 	SGVector<float64_t> quantity;
 
-	/*Function Gradient*/
+	/** Function Gradient*/
 	CMap<TParameter*, SGVector<float64_t> > gradient;
 
-	/*Which objects do the gradient parameters belong to?*/
+	/** Which objects do the gradient parameters belong to?*/
 	CMap<TParameter*, CSGObject*>  parameter_dictionary;
 
-	/*Total number of variables represented by the gradient*/
+	/** Total number of variables represented by the gradient*/
 	index_t total_variables;
 
 	/** Returns the function value

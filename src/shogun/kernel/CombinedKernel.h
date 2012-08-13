@@ -386,14 +386,14 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @param  param the parameter
 		 * @param obj the object that owns the parameter
-		 * @index index the index of the element if parameter is a vector
+		 * @param index the index of the element if parameter is a vector
 		 *
 		 * @return gradient with respect to parameter
 		 */
 		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
 				CSGObject* obj, index_t index);
 
-		/* Get the Kernel list
+		/** Get the Kernel list
 		 *
 		 * @return kernel list
 		 */

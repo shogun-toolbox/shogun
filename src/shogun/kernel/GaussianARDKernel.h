@@ -21,6 +21,9 @@
 namespace shogun
 {
 
+/** @brief Gaussian Kernel with Automatic
+ * Relevance Detection
+ */
 class CGaussianARDKernel: public CLinearARDKernel
 {
 
@@ -33,6 +36,8 @@ public:
 	/** constructor
 	 *
 	 * @param size cache size
+	 * @param width kernel width
+	 *
 	 */
 	CGaussianARDKernel(int32_t size, float64_t width);
 
@@ -41,6 +46,7 @@ public:
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 * @param size cache size
+	 * @param width kernel width
 	 */
 	CGaussianARDKernel(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 		int32_t size=10, float64_t width = 2.0);
@@ -71,7 +77,7 @@ public:
 	 *
 	 * @param  param the parameter
 	 * @param obj the object that owns the parameter
-	 * @index index the index of the element if parameter is a vector
+	 * @param index the index of the element if parameter is a vector
 	 *
 	 * @return gradient with respect to parameter
 	 */
@@ -96,7 +102,7 @@ private:
 
 protected:
 
-	/* kernel width */
+	/** kernel width */
 	float64_t m_width;
 };
 

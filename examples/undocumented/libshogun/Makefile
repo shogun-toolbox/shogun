@@ -2,7 +2,7 @@ LIB_PATH=/usr/lib
 INC_PATH=/usr/include
 VALGRINDOPTS=--tool=memcheck --error-limit=no --trace-children=yes --leak-check=full --show-reachable=yes
 
-INCLUDES=-I/usr/include/atlas
+INCLUDES=-I/usr/include/atlas -I/usr/include/eigen3
 LIBS=
 LIBS_ADD=-lshogun
 
@@ -41,6 +41,7 @@ TARGETS = basic_minimal \
 		  regression_gaussian_process_sum \
 		  regression_gaussian_process_product \
 		  regression_gaussian_process_ard \
+		  regression_gaussian_process_laplace \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \

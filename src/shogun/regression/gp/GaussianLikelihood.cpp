@@ -9,8 +9,6 @@
 
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <iostream>
-
 
 #include <shogun/base/Parameter.h>
 
@@ -50,53 +48,49 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
 	return result;
 }
 
-float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels, Eigen::VectorXd function)
+float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels,
+		Eigen::VectorXd function)
 {
-    VectorXd result(function.rows());
+	VectorXd result(function.rows());
 
-    for (index_t i = 0; i < function.rows(); i++)
-    	result[i] = labels->get_labels()[i] - function[i];
+	for (index_t i = 0; i < function.rows(); i++)
+		result[i] = labels->get_labels()[i] - function[i];
 
-    result = result.cwiseProduct(result);
+	result = result.cwiseProduct(result);
 
-<<<<<<< HEAD
-    result /= -2*m_sigma*m_sigma;
-=======
-    result /= 2*m_sigma*m_sigma;
->>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
+	result /= -2*m_sigma*m_sigma;
 
-    for (index_t i = 0; i < function.rows(); i++)
-    	result[i] -= log(2*CMath::PI*m_sigma*m_sigma)/2.0;
+	for (index_t i = 0; i < function.rows(); i++)
+		result[i] -= log(2*CMath::PI*m_sigma*m_sigma)/2.0;
 
-    return result.sum();
+	return result.sum();
 }
 
-VectorXd CGaussianLikelihood::get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd function, index_t j)
+VectorXd CGaussianLikelihood::get_log_probability_derivative_f(
+		CRegressionLabels* labels, Eigen::VectorXd function, index_t j)
 {
-    VectorXd result(function.rows());
+	VectorXd result(function.rows());
 
-    for (index_t i = 0; i < function.rows(); i++)
-    	result[i] = labels->get_labels()[i] - function[i];
+	for (index_t i = 0; i < function.rows(); i++)
+		result[i] = labels->get_labels()[i] - function[i];
 
-    if (j == 1)
-    	return result/(m_sigma*m_sigma);
+	if (j == 1)
+		return result/(m_sigma*m_sigma);
 
-    else if (j == 2)
-<<<<<<< HEAD
-    	return -VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
-=======
-    	return VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
->>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
+	else if (j == 2)
+		return -VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
 
-    else if (j == 3)
-    	return VectorXd::Zero(result.rows());
+	else if (j == 3)
+		return VectorXd::Zero(result.rows());
+
+	else
+		SG_ERROR("Invalid Index for Likelihood Derivative\n");
 }
 
-VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TParameter* param,  CSGObject* obj, Eigen::VectorXd function)
+VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels,
+		TParameter* param,  CSGObject* obj, Eigen::VectorXd function)
 {
-<<<<<<< HEAD
-
-    VectorXd result(function.rows());
+	VectorXd result(function.rows());
 
 	if (strcmp(param->m_name, "sigma") || obj != this)
 	{
@@ -104,38 +98,31 @@ VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels, TP
 		return result;
 	}
 
-	//(ymmu^2-x^2)/x^3
+	for (index_t i = 0; i < function.rows(); i++)
+		result[i] = labels->get_labels()[i] - function[i];
 
-=======
-    VectorXd result(function.rows());
+	result = result.cwiseProduct(result);
 
->>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
-    for (index_t i = 0; i < function.rows(); i++)
-    	result[i] = labels->get_labels()[i] - function[i];
+	result /= m_sigma*m_sigma;
 
-    result = result.cwiseProduct(result);
+	for (index_t i = 0; i < function.rows(); i++)
+		result[i] -= 1;
 
-    result /= m_sigma*m_sigma;
-
-    for (index_t i = 0; i < function.rows(); i++)
-    	result[i] -= 1;
-
-    return result;
+	return result;
 }
 
-VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function)
+VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels,
+		TParameter* param, CSGObject* obj, Eigen::VectorXd function)
 {
-<<<<<<< HEAD
-	//2/x^3
+
 	if (strcmp(param->m_name, "sigma") || obj != this)
 	{
-	    VectorXd result(function.rows());
+		VectorXd result(function.rows());
 		result(0) = CMath::INFTY;
 		return result;
 	}
-=======
->>>>>>> bcb9792ea2c925960844465c7d6f82cfdb2bdc7c
-    return 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
+
+	return 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
 }
 
 

@@ -15,17 +15,17 @@
 namespace shogun
 {
 
-class CGradientCriterion: public CEvaluation
-{
-
-/* @brief CGradientCriterion
- *
- * Simple class which specifies the direction
+/** @brief CGradientCriterion Simple class which specifies the direction
  * of gradient search. Does not provide any
  * label evaluation measure, however.
  */
+class CGradientCriterion: public CEvaluation
+{
+
+
 public:
 
+	/*Constructor*/
 	CGradientCriterion();
 
 	virtual ~CGradientCriterion();
@@ -44,7 +44,7 @@ public:
 	{ return m_direction; }
 
 	/** Set the evaluation direction
-	 * @param evaluation direction to be set.
+	 * @param dir evaluation direction to be set.
 	 */
 	virtual void set_evaluation_direction(EEvaluationDirection dir)
 	{
@@ -55,7 +55,7 @@ public:
 	virtual inline const char* get_name() const { return "GradientCriterion"; }
 
 private:
-
+	/*Evaluation Direction*/
 	EEvaluationDirection m_direction;
 
 };

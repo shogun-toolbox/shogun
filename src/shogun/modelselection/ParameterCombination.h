@@ -118,6 +118,7 @@ public:
 	 * @param name Name of parameter
 	 * @param value value to be set
 	 * @param parent The CSObject that directly holds this parameter
+	 * @param index index if the parameter is a vector
 	 *
 	 * @return bool true if value successfully set.
 	 */
@@ -163,6 +164,7 @@ public:
 
 		return result;
 	}
+
 	/** Gets specific parameter by name.
 	 *
 	 * @param name Name of parameter
@@ -205,7 +207,7 @@ protected:
 	 *
 	 * @param sets set of sets of CParameterCombination instances which
 	 * represent the trees to be multiplied
-	 * @new_root this new root is put in front of all products
+	 * @param new_root this new root is put in front of all products
 	 * @return set of trees with the given root as root and all combinations
 	 * of the trees in the sets as children
 	 */
@@ -224,14 +226,14 @@ protected:
 	static CDynamicObjectArray* extract_trees_with_name(
 			const CDynamicObjectArray* sets, const char* desired_name);
 
-	/* Gets parameter by name in current node.
+	/** Gets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @return parameter. Null if not found.
 	 */
 	TParameter* get_parameter_helper(const char* name);
 
-	/* Sets parameter by name in current node.
+	/** Sets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @param value of parameter
@@ -241,7 +243,7 @@ protected:
 	 */
 	bool set_parameter_helper(const char* name, bool value, index_t index);
 
-	/* Sets parameter by name in current node.
+	/** Sets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @param value of parameter
@@ -251,7 +253,7 @@ protected:
 	 */
 	bool set_parameter_helper(const char* name, int32_t value, index_t index);
 
-	/* Sets parameter by name in current node.
+	/** Sets parameter by name in current node.
 	 *
 	 * @param name name of parameter
 	 * @param value of parameter
@@ -265,7 +267,11 @@ private:
 	void init();
 
 protected:
+
+	/** Parameter of combination */
 	Parameter* m_param;
+
+	/** Child Parameters */
 	CDynamicObjectArray* m_child_nodes;
 };
 }

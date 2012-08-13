@@ -5,6 +5,10 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
+ *
+ * Code adapted from the GPML Toolbox:
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ *
  */
 
 #ifndef CSTUDENTSTLIKELIHOOD_H_
@@ -15,10 +19,10 @@
 namespace shogun
 {
 
-/** @brief This is the class that models a Gaussian Likelihood
+/** @brief This is the class that models a likelihood model
+ * with a Student's T Distribution. The parameters include
+ * degrees of freedom as well as a sigma scale parameter.
  *
- * In this case, P(y|f) is normally distributed with mean f and
- * variance $\sigma$.
  *
  */
 class CStudentsTLikelihood: public CLikelihoodModel
@@ -37,7 +41,7 @@ public:
 	 *
 	 * @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() const { return "GaussianLikelihood"; }
+	inline virtual const char* get_name() const { return "StudentsTLikelihood"; }
 
 	/** Returns the noise variance
 	 *
@@ -53,14 +57,14 @@ public:
 
 	/** Evaluate means
 	 *
-	 * @param Vector of means calculated by inference method
+	 * @param means Vector of means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
 
 	/** Evaluate variances
 	 *
-	 * @param Vector of variances calculated by inference method
+	 * @param vars Vector of variances calculated by inference method
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
@@ -69,28 +73,91 @@ public:
 	  *
 	  * @return model type Gaussian
 	 */
-	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
+	virtual ELikelihoodModelType get_model_type() {return LT_STUDENTST;}
 
-	virtual float64_t get_log_probability_f(CRegressionLabels* labels, Eigen::VectorXd f);
-	virtual Eigen::VectorXd get_log_probability_derivative_f(CRegressionLabels* labels, Eigen::VectorXd f, index_t i);
-	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
-	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels, TParameter* param, CSGObject* obj, Eigen::VectorXd function);
+
+	/** get log likelihood log(P(y|f)) with respect
+	 *  to location f
+	 *
+	 *  @param labels labels used
+	 *  @param f location
+	 *
+	 *  @return log likelihood
+	 */
+	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
+			Eigen::VectorXd f);
+
+
+	/** get derivative of log likelihood log(P(y|f)) with respect
+	 *  to location f
+	 *
+	 *  @param labels labels used
+	 *  @param f location
+	 *  @param i index, choices are 1, 2, and 3
+	 *  for first, second, and third derivatives
+	 *  respectively
+	 *
+	 *  @return derivative
+	 */
+	virtual Eigen::VectorXd get_log_probability_derivative_f(
+			CRegressionLabels* labels, Eigen::VectorXd f, index_t i);
+
+	/** get derivative of log likelihood log(P(y|f))
+	 *  with respect to given parameter
+	 *
+	 *  @param labels labels used
+	 *  @param param parameter
+	 *  @param obj pointer to object to make sure we
+	 *  have the right parameter
+	 *  @param function function location
+	 *
+	 *  @return derivative
+	 */
+	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels,
+			TParameter* param, CSGObject* obj, Eigen::VectorXd function);
+
+	/** get derivative of the second derivative
+	 *  of log likelihood with respect to function
+	 *  location, i.e.
+	 *
+	 *  \f$\frac{\partial^{2}log(P(y|f))}{\partial{f^{2}}}\f$
+	 *
+	 *  with respect to given parameter
+	 *
+	 *  @param labels labels used
+	 *  @param param parameter
+	 *  @param obj pointer to object to make sure we
+	 *  have the right parameter
+	 *  @param function function location
+	 *
+	 *  @return derivative
+	 */
+	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels,
+			TParameter* param, CSGObject* obj, Eigen::VectorXd function);
 
 private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 
-	float64_t m_df;
 
-	/*Initialize function*/
+	/** Initialize function*/
 	void init();
 
+	/** Derivative of the log gamma function.
+	 *
+	 * Taken from likT.m from the GPML
+	 * toolbox.
+	 *
+	 * @param x input
+	 * @return derivative of the log gamma input
+	 */
 	float64_t dlgamma(float64_t x)
 	{
 	  x = x+6.0;
 	  float64_t df = 1./(x*x);
 	  df = (((df/240-0.003968253986254)*df+1/120.0)*df-1/120.0)*df;
-	  df = df+log(x)-0.5/x-1.0/(x-1.0)-1.0/(x-2.0)-1.0/(x-3.0)-1.0/(x-4.0)-1.0/(x-5.0)-1.0/(x-6.0);
+	  df = df+log(x)-0.5/x-1.0/(x-1.0)-1.0/(x-2.0)-1.0/
+			  (x-3.0)-1.0/(x-4.0)-1.0/(x-5.0)-1.0/(x-6.0);
 	  return df;
 	}
 };

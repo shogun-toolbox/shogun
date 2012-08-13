@@ -6,7 +6,7 @@
  *
  * Copyright (C) 2012 Jacob Walker
  *
- *  * Code adapted from Gaussian Process Machine Learning Toolbox
+ * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  *
  */
@@ -27,19 +27,25 @@
 namespace shogun
 {
 
-/** @brief The Fully Independent Conditional Training
+/** @brief The Laplace Approximation
  *  Inference Method
  *
- *  This inference method computes the Cholesky and
- *  Alpha vectors approximately with the help of latent
- *  variables. For more details, see "Sparse Gaussian Process
- *  using Pseudo-inputs", Edward Snelson, Zoubin Ghahramani,
- *  NIPS 18, MIT Press, 2005.
+ *  This inference method approximates the
+ *  posterior likelihood function by using
+ *  Laplace's method. Here, we compute a Gaussian
+ *  approximation to the posterior via a
+ *  Taylor expansion around the maximum of the posterior
+ *  likelihood function. For more details, see "Bayesian
+ *  Classification with Gaussian Processes" by Christopher K.I
+ *  Williams and David Barber, published 1998 in the IEEE
+ *  Transactions on Pattern Analysis and Machine Intelligence,
+ *  Volume 20, Number 12, Pages 1342-1351.
  *
- *  This specific implementation was inspired by the infFITC.m file
+ *
+ *
+ *  This specific implementation was adapted from the infLaplace.m file
  *  in the GPML toolbox
  *
- *  The Gaussian Likelihood Function must be used for this inference method.
  *
  */
 class CLaplacianInferenceMethod: public CInferenceMethod
@@ -56,8 +62,7 @@ public:
 	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
-	 * @param latent features to use
-	 */
+]	 */
 	CLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
@@ -83,7 +88,8 @@ public:
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
+	virtual CMap<TParameter*, SGVector<float64_t> >
+	get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict);
 
 	/** get Alpha Matrix
@@ -139,20 +145,78 @@ public:
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict)
-	{
+			{
 		return get_marginal_likelihood_derivatives(para_dict);
-	}
+			}
 
 	/*Get the function value
 	 *
 	 * @return Vector that represents the function value
 	 */
 	virtual SGVector<float64_t> get_quantity()
-	{
+			{
 		SGVector<float64_t> result(1);
 		result[0] = get_negative_marginal_likelihood();
 		return result;
-	}
+			}
+
+	/*Get tolerance for Newton Iterations
+	 *
+	 * @return Tolerance for Newton Iterations
+	 */
+	inline virtual float64_t get_newton_tolerance() {
+		return m_tolerance;}
+
+	/*Set tolerance for Newton Iterations
+	 *
+	 * @param Tolerance for Newton Iterations
+	 */
+	inline virtual void set_newton_tolerance(float64_t tol) {
+		m_tolerance = tol;}
+
+	/*Get tolerance for Brent's Minimization Method
+	 *
+	 * @return tolerance for Brent's Minimization Method
+	 */
+	inline virtual float64_t get_minimization_tolerance() {
+		return m_opt_tolerance;}
+
+	/*Set tolerance for Brent's Minimization Method
+	 *
+	 * @param tolerance for Brent's Minimization Method
+	 */
+	inline virtual void set_minimization_tolerance(float64_t tol) {
+		m_opt_tolerance = tol;}
+
+	/*Get max iterations for Brent's Minimization Method
+	 *
+	 * @return max iterations for Brent's Minimization Method
+	 */
+	inline virtual int32_t get_minimization_iterations() {
+		return m_max;}
+
+	/*Set max iterations for Brent's Minimization Method
+	 *
+	 * @param max iterations for Brent's Minimization Method
+	 */
+	inline virtual void set_minimization_tolerance(int32_t itr) {
+		m_max = itr;}
+
+	/*Get max Newton iterations
+	 *
+	 * @return max Newton iterations
+	 */
+	inline virtual int32_t get_newton_iterations() {
+		return m_max_itr;}
+
+	/*Set max Newton iterations
+	 *
+	 * @param max Newton iterations
+	 */
+	inline virtual void set_newton_tolerance(int32_t itr) {
+		m_max_itr = itr;}
+
+
 
 protected:
 	/** Update Alpha and Cholesky Matrices.
@@ -173,102 +237,86 @@ private:
 	 */
 	void check_members();
 
-	/*Kernel matrix with noise*/
-	SGMatrix<float64_t> m_kern_with_noise;
-
-	/*noise of the latent variables*/
-	float64_t m_ind_noise;
-
-	/*Cholesky of Covariance of
-	 * latent features
-	 */
-	Eigen::MatrixXd m_chol_uu;
-
-	/*Cholesky of Covariance of
-	 * latent features
-	 * and training features
-	 */
-	Eigen::MatrixXd m_chol_utr;
-
-	/* Covariance matrix of latent
-	 * features
-	 */
-	Eigen::MatrixXd m_kuu;
-
-	/* Covariance matrix of latent
-	 * features and training features
-	 */
-	Eigen::MatrixXd m_ktru;
-
-	/* Diagonal of Training
-	 * kernel matrix + noise
-	 * - diagonal of the matrix
-	 * (m_chol_uu^{-1}*m_ktru)*
-	 * (m_chol_uu^(-1)*m_ktru)'
-	 * = V*V'
-	 */
-	Eigen::VectorXd m_dg;
-
-	/*Labels adjusted for
-	 * noise and means
-	 */
-	Eigen::VectorXd m_r;
-
-	/* Solves the equation
-	 * V*r = m_chol_utr
-	 */
-	Eigen::VectorXd m_be;
-
+	/*Amount of tolerance for Newton's Iterations*/
 	float64_t m_tolerance;
 
+	/*Amount of tolerance for Brent's Minimization Method*/
 	float64_t m_opt_tolerance;
 
+	/*Max iterations for Brent's Minimization Method*/
 	float64_t m_max;
 
+	/*Max Newton Iterations*/
 	index_t m_max_itr;
 
+	/*Kernel Matrix*/
 	Eigen::MatrixXd temp_kernel;
+
+	/*Eigen version of alpha vector*/
 	Eigen::VectorXd temp_alpha;
+
+	/*Function Location*/
 	Eigen::VectorXd function;
+
+	/*Noise Matrix*/
 	Eigen::MatrixXd W;
+
+	/*Square root of W*/
 	Eigen::MatrixXd sW;
+
+	/*Eigen version of means vector*/
 	Eigen::VectorXd m_means;
+
+	/*Derivative of log likelihood with respect
+	 * to function location
+	 */
 	Eigen::VectorXd dlp;
+
+	/*Second derivative of log likelihood with respect
+	 * to function location
+	 */
 	Eigen::VectorXd	d2lp;
+
+	/*Third derivative of log likelihood with respect
+	 * to function location
+	 */
 	Eigen::VectorXd	d3lp;
+
+	/*log likelihood*/
 	float64_t lp;
 
-	class Psi_line : public brent::func_base {
+	/*Wrapper class used for the Brent minimizer
+	 *
+	 */
+	class Psi_line : public brent::func_base
+	{
 	public:
-	  Eigen::VectorXd* alpha;
-	  Eigen::VectorXd* dalpha;
-	  Eigen::MatrixXd* K;
-	  float64_t* l1;
-	  Eigen::VectorXd* dl1;
-	  Eigen::VectorXd* dl2;
-	  Eigen::MatrixXd* mW;
-	  Eigen::VectorXd* f;
-	  Eigen::VectorXd* m;
-	  float64_t scale;
-	  CLikelihoodModel* lik;
-	  CRegressionLabels *lab;
+		Eigen::VectorXd* alpha;
+		Eigen::VectorXd* dalpha;
+		Eigen::MatrixXd* K;
+		float64_t* l1;
+		Eigen::VectorXd* dl1;
+		Eigen::VectorXd* dl2;
+		Eigen::MatrixXd* mW;
+		Eigen::VectorXd* f;
+		Eigen::VectorXd* m;
+		float64_t scale;
+		CLikelihoodModel* lik;
+		CRegressionLabels *lab;
 
-	  Eigen::VectorXd start_alpha;
+		Eigen::VectorXd start_alpha;
 
-	  virtual double operator() (double x)
-	  {
-			  *alpha = start_alpha + x*(*dalpha);
-			  (*f) = (*K)*(*alpha)*scale*scale+(*m);
-		//	  (*l1) =
-			  (*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
-		//	  (*dl2) = lik->get_log_probability_derivative_f(lab, (*f), 2);
-			  (*mW) = -lik->get_log_probability_derivative_f(lab, (*f), 2);
-			  float64_t result = ((*alpha).dot(((*f)-(*m))))/2.0;
-			  result -= lik->get_log_probability_f(lab, *f);
-			  return result;
-	  }
+		virtual double operator() (double x)
+		{
+			*alpha = start_alpha + x*(*dalpha);
+			(*f) = (*K)*(*alpha)*scale*scale+(*m);
+			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
+			(*mW) = -lik->get_log_probability_derivative_f(lab, (*f), 2);
+			float64_t result = ((*alpha).dot(((*f)-(*m))))/2.0;
+			result -= lik->get_log_probability_f(lab, *f);
+			return result;
+		}
 	};
-
 
 };
 
@@ -276,4 +324,4 @@ private:
 #endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
 
-#endif /* CLaplacianInferenceMethod_H_ */
+#endif /* CLAPLACIANINFERENCEMETHOD_H_ */
