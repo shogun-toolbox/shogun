@@ -25,122 +25,124 @@
 #define LIBBMRM_MEMMOVE(x, y, z) memmove(x, y, z)
 #define LIBBMRM_INDEX(ROW, COL, NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 #define LIBBMRM_ABS(A) ((A) < 0 ? -(A) : (A))
+#define IGNORE_IN_CLASSLIST
 
 namespace shogun
 {
-	/** BMRM result structure */
-	typedef struct {
-		/** number of iterations  */
-		uint32_t nIter;
-		/** number of cutting planes */
-		uint32_t nCP;
-		/** number of active cutting planes */
-		uint32_t nzA;
-		/** primal objective value  */
-		float64_t Fp;
-		/** reduced (dual) objective value */
-		float64_t Fd;
-		/** exitflag from the last call of the inner QP solver  */
-		int8_t qp_exitflag;
-		/** 1 .. bmrm.Q_P - bmrm.Q_D <= TolRel*ABS(bmrm.Q_P)
-		 *  2 .. bmrm.Q_P - bmrm.Q_D <= TolAbs
-		 * -1 .. bmrm.nCutPlanes >= BufSize
-		 * -2 .. not enough memory for the solver
-		 */
-		int8_t exitflag;
-	} bmrm_return_value_T;
-
-	/** Linked list for cutting planes buffer management */
-	typedef struct ll {
-		/** Pointer to previous CP entry */
-		struct ll   *prev;
-		/** Pointer to next CP entry */
-		struct ll   *next;
-		/** Pointer to the real CP data */
-		float64_t   *address;
-		/** Index of CP */
-		uint32_t    idx;
-	} bmrm_ll;
-
-	/** Add cutting plane
-	 *
-	 * @param tail 		Pointer to the last CP entry
-	 * @param map		Pointer to map storing info about CP physical memory
-	 * @param A			CP physical memory
-	 * @param free_idx	Index to physical memory where the CP data will be stored
-	 * @param cp_data	CP data
-	 * @param dim		Dimension of CP data
+/** BMRM result structure */
+IGNORE_IN_CLASSLIST struct bmrm_return_value_T
+{
+	/** number of iterations  */
+	uint32_t nIter;
+	/** number of cutting planes */
+	uint32_t nCP;
+	/** number of active cutting planes */
+	uint32_t nzA;
+	/** primal objective value  */
+	float64_t Fp;
+	/** reduced (dual) objective value */
+	float64_t Fd;
+	/** exitflag from the last call of the inner QP solver  */
+	int8_t qp_exitflag;
+	/** 1 .. bmrm.Q_P - bmrm.Q_D <= TolRel*ABS(bmrm.Q_P)
+	 *  2 .. bmrm.Q_P - bmrm.Q_D <= TolAbs
+	 * -1 .. bmrm.nCutPlanes >= BufSize
+	 * -2 .. not enough memory for the solver
 	 */
-	void add_cutting_plane(
-			bmrm_ll**	tail,
-			bool* 		map,
-			float64_t*	A,
-			uint32_t 	free_idx,
-			float64_t* 	cp_data,
-			uint32_t 	dim);
+	int8_t exitflag;
+};
 
-	/** Remove cutting plane at given index
-	 *
-	 * @param head	Pointer to the first CP entry
-	 * @param tail	Pointer to the last CP entry
-	 * @param map	Pointer to map storing info about CP physical memory
-	 * @param icp	Pointer to inactive CP that should be removed
-	 */
-	void remove_cutting_plane(
-			bmrm_ll**	head,
-			bmrm_ll**	tail,
-			bool*		map,
-			float64_t* 	icp);
+/** Linked list for cutting planes buffer management */
+IGNORE_IN_CLASSLIST struct bmrm_ll {
+	/** Pointer to previous CP entry */
+	bmrm_ll   *prev;
+	/** Pointer to next CP entry */
+	bmrm_ll   *next;
+	/** Pointer to the real CP data */
+	float64_t   *address;
+	/** Index of CP */
+	uint32_t    idx;
+};
 
-	/** Get cutting plane
-	 *
-	 * @param ptr 	Pointer to some CP entry
-	 * @return Pointer to cutting plane at given entry
-	 */
-	inline float64_t * get_cutting_plane(bmrm_ll *ptr) { return ptr->address; }
+/** Add cutting plane
+ *
+ * @param tail 		Pointer to the last CP entry
+ * @param map		Pointer to map storing info about CP physical memory
+ * @param A			CP physical memory
+ * @param free_idx	Index to physical memory where the CP data will be stored
+ * @param cp_data	CP data
+ * @param dim		Dimension of CP data
+ */
+void add_cutting_plane(
+		bmrm_ll**	tail,
+		bool* 		map,
+		float64_t*	A,
+		uint32_t 	free_idx,
+		float64_t* 	cp_data,
+		uint32_t 	dim);
 
-	/** Get index of free slot for new cutting plane
-	 *
-	 * @param map	Pointer to map storing info about CP physical memory
-	 * @param size	Size of the CP buffer
-	 * @return Index of unoccupied memory field in CP physical memory
-	 */
-	inline uint32_t find_free_idx(bool *map, uint32_t size)
-	{ for(uint32_t i=0; i<size; ++i) if (map[i]) return i; return size+1; }
+/** Remove cutting plane at given index
+ *
+ * @param head	Pointer to the first CP entry
+ * @param tail	Pointer to the last CP entry
+ * @param map	Pointer to map storing info about CP physical memory
+ * @param icp	Pointer to inactive CP that should be removed
+ */
+void remove_cutting_plane(
+		bmrm_ll**	head,
+		bmrm_ll**	tail,
+		bool*		map,
+		float64_t* 	icp);
 
-	/** Standard BMRM Solver for Structured Output Learning
-	 *
-	 * @param data			Pointer to user data passed to risk function
-	 * @param W				Weight vector
-	 * @param TolRel		Relative tolerance
-	 * @param TolAbs		Absolute tolerance
-	 * @param lambda		Regularization constant
-	 * @param _BufSize		Size of the CP buffer (i.e. maximal number of
-	 * 						iterations)
-	 * @param cleanICP		Flag that enables/disables inactive cutting plane
-	 * 						removal feature
-	 * @param cleanAfter	Number of iterations that should be cutting plane
-	 * 						inactive for to be removed
-	 * @param K				Parameter K
-	 * @param Tmax			Parameter Tmax
-	 * @param verbose		Flag that enables/disables screen output
-	 * @param risk_function	Pointer to risk function
-	 * @return Structure with BMRM algorithm result
-	 */
-	bmrm_return_value_T svm_bmrm_solver(
-			void        *data,
-			float64_t   *W,
-			float64_t   TolRel,
-			float64_t   TolAbs,
-			float64_t   lambda,
-			uint32_t    _BufSize,
-			bool        cleanICP,
-			uint32_t    cleanAfter,
-			float64_t   K,
-			uint32_t    Tmax,
-			bool        verbose,
-			CRiskFunction* risk_function
-			);
+/** Get cutting plane
+ *
+ * @param ptr 	Pointer to some CP entry
+ * @return Pointer to cutting plane at given entry
+ */
+inline float64_t * get_cutting_plane(bmrm_ll *ptr) { return ptr->address; }
+
+/** Get index of free slot for new cutting plane
+ *
+ * @param map	Pointer to map storing info about CP physical memory
+ * @param size	Size of the CP buffer
+ * @return Index of unoccupied memory field in CP physical memory
+ */
+inline uint32_t find_free_idx(bool *map, uint32_t size)
+{ for(uint32_t i=0; i<size; ++i) if (map[i]) return i; return size+1; }
+
+/** Standard BMRM Solver for Structured Output Learning
+ *
+ * @param data			Pointer to user data passed to risk function
+ * @param W				Weight vector
+ * @param TolRel		Relative tolerance
+ * @param TolAbs		Absolute tolerance
+ * @param lambda		Regularization constant
+ * @param _BufSize		Size of the CP buffer (i.e. maximal number of
+ * 						iterations)
+ * @param cleanICP		Flag that enables/disables inactive cutting plane
+ * 						removal feature
+ * @param cleanAfter	Number of iterations that should be cutting plane
+ * 						inactive for to be removed
+ * @param K				Parameter K
+ * @param Tmax			Parameter Tmax
+ * @param verbose		Flag that enables/disables screen output
+ * @param risk_function	Pointer to risk function
+ * @return Structure with BMRM algorithm result
+ */
+bmrm_return_value_T svm_bmrm_solver(
+		void        *data,
+		float64_t   *W,
+		float64_t   TolRel,
+		float64_t   TolAbs,
+		float64_t   lambda,
+		uint32_t    _BufSize,
+		bool        cleanICP,
+		uint32_t    cleanAfter,
+		float64_t   K,
+		uint32_t    Tmax,
+		bool        verbose,
+		CRiskFunction* risk_function
+		);
 
 }
 

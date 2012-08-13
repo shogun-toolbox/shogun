@@ -15,17 +15,18 @@
 
 namespace shogun
 {
+#define IGNORE_IN_CLASSLIST
 
 /**
  * \struct TMultipleCPinfo
  * Multiple cutting plane models helper
  */
-typedef struct {
+IGNORE_IN_CLASSLIST struct TMultipleCPinfo {
 	/** where this portion of data starts */
 	uint32_t from;
 	/** how many examples belong to this portion of data */
 	uint32_t N;
-} TMultipleCPinfo;
+};
 
 /** @brief Class CRiskFunction interface for Structured Output Risk functions
  *
