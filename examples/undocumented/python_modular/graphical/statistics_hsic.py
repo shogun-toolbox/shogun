@@ -16,6 +16,9 @@ from shogun.Kernel import GaussianKernel
 from shogun.Statistics import HSIC
 from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
 
+# for nice plotting that fits into our shogun tutorial
+import latex_plot_inits
+
 # parameters, change to get different results
 m=250
 difference=3
@@ -77,11 +80,13 @@ figure()
 
 # plot data x and y
 subplot(2,2,1)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 4) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 4) ) # reduce number of x-ticks
+grid(True)
 plot(data[0], data[1], 'o')
 title('Data, rotation=$\pi$/'+str(1/angle*pi)+'\nm='+str(m))
 xlabel('$x$')
 ylabel('$y$')
-grid(True)
 
 # compute threshold for test level
 alpha=0.05
@@ -95,24 +100,31 @@ type_one_error_gamma=sum(null_samples_gamma<thresh_boot)/float(num_null_samples)
 
 # plot alternative distribution with threshold
 subplot(2,2,2)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+grid(True)
 hist(alt_samples, 20, normed=True);
 axvline(thresh_boot, 0, 1, linewidth=2, color='red')
 type_two_error=sum(alt_samples<thresh_boot)/float(num_null_samples)
 title('Alternative Dist.\n' + 'Type II error is ' + str(type_two_error))
-grid(True)
 
 # compute range for all null distribution histograms
 hist_range=[min([min(null_samples_boot), min(null_samples_gamma)]), max([max(null_samples_boot), max(null_samples_gamma)])]
 
 # plot null distribution with threshold
 subplot(2,2,3)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+grid(True)
 hist(null_samples_boot, 20, range=hist_range, normed=True);
 axvline(thresh_boot, 0, 1, linewidth=2, color='red')
 title('Bootstrapped Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
-grid(True)
 
 # plot null distribution gamma
 subplot(2,2,4)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+grid(True)
 hist(null_samples_gamma, 20, range=hist_range, normed=True);
 axvline(thresh_gamma, 0, 1, linewidth=2, color='red')
 title('Null Dist. Gamma\nType I error is '  + str(type_one_error_gamma))

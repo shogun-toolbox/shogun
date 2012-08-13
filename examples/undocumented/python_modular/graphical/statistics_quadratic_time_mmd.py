@@ -16,6 +16,9 @@ from shogun.Kernel import GaussianKernel
 from shogun.Statistics import QuadraticTimeMMD
 from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
 
+# for nice plotting that fits into our shogun tutorial
+import latex_plot_inits
+
 # parameters, change to get different results
 m=100
 dim=2
@@ -76,23 +79,28 @@ title('Quadratic Time MMD')
 
 # plot data of p and q
 subplot(2,3,1)
+grid(True)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 4) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 4) ) # reduce number of x-ticks
 plot(data[0][0:m], data[1][0:m], 'ro', label='$x$')
-plot(data[0][m+1:2*m], data[1][m+1:2*m], 'bo', label='$x$')
-legend()
+plot(data[0][m+1:2*m], data[1][m+1:2*m], 'bo', label='$x$', alpha=0.5)
 title('Data, shift in $x_1$='+str(difference)+'\nm='+str(m))
 xlabel('$x_1, y_1$')
 ylabel('$x_2, y_2$')
-grid(True)
 
 # histogram of first data dimension and pdf
 subplot(2,3,2)
+grid(True)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3 )) # reduce number of x-ticks
 hist(data[0], bins=50, alpha=0.5, facecolor='r', normed=True)
 hist(data[1], bins=50, alpha=0.5, facecolor='b', normed=True)
 xs=linspace(min(data[0])-1,max(data[0])+1, 50)
 plot(xs,normpdf( xs, 0, 1), 'r', linewidth=3)
 plot(xs,normpdf( xs, difference, 1), 'b', linewidth=3)
-title('Data PDF in $x_1$')
-grid(True)
+xlabel('$x_1, y_1$')
+ylabel('$p(x_1), p(y_1)$')
+title('Data PDF in $x_1, y_1$')
 
 # compute threshold for test level
 alpha=0.05
@@ -109,17 +117,21 @@ type_one_error_gamma=sum(null_samples_gamma<thresh_boot)/float(num_null_samples)
 
 # plot alternative distribution with threshold
 subplot(2,3,4)
+grid(True)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
 hist(alt_samples, 20, normed=True);
 axvline(thresh_boot, 0, 1, linewidth=2, color='red')
 type_two_error=sum(alt_samples<thresh_boot)/float(num_null_samples)
 title('Alternative Dist.\n' + 'Type II error is ' + str(type_two_error))
-grid(True)
 
 # compute range for all null distribution histograms
 hist_range=[min([min(null_samples_boot), min(null_samples_spectrum), min(null_samples_gamma)]), max([max(null_samples_boot), max(null_samples_spectrum), max(null_samples_gamma)])]
 
 # plot null distribution with threshold
 subplot(2,3,3)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3 )) # reduce number of x-ticks
 hist(null_samples_boot, 20, range=hist_range, normed=True);
 axvline(thresh_boot, 0, 1, linewidth=2, color='red')
 title('Bootstrapped Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
@@ -127,17 +139,21 @@ grid(True)
 
 # plot null distribution spectrum
 subplot(2,3,5)
+grid(True)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
 hist(null_samples_spectrum, 20, range=hist_range, normed=True);
 axvline(thresh_spectrum, 0, 1, linewidth=2, color='red')
 title('Null Dist. Spectrum\nType I error is '  + str(type_one_error_spectrum))
-grid(True)
 
 # plot null distribution gamma
 subplot(2,3,6)
+grid(True)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
 hist(null_samples_gamma, 20, range=hist_range, normed=True);
 axvline(thresh_gamma, 0, 1, linewidth=2, color='red')
 title('Null Dist. Gamma\nType I error is '  + str(type_one_error_gamma))
-grid(True)
 
 # pull plots a bit apart
 subplots_adjust(hspace=0.5)
