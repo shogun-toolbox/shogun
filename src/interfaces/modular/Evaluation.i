@@ -42,7 +42,7 @@
 %rename(DifferentiableFunction) CDifferentiableFunction;
 %rename(GradientCriterion) CGradientCriterion;
 %rename(GradientEvaluation) CGradientEvaluation;
-
+%rename(MulticlassOVREvaluation) CMulticlassOVREvaluation;
 
 
 
@@ -67,5 +67,6 @@
 %include <shogun/evaluation/GradientCriterion.h>
 %include <shogun/evaluation/GradientEvaluation.h>
 %include <shogun/evaluation/GradientResult.h>
+%include <shogun/evaluation/MulticlassOVREvaluation.h>
 %include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 %include <shogun/evaluation/CrossValidationSplitting.h>

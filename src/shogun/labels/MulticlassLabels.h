@@ -54,6 +54,9 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CMulticlassLabels(CFile* loader);
 
+		/** destructor */
+		~CMulticlassLabels();
+
 		/** helper method used to specialize a base class instance
 		 *
 		 * @param base_labels its dynamic type must be CMulticlassLabels
@@ -97,8 +100,30 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		int32_t get_num_classes();
 
+		/** returns multiclass confidences 
+		 *
+		 * @param i index
+		 * @return confidences of ith result
+		 */
+		SGVector<float64_t> get_multiclass_confidences(int32_t i);
+
+		/** sets multiclass confidences
+		 *
+		 * @param i index
+		 * @param confidences confidences to be set for ith result
+		 */
+		void set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences);
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "MulticlassLabels"; }
+
+	protected:
+
+		/** multiclass confidences */
+		SGVector<float64_t>* m_multiclass_confidences;
+
+		/** number of multiclass confidences */
+		int32_t m_num_multiclass_confidences;
 };
 }
 #endif

@@ -6,19 +6,46 @@ using namespace shogun;
 
 CMulticlassLabels::CMulticlassLabels() : CDenseLabels()
 {
+	m_num_multiclass_confidences = 0;
 }
 
 CMulticlassLabels::CMulticlassLabels(int32_t num_labels) : CDenseLabels(num_labels)
 {
+	m_multiclass_confidences = SG_MALLOC(SGVector<float64_t>, num_labels);
+	m_num_multiclass_confidences = num_labels;
+	for (int32_t i=0; i<num_labels; i++)
+		new (&m_multiclass_confidences[i]) SGVector<float64_t>();
 }
 
 CMulticlassLabels::CMulticlassLabels(const SGVector<float64_t> src) : CDenseLabels()
 {
 	set_labels(src);
+	m_multiclass_confidences = SG_MALLOC(SGVector<float64_t>, src.vlen);
+	m_num_multiclass_confidences = src.vlen;
+	for (int32_t i=0; i<src.vlen; i++)
+		new (&m_multiclass_confidences[i]) SGVector<float64_t>();
 }
 
 CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 {
+	m_num_multiclass_confidences = 0;
+}
+
+CMulticlassLabels::~CMulticlassLabels()
+{
+	for (int32_t i=0; i<m_num_multiclass_confidences; i++)
+		m_multiclass_confidences[i].~SGVector<float64_t>();
+	SG_FREE(m_multiclass_confidences);
+}
+
+void CMulticlassLabels::set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences)
+{
+	m_multiclass_confidences[i] = confidences;
+}
+
+SGVector<float64_t> CMulticlassLabels::get_multiclass_confidences(int32_t i)
+{
+	return m_multiclass_confidences[i];
 }
 
 CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
