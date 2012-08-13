@@ -22,7 +22,6 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
-#include <iostream>
 
 using namespace shogun;
 using namespace Eigen;
@@ -36,7 +35,7 @@ CFITCInferenceMethod::CFITCInferenceMethod() : CInferenceMethod()
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat) :
-			CInferenceMethod(kern, feat, m, lab, mod)
+		CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
 	set_latent_features(lat);
@@ -105,8 +104,8 @@ void CFITCInferenceMethod::update_all()
 		update_train_kernel();
 
 	if (m_ktrtr.num_cols*m_ktrtr.num_rows &&
-		m_kuu.rows()*m_kuu.cols() &&
-		m_ktru.cols()*m_ktru.rows())
+			m_kuu.rows()*m_kuu.cols() &&
+			m_ktru.cols()*m_ktru.rows())
 	{
 		update_chol();
 		update_alpha();
@@ -127,7 +126,7 @@ void CFITCInferenceMethod::check_members()
 	if (!m_latent_features)
 		SG_ERROR("No latent features set!\n");
 
-  	if (m_labels->get_num_labels() != m_features->get_num_vectors())
+	if (m_labels->get_num_labels() != m_features->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
 
 	if(m_features->get_feature_class() == C_COMBINED)
@@ -207,8 +206,8 @@ void CFITCInferenceMethod::check_members()
 }
 
 CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
-	get_marginal_likelihood_derivatives(CMap<TParameter*,
-			CSGObject*>& para_dict)
+get_marginal_likelihood_derivatives(CMap<TParameter*,
+		CSGObject*>& para_dict)
 {
 	check_members();
 
@@ -248,7 +247,7 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 	al = al.cwiseQuotient(m_dg);
 
 	MatrixXd iKuu = m_kuu.selfadjointView<Eigen::Upper>().llt()
-			.solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+					.solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
 	MatrixXd B = iKuu*m_ktru;
 
@@ -276,7 +275,7 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
 	{
 		shogun::CMapNode<TParameter*, CSGObject*>* node =
-						para_dict.get_node_ptr(i);
+				para_dict.get_node_ptr(i);
 
 		TParameter* param = node->key;
 		CSGObject* obj = node->data;
@@ -313,20 +312,20 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 				m_kernel->init(m_latent_features, m_latent_features);
 				derivuu = m_kernel->get_parameter_gradient(param, obj);
 
-				 mean_derivatives = m_mean->get_parameter_derivative(
-				 				param, obj, m_feature_matrix, g);
+				mean_derivatives = m_mean->get_parameter_derivative(
+						param, obj, m_feature_matrix, g);
 
-				 for (index_t d = 0; d < mean_derivatives.vlen; d++)
-					 mean_dev_temp[d] = mean_derivatives[d];
+				for (index_t d = 0; d < mean_derivatives.vlen; d++)
+					mean_dev_temp[d] = mean_derivatives[d];
 			}
 
 			else
 			{
 				mean_derivatives = m_mean->get_parameter_derivative(
-				 				param, obj, m_feature_matrix);
+						param, obj, m_feature_matrix);
 
 				for (index_t d = 0; d < mean_derivatives.vlen; d++)
-					 mean_dev_temp[d] = mean_derivatives[d];
+					mean_dev_temp[d] = mean_derivatives[d];
 
 				m_kernel->init(m_features, m_features);
 				deriv = m_kernel->get_parameter_gradient(param, obj);
@@ -350,47 +349,47 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 				for (index_t d = 0; d < deriv.num_rows; d++)
 				{
 					for (index_t s = 0; s < deriv.num_cols; s++)
-						ddiagKi(d,s) = deriv(d,s);
+						ddiagKi(d,s) = deriv(d,s)*m_scale*m_scale;
 				}
 
 				for (index_t d = 0; d < derivuu.num_rows; d++)
 				{
 					for (index_t s = 0; s < derivuu.num_cols; s++)
-						dKuui(d,s) = derivuu(d,s);
+						dKuui(d,s) = derivuu(d,s)*m_scale*m_scale;
 				}
 
 				for (index_t d = 0; d < derivtru.num_rows; d++)
 				{
 					for (index_t s = 0; s < derivtru.num_cols; s++)
-						dKui(d,s) = derivtru(d,s);
+						dKui(d,s) = derivtru(d,s)*m_scale*m_scale;
 				}
 
-			    MatrixXd R = 2*dKui-dKuui*B;
-			    MatrixXd v = ddiagKi;
-			    MatrixXd temp = R.cwiseProduct(B);
+				MatrixXd R = 2*dKui-dKuui*B;
+				MatrixXd v = ddiagKi;
+				MatrixXd temp = R.cwiseProduct(B);
 
-			    for (index_t d = 0; d < ddiagKi.rows(); d++)
-			    	v(d,d) = v(d,d) - temp.col(d).sum();
+				for (index_t d = 0; d < ddiagKi.rows(); d++)
+					v(d,d) = v(d,d) - temp.col(d).sum();
 
-			    sum = sum + ddiagKi.diagonal().transpose()*
-			    		VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
+				sum = sum + ddiagKi.diagonal().transpose()*
+						VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
 
-			    sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
+				sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
 
-			    sum = sum - al.transpose()*(v.diagonal().cwiseProduct(al));
+				sum = sum - al.transpose()*(v.diagonal().cwiseProduct(al));
 
-			    MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
+				MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
 
-			    VectorXd Wdg_sum(Wdg.rows());
+				VectorXd Wdg_sum(Wdg.rows());
 
-			    for (index_t d = 0; d < Wdg.rows(); d++)
-			    	Wdg_sum[d] = Wdg_temp.col(d).sum();
+				for (index_t d = 0; d < Wdg.rows(); d++)
+					Wdg_sum[d] = Wdg_temp.col(d).sum();
 
-			    sum = sum - v.diagonal().transpose()*Wdg_sum;
+				sum = sum - v.diagonal().transpose()*Wdg_sum;
 
-			    Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
+				Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
 
-			    sum[0] = sum[0] - Wdg_temp.sum();
+				sum[0] = sum[0] - Wdg_temp.sum();
 
 				sum /= 2.0;
 
@@ -413,6 +412,86 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 
 	}
 
+	//Here we take the kernel scale derivative.
+	{
+		TParameter* param;
+		index_t index = get_modsel_param_index("scale");
+		param = m_model_selection_parameters->get_parameter(index);
+
+		SGVector<float64_t> variables(1);
+
+		SGMatrix<float64_t> deriv;
+		SGMatrix<float64_t> derivtru;
+		SGMatrix<float64_t> derivuu;
+
+		m_kernel->init(m_features, m_features);
+		deriv = m_kernel->get_kernel_matrix();
+
+		m_kernel->init(m_latent_features, m_features);
+		derivtru = m_kernel->get_kernel_matrix();
+
+		m_kernel->init(m_latent_features, m_latent_features);
+		derivuu = m_kernel->get_kernel_matrix();
+
+		MatrixXd ddiagKi(deriv.num_cols, deriv.num_rows);
+		MatrixXd dKuui(derivuu.num_cols, derivuu.num_rows);
+		MatrixXd dKui(derivtru.num_cols, derivtru.num_rows);
+
+		for (index_t d = 0; d < deriv.num_rows; d++)
+		{
+			for (index_t s = 0; s < deriv.num_cols; s++)
+				ddiagKi(d,s) = deriv(d,s)*m_scale*2.0;
+		}
+
+		for (index_t d = 0; d < derivuu.num_rows; d++)
+		{
+			for (index_t s = 0; s < derivuu.num_cols; s++)
+				dKuui(d,s) = derivuu(d,s)*m_scale*2.0;
+		}
+
+		for (index_t d = 0; d < derivtru.num_rows; d++)
+		{
+			for (index_t s = 0; s < derivtru.num_cols; s++)
+				dKui(d,s) = derivtru(d,s)*m_scale*2.0;
+		}
+
+		MatrixXd R = 2*dKui-dKuui*B;
+		MatrixXd v = ddiagKi;
+		MatrixXd temp = R.cwiseProduct(B);
+
+		for (index_t d = 0; d < ddiagKi.rows(); d++)
+			v(d,d) = v(d,d) - temp.col(d).sum();
+
+		sum = sum + ddiagKi.diagonal().transpose()*
+
+				VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
+
+		sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
+
+		sum = sum - al.transpose()*(v.diagonal().cwiseProduct(al));
+
+		MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
+
+		VectorXd Wdg_sum(Wdg.rows());
+
+		for (index_t d = 0; d < Wdg.rows(); d++)
+			Wdg_sum[d] = Wdg_temp.col(d).sum();
+
+		sum = sum - v.diagonal().transpose()*Wdg_sum;
+
+		Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
+
+		sum[0] = sum[0] - Wdg_temp.sum();
+
+		sum /= 2.0;
+
+		variables[0] = sum[0];
+
+		gradient.add(param, variables);
+		para_dict.add(param, this);
+
+	}
+
 	TParameter* param;
 	index_t index;
 
@@ -424,14 +503,14 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 	MatrixXd W_temp = W.cwiseProduct(W);
 	VectorXd W_sum(W_temp.rows());
 
-    for (index_t d = 0; d < W_sum.rows(); d++)
-    	W_sum[d] = W_temp.col(d).sum();
+	for (index_t d = 0; d < W_sum.rows(); d++)
+		W_sum[d] = W_temp.col(d).sum();
 
-    W_sum = W_sum.cwiseQuotient(m_dg.cwiseProduct(m_dg));
+	W_sum = W_sum.cwiseQuotient(m_dg.cwiseProduct(m_dg));
 
-    sum[0] = W_sum.sum();
+	sum[0] = W_sum.sum();
 
-    sum = sum + al.transpose()*al;
+	sum = sum + al.transpose()*al;
 
 	sum[0] = VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg).sum() - sum[0];
 
@@ -444,24 +523,24 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 	VectorXd v(temp.rows());
 
 	for (index_t d = 0; d < temp.rows(); d++)
-	    v[d] = temp.col(d).sum();
+		v[d] = temp.col(d).sum();
 
 	sum = sum + (w.transpose()*dKuui*w)/2.0;
 
 	sum = sum - al.transpose()*(v.cwiseProduct(al))/2.0;
 
-    MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
+	MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
 	VectorXd Wdg_sum(Wdg.rows());
 
 	for (index_t d = 0; d < Wdg.rows(); d++)
-	    Wdg_sum[d] = Wdg_temp.col(d).sum();
+		Wdg_sum[d] = Wdg_temp.col(d).sum();
 
 	sum = sum - v.transpose()*Wdg_sum/2.0;
 
 
-    Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
+	Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
 
-    sum[0] = sum[0] - Wdg_temp.sum()/2.0;
+	sum[0] = sum[0] - Wdg_temp.sum()/2.0;
 
 	SGVector<float64_t> sigma(1);
 
@@ -547,7 +626,7 @@ void CFITCInferenceMethod::update_train_kernel()
 	for (index_t i = 0; i < kernel_matrix.num_rows; i++)
 	{
 		for (index_t j = 0; j < kernel_matrix.num_cols; j++)
-			m_kuu(i,j) = kernel_matrix(i,j);
+			m_kuu(i,j) = kernel_matrix(i,j)*m_scale*m_scale;
 	}
 
 	m_kernel->cleanup();
@@ -561,7 +640,7 @@ void CFITCInferenceMethod::update_train_kernel()
 	for (index_t i = 0; i < kernel_matrix.num_rows; i++)
 	{
 		for (index_t j = 0; j < kernel_matrix.num_cols; j++)
-			m_ktru(i,j) = kernel_matrix(i,j);
+			m_ktru(i,j) = kernel_matrix(i,j)*m_scale*m_scale;
 	}
 }
 
@@ -575,7 +654,7 @@ void CFITCInferenceMethod::update_chol()
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
 	LLT<MatrixXd> Luu(m_kuu +
-				m_ind_noise*MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+			m_ind_noise*MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
 	m_chol_uu = Luu.matrixL();
 
@@ -588,7 +667,7 @@ void CFITCInferenceMethod::update_chol()
 
 	for (index_t i = 0; i < m_ktrtr.num_cols; i++)
 	{
-		m_dg[i] = m_ktrtr(i,i) + m_sigma*m_sigma - temp_V.col(i).sum();
+		m_dg[i] = m_ktrtr(i,i)*m_scale*m_scale + m_sigma*m_sigma - temp_V.col(i).sum();
 		sqrt_dg[i] = sqrt(m_dg[i]);
 	}
 
@@ -599,7 +678,7 @@ void CFITCInferenceMethod::update_chol()
 	}
 
 	LLT<MatrixXd> Lu(V*V.transpose() +
-				MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+			MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
 
 	m_chol_utr = Lu.matrixL();
 

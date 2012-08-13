@@ -118,7 +118,7 @@ public:
 	 * @param name Name of parameter
 	 * @param value value to be set
 	 * @param parent The CSObject that directly holds this parameter
-	 * @param index index
+	 * @param index index if the parameter is a vector
 	 *
 	 * @return bool true if value successfully set.
 	 */
@@ -164,6 +164,7 @@ public:
 
 		return result;
 	}
+
 	/** Gets specific parameter by name.
 	 *
 	 * @param name Name of parameter
@@ -266,9 +267,11 @@ private:
 	void init();
 
 protected:
-	/** parameter */
+
+	/** Parameter of combination */
 	Parameter* m_param;
-	/** child nodes */
+
+	/** Child Parameters */
 	CDynamicObjectArray* m_child_nodes;
 };
 }

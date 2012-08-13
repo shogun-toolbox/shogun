@@ -13,7 +13,8 @@ using namespace shogun;
 
 CLikelihoodModel::CLikelihoodModel()
 {
-
+	m_df = 1.0;
+	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
 }
 
 CLikelihoodModel::~CLikelihoodModel()

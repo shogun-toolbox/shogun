@@ -7,10 +7,13 @@
  #include <shogun/regression/LeastSquaresRegression.h>
  #include <shogun/regression/gp/LikelihoodModel.h>
  #include <shogun/regression/gp/GaussianLikelihood.h>
+ #include <shogun/regression/gp/StudentsTLikelihood.h>
  #include <shogun/regression/gp/MeanFunction.h>
  #include <shogun/regression/gp/ZeroMean.h>
  #include <shogun/regression/gp/InferenceMethod.h>
  #include <shogun/regression/gp/ExactInferenceMethod.h>
+ #include <shogun/regression/gp/LaplacianInferenceMethod.h>
+ #include <shogun/regression/gp/FITCInferenceMethod.h>
  #include <shogun/regression/GaussianProcessRegression.h>
  #include <shogun/regression/LeastAngleRegression.h>
  #include <shogun/classifier/svm/SVM.h>
