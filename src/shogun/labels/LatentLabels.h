@@ -12,66 +12,56 @@
 #define __LATENTLABELS_H__
 
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/lib/Data.h>
 #include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
-	/** @brief class LatentData used to store information about latent
-	 * variables.
-	 * TODO
-	 */
-	class CLatentData : public CSGObject
-	{
-		public:
-			/** constructor */
-			CLatentData();
-
-			/** destructor */
-			virtual ~CLatentData();
-
-			/** get name */
-			virtual const char* get_name() const { return "LatentData"; }
-	};
-
-	/** @brief class LatentLabels used to store latent labels 
-	 * TODO
+	/** @brief abstract class for latent labels
+	 * As latent labels always depends on the given application, this class
+	 * only defines the API that the user has to implement for latent labels.
 	 */
 	class CLatentLabels : public CBinaryLabels
 	{
 		public:
-			/** constructor */
+			/** default ctor */
 			CLatentLabels();
 
 			/** constructor
 			 *
-			 * @param num_labels number of labels
+			 * @param num_samples the number of labels
 			 */
 			CLatentLabels(int32_t num_labels);
 
 			/** destructor */
 			virtual ~CLatentLabels();
 
-			/** get labels */
+			/** get all the stored latent labels
+			 *
+			 * @return the CDynamicObjectArray with the latent labels in it
+			 */
 			CDynamicObjectArray* get_labels() const;
 
-			/** get latent label
-			 * 
-			 * @param idx index of label
-			 */
-			CLatentData* get_latent_label(int32_t idx);
-
-			/** add latent label
+			/** get the latent label of a given example
 			 *
-			 * @param label label to add
+			 * @param idx index of the label
+			 * @return the user defined latent label
 			 */
-			void add_latent_label(CLatentData* label);
+			CData* get_latent_label(int32_t idx);
 
-			/** set latend label
+			/** append the latent label
 			 *
-			 * @param idx index of latent label
-			 * @param label value of latent label
+			 * @param label latent label
 			 */
-			bool set_latent_label(int32_t idx, CLatentData* label);
+			void add_latent_label(CData* label);
+
+			/** set latent label at a given index
+			 *
+			 * @param idx position of the label
+			 * @param label the latent label
+			 * @return TRUE if success, FALSE otherwise
+			 */
+			bool set_latent_label(int32_t idx, CData* label);
 
 			/** Make sure the label is valid, otherwise raise SG_ERROR.
 			 *
@@ -93,7 +83,10 @@ namespace shogun
 			 */
 			static CLatentLabels* obtain_from_generic(CLabels* base_labels);
 
-			/** get name */
+			/** Returns the name of the SGSerializable instance.
+			 *
+			 * @return name of the SGSerializable
+			 */
 			virtual const char* get_name() const { return "LatentLabels"; }
 
 		protected:
@@ -101,6 +94,7 @@ namespace shogun
 			CDynamicObjectArray* m_latent_labels;
 
 		private:
+			/** initalize the values to default values */
 			void init();
 	};
 }

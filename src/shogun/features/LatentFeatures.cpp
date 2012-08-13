@@ -58,7 +58,7 @@ int32_t CLatentFeatures::get_size() const
 	return sizeof(float64_t);
 }
 
-bool CLatentFeatures::add_sample(CLatentData* example)
+bool CLatentFeatures::add_sample(CData* example)
 {
 	ASSERT(m_samples != NULL);
 	if (m_samples != NULL)
@@ -70,13 +70,13 @@ bool CLatentFeatures::add_sample(CLatentData* example)
 		return false;
 }
 
-CLatentData* CLatentFeatures::get_sample(index_t idx)
+CData* CLatentFeatures::get_sample(index_t idx)
 {
 	ASSERT(m_samples != NULL);
 	if (idx < 0 || idx >= this->get_num_vectors())
 		SG_ERROR("Out of index!\n");
 
-	return (CLatentData*) m_samples->get_element(idx);
+	return (CData*) m_samples->get_element(idx);
 
 }
 

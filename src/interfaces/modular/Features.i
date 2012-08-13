@@ -64,6 +64,7 @@ PYPROTO_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_F
 %rename(RegressionLabels) CRegressionLabels;
 
 %rename(StructuredLabels) CStructuredLabels;
+%rename(LatentLabels) CLatentLabels;
 %rename(MulticlassMultipleOutputLabels) CMulticlassMultipleOutputLabels;
 %rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
@@ -78,6 +79,7 @@ PYPROTO_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_F
 %rename(ExplicitSpecFeatures) CExplicitSpecFeatures;
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
 %rename(DataGenerator) CDataGenerator;
+%rename(LatentFeatures) CLatentFeatures;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/FeatureTypes.h>
@@ -458,6 +460,7 @@ namespace shogun
 %include <shogun/labels/Labels.h>
 %include <shogun/labels/DenseLabels.h>
 %include <shogun/labels/BinaryLabels.h>
+%include <shogun/labels/LatentLabels.h>
 %include <shogun/labels/MulticlassLabels.h>
 %include <shogun/labels/RegressionLabels.h>
 %include <shogun/labels/StructuredLabels.h>
@@ -474,3 +477,4 @@ namespace shogun
 %include <shogun/features/LBPPyrDotFeatures.h>
 %include <shogun/features/ExplicitSpecFeatures.h>
 %include <shogun/features/ImplicitWeightedSpecFeatures.h>
+%include <shogun/features/LatentFeatures.h>
