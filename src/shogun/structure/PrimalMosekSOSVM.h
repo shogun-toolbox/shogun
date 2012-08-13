@@ -43,7 +43,7 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @param labs structured labels
 		 * @param features features
 		 */
-		CPrimalMosekSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features);
+		CPrimalMosekSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CFeatures* features);
 
 		/** destructor */
 		~CPrimalMosekSOSVM();

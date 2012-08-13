@@ -23,12 +23,9 @@ CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
 		CStructuredModel*  model, 
 		CLossFunction*     loss, 
 		CStructuredLabels* labs, 
-		CDotFeatures*      features)
+		CFeatures*      features)
 : CStructuredOutputMachine(model, loss, labs), m_features(NULL)
 {
-	if ( !features->has_property(FP_DOT) )
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
-
 	set_features(features);
 	register_parameters();
 }
@@ -38,14 +35,14 @@ CLinearStructuredOutputMachine::~CLinearStructuredOutputMachine()
 	SG_UNREF(m_features)
 }
 
-void CLinearStructuredOutputMachine::set_features(CDotFeatures* f)
+void CLinearStructuredOutputMachine::set_features(CFeatures* f)
 {
 	SG_REF(f);
 	SG_UNREF(m_features);
 	m_features = f;
 }
 
-CDotFeatures* CLinearStructuredOutputMachine::get_features() const
+CFeatures* CLinearStructuredOutputMachine::get_features() const
 {
 	SG_REF(m_features);
 	return m_features;
@@ -60,10 +57,7 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 {
 	if (data)
 	{
-		if ( !data->has_property(FP_DOT) )
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
-
-		set_features((CDotFeatures*) data);
+		set_features(data);
 	}
 
 	CStructuredLabels* out;
@@ -76,7 +70,7 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 		out = new CStructuredLabels( m_features->get_num_vectors() );
 		for ( int32_t i = 0 ; i < m_features->get_num_vectors() ; ++i )
 		{
-			CResultSet* result = m_model->argmax(m_w, i);
+			CResultSet* result = m_model->argmax(m_w, i, false);
 			out->add_label(result->argmax);
 
 			SG_UNREF(result);

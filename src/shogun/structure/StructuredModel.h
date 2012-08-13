@@ -54,9 +54,8 @@ struct CResultSet : public CSGObject
  * pointers to the functions that are dependent on the application, i.e. the 
  * combined feature representation \f$\Psi(\bold{x},\bold{y})\f$ and the argmax
  * function \f$ {\arg\max} _{\bold{y} \neq \bold{y}_i} \left \langle { \bold{w}, 
- * \Psi(\bold{x}_i,\bold{y}) }  \right \rangle \f$. See: TODO pointer to an 
- * example of these functions is implemented, e.g. for HM-SVM and TODO reference
- * to the paper.
+ * \Psi(\bold{x}_i,\bold{y}) }  \right \rangle \f$. See: MulticlassModel.h and
+ * .cpp for an example of these functions implemented.
  */
 class CStructuredModel : public CSGObject
 {
@@ -85,8 +84,8 @@ class CStructuredModel : public CSGObject
 		 * @param C
 		 */
 		virtual void init_opt(
-				SGMatrix< float64_t > A,  SGVector< float64_t > a, 
-				SGMatrix< float64_t > B,  SGVector< float64_t > b, 
+				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
+				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub, 
 				SGMatrix < float64_t >  & C);
 
@@ -102,11 +101,23 @@ class CStructuredModel : public CSGObject
 		 */
 		void set_labels(CStructuredLabels* labs);
 
+		/** get labels
+		 *
+		 * @return labels
+		 */
+		CStructuredLabels* get_labels();
+
 		/** set features
 		 *
 		 * @param feats features
 		 */
 		void set_features(CFeatures* feats);
+
+		/** get features
+		 *
+		 * @return features
+		 */
+		CFeatures* get_features();
 
 		/** 
 		 * gets joint feature vector 
@@ -140,10 +151,14 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @param w weight vector
 		 * @param feat_idx index of the feature to compute the argmax
+		 * @param training true if argmax is called during training.
+		 * Then, it is assumed that the label indexed by feat_idx in
+		 * m_labels corresponds to the true label of the corresponding
+		 * feature vector.
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx) = 0;
+		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) = 0;
 
 		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
 		 *
@@ -152,11 +167,51 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred) = 0;
+		float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+
+		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
+		 *
+		 * @param y1 an instance of structured data
+		 * @param y2 another instance of structured data
+		 *
+		 * @return loss value
+		 */
+		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }
 	
+		/**
+		 * method to be called from a SO machine before training
+		 * to ensure that the training data is valid (e.g. check that
+		 * there is at least one example for every class). In this class
+		 * the method is empty and it can be re-implemented for any
+		 * application (e.g. HM-SVM).
+		 */
+		virtual bool check_training_setup() const;
+
+		/**
+		 * get the number of auxiliary variables to introduce in the
+		 * optimization problem. By default, this class do not impose
+		 * the use of auxiliary variables and it will return zero.
+		 * Re-implement this method subclasses to use auxiliary
+		 * variables.
+		 *
+		 * return the number of auxiliary variables
+		 */
+		virtual int32_t get_num_aux() const;
+
+		/**
+		 * get the number of auxiliary constraints to introduce in the
+		 * optimization problem. By default, this class do not impose
+		 * the use of any auxiliary constraints and it will return zero.
+		 * Re-implement this method in subclasses to use auxiliary
+		 * constraints.
+		 *
+		 * return the number of auxiliary constraints
+		 */
+		virtual int32_t get_num_aux_con() const;
+
 	private:
 		/** internal initialization */
 		void init();

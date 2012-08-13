@@ -8,34 +8,41 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#ifndef _MULTICLASS_MODEL__H__
-#define _MULTICLASS_MODEL__H__
+#ifndef _HMSVM_MODEL__H__
+#define _HMSVM_MODEL__H__
 
 #include <shogun/structure/StructuredModel.h>
+#include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/StateModelTypes.h>
+#include <shogun/structure/StateModel.h>
 
 namespace shogun
 {
 
-/** @brief TODO */
-class CMulticlassModel : public CStructuredModel
-{
+enum EStateModelType;
 
+/**
+ * @brief Class CHMSVMModel TODO DOC
+ */
+class CHMSVMModel : public CStructuredModel
+{
 	public:
 		/** default constructor */
-		CMulticlassModel();
+		CHMSVMModel();
 
 		/** constructor
 		 *
-		 * @param features
-		 * @param labels
+		 * @param features the feature vectors, must be of type MatrixFeatures
+		 * @param labels HMSVM labels
+		 * @param num_obs number of observations
 		 */
-		CMulticlassModel(CFeatures* features, CStructuredLabels* labels);
+		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs);
 
 		/** destructor */
-		virtual ~CMulticlassModel();
+		virtual ~CHMSVMModel();
 
 		/**
-		 * return the dimensionality of the joint feature space, i.e. 
+		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
 		virtual int32_t get_dim() const;
@@ -92,18 +99,56 @@ class CMulticlassModel : public CStructuredModel
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
 				SGMatrix < float64_t > & C);
 
-		/** @return name of SGSerializable */
-		virtual const char* get_name() const { return "MulticlassModel"; }
+		/**
+		 * method to be called from a SO machine before training
+		 * to ensure that the training data is valid
+		 */
+		virtual bool check_training_setup() const;
+
+		/**
+		 * get the number of auxiliary variables to introduce in the
+		 * optimization problem. The auxiliary variables are used to
+		 * implement smoothness regularization between adjacent emission
+		 * scores via constraints.
+		 *
+		 * return the number of auxiliary variables
+		 */
+		virtual int32_t get_num_aux() const;
+
+		/**
+		 * get the number of auxiliary constraints to introduce in the
+		 * optimization problem. These constraints are used to implement
+		 * smoothness regularization between adjacent emission scores.
+		 *
+		 * return the number of auxiliary constraints
+		 */
+		virtual int32_t get_num_aux_con() const;
 
 	private:
+		/* internal initialization */
 		void init();
 
 	private:
-		/** number of classes */
-		int32_t m_num_classes;
+		/** the number of states */
+		int32_t m_num_states;
 
-}; /* MulticlassModel */
+		/** the number of observations */
+		int32_t m_num_obs;
+
+		/** the number of auxiliary variables */
+		int32_t m_num_aux;
+
+		/** the state model */
+		CStateModel* m_state_model;
+
+		/** transition weights used in Viterbi */
+		SGMatrix< float64_t > m_transmission_weights;
+
+		/** emission weights used in Viterbi */
+		SGVector< float64_t > m_emission_weights;
+
+}; /* class CHMSVMModel */
 
 } /* namespace shogun */
 
-#endif /* _MULTICLASS_MODEL__H__ */
+#endif /* _HMSVM_MODEL__H__ */

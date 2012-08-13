@@ -36,9 +36,6 @@ struct CRealNumber : public CStructuredData
 	 */
 	CRealNumber(float64_t val) : CStructuredData(), value(val) { }
 
-	/** value of the real number */
-	float64_t value;
-
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param base_data its dynamic type must be CRealNumber
@@ -53,14 +50,16 @@ struct CRealNumber : public CStructuredData
 		return NULL;
 	}
 
-	/** @return mae of SGSerializable */
+	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "RealNumber"; }
 
+	/** value of the real number */
+	float64_t value;
 };
 
 /** @brief Class CMulticlassSOLabels to be used in the application of Structured
  * Output (SO) learning to multiclass classification. Each of the labels is
- * represented by a real numeur and it is required that the values of the labels
+ * represented by a real number and it is required that the values of the labels
  * are in the set {0, 1, ..., num_classes-1}. Each label is of type CRealNumber
  * and all of them are stored in a CDynamicObjectArray. */
 class CMulticlassSOLabels : public CStructuredLabels

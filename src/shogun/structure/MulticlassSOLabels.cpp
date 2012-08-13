@@ -18,7 +18,7 @@ CMulticlassSOLabels::CMulticlassSOLabels()
 	init();
 }
 
-CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > src)
+CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > const src)
 : CStructuredLabels(src.vlen)
 {
 	init();
