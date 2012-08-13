@@ -34,7 +34,6 @@ class CEvaluation;
 class CMachineEvaluation: public CSGObject
 {
 
-
 public:
 
 	CMachineEvaluation();
@@ -86,18 +85,24 @@ public:
 
 protected:
 
+	/** Initialize Object */
 	virtual void init();
 
 protected:
-	/** machine */
+
+	/** Machine to be Evaluated */
 	CMachine* m_machine;
-	/** features */
+
+	/** Features to be used*/
 	CFeatures* m_features;
-	/** labels */
+
+	/** Labels for the features */
 	CLabels* m_labels;
-	/** splitting strategy */
+
+	/** Splitting Strategy to be used */
 	CSplittingStrategy* m_splitting_strategy;
-	/** evaluation criterion */
+
+	/** Criterion for evaluation */
 	CEvaluation* m_evaluation_criterion;
 
 	/** whether machine will automatically be locked before evaluation */
