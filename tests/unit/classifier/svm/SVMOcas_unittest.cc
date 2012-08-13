@@ -1,18 +1,13 @@
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/evaluation/ROCEvaluation.h>
 #include <gtest/gtest.h>
-
-#include <iostream>
 
 using namespace shogun;
 
 TEST(SVMOcasTest,train)
 {
 	index_t num_samples = 50;
-	float64_t dist = 1.0, angle = 0.0;
-	CMath::init_random(5);
 	SGMatrix<float64_t> data =
 		CDataGenerator::generate_gaussians(num_samples, 2, 2);
 	CDenseFeatures<float64_t> features(data);
@@ -39,7 +34,7 @@ TEST(SVMOcasTest,train)
 	
 	CLabels* pred = ocas->apply(test_feats);
 	for (int i = 0; i < num_samples; ++i)
-		EXPECT_EQ(((CBinaryLabels*)pred)->get_int_label(i), ((CBinaryLabels)labels).get_int_label(i));
+		EXPECT_EQ(ground_truth->get_int_label(i), ((CBinaryLabels*)pred)->get_int_label(i));
 
 	SG_UNREF(ocas);
 	SG_UNREF(train_feats);
