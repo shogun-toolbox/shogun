@@ -532,6 +532,9 @@ template<class T> class SGVector : public SGReferencedData
 			return idx;
 		}
 
+		/// scale vector inplace
+		void scale(T alpha);
+
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig);

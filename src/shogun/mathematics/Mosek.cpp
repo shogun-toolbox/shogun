@@ -63,6 +63,7 @@ CMosek::CMosek(int32_t num_con, int32_t num_var)
 
 CMosek::~CMosek()
 {
+	delete_problem();
 }
 
 void MSKAPI CMosek::print(void* handle, char str[])
@@ -70,16 +71,16 @@ void MSKAPI CMosek::print(void* handle, char str[])
 	SG_SPRINT("%s", str);
 }
 
-MSKrescodee CMosek::init_sosvm(
-		int32_t M, int32_t N,
-		SGMatrix< float64_t > C,
-		SGVector< float64_t > lb,
-		SGVector< float64_t > ub)
+MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
+		int32_t num_aux, int32_t num_aux_con,
+		SGMatrix< float64_t > C, SGVector< float64_t > lb,
+		SGVector< float64_t > ub, SGMatrix< float64_t > A,
+		SGVector< float64_t > b)
 {
 	// Give an estimate of the size of the input data to increase the
 	// speed of inputting
-	int32_t num_var = M+N;
-	int32_t num_con = N*N;
+	int32_t num_var = M+N+num_aux;
+	int32_t num_con = N*N+num_aux_con;
 	// NOTE: However, to input this step is completely optional and MOSEK
 	// will automatically allocate more resources if necessary
 	m_rescode = MSK_putmaxnumvar(m_task, num_var);
@@ -87,7 +88,7 @@ MSKrescodee CMosek::init_sosvm(
 	// is known a priori, rough estimates are given here
 	m_rescode = MSK_putmaxnumcon(m_task, num_con);
 	// A = [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row
-	m_rescode = MSK_putmaxnumanz(m_task, (M+1)*num_con);
+	m_rescode = MSK_putmaxnumanz(m_task, (M+1)*N*N);
 
 	// Append optimization variables initialized to zero
 	m_rescode = MSK_append(m_task, MSK_ACC_VAR, num_var);
@@ -99,7 +100,7 @@ MSKrescodee CMosek::init_sosvm(
 	for ( int32_t j = 0 ; j < num_var && m_rescode == MSK_RES_OK ; ++j )
 	{
 		// Set the linear term c_j in the objective
-		if ( j < M )
+		if ( j < M+num_aux )
 			m_rescode = MSK_putcj(m_task, j, 0.0);
 		else
 			m_rescode = MSK_putcj(m_task, j, 1.0);
@@ -109,9 +110,10 @@ MSKrescodee CMosek::init_sosvm(
 		if ( j < M )
 		{
 			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
-					MSK_BK_FR, 0.0, 0.0);
+					MSK_BK_FR, -MSK_INFINITY, +MSK_INFINITY);
 		}
-		// The slack variables are required to be positive
+
+		// The slack and the auxiliary variables are required to be positive
 		if ( j >= M )
 		{
 			m_rescode = MSK_putbound(m_task, MSK_ACC_VAR, j,
@@ -119,17 +121,19 @@ MSKrescodee CMosek::init_sosvm(
 		}
 	}
 
-	if ( m_rescode != MSK_RES_OK )
-	{
-		SG_ERROR("Problem occurred in CMosek::init_sosvm()\n");
-	}
-
 	// Input the matrix Q^0 for the objective
 	//
 	// NOTE: In MOSEK we minimize x'*Q^0*x. C != Q0 but Q0 is
 	// just an extended version of C with zeros that make no
 	// difference in MOSEK's sparse representation
-	wrapper_putqobj(C);
+	m_rescode = wrapper_putqobj(C);
+
+	// Input the matrix A and the vector b for the contraints A*x <= b
+	m_rescode = wrapper_putaveclist(m_task, A);
+	m_rescode = wrapper_putboundlist(m_task, b);
+
+	REQUIRE(m_rescode == MSK_RES_OK, "MOSEK Error in CMosek::init_sosvm(). "
+			"Enable DEBUG_MOSEK for details.\n");
 
 	return m_rescode;
 }
@@ -138,6 +142,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 		SGVector< float64_t > dPsi,
 		index_t con_idx,
 		index_t train_idx,
+		int32_t num_aux,
 		float64_t bi)
 {
 	// Count the number of non-zero element in dPsi
@@ -161,7 +166,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 
 	ASSERT(idx == nnz);
 
-	asub[idx] = dPsi.vlen + train_idx;
+	asub[idx] = dPsi.vlen + num_aux + train_idx;
 	aval[idx] = -1;
 
 	m_rescode = MSK_putavec(m_task, MSK_ACC_CON, con_idx, nnz+1,
@@ -178,39 +183,36 @@ MSKrescodee CMosek::add_constraint_sosvm(
 
 MSKrescodee CMosek::wrapper_putaveclist(
 		MSKtask_t & task, 
-		SGMatrix< float64_t > A, int32_t nnza)
+		SGMatrix< float64_t > A)
 {
-	// Shorthands for A dimensions
-	index_t N = A.num_rows;
-	index_t M = A.num_cols;
-
 	// Indices to the rows of A to replace, all the rows
-	SGVector< index_t > sub(N);
-	for ( index_t i = 0 ; i < N ; ++i )
+	SGVector< index_t > sub(A.num_rows);
+	for ( index_t i = 0 ; i < A.num_rows ; ++i )
 		sub[i] = i;
 
 	// Non-zero elements of A
+	int32_t nnza = CMath::get_num_nonzero(A.matrix, A.num_rows*A.num_cols);
 	SGVector< float64_t > aval(nnza);
 	// For each of the rows, indices to non-zero elements
 	SGVector< index_t > asub(nnza);
 	// For each row, pointer to the first non-zero element
 	// in aval
-	SGVector< int32_t > ptrb(N);
+	SGVector< int32_t > ptrb(A.num_rows);
 	// Next position to write in aval and asub
 	index_t idx = 0;
 	// Switch if the first non-zero element in each row 
 	// has been found
 	bool first_nnz_found = false;
 
-	for ( index_t i = 0 ; i < N ; ++i )
+	for ( index_t i = 0 ; i < A.num_rows ; ++i )
 	{
 		first_nnz_found = false;
 
-		for ( index_t j = 0 ; j < M ; ++j )
+		for ( index_t j = 0 ; j < A.num_cols ; ++j )
 		{
-			if ( A[j + i*M] )
+			if ( A(i,j) )
 			{
-				aval[idx] = A[j + i*M];
+				aval[idx] = A(i,j);
 				asub[idx] = j;
 
 				if ( !first_nnz_found )
@@ -224,21 +226,56 @@ MSKrescodee CMosek::wrapper_putaveclist(
 		}
 
 		// Handle rows whose elements are all zero
+		// TODO does it make sense that a row in A has all its elements
+		// equal to zero?
 		if ( !first_nnz_found )
 			ptrb[i] = ( i ? ptrb[i-1] : 0 );
 	}
 
 	// For each row, pointer to the last+1 non-zero element 
 	// in aval
-	SGVector< int32_t > ptre(N);
-	for ( index_t i = 0 ; i < N-1 ; ++i )
+	SGVector< int32_t > ptre(A.num_rows);
+	for ( index_t i = 0 ; i < A.num_rows-1 ; ++i )
 		ptre[i] = ptrb[i+1];
 
-	ptre[N-1] = nnza;
+	ptre[A.num_rows-1] = nnza;
 
-	return MSK_putaveclist(task, MSK_ACC_CON, N, sub.vector,
+	MSKrescodee ret = MSK_putaveclist(task, MSK_ACC_CON, A.num_rows, sub.vector,
 			ptrb.vector, ptre.vector,
 			asub.vector, aval.vector);
+
+	REQUIRE(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putaveclist(). "
+			"Enable DEBUG_MOSEK for details.\n");
+
+	return ret;
+}
+
+MSKrescodee CMosek::wrapper_putboundlist(MSKtask_t & task, SGVector< float64_t > b)
+{
+	// Indices to the bounds that should be replaced, b.vlen bounds starting
+	// from zero
+	SGVector< index_t > sub(b.vlen);
+	for ( index_t i = 0 ; i < b.vlen ; ++i )
+		sub[i] = i;
+
+	// Type of the bounds and lower bound values
+	MSKboundkeye* bk = SG_MALLOC(MSKboundkeye, b.vlen);
+	SGVector< float64_t > bl(b.vlen);
+	for ( index_t i = 0 ; i < b.vlen ; ++i )
+	{
+		bk[i] =  MSK_BK_UP;
+		bl[i] = -MSK_INFINITY;
+	}
+
+	MSKrescodee ret =  MSK_putboundlist(task, MSK_ACC_CON, b.vlen, sub.vector,
+			bk, bl.vector, b.vector);
+
+	SG_FREE(bk);
+
+	REQUIRE(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putboundlist(). "
+			"Enable DEBUG_MOSEK for details.\n");
+
+	return ret;
 }
 
 MSKrescodee CMosek::wrapper_putqobj(SGMatrix< float64_t > Q0) const
@@ -373,9 +410,9 @@ void CMosek::display_problem()
 		{
 			float64_t qij;
 			m_rescode = MSK_getqobjij(m_task, i, j, &qij);
-			SG_PRINT("%6.2f ", qij);
+			if ( qij != 0.0 )
+				SG_PRINT("(%d,%d)\t%.2f\n", i, j, qij);
 		}
-		SG_PRINT("\n");
 	}
 	SG_PRINT("\n");
 
@@ -391,10 +428,11 @@ void CMosek::display_problem()
 		{
 			float64_t aij;
 			m_rescode = MSK_getaij(m_task, i, j, &aij);
-			SG_PRINT("%6.2f ", aij);
+			if ( aij != 0.0 )
+				SG_PRINT("(%d,%d)\t%.2f\n", i, j, aij);
 		}
-		SG_PRINT("\n");
 	}
+	SG_PRINT("\n");
 
 	SG_PRINT("\nConstraint Bounds, vector b:\n");
 	for ( int32_t i = 0 ; i < num_con ; ++i )

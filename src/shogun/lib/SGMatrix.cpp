@@ -4,6 +4,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/lib/SGMatrixList.cpp>
 
 namespace shogun {
 
@@ -643,7 +644,7 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 				C(i,j) += A(i,k)*B(k,j);
 		}
 	}
-#endif
+#endif //HAVE_LAPACK
 
 	return C;
 }
@@ -677,7 +678,6 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 
 	return result;
 }
-
 
 template class SGMatrix<bool>;
 template class SGMatrix<char>;

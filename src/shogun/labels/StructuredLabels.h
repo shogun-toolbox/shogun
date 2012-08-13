@@ -29,6 +29,10 @@ class CStructuredLabels : public CLabels
 
 		/** constructor
 		 *
+		 * This method reserves memory to store num_labels without the
+		 * need of allocating more memory in the future when inserting
+		 * labels with other method, e.g. add_label.
+		 *
 		 * @param num_labels number of labels
 		 */
 		CStructuredLabels(int32_t num_labels);

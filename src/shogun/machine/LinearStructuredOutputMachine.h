@@ -11,7 +11,7 @@
 #ifndef _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 #define _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 
-#include <shogun/features/DotFeatures.h>
+#include <shogun/features/Features.h>
 #include <shogun/machine/StructuredOutputMachine.h>
 
 namespace shogun
@@ -31,7 +31,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 * @param labs structured labels
 		 * @param features features
 		 */
-		CLinearStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CDotFeatures* features);
+		CLinearStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CFeatures* features);
 
 		/** destructor */
 		virtual ~CLinearStructuredOutputMachine();
@@ -40,13 +40,13 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 *
 		 * @param f features
 		 */
-		void set_features(CDotFeatures* f);
+		void set_features(CFeatures* f);
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		CDotFeatures* get_features() const;
+		CFeatures* get_features() const;
 
 		/** get w
 		 *
@@ -76,7 +76,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 
 	protected:
 		/** feature vectors */
-		CDotFeatures* m_features;
+		CFeatures* m_features;
 
 		/** weight vector */
 		SGVector< float64_t > m_w;

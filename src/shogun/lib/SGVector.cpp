@@ -71,8 +71,6 @@ template<class T> void SGVector<T>::random(T min_value, T max_value)
 
 template<class T> void SGVector<T>::randperm()
 {
-	/* this does not work. Heiko Strathmann */
-	SG_SNOTIMPLEMENTED;
 	randperm(vector, vlen);
 }
 
@@ -634,6 +632,11 @@ SGVector<index_t> SGVector<T>::find(T elem)
 			idx[k++] = i;
 	idx.vlen = k;
 	return idx;
+}
+
+template<class T> void SGVector<T>::scale(T alpha)
+{
+	scale_vector(alpha, vector, vlen);
 }
 
 template class SGVector<bool>;

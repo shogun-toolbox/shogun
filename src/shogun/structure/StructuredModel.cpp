@@ -38,10 +38,10 @@ CStructuredModel::~CStructuredModel()
 }
 
 void CStructuredModel::init_opt(
-		SGMatrix< float64_t > A,
+		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
-		SGVector< float64_t > b,
+		SGVector< float64_t > & b,
 		SGVector< float64_t > lb,
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
@@ -56,6 +56,12 @@ void CStructuredModel::set_labels(CStructuredLabels* labels)
 	m_labels = labels;
 }
 
+CStructuredLabels* CStructuredModel::get_labels()
+{
+	SG_REF(m_labels);
+	return m_labels;
+}
+
 void CStructuredModel::set_features(CFeatures* features)
 {
 	SG_UNREF(m_features);
@@ -63,11 +69,21 @@ void CStructuredModel::set_features(CFeatures* features)
 	m_features = features;
 }
 
+CFeatures* CStructuredModel::get_features()
+{
+	SG_REF(m_features);
+	return m_features;
+}
+
 SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx, 
 		int32_t lab_idx)
 {
-	return get_joint_feature_vector(feat_idx, m_labels->get_label(lab_idx));
+	CStructuredData* label = m_labels->get_label(lab_idx);
+	SGVector< float64_t > ret = get_joint_feature_vector(feat_idx, label);
+	SG_UNREF(label);
+
+	return ret;
 }
 
 SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
@@ -80,6 +96,26 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 	return SGVector< float64_t >();
 }
 
+float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
+{
+	if ( ytrue_idx < 0 || ytrue_idx >= m_labels->get_num_labels() )
+		SG_ERROR("The label index must be inside [0, num_labels-1]\n");
+
+	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
+	float64_t ret = delta_loss(ytrue, ypred);
+	SG_UNREF(ytrue);
+
+	return ret;
+}
+
+float64_t CStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+{
+	SG_ERROR("delta_loss(CStructuredData*, CStructuredData*) is not "
+		 "implemented for %s!\n", get_name());
+
+	return 0.0;
+}
+
 void CStructuredModel::init()
 {
 	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels", 
@@ -89,4 +125,20 @@ void CStructuredModel::init()
 
 	m_features = NULL;
 	m_labels   = NULL;
+}
+
+bool CStructuredModel::check_training_setup() const
+{
+	// Nothing to do here
+	return true;
+}
+
+int32_t CStructuredModel::get_num_aux() const
+{
+	return 0;
+}
+
+int32_t CStructuredModel::get_num_aux_con() const
+{
+	return 0;
 }

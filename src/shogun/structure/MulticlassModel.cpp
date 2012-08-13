@@ -18,11 +18,13 @@ using namespace shogun;
 CMulticlassModel::CMulticlassModel()
 : CStructuredModel()
 {
+	init();
 }
 
 CMulticlassModel::CMulticlassModel(CFeatures* features, CStructuredLabels* labels)
 : CStructuredModel(features, labels)
 {
+	init();
 }
 
 CMulticlassModel::~CMulticlassModel()
@@ -31,6 +33,7 @@ CMulticlassModel::~CMulticlassModel()
 
 int32_t CMulticlassModel::get_dim() const
 {
+	// TODO make the casts safe!
 	int32_t num_classes = ((CMulticlassSOLabels*) m_labels)->get_num_classes();
 	int32_t feats_dim   = ((CDotFeatures*) m_features)->get_dim_feature_space();
 
@@ -45,7 +48,7 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 	SGVector< float64_t > x = ((CDotFeatures*) m_features)->
 				get_computed_dot_feature_vector(feat_idx);
 	/* TODO add checks for the casting!! */
-	float64_t label_value = ((CRealNumber*) y)->value;
+	float64_t label_value = CRealNumber::obtain_from_generic(y)->value;
 
 	for ( index_t i = 0, j = label_value*x.vlen ; i < x.vlen ; ++i, ++j )
 		psi[j] = x[i];
@@ -53,22 +56,33 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 	return psi;
 }
 
-CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
+CResultSet* CMulticlassModel::argmax(
+		SGVector< float64_t > w,
+		int32_t feat_idx,
+		bool const training)
 {
 	CDotFeatures* df = (CDotFeatures*) m_features;
-	CMulticlassSOLabels* ml = (CMulticlassSOLabels*) m_labels;
-
 	int32_t feats_dim   = df->get_dim_feature_space();
-	int32_t num_classes = ml->get_num_classes();
 
-	ASSERT(feats_dim*num_classes == w.vlen);
+	if ( training )
+	{
+		CMulticlassSOLabels* ml = (CMulticlassSOLabels*) m_labels;
+		m_num_classes = ml->get_num_classes();
+	}
+	else
+	{
+		REQUIRE(m_num_classes > 0, "The model needs to be trained before "
+			"using it for prediction\n");
+	}
+
+	ASSERT(feats_dim*m_num_classes == w.vlen);
 
 	// Find the class that gives the maximum score
 
 	float64_t score = 0, ypred = 0;
 	float64_t max_score = df->dense_dot(feat_idx, w.vector, feats_dim);
 	
-	for ( int32_t c = 1 ; c < num_classes ; ++c )
+	for ( int32_t c = 1 ; c < m_num_classes ; ++c )
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
 
@@ -85,35 +99,42 @@ CResultSet* CMulticlassModel::argmax(SGVector< float64_t > w, int32_t feat_idx)
 	SG_REF(ret);
 	SG_REF(y);
 
-	ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
-	ret->psi_pred  = get_joint_feature_vector(feat_idx, y);
-	ret->score     = max_score;
-	ret->delta     = delta_loss(feat_idx, y);
-	ret->argmax    = y;
+	ret->psi_pred = get_joint_feature_vector(feat_idx, y);
+	ret->score    = max_score;
+	ret->argmax   = y;
+	if ( training )
+	{
+		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
+		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
+	}
 
 	return ret;
 }
 
-float64_t CMulticlassModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
+float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
-	if ( ytrue_idx < 0 || ytrue_idx >= m_labels->get_num_labels() )
-		SG_ERROR("The label index must be inside [0, num_labels-1]\n");
+	CRealNumber* rn1 = CRealNumber::obtain_from_generic(y1);
+	CRealNumber* rn2 = CRealNumber::obtain_from_generic(y2);
 
-	/* TODO add checks for the castings!! */
-	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
-	return ( ((CRealNumber*) ytrue)->value == ((CRealNumber*) ypred)->value ) ? 0 : 1;
-
-	return 0;
+	return ( rn1->value == rn2->value ) ? 0 : 1;
 }
 
 void CMulticlassModel::init_opt(
-		SGMatrix< float64_t > A,
+		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
-		SGVector< float64_t > b,
+		SGVector< float64_t > & b,
 		SGVector< float64_t > lb,
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1);
+}
+
+void CMulticlassModel::init()
+{
+	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes",
+			MS_NOT_AVAILABLE);
+
+	m_num_classes = 0;
 }

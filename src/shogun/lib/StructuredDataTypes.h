@@ -18,6 +18,7 @@ enum EStructuredDataType
 {
 	SDT_UNKNOWN = 0,
 	SDT_REAL = 1,
+	SDT_SEQUENCE = 2,
 };
 
 #define STRUCTURED_DATA_TYPE(SDT) \
