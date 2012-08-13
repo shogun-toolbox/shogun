@@ -23,6 +23,7 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/LatentLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/StructuredLabels.h>
@@ -41,4 +42,5 @@
 #include <shogun/features/ExplicitSpecFeatures.h>
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
 #include <shogun/features/DataGenerator.h>
+#include <shogun/features/LatentFeatures.h>
 %}

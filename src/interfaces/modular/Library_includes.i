@@ -25,4 +25,5 @@
 #include <shogun/lib/IndexBlockRelation.h>
 #include <shogun/lib/IndexBlockGroup.h>
 #include <shogun/lib/IndexBlockTree.h>
+#include <shogun/lib/Data.h>
 %}

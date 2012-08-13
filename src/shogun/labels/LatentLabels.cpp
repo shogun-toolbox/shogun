@@ -12,16 +12,6 @@
 
 using namespace shogun;
 
-CLatentData::CLatentData()
-{
-
-}
-
-CLatentData::~CLatentData()
-{
-
-}
-
 CLatentLabels::CLatentLabels()
 	: CBinaryLabels()
 {
@@ -53,22 +43,22 @@ CDynamicObjectArray* CLatentLabels::get_labels() const
 	return m_latent_labels;
 }
 
-CLatentData* CLatentLabels::get_latent_label(int32_t idx)
+CData* CLatentLabels::get_latent_label(int32_t idx)
 {
 	ASSERT(m_latent_labels != NULL);
 	if (idx < 0 || idx >= get_num_labels())
 		SG_ERROR("Out of index!\n");
 
-	return (CLatentData*) m_latent_labels->get_element(idx);
+	return (CData*) m_latent_labels->get_element(idx);
 }
 
-void CLatentLabels::add_latent_label(CLatentData* label)
+void CLatentLabels::add_latent_label(CData* label)
 {
 	ASSERT(m_latent_labels != NULL);
 	m_latent_labels->push_back(label);
 }
 
-bool CLatentLabels::set_latent_label(int32_t idx, CLatentData* label)
+bool CLatentLabels::set_latent_label(int32_t idx, CData* label)
 {
 	if (idx < get_num_labels())
 	{

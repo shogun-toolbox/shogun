@@ -17,7 +17,10 @@
 
 namespace shogun
 {
-	class CLatentLinearMachine: public CLinearMachine
+	/** @brief abstract implementaion of Linear Machine with latent variable
+	 * This is the base implementation of all linear machines with latent variable.
+	 */
+	class CLinearLatentMachine: public CLinearMachine
 	{
 
 		public:
@@ -26,16 +29,16 @@ namespace shogun
 			MACHINE_PROBLEM_TYPE(PT_LATENT);
 
 			/** default contstructor */
-			CLatentLinearMachine();
+			CLinearLatentMachine();
 
 			/** constructor
 			 *
-			 * @param model latent model
-			 * @param C regularization coefficient
+			 * @param model the user defined CLatentModel
+			 * @param C regularisation constant
 			 */
-			CLatentLinearMachine(CLatentModel* model, float64_t C);
+			CLinearLatentMachine(CLatentModel* model, float64_t C);
 
-			virtual ~CLatentLinearMachine();
+			virtual ~CLinearLatentMachine();
 
 			/** apply linear machine to all examples
 			 *
@@ -50,31 +53,11 @@ namespace shogun
 			 */
 			virtual CLatentLabels* apply(CFeatures* data);
 
-			/** get features
-			 *
-			 * @return features
-			virtual CDotFeatures* get_features()
-			{ 
-				SG_REF(features);
-				return features;
-			}
-			*/
-
-			/** get latent features
-			 *
-			 * @return features
-			virtual CLatentFeatures* get_latent_features()
-			{
-				SG_REF(m_latent_feats);
-				return m_latent_feats;
-			}
-			*/
-
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "LatentLinearMachine"; }
+			virtual const char* get_name() const { return "LinearLatentMachine"; }
 
 			/** set epsilon
 			 *
@@ -90,29 +73,18 @@ namespace shogun
 
 			/** set C
 			 *
-			 * @param c_neg new C constant for negatively labeled examples
-			 * @param c_pos new C constant for positively labeled examples
-			 *
-			 * Note that not all SVMs support this (however at least CLibSVM and
-			 * CSVMLight do)
+			 * @param c new C constant
 			 */
-			inline void set_C(float64_t c_neg, float64_t c_pos)
+			inline void set_C(float64_t c)
 			{
-				m_C1=c_neg;
-				m_C2=c_pos;
+				m_C=c;
 			}
 
-			/** get C1
+			/** get C
 			 *
-			 * @return C1
+			 * @return C
 			 */
-			inline float64_t get_C1() { return m_C1; }
-
-			/** get C2
-			 *
-			 * @return C2
-			 */
-			inline float64_t get_C2() { return m_C2; }
+			inline float64_t get_C() { return m_C; }
 
 			/** set maximum iterations
 			 *
@@ -132,29 +104,35 @@ namespace shogun
 			 */
 			void set_model(CLatentModel* latent_model);
 
-			virtual bool train_require_labels() const { return false; }
-
 		protected:
 			virtual bool train_machine(CFeatures* data=NULL);
 
 			/** cache PSI vectors */
 			virtual void cache_psi_vectors();
 
-		private:
-			/** initalize the values to default values */
-			void init();
+			/** inner loop of the latent machine
+			 *
+			 * @param cooling_eps epsilon
+			 *
+			 * @return primal objective value
+			 */
+			virtual float64_t do_inner_loop(float64_t cooling_eps)=0;
 
-		private:
-			/** Latent model */
+			virtual bool train_require_labels() const { return false; }
+
+		protected:
+			/** user supplied latent model */
 			CLatentModel* m_model;
-			/** C1 */
-			float64_t m_C1;
-			/** C2 */
-			float64_t m_C2;
+			/** C */
+			float64_t m_C;
 			/** epsilon */
 			float64_t m_epsilon;
 			/** max iterations */
 			int32_t m_max_iter;
+
+		private:
+			/** initalize the values to default values */
+			void init();
 	};
 }
 

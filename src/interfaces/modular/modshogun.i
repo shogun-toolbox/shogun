@@ -63,6 +63,7 @@
 %include "Transfer_includes.i"
 %include "Loss_includes.i"
 %include "Statistics_includes.i"
+%include "Latent_includes.i"
 
 %include "Machine.i"
 %include "SGBase.i"
@@ -85,3 +86,4 @@
 %include "Transfer.i"
 %include "Loss.i"
 %include "Statistics.i"
+%include "Latent.i"
