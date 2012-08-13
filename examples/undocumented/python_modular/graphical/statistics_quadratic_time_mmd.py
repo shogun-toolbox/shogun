@@ -91,6 +91,8 @@ ylabel('$x_2, y_2$')
 # histogram of first data dimension and pdf
 subplot(2,3,2)
 grid(True)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3 )) # reduce number of x-ticks
 hist(data[0], bins=50, alpha=0.5, facecolor='r', normed=True)
 hist(data[1], bins=50, alpha=0.5, facecolor='b', normed=True)
 xs=linspace(min(data[0])-1,max(data[0])+1, 50)
@@ -128,6 +130,8 @@ hist_range=[min([min(null_samples_boot), min(null_samples_spectrum), min(null_sa
 
 # plot null distribution with threshold
 subplot(2,3,3)
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 3 )) # reduce number of x-ticks
 hist(null_samples_boot, 20, range=hist_range, normed=True);
 axvline(thresh_boot, 0, 1, linewidth=2, color='red')
 title('Bootstrapped Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))

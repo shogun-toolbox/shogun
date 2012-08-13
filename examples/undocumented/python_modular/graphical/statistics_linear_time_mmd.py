@@ -67,8 +67,8 @@ figure()
 # plot data of p and q
 subplot(2,3,1)
 grid(True)
-gca().xaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
-gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
+gca().xaxis.set_major_locator( MaxNLocator(nbins = 4) ) # reduce number of x-ticks
+gca().yaxis.set_major_locator( MaxNLocator(nbins = 4) ) # reduce number of x-ticks
 plot(data[0][0:m], data[1][0:m], 'ro', label='$x$')
 plot(data[0][m+1:2*m], data[1][m+1:2*m], 'bo', label='$x$', alpha=0.5)
 title('Data, shift in $x_1$='+str(difference)+'\nm='+str(m))
