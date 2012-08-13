@@ -50,7 +50,7 @@ float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
 {
 	float64_t lambda = 1/m_C;
 	CLatentRiskFunction* risk = new CLatentRiskFunction();
-  CDualLibQPBMSOSVM* so = new CDualLibQPBMSOSVM(NULL, NULL, NULL, NULL, lambda, risk);
+  CDualLibQPBMSOSVM* so = new CDualLibQPBMSOSVM(NULL, NULL, NULL, NULL, lambda, risk, NULL);
 	so->train();
 
 	/* copy the resulting w */
@@ -58,7 +58,7 @@ float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
 	memcpy(w.vector, cur_w.vector, cur_w.vlen*sizeof(float64_t));
 
 	/* get the primal objective value */
-	float64_t po = so->get_bmrm_result().Fp;
+	float64_t po = so->get_result().Fp;
 
 	SG_UNREF(risk);
 	SG_UNREF(so);

@@ -22,7 +22,7 @@ CLatentRiskFunction::~CLatentRiskFunction()
 
 }
 
-void CLatentRiskFunction::risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W)
+void CLatentRiskFunction::risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
 {
 	ASSERT(data != NULL);
 	ASSERT(R != NULL);

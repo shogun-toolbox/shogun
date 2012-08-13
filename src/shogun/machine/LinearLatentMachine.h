@@ -17,6 +17,9 @@
 
 namespace shogun
 {
+	/** @brief abstract implementaion of Linear Machine with latent variable
+	 * This is the base implementation of all linear machines with latent variable.
+	 */
 	class CLinearLatentMachine: public CLinearMachine
 	{
 
@@ -30,8 +33,8 @@ namespace shogun
 
 			/** constructor
 			 *
-			 * @param model latent model
-			 * @param C regularization coefficient
+			 * @param model the user defined CLatentModel
+			 * @param C regularisation constant
 			 */
 			CLinearLatentMachine(CLatentModel* model, float64_t C);
 
@@ -118,7 +121,7 @@ namespace shogun
 			virtual bool train_require_labels() const { return false; }
 
 		protected:
-			/** Latent model */
+			/** user supplied latent model */
 			CLatentModel* m_model;
 			/** C */
 			float64_t m_C;
