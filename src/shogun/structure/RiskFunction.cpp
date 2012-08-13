@@ -13,10 +13,26 @@
 using namespace shogun;
 
 CRiskFunction::CRiskFunction()
-: CSGObject()
+:CSGObject()
 {
 }
 
 CRiskFunction::~CRiskFunction()
+{
+}
+
+CRiskData::CRiskData()
+:CSGObject()
+{
+}
+
+CRiskData::CRiskData(uint32_t w_dim, uint32_t nFeatures)
+:CSGObject()
+{
+	m_w_dim=w_dim;
+	m_nFeatures=nFeatures;
+}
+
+CRiskData::~CRiskData()
 {
 }

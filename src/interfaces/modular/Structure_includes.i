@@ -17,6 +17,12 @@
  #include <shogun/structure/MulticlassModel.h>
  #include <shogun/structure/MulticlassSOLabels.h>
 
+ #include <shogun/structure/libbmrm.h>
+ #include <shogun/structure/libppbm.h>
+ #include <shogun/structure/libp3bm.h>
+ #include <shogun/structure/MulticlassRiskFunction.h>
+ #include <shogun/structure/DualLibQPBMSOSVM.h>
+
 #ifdef USE_MOSEK
  #include <shogun/structure/PrimalMosekSOSVM.h>
 #endif /* USE_MOSEK */

@@ -28,50 +28,107 @@
 
 namespace shogun
 {
-	/* BMRM result */
+	/** BMRM result structure */
 	typedef struct {
-		uint32_t nIter;         /* number of iterations  */
-		uint32_t nCP;           /* number of cutting planes */
-		uint32_t nzA;           /* number of active cutting planes */
-		float64_t Fp;           /* primal objective value  */
-		float64_t Fd;           /* reduced (dual) objective value */
-		int8_t qp_exitflag;     /* exitflag from the last call of the inner QP solver  */
-		int8_t exitflag;        /* 1 .. ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P)
-								   2 .. ocas.Q_P - ocas.Q_D <= TolAbs
-								   -1 .. ocas.nCutPlanes >= BufSize
-								   -2 .. not enough memory for the solver */
+		/** number of iterations  */
+		uint32_t nIter;
+		/** number of cutting planes */
+		uint32_t nCP;
+		/** number of active cutting planes */
+		uint32_t nzA;
+		/** primal objective value  */
+		float64_t Fp;
+		/** reduced (dual) objective value */
+		float64_t Fd;
+		/** exitflag from the last call of the inner QP solver  */
+		int8_t qp_exitflag;
+		/** 1 .. bmrm.Q_P - bmrm.Q_D <= TolRel*ABS(bmrm.Q_P)
+		 *  2 .. bmrm.Q_P - bmrm.Q_D <= TolAbs
+		 * -1 .. bmrm.nCutPlanes >= BufSize
+		 * -2 .. not enough memory for the solver
+		 */
+		int8_t exitflag;
 	} bmrm_return_value_T;
 
-	/* BMRM input data */
-	typedef struct {
-		void*     X;     /* features */
-		void*     y;     /* labels */
-		uint32_t  w_dim; /* dimension of joint parameter vector w */
-	} bmrm_data_T;
-
-	/* Linked list for cutting planes buffer management */
+	/** Linked list for cutting planes buffer management */
 	typedef struct ll {
+		/** Pointer to previous CP entry */
 		struct ll   *prev;
+		/** Pointer to next CP entry */
 		struct ll   *next;
+		/** Pointer to the real CP data */
 		float64_t   *address;
+		/** Index of CP */
 		uint32_t    idx;
 	} bmrm_ll;
 
-	/* Add cutting plane */
-	void add_cutting_plane(bmrm_ll **tail, bool *map, float64_t *A, uint32_t free_idx, float64_t *cp_data, uint32_t dim);
+	/** Add cutting plane
+	 *
+	 * @param tail 		Pointer to the last CP entry
+	 * @param map		Pointer to map storing info about CP physical memory
+	 * @param A			CP physical memory
+	 * @param free_idx	Index to physical memory where the CP data will be stored
+	 * @param cp_data	CP data
+	 * @param dim		Dimension of CP data
+	 */
+	void add_cutting_plane(
+			bmrm_ll**	tail,
+			bool* 		map,
+			float64_t*	A,
+			uint32_t 	free_idx,
+			float64_t* 	cp_data,
+			uint32_t 	dim);
 
-	/* Remove cutting plane at given index */
-	void remove_cutting_plane(bmrm_ll **head, bmrm_ll **tail, bool *map, float64_t *icp);
+	/** Remove cutting plane at given index
+	 *
+	 * @param head	Pointer to the first CP entry
+	 * @param tail	Pointer to the last CP entry
+	 * @param map	Pointer to map storing info about CP physical memory
+	 * @param icp	Pointer to inactive CP that should be removed
+	 */
+	void remove_cutting_plane(
+			bmrm_ll**	head,
+			bmrm_ll**	tail,
+			bool*		map,
+			float64_t* 	icp);
 
-	/* Get cutting plane */
+	/** Get cutting plane
+	 *
+	 * @param ptr 	Pointer to some CP entry
+	 * @return Pointer to cutting plane at given entry
+	 */
 	inline float64_t * get_cutting_plane(bmrm_ll *ptr) { return ptr->address; }
 
-	/* Get index of free slot for new cutting plane */
-	inline uint32_t find_free_idx(bool *map, uint32_t size) { for(uint32_t i=0; i<size; ++i) if (map[i]) return i; return size+1; }
+	/** Get index of free slot for new cutting plane
+	 *
+	 * @param map	Pointer to map storing info about CP physical memory
+	 * @param size	Size of the CP buffer
+	 * @return Index of unoccupied memory field in CP physical memory
+	 */
+	inline uint32_t find_free_idx(bool *map, uint32_t size)
+	{ for(uint32_t i=0; i<size; ++i) if (map[i]) return i; return size+1; }
 
-	/* Bundle Methods Solver for Structured Output Learning */
+	/** Standard BMRM Solver for Structured Output Learning
+	 *
+	 * @param data			Pointer to user data passed to risk function
+	 * @param W				Weight vector
+	 * @param TolRel		Relative tolerance
+	 * @param TolAbs		Absolute tolerance
+	 * @param lambda		Regularization constant
+	 * @param _BufSize		Size of the CP buffer (i.e. maximal number of
+	 * 						iterations)
+	 * @param cleanICP		Flag that enables/disables inactive cutting plane
+	 * 						removal feature
+	 * @param cleanAfter	Number of iterations that should be cutting plane
+	 * 						inactive for to be removed
+	 * @param K				Parameter K
+	 * @param Tmax			Parameter Tmax
+	 * @param verbose		Flag that enables/disables screen output
+	 * @param risk_function	Pointer to risk function
+	 * @return Structure with BMRM algorithm result
+	 */
 	bmrm_return_value_T svm_bmrm_solver(
-			bmrm_data_T *data,
+			void        *data,
 			float64_t   *W,
 			float64_t   TolRel,
 			float64_t   TolAbs,
