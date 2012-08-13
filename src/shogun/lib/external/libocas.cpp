@@ -1643,7 +1643,7 @@ ocas_return_value_T msvm_ocas_solver(
   /* initial cutting plane */
   for(i=0; i < nData; i++)
   {
-    y2 = (uint32_t)data_y[i]-1;
+    y2 = (uint32_t)data_y[i];
 
     if(y2 > 0)
       new_cut[i] = 0;
@@ -1726,7 +1726,7 @@ ocas_return_value_T msvm_ocas_solver(
                             /* new_cut[i] = argmax_i ( [[y != y_i]] + (w_y- w_y_i)'*x_i )  */
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
 
           for(xi=-LIBOCAS_PLUS_INF, y=0; y < nY; y++)
           {
@@ -1778,7 +1778,7 @@ ocas_return_value_T msvm_ocas_solver(
 
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
 
           for(y=0; y < nY; y++)
           {
@@ -1876,7 +1876,7 @@ ocas_return_value_T msvm_ocas_solver(
                             /* new_cut[i] = argmax_i ( [[y != y_i]] + (w_y- w_y_i)'*x_i )  */
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
 
           for(xi=-LIBOCAS_PLUS_INF, y=0; y < nY; y++)
           {
@@ -1904,7 +1904,7 @@ ocas_return_value_T msvm_ocas_solver(
         R = 0;
         for(i=0; i < nData; i++)
         {
-          y2 = (uint32_t)data_y[i]-1;
+          y2 = (uint32_t)data_y[i];
 
           for(tmp=-LIBOCAS_PLUS_INF, y=0; y < nY; y++)
           {
