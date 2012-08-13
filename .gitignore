@@ -70,6 +70,7 @@ configure.log
 /src/interfaces/*_modular/Transfer.i
 /src/interfaces/*_modular/Loss.i
 /src/interfaces/*_modular/Statistics.i
+/src/interfaces/*_modular/Latent.i
 
 # particular modular ones
 /src/interfaces/csharp_modular/*.cs

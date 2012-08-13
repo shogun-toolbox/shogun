@@ -17,14 +17,17 @@ namespace shogun
 {
 	/** @brief: Calculates the risk function for Latent Structural SVM
 	 *
-	 * \sum_{i=1)^n \max_{\hat{y},\hat{h} \in YxH}{\mathbf{w} \cdot \Psi(x_i, \hat{y}, \hat{h})+\delta{y_i, \hat{y}, \hat{h}}
+   * \f[
+	 *   \sum_{i=1)^n \max_{\hat{y},\hat{h} \in YxH}{\mathbf{w} 
+   *   \cdot \Psi(x_i, \hat{y}, \hat{h})+\delta{y_i, \hat{y}, \hat{h}}
 	 *  - \sum_{i=1)^n \mathbf{w} \cdot \Psi(x_i, y_i, h^*_i)
+   * \f]
 	 *
 	 * For more details see [1]
 	 * [1] C.-N. J. Yu and T. Joachims, 
-	 *     “Learning structural SVMs with latent variables,” 
+	 *     "Learning structural SVMs with latent variables"
 	 *     presented at the Proceedings of the 26th Annual International Conference on Machine Learning,
-	 *     New York, NY, USA, 2009, pp. 1169–1176.
+	 *     New York, NY, USA, 2009, pp. 1169-1176.
 	 * http://www.cs.cornell.edu/~cnyu/papers/icml09_latentssvm.pdf
 	 *
 	 */
@@ -46,7 +49,10 @@ namespace shogun
 			 */
 			virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W);
 
-			/** @return name of SGSerializable */
+			/** Returns the name of the SGSerializable instance.
+			 *
+			 * @return name of the SGSerializable
+			 */
 			virtual const char* get_name() const { return "LatentRiskFunction"; }
 	};
 }

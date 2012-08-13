@@ -69,7 +69,7 @@ void CLatentModel::argmax_h(const SGVector<float64_t>& w)
 		if (m_labels->get_label(i) == 1)
 		{
 			// infer h and set it for the argmax_h <w,psi(x,h)>
-			CLatentData* latent_data = infer_latent_variable(w, i);
+			CData* latent_data = infer_latent_variable(w, i);
 			m_labels->set_latent_label(i, latent_data);
 		}
 	}

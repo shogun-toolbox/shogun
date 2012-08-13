@@ -12,20 +12,33 @@
 #define __LATENTFEATURES_H__
 
 #include <shogun/features/Features.h>
-#include <shogun/labels/LatentLabels.h>
+#include <shogun/lib/Data.h>
 
 namespace shogun
 {
+	/** @brief Latent Features class
+	 * The class if for representing features for latent learning, e.g. LatentSVM.
+	 * It's basically a very generic way of storing features of any (user-defined) form
+	 * based on CData.
+	 */
 	class CLatentFeatures : public CFeatures
 	{
 		public:
 			/** default constructor */
 			CLatentFeatures();
 
+			/** constructor
+			 *
+			 * @param num_samples the number of examples the object will contain
+			 */
 			CLatentFeatures(int32_t num_samples);
 
 			virtual ~CLatentFeatures();
 
+			/** Copy-constructor
+			 *
+			 * @return the copy of the given object
+			 */
 			virtual CFeatures* duplicate() const;
 
 			/** get feature type
@@ -54,20 +67,24 @@ namespace shogun
 			 */
 			virtual int32_t get_size() const;
 
+			/** Returns the name of the SGSerializable instance.
+			 *
+			 * @return name of the SGSerializable
+			 */
 			virtual const char* get_name() const { return "LatentFeatures"; }
 
 			/** add latent example
 			 *
-			 * @param example the user defined CLatentData
+			 * @param example the user defined CData
 			 */
-			bool add_sample(CLatentData* example);
+			bool add_sample(CData* example);
 
 			/** get latent example
 			 *
 			 * @param idx index of the required example
-			 * @return the user defined LatentData at the given index
+			 * @return the user defined CData at the given index
 			 */
-			CLatentData* get_sample(index_t idx);
+			CData* get_sample(index_t idx);
 
 			/** helper method used to specialize a base class instance
 			 *
@@ -75,9 +92,11 @@ namespace shogun
 			 */
 			static CLatentFeatures* obtain_from_generic(CFeatures* base_feats);
 		protected:
+			/** array of CData */
 			CDynamicObjectArray* m_samples;
 
 		private:
+			/** init function for the object */
 			void init();
 	};
 }

@@ -63,7 +63,7 @@ CLatentLabels* CLinearLatentMachine::apply(CFeatures* data)
 	for (index_t i = 0; i < num_examples; ++i)
 	{
 		/* find h for the example */
-		CLatentData* h = m_model->infer_latent_variable(w, i);
+		CData* h = m_model->infer_latent_variable(w, i);
 		labels->set_latent_label(i, h);
 		SGVector<float64_t> psi_feat = m_model->get_psi_feature_vector(i);
 

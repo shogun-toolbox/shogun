@@ -16,19 +16,29 @@
 
 namespace shogun
 {
+	/** @brief LatentSVM class
+	 * Latent SVM implementation based on [1].
+	 * For optimization this implementation uses SVMOcas.
+	 *
+	 * User must provide a her own CLatentModel which implements the PSI(x_i,h_i)
+	 * function for the given problem.
+	 *
+	 * [1] P. F. Felzenszwalb, R. B. Girshick, D. McAllester, and D. Ramanan,
+	 *  "Object detection with discriminatively trained part-based models,"
+	 *  Pattern Analysis and Machine Intelligence,
+	 *  IEEE Transactions on, vol. 32, no. 9, pp. 1627-1645, 2010.
+	 *
+	 */
 	class CLatentSVM: public CLinearLatentMachine
 	{
-
 		public:
-
 			/** default contstructor */
 			CLatentSVM();
 
 			/** constructor
 			 *
-			 * @param C constant C
-			 * @param traindat training features
-			 * @param trainlab labels for training features
+			 * @param model the user defined CLatentModel object.
+			 * @param C regularization constant
 			 */
 			CLatentSVM(CLatentModel* model, float64_t C);
 
@@ -43,8 +53,11 @@ namespace shogun
 		protected:
 			/** inner loop of the latent machine
 			 *
-			 * @param cooling_eps epsilon
+			 * The optimization part after finding the argmax_h for the
+			 * positive examples in the outter loop. It uses SVMOcas for
+			 * finding the cutting plane.
 			 *
+			 * @param cooling_eps epsilon
 			 * @return primal objective value
 			 */
 			virtual float64_t do_inner_loop(float64_t cooling_eps);
