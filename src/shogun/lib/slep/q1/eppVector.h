@@ -59,13 +59,12 @@ void eppVector(double *x, double * v, int* ind, int k, int n, double * rho, doub
 	iter_step=(int *)malloc(sizeof(int)*2);
 
 	c0=0;
-	for(i=0; i<k; i++){
-
+	for(i=0; i<k; i++)
+	{
 		px=x+(int)ind[i];
 		pv=v+(int)ind[i];
 
 		epp(px, &c, iter_step, pv, (int)(ind[i+1]-ind[i]), rho[i]*rho_multiplier, p, c0);
-
 	}
 
 	free(iter_step);    

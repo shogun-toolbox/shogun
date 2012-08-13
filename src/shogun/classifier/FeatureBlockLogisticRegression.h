@@ -12,12 +12,12 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/IndexBlockRelation.h>
-#include <shogun/machine/SLEPMachine.h>
+#include <shogun/machine/LinearMachine.h>
 
 namespace shogun
 {
 /** @brief  */
-class CFeatureBlockLogisticRegression : public CSLEPMachine
+class CFeatureBlockLogisticRegression : public CLinearMachine
 {
 
 	public:
@@ -57,6 +57,32 @@ class CFeatureBlockLogisticRegression : public CSLEPMachine
 		void set_feature_relation(CIndexBlockRelation* feature_relation);
 
 		virtual float64_t apply_one(int32_t vec_idx);
+		
+		/** get max iter */
+		int32_t get_max_iter() const;
+		/** get q */
+		float64_t get_q() const;
+		/** get regularization */
+		int32_t get_regularization() const;
+		/** get termination */
+		int32_t get_termination() const;
+		/** get tolerance */
+		float64_t get_tolerance() const;
+		/** get z */
+		float64_t get_z() const;
+
+		/** set max iter */
+		void set_max_iter(int32_t max_iter);
+		/** set q */
+		void set_q(float64_t q);
+		/** set regularization */
+		void set_regularization(int32_t regularization);
+		/** set termination */
+		void set_termination(int32_t termination);
+		/** set tolerance */
+		void set_tolerance(float64_t tolerance);
+		/** set z */
+		void set_z(float64_t z);
 
 	protected:
 		
@@ -74,6 +100,24 @@ class CFeatureBlockLogisticRegression : public CSLEPMachine
 
 		/** feature tree */
 		CIndexBlockRelation* m_feature_relation;
+		
+		/** regularization type */
+		int32_t m_regularization;
+
+		/** termination criteria */
+		int32_t m_termination;
+
+		/** max iteration */
+		int32_t m_max_iter;
+
+		/** tolerance */
+		float64_t m_tolerance;
+
+		/** q of L1/Lq */
+		float64_t m_q;
+
+		/** regularization coefficient */
+		float64_t m_z;
 
 };
 }

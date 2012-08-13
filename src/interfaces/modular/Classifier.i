@@ -63,7 +63,6 @@
 %rename(SVMLightOneClass) CSVMLightOneClass;
 #endif //USE_SVMLIGHT
 %rename(FeatureBlockLogisticRegression) CFeatureBlockLogisticRegression;
-%rename(L1LogisticRegression) CL1LogisticRegression;
 %rename(DirectorLinearMachine) CDirectorLinearMachine;
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
 
@@ -107,9 +106,7 @@
 %include <shogun/classifier/mkl/MKLOneClass.h>
 %include <shogun/classifier/vw/VowpalWabbit.h>
 %include <shogun/classifier/svm/NewtonSVM.h>
-%include <shogun/machine/SLEPMachine.h>
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
-%include <shogun/classifier/L1LogisticRegression.h>
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
 

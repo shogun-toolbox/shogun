@@ -48,6 +48,7 @@ SGVector<index_t> CIndexBlockGroup::get_SLEP_ind()
 		i++;
 	}
 	while ((iterator = (CIndexBlock*)m_blocks->get_next_element()) != NULL);
+	ind.display_vector("ind");
 
 	return ind;
 }
