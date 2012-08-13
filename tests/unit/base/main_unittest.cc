@@ -9,7 +9,7 @@ using ::testing::Test;
 int main(int argc, char** argv)
 {
 	::testing::InitGoogleMock(&argc, argv);
-	init_shogun();
+	init_shogun_with_defaults();
 	int ret = RUN_ALL_TESTS();
 	exit_shogun();
 

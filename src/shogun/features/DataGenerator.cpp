@@ -84,19 +84,24 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 	SGMatrix<float64_t> result =
 		SGMatrix<float64_t>::get_allocated_matrix(dim, n*m);
 
-
+	float64_t grid_distance = 5.0;
 	for (index_t i = 0; i < n; ++i)
 	{
 		SGVector<float64_t> mean(dim);
 		SGMatrix<float64_t> cov = SGMatrix<float64_t>::create_identity_matrix(dim, 1.0);
 
-		mean.random(0.0, 10.0);
-
+		mean.zero();
+		for (index_t k = 0; k < dim; ++k)
+		{
+			mean[k] = (i+1)*grid_distance;
+			if (k % (i+1) == 0)
+				mean[k] *= -1;
+		}
 		CGaussian* g = new CGaussian(mean, cov, DIAG);
 		for (index_t j = 0; j < m; ++j)
 		{
 			SGVector<float64_t> v = g->sample();
-			memcpy(result.matrix+((i+j)*result.num_rows), v.vector, dim*sizeof(float64_t));
+			memcpy((result.matrix+j*result.num_rows+i*m*dim), v.vector, dim*sizeof(float64_t));
 		}
 
 		SG_UNREF(g);
