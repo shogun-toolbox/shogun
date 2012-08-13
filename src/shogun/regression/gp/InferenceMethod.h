@@ -34,12 +34,12 @@ class CInferenceMethod : public CDifferentiableFunction
   
 public:
 
-	/* Default Constructor
+	/** Default Constructor
 	 *
 	 */
 	CInferenceMethod();
 
-	/* Constructor
+	/** Constructor
 	 * @param kernel covariance function
 	 * @param features features to use in inference
 	 * @param labels labels of the features
@@ -48,8 +48,8 @@ public:
 	CInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
+	/** destructor */
 	virtual ~CInferenceMethod();
-
 
 	/** get Negative Log Marginal Likelihood
 	 *
@@ -173,17 +173,17 @@ public:
 	 */
 	virtual void set_model(CLikelihoodModel* mod);
 
-	/*set kernel scale
+	/** set kernel scale
 	 *
 	 * @param s scale to be set
 	 */
 	virtual void set_scale(float64_t s);
 
-	/*get kernel scale
+	/** get kernel scale
 	 *
 	 * @return kernel scale
 	 */
-	inline float64_t get_scale() { return m_scale; }
+	virtual float64_t get_scale() { return m_scale; }
 
 	/** set latent features
 	*
@@ -203,11 +203,13 @@ public:
 
 
 protected:
-	/** Update Alpha and Cholesky Matrices.
-	 */
+	/** Update alpha matrix */
 	virtual void update_alpha() {}
+	/** update cholesky matrices */
 	virtual void update_chol() {}
+	/** update train kernel */
 	virtual void update_train_kernel() {}
+	/** update data means */
 	virtual void update_data_means();
 
 private:
@@ -265,6 +267,7 @@ protected:
 	/** Kernel matrix from features*/
 	SGMatrix<float64_t> m_ktrtr;
 
+	/** latent variables matrix */
 	SGMatrix<float64_t> m_latent_matrix;
 
 };

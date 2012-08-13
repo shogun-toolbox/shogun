@@ -112,7 +112,7 @@ struct TParameter
 	 *
 	 * @param hash current hash value
 	 * @param carry value for incremental murmur hashing
-	 * @param total byte length of parameters. Function will
+	 * @param total_length byte length of parameters. Function will
 	 * add byte length to received value
 	 *
 	 */
