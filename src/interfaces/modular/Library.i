@@ -26,6 +26,7 @@
 %rename(IndexBlockRelation) CIndexBlockRelation;
 %rename(IndexBlockGroup) CIndexBlockGroup;
 %rename(IndexBlockTree) CIndexBlockTree;
+%rename(Data) CData;
 
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
@@ -468,3 +469,4 @@ namespace shogun
 %include <shogun/lib/IndexBlockRelation.h>
 %include <shogun/lib/IndexBlockGroup.h>
 %include <shogun/lib/IndexBlockTree.h>
+%include <shogun/lib/Data.h>

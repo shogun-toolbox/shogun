@@ -1,6 +1,6 @@
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
-#include <shogun/classifier/svm/LatentLinearMachine.h>
+#include <shogun/latent/LatentSVM.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
@@ -12,9 +12,9 @@ using namespace shogun;
 #define MAX_LINE_LENGTH 4096
 #define HOG_SIZE 1488
 
-struct CBoundingBox : public CLatentData
+struct CBoundingBox : public CData
 {
-	CBoundingBox(int32_t x, int32_t y) : CLatentData(), x_pos(x), y_pos(y) {};
+	CBoundingBox(int32_t x, int32_t y) : CData(), x_pos(x), y_pos(y) {};
 
 	int32_t x_pos, y_pos;
 
@@ -22,9 +22,9 @@ struct CBoundingBox : public CLatentData
 	virtual const char* get_name() const { return "BoundingBox"; }
 };
 
-struct CHOGFeatures : public CLatentData
+struct CHOGFeatures : public CData
 {
-	CHOGFeatures(int32_t w, int32_t h) : CLatentData(), width(w), height(h) {};
+	CHOGFeatures(int32_t w, int32_t h) : CData(), width(w), height(h) {};
 
 	int32_t width, height;
 	float64_t ***hog;
@@ -55,7 +55,7 @@ class CObjectDetector: public CLatentModel
 			return psi_v;
 		}
 
-		virtual CLatentData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
+		virtual CData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
 		{
 			int32_t pos_x = 0, pos_y = 0;
 			float64_t max_score;
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 	float64_t C = 10.0;
 
 	CObjectDetector* od = new CObjectDetector(train_feats, train_labels);
-	CLatentLinearMachine llm(od, C);
+	CLatentSVM llm(od, C);
 	llm.train();
 
 	//  CLatentFeatures* test_feats = NULL;
