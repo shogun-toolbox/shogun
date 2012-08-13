@@ -29,6 +29,9 @@
 %ignore shogun::CDirectorRiskFunction::risk_directed(CDotFeatures* features, CLabels* labels, const SGVector<float64_t> R, const SGVector<float64_t> subgrad, const SGVector<float64_t> W);
 #endif
 
+%ignore shogun::bmrm_ll;
+%ignore shogun::bmrm_return_value_T;
+%ignore shogun::TMultipleCPinfo;
 %ignore refcount_t; 
 %ignore cleanup;
 %ignore QP;
