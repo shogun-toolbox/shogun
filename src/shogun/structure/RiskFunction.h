@@ -21,7 +21,9 @@ namespace shogun
  * Multiple cutting plane models helper
  */
 typedef struct {
+	/** where this portion of data starts */
 	uint32_t from;
+	/** how many examples belong to this portion of data */
 	uint32_t N;
 } TMultipleCPinfo;
 
@@ -45,7 +47,12 @@ class CRiskFunction : public CSGObject
 		 * @param W			Given weight vector
 		 * @param info		Helper info for multiple cutting plane models algorithm
 		 */
-		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0) = 0;
+		virtual void risk(
+				void* data,
+				float64_t* 			R,
+				float64_t* 			subgrad,
+				float64_t* 			W,
+				TMultipleCPinfo* 	info=0) = 0;
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "RiskFunction"; }
@@ -68,7 +75,7 @@ class CRiskData : public CSGObject
 		CRiskData(uint32_t w_dim, uint32_t nFeatures);
 
 		/** destructor */
-		virtual ~CRiskData();
+		~CRiskData();
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "RiskData"; }

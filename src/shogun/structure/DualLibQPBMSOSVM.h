@@ -102,7 +102,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** set absolute tolerance
 		 *
-		 * @oaram TolAbs	Absolute tolerance
+		 * @param TolAbs	Absolute tolerance
 		 */
 		inline void set_TolAbs(float64_t TolAbs) { m_TolAbs=TolAbs; }
 
@@ -214,7 +214,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** set training algorithm
 		 *
-		 * @oaram solver	Type of Bundle Method solver used for training
+		 * @param solver	Type of Bundle Method solver used for training
 		 */
 		inline void set_solver(ESolver solver) { m_solver=solver; }
 

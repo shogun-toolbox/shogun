@@ -43,7 +43,12 @@ CMulticlassRiskData::~CMulticlassRiskData()
 {
 }
 
-void CMulticlassRiskFunction::risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W, TMultipleCPinfo *info)
+void CMulticlassRiskFunction::risk(
+		void* 				data,
+		float64_t* 			R,
+		float64_t* 			subgrad,
+		float64_t* 			W,
+		TMultipleCPinfo* 	info)
 {
 	CMulticlassRiskData* data_struct=(CMulticlassRiskData*)data;
 	CDotFeatures* X=data_struct->m_X;
@@ -83,7 +88,8 @@ void CMulticlassRiskFunction::risk(void* data, float64_t* R, float64_t* subgrad,
 		for (uint32_t c = 0; c < num_classes; ++c)
 		{
 			loss=(c == GT) ? 0.0 : 1.0;
-			Rtmp=loss+SGVector< float64_t >::dot(W+c*feats_dim, xi.vector, feats_dim)-SGVector< float64_t >::dot(W+GT*feats_dim, xi.vector, feats_dim);
+			Rtmp=loss+SGVector< float64_t >::dot(W+c*feats_dim, xi.vector, feats_dim)
+				-SGVector< float64_t >::dot(W+GT*feats_dim, xi.vector, feats_dim);
 
 			if (Rtmp > Rmax)
 			{

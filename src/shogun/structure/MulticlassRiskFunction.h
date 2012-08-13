@@ -18,14 +18,16 @@
 namespace shogun
 {
 
-/** @brief Class CMulticlassRiskFunction implements risk function for multiclass SO-SVM
+/** @brief Class CMulticlassRiskFunction implements risk function
+ * for multiclass SO-SVM
  *
  * Implementation of risk function for structured output multiclass SVM.
  *
  * The value of the risk is evaluated as
  *
  * \f[
- * R({\bf w}) = \sum_{i=1}^{m} \max_{y \in \mathcal{Y}} \left[ \ell(y_i, y) + \langle {\bf w}, \Psi(x_i, y) - \Psi(x_i, y_i)  \rangle  \right]
+ * R({\bf w}) = \sum_{i=1}^{m} \max_{y \in \mathcal{Y}} \left[ \ell(y_i, y)
+ * + \langle {\bf w}, \Psi(x_i, y) - \Psi(x_i, y_i)  \rangle  \right]
  * \f]
  *
  * The subgradient is by Danskin's theorem given as
@@ -37,7 +39,8 @@ namespace shogun
  * where \f$ \hat{y}_i \f$ is the most violated label, i.e.
  *
  * \f[
- * \hat{y}_i = \arg\max_{y \in \mathcal{Y}} \left[ \ell(y_i, y) + \langle {\bf w}, \Psi(x_i, y)  \rangle \right]
+ * \hat{y}_i = \arg\max_{y \in \mathcal{Y}} \left[ \ell(y_i, y)
+ * + \langle {\bf w}, \Psi(x_i, y)  \rangle \right]
  * \f]
  *
  *	\sa CRiskFunction
@@ -52,7 +55,12 @@ class CMulticlassRiskFunction : public CRiskFunction
 		~CMulticlassRiskFunction();
 
 		/** function computing risk and subgradient at given point W */
-		virtual void risk(void* data, float64_t* R, float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
+		virtual void risk(
+				void* 				data,
+				float64_t* 			R,
+				float64_t* 			subgrad,
+				float64_t* 			W,
+				TMultipleCPinfo* 	info=0);
 
 		virtual const char* get_name() const { return "MulticlassRiskFunction"; }
 
@@ -75,7 +83,11 @@ class CMulticlassRiskData : public CRiskData
 		 * @param w_dim		Dimension of the weight vector W
 		 * @param nFeatures	Number of features
 		 */
-		CMulticlassRiskData(CDotFeatures *X, CMulticlassSOLabels *y, uint32_t w_dim, uint32_t nFeatures);
+		CMulticlassRiskData(
+				CDotFeatures* 			X,
+				CMulticlassSOLabels*	y,
+				uint32_t 				w_dim,
+				uint32_t 				nFeatures);
 
 		/** destructor */
 		~CMulticlassRiskData();
