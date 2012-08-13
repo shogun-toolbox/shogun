@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2009 Soeren Sonnenburg, 2012 Fernando José Iglesias García
+ * Written (W) 2009 Soeren Sonnenburg, 2012 Viktor Gal
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
