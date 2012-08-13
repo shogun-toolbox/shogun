@@ -18,8 +18,10 @@ namespace shogun
 
 struct RelaxedTreeNodeData
 {
+	/** mu */
 	SGVector<int32_t> mu;
 
+	/** print data */
 	static void print_data(const RelaxedTreeNodeData &data)
 	{
 		SG_SPRINT("left=(");

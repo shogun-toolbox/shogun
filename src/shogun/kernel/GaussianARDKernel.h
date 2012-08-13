@@ -33,6 +33,7 @@ public:
 	/** constructor
 	 *
 	 * @param size cache size
+	 * @param width kernel width
 	 */
 	CGaussianARDKernel(int32_t size, float64_t width);
 
@@ -41,10 +42,12 @@ public:
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 * @param size cache size
+	 * @param width kernel width
 	 */
 	CGaussianARDKernel(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 		int32_t size=10, float64_t width = 2.0);
 
+	/** destructor */
 	virtual ~CGaussianARDKernel();
 
 	/** initialize kernel
@@ -65,20 +68,20 @@ public:
 	 *
 	 * @return name GaussianARDKernel
 	 */
-	inline virtual const char* get_name() const { return "GaussianARDKernel"; }
+	virtual const char* get_name() const { return "GaussianARDKernel"; }
 
 	/** return derivative with respect to specified parameter
 	 *
-	 * @param  param the parameter
+	 * @param param the parameter
 	 * @param obj the object that owns the parameter
-	 * @index index the index of the element if parameter is a vector
+	 * @param index index the index of the element if parameter is a vector
 	 *
 	 * @return gradient with respect to parameter
 	 */
 	virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
 			CSGObject* obj, index_t index = -1);
 
-	protected:
+protected:
 
 	/** compute kernel function for features a and b
 	 * idx_{a,b} denote the index of the feature vectors

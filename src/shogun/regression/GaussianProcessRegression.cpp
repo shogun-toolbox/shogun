@@ -150,7 +150,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	if (m_return == GP_RETURN_COV)
 	{
 		CRegressionLabels* result =
-				new CRegressionLabels(getCovarianceVector());
+				new CRegressionLabels(get_covariance_vector());
 
 		return result;
 	}
@@ -158,7 +158,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	if (m_return == GP_RETURN_MEANS)
 	{
 		CRegressionLabels* result =
-				new CRegressionLabels(getMeanVector());
+				new CRegressionLabels(get_mean_vector());
 
 		return result;
 	}
@@ -166,8 +166,8 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	else
 	{
 
-		SGVector<float64_t> mean_vector = getMeanVector();
-		SGVector<float64_t> cov_vector = getCovarianceVector();
+		SGVector<float64_t> mean_vector = get_mean_vector();
+		SGVector<float64_t> cov_vector = get_covariance_vector();
 
 		index_t size = mean_vector.vlen+cov_vector.vlen;
 
@@ -195,7 +195,7 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 }
 
 
-SGVector<float64_t> CGaussianProcessRegression::getMeanVector()
+SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 {
 
 	SGVector<float64_t> m_alpha = m_method->get_alpha();
@@ -232,7 +232,7 @@ SGVector<float64_t> CGaussianProcessRegression::getMeanVector()
 }
 
 
-SGVector<float64_t> CGaussianProcessRegression::getCovarianceVector()
+SGVector<float64_t> CGaussianProcessRegression::get_covariance_vector()
 {
 
 	if (!m_data)

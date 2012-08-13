@@ -53,14 +53,14 @@ public:
 
 	/** Evaluate means
 	 *
-	 * @param Vector of means calculated by inference method
+	 * @param means means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
 
 	/** Evaluate variances
 	 *
-	 * @param Vector of variances calculated by inference method
+	 * @param vars variances calculated by inference method
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);

@@ -81,11 +81,16 @@ public:
     virtual SGMatrix<int32_t> create_codebook(int32_t num_classes);
 
 protected:
-    int32_t   m_maxiter; // max number of iterations
-    int32_t   m_codelen; // code length
-    float64_t m_pzero;   // probability of zero
-    float64_t m_pposone; // probability of +1
-    float64_t m_pnegone; // probability of -1
+    /** maximum number of iterations */
+	int32_t   m_maxiter;
+	/** code length */
+	int32_t   m_codelen;
+	/** probability of zero */
+	float64_t m_pzero;
+	/** probability of +1 */
+	float64_t m_pposone;
+	/** probability of -1 */
+    float64_t m_pnegone;
 
 private:
     /** ensure probability sum to one

@@ -233,8 +233,14 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+		/** get real outputs
+		 *
+		 * @param data features to compute outputs
+		 * @return outputs
+		 */
 		SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
+		/** whether train require labels */
 		virtual bool train_require_labels() const { return false; }
 
 	protected:

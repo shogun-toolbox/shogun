@@ -81,7 +81,7 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * 	where \mu is the mean and K is the prior covariance matrix
+	 * 	where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha() = 0;
 
@@ -92,8 +92,8 @@ public:
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * 	Where K is the prior covariance matrix, sW is the matrix returned by
-	 * 	get_cholesky(), and I is the identity matrix.
+	 * 	Where \f$K\f$ is the prior covariance matrix, sW is the matrix returned by
+	 * 	get_cholesky(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky() = 0;
 
@@ -137,15 +137,15 @@ public:
 	 */
 	virtual void set_kernel(CKernel* kern);
 
-	/**get kernel
+	/**get mean
 	 *
-	 * @return kernel
+	 * @return mean
 	 */
 	virtual CMeanFunction* get_mean() { SG_REF(m_mean); return m_mean; }
 
-	/**set kernel
+	/**set mean
 	 *
-	 * @param kern kernel to set
+	 * @param m mean to set
 	 */
 	virtual void set_mean(CMeanFunction* m);
 

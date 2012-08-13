@@ -89,7 +89,7 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * 	where \mu is the mean and K is the prior covariance matrix
+	 * 	where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha();
 

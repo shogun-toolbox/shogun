@@ -181,6 +181,7 @@ public:
 		return CMachine::train(data);
 	}
 
+	/** entry type */
 	typedef std::pair<std::pair<int32_t, int32_t>, float64_t> entry_t;
 protected:
 	/** apply to one instance.
@@ -199,25 +200,42 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data);
 
+	/** train node */
 	node_t *train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
+	/** init node */
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
+	/** train node with initialization */
 	SGVector<int32_t> train_node_with_initialization(const CRelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, CSVM *svm);
 
+	/** compute score */
 	float64_t compute_score(SGVector<int32_t> mu, CSVM *svm);
+	/** color label space */
 	SGVector<int32_t> color_label_space(CSVM *svm, SGVector<int32_t> classes);
+	/** evaluate binary model K */
 	SGVector<float64_t> eval_binary_model_K(CSVM *svm);
 
+	/** enforce balance constraints upper */
 	void enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);
+	/** enforce balance constraints lower */
 	void enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);
 
+	/** maximum number of iterations */
 	int32_t m_max_num_iter;
+	/** A */
 	float64_t m_A;
+	/** B */
 	int32_t m_B;
+	/** svm C */
 	float64_t m_svm_C;
+	/** svm epsilon */
 	float64_t m_svm_epsilon;
+	/** kernel */
 	CKernel *m_kernel;
+	/** features */
 	CDenseFeatures<float64_t> *m_feats;
+	/** machine for confusion matrix computation */
 	CBaseMulticlassMachine *m_machine_for_confusion_matrix;
+	/** number of classes */
 	int32_t m_num_classes;
 };
 

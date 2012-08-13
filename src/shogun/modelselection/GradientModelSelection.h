@@ -111,8 +111,11 @@ protected:
 	/** struct used for nlopt callback function*/
 	struct nlopt_package
 	{
+		/** machine evaluation */
 		shogun::CMachineEvaluation* m_machine_eval;
+		/** current combination */
 		shogun::CParameterCombination* m_current_combination;
+		/** whether print current state */
 		bool print_state;
 	};
 

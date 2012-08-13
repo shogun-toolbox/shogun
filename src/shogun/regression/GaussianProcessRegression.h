@@ -142,17 +142,15 @@ class CGaussianProcessRegression : public CMachine
 		
 		/** get covariance vector
 		*
-		* @param data (test)data to be classified
 		* @return covariance vector
 		*/
-		SGVector<float64_t> getCovarianceVector();
+		SGVector<float64_t> get_covariance_vector();
 		
 		/** get predicted mean vector
 		 *
-		* @param data (test)data to be classified
 		* @return predicted mean vector
 		*/
-		SGVector<float64_t> getMeanVector();
+		SGVector<float64_t> get_mean_vector();
 
 		/** @return object name */
 		inline virtual const char* get_name() const

@@ -108,7 +108,7 @@ struct TParameter
 	 * its parameter, but from scratch using allocate_data_from_scratch */
 	bool m_was_allocated_from_scratch;
 
-	/*Incrementally get a hash from parameter value*
+	/** Incrementally get a hash from parameter value*
 	 *
 	 * @param hash current hash value
 	 * @param carry value for incremental murmur hashing
