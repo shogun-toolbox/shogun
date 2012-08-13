@@ -454,6 +454,42 @@ and send a pull request.
 
   note deleting your remote branch will not delete your pull request associated with that
   branch. And as long as you push your branch there again, your pull request will be OK.
-  
+
+- Unit testing/Pre-commit hook
+  As shogun-toolbox is getting bigger and bigger code-reviews of pull requests are getting
+  harder and harder. In order to avoid breaking the functionality of the existing code, we
+  highly encourage contributors of shogun to use the supplied unit testing, that is based
+  on Google C++ Mock Framework.
+
+  In order to be able to use the unit testing framework one will need to have
+  Google C++ Mock Framework installed on her machine as well as detected by
+  the ./configure script. So, please check the produced configure.log whether
+  the script detected it.
+
+  Once it's detected if you add new classes to the code please define some basic
+  unit tests for them under ./tests/unit (see some of the examples under that directory).
+  As one can see the naming convention for files that contains the unit tests are:
+  <classname>_unittest.cc
+
+  Before commiting or sending a pull request please run 'make unit-tests' under
+  ./src in order to check that nothing has been breaked by the modifications and
+  the library is still acting as it's intended.
+
+  One possible way to do this automatically is to add into your pre-commit hook the
+  following code snippet (.git/hook/pre-commit):
+
+#!/bin/sh
+
+# run unit testing for basic checks
+# and only let commiting if the unit testing runs successfully
+cd src && make unit-tests
+
+
+  This way before each commit the unit testing will run automatically and if it
+  fails it won't let you commit until you don't fix the problem (or remove the
+  pre-commit script :P
+
+  Note that the script should be executable, i.e. 'chmod +x .git/hook/pre-commit'
+
 
 To make a release, refer to the Makefile in the root dir of the repo.
