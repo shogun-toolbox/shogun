@@ -10,8 +10,8 @@ function y = set_distance()
 	elseif strcmp(dname, 'MINKOWSKI')==1
 		global distance_arg0_k;
 		sg('set_distance', dname, ftype, distance_arg0_k);
-	elseif strcmp(dname, 'SPARSEEUCLIDIAN')==1
-		sg('set_distance', 'EUCLIDIAN', 'SPARSEREAL');
+	elseif strcmp(dname, 'SPARSEEUCLIDEAN')==1
+		sg('set_distance', 'EUCLIDEAN', 'SPARSEREAL');
 	else
 		sg('set_distance', dname, ftype);
 	end

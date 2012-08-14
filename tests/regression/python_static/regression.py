@@ -13,6 +13,7 @@ def _set_regression (indata):
 	sg('set_labels', 'TRAIN', double(indata[prefix+'labels']))
 
 	rname=util.fix_regression_name_inconsistency(indata[prefix+'name'])
+	print rname
 	sg('new_regression', rname)
 
 

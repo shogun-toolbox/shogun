@@ -1,5 +1,5 @@
 """
-Test PreProc
+Test Preprocessor
 """
 
 from sg import sg
@@ -19,7 +19,7 @@ def _evaluate (indata, prefix):
 		indata[prefix+'accuracy'], km_train=km_train, km_test=km_test)
 
 
-def _set_preproc (indata, prefix):
+def _set_preprocessor(indata, prefix):
 	pname=util.fix_preproc_name_inconsistency(indata[prefix+'name'])
 	args=util.get_args(indata, prefix)
 
@@ -40,7 +40,7 @@ def test (indata):
 		print e
 		return True
 
-	_set_preproc(indata, 'preproc_')
+	_set_preprocessor(indata, 'preprocessor_')
 
 	return _evaluate(indata, prefix)
 
