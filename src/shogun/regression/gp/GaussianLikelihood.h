@@ -17,8 +17,8 @@ namespace shogun
 
 /** @brief This is the class that models a Gaussian Likelihood
  *
- * In this case, P(y|f) is normally distributed with mean f and
- * variance $\sigma$.
+ * In this case, \f$P(y|f)\f$ is normally distributed with mean \f$f\f$ and
+ * variance \f$\sigma\f$.
  *
  */
 class CGaussianLikelihood: public CLikelihoodModel

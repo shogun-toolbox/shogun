@@ -28,6 +28,7 @@ class CMulticlassSOLabels;
  * labels needs to inherit from CStructuredData. */
 struct CRealNumber : public CStructuredData
 {
+	/** data type */
 	STRUCTURED_DATA_TYPE(SDT_REAL);
 
 	/** constructor
@@ -77,7 +78,7 @@ class CMulticlassSOLabels : public CStructuredLabels
 		/** destructor */
 		virtual ~CMulticlassSOLabels();
 
-		/* get number of classes
+		/** get number of classes
 		 *
 		 * @return number of classes
 		 */

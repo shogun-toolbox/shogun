@@ -66,12 +66,12 @@ public:
 	}
 
 	/** returns graph for ith class */
-	SGMatrix<float64_t> get_graph_for_class(int32_t i)
+	SGMatrix<float64_t> get_graph_for_class(int32_t class_idx)
 	{
 		ASSERT(m_graph_results);
-		ASSERT(i>=0);
-		ASSERT(i<m_num_graph_results);
-		return m_graph_results[i];
+		ASSERT(class_idx>=0);
+		ASSERT(class_idx<m_num_graph_results);
+		return m_graph_results[class_idx];
 	}
 
 	/** returns evaluation direction */
