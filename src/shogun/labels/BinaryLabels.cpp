@@ -220,14 +220,14 @@ void CBinaryLabels::scores_to_probabilities()
 		{
 			SG_WARNING("%s::scores_to_probabilities(): line search fails, A=%f, "
 					"B=%f, g1=%f, g2=%f, dA=%f, dB=%f, gd=%f\n",
-					a, b, g1, g2, dA, dB, gd);
+					get_name(), a, b, g1, g2, dA, dB, gd);
 		}
 	}
 
 	if (it>=maxiter-1)
 	{
 		SG_WARNING("%s::scores_to_probabilities(): reaching maximal iterations,"
-				" g1=%f, g2=%f\n", g1, g2);
+				" g1=%f, g2=%f\n", get_name(), g1, g2);
 	}
 
 	SG_DEBUG("fitted sigmoid: a=%f, b=%f\n", a, b);
