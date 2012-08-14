@@ -54,6 +54,7 @@ TARGETS = basic_minimal \
 		  features_copy_subset_string_features \
 		  features_copy_subset_sparse_features \
 		  features_create_merged_copy \
+		  labels_binary_fit_sigmoid \
 		  mathematics_confidence_intervals \
 		  clustering_kmeans base_parameter_map \
 		  base_load_file_parameters \
