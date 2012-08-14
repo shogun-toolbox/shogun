@@ -31,6 +31,7 @@ namespace shogun
  * scores_to_probabilities(), which implements the method described in
  * Lin, H., Lin, C., and Weng, R. (2007).
  * A note on Platt's probabilistic outputs for support vector machines.
+ * Should only be used in conjunction with SVM.
  */
 class CBinaryLabels : public CDenseLabels
 {
@@ -84,6 +85,7 @@ class CBinaryLabels : public CDenseLabels
 		 * Lin, H., Lin, C., and Weng, R. (2007).
 		 * A note on Platt's probabilistic outputs for support vector machines.
 		 *
+		 * Should only be used in conjunction with SVM.
 		 * The fitted sigmoid is used to replace all confidence values.
 		 */
 		void scores_to_probabilities();
