@@ -45,6 +45,7 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 
 	// risk data
 	m_risk_data=risk_data;
+	SG_REF(m_risk_data);
 
 	// get dimension of w
 	uint32_t nDim=this->m_model->get_dim();

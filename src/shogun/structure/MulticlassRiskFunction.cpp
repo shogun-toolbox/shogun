@@ -67,10 +67,8 @@ void CMulticlassRiskFunction::risk(
 	const uint32_t w_dim=data_struct->m_w_dim;
 
 	*R=0;
-	SGVector< float64_t > subgradient(w_dim);
-	subgradient.zero();
-
-	SGVector< float64_t > xi;
+	for (uint32_t i=0; i<w_dim; i++)
+		subgrad[i] = 0;
 
 	float64_t Rtmp=0.0;
 	float64_t Rmax=0.0;
@@ -82,14 +80,13 @@ void CMulticlassRiskFunction::risk(
 	for(uint32_t i=from; i<to; ++i)
 	{
 		Rmax=-CMath::INFTY;
-		xi=X->get_computed_dot_feature_vector(i);
 		GT=(uint32_t)((CRealNumber*)y->get_label(i))->value;
 
 		for (uint32_t c = 0; c < num_classes; ++c)
 		{
 			loss=(c == GT) ? 0.0 : 1.0;
-			Rtmp=loss+SGVector< float64_t >::dot(W+c*feats_dim, xi.vector, feats_dim)
-				-SGVector< float64_t >::dot(W+GT*feats_dim, xi.vector, feats_dim);
+			Rtmp=loss+X->dense_dot(i, W+c*feats_dim, feats_dim)
+				-X->dense_dot(i, W+GT*feats_dim, feats_dim);
 
 			if (Rtmp > Rmax)
 			{
@@ -99,12 +96,7 @@ void CMulticlassRiskFunction::risk(
 		}
 		*R += Rmax;
 
-		for(uint32_t j = 0; j < feats_dim; ++j)
-		{
-			subgradient[yhat*feats_dim+j]+=xi[j];
-			subgradient[GT*feats_dim+j]-=xi[j];
-		}
-
+		X->add_to_dense_vec(1.0, i, subgrad+yhat*feats_dim, feats_dim);
+		X->add_to_dense_vec(-1.0, i, subgrad+GT*feats_dim, feats_dim);
 	}
-	memcpy(subgrad, subgradient.vector, w_dim*sizeof(float64_t));
 }
