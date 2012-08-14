@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -26,6 +26,11 @@ namespace shogun
 /** @brief Binary Labels for binary classification 
  *
  * valid values for labels are +1/-1
+ *
+ * Confidences may be converted into calibrated probabilities using
+ * scores_to_probabilities(), which implements the method described in
+ * Lin, H., Lin, C., and Weng, R. (2007).
+ * A note on Platt's probabilistic outputs for support vector machines.
  */
 class CBinaryLabels : public CDenseLabels
 {
@@ -74,10 +79,17 @@ class CBinaryLabels : public CDenseLabels
 		 */
 		virtual ELabelType get_label_type();
 
+		/** Converts all confidences to calibrated probabilities by fitting a
+		 * sigmoid function using the method described in
+		 * Lin, H., Lin, C., and Weng, R. (2007).
+		 * A note on Platt's probabilistic outputs for support vector machines.
+		 *
+		 * The fitted sigmoid is used to replace all confidence values.
+		 */
+		void scores_to_probabilities();
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "BinaryLabels"; }
-
-
 };
 }
 #endif
