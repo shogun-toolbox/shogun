@@ -37,7 +37,7 @@ void CLatentLabels::init()
 	m_latent_labels = NULL;
 }
 
-CDynamicObjectArray* CLatentLabels::get_labels() const
+CDynamicObjectArray* CLatentLabels::get_latent_labels() const
 {
 	SG_REF(m_latent_labels);
 	return m_latent_labels;

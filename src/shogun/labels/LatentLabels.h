@@ -40,7 +40,7 @@ namespace shogun
 			 *
 			 * @return the CDynamicObjectArray with the latent labels in it
 			 */
-			CDynamicObjectArray* get_labels() const;
+			CDynamicObjectArray* get_latent_labels() const;
 
 			/** get the latent label of a given example
 			 *
