@@ -1,5 +1,4 @@
 %{
-#include <shogun/modelselection/ModelSelectionOutput.h>
 #include <shogun/modelselection/ModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/GridSearchModelSelection.h>
