@@ -260,8 +260,8 @@ malsar_result_t malsar_clustered(
 			case 0:
 				if (iter>=2)
 				{
-				//	if ( CMath::abs(obj-obj_old) <= options.tolerance )
-				//		done = true;
+					if ( CMath::abs(obj-obj_old) <= options.tolerance )
+						done = true;
 				}
 			break;
 			case 1:
