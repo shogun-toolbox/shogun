@@ -44,10 +44,6 @@ CLinearLatentMachine::~CLinearLatentMachine()
 
 CLatentLabels* CLinearLatentMachine::apply()
 {
-	if (!features)
-		return NULL;
-
-	return NULL;
 }
 
 CLatentLabels* CLinearLatentMachine::apply(CFeatures* data)
@@ -57,22 +53,8 @@ CLatentLabels* CLinearLatentMachine::apply(CFeatures* data)
 
 	CLatentFeatures* lf = CLatentFeatures::obtain_from_generic(data);
 	m_model->set_features(lf);
-	index_t num_examples = m_model->get_num_vectors();
-	CLatentLabels* labels = new CLatentLabels(num_examples);
 
-	for (index_t i = 0; i < num_examples; ++i)
-	{
-		/* find h for the example */
-		CData* h = m_model->infer_latent_variable(w, i);
-		labels->set_latent_label(i, h);
-		SGVector<float64_t> psi_feat = m_model->get_psi_feature_vector(i);
-
-		/* calculate and set y for the example */
-		float64_t y = w.dot(w.vector, psi_feat.vector, w.vlen);
-		labels->set_label(i, y);
-	}
-
-	return labels;
+	return apply();
 }
 
 void CLinearLatentMachine::set_model(CLatentModel* latent_model)

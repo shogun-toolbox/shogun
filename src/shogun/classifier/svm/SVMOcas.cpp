@@ -58,7 +58,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
 
 	ASSERT(m_labels);
-  ASSERT(m_labels->get_label_type() == LT_BINARY || m_labels->get_label_type() == LT_LATENT);
+  ASSERT(m_labels->get_label_type() == LT_BINARY);
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))

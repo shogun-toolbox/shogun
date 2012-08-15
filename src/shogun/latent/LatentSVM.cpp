@@ -29,13 +29,42 @@ CLatentSVM::~CLatentSVM()
 {
 }
 
+CLatentLabels* CLatentSVM::apply()
+{
+	if (!m_model)
+		SG_ERROR("LatentModel is not set!\n");
+
+	if (!features)
+		return NULL;
+
+	index_t num_examples = m_model->get_num_vectors();
+	CLatentLabels* hs = new CLatentLabels(num_examples);
+	CBinaryLabels* ys = new CBinaryLabels(num_examples);
+
+	for (index_t i = 0; i < num_examples; ++i)
+	{
+		/* find h for the example */
+		CData* h = m_model->infer_latent_variable(w, i);
+		hs->set_latent_label(i, h);
+		SGVector<float64_t> psi_feat = m_model->get_psi_feature_vector(i);
+
+		/* calculate and set y for the example */
+		float64_t y = w.dot(w.vector, psi_feat.vector, w.vlen);
+		ys->set_label(i, y);
+	}
+
+	hs->set_labels(ys);
+
+	return hs;
+}
+
 float64_t CLatentSVM::do_inner_loop(float64_t cooling_eps)
 {
-	CLatentLabels* labels = m_model->get_labels();
-	CSVMOcas svm(m_C, features, labels);
+	CLabels* ys = m_model->get_labels()->get_labels();
+	CSVMOcas svm(m_C, features, ys);
 	svm.set_epsilon(cooling_eps);
 	svm.train();
-	SG_UNREF(labels);
+	SG_UNREF(ys);
 
 	/* copy the resulting w */
 	SGVector<float64_t> cur_w = svm.get_w();
