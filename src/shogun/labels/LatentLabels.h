@@ -11,7 +11,7 @@
 #ifndef __LATENTLABELS_H__
 #define __LATENTLABELS_H__
 
-#include <shogun/labels/BinaryLabels.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/lib/Data.h>
 #include <shogun/lib/DynamicObjectArray.h>
 
@@ -21,7 +21,7 @@ namespace shogun
 	 * As latent labels always depends on the given application, this class
 	 * only defines the API that the user has to implement for latent labels.
 	 */
-	class CLatentLabels : public CBinaryLabels
+	class CLatentLabels : public CLabels
 	{
 		public:
 			/** default ctor */
@@ -31,7 +31,13 @@ namespace shogun
 			 *
 			 * @param num_samples the number of labels
 			 */
-			CLatentLabels(int32_t num_labels);
+			CLatentLabels(int32_t num_samples);
+
+			/** constructor
+			 *
+			 * @param labels the (y_i) labels
+			 */
+			CLatentLabels(CLabels* labels);
 
 			/** destructor */
 			virtual ~CLatentLabels();
@@ -89,9 +95,29 @@ namespace shogun
 			 */
 			virtual const char* get_name() const { return "LatentLabels"; }
 
+			/** get the number of stored labels
+			 *
+			 * @return the number of labels
+			 */
+			virtual int32_t get_num_labels();
+
+			/** set labels
+			 *
+			 * @param labels the labels (y_i)
+			 */
+			void set_labels(CLabels* labels);
+
+			/** get the labels (y_i)
+			 *
+			 * @return the labels (y_i)
+			 */
+			CLabels* get_labels() const;
+
 		protected:
-			/** the vector of labels */
+			/** the of CData, the latent labels (h_i) */
 			CDynamicObjectArray* m_latent_labels;
+			/** the labels (y_i) */
+			CLabels* m_labels;
 
 		private:
 			/** initalize the values to default values */

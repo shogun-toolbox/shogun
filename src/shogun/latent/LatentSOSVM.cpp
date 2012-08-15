@@ -32,9 +32,8 @@ CLatentSOSVM::~CLatentSOSVM()
 	SG_UNREF(m_so_solver);
 }
 
-CLatentLabels* CLatentSOSVM::apply(CFeatures* data)
+CLatentLabels* CLatentSOSVM::apply()
 {
-
 
 	return NULL;
 }

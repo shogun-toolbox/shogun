@@ -9,6 +9,7 @@
  */
 
 #include <shogun/latent/LatentModel.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace shogun;
 
@@ -60,13 +61,15 @@ void CLatentModel::set_features(CLatentFeatures* feats)
 void CLatentModel::argmax_h(const SGVector<float64_t>& w)
 {
 	int32_t num = get_num_vectors();
+	CBinaryLabels* y = CBinaryLabels::obtain_from_generic(m_labels->get_labels());
 	ASSERT(num > 0);
 	ASSERT(num == m_labels->get_num_labels());
+	
 
 	// argmax_h only for positive examples
 	for (int32_t i = 0; i < num; ++i)
 	{
-		if (m_labels->get_label(i) == 1)
+		if (y->get_label(i) == 1)
 		{
 			// infer h and set it for the argmax_h <w,psi(x,h)>
 			CData* latent_data = infer_latent_variable(w, i);
