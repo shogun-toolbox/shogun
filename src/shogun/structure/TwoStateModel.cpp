@@ -143,9 +143,9 @@ void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_wei
 }
 
 void CTwoStateModel::reshape_transmission_params(
-		SGMatrix< float64_t >& transmission_matrix, SGVector< float64_t > w)
+		SGMatrix< float64_t >& transmission_weights, SGVector< float64_t > w)
 {
-	transmission_matrix.set_const(-CMath::INFTY);
+	transmission_weights.set_const(-CMath::INFTY);
 
 	// Legend for state indices:
 	// 0 -> start state
@@ -154,20 +154,20 @@ void CTwoStateModel::reshape_transmission_params(
 	// 3 -> positive state (label == 1)
 
 	// From start
-	transmission_matrix(0,2) = 0;    // to negative
-	transmission_matrix(0,3) = 0;    // to positive
+	transmission_weights(0,2) = 0;    // to negative
+	transmission_weights(0,3) = 0;    // to positive
 	// From negative
-	transmission_matrix(2,1) = 0;    // to stop
-	transmission_matrix(2,2) = w[0]; // to negative
-	transmission_matrix(2,3) = w[1]; // to positive
+	transmission_weights(2,1) = 0;    // to stop
+	transmission_weights(2,2) = w[0]; // to negative
+	transmission_weights(2,3) = w[1]; // to positive
 	// From positive
-	transmission_matrix(3,1) = 0;    // to stop
-	transmission_matrix(3,2) = w[3]; // to positive
-	transmission_matrix(3,3) = w[2]; // to negative
+	transmission_weights(3,1) = 0;    // to stop
+	transmission_weights(3,2) = w[3]; // to positive
+	transmission_weights(3,3) = w[2]; // to negative
 }
 
 void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
-		SGMatrix< float64_t > transition_weights,
+		SGMatrix< float64_t > transmission_weights,
 		SGVector< float64_t > emission_weights,
 		int32_t num_feats, int32_t num_obs) const
 {
@@ -176,10 +176,10 @@ void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 	// 1 -> stop state
 	// 2 -> negative state
 	// 3 -> positive state
-	psi[0] = transition_weights(2,2);
-	psi[1] = transition_weights(2,3);
-	psi[2] = transition_weights(3,3);
-	psi[3] = transition_weights(3,2);
+	psi[0] = transmission_weights(2,2);
+	psi[1] = transmission_weights(2,3);
+	psi[2] = transmission_weights(3,3);
+	psi[3] = transmission_weights(3,2);
 
 	// start and stop states have no emission scores
 	index_t obs_idx, psi_idx = m_num_transmission_params;

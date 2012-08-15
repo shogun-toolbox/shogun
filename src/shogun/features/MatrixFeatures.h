@@ -35,26 +35,27 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		/** standard constructor
 		 *
 		 * @param num_vecs number of vectors
-		 * @param num_feat number of features per vector
+		 * @param num_feats number of features per vector
 		 */
 		CMatrixFeatures(int32_t num_vecs, int32_t num_feats = 0);
 
 		/** constructor
 		 *
-		 * @param features list of feature matrices
+		 * @param feats list of feature matrices
+		 * @param num_feats number of features per vector
 		 */
-		CMatrixFeatures(SGMatrixList< ST > feats, int32_t num, int32_t num_feats = 0);
+		CMatrixFeatures(SGMatrixList< ST > feats, int32_t num_feats = 0);
 
 		/**
-		 * constructor using the data of all the features concatenated in a
-		 * matrix. All the features are assumed to have the same length. The number
-		 * of colums of feats must be equal to feat_length times num_vecs. The number
-		 * of features per vector is equal to the number of rows of feats.
+		 * constructor using the data of all the features concatenated
+		 * in a matrix. All the features are assumed to have the same
+		 * length. The number of colums of feats must be equal to
+		 * feat_length times num_vecs. The number of features per vector
+		 * is equal to the number of rows of feats.
 		 *
 		 * @param feats concatenation of the features
 		 * @param feat_length length of each feature
 		 * @param num_vecs number of feature vectors
-		 * @param num_feat number of features per vector
 		 */
 		CMatrixFeatures(SGMatrix< ST > feats, int32_t feat_length, int32_t num_vecs);
 
@@ -125,9 +126,9 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		/** set features
 		 *
 		 * @param features to set
-		 * @param num_vecs number of vectors
+		 * @param num_feats number of features per vector
 		 */
-		void set_features(SGMatrixList< ST > features, int32_t num_vecs, int32_t num_feats);
+		void set_features(SGMatrixList< ST > features, int32_t num_feats);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MatrixFeatures"; }

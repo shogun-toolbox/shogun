@@ -22,7 +22,9 @@ namespace shogun
 enum EStateModelType;
 
 /**
- * @brief Class CHMSVMModel TODO DOC
+ * @brief Class CHMSVMModel that represents the application specific model
+ * and contains the application dependent logic to solve Hidden Markov Support
+ * Vector Machines (HM-SVM) type of problems within a generic SO framework.
  */
 class CHMSVMModel : public CStructuredModel
 {
@@ -34,6 +36,7 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @param features the feature vectors, must be of type MatrixFeatures
 		 * @param labels HMSVM labels
+		 * @param smt internal state representation
 		 * @param num_obs number of observations
 		 */
 		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs);

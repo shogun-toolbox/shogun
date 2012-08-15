@@ -17,7 +17,10 @@
 namespace shogun
 {
 
-/** TODO DOC */
+/**
+ * @brief class CTwoStateModel class for the internal two-state representation
+ * used in the CHMSVMModel.
+ */
 class CTwoStateModel : public CStateModel
 {
 	public:
@@ -56,11 +59,10 @@ class CTwoStateModel : public CStateModel
 		 * This vector is suitable to iterate through when constructing the
 		 * emission matrix used in Viterbi decoding
 		 *
+		 * @param emission_weights emission parameters outputted
 		 * @param w the weight vector
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
-		 *
-		 * @return a vector with the emission parameters
 		 */
 		virtual void reshape_emission_params(SGVector< float64_t >& emission_weights,
 				SGVector< float64_t > w, int32_t num_feats, int32_t num_obs);
@@ -70,12 +72,11 @@ class CTwoStateModel : public CStateModel
 		 * adding zero elements for the states whose parameters are not learnt.
 		 * This matrix is suitable to iterate during Viterbi decoding
 		 *
+		 * @param transmission_weights transmission parameters outputted
 		 * @param w the weight vector
-		 *
-		 * @return a matrix with the transmission parameters
 		 */
 		virtual void reshape_transmission_params(
-				SGMatrix< float64_t >& transmission_matrix,
+				SGMatrix< float64_t >& transmission_weights,
 				SGVector< float64_t > w);
 
 		/** translates label sequence to state sequence
@@ -100,7 +101,7 @@ class CTwoStateModel : public CStateModel
 		 * weight vector)
 		 *
 		 * @param psi output vector
-		 * @param transition_weights counts of the state transitions for a state
+		 * @param transmission_weights counts of the state transitions for a state
 		 * sequence
 		 * @param emission_weights counts of the emission scores for a state
 		 * sequence and a feature vector
@@ -108,7 +109,7 @@ class CTwoStateModel : public CStateModel
 		 * @param num_obs number of emission scores per feature and state
 		 */
 		virtual void weights_to_vector(SGVector< float64_t >& psi,
-				SGMatrix< float64_t > transiton_weights,
+				SGMatrix< float64_t > transmission_weights,
 				SGVector< float64_t > emission_weights,
 				int32_t num_feats, int32_t num_obs) const;
 

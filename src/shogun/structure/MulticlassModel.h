@@ -16,7 +16,11 @@
 namespace shogun
 {
 
-/** @brief TODO */
+/**
+ * @brief Class CMulticlassModel that represents the application specific model
+ * and contains the application dependent logic to solve multiclass
+ * classification within a generic SO framework.
+ */
 class CMulticlassModel : public CStructuredModel
 {
 
