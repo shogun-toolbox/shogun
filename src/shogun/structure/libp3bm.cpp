@@ -18,7 +18,6 @@
 #include <shogun/structure/libppbm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
-#include <shogun/structure/RiskFunction.h>
 
 namespace shogun
 {
@@ -37,7 +36,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 bmrm_return_value_T svm_p3bm_solver(
-		void*           data,
+		CStructuredModel* model,
 		float64_t*      W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
@@ -48,8 +47,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		float64_t       K,
 		uint32_t        Tmax,
 		uint32_t        cp_models,
-		bool            verbose,
-		CRiskFunction*  risk_function)
+		bool            verbose)
 {
 	bmrm_return_value_T p3bmrm={0, 0, 0, 0, 0, 0, 0};
 	libqp_state_T qp_exitflag={0, 0, 0, 0}, qp_exitflag_good={0, 0, 0, 0};
@@ -66,7 +64,7 @@ bmrm_return_value_T svm_p3bm_solver(
 	bool *map=NULL, tuneAlpha=true, flag=true;
 	bool alphaChanged=false, isThereGoodSolution=false;
 	TMultipleCPinfo **info=NULL;
-	uint32_t nDim=((CRiskData*)data)->m_w_dim;
+	uint32_t nDim=model->get_dim();
 	uint32_t to=0, N=0, cp_i=0;
 
 	CTime ttime;
@@ -136,6 +134,8 @@ bmrm_return_value_T svm_p3bm_solver(
 
 	info= (TMultipleCPinfo**) LIBBMRM_CALLOC(cp_models, sizeof(TMultipleCPinfo*));
 
+	int32_t num_feats = model->get_features()->get_num_vectors();
+
 	if (H==NULL || A==NULL || b==NULL || beta==NULL || subgrad_t==NULL ||
 			diag_H==NULL || I==NULL || ICPcounter==NULL || ICPs==NULL || ACPs==NULL ||
 			cp_list==NULL || prevW==NULL || wt==NULL || Rt==NULL || C==NULL ||
@@ -148,9 +148,7 @@ bmrm_return_value_T svm_p3bm_solver(
 	/* multiple cutting plane model init */
 
 	to=0;
-
-	N= (uint32_t) round( (float64_t) ( (CRiskData*) data)->m_nFeatures
-			/ (float64_t) cp_models);
+	N= (uint32_t) round( (float64_t) ((float64_t)num_feats / (float64_t) cp_models));
 
 	for (uint32_t p=0; p<cp_models; ++p)
 	{
@@ -166,7 +164,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		}
 
 		info[p]->from=to;
-		to=((p+1)*N > ((CRiskData*)data)->m_nFeatures) ? ((CRiskData*)data)->m_nFeatures : (p+1)*N;
+		to=((p+1)*N > num_feats) ? num_feats : (p+1)*N;
 		info[p]->N=to-info[p]->from;
 	}
 
@@ -214,7 +212,7 @@ bmrm_return_value_T svm_p3bm_solver(
 	}
 
 	/* Iinitial solution */
-	risk_function->risk(data, &Rt[0], subgrad_t[0], W, info[0]);
+	Rt[0] = model->risk(subgrad_t[0], W, info[0]);
 
 	p3bmrm.nCP=0;
 	p3bmrm.nIter=0;
@@ -234,7 +232,7 @@ bmrm_return_value_T svm_p3bm_solver(
 
 	for (uint32_t p=1; p<cp_models; ++p)
 	{
-		risk_function->risk(data, &Rt[p], subgrad_t[p], W, info[p]);
+		Rt[p] = model->risk(subgrad_t[p], W, info[p]);
 		b[p]=-Rt[p];
 		add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 	}
@@ -592,7 +590,7 @@ bmrm_return_value_T svm_p3bm_solver(
 
 		for (uint32_t p=0; p<cp_models; ++p)
 		{
-			risk_function->risk(data, &Rt[p], subgrad_t[p], W, info[p]);
+			Rt[p] = model->risk(subgrad_t[p], W, info[p]);
 			b[p3bmrm.nCP+p]=-Rt[p];
 			add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 			R+=Rt[p];

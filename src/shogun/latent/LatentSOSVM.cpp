@@ -9,7 +9,6 @@
  */
 
 #include <shogun/latent/LatentSOSVM.h>
-#include <shogun/latent/LatentRiskFunction.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 
 using namespace shogun;
@@ -48,8 +47,7 @@ void CLatentSOSVM::set_so_solver(CLinearStructuredOutputMachine* so)
 float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
 {
 	float64_t lambda = 1/m_C;
-	CLatentRiskFunction* risk = new CLatentRiskFunction();
-  CDualLibQPBMSOSVM* so = new CDualLibQPBMSOSVM(NULL, NULL, NULL, NULL, lambda, risk, NULL);
+  CDualLibQPBMSOSVM* so = new CDualLibQPBMSOSVM();
 	so->train();
 
 	/* copy the resulting w */
@@ -59,7 +57,6 @@ float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
 	/* get the primal objective value */
 	float64_t po = so->get_result().Fp;
 
-	SG_UNREF(risk);
 	SG_UNREF(so);
 
 	return po;
