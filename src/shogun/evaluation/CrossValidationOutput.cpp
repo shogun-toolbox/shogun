@@ -5,9 +5,10 @@
  * (at your option) any later version.
  *
  * Copyright (W) 2012 Sergey Lisitsyn
+ * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/modelselection/ModelSelectionOutput.h>
+#include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
@@ -17,27 +18,27 @@
 
 using namespace shogun;
 
-CModelSelectionOutput::CModelSelectionOutput() : CSGObject(),
+CCrossValidationOutput::CCrossValidationOutput() : CSGObject(),
 	m_custom_evaluations(NULL)
 {
 }
 
-CModelSelectionOutput::~CModelSelectionOutput()
+CCrossValidationOutput::~CCrossValidationOutput()
 {
 	SG_UNREF(m_custom_evaluations);
 }
 
-void CModelSelectionOutput::output_train_indices(SGVector<index_t> indices)
+void CCrossValidationOutput::output_train_indices(SGVector<index_t> indices)
 {
 	indices.display_vector("train_indices");
 }
 
-void CModelSelectionOutput::output_test_indices(SGVector<index_t> indices)
+void CCrossValidationOutput::output_test_indices(SGVector<index_t> indices)
 {
 	indices.display_vector("test_indices");
 }
 
-void CModelSelectionOutput::output_trained_machine(CMachine* machine)
+void CCrossValidationOutput::output_trained_machine(CMachine* machine)
 {
 	if (dynamic_cast<CLinearMachine*>(machine))
 	{
@@ -64,29 +65,29 @@ void CModelSelectionOutput::output_trained_machine(CMachine* machine)
 	}
 }
 
-void CModelSelectionOutput::output_test_result(CLabels* results)
+void CCrossValidationOutput::output_test_result(CLabels* results)
 {
 	results->get_confidences().display_vector("test_labels");
 }
 
-void CModelSelectionOutput::output_test_true_result(CLabels* results)
+void CCrossValidationOutput::output_test_true_result(CLabels* results)
 {
 	results->get_confidences().display_vector("true_labels");
 }
 
-void CModelSelectionOutput::output_evaluate_result(float64_t result)
+void CCrossValidationOutput::output_evaluate_result(float64_t result)
 {
 	SG_PRINT("evaluation result = %f\n",result);
 }
 
-void CModelSelectionOutput::add_custom_evaluation(CEvaluation* evaluation)
+void CCrossValidationOutput::add_custom_evaluation(CEvaluation* evaluation)
 {
 	if (!m_custom_evaluations)
 		m_custom_evaluations = new CDynamicObjectArray();
 	m_custom_evaluations->append_element(evaluation);
 }
 
-void CModelSelectionOutput::output_custom_evaluations(CLabels* result, CLabels* truth)
+void CCrossValidationOutput::output_custom_evaluations(CLabels* result, CLabels* truth)
 {
 	for (int32_t i=0; i<m_custom_evaluations->get_num_elements(); i++)
 	{

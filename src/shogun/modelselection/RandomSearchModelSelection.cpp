@@ -52,7 +52,7 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 	for (int32_t i=0; i<combinations_indices.vlen; i++)
 		combinations->append_element(all_combinations->get_element(i));
 
-	CrossValidationResult* best_result = new CrossValidationResult();
+	CCrossValidationResult* best_result = new CCrossValidationResult();
 
 	CParameterCombination* best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
@@ -86,11 +86,11 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
-		CrossValidationResult* result =
-				(CrossValidationResult*)(m_machine_eval->evaluate(m_ms_output));
+		CCrossValidationResult* result =
+				(CCrossValidationResult*)(m_machine_eval->evaluate());
 
 		if (result->get_result_type() != CROSSVALIDATION_RESULT)
-			SG_ERROR("Evaluation result is not of type CrossValidationResult!");
+			SG_ERROR("Evaluation result is not of type CCrossValidationResult!");
 
 		if (print_state)
 			result->print_result();

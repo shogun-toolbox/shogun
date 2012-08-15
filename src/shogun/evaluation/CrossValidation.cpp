@@ -12,10 +12,10 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/SplittingStrategy.h>
-#include <shogun/modelselection/ModelSelectionOutput.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/evaluation/CrossValidationOutput.h>
 
 using namespace shogun;
 
@@ -51,15 +51,18 @@ void CCrossValidation::init()
 {
 	m_num_runs=1;
 	m_conf_int_alpha=0;
+	m_xval_output=NULL;
 
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions",
 			MS_NOT_AVAILABLE);
-	SG_ADD(&m_conf_int_alpha, "conf_int_alpha", "alpha-value " \
+	SG_ADD(&m_conf_int_alpha, "conf_int_alpha", "alpha-value "
 			"of confidence interval", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_xval_output, "xval_output", "Output class for"
+			" intermediade cross-validation results", MS_NOT_AVAILABLE);
 }
 
 
-CEvaluationResult* CCrossValidation::evaluate(CModelSelectionOutput* ms_output)
+CEvaluationResult* CCrossValidation::evaluate()
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name());
 
@@ -109,12 +112,12 @@ CEvaluationResult* CCrossValidation::evaluate(CModelSelectionOutput* ms_output)
 	for (index_t i=0; i <m_num_runs; ++i)
 	{
 		SG_DEBUG("entering cross-validation run %d \n", i);
-		results[i]=evaluate_one_run(ms_output);
+		results[i]=evaluate_one_run();
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i]);
 	}
 
 	/* construct evaluation result */
-	CrossValidationResult* result = new CrossValidationResult();
+	CCrossValidationResult* result = new CCrossValidationResult();
 	result->has_conf_int=m_conf_int_alpha != 0;
 	result->conf_int_alpha=m_conf_int_alpha;
 
@@ -168,7 +171,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs=num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
+float64_t CCrossValidation::evaluate_one_run()
 {
 	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name());
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
@@ -199,10 +202,11 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 			SGVector<index_t> subset_indices =
 					m_splitting_strategy->generate_subset_indices(i);
 
-			if (ms_output)
+			/* evtl. update xvalidation output class */
+			if (m_xval_output)
 			{
-				ms_output->output_train_indices(inverse_subset_indices);
-				ms_output->output_trained_machine(m_machine);
+				m_xval_output->output_train_indices(inverse_subset_indices);
+				m_xval_output->output_trained_machine(m_machine);
 			}
 
 			/* produce output for desired indices */
@@ -216,13 +220,14 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 			m_evaluation_criterion->set_indices(subset_indices);
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
-			if (ms_output)
+			/* evtl. update xvalidation output class */
+			if (m_xval_output)
 			{
-				ms_output->output_custom_evaluations(result_labels, m_labels);
-				ms_output->output_test_indices(subset_indices);
-				ms_output->output_test_result(result_labels);
-				ms_output->output_test_true_result(m_labels);
-				ms_output->output_evaluate_result(results[i]);
+				m_xval_output->output_custom_evaluations(result_labels, m_labels);
+				m_xval_output->output_test_indices(subset_indices);
+				m_xval_output->output_test_result(result_labels);
+				m_xval_output->output_test_true_result(m_labels);
+				m_xval_output->output_evaluate_result(results[i]);
 			}
 
 			/* remove subset to prevent side effects */
@@ -269,10 +274,12 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 			SG_DEBUG("starting training\n");
 			m_machine->train(m_features);
 			SG_DEBUG("finished training\n");
-			if (ms_output)
+
+			/* evtl. update xvalidation output class */
+			if (m_xval_output)
 			{
-				ms_output->output_train_indices(inverse_subset_indices);
-				ms_output->output_trained_machine(m_machine);
+				m_xval_output->output_train_indices(inverse_subset_indices);
+				m_xval_output->output_trained_machine(m_machine);
 			}
 
 			m_features->remove_subset();
@@ -303,13 +310,15 @@ float64_t CCrossValidation::evaluate_one_run(CModelSelectionOutput* ms_output)
 
 			/* evaluate */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
-			if (ms_output)
+
+			/* evtl. update xvalidation output class */
+			if (m_xval_output)
 			{
-				ms_output->output_custom_evaluations(result_labels, m_labels);
-				ms_output->output_test_indices(subset_indices);
-				ms_output->output_test_result(result_labels);
-				ms_output->output_test_true_result(m_labels);
-				ms_output->output_evaluate_result(results[i]);
+				m_xval_output->output_custom_evaluations(result_labels, m_labels);
+				m_xval_output->output_test_indices(subset_indices);
+				m_xval_output->output_test_result(result_labels);
+				m_xval_output->output_test_true_result(m_labels);
+				m_xval_output->output_evaluate_result(results[i]);
 			}
 			SG_DEBUG("result on fold %d is %f\n", i, results[i]);
 

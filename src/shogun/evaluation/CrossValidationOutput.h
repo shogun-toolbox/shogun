@@ -5,10 +5,12 @@
  * (at your option) any later version.
  *
  * Written (W) 2012 Sergey Lisitsyn
+ * Written (W) 2012 Heiko Strathmann
+ *
  */
 
-#ifndef __MODELSELECTIONOUTPUT_H_
-#define __MODELSELECTIONOUTPUT_H_
+#ifndef __CROSSVALIDATIONOUTPUT_H_
+#define __CROSSVALIDATIONOUTPUT_H_
 
 #include <shogun/base/SGObject.h>
 #include <shogun/machine/Machine.h>
@@ -21,15 +23,15 @@ namespace shogun
 
 /**
  * @brief */
-class CModelSelectionOutput: public CSGObject
+class CCrossValidationOutput: public CSGObject
 {
 public:
 
 	/** constructor */
-	CModelSelectionOutput();
+	CCrossValidationOutput();
 
 	/** destructor */
-	virtual ~CModelSelectionOutput();
+	virtual ~CCrossValidationOutput();
 
 	/** get name */
 	virtual const char* get_name() const { return "ModelSelectionOutput"; }
@@ -61,4 +63,4 @@ protected:
 
 }
 
-#endif /* __MODELSELECTIONOUTPUT_H_ */
+#endif /* __CROSSVALIDATIONOUTPUT_H_ */
