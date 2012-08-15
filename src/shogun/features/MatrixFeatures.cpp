@@ -30,11 +30,11 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 }
 
 template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
-		SGMatrixList< ST > feats, int32_t num_vecs, int32_t num_feats)
+		SGMatrixList< ST > feats, int32_t num_feats)
 : CFeatures(0)
 {
 	init();
-	set_features(feats, num_vecs, num_feats);
+	set_features(feats, num_feats);
 }
 
 template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
@@ -45,7 +45,7 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 			"must be equal to feat_length times num_vecs\n");
 	init();
 	SGMatrixList< ST > feats_list = SGMatrixList< ST >::split(feats, num_vecs);
-	set_features(feats_list, num_vecs, feats.num_rows);
+	set_features(feats_list, feats.num_rows);
 }
 
 /* TODO */
@@ -144,10 +144,10 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 }
 
 template< class ST > void CMatrixFeatures< ST >::set_features(
-		SGMatrixList< ST > features, int32_t num_vecs, int32_t num_feats)
+		SGMatrixList< ST > features, int32_t num_feats)
 {
 	m_features     = features;
-	m_num_vectors  = num_vecs;
+	m_num_vectors  = features.num_matrices;
 	m_num_features = num_feats;
 }
 

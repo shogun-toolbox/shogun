@@ -25,6 +25,7 @@ class CHMSVMLabels;
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). */
 struct CSequence : public CStructuredData
 {
+	/** data type */
 	STRUCTURED_DATA_TYPE(SDT_SEQUENCE);
 
 	/** constructor
