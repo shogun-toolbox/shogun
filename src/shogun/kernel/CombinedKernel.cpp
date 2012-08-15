@@ -510,12 +510,16 @@ void CCombinedKernel::compute_by_subkernel(
 
 const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
+	SG_DEBUG("entering CCombinedKernel::get_subkernel_weights()\n");
+
 	num_weights = get_num_subkernels() ;
 	SG_FREE(subkernel_weights_buffer);
 	subkernel_weights_buffer = SG_MALLOC(float64_t, num_weights);
 
 	if (append_subkernel_weights)
 	{
+		SG_DEBUG("appending kernel weights\n");
+
 		int32_t i=0 ;
 		CListElement* current = NULL ;
 		CKernel* k = get_first_kernel(current);
@@ -547,6 +551,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		}
 	}
 
+	SG_DEBUG("leaving CCombinedKernel::get_subkernel_weights()\n");
 	return subkernel_weights_buffer ;
 }
 
@@ -582,6 +587,7 @@ void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 	}
 	else
 	{
+		SG_DEBUG("not appending kernel weights\n");
 		int32_t i=0 ;
 		CListElement* current = NULL ;
 		CKernel* k = get_first_kernel(current);
