@@ -12,7 +12,6 @@
  *--------------------------------------------------------------------- */
 
 #include <shogun/lib/common.h>
-#include <shogun/structure/RiskFunction.h>
 #include <shogun/structure/libbmrm.h>
 
 #ifndef libppbm_h
@@ -39,7 +38,7 @@ namespace shogun
 	 * @return Structure with BMRM algorithm result
 	 */
 	bmrm_return_value_T svm_ppbm_solver(
-			void            *data,
+			CStructuredModel *model,
 			float64_t   	*W,
 			float64_t   	TolRel,
 			float64_t   	TolAbs,
@@ -49,8 +48,7 @@ namespace shogun
 			uint32_t    	cleanAfter,
 			float64_t   	K,
 			uint32_t    	Tmax,
-			bool        	verbose,
-			CRiskFunction* 	risk_function
+			bool        	verbose
 			);
 
 }

@@ -1,6 +1,4 @@
 %{
- #include <shogun/structure/RiskFunction.h>
- #include <shogun/structure/DirectorRiskFunction.h>
  #include <shogun/structure/PlifBase.h>
  #include <shogun/structure/Plif.h>
  #include <shogun/structure/PlifArray.h>
@@ -25,7 +23,6 @@
  #include <shogun/structure/libbmrm.h>
  #include <shogun/structure/libppbm.h>
  #include <shogun/structure/libp3bm.h>
- #include <shogun/structure/MulticlassRiskFunction.h>
  #include <shogun/structure/DualLibQPBMSOSVM.h>
 
 #ifdef USE_MOSEK

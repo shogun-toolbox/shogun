@@ -98,18 +98,17 @@ static const float64_t *get_col( uint32_t i)
 }
 
 bmrm_return_value_T svm_bmrm_solver(
-		void*           data,
-		float64_t*      W,
-		float64_t       TolRel,
-		float64_t       TolAbs,
-		float64_t       lambda,
-		uint32_t        _BufSize,
-		bool            cleanICP,
-		uint32_t        cleanAfter,
-		float64_t       K,
-		uint32_t        Tmax,
-		bool            verbose,
-		CRiskFunction*  risk_function)
+		CStructuredModel* model,
+		float64_t*       W,
+		float64_t        TolRel,
+		float64_t        TolAbs,
+		float64_t        lambda,
+		uint32_t         _BufSize,
+		bool             cleanICP,
+		uint32_t         cleanAfter,
+		float64_t        K,
+		uint32_t         Tmax,
+		bool             verbose)
 {
 	bmrm_return_value_T bmrm={0, 0, 0, 0, 0, 0, 0};
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
@@ -118,7 +117,7 @@ bmrm_return_value_T svm_bmrm_solver(
 	floatmax_t rsum, sq_norm_W;
 	uint32_t *I, *ICPcounter, *ACPs, cntICP=0, cntACP=0;
 	uint8_t S=1;
-	uint32_t nDim=((CRiskData*)data)->m_w_dim;
+	uint32_t nDim=model->get_dim();
 	float64_t **ICPs;
 
 	CTime ttime;
@@ -256,7 +255,7 @@ bmrm_return_value_T svm_bmrm_solver(
 	}
 
 	/* Iinitial solution */
-	risk_function->risk(data, &R, subgrad, W);
+	R = model->risk(subgrad, W);
 
 	bmrm.nCP=0;
 	bmrm.nIter=0;
@@ -376,7 +375,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		}
 
 		/* risk and subgradient computation */
-		risk_function->risk(data, &R, subgrad, W);
+		R = model->risk(subgrad, W);
 		b[bmrm.nCP]=-R;
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);

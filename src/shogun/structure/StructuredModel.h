@@ -20,6 +20,19 @@
 namespace shogun
 {
 
+#define IGNORE_IN_CLASSLIST
+
+/**
+ * \struct TMultipleCPinfo
+ * Multiple cutting plane models helper
+ */
+IGNORE_IN_CLASSLIST struct TMultipleCPinfo {
+	/** where this portion of data starts */
+	uint32_t from;
+	/** how many examples belong to this portion of data */
+	uint32_t N;
+};
+
 class CStructuredModel;
 
 /** output of the argmax function */
@@ -211,6 +224,15 @@ class CStructuredModel : public CSGObject
 		 * return the number of auxiliary constraints
 		 */
 		virtual int32_t get_num_aux_con() const;
+
+		/** computes the value of the risk function and sub-gradient at given point
+		 *
+		 * @param subgrad Subgradient computed at given point W
+		 * @param W Given weight vector
+		 * @param info Helper info for multiple cutting plane models algorithm
+		 * @return Value of the computed risk at given point W
+		 */
+		virtual float64_t risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
 
 	private:
 		/** internal initialization */

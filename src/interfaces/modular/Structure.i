@@ -8,18 +8,6 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifdef USE_SWIG_DIRECTORS
-%feature("director") shogun::CDirectorRiskFunction;
-%feature("director:except") {
-    if ($error != NULL) {
-        throw Swig::DirectorMethodException();
-    }
-}
-#endif
-
-%rename(BaseRiskFunction) CRiskFunction;
-%rename(DirectorRiskFunction) CDirectorRiskFunction;
-
 /* Remove C Prefix */
 %rename(PlifBase) CPlifBase;
 %rename(Plif) CPlif;
@@ -42,9 +30,6 @@
 %rename(StateModel) CStateModel;
 %rename(TwoStateModel) CTwoStateModel;
 
-%rename(RiskData) CRiskData;
-%rename(MulticlassRiskFunction) CMulticlassRiskFunction;
-%rename(MulticlassRiskData) CMulticlassRiskData;
 %rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
 
 
@@ -53,9 +38,6 @@
 #endif /* USE_MOSEK */
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/structure/RiskFunction.h>
-%include <shogun/structure/DirectorRiskFunction.h>
-
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>
 %include <shogun/structure/PlifArray.h>
@@ -80,7 +62,6 @@
 %include <shogun/structure/libbmrm.h>
 %include <shogun/structure/libppbm.h>
 %include <shogun/structure/libp3bm.h>
-%include <shogun/structure/MulticlassRiskFunction.h>
 %include <shogun/structure/DualLibQPBMSOSVM.h>
 
 

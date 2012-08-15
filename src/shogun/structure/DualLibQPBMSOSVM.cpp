@@ -25,8 +25,6 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		CStructuredLabels*  	labs,
 		CDotFeatures*       	features,
 		float64_t           	lambda,
-		CRiskFunction*      	risk_function,
-		CRiskData*          	risk_data,
 		SGVector< float64_t >	W)
 :CLinearStructuredOutputMachine(model, loss, labs, features)
 {
@@ -41,11 +39,6 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	set_cp_models(1);
 	set_verbose(true);
 	set_solver(BMRM);
-	m_risk_function=risk_function;
-
-	// risk data
-	m_risk_data=risk_data;
-	SG_REF(m_risk_data);
 
 	// get dimension of w
 	uint32_t nDim=this->m_model->get_dim();
@@ -67,7 +60,6 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 
 CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
 {
-	SG_UNREF(m_risk_data);
 }
 
 void CDualLibQPBMSOSVM::init()
@@ -96,19 +88,19 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	switch(m_solver)
 	{
 		case BMRM:
-			m_result=svm_bmrm_solver(m_risk_data, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_bmrm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
-					m_verbose, m_risk_function);
+					m_verbose);
 			break;
 		case PPBMRM:
-			m_result=svm_ppbm_solver(m_risk_data, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_ppbm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
-					m_verbose, m_risk_function);
+					m_verbose);
 			break;
 		case P3BMRM:
-			m_result=svm_p3bm_solver(m_risk_data, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_p3bm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
-					m_cp_models, m_verbose, m_risk_function);
+					m_cp_models, m_verbose);
 			break;
 	}
 
