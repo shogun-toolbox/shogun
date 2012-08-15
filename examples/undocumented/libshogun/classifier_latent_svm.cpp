@@ -102,6 +102,8 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 	labels = new CLatentLabels(num_examples);
 	SG_REF(labels);
 
+	CBinaryLabels* ys = new CBinaryLabels(num_examples);
+
 	feats = new CLatentFeatures(num_examples);
 	SG_REF(feats);
 
@@ -122,7 +124,7 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 		label = (atoi(last_pchar) % 2 == 0) ? 1 : -1;
 		pchar++;
 
-		if (labels->set_label(i, label) == false)
+		if (ys->set_label(i, label) == false)
 			SG_SERROR("Couldn't set label for element %d\n", i);
 
 		last_pchar = pchar;
@@ -165,6 +167,8 @@ static void read_dataset(char* fname, CLatentFeatures*& feats, CLatentLabels*& l
 		feats->add_sample(hog);
 	}
 	fclose(fd);
+
+	labels->set_labels(ys);
 
 	SG_SDONE();
 }

@@ -41,7 +41,7 @@ namespace shogun
 			 * @param data (test)data to be classified
 			 * @return classified labels
 			 */
-			virtual CLatentLabels* apply(CFeatures* data);
+			virtual CLatentLabels* apply();
 
 			void set_so_solver(CLinearStructuredOutputMachine* so);
 

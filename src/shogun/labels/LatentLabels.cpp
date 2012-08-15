@@ -13,28 +13,41 @@
 using namespace shogun;
 
 CLatentLabels::CLatentLabels()
-	: CBinaryLabels()
+	: CLabels()
 {
 	init();
 }
 
-CLatentLabels::CLatentLabels(int32_t num_labels)
-	: CBinaryLabels(num_labels)
+CLatentLabels::CLatentLabels(int32_t num_samples)
+	: CLabels()
 {
 	init();
-	m_latent_labels = new CDynamicObjectArray(num_labels);
+	m_latent_labels = new CDynamicObjectArray(num_samples);
+	SG_REF(m_latent_labels);
+}
+
+CLatentLabels::CLatentLabels(CLabels* labels)
+	: CLabels()
+{
+	init();
+	m_labels = labels;
+	SG_REF(m_labels);
+	m_latent_labels = new CDynamicObjectArray(m_labels->get_num_labels());
 	SG_REF(m_latent_labels);
 }
 
 CLatentLabels::~CLatentLabels()
 {
 	SG_UNREF(m_latent_labels);
+	SG_UNREF(m_labels);
 }
 
 void CLatentLabels::init()
 {
-	SG_ADD((CSGObject**) &m_latent_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_latent_labels, "m_latent_labels", "The latent labels", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
 	m_latent_labels = NULL;
+	m_labels = NULL;
 }
 
 CDynamicObjectArray* CLatentLabels::get_latent_labels() const
@@ -85,5 +98,29 @@ CLatentLabels* CLatentLabels::obtain_from_generic(CLabels* base_labels)
 		SG_SERROR("base_labels must be of dynamic type CLatentLabels\n");
 
 	return NULL;
+}
+
+int32_t CLatentLabels::get_num_labels()
+{
+	if (!m_latent_labels || !m_labels)
+		return 0;
+	int32_t num_labels = m_latent_labels->get_num_elements();
+
+	ASSERT(num_labels == m_labels->get_num_labels());
+
+	return num_labels;
+}
+
+void CLatentLabels::set_labels(CLabels* labels)
+{
+	SG_UNREF(m_labels);
+	SG_REF(labels);
+	m_labels = labels;
+}
+
+CLabels* CLatentLabels::get_labels() const
+{
+	SG_REF(m_labels);
+	return m_labels;
 }
 
