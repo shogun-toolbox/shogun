@@ -142,3 +142,8 @@ int32_t CStructuredModel::get_num_aux_con() const
 {
 	return 0;
 }
+
+float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+{
+	SG_NOTIMPLEMENTED;
+}

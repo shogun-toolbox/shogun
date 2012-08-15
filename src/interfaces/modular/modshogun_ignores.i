@@ -26,7 +26,6 @@
 %ignore shogun::CStructuredModel::init_opt;
 %ignore shogun::CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
 %ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, SGVector<index_t> test_indices);
-%ignore shogun::CDirectorRiskFunction::risk_directed(CDotFeatures* features, CLabels* labels, SGVector<float64_t> R, SGVector<float64_t> subgrad, const SGVector<float64_t> W);
 #endif
 
 %ignore shogun::bmrm_ll;

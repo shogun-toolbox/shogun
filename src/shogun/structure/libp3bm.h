@@ -12,7 +12,6 @@
  *--------------------------------------------------------------------- */
 
 #include <shogun/lib/common.h>
-#include <shogun/structure/RiskFunction.h>
 #include <shogun/structure/libbmrm.h>
 
 #ifndef libp3bm_h
@@ -23,7 +22,7 @@ namespace shogun
 	/** Proximal Point P-BMRM (multiple cutting plane models) Solver for
 	 * 	Structured Output Learning
 	 *
-	 * @param data			Pointer to user data passed to risk function
+	 * @param model			Pointer to user data passed to risk function
 	 * @param W				Weight vector
 	 * @param TolRel		Relative tolerance
 	 * @param TolAbs		Absolute tolerance
@@ -37,11 +36,10 @@ namespace shogun
 	 * @param Tmax			Parameter Tmax
 	 * @param cp_models		Count of cutting plane models to be used
 	 * @param verbose		Flag that enables/disables screen output
-	 * @param risk_function	Pointer to risk function
 	 * @return Structure with BMRM algorithm result
 	 */
 	bmrm_return_value_T svm_p3bm_solver(
-			void            *data,
+			CStructuredModel *model,
 			float64_t   	*W,
 			float64_t   	TolRel,
 			float64_t   	TolAbs,
@@ -52,8 +50,7 @@ namespace shogun
 			float64_t   	K,
 			uint32_t    	Tmax,
 			uint32_t        cp_models,
-			bool        	verbose,
-			CRiskFunction* 	risk_function
+			bool        	verbose
 			);
 
 }

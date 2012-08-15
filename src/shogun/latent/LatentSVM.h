@@ -44,6 +44,14 @@ namespace shogun
 
 			virtual ~CLatentSVM();
 
+			/** apply linear machine to all examples
+			 *
+			 * @return resulting labels
+			 */
+			virtual CLatentLabels* apply();
+
+			using CLinearLatentMachine::apply;
+
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable
