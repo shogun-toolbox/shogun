@@ -60,7 +60,7 @@ public:
 	 * @return GradientResult containing value and
 	 * gradient
 	 */
-	virtual CEvaluationResult* evaluate(CModelSelectionOutput* ms_output=NULL);
+	virtual CEvaluationResult* evaluate();
 
 	/** set Differentiable Function
 	*

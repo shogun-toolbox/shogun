@@ -17,7 +17,6 @@
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
-#include <shogun/modelselection/ModelSelectionOutput.h>
 
 namespace shogun
 {
@@ -76,7 +75,7 @@ public:
 	 *
 	 * @return result of evaluation
 	 */
-	virtual CEvaluationResult* evaluate(CModelSelectionOutput* ms_output=NULL) = 0;
+	virtual CEvaluationResult* evaluate() = 0;
 
 	/** @return underlying learning machine */
 	CMachine* get_machine() const;

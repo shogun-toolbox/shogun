@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -17,16 +17,18 @@
 namespace shogun
 {
 
+class CMachineEvaluation;
+class CCrossValidationOutput;
 
 /** @brief type to encapsulate the results of an evaluation run.
  * May contain confidence interval (if conf_int_alpha!=0).
  * m_conf_int_alpha is the probability for an error, i.e. the value does not lie
  * in the confidence interval.
  */
-class CrossValidationResult : public CEvaluationResult
+class CCrossValidationResult : public CEvaluationResult
 {
 	public:
-		CrossValidationResult()
+		CCrossValidationResult()
 		{
 			mean = 0;
 			has_conf_int = 0;
@@ -141,7 +143,7 @@ public:
 	/** setter for the number of runs to use for evaluation */
 	void set_conf_int_alpha(float64_t m_conf_int_alpha);
 
-	virtual CEvaluationResult* evaluate(CModelSelectionOutput* ms_output=NULL);
+	virtual CEvaluationResult* evaluate();
 
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
@@ -161,11 +163,12 @@ protected:
 	 *
 	 * @return evaluation result of one cross-validation run
 	 */
-	virtual float64_t evaluate_one_run(CModelSelectionOutput* ms_output=NULL);
+	virtual float64_t evaluate_one_run();
 
-private:
 	int32_t m_num_runs;
 	float64_t m_conf_int_alpha;
+
+	CCrossValidationOutput* m_xval_output;
 };
 
 }
