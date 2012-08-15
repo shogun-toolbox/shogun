@@ -44,7 +44,7 @@ namespace shogun
 			 *
 			 * @return resulting labels
 			 */
-			virtual CLatentLabels* apply();
+			virtual CLatentLabels* apply() = 0;
 
 			/** apply linear machine to data
 			 *
