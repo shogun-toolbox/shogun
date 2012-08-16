@@ -603,12 +603,7 @@ static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *ar
 
 			(arg1)->free_feature_matrix();
 		}
-    
-		catch (Swig::DirectorException &e)
-		{
-			SWIG_fail;
-		}
-    
+
 		catch (std::bad_alloc)
 		{
 			SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
