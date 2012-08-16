@@ -102,7 +102,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		float64_t*       W,
 		float64_t        TolRel,
 		float64_t        TolAbs,
-		float64_t        lambda,
+		float64_t        _lambda,
 		uint32_t         _BufSize,
 		bool             cleanICP,
 		uint32_t         cleanAfter,
@@ -255,7 +255,7 @@ bmrm_return_value_T svm_bmrm_solver(
 	}
 
 	/* Iinitial solution */
-	R = model->risk(subgrad, W);
+	R=model->risk(subgrad, W);
 
 	bmrm.nCP=0;
 	bmrm.nIter=0;
@@ -264,6 +264,7 @@ bmrm_return_value_T svm_bmrm_solver(
 	b[0]=-R;
 
 	/* Cutting plane auxiliary double linked list */
+
 	LIBBMRM_MEMCPY(A, subgrad, nDim*sizeof(float64_t));
 	map[0]=false;
 	cp_list->address=&A[0];
@@ -274,8 +275,9 @@ bmrm_return_value_T svm_bmrm_solver(
 	CPList_tail=cp_list;
 
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
+
 	sq_norm_W=0;
-	bmrm.Fp=R+0.5*lambda*sq_norm_W;
+	bmrm.Fp=R+0.5*_lambda*sq_norm_W;
 	bmrm.Fd=-LIBBMRM_PLUS_INF;
 
 	tstop=ttime.cur_time_diff(false);
@@ -311,7 +313,7 @@ bmrm_return_value_T svm_bmrm_solver(
 					rsum+=A_1[j]*A_2[j];
 				}
 
-				H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)]=rsum/lambda;
+				H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)]=rsum/_lambda;
 			}
 
 			for (uint32_t i=0; i<bmrm.nCP; ++i)
@@ -327,7 +329,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		for (uint32_t i=0; i<nDim; ++i)
 			rsum+=A_2[i]*A_2[i];
 
-		H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)]=rsum/lambda;
+		H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)]=rsum/_lambda;
 
 		diag_H[bmrm.nCP]=H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)];
 		I[bmrm.nCP]=1;
@@ -371,7 +373,7 @@ bmrm_return_value_T svm_bmrm_solver(
 				rsum+=A_1[i]*beta[j];
 			}
 
-			W[i]=-rsum/lambda;
+			W[i]=-rsum/_lambda;
 		}
 
 		/* risk and subgradient computation */
@@ -388,7 +390,7 @@ bmrm_return_value_T svm_bmrm_solver(
 			sq_norm_W+=W[j]*W[j];
 		}
 
-		bmrm.Fp=R+0.5*lambda*sq_norm_W;
+		bmrm.Fp=R+0.5*_lambda*sq_norm_W;
 		bmrm.Fd=-qp_exitflag.QP;
 
 		/* Stopping conditions */

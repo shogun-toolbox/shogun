@@ -24,14 +24,14 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		CLossFunction*      	loss,
 		CStructuredLabels*  	labs,
 		CDotFeatures*       	features,
-		float64_t           	lambda,
+		float64_t           	_lambda,
 		SGVector< float64_t >	W)
 :CLinearStructuredOutputMachine(model, loss, labs, features)
 {
 	set_TolRel(0.001);
 	set_TolAbs(0.0);
 	set_BufSize(1000);
-	set_lambda(lambda);
+	set_lambda(_lambda);
 	set_cleanICP(true);
 	set_cleanAfter(10);
 	set_K(0.4);
@@ -52,7 +52,7 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	}
 	else
 	{
-		m_w=W;
+		set_w(W);
 	}
 
 	init();

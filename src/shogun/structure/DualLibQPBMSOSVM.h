@@ -55,7 +55,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 * @param loss			Loss function
 		 * @param labs			Structured labels
 		 * @param features		Feature vectors
-		 * @param lambda		Regularization constant
+		 * @param _lambda		Regularization constant
 		 * @param W				initial solution of weight vector
 		 */
 		CDualLibQPBMSOSVM(
@@ -63,7 +63,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 				CLossFunction* 			loss,
 				CStructuredLabels* 		labs,
 				CDotFeatures* 			features,
-				float64_t 				lambda,
+				float64_t 				_lambda,
 				SGVector< float64_t > 	W=0);
 
 		/** destructor */
@@ -76,7 +76,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 *
 		 * @param lambda	Regularization constant
 		 */
-		inline void set_lambda(float64_t lambda) { m_lambda=lambda; }
+		inline void set_lambda(float64_t _lambda) { m_lambda=_lambda; }
 
 		/** get lambda
 		 *
@@ -213,6 +213,17 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 * @param solver	Type of Bundle Method solver used for training
 		 */
 		inline void set_solver(ESolver solver) { m_solver=solver; }
+
+		/** set initial value of weight vector w
+		 *
+		 * @param W     initial weight vector
+		 */
+		inline void set_w(SGVector< float64_t > W)
+		{
+			REQUIRE(W.vlen == m_model->get_dim(), "Dimension of the initial "
+					"solution must match the model's dimension!\n");
+			m_w=W;
+		}
 
 	protected:
 		/** train dual SO-SVM
