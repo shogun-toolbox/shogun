@@ -99,7 +99,7 @@ fail:
 %enddef // NUMERIC_DENSELABELS
 
 /* Python protocols for DenseLabels */
-%define PYPROTO_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
+%define PROTOCOLS_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
 
 %wrapper
 %{
@@ -401,5 +401,5 @@ SwigPyBuiltin__shogun__ ## class_type ## _type.ht_type.tp_flags = class_name ## 
 %feature("python:sq_slice") class_type #class_name "_getslice"
 %feature("python:sq_ass_slice") class_type #class_name "_setslice"
 
-%enddef /* PYPROTO_DENSELABELS */
+%enddef /* PROTOCOLS_DENSELABELS */
 #endif /* SWIG_PYTHON */

@@ -32,8 +32,9 @@
 #endif
 
 #ifndef SWIGPYTHON
-#define PYPROTO_DENSEFEATURES(class_name, type_name, format_str, typecode)
-#define PYPROTO_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
+#define PROTOCOLS_DENSEFEATURES(class_name, type_name, format_str, typecode)
+#define PROTOCOLS_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
+#define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
 #endif
 
 /* Remove C Prefix */
@@ -51,16 +52,16 @@
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
 %rename(Labels) CLabels;
 
-PYPROTO_DENSELABELS(CDenseLabels, DenseLabels, float64_t, "d\0", NPY_FLOAT64)
+PROTOCOLS_DENSELABELS(CDenseLabels, DenseLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(DenseLabels) CDenseLabels;
 
-PYPROTO_DENSELABELS(CBinaryLabels, BinaryLabels, float64_t, "d\0", NPY_FLOAT64)
+PROTOCOLS_DENSELABELS(CBinaryLabels, BinaryLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(BinaryLabels) CBinaryLabels;
 
-PYPROTO_DENSELABELS(CMulticlassLabels, MulticlassLabels, float64_t, "d\0", NPY_FLOAT64)
+PROTOCOLS_DENSELABELS(CMulticlassLabels, MulticlassLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(MulticlassLabels) CMulticlassLabels;
 
-PYPROTO_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_FLOAT64)
+PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(RegressionLabels) CRegressionLabels;
 
 %rename(StructuredLabels) CStructuredLabels;
