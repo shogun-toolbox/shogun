@@ -40,7 +40,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		float64_t*      W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
-		float64_t       lambda,
+		float64_t       _lambda,
 		uint32_t        _BufSize,
 		bool            cleanICP,
 		uint32_t        cleanAfter,
@@ -163,9 +163,9 @@ bmrm_return_value_T svm_p3bm_solver(
 			goto cleanup;
 		}
 
-		info[p]->from=to;
-		to=((p+1)*N > num_feats) ? num_feats : (p+1)*N;
-		info[p]->N=to-info[p]->from;
+		info[p]->_from=to;
+		to=((p+1)*N > (uint32_t)num_feats) ? (uint32_t)num_feats : (p+1)*N;
+		info[p]->N=to-info[p]->_from;
 	}
 
 	map= (bool*) LIBBMRM_CALLOC(BufSize, sizeof(bool));
@@ -255,7 +255,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 	}
 
-	p3bmrm.Fp=R+0.5*lambda*sq_norm_W + alpha*sq_norm_Wdiff;
+	p3bmrm.Fp=R+0.5*_lambda*sq_norm_W + alpha*sq_norm_Wdiff;
 	p3bmrm.Fd=-LIBBMRM_PLUS_INF;
 	lastFp=p3bmrm.Fp;
 
@@ -365,12 +365,12 @@ bmrm_return_value_T svm_p3bm_solver(
 				for (uint32_t j=0; j<nDim; ++j)
 					rsum+=A_1[j]*prevW[j];
 
-				b2[i]=b[i]-((2*alpha)/(lambda+2*alpha))*rsum;
-				diag_H2[i]=diag_H[i]/(lambda+2*alpha);
+				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
+				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
 
 				for (uint32_t j=0; j<p3bmrm.nCP; ++j)
 					H2[LIBBMRM_INDEX(i, j, BufSize)]=
-						H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
+						H[LIBBMRM_INDEX(i, j, BufSize)]/(_lambda+2*alpha);
 
 			}
 
@@ -394,7 +394,7 @@ bmrm_return_value_T svm_p3bm_solver(
 					rsum+=A_1[i]*beta[j];
 				}
 
-				wt[i]=(2*alpha*prevW[i] - rsum)/(lambda+2*alpha);
+				wt[i]=(2*alpha*prevW[i] - rsum)/(_lambda+2*alpha);
 			}
 
 			sq_norm_Wdiff=0.0;
@@ -431,11 +431,11 @@ bmrm_return_value_T svm_p3bm_solver(
 					for (uint32_t j=0; j<nDim; ++j)
 						rsum+=A_1[j]*prevW[j];
 
-					b2[i]=b[i]-((2*alpha)/(lambda+2*alpha))*rsum;
-					diag_H2[i]=diag_H[i]/(lambda+2*alpha);
+					b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
+					diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
 
 					for (uint32_t j=0; j<p3bmrm.nCP; ++j)
-						H2[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
+						H2[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)]/(_lambda+2*alpha);
 				}
 
 				/* solve QP with current alpha */
@@ -457,7 +457,7 @@ bmrm_return_value_T svm_p3bm_solver(
 						rsum+=A_1[i]*beta[j];
 					}
 
-					wt[i]=(2*alpha*prevW[i] - rsum)/(lambda+2*alpha);
+					wt[i]=(2*alpha*prevW[i] - rsum)/(_lambda+2*alpha);
 				}
 
 				sq_norm_Wdiff=0.0;
@@ -538,11 +538,11 @@ bmrm_return_value_T svm_p3bm_solver(
 				for (uint32_t j=0; j<nDim; ++j)
 					rsum+=A_1[j]*prevW[j];
 
-				b2[i]=b[i]-((2*alpha)/(lambda+2*alpha))*rsum;
-				diag_H2[i]=diag_H[i]/(lambda+2*alpha);
+				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
+				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
 
 				for (uint32_t j=0; j<p3bmrm.nCP; ++j)
-					H2[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)]/(lambda+2*alpha);
+					H2[LIBBMRM_INDEX(i, j, BufSize)]=H[LIBBMRM_INDEX(i, j, BufSize)]/(_lambda+2*alpha);
 			}
 
 			/* solve QP with current alpha */
@@ -582,7 +582,7 @@ bmrm_return_value_T svm_p3bm_solver(
 				rsum+=A_1[i]*beta[j];
 			}
 
-			W[i]=(2*alpha*prevW[i]-rsum)/(lambda+2*alpha);
+			W[i]=(2*alpha*prevW[i]-rsum)/(_lambda+2*alpha);
 		}
 
 		/* risk and subgradient computation */
@@ -611,8 +611,8 @@ bmrm_return_value_T svm_p3bm_solver(
 		}
 
 		/* compute Fp and Fd */
-		p3bmrm.Fp=R+0.5*lambda*sq_norm_W + alpha*sq_norm_Wdiff;
-		p3bmrm.Fd=-qp_exitflag.QP + ((alpha*lambda)/(lambda + 2*alpha))*sq_norm_prevW;
+		p3bmrm.Fp=R+0.5*_lambda*sq_norm_W + alpha*sq_norm_Wdiff;
+		p3bmrm.Fd=-qp_exitflag.QP + ((alpha*_lambda)/(_lambda + 2*alpha))*sq_norm_prevW;
 
 		/* gamma + tuneAlpha flag */
 		if (alphaChanged)

@@ -76,7 +76,7 @@ CFeatures* CStructuredModel::get_features()
 }
 
 SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
-		int32_t feat_idx, 
+		int32_t feat_idx,
 		int32_t lab_idx)
 {
 	CStructuredData* label = m_labels->get_label(lab_idx);
@@ -87,11 +87,11 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 }
 
 SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
-		int32_t feat_idx, 
+		int32_t feat_idx,
 		CStructuredData* y)
 {
 	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
-		 "implemented for %s!\n", get_name());
+			"implemented for %s!\n", get_name());
 
 	return SGVector< float64_t >();
 }
@@ -111,16 +111,16 @@ float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred
 float64_t CStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
 	SG_ERROR("delta_loss(CStructuredData*, CStructuredData*) is not "
-		 "implemented for %s!\n", get_name());
+			"implemented for %s!\n", get_name());
 
 	return 0.0;
 }
 
 void CStructuredModel::init()
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels", 
+	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels",
 			MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors", 
+	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors",
 			MS_NOT_AVAILABLE);
 
 	m_features = NULL;
@@ -146,4 +146,5 @@ int32_t CStructuredModel::get_num_aux_con() const
 float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
 {
 	SG_NOTIMPLEMENTED;
+	return -1.0;
 }

@@ -28,7 +28,7 @@ namespace shogun
  */
 IGNORE_IN_CLASSLIST struct TMultipleCPinfo {
 	/** where this portion of data starts */
-	uint32_t from;
+	uint32_t _from;
 	/** how many examples belong to this portion of data */
 	uint32_t N;
 };
@@ -39,7 +39,7 @@ class CStructuredModel;
 struct CResultSet : public CSGObject
 {
 	/** destructor */
-	~CResultSet() { SG_UNREF(argmax) };
+	~CResultSet() { SG_UNREF(argmax) }
 
 	/** argmax */
 	CStructuredData* argmax;
@@ -60,13 +60,13 @@ struct CResultSet : public CSGObject
 	virtual const char* get_name() const { return "ResultSet"; }
 };
 
-/** 
- * @brief Class CStructuredModel that represents the application specific model 
- * and contains most of the application dependent logic to solve structured 
+/**
+ * @brief Class CStructuredModel that represents the application specific model
+ * and contains most of the application dependent logic to solve structured
  * output (SO) problems. The idea of this class is to be instantiated giving
- * pointers to the functions that are dependent on the application, i.e. the 
+ * pointers to the functions that are dependent on the application, i.e. the
  * combined feature representation \f$\Psi(\bold{x},\bold{y})\f$ and the argmax
- * function \f$ {\arg\max} _{\bold{y} \neq \bold{y}_i} \left \langle { \bold{w}, 
+ * function \f$ {\arg\max} _{\bold{y} \neq \bold{y}_i} \left \langle { \bold{w},
  * \Psi(\bold{x}_i,\bold{y}) }  \right \rangle \f$. See: MulticlassModel.h and
  * .cpp for an example of these functions implemented.
  */
@@ -99,11 +99,11 @@ class CStructuredModel : public CSGObject
 		virtual void init_opt(
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
-				SGVector< float64_t > lb, SGVector< float64_t > ub, 
+				SGVector< float64_t > lb, SGVector< float64_t > ub,
 				SGMatrix < float64_t >  & C);
 
 		/**
-		 * return the dimensionality of the joint feature space, i.e. 
+		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
 		virtual int32_t get_dim() const = 0;
@@ -132,8 +132,8 @@ class CStructuredModel : public CSGObject
 		 */
 		CFeatures* get_features();
 
-		/** 
-		 * gets joint feature vector 
+		/**
+		 * gets joint feature vector
 		 *
 		 * \f[
 		 * \vec{\Psi}(\bf{x}_\text{feat\_idx}, \bf{y}_\text{lab\_idx})
@@ -193,7 +193,7 @@ class CStructuredModel : public CSGObject
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }
-	
+
 		/**
 		 * method to be called from a SO machine before training
 		 * to ensure that the training data is valid (e.g. check that

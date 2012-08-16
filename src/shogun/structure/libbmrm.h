@@ -116,7 +116,7 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
  * @param W				Weight vector
  * @param TolRel		Relative tolerance
  * @param TolAbs		Absolute tolerance
- * @param lambda		Regularization constant
+ * @param _lambda		Regularization constant
  * @param _BufSize		Size of the CP buffer (i.e. maximal number of
  * 						iterations)
  * @param cleanICP		Flag that enables/disables inactive cutting plane
@@ -133,7 +133,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		float64_t        *W,
 		float64_t        TolRel,
 		float64_t        TolAbs,
-		float64_t        lambda,
+		float64_t        _lambda,
 		uint32_t         _BufSize,
 		bool             cleanICP,
 		uint32_t         cleanAfter,

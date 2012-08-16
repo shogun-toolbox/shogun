@@ -43,7 +43,7 @@ namespace shogun
 			float64_t   	*W,
 			float64_t   	TolRel,
 			float64_t   	TolAbs,
-			float64_t   	lambda,
+			float64_t   	_lambda,
 			uint32_t    	_BufSize,
 			bool        	cleanICP,
 			uint32_t    	cleanAfter,

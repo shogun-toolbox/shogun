@@ -4,7 +4,8 @@ import numpy as np
 
 from shogun.Features 	import RealFeatures
 from shogun.Loss     	import HingeLoss
-from shogun.Structure	import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM, BMRM, PPBMRM, P3BMRM, MulticlassRiskFunction, MulticlassRiskData
+from shogun.Structure	import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM
+from shogun.Structure 	import BMRM, PPBMRM, P3BMRM
 
 def gen_data():
 	np.random.seed(0)
@@ -20,7 +21,7 @@ def gen_data():
 # Number of classes
 M = 3
 # Number of samples of each class
-N = 50
+N = 1000
 # Dimension of the data
 dim = 2
 
@@ -32,12 +33,8 @@ features = RealFeatures(X.T)
 model = MulticlassModel(features, labels)
 loss = HingeLoss()
 
-risk = MulticlassRiskFunction()
-
-risk_data = MulticlassRiskData(features, labels, model.get_dim(), features.get_num_vectors())
-
-lambda_ = 1e3
-sosvm = DualLibQPBMSOSVM(model, loss, labels, features, lambda_, risk, risk_data)
+lambda_ = 1e1
+sosvm = DualLibQPBMSOSVM(model, loss, labels, features, lambda_)
 
 sosvm.set_cleanAfter(10)	# number of iterations that cutting plane has to be inactive for to be removed
 sosvm.set_cleanICP(True)	# enables inactive cutting plane removal feature
@@ -51,11 +48,11 @@ sosvm.set_solver(BMRM)		# select training algorithm
 sosvm.train()
 
 out = sosvm.apply()
-count = 0
+count = 0.0
 for i in xrange(out.get_num_labels()):
 	yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
 	if yi_pred.value == y[i]:
-		count = count + 1
+		count += 1.0
 
 print "Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() )
 
