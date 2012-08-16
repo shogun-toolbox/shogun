@@ -203,6 +203,7 @@ class SignalSensor(object):
             self.kernel.init(self.svs, tf)
             sys.stderr.write("..done\n")
 
+            self.svm.set_kernel(self.kernel)
             lab_out = self.svm.apply()
 
             # work around problem with get_labels()
