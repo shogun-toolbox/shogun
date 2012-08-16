@@ -523,7 +523,7 @@ int main(int argc, char** argv)
 }
 EOF
 
-	GMOCK_LDADD="-lgmock -lgtest"
+	GMOCK_LDADD="-lgmock -lgtest -lpthread -D_THREAD_SAFE"
 	if test "$_gmock" = yes || test "$_gmock" = auto
 	then
 		if $GMOCK --version > /dev/null 2>&1
