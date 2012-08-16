@@ -21,7 +21,7 @@ CMulticlassModel::CMulticlassModel()
 	init();
 }
 
-CMulticlassModel::CMulticlassModel(CFeatures* features, CStructuredLabels* labels)
+	CMulticlassModel::CMulticlassModel(CFeatures* features, CStructuredLabels* labels)
 : CStructuredModel(features, labels)
 {
 	init();
@@ -46,7 +46,7 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 	psi.zero();
 
 	SGVector< float64_t > x = ((CDotFeatures*) m_features)->
-				get_computed_dot_feature_vector(feat_idx);
+		get_computed_dot_feature_vector(feat_idx);
 	/* TODO add checks for the casting!! */
 	float64_t label_value = CRealNumber::obtain_from_generic(y)->value;
 
@@ -72,7 +72,7 @@ CResultSet* CMulticlassModel::argmax(
 	else
 	{
 		REQUIRE(m_num_classes > 0, "The model needs to be trained before "
-			"using it for prediction\n");
+				"using it for prediction\n");
 	}
 
 	ASSERT(feats_dim*m_num_classes == w.vlen);
@@ -81,7 +81,7 @@ CResultSet* CMulticlassModel::argmax(
 
 	float64_t score = 0, ypred = 0;
 	float64_t max_score = df->dense_dot(feat_idx, w.vector, feats_dim);
-	
+
 	for ( int32_t c = 1 ; c < m_num_classes ; ++c )
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
@@ -142,16 +142,19 @@ void CMulticlassModel::init()
 float64_t CMulticlassModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
 {
 	CDotFeatures* X=(CDotFeatures*)m_features;
-	CMulticlassSOLabels* y=(CMulticlassSOLabels*)m_features;
+	CMulticlassSOLabels* y=(CMulticlassSOLabels*)m_labels;
+	m_num_classes = y->get_num_classes();
 	uint32_t from, to;
+
 	if (info)
 	{
-		from=info->from;
+		from=info->_from;
 		to=(info->N == 0) ? X->get_num_vectors() : from+info->N;
 	} else {
 		from=0;
 		to=X->get_num_vectors();
 	}
+
 	uint32_t num_classes=y->get_num_classes();
 	uint32_t feats_dim=X->get_dim_feature_space();
 	const uint32_t w_dim=get_dim();
