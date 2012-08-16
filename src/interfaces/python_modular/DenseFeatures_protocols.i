@@ -105,7 +105,7 @@ fail:
 %enddef // NUMERIC_DENSEFEATURES
 
 /* Python protocols for DenseFeatures */
-%define PYPROTO_DENSEFEATURES(class_name, type_name, format_str, typecode)
+%define PROTOCOLS_DENSEFEATURES(class_name, type_name, format_str, typecode)
 
 %wrapper
 %{
@@ -147,7 +147,8 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	arg1=reinterpret_cast< CDenseFeatures < type_name >* >(argp1);
 
-	info=new buffer_matrix_ ## type_name ## _info;
+	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
+	new (&info->buf) SGMatrix< type_name >();
 
 	info->buf=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
@@ -165,6 +166,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 
 	info->shape=shape;
 	info->strides=strides;
+	info->internal=NULL;
 
 	view->ndim=2;
 
@@ -203,7 +205,7 @@ static void class_name ## _releasebuffer(PyObject *self, Py_buffer *view)
 			delete[] temp->strides;
 
 		temp->buf=SGMatrix< type_name >();
-		delete temp;
+		free(temp);
 	}
 }
 
@@ -567,6 +569,67 @@ fail:
 	return -1;
 }
 
+static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *args)
+{
+	PyObject* resultobj=0;
+	CDenseFeatures< type_name > *arg1=(CDenseFeatures< type_name > *) 0;
+	void* argp1=0;
+	int res1=0;
+  
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	if (!SWIG_IsOK(res1)) 
+	{
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BoolFeatures_free_feature_matrix" "', argument " "1"" of type '" "shogun::CDenseFeatures< bool > *""'"); 
+	}
+
+	arg1=reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+	{
+		try
+		{
+			Py_buffer* view=NULL;
+			buffer_matrix_ ## type_name ## _info* temp=NULL;
+			if (extend_ ## class_name ## _info.count(arg1)>0)
+			{
+				view=extend_ ## class_name ## _info[arg1];
+				temp=(buffer_matrix_ ## type_name ## _info*) view->internal;
+				view->internal=temp->internal;
+
+				PyBuffer_Release(view);
+				extend_ ## class_name ## _info.erase(arg1);
+		
+				free(temp);
+				delete view;
+			}
+
+			(arg1)->free_feature_matrix();
+		}
+    
+		catch (Swig::DirectorException &e)
+		{
+			SWIG_fail;
+		}
+    
+		catch (std::bad_alloc)
+		{
+			SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
+      
+			SWIG_fail;
+      
+		}
+		catch (shogun::ShogunException e)
+		{
+			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
+      
+			SWIG_fail;
+      
+		}
+	}
+	resultobj=SWIG_Py_Void();
+	return resultobj;
+fail:
+	return NULL;
+}
+
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, add, +)
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, sub, -)
 NUMERIC_DENSEFEATURES(class_name, type_name, format_str, mul, *)
@@ -576,7 +639,20 @@ static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFE
 
 %init
 %{
+// overload flags slot in DenseFatures proxy class
 SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags = class_name ## _flags;
+
+// overload free_feature_matrix in DenseFeatures
+set_method(SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_methods, "free_feature_matrix", (PyCFunction) class_name ## _free_feature_matrix);
+
+%}
+
+%header
+%{
+
+#include <map>
+static std::map<CDenseFeatures< type_name >*, Py_buffer*> extend_ ## class_name ## _info;
+
 %}
 
 %feature("python:bf_getbuffer") CDenseFeatures< type_name > #class_name "_getbuffer"
@@ -595,4 +671,83 @@ SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags
 %feature("python:mp_ass_subscript") CDenseFeatures< type_name > #class_name "_setsubscript"
 
 %enddef /* PYPROTO_DENSEFEATURES */
+
+%define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
+
+%extend CDenseFeatures< type_name >
+{
+
+int frombuffer(PyObject* exporter, bool copy)
+{
+	Py_buffer* view=NULL;
+	buffer_matrix_ ## type_name ## _info* info=NULL;
+	SGMatrix< type_name > new_feat_matrix;
+
+	int res1=0;
+	int res2=0;
+
+	res1=PyObject_CheckBuffer(exporter);
+	if (!res1)
+	{
+		PyErr_SetString(PyExc_BufferError, "this object don't support buffer protocol");
+		return -1;
+	}
+
+	view=new Py_buffer;
+	res2=PyObject_GetBuffer(exporter, view, PyBUF_F_CONTIGUOUS | PyBUF_ND | PyBUF_STRIDES | 0);
+	if (res2!=0 || view->buf==NULL)
+	{
+		PyErr_SetString(PyExc_BufferError, "bad buffer");
+		return -1;
+	}
+
+	// checking that buffer is right
+	if (view->ndim!=2)
+	{
+		PyErr_SetString(PyExc_BufferError, "wrond dimensional");
+		return -1;
+	}
+
+	if (view->itemsize!=sizeof(type_name))
+	{
+		PyErr_SetString(PyExc_BufferError, "wrong type");
+		return -1;
+	}
+
+	if (view->shape==NULL)
+	{
+		PyErr_SetString(PyExc_BufferError, "wrong shape");
+		return -1;
+	}
+
+	new_feat_matrix=SGMatrix< type_name >((type_name*) view->buf, view->shape[0], view->shape[1], true);
+
+	if (copy)
+	{
+		$self->set_feature_matrix(new_feat_matrix.clone());
+	}
+	else
+	{	
+		$self->set_feature_matrix(new_feat_matrix);
+	}
+
+	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
+	new (&info->buf) SGMatrix< type_name >();
+
+	info->buf=new_feat_matrix;
+	info->shape=view->shape;
+	info->strides=view->strides;
+	info->internal=view->internal;
+
+	view->internal=info;
+
+	extend_ ## class_name ## _info[$self]=view;
+
+	return 0;
+}
+
+}
+
+%enddef /* EXTEND_DENSEFEATURES */
+
 #endif /* SWIG_PYTHON */
