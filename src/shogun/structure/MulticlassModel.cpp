@@ -47,8 +47,9 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 
 	SGVector< float64_t > x = ((CDotFeatures*) m_features)->
 		get_computed_dot_feature_vector(feat_idx);
-	/* TODO add checks for the casting!! */
-	float64_t label_value = CRealNumber::obtain_from_generic(y)->value;
+	CRealNumber* r = CRealNumber::obtain_from_generic(y);
+	ASSERT(r != NULL)
+	float64_t label_value = r->value;
 
 	for ( index_t i = 0, j = label_value*x.vlen ; i < x.vlen ; ++i, ++j )
 		psi[j] = x[i];
@@ -88,7 +89,7 @@ CResultSet* CMulticlassModel::argmax(
 
 		if ( score > max_score )
 		{
-			score = max_score;
+			max_score = score;
 			ypred = c;
 		}
 	}
@@ -115,6 +116,8 @@ float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
 	CRealNumber* rn1 = CRealNumber::obtain_from_generic(y1);
 	CRealNumber* rn2 = CRealNumber::obtain_from_generic(y2);
+	ASSERT(rn1 != NULL);
+	ASSERT(rn2 != NULL);
 
 	return ( rn1->value == rn2->value ) ? 0 : 1;
 }
