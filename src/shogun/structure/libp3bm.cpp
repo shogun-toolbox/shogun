@@ -773,11 +773,17 @@ cleanup:
 	LIBBMRM_FREE(H2);
 	LIBBMRM_FREE(C);
 	LIBBMRM_FREE(S);
+	LIBBMRM_FREE(cp_list);
+	LIBBMRM_FREE(Rt);
 
 	for (uint32_t p=0; p<cp_models; ++p)
+	{
 		LIBBMRM_FREE(subgrad_t[p]);
+		LIBBMRM_FREE(info[p]);
+	}
 
 	LIBBMRM_FREE(subgrad_t);
+	LIBBMRM_FREE(info);
 
 	return(p3bmrm);
 }
