@@ -99,6 +99,7 @@ _mosek=auto
 _arpack=auto
 _nlopt=auto
 _eigen3=auto
+_gmock=auto
 _bigstates=yes
 _hmmcache=yes
 _debug=yes
@@ -507,15 +508,47 @@ EOF
 check_gmock()
 {
 	echocheck "Google C++ Mocking Framework"
-	if $GMOCK --version > /dev/null 2>&1
+
+cat >$TMPCXX << EOF
+#include <iostream>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
+using ::testing::Test;
+
+int main(int argc, char** argv)
+{
+        ::testing::InitGoogleMock(&argc, argv);
+        return RUN_ALL_TESTS();
+}
+EOF
+
+	GMOCK_LDADD="-lgmock -lgtest"
+	if test "$_gmock" = yes || test "$_gmock" = auto
 	then
-		USE_GMOCK='yes'
-		COMPFLAGS_GMOCK_CPP=`$GMOCK --cppflags --cxxflags`
-		LINKFLAGS_GMOCK=`$GMOCK --ldflags --libs`
-		echores `$GMOCK --version`
+		if $GMOCK --version > /dev/null 2>&1
+		then
+			USE_GMOCK='yes'
+			COMPFLAGS_GMOCK_CPP=`$GMOCK --cppflags --cxxflags`
+			LINKFLAGS_GMOCK=`$GMOCK --ldflags --libs`
+			echores `$GMOCK --version`
+		elif cxx_check $GMOCK_LDADD
+		then
+			echores "yes"
+			USE_GMOCK='yes'
+			LINKFLAGS_GMOCK=$GMOCK_LDADD
+		else
+			if test "$_gmock" = yes
+			then
+				die "google mock not detected"
+			else
+				echores "not detected, for unit testing please install it"
+				USE_GMOCK='no'
+			fi
+		fi
 	else
+		echores "disabled"
 		USE_GMOCK='no'
-		echores "no"
 	fi
 }
 
@@ -1557,6 +1590,8 @@ EOF
 	  --enable-hmmcache)	_hmmcache=yes	;;
 	  --disable-debug) 		_debug=no ;;
 	  --enable-debug) 		_debug=yes ;;
+	  --disable-gmock) 		_gmock=no ;;
+	  --enable-gmock) 		_gmock=yes ;;
 	  --disable-trace-mallocs) _trace_mallocs=no ;;
 	  --enable-trace-mallocs) _trace_mallocs=yes ;;
 	  --disable-reference-counting) _reference_counting=no ;;
