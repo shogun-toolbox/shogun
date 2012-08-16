@@ -6,6 +6,7 @@ using namespace shogun;
 
 CMulticlassLabels::CMulticlassLabels() : CDenseLabels()
 {
+	m_multiclass_confidences = NULL;
 	m_num_multiclass_confidences = 0;
 }
 
