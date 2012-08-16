@@ -1,12 +1,12 @@
 parameter_list=[[5,1,10, 2.0, 10], [10,0.3,2, 1.0, 0.1]]
 
-def check_status(status):
+def check_status(status,suffix):
 	# silent...
 	assert(status)
-	#if  status:
-	#	print("OK reading/writing .h5\n")
-	#else:
-	#	print("ERROR reading/writing .h5\n")
+	if  status:
+		print("OK reading/writing %s\n" % suffix)
+	else:
+		print("ERROR reading/writing %s\n" % suffix)
 
 def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
@@ -43,43 +43,43 @@ def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
 
 	fstream = SerializableHdf5File("blaah.h5", "w")
 	status = svm.save_serializable(fstream)
-	check_status(status)
+	check_status(status,'h5')
 
 	fstream = SerializableAsciiFile("blaah.asc", "w")
 	status = svm.save_serializable(fstream)
-	check_status(status)
+	check_status(status,'asc')
 
 	fstream = SerializableJsonFile("blaah.json", "w")
 	status = svm.save_serializable(fstream)
-	check_status(status)
+	check_status(status,'json')
 
 	fstream = SerializableXmlFile("blaah.xml", "w")
 	status = svm.save_serializable(fstream)
-	check_status(status)
+	check_status(status,'xml')
 
 
 	fstream = SerializableHdf5File("blaah.h5", "r")
 	new_svm=GMNPSVM()
 	status = new_svm.load_serializable(fstream)
-	check_status(status)
+	check_status(status,'h5')
 	new_svm.train()
 
 	fstream = SerializableAsciiFile("blaah.asc", "r")
 	new_svm=GMNPSVM()
 	status = new_svm.load_serializable(fstream)
-	check_status(status)
+	check_status(status,'asc')
 	new_svm.train()
 
-	#fstream = SerializableJsonFile("blaah.json", "r")
-	#new_svm=GMNPSVM()
-	#status = new_svm.load_serializable(fstream)
-	#check_status(status)
-	#new_svm.train()
+	fstream = SerializableJsonFile("blaah.json", "r")
+	new_svm=GMNPSVM()
+	status = new_svm.load_serializable(fstream)
+	check_status(status,'json')
+	new_svm.train()
 
 	fstream = SerializableXmlFile("blaah.xml", "r")
 	new_svm=GMNPSVM()
 	status = new_svm.load_serializable(fstream)
-	check_status(status)
+	check_status(status,'xml')
 	new_svm.train()
 
 	os.unlink("blaah.h5")
