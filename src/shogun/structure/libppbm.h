@@ -21,11 +21,11 @@ namespace shogun
 {
 	/** Proximal Point BMRM Solver for Structured Output Learning
 	 *
-	 * @param data			Pointer to user data passed to risk function
+	 * @param model			Pointer to user defined CStructuredModel
 	 * @param W				Weight vector
 	 * @param TolRel		Relative tolerance
 	 * @param TolAbs		Absolute tolerance
-	 * @param lambda		Regularization constant
+	 * @param _lambda		Regularization constant
 	 * @param _BufSize		Size of the CP buffer (i.e. maximal number of iterations)
 	 * @param cleanICP		Flag that enables/disables inactive cutting plane removal
 	 * 						feature
@@ -34,7 +34,6 @@ namespace shogun
 	 * @param K				Parameter K
 	 * @param Tmax			Parameter Tmax
 	 * @param verbose		Flag that enables/disables screen output
-	 * @param risk_function	Pointer to risk function
 	 * @return Structure with BMRM algorithm result
 	 */
 	bmrm_return_value_T svm_ppbm_solver(
