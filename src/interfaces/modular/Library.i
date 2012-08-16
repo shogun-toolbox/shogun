@@ -10,7 +10,7 @@
  */
 
 #ifndef SWIGPYTHON
-#define PYPROTO_SGVECTOR(class_name, type_name, format_str, typecode)
+#define PROTOCOLS_SGVECTOR(class_name, type_name, format_str, typecode)
 #endif
 
 %rename(Cache) CCache;
@@ -282,12 +282,12 @@ namespace shogun
     SERIALIZABLE_DUMMY(SGVector<uint64_t>);
 #endif
 #ifdef USE_FLOAT32
-	PYPROTO_SGVECTOR(ShortRealVector, float32_t, "f\0", NPY_FLOAT32)
+	PROTOCOLS_SGVECTOR(ShortRealVector, float32_t, "f\0", NPY_FLOAT32)
     %template(ShortRealVector) SGVector<float32_t>;
     SERIALIZABLE_DUMMY(SGVector<float32_t>);
 #endif
 #ifdef USE_FLOAT64
-	PYPROTO_SGVECTOR(RealVector, float64_t, "d\0", NPY_FLOAT64)
+	PROTOCOLS_SGVECTOR(RealVector, float64_t, "d\0", NPY_FLOAT64)
     %template(RealVector) SGVector<float64_t>;
     SERIALIZABLE_DUMMY(SGVector<float64_t>);
 #endif
