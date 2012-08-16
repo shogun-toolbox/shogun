@@ -665,7 +665,7 @@ static std::map<CDenseFeatures< type_name >*, Py_buffer*> extend_ ## class_name 
 %feature("python:mp_subscript") CDenseFeatures< type_name > #class_name "_getsubscript"
 %feature("python:mp_ass_subscript") CDenseFeatures< type_name > #class_name "_setsubscript"
 
-%enddef /* PYPROTO_DENSEFEATURES */
+%enddef /* PROTOCOLS_DENSEFEATURES */
 
 %define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
 

@@ -99,7 +99,7 @@ fail:
 %enddef // NUMERIC_SGVECTOR
 
 /* Python protocols for SGVector */
-%define PYPROTO_SGVECTOR(class_name, type_name, format_str, typecode)
+%define PROTOCOLS_SGVECTOR(class_name, type_name, format_str, typecode)
 
 %wrapper
 %{
@@ -401,5 +401,5 @@ SwigPyBuiltin__shogun__SGVectorT_ ## type_name ## _t_type.ht_type.tp_flags = cla
 %feature("python:sq_slice") SGVector< type_name > #class_name "_getslice"
 %feature("python:sq_ass_slice") SGVector< type_name > #class_name "_setslice"
 
-%enddef /* PYPROTO_SGVECTOR */
+%enddef /* PROTOCOLS_SGVECTOR */
 #endif /* SWIG_PYTHON */
