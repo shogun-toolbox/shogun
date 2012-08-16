@@ -20,6 +20,7 @@ namespace shogun
 template <class T> class CTreeMachine: public CBaseMulticlassMachine
 {
 public:
+	/** node_t type */
 	typedef CTreeMachineNode<T> node_t;
 
     /** constructor */
@@ -39,6 +40,7 @@ public:
     virtual const char* get_name() const { return "TreeMachine"; }
 
 protected:
+	/** tree root */
 	CTreeMachineNode<T> *m_root;
 };
 
