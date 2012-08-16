@@ -10,21 +10,22 @@
 /* helper's stuff */
 
 %define BUFFER_VECTOR_INFO(type_name)
-%wrapper
+%header
 %{
 
 struct buffer_vector_ ## type_name ## _info
 {
-	SGVector< type_name >  buf; 
+	SGVector< type_name > buf; 
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
+	void* internal;
 };
 
 %}
 %enddef // BUFFER_VECTOR_INFO
 
 %define BUFFER_MATRIX_INFO(type_name)
-%wrapper
+%header
 %{
 
 struct buffer_matrix_ ## type_name ## _info
@@ -32,6 +33,7 @@ struct buffer_matrix_ ## type_name ## _info
 	SGMatrix< type_name >  buf; 
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
+	void* internal;
 };
 
 %}
@@ -63,12 +65,7 @@ BUFFER_MATRIX_INFO(float64_t)
 
 %wrapper
 %{
-
-struct buffer_info
-{
-	Py_ssize_t* shape;
-	Py_ssize_t* strides;
-};
+#include <cstring>
 
 void get_slice_in_bounds(Py_ssize_t* ilow, Py_ssize_t* ihigh, Py_ssize_t max_idx)
 {
@@ -130,4 +127,18 @@ int parse_tuple_item(PyObject* item, Py_ssize_t length,
 	return 0;
 }
 
+void set_method(PyMethodDef* methods, const char* name, PyCFunction new_method)
+{
+	PyMethodDef method_temp;
+	int method_idx=0;
+
+	do
+	{
+		method_temp=methods[method_idx];
+		method_idx++;
+	} 
+	while (strcmp(method_temp.ml_name, name)!=0 && method_temp.ml_name!=NULL);
+
+	methods[method_idx-1].ml_meth=new_method;
+}
 %}

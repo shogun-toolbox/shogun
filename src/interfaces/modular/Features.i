@@ -309,62 +309,74 @@ namespace shogun
 namespace shogun
 {
 #ifdef USE_BOOL
-	PYPROTO_DENSEFEATURES(BoolFeatures, bool, "?\0", NPY_BOOL)
-    %template(BoolFeatures) CDenseFeatures<bool>;
+	// something wrong with git
+	PROTOCOLS_DENSEFEATURES(BoolFeatures, bool, "?\0", NPY_BOOL)
+	%template(BoolFeatures) CDenseFeatures<bool>;
+	EXTEND_DENSEFEATURES(BoolFeatures, bool, NPY_BOOL)
 #endif
 
 #ifdef USE_CHAR
-	PYPROTO_DENSEFEATURES(CharFeatures, char, "c\0", NPY_STRING)
-    %template(CharFeatures) CDenseFeatures<char>;
+	PROTOCOLS_DENSEFEATURES(CharFeatures, char, "c\0", NPY_STRING)
+	%template(CharFeatures) CDenseFeatures<char>;
+	EXTEND_DENSEFEATURES(CharFeatures, char, NPY_STRING)
 #endif
 
 #ifdef USE_UINT8
-	PYPROTO_DENSEFEATURES(ByteFeatures, uint8_t, "B\0", NPY_UINT8)
-    %template(ByteFeatures) CDenseFeatures<uint8_t>;
+	PROTOCOLS_DENSEFEATURES(ByteFeatures, uint8_t, "B\0", NPY_UINT8)
+	%template(ByteFeatures) CDenseFeatures<uint8_t>;
+	EXTEND_DENSEFEATURES(ByteFeatures, uint8_t, NPY_UINT8)
 #endif
 
 #ifdef USE_UINT16
-	PYPROTO_DENSEFEATURES(WordFeatures, uint16_t, "H\0", NPY_UINT16)
-    %template(WordFeatures) CDenseFeatures<uint16_t>;
+	PROTOCOLS_DENSEFEATURES(WordFeatures, uint16_t, "H\0", NPY_UINT16)
+	%template(WordFeatures) CDenseFeatures<uint16_t>;
+	EXTEND_DENSEFEATURES(WordFeatures, uint16_t, NPY_UINT16)
 #endif
 
 #ifdef USE_INT16
-	PYPROTO_DENSEFEATURES(ShortFeatures, int16_t, "h\0", NPY_INT16)
-    %template(ShortFeatures) CDenseFeatures<int16_t>;
+	PROTOCOLS_DENSEFEATURES(ShortFeatures, int16_t, "h\0", NPY_INT16)
+	%template(ShortFeatures) CDenseFeatures<int16_t>;
+	EXTEND_DENSEFEATURES(ShortFeatures, int16_t, NPY_INT16)
 #endif
 
 #ifdef USE_INT32
-	PYPROTO_DENSEFEATURES(IntFeatures, int32_t, "i\0", NPY_INT32)
-    %template(IntFeatures)  CDenseFeatures<int32_t>;
+	PROTOCOLS_DENSEFEATURES(IntFeatures, int32_t, "i\0", NPY_INT32)
+	%template(IntFeatures)  CDenseFeatures<int32_t>;
+	EXTEND_DENSEFEATURES(IntFeatures, int32_t, NPY_INT32)
 #endif
 
 #ifdef USE_UINT32
-	PYPROTO_DENSEFEATURES(UIntFeatures, uint32_t, "I\0", NPY_UINT32)
-    %template(UIntFeatures)  CDenseFeatures<uint32_t>;
+	PROTOCOLS_DENSEFEATURES(UIntFeatures, uint32_t, "I\0", NPY_UINT32)
+	%template(UIntFeatures)  CDenseFeatures<uint32_t>;
+	EXTEND_DENSEFEATURES(UIntFeatures, uint32_t, NPY_UINT32)
 #endif
 
 #ifdef USE_INT64
-	PYPROTO_DENSEFEATURES(LongIntFeatures, int64_t, "l\0", NPY_INT64)
-    %template(LongIntFeatures) CDenseFeatures<int64_t>;
+	PROTOCOLS_DENSEFEATURES(LongIntFeatures, int64_t, "l\0", NPY_INT64)
+	%template(LongIntFeatures) CDenseFeatures<int64_t>;
+	EXTEND_DENSEFEATURES(LongIntFeatures, int64_t, NPY_INT64)
 #endif
 
 #ifdef USE_UINT64
-	PYPROTO_DENSEFEATURES(ULongIntFeatures, uint64_t, "L\0", NPY_UINT64)
-    %template(ULongIntFeatures) CDenseFeatures<uint64_t>;
+	PROTOCOLS_DENSEFEATURES(ULongIntFeatures, uint64_t, "L\0", NPY_UINT64)
+	%template(ULongIntFeatures) CDenseFeatures<uint64_t>;
+	EXTEND_DENSEFEATURES(ULongIntFeatures, uint64_t, NPY_UINT64)
 #endif
 
 #ifdef USE_FLOATMAX
-    %template(LongRealFeatures) CDenseFeatures<floatmax_t>;
+	%template(LongRealFeatures) CDenseFeatures<floatmax_t>;
 #endif
 
 #ifdef USE_FLOAT32
-	PYPROTO_DENSEFEATURES(ShortRealFeatures, float32_t, "f\0", NPY_FLOAT32)
-    %template(ShortRealFeatures) CDenseFeatures<float32_t>;
+	PROTOCOLS_DENSEFEATURES(ShortRealFeatures, float32_t, "f\0", NPY_FLOAT32)
+	%template(ShortRealFeatures) CDenseFeatures<float32_t>;
+	EXTEND_DENSEFEATURES(ShortRealFeatures, float32_t, NPY_FLOAT32)
 #endif
 
 #ifdef USE_FLOAT64
-	PYPROTO_DENSEFEATURES(RealFeatures, float64_t, "d\0", NPY_FLOAT64)
+	PROTOCOLS_DENSEFEATURES(RealFeatures, float64_t, "d\0", NPY_FLOAT64)
 	%template(RealFeatures) CDenseFeatures<float64_t>;
+	EXTEND_DENSEFEATURES(RealFeatures, float64_t, NPY_FLOAT64)
 #endif
 }
 
