@@ -19,7 +19,7 @@ dump <- sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width)
 
 dump <- sg('set_labels', 'TRAIN', label_train)
 
-dump <- sg('new_regression', 'KernelRidgeRegression')
+dump <- sg('new_regression', 'KERNELRIDGEREGRESSION')
 dump <- sg('krr_tau', tau)
 dump <- sg('c', C)
 dump <- sg('train_regression')

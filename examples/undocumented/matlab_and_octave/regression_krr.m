@@ -16,7 +16,7 @@ tau=1.2;
 sg('set_features', 'TRAIN', fm_train);
 sg('set_kernel', 'GAUSSIAN', 'REAL', size_cache, width);
 sg('set_labels', 'TRAIN', label_train);
-sg('new_regression', 'KernelRidgeRegression');
+sg('new_regression', 'KERNELRIDGEREGRESSION');
 sg('krr_tau', tau);
 sg('c', C);
 
