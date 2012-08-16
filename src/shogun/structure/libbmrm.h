@@ -112,7 +112,7 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
 
 /** Standard BMRM Solver for Structured Output Learning
  *
- * @param model			Pointer to user data passed to risk function
+ * @param model			Pointer to user defined CStructuredModel
  * @param W				Weight vector
  * @param TolRel		Relative tolerance
  * @param TolAbs		Absolute tolerance

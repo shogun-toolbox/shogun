@@ -22,11 +22,11 @@ namespace shogun
 	/** Proximal Point P-BMRM (multiple cutting plane models) Solver for
 	 * 	Structured Output Learning
 	 *
-	 * @param model			Pointer to user data passed to risk function
+	 * @param model			Pointer to user defined CStructuredModel
 	 * @param W				Weight vector
 	 * @param TolRel		Relative tolerance
 	 * @param TolAbs		Absolute tolerance
-	 * @param lambda		Regularization constant
+	 * @param _lambda		Regularization constant
 	 * @param _BufSize		Size of the CP buffer (i.e. maximal number of iterations)
 	 * @param cleanICP		Flag that enables/disables inactive cutting plane removal
 	 * 						feature
