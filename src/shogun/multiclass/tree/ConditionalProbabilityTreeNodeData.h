@@ -16,11 +16,17 @@ namespace shogun
 
 struct ConditionalProbabilityTreeNodeData
 {
+	/** labels */
 	int32_t label;
-	float64_t p_right; // prob of right subtree, used in prediction
+	/** prob of right subtree used in prediction */
+	float64_t p_right;
 
-	ConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
+	/** constructor */
+	ConditionalProbabilityTreeNodeData(): label(-1), p_right(0) 
+	{
+	}
 
+	/** print data */
 	static void print_data(const ConditionalProbabilityTreeNodeData &data)
 	{
 		SG_SPRINT("label=%d\n", data.label);
