@@ -42,10 +42,6 @@ CLinearLatentMachine::~CLinearLatentMachine()
 	SG_UNREF(m_model);
 }
 
-CLatentLabels* CLinearLatentMachine::apply()
-{
-}
-
 CLatentLabels* CLinearLatentMachine::apply(CFeatures* data)
 {
 	if (m_model == NULL)
