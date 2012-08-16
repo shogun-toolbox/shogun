@@ -12,7 +12,7 @@
  *--------------------------------------------------------------------- */
 
 #include <shogun/lib/common.h>
-#include <shogun/structure/RiskFunction.h>
+#include <shogun/structure/StructuredModel.h>
 
 #ifndef libbmrm_h
 #define libbmrm_h
@@ -112,7 +112,7 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
 
 /** Standard BMRM Solver for Structured Output Learning
  *
- * @param data			Pointer to user data passed to risk function
+ * @param model			Pointer to user data passed to risk function
  * @param W				Weight vector
  * @param TolRel		Relative tolerance
  * @param TolAbs		Absolute tolerance
@@ -126,22 +126,20 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
  * @param K				Parameter K
  * @param Tmax			Parameter Tmax
  * @param verbose		Flag that enables/disables screen output
- * @param risk_function	Pointer to risk function
  * @return Structure with BMRM algorithm result
  */
 bmrm_return_value_T svm_bmrm_solver(
-		void        *data,
-		float64_t   *W,
-		float64_t   TolRel,
-		float64_t   TolAbs,
-		float64_t   lambda,
-		uint32_t    _BufSize,
-		bool        cleanICP,
-		uint32_t    cleanAfter,
-		float64_t   K,
-		uint32_t    Tmax,
-		bool        verbose,
-		CRiskFunction* risk_function
+		CStructuredModel *model,
+		float64_t        *W,
+		float64_t        TolRel,
+		float64_t        TolAbs,
+		float64_t        lambda,
+		uint32_t         _BufSize,
+		bool             cleanICP,
+		uint32_t         cleanAfter,
+		float64_t        K,
+		uint32_t         Tmax,
+		bool             verbose
 		);
 
 }

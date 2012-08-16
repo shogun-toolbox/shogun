@@ -12,7 +12,6 @@
 #define _DUALLIBQPBMSOSVM__H__
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/structure/RiskFunction.h>
 #include <shogun/structure/libbmrm.h>
 #include <shogun/features/DotFeatures.h>
 
@@ -57,8 +56,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 * @param labs			Structured labels
 		 * @param features		Feature vectors
 		 * @param lambda		Regularization constant
-		 * @param risk_function	Risk function
-		 * @param risk_data		Data provided passed to risk function
 		 * @param W				initial solution of weight vector
 		 */
 		CDualLibQPBMSOSVM(
@@ -67,8 +64,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 				CStructuredLabels* 		labs,
 				CDotFeatures* 			features,
 				float64_t 				lambda,
-				CRiskFunction* 			risk_function,
-				CRiskData* 				risk_data,
 				SGVector< float64_t > 	W=0);
 
 		/** destructor */
@@ -233,9 +228,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 	private:
 
-		/** risk user data */
-		CRiskData* m_risk_data;
-
 		/** lambda */
 		float64_t m_lambda;
 
@@ -265,9 +257,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** verbose */
 		bool m_verbose;
-
-		/** Risk function */
-		CRiskFunction* m_risk_function;
 
 		/** BMRM result */
 		bmrm_return_value_T m_result;

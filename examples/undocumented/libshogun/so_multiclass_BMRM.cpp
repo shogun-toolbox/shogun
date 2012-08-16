@@ -21,7 +21,6 @@
 #include <shogun/structure/MulticlassSOLabels.h>
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/structure/MulticlassRiskFunction.h>
 #include <shogun/io/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
 
@@ -134,17 +133,6 @@ int main(int argc, char * argv[])
 	// Create loss function
 	CHingeLoss* loss = new CHingeLoss();
 
-	// Create risk function
-	CMulticlassRiskFunction* risk = new CMulticlassRiskFunction();
-
-	// Create risk data
-	CMulticlassRiskData* risk_data =
-		new CMulticlassRiskData(
-				features,
-				labels,
-				model->get_dim(),
-				features->get_num_vectors());
-
 	// Create SO-SVM
 	CDualLibQPBMSOSVM* sosvm =
 		new CDualLibQPBMSOSVM(
@@ -152,9 +140,7 @@ int main(int argc, char * argv[])
 				loss,
 				labels,
 				features,
-				lambda,
-				risk,
-				risk_data);
+				lambda);
 	SG_REF(sosvm);
 
 	sosvm->set_cleanAfter(10);
