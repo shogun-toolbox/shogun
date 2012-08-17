@@ -3504,7 +3504,7 @@ EOF
 		fi
 
 		echocheck "Mosek support"
-		if cxx_check $MOSEK_LDADD
+		if cxx_check $MOSEK_LDADD -lpthread
 		then
 			echores "yes"
 			USE_MOSEK='#define USE_MOSEK 1'
