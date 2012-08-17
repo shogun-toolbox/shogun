@@ -14,7 +14,6 @@
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/GradientResult.h>
-#include <shogun/modelselection/ModelSelectionOutput.h>
 
 namespace shogun
 {
