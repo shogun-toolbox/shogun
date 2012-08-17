@@ -123,7 +123,7 @@ void test_multiclass_mkl_cv()
 	cross->set_conf_int_alpha(0.05);
 
 	/* perform x-val and print result */
-	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
 	SG_SPRINT("mean of %d %d-fold x-val runs: %f\n", n_runs, n_folds,
 			result->mean);
 

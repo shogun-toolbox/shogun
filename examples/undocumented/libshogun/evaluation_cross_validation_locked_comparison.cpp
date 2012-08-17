@@ -103,7 +103,7 @@ void test_cross_validation()
 	cross->set_num_runs(5);
 	cross->set_conf_int_alpha(0.05);
 
-	CrossValidationResult* tmp;
+	CCrossValidationResult* tmp;
 	/* no locking */
 	index_t repetitions=5;
 	SG_SPRINT("unlocked x-val\n");
@@ -113,7 +113,7 @@ void test_cross_validation()
 	time.start();
 	for (index_t i=0; i<repetitions; ++i)
 	{
-		tmp = (CrossValidationResult*)cross->evaluate();
+		tmp = (CCrossValidationResult*)cross->evaluate();
 		SG_UNREF(tmp);
 	}
 
@@ -127,7 +127,7 @@ void test_cross_validation()
 	
 	for (index_t i=0; i<repetitions; ++i)
         {
-                tmp = (CrossValidationResult*)cross->evaluate();
+                tmp = (CCrossValidationResult*)cross->evaluate();
                 SG_UNREF(tmp);
         }
 
@@ -141,7 +141,7 @@ void test_cross_validation()
 	
         for (index_t i=0; i<repetitions; ++i)
         {
-                tmp = (CrossValidationResult*)cross->evaluate();
+                tmp = (CCrossValidationResult*)cross->evaluate();
                 SG_UNREF(tmp);
         }
 
