@@ -44,7 +44,7 @@
 %rename(GradientEvaluation) CGradientEvaluation;
 %rename(MulticlassOVREvaluation) CMulticlassOVREvaluation;
 %rename(CrossValidationOutput) CCMulticlassOVREvaluation;
-
+%rename(CrossValidationResult) CCrossValidationResult;
 
 
 /* Include Class Headers to make them visible from within the target language */

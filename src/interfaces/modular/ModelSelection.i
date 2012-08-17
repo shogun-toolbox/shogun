@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
  
-SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
+SERIALIZABLE_DUMMY(shogun::CCrossValidationResult);
 
 /* These functions return new Objects */
 %newobject *::select_model();
