@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
  
-SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
+SERIALIZABLE_DUMMY(shogun::CCrossValidationResult);
 
 /* These functions return new Objects */
 %newobject *::select_model();
@@ -24,11 +24,9 @@ SERIALIZABLE_DUMMY(shogun::CrossValidationResult);
 %rename(RandomSearchModelSelection) CRandomSearchModelSelection;
 %rename(GradientModelSelection) CGradientModelSelection;
 %rename(ModelSelectionBase) CModelSelection;
-%rename(ModelSelectionOutput) CModelSelectionOutput;
 %rename(ModelSelectionParameters) CModelSelectionParameters;
 %rename(ParameterCombination) CParameterCombination;
 
-%include <shogun/modelselection/ModelSelectionOutput.h>
 %include <shogun/modelselection/ModelSelection.h>
 %include <shogun/modelselection/GridSearchModelSelection.h>
 %include <shogun/modelselection/RandomSearchModelSelection.h>
