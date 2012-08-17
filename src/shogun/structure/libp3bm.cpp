@@ -746,6 +746,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		cp_ptr2=cp_ptr;
 		cp_ptr=cp_ptr->next;
 		LIBBMRM_FREE(cp_ptr2);
+		cp_ptr2 = NULL;
 	}
 
 cleanup:
@@ -773,8 +774,10 @@ cleanup:
 	LIBBMRM_FREE(H2);
 	LIBBMRM_FREE(C);
 	LIBBMRM_FREE(S);
-	LIBBMRM_FREE(cp_list);
 	LIBBMRM_FREE(Rt);
+
+	if (cp_list)
+		LIBBMRM_FREE(cp_list);
 
 	for (uint32_t p=0; p<cp_models; ++p)
 	{
