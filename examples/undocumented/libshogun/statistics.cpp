@@ -17,6 +17,72 @@
 
 using namespace shogun;
 
+void test_mean()
+{
+	SGMatrix<float64_t> X(3,5);
+
+	for (index_t i=0; i<X.num_rows*X.num_cols; ++i)
+	{
+		X.matrix[i]=i;
+	}
+	X.display_matrix("X");
+
+	SGVector<float64_t> mean=CStatistics::mean(X, true);
+	mean.display_vector("mean");
+	ASSERT(mean.vlen==5);
+	ASSERT(mean[0]==1);
+	ASSERT(mean[1]==4);
+	ASSERT(mean[2]==7);
+	ASSERT(mean[3]==10);
+	ASSERT(mean[4]==13);
+
+	float64_t mean2=CStatistics::mean(mean);
+	ASSERT(mean2==7);
+
+	mean=CStatistics::mean(X, false);
+	mean.display_vector("mean");
+	ASSERT(mean.vlen==3);
+	ASSERT(mean[0]==6);
+	ASSERT(mean[1]==7);
+	ASSERT(mean[2]==8);
+
+	mean2=CStatistics::mean(mean);
+	ASSERT(mean2==7);
+}
+
+void test_variance()
+{
+	SGMatrix<float64_t> X(3,5);
+
+	for (index_t i=0; i<X.num_rows*X.num_cols; ++i)
+	{
+		X.matrix[i]=i;
+	}
+	X.display_matrix("X");
+
+	SGVector<float64_t> var=CStatistics::variance(X, true);
+	var.display_vector("variance");
+	ASSERT(var.vlen==5);
+	ASSERT(var[0]==1);
+	ASSERT(var[1]==1);
+	ASSERT(var[2]==1);
+	ASSERT(var[3]==1);
+	ASSERT(var[4]==1);
+
+	float64_t var2=CStatistics::variance(var);
+	ASSERT(var2==0);
+
+	var=CStatistics::variance(X, false);
+	var.display_vector("variance");
+	ASSERT(var.vlen==3);
+	ASSERT(var[0]==22.5);
+	ASSERT(var[1]==22.5);
+	ASSERT(var[2]==22.5);
+
+	var2=CStatistics::variance(var);
+	ASSERT(var2==0);
+}
+
 void test_confidence_intervals()
 {
 	int32_t data_size=100;
@@ -244,6 +310,8 @@ int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
 
+	test_mean();
+	test_variance();
 	test_confidence_intervals();
 	test_inverse_student_t();
 	test_incomplete_gamma();
