@@ -23,5 +23,7 @@
  #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
  #include <shogun/evaluation/CrossValidationSplitting.h>
  #include <shogun/evaluation/CrossValidationOutput.h>
+ #include <shogun/evaluation/CrossValidationPrintOutput.h>
+ #include <shogun/evaluation/CrossValidationMKLStorage.h>
 %}
 
