@@ -17,6 +17,7 @@
 #include <shogun/evaluation/CrossValidationMKLStorage.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -103,7 +104,14 @@ void test_mkl_cross_validation()
 	CEvaluationResult* result=cross->evaluate();
 
 	/* print mkl weights */
-	mkl_storage->get_mkl_weights().display_matrix("mkl weights");
+	SGMatrix<float64_t> weights=mkl_storage->get_mkl_weights();
+	weights.display_matrix("mkl weights");
+
+	/* print mean and variance of each kernel weight. These could for example
+	 * been used to compute confidence intervals */
+	CStatistics::mean(weights, false).display_vector("mean per kernel");
+	CStatistics::variance(weights, false).display_vector("variance per kernel");
+	CStatistics::std_deviation(weights, false).display_vector("std-dev per kernel");
 
 	/* clean up */
 	SG_UNREF(result);
