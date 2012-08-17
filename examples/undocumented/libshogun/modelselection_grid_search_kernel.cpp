@@ -153,10 +153,10 @@ int main(int argc, char **argv)
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
-	CrossValidationResult* result=(CrossValidationResult*)cross->evaluate();
+	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
 
 	SG_SPRINT("result: ");
 	result->print_result();
@@ -167,10 +167,10 @@ int main(int argc, char **argv)
 	best_combination=grid_search->select_model(print_state);
 	best_combination->apply_to_machine(classifier);
 	SG_UNREF(result);
-	result=(CrossValidationResult*)cross->evaluate();
+	result=(CCrossValidationResult*)cross->evaluate();
 	
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_SERROR("Evaluation result is not of type CrossValidationResult!");
+		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
 	
 	SG_SPRINT("result (unlocked): ");
 
