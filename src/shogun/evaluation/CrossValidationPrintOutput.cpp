@@ -37,6 +37,12 @@ void CCrossValidationPrintOutput::update_run_index(index_t run_index,
 	SG_PRINT("%scross validation run %d\n", prefix, run_index);
 }
 
+void CCrossValidationPrintOutput::update_fold_index(index_t fold_index,
+		const char* prefix)
+{
+	SG_PRINT("%sfold %d\n", prefix, fold_index);
+}
+
 void CCrossValidationPrintOutput::update_train_indices(
 		SGVector<index_t> indices, const char* prefix)
 {
