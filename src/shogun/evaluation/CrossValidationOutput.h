@@ -13,52 +13,107 @@
 #define __CROSSVALIDATIONOUTPUT_H_
 
 #include <shogun/base/SGObject.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/evaluation/Evaluation.h>
 
 namespace shogun
 {
 
-/**
- * @brief */
+class CMachine;
+class CLabels;
+class CEvaluation;
+
+/** @brief Class for managing individual folds in cross-validation.
+ *
+ * In often is desired to print/save informations that occur during individual
+ * folds in cross-validation, such as indices, parameters of underlying
+ * machine etc. This abstract base class might be called from the
+ * CCrossValidation class after each fold in order to collect these things.
+ * Different implementations then could output the informations, or even store
+ * them to make them accessible later. Since is different for every underlying
+ * machine, individual sub-classes have to handle this separately.
+ * When writing new subclasses, try to make the design as inheritance based
+ * as possible, such that future sub-sub-classes can use yours.
+ */
 class CCrossValidationOutput: public CSGObject
 {
 public:
 
 	/** constructor */
-	CCrossValidationOutput();
+	CCrossValidationOutput() : CSGObject() {}
 
 	/** destructor */
-	virtual ~CCrossValidationOutput();
+	virtual ~CCrossValidationOutput() {}
 
-	/** get name */
-	virtual const char* get_name() const { return "ModelSelectionOutput"; }
+	/** @return name of SG_SERIALIZABLE */
+	virtual const char* get_name() const=0;
 
-	/** output train indices */
-	void output_train_indices(SGVector<index_t> indices);
-	/** output test indices */
-	void output_test_indices(SGVector<index_t> indices);
-	/** output trained machine */
-	void output_trained_machine(CMachine* machine);
-	/** output test result */
-	void output_test_result(CLabels* results);
-	/** output test true result */
-	void output_test_true_result(CLabels* results);
-	/** output evaluate result */
-	void output_evaluate_result(float64_t result);
+	/** init number of runs (called once)
+	 *
+	 * @param num_runs number of runs that will be performed
+	 * @param prefix prefix for output
+	 */
+	virtual void init_num_runs(index_t num_runs, const char* prefix="")=0;
 
-	/** add custom evaluation */
-	void add_custom_evaluation(CEvaluation* evaluation);
-	/** output custom evaluations */
-	void output_custom_evaluations(CLabels* results, CLabels* truth);
+	/** init number of folds
+	 * @param num_folds number of folds that will be performed
+	 * @param prefix prefix for output
+	 */
+	virtual void init_num_folds(index_t num_folds, const char* prefix="")=0;
 
-protected:
+	/** update run index
+	 *
+	 * @param run_index index of current run
+	 * @param prefix prefix for output
+	 */
+	virtual void update_run_index(index_t run_index,
+			const char* prefix="")=0;
 
-	/** custom evaluations */
-	CDynamicObjectArray* m_custom_evaluations;
+	/** update train indices
+	 *
+	 * @param indices indices used for training
+	 * @param prefix prefix for output
+	 */
+	virtual void update_train_indices(SGVector<index_t> indices,
+			const char* prefix="")=0;
 
+	/** update test indices
+	 *
+	 * @param indices indices used for testing/validation
+	 * @param prefix prefix for output
+	 */
+	virtual void update_test_indices(SGVector<index_t> indices,
+			const char* prefix="")=0;
+
+	/** update trained machine
+	 *
+	 * @param machine trained machine instance
+	 * @param prefix prefix for output
+	 */
+	virtual void update_trained_machine(CMachine* machine,
+			const char* prefix="")=0;
+
+	/** update test result
+	 *
+	 * @param results result labels for test/validation run
+	 * @param prefix prefix for output
+	 */
+	virtual void update_test_result(CLabels* results,
+			const char* prefix="")=0;
+
+	/** update test true result
+	 *
+	 * @param results ground truth labels for test/validation run
+	 * @param prefix prefix for output
+	 */
+	virtual void update_test_true_result(CLabels* results,
+			const char* prefix="")=0;
+
+	/** update evaluate result
+	 *
+	 * @param result evaluation result
+	 * @param prefix prefix for output
+	 */
+	virtual void update_evaluation_result(float64_t result,
+			const char* prefix="")=0;
 };
 
 }
