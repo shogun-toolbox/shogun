@@ -46,7 +46,7 @@
 %rename(CrossValidationResult) CCrossValidationResult;
 %rename(CrossValidationOutput) CCrossValidationOutput;
 %rename(CrossValidationPrintOutput) CCrossValidationPrintOutput;
-
+%rename(CrossValidationMKLStorage) CCrossValidationMKLStorage;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/EvaluationResult.h>
@@ -74,3 +74,4 @@
 %include <shogun/evaluation/CrossValidationSplitting.h>
 %include <shogun/evaluation/CrossValidationOutput.h>
 %include <shogun/evaluation/CrossValidationPrintOutput.h>
+%include <shogun/evaluation/CrossValidationMKLStorage.h>
