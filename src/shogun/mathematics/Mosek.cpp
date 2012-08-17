@@ -238,7 +238,8 @@ MSKrescodee CMosek::wrapper_putaveclist(
 	for ( index_t i = 0 ; i < A.num_rows-1 ; ++i )
 		ptre[i] = ptrb[i+1];
 
-	ptre[A.num_rows-1] = nnza;
+	if ( A.num_rows > 0 )
+		ptre[A.num_rows-1] = nnza;
 
 	MSKrescodee ret = MSK_putaveclist(task, MSK_ACC_CON, A.num_rows, sub.vector,
 			ptrb.vector, ptre.vector,
