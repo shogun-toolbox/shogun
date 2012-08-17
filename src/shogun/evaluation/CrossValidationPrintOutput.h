@@ -57,6 +57,14 @@ public:
 	virtual void update_run_index(index_t run_index,
 			const char* prefix="");
 
+	/** update fold index
+	 *
+	 * @param fold_index index of current run
+	 * @param prefix prefix for output
+	 */
+	virtual void update_fold_index(index_t fold_index,
+			const char* prefix="");
+
 	/** update train indices
 	 *
 	 * @param indices indices used for training
