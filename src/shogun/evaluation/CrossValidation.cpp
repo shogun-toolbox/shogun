@@ -217,6 +217,17 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
+			/* evtl. update xvalidation output class */
+			CCrossValidationOutput* current=(CCrossValidationOutput*)
+					m_xval_outputs->get_first_element();
+			while (current)
+			{
+				current->update_fold_index(i);
+				SG_UNREF(current);
+				current=(CCrossValidationOutput*)
+						m_xval_outputs->get_next_element();
+			}
+
 			/* index subset for training, will be freed below */
 			SGVector<index_t> inverse_subset_indices =
 					m_splitting_strategy->generate_subset_inverse(i);
@@ -229,8 +240,7 @@ float64_t CCrossValidation::evaluate_one_run()
 					m_splitting_strategy->generate_subset_indices(i);
 
 			/* evtl. update xvalidation output class */
-			CCrossValidationOutput* current=(CCrossValidationOutput*)
-					m_xval_outputs->get_first_element();
+			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
 			while (current)
 			{
 				current->update_train_indices(inverse_subset_indices, "\t");
@@ -283,6 +293,17 @@ float64_t CCrossValidation::evaluate_one_run()
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
+			/* evtl. update xvalidation output class */
+			CCrossValidationOutput* current=(CCrossValidationOutput*)
+					m_xval_outputs->get_first_element();
+			while (current)
+			{
+				current->update_fold_index(i);
+				SG_UNREF(current);
+				current=(CCrossValidationOutput*)
+						m_xval_outputs->get_next_element();
+			}
+
 			/* set feature subset for training */
 			SGVector<index_t> inverse_subset_indices=
 					m_splitting_strategy->generate_subset_inverse(i);
@@ -310,8 +331,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			SG_DEBUG("finished training\n");
 
 			/* evtl. update xvalidation output class */
-			CCrossValidationOutput* current=(CCrossValidationOutput*)
-					m_xval_outputs->get_first_element();
+			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
 			while (current)
 			{
 				current->update_train_indices(inverse_subset_indices, "\t");
