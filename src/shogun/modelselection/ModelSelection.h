@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -13,7 +13,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/evaluation/MachineEvaluation.h>
-#include <shogun/modelselection/ModelSelectionOutput.h>
 
 namespace shogun
 {
@@ -50,9 +49,6 @@ public:
 	 */
 	virtual CParameterCombination* select_model(bool print_state=false)=0;
 
-	/** set model selection output */
-	void set_ms_output(CModelSelectionOutput* ms_output);
-
 private:
 
 	/*Initializer*/
@@ -63,8 +59,6 @@ protected:
 	CModelSelectionParameters* m_model_parameters;
 	/** cross validation */
 	CMachineEvaluation* m_machine_eval;
-	/** output */
-	CModelSelectionOutput* m_ms_output;
 };
 
 }

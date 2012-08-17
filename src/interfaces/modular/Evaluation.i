@@ -43,7 +43,8 @@
 %rename(GradientCriterion) CGradientCriterion;
 %rename(GradientEvaluation) CGradientEvaluation;
 %rename(MulticlassOVREvaluation) CMulticlassOVREvaluation;
-
+%rename(CrossValidationOutput) CCMulticlassOVREvaluation;
+%rename(CrossValidationResult) CCrossValidationResult;
 
 
 /* Include Class Headers to make them visible from within the target language */
@@ -70,3 +71,4 @@
 %include <shogun/evaluation/MulticlassOVREvaluation.h>
 %include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 %include <shogun/evaluation/CrossValidationSplitting.h>
+%include <shogun/evaluation/CrossValidationOutput.h>
