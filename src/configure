@@ -3495,13 +3495,21 @@ int main(int argc, char **argv)
 	MSK_makeenv(&m_env, NULL, NULL, NULL, NULL);
 }
 EOF
+		MOSEK_LDADD="-liomp5"
+		if x86_64
+		then
+			MOSEK_LDADD="$MOSEK_LDADD -lmosek64"
+		else
+			MOSEK_LDADD="$MOSEK_LDADD -lmosek"
+		fi
+
 		echocheck "Mosek support"
-		if cxx_check -lmosek
+		if cxx_check $MOSEK_LDADD
 		then
 			echores "yes"
 			USE_MOSEK='#define USE_MOSEK 1'
 			DEFINES="$DEFINES -DUSE_MOSEK"
-			POSTLINKFLAGS="$POSTLINKFLAGS -lmosek"
+			POSTLINKFLAGS="$POSTLINKFLAGS $MOSEK_LDADD"
 		else
 			if test "$_mosek" = yes
 			then 
