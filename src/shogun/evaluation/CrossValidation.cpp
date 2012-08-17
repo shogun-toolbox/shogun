@@ -16,6 +16,7 @@
 #include <shogun/base/ParameterMap.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/evaluation/CrossValidationOutput.h>
+#include <shogun/lib/List.h>
 
 using namespace shogun;
 
@@ -44,23 +45,25 @@ CCrossValidation::CCrossValidation(CMachine* machine, CLabels* labels,
 
 CCrossValidation::~CCrossValidation()
 {
-
+	SG_UNREF(m_xval_outputs);
 }
 
 void CCrossValidation::init()
 {
 	m_num_runs=1;
 	m_conf_int_alpha=0;
-	m_xval_output=NULL;
+
+	/* do reference counting for output objects */
+	m_xval_outputs=new CList(true);
 
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions",
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_conf_int_alpha, "conf_int_alpha", "alpha-value "
 			"of confidence interval", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_xval_output, "xval_output", "Output class for"
-			" intermediade cross-validation results", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_xval_outputs, "m_xval_outputs", "List of output "
+			"classes for intermediade cross-validation results",
+			MS_NOT_AVAILABLE);
 }
-
 
 CEvaluationResult* CCrossValidation::evaluate()
 {
@@ -107,10 +110,33 @@ CEvaluationResult* CCrossValidation::evaluate()
 
 	SGVector<float64_t> results(m_num_runs);
 
+	/* evtl. update xvalidation output class */
+	CCrossValidationOutput* current=(CCrossValidationOutput*)
+			m_xval_outputs->get_first_element();
+	while (current)
+	{
+		current->init_num_runs(m_num_runs);
+		current->init_num_folds(m_splitting_strategy->get_num_subsets());
+		SG_UNREF(current);
+		current=(CCrossValidationOutput*)
+				m_xval_outputs->get_next_element();
+	}
+
 	/* perform all the x-val runs */
 	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs);
 	for (index_t i=0; i <m_num_runs; ++i)
 	{
+
+		/* evtl. update xvalidation output class */
+		current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
+		while (current)
+		{
+			current->update_run_index(i);
+			SG_UNREF(current);
+			current=(CCrossValidationOutput*)
+					m_xval_outputs->get_next_element();
+		}
+
 		SG_DEBUG("entering cross-validation run %d \n", i);
 		results[i]=evaluate_one_run();
 		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i]);
@@ -203,10 +229,15 @@ float64_t CCrossValidation::evaluate_one_run()
 					m_splitting_strategy->generate_subset_indices(i);
 
 			/* evtl. update xvalidation output class */
-			if (m_xval_output)
+			CCrossValidationOutput* current=(CCrossValidationOutput*)
+					m_xval_outputs->get_first_element();
+			while (current)
 			{
-				m_xval_output->output_train_indices(inverse_subset_indices);
-				m_xval_output->output_trained_machine(m_machine);
+				current->update_train_indices(inverse_subset_indices, "\t");
+				current->update_trained_machine(m_machine, "\t");
+				SG_UNREF(current);
+				current=(CCrossValidationOutput*)
+						m_xval_outputs->get_next_element();
 			}
 
 			/* produce output for desired indices */
@@ -221,13 +252,16 @@ float64_t CCrossValidation::evaluate_one_run()
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
 
 			/* evtl. update xvalidation output class */
-			if (m_xval_output)
+			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
+			while (current)
 			{
-				m_xval_output->output_custom_evaluations(result_labels, m_labels);
-				m_xval_output->output_test_indices(subset_indices);
-				m_xval_output->output_test_result(result_labels);
-				m_xval_output->output_test_true_result(m_labels);
-				m_xval_output->output_evaluate_result(results[i]);
+				current->update_test_indices(subset_indices, "\t");
+				current->update_test_result(result_labels, "\t");
+				current->update_test_true_result(m_labels, "\t");
+				current->update_evaluation_result(results[i], "\t");
+				SG_UNREF(current);
+				current=(CCrossValidationOutput*)
+						m_xval_outputs->get_next_element();
 			}
 
 			/* remove subset to prevent side effects */
@@ -276,10 +310,15 @@ float64_t CCrossValidation::evaluate_one_run()
 			SG_DEBUG("finished training\n");
 
 			/* evtl. update xvalidation output class */
-			if (m_xval_output)
+			CCrossValidationOutput* current=(CCrossValidationOutput*)
+					m_xval_outputs->get_first_element();
+			while (current)
 			{
-				m_xval_output->output_train_indices(inverse_subset_indices);
-				m_xval_output->output_trained_machine(m_machine);
+				current->update_train_indices(inverse_subset_indices, "\t");
+				current->update_trained_machine(m_machine, "\t");
+				SG_UNREF(current);
+				current=(CCrossValidationOutput*)
+						m_xval_outputs->get_next_element();
 			}
 
 			m_features->remove_subset();
@@ -310,17 +349,20 @@ float64_t CCrossValidation::evaluate_one_run()
 
 			/* evaluate */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
+			SG_DEBUG("result on fold %d is %f\n", i, results[i]);
 
 			/* evtl. update xvalidation output class */
-			if (m_xval_output)
+			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
+			while (current)
 			{
-				m_xval_output->output_custom_evaluations(result_labels, m_labels);
-				m_xval_output->output_test_indices(subset_indices);
-				m_xval_output->output_test_result(result_labels);
-				m_xval_output->output_test_true_result(m_labels);
-				m_xval_output->output_evaluate_result(results[i]);
+				current->update_test_indices(subset_indices, "\t");
+				current->update_test_result(result_labels, "\t");
+				current->update_test_true_result(m_labels, "\t");
+				current->update_evaluation_result(results[i], "\t");
+				SG_UNREF(current);
+				current=(CCrossValidationOutput*)
+						m_xval_outputs->get_next_element();
 			}
-			SG_DEBUG("result on fold %d is %f\n", i, results[i]);
 
 			/* clean up, remove subsets */
 			SG_UNREF(result_labels);
@@ -335,4 +377,10 @@ float64_t CCrossValidation::evaluate_one_run()
 
 	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name());
 	return mean;
+}
+
+void CCrossValidation::add_cross_validation_output(
+			CCrossValidationOutput* cross_validation_output)
+{
+	m_xval_outputs->append_element(cross_validation_output);
 }

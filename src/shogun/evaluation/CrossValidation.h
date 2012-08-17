@@ -19,6 +19,7 @@ namespace shogun
 
 class CMachineEvaluation;
 class CCrossValidationOutput;
+class CList;
 
 /** @brief type to encapsulate the results of an evaluation run.
  * May contain confidence interval (if conf_int_alpha!=0).
@@ -145,6 +146,9 @@ public:
 
 	virtual CEvaluationResult* evaluate();
 
+	void add_cross_validation_output(
+			CCrossValidationOutput* cross_validation_output);
+
 	/** @return name of the SGSerializable */
 	inline virtual const char* get_name() const
 	{
@@ -168,7 +172,7 @@ protected:
 	int32_t m_num_runs;
 	float64_t m_conf_int_alpha;
 
-	CCrossValidationOutput* m_xval_output;
+	CList* m_xval_outputs;
 };
 
 }
