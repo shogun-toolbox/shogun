@@ -465,7 +465,8 @@ template<class T> class SGVector : public SGReferencedData
 		void display_size() const;
 
 		/** display vector */
-		void display_vector(const char* name="vector") const;
+		void display_vector(const char* name="vector",
+				const char* prefix="") const;
 
 		/// display vector (useful for debugging)
 		static void display_vector(

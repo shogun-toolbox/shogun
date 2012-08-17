@@ -141,17 +141,17 @@ template<class T> void SGVector<T>::free_data()
 	vlen=0;
 }
 
-template<class T> void SGVector<T>::display_vector(const char* name) const
+template<class T> void SGVector<T>::display_vector(const char* name,
+		const char* prefix) const
 {
-	display_size();
-	display_vector(vector, vlen, name);
+	display_vector(vector, vlen, name, prefix);
 }
 
 template <class T>
 void SGVector<T>::display_vector(const SGVector<T> vector, const char* name,
 		const char* prefix)
 {
-	vector.display_vector();
+	vector.display_vector(prefix);
 }
 
 template <>
