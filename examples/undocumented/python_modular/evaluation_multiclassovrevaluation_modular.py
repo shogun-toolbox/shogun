@@ -3,23 +3,32 @@ from numpy import random
 lm=LoadMatrix()
 
 random.seed(17)
-ground_truth = lm.load_labels('../data/label_train_multiclass.dat')
+import classifier_multiclass_shared
+[traindat, label_traindat, testdat, label_testdat] = classifier_multiclass_shared.prepare_data(False)
 
-parameter_list = [[ground_truth]]
+parameter_list = [[traindat, label_traindat, testdat, label_testdat]]
 
-def evaluation_multiclassovrevaluation_modular(ground_truth):
+def evaluation_multiclassovrevaluation_modular(traindat, label_traindat, testdat, label_testdat):
 	from shogun.Features import MulticlassLabels
-	from shogun.Evaluation import MulticlassAccuracy,ROCEvaluation
+	from shogun.Evaluation import MulticlassOVREvaluation,ROCEvaluation
+	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
 
-	ground_truth_labels = MulticlassLabels(ground_truth)
-	predicted_labels = MulticlassLabels(ground_truth)
+	ground_truth_labels = MulticlassLabels(label_traindat)
+	svm = MulticlassLibLinear(1.0,RealFeatures(traindat),MulticlassLabels(label_traindat))
+	svm.train()
+	predicted_labels = svm.apply()
 	
 	binary_evaluator = ROCEvaluation()
-	evaluator = MulticlassAccuracy(binary_evaluator)
+	evaluator = MulticlassOVREvaluation(binary_evaluator)
 	mean_roc = evaluator.evaluate(predicted_labels,ground_truth_labels)
 	print mean_roc
+	
+	binary_evaluator = ContingencyTableEvaluation(ACCURACY)
+	evaluator = MulticlassOVREvaluation(binary_evaluator)
+	mean_accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
+	print mean_accuracy
 
-	return mean_roc
+	return mean_roc, mean_accuracy
 
 
 if __name__=='__main__':

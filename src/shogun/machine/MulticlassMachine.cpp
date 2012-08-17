@@ -124,7 +124,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 				output_for_i[j] = outputs[j]->get_confidence(i);
 
 			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
-			result->set_multiclass_confidences(i, output_for_i);
+			result->set_multiclass_confidences(i, output_for_i.clone());
 		}
 
 		for (int32_t i=0; i < num_machines; ++i)
