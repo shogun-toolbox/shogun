@@ -126,6 +126,21 @@ SGVector<float64_t> CStatistics::variance(SGMatrix<float64_t> values,
 	return result;
 }
 
+float64_t CStatistics::std_deviation(SGVector<float64_t> values)
+{
+	return CMath::sqrt(variance(values));
+}
+
+SGVector<float64_t> CStatistics::std_deviation(SGMatrix<float64_t> values,
+			bool col_wise)
+{
+	SGVector<float64_t> var=CStatistics::variance(values, col_wise);
+	for (index_t i=0; i<var.vlen; ++i)
+		var[i]=CMath::sqrt(var[i]);
+
+	return var;
+}
+
 #ifdef HAVE_LAPACK
 SGMatrix<float64_t> CStatistics::covariance_matrix(
 		SGMatrix<float64_t> observations, bool in_place)
@@ -150,10 +165,6 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 	return cov;
 }
 #endif //HAVE_LAPACK
-float64_t CStatistics::std_deviation(SGVector<float64_t> values)
-{
-	return CMath::sqrt(variance(values));
-}
 
 float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 		float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up)
@@ -171,7 +182,7 @@ float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 	float64_t t=CMath::abs(inverse_student_t(deg, alpha));
 
 	/* values for calculating confidence interval */
-	float64_t std_dev=std_deviation(values);
+	float64_t std_dev=CStatistics::std_deviation(values);
 	float64_t mean=CStatistics::mean(values);
 
 	/* compute confidence interval */

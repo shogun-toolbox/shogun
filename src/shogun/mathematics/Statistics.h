@@ -50,6 +50,16 @@ public:
 	 */
 	static float64_t variance(SGVector<float64_t> values);
 
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
+	 *
+	 * @param values vector of values
+	 * @return variance of given values
+	 */
+	static float64_t std_deviation(SGVector<float64_t> values);
+
 	/** Calculates mean of given values. Given \f$\{x_1, ..., x_m\}\f$, this
 	 * is \f$\frac{1}{m}\sum_{i=1}^m x_i\f$
 	 *
@@ -78,6 +88,21 @@ public:
 	static SGVector<float64_t> variance(SGMatrix<float64_t> values,
 			bool col_wise=true);
 
+	/** Calculates unbiased empirical standard deviation estimator of given
+	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
+	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
+	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
+	 *
+	 * Computes the variance for each row/col of matrix
+	 *
+	 * @param values vector of values
+	 * @param col_wise if true, every column vector will be used, row vectors
+	 * otherwise
+	 * @return variance of given values
+	 */
+	static SGVector<float64_t> std_deviation(SGMatrix<float64_t> values,
+			bool col_wise=true);
+
 #ifdef HAVE_LAPACK
 	/** Computes the empirical estimate of the covariance matrix of the given
 	 * data which is organized as num_cols variables with num_rows observations.
@@ -99,16 +124,6 @@ public:
 	static SGMatrix<float64_t> covariance_matrix(
 			SGMatrix<float64_t> observations, bool in_place=false);
 #endif //HAVE_LAPACK
-
-	/** Calculates unbiased empirical standard deviation estimator of given
-	 * values. Given \f$\{x_1, ..., x_m\}\f$, this is
-	 * \f$\sqrt{\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2}\f$ where
-	 * \f$\bar x=\frac{1}{m}\sum_{i=1}^m x_i\f$
-	 *
-	 * @param values vector of values
-	 * @return variance of given values
-	 */
-	static float64_t std_deviation(SGVector<float64_t> values);
 
 	/** Calculates the sample mean of a given set of samples and also computes
 	 * the confidence interval for the actual mean for a given p-value,
