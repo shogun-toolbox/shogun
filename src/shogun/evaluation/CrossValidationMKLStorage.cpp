@@ -30,19 +30,39 @@ void CCrossValidationMKLStorage::update_trained_machine(
 
 	SGVector<float64_t> w=kernel->get_subkernel_weights();
 
+	/* evtl re-allocate memory (different number of runs from evaluation before) */
+	if (m_mkl_weights.num_rows!=w.vlen ||
+			m_mkl_weights.num_cols!=m_num_folds*m_num_runs)
+	{
+		if (m_mkl_weights.matrix)
+		{
+			SG_DEBUG("deleting memory for mkl weight matrix\n");
+			m_mkl_weights=SGMatrix<float64_t>();
+		}
+	}
+
 	/* evtl allocate memory (first call) */
 	if (!m_mkl_weights.matrix)
 	{
-		SG_PRINT("allocating memory for mkl weight matrix\n");
-		m_mkl_weights=SGMatrix<float64_t>(w.vlen, m_num_folds*m_num_runs);
+		SG_DEBUG("allocating memory for mkl weight matrix\n");
+		m_mkl_weights=SGMatrix<float64_t>(w.vlen,m_num_folds*m_num_runs);
 	}
 
 	/* put current mkl weights into matrix, copy memory vector wise to make
-	 * things fast */
-	index_t n=m_current_run_index*m_current_fold_index;
-	index_t first_idx=n*w.vlen+m_current_fold_index*w.vlen;
+	 * things fast. Compute index of address to where vector goes */
+
+	/* number of runs is w.vlen*m_num_folds shift */
+	index_t run_shift=m_current_run_index*w.vlen*m_num_folds;
+
+	/* fold shift is m_current_fold_index*w-vlen */
+	index_t fold_shift=m_current_fold_index*w.vlen;
+
+	/* add both index shifts */
+	index_t first_idx=run_shift+fold_shift;
 	SG_DEBUG("run %d, fold %d, matrix index %d\n",m_current_run_index,
 			m_current_fold_index, first_idx);
+
+	/* copy memory */
 	memcpy(&m_mkl_weights.matrix[first_idx], w.vector,
 			w.vlen*sizeof(float64_t));
 
