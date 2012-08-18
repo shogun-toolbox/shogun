@@ -65,7 +65,7 @@ void CCrossValidation::init()
 			MS_NOT_AVAILABLE);
 }
 
-CEvaluationResult* CCrossValidation::evaluate()
+CCrossValidationResult* CCrossValidation::evaluate()
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name());
 
