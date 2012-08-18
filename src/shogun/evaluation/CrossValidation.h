@@ -67,6 +67,26 @@ class CCrossValidationResult : public CEvaluationResult
 				SG_SPRINT("%f\n", mean);
 		}
 
+		float64_t get_mean()
+		{
+			return mean;
+		}
+
+		float64_t get_conf_int_low()
+		{
+			return conf_int_low;
+		}
+
+		float64_t get_conf_int_up()
+		{
+			return conf_int_up;
+		}
+
+		float64_t get_conf_int_alpha()
+		{
+			return conf_int_alpha;
+		}
+
 	public:
 		/** mean */
 		float64_t mean;
@@ -144,7 +164,7 @@ public:
 	/** setter for the number of runs to use for evaluation */
 	void set_conf_int_alpha(float64_t m_conf_int_alpha);
 
-	virtual CEvaluationResult* evaluate();
+	virtual CCrossValidationResult* evaluate();
 
 	void add_cross_validation_output(
 			CCrossValidationOutput* cross_validation_output);
