@@ -99,8 +99,6 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 			regularizer += lambda2*fuse;
 		}
 		break;
-		default:
-			SG_SERROR("WHOA?\n");
 	}
 	return regularizer;
 };
@@ -126,7 +124,7 @@ double compute_lambda(
 	else 
 		q_bar = options.q/(options.q-1);
 
-	SG_SDEBUG("q bar = %f \n",q_bar);
+	SG_SINFO("q bar = %f \n",q_bar);
 
 	switch (options.mode)
 	{
@@ -244,6 +242,7 @@ double compute_lambda(
 				
 				sum = CMath::pow(sum, 1.0/q_bar);
 				sum /= options.gWeight[t];
+				SG_SINFO("sum = %f\n",sum);
 				if (sum>lambda_max)
 					lambda_max = sum;
 			}
@@ -271,7 +270,7 @@ double compute_lambda(
 		break;
 	}
 
-	SG_SINFO("Computed lambda = %f\n",z*lambda_max);
+	SG_SINFO("Computed lambda = %f * %f = %f\n",z,lambda_max,z*lambda_max);
 	return z*lambda_max;
 }
 
@@ -290,7 +289,7 @@ void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, 
 				altra_mt(w, v, n_feats, n_blocks, options.ind_t, options.n_nodes, lambda/L);
 		break;
 		case FEATURE_GROUP:
-			eppVector(w, v, options.ind, n_blocks, n_feats, options.gWeight, lambda/L, CMath::max(options.q,1e6));
+			eppVector(w, v, options.ind, n_blocks, n_feats, options.gWeight, lambda/L, options.q > 1e6 ? 1e6 : options.q);
 		break;
 		case FEATURE_TREE:
 			if (options.general)
@@ -317,6 +316,17 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
                                            double* g, double* gc,
                                            const slep_options& options)
 {
+	int n_pos = 0;
+	int n_neg = 0;
+	for (int i=0; i<n_vecs; i++)
+	{
+		if (y[i]>0)
+			n_pos++;
+		else
+			n_neg++;
+	}
+	double pos_weight = double(n_pos)/n_vecs;
+	double neg_weight = double(n_neg)/n_vecs;
 	double fun_s = 0.0;
 	//SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs));
 	//SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks));
@@ -366,8 +376,21 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 						double aa = -y[i]*(As[i]+sc[0]);
 						double bb = CMath::max(aa,0.0);
 						fun_s += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
+						/*
+						if (y[i]>0)
+							fun_s += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)*pos_weight;
+						else
+							fun_s += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)*neg_weight;
+						*/
 						double prob = 1.0/(1.0+CMath::exp(aa));
-						double b = -y[i]*(1.0-prob) / n_vecs;
+						//double b = 0;
+						double b = -y[i]*(1.0-prob)/n_vecs;
+						/*
+						if (y[i]>0)
+							b = -y[i]*(1.0-prob)*pos_weight;
+						else
+							b = -y[i]*(1.0-prob)*neg_weight;
+						*/
 						gc[0] += b;
 						features->add_to_dense_vec(b,i,g,n_feats);
 					}
@@ -382,7 +405,7 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 			}
 		break;
 	}
-	//SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
+	SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
 
 	return fun_s;
 }
@@ -442,7 +465,7 @@ slep_result_t slep_solver(
 
 	SGMatrix<double> w(n_feats,n_tasks);
 	w.zero();
-	SGVector<double> c(n_blocks);
+	SGVector<double> c(n_tasks);
 	c.zero();
 	
 	if (options.last_result)
@@ -508,6 +531,18 @@ slep_result_t slep_solver(
 
 	double* gc = SG_MALLOC(double, n_tasks);
 	
+	int32_t n_pos = 0;
+	int32_t n_neg = 0;
+	for (i=0; i<n_vecs; i++)
+	{
+		if (y[i]>0)
+			n_pos++;
+		else
+			n_neg++;
+	}
+	double pos_weight = double(n_pos)/n_vecs;
+	double neg_weight = double(n_neg)/n_vecs;
+
 	double alphap = 0.0, alpha = 1.0;
 	double fun_x = 0.0;
 	
@@ -543,6 +578,7 @@ slep_result_t slep_solver(
 		{
 			for (i=0; i<n_feats*n_tasks; i++)
 				v[i] = s[i] - g[i]*(1.0/L);
+
 			for (t=0; t<n_tasks; t++)
 				c[t] = sc[t] - gc[t]*(1.0/L);
 			
@@ -583,7 +619,10 @@ slep_result_t slep_solver(
 						{
 							double aa = -y[i]*(Aw[i]+c[0]);
 							double bb = CMath::max(aa,0.0);
-							fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
+							if (y[i]>0)
+								fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);//*pos_weight;
+							else
+								fun_x += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);//*neg_weight;
 						}
 					}
 				break;
@@ -645,7 +684,7 @@ slep_result_t slep_solver(
 			for (i=0; i<n_vecs; i++)
 				func += CMath::sq(Aw[i] - y[i]);
 		}
-		//SG_SDEBUG("Obj = %f + %f * %f = %f \n",fun_x, lambda, regularizer, func);
+		SG_SDEBUG("Obj = %f + %f = %f \n",fun_x, regularizer, func);
 
 		if (gradient_break)
 		{
@@ -661,7 +700,6 @@ slep_result_t slep_solver(
 				if (iter>=2)
 				{
 					step = CMath::abs(func-funcp);
-
 					if (step <= options.tolerance)
 					{
 						SG_SINFO("Objective changes less than tolerance\n");
@@ -706,7 +744,7 @@ slep_result_t slep_solver(
 	}
 	SG_SINFO("Finished %d iterations, objective = %f\n", iter, func);
 
-	SG_FREE(ATx);
+	//SG_FREE(ATx);
 	SG_FREE(wp);
 	SG_FREE(wwp);
 	SG_FREE(s);
