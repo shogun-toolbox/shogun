@@ -316,17 +316,6 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
                                            double* g, double* gc,
                                            const slep_options& options)
 {
-	int n_pos = 0;
-	int n_neg = 0;
-	for (int i=0; i<n_vecs; i++)
-	{
-		if (y[i]>0)
-			n_pos++;
-		else
-			n_neg++;
-	}
-	double pos_weight = double(n_pos)/n_vecs;
-	double neg_weight = double(n_neg)/n_vecs;
 	double fun_s = 0.0;
 	//SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs));
 	//SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks));
@@ -530,19 +519,6 @@ slep_result_t slep_solver(
 	double* ccp = SG_CALLOC(double, n_tasks);
 
 	double* gc = SG_MALLOC(double, n_tasks);
-	
-	int32_t n_pos = 0;
-	int32_t n_neg = 0;
-	for (i=0; i<n_vecs; i++)
-	{
-		if (y[i]>0)
-			n_pos++;
-		else
-			n_neg++;
-	}
-	double pos_weight = double(n_pos)/n_vecs;
-	double neg_weight = double(n_neg)/n_vecs;
-
 	double alphap = 0.0, alpha = 1.0;
 	double fun_x = 0.0;
 	
