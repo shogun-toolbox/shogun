@@ -113,6 +113,22 @@ void test_mkl_cross_validation()
 	CStatistics::variance(weights, false).display_vector("variance per kernel");
 	CStatistics::std_deviation(weights, false).display_vector("std-dev per kernel");
 
+	SG_UNREF(result);
+
+	/* again for two runs */
+	cross->set_num_runs(2);
+	result=cross->evaluate();
+
+	/* print mkl weights */
+	weights=mkl_storage->get_mkl_weights();
+	weights.display_matrix("mkl weights");
+
+	/* print mean and variance of each kernel weight. These could for example
+	 * been used to compute confidence intervals */
+	CStatistics::mean(weights, false).display_vector("mean per kernel");
+	CStatistics::variance(weights, false).display_vector("variance per kernel");
+	CStatistics::std_deviation(weights, false).display_vector("std-dev per kernel");
+
 	/* clean up */
 	SG_UNREF(result);
 	SG_UNREF(cross);
