@@ -181,7 +181,6 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			SGVector<float64_t> new_w(n_feats);
 			for (int i=0; i<n_feats; i++)
 				new_w[i] = result.w[i];
-
 			set_bias(result.c[0]);
 
 			w = new_w;
