@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from shogun.Features import RegressionLabels, RealFeatures
 from shogun.Regression import LeastAngleRegression, LinearRidgeRegression, LeastSquaresRegression
+from shogun.Evaluation import MeanSquaredError
 
 # we compare LASSO with ordinary least-squares (OLE)
 # in the ideal case, the MSE of OLE should coincide
@@ -27,7 +28,7 @@ cov  = correlation*np.ones((p,p)) + (1-correlation)*np.eye(p)
 Xall = np.random.multivariate_normal(mean, cov, n)
 
 # model is the linear combination of the first three variables plus noise
-yall = Xall[:,0] + Xall[:,1] + Xall[:,2] + 2*np.random.randn(n)
+yall = 2*Xall[:,0] + 5*Xall[:,1] + -3*Xall[:,2] + 0.5*np.random.randn(n)
 
 X = Xall[0:ntrain,:]
 y = yall[0:ntrain]
@@ -60,23 +61,25 @@ path = np.zeros((p, LeastAngleRegression.get_path_size()))
 for i in xrange(path.shape[1]):
     path[:,i] = LeastAngleRegression.get_w(i)
 
+evaluator = MeanSquaredError()
+
 # apply on training data
 mse_train = np.zeros(LeastAngleRegression.get_path_size())
 for i in xrange(mse_train.shape[0]):
     LeastAngleRegression.switch_w(i)
-    ypred = LeastAngleRegression.apply(RealFeatures(X.T)).get_labels()
-    mse_train[i] = np.dot(ypred - y, ypred - y) / y.shape[0]
-ypred = lsr.apply(RealFeatures(X.T)).get_labels()
-mse_train_lsr = np.dot(ypred - y, ypred - y) / y.shape[0]
+    ypred = LeastAngleRegression.apply(RealFeatures(X.T))
+    mse_train[i] = evaluator.evaluate(ypred, RegressionLabels(y))
+ypred = lsr.apply(RealFeatures(X.T))
+mse_train_lsr = evaluator.evaluate(ypred, RegressionLabels(y))
 
 # apply on test data
 mse_test = np.zeros(LeastAngleRegression.get_path_size())
 for i in xrange(mse_test.shape[0]):
     LeastAngleRegression.switch_w(i)
-    ypred = LeastAngleRegression.apply(RealFeatures(Xtest.T)).get_labels()
-    mse_test[i] = np.dot(ypred - ytest, ypred - ytest) / ytest.shape[0]
-ypred = lsr.apply(RealFeatures(Xtest.T)).get_labels()
-mse_test_lsr = np.dot(ypred - ytest, ypred - ytest) / ytest.shape[0]
+    ypred = LeastAngleRegression.apply(RealFeatures(Xtest.T))
+    mse_test[i] = evaluator.evaluate(ypred, RegressionLabels(y))
+ypred = lsr.apply(RealFeatures(Xtest.T))
+mse_test_lsr = evaluator.evaluate(ypred, RegressionLabels(y))
 
 fig = plt.figure()
 ax_path = fig.add_subplot(1,2,1)
@@ -86,16 +89,16 @@ plt.xlabel('iteration')
 plt.title('LASSO path')
 
 ax_tr   = fig.add_subplot(2,2,2)
-plt.plot(xrange(mse_train.shape[0]), mse_train, 'k.-')
-plt.plot(xrange(mse_train.shape[0]), np.zeros(mse_train.shape[0]) + mse_train_lsr, 'r-')
+plt.plot(range(mse_train.shape[0])[1:], mse_train[1:], 'k.-')
+plt.plot(range(mse_train.shape[0])[1:], np.zeros(mse_train.shape[0])[1:] + mse_train_lsr, 'r-')
 plt.legend(('LASSO', 'LeastSquares'))
 plt.xlabel('# of non-zero variables')
 plt.ylabel('MSE')
 plt.title('MSE on training data')
 
 ax_tt   = fig.add_subplot(2,2,4)
-plt.plot(xrange(mse_test.shape[0]), mse_test, 'k.-')
-plt.plot(xrange(mse_test.shape[0]), np.zeros(mse_test.shape[0]) + mse_test_lsr, 'r-')
+plt.plot(range(mse_test.shape[0])[1:], mse_test[1:], 'k.-')
+plt.plot(range(mse_test.shape[0])[1:], np.zeros(mse_test.shape[0])[1:] + mse_test_lsr, 'r-')
 plt.legend(('LASSO', 'LeastSquares'), loc='lower right')
 plt.xlabel('# of non-zero variables')
 plt.ylabel('MSE')
