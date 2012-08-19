@@ -25,7 +25,7 @@ class CGradientCriterion: public CEvaluation
 
 public:
 
-	/** Constructor*/
+	/*Constructor*/
 	CGradientCriterion();
 
 	/** destructor */
