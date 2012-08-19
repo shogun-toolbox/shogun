@@ -1,7 +1,7 @@
 #include <vector>
 namespace shogun
 {
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class func_base{
 public:
   virtual double operator() (double) = 0;
@@ -54,5 +54,5 @@ double glomin ( double a, double b, double c, double m, double e, double t,
 double local_min ( double a, double b, double t, double f ( double x ),
   double &x );
 double zero ( double a, double b, double t, double f ( double x ) );
-
+#endif
 }
