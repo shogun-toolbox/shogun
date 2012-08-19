@@ -8,6 +8,7 @@
  */
 
 #include <shogun/regression/gp/GaussianLikelihood.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/modelselection/ParameterCombination.h>
 
 #include <shogun/base/Parameter.h>
@@ -123,5 +124,4 @@ VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels,
 
 	return 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
 }
-
-
+#endif /* HAVE_EIGEN3 */
