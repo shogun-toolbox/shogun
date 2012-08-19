@@ -749,6 +749,8 @@ bmrm_return_value_T svm_p3bm_solver(
 		cp_ptr2 = NULL;
 	}
 
+	cp_list=NULL;
+
 cleanup:
 
 	LIBBMRM_FREE(H);
