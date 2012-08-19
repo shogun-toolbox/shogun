@@ -13,7 +13,7 @@
 
 #include <shogun/regression/gp/StudentsTLikelihood.h>
 #include <shogun/modelselection/ParameterCombination.h>
-
+#include <shogun/mathematics/Statistics.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
@@ -119,6 +119,12 @@ VectorXd CStudentsTLikelihood::get_log_probability_derivative_f(
 
 	if (j == 3)
 		return (m_df+1)*2*result.cwiseProduct(c).cwiseQuotient(d.cwiseProduct(a));
+
+	else
+	{
+		SG_ERROR("Invalid index for derivative\n");
+		return result;
+	}
 }
 
 //Taken in log space then converted back to direct derivative
@@ -150,7 +156,8 @@ VectorXd CStudentsTLikelihood::get_first_derivative(
 		a *= (m_df/2.0+.5);
 
 		for (index_t i = 0; i < function.rows(); i++)
-			a[i] += m_df*( dlgamma(m_df/2.0+1/2.0)-dlgamma(m_df/2.0) )/2.0 - 1/2.0
+			a[i] += m_df*( CStatistics::dlgamma(m_df/2.0+1/2.0)-
+			CStatistics::dlgamma(m_df/2.0) )/2.0 - 1/2.0
 			-m_df*log(1+result_squared[i]/(m_df*m_sigma*m_sigma))/2.0;
 
 		a *= (1-1/m_df);
