@@ -9,6 +9,8 @@
 
 #ifndef CGAUSSIANLIKELIHOOD_H_
 #define CGAUSSIANLIKELIHOOD_H_
+#include <shogun/lib/config.h>
+#ifdef HAVE_EIGEN3
 
 #include <shogun/regression/gp/LikelihoodModel.h>
 
@@ -139,5 +141,5 @@ private:
 };
 
 }
-
+#endif /* HAVE_EIGEN3 */
 #endif /* CGAUSSIANLIKELIHOOD_H_ */

@@ -9,7 +9,8 @@
 
 #ifndef CLIKELIHOODMODEL_H_
 #define CLIKELIHOODMODEL_H_
-
+#include <shogun/lib/config.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -79,7 +80,7 @@ public:
 	 * @return degrees of freedom
 	 */
 	inline virtual float64_t get_degrees_freedom() {return m_df;}
-
+	
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f
 	 *
@@ -147,5 +148,5 @@ protected:
 
 
 }
-
+#endif /* HAVE_EIGEN3 */
 #endif /* CLIKELIHOODMODEL_H_ */
