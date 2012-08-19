@@ -8,6 +8,7 @@
  */
 
 #include <shogun/regression/gp/LikelihoodModel.h>
+#ifdef HAVE_EIGEN3
 
 using namespace shogun;
 
@@ -29,3 +30,4 @@ float64_t CLikelihoodModel::get_parameter_derivative(const char* param_name)
 
 	return 0;
 }
+#endif /* HAVE_EIGEN3 */
