@@ -13,6 +13,7 @@
 
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
+#include <shogun/features/DotFeatures.h>
 
 namespace shogun
 {
@@ -72,12 +73,11 @@ namespace shogun
 			 */
 			void set_features(CLatentFeatures* feats);
 
-			/** Calculate the PSI vector for a given sample
+			/** Calculate the PSI vectors for all features
 			 *
-			 * @param idx index of the sample
-			 * @return PSI vector
+			 * @return PSI vectors
 			 */
-			virtual SGVector<float64_t> get_psi_feature_vector(index_t idx)=0;
+			virtual CDotFeatures* get_psi_feature_vectors()=0;
 
 			/** User defined \f$h^{*} = argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 			 * This function has to be defined the user as it is applications specific, since

@@ -1,6 +1,7 @@
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/latent/LatentSVM.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
@@ -43,22 +44,26 @@ class CObjectDetector: public CLatentModel
 
 		virtual int32_t get_dim() const { return HOG_SIZE; }
 
-		virtual SGVector<float64_t> get_psi_feature_vector(index_t idx)
+		virtual CDotFeatures* get_psi_feature_vectors()
 		{
-			CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(idx);
-			CBoundingBox* bb = (CBoundingBox*) m_labels->get_latent_label(idx);
-			SGVector<float64_t> psi_v(get_dim());
-			for (int i = 0; i < psi_v.vlen; ++i)
+			int32_t num_examples = this->get_num_vectors();
+			int32_t dim = this->get_dim();
+			SGMatrix<float64_t> psi_m(dim, num_examples);
+			for (int32_t i = 0; i < num_examples; ++i)
 			{
-				psi_v.vector[i] = hf->hog[bb->x_pos][bb->y_pos][i];
+				CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(i);
+				CBoundingBox* bb = (CBoundingBox*) m_labels->get_latent_label(i);
+				memcpy(psi_m.matrix+i*dim, hf->hog[bb->x_pos][bb->y_pos], dim*sizeof(float64_t));
 			}
-			return psi_v;
+
+			CDenseFeatures<float64_t>* psi_feats = new CDenseFeatures<float64_t>(psi_m);
+			return psi_feats;
 		}
 
 		virtual CData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
 		{
 			int32_t pos_x = 0, pos_y = 0;
-			float64_t max_score;
+			float64_t max_score = -CMath::INFTY;
 
 			CHOGFeatures* hf = (CHOGFeatures*) m_features->get_sample(idx);
 			for (int i = 0; i < hf->width; ++i)

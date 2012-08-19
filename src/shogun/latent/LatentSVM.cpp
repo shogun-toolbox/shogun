@@ -40,20 +40,19 @@ CLatentLabels* CLatentSVM::apply()
 	index_t num_examples = m_model->get_num_vectors();
 	CLatentLabels* hs = new CLatentLabels(num_examples);
 	CBinaryLabels* ys = new CBinaryLabels(num_examples);
+	hs->set_labels(ys);
+	m_model->set_labels(hs);
 
 	for (index_t i = 0; i < num_examples; ++i)
 	{
 		/* find h for the example */
 		CData* h = m_model->infer_latent_variable(w, i);
-		hs->set_latent_label(i, h);
-		SGVector<float64_t> psi_feat = m_model->get_psi_feature_vector(i);
-
-		/* calculate and set y for the example */
-		float64_t y = w.dot(w.vector, psi_feat.vector, w.vlen);
-		ys->set_label(i, y);
+		hs->add_latent_label(h);
 	}
 
-	hs->set_labels(ys);
+	/* compute the y labels */
+	CDotFeatures* x = m_model->get_psi_feature_vectors();
+	x->dense_dot_range(ys->get_labels().vector, 0, num_examples, NULL, w.vector, w.vlen, 0.0);
 
 	return hs;
 }
