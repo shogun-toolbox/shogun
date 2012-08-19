@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  *
  * ALGLIB Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier under GPL2+
@@ -49,7 +49,7 @@ float64_t CStatistics::variance(SGVector<float64_t> values)
 	return sum_squared_diff/(values.vlen-1);
 }
 
-SGVector<float64_t> CStatistics::mean(SGMatrix<float64_t> values,
+SGVector<float64_t> CStatistics::matrix_mean(SGMatrix<float64_t> values,
 		bool col_wise)
 {
 	ASSERT(values.num_rows>0);
@@ -86,7 +86,7 @@ SGVector<float64_t> CStatistics::mean(SGMatrix<float64_t> values,
 	return result;
 }
 
-SGVector<float64_t> CStatistics::variance(SGMatrix<float64_t> values,
+SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
 		bool col_wise)
 {
 	ASSERT(values.num_rows>0);
@@ -94,7 +94,7 @@ SGVector<float64_t> CStatistics::variance(SGMatrix<float64_t> values,
 	ASSERT(values.matrix);
 
 	/* first compute mean */
-	SGVector<float64_t> mean=CStatistics::mean(values, col_wise);
+	SGVector<float64_t> mean=CStatistics::matrix_mean(values, col_wise);
 
 	SGVector<float64_t> result;
 
@@ -131,10 +131,10 @@ float64_t CStatistics::std_deviation(SGVector<float64_t> values)
 	return CMath::sqrt(variance(values));
 }
 
-SGVector<float64_t> CStatistics::std_deviation(SGMatrix<float64_t> values,
-			bool col_wise)
+SGVector<float64_t> CStatistics::matrix_std_deviation(
+		SGMatrix<float64_t> values, bool col_wise)
 {
-	SGVector<float64_t> var=CStatistics::variance(values, col_wise);
+	SGVector<float64_t> var=CStatistics::matrix_variance(values, col_wise);
 	for (index_t i=0; i<var.vlen; ++i)
 		var[i]=CMath::sqrt(var[i]);
 

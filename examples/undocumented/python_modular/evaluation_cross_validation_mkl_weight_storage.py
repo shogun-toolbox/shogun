@@ -79,13 +79,13 @@ def evaluation_cross_validation_classification(traindat=traindat, label_traindat
     print weights
     
     print "mean per kernel"
-    print Statistics.mean(weights, False)
+    print Statistics.matrix_mean(weights, False)
     
     print "variance per kernel"
-    print Statistics.variance(weights, False)
+    print Statistics.matrix_variance(weights, False)
     
     print "std-dev per kernel"
-    print Statistics.std_deviation(weights, False)
+    print Statistics.matrix_std_deviation(weights, False)
     
 
 if __name__=='__main__':
