@@ -31,10 +31,6 @@ CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
 
 	index_t feat_dim = m_model->get_dim();
 	set_w(SGVector<float64_t> (feat_dim));
-
-	/* create the temporal storage for PSI features */
-	SGMatrix<float64_t> psi_m(feat_dim, m_model->get_num_vectors());
-	((CDenseFeatures<float64_t>*) features)->set_feature_matrix(psi_m);
 }
 
 CLinearLatentMachine::~CLinearLatentMachine()
@@ -63,14 +59,7 @@ void CLinearLatentMachine::set_model(CLatentModel* latent_model)
 
 void CLinearLatentMachine::cache_psi_vectors()
 {
-	ASSERT(features != NULL);
-	index_t num_vectors = features->get_num_vectors();
-	for (index_t i = 0; i < num_vectors; ++i)
-	{
-		SGVector<float64_t> psi_feat =
-			dynamic_cast<CDenseFeatures<float64_t>*>(features)->get_feature_vector(i);
-		memcpy(psi_feat.vector, m_model->get_psi_feature_vector(i).vector, psi_feat.vlen*sizeof(float64_t));
-	}
+	set_features(m_model->get_psi_feature_vectors());
 }
 
 bool CLinearLatentMachine::train_machine(CFeatures* data)
