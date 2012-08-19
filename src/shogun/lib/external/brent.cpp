@@ -7,7 +7,8 @@ using namespace std;
 
 # include "brent.h"
 
-namespace brent{
+namespace shogun
+{
 
 //****************************************************************************80
 
@@ -362,7 +363,7 @@ double local_min ( double a, double b, double t, func_base& f,
 //
 {
   double c;
-  double d;
+  double d = 0.0;
   double e;
   double eps;
   double fu;
@@ -1034,13 +1035,12 @@ void timestamp ( )
 
   static char time_buffer[TIME_SIZE];
   const struct tm *tm;
-  size_t len;
   time_t now;
 
   now = time ( NULL );
   tm = localtime ( &now );
 
-  len = strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
+  strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
 
   cout << time_buffer << "\n";
 
@@ -1509,6 +1509,7 @@ double monicPoly::operator()(double x){
     rslt *= x;
     rslt += coeff[ii];
   }
+  return rslt;
 }
 
 // Similarly, evaluate a general polynomial (not necessarily monic):
@@ -1518,6 +1519,7 @@ double Poly::operator()(double x){
     rslt *= x;
     rslt += coeff[ii];
   }
+  return rslt;
 }
 
-} // end namespace brent
+}

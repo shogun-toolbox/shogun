@@ -288,7 +288,7 @@ private:
 	/*Wrapper class used for the Brent minimizer
 	 *
 	 */
-	class Psi_line : public brent::func_base
+	class Psi_line : public func_base
 	{
 	public:
 		Eigen::VectorXd* alpha;

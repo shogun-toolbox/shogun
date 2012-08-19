@@ -672,7 +672,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		func.m = &m_means;
 		func.mW = &W;
 		func.start_alpha = temp_alpha;
-		brent::local_min(0, m_max, m_opt_tolerance, func, Psi_New);
+		local_min(0, m_max, m_opt_tolerance, func, Psi_New);
 	}
 
 

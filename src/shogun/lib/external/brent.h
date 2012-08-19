@@ -1,5 +1,6 @@
 #include <vector>
-namespace brent {
+namespace shogun
+{
 
 class func_base{
 public:
