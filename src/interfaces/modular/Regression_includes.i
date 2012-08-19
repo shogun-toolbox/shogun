@@ -2,6 +2,7 @@
  #include <shogun/regression/Regression.h>
  #include <shogun/machine/Machine.h>
  #include <shogun/machine/KernelMachine.h>
+ #include <shogun/regression/GaussianProcessRegression.h>
  #include <shogun/regression/KernelRidgeRegression.h>
  #include <shogun/regression/LinearRidgeRegression.h>
  #include <shogun/regression/LeastSquaresRegression.h>
