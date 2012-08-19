@@ -8,6 +8,7 @@
  */
 
 #include <shogun/regression/gp/InferenceMethod.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -193,4 +194,4 @@ void CInferenceMethod::update_data_means()
 		}
 	}
 }
-
+#endif /* HAVE_EIGEN3 */

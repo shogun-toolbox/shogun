@@ -9,7 +9,7 @@
 
 #ifndef CINFERENCEMETHOD_H_
 #define CINFERENCEMETHOD_H_
-
+#ifdef HAVE_EIGEN3
 #include <shogun/kernel/Kernel.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/DotFeatures.h>
@@ -278,5 +278,5 @@ protected:
 };
 
 }
-
+#endif /* HAVE_EIGEN3 */
 #endif /* CInferenceMethod_H_ */

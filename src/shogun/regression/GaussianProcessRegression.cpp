@@ -12,7 +12,7 @@
  */
 
 #include <shogun/lib/config.h>
-
+#ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
 #include <shogun/io/SGIO.h>
@@ -393,4 +393,5 @@ bool CGaussianProcessRegression::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
+#endif
 #endif
