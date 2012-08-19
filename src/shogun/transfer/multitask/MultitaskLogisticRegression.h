@@ -24,11 +24,15 @@ using namespace std;
 
 namespace shogun
 {
-/** @brief  */
+/** @brief class Multitask Logistic Regression used
+ * to solve classification problems with a few tasks
+ * related via group or tree. Based on L1/Lq regression 
+ * for groups and L1/L2 for trees. */
 class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 {
 
 	public:
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
