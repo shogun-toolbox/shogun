@@ -42,7 +42,7 @@ public:
 	/** Constructor
 	 * @param kernel covariance function
 	 * @param features features to use in inference
-	 * @param mean mean function to use
+	 * @param mean Mean function
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
@@ -146,7 +146,7 @@ public:
 
 	/**set mean
 	 *
-	 * @param m mean to set
+	 * @param m mean function to set
 	 */
 	virtual void set_mean(CMeanFunction* m);
 
@@ -174,13 +174,13 @@ public:
 	 */
 	virtual void set_model(CLikelihoodModel* mod);
 
-	/** set kernel scale
+	/**set kernel scale
 	 *
 	 * @param s scale to be set
 	 */
 	virtual void set_scale(float64_t s);
 
-	/** get kernel scale
+	/**get kernel scale
 	 *
 	 * @return kernel scale
 	 */
@@ -204,13 +204,17 @@ public:
 
 
 protected:
+
 	/** Update alpha matrix */
 	virtual void update_alpha() {}
-	/** update cholesky matrices */
+
+	/** Update cholesky matrix */
 	virtual void update_chol() {}
-	/** update train kernel */
+
+	/** Update train kernel matrix */
 	virtual void update_train_kernel() {}
-	/** update data means */
+
+	/** Update data means */
 	virtual void update_data_means();
 
 private:
@@ -218,32 +222,32 @@ private:
 
 protected:
 
-	/** Covariance Function*/
+	/**Covariance Function*/
 	CKernel* m_kernel;
 
-	/** Features to use*/
+	/**Features to use*/
 	CFeatures* m_features;
 
-	/** Feature Matrix*/
+	/**Feature Matrix*/
 	SGMatrix<float64_t> m_feature_matrix;
 
-	/** Means of Features*/
+	/**Means of Features*/
 	SGVector<float64_t> m_data_means;
 
-	/** Vector of labels*/
+	/**Vector of labels*/
 	SGVector<float64_t> m_label_vector;
 
 
-	/** Labels of those features*/
+	/**Labels of those features*/
 	CLabels* m_labels;
 
-	/** Mean Function*/
+	/**Mean Function*/
 	CMeanFunction* m_mean;
 
-	/** Latent Features for Approximation*/
+	/**Latent Features for Approximation*/
 	CFeatures* m_latent_features;
 
-	/** Likelihood function to use
+	/**Likelihood function to use
 	 * \f[
 	 *   p(y|f)
 	 * \f]
@@ -262,13 +266,13 @@ protected:
 	 */
 	SGMatrix<float64_t> m_L;
 
-	/** Kernel Scale*/
+	/**Kernel Scale*/
 	float64_t m_scale;
 
-	/** Kernel matrix from features*/
+	/**Kernel matrix from features*/
 	SGMatrix<float64_t> m_ktrtr;
 
-	/** latent variables matrix */
+	/** Kernel matrix from latent features */
 	SGMatrix<float64_t> m_latent_matrix;
 
 };

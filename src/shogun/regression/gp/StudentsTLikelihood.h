@@ -5,39 +5,43 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
+ *
+ * Code adapted from the GPML Toolbox:
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ *
  */
 
-#ifndef CGAUSSIANLIKELIHOOD_H_
-#define CGAUSSIANLIKELIHOOD_H_
+#ifndef CSTUDENTSTLIKELIHOOD_H_
+#define CSTUDENTSTLIKELIHOOD_H_
 
 #include <shogun/regression/gp/LikelihoodModel.h>
 
 namespace shogun
 {
 
-/** @brief This is the class that models a Gaussian Likelihood
+/** @brief This is the class that models a likelihood model
+ * with a Student's T Distribution. The parameters include
+ * degrees of freedom as well as a sigma scale parameter.
  *
- * In this case, P(y|f) is normally distributed with mean f and
- * variance \f$\sigma\f$
  *
  */
-class CGaussianLikelihood: public CLikelihoodModel
+class CStudentsTLikelihood: public CLikelihoodModel
 {
-  
+
 public:
 
 	/*Constructor*/
-	CGaussianLikelihood();
+	CStudentsTLikelihood();
 
 	/*Destructor*/
-	virtual ~CGaussianLikelihood();
+	virtual ~CStudentsTLikelihood();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
 	 * @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() const { return "GaussianLikelihood"; }
+	inline virtual const char* get_name() const { return "StudentsTLikelihood"; }
 
 	/** Returns the noise variance
 	 *
@@ -53,7 +57,7 @@ public:
 
 	/** Evaluate means
 	 *
-	 * @param means vector of means calculated by inference method
+	 * @param means Vector of means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
@@ -64,12 +68,13 @@ public:
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
-	
+
 	/** get model type
 	  *
 	  * @return model type Gaussian
 	 */
-	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
+	virtual ELikelihoodModelType get_model_type() {return LT_STUDENTST;}
+
 
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f
@@ -134,10 +139,12 @@ private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 
-	/*Initialize function*/
+
+	/** Initialize function*/
 	void init();
+
 };
 
 }
 
-#endif /* CGAUSSIANLIKELIHOOD_H_ */
+#endif /* CStudentsTLIKELIHOOD_H_ */

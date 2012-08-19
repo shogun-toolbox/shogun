@@ -134,7 +134,7 @@ class CGaussianKernel: public CDotKernel
 		 * 
 		 * @param param the parameter
 		 * @param obj the object that owns the parameter
-		 * @param index index the index of the element if parameter is a vector
+		 * @param index the index of the element if parameter is a vector
 		 *
 		 * @return gradient with respect to parameter
 		 */

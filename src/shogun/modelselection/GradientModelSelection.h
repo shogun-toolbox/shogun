@@ -29,16 +29,16 @@ class CGradientModelSelection: public CModelSelection
 public:
 
 	/** constructor
-	 * @param model_parameters model parameters
-	 * @param machine_eval machine evaluation
+	 * @param model_parameters Parameters
+	 * @param machine_eval Machine Evaluation Object
 	 */
 	CGradientModelSelection(CModelSelectionParameters* model_parameters,
 			CMachineEvaluation* machine_eval);
 
-	/*Default Constructor*/
+	/**Default Constructor*/
 	CGradientModelSelection();
 
-	/*Destructor*/
+	/**Destructor*/
 	virtual ~CGradientModelSelection();
 
 	/**
@@ -103,19 +103,22 @@ private:
 
 	void test_gradients();
 
-	/*Initialize object*/
+	/** Initialize object*/
 	void init();
 
 protected:
 
-	/** struct used for nlopt callback function*/
+	/** @brief
+	 *  struct used for nlopt callback function*/
 	struct nlopt_package
 	{
-		/** machine evaluation */
+		/** Pointer to Machine Evaluation */
 		shogun::CMachineEvaluation* m_machine_eval;
-		/** current combination */
+
+		/** Pointer to current combination */
 		shogun::CParameterCombination* m_current_combination;
-		/** whether print current state */
+
+		/** Do we want to print the state? */
 		bool print_state;
 	};
 
