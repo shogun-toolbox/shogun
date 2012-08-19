@@ -25,5 +25,6 @@
  #include <shogun/evaluation/CrossValidationOutput.h>
  #include <shogun/evaluation/CrossValidationPrintOutput.h>
  #include <shogun/evaluation/CrossValidationMKLStorage.h>
+ #include <shogun/evaluation/StructuredAccuracy.h>
 %}
 
