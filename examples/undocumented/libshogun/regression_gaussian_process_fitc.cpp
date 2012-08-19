@@ -8,7 +8,7 @@
  */
 
 #include <shogun/lib/config.h>
-
+#ifdef HAVE_EIGEN3
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -225,4 +225,4 @@ int main(int argc, char **argv)
 	exit_shogun();
 	return 0;
 }
-
+#endif
