@@ -70,7 +70,7 @@ public:
 	 * otherwise
 	 * @return mean of given values
 	 */
-	static SGVector<float64_t> mean(SGMatrix<float64_t> values,
+	static SGVector<float64_t> matrix_mean(SGMatrix<float64_t> values,
 			bool col_wise=true);
 
 	/** Calculates unbiased empirical variance estimator of given values. Given
@@ -85,7 +85,7 @@ public:
 	 * otherwise
 	 * @return variance of given values
 	 */
-	static SGVector<float64_t> variance(SGMatrix<float64_t> values,
+	static SGVector<float64_t> matrix_variance(SGMatrix<float64_t> values,
 			bool col_wise=true);
 
 	/** Calculates unbiased empirical standard deviation estimator of given
@@ -100,8 +100,8 @@ public:
 	 * otherwise
 	 * @return variance of given values
 	 */
-	static SGVector<float64_t> std_deviation(SGMatrix<float64_t> values,
-			bool col_wise=true);
+	static SGVector<float64_t> matrix_std_deviation(
+			SGMatrix<float64_t> values, bool col_wise=true);
 
 #ifdef HAVE_LAPACK
 	/** Computes the empirical estimate of the covariance matrix of the given
