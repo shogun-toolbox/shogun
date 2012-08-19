@@ -107,13 +107,25 @@ class CStructuredLabels : public CLabels
 		 */
 		virtual ELabelType get_label_type() { return LT_STRUCTURED; }
 
+		/** get structured data type the labels are composed of
+		 *
+		 * @return structured data type
+		 */
+		inline EStructuredDataType get_structured_data_type() { return m_sdt; }
+
 	private:
 		/** internal initialization */
 		void init();
 
+		/** ensure that the correct structured data type is used */
+		void ensure_valid_sdt(CStructuredData* label);
+
 	protected:
 		/** the vector of labels */
 		CDynamicObjectArray* m_labels;
+
+		/** the structured data type the labels are composed of */
+		EStructuredDataType m_sdt;
 
 }; /* class CStructuredLabels */
 

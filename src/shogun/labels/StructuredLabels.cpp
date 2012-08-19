@@ -64,11 +64,13 @@ CStructuredData* CStructuredLabels::get_label(int32_t idx)
 
 void CStructuredLabels::add_label(CStructuredData* label)
 {
+	ensure_valid_sdt(label);
 	m_labels->push_back(label);
 }
 
 bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 {
+	ensure_valid_sdt(label);
 	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
 
 	if ( real_idx < get_num_labels() )
@@ -94,4 +96,18 @@ void CStructuredLabels::init()
 	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
 
 	m_labels = NULL;
+	m_sdt = SDT_UNKNOWN;
+}
+
+void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
+{
+	if ( m_sdt == SDT_UNKNOWN )
+	{
+		m_sdt = label->get_structured_data_type();
+	}
+	else
+	{
+		REQUIRE(label->get_structured_data_type() == m_sdt, "All the labels must "
+				"belong to the same CStructuredData child class\n");
+	}
 }
