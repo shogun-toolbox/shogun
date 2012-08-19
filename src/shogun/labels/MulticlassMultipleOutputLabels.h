@@ -16,6 +16,13 @@
 
 namespace shogun 
 {
+/** @brief Multiclass Labels for multi-class classification 
+ * with multiple labels
+ *
+ * valid values for labels are 0...nr_classes-1
+ *
+ * Each label in this setting is vector of a few labels
+ */
 class CMulticlassMultipleOutputLabels : public CLabels
 {
 
