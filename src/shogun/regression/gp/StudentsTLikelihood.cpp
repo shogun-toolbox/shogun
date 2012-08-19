@@ -12,6 +12,7 @@
  */
 
 #include <shogun/regression/gp/StudentsTLikelihood.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/base/Parameter.h>
@@ -253,6 +254,4 @@ VectorXd CStudentsTLikelihood::get_second_derivative(
 	return result;
 
 }
-
-
-
+#endif /* HAVE_EIGEN3 */
