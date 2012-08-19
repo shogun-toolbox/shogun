@@ -219,6 +219,13 @@ CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_
 	m_precomputed_ind_t = ind_t;
 }
 
+CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> ind_t) :
+	CIndexBlockRelation(),
+	m_root_block(NULL), m_general(false)
+{
+	m_precomputed_ind_t = ind_t;
+}
+
 CIndexBlockTree::~CIndexBlockTree()
 {
 	SG_UNREF(m_root_block);

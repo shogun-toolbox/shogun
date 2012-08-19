@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+/** @brief 
+ */
 class CIndexBlockTree : public CIndexBlockRelation
 {
 public:
@@ -38,6 +40,11 @@ public:
 	 * @param ind_t custom ind_t
 	 */
 	CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
+	
+	/** constructor
+	 * @param ind_t custom ind_t
+	 */
+	CIndexBlockTree(SGVector<float64_t> ind_t);
 
 	/** destructor */
 	virtual ~CIndexBlockTree();
