@@ -17,18 +17,24 @@ using namespace shogun;
 void CCrossValidationMKLStorage::update_trained_machine(
 		CMachine* machine, const char* prefix)
 {
-	if (!dynamic_cast<CMKL*>(machine))
-	{
-		SG_ERROR("%s::update_trained_machine(): This method is only usable "
+	REQUIRE(machine, "%s::update_trained_machine(): Provided Machine is NULL!\n",
+			get_name());
+
+	CMKL* mkl=dynamic_cast<CMKL*>(machine);
+	REQUIRE(mkl, "%s::update_trained_machine(): This method is only usable "
 				"with CMKL derived machines. This one is \"s\"\n", get_name(),
 				machine->get_name());
-	}
 
-	CMKL* mkl=(CMKL*)machine;
-	CCombinedKernel* kernel=dynamic_cast<CCombinedKernel*>(
-			mkl->get_kernel());
+	CKernel* kernel=mkl->get_kernel();
+	REQUIRE(kernel, "%s::update_trained_machine(): No kernel assigned to "
+			"machine of type \"%s\"\n", get_name(), machine->get_name());
 
-	SGVector<float64_t> w=kernel->get_subkernel_weights();
+	CCombinedKernel* combined_kernel=dynamic_cast<CCombinedKernel*>(kernel);
+	REQUIRE(combined_kernel, "%s::update_trained_machine(): This method is only"
+			" usable with CCombinedKernel on machines. This one is \"s\"\n",
+			get_name(), kernel->get_name());
+
+	SGVector<float64_t> w=combined_kernel->get_subkernel_weights();
 
 	/* evtl re-allocate memory (different number of runs from evaluation before) */
 	if (m_mkl_weights.num_rows!=w.vlen ||
