@@ -27,7 +27,7 @@ void test_mean()
 	}
 	X.display_matrix("X");
 
-	SGVector<float64_t> mean=CStatistics::mean(X, true);
+	SGVector<float64_t> mean=CStatistics::matrix_mean(X, true);
 	mean.display_vector("mean");
 	ASSERT(mean.vlen==5);
 	ASSERT(mean[0]==1);
@@ -39,7 +39,7 @@ void test_mean()
 	float64_t mean2=CStatistics::mean(mean);
 	ASSERT(mean2==7);
 
-	mean=CStatistics::mean(X, false);
+	mean=CStatistics::matrix_mean(X, false);
 	mean.display_vector("mean");
 	ASSERT(mean.vlen==3);
 	ASSERT(mean[0]==6);
@@ -60,7 +60,7 @@ void test_variance()
 	}
 	X.display_matrix("X");
 
-	SGVector<float64_t> var=CStatistics::variance(X, true);
+	SGVector<float64_t> var=CStatistics::matrix_variance(X, true);
 	var.display_vector("variance");
 	ASSERT(var.vlen==5);
 	ASSERT(var[0]==1);
@@ -72,7 +72,7 @@ void test_variance()
 	float64_t var2=CStatistics::variance(var);
 	ASSERT(var2==0);
 
-	var=CStatistics::variance(X, false);
+	var=CStatistics::matrix_variance(X, false);
 	var.display_vector("variance");
 	ASSERT(var.vlen==3);
 	ASSERT(var[0]==22.5);
