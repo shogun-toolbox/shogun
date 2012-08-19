@@ -11,7 +11,7 @@
  *
  */
 #include <shogun/lib/config.h>
-
+#ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
 #include <shogun/regression/gp/ExactInferenceMethod.h>
@@ -467,5 +467,5 @@ void CExactInferenceMethod::update_alpha()
 		m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);
 
 }
-
+#endif
 #endif // HAVE_LAPACK
