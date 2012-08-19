@@ -374,6 +374,17 @@ public:
 		return "Statistics";
 	}
 
+	 /** Derivative of the log gamma function.
+         *
+         * Taken from likT.m from the GPML
+         * toolbox.
+         *
+         * @param x input
+         * @return derivative of the log gamma input
+         */
+        static float64_t dlgamma(float64_t x);
+
+
 protected:
 	/** Power series for incomplete beta integral.
 	 * Use when b*x is small and x not too close to 1.

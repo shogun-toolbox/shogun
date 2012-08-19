@@ -21,7 +21,7 @@
 
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/regression/gp/InferenceMethod.h>
-#include <shogun/lib/external/brent.hpp>
+#include <shogun/lib/external/brent.h>
 
 
 namespace shogun

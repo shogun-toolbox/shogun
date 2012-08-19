@@ -5,7 +5,7 @@
 
 using namespace std;
 
-# include "brent.hpp"
+# include "brent.h"
 
 namespace brent{
 

@@ -1690,3 +1690,13 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	return SGVector<int32_t>(permuted_idxs, sample_size);
 }
 
+float64_t CStatistics::dlgamma(float64_t x)
+{
+	x = x+6.0;
+        float64_t df = 1./(x*x);
+        df = (((df/240-0.003968253986254)*df+1/120.0)*df-1/120.0)*df;
+        df = df+log(x)-0.5/x-1.0/(x-1.0)-1.0/(x-2.0)-1.0/
+                          (x-3.0)-1.0/(x-4.0)-1.0/(x-5.0)-1.0/(x-6.0);
+        return df;
+}
+

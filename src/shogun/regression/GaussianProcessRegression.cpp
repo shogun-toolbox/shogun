@@ -202,8 +202,19 @@ SGVector<float64_t> CGaussianProcessRegression::getMeanVector()
 
 	CMeanFunction* mean_function = m_method->get_mean();
 
-	SGMatrix<float64_t> features = ((CDotFeatures*)m_data)->
+	SGMatrix<float64_t> features;
+        if(m_data->get_feature_class() == C_COMBINED)
+        {
+	        features = ((CDotFeatures*)((CCombinedFeatures*)m_data)->
+                                        get_first_feature_obj())->
+					get_computed_dot_feature_matrix();
+	}
+
+	else
+	{
+		features = ((CDotFeatures*)m_data)->
 			get_computed_dot_feature_matrix();
+	}
 
 	if (!mean_function)
 		SG_ERROR("Mean function is NULL!\n");
