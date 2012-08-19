@@ -13,7 +13,8 @@
 
 #ifndef CSTUDENTSTLIKELIHOOD_H_
 #define CSTUDENTSTLIKELIHOOD_H_
-
+#include <shogun/lib/config.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/regression/gp/LikelihoodModel.h>
 
 namespace shogun
@@ -146,5 +147,5 @@ private:
 };
 
 }
-
+#endif /* HAVE_EIGEN3 */
 #endif /* CStudentsTLIKELIHOOD_H_ */
