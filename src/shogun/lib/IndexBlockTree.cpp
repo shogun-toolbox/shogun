@@ -119,7 +119,7 @@ CIndexBlockTree::CIndexBlockTree(CIndexBlock* root_block) : CIndexBlockRelation(
 	set_root_block(root_block);
 }
 
-CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix) : 
+CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode) : 
 	CIndexBlockRelation(),
 	m_root_block(NULL), m_general(true)
 {
@@ -177,12 +177,16 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix) :
 	SG_SPRINT("]\n");
 	*/
 
-	m_precomputed_ind_t = SGVector<float64_t>((int32_t)ind_t.size()+3);
-	m_precomputed_ind_t[0] = -1;
-	m_precomputed_ind_t[1] = -1;
-	m_precomputed_ind_t[2] = 1.0;
+	int32_t supernode_offset = include_supernode ? 3 : 0;
+	m_precomputed_ind_t = SGVector<float64_t>((int32_t)ind_t.size()+supernode_offset);
+	if (include_supernode)
+	{
+		m_precomputed_ind_t[0] = -1;
+		m_precomputed_ind_t[1] = -1;
+		m_precomputed_ind_t[2] = 1.0;
+	}
 	for (int32_t i=0; i<(int32_t)ind_t.size(); i++)
-		m_precomputed_ind_t[i+3] = ind_t[i];
+		m_precomputed_ind_t[i+supernode_offset] = ind_t[i];
 	m_precomputed_G = SGVector<float64_t>((int32_t)G.size());
 	for (int32_t i=0; i<(int32_t)G.size(); i++)
 		m_precomputed_G[i] = G[i] + 1;

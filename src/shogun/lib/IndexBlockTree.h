@@ -32,8 +32,9 @@ public:
 
 	/** constructor
 	 * @param adjacency_matrix adjacency matrix
+	 * @param include_supernode whether to include supernode
 	 */
-	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix);
+	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode);
 	
 	/** constructor
 	 * @param G custom G
