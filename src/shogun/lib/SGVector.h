@@ -536,6 +536,12 @@ template<class T> class SGVector : public SGReferencedData
 		/// scale vector inplace
 		void scale(T alpha);
 
+		/** compute the mean value of the vector
+		 *
+		 * @return the mean value
+		 */
+		float64_t mean() const;
+
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig);

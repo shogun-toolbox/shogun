@@ -639,6 +639,16 @@ template<class T> void SGVector<T>::scale(T alpha)
 	scale_vector(alpha, vector, vlen);
 }
 
+template<class T> float64_t SGVector<T>::mean() const
+{
+	float64_t cum = 0;
+
+	for ( index_t i = 0 ; i < vlen ; ++i )
+		cum += vector[i];
+
+	return cum/vlen;
+}
+
 template class SGVector<bool>;
 template class SGVector<char>;
 template class SGVector<int8_t>;
