@@ -1,4 +1,6 @@
 #include <shogun/classifier/svm/LibLinear.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/evaluation/StructuredAccuracy.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -103,18 +105,6 @@ int main(int argc, char ** argv)
 	mc_svm->train();
 	CMulticlassLabels* mout = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
 
-	int32_t sosvm_ncorrect = 0, mc_ncorrect = 0;
-	SGVector< float64_t > slacks = sosvm->get_slacks();
-	for ( int i = 0 ; i < out->get_num_labels() ; ++i )
-	{
-		CRealNumber* ypred = (CRealNumber*) out->get_label(i);
-
-		sosvm_ncorrect += mlabels->get_label(i) == ypred->value;
-		mc_ncorrect    += mlabels->get_label(i) == mout->get_label(i);
-
-		SG_UNREF(ypred); // because of CStructuredLabels::get_label()
-	}
-
 	SGVector< float64_t > w = sosvm->get_w();
 	for ( int32_t i = 0 ; i < w.vlen ; ++i )
 		SG_SPRINT("%10f ", w[i]);
@@ -131,10 +121,17 @@ int main(int argc, char ** argv)
 	}
 	SG_SPRINT("\n");
 
-	SG_SPRINT("SO-SVM: %5.2f%\n", 100.0*sosvm_ncorrect/mlabels->get_num_labels());
-	SG_SPRINT("MC:     %5.2f%\n\n",  100.0*mc_ncorrect/mlabels->get_num_labels());
+	CStructuredAccuracy* structured_evaluator = new CStructuredAccuracy();
+	CMulticlassAccuracy* multiclass_evaluator = new CMulticlassAccuracy();
+	SG_REF(structured_evaluator);
+	SG_REF(multiclass_evaluator);
+
+	SG_SPRINT("SO-SVM: %5.2f%\n", 100.0*structured_evaluator->evaluate(out, labels));
+	SG_SPRINT("MC:     %5.2f%\n", 100.0*multiclass_evaluator->evaluate(mout, mlabels));
 
 	// Free memory
+	SG_UNREF(multiclass_evaluator);
+	SG_UNREF(structured_evaluator);
 	SG_UNREF(mout);
 	SG_UNREF(mc_svm);
 	SG_UNREF(sosvm);
