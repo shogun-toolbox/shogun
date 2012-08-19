@@ -30,6 +30,7 @@
 #endif //USE_SVMLIGHT
 
 /* Include Class Headers to make them visible from within the target language */
+%include <shogun/regression/GaussianProcessRegression.h>
 %include <shogun/regression/gp/LikelihoodModel.h>
 %include <shogun/regression/gp/GaussianLikelihood.h>
 %include <shogun/regression/gp/StudentsTLikelihood.h>
