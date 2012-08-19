@@ -32,7 +32,7 @@ CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 
 CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
-			CInferenceMethod(kern, feat, m, lab, mod)
+		CInferenceMethod(kern, feat, m, lab, mod)
 {
 	update_all();
 }
@@ -86,7 +86,7 @@ void CExactInferenceMethod::check_members()
 	if (!m_features)
 		SG_ERROR("No features set!\n");
 
-  	if (m_labels->get_num_labels() != m_features->get_num_vectors())
+	if (m_labels->get_num_labels() != m_features->get_num_vectors())
 		SG_ERROR("Number of training vectors does not match number of labels\n");
 
 	if(m_features->get_feature_class() == C_COMBINED)
@@ -133,8 +133,8 @@ void CExactInferenceMethod::check_members()
 }
 
 CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
-	get_marginal_likelihood_derivatives(CMap<TParameter*,
-			CSGObject*>& para_dict)
+get_marginal_likelihood_derivatives(CMap<TParameter*,
+		CSGObject*>& para_dict)
 {
 	check_members();
 
@@ -171,7 +171,7 @@ CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 	//Solve (L) Q = Identity for Q.
 	clapack_dpotrs(CblasColMajor, CblasUpper,
 			temp1.num_rows, Q.num_cols, temp1.matrix, temp1.num_cols,
-			  Q.matrix, Q.num_cols);
+			Q.matrix, Q.num_cols);
 
 	//Calculate alpha*alpha'
 	cblas_dger(CblasColMajor, m_alpha.vlen, m_alpha.vlen,
@@ -188,7 +188,7 @@ CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 			temp2.matrix, temp2.num_cols);
 
 	memcpy(Q.matrix, temp2.matrix,
-		temp2.num_cols*temp2.num_rows*sizeof(float64_t));
+			temp2.num_cols*temp2.num_rows*sizeof(float64_t));
 
 	float64_t sum = 0;
 
@@ -203,7 +203,7 @@ CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
 	{
 		shogun::CMapNode<TParameter*, CSGObject*>* node =
-						para_dict.get_node_ptr(i);
+				para_dict.get_node_ptr(i);
 
 		TParameter* param = node->key;
 		CSGObject* obj = node->data;
@@ -228,15 +228,15 @@ CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 			if (param->m_datatype.m_ctype == CT_VECTOR ||
 					param->m_datatype.m_ctype == CT_SGVECTOR)
 			{
-				 deriv = m_kernel->get_parameter_gradient(param, obj, g);
-				 mean_derivatives = m_mean->get_parameter_derivative(
-				 				param, obj, m_feature_matrix, g);
+				deriv = m_kernel->get_parameter_gradient(param, obj, g);
+				mean_derivatives = m_mean->get_parameter_derivative(
+						param, obj, m_feature_matrix, g);
 			}
 
 			else
 			{
 				mean_derivatives = m_mean->get_parameter_derivative(
-				 				param, obj, m_feature_matrix);
+						param, obj, m_feature_matrix);
 
 				deriv = m_kernel->get_parameter_gradient(param, obj);
 			}
@@ -298,7 +298,7 @@ CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 	param = m_model->m_model_selection_parameters->get_parameter(index);
 
 	sum = m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
-	
+
 	SGVector<float64_t> sigma(1);
 
 	sigma[0] = sum;
@@ -408,15 +408,15 @@ void CExactInferenceMethod::update_chol()
 	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper,
 			m_ktrtr.num_rows, temp2.num_cols, (m_scale*m_scale)/(m_sigma*m_sigma),
 			m_ktrtr.matrix, m_ktrtr.num_cols,
-		temp2.matrix, temp2.num_cols, 1.0,
-		temp1.matrix, temp1.num_cols);
+			temp2.matrix, temp2.num_cols, 1.0,
+			temp1.matrix, temp1.num_cols);
 
 	memcpy(m_kern_with_noise.matrix, temp1.matrix,
-		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
+			temp1.num_cols*temp1.num_rows*sizeof(float64_t));
 
 	//Get Lower triangle cholesky decomposition of K(X, X)+sigma*I)
 	clapack_dpotrf(CblasColMajor, CblasUpper,
-		temp1.num_rows, temp1.matrix, temp1.num_cols);
+			temp1.num_rows, temp1.matrix, temp1.num_cols);
 
 	m_L = SGMatrix<float64_t>(temp1.num_rows, temp1.num_cols);
 
@@ -434,7 +434,7 @@ void CExactInferenceMethod::update_chol()
 	}
 
 	memcpy(m_L.matrix, temp1.matrix,
-		temp1.num_cols*temp1.num_rows*sizeof(float64_t));
+			temp1.num_cols*temp1.num_rows*sizeof(float64_t));
 }
 
 void CExactInferenceMethod::update_alpha()
@@ -452,10 +452,10 @@ void CExactInferenceMethod::update_alpha()
 	m_alpha = SGVector<float64_t>(m_label_vector.vlen);
 
 	memcpy(temp1.matrix, m_L.matrix,
-		m_L.num_cols*m_L.num_rows*sizeof(float64_t));
+			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
 
 	memcpy(m_alpha.vector, m_label_vector.vector,
-		m_label_vector.vlen*sizeof(float64_t));
+			m_label_vector.vlen*sizeof(float64_t));
 
 	//Solve (K(X, X)+sigma*I) alpha = labels for alpha.
 	clapack_dposv(CblasColMajor, CblasLower,
