@@ -74,7 +74,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** set lambda
 		 *
-		 * @param lambda	Regularization constant
+		 * @param _lambda	Regularization constant
 		 */
 		inline void set_lambda(float64_t _lambda) { m_lambda=_lambda; }
 
