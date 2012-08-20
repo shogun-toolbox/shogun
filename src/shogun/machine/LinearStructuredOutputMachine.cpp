@@ -40,6 +40,7 @@ void CLinearStructuredOutputMachine::set_features(CFeatures* f)
 	SG_REF(f);
 	SG_UNREF(m_features);
 	m_features = f;
+	m_model->set_features(f);
 }
 
 CFeatures* CLinearStructuredOutputMachine::get_features() const
