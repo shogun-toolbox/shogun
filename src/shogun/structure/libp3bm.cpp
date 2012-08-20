@@ -49,7 +49,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		uint32_t        cp_models,
 		bool            verbose)
 {
-	bmrm_return_value_T p3bmrm={0, 0, 0, 0, 0, 0, 0};
+	bmrm_return_value_T p3bmrm={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	libqp_state_T qp_exitflag={0, 0, 0, 0}, qp_exitflag_good={0, 0, 0, 0};
 	float64_t *b, *b2, *beta, *beta_good, *beta_start, *diag_H, *diag_H2;
 	float64_t R, *Rt, **subgrad_t, *A, QPSolverTolRel, *C=NULL;
@@ -211,6 +211,10 @@ bmrm_return_value_T svm_p3bm_solver(
 		goto cleanup;
 	}
 
+	p3bmrm.hist_Fp.resize_vector(BufSize);
+	p3bmrm.hist_Fd.resize_vector(BufSize);
+	p3bmrm.hist_wdist.resize_vector(BufSize);
+
 	/* Iinitial solution */
 	Rt[0] = model->risk(subgrad_t[0], W, info[0]);
 
@@ -255,6 +259,8 @@ bmrm_return_value_T svm_p3bm_solver(
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 	}
 
+	wdist=::sqrt(sq_norm_Wdiff);
+
 	p3bmrm.Fp=R+0.5*_lambda*sq_norm_W + alpha*sq_norm_Wdiff;
 	p3bmrm.Fd=-LIBBMRM_PLUS_INF;
 	lastFp=p3bmrm.Fp;
@@ -265,6 +271,11 @@ bmrm_return_value_T svm_p3bm_solver(
 	LIBBMRM_MEMCPY(prevW, W, nDim*sizeof(float64_t));
 
 	tstop=ttime.cur_time_diff(false);
+
+	/* Keep history of Fp, Fd, and wdist */
+	p3bmrm.hist_Fp[0]=p3bmrm.Fp;
+	p3bmrm.hist_Fd[0]=p3bmrm.Fd;
+	p3bmrm.hist_wdist[0]=wdist;
 
 	/* Verbose output */
 	if (verbose)
@@ -655,6 +666,11 @@ bmrm_return_value_T svm_p3bm_solver(
 
 		wdist=::sqrt(sq_norm_Wdiff);
 
+		/* Keep history of Fp, Fd and wdist */
+		p3bmrm.hist_Fp[p3bmrm.nIter]=p3bmrm.Fp;
+		p3bmrm.hist_Fd[p3bmrm.nIter]=p3bmrm.Fd;
+		p3bmrm.hist_wdist[p3bmrm.nIter]=wdist;
+
 		/* Verbose output */
 		if (verbose)
 			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, wdist=%lf, alpha=%lf, qp_cnt=%d, gamma=%lf, tuneAlpha=%d\n",
@@ -739,15 +755,21 @@ bmrm_return_value_T svm_p3bm_solver(
 		}
 	} /* end of main loop */
 
+	p3bmrm.hist_Fp.resize_vector(p3bmrm.nIter);
+	p3bmrm.hist_Fd.resize_vector(p3bmrm.nIter);
+	p3bmrm.hist_wdist.resize_vector(p3bmrm.nIter);
+
 	cp_ptr=CPList_head;
 
-	while(cp_ptr != NULL)
+	while(cp_ptr!=NULL)
 	{
 		cp_ptr2=cp_ptr;
 		cp_ptr=cp_ptr->next;
 		LIBBMRM_FREE(cp_ptr2);
-		cp_ptr2 = NULL;
+		cp_ptr2=NULL;
 	}
+
+	cp_list=NULL;
 
 cleanup:
 

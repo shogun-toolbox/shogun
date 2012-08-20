@@ -29,9 +29,8 @@
 #endif
 
 %ignore shogun::bmrm_ll;
-%ignore shogun::bmrm_return_value_T;
 %ignore shogun::TMultipleCPinfo;
-%ignore refcount_t; 
+%ignore refcount_t;
 %ignore cleanup;
 %ignore QP;
 %ignore ConsensusEntry;
@@ -42,7 +41,7 @@
 %ignore larank_kcache_s;
 %ignore LaRankPattern;
 %ignore LaRankPatterns;
-%ignore POIMTrie; 
+%ignore POIMTrie;
 %ignore segment_loss_struct;
 %ignore joint_list_struct;
 %ignore TreeParseInfo;
