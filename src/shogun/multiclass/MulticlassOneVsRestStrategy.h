@@ -16,6 +16,12 @@
 namespace shogun
 {
 
+/** @brief multiclass one vs rest strategy 
+ * used to train generic multiclass machines 
+ * for K-class problems with building 
+ * ensemble of K binary classifiers
+ * 
+ */
 class CMulticlassOneVsRestStrategy: public CMulticlassStrategy
 {
 public:
