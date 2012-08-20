@@ -25,7 +25,10 @@ using namespace std;
 
 namespace shogun
 {
-/** @brief  */
+/** @brief class MultitaskCompositeMachine used to
+ * solve multitask binary classification problems with separate
+ * training of given binary classifier on each task
+ */
 class CMultitaskCompositeMachine : public CMachine
 {
 

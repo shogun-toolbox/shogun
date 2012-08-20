@@ -19,6 +19,9 @@
 namespace shogun
 {
 
+/** @brief class MulticlassStrategy used to construct generic
+ * multiclass classifiers with ensembles of binary classifiers
+ */
 class CMulticlassStrategy: public CSGObject
 {
 public:

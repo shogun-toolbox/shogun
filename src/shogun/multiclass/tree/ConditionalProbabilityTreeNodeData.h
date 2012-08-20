@@ -13,7 +13,9 @@
 
 namespace shogun
 {
-
+/** @brief struct to store data of node of 
+ * conditional probability tree
+ */
 struct ConditionalProbabilityTreeNodeData
 {
 	/** labels */

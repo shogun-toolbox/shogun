@@ -13,6 +13,12 @@
 namespace shogun
 {
 
+/** @brief multiclass one vs one strategy 
+ * used to train generic multiclass machines 
+ * for K-class problems with building 
+ * voting-based ensemble of K*(K-1) 
+ * binary classifiers
+ */
 class CMulticlassOneVsOneStrategy: public CMulticlassStrategy
 {
 public:

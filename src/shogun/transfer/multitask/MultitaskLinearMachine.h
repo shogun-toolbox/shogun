@@ -24,7 +24,9 @@ using namespace std;
 
 namespace shogun
 {
-/** @brief  */
+/** @brief class MultitaskLinearMachine, a base class
+ * for linear multitask classifiers 
+ */
 class CMultitaskLinearMachine : public CLinearMachine
 {
 
