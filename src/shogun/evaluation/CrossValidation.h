@@ -169,9 +169,12 @@ protected:
 	 */
 	virtual float64_t evaluate_one_run();
 
+	/** number of evaluation runs for one fold */
 	int32_t m_num_runs;
+	/** confidence interval alpha parameter */
 	float64_t m_conf_int_alpha;
 
+	/** xval output listeners */
 	CList* m_xval_outputs;
 };
 
