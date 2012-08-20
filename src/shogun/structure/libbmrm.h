@@ -30,26 +30,42 @@
 namespace shogun
 {
 /** BMRM result structure */
-IGNORE_IN_CLASSLIST struct bmrm_return_value_T
+//IGNORE_IN_CLASSLIST struct bmrm_return_value_T
+struct bmrm_return_value_T
 {
 	/** number of iterations  */
 	uint32_t nIter;
+
 	/** number of cutting planes */
 	uint32_t nCP;
+
 	/** number of active cutting planes */
 	uint32_t nzA;
+
 	/** primal objective value  */
 	float64_t Fp;
+
 	/** reduced (dual) objective value */
 	float64_t Fd;
+
 	/** exitflag from the last call of the inner QP solver  */
 	int8_t qp_exitflag;
+
 	/** 1 .. bmrm.Q_P - bmrm.Q_D <= TolRel*ABS(bmrm.Q_P)
 	 *  2 .. bmrm.Q_P - bmrm.Q_D <= TolAbs
 	 * -1 .. bmrm.nCutPlanes >= BufSize
 	 * -2 .. not enough memory for the solver
 	 */
 	int8_t exitflag;
+
+	/** Track of Fp values in individual iterations */
+	SGVector< float64_t > hist_Fp;
+
+	/** Track of Fd values in individual iterations */
+	SGVector< float64_t > hist_Fd;
+
+	/** Track of w_dist values in individual iterations */
+	SGVector< float64_t > hist_wdist;
 };
 
 /** Linked list for cutting planes buffer management */
