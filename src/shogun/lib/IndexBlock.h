@@ -16,7 +16,8 @@
 namespace shogun
 {
 
-/** @brief used to represent tasks in multitask learning
+/** @brief class IndexBlock used to represent
+ * contiguous indices of one group (e.g. block of related features)
  */
 class CIndexBlock : public CSGObject
 {

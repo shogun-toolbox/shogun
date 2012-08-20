@@ -16,7 +16,11 @@
 namespace shogun
 {
 
-/** @brief 
+/** @brief class IndexBlockTree used to represent 
+ * tree guided feature relation.
+ *
+ * Can be constructed via CIndexBlock instance having
+ * sub blocks, adjacency matrix or precomputed indices.
  */
 class CIndexBlockTree : public CIndexBlockRelation
 {
@@ -25,25 +29,29 @@ public:
 	/** default constructor */
 	CIndexBlockTree();
 
-	/** constructor
+	/** constructor from index block
 	 * @param root_block root block of the tree
 	 */
 	CIndexBlockTree(CIndexBlock* root_block);
 
-	/** constructor
+	/** constructor from adjacency matrix
 	 * @param adjacency_matrix adjacency matrix
 	 * @param include_supernode whether to include supernode
 	 */
 	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode);
 	
-	/** constructor
-	 * @param G custom G
-	 * @param ind_t custom ind_t
+	/** constructor from general precomputed indices
+	 * each node is represented with indices G[ind_t.min:ind_t.max]
+	 * and weight ind_t.weight
+	 * @param G custom G containing mapping indices
+	 * @param ind_t custom ind_t containing flatten parameters of each node [min,max,weight]
 	 */
 	CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
 	
-	/** constructor
-	 * @param ind_t custom ind_t
+	/** constructor from basic precomputed indices
+	 * each node is represented with indices ind_t.min:ind_t.max
+	 * and weight ind_t.weight
+	 * @param ind_t custom ind_t containing flatten parameters of each node [min,max,weight]
 	 */
 	CIndexBlockTree(SGVector<float64_t> ind_t);
 

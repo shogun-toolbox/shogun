@@ -29,7 +29,9 @@ namespace shogun
 #ifdef HAVE_LAPACK
 
 
-
+/** @brief mapped sparse matrix for 
+ * representing graph relations of tasks
+ */
 class MappedSparseMatrix
 {
 
