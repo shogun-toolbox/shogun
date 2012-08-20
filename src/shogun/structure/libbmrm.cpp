@@ -110,11 +110,11 @@ bmrm_return_value_T svm_bmrm_solver(
 		uint32_t         Tmax,
 		bool             verbose)
 {
-	bmrm_return_value_T bmrm={0, 0, 0, 0, 0, 0, 0};
+	bmrm_return_value_T bmrm={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
-	float64_t *b, *beta, *diag_H;
-	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0;
-	floatmax_t rsum, sq_norm_W;
+	float64_t *b, *beta, *diag_H, *prevW;
+	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0, wdist=0.0;
+	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff=0.0;
 	uint32_t *I, *ICPcounter, *ACPs, cntICP=0, cntACP=0;
 	uint8_t S=1;
 	uint32_t nDim=model->get_dim();
@@ -146,6 +146,7 @@ bmrm_return_value_T svm_bmrm_solver(
 	ICPs=NULL;
 	ACPs=NULL;
 	H_buff=NULL;
+	prevW=NULL;
 
 	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
 
@@ -254,6 +255,19 @@ bmrm_return_value_T svm_bmrm_solver(
 		goto cleanup;
 	}
 
+	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+
+	if (prevW==NULL)
+	{
+		bmrm.exitflag=-2;
+		goto cleanup;
+	}
+
+
+	bmrm.hist_Fp.resize_vector(BufSize);
+	bmrm.hist_Fd.resize_vector(BufSize);
+	bmrm.hist_wdist.resize_vector(BufSize);
+
 	/* Iinitial solution */
 	R=model->risk(subgrad, W);
 
@@ -287,6 +301,11 @@ bmrm_return_value_T svm_bmrm_solver(
 	if (verbose)
 		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
+
+	/* store Fp, Fd and wdist history */
+	bmrm.hist_Fp[0]=bmrm.Fp;
+	bmrm.hist_Fd[0]=bmrm.Fd;
+	bmrm.hist_wdist[0]=0.0;
 
 	/* main loop */
 
@@ -383,15 +402,18 @@ bmrm_return_value_T svm_bmrm_solver(
 				find_free_idx(map, BufSize), subgrad, nDim);
 
 		sq_norm_W=0.0;
+		sq_norm_Wdiff=0.0;
 
 		for (uint32_t j=0; j<nDim; ++j)
 		{
 			b[bmrm.nCP]+=subgrad[j]*W[j];
 			sq_norm_W+=W[j]*W[j];
+			sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 		}
 
 		bmrm.Fp=R+0.5*_lambda*sq_norm_W;
 		bmrm.Fd=-qp_exitflag.QP;
+		wdist=::sqrt(sq_norm_Wdiff);
 
 		/* Stopping conditions */
 
@@ -413,6 +435,11 @@ bmrm_return_value_T svm_bmrm_solver(
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
+		/* Keep Fp, Fd and w_dist history */
+		bmrm.hist_Fp[bmrm.nIter]=bmrm.Fp;
+		bmrm.hist_Fd[bmrm.nIter]=bmrm.Fd;
+		bmrm.hist_wdist[bmrm.nIter]=wdist;
+
 		/* Check size of Buffer */
 
 		if (bmrm.nCP>=BufSize)
@@ -420,6 +447,9 @@ bmrm_return_value_T svm_bmrm_solver(
 			bmrm.exitflag=-2;
 			SG_SERROR("Buffer exceeded.\n");
 		}
+
+		/* keep W (for wdist history track) */
+		LIBBMRM_MEMCPY(prevW, W, nDim*sizeof(float64_t));
 
 		/* Inactive Cutting Planes (ICP) removal */
 		if (cleanICP)
@@ -494,14 +524,22 @@ bmrm_return_value_T svm_bmrm_solver(
 		}
 	} /* end of main loop */
 
+
+	bmrm.hist_Fp.resize_vector(bmrm.nIter);
+	bmrm.hist_Fd.resize_vector(bmrm.nIter);
+	bmrm.hist_wdist.resize_vector(bmrm.nIter);
+
 	cp_ptr=CPList_head;
 
-	while(cp_ptr != NULL)
+	while(cp_ptr!=NULL)
 	{
 		cp_ptr2=cp_ptr;
 		cp_ptr=cp_ptr->next;
 		LIBBMRM_FREE(cp_ptr2);
+		cp_ptr2=NULL;
 	}
+
+	cp_list=NULL;
 
 cleanup:
 
@@ -517,6 +555,10 @@ cleanup:
 	LIBBMRM_FREE(ACPs);
 	LIBBMRM_FREE(H_buff);
 	LIBBMRM_FREE(map);
+	LIBBMRM_FREE(prevW);
+
+	if (cp_list)
+		LIBBMRM_FREE(cp_list);
 
 	return(bmrm);
 }

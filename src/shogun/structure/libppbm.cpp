@@ -48,7 +48,7 @@ bmrm_return_value_T svm_ppbm_solver(
 		uint32_t        Tmax,
 		bool            verbose)
 {
-	bmrm_return_value_T ppbmrm={0, 0, 0, 0, 0, 0, 0};
+	bmrm_return_value_T ppbmrm={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	libqp_state_T qp_exitflag={0, 0, 0, 0}, qp_exitflag_good={0, 0, 0, 0};
 	float64_t *b, *b2, *beta, *beta_good, *beta_start, *diag_H, *diag_H2;
 	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0;
@@ -174,6 +174,10 @@ bmrm_return_value_T svm_ppbm_solver(
 		goto cleanup;
 	}
 
+	ppbmrm.hist_Fp.resize_vector(BufSize);
+	ppbmrm.hist_Fd.resize_vector(BufSize);
+	ppbmrm.hist_wdist.resize_vector(BufSize);
+
 	/* Iinitial solution */
 	R = model->risk(subgrad, W);
 
@@ -207,12 +211,18 @@ bmrm_return_value_T svm_ppbm_solver(
 	ppbmrm.Fp=R+0.5*_lambda*sq_norm_W + alpha*sq_norm_Wdiff;
 	ppbmrm.Fd=-LIBBMRM_PLUS_INF;
 	lastFp=ppbmrm.Fp;
+	wdist=::sqrt(sq_norm_Wdiff);
 
 	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*::sqrt(sq_norm_W);
 
 	LIBBMRM_MEMCPY(prevW, W, nDim*sizeof(float64_t));
 
 	tstop=ttime.cur_time_diff(false);
+
+	/* Keep history of Fp, Fd, wdist */
+	ppbmrm.hist_Fp[0]=ppbmrm.Fp;
+	ppbmrm.hist_Fd[0]=ppbmrm.Fd;
+	ppbmrm.hist_wdist[0]=wdist;
 
 	/* Verbose output */
 
@@ -583,6 +593,11 @@ bmrm_return_value_T svm_ppbm_solver(
 
 		wdist=::sqrt(sq_norm_Wdiff);
 
+		/* Keep history of Fp, Fd, wdist */
+		ppbmrm.hist_Fp[ppbmrm.nIter]=ppbmrm.Fp;
+		ppbmrm.hist_Fd[ppbmrm.nIter]=ppbmrm.Fd;
+		ppbmrm.hist_wdist[ppbmrm.nIter]=wdist;
+
 		/* Verbose output */
 		if (verbose)
 			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, wdist=%lf, alpha=%lf, qp_cnt=%d, gamma=%lf, tuneAlpha=%d\n",
@@ -673,14 +688,21 @@ bmrm_return_value_T svm_ppbm_solver(
 		}
 	} /* end of main loop */
 
+	ppbmrm.hist_Fp.resize_vector(ppbmrm.nIter);
+	ppbmrm.hist_Fd.resize_vector(ppbmrm.nIter);
+	ppbmrm.hist_wdist.resize_vector(ppbmrm.nIter);
+
 	cp_ptr=CPList_head;
 
-	while(cp_ptr != NULL)
+	while(cp_ptr!=NULL)
 	{
 		cp_ptr2=cp_ptr;
 		cp_ptr=cp_ptr->next;
 		LIBBMRM_FREE(cp_ptr2);
+		cp_ptr2=NULL;
 	}
+
+	cp_list=NULL;
 
 cleanup:
 
@@ -706,6 +728,9 @@ cleanup:
 	LIBBMRM_FREE(b2);
 	LIBBMRM_FREE(diag_H2);
 	LIBBMRM_FREE(H2);
+
+	if (cp_list)
+		LIBBMRM_FREE(cp_list);
 
 	return(ppbmrm);
 }
