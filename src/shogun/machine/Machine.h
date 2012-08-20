@@ -96,13 +96,14 @@ enum ESolverType
 	ST_BLOCK_NORM=6
 };
 
+/** problem type */
 enum EProblemType
 {
 	PT_BINARY = 0,
 	PT_REGRESSION = 1,
 	PT_MULTICLASS = 2,
 	PT_STRUCTURED = 3,
-  PT_LATENT = 4
+	PT_LATENT = 4
 };
 
 #define MACHINE_PROBLEM_TYPE(PT) \

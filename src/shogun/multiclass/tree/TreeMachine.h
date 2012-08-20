@@ -17,6 +17,9 @@
 namespace shogun
 {
 
+/** @brief class TreeMachine, a base class
+ * for tree based multiclass classifiers
+ */
 template <class T> class CTreeMachine: public CBaseMulticlassMachine
 {
 public:

@@ -144,8 +144,14 @@ public:
 	/** setter for the number of runs to use for evaluation */
 	void set_conf_int_alpha(float64_t m_conf_int_alpha);
 
+	/** evaluate */
 	virtual CEvaluationResult* evaluate();
 
+	/** appends given cross validation output instance
+	 * to the list of listeners
+	 * 
+	 * @param cross_validation_output given cross validation output
+	 */
 	void add_cross_validation_output(
 			CCrossValidationOutput* cross_validation_output);
 
