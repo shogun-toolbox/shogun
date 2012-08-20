@@ -30,8 +30,8 @@
 namespace shogun
 {
 /** BMRM result structure */
-//IGNORE_IN_CLASSLIST struct bmrm_return_value_T
-struct bmrm_return_value_T
+IGNORE_IN_CLASSLIST struct bmrm_return_value_T
+//struct bmrm_return_value_T
 {
 	/** number of iterations  */
 	uint32_t nIter;
