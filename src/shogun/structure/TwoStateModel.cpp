@@ -293,7 +293,7 @@ CHMSVMModel* CTwoStateModel::simulate_two_state_data()
 
 		int32_t idx = i*signal.num_cols;
 		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
-			signal[idx++] = lf[j] + CMath::random(0,1);
+			signal[idx++] = lf[j] + noise_std*CMath::normal_random((float64_t)0.0, 1.0);
 	}
 
 	// Substitute some features by pure noise
@@ -303,7 +303,7 @@ CHMSVMModel* CTwoStateModel::simulate_two_state_data()
 	{
 		int32_t idx = i*signal.num_cols;
 		for ( int32_t j = 0 ; j < signal.num_cols ; ++j )
-			signal[idx++] = CMath::random(0,2);
+			signal[idx++] = noise_std*CMath::normal_random((float64_t)0.0, 1.0);
 	}
 
 	CMatrixFeatures< float64_t >* features =
