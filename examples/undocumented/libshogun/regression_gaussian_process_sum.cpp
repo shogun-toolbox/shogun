@@ -305,4 +305,9 @@ int main(int argc, char **argv)
 	return 0;
 
 }
-#endif
+#else // HAVE_EIGEN3
+int main(int argc, char **argv)
+{
+	return 0;
+}
+#endif // HAVE_EIGEN3
