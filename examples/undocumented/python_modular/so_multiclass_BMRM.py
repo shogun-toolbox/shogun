@@ -1,14 +1,25 @@
 #!/usr/bin/env python
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from shogun.Features 	import RealFeatures
 from shogun.Loss     	import HingeLoss
 from shogun.Structure	import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM
 from shogun.Structure 	import BMRM, PPBMRM, P3BMRM
+from shogun.Evaluation 	import StructuredAccuracy
+
+def fill_data(cnt, minv, maxv):
+	x1 = np.linspace(minv, maxv, cnt)
+	a, b = np.meshgrid(x1, x1)
+	X = np.array((np.ravel(a), np.ravel(b)))
+	y = np.zeros((1, cnt*cnt))
+	tmp = cnt*cnt;
+	y[0, tmp/3:(tmp/3)*2]=1
+	y[0, tmp/3*2:(tmp/3)*3]=2
+	return X, y.flatten()
 
 def gen_data():
-	np.random.seed(0)
 	covs = np.array([[[0., -1. ], [2.5,  .7]],
 		[[3., -1.5], [1.2, .3]],
 		[[ 2,  0  ], [ .0,  1.5 ]]])
@@ -18,6 +29,13 @@ def gen_data():
 	Y = np.hstack((np.zeros(N), np.ones(N), 2*np.ones(N)))
 	return X, Y
 
+def get_so_labels(out):
+	N = out.get_num_labels()
+	l = np.zeros(N)
+	for i in xrange(N):
+		l[i] = RealNumber.obtain_from_generic(out.get_label(i)).value
+	return l
+
 # Number of classes
 M = 3
 # Number of samples of each class
@@ -26,6 +44,10 @@ N = 1000
 dim = 2
 
 X, y = gen_data()
+
+cnt = 250
+
+X2, y2 = fill_data(cnt, np.min(X), np.max(X))
 
 labels = MulticlassSOLabels(y)
 features = RealFeatures(X.T)
@@ -47,12 +69,38 @@ sosvm.set_solver(BMRM)		# select training algorithm
 
 sosvm.train()
 
+res = sosvm.get_result()
+Fps = np.array(res.hist_Fp)
+Fds = np.array(res.hist_Fd)
+wdists = np.array(res.hist_wdist)
+
+plt.figure()
+plt.subplot(221)
+plt.title('Fp and Fd history')
+plt.plot(xrange(res.nIter), Fps, hold=True)
+plt.plot(xrange(res.nIter), Fds, hold=True)
+plt.subplot(222)
+plt.title('w dist history')
+plt.plot(xrange(res.nIter), wdists)
+
+# Evaluation
 out = sosvm.apply()
-count = 0.0
-for i in xrange(out.get_num_labels()):
-	yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
-	if yi_pred.value == y[i]:
-		count += 1.0
 
-print "Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() )
+Evaluation = StructuredAccuracy()
+acc = Evaluation.evaluate(out, labels)
 
+print "Correct classification rate: %0.4f%%" % ( 100.0*acc )
+
+# show figure
+Z = get_so_labels(sosvm.apply(RealFeatures(X2)))
+x = (X2[0,:]).reshape(cnt, cnt)
+y = (X2[1,:]).reshape(cnt, cnt)
+z = Z.reshape(cnt, cnt)
+
+plt.subplot(223)
+plt.pcolor(x, y, z, shading='interp')
+plt.contour(x, y, z, linewidths=1, colors='black', hold=True)
+plt.plot(X[:,0], X[:,1], 'yo')
+plt.axis('tight')
+plt.title('Classification')
+plt.show()
