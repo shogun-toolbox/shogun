@@ -19,6 +19,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/StructuredLabels.h>
+#include <shogun/labels/LatentLabels.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -165,6 +166,8 @@ class CMachine : public CSGObject
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 		/** apply machine to data in means of SO classification problem */
 		virtual CStructuredLabels* apply_structured(CFeatures* data=NULL);
+		/** apply machine to data in means of latent problem */
+		virtual CLatentLabels* apply_latent(CFeatures* data=NULL);
 
 		/** set labels
 		 *
@@ -252,6 +255,12 @@ class CMachine : public CSGObject
 				SGVector<index_t> indices);
 		/** applies a locked machine on a set of indices for multiclass problems */
 		virtual CMulticlassLabels* apply_locked_multiclass(
+				SGVector<index_t> indices);
+		/** applies a locked machine on a set of indices for structured problems */
+		virtual CStructuredLabels* apply_locked_structured(
+				SGVector<index_t> indices);
+		/** applies a locked machine on a set of indices for latent problems */
+		virtual CLatentLabels* apply_locked_latent(
 				SGVector<index_t> indices);
 
 		/** Locks the machine on given labels and data. After this call, only

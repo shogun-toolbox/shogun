@@ -39,19 +39,19 @@ namespace shogun
 			CLinearLatentMachine(CLatentModel* model, float64_t C);
 
 			virtual ~CLinearLatentMachine();
-
-			/** apply linear machine to all examples
+			
+			/** apply linear machine to data set before
 			 *
-			 * @return resulting labels
+			 * @return classified labels
 			 */
-			virtual CLatentLabels* apply() = 0;
+			virtual CLatentLabels* apply_latent() = 0;
 
 			/** apply linear machine to data
 			 *
 			 * @param data (test)data to be classified
 			 * @return classified labels
 			 */
-			virtual CLatentLabels* apply(CFeatures* data);
+			virtual CLatentLabels* apply_latent(CFeatures* data);
 
 			/** Returns the name of the SGSerializable instance.
 			 *

@@ -201,6 +201,10 @@ CLabels* CMachine::apply_locked(SGVector<index_t> indices)
 			return apply_locked_regression(indices);
 		case PT_MULTICLASS:
 			return apply_locked_multiclass(indices);
+		case PT_STRUCTURED:
+			return apply_locked_structured(indices);
+		case PT_LATENT:
+			return apply_locked_latent(indices);
 		default:
 			SG_ERROR("Unknown problem type");
 			break;
@@ -228,7 +232,13 @@ CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
 
 CStructuredLabels* CMachine::apply_structured(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_multiclass()\n");
+	SG_ERROR("This machine does not support apply_structured()\n");
+	return NULL;
+}
+
+CLatentLabels* CMachine::apply_latent(CFeatures* data)
+{
+	SG_ERROR("This machine does not support apply_latent()\n");
 	return NULL;
 }
 
@@ -249,6 +259,20 @@ CRegressionLabels* CMachine::apply_locked_regression(SGVector<index_t> indices)
 CMulticlassLabels* CMachine::apply_locked_multiclass(SGVector<index_t> indices)
 {
 	SG_ERROR("apply_locked_multiclass(SGVector<index_t>) is not yet implemented "
+			"for %s\n", get_name());
+	return NULL;
+}
+
+CStructuredLabels* CMachine::apply_locked_structured(SGVector<index_t> indices)
+{
+	SG_ERROR("apply_locked_structured(SGVector<index_t>) is not yet implemented "
+			"for %s\n", get_name());
+	return NULL;
+}
+
+CLatentLabels* CMachine::apply_locked_latent(SGVector<index_t> indices)
+{
+	SG_ERROR("apply_locked_latent(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());
 	return NULL;
 }

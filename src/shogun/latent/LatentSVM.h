@@ -48,9 +48,9 @@ namespace shogun
 			 *
 			 * @return resulting labels
 			 */
-			virtual CLatentLabels* apply();
+			virtual CLatentLabels* apply_latent();
 
-			using CLinearLatentMachine::apply;
+			using CLinearLatentMachine::apply_latent;
 
 			/** Returns the name of the SGSerializable instance.
 			 *
