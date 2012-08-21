@@ -14,7 +14,7 @@
 using namespace shogun;
 
 CLinearStructuredOutputMachine::CLinearStructuredOutputMachine()
-: CStructuredOutputMachine(), m_features(NULL)
+: CStructuredOutputMachine()
 {
 	register_parameters();
 }
@@ -22,31 +22,24 @@ CLinearStructuredOutputMachine::CLinearStructuredOutputMachine()
 CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
 		CStructuredModel*  model, 
 		CLossFunction*     loss, 
-		CStructuredLabels* labs, 
-		CFeatures*      features)
-: CStructuredOutputMachine(model, loss, labs), m_features(NULL)
+		CStructuredLabels* labs)
+: CStructuredOutputMachine(model, loss, labs)
 {
-	set_features(features);
 	register_parameters();
 }
 
 CLinearStructuredOutputMachine::~CLinearStructuredOutputMachine()
 {
-	SG_UNREF(m_features)
 }
 
 void CLinearStructuredOutputMachine::set_features(CFeatures* f)
 {
-	SG_REF(f);
-	SG_UNREF(m_features);
-	m_features = f;
 	m_model->set_features(f);
 }
 
 CFeatures* CLinearStructuredOutputMachine::get_features() const
 {
-	SG_REF(m_features);
-	return m_features;
+	return m_model->get_features();
 }
 
 SGVector< float64_t > CLinearStructuredOutputMachine::get_w() const
@@ -62,14 +55,15 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 	}
 
 	CStructuredLabels* out;
-	if ( !m_features )
+	CFeatures* model_features = this->get_features();
+	if (!model_features)
 	{
 		out = new CStructuredLabels();
 	}
 	else
 	{
-		out = new CStructuredLabels( m_features->get_num_vectors() );
-		for ( int32_t i = 0 ; i < m_features->get_num_vectors() ; ++i )
+		out = new CStructuredLabels(model_features->get_num_vectors());
+		for ( int32_t i = 0 ; i < model_features->get_num_vectors() ; ++i )
 		{
 			CResultSet* result = m_model->argmax(m_w, i, false);
 			out->add_label(result->argmax);
@@ -77,13 +71,12 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 			SG_UNREF(result);
 		}
 	}
-
+	SG_UNREF(model_features);
 	SG_REF(out);
 	return out;
 }
 
 void CLinearStructuredOutputMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_features, "m_features", "Feature object", MS_NOT_AVAILABLE);
 	SG_ADD(&m_w, "m_w", "Weight vector", MS_NOT_AVAILABLE);
 }

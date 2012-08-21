@@ -49,7 +49,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		uint32_t        cp_models,
 		bool            verbose)
 {
-	bmrm_return_value_T p3bmrm={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	bmrm_return_value_T p3bmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0}, qp_exitflag_good={0, 0, 0, 0};
 	float64_t *b, *b2, *beta, *beta_good, *beta_start, *diag_H, *diag_H2;
 	float64_t R, *Rt, **subgrad_t, *A, QPSolverTolRel, *C=NULL;

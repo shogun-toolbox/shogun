@@ -56,7 +56,7 @@ model = MulticlassModel(features, labels)
 loss = HingeLoss()
 
 lambda_ = 1e1
-sosvm = DualLibQPBMSOSVM(model, loss, labels, features, lambda_)
+sosvm = DualLibQPBMSOSVM(model, loss, labels, lambda_)
 
 sosvm.set_cleanAfter(10)	# number of iterations that cutting plane has to be inactive for to be removed
 sosvm.set_cleanICP(True)	# enables inactive cutting plane removal feature
@@ -70,8 +70,8 @@ sosvm.set_solver(BMRM)		# select training algorithm
 sosvm.train()
 
 res = sosvm.get_result()
-Fps = np.array(res.hist_Fp)
-Fds = np.array(res.hist_Fd)
+Fps = np.array(res.get_hist_Fp())
+Fds = np.array(res.get_hist_Fd())
 wdists = np.array(res.hist_wdist)
 
 plt.figure()
