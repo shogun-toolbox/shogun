@@ -150,7 +150,7 @@ class CStateModel : public CSGObject
 		 * which may not. The elements of the vector returned can take one
 		 * out of two values:
 		 *
-		 * - -CMath::INFTY if the state is not allowed to be a start state
+		 * - -INFTY if the state is not allowed to be a start state
 		 * - 0 otherwise
 		 *
 		 * The distrubtion of start states m_p must be initialized in the
@@ -167,7 +167,7 @@ class CStateModel : public CSGObject
 		 * which may not. The elements of the vector returned can take one
 		 * out of two values:
 		 *
-		 * - -CMath::INFTY if the state is not allowed to be a stop state
+		 * - -INFTY if the state is not allowed to be a stop state
 		 * - 0 otherwise
 		 *
 		 * The distrubtion of stop states m_q must be initialized in the
