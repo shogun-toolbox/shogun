@@ -110,7 +110,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		uint32_t         Tmax,
 		bool             verbose)
 {
-	bmrm_return_value_T bmrm={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	bmrm_return_value_T bmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
 	float64_t *b, *beta, *diag_H, *prevW;
 	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0, wdist=0.0;

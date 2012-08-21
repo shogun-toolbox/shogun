@@ -23,10 +23,9 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		CStructuredModel*   	model,
 		CLossFunction*      	loss,
 		CStructuredLabels*  	labs,
-		CDotFeatures*       	features,
 		float64_t           	_lambda,
 		SGVector< float64_t >	W)
-:CLinearStructuredOutputMachine(model, loss, labs, features)
+ : CLinearStructuredOutputMachine(model, loss, labs)
 {
 	set_TolRel(0.001);
 	set_TolAbs(0.0);
@@ -84,6 +83,9 @@ void CDualLibQPBMSOSVM::init()
 
 bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 {
+	if (data)
+		set_features(data);
+
 	// call the solver
 	switch(m_solver)
 	{

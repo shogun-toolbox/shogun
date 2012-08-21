@@ -48,7 +48,7 @@ bmrm_return_value_T svm_ppbm_solver(
 		uint32_t        Tmax,
 		bool            verbose)
 {
-	bmrm_return_value_T ppbmrm={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	bmrm_return_value_T ppbmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0}, qp_exitflag_good={0, 0, 0, 0};
 	float64_t *b, *b2, *beta, *beta_good, *beta_start, *diag_H, *diag_H2;
 	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0;

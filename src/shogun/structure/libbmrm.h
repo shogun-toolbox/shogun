@@ -25,14 +25,33 @@
 #define LIBBMRM_MEMMOVE(x, y, z) memmove(x, y, z)
 #define LIBBMRM_INDEX(ROW, COL, NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 #define LIBBMRM_ABS(A) ((A) < 0 ? -(A) : (A))
-#define IGNORE_IN_CLASSLIST
 
 namespace shogun
 {
 /** BMRM result structure */
-IGNORE_IN_CLASSLIST struct bmrm_return_value_T
-//struct bmrm_return_value_T
+struct bmrm_return_value_T
 {
+	/** constructor */
+	bmrm_return_value_T()
+	{
+		nIter = 0;
+		nCP = 0;
+		nzA = 0;
+		Fp = 0;
+		Fd = 0;
+		qp_exitflag = 0;
+		exitflag = 0;
+	};
+
+	/** destructor */
+	~bmrm_return_value_T() { };
+
+	/** dummy load serializable */
+	bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; }
+	
+	/** dummy save serializable */
+	bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; }
+
 	/** number of iterations  */
 	uint32_t nIter;
 
@@ -66,6 +85,15 @@ IGNORE_IN_CLASSLIST struct bmrm_return_value_T
 
 	/** Track of w_dist values in individual iterations */
 	SGVector< float64_t > hist_wdist;
+
+	/** get hist Fp */
+	SGVector<float64_t> get_hist_Fp() const { return hist_Fp; }
+
+	/** get hist Fd */
+	SGVector<float64_t> get_hist_Fd() const { return hist_Fd; }
+
+	/** get hist wdist */
+	SGVector<float64_t> get_hist_wdist() const { return hist_wdist; }
 };
 
 /** Linked list for cutting planes buffer management */

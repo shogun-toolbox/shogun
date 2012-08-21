@@ -62,7 +62,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 				CStructuredModel* 		model,
 				CLossFunction* 			loss,
 				CStructuredLabels* 		labs,
-				CDotFeatures* 			features,
 				float64_t 				_lambda,
 				SGVector< float64_t > 	W=0);
 

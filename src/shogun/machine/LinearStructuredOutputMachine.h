@@ -29,9 +29,8 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 * @param model structured model with application specific functions
 		 * @param loss loss function
 		 * @param labs structured labels
-		 * @param features features
 		 */
-		CLinearStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CFeatures* features);
+		CLinearStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs);
 
 		/** destructor */
 		virtual ~CLinearStructuredOutputMachine();
