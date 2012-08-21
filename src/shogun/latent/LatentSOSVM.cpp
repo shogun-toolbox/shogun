@@ -31,9 +31,8 @@ CLatentSOSVM::~CLatentSOSVM()
 	SG_UNREF(m_so_solver);
 }
 
-CLatentLabels* CLatentSOSVM::apply()
+CLatentLabels* CLatentSOSVM::apply_latent()
 {
-
 	return NULL;
 }
 

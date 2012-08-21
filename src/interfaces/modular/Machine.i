@@ -42,6 +42,16 @@
     }
 %enddef
 
+%define APPLY_LATENT(CLASS)
+    %extend CLASS
+    {
+        CLatentLabels* apply(CFeatures* data=NULL)
+        {
+            return $self->apply_latent(data);
+        }
+    }
+%enddef
+
 namespace shogun {
 APPLY_MULTICLASS(CMulticlassMachine);
 APPLY_MULTICLASS(CKernelMulticlassMachine);
@@ -70,6 +80,9 @@ APPLY_STRUCTURED(CKernelStructuredOutputMachine);
 #ifdef USE_MOSEK
 APPLY_STRUCTURED(CPrimalMosekSOSVM);
 #endif
+APPLY_STRUCTURED(CDualLibQPBMSOSVM);
+
+APPLY_LATENT(CLatentSVM);
 }
 
 %rename(apply_generic) CMachine::apply(CFeatures* data=NULL);
@@ -103,4 +116,5 @@ APPLY_STRUCTURED(CPrimalMosekSOSVM);
 #undef APPLY_BINARY
 #undef APPLY_REGRESSION
 #undef APPLY_STRUCTURED
+#undef APPLY_LATENT
 #endif

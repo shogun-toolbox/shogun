@@ -38,7 +38,7 @@ CLinearLatentMachine::~CLinearLatentMachine()
 	SG_UNREF(m_model);
 }
 
-CLatentLabels* CLinearLatentMachine::apply(CFeatures* data)
+CLatentLabels* CLinearLatentMachine::apply_latent(CFeatures* data)
 {
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n");
@@ -46,7 +46,7 @@ CLatentLabels* CLinearLatentMachine::apply(CFeatures* data)
 	CLatentFeatures* lf = CLatentFeatures::obtain_from_generic(data);
 	m_model->set_features(lf);
 
-	return apply();
+	return apply_latent();
 }
 
 void CLinearLatentMachine::set_model(CLatentModel* latent_model)

@@ -40,7 +40,7 @@ namespace shogun
 			 *
 			 * @return classified labels
 			 */
-			virtual CLatentLabels* apply();
+			virtual CLatentLabels* apply_latent();
 
 			/** set SO solver that is going to be used
 			 * 
