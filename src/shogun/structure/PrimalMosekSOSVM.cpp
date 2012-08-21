@@ -25,9 +25,8 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM()
 CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 		CStructuredModel*  model,
 		CLossFunction*     loss,
-		CStructuredLabels* labs,
-		CFeatures*      features)
-: CLinearStructuredOutputMachine(model, loss, labs, features)
+		CStructuredLabels* labs)
+: CLinearStructuredOutputMachine(model, loss, labs)
 {
 }
 
@@ -42,6 +41,10 @@ CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
 
 bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 {
+	if (data)
+		set_features(data);
+
+	CDotFeatures* model_features = get_features();
 	// Check that the scenary is correct to start with training
 	m_model->check_training_setup();
 
@@ -52,7 +55,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Number of auxiliary constraints
 	int32_t num_aux_con = m_model->get_num_aux_con();
 	// Number of training examples
-	int32_t N = m_features->get_num_vectors();
+	int32_t N = model_features->get_num_vectors();
 
 	// Interface with MOSEK
 	CMosek* mosek = new CMosek(0, M+num_aux+N);
@@ -188,7 +191,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Free resources
 	SG_UNREF(results);
 	SG_UNREF(mosek);
-
+	SG_UNREF(model_features);
 	return true;
 }
 

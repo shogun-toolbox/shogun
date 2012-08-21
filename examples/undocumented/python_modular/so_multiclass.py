@@ -36,7 +36,7 @@ features = RealFeatures(X.T)
 
 model = MulticlassModel(features, labels)
 loss = HingeLoss()
-sosvm = PrimalMosekSOSVM(model, loss, labels, features)
+sosvm = PrimalMosekSOSVM(model, loss, labels)
 sosvm.train()
 
 out = sosvm.apply()
