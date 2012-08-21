@@ -145,6 +145,30 @@ int32_t CStructuredModel::get_num_aux_con() const
 
 float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
 {
-	SG_NOTIMPLEMENTED;
-	return -1.0;
+	int32_t from=0, to=0;
+	if (info)
+	{
+		from = info->_from;
+		to = (info->N == 0) ? m_features->get_num_vectors() : from+info->N;
+	}
+	else
+	{
+		from = 0;
+		to = m_features->get_num_vectors();
+	}
+
+	int32_t dim = this->get_dim();
+	float64_t R = 0.0;
+	for (int32_t i=from; i<to; i++)
+	{
+		CResultSet* result = this->argmax(SGVector<float64_t>(W,dim,false), i, true);
+		SGVector<float64_t> psi_pred = result->psi_pred;
+		SGVector<float64_t> psi_truth = result->psi_truth;
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, 1.0, psi_pred.vector, dim);
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, -1.0, psi_truth.vector, dim);
+		R += result->score;
+		SG_UNREF(result);
+	}
+
+	return R;
 }
