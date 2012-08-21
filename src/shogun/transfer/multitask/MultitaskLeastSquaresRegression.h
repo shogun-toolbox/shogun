@@ -16,11 +16,16 @@
 
 namespace shogun
 {
-/** @brief  */
+/** @brief class Multitask Least Squares Regression, a
+ * machine to solve regression problems with a few tasks
+ * related via group or tree. Based on L1/Lq regression 
+ * for groups and L1/L2 for trees
+ */
 class CMultitaskLeastSquaresRegression : public CMultitaskLinearMachine
 {
 
 	public:
+		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION)
 
 		/** default constructor */
