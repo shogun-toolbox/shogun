@@ -46,6 +46,18 @@ slep_result_t slep_mc_tree_lr(
 	MatrixXd w  = MatrixXd::Zero(n_feats, n_classes);
 	// intercepts (biases)
 	VectorXd c  = VectorXd::Zero(n_classes);
+
+	if (options.last_result)
+	{
+		SGMatrix<float64_t> last_w = options.last_result->w;
+		SGVector<float64_t> last_c = options.last_result->c;
+		for (i=0; i<n_classes; i++)
+		{
+			c[i] = last_c[i];
+			for (j=0; j<n_feats; j++)
+				w(j,i) = last_w(j,i);
+		}
+	}
 	// iterative process matrices and vectors
 	MatrixXd wp = w, wwp = MatrixXd::Zero(n_feats, n_classes);
 	VectorXd cp = c, ccp = VectorXd::Zero(n_classes);
@@ -55,6 +67,8 @@ slep_result_t slep_mc_tree_lr(
 	VectorXd search_c = VectorXd::Zero(n_classes);
 	// dot products
 	MatrixXd Aw  = MatrixXd::Zero(n_vecs, n_classes);
+	for (j=0; j<n_classes; j++)
+		features->dense_dot_range(Aw.col(j).data(), 0, n_vecs, NULL, w.col(j).data(), n_feats, 0.0);
 	MatrixXd As  = MatrixXd::Zero(n_vecs, n_classes);
 	MatrixXd Awp = MatrixXd::Zero(n_vecs, n_classes);
 	// gradients
@@ -205,7 +219,7 @@ slep_result_t slep_mc_tree_lr(
 		cout << "Objective = " << objective << endl;
 
 		// check for termination of whole process
-		if ((CMath::abs(objective - objective_p) < options.tolerance) && (iter>2))
+		if ((CMath::abs(objective - objective_p) < options.tolerance*CMath::abs(objective)) && (iter>2))
 		{
 			SG_SINFO("Objective changes less than tolerance\n");
 			done = true;
