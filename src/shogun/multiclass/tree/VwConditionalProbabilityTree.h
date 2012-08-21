@@ -19,6 +19,7 @@
 namespace shogun
 {
 
+/** Tree Data for Vowpal Wabbit Conditional Probability Tree */
 struct VwConditionalProbabilityTreeNodeData
 {
 	int32_t label;
@@ -27,6 +28,7 @@ struct VwConditionalProbabilityTreeNodeData
 	VwConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
 };
 
+/** Conditional Probability Tree using Vowpal Wabbit for base machine. */
 class CVwConditionalProbabilityTree: public CTreeMachine<VwConditionalProbabilityTreeNodeData>
 {
 public:

@@ -19,6 +19,7 @@
 namespace shogun
 {
 
+/** Utility class for CRelaxedTree */
 class RelaxedTreeUtil
 {
 public:
