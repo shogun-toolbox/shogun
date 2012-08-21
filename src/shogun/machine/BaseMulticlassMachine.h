@@ -18,6 +18,8 @@ namespace shogun
 
 class CMachine;
 
+/** Base class of all Multiclass Machines.
+ */
 class CBaseMulticlassMachine: public CMachine
 {
 public:
