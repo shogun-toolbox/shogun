@@ -74,12 +74,16 @@ public:
 		return m_active_subsets_stack->get_num_elements();
 	}
 
+	/** returns last (active) subset of the stack
+	 * 
+	 * @return active subset
+	 */
 	CSubset* get_last_subset() const { return m_active_subset; }
 
 	/** returns the corresponding real index of a subset index
 	 * Maps through all added subsets in stack.
 	 *
-	 * @ return array index of the provided subset index
+	 * @return array index of the provided subset index
 	 */
 	inline index_t subset_idx_conversion(index_t idx) const
 	{
