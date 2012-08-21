@@ -105,6 +105,7 @@ public:
 	/** extra data carried by the tree node */
 	T data;
 
+	/** print function */
 	typedef void (*data_print_func_t) (const T&);
 	/** debug print the tree structure
 	 * @param data_print_func the function to print the data payload

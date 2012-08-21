@@ -22,9 +22,12 @@ namespace shogun
 /** Tree Data for Vowpal Wabbit Conditional Probability Tree */
 struct VwConditionalProbabilityTreeNodeData
 {
+	/** actual label */
+	/** probability of right subtree used for prediction */
 	int32_t label;
-	float64_t p_right; // prob of right subtree, used in prediction
+	float64_t p_right; 
 
+	/** ctor */
 	VwConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
 };
 
