@@ -85,15 +85,6 @@ struct bmrm_return_value_T
 
 	/** Track of w_dist values in individual iterations */
 	SGVector< float64_t > hist_wdist;
-
-	/** get hist Fp */
-	SGVector<float64_t> get_hist_Fp() const { return hist_Fp; }
-
-	/** get hist Fd */
-	SGVector<float64_t> get_hist_Fd() const { return hist_Fd; }
-
-	/** get hist wdist */
-	SGVector<float64_t> get_hist_wdist() const { return hist_wdist; }
 };
 
 /** Linked list for cutting planes buffer management */
