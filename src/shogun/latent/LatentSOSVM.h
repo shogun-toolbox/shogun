@@ -38,7 +38,6 @@ namespace shogun
 
 			/** apply linear machine to data
 			 *
-			 * @param data (test)data to be classified
 			 * @return classified labels
 			 */
 			virtual CLatentLabels* apply();
