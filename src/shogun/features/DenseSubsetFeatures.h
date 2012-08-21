@@ -21,6 +21,7 @@ template<class ST> class CDenseFeatures;
 template<class ST> class SGVector;
 class CDotFeatures;
 
+/** SubsetFeatures wrap features but only uses a subset of the variables */
 template<class ST> class CDenseSubsetFeatures: public CDotFeatures
 {
 public:

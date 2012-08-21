@@ -17,6 +17,7 @@
 namespace shogun
 {
 
+/** The node of the tree structure forming a TreeMachine */
 template <typename T>
 class CTreeMachineNode
 	: public CSGObject
@@ -104,10 +105,10 @@ public:
 	/** extra data carried by the tree node */
 	T data;
 
+	typedef void (*data_print_func_t) (const T&);
 	/** debug print the tree structure
 	 * @param data_print_func the function to print the data payload
 	 */
-	typedef void (*data_print_func_t) (const T&);
 	void debug_print(data_print_func_t data_print_func)
 	{
 		debug_print_impl(data_print_func, this, 0);
@@ -119,6 +120,7 @@ private:
 	CTreeMachineNode *m_parent;  ///< parent node
 	int32_t           m_machine; ///< machine index associated with this node
 
+    /** implementation of printing the tree for debugging purpose */
 	static void debug_print_impl(data_print_func_t data_print_func, CTreeMachineNode<T> *node, int32_t depth)
 	{
 		for (int32_t i=0; i < depth; ++i)
