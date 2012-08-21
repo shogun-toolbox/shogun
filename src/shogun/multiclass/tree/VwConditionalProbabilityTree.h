@@ -23,8 +23,8 @@ namespace shogun
 struct VwConditionalProbabilityTreeNodeData
 {
 	/** actual label */
-	/** probability of right subtree used for prediction */
 	int32_t label;
+	/** probability of right subtree used for prediction */
 	float64_t p_right; 
 
 	/** ctor */

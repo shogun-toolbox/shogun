@@ -54,7 +54,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 * @param model 		Structured Model
 		 * @param loss			Loss function
 		 * @param labs			Structured labels
-		 * @param features		Feature vectors
 		 * @param _lambda		Regularization constant
 		 * @param W				initial solution of weight vector
 		 */
