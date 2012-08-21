@@ -16,9 +16,9 @@
 
 namespace shogun
 {
-	/**
-	 * @brief TODO
-	 *
+	/** @brief class Latent Structured Output SVM,
+	 * an structured output based machine for classification
+	 * problems with latent variables.
 	 */
 	class CLatentSOSVM: public CLinearLatentMachine
 	{
@@ -43,6 +43,10 @@ namespace shogun
 			 */
 			virtual CLatentLabels* apply();
 
+			/** set SO solver that is going to be used
+			 * 
+			 * @param so SO machine
+			 */
 			void set_so_solver(CLinearStructuredOutputMachine* so);
 
 			/** Returns the name of the SGSerializable instance.
@@ -52,6 +56,10 @@ namespace shogun
 			virtual const char* get_name() const { return "LatentSOSVM"; }
 
 		protected:
+			/** do inner loop with given cooling epsilon
+			 * 
+			 * @param cooling_eps cooling epsilon
+			 */
 			virtual float64_t do_inner_loop(float64_t cooling_eps);
 
 		private:
