@@ -16,8 +16,11 @@
 namespace shogun
 {
 
-/** @brief 
+/** @brief class IndexBlockGroup used to represent 
+ * group-based feature relation.
  *
+ * Currently can be constructed with a few CIndexBlock 
+ * instances.
  */
 class CIndexBlockGroup : public CIndexBlockRelation
 {
