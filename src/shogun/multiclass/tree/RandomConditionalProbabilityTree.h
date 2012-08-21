@@ -16,6 +16,8 @@
 namespace shogun
 {
 
+/** Conditional Probability Tree, decide subtree by a random strategy.
+ */
 class CRandomConditionalProbabilityTree: public CConditionalProbabilityTree
 {
 public:

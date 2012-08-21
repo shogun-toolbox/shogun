@@ -16,6 +16,7 @@
 namespace shogun
 {
 
+/** Data for the tree nodes in a RelaxedTree */
 struct RelaxedTreeNodeData
 {
 	/** mu */
