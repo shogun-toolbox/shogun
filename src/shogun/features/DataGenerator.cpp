@@ -77,7 +77,7 @@ SGMatrix<float64_t> CDataGenerator::generate_sym_mix_gauss(index_t m,
 
 	return result;
 }
-
+#ifdef HAVE_LAPACK
 SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, index_t dim)
 {
 	/* evtl. allocate space */
@@ -109,4 +109,4 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 
 	return result;
 }
-
+#endif /* HAVE_LAPACK */
