@@ -9,7 +9,7 @@
 
 #ifndef __DATAGENERATOR_H_
 #define __DATAGENERATOR_H_
-
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 
@@ -68,6 +68,7 @@ public:
 			float64_t d, float64_t angle,
 			SGMatrix<float64_t> target=SGMatrix<float64_t>());
 
+#ifdef HAVE_LAPACK
 	/** Produces samples of gaussians
 	 * The functions produces m number of samples of each gaussians (n number) with
 	 * the given dimension.
@@ -79,7 +80,8 @@ public:
 	 * of the first gaussian, m number of second etc.
 	 */
 	static SGMatrix<float64_t> generate_gaussians(index_t m, index_t n, index_t dim);
-	
+#endif /* HAVE_LAPACK */
+
 	inline virtual const char* get_name() const { return "DataGenerator"; }
 
 private:
