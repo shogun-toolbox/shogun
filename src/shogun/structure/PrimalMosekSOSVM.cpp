@@ -44,7 +44,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	if (data)
 		set_features(data);
 
-	CDotFeatures* model_features = get_features();
+	CFeatures* model_features = get_features();
 	// Check that the scenary is correct to start with training
 	m_model->check_training_setup();
 
