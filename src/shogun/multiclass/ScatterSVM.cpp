@@ -130,7 +130,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	}
 
 	int32_t weights_label[2]={-1,+1};
-	float64_t weights[2]={1.0,get_C2()/get_C1()};
+	float64_t weights[2]={1.0,get_C()/get_C()};
 
 	ASSERT(m_kernel && m_kernel->has_features());
     ASSERT(m_kernel->get_num_vec_lhs()==problem.l);
@@ -224,7 +224,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 	m_kernel->set_normalizer(n);
 	m_kernel->init_normalizer();
 
-	CSVMLightOneClass* light=new CSVMLightOneClass(get_C1(), m_kernel);
+	CSVMLightOneClass* light=new CSVMLightOneClass(get_C(), m_kernel);
 	light->set_linadd_enabled(false);
 	light->train();
 
@@ -264,7 +264,7 @@ bool CScatterSVM::train_testrule12()
 	}
 
 	int32_t weights_label[2]={-1,+1};
-	float64_t weights[2]={1.0,get_C2()/get_C1()};
+	float64_t weights[2]={1.0,get_C()/get_C()};
 
 	ASSERT(m_kernel && m_kernel->has_features());
     ASSERT(m_kernel->get_num_vec_lhs()==problem.l);

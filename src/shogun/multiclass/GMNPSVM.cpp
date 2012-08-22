@@ -80,7 +80,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 
 	}
 
-	float64_t C = get_C1();
+	float64_t C = get_C();
 	int32_t tmax = 1000000000;
 	float64_t tolabs = 0;
 	float64_t tolrel = get_epsilon();

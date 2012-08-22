@@ -79,7 +79,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	param.kernel=m_kernel;
 	param.cache_size = m_kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
-	param.C = get_C1();
+	param.C = get_C();
 	param.eps = get_epsilon();
 	param.p = 0.1;
 	param.shrinking = 1;

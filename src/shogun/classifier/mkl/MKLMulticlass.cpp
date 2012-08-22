@@ -77,7 +77,7 @@ void CMKLMulticlass::initsvm()
 	svm=new CGMNPSVM;
 	SG_REF(svm);
 
-	svm->set_C(get_C1(),get_C2());
+	svm->set_C(get_C());
 	svm->set_epsilon(get_epsilon());
 
 	if (m_labels->get_num_labels()<=0)
