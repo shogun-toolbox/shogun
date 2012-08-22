@@ -133,6 +133,10 @@ class CMulticlassModel : public CStructuredModel
 	private:
 		void init();
 
+		/** Different flavours of the delta_loss that become handy */
+		float64_t delta_loss(float64_t y1, float64_t y2);
+		float64_t delta_loss(int32_t y1_idx, float64_t y2);
+
 	private:
 		/** number of classes */
 		int32_t m_num_classes;
