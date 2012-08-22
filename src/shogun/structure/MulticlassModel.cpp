@@ -83,7 +83,7 @@ CResultSet* CMulticlassModel::argmax(
 	float64_t score = 0, ypred = 0;
 	float64_t max_score = -CMath::INFTY;
 
-	for ( int32_t c = 1 ; c < m_num_classes ; ++c )
+	for ( int32_t c = 0 ; c < m_num_classes ; ++c )
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
 		if ( training )
