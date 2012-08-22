@@ -46,7 +46,8 @@ void CLatentSOSVM::set_so_solver(CLinearStructuredOutputMachine* so)
 float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
 {
 	float64_t lambda = 1/m_C;
-  CDualLibQPBMSOSVM* so = new CDualLibQPBMSOSVM();
+	CDualLibQPBMSOSVM* so = new CDualLibQPBMSOSVM();
+	so->set_lambda(lambda);
 	so->train();
 
 	/* copy the resulting w */
