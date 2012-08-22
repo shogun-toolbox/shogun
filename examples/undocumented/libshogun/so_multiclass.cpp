@@ -13,6 +13,8 @@
 #include <shogun/structure/MulticlassSOLabels.h>
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
+#include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <shogun/lib/Time.h>
 
 using namespace shogun;
 
@@ -59,6 +61,28 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 	fclose(pfile);
 }
 
+void read_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
+{
+	FILE* pfile = fopen(FNAME, "r");
+	int32_t label, idx;
+	float32_t value;
+
+	for ( int32_t i = 0 ; i < NUM_SAMPLES*NUM_CLASSES ; ++i )
+	{
+		fscanf(pfile, "%d", &label);
+
+		labs[i] = label;
+
+		for ( int32_t j = 0 ; j < DIMS ; ++j )
+		{
+			fscanf(pfile, "%d:%f", &idx, &value);
+			feats[i*DIMS + j] = value;
+		}
+	}
+
+	fclose(pfile);
+}
+
 int main(int argc, char ** argv)
 {
 	init_shogun_with_defaults();
@@ -66,7 +90,8 @@ int main(int argc, char ** argv)
 	SGVector< float64_t > labs(NUM_CLASSES*NUM_SAMPLES);
 	SGMatrix< float64_t > feats(DIMS, NUM_CLASSES*NUM_SAMPLES);
 
-	gen_rand_data(labs, feats);
+	//gen_rand_data(labs, feats);
+	read_data(labs, feats);
 
 	// Create train labels
 	CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
@@ -82,11 +107,20 @@ int main(int argc, char ** argv)
 	CHingeLoss* loss = new CHingeLoss();
 
 	// Create SO-SVM
-	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels, features);
+	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
+	CDualLibQPBMSOSVM* bundle = new CDualLibQPBMSOSVM(model, loss, labels, 1000);
+	bundle->set_verbose(false);
 	SG_REF(sosvm);
+	SG_REF(bundle);
 
+	CTime start;
+	float64_t t1;
 	sosvm->train();
+	SG_SPRINT(">>>> PrimalMosekSOSVM trained in %9.4f\n", (t1 = start.cur_time_diff(false)));
+	bundle->train();
+	SG_SPRINT(">>>> BMRM trained in %9.4f\n", start.cur_time_diff(false)-t1);
 	CStructuredLabels* out = CStructuredLabels::obtain_from_generic(sosvm->apply());
+	CStructuredLabels* bout = CStructuredLabels::obtain_from_generic(bundle->apply());
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
 	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
@@ -127,6 +161,7 @@ int main(int argc, char ** argv)
 	SG_REF(multiclass_evaluator);
 
 	SG_SPRINT("SO-SVM: %5.2f%\n", 100.0*structured_evaluator->evaluate(out, labels));
+	SG_SPRINT("BMRM:   %5.2f%\n", 100.0*structured_evaluator->evaluate(bout, labels));
 	SG_SPRINT("MC:     %5.2f%\n", 100.0*multiclass_evaluator->evaluate(mout, mlabels));
 
 	// Free memory
@@ -134,9 +169,10 @@ int main(int argc, char ** argv)
 	SG_UNREF(structured_evaluator);
 	SG_UNREF(mout);
 	SG_UNREF(mc_svm);
+	SG_UNREF(bundle);
 	SG_UNREF(sosvm);
+	SG_UNREF(bout);
 	SG_UNREF(out);
-
 	exit_shogun();
 
 	return 0;

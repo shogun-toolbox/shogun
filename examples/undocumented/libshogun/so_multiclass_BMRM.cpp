@@ -139,7 +139,6 @@ int main(int argc, char * argv[])
 				model,
 				loss,
 				labels,
-				features,
 				lambda);
 	SG_REF(sosvm);
 
