@@ -167,7 +167,6 @@ float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, 1.0, psi_pred.vector, dim);
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, -1.0, psi_truth.vector, dim);
 		R += result->score;
-		R += this->delta_loss(i, result->argmax);
 		SG_UNREF(result);
 	}
 
