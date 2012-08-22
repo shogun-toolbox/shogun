@@ -180,6 +180,9 @@ CLabels* CMachine::apply(CFeatures* data)
 		case PT_STRUCTURED:
 			result=apply_structured(data);
 			break;
+		case PT_LATENT:
+			result=apply_latent(data);
+			break;
 		default:
 			SG_ERROR("Unknown problem type");
 			break;
