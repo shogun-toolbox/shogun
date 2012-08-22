@@ -70,20 +70,49 @@ int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
 {
 	int32_t s=0;
 	SGVector<int32_t> votes(m_num_classes);
+    SGVector<int32_t> dec_vals(m_num_classes);
 	votes.zero();
+    dec_vals.zero();
 
 	for (int32_t i=0; i<m_num_classes; i++)
 	{
 		for (int32_t j=i+1; j<m_num_classes; j++)
 		{
-			if (outputs[s++]>0)
+			if (outputs[s]>0)
+            {
 				votes[i]++;
+                dec_vals[i] += CMath::abs(outputs[s]);
+            }
 			else
+            {
 				votes[j]++;
+                dec_vals[j] += CMath::abs(outputs[s]);
+            }
+            s++;
 		}
 	}
 
-	int32_t result=SGVector<int32_t>::arg_max(votes.vector, 1, votes.vlen);
+    int32_t i_max=0;
+    int32_t vote_max=-1;
+    float64_t dec_val_max=-1;
 
-	return result;
+    for (int32_t i=0; i < m_num_classes; ++i)
+    {
+        if (votes[i] > vote_max)
+        {
+            i_max = i;
+            vote_max = votes[i];
+            dec_val_max = dec_vals[i];
+        }
+        else if (votes[i] == vote_max)
+        {
+            if (dec_vals[i] > dec_val_max)
+            {
+                i_max = i;
+                dec_val_max = dec_vals[i];
+            }
+        }
+    }
+
+    return i_max;
 }
