@@ -16,7 +16,7 @@ using namespace shogun;
 
 void CKernelMulticlassMachine::store_model_features()
 {
-	CKernel *kernel=((CKernelMachine *)m_machine)->get_kernel();
+	CKernel *kernel= m_kernel;
 	if (!kernel)
 		SG_ERROR("%s::store_model_features(): kernel is needed to store SV "
 				"features.\n", get_name());
@@ -78,5 +78,4 @@ void CKernelMulticlassMachine::store_model_features()
 
 	SG_UNREF(lhs);
 	SG_UNREF(rhs);
-	SG_UNREF(kernel);
 }
