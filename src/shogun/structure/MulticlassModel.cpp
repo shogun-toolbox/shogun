@@ -81,11 +81,13 @@ CResultSet* CMulticlassModel::argmax(
 	// Find the class that gives the maximum score
 
 	float64_t score = 0, ypred = 0;
-	float64_t max_score = df->dense_dot(feat_idx, w.vector, feats_dim);
+	float64_t max_score = -CMath::INFTY;
 
 	for ( int32_t c = 1 ; c < m_num_classes ; ++c )
 	{
 		score = df->dense_dot(feat_idx, w.vector+c*feats_dim, feats_dim);
+		if ( training )
+			score += delta_loss(feat_idx, c);
 
 		if ( score > max_score )
 		{
@@ -119,7 +121,24 @@ float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 	ASSERT(rn1 != NULL);
 	ASSERT(rn2 != NULL);
 
-	return ( rn1->value == rn2->value ) ? 0 : 1;
+	return delta_loss(rn1->value, rn2->value);
+}
+
+float64_t CMulticlassModel::delta_loss(int32_t y1_idx, float64_t y2)
+{
+	REQUIRE(y1_idx >= 0 || y1_idx < m_labels->get_num_labels(),
+			"The label index must be inside [0, num_labels-1]\n");
+
+	CRealNumber* rn1 = CRealNumber::obtain_from_generic(m_labels->get_label(y1_idx));
+	float64_t ret = delta_loss(rn1->value, y2);
+	SG_UNREF(rn1);
+
+	return ret;
+}
+
+float64_t CMulticlassModel::delta_loss(float64_t y1, float64_t y2)
+{
+	return (y1 == y2) ? 0 : 1;
 }
 
 void CMulticlassModel::init_opt(
