@@ -107,15 +107,10 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 */
 		float64_t get_nu() { return svm_proto()->get_nu(); }
 		// TODO remove if unnecessary here
-		/** get C1 of base SVM
-		 * @return C1 of base SVM 
+		/** get C of base SVM
+		 * @return C of base SVM 
 		 */
-		float64_t get_C1() { return svm_proto()->get_C1(); }
-		// TODO remove if unnecessary here
-		/** get C2 of base SVM
-		 * @return C1 of base SVM 
-		 */
-		float64_t get_C2() { return svm_proto()->get_C2(); }
+		float64_t get_C() { return m_C; }
 		// TODO remove if unnecessary here
 		/** get qpsize of base SVM
 		 * @return qpsize of base SVM 
@@ -163,7 +158,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 * @param c_neg C for negatives
 		 * @param c_pos C for positives
 		 */
-		void set_C(float64_t c_neg, float64_t c_pos) { svm_proto()->set_C(c_neg, c_pos); }
+		void set_C(float64_t C) { svm_proto()->set_C(C,C); m_C = C; }
 		// TODO remove in unnecessary here
 		/** set epsilon value
 		 * @param eps epsilon value
@@ -236,7 +231,13 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		}
 
 	private:
+
 		void init();
+
+	protected:
+
+		/** C regularization constant */
+		float64_t m_C;
 };
 }
 #endif

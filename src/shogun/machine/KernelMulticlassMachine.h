@@ -65,6 +65,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 */
 		void set_kernel(CKernel* k)
 		{
+			((CKernelMachine*)m_machine)->set_kernel(k);
 			SG_REF(k);
 			SG_UNREF(m_kernel);
 			m_kernel=k;

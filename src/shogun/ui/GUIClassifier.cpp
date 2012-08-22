@@ -468,7 +468,7 @@ bool CGUIClassifier::train_mkl_multiclass()
 	mkl->set_max_train_time(max_train_time);
 	mkl->set_tube_epsilon(svm_tube_epsilon);
 	mkl->set_nu(svm_nu);
-	mkl->set_C(svm_C1, svm_C2);
+	mkl->set_C(svm_C1);
 	mkl->set_qpsize(svm_qpsize);
 	mkl->set_shrinking_enabled(svm_use_shrinking);
 	mkl->set_linadd_enabled(svm_use_linadd);
@@ -589,7 +589,7 @@ bool CGUIClassifier::train_svm()
 		svm->set_max_train_time(max_train_time);
 		svm->set_tube_epsilon(svm_tube_epsilon);
 		svm->set_nu(svm_nu);
-		svm->set_C(svm_C1, svm_C2);
+		svm->set_C(svm_C1);
 		svm->set_qpsize(svm_qpsize);
 		svm->set_shrinking_enabled(svm_use_shrinking);
 		svm->set_linadd_enabled(svm_use_linadd);

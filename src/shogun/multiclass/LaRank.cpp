@@ -632,7 +632,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	float64_t gap = DBL_MAX;
 
 	SG_INFO("Training on %d examples\n", nb_train);
-	while (gap > get_C1() && (!CSignal::cancel_computations()))      // stopping criteria
+	while (gap > get_C() && (!CSignal::cancel_computations()))      // stopping criteria
 	{
 		float64_t tr_err = 0;
 		int32_t ind = step;
@@ -653,7 +653,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		SG_DEBUG("End of iteration %d\n", n_it++);
 		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100);
 		gap = computeGap ();
-		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C1()), 6);
+		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C()), 6);
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
@@ -825,7 +825,7 @@ float64_t CLaRank::computeGap ()
 		}
 		sum_sl += CMath::max (0.0, gi - gmin);
 	}
-	return CMath::max (0.0, computeW2 () + get_C1() * sum_sl - sum_bi);
+	return CMath::max (0.0, computeW2 () + get_C() * sum_sl - sum_bi);
 }
 
 // Nuber of classes so far
@@ -937,7 +937,7 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 		bool support = ptype == processOptimize || output->isSupportVector (pattern.x_id);
 		bool goodclass = current.output == pattern.y;
 		if ((!support && goodclass) ||
-				(support && output->getBeta (pattern.x_id) < (goodclass ? get_C1() : 0)))
+				(support && output->getBeta (pattern.x_id) < (goodclass ? get_C() : 0)))
 		{
 			ygp = current;
 			outp = output;
@@ -986,12 +986,12 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 	{
 		float64_t beta = outp->getBeta (pattern.x_id);
 		if (ygp.output == pattern.y)
-			lambda = CMath::min (lambda, get_C1() - beta);
+			lambda = CMath::min (lambda, get_C() - beta);
 		else
 			lambda = CMath::min (lambda, fabs (beta));
 	}
 	else
-		lambda = CMath::min (lambda, get_C1());
+		lambda = CMath::min (lambda, get_C());
 
 	/*
 	 ** update the solution
