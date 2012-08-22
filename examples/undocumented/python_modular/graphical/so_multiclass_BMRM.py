@@ -70,8 +70,8 @@ sosvm.set_solver(BMRM)		# select training algorithm
 sosvm.train()
 
 res = sosvm.get_result()
-Fps = np.array(res.get_hist_Fp())
-Fds = np.array(res.get_hist_Fd())
+Fps = np.array(res.hist_Fp)
+Fds = np.array(res.hist_Fp)
 wdists = np.array(res.hist_wdist)
 
 plt.figure()
