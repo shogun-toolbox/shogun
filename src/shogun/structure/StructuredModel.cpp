@@ -98,8 +98,8 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 
 float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
 {
-	if ( ytrue_idx < 0 || ytrue_idx >= m_labels->get_num_labels() )
-		SG_ERROR("The label index must be inside [0, num_labels-1]\n");
+	REQUIRE(ytrue_idx >= 0 || ytrue_idx < m_labels->get_num_labels(),
+			"The label index must be inside [0, num_labels-1]\n");
 
 	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
 	float64_t ret = delta_loss(ytrue, ypred);
