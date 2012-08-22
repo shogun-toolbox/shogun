@@ -96,6 +96,7 @@ TARGETS = basic_minimal \
 		  statistics_linear_time_mmd_kernel_choice \
 		  statistics_hsic \
 		  classifier_featureblocklogisticregression \
+		  so_multiclass_BMRM \
 
 all: $(TARGETS)
 
