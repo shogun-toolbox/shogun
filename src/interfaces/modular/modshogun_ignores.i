@@ -28,6 +28,9 @@
 %ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, SGVector<index_t> test_indices);
 #endif
 
+%ignore shogun::SGVector::display_vector;
+%ignore shogun::SGMatrix::display_matrix;
+
 %ignore shogun::bmrm_ll;
 %ignore shogun::TMultipleCPinfo;
 %ignore refcount_t;
