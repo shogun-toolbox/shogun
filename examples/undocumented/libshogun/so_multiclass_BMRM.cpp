@@ -21,7 +21,7 @@
 #include <shogun/structure/MulticlassSOLabels.h>
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/io/StreamingAsciiFile.h>
+#include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
 
 using namespace shogun;
