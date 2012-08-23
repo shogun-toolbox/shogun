@@ -109,6 +109,7 @@ CResultSet* CMulticlassModel::argmax(
 	{
 		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
+		ret->score    -= ret->delta;
 	}
 
 	return ret;
