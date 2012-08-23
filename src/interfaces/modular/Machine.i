@@ -72,7 +72,9 @@ APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
+#ifdef HAVE_EIGEN3
 APPLY_REGRESSION(CGaussianProcessRegression);
+#endif //HAVE_EIGEN3
 
 APPLY_STRUCTURED(CStructuredOutputMachine);
 APPLY_STRUCTURED(CLinearStructuredOutputMachine);
