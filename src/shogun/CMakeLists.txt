@@ -38,6 +38,7 @@ aux_source_directory(regression/svr REGRESSION_SVR)
 aux_source_directory(regression/gp REGRESSION_GP)
 aux_source_directory(statistics STATISTICS)
 aux_source_directory(structure STRUCTURE)
+aux_source_directory(transfer TRANSFER)
 aux_source_directory(transfer/multitask TRANSFER_MULTITASK)
 aux_source_directory(transfer/domain_adaptation TRANSFER_DOMAIN_ADAPTATION)
 aux_source_directory(ui UI)
@@ -65,6 +66,7 @@ add_library(shogun SHARED
                    ${LABELS}
                    ${LATENT}
                    ${LIB}
+                     ${LIB_EXTERNAL}
                    ${LOSS}
                    ${MACHINE}
                    ${MATHEMATICS}
@@ -78,5 +80,8 @@ add_library(shogun SHARED
                      ${REGRESSION_GP}
                    ${STATISTICS}
                    ${STRUCTURE}
+                   ${TRANSFER}
+                     ${TRANSFER_DOMAIN_ADAPTATION}
+                     ${TRANSFER_MULTITASK}
                    ${UI})
 
