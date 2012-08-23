@@ -155,8 +155,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		void set_linear_term(SGVector<float64_t> linear_term) { svm_proto()->set_linear_term(linear_term); }
 		// TODO remove in unnecessary here
 		/** set C parameters
-		 * @param c_neg C for negatives
-		 * @param c_pos C for positives
+		 * @param C set regularization parameter
 		 */
 		void set_C(float64_t C) { svm_proto()->set_C(C,C); m_C = C; }
 		// TODO remove in unnecessary here
