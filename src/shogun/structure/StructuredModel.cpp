@@ -169,7 +169,7 @@ float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 		SGVector<float64_t> psi_truth = result->psi_truth;
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, 1.0, psi_pred.vector, dim);
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, -1.0, psi_truth.vector, dim);
-		R += result->score + result->delta - SGVector<float64_t>::dot(W, psi_truth.vector, dim);
+		R += result->score;
 		SG_UNREF(result);
 	}
 
