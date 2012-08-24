@@ -76,7 +76,8 @@ CResultSet* CMulticlassModel::argmax(
 				"using it for prediction\n");
 	}
 
-	ASSERT(feats_dim*m_num_classes == w.vlen);
+	int32_t dim = get_dim();
+	ASSERT(dim == w.vlen);
 
 	// Find the class that gives the maximum score
 
@@ -107,9 +108,11 @@ CResultSet* CMulticlassModel::argmax(
 	ret->argmax   = y;
 	if ( training )
 	{
-		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
-		ret->score    -= ret->delta;
+		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
+					feat_idx, feat_idx);
+		ret->score    -= SGVector< float64_t >::dot(w.vector,
+					ret->psi_truth.vector, dim);
 	}
 
 	return ret;
