@@ -117,6 +117,8 @@ CEvaluationResult* CCrossValidation::evaluate()
 	{
 		current->init_num_runs(m_num_runs);
 		current->init_num_folds(m_splitting_strategy->get_num_subsets());
+		current->init_expose_labels(m_labels);
+		current->post_init();
 		SG_UNREF(current);
 		current=(CCrossValidationOutput*)
 				m_xval_outputs->get_next_element();
@@ -268,6 +270,7 @@ float64_t CCrossValidation::evaluate_one_run()
 				current->update_test_indices(subset_indices, "\t");
 				current->update_test_result(result_labels, "\t");
 				current->update_test_true_result(m_labels, "\t");
+				current->post_update_results();
 				current->update_evaluation_result(results[i], "\t");
 				SG_UNREF(current);
 				current=(CCrossValidationOutput*)
@@ -378,6 +381,7 @@ float64_t CCrossValidation::evaluate_one_run()
 				current->update_test_indices(subset_indices, "\t");
 				current->update_test_result(result_labels, "\t");
 				current->update_test_true_result(m_labels, "\t");
+				current->post_update_results();
 				current->update_evaluation_result(results[i], "\t");
 				SG_UNREF(current);
 				current=(CCrossValidationOutput*)

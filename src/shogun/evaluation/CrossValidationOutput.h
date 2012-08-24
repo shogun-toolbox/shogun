@@ -75,6 +75,14 @@ public:
 		m_num_folds=num_folds;
 	}
 
+	/** initially expose labels before usage
+	 * @param labels labels to expose to CV output
+	 */
+	virtual void init_expose_labels(CLabels* labels) { }
+
+	/** post init action (called once) */
+	virtual void post_init() { }
+
 	/** update run index (called every iteration). saves to local variable
 	 *
 	 * @param run_index index of current run
@@ -136,6 +144,10 @@ public:
 	 */
 	virtual void update_test_true_result(CLabels* results,
 			const char* prefix="") {}
+
+	/** post update test and true results 
+	 */
+	virtual void post_update_results() {}
 
 	/** update evaluate result
 	 *
