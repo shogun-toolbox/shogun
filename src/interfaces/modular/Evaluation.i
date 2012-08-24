@@ -47,6 +47,7 @@
 %rename(CrossValidationOutput) CCrossValidationOutput;
 %rename(CrossValidationPrintOutput) CCrossValidationPrintOutput;
 %rename(CrossValidationMKLStorage) CCrossValidationMKLStorage;
+%rename(CrossValidationMulticlassStorage) CCrossValidationMulticlassStorage;
 %rename(StructuredAccuracy) CStructuredAccuracy;
 
 /* Include Class Headers to make them visible from within the target language */
@@ -76,4 +77,5 @@
 %include <shogun/evaluation/CrossValidationOutput.h>
 %include <shogun/evaluation/CrossValidationPrintOutput.h>
 %include <shogun/evaluation/CrossValidationMKLStorage.h>
+%include <shogun/evaluation/CrossValidationMulticlassStorage.h>
 %include <shogun/evaluation/StructuredAccuracy.h>

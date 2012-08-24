@@ -81,8 +81,8 @@ void CCrossValidationPrintOutput::update_trained_machine(
 		CMulticlassMachine* mc_machine=(CMulticlassMachine*)machine;
 		for (int i=0; i<mc_machine->get_num_machines(); i++)
 		{
-			SG_PRINT("%smulti-class machine %d:\n", i);
 			CMachine* sub_machine=mc_machine->get_machine(i);
+            //SG_PRINT("%smulti-class machine %d:\n", i, sub_machine);
 			this->update_trained_machine(sub_machine, new_prefix);
 			SG_UNREF(sub_machine);
 		}
