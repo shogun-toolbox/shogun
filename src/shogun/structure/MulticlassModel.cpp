@@ -76,7 +76,8 @@ CResultSet* CMulticlassModel::argmax(
 				"using it for prediction\n");
 	}
 
-	ASSERT(feats_dim*m_num_classes == w.vlen);
+	int32_t dim = get_dim();
+	ASSERT(dim == w.vlen);
 
 	// Find the class that gives the maximum score
 
@@ -107,8 +108,11 @@ CResultSet* CMulticlassModel::argmax(
 	ret->argmax   = y;
 	if ( training )
 	{
-		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
+		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
+					feat_idx, feat_idx);
+		ret->score    -= SGVector< float64_t >::dot(w.vector,
+					ret->psi_truth.vector, dim);
 	}
 
 	return ret;
@@ -190,12 +194,14 @@ float64_t CMulticlassModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 	float64_t loss=0.0;
 	uint32_t yhat=0;
 	uint32_t GT=0;
+	CRealNumber* GT_rn=NULL;
 
 	/* loop through examples */
 	for(uint32_t i=from; i<to; ++i)
 	{
 		Rmax=-CMath::INFTY;
-		GT=(uint32_t)((CRealNumber*)y->get_label(i))->value;
+		GT_rn=CRealNumber::obtain_from_generic(y->get_label(i));
+		GT=(uint32_t)GT_rn->value;
 
 		for (uint32_t c = 0; c < num_classes; ++c)
 		{
@@ -213,6 +219,8 @@ float64_t CMulticlassModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 
 		X->add_to_dense_vec(1.0, i, subgrad+yhat*feats_dim, feats_dim);
 		X->add_to_dense_vec(-1.0, i, subgrad+GT*feats_dim, feats_dim);
+
+		SG_UNREF(GT_rn);
 	}
 
 	return R;

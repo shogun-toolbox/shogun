@@ -263,10 +263,9 @@ bmrm_return_value_T svm_bmrm_solver(
 		goto cleanup;
 	}
 
-
-	bmrm.hist_Fp.resize_vector(BufSize);
-	bmrm.hist_Fd.resize_vector(BufSize);
-	bmrm.hist_wdist.resize_vector(BufSize);
+	bmrm.hist_Fp = SGVector< float64_t >(BufSize);
+	bmrm.hist_Fd = SGVector< float64_t >(BufSize);
+	bmrm.hist_wdist = SGVector< float64_t >(BufSize);
 
 	/* Iinitial solution */
 	R=model->risk(subgrad, W);
@@ -523,7 +522,6 @@ bmrm_return_value_T svm_bmrm_solver(
 			}
 		}
 	} /* end of main loop */
-
 
 	bmrm.hist_Fp.resize_vector(bmrm.nIter);
 	bmrm.hist_Fd.resize_vector(bmrm.nIter);
