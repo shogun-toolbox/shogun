@@ -1,6 +1,8 @@
 %ignore *::operator[];
 %ignore *::operator();
 %ignore *::operator=;
+%ignore shogun::SGVector::operator+=;
+%ignore shogun::SGVector::operator+;
 %ignore *::operator==;
 %ignore *::operator!=;
 %ignore *::operator bool*;
