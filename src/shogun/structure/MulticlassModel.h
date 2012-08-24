@@ -58,7 +58,9 @@ class CMulticlassModel : public CStructuredModel
 		 */
 		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
 
-		/** obtains the argmax
+		/**
+		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
+		 * \langle w, \Psi(x_{truth}, y_{pred}) \rangle \f$
 		 *
 		 * @param w weight vector
 		 * @param feat_idx index of the feature to compute the argmax
