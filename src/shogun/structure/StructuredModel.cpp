@@ -159,6 +159,9 @@ float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 
 	int32_t dim = this->get_dim();
 	float64_t R = 0.0;
+	for (uint32_t i=0; i<dim; i++)
+		subgrad[i] = 0;
+
 	for (int32_t i=from; i<to; i++)
 	{
 		CResultSet* result = this->argmax(SGVector<float64_t>(W,dim,false), i, true);
