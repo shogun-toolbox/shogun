@@ -8,6 +8,10 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorStructuredModel;
+#endif
+
 /* Remove C Prefix */
 %rename(PlifBase) CPlifBase;
 %rename(Plif) CPlif;
@@ -21,6 +25,7 @@
 %rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
 %rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
 %rename(StructuredModel) CStructuredModel;
+%rename(ResultSet) CResultSet;
 %rename(MulticlassModel) CMulticlassModel;
 %rename(MulticlassSOLabels) CMulticlassSOLabels;
 %rename(RealNumber) CRealNumber;
@@ -29,6 +34,8 @@
 %rename(Sequence) CSequence;
 %rename(StateModel) CStateModel;
 %rename(TwoStateModel) CTwoStateModel;
+
+%rename(DirectorStructuredModel) CDirectorStructuredModel;
 
 %rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
 
@@ -58,6 +65,8 @@
 %include <shogun/structure/StateModelTypes.h>
 %include <shogun/structure/StateModel.h>
 %include <shogun/structure/TwoStateModel.h>
+
+%include <shogun/structure/DirectorStructuredModel.h>
 
 %include <shogun/structure/libbmrm.h>
 %include <shogun/structure/libppbm.h>

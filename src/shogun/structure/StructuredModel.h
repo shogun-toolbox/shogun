@@ -38,8 +38,11 @@ class CStructuredModel;
 /** output of the argmax function */
 struct CResultSet : public CSGObject
 {
+	/** constructor */
+	CResultSet() : CSGObject(), argmax(NULL) { };
+
 	/** destructor */
-	~CResultSet() { SG_UNREF(argmax) }
+	virtual ~CResultSet() { SG_UNREF(argmax) }
 
 	/** argmax */
 	CStructuredData* argmax;
