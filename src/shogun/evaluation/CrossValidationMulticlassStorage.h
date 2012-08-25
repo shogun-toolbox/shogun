@@ -32,9 +32,18 @@ class CCrossValidationMulticlassStorage: public CCrossValidationOutput
 {
 public:
 
-	/** constructor */
-	CCrossValidationMulticlassStorage() : CCrossValidationOutput()
+	/** constructor 
+	 * @param compute_ROC whether to compute ROCs
+	 * @param compute_PRC whether to compute PRCs
+	 * @param compute_conf_matrices whether to compute confusion matrices
+	 */
+	CCrossValidationMulticlassStorage(bool compute_ROC=true, bool compute_PRC=false, bool compute_conf_matrices=false) : 
+		CCrossValidationOutput()
 	{
+		m_initialized = false;
+		m_compute_ROC = compute_ROC;
+		m_compute_PRC = compute_PRC;
+		m_compute_conf_matrices = compute_conf_matrices;
 		m_pred_labels = NULL;
 		m_true_labels = NULL;
 		m_num_classes = 0;
@@ -49,11 +58,19 @@ public:
 			m_fold_ROC_graphs[i].~SGMatrix<float64_t>();
 		}
 		SG_FREE(m_fold_ROC_graphs);
+
 		for (int32_t i=0; i<m_num_folds*m_num_runs*m_num_classes; i++)
 		{
 			m_fold_PRC_graphs[i].~SGMatrix<float64_t>();
 		}
 		SG_FREE(m_fold_PRC_graphs);
+
+		for (int32_t i=0; i<m_num_folds*m_num_runs; i++)
+		{
+			m_conf_matrices[i].~SGMatrix<int32_t>();
+		}
+		SG_FREE(m_conf_matrices);
+
 		SG_UNREF(m_binary_evaluations);
 	};
 
@@ -72,6 +89,7 @@ public:
 		ASSERT(fold<m_num_folds);
 		ASSERT(0<=c);
 		ASSERT(c<m_num_classes);
+		REQUIRE(m_compute_ROC, "ROC computation was not enabled\n");
 		return m_fold_ROC_graphs[run*m_num_folds*m_num_classes+fold*m_num_classes+c];
 	}
 	
@@ -90,6 +108,7 @@ public:
 		ASSERT(fold<m_num_folds);
 		ASSERT(0<=c);
 		ASSERT(c<m_num_classes);
+		REQUIRE(m_compute_PRC, "PRC computation was not enabled\n");
 		return m_fold_PRC_graphs[run*m_num_folds*m_num_classes+fold*m_num_classes+c];
 	}
 
@@ -132,6 +151,33 @@ public:
 		return m_evaluations_results[run*m_num_folds*m_num_classes*n_evals+fold*m_num_classes*n_evals+c*n_evals+e];
 	}
 
+	/** returns accuracy of fold and run
+	 * @param run run
+	 * @param fold fold
+	 */
+	float64_t get_fold_accuracy(int32_t run, int32_t fold)
+	{
+		ASSERT(0<=run);
+		ASSERT(run<m_num_runs);
+		ASSERT(0<=fold);
+		ASSERT(fold<m_num_folds);
+		return m_accuracies[run*m_num_folds+fold];
+	}
+
+	/** returns confusion matrix of fold and run
+	 * @param run run
+	 * @param fold fold
+	 */
+	SGMatrix<int32_t> get_fold_conf_matrix(int32_t run, int32_t fold)
+	{
+		ASSERT(0<=run);
+		ASSERT(run<m_num_runs);
+		ASSERT(0<=fold);
+		ASSERT(fold<m_num_folds);
+		REQUIRE(m_compute_conf_matrices, "Confusion matrices computation was not enabled\n");
+		return m_conf_matrices[run*m_num_folds+fold];
+	}
+
 	/** post init */
 	virtual void post_init();
 
@@ -164,17 +210,35 @@ public:
 
 protected:
 
+	/** is initialized */
+	bool m_initialized;
+
 	/** custom binary evaluators */
 	CDynamicObjectArray* m_binary_evaluations;
 
 	/** fold evaluation results */
 	SGVector<float64_t> m_evaluations_results;
 
+	/** accuracies */
+	SGVector<float64_t> m_accuracies;
+
+	/** whether compute ROCs */
+	bool m_compute_ROC;
+
 	/** fold ROC graphs */
 	SGMatrix<float64_t>* m_fold_ROC_graphs; 
-	
+
+	/** whether compute PRCs */
+	bool m_compute_PRC;
+
 	/** fold PRC graphs */
 	SGMatrix<float64_t>* m_fold_PRC_graphs; 
+
+	/** whether compute confusion matrices */
+	bool m_compute_conf_matrices;
+
+	/** confusion matrices */
+	SGMatrix<int32_t>* m_conf_matrices;
 
 	/** predicted results */
 	CMulticlassLabels* m_pred_labels;
