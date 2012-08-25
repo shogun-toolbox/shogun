@@ -3451,7 +3451,7 @@ check_eigen3()
 	then
 		if pkg-config --exists eigen3
 		then
-			EIGEN3_CFLAGS=`pkg-config --cflags eigen3`
+			EIGEN3_CFLAGS=`pkg-config --cflags eigen3 | sed "s/-I/-isystem /"`
 			INCLUDES="$INCLUDES $EIGEN3_CFLAGS"
 		fi
 		cat > $TMPCXX << EOF
