@@ -1,4 +1,4 @@
-preproc <- function(filename) {
+preprocessor <- function(filename) {
 	source('util/set_features.R')
 	source('util/set_kernel.R')
 	source('util/check_accuracy.R')
