@@ -34,7 +34,6 @@ void CCrossValidationMulticlassStorage::post_update_results()
 		SG_DEBUG("Computing ROC for run %d fold %d class %d", m_current_run_index, m_current_fold_index, c);
 		CBinaryLabels* pred_labels_binary = m_pred_labels->get_binary_for_class(c);
 		CBinaryLabels* true_labels_binary = m_true_labels->get_binary_for_class(c);
-		pred_labels_binary->get_labels().display_vector();
 		eval.evaluate(pred_labels_binary, true_labels_binary);
 		m_fold_ROC_graphs[m_current_run_index*m_num_folds*m_num_classes+m_current_fold_index*m_num_classes+c] = 
 			eval.get_ROC();
