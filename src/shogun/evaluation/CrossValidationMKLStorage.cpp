@@ -11,6 +11,7 @@
 #include <shogun/evaluation/CrossValidationMKLStorage.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/mkl/MKL.h>
+#include <shogun/classifier/mkl/MKLMulticlass.h>
 
 using namespace shogun;
 
@@ -21,11 +22,17 @@ void CCrossValidationMKLStorage::update_trained_machine(
 			get_name());
 
 	CMKL* mkl=dynamic_cast<CMKL*>(machine);
-	REQUIRE(mkl, "%s::update_trained_machine(): This method is only usable "
-				"with CMKL derived machines. This one is \"s\"\n", get_name(),
+	CMKLMulticlass* mkl_multiclass=dynamic_cast<CMKLMulticlass*>(machine);
+	REQUIRE(mkl || mkl_multiclass, "%s::update_trained_machine(): This method is only usable "
+				"with CMKL derived machines. This one is \"%s\"\n", get_name(),
 				machine->get_name());
 
-	CKernel* kernel=mkl->get_kernel();
+	CKernel* kernel = NULL;
+	if (mkl) 
+		kernel = mkl->get_kernel();
+	else
+		kernel = mkl_multiclass->get_kernel();
+
 	REQUIRE(kernel, "%s::update_trained_machine(): No kernel assigned to "
 			"machine of type \"%s\"\n", get_name(), machine->get_name());
 
