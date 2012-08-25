@@ -11,30 +11,32 @@
 
 %include "protocols_helper.i"
 
-/* Numeric operators for DenseFeatures */
-%define NUMERIC_DENSEFEATURES(class_name, type_name, format_str, operator_name, operator)
+/* Numeric operators for CustomKernel */
+%define NUMERIC_CUSTOMKERNEL(class_name, type_name, format_str, operator_name, operator)
 
 PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *o2)
 {
-	PyObject* resultobj=0;
+	PyObject* resultobj=NULL;
 
-	CDenseFeatures< type_name >* arg1=(CDenseFeatures< type_name > *) 0; // self in c++ repr
+	CCustomKernel* arg1=NULL; // self in c++ repr
 	int res1=0; // result for self's casting
-	void* argp1=0; // pointer to self
+	void* argp1=NULL; // pointer to self
 
-	PyObject* internal_data=0;
+	PyObject* kernel_narray=NULL;
+	SGMatrix< type_name > kernel_matrix;
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "inplace operator_name" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" "inplace operator_name" "', argument " "1"" of type '" "CCustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures < type_name >* >(argp1);
+	arg1=reinterpret_cast< CCustomKernel* >(argp1);
 
-	internal_data=PySequence_GetSlice(self, 0, arg1->get_num_features());
-	PyNumber_InPlace ## operator ## (internal_data, o2);
+	kernel_matrix=arg1->get_float32_kernel_matrix();
+	kernel_narray=PySequence_GetSlice(self, 0, kernel_matrix.num_rows);
+	PyNumber_InPlace ## operator ## (kernel_narray, o2);
 
 	resultobj=self;
 	Py_INCREF(resultobj);
@@ -44,10 +46,10 @@ fail:
 	return NULL;
 }
 
-%enddef // NUMERIC_DENSEFEATURES
+%enddef // NUMERIC_CUSTOMKERNEL
 
-/* Python protocols for DenseFeatures */
-%define PROTOCOLS_DENSEFEATURES(class_name, type_name, format_str, typecode)
+/* Python protocols for CustomKernel */
+%define PROTOCOLS_CUSTOMKERNEL(class_name, type_name, format_str, typecode)
 
 %wrapper
 %{
@@ -55,23 +57,24 @@ fail:
 /* used by PyObject_GetBuffer */
 static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 {
-	CDenseFeatures< type_name >* arg1=(CDenseFeatures< type_name > *) 0; // self in c++ repr
+	CCustomKernel* arg1=(CCustomKernel *) 0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
-	int num_feat=0, num_vec=0;
+	int num_rows=0, num_cols=0;
 	Py_ssize_t* shape=NULL;
 	Py_ssize_t* strides=NULL;
+	SGMatrix< type_name > kernel_matrix;
 	
 	buffer_matrix_ ## type_name ## _info* info=NULL;
 
 	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" "getbuffer" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" "getbuffer" "', argument " "1"" of type '" "CCustomKernel *""'");
 	}
 
 	if ((flags & PyBUF_C_CONTIGUOUS)==PyBUF_C_CONTIGUOUS)
@@ -87,24 +90,26 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 		goto fail;
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures < type_name >* >(argp1);
+	arg1=reinterpret_cast< CCustomKernel* >(argp1);
 
 	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
 	new (&info->buf) SGMatrix< type_name >();
 
-	info->buf=arg1->get_feature_matrix();
-	num_feat=arg1->get_num_features();
-	num_vec=arg1->get_num_vectors();
+	kernel_matrix=arg1->get_float32_kernel_matrix();
 
-	view->buf=info->buf.matrix;
+	info->buf=kernel_matrix;
+	num_rows=kernel_matrix.num_rows;
+	num_cols=kernel_matrix.num_cols;
+
+	view->buf=kernel_matrix.matrix;
 
 	shape=new Py_ssize_t[2];
-	shape[0]=num_feat;
-	shape[1]=num_vec;
+	shape[0]=num_rows;
+	shape[1]=num_cols;
 
 	strides=new Py_ssize_t[2];
 	strides[0]=sizeof( type_name );
-	strides[1]=sizeof( type_name ) * num_feat;
+	strides[1]=sizeof( type_name ) * num_rows;
 
 	info->shape=shape;
 	info->strides=strides;
@@ -154,14 +159,15 @@ static void class_name ## _releasebuffer(PyObject *self, Py_buffer *view)
 /* used by PySequence_GetItem */
 static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 {
-	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	CCustomKernel* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
 
 	char* data=0; // internal data of self
-	int num_feat=0, num_vec=0;
+	int num_rows=0;
+	int num_cols=0;
 
-	SGMatrix< type_name > temp;
+	SGMatrix< type_name > kernel_matrix;
 
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
@@ -169,22 +175,22 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _getitem" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" " class_name _getitem" "', argument " "1"" of type '" "CCustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	arg1=reinterpret_cast< CCustomKernel* >(argp1);
 	
-	temp=arg1->get_feature_matrix();
-	num_feat=arg1->get_num_features();
-	num_vec=arg1->get_num_vectors();
+	kernel_matrix=arg1->get_float32_kernel_matrix();
+	num_rows=kernel_matrix.num_rows;
+	num_cols=kernel_matrix.num_cols;
 
-	data=(char*) temp.matrix;
+	data=(char*) kernel_matrix.matrix;
 
-	idx=get_idx_in_bounds(idx, num_feat);
+	idx=get_idx_in_bounds(idx, num_rows);
 	if (idx < 0)
 	{
 		goto fail;
@@ -194,11 +200,11 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 
 	shape=new Py_ssize_t[2];
 	shape[0]=1;
-	shape[1]=num_vec;
+	shape[1]=num_cols;
 
 	strides=new Py_ssize_t[2];
 	strides[0]=sizeof( type_name );
-	strides[1]=sizeof( type_name ) * num_feat;
+	strides[1]=sizeof( type_name ) * num_rows;
 
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					1, shape+1,
@@ -244,14 +250,14 @@ fail:
 /* used by PySequence_GetSlice */
 static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssize_t ihigh)
 {
-	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	CCustomKernel* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0 ; // result for self's casting
 
-	int num_feat=0, num_vec=0;
+	int num_rows=0, num_cols=0;
 	char* data=0; // internal data of self
 
-	SGMatrix< type_name > temp;
+	SGMatrix< type_name > kernel_matrix;
 
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
@@ -259,22 +265,22 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 	PyArrayObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
 
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _slice" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" " class_name _slice" "', argument " "1"" of type '" "CCustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	arg1=reinterpret_cast< CCustomKernel* >(argp1);
 
-	temp=arg1->get_feature_matrix();
-	num_feat=arg1->get_num_features();
-	num_vec=arg1->get_num_vectors();
+	kernel_matrix=arg1->get_float32_kernel_matrix();
+	num_rows=kernel_matrix.num_rows;
+	num_cols=kernel_matrix.num_cols;
 
-	data=(char*) temp.matrix;
+	data=(char*) kernel_matrix.matrix;
 
-	get_slice_in_bounds(&ilow, &ihigh, num_feat);
+	get_slice_in_bounds(&ilow, &ihigh, num_rows);
 	if (ilow < ihigh)
 	{
 		data+=ilow * sizeof( type_name );
@@ -282,11 +288,11 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 
 	shape=new Py_ssize_t[2];
 	shape[0]=ihigh - ilow;
-	shape[1]=num_vec;
+	shape[1]=num_cols;
 
 	strides=new Py_ssize_t[2];
 	strides[0]=sizeof( type_name );
-	strides[1]=sizeof( type_name ) * num_feat;
+	strides[1]=sizeof( type_name ) * num_rows;
 
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					2, shape,
@@ -332,21 +338,21 @@ fail:
 static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool get_scalar=true)
 {
 	// key is tuple, like (PySlice or PyLong, PySlice or PyLong)
-	// or only PySlice or PyLong
+	// or only PySlice/PyLong
 
-	CDenseFeatures< type_name >* arg1=0; // self in c++ repr
+	CCustomKernel* arg1=0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0 ; // result for self's casting
 
-	int num_feat=0;
-	int num_vec=0;
+	int num_rows=0;
+	int num_cols=0;
 	int ndims=2;
 	char* data = 0; // internal data of self
 
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
 
-	SGMatrix< type_name > temp;
+	SGMatrix< type_name > kernel_matrix;
 
 	PyObject* ret;
 	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
@@ -355,35 +361,35 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 	int type_item1=0; // results for tuple parsing
 	int type_item2=0;
 
-	Py_ssize_t feat_high=0;
-	Py_ssize_t feat_low=0;
-	Py_ssize_t vec_high=0;
-	Py_ssize_t vec_low=0;
+	Py_ssize_t row_high=0;
+	Py_ssize_t row_low=0;
+	Py_ssize_t col_high=0;
+	Py_ssize_t col_low=0;
 
-	Py_ssize_t feat_step=0;
-	Py_ssize_t vec_step=0;
-	Py_ssize_t feat_slicelength=0;
-	Py_ssize_t vec_slicelength=0;
+	Py_ssize_t rows_step=0;
+	Py_ssize_t cols_step=0;
+	Py_ssize_t rows_slicelength=0;
+	Py_ssize_t cols_slicelength=0;
 
 	PyObject* tmp; // temporary object for tuple's item
 
-	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1))
 	{
 		SWIG_exception_fail(SWIG_ArgError(res1),
-					"in method '" " class_name _subscript" "', argument " "1"" of type '" "CDenseFeatures< type_name > *""'");
+					"in method '" " class_name _subscript" "', argument " "1"" of type '" "CCustomKernel *""'");
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
+	arg1=reinterpret_cast< CCustomKernel* >(argp1);
 
-	temp=arg1->get_feature_matrix();
-	num_feat=arg1->get_num_features();
-	num_vec=arg1->get_num_vectors();
+	kernel_matrix=arg1->get_float32_kernel_matrix();
+	num_rows=kernel_matrix.num_rows;
+	num_cols=kernel_matrix.num_cols;
 
-	data=(char*) temp.matrix;
+	data=(char*) kernel_matrix.matrix;
 
-	feat_high=num_feat;
-	vec_high=num_vec;
+	row_high=num_rows;
+	col_high=num_cols;
 
 	if(PyTuple_Check(key))
 	{
@@ -392,9 +398,9 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 		{
 			// get slice for feat's dim
 			tmp=PyTuple_GET_ITEM(key, 0); // first element of tuple
-			type_item1=parse_tuple_item(tmp, num_feat,
-								&feat_low, &feat_high,
-								&feat_step, &feat_slicelength);
+			type_item1=parse_tuple_item(tmp, num_rows,
+								&row_low, &row_high,
+								&rows_step, &rows_slicelength);
 			if (type_item1==0)
 			{
 				goto fail;
@@ -402,9 +408,9 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 
 			// get slice for vector's dim
 			tmp=PyTuple_GET_ITEM(key, 1); // second element of tuple
-			type_item2=parse_tuple_item(tmp, num_vec,
-								&vec_low, &vec_high,
-								&vec_step, &vec_slicelength);
+			type_item2=parse_tuple_item(tmp, num_cols,
+								&col_low, &col_high,
+								&cols_step, &cols_slicelength);
 			if (type_item2==0)
 			{
 				goto fail;
@@ -412,19 +418,19 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 		}
 		else
 		{
-			SWIG_exception_fail(SWIG_ArgError(res1), "same size is needed...");
+			SWIG_exception_fail(SWIG_ArgError(res1), "same size is needed");
 			goto fail;
 		}
 
 		shape = new Py_ssize_t[2];
-		shape[0]=feat_high-feat_low;
-		shape[1]=vec_high-vec_low;
+		shape[0]=row_high-row_low;
+		shape[1]=col_high-col_low;
 
 		strides=new Py_ssize_t[2];
 		strides[0]=sizeof( type_name );
-		strides[1]=sizeof( type_name )*num_feat;
+		strides[1]=sizeof( type_name ) * num_rows;
 
-		data+=feat_low*strides[0]+vec_low*strides[1];
+		data+=row_low*strides[0]+col_low*strides[1];
 
 		// not slice item should give vector or scalar
 		if (type_item1==1)
@@ -465,17 +471,17 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
        		PyLong_Check(key) || (PyIndex_Check(key) && !PySequence_Check(key)))
 	{
 		int item_type;
-		item_type=parse_tuple_item(key, num_feat,
-							&feat_low, &feat_high,
-							&feat_step, &feat_slicelength);
+		item_type=parse_tuple_item(key, num_rows,
+							&row_low, &row_high,
+							&rows_step, &rows_slicelength);
 
 		switch (item_type)
 		{
 		case 1:
-			return class_name ## _getitem(self, feat_low);
+			return class_name ## _getitem(self, row_low);
 			break;
 		case 2:
-			return class_name ## _getslice(self, feat_low, feat_high);
+			return class_name ## _getslice(self, row_low, row_high);
 			break;
 		default:
 			goto fail;
@@ -511,20 +517,21 @@ fail:
 	return -1;
 }
 
-static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *args)
+static PyObject* class_name ## _cleanup_custom(PyObject *self, PyObject *args)
 {
-	PyObject* resultobj=0;
-	CDenseFeatures< type_name > *arg1=(CDenseFeatures< type_name > *) 0;
-	void* argp1=0;
+	PyObject* resultobj=NULL;
+	CCustomKernel* arg1=NULL;
+	void* argp1=NULL;
 	int res1=0;
   
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
+	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CCustomKernel"), 0 |  0 );
 	if (!SWIG_IsOK(res1)) 
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BoolFeatures_free_feature_matrix" "', argument " "1"" of type '" "shogun::CDenseFeatures< bool > *""'"); 
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" 
+				"cleanup" "', argument " "1"" of type '" "shogun::CCustomKernel *""'"); 
 	}
 
-	arg1=reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
+	arg1=reinterpret_cast< CCustomKernel * >(argp1);
 	{
 		try
 		{
@@ -543,7 +550,7 @@ static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *ar
 				delete view;
 			}
 
-			(arg1)->free_feature_matrix();
+			arg1->cleanup();
 		}
 
 		catch (std::bad_alloc)
@@ -577,10 +584,10 @@ static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFE
 %init
 %{
 // overload flags slot in DenseFatures proxy class
-SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_type.ht_type.tp_flags = class_name ## _flags;
+SwigPyBuiltin__shogun__CCustomKernel_type.ht_type.tp_flags = class_name ## _flags;
 
 // overload free_feature_matrix in DenseFeatures
-set_method(SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_methods, "free_feature_matrix", (PyCFunction) class_name ## _free_feature_matrix);
+set_method(SwigPyBuiltin__shogun__CCustomKernel_methods, "cleanup_custom", (PyCFunction) class_name ## _cleanup_custom);
 
 %}
 
@@ -588,37 +595,37 @@ set_method(SwigPyBuiltin__shogun__CDenseFeaturesT_ ## type_name ## _t_methods, "
 %{
 
 #include <map>
-static std::map<CDenseFeatures< type_name >*, Py_buffer*> extend_ ## class_name ## _info;
+static std::map< CCustomKernel*, Py_buffer*> extend_ ## class_name ## _info;
 
 %}
 
-%feature("python:bf_getbuffer") CDenseFeatures< type_name > #class_name "_getbuffer"
-%feature("python:bf_releasebuffer") CDenseFeatures< type_name > #class_name "_releasebuffer"
+%feature("python:bf_getbuffer") CCustomKernel #class_name "_getbuffer"
+%feature("python:bf_releasebuffer") CCustomKernel #class_name "_releasebuffer"
 
-%feature("python:nb_inplace_add") CDenseFeatures< type_name > #class_name "_inplaceadd"
-%feature("python:nb_inplace_subtract") CDenseFeatures< type_name > #class_name "_inplacesub"
-%feature("python:nb_inplace_multiply") CDenseFeatures< type_name > #class_name "_inplacemul"
+%feature("python:nb_inplace_add") CCustomKernel #class_name "_inplaceadd"
+%feature("python:nb_inplace_subtract") CCustomKernel #class_name "_inplacesub"
+%feature("python:nb_inplace_multiply") CCustomKernel #class_name "_inplacemul"
 
-%feature("python:sq_item") CDenseFeatures< type_name > #class_name "_getitem"
-%feature("python:sq_ass_item") CDenseFeatures< type_name > #class_name "_setitem"
-%feature("python:sq_slice") CDenseFeatures< type_name > #class_name "_getslice"
-%feature("python:sq_ass_slice") CDenseFeatures< type_name > #class_name "_setslice"
+%feature("python:sq_item") CCustomKernel #class_name "_getitem"
+%feature("python:sq_ass_item") CCustomKernel #class_name "_setitem"
+%feature("python:sq_slice") CCustomKernel #class_name "_getslice"
+%feature("python:sq_ass_slice") CCustomKernel #class_name "_setslice"
 
-%feature("python:mp_subscript") CDenseFeatures< type_name > #class_name "_getsubscript"
-%feature("python:mp_ass_subscript") CDenseFeatures< type_name > #class_name "_setsubscript"
+%feature("python:mp_subscript") CCustomKernel #class_name "_getsubscript"
+%feature("python:mp_ass_subscript") CCustomKernel #class_name "_setsubscript"
 
-%enddef /* PROTOCOLS_DENSEFEATURES */
+%enddef /* PROTOCOLS_CUSTOMKERNEL */
 
-%define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
+%define EXTEND_CUSTOMKERNEL(class_name, type_name, typecode)
 
-%extend CDenseFeatures< type_name >
+%extend shogun::CCustomKernel
 {
 
 int frombuffer(PyObject* exporter, bool copy)
 {
 	Py_buffer* view=NULL;
 	buffer_matrix_ ## type_name ## _info* info=NULL;
-	SGMatrix< type_name > new_feat_matrix;
+	SGMatrix< type_name > new_kernel_matrix;
 
 	int res1=0;
 	int res2=0;
@@ -641,7 +648,7 @@ int frombuffer(PyObject* exporter, bool copy)
 	// checking that buffer is right
 	if (view->ndim!=2)
 	{
-		PyErr_SetString(PyExc_BufferError, "wrond dimensional");
+		PyErr_SetString(PyExc_BufferError, "wrong dimension");
 		return -1;
 	}
 
@@ -657,21 +664,21 @@ int frombuffer(PyObject* exporter, bool copy)
 		return -1;
 	}
 
-	new_feat_matrix=SGMatrix< type_name >((type_name*) view->buf, view->shape[0], view->shape[1], true);
+	new_kernel_matrix=SGMatrix< type_name >((type_name*) view->buf, view->shape[0], view->shape[1], true);
 
 	if (copy)
 	{
-		$self->set_feature_matrix(new_feat_matrix.clone());
+		$self->set_full_kernel_matrix_from_full(new_kernel_matrix.clone());
 	}
 	else
 	{	
-		$self->set_feature_matrix(new_feat_matrix);
+		$self->set_full_kernel_matrix_from_full(new_kernel_matrix);
 	}
 
 	info=(buffer_matrix_ ## type_name ## _info*) malloc(sizeof(buffer_matrix_ ## type_name ## _info));
 	new (&info->buf) SGMatrix< type_name >();
 
-	info->buf=new_feat_matrix;
+	info->buf=new_kernel_matrix;
 	info->shape=view->shape;
 	info->strides=view->strides;
 	info->internal=view->internal;
@@ -685,6 +692,6 @@ int frombuffer(PyObject* exporter, bool copy)
 
 }
 
-%enddef /* EXTEND_DENSEFEATURES */
+%enddef /* EXTEND_CUSTOMKERNEL */
 
 #endif /* SWIG_PYTHON */
