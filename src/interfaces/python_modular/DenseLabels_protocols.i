@@ -16,79 +16,28 @@
 
 PyObject* class_name ## _inplace ## operator_name ## (PyObject *self, PyObject *o2)
 {
-	class_type* arg1=0; // self in c++ repr
+	PyObject* resultobj=0;
 
+	class_type* arg1=(class_type*) 0; // self in c++ repr
 	void* argp1=0; // pointer to self
 	int res1=0; // result for self's casting
-	int res2=0; // result for checking buffer
-	int res3=0; // result for getting buffer
 
-	PyObject* resultobj=0;
-	Py_buffer view;
-	SGVector< type_name > buf; // internal buffer of self
+	PyObject* internal_data=0;
 
-	int num_labels; // shape of buffer of self
-	Py_ssize_t shape[1];
-	Py_ssize_t strides[1];
+	res1 = SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::class_type"), 0 |  0 );
+	if (!SWIG_IsOK(res1))
+	{
+		// TODO fix message
+		SWIG_exception_fail(SWIG_ArgError(res1),
+					"in method '" "inplace_#operator_name" "', argument " "1"" of type '" "class_type *""'");
+	}
 
-	type_name* lhs;
-	char* rhs;
-
-	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::class_type"), 0 |  0 );
 	arg1=reinterpret_cast< class_type* >(argp1);
 
-	res2=PyObject_CheckBuffer(o2);
-	if (!res2)
-	{
-		SWIG_exception_fail(SWIG_ArgError(res2), "this object don't support buffer protocol");
-	}
-
-	res3=PyObject_GetBuffer(o2, &view, PyBUF_F_CONTIGUOUS | PyBUF_ND | PyBUF_STRIDES | 0);
-	if (res3!=0 || view.buf==NULL)
-	{
-		SWIG_exception_fail(SWIG_ArgError(res3), "bad buffer");
-	}
-
-	// checking that buffer is right
-	if (view.ndim!=1)
-	{
-		SWIG_exception_fail(SWIG_ArgError(view.ndim), "wrong dimension");
-	}
-
-	if (view.itemsize!=sizeof(type_name))
-	{
-		SWIG_exception_fail(SWIG_ArgError(view.itemsize), "wrong type");
-	}
-
-	if (view.shape==NULL)
-	{
-		SWIG_exception_fail(SWIG_ArgError(0), "wrong shape");
-	}
-
-	shape[0]=view.shape[0];
-	if (shape[0]!=arg1->get_num_labels())
-		SWIG_exception_fail(SWIG_ArgError(0), "wrong size");
-
-	strides[0]=view.strides[0];
-
-	if (view.len!=shape[0]*view.itemsize)
-		SWIG_exception_fail(SWIG_ArgError(view.len), "bad buffer");
-
-	// calculation
-	buf=arg1->get_labels();
-	num_labels=arg1->get_num_labels();
-
-	lhs=buf.vector;
-	rhs=(char*) view.buf;
-
-	for (int i=0; i<num_labels; i++)
-	{
-		lhs[i] ## operator ## = (*(type_name*) (rhs + strides[0]*i));
-	}
+	internal_data=PySequence_GetSlice(self, 0, arg1->get_num_labels());
+	PyNumber_InPlace ## operator ## (internal_data, o2);
 
 	resultobj=self;
-	PyBuffer_Release(&view);
-
 	Py_INCREF(resultobj);
 	return resultobj;
 
@@ -377,9 +326,9 @@ fail:
 	return -1;
 }
 
-NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, add, +)
-NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, sub, -)
-NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, mul, *)
+NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, add, Add)
+NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, sub, Subtract)
+NUMERIC_DENSELABELS(class_type, class_name, type_name, format_str, mul, Multiply)
 
 static long class_name ## _flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFER | Py_TPFLAGS_BASETYPE;
 %}
