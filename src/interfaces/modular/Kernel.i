@@ -23,6 +23,11 @@
 }
 #endif
 
+#ifndef SWIGPYTHON
+#define PROTOCOLS_CUSTOMKERNEL(class_name, type_name, format_str, typecode)
+#define EXTEND_CUSTOMKERNEL(class_name, type_name, typecode)
+#endif
+
 /* Remove C Prefix */
 %rename(Kernel) CKernel;
 %rename(KernelNormalizer) CKernelNormalizer;
@@ -38,7 +43,10 @@
 %rename(CommUlongStringKernel) CCommUlongStringKernel;
 %rename(CommWordStringKernel) CCommWordStringKernel;
 %rename(ConstKernel) CConstKernel;
+
+PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(CustomKernel) CCustomKernel;
+
 %rename(DiagKernel) CDiagKernel;
 %rename(DistantSegmentsKernel) CDistantSegmentsKernel;
 %rename(WaveKernel) CWaveKernel;
@@ -204,3 +212,5 @@ namespace shogun
 %include <shogun/kernel/MultiquadricKernel.h>
 %include <shogun/kernel/RationalQuadraticKernel.h>
 %include <shogun/kernel/JensenShannonKernel.h>
+
+EXTEND_CUSTOMKERNEL(CustomKernel, float32_t, NPY_FLOAT32)
