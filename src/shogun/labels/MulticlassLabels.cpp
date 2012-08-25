@@ -85,12 +85,23 @@ CBinaryLabels* CMulticlassLabels::get_binary_for_class(int32_t i)
 {
 	SGVector<float64_t> binary_labels(get_num_labels());
 
-	for (int32_t k=0; k<binary_labels.vlen; k++)
+	if (m_num_multiclass_confidences == get_num_labels())
 	{
-		int32_t label = get_int_label(k);
-		binary_labels[k] = label == i ? +1.0 : -1.0;
+		for (int32_t k=0; k<binary_labels.vlen; k++)
+		{
+			SGVector<float64_t> confs = m_multiclass_confidences[k];
+			int32_t label = get_int_label(k);
+			binary_labels[k] = label == i ? confs[label] : -confs[label];
+		}
 	}
-
+	else
+	{
+		for (int32_t k=0; k<binary_labels.vlen; k++)
+		{
+			int32_t label = get_int_label(k);
+			binary_labels[k] = label == i ? +1.0 : -1.0;
+		}
+	}
 	return new CBinaryLabels(binary_labels);
 }
 
