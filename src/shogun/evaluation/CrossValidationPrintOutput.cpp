@@ -15,6 +15,7 @@
 #include <shogun/machine/KernelMulticlassMachine.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/classifier/mkl/MKL.h>
+#include <shogun/classifier/mkl/MKLMulticlass.h>
 
 using namespace shogun;
 
@@ -94,6 +95,16 @@ void CCrossValidationPrintOutput::update_trained_machine(
 	if (dynamic_cast<CMKL*>(machine))
 	{
 		CMKL* mkl=(CMKL*)machine;
+		CCombinedKernel* kernel=dynamic_cast<CCombinedKernel*>(
+				mkl->get_kernel());
+		kernel->get_subkernel_weights().display_vector("MKL sub-kernel weights",
+				prefix);
+		SG_UNREF(kernel);
+	}
+	
+	if (dynamic_cast<CMKLMulticlass*>(machine))
+	{
+		CMKLMulticlass* mkl=(CMKLMulticlass*)machine;
 		CCombinedKernel* kernel=dynamic_cast<CCombinedKernel*>(
 				mkl->get_kernel());
 		kernel->get_subkernel_weights().display_vector("MKL sub-kernel weights",
