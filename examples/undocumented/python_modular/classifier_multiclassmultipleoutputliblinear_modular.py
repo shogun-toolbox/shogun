@@ -18,7 +18,7 @@ def classifier_multiclassmultipleoutputliblinear_modular (fm_train_real=traindat
 
 	label_pred = classifier.apply_multiclass_multiple_output(feats_test,2)
 	out = label_pred.get_labels()
-	print out
+	#print out
 	return out
 
 if __name__=='__main__':
