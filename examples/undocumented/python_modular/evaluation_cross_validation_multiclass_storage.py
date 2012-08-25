@@ -24,7 +24,7 @@ def evaluation_cross_validation_multiclass_storage(traindat=traindat, label_trai
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import CrossValidationPrintOutput
     from shogun.Evaluation import CrossValidationMKLStorage, CrossValidationMulticlassStorage
-    from shogun.Evaluation import MulticlassAccuracy
+    from shogun.Evaluation import MulticlassAccuracy, F1Measure
     from shogun.Evaluation import StratifiedCrossValidationSplitting
     from shogun.Features import MulticlassLabels
     from shogun.Features import RealFeatures, CombinedFeatures
@@ -68,6 +68,7 @@ def evaluation_cross_validation_multiclass_storage(traindat=traindat, label_trai
     #mkl_storage=CrossValidationMKLStorage()
     #cross_validation.add_cross_validation_output(mkl_storage)
     multiclass_storage=CrossValidationMulticlassStorage()
+    multiclass_storage.append_binary_evaluation(F1Measure())
     cross_validation.add_cross_validation_output(multiclass_storage)
     cross_validation.set_num_runs(3)
     
@@ -77,6 +78,8 @@ def evaluation_cross_validation_multiclass_storage(traindat=traindat, label_trai
 
     roc_0_0_0 = multiclass_storage.get_fold_ROC(0,0,0)
     print roc_0_0_0
+    auc_0_0_0 = multiclass_storage.get_fold_evaluation_result(0,0,0,0)
+    print auc_0_0_0
 
 
 if __name__=='__main__':
