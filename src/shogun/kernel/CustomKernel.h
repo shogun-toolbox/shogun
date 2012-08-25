@@ -95,6 +95,9 @@ class CCustomKernel: public CKernel
 		/** clean up kernel */
 		virtual void cleanup();
 
+		/** only cleanup stuff specific to Custom kernel */
+		void cleanup_custom();
+
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type CUSTOM
@@ -417,11 +420,6 @@ class CCustomKernel: public CKernel
 				return kmatrix.matrix[r*kmatrix.num_cols+real_col];
 			}
 		}
-
-	private:
-
-		/** only cleanup stuff specific to Custom kernel */
-		void cleanup_custom();
 
 	protected:
 

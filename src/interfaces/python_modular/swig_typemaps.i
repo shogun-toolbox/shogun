@@ -18,6 +18,7 @@
  */
 
 %include "DenseFeatures_protocols.i"
+%include "CustomKernel_protocols.i"
 %include "DenseLabels_protocols.i"
 %include "SGVector_protocols.i"
 
