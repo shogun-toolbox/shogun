@@ -10,9 +10,19 @@
 		- New 'multiclass' module for multiclass classification algorithms, generic linear
 		  and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
 		  new rejection schemes concept by Sergey Lisitsyn.
+		- Various multitask learning algorithms including L1/Lq multitask group lasso logistic regression
+		  and least squares regression, L1/L2 multitask tree guided group lasso logistic regression 
+		  and least squares regression, trace norm regularized multitask logistic regression, clustered multitask 
+		  logistic regression and L1/L2 multitask group logistic regression by Sergey Lisitsyn.
+		- Group and tree-guided logistic regression for binary and multiclass problems by Sergey Lisitsyn.
 		- Mahalanobis distance, QDA, Stochastic Proximity Embedding,
 		  generic OvO multiclass machine and CoverTree & KNN integation (thanks to Fernando J. Iglesias Garcia).
-		- New regression estimation algorithms.
+		- Structured output learning framework by Fernando J. Iglesias Garcia.
+		- Hidden markov support vector machine structured output model by Fernando J. Iglesias Garcia.
+		- Implementations of three Bundle method for risk minimization (BMRM) variants by Michal Uricar.
+		- Latent SVM framework and latent detector example by Viktor Gal.
+		- Gaussian processes framework for parameters selection and gaussian processes regression estimation
+		  framework by Jacob Walker.
 		- New graphical python modular examples.
 		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
 		- New data-locking concept by Heiko Strathmann which allows to tell machines that data
@@ -23,10 +33,13 @@
 		- Features may now have arbritarily many index subsets (of subsets (of subsets (...))).
 		- Various clustering measures, Least Angle Regression and new multiclass strategies
 		  concept (thanks to Chiyuan Zhang).
+		- A bunch of multiclass learning algorithms including the ShareBoost algorithm, ECOC framework,
+		  conditional probability tree, balanced conditional probability tree, random conditional probability
+		  tree and relaxed tree by Chiyuan Zhang.
 		- Python Sparse matrix typemap for octave modular interface (thanks to Evgeniy Andreev).
-		- Newton SVM port (thanks to Harshit Syal)
+		- Newton SVM port (thanks to Harshit Syal).
 		- Some progress on native windows compilation using 
-		  cmake and mingw-w64 (thanks to Josh aka jklontz)
+		  cmake and mingw-w64 (thanks to Josh aka jklontz).
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was
 		  changed to log-space.
