@@ -9,9 +9,9 @@ preprocessor <- function(filename) {
 		return(TRUE)
 	}
 
-	pname <- fix_preproc_name_inconsistency(preproc_name)
+	pname <- fix_preproc_name_inconsistency(preprocessor_name)
 	if (regexpr('PRUNEVARSUBMEAN', pname)>0) {
-		sg('add_preproc', pname, tobool(preproc_arg0_divide))
+		sg('add_preproc', pname, tobool(preprocessor_arg0_divide))
 	} else {
 		sg('add_preproc', pname)
 	}
