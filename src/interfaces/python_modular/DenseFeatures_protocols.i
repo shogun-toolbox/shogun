@@ -641,7 +641,7 @@ int frombuffer(PyObject* exporter, bool copy)
 	// checking that buffer is right
 	if (view->ndim!=2)
 	{
-		PyErr_SetString(PyExc_BufferError, "wrond dimensional");
+		PyErr_SetString(PyExc_BufferError, "wrong dimensional");
 		return -1;
 	}
 
