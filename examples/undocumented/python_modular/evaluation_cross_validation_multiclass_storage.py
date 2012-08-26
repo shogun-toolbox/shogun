@@ -73,13 +73,13 @@ def evaluation_cross_validation_multiclass_storage(traindat=traindat, label_trai
     cross_validation.set_num_runs(3)
     
     # perform cross-validation
-    cross_validation.io.set_loglevel(MSG_DEBUG)
     result=cross_validation.evaluate()
 
     roc_0_0_0 = multiclass_storage.get_fold_ROC(0,0,0)
-    print roc_0_0_0
+    #print roc_0_0_0
     auc_0_0_0 = multiclass_storage.get_fold_evaluation_result(0,0,0,0)
-    print auc_0_0_0
+    #print auc_0_0_0
+    return roc_0_0_0, auc_0_0_0
 
 
 if __name__=='__main__':

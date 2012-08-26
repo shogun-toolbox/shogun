@@ -14,6 +14,50 @@
 
 using namespace shogun;
 
+CCrossValidationMulticlassStorage::CCrossValidationMulticlassStorage(bool compute_ROC, bool compute_PRC, bool compute_conf_matrices) : 
+	CCrossValidationOutput()
+{
+	m_initialized = false;
+	m_compute_ROC = compute_ROC;
+	m_compute_PRC = compute_PRC;
+	m_compute_conf_matrices = compute_conf_matrices;
+	m_pred_labels = NULL;
+	m_true_labels = NULL;
+	m_num_classes = 0;
+	m_binary_evaluations = new CDynamicObjectArray();
+}
+
+
+CCrossValidationMulticlassStorage::~CCrossValidationMulticlassStorage()
+{
+	if (m_compute_ROC)
+	{
+		for (int32_t i=0; i<m_num_folds*m_num_runs*m_num_classes; i++)
+			m_fold_ROC_graphs[i].~SGMatrix<float64_t>();
+
+		SG_FREE(m_fold_ROC_graphs);
+	}
+
+	if (m_compute_PRC)
+	{
+		for (int32_t i=0; i<m_num_folds*m_num_runs*m_num_classes; i++)
+			m_fold_PRC_graphs[i].~SGMatrix<float64_t>();
+
+		SG_FREE(m_fold_PRC_graphs);
+	}
+
+	if (m_compute_conf_matrices)
+	{
+		for (int32_t i=0; i<m_num_folds*m_num_runs; i++)
+			m_conf_matrices[i].~SGMatrix<int32_t>();
+	
+		SG_FREE(m_conf_matrices);
+	}
+
+	SG_UNREF(m_binary_evaluations);
+};
+
+
 void CCrossValidationMulticlassStorage::post_init()
 {
 	if (m_initialized)
