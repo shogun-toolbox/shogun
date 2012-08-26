@@ -78,11 +78,12 @@ SGVector< int32_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
 	// 2 -> negative state (label == 0)
 	// 3 -> positive state (label == 1)
 
-	SGVector< int32_t > state_seq(label_seq->data.vlen);
+	SGVector< int32_t > seq_data = label_seq->get_data();
+	SGVector< int32_t > state_seq(seq_data.size());
 	for ( int32_t i = 1 ; i < state_seq.vlen-1 ; ++i )
 	{
 		//FIXME make independent of values 0-1 in labels
-		state_seq[i] = label_seq->data[i] + 2;
+		state_seq[i] = seq_data[i] + 2;
 	}
 
 	// The first element is always start state

@@ -23,8 +23,9 @@ class CHMSVMLabels;
 
 /** @brief Class CSequence to be used in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). */
-struct CSequence : public CStructuredData
+class CSequence : public CStructuredData
 {
+public:
 	/** data type */
 	STRUCTURED_DATA_TYPE(SDT_SEQUENCE);
 
@@ -32,7 +33,7 @@ struct CSequence : public CStructuredData
 	 *
 	 * @param seq data sequence
 	 */
-	CSequence(SGVector< int32_t > seq) : CStructuredData(), data(seq) { }
+	CSequence(SGVector< int32_t > seq = SGVector<int32_t>()) : CStructuredData(), data(seq) { }
 
 	/** destructor */
 	~CSequence() { }
@@ -54,11 +55,14 @@ struct CSequence : public CStructuredData
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "Sequence"; }
 
+	/** returns data */
+	SGVector<int32_t> get_data() const { return data; }
+
+protected:
+
 	/** data sequence */
 	SGVector< int32_t > data;
 
-	/** returns data */
-	SGVector<int32_t> get_data() const { return data; }
 };
 
 /** @brief Class CHMSVMLabels to be used in the application of Structured Output

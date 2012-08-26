@@ -98,15 +98,18 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels* predicted,
 		CSequence* pred_seq =
 			CSequence::obtain_from_generic(predicted->get_label(i));
 
-		REQUIRE(true_seq->data.vlen == pred_seq->data.vlen, "Corresponding ground "
+		SGVector<int32_t> true_seq_data = true_seq->get_data();
+		SGVector<int32_t> pred_seq_data = pred_seq->get_data();
+
+		REQUIRE(true_seq_data.size() == pred_seq_data.size(), "Corresponding ground "
 				"truth and predicted sequences must be equally long\n");
 
 		num_equal = 0;
 		// Count the number of elements that are equal in both sequences
-		for ( int32_t j = 0 ; j < true_seq->data.vlen ; ++j )
-			num_equal += true_seq->data[j] == pred_seq->data[j];
+		for ( int32_t j = 0 ; j < true_seq_data.size() ; ++j )
+			num_equal += true_seq_data[j] == pred_seq_data[j];
 
-		accuracies[i] = (1.0*num_equal) / true_seq->data.vlen;
+		accuracies[i] = (1.0*num_equal) / true_seq_data.size();
 
 		SG_UNREF(true_seq);
 		SG_UNREF(pred_seq);
