@@ -154,9 +154,9 @@ CResultSet* CHMSVMModel::argmax(
 		CSequence* ytrue =
 			CSequence::obtain_from_generic(m_labels->get_label(feat_idx));
 
-		REQUIRE(ytrue->data.vlen == T, "T, the length of the feature "
+		REQUIRE(ytrue->get_data().size() == T, "T, the length of the feature "
 			"x^i (%d) and the length of its corresponding label y^i "
-			"(%d) must be the same.\n", T, ytrue->data.vlen);
+			"(%d) must be the same.\n", T, ytrue->get_data().size());
 
 		SGMatrix< float64_t > loss_matrix = m_state_model->loss_matrix(ytrue);
 
@@ -368,9 +368,10 @@ bool CHMSVMModel::check_training_setup() const
 	{
 		seq = CSequence::obtain_from_generic(hmsvm_labels->get_label(i));
 
-		for ( int32_t j = 0 ; j < seq->data.vlen ; ++j )
+		SGVector<int32_t> seq_data = seq->get_data();
+		for ( int32_t j = 0 ; j < seq_data.size() ; ++j )
 		{
-			state = seq->data[j];
+			state = seq_data[j];
 
 			if ( state < 0 || state >= hmsvm_labels->get_num_states() )
 			{
