@@ -85,7 +85,13 @@ CBinaryLabels* CMulticlassLabels::get_binary_for_class(int32_t i)
 {
 	SGVector<float64_t> binary_labels(get_num_labels());
 
-	if (m_num_multiclass_confidences == get_num_labels())
+	bool use_confidences = false;
+	if (m_num_multiclass_confidences != 0)
+	{
+		if (m_multiclass_confidences[i].size())
+			use_confidences = true;
+	}
+	if (use_confidences)
 	{
 		for (int32_t k=0; k<binary_labels.vlen; k++)
 		{
