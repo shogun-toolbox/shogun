@@ -56,6 +56,9 @@ struct CSequence : public CStructuredData
 
 	/** data sequence */
 	SGVector< int32_t > data;
+
+	/** returns data */
+	SGVector<int32_t> get_data() const { return data; }
 };
 
 /** @brief Class CHMSVMLabels to be used in the application of Structured Output
