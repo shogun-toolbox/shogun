@@ -120,14 +120,14 @@ slep_result_t slep_mc_tree_lr(
 				// avoid underflow via log-sum-exp trick
 				fun_s += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
 				double prob = 1.0/(1+CMath::exp(aa));
-				double b = ((vec_class == j) ? -1.0 : 1.0)*(1-prob)/(n_vecs*n_classes);
+				double b = ((vec_class == j) ? -1.0 : 1.0)*(1-prob);///(n_vecs*n_classes);
 				// update gradient of intercepts
 				gc[j] += b;
 				// update gradient of weight vectors
 				features->add_to_dense_vec(b, i, g.col(j).data(), n_feats);
 			}
 		}
-		fun_s /= (n_vecs*n_classes);
+		//fun_s /= (n_vecs*n_classes);
 		
 		wp = w;
 		Awp = Aw;
@@ -166,7 +166,7 @@ slep_result_t slep_mc_tree_lr(
 					fun_x += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
 				}
 			}
-			fun_x /= (n_vecs*n_classes);
+			//fun_x /= (n_vecs*n_classes);
 
 			// check for termination of line search
 			double r_sum = (v.squaredNorm() + (c-search_c).squaredNorm())/2;
@@ -216,10 +216,10 @@ slep_result_t slep_mc_tree_lr(
 		// regularize objective with tree norm
 		objective += lambda*tree_norm;
 
-		cout << "Objective = " << objective << endl;
+		//cout << "Objective = " << objective << endl;
 
 		// check for termination of whole process
-		if ((CMath::abs(objective - objective_p) < options.tolerance*CMath::abs(objective)) && (iter>2))
+		if ((CMath::abs(objective - objective_p) < options.tolerance*CMath::abs(objective_p)) && (iter>2))
 		{
 			SG_SINFO("Objective changes less than tolerance\n");
 			done = true;
