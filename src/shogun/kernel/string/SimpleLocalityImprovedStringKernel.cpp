@@ -19,6 +19,7 @@ using namespace shogun;
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel()
 : CStringKernel<char>()
 {
+	SG_UNSTABLE("SimpleLocalityImprovedStringKernel");
 	init();
 }
 
@@ -26,6 +27,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
 : CStringKernel<char>(size)
 {
+	SG_UNSTABLE("SimpleLocalityImprovedStringKernel");
 	init();
 
 	length=l;
@@ -38,6 +40,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	int32_t len, int32_t id, int32_t od)
 : CStringKernel<char>()
 {
+	SG_UNSTABLE("SimpleLocalityImprovedStringKernel");
 	init();
 
 	length=len;
