@@ -17,9 +17,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/regression/gp/InferenceMethod.h>
 
 namespace shogun
@@ -181,23 +179,23 @@ private:
 	/*Cholesky of Covariance of
 	 * latent features
 	 */
-	Eigen::MatrixXd m_chol_uu;
+	SGMatrix<float64_t> m_chol_uu;
 
 	/*Cholesky of Covariance of
 	 * latent features
 	 * and training features
 	 */
-	Eigen::MatrixXd m_chol_utr;
+	SGMatrix<float64_t> m_chol_utr;
 
 	/* Covariance matrix of latent
 	 * features
 	 */
-	Eigen::MatrixXd m_kuu;
+	SGMatrix<float64_t> m_kuu;
 
 	/* Covariance matrix of latent
 	 * features and training features
 	 */
-	Eigen::MatrixXd m_ktru;
+	SGMatrix<float64_t> m_ktru;
 
 	/* Diagonal of Training
 	 * kernel matrix + noise
@@ -206,24 +204,23 @@ private:
 	 * (m_chol_uu^(-1)*m_ktru)'
 	 * = V*V'
 	 */
-	Eigen::VectorXd m_dg;
+	SGVector<float64_t> m_dg;
 
 	/*Labels adjusted for
 	 * noise and means
 	 */
-	Eigen::VectorXd m_r;
+	SGVector<float64_t> m_r;
 
 	/* Solves the equation
 	 * V*r = m_chol_utr
 	 */
-	Eigen::VectorXd m_be;
+	SGVector<float64_t> m_be;
 
 
 
 };
 
 }
-#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
 
 #endif /* CFITCInferenceMethod_H_ */

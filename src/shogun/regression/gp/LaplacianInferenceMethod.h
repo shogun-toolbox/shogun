@@ -250,37 +250,37 @@ private:
 	index_t m_max_itr;
 
 	/*Kernel Matrix*/
-	Eigen::MatrixXd temp_kernel;
+	SGMatrix<float64_t> temp_kernel;
 
 	/*Eigen version of alpha vector*/
-	Eigen::VectorXd temp_alpha;
+	SGVector<float64_t> temp_alpha;
 
 	/*Function Location*/
-	Eigen::VectorXd function;
+	SGVector<float64_t> function;
 
 	/*Noise Matrix*/
-	Eigen::MatrixXd W;
+	SGVector<float64_t> W;
 
 	/*Square root of W*/
-	Eigen::MatrixXd sW;
+	SGVector<float64_t> sW;
 
 	/*Eigen version of means vector*/
-	Eigen::VectorXd m_means;
+	SGVector<float64_t> m_means;
 
 	/*Derivative of log likelihood with respect
 	 * to function location
 	 */
-	Eigen::VectorXd dlp;
+	SGVector<float64_t> dlp;
 
 	/*Second derivative of log likelihood with respect
 	 * to function location
 	 */
-	Eigen::VectorXd	d2lp;
+	SGVector<float64_t> d2lp;
 
 	/*Third derivative of log likelihood with respect
 	 * to function location
 	 */
-	Eigen::VectorXd	d3lp;
+	SGVector<float64_t> d3lp;
 
 	/*log likelihood*/
 	float64_t lp;
@@ -291,15 +291,15 @@ private:
 	class Psi_line : public func_base
 	{
 	public:
-		Eigen::VectorXd* alpha;
+		Eigen::Map<Eigen::VectorXd>* alpha;
 		Eigen::VectorXd* dalpha;
-		Eigen::MatrixXd* K;
+		Eigen::Map<Eigen::MatrixXd>* K;
 		float64_t* l1;
-		Eigen::VectorXd* dl1;
-		Eigen::VectorXd* dl2;
-		Eigen::MatrixXd* mW;
-		Eigen::VectorXd* f;
-		Eigen::VectorXd* m;
+		SGVector<float64_t>* dl1;
+		Eigen::Map<Eigen::VectorXd>* dl2;
+		SGVector<float64_t>* mW;
+		SGVector<float64_t>* f;
+		SGVector<float64_t>* m;
 		float64_t scale;
 		CLikelihoodModel* lik;
 		CRegressionLabels *lab;
@@ -308,11 +308,21 @@ private:
 
 		virtual double operator() (double x)
 		{
+			Eigen::Map<Eigen::VectorXd> eigen_f(f->vector, f->vlen);
+			Eigen::Map<Eigen::VectorXd> eigen_m(m->vector, m->vlen);
+
 			*alpha = start_alpha + x*(*dalpha);
-			(*f) = (*K)*(*alpha)*scale*scale+(*m);
+			(eigen_f) = (*K)*(*alpha)*scale*scale+(eigen_m);
 			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
-			(*mW) = -lik->get_log_probability_derivative_f(lab, (*f), 2);
-			float64_t result = ((*alpha).dot(((*f)-(*m))))/2.0;
+			(*mW) = lik->get_log_probability_derivative_f(lab, (*f), 2);
+			float64_t result = ((*alpha).dot(((eigen_f)-(eigen_m))))/2.0;
+
+			for (index_t i = 0; i < eigen_f.rows(); i++)
+				(*f)[i] = eigen_f[i];
+
+			for (index_t i = 0; i < (*mW).vlen; i++)
+				(*mW)[i] = -(*mW)[i];
+
 			result -= lik->get_log_probability_f(lab, *f);
 			return result;
 		}
