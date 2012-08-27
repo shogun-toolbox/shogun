@@ -89,7 +89,7 @@ public:
 	 *  @return log likelihood
 	 */
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
-			Eigen::VectorXd f) = 0;
+			SGVector<float64_t> f) = 0;
 
 
 	/** get derivative of log likelihood log(P(y|f)) with respect
@@ -103,8 +103,8 @@ public:
 	 *
 	 *  @return derivative
 	 */
-	virtual Eigen::VectorXd get_log_probability_derivative_f(
-			CRegressionLabels* labels, Eigen::VectorXd f, index_t i) = 0;
+	virtual SGVector<float64_t> get_log_probability_derivative_f(
+			CRegressionLabels* labels, SGVector<float64_t> f, index_t i) = 0;
 
 	/** get derivative of log likelihood log(P(y|f))
 	 *  with respect to given parameter
@@ -117,8 +117,8 @@ public:
 	 *
 	 *  @return derivative
 	 */
-	virtual Eigen::VectorXd get_first_derivative(CRegressionLabels* labels,
-			TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
+	virtual SGVector<float64_t> get_first_derivative(CRegressionLabels* labels,
+			TParameter* param, CSGObject* obj, SGVector<float64_t> function) = 0;
 
 	/** get derivative of the second derivative
 	 *  of log likelihood with respect to function
@@ -136,8 +136,8 @@ public:
 	 *
 	 *  @return derivative
 	 */
-	virtual Eigen::VectorXd get_second_derivative(CRegressionLabels* labels,
-			TParameter* param, CSGObject* obj, Eigen::VectorXd function) = 0;
+	virtual SGVector<float64_t> get_second_derivative(CRegressionLabels* labels,
+			TParameter* param, CSGObject* obj, SGVector<float64_t> function) = 0;
 protected:
 
 	/** Degrees of Freedom*/
