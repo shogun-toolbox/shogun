@@ -61,8 +61,10 @@ SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(
 }
 
 float64_t CStudentsTLikelihood::get_log_probability_f(
-		CRegressionLabels* labels, Eigen::VectorXd function)
+		CRegressionLabels* labels, SGVector<float64_t> m_function)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
+
 	float64_t temp = lgamma(m_df/2.0+0.5) -
 			lgamma(m_df/2.0) - log(m_df*CMath::PI*m_sigma*m_sigma)/2.0;
 
@@ -85,9 +87,10 @@ float64_t CStudentsTLikelihood::get_log_probability_f(
 	return result.sum();
 }
 
-VectorXd CStudentsTLikelihood::get_log_probability_derivative_f(
-		CRegressionLabels* labels, Eigen::VectorXd function, index_t j)
+SGVector<float64_t>  CStudentsTLikelihood::get_log_probability_derivative_f(
+		CRegressionLabels* labels, SGVector<float64_t> m_function, index_t j)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
 	VectorXd result(function.rows());
 
 	for (index_t i = 0; i < function.rows(); i++)
@@ -100,18 +103,29 @@ VectorXd CStudentsTLikelihood::get_log_probability_derivative_f(
 	VectorXd c(function.rows());
 	VectorXd d(function.rows());
 
+	SGVector<float64_t> sgresult(result.rows());
 
 	for (index_t i = 0; i < function.rows(); i++)
 		a[i] = result_squared[i] + m_df*m_sigma*m_sigma;
 
 	if (j == 1)
-		return (m_df+1)*result.cwiseQuotient(a);
+	{
+		result = (m_df+1)*result.cwiseQuotient(a);
+		for (index_t i = 0; i < result.rows(); i++)
+			sgresult[i] = result[i];
+		return sgresult;
+	}
 
 	for (index_t i = 0; i < function.rows(); i++)
 		b[i] = result_squared[i] - m_df*m_sigma*m_sigma;
 
 	if (j == 2)
-		return (m_df+1)*b.cwiseQuotient(a.cwiseProduct(a));
+	{
+		result = (m_df+1)*b.cwiseQuotient(a.cwiseProduct(a));
+		for (index_t i = 0; i < result.rows(); i++)
+			sgresult[i] = result[i];
+		return sgresult;
+	}
 
 	for (index_t i = 0; i < function.rows(); i++)
 		c[i] = result_squared[i] - 3*m_df*m_sigma*m_sigma;
@@ -119,20 +133,30 @@ VectorXd CStudentsTLikelihood::get_log_probability_derivative_f(
 	d = a.cwiseProduct(a);
 
 	if (j == 3)
-		return (m_df+1)*2*result.cwiseProduct(c).cwiseQuotient(d.cwiseProduct(a));
+	{
+		result = (m_df+1)*2*result.cwiseProduct(c).cwiseQuotient(d.cwiseProduct(a));
+		for (index_t i = 0; i < result.rows(); i++)
+			sgresult[i] = result[i];
+		return sgresult;
+
+	}
 
 	else
 	{
 		SG_ERROR("Invalid index for derivative\n");
-		return result;
+		return sgresult;
 	}
 }
 
 //Taken in log space then converted back to direct derivative
-VectorXd CStudentsTLikelihood::get_first_derivative(
+SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(
 		CRegressionLabels* labels, TParameter* param,
-		CSGObject* obj, Eigen::VectorXd function)
+		CSGObject* obj, SGVector<float64_t> m_function)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
+
+	SGVector<float64_t> sgresult(function.rows());
+
 	VectorXd result(function.rows());
 
 	for (index_t i = 0; i < function.rows(); i++)
@@ -163,7 +187,11 @@ VectorXd CStudentsTLikelihood::get_first_derivative(
 
 		a *= (1-1/m_df);
 
-		return a/(m_df-1);
+		result = a/(m_df-1);
+
+		for (index_t i = 0; i < result.rows(); i++)
+			sgresult[i] = result[i];
+		return sgresult;
 	}
 
 
@@ -177,20 +205,27 @@ VectorXd CStudentsTLikelihood::get_first_derivative(
 		for (index_t i = 0; i < function.rows(); i++)
 			a[i] -= 1.0;
 
-		return a/(m_sigma);
+		result = a/(m_sigma);
+
+		for (index_t i = 0; i < result.rows(); i++)
+			sgresult[i] = result[i];
+		return sgresult;
 	}
 
 
-	result(0) = CMath::INFTY;
+	sgresult[0] = CMath::INFTY;
 
-	return result;
+	return sgresult;
 }
 
 //Taken in log space then converted back to direct derivative
-VectorXd CStudentsTLikelihood::get_second_derivative(
+SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(
 		CRegressionLabels* labels, TParameter* param,
-		CSGObject* obj, Eigen::VectorXd function)
+		CSGObject* obj, SGVector<float64_t> m_function)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
+
+	SGVector<float64_t> sgresult(function.rows());
 	VectorXd result(function.rows());
 
 	for (index_t i = 0; i < function.rows(); i++)
@@ -228,7 +263,11 @@ VectorXd CStudentsTLikelihood::get_second_derivative(
 
 		result = b.cwiseQuotient(c);
 
-		return result/(m_df-1);
+		result = result/(m_df-1);
+		
+		for (index_t i = 0; i < result.rows(); i++)
+			sgresult[i] = result[i];
+		return sgresult;
 	}
 
 	if (strcmp(param->m_name, "sigma") == 0 && obj == this)
@@ -245,13 +284,18 @@ VectorXd CStudentsTLikelihood::get_second_derivative(
 
 		b *= m_sigma*m_sigma*m_df*2.0*(m_df+1);
 
-		return b.cwiseQuotient(c)/m_sigma;
+		result = b.cwiseQuotient(c)/m_sigma;
+
+		for (index_t i = 0; i < result.rows(); i++)
+			sgresult[i] = result[i];
+
+		return sgresult;
 
 	}
 
 
-	result(0) = CMath::INFTY;
-	return result;
+	sgresult[0] = CMath::INFTY;
+	return sgresult;
 
 }
 #endif /* HAVE_EIGEN3 */
