@@ -541,6 +541,22 @@ class CMath : public CSGObject
 				return nnz;
 			}
 
+		/** Returns a random permutation of number from 0 to n-1
+		 * @param n range of permutation
+		 * @return random permutation of number from 0 to n-1
+		 */
+		static inline SGVector<int32_t> randperm_vec(int32_t n)
+		{
+			SGVector<int32_t> result(randperm(n), n);
+			return result;
+		}
+
+		/** Returns a random permutation of number from 0 to n-1.
+		 * Caller has to free memory.
+		 *
+		 * @param n range of permutation
+		 * @return random permutation of number from 0 to n-1
+		 */
 		static inline int32_t* randperm(int32_t n)
 		{
 			int32_t* perm = SG_MALLOC(int32_t, n);
