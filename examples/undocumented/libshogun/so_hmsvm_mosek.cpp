@@ -19,7 +19,7 @@ int main(int argc, char ** argv)
 
 	CHingeLoss* loss = new CHingeLoss();
 
-	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels, features);
+	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
 	SG_REF(sosvm);
 
 	sosvm->train();
