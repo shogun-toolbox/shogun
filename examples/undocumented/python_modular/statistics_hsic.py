@@ -16,6 +16,8 @@ def statistics_hsic():
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import HSIC
 	from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
+	from shogun.Distance import EuclideanDistance
+	from shogun.Mathematics import Statistics, Math
 
 	# note that the HSIC has to store kernel matrices
 	# which upper bounds the sample size
@@ -31,12 +33,31 @@ def statistics_hsic():
 	features_x=RealFeatures(array([data[0]]))
 	features_y=RealFeatures(array([data[1]]))
 
-	# use a kernel width of sigma=2, which is 8 in SHOGUN's parametrization
-	# which is k(x,y)=exp(-||x-y||^2 / tau), in constrast to the standard
-	# k(x,y)=exp(-||x-y||^2 / (2*sigma^2)), so tau=2*sigma^2
-	kernel=GaussianKernel(10,8)
+	# compute median data distance in order to use for Gaussian kernel width
+	# 0.5*median_distance normally (factor two in Gaussian kernel)
+	# However, shoguns kernel width is different to usual parametrization
+	# Therefore 0.5*2*median_distance^2
+	# Use a subset of data for that, only 200 elements. Median is stable
+	subset=Math.randperm_vec(features_x.get_num_vectors())
+	subset=subset[0:200]
+	features_x.add_subset(subset)
+	dist=EuclideanDistance(features_x, features_x)
+	distances=dist.get_distance_matrix()
+	features_x.remove_subset()
+	median_distance=Statistics.matrix_median(distances, True)
+	sigma_x=median_distance**2
+	features_y.add_subset(subset)
+	dist=EuclideanDistance(features_y, features_y)
+	distances=dist.get_distance_matrix()
+	features_y.remove_subset()
+	median_distance=Statistics.matrix_median(distances, True)
+	sigma_y=median_distance**2
+	print "median distance for Gaussian kernel on x:", sigma_x
+	print "median distance for Gaussian kernel on y:", sigma_y
+	kernel_x=GaussianKernel(10,sigma_x)
+	kernel_y=GaussianKernel(10,sigma_y)
 
-	hsic=HSIC(kernel,kernel,features_x,features_y)
+	hsic=HSIC(kernel_x,kernel_y,features_x,features_y)
 
 	# perform test: compute p-value and test if null-hypothesis is rejected for
 	# a test level of 0.05 using different methods to approximate

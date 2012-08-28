@@ -35,6 +35,170 @@ float64_t CStatistics::mean(SGVector<float64_t> values)
 	return sum/values.vlen;
 }
 
+float64_t CStatistics::median(SGVector<float64_t> values, bool modify,
+			bool in_place)
+{
+	float64_t result;
+	if (modify)
+	{
+		/* use QuickSelect method
+		 * This Quickselect routine is based on the algorithm described in
+		 * "Numerical recipes in C", Second Edition,
+		 * Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
+		 * This code by Nicolas Devillard - 1998. Public domain.
+		 * Adapted to SHOGUN by Heiko Strathmann
+		 */
+		int32_t low;
+		int32_t high;
+		int32_t median;
+		int32_t middle;
+		int32_t l;
+		int32_t h;
+
+		low=0;
+		high=values.vlen-1;
+		median=(low+high)/2;
+
+		while (true)
+		{
+			if (high<=low)
+			{
+				result=values[median];
+				break;
+			}
+
+			if (high==low+1)
+			{
+				if (values[low]>values[high])
+					CMath::CMath::swap(values[low], values[high]);
+				result=values[median];
+				break;
+			}
+
+			middle=(low+high)/2;
+			if (values[middle]>values[high])
+				CMath::swap(values[middle], values[high]);
+			if (values[low]>values[high])
+				CMath::swap(values[low], values[high]);
+			if (values[middle]>values[low])
+				CMath::swap(values[middle], values[low]);
+
+			CMath::swap(values[middle], values[low+1]);
+
+			l=low+1;
+			h=high;
+			for (;;)
+			{
+				do
+					l++;
+				while (values[low]>values[l]);
+				do
+					h--;
+				while (values[h]>values[low]);
+				if (h<l)
+					break;
+				CMath::swap(values[l], values[h]);
+			}
+
+			CMath::swap(values[low], values[h]);
+			if (h<=median)
+				low=l;
+			if (h>=median)
+				high=h-1;
+		}
+
+	}
+	else
+	{
+		if (in_place)
+		{
+			/* use Torben method
+			 * The following code is public domain.
+			 * Algorithm by Torben Mogensen, implementation by N. Devillard.
+			 * This code in public domain.
+			 * Adapted to SHOGUN by Heiko Strathmann
+			 */
+			int32_t i;
+			int32_t less;
+			int32_t greater;
+			int32_t equal;
+			float64_t min;
+			float64_t max;
+			float64_t guess;
+			float64_t maxltguess;
+			float64_t mingtguess;
+			min=max=values[0];
+			for (i=1; i<values.vlen; i++)
+			{
+				if (values[i]<min)
+					min=values[i];
+				if (values[i]>max)
+					max=values[i];
+			}
+			while (1)
+			{
+				guess=(min+max)/2;
+				less=0;
+				greater=0;
+				equal=0;
+				maxltguess=min;
+				mingtguess=max;
+				for (i=0; i<values.vlen; i++)
+				{
+					if (values[i]<guess)
+					{
+						less++;
+						if (values[i]>maxltguess)
+							maxltguess=values[i];
+					}
+					else if (values[i]>guess)
+					{
+						greater++;
+						if (values[i]<mingtguess)
+							mingtguess=values[i];
+					}
+					else
+						equal++;
+				}
+				if (less<=(values.vlen+1)/2&&greater<=(values.vlen+1)/2)
+					break;
+				else if (less>greater)
+					max=maxltguess;
+				else
+					min=mingtguess;
+			}
+
+			if (less>=(values.vlen+1)/2)
+				result=maxltguess;
+			else if (less+equal>=(values.vlen+1)/2)
+				result=guess;
+			else
+				result=mingtguess;
+		}
+		else
+		{
+			/* copy vector and do recursive call which modifies copy */
+			SGVector<float64_t> copy(values.vlen);
+			memcpy(copy.vector, values.vector, sizeof(float64_t)*values.vlen);
+			result=median(copy, true);
+		}
+	}
+
+	return result;
+}
+
+float64_t CStatistics::matrix_median(SGMatrix<float64_t> values,
+		bool modify, bool in_place)
+{
+	/* create a vector that uses the matrix data, dont do reference counting */
+	SGVector<float64_t> as_vector(values.matrix,
+			values.num_rows*values.num_cols, false);
+
+	/* return vector median method */
+	return median(as_vector, modify, in_place);
+}
+
+
 float64_t CStatistics::variance(SGVector<float64_t> values)
 {
 	ASSERT(values.vlen>1);
