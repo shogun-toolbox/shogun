@@ -40,6 +40,55 @@ public:
 	 */
 	static float64_t mean(SGVector<float64_t> values);
 
+	/** Calculates median of given values. The median is the value that one
+	 * gets when the input vector is sorted and then selects the middle value.
+	 *
+	 * QuickSelect method copyright:
+	 * This Quickselect routine is based on the algorithm described in
+	 * "Numerical recipes in C", Second Edition,
+	 * Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
+	 * This code by Nicolas Devillard - 1998. Public domain.
+	 *
+	 * Torben method copyright:
+	 * The following code is public domain.
+	 * Algorithm by Torben Mogensen, implementation by N. Devillard.
+	 * Public domain.
+	 *
+	 * Both methods adapted to SHOGUN by Heiko Strathmann.
+	 *
+	 * @param values vector of values
+	 * @param modify if false, array is modified while median is computed
+	 * (Using QuickSelect).
+	 * If true, median is computed without modifications, which is slower.
+	 * There are two methods to choose from.
+	 * @param in-place if set false, the vector is copied and then computed
+	 * using QuickSelect. If set true, median is computed in-place using
+	 * Torben method.
+	 * @return median of given values
+	 */
+	static float64_t median(SGVector<float64_t> values, bool modify=false,
+			bool in_place=false);
+
+	/** Calculates median of given values. Matrix is seen as a long vector for
+	 * this. The median is the value that one
+	 * gets when the input vector is sorted and then selects the middle value.
+	 *
+	 * This method is just a wrapper for median(). See this method for license
+	 * of QuickSelect and Torben.
+	 *
+	 * @param values vector of values
+	 * @param modify if false, array is modified while median is computed
+	 * (Using QuickSelect).
+	 * If true, median is computed without modifications, which is slower.
+	 * There are two methods to choose from.
+	 * @param in-place if set false, the vector is copied and then computed
+	 * using QuickSelect. If set true, median is computed in-place using
+	 * Torben method.
+	 * @return median of given values
+	 */
+	static float64_t matrix_median(SGMatrix<float64_t> values,
+			bool modify=false, bool in_place=false);
+
 	/** Calculates unbiased empirical variance estimator of given values. Given
 	 * \f$\{x_1, ..., x_m\}\f$, this is
 	 * \f$\frac{1}{m-1}\sum_{i=1}^m (x-\bar{x})^2\f$ where
