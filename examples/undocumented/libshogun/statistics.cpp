@@ -50,6 +50,28 @@ void test_mean()
 	ASSERT(mean2==7);
 }
 
+void test_median()
+{
+	SGMatrix<float64_t> X(3,5);
+	SGVector<float64_t> Y(X.num_rows*X.num_cols);
+	for (index_t i=0; i<X.num_rows*X.num_cols; ++i)
+	{
+		X.matrix[i]=CMath::random(0, 15);
+		Y[i]=X.matrix[i];
+	}
+	X.display_matrix("X");
+	Y.display_vector("Y");
+
+	/* test all median computation method on vector and matrix */
+	float64_t median=CStatistics::median(Y, false, false);
+	ASSERT(median==CStatistics::median(Y, false, true));
+	ASSERT(median==CStatistics::median(Y, true));
+
+	ASSERT(median==CStatistics::matrix_median(X, false, false));
+	ASSERT(median==CStatistics::matrix_median(X, false, true));
+	ASSERT(median==CStatistics::matrix_median(X, true));
+}
+
 void test_variance()
 {
 	SGMatrix<float64_t> X(3,5);
@@ -311,6 +333,7 @@ int main(int argc, char **argv)
 	init_shogun_with_defaults();
 
 	test_mean();
+	test_median();
 	test_variance();
 	test_confidence_intervals();
 	test_inverse_student_t();
