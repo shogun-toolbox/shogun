@@ -15,6 +15,8 @@ from shogun.Features import DataGenerator
 from shogun.Kernel import GaussianKernel
 from shogun.Statistics import QuadraticTimeMMD
 from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
+from shogun.Distance import EuclideanDistance
+from shogun.Mathematics import Statistics, Math
 
 # for nice plotting that fits into our shogun tutorial
 import latex_plot_inits
@@ -35,10 +37,21 @@ data=DataGenerator.generate_mean_data(m,dim,difference)
 # create shogun feature representation
 features=RealFeatures(data)
 
-# use a kernel width of sigma=2, which is 8 in SHOGUN's parametrization
-# which is k(x,y)=exp(-||x-y||^2 / tau), in constrast to the standard
-# k(x,y)=exp(-||x-y||^2 / (2*sigma^2)), so tau=2*sigma^2
-kernel=GaussianKernel(10,8)
+# compute median data distance in order to use for Gaussian kernel width
+# 0.5*median_distance normally (factor two in Gaussian kernel)
+# However, shoguns kernel width is different to usual parametrization
+# Therefore 0.5*2*median_distance^2
+# Use a subset of data for that, only 200 elements. Median is stable
+subset=Math.randperm_vec(features.get_num_vectors())
+subset=subset[0:200]
+features.add_subset(subset)
+dist=EuclideanDistance(features, features)
+distances=dist.get_distance_matrix()
+features.remove_subset()
+median_distance=Statistics.matrix_median(distances, True)
+sigma=median_distance**2
+print "median distance for Gaussian kernel:", sigma
+kernel=GaussianKernel(10,sigma)
 
 # use biased statistic
 mmd=QuadraticTimeMMD(kernel,features, m)
