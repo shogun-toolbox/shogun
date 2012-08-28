@@ -222,7 +222,8 @@ class CMath : public CSGObject
 		template <class T>
 			static inline void swap(T &a,T &b)
 			{
-				T c=a;
+			/* register for fast swaps */
+				register T c=a;
 				a=b;
 				b=c;
 			}
