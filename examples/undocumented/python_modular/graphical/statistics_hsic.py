@@ -15,6 +15,8 @@ from shogun.Features import DataGenerator
 from shogun.Kernel import GaussianKernel
 from shogun.Statistics import HSIC
 from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
+from shogun.Distance import EuclideanDistance
+from shogun.Mathematics import Statistics, Math
 
 # for nice plotting that fits into our shogun tutorial
 import latex_plot_inits
@@ -36,12 +38,29 @@ data=DataGenerator.generate_sym_mix_gauss(m,difference,angle)
 features_x=RealFeatures(array([data[0]]))
 features_y=RealFeatures(array([data[1]]))
 
-# use a kernel width of sigma=2, which is 8 in SHOGUN's parametrization
-# which is k(x,y)=exp(-||x-y||^2 / tau), in constrast to the standard
-# k(x,y)=exp(-||x-y||^2 / (2*sigma^2)), so tau=2*sigma^2
-# Note that kernels per data can be different
-kernel_x=GaussianKernel(10,8)
-kernel_y=GaussianKernel(10,8)
+# compute median data distance in order to use for Gaussian kernel width
+# 0.5*median_distance normally (factor two in Gaussian kernel)
+# However, shoguns kernel width is different to usual parametrization
+# Therefore 0.5*2*median_distance^2
+# Use a subset of data for that, only 200 elements. Median is stable
+subset=Math.randperm_vec(features_x.get_num_vectors())
+subset=subset[0:200]
+features_x.add_subset(subset)
+dist=EuclideanDistance(features_x, features_x)
+distances=dist.get_distance_matrix()
+features_x.remove_subset()
+median_distance=Statistics.matrix_median(distances, True)
+sigma_x=median_distance**2
+features_y.add_subset(subset)
+dist=EuclideanDistance(features_y, features_y)
+distances=dist.get_distance_matrix()
+features_y.remove_subset()
+median_distance=Statistics.matrix_median(distances, True)
+sigma_y=median_distance**2
+print "median distance for Gaussian kernel on x:", sigma_x
+print "median distance for Gaussian kernel on y:", sigma_y
+kernel_x=GaussianKernel(10,sigma_x)
+kernel_y=GaussianKernel(10,sigma_y)
 
 # create hsic instance. Note that this is a convienience constructor which copies
 # feature data. features_x and features_y are not these used in hsic.
