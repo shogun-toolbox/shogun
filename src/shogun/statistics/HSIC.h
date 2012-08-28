@@ -54,6 +54,11 @@ template<class T> class SGMatrix;
  * Bootstrapping is done on precomputed kernel matrices, since they have to
  * be stored anyway when the statistic is computed.
  *
+ * A very basic method for kernel selection when using CGaussianKernel is to
+ * use the median distance of the underlying data. See examples how to do that.
+ * More advanced methods will follow in the near future. However, the median
+ * heuristic works in quite some cases. See [1].
+ *
  * [1]: Gretton, A., Fukumizu, K., Teo, C., & Song, L. (2008).
  * A kernel statistical test of independence.
  * Advances in Neural Information Processing Systems, 1-8.

@@ -69,6 +69,11 @@ enum EQuadraticMMDType
  *
  * BOOTSTRAPPING: For permuting available samples to sample null-distribution
  *
+ * A very basic method for kernel selection when using CGaussianKernel is to
+ * use the median distance of the underlying data. See examples how to do that.
+ * More advanced methods will follow in the near future. However, the median
+ * heuristic works in quite some cases. See [1].
+ *
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  *
