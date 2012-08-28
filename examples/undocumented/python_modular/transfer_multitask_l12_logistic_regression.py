@@ -9,9 +9,9 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 
 parameter_list = [[traindat,testdat,label_traindat]]
 
-def transfer_multitask_l1l2_logistic_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat):
+def transfer_multitask_l12_logistic_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat):
 
-	from modshogun import BinaryLabels, RealFeatures, Task, TaskGroup, MultitaskL1L2LogisticRegression
+	from modshogun import BinaryLabels, RealFeatures, Task, TaskGroup, MultitaskL12LogisticRegression
 
 	features = RealFeatures(hstack((traindat,traindat)))
 	labels = BinaryLabels(hstack((label_train,label_train)))
@@ -23,7 +23,7 @@ def transfer_multitask_l1l2_logistic_regression(fm_train=traindat,fm_test=testda
 	task_group.append_task(task_one)
 	task_group.append_task(task_two)
 
-	mtlr = MultitaskL1L2LogisticRegression(0.1,0.1,features,labels,task_group)
+	mtlr = MultitaskL12LogisticRegression(0.1,0.1,features,labels,task_group)
 	mtlr.set_tolerance(1e-2) # use 1e-2 tolerance
 	mtlr.set_max_iter(10)
 	mtlr.train()
@@ -33,5 +33,5 @@ def transfer_multitask_l1l2_logistic_regression(fm_train=traindat,fm_test=testda
 	return out
 
 if __name__=='__main__':
-	print('TransferMultitaskL1L2LogisticRegression')
-	transfer_multitask_l1l2_logistic_regression(*parameter_list[0])
+	print('TransferMultitaskL12LogisticRegression')
+	transfer_multitask_l12_logistic_regression(*parameter_list[0])

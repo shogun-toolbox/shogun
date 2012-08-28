@@ -7,26 +7,26 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#ifndef  MULTITASKL1L2LOGISTICREGRESSION_H_
-#define  MULTITASKL1L2LOGISTICREGRESSION_H_
+#ifndef  MULTITASKL12LOGISTICREGRESSION_H_
+#define  MULTITASKL12LOGISTICREGRESSION_H_
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 
 namespace shogun
 {
-/** @brief class MultitaskL1L2LogisticRegression, a classifier for multitask problems. 
+/** @brief class MultitaskL12LogisticRegression, a classifier for multitask problems. 
  * Supports only task group relations. Based on solver ported from the MALSAR library.
  *
  * @see CTaskGroup
  * */
-class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
+class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 {
 
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
-		CMultitaskL1L2LogisticRegression();
+		CMultitaskL12LogisticRegression();
 
 		/** constructor
 		 *
@@ -36,12 +36,12 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 		 * @param training_labels training labels
 		 * @param task_group task group
 		 */
-		CMultitaskL1L2LogisticRegression(
+		CMultitaskL12LogisticRegression(
 		     float64_t rho1, float64_t rho2, CDotFeatures* training_data, 
 		     CBinaryLabels* training_labels, CTaskGroup* task_group);
 
 		/** destructor */
-		virtual ~CMultitaskL1L2LogisticRegression();
+		virtual ~CMultitaskL12LogisticRegression();
 
 		/** set rho1 regularization coefficient
 		 * @param rho1 value
@@ -69,7 +69,7 @@ class CMultitaskL1L2LogisticRegression : public CMultitaskLogisticRegression
 		 */
 		virtual const char* get_name() const 
 		{
-			return "MultitaskL1L2LogisticRegression";
+			return "MultitaskL12LogisticRegression";
 		}
 
 	private:

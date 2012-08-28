@@ -15,7 +15,7 @@
  #include <shogun/transfer/multitask/MultitaskLinearMachine.h>
  #include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
  #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
- #include <shogun/transfer/multitask/MultitaskL1L2LogisticRegression.h>
+ #include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
  #include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 
