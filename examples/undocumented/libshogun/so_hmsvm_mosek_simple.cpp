@@ -49,7 +49,7 @@ int main(int argc, char ** argv)
 	CHMSVMModel* model = new CHMSVMModel(features, labels, SMT_TWO_STATE, 3);
 	SG_REF(model);
 	CHingeLoss* loss = new CHingeLoss();
-	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels, features);
+	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
 	SG_REF(sosvm);
 
 	sosvm->train();
