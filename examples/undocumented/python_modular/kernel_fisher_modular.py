@@ -10,7 +10,7 @@ parameter_list = [[traindat,testdat,label_traindat,1,4,1e-1,1,0,False,[1,False,T
 fm_hmm_pos=[ traindat[i] for i in where([label_traindat==1])[1] ]
 fm_hmm_neg=[ traindat[i] for i in where([label_traindat==-1])[1] ]
 
-def kernel_fisher_modular(fm_train_dna=traindat, fm_test_dna=testdat,
+def kernel_fisher_modular (fm_train_dna=traindat, fm_test_dna=testdat,
 		label_train_dna=label_traindat, 
 		N=1,M=4,pseudo=1e-1,order=1,gap=0,reverse=False,
 		kargs=[1,False,True]):

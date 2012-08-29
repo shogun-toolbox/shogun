@@ -4,7 +4,7 @@ import os
 
 parameter_list=[[[[1.0,2,3],[4,5,6]]]]
 
-def serialization_matrix_modular(m):
+def serialization_matrix_modular (m):
 	feats=RealFeatures(array(m))
 	#feats.io.set_loglevel(0)
 	fstream = SerializableAsciiFile("foo.asc", "w")

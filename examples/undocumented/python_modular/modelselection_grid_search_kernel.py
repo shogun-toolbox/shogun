@@ -75,7 +75,7 @@ def create_param_tree():
 	return root
 
 
-def modelselection_grid_search_kernel():
+def modelselection_grid_search_kernel ():
 	num_subsets=3
 	num_vectors=20
 	dim_vectors=3

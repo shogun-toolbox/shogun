@@ -5,7 +5,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data, 12]]
 
-def converter_stochasticproximityembedding_modular(data, k):
+def converter_stochasticproximityembedding_modular (data, k):
 	from shogun.Features import RealFeatures
 	from shogun.Converter import StochasticProximityEmbedding, SPE_GLOBAL, SPE_LOCAL
 	

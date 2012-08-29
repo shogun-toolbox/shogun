@@ -5,7 +5,7 @@ traindat = lm.load_dna('../data/fm_train_dna.dat')
 testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list=[[traindat,testdat],[traindat,testdat]]
 
-def kernel_local_alignment_string_modular(fm_train_dna=traindat,fm_test_dna=testdat):
+def kernel_local_alignment_string_modular (fm_train_dna=traindat,fm_test_dna=testdat):
 
 	from shogun.Features import StringCharFeatures, DNA
 	from shogun.Kernel import LocalAlignmentStringKernel

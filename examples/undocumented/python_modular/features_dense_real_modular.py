@@ -7,7 +7,7 @@ matrix=array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=float64)
 parameter_list = [[matrix]]
 
 # ... of type LongInt
-def features_dense_real_modular(A=matrix):
+def features_dense_real_modular (A=matrix):
   
 # ... of type Real, LongInt and Byte
     a=RealFeatures(A)

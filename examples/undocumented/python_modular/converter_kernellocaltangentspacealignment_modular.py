@@ -5,7 +5,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data,60],[data,70]]
 
-def converter_kernellocaltangentspacealignment_modular(data,k):
+def converter_kernellocaltangentspacealignment_modular (data,k):
 	from shogun.Features import RealFeatures
 	from shogun.Converter import KernelLocalTangentSpaceAlignment
 	

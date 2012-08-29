@@ -6,7 +6,7 @@ labels=lm.load_labels('../data/label_train_twoclass.dat')
 
 parameter_list=[[train,test,labels,5,1e-3,3.0], [train,test,labels,0.9,1e-2,1.0]]
 
-def classifier_subgradientsvm_modular(fm_train_real, fm_test_real,
+def classifier_subgradientsvm_modular (fm_train_real, fm_test_real,
 		label_train_twoclass, C, epsilon, max_train_time):
 
 	from shogun.Features import RealFeatures, SparseRealFeatures, BinaryLabels

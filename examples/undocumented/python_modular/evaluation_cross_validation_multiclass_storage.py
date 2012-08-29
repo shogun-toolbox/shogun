@@ -20,7 +20,7 @@ label_traindat=concatenate((zeros(num_vectors), ones(num_vectors)));
 
 parameter_list = [[traindat,label_traindat]]
 
-def evaluation_cross_validation_multiclass_storage(traindat=traindat, label_traindat=label_traindat):
+def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_traindat=label_traindat):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import CrossValidationPrintOutput
     from shogun.Evaluation import CrossValidationMKLStorage, CrossValidationMulticlassStorage

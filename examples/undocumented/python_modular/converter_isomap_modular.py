@@ -5,7 +5,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def converter_isomap_modular(data):
+def converter_isomap_modular (data):
 	from shogun.Features import RealFeatures
 	from shogun.Converter import Isomap
 	

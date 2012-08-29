@@ -8,7 +8,7 @@ predicted = random.randn(len(ground_truth))
 
 parameter_list = [[ground_truth,predicted]]
 
-def evaluation_prcevaluation_modular(ground_truth, predicted):
+def evaluation_prcevaluation_modular (ground_truth, predicted):
 	from shogun.Features import BinaryLabels
 	from shogun.Evaluation import PRCEvaluation
 
