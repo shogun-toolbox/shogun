@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 from shogun.Features import RealFeatures
 from numpy import array, float64, int64
@@ -7,7 +8,7 @@ data=[[1,2,3],[4,5,6],[7,8,9],[-1,-2,-3]]
 
 parameter_list = [[data]]
 
-def features_dense_zero_copy_modular(in_data=data):
+def features_dense_zero_copy_modular (in_data=data):
 	feats = None
 	if numpy.__version__ >= '1.5':
 		feats=numpy.array(in_data, dtype=float64, order='F')		

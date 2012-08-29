@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # This program is free software you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -8,7 +9,7 @@
 #
 from numpy import *
 
-def statistics_quadratic_time_mmd():
+def statistics_quadratic_time_mmd ():
 	from shogun.Features import RealFeatures
 	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel

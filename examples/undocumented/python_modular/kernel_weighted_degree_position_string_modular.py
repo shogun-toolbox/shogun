@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
@@ -5,7 +6,7 @@ traindat = lm.load_dna('../data/fm_train_dna.dat')
 testdat = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,20],[traindat,testdat,22]]
-def kernel_weighted_degree_position_string_modular(fm_train_dna=traindat,fm_test_dna=testdat,degree=20):
+def kernel_weighted_degree_position_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,degree=20):
 	from shogun.Features import StringCharFeatures, DNA
 	from shogun.Kernel import WeightedDegreePositionStringKernel, MSG_DEBUG
 

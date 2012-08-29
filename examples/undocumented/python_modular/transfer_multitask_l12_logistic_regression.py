@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from numpy import array,hstack
 from numpy.random import seed, rand
 from tools.load import LoadMatrix
@@ -9,7 +10,7 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 
 parameter_list = [[traindat,testdat,label_traindat]]
 
-def transfer_multitask_l12_logistic_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat):
+def transfer_multitask_l12_logistic_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
 
 	from modshogun import BinaryLabels, RealFeatures, Task, TaskGroup, MultitaskL12LogisticRegression
 

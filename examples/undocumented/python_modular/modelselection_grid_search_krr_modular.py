@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +22,7 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
                  [traindat,testdat,label_traindat,2.1,1,1e-5,1e-2]]
 
-def modelselection_grid_search_krr_modular(fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
+def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import MeanSquaredError

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list=[[5,1,10, 2.0, 10], [10,0.3,2, 1.0, 0.1]]
 
 def check_status(status,suffix):
@@ -8,7 +9,7 @@ def check_status(status,suffix):
 	else:
 		print("ERROR reading/writing %s\n" % suffix)
 
-def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
+def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
 	from numpy import concatenate, zeros, ones
 	from numpy.random import randn, seed

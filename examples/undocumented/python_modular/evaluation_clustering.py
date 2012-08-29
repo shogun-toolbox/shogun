@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 def get_dataset():
 	from os.path import exists
 	filename = "../data/optdigits.tes"
@@ -54,7 +55,7 @@ def assign_labels(data, centroids, ncenters):
 	knn.train()
 	return knn.apply(fea)
 
-def evaluation_clustering(features=fea, ground_truth=gnd_raw, ncenters=10):
+def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
 	from shogun.Evaluation import ClusteringAccuracy, ClusteringMutualInformation
 	from shogun.Features import MulticlassLabels
 	centroids = run_clustering(features, ncenters)

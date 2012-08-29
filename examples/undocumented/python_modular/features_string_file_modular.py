@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 parameter_list=[[".", "features_string_char_modular.py"]]
 
-def features_string_file_modular(directory, fname):
+def features_string_file_modular (directory, fname):
 	from shogun.Features import StringCharFeatures, RAWBYTE
 	from shogun.IO import AsciiFile
 

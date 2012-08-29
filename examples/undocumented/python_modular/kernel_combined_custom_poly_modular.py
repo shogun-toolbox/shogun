@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
@@ -7,7 +8,7 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_traindat]]
 
 
-def kernel_combined_custom_poly_modular(fm_train_real = traindat,fm_test_real = testdat,fm_label_twoclass=label_traindat):
+def kernel_combined_custom_poly_modular (fm_train_real = traindat,fm_test_real = testdat,fm_label_twoclass=label_traindat):
     from shogun.Features import CombinedFeatures, RealFeatures, BinaryLabels
     from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
     from shogun.Classifier import LibSVM

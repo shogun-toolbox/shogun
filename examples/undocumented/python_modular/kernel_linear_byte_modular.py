@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ###########################################################################
 # linear kernel on byte features
 ###########################################################################
@@ -10,7 +11,7 @@ testdat = ubyte(lm.load_numbers('../data/fm_test_byte.dat'))
 
 parameter_list=[[traindat,testdat],[traindat,testdat]]
 
-def kernel_linear_byte_modular(fm_train_byte=traindat,fm_test_byte=testdat):
+def kernel_linear_byte_modular (fm_train_byte=traindat,fm_test_byte=testdat):
 	from shogun.Kernel import LinearKernel
 	from shogun.Features import ByteFeatures
 

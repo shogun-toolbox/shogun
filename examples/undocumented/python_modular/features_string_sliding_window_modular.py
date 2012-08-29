@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 # create string features with a single string
 s=10*'A' + 10*'C' + 10*'G' + 10*'T'
 
 parameter_list=[[s]]
 
-def features_string_sliding_window_modular(strings):
+def features_string_sliding_window_modular (strings):
 	from shogun.Features import StringCharFeatures, DNA
 	from shogun.Library import DynamicIntArray
 

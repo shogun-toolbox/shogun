@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 import numpy
 
@@ -6,7 +7,7 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def converter_multidimensionalscaling_modular(data):
+def converter_multidimensionalscaling_modular (data):
 	from shogun.Features import RealFeatures
 	from shogun.Converter import MultidimensionalScaling
 	from shogun.Distance import EuclideanDistance

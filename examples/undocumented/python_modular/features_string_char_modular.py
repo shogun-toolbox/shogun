@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 strings=['hey','guys','i','am','a','string']
 
 parameter_list=[[strings]]
 
-def features_string_char_modular(strings):
+def features_string_char_modular (strings):
 	from shogun.Features import StringCharFeatures, RAWBYTE
 	from numpy import array
 

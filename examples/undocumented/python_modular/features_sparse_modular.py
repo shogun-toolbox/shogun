@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 import numpy
 # create dense matrix A
 A=numpy.array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=numpy.float64)
 
 parameter_list=[[A]]
-def features_sparse_modular(A):
+def features_sparse_modular (A):
 	from scipy.sparse import csc_matrix
 	from shogun.Features import SparseRealFeatures
 	from numpy import array, float64, all

@@ -1,14 +1,15 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 from numpy import random
 lm=LoadMatrix()
 
 random.seed(17)
-import classifier_multiclass_shared
-[traindat, label_traindat, testdat, label_testdat] = classifier_multiclass_shared.prepare_data(False)
+from tools.multiclass_shared import prepare_data
+[traindat, label_traindat, testdat, label_testdat] = prepare_data(False)
 
 parameter_list = [[traindat, label_traindat, testdat, label_testdat]]
 
-def evaluation_multiclassovrevaluation_modular(traindat, label_traindat, testdat, label_testdat):
+def evaluation_multiclassovrevaluation_modular (traindat, label_traindat, testdat, label_testdat):
 	from shogun.Features import MulticlassLabels
 	from shogun.Evaluation import MulticlassOVREvaluation,ROCEvaluation
 	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY

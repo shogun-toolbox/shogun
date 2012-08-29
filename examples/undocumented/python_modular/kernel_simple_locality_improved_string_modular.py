@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 traindat = lm.load_dna('../data/fm_train_dna.dat')
@@ -5,7 +6,7 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 
 parameter_list = [[traindat,testdat,5,5,1],[traindat,testdat,5,3,2]]
 
-def kernel_simple_locality_improved_string_modular(fm_train_dna=traindat,fm_test_dna=testdat,
+def kernel_simple_locality_improved_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,
 	length=5,inner_degree=5,outer_degree=1 ):
 	
 	from shogun.Features import StringCharFeatures, DNA

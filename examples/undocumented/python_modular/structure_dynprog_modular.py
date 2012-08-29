@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #!/usr/bin/env python 
 # -*- coding: utf-8 -*-
 
@@ -63,7 +64,7 @@ def loads(str):
 	unpickler.dispatch[pickle.GLOBAL] = mapped_load_global
 	return unpickler.load()
 
-def structure_dynprog_modular(fname):
+def structure_dynprog_modular (fname):
 
 	data_dict = loads(gzip.GzipFile(fname).read())
 	#data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat=False, struct_as_record=False)
