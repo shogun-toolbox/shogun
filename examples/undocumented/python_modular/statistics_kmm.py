@@ -1,7 +1,7 @@
 from numpy import *
 from numpy import random
 
-def statistics_kmm():
+def statistics_kmm ():
 	from shogun.Features import RealFeatures
 	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel, MSG_DEBUG

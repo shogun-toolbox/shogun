@@ -10,7 +10,7 @@
 
 parameter_list=[[None]]
 
-def modelselection_parameter_tree_modular(dummy):
+def modelselection_parameter_tree_modular (dummy):
     from shogun.ModelSelection import ParameterCombination
     from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
     from shogun.Kernel import PowerKernel

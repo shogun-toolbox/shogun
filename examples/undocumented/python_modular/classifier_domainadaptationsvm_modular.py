@@ -55,7 +55,7 @@ parameter_list = [[traindna,testdna,label_traindna,label_testdna,traindna2,label
                        testdna2,label_testdna2,1,3],[traindna,testdna,label_traindna,label_testdna,traindna2,label_traindna2, \
                        testdna2,label_testdna2,2,5]] 
 
-def classifier_domainadaptationsvm_modular(fm_train_dna=traindna,fm_test_dna=testdna, \
+def classifier_domainadaptationsvm_modular (fm_train_dna=traindna,fm_test_dna=testdna, \
                                                 label_train_dna=label_traindna, \
                                                label_test_dna=label_testdna,fm_train_dna2=traindna2,fm_test_dna2=testdna2, \
                                                label_train_dna2=label_traindna2,label_test_dna2=label_testdna2,C=1,degree=3):

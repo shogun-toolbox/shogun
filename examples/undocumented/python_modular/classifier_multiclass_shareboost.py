@@ -1,6 +1,6 @@
-import classifier_multiclass_shared
+from tools.multiclass_shared import prepare_data
 
-[traindat, label_traindat, testdat, label_testdat] = classifier_multiclass_shared.prepare_data(False)
+[traindat, label_traindat, testdat, label_testdat] = prepare_data(False)
 
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 

@@ -8,7 +8,7 @@ def check_status(status,suffix):
 	else:
 		print("ERROR reading/writing %s\n" % suffix)
 
-def serialization_complex_example(num=5, dist=1, dim=10, C=2.0, width=10):
+def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
 	from numpy import concatenate, zeros, ones
 	from numpy.random import randn, seed

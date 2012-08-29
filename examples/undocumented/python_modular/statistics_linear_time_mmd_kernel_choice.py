@@ -11,7 +11,7 @@ from numpy import *
 
 # performs learning of optimal non-negative kernel weights for a linear time
 # two sample test using the linear time Maximum Mean Discrepancy
-def statistics_linear_time_mmd_kernel_choice():
+def statistics_linear_time_mmd_kernel_choice ():
 	from shogun.Features import RealFeatures, CombinedFeatures
 	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel, CombinedKernel

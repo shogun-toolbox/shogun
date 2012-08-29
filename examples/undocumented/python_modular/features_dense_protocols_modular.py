@@ -9,7 +9,7 @@ data=[[1,2,3],[4,5,6],[7,8,9],[-1,-2,-3]]
 
 parameter_list = [[data]]
 
-def features_dense_protocols_modular(in_data=data):
+def features_dense_protocols_modular (in_data=data):
 	m_real=array(in_data, dtype=float64, order='F')
 	f_real=RealFeatures(m_real)
 

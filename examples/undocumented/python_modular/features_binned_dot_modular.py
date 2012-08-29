@@ -6,7 +6,7 @@ bins=numpy.array([[0.0, 0.0, 0.0],[1.0,1.0,1.0],[2.0,2.0,2.0],[3.0,3.0,3.0],[4.0
 
 parameter_list = [(matrix,bins)]
 
-def features_binned_dot_modular(matrix, bins):
+def features_binned_dot_modular (matrix, bins):
 	from modshogun import RealFeatures, BinnedDotFeatures
 	rf=RealFeatures(matrix)
 

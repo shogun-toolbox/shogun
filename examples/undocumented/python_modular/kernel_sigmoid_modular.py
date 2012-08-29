@@ -6,7 +6,7 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list = [[traindat,testdat,10,1.2,1.3],[traindat,testdat,10,1.2,1.3]]
 
-def kernel_sigmoid_modular(fm_train_real=traindat,fm_test_real=testdat,size_cache=10,gamma=1.2,coef0=1.3):
+def kernel_sigmoid_modular (fm_train_real=traindat,fm_test_real=testdat,size_cache=10,gamma=1.2,coef0=1.3):
 
 	from shogun.Features import RealFeatures
 	from shogun.Kernel import SigmoidKernel

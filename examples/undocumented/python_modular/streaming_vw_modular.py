@@ -5,7 +5,7 @@ from modshogun import VowpalWabbit
 
 parameter_list=[[None]]
 
-def streaming_vw_modular(dummy):
+def streaming_vw_modular (dummy):
 	"""Runs the VW algorithm on a toy dataset in SVMLight format."""
 
 	# Open the input file as a StreamingVwFile

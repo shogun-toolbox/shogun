@@ -10,7 +10,7 @@ testdat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,1.7], [traindat,testdat,1.6]]
 
 
-def kernel_auc_modular(fm_train_real=traindat,label_train_real=testdat,width=1.7):
+def kernel_auc_modular (fm_train_real=traindat,label_train_real=testdat,width=1.7):
 
 
 	from shogun.Kernel import GaussianKernel, AUCKernel

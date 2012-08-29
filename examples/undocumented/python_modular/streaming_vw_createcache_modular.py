@@ -6,7 +6,7 @@ from modshogun import VowpalWabbit
 
 parameter_list=[['../data/fm_train_sparsereal.dat']]
 
-def streaming_vw_createcache_modular(fname):
+def streaming_vw_createcache_modular (fname):
 	# First creates a binary cache from an ascii data file.
 	# and then trains using the StreamingVwCacheFile as input
 
