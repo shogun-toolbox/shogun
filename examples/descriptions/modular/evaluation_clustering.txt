@@ -1,0 +1,1 @@
+Example on how to evaluate the clustering performance (given ground-truth)
