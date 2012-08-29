@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 parameter_list = [[0,2,0,False],[0,3,0,False]]
 

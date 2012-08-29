@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 # create dense matrix A
 A=numpy.array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=numpy.float64)

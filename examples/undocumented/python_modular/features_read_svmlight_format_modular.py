@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list=[['../data/train_sparsereal.light']]
 
 def features_read_svmlight_format_modular (fname):

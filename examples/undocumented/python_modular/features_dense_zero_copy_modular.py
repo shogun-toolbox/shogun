@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 from shogun.Features import RealFeatures
 from numpy import array, float64, int64

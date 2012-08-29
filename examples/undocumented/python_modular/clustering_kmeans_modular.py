@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ##!/usr/bin/env python
 #"""
 #Explicit examples on how to use clustering

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list =[[23],[24]]
 
 def kernel_const_modular (c=23):

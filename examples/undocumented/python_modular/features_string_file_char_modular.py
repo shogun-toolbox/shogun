@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list = [['features_string_file_char_modular.py']]
 
 def features_string_file_char_modular (fname):

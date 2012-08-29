@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.multiclass_shared import prepare_data
 
 [traindat, label_traindat, testdat, label_testdat] = prepare_data()

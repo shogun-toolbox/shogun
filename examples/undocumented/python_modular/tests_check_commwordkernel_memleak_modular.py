@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list=[[10,7,0,0]]
 
 def tests_check_commwordkernel_memleak_modular (num, order, gap, reverse):

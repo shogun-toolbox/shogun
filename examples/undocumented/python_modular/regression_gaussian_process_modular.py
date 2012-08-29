@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from numpy import concatenate, ones
 from numpy.random import randn
 num=100

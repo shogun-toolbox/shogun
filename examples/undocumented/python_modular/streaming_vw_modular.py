@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from modshogun import StreamingVwFile
 from modshogun import T_SVMLIGHT
 from modshogun import StreamingVwFeatures

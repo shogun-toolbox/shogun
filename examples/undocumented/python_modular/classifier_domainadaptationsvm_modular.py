@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 
 from shogun.Features import StringCharFeatures, BinaryLabels, DNA

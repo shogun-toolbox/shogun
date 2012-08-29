@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list=[[5,1,10, 2.0, 10], [10,0.3,2, 1.0, 0.1]]
 
 def check_status(status,suffix):
