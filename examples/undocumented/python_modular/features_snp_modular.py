@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list=[['../data/snps.dat']]
 
 def features_snp_modular (fname):

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from os.path import exists
 from tools.load import LoadMatrix
 lm=LoadMatrix()

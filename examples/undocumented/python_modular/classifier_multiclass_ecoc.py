@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import re
 import time
 from tools.multiclass_shared import prepare_data

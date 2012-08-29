@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from shogun.Features import LongIntFeatures
 from numpy import array, int64, all
 

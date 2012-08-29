@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 strings=['hey','guys','string']
 
 parameter_list=[[strings,0,2,0,False]]

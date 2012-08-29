@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list = [['features_string_char_compressed_modular.py']]
 
 def features_string_char_compressed_modular (fname):

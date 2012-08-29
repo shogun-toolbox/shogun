@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 data=lm.load_cubes('../data/fm_train_cube.dat')

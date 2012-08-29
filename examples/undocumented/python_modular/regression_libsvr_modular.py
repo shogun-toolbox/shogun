@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from numpy import array
 from numpy.random import seed, rand
 from tools.load import LoadMatrix

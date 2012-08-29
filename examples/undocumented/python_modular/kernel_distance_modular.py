@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 from numpy import double
 lm=LoadMatrix()

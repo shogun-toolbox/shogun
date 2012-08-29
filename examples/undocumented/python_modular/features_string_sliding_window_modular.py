@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # create string features with a single string
 s=10*'A' + 10*'C' + 10*'G' + 10*'T'
 

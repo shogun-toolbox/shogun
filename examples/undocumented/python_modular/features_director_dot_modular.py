@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 try:
 	from shogun.Features import DirectorDotFeatures

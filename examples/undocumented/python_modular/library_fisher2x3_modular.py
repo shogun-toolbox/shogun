@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from numpy import *
 from shogun.Mathematics import *
 

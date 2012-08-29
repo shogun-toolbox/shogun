@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 
 matrix=numpy.array([[-1.0,0,1],[2,3,4],[5,6,7]])

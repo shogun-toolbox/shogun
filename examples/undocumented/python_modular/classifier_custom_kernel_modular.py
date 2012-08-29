@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list = [[1,7],[2,8]]
 
 def classifier_custom_kernel_modular (C=1,dim=7):

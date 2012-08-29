@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from numpy import mean, sign
 
 from tools.load import LoadMatrix

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy
 from shogun.Features import RealFeatures
 from shogun.Features import LongIntFeatures
