@@ -61,7 +61,7 @@ public:
 	 * (Using QuickSelect).
 	 * If true, median is computed without modifications, which is slower.
 	 * There are two methods to choose from.
-	 * @param in-place if set false, the vector is copied and then computed
+	 * @param in_place if set false, the vector is copied and then computed
 	 * using QuickSelect. If set true, median is computed in-place using
 	 * Torben method.
 	 * @return median of given values
@@ -81,7 +81,7 @@ public:
 	 * (Using QuickSelect).
 	 * If true, median is computed without modifications, which is slower.
 	 * There are two methods to choose from.
-	 * @param in-place if set false, the vector is copied and then computed
+	 * @param in_place if set false, the vector is copied and then computed
 	 * using QuickSelect. If set true, median is computed in-place using
 	 * Torben method.
 	 * @return median of given values
