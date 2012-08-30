@@ -22,6 +22,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/regression/gp/InferenceMethod.h>
 #include <shogun/lib/external/brent.h>
+#include <iostream>
 
 
 namespace shogun
@@ -313,17 +314,22 @@ private:
 
 			*alpha = start_alpha + x*(*dalpha);
 			(eigen_f) = (*K)*(*alpha)*scale*scale+(eigen_m);
-			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
-			(*mW) = lik->get_log_probability_derivative_f(lab, (*f), 2);
-			float64_t result = ((*alpha).dot(((eigen_f)-(eigen_m))))/2.0;
+
 
 			for (index_t i = 0; i < eigen_f.rows(); i++)
 				(*f)[i] = eigen_f[i];
 
+			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
+			(*mW) = lik->get_log_probability_derivative_f(lab, (*f), 2);
+			float64_t result = ((*alpha).dot(((eigen_f)-(eigen_m))))/2.0;
+
 			for (index_t i = 0; i < (*mW).vlen; i++)
 				(*mW)[i] = -(*mW)[i];
 
+
+
 			result -= lik->get_log_probability_f(lab, *f);
+
 			return result;
 		}
 	};
