@@ -31,15 +31,14 @@ CGaussianProcessRegression::CGaussianProcessRegression()
 	init();
 }
 
-CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf,
-		CFeatures* data, CLabels* lab)
+CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf, CFeatures* data, CLabels* lab)
 : CMachine()
 {
 	init();
 
 	set_labels(lab);
 	set_features(data);
-	set_method(inf);
+	set_method(inf);	
 }
 
 void CGaussianProcessRegression::init()
