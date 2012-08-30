@@ -720,7 +720,7 @@ slep_result_t slep_solver(
 	}
 	SG_SINFO("Finished %d iterations, objective = %f\n", iter, func);
 
-	//SG_FREE(ATx);
+	SG_FREE(ATx);
 	SG_FREE(wp);
 	SG_FREE(wwp);
 	SG_FREE(s);
