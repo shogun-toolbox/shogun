@@ -579,7 +579,7 @@ template<class ST> void CDenseFeatures<ST>::init()
 	num_vectors = 0;
 	num_features = 0;
 
-	feature_matrix = SGMatrix<ST>();
+	feature_matrix = SGMatrix<ST>(1,1);
 	feature_cache = NULL;
 
 	set_generic<ST>();
