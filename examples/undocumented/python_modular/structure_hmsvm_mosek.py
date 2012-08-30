@@ -3,12 +3,12 @@
 import numpy
 import scipy
 
+from scipy import io
 data_dict = scipy.io.loadmat('../data/hmsvm_data_large_integer.mat')
 
 parameter_list=[[data_dict]]
 
 def structure_hmsvm_mosek (m_data_dict=data_dict):
-	from scipy             import io
 	from shogun.Features   import RealMatrixFeatures
 	from shogun.Loss       import HingeLoss
 	from shogun.Structure  import HMSVMLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
