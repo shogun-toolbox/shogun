@@ -49,9 +49,9 @@ void CLaplacianInferenceMethod::init()
 {
 	m_latent_features = NULL;
 	m_max_itr = 30;
-	m_opt_tolerance = 1e-4;
-	m_tolerance = 1e-6;
-	m_max = 2;
+	m_opt_tolerance = 1e-6;
+	m_tolerance = 1e-8;
+	m_max = 5;
 }
 
 CLaplacianInferenceMethod::~CLaplacianInferenceMethod()
@@ -621,20 +621,20 @@ void CLaplacianInferenceMethod::update_alpha()
 
 	VectorXd eigen_function;
 
-	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
-
 	Map<VectorXd> eigen_m_means(m_means.vector, m_means.vlen);	
 
-	if (m_alpha.vlen != m_labels->get_num_labels())
+//	if (m_alpha.vlen != m_labels->get_num_labels())
 	{
 
-		eigen_temp_alpha = eigen_temp_alpha.Zero(m_labels->get_num_labels());
-
-		temp_alpha = SGVector<float64_t>(eigen_temp_alpha.rows());
+		
+		temp_alpha = SGVector<float64_t>(m_labels->get_num_labels());
 
 		for (index_t i = 0; i < temp_alpha.vlen; i++)
 			temp_alpha[i] = 0.0;
-		eigen_function = eigen_temp_kernel*eigen_temp_alpha*m_scale*m_scale+eigen_m_means;
+
+		Map<VectorXd> eigen_temp_alpha2(temp_alpha.vector, temp_alpha.vlen);
+
+		eigen_function = eigen_temp_kernel*eigen_temp_alpha2*m_scale*m_scale+eigen_m_means;
 
 		function = SGVector<float64_t>(eigen_function.rows());
 
@@ -650,10 +650,13 @@ void CLaplacianInferenceMethod::update_alpha()
 				(CRegressionLabels*)m_labels, function);
 	}
 
-
+/*
 	else
 	{
-		eigen_function = eigen_temp_kernel*m_scale*m_scale*eigen_temp_alpha+eigen_m_means;
+
+		Map<VectorXd> eigen_temp_alpha2(temp_alpha.vector, temp_alpha.vlen);
+
+		eigen_function = eigen_temp_kernel*m_scale*m_scale*eigen_temp_alpha2+eigen_m_means;
 
 		function = SGVector<float64_t>(eigen_function.rows());
 
@@ -661,26 +664,30 @@ void CLaplacianInferenceMethod::update_alpha()
 			function[i] = eigen_function[i];
 
 
+
 		W = m_model->get_log_probability_derivative_f(
 				(CRegressionLabels*)m_labels, function, 2);
+
 
 		for (index_t i = 0; i < W.vlen; i++)
 			W[i] = -W[i];
 
-		Psi_New = (eigen_temp_alpha.transpose()*(eigen_function-eigen_m_means))[0]/2.0;
+		Psi_New = (eigen_temp_alpha2.transpose()*(eigen_function-eigen_m_means))[0]/2.0;
 
-		Psi_New -= -m_model->get_log_probability_f(
+		Psi_New -= m_model->get_log_probability_f(
 				(CRegressionLabels*)m_labels, function);
+
+
 
 		Psi_Def = -m_model->get_log_probability_f(
 				(CRegressionLabels*)m_labels, m_means);
 
 		if (Psi_Def < Psi_New)
 		{
-			eigen_temp_alpha = eigen_temp_alpha.Zero(m_labels->get_num_labels());
+			eigen_temp_alpha2 = eigen_temp_alpha2.Zero(m_labels->get_num_labels());
 
 			for (index_t i = 0; i < m_alpha.vlen; i++)
-				temp_alpha[i] = eigen_temp_alpha[i];
+				temp_alpha[i] = eigen_temp_alpha2[i];
 
 			W = m_model->get_log_probability_derivative_f(
 					(CRegressionLabels*)m_labels, function, 2);
@@ -691,7 +698,9 @@ void CLaplacianInferenceMethod::update_alpha()
 			Psi_New = -m_model->get_log_probability_f(
 					(CRegressionLabels*)m_labels, function);
 		}
-	}
+	}*/
+
+	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
 
 	index_t itr = 0;
 
@@ -706,9 +715,9 @@ void CLaplacianInferenceMethod::update_alpha()
 
 	Map<VectorXd> eigen_d2lp(d2lp.vector, d2lp.vlen);
 
-	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
-
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
+
+	sW = W;
 
 	while (Psi_Old - Psi_New > m_tolerance && itr < m_max_itr)
 	{
@@ -721,13 +730,14 @@ void CLaplacianInferenceMethod::update_alpha()
 			//Gaussian Process Regression with Student's t likelihood, NIPS 2009
 			//Quoted from infLaplace.m
 			float64_t df = m_model->get_degrees_freedom();
-			eigen_W = eigen_W + 2.0/(df)*eigen_dlp.cwiseProduct(eigen_dlp);
+			
+			for (index_t i = 0; i < eigen_W.rows(); i++)
+				eigen_W[i] += 2.0/(df)*dlp[i]*dlp[i];
+
 		}
 
 		for (index_t i = 0; i < eigen_W.rows(); i++)
 			W[i] = eigen_W[i];
-
-		sW = W;
 
 		for (index_t i = 0; i < sW.vlen; i++)
 			sW[i] = CMath::sqrt(float64_t(W[i]));
@@ -742,7 +752,9 @@ void CLaplacianInferenceMethod::update_alpha()
 
 		MatrixXd temp = L.matrixL();
 
-		VectorXd b = eigen_W.cwiseProduct((eigen_function - eigen_m_means)) + eigen_dlp;
+		Map<VectorXd> temp_eigen_dlp(dlp.vector, dlp.vlen);
+
+		VectorXd b = eigen_W.cwiseProduct((eigen_function - eigen_m_means)) + temp_eigen_dlp;
 
 		chol = chol.colPivHouseholderQr().solve(eigen_sW.cwiseProduct(
 				(eigen_temp_kernel*b*m_scale*m_scale)));
@@ -750,9 +762,9 @@ void CLaplacianInferenceMethod::update_alpha()
 		chol = temp.transpose().colPivHouseholderQr().solve(chol);
 
 		VectorXd dalpha = b - eigen_sW.cwiseProduct(chol) - eigen_temp_alpha;
+
 		Psi_line func;
 
-		Map<VectorXd> eigen_W(W.vector, W.vlen);
 		func.lab = (CRegressionLabels*)m_labels;
 		func.K = &eigen_temp_kernel;
 		func.scale = m_scale;
@@ -772,9 +784,7 @@ void CLaplacianInferenceMethod::update_alpha()
 	for (index_t i = 0; i < m_alpha.vlen; i++)
 		temp_alpha[i] = eigen_temp_alpha[i];
 
-	eigen_dlp = Map<VectorXd>(dlp.vector, dlp.vlen);
-
-	eigen_function = Map<VectorXd>(function.vector, function.vlen);
+	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
 
 	eigen_function = eigen_temp_kernel*m_scale*m_scale*eigen_temp_alpha+eigen_m_means;
 
