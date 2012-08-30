@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 data=lm.load_numbers('../data/fm_train_real.dat')
@@ -5,7 +6,7 @@ label=lm.load_numbers('../data/label_train_twoclass.dat')
 
 parameter_list=[[data,label]]
 
-def features_io_modular(fm_train_real, label_train_twoclass):
+def features_io_modular (fm_train_real, label_train_twoclass):
 	import numpy
 	from shogun.Features import SparseRealFeatures, RealFeatures, MulticlassLabels
 	from shogun.Kernel import GaussianKernel

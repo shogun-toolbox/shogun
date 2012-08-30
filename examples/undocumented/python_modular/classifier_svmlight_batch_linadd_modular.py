@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 
@@ -8,7 +9,7 @@ label=lm.load_labels('../data/label_train_dna.dat')
 parameter_list=[[train_dna, test_dna, label, 20, 0.9, 1e-3, 1],
 		[train_dna, test_dna, label, 20, 2.3, 1e-5, 4]]
 
-def classifier_svmlight_batch_linadd_modular(fm_train_dna, fm_test_dna,
+def classifier_svmlight_batch_linadd_modular (fm_train_dna, fm_test_dna,
 		label_train_dna, degree, C, epsilon, num_threads):
 
 	from shogun.Features import StringCharFeatures, BinaryLabels, DNA

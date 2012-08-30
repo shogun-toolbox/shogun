@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # This program is free software you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -10,7 +11,7 @@ from numpy import *
 #from pylab import *
 from math import pi
 
-def statistics_hsic():
+def statistics_hsic ():
 	from shogun.Features import RealFeatures
 	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel

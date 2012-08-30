@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm = LoadMatrix()
 fm_train_real = lm.load_numbers('../data/fm_train_real.dat')
@@ -8,7 +9,7 @@ parameter_list=[
 		[ fm_train_real, fm_test_real, label_train_multiclass, 1.2, 1.2, 1e-5, 1, 0.001, 1.5],
 		[ fm_train_real, fm_test_real, label_train_multiclass, 5, 1.2, 1e-2, 1, 0.001, 2]]
 
-def mkl_multiclass_modular(fm_train_real, fm_test_real, label_train_multiclass,
+def mkl_multiclass_modular (fm_train_real, fm_test_real, label_train_multiclass,
 	width, C, epsilon, num_threads, mkl_epsilon, mkl_norm):
 
 	from shogun.Features import CombinedFeatures, RealFeatures, MulticlassLabels

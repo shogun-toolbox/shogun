@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 parameter_list=[['../data/snps.dat']]
 
-def features_snp_modular(fname):
+def features_snp_modular (fname):
 	from shogun.Features import StringByteFeatures, SNPFeatures, SNP
 
 	sf=StringByteFeatures(SNP)

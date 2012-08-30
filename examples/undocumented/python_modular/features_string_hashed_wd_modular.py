@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from shogun.Features import LongIntFeatures
 from numpy import array, int64, all
 
@@ -7,7 +8,7 @@ matrix=array([[1,2,3],[4,0,0],[0,0,0],[0,5,0],[0,0,6],[9,9,9]], dtype=int64)
 parameter_list = [[matrix,3,1,2],[matrix,3,1,2]]
 
 # ... of type LongInt
-def features_string_hashed_wd_modular(A=matrix,order=3,start_order=1,hash_bits=2):
+def features_string_hashed_wd_modular (A=matrix,order=3,start_order=1,hash_bits=2):
     a=LongIntFeatures(A)
     
     from numpy import array, uint8

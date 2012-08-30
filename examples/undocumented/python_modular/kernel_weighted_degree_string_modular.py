@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 traindat = lm.load_dna('../data/fm_train_dna.dat')

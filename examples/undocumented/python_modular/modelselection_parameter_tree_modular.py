@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -10,7 +11,7 @@
 
 parameter_list=[[None]]
 
-def modelselection_parameter_tree_modular(dummy):
+def modelselection_parameter_tree_modular (dummy):
     from shogun.ModelSelection import ParameterCombination
     from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
     from shogun.Kernel import PowerKernel

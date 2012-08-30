@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 import time
 from modshogun import Time
 
 parameter_list = [[1]]
-def library_time(sleep_secs):
+def library_time (sleep_secs):
 	# measure wall clock time difference
 	t=Time()
 	time.sleep(1)

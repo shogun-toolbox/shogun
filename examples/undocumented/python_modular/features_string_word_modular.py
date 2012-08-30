@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 strings=['hey','guys','string']
 
 parameter_list=[[strings,0,2,0,False]]
 
-def features_string_word_modular(strings, start, order, gap, rev):
+def features_string_word_modular (strings, start, order, gap, rev):
 	from shogun.Features import StringCharFeatures, StringWordFeatures, RAWBYTE
 	from numpy import array, uint16
 

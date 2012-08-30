@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from shogun.Features import CombinedFeatures, RealFeatures, BinaryLabels
 from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
 from shogun.Classifier import MKLClassification

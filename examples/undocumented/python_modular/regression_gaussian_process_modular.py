@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from numpy import concatenate, ones
 from numpy.random import randn
 num=100
@@ -9,8 +10,7 @@ label_traindat = concatenate((-ones(num), ones(num)))
 
 parameter_list=[[traindat, testdat, label_traindat, 2.1]]
 
-
-def regression_gaussian_process_modular(traindata_real=traindat, \
+def regression_gaussian_process_modular (traindata_real=traindat, \
 		testdata_real=testdat, \
 		trainlab=label_traindat, width=2.1):
 	from numpy.random import randn

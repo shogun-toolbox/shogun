@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 parameter_list =[[23],[24]]
 def kernel_diag_modular (diag=23):
 	from shogun.Features import DummyFeatures

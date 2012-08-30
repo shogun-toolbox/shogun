@@ -1,29 +1,33 @@
-from numpy import *
-from numpy.random import randn
-from shogun.Features import *
-from shogun.Classifier import *
-from shogun.Kernel import *
+#!/usr/bin/env python
+from numpy import mean, sign
 
-num=1000
-dist=1
-width=2.1
-C=1
+from tools.load import LoadMatrix
+lm=LoadMatrix()
 
-traindata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
-testdata_real=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1);
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 
-trainlab=concatenate((-ones(num), ones(num)));
-testlab=concatenate((-ones(num), ones(num)));
+parameter_list = [[traindat,testdat,label_traindat,2.1,1]]
 
-feats_train=RealFeatures(traindata_real);
-feats_test=RealFeatures(testdata_real);
-kernel=GaussianKernel(feats_train, feats_train, width);
+def classifier_libsvm_minimal_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,width=2.1,C=1):
+	from shogun.Features import RealFeatures, BinaryLabels
+	from shogun.Classifier import LibSVM
+	from shogun.Kernel import GaussianKernel
 
-labels=BinaryLabels(trainlab);
-svm=LibSVM(C, kernel, labels);
-svm.train();
+	feats_train=RealFeatures(fm_train_real);
+	feats_test=RealFeatures(fm_test_real);
+	kernel=GaussianKernel(feats_train, feats_train, width);
 
-kernel.init(feats_train, feats_test);
-out=svm.apply().get_labels();
-testerr=mean(sign(out)!=testlab)
-print(testerr)
+	labels=BinaryLabels(label_train_twoclass);
+	svm=LibSVM(C, kernel, labels);
+	svm.train();
+
+	kernel.init(feats_train, feats_test);
+	out=svm.apply().get_labels();
+	testerr=mean(sign(out)!=label_train_twoclass)
+	print(testerr)
+
+if __name__=='__main__':
+	print('LibSVM Minimal')
+	classifier_libsvm_minimal_modular(*parameter_list[0])

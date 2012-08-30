@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +20,7 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 
 parameter_list = [[traindat,testdat,label_traindat,0.8,1e-6],[traindat,testdat,label_traindat,0.9,1e-7]]
 
-def evaluation_cross_validation_regression(fm_train=traindat,fm_test=testdat,label_train=label_traindat,width=0.8,tau=1e-6):
+def evaluation_cross_validation_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat,width=0.8,tau=1e-6):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import MeanSquaredError
     from shogun.Evaluation import CrossValidationSplitting
