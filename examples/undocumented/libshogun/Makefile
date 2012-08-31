@@ -99,6 +99,7 @@ TARGETS = basic_minimal \
 		  so_multiclass_BMRM \
 		  balanced_conditional_probability_tree \
 		  classifier_multiclass_ecoc \
+		  classifier_multiclass_ecoc_discriminant \
 
 all: $(TARGETS)
 
