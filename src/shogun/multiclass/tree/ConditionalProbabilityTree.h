@@ -38,7 +38,7 @@ public:
 	}
 
     /** destructor */
-	virtual ~CConditionalProbabilityTree() {}
+	virtual ~CConditionalProbabilityTree() { SG_UNREF(m_feats); }
 
     /** get name */
     virtual const char* get_name() const { return "ConditionalProbabilityTree"; }
