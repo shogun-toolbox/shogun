@@ -62,6 +62,7 @@ int main(int argc, char **argv)
 	SG_REF(test_features);
 
 	CMulticlassLabels *gnd = new CMulticlassLabels(pred->get_num_labels());
+	SG_REF(gnd);
 	test_features->start_parser();
 	for (int32_t i=0; i < pred->get_num_labels(); ++i)
 	{
@@ -82,6 +83,7 @@ int main(int argc, char **argv)
 
 	SG_SPRINT("Multiclass Accuracy = %.2f%%\n", 100.0*n_correct / gnd->get_num_labels());
 
+	SG_UNREF(gnd);
 	SG_UNREF(train_features);
 	SG_UNREF(test_features);
 	SG_UNREF(train_file);
