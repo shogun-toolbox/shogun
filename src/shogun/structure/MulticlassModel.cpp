@@ -100,7 +100,6 @@ CResultSet* CMulticlassModel::argmax(
 	// Build the CResultSet object to return
 	CResultSet* ret = new CResultSet();
 	CRealNumber* y  = new CRealNumber(ypred);
-	SG_REF(ret);
 	SG_REF(y);
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, y);
