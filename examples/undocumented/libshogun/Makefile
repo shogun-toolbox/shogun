@@ -100,6 +100,7 @@ TARGETS = basic_minimal \
 		  balanced_conditional_probability_tree \
 		  classifier_multiclass_ecoc \
 		  classifier_multiclass_ecoc_discriminant \
+		  classifier_multiclass_ecoc_random \
 
 all: $(TARGETS)
 
