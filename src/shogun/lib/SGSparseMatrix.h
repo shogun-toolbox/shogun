@@ -25,7 +25,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGSparseMatrix() : SGReferencedData(false)
+		SGSparseMatrix() : SGReferencedData()
 		{
 			init_data();
 		}

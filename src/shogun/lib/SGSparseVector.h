@@ -36,7 +36,7 @@ template <class T> class SGSparseVector : public SGReferencedData
 {
 public:
 	/** default constructor */
-	SGSparseVector() : SGReferencedData(false)
+	SGSparseVector() : SGReferencedData()
 	{
 		init_data();
 	}

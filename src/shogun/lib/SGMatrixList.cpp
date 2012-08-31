@@ -13,7 +13,7 @@
 namespace shogun {
 
 template <class T>
-SGMatrixList<T>::SGMatrixList() : SGReferencedData(false)
+SGMatrixList<T>::SGMatrixList() : SGReferencedData()
 {
 	init_data();
 }
