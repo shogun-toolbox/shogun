@@ -97,6 +97,10 @@ TARGETS = basic_minimal \
 		  statistics_hsic \
 		  classifier_featureblocklogisticregression \
 		  so_multiclass_BMRM \
+		  balanced_conditional_probability_tree \
+		  classifier_multiclass_ecoc \
+		  classifier_multiclass_ecoc_discriminant \
+		  classifier_multiclass_ecoc_random \
 
 all: $(TARGETS)
 
