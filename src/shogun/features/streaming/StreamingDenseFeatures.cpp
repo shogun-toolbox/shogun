@@ -224,8 +224,7 @@ bool CStreamingDenseFeatures<T>::get_next_example()
 template <class T>
 SGVector<T> CStreamingDenseFeatures<T>::get_vector()
 {
-	current_sgvector.vector=current_vector;
-	current_sgvector.vlen=current_length;
+	current_sgvector=SGVector<T>(current_vector, current_length, false);
 
 	return current_sgvector;
 }
