@@ -41,7 +41,7 @@ char FNAME[] = "data.svmlight";
  * @param labs     vector with labels
  * @param feats    matrix with features
  */
-void read_data(const char fname[], uint32_t DIM, uint32_t N, SGVector< float64_t > *labs, SGMatrix< float64_t > *feats)
+void read_data(const char fname[], uint32_t DIM, uint32_t N, SGVector<float64_t> labs, SGMatrix<float64_t> feats)
 {
 	CStreamingAsciiFile* file=new CStreamingAsciiFile(fname);
 	SG_REF(file);
@@ -56,17 +56,15 @@ void read_data(const char fname[], uint32_t DIM, uint32_t N, SGVector< float64_t
 
 	uint32_t num_vectors=0;
 
-	while( stream_features->get_next_example() )
+	while (stream_features->get_next_example())
 	{
 		vec.zero();
 		stream_features->add_to_dense_vec(1.0, vec, DIM);
 
-		(*labs)[num_vectors]=stream_features->get_label();
+		labs[num_vectors]=stream_features->get_label();
 
-		for(uint32_t i=0; i<DIM; ++i)
-		{
-			(*feats)[num_vectors*DIM+i]=vec[i];
-		}
+		for (uint32_t i=0; i<DIM; ++i)
+			feats[num_vectors*DIM+i]=vec[i];
 
 		num_vectors++;
 		stream_features->release_example();
@@ -175,15 +173,13 @@ int main(int argc, char * argv[])
 		solver=BMRM;
 	}
 
-	SGVector< float64_t >* labs=
-		new SGVector< float64_t >(num_feat);
+	SGVector<float64_t> labs(num_feat);
 
-	SGMatrix< float64_t >* feats=
-		new SGMatrix< float64_t >(feat_dim, num_feat);
+	SGMatrix<float64_t> feats(feat_dim, num_feat);
 
 	if (argc==1)
 	{
-		gen_rand_data(*labs, *feats);
+		gen_rand_data(labs, feats);
 	}
 	else
 	{
@@ -192,11 +188,11 @@ int main(int argc, char * argv[])
 	}
 
 	// Create train labels
-	CMulticlassSOLabels* labels = new CMulticlassSOLabels(*labs);
+	CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
 
 	// Create train features
 	CDenseFeatures< float64_t >* features =
-		new CDenseFeatures< float64_t >(*feats);
+		new CDenseFeatures< float64_t >(feats);
 
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
@@ -244,7 +240,7 @@ int main(int argc, char * argv[])
 
 	for (uint32_t i=0; i<num_feat; ++i)
 	{
-		error+=(( (CRealNumber*) out->get_label(i) )->value==labs->get_element(i)) ? 0.0 : 1.0;
+		error+=(( (CRealNumber*) out->get_label(i) )->value==labs.get_element(i)) ? 0.0 : 1.0;
 	}
 
 	SG_SPRINT("Error = %lf %% \n", error/num_feat*100);

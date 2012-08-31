@@ -72,7 +72,6 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 		}
 	}
 	SG_UNREF(model_features);
-	SG_REF(out);
 	return out;
 }
 
