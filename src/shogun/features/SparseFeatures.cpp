@@ -375,7 +375,7 @@ template<class ST> SGSparseMatrix<ST> CSparseFeatures<ST>::get_sparse_feature_ma
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("get_sparse_feature_matrix() not allowed with subset\n");
 
-	SGSparseMatrix<ST> sm;
+	SGSparseMatrix<ST> sm=SGSparseMatrix<ST>(NULL, 0, 0, false);
 	sm.sparse_matrix=get_sparse_feature_matrix(sm.num_features, sm.num_vectors);
 	return sm;
 }
