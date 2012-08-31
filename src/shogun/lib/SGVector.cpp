@@ -21,7 +21,7 @@
 
 namespace shogun {
 
-template<class T> SGVector<T>::SGVector() : SGReferencedData(false)
+template<class T> SGVector<T>::SGVector() : SGReferencedData()
 {
 	init_data();
 }
