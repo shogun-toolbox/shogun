@@ -98,6 +98,7 @@ TARGETS = basic_minimal \
 		  classifier_featureblocklogisticregression \
 		  so_multiclass_BMRM \
 		  balanced_conditional_probability_tree \
+		  classifier_multiclass_ecoc \
 
 all: $(TARGETS)
 
