@@ -1,4 +1,4 @@
-#include <shogun/features/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/StreamingDenseFeatures.h>
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 	// Create features with the useful values from mat
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(mat);
 
-	CLabels* labels = new CLabels(num_vectors);
+	CMulticlassLabels* labels = new CMulticlassLabels(num_vectors);
 	SG_REF(features);
 	SG_REF(labels);
 
@@ -92,10 +92,10 @@ int main(int argc, char** argv)
 	mc_svm->train();
 
 	// Classify the training examples and show the results
-	CLabels* output = mc_svm->apply();
+	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
 
 	SGVector< int32_t > out_labels = output->get_int_labels();
-	CMath::display_vector(out_labels.vector, out_labels.vlen);
+	SGVector< int32_t >::display_vector(out_labels.vector, out_labels.vlen);
 
 	// Free resources
 	SG_UNREF(mc_svm);
