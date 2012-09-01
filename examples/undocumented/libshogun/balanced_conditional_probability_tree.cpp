@@ -12,8 +12,8 @@
 
 #include <shogun/lib/common.h>
 
-#include <shogun/io/StreamingAsciiFile.h>
-#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/io/streaming/StreamingAsciiFile.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
 
 using namespace shogun;
