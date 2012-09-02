@@ -4,9 +4,9 @@
 #include <getopt.h>
 #include <string.h>
 
-#include <shogun/io/StreamingVwFile.h>
-#include <shogun/io/StreamingVwCacheFile.h>
-#include <shogun/features/StreamingVwFeatures.h>
+#include <shogun/io/streaming/StreamingVwFile.h>
+#include <shogun/io/streaming/StreamingVwCacheFile.h>
+#include <shogun/features/streaming/StreamingVwFeatures.h>
 #include <shogun/classifier/vw/VowpalWabbit.h>
 
 using namespace shogun;
