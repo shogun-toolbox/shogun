@@ -19,7 +19,6 @@
 #ifdef HAVE_LAPACK
 
 #include <shogun/regression/gp/InferenceMethod.h>
-#include <shogun/lib/external/brent.h>
 
 namespace shogun
 {
