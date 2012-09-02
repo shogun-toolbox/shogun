@@ -101,11 +101,15 @@ def get_sinedata():
 	return x, y
 
 
-def compute_output_plot_isolines_sine(classifier, kernel, train):
+def compute_output_plot_isolines_sine(classifier, kernel, train, regression=False):
 	x=4*rand(1, 500)-2
 	x.sort()
 	test=RealFeatures(x)
 	kernel.init(train, test)
-	y=classifier.apply().get_confidences()
+
+	if regression:
+		y=classifier.apply().get_labels()
+	else:
+		y=classifier.apply().get_confidences()
 
 	return x, y
