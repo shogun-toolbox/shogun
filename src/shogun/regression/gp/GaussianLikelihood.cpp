@@ -7,9 +7,12 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/regression/gp/GaussianLikelihood.h>
+
 #ifdef HAVE_EIGEN3
+
+#include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/mathematics/eigen3.h>
 
 #include <shogun/base/Parameter.h>
 
@@ -50,8 +53,10 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
 }
 
 float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels,
-		Eigen::VectorXd function)
+		SGVector<float64_t> m_function)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
+
 	VectorXd result(function.rows());
 
 	for (index_t i = 0; i < function.rows(); i++)
@@ -67,36 +72,48 @@ float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels,
 	return result.sum();
 }
 
-VectorXd CGaussianLikelihood::get_log_probability_derivative_f(
-		CRegressionLabels* labels, Eigen::VectorXd function, index_t j)
+SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
+		CRegressionLabels* labels, SGVector<float64_t> m_function, index_t j)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
 	VectorXd result(function.rows());
 
 	for (index_t i = 0; i < function.rows(); i++)
 		result[i] = labels->get_labels()[i] - function[i];
 
 	if (j == 1)
-		return result/(m_sigma*m_sigma);
+		result = result/(m_sigma*m_sigma);
 
 	else if (j == 2)
-		return -VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
+		result = -VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
 
 	else if (j == 3)
-		return VectorXd::Zero(result.rows());
+		result = VectorXd::Zero(result.rows());
 
 	else
 		SG_ERROR("Invalid Index for Likelihood Derivative\n");
+
+	SGVector<float64_t> sgresult(result.rows());
+	
+	for (index_t i = 0; i < result.rows(); i++)
+		sgresult[i] = result[i];
+
+	return sgresult;
 }
 
-VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels,
-		TParameter* param,  CSGObject* obj, Eigen::VectorXd function)
+SGVector<float64_t> CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels,
+		TParameter* param,  CSGObject* obj, SGVector<float64_t> m_function)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
+
 	VectorXd result(function.rows());
+
+	SGVector<float64_t> sgresult(result.rows());
 
 	if (strcmp(param->m_name, "sigma") || obj != this)
 	{
-		result(0) = CMath::INFTY;
-		return result;
+		sgresult[0] = CMath::INFTY;
+		return sgresult;
 	}
 
 	for (index_t i = 0; i < function.rows(); i++)
@@ -108,20 +125,35 @@ VectorXd CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels,
 
 	for (index_t i = 0; i < function.rows(); i++)
 		result[i] -= 1;
+	
+	for (index_t i = 0; i < result.rows(); i++)
+		sgresult[i] = result[i];
 
-	return result;
+	return sgresult;
 }
 
-VectorXd CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels,
-		TParameter* param, CSGObject* obj, Eigen::VectorXd function)
+SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels,
+		TParameter* param, CSGObject* obj, SGVector<float64_t> m_function)
 {
+	Map<VectorXd> function(m_function.vector, m_function.vlen);
+	VectorXd result(function.rows());
+
+	SGVector<float64_t> sgresult(result.rows());
+
 	if (strcmp(param->m_name, "sigma") || obj != this)
 	{
-		VectorXd result(function.rows());
-		result(0) = CMath::INFTY;
-		return result;
+		sgresult[0] = CMath::INFTY;
+		return sgresult;
 	}
 
-	return 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
+	result = 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
+
+	for (index_t i = 0; i < result.rows(); i++)
+		sgresult[i] = result[i];
+
+	return sgresult;
 }
-#endif /* HAVE_EIGEN3 */
+
+#endif //HAVE_EIGEN3
+
+

@@ -22,6 +22,8 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/mathematics/eigen3.h>
+
 
 using namespace shogun;
 using namespace Eigen;
@@ -104,8 +106,8 @@ void CFITCInferenceMethod::update_all()
 		update_train_kernel();
 
 	if (m_ktrtr.num_cols*m_ktrtr.num_rows &&
-			m_kuu.rows()*m_kuu.cols() &&
-			m_ktru.cols()*m_ktru.rows())
+			m_kuu.num_rows*m_kuu.num_cols &&
+			m_ktru.num_cols*m_ktru.num_rows)
 	{
 		update_chol();
 		update_alpha();
@@ -218,45 +220,50 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	float64_t m_sigma =
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	MatrixXd W = m_ktru;
+	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
 
-	for (index_t j = 0; j < m_ktru.rows(); j++)
+	MatrixXd W = eigen_ktru;
+
+	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+
+	for (index_t j = 0; j < eigen_ktru.rows(); j++)
 	{
-		for (index_t i = 0; i < m_ktru.cols(); i++)
-			W(i,j) = m_ktru(i,j) / sqrt(m_dg[j]);
+		for (index_t i = 0; i < eigen_ktru.cols(); i++)
+			W(i,j) = eigen_ktru(i,j) / sqrt(eigen_dg[j]);
 	}
 
-	LLT<MatrixXd> CholW(m_kuu + W*W.transpose() +
-			m_ind_noise*MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+	Map<MatrixXd> eigen_uu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
+	LLT<MatrixXd> CholW(eigen_uu + W*W.transpose() +
+			m_ind_noise*MatrixXd::Identity(eigen_uu.rows(), eigen_uu.cols()));
 	W = CholW.matrixL();
 
 
-	W = W.colPivHouseholderQr().solve(m_ktru);
+	W = W.colPivHouseholderQr().solve(eigen_ktru);
 
 	VectorXd true_lab(m_data_means.vlen);
 
 	for (index_t j = 0; j < m_data_means.vlen; j++)
 		true_lab[j] = m_label_vector[j] - m_data_means[j];
 
-	VectorXd al = W*true_lab.cwiseQuotient(m_dg);
+	VectorXd al = W*true_lab.cwiseQuotient(eigen_dg);
 
 	al = W.transpose()*al;
 
 	al = true_lab - al;
 
-	al = al.cwiseQuotient(m_dg);
+	al = al.cwiseQuotient(eigen_dg);
 
-	MatrixXd iKuu = m_kuu.selfadjointView<Eigen::Upper>().llt()
-					.solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+	MatrixXd iKuu = eigen_uu.selfadjointView<Eigen::Upper>().llt()
+					.solve(MatrixXd::Identity(eigen_uu.rows(), eigen_uu.cols()));
 
-	MatrixXd B = iKuu*m_ktru;
+	MatrixXd B = iKuu*eigen_ktru;
 
 	MatrixXd Wdg = W;
 
-	for (index_t j = 0; j < m_ktru.rows(); j++)
+	for (index_t j = 0; j < eigen_ktru.rows(); j++)
 	{
-		for (index_t i = 0; i < m_ktru.cols(); i++)
-			Wdg(i,j) = Wdg(i,j) / m_dg[j];
+		for (index_t i = 0; i < eigen_ktru.cols(); i++)
+			Wdg(i,j) = Wdg(i,j) / eigen_dg[j];
 	}
 
 	VectorXd w = B*al;
@@ -372,7 +379,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 					v(d,d) = v(d,d) - temp.col(d).sum();
 
 				sum = sum + ddiagKi.diagonal().transpose()*
-						VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
+						VectorXd::Ones(eigen_dg.rows()).cwiseQuotient(eigen_dg);
 
 				sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
 
@@ -464,7 +471,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 		sum = sum + ddiagKi.diagonal().transpose()*
 
-				VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg);
+				VectorXd::Ones(eigen_dg.rows()).cwiseQuotient(eigen_dg);
 
 		sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
 
@@ -506,13 +513,13 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	for (index_t d = 0; d < W_sum.rows(); d++)
 		W_sum[d] = W_temp.col(d).sum();
 
-	W_sum = W_sum.cwiseQuotient(m_dg.cwiseProduct(m_dg));
+	W_sum = W_sum.cwiseQuotient(eigen_dg.cwiseProduct(eigen_dg));
 
 	sum[0] = W_sum.sum();
 
 	sum = sum + al.transpose()*al;
 
-	sum[0] = VectorXd::Ones(m_dg.rows()).cwiseQuotient(m_dg).sum() - sum[0];
+	sum[0] = VectorXd::Ones(eigen_dg.rows()).cwiseQuotient(eigen_dg).sum() - sum[0];
 
 	sum = sum*m_sigma*m_sigma;
 	float64_t dKuui = 2.0*m_ind_noise;
@@ -564,20 +571,28 @@ float64_t CFITCInferenceMethod::get_negative_marginal_likelihood()
 	if(update_parameter_hash())
 		update_all();
 
-	VectorXd temp = m_dg;
-	VectorXd temp2(m_chol_utr.cols());
+       Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, 			m_chol_utr.num_rows, m_chol_utr.num_cols);
 
-	for (index_t i = 0; i < m_dg.rows(); i++)
-		temp[i] = log(m_dg[i]);
+	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
 
-	for (index_t j = 0; j < m_chol_utr.rows(); j++)
-		temp2[j] = log(m_chol_utr(j,j));
+	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
+
+	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+
+	VectorXd temp = eigen_dg;
+	VectorXd temp2(m_chol_utr.num_cols);
+
+	for (index_t i = 0; i < eigen_dg.rows(); i++)
+		temp[i] = log(eigen_dg[i]);
+
+	for (index_t j = 0; j < eigen_chol_utr.rows(); j++)
+		temp2[j] = log(eigen_chol_utr(j,j));
 
 	VectorXd sum(1);
 
 	sum[0] = temp.sum();
-	sum = sum + m_r.transpose()*m_r;
-	sum = sum - m_be.transpose()*m_be;
+	sum = sum + eigen_r.transpose()*eigen_r;
+	sum = sum - eigen_be.transpose()*eigen_be;
 	sum[0] += m_label_vector.vlen*log(2*CMath::PI);
 	sum /= 2.0;
 	sum[0] += temp2.sum();
@@ -621,8 +636,7 @@ void CFITCInferenceMethod::update_train_kernel()
 	//K(X, X)
 	kernel_matrix = m_kernel->get_kernel_matrix();
 
-	m_kuu = MatrixXd(kernel_matrix.num_rows, kernel_matrix.num_cols);
-
+	m_kuu = kernel_matrix.clone();
 	for (index_t i = 0; i < kernel_matrix.num_rows; i++)
 	{
 		for (index_t j = 0; j < kernel_matrix.num_cols; j++)
@@ -635,7 +649,7 @@ void CFITCInferenceMethod::update_train_kernel()
 
 	kernel_matrix = m_kernel->get_kernel_matrix();
 
-	m_ktru = MatrixXd(kernel_matrix.num_rows, kernel_matrix.num_cols);
+	m_ktru = SGMatrix<float64_t>(kernel_matrix.num_rows, kernel_matrix.num_cols);
 
 	for (index_t i = 0; i < kernel_matrix.num_rows; i++)
 	{
@@ -653,23 +667,44 @@ void CFITCInferenceMethod::update_chol()
 	float64_t m_sigma =
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	LLT<MatrixXd> Luu(m_kuu +
-			m_ind_noise*MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+	Map<MatrixXd> eigen_uu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
 
-	m_chol_uu = Luu.matrixL();
+	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows,
+m_ktru.num_cols);
 
-	MatrixXd V = m_chol_uu.colPivHouseholderQr().solve(m_ktru);
+	LLT<MatrixXd> Luu(eigen_uu +
+			m_ind_noise*MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
+	MatrixXd eigen_chol_uu = Luu.matrixL();
+
+	MatrixXd V = eigen_chol_uu.colPivHouseholderQr().solve(eigen_ktru);
+
+	m_chol_uu = SGMatrix<float64_t>(eigen_chol_uu.rows(), 
+			eigen_chol_uu.cols());
+
+	for (index_t f = 0; f < eigen_chol_uu.rows(); f++)
+	{
+		for (index_t s = 0; s < eigen_chol_uu.cols(); s++)
+			m_chol_uu(f,s) = eigen_chol_uu(f,s);
+	}	
+	
 	MatrixXd temp_V = V.cwiseProduct(V);
 
-	m_dg.resize(m_ktrtr.num_cols);
+	VectorXd eigen_dg;
+
+	eigen_dg.resize(m_ktrtr.num_cols);
 	VectorXd sqrt_dg(m_ktrtr.num_cols);
 
 	for (index_t i = 0; i < m_ktrtr.num_cols; i++)
 	{
-		m_dg[i] = m_ktrtr(i,i)*m_scale*m_scale + m_sigma*m_sigma - temp_V.col(i).sum();
-		sqrt_dg[i] = sqrt(m_dg[i]);
+		eigen_dg[i] = m_ktrtr(i,i)*m_scale*m_scale + m_sigma*m_sigma - temp_V.col(i).sum();
+		sqrt_dg[i] = sqrt(eigen_dg[i]);
 	}
+
+	m_dg = SGVector<float64_t>(eigen_dg.rows());
+
+	for (index_t i = 0; i < eigen_dg.rows(); i++)
+		m_dg[i] = eigen_dg[i];
 
 	for (index_t i = 0; i < V.rows(); i++)
 	{
@@ -678,27 +713,49 @@ void CFITCInferenceMethod::update_chol()
 	}
 
 	LLT<MatrixXd> Lu(V*V.transpose() +
-			MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+			MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
-	m_chol_utr = Lu.matrixL();
+	MatrixXd eigen_chol_utr = Lu.matrixL();
+
+	m_chol_utr = SGMatrix<float64_t>(eigen_chol_utr.rows(), 
+			eigen_chol_utr.cols());
+
+	for (index_t f = 0; f < eigen_chol_utr.rows(); f++)
+	{
+		for (index_t s = 0; s < eigen_chol_utr.cols(); s++)
+			m_chol_utr(f,s) = eigen_chol_utr(f,s);
+	}	
 
 	VectorXd true_lab(m_data_means.vlen);
 
 	for (index_t j = 0; j < m_data_means.vlen; j++)
 		true_lab[j] = m_label_vector[j] - m_data_means[j];
 
-	m_r = true_lab.cwiseQuotient(sqrt_dg);
+	VectorXd eigen_r;
 
-	m_be = m_chol_utr.colPivHouseholderQr().solve(V*m_r);
+	eigen_r = true_lab.cwiseQuotient(sqrt_dg);
 
-	MatrixXd iKuu = m_chol_uu.llt().solve(
-			MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+	m_r = SGVector<float64_t>(eigen_r.rows());
 
-	MatrixXd chol = m_chol_utr*m_chol_uu;
+	for (index_t j = 0; j < eigen_r.rows(); j++)
+		m_r[j] = eigen_r[j];
+
+	VectorXd eigen_be = eigen_chol_utr.colPivHouseholderQr().solve(V*eigen_r);
+	
+
+	m_be = SGVector<float64_t>(eigen_be.rows());
+
+	for (index_t j = 0; j < eigen_be.rows(); j++)
+		m_be[j] = eigen_be[j];
+
+	MatrixXd iKuu = eigen_chol_uu.llt().solve(
+			MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
+
+	MatrixXd chol = eigen_chol_utr*eigen_chol_uu;
 
 	chol *= chol.transpose();
 
-	chol = chol.llt().solve(MatrixXd::Identity(m_kuu.rows(), m_kuu.cols()));
+	chol = chol.llt().solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	chol = chol - iKuu;
 
@@ -715,9 +772,15 @@ void CFITCInferenceMethod::update_alpha()
 {
 	MatrixXd alph;
 
-	alph = m_chol_utr.colPivHouseholderQr().solve(m_be);
+        Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, 			m_chol_uu.num_rows, m_chol_uu.num_cols);
 
-	alph = m_chol_uu.colPivHouseholderQr().solve(alph);
+        Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, 			m_chol_utr.num_rows, m_chol_utr.num_cols);
+
+	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+
+	alph = eigen_chol_utr.colPivHouseholderQr().solve(eigen_be);
+
+	alph = eigen_chol_uu.colPivHouseholderQr().solve(alph);
 
 	m_alpha = SGVector<float64_t>(alph.rows());
 
