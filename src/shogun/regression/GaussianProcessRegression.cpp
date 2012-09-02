@@ -66,11 +66,10 @@ void CGaussianProcessRegression::update_kernel_matrices()
 	{
 		float64_t m_scale = m_method->get_scale();
 
-		kernel->cleanup();
-
-		if (m_method->get_latent_features())
-			kernel->init(m_method->get_latent_features(), m_data);
-
+		CFeatures* latent_features = m_method->get_latent_features();
+		
+		if (latent_features)
+			kernel->init(latent_features, m_data);
 		else
 			kernel->init(m_data, m_data);
 
@@ -83,8 +82,6 @@ void CGaussianProcessRegression::update_kernel_matrices()
 				m_k_trts(i,j) *= (m_scale*m_scale);
 		}
 
-		kernel->cleanup();
-
 		kernel->init(m_data, m_data);
 
 		m_k_tsts = kernel->get_kernel_matrix();
@@ -94,8 +91,11 @@ void CGaussianProcessRegression::update_kernel_matrices()
 			for (index_t j = 0; j < m_k_tsts.num_cols; j++)
 				m_k_tsts(i,j) *= (m_scale*m_scale);
 		}
+		
+		kernel->remove_lhs_and_rhs();
 
 		SG_UNREF(kernel);
+		SG_UNREF(latent_features);
 	}
 }
 
