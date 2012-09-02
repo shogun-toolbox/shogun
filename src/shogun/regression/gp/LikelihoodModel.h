@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
 #include <shogun/base/SGObject.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/RegressionLabels.h>
 
 
