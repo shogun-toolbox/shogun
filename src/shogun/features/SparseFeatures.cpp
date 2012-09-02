@@ -1059,13 +1059,8 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 		index_t real_index=m_subset_stack->subset_idx_conversion(index);
 
 		/* copy sparse vector */
-		SGSparseVector<ST> current=get_sparse_feature_vector(index);
-		matrix_copy.sparse_matrix[i]=SGSparseVector<ST>(
-			current.num_feat_entries, real_index);
-
-		/* copy entries */
-		memcpy(matrix_copy.sparse_matrix[i].features, current.features,
-			sizeof(SGSparseVectorEntry<ST>)*current.num_feat_entries);
+		SGSparseVector<ST> current=get_sparse_feature_vector(real_index);
+		matrix_copy.sparse_matrix[i]=current;
 
 		free_sparse_feature_vector(index);
 	}
