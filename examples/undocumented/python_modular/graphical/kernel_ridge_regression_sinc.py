@@ -22,7 +22,7 @@ krr.train()
 plot(X, Y, '.', label='train data')
 plot(X[0], krr.apply().get_labels(), hold=True, label='train output')
 
-XE, YE=util.compute_output_plot_isolines_sine(krr, gk, feat)
+XE, YE=util.compute_output_plot_isolines_sine(krr, gk, feat, regression=True)
 YE200=krr.apply_one(200)
 
 plot(XE[0], YE, hold=True, label='test output')
