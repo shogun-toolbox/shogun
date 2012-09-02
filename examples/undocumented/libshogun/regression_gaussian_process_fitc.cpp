@@ -207,8 +207,6 @@ int main(int argc, char **argv)
 	matrix2.display_matrix("Testing Features");
 	
 	/*free memory*/
-	SG_UNREF(features);
-	SG_UNREF(features2);
 	SG_UNREF(predictions);
 	SG_UNREF(covariance);
 	SG_UNREF(labels);
