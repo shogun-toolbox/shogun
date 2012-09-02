@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* put elements only at even indices */
-		data.sparse_matrix[i]=SGSparseVector<float64_t>(num_features, 2*i);
+		data.sparse_matrix[i]=SGSparseVector<float64_t>(num_features);
 
 		/* fill */
 		for (index_t j=0; j<num_features; ++j)
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<subset_copy->get_num_vectors(); ++i)
 	{
 		SGSparseVector<float64_t> vec=subset_copy->get_sparse_feature_vector(i);
-		index_t ind=i+offset_copy+offset_subset;
+		index_t ind=i+offset_copy+offset_subset+1;
 
 		for (index_t j=0; j<vec.num_feat_entries; ++j)
 		{
@@ -124,6 +124,7 @@ int main(int argc, char **argv)
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
+	
 	exit_shogun();
 	return 0;
 }
