@@ -7,9 +7,12 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/regression/gp/GaussianLikelihood.h>
+
 #ifdef HAVE_EIGEN3
+
+#include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/mathematics/eigen3.h>
 
 #include <shogun/base/Parameter.h>
 
@@ -150,4 +153,7 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CRegressionLabels
 
 	return sgresult;
 }
-#endif /* HAVE_EIGEN3 */
+
+#endif //HAVE_EIGEN3
+
+
