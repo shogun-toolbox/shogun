@@ -33,7 +33,7 @@ distance_matrix = np.zeros((N,N))
 for i in range(N):
 	for j in range(N):
 		distance_matrix[i,j] = \
-		  np.cos(np.linalg.norm(feature_matrix[:,i]-feature_matrix[:,j],2))
+		  np.linalg.norm(feature_matrix[:,i]-feature_matrix[:,j],2)
 # create custom distance instance
 distance = sg.CustomDistance(distance_matrix)
 # construct embedding based on created distance
