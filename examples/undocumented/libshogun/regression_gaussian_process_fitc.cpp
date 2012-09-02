@@ -115,9 +115,6 @@ int main(int argc, char **argv)
 	CDenseFeatures<float64_t>* features2=new CDenseFeatures<float64_t> ();
 	features2->set_feature_matrix(matrix2);
 
-	SG_REF(features);
-	SG_REF(features2);
-
 	SG_REF(labels);
 	
 	/*Allocate our Kernel*/
@@ -127,14 +124,17 @@ int main(int argc, char **argv)
 
 	/*Allocate our mean function*/
 	CZeroMean* mean = new CZeroMean();
-	
+
 	/*Allocate our likelihood function*/
 	CGaussianLikelihood* lik = new CGaussianLikelihood();
+	
+	//SG_SPRINT("features2 bef inf rc= %d\n",features2->ref_count());
 
 	/*Allocate our inference method*/
 	CFITCInferenceMethod* inf =
 			new CFITCInferenceMethod(test_kernel, 
 						  features, mean, labels, lik, features2);
+	//SG_SPRINT("features2 aft inf rc= %d\n",features2->ref_count());
 
 	SG_REF(inf);
 
@@ -191,11 +191,10 @@ int main(int argc, char **argv)
 	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
 	SGMatrix<float64_t> cholesky = inf->get_cholesky();
 	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_COV);
-
 	CRegressionLabels* covariance = gp->apply_regression(features);
 
 	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
-	
+
 	CRegressionLabels* predictions = gp->apply_regression();
 
 	alpha.display_vector("Alpha Vector");
