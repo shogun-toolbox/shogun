@@ -19,6 +19,8 @@ using namespace shogun;
 
 CInferenceMethod::CInferenceMethod()
 {
+	init();
+
 	m_kernel = NULL;
 	m_model = NULL;
 	m_labels = NULL;
@@ -39,7 +41,8 @@ CInferenceMethod::CInferenceMethod(CKernel* kern, CFeatures* feat,
 	set_mean(m);
 }
 
-CInferenceMethod::~CInferenceMethod() {
+CInferenceMethod::~CInferenceMethod() 
+{
 	SG_UNREF(m_kernel);
 	SG_UNREF(m_features);
 	SG_UNREF(m_latent_features);

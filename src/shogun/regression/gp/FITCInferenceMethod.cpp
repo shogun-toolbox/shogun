@@ -319,6 +319,8 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 				m_kernel->init(m_latent_features, m_latent_features);
 				derivuu = m_kernel->get_parameter_gradient(param, obj);
 
+				m_kernel->remove_lhs_and_rhs();
+
 				mean_derivatives = m_mean->get_parameter_derivative(
 						param, obj, m_feature_matrix, g);
 
@@ -342,6 +344,8 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 				m_kernel->init(m_latent_features, m_latent_features);
 				derivuu = m_kernel->get_parameter_gradient(param, obj);
+
+				m_kernel->remove_lhs_and_rhs();
 			}
 
 			sum[0] = 0;
@@ -439,6 +443,8 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 		m_kernel->init(m_latent_features, m_latent_features);
 		derivuu = m_kernel->get_kernel_matrix();
+
+		m_kernel->remove_lhs_and_rhs();
 
 		MatrixXd ddiagKi(deriv.num_cols, deriv.num_rows);
 		MatrixXd dKuui(derivuu.num_cols, derivuu.num_rows);
@@ -620,16 +626,12 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_cholesky()
 
 void CFITCInferenceMethod::update_train_kernel()
 {
-	m_kernel->cleanup();
-
 	m_kernel->init(m_features, m_features);
 
 	//K(X, X)
 	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
 
 	m_ktrtr=kernel_matrix.clone();
-
-	m_kernel->cleanup();
 
 	m_kernel->init(m_latent_features, m_latent_features);
 
@@ -643,11 +645,11 @@ void CFITCInferenceMethod::update_train_kernel()
 			m_kuu(i,j) = kernel_matrix(i,j)*m_scale*m_scale;
 	}
 
-	m_kernel->cleanup();
-
 	m_kernel->init(m_latent_features, m_features);
 
 	kernel_matrix = m_kernel->get_kernel_matrix();
+
+	m_kernel->remove_lhs_and_rhs();
 
 	m_ktru = SGMatrix<float64_t>(kernel_matrix.num_rows, kernel_matrix.num_cols);
 

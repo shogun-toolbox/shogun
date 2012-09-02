@@ -237,6 +237,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 	result_vector = lik->evaluate_means(result_vector);
 
 	SG_UNREF(lik);
+	SG_UNREF(mean_function);
 
 	return result_vector;
 }

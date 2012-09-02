@@ -219,7 +219,6 @@ int main(int argc, char **argv)
 	SG_UNREF(grad_search);
 	SG_UNREF(best_combination);
 	SG_UNREF(result);
-	SG_UNREF(mean);
 
 	exit_shogun();
 
