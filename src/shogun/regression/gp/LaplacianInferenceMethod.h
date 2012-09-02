@@ -17,12 +17,8 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/regression/gp/InferenceMethod.h>
-#include <shogun/lib/external/brent.h>
-
 
 namespace shogun
 {
@@ -250,78 +246,44 @@ private:
 	index_t m_max_itr;
 
 	/*Kernel Matrix*/
-	Eigen::MatrixXd temp_kernel;
+	SGMatrix<float64_t> temp_kernel;
 
 	/*Eigen version of alpha vector*/
-	Eigen::VectorXd temp_alpha;
+	SGVector<float64_t> temp_alpha;
 
 	/*Function Location*/
-	Eigen::VectorXd function;
+	SGVector<float64_t> function;
 
 	/*Noise Matrix*/
-	Eigen::MatrixXd W;
+	SGVector<float64_t> W;
 
 	/*Square root of W*/
-	Eigen::MatrixXd sW;
+	SGVector<float64_t> sW;
 
 	/*Eigen version of means vector*/
-	Eigen::VectorXd m_means;
+	SGVector<float64_t> m_means;
 
 	/*Derivative of log likelihood with respect
 	 * to function location
 	 */
-	Eigen::VectorXd dlp;
+	SGVector<float64_t> dlp;
 
 	/*Second derivative of log likelihood with respect
 	 * to function location
 	 */
-	Eigen::VectorXd	d2lp;
+	SGVector<float64_t> d2lp;
 
 	/*Third derivative of log likelihood with respect
 	 * to function location
 	 */
-	Eigen::VectorXd	d3lp;
+	SGVector<float64_t> d3lp;
 
 	/*log likelihood*/
 	float64_t lp;
 
-	/*Wrapper class used for the Brent minimizer
-	 *
-	 */
-	class Psi_line : public func_base
-	{
-	public:
-		Eigen::VectorXd* alpha;
-		Eigen::VectorXd* dalpha;
-		Eigen::MatrixXd* K;
-		float64_t* l1;
-		Eigen::VectorXd* dl1;
-		Eigen::VectorXd* dl2;
-		Eigen::MatrixXd* mW;
-		Eigen::VectorXd* f;
-		Eigen::VectorXd* m;
-		float64_t scale;
-		CLikelihoodModel* lik;
-		CRegressionLabels *lab;
-
-		Eigen::VectorXd start_alpha;
-
-		virtual double operator() (double x)
-		{
-			*alpha = start_alpha + x*(*dalpha);
-			(*f) = (*K)*(*alpha)*scale*scale+(*m);
-			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
-			(*mW) = -lik->get_log_probability_derivative_f(lab, (*f), 2);
-			float64_t result = ((*alpha).dot(((*f)-(*m))))/2.0;
-			result -= lik->get_log_probability_f(lab, *f);
-			return result;
-		}
-	};
-
 };
 
 }
-#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
 
 #endif /* CLAPLACIANINFERENCEMETHOD_H_ */
