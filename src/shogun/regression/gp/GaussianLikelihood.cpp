@@ -7,10 +7,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/regression/gp/GaussianLikelihood.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/eigen3.h>
 
