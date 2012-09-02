@@ -1,7 +1,7 @@
 # File   : $HeadURL$
 # Version: $Id$
 
-from modshogun import RealFeatures, Labels
+from modshogun import RealFeatures, MulticlassLabels
 from modshogun import GaussianKernel
 from modshogun import GMNPSVM
 
@@ -35,7 +35,7 @@ class Ai:
             raise Exception("No training data loaded.")
 
         x = RealFeatures(self.x)
-        y = Labels(self.y)
+        y = MulticlassLabels(self.y)
 
         self.svm = GMNPSVM(c, GaussianKernel(x, x, kernel_width), y)
         self.svm.set_epsilon(epsilon)
