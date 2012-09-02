@@ -25,6 +25,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/lib/external/brent.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -34,7 +35,7 @@ namespace shogun
 	/*Wrapper class used for the Brent minimizer
 	 *
 	 */
-	class Psi_line : public brent::func_base
+	class Psi_line : public func_base
 	{
 	public:
 		Eigen::Map<Eigen::VectorXd>* alpha;
@@ -251,8 +252,6 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 				temp_diagonal(r,s) = W[s];
 		}
 
-		Map<MatrixXd> eigen_temp_kernel(temp_kernel.matrix,
-			temp_kernel.num_rows, temp_kernel.num_cols);
 		A = A + eigen_temp_kernel*m_scale*m_scale*temp_diagonal;
 
 		FullPivLU<MatrixXd> lu(A);
@@ -603,8 +602,6 @@ void CLaplacianInferenceMethod::update_chol()
 				temp_diagonal(s,s) = 1.0/W[s];
 		}
 
-		Map<MatrixXd> eigen_temp_kernel(temp_kernel.matrix,
-			temp_kernel.num_rows, temp_kernel.num_cols);
 
 		MatrixXd A = eigen_temp_kernel*m_scale*m_scale+temp_diagonal;
 
@@ -830,7 +827,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		func.m = &m_means;
 		func.mW = &W;
 		func.start_alpha = eigen_temp_alpha;
-		brent::local_min(0, m_max, m_opt_tolerance, func, Psi_New);
+		local_min(0, m_max, m_opt_tolerance, func, Psi_New);
 	}
 
 	for (index_t i = 0; i < m_alpha.vlen; i++)
