@@ -40,7 +40,7 @@ new_features = converter_instance.embed(features).get_feature_matrix()
 end = time.time()
 
 clusterer = KMeans
-clusterer_instance = clusterer(2,EuclidianDistance())
+clusterer_instance = clusterer(2,EuclideanDistance())
 clusterer_instance.train(features)
 labels = clusterer_instance.apply().get_labels()
 print labels
