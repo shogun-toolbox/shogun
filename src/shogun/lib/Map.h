@@ -439,8 +439,8 @@ private:
 				CMapNode<K, T>* element = array->get_element(i);
 				if (element!=NULL)
 				{
-					element->key = K();
-					element->data = T();
+					//element->key.~K();
+					//element->data.~T();
 
 					if (use_sg_mallocs)
 						SG_FREE(element);
