@@ -22,6 +22,8 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/mathematics/eigen3.h>
+
 
 using namespace shogun;
 using namespace Eigen;

@@ -11,10 +11,13 @@
  *
  */
 
+#ifdef HAVE_EIGEN3
+
 #include <shogun/regression/gp/StudentsTLikelihood.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -208,6 +211,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(
 
 		for (index_t i = 0; i < result.rows(); i++)
 			sgresult[i] = result[i];
+ 
 		return sgresult;
 	}
 
@@ -297,6 +301,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(
 	return sgresult;
 
 }
+
+#endif //HAVE_EIGEN3
 
 
 

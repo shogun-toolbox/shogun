@@ -11,7 +11,6 @@
 #define CLIKELIHOODMODEL_H_
 
 #include <shogun/base/SGObject.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/RegressionLabels.h>
 
 

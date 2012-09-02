@@ -12,7 +12,7 @@
  *
  */
 #include <shogun/lib/config.h>
-
+ 
 #ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
 
@@ -24,10 +24,61 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
-#include <iostream>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;
+
+namespace shogun
+{
+	/*Wrapper class used for the Brent minimizer
+	 *
+	 */
+	class Psi_line : public brent::func_base
+	{
+	public:
+		Eigen::Map<Eigen::VectorXd>* alpha;
+		Eigen::VectorXd* dalpha;
+		Eigen::Map<Eigen::MatrixXd>* K;
+		float64_t* l1;
+		SGVector<float64_t>* dl1;
+		Eigen::Map<Eigen::VectorXd>* dl2;
+		SGVector<float64_t>* mW;
+		SGVector<float64_t>* f;
+		SGVector<float64_t>* m;
+		float64_t scale;
+		CLikelihoodModel* lik;
+		CRegressionLabels *lab;
+
+		Eigen::VectorXd start_alpha;
+
+		virtual double operator() (double x)
+		{
+			Eigen::Map<Eigen::VectorXd> eigen_f(f->vector, f->vlen);
+			Eigen::Map<Eigen::VectorXd> eigen_m(m->vector, m->vlen);
+
+			*alpha = start_alpha + x*(*dalpha);
+			(eigen_f) = (*K)*(*alpha)*scale*scale+(eigen_m);
+
+
+			for (index_t i = 0; i < eigen_f.rows(); i++)
+				(*f)[i] = eigen_f[i];
+
+			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
+			(*mW) = lik->get_log_probability_derivative_f(lab, (*f), 2);
+			float64_t result = ((*alpha).dot(((eigen_f)-(eigen_m))))/2.0;
+
+			for (index_t i = 0; i < (*mW).vlen; i++)
+				(*mW)[i] = -(*mW)[i];
+
+
+
+			result -= lik->get_log_probability_f(lab, *f);
+
+			return result;
+		}
+	};
+}
 
 CLaplacianInferenceMethod::CLaplacianInferenceMethod() : CInferenceMethod()
 {
@@ -623,7 +674,7 @@ void CLaplacianInferenceMethod::update_alpha()
 
 	Map<VectorXd> eigen_m_means(m_means.vector, m_means.vlen);	
 
-//	if (m_alpha.vlen != m_labels->get_num_labels())
+	if (m_alpha.vlen != m_labels->get_num_labels())
 	{
 
 		
@@ -650,7 +701,7 @@ void CLaplacianInferenceMethod::update_alpha()
 				(CRegressionLabels*)m_labels, function);
 	}
 
-/*
+
 	else
 	{
 
@@ -698,7 +749,7 @@ void CLaplacianInferenceMethod::update_alpha()
 			Psi_New = -m_model->get_log_probability_f(
 					(CRegressionLabels*)m_labels, function);
 		}
-	}*/
+	}
 
 	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
 
@@ -715,12 +766,13 @@ void CLaplacianInferenceMethod::update_alpha()
 
 	Map<VectorXd> eigen_d2lp(d2lp.vector, d2lp.vlen);
 
-	Map<VectorXd> eigen_W(W.vector, W.vlen);
-
-	sW = W;
+	sW = W.clone();
 
 	while (Psi_Old - Psi_New > m_tolerance && itr < m_max_itr)
 	{
+
+		Map<VectorXd> eigen_W(W.vector, W.vlen);
+
 		Psi_Old = Psi_New;
 		itr++;
 
@@ -730,7 +782,7 @@ void CLaplacianInferenceMethod::update_alpha()
 			//Gaussian Process Regression with Student's t likelihood, NIPS 2009
 			//Quoted from infLaplace.m
 			float64_t df = m_model->get_degrees_freedom();
-			
+
 			for (index_t i = 0; i < eigen_W.rows(); i++)
 				eigen_W[i] += 2.0/(df)*dlp[i]*dlp[i];
 
@@ -739,7 +791,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		for (index_t i = 0; i < eigen_W.rows(); i++)
 			W[i] = eigen_W[i];
 
-		for (index_t i = 0; i < sW.vlen; i++)
+		for (index_t i = 0; i < W.vlen; i++)
 			sW[i] = CMath::sqrt(float64_t(W[i]));
 
 		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
@@ -761,7 +813,7 @@ void CLaplacianInferenceMethod::update_alpha()
 
 		chol = temp.transpose().colPivHouseholderQr().solve(chol);
 
-		VectorXd dalpha = b - eigen_sW.cwiseProduct(chol) - eigen_temp_alpha;
+		VectorXd dalpha = b - eigen_sW.cwiseProduct(chol) - eigen_temp_alpha;		
 
 		Psi_line func;
 
@@ -813,9 +865,9 @@ void CLaplacianInferenceMethod::update_alpha()
 	for (index_t i = 0; i < sW.vlen; i++)
 		sW[i] = 0.0;
 
-	eigen_W = Map<VectorXd>(W.vector, W.vlen);
+	Map<VectorXd> eigen_W2(W.vector, W.vlen);
 
-	if (eigen_W.minCoeff() > 0)
+	if (eigen_W2.minCoeff() > 0)
 	{
 		for (index_t i = 0; i < sW.vlen; i++)
 			sW[i] = CMath::sqrt(float64_t(W[i]));

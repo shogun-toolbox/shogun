@@ -17,13 +17,9 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
-#ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/regression/gp/InferenceMethod.h>
 #include <shogun/lib/external/brent.h>
-#include <iostream>
-
 
 namespace shogun
 {
@@ -286,58 +282,9 @@ private:
 	/*log likelihood*/
 	float64_t lp;
 
-	/*Wrapper class used for the Brent minimizer
-	 *
-	 */
-	class Psi_line : public brent::func_base
-	{
-	public:
-		Eigen::Map<Eigen::VectorXd>* alpha;
-		Eigen::VectorXd* dalpha;
-		Eigen::Map<Eigen::MatrixXd>* K;
-		float64_t* l1;
-		SGVector<float64_t>* dl1;
-		Eigen::Map<Eigen::VectorXd>* dl2;
-		SGVector<float64_t>* mW;
-		SGVector<float64_t>* f;
-		SGVector<float64_t>* m;
-		float64_t scale;
-		CLikelihoodModel* lik;
-		CRegressionLabels *lab;
-
-		Eigen::VectorXd start_alpha;
-
-		virtual double operator() (double x)
-		{
-			Eigen::Map<Eigen::VectorXd> eigen_f(f->vector, f->vlen);
-			Eigen::Map<Eigen::VectorXd> eigen_m(m->vector, m->vlen);
-
-			*alpha = start_alpha + x*(*dalpha);
-			(eigen_f) = (*K)*(*alpha)*scale*scale+(eigen_m);
-
-
-			for (index_t i = 0; i < eigen_f.rows(); i++)
-				(*f)[i] = eigen_f[i];
-
-			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
-			(*mW) = lik->get_log_probability_derivative_f(lab, (*f), 2);
-			float64_t result = ((*alpha).dot(((eigen_f)-(eigen_m))))/2.0;
-
-			for (index_t i = 0; i < (*mW).vlen; i++)
-				(*mW)[i] = -(*mW)[i];
-
-
-
-			result -= lik->get_log_probability_f(lab, *f);
-
-			return result;
-		}
-	};
-
 };
 
 }
-#endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
 
 #endif /* CLAPLACIANINFERENCEMETHOD_H_ */
