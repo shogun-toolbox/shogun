@@ -128,7 +128,7 @@ class CQDA : public CNativeMulticlassMachine
 		 */
 		inline SGVector< float64_t > get_mean(int32_t c) const
 		{
-			return SGVector< float64_t >(m_means.get_column_vector(c), m_dim);
+			return SGVector< float64_t >(m_means.get_column_vector(c), m_dim, false);
 		}
 
 		/** get a class' covariance matrix
@@ -139,7 +139,7 @@ class CQDA : public CNativeMulticlassMachine
 		 */
 		inline SGMatrix< float64_t > get_cov(int32_t c) const
 		{
-			return SGMatrix< float64_t >(m_covs.get_matrix(c), m_dim, m_dim);
+			return SGMatrix< float64_t >(m_covs.get_matrix(c), m_dim, m_dim, false);
 		}
 
 	protected:
