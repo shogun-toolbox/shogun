@@ -1313,6 +1313,8 @@ INCLUDE_FILE_PATTERNS  = *.h
 # instead of the = operator.
 
 PREDEFINED             = HAVE_LAPACK \
+                         HAVE_EIGEN3 \
+                         HAVE_NLOPT \
                          HAVE_ATLAS \
                          HAVE_PYTHON \
                          HAVE_SWIG \
