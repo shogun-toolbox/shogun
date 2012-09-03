@@ -313,7 +313,7 @@ def train(trainex,trainlab,C,kname,kparam,seq_source,nuc_con):
         kernel.init(feats_train, feats_train)
     kernel.io.disable_progress()
     kernel.set_optimization_type(SLOWBUTMEMEFFICIENT)
-    labels = Labels(numpy.array(trainlab,numpy.double))
+    labels = BinaryLabels(numpy.array(trainlab,numpy.double))
 
     # libsvm is fine for most kernels
     if kname in ('wd', 'spec', 'cumspec', 'spec2', 'cumspec2'):
