@@ -188,8 +188,8 @@ private:
 		m_active_set.erase(m_active_set.begin() + v_idx);
 	}
 
-	void cholesky_insert(const SGMatrix<float64_t> &X, SGMatrix<float64_t> &R, int32_t i_max_corr);
-	void cholesky_delete(SGMatrix<float64_t> &R, int32_t i_kick);
+	SGMatrix<float64_t> cholesky_insert(SGMatrix<float64_t> X, SGMatrix<float64_t> R, int32_t i_max_corr);
+	SGMatrix<float64_t> cholesky_delete(SGMatrix<float64_t> R, int32_t i_kick);
 
 
 	bool m_lasso; //!< enable lasso modification
