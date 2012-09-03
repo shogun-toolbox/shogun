@@ -87,6 +87,8 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 
 	FILE* pfile = fopen(FNAME, "w");
 
+	CMath::init_random(17);
+
 	for ( int32_t c = 0 ; c < NUM_CLASSES ; ++c )
 	{
 		for ( int32_t j = 0 ; j < DIMS ; ++j )
