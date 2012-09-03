@@ -557,7 +557,7 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_SH)"
 	@echo "/*" > $@
 	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
-	@echo " * CORRESPONDING TEMPLAT FILE, PLEASE!" >> $@
+	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
 	@echo -e " */\n" >> $@
 	@cat  $< >> $@
 	@sh $*.$(EXT_CPP_SH) $@ $(HEADERFILES)
@@ -566,7 +566,7 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PY)"
 	@echo "/*" > $@
 	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
-	@echo " * CORRESPONDING TEMPLAT FILE, PLEASE!" >> $@
+	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
 	@echo -e " */\n" >> $@
 	@cat  $< >> $@
 	@$(PYTHON) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
