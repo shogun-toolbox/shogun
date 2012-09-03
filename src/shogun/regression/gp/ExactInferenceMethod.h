@@ -17,6 +17,8 @@
 namespace shogun
 {
 
+class CInferenceMethod;
+
 /** @brief The Gaussian Exact Form Inference Method
  *
  *  This inference method computes the Gaussian Method

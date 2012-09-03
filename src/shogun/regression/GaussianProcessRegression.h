@@ -21,6 +21,11 @@
 
 namespace shogun
 {
+
+class CInferenceMethod;
+class CFeatures;
+class CLabels;
+
 /** @brief Class GaussianProcessRegression implements Gaussian Process
  * Regression.vInstead of a distribution over weights, the GP specifies
  * a distribution over functions.
