@@ -15,7 +15,7 @@ import sys,os
 import numpy
 import shogun
 from shogun.Kernel import GaussianKernel, LinearKernel, PolyKernel
-from shogun.Features import RealFeatures, Labels
+from shogun.Features import RealFeatures, BinaryLabels
 from shogun.Classifier import LibSVM
 
 from numpy import arange
@@ -34,7 +34,7 @@ def features_from_file(fileName) :
         labels.append(float(tokens[1]))
         features.append([float(token) for token in tokens[2:]])
 
-    return RealFeatures(numpy.transpose(numpy.array(features))), features, Labels(numpy.array(labels,numpy.float))
+    return RealFeatures(numpy.transpose(numpy.array(features))), features, BinaryLabels(numpy.array(labels,numpy.float))
 
 def create_kernel(kname, features, kparam=None) :
 
@@ -67,7 +67,7 @@ def svm_test(svm, kernel, features_train, features_test) :
     """predicts on the test examples"""
 
     kernel.init(features_train, features_test)
-    output = svm.classify().get_labels()
+    output = svm.apply().get_labels()
 
     return output
 
