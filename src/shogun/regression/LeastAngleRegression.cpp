@@ -185,8 +185,7 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 		if (!lasso_cond)
 		{
 			// update Cholesky factorization matrix
-			cholesky_insert(X, R, i_max_corr);
-
+			R=cholesky_insert(X, R, i_max_corr);
 			activate_variable(i_max_corr);
 		}
 
@@ -301,8 +300,7 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 			beta[i_change] = 0; // ensure it be zero
 
 			// update Cholesky factorization
-			cholesky_delete(R, i_kick);
-
+			R=cholesky_delete(R, i_kick);
 			deactivate_variable(i_kick);
 		}
 
@@ -326,7 +324,8 @@ bool CLeastAngleRegression::train_machine(CFeatures* data)
 	return true;
 }
 
-void CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t> &X, SGMatrix<float64_t> &R, int32_t i_max_corr)
+SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(
+		SGMatrix<float64_t> X, SGMatrix<float64_t> R, int32_t i_max_corr)
 {
 	// diag_k = X[:,i_max_corr]' * X[:,i_max_corr]
 	float64_t diag_k = cblas_ddot(X.num_rows, X.get_column_vector(i_max_corr), 1,
@@ -334,14 +333,12 @@ void CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t> &X, SGMatr
 
 	if (m_num_active == 0)
 	{ // R isn't allocated yet
-		R.matrix = SG_MALLOC(float64_t, 1);
-		R.num_rows = 1;
-		R.num_cols = 1;
-		R.matrix[0] = CMath::sqrt(diag_k);
+		SGMatrix<float64_t> nR(1,1);
+		nR(0,0) = CMath::sqrt(diag_k);
+		return nR;
 	}
 	else
 	{
-		float64_t *new_R = SG_MALLOC(float64_t, (m_num_active+1)*(m_num_active+1));
 
 		// col_k is the k-th column of (X'X)
 		vector<float64_t> col_k(m_num_active);
@@ -361,10 +358,7 @@ void CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t> &X, SGMatr
 			cblas_ddot(m_num_active, &R_k[0], 1, &R_k[0], 1));
 
 		// new_R = [R R_k; zeros(...) R_kk]
-		SGMatrix<float64_t> nR;
-		nR.matrix = new_R;
-		nR.num_rows = m_num_active+1;
-		nR.num_cols = m_num_active+1;
+		SGMatrix<float64_t> nR(m_num_active+1, m_num_active+1);
 		for (int32_t i=0; i < m_num_active; ++i)
 			for (int32_t j=0; j < m_num_active; ++j)
 				nR(i,j) = R(i,j);
@@ -374,15 +368,12 @@ void CLeastAngleRegression::cholesky_insert(const SGMatrix<float64_t> &X, SGMatr
 			nR(m_num_active, i) = 0;
 		nR(m_num_active, m_num_active) = R_kk;
 
-		// update R
-		SG_FREE(R.matrix);
-		R.matrix = nR.matrix;
-		R.num_rows = nR.num_rows;
-		R.num_cols = nR.num_cols;
+		return nR;
 	}
+
 }
 
-void CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t> &R, int32_t i_kick)
+SGMatrix<float64_t> CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t> R, int32_t i_kick)
 {
 	if (i_kick != m_num_active-1)
 	{
@@ -413,10 +404,7 @@ void CLeastAngleRegression::cholesky_delete(SGMatrix<float64_t> &R, int32_t i_ki
 		for (int32_t j=0; j < m_num_active-1; ++j)
 			nR(i,j) = R(i,j);
 
-	SG_FREE(R.matrix);
-	R.matrix = nR.matrix;
-	R.num_cols = nR.num_cols;
-	R.num_rows = nR.num_rows;
+	return nR;
 }
 
 #endif // HAVE_LAPACK
