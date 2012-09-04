@@ -1,58 +1,13 @@
-2012-09-01 Soeren Sonnenburg <sonne@debian.org>
+2012-10-01 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 2.0.0 (libshogun 12.0, data 0.4, parameter 1)
+	* SHOGUN Release version 2.0.1 (libshogun 12.0, data 0.4, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- This release contains first release of Efficient Dimensionality Reduction Toolkit (EDRT).
-		- Support for new SWIG -builtin python interface feature (SWIG 2.0.4 is required now).
-		- EDRT algorithms are now available using static interfaces such as matlab and octave.
-		- Jensen-Shannon kernel and Homogeneous kernel map preprocessor (thanks to Viktor Gal).
-		- New 'multiclass' module for multiclass classification algorithms, generic linear
-		  and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
-		  new rejection schemes concept by Sergey Lisitsyn.
-		- Various multitask learning algorithms including L1/Lq multitask group lasso logistic regression
-		  and least squares regression, L1/L2 multitask tree guided group lasso logistic regression 
-		  and least squares regression, trace norm regularized multitask logistic regression, clustered multitask 
-		  logistic regression and L1/L2 multitask group logistic regression by Sergey Lisitsyn.
-		- Group and tree-guided logistic regression for binary and multiclass problems by Sergey Lisitsyn.
-		- Mahalanobis distance, QDA, Stochastic Proximity Embedding,
-		  generic OvO multiclass machine and CoverTree & KNN integation (thanks to Fernando J. Iglesias Garcia).
-		- Structured output learning framework by Fernando J. Iglesias Garcia.
-		- Hidden markov support vector machine structured output model by Fernando J. Iglesias Garcia.
-		- Implementations of three Bundle method for risk minimization (BMRM) variants by Michal Uricar.
-		- Latent SVM framework and latent detector example by Viktor Gal.
-		- Gaussian processes framework for parameters selection and gaussian processes regression estimation
-		  framework by Jacob Walker.
-		- New graphical python modular examples.
-		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
-		- New data-locking concept by Heiko Strathmann which allows to tell machines that data
-		  is not going to change during training/testing until unlocked.
-		  KernelMachines now make use of that by not recomputing kernel matrix in cross-validation.
-		- Cross-validation for KernelMachines is now parallelized.
-		- Cross-validation is now possible with custom kernels.
-		- Features may now have arbritarily many index subsets (of subsets (of subsets (...))).
-		- Various clustering measures, Least Angle Regression and new multiclass strategies
-		  concept (thanks to Chiyuan Zhang).
-		- A bunch of multiclass learning algorithms including the ShareBoost algorithm, ECOC framework,
-		  conditional probability tree, balanced conditional probability tree, random conditional probability
-		  tree and relaxed tree by Chiyuan Zhang.
-		- Python Sparse matrix typemap for octave modular interface (thanks to Evgeniy Andreev).
-		- Newton SVM port (thanks to Harshit Syal).
-		- Some progress on native windows compilation using 
-		  cmake and mingw-w64 (thanks to Josh aka jklontz).
-		- CMake compilation improvements (thanks to Eric aka yoo).
+		- None
 	* Bugfixes:
-		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was
-		  changed to log-space.
-		- Fix for R_static interface installation (thanks Steve Lianoglou).
-		- SVMOcas memsetting and max_train_time bugfix.
-		- Various fixes for compile errors with clang.
-		- Stratified-cross-validation now used different indices for each run.
+		- None
 	* Cleanup and API Changes:
-		- Various code cleanups by Evan Shelhamer
-		- Parameter migration framework by Heiko Strathmann. From now on,
-		  changes in the shogun objects will not break loading old serialized
-		  files anymore
+		- None
 
 2011-12-01 Soeren Sonnenburg <sonne@debian.org>
 

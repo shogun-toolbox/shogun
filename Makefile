@@ -134,8 +134,8 @@ release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.
 
 data-release:
 	cd data && git checkout-index --prefix=../$(DATADESTDIR)/ -a
+	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar
 	tar -c -f $(DATARELEASENAME).tar -C ../shogun-releases $(DATARELEASENAME)
-	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 	$(COMPRESS) -9 $(DATADESTDIR).tar
 
 embed-main-version: src/shogun/lib/versionstring.h
@@ -167,26 +167,26 @@ update-webpage:
 	gpg --no-emit-version -s -b -a $(DESTDIR).tar.bz2
 	gpg --no-emit-version -s -b -a $(DATADESTDIR).tar.bz2
 
-	ssh km mkdir -m 0755 -p /var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources
+	ssh 7nn.de mkdir -m 0755 -p /var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources
 	rsync --progress $(DATADESTDIR).tar.bz2 $(DATADESTDIR).md5sum \
-		km:/var/www/shogun-toolbox.org/archives/shogun/data/
+		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/data/
 	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.asc $(DESTDIR).md5sum \
-		km:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
-	ssh km chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.* /var/www/shogun-toolbox.org/archives/shogun/data/*"
+		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
+	ssh 7nn.de chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.* /var/www/shogun-toolbox.org/archives/shogun/data/*"
 	
 	$(MAKE) -C examples
 	rm -rf doc/html
 	$(MAKE) -C doc
-	ssh km rm -f "/var/www/shogun-toolbox.org/doc/*/$(MAINVERSION)/*.*"
-	ssh km mkdir -p "/var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)"
-	ssh km mkdir -p "/var/www/shogun-toolbox.org/doc/en/$(MAINVERSION)"
-	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION)/ -xjvf -
-	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)/ -xjvf -
-	ssh km find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type f -exec chmod 644 \{\} "\;"
-	ssh km find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type d -exec chmod 755 \{\} "\;"
-	ssh km find /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION) -type f -exec chmod 644 \{\} "\;"
-	ssh km find /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION) -type d -exec chmod 755 \{\} "\;"
-	ssh km ./bin/shogun_doc_install.sh $(MAINVERSION)
+	ssh 7nn.de rm -f "/var/www/shogun-toolbox.org/doc/*/$(MAINVERSION)/*.*"
+	ssh 7nn.de mkdir -p "/var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)"
+	ssh 7nn.de mkdir -p "/var/www/shogun-toolbox.org/doc/en/$(MAINVERSION)"
+	cd doc/html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh 7nn.de tar -C /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION)/ -xjvf -
+	cd doc/html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh 7nn.de tar -C /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)/ -xjvf -
+	ssh 7nn.de find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type f -exec chmod 644 \{\} "\;"
+	ssh 7nn.de find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type d -exec chmod 755 \{\} "\;"
+	ssh 7nn.de find /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION) -type f -exec chmod 644 \{\} "\;"
+	ssh 7nn.de find /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION) -type d -exec chmod 755 \{\} "\;"
+	ssh 7nn.de ./bin/shogun_doc_install.sh $(MAINVERSION)
 	rm -rf doc/html*
 
 	cd ../shogun-publicity/website && $(MAKE)
