@@ -1,6 +1,6 @@
 2012-09-01 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 2.0.0 (libshogun 12.0, data 0.3, parameter 1)
+	* SHOGUN Release version 2.0.0 (libshogun 12.0, data 0.4, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- This release contains first release of Efficient Dimensionality Reduction Toolkit (EDRT).
@@ -40,6 +40,7 @@
 		- Newton SVM port (thanks to Harshit Syal).
 		- Some progress on native windows compilation using 
 		  cmake and mingw-w64 (thanks to Josh aka jklontz).
+		- CMake compilation improvements (thanks to Eric aka yoo).
 	* Bugfixes:
 		- Fix for bug in the Gaussian Naive Bayes classifier, its domain was
 		  changed to log-space.
