@@ -16,7 +16,7 @@ using namespace shogun;
 
 int main(int argc, char** argv)
 {
-	init_shogun();
+	init_shogun_with_defaults();
 
 	int N = 100;
 	int dim = 3;

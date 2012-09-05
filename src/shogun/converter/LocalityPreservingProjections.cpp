@@ -86,7 +86,9 @@ CDenseFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(C
 	SG_FREE(lhs_M);
 	SG_FREE(rhs_M);
 	SG_FREE(evals);
-	if (info!=0) SG_ERROR("Failed to solve eigenproblem (%d)\n",info);
+
+	if (info!=0)
+		SG_ERROR("Failed to solve eigenproblem (%d)\n",info);
 
 	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,N,m_target_dim,dim,1.0,feature_matrix.matrix,dim,evectors,dim,0.0,XTM,N);
 	SG_FREE(evectors);
