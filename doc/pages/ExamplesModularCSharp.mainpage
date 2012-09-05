@@ -51,17 +51,17 @@ LD_LIBRARY_PATH=path/to/libshogun:path/to/shogun/interfaces/csharp_modular mono 
 \li <b>../examples/documented/csharp_modular/classifier_libsvm_minimal_modular.cs</b>
 \verbinclude classifier_libsvm_minimal_modular.cs
 
-\li <b>../examples/documented/csharp_modular/classifier_libsvmmulticlass_modular.cs</b>
-\verbinclude classifier_libsvmmulticlass_modular.cs
+\li <b>../examples/documented/csharp_modular/classifier_libsvm_modular.cs</b>
+\verbinclude classifier_libsvm_modular.cs
 
 \li <b>../examples/documented/csharp_modular/classifier_libsvmoneclass_modular.cs</b>
 \verbinclude classifier_libsvmoneclass_modular.cs
 
-\li <b>../examples/documented/csharp_modular/classifier_libsvn_modular.cs</b>
-\verbinclude classifier_libsvn_modular.cs
-
 \li <b>../examples/documented/csharp_modular/classifier_mpdsvm_modular.cs</b>
 \verbinclude classifier_mpdsvm_modular.cs
+
+\li <b>../examples/documented/csharp_modular/classifier_multiclasslibsvm_modular.cs</b>
+\verbinclude classifier_multiclasslibsvm_modular.cs
 
 \li <b>../examples/documented/csharp_modular/classifier_perceptron_modular.cs</b>
 \verbinclude classifier_perceptron_modular.cs
@@ -150,8 +150,8 @@ LD_LIBRARY_PATH=path/to/libshogun:path/to/shogun/interfaces/csharp_modular mono 
 \section csharp_modular_features_examples Features
 
 
-\li <b>../examples/documented/csharp_modular/features_simple_real_modular.cs</b>
-\verbinclude features_simple_real_modular.cs
+\li <b>../examples/documented/csharp_modular/features_dense_real_modular.cs</b>
+\verbinclude features_dense_real_modular.cs
 
 \li <b>../examples/documented/csharp_modular/features_snp_modular.cs</b>
 \verbinclude features_snp_modular.cs

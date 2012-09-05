@@ -58,14 +58,14 @@ java -jar path/to/modshogun.jar name_of_example
 \li <b>../examples/documented/java_modular/classifier_libsvm_modular.java</b>
 \verbinclude classifier_libsvm_modular.java
 
-\li <b>../examples/documented/java_modular/classifier_libsvmmulticlass_modular.java</b>
-\verbinclude classifier_libsvmmulticlass_modular.java
-
 \li <b>../examples/documented/java_modular/classifier_libsvmoneclass_modular.java</b>
 \verbinclude classifier_libsvmoneclass_modular.java
 
 \li <b>../examples/documented/java_modular/classifier_mpdsvm_modular.java</b>
 \verbinclude classifier_mpdsvm_modular.java
+
+\li <b>../examples/documented/java_modular/classifier_multiclasslibsvm_modular.java</b>
+\verbinclude classifier_multiclasslibsvm_modular.java
 
 \li <b>../examples/documented/java_modular/classifier_perceptron_modular.java</b>
 \verbinclude classifier_perceptron_modular.java
@@ -118,8 +118,8 @@ java -jar path/to/modshogun.jar name_of_example
 \li <b>../examples/documented/java_modular/distance_cosine_modular.java</b>
 \verbinclude distance_cosine_modular.java
 
-\li <b>../examples/documented/java_modular/distance_euclidian_modular.java</b>
-\verbinclude distance_euclidian_modular.java
+\li <b>../examples/documented/java_modular/distance_euclidean_modular.java</b>
+\verbinclude distance_euclidean_modular.java
 
 \li <b>../examples/documented/java_modular/distance_geodesic_modular.java</b>
 \verbinclude distance_geodesic_modular.java
@@ -181,8 +181,8 @@ java -jar path/to/modshogun.jar name_of_example
 \section java_modular_features_examples Features
 
 
-\li <b>../examples/documented/java_modular/features_simple_modular.java</b>
-\verbinclude features_simple_modular.java
+\li <b>../examples/documented/java_modular/features_dense_modular.java</b>
+\verbinclude features_dense_modular.java
 
 \li <b>../examples/documented/java_modular/features_snp_modular.java</b>
 \verbinclude features_snp_modular.java

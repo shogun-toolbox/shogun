@@ -46,8 +46,8 @@ lua name_of_example.lua
 \section lua_modular_features_examples Features
 
 
-\li <b>../examples/documented/lua_modular/features_simple_real_modular.lua</b>
-\verbinclude features_simple_real_modular.lua
+\li <b>../examples/documented/lua_modular/features_dense_real_modular.lua</b>
+\verbinclude features_dense_real_modular.lua
 
 \li <b>../examples/documented/lua_modular/features_string_char_modular.lua</b>
 \verbinclude features_string_char_modular.lua

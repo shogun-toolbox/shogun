@@ -6,6 +6,7 @@ This page lists ready to run shogun examples for the Octave Modular interface.
 \li \subpage octave_modular_clustering_examples 
 \li \subpage octave_modular_distance_examples 
 \li \subpage octave_modular_distribution_examples 
+\li \subpage octave_modular_features_examples 
 \li \subpage octave_modular_kernel_examples 
 \li \subpage octave_modular_mkl_examples 
 \li \subpage octave_modular_preprocessor_examples 
@@ -48,14 +49,17 @@ name_of_example
 \li <b>../examples/documented/octave_modular/classifier_libsvm_modular.m</b>
 \verbinclude classifier_libsvm_modular.m
 
-\li <b>../examples/documented/octave_modular/classifier_libsvmmulticlass_modular.m</b>
-\verbinclude classifier_libsvmmulticlass_modular.m
-
 \li <b>../examples/documented/octave_modular/classifier_libsvmoneclass_modular.m</b>
 \verbinclude classifier_libsvmoneclass_modular.m
 
 \li <b>../examples/documented/octave_modular/classifier_mpdsvm_modular.m</b>
 \verbinclude classifier_mpdsvm_modular.m
+
+\li <b>../examples/documented/octave_modular/classifier_multiclasslibsvm_modular.m</b>
+\verbinclude classifier_multiclasslibsvm_modular.m
+
+\li <b>../examples/documented/octave_modular/classifier_newtonsvm_modular.m</b>
+\verbinclude classifier_newtonsvm_modular.m
 
 \li <b>../examples/documented/octave_modular/classifier_perceptron_modular.m</b>
 \verbinclude classifier_perceptron_modular.m
@@ -146,6 +150,12 @@ name_of_example
 
 \li <b>../examples/documented/octave_modular/distribution_linearhmm_modular.m</b>
 \verbinclude distribution_linearhmm_modular.m
+
+\section octave_modular_features_examples Features
+
+
+\li <b>../examples/documented/octave_modular/features_sparse_modular.m</b>
+\verbinclude features_sparse_modular.m
 
 \section octave_modular_kernel_examples Kernel
 
@@ -270,8 +280,8 @@ name_of_example
 \section octave_modular_regression_examples Regression
 
 
-\li <b>../examples/documented/octave_modular/regression_krr_modular.m</b>
-\verbinclude regression_krr_modular.m
+\li <b>../examples/documented/octave_modular/regression_kernel_ridge_modular.m</b>
+\verbinclude regression_kernel_ridge_modular.m
 
 \li <b>../examples/documented/octave_modular/regression_libsvr_modular.m</b>
 \verbinclude regression_libsvr_modular.m
