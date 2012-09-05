@@ -39,14 +39,14 @@ source('name_of_example.R')
 \li <b>../examples/documented/r_modular/classifier_libsvm_modular.R</b>
 \verbinclude classifier_libsvm_modular.R
 
-\li <b>../examples/documented/r_modular/classifier_libsvmmulticlass_modular.R</b>
-\verbinclude classifier_libsvmmulticlass_modular.R
-
 \li <b>../examples/documented/r_modular/classifier_libsvmoneclass_modular.R</b>
 \verbinclude classifier_libsvmoneclass_modular.R
 
 \li <b>../examples/documented/r_modular/classifier_mpdsvm_modular.R</b>
 \verbinclude classifier_mpdsvm_modular.R
+
+\li <b>../examples/documented/r_modular/classifier_multiclasslibsvm_modular.R</b>
+\verbinclude classifier_multiclasslibsvm_modular.R
 
 \li <b>../examples/documented/r_modular/classifier_perceptron_modular.R</b>
 \verbinclude classifier_perceptron_modular.R

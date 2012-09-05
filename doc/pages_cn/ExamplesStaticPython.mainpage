@@ -8,6 +8,7 @@
 \li \subpage python_static_distribution_examples 
 \li \subpage python_static_kernel_examples 
 \li \subpage python_static_mkl_examples 
+\li \subpage python_static_multiclass_examples 
 \li \subpage python_static_preproc_examples 
 \li \subpage python_static_regression_examples 
 
@@ -18,9 +19,6 @@ python name_of_example.py
 
 \section python_static_classifier_examples Classifier
 
-
-\li <b>../examples/documented/python_static/classifier_gmnpsvm.py</b>
-\verbinclude classifier_gmnpsvm.py
 
 \li <b>../examples/documented/python_static/classifier_gpbtsvm.py</b>
 \verbinclude classifier_gpbtsvm.py
@@ -33,9 +31,6 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_static/classifier_libsvm.py</b>
 \verbinclude classifier_libsvm.py
-
-\li <b>../examples/documented/python_static/classifier_libsvmmulticlass.py</b>
-\verbinclude classifier_libsvmmulticlass.py
 
 \li <b>../examples/documented/python_static/classifier_libsvmoneclass.py</b>
 \verbinclude classifier_libsvmoneclass.py
@@ -204,6 +199,15 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_static/mkl_twoclass.py</b>
 \verbinclude mkl_twoclass.py
+
+\section python_static_multiclass_examples Multiclass
+
+
+\li <b>../examples/documented/python_static/multiclass_gmnpsvm.py</b>
+\verbinclude multiclass_gmnpsvm.py
+
+\li <b>../examples/documented/python_static/multiclass_multiclasslibsvm.py</b>
+\verbinclude multiclass_multiclasslibsvm.py
 
 \section python_static_preproc_examples Preproc
 
