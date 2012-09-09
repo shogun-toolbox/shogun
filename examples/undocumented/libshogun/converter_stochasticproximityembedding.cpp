@@ -11,6 +11,7 @@
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/StochasticProximityEmbedding.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -24,7 +25,7 @@ int main()
 	// Generate toy data
 	SGMatrix< float64_t > matrix(dim, N);
 	for (int i=0; i<N*dim; i++)
-		matrix[i] = i;
+		matrix[i] = CMath::sin((i/float64_t(N*dim))*3.14);
 
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(matrix);
 	SG_REF(features);

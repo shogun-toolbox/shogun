@@ -11,6 +11,7 @@
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/converter/LinearLocalTangentSpaceAlignment.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
 	int dim = 3;
 	float64_t* matrix = new double[N*dim];
 	for (int i=0; i<N*dim; i++)
-		matrix[i] = i;
+		matrix[i] = CMath::sin((i/float64_t(N*dim))*3.14);
 
 	CDenseFeatures<double>* features = new CDenseFeatures<double>(SGMatrix<double>(matrix,dim,N));
 	SG_REF(features);
