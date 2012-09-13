@@ -6777,7 +6777,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
 
-	h->set_observation_matrix(SGNDArray<float64_t>(features, feat_dims, 3));
+	h->set_observation_matrix(SGNDArray<float64_t>(features, feat_dims, 3, false));
 
 	if (seg_path!=NULL)
 	{
