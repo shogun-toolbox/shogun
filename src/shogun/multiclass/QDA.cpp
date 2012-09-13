@@ -59,11 +59,6 @@ void CQDA::init()
 
 void CQDA::cleanup()
 {
-	if ( m_store_covs )
-		m_covs.destroy_ndarray();
-
-	m_covs.free_ndarray();
-	m_M.free_ndarray();
 	m_means=SGMatrix<float64_t>();
 
 	m_num_classes = 0;
@@ -206,7 +201,7 @@ bool CQDA::train_machine(CFeatures* data)
 		cov_dims[0] = m_dim;
 		cov_dims[1] = m_dim;
 		cov_dims[2] = m_num_classes;
-		m_covs = SGNDArray< float64_t >(cov_dims, 3, true);
+		m_covs = SGNDArray< float64_t >(cov_dims, 3);
 	}
 
 	m_means = SGMatrix< float64_t >(m_dim, m_num_classes, true);
@@ -290,7 +285,7 @@ bool CQDA::train_machine(CFeatures* data)
 	M_dims[0] = m_dim;
 	M_dims[1] = m_dim;
 	M_dims[2] = m_num_classes;
-	m_M = SGNDArray< float64_t >(M_dims, 3, true);
+	m_M = SGNDArray< float64_t >(M_dims, 3);
 
 	m_slog = SGVector< float32_t >(m_num_classes);
 	m_slog.zero();
@@ -335,7 +330,6 @@ bool CQDA::train_machine(CFeatures* data)
 	SG_PRINT("\n>>> Exit DEBUG_QDA\n");
 #endif
 
-	rotations.destroy_ndarray();
 	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
 	return true;

@@ -6372,7 +6372,7 @@ bool CSGInterface::cmd_set_model()
 	ASSERT(numDim==3);
 	ASSERT(Dim[0]==Dim[1]);
 
-	if (!pm->compute_plif_matrix(SGNDArray<float64_t>(penalties_array, Dim, numDim)))
+	if (!pm->compute_plif_matrix(SGNDArray<float64_t>(penalties_array, Dim, numDim, false)))
 		SG_ERROR("error computing plif  matrix\n");
 	ui_structure->set_num_states(Dim[0]);
 	SG_FREE(penalties_array);

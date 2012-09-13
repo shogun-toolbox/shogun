@@ -15,60 +15,28 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGReferencedData.h>
 
 namespace shogun
 {
 /** @brief shogun n-dimensional array */
-template<class T> class SGNDArray
+template<class T> class SGNDArray : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGNDArray() : array(NULL), dims(NULL), num_dims(0), do_free(false) { }
+		SGNDArray();
 
 		/** constructor for setting params */
-		SGNDArray(T* a, index_t* d, index_t nd, bool do_free_ndarray = false)
-		    : array(a), dims(d), num_dims(nd), do_free(do_free_ndarray) { }
+		SGNDArray(T* a, index_t* d, index_t nd, bool ref_counting=true);
 
 		/** constructor to create new ndarray in memory */
-		SGNDArray(index_t* d, index_t nd, bool do_free_ndarray = false)
-			: dims(d), num_dims(nd), do_free(do_free_ndarray)
-		{
-			index_t tot = 1;
-			for (int32_t i=0; i<nd; i++)
-				tot *= dims[i];
-			array=SG_MALLOC(T, tot);
-		}
-
+		SGNDArray(index_t* d, index_t nd, bool ref_counting=true);
+		
 		/** copy constructor */
-		SGNDArray(const SGNDArray &orig)
-		    : array(orig.array), dims(orig.dims), num_dims(orig.num_dims),
-		    do_free(orig.do_free) { }
+		SGNDArray(const SGNDArray &orig);
 
 		/** empty destructor */
-		virtual ~SGNDArray()
-		{
-		}
-
-		/** free ndarray */
-		virtual void free_ndarray()
-		{
-			if (do_free)
-				SG_FREE(array);
-
-			SG_FREE(dims);
-
-			array     = NULL;
-			dims      = NULL;
-			num_dims  = 0;
-		}
-
-
-		/** destroy ndarray */
-		virtual void destroy_ndarray()
-		{
-			do_free = true;
-			free_ndarray();
-		}
+		virtual ~SGNDArray();
 
 		/** get a matrix formed by the two first dimensions
 		 *
@@ -80,6 +48,12 @@ template<class T> class SGNDArray
 			ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
 			return &array[matIdx*dims[0]*dims[1]];
 		}
+
+		/** transposes a matrix formed by the two first dimensions
+		 *
+		 * @param matIdx matrix index
+		 */
+		void transpose_matrix(index_t matIdx) const;
 
 		/** operator overload for ndarray read only access
 		 *
@@ -99,41 +73,27 @@ template<class T> class SGNDArray
 			return array[index];
 		}
 
-		/** transposes a matrix formed by the two first dimensions
-		 *
-		 * @param matIdx matrix index
-		 */
-		void transpose_matrix(index_t matIdx) const
-		{
-			ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
+	protected:
 
-			T aux;
-			// Index to acces directly the elements of the matrix of interest
-			int32_t idx = matIdx*dims[0]*dims[1];
+		/** copy data */
+		virtual void copy_data(const SGReferencedData &orig);
 
-			for (int32_t i=0; i<dims[0]; i++)
-				for (int32_t j=0; j<i-1; j++)
-				{
-					aux = array[idx + i + j*dims[0]];
-					array[idx + i + j*dims[0]] = array[idx + j + i*dims[0]];
-					array[idx + j + i*dims[1]] = aux;
-				}
+		/** init data */
+		virtual void init_data();
 
-			// Swap the sizes of the two first dimensions
-			index_t auxDim = dims[0];
-			dims[0] = dims[1];
-			dims[1] = auxDim;
-		}
+		/** free data */
+		virtual void free_data();
 
 	public:
+
 		/** array  */
 		T* array;
+
 		/** dimension sizes */
 		index_t* dims;
+
 		/** number of dimensions  */
 		index_t num_dims;
-		/** whether ndarry needs to be freed */
-		bool do_free;
 };
 }
 #endif // __SGNDARRAY_H__
