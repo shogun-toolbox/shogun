@@ -17,7 +17,7 @@ CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDe
 	for (int32_t i=0; i<labels.vlen; i++)
 		labels[i] = src[i]+threshold>=0 ? +1.0 : -1.0;
 	set_labels(labels);
-	set_confidences(src);
+	set_values(src);
 }
 
 CBinaryLabels::CBinaryLabels(CFile* loader) : CDenseLabels(loader)
@@ -78,17 +78,17 @@ void CBinaryLabels::scores_to_probabilities()
 {
 	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n");
 
-	REQUIRE(m_confidences.vector, "%s::scores_to_probabilities() requires "
-			"confidences vector!\n", get_name());
+	REQUIRE(m_current_values.vector, "%s::scores_to_probabilities() requires "
+			"values vector!\n", get_name());
 
 	/* count prior0 and prior1 if needed */
 	int32_t prior0=0;
 	int32_t prior1=0;
 	SG_DEBUG("counting number of positive and negative labels\n");
 	{
-		for (index_t i=0; i<m_confidences.vlen; ++i)
+		for (index_t i=0; i<m_current_values.vlen; ++i)
 		{
-			if (m_confidences[i]>0)
+			if (m_current_values[i]>0)
 				prior1++;
 			else
 				prior0++;
@@ -115,7 +115,7 @@ void CBinaryLabels::scores_to_probabilities()
 	SGVector<float64_t> t(length);
 	for (index_t i=0; i<length; ++i)
 	{
-		if (m_confidences[i]>0)
+		if (m_current_values[i]>0)
 			t[i]=hiTarget;
 		else
 			t[i]=loTarget;
@@ -129,7 +129,7 @@ void CBinaryLabels::scores_to_probabilities()
 
 	for (index_t i=0; i<length; ++i)
 	{
-		float64_t fApB=m_confidences[i]*a+b;
+		float64_t fApB=m_current_values[i]*a+b;
 		if (fApB>=0)
 			fval+=t[i]*fApB+CMath::log(1+CMath::exp(-fApB));
 		else
@@ -152,7 +152,7 @@ void CBinaryLabels::scores_to_probabilities()
 
 		for (index_t i=0; i<length; ++i)
 		{
-			float64_t fApB=m_confidences[i]*a+b;
+			float64_t fApB=m_current_values[i]*a+b;
 			float64_t p;
 			float64_t q;
 			if (fApB>=0)
@@ -167,11 +167,11 @@ void CBinaryLabels::scores_to_probabilities()
 			}
 
 			float64_t d2=p*q;
-			h11+=m_confidences[i]*m_confidences[i]*d2;
+			h11+=m_current_values[i]*m_current_values[i]*d2;
 			h22+=d2;
-			h21+=m_confidences[i]*d2;
+			h21+=m_current_values[i]*d2;
 			float64_t d1=t[i]-p;
-			g1+=m_confidences[i]*d1;
+			g1+=m_current_values[i]*d1;
 			g2+=d1;
 		}
 
@@ -197,7 +197,7 @@ void CBinaryLabels::scores_to_probabilities()
 			float64_t newf=0.0;
 			for (index_t i=0; i<length; ++i)
 			{
-				float64_t fApB=m_confidences[i]*newA+newB;
+				float64_t fApB=m_current_values[i]*newA+newB;
 				if (fApB>=0)
 					newf+=t[i]*fApB+CMath::log(1+CMath::exp(-fApB));
 				else
@@ -232,11 +232,11 @@ void CBinaryLabels::scores_to_probabilities()
 
 	SG_DEBUG("fitted sigmoid: a=%f, b=%f\n", a, b);
 
-	/* now the sigmoid is fitted, convert all confidences to probabilities */
-	for (index_t i=0; i<m_confidences.vlen; ++i)
+	/* now the sigmoid is fitted, convert all values to probabilities */
+	for (index_t i=0; i<m_current_values.vlen; ++i)
 	{
-		float64_t fApB=m_confidences[i]*a+b;
-		m_confidences[i]=fApB>=0 ? CMath::exp(-fApB)/(1.0+exp(-fApB)) :
+		float64_t fApB=m_current_values[i]*a+b;
+		m_current_values[i]=fApB>=0 ? CMath::exp(-fApB)/(1.0+exp(-fApB)) :
 				1.0/(1+CMath::exp(fApB));
 	}
 

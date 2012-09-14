@@ -13,18 +13,18 @@ using namespace shogun;
 void test_sigmoid_fitting()
 {
 	CBinaryLabels* labels=new CBinaryLabels(10);
-	labels->set_confidences(SGVector<float64_t>(labels->get_num_labels()));
+	labels->set_values(SGVector<float64_t>(labels->get_num_labels()));
 
 	for (index_t i=0; i<labels->get_num_labels(); ++i)
-		labels->set_confidence(i%2==0 ? 1 : -1, i);
+		labels->set_value(i%2==0 ? 1 : -1, i);
 
-	labels->get_confidences().display_vector("scores");
+	labels->get_values().display_vector("scores");
 	labels->scores_to_probabilities();
 
 	/* only two probabilities will be the result, repeatedly,
 	 * assert against reference implementation */
-	ASSERT(CMath::abs(labels->get_confidence(0)-0.8571428439385661)<10E-15);
-	ASSERT(CMath::abs(labels->get_confidence(1)-0.14285715606143384)<10E-15);
+	ASSERT(CMath::abs(labels->get_value(0)-0.8571428439385661)<10E-15);
+	ASSERT(CMath::abs(labels->get_value(1)-0.14285715606143384)<10E-15);
 
 	SG_UNREF(labels);
 }

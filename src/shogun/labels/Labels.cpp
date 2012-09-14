@@ -52,33 +52,33 @@ void CLabels::remove_all_subsets()
 	m_subset_stack->remove_all_subsets();
 }
 
-float64_t CLabels::get_confidence(int32_t idx)
+float64_t CLabels::get_value(int32_t idx)
 {
-	ASSERT(m_confidences.vector && idx<get_num_labels());
+	ASSERT(m_current_values.vector && idx<get_num_labels());
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	return m_confidences.vector[real_num];
+	return m_current_values.vector[real_num];
 }
 
-void CLabels::set_confidence(float64_t confidence, int32_t idx)
+void CLabels::set_value(float64_t value, int32_t idx)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	ASSERT(m_confidences.vector && idx<get_num_labels());
-	m_confidences.vector[real_num]=confidence;
+	ASSERT(m_current_values.vector && idx<get_num_labels());
+	m_current_values.vector[real_num]=value;
 }
 
-void CLabels::set_confidences(SGVector<float64_t> confidences)
+void CLabels::set_values(SGVector<float64_t> values)
 {
-	if (confidences.vlen!=0 && confidences.vlen!=get_num_labels())
+	if (m_current_values.vlen!=0 && m_current_values.vlen!=get_num_labels())
 	{
-		SG_ERROR("length of confidence values should match number of labels or"
-				" have zero length (len(labels)=%d, len(confidences)=%d)\n",
-				get_num_labels(), confidences.vlen);
+		SG_ERROR("length of value values should match number of labels or"
+				" have zero length (len(labels)=%d, len(values)=%d)\n",
+				get_num_labels(), values.vlen);
 	}
 
-	m_confidences=confidences;
+	m_current_values=values;
 }
 
-SGVector<float64_t> CLabels::get_confidences()
+SGVector<float64_t> CLabels::get_values()
 {
-	return m_confidences;
+	return m_current_values;
 }

@@ -34,6 +34,8 @@
 		- Latent SVM framework and latent detector example by Viktor Gal.
 		- Gaussian processes framework for parameters selection and gaussian processes regression estimation
 		  framework by Jacob Walker.
+		- New framework for statistical hypothesis testing and algorithms for kernel-based two-sample and
+		  independence tests using MMD and HSIC by Heiko Strathmann.
 		- New graphical python modular examples.
 		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
 		- New data-locking concept by Heiko Strathmann which allows to tell machines that data

@@ -88,7 +88,7 @@ void test_libsvm()
 	for (int32_t i=0; i<num; i++)
 	{
 		SG_SPRINT("out[%d]=%f (%f)\n", i, out_labels->get_label(i),
-				out_labels->get_confidence(i));
+				out_labels->get_value(i));
 	}
 
 	SG_UNREF(out_labels);
