@@ -121,7 +121,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			for (int32_t j=0; j<num_machines; j++)
-				output_for_i[j] = outputs[j]->get_confidence(i);
+				output_for_i[j] = outputs[j]->get_value(i);
 
 			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
 			result->set_multiclass_confidences(i, output_for_i.clone());
@@ -173,7 +173,7 @@ CMulticlassMultipleOutputLabels* CMulticlassMachine::apply_multiclass_multiple_o
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			for (int32_t j=0; j<num_machines; j++)
-				output_for_i[j] = outputs[j]->get_confidence(i);
+				output_for_i[j] = outputs[j]->get_value(i);
 
 			result->set_label(i, m_multiclass_strategy->decide_label_multiple_output(output_for_i, n_outputs));
 		}

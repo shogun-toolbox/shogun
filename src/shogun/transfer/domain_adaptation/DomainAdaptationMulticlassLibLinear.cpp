@@ -113,7 +113,7 @@ CBinaryLabels* CDomainAdaptationMulticlassLibLinear::get_submachine_outputs(int3
 	ASSERT(n_target_outputs==source_outputs->get_num_labels());
 	SGVector<float64_t> result(n_target_outputs);
 	for (int32_t j=0; j<result.vlen; j++)
-		result[j] = (1-m_source_bias)*target_outputs->get_confidence(j) + m_source_bias*source_outputs->get_confidence(j);
+		result[j] = (1-m_source_bias)*target_outputs->get_value(j) + m_source_bias*source_outputs->get_value(j);
 
 	SG_UNREF(target_outputs);
 	SG_UNREF(source_outputs);

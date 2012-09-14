@@ -46,7 +46,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	SGVector<float64_t> orig_labels(predicted->get_num_labels());
 	int32_t length = orig_labels.vlen;
 	for (i=0; i<length; i++)
-		orig_labels[i] = predicted->get_confidence(i);
+		orig_labels[i] = predicted->get_value(i);
 	float64_t* labels = SGVector<float64_t>::clone_vector(orig_labels.vector, length);
 
 	// get sorted indexes
@@ -76,7 +76,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	// get total numbers of positive and negative labels
 	for(i=0; i<length; i++)
 	{
-		if (ground_truth->get_confidence(i) >= 0)
+		if (ground_truth->get_value(i) >= 0)
 			pos_count++;
 		else
 			neg_count++;
@@ -91,7 +91,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	// create ROC curve and calculate auROC
 	for(i=0; i<length; i++)
 	{
-		label = predicted->get_confidence(idxs[i]);
+		label = predicted->get_value(idxs[i]);
 
 		if (label != threshold)
 		{
@@ -103,7 +103,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 
 		m_thresholds[i]=threshold;
 
-		if (ground_truth->get_confidence(idxs[i]) > 0)
+		if (ground_truth->get_value(idxs[i]) > 0)
 			tp+=1.0;
 		else
 			fp+=1.0;

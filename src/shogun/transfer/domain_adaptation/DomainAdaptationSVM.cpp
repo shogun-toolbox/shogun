@@ -166,7 +166,7 @@ CBinaryLabels* CDomainAdaptationSVM::apply_binary(CFeatures* data)
 	SGVector<float64_t> out_combined(num_examples);
 	for (int32_t i=0; i<num_examples; i++)
 	{
-		out_combined[i] = out_current->get_confidence(i) + B*out_presvm->get_confidence(i);
+		out_combined[i] = out_current->get_value(i) + B*out_presvm->get_value(i);
 	}
 	SG_UNREF(out_current);
 	SG_UNREF(out_presvm);

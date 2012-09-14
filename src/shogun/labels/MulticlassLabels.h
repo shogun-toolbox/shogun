@@ -100,7 +100,7 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		int32_t get_num_classes();
 
-		/** returns multiclass confidences 
+		/** returns multiclass confidences
 		 *
 		 * @param i index
 		 * @return confidences of ith result
