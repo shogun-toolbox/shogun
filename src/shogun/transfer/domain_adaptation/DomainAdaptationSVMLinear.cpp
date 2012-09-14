@@ -137,7 +137,7 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
         // pre-compute linear term
         for (int32_t i=0; i!=num_training_points; i++)
         {
-            lin_term[i] = train_factor * B * labels->get_confidence(i) * parent_svm_out->get_confidence(i) - 1.0;
+            lin_term[i] = train_factor * B * labels->get_value(i) * parent_svm_out->get_value(i) - 1.0;
         }
 
     	// set linear term for QP
@@ -227,7 +227,7 @@ CBinaryLabels* CDomainAdaptationSVMLinear::apply_binary(CFeatures* data)
 
 		// combine outputs
 		for (int32_t i=0; i!=num_examples; i++)
-			out_combined[i] = out_current->get_confidence(i) + B*out_presvm->get_confidence(i);
+			out_combined[i] = out_current->get_value(i) + B*out_presvm->get_value(i);
 
 		SG_UNREF(out_presvm);
 	}

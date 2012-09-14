@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -77,30 +77,30 @@ class CLabels : public CSGObject
 
 		/** set the confidence value for a particular label
 		 *
-		 * @param confidence value to set
+		 * @param value value to set
 		 * @param idx label index whose conf. value is to be changed
 		 */
-		virtual void set_confidence(float64_t confidence, int32_t idx);
+		virtual void set_value(float64_t value, int32_t idx);
 
 		/** get confidence value for a particular label
 		 *
 		 * @param idx label index
 		 * @return confidence value of label with index idx
 		 */
-		virtual float64_t get_confidence(int32_t idx);
+		virtual float64_t get_value(int32_t idx);
 
 		/** set confidence vector
 		 *
-		 * @param confidences to be set (should have zero length to disable
-		 * confidences or length must match the number of labels)
+		 * @param values to be set (should have zero length to disable
+		 * values or length must match the number of labels)
 		 */
-		virtual void set_confidences(SGVector<float64_t> confidences);
+		virtual void set_values(SGVector<float64_t> values);
 
 		/** get confidence vector
 		 *
 		 * @return confidences
 		 */
-		virtual SGVector<float64_t> get_confidences();
+		virtual SGVector<float64_t> get_values();
 
 	private:
 		void init();
@@ -110,8 +110,8 @@ class CLabels : public CSGObject
 		/** subset class to enable subset support for this class */
 		CSubsetStack* m_subset_stack;
 
-		/** confidences for labels */
-		SGVector<float64_t> m_confidences;
+		/** current active value vector */
+		SGVector<float64_t> m_current_values;
 };
 }
 #endif

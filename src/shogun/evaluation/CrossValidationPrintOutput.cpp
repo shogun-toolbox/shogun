@@ -116,13 +116,13 @@ void CCrossValidationPrintOutput::update_trained_machine(
 void CCrossValidationPrintOutput::update_test_result(CLabels* results,
 		const char* prefix)
 {
-	results->get_confidences().display_vector("test_labels", prefix);
+	results->get_values().display_vector("test_labels", prefix);
 }
 
 void CCrossValidationPrintOutput::update_test_true_result(CLabels* results,
 		const char* prefix)
 {
-	results->get_confidences().display_vector("true_labels", prefix);
+	results->get_values().display_vector("true_labels", prefix);
 }
 
 void CCrossValidationPrintOutput::update_evaluation_result(float64_t result,
