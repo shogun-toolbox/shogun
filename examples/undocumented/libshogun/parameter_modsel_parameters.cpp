@@ -44,7 +44,6 @@ void print_modsel_parameters(CSGObject* object)
 	}
 	SG_FREE(type_string);
 
-	modsel_params.destroy_list();
 	SG_SPRINT("\n");
 }
 

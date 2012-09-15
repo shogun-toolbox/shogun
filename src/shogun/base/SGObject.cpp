@@ -1160,9 +1160,6 @@ index_t CSGObject::get_modsel_param_index(const char* param_name)
 		}
 	}
 
-	/* clean up */
-	names.destroy_list();
-
 	return index;
 }
 

@@ -861,9 +861,11 @@ template<class ST> bool CStringFeatures<ST>::set_features(SGString<ST>* p_featur
 			alphabet=alpha;
 			SG_REF(alphabet);
 
-			features=p_features;
-			num_vectors=p_num_vectors;
-			max_string_length=p_max_string_length;
+			// TODO remove copying
+			features = SG_MALLOC(SGString<ST>,p_num_vectors);
+			memcpy(features,p_features,sizeof(SGString<ST>)*p_num_vectors);
+			num_vectors = p_num_vectors;
+			max_string_length = p_max_string_length;
 
 			return true;
 		}
