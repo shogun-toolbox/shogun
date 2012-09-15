@@ -41,8 +41,6 @@ namespace shogun
 		L2R_LR_DUAL
 	};
 
-#ifdef HAVE_LAPACK
-
 /** @brief class to implement LibLinear */
 class CLibLinear : public CLinearMachine
 {
@@ -196,8 +194,6 @@ class CLibLinear : public CLinearMachine
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;
 };
-
-#endif //HAVE_LAPACK
 
 } /* namespace shogun  */
 

@@ -7,12 +7,55 @@
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
 
-#ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/liblinear/tron.h>
 
 using namespace shogun;
+
+double tron_ddot(const int N, const double *X, const int incX, const double *Y, const int incY)
+{
+#ifdef HAVE_LAPACK
+	return cblas_ddot(N,X,incX,Y,incY);
+#else
+	double dot = 0.0;
+	for (int32_t i=0; i<N; i++)
+		dot += X[incX*i]*Y[incY*i];
+	return dot;
+#endif
+}
+
+double tron_dnrm2(const int N, const double *X, const int incX)
+{
+#ifdef HAVE_LAPACK
+	return cblas_dnrm2(N,X,incX);
+#else
+	double dot = 0.0;
+	for (int32_t i=0; i<N; i++)
+		dot += X[incX*i]*X[incX*i];
+	return sqrt(dot);
+#endif
+}
+
+void tron_dscal(const int N, const double alpha, double *X, const int incX)
+{
+#ifdef HAVE_LAPACK
+	return cblas_dscal(N,alpha,X,incX);
+#else
+	for (int32_t i=0; i<N; i++)
+		X[i]*= alpha;
+#endif
+}
+
+void tron_daxpy(const int N, const double alpha, const double *X, const int incX, double *Y, const int incY)
+{
+#ifdef HAVE_LAPACK
+	cblas_daxpy(N,alpha,X,incX,Y,incY);
+#else
+	for (int32_t i=0; i<N; i++)
+		Y[i] += alpha*X[i];
+#endif
+}
 
 CTron::CTron(const function *f, float64_t e, int32_t it)
 : CSGObject()
@@ -51,7 +94,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 
 	f = fun_obj->fun(w);
 	fun_obj->grad(w, g);
-	delta = cblas_dnrm2(n, g, inc);
+	delta = tron_dnrm2(n, g, inc);
 	float64_t gnorm1 = delta;
 	float64_t gnorm = gnorm1;
 
@@ -71,17 +114,17 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 		cg_iter = trcg(delta, g, s, r);
 
 		memcpy(w_new, w, sizeof(float64_t)*n);
-		cblas_daxpy(n, one, s, inc, w_new, inc);
+		tron_daxpy(n, one, s, inc, w_new, inc);
 
-		gs = cblas_ddot(n, g, inc, s, inc);
-		prered = -0.5*(gs-cblas_ddot(n, s, inc, r, inc));
+		gs = tron_ddot(n, g, inc, s, inc);
+		prered = -0.5*(gs-tron_ddot(n, s, inc, r, inc));
 			fnew = fun_obj->fun(w_new);
 
 		// Compute the actual reduction.
 	        actred = f - fnew;
 
 		// On the first iteration, adjust the initial step bound.
-		snorm = cblas_dnrm2(n, s, inc);
+		snorm = tron_dnrm2(n, s, inc);
 		if (iter == 1)
 			delta = CMath::min(delta, snorm);
 
@@ -110,7 +153,7 @@ void CTron::tron(float64_t *w, float64_t max_train_time)
 			f = fnew;
 		        fun_obj->grad(w, g);
 
-			gnorm = cblas_dnrm2(n, g, inc);
+			gnorm = tron_dnrm2(n, g, inc);
 			if (gnorm < eps*gnorm1)
 				break;
 			SG_SABS_PROGRESS(gnorm, -CMath::log10(gnorm), -CMath::log10(1), -CMath::log10(eps*gnorm1), 6);
@@ -158,45 +201,45 @@ int32_t CTron::trcg(float64_t delta, double* g, double* s, double* r)
 		r[i] = -g[i];
 		d[i] = r[i];
 	}
-	cgtol = 0.1* cblas_dnrm2(n, g, inc);
+	cgtol = 0.1* tron_dnrm2(n, g, inc);
 
 	cg_iter = 0;
-	rTr = cblas_ddot(n, r, inc, r, inc);
+	rTr = tron_ddot(n, r, inc, r, inc);
 	while (1)
 	{
-		if (cblas_dnrm2(n, r, inc) <= cgtol)
+		if (tron_dnrm2(n, r, inc) <= cgtol)
 			break;
 		cg_iter++;
 		fun_obj->Hv(d, Hd);
 
-		alpha = rTr/cblas_ddot(n, d, inc, Hd, inc);
-		cblas_daxpy(n, alpha, d, inc, s, inc);
-		if (cblas_dnrm2(n, s, inc) > delta)
+		alpha = rTr/tron_ddot(n, d, inc, Hd, inc);
+		tron_daxpy(n, alpha, d, inc, s, inc);
+		if (tron_dnrm2(n, s, inc) > delta)
 		{
 			SG_INFO("cg reaches trust region boundary\n");
 			alpha = -alpha;
-			cblas_daxpy(n, alpha, d, inc, s, inc);
+			tron_daxpy(n, alpha, d, inc, s, inc);
 
-			double std = cblas_ddot(n, s, inc, d, inc);
-			double sts = cblas_ddot(n, s, inc, s, inc);
-			double dtd = cblas_ddot(n, d, inc, d, inc);
+			double std = tron_ddot(n, s, inc, d, inc);
+			double sts = tron_ddot(n, s, inc, s, inc);
+			double dtd = tron_ddot(n, d, inc, d, inc);
 			double dsq = delta*delta;
 			double rad = sqrt(std*std + dtd*(dsq-sts));
 			if (std >= 0)
 				alpha = (dsq - sts)/(std + rad);
 			else
 				alpha = (rad - std)/dtd;
-			cblas_daxpy(n, alpha, d, inc, s, inc);
+			tron_daxpy(n, alpha, d, inc, s, inc);
 			alpha = -alpha;
-			cblas_daxpy(n, alpha, Hd, inc, r, inc);
+			tron_daxpy(n, alpha, Hd, inc, r, inc);
 			break;
 		}
 		alpha = -alpha;
-		cblas_daxpy(n, alpha, Hd, inc, r, inc);
-		rnewTrnew = cblas_ddot(n, r, inc, r, inc);
+		tron_daxpy(n, alpha, Hd, inc, r, inc);
+		rnewTrnew = tron_ddot(n, r, inc, r, inc);
 		beta = rnewTrnew/rTr;
-		cblas_dscal(n, beta, d, inc);
-		cblas_daxpy(n, one, r, inc, d, inc);
+		tron_dscal(n, beta, d, inc);
+		tron_daxpy(n, one, r, inc, d, inc);
 		rTr = rnewTrnew;
 	}
 
@@ -214,4 +257,3 @@ float64_t CTron::norm_inf(int32_t n, float64_t *x)
 			dmax = CMath::abs(x[i]);
 	return(dmax);
 }
-#endif //HAVE_LAPACK

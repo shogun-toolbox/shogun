@@ -9,7 +9,6 @@
  */
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
@@ -153,4 +152,3 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 
 	return true;
 }
-#endif /* HAVE_LAPACK */

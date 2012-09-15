@@ -11,7 +11,6 @@
 #ifndef _MULTICLASSLIBLINEAR_H___
 #define _MULTICLASSLIBLINEAR_H___
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
@@ -179,5 +178,4 @@ protected:
 		mcsvm_state* m_train_state;
 };
 }
-#endif /* HAVE_LAPACK */
 #endif

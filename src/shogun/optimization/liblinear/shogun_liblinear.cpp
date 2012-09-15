@@ -32,7 +32,6 @@
  */
 #include <shogun/lib/config.h>
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#ifdef HAVE_LAPACK
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -708,5 +707,4 @@ void destroy_param(parameter* param)
 	SG_FREE(param->weight_label);
 	SG_FREE(param->weight);
 }
-#endif //HAVE_LAPACK
 #endif // DOXYGEN_SHOULD_SKIP_THIS

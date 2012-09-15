@@ -37,7 +37,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <shogun/optimization/liblinear/tron.h>
 #include <shogun/features/DotFeatures.h>
 #include <vector>
@@ -318,7 +317,6 @@ class Solver_MCSVM_CS
 
 
 }
-#endif //HAVE_LAPACK
 #endif //_LIBLINEAR_H
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

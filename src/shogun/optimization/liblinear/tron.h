@@ -3,7 +3,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <shogun/base/SGObject.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -86,5 +85,4 @@ private:
 	function *fun_obj;
 };
 }
-#endif //HAVE_LAPACK
 #endif

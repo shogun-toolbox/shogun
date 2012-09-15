@@ -10,7 +10,6 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
@@ -1360,5 +1359,3 @@ void CLibLinear::init_linear_term()
 	m_linear_term=SGVector<float64_t>(m_labels->get_num_labels());
 	SGVector<float64_t>::fill_vector(m_linear_term.vector, m_linear_term.vlen, -1.0);
 }
-
-#endif //HAVE_LAPACK
