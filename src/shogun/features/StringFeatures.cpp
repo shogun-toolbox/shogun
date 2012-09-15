@@ -953,7 +953,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_fea
 
 template<class ST> SGStringList<ST> CStringFeatures<ST>::get_features()
 {
-	SGStringList<ST> sl;
+	SGStringList<ST> sl(NULL,0,0,false);
 
 	sl.strings=get_features(sl.num_strings, sl.max_string_length);
 	return sl;
