@@ -15,6 +15,8 @@
 #include <shogun/kernel/Kernel.h>
 
 #include <string>
+#include <vector>
+#include <utility>
 
 namespace shogun
 {
