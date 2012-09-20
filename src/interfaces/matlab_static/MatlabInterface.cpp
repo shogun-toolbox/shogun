@@ -351,16 +351,17 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 		num_str=mxGetNumberOfElements(mx_str);											\
 		ASSERT(num_str>=1);																\
 																						\
-		strings=SG_MALLOC(SGString<sg_type>, num_str);											\
-		for (int32_t i=0; i<num_str; i++)													\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);									\
+		for (int32_t i=0; i<num_str; i++)												\
 		{																				\
+			new (&strings[i]) SGString<sg_type>();										\
 			mxArray* str=mxGetCell(mx_str, i);											\
 			if (!str)					\
 				SG_ERROR("argument empty");		\
 			if (!str || !mxIsClass(str, mx_type) || !mxGetM(str)==1)					\
 				SG_ERROR("Expected String of type " error_string " as argument %d.  M:%i N:%i\n", m_rhs_counter,mxGetM(str),mxGetN(str)); \
 																						\
-			int32_t len=mxGetN(str);														\
+			int32_t len=mxGetN(str);													\
 			if (len>0) 																	\
 			{ 																			\
 				if_type* data=(if_type*) mxGetData(str);								\
@@ -389,6 +390,7 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																						\
 		for (int32_t i=0; i<num_str; i++) 													\
 		{ 																				\
+			new (&strings[i]) SGString<sg_type>();										\
 			if (len>0) 																	\
 			{ 																			\
 				strings[i].slen=len; /* all must have same length in matlab */ 		\

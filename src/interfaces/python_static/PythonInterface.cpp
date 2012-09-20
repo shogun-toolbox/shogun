@@ -379,6 +379,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																			\
 		for (int32_t i=0; i<num_str; i++)										\
 		{																	\
+			new (&strings[i]) SGString<sg_type>();							\
 			PyObject *o = PyList_GetItem((PyObject*) py_str,i);				\
 			if (PyUnicode_Check(o))											\
 			{																\
@@ -398,8 +399,8 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			}																\
 			else															\
 			{																\
-				for (int32_t j=0; j<i; j++)										\
-					SG_FREE(strings[i].string);								\
+				for (int32_t j=0; j<i; j++)									\
+					strings[i].~SGString<sg_type>();						\
 				SG_FREE(strings);											\
 				SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
 			}																\
@@ -415,6 +416,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																			\
 		for (int32_t i=0; i<num_str; i++) 										\
 		{ 																	\
+			new (&strings[i]) SGString<sg_type>();							\
 			if (len>0) 														\
 			{ 																\
 				strings[i].slen=len; /* all must have same length*/			\
@@ -460,6 +462,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																			\
 		for (int32_t i=0; i<num_str; i++)										\
 		{																	\
+			new (&strings[i]) SGString<sg_type>();							\
 			PyObject *o = PyList_GetItem((PyObject*) py_str,i);				\
 			if (PyString_Check(o))											\
 			{																\
@@ -480,7 +483,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			else															\
 			{																\
 				for (int32_t j=0; j<i; j++)										\
-					SG_FREE(strings[i].string);								\
+					strings[i].~SGString<sg_type>();								\
 				SG_FREE(strings);											\
 				SG_ERROR("All elements in list must be strings, error in line %d.\n", i);\
 			}																\
@@ -496,6 +499,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																			\
 		for (int32_t i=0; i<num_str; i++) 										\
 		{ 																	\
+			new (&strings[i]) SGString<sg_type>();							\
 			if (len>0) 														\
 			{ 																\
 				strings[i].slen=len; /* all must have same length*/			\

@@ -288,6 +288,7 @@ TYPEMAP_SGMATRIX(float64_t)
             const char *str = lua_tolstring(L, -1, (size_t *)&len);
             max_len = shogun::CMath::max(len, max_len);
 
+            new (&strings[i]) SGString<SGTYPE>();
             strings[i].slen = len;
             strings[i].string = NULL;
 
@@ -305,6 +306,7 @@ TYPEMAP_SGMATRIX(float64_t)
             len = lua_objlen(L, -1);
             max_len = shogun::CMath::max(len, max_len);
 
+            new (&strings[i]) SGString<SGTYPE>();
             strings[i].slen=len;
             strings[i].string=NULL;
 

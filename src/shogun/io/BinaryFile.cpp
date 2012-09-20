@@ -190,6 +190,7 @@ void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& 
 																								\
 	for (int32_t i=0; i<num_str; i++)															\
 	{																							\
+		new (&strings[i]) SGString<sg_type>();													\
 		int32_t len=0;																			\
 		if (fread(&len, sizeof(int32_t), 1, file)!=1)											\
 			SG_ERROR("Failed to read string length of string with idx=%d\n", i);				\

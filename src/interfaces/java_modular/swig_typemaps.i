@@ -651,6 +651,7 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 		len = JCALL1(GetArrayLength, jenv, jarr);
 		max_len = shogun::CMath::max(len, max_len);
 
+		new (&strings[i]) SGString<SGTYPE>();
 		strings[i].slen=len;
 		strings[i].string=NULL;
 
@@ -690,10 +691,8 @@ TYPEMAP_SGMATRIX(float64_t, double, Double, jdouble, "toDoubleArray", "()[[D", "
 		JCALL3(SetObjectArrayElement, jenv, res, i, jarr);
 		JCALL1(DeleteLocalRef, jenv, jarr);
 
-		SG_FREE(str[i].string);
 		SG_FREE(arr);
 	}
-	SG_FREE(str);
 	$result = res;
 }
 
@@ -743,6 +742,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, Double, jdouble, "Doulbe[][]", "[[D")
 		max_len = shogun::CMath::max(len, max_len);
 		const char *str = (char *)JCALL2(GetStringUTFChars, jenv, jstr, 0);
 
+		new (&strings[i]) SGString<char>();
 		strings[i].slen = len;
 		strings[i].string = NULL;
 

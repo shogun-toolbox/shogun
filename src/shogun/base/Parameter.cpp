@@ -1855,43 +1855,82 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 		switch (m_datatype.m_ptype) {
 		case PT_BOOL:
 			*(SGString<bool>**) m_parameter
-				= SG_MALLOC(SGString<bool>, new_length); break;
+				= SG_MALLOC(SGString<bool>, new_length); 
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<bool>**)m_parameter)[i]) SGString<bool>();
+			break;
 		case PT_CHAR:
 			*(SGString<char>**) m_parameter
-				= SG_MALLOC(SGString<char>, new_length); break;
+				= SG_MALLOC(SGString<char>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<char>**)m_parameter)[i]) SGString<char>();
+			break;
 		case PT_INT8:
 			*(SGString<int8_t>**) m_parameter
-				= SG_MALLOC(SGString<int8_t>, new_length); break;
+				= SG_MALLOC(SGString<int8_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<int8_t>**)m_parameter)[i]) SGString<int8_t>();
+			break;
 		case PT_UINT8:
 			*(SGString<uint8_t>**) m_parameter
-				= SG_MALLOC(SGString<uint8_t>, new_length); break;
+				= SG_MALLOC(SGString<uint8_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<uint8_t>**)m_parameter)[i]) SGString<uint8_t>();
+			break;
 		case PT_INT16:
 			*(SGString<int16_t>**) m_parameter
-				= SG_MALLOC(SGString<int16_t>, new_length); break;
+				= SG_MALLOC(SGString<int16_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<int16_t>**)m_parameter)[i]) SGString<int16_t>();
+			break;
 		case PT_UINT16:
 			*(SGString<uint16_t>**) m_parameter
-				= SG_MALLOC(SGString<uint16_t>, new_length); break;
+				= SG_MALLOC(SGString<uint16_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<uint16_t>**)m_parameter)[i]) SGString<uint16_t>();
+			break;
 		case PT_INT32:
 			*(SGString<int32_t>**) m_parameter
-				= SG_MALLOC(SGString<int32_t>, new_length); break;
+				= SG_MALLOC(SGString<int32_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<int32_t>**)m_parameter)[i]) SGString<int32_t>();
+			break;
 		case PT_UINT32:
 			*(SGString<uint32_t>**) m_parameter
-				= SG_MALLOC(SGString<uint32_t>, new_length); break;
+				= SG_MALLOC(SGString<uint32_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<uint32_t>**)m_parameter)[i]) SGString<uint32_t>();
+			break;
 		case PT_INT64:
 			*(SGString<int64_t>**) m_parameter
-				= SG_MALLOC(SGString<int64_t>, new_length); break;
+				= SG_MALLOC(SGString<int64_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<int64_t>**)m_parameter)[i]) SGString<int64_t>();
+			break;
 		case PT_UINT64:
 			*(SGString<uint64_t>**) m_parameter
-				= SG_MALLOC(SGString<uint64_t>, new_length); break;
+				= SG_MALLOC(SGString<uint64_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<uint64_t>**)m_parameter)[i]) SGString<uint64_t>();
+			break;
 		case PT_FLOAT32:
 			*(SGString<float32_t>**) m_parameter
-				= SG_MALLOC(SGString<float32_t>, new_length); break;
+				= SG_MALLOC(SGString<float32_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<float32_t>**)m_parameter)[i]) SGString<float32_t>();
+			break;
 		case PT_FLOAT64:
 			*(SGString<float64_t>**) m_parameter
-				= SG_MALLOC(SGString<float64_t>, new_length); break;
+				= SG_MALLOC(SGString<float64_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<float64_t>**)m_parameter)[i]) SGString<float64_t>();
+			break;
 		case PT_FLOATMAX:
 			*(SGString<floatmax_t>**) m_parameter
-				= SG_MALLOC(SGString<floatmax_t>, new_length); break;
+				= SG_MALLOC(SGString<floatmax_t>, new_length);
+			for (int32_t i=0; i<new_length; i++)
+				new (((SGString<floatmax_t>**)m_parameter)[i]) SGString<floatmax_t>();
+			break;
 		case PT_SGOBJECT:
 			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
