@@ -1,14 +1,17 @@
 /*! \page staticinterfaces 静态接口
 
 如前所述，SHOGUN可以为多种语言提供接口，其中包括Matlab(tm), R, Python以及Octave。
+如前所述，SHOGUN可以为多种语言提供接口，其中包括Matlab(tm), R, Perl以及Octave。
 下面是关于这些静态接口的简介。对所有的静态接口，我们力求在所有语言都保持相同的
 语法风格。然而在某些情况下这是不可能的，我们会在相关的文档中描述这些不同。在阅读这些
 文档之前，我们建议读者先看一下\b examples 目录下的大量例子。例如，在examples/R目录和examples/python
+文档之前，我们建议读者先看一下\b examples 目录下的大量例子。例如，在examples/R目录和examples/perl
 目录。
 
 <b>静态接口概览和安装测试</b>
 \li \ref staticoctaveinterf_sec
 \li \ref staticpythoninterf_sec
+\li \ref staticperlinterf_sec
 \li \ref staticrinterf_sec
 
 <b>接口命令</b>
@@ -39,8 +42,10 @@
 这将显示shogun的帮助文本。
 
 \subsection staticpythoninterf_sec 静态Python接口
+\subsection staticperlinterf_sec 静态Perl接口
 
 要在python中使用SHOGUN，首先启动python，使用以下命令检测SHOGUN是否被正确安装
+要在perl中使用SHOGUN，首先启动perl，使用以下命令检测SHOGUN是否被正确安装
 
 \verbatim
   from sg import sg
@@ -217,6 +222,7 @@ get_classifier命令返回一系列参数。\b set_classifier可用于设置alph
 \arg \b classify \verbatim [result]=sg('classify') \endverbatim
 \arg \b classify_example \verbatim [result]=sg('classify_example', feature_vector_index) \endverbatim
 结果是一个向量，包含每一个数据点的分类结果，\b classify_example 只返回一个指定数据点的分类结果（注意python中的下标是以0开始，
+结果是一个向量，包含每一个数据点的分类结果，\b classify_example 只返回一个指定数据点的分类结果（注意perl中的下标是以0开始，
 而在octave, matlab, R中是以1开始的）。
 
 \subsection staticifhmm_sec HMM
@@ -293,6 +299,7 @@ get_classifier命令返回一系列参数。\b set_classifier可用于设置alph
 \section staticifcmdref_sec 函数参考
   \li \subpage staticoctave
   \li \subpage staticpython
+  \li \subpage staticperl
   \li \subpage staticcmdline
   \li \subpage staticr
 */

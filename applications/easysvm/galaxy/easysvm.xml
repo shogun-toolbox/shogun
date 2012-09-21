@@ -2,6 +2,7 @@
 <tool id="easysvm" name="Train and Test SVMs">
 <description>Train SVMs and predict for given hyper-parameters</description>
   <command interpreter="python">easysvm.py 
+  <command interpreter="perl">easysvm.py 
   	#if $protocol.expt_type=="1"
   		cv $protocol.crossval
   	#elif $protocol.expt_type=="2"

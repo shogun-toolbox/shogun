@@ -2,15 +2,18 @@
 \page static_tutorial 静态接口使用指南
 
 SHOGUN为Matlab(tm), R, Python, Octave提供静态接口，另外还有一个单独的命令行程序。静态接口背后的思想
+SHOGUN为Matlab(tm), R, Perl, Octave提供静态接口，另外还有一个单独的命令行程序。静态接口背后的思想
 就是提供一个可以足够做简单实验的简单环境。例如，你可以训练和评价一个分类器，但额外的事情做不了。如果
 你想找一个有良好扩展性的接口（如同时使用多个分类器，它们可以共享数据并可以交互），你可以阅读\subpage modular_tutorial
 "模块化接口"这一节。
 
 本指南告诉你如何使用shogun来创建一个基于高斯核函数的SVM分类器。首先，你需要
 启动R, python, octave或者matlab来加载shogun。
+启动R, perl, octave或者matlab来加载shogun。
 
 \section start_shogun_static 启动SHOGUN
 在python中加载SHOGUN，输入
+在perl中加载SHOGUN，输入
 
 \verbatim
   from sg import sg
@@ -52,6 +55,7 @@ set_kernel GAUSSIAN REAL 10 1.2
 \endverbatim
 
 将创建一个实值feature的高斯核函数，使用10MB缓存，核函数宽度为1.2。表示同样的意思，在其它接口(python,r,...)中是这样
+将创建一个实值feature的高斯核函数，使用10MB缓存，核函数宽度为1.2。表示同样的意思，在其它接口(perl,r,...)中是这样
 \verbatim
 sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 1.2)
 \endverbatim
@@ -124,4 +128,5 @@ in this case.
 \li Static R Interface \verbinclude classifier_libsvm.R
 \li Static Matlab/Octave Interface \verbinclude classifier_libsvm.m
 \li Static Python Interface \verbinclude classifier_libsvm.py
+\li Static Perl Interface \verbinclude classifier_libsvm.py
 */

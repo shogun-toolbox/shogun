@@ -7,10 +7,12 @@ Jonas Behr and Gunnar Raetsch [1].
 ASP PROGRAM REQUIREMENTS:
 
 Asp requires a working python (2.4 or later) installation with numpy
+Asp requires a working perl (2.4 or later) installation with numpy
 (version 1.0 or later) and the shogun toolbox (version 0.7.3 or later)
 - which is available from http://www.shogun-toolbox.org for Linux, MacOSX,
 cygwin/win32. If you are running Debian GNU Linux, shogun 0.7.3 is available in
 debian unstable http://packages.debian.org/unstable/science/shogun-python-modular.
+debian unstable http://packages.debian.org/unstable/science/shogun-perl-modular.
 
 ASP PROGRAM RUNNING TIME AND MEMORY REQUIREMENTS:
 
@@ -19,6 +21,7 @@ don't grow much (a additional linear term w.r.t. the length of the input
 sequence). On first run with a new model (see --model option below),
 asp will load and decompress the .bz2 compressed model file and store it
 as a python native pickle dump, which increases startup times a lot.
+as a perl native pickle dump, which increases startup times a lot.
 Due to the optimizations in [2] splice form prediction (layer 1) times
 won't change much for many/long sequences. 
 

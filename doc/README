@@ -13,6 +13,7 @@ texlive-latex-extra
 gs
 doxygen
 python-docutils
+perl-docutils
 
 
 When you have got all these, a simple

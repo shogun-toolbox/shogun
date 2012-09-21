@@ -14,7 +14,9 @@
 %feature("autodoc", "get_log_transition_probs(self) -> numpy 1dim array of %float") get_log_transition_probs;
 %feature("autodoc", "get_transition_probs(self) -> numpy 1dim array of %float") get_transition_probs;
 #endif
+#endif
 
+ARRAY(0x28a88a0)
 /* Remove C Prefix */
 %rename(Distribution) CDistribution;
 %rename(Histogram) CHistogram;

@@ -173,6 +173,7 @@ class CMatlabInterface : public CSGInterface
 		inline virtual const char* get_name() const { return "MatlabInterface"; }
 
 		virtual bool cmd_run_python();
+		virtual bool cmd_run_perl();
 		virtual bool cmd_run_octave();
 		virtual bool cmd_run_r();
 

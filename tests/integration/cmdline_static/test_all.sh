@@ -14,6 +14,7 @@ function test_all () {
 		echo -n -e "\t\t"
 
 		output=`${PYTHON} test_one.py "$file"`
+		output=`${PERL} test_one.py "$file"`
 		ret=$?
 
 		if [ $ret -eq 0 ] ; then

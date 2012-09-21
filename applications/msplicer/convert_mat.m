@@ -19,6 +19,7 @@ for i=1:length(fnames),
 	fprintf(fid,'\n');
     
     % has to fit to the python code (order of array in plif.py)
+    % has to fit to the perl code (order of array in plif.py)
     penids.acceptor = 0 ;
     penids.donor = 1 ;
     penids.first_coding_len = 2 ;

@@ -1,7 +1,9 @@
 #ifdef HAVE_PYTHON
 #include "../python_static/PythonInterface.cpp"
 #endif
+#endif
 
+ARRAY(0x28b4528)
 #ifdef HAVE_MATLAB
 #include "../matlab_static/MatlabInterface.cpp"
 #endif

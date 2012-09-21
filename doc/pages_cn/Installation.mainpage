@@ -15,11 +15,14 @@ libshogun-dev         - 供C++开发者使用和扩展libshogun
 shogun-octave         - 使用静态octave接口
 shogun-octave-modular - 使用模块化octave接口
 shogun-python         - 使用静态python接口
+shogun-perl         - 使用静态perl接口
 shogun-python-modular - 使用模块化python接口
+shogun-perl-modular - 使用模块化perl接口
 shogun-r              - 使用R接口
 shogun-cmdline        - 使用命令行接口
 shogun-elwms          - 使用eierlegende wollmilchsau接口
                         (一种可以同时使用r/python/octave命令的接口)
+                        (一种可以同时使用r/perl/octave命令的接口)
 shogun-doc            - 安装文档
 \endverbatim
 
@@ -33,6 +36,7 @@ shogun-doc            - 安装文档
 sudo port selfupdate
 
 sudo port install swig -php5 -ruby -perl +python
+sudo port install swig -php5 -ruby -perl +perl
   (如果要使用octave和r的接口需要添加+octave和+r到列表中)
 
 sudo port install shogun
@@ -49,6 +53,7 @@ sudo port install shogun
 
 SHOGUN的./configure配置程序需要使用一些linux工具，包括bash, grep, test, sed, cut, ldd,uname,gcc,g++和
 cat，还有python(debian包: python2.4 or python2.5)。 
+cat，还有perl(debian包: perl2.4 or perl2.5)。 
 
 另外，你可以选择安装atlas和lapack（debian包lapack3-dev,atlas3-headers，atlas3-base-dev或atlas3-altivec-dev，
 atlas3-sse2-dev）。请注意atlas/lapack只可以支持linux（因此它们所支持的高性能计算只能在linux进行）。
@@ -60,6 +65,7 @@ atlas3-sse2-dev）。请注意atlas/lapack只可以支持linux（因此它们所
 \li 若安装octave接口，你需要安装octave开发包（debian包octave3.0-headers） 
 
 \li 若安装python接口，你需要安装numpy1.x
+\li 若安装perl接口，你需要安装numpy1.x
 
 \section compiling_shogun 编译SHOGUN
 
@@ -82,6 +88,7 @@ sudo make install
 这里\b interface 是以下接口之一：
 
 \li python or python-modular -- 使用python (见 http://www.python.org)
+\li perl or perl-modular -- 使用perl (见 http://www.perl.org)
 
 \li octave or octave_modular -- 使用octave (见 http://www.octave.org)
 

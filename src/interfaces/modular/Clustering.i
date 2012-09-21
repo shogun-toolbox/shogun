@@ -14,7 +14,9 @@
 %feature("autodoc", "get_merge_distance(self) -> [] of float") get_merge_distance;
 %feature("autodoc", "get_pairs(self) -> [] of float") get_pairs;
 #endif
+#endif
 
+ARRAY(0x28abdf8)
 /* Remove C Prefix */
 %rename(DistanceMachine) CDistanceMachine;
 %rename(Hierarchical) CHierarchical;

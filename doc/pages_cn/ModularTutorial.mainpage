@@ -2,12 +2,14 @@
 \page modular_tutorial 模块化接口使用指南
 
 SHOGUN为Python和Octave支持的模块化接口提供了一个直观和容易的使用shogun功能的方法。与
+SHOGUN为Perl和Octave支持的模块化接口提供了一个直观和容易的使用shogun功能的方法。与
 静态接口（\subpage staticinterfaces）相比，模块化接口更加灵活并具有良好的扩展性。
 
 如果这是第一次使用shogun,这就是你首先要看的地方！
 
 在本指南中，我们将演示如使用shogun创建一个基于高斯核函数的SVM分类器。但是，
 首先需要启动python或者octave并加载shogun。
+首先需要启动perl或者octave并加载shogun。
 
 \section start_shogun_modular 启动SHOGUN
 
@@ -17,6 +19,7 @@ init_shogun
 \endverbatim
 
 在python下需要指定我们要使用的函数。
+在perl下需要指定我们要使用的函数。
 在这个例子中，我们需要feature和label表示数据，一个分类器，一个用于比较feature相似性的核函数
 及一些评价方法。
 
@@ -33,8 +36,10 @@ from shogun.Evaluation import *
 如果想知道shogun中类的一些基本信息或者某一个类的文档，使用上面的Classes标签查看类
 列表。所有类都有良好的文档（如果你觉得文档不好，请告诉我们）。注意所有在类列表中类
 都有C作前缀，在python和octave模块化接口中使用时需要去掉C前缀。
+都有C作前缀，在perl和octave模块化接口中使用时需要去掉C前缀。
 
 另外，在python下通过help命令也可以得到相同的文档，你只需要输入
+另外，在perl下通过help命令也可以得到相同的文档，你只需要输入
 \verbatim
 help(<classname>)
 \endverbatim
@@ -56,6 +61,7 @@ help(shogun.Kernel)
 \section toy_tutorial_modular 产生一个小数据集
 
 首先，我们先来产生一个小的数据集。在python中，我们需要加载numpy。我们产生
+首先，我们先来产生一个小的数据集。在perl中，我们需要加载numpy。我们产生
 一个基于高斯分布的训练数据集及测试数据集，每个数据集可以分为两块,两块的数据中心之间有一定的距离。
 数据保存在一个矩阵中，每一列代表一个个体。另外，我们还需要一个向量保存label（每项的值为1或-1）
 ，分别说明属于哪一类。
@@ -80,6 +86,7 @@ test_labels = [-ones(1,100), ones(1,100)];
 \endverbatim
 
 本指南的后面部分在python和octave都是一样的（相同的语法，略为不同的是，在octave分号是必需的）。
+本指南的后面部分在perl和octave都是一样的（相同的语法，略为不同的是，在octave分号是必需的）。
 \section svm_tutorial_modular 创建一个SVM分类器
 
 
@@ -124,6 +131,7 @@ svm.train();
 对象（注意我们还可以在初始化kernel对象时指定训练数据集和测试数据集，然后调用无参数的classify方法，
 在其它的一些例子中你可以看到这种情况）。
 如果我们想在python/octave分析这些输出，可以通过get_labels()方法获得输出的向量形式。
+如果我们想在perl/octave分析这些输出，可以通过get_labels()方法获得输出的向量形式。
 
 \verbatim
 output = svm.classify(feats_test);
@@ -145,6 +153,7 @@ fms = pm.get_fmeasure();
 
 \li examples/octave-modular also available online \subpage octave_modular_examples "here"
 \li examples/python-modular also available online \subpage python_modular_examples "here"
+\li examples/perl-modular also available online \subpage perl_modular_examples "here"
 
 作为一个完整的例子，下面给出两种接口的代码
 For octave:
@@ -152,5 +161,6 @@ For octave:
 \verbinclude classifier_libsvm_minimal_modular.m
 
 For python:
+For perl:
 \verbinclude classifier_libsvm_minimal_modular.py
 */

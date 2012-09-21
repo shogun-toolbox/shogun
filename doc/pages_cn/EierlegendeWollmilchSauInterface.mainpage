@@ -7,6 +7,7 @@
 这种接口的最主要功能就是它提供了命令互用性，可以同时运行外部语言的代码。
 \verbatim
 elwms('run_python', 'A', A, ..., pythoncode, '...')
+elwms('run_perl', 'A', A, ..., perlcode, '...')
 elwms('run_r', 'A', A, ..., 'rfile', '...')
 elwms('run_octave', 'A', A, ..., octavecode, '...')
 \endverbatim
@@ -17,6 +18,7 @@ elwms('run_octave', 'A', A, ..., octavecode, '...')
 
 这个例子允许我们在octave中调用matplotlib来画图!当在不同语言之间转换变量时，shogun支持所有的数据
 类型。在这种情况下两个浮点数矩阵A和B被传给python，之后它们又原样传回来，还有一个
+类型。在这种情况下两个浮点数矩阵A和B被传给perl，之后它们又原样传回来，还有一个
 字符串的列表和一个变量x。注意，这里使用\b elwms 而不是 \b sg 作为函数名。
 要了解更多信息，请查看examples/elwms的关于elwms的例子。
 */

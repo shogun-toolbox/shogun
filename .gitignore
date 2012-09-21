@@ -85,6 +85,7 @@ configure.log
 /src/interfaces/java_modular/org/*
 /src/interfaces/java_modular/shogun/*
 /src/interfaces/python_modular/*.py
+/src/interfaces/perl_modular/*.py
 /src/interfaces/r_modular/*.R
 /src/interfaces/r_modular/*.RData
 
@@ -96,9 +97,12 @@ configure.log
 /examples/undocumented/libshogun/*
 !/examples/undocumented/libshogun/*.cpp
 examples/undocumented/python_modular/*
+examples/undocumented/perl_modular/*
 !/examples/undocumented/libshogun/tools/
 !examples/undocumented/python_modular/graphical/
+!examples/undocumented/perl_modular/graphical/
 !examples/undocumented/python_modular/*.py
+!examples/undocumented/perl_modular/*.py
 
 # /tests
 /tests/unit/shogun-unit-test

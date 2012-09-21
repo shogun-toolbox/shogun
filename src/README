@@ -32,6 +32,7 @@ INTERFACES
 
 SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave, 
 Java, C#, Ruby, Lua and Python.
+Java, C#, Ruby, Lua and Perl.
 
 PLATFORMS
 

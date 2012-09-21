@@ -213,6 +213,7 @@ OPTIMIZE_OUTPUT_VHDL   = NO
 # The format is ext=language, where ext is a file extension, and language is one of 
 # the parsers supported by doxygen: IDL, Java, Javascript, C#, C, C++, D, PHP, 
 # Objective-C, Python, Fortran, VHDL, C, C++. For instance to make doxygen treat 
+# Objective-C, Perl, Fortran, VHDL, C, C++. For instance to make doxygen treat 
 # .inc files as Fortran files (default is PHP), and .f files as C (default is Fortran), 
 # use: inc=Fortran f=C
 
@@ -1261,6 +1262,7 @@ INCLUDE_FILE_PATTERNS  = *.h
 PREDEFINED             = HAVE_LAPACK \
                          HAVE_ATLAS \
                          HAVE_PYTHON \
+                         HAVE_PERL \
                          HAVE_SWIG \
                          USE_CPLEX \
                          USE_GLPK \

@@ -7,6 +7,7 @@ pwd
 cd /mnt/galaxyTools/tools/asp-0.3
 export LD_LIBRARY_PATH=/mnt/galaxyTools/tools/shogun-0.10.0/lib
 export PYTHONPATH=/mnt/galaxyTools/tools/shogun-0.10.0/lib/python2.6/dist-packages
+export PERLPATH=/mnt/galaxyTools/tools/shogun-0.10.0/lib/perl2.6/dist-packages
 
 if [ "$3" = "spf1" ]
 then

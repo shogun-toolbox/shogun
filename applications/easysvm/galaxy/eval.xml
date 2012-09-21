@@ -2,6 +2,7 @@
 <tool id="eval" name="Evaluate Predictions">
 <description>Use predictions and labeled examples to measure prediction performance</description>
   <command interpreter="python">easysvm.py 
+  <command interpreter="perl">easysvm.py 
         eval
 	$predfile	
 	#if $datatype.inputdatatype=="1"

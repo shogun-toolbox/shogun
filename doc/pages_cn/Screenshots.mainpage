@@ -14,9 +14,12 @@
   \image html MatlabDemo.png "matlab静态接口使用快照 (见 http://www.mathworks.com)"
   
   \subsection py_interf Python接口
+  \subsection py_interf Perl接口
   python的使用例子在目录examples/python下。
+  perl的使用例子在目录examples/perl下。
 
   \image html PythonDemo.png "python静态接口使用快照(见 http://www.python.org)"
+  \image html PerlDemo.png "perl静态接口使用快照(见 http://www.perl.org)"
 
   \subsection r_interf R接口
    R的使用例子在目录examples/R下。
@@ -26,6 +29,7 @@
   \section shots_modinterf_sec 模块化接口
   与静态接口不同，模块化接口允许有多个相同类型的对象。因此它们可适用于更加复杂的应用，如多重分类器。目前
   模块化接口只支持python。然而缺省安装情况下，octave模块化接口也会被安装且可以正常工作，尽管octave有一个bug
+  模块化接口只支持perl。然而缺省安装情况下，octave模块化接口也会被安装且可以正常工作，尽管octave有一个bug
   （当存在一个没有注册的全局变量时，octave会挂掉）。因为swig有一个bug，R模块化接口只有如下的安装配置下才能工作
 
 \verbatim
@@ -33,7 +37,10 @@
 \endverbatim
  但这样会造成内存泄漏。
   \subsection py_mod_interf python模块化接口
+  \subsection py_mod_interf perl模块化接口
   python的使用例子在目录python-modular/examples下。
+  perl的使用例子在目录perl-modular/examples下。
 
   \image html PythonDemo.png "python-modular接口使用快照 (见 http://www.python.org)"
+  \image html PerlDemo.png "perl-modular接口使用快照 (见 http://www.perl.org)"
 */

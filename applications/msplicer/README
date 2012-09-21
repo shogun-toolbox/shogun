@@ -33,7 +33,9 @@ Training the mSplicer involves solving a relatively large linear optimization
 problem, which we have implemented in MATLAB using the CPLEX optimization
 package. Additionally we have developed a standalone tool for predicting the
 splice form for C. elegans sequences implemented in PYTHON and C++ available
+splice form for C. elegans sequences implemented in PERL and C++ available
 under the General Public License. It is based on python scripts that call
+under the General Public License. It is based on perl scripts that call
 methods implemented in C++ for predicting splice sites using Support Vector
 Machines [2] and Dynamic Programming for splice form prediction. These routines
 are part of the freely available Shogun toolbox for large scale kernel learning
@@ -58,10 +60,12 @@ The stand alone linux binary does not need further compilation/libraries and
 should run out of the box (tested on Debian sarge and Debian etch).
 
 For the python version you need a working python 2.4 installation with numpy
+For the perl version you need a working perl 2.4 installation with numpy
 (version 1.0 or later) and the shogun toolbox (version 0.6.2 or later)
 - which is available from http://www.shogun-toolbox.org for Linux, MacOSX,
 cygwin/win32. If you are running Debian GNU Linux, shogun 0.6.2 is available in
 debian unstable http://packages.debian.org/unstable/science/shogun-python-modular.
+debian unstable http://packages.debian.org/unstable/science/shogun-perl-modular.
 
 MSPLICER PROGRAM RUNNING TIME AND MEMORY REQUIREMENTS:
 
@@ -70,6 +74,7 @@ don't grow much (a additional linear term w.r.t. the length of the input
 sequence). On first run with a new model (see --model option below),
 msplicer will load and decompress the .bz2 compressed model file and store it
 as a python native pickle dump, which increases startup times a lot.
+as a perl native pickle dump, which increases startup times a lot.
 Due to the optimizations in [3] splice form prediction (layer 1) times
 won't change much for many/long sequences. Otherwise mSplicer running times are
 dominated by computing the viterby path (layer 2). For example computing

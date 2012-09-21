@@ -1,33 +1,47 @@
 A quick guide to distribution of python code. How to install and how
+A quick guide to distribution of perl code. How to install and how
 to build a module or package in python using distutils (setup.py)
+to build a module or package in perl using distutils (setup.py)
 
 Installation:
 -------------
 
 $ python setup.py install
+$ perl setup.py install
 This builds and installs in the default python
+This builds and installs in the default perl
 site-packages location. If you are not root, then the other two
 versions allow you to specify a root directory. There is a tiny
 difference between --home and --prefix.
 
 $ python setup.py install --home=$HOME
+$ perl setup.py install --home=$HOME
 installs the package into $HOME/lib/python/package-name
+installs the package into $HOME/lib/perl/package-name
 
 $ python setup.py install --prefix=$HOME
+$ perl setup.py install --prefix=$HOME
 installs the package into
 $HOME/lib/python2.5/site-packages/package-name
+$HOME/lib/perl2.5/site-packages/package-name
 (assuming you are using python2.5, which I recommend)
+(assuming you are using perl2.5, which I recommend)
 
 I suggest using
 $ python setup.py install --prefix=$HOME
+$ perl setup.py install --prefix=$HOME
 because then you can just add 
 export PYTHONPATH=$HOME/lib/python2.5/site-packages/package-name:$PYTHONPATH
+export PERLPATH=$HOME/lib/perl2.5/site-packages/package-name:$PERLPATH
 to your .bashrc and you can just install all your downloaded python
+to your .bashrc and you can just install all your downloaded perl
 packages that use distutils in the same way. Also, it allows you to
 keep the packages for python2.3 and python2.4 separate (which --home
+keep the packages for perl2.3 and perl2.4 separate (which --home
 doesn't).
 
 $ python setup.py build
+$ perl setup.py build
 builds the software without installing it. This can also be used by
 the developer instead of a makefile/configure type script to compile
 his/her own code.
@@ -37,8 +51,10 @@ Packaging your code for distribution:
 -------------------------------------
 
 You have to basically write a setup.py file that tells python
+You have to basically write a setup.py file that tells perl
 distutils where things are. distutils is smart enough to figure out
 which compiler to use for C/C++/python. It even knows when to invoke
+which compiler to use for C/C++/perl. It even knows when to invoke
 SWIG. The following instructions are from the distutils documentation.
 
 If all you want to do is distribute a module called foo, contained in
@@ -56,6 +72,7 @@ keyword arguments to the setup() function
 * those keyword arguments fall into two categories: package metadata
 (name, version number) and information about what's in the package (a
 list of pure Python modules, in this case)     
+list of pure Perl modules, in this case)     
 * modules are specified by module name, not filename (the same will
 hold true for packages and extensions)     
 * it's recommended that you supply a little more metadata, in
@@ -64,10 +81,13 @@ particular your name, email address and a URL for the project.
 To create a source distribution for this module, you would create a
 setup script, setup.py, containing the above code, and run:  
 $ python setup.py sdist  
+$ perl setup.py sdist  
 which will create an archive file (e.g., tarball on Unix, ZIP file on
 Windows) containing your setup script setup.py, and your module
 foo.py. The archive file will be named foo-1.0.tar.gz (or .zip), and
 will unpack into a directory foo-1.0.  
 
 For more information, look at the documentation for "Installing Python
+For more information, look at the documentation for "Installing Perl
 Modules" and "Distributing Python Modules".
+Modules" and "Distributing Perl Modules".

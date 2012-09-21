@@ -74,6 +74,7 @@ We integrated the work of the following people:
  Evgeniy Andreev:
 	- FibonacciHeap
 	- Python 3 support
+	- Perl 3 support
 	- CoverTree
 	- HashSet
 

@@ -2,6 +2,7 @@
 <tool id="easypoim" name="Positional Oligomer Matrices">
 <description>Visualize SVMs with WD kernel</description>
   <command interpreter="python">easysvm.py 
+  <command interpreter="perl">easysvm.py 
         poim
         $C 
 	${poimdegree}

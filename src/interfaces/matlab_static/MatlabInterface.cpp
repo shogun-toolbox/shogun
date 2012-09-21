@@ -15,7 +15,9 @@
 #ifdef HAVE_PYTHON
 #include "../python/PythonInterface.h"
 #endif
+#endif
 
+ARRAY(0x289de60)
 #ifdef HAVE_OCTAVE
 #include "../octave/OctaveInterface.h"
 #endif

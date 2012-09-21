@@ -18,6 +18,7 @@
 
   \li \b examples/libshogun
   \li \b examples/python
+  \li \b examples/perl
   \li \b examples/octave
   \li \b examples/matlab
   \li \b examples/r
@@ -25,16 +26,19 @@
   \li \b examples/r_modular
   \li \b examples/octave_modular
   \li \b examples/python_modular
+  \li \b examples/perl_modular
 
   directories and online \subpage examples "here".
 
   Note that we always keep the python-modular examples complete and up-to-date
+  Note that we always keep the perl-modular examples complete and up-to-date
   and also perform regression tests using a test-suite. Finally, we provide a
   %function reference for all static and modular interfaces:
 
 \section refinterface_sec Function Reference
   \li \subpage staticoctave
   \li \subpage staticpython
+  \li \subpage staticperl
   \li \subpage staticcmdline
   \li \subpage staticr
   \li Modular Interfaces, click the Classes tab above

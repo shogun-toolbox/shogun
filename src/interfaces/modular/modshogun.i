@@ -35,7 +35,9 @@
 /*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;
 %feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
 #endif
+#endif
 
+ARRAY(0x28abeb8)
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
 %include "modshogun_doxygen.i"

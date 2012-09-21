@@ -1,4 +1,5 @@
 #demonstrates how to exec python from inside R in the
+#demonstrates how to exec perl from inside R in the
 #eierlegendewollmilchsau shogun interface
 
 library(elwms)

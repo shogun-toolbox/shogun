@@ -211,7 +211,9 @@ void test_linear_mmd_type2_error()
 
 	SG_UNREF(mmd);
 }
+}
 
+ARRAY(0x2976e50)
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();

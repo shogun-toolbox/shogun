@@ -2,6 +2,7 @@
   \section static_examples Examples for Static Interfaces
   
   \li \subpage python_static_examples
+  \li \subpage perl_static_examples
   \li \subpage octave_static_examples
   \li \subpage r_static_examples
   \li \subpage cmdline_static_examples
@@ -9,6 +10,7 @@
   \section modular_examples Examples for Modular Interfaces
   \li \subpage libshogun_examples
   \li \subpage python_modular_examples
+  \li \subpage perl_modular_examples
   \li \subpage octave_modular_examples
   \li \subpage r_modular_examples
   \li \subpage lua_modular_examples

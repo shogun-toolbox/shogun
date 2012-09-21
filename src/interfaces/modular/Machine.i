@@ -120,3 +120,6 @@ APPLY_LATENT(CLatentSVM);
 #undef APPLY_STRUCTURED
 #undef APPLY_LATENT
 #endif
+#endif
+
+ARRAY(0x28a8960)

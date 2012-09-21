@@ -2,6 +2,7 @@
 <tool id="easymodelsel" name="SVM Model Selection">
 <description>Find the best combination of SVM hyper-parameters</description>
   <command interpreter="python">easysvm.py 
+  <command interpreter="perl">easysvm.py 
         modelsel $crossval 
         $C 
 	#if $kernel.kname == "1"

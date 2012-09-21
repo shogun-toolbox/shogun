@@ -2,6 +2,7 @@
 
 As mentioned before SHOGUN interfaces to several programming languages and
 toolkits such as Matlab(tm), R, Python, Octave. The special
+toolkits such as Matlab(tm), R, Perl, Octave. The special
 Eierlegendewollmilchsau (elwms) interface does everything in one file. It is a
 chimera of all the \subpage staticinterfaces, thus all the examples and
 documentation form \subpage staticinterfaces still apply.
@@ -9,6 +10,7 @@ documentation form \subpage staticinterfaces still apply.
 One of the key strengths of this interface is that it provides the
 \verbatim
 elwms('run_python', 'A', A, ..., pythoncode, '...')
+elwms('run_perl', 'A', A, ..., perlcode, '...')
 elwms('run_r', 'A', A, ..., 'rfile', '...')
 elwms('run_octave', 'A', A, ..., octavecode, '...')
 \endverbatim
@@ -21,7 +23,9 @@ example
 allows us to use matplotlib to plot figures from within octave! All the types
 that shogun supports when translating variables between languages. In this case
 two floating point matrices A and B are passed to python and they are passed
+two floating point matrices A and B are passed to perl and they are passed
 back from python unchanged together with a list of strings and another variable
+back from perl unchanged together with a list of strings and another variable
 x. Note that the it uses \b elwms instead of \b sg as function name.
 
 In addition it is suggested to have a look at the examples/elwms directory for

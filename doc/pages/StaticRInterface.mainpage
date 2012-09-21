@@ -215,6 +215,7 @@
 \arg \b help \verbatim sg('help') \endverbatim
 \arg \b whos \verbatim sg('whos') \endverbatim
 \arg \b run_python \verbatim [results]=sg('run_python', 'Var1', Var1, 'Var2', Var2,..., python_function) \endverbatim
+\arg \b run_perl \verbatim [results]=sg('run_perl', 'Var1', Var1, 'Var2', Var2,..., perl_function) \endverbatim
 \arg \b run_octave \verbatim [results]=sg('run_octave', 'Var1', Var1, 'Var2', Var2,..., octave_function) \endverbatim
 \arg \b run_r \verbatim [results]=sg('run_r', 'Var1', Var1, 'Var2', Var2,..., r_function) \endverbatim
 

@@ -15,6 +15,7 @@
 
   \li \b examples/libshogun
   \li \b examples/python
+  \li \b examples/perl
   \li \b examples/octave
   \li \b examples/matlab
   \li \b examples/r
@@ -22,13 +23,16 @@
   \li \b examples/r_modular
   \li \b examples/octave_modular
   \li \b examples/python_modular
+  \li \b examples/perl_modular
 
   注意，我们总是保证python-modular的例子是最全并且是最新的，同时在更新的同时会使用一组测试程序
+  注意，我们总是保证perl-modular的例子是最全并且是最新的，同时在更新的同时会使用一组测试程序
   作回归测试。最后我们会提供所有静态和模块化接口的函数使用说明。
 
 \section refinterface_sec 函数使用说明
   \li \subpage staticoctave
   \li \subpage staticpython
+  \li \subpage staticperl
   \li \subpage staticcmdline
   \li \subpage staticr
   \li 对于模块化接口，可以点击上面的类标签

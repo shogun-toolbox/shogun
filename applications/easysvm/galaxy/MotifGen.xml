@@ -1,6 +1,7 @@
 <tool id="motifgen-arff" name="MotifGen (ARFF)">
   <description>Generation of a sequence toy data set for motif discovery in ARFF format.</description>
   <command interpreter="python">datagen.py motif arff $p_motif
+  <command interpreter="perl">datagen.py motif arff $p_motif
   $p_number_of_sequences $p_length $p_position
   $p_mutation_rate 
   #if $negative_model.negseq=="1"

@@ -1,6 +1,7 @@
 <tool id="cloudgen" name="CloudGen (ARFF)">
   <description>Generation of a toy data set</description>
   <command interpreter="python2.5">datagen.py cloud $number_of_examples
+  <command interpreter="perl2.5">datagen.py cloud $number_of_examples
   $number_of_features $fraction_positive $spread $outfile_arff $outfile_png
   </command>
   <inputs>

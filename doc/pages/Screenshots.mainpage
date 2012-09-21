@@ -14,9 +14,12 @@
   \image html MatlabDemo.png "Screenshot of the static matlab interface (see http://www.mathworks.com)"
   
   \subsection py_interf Python Interface
+  \subsection py_interf Perl Interface
   Examples for python can be found \subpage python_examples "here" or in the examples/python directory.
+  Examples for perl can be found \subpage perl_examples "here" or in the examples/perl directory.
 
   \image html PythonDemo.png "Screenshot of the static python interface (see http://www.python.org)"
+  \image html PerlDemo.png "Screenshot of the static perl interface (see http://www.perl.org)"
 
   \subsection r_interf R Interface
   Examples for R can be found \subpage r_examples "here" or in the examples/R directory.
@@ -28,6 +31,7 @@
   objects of the same kind. Thus they are well suited for complex applications
   requiring e.g. multiple classifiers. Currently the only supported modular
   interface uses python as a front-end. However, the modular octave interface is
+  interface uses perl as a front-end. However, the modular octave interface is
   build by default too and works reliably albeit a bug in octave (octave will crash on
   exit unregistering global variables).  Due to a bug in the swig
   (http://swig.org) R wrapper, the R modular interface will only work when
@@ -40,7 +44,10 @@
   and will leak memory.
 
   \subsection py_mod_interf Python-Modular Interface
+  \subsection py_mod_interf Perl-Modular Interface
   Examples for python-modular can be found \subpage python_modular_examples "here" or in the examples/python_modular directory.
+  Examples for perl-modular can be found \subpage perl_modular_examples "here" or in the examples/perl_modular directory.
 
   \image html PythonDemo.png "Screenshot of the python-modular interface (see http://www.python.org)"
+  \image html PerlDemo.png "Screenshot of the perl-modular interface (see http://www.perl.org)"
 */

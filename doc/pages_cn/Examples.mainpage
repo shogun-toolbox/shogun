@@ -2,6 +2,7 @@
   \section static_examples 静态接口的例子
   
   \li \subpage python_examples
+  \li \subpage perl_examples
   \li \subpage octave_examples
   \li \subpage r_examples
   \li \subpage cmdline_examples
@@ -9,6 +10,7 @@
   \section modular_examples 模块化接口的例子
   \li \subpage libshogun_examples
   \li \subpage python_modular_examples
+  \li \subpage perl_modular_examples
   \li \subpage octave_modular_examples
   \li \subpage r_modular_examples
 */

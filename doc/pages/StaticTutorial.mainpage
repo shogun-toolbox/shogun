@@ -2,6 +2,7 @@
 \page static_tutorial Tutorial for Static Interfaces
 
 SHOGUN provides "static" interfaces to Matlab(tm), R, Python, Octave and
+SHOGUN provides "static" interfaces to Matlab(tm), R, Perl, Octave and
 provides a command line stand-a-lone executable. The idea behind the static
 interfaces is to provide a simple environment just enough to do simple
 experiments. For example, it will allow you to train and evaluate a classifier
@@ -13,10 +14,12 @@ Interfaces" instead.
 In this tutorial we demonstrate how to use shogun to create a simple
 gaussian kernel based support vector machine classifier but first
 things first. Lets start up R, python, octave or matlab load the shogun
+things first. Lets start up R, perl, octave or matlab load the shogun
 environment.
 
 \section start_shogun_static Starting SHOGUN
 To start SHOGUN in python, start python and type
+To start SHOGUN in perl, start perl and type
 
 \verbatim
   from sg import sg
@@ -63,6 +66,7 @@ set_kernel GAUSSIAN REAL 10 1.2
 will create a gaussian kernel that operates on real-valued features uses a
 kernel cache of size 10 MB and kernel width of 1.2. In analogy the other the
 cmdline for the other interfaces (python,r,...) would look like
+cmdline for the other interfaces (perl,r,...) would look like
 
 \verbatim
 sg('set_kernel', 'GAUSSIAN', 'REAL', 10, 1.2)
@@ -125,6 +129,7 @@ load_classifier libsvm.model LIBSVM
 \endverbatim
 
 Other interfaces (python,r...) could use the load/save functions but typically
+Other interfaces (perl,r...) could use the load/save functions but typically
 one manually obtains and restores the model parameters, like
 
 \verbatim
@@ -146,4 +151,5 @@ For users of other interfaces we show the translated example for completeness:
 \li Static R Interface \verbinclude classifier_libsvm.R
 \li Static Matlab/Octave Interface \verbinclude classifier_libsvm.m
 \li Static Python Interface \verbinclude classifier_libsvm.py
+\li Static Perl Interface \verbinclude classifier_libsvm.py
 */

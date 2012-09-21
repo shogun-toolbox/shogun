@@ -5,6 +5,7 @@ SHOGUN comes as a stand-a-lone program accepting input via command-line or from
 a *script* file, where standard file IO is used to read in /write out data
 (optionally even tcp/ip). More importantly, it interfaces to established matrix
 and statistics packages, such as Matlab(tm), Octave, R and Python. SHOGUN comes
+and statistics packages, such as Matlab(tm), Octave, R and Perl. SHOGUN comes
 in three flavours, the so called
 \subpage staticinterfaces, the \subpage elwmsinterface
 and the
@@ -13,9 +14,11 @@ and the
 \li
 The static interfaces are cross language compatible, i.e. the syntax for calling
 shogun from python,R,matlab,octave is the same (with minor exceptions). However
+shogun from perl,R,matlab,octave is the same (with minor exceptions). However
 only a singly object of each type is supported (e.g. only a single SVM
 classifier). In case you are dealing with more complex models it is suggested to
 use the object oriented, very flexible python-modular interface.  Note that all
+use the object oriented, very flexible perl-modular interface.  Note that all
 interfaces should work equally well, though some may not support more advanced
 data types like byte matrices. For further information
 \ref staticinterfaces "see Static Interfaces"
@@ -23,7 +26,9 @@ data types like byte matrices. For further information
 \li
 The special Eierlegende Wollmilchsau (elwms) interface is a chimera that in one
 file interfaces to python,R,matlab,octave. Using it provides one with the
+file interfaces to perl,R,matlab,octave. Using it provides one with the
 advantage of running e.g., python or R scripts within octave (where variables
+advantage of running e.g., perl or R scripts within octave (where variables
 are passed in memory).  \ref elwmsinterface "see ELWMS Interface"
 
 \li
@@ -32,6 +37,7 @@ number of objects potentially interacting together. For example several SVMs
 with using multiple kernels or preprocessors, with the kernels relying on other
 machine learning methods (like e.g. HMMs). The modular interfaces heavily rely
 on swig and therefore currently only python is supported (though octave and R
+on swig and therefore currently only perl is supported (though octave and R
 support is on the way). For further information 
 \ref modularinterfaces "see Modular Interfaces"
 

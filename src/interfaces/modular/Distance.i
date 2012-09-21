@@ -11,7 +11,9 @@
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_distance_matrix(self) -> numpy 2dim array of float") get_distance_matrix;
 #endif
+#endif
 
+ARRAY(0x28b06b0)
 #ifdef USE_SWIG_DIRECTORS
 %feature("director") shogun::CDirectorDistance;
 %feature("director:except") {

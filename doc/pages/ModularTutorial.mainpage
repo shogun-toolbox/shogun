@@ -2,6 +2,7 @@
 \page modular_tutorial Tutorial for Modular Interfaces
 
 SHOGUN's "modular" interfaces to Python, Octave, Java, Lua, Ruby and C# give
+SHOGUN's "modular" interfaces to Perl, Octave, Java, Lua, Ruby and C# give
 intuitive and easy access to the shogun's functionality. Compared to the static
 interfaces (\subpage staticinterfaces), the modular ones are much more flexible
 and allow for nearly unlimited extensibility.
@@ -12,6 +13,7 @@ If this is your first time using shogun, you've found the right place to start!
 In this tutorial, we demonstrate how to use shogun to create a simple Gaussian
 kernel based Support Vector Machine (SVM) classifier, but first things first.
 Let's fire up python, octave, java, lua, ruby or C#, and load the modular shogun
+Let's fire up perl, octave, java, lua, ruby or C#, and load the modular shogun
 environment.
 
 \section start_shogun_modular Starting SHOGUN
@@ -22,6 +24,7 @@ init_shogun
 \endverbatim
 
 Under python we have to specify what we'd like to import.
+Under perl we have to specify what we'd like to import.
 For this example, we will need features and labels to represent our input data,
 a classifier, a kernel to compare the similarity of features and
 some evaluation procedures.
@@ -96,10 +99,13 @@ All classes are rather well documented (if documentation is not good enough in a
 particular class, please notify us). Note that all classes in the
 classes list (classes tab above) are all prefixed with a 'C' - that
 really is the only difference to using them from within the python or
+really is the only difference to using them from within the perl or
 octave modular interfaces (where the C prefix is missing).
 
 Alternatively, under python the same documentation is available via
+Alternatively, under perl the same documentation is available via
 python help strings, so you may issue
+perl help strings, so you may issue
 
 \verbatim
 help(<classname>)
@@ -122,6 +128,7 @@ help(shogun.Kernel)
 \section toy_tutorial_modular Generating a toy dataset
 
 To start with, we will generate a small toy dataset. In python, we need to
+To start with, we will generate a small toy dataset. In perl, we need to
 import numpy to do this. We will generate real valued training (and testing)
 data drawn from Gaussians distribution. We will generate two Gauss bumps
 that are "dist" apart. The data is in matrix shape with each column
@@ -301,7 +308,9 @@ for (int i = 0; i < num; i ++) {
 
 The rest of this tutorial below will now work the same (identical syntax) for
 python, octave (when using a trailing semicolon for each command, which is
+perl, octave (when using a trailing semicolon for each command, which is
 optional in python), lua(we use colon to get the method of an object), ruby and
+optional in perl), lua(we use colon to get the method of an object), ruby and
 C#
 
 For java, we use DoubleMatrix to represent most of the types. If shogun C++
@@ -362,6 +371,7 @@ alternatively initialize the kernel object with the train and test data manually
 and then call apply without arguments, which is done in some of the other
 example scripts). If we would like to analyze the outputs directly in
 python/octave, we can obtain the vector of outputs in native python/octave
+perl/octave, we can obtain the vector of outputs in native perl/octave
 representation via get_labels().
 
 \verbatim
@@ -388,6 +398,7 @@ That's really it. For any of the advanced topics please have a look one of the
 
 \li examples/octave-modular also available online \subpage octave_modular_examples "here"
 \li examples/python-modular also available online \subpage python_modular_examples "here"
+\li examples/perl-modular also available online \subpage perl_modular_examples "here"
 
 A full, working example similar to the one presented above is shown below:
 
@@ -412,5 +423,6 @@ For csharp:
 \verbinclude classifier_libsvm_minimal_modular.cs
 
 For python:
+For perl:
 \verbinclude classifier_libsvm_minimal_modular.py
 */

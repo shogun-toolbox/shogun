@@ -10,6 +10,7 @@
  */
 
 #ifndef SWIGPYTHON
+#ifndef SWIGPERL
 #define PROTOCOLS_SGVECTOR(class_name, type_name, format_str, typecode)
 #endif
 

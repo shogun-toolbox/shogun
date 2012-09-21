@@ -25,10 +25,12 @@ Install
 For a global install, for which you need root permissions
 
     python setup.py install
+    perl setup.py install
 
 For a local install
 
     python setup.py install --prefix=$HOME
+    perl setup.py install --prefix=$HOME
 
 See distutils-help.txt for more details.
 
@@ -54,6 +56,7 @@ it in the data directory::
 
     cd data
     python ../splicesites/tutorial_example.py
+    perl ../splicesites/tutorial_example.py
 
 Galaxy interface
 ----------------

@@ -89,6 +89,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <dlfcn.h>
 #endif
  /* required for python */
+ /* required for perl */
  #define SWIG_FILE_WITH_INIT
 
 #if defined(SWIGJAVA) || defined(SWIGCSHARP)
@@ -114,6 +115,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #endif
 
 #ifdef SWIGPYTHON
+#ifdef SWIGPERL
 
  #include <shogun/io/SerializableFile.h>
  #include <shogun/io/SerializableAsciiFile.h>
@@ -127,6 +129,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 %init %{
 #ifdef SWIGPYTHON
+#ifdef SWIGPERL
         import_array();
 #endif
 
@@ -191,6 +194,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %}
 
 #ifdef SWIGPYTHON
+#ifdef SWIGPERL
 %{
         static int print_sgobject(PyObject *pyobj, FILE *f, int flags) {
             void *argp;
@@ -229,6 +233,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         $action
     }
 #if defined(SWIGPYTHON) && defined(USE_SWIG_DIRECTORS)
+#if defined(SWIGPERL) && defined(USE_SWIG_DIRECTORS)
     catch (Swig::DirectorException &e)
     {
         SWIG_fail;
@@ -289,6 +294,7 @@ SERIALIZABLE_DUMMY(shogun::Version);
 SERIALIZABLE_DUMMY(shogun::Parallel);
 
 #ifdef SWIGPYTHON
+#ifdef SWIGPERL
 namespace shogun
 {
 
@@ -332,6 +338,7 @@ namespace shogun
             unlink(fname);
 
 #ifdef PYTHON3
+#ifdef PERL3
 			PyObject* str=PyBytes_FromStringAndSize(result, len);
 #else
             PyObject* str=PyString_FromStringAndSize(result, len);
@@ -354,6 +361,7 @@ namespace shogun
             Py_ssize_t len=0;
 
 #ifdef PYTHON3
+#ifdef PERL3
 			PyBytes_AsStringAndSize(py_str, &str, &len);
 #else
             PyString_AsStringAndSize(py_str, &str, &len);
@@ -389,6 +397,7 @@ namespace shogun
 }
 
 %pythoncode %{
+%perlcode %{
 try:
     import copy_reg
 except ImportError:
@@ -449,3 +458,4 @@ copy_reg._reconstructor=_sg_reconstructor
 %}
 
 #endif /* SWIGPYTHON  */
+#endif /* SWIGPERL  */

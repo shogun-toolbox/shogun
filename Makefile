@@ -87,6 +87,7 @@ ifeq ($(SNAPSHOT),yes)
 RELEASENAME := $(RELEASENAME)+git$(GITVERSION)
 endif
 all: doc release matlab python octave
+all: doc release matlab perl octave
 endif
 
 

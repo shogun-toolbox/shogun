@@ -16,6 +16,7 @@
 	* Features:
 		- This release contains first release of Efficient Dimensionality Reduction Toolkit (EDRT).
 		- Support for new SWIG -builtin python interface feature (SWIG 2.0.4 is required now).
+		- Support for new SWIG -builtin perl interface feature (SWIG 2.0.4 is required now).
 		- EDRT algorithms are now available using static interfaces such as matlab and octave.
 		- Jensen-Shannon kernel and Homogeneous kernel map preprocessor (thanks to Viktor Gal).
 		- New 'multiclass' module for multiclass classification algorithms, generic linear
@@ -37,6 +38,7 @@
 		- New framework for statistical hypothesis testing and algorithms for kernel-based two-sample and
 		  independence tests using MMD and HSIC by Heiko Strathmann.
 		- New graphical python modular examples.
+		- New graphical perl modular examples.
 		- Standard Cross-Validation splitting for regression problems by Heiko Strathmann
 		- New data-locking concept by Heiko Strathmann which allows to tell machines that data
 		  is not going to change during training/testing until unlocked.
@@ -50,6 +52,7 @@
 		  conditional probability tree, balanced conditional probability tree, random conditional probability
 		  tree and relaxed tree by Chiyuan Zhang.
 		- Python Sparse matrix typemap for octave modular interface (thanks to Evgeniy Andreev).
+		- Perl Sparse matrix typemap for octave modular interface (thanks to Evgeniy Andreev).
 		- Newton SVM port (thanks to Harshit Syal).
 		- Some progress on native windows compilation using 
 		  cmake and mingw-w64 (thanks to Josh aka jklontz).
@@ -202,6 +205,7 @@
 		- WDK kernel supports amino acids
 		- String Features now support append operations (and creation of
 		- python-dbg support
+		- perl-dbg support
 		- Allow floats as input for custom kernel (and matrices > 4GB in size)
 	* Bugfixes:
 		- Static linking fix.
@@ -209,6 +213,7 @@
 	* Cleanup and API Changes:
 		- Remove init() function in Performance Measures
 		- Adjust .so suffix for python and use python distutils to figure out
+		- Adjust .so suffix for perl and use perl distutils to figure out
 		install paths
 
 2010-03-31 Soeren Sonnenburg <sonne@debian.org>
@@ -229,6 +234,7 @@
 	* Bugfixes:
 		- Fix set_w() for linear classifiers.
 		- Static Octave, Python, Cmdline and Modular Python interfaces Compile
+		- Static Octave, Perl, Cmdline and Modular Perl interfaces Compile
 		cleanly under Windows/Cygwin again.
 		- In static interfaces testing could fail when not directly done after
 		training.
@@ -301,12 +307,14 @@
 		one-class for wrapper and chunking algorithm for arbitrary (dual) SVM
 		solvers.
 		- Dynamic Programming code is now accessible from python.
+		- Dynamic Programming code is now accessible from perl.
 		- Implements Regulatory Modules kernel.
 		- Documentation updates (Tutorial, improved installation instructions,
 				overview about the implemented algorithms).
 	* Bugfixes:
 		- Correct q-norm MKL for Newton.
 		- Upon make install of elwms don't install files into R/octave/python
+		- Upon make install of elwms don't install files into R/octave/perl
 		if these interfaces were not configured
 		- Svm-nu parameter was not set correctly.
 		- Fix custom kernel initialization.
@@ -344,9 +352,11 @@
 	* This release contains several cleanups and enhancements:
 	* Features:
 		- Support all data types from python_modular: dense, scipy-sparse
+		- Support all data types from perl_modular: dense, scipy-sparse
 		csc_sparse matrices and strings of type bool, char, (u)int{8,16,32,64},
 		float{32,64,96}. In addition, individual vectors/strings can now be
 		obtained and even changed.  See examples/python_modular/features_*.py
+		obtained and even changed.  See examples/perl_modular/features_*.py
 		for examples.
 		- AUC maximization now works with arbitrary kernel SVMs.
 		- Documentation updates, many examples have been polished.
@@ -358,6 +368,7 @@
 		- Remove {Char,Short,Word,Int,Real}Features and only ever use the
 		templated SimpleFeatures.
 		- Split up examples in examples/python_modular to separate files.
+		- Split up examples in examples/perl_modular to separate files.
 		- Now use s.set_features(strs) instead of s.set_string_features(strs)
           to set string features.
 		- The meaning of the width parameter for the Oligo Kernel changed, the
@@ -374,8 +385,11 @@
 		- Tutorial on how to develop with libshogun and to extend shogun.
 		- Added the elwms (eilergendewollmilchsau) interface that is a
 		chimera that in one file interfaces to python,octave,r,matlab and
+		chimera that in one file interfaces to perl,octave,r,matlab and
 		provides the run_{octave,python,r} command to run code in
+		provides the run_{octave,perl,r} command to run code in
 		{octave,python,r} from within octave,r,matlab,python transparently
+		{octave,perl,r} from within octave,r,matlab,perl transparently
 		making variables available to the target interface avoiding file i/o.
 		- Implement AttributeFeatures for (attr,value) pairs, trees etc.
 	* Bugfixes:
@@ -436,8 +450,10 @@
 		  now support commands GET_NUM_SVMS and GET_SVM for MultiClassSVMs.
 	* Bugfixes:
 		- Fix for contigous arrays/vectors in interface for Python modular.
+		- Fix for contigous arrays/vectors in interface for Perl modular.
 		- Fixed improper assignment of labels in constructor of WDSVMOcas
 		  leading to segfaults on destruction in (python) modular interface.
+		  leading to segfaults on destruction in (perl) modular interface.
 		- Fixed a segfault opportunity in MultiClassSVM.
 
 2008-10-11  Soeren Sonnenburg <debian@nn7.de>
@@ -480,6 +496,7 @@
 		- Much extended documentation.
 		- Add Gaussian kernel for 32bit floating point features.
 		- Testsuite is now available for static interfaces python, octave,
+		- Testsuite is now available for static interfaces perl, octave,
 		  matlab and R and modular interface octave.
 	* Bugfixes:
 		- Tests are now run in the examples/interface directory, with paths set
@@ -522,11 +539,13 @@
 	* SHOGUN Release version 0.6.2
 		- Experimental support for r-modular thanks to the swig team!
 		- All python-modular examples describing the use of kernels,
+		- All perl-modular examples describing the use of kernels,
 		classifier, distributions, features, distances, regression and
 		preprocessors have been ported to r-modular (requires swig from svn).
 		- The 'send_command' legacy is no longer necessary, numbers can be used
 		as such and don't have to be given as strings. All examples for
 		r,python,octave,matlab have been converted to the new syntax.
+		r,perl,octave,matlab have been converted to the new syntax.
 		- Resurrected the command line interface. Basic functionionality,
 		like training a classifier on strings/real valued (sparse) features
 		was restored. Readline completion was added.
@@ -544,12 +563,14 @@
 	* SHOGUN Release version 0.6.1
 		- Now fully support octave-modular thanks to the swig team!
 		- All python-modular examples describing the use of kernels,
+		- All perl-modular examples describing the use of kernels,
 		classifier, distributions, features, distances, regression and
 		preprocessors have been ported to octave-modular.
 		- Minor documentation updates.
 		- Unconditionally disable swig director. This reduces wrapper code size
 		and compile time and also speeds up calls to virtual functions *a lot*.
 		Expect big speed improvements if you were using the python-modular
+		Expect big speed improvements if you were using the perl-modular
 		interface.
 	* Bugfixes:
 		- Include missing files in documentation.
@@ -561,15 +582,18 @@
 	* SHOGUN Release version 0.6.0
 	* This release contains several major enhancements:
 		- The static R,octave,matlab,python interfaces have been rewritten from
+		- The static R,octave,matlab,perl interfaces have been rewritten from
 		scratch simplifying future extensions. They now use the same syntax and
 		support the same set of shogun commands.
 		- Toy examples describing the use of kernels, classifier,
 		distributions, features, distances, regression and preprocessors
 		for the static python, R, octave and matlab interface have been added.
+		for the static perl, R, octave and matlab interface have been added.
 		- Improved user documentation
 		- Support for ACML and Intel MKL
 	* New methods:
 		- POIMs for python-modular interface
+		- POIMs for perl-modular interface
 	* Bugfixes:
 		- Fixed memory leaks in Classifiers, Kernels, Distributions
 		- Fixed severale delete[]/free mismatches
@@ -593,11 +617,15 @@
 	* SHOGUN Release version 0.5.0
 	* This release contains several major enhancements:
 		- Full fledged test suite for python-modular interface
+		- Full fledged test suite for perl-modular interface
 		- Toy examples describing the use of kernels, classifier,
 		distributions, features, distances, regression and preprocessors
 		for the python-modular interface
+		for the perl-modular interface
 		- Doxygen generated documentation for python-modular interface
+		- Doxygen generated documentation for perl-modular interface
 		- Many cleanups to make python-modular interface more consistent
+		- Many cleanups to make perl-modular interface more consistent
 	* New methods:
 		- WDSVMOcas
 		- Update liblinear to version 1.22
@@ -622,11 +650,14 @@
 		- Free memory after batch computation
 		- Parallel (num_threads>1) bug occurring with batch computation
 		- Several python-modular interface cleanups
+		- Several perl-modular interface cleanups
 		- Fix for Chi2 kernel
 		- Use gcc now to generate build dependencies
 		- Test for existance of log2 (enables building on interix)
 		- Python build fix
+		- Perl build fix
 		- Double free fix for combined kernel (python modular interface)
+		- Double free fix for combined kernel (perl modular interface)
 	* New methods: SVMOcas, GaussianShiftKernel
 
 2007-10-10  Soeren Sonnenburg <debian@nn7.de>
@@ -651,6 +682,7 @@
 	* Fixes for:
 		- SVMLin
 		- python examples
+		- perl examples
 		- R examples
 		- cplex 10 compatibility fixes
 		- compilation fix when configured with --disable-svm-light
@@ -660,6 +692,7 @@
 		- Local Alignment Kernel
 		- support for transfering StringFeatures of type word to matlab
 		- python modular support for custom kernel
+		- perl modular support for custom kernel
 
 2007-07-30  Soeren Sonnenburg <debian@nn7.de>
 
@@ -684,6 +717,7 @@
 
 	* SHOGUN Release version 0.3.2
 	* workaround for python-numpy, when long==int==int32, add bool support
+	* workaround for perl-numpy, when long==int==int32, add bool support
 	* fix autodetection of atlas/lapack
 	* fix uninitialized variables in (GUI)HMM, valgrind errors
 
@@ -704,6 +738,7 @@
 	* conservational weights in WD kernel
 	* added mikios kernel ridge regression (KRR)
 	* many fixes in python swig interface
+	* many fixes in perl swig interface
 	* build fixes for archs that don't have powl()
 	* much improved build system
 	* updated coding conventions (though still in a flux)
@@ -717,6 +752,7 @@
 2006-10-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* swig python interface (works w/ multiple svms etc etc)
+	* swig perl interface (works w/ multiple svms etc etc)
 
 2006-10-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
@@ -755,6 +791,7 @@
 	* some compile fixes for cygwin/WIN32
 	* Weighted Degree/Weighted Degree Shift kernel speedups & fixes
 	* python build fixes
+	* perl build fixes
 	* initial *workin* swig support 
 	* entropy example
 

@@ -20,12 +20,15 @@ shogun-java-modular   - for the modular java interface
 shogun-octave-static  - for the static octave interface
 shogun-octave-modular - for the modular octave interface
 shogun-python-static  - for the static python interface
+shogun-perl-static  - for the static perl interface
 shogun-python-modular - for the modular python interface
+shogun-perl-modular - for the modular perl interface
 shogun-r-static       - for the static r interface
 shogun-ruby-modular   - for the modular ruby interface
 shogun-cmdline-static - for the static command-line interface.
 shogun-elwms-static   - for the static eierlegende wollmilchsau interface
                         (one interface to r/python/octave allowing
+                        (one interface to r/perl/octave allowing
 						to run commands in non-native languages)
 shogun-doc            - for the documentation
 \endverbatim
@@ -40,6 +43,7 @@ http://www.macports.org). Then issue
 sudo port selfupdate
 
 sudo port install swig -php5 -ruby -perl +python
+sudo port install swig -php5 -ruby -perl +perl
   (shogun users who want the r and octave interfaces should add
   +octave and/or +r to this list)
 
@@ -60,6 +64,7 @@ Download SHOGUN from http://www.shogun-toolbox.org , aswell as its requirements.
 
 SHOGUN requires the standard linux utils like bash, grep, test, sed, cut, ldd,
 uname gcc g++ and cat python (debian package: python2.4 or python2.5)
+uname gcc g++ and cat perl (debian package: perl2.4 or perl2.5)
 for the ./configure to work.
 
 Optionally you will need atlas and lapack (debian packages lapack3-dev, 
@@ -91,7 +96,9 @@ p-norm MKL with p>1 will work nonetheless.
 (debian package octave3.0-headers) installed.
 
 \li To compile the python interface you need to have numpy version 1.x installed 
+\li To compile the perl interface you need to have numpy version 1.x installed 
 (debian package python-numpy) installed.
+(debian package perl-numpy) installed.
 
 \section compiling_shogun Compiling SHOGUN
 
@@ -114,6 +121,7 @@ sudo make install
 where \b interface is one of the following
 
 \li python_static or python_modular -- for python (see http://www.python.org)
+\li perl_static or perl_modular -- for perl (see http://www.perl.org)
 
 \li octave_static or octave_modular -- for octave (see http://www.octave.org)
 

@@ -118,8 +118,11 @@ SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -l
 TAR:=$(CONFIGPATH)/shogun-$(shell date +%Y-%m-%d).tar
 
 PRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
+PRELPATH=$(shell perl $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
 ORELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
+ORELPATH=$(shell perl $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
 RRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
+RRELPATH=$(shell perl $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
 
 foo: 
 	echo $(SWIGLIBFILES)
@@ -203,6 +206,7 @@ install-libshogun: $(TEMPLATE_TARGET)
 	-ldconfig
 
 install-python_static: $(TEMPLATE_TARGET)
+install-perl_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(PYDIR)
 
@@ -226,7 +230,9 @@ ifneq ($(ELWMS_STATIC_TARGET),)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
 endif
 	#python
+	#perl
 ifneq ($(PYTHON_STATIC_TARGET),)
+ifneq ($(PERL_STATIC_TARGET),)
 	rm -f $(DESTDIR)$(PYDIR)/$(TEMPLATE_TARGET) 
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	cd $(DESTDIR)$(PYDIR) && ln -s $(PRELPATH)/$(TEMPLATE_TARGET)
@@ -259,6 +265,7 @@ install-matlab_static: $(TEMPLATE_TARGET)
 	@echo
 
 install-python_modular: $(TEMPLATE_TARGET)
+install-perl_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
 	install -m644 $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)"
@@ -340,13 +347,21 @@ check-examples-elwms:
 	true
 
 run-testsuite-python_static:
+run-testsuite-perl_static:
 	cd $(CONFIGPATH)/../tests/integration/python_static && \
+	cd $(CONFIGPATH)/../tests/integration/perl_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+		PERLPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples-python_static:
+check-examples-perl_static:
 	cd $(CONFIGPATH)/../examples/undocumented/python_static && \
+	cd $(CONFIGPATH)/../examples/undocumented/perl_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
+		PERLPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
 run-testsuite-r_static:
 	cd $(CONFIGPATH)/../tests/integration/r_static && \
@@ -385,16 +400,26 @@ check-examples-matlab_static:
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
 
 run-testsuite-python_modular:
+run-testsuite-perl_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
+	cd $(CONFIGPATH)/../tests/integration/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
+		PERLPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
+	cd $(CONFIGPATH)/../tests/integration/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
+		PERLPATH="$(DESTDIR)$(PYDIR)" $(PERL) tester.py  )
 check-examples-python_modular:
+check-examples-perl_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
+	cd $(CONFIGPATH)/../examples/undocumented/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+		PERLPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
 run-testsuite-java_modular:
 	#TODO
@@ -470,11 +495,15 @@ doc-cmdline_static:
 	rm -f x y
 
 doc-python_static:
+doc-perl_static:
 	echo "/** \page staticpython Static Python Interface Function Reference" >x
+	echo "/** \page staticperl Static Perl Interface Function Reference" >x
 	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
 		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
+		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  PERLPATH="$(DESTDIR)$(PYDIR)" perl )
 	echo "*/" >>y
 	cat x y >$(CONFIGPATH)/../doc/pages/StaticPythonInterface.mainpage
+	cat x y >$(CONFIGPATH)/../doc/pages/StaticPerlInterface.mainpage
 	rm -f x y
 
 doc-r_static:
@@ -495,6 +524,7 @@ doc-octave_modular:
 	true
 
 doc-python_modular:
+doc-perl_modular:
 	true
 
 doc-r_modular:
@@ -570,20 +600,24 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@echo -e " */\n" >> $@
 	@cat  $< >> $@
 	@$(PYTHON) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
+	@$(PERL) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
 
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
 	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PERL) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
 	$(PYTHON) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
+	$(PERL) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
 		$(shell basename $< $(EXT_DOXY))/doxygen_xml/index.xml $@
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
 	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PERL) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 endif
 
 # Do not include dependencies when they are about to be removed anyway.
@@ -605,6 +639,7 @@ else #gcc -MM
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
 			$(PYTHON) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
+			$(PERL) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
 			"$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
 ifeq (r_modular,$(TEMPLATE_TARGET))
 	    bash -c "( for i in \`grep '.$(EXT_LIB):' .depend | cut -f 1 -d ':'\` ; \

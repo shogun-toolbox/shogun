@@ -11,7 +11,9 @@
 %feature("autodoc", "get_kernel_matrix(self) -> numpy 2dim array of float") get_kernel_matrix;
 %feature("autodoc", "get_POIM2(self) -> [] of float") get_POIM2;
 #endif
+#endif
 
+ARRAY(0x289d488)
 %ignore CWeightedDegreePositionStringKernel::set_position_weights(float64_t*);
 
 #ifdef USE_SWIG_DIRECTORS
@@ -24,6 +26,7 @@
 #endif
 
 #ifndef SWIGPYTHON
+#ifndef SWIGPERL
 #define PROTOCOLS_CUSTOMKERNEL(class_name, type_name, format_str, typecode)
 #define EXTEND_CUSTOMKERNEL(class_name, type_name, typecode)
 #endif

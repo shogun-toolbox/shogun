@@ -142,6 +142,7 @@ class CRInterface : public CSGInterface
 		SEXP get_return_values();
 
 		virtual bool cmd_run_python();
+		virtual bool cmd_run_perl();
 		virtual bool cmd_run_octave();
 		static void run_r_init();
 		static void run_r_exit();

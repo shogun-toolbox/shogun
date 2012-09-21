@@ -1,4 +1,5 @@
 %demonstrates how to exec python from inside octave in the
+%demonstrates how to exec perl from inside octave in the
 %eierlegendewollmilchsau shogun interface
 
 A=[[1,2,3];[4,5,6]];

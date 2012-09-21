@@ -22,7 +22,9 @@ extern "C" {
 #ifdef HAVE_PYTHON
 #include "../python_static/PythonInterface.h"
 #endif
+#endif
 
+ARRAY(0x28bec98)
 #ifdef HAVE_OCTAVE
 #include "../octave_static/OctaveInterface.h"
 #endif

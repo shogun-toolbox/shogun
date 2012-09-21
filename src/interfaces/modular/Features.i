@@ -16,7 +16,9 @@
 %feature("autodoc", "get_fm(self) -> numpy 1dim array of float") get_fm;
 %feature("autodoc", "get_labels(self) -> numpy 1dim array of float") get_labels;
 #endif
+#endif
 
+ARRAY(0x28a8420)
 /* These functions return new Objects */
 %newobject get_transposed();
 %newobject create_merged_copy(CFeatures* other);
@@ -32,6 +34,7 @@
 #endif
 
 #ifndef SWIGPYTHON
+#ifndef SWIGPERL
 #define PROTOCOLS_DENSEFEATURES(class_name, type_name, format_str, typecode)
 #define PROTOCOLS_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
 #define EXTEND_DENSEFEATURES(class_name, type_name, typecode)

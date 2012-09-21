@@ -25,7 +25,9 @@ examples: $(UNDOCUMENTED_EXAMPLE_DIRS) $(EXAMPLE_FILES)
 	$(MAKE) -C ../examples
 	echo $(DOCUMENTED_EXAMPLE_DIRS)
 	python ./insert_examples.py pages/
+	perl ./insert_examples.py pages/
 	python ./insert_examples_cn.py pages_cn/
+	perl ./insert_examples_cn.py pages_cn/
 
 distclean: clean
 

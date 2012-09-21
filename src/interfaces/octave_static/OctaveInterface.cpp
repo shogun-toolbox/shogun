@@ -29,7 +29,9 @@
 #ifdef HAVE_PYTHON
 #include "../python_static/PythonInterface.h"
 #endif
+#endif
 
+ARRAY(0x28aca70)
 #ifdef HAVE_R
 #include "../r_static/RInterface.h"
 #undef length
@@ -803,7 +805,9 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 					&octave_print_error, &octave_cancel_computations);
 			interface=new COctaveInterface(prhs, nlhs);
 #ifdef HAVE_PYTHON
+#ifdef HAVE_PERL
 			CPythonInterface::run_python_init();
+			CPerlInterface::run_perl_init();
 #endif
 #ifdef HAVE_R
 			CRInterface::run_r_init();
@@ -837,5 +841,6 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 /* to be run on exiting matlab ... does not seem to be possible right now:
  * run_octave_exit()
  * run_python_exit()
+ * run_perl_exit()
  * run_r_exit()
  */
