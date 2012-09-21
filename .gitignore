@@ -25,6 +25,11 @@ configure.log
 *.oct
 .localvimrc
 
+#backups
+*~
+\#*
+/*.pb
+
 # /doc/
 /doc/html
 /doc/html_cn
