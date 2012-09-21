@@ -53,7 +53,7 @@ CSGObject *CGaussianKernel::shallow_copy() const
 	// this assert is to avoid any subclass of CGaussianKernel accidentally called
 	// with the implement here
 	ASSERT(typeid(*this) == typeid(CGaussianKernel));
-	CGaussianKernel *ker = new CGaussianKernel(width, cache_size);
+	CGaussianKernel *ker = new CGaussianKernel(cache_size, width);
 	if (lhs)
 	{
 		ker->init(lhs, rhs);
