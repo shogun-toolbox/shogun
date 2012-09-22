@@ -644,6 +644,7 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 				}
 
 				len=fasta_len-spanned_lines;
+				new (&strings[i]) SGString<ST>();
 				strings[i].string=SG_MALLOC(ST, len);
 				strings[i].slen=len;
 
@@ -953,6 +954,8 @@ template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_fea
 
 		for (int32_t i=0; i<num_vectors; i++)
 		{
+			new (&new_features[i]) SGString<ST>();
+
 			if (i<old_num_vectors)
 			{
 				new_features[i].string=features[i].string;
@@ -1008,6 +1011,7 @@ template<class ST> SGString<ST>* CStringFeatures<ST>::copy_features(int32_t& num
 		int32_t len;
 		bool free_vec;
 		ST* vec=get_feature_vector(i, len, free_vec);
+		new (&new_feat[i]) SGString<ST>();
 		new_feat[i].string=SG_MALLOC(ST, len);
 		new_feat[i].slen=len;
 		memcpy(new_feat[i].string, vec, ((size_t) len) * sizeof(ST));
@@ -1087,9 +1091,7 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 		// vector raw data
 		if (decompress)
 		{
-			new (&features[i]) SGString<ST>();
-			features[i].string=SG_MALLOC(ST, len_uncompressed);
-			features[i].slen=len_uncompressed;
+			new (&features[i]) SGString<ST>(len_uncompressed);
 			uint8_t* compressed=SG_MALLOC(uint8_t, len_compressed);
 			if (fread(compressed, sizeof(uint8_t), len_compressed, file)!=(size_t) len_compressed)
 				SG_ERROR("failed to read compressed data (expected %d bytes)", len_compressed);
@@ -1103,8 +1105,7 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 		else
 		{
 			int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
-			features[i].string=SG_MALLOC(ST, len_compressed+offs);
-			features[i].slen=len_compressed+offs;
+			new (&features[i]) SGString<ST>(len_compressed+offs);
 			int32_t* feat32ptr=((int32_t*) (features[i].string));
 			memset(features[i].string, 0, offs*sizeof(ST));
 			feat32ptr[0]=(int32_t) len_compressed;
@@ -1522,6 +1523,7 @@ template<class ST> void CStringFeatures<ST>::create_random(float64_t* hist, int3
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
+		new (&sf[i]) SGString<ST>();
 		sf[i].string=SG_MALLOC(ST, cols);
 		sf[i].slen=cols;
 

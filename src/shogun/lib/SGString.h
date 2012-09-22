@@ -51,7 +51,7 @@ public:
 	SGString(index_t len, bool ref_counting=true) :
 		slen(len)
 	{
-		string=SG_CALLOC(T, len);
+		string=SG_MALLOC(T, len);
 	}
 
 	/** copy constructor */
