@@ -5,9 +5,9 @@
 	* Features:
 		- None
 	* Bugfixes:
-		- None
+		- Fix for shallow copy of gaussian kernel by Matt Aasted
 	* Cleanup and API Changes:
-		- None
+		- SGString and SGStringList are now based on SGReferencedData
 
 2012-09-01 Soeren Sonnenburg <sonne@debian.org>
 
