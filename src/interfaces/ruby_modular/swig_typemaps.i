@@ -182,6 +182,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 
 	for (i = 0; i < size; i++) {
 		VALUE arr = rb_ary_entry($input, i);
+		new (&strings[i]) SGString<SGTYPE>();
 		if (TYPE(arr) == T_STRING) {
 			len = RSTRING_LEN(arr);
 			const char *str = StringValuePtr(arr);
