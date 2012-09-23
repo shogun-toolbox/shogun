@@ -146,16 +146,6 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 		}
 	}
 
-	/*
-	if (single_string)
-	{
-		SG_FREE(single_string);
-		single_string=NULL;
-	}
-	else
-		cleanup_feature_vectors(0, num_vectors-1);
-	*/
-
 	num_vectors=0;
 	SG_FREE(features);
 	SG_FREE(symbol_mask_table);
@@ -170,42 +160,6 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 	SG_UNREF(alphabet);
 	alphabet=alpha;
 	SG_REF(alphabet);
-}
-
-template<class ST> void CStringFeatures<ST>::cleanup_feature_vector(int32_t num)
-{
-	ASSERT(num<get_num_vectors());
-
-	/*
-	if (features)
-	{
-		int32_t real_num=m_subset_stack->subset_idx_conversion(num);
-		SG_FREE(features[real_num].string);
-		features[real_num].string=NULL;
-		features[real_num].slen=0;
-
-		determine_maximum_string_length();
-	}
-	*/
-}
-
-template<class ST> void CStringFeatures<ST>::cleanup_feature_vectors(int32_t start, int32_t stop)
-{
-	if (features && get_num_vectors())
-	{
-		ASSERT(start<get_num_vectors());
-		ASSERT(stop<get_num_vectors());
-
-		/*
-		for (int32_t i=start; i<=stop; i++)
-		{
-			int32_t real_num=m_subset_stack->subset_idx_conversion(i);
-			SG_FREE(features[real_num].string);
-			features[real_num].string=NULL;
-			features[real_num].slen=0;
-		}*/
-		determine_maximum_string_length();
-	}
 }
 
 template<class ST> EFeatureClass CStringFeatures<ST>::get_feature_class() const { return C_STRING; }
@@ -257,9 +211,7 @@ template<class ST> void CStringFeatures<ST>::set_feature_vector(SGVector<ST> vec
 	if (vector.vlen<=0)
 		SG_ERROR("String has zero or negative length\n");
 
-	cleanup_feature_vector(num);
-	features[num].slen=vector.vlen;
-	features[num].string=SG_MALLOC(ST, vector.vlen);
+	features[num] = SGString<ST>(vector.vlen);
 	memcpy(features[num].string, vector.vector, vector.vlen*sizeof(ST));
 
 	determine_maximum_string_length();
