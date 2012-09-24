@@ -110,7 +110,8 @@ enum EKernelType
 	K_DIRECTOR = 480,
 	K_PRODUCT = 490,
 	K_LINEARARD = 500,
-	K_GAUSSIANARD = 510
+	K_GAUSSIANARD = 510,
+	K_STREAMING = 520
 };
 
 /** kernel property */
@@ -190,6 +191,8 @@ class CKernel : public CSGObject
 	friend class CTanimotoKernelNormalizer;
 	friend class CDiceKernelNormalizer;
 	friend class CZeroMeanCenterKernelNormalizer;
+
+	friend class CStreamingKernel;
 
 	public:
 
