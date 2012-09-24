@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Shashwat Lal Das
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #ifndef _STREAMING_FEATURES__H__
@@ -178,6 +179,19 @@ public:
 	 * Function to reset the stream (if possible).
 	 */
 	virtual void reset_stream();
+
+	/** Returns a CFeatures instance which contains num_elements elements from
+	 * the underlying stream
+	 *
+	 * @param num_elements num elements to save from stream
+	 * @return CFeatures object of underlying type, NULL if not enough data
+	 */
+	virtual CFeatures* get_streamed_features(index_t num_elements)
+	{
+		SG_ERROR("%s::get_streamed_features() is not yet implemented!\n",
+				get_name());
+		return NULL;
+	}
 
 protected:
 
