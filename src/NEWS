@@ -8,6 +8,7 @@
 		- Fix for shallow copy of gaussian kernel by Matt Aasted
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData
+		- "confidences" in context of CLabel and subclasses are now "values"
 
 2012-09-01 Soeren Sonnenburg <sonne@debian.org>
 
