@@ -149,13 +149,19 @@ public:
 	 *
 	 * @param destroy free examples on destruction or not
 	 */
-	void set_free_vectors_on_destruct(bool destroy) { free_vectors_on_destruct = destroy; }
+	void set_free_vectors_on_destruct(bool destroy)
+	{
+		free_vectors_on_destruct = destroy;
+	}
 
 	/**
 	 * Return whether all example objects will be freed
 	 * on destruction.
 	 */
-	bool get_free_vectors_on_destruct() { return free_vectors_on_destruct; }
+	bool get_free_vectors_on_destruct()
+	{
+		return free_vectors_on_destruct;
+	}
 
 	/**
 	 * Return the name of the object
@@ -228,8 +234,11 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 	for (int32_t i=0; i<ring_size; i++)
 	{
 		ex_used[i] = E_EMPTY;
-		ex_ring[i].fv.vector = new T();
-		ex_ring[i].fv.vlen = 1;
+
+		/* this closes a memory leak, seems to have no bad consequences,
+		 * but I am not completely sure due to lack of any tests */
+//		ex_ring[i].fv.vector = SG_MALLOC(T, 1);
+//		ex_ring[i].fv.vlen = 1;
 		ex_ring[i].label = FLT_MAX;
 
 		pthread_cond_init(&ex_in_use_cond[i], NULL);
@@ -243,10 +252,15 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 
 template <class T> CParseBuffer<T>::~CParseBuffer()
 {
+	SG_PRINT("free vectors on destruct: %d\n", free_vectors_on_destruct);
 	for (int32_t i=0; i<ring_size; i++)
 	{
 		if (ex_ring[i].fv.vector != NULL && free_vectors_on_destruct)
-			delete ex_ring[i].fv.vector;
+		{
+			SG_PRINT("%s::~%s(): destroying examples ring vector %d\n",
+					get_name(), get_name(), i);
+			SG_FREE(ex_ring[i].fv.vector);
+		}
 		pthread_mutex_destroy(&ex_in_use_mutex[i]);
 		pthread_cond_destroy(&ex_in_use_cond[i]);
 	}

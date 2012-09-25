@@ -380,7 +380,7 @@ template <class T>
     pthread_mutex_destroy(&examples_state_lock);
     pthread_cond_destroy(&examples_state_changed);
 
-    delete examples_ring;
+    SG_UNREF(examples_ring);
 }
 
 template <class T>
@@ -394,6 +394,7 @@ template <class T>
         example_type = E_UNLABELLED;
 
     examples_ring = new CParseBuffer<T>(size);
+    SG_REF(examples_ring);
 
     parsing_done = false;
     reading_done = false;

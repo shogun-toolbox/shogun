@@ -6,6 +6,11 @@ CStreamingFeatures::CStreamingFeatures() : CFeatures()
 {
 }
 
+CStreamingFeatures::~CStreamingFeatures()
+{
+	SG_UNREF(working_file);
+}
+
 CStreamingFeatures::CStreamingFeatures(CStreamingFile* file,
 		bool is_labelled, int32_t size) : CFeatures()
 {

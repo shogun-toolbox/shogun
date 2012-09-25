@@ -84,7 +84,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFeatures() { }
+	virtual ~CStreamingFeatures();
 
 	/**
 	 * Set the vector reading functions.
