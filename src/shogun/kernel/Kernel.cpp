@@ -97,6 +97,8 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
+	SG_DEBUG("entering CKernel::init()\n");
+
 	/* make sure that features are not deleted if same ones are used */
 	SG_REF(l);
 	SG_REF(r);
@@ -132,6 +134,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	SG_UNREF(r);
 	SG_UNREF(l);
 
+	SG_DEBUG("leaving CKernel::init()\n");
 	return true;
 }
 
@@ -644,6 +647,7 @@ void CKernel::save(CFile* writer)
 
 void CKernel::remove_lhs_and_rhs()
 {
+	SG_DEBUG("entering CKernel::remove_lhs_and_rhs\n");
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
@@ -657,6 +661,7 @@ void CKernel::remove_lhs_and_rhs()
 #ifdef USE_SVMLIGHT
 	cache_reset();
 #endif //USE_SVMLIGHT
+	SG_DEBUG("leaving CKernel::remove_lhs_and_rhs\n");
 }
 
 void CKernel::remove_lhs()
