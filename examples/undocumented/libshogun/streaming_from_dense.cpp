@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2012 Heiko Strathmann
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  *
@@ -12,8 +13,8 @@
  * making it suitable for using online learning algorithms.
  */
 
-#include <shogun/features/StreamingDenseFeatures.h>
-#include <shogun/io/StreamingFileFromDenseFeatures.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
@@ -25,18 +26,12 @@
 
 using namespace shogun;
 
-#define NUM 100
+#define NUM 10
 #define DIMS 2
 #define DIST 0.5
 
-float32_t* feat;
-float64_t* lab;
-
-void gen_rand_data()
+void gen_rand_data(SGMatrix<float32_t> feat, SGVector<float64_t> lab)
 {
-	feat=SG_MALLOC(float32_t, NUM*DIMS);
-	lab=SG_MALLOC(float64_t, NUM);
-
 	for (int32_t i=0; i<NUM; i++)
 	{
 		if (i<NUM/2)
@@ -52,23 +47,28 @@ void gen_rand_data()
 			lab[i]=1;
 		}
 	}
-	CMath::display_matrix(feat,DIMS, NUM);
+	feat.display_matrix("feat");
+	lab.display_vector("lab");
 }
 
-int main()
+
+void test()
 {
-	init_shogun_with_defaults();
+	SGMatrix<float32_t> feat(DIMS, NUM);
+	SGVector<float64_t> lab(NUM);
 
 	// Generate random data, features and labels
-	gen_rand_data();
+	gen_rand_data(feat, lab);
 
 	// Create features
 	CDenseFeatures<float32_t>* features = new CDenseFeatures<float32_t>();
 	SG_REF(features);
-	features->set_feature_matrix(feat, DIMS, NUM);
+	features->set_feature_matrix(feat);
 
-	// Create a StreamingDenseFeatures object which uses the above as input; labels (float64_t*) are optional
-	CStreamingDenseFeatures<float32_t>* streaming_simple = new CStreamingDenseFeatures<float32_t>(features, lab);
+	// Create a StreamingDenseFeatures object which uses the above as input;
+	// labels (float64_t*) are optional
+	CStreamingDenseFeatures<float32_t>* streaming_simple =
+			new CStreamingDenseFeatures<float32_t>(features, lab);
 	SG_REF(streaming_simple);
 
 	// Start parsing of the examples; in this case, it is trivial - returns each vector from the DenseFeatures object
@@ -111,11 +111,17 @@ int main()
 	// Now that all examples are used, end the parser.
 	streaming_simple->end_parser();
 
-	SG_FREE(lab);
-
 	SG_UNREF(streaming_simple);
 	SG_UNREF(features);
+}
+
+int main()
+{
+	init_shogun_with_defaults();
+
+	test();
 
 	exit_shogun();
 	return 0;
 }
+
