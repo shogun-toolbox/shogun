@@ -38,6 +38,8 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 		CDenseFeatures<T>* dense_features, float64_t* lab) :
 		CStreamingDotFeatures()
 {
+	REQUIRE(dense_features, "%s::CStreamingDenseFeatures(): Features needed!\n");
+
 	CStreamingFileFromDenseFeatures<T>* file;
 	bool is_labelled;
 	int32_t size=1024;
@@ -302,8 +304,8 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	{
 		if (!get_next_example())
 		{
-			SG_WARNING("%s::get_streamed_features(): ran out of streaming "
-			"data, returnung NULL!\n", get_name());
+			SG_DEBUG("%s::get_streamed_features(): ran out of streaming "
+					"data, returnung NULL!\n", get_name());
 			return NULL;
 		}
 

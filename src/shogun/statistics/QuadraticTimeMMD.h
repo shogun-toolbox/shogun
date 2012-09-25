@@ -89,14 +89,14 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		/** Constructor
 		 *
 		 * @param p_and_q feature data. Is assumed to contain samples from both
-		 * p and q. First all samples from p, then from index q_start all
+		 * p and q. First all samples from p, then from index m all
 		 * samples from q
 		 *
 		 * @param kernel kernel to use
 		 * @param p_and_q samples from p and q, appended
-		 * @param q_start index of first sample of q
+		 * @param m index of first sample of q
 		 */
-		CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t q_start);
+		CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t m);
 
 		/** Constructor.
 		 * This is a convienience constructor which copies both features to one
@@ -187,7 +187,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		void set_num_samples_sepctrum(index_t num_samples_spectrum);
 
 		/** setter for number of eigenvalues to use in spectrum based p-value
-		 * computation. Maximum is 2*m_q_start-1
+		 * computation. Maximum is 2*m_m-1
 		 *
 		 * @param num_eigenvalues_spectrum number of eigenvalues to use to
 		 * approximate null-distributrion

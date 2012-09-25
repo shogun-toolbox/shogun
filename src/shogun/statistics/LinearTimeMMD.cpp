@@ -9,9 +9,11 @@
 
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/features/Features.h>
+#include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/StreamingKernel.h>
 
 #include <shogun/lib/external/libqp.h>
 
@@ -24,33 +26,55 @@ CLinearTimeMMD::CLinearTimeMMD() :
 }
 
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
-		index_t q_start) :
-		CKernelTwoSampleTestStatistic(kernel, p_and_q, q_start)
+		index_t m)
 {
-	init();
-
-	if (p_and_q && q_start!=p_and_q->get_num_vectors()/2)
-	{
-		SG_ERROR("CLinearTimeMMD: Only features with equal number of vectors "
-				"are currently possible\n");
-	}
+	SG_ERROR("%s::CLinearTimeMMD(): Constructor with appended features is "
+			"not supported. Split features and use other constructor.\n",
+			get_name());
 }
 
-CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q) :
-		CKernelTwoSampleTestStatistic(kernel, p, q)
+CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q)
+{
+	/* convienience constructor, construct streaming kernel and features from
+	 * the provided objects. Thats why base constructor is NOT called */
+
+	/* prevent calling this with streaming features */
+	CStreamingFeatures* temp1=dynamic_cast<CStreamingFeatures*>(p);
+	CStreamingFeatures* temp2=dynamic_cast<CStreamingFeatures*>(q);
+	CStreamingKernel* temp3=dynamic_cast<CStreamingKernel*>(kernel);
+	REQUIRE(!(temp1 || temp2 || temp3), "%s::CLinearTimeMMD(): Please use "
+			"streaming features based constructor when passing streaming "
+			"features. This constructor can only handle non-streaming features"
+			" and kernels!\n", get_name());
+
+	/* create streaming features from given features. Same for kernel */
+	m_streaming_p=CStreamingFeatures::from_non_streaming(p);
+	SG_REF(m_streaming_p);
+
+	m_streaming_q=CStreamingFeatures::from_non_streaming(q);
+	SG_REF(m_streaming_p);
+
+	m_kernel=new CStreamingKernel(m_streaming_p, m_streaming_q, kernel);
+	SG_REF(m_kernel);
+}
+
+CLinearTimeMMD::CLinearTimeMMD(CStreamingKernel* kernel,
+		CStreamingFeatures* p, CStreamingFeatures* q, index_t m) :
+		CKernelTwoSampleTestStatistic(kernel, NULL, m)
 {
 	init();
 
-	if (p->get_num_vectors()!=q->get_num_vectors())
-	{
-		SG_ERROR("CLinearTimeMMD: Only features with equal number of vectors "
-				"are currently possible\n");
-	}
+	m_streaming_p=p;
+	SG_REF(m_streaming_p);
+
+	m_streaming_q=q;
+	SG_REF(m_streaming_q);
 }
 
 CLinearTimeMMD::~CLinearTimeMMD()
 {
-
+	SG_UNREF(m_streaming_p);
+	SG_UNREF(m_streaming_q);
 }
 
 void CLinearTimeMMD::init()
@@ -68,38 +92,54 @@ void CLinearTimeMMD::init()
 	m_opt_epsilon=10E-15;
 	m_opt_low_cut=10E-7;
 	m_opt_regularization_eps=0;
+	m_streaming_p=NULL;
+	m_streaming_q=NULL;
+
+	SG_WARNING("register params!\n");
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
 {
 	SG_DEBUG("entering CLinearTimeMMD::compute_statistic()\n");
 
-	REQUIRE(m_p_and_q, "%s::compute_statistic: features needed!\n", get_name());
+	REQUIRE(m_streaming_p, "%s::compute_statistic: streaming features p "
+			"required!\n", get_name());
+	REQUIRE(m_streaming_q, "%s::compute_statistic: streaming features q "
+			"required!\n", get_name());
 
 	REQUIRE(m_kernel, "%s::compute_statistic: kernel needed!\n", get_name());
 
+	/* cast kernel as streaming kernel */
+	CStreamingKernel* streaming_kernel=
+			dynamic_cast<CStreamingKernel*>(m_kernel);
+	REQUIRE(streaming_kernel,
+			"%s::compute_statistic: streaming kernel required!\n", get_name());
+
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
-	index_t m=m_q_start;
-	index_t m_2=m/2;
+	index_t m_2=m_m/2;
 
-	SG_DEBUG("m_q_start=%d\n", m_q_start);
+	SG_DEBUG("m_m=%d\n", m_m);
 
-	/* compute traces of kernel matrices for linear MMD */
-	m_kernel->init(m_p_and_q, m_p_and_q);
-
+	/* these sums are needed to compute statistic */
 	float64_t pp=0;
 	float64_t qq=0;
 	float64_t pq=0;
 	float64_t qp=0;
 
-	/* compute traces */
+	/* compute sums */
 	for (index_t i=0; i<m_2; ++i)
 	{
-		pp+=m_kernel->kernel(i, m_2+i);
-		qq+=m_kernel->kernel(m+i, m+m_2+i);
-		pq+=m_kernel->kernel(i, m+m_2+i);
-		qp+=m_kernel->kernel(m_2+i, m+i);
+		/* stream kernel values and add values */
+		streaming_kernel->init(m_streaming_p, m_streaming_p);
+		pp+=streaming_kernel->kernel(0, 0);
+
+		streaming_kernel->init(m_streaming_q, m_streaming_q);
+		qq+=streaming_kernel->kernel(0, 0);
+
+		streaming_kernel->init(m_streaming_p, m_streaming_q);
+		pq+=streaming_kernel->kernel(0, 0);
+		qp+=streaming_kernel->kernel(0, 0);
 	}
 
 	SG_DEBUG("returning: 1/%d*(%f+%f-%f-%f)\n", m_2, pp, qq, pq, qp);
@@ -173,7 +213,7 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 
 	/* this corresponds to computing the statistic itself, however, the
 	 * difference is that all terms (of the traces) have to be stored */
-	index_t m=m_q_start;
+	index_t m=m_m;
 	index_t m_2=m/2;
 
 	m_kernel->init(m_p_and_q, m_p_and_q);
@@ -242,7 +282,7 @@ void CLinearTimeMMD::optimize_kernel_weights()
 
 	/* number of kernels and data */
 	index_t num_kernels=combined_kernel->get_num_subkernels();
-	index_t m2=m_q_start/2;
+	index_t m2=m_m/2;
 
 	/* matrix with all h entries for all kernels and data */
 	SGMatrix<float64_t> hs(m2, num_kernels);
@@ -262,9 +302,9 @@ void CLinearTimeMMD::optimize_kernel_weights()
 		for (index_t j=0; j<m2; ++j)
 		{
 			pp=current->kernel(j, m2+j);
-			qq=current->kernel(m_q_start+j, m_q_start+m2+j);
-			pq=current->kernel(j, m_q_start+m2+j);
-			qp=current->kernel(m2+j, m_q_start+j);
+			qq=current->kernel(m_m+j, m_m+m2+j);
+			pq=current->kernel(j, m_m+m2+j);
+			qp=current->kernel(m2+j, m_m+j);
 			hs(j, i)=pp+qq-pq-qp;
 			mmds[i]+=hs(j, i);
 		}

@@ -20,12 +20,12 @@ CQuadraticTimeMMD::CQuadraticTimeMMD() : CKernelTwoSampleTestStatistic()
 }
 
 CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q,
-		index_t q_start) :
-		CKernelTwoSampleTestStatistic(kernel, p_and_q, q_start)
+		index_t m) :
+		CKernelTwoSampleTestStatistic(kernel, p_and_q, m)
 {
 	init();
 
-	if (p_and_q && q_start!=p_and_q->get_num_vectors()/2)
+	if (p_and_q && m!=p_and_q->get_num_vectors()/2)
 	{
 		SG_ERROR("CQuadraticTimeMMD: Only features with equal number of vectors "
 				"are currently possible\n");
@@ -68,7 +68,7 @@ void CQuadraticTimeMMD::init()
 float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 {
 	/* split computations into three terms from JLMR paper (see documentation )*/
-	index_t m=m_q_start;
+	index_t m=m_m;
 
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
@@ -85,10 +85,10 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 
 	/* second term */
 	float64_t second=0;
-	for (index_t i=m_q_start; i<m_q_start+m; ++i)
+	for (index_t i=m_m; i<m_m+m; ++i)
 	{
 		/* ensure i!=j while adding up */
-		for (index_t j=m_q_start; j<m_q_start+m; ++j)
+		for (index_t j=m_m; j<m_m+m; ++j)
 			second+=i==j ? 0 : m_kernel->kernel(i,j);
 	}
 	second/=(m-1);
@@ -97,7 +97,7 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	float64_t third=0;
 	for (index_t i=0; i<m; ++i)
 	{
-		for (index_t j=m_q_start; j<m_q_start+m; ++j)
+		for (index_t j=m_m; j<m_m+m; ++j)
 			third+=m_kernel->kernel(i,j);
 	}
 	third*=2.0/m;
@@ -108,7 +108,7 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 float64_t CQuadraticTimeMMD::compute_biased_statistic()
 {
 	/* split computations into three terms from JLMR paper (see documentation )*/
-	index_t m=m_q_start;
+	index_t m=m_m;
 
 	/* init kernel with features */
 	m_kernel->init(m_p_and_q, m_p_and_q);
@@ -124,9 +124,9 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 
 	/* second term */
 	float64_t second=0;
-	for (index_t i=m_q_start; i<m_q_start+m; ++i)
+	for (index_t i=m_m; i<m_m+m; ++i)
 	{
-		for (index_t j=m_q_start; j<m_q_start+m; ++j)
+		for (index_t j=m_m; j<m_m+m; ++j)
 			second+=m_kernel->kernel(i,j);
 	}
 	second/=m;
@@ -135,7 +135,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	float64_t third=0;
 	for (index_t i=0; i<m; ++i)
 	{
-		for (index_t j=m_q_start; j<m_q_start+m; ++j)
+		for (index_t j=m_m; j<m_m+m; ++j)
 			third+=m_kernel->kernel(i,j);
 	}
 	third*=2.0/m;
@@ -247,7 +247,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		index_t num_eigenvalues)
 {
-	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
+	if (m_m!=m_p_and_q->get_num_vectors()/2)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Currently, only equal "
 				"sample sizes are supported\n", get_name());
@@ -259,7 +259,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 				" least 2, better in the hundrets", get_name());
 	}
 
-	if (num_eigenvalues>2*m_q_start-1)
+	if (num_eigenvalues>2*m_m-1)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Number of Eigenvalues too large\n",
 				get_name());
@@ -297,7 +297,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	/* take largest EV, scale by 1/2/m on the fly and take abs value*/
 	for (index_t i=0; i<num_eigenvalues; ++i)
 		largest_ev[i]=CMath::abs(
-				1.0/2/m_q_start*eigenvalues[eigenvalues.vlen-1-i]);
+				1.0/2/m_m*eigenvalues[eigenvalues.vlen-1-i]);
 
 	/* finally, sample from null distribution */
 	SGVector<float64_t> null_samples(num_samples);
@@ -317,7 +317,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 
 SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 {
-	if (m_q_start!=m_p_and_q->get_num_vectors()/2)
+	if (m_m!=m_p_and_q->get_num_vectors()/2)
 	{
 		SG_ERROR("%s::compute_p_value_gamma(): Currently, only equal "
 				"sample sizes are supported\n", get_name());
@@ -342,38 +342,38 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 	 * in MATLAB.
 	 * Remove diagonals on the fly */
 	float64_t mean_mmd=0;
-	for (index_t i=0; i<m_q_start; ++i)
+	for (index_t i=0; i<m_m; ++i)
 	{
 		/* virtual KL matrix is in upper right corner of SHOGUN K matrix
 		 * so this sums the diagonal of the matrix between X and Y*/
-		mean_mmd+=m_kernel->kernel(i, m_q_start+i);
+		mean_mmd+=m_kernel->kernel(i, m_m+i);
 	}
-	mean_mmd=2.0/m_q_start*(1.0-1.0/m_q_start*mean_mmd);
+	mean_mmd=2.0/m_m*(1.0-1.0/m_m*mean_mmd);
 
 	/* compute variance under H0 of MMD, which is
 	 * varMMD = 2/m/(m-1) * 1/m/(m-1) * sum(sum( (K + L - KL - KL').^2 ));
 	 * in MATLAB, so sum up all elements */
 	float64_t var_mmd=0;
-	for (index_t i=0; i<m_q_start; ++i)
+	for (index_t i=0; i<m_m; ++i)
 	{
-		for (index_t j=0; j<m_q_start; ++j)
+		for (index_t j=0; j<m_m; ++j)
 		{
 			/* dont add diagonal of all pairs of imaginary kernel matrices */
-			if (i==j || m_q_start+i==j || m_q_start+j==i)
+			if (i==j || m_m+i==j || m_m+j==i)
 				continue;
 
 			float64_t to_add=m_kernel->kernel(i, j);
-			to_add+=m_kernel->kernel(m_q_start+i, m_q_start+j);
-			to_add-=m_kernel->kernel(i, m_q_start+j);
-			to_add-=m_kernel->kernel(m_q_start+i, j);
+			to_add+=m_kernel->kernel(m_m+i, m_m+j);
+			to_add-=m_kernel->kernel(i, m_m+j);
+			to_add-=m_kernel->kernel(m_m+i, j);
 			var_mmd+=CMath::pow(to_add, 2);
 		}
 	}
-	var_mmd*=2.0/m_q_start/(m_q_start-1)*1.0/m_q_start/(m_q_start-1);
+	var_mmd*=2.0/m_m/(m_m-1)*1.0/m_m/(m_m-1);
 
 	/* parameters for gamma distribution */
 	float64_t a=CMath::pow(mean_mmd, 2)/var_mmd;
-	float64_t b=var_mmd*m_q_start / mean_mmd;
+	float64_t b=var_mmd*m_m / mean_mmd;
 
 	SGVector<float64_t> result(2);
 	result[0]=a;

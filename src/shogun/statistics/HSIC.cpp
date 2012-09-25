@@ -22,10 +22,10 @@ CHSIC::CHSIC() :
 }
 
 CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
-		index_t q_start) :
-		CKernelIndependenceTestStatistic(kernel_p, kernel_q, m_p_and_q, q_start)
+		index_t m) :
+		CKernelIndependenceTestStatistic(kernel_p, kernel_q, m_p_and_q, m)
 {
-	if (p_and_q && p_and_q->get_num_vectors()/2!=q_start)
+	if (p_and_q && p_and_q->get_num_vectors()/2!=m)
 	{
 		SG_ERROR("%s: Only features with equal number of vectors are currently "
 				"possible\n", get_name());
@@ -72,7 +72,7 @@ float64_t CHSIC::compute_statistic()
 	K.center();
 
 	/* compute MATLAB: sum(sum(Kc' .* (L))), which is biased HSIC */
-	index_t m=m_q_start;
+	index_t m=m_m;
 	float64_t result=0;
 	for (index_t i=0; i<m; ++i)
 	{
@@ -137,7 +137,7 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 
 	REQUIRE(m_p_and_q, "%s::fit_null_gamma: features needed!\n", get_name());
 
-	index_t m=m_q_start;
+	index_t m=m_m;
 
 	/* compute kernel matrices */
 	SGMatrix<float64_t> K=get_kernel_matrix_K();
@@ -221,7 +221,7 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_K()
 	SGMatrix<float64_t> K;
 
 	/* subset for selecting only data from one distribution */
-	SGVector<index_t> subset(m_q_start);
+	SGVector<index_t> subset(m_m);
 	subset.range_fill();
 
 	/* distinguish between custom and normal kernels */
@@ -256,9 +256,9 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
 	SGMatrix<float64_t> L;
 
 	/* subset for selecting only data from one distribution */
-	SGVector<index_t> subset(m_q_start);
+	SGVector<index_t> subset(m_m);
 	subset.range_fill();
-	subset.add(m_q_start);
+	subset.add(m_m);
 
 	/* now second half of data for L */
 	if (m_kernel_q->get_kernel_type()==K_CUSTOM)

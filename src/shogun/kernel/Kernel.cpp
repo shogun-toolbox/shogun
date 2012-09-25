@@ -102,8 +102,8 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	SG_REF(r);
 
 	//make sure features were indeed supplied
-	ASSERT(l);
-	ASSERT(r);
+	REQUIRE(l, "CKernel::init(): LHS features required!\n");
+	REQUIRE(r, "CKernel::init(): RHS features required!\n");
 
 	//make sure features are compatible
 	ASSERT(l->get_feature_class()==r->get_feature_class());
@@ -755,6 +755,7 @@ void CKernel::list_kernel()
 		ENUM_CASE(K_PRODUCT)
 		ENUM_CASE(K_LINEARARD)
 		ENUM_CASE(K_GAUSSIANARD)
+		ENUM_CASE(K_STREAMING)
 	}
 
 	switch (get_feature_class())

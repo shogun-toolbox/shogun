@@ -47,6 +47,17 @@ class CStreamingKernel: public CKernel
 
 		virtual SGMatrix<float64_t> get_kernel_matrix();
 
+		void set_blocksize(index_t blocksize) { m_block_size=blocksize; }
+
+		/** Overloaded init function, makes sure provided CFeatures are
+		 * CStreamingFeatures and calls superclass method
+		 *
+		 * @param lhs features for left-hand side
+		 * @param rhs features for right-hand side
+		 * @return if init was successful
+		 */
+		bool init(CFeatures* l, CFeatures* r);
+
 		/** @return name of SG_SERIALIZABLE */
 		virtual const char* get_name() const { return "StreamingKernel"; }
 

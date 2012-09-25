@@ -39,9 +39,9 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 * samples from q
 		 *
 		 * @param p_and_q samples from p and q, appended
-		 * @param q_start index of first sample of q
+		 * @param m index of first sample of q
 		 */
-		CTwoDistributionsTestStatistic(CFeatures* p_and_q, index_t q_start);
+		CTwoDistributionsTestStatistic(CFeatures* p_and_q, index_t m);
 
 		/** Constructor.
 		 * This is a convienience constructor which copies both features to one
@@ -94,7 +94,7 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		CFeatures* m_p_and_q;
 
 		/** defines the first index of samples of q */
-		index_t m_q_start;
+		index_t m_m;
 };
 
 }

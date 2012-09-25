@@ -19,9 +19,9 @@ CStreamingKernel::CStreamingKernel()
 
 CStreamingKernel::CStreamingKernel(CStreamingFeatures* streaming_lhs,
 		CStreamingFeatures* streaming_rhs, CKernel* baseline_kernel):
-		CKernel(NULL, NULL, 0)
+		CKernel()
 {
-	init();
+	CStreamingKernel::init();
 
 	m_baseline_kernel=baseline_kernel;
 	SG_REF(baseline_kernel);
@@ -42,6 +42,8 @@ CStreamingKernel::~CStreamingKernel()
 
 float64_t CStreamingKernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	/* NOTE: indices are ignored */
+
 	/* create feature objects from streaming features (one each) */
 	CFeatures* l=m_streaming_lhs->get_streamed_features(1);
 	CFeatures* r=m_streaming_rhs->get_streamed_features(1);
@@ -84,4 +86,17 @@ void CStreamingKernel::init()
 	m_block_size=1;
 
 	SG_WARNING("TODO init method register parameters\n");
+}
+
+bool CStreamingKernel::init(CFeatures* l, CFeatures* r)
+{
+	CStreamingFeatures* streaming_l=dynamic_cast<CStreamingFeatures*>(l);
+	CStreamingFeatures* streaming_r=dynamic_cast<CStreamingFeatures*>(r);
+
+	REQUIRE(streaming_l, "%s::init(): LHS features must be streaming "
+			"features!\n", get_name());
+	REQUIRE(streaming_r, "%s::init(): RHS features must be streaming "
+			"features!\n", get_name());
+
+	return CKernel::init(l, r);
 }
