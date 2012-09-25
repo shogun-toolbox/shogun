@@ -30,20 +30,20 @@ using namespace shogun;
 #define DIMS 2
 #define DIST 0.5
 
-void gen_rand_data(SGMatrix<float32_t> feat, SGVector<float64_t> lab)
+void gen_rand_data(SGMatrix<float64_t> feat, SGVector<float64_t> lab)
 {
 	for (int32_t i=0; i<NUM; i++)
 	{
 		if (i<NUM/2)
 		{
 			for (int32_t j=0; j<DIMS; j++)
-				feat[i*DIMS+j]=CMath::random(0.0,1.0)+DIST;
+				feat[i*DIMS+j]=CMath::random(0.0, 1.0)+DIST;
 			lab[i]=0;
 		}
 		else
 		{
 			for (int32_t j=0; j<DIMS; j++)
-				feat[i*DIMS+j]=CMath::random(0.0,1.0)-DIST;
+				feat[i*DIMS+j]=CMath::random(0.0, 1.0)-DIST;
 			lab[i]=1;
 		}
 	}
@@ -51,28 +51,27 @@ void gen_rand_data(SGMatrix<float32_t> feat, SGVector<float64_t> lab)
 	lab.display_vector("lab");
 }
 
-
-void test()
+void test_general()
 {
-	SGMatrix<float32_t> feat(DIMS, NUM);
+	SGMatrix<float64_t> feat(DIMS, NUM);
 	SGVector<float64_t> lab(NUM);
 
 	// Generate random data, features and labels
 	gen_rand_data(feat, lab);
 
 	// Create features
-	CDenseFeatures<float32_t>* features = new CDenseFeatures<float32_t>();
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
 	SG_REF(features);
 	features->set_feature_matrix(feat);
 
 	// Create a StreamingDenseFeatures object which uses the above as input;
 	// labels (float64_t*) are optional
-	CStreamingDenseFeatures<float32_t>* streaming_simple =
-			new CStreamingDenseFeatures<float32_t>(features, lab);
-	SG_REF(streaming_simple);
+	CStreamingDenseFeatures<float64_t>* streaming=new CStreamingDenseFeatures<
+			float64_t>(features, lab);
+	SG_REF(streaming);
 
 	// Start parsing of the examples; in this case, it is trivial - returns each vector from the DenseFeatures object
-	streaming_simple->start_parser();
+	streaming->start_parser();
 
 	int32_t counter=0;
 	SG_SPRINT("Processing examples...\n\n");
@@ -82,12 +81,12 @@ void test()
 	// number_of_vectors known to the StreamingFeatures object.
 	// Thus, this loop must be used to iterate over all the
 	// features
-	while (streaming_simple->get_next_example())
+	while (streaming->get_next_example())
 	{
 		counter++;
 		// Get the current vector; no other vector is accessible
-		SGVector<float32_t> vec = streaming_simple->get_vector();
-		float64_t label = streaming_simple->get_label();
+		SGVector<float64_t> vec=streaming->get_vector();
+		float64_t label=streaming->get_label();
 
 		SG_SPRINT("Vector %d: [\t", counter);
 		for (int32_t i=0; i<vec.vlen; i++)
@@ -99,27 +98,101 @@ void test()
 		// Calculate dot product of the current vector (from
 		// the StreamingFeatures object) with itself (the
 		// vector passed as argument)
-		float32_t dot_prod = streaming_simple->dense_dot(vec.vector, vec.vlen);
+		float64_t dot_prod=streaming->dense_dot(vec.vector, vec.vlen);
 
 		SG_SPRINT("]\nDot product of the vector with itself: %f", dot_prod);
 		SG_SPRINT("\n\n");
 
 		// Free the example, since we are done with processing it.
-		streaming_simple->release_example();
+		streaming->release_example();
 	}
 
 	// Now that all examples are used, end the parser.
-	streaming_simple->end_parser();
+	streaming->end_parser();
 
-	SG_UNREF(streaming_simple);
+	SG_UNREF(streaming);
 	SG_UNREF(features);
+}
+
+void test_get_streamed_features()
+{
+	/* create streaming features from dense features and then make call and
+	 * assert that data is equal */
+
+	SGMatrix<float64_t> feat(DIMS, NUM);
+	SGVector<float64_t> lab(NUM);
+
+	// Generate random data, features and labels
+	gen_rand_data(feat, lab);
+
+	// Create features
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
+	SG_REF(features);
+	features->set_feature_matrix(feat);
+
+	// Create a StreamingDenseFeatures object which uses the above as input;
+	// labels (float64_t*) are optional
+	CStreamingDenseFeatures<float64_t>* streaming=new CStreamingDenseFeatures<
+			float64_t>(features, lab);
+	SG_REF(streaming);
+
+	streaming->start_parser();
+	CDenseFeatures<float64_t>* dense=
+			(CDenseFeatures<float64_t>*)streaming->get_streamed_features(NUM);
+
+	/* assert that matrices are equal */
+	ASSERT(dense->get_feature_matrix()==feat);
+
+	SG_UNREF(dense);
+	streaming->end_parser();
+
+	SG_UNREF(features);
+	SG_UNREF(streaming);
+}
+
+void test_from_non_streaming()
+{
+	/* create streaming features from dense features via CStreamingFeatures
+	 * interface and check that data is equal */
+
+	SGMatrix<float64_t> feat(DIMS, NUM);
+	SGVector<float64_t> lab(NUM);
+
+	// Generate random data, features and labels
+	gen_rand_data(feat, lab);
+
+	// Create features
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
+	SG_REF(features);
+	features->set_feature_matrix(feat);
+
+	/* this is the important call */
+	CStreamingFeatures* streaming=
+			CStreamingFeatures::from_non_streaming(features);
+	SG_REF(streaming);
+
+	/* use get_streamed_features method to compare whether it worked */
+	streaming->start_parser();
+	CDenseFeatures<float64_t>* dense=
+			(CDenseFeatures<float64_t>*)streaming->get_streamed_features(NUM);
+
+	/* assert that matrices are equal */
+	ASSERT(dense->get_feature_matrix()==feat);
+
+	SG_UNREF(dense);
+	streaming->end_parser();
+
+	SG_UNREF(features);
+	SG_UNREF(streaming);
 }
 
 int main()
 {
 	init_shogun_with_defaults();
 
-	test();
+	test_general();
+	test_get_streamed_features();
+	test_from_non_streaming();
 
 	exit_shogun();
 	return 0;
