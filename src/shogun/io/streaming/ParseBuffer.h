@@ -252,7 +252,6 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 
 template <class T> CParseBuffer<T>::~CParseBuffer()
 {
-	SG_PRINT("free vectors on destruct: %d\n", free_vectors_on_destruct);
 	for (int32_t i=0; i<ring_size; i++)
 	{
 		if (ex_ring[i].fv.vector != NULL && free_vectors_on_destruct)

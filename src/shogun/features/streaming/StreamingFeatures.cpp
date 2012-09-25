@@ -20,7 +20,9 @@ CStreamingFeatures::CStreamingFeatures() : CFeatures()
 
 CStreamingFeatures::~CStreamingFeatures()
 {
+	SG_DEBUG("entering CStreamingFeatures::~CStreamingFeatures()\n");
 	SG_UNREF(working_file);
+	SG_DEBUG("leaving CStreamingFeatures::~CStreamingFeatures()\n");
 }
 
 CStreamingFeatures::CStreamingFeatures(CStreamingFile* file,

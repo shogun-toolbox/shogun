@@ -55,8 +55,10 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 
 template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
+	SG_DEBUG("entering %s::~CStreamingDenseFeatures()\n", get_name());
 	if (parser.is_running())
 		parser.end_parser();
+	SG_DEBUG("leaving %s::~CStreamingDenseFeatures()\n", get_name());
 }
 
 template<class T> void CStreamingDenseFeatures<T>::reset_stream()
@@ -141,9 +143,9 @@ template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
 {
-	if (current_vector)
+//	if (current_vector)
 		return 1;
-	return 0;
+//	return 0;
 }
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_size() const
@@ -298,6 +300,9 @@ template<class T>
 CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		index_t num_elements)
 {
+	SG_DEBUG("entering %s(%p)::get_streamed_features(%d)\n", get_name(), this,
+			num_elements);
+
 	/* init matrix empty since num_rows is not yet known */
 	SGMatrix<T> matrix;
 
@@ -333,9 +338,16 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		memcpy(&matrix.matrix[current_length*i], vec.vector,
 				vec.vlen*sizeof(T));
 
+		/* evtl output vector */
+		if (sg_io->get_loglevel()==MSG_DEBUG)
+			vec.display_vector("streamed vector");
+
 		/* clean up */
 		release_example();
 	}
+
+	SG_DEBUG("leaving %s(%p)::get_streamed_features(%d)\n", get_name(), this,
+			num_elements);
 
 	/* create new feature object from collected data */
 	return new CDenseFeatures<T>(matrix);

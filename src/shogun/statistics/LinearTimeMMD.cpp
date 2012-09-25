@@ -33,7 +33,8 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 			get_name());
 }
 
-CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q)
+CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q,
+		index_t m)
 {
 	/* convienience constructor, construct streaming kernel and features from
 	 * the provided objects. Thats why base constructor is NOT called */
@@ -47,12 +48,16 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q)
 			"features. This constructor can only handle non-streaming features"
 			" and kernels!\n", get_name());
 
+	m_m=m;
+
 	/* create streaming features from given features. Same for kernel */
 	m_streaming_p=CStreamingFeatures::from_non_streaming(p);
 	SG_REF(m_streaming_p);
+	m_streaming_p->start_parser();
 
 	m_streaming_q=CStreamingFeatures::from_non_streaming(q);
-	SG_REF(m_streaming_p);
+	SG_REF(m_streaming_q);
+	m_streaming_q->start_parser();
 
 	m_kernel=new CStreamingKernel(m_streaming_p, m_streaming_q, kernel);
 	SG_REF(m_kernel);
@@ -131,15 +136,27 @@ float64_t CLinearTimeMMD::compute_statistic()
 	for (index_t i=0; i<m_2; ++i)
 	{
 		/* stream kernel values and add values */
+		SG_DEBUG("initialising streaming kernel with pp\n");
 		streaming_kernel->init(m_streaming_p, m_streaming_p);
-		pp+=streaming_kernel->kernel(0, 0);
+		float64_t temp=streaming_kernel->kernel(0, 0);
+		pp+=temp;
+		SG_DEBUG("pp+=%f\n", temp);
 
+		SG_DEBUG("initialising streaming kernel with qq\n");
 		streaming_kernel->init(m_streaming_q, m_streaming_q);
-		qq+=streaming_kernel->kernel(0, 0);
+		temp=streaming_kernel->kernel(0, 0);
+		qq+=temp;
+		SG_DEBUG("qq+=%f\n", temp);
 
+		SG_DEBUG("initialising streaming kernel with pq\n");
 		streaming_kernel->init(m_streaming_p, m_streaming_q);
-		pq+=streaming_kernel->kernel(0, 0);
-		qp+=streaming_kernel->kernel(0, 0);
+		temp=streaming_kernel->kernel(0, 0);
+		pq+=temp;
+		SG_DEBUG("pq+=%f\n", temp);
+
+		temp=streaming_kernel->kernel(0, 0);
+		qp+=temp;
+		SG_DEBUG("pq+=%f\n", temp);
 	}
 
 	SG_DEBUG("returning: 1/%d*(%f+%f-%f-%f)\n", m_2, pp, qq, pq, qp);

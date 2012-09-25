@@ -101,11 +101,16 @@ public:
 	 * the given normal features automagically. A streaming kernel is also
 	 * constructed.
 	 *
+	 * Note that the number of vectors in both features may be different here
+	 * since data is streamed.
+	 *
 	 * @param kernel kernel for MMD. Is used to construct streaming kernel
 	 * @param p samples from distribution p, basis for streaming features
 	 * @param q samples from distribution q, basis for streaming features
+	 * @param m number of sample to use for MMD test (not all feature data has
+	 * to be used)
 	 */
-	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
+	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q, index_t m);
 
 	virtual ~CLinearTimeMMD();
 

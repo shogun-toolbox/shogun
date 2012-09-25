@@ -19,34 +19,39 @@ CStreamingKernel::CStreamingKernel()
 
 CStreamingKernel::CStreamingKernel(CStreamingFeatures* streaming_lhs,
 		CStreamingFeatures* streaming_rhs, CKernel* baseline_kernel):
-		CKernel()
+		CKernel(streaming_lhs, streaming_rhs, 0)
 {
+	SG_DEBUG("entering %s::CStreamingKernel(%p, %p, %p)\n", get_name(),
+			streaming_lhs, streaming_rhs, baseline_kernel);
+	/* CKernel also has init() */
 	CStreamingKernel::init();
 
 	m_baseline_kernel=baseline_kernel;
 	SG_REF(baseline_kernel);
 
-	m_streaming_lhs=streaming_lhs;
-	SG_REF(m_streaming_lhs);
-
-	m_streaming_rhs=streaming_rhs;
-	SG_REF(m_streaming_rhs);
+	SG_DEBUG("leaving %s::CStreamingKernel(%p, %p, %p)\n", get_name(),
+			streaming_lhs, streaming_rhs, baseline_kernel);
 }
 
 CStreamingKernel::~CStreamingKernel()
 {
 	SG_UNREF(m_baseline_kernel);
-	SG_UNREF(m_streaming_lhs);
-	SG_UNREF(m_streaming_rhs);
 }
 
 float64_t CStreamingKernel::compute(int32_t idx_a, int32_t idx_b)
 {
+	SG_DEBUG("entering %s::compute\n", get_name());
 	/* NOTE: indices are ignored */
 
-	/* create feature objects from streaming features (one each) */
-	CFeatures* l=m_streaming_lhs->get_streamed_features(1);
-	CFeatures* r=m_streaming_rhs->get_streamed_features(1);
+	/* create feature objects from streaming features (one each)
+	 * Note that we *know* that lhs and rhs are streaming kernels */
+	CStreamingFeatures* streaming_lhs=dynamic_cast<CStreamingFeatures*>(lhs);
+	CStreamingFeatures* streaming_rhs=dynamic_cast<CStreamingFeatures*>(rhs);
+	ASSERT(lhs);
+	ASSERT(rhs);
+
+	CFeatures* l=streaming_lhs->get_streamed_features(1);
+	CFeatures* r=streaming_rhs->get_streamed_features(1);
 	SG_REF(l);
 	SG_REF(r);
 
@@ -57,14 +62,24 @@ float64_t CStreamingKernel::compute(int32_t idx_a, int32_t idx_b)
 	/* clean up and return */
 	SG_UNREF(l);
 	SG_UNREF(r);
+
+	SG_DEBUG("returning %f\n", result);
+
+	SG_DEBUG("leaving %s::compute\n", get_name());
 	return result;
 }
 
 SGMatrix<float64_t> CStreamingKernel::get_kernel_matrix()
 {
+	/* Note that we *know* that lhs and rhs are streaming kernels */
+	CStreamingFeatures* streaming_lhs=dynamic_cast<CStreamingFeatures*>(lhs);
+	CStreamingFeatures* streaming_rhs=dynamic_cast<CStreamingFeatures*>(rhs);
+	ASSERT(lhs);
+	ASSERT(rhs);
+
 	/* create feature objects from streaming features */
-	CFeatures* l=m_streaming_lhs->get_streamed_features(m_block_size);
-	CFeatures* r=m_streaming_rhs->get_streamed_features(m_block_size);
+	CFeatures* l=streaming_lhs->get_streamed_features(m_block_size);
+	CFeatures* r=streaming_rhs->get_streamed_features(m_block_size);
 	SG_REF(l);
 	SG_REF(r);
 
@@ -81,8 +96,6 @@ SGMatrix<float64_t> CStreamingKernel::get_kernel_matrix()
 void CStreamingKernel::init()
 {
 	m_baseline_kernel=NULL;
-	m_streaming_lhs=NULL;
-	m_streaming_rhs=NULL;
 	m_block_size=1;
 
 	SG_WARNING("TODO init method register parameters\n");
@@ -90,6 +103,8 @@ void CStreamingKernel::init()
 
 bool CStreamingKernel::init(CFeatures* l, CFeatures* r)
 {
+	SG_DEBUG("entering %s::init(%p, %p)\n", get_name(), l, r);
+
 	CStreamingFeatures* streaming_l=dynamic_cast<CStreamingFeatures*>(l);
 	CStreamingFeatures* streaming_r=dynamic_cast<CStreamingFeatures*>(r);
 
@@ -98,5 +113,8 @@ bool CStreamingKernel::init(CFeatures* l, CFeatures* r)
 	REQUIRE(streaming_r, "%s::init(): RHS features must be streaming "
 			"features!\n", get_name());
 
-	return CKernel::init(l, r);
+	bool result=CKernel::init(l, r);
+	SG_DEBUG("leaving %s::init(%p, %p)\n", get_name(), l, r);
+
+	return result;
 }

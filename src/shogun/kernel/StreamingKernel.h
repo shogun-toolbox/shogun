@@ -70,9 +70,6 @@ class CStreamingKernel: public CKernel
 	protected:
 		CKernel* m_baseline_kernel;
 
-		CStreamingFeatures* m_streaming_lhs;
-		CStreamingFeatures* m_streaming_rhs;
-
 		index_t m_block_size;
 };
 }
