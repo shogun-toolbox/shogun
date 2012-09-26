@@ -306,6 +306,10 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	/* init matrix empty since num_rows is not yet known */
 	SGMatrix<T> matrix;
 
+	bool parser_flag=parser.is_running();
+	if (!parser_flag)
+		parser.start_parser();
+
 	for (index_t i=0; i<num_elements; ++i)
 	{
 		/* check if we run out of data */
@@ -346,11 +350,16 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		release_example();
 	}
 
+	if (!parser_flag)
+		parser.exit_parser();
+
+	/* create new feature object from collected data */
+	CDenseFeatures<T>* result=new CDenseFeatures<T>(matrix);
+
 	SG_DEBUG("leaving %s(%p)::get_streamed_features(%d)\n", get_name(), this,
 			num_elements);
 
-	/* create new feature object from collected data */
-	return new CDenseFeatures<T>(matrix);
+	return result;
 }
 
 template class CStreamingDenseFeatures<bool> ;
