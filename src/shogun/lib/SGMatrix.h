@@ -96,6 +96,26 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
+		/** operator overload for element-wise matrix comparison.
+		 * Note that only numerical data is compared
+		 *
+		 * @param other matrix to compare with
+		 * @return true iff all elements are euqal using == operator
+		 */
+		inline bool operator==(SGMatrix<T>& other)
+		{
+			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
+				return false;
+
+			for (index_t i=0; i<num_rows*num_cols; ++i)
+			{
+				if (matrix[i]!=other.matrix[i])
+					return false;
+			}
+
+			return true;
+		}
+
 		/** set matrix to a constant */
 		void set_const(T const_elem)
 		{
