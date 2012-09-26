@@ -11,13 +11,17 @@
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
 /** tests the linear mmd statistic for a single data case and ensures
- * equality with matlab implementation */
+ * equality with matlab implementation. Since data from memory is used,
+ * this is rather complicated, i.e. create dense features and then create
+ * streaming dense features from them. Normally, just use streaming features
+ * directly. */
 void test_linear_mmd_fixed()
 {
 	index_t m=2;
@@ -38,12 +42,18 @@ void test_linear_mmd_fixed()
 	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=
+			new CStreamingDenseFeatures<float64_t>(features_p);
+	CStreamingFeatures* streaming_q=
+			new CStreamingDenseFeatures<float64_t>(features_q);
+
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
 	/* create MMD instance. this will create streaming kernel and features
 	 * internally */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features_p, features_q, m);
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
 
 	/* assert matlab result */
 	float64_t difference=mmd->compute_statistic()-0.034218118311602;
@@ -77,11 +87,16 @@ void test_linear_mmd_random()
 	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=
+			new CStreamingDenseFeatures<float64_t>(features_p);
+	CStreamingFeatures* streaming_q=
+			new CStreamingDenseFeatures<float64_t>(features_q);
 
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features_p, features_q, m);
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
@@ -127,10 +142,16 @@ void test_linear_mmd_variance_estimate()
 	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=
+			new CStreamingDenseFeatures<float64_t>(features_p);
+	CStreamingFeatures* streaming_q=
+			new CStreamingDenseFeatures<float64_t>(features_q);
+
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
 
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, features_p, features_q, m);
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
 
 	for (index_t i=0; i<num_runs; ++i)
 	{
