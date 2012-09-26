@@ -43,11 +43,17 @@ int lassoCD(double *Theta, double *W, double *S, double lambda, int n, int ith, 
 	double x_change;
 
 	Ax=         (double *)malloc(sizeof(double)*n);
-	x=          (double *)malloc(sizeof(double)*n);
-
-
-	if ( (Ax==NULL) || (x==NULL) ){
+	if (Ax==NULL)
+	{
 		printf("\n Memory allocation failure!");
+		return (-1);
+	}
+
+	x=          (double *)malloc(sizeof(double)*n);
+	if (x==NULL)
+	{
+		printf("\n Memory allocation failure!");
+		free(Ax);
 		return (-1);
 	}
 
