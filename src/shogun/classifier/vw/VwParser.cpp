@@ -138,7 +138,7 @@ int32_t CVwParser::read_features(CIOBuffer* buf, VwExample*& ae)
 		for (substring* j = words.begin+feature_offset; j != words.end; j++)
 		{
 			/* Get individual features and multiply by scale value */
-			float32_t v;
+			float32_t v = 0.0;
 			feature_value(*j, name, v);
 			v *= channel_v;
 
