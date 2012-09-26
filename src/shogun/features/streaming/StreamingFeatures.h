@@ -201,21 +201,6 @@ public:
 		return NULL;
 	}
 
-	/** Static method that returns a newly created streaming features instance
-	 * which streams data from a provided features object.
-	 *
-	 * @param source_features features that are streamed from
-	 * @return new streaming features instance that is based on provided
-	 * features
-	 *
-	 * NOTE: This is currently extremely ugly. Should be done in subclasses
-	 * via type of argument. But this is beyond my c++ knowledge.
-	 * If you know a better way, please tell me!
-	 * Heiko Strathmann
-	 */
-	static CStreamingFeatures* from_non_streaming(
-			CFeatures* source_features);
-
 protected:
 
 	/// Whether examples are labelled or not.

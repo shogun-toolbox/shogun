@@ -51,31 +51,3 @@ void CStreamingFeatures::reset_stream()
 	SG_NOTIMPLEMENTED;
 	return;
 }
-CStreamingFeatures* CStreamingFeatures::from_non_streaming(
-			CFeatures* source_features)
-{
-	CStreamingFeatures* result=NULL;
-
-	REQUIRE(source_features, "CStreamingFeatures::from_non_streaming(): "
-			"features required!\n");
-
-	/* please help here! This must be solved better. Heiko Strathmann */
-	if (source_features->get_feature_type()==F_DREAL)
-	{
-		CDenseFeatures<float64_t>* dense_features=
-				dynamic_cast<CDenseFeatures<float64_t>*>(source_features);
-
-		REQUIRE(dense_features, "CStreamingFeatures::from_non_streaming(): "
-				"Provided features \"%s\" not supported!\n",
-				source_features->get_name());
-
-		result=new CStreamingDenseFeatures<float64_t>(dense_features);
-	}
-	else
-	{
-		SG_SERROR("CStreamingFeaturess::from_non_streaming(): Currently, only "
-				"float64_t dense features suppoted!\n");
-	}
-
-	return result;
-}
