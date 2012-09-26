@@ -97,15 +97,15 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
-	SG_DEBUG("entering CKernel::init()\n");
+	SG_DEBUG("entering CKernel::init(%p, %p)\n", l, r);
 
 	/* make sure that features are not deleted if same ones are used */
 	SG_REF(l);
 	SG_REF(r);
 
 	//make sure features were indeed supplied
-	REQUIRE(l, "CKernel::init(): LHS features required!\n");
-	REQUIRE(r, "CKernel::init(): RHS features required!\n");
+	REQUIRE(l, "CKernel::init(%p, %p): LHS features required!\n", l, r);
+	REQUIRE(r, "CKernel::init(%p, %p): RHS features required!\n", l, r);
 
 	//make sure features are compatible
 	ASSERT(l->get_feature_class()==r->get_feature_class());
@@ -134,7 +134,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	SG_UNREF(r);
 	SG_UNREF(l);
 
-	SG_DEBUG("leaving CKernel::init()\n");
+	SG_DEBUG("leaving CKernel::init(%p, %p)\n", l, r);
 	return true;
 }
 
