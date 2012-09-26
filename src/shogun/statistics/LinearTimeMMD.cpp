@@ -13,7 +13,6 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/kernel/CombinedKernel.h>
-#include <shogun/kernel/StreamingKernel.h>
 
 #include <shogun/lib/external/libqp.h>
 

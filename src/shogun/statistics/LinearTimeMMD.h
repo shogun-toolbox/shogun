@@ -17,9 +17,7 @@
 namespace shogun
 {
 
-
 class CStreamingFeatures;
-class CStreamingKernel;
 class CFeatures;
 
 /** @brief This class implements the linear time Maximum Mean Statistic as
