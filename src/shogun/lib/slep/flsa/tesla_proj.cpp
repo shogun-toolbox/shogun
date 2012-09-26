@@ -182,6 +182,7 @@ switch( flag )
 		free(v);
 		free(z);
 		free(z0);
+		free(infor);
 
 	}
 #endif   /* ----- #ifndef TESLA_PROJ_SLEP  ----- */
