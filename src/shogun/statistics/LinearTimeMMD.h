@@ -83,11 +83,11 @@ public:
 	CLinearTimeMMD();
 
 	/** Constructor.
-	 * @param kernel streaming kernel to use
+	 * @param kernel kernel to use
 	 * @param p streaming features p to use
 	 * @param q streaming features q to use
 	 */
-	CLinearTimeMMD(CStreamingKernel* kernel, CStreamingFeatures* p,
+	CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
 			CStreamingFeatures* q, index_t m);
 
 	/** Constructor.
@@ -98,13 +98,12 @@ public:
 
 	/** Constructor.
 	 * This is a convienience constructor which creates streaming features from
-	 * the given normal features automagically. A streaming kernel is also
-	 * constructed.
+	 * the given normal features automagically.
 	 *
 	 * Note that the number of vectors in both features may be different here
 	 * since data is streamed.
 	 *
-	 * @param kernel kernel for MMD. Is used to construct streaming kernel
+	 * @param kernel kernel for MMD
 	 * @param p samples from distribution p, basis for streaming features
 	 * @param q samples from distribution q, basis for streaming features
 	 * @param m number of sample to use for MMD test (not all feature data has

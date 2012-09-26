@@ -36,17 +36,16 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q,
 		index_t m)
 {
-	/* convienience constructor, construct streaming kernel and features from
+	/* convienience constructor, construct streaming features from
 	 * the provided objects. Thats why base constructor is NOT called */
 
 	/* prevent calling this with streaming features */
 	CStreamingFeatures* temp1=dynamic_cast<CStreamingFeatures*>(p);
 	CStreamingFeatures* temp2=dynamic_cast<CStreamingFeatures*>(q);
-	CStreamingKernel* temp3=dynamic_cast<CStreamingKernel*>(kernel);
-	REQUIRE(!(temp1 || temp2 || temp3), "%s::CLinearTimeMMD(): Please use "
+	REQUIRE(!(temp1 || temp2), "%s::CLinearTimeMMD(): Please use "
 			"streaming features based constructor when passing streaming "
 			"features. This constructor can only handle non-streaming features"
-			" and kernels!\n", get_name());
+			"\n", get_name());
 
 	m_m=m;
 
@@ -59,12 +58,13 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q,
 	SG_REF(m_streaming_q);
 	m_streaming_q->start_parser();
 
-	m_kernel=new CStreamingKernel(m_streaming_p, m_streaming_q, kernel);
+	/* this would normally be done in base constructor but its not called here */
+	m_kernel=kernel;
 	SG_REF(m_kernel);
 }
 
-CLinearTimeMMD::CLinearTimeMMD(CStreamingKernel* kernel,
-		CStreamingFeatures* p, CStreamingFeatures* q, index_t m) :
+CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
+		CStreamingFeatures* q, index_t m) :
 		CKernelTwoSampleTestStatistic(kernel, NULL, m)
 {
 	init();
@@ -80,6 +80,8 @@ CLinearTimeMMD::~CLinearTimeMMD()
 {
 	SG_UNREF(m_streaming_p);
 	SG_UNREF(m_streaming_q);
+
+	/* m_kernel is SG_UNREFed in base desctructor */
 }
 
 void CLinearTimeMMD::init()
@@ -114,12 +116,6 @@ float64_t CLinearTimeMMD::compute_statistic()
 
 	REQUIRE(m_kernel, "%s::compute_statistic: kernel needed!\n", get_name());
 
-	/* cast kernel as streaming kernel */
-	CStreamingKernel* streaming_kernel=
-			dynamic_cast<CStreamingKernel*>(m_kernel);
-	REQUIRE(streaming_kernel,
-			"%s::compute_statistic: streaming kernel required!\n", get_name());
-
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
 	index_t m_2=m_m/2;
@@ -135,28 +131,46 @@ float64_t CLinearTimeMMD::compute_statistic()
 	/* compute sums */
 	for (index_t i=0; i<m_2; ++i)
 	{
+		/* stream four more elements */
+		CFeatures* p1=m_streaming_p->get_streamed_features(1);
+		CFeatures* p2=m_streaming_p->get_streamed_features(1);
+		CFeatures* q1=m_streaming_q->get_streamed_features(1);
+		CFeatures* q2=m_streaming_q->get_streamed_features(1);
+		SG_REF(p1);
+		SG_REF(p2);
+		SG_REF(q1);
+		SG_REF(q2);
+
 		/* stream kernel values and add values */
 		SG_DEBUG("initialising streaming kernel with pp\n");
-		streaming_kernel->init(m_streaming_p, m_streaming_p);
-		float64_t temp=streaming_kernel->kernel(0, 0);
+		m_kernel->init(p1, p2);
+		float64_t temp=m_kernel->kernel(0, 0);
 		pp+=temp;
 		SG_DEBUG("pp+=%f\n", temp);
 
 		SG_DEBUG("initialising streaming kernel with qq\n");
-		streaming_kernel->init(m_streaming_q, m_streaming_q);
-		temp=streaming_kernel->kernel(0, 0);
+		m_kernel->init(q1, q2);
+		temp=m_kernel->kernel(0, 0);
 		qq+=temp;
 		SG_DEBUG("qq+=%f\n", temp);
 
 		SG_DEBUG("initialising streaming kernel with pq\n");
-		streaming_kernel->init(m_streaming_p, m_streaming_q);
-		temp=streaming_kernel->kernel(0, 0);
+		m_kernel->init(p1, q2);
+		temp=m_kernel->kernel(0, 0);
 		pq+=temp;
 		SG_DEBUG("pq+=%f\n", temp);
 
-		temp=streaming_kernel->kernel(0, 0);
+		SG_DEBUG("initialising streaming kernel with qp\n");
+		m_kernel->init(p2, q1);
+		temp=m_kernel->kernel(0, 0);
 		qp+=temp;
-		SG_DEBUG("pq+=%f\n", temp);
+		SG_DEBUG("qp+=%f\n", temp);
+
+		/* clean up */
+		SG_UNREF(p1);
+		SG_UNREF(p2);
+		SG_UNREF(q1);
+		SG_UNREF(q2);
 	}
 
 	SG_DEBUG("returning: 1/%d*(%f+%f-%f-%f)\n", m_2, pp, qq, pq, qp);
