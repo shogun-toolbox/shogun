@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Shashwat Lal Das
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #ifndef _STREAMING_FEATURES__H__
@@ -50,7 +51,13 @@ namespace shogun
  *
  * - get_num_features(): returns the number of features for the current example.
  *
- *   release_example() must be called before get_next_example().
+ * - release_example() must be called before get_next_example().
+ *
+ * - get_streamed_features() to retreive a non-streaming instance of a certain size
+ *   (has to be implemented in subclasses)
+ *
+ * - from_non_streaming() to stream features from an existing features object
+ *   (has to be implemented in subclasses)
  *
  *   The feature vector itself may be returned through a derived class
  *   since at the moment the parser is templated for each data type.
@@ -83,7 +90,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFeatures() { }
+	virtual ~CStreamingFeatures();
 
 	/**
 	 * Set the vector reading functions.
@@ -178,6 +185,21 @@ public:
 	 * Function to reset the stream (if possible).
 	 */
 	virtual void reset_stream();
+
+	/** Returns a CFeatures instance which contains num_elements elements from
+	 * the underlying stream
+	 *
+	 * @param num_elements num elements to save from stream
+	 * @return CFeatures object of underlying type, NULL if not enough data
+	 *
+	 * NOT IMPLEMENTED!
+	 */
+	virtual CFeatures* get_streamed_features(index_t num_elements)
+	{
+		SG_ERROR("%s::get_streamed_features() is not yet implemented!\n",
+				get_name());
+		return NULL;
+	}
 
 protected:
 

@@ -17,6 +17,7 @@
 namespace shogun
 {
 
+class CStreamingFeatures;
 class CFeatures;
 
 /** @brief This class implements the linear time Maximum Mean Statistic as
@@ -69,35 +70,33 @@ class CFeatures;
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  *
- * [2]: TODO, not yet published
+ * [2]: Gretton, A., Sriperumbudur, B., Sejdinovic, D., Strathmann, H.,
+ * Balakrishnan, S., Pontil, M., & Fukumizu, K. (2012).
+ * Optimal kernel choice for large-scale two-sample tests.
+ * Advances in Neural Information Processing Systems.
  */
 class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
 public:
 	CLinearTimeMMD();
 
-	/** Constructor
-	 *
-	 * @param p_and_q feature data. Is assumed to contain samples from both
-	 * p and q. First all samples from p, then from index q_start all
-	 * samples from q
-	 *
+	/** Constructor.
 	 * @param kernel kernel to use
-	 * @param p_and_q samples from p and q, appended
-	 * @param q_start index of first sample of q
+	 * @param p streaming features p to use
+	 * @param q streaming features q to use
 	 */
-	CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t q_start);
+	CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
+			CStreamingFeatures* q, index_t m);
 
 	/** Constructor.
-	 * This is a convienience constructor which copies both features to one
-	 * element and then calls the other constructor. Needs twice the memory
-	 * for a short time
-	 *
-	 * @param kernel kernel for MMD
-	 * @param p samples from distribution p, will be copied and NOT
-	 * SG_REF'ed
-	 * @param q samples from distribution q, will be copied and NOT
-	 * SG_REF'ed
+	 * This throws an error since this way of appended features is not supported
+	 * for linear time MMD. Is here to prevent usage of superclass constructor
+	 * */
+	CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t m);
+
+	/** Constructor.
+	 * This throws an error since normal features are not supported.
+	 * Is here to prevent usage of superclass constructor
 	 */
 	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
 
@@ -226,6 +225,10 @@ protected:
 
 	/** matrix for selection of kernel weights (static because of libqp) */
 	static SGMatrix<float64_t> m_Q;
+
+	CStreamingFeatures* m_streaming_p;
+	CStreamingFeatures* m_streaming_q;
+
 };
 
 }

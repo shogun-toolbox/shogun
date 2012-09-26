@@ -28,9 +28,6 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 
 	m_kernel=kernel;
 	SG_REF(kernel);
-
-	/* init kernel once in the beginning */
-	m_kernel->init(m_p_and_q, m_p_and_q);
 }
 
 CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,

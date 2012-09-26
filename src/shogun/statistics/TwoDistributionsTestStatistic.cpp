@@ -20,14 +20,14 @@ CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic() :
 
 CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
 		CFeatures* p_and_q,
-		index_t q_start) : CTestStatistic()
+		index_t m) : CTestStatistic()
 {
 	init();
 
 	m_p_and_q=p_and_q;
 	SG_REF(m_p_and_q);
 
-	m_q_start=q_start;
+	m_m=m;
 }
 
 CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
@@ -39,7 +39,7 @@ CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
 	m_p_and_q=p->create_merged_copy(q);
 	SG_REF(m_p_and_q);
 
-	m_q_start=p->get_num_vectors();
+	m_m=p->get_num_vectors();
 }
 
 CTwoDistributionsTestStatistic::~CTwoDistributionsTestStatistic()
@@ -51,11 +51,11 @@ void CTwoDistributionsTestStatistic::init()
 {
 	SG_ADD((CSGObject**)&m_p_and_q, "p_and_q", "Concatenated samples p and q",
 			MS_NOT_AVAILABLE);
-	SG_ADD(&m_q_start, "q_start", "Index of first sample of q",
+	SG_ADD(&m_m, "m", "Index of first sample of q",
 			MS_NOT_AVAILABLE);
 
 	m_p_and_q=NULL;
-	m_q_start=0;
+	m_m=0;
 }
 
 SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()

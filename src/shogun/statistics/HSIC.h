@@ -73,16 +73,16 @@ public:
 	/** Constructor
 	 *
 	 * @param p_and_q feature data. Is assumed to contain samples from both
-	 * p and q. First all samples from p, then from index q_start all
+	 * p and q. First all samples from p, then from index m all
 	 * samples from q
 	 *
 	 * @param kernel_p kernel to use on samples from p
 	 * @param kernel_q kernel to use on samples from q
 	 * @param p_and_q samples from p and q, appended
-	 * @param q_start index of first sample of q
+	 * @param m index of first sample of q
 	 */
 	CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
-			index_t q_start);
+			index_t m);
 
 	/** Constructor.
 	 * This is a convienience constructor which copies both features to one

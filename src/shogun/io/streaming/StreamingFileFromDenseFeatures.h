@@ -24,7 +24,8 @@ namespace shogun
  *
  * It is useful for testing/comparison purposes.
  */
-template <class T> class CStreamingFileFromDenseFeatures: public CStreamingFileFromFeatures
+template<class T> class CStreamingFileFromDenseFeatures:
+	public CStreamingFileFromFeatures
 {
 public:
 	/**
@@ -36,16 +37,10 @@ public:
 	 * Constructor taking a DenseFeatures object as arg
 	 *
 	 * @param feat DenseFeatures object
+	 * @param lab Labels as float64_t*, optional
 	 */
-	CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat);
-
-	/**
-	 * Constructor taking a DenseFeatures object as arg
-	 *
-	 * @param feat DenseFeatures object
-	 * @param lab Labels as float64_t*
-	 */
-	CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat, float64_t* lab);
+	CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat,
+			float64_t* lab=NULL);
 
 	/**
 	 * Destructor
@@ -80,7 +75,7 @@ public:
 	 */
 	void reset_stream()
 	{
-		vector_num = 0;
+		vector_num=0;
 	}
 
 	/** @return object name */
@@ -106,89 +101,88 @@ protected:
 
 };
 
-template <class T>
-CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures()
-	: CStreamingFileFromFeatures()
+template<class T>
+CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures() :
+		CStreamingFileFromFeatures()
 {
 	init();
 }
 
-template <class T>
-CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat)
-	: CStreamingFileFromFeatures()
+template<class T>
+CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(
+		CDenseFeatures<T>* feat, float64_t* lab) :
+		CStreamingFileFromFeatures()
 {
-	ASSERT(feat);
-	features=feat;
-
 	init();
-}
 
-template <class T>
-CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat, float64_t* lab)
-	: CStreamingFileFromFeatures()
-{
-	ASSERT(feat);
-	ASSERT(lab);
+	REQUIRE(feat,"%s::CStreamingFileFromDenseFeatures() features required!\n",
+			get_name());
 	features=feat;
+	SG_REF(feat);
+
 	labels=lab;
 
-	init();
 }
 
-template <class T>
+template<class T>
 CStreamingFileFromDenseFeatures<T>::~CStreamingFileFromDenseFeatures()
 {
+	SG_UNREF(features);
 }
 
-template <class T>
+template<class T>
 void CStreamingFileFromDenseFeatures<T>::init()
 {
 	vector_num=0;
+	features=NULL;
+
+	SG_WARNING("%s::init(): register params!\n", get_name());
 }
 
 /* Functions to return the vector from the DenseFeatures object
  * If the class is of type T, specialize this function to work for
  * vectors of that type. */
-template <class T>
-void CStreamingFileFromDenseFeatures<T>::get_vector(T*& vector, int32_t& num_feat)
+template<class T>
+void CStreamingFileFromDenseFeatures<T>::get_vector(T*& vector,
+		int32_t& num_feat)
 {
-	if (vector_num >= features->get_num_vectors())
+	if (vector_num>=features->get_num_vectors())
 	{
 		vector=NULL;
 		num_feat=-1;
 		return;
 	}
 
-	SGVector<T> sg_vector=
-		features->get_feature_vector(vector_num);
+	SGVector<T> sg_vector=features->get_feature_vector(vector_num);
 
-	vector = sg_vector.vector;
-	num_feat = sg_vector.vlen;;
+	vector=sg_vector.vector;
+	num_feat=sg_vector.vlen;
+	;
 	vector_num++;
 
 }
 
 /* Functions to return the vector from the DenseFeatures object with label */
-template <class T>
-void CStreamingFileFromDenseFeatures<T>::get_vector_and_label
-(T*& vector, int32_t& num_feat, float64_t& label)
+template<class T>
+void CStreamingFileFromDenseFeatures<T>::get_vector_and_label(T*& vector,
+		int32_t& num_feat, float64_t& label)
 {
-	if (vector_num >= features->get_num_vectors())
+	if (vector_num>=features->get_num_vectors())
 	{
 		vector=NULL;
 		num_feat=-1;
 		return;
 	}
 
-	SGVector<T> sg_vector
-		=features->get_feature_vector(vector_num);
+	SGVector<T> sg_vector=features->get_feature_vector(vector_num);
 
-	vector = sg_vector.vector;
-	num_feat = sg_vector.vlen;
-	label = labels[vector_num];
+	vector=sg_vector.vector;
+	num_feat=sg_vector.vlen;
+	label=labels[vector_num];
 
 	vector_num++;
 }
+
 
 }
 #endif //__STREAMING_FILEFROMDENSE_H__

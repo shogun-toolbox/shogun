@@ -110,7 +110,8 @@ enum EKernelType
 	K_DIRECTOR = 480,
 	K_PRODUCT = 490,
 	K_LINEARARD = 500,
-	K_GAUSSIANARD = 510
+	K_GAUSSIANARD = 510,
+	K_STREAMING = 520
 };
 
 /** kernel property */
@@ -191,6 +192,8 @@ class CKernel : public CSGObject
 	friend class CDiceKernelNormalizer;
 	friend class CZeroMeanCenterKernelNormalizer;
 
+	friend class CStreamingKernel;
+
 	public:
 
 		/** default constructor
@@ -225,8 +228,8 @@ class CKernel : public CSGObject
 		inline float64_t kernel(int32_t idx_a, int32_t idx_b)
 		{
 			REQUIRE(idx_a>=0 && idx_b>=0 && idx_a<num_lhs && idx_b<num_rhs,
-				"Index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
-				idx_a,num_lhs, idx_b,num_rhs);
+				"%s::kernel(): index out of Range: idx_a=%d/%d idx_b=%d/%d\n",
+				get_name(), idx_a,num_lhs, idx_b,num_rhs);
 
 			return normalizer->normalize(compute(idx_a, idx_b), idx_a, idx_b);
 		}
