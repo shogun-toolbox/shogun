@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 
 //	sg_io->set_loglevel(MSG_DEBUG);
 
-	test_linear_mmd_optimize_weights();
+//	test_linear_mmd_optimize_weights();
 
 	exit_shogun();
 	return 0;
