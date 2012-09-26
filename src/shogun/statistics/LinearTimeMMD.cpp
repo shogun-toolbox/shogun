@@ -27,39 +27,17 @@ CLinearTimeMMD::CLinearTimeMMD() :
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 		index_t m)
 {
-	SG_ERROR("%s::CLinearTimeMMD(): Constructor with appended features is "
-			"not supported. Split features and use other constructor.\n",
+	SG_ERROR("%s::CLinearTimeMMD(): Constructor with appended normal features "
+			"is not supported. Split features and use other constructor.\n",
 			get_name());
 }
 
-CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q,
-		index_t m)
+CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q)
 {
-	/* convienience constructor, construct streaming features from
-	 * the provided objects. Thats why base constructor is NOT called */
-
-	/* prevent calling this with streaming features */
-	CStreamingFeatures* temp1=dynamic_cast<CStreamingFeatures*>(p);
-	CStreamingFeatures* temp2=dynamic_cast<CStreamingFeatures*>(q);
-	REQUIRE(!(temp1 || temp2), "%s::CLinearTimeMMD(): Please use "
-			"streaming features based constructor when passing streaming "
-			"features. This constructor can only handle non-streaming features"
-			"\n", get_name());
-
-	m_m=m;
-
-	/* create streaming features from given features. Same for kernel */
-	m_streaming_p=CStreamingFeatures::from_non_streaming(p);
-	SG_REF(m_streaming_p);
-	m_streaming_p->start_parser();
-
-	m_streaming_q=CStreamingFeatures::from_non_streaming(q);
-	SG_REF(m_streaming_q);
-	m_streaming_q->start_parser();
-
-	/* this would normally be done in base constructor but its not called here */
-	m_kernel=kernel;
-	SG_REF(m_kernel);
+	SG_ERROR("%s::CLinearTimeMMD(): Constructor with normal features is "
+			"not supported. Use streaming features constructor. There"
+			" are ways to create streaming features from normal ones.\n",
+			get_name());
 }
 
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
@@ -101,7 +79,7 @@ void CLinearTimeMMD::init()
 	m_streaming_p=NULL;
 	m_streaming_q=NULL;
 
-	SG_WARNING("register params!\n");
+	SG_WARNING("%s::init(): register params!\n", get_name());
 }
 
 float64_t CLinearTimeMMD::compute_statistic()

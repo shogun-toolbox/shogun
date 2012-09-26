@@ -90,24 +90,15 @@ public:
 
 	/** Constructor.
 	 * This throws an error since this way of appended features is not supported
-	 * for linear time MMD.
+	 * for linear time MMD. Is here to prevent usage of superclass constructor
 	 * */
 	CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t m);
 
 	/** Constructor.
-	 * This is a convienience constructor which creates streaming features from
-	 * the given normal features automagically.
-	 *
-	 * Note that the number of vectors in both features may be different here
-	 * since data is streamed.
-	 *
-	 * @param kernel kernel for MMD
-	 * @param p samples from distribution p, basis for streaming features
-	 * @param q samples from distribution q, basis for streaming features
-	 * @param m number of sample to use for MMD test (not all feature data has
-	 * to be used)
+	 * This throws an error since normal features are not supported.
+	 * Is here to prevent usage of superclass constructor
 	 */
-	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q, index_t m);
+	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
 
 	virtual ~CLinearTimeMMD();
 
