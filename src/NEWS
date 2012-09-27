@@ -3,12 +3,14 @@
 	* SHOGUN Release version 2.0.1 (libshogun 13.0, data 0.4, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- None
+		- Linear Time MMD two-sample test now works on streaming-features, which 
+		  allows to perform tests on infinite amounts of data
 	* Bugfixes:
 		- Fix for shallow copy of gaussian kernel by Matt Aasted
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData
 		- "confidences" in context of CLabel and subclasses are now "values"
+		- CLinearTimeMMD constructor changes, only streaming features allowed
 
 2012-09-01 Soeren Sonnenburg <sonne@debian.org>
 
