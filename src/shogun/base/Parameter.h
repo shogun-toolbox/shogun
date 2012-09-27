@@ -208,6 +208,27 @@ public:
 		return m_params.get_element(idx);
 	}
 
+	/** Getter for Tparameter elements by name
+	 *
+	 * @param name name of desired parameter
+	 * @return parameter with desired name, NULL if non such found
+	 */
+	inline TParameter* get_parameter(const char* name)
+	{
+		TParameter* result=NULL;
+
+		for (index_t i=0; i<m_params.get_num_elements(); ++i)
+		{
+			result=m_params.get_element(i);
+			if (!strcmp(name, result->m_name))
+				break;
+			else
+				result=NULL;
+		}
+
+		return result;
+	}
+
 	/* ************************************************************ */
 	/* Scalar wrappers  */
 
