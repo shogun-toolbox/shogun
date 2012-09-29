@@ -101,7 +101,7 @@ TARGETS = basic_minimal \
 		  classifier_multiclass_ecoc \
 		  classifier_multiclass_ecoc_discriminant \
 		  classifier_multiclass_ecoc_random \
-		  streaming_from_dense \
+		  # streaming_from_dense \
 
 all: $(TARGETS)
 
