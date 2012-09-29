@@ -17,7 +17,8 @@ The following table depicts the status of each interface available in shogun:
 |python_modular    | mature (no known problems)                                |
 |octave_modular    | mature (no known problems)                                |
 |java_modular      | beta quality - not all examples are ported and working    |
-|lua_modular       | alpha work in progress quality - some examples work       |
+|lua_modular       | alpha work in progress quality - some examples work,      |
+|                  | string typemaps are unstable                              |
 |ruby_modular      | pre-alpha work in progress quality - proof-of-concept only|
 |csharp_modular    | pre-alpha work in progress quality - proof-of-concept only|
 |r_modular         | pre-alpha quality (swig does not properly handle reference|
