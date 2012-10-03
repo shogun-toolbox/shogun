@@ -259,8 +259,8 @@ PYTHON_TARGET=
 DEFINES_PYTHON=
 INCLUDES_PYTHON=
 PRELINKFLAGS_PYTHON=
-LINKFLAGS_PYTHON=
-POSTLINKFLAGS_PYTHON=
+LINKFLAGS_PYTHON="-ldl -lutil"
+POSTLINKFLAGS_PYTHON="-ldl -lutil"
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
