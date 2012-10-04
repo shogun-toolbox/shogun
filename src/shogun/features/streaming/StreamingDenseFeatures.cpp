@@ -313,39 +313,51 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 		/* check if we run out of data */
 		if (!get_next_example())
 		{
-			SG_DEBUG("%s::get_streamed_features(): ran out of streaming "
-					"data, returnung NULL!\n", get_name());
-			return NULL;
-		}
+			SG_WARNING("%s::get_streamed_features(): ran out of streaming "
+					"data, reallocating matrix and returning!\n", get_name());
 
-		/* allocate matrix memory during first run */
-		if (!matrix.matrix)
+			/* allocating space for data so far */
+			SGMatrix<T> so_far(matrix.num_rows, i+1);
+
+			/* copy */
+			memcpy(so_far.matrix, matrix.matrix,
+					so_far.num_rows*so_far.num_cols*sizeof(T));
+
+			matrix=so_far;
+			break;
+		}
+		else
 		{
-			SG_DEBUG("%s::get_streamed_features(): allocating %dx%d matrix\n",
-					get_name(), current_vector.vlen, num_elements);
-			matrix=SGMatrix<T>(current_vector.vlen, num_elements);
+			/* allocate matrix memory during first run */
+			if (!matrix.matrix)
+			{
+				SG_DEBUG("%s::get_streamed_features(): allocating %dx%d matrix\n",
+						get_name(), current_vector.vlen, num_elements);
+				matrix=SGMatrix<T>(current_vector.vlen, num_elements);
+			}
+
+			/* get an example from stream and copy to feature matrix */
+			SGVector<T> vec=get_vector();
+
+			/* check for inconsistent dimensions */
+			if (vec.vlen!=matrix.num_rows)
+			{
+				SG_ERROR("%s::get_streamed_features(): streamed vectors have "
+						"different dimensions. This is not allowed!\n", get_name());
+			}
+
+			/* copy vector into matrix */
+			memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
+					vec.vlen*sizeof(T));
+
+			/* evtl output vector */
+			if (sg_io->get_loglevel()==MSG_DEBUG)
+				vec.display_vector("streamed vector");
+
+			/* clean up */
+			release_example();
 		}
 
-		/* get an example from stream and copy to feature matrix */
-		SGVector<T> vec=get_vector();
-
-		/* check for inconsistent dimensions */
-		if (vec.vlen!=matrix.num_rows)
-		{
-			SG_ERROR("%s::get_streamed_features(): streamed vectors have "
-					"different dimensions. This is not allowed!\n", get_name());
-		}
-
-		/* copy vector into matrix */
-		memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
-				vec.vlen*sizeof(T));
-
-		/* evtl output vector */
-		if (sg_io->get_loglevel()==MSG_DEBUG)
-			vec.display_vector("streamed vector");
-
-		/* clean up */
-		release_example();
 	}
 
 	if (!parser_flag)
@@ -354,8 +366,9 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	/* create new feature object from collected data */
 	CDenseFeatures<T>* result=new CDenseFeatures<T>(matrix);
 
-	SG_DEBUG("leaving %s(%p)::get_streamed_features(%d)\n", get_name(), this,
-			num_elements);
+	SG_DEBUG("leaving %s(%p)::get_streamed_features(%d) and returning %dx%d "
+			"matrix\n", get_name(), this, num_elements, matrix.num_rows,
+			matrix.num_cols);
 
 	return result;
 }
