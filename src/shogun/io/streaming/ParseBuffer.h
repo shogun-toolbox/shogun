@@ -256,7 +256,7 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 	{
 		if (ex_ring[i].fv.vector != NULL && free_vectors_on_destruct)
 		{
-			SG_PRINT("%s::~%s(): destroying examples ring vector %d\n",
+			SG_DEBUG("%s::~%s(): destroying examples ring vector %d\n",
 					get_name(), get_name(), i);
 			SG_FREE(ex_ring[i].fv.vector);
 		}
