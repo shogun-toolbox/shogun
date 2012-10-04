@@ -350,6 +350,11 @@ protected:
 
     /// Condition variable to indicate change of state of examples
     pthread_cond_t examples_state_changed;
+
+private:
+	/* is false before first start, and true afterwards. Helper to avoid
+	* memory errors */
+	bool m_may_run;
 };
 
 template <class T>
@@ -370,15 +375,19 @@ template <class T>
     CInputParser<T>::CInputParser()
 {
     //init(NULL, true, PARSER_DEFAULT_BUFFSIZE);
+	m_may_run=false;
+	examples_ring=NULL;
 }
 
 template <class T>
     CInputParser<T>::~CInputParser()
 {
-    end_parser();
-
-    pthread_mutex_destroy(&examples_state_lock);
-    pthread_cond_destroy(&examples_state_changed);
+	if (is_running())
+	{
+		end_parser();
+		pthread_mutex_destroy(&examples_state_lock);
+		pthread_cond_destroy(&examples_state_changed);
+	}
 
     SG_UNREF(examples_ring);
 }
@@ -433,6 +442,8 @@ template <class T>
     }
 
     pthread_create(&parse_thread, NULL, parse_loop_entry_point, this);
+
+    m_may_run=true;
 }
 
 template <class T>
@@ -446,6 +457,10 @@ template <class T>
 template <class T>
     bool CInputParser<T>::is_running()
 {
+	/* in order to abvoid memory errors */
+	if (!m_may_run)
+		return false;
+
     bool ret;
 
     pthread_mutex_lock(&examples_state_lock);
