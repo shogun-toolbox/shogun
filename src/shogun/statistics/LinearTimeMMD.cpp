@@ -105,6 +105,10 @@ float64_t CLinearTimeMMD::compute_statistic()
 	float64_t pq=0;
 	float64_t qp=0;
 
+	SG_WARNING("%s::compute_statistic(): should be in one method with"
+			" compute_variance_estimate!\n",
+				get_name());
+
 	/* compute sums */
 	for (index_t i=0; i<m_2; ++i)
 	{
@@ -205,13 +209,23 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 
 float64_t CLinearTimeMMD::compute_variance_estimate()
 {
-	REQUIRE(m_p_and_q, "%s::compute_variance_estimate: features needed!\n",
-			get_name());
+	SG_DEBUG("entering CLinearTimeMMD::compute_variance_estimate()\n");
+
+	REQUIRE(m_streaming_p, "%s::compute_variance_estimate: streaming features p "
+			"required!\n", get_name());
+	REQUIRE(m_streaming_q, "%s::compute_variance_estimate: streaming features q "
+			"required!\n", get_name());
 
 	REQUIRE(m_kernel, "%s::compute_variance_estimate: kernel needed!\n",
 			get_name());
 
-	if (m_p_and_q->get_num_vectors()<1000)
+	/* m is number of samples from each distribution, m_2 is half of it
+	 * using names from JLMR paper (see class documentation) */
+	index_t m_2=m_m/2;
+
+	SG_DEBUG("m_m=%d\n", m_m);
+
+	if (m_m<1000)
 	{
 		SG_WARNING("%s::compute_variance_estimate: The number of samples"
 				" should be very large (at least 1000)  in order to get a"
@@ -221,31 +235,59 @@ float64_t CLinearTimeMMD::compute_variance_estimate()
 
 	/* this corresponds to computing the statistic itself, however, the
 	 * difference is that all terms (of the traces) have to be stored */
-	index_t m=m_m;
-	index_t m_2=m/2;
-
-	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* allocate memory for traces */
 	SGVector<float64_t> traces(m_2);
 
+	SG_WARNING("%s::compute_variance_estimate(): should be streamed!\n",
+			get_name());
+
 	/* sum up diagonals of all kernel matrices */
 	for (index_t i=0; i<m_2; ++i)
 	{
-		/* init for code beauty :) */
+		/* stream four more elements */
+		CFeatures* p1=m_streaming_p->get_streamed_features(1);
+		CFeatures* p2=m_streaming_p->get_streamed_features(1);
+		CFeatures* q1=m_streaming_q->get_streamed_features(1);
+		CFeatures* q2=m_streaming_q->get_streamed_features(1);
+		SG_REF(p1);
+		SG_REF(p2);
+		SG_REF(q1);
+		SG_REF(q2);
+
+		/* init for code beatuy :) */
 		traces[i]=0;
 
-		/* p and p */
-		traces[i]+=m_kernel->kernel(i, m_2+i);
+		/* stream kernel values and add values */
+		SG_DEBUG("initialising streaming kernel with pp\n");
+		m_kernel->init(p1, p2);
+		float64_t temp=m_kernel->kernel(0, 0);
+		traces[i]+=temp;
+		SG_DEBUG("pp+=%f\n", temp);
 
-		/* q and q */
-		traces[i]+=m_kernel->kernel(m+i, m+m_2+i);
+		SG_DEBUG("initialising streaming kernel with qq\n");
+		m_kernel->init(q1, q2);
+		temp=m_kernel->kernel(0, 0);
+		traces[i]+=temp;
+		SG_DEBUG("qq+=%f\n", temp);
 
-		/* p and q */
-		traces[i]-=m_kernel->kernel(i, m+m_2+i);
+		SG_DEBUG("initialising streaming kernel with pq\n");
+		m_kernel->init(p1, q2);
+		temp=m_kernel->kernel(0, 0);
+		traces[i]+=temp;
+		SG_DEBUG("pq+=%f\n", temp);
 
-		/* q and p */
-		traces[i]-=m_kernel->kernel(m_2+i, m+i);
+		SG_DEBUG("initialising streaming kernel with qp\n");
+		m_kernel->init(p2, q1);
+		temp=m_kernel->kernel(0, 0);
+		traces[i]+=temp;
+		SG_DEBUG("qp+=%f\n", temp);
+
+		/* clean up */
+		SG_UNREF(p1);
+		SG_UNREF(p2);
+		SG_UNREF(q1);
+		SG_UNREF(q2);
 	}
 
 	/* return linear time variance estimate */
