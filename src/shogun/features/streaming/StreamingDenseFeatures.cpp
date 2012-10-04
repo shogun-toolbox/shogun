@@ -224,8 +224,8 @@ template<class T>
 bool CStreamingDenseFeatures<T>::get_next_example()
 {
 	bool ret_value;
-	ret_value=(bool)parser.get_next_example(current_vector.vector, current_vector.vlen,
-			current_label);
+	ret_value=(bool)parser.get_next_example(current_vector.vector,
+			current_vector.vlen, current_label);
 
 	return ret_value;
 }
@@ -233,8 +233,6 @@ bool CStreamingDenseFeatures<T>::get_next_example()
 template<class T>
 SGVector<T> CStreamingDenseFeatures<T>::get_vector()
 {
-	current_vector=SGVector<T>(current_vector.vector, current_vector.vlen, false);
-
 	return current_vector;
 }
 
