@@ -1,16 +1,14 @@
 /*! \page staticinterfaces Static Interfaces
 
 As mentioned before SHOGUN interfaces to several programming languages and
-toolkits such as Matlab(tm), R, Python, Octave. The following sections shall
-toolkits such as Matlab(tm), R, Perl, Octave. The following sections shall
+toolkits such as Matlab(tm), R, Python, Perl, Octave. The following sections shall
 give you an overview over the static interface commands of SHOGUN. For the
 static interfaces we tried to preserve the syntax of the commands in a
 consistent manner through all the different languages. However as in some cases
 this was not possible and we document the subtle differences of syntax and
 semantic in the respective toolkit. Instead of reading through all this, we
 suggest to have a look at the large number of examples available in the \b
-examples / interface directory. For example examples/R or examples/python etc.
-examples / interface directory. For example examples/R or examples/perl etc.
+examples / interface directory. For example examples/R or examples/python or examples/perl etc.
 
 <b>Overview of Static Interfaces & Testing the Installation</b>
 \li \ref staticoctaveinterf_sec
@@ -48,12 +46,9 @@ by by typing ( let ">" be the octave prompt )
 inside of octave. This should show you some help text.
 
 \subsection staticpythoninterf_sec Static Python Interface
-\subsection staticperlinterf_sec Static Perl Interface
 
 To start SHOGUN in python, start python and check if it is correctly installed
-To start SHOGUN in perl, start perl and check if it is correctly installed
 by by typing ( let ">" be the python prompt )
-by by typing ( let ">" be the perl prompt )
 
 \verbatim
   from sg import sg
@@ -61,6 +56,17 @@ by by typing ( let ">" be the perl prompt )
 \endverbatim
 
 inside of python. This should show you some help text.
+
+
+\subsection staticperlinterf_sec Static Perl Interface
+To start SHOGUN in perl, start perl and check if it is correctly installed
+by by typing ( let ">" be the perl prompt )
+
+\verbatim
+  use SG;
+  sg('help');
+\endverbatim
+
 inside of perl. This should show you some help text.
 
 \subsection staticrinterf_sec Static R Interface
@@ -255,8 +261,7 @@ The result of the classification of the test sample is obtained via:
 \arg \b classify_example \verbatim [result]=sg('classify_example', feature_vector_index) \endverbatim
 where result is a vector containing the classification result for each
 datapoint and \b classify_example only obtains the output for a single example
-(index is zero based like in python. note that octave, matlab, R are 1 based).
-(index is zero based like in perl. note that octave, matlab, R are 1 based).
+(index is zero based like in python or in perl. note that octave, matlab, R are 1 based).
 
 \subsection staticifhmm_sec HMM
 \li get_hmm

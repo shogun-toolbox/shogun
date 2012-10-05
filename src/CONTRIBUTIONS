@@ -74,7 +74,6 @@ We integrated the work of the following people:
  Evgeniy Andreev:
 	- FibonacciHeap
 	- Python 3 support
-	- Perl 3 support
 	- CoverTree
 	- HashSet
 
@@ -87,3 +86,6 @@ We integrated the work of the following people:
  Fernando José Iglesias Garcia
  	- Generic multiclass OvO training
  	- Quadratic Discriminant Analysis
+
+ptizoom
+	- Perl support

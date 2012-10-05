@@ -14,9 +14,13 @@
 %feature("autodoc", "get_merge_distance(self) -> [] of float") get_merge_distance;
 %feature("autodoc", "get_pairs(self) -> [] of float") get_pairs;
 #endif
+#ifdef HAVE_PERL
+%feature("autodoc", "get_radi(self) -> PDL 1dim array of float") get_radi;
+%feature("autodoc", "get_centers(self) -> PDL 2dim array of float") get_centers;
+%feature("autodoc", "get_merge_distance(self) -> [] of float") get_merge_distance;
+%feature("autodoc", "get_pairs(self) -> [] of float") get_pairs;
 #endif
 
-ARRAY(0x28abdf8)
 /* Remove C Prefix */
 %rename(DistanceMachine) CDistanceMachine;
 %rename(Hierarchical) CHierarchical;

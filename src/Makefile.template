@@ -118,11 +118,11 @@ SWIGRDATAFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -l
 TAR:=$(CONFIGPATH)/shogun-$(shell date +%Y-%m-%d).tar
 
 PRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
-PRELPATH=$(shell perl $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
 ORELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
-ORELPATH=$(shell perl $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
 RRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
-RRELPATH=$(shell perl $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
+
+PLRELPATH=$(shell pyton $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PLDIR) $(DESTDIR)$(LIBDIR)/shogun)
+
 
 foo: 
 	echo $(SWIGLIBFILES)
@@ -193,7 +193,6 @@ install-libshogun: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
-
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o \
 		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
@@ -206,9 +205,12 @@ install-libshogun: $(TEMPLATE_TARGET)
 	-ldconfig
 
 install-python_static: $(TEMPLATE_TARGET)
-install-perl_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(PYDIR)
+
+install-perl_static: $(TEMPLATE_TARGET)
+	install -d -m755 $(DESTDIR)$(PLDIR)
+	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(PLDIR)
 
 install-octave_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
@@ -224,26 +226,30 @@ install-r_static: $(TEMPLATE_TARGET)
 	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB) $(SAVERDS)
 
 install-elwms_static: $(TEMPLATE_TARGET)
-	#one .so file
+#one .so file
 ifneq ($(ELWMS_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(LIBDIR)/shogun
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
 endif
-	#python
-	#perl
+#python
 ifneq ($(PYTHON_STATIC_TARGET),)
-ifneq ($(PERL_STATIC_TARGET),)
 	rm -f $(DESTDIR)$(PYDIR)/$(TEMPLATE_TARGET) 
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	cd $(DESTDIR)$(PYDIR) && ln -s $(PRELPATH)/$(TEMPLATE_TARGET)
 endif
-	#octave
+#perldl
+ifneq ($(PERLDL_STATIC_TARGET),)
+	rm -f $(DESTDIR)$(PLDIR)/$(TEMPLATE_TARGET) 
+	install -d -m755 $(DESTDIR)$(PLDIR)
+	cd $(DESTDIR)$(PLDIR) && ln -s $(PRELPATH)/$(TEMPLATE_TARGET)
+endif
+#octave
 ifneq ($(OCTAVE_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	rm -f $(DESTDIR)$(OCTDIR)/elwms.oct
 	cd $(DESTDIR)$(OCTDIR) && ln -s $(ORELPATH)/$(TEMPLATE_TARGET) elwms.oct
 endif
-	#r
+#r
 ifneq ($(R_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/libs
@@ -265,7 +271,6 @@ install-matlab_static: $(TEMPLATE_TARGET)
 	@echo
 
 install-python_modular: $(TEMPLATE_TARGET)
-install-perl_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
 	install -m644 $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)"
 	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PYDIR)"
@@ -283,6 +288,19 @@ install-perl_modular: $(TEMPLATE_TARGET)
 #for i in $(SWIGPYFILES) ; do echo $$i \
 #	| sed -e 's=.*/="=' -e 's/\.py/", /' \
 #	>>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
+
+#not really... use Makefile.PL...and the lot
+install-perldl_modular: $(TEMPLATE_TARGET)
+	install -d -m755 "$(DESTDIR)$(PLDIR)/shogun"
+	install -m644 $(SWIGPLFILES) "$(DESTDIR)$(PLDIR)"
+	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PLDIR)"
+	for i in Kernel Distance Features Classifier Regression Converter \
+		Loss Clustering Evaluation IO Library Mathematics \
+		ModelSelection Preprocessor Structure Distribution Statistics;\
+	do \
+		install -d -m755 "$(DESTDIR)$(PLDIR)/shogun/$$i" ;\
+		echo "use Shogun::Mods;" > "$(DESTDIR)$(PLDIR)/Shogun/$$i.pm" ;\
+	done
 
 install-r_modular: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/demo
@@ -347,21 +365,24 @@ check-examples-elwms:
 	true
 
 run-testsuite-python_static:
-run-testsuite-perl_static:
 	cd $(CONFIGPATH)/../tests/integration/python_static && \
-	cd $(CONFIGPATH)/../tests/integration/perl_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
-		PERLPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+
 check-examples-python_static:
-check-examples-perl_static:
 	cd $(CONFIGPATH)/../examples/undocumented/python_static && \
-	cd $(CONFIGPATH)/../examples/undocumented/perl_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
-		PERLPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
+
+run-testsuite-perldl_static:
+	cd $(CONFIGPATH)/../tests/integration/perldl_static && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) \
+		PERLDLPATH="$(DESTDIR)$(PLDIR)" ./test_all.sh	)
+
+check-examples-perldl_static:
+	cd $(CONFIGPATH)/../examples/undocumented/perldl_static && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) \
+		PERLDLPATH="$(DESTDIR)$(PLDIR)" ./check.sh	)
 
 run-testsuite-r_static:
 	cd $(CONFIGPATH)/../tests/integration/r_static && \
@@ -400,35 +421,42 @@ check-examples-matlab_static:
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
 
 run-testsuite-python_modular:
-run-testsuite-perl_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
-	cd $(CONFIGPATH)/../tests/integration/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
-		PERLPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh    )
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
-	cd $(CONFIGPATH)/../tests/integration/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
-		PERLPATH="$(DESTDIR)$(PYDIR)" $(PERL) tester.py  )
+
+run-testsuite-perldl_modular:
+	cd $(CONFIGPATH)/../tests/integration/perldl_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) \
+		PERLDLPATH="$(DESTDIR)$(PDLDIR)" ./test_all.sh    )
+	cd $(CONFIGPATH)/../tests/integration/perldl_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
+		PERLDLPATH="$(DESTDIR)$(PDLDIR)" $(PERLDL) tester.pl  )
+
+
 check-examples-python_modular:
-check-examples-perl_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
-	cd $(CONFIGPATH)/../examples/undocumented/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
-		PERLPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+
+check-examples-perldl_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/perldl_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) \
+		PERLDLPATH="$(DESTDIR)$(PLDIR)" ./check.sh    )
 
 run-testsuite-java_modular:
-	#TODO
+#TODO
+
 check-examples-java_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/java_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
 
 run-testsuite-csharp_modular:
-	#TODO
+#TODO
+
 check-examples-csharp_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/csharp_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
@@ -452,14 +480,16 @@ check-examples-octave_modular:
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
 run-testsuite-lua_modular:
-	#TODO
+#TODO
+
 check-examples-lua_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/lua_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		LUA_CPATH="$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)/?.so" ./check.sh )
 
 run-testsuite-ruby_modular:
-	#TODO
+#TODO
+
 check-examples-ruby_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/ruby_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
@@ -495,14 +525,18 @@ doc-cmdline_static:
 	rm -f x y
 
 doc-python_static:
-doc-perl_static:
 	echo "/** \page staticpython Static Python Interface Function Reference" >x
-	echo "/** \page staticperl Static Perl Interface Function Reference" >x
 	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
 		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  PYTHONPATH="$(DESTDIR)$(PYDIR)" python )
-		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  PERLPATH="$(DESTDIR)$(PYDIR)" perl )
 	echo "*/" >>y
 	cat x y >$(CONFIGPATH)/../doc/pages/StaticPythonInterface.mainpage
+	rm -f x y
+
+doc-perldl_static:
+	echo "/** \page staticperldl Static Perldl Interface Function Reference" >x
+	-bash -c "echo -e \"from sg import sg\nsg('set_output', 'y')\nsg('help','doxygen')\n\"" | \
+		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun  PERLDLPATH="$(DESTDIR)$(PLDIR)" perldl )
+	echo "*/" >>y
 	cat x y >$(CONFIGPATH)/../doc/pages/StaticPerlInterface.mainpage
 	rm -f x y
 
@@ -524,7 +558,9 @@ doc-octave_modular:
 	true
 
 doc-python_modular:
-doc-perl_modular:
+	true
+
+doc-perldl_modular:
 	true
 
 doc-r_modular:
@@ -542,7 +578,7 @@ doc-lua_modular:
 doc-csharp_modular:
 	true
 
-$(OBJFILES): $(CONFIGPATH)/.config .depend Makefile $(CONFIGPATH)/ChangeLog
+$(OBJFILES): $(CONFIGPATH).config .depend Makefile $(CONFIGPATH)/ChangeLog
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
@@ -600,24 +636,40 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@echo -e " */\n" >> $@
 	@cat  $< >> $@
 	@$(PYTHON) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
-	@$(PERL) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
+
+%.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PD) $(HEADERFILES)
+	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PD)"
+	@echo "/*" > $@
+	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
+	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
+	@echo -e " */\n" >> $@
+	@cat  $< >> $@
+	@$(PERLDL) $*.$(EXT_CPP_PD) $@ $(HEADERFILES)
+
+%.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PM) $(HEADERFILES)
+	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PM)"
+	@echo "/*" > $@
+	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
+	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
+	@echo -e " */\n" >> $@
+	@cat  $< >> $@
+	@$(PERL) $*.$(EXT_CPP_PM) $@ $(HEADERFILES)
+
+
 
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
-	$(PERL) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PYTHON) $(CONFIGPATH).scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
-	$(PYTHON) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
-	$(PERL) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
+	$(PYTHON) $(CONFIGPATH).doxy2swig.py --quiet --no-function-definition \
 		$(shell basename $< $(EXT_DOXY))/doxygen_xml/index.xml $@
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
-	$(PERL) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PYTHON) $(CONFIGPATH).scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 endif
 
 # Do not include dependencies when they are about to be removed anyway.
@@ -625,7 +677,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),clean)
 
 # Generate dependecies.
-.depend:	$(CONFIGPATH)/.config $(DEPDEPS)
+.depend:	$(CONFIGPATH).config $(DEPDEPS)
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -638,8 +690,7 @@ else #gcc -MM
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
-			$(PYTHON) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
-			$(PERL) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
+			$(PYTHON) $(CONFIGPATH).generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
 			"$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
 ifeq (r_modular,$(TEMPLATE_TARGET))
 	    bash -c "( for i in \`grep '.$(EXT_LIB):' .depend | cut -f 1 -d ':'\` ; \

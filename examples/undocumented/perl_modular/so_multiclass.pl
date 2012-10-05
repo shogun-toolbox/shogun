@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-#!/usr/bin/env perl
-#!/usr/bin/env python
 #!/usr/bin/env perl
 
 import numpy as np

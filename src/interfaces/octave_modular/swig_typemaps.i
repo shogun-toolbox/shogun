@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * This code is inspired by the python numpy.i typemaps, from John Hunter
- * This code is inspired by the perl numpy.i typemaps, from John Hunter
  * and Bill Spotz.
  *
  * Written (W) 2008-2009 Soeren Sonnenburg

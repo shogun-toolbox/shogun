@@ -25,9 +25,7 @@ do
 		echo >>error.log
 		echo >>error.log
 	fi
-	fi
-
-ARRAY(0x2e29630)done
+done
 
 if test -f error.log 
 then

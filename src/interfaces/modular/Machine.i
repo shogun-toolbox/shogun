@@ -1,6 +1,6 @@
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
-#if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
+#if defined(SWIGPYTHON) || defined(SWIGPERL) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
 
 %define APPLY_MULTICLASS(CLASS)
     %extend CLASS
@@ -68,7 +68,7 @@ APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLibSVR);
 APPLY_REGRESSION(CSVRLight);
 APPLY_REGRESSION(CMKLRegression);
-APPLY_REGRESSION(CKernelRidgeRegression);
+
 APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
@@ -120,6 +120,3 @@ APPLY_LATENT(CLatentSVM);
 #undef APPLY_STRUCTURED
 #undef APPLY_LATENT
 #endif
-#endif
-
-ARRAY(0x28a8960)

@@ -6,10 +6,8 @@ On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 make
 sudo make install
 
-which will build shogun for the r_static, matlab_static, python_static,
-which will build shogun for the r_static, matlab_static, perl_static,
-octave_static and octave_modular, python_modular, r_modular and
-octave_static and octave_modular, perl_modular, r_modular and
+which will build shogun for the r_static, matlab_static, python_static, perl_static,
+octave_static and octave_modular, python_modular, perl_modular, r_modular and
 java_modular interfaces and later install it.
 
 Often you are just interested in one language and we always recommend to
@@ -18,8 +16,7 @@ use the more powerful modular interfaces.
 If you want specific interfaces use,
 e.g
 
-./configure --interfaces=python_static,python_modular
-./configure --interfaces=perl_static,perl_modular
+./configure --interfaces=python_static,python_modular,perl_static,perl_modular
 
 See ./configure --help for additional options.
 
@@ -35,8 +32,8 @@ for 1-norm MKL, p-norm MKL with p>1 will work nonetheless.
 REQUIREMENTS
 
 The standard linux utils like bash, grep, test, sed, cut, awk, ldd, uname gcc
-g++ and cat, python (debian package: python2.5, python2.6) are required
-g++ and cat, perl (debian package: perl2.5, perl2.6) are required
+g++ and cat, python (debian package: python2.5, python2.6) are required,
+ perl (debian package: perl5) are required
 for the ./configure to work.
 
 To compile the R interface you need to have the R developer files 
@@ -48,12 +45,11 @@ To compile the octave interface you need to have the octave developer files
 To compile the java interface you need to have the java developer files 
 (debian package openjdk-6-jdk) installed.
 
-To compile the python interface you need to have the python developer files
-To compile the perl interface you need to have the perl developer files
+To compile the python and the perl interfaces you need to have the perl developer files
 installed (debian packages python2.5-dev or python2.6-dev) and numpy
-installed (debian packages perl2.5-dev or perl2.6-dev) and numpy
-version 1.x installed (debian package python-numpy) installed.
-version 1.x installed (debian package perl-numpy) installed.
+and perl (debian packages perl5-dev or perl6-dev)
+version 1.x installed (debian package python-numpy), 
+(debian package perl-numpy) installed.
 
 Optionally you will need atlas and lapack (debian packages lapack3-dev, 
 atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
@@ -64,7 +60,6 @@ though slightly slower versions are used. For standard 1-norm
 multiple kernel learning (MKL) the GNU Linear Programming Kit (GLPK) version at
 least 4.29 or CPLEX is required. If you want to build the html documentation or
 python online help you will need doxygen version 1.6.0 or higher.
-perl online help you will need doxygen version 1.6.0 or higher.
 
 
 SPECIFIC BUILD INSTRUCTIONS
@@ -146,12 +141,31 @@ make
 make install
 
 python
-perl
 ======
 
 To compile the python interface you need to have numpy version 1.x installed 
-To compile the perl interface you need to have numpy version 1.x installed 
 (debian package python-numpy and python-numpy-ext) and optionally for plotting
+python-matplotlib installed. When using matplotlib, make sure you use numpy as
+the underlying numeric toolkit, i.e. you have the line 
+
+numerix      : numpy
+
+in your /etc/matplotlibrc
+
+
+then do a
+./configure --interfaces=python_static
+make
+
+A sg.so file should be created in the src/ directory:
+To test whether it is working try
+PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classification.py
+
+
+perl
+======
+
+To compile the perl interface you need to have numpy version 1.x installed 
 (debian package perl-numpy and perl-numpy-ext) and optionally for plotting
 python-matplotlib installed. When using matplotlib, make sure you use numpy as
 perl-matplotlib installed. When using matplotlib, make sure you use numpy as
@@ -163,26 +177,21 @@ in your /etc/matplotlibrc
 
 
 then do a
-./configure --interfaces=python_static
 ./configure --interfaces=perl_static
 make
 
 A sg.so file should be created in the src/ directory:
 To test whether it is working try
-PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classification.py
-PERLPATH=`pwd` perl ../examples/documented/perl/graphical/svm_classification.py
+PERLPATH=`pwd` perl ../examples/documented/perl/graphical/svm_classification.pl
 
 eierlegendewollmichsau (elwms) interface
 ========================================
 
-This is a .so file that works with R,python,matlab,octave all in one. To compile
-This is a .so file that works with R,perl,matlab,octave all in one. To compile
- you should have at least python and some other interface enabled:
- you should have at least perl and some other interface enabled:
+This is a .so file that works with R,python,perl,matlab,octave all in one. To compile
+ you should have at least python and  perl and some other interface enabled:
 
 cd src
-./configure --interfaces=octave_static,matlab_static,r_static,python_static,elwms_static
-./configure --interfaces=octave_static,matlab_static,r_static,perl_static,elwms_static
+./configure --interfaces=octave_static,matlab_static,r_static,python_static,perl_static,elwms_static
 make
 cd interfaces/elwms_static
 
@@ -192,33 +201,26 @@ All examples from
 examples/documented/{r_static,python_static,matlab_static,octave_static}/*
 examples/documented/{r_static,perl_static,matlab_static,octave_static}/*
 should work plus the ones in examples/documented/elwms_static/
-(that allows lang -> python subcommands).
-(that allows lang -> perl subcommands).
+(that allows lang -> python and  -> perl subcommands).
 
 object oriented python/swig interface:
-object oriented perl/swig interface:
 ======================================
 
 proceed as for the python interface but now in addition install the swig package and
-proceed as for the perl interface but now in addition install the swig package and
 configure+compile shogun with:
 
   ./configure --interfaces=python_modular
-  ./configure --interfaces=perl_modular
   make
   sudo make install
 
 to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
-to test if it is working try perl ../examples/documented/perl_modular/graphical/svm.py
 
 BUILDING ON MACOSX
 
 python:
-perl:
 =======
 Get the precompiled binary packages
 python, matplotlib, NumPy and wxPython from http://pythonmac.org/packages/py24-fat/index.html
-perl, matplotlib, NumPy and wxPerl from http://perlmac.org/packages/py24-fat/index.html
 
 Note: On powerpc archs don't use gcc-4.0 / gcc-4.1 as it will fail with an internal compiler
 error. Try gcc-4.2 instead or disable optimization (using -O0).
@@ -233,31 +235,35 @@ A workaround is to uncomment this in math.h:
  } __complex_t;
  
 Also make sure you don't mix python versions (i.e. python2.5 and python2.6) on build/runtime.
-Also make sure you don't mix perl versions (i.e. perl2.5 and perl2.6) on build/runtime.
 You can specify the python version as a argument to configure, e.g.: --python=python2.7
-You can specify the perl version as a argument to configure, e.g.: --perl=perl2.7
 
 ./configure --interface=python_static
-./configure --interface=perl_static
 make
 
 to test if it is working try:
 
 PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classification.py
-PERLPATH=`pwd` perl ../examples/documented/perl/graphical/svm_classification.py
+
 
 object oriented python/swig interface:
-object oriented perl/swig interface:
 ======================================
 Follow the above instructions for python. Then use homebrew/fink/darwinports to install swig.
-Follow the above instructions for perl. Then use homebrew/fink/darwinports to install swig.
 
 ./configure --interfaces=python-modular
-./configure --interfaces=perl-modular
 make
 sudo make install
 
 to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
+
+
+object oriented perl/swig interface:
+======================================
+Follow the above instructions for perl. Then use homebrew/fink/darwinports to install swig.
+
+./configure --interfaces=perl-modular
+make
+sudo make install
+
 to test if it is working try perl ../examples/documented/perl_modular/graphical/svm.py
 
 octave:
@@ -404,40 +410,60 @@ octave:
 
 
 python:
-perl:
 =======
 
   install python2.5 and numpy >1.0
-  install perl2.5 and numpy >1.0
   
   now compile shogun:
 	./configure --interfaces=python_static
-	./configure --interfaces=perl_static
 	make
 	make install
 
   this will create a sg.dll in the src/python dir
-  this will create a sg.dll in the src/perl dir
 
   to test if it is working, try:
 	 cd src
 	 LD_LIBRARY_PATH=./libshogun PYTHONPATH=./python python ../examples/documented/python/graphical/svm_classification.py
+
+perl:
+=======
+
+  install perl2.5 and numpy >1.0
+  
+  now compile shogun:
+	./configure --interfaces=perl_static
+	make
+	make install
+
+  this will create a sg.dll in the src/perl dir
+
+  to test if it is working, try:
+	 cd src
 	 LD_LIBRARY_PATH=./libshogun PERLPATH=./perl perl ../examples/documented/perl/graphical/svm_classification.py
 
+
 object oriented python/swig interface:
-object oriented perl/swig interface:
 ======================================
 
 do all of the above you did for python but now in addition install the swig
-do all of the above you did for perl but now in addition install the swig
 package and configure+compile shogun with:
 
  ./configure --interfaces=python_modular
- ./configure --interfaces=perl_modular
   make
   make install
 
 to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
+
+object oriented perl/swig interface:
+======================================
+
+do all of the above you did for perl but now in addition install the swig
+package and configure+compile shogun with:
+
+ ./configure --interfaces=perl_modular
+  make
+  make install
+
 to test if it is working try perl ../examples/documented/perl_modular/graphical/svm.py
 
 object oriented octave/swig interface:

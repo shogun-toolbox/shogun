@@ -78,12 +78,14 @@ public:
 	 */
 	inline void set_initial(float32_t i) { initial = i; }
 
+#if ! defined HAVE_PERL
 	/**
 	 * Parse a substring to get a label
 	 *
 	 * @param words substrings, each representing a token in the label data of the format
 	 */
 	void parse_label(v_array<substring>& words);
+#endif
 
 public:
 	/// Label value

@@ -16,9 +16,19 @@
 %feature("autodoc", "get_fm(self) -> numpy 1dim array of float") get_fm;
 %feature("autodoc", "get_labels(self) -> numpy 1dim array of float") get_labels;
 #endif
+
+
+#ifdef HAVE_PERL
+%feature("autodoc", "get_str(self) -> PDL 1dim array of str\n\nUse this instead of get_string() which is not nicely wrapped") get_str;
+%feature("autodoc", "get_hist(self) -> PDL 1dim array of int") get_hist;
+%feature("autodoc", "get_fm(self) -> PDL 1dim array of int") get_fm;
+%feature("autodoc", "get_fm(self) -> PDL 1dim array of float") get_fm;
+%feature("autodoc", "get_fm(self) -> PDL 1dim array of float") get_fm;
+%feature("autodoc", "get_labels(self) -> PDL 1dim array of float") get_labels;
+
 #endif
 
-ARRAY(0x28a8420)
+
 /* These functions return new Objects */
 %newobject get_transposed();
 %newobject create_merged_copy(CFeatures* other);
@@ -33,12 +43,13 @@ ARRAY(0x28a8420)
 }
 #endif
 
-#ifndef SWIGPYTHON
-#ifndef SWIGPERL
+
+#if ! defined (SWIGPYTHON) && ! defined (SWIGPERL)
 #define PROTOCOLS_DENSEFEATURES(class_name, type_name, format_str, typecode)
 #define PROTOCOLS_DENSELABELS(class_type, class_name, type_name, format_str, typecode)
 #define EXTEND_DENSEFEATURES(class_name, type_name, typecode)
 #endif
+
 
 /* Remove C Prefix */
 %rename(Alphabet) CAlphabet;
@@ -66,6 +77,7 @@ PROTOCOLS_DENSELABELS(CMulticlassLabels, MulticlassLabels, float64_t, "d\0", NPY
 
 PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY_FLOAT64)
 %rename(RegressionLabels) CRegressionLabels;
+
 
 %rename(StructuredLabels) CStructuredLabels;
 %rename(LatentLabels) CLatentLabels;

@@ -3,10 +3,8 @@
 
 Shogun is split up into libshogun which contains all the machine learning
 algorithms, libshogunui which contains a library for the 'static interfaces',
-the static interfaces python, octave, matlab, r and the modular interfaces
-the static interfaces perl, octave, matlab, r and the modular interfaces
-python_modular, octave_modular and r_modular (all found in the src/
-perl_modular, octave_modular and r_modular (all found in the src/
+the static interfaces python, perl, octave, matlab, r and the modular interfaces
+python_modular, perl_modular, octave_modular and r_modular (all found in the src/
 subdirectory with corresponding name). See src/INSTALL on how to install shogun.
 
 In case one wants to extend shogun the best way is to start using its library.

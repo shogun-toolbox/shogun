@@ -2,6 +2,7 @@
 %include "stdint.i"
 %include "exception.i"
 
+
 %define SERIALIZABLE_DUMMY(SWIGCLASS)
 %extend SWIGCLASS {
 bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
@@ -75,8 +76,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     %}
 #endif
 
-%{
 #ifdef SWIGRUBY
+%{
  extern "C" {
   #include <ruby.h>
   #include <narray.h>
@@ -87,14 +88,35 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  VALUE (*na_to_narray_dl)(VALUE);
  VALUE cNArray;
  #include <dlfcn.h>
+%}
 #endif
- /* required for python */
- /* required for perl */
- #define SWIG_FILE_WITH_INIT
+#ifdef SWIGPERL
+#ifdef HAVE_PDL
+%{
+#ifdef __cplusplus
+  extern "C" {
+#endif
+#include <pdlcore.h>
 
-#if defined(SWIGJAVA) || defined(SWIGCSHARP)
- #include <shogun/base/init.h>
+#include <ppport.h>
+
+#ifdef __cplusplus
+  }
 #endif
+%}
+#endif
+#endif
+
+%{
+ /* required for python */
+ #define SWIG_FILE_WITH_INIT
+%}
+#if defined(SWIGJAVA) || defined(SWIGCSHARP)
+%{
+ #include <shogun/base/init.h>
+%}
+#endif
+%{
  #include <shogun/lib/common.h>
  #include <shogun/io/SGIO.h>
  #include <shogun/lib/ShogunException.h>
@@ -109,31 +131,37 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 #ifndef DISABLE_CANCEL_CALLBACK
  extern void sg_global_cancel_computations(bool &delayed, bool &immediately);
 #endif
+%}
 
 #ifdef SWIGR
+%{
  #include <Rdefines.h>
+%}
 #endif
 
-#ifdef SWIGPYTHON
-#ifdef SWIGPERL
-
+#if defined(SWIGPYTHON) || defined (SWIGPERL)
+%{
  #include <shogun/io/SerializableFile.h>
  #include <shogun/io/SerializableAsciiFile.h>
  #include <shogun/io/SerializableHdf5File.h>
 
  static int pickle_ascii;
+%}
 #endif
 
+%{
  using namespace shogun;
 %}
 
+
+#if defined(SWIGPYTHON) || defined (SWIGPERL)
 %init %{
-#ifdef SWIGPYTHON
-#ifdef SWIGPERL
-        import_array();
+  import_array();
+%}
 #endif
 
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
+%init %{
 #ifndef DISABLE_CANCEL_CALLBACK
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
                 &sg_global_print_error, &sg_global_cancel_computations);
@@ -141,11 +169,60 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         shogun::init_shogun(&sg_global_print_message, &sg_global_print_warning,
                 &sg_global_print_error);
 #endif
+%}
+#endif
+#if  defined (SWIGPERL) //&& HAVE_PDL
+
+%header %{
+  SV* CoreSV;
+  Core* PDL;
+%}
+
+%init %{
+  //PTZ120930 boot PDL, load PDL stuff??? and define a PDL
+  //pl_require('PDL');
+  //check Core.xs //Core* PDL_p = pdl__Core_get_Core();
+  //PDL_COMMENT("Get pointer to structure of core shared C routines")
+  //PDL_COMMENT("make sure PDL::Core is loaded")
+
+  perl_require_pv("PDL::Core");
+  CoreSV = perl_get_sv("PDL::SHARE",FALSE);
+  //  PDL_COMMENT("SV* value")
+  if (CoreSV == NULL)
+    Perl_croak(aTHX_ "Can't load PDL::Core module");
+  PDL = INT2PTR(Core*, SvIV( CoreSV ));
+  //  PDL_COMMENT("Core* value")
+
+#if !defined(XS_VERSION)
+#define XS_VERSION "NAN"
+#endif
+
+  if (PDL->Version != PDL_CORE_VERSION)
+    Perl_croak(aTHX_ "[PDL->Version: %d PDL_CORE_VERSION: %d XS_VERSION: %s] PDL::Bad needs to be recompiled against the newly installed PDL", PDL->Version, PDL_CORE_VERSION, XS_VERSION);
+
+
+#if 0
+BOOT:
+
+   PDL_COMMENT("Get pointer to structure of core shared C routines")
+   PDL_COMMENT("make sure PDL::Core is loaded")
+   perl_require_pv("PDL::Core");
+   CoreSV = perl_get_sv("PDL::SHARE",FALSE);  PDL_COMMENT("SV* value")
+   if (CoreSV==NULL)
+     Perl_croak(aTHX_ "Can't load PDL::Core module");
+   PDL = INT2PTR(Core*, SvIV( CoreSV ));  PDL_COMMENT("Core* value")
+   if (PDL->Version != PDL_CORE_VERSION)
+     Perl_croak(aTHX_ "[PDL->Version: %d PDL_CORE_VERSION: %d XS_VERSION: %s] PDL::Bad needs to be recompiled against the newly installed PDL", PDL->Version, PDL_CORE_VERSION, XS_VERSION);
+   //_nan_float = __pdl_nan.__d;
+   //_nan_double = (double) __pdl_nan.__d;
+           
+#endif
+%}
 #endif
 
 
-
 #ifdef SWIGRUBY
+%init %{
         rb_require("narray");
         cNArray = rb_const_get(rb_cObject, rb_intern("NArray"));
 
@@ -189,12 +266,13 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
                 fprintf(stderr, "cNArray %s\n", error);
                 exit(EXIT_FAILURE);
         }*/
+%}
 #endif
 
-%}
 
-#ifdef SWIGPYTHON
-#ifdef SWIGPERL
+
+#if defined(SWIGPYTHON)
+
 %{
         static int print_sgobject(PyObject *pyobj, FILE *f, int flags) {
             void *argp;
@@ -224,7 +302,46 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 {
     $result=$1;
 }
+
+#elseif defined (SWIGPERL)
+
+%{
+  static int print_sgobject(SV* pobj, FILE *f, int flags) {
+    void *argp;
+    int res;
+    res = SWIG_ConvertPtr(pobj, &argp, SWIGTYPE_p_shogun__CSGObject, 0);
+    if (!SWIG_IsOK(res)) {
+      SWIG_Error(SWIG_ArgError(res), "in method 'CSGObject::tp_print', argument 1 of type 'CSGObject *'");
+      return SWIG_ERROR;
+    }
+    CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
+    fprintf(f, "%s", obj->get_name());
+    return 0;
+  }
+%}
+//PTZ120924 whao...need to try harder...?
+
+%typemap(out) SV* __reduce_ex__(int proto)
+{
+  //TPZ120926 not good!!use stack spare..
+
+  return SWIG_CALLXS("__reduce__");
+
+    //return PyObject_CallMethod(self, (char*) "__reduce__", (char*) "");
+}
+
+%typemap(in) __setstate__(SV* state) {
+    $1 = $input;
+}       
+
+%typemap(out) SV* __getstate__()
+{
+    $result = $1;
+}
 #endif
+
+
+
 
 %exception
 {
@@ -232,8 +349,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     {
         $action
     }
-#if defined(SWIGPYTHON) && defined(USE_SWIG_DIRECTORS)
-#if defined(SWIGPERL) && defined(USE_SWIG_DIRECTORS)
+#if (defined(SWIGPYTHON) || defined(SWIGPERL)) && defined(USE_SWIG_DIRECTORS)
     catch (Swig::DirectorException &e)
     {
         SWIG_fail;
@@ -293,8 +409,8 @@ SERIALIZABLE_DUMMY(shogun::Version);
 %include <shogun/base/Parallel.h>
 SERIALIZABLE_DUMMY(shogun::Parallel);
 
-#ifdef SWIGPYTHON
-#ifdef SWIGPERL
+#if defined(SWIGPYTHON)
+
 namespace shogun
 {
 
@@ -338,8 +454,7 @@ namespace shogun
             unlink(fname);
 
 #ifdef PYTHON3
-#ifdef PERL3
-			PyObject* str=PyBytes_FromStringAndSize(result, len);
+	    PyObject* str=PyBytes_FromStringAndSize(result, len);
 #else
             PyObject* str=PyString_FromStringAndSize(result, len);
 #endif
@@ -361,8 +476,7 @@ namespace shogun
             Py_ssize_t len=0;
 
 #ifdef PYTHON3
-#ifdef PERL3
-			PyBytes_AsStringAndSize(py_str, &str, &len);
+	    PyBytes_AsStringAndSize(py_str, &str, &len);
 #else
             PyString_AsStringAndSize(py_str, &str, &len);
 #endif
@@ -397,7 +511,6 @@ namespace shogun
 }
 
 %pythoncode %{
-%perlcode %{
 try:
     import copy_reg
 except ImportError:
@@ -457,5 +570,247 @@ copy_reg._reduce_ex=_sg_reduce_ex
 copy_reg._reconstructor=_sg_reconstructor
 %}
 
-#endif /* SWIGPYTHON  */
+/* SWIGPYTHON  */
+#elseif defined (SWIGPERL)
+
+/*%todo
+ */
+//typedef pdl pdl;
+
+namespace shogun
+{
+    %extend CSGObject
+    {
+        const char* __str__() const
+        {
+            return $self->get_name();
+        }
+
+        const char* __repr__() const
+        {
+            return $self->get_name();
+        }
+
+        SV* __reduce_ex__(int proto)
+        {
+            pickle_ascii = (proto == 0) ? 1 : 0;
+            return NULL;
+        }
+
+	//XS(XS_shogun___getstate__);
+	//SV** __getstate__()
+	XS(XS_Shogun_CSGObject___getstate__);
+	SV**  __getstate__()
+        {
+#ifdef dVAR
+	  dVAR; dXSARGS;
+#else
+	  dXSARGS;
+#endif
+	  dSP;
+	  if (items != 1)
+	    croak_xs_usage(cv,  "CSGObject, ...");
+	  {
+            char* fname = tmpnam(NULL);
+            FILE* tmpf = fopen(fname, "w");
+            CSerializableFile* fstream = NULL;
+            size_t len = 0;
+
+#if 0
+	    STMT_START {
+	      SV* const xsub_tmp_sv = ST(0);
+	      SvGETMAGIC(xsub_tmp_sv);
+	      if (SvROK(xsub_tmp_sv) && SvTYPE(SvRV(xsub_tmp_sv)) == SVt_PVHV){
+		s = (HV*)SvRV(xsub_tmp_sv);
+	      }else{
+		Perl_croak(aTHX_ "%s: %s is not a HASH reference",
+			   "Shogun::CSGObject::__getstate__",
+			   "s");
+	      }
+	    } STMT_END;
+#endif
+
+#ifdef HAVE_HDF5
+            if (pickle_ascii)
+                fstream = new CSerializableAsciiFile(fname, 'w');
+            else
+                fstream = new CSerializableHdf5File(fname, 'w');
+#else
+            fstream = new CSerializableAsciiFile(fname, 'w');
+#endif
+	    RETVAL = pickle_ascii;
+	    XPUSHu((UV) RETVAL);
+
+            $self->save_serializable(fstream);
+            fstream->close();
+            delete fstream;
+            char* result = CFile::read_whole_file(fname, len);
+            unlink(fname);
+
+	    SV* pl_str= sv_2mortal(newSVpv(result,(STRLEN) len));
+            SG_FREE(result);
+	    XPUSHs(pl_str);
+	  }
+	  XSRETURN(2);
+        }
+	
+	//XS(XS_Shogun_CSGObject___setstate__)
+        void __setstate__(U32  pl_ascii, char *pl_str, STRLEN pl_len)
+        {
+#ifdef dVAR
+	  dVAR;
+#endif
+	  dXSARGS;
+	  if (items != 4)
+	    croak_xs_usage(cv, "CSGObject,  ascii_flag, string");
+	  if (items == 4)
+	    {
+#if 0	      
+	      CSGObject* pn;
+	      if (SvROK(ST(0)) && sv_derived_from(ST(0), "CSGObjectPtr")) {
+		IV tmp = SvIV((SV*)SvRV(ST(0)));
+		pn = INT2PTR(CSGObject *,tmp);
+	      }
+	      else
+		Perl_croak(aTHX_ "%s: %s is not of type %s",
+			   "Shogun::CSGObjectPtr::__setstate__",
+			   "pn", "CSGObjectPtr");
+
+
+
+	      SV* pl_ascii = SvREFCNT_inc(ST(1));
+#endif
+	      pickle_ascii = (SvTRUE(pl_ascii) ? 1 : 0); //const U32 flags SVf_UTF8
+	      //could also use  bool    is_ascii_string(const U8 *s, STRLEN len)
+
+	      //SV* pl_str = SvPV_nolen(ST(2));
+	      //char* str = NULL;
+	      //newSVpvn_flags((s), (len), (u) ? 0 : SVf_UTF8)
+	      //SV*     newSVpvn_flags(const char *const s, const STRLEN len, const U32 flags);
+
+	      //PTZ120923dump my string into a temp file and then stream it whao....
+	      char* fname = tmpnam(NULL);
+	      FILE* tmpf = fopen(fname, "w");
+	      size_t total = fwrite(pl_str, (size_t) 1, (size_t) pl_len, tmpf);
+	      fclose(tmpf);
+	      ASSERT(total == len);
+
+	      CSerializableFile* fstream=NULL;
+
+	      //PTZ120924 obviously here "pickle_ascii" is used to check with data format!!! how wondefull.
+#ifdef HAVE_HDF5
+	      if (pickle_ascii)
+                fstream = new CSerializableAsciiFile(fname, 'r');
+	      else
+                fstream = new CSerializableHdf5File(fname, 'r');
+#else
+	      if (!pickle_ascii)
+                SG_SERROR("File contains an HDF5 stream but "	\
+			  "Shogun was not compiled with HDF5"	\
+			  " support! -  cannot load.");
+	      fstream = new CSerializableAsciiFile(fname, 'r');
+#endif
+	      $self->load_serializable(fstream);
+	      fstream->close();
+	      delete fstream;
+	      unlink(fname);
+	      //PTZ120924 much ado about nothing, might be better of with an IPC around
+	    }
+	}
+        /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/
+    }
+}
+
+%}
+
+%perlcode %{
+
+  //PTZ120930 boot pdl ?
+
+
+  eval {use Copy_Reg;};
+  if($@) {
+    package Copy_Reg {
+      use base(qw(CopyReg));
+    };
+  }
+
+  sub _sg_reconstructor
+  {
+    my ($self, $cls, $base, $state) = @_;
+  try:
+    eval {
+      if(not isinstance($cls->(), SGObject)) {
+	return _py_orig_reconstructor($cls, $base, $state);
+      }
+    };
+  except:
+    if($@) {
+      return $self->_pl_orig_reconstructor($cls, $base, $state);
+    }
+    my $obj;
+    if(ref($base)) {
+      $obj = $cls->();
+    } else {
+      $obj = $base->new($cls, $state);
+      if($base->__init__() != $object->__init__()) {
+	$base->__init__($obj, $state);
+      }
+    }
+    return $obj;
+  }
+
+  sub _sg_reduce_ex
+  {
+    my ($self, $proto) = @_;
+    eval {
+      if(not isinstance($self, $SGObject)) {
+	return &_pl_orig_reduce_ex($self, $proto);
+      }
+    };
+    if($@) {
+      return &_pl_orig_reduce_ex($self, $proto);
+    }
+    my $base = $object;
+    if($base is $object) {
+      $state = 'None';
+    }
+    else {
+      if( $base is $self->__class__) {
+	croack("can't pickle %s objects", $base->__name__);
+      }
+      $state = base($self);
+    }
+    my @args = ($self->__class__, base, state);
+    eval {
+      getstate = $self->__getstate__;
+    }
+    except AttributeError:
+        if getattr(self, "__slots__", None):
+            raise TypeError("a class that defines __slots__ without "
+                            "defining __getstate__ cannot be pickled")
+
+	    eval {
+	      $dict = $self->__dict__;
+	      }
+        except AttributeError:
+	if($@) {
+	my $dict;
+	} else {
+	      my $dict = $self->getstate();
+	      if($dict){
+		return(\&_sg_reconstructor, $args, $dict);
+	      } else {
+		return(\&_sg_reconstructor, $args};
+	      }
+_py_orig_reduce_ex=copy_reg._reduce_ex
+_py_orig_reconstructor=copy_reg._reconstructor
+      
+copy_reg._reduce_ex=_sg_reduce_ex
+copy_reg._reconstructor=_sg_reconstructor
+
+
+%}
+
+
 #endif /* SWIGPERL  */

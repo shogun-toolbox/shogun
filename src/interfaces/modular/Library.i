@@ -9,8 +9,7 @@
  * Copyright (c) 2012 Evgeniy Andreev (gsomix)
  */
 
-#ifndef SWIGPYTHON
-#ifndef SWIGPERL
+#if ! defined (SWIGPYTHON) && ! defined (SWIGPERL)
 #define PROTOCOLS_SGVECTOR(class_name, type_name, format_str, typecode)
 #endif
 
@@ -283,7 +282,7 @@ namespace shogun
     SERIALIZABLE_DUMMY(SGVector<uint64_t>);
 #endif
 #ifdef USE_FLOAT32
-	PROTOCOLS_SGVECTOR(ShortRealVector, float32_t, "f\0", NPY_FLOAT32)
+    PROTOCOLS_SGVECTOR(ShortRealVector, float32_t, "f\0", NPY_FLOAT32)
     %template(ShortRealVector) SGVector<float32_t>;
     SERIALIZABLE_DUMMY(SGVector<float32_t>);
 #endif

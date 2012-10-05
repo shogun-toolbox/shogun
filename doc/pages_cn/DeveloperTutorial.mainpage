@@ -2,10 +2,8 @@
 \page developer_tutorial Libshogun使用指南和开发者指南
 
 Shogun分成两个部分：libshogun，它包含了已实现的所有机器学习算法；libshogunui，
-它是一个接口库，提供各种静态和模块化接口，静态接口包括python、octave、matlab和r，
-它是一个接口库，提供各种静态和模块化接口，静态接口包括perl、octave、matlab和r，
-模块化接口包括python_modular、octave_modular和r_modular（各种接口可以在src/目录
-模块化接口包括perl_modular、octave_modular和r_modular（各种接口可以在src/目录
+它是一个接口库，提供各种静态和模块化接口，静态接口包括python、perl、octave、matlab和r，
+模块化接口包括python_modular、perl_modular、octave_modular和r_modular（各种接口可以在src/目录
 下找到相应的子目录）。关于如何安装shogun请看src/INSTALL。
 
 如果要想扩展shogun，最好方法就是开始使用它提供的库。通过查看examples/libshogun

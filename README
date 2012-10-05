@@ -15,7 +15,7 @@ The following table depicts the status of each interface available in shogun:
 |    interface     |     status                                                |
 +==================+===========================================================+
 |python_modular    | mature (no known problems)                                |
-|perl_modular    | mature (no known problems)                                |
+|perl_modular      | immature (many unknown problems)                          |
 |octave_modular    | mature (no known problems)                                |
 |java_modular      | beta quality - not all examples are ported and working    |
 |lua_modular       | alpha work in progress quality - some examples work       |
@@ -29,16 +29,16 @@ The following table depicts the status of each interface available in shogun:
 |octave_static     | mature (no known problems)                                |
 |matlab_static     | mature (no known problems)                                |
 |python_static     | mature (no known problems)                                |
-|perl_static     | mature (no known problems)                                |
+|perl_static       | imature (many unknown problems)                           |
 |r_static          | mature (no known problems)                                |
 |libshogun_static  | mature (no known problems)                                |
 |cmdline_static    | stable but some data types incomplete                     |
 |                  |                                                           |
 |elwms_static      | this is the eierlegendewollmilchsau interface, a chimera  |
-|                  | that in one file interfaces with python,octave,r,matlab   |
-|                  | that in one file interfaces with perl,octave,r,matlab   |
+|                  | that in one file interfaces                               |
+|                  | with python,perl,octave,r,matlab                          |
 |                  | and provides the run_python command to run code in python |
-|                  | and provides the run_perl command to run code in perl |
+|                  | and also the run_perl command to run code in perl         |
 |                  | using the in octave,r,matlab available variables, etc)    |
 +==================+===========================================================+
 

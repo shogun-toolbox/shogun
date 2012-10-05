@@ -79,8 +79,7 @@ cat >"$1/$2/R/$2" <<EOF
 #
 # where > is the R prompt.
 
-# interface $2(arg1,arg2,...) as w/ matlab/octave/python
-# interface $2(arg1,arg2,...) as w/ matlab/octave/perl
+# interface $2(arg1,arg2,...) as w/ matlab/octave/python/perl
 #
 $2 <- function(...) .External("$2",...,PACKAGE="$2")
 

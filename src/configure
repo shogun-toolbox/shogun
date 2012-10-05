@@ -30,16 +30,19 @@ EXT_IF_SWIG=.py
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB=so
 EXT_LIB_SWIG_PYTHON_MODULAR=
-EXT_LIB_SWIG_PERL_MODULAR=
+EXT_LIB_SWIG_PERLDL_MODULAR=
 EXT_LIB_SWIG_RUBY_MODULAR=.so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -w312 -w325 -fvirtual"
-SWIG=swig
+SWIG="swig -v -Wall"
 DOXYGEN=doxygen
 RUBY=ruby
 PYTHON=python
 PERL=perl
+PERLDL=pdl
+PLVER=
+PDLVER=
 PYVER=
 GMOCK=gmock-config
 KERNELNAME=`uname`
@@ -50,6 +53,9 @@ EXT_OBJ_TEST=_unittest.cc.o
 EXT_CPP_TMP="${EXT_SRC_CPP}.templ"
 EXT_CPP_SH="${EXT_SRC_CPP}.sh"
 EXT_CPP_PY="${EXT_SRC_CPP}.py"
+EXT_CPP_PD="${EXT_SRC_CPP}.pd"
+EXT_CPP_PM="${EXT_SRC_CPP}.pm"
+EXT_CPP_PL="${EXT_SRC_CPP}.pl"
 CLASSPATH="$CLASSPATH"
 COMP_CSHARP=gmcs
 
@@ -119,6 +125,7 @@ _confdir=""
 _libdir=""
 _incdir=""
 _pydir=""
+_pdldir=""
 _rubydir=""
 _octdir=""
 _inc_extra=""
@@ -131,13 +138,14 @@ _datatypes="bool,char,uint8_t,uint16_t,int32_t,int64_t,uint64_t,float32_t,float6
 _libshogun=yes
 _python=auto
 _perl=auto
+_perldl=auto
 _octave=auto
 _r=auto
 
 #static interfaces
 _cmdline_static=auto
 _python_static=auto
-_perl_static=auto
+_perldl_static=auto
 _octave_static=auto
 _r_static=auto
 _elwms_static=no
@@ -145,7 +153,7 @@ _matlab_static=auto
 
 #modular interfaces
 _python_modular=auto
-_perl_modular=auto
+_perldl_modular=auto
 _octave_modular=auto
 _java_modular=auto
 _ruby_modular=auto
@@ -261,17 +269,18 @@ LINKFLAGS_R=
 POSTLINKFLAGS_R=
 
 PYTHON_TARGET=
-PERL_TARGET=
 DEFINES_PYTHON=
-DEFINES_PERL=
-INCLUDES_PYTHON=
-INCLUDES_PERL=
 PRELINKFLAGS_PYTHON=
-PRELINKFLAGS_PERL=
+INCLUDES_PYTHON=
 LINKFLAGS_PYTHON=
-LINKFLAGS_PERL=
 POSTLINKFLAGS_PYTHON=
-POSTLINKFLAGS_PERL=
+
+PERLDL_TARGET=
+DEFINES_PERLDL=
+INCLUDES_PERLDL=
+PRELINKFLAGS_PERLDL=
+LINKFLAGS_PERLDL=
+POSTLINKFLAGS_PERLDL=
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
@@ -564,10 +573,8 @@ EOF
 }
 
 check_python()
-check_perl()
 {
 	echocheck "Python"
-	echocheck "Perl"
 	if $PYTHON -V >/dev/null 2>&1
 	then
 		PYVER="`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
@@ -576,9 +583,33 @@ check_perl()
 	else
 		die "python not detected (required)"
 	fi
-	fi
+}
 
-ARRAY(0x2777658)}
+check_perl()
+{
+	echocheck "Perl"
+	if $PERL -V >/dev/null 2>&1
+	then
+		PLVER="`$PERL -v 2>&1 | grep version | cut -f 9 -d ' '`"
+		echores "${PLVER}"
+		PLVER="`echo $PLVER | cut -f 2 -d 'v' | cut -f 1-2 -d '.'`"
+	else
+		die "perl not detected (required)"
+	fi
+}
+
+check_perldl()
+{
+	echocheck "Perl Data Language"
+	PDLVER=
+	if $PERL -MPDL -e "1;" >/dev/null 2>&1
+	then
+	    PDLVER=`$PERL -MPDL -e 'print($PDL::Version::VERSION =~ m/^\d+\.\d+/g)'`
+	    echores "${PDLVER}"
+	else
+	     echores "perl DL not detected (required)"
+	fi
+}
 
 check_pkg_config()
 {
@@ -1285,7 +1316,7 @@ Configuration:
 			   configure shogun for a modular interface (recommended) like
 
 				  python_modular
-				  perl_modular
+				  perldl_modular
 				  r_modular
 				  octave_modular
 				  java_modular
@@ -1298,7 +1329,7 @@ Configuration:
 				  cmdline_static
 				  r_static
 				  python_static
-				  perl_static
+				  perldl_static
 				  octave_static
 				  matlab_static
 
@@ -1325,9 +1356,8 @@ Installation directories:
   --libdir=DIR                   use this prefix for object code libraries [PREFIX/lib]
   --incdir=DIR                   use this prefix for include files [PREFIX/include]
   --pydir=DIR                    use this prefix for python files [PREFIX/auto-detected]
-  --pydir=DIR                    use this prefix for perl files [PREFIX/auto-detected]
-  --rubydir=DIR                  use this prefix for python files [PREFIX/auto-detected]
-  --rubydir=DIR                  use this prefix for perl files [PREFIX/auto-detected]
+  --pldir=DIR                    use this prefix for perl files [PREFIX/auto-detected]
+  --rubydir=DIR                  use this prefix for ruby files [PREFIX/auto-detected]
   --octdir=DIR                   use this prefix for octave files [PREFIX/auto-detected]
   --rdir=DIR                     use this prefix for r files [PREFIX/auto-detected]
 
@@ -1388,8 +1418,7 @@ Optional features:
   --disable-hmm-parallel         disable parallel structures in hmm training. shogun will then run as many threads as the machine has (much faster) [disabled]
 
 Miscellaneous options:
-  --disable-doxygen              disable documentation generation via doxygen for python_modular interface [enabled]
-  --disable-doxygen              disable documentation generation via doxygen for perl_modular interface [enabled]
+  --disable-doxygen              disable documentation generation via doxygen for python/perldl_modular interface [enabled]
   --disable-optimization         disable compiler optimizations [enabled]
   --disable-cpudetection         disable cpu flags detection and corresponding optimization options [enabled]
   --enable-debug                 enable debugging [enabled]
@@ -1401,7 +1430,7 @@ Miscellaneous options:
   --enable-static                build a statically linked binary (to the extend possible);
                                  set further linking options with --enable-static="-lm -lglpk"
   --python=python                use this python executable [python]
-  --perl=perl                use this perl executable [perl]
+  --perl=perl                    use this perl executable [perl]
   --gmock=gmock-config           use this gmock-config script [gmock]
   --ruby=ruby                    use this ruby executable [ruby]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
@@ -1437,13 +1466,13 @@ EOF
 	  --interfaces=*)
 		_cmdline_static=no
 		_python_static=no
-		_perl_static=no
+		_perldl_static=no
 		_octave_static=no
 		_matlab_static=no
 		_elwms_static=no
 		_r_static=no
 		_python_modular=no
-		_perl_modular=no
+		_perldl_modular=no
 		_octave_modular=no
 		_r_modular=no
 		_ruby_modular=no
@@ -1459,9 +1488,10 @@ EOF
 			_cmdline_static=yes
 			;;
 		  python_static)
-		  perl_static)
 			_python_static=yes
-			_perl_static=yes
+			;;
+		  perldl_static)
+			_perldl_static=yes
 			;;
 		  octave_static)
 			_octave_static=yes
@@ -1476,9 +1506,10 @@ EOF
 			_elwms_static=yes
 			;;
 		  python_modular)
-		  perl_modular)
 			_python_modular=yes
-			_perl_modular=yes
+			;;
+		  perldl_modular)
+			_perldl_modular=yes
 			;;
 		  octave_modular)
 			_octave_modular=yes
@@ -1508,8 +1539,9 @@ EOF
 		_target=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --python=*)
-	  --perl=*)
 		PYTHON=`echo $ac_option | cut -d '=' -f 2`
+		;;
+	  --perl=*)
 		PERL=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --gmock=*)
@@ -1664,6 +1696,9 @@ EOF
 	  --pydir=*)
 		_pydir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
 		;;
+	  --pldir=*)
+		_pldir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
+		;;
 	  --rubydir=*)
 		_rubydir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
 		;;
@@ -1681,7 +1716,8 @@ EOF
 	done
 }
 
-set_install_dirs() {
+set_install_dirs()
+{
 	test -z "$_bindir" && _bindir="$_prefix/bin"
 	test -z "$_datadir" && _datadir="$_prefix/share/shogun"
 	test -z "$_mandir" && _mandir="$_prefix/man"
@@ -1691,9 +1727,7 @@ set_install_dirs() {
 	test -z "$_rubydir" && _rubydir="site_ruby"
 
 	python_major=`$PYTHON -V 2>&1 | cut -f 2 -d ' ' | cut -f 1 -d '.'`
-	perl_major=`$PERL -V 2>&1 | cut -f 2 -d ' ' | cut -f 1 -d '.'`
 	python_minor=`$PYTHON -V 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
-	perl_minor=`$PERL -V 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
 	if test -z "$_pydir" ; then
 		if (test "$python_major" -ge 2 && test "$python_minor" -ge 6) || (test "$python_major" -ge 3) ; then
 			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/dist-packages"
@@ -1701,9 +1735,11 @@ set_install_dirs() {
 			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/site-packages"
 		fi
 	fi
+#PTZ120921 really fiddly, where is my MAkefile.ac? and  ExtUtils::MakeMaker
+	if test -z "$_pdldir" ; then
+	    _pdldir="`$PERL -e 'print join(\"\\n\",  @INC)' | grep $_prefix | head -1`"
 	fi
-
-ARRAY(0x2777778)}
+}
 
 determine_system_name()
 {
@@ -4092,13 +4128,16 @@ test_modular()
 			OCTAVE_MODULAR_TARGET=octave_modular
 		fi
 
+		if test "$_perldl" = yes && test "$_perldl_modular" != no
+		then
+			PARTS="$PARTS perldl_modular"
+			PERLDL_MODULAR_TARGET=perldl_modular
+		fi
+
 		if test "$_python" = yes && test "$_python_modular" != no
-		if test "$_perl" = yes && test "$_perl_modular" != no
 		then
 			PARTS="$PARTS python_modular"
-			PARTS="$PARTS perl_modular"
 			PYTHON_MODULAR_TARGET=python_modular
-			PERL_MODULAR_TARGET=perl_modular
 		fi
 
 		if test "$_r" = yes && test "$_r_modular" != no
@@ -4133,7 +4172,7 @@ test_modular()
 	else
 		if test "$_octave_modular" == yes || \
 			test "$_python_modular" == yes || \
-			test "$_perl_modular" == yes || \
+			test "$_perldl_modular" == yes || \
 			test "$_r_modular" == yes || \
 			test "$_java_modular" == yes || \
 			test "$_lua_modular" == yes || \
@@ -4330,19 +4369,15 @@ test_elwms()
 	if test "$_elwms_static" = yes || test "$_elwms_static" = auto
 	then
 		if test "$_octave_static" = yes || test "$_r_static" = yes || \
-			test "$_matlab_static" = yes || test "$_python_static" = yes
-			test "$_matlab_static" = yes || test "$_perl_static" = yes
+		    test "$_matlab_static" = yes || test "$_python_static" = yes || \
+		    test "$_perldl_static" = yes
 		then
 			_elwms_static=yes
 			PARTS="$PARTS elwms_static"
-			DEFINES_ELWMS="-DHAVE_ELWMS -DR_HOME_ENV=\\\"${R_HOME}\\\" -DLIBPYTHON=\\\"libpython${PYVER}.${EXT_LIB}\\\" $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
-			DEFINES_ELWMS="-DHAVE_ELWMS -DR_HOME_ENV=\\\"${R_HOME}\\\" -DLIBPERL=\\\"libperl${PYVER}.${EXT_LIB}\\\" $DEFINES_PERL $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
-			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_OCTAVE $INCLUDES_MATLAB "
-			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PERL $INCLUDES_OCTAVE $INCLUDES_MATLAB "
-			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON `echo $LINKFLAGS_R | sed 's/-dynamiclib//g'` `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
-			LINKFLAGS_ELWMS="$LINKFLAGS_PERL `echo $LINKFLAGS_R | sed 's/-dynamiclib//g'` `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
+			DEFINES_ELWMS="-DHAVE_ELWMS -DR_HOME_ENV=\\\"${R_HOME}\\\" -DLIBPYTHON=\\\"libpython${PYVER}.${EXT_LIB}\\\" -DLIBPERL=\\\"libperl${PLVER}.${EXT_LIB}\\\" $DEFINES_PERLDL $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
+			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_PERLDL $INCLUDES_OCTAVE $INCLUDES_MATLAB"
+			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON $LINKFLAGS_PERLDL `echo $LINKFLAGS_R | sed 's/-dynamiclib//g'` `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
 			POSTLINKFLAGS_ELWMS="$POSTLINKFLAGS_OCTAVE"
-
 			ELWMS_TARGET="elwms.${EXT_LIB}"
 		fi
 	fi
@@ -4491,115 +4526,79 @@ EOF
 }
 
 test_python()
-test_perl()
 {
 	if test "$_libshogun" = no 
 	then
 		if test "$_python_static" = yes
-		if test "$_perl_static" = yes
 		then
 			die "libshogun is required for python"
-			die "libshogun is required for perl"
 		else
 			_python_static=no
-			_perl_static=no
 		fi
 	fi
 
 	if test "$_libshogun" = no
 	then
 		if test "$_python_modular" = yes
-		if test "$_perl_modular" = yes
 		then
 			die "libshogun is required for python_modular"
-			die "libshogun is required for perl_modular"
 		else
 			_python_modular=no
-			_perl_modular=no
 		fi
 	fi
 
 	if test "$_python_static" != no || test "$_python_modular" != no
-	if test "$_perl_static" != no || test "$_perl_modular" != no
 	then
 		echocheck "Python numpy support"
-		echocheck "Perl numpy support"
 		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
-		if $PERL -c "import sys; import numpy" >/dev/null 2>&1
 		then
 			if [ `$PYTHON -c 'import numpy; print(numpy.__version__)' | cut -c 1` -gt 0 ]
-			if [ `$PERL -c 'import numpy; print(numpy.__version__)' | cut -c 1` -gt 0 ]
 			then
 				echores "`$PYTHON -c 'import numpy; print(numpy.__version__)'`"
-				echores "`$PERL -c 'import numpy; print(numpy.__version__)'`"
 			else
 				echores "`$PYTHON -c 'import numpy; print(numpy.__version__)'`... too old version 1.0 or later required"
-				echores "`$PERL -c 'import numpy; print(numpy.__version__)'`... too old version 1.0 or later required"
 				if test "$_python" = yes
-				if test "$_perl" = yes
 				then
 					die "python numpy outdated"
-					die "perl numpy outdated"
 				fi
 				_python="no"
-				_perl="no"
 			fi
 		else
 			echores "no"
 			if test "$_python" = yes || test "$_python_static" = yes \
-			if test "$_perl" = yes || test "$_perl_static" = yes \
 				|| test "$_python_modular" = yes
-				|| test "$_perl_modular" = yes
 			then
 				die "python numpy package missing"
-				die "perl numpy package missing"
 			fi
 			_python="no"
-			_perl="no"
 		fi
 
 		if test "$_python" != no
-		if test "$_perl" != no
 		then
 			PRE_LIB_SWIG_PYTHON_MODULAR=_
-			PRE_LIB_SWIG_PERL_MODULAR=_
 			EXT_IF_SWIG_PYTHON_MODULAR='.py'
-			EXT_IF_SWIG_PERL_MODULAR='.py'
 			test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
 			test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "from distutils.sysconfig import get_python_inc; import numpy; print('-I%s -I%s' % (get_python_inc(), numpy.get_include()))"`
-			test -n "$_pyinclude" || _pyinclude=`$PERL -c "from distutils.sysconfig import get_perl_inc; import numpy; print('-I%s -I%s' % (get_perl_inc(), numpy.get_include()))"`
 			_pylibpath=`$PYTHON -c 'from distutils.sysconfig import get_config_vars; print("-L%(LIBPL)s" % get_config_vars())'`
-			_pylibpath=`$PERL -c 'from distutils.sysconfig import get_config_vars; print("-L%(LIBPL)s" % get_config_vars())'`
 			EXT_LIB_SWIG_PYTHON_MODULAR=`$PYTHON -c "from distutils.sysconfig import get_config_vars, get_config_var; sle=(get_config_var('SO').replace('.'+get_config_var('SOABI'),'',1) if 'SOABI' in get_config_vars() else get_config_var('SO')); print(sle)"`
-			EXT_LIB_SWIG_PERL_MODULAR=`$PERL -c "from distutils.sysconfig import get_config_vars, get_config_var; sle=(get_config_var('SO').replace('.'+get_config_var('SOABI'),'',1) if 'SOABI' in get_config_vars() else get_config_var('SO')); print(sle)"`
 			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print('python'+sys.version[0:3])"`${EXT_LIB_SWIG_PYTHON_MODULAR%.*}
-			test -n "$_pylibs" || _pylibs=`$PERL -c "import sys; print('perl'+sys.version[0:3])"`${EXT_LIB_SWIG_PERL_MODULAR%.*}
 			INCLUDES_PYTHON="$_pyinclude $INCLUDES_PYTHON"
-			INCLUDES_PERL="$_pyinclude $INCLUDES_PERL"
 			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PYTHON"
-			COMPFLAGS_CPP_PERL="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PERL"
 			COMPFLAGS_C_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_C_PYTHON"
-			COMPFLAGS_C_PERL="-fno-strict-aliasing -fPIC $COMPFLAGS_C_PERL"
 
 			if darwin
 			then
 				LINKFLAGS_PYTHON="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS_PYTHON"
-				LINKFLAGS_PERL="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS_PERL"
 				POSTLINKFLAGS_PYTHON="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $POSTLINKFLAGS_PYTHON"
-				POSTLINKFLAGS_PERL="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $POSTLINKFLAGS_PERL"
 			else
 				LINKFLAGS_PYTHON="-shared $_pylibpath -l$_pylibs $LINKFLAGS_PYTHON"
-				LINKFLAGS_PERL="-shared $_pylibpath -l$_pylibs $LINKFLAGS_PERL"
 				POSTLINKFLAGS_PYTHON="-shared $_pylibpath -l$_pylibs $POSTLINKFLAGS_PYTHON"
-				POSTLINKFLAGS_PERL="-shared $_pylibpath -l$_pylibs $POSTLINKFLAGS_PERL"
 			fi
 
 			PYTHON_TARGET="sg$EXT_LIB_SWIG_PYTHON_MODULAR"
-			PERL_TARGET="sg$EXT_LIB_SWIG_PERL_MODULAR"
 
 cat > $TMPC << EOF
 #include <Python.h>
-#include <Perl.h>
 #include <stdlib.h>
 #include <numpy/arrayobject.h>
 
@@ -4616,40 +4615,27 @@ PyMODINIT_FUNC initsg(void);
 EOF
 
 			echocheck "Python/Python Numpy Developer Files"
-			echocheck "Perl/Perl Numpy Developer Files"
 			if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON
-			if cc_check $COMPFLAGS_CPP_PERL $INCLUDES_PERL $LINKFLAGS_PERL
 			then
 				echores "yes"
 				_python=yes
-				_perl=yes
 				SWIGFLAGS_PYTHON_MODULAR="-builtin -modern -modernargs -c++ -python"
-				SWIGFLAGS_PERL_MODULAR="-builtin -modern -modernargs -c++ -perl"
 			else
 				# add -ldl and -lutil for some self compiled python versions as
-				# add -ldl and -lutil for some self compiled perl versions as
 				# they for some reason are not automgically pulled in
 				LINKFLAGS_PYTHON="-lutil -ldl $LINKFLAGS_PYTHON"
-				LINKFLAGS_PERL="-lutil -ldl $LINKFLAGS_PERL"
 				POSTLINKFLAGS_PYTHON="-lutil -ldl $POSTLINKFLAGS_PYTHON"
-				POSTLINKFLAGS_PERL="-lutil -ldl $POSTLINKFLAGS_PERL"
 				if cc_check $COMPFLAGS_CPP_PYTHON $INCLUDES_PYTHON $LINKFLAGS_PYTHON
-				if cc_check $COMPFLAGS_CPP_PERL $INCLUDES_PERL $LINKFLAGS_PERL
 				then
 					echores "yes"
 					_python=yes
-					_perl=yes
 					SWIGFLAGS_PYTHON_MODULAR="-builtin -modern -modernargs -c++ -python"
-					SWIGFLAGS_PERL_MODULAR="-builtin -modern -modernargs -c++ -perl"
 				else
 					echores "no"
 					if test "$_python" = yes || test "$_python_static" = yes \
-					if test "$_perl" = yes || test "$_perl_static" = yes \
 						|| test "$_python_modular" = yes
-						|| test "$_perl_modular" = yes
 					then
 						die "python/numpy developer files missing"
-						die "perl/numpy developer files missing"
 					fi
 				fi
 			fi
@@ -4657,39 +4643,165 @@ EOF
 	fi
 
 	if test "$_python" = yes
-	if test "$_perl" = yes
 	then
 		DEFINES_PYTHON="$DEFINES_PYTHON -DHAVE_PYTHON"
-		DEFINES_PERL="$DEFINES_PERL -DHAVE_PERL"
 
 		if test "$_python_static" != no
-		if test "$_perl_static" != no
 		then
 			PARTS="$PARTS python_static"
-			PARTS="$PARTS perl_static"
 			_python_static=yes
-			_perl_static=yes
 		fi
 	else
 		_python_static=no
-		_perl_static=no
 		INCLUDES_PYTHON=""
-		INCLUDES_PERL=""
 		LINKFLAGS_PYTHON=""
-		LINKFLAGS_PERL=""
 		COMPFLAGS_CPP_PYTHON=""
-		COMPFLAGS_CPP_PERL=""
 		COMPFLAGS_C_PYTHON=""
-		COMPFLAGS_C_PERL=""
 	fi
 	
 	if [ `echo $PYVER | cut -c 1` -gt 2 ]
 	then
 		SWIGFLAGS_PYTHON_MODULAR="${SWIGFLAGS_PYTHON_MODULAR} -py3"
-		SWIGFLAGS_PERL_MODULAR="${SWIGFLAGS_PERL_MODULAR} -py3"
 		DEFINES_PYTHON="${DEFINES_PYTHON} -DPYTHON3"
-		DEFINES_PERL="${DEFINES_PERL} -DPERL3"
 	fi
+}
+
+
+test_perldl()
+{
+	if test "$_libshogun" = no 
+	then
+		if test "$_perldl_static" = yes
+		then
+			die "libshogun is required for perl"
+		else
+			_perldl_static=no
+		fi
+	fi
+
+	if test "$_libshogun" = no
+	then
+		if test "$_perldl_modular" = yes
+		then
+			die "libshogun is required for perldl_modular"
+		else
+			_perldl_modular=no
+		fi
+	fi
+
+	if test "$_perldl_static" != no || test "$_perldl_modular" != no
+	then
+		echocheck "Perl Data Language version support"
+		check_perldl		
+		if test "$PDLVERx" != "x"
+		then
+		    if [ `echo $PDLVER | cut -c 1` -gt 1 ]
+		    then
+			echores $PDLVER
+		    else
+			echores "PDL version  $PDLVER ... too old::PDL version 2.4 or later required"
+			if test "$_perldl" = yes
+			then
+			    die "$PERLDL outdated"
+			fi
+			_perldl="no"
+		    fi
+		else
+		    echores "no"
+		    if test "$_perldl" = yes || test "$_perldl_static" = yes \
+			|| test "$_perldl_modular" = yes
+		    then
+			die "PDL package missing"
+		    fi
+		    _perldl="no"
+		fi
+		if test "$_perldl" != no
+		then
+#PTZ120923
+#check  less /usr/lib/perl5/PDL/Config.pm
+#with $PDL::Config{*_LIBS}
+#also use ExtUtils::MakeMaker 6.31;
+#use Config;
+#but altogether... perl and pdl have to be relied upon for this job....
+#`$PERL -c "from distutils.sysconfig import get_config_vars, get_config_var; sle=(get_config_var('SO').replace('.'+get_config_var('SOABI'),'',1) #if 'SOABI' in get_config_vars() else get_config_var('SO')); print(sle)"`
+#perl -MConfig -e 'print $Config{libpth}'
+			PRE_LIB_SWIG_PERLDL_MODULAR=
+			EXT_IF_SWIG_PERLDL_MODULAR='.pm'
+			EXT_LIB_SWIG_PERLDL_MODULAR='.so'
+			_plinclude=`perl -MConfig -e 'print "-I$Config{archlib}/CORE"'`
+			INCLUDES_PERLDL="$_plinclude $INCLUDES_PERLDL"
+			_pdlinclude=`perl -MPDL::Core::Dev -e 'print &PDL_INCLUDE'`
+			INCLUDES_PERLDL="$_pdlinclude $INCLUDES_PERLDL"
+
+			COMPFLAGS_CPP_PERLDL="`$PERL -MConfig -e 'print $Config{cccdlflags}'` $COMPFLAGS_CPP_PERLDL"
+			COMPFLAGS_C_PERLDL="`$PERL -MExtUtils::Embed -e ccopts` $COMPFLAGS_C_PERL"
+			COMPFLAGS_C_PERLDL="`$PERL -MConfig -e 'print $Config{cccdlflags}'` $COMPFLAGS_C_PERL"
+
+			_pdllibpath="-L`$PERL -MConfig -e 'print $Config{archlib}'`"
+			test -n "$_pdllibs" || _pdllibs="`$PERL -MConfig -e 'print $Config{libs}'` ${EXT_LIB_SWIG_PERLDL_MODULAR%.*}"
+			LINKFLAGS_PERLDL="`$PERL -MExtUtils::Embed -e ldopts` $LINKFLAGS_PERLDL"
+			LINKFLAGS_PERLDL="$_pdllibpath $_pdllibs $LINKFLAGS_PERLDL"
+			POSTLINKFLAGS_PERLDL=`$PERL -MConfig -e 'print $Config{lddlflags}'`
+			POSTLINKFLAGS_PERLDL="-shared $_pdllibpath $_pdllibs $POSTLINKFLAGS_PERLDL"
+			POSTLINKFLAGS_PERLDL="$POSTLINKFLAGS_PERLDL /usr/lib/perl5/auto/PDL/Core/Core.so"
+			PERLDL_TARGET="sg$EXT_LIB_SWIG_PERLDL_MODULAR"
+			
+
+cat > $TMPC << EOF
+#include <pdlcore.h>
+static PerlInterpreter *my_perl;  /***    The Perl interpreter    ***/
+int main(int argc, char **argv, char **env)
+          {
+	double* array=(double*) malloc(10*sizeof(double));
+               PERL_SYS_INIT3(&argc,&argv,&env);
+               my_perl = perl_alloc();
+               perl_construct(my_perl);
+               PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+               perl_parse(my_perl, NULL, argc, argv, (char **)NULL);
+               perl_run(my_perl);
+               perl_destruct(my_perl);
+               perl_free(my_perl);
+               PERL_SYS_TERM();
+           }
+/*
+#include <stdlib.h>
+
+PyMODINIT_FUNC initsg(void)
+{
+	double* array=(double*) malloc(10*sizeof(double));
+	npy_intp* dims=(npy_intp*) malloc(sizeof(npy_int));
+	dims[0]=10;
+	Py_Initialize();
+	PyObject* outArray = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, (void*)array);
+}
+PyMODINIT_FUNC initsg(void);
+*/
+EOF
+                        echocheck "Perl Data Language Developer Files"
+			_perldl=yes
+			SWIGFLAGS_PERLDL_MODULAR="-c++ -perl"
+			INCLUDES_MODULAR_INTERFACES="$INCLUDES_PERLDL $INCLUDES_MODULAR_INTERFACES"
+		fi
+	fi
+#PTZ120923 forces it for now
+#	_perldl=yes
+#	SWIGFLAGS_PERLDL_MODULAR="-builtin -modern -modernargs -c++ -perl"
+#
+	if test "$_perldl" = yes
+	then
+		DEFINES_PERLDL="$DEFINES_PERLDL -DHAVE_PERL -DHAVE_PDL"
+		if test "$_perldl_static" != no
+		then
+			PARTS="$PARTS perldl_static"
+			_perldl_static=yes
+		fi
+	else
+		_perldl_static=no
+		INCLUDES_PERLDL=""
+		LINKFLAGS_PERLDL=""
+		COMPFLAGS_CPP_PERLDL=""
+		COMPFLAGS_C_PERLDL=""
+	fi	
 }
 
 test_r()
@@ -4935,7 +5047,7 @@ LIBSHOGUN_STATIC		= ${LIBSHOGUN_STATIC}
 CMDLINE_STATIC_TARGET	= ${CMDLINE_TARGET}
 R_STATIC_TARGET			= ${R_TARGET}
 PYTHON_STATIC_TARGET	= ${PYTHON_TARGET}
-PERL_STATIC_TARGET	= ${PERL_TARGET}
+PERLDL_STATIC_TARGET	= ${PERLDL_TARGET}
 OCTAVE_STATIC_TARGET	= ${OCTAVE_TARGET}
 MATLAB_STATIC_TARGET	= ${MATLAB_TARGET}
 ELWMS_STATIC_TARGET		= ${ELWMS_TARGET}
@@ -4945,7 +5057,7 @@ CSHARP_MODULAR_TARGET	= ${CSHARP_MODULAR_TARGET}
 RUBY_MODULAR_TARGET		= ${RUBY_MODULAR_TARGET}
 LUA_MODULAR_TARGET		= ${LUA_MODULAR_TARGET}
 PYTHON_MODULAR_TARGET	= ${PYTHON_MODULAR_TARGET}
-PERL_MODULAR_TARGET	= ${PERL_MODULAR_TARGET}
+PERLDL_MODULAR_TARGET	= ${PERLDL_MODULAR_TARGET}
 OCTAVE_MODULAR_TARGET	= ${OCTAVE_MODULAR_TARGET}
 MAKE 			= ${MAKE}
 MAKEDEPEND		= ${MAKEDEPEND}
@@ -4954,6 +5066,7 @@ SWIG 			= ${SWIG}
 SEDMI 			= ${SEDMI}
 PYTHON 			= ${PYTHON}
 PERL 			= ${PERL}
+PERLDL 			= ${PERLDL}
 RUBY 			= ${RUBY}
 PYVER 			= ${PYVER}
 DOXYGEN 		= ${DOXYGEN}
@@ -4977,6 +5090,9 @@ EXT_SRC_TEST	= ${EXT_SRC_TEST}
 EXT_CPP_TMP     = ${EXT_CPP_TMP}
 EXT_CPP_SH      = ${EXT_CPP_SH}
 EXT_CPP_PY      = ${EXT_CPP_PY}
+EXT_CPP_PD      = ${EXT_CPP_PD}
+EXT_CPP_PM      = ${EXT_CPP_PM}
+EXT_CPP_PL      = ${EXT_CPP_PL}
 EXT_DOXY        = ${EXT_DOXY}
 EXT_SWIG_DOXY  	= ${EXT_SWIG_DOXY}
 GDB				= ${GDB}
@@ -5057,15 +5173,15 @@ LINKFLAGS_R_STATIC 		= ${LINKFLAGS_R}
 POSTLINKFLAGS_R_STATIC	= ${POSTLINKFLAGS_R}
 
 DEFINES_PYTHON_STATIC		= ${DEFINES_PYTHON}
-DEFINES_PERL_STATIC		= ${DEFINES_PERL}
+DEFINES_PERLDL_STATIC		= ${DEFINES_PERLDL}
 INCLUDES_PYTHON_STATIC		= ${INCLUDES_PYTHON}
-INCLUDES_PERL_STATIC		= ${INCLUDES_PERL}
+INCLUDES_PERLDL_STATIC		= ${INCLUDES_PERLDL}
 PRELINKFLAGS_PYTHON_STATIC	= ${PRELINKFLAGS_PYTHON}
-PRELINKFLAGS_PERL_STATIC	= ${PRELINKFLAGS_PERL}
+PRELINKFLAGS_PERLDL_STATIC	= ${PRELINKFLAGS_PERLDL}
 LINKFLAGS_PYTHON_STATIC 	= ${LINKFLAGS_PYTHON}
-LINKFLAGS_PERL_STATIC 	= ${LINKFLAGS_PERL}
+LINKFLAGS_PERLDL_STATIC 	= ${LINKFLAGS_PERLDL}
 POSTLINKFLAGS_PYTHON_STATIC	= ${POSTLINKFLAGS_PYTHON}
-POSTLINKFLAGS_PERL_STATIC	= ${POSTLINKFLAGS_PERL}
+POSTLINKFLAGS_PERLDL_STATIC	= ${POSTLINKFLAGS_PERLDL}
 
 DEFINES_ELWMS_STATIC		= ${DEFINES_ELWMS}
 INCLUDES_ELWMS_STATIC		= ${INCLUDES_ELWMS}
@@ -5095,23 +5211,23 @@ SWIGFLAGS_R_MODULAR		= ${SWIGFLAGS_R_MODULAR}
 SAVERDS					= ${SAVERDS}
 
 PRE_LIB_SWIG_PYTHON_MODULAR	= ${PRE_LIB_SWIG_PYTHON_MODULAR}
-PRE_LIB_SWIG_PERL_MODULAR	= ${PRE_LIB_SWIG_PERL_MODULAR}
+PRE_LIB_SWIG_PERLDL_MODULAR	= ${PRE_LIB_SWIG_PERLDL_MODULAR}
 EXT_LIB_SWIG_PYTHON_MODULAR	= ${EXT_LIB_SWIG_PYTHON_MODULAR}
-EXT_LIB_SWIG_PERL_MODULAR	= ${EXT_LIB_SWIG_PERL_MODULAR}
+EXT_LIB_SWIG_PERLDL_MODULAR	= ${EXT_LIB_SWIG_PERLDL_MODULAR}
 EXT_IF_SWIG_PYTHON_MODULAR	= ${EXT_IF_SWIG_PYTHON_MODULAR}
-EXT_IF_SWIG_PERL_MODULAR	= ${EXT_IF_SWIG_PERL_MODULAR}
+EXT_IF_SWIG_PERLDL_MODULAR	= ${EXT_IF_SWIG_PERLDL_MODULAR}
 DEFINES_PYTHON_MODULAR		= ${DEFINES_PYTHON}
-DEFINES_PERL_MODULAR		= ${DEFINES_PERL}
+DEFINES_PERLDL_MODULAR		= ${DEFINES_PERLDL}
 INCLUDES_PYTHON_MODULAR		= ${INCLUDES_PYTHON}
-INCLUDES_PERL_MODULAR		= ${INCLUDES_PERL}
+INCLUDES_PERLDL_MODULAR		= ${INCLUDES_PERLDL}
 PRELINKFLAGS_PYTHON_MODULAR	= ${PRELINKFLAGS_PYTHON}
-PRELINKFLAGS_PERL_MODULAR	= ${PRELINKFLAGS_PERL}
+PRELINKFLAGS_PERLDL_MODULAR	= ${PRELINKFLAGS_PERLDL}
 LINKFLAGS_PYTHON_MODULAR 	= ${LINKFLAGS_PYTHON}
-LINKFLAGS_PERL_MODULAR 	= ${LINKFLAGS_PERL}
+LINKFLAGS_PERLDL_MODULAR 	= ${LINKFLAGS_PERLDL}
 POSTLINKFLAGS_PYTHON_MODULAR= ${POSTLINKFLAGS_PYTHON}
-POSTLINKFLAGS_PERL_MODULAR= ${POSTLINKFLAGS_PERL}
+POSTLINKFLAGS_PERLDL_MODULAR= ${POSTLINKFLAGS_PERLDL}
 SWIGFLAGS_PYTHON_MODULAR 	= ${SWIGFLAGS_PYTHON_MODULAR}
-SWIGFLAGS_PERL_MODULAR 	= ${SWIGFLAGS_PERL_MODULAR}
+SWIGFLAGS_PERLDL_MODULAR 	= ${SWIGFLAGS_PERLDL_MODULAR}
 
 PRE_LIB_SWIG_JAVA_MODULAR	= ${PRE_LIB_SWIG_JAVA_MODULAR}
 EXT_LIB_SWIG_JAVA_MODULAR	= ${EXT_LIB_SWIG_JAVA_MODULAR}
@@ -5168,6 +5284,7 @@ CONFDIR			= ${_confdir}
 INCDIR			= ${_incdir}
 LIBDIR			= ${_libdir}
 PYDIR			= ${_libdir}/${_pydir}
+PDLDIR			= ${_libdir}/${_pdldir}
 OCTDIR			= ${_octdir}
 RDIR			= ${_rdir}
 EOF
@@ -5309,10 +5426,13 @@ test_static_linking()
 		fi
 
 		if test "$_python_static" = yes
-		if test "$_perl_static" = yes
 		then
 			POSTLINKFLAGS_PYTHON="$POSTLINKFLAGS_PYTHON ../../shogun/libshogun.a"
-			POSTLINKFLAGS_PERL="$POSTLINKFLAGS_PERL ../../shogun/libshogun.a"
+		fi
+
+		if test "$_perldl_static" = yes
+		then
+			POSTLINKFLAGS_PERLDL="$POSTLINKFLAGS_PERLDL ../../shogun/libshogun.a"
 		fi
 
 		if test "$_r_static" = yes
@@ -5342,6 +5462,7 @@ determine_system_name
 check_makedepend
 check_python
 check_perl
+check_perldl
 check_pkg_config
 check_make
 check_doxygen
@@ -5377,7 +5498,7 @@ test_spinlocks
 test_libshogun
 test_cmdline
 test_python
-test_perl
+test_perldl
 test_octave
 test_r
 test_matlab

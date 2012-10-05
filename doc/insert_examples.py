@@ -16,6 +16,13 @@ python name_of_example.py
 \\endverbatim
 '''
 		),
+		'perl_modular' : ('Perl Modular', 'ExamplesModularPerl.mainpage',
+		'''\nTo run the examples issue
+\\verbatim
+perl name_of_example.pl
+\\endverbatim
+'''
+		),
 
 		'r_modular' : ('R Modular', 'ExamplesModularR.mainpage',
 		'''\nTo run the examples issue
@@ -47,6 +54,13 @@ name_of_example
 		'''\nTo run the examples issue
 \\verbatim
 python name_of_example.py
+\\endverbatim
+'''
+		),
+		'perl_static': ('Static Perl', 'ExamplesStaticPerl.mainpage',
+		'''\nTo run the examples issue
+\\verbatim
+perl name_of_example.pl
 \\endverbatim
 '''
 		),
@@ -157,7 +171,7 @@ java -jar path/to/modshogun.jar name_of_example
 		),
 		}
 
-valid_endings=['.py', '.m', '.R', '.sg', '.cpp', '.lua', '.rb', '.cs', '.java']
+valid_endings=['.py', '.m', '.R', '.sg', '.cpp', '.lua', '.rb', '.cs', '.java', '.pl']
 
 import os
 import os.path

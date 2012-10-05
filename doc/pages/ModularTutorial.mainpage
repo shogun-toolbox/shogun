@@ -1,8 +1,7 @@
 /*!
 \page modular_tutorial Tutorial for Modular Interfaces
 
-SHOGUN's "modular" interfaces to Python, Octave, Java, Lua, Ruby and C# give
-SHOGUN's "modular" interfaces to Perl, Octave, Java, Lua, Ruby and C# give
+SHOGUN's "modular" interfaces to Python, Perl, Octave, Java, Lua, Ruby and C# give
 intuitive and easy access to the shogun's functionality. Compared to the static
 interfaces (\subpage staticinterfaces), the modular ones are much more flexible
 and allow for nearly unlimited extensibility.
@@ -12,8 +11,7 @@ If this is your first time using shogun, you've found the right place to start!
 
 In this tutorial, we demonstrate how to use shogun to create a simple Gaussian
 kernel based Support Vector Machine (SVM) classifier, but first things first.
-Let's fire up python, octave, java, lua, ruby or C#, and load the modular shogun
-Let's fire up perl, octave, java, lua, ruby or C#, and load the modular shogun
+Let's fire up python, perl, octave, java, lua, ruby or C#, and load the modular shogun
 environment.
 
 \section start_shogun_modular Starting SHOGUN
@@ -24,7 +22,6 @@ init_shogun
 \endverbatim
 
 Under python we have to specify what we'd like to import.
-Under perl we have to specify what we'd like to import.
 For this example, we will need features and labels to represent our input data,
 a classifier, a kernel to compare the similarity of features and
 some evaluation procedures.
@@ -34,6 +31,18 @@ from shogun.Features import *
 from shogun.Kernel import *
 from shogun.Classifier import *
 from shogun.Evaluation import *
+\endverbatim
+
+Under perl we have to specify what we'd like to import.
+For this example, we will need features and labels to represent our input data,
+a classifier, a kernel to compare the similarity of features and
+some evaluation procedures.
+
+\verbatim
+use Shogun::Features;
+use Shogun::Kernel;
+use Shogun::Classifier;
+use Shogun::Evaluation;
 \endverbatim
 
 Under java we need import shogun package and jblas package.
@@ -98,14 +107,11 @@ use the "Classes" tab above and browse through the class list.
 All classes are rather well documented (if documentation is not good enough in a
 particular class, please notify us). Note that all classes in the
 classes list (classes tab above) are all prefixed with a 'C' - that
-really is the only difference to using them from within the python or
-really is the only difference to using them from within the perl or
+really is the only difference to using them from within the python or perl or
 octave modular interfaces (where the C prefix is missing).
 
 Alternatively, under python the same documentation is available via
-Alternatively, under perl the same documentation is available via
 python help strings, so you may issue
-perl help strings, so you may issue
 
 \verbatim
 help(<classname>)
@@ -124,11 +130,19 @@ import shogun.Kernel
 help(shogun.Kernel)
 \endverbatim
 
+Alternatively, under perl the same documentation is available via
+perldoc, so you may issue
+\verbatim
+ perldoc Shogun::<classname>
+\endverbatim
+etc...
+
+
+
 
 \section toy_tutorial_modular Generating a toy dataset
 
 To start with, we will generate a small toy dataset. In python, we need to
-To start with, we will generate a small toy dataset. In perl, we need to
 import numpy to do this. We will generate real valued training (and testing)
 data drawn from Gaussians distribution. We will generate two Gauss bumps
 that are "dist" apart. The data is in matrix shape with each column
@@ -145,6 +159,19 @@ testdata_real = concatenate((randn(2,100)-dist, randn(2,100)+dist), axis=1)
 train_labels = concatenate((-ones(100), ones(100)))
 test_labels = concatenate((-ones(100), ones(100)))
 \endverbatim
+
+In perl, we need to do for example
+
+\verbatim
+use Shogun::numpy;
+use Shogun::numpy::random qw(randn);
+my $dist=0.5
+my $traindata_real = concatenate((randn(2,100)-$dist, randn(2,100)+$dist), axis=>1)
+my $testdata_real = concatenate((randn(2,100)-$dist, randn(2,100)+$dist), axis=>1)
+my $train_labels = concatenate((-ones(100), ones(100)))
+my $test_labels = concatenate((-ones(100), ones(100)))
+\endverbatim
+
 
 In octave, this is is done as follows:
 
@@ -307,10 +334,8 @@ for (int i = 0; i < num; i ++) {
 }
 
 The rest of this tutorial below will now work the same (identical syntax) for
-python, octave (when using a trailing semicolon for each command, which is
-perl, octave (when using a trailing semicolon for each command, which is
-optional in python), lua(we use colon to get the method of an object), ruby and
-optional in perl), lua(we use colon to get the method of an object), ruby and
+python, perl, octave (when using a trailing semicolon for each command, which is
+optional in python or perl), lua(we use colon to get the method of an object), ruby and
 C#
 
 For java, we use DoubleMatrix to represent most of the types. If shogun C++
@@ -371,7 +396,7 @@ alternatively initialize the kernel object with the train and test data manually
 and then call apply without arguments, which is done in some of the other
 example scripts). If we would like to analyze the outputs directly in
 python/octave, we can obtain the vector of outputs in native python/octave
-perl/octave, we can obtain the vector of outputs in native perl/octave
+, also in perl/octave, we can obtain the vector of outputs in native perl/octave
 representation via get_labels().
 
 \verbatim
@@ -423,6 +448,9 @@ For csharp:
 \verbinclude classifier_libsvm_minimal_modular.cs
 
 For python:
-For perl:
 \verbinclude classifier_libsvm_minimal_modular.py
+
+For perl:
+\verbinclude classifier_libsvm_minimal_modular.pl
+
 */

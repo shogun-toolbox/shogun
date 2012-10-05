@@ -805,8 +805,9 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 					&octave_print_error, &octave_cancel_computations);
 			interface=new COctaveInterface(prhs, nlhs);
 #ifdef HAVE_PYTHON
-#ifdef HAVE_PERL
 			CPythonInterface::run_python_init();
+#endif
+#ifdef HAVE_PERL
 			CPerlInterface::run_perl_init();
 #endif
 #ifdef HAVE_R

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #!/usr/bin/env perl
 from tools.load import LoadMatrix
 lm=LoadMatrix()

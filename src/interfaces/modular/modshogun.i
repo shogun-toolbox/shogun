@@ -34,10 +34,17 @@
 %feature("python:tp_print") shogun::CSGObject "print_sgobject";
 /*%feature("python:slot", "tp_as_buffer", functype="PyBufferProcs*") shogun::SGObject::tp_as_buffer;
 %feature("python:slot", "bf_getbuffer", functype="getbufferproc") shogun::SGObject::getbuffer;*/
-#endif
+#elseif defined(SWIGPERL)
+#include <object.h>
+%{
+    static int print_sgobject(SV* plobj, FILE *f, int flags);
+%}
+%feature("perl:slot", "tp_str", functype="reprfunc") shogun::CSGObject::__str__;
+%feature("perl:slot", "tp_repr", functype="reprfunc") shogun::CSGObject::__repr__;
+%feature("perl:tp_print") shogun::CSGObject "print_sgobject";
 #endif
 
-ARRAY(0x28abeb8)
+
 #ifdef HAVE_DOXYGEN
 #ifndef SWIGRUBY
 %include "modshogun_doxygen.i"

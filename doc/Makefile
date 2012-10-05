@@ -25,9 +25,9 @@ examples: $(UNDOCUMENTED_EXAMPLE_DIRS) $(EXAMPLE_FILES)
 	$(MAKE) -C ../examples
 	echo $(DOCUMENTED_EXAMPLE_DIRS)
 	python ./insert_examples.py pages/
-	perl ./insert_examples.py pages/
 	python ./insert_examples_cn.py pages_cn/
-	perl ./insert_examples_cn.py pages_cn/
+	perl ./insert_examples.pl pages/
+	perl ./insert_examples_cn.pl pages_cn/
 
 distclean: clean
 
@@ -42,7 +42,7 @@ put-online: doc
 	cd html && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -xjvf -
 	ssh km find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type f -exec chmod 644 \{\} "\;"
 	ssh km find /var/www/shogun-toolbox.org/doc/en/$(MAINVERSION) -type d -exec chmod 755 \{\} "\;"
-	#
+#
 	ssh km rm -rf "/var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)"
 	ssh km mkdir "/var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION)"
 	cd html_cn && tar --exclude='*.map' --exclude='*.md5' -cjf - . | ssh km tar -C /var/www/shogun-toolbox.org/doc/cn/$(MAINVERSION) -xjvf -

@@ -14,8 +14,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 
-//names of octave/python/matlab/R interface commands
-//names of octave/perl/matlab/R interface commands
+//names of octave/python/perl/matlab/R interface commands
 #define N_SEND_COMMAND						"send_command"
 #define N_CRC								"crc"
 #define N_TRANSLATE_STRING					"translate_string"

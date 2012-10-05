@@ -30,8 +30,7 @@
 
   directories and online \subpage examples "here".
 
-  Note that we always keep the python-modular examples complete and up-to-date
-  Note that we always keep the perl-modular examples complete and up-to-date
+  Note that we always keep the python-modular or the perl-modular examples complete and up-to-date
   and also perform regression tests using a test-suite. Finally, we provide a
   %function reference for all static and modular interfaces:
 

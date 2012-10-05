@@ -215,4 +215,53 @@ and to revert changes:
     git reset
     git ls-files --others | xargs rm -v
 
+
+
+=todo
+
+=item python, inlines to python, perl, also within a list of R,octave etc...
+
+=item a perl|.*.pl file shall not contain python strings!
+
+=item a perl|.*.pl file shall not contain .py but .pl strings!
+
+=item unless there are a few lines around with python, octave, r...
+
+=item check inline incompatibility perl.*\.py 
+
+=item well, if changes inline have to be donejust after replacement string
+
+=item git rm ./doc/insert_examples.pl ./doc/insert_examples_cn.pl
+ ./src/.relpath.pl
+./src/.doxy2swig.pl
+./src/shogun/base/class_list.cpp.pl
+./src/.scrub_docstrings.pl
+git rm src/interfaces/perl_static/PythonInterface.*
+
+
+=item ifneq/endif in makefiles
+
+=item
+
+fix ...
+
+check_python()
+check_perl()
+{
+	echocheck "Python"
+	echocheck "Perl"
+	if $PYTHON -V >/dev/null 2>&1
+	then
+		PYVER="`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
+		echores "${PYVER}"
+		PYVER="`echo $PYVER | cut -f 1-2 -d '.'`"
+	else
+		die "python not detected (required)"
+	fi
+	fi
+
+ARRAY(0x2777658)}
+
+
+
 =cut

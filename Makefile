@@ -86,8 +86,8 @@ else
 ifeq ($(SNAPSHOT),yes)
 RELEASENAME := $(RELEASENAME)+git$(GITVERSION)
 endif
-all: doc release matlab python octave
-all: doc release matlab perl octave
+.PHONY: doc release matlab python perl octave
+all: doc release matlab python perl octave
 endif
 
 
@@ -107,14 +107,14 @@ prepare-release:
 	@if [ -f $(LOGFILE) ]; then rm -f $(LOGFILE); fi
 	git pull --rebase github master | tee --append $(LOGFILE)
 	git submodule update | tee --append $(LOGFILE)
-	#update changelog
+#update changelog
 	git status -v | tee --append $(LOGFILE)
 	@echo | tee --append $(LOGFILE)
 	@echo "Please check output of 'git status'." | tee --append $(LOGFILE)
 	@echo "Press ENTER to continue or Ctrl-C to abort." | tee --append $(LOGFILE)
 	@read foobar
 	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; git commit -m "updated changelog" ChangeLog ) | tee --append $(LOGFILE)
-	#build for all interfaces and update doc
+#build for all interfaces and update doc
 	git clean -dfx
 	( cd src && ./configure ) | tee --append $(LOGFILE)
 	+$(MAKE) -C src | tee --append $(LOGFILE)
@@ -126,7 +126,7 @@ prepare-release:
 
 release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
-	# copy things over to shogun-releases dir
+# copy things over to shogun-releases dir
 	git checkout-index --prefix=$(DESTDIR)/ -a
 	cp src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C ../shogun-releases $(RELEASENAME)
@@ -145,7 +145,7 @@ embed-main-version: src/shogun/lib/versionstring.h
 
 git-tag-release: embed-main-version
 	git commit -a -m "Preparing for new Release shogun_$(MAINVERSION)"
-	# create shogun X.Y branch and put in versionstring
+# create shogun X.Y branch and put in versionstring
 	git checkout -b shogun_$(VERSIONBASE)
 	git add -f src/shogun/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" src/Makefile
@@ -174,7 +174,7 @@ update-webpage:
 	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.asc $(DESTDIR).md5sum \
 		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
 	ssh 7nn.de chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.* /var/www/shogun-toolbox.org/archives/shogun/data/*"
-	
+#	
 	$(MAKE) -C examples
 	rm -rf doc/html
 	$(MAKE) -C doc
@@ -201,8 +201,7 @@ $(DESTDIR)/src/shogun/lib/versionstring.h: src/shogun/lib/versionstring.h
 	rm -rf $(DESTDIR)
 	git checkout-index --prefix=$(DESTDIR)/ -a
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
-
-	# remove top level makefile from distribution
+# remove top level makefile from distribution
 	cp -f src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/
 
 clean:
@@ -212,3 +211,56 @@ distclean:
 	$(MAKE) -C src distclean
 	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	rm -rf $(DATADESTDIR) $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
+
+
+perl-conf:
+	cd src;./configure --interfaces=perldl_modular
+	$(MAKE) -C src
+perl:
+	$(MAKE) -C src
+
+
+dbg-cxx:
+	cd /usr/src/shogun/src/interfaces/perldl_modular;\
+	c++ -v \
+	-g -fPIC -O0 \
+	-DSWIG_TYPE_TABLE=shogun -DSHOGUN -DLINUX -DUSE_BOOL -DUSE_CHAR -DUSE_UINT8 \
+	-DUSE_UINT16 -DUSE_INT32 -DUSE_INT64 -DUSE_UINT64 -DUSE_FLOAT32 -DUSE_FLOAT64 -DHAVE_POWL \
+	-DHAVE_LGAMMAL -DHAVE_SQRTL -DHAVE_LOG2 -DHAVE_PTHREAD -DHAVE_XML -DHAVE_LAPACK -DHAVE_LAPACK \
+	-DUSE_GZIP -DUSE_BZIP2 -DHAVE_LARGEFILE -DUSE_SHORTREAL_KERNELCACHE -DUSE_BIGSTATES -DUSE_HMMCACHE \
+	-DUSE_REFERENCE_COUNTING -DUSE_SVMLIGHT -DUSE_SPINLOCKS -DHAVE_DOXYGEN -DHAVE_PERL -DHAVE_PDL \
+	 -I. -I..  -I/usr/include/libxml2   -I../../shogun -I../.. -I/usr/lib/perl/5.14/CORE \
+	 -o modshogun_wrap.cxx.o modshogun_wrap.cxx
+
+#this is clash with perl and vodal-wabbit!
+# In file included from ../../shogun/classifier/vw/vw_common.h:26:0,
+#                  from ../../shogun/io/streaming/StreamingFile.h:21,
+#                  from ../../shogun/features/streaming/StreamingFeatures.h:15,
+#                  from ../../shogun/features/streaming/StreamingDotFeatures.h:14,
+#                  from ../../shogun/machine/OnlineLinearMachine.h:17,
+#                  from modshogun_wrap.cxx:2850:
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: expected identifier before ‘(’ token
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: expected ‘)’ before ‘pthread_getspecific’
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: expected ‘)’ before ‘pthread_getspecific’
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: expected ‘;’ at end of member declaration
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: ‘PL_thr_key’ is not a type
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: ISO C++ forbids declaration of ‘pthread_getspecific’ with no type [-fpermissive]
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: expected ‘;’ at end of member declaration
+# ../../shogun/classifier/vw/vw_label.h:86:7: error: expected unqualified-id before ‘)’ token
+
+dbg-lk:
+	cd /usr/src/shogun/src/interfaces/perldl_modular;\
+	c++ -Xlinker --no-undefined -L../../shogun -lshogun \
+	-L/usr/lib/perl/5.14 \
+	-lgdbm -lgdbm_compat -ldb \
+	-ldl -lm -lpthread -lc -lcrypt \
+	-Wl,-E  -fstack-protector -L/usr/local/lib  -L/usr/lib/perl/5.14/CORE -lperl \
+	-ldl -lm -lpthread -lc -lcrypt  \
+	-o modshogun.so modshogun_wrap.cxx.o sg_print_functions.cpp.o \
+	-L../../shogun -lshogun -lm -pthread -lxml2   -llapack -lblas -lz -lbz2 -shared -L/usr/lib/perl/5.14 \
+	-lgdbm -lgdbm_compat -ldb \
+	-ldl -lm -lpthread -lc -lcrypt  \
+	-shared \
+	-L/usr/local/lib -fstack-protector \
+	/usr/lib/perl5/auto/PDL/Core/Core.so \
+
