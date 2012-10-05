@@ -6,8 +6,9 @@
 
 SRCDIR = .
 
+CONFIGPATH = .
 ifeq (../.config,$(wildcard ../.config))
-CONFIGPATH = ../
+CONFIGPATH = ..
 all: build
 include ../.config
 ifeq (../.config-local,$(wildcard ../.config-local))
@@ -15,7 +16,7 @@ include ../.config-local
 endif
 else
 ifeq (../../.config,$(wildcard ../../.config))
-CONFIGPATH = ../../
+CONFIGPATH = ../..
 all: build
 include ../../.config
 ifeq (../../.config-local,$(wildcard ../../.config-local))
@@ -374,13 +375,13 @@ check-examples-python_static:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
 
-run-testsuite-perldl_static:
-	cd $(CONFIGPATH)/../tests/integration/perldl_static && \
+run-testsuite-perl_static:
+	cd $(CONFIGPATH)/../tests/integration/perl_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) \
 		PERLDLPATH="$(DESTDIR)$(PLDIR)" ./test_all.sh	)
 
-check-examples-perldl_static:
-	cd $(CONFIGPATH)/../examples/undocumented/perldl_static && \
+check-examples-perl_static:
+	cd $(CONFIGPATH)/../examples/undocumented/perl_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) \
 		PERLDLPATH="$(DESTDIR)$(PLDIR)" ./check.sh	)
 
@@ -578,7 +579,7 @@ doc-lua_modular:
 doc-csharp_modular:
 	true
 
-$(OBJFILES): $(CONFIGPATH).config .depend Makefile $(CONFIGPATH)/ChangeLog
+$(OBJFILES): $(CONFIGPATH)/.config .depend Makefile $(CONFIGPATH)/ChangeLog
 
 ifeq (modular,$(findstring modular,$(TEMPLATE_TARGET)))
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
@@ -660,16 +661,16 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) $(CONFIGPATH).scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
-	$(PYTHON) $(CONFIGPATH).doxy2swig.py --quiet --no-function-definition \
+	$(PYTHON) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
 		$(shell basename $< $(EXT_DOXY))/doxygen_xml/index.xml $@
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) $(CONFIGPATH).scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 endif
 
 # Do not include dependencies when they are about to be removed anyway.
@@ -677,7 +678,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),clean)
 
 # Generate dependecies.
-.depend:	$(CONFIGPATH).config $(DEPDEPS)
+.depend:	$(CONFIGPATH)/.config $(DEPDEPS)
 ifeq (makedepend,$(MAKEDEPEND))
 	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
@@ -690,7 +691,7 @@ else #gcc -MM
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
-			$(PYTHON) $(CONFIGPATH).generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
+			$(PYTHON) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
 			"$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
 ifeq (r_modular,$(TEMPLATE_TARGET))
 	    bash -c "( for i in \`grep '.$(EXT_LIB):' .depend | cut -f 1 -d ':'\` ; \

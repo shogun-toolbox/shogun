@@ -6,7 +6,7 @@ opts=''
 #opts=' --prefix=/local/cong --libs=/local/cong/lib --includes=/local/cong/include'
 
 interfaces = ['elwms','cmdline', 'python_modular', 'python', 'r', 'r_modular',
-              'octave', 'octave_modular', 'matlab','libshogun','libshogunui'];
+              'octave', 'octave_modular', 'matlab','libshogun','libshogunui', 'perl', 'perl_modular'];
 
 def powerset(s):
     """Return the powerset of a list"""

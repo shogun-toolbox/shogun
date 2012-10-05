@@ -153,7 +153,7 @@ git-tag-release: embed-main-version
 	git tag shogun_$(MAINVERSION)
 
 package-from-release:
-	rm -rf $(DESTDIR)
+	echo rm -rf $(DESTDIR)
 	mkdir $(DESTDIR)
 	find ./ -regextype posix-egrep  ! -regex '(.*svn.*|.*\.o$$|.*wrap.*|.*\.so$$|.*\.mat$$|.*\.pyc$$|.*\.log$$)' \
 		| xargs tar --no-recursion -cf - | tar -C $(DESTDIR) -xf - 
@@ -198,27 +198,41 @@ src/shogun/lib/versionstring.h:
 	$(MAKE) -C src/shogun lib/versionstring.h
 
 $(DESTDIR)/src/shogun/lib/versionstring.h: src/shogun/lib/versionstring.h
-	rm -rf $(DESTDIR)
+	echo rm -rf $(DESTDIR)
 	git checkout-index --prefix=$(DESTDIR)/ -a
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 # remove top level makefile from distribution
 	cp -f src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/
 
 clean:
-	rm -rf $(DESTDIR)
+	echo hoooo nooooo rm -rf $(DESTDIR)
 
 distclean:
 	$(MAKE) -C src distclean
-	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
-	rm -rf $(DATADESTDIR) $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
+	echo rm -rf $(DESTDIR) 
+	rm $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+	echo rm -rf $(DATADESTDIR) 
+	rm $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 
 
 perl-conf:
 	cd src;./configure --interfaces=perldl_modular
-	$(MAKE) -C src
-perl:
+
+perl: perl-conf src
+
+src:
 	$(MAKE) -C src
 
+.PHONY:run-testsuite
+
+run-testsuite:
+	$(MAKE) -C src $@
+
+TAGS:
+	cd src;etags $(SRCFILES)
+
+
+###other debuging stuff
 
 dbg-cxx:
 	cd /usr/src/shogun/src/interfaces/perldl_modular;\

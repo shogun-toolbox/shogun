@@ -1,8 +1,24 @@
-#!/usr/bin/env python
-#!/usr/bin/env perl
-"""
+#!/usr/bin/perl
+
+use PDL;
+use kernel;
+#...
+our @SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
+		'regression', 'preprocessor'];
+
+use Shogun qw(Math_init_random);
+
+
+
+
+
+__END__
+
+=head1 
+
 Test one data file
-"""
+
+=cut
 
 from numpy import *
 import sys

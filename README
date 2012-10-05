@@ -29,7 +29,7 @@ The following table depicts the status of each interface available in shogun:
 |octave_static     | mature (no known problems)                                |
 |matlab_static     | mature (no known problems)                                |
 |python_static     | mature (no known problems)                                |
-|perl_static       | imature (many unknown problems)                           |
+|perl_static       | immature (many unknown problems)                          |
 |r_static          | mature (no known problems)                                |
 |libshogun_static  | mature (no known problems)                                |
 |cmdline_static    | stable but some data types incomplete                     |

@@ -1,5 +1,16 @@
-#!/usr/bin/env python
 #!/usr/bin/env perl
+#from Makefile.PL
+
+=pod
+
+  check-local: Makefile.perl
+	$(MAKE) -f $< test
+
+=cut
+
+
+
+__END__
 import modshogun
 import pickle
 import os

@@ -117,7 +117,7 @@ _hmmdebug=no
 _pathdebug=no
 _profile=no
 _prefix="/usr/local"
-_destdir="/"
+_destdir=""
 _bindir=""
 _datadir=""
 _mandir=""
@@ -1736,8 +1736,9 @@ set_install_dirs()
 		fi
 	fi
 #PTZ120921 really fiddly, where is my MAkefile.ac? and  ExtUtils::MakeMaker
+#PTZ121005 this is so so so bad.... give me Makemaker autoconf, and the lot...
 	if test -z "$_pdldir" ; then
-	    _pdldir="`$PERL -e 'print join(\"\\n\",  @INC)' | grep $_prefix | head -1`"
+	    _pdldir="`$PERL -e 'print join(\"\\n\",  @INC)' | grep $_prefix | head -1 |sed 's,.*/lib/,,'`"
 	fi
 }
 

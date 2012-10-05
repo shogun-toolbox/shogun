@@ -1,14 +1,36 @@
+#!/usr/bin/perl
+
+my $example_dir = '../../../examples/undocumented/perl_modular';
+my $test_dir = '../../regression/tests';
+my @blacklist = ("classifier_libsvm_minimal_modular.t",
+		"kernel_combined_modular.t",
+		"kernel_distance_modular.t",
+	      "distribution_hmm_modular.t");
+
+=pod
+if __name__=='__main__':
+	from optparse import OptionParser
+	op=OptionParser()
+	op.set_usage("[<file1> <file2> ...]")
+=cut
+
+    my ($opts, $args)=op.parse_args()
+    my $tests = setup_tests(args);
+    generator($tests);
+
+
+
+__END__
 import os
 import sys
 import pickle
 
-example_dir = '../../../examples/undocumented/python_modular'
 example_dir = '../../../examples/undocumented/perl_modular'
 test_dir = '../../regression/tests'
-blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.py",
-		"kernel_combined_modular.py",
-		"kernel_distance_modular.py",
-		"distribution_hmm_modular.py")
+blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.t",
+		"kernel_combined_modular.t",
+		"kernel_distance_modular.t",
+		"distribution_hmm_modular.t")
 
 def get_fname(mod_name, i):
 	return os.path.join(test_dir, mod_name + str(i) + '.txt')
@@ -32,7 +54,7 @@ def check_for_function(fname):
 	return False
 
 def get_test_mod(t):
-	if t.endswith(".py") and not t.startswith('.') and t not in blacklist:
+	if t.endswith(".t") and not t.startswith('.') and t not in blacklist:
 		mod_name = t[:-3]
 
 		if not check_for_function(t):

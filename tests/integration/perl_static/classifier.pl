@@ -1,3 +1,5 @@
+__END__
+
 """
 Test Classifier
 """

@@ -42,8 +42,6 @@ There are two major functions:
    against, e.g.
 
      cd python-modular
-   or
-     cd perl-modular
 
    There you can test against all testcases or all of one category or
    individually.
