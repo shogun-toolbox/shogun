@@ -1,17 +1,115 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -I. 
 
 use PDL;
+
 use kernel;
+use distance;
+use classifier;
+use clustering;
+use distribution;
+use regression;
+use preprocessor;
+
 #...
-our @SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
-		'regression', 'preprocessor'];
+our @SUPPORTED=('kernel', 'distance', 'classifier', 'clustering', 'distribution',
+		'regression', 'preprocessor');
+@SUPPORTED=('kernel');
 
 use Shogun qw(Math_init_random);
 
+sub _get_name_fun() {
+    my $fnam = shift;
+    my $module;
+    if (grep($_ eq $fnam, @supported)) {
+	$module = $supported;
+    }
+    unless($module) {
+	printf('Module required for %s not supported yet!', $fnam);
+	return undef;
+    }
+    return $module . '.test';
+}
 
+sub _test_tfile {
+    my $fnam = shift;    
+    my $mfile = open($fnam, 'r') or return false;	
+    my %indata = ();
 
+    my $name_fun = _get_name_fun($fnam);
+    unless($name_fun) {
+	return false;
+    }
+    while(my $line = <$mfile>) {
+	$line =~ s/[\s]//g;
+	(my $param = $line) =~ s/=.*//;
 
+	if($param eq 'name') {
+	    #name=line.split('=')[1].strip().split("'")[1]
+	    my $name = $line =~ m/.*='(.*)'/;
+	    $indata{$param} = $name;
+	}
+	elsif ($param eq 'kernel_symdata' or $param eq 'kernel_data') {
+	    $indata{$param}=_read_matrix($line);
+	}
+	elsif ($param =~ /^kernel_matrix/ or 
+	       $param =~ /^distance_matrix/) {
+	    $indata{$param}=_read_matrix($line); }
+	elsif ($param =~ /data_train/ or $param =~ /data_test/) {
+	    # data_{train,test} might be prepended by 'subkernelX_'
+	    $indata{$param}=_read_matrix($line);}
+	elsif ($param eq 'classifier_alphas' or $param eq'classifier_support_vectors') {
+	    ($indata{$param}) = $line =~ m/=(.*)$/;
+	    unless($indata{$param}) {
+ # might be MultiClass SVM and hence matrix
+		$indata{$param}=_read_matrix($line); }
+	}
+	elsif($param=='clustering_centers' or param=='clustering_pairs') {
+	    $indata{$param}=_read_matrix($line); 
+	} else {
+	    unless($line =~ /'/) {
+		($indata{$param}) = $line =~ m/=(.*)$/;
+		unless($indata{$param}) {
+		    ($indata{$param}) = $line =~ m/='(.*)'/;
+		}
+	    }
+	}
+	close($mfile);
+	$fun = *{$name_fun};
+	
+	# seed random to constant value used at data file's creation
+	&Math_init_random($indata{'init_random'});
+	$random->seed($indata{'init_random'});
+	return $fun->(\%indata);
+}
 
+sub _read_matrix {
+    my $line = shift;
+    my ($str_line) = $line =~ m/\[(.*)\]/g;
+    unless($str_line) {
+	($str_line) = $line =~ m/\{(.*)\}/g;
+    }
+    my @lines = split(/;/, $str_line);
+    my @lis2d;    
+    foreach my $x (@lines) {
+	my @lis;
+	foreach my $y (split(/,/, $x)) {
+	    $y =~ s/'//g;
+	    push(@lis, $y);
+	}
+	push(@lis2d, \@lis);
+    }
+    return \@lis2d;
+}
+
+my $res = 1;
+foreach my $filename (@ARGV) {
+    if($filename =~ /\.t$/) {
+	$res &&= &_test_mfile($filename);
+    }
+}
+if($res) { 
+    return 1;
+}
 __END__
 
 =head1 
