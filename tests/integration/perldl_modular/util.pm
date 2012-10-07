@@ -1,9 +1,15 @@
 package utils;
 
+use modshogun;
+
+=pod
+
 use Shogun.Features;
 use Shogun.Preprocessor;
 use Shogun.Distance;
 use Shogun.Kernel;
+
+=cut
 
 use PDL;
 
@@ -39,17 +45,17 @@ sub get_args {
 
 =cut
     
-    my $ident=$prefix +'arg';
+    my $ident=$prefix . 'arg';
     # need to pregenerate list for using indices in loop
-    my $args=len($indata)*[None];
+    my $args = [undef] x $#$indata ;
     foreach my $i (@$indata) {
-	unless($ident =~ /$i/) continue;
-	my $idx=int(substr($i, len($ident), 1));
-	unless($idx>=0)
+	unless($ident =~ /$i/) { next;}
+	my $idx= substr($i, len($ident), 1);
+	unless($idx>=0) {
 	    warn( 'Wrong indata data %s: "%s"!' , $ident, $i);
-
+	}
 	if($i =~ /_distance/) { # DistanceKernel
-	    $args[$idx]=eval($indata->[$i]->'()');
+	    $args[$idx]=eval($indata->[$i]->());
 	}else{
 	    $args[$idx]=eval($indata->[$i]);
 	    #except TypeError: # no bool
@@ -57,12 +63,12 @@ sub get_args {
 	}
     }
     # weed out superfluous Nones
-    return &filter(lambda arg: arg is not None, $args);
+    return $args; #&filter(lambda arg: arg is not None, $args);
 }
 
 sub get_features
 {
-    my ($indata, $prefix='') = @_;
+    my ($indata, $prefix) = @_;
     my $fclass=$prefix.'feature_class';
     if($indata->{$fclass} eq 'simple') {
 	return &get_feats_simple($indata, $prefix);
@@ -77,8 +83,8 @@ sub get_features
     }
 }
 
-sub &get_feats_simple {
-    my ($indata, $prefix='') = @_;
+sub get_feats_simple {
+    my ($indata, $prefix) = @_;
 
     my $ftype=$indata->{$prefix.'feature_type'};
 
@@ -89,14 +95,14 @@ sub &get_feats_simple {
 	'Word'=> &ushort
 	);
 
-    my $data_train=$indata->{$prefix.'data_train'}->astype(as_types[ftype]);
-    my $data_test=$indata->{$prefix.'data_test'}->astype(as_types[ftype]);
+    my $data_train=$indata->{$prefix.'data_train'}->astype($as_types{$ftype});
+    my $data_test=$indata->{$prefix.'data_test'}->astype($as_types{$ftype});
     my $ftrain;
     my $ftest;
     if( $ftype eq 'Byte' or $ftype eq 'Char') {
 	my $alphabet=eval($indata->{$prefix.'alphabet'});
-	$ftrain=eval($ftype+'Features($alphabet)');
-	$ftest=eval($ftype+'Features($alphabet)');
+	$ftrain=eval($ftype.'Features($alphabet)');
+	$ftest=eval($ftype.'Features($alphabet)');
 	$ftrain->copy_feature_matrix($data_train);
 	$ftest->copy_feature_matrix($data_test);
     } else {
@@ -119,8 +125,8 @@ sub &get_feats_simple {
 }
 
 sub get_feats_string {
-    my ($indata, $prefix='') = @_;
-    my $ftype=$indata->{$prefix.'feature_type']
+    my ($indata, $prefix) = @_;
+    my $ftype=$indata->{$prefix.'feature_type'};
     my $alphabet=eval($indata->{$prefix.'alphabet'});
     my %feats=(
 	'train'=> eval('String'.$ftype.'Features($alphabet)')
@@ -128,11 +134,11 @@ sub get_feats_string {
 	);
     $feats{'train'}->set_features($indata->{$prefix.'data_train'}[0]);
     $feats{'test'}->set_features($indata->{$prefix.'data_test'}[0]);
-    return $feats;
+    return \%feats;
 }
 sub get_feats_string_complex
 {
-    my ($indata, $prefix='') = @_;
+    my ($indata, $prefix) = @_;
     my $alphabet=eval($indata->{$prefix.'alphabet'});
     my %feats=(
 	'train'=> &StringCharFeatures($alphabet)
@@ -164,18 +170,18 @@ sub get_feats_string_complex
 			    eval($indata->{$prefix.'reverse'}));
     $feats{'test'}=$feat;
 
-    if( $indata->{$prefix.'feature_type']=='Word' or 
-	$indata->{$prefix.'feature_type']=='Ulong'){
+    if( $indata->{$prefix.'feature_type'} eq 'Word' or 
+	$indata->{$prefix.'feature_type'} eq 'Ulong'){
 	my $name='Sort'.$indata->{$prefix.'feature_type'}.'String';
 	return &add_preprocessor($name, $feats);
     } else {
-	return $feats;
+	return \%feats;
     }
 }
 
 sub get_feats_wd
 {
-    my ($indata, $prefix='') = @_;
+    my ($indata, $prefix) = @_;
     my $order=$indata->{$prefix.'order'};
     my %feats;
 
@@ -191,7 +197,7 @@ sub get_feats_wd
     $bytefeat->obtain_from_char($charfeat, 0, 1, 0, false);
     $feats{'test'}=&WDFeatures($bytefeat, $order, $order);
 
-    return $feats;
+    return \%feats;
 }
 
 sub add_preprocessor
@@ -200,10 +206,10 @@ sub add_preprocessor
     my $fun=*{$name};
     my $preproc=$fun->($args);
     my $preproc->init($feats{'train'});
-    $feats{'train'}->add_preprocessor($preproc);
-    $feats{'train'}->apply_preprocessor();
-    $feats{'test'}->add_preprocessor($preproc);
-    $feats{'test'}->apply_preprocessor();
+    $feats->{'train'}->add_preprocessor($preproc);
+    $feats->{'train'}->apply_preprocessor();
+    $feats->{'test'}->add_preprocessor($preproc);
+    $feats->{'test'}->apply_preprocessor();
     return $feats;
 }
 

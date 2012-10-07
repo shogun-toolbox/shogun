@@ -1,23 +1,36 @@
-#!/usr/bin/env perl
-
+#!/usr/bin/perl -I ../../../src/interfaces/perldl_modular -I .
+use lib  qw(../../../src/interfaces/perldl_modular);
+use PDL;
 use modshogun;
 use generator qw(setup_tests get_fname blacklist get_test_mod run_test);
 
-use Tests::More;
-use DataDumper;
+use Test::More;
+use Data::Dumper;
 use File::Slurp;
 use Getopt::Long;
 use Pod::Usage;
 
+use Data::Dumper;
+use Digest::MD5 qw(md5 md5_hex md5_base64);
+use IO::String;
+use IO::File;
+use Data::Hexdumper qw(hexdump) ;
+use File::Temp qw/tempfile tempdir mktemp/;
+use File::Spec;
+use Tie::IxHash;
+#use MIME::Lite::HTML;
+#use Algorithm::QuineMcCluskey::Util;
+use Storable;
+use Archive::Zip qw( :ERROR_CODES );
 
 
 sub typecheck
 {
     my ($a, $b) = @_;
-    my $rfa = ref($a) =~ s/\(.*$//;
-    my $rfb = ref($b) =~ s/\(.*$//;
+    (my $rfa = ref($a)) =~ s/\(.*$//;
+    (my $rfb = ref($b)) =~ s/\(.*$//;
     if($rfa =~ /Shogun.*Labels/ and $rfb =~ /Shogun.*Labels/) {
-	return true:
+	return true;
     }
     return($rfa eq $rfb);
 }
@@ -26,7 +39,7 @@ sub typecheck
 sub compare
 {
     my($a, $b, $tolerance) = @_;
-    if(not &typecheck($a, $b)) return false;
+    if(not &typecheck($a, $b)) { return false;}
     if(ref($a) =~ /PDL::ndarray/) {
 	if($tolerance) {
 	    return (max(abs($a - $b)) < $tolerance);
@@ -35,16 +48,18 @@ sub compare
 	}
     } elsif( &isinstance($a, modshogun::SGObject)) {
 	return like(Dumper($a), Dumper($b));
-    } elsif(ref($a) =~ ($tuple, $list)) {
-	if(len($a) != len($b)) return false;
-	foreach my($obj1, $obj2) (&zip($a,$b)) {
-	    if( not &compare($obj1, $obj2, $tolerance))
+    } elsif(ref($a) =~ qr'ARRAY') {
+	if($#$a != $#$b) {return false;}
+	while((my ($obj1) = pop(@$a)) && (my ($obj2) = pop(@$b))) {
+	    if( not &compare($obj1, $obj2, $tolerance)) {
 		return false;
+	    }
 	}
 	return true;
     }
     return $a <=> $b;
 }
+
 sub compare_dbg {
     my ($a, $b, $tolerance) = @_;
     if(not &compare_dbg_helper($a, $b, $tolerance)) {
@@ -56,33 +71,34 @@ sub compare_dbg {
 sub compare_dbg_helper
 {
     my ($a, $b, $tolerance) = @_;
-
+    my $rfa = ref($a);
+    my $rfb = ref($b);
     if(not &typecheck($a, $b)) {
 	printf( "Type mismatch (type(a)=%s vs type(b)=%s)", ref($a), ref($b));
 	    return false;
     }
-    my $rfa = ref($a);
     if(ref($a) =~ /PDL/) {
 	if ($tolerance){
-	    if (max(abs($a - $b)) < $tolerance);numpy.max(numpy.abs(a - b)) < tolerance {
+	    if (max(abs($a - $b)) < $tolerance) {
 		return true;
 	    }else{
-		print "Numpy Array mismatch > max_tol";
+		print "PDL Array mismatch > max_tol";
 		print $a-$b;
 		return false;
 	    }
 	}else{
-	    if (numpy.all(a == b)){
+	    if (&is_like($a, $b)){
 		return true;
 	    }else{
-		print "Numpy Array mismatch";
+		print "PDL Array mismatch";
 		print $a-$b;
-		return false:
+		return false;
 	    }
 	}
     } elsif(ref($a) =~ /modshogun::SGObject/){
-	if(like(Dumper($a), Dumper($b)))
+	if(&like(Dumper($a), Dumper($b))) {
 	    return true;
+	}
 	print("a=", Dumper($a));
 	print("b=", Dumper($b));
 	return false;
@@ -115,10 +131,10 @@ sub tester
 
 	my ($mod, $mod_name) = &get_test_mod($t);
 	my $n=$#{$mod->{parameter_list}};
-	unless($n) continue;
+	unless($n) {next;}
 	if(@_) {
 	    warn( "%-60s ERROR (%s)" ,$t,@_);
-	    continue;
+	    next;
 	}
 	my $fname = "";
 
@@ -153,15 +169,17 @@ sub tester
 }
 
 
-         my $verbose = '';   # option variable with default value (false)
-           my $all = '';       # option variable with default value (false)
+my $verbose = '';   # option variable with default value (false)
+my $all = '';       # option variable with default value (false)
+my $man = 0;
+my $help = 0;
 
 my $debug = false;
 my $failures = false;
 my $tolerance = false;
 my $missing = false;
-my $man = 0;
-my $help = 0;
+my $cmp_method;
+
 
 GetOptions ('verbose' => \$verbose, 'all' => \$all,
 	    , 'debug!' => \$debug
@@ -172,8 +190,6 @@ GetOptions ('verbose' => \$verbose, 'all' => \$all,
     ) or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage(-exitstatus => 0, -verbose => 2) if $man;
-
-my $cmp_method;
 
 if($debug) {
     $cmp_method= \&compare_dbg;

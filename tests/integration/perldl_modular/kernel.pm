@@ -1,10 +1,19 @@
 package kernel;
+
+use modshogun;
+
+=pod
+
+comming from modshogun?
 use Shogun::Features;
 use Shogun::Kernel;
 use Shogun::Preprocessor;
 use Shogun::Distance;
 use Shogun::Classifier qw(PluginEstimate);
 use Shogun::Distribution qw(HMM BW_NORMAL);
+
+=cut
+
 
 use PDL  qw( array ushort ubyte double);
 
@@ -17,23 +26,23 @@ use util;
 sub _evaluate {
  my ($indata, $prefix) = @_;
  my $feats=&util::get_features($indata, $prefix);
- my $kfun= *{$indata{$prefix.'name'}.'Kernel'};
+ my $kfun= *{$indata->{$prefix.'name'}.'Kernel'};
  my $kargs=&util::get_args($indata, $prefix);
- my $kernel=$kfun($kargs);
- if( defined($indata{$prefix.'normalizer'})) {
-     $kernel->set_normalizer(eval($indata{$prefix+'normalizer'}.'()'));
+ my $kernel=$kfun->($kargs);
+ if( defined($indata->{$prefix.'normalizer'})) {
+     $kernel->set_normalizer(eval($indata->{$prefix+'normalizer'}.'()'));
  }
- $kernel->init(feats['train'], feats['train']);
+ $kernel->init($feats->{'train'}, $feats->{'train'});
  $km_train=max(abs(
-		   $indata{$prefix.'matrix_train'}
+		   $indata->{$prefix.'matrix_train'}
 		   - $kernel->get_kernel_matrix())->flat());
- $kernel->init($feats{'train'}, $feats{'test'});
+ $kernel->init($feats->{'train'}, $feats->{'test'});
  $km_test=max(abs(
-		  $indata{$prefix.'matrix_test'}
+		  $indata->{$prefix.'matrix_test'}
 		  -$kernel->get_kernel_matrix())->flat);
 
  return util::check_accuracy(
-     $indata{$prefix.'accuracy'}, km_train=>$km_train, km_test=>$km_test);
+     $indata->{$prefix.'accuracy'}, km_train=>$km_train, km_test=>$km_test);
 }
 
 sub _get_subkernels 
@@ -41,16 +50,16 @@ sub _get_subkernels
     my ($indata, $prefix) = @_;
     my %subkernels;
     $prefix.='subkernel';
-    my $len_prefix = len($prefix);
+    my $len_prefix = strlen($prefix);
 
     # loop through indata (unordered dict) to gather subkernel data
     foreach my $key (keys %$indata) {
-	unless($prefix =~ /$key/)	continue;
+	unless($prefix =~ /${key}/) { next;}
 
 	# get subkernel's number
 	my $num= substr($key, $len_prefix, 1);
 	unless ($num) {
-	    warn('Cannot find number for subkernel: "%s"!' $data);
+	    warn('Cannot find number for subkernel: "%s"!', $data);
 	}
 	# get item's name
 	my $name=substr($key, $len_prefix + 2);
@@ -66,7 +75,7 @@ sub _get_subkernels
 	    $subkernels{$num}{'kernel'}=$fun->($args);
 	}
     }
-    return $subkernels;
+    return \%subkernels;
 }
 
 sub _evaluate_combined
@@ -75,7 +84,7 @@ sub _evaluate_combined
     my $kernel = &CombinedKernel();
     my %feats=('train'=> &CombinedFeatures()
 	       , 'test' => &CombinedFeatures()
-	};
+	);
 
     my %subkernels = (&_get_subkernels($indata, $prefix));
     foreach my $subk (keys %subkernels) {
@@ -93,8 +102,14 @@ sub _evaluate_combined
 			$indata->{'kernel_matrix_test'}
 			- $kernel->get_kernel_matrix())->flat);
     
-    return &util::check_accuracy($indata->{$prefix.'accuracy'},
-				 km_train=>$km_train, km_test=>$km_test);
+    return &util::check_accuracy
+	(
+	 $indata->{$prefix.'accuracy'}
+	 , {
+	     km_train=>$km_train
+		 , km_test=>$km_test
+	 }
+	);
 
 }
 sub _evaluate_auc
@@ -104,9 +119,9 @@ sub _evaluate_auc
     my $feats_subk = &util::get_features($subk, '');
     $subk{'kernel'}->init($feats_subk{'train'}, $feats_subk{'test'});
     my %feats= (
-	'train'=> &WordFeatures($indata{$prefix.'data_train'}->astype(ushort))
-	, 'test'=> &WordFeatures($indata{$prefix.'data_test'}->astype(ushort))
-	};
+	'train'=> &WordFeatures($indata->{$prefix.'data_train'}->astype(ushort))
+	, 'test'=> &WordFeatures($indata->{$prefix.'data_test'}->astype(ushort))
+	);
     my $kernel=&AUCKernel(10, $subk{'kernel'});
 
     $kernel->init($feats{'train'}, $feats{'train'});
@@ -116,8 +131,12 @@ sub _evaluate_auc
     my $km_test=max(abs(
 			$indata->{$prefix.'matrix_test'}-$kernel->get_kernel_matrix())->flat);
 
-    return &util::check_accuracy($indata{$prefix.'accuracy'},
-			       km_train=>$km_train, km_test=>$km_test);
+    return &util::check_accuracy
+	($indata->{$prefix.'accuracy'}
+	 , {   km_train=>$km_train
+		   , km_test=>$km_test
+	 }
+	);
 
 }
 sub  _evaluate_custom
@@ -133,8 +152,8 @@ sub  _evaluate_custom
 
 #PTZ121005not realy sure about this...
     my @a;
-    foreach my  $x (0..$symdata->shape[1]) {
-	foreach my $y (0..$symdata->shape[0]) {
+    foreach my  $x (0...$symdata->shape()->[1]) {
+	foreach my $y (0...$symdata->shape()->[0]) {
 	    if($y <= $x) {
 		push(@a, $symdata->[($x, $y)]);
 	    }
@@ -143,21 +162,29 @@ sub  _evaluate_custom
     my $lowertriangle = \@a;
     my $kernel=&CustomKernel();
     $kernel->set_triangle_kernel_matrix_from_triangle($lowertriangle);
-    my $triangletriangle=max(abs(
-				 $indata->{$prefix.'matrix_triangletriangle'}
-				 -$kernel->get_kernel_matrix())->flat);
+    my $triangletriangle
+	=max(abs(
+		 $indata->{$prefix.'matrix_triangletriangle'}
+		 -$kernel->get_kernel_matrix())->flat);
     $kernel->set_triangle_kernel_matrix_from_full($indata->{$prefix.'symdata'});
-    my $fulltriangle=max(abs(
-			     $indata{$prefix+'matrix_fulltriangle']-$kernel->get_kernel_matrix())->flat);
-	$kernel->set_full_kernel_matrix_from_full($indata->{$prefix.'data'});
-	my $fullfull=max(abs(
-			     $indata->{$prefix.'matrix_fullfull'}
-			     -$kernel->get_kernel_matrix())->flat);
+    my $fulltriangle
+	=max(abs(
+		 $indata->{$prefix.'matrix_fulltriangle'}
+		 -$kernel->get_kernel_matrix())->flat);
+    $kernel->set_full_kernel_matrix_from_full($indata->{$prefix.'data'});
+    my $fullfull
+	=max(abs(
+		 $indata->{$prefix.'matrix_fullfull'}
+		 -$kernel->get_kernel_matrix())->flat);
 
-    return &util::check_accuracy($indata->{$prefix.'accuracy'},{
-	triangletriangle=>$triangletriangle
-	    , fulltriangle=>$fulltriangle,
-	    fullfull=>$fullfull});
+    return &util::check_accuracy
+	($indata->{$prefix.'accuracy'}
+	 ,{
+	     triangletriangle=>$triangletriangle
+		 , fulltriangle=>$fulltriangle
+		 , fullfull=>$fullfull
+	 }
+	);
 }
 
 sub _evaluate_pie
@@ -167,17 +194,17 @@ sub _evaluate_pie
     my $feats=&util::get_features($indata, $prefix);
     my $labels=&BinaryLabels(&double($indata->{'classifier_labels'}));
     $pie->set_labels($labels);
-    $pie->set_features($feats{'train'});
+    $pie->set_features($feats->{'train'});
     $pie->train();
 
     my $fun=*{$indata->{$prefix.'name'}.'Kernel'};
-    my $kernel=$fun->($feats{'train'}, $feats{'train'}, $pie);
+    my $kernel=$fun->($feats->{'train'}, $feats->{'train'}, $pie);
     my $km_train=max(abs(
 			 $indata->{$prefix.'matrix_train'}
 			 -$kernel->get_kernel_matrix())->flat);
 
-    $kernel->init($feats{'train'}, $feats{'test'});
-    $pie->set_features(feats{'test'});
+    $kernel->init($feats->{'train'}, $feats->{'test'});
+    $pie->set_features(feats->{'test'});
     my $km_test=max(abs(
 			$indata->{$prefix.'matrix_test'}
 			-$kernel->get_kernel_matrix())->flat);
@@ -213,23 +240,23 @@ sub _evaluate_top_fisher
     $neg_test->set_observations($wordfeats{'test'});
 
     if($indata->{$prefix.'name'} eq 'TOP'){
-	$feats{'train'}=&TOPFeatures(10, $pos_train, $neg_train, false, false);
-	$feats{'test'}=&TOPFeatures(10, $pos_test, $neg_test, false, false);
+	$feats->{'train'}=&TOPFeatures(10, $pos_train, $neg_train, false, false);
+	$feats->{'test'}=&TOPFeatures(10, $pos_test, $neg_test, false, false);
     }else{
-	$feats{'train']=FKFeatures(10, $pos_train, $neg_train);
-	$feats{'train'}->set_opt_a(-1); #estimate prior
-	$feats{'test'}=&FKFeatures(10, $pos_test, $neg_test);
-	$feats{'test'}->set_a($feats{'train'}->get_a()); #use prior from training data
+	$feats->{'train'}=FKFeatures(10, $pos_train, $neg_train);
+	$feats->{'train'}->set_opt_a(-1); #estimate prior
+	$feats->{'test'}=&FKFeatures(10, $pos_test, $neg_test);
+	$feats->{'test'}->set_a($feats->{'train'}->get_a()); #use prior from training data
     }
     $prefix='kernel_';
     my $args=&util::get_args($indata, $prefix);
-    my $kernel=&PolyKernel($feats{'train'}, $feats{'train'}, $args);
+    my $kernel=&PolyKernel($feats->{'train'}, $feats->{'train'}, $args);
 #	kernel=PolyKernel(*args)
 #	kernel.init(feats['train'], feats['train'])
     my $km_train=max(abs(
 		$indata->{$prefix.'matrix_train'}
 			 -$kernel->get_kernel_matrix())->flat);
-    $kernel->init($feats{'train'}, $feats{'test'});
+    $kernel->init($feats->{'train'}, $feats->{'test'});
     my $km_test=max(abs(
 		$indata->{$prefix.'matrix_test'}
 			-$kernel->get_kernel_matrix())->flat);
@@ -246,26 +273,26 @@ sub test
 {
     my ($indata) =@_;
     my $prefix='topfk_';
-    if(defined($indata{$prefix.'name'})) {
+    if(defined($indata->{$prefix.'name'})) {
 	return &_evaluate_top_fisher($indata, $prefix);
     }
     $prefix='kernel_';
     my @names=('Combined', 'AUC', 'Custom');
     foreach my $name (@names) {
-	if( $indata{$prefix.'name'}eq $name) {
+	if( $indata->{$prefix.'name'}eq $name) {
 	    return eval('&_evaluate_'. lc $name . '($indata, $prefix)');
 	}
     }
     @names=('HistogramWordString', 'SalzbergWordString');
     foreach my $name (@names) {
-	if($indata{$prefix . 'name'} eq $name) {
+	if($indata->{$prefix . 'name'} eq $name) {
 	    return &_evaluate_pie($indata, $prefix);
 	}
     }
     return &_evaluate($indata, $prefix);
 }
 
-
+true;
 __END__
 =head1
 
@@ -289,21 +316,21 @@ import util
 
 def _evaluate (indata, prefix):
 	feats=util.get_features(indata, prefix)
-	kfun=eval($indata{$prefix+'name']+'Kernel')
+	kfun=eval($indata->{$prefix+'name']+'Kernel')
 	kargs=util.get_args(indata, prefix)
 	kernel=kfun(*kargs)
 	if indata.has_key(prefix+'normalizer'):
-		kernel.set_normalizer(eval($indata{$prefix+'normalizer']+'()'))
+		kernel.set_normalizer(eval($indata->{$prefix+'normalizer']+'()'))
 
 	kernel.init(feats['train'], feats['train'])
 	km_train=max(abs(
-		$indata{$prefix+'matrix_train']-kernel.get_kernel_matrix()).flat)
+		$indata->{$prefix+'matrix_train']-kernel.get_kernel_matrix()).flat)
 	kernel.init(feats['train'], feats['test'])
 	km_test=max(abs(
-		$indata{$prefix+'matrix_test']-kernel.get_kernel_matrix()).flat)
+		$indata->{$prefix+'matrix_test']-kernel.get_kernel_matrix()).flat)
 
 	return util.check_accuracy(
-		$indata{$prefix+'accuracy'], km_train=km_train, km_test=km_test)
+		$indata->{$prefix+'accuracy'], km_train=km_train, km_test=km_test)
 
 
 def _get_subkernels (indata, prefix):
@@ -358,7 +385,7 @@ def _evaluate_combined (indata, prefix):
 	km_test=max(abs(
 		indata['kernel_matrix_test']-kernel.get_kernel_matrix()).flat)
 
-	return util.check_accuracy($indata{$prefix+'accuracy'],
+	return util.check_accuracy($indata->{$prefix+'accuracy'],
 		km_train=km_train, km_test=km_test)
 
 
@@ -368,8 +395,8 @@ def _evaluate_auc (indata, prefix):
 	subk['kernel'].init(feats_subk['train'], feats_subk['test'])
 
 	feats={
-		'train': WordFeatures($indata{$prefix+'data_train'].astype(ushort)),
-		'test': WordFeatures($indata{$prefix+'data_test'].astype(ushort))
+		'train': WordFeatures($indata->{$prefix+'data_train'].astype(ushort)),
+		'test': WordFeatures($indata->{$prefix+'data_test'].astype(ushort))
 	}
 	kernel=AUCKernel(10, subk['kernel'])
 

@@ -1,5 +1,6 @@
 #!/usr/bin/perl -I. 
 
+use lib qw(. /usr/src/shogun/src/interfaces/perldl_modular /usr/src/shogun/src/shogun);
 use PDL;
 
 use kernel;
@@ -15,9 +16,11 @@ our @SUPPORTED=('kernel', 'distance', 'classifier', 'clustering', 'distribution'
 		'regression', 'preprocessor');
 @SUPPORTED=('kernel');
 
-use Shogun qw(Math_init_random);
+#use Shogun qw(Math_init_random);
+use modshogun;
 
-sub _get_name_fun() {
+sub _get_name_fun($)
+{
     my $fnam = shift;
     my $module;
     if (grep($_ eq $fnam, @supported)) {
@@ -30,17 +33,23 @@ sub _get_name_fun() {
     return $module . '.test';
 }
 
-sub _test_tfile {
+=head3 _test_mfile
+
+ a simple parser from m files to perl structures
+
+=cut
+
+sub _test_mfile {
     my $fnam = shift;    
     my $mfile = open($fnam, 'r') or return false;	
     my %indata = ();
 
-    my $name_fun = _get_name_fun($fnam);
+    my $name_fun = &_get_name_fun($fnam);
     unless($name_fun) {
 	return false;
     }
     while(my $line = <$mfile>) {
-	$line =~ s/[\s]//g;
+	$line =~ s/[\s;]//g;
 	(my $param = $line) =~ s/=.*//;
 
 	if($param eq 'name') {
@@ -56,11 +65,12 @@ sub _test_tfile {
 	    $indata{$param}=_read_matrix($line); }
 	elsif ($param =~ /data_train/ or $param =~ /data_test/) {
 	    # data_{train,test} might be prepended by 'subkernelX_'
-	    $indata{$param}=_read_matrix($line);}
+	    $indata{$param}=_read_matrix($line);
+	}
 	elsif ($param eq 'classifier_alphas' or $param eq'classifier_support_vectors') {
 	    ($indata{$param}) = $line =~ m/=(.*)$/;
 	    unless($indata{$param}) {
- # might be MultiClass SVM and hence matrix
+		# might be MultiClass SVM and hence matrix
 		$indata{$param}=_read_matrix($line); }
 	}
 	elsif($param=='clustering_centers' or param=='clustering_pairs') {
@@ -73,13 +83,14 @@ sub _test_tfile {
 		}
 	    }
 	}
-	close($mfile);
-	$fun = *{$name_fun};
-	
-	# seed random to constant value used at data file's creation
-	&Math_init_random($indata{'init_random'});
-	$random->seed($indata{'init_random'});
-	return $fun->(\%indata);
+    }
+    close($mfile);
+    $fun = *{$name_fun};
+    
+    # seed random to constant value used at data file's creation
+    &Math_init_random($indata{'init_random'});
+    $random->seed($indata{'init_random'});
+    return $fun->(\%indata);
 }
 
 sub _read_matrix {
@@ -103,13 +114,13 @@ sub _read_matrix {
 
 my $res = 1;
 foreach my $filename (@ARGV) {
-    if($filename =~ /\.t$/) {
+    if($filename =~ /\.m$/) {
 	$res &&= &_test_mfile($filename);
     }
 }
-if($res) { 
-    return 1;
-}
+
+$res;
+
 __END__
 
 =head1 

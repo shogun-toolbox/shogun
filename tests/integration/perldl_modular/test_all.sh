@@ -20,7 +20,7 @@ function test_all () {
     for file in $datapath; do
 	echo -n "$file"
 	echo -n -e "\t\t"
-	output=`test_one.pl "$file"`
+	output=`./test_one.pl "$file"`
 	ret=$?
 
 	if [ $ret -eq 0 ] ; then
@@ -35,9 +35,9 @@ function test_all () {
 }
 
 if [ -n "$1" ]; then
-    test_all "$DATAPATH/$1/*.t"
+    test_all "$DATAPATH/$1/*.m"
 else
     for i in $DATAPATH/*; do
-	test_all "$i/*.t"
+	test_all "$i/*.m"
     done
 fi

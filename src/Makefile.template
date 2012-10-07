@@ -430,13 +430,14 @@ run-testsuite-python_modular:
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
 
 run-testsuite-perldl_modular:
-	cd $(CONFIGPATH)/../tests/integration/perldl_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) \
-		PERLDLPATH="$(DESTDIR)$(PDLDIR)" ./test_all.sh    )
-	cd $(CONFIGPATH)/../tests/integration/perldl_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		PERLDLPATH="$(DESTDIR)$(PDLDIR)" $(PERLDL) tester.pl  )
-
+	cd $(CONFIGPATH)/../tests/integration/perldl_modular && (\
+	 $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDL=$(PERLDL) PERLDLPATH="$(DESTDIR)$(PDLDIR)" 	\
+	 $(LIBRARY_PATH)="/usr/src/shogun/src/interfaces/perldl_modular:/usr/src/shogun/src/shogun" \
+	 ./test_all.sh    )
+	cd $(CONFIGPATH)/../tests/integration/perldl_modular && (\
+	$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLDLPATH="$(DESTDIR)$(PDLDIR)" \
+	$(LIBRARY_PATH)="/usr/src/shogun/src/interfaces/perldl_modular:/usr/src/shogun/src/shogun" \
+	./tester.pl )
 
 check-examples-python_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
