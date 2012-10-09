@@ -14,48 +14,54 @@
 
 /* Functions to extract array attributes.
  */
+    //SVt_PDLV was not declared in this scope
+    //is this a piddle?    SvGETMAGIC(a);
+    //return((SvROK(a) && SvTYPE(SvRV(a)) == SVt_PDLV) ? true : false);
+
+  static pdl* if_piddle(SV* a) {
+    pdl* it = 0;
+    //PDL_COMMENT("Check if you can get a package name for this input value.  ")
+    //PDL_COMMENT("It can be either a PDL (SVt_PVMG) or a hash which is a     ")
+    //PDL_COMMENT("derived PDL subclass (SVt_PVHV)                            ")
+    if (SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV))) {
+#if 0
+      const char *objname = "PDL";
+      HV *bless_stash = 0;
+      SV *parent = a;
+      if(sv_isobject(parent)) {
+	objname = HvNAME((bless_stash = SvSTASH(SvRV(a))));
+      }
+      //PDL_COMMENT("The package to bless output vars into is taken from the first input var")
+#endif
+      it = PDL->SvPDLV(a);
+    }
+    return it;
+  }
+
+  //is there such think
+  //  return (int) PyArray_TYPE(a);
+  //maybe we talk about MAGIC
+  //but perl does not care any types can be put in a array...
+  //pdl *p = SvPDLV(a);
+  //SV* a = p->sv;
+  //return SvTYPE(SvRV(a));
+  //Basic/Core/pdlapi.c
+  
+  static int array_type(SV* sv) {
+    pdl* it = PDL->SvPDLV(sv);
+    return it->datatype;
+  }
 
   static bool is_array(SV* a) {
     return SVavref(a);
   }
 
   static bool is_piddle(SV* a) {
-    //SVt_PDLV was not declared in this scop
-    //is this a piddle?    SvGETMAGIC(a);
-    //return((SvROK(a) && SvTYPE(SvRV(a)) == SVt_PDLV) ? true : false);
-    const char *objname = "PDL";
-    SV *parent = 0;
-    HV *bless_stash = 0;
-  
-    //PDL_COMMENT("Check if you can get a package name for this input value.  ")
-    //PDL_COMMENT("It can be either a PDL (SVt_PVMG) or a hash which is a     ")
-    //PDL_COMMENT("derived PDL subclass (SVt_PVHV)                            ")
-    if (SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV))) {
-      parent = a;
-      if (sv_isobject(parent))
-	objname = HvNAME((bless_stash = SvSTASH(SvRV(a))));
-      //PDL_COMMENT("The package to bless output vars into is taken from the first input var")
-    }
-    return (parent != 0);
+    return(if_piddle(a) != 0 ? true : false);
   }
-
-
-  static int array_type(SV* sv) {
-  //is there such think
-  //  return (int) PyArray_TYPE(a);
-  //maybe we talk about MAGIC
-  //but perl does not care any types can be put in a array...
-    //pdl *p = SvPDLV(a);
-    //SV* a = p->sv;
-    //return SvTYPE(SvRV(a));
-//Basic/Core/pdlapi.c
-    pdl* it = SvPDLV(sv);
-    return it->datatype;
-  }
-
 
   static int array_dimensions(SV* sv) {
-    pdl* it = SvPDLV(sv);
+    pdl* it = PDL->SvPDLV(sv);
     if(it->state & PDL_NOMYDIMS) {
       return -1;//NODIMS?
     }
@@ -64,7 +70,7 @@
 
   //
   static size_t array_size(SV* sv, int i) {
-    pdl* x = SvPDLV(sv);
+    pdl* x = PDL->SvPDLV(sv);
     pdl_make_physvaffine( x );
     //size_t *incs = (PDL_VAFFOK(x) ? x->vafftrans->incs : x->dimincs);
     //return it->dimincs;
@@ -94,6 +100,35 @@
   }
 
 
+static bool is_pdl_narry(SV* sv, int ndims)
+{
+  pdl* it = if_piddle(sv);
+  if(it != 0) {
+    pdl_make_physdims(it);
+    if((!(it->state & PDL_NOMYDIMS)) && it->ndims >= ndims) {
+      return true;
+    }
+  } else if(is_array(sv)) {
+    return true;
+  }
+  return false;
+}
+
+static int is_pdl_vector(SV* sv, int typecode)
+{
+  return(is_pdl_narry(sv, 1));
+}
+//check  for rectangular matrix (2D)
+static int is_pdl_matrix(SV* sv, int typecode)
+{
+  return(is_pdl_narry(sv, 2));
+}
+
+//check  for PDL (rectangular) array N-ary
+static int is_pdl_array(SV* sv, int typecode)
+{
+  return(is_pdl_narry(sv, 3));
+}
 
 
 

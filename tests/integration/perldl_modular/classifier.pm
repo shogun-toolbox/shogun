@@ -1,46 +1,47 @@
 package classifier;
 use modshogun;
 use util;
+use PDL;
 
 sub _get_machine
 {
     my  ($indata, $prefix, $feats) = @_;
     my $machine;
-    if ($indata->{$prefix.'type'}=='kernel') {
+    if ($indata->{$prefix.'type'} eq 'kernel') {
 	my $pre='kernel_';
 	my $kargs=&util::get_args($indata, $pre);
 	my $kfun=*{$indata->{$pre.'name'}.'Kernel'};
 	my $machine=$kfun->($feats->{'train'}, $feats->{'train'}, $kargs);
-	if ($indata->{$pre.'name'}=='Linear') {
+	if ($indata->{$pre.'name'} eq 'Linear') {
 	    my $normalizer=*{$indata->{$pre.'normalizer'}->()};
 	    $machine->set_normalizer($normalizer);
 	    $machine->init($feats->{'train'}, $feats->{'train'});
 	}
 	$machine->parallel->set_num_threads($indata->{$prefix.'num_threads'});
-    } elsif( $indata->{$prefix.'type'}=='knn') {
+    } elsif( $indata->{$prefix.'type'} eq 'knn') {
 	my $pre='distance_';
 	my $dargs=&util::get_args($indata, $pre);
 	my $dfun= *{$indata->{$pre.'name'}};
 	$machine=$dfun->($feats->{'train'}, $feats->{'train'}, $dargs);
 	$machine->parallel->set_num_threads($indata->{$prefix.'num_threads'});
     } else {
-	#$machine=undef;
+	$machine=undef;
     }
     return $machine;
 }
 sub  _get_results_alpha_and_sv
 {
     my ($indata, $prefix, $classifier) = @_;
-    if( not defined $indata->{$prefix.'alpha_sum'}
+    if( not defined($indata->{$prefix.'alpha_sum'})
 	and
-	not defined $indata->{$prefix.'sv_sum'}){
+	not defined($indata->{$prefix.'sv_sum'})){
 	return (undef, undef);
     }
     my $a=0;
     my $sv=0;
     if( defined($indata->{$prefix.'label_type'})
 	and 
-	$indata->{$prefix.'label_type'}=='series'){
+	$indata->{$prefix.'label_type'} eq 'series'){
 	foreach my  $i (0..$classifier->get_num_svms()){
 	    my $subsvm=$classifier->get_svm($i);
 	    foreach my  $item (@{$subsvm->get_alphas()}){
@@ -75,14 +76,14 @@ sub _get_results
 		'accuracy'=>$indata->{$prefix.'accuracy'}
 	);
 
-    if(defined $indata->{$prefix.'bias'}){
+    if(defined($indata->{$prefix.'bias'})) {
 	    $res{'bias'}=abs($classifier->get_bias()-$indata->{$prefix.'bias'});
     }
-    $res{'alphas'}, res{'sv'}=&_get_results_alpha_and_sv(
-	$indata, $prefix, $classifier);
+    ($res{'alphas'}, $res{'sv'})
+	= &_get_results_alpha_and_sv($indata, $prefix, $classifier);
 
     my $ctype=$indata->{$prefix.'type'};
-    if( $ctype=='kernel' or $ctype=='knn' ) {
+    if( $ctype eq 'kernel' or $ctype eq 'knn' ) {
 	$machine->init($feats->{'train'}, $feats->{'test'});
     }else{
 	@ctypes=('linear', 'perceptron', 'lda', 'wdsvmocas');
@@ -91,8 +92,11 @@ sub _get_results
 	}
     }
     $res{'classified'}
-    =max(abs(
-	     $classifier->apply()->get_confidences()-$indata->{$prefix.'classified'}));
+    = max(abs(
+#PTZ121009 this is called differently on this branch	      $classifier->apply()->get_confidences()
+	      $classifier->apply()->get_values()
+	      - $indata->{$prefix.'classified'})
+	);
     return \%res;
 }
 
@@ -101,54 +105,61 @@ sub _evaluate {
     my $prefix='classifier_';
     my $ctype=$indata->{$prefix.'type'};
     my $feats;
-    if( $indata->{$prefix.'name'}=='KNN'){
+    if($indata->{$prefix.'name'} eq 'KNN'){
 	$feats=&util::get_features($indata, 'distance_');
-    }elsif( $ctype=='kernel'){
+    }elsif( $ctype eq 'kernel'){
 	$feats=&util::get_features($indata, 'kernel_');
     }else{
 	$feats=&util::get_features($indata, $prefix);
     }
     my $machine=&_get_machine($indata, $prefix, $feats);
-    my $fun=*{$indata->{$prefix.'name'}};
+    #my $fun=*{'modshogun::' . $indata->{$prefix.'name'}};
+    my $fun= eval('modshogun::' . $indata->{$prefix.'name'});
     if($@) {#except NameError, e:
 	warn( "%s is disabled/unavailable!", $indata->{$prefix.'name'});
 	return false;
     }
-	# cannot refactor into function, because labels is unrefed otherwise
+    # cannot refactor into function, because labels is unrefed otherwise
+    my $classifier;
     if(defined($indata->{$prefix.'labels'})){
-	my $labels=&BinaryLabels(&double($indata->{$prefix.'labels'}));
-	if( $ctype=='kernel'){
-	    $classifier=$fun->($indata->{$prefix.'C'}, $machine, $labels);
-	} elsif( $ctype=='linear'){
-	    $classifier=$fun->($indata->{$prefix.'C'}, $feats->{'train'}, $labels)
-	} elsif( $ctype=='knn') {
-	    $classifier=$fun->($indata->{$prefix.'k'}, $machine, $labels);
-	} elsif( $ctype=='lda') {
-	    $classifier=$fun->($indata->{$prefix.'gamma'}, $feats->{'train'}, $labels);
-	} elsif( $ctype=='perceptron') {
-	    $classifier=$fun->($feats->{'train'}, labels);
-	} elsif( $ctype=='wdsvmocas'){
-	    $classifier=$fun->($indata->{$prefix.'C'}, $indata->{$prefix.'degree'},
+#vector_from_pdl<float64_t> is_pdl_vector(ST(0), PDL_D);
+	my $labels= modshogun::BinaryLabels->new(&double($indata->{$prefix.'labels'}));
+	if( $ctype eq 'kernel'){
+	    $classifier=$fun->new($indata->{$prefix.'C'}, $machine, $labels);
+	} elsif( $ctype eq 'linear'){
+#Can't locate object method "swig_train_get" via package "modshogun::SparseRealFeatures" at /usr/src/shogun/src/interfaces/perldl_modular/modshogun.pm line 33.
+	    $classifier=$fun->new($indata->{$prefix.'C'}, $feats->{'train'}, $labels);
+	} elsif( $ctype eq 'knn') {
+	    $classifier=$fun->new($indata->{$prefix.'k'}, $machine, $labels);
+	} elsif( $ctype eq 'lda') {
+	    $classifier=$fun->new($indata->{$prefix.'gamma'}, $feats->{'train'}, $labels);
+	} elsif( $ctype eq 'perceptron') {
+	    $classifier=$fun->new($feats->{'train'}, labels);
+	} elsif( $ctype eq 'wdsvmocas'){
+	    $classifier=$fun->new($indata->{$prefix.'C'}, $indata->{$prefix.'degree'},
 			       $indata->{$prefix.'degree'}, $feats->{'train'}, $labels);
 	} else {
 	    return false;
 	}
     } else {
-	$classifier=$fun->($indata->{$prefix.'C'}, $machine);
+	$classifier=$fun->new($indata->{$prefix.'C'}, $machine);
     }
-    if($classifier->get_name() == 'LibLinear'){
-	print ($classifier->get_name(), "yes");
-	$classifier->set_liblinear_solver_type($L2R_LR);
+    if($classifier->get_name()  eq  'LibLinear'){
+	print ($classifier->get_name(), " - yes");
+	$classifier->set_liblinear_solver_type($modshogun::L2R_LR);
     }
-    $classifier->parallel.set_num_threads($indata->{$prefix.'num_threads'});
-    if($ctype=='linear'){
+    $classifier->{parallel} = modshogun::Parallel->new();
+    $classifier->{parallel}->set_num_threads($indata->{$prefix.'num_threads'});
+    #PTZ121009 threads are not working..it crashes in Perl_IO_stdin...
+    $classifier->{parallel}->set_num_threads(1);
+    if($ctype eq 'linear'){
 	if(defined($indata->{$prefix.'bias'})){
 	    $classifier->set_bias_enabled(true);
 	}
     }else{
 	$classifier->set_bias_enabled(false);
     }	
-    if( $ctype=='perceptron'){
+    if( $ctype eq 'perceptron'){
 	$classifier->set_learn_rate=$indata->{$prefix.'learn_rate'};
 	$classifier->set_max_iter=$indata->{$prefix.'max_iter'};
     }

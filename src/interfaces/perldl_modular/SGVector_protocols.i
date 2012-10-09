@@ -6,7 +6,7 @@
  *
  * Copyright (C) 2012 Evgeniy Andreev (gsomix)
  */
-//can we use Math::GSL::Vector ??!!
+//PTZ121008can we use Math::GSL::Vector ??!!
 
 #ifdef SWIGPERL
 

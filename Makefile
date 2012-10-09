@@ -223,7 +223,7 @@ perl: perl-conf src
 src:
 	$(MAKE) -C src
 
-.PHONY:run-testsuite
+.PHONY:run-testsuite src
 
 run-testsuite:
 	$(MAKE) -C src $@

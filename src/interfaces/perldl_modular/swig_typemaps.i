@@ -230,46 +230,10 @@ static SV* make_contiguous
 
 }
 
-static int is_pdl_vector(SV* sv, int typecode)
-{
-  pdl* it = SvPDLV(sv);
-  //(SvROK(a) && SvTYPE(SvRV(a)) == SVt_PDLV);
-  //is_array(obj) SVavref(a)
-  return
-    (
-     it
-     && it->ndims == 1
-     && it->datatype == typecode
-     );
-
-}
-//check  for rectangular matrix (2D)
-static int is_pdl_matrix(SV* sv, int typecode)
-{
-  pdl* it = PDL->SvPDLV(sv);
-  return
-    (
-     it
-     && it->ndims == 2
-     && it->datatype == typecode
-     );
-}
-
-//check  for rectangular array N-ary
-static int is_pdl_array(SV* sv, int typecode)
-{
-  pdl* it = PDL->SvPDLV(sv);
-  return
-    (
-     it
-     && it->datatype == typecode
-     );
-}
-
 //check  for sparse? matrix (2D) 
 static int is_pdl_sparse_matrix(SV* sv, int typecode)
 {
-  return(array_is_contiguous(sv) && is_pdl_array(sv, typecode));
+  return(array_is_contiguous(sv) && is_pdl_matrix(sv, typecode));
 #if 0
   return ( obj && SV_HasAttrString(obj, "indptr") &&
 	   SV_HasAttrString(obj, "indices") &&
@@ -321,41 +285,50 @@ static int is_pdl_string_list(SV* sv, int typecode)
 
 //PTZ120929 in pdlcore.c check how pdl_setav_Long( stuffpdl -> into AV*, also *pdata
 //	*pdata = (PDL_Long) SvNV(el);
-
-template <class type>
-static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
-{
+#if 0
     if(!is_pdl_vector(obj, typecode))
     {
       warn("not a PDL vector of appropriate type %i", typecode);
       return false;
     }
-
-#if 0
     SV* array = make_contiguous(obj, &is_new_object, 1, typecode, true);
     if(!array) return false;
     //((AV*) array)->flags &= (-1 ^ NPY_OWNDATA);
     type* vec = (type*) PyArray_BYTES (array);
     int32_t vlen = PyArray_DIM (array, 0);
     Py_DECREF(array);
-#endif
 
-    //pdl* it = pdl_get_convertedpdl(SvPDLV(sv), PDL_TMP);
-    pdl* it = SvPDLV(obj);
-    pdl_make_physical(it); /* Wasteful*/
-    //pdl *pdl_hard_copy(pdl *src) src to a new...
+   //pdl* it = pdl_get_convertedpdl(SvPDLV(sv), PDL_TMP);
+   //pdl *pdl_hard_copy(pdl *src) src to a new...
     //from void** v = pdl_twod(it);
     //concerns about reference counters...  shogun::SGVector<type>->free...
+  if(it->ndims < 1) {
+    warn("not a PDL vector");
+    return false;
+  }
 
-    SvREFCNT_inc(it->datasv);
+#endif
 
-    type* vec = (type*) it->data;
-    int32_t vlen = pdl_howbig(it->datatype) * it->dims[0];
-    sg_vec = shogun::SGVector<type>(vec, vlen);
-    //PTZ120927 shall I deference it? it will free it->data
-    //pdl_destroy(it); //shall increment the vector? not here
+template <class type>
+static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
+{
+  pdl* it = SvPDLV(obj);
+  it = pdl_get_convertedpdl(it, typecode);
+  pdl_make_physical(it); /* Wasteful*/
+  //PTZ121008 could also flatten it...?
+  if(!(it->state && PDL_ALLOCATED)) {
+    warn("could not allocate PDL vector memory");
+    return false;
+  }
+  //PTZ121008 still not sure of this one
+  SvREFCNT_inc(it->datasv);
+  //type* vec = (type*) it->data;
+  sg_vec = shogun::SGVector<type>((type*) it->data, it->dims[0]);
+
+  //PTZ120927 shall I deference it? it will free it->data
+  //pdl_destroy(it); //shall increment the vector? not here
     
-    return true;
+  return true;
 }
 
 
@@ -394,46 +367,70 @@ static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
 //that is bizare... this is used wrong way round... in wrapper...
       if (!vector_to_pdl(ST(argvi), result, PDL_L))
       SWIG_fail;
+  //pdl_makescratchhash(it, 0.0, typecode);
+  //pdl* it = PDL->SvPDLV ( rsv );
+
+it->state |= PDL_DONTTOUCHDATA;
+
+#endif
+
+#if 0
+  HV *bless_stash = 0;
+ SV *parent = rsv;
+
+ char *objname = "PDL";
+       PUSHMARK(SP);
+       XPUSHs(sv_2mortal(newSVpv(objname, 0)));
+       PUTBACK;
+       perl_call_method("initialize", G_SCALAR);
+       SPAGAIN;
+       SV *b_SV = POPs;
+       PUTBACK;
+       //it = PDL->SvPDLV(b_SV);
+  if (bless_stash) rsv = sv_bless(rsv, bless_stash);
+
+
+  //it->data = get_copy(sg_vec.vector, clen);
+  //it->datasv = newSVpvn((char*)it->data, clen);
+  //it->data =(void *) SvPV( it->datasv , clen );
 
 #endif
 
 //PTZ121005 not really ready, need to know what is given PDL or sg_vec
 //PTZ121004 my understanding is sg_vec given, but why return it...?
 
+
 template <class type>
 static bool vector_to_pdl(SV* rsv, SGVector<type> sg_vec, int typecode)
 {
-    PDL_Long d[1];
-
-    pdl* it = PDL->SvPDLV ( rsv );
-      //pdl* it = pdl_new();
-
-    d[0] = size_t(sg_vec.vlen);
-    //pdl_makescratchhash(it, 0.0, typecode);
-    pdl_setdims(it, d, 1);
-    it->datatype = typecode;
-    pdl_allocdata(it);
-    //PDL->SetSV_PDL(sv, it);
-
-    void* copy = get_copy(sg_vec.vector, sizeof(type) * size_t(sg_vec.vlen));
-  
-  return false;
-
-    return true;
- fail:
+  pdl* it = PDL->pdlnew();
+  if(!it) {
     return false;
+  }
+  STRLEN clen = sizeof(type) * size_t(sg_vec.vlen);
+  PDL_Long dims[1] = {size_t(sg_vec.vlen)};
+  //dims[0] = size_t(sg_vec.vlen);
+  PDL->setdims(it, dims, 1);
+  it->datatype = typecode;
+  PDL->allocdata(it);
+  if(!it->data) {
+    PDL->destroy(it);
+    return false;
+  }
+  memcpy(it->data, sg_vec.vector, clen);
+  PDL->SetSV_PDL(rsv, it);
+  return true;
 }
 
-
-
-template <class type>
-static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
-{
+#if 0
+...done in typemapcheck!!!
     if (!is_pdl_matrix(obj, typecode))
     {
         warn("not a numpy matrix of appropriate type");
         return false;
     }
+#endif
+
 #if 0
     int is_new_object;
     SV* array = make_contiguous(obj, &is_new_object, 2,typecode, true);
@@ -444,21 +441,34 @@ static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
 
     ((AV*) array)->flags &= (-1 ^ NPY_OWNDATA);
     Py_DECREF(array);
+ 
+   if(it->ndims < 2) {
+      warn("not a PDL matrix");
+      return false;
+    }
+ 
 #endif
+//PTZ121002 wont work as typemap AV* would not work well?
+    // comparable to make_contiguous
 
+template <class type>
+static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
+{
     pdl* it = SvPDLV(obj);
+    it = pdl_get_convertedpdl(it, typecode);
     pdl_make_physical(it); /* Wasteful but needed */
-    // comparable to make_contiguous!!!
+    if(!(it->state && PDL_ALLOCATED)) {
+      warn("could not allocate PDL (rectangular) matrix memory");
+      return false;
+    }
     //pdl *pdl_hard_copy(pdl *src) src to a new...
-    //concerns about reference counters...  shogun::SGVector<type>->free...
-
-    type* m = (type*) it->data;
-    //PTZ121002 wont work as typemap AV* would not work well?
-    sg_matrix = shogun::SGMatrix<type>(m, it->dims[0], it->dims[1], true);
-    
-    //PTZ120928 shall I deference it? it will free it->data
-    //pdl_destroy(it); shall increment the vector?
-
+    //PTZ120928 shall I reference it? as it->data might be reuseable! by sg_matrix indeed
+    //something like incREF(it->datasv);
+    //also  make use of it->typecode and typecode, and type;
+    //pdl *pdl_get_convertedpdl(pdl *old,int type) {    //it->datatype = typecode;
+    SvREFCNT_inc(it->datasv); // so it would need to e free later? or we cannot avoid the copy?
+    //type* m = (type*) it->data;
+    sg_matrix = shogun::SGMatrix<type>((type*) it->data, it->dims[0], it->dims[1], true);    
     return true;
 }
 
@@ -913,7 +923,6 @@ static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode
     else
         return false;
 #endif
-
 
 
 //each string is a ref to a pv
@@ -1553,8 +1562,12 @@ TYPEMAP_IN_SGVECTOR(floatmax_t,    PDL_D)
 %define TYPEMAP_OUT_SGVECTOR(type,typecode)
 %typemap(out) shogun::SGVector<type>
 {
-    if (!vector_to_pdl($result, $1, typecode))
-        SWIG_fail;
+  $result = sv_newmortal();
+  if(!vector_to_pdl($result, $1, typecode))
+    SWIG_fail;
+  if(!is_piddle($result))
+    SWIG_fail;
+  argvi++;   
 }
 %enddef
 

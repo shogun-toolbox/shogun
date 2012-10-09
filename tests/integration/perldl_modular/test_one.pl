@@ -1,7 +1,9 @@
-#!/usr/bin/perl -I. 
+#!/usr/bin/perl
 
 use lib qw(. /usr/src/shogun/src/interfaces/perldl_modular /usr/src/shogun/src/shogun);
 use PDL;
+
+use IO::File;
 
 use kernel;
 use distance;
@@ -14,7 +16,7 @@ use preprocessor;
 #...
 our @SUPPORTED=('kernel', 'distance', 'classifier', 'clustering', 'distribution',
 		'regression', 'preprocessor');
-@SUPPORTED=('kernel');
+@SUPPORTED=('classifier', 'kernel');
 
 #use Shogun qw(Math_init_random);
 use modshogun;
@@ -23,14 +25,14 @@ sub _get_name_fun($)
 {
     my $fnam = shift;
     my $module;
-    if (grep($_ eq $fnam, @supported)) {
+    if(my ($supported) = grep($fnam =~ /$_/, @SUPPORTED)) {
 	$module = $supported;
     }
     unless($module) {
 	printf('Module required for %s not supported yet!', $fnam);
 	return undef;
     }
-    return $module . '.test';
+    return $module . '::test';
 }
 
 =head3 _test_mfile
@@ -41,7 +43,7 @@ sub _get_name_fun($)
 
 sub _test_mfile {
     my $fnam = shift;    
-    my $mfile = open($fnam, 'r') or return false;	
+    my $mfile = IO::File->new($fnam, 'r') or return false;	
     my %indata = ();
 
     my $name_fun = &_get_name_fun($fnam);
@@ -49,47 +51,45 @@ sub _test_mfile {
 	return false;
     }
     while(my $line = <$mfile>) {
-	$line =~ s/[\s;]//g;
+	$line =~ s/[\s]//g;
+	$line =~ s/;$//;
 	(my $param = $line) =~ s/=.*//;
 
 	if($param eq 'name') {
-	    #name=line.split('=')[1].strip().split("'")[1]
-	    my $name = $line =~ m/.*='(.*)'/;
-	    $indata{$param} = $name;
-	}
-	elsif ($param eq 'kernel_symdata' or $param eq 'kernel_data') {
-	    $indata{$param}=_read_matrix($line);
-	}
-	elsif ($param =~ /^kernel_matrix/ or 
-	       $param =~ /^distance_matrix/) {
-	    $indata{$param}=_read_matrix($line); }
-	elsif ($param =~ /data_train/ or $param =~ /data_test/) {
+	    $indata{$param} = $line =~ m/.*='(.*)'/;
+	} elsif ($param eq 'kernel_symdata' or $param eq 'kernel_data') {
+	    $indata{$param} = &_read_matrix($line);
+	} elsif ($param =~ /^kernel_matrix/ or 
+		 $param =~ /^distance_matrix/) {
+	    $indata{$param} = &_read_matrix($line);
+	} elsif ($param =~ /data_train/ or $param =~ /data_test/) {
 	    # data_{train,test} might be prepended by 'subkernelX_'
-	    $indata{$param}=_read_matrix($line);
-	}
-	elsif ($param eq 'classifier_alphas' or $param eq'classifier_support_vectors') {
+	    $indata{$param} = &_read_matrix($line);
+	} elsif ($param eq 'classifier_alphas' or $param eq 'classifier_support_vectors') {
 	    ($indata{$param}) = $line =~ m/=(.*)$/;
 	    unless($indata{$param}) {
 		# might be MultiClass SVM and hence matrix
-		$indata{$param}=_read_matrix($line); }
-	}
-	elsif($param=='clustering_centers' or param=='clustering_pairs') {
-	    $indata{$param}=_read_matrix($line); 
+		$indata{$param} = &_read_matrix($line);
+	    }
+	} elsif($param eq 'clustering_centers' or $param eq 'clustering_pairs') {
+	    $indata{$param} = &_read_matrix($line); 
 	} else {
 	    unless($line =~ /'/) {
 		($indata{$param}) = $line =~ m/=(.*)$/;
-		unless($indata{$param}) {
-		    ($indata{$param}) = $line =~ m/='(.*)'/;
-		}
+	    } else {
+		($indata{$param}) = $line =~ m/='(.*)'/;
 	    }
 	}
     }
-    close($mfile);
-    $fun = *{$name_fun};
+    $mfile->close();
+    my $fun = *{$name_fun};
     
     # seed random to constant value used at data file's creation
-    &Math_init_random($indata{'init_random'});
-    $random->seed($indata{'init_random'});
+    &modshogun::Math::init_random($indata{'init_random'});
+    #is(&modshogun::Math::get_seed(), $indata{'init_random'});
+    #$random->seed($indata{'init_random'});
+    #my $random = &modshogun::Math->new();
+    #= &modshogun::Math::random()
     return $fun->(\%indata);
 }
 
@@ -109,7 +109,8 @@ sub _read_matrix {
 	}
 	push(@lis2d, \@lis);
     }
-    return \@lis2d;
+    my $m = PDL->new(\@lis2d);
+    return $m->transpose();
 }
 
 my $res = 1;

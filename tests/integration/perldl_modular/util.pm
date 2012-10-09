@@ -1,4 +1,4 @@
-package utils;
+package util;
 
 use modshogun;
 
@@ -12,6 +12,17 @@ use Shogun.Kernel;
 =cut
 
 use PDL;
+use base qw(Exporter);
+our %EXPORT_TAGS =
+(
+ #FIELDS => [ @EXPORT_OK, @EXPORT ]
+ feats => [qw(check_accuracy get_args get_features get_feats_simple get_feats_string get_feats_string_complex )]
+ , basic => [qw()]
+ , misc => [qw(add_preprocessor)]
+);
+
+Exporter::export_tags(qw//);
+Exporter::export_ok_tags(qw/feats basic misc/);
 
 sub check_accuracy {
     my ($accuracy, $kwargs) = @_;
@@ -73,7 +84,7 @@ sub get_features
     if($indata->{$fclass} eq 'simple') {
 	return &get_feats_simple($indata, $prefix);
     } elsif($indata->{$fclass} eq 'string') {
-	return get_feats_string($indata, $prefix);
+	return &get_feats_string($indata, $prefix);
     }elsif ($indata->{$fclass} eq 'string_complex') {
 	return &get_feats_string_complex($indata, $prefix);
     } elsif($indata->{$fclass} eq 'wd') {
@@ -90,37 +101,43 @@ sub get_feats_simple {
 
     # have to explicitely set data type for numpy if not real
     my %as_types=(
-	'Byte'=> &ubyte,
-	'Real'=> &double,
-	'Word'=> &ushort
+	'Byte'=> \&byte,
+	'Real'=> \&double,
+	'Word'=> \&ushort
+	, 'Char' => \&byte
 	);
-
-    my $data_train=$indata->{$prefix.'data_train'}->astype($as_types{$ftype});
-    my $data_test=$indata->{$prefix.'data_test'}->astype($as_types{$ftype});
+    unless(defined($as_types{$ftype})) {
+	croak("PDL type conversion $ftype not found");
+    }
+    my $data_train = $as_types{$ftype}->($indata->{$prefix.'data_train'});
+    my $data_test = $as_types{$ftype}->($indata->{$prefix.'data_test'});
     my $ftrain;
     my $ftest;
-    if( $ftype eq 'Byte' or $ftype eq 'Char') {
+    if($ftype eq 'Byte' or $ftype eq 'Char') {
 	my $alphabet=eval($indata->{$prefix.'alphabet'});
-	$ftrain=eval($ftype.'Features($alphabet)');
-	$ftest=eval($ftype.'Features($alphabet)');
+	$ftrain=eval('modshogun::' . $ftype . 'Features')->new($alphabet);
+	$ftest =eval('modshogun::' . $ftype . 'Features')->new($alphabet);
 	$ftrain->copy_feature_matrix($data_train);
 	$ftest->copy_feature_matrix($data_test);
     } else {
-	$ftrain=eval($ftype.'Features($data_train)');
-	$ftest=eval($ftype.'Features($data_test)');
+#tests (for 'Real' type) matrix_from_pdl<float64_t>(arg1, ST(0), PDL_D)) ; is_pdl_matrix(ST(0), PDL_D);
+	$ftrain = eval('modshogun::' . $ftype . 'Features')->new($data_train);
+	$ftest  = eval('modshogun::' . $ftype . 'Features')->new($data_test);
     }
-    if ($indata->{$prefix.'name'} =~ /Sparse/ or (
-	    defined($indata->{'classifier_type'}) and 
-	    $indata->{'classifier_type'} eq 'linear')) {
-	my $sparse_train=eval('Sparse'.$ftype.'Features()');
+    if($indata->{$prefix.'name'} =~ /Sparse/ or (
+	   defined($indata->{'classifier_type'}) and 
+	   $indata->{'classifier_type'} eq 'linear')
+	) {
+#  _v = is_pdl_sparse_matrix(ST(0), PDL_D);
+	my $sparse_train=eval('modshogun::' .'Sparse'.$ftype.'Features')->new();
 	$sparse_train->obtain_from_simple($ftrain);
 
-	my $sparse_test=eval('Sparse'.$ftype.'Features()');
+	my $sparse_test=eval('modshogun::' .'Sparse'.$ftype.'Features')->new();
 	$sparse_test->obtain_from_simple($ftest);
 
-	return ('train'=>$sparse_train, 'test'=>$sparse_test);
+	return {'train' => $sparse_train, 'test' => $sparse_test};
     }else{
-	return ('train'=>$ftrain, 'test'=>$ftest);
+	return {'train' => $ftrain, 'test' => $ftest};
     }
 }
 
@@ -129,8 +146,8 @@ sub get_feats_string {
     my $ftype=$indata->{$prefix.'feature_type'};
     my $alphabet=eval($indata->{$prefix.'alphabet'});
     my %feats=(
-	'train'=> eval('String'.$ftype.'Features($alphabet)')
-	,'test'=> eval('String'.$ftype.'Features($alphabet)')
+	'train'=> eval('modshogun::' .'String'.$ftype.'Features')->new($alphabet)
+	,'test'=> eval('modshogun::' .'String'.$ftype.'Features')->new($alphabet)
 	);
     $feats{'train'}->set_features($indata->{$prefix.'data_train'}[0]);
     $feats{'test'}->set_features($indata->{$prefix.'data_test'}[0]);
@@ -158,21 +175,21 @@ sub get_feats_string_complex
     $feats{'train'}->set_features($data_train);
     $feats{'test'}->set_features($data_test);
 
-    $feat=eval('String'.$indata->{$prefix.'feature_type'}."Features($alphabet)");
+    $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->new($alphabet);
     $feat->obtain_from_char($feats{'train'}, $indata->{$prefix.'order'}-1,
 			    $indata->{$prefix.'order'}, $indata->{$prefix.'gap'},
-			    eval($indata->{$prefix.'reverse'}));
+			    eval('modshogun::' . $indata->{$prefix.'reverse'}));
     $feats{'train'}=$feat;
 
-    $feat=eval('String'.$indata->{$prefix.'feature_type'}."Features(alphabet)");
+    $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->($alphabet);
     $feat->obtain_from_char($feats{'test'}, $indata->{$prefix.'order'}-1,
 			    $indata->{$prefix.'order'}, $indata->{$prefix.'gap'},
-			    eval($indata->{$prefix.'reverse'}));
+			    eval('modshogun::' .$indata->{$prefix.'reverse'}));
     $feats{'test'}=$feat;
 
     if( $indata->{$prefix.'feature_type'} eq 'Word' or 
 	$indata->{$prefix.'feature_type'} eq 'Ulong'){
-	my $name='Sort'.$indata->{$prefix.'feature_type'}.'String';
+	my $name='modshogun::' .'Sort'.$indata->{$prefix.'feature_type'}.'String';
 	return &add_preprocessor($name, $feats);
     } else {
 	return \%feats;
@@ -185,17 +202,17 @@ sub get_feats_wd
     my $order=$indata->{$prefix.'order'};
     my %feats;
 
-    my $charfeat=&StringCharFeatures(&DNA);
+    my $charfeat=&modshogun::StringCharFeatures(&modshogun::DNA);
     my $charfeat->set_features(@{$indata->{$prefix.'data_train'}[0]});
-    my $bytefeat=&StringByteFeatures(&RAWDNA);
+    my $bytefeat=&modshogun::StringByteFeatures(&modshogun::RAWDNA);
     $bytefeat->obtain_from_char($charfeat, 0, 1, 0, false);
-    $feats{'train'}=&WDFeatures($bytefeat, $order, $order);
+    $feats{'train'}=&modshogun::WDFeatures($bytefeat, $order, $order);
 
-    $charfeat=&StringCharFeatures(&DNA);
+    $charfeat=&modshogun::StringCharFeatures(&modshogun::DNA);
     $charfeat->set_features(@{$indata->{$prefix.'data_test'}[0]});
-    $bytefeat=&StringByteFeatures(&RAWDNA);
+    $bytefeat=&modshogun::StringByteFeatures(&modshogun::RAWDNA);
     $bytefeat->obtain_from_char($charfeat, 0, 1, 0, false);
-    $feats{'test'}=&WDFeatures($bytefeat, $order, $order);
+    $feats{'test'}=&modshogun::WDFeatures($bytefeat, $order, $order);
 
     return \%feats;
 }
