@@ -31,16 +31,40 @@ void test_mean_shift()
 	{
 		gen->get_next_example();
 		avg.add(gen->get_vector());
+		gen->release_example();
 	}
 
 	/* average */
 	avg.scale(1.0/num_runs);
 	avg.display_vector("mean_shift");
 
+
 	/* roughly assert correct model parameters */
 	ASSERT(avg[0]-mean_shift<mean_shift/100);
 	for (index_t i=1; i<dimension; ++i)
 		ASSERT(avg[i]<0.5 && avg[i]>-0.5);
+
+
+	/* draw whole matrix and test that too */
+	CDenseFeatures<float64_t>* features=(CDenseFeatures<float64_t>*)
+			gen->get_streamed_features(num_runs);
+	avg=SGVector<float64_t>(dimension);
+
+	for (index_t i=0; i<dimension; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<num_runs; ++j)
+			sum+=features->get_feature_matrix()(i, j);
+
+		avg[i]=sum/num_runs;
+	}
+	avg.display_vector("mean_shift");
+
+	ASSERT(avg[0]-mean_shift<mean_shift/100);
+	for (index_t i=1; i<dimension; ++i)
+		ASSERT(avg[i]<0.5 && avg[i]>-0.5);
+
+	SG_UNREF(features);
 
 	SG_UNREF(gen);
 }
