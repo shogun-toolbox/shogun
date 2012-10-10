@@ -51,8 +51,7 @@ void test_linear_mmd_fixed()
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	/* create MMD instance. this will create streaming kernel and features
-	 * internally */
+	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
 
 	/* assert matlab result */
