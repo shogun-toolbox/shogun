@@ -215,15 +215,23 @@ distclean:
 	rm $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
 
 
+#
+# debugging stuff to remove later
+#
+#
+#
+
+.PHONY:run-testsuite src perl-all perl-conf
+
+
 perl-conf:
 	cd src;./configure --interfaces=perldl_modular
 
-perl: perl-conf src
+perl-all: perl-conf src
 
 src:
-	$(MAKE) -C src
+	$(MAKE) -C $@
 
-.PHONY:run-testsuite src
 
 run-testsuite:
 	$(MAKE) -C src $@
@@ -276,5 +284,60 @@ dbg-lk:
 	-ldl -lm -lpthread -lc -lcrypt  \
 	-shared \
 	-L/usr/local/lib -fstack-protector \
-	/usr/lib/perl5/auto/PDL/Core/Core.so \
+	/usr/lib/perl5/auto/PDL/Core/Core.so
 
+
+
+ifneq (,)
+# + for file in '$datapath'
+# + echo -n ../data/classifier/SVMSGD_0017_1en05_1_True.m
+# ../data/classifier/SVMSGD_0017_1en05_1_True.m+ echo -n -e '\t\t'
+# 		./test_one.pl "$file"
+# ++ ./test_one.pl ../data/classifier/SVMSGD_0017_1en05_1_True.m
+# Can't locate object method "set_epsilon" via package "modshogun::SVMSGD" at classifier.pm line 167.
+# + output=
+# + ret=255
+# + '[' 255 -eq 0 ']'
+# + echo ERROR
+# ERROR
+t-one_set_epsilon:LD_LIBRARY_PATH="/usr/src/shogun/src/interfaces/perldl_modular:/usr/src/shogun/src/shogun"
+	cd /usr/src/shogun/src/interfaces/perldl_modular; \
+		 ./test_one.pl \
+	../data/classifier/SVMSGD_0017_1en05_1_True.m
+
+#Not an ARRAY reference at util.pm line 61.
+t-one_kernel: LD_LIBRARY_PATH="/usr/src/shogun/src/interfaces/perldl_modular:/usr/src/shogun/src/shogun"
+	cd /usr/src/shogun/src/interfaces/perldl_modular; ./test_one.pl ../data/kernel/Chi2_10_12.m
+
+
+# + for file in '$datapath'
+# + echo -n ../data/kernel/SimpleLocalityImprovedString_DNA_10_5_60_5_7.m
+# ../data/kernel/SimpleLocalityImprovedString_DNA_10_5_60_5_7.m+ echo -n -e '\t\t'
+# 		./test_one.pl "$file"
+# ++ ./test_one.pl ../data/kernel/SimpleLocalityImprovedString_DNA_10_5_60_5_7.m
+# No matching function for overloaded 'new_StringCharFeatures' at /usr/src/shogun/src/interfaces/perldl_modular/modshogun.pm line 6440.
+t-one_string: LD_LIBRARY_PATH="/usr/src/shogun/src/interfaces/perldl_modular:/usr/src/shogun/src/shogun"
+	cd /usr/src/shogun/src/interfaces/perldl_modular;\
+	 ./test_one.pl ../data/kernel/SimpleLocalityImprovedString_DNA_10_5_60_5_7.m
+
+# + for file in '$datapath'
+# + echo -n ../data/kernel/SalzbergWordString_DNA_0_3_60_False.m
+# ../data/kernel/SalzbergWordString_DNA_0_3_60_False.m+ echo -n -e '\t\t'
+# 		./test_one.pl "$file"
+# ++ ./test_one.pl ../data/kernel/SalzbergWordString_DNA_0_3_60_False.m
+# Undefined subroutine &kernel::PluginEstimate called at kernel.pm line 193.
+t-plugin_estimate: LD_LIBRARY_PATH="/usr/src/shogun/src/interfaces/perldl_modular:/usr/src/shogun/src/shogun"
+	cd /usr/src/shogun/src/interfaces/perldl_modular;\
+	 ./test_one.pl ./test_one.pl ../data/kernel/SalzbergWordString_DNA_0_3_60_False.m
+
+# + echo -n ../data/kernel/PolyMatchWordString_3_DNA_10_0_3_60_True_False.m
+# ../data/kernel/PolyMatchWordString_3_DNA_10_0_3_60_True_False.m+ echo -n -e '\t\t'
+# 		./test_one.pl "$file"
+# ++ ./test_one.pl ../data/kernel/PolyMatchWordString_3_DNA_10_0_3_60_True_False.m
+# Undefined subroutine &util::StringCharFeatures called at util.pm line 160.
+t-stringcharfeatures: LD_LIBRARY_PATH="/usr/src/shogun/src/interfaces/perldl_modular:/usr/src/shogun/src/shogun"
+	cd /usr/src/shogun/src/interfaces/perldl_modular;\
+	 ./test_one.pl \
+	 ../data/kernel/PolyMatchWordString_3_DNA_10_0_3_60_True_False.m
+
+endif

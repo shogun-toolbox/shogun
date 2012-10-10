@@ -58,23 +58,26 @@ sub get_args {
     
     my $ident=$prefix . 'arg';
     # need to pregenerate list for using indices in loop
-    my $args = [undef] x $#$indata ;
-    foreach my $i (@$indata) {
-	unless($ident =~ /$i/) { next;}
-	my $idx= substr($i, len($ident), 1);
-	unless($idx>=0) {
+    my @args = ();
+    foreach my $i (keys(%$indata)) {
+	unless($i =~ /$ident/) { next;}
+	my ($idx) = $i =~ m/$ident(\d+)/;
+	unless($idx >= 0) {
 	    warn( 'Wrong indata data %s: "%s"!' , $ident, $i);
 	}
 	if($i =~ /_distance/) { # DistanceKernel
-	    $args[$idx]=eval($indata->[$i]->());
+	    $args[$idx] = eval($indata->{$i}->());
 	}else{
-	    $args[$idx]=eval($indata->[$i]);
+	    $args[$idx] = eval($indata->{$i});
 	    #except TypeError: # no bool
-	    #args[idx]=indata[i]
+	    if($@) {
+		$args[$idx] = $indata->{$i};
+	    }
 	}
     }
     # weed out superfluous Nones
-    return $args; #&filter(lambda arg: arg is not None, $args);
+    @args = grep(defined($_), @args);
+    return \@args; #&filter(lambda arg: arg is not None, $args);
 }
 
 sub get_features
@@ -156,24 +159,23 @@ sub get_feats_string {
 sub get_feats_string_complex
 {
     my ($indata, $prefix) = @_;
-    my $alphabet=eval($indata->{$prefix.'alphabet'});
+    my $alphabet = ${'modshogun::' . $indata->{$prefix.'alphabet'}};
     my %feats=(
-	'train'=> &StringCharFeatures($alphabet)
-	,
-	'test'=> &StringCharFeatures($alphabet)
+	'train'=> modshogun::StringCharFeatures->new($alphabet)
+	, 'test'=> modshogun::StringCharFeatures->new($alphabet)
 	);
     my @data_train;
     my @data_test;
-    if($alphabet eq &CUBE) # data_{train,test} ints due to test.py:_read_matrix
+    if($alphabet == $modshogun::CUBE) # data_{train,test} ints due to test.py:_read_matrix
     {
-	(@data_train)=map(str($_), @{$indata->{$prefix.'data_train'}[0]});
-	(@data_test)= map(str($_), @{$indata->{$prefix.'data_test'}[0]});
+	(@data_train) = map(str($_), @{$indata->{$prefix.'data_train'}[0]});
+	(@data_test)  = map(str($_), @{$indata->{$prefix.'data_test'}[0]});
     }else{
-	(@data_train)=@{$indata->{$prefix.'data_train'}[0]};
-	(@data_test)=@{$indata->{$prefix.'data_test'}[0]};
+	(@data_train) = @{$indata->{$prefix.'data_train'}[0]};
+	(@data_test)  = @{$indata->{$prefix.'data_test'}[0]};
     }
-    $feats{'train'}->set_features($data_train);
-    $feats{'test'}->set_features($data_test);
+    $feats{'train'}->set_features(@data_train);
+    $feats{'test'}->set_features(@data_test);
 
     $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->new($alphabet);
     $feat->obtain_from_char($feats{'train'}, $indata->{$prefix.'order'}-1,
@@ -181,15 +183,15 @@ sub get_feats_string_complex
 			    eval('modshogun::' . $indata->{$prefix.'reverse'}));
     $feats{'train'}=$feat;
 
-    $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->($alphabet);
+    $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->new($alphabet);
     $feat->obtain_from_char($feats{'test'}, $indata->{$prefix.'order'}-1,
 			    $indata->{$prefix.'order'}, $indata->{$prefix.'gap'},
-			    eval('modshogun::' .$indata->{$prefix.'reverse'}));
+			    eval('modshogun::' . $indata->{$prefix.'reverse'}));
     $feats{'test'}=$feat;
 
     if( $indata->{$prefix.'feature_type'} eq 'Word' or 
 	$indata->{$prefix.'feature_type'} eq 'Ulong'){
-	my $name='modshogun::' .'Sort'.$indata->{$prefix.'feature_type'}.'String';
+	my $name='modshogun::' . 'Sort' .$indata->{$prefix.'feature_type'}.'String';
 	return &add_preprocessor($name, $feats);
     } else {
 	return \%feats;

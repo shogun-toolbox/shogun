@@ -4,7 +4,7 @@ use modshogun;
 
 =pod
 
-comming from modshogun?
+comming from modshogun::?
 use Shogun::Features;
 use Shogun::Kernel;
 use Shogun::Preprocessor;
@@ -15,7 +15,7 @@ use Shogun::Distribution qw(HMM BW_NORMAL);
 =cut
 
 
-use PDL  qw( array ushort ubyte double);
+use PDL;#  qw( array ushort ubyte double);
 
 use util;
 
@@ -25,24 +25,31 @@ use util;
 
 sub _evaluate {
  my ($indata, $prefix) = @_;
- my $feats=&util::get_features($indata, $prefix);
- my $kfun= *{$indata->{$prefix.'name'}.'Kernel'};
- my $kargs=&util::get_args($indata, $prefix);
- my $kernel=$kfun->($kargs);
+ my $feats  = &util::get_features($indata, $prefix);
+ my $kfun   = eval('modshogun::' . $indata->{$prefix.'name'}.'Kernel');
+ my $kargs  = &util::get_args($indata, $prefix);
+ my $kernel = $kfun->new(@$kargs);
  if( defined($indata->{$prefix.'normalizer'})) {
-     $kernel->set_normalizer(eval($indata->{$prefix+'normalizer'}.'()'));
+     my $fnorm = *{'modshogun::' . $indata->{$prefix.'normalizer'}};
+     $kernel->set_normalizer($fnorm);
  }
  $kernel->init($feats->{'train'}, $feats->{'train'});
  $km_train=max(abs(
 		   $indata->{$prefix.'matrix_train'}
-		   - $kernel->get_kernel_matrix())->flat());
+		   - $kernel->get_kernel_matrix()->transpose)->flat());
  $kernel->init($feats->{'train'}, $feats->{'test'});
  $km_test=max(abs(
 		  $indata->{$prefix.'matrix_test'}
-		  -$kernel->get_kernel_matrix())->flat);
+		  -$kernel->get_kernel_matrix()->transpose)->flat);
 
- return util::check_accuracy(
-     $indata->{$prefix.'accuracy'}, km_train=>$km_train, km_test=>$km_test);
+#PTZ121010 I did a transpose here which is wrong!!!
+#there is a transpose in _read_matrix to work in... ,
+# so, the matrix typemaps in and out need to be transposed here instead?
+
+
+ return &util::check_accuracy(
+     $indata->{$prefix.'accuracy'}
+     , {km_train => $km_train, km_test => $km_test});
 }
 
 sub _get_subkernels 
@@ -70,7 +77,7 @@ sub _get_subkernels
 	# got all necessary information in new structure, now create a kernel
 	# object for each subkernel
 	while(my ($num, $data) = each(%subkernels)) {
-	    my $fun = *{$data{'name'}.'Kernel'};
+	    my $fun = eval('modshogun::' . $data{'name'}.'Kernel');
 	    my $args= &util::get_args($data, '');
 	    $subkernels{$num}{'kernel'}=$fun->($args);
 	}

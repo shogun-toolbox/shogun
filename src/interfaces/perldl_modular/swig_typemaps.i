@@ -80,6 +80,8 @@ static const char* typecode_string(int typecode) {
         return type_names[typecode];
 }
 
+//PTZ121010 doesnot think we need this since already called in the swig interface...
+//const class->get_copy
 static void* get_copy(void* src, size_t len)
 {
     void* copy = SG_MALLOC(uint8_t, len);
@@ -112,7 +114,7 @@ static SV* make_contiguous
     pdl* my_pdl = NULL;
 
     /* mapping of SvPDLV */
-    my_pdl = SvPDLV(ary);
+    my_pdl = PDL->SvPDLV(ary);
 
     if(force_copy == true) {
       //const char * option = "";
@@ -126,7 +128,7 @@ static SV* make_contiguous
     //PDL_Long* my_dims_pdl = pdl_packdims(ary, ndims);
     //as in pdlapi.c
     //pdl_setdims(my_pdl, my_pdl->dims, dims);
-    pdl_reallocdims(my_pdl, dims);
+    PDL->reallocdims(my_pdl, dims);
     //maybe pdl_setdims_careful(my_pdl);
 
     /* change type... */
@@ -137,10 +139,10 @@ static SV* make_contiguous
 	pdl_destroy(old_pdl);
       }
     }
-    pdl_make_physical(my_pdl);
+    PDL->make_physical(my_pdl);
 
 
-    SetSV_PDL(array, my_pdl);
+    PDL->SetSV_PDL(array, my_pdl);
 
     if(array != ary) {
       *is_new_object = 1;
@@ -230,58 +232,6 @@ static SV* make_contiguous
 
 }
 
-//check  for sparse? matrix (2D) 
-static int is_pdl_sparse_matrix(SV* sv, int typecode)
-{
-  return(array_is_contiguous(sv) && is_pdl_matrix(sv, typecode));
-#if 0
-  return ( obj && SV_HasAttrString(obj, "indptr") &&
-	   SV_HasAttrString(obj, "indices") &&
-	   SV_HasAttrString(obj, "data") &&
-	   SV_HasAttrString(obj, "shape")
-	   ) ? 1 : 0;
-#endif
-}
-
-static int is_pdl_string_list(SV* sv, int typecode)
-{
-  pdl* it = SvPDLV(sv);
-  return (it->datatype == typecode);
-  //PTZ120927 for now
-
-#if 0
-    SV* list=(SV*) obj;
-    int result=0;
-    if (list && PyList_Check(list) && PyList_Size(list)>0)
-    {
-        result=1;
-        int32_t size=PyList_Size(list);
-        for (int32_t i=0; i<size; i++)
-        {
-            SV *o = PyList_GetItem(list,i);
-            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
-            {
-				if (!PyString_Check(o))
-                {
-                    result=0;
-                    break;
-                }
-            }
-            else
-            {
-                if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
-                {
-                    result=0;
-                    break;
-                }
-            }
-        }
-    }
-    return result;
-#endif
-}
-
-
 
 //PTZ120929 in pdlcore.c check how pdl_setav_Long( stuffpdl -> into AV*, also *pdata
 //	*pdata = (PDL_Long) SvNV(el);
@@ -322,7 +272,7 @@ static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
   }
   //PTZ121008 still not sure of this one
   SvREFCNT_inc(it->datasv);
-  //type* vec = (type*) it->data;
+
   sg_vec = shogun::SGVector<type>((type*) it->data, it->dims[0]);
 
   //PTZ120927 shall I deference it? it will free it->data
@@ -409,7 +359,6 @@ static bool vector_to_pdl(SV* rsv, SGVector<type> sg_vec, int typecode)
   }
   STRLEN clen = sizeof(type) * size_t(sg_vec.vlen);
   PDL_Long dims[1] = {size_t(sg_vec.vlen)};
-  //dims[0] = size_t(sg_vec.vlen);
   PDL->setdims(it, dims, 1);
   it->datatype = typecode;
   PDL->allocdata(it);
@@ -508,54 +457,55 @@ static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
     SV** sv_pl_p ;
     SV* dims_sv = newSV();
     (AV*)SvRV(dims_rv);
-#endif
 
 
 
-
-template <class type>
-static bool matrix_to_pdl(SV* rsv, SGMatrix<type> sg_matrix, int typecode)
-{
-    //from pdl_unpackdims
-    PDL_Long d[2] = {sg_matrix.num_rows, sg_matrix.num_cols};
-    
-    AV* dims_av = newAV();
-    AV* data_av = newAV();
-    type* copy = (type*) get_copy(sg_matrix.matrix
-			  , sizeof(type)
-			  * size_t(sg_matrix.num_rows)
-			  * size_t(sg_matrix.num_cols));
-    STRLEN len = sizeof(type)
+    STRLEN clen = sizeof(type)
       * size_t(sg_matrix.num_rows)
       * size_t(sg_matrix.num_cols);
-    AV* data_i_av;
-    pdl* it;
-    int ij = 0;
-    
-    for(int i = 0; i < 2; i++)
-	av_store(dims_av, i, (SV*)newSViv((IV) d[i]));
+    type* copy = (type*) get_copy(sg_matrix.matrix, clen);
+
+
+    //from pdl_unpackdims
+
+#endif
+
+    //PTZ121010 
+    //yet another way of filling a piddle using pdl_from_array()
+    //it is inneficient... a memcopy shall be better used:
+    // take vector_to_pdl as an example....
+    //
     //pdl_unpackdims(dims_sv, d, 2)
     //sv_setpvn((SV*)data_pv, (const char*)copy, len);
     //PTR2UV(copy);
     //PTZ120928 very innefficient indeed, and not right, need to check SGMatrix<type>
     //PTZ120928 typecode need to be cast to perl types? type to IV,NV,PV?
     //AV*     av_make(I32 size, SV **strp)
+
+template <class type>
+static bool matrix_to_pdl(SV* rsv, SGMatrix<type> sg_matrix, int typecode)
+{
+    AV* dims_av = newAV();
+    AV* data_av = newAV();
+    AV* data_i_av;
+    int ij = 0;
+    int ndims = 2;
+    PDL_Long dims[2] = {sg_matrix.num_rows, sg_matrix.num_cols};
+    for(int i = 0; i < ndims; i++)
+	av_store(dims_av, i, (SV*)newSViv((IV) dims[i]));
     for(int i = 0; i < sg_matrix.num_rows; i++) {
       data_i_av = newAV();
       for(int j = 0; j < sg_matrix.num_cols; j++) {
-	av_store(data_i_av, j, newSVnv((NV) copy[ij]));
-	  ij++;
+	av_store(data_i_av, j, newSVnv((NV) *(sg_matrix.matrix + ij)));
+	ij++;
       }
       av_store(data_av, i, newRV((SV*) data_i_av));
     }
-    it = pdl_from_array(data_av, dims_av, typecode, NULL);
-    //get sv from rsv
-    SV* sv_pdl;
-    SetSV_PDL(sv_pdl, it);
+    pdl* it = pdl_from_array(data_av, dims_av, typecode, NULL);
+    
+    PDL->SetSV_PDL(rsv, it);
     //PTZ121005assign sv_pdl to rsv???newRV((SV*) sv_pdl)
     //PTZ120928 free copy? check also nmap type of copy in Core.xs
-    sv_setsv_mg(rsv, sv_pdl);
-    
     return true;
 }
 
@@ -675,9 +625,6 @@ static bool array_from_pdl(SGNDArray<type>& sg_array, SV* obj, int typecode)
 	el_len = is_utf8_char(el_str);
       }
 #endif
-	
-
-
 
 #if 0
     /* Check if is a list */
@@ -1511,20 +1458,6 @@ static bool spvector_to_pdl(SV* rsv, SGSparseVector<type> sg_vector, int typecod
 }
 #endif
 
-/* One dimensional input arrays */
-%define TYPEMAP_IN_SGVECTOR(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
-{
-  $1 = is_pdl_vector($input, typecode);
-}
-
-%typemap(in) shogun::SGVector<type>
-{
-  if (!vector_from_pdl<type>($1, $input, typecode))
-    SWIG_fail;
-}
-%enddef
-
 #define	PDL_BOOL	PDL_B
 #define PDL_UNICODE	PDL_US
 #define PDL_STRING	PDL_B
@@ -1540,21 +1473,35 @@ static bool spvector_to_pdl(SV* rsv, SGSparseVector<type> sg_vector, int typecod
 #define PDL_LONGDOUBLE	PDL_D
 #define PDL_OBJECT	PDL_LL
 
+/* One dimensional input arrays */
+%define TYPEMAP_IN_SGVECTOR(type,typecode)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
+{
+  $1 = is_pdl_vector($input, typecode);
+}
+
+%typemap(in) shogun::SGVector<type>
+{
+  if (!vector_from_pdl<type>($1, $input, typecode))
+    SWIG_fail;
+}
+%enddef
+
 /* Define concrete examples of the TYPEMAP_IN_SGVECTOR macros */
-TYPEMAP_IN_SGVECTOR(bool,          PDL_B)
- //TYPEMAP_IN_SGVECTOR(w_char,          PDL_US) //UNICODE
-TYPEMAP_IN_SGVECTOR(char,          PDL_B)
-TYPEMAP_IN_SGVECTOR(uint8_t,       PDL_B)
-TYPEMAP_IN_SGVECTOR(int16_t,       PDL_S)
-TYPEMAP_IN_SGVECTOR(uint16_t,      PDL_US)
-TYPEMAP_IN_SGVECTOR(int32_t,       PDL_L)
-TYPEMAP_IN_SGVECTOR(uint32_t,      PDL_L)
-TYPEMAP_IN_SGVECTOR(int64_t,       PDL_LL)
-TYPEMAP_IN_SGVECTOR(uint64_t,      PDL_LL)
-TYPEMAP_IN_SGVECTOR(float32_t,     PDL_F)
-TYPEMAP_IN_SGVECTOR(float64_t,     PDL_D)
-TYPEMAP_IN_SGVECTOR(floatmax_t,    PDL_D)
- //TYPEMAP_IN_SGVECTOR(SV*,      PDL_LL)
+TYPEMAP_IN_SGVECTOR(bool,          PDL_BOOL)
+TYPEMAP_IN_SGVECTOR(w_char,        PDL_UNICODE)
+TYPEMAP_IN_SGVECTOR(char,          PDL_STRING)
+TYPEMAP_IN_SGVECTOR(uint8_t,       PDL_UINT8)
+TYPEMAP_IN_SGVECTOR(int16_t,       PDL_INT16)
+TYPEMAP_IN_SGVECTOR(uint16_t,      PDL_UINT16)
+TYPEMAP_IN_SGVECTOR(int32_t,       PDL_INT32)
+TYPEMAP_IN_SGVECTOR(uint32_t,      PDL_UINT32)
+TYPEMAP_IN_SGVECTOR(int64_t,       PDL_INT64)
+TYPEMAP_IN_SGVECTOR(uint64_t,      PDL_UINT64)
+TYPEMAP_IN_SGVECTOR(float32_t,     PDL_FLOAT32)
+TYPEMAP_IN_SGVECTOR(float64_t,     PDL_FLOAT64)
+TYPEMAP_IN_SGVECTOR(floatmax_t,    PDL_LONGDOUBLE)
+TYPEMAP_IN_SGVECTOR(SV*,	   PDL_OBJECT)
 
 #undef TYPEMAP_IN_SGVECTOR
 
@@ -1573,7 +1520,7 @@ TYPEMAP_IN_SGVECTOR(floatmax_t,    PDL_D)
 
 /* Define concrete examples of the TYPEMAP_OUT_SGVECTOR macros */
 TYPEMAP_OUT_SGVECTOR(bool,          PDL_BOOL)
-TYPEMAP_OUT_SGVECTOR(char,          PDL_UNICODE)
+TYPEMAP_OUT_SGVECTOR(w_char,        PDL_UNICODE)
 TYPEMAP_OUT_SGVECTOR(char,          PDL_STRING)
 TYPEMAP_OUT_SGVECTOR(uint8_t,       PDL_UINT8)
 TYPEMAP_OUT_SGVECTOR(int16_t,       PDL_INT16)
@@ -1585,7 +1532,7 @@ TYPEMAP_OUT_SGVECTOR(uint64_t,      PDL_UINT64)
 TYPEMAP_OUT_SGVECTOR(float32_t,     PDL_FLOAT32)
 TYPEMAP_OUT_SGVECTOR(float64_t,     PDL_FLOAT64)
 TYPEMAP_OUT_SGVECTOR(floatmax_t,    PDL_LONGDOUBLE)
- //TYPEMAP_OUT_SGVECTOR(SV,      PDL_OBJECT)
+TYPEMAP_OUT_SGVECTOR(SV*,	    PDL_OBJECT)
 
 #undef TYPEMAP_OUT_SGVECTOR
 
@@ -1598,8 +1545,8 @@ TYPEMAP_OUT_SGVECTOR(floatmax_t,    PDL_LONGDOUBLE)
 
 %typemap(in) shogun::SGMatrix<type>
 {
-    if (!matrix_from_pdl<type>($1, $input, typecode))
-        SWIG_fail;
+    if(!matrix_from_pdl<type>($1, $input, typecode))
+      SWIG_fail;
 }
 %enddef
 
@@ -1617,22 +1564,26 @@ TYPEMAP_IN_SGMATRIX(uint64_t,      PDL_UINT64)
 TYPEMAP_IN_SGMATRIX(float32_t,     PDL_FLOAT32)
 TYPEMAP_IN_SGMATRIX(float64_t,     PDL_FLOAT64)
 TYPEMAP_IN_SGMATRIX(floatmax_t,    PDL_LONGDOUBLE)
- //TYPEMAP_IN_SGMATRIX(SV,      PDL_OBJECT)
+TYPEMAP_IN_SGMATRIX(SV*,	   PDL_OBJECT)
 
 #undef TYPEMAP_IN_SGMATRIX
 
-/* Two dimensional output arrays */
+/* Two dimensional (rectangular) output arrays */
 %define TYPEMAP_OUT_SGMATRIX(type,typecode)
 %typemap(out) shogun::SGMatrix<type>
 {
-    if (!matrix_to_pdl($result, $1, typecode))
-        SWIG_fail;
+  $result = sv_newmortal();
+  if(!matrix_to_pdl($result, $1, typecode))
+      SWIG_fail;
+  if(!is_piddle($result))
+    SWIG_fail;
+  argvi++;
 }
 %enddef
 
 /* Define concrete examples of the TYPEMAP_OUT_SGMATRIX macros */
 TYPEMAP_OUT_SGMATRIX(bool,          PDL_BOOL)
-TYPEMAP_OUT_SGMATRIX(w_char,          PDL_UNICODE)
+TYPEMAP_OUT_SGMATRIX(w_char,        PDL_UNICODE)
 TYPEMAP_OUT_SGMATRIX(char,          PDL_STRING)
 TYPEMAP_OUT_SGMATRIX(uint8_t,       PDL_UINT8)
 TYPEMAP_OUT_SGMATRIX(int16_t,       PDL_INT16)
@@ -1644,7 +1595,7 @@ TYPEMAP_OUT_SGMATRIX(uint64_t,      PDL_UINT64)
 TYPEMAP_OUT_SGMATRIX(float32_t,     PDL_FLOAT32)
 TYPEMAP_OUT_SGMATRIX(float64_t,     PDL_FLOAT64)
 TYPEMAP_OUT_SGMATRIX(floatmax_t,    PDL_LONGDOUBLE)
- //TYPEMAP_OUT_SGMATRIX(SV,      PDL_OBJECT)
+TYPEMAP_OUT_SGMATRIX(SV*,	    PDL_OBJECT)
 
 #undef TYPEMAP_OUT_SGMATRIX
 
@@ -1659,7 +1610,7 @@ TYPEMAP_OUT_SGMATRIX(floatmax_t,    PDL_LONGDOUBLE)
 %typemap(in) shogun::SGNDArray<type>
 {
     if(!array_from_pdl<type>($1, $input, typecode))
-        SWIG_fail;
+      SWIG_fail;
 }
 %enddef
 
@@ -1677,22 +1628,16 @@ TYPEMAP_INND(uint64_t,      PDL_UINT64)
 TYPEMAP_INND(float32_t,     PDL_FLOAT32)
 TYPEMAP_INND(float64_t,     PDL_FLOAT64)
 TYPEMAP_INND(floatmax_t,    PDL_LONGDOUBLE)
- //TYPEMAP_INND(SV,      PDL_OBJECT)
+TYPEMAP_INND(SV*,	    PDL_OBJECT)
 
 #undef TYPEMAP_INND
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
-#if 0 //PTZ121004 is this needed?
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<type>
 {
-    $1 = is_pdl_string_li        {
-      pdl_makescratchhash(pdl_view, 0.0, PDL_B);
-      //etc...?
-    } st($input, typecode);
-
+    $1 = is_pdl_string($input, typecode);
 }
-#endif
 
 %typemap(in) shogun::SGStringList<type>
 {
@@ -1714,7 +1659,7 @@ TYPEMAP_STRINGFEATURES_IN(uint64_t,      PDL_UINT64)
 TYPEMAP_STRINGFEATURES_IN(float32_t,     PDL_FLOAT32)
 TYPEMAP_STRINGFEATURES_IN(float64_t,     PDL_FLOAT64)
 TYPEMAP_STRINGFEATURES_IN(floatmax_t,    PDL_LONGDOUBLE)
- //TYPEMAP_STRINGFEATURES_IN(SV,      PDL_OBJECT)
+TYPEMAP_STRINGFEATURES_IN(SV*,		 PDL_OBJECT)
 
 #undef TYPEMAP_STRINGFEATURES_IN
 
@@ -1722,8 +1667,12 @@ TYPEMAP_STRINGFEATURES_IN(floatmax_t,    PDL_LONGDOUBLE)
 %define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
 %typemap(out) shogun::SGStringList<type>
 {
+  $result = sv_newmortal();
   if(!string_to_pdl($result, $1, typecode))
     SWIG_fail;
+  if(!is_piddle($result))
+    SWIG_fail;
+  argvi++;
 }
 %enddef
 
@@ -1740,7 +1689,7 @@ TYPEMAP_STRINGFEATURES_OUT(uint64_t,      PDL_UINT64)
 TYPEMAP_STRINGFEATURES_OUT(float32_t,     PDL_FLOAT32)
 TYPEMAP_STRINGFEATURES_OUT(float64_t,     PDL_FLOAT64)
 TYPEMAP_STRINGFEATURES_OUT(floatmax_t,    PDL_LONGDOUBLE)
- //TYPEMAP_STRINGFEATURES_OUT(SV,      PDL_OBJECT)
+TYPEMAP_STRINGFEATURES_OUT(SV*,		  PDL_OBJECT)
 #undef TYPEMAP_STRINGFEATURES_ARGOUT
 
 
@@ -1753,8 +1702,8 @@ TYPEMAP_STRINGFEATURES_OUT(floatmax_t,    PDL_LONGDOUBLE)
 
 %typemap(in) shogun::SGSparseMatrix<type>
 {
-    if (! spmatrix_from_pdl<type>($1, $input, typecode))
-        SWIG_fail;
+    if(! spmatrix_from_pdl<type>($1, $input, typecode))
+      SWIG_fail;
 }
 %enddef
 
@@ -1771,38 +1720,42 @@ TYPEMAP_SPARSEFEATURES_IN(uint64_t,      PDL_UINT64)
 TYPEMAP_SPARSEFEATURES_IN(float32_t,     PDL_FLOAT32)
 TYPEMAP_SPARSEFEATURES_IN(float64_t,     PDL_FLOAT64)
 TYPEMAP_SPARSEFEATURES_IN(floatmax_t,    PDL_LONGDOUBLE)
- //TYPEMAP_SPARSEFEATURES_IN(SV,      PDL_OBJECT)
+TYPEMAP_SPARSEFEATURES_IN(SV*,		 PDL_OBJECT)
 #undef TYPEMAP_SPARSEFEATURES_IN
 
 /* output typemap for sparse features returns (data, row, ptr) */
 %define TYPEMAP_SPARSEFEATURES_OUT(type,typecode)
 %typemap(out) shogun::SGSparseVector<type>
 {
-    if (!spvector_to_pdl($result, $1, typecode))
-        SWIG_fail;
+  if(!spvector_to_pdl($result, $1, typecode))
+    SWIG_fail;
 }
 
 %typemap(out) shogun::SGSparseMatrix<type>
 {
-    if (!spmatrix_to_pdl($result, $1, typecode))
-        SWIG_fail;
+  $result = sv_newmortal();
+  if(!spmatrix_to_pdl($result, $1, typecode))
+    SWIG_fail;
+  if(!is_piddle($result))
+    SWIG_fail;
+  argvi++;
 }
 %enddef
 
-TYPEMAP_SPARSEFEATURES_OUT(bool,          PDL_B)
- //STRING,UNICODE
-TYPEMAP_SPARSEFEATURES_OUT(char,          PDL_B)
-TYPEMAP_SPARSEFEATURES_OUT(uint8_t,       PDL_B)
-TYPEMAP_SPARSEFEATURES_OUT(int16_t,       PDL_S)
-TYPEMAP_SPARSEFEATURES_OUT(uint16_t,      PDL_US)
-TYPEMAP_SPARSEFEATURES_OUT(int32_t,       PDL_L)
-TYPEMAP_SPARSEFEATURES_OUT(uint32_t,      PDL_L)
-TYPEMAP_SPARSEFEATURES_OUT(int64_t,       PDL_LL)
-TYPEMAP_SPARSEFEATURES_OUT(uint64_t,      PDL_LL)
-TYPEMAP_SPARSEFEATURES_OUT(float32_t,     PDL_F)
-TYPEMAP_SPARSEFEATURES_OUT(float64_t,     PDL_D)
-TYPEMAP_SPARSEFEATURES_OUT(floatmax_t,    PDL_D)
- //TYPEMAP_SPARSEFEATURES_OUT(pdl,      PDL_OBJECT)
+TYPEMAP_SPARSEFEATURES_OUT(bool,          PDL_BOOL)
+TYPEMAP_SPARSEFEATURES_OUT(w_char,        PDL_UNICODE)
+TYPEMAP_SPARSEFEATURES_OUT(char,          PDL_STRING)
+TYPEMAP_SPARSEFEATURES_OUT(uint8_t,       PDL_UINT8)
+TYPEMAP_SPARSEFEATURES_OUT(int16_t,       PDL_INT16)
+TYPEMAP_SPARSEFEATURES_OUT(uint16_t,      PDL_UINT16)
+TYPEMAP_SPARSEFEATURES_OUT(int32_t,       PDL_INT32)
+TYPEMAP_SPARSEFEATURES_OUT(uint32_t,      PDL_UINT32)
+TYPEMAP_SPARSEFEATURES_OUT(int64_t,       PDL_INT64)
+TYPEMAP_SPARSEFEATURES_OUT(uint64_t,      PDL_UINT64)
+TYPEMAP_SPARSEFEATURES_OUT(float32_t,     PDL_FLOAT32)
+TYPEMAP_SPARSEFEATURES_OUT(float64_t,     PDL_FLOAT64)
+TYPEMAP_SPARSEFEATURES_OUT(floatmax_t,    PDL_LONGDOUBLE)
+TYPEMAP_SPARSEFEATURES_OUT(SV*,		  PDL_OBJECT)
 
 #undef TYPEMAP_SPARSEFEATURES_OUT
 #endif /* HAVE_PDL */

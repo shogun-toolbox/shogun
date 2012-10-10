@@ -131,6 +131,67 @@ static int is_pdl_array(SV* sv, int typecode)
 }
 
 
+//check  for sparse? matrix (2D) 
+static int is_pdl_sparse_matrix(SV* sv, int typecode)
+{
+  return(array_is_contiguous(sv) && is_pdl_matrix(sv, typecode));
+#if 0
+  return ( obj && SV_HasAttrString(obj, "indptr") &&
+	   SV_HasAttrString(obj, "indices") &&
+	   SV_HasAttrString(obj, "data") &&
+	   SV_HasAttrString(obj, "shape")
+	   ) ? 1 : 0;
+#endif
+}
+
+static int is_pdl_string(SV* sv, int typecode)
+{
+  pdl* it = if_piddle(sv);
+  if(it != 0) {
+    return (it->datatype == typecode);
+  }
+  return false;
+}
+
+static int is_pdl_string_list(SV* sv, int typecode)
+{
+  pdl* it = PDL->SvPDLV(sv);
+  return (it->datatype == typecode);
+  //PTZ120927 for now
+
+#if 0
+    SV* list=(SV*) obj;
+    int result=0;
+    if (list && PyList_Check(list) && PyList_Size(list)>0)
+    {
+        result=1;
+        int32_t size=PyList_Size(list);
+        for (int32_t i=0; i<size; i++)
+        {
+            SV *o = PyList_GetItem(list,i);
+            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
+            {
+				if (!PyString_Check(o))
+                {
+                    result=0;
+                    break;
+                }
+            }
+            else
+            {
+                if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
+                {
+                    result=0;
+                    break;
+                }
+            }
+        }
+    }
+    return result;
+#endif
+}
+
+
 
 
   //form PDL/Basic/Core/Core.xs

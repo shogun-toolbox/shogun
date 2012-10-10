@@ -2,6 +2,7 @@ package classifier;
 use modshogun;
 use util;
 use PDL;
+use Data::Dumper;
 
 sub _get_machine
 {
@@ -69,6 +70,7 @@ sub  _get_results_alpha_and_sv
 sub _get_results 
 {
     my ($indata, $prefix, $classifier, $machine, $feats) = @_;
+    my $e;
     my %res=(
 		'alphas'=>0,
 		'bias'=>0,
@@ -151,7 +153,13 @@ sub _evaluate {
     $classifier->{parallel} = modshogun::Parallel->new();
     $classifier->{parallel}->set_num_threads($indata->{$prefix.'num_threads'});
     #PTZ121009 threads are not working..it crashes in Perl_IO_stdin...
-    $classifier->{parallel}->set_num_threads(1);
+    # but also is not translating into the ::Parrallel instance?!
+    #$classifier->{parallel}->set_num_threads(1);
+    if($@) {
+	warn($@);
+	#return false;
+    }
+
     if($ctype eq 'linear'){
 	if(defined($indata->{$prefix.'bias'})){
 	    $classifier->set_bias_enabled(true);
@@ -164,9 +172,11 @@ sub _evaluate {
 	$classifier->set_max_iter=$indata->{$prefix.'max_iter'};
     }
     if(defined($indata->{$prefix.'epsilon'})){
-	$classifier->set_epsilon($indata->{$prefix.'epsilon'});
-	if(@_) {
-	    #except AttributeError:		pass
+	eval { $classifier->set_epsilon($indata->{$prefix.'epsilon'}); };
+	if($@) {
+#Can't locate object method "set_epsilon" via package "modshogun::SVMSGD" at classifier.pm line 167.
+	    warn(Dumper($classifier));
+	    #return false;
 	}
     }
     if(defined($indata->{$prefix.'max_train_time'})){
