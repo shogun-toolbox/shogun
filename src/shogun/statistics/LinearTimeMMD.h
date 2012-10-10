@@ -21,7 +21,11 @@ class CStreamingFeatures;
 class CFeatures;
 
 /** @brief This class implements the linear time Maximum Mean Statistic as
- * described in [1].
+ * described in [1]. This statistic is in particular suitable for streaming
+ * data. Only the constructor with streaming features is therefore allowed.
+ * The class starts and ends the streaming features' underlying parser
+ * automatically.
+ *
  * The MMD is the distance of two probability distributions \f$p\f$ and \f$q\f$
  * in a RKHS.
  * \f[
@@ -103,7 +107,10 @@ public:
 	virtual ~CLinearTimeMMD();
 
 	/** Computes the squared linear time MMD for the current data. This is an
-	 * unbiased estimate
+	 * unbiased estimate.
+	 *
+	 * Note that this method automatically starts/ends the underlying streaming
+	 * features parser.
 	 *
 	 * @return squared linear time MMD
 	 */

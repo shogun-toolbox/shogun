@@ -109,6 +109,10 @@ float64_t CLinearTimeMMD::compute_statistic()
 			" compute_variance_estimate!\n",
 				get_name());
 
+	/* start streaming features parser */
+	m_streaming_p->start_parser();
+	m_streaming_q->start_parser();
+
 	/* compute sums */
 	for (index_t i=0; i<m_2; ++i)
 	{
@@ -153,6 +157,10 @@ float64_t CLinearTimeMMD::compute_statistic()
 		SG_UNREF(q1);
 		SG_UNREF(q2);
 	}
+
+	/* stop streaming features parser */
+	m_streaming_p->end_parser();
+	m_streaming_q->end_parser();
 
 	SG_DEBUG("returning: 1/%d*(%f+%f-%f-%f)\n", m_2, pp, qq, pq, qp);
 
