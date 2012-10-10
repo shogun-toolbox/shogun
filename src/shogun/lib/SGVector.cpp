@@ -136,13 +136,9 @@ template<class T> void SGVector<T>::init_data()
 
 template<class T> void SGVector<T>::free_data()
 {
-	SG_SDEBUG("entering SGVector::free_data\n");
-
-	SG_SDEBUG("Free'ing %p\n", vector);
 	SG_FREE(vector);
 	vector=NULL;
 	vlen=0;
-	SG_SDEBUG("leaving SGVector::free_data\n");
 }
 
 template<class T> void SGVector<T>::display_vector(const char* name,
