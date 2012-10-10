@@ -47,6 +47,8 @@ public:
 
 	bool get_next_example();
 
+	void release_example();
+
 private:
 	/** registers all parameters and initializes variables with defaults */
 	void init();

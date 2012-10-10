@@ -68,6 +68,13 @@ bool CMeanShiftDataGenerator<T>::get_next_example()
 	return true;
 }
 
+template<class T>
+void CMeanShiftDataGenerator<T>::release_example()
+{
+	SGVector<T> temp=SGVector<T>();
+	CMeanShiftDataGenerator<T>::current_vector=temp;
+}
+
 template class CMeanShiftDataGenerator<bool>;
 template class CMeanShiftDataGenerator<char>;
 template class CMeanShiftDataGenerator<int8_t>;
