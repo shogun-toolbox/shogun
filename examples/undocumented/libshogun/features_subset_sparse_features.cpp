@@ -45,9 +45,8 @@ void check_transposed(CSparseFeatures<int32_t>* features)
 	SG_UNREF(double_transposed);
 }
 
-int main(int argc, char **argv)
+void test()
 {
-	init_shogun(&print_message, &print_message, &print_message);
 	const int32_t num_subset_idx=CMath::random(1, num_vectors);
 
 	/* create feature data matrix */
@@ -145,6 +144,14 @@ int main(int argc, char **argv)
 	}
 
 	SG_UNREF(features);
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+
+	test();
+
 	exit_shogun();
 	return 0;
 }

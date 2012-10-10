@@ -14,14 +14,8 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
+void test()
 {
-	fprintf(target, "%s", str);
-}
-
-int main(int argc, char **argv)
-{
-	init_shogun(&print_message, &print_message, &print_message);
 
 	SGMatrix<float64_t> data(3, 10);
 	CDenseFeatures<float64_t>* f=new CDenseFeatures<float64_t>(data);
@@ -70,7 +64,14 @@ int main(int argc, char **argv)
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
-	SG_SPRINT("\nEND\n");
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+
+	test();
+
 	exit_shogun();
 	return 0;
 }

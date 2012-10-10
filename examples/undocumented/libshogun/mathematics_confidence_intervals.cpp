@@ -14,15 +14,8 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
+void test()
 {
-	fprintf(target, "%s", str);
-}
-
-int main(int argc, char **argv)
-{
-	init_shogun(&print_message, &print_message, &print_message);
-
 	SGVector<float64_t> data(10);
 	SGVector<float64_t>::range_fill_vector(data.vector, data.vlen, 1.0);
 
@@ -32,8 +25,14 @@ int main(int argc, char **argv)
 
 	SG_SPRINT("sample mean: %f. True mean lies in [%f,%f] with %f%%\n",
 			mean, low, up, 100*(1-error_prob));
+}
 
-	SG_SPRINT("\nEND\n");
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+
+	test();
+
 	exit_shogun();
 
 	return 0;

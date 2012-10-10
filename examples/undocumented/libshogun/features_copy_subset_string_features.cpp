@@ -14,14 +14,8 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
+void test()
 {
-	fprintf(target, "%s", str);
-}
-
-int main(int argc, char **argv)
-{
-	init_shogun(&print_message, &print_message, &print_message);
 
 	index_t num_strings=10;
 	index_t max_string_length=20;
@@ -117,6 +111,13 @@ int main(int argc, char **argv)
 
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+
+	test();
 
 	exit_shogun();
 
