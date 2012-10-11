@@ -109,8 +109,7 @@ sub _read_matrix {
 	}
 	push(@lis2d, \@lis);
     }
-    return \@lis2d;
-    my $m = PDL->new(\@lis2d);
+    PDL->new(\@lis2d);
 }
 
 my $res = 1;
