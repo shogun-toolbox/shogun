@@ -109,8 +109,8 @@ sub _read_matrix {
 	}
 	push(@lis2d, \@lis);
     }
+    return \@lis2d;
     my $m = PDL->new(\@lis2d);
-    return $m->transpose();
 }
 
 my $res = 1;

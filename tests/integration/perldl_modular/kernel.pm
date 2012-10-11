@@ -36,16 +36,11 @@ sub _evaluate {
  $kernel->init($feats->{'train'}, $feats->{'train'});
  $km_train=max(abs(
 		   $indata->{$prefix.'matrix_train'}
-		   - $kernel->get_kernel_matrix()->transpose)->flat());
+		   - $kernel->get_kernel_matrix())->flat());
  $kernel->init($feats->{'train'}, $feats->{'test'});
  $km_test=max(abs(
 		  $indata->{$prefix.'matrix_test'}
-		  -$kernel->get_kernel_matrix()->transpose)->flat);
-
-#PTZ121010 I did a transpose here which is wrong!!!
-#there is a transpose in _read_matrix to work in... ,
-# so, the matrix typemaps in and out need to be transposed here instead?
-
+		  -$kernel->get_kernel_matrix())->flat);
 
  return &util::check_accuracy(
      $indata->{$prefix.'accuracy'}

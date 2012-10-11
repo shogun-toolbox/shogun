@@ -9,8 +9,12 @@
  * Written (W) 2012 Christian Montanari
  */
 
-
 %{
+
+#include  <values.h>
+//PTZ121012 from PDL
+#define MAX_DIMENSIONS 100
+#define MAX_VAR_DIMS 32
 
 /* Functions to extract array attributes.
  */
@@ -61,16 +65,16 @@
   }
 
   static int array_dimensions(SV* sv) {
-    pdl* it = PDL->SvPDLV(sv);
+    pdl* it = if_piddle(sv);
     if(it->state & PDL_NOMYDIMS) {
-      return -1;//NODIMS?
+      return -1; //NODIMS?
     }
     return it->ndims;
   }
 
   //
   static size_t array_size(SV* sv, int i) {
-    pdl* x = PDL->SvPDLV(sv);
+    pdl* x = if_piddle(sv);
     pdl_make_physvaffine( x );
     //size_t *incs = (PDL_VAFFOK(x) ? x->vafftrans->incs : x->dimincs);
     //return it->dimincs;
@@ -100,40 +104,41 @@
   }
 
 
-static bool is_pdl_narry(SV* sv, int ndims)
-{
-  pdl* it = if_piddle(sv);
-  if(it != 0) {
-    pdl_make_physdims(it);
-    if((!(it->state & PDL_NOMYDIMS)) && it->ndims >= ndims) {
+  static bool is_pdl_narry(SV* sv, int ndims_min, int ndims_max)
+  {
+    pdl* it = if_piddle(sv);
+    if(it != 0) {
+      pdl_make_physdims(it);
+      if((!(it->state & PDL_NOMYDIMS))
+	 && it->ndims >= ndims_min
+	 && it->ndims < ndims_max) {
+	return true;
+      }
+    } else if(is_array(sv)) {
       return true;
     }
-  } else if(is_array(sv)) {
-    return true;
+    return false;
   }
-  return false;
-}
 
-static int is_pdl_vector(SV* sv, int typecode)
-{
-  return(is_pdl_narry(sv, 1));
-}
-//check  for rectangular matrix (2D)
-static int is_pdl_matrix(SV* sv, int typecode)
-{
-  return(is_pdl_narry(sv, 2));
-}
+  static int is_pdl_vector(SV* sv, int typecode)
+  {
+    return(is_pdl_narry(sv, 1, 2));
+  }
+  //check  for rectangular matrix (2D)
+  static int is_pdl_matrix(SV* sv, int typecode)
+  {
+    return(is_pdl_narry(sv, 2, 3));
+  }
 
-//check  for PDL (rectangular) array N-ary
-static int is_pdl_array(SV* sv, int typecode)
-{
-  return(is_pdl_narry(sv, 3));
-}
+  //check  for PDL (rectangular) array N-ary
+  static int is_pdl_array(SV* sv, int typecode)
+  {
+    return(is_pdl_narry(sv, 3, MAX_DIMENSIONS));
+  }
 
-
-//check  for sparse? matrix (2D) 
-static int is_pdl_sparse_matrix(SV* sv, int typecode)
-{
+  //check  for sparse? matrix (2D) 
+  static int is_pdl_sparse_matrix(SV* sv, int typecode)
+  {
   return(array_is_contiguous(sv) && is_pdl_matrix(sv, typecode));
 #if 0
   return ( obj && SV_HasAttrString(obj, "indptr") &&
@@ -142,7 +147,7 @@ static int is_pdl_sparse_matrix(SV* sv, int typecode)
 	   SV_HasAttrString(obj, "shape")
 	   ) ? 1 : 0;
 #endif
-}
+  }
 
 static int is_pdl_string(SV* sv, int typecode)
 {

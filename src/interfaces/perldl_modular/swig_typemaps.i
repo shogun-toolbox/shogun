@@ -20,7 +20,6 @@
 
 %{
 
-
 #ifndef SWIG_FILE_WITH_INIT
 #  define NO_IMPORT_ARRAY
 #else
@@ -399,6 +398,7 @@ static bool vector_to_pdl(SV* rsv, SGVector<type> sg_vec, int typecode)
 #endif
 //PTZ121002 wont work as typemap AV* would not work well?
     // comparable to make_contiguous
+    //type* m = (type*) it->data;
 
 template <class type>
 static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
@@ -416,8 +416,8 @@ static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
     //also  make use of it->typecode and typecode, and type;
     //pdl *pdl_get_convertedpdl(pdl *old,int type) {    //it->datatype = typecode;
     SvREFCNT_inc(it->datasv); // so it would need to e free later? or we cannot avoid the copy?
-    //type* m = (type*) it->data;
-    sg_matrix = shogun::SGMatrix<type>((type*) it->data, it->dims[0], it->dims[1], true);    
+    //PTZ121011 dims seems to be transposed from normal order
+    sg_matrix = shogun::SGMatrix<type>((type*) it->data, it->dims[1], it->dims[0], true);    
     return true;
 }
 
@@ -469,7 +469,29 @@ static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
     //from pdl_unpackdims
 
 #endif
-
+#if 0
+    AV* dims_av = newAV();
+    AV* data_av = newAV();
+    AV* data_i_av;
+    int ij = 0;
+    int ndims = 2;
+    PDL_Long dims[2] = {sg_matrix.num_cols, sg_matrix.num_rows};
+    for(int i = 0; i < ndims; i++)
+	av_store(dims_av, i, (SV*)newSViv((IV) dims[i]));
+    for(int i = 0; i < sg_matrix.num_cols; i++) {
+      data_i_av = newAV();
+      for(int j = 0; j < sg_matrix.num_rows; j++) {
+	av_store(data_i_av, j, newSVnv((NV) *(sg_matrix.matrix + ij)));
+	ij++;
+      }
+      av_store(data_av, i, newRV((SV*) data_i_av));
+    }
+    pdl* it = pdl_from_array(data_av, dims_av, typecode, NULL);    
+    PDL->SetSV_PDL(rsv, it);
+    //PTZ121005assign sv_pdl to rsv???newRV((SV*) sv_pdl)
+    //PTZ120928 free copy? check also nmap type of copy in Core.xs
+    return true;
+#endif
     //PTZ121010 
     //yet another way of filling a piddle using pdl_from_array()
     //it is inneficient... a memcopy shall be better used:
@@ -485,28 +507,24 @@ static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
 template <class type>
 static bool matrix_to_pdl(SV* rsv, SGMatrix<type> sg_matrix, int typecode)
 {
-    AV* dims_av = newAV();
-    AV* data_av = newAV();
-    AV* data_i_av;
-    int ij = 0;
-    int ndims = 2;
-    PDL_Long dims[2] = {sg_matrix.num_rows, sg_matrix.num_cols};
-    for(int i = 0; i < ndims; i++)
-	av_store(dims_av, i, (SV*)newSViv((IV) dims[i]));
-    for(int i = 0; i < sg_matrix.num_rows; i++) {
-      data_i_av = newAV();
-      for(int j = 0; j < sg_matrix.num_cols; j++) {
-	av_store(data_i_av, j, newSVnv((NV) *(sg_matrix.matrix + ij)));
-	ij++;
-      }
-      av_store(data_av, i, newRV((SV*) data_i_av));
-    }
-    pdl* it = pdl_from_array(data_av, dims_av, typecode, NULL);
-    
-    PDL->SetSV_PDL(rsv, it);
-    //PTZ121005assign sv_pdl to rsv???newRV((SV*) sv_pdl)
-    //PTZ120928 free copy? check also nmap type of copy in Core.xs
-    return true;
+  pdl* it = PDL->pdlnew();
+  if(!it) {
+    return false;
+  }
+  STRLEN clen = sizeof(type)
+    * size_t(sg_matrix.num_rows)
+    * size_t(sg_matrix.num_cols);
+  PDL_Long dims[2] = {sg_matrix.num_cols, sg_matrix.num_rows};
+  PDL->setdims(it, dims, 2);
+  it->datatype = typecode;
+  PDL->allocdata(it);
+  if(!it->data) {
+    PDL->destroy(it);
+    return false;
+  }
+  memcpy(it->data, sg_matrix.matrix, clen);
+  PDL->SetSV_PDL(rsv, it);
+  return true;
 }
 
 
