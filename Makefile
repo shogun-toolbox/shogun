@@ -340,4 +340,8 @@ t-stringcharfeatures: LD_LIBRARY_PATH="/usr/src/shogun/src/interfaces/perldl_mod
 	 ./test_one.pl \
 	 ../data/kernel/PolyMatchWordString_3_DNA_10_0_3_60_True_False.m
 
+#famous searches
+#find /usr/src/PDL /usr/src/shogun -type f -a \( -name '*.h' -o -name '*.c*' -o -name '*.i' -o -name '.*p*' \) -print0 | "xargs" -0 -e grep -nH -e DNA
+
+
 endif

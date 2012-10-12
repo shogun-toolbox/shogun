@@ -34,11 +34,11 @@ sub _evaluate {
      $kernel->set_normalizer($fnorm);
  }
  $kernel->init($feats->{'train'}, $feats->{'train'});
- $km_train=max(abs(
+ my $km_train=max(abs(
 		   $indata->{$prefix.'matrix_train'}
 		   - $kernel->get_kernel_matrix())->flat());
  $kernel->init($feats->{'train'}, $feats->{'test'});
- $km_test=max(abs(
+ my $km_test=max(abs(
 		  $indata->{$prefix.'matrix_test'}
 		  -$kernel->get_kernel_matrix())->flat);
 

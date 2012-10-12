@@ -9,6 +9,12 @@
  * Written (W) 2012 Christian Montanari
  */
 
+
+//%constant   enum boolean {True=true, False=false};
+
+%constant  bool True = true;
+%constant  bool False = false;
+
 %{
 
 #include  <values.h>
@@ -184,6 +190,7 @@
 #endif
   }
 
+  //PTZ121011... check dims >= 2 and dims[-1] == 1
 static int is_pdl_string(SV* sv, int typecode)
 {
   pdl* it = if_piddle(sv);
@@ -513,7 +520,7 @@ T_PDL
 }
 %enddef
 #endif
-
+#if 0
 
 %define TYPEMAP_PDL
 %typemap(out) pdl*
@@ -526,5 +533,5 @@ T_PDL
     $result = PDL->SvPDLV($1)
 }
 %enddef
-
+#endif
 

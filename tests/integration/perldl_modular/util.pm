@@ -11,6 +11,9 @@ use Shogun.Distance;use Shogun.Kernel;
 
 use PDL;
 #use PDL::NiceSlice; 
+
+use Data::Dumper;
+
 use base qw(Exporter);
 our %EXPORT_TAGS =
 (
@@ -116,7 +119,7 @@ sub get_feats_simple {
     my $ftrain;
     my $ftest;
     if($ftype eq 'Byte' or $ftype eq 'Char') {
-	my $alphabet=eval($indata->{$prefix.'alphabet'});
+	my $alphabet=eval('modshogun::' . $indata->{$prefix.'alphabet'});
 	$ftrain=eval('modshogun::' . $ftype . 'Features')->new($alphabet);
 	$ftest =eval('modshogun::' . $ftype . 'Features')->new($alphabet);
 	$ftrain->copy_feature_matrix($data_train);
@@ -146,13 +149,15 @@ sub get_feats_simple {
 sub get_feats_string {
     my ($indata, $prefix) = @_;
     my $ftype=$indata->{$prefix.'feature_type'};
-    my $alphabet=eval('modshogun::' . $indata->{$prefix.'alphabet'});
+    my $alphabet=${'modshogun::' . $indata->{$prefix.'alphabet'}};
     my %feats=(
 	'train'=> eval('modshogun::' .'String'.$ftype.'Features')->new($alphabet)
 	,'test'=> eval('modshogun::' .'String'.$ftype.'Features')->new($alphabet)
 	);
-    $feats{'train'}->set_features($indata->{$prefix.'data_train'}->slice('0:-1,(0)'));
-    $feats{'test'}->set_features($indata->{$prefix.'data_test'}->slice('0:-1,(0)'));
+    #$feats{'train'}->set_features($indata->{$prefix.'data_train'}->slice('0:-1,(0)'));
+    #$feats{'test'}->set_features($indata->{$prefix.'data_test'}->slice('0:-1,(0)'));
+    $feats{'train'}->set_features($indata->{$prefix.'data_train'});
+    $feats{'test'}->set_features($indata->{$prefix.'data_test'});
     return \%feats;
 }
 sub get_feats_string_complex
@@ -163,10 +168,11 @@ sub get_feats_string_complex
 	'train'=> modshogun::StringCharFeatures->new($alphabet)
 	, 'test'=> modshogun::StringCharFeatures->new($alphabet)
 	);
-
 #PTZ121011 ->server might be needed to be sure it is a dense object.
-    my $data_train = $indata->{$prefix.'data_train'}->slice('0:-1,(0)'); #->nslice([0,-1], 0); 
-    my $data_test  = $indata->{$prefix.'data_test'}->slice('0:-1,(0)'); #->nslice([0,-1], (0));
+    #my $data_train = $indata->{$prefix.'data_train'}->slice('0:-1,(0)'); #->nslice([0,-1], 0); 
+    #my $data_test  = $indata->{$prefix.'data_test'}->slice('0:-1,(0)'); #->nslice([0,-1], 0);
+    my $data_train = $indata->{$prefix.'data_train'};
+    my $data_test  = $indata->{$prefix.'data_test'};
     if($alphabet == $modshogun::CUBE) # data_{train,test} ints due to test.py:_read_matrix
     { #map { $a($_ - 1) .= $_; } (1..$a->nelem);    # Lots of little ops
 	map { $data_train->nslice($_) = chr($data_train->nslice($_)) } (0..$data_train->nelem - 1);
@@ -175,22 +181,22 @@ sub get_feats_string_complex
     $feats{'train'}->set_features($data_train);
     $feats{'test'}->set_features($data_test);
 
-    $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->new($alphabet);
+    my $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->new($alphabet);
     $feat->obtain_from_char($feats{'train'}, $indata->{$prefix.'order'}-1,
 			    $indata->{$prefix.'order'}, $indata->{$prefix.'gap'},
-			    eval('modshogun::' . $indata->{$prefix.'reverse'}));
+			    ${'modshogun::' . $indata->{$prefix.'reverse'}});
     $feats{'train'}=$feat;
 
     $feat=eval('modshogun::' .'String'.$indata->{$prefix.'feature_type'}."Features")->new($alphabet);
     $feat->obtain_from_char($feats{'test'}, $indata->{$prefix.'order'}-1,
-			    $indata->{$prefix.'order'}, $indata->{$prefix.'gap'},
-			    eval('modshogun::' . $indata->{$prefix.'reverse'}));
+			    $indata->{$prefix.'order'},  $indata->{$prefix.'gap'},
+			    ${'modshogun::' . $indata->{$prefix.'reverse'}});
     $feats{'test'}=$feat;
 
     if( $indata->{$prefix.'feature_type'} eq 'Word' or 
 	$indata->{$prefix.'feature_type'} eq 'Ulong'){
 	my $name='modshogun::' . 'Sort' .$indata->{$prefix.'feature_type'}.'String';
-	return &add_preprocessor($name, $feats);
+	return &add_preprocessor($name, \%feats);
     } else {
 	return \%feats;
     }

@@ -2,8 +2,11 @@
 
 use lib qw(. /usr/src/shogun/src/interfaces/perldl_modular /usr/src/shogun/src/shogun);
 use PDL;
+use PDL::Char;
 
 use IO::File;
+
+import Devel::Trace 'trace';
 
 use kernel;
 use distance;
@@ -93,6 +96,28 @@ sub _test_mfile {
     return $fun->(\%indata);
 }
 
+sub _stringlike {
+  return 1 unless defined $_[0] && ref $_[0];
+  return 1 if (blessed $_[0]) &&
+    eval {
+      (("$_[0]" eq "$_[0]") && (($_[0] cmp $_[0])==0))
+    };
+  return;
+}
+sub _numberlike {
+  return 1, unless defined $_[0];
+
+  # L<perlfunc> manpage notes that NaN != NaN, so we can verify that
+  # numeric conversion function works properly along with the
+  # comparison operator.
+  no warnings;
+
+  return 1 if ((!ref $_[0]) || blessed($_[0])) &&
+    eval {
+      ((0+$_[0]) == (0+$_[0])) && (($_[0] <=> $_[0])==0)
+    } && ($_[0] =~ /\d/);
+  return;
+}
 sub _read_matrix {
     my $line = shift;
     my ($str_line) = $line =~ m/\[(.*)\]/g;
@@ -100,14 +125,20 @@ sub _read_matrix {
 	($str_line) = $line =~ m/\{(.*)\}/g;
     }
     my @lines = split(/;/, $str_line);
-    my @lis2d;    
+    my @lis2d;
+    my $is_char = 0;
     foreach my $x (@lines) {
 	my @lis;
 	foreach my $y (split(/,/, $x)) {
 	    $y =~ s/'//g;
 	    push(@lis, $y);
+	    $is_char ||= (&_stringlike($y) && !&_numberlike($y));
 	}
 	push(@lis2d, \@lis);
+    }
+    if($is_char) {
+	my $m = PDL::Char->new(\@lis2d);
+	return $m;
     }
     PDL->new(\@lis2d);
 }
