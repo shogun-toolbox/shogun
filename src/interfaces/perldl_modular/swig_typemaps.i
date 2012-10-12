@@ -116,7 +116,7 @@ static SV* make_contiguous
     my_pdl = PDL->SvPDLV(ary);
 
     if(force_copy == true) {
-      //const char * option = "";
+      //const char* opt = "";
       char * opt = "";
       sv_setsv(array, pdl_copy(my_pdl, opt));
     } else {
@@ -232,47 +232,20 @@ static SV* make_contiguous
 }
 
 
-//PTZ120929 in pdlcore.c check how pdl_setav_Long( stuffpdl -> into AV*, also *pdata
-//	*pdata = (PDL_Long) SvNV(el);
-#if 0
-    if(!is_pdl_vector(obj, typecode))
-    {
-      warn("not a PDL vector of appropriate type %i", typecode);
-      return false;
-    }
-    SV* array = make_contiguous(obj, &is_new_object, 1, typecode, true);
-    if(!array) return false;
-    //((AV*) array)->flags &= (-1 ^ NPY_OWNDATA);
-    type* vec = (type*) PyArray_BYTES (array);
-    int32_t vlen = PyArray_DIM (array, 0);
-    Py_DECREF(array);
-
-   //pdl* it = pdl_get_convertedpdl(SvPDLV(sv), PDL_TMP);
-   //pdl *pdl_hard_copy(pdl *src) src to a new...
-    //from void** v = pdl_twod(it);
-    //concerns about reference counters...  shogun::SGVector<type>->free...
-  if(it->ndims < 1) {
-    warn("not a PDL vector");
-    return false;
-  }
-
-#endif
-
 template <class type>
 static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
 {
   pdl* it = SvPDLV(obj);
   it = pdl_get_convertedpdl(it, typecode);
-  pdl_make_physical(it); /* Wasteful*/
-  //PTZ121008 could also flatten it...?
-  if(!(it->state && PDL_ALLOCATED)) {
+  PDL->make_physical(it); /* Wasteful*/
+  if(!PDL_ENSURE_ALLOCATED(it)) {
     warn("could not allocate PDL vector memory");
     return false;
   }
   //PTZ121008 still not sure of this one
-  SvREFCNT_inc(it->datasv);
-
-  sg_vec = shogun::SGVector<type>((type*) it->data, it->dims[0]);
+  //SvREFCNT_inc(it->datasv);
+  void* data = get_copy(PDL_REPRP(it), sizeof(type) * it->nvals);
+  sg_vec = shogun::SGVector<type>((type*) data, it->dims[0]);
 
   //PTZ120927 shall I deference it? it will free it->data
   //pdl_destroy(it); //shall increment the vector? not here
@@ -365,19 +338,12 @@ static bool vector_to_pdl(SV* rsv, SGVector<type> sg_vec, int typecode)
     PDL->destroy(it);
     return false;
   }
-  memcpy(it->data, sg_vec.vector, clen);
+  void* data = PDL_REPRP(it);    
+  memcpy((type*)data, sg_vec.vector, clen);
   PDL->SetSV_PDL(rsv, it);
   return true;
 }
 
-#if 0
-...done in typemapcheck!!!
-    if (!is_pdl_matrix(obj, typecode))
-    {
-        warn("not a numpy matrix of appropriate type");
-        return false;
-    }
-#endif
 
 #if 0
     int is_new_object;
@@ -403,22 +369,26 @@ static bool vector_to_pdl(SV* rsv, SGVector<type> sg_vec, int typecode)
 template <class type>
 static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
 {
-    pdl* it = SvPDLV(obj);
-    it = pdl_get_convertedpdl(it, typecode);
-    pdl_make_physical(it); /* Wasteful but needed */
-    if(!(it->state && PDL_ALLOCATED)) {
-      warn("could not allocate PDL (rectangular) matrix memory");
-      return false;
-    }
-    //pdl *pdl_hard_copy(pdl *src) src to a new...
-    //PTZ120928 shall I reference it? as it->data might be reuseable! by sg_matrix indeed
-    //something like incREF(it->datasv);
-    //also  make use of it->typecode and typecode, and type;
-    //pdl *pdl_get_convertedpdl(pdl *old,int type) {    //it->datatype = typecode;
-    SvREFCNT_inc(it->datasv); // so it would need to e free later? or we cannot avoid the copy?
-    //PTZ121011 dims seems to be transposed from normal order
-    sg_matrix = shogun::SGMatrix<type>((type*) it->data, it->dims[1], it->dims[0], true);    
-    return true;
+  pdl* it = if_piddle(obj);
+  it = pdl_get_convertedpdl(it, typecode);
+  PDL->make_physical(it); /* Wasteful but needed */
+  if(!PDL_ENSURE_ALLOCATED(it)) {
+    warn("could not allocate PDL (rectangular) matrix memory");
+    return false;
+  }
+  //pdl *pdl_hard_copy(pdl *src) src to a new...
+  //PTZ120928 shall I reference it? as it->data might be reuseable! by sg_matrix indeed
+  //something like incREF(it->datasv);
+  //also  make use of it->typecode and typecode, and type;
+  //pdl *pdl_get_convertedpdl(pdl *old,int type) {    //it->datatype = typecode;
+  //SvREFCNT_inc(it->datasv);
+  // so it would need to e free later with shogun ?? or we cannot avoid the copy?
+  // checkout the SG_MALLOC
+  //PTZ121011 dims seems to be transposed from normal order
+
+  void* data = get_copy(PDL_REPRP(it), sizeof(type) * it->nvals);
+  sg_matrix = shogun::SGMatrix<type>((type*) data, it->dims[1], it->dims[0], true);    
+  return true;
 }
 
 
@@ -518,11 +488,12 @@ static bool matrix_to_pdl(SV* rsv, SGMatrix<type> sg_matrix, int typecode)
   PDL->setdims(it, dims, 2);
   it->datatype = typecode;
   PDL->allocdata(it);
-  if(!it->data) {
+  void* data = PDL_REPRP(it);
+  if(!data) {
     PDL->destroy(it);
     return false;
   }
-  memcpy(it->data, sg_matrix.matrix, clen);
+  memcpy((type*) data, sg_matrix.matrix, clen);
   PDL->SetSV_PDL(rsv, it);
   return true;
 }
@@ -557,8 +528,8 @@ static bool array_from_pdl(SGNDArray<type>& sg_array, SV* obj, int typecode)
 {
     int level = 0;
     
-    pdl* it = SvPDLV(obj);
-    pdl_make_physdims(it);
+    pdl* it = PDL->SvPDLV(obj);
+    PDL->make_physdims(it);
 
     int32_t ndims_pdl = it->ndims; //could try pdl::getndims(it)
     int32_t* dims_sg = SG_MALLOC(int32_t, ndims_pdl);
@@ -584,18 +555,18 @@ static bool array_from_pdl(SGNDArray<type>& sg_array, SV* obj, int typecode)
       inds[i] = 0;
     }
 
-    pdl_make_physdims(it);
+    PDL->make_physdims(it);
     PDL_Long nvals_pdl = it->nvals;
     
     //from set_datatype
-    pdl_make_physical(it); /* Wasteful because linearise the array*/
+    PDL->make_physical(it); /* Wasteful because linearise the array*/
     if(it->trans) {
       pdl_destroytransform(it->trans, 1);
     }
     /*     if(! (a->state && PDL_NOMYDIMS)) { */
     pdl_converttype(&it, typecode, PDL_PERM); //_TMP?
 
-    pdl_make_physvaffine(it);    
+    //pdl_make_physvaffine(it);    
     while(!stop) {
       pdl_val = pdl_at(data_pdl, it->datatype, inds, dims_pdl, incs_pdl, offs_pdl, ndims_pdl);
       //if(badflag && pdl_val == pdl_badval) {
@@ -645,83 +616,83 @@ static bool array_from_pdl(SGNDArray<type>& sg_array, SV* obj, int typecode)
 #endif
 
 #if 0
-    /* Check if is a list */
-    if (!list || PyList_Check(list) || PyList_Size(list)==0)
-    {
-        int32_t size=PyList_Size(list);
-        shogun::SGString<type>* strings=SG_MALLOC(shogun::SGString<type>, size);
+/* Check if is a list */
+if (!list || PyList_Check(list) || PyList_Size(list)==0)
+  {
+    int32_t size=PyList_Size(list);
+    shogun::SGString<type>* strings=SG_MALLOC(shogun::SGString<type>, size);
 
-        int32_t max_len=0;
-        for (int32_t i=0; i<size; i++)
-        {
-            new (&strings[i]) SGString<type>();
-            SV *o = PyList_GetItem(list,i);
-            if (typecode == NPY_STRING || typecode == NPY_UNICODE)
-            {
-                if (PyUnicode_Check(o))
-				if (PyString_Check(o))
+    int32_t max_len=0;
+    for (int32_t i=0; i<size; i++)
+      {
+	new (&strings[i]) SGString<type>();
+	SV *o = PyList_GetItem(list,i);
+	if (typecode == NPY_STRING || typecode == NPY_UNICODE)
+	  {
+	    if (PyUnicode_Check(o))
+	      if (PyString_Check(o))
                 {
 
-					int32_t len = PyUnicode_GetSize((SV*) o);
-    				const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<SV*>(o)));
-                    int32_t len = PyString_Size(o);
-                    const char* str = PyString_AsString(o);
-					max_len=shogun::CMath::max(len,max_len);
-                    strings[i].slen=len;
-                    strings[i].string=NULL;
+		  int32_t len = PyUnicode_GetSize((SV*) o);
+		  const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<SV*>(o)));
+		  int32_t len = PyString_Size(o);
+		  const char* str = PyString_AsString(o);
+		  max_len=shogun::CMath::max(len,max_len);
+		  strings[i].slen=len;
+		  strings[i].string=NULL;
 
-                    if (len>0)
+		  if (len>0)
                     {
-                        strings[i].string=SG_MALLOC(type, len);
-                        memcpy(strings[i].string, str, len);
+		      strings[i].string=SG_MALLOC(type, len);
+		      memcpy(strings[i].string, str, len);
                     }
                 }
-                else
+	      else
                 {
-                    PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
+		  PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
 
-                    for (int32_t j=0; j<i; j++)
-                        strings[i].~SGString<type>();
-                    SG_FREE(strings);
-                    return false;
+		  for (int32_t j=0; j<i; j++)
+		    strings[i].~SGString<type>();
+		  SG_FREE(strings);
+		  return false;
                 }
-            }
-            else
-            {
-                if (is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
-                {
-                    int is_new_object=0;
-                    SV* array = make_contiguous(o, &is_new_object, 1, typecode);
-                    if (!array)
-                        return false;
+	  }
+	else
+	  {
+	    if (is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
+	      {
+		int is_new_object=0;
+		SV* array = make_contiguous(o, &is_new_object, 1, typecode);
+		if (!array)
+		  return false;
 
-                    type* str=(type*) PyArray_BYTES(array);
-                    int32_t len = PyArray_DIM(array,0);
-                    max_len=shogun::CMath::max(len,max_len);
+		type* str=(type*) PyArray_BYTES(array);
+		int32_t len = PyArray_DIM(array,0);
+		max_len=shogun::CMath::max(len,max_len);
 
-                    strings[i].slen=len;
-                    strings[i].string=NULL;
+		strings[i].slen=len;
+		strings[i].string=NULL;
 
-                    if (len>0)
-                    {
-                        strings[i].string=SG_MALLOC(type, len);
-                        memcpy(strings[i].string, str, len*sizeof(type));
-                    }
+		if (len>0)
+		  {
+		    strings[i].string=SG_MALLOC(type, len);
+		    memcpy(strings[i].string, str, len*sizeof(type));
+		  }
 
-                    if (is_new_object)
-                        Py_DECREF(array);
-                }
-                else
-                {
-                    PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
+		if (is_new_object)
+		  Py_DECREF(array);
+	      }
+	    else
+	      {
+		PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
 
-                    for (int32_t j=0; j<i; j++)
-                        strings[i].~SGString<type>();
-                    SG_FREE(strings);
-                    return false;
-                }
-            }
-        }
+		for (int32_t j=0; j<i; j++)
+		  strings[i].~SGString<type>();
+		SG_FREE(strings);
+		return false;
+	      }
+	  }
+      }
 
         SGStringList<type> sl;
         sl.strings=strings;
@@ -736,37 +707,12 @@ static bool array_from_pdl(SGNDArray<type>& sg_array, SV* obj, int typecode)
         PyErr_SetString(PyExc_TypeError,"not a/empty list");
         return false;
     }
-#endif
- 
 
-
-template <class type>
-static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode)
-{
-  if(is_array(sv)) {
-    AV* l_av = (AV*) SvRV(sv);   /* dereference */
-    int l_sz = av_len(l_av) + 1;
-    int32_t max_len = 0;
-    shogun::SGString<type>* l_ss = SG_MALLOC(shogun::SGString<type>, l_sz);
-    for (int32_t i = 0; i <= l_sz; i++) {
-      STRLEN el_len;
-      const char* el_str;
-      SV** el_psv = av_fetch(l_av, i, 0);
-      new (&l_ss[i]) SGString<type>();
-      el_str = SvPV(*el_psv, el_len);
-      //PTZ121002 free *el_psv?
-      l_ss[i].slen = el_len;
-      l_ss[i].string = NULL;
-      if (el_len > 0) {
-	l_ss[i].string = SG_MALLOC(type, el_len);
-	memcpy(l_ss[i].string, el_str, el_len);
-      }
-    }
-    return true;
-  } else if(is_piddle(sv)) {
     shogun::SGString<type>* l_ss;
     int l_sz;
+
     int32_t max_len = 0;
+
     PDL_Long * inds;
     PDL_Long * incs;
     PDL_Long offs;
@@ -778,28 +724,26 @@ static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode
     
     SV *sv;
     SV** pdl_val;
-    SV** data_psv;
-
-    pdl* i_pdl = SvPDLV(sv);
+    SV** data_psv = (SV**) data;
 
     //nelem
-    pdl_make_physdims(i_pdl);
+    PDL->make_physdims(i_pdl);
 
     //list_c
-    //pdl_make_physavaffine(i_pdl);
+    //PDL->make_physavaffine(i_pdl);
 
     //SV* pdl_core_listref_c(pdl* x)
-    inds = (PDL_Long*) pdl_malloc(sizeof(PDL_Long) * i_pdl->ndims); /* GCC -> on stack :( */
-    data = PDL_REPRP(i_pdl);
-    data_psv = (SV**) data;
+    int inds = (PDL_Long*) pdl_malloc(sizeof(PDL_Long) * i_pdl->ndims); /* GCC -> on stack :( */
+    void* data = PDL_REPRP(i_pdl);
+
+    
     incs = (PDL_VAFFOK(i_pdl) ? i_pdl->vafftrans->incs : i_pdl->dimincs);
     offs = PDL_REPROFFS(i_pdl);
     l_sz = i_pdl->nvals;
     l_ss = SG_MALLOC(shogun::SGString<type>, l_sz);
 
-
-    lind=0;
-    for(ind=0; ind < i_pdl->ndims; ind++) inds[ind] = 0;
+    lind = 0;
+    for(int ind=0; ind < i_pdl->ndims; ind++) inds[ind] = 0;
     while(!stop && lind < l_sz) {
       STRLEN el_len;
       const char* el_str;
@@ -808,6 +752,7 @@ static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode
       int i = pdl_get_offset(inds, i_pdl->dims, incs, offs, i_pdl->ndims);
       //cast
       //pdl_val shall be SVpv references...
+      
       if(SvROK(data_psv[i]) && (SvTYPE(SvRV(data_psv[i])) == SVt_PVMG)) {
 	el_pv = SvRV((SV*) data_psv[i]);
 	el_str = SvPV(el_pv, el_len);
@@ -815,7 +760,7 @@ static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode
 	el_len = 0;
       }
       //el_psv = PTR2RV(pdl_val);
-      new (&l_ss[lind]) SGString<type>();
+      new(&l_ss[lind]) SGString<type>();
       //PTZ121002 free *el_psv?
       l_ss[i].slen = el_len;
       l_ss[i].string = NULL;
@@ -823,8 +768,6 @@ static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode
 	l_ss[i].string = SG_MALLOC(type, el_len);
 	memcpy(l_ss[i].string, el_str, el_len);
       }
-
-
       lind++;
       stop = 1;
       for(ind = 0; ind < i_pdl->ndims; ind++) {
@@ -836,13 +779,155 @@ static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode
       }
     }
 
+#endif
+#if 0
+      if(SvROK(datasv[i]) && (SvTYPE(SvRV(data_psv[i])) == SVt_PVMG)) {
+	//pdl_val shall be SVpv references...
+	el_pv = SvRV((SV*) data_psv[i]);
+	el_str = SvPV(el_pv, el_len);
+      }
+      //el_psv = PTR2RV(pdl_val);
+      //PTZ121002 free *el_psv?
+      //pdl_val = cast<SV**>(pdl_at(data, x->datatype, inds, x->dims, incs, offs, x->ndims));
 
+
+    //list_c
+    //pdl_make_physavaffine(i_pdl);
+
+    //SV* pdl_core_listref_c(pdl* x)
+
+    //double pdl_get(pdl *it,int *inds);//quite inefficient!
+
+
+#endif
+
+ 
+
+
+template <class type>
+static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode)
+{
+  pdl* i_pdl = if_piddle(sv);
+  //  it = pdl_get_convertedpdl(it, typecode);
+  if(i_pdl) {
+    //PTZ121011 I can see it is not good!!
+    // datasv ->data , array of pv*, values ???
+    // how does it translates with avaffine?
+    //do I need to sacrify dims[-1] and stuff it into the StringList?
+    //List is actually a vector...
+    //nelem
+    //PDL->make_physdims(i_pdl);
+    PDL->make_physical(i_pdl); /* Wasteful*/  
+    if(!PDL_ENSURE_ALLOCATED(i_pdl)) {
+      pdl_dump(i_pdl);
+      return false;
+    }
+    void* data = PDL_REPRP(i_pdl);    
+    PDL_Long* incs = (PDL_VAFFOK(i_pdl) ? i_pdl->vafftrans->incs : i_pdl->dimincs);
+    PDL_Long offs = PDL_REPROFFS(i_pdl);
+    SV* datasv = (SV*) i_pdl->datasv;
+
+    int l_sz = i_pdl->nvals;
+    shogun::SGString<type>* l_ss = SG_MALLOC(shogun::SGString<type>, l_sz);
+    if(!l_ss) {
+      return false;
+    }
+    PDL_Long* inds = (PDL_Long*) pdl_malloc(sizeof(PDL_Long) * i_pdl->ndims); /* GCC -> on stack :( */
+    if(!inds) {
+      SG_FREE(l_ss);
+      return false;
+    }
+    for(int i = 0; i < i_pdl->ndims; i++) inds[i] = 0;
+
+    int lind = 0;
+    int stop = 0;
+    while(!stop && lind < l_sz) {
+      STRLEN el_len = 0;
+      const char* el_str;
+      SV* el_pv;
+      int i = pdl_get_offset(inds, i_pdl->dims, incs, offs, i_pdl->ndims);
+      if(i >= l_sz) {
+	warn("offset error in string conversion::bayling out");
+	for(int32_t j = 0; j < lind; j++)
+	  l_ss[j].~SGString<type>();
+	SG_FREE(l_ss);
+	//free(inds);
+	return false;
+      }
+#if 0
+      if(datasv) {
+	if(SvOK(datasv) && (SvTYPE(datasv) == SVt_PVMG)) {
+	  el_pv =  datasv;
+	  el_str = SvPV(el_pv, el_len);
+	} else
+	if(SvROK(datasv) && (SvTYPE(SvRV(datasv)) == SVt_PVMG)) {
+	  el_pv = SvRV((SV*) datasv);
+	  el_str = SvPV(el_pv, el_len);	
+	}
+      }
+#endif
+      //PTZ121011 still not working...vector 0 does not give "" nescesarely?
+      el_str = (char*) data + i;
+      el_len = strnlen(el_str, l_sz);
+
+      new(&l_ss[lind]) SGString<type>();
+      l_ss[lind].slen = el_len;
+      l_ss[lind].string = NULL;
+      if(el_len > 0) {
+	l_ss[lind].string = SG_MALLOC(type, el_len);
+	if(!l_ss[lind].string) {
+	  for(int32_t j = 0; j <= lind; j++)
+	    l_ss[j].~SGString<type>();
+	  SG_FREE(l_ss);
+	  //free(inds);
+	  return false;	  
+	}
+	memcpy(l_ss[lind].string, el_str, el_len);
+      }
+      lind++;
+      stop = 1;
+      //PTZ121011 i have got he feeling a dim needs to be sacrified
+      // most likely the last one holds max(len) of strings.
+      //PTZ121011 might have to transpose this algo
+      for(int n = 0; n < i_pdl->ndims; n++) {
+	if(++(inds[n]) >= i_pdl->dims[n]) {
+	  inds[n] = 0;
+	} else {
+	  stop = 0;
+	  break;
+	}
+      }
+    }
+    //free(inds);
     return true;
-  } else { /*scalar string*/
-    warn("not a/empty list");
-    return false;
   }
 
+#if 0
+    //PTZ121011 pure perl, but not used create another typemap...like string_from_perl
+    else if(is_array(sv)) {
+      AV* l_av = (AV*) SvRV(sv);   /* dereference */
+      int l_sz = av_len(l_av) + 1;
+      int32_t max_len = 0;
+      shogun::SGString<type>* l_ss = SG_MALLOC(shogun::SGString<type>, l_sz);
+      for (int32_t i = 0; i <= l_sz; i++) {
+	STRLEN el_len;
+	const char* el_str;
+	SV** el_psv = av_fetch(l_av, i, 0);
+	new (&l_ss[i]) SGString<type>();
+	el_str = SvPV(*el_psv, el_len);
+	//PTZ121002 free *el_psv?
+	l_ss[i].slen = el_len;
+	l_ss[i].string = NULL;
+	if (el_len > 0) {
+	  l_ss[i].string = SG_MALLOC(type, el_len);
+	  memcpy(l_ss[i].string, el_str, el_len);
+	}
+      }
+      return true;
+    }
+#endif
+
+  return false;
 }
 
 
@@ -923,11 +1008,11 @@ static bool string_to_pdl(SV* rsv, SGStringList<type> sg_strings, int typecode)
   //SetSV_PDL(*psv, it_pdl);
 
   dims_pdl[0] = num;
-  pdl_setdims(i_pdl, dims_pdl, 1);
+  PDL->setdims(i_pdl, dims_pdl, 1);
   //pdl_makescratchhash(pdl *ret,double data, int datatype)
   //pdl_set_type();
 
-  pdl_make_physvaffine( i_pdl );
+  //pdl_make_physvaffine( i_pdl );
   inds_pdl = (PDL_Long*) pdl_malloc( sizeof( PDL_Long ) * i_pdl->ndims);
   data_pdl = PDL_REPRP(i_pdl);
   xx_pdl = (SV**) data_pdl;
@@ -1456,7 +1541,9 @@ static bool spvector_to_pdl(SV* rsv, SGSparseVector<type> sg_vector, int typecod
     break;
   }
 }
+
 #if 0
+//PTZ121011 I believe swigperl has its own?
 %typemap(typecheck) const char* 
 {
   $1 = is_utf8_char($INPUT);
@@ -1465,9 +1552,7 @@ static bool spvector_to_pdl(SV* rsv, SGSparseVector<type> sg_vector, int typecod
 //PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<SV*>($input)));
 %typemap(in) const char* 
 {
-  if(is_utf8_char($input))
-    $1 = newSVpvs_flags($input, 0);
-  else
+  if(!($1 = newSVpvs_flags($input, 0)))
     SWIG_fail;
 }
 %typemap(freearg) const char* 
@@ -1665,7 +1750,7 @@ TYPEMAP_INND(SV*,	    PDL_OBJECT)
 %enddef
 
 TYPEMAP_STRINGFEATURES_IN(bool,          PDL_BOOL)
-TYPEMAP_STRINGFEATURES_IN(char,          PDL_UNICODE)
+TYPEMAP_STRINGFEATURES_IN(w_char,        PDL_UNICODE)
 TYPEMAP_STRINGFEATURES_IN(char,          PDL_STRING)
 TYPEMAP_STRINGFEATURES_IN(uint8_t,       PDL_UINT8)
 TYPEMAP_STRINGFEATURES_IN(int16_t,       PDL_INT16)

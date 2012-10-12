@@ -21,6 +21,41 @@
     //SVt_PDLV was not declared in this scope
     //is this a piddle?    SvGETMAGIC(a);
     //return((SvROK(a) && SvTYPE(SvRV(a)) == SVt_PDLV) ? true : false);
+#if 0
+  char *objname = "PDL"; /* XXX maybe that class should actually depend on the value set
+                            by pp_bless ? (CS) */
+  HV *bless_stash = 0;
+  SV *parent = 0;
+  int   nreturn;
+  SV *y_SV;
+  pdl  *x;
+  pdl  *shift;
+  pdl  *y;
+  if (SvROK(ST(0)) && ((SvTYPE(SvRV(ST(0))) == SVt_PVMG) || (SvTYPE(SvRV(ST(0))) == SVt_PVHV))) {
+    parent = ST(0);
+    if (sv_isobject(parent))
+      objname = HvNAME((bless_stash = SvSTASH(SvRV(ST(0)))));  PDL_COMMENT("The package to bless output vars into is taken from the first input var")
+  }
+
+    nreturn = 1;
+    x = PDL->SvPDLV(ST(0));
+    shift = PDL->SvPDLV(ST(1));
+    if (strcmp(objname,"PDL") == 0) { PDL_COMMENT("shortcut if just PDL")
+       y_SV = sv_newmortal();
+       y = PDL->null();
+       PDL->SetSV_PDL(y_SV,y);
+       if (bless_stash) y_SV = sv_bless(y_SV, bless_stash);
+    } else {
+       PUSHMARK(SP);
+       XPUSHs(sv_2mortal(newSVpv(objname, 0)));
+       PUTBACK;
+       perl_call_method("initialize", G_SCALAR);
+       SPAGAIN;
+       y_SV = POPs;
+       PUTBACK;
+       y = PDL->SvPDLV(y_SV);
+#endif
+
 
   static pdl* if_piddle(SV* a) {
     pdl* it = 0;
