@@ -219,20 +219,22 @@ sub _evaluate_pie
     $pie->set_features($feats->{'train'});
     $pie->train();
 
-    my $fun=*{$indata->{$prefix.'name'}.'Kernel'};
-    my $kernel=$fun->($feats->{'train'}, $feats->{'train'}, $pie);
-    my $km_train=max(abs(
+    my $fun = eval('modshogun::' . $indata->{$prefix.'name'}.'Kernel');
+    my $kernel = $fun->new($feats->{'train'}, $feats->{'train'}, $pie);
+    my $km_train = max(abs(
 			 $indata->{$prefix.'matrix_train'}
 			 -$kernel->get_kernel_matrix())->flat);
 
     $kernel->init($feats->{'train'}, $feats->{'test'});
-    $pie->set_features(feats->{'test'});
-    my $km_test=max(abs(
+    $pie->set_features($feats->{'test'});
+    my $km_test = max(abs(
 			$indata->{$prefix.'matrix_test'}
 			-$kernel->get_kernel_matrix())->flat);
-    my $classified=max(abs(
+  
+#PTZ121013 did not find get_confidences() anywhere in Labels it disappeared!
+    my $classified = max(abs(
 		$pie->apply()->get_confidences()
-			   -$indata->{'classifier_classified'}));
+			   - &pdl($indata->{'classifier_classified'})));
     
     return &util::check_accuracy(
 	$indata->{$prefix.'accuracy'}
@@ -246,40 +248,39 @@ sub _evaluate_top_fisher
     my ($indata, $prefix) = @_;
 
     my %feats;
-    my $wordfeats=&util::get_features($indata, $prefix);
+    my $wordfeats = &util::get_features($indata, $prefix);
 
-    my $pos_train=&modshogun::HMM($wordfeats{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
+    my $pos_train = modshogun::HMM->new($wordfeats->{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
 		       $indata->{$prefix.'pseudo'});
     $pos_train->train();
     $pos_train->baum_welch_viterbi_train($modshogun::BW_NORMAL);
-    my $neg_train= modshogun::HMM->new($wordfeats{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
+    my $neg_train= modshogun::HMM->new($wordfeats->{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
 		       $indata->{$prefix.'pseudo'});
     $neg_train->train();
     $neg_train->baum_welch_viterbi_train($modshogun::BW_NORMAL);
     my $pos_test= modshogun::HMM->new($pos_train);
-    $pos_test->set_observations($wordfeats{'test'});
+    $pos_test->set_observations($wordfeats->{'test'});
     my $neg_test= modshogun::HMM->new($neg_train);
-    $neg_test->set_observations($wordfeats{'test'});
+    $neg_test->set_observations($wordfeats->{'test'});
 
     if($indata->{$prefix.'name'} eq 'TOP'){
-	$feats->{'train'}= modshogun::TOPFeatures->new(10, $pos_train, $neg_train, false, false);
-	$feats->{'test'}= modshogun::TOPFeatures->new(10, $pos_test, $neg_test, false, false);
+	$feats{'train'} = modshogun::TOPFeatures->new(10, $pos_train, $neg_train, false, false);
+	$feats{'test'}  = modshogun::TOPFeatures->new(10, $pos_test, $neg_test, false, false);
     }else{
-	$feats->{'train'}= modshogun::FKFeatures->new(10, $pos_train, $neg_train);
-	$feats->{'train'}->set_opt_a(-1); #estimate prior
-	$feats->{'test'}= modshogun::FKFeatures->new(10, $pos_test, $neg_test);
-	$feats->{'test'}->set_a($feats->{'train'}->get_a()); #use prior from training data
+	$feats{'train'} = modshogun::FKFeatures->new(10, $pos_train, $neg_train);
+	$feats{'train'}->set_opt_a(-1); #estimate prior
+	$feats{'test'} = modshogun::FKFeatures->new(10, $pos_test, $neg_test);
+	$feats{'test'}->set_a($feats{'train'}->get_a()); #use prior from training data
     }
-    $prefix='kernel_';
-    my $args=&util::get_args($indata, $prefix);
-    my $kernel= modshogun::PolyKernel->new($feats->{'train'}, $feats->{'train'}, $args);
-#	kernel=PolyKernel(*args)
-#	kernel.init(feats['train'], feats['train'])
-    my $km_train=max(abs(
+    $prefix = 'kernel_';
+    my $args = &util::get_args($indata, $prefix);
+    my $kernel = modshogun::PolyKernel->new($feats{'train'}, $feats{'train'}, @$args);
+    #$kernel->init($feats{'train'}, $feats{'train'});
+    my $km_train = max(abs(
 		$indata->{$prefix.'matrix_train'}
 			 -$kernel->get_kernel_matrix())->flat);
-    $kernel->init($feats->{'train'}, $feats->{'test'});
-    my $km_test=max(abs(
+    $kernel->init($feats{'train'}, $feats{'test'});
+    my $km_test = max(abs(
 		$indata->{$prefix.'matrix_test'}
 			-$kernel->get_kernel_matrix())->flat);
 
