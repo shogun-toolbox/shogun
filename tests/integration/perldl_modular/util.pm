@@ -37,11 +37,11 @@ sub check_accuracy {
     }
     printf(join(', ', @output) . ' <--- accuracy: %e', $accuracy);
     foreach my $val (values(%$kwargs)) {
-	if($val>$acc) {
-	    return false;
+	if($val > $acc) {
+	    return 0;#false
 	}
     }
-    return true;
+    return 1;#true
 }
 
 sub get_args {
@@ -74,6 +74,12 @@ sub get_args {
 	    #except TypeError: # no bool
 	    if($@) {
 		$args[$idx] = $indata->{$i};
+	    }
+	    #False  and True...
+	    if($args[$idx] eq 'False') {
+		$args[$idx] = 0;#$modshogun::False;
+	    } elsif($args[$idx] eq 'True') {
+		$args[$idx] = 1;#$modshogun::True;
 	    }
 	}
     }
@@ -174,9 +180,10 @@ sub get_feats_string_complex
     my $data_train = $indata->{$prefix.'data_train'};
     my $data_test  = $indata->{$prefix.'data_test'};
     if($alphabet == $modshogun::CUBE) # data_{train,test} ints due to test.py:_read_matrix
-    { #map { $a($_ - 1) .= $_; } (1..$a->nelem);    # Lots of little ops
-	map { $data_train->nslice($_) = chr($data_train->nslice($_)) } (0..$data_train->nelem - 1);
-	map { $data_test->nslice($_) = chr($data_test->nslice($_)) } (0..$data_test->nelem - 1);
+    { ##map { $a($_ - 1) .= $_; } (1..$a->nelem);    # Lots of little ops
+	#map { $data_train->nslice($_) = chr($data_train->nslice($_)) } (0..$data_train->nelem - 1);
+	#map { $data_test->nslice($_) = chr($data_test->nslice($_)) } (0..$data_test->nelem - 1);
+	
     }
     $feats{'train'}->set_features($data_train);
     $feats{'test'}->set_features($data_test);
@@ -195,7 +202,7 @@ sub get_feats_string_complex
 
     if( $indata->{$prefix.'feature_type'} eq 'Word' or 
 	$indata->{$prefix.'feature_type'} eq 'Ulong'){
-	my $name='modshogun::' . 'Sort' .$indata->{$prefix.'feature_type'}.'String';
+	my $name = 'Sort' .$indata->{$prefix.'feature_type'}.'String';
 	return &add_preprocessor($name, \%feats);
     } else {
 	return \%feats;
@@ -228,7 +235,7 @@ sub add_preprocessor
     my ($name, $feats, $args) = @_;
     #my $fun=*{$name};
     #my $preproc=*{$name.'::new'}->($name, @$args);
-    my $preproc=eval($name)->new(@$args);
+    my $preproc=eval('modshogun::' . $name)->new(@$args);
     $preproc->init($feats->{'train'});
     $feats->{'train'}->add_preprocessor($preproc);
     $feats->{'train'}->apply_preprocessor();

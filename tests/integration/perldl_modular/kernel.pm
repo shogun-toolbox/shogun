@@ -214,7 +214,7 @@ sub _evaluate_pie
     my ($indata, $prefix) = @_;
     my $pie=modshogun::PluginEstimate->new();
     my $feats=&util::get_features($indata, $prefix);
-    my $labels=modshogun::BinaryLabels->new(&double($indata->{'classifier_labels'}));
+    my $labels=modshogun::BinaryLabels->new($indata->{'classifier_labels'});
     $pie->set_labels($labels);
     $pie->set_features($feats->{'train'});
     $pie->train();
@@ -234,7 +234,7 @@ sub _evaluate_pie
 #PTZ121013 did not find get_confidences() anywhere in Labels it disappeared!
     my $classified = max(abs(
 		$pie->apply()->get_confidences()
-			   - &pdl($indata->{'classifier_classified'})));
+			   - $indata->{'classifier_classified'}));
     
     return &util::check_accuracy(
 	$indata->{$prefix.'accuracy'}
@@ -264,8 +264,8 @@ sub _evaluate_top_fisher
     $neg_test->set_observations($wordfeats->{'test'});
 
     if($indata->{$prefix.'name'} eq 'TOP'){
-	$feats{'train'} = modshogun::TOPFeatures->new(10, $pos_train, $neg_train, false, false);
-	$feats{'test'}  = modshogun::TOPFeatures->new(10, $pos_test, $neg_test, false, false);
+	$feats{'train'} = modshogun::TOPFeatures->new(10, $pos_train, $neg_train, 0, 0);
+	$feats{'test'}  = modshogun::TOPFeatures->new(10, $pos_test, $neg_test, 0, 0);
     }else{
 	$feats{'train'} = modshogun::FKFeatures->new(10, $pos_train, $neg_train);
 	$feats{'train'}->set_opt_a(-1); #estimate prior

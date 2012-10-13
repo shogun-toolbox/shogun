@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash
 
 if test -z "$PERL" 
 then
@@ -23,7 +23,7 @@ function test_all () {
 	output=`./test_one.pl "$file"`
 	ret=$?
 
-	if [ $ret -eq 0 ] ; then
+	if [ $ret -eq 1 ] ; then
 	    echo 'OK'
 	else
 	    echo 'ERROR'

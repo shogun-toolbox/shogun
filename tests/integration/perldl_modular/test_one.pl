@@ -19,7 +19,6 @@ use preprocessor;
 #...
 our @SUPPORTED=('kernel', 'distance', 'classifier', 'clustering', 'distribution',
 		'regression', 'preprocessor');
-@SUPPORTED=('classifier', 'kernel');
 
 #use Shogun qw(Math_init_random);
 use modshogun;
@@ -78,7 +77,14 @@ sub _test_mfile {
 	    $indata{$param} = &_read_matrix($line); 
 	} else {
 	    unless($line =~ /'/) {
-		($indata{$param}) = $line =~ m/=(.*)$/;
+		my $str_line;
+		if(($str_line) = $line =~ m/=\[(.*)\]$/g) {
+		    $indata{$param} = &pdl(eval($str_line));
+		} elsif(($str_line) = $line =~ m/=\{(.*)\}$/g) {
+		    $indata{$param} = PDL::Char->new(eval($str_line));
+		} else {
+		    ($indata{$param}) = $line =~ m/=(.*)$/;
+		}
 	    } else {
 		($indata{$param}) = $line =~ m/='(.*)'/;
 	    }
@@ -86,12 +92,11 @@ sub _test_mfile {
     }
     $mfile->close();
     my $fun = *{$name_fun};
-    
+    my $random = modshogun::Math->new();
     # seed random to constant value used at data file's creation
     &modshogun::Math::init_random($indata{'init_random'});
     #is(&modshogun::Math::get_seed(), $indata{'init_random'});
     #$random->seed($indata{'init_random'});
-    #my $random = &modshogun::Math->new();
     #= &modshogun::Math::random()
     return $fun->(\%indata);
 }
@@ -120,19 +125,24 @@ sub _numberlike {
 }
 sub _read_matrix {
     my $line = shift;
+    my $is_char = 0;
     my ($str_line) = $line =~ m/\[(.*)\]/g;
     unless($str_line) {
 	($str_line) = $line =~ m/\{(.*)\}/g;
+	$is_char = 1;
     }
     my @lines = split(/;/, $str_line);
     my @lis2d;
-    my $is_char = 0;
+
     foreach my $x (@lines) {
 	my @lis;
 	foreach my $y (split(/,/, $x)) {
+	    if($y =~ /'/) {
+		$is_char = 1;	
+	    }
 	    $y =~ s/'//g;
 	    push(@lis, $y);
-	    $is_char ||= (&_stringlike($y) && !&_numberlike($y));
+	    #$is_char ||= (&_stringlike($y) && !&_numberlike($y));
 	}
 	push(@lis2d, \@lis);
     }

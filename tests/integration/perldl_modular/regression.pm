@@ -1,33 +1,35 @@
 package regression;
 use util;
+use PDL;
+use modshogun;
 
 sub _evaluate (indata):
 {
-    my  ($indata) = @_;
-    my $prefix='kernel_';
-    my $feats=&util::get_features($indata, $prefix);
-    my $kargs=&util::get_args($indata, $prefix);
-    my $fun=*{$indata->{$prefix.'name'}.'Kernel'};
-    my $kernel=$fun->($feats->{'train'}, $feats->{'train'}, $kargs);
+    my ($indata) = @_;
+    my $prefix = 'kernel_';
+    my $feats = &util::get_features($indata, $prefix);
+    my $kargs = &util::get_args($indata, $prefix);
+    my $fun = eval('modshogun::' . $indata->{$prefix.'name'}.'Kernel');
+    my $kernel = $fun->new($feats->{'train'}, $feats->{'train'}, @$kargs);
 
     $prefix='regression_';
-    $kernel->parallel()->set_num_threads($indata->{$prefix.'num_threads'});
-    my $rfun=*{$indata->{$prefix.'name'}};
-	if(@_) {#except NameError, e:
-	    warn( "%s is disabled/unavailable!",$indata->{$prefix.'name'});
-	    return false;
+    $kernel->{parallel}->set_num_threads($indata->{$prefix.'num_threads'});
+    my $rfun = eval('modshogun::' . $indata->{$prefix.'name'});
+    if($@) {#except NameError, e:
+	warn( "%s is disabled/unavailable!",$indata->{$prefix.'name'});
+	return false;
     }
-    my $labels=&RegressionLabels(&double($indata->{$prefix.'labels'}));
-    if( $indata->{$prefix.'type'}=='svm') {
-	$regression=$rfun->(
+    my $labels = modshogun::RegressionLabels->new($indata->{$prefix.'labels'});
+    if($indata->{$prefix.'type'} eq 'svm') {
+	$regression = $rfun->new(
 	    $indata->{$prefix.'C'}, $indata->{$prefix.'epsilon'}, $kernel, $labels);
-    }elsif( $indata->{$prefix.'type'} eq 'kernelmachine') {
-	$regression=$rfun->($indata->{$prefix.'tau'}, $kernel, $labels);
+    }elsif($indata->{$prefix.'type'} eq 'kernelmachine') {
+	$regression = $rfun->new($indata->{$prefix.'tau'}, $kernel, $labels);
     }else{
-	    return false;
+	return false;
     }
-    $regression->parallel->set_num_threads($indata->{$prefix.'num_threads'});
-    if( defined($indata->{$prefix.'tube_epsilon'})) {
+    $regression->{parallel}->set_num_threads($indata->{$prefix.'num_threads'});
+    if(defined($indata->{$prefix.'tube_epsilon'})) {
 	$regression->set_tube_epsilon($indata->{$prefix.'tube_epsilon'});
     }
     $regression->train();
@@ -36,7 +38,7 @@ sub _evaluate (indata):
     my $bias=0;
     my $sv=0;
     if(defined($indata->{$prefix.'bias'})) {
-	$bias=abs($regression->get_bias()-$indata->{$prefix.'bias'});
+	$bias = abs($regression->get_bias()-$indata->{$prefix.'bias'});
     }
     if(defined($indata->{$prefix.'alphas'})) {
 	foreach my $item (@{ $regression->get_alphas()->tolist()}) {
