@@ -30,7 +30,7 @@ sub _evaluate {
  my $kargs  = &util::get_args($indata, $prefix);
  my $kernel = $kfun->new(@$kargs);
  if( defined($indata->{$prefix.'normalizer'})) {
-     my $fnorm = *{'modshogun::' . $indata->{$prefix.'normalizer'}};
+     my $fnorm = eval('modshogun::' . $indata->{$prefix.'normalizer'})->new();
      $kernel->set_normalizer($fnorm);
  }
  $kernel->init($feats->{'train'}, $feats->{'train'});

@@ -119,7 +119,7 @@ sub get_feats_simple {
     my $ftrain;
     my $ftest;
     if($ftype eq 'Byte' or $ftype eq 'Char') {
-	my $alphabet=eval('modshogun::' . $indata->{$prefix.'alphabet'});
+	my $alphabet= ${'modshogun::' . $indata->{$prefix.'alphabet'}};
 	$ftrain=eval('modshogun::' . $ftype . 'Features')->new($alphabet);
 	$ftest =eval('modshogun::' . $ftype . 'Features')->new($alphabet);
 	$ftrain->copy_feature_matrix($data_train);
@@ -226,9 +226,10 @@ sub get_feats_wd
 sub add_preprocessor
 {
     my ($name, $feats, $args) = @_;
-    my $fun=*{$name};
-    my $preproc=$fun->($args);
-    my $preproc->init($feats{'train'});
+    #my $fun=*{$name};
+    #my $preproc=*{$name.'::new'}->($name, @$args);
+    my $preproc=eval($name)->new(@$args);
+    $preproc->init($feats->{'train'});
     $feats->{'train'}->add_preprocessor($preproc);
     $feats->{'train'}->apply_preprocessor();
     $feats->{'test'}->add_preprocessor($preproc);
