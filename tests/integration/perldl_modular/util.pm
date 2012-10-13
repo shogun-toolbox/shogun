@@ -68,7 +68,7 @@ sub get_args {
 	    warn( 'Wrong indata data %s: "%s"!' , $ident, $i);
 	}
 	if($i =~ /_distance/) { # DistanceKernel
-	    $args[$idx] = eval($indata->{$i}->());
+	    $args[$idx] = eval('modshogun::' . $indata->{$i})->new();
 	}else{
 	    $args[$idx] = eval($indata->{$i});
 	    #except TypeError: # no bool
@@ -151,8 +151,8 @@ sub get_feats_string {
     my $ftype=$indata->{$prefix.'feature_type'};
     my $alphabet=${'modshogun::' . $indata->{$prefix.'alphabet'}};
     my %feats=(
-	'train'=> eval('modshogun::' .'String'.$ftype.'Features')->new($alphabet)
-	,'test'=> eval('modshogun::' .'String'.$ftype.'Features')->new($alphabet)
+	'train'=> eval('modshogun::' . 'String'.$ftype.'Features')->new($alphabet)
+	,'test'=> eval('modshogun::' . 'String'.$ftype.'Features')->new($alphabet)
 	);
     #$feats{'train'}->set_features($indata->{$prefix.'data_train'}->slice('0:-1,(0)'));
     #$feats{'test'}->set_features($indata->{$prefix.'data_test'}->slice('0:-1,(0)'));

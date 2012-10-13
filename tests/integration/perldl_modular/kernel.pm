@@ -83,9 +83,9 @@ sub _get_subkernels
 sub _evaluate_combined
 {
     my ($indata, $prefix) = @_;
-    my $kernel = &CombinedKernel();
-    my %feats=('train'=> &CombinedFeatures()
-	       , 'test' => &CombinedFeatures()
+    my $kernel = modshogun::CombinedKernel->new();
+    my %feats=('train'=> modshogun::CombinedFeatures->new()
+	       , 'test' => modshogun::CombinedFeatures->new()
 	);
 
     my %subkernels = (&_get_subkernels($indata, $prefix));
@@ -121,10 +121,10 @@ sub _evaluate_auc
     my $feats_subk = &util::get_features($subk, '');
     $subk{'kernel'}->init($feats_subk{'train'}, $feats_subk{'test'});
     my %feats= (
-	'train'=> &WordFeatures($indata->{$prefix.'data_train'}->astype(ushort))
-	, 'test'=> &WordFeatures($indata->{$prefix.'data_test'}->astype(ushort))
+	'train'=> modshogun::WordFeatures->new($indata->{$prefix.'data_train'}->astype(&ushort))
+	, 'test'=> modshogun::WordFeatures->new($indata->{$prefix.'data_test'}->astype(&ushort))
 	);
-    my $kernel=&AUCKernel(10, $subk{'kernel'});
+    my $kernel= modshogun::AUCKernel->new(10, $subk{'kernel'});
 
     $kernel->init($feats{'train'}, $feats{'train'});
     my $km_train=max(abs(
@@ -145,24 +145,44 @@ sub  _evaluate_custom
 {
     my ($indata, $prefix) = @_;
     my %feats=(
-		'train'=> &RealFeatures($indata->{$prefix.'data'}),
-		'test'=> &RealFeatures($indata->{$prefix.'data'})
+		'train'=> modshogun::RealFeatures->new($indata->{$prefix.'data'}),
+		'test'=> modshogun::RealFeatures->new($indata->{$prefix.'data'})
 	    );
 
     my $symdata=$indata->{$prefix.'symdata'};
-    my ($x, $y);
-
+    if(0) {
 #PTZ121005not realy sure about this...
-    my @a;
-    foreach my  $x (0...$symdata->shape()->[1]) {
-	foreach my $y (0...$symdata->shape()->[0]) {
+    my @c;
+    foreach my  $x (0..$symdata->shape()->at(1)-1) {
+	my @r;
+	foreach my $y (0..$symdata->shape()->at(0)-1) {
 	    if($y <= $x) {
-		push(@a, $symdata->[($x, $y)]);
+		push(@r, $symdata->at($x, $y));
 	    }
 	}
+	push(@c, \@r);
     }
-    my $lowertriangle = \@a;
-    my $kernel=&CustomKernel();
+
+    my $lowertriangle = pdl(\@c);
+    }
+    my $ns = $symdata->shape()->at(0);
+    my $lowertriangle = zeroes($ns * ($ns + 1) / 2);
+    $symdata->squaretotri($lowertriangle);
+
+#
+#           if($SIZE (m) != (ns * (ns+1))/2) {
+#               barf("Wrong sized args for squaretotri");
+#            }
+#            threadloop %{
+#                loop(m) %{
+#                       $b () = $a (n0 => mna, n1 => nb);
+#                      mna++; if(mna > nb) {mna = 0; nb ++;}
+#                %}
+#
+#	lowertriangle=array([symdata[(x,y)] for x in xrange(symdata.shape[1])
+#		for y in xrange(symdata.shape[0]) if y<=x])
+
+    my $kernel= modshogun::CustomKernel->new();
     $kernel->set_triangle_kernel_matrix_from_triangle($lowertriangle);
     my $triangletriangle
 	=max(abs(
@@ -192,9 +212,9 @@ sub  _evaluate_custom
 sub _evaluate_pie
 {
     my ($indata, $prefix) = @_;
-    my $pie=&PluginEstimate();
+    my $pie=modshogun::PluginEstimate->new();
     my $feats=&util::get_features($indata, $prefix);
-    my $labels=&BinaryLabels(&double($indata->{'classifier_labels'}));
+    my $labels=modshogun::BinaryLabels->new(&double($indata->{'classifier_labels'}));
     $pie->set_labels($labels);
     $pie->set_features($feats->{'train'});
     $pie->train();
@@ -228,31 +248,31 @@ sub _evaluate_top_fisher
     my %feats;
     my $wordfeats=&util::get_features($indata, $prefix);
 
-    my $pos_train=&HMM($wordfeats{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
+    my $pos_train=&modshogun::HMM($wordfeats{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
 		       $indata->{$prefix.'pseudo'});
     $pos_train->train();
-    $pos_train->baum_welch_viterbi_train($BW_NORMAL);
-    my $neg_train=&HMM($wordfeats{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
+    $pos_train->baum_welch_viterbi_train($modshogun::BW_NORMAL);
+    my $neg_train= modshogun::HMM->new($wordfeats{'train'}, $indata->{$prefix.'N'}, $indata->{$prefix.'M'},
 		       $indata->{$prefix.'pseudo'});
     $neg_train->train();
-    $neg_train->baum_welch_viterbi_train($BW_NORMAL);
-    my $pos_test=&HMM($pos_train);
+    $neg_train->baum_welch_viterbi_train($modshogun::BW_NORMAL);
+    my $pos_test= modshogun::HMM->new($pos_train);
     $pos_test->set_observations($wordfeats{'test'});
-    my $neg_test=&HMM($neg_train);
+    my $neg_test= modshogun::HMM->new($neg_train);
     $neg_test->set_observations($wordfeats{'test'});
 
     if($indata->{$prefix.'name'} eq 'TOP'){
-	$feats->{'train'}=&TOPFeatures(10, $pos_train, $neg_train, false, false);
-	$feats->{'test'}=&TOPFeatures(10, $pos_test, $neg_test, false, false);
+	$feats->{'train'}= modshogun::TOPFeatures->new(10, $pos_train, $neg_train, false, false);
+	$feats->{'test'}= modshogun::TOPFeatures->new(10, $pos_test, $neg_test, false, false);
     }else{
-	$feats->{'train'}=FKFeatures(10, $pos_train, $neg_train);
+	$feats->{'train'}= modshogun::FKFeatures->new(10, $pos_train, $neg_train);
 	$feats->{'train'}->set_opt_a(-1); #estimate prior
-	$feats->{'test'}=&FKFeatures(10, $pos_test, $neg_test);
+	$feats->{'test'}= modshogun::FKFeatures->new(10, $pos_test, $neg_test);
 	$feats->{'test'}->set_a($feats->{'train'}->get_a()); #use prior from training data
     }
     $prefix='kernel_';
     my $args=&util::get_args($indata, $prefix);
-    my $kernel=&PolyKernel($feats->{'train'}, $feats->{'train'}, $args);
+    my $kernel= modshogun::PolyKernel->new($feats->{'train'}, $feats->{'train'}, $args);
 #	kernel=PolyKernel(*args)
 #	kernel.init(feats['train'], feats['train'])
     my $km_train=max(abs(
@@ -263,7 +283,7 @@ sub _evaluate_top_fisher
 		$indata->{$prefix.'matrix_test'}
 			-$kernel->get_kernel_matrix())->flat);
 
-    return util.check_accuracy($indata->{$prefix.'accuracy'}
+    return &util::check_accuracy($indata->{$prefix.'accuracy'}
 			       , {km_train=>$km_train, km_test=>$km_test});
 
 }
