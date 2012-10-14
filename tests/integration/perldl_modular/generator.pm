@@ -33,7 +33,7 @@ sub get_fname
 sub setup_tests($) {
     my ($tests) = @_;
     my $edir = pushd( $example_dir );
-    if(not $#{$tests}) {
+    if($#$tests < 0) {
 	$tests = File::Find::Rule->file()
 	    ->name( '*.t' )
 	    ->in( '.' );

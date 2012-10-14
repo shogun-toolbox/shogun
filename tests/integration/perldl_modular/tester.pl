@@ -35,7 +35,7 @@ sub typecheck
     return($rfa eq $rfb);
 }
 
-#PTZ121006 ther must be better
+#PTZ121006 there must be better ways
 sub compare
 {
     my($a, $b, $tolerance) = @_;
