@@ -439,7 +439,7 @@ perl:
 
   to test if it is working, try:
 	 cd src
-	 LD_LIBRARY_PATH=./libshogun PERLPATH=./perl perl ../examples/documented/perl/graphical/svm_classification.py
+	 LD_LIBRARY_PATH=./libshogun PERLPATH=./perl perl ../examples/documented/perl/graphical/svm_classification.pm
 
 
 object oriented python/swig interface:

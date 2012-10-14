@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -xv
 rm -f error.log
 
 test -n "$LIBRARY_PATH" && LIBRARY_PATH="LIBRARY_PATH=${LIBRARY_PATH}"
