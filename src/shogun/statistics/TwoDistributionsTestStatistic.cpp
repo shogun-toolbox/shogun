@@ -140,3 +140,11 @@ float64_t CTwoDistributionsTestStatistic::compute_threshold(
 
 	return result;
 }
+
+void CTwoDistributionsTestStatistic::set_p_and_q(CFeatures* p_and_q)
+{
+	/* ref before unref to avoid problems when instances are equal */
+	SG_REF(p_and_q);
+	SG_UNREF(m_p_and_q);
+	m_p_and_q=p_and_q;
+}
