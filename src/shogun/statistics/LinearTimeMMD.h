@@ -22,9 +22,11 @@ class CFeatures;
 
 /** @brief This class implements the linear time Maximum Mean Statistic as
  * described in [1]. This statistic is in particular suitable for streaming
- * data. Only the constructor with streaming features is therefore allowed.
- * The class starts and ends the streaming features' underlying parser
- * automatically.
+ * data. Therefore, only streaming features may be passed. To process other
+ * feature types, construct streaming features from these (see constructor
+ * documentations). A blocksize has to be specified that determines how many
+ * examples are processed at once. This should be set as large as available
+ * memory allows to ensure faster computations.
  *
  * The MMD is the distance of two probability distributions \f$p\f$ and \f$q\f$
  * in a RKHS.
@@ -50,7 +52,8 @@ class CFeatures;
  *
  * Along with the statistic comes a method to compute a p-value based on a
  * Gaussian approximation of the null-distribution which is also possible in
- * linear time and constant space. Bootstrapping, is also possible.
+ * linear time and constant space. Bootstrapping, is also possible (no
+ * permutations but new examples will be used here).
  * If unsure which one to use, bootstrapping with 250 iterations always is
  * correct (but slow). When the sample size is large (>1000) at least,
  * the Gaussian approximation is an accurate and much faster choice than
@@ -88,29 +91,21 @@ public:
 	 * @param kernel kernel to use
 	 * @param p streaming features p to use
 	 * @param q streaming features q to use
+	 * @param blocksize size of examples that are processed at once when
+	 * computing statistic/threshold. If larger than m/2, all examples will be
+	 * processed at once. Memory consumption increased linearly in the
+	 * blocksize. Choose as large as possible regarding available memory.
 	 */
 	CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
-			CStreamingFeatures* q, index_t m);
-
-	/** Constructor.
-	 * This throws an error since this way of appended features is not supported
-	 * for linear time MMD. Is here to prevent usage of superclass constructor
-	 * */
-	CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t m);
-
-	/** Constructor.
-	 * This throws an error since normal features are not supported.
-	 * Is here to prevent usage of superclass constructor
-	 */
-	CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
+			CStreamingFeatures* q, index_t m, index_t blocksize=10000);
 
 	virtual ~CLinearTimeMMD();
 
 	/** Computes the squared linear time MMD for the current data. This is an
 	 * unbiased estimate.
 	 *
-	 * Note that this method automatically starts/ends the underlying streaming
-	 * features parser.
+	 * Note that the underlying streaming feature parser has to be started
+	 * before this is called. Otherwise deadlock.
 	 *
 	 * @return squared linear time MMD
 	 */
@@ -153,6 +148,26 @@ public:
 	 * @return variance estimate
 	 */
 	virtual float64_t compute_variance_estimate();
+
+	/** Computes MMD and a linear time variance estimate using an in-place
+	 * method.
+	 *
+	 * @param statistic return parameter for statistic
+	 * @param variance return parameter for variance
+	 */
+	virtual void compute_statistic_and_variance(float64_t& statistic,
+			float64_t& variance);
+
+	/** Mimics bootstrapping for the linear time MMD. However, samples are not
+	 * permutated but constantly streamed and then merged. Usually, this is not
+	 * necessary since there is the Gaussian approximation for the null
+	 * distribution. However, in certain cases this may fail and sampling the
+	 * null distribution might be numerically more stable.
+	 * Ovewrite superclass method that merges samples.
+	 *
+	 * @return vector of all statistics
+	 */
+	virtual SGVector<float64_t> bootstrap_null();
 
 #ifdef HAVE_LAPACK
 	/** Selects optimal kernel weights (if the underlying kernel and features
@@ -197,7 +212,6 @@ public:
 	{
 		m_opt_regularization_eps=opt_regularization_eps;
 	}
-
 #endif //HAVE_LAPACK
 
 	inline virtual const char* get_name() const
@@ -218,6 +232,16 @@ public:
 #endif //HAVE_LAPACK
 
 protected:
+	/** Streaming feature objects that are used instead of merged samples */
+	CStreamingFeatures* m_streaming_p;
+
+	/** Streaming feature objects that are used instead of merged samples*/
+	CStreamingFeatures* m_streaming_q;
+
+	/** Number of examples processed at once, i.e. in one burst */
+	index_t m_blocksize;
+
+#ifdef HAVE_LAPACK
 	/** maximum number of iterations of qp solver */
 	index_t m_opt_max_iterations;
 
@@ -232,9 +256,7 @@ protected:
 
 	/** matrix for selection of kernel weights (static because of libqp) */
 	static SGMatrix<float64_t> m_Q;
-
-	CStreamingFeatures* m_streaming_p;
-	CStreamingFeatures* m_streaming_q;
+#endif //HAVE_LAPACK
 
 };
 
