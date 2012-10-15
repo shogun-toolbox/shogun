@@ -534,3 +534,45 @@ namespace shogun
     %template(RealMatrixFeatures) CMatrixFeatures<float64_t>;
 #endif
 }
+
+/* Templated Class MeanShiftDataGenerator */
+%include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+namespace shogun
+ {
+#ifdef USE_BOOL
+    %template(MeanShiftBoolDataGenerator) CMeanShiftDataGenerator<bool>;
+#endif
+#ifdef USE_CHAR
+    %template(MeanShiftCharDataGenerator) CMeanShiftDataGenerator<char>;
+#endif
+#ifdef USE_UINT8
+    %template(MeanShiftByteDataGenerator) CMeanShiftDataGenerator<uint8_t>;
+#endif
+#ifdef USE_UINT16
+    %template(MeanShiftWordDataGenerator) CMeanShiftDataGenerator<uint16_t>;
+#endif
+#ifdef USE_INT16
+    %template(MeanShiftShortDataGenerator) CMeanShiftDataGenerator<int16_t>;
+#endif
+#ifdef USE_INT32
+    %template(MeanShiftIntDataGenerator)  CMeanShiftDataGenerator<int32_t>;
+#endif
+#ifdef USE_UINT32
+    %template(MeanShiftUIntDataGenerator)  CMeanShiftDataGenerator<uint32_t>;
+#endif
+#ifdef USE_INT64
+    %template(MeanShiftLongIntDataGenerator)  CMeanShiftDataGenerator<int64_t>;
+#endif
+#ifdef USE_UINT64
+    %template(MeanShiftULongIntDataGenerator)  CMeanShiftDataGenerator<uint64_t>;
+#endif
+#ifdef USE_FLOATMAX
+    %template(MeanShiftLongRealDataGenerator) CMeanShiftDataGenerator<floatmax_t>;
+#endif
+#ifdef USE_FLOAT32
+    %template(MeanShiftShortRealDataGenerator) CMeanShiftDataGenerator<float32_t>;
+#endif
+#ifdef USE_FLOAT64
+    %template(MeanShiftRealDataGenerator) CMeanShiftDataGenerator<float64_t>;
+#endif
+}
