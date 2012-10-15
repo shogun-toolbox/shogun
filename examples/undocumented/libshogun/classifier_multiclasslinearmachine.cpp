@@ -12,13 +12,8 @@
 
 using namespace shogun;
 
-int main(int argc, char** argv)
+void test()
 {
-	int32_t num_vectors = 0;
-	int32_t num_feats   = 2;
-
-	init_shogun_with_defaults();
-
 	// Prepare to read a file for the training data
 	char fname_feats[]  = "../data/fm_train_real.dat";
 	char fname_labels[] = "../data/label_train_multiclass.dat";
@@ -27,39 +22,27 @@ int main(int argc, char** argv)
 	SG_REF(ffeats_train);
 	SG_REF(flabels_train);
 
-	CStreamingDenseFeatures< float64_t >* stream_features = 
+	CStreamingDenseFeatures< float64_t >* stream_features =
 		new CStreamingDenseFeatures< float64_t >(ffeats_train, false, 1024);
 
-	CStreamingDenseFeatures< float64_t >* stream_labels = 
+	CStreamingDenseFeatures< float64_t >* stream_labels =
 		new CStreamingDenseFeatures< float64_t >(flabels_train, true, 1024);
 
 	SG_REF(stream_features);
 	SG_REF(stream_labels);
 
-	// Create a matrix with enough space to read all the feature vectors
-	SGMatrix< float64_t > mat = SGMatrix< float64_t >(num_feats, 1000);
-
-	// Read the values from the file and store them in mat
-	SGVector< float64_t > vec;
 	stream_features->start_parser();
-	while ( stream_features->get_next_example() )
-	{
-		vec = stream_features->get_vector();
 
-		for ( int32_t i = 0 ; i < num_feats ; ++i )
-			mat.matrix[num_vectors*num_feats + i] = vec[i];
+	// Read the values from the file and store them in features
+	CDenseFeatures< float64_t >* features=
+			(CDenseFeatures< float64_t >*)
+			stream_features->get_streamed_features(1000);
 
-		num_vectors++;
-		stream_features->release_example();
-	}
-	stream_features->end_parser();
-	mat.num_cols = num_vectors;
-	
-	// Create features with the useful values from mat
-	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
-
-	CMulticlassLabels* labels = new CMulticlassLabels(num_vectors);
+	features->get_feature_matrix().display_matrix("FM");
 	SG_REF(features);
+	stream_features->end_parser();
+
+	CMulticlassLabels* labels = new CMulticlassLabels(features->get_num_vectors());
 	SG_REF(labels);
 
 	// Read the labels from the file
@@ -80,6 +63,7 @@ int main(int argc, char** argv)
 	svm->set_epsilon(EPSILON);
 	svm->set_bias_enabled(true);
 
+
 	// Create a multiclass svm classifier that consists of several of the previous one
 	CLinearMulticlassMachine* mc_svm = new CLinearMulticlassMachine(
 			new CMulticlassOneVsOneStrategy(), (CDotFeatures*) features, svm, labels);
@@ -94,7 +78,7 @@ int main(int argc, char** argv)
 	SGVector< int32_t > out_labels = output->get_int_labels();
 	SGVector<int32_t>::display_vector(out_labels.vector, out_labels.vlen);
 
-	// Free resources
+	//Free resources
 	SG_UNREF(mc_svm);
 	SG_UNREF(svm);
 	SG_UNREF(output);
@@ -104,7 +88,18 @@ int main(int argc, char** argv)
 	SG_UNREF(flabels_train);
 	SG_UNREF(stream_features);
 	SG_UNREF(stream_labels);
+}
+
+int main(int argc, char** argv)
+{
+	init_shogun_with_defaults();
+
+	sg_io->set_loglevel(MSG_DEBUG);
+
+	test();
+
 	exit_shogun();
 
 	return 0;
 }
+

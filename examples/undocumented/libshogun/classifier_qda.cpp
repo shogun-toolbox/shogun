@@ -43,10 +43,8 @@ void gen_rand_data(SGVector< float64_t > lab, SGMatrix< float64_t > feat)
 	}
 }
 
-int main(int argc, char ** argv)
+void test()
 {
-	init_shogun_with_defaults();
-
 	SGVector< float64_t > lab(NUM);
 	SGMatrix< float64_t > feat(DIMS, NUM);
 
@@ -70,8 +68,16 @@ int main(int argc, char ** argv)
 	// Free memory
 	SG_UNREF(out_labels);
 	SG_UNREF(qda);
+}
+
+int main(int argc, char ** argv)
+{
+	init_shogun_with_defaults();
+
+	test();
 
 	exit_shogun();
 
 	return 0;
 }
+

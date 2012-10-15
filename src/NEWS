@@ -3,12 +3,25 @@
 	* SHOGUN Release version 2.0.1 (libshogun 13.0, data 0.4, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- None
+		- Linear Time MMD two-sample test now works on streaming-features, which 
+		  allows to perform tests on infinite amounts of data. A block size may
+		  be specified for fast processing.
+		- It is now possible to ask streaming features to produce an instance
+		  of streamed features that are stored in memory and returned as a
+		  CFeatures* object of corresponding type. See
+		  CStreamingFeatures::get_streamed_features().
+		- New concept of artificial data generator classes: Based on streaming
+		  features. First implemented instance is CMeanShiftDataGenerator.
+		  Use above new concepts to get non-streaming data if desired.
+		  
 	* Bugfixes:
 		- Fix for shallow copy of gaussian kernel by Matt Aasted
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData
 		- "confidences" in context of CLabel and subclasses are now "values"
+		- CLinearTimeMMD constructor changes, only streaming features allowed
+		- CDataGenerator will soon be removed and replaced by new streaming-
+		  based classes.
 
 2012-09-01 Soeren Sonnenburg <sonne@debian.org>
 

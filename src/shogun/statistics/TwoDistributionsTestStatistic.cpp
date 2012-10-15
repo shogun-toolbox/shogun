@@ -62,11 +62,14 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 {
 	SG_DEBUG("entering CTwoDistributionsTestStatistic::bootstrap_null()\n");
 
+	REQUIRE(m_p_and_q, "CTwoDistributionsTestStatistic::bootstrap_null(): "
+			"No appended features p and q!\n");
+
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results(m_bootstrap_iterations);
 
 	/* memory for index permutations, (would slow down loop) */
-	SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
+	SGVector<index_t> ind_permutation(2*m_m);
 	ind_permutation.range_fill();
 	m_p_and_q->add_subset(ind_permutation);
 
@@ -136,4 +139,12 @@ float64_t CTwoDistributionsTestStatistic::compute_threshold(
 	}
 
 	return result;
+}
+
+void CTwoDistributionsTestStatistic::set_p_and_q(CFeatures* p_and_q)
+{
+	/* ref before unref to avoid problems when instances are equal */
+	SG_REF(p_and_q);
+	SG_UNREF(m_p_and_q);
+	m_p_and_q=p_and_q;
 }

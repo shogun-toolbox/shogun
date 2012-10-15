@@ -12,15 +12,8 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
+void test()
 {
-	fprintf(target, "%s", str);
-}
-
-int main(int argc, char **argv)
-{
-	init_shogun(&print_message, &print_message, &print_message);
-
 	CSubsetStack* stack=new CSubsetStack();
 	SG_REF(stack);
 
@@ -55,6 +48,13 @@ int main(int argc, char **argv)
 
 	/* clean up */
 	SG_UNREF(stack);
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+
+	test();
 
 	exit_shogun();
 

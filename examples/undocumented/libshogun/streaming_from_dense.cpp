@@ -38,13 +38,17 @@ void gen_rand_data(SGMatrix<float64_t> feat, SGVector<float64_t> lab)
 		{
 			for (int32_t j=0; j<DIMS; j++)
 				feat[i*DIMS+j]=CMath::random(0.0, 1.0)+DIST;
-			lab[i]=0;
+
+			if (lab.vector)
+				lab[i]=0;
 		}
 		else
 		{
 			for (int32_t j=0; j<DIMS; j++)
 				feat[i*DIMS+j]=CMath::random(0.0, 1.0)-DIST;
-			lab[i]=1;
+
+			if (lab.vector)
+				lab[i]=1;
 		}
 	}
 	feat.display_matrix("feat");
@@ -140,20 +144,23 @@ void test_get_streamed_features()
 	CDenseFeatures<float64_t>* dense=
 			(CDenseFeatures<float64_t>*)streaming->get_streamed_features(NUM);
 
+	streaming->end_parser();
+
 	/* assert that matrices are equal */
-	ASSERT(dense->get_feature_matrix()==feat);
+	ASSERT(dense->get_feature_matrix().equals(feat));
 
 	SG_UNREF(dense);
-	streaming->end_parser();
+
+
 
 	SG_UNREF(features);
 	SG_UNREF(streaming);
 }
 
-void test_from_non_streaming()
+void test_get_streamed_features_too_many()
 {
-	/* create streaming features from dense features via CStreamingFeatures
-	 * interface and check that data is equal */
+	/* create streaming features from dense features and then make call and
+	 * assert that data is equal. requests more data than available */
 
 	SGMatrix<float64_t> feat(DIMS, NUM);
 	SGVector<float64_t> lab(NUM);
@@ -166,21 +173,26 @@ void test_from_non_streaming()
 	SG_REF(features);
 	features->set_feature_matrix(feat);
 
-	/* this is the important call */
-	CStreamingFeatures* streaming=
-			CStreamingFeatures::from_non_streaming(features);
+	// Create a StreamingDenseFeatures object which uses the above as input;
+	// labels (float64_t*) are optional
+	CStreamingDenseFeatures<float64_t>* streaming=new CStreamingDenseFeatures<
+			float64_t>(features, lab);
 	SG_REF(streaming);
 
-	/* use get_streamed_features method to compare whether it worked */
 	streaming->start_parser();
+
+	/* request more features than available */
 	CDenseFeatures<float64_t>* dense=
-			(CDenseFeatures<float64_t>*)streaming->get_streamed_features(NUM);
+			(CDenseFeatures<float64_t>*)streaming->get_streamed_features(NUM+10);
+
+	streaming->end_parser();
 
 	/* assert that matrices are equal */
-	ASSERT(dense->get_feature_matrix()==feat);
+	ASSERT(dense->get_feature_matrix().equals(feat));
 
 	SG_UNREF(dense);
-	streaming->end_parser();
+
+
 
 	SG_UNREF(features);
 	SG_UNREF(streaming);
@@ -190,10 +202,12 @@ int main()
 {
 	init_shogun_with_defaults();
 
+	sg_io->set_loglevel(MSG_DEBUG);
+
 	test_general();
 	test_get_streamed_features();
-	test_from_non_streaming();
-
+	test_get_streamed_features_too_many();
+//
 	exit_shogun();
 	return 0;
 }

@@ -22,9 +22,8 @@ void print_message(FILE* target, const char* str)
 const int32_t num_labels=10;
 const int32_t num_classes=3;
 
-int main(int argc, char **argv)
+void test()
 {
-	init_shogun(&print_message, &print_message, &print_message);
 	const int32_t num_subset_idx=CMath::random(1, num_labels);
 
 	/* create labels */
@@ -77,7 +76,14 @@ int main(int argc, char **argv)
 		ASSERT(label==labels_data.vector[i]);
 	}
 	SG_UNREF(labels);
-	SG_SPRINT("\nEND\n");
+}
+
+int main(int argc, char **argv)
+{
+	init_shogun(&print_message, &print_message, &print_message);
+
+	test();
+
 	exit_shogun();
 
 	return 0;

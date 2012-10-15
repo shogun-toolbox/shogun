@@ -24,7 +24,8 @@ namespace shogun
  * The current example is stored as a combination of current_vector
  * and current_label.
  */
-template <class T> class CStreamingDenseFeatures : public CStreamingDotFeatures
+template<class T> class CStreamingDenseFeatures:
+	public CStreamingDotFeatures
 {
 public:
 
@@ -45,8 +46,8 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingDenseFeatures(CStreamingFile* file,
-				 bool is_labelled, int32_t size);
+	CStreamingDenseFeatures(CStreamingFile* file, bool is_labelled,
+			int32_t size);
 
 	/**
 	 * Constructor taking a DenseFeatures object and a labels array
@@ -55,8 +56,8 @@ public:
 	 * @param dense_features DenseFeatures object of same type
 	 * @param lab labels array, float64_t*
 	 */
-	CStreamingDenseFeatures(CDenseFeatures<T>* dense_features,
-				 float64_t* lab=NULL);
+	CStreamingDenseFeatures(CDenseFeatures<T>* dense_features, float64_t* lab=
+			NULL);
 
 	/**
 	 * Destructor.
@@ -198,7 +199,8 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len , bool abs_val=false);
+	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2,
+			int32_t vec2_len, bool abs_val=false);
 
 	/**
 	 * Add alpha*current_vector to another float64_t type dense vector.
@@ -209,7 +211,8 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2, int32_t vec2_len , bool abs_val=false);
+	virtual void add_to_dense_vec(float64_t alpha, float64_t* vec2,
+			int32_t vec2_len, bool abs_val=false);
 
 	/** get number of non-zero features in vector
 	 *
@@ -250,7 +253,10 @@ public:
 	 *
 	 * @return StreamingDenseFeatures
 	 */
-	inline virtual const char* get_name() const { return "StreamingDenseFeatures"; }
+	inline virtual const char* get_name() const
+	{
+		return "StreamingDenseFeatures";
+	}
 
 	/**
 	 * Return the number of vectors stored in this object.
@@ -299,16 +305,10 @@ protected:
 	CInputParser<T> parser;
 
 	/// The current example's feature vector as an SGVector<T>
-	SGVector<T> current_sgvector;
-
-	/// The current example's feature vector as a T*.
-	T* current_vector;
+	SGVector<T> current_vector;
 
 	/// The current example's label.
 	float64_t current_label;
-
-	/// Number of features in current example.
-	int32_t current_length;
 };
 }
 #endif // _STREAMINGDENSEFEATURES__H__

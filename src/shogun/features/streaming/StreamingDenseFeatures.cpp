@@ -56,9 +56,10 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
 	SG_DEBUG("entering %s::~CStreamingDenseFeatures()\n", get_name());
-	if (parser.is_running())
-		parser.end_parser();
 	SG_DEBUG("leaving %s::~CStreamingDenseFeatures()\n", get_name());
+
+	current_vector.vector=NULL;
+	current_vector.vlen=0;
 }
 
 template<class T> void CStreamingDenseFeatures<T>::reset_stream()
@@ -76,10 +77,10 @@ template<class T> void CStreamingDenseFeatures<T>::reset_stream()
 template<class T> float32_t CStreamingDenseFeatures<T>::dense_dot(
 		const float32_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len==current_length);
+	ASSERT(vec2_len==current_vector.vlen);
 	float32_t result=0;
 
-	for (int32_t i=0; i<current_length; i++)
+	for (int32_t i=0; i<current_vector.vlen; i++)
 		result+=current_vector[i]*vec2[i];
 
 	return result;
@@ -88,10 +89,10 @@ template<class T> float32_t CStreamingDenseFeatures<T>::dense_dot(
 template<class T> float64_t CStreamingDenseFeatures<T>::dense_dot(
 		const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len==current_length);
+	ASSERT(vec2_len==current_vector.vlen);
 	float64_t result=0;
 
-	for (int32_t i=0; i<current_length; i++)
+	for (int32_t i=0; i<current_vector.vlen; i++)
 		result+=current_vector[i]*vec2[i];
 
 	return result;
@@ -100,16 +101,16 @@ template<class T> float64_t CStreamingDenseFeatures<T>::dense_dot(
 template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 		float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	ASSERT(vec2_len==current_length);
+	ASSERT(vec2_len==current_vector.vlen);
 
 	if (abs_val)
 	{
-		for (int32_t i=0; i<current_length; i++)
+		for (int32_t i=0; i<current_vector.vlen; i++)
 			vec2[i]+=alpha*CMath::abs(current_vector[i]);
 	}
 	else
 	{
-		for (int32_t i=0; i<current_length; i++)
+		for (int32_t i=0; i<current_vector.vlen; i++)
 			vec2[i]+=alpha*current_vector[i];
 	}
 }
@@ -117,23 +118,23 @@ template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 		float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	ASSERT(vec2_len==current_length);
+	ASSERT(vec2_len==current_vector.vlen);
 
 	if (abs_val)
 	{
-		for (int32_t i=0; i<current_length; i++)
+		for (int32_t i=0; i<current_vector.vlen; i++)
 			vec2[i]+=alpha*CMath::abs(current_vector[i]);
 	}
 	else
 	{
-		for (int32_t i=0; i<current_length; i++)
+		for (int32_t i=0; i<current_vector.vlen; i++)
 			vec2[i]+=alpha*current_vector[i];
 	}
 }
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_nnz_features_for_vector()
 {
-	return current_length;
+	return current_vector.vlen;
 }
 
 template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
@@ -143,7 +144,7 @@ template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
 {
-//	if (current_vector)
+//	if (current_vector.vector)
 		return 1;
 //	return 0;
 }
@@ -190,9 +191,9 @@ template<class T>
 void CStreamingDenseFeatures<T>::init()
 {
 	working_file=NULL;
-	current_vector=NULL;
+	current_vector.vector=NULL;
 	seekable=false;
-	current_length=-1;
+	current_vector.vlen=-1;
 }
 
 template<class T>
@@ -224,8 +225,8 @@ template<class T>
 bool CStreamingDenseFeatures<T>::get_next_example()
 {
 	bool ret_value;
-	ret_value=(bool)parser.get_next_example(current_vector, current_length,
-			current_label);
+	ret_value=(bool)parser.get_next_example(current_vector.vector,
+			current_vector.vlen, current_label);
 
 	return ret_value;
 }
@@ -233,9 +234,7 @@ bool CStreamingDenseFeatures<T>::get_next_example()
 template<class T>
 SGVector<T> CStreamingDenseFeatures<T>::get_vector()
 {
-	current_sgvector=SGVector<T>(current_vector, current_length, false);
-
-	return current_sgvector;
+	return current_vector;
 }
 
 template<class T>
@@ -255,7 +254,7 @@ void CStreamingDenseFeatures<T>::release_example()
 template<class T>
 int32_t CStreamingDenseFeatures<T>::get_dim_feature_space() const
 {
-	return current_length;
+	return current_vector.vlen;
 }
 
 template<class T>
@@ -268,7 +267,7 @@ float32_t CStreamingDenseFeatures<T>::dot(CStreamingDotFeatures* df)
 
 	SGVector<T> other_vector=sf->get_vector();
 
-	return SGVector<T>::dot(current_vector, other_vector.vector, current_length);
+	return SGVector<T>::dot(current_vector.vector, other_vector.vector, current_vector.vlen);
 }
 
 template<class T>
@@ -277,17 +276,17 @@ float32_t CStreamingDenseFeatures<T>::dot(SGVector<T> sgvec1)
 	int32_t len1;
 	len1=sgvec1.vlen;
 
-	if (len1!=current_length)
+	if (len1!=current_vector.vlen)
 		SG_ERROR(
-				"Lengths %d and %d not equal while computing dot product!\n", len1, current_length);
+				"Lengths %d and %d not equal while computing dot product!\n", len1, current_vector.vlen);
 
-	return SGVector<T>::dot(current_vector, sgvec1.vector, len1);
+	return SGVector<T>::dot(current_vector.vector, sgvec1.vector, len1);
 }
 
 template<class T>
 int32_t CStreamingDenseFeatures<T>::get_num_features()
 {
-	return current_length;
+	return current_vector.vlen;
 }
 
 template<class T>
@@ -306,58 +305,68 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 	/* init matrix empty since num_rows is not yet known */
 	SGMatrix<T> matrix;
 
-	bool parser_flag=parser.is_running();
-	if (!parser_flag)
-		parser.start_parser();
-
 	for (index_t i=0; i<num_elements; ++i)
 	{
 		/* check if we run out of data */
 		if (!get_next_example())
 		{
-			SG_DEBUG("%s::get_streamed_features(): ran out of streaming "
-					"data, returnung NULL!\n", get_name());
-			return NULL;
-		}
+			SG_WARNING("%s::get_streamed_features(): ran out of streaming "
+					"data, reallocating matrix and returning!\n", get_name());
 
-		/* allocate matrix memory during first run */
-		if (!matrix.matrix)
+			/* allocating space for data so far */
+			SGMatrix<T> so_far(matrix.num_rows, i);
+
+			/* copy */
+			memcpy(so_far.matrix, matrix.matrix,
+					so_far.num_rows*so_far.num_cols*sizeof(T));
+
+			matrix=so_far;
+			break;
+		}
+		else
 		{
-			SG_DEBUG("%s::get_streamed_features(): allocating %dx%d matrix\n",
-					get_name(), current_length, num_elements);
-			matrix=SGMatrix<T>(current_length, num_elements);
+			/* allocate matrix memory during first run */
+			if (!matrix.matrix)
+			{
+				SG_DEBUG("%s::get_streamed_features(): allocating %dx%d matrix\n",
+						get_name(), current_vector.vlen, num_elements);
+				matrix=SGMatrix<T>(current_vector.vlen, num_elements);
+			}
+
+			/* get an example from stream and copy to feature matrix */
+			SGVector<T> vec=get_vector();
+
+			/* check for inconsistent dimensions */
+			if (vec.vlen!=matrix.num_rows)
+			{
+				SG_ERROR("%s::get_streamed_features(): streamed vectors have "
+						"different dimensions. This is not allowed!\n",
+						get_name());
+			}
+
+			/* copy vector into matrix */
+			memcpy(&matrix.matrix[current_vector.vlen*i], vec.vector,
+					vec.vlen*sizeof(T));
+
+			/* evtl output vector */
+			if (sg_io->get_loglevel()==MSG_DEBUG)
+			{
+				SG_DEBUG("%d. ", i);
+				vec.display_vector("streamed vector");
+			}
+
+			/* clean up */
+			release_example();
 		}
 
-		/* get an example from stream and copy to feature matrix */
-		SGVector<T> vec=get_vector();
-
-		/* check for inconsistent dimensions */
-		if (vec.vlen!=matrix.num_rows)
-		{
-			SG_ERROR("%s::get_streamed_features(): streamed vectors have "
-					"different dimensions. This is not allowed!\n", get_name());
-		}
-
-		/* copy vector into matrix */
-		memcpy(&matrix.matrix[current_length*i], vec.vector,
-				vec.vlen*sizeof(T));
-
-		/* evtl output vector */
-		if (sg_io->get_loglevel()==MSG_DEBUG)
-			vec.display_vector("streamed vector");
-
-		/* clean up */
-		release_example();
 	}
-
-	if (!parser_flag)
-		parser.exit_parser();
 
 	/* create new feature object from collected data */
 	CDenseFeatures<T>* result=new CDenseFeatures<T>(matrix);
 
-	SG_DEBUG("leaving %s(%p)::get_streamed_features(%d)\n", get_name(), this,
-			num_elements);
+	SG_DEBUG("leaving %s(%p)::get_streamed_features(%d) and returning %dx%d "
+			"matrix\n", get_name(), this, num_elements, matrix.num_rows,
+			matrix.num_cols);
 
 	return result;
 }
