@@ -376,6 +376,8 @@ template <class T>
 	pthread_mutex_init(&examples_state_lock, NULL);
 	pthread_cond_init(&examples_state_changed, NULL);
 	examples_ring=NULL;
+	parsing_done=true;
+	reading_done=true;
 }
 
 template <class T>
