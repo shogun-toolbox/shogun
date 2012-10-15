@@ -84,6 +84,11 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 */
 		virtual float64_t compute_threshold(float64_t alpha);
 
+		/** Setter for joint features
+		 * @param p_and_q joint features from p and q to set
+		 */
+		virtual void set_p_and_q(CFeatures* p_and_q);
+
 		inline virtual const char* get_name() const=0;
 
 	private:

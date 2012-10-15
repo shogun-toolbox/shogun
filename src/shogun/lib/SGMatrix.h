@@ -107,6 +107,17 @@ template<class T> class SGMatrix : public SGReferencedData
 			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
 				return false;
 
+			if (matrix!=other.matrix)
+				return false;
+
+
+		}
+
+		inline bool equals(SGMatrix<T>& other)
+		{
+			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
+				return false;
+
 			for (index_t i=0; i<num_rows*num_cols; ++i)
 			{
 				if (matrix[i]!=other.matrix[i])

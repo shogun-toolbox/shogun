@@ -24,24 +24,8 @@ CLinearTimeMMD::CLinearTimeMMD() :
 	init();
 }
 
-CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p_and_q,
-		index_t m)
-{
-	SG_ERROR("%s::CLinearTimeMMD(): Constructor with appended normal features "
-			"is not supported. Split features and use other constructor.\n",
-			get_name());
-}
-
-CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q)
-{
-	SG_ERROR("%s::CLinearTimeMMD(): Constructor with normal features is "
-			"not supported. Use streaming features constructor. There"
-			" are ways to create streaming features from normal ones.\n",
-			get_name());
-}
-
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
-		CStreamingFeatures* q, index_t m) :
+		CStreamingFeatures* q, index_t m, index_t blocksize) :
 		CKernelTwoSampleTestStatistic(kernel, NULL, m)
 {
 	init();
@@ -51,6 +35,8 @@ CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
 
 	m_streaming_q=q;
 	SG_REF(m_streaming_q);
+
+	m_blocksize=blocksize;
 }
 
 CLinearTimeMMD::~CLinearTimeMMD()
@@ -78,20 +64,23 @@ void CLinearTimeMMD::init()
 	m_opt_regularization_eps=0;
 	m_streaming_p=NULL;
 	m_streaming_q=NULL;
+	m_blocksize=10000;
 
 	SG_WARNING("%s::init(): register params!\n", get_name());
 }
 
-float64_t CLinearTimeMMD::compute_statistic()
+void CLinearTimeMMD::compute_statistic_and_variance(
+		float64_t& statistic, float64_t& variance)
 {
-	SG_DEBUG("entering CLinearTimeMMD::compute_statistic()\n");
+	SG_DEBUG("entering CLinearTimeMMD::compute_statistic_and_variance()\n");
 
-	REQUIRE(m_streaming_p, "%s::compute_statistic: streaming features p "
-			"required!\n", get_name());
-	REQUIRE(m_streaming_q, "%s::compute_statistic: streaming features q "
-			"required!\n", get_name());
+	REQUIRE(m_streaming_p, "%s::compute_statistic_and_variance: streaming "
+			"features p required!\n", get_name());
+	REQUIRE(m_streaming_q, "%s::compute_statistic_and_variance: streaming "
+			"features q required!\n", get_name());
 
-	REQUIRE(m_kernel, "%s::compute_statistic: kernel needed!\n", get_name());
+	REQUIRE(m_kernel, "%s::compute_statistic_and_variance: kernel needed!\n",
+			get_name());
 
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
@@ -99,62 +88,111 @@ float64_t CLinearTimeMMD::compute_statistic()
 
 	SG_DEBUG("m_m=%d\n", m_m);
 
-	/* these sums are needed to compute statistic */
-	float64_t pp=0;
-	float64_t qq=0;
-	float64_t pq=0;
-	float64_t qp=0;
+	/* these sums are needed to compute online statistic/variance */
+	float64_t mean=0;
+	float64_t M2=0;
 
-	/* compute sums */
-	for (index_t i=0; i<m_2; ++i)
+	/* temp variable in the algorithm */
+	float64_t current;
+	float64_t delta;
+
+	index_t num_examples_processed=0;
+	index_t term_counter=1;
+	while (num_examples_processed<m_2)
 	{
-		/* stream four more elements */
-		CFeatures* p1=m_streaming_p->get_streamed_features(1);
-		CFeatures* p2=m_streaming_p->get_streamed_features(1);
-		CFeatures* q1=m_streaming_q->get_streamed_features(1);
-		CFeatures* q2=m_streaming_q->get_streamed_features(1);
+		/* number of example to look at in this iteration */
+		index_t num_this_run=CMath::min(m_blocksize, m_2-num_examples_processed);
+		SG_DEBUG("processing %d more examples. %d so far processed. Blocksize "
+				"is %d\n", num_this_run, num_examples_processed, m_blocksize);
+
+		/* stream data from both distributions */
+		CFeatures* p1=m_streaming_p->get_streamed_features(num_this_run);
+		CFeatures* p2=m_streaming_p->get_streamed_features(num_this_run);
+		CFeatures* q1=m_streaming_q->get_streamed_features(num_this_run);
+		CFeatures* q2=m_streaming_q->get_streamed_features(num_this_run);
 		SG_REF(p1);
 		SG_REF(p2);
 		SG_REF(q1);
 		SG_REF(q2);
 
-		/* stream kernel values and add values */
-		SG_DEBUG("initialising streaming kernel with pp\n");
+		/* compute kernel matrix diagonals */
+		SG_DEBUG("processing kernel diagonal pp\n");
 		m_kernel->init(p1, p2);
-		float64_t temp=m_kernel->kernel(0, 0);
-		pp+=temp;
-		SG_DEBUG("pp+=%f\n", temp);
+		SGVector<float64_t> pp=m_kernel->get_kernel_diagonal();
 
-		SG_DEBUG("initialising streaming kernel with qq\n");
+		SG_DEBUG("processing kernel diagonal qq\n");
 		m_kernel->init(q1, q2);
-		temp=m_kernel->kernel(0, 0);
-		qq+=temp;
-		SG_DEBUG("qq+=%f\n", temp);
+		SGVector<float64_t> qq=m_kernel->get_kernel_diagonal();
 
-		SG_DEBUG("initialising streaming kernel with pq\n");
+		SG_DEBUG("processing kernel diagonal pq\n");
 		m_kernel->init(p1, q2);
-		temp=m_kernel->kernel(0, 0);
-		pq+=temp;
-		SG_DEBUG("pq+=%f\n", temp);
+		SGVector<float64_t> pq=m_kernel->get_kernel_diagonal();
 
-		SG_DEBUG("initialising streaming kernel with qp\n");
-		m_kernel->init(p2, q1);
-		temp=m_kernel->kernel(0, 0);
-		qp+=temp;
-		SG_DEBUG("qp+=%f\n", temp);
+		SG_DEBUG("processing kernel diagonal qp\n");
+		m_kernel->init(q1, p2);
+		SGVector<float64_t> qp=m_kernel->get_kernel_diagonal();
+
+		/* update mean and variance using Knuth's online variance algorithm.
+		 * C.f. for example Wikipedia */
+		for (index_t i=0; i<num_this_run; ++i)
+		{
+			/* compute sum of current h terms */
+			current=pp[i]+qq[i]-pq[i]-qp[i];
+
+			/* D. Knuth's online variance algorithm */
+			delta=current-mean;
+			mean=mean+delta/term_counter++;
+			M2=M2+delta*(current-mean);
+
+			SG_DEBUG("burst: current=%f, delta=%f, mean=%f, M2=%f\n",
+					current, delta, mean, M2);
+		}
 
 		/* clean up */
 		SG_UNREF(p1);
 		SG_UNREF(p2);
 		SG_UNREF(q1);
 		SG_UNREF(q2);
-	}
 
-	SG_DEBUG("returning: 1/%d*(%f+%f-%f-%f)\n", m_2, pp, qq, pq, qp);
+		/* add number of processed examples for this run */
+		num_examples_processed+=num_this_run;
+	}
+	SG_DEBUG("Done compouting statistic, processed 2*%d examples.\n",
+			num_examples_processed);
 
 	/* mean of sum all traces is linear time mmd */
-	SG_DEBUG("leaving CLinearTimeMMD::compute_statistic()\n");
-	return 1.0/m_2*(pp+qq-pq-qp);
+	statistic=mean;
+	SG_DEBUG("statistic %f\n", statistic);
+
+	/* variance of terms can be computed using mean (statistic).
+	 * Note that the variance needs to be divided by m_2 in order to get
+	 * variance of null-distribution */
+	variance=M2/(m_2-1)/m_2;
+	SG_DEBUG("variance: %f\n", variance);
+
+	SG_DEBUG("leaving CLinearTimeMMD::compute_statistic_and_variance()\n");
+}
+
+float64_t CLinearTimeMMD::compute_statistic()
+{
+	float64_t statistic=0;
+	float64_t variance=0;
+
+	/* use wrapper method */
+	compute_statistic_and_variance(statistic, variance);
+
+	return statistic;
+}
+
+float64_t CLinearTimeMMD::compute_variance_estimate()
+{
+	float64_t statistic=0;
+	float64_t variance=0;
+
+	/* use wrapper method */
+	compute_statistic_and_variance(statistic, variance);
+
+	return variance;
 }
 
 float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
@@ -203,53 +241,39 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 	return result;
 }
 
-float64_t CLinearTimeMMD::compute_variance_estimate()
+SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
 {
-	REQUIRE(m_p_and_q, "%s::compute_variance_estimate: features needed!\n",
-			get_name());
+	SGVector<float64_t> samples(m_bootstrap_iterations);
 
-	REQUIRE(m_kernel, "%s::compute_variance_estimate: kernel needed!\n",
-			get_name());
-
-	if (m_p_and_q->get_num_vectors()<1000)
+	/* instead of permutating samples, just samples new data all the time.
+	 * In order to merge p and q, simply randomly select p and q for each
+	 * feature object inernally */
+	CStreamingFeatures* p=m_streaming_p;
+	CStreamingFeatures* q=m_streaming_q;
+	SG_REF(p);
+	SG_REF(q);
+	for (index_t i=0; i<m_bootstrap_iterations; ++i)
 	{
-		SG_WARNING("%s::compute_variance_estimate: The number of samples"
-				" should be very large (at least 1000)  in order to get a"
-				" good Gaussian approximation using MMD1_GAUSSIAN.\n",
-				get_name());
+		/* merge samples by randomly shuffling p and q */
+		if (CMath::random(0,1))
+			m_streaming_p=p;
+		else
+			m_streaming_p=q;
+
+		if (CMath::random(0,1))
+			m_streaming_q=p;
+		else
+			m_streaming_q=q;
+
+		/* compute statistic for this permutation of mixed samples */
+		samples[i]=compute_statistic();
 	}
+	m_streaming_p=p;
+	m_streaming_q=q;
+	SG_UNREF(p);
+	SG_UNREF(q);
 
-	/* this corresponds to computing the statistic itself, however, the
-	 * difference is that all terms (of the traces) have to be stored */
-	index_t m=m_m;
-	index_t m_2=m/2;
-
-	m_kernel->init(m_p_and_q, m_p_and_q);
-
-	/* allocate memory for traces */
-	SGVector<float64_t> traces(m_2);
-
-	/* sum up diagonals of all kernel matrices */
-	for (index_t i=0; i<m_2; ++i)
-	{
-		/* init for code beauty :) */
-		traces[i]=0;
-
-		/* p and p */
-		traces[i]+=m_kernel->kernel(i, m_2+i);
-
-		/* q and q */
-		traces[i]+=m_kernel->kernel(m+i, m+m_2+i);
-
-		/* p and q */
-		traces[i]-=m_kernel->kernel(i, m+m_2+i);
-
-		/* q and p */
-		traces[i]-=m_kernel->kernel(m_2+i, m+i);
-	}
-
-	/* return linear time variance estimate */
-	return CStatistics::variance(traces)/m_2;
+	return samples;
 }
 
 #ifdef HAVE_LAPACK

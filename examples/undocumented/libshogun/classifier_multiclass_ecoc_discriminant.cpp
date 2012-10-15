@@ -14,13 +14,8 @@
 
 using namespace shogun;
 
-int main(int argc, char** argv)
+void test()
 {
-	int32_t num_vectors = 0;
-	int32_t num_feats   = 2;
-
-	init_shogun_with_defaults();
-
 	// Prepare to read a file for the training data
 	char fname_feats[]  = "../data/fm_train_real.dat";
 	char fname_labels[] = "../data/label_train_multiclass.dat";
@@ -38,29 +33,16 @@ int main(int argc, char** argv)
 	SG_REF(stream_features);
 	SG_REF(stream_labels);
 
-	// Create a matrix with enough space to read all the feature vectors
-	SGMatrix< float64_t > mat = SGMatrix< float64_t >(num_feats, 1000);
-
-	// Read the values from the file and store them in mat
-	SGVector< float64_t > vec;
 	stream_features->start_parser();
-	while ( stream_features->get_next_example() )
-	{
-		vec = stream_features->get_vector();
 
-		for ( int32_t i = 0 ; i < num_feats ; ++i )
-			mat[num_vectors*num_feats + i] = vec[i];
+	// Read the values from the file and store them in features
+	CDenseFeatures< float64_t >* features=
+			(CDenseFeatures< float64_t >*)
+			stream_features->get_streamed_features(1000);
 
-		num_vectors++;
-		stream_features->release_example();
-	}
 	stream_features->end_parser();
-    mat.num_cols = num_vectors;
 
-	// Create features with the useful values from mat
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(mat);
-
-	CMulticlassLabels* labels = new CMulticlassLabels(num_vectors);
+	CMulticlassLabels* labels = new CMulticlassLabels(features->get_num_vectors());
 	SG_REF(features);
 	SG_REF(labels);
 
@@ -110,6 +92,14 @@ int main(int argc, char** argv)
 	SG_UNREF(flabels_train);
 	SG_UNREF(stream_features);
 	SG_UNREF(stream_labels);
+}
+
+int main(int argc, char** argv)
+{
+	init_shogun_with_defaults();
+
+	test();
+
 	exit_shogun();
 
 	return 0;

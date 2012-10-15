@@ -28,9 +28,6 @@ void print_message(FILE* target, const char* str)
 
 void test_cross_validation()
 {
-	int32_t num_vectors = 0;
-	int32_t num_feats   = 2;
-	
 	// Prepare to read a file for the training data
 	char fname_feats[]  = "../data/fm_train_real.dat";
 	char fname_labels[] = "../data/label_train_multiclass.dat";
@@ -39,38 +36,25 @@ void test_cross_validation()
 	SG_REF(ffeats_train);
 	SG_REF(flabels_train);
 
-	CStreamingDenseFeatures< float64_t >* stream_features = 
+	CStreamingDenseFeatures< float64_t >* stream_features =
 		new CStreamingDenseFeatures< float64_t >(ffeats_train, false, 1024);
 
-	CStreamingDenseFeatures< float64_t >* stream_labels = 
+	CStreamingDenseFeatures< float64_t >* stream_labels =
 		new CStreamingDenseFeatures< float64_t >(flabels_train, true, 1024);
 
 	SG_REF(stream_features);
 	SG_REF(stream_labels);
 
-	// Create a matrix with enough space to read all the feature vectors
-	SGMatrix< float64_t > mat = SGMatrix< float64_t >(num_feats, 1000);
-
-	// Read the values from the file and store them in mat
-	SGVector< float64_t > vec;
 	stream_features->start_parser();
-	while ( stream_features->get_next_example() )
-	{
-		vec = stream_features->get_vector();
 
-		for ( int32_t i = 0 ; i < num_feats ; ++i )
-			mat.matrix[num_vectors*num_feats + i] = vec[i];
+	// Read the values from the file and store them in features
+	CDenseFeatures< float64_t >* features=
+			(CDenseFeatures< float64_t >*)
+			stream_features->get_streamed_features(1000);
 
-		num_vectors++;
-		stream_features->release_example();
-	}
 	stream_features->end_parser();
-	mat.num_cols = num_vectors;
-	
-	// Create features with the useful values from mat
-	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(mat);
 
-	CMulticlassLabels* labels = new CMulticlassLabels(num_vectors);
+	CMulticlassLabels* labels = new CMulticlassLabels(features->get_num_vectors());
 	SG_REF(features);
 	SG_REF(labels);
 
@@ -93,7 +77,7 @@ void test_cross_validation()
 	/* train and output */
 	svm->train(features);
 	CMulticlassLabels* output=CMulticlassLabels::obtain_from_generic(svm->apply(features));
-	for (index_t i=0; i<num_vectors; ++i)
+	for (index_t i=0; i<features->get_num_vectors(); ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 
 	/* evaluation criterion */
@@ -118,7 +102,7 @@ void test_cross_validation()
 	CCrossValidation* cross=new CCrossValidation(svm, features, labels,
 			splitting, eval_crit);
 
-	cross->set_num_runs(10);
+	cross->set_num_runs(1);
 	cross->set_conf_int_alpha(0.05);
 
 	/* actual evaluation */

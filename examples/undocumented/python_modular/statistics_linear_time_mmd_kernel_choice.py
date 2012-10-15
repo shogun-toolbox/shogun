@@ -14,7 +14,7 @@ from numpy import *
 # two sample test using the linear time Maximum Mean Discrepancy
 def statistics_linear_time_mmd_kernel_choice ():
 	from shogun.Features import RealFeatures, CombinedFeatures
-	from shogun.Features import DataGenerator
+	from shogun.Features import MeanShiftRealDataGenerator
 	from shogun.Kernel import GaussianKernel, CombinedKernel
 	from shogun.Statistics import LinearTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
@@ -67,4 +67,5 @@ def statistics_linear_time_mmd_kernel_choice ():
 
 if __name__=='__main__':
 	print('LinearTimeMMDKernelChoice')
-	statistics_linear_time_mmd_kernel_choice()
+	# uncomment for now
+	#statistics_linear_time_mmd_kernel_choice()

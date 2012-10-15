@@ -11,7 +11,7 @@ from numpy import *
 
 def statistics_linear_time_mmd ():
 	from shogun.Features import RealFeatures
-	from shogun.Features import DataGenerator
+	from shogun.Features import MeanShiftRealDataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import LinearTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
@@ -23,35 +23,32 @@ def statistics_linear_time_mmd ():
 	dim=2
 	difference=0.5
 
-	# use data generator class to produce example data
-	# in pratice, this generate data function could be replaced by a method
-	# that obtains data from a stream
-	data=DataGenerator.generate_mean_data(n,dim,difference)
-	
-	print "dimension means of X", mean(data.T[0:n].T)
-	print "dimension means of Y", mean(data.T[n:2*n+1].T)
-
-	# create shogun feature representation
-	features=RealFeatures(data)
+	# streaming data generator for mean shift distributions
+	gen_p=MeanShiftRealDataGenerator(0, dim)
+	gen_q=MeanShiftRealDataGenerator(difference, dim)
 
 	# compute median data distance in order to use for Gaussian kernel width
 	# 0.5*median_distance normally (factor two in Gaussian kernel)
 	# However, shoguns kernel width is different to usual parametrization
 	# Therefore 0.5*2*median_distance^2
 	# Use a subset of data for that, only 200 elements. Median is stable
-	# Using all distances here would blow up memory
-	subset=Math.randperm_vec(features.get_num_vectors())
-	subset=subset[0:200]
-	features.add_subset(subset)
+	
+	# Stream examples and merge them in order to compute median on joint sample
+	features=gen_p.get_streamed_features(100)
+	features=features.create_merged_copy(gen_q.get_streamed_features(100))
+	
+	# compute all pairwise distances
 	dist=EuclideanDistance(features, features)
 	distances=dist.get_distance_matrix()
-	features.remove_subset()
+	
+	# compute median and determine kernel width (using shogun)
 	median_distance=Statistics.matrix_median(distances, True)
 	sigma=median_distance**2
 	print "median distance for Gaussian kernel:", sigma
 	kernel=GaussianKernel(10,sigma)
 
-	mmd=LinearTimeMMD(kernel,features, n)
+	# mmd instance using streaming features, blocksize of 10000
+	mmd=LinearTimeMMD(kernel, gen_p, gen_q, n, 10000)
 
 	# perform test: compute p-value and test if null-hypothesis is rejected for
 	# a test level of 0.05
