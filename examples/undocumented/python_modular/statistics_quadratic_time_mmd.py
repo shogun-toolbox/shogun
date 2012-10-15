@@ -11,7 +11,7 @@ from numpy import *
 
 def statistics_quadratic_time_mmd ():
 	from shogun.Features import RealFeatures
-	from shogun.Features import DataGenerator
+	from shogun.Features import MeanShiftRealDataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
@@ -24,20 +24,27 @@ def statistics_quadratic_time_mmd ():
 	dim=2
 	difference=0.5
 
+	# streaming data generator for mean shift distributions
+	gen_p=MeanShiftRealDataGenerator(0, dim)
+	gen_q=MeanShiftRealDataGenerator(difference, dim)
+	
+	# Stream examples and merge them in order to compute median on joint sample
+	# alternative is to call a different constructor of QuadraticTimeMMD
+	features=gen_p.get_streamed_features(n)
+	features=features.create_merged_copy(gen_q.get_streamed_features(n))
+	
 	# use data generator class to produce example data
-	data=DataGenerator.generate_mean_data(n,dim,difference)
+	data=features.get_feature_matrix()
 	
 	print "dimension means of X", mean(data.T[0:n].T)
 	print "dimension means of Y", mean(data.T[n:2*n+1].T)
-
-	# create shogun feature representation
-	features=RealFeatures(data)
 
 	# compute median data distance in order to use for Gaussian kernel width
 	# 0.5*median_distance normally (factor two in Gaussian kernel)
 	# However, shoguns kernel width is different to usual parametrization
 	# Therefore 0.5*2*median_distance^2
 	# Use a subset of data for that, only 200 elements. Median is stable
+	# Use a permutation set to temporarily merge features in merged examples
 	subset=Math.randperm_vec(features.get_num_vectors())
 	subset=subset[0:200]
 	features.add_subset(subset)
