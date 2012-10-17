@@ -31,7 +31,11 @@ template <class T> struct SGSparseVectorEntry
 	T entry;
 };
 
-/** @brief template class SGSparseVector */
+/** @brief template class SGSparseVector
+ * The assumtion is that the stored SGSparseVectorEntry<T>* vector is ordered
+ * by SGSparseVectorEntry.feat_index in non-decreasing order.
+ * This has to be assured by the user of the class.
+ */
 template <class T> class SGSparseVector : public SGReferencedData
 {
 public:
@@ -41,7 +45,12 @@ public:
 		init_data();
 	}
 
-	/** constructor for setting params */
+	/** constructor for setting params
+	 *
+	 * @param feats vector of SGSparseVectorEntry ordered by SGSparseVectorEntry.feat_index in non-decreasing order
+	 * @param num_entries number of elements in feats vector
+	 * @param ref_counting use reference counting
+	 */
 	SGSparseVector(SGSparseVectorEntry<T>* feats, index_t num_entries,
 			bool ref_counting=true) :
 			SGReferencedData(ref_counting),
@@ -106,22 +115,34 @@ public:
 	 */
 	T sparse_dot(const SGSparseVector<T>& v)
 	{
-		if (this->num_feat_entries == 0 || v.num_feat_entries == 0)
+		return sparse_dot(*this, v);
+	}
+
+	/** compute the dot product between two sparse vectors.
+	 * sparse_a^T * sparse_b
+	 *
+	 * @param a sparse vector
+	 * @param b sparse vector
+	 * @return dot product between a and b
+	 */
+	static T sparse_dot(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
+	{
+		if (a.num_feat_entries == 0 || b.num_feat_entries == 0)
 			return 0;
 
-		int32_t cmp = cmp_dot_prod_symmetry_fast(this->num_feat_entries, v.num_feat_entries);
+		int32_t cmp = cmp_dot_prod_symmetry_fast(a.num_feat_entries, b.num_feat_entries);
 
 		if (cmp == 0) // symmetric
 		{
-			return dot_prod_symmetric(*this, v);
+			return dot_prod_symmetric(a, b);
 		}
-		else if (cmp > 0) // v has more element
+		else if (cmp > 0) // b has more element
 		{
-			return dot_prod_asymmetric(*this, v);
+			return dot_prod_asymmetric(a, b);
 		}
-		else // this has more element
+		else // a has more element
 		{
-			return dot_prod_asymmetric(v, *this);
+			return dot_prod_asymmetric(b, a);
 		}
 	}
 
@@ -145,7 +166,7 @@ protected:
 		SG_FREE(features);
 	}
 
-	int32_t floor_log(index_t n)
+	static int32_t floor_log(index_t n)
 	{
 		register int32_t i;
 		for (i = 0; n != 0; i++)
@@ -154,7 +175,7 @@ protected:
 		return i;
 	}
 
-	int32_t cmp_dot_prod_symmetry_fast(index_t alen, index_t blen)
+	static int32_t cmp_dot_prod_symmetry_fast(index_t alen, index_t blen)
 	{
 		if (alen > blen) // no need for floats here
 		{
@@ -172,8 +193,8 @@ protected:
 		for(index_t b_idx = 0; b_idx < b.num_feat_entries; ++b_idx)
 		{
 			const T tmp = b.features[b_idx].entry;
-			// TODO: make sure that SGSparseVectorEntry<T>* are non-decreasingly ordered!
-			// if (a.features[a.num_feat_entries-1].feat_index < b.features[b_idx].feat_index) break;
+			if (a.features[a.num_feat_entries-1].feat_index < b.features[b_idx].feat_index)
+				break;
 			for (index_t a_idx = 0; a_idx < a.num_feat_entries; ++a_idx)
 			{
 				if (a.features[a_idx].feat_index == b.features[b_idx].feat_index)
@@ -194,16 +215,24 @@ protected:
 			{
 				dot_prod += a.features[a_idx].entry * b.features[b_idx].entry;
 
-				++a_idx; if (a.num_feat_entries == a_idx) break;
-				++b_idx; if (b.num_feat_entries == b_idx) break;
+				a_idx++;
+				if (a.num_feat_entries == a_idx)
+					break;
+				b_idx++;
+				if (b.num_feat_entries == b_idx)
+					break;
 			}
 			else if (a.features[a_idx].feat_index < b.features[b_idx].feat_index)
 			{
-				++a_idx; if (a.num_feat_entries == a_idx) break;
+				a_idx++;
+				if (a.num_feat_entries == a_idx)
+					break;
 			}
 			else
 			{
-				++b_idx; if (b.num_feat_entries == b_idx) break;
+				b_idx++;
+				if (b.num_feat_entries == b_idx)
+					break;
 			}
 		}
 		return dot_prod;

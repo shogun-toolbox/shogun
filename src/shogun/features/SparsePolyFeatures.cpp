@@ -124,8 +124,7 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 	SGSparseVector<float64_t> vec2=pf->m_feat->get_sparse_feature_vector(
 			vec_idx2);
 
-	float64_t result=CSparseFeatures<float64_t>::sparse_dot(1, vec1.features,
-			vec1.num_feat_entries, vec2.features, vec2.num_feat_entries);
+	float64_t result=SGSparseVector<float64_t>::sparse_dot(vec1, vec2);
 	result=CMath::pow(result, m_degree);
 
 	m_feat->free_feature_vector(vec_idx1);
