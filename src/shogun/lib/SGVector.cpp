@@ -117,6 +117,19 @@ template<class T> void SGVector<T>::add(const T x)
 		vector[i]+=x;
 }
 
+template<class T> void SGVector<T>::add(const SGSparseVector<T>& x)
+{
+	if (x.features)
+	{
+		for (int32_t i=0; i < x.num_feat_entries; i++)
+		{
+			index_t idx = x.features[i].feat_index;
+			ASSERT(idx < vlen);
+			vector[idx] += x.features[i].entry;
+		}
+	}
+}
+
 template<class T> void SGVector<T>::display_size() const
 {
 	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen);

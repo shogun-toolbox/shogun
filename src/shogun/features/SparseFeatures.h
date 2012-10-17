@@ -163,19 +163,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		SGSparseVector<ST> get_sparse_feature_vector(int32_t num);
 
-		/** compute the dot product between two sparse feature vectors
-		 * alpha * vec^T * vec
-		 *
-		 * @param alpha scalar to multiply with
-		 * @param avec first sparse feature vector
-		 * @param alen avec's length
-		 * @param bvec second sparse feature vector
-		 * @param blen bvec's length
-		 * @return dot product between the two sparse feature vectors
-		 */
-		static ST sparse_dot(ST alpha, SGSparseVectorEntry<ST>* avec, int32_t alen,
-				SGSparseVectorEntry<ST>* bvec, int32_t blen);
-
 		/** compute the dot product between dense weights and a sparse feature vector
 		 * alpha * sparse^T * w + b
 		 *

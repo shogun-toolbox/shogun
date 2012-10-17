@@ -248,54 +248,6 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 	}
 }
 
-template<class ST> ST CSparseFeatures<ST>::sparse_dot(ST alpha, SGSparseVectorEntry<ST>* avec, int32_t alen, SGSparseVectorEntry<ST>* bvec, int32_t blen)
-{
-	ST result=0;
-
-	//result remains zero when one of the vectors is non existent
-	if (avec && bvec)
-	{
-		if (alen<=blen)
-		{
-			int32_t j=0;
-			for (int32_t i=0; i<alen; i++)
-			{
-				int32_t a_feat_idx=avec[i].feat_index;
-
-				while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
-					j++;
-
-				if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
-				{
-					result+= avec[i].entry * bvec[j].entry;
-					j++;
-				}
-			}
-		}
-		else
-		{
-			int32_t j=0;
-			for (int32_t i=0; i<blen; i++)
-			{
-				int32_t b_feat_idx=bvec[i].feat_index;
-
-				while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
-					j++;
-
-				if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
-				{
-					result+= bvec[i].entry * avec[j].entry;
-					j++;
-				}
-			}
-		}
-
-		result*=alpha;
-	}
-
-	return result;
-}
-
 template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b)
 {
 	ASSERT(vec);
@@ -973,9 +925,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 	SGSparseVector<ST> avec=get_sparse_feature_vector(vec_idx1);
 	SGSparseVector<ST> bvec=sf->get_sparse_feature_vector(vec_idx2);
 
-	float64_t result=sparse_dot(1, avec.features, avec.num_feat_entries,
-		bvec.features, bvec.num_feat_entries);
-
+	float64_t result = SGSparseVector<ST>::sparse_dot(avec, bvec);
 	free_sparse_feature_vector(vec_idx1);
 	sf->free_sparse_feature_vector(vec_idx2);
 

@@ -16,6 +16,7 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
 
 namespace shogun
@@ -152,6 +153,12 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void add(const SGVector<T> x);
 
+		/** add sparse vector to current vector
+		 *
+		 * @param x add sparse vector x to current vector
+		 */
+		void add(const SGSparseVector<T>& x);
+
 		/** add scalar to current vector
 		 *
 		 * @param x add vector x to current vector
@@ -171,6 +178,13 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** inplace addition operator */
 		SGVector<T> operator+= (SGVector<T> x)
+		{
+			add(x);
+			return *this;
+		}
+
+		/** inplace addition operator for sparse vector */
+		SGVector<T> operator+= (SGSparseVector<T>& x)
 		{
 			add(x);
 			return *this;
