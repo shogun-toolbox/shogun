@@ -64,12 +64,10 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 	{
 		free_sparse_feature_matrix();
 		sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
-		memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(SGSparseVector<ST>)*num_vectors);
 		for (int32_t i=0; i< num_vectors; i++)
 		{
-			sparse_feature_matrix[i].features=SG_MALLOC(SGSparseVectorEntry<ST>, sparse_feature_matrix[i].num_feat_entries);
-			memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(SGSparseVectorEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
-
+			new (&sparse_feature_matrix[i]) SGSparseVector<ST>();
+			sparse_feature_matrix[i] = orig.sparse_feature_matrix[i];
 		}
 	}
 
