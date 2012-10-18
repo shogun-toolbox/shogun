@@ -458,4 +458,12 @@ void CMosek::display_problem()
 }
 
 
+float64_t CMosek::get_primal_objective_value() const
+{
+	float64_t po = 0.0;
+	MSK_getprimalobj(m_task, MSK_SOL_ITR, &po);
+
+	return po;
+}
+
 #endif /* USE_MOSEK */

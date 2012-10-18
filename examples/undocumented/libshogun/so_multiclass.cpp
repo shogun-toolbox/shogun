@@ -64,6 +64,9 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 void read_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 {
 	FILE* pfile = fopen(FNAME, "r");
+	if (pfile == NULL)
+		SG_SERROR("Unable to open file: %s\n", FNAME);
+
 	int32_t label, idx;
 	float32_t value;
 
@@ -90,8 +93,8 @@ int main(int argc, char ** argv)
 	SGVector< float64_t > labs(NUM_CLASSES*NUM_SAMPLES);
 	SGMatrix< float64_t > feats(DIMS, NUM_CLASSES*NUM_SAMPLES);
 
-	//gen_rand_data(labs, feats);
-	read_data(labs, feats);
+	gen_rand_data(labs, feats);
+	//read_data(labs, feats);
 
 	// Create train labels
 	CMulticlassSOLabels* labels = new CMulticlassSOLabels(labs);
