@@ -14,3 +14,5 @@ notifications:
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get build-dep -qq shogun
+ - sudo apt-get install -qq libeigen3-dev
+before_script: cd ./src
