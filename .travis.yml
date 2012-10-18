@@ -1,0 +1,16 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+branches:
+  only:
+    - master
+notifications:
+  recipients:
+    - wiking@jol.hu
+  email:
+    on_success: change
+    on_failure: alwaye
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get build-dep -qq shogun
