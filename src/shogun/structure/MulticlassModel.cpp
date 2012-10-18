@@ -99,6 +99,7 @@ CResultSet* CMulticlassModel::argmax(
 
 	// Build the CResultSet object to return
 	CResultSet* ret = new CResultSet();
+	SG_REF(ret);
 	CRealNumber* y  = new CRealNumber(ypred);
 	SG_REF(y);
 
