@@ -1,7 +1,6 @@
 language: cpp
 compiler:
   - gcc
-  - clang
 branches:
   only:
     - master
@@ -16,3 +15,4 @@ before_install:
  - sudo apt-get build-dep -qq shogun
  - sudo apt-get install -qq libeigen3-dev
 before_script: cd ./src
+script: ./configure --interfaces=python_modular,r_modular && make -j 4 && make tests
