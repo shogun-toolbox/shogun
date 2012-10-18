@@ -53,6 +53,12 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 */
 		inline SGVector< float64_t > get_slacks() const { return m_slacks; }
 
+		/** compute the primal objective value
+		 *
+		 * @return primal objective value.
+		 */
+		virtual float64_t compute_primal_objective() const;
+
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "PrimalMosekSOSVM"; }
 
@@ -109,6 +115,9 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 	private:
 		/** slack variables associated to each training example */
 		SGVector< float64_t > m_slacks;
+
+		/** primal objective value */
+		float64_t po_value;
 
 }; /* class CPrimalMosekSOSVM */
 

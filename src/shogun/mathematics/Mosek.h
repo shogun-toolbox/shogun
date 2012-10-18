@@ -158,6 +158,13 @@ class CMosek : public CSGObject
 		 */
 		void display_problem();
 
+		/**
+		 * Obtains the primal objective value for a solution.
+		 *
+		 * @return the primal objective value.
+		 */
+		float64_t get_primal_objective_value() const;
+
 		/** @return object name */
 		inline virtual const char* get_name() const { return "Mosek"; }
 

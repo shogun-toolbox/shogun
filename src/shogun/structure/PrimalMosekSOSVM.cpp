@@ -18,7 +18,8 @@
 using namespace shogun;
 
 CPrimalMosekSOSVM::CPrimalMosekSOSVM()
-: CLinearStructuredOutputMachine()
+: CLinearStructuredOutputMachine(),
+	po_value(0.0)
 {
 }
 
@@ -26,7 +27,8 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 		CStructuredModel*  model,
 		CLossFunction*     loss,
 		CStructuredLabels* labs)
-: CLinearStructuredOutputMachine(model, loss, labs)
+: CLinearStructuredOutputMachine(model, loss, labs),
+	po_value(0.0)
 {
 }
 
@@ -55,7 +57,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Number of auxiliary constraints
 	int32_t num_aux_con = m_model->get_num_aux_con();
 	// Number of training examples
-	int32_t N = model_features->get_num_vectors();
+	int32_t N = m_model->get_features()->get_num_vectors();
 
 	// Interface with MOSEK
 	CMosek* mosek = new CMosek(0, M+num_aux+N);
@@ -122,6 +124,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			// Predict the result of the ith training example
 			result = m_model->argmax(m_w, i);
 
+			//SG_PRINT("loss %f %f\n", compute_loss_arg(result),  m_loss->loss( compute_loss_arg(result)) );
 			// Compute the loss associated with the prediction
 			slack = m_loss->loss( compute_loss_arg(result) );
 			cur_list = (CList*) results->get_element(i);
@@ -188,6 +191,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 	} while ( old_num_con != num_con && ! exception );
 
+	po_value = mosek->get_primal_objective_value();
+
 	// Free resources
 	SG_UNREF(results);
 	SG_UNREF(mosek);
@@ -232,6 +237,12 @@ bool CPrimalMosekSOSVM::add_constraint(
 
 	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx, 
 			m_model->get_num_aux(), -result->delta) == MSK_RES_OK );
+}
+
+
+float64_t CPrimalMosekSOSVM::compute_primal_objective() const
+{
+	return po_value;
 }
 
 #endif /* USE_MOSEK */
