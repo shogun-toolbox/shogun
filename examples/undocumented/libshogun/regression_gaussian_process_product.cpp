@@ -8,7 +8,7 @@
  */
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
+#if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT)
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
@@ -173,7 +173,6 @@ int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
 
-#ifdef HAVE_NLOPT
 	/* create some data and labels */
 	SGMatrix<float64_t> matrix =
 		 SGMatrix<float64_t>(dim_vectors, num_vectors);
@@ -298,7 +297,6 @@ int main(int argc, char **argv)
 	SG_UNREF(grad_search);
 	SG_UNREF(best_combination);
 	SG_UNREF(result);
-#endif // HAVE_NLOPT
 
 	exit_shogun();
 
