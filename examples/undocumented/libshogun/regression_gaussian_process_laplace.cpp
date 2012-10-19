@@ -8,7 +8,7 @@
  */
 
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
+#if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT)
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
