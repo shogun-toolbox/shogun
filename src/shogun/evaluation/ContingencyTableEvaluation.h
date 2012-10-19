@@ -32,7 +32,8 @@ enum EContingencyTableMeasureType
 	CROSS_CORRELATION = 50,
 	RECALL = 60,
 	PRECISION = 70,
-	SPECIFICITY = 80
+	SPECIFICITY = 80,
+	CUSTOM = 999
 };
 
 /** @brief The class ContingencyTableEvaluation
@@ -197,6 +198,53 @@ public:
 
 		return m_TN/(m_TN+m_FP);
 	};
+
+	/** Returns number of True Positives 
+	 * @return number of true positives
+	 */
+	float64_t get_TP() const
+	{
+		return m_TP;
+	}
+	/** Returns number of False Positives 
+	 * @return number of false positives
+	 */
+	float64_t get_FP() const
+	{
+		return m_FP;
+	}
+	/** Returns number of True Negatives 
+	 * @return number of true negatives
+	 */
+	float64_t get_TN() const
+	{
+		return m_TN;
+	}
+	/** Returns number of True Negatives 
+	 * @return number of false negatives
+	 */
+	float64_t get_FN() const
+	{
+		return m_FN;
+	}
+
+	/** Computes custom score, not implemented
+	 * @return custom score value
+	 */
+	virtual float64_t get_custom_score()
+	{
+		SG_NOTIMPLEMENTED;
+		return 0.0;
+	}
+
+	/** Returns custom direction, not implemented
+	 * @return direction of custom score
+	 */
+	virtual EEvaluationDirection get_custom_direction()
+	{
+		SG_NOTIMPLEMENTED;
+		return ED_MAXIMIZE;
+	}
 
 protected:
 

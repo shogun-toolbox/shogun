@@ -12,6 +12,9 @@
 %newobject CGradientEvaluation::evaluate();
 %newobject CCrossValidation::evaluate();
 
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorContingencyTableEvaluation;
+#endif
 
 /* Remove C Prefix */
 %rename(Evaluation) CEvaluation;
@@ -49,6 +52,7 @@
 %rename(CrossValidationMKLStorage) CCrossValidationMKLStorage;
 %rename(CrossValidationMulticlassStorage) CCrossValidationMulticlassStorage;
 %rename(StructuredAccuracy) CStructuredAccuracy;
+%rename(DirectorContingencyTableEvaluation) CDirectorContingencyTableEvaluation;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/evaluation/EvaluationResult.h>
@@ -79,3 +83,4 @@
 %include <shogun/evaluation/CrossValidationMKLStorage.h>
 %include <shogun/evaluation/CrossValidationMulticlassStorage.h>
 %include <shogun/evaluation/StructuredAccuracy.h>
+%include <shogun/evaluation/DirectorContingencyTableEvaluation.h>

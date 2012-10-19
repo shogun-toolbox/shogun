@@ -44,6 +44,8 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 			return get_precision();
 		case SPECIFICITY:
 			return get_specificity();
+		case CUSTOM:
+			return get_custom_score();
 	}
 
 	SG_NOTIMPLEMENTED;
@@ -72,6 +74,8 @@ inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_directio
 		return ED_MAXIMIZE;
 	case SPECIFICITY:
 		return ED_MAXIMIZE;
+	case CUSTOM:
+		return get_custom_direction();
 	default:
 		SG_NOTIMPLEMENTED;
 	}
