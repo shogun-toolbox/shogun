@@ -6,11 +6,14 @@ branches:
   only:
     - master
 notifications:
-  recipients:
-    - wiking@jol.hu
-  email:
+  email: false
+  irc:
+    channels:
+      - "irc.freenode.org#shogun"
     on_success: change
     on_failure: always
+    template:
+      - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev
