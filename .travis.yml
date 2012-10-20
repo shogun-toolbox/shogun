@@ -1,6 +1,7 @@
 language: cpp
 compiler:
   - gcc
+  - clang
 branches:
   only:
     - master
@@ -9,7 +10,7 @@ notifications:
     - wiking@jol.hu
   email:
     on_success: change
-    on_failure: alwaye
+    on_failure: always
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev
