@@ -218,7 +218,7 @@ public:
 	 *
 	 * @return number of non-zero features in vector
 	 */
-	virtual inline int32_t get_nnz_features_for_vector();
+	virtual int32_t get_nnz_features_for_vector();
 
 	/**
 	 * Return the number of features in the current example.
@@ -232,7 +232,7 @@ public:
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual inline EFeatureType get_feature_type() const;
+	virtual EFeatureType get_feature_type() const;
 
 	/**
 	 * Return the feature class

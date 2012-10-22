@@ -82,7 +82,7 @@ int32_t CVwParser::read_features(CIOBuffer* buf, VwExample*& ae)
 			ae->tag.push_many(tag.start, tag.end - tag.start);
 		}
 
-		ae->ld->parse_label(words);
+		ae->ld->label_from_substring(words);
 		set_minmax(ae->ld->label);
 	}
 

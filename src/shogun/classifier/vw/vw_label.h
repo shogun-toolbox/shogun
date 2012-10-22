@@ -83,7 +83,7 @@ public:
 	 *
 	 * @param words substrings, each representing a token in the label data of the format
 	 */
-	void parse_label(v_array<substring>& words);
+	void label_from_substring(v_array<substring>& words);
 
 public:
 	/// Label value

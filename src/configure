@@ -140,6 +140,7 @@ _elwms_static=no
 _matlab_static=auto
 
 #modular interfaces
+_perl_modular=no
 _python_modular=auto
 _octave_modular=auto
 _java_modular=auto
@@ -1269,6 +1270,7 @@ Configuration:
   --interfaces=INTERFACE1,INTERFACE2,...
 			   configure shogun for a modular interface (recommended) like
 
+				  perl_modular
 				  python_modular
 				  r_modular
 				  octave_modular
@@ -1420,6 +1422,7 @@ EOF
 		_matlab_static=no
 		_elwms_static=no
 		_r_static=no
+		_perl_modular=no
 		_python_modular=no
 		_octave_modular=no
 		_r_modular=no
@@ -1449,6 +1452,9 @@ EOF
 			;;
 		  elwms_static)
 			_elwms_static=yes
+			;;
+		  perl_modular)
+			_perl_modular=yes
 			;;
 		  python_modular)
 			_python_modular=yes
@@ -4059,6 +4065,12 @@ test_modular()
 			OCTAVE_MODULAR_TARGET=octave_modular
 		fi
 
+		if test "$_perl_modular" != no
+		then
+			PARTS="$PARTS perl_modular"
+			PERL_MODULAR_TARGET=perl_modular
+		fi
+
 		if test "$_python" = yes && test "$_python_modular" != no
 		then
 			PARTS="$PARTS python_modular"
@@ -4097,6 +4109,7 @@ test_modular()
 	else
 		if test "$_octave_modular" == yes || \
 			test "$_python_modular" == yes || \
+			test "$_perl_modular" == yes || \
 			test "$_r_modular" == yes || \
 			test "$_java_modular" == yes || \
 			test "$_lua_modular" == yes || \
@@ -4445,6 +4458,69 @@ EOF
 		then
 			PARTS="$PARTS octave_static"
 			_octave_static=yes
+		fi
+	fi
+}
+
+
+test_perl()
+{
+	if test "$_libshogun" = no
+	then
+		if test "$_perl_modular" = yes
+		then
+			die "libshogun is required for perl_modular"
+		else
+			_perl_modular=no
+		fi
+	fi
+
+	if test "$_perl_modular" != no
+	then
+		echocheck "Perl"
+		if perl -v >/dev/null 2>&1
+		then
+			perl_version=`perl -MConfig -e 'print $Config{version}'`
+			echores $perl_version
+
+			echocheck "Perl ExtUtils::Embed"
+			if perl -MExtUtils::Embed -e ccopts -e ldopts >/dev/null 2>&1
+			then
+				echores yes
+				echocheck "PDL"
+				if perl -MPDL::Core::Dev -e 'print PDL_INCLUDE' >/dev/null 2>&1
+				then
+					echores yes
+					DEFINES_PERL="-DHAVE_PERL -DHAVE_PDL"
+					EXT_IF_SWIG_PERL_MODULAR=".pm"
+					COMPFLAGS_CPP_PERL="`perl -MExtUtils::Embed -e ccopts`"
+					COMPFLAGS_C_PERL=$COMPFLAGS_CPP_PERL
+					INCLUDES_PERL="`perl -MExtUtils::Embed -e perl_inc` `perl -MPDL::Core::Dev -e 'print PDL_INCLUDE'`"
+					LINKFLAGS_PERL="`perl -MExtUtils::Embed -e ldopts`"
+					SWIGFLAGS_PERL_MODULAR="-c++ -perl"
+				else
+					if test "$_perl_modular" = yes
+					then
+						die "perl is required for perl_modular"
+					else
+						_perl_modular=no
+					fi
+				fi
+			else
+				if test "$_perl_modular" = yes
+				then
+					die "perl is required for perl_modular"
+				else
+					_perl_modular=no
+				fi
+			fi
+		else
+			if test "$_perl_modular" = yes
+			then
+				die "perl is required for perl_modular"
+			else
+				_perl_modular=no
+			fi
 		fi
 	fi
 }
@@ -4842,6 +4918,7 @@ CSHARP_MODULAR_TARGET	= ${CSHARP_MODULAR_TARGET}
 RUBY_MODULAR_TARGET		= ${RUBY_MODULAR_TARGET}
 LUA_MODULAR_TARGET		= ${LUA_MODULAR_TARGET}
 PYTHON_MODULAR_TARGET	= ${PYTHON_MODULAR_TARGET}
+PERL_MODULAR_TARGET		= ${PERL_MODULAR_TARGET}
 OCTAVE_MODULAR_TARGET	= ${OCTAVE_MODULAR_TARGET}
 MAKE 			= ${MAKE}
 MAKEDEPEND		= ${MAKEDEPEND}
@@ -4993,6 +5070,16 @@ PRELINKFLAGS_PYTHON_MODULAR	= ${PRELINKFLAGS_PYTHON}
 LINKFLAGS_PYTHON_MODULAR 	= ${LINKFLAGS_PYTHON}
 POSTLINKFLAGS_PYTHON_MODULAR= ${POSTLINKFLAGS_PYTHON}
 SWIGFLAGS_PYTHON_MODULAR 	= ${SWIGFLAGS_PYTHON_MODULAR}
+
+PRE_LIB_SWIG_PERL_MODULAR	= ${PRE_LIB_SWIG_PERL_MODULAR}
+EXT_LIB_SWIG_PERL_MODULAR	= ${EXT_LIB_SWIG_PERL_MODULAR}
+EXT_IF_SWIG_PERL_MODULAR	= ${EXT_IF_SWIG_PERL_MODULAR}
+DEFINES_PERL_MODULAR		= ${DEFINES_PERL}
+INCLUDES_PERL_MODULAR		= ${INCLUDES_PERL}
+PRELINKFLAGS_PERL_MODULAR	= ${PRELINKFLAGS_PERL}
+LINKFLAGS_PERL_MODULAR 		= ${LINKFLAGS_PERL}
+POSTLINKFLAGS_PERL_MODULAR	= ${POSTLINKFLAGS_PERL}
+SWIGFLAGS_PERL_MODULAR 		= ${SWIGFLAGS_PERL_MODULAR}
 
 PRE_LIB_SWIG_JAVA_MODULAR	= ${PRE_LIB_SWIG_JAVA_MODULAR}
 EXT_LIB_SWIG_JAVA_MODULAR	= ${EXT_LIB_SWIG_JAVA_MODULAR}
@@ -5254,6 +5341,7 @@ set_opts
 test_spinlocks
 test_libshogun
 test_cmdline
+test_perl
 test_python
 test_octave
 test_r

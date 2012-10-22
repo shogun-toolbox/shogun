@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-void VwLabel::parse_label(v_array<substring>& words)
+void VwLabel::label_from_substring(v_array<substring>& words)
 {
 	switch(words.index())
 	{

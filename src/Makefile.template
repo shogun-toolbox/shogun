@@ -167,6 +167,7 @@ clean: swigclean swigdocclean
 	@rm -f $(shell find . -type f -name '*.pyc' -o -name '*.R')
 	@rm -f $(shell find . -type f -name '*.RData')
 	@rm -f $(shell find . -type f -name '*.oct')
+	@rm -f $(shell find . -type f -name '*.pm')
 	@rm -f $(shell find . -type l -name '*.i')
 	@rm -f $(shell for i in `find . -type l -name '*.doxy'` ; do rm -rf `basename $$i .doxy` ; done)
 	@rm -f $(shell find . -type l -name '*.doxy')
