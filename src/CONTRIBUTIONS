@@ -86,3 +86,9 @@ We integrated the work of the following people:
  Fernando José Iglesias Garcia
  	- Generic multiclass OvO training
  	- Quadratic Discriminant Analysis
+
+ J. Liu, S. Ji and J. Ye
+ 	- SLEP: A Sparse Learning Package C and ported code
+
+ J. Zhou, J. Chen and J. Ye
+ 	- MALSAR: Multi-tAsk Learning via StructurAL Regularization ported code
