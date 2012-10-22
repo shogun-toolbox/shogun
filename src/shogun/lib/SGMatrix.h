@@ -96,12 +96,7 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
-		/** operator overload for element-wise matrix comparison.
-		 * Note that only numerical data is compared
-		 *
-		 * @param other matrix to compare with
-		 * @return true iff all elements are euqal using == operator
-		 */
+		/** check for pointer identity */
 		inline bool operator==(SGMatrix<T>& other)
 		{
 			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
@@ -110,9 +105,15 @@ template<class T> class SGMatrix : public SGReferencedData
 			if (matrix!=other.matrix)
 				return false;
 
-
+			return true;
 		}
 
+		/** operator overload for element-wise matrix comparison.
+		 * Note that only numerical data is compared
+		 *
+		 * @param other matrix to compare with
+		 * @return true iff all elements are equal
+		 */
 		inline bool equals(SGMatrix<T>& other)
 		{
 			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
