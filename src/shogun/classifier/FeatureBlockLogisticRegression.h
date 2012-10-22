@@ -22,6 +22,8 @@ namespace shogun
  * (done via CIndexBlockGroup) and feature tree (done via CIndexTree). 
  * Handling of feature relations is done via L1/Lq (for groups) and L1/L2 
  * (for trees) regularization.
+ *
+ * The underlying solver is based on the SLEP library.
  * 
  * @see CIndexBlock
  * @see CIndexBlockGroup

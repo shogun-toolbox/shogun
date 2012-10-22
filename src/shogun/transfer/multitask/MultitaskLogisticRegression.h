@@ -27,7 +27,11 @@ namespace shogun
 /** @brief class Multitask Logistic Regression used
  * to solve classification problems with a few tasks
  * related via group or tree. Based on L1/Lq regression 
- * for groups and L1/L2 for trees. */
+ * for groups and L1/L2 for trees. 
+ *
+ * The underlying solver is based on the SLEP library.
+ *
+ */
 class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 {
 
