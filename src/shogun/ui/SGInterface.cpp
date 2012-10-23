@@ -4080,10 +4080,9 @@ bool CSGInterface::cmd_get_kernel_optimization()
 		case K_LINEAR:
 		{
 			CLinearKernel* k=(CLinearKernel*) kernel;
-			int32_t len=0;
-			const float64_t* weights=k->get_normal(len);
+			SGVector<float64_t> weights=k->get_w();
 
-			set_vector(weights, len);
+			set_vector(weights.vector, weights.size());
 			return true;
 		}
 		default:

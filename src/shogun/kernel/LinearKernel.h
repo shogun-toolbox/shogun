@@ -98,9 +98,6 @@ class CLinearKernel: public CDotKernel
 	 	*/
 		virtual float64_t compute_optimized(int32_t idx);
 
-		/** clear normal vector */
-		virtual void clear_normal();
-
 		/** add to normal vector
 		 *
 		 * @param idx where to add
@@ -108,58 +105,30 @@ class CLinearKernel: public CDotKernel
 		 */
 		virtual void add_to_normal(int32_t idx, float64_t weight);
 
-		/** get normal
-		 *
-		 * @param len where length of normal vector will be stored
-		 * @return normal vector
-		 */
-		inline const float64_t* get_normal(int32_t& len)
-		{
-			if (lhs && normal)
-			{
-				len = ((CDotFeatures*) lhs)->get_dim_feature_space();
-				return normal;
-			}
-			else
-			{
-				len = 0;
-				return NULL;
-			}
-		}
-
-		/** get normal vector (swig compatible)
+		/** get normal vector
 		 *
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		inline void get_w(float64_t** dst_w, int32_t* dst_dims)
+		SGVector<float64_t> get_w() const 
 		{
-			ASSERT(lhs && normal);
-			int32_t len = ((CDotFeatures*) lhs)->get_dim_feature_space();
-			ASSERT(dst_w && dst_dims);
-			*dst_dims=len;
-			*dst_w=SG_MALLOC(float64_t, *dst_dims);
-			ASSERT(*dst_w);
-			memcpy(*dst_w, normal, sizeof(float64_t) * (*dst_dims));
+			ASSERT(lhs);
+			return normal;
 		}
 
-		/** set normal vector (swig compatible)
+		/** set normal vector
 		 *
-		 * @param src_w new w
-		 * @param src_w_dim dimension of new w - must fit dim of lhs
+		 * @param w new normal
 		 */
-		inline void set_w(float64_t* src_w, int32_t src_w_dim)
+		void set_w(SGVector<float64_t> w)
 		{
-			ASSERT(lhs && src_w_dim==((CDotFeatures*) lhs)->get_dim_feature_space());
-			clear_normal();
-			memcpy(normal, src_w, sizeof(float64_t) * src_w_dim);
+			ASSERT(lhs && w.size()==((CDotFeatures*) lhs)->get_dim_feature_space());
+			this->normal = w;
 		}
 
 	protected:
 		/** normal vector (used in case of optimized kernel) */
-		float64_t* normal;
-		/** length of normal vector */
-		int32_t normal_length;
+		SGVector<float64_t> normal;
 };
 }
 #endif /* _LINEARKERNEL_H__ */

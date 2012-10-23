@@ -18,13 +18,13 @@
 using namespace shogun;
 
 CLinearKernel::CLinearKernel()
-: CDotKernel(0), normal(NULL), normal_length(0)
+: CDotKernel(0)
 {
 	properties |= KP_LINADD;
 }
 
 CLinearKernel::CLinearKernel(CDotFeatures* l, CDotFeatures* r)
-: CDotKernel(0), normal(NULL), normal_length(0)
+: CDotKernel(0)
 {
 	properties |= KP_LINADD;
 	init(l,r);
@@ -49,24 +49,10 @@ void CLinearKernel::cleanup()
 	CKernel::cleanup();
 }
 
-void CLinearKernel::clear_normal()
-{
-	int32_t num = ((CDotFeatures*) lhs)->get_dim_feature_space();
-	if (normal==NULL)
-	{
-		normal = SG_MALLOC(float64_t, num);
-		normal_length=num;
-	}
-
-	memset(normal, 0, sizeof(float64_t)*normal_length);
-
-	set_is_initialized(true);
-}
-
 void CLinearKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	((CDotFeatures*) lhs)->add_to_dense_vec(
-		normalizer->normalize_lhs(weight, idx), idx, normal, normal_length);
+		normalizer->normalize_lhs(weight, idx), idx, normal.vector, normal.size());
 	set_is_initialized(true);
 }
 
@@ -98,8 +84,7 @@ bool CLinearKernel::init_optimization(CKernelMachine* km)
 bool CLinearKernel::delete_optimization()
 {
 	SG_FREE(normal);
-	normal_length=0;
-	normal=NULL;
+	normal = SGVector<float64_t>();
 	set_is_initialized(false);
 
 	return true;
@@ -109,6 +94,6 @@ float64_t CLinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized());
 	float64_t result = ((CDotFeatures*) rhs)->
-		dense_dot(idx, normal, normal_length);
+		dense_dot(idx, normal.vector, normal.size());
 	return normalizer->normalize_rhs(result, idx);
 }
