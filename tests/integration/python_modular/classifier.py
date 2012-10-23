@@ -87,7 +87,7 @@ def _get_results (indata, prefix, classifier, machine=None, feats=None):
 			classifier.set_features(feats['test'])
 
 	res['classified']=max(abs(
-		classifier.apply().get_confidences()-indata[prefix+'classified']))
+		classifier.apply().get_values()-indata[prefix+'classified']))
 	return res
 
 
