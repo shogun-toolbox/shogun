@@ -4493,10 +4493,11 @@ test_perl()
 					echores yes
 					DEFINES_PERL="-DHAVE_PERL -DHAVE_PDL"
 					EXT_IF_SWIG_PERL_MODULAR=".pm"
+					EXT_LIB_SWIG_PERL_MODULAR="$EXT_LIB"
 					COMPFLAGS_CPP_PERL="`perl -MExtUtils::Embed -e ccopts`"
 					COMPFLAGS_C_PERL=$COMPFLAGS_CPP_PERL
 					INCLUDES_PERL="`perl -MExtUtils::Embed -e perl_inc` `perl -MPDL::Core::Dev -e 'print PDL_INCLUDE'`"
-					LINKFLAGS_PERL="`perl -MExtUtils::Embed -e ldopts`"
+					LINKFLAGS_PERL="`perl -MExtUtils::Embed -e ldopts` -shared /usr/lib/perl5/auto/PDL/Core/Core.so"
 					SWIGFLAGS_PERL_MODULAR="-c++ -perl"
 				else
 					if test "$_perl_modular" = yes
