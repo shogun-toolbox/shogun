@@ -115,7 +115,7 @@ class CDistribution : public CSGObject
 		 * @param num_param which param
 		 * @return model parameter
 		 */
-		virtual inline float64_t get_model_parameter(int32_t num_param)
+		virtual float64_t get_model_parameter(int32_t num_param)
 		{
 			return exp(get_log_model_parameter(num_param));
 		}
@@ -126,7 +126,7 @@ class CDistribution : public CSGObject
 		 * @param num_example which example
 		 * @return derivative of likelihood function
 		 */
-		virtual inline float64_t get_derivative(
+		virtual float64_t get_derivative(
 			int32_t num_param, int32_t num_example)
 		{
 			return exp(get_log_derivative(num_param, num_example));
@@ -137,7 +137,7 @@ class CDistribution : public CSGObject
 		 * @param num_example which example
 		 * @return likelihood for example
 		 */
-		virtual inline float64_t get_likelihood_example(int32_t num_example)
+		virtual float64_t get_likelihood_example(int32_t num_example)
 		{
 			return exp(get_log_likelihood_example(num_example));
 		}
@@ -146,7 +146,7 @@ class CDistribution : public CSGObject
 		 *
 		 * @param f new feature vectors
 		 */
-		virtual inline void set_features(CFeatures* f)
+		virtual void set_features(CFeatures* f)
 		{
 			SG_UNREF(features);
 			SG_REF(f);
@@ -157,7 +157,7 @@ class CDistribution : public CSGObject
 		 *
 		 * @return feature vectors
 		 */
-		virtual inline CFeatures* get_features()
+		virtual CFeatures* get_features()
 		{
 			SG_REF(features);
 			return features;
@@ -167,13 +167,13 @@ class CDistribution : public CSGObject
 		 *
 		 * @param pseudo new pseudo count
 		 */
-		virtual inline void set_pseudo_count(float64_t pseudo) { pseudo_count=pseudo; }
+		virtual void set_pseudo_count(float64_t pseudo) { pseudo_count=pseudo; }
 
 		/** get pseudo count
 		 *
 		 * @return pseudo count
 		 */
-		virtual inline float64_t get_pseudo_count() { return pseudo_count; }
+		virtual float64_t get_pseudo_count() { return pseudo_count; }
 
 	protected:
 		/** feature vectors */

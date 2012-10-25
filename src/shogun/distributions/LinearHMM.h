@@ -116,7 +116,7 @@ class CLinearHMM : public CDistribution
 		 * @param obs observation
 		 * @param pos position
 		 */
-		virtual inline float64_t get_log_derivative_obsolete(
+		virtual float64_t get_log_derivative_obsolete(
 			uint16_t obs, int32_t pos)
 		{
 			return 1.0/transition_probs[pos*num_symbols+obs];
@@ -128,7 +128,7 @@ class CLinearHMM : public CDistribution
 		 * @param len length
 		 * @param pos position
 		 */
-		virtual inline float64_t get_derivative_obsolete(
+		virtual float64_t get_derivative_obsolete(
 			uint16_t* vector, int32_t len, int32_t pos)
 		{
 			ASSERT(pos<len);
@@ -139,19 +139,19 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @return sequence length of each example
 		 */
-		virtual inline int32_t get_sequence_length() { return sequence_length; }
+		virtual int32_t get_sequence_length() { return sequence_length; }
 
 		/** get number of symbols in examples
 		 *
 		 * @return number of symbols in examples
 		 */
-		virtual inline int32_t get_num_symbols() { return num_symbols; }
+		virtual int32_t get_num_symbols() { return num_symbols; }
 
 		/** get number of model parameters
 		 *
 		 * @return number of model parameters
 		 */
-		virtual inline int32_t get_num_model_parameters() { return num_params; }
+		virtual int32_t get_num_model_parameters() { return num_params; }
 
 		/** get positional log parameter
 		 *
@@ -159,7 +159,7 @@ class CLinearHMM : public CDistribution
 		 * @param position position
 		 * @return positional log parameter
 		 */
-		virtual inline float64_t get_positional_log_parameter(
+		virtual float64_t get_positional_log_parameter(
 			uint16_t obs, int32_t position)
 		{
 			return log_transition_probs[position*num_symbols+obs];
@@ -170,7 +170,7 @@ class CLinearHMM : public CDistribution
 		 * @param num_param which param
 		 * @result logarithm of given model parameter
 		 */
-		virtual inline float64_t get_log_model_parameter(int32_t num_param)
+		virtual float64_t get_log_model_parameter(int32_t num_param)
 		{
 			ASSERT(log_transition_probs);
 			ASSERT(num_param<num_params);
@@ -205,7 +205,7 @@ class CLinearHMM : public CDistribution
 		virtual bool set_transition_probs(const SGVector<float64_t> probs);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LinearHMM"; }
+		virtual const char* get_name() const { return "LinearHMM"; }
 
 	protected:
 		virtual void load_serializable_post() throw (ShogunException);

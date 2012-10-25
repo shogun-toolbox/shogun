@@ -61,10 +61,10 @@ class CPNorm : public CDensePreprocessor<float64_t>
 		virtual SGVector<float64_t> apply_to_feature_vector (SGVector<float64_t> vector);
 
 		/** @return object name */
-		virtual inline const char* get_name () const { return "PNorm"; }
+		virtual const char* get_name () const { return "PNorm"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreprocessorType get_type () const { return P_PNORM; }
+		virtual EPreprocessorType get_type () const { return P_PNORM; }
 		
 		/**
 		 * Set norm

@@ -67,14 +67,14 @@ public:
 	 *
 	 * @return name LinearARDKernel
 	 */
-	inline virtual const char* get_name() const { return "LinearARDKernel"; }
+	virtual const char* get_name() const { return "LinearARDKernel"; }
 
 
 	/** return feature class the kernel can deal with
 	 *
 	 * @return feature class DENSE
 	 */
-	inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
+	virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 	/** return feature type the kernel can deal with
 	 *

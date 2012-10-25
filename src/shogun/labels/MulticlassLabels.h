@@ -115,7 +115,7 @@ class CMulticlassLabels : public CDenseLabels
 		void set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "MulticlassLabels"; }
+		virtual const char* get_name() const { return "MulticlassLabels"; }
 
 	protected:
 

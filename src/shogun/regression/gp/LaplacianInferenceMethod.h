@@ -129,7 +129,7 @@ public:
 	 *
 	 * @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "LaplacianInferenceMethod";
 	}
@@ -160,56 +160,56 @@ public:
 	 *
 	 * @return Tolerance for Newton Iterations
 	 */
-	inline virtual float64_t get_newton_tolerance() {
+	virtual float64_t get_newton_tolerance() {
 		return m_tolerance;}
 
 	/*Set tolerance for Newton Iterations
 	 *
 	 * @param Tolerance for Newton Iterations
 	 */
-	inline virtual void set_newton_tolerance(float64_t tol) {
+	virtual void set_newton_tolerance(float64_t tol) {
 		m_tolerance = tol;}
 
 	/*Get tolerance for Brent's Minimization Method
 	 *
 	 * @return tolerance for Brent's Minimization Method
 	 */
-	inline virtual float64_t get_minimization_tolerance() {
+	virtual float64_t get_minimization_tolerance() {
 		return m_opt_tolerance;}
 
 	/*Set tolerance for Brent's Minimization Method
 	 *
 	 * @param tolerance for Brent's Minimization Method
 	 */
-	inline virtual void set_minimization_tolerance(float64_t tol) {
+	virtual void set_minimization_tolerance(float64_t tol) {
 		m_opt_tolerance = tol;}
 
 	/*Get max iterations for Brent's Minimization Method
 	 *
 	 * @return max iterations for Brent's Minimization Method
 	 */
-	inline virtual int32_t get_minimization_iterations() {
+	virtual int32_t get_minimization_iterations() {
 		return m_max;}
 
 	/*Set max iterations for Brent's Minimization Method
 	 *
 	 * @param max iterations for Brent's Minimization Method
 	 */
-	inline virtual void set_minimization_tolerance(int32_t itr) {
+	virtual void set_minimization_tolerance(int32_t itr) {
 		m_max = itr;}
 
 	/*Get max Newton iterations
 	 *
 	 * @return max Newton iterations
 	 */
-	inline virtual int32_t get_newton_iterations() {
+	virtual int32_t get_newton_iterations() {
 		return m_max_itr;}
 
 	/*Set max Newton iterations
 	 *
 	 * @param max Newton iterations
 	 */
-	inline virtual void set_newton_tolerance(int32_t itr) {
+	virtual void set_newton_tolerance(int32_t itr) {
 		m_max_itr = itr;}
 
 

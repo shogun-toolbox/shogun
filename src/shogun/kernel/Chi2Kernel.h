@@ -74,7 +74,7 @@ class CChi2Kernel: public CDotKernel
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *

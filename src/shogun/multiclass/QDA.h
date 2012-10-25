@@ -91,13 +91,13 @@ class CQDA : public CNativeMulticlassMachine
 		 *
 		 * @return classifier type QDA
 		 */
-		inline virtual EMachineType get_classifier_type() { return CT_QDA; }
+		virtual EMachineType get_classifier_type() { return CT_QDA; }
 
 		/** set features
 		 *
 		 * @param feat features to set
 		 */
-		inline virtual void set_features(CDotFeatures* feat)
+		virtual void set_features(CDotFeatures* feat)
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
@@ -118,7 +118,7 @@ class CQDA : public CNativeMulticlassMachine
 		 *
 		 * @return object name
 		 */
-		inline virtual const char* get_name() const { return "QDA"; }
+		virtual const char* get_name() const { return "QDA"; }
 
 		/** get a class' mean vector
 		 *

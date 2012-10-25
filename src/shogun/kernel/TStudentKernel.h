@@ -65,22 +65,22 @@ public:
 	/**
 	 * @return kernel type
 	 */
-	inline virtual EKernelType get_kernel_type() { return K_TSTUDENT; }
+	virtual EKernelType get_kernel_type() { return K_TSTUDENT; }
 
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "TStudentKernel"; }
+	virtual const char* get_name() const { return "TStudentKernel"; }
 
 	/** getter for degree parameter
 	 *  @return kernel parameter degree

@@ -55,7 +55,7 @@ class CGUIPreprocessor : public CSGObject
 		bool attach_preproc(char* target, bool do_force=false);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUIPreprocessor"; }
+		virtual const char* get_name() const { return "GUIPreprocessor"; }
 
 	protected:
 		/** preprocess features

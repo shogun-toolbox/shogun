@@ -82,10 +82,10 @@ public:
 		}
 
 		/** @return object name */
-		virtual inline const char* get_name() const { return "KernelPCA"; }
+		virtual const char* get_name() const { return "KernelPCA"; }
 
 		/** @return the type of preprocessor */
-		virtual inline EPreprocessorType get_type() const { return P_KERNELPCA; }
+		virtual EPreprocessorType get_type() const { return P_KERNELPCA; }
 
 	protected:
 

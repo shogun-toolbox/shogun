@@ -166,7 +166,7 @@ class CMosek : public CSGObject
 		float64_t get_primal_objective_value() const;
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Mosek"; }
+		virtual const char* get_name() const { return "Mosek"; }
 
 	private:
 		/** MOSEK environment */

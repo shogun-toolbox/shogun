@@ -64,7 +64,7 @@ class CGaussianProcessRegression : public CMachine
 		*
 		* @param feat features to set
 		*/
-		virtual inline void set_features(CFeatures* feat)
+		virtual void set_features(CFeatures* feat)
 		{
 			SG_UNREF(m_features);
 			SG_REF(feat);
@@ -140,7 +140,7 @@ class CGaussianProcessRegression : public CMachine
 		*
 		* @return classifier type GaussianProcessRegression
 		*/
-		inline virtual EMachineType get_classifier_type()
+		virtual EMachineType get_classifier_type()
 		{
 		  return CT_GAUSSIANPROCESSREGRESSION;
 		}
@@ -158,7 +158,7 @@ class CGaussianProcessRegression : public CMachine
 		SGVector<float64_t> get_mean_vector();
 
 		/** @return object name */
-		inline virtual const char* get_name() const
+		virtual const char* get_name() const
 		{
 			return "GaussianProcessRegression";
 		}

@@ -67,13 +67,13 @@ template <class ST> class CSparseKernel : public CKernel
 		 *
 		 * @return feature class SPARSE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+		virtual EFeatureClass get_feature_class() { return C_SPARSE; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type();
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.

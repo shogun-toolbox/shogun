@@ -53,7 +53,7 @@ class CDomainAdaptationSVM : public CSVMLight
 		 *
 		 * @return classifier type
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_DASVM; }
+		virtual EMachineType get_classifier_type() { return CT_DASVM; }
 
 		/** classify objects
 		 *
@@ -86,7 +86,7 @@ class CDomainAdaptationSVM : public CSVMLight
 		virtual void set_train_factor(float64_t factor);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "DomainAdaptationSVM"; }
+		virtual const char* get_name() const { return "DomainAdaptationSVM"; }
 
 	protected:
 

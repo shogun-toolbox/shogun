@@ -438,7 +438,7 @@ public:
 	static SGVector<int32_t> sample_indices(int32_t sample_size, int32_t N);
 
 	/** @return object name */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "Statistics";
 	}

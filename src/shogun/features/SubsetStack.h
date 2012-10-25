@@ -69,7 +69,7 @@ public:
 	}
 
 	/** @return true iff no subset was added */
-	inline virtual bool has_subsets() const
+	virtual bool has_subsets() const
 	{
 		return m_active_subsets_stack->get_num_elements();
 	}

@@ -112,13 +112,13 @@ class CKernelRidgeRegression : public CKernelMachine
 		 *
 		 * @return classifier type KernelRidgeRegression
 		 */
-		inline virtual EMachineType get_classifier_type()
+		virtual EMachineType get_classifier_type()
 		{
 			return CT_KERNELRIDGEREGRESSION;
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "KernelRidgeRegression"; }
+		virtual const char* get_name() const { return "KernelRidgeRegression"; }
 
 	protected:
 		/** train regression

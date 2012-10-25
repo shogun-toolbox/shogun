@@ -58,7 +58,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @return classifier type OnlineSVMSGD
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_SVMSGD; }
+		virtual EMachineType get_classifier_type() { return CT_SVMSGD; }
 
 		/** train classifier
 		 *
@@ -151,7 +151,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "OnlineSVMSGD"; }
+		inline const char* get_name() const { return "OnlineSVMSGD"; }
 
 	protected:
 		/** calibrate

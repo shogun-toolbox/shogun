@@ -128,7 +128,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		inline virtual bool init_optimization(
+		virtual bool init_optimization(
 			int32_t count, int32_t *IDX, float64_t* alphas)
 		{
 			return init_optimization(count, IDX, alphas, -1);
@@ -191,7 +191,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		/** clear normal
 		 * subkernel functionality
 		 */
-		inline virtual void clear_normal()
+		virtual void clear_normal()
 		{
 			if (get_is_initialized())
 			{
@@ -209,7 +209,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		inline virtual void add_to_normal(int32_t idx, float64_t weight)
+		virtual void add_to_normal(int32_t idx, float64_t weight)
 		{
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
@@ -227,7 +227,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 *
 		 * @return number of subkernels
 		 */
-		inline virtual int32_t get_num_subkernels()
+		virtual int32_t get_num_subkernels()
 		{
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				return ((CMultitaskKernelMklNormalizer*)normalizer)->get_num_betas();

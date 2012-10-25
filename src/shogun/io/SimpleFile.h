@@ -207,7 +207,7 @@ template <class T> class CSimpleFile : public CSGObject
 		inline bool is_ok() { return status; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SimpleFile"; }
+		virtual const char* get_name() const { return "SimpleFile"; }
 
 	protected:
 		/** file descriptor */

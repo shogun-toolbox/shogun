@@ -163,13 +163,13 @@ public:
 	 *
 	 * @return classifier type LinearRidgeRegression
 	 */
-	inline virtual EMachineType get_classifier_type()
+	virtual EMachineType get_classifier_type()
 	{
 		return CT_LARS;
 	}
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "LARS"; }
+	virtual const char* get_name() const { return "LARS"; }
 
 protected:
 	virtual bool train_machine(CFeatures* data=NULL);

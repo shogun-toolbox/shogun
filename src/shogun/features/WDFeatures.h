@@ -166,9 +166,9 @@ class CWDFeatures : public CDotFeatures
 		 */
 		virtual EFeatureClass get_feature_class() const;
 
-		inline virtual int32_t get_num_vectors() const;
+		virtual int32_t get_num_vectors() const;
 
-		inline virtual int32_t get_size() const;
+		virtual int32_t get_size() const;
 
 		/** set normalization constant
 		 * @param n n=0 means automagic */
@@ -178,7 +178,7 @@ class CWDFeatures : public CDotFeatures
 		float64_t get_normalization_const();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "WDFeatures"; }
+		virtual const char* get_name() const { return "WDFeatures"; }
 
 		/** set wd weights
 		 *

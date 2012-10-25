@@ -88,7 +88,7 @@ class CTestStatistic : public CSGObject
 		virtual void set_null_approximation_method(
 				ENullApproximationMethod null_approximation_method);
 
-		inline virtual const char* get_name() const=0;
+		virtual const char* get_name() const=0;
 
 	private:
 		void init();

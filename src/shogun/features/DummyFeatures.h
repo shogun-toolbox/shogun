@@ -51,10 +51,10 @@ class CDummyFeatures : public CFeatures
 		inline EFeatureType get_feature_type() const;
 
 		/** get feature class (ANY) */
-		inline virtual EFeatureClass get_feature_class() const;
+		virtual EFeatureClass get_feature_class() const;
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "DummyFeatures"; }
+		virtual const char* get_name() const { return "DummyFeatures"; }
 
 	private:
 		void init();

@@ -222,7 +222,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return name Director
 		 */
-		inline virtual const char* get_name() const { return "DirectorKernel"; }
+		virtual const char* get_name() const { return "DirectorKernel"; }
 
 		/** for optimizable kernels, i.e. kernels where the weight
 		 * vector can be computed explicitly (if it fits into memory)
@@ -246,7 +246,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @param t optimization type to set
 		 */
-		virtual inline void set_optimization_type(EOptimizationType t)
+		virtual void set_optimization_type(EOptimizationType t)
 		{
 			CKernel::set_optimization_type(t);
 		}

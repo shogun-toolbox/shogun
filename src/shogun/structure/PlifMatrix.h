@@ -187,7 +187,7 @@ class CPlifMatrix: public CSGObject
 
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "PlifMatrix"; }
+		virtual const char* get_name() const { return "PlifMatrix"; }
 
 	protected:
 

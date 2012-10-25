@@ -92,13 +92,13 @@ class CGaussianKernel: public CDotKernel
 		 *
 		 * @return name Gaussian
 		 */
-		inline virtual const char* get_name() const { return "GaussianKernel"; }
+		virtual const char* get_name() const { return "GaussianKernel"; }
 
 		/** set the kernel's width
 		 *
 		 * @param w kernel width
 		 */
-		inline virtual void set_width(float64_t w)
+		virtual void set_width(float64_t w)
 		{
 			width=w;
 		}
@@ -107,7 +107,7 @@ class CGaussianKernel: public CDotKernel
 		 *
 		 * @return kernel width
 		 */
-		inline virtual float64_t get_width() const
+		virtual float64_t get_width() const
 		{
 			return width;
 		}

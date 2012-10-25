@@ -255,7 +255,7 @@ class CMKL : public CSVM
 		virtual void compute_sum_beta(float64_t* sumw);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "MKL"; }
+		virtual const char* get_name() const { return "MKL"; }
 
 	protected:
 		/** train MKL classifier

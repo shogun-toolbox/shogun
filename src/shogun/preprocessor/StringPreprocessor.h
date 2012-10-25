@@ -43,15 +43,15 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		virtual ST* apply_to_string(ST* f, int32_t &len)=0;
 
 		/// return that we are string features (just fixed size matrices)
-		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
+		virtual EFeatureClass get_feature_class() { return C_STRING; }
 		/// return feature type
-		inline virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type();
 
 		/// return the name of the preprocessor
-		virtual inline const char* get_name() const { return "UNKNOWN"; }
+		virtual const char* get_name() const { return "UNKNOWN"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; }
+		virtual EPreprocessorType get_type() const { return P_UNKNOWN; }
 
 };
 

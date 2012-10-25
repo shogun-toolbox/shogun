@@ -221,7 +221,7 @@ class CGUIFeatures : public CSGObject
 		bool set_reference_features(char* target);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUIFeatures"; }
+		virtual const char* get_name() const { return "GUIFeatures"; }
 
 	protected:
 		/** ui */

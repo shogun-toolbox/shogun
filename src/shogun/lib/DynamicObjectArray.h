@@ -439,7 +439,7 @@ class CDynamicObjectArray : public CSGObject
 		inline const char* get_array_name() const { return name; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const
+		virtual const char* get_name() const
 		{ return "DynamicObjectArray"; }
 
 	private:

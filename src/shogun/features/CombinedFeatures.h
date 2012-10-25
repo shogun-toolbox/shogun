@@ -55,7 +55,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return feature type UNKNOWN
 		 */
-		inline virtual EFeatureType get_feature_type() const
+		virtual EFeatureType get_feature_type() const
 		{
 			return F_UNKNOWN;
 		}
@@ -64,7 +64,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class() const
+		virtual EFeatureClass get_feature_class() const
 		{
 			return C_COMBINED;
 		}
@@ -73,7 +73,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		inline virtual int32_t get_num_vectors() const
+		virtual int32_t get_num_vectors() const
 		{
 			return m_subset_stack->has_subsets()
 					? m_subset_stack->get_size() : num_vec;
@@ -198,7 +198,7 @@ class CCombinedFeatures : public CFeatures
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "CombinedFeatures"; }
+		virtual const char* get_name() const { return "CombinedFeatures"; }
 
 	private:
 		void init();

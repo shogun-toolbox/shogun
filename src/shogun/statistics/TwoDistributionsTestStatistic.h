@@ -89,7 +89,7 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 */
 		virtual void set_p_and_q(CFeatures* p_and_q);
 
-		inline virtual const char* get_name() const=0;
+		virtual const char* get_name() const=0;
 
 	private:
 		void init();

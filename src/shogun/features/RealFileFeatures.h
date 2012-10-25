@@ -61,7 +61,7 @@ class CRealFileFeatures: public CDenseFeatures<float64_t>
 		int32_t get_label(int32_t idx);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "RealFileFeatures"; }
+		virtual const char* get_name() const { return "RealFileFeatures"; }
 
 	protected:
 		/** compute feature vector for sample num

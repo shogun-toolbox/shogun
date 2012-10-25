@@ -37,7 +37,7 @@ public:
 	 *
 	 * @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() const { return "ZeroMean"; }
+	virtual const char* get_name() const { return "ZeroMean"; }
 
 	/** Returns the mean of the specified data
 	 *

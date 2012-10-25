@@ -130,7 +130,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 *
 		 * @return feature type WORD
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_WORD; }
+		virtual EFeatureType get_feature_type() { return F_WORD; }
 
 		/** compute scoring
 		 *

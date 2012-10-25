@@ -70,7 +70,7 @@ class CAttenuatedEuclideanDistance: public CRealDistance
 		 *
 		 * @return feature type DREAL
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_DREAL; }
+		virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 		/** get name of the distance
 		 *

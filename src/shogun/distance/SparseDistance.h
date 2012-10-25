@@ -50,13 +50,13 @@ template <class ST> class CSparseDistance : public CDistance
 		 *
 		 * @return feature class SPARSE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+		virtual EFeatureClass get_feature_class() { return C_SPARSE; }
 
 		/** get feature type the distance can deal with
 		 *
 		 * @return template-specific feature type
 		 */
-		inline virtual EFeatureType get_feature_type();
+		virtual EFeatureType get_feature_type();
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.

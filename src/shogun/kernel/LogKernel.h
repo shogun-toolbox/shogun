@@ -63,22 +63,22 @@ public:
 	/**
 	 * @return kernel type
 	 */
-	inline virtual EKernelType get_kernel_type() { return K_POWER; }
+	virtual EKernelType get_kernel_type() { return K_POWER; }
 
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
+	virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
+	virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "LogKernel"; }
+	virtual const char* get_name() const { return "LogKernel"; }
 
 	virtual ~CLogKernel();
 

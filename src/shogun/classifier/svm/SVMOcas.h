@@ -60,7 +60,7 @@ class CSVMOcas : public CLinearMachine
 		 *
 		 * @return classifier type SVMOCAS
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_SVMOCAS; }
+		virtual EMachineType get_classifier_type() { return CT_SVMOCAS; }
 
 		/** set C
 		 *
@@ -190,7 +190,7 @@ class CSVMOcas : public CLinearMachine
 		virtual bool train_machine(CFeatures* data=NULL);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SVMOcas"; }
+		inline const char* get_name() const { return "SVMOcas"; }
 	private:
 		void init();
 

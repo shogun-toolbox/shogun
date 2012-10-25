@@ -44,7 +44,7 @@ class CSVMLin : public CLinearMachine
 		 *
 		 * @return classifier type SVMLIN
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_SVMLIN; }
+		virtual EMachineType get_classifier_type() { return CT_SVMLIN; }
 
 		/** set C
 		 *
@@ -91,7 +91,7 @@ class CSVMLin : public CLinearMachine
 		inline float64_t get_epsilon() { return epsilon; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SVMLin"; }
+		virtual const char* get_name() const { return "SVMLin"; }
 
 	protected:
 		/** train SVM classifier

@@ -285,7 +285,7 @@ class CDistance : public CSGObject
 		 *
 		 * @param flag if precompute_matrix
 		 */
-		inline virtual void set_precompute_matrix(bool flag)
+		virtual void set_precompute_matrix(bool flag)
 		{
 			precompute_matrix=flag;
 

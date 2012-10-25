@@ -350,7 +350,7 @@ public:
 	//@}
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "BinaryFile"; }
+	virtual const char* get_name() const { return "BinaryFile"; }
 
 protected:
     /** read header

@@ -73,7 +73,7 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		 */
 		virtual SGVector<float64_t> bootstrap_null();
 
-		inline virtual const char* get_name() const=0;
+		virtual const char* get_name() const=0;
 
 	private:
 		void init();

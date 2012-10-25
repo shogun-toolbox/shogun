@@ -253,7 +253,7 @@ public:
 	 *
 	 * @return StreamingDenseFeatures
 	 */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "StreamingDenseFeatures";
 	}
@@ -263,7 +263,7 @@ public:
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	inline virtual int32_t get_num_vectors() const;
+	virtual int32_t get_num_vectors() const;
 
 	/**
 	 * Return the size of one T object.

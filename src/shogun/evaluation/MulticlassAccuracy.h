@@ -71,7 +71,7 @@ public:
 	}
 
 	/** get name */
-	virtual inline const char* get_name() const { return "MulticlassAccuracy"; }
+	virtual const char* get_name() const { return "MulticlassAccuracy"; }
 
 protected:
 

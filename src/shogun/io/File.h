@@ -397,7 +397,7 @@ public:
 	//@}
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "File"; }
+	virtual const char* get_name() const { return "File"; }
 
     /** read whole file in memory
      *

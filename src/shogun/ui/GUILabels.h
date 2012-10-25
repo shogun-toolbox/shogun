@@ -66,7 +66,7 @@ class CGUILabels : public CSGObject
 		CLabels* infer_labels(float64_t* lab, int32_t len);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUILabels"; }
+		virtual const char* get_name() const { return "GUILabels"; }
 
 	protected:
 		/** ui */

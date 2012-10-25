@@ -73,30 +73,30 @@ class CDistanceKernel: public CKernel
 		 *
 		 * @return kernel type DISTANCE
 		 */
-		inline virtual EKernelType get_kernel_type() { return K_DISTANCE; }
+		virtual EKernelType get_kernel_type() { return K_DISTANCE; }
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type of distance used
 		 */
-		inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+		virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class of distance used
 		 */
-		inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+		virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
 
 		/** return the kernel's name
 		 *
 		 * @return name Distance
 		 */
-		inline virtual const char* get_name() const { return "DistanceKernel"; }
+		virtual const char* get_name() const { return "DistanceKernel"; }
 
 		/** set the kernel's width
 		 *
 		 * @param w kernel width
 		 */
-		inline virtual void set_width(float64_t w)
+		virtual void set_width(float64_t w)
 		{
 			width=w;
 		}
@@ -105,7 +105,7 @@ class CDistanceKernel: public CKernel
 		 *
 		 * @return kernel width
 		 */
-		inline virtual float64_t get_width() const
+		virtual float64_t get_width() const
 		{
 			return width;
 		}

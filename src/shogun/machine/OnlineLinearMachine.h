@@ -59,7 +59,7 @@ class COnlineLinearMachine : public CMachine
 		 * @param dst_w store w in this argument
 		 * @param dst_dims dimension of w
 		 */
-		virtual inline void get_w(float32_t*& dst_w, int32_t& dst_dims)
+		virtual void get_w(float32_t*& dst_w, int32_t& dst_dims)
 		{
 			ASSERT(w && w_dim>0);
 			dst_w=w;
@@ -85,7 +85,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return weight vector
 		 */
-		virtual inline SGVector<float32_t> get_w()
+		virtual SGVector<float32_t> get_w()
 		{
 			return SGVector<float32_t>(w, w_dim);
 		}
@@ -95,7 +95,7 @@ class COnlineLinearMachine : public CMachine
 		 * @param src_w new w
 		 * @param src_w_dim dimension of new w
 		 */
-		virtual inline void set_w(float32_t* src_w, int32_t src_w_dim)
+		virtual void set_w(float32_t* src_w, int32_t src_w_dim)
 		{
 			SG_FREE(w);
 			w=SG_MALLOC(float32_t, src_w_dim);
@@ -122,7 +122,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @param b new bias
 		 */
-		virtual inline void set_bias(float32_t b)
+		virtual void set_bias(float32_t b)
 		{
 			bias=b;
 		}
@@ -131,7 +131,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return bias
 		 */
-		virtual inline float32_t get_bias()
+		virtual float32_t get_bias()
 		{
 			return bias;
 		}
@@ -140,7 +140,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CStreamingDotFeatures* feat)
+		virtual void set_features(CStreamingDotFeatures* feat)
 		{
 			if (features)
 				SG_UNREF(features);

@@ -50,7 +50,7 @@ class CMKLClassification : public CMKL
 		 *
 		 * @return classifier type MKL_CLASSIFICATION
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_MKLCLASSIFICATION; }
+		virtual EMachineType get_classifier_type() { return CT_MKLCLASSIFICATION; }
 };
 }
 #endif //__MKLCLASSIFICATION_H__

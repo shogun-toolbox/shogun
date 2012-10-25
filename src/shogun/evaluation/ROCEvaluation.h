@@ -42,7 +42,7 @@ public:
 	virtual ~CROCEvaluation();
 
 	/** get name */
-	virtual inline const char* get_name() const { return "ROCEvaluation"; };
+	virtual const char* get_name() const { return "ROCEvaluation"; };
 
 	/** evaluate ROC and auROC
 	 * @param predicted labels

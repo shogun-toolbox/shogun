@@ -45,7 +45,7 @@ class CSubGradientSVM : public CLinearMachine
 		 *
 		 * @return classifier type SUBGRADIENTSVM
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_SUBGRADIENTSVM; }
+		virtual EMachineType get_classifier_type() { return CT_SUBGRADIENTSVM; }
 
 		/** set C
 		 *
@@ -151,7 +151,7 @@ class CSubGradientSVM : public CLinearMachine
 		void cleanup();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SubGradientSVM"; }
+		virtual const char* get_name() const { return "SubGradientSVM"; }
 
 	protected:
 		/** train SVM classifier

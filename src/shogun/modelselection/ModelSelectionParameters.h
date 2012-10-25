@@ -155,7 +155,7 @@ public:
 			int32_t step=1, int32_t type_base=2);
 
 	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "ModelSelectionParameters";
 	}

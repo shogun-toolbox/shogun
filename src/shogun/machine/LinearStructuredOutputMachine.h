@@ -64,7 +64,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		virtual CStructuredLabels* apply_structured(CFeatures* data = NULL);
 
 		/** @return object name */
-		inline virtual const char* get_name() const 
+		virtual const char* get_name() const 
 		{ 
 			return "LinearStructuredOutputMachine"; 
 		}

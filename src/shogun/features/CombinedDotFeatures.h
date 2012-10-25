@@ -57,7 +57,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return number of vectors
 		 */
-		inline virtual int32_t get_num_vectors() const
+		virtual int32_t get_num_vectors() const
 		{
 			return num_vectors;
 		}
@@ -66,7 +66,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		inline virtual int32_t get_dim_feature_space() const
+		virtual int32_t get_dim_feature_space() const
 		{
 			return  num_dimensions;
 		}
@@ -140,7 +140,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type() const
+		virtual EFeatureType get_feature_type() const
 		{
 			return F_DREAL;
 		}
@@ -149,7 +149,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class() const
+		virtual EFeatureClass get_feature_class() const
 		{
 			return C_COMBINED_DOT;
 		}
@@ -158,7 +158,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 *
 		 * @return size of a element
 		 */
-		inline virtual int32_t get_size() const
+		virtual int32_t get_size() const
 		{
 			return sizeof(float64_t);
 		}
@@ -287,7 +287,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		virtual void set_subfeature_weights(SGVector<float64_t> weights);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "CombinedDotFeatures"; }
+		virtual const char* get_name() const { return "CombinedDotFeatures"; }
 
 	protected:
 		/** update total number of dimensions and vectors */

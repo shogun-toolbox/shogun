@@ -45,10 +45,10 @@ class CLibSVM : public CSVM
 		 *
 		 * @return classifier type LIBSVM
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_LIBSVM; }
+		virtual EMachineType get_classifier_type() { return CT_LIBSVM; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LibSVM"; }
+		virtual const char* get_name() const { return "LibSVM"; }
 
 	protected:
 		/** train SVM classifier

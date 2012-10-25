@@ -57,7 +57,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return classifier type KMEANS
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_KMEANS; }
+		virtual EMachineType get_classifier_type() { return CT_KMEANS; }
 
 		/** load distance machine from file
 		 *
@@ -116,7 +116,7 @@ class CKMeans : public CDistanceMachine
 		int32_t get_dimensions();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "KMeans"; }
+		virtual const char* get_name() const { return "KMeans"; }
 
 	protected:
 		/** clustknb

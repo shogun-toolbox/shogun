@@ -63,7 +63,7 @@ class CGUIPluginEstimate : public CSGObject
 		float64_t apply_one(int32_t idx);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUIPluginEstimate"; }
+		virtual const char* get_name() const { return "GUIPluginEstimate"; }
 
 	protected:
 		/** ui */

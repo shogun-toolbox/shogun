@@ -71,7 +71,7 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	inline virtual float64_t normalize(float64_t value, int32_t idx_lhs,
+	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
 			int32_t idx_rhs)
 	{
 
@@ -310,7 +310,7 @@ public:
 
 
 	/** @return object name */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "MultitaskKernelPlifNormalizer";
 	}

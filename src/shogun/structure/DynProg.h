@@ -562,7 +562,7 @@ protected:
 	bool extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos, int32_t to);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "DynProg"; }
+	virtual const char* get_name() const { return "DynProg"; }
 
 private:
 

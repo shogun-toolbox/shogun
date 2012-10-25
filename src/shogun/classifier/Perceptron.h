@@ -49,7 +49,7 @@ class CPerceptron : public CLinearMachine
 		 *
 		 * @return classifier type PERCEPTRON
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_PERCEPTRON; }
+		virtual EMachineType get_classifier_type() { return CT_PERCEPTRON; }
 
 		/// set learn rate of gradient descent training algorithm
 		inline void set_learn_rate(float64_t r)
@@ -64,7 +64,7 @@ class CPerceptron : public CLinearMachine
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Perceptron"; }
+		virtual const char* get_name() const { return "Perceptron"; }
 
 	protected:
 		/** train classifier

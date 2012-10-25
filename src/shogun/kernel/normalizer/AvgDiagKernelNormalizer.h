@@ -81,7 +81,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual float64_t normalize(
+		virtual float64_t normalize(
 			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			return value/scale;
@@ -91,7 +91,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			return value/sqrt(scale);
 		}
@@ -100,13 +100,13 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			return value/sqrt(scale);
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "AvgDiagKernelNormalizer"; }
+		virtual const char* get_name() const { return "AvgDiagKernelNormalizer"; }
 
 	protected:
 		/// the constant scaling factor (avg of diagonal or user given const)

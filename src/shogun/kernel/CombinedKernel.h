@@ -254,7 +254,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual inline bool has_features()
+		virtual bool has_features()
 		{
 			return initialized;
 		}

@@ -57,7 +57,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 		 *
 		 * @return classifier type DASVMLINEAR
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_DASVMLINEAR; }
+		virtual EMachineType get_classifier_type() { return CT_DASVMLINEAR; }
 
 
 		/** classify objects
@@ -111,7 +111,7 @@ class CDomainAdaptationSVMLinear : public CLibLinear
 
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "DomainAdaptationSVMLinear"; }
+		virtual const char* get_name() const { return "DomainAdaptationSVMLinear"; }
 
 	protected:
 

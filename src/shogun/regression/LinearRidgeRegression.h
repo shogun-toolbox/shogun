@@ -81,13 +81,13 @@ class CLinearRidgeRegression : public CLinearMachine
 		 *
 		 * @return classifier type LinearRidgeRegression
 		 */
-		inline virtual EMachineType get_classifier_type()
+		virtual EMachineType get_classifier_type()
 		{
 			return CT_LINEARRIDGEREGRESSION;
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LinearRidgeRegression"; }
+		virtual const char* get_name() const { return "LinearRidgeRegression"; }
 
 	protected:
 		/** train regression

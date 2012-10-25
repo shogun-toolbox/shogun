@@ -65,7 +65,7 @@ namespace shogun
 		 *
 		 * @return false by default, unless overloaded
 		 */
-		inline virtual bool is_seekable() { return false; }
+		virtual bool is_seekable() { return false; }
 
 		/**
 		 * Reset the stream, should be overloaded if possible
@@ -287,7 +287,7 @@ namespace shogun
 		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float64_t& label);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "StreamingFile"; }
+		virtual const char* get_name() const { return "StreamingFile"; }
 
 	protected:
 

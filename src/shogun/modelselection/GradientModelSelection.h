@@ -54,7 +54,7 @@ public:
 	 *
 	 *  @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() const {return "GradientModelSelection";}
+	virtual const char* get_name() const {return "GradientModelSelection";}
 
 	/** Set the maximum evaluations used in the optimization algorithm
 	 *

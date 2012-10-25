@@ -329,7 +329,7 @@ class CBitString : public CSGObject
 		inline uint64_t get_length() const { return length-word_len/alphabet->get_num_bits()+1; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "BitString"; }
+		virtual const char* get_name() const { return "BitString"; }
 
 	private:
 		/** alphabet the bit string is based on */

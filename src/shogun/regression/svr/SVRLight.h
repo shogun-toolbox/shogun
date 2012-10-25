@@ -190,7 +190,7 @@ class CSVRLight: public CSVMLight
 			float64_t* maxdiff);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SVRLight"; }
+		virtual const char* get_name() const { return "SVRLight"; }
 
 	protected:
 		/** thread helper for update linear component linadd

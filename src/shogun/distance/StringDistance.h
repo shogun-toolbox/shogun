@@ -47,7 +47,7 @@ template <class ST> class CStringDistance : public CDistance
 		 *
 		 * @return feature class STRING
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
+		virtual EFeatureClass get_feature_class() { return C_STRING; }
 
 		/** get feature type the distance can deal with
 		 *

@@ -170,7 +170,7 @@ public:
 	/** getter for number of parameters
 	 * @return number of parameters
 	 */
-	inline virtual int32_t get_num_parameters()
+	virtual int32_t get_num_parameters()
 	{
 		return m_params.get_num_elements();
 	}

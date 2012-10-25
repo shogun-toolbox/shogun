@@ -55,7 +55,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	inline virtual int32_t get_dim_feature_space() const
+	virtual int32_t get_dim_feature_space() const
 	{
 		return w_dim;
 	}
@@ -156,7 +156,7 @@ public:
 	 *
 	 * @return templated feature type
 	 */
-	inline virtual EFeatureType get_feature_type() const
+	virtual EFeatureType get_feature_type() const
 	{
 		return F_UNKNOWN;
 	}
@@ -165,17 +165,17 @@ public:
 	 *
 	 * @return feature class
 	 */
-	inline virtual EFeatureClass get_feature_class() const
+	virtual EFeatureClass get_feature_class() const
 	{
 		return C_WD;
 	}
 
-	inline virtual int32_t get_num_vectors() const
+	virtual int32_t get_num_vectors() const
 	{
 		return num_strings;
 	}
 
-	inline virtual int32_t get_size() const
+	virtual int32_t get_size() const
 	{
 		return sizeof(float64_t);
 	}
@@ -191,7 +191,7 @@ public:
 	}
 
 	/** @return object name */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "HashedWDFeatures";
 	}

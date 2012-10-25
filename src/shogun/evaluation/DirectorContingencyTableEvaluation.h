@@ -62,7 +62,7 @@ public:
 	}
 
 	/** get name */
-	virtual inline const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "DirectorContingencyTableEvaluation";
 	}

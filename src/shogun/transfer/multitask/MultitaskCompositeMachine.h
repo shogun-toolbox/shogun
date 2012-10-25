@@ -94,7 +94,7 @@ class CMultitaskCompositeMachine : public CMachine
 		 *
 		 * @param features features to set
 		 */
-		virtual inline void set_features(CFeatures* features)
+		virtual void set_features(CFeatures* features)
 		{
 			SG_REF(features);
 			SG_UNREF(m_features);

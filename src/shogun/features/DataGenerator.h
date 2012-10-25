@@ -82,7 +82,7 @@ public:
 	static SGMatrix<float64_t> generate_gaussians(index_t m, index_t n, index_t dim);
 #endif /* HAVE_LAPACK */
 
-	inline virtual const char* get_name() const { return "DataGenerator"; }
+	virtual const char* get_name() const { return "DataGenerator"; }
 
 private:
 	/** registers all parameters and initializes variables with defaults */

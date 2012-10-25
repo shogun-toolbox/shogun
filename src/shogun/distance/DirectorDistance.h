@@ -214,14 +214,14 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 *
 		 * @return name Director
 		 */
-		inline virtual const char* get_name() const { return "DirectorDistance"; }
+		virtual const char* get_name() const { return "DirectorDistance"; }
 
 		/** FIXME: precompute matrix should be dropped, handling
 		 * should be via customdistance
 		 *
 		 * @param flag if precompute_matrix
 		 */
-		inline virtual void set_precompute_matrix(bool flag)
+		virtual void set_precompute_matrix(bool flag)
 		{
 			CDistance::set_precompute_matrix(flag);
 		}

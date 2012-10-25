@@ -82,7 +82,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual float64_t normalize(
+		virtual float64_t normalize(
 			float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
@@ -93,7 +93,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			SG_ERROR("linadd not supported with Dice normalization.\n");
 			return 0;
@@ -103,7 +103,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			SG_ERROR("linadd not supported with Dice normalization.\n");
 			return 0;

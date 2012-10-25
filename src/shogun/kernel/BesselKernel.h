@@ -89,7 +89,7 @@ class CBesselKernel: public CDistanceKernel
 		/**
 		 * @return type of features
 		 */
-		inline virtual EFeatureType get_feature_type()
+		virtual EFeatureType get_feature_type()
 		{
 			return distance->get_feature_type();
 		}
@@ -97,7 +97,7 @@ class CBesselKernel: public CDistanceKernel
 		/**
 		 * @return class of features
 		 */
-		inline virtual EFeatureClass get_feature_class()
+		virtual EFeatureClass get_feature_class()
 		{
 			return distance->get_feature_class();
 		}
@@ -106,7 +106,7 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @return name Bessel
 		 */
-		inline virtual const char* get_name() const
+		virtual const char* get_name() const
 		{
 			return "BesselKernel";
 		}
@@ -115,7 +115,7 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @param v kernel order
 		 */
-		inline virtual void set_order(float64_t v)
+		virtual void set_order(float64_t v)
 		{
 			order = v;
 		}
@@ -124,7 +124,7 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @return kernel order
 		 */
-		inline virtual float64_t get_order() const
+		virtual float64_t get_order() const
 		{
 			return order;
 		}
@@ -133,7 +133,7 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @param tau kernel width
 		 */
-		inline virtual void set_width(float64_t tau)
+		virtual void set_width(float64_t tau)
 		{
 			width = tau;
 		}
@@ -142,7 +142,7 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @return kernel width
 		 */
-		inline virtual float64_t get_width() const
+		virtual float64_t get_width() const
 		{
 			return width;
 		}
@@ -151,7 +151,7 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @param n kernel degree
 		 */
-		inline virtual void set_degree(int32_t n)
+		virtual void set_degree(int32_t n)
 		{
 			degree = n;
 		}
@@ -160,7 +160,7 @@ class CBesselKernel: public CDistanceKernel
 		 *
 		 * @return kernel degree
 		 */
-		inline virtual int32_t get_degree() const
+		virtual int32_t get_degree() const
 		{
 			return degree;
 		}

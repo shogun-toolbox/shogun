@@ -360,10 +360,10 @@ namespace shogun
 			 *
 			 * @return classifier type LIBSVM
 			 */
-			virtual inline EMachineType get_classifier_type() { return CT_LARANK; }
+			virtual EMachineType get_classifier_type() { return CT_LARANK; }
 
 			/** @return object name */
-			inline virtual const char* get_name() const { return "LaRank"; }
+			virtual const char* get_name() const { return "LaRank"; }
 
 			/** set batch mode
 			 * @param enable

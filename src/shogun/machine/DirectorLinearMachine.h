@@ -60,7 +60,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CDotFeatures* feat)
+		virtual void set_features(CDotFeatures* feat)
 		{
 			CLinearMachine::set_features(feat);
 		}
@@ -201,7 +201,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		}
 
 		//TODO change to pure virtual
-		inline virtual EProblemType get_machine_problem_type() const
+		virtual EProblemType get_machine_problem_type() const
 		{
 			return CLinearMachine::get_machine_problem_type();
 		}

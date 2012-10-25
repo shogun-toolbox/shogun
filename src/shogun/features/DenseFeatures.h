@@ -493,7 +493,7 @@ public:
 	CFeatures* create_merged_copy(CFeatures* other);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "DenseFeatures"; }
+	virtual const char* get_name() const { return "DenseFeatures"; }
 
 protected:
 	/** compute feature vector for sample num

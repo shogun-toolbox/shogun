@@ -58,13 +58,13 @@ class CConstKernel: public CKernel
 		 *
 		 * @return kernel type CONST
 		 */
-		inline virtual EKernelType get_kernel_type() { return K_CONST; }
+		virtual EKernelType get_kernel_type() { return K_CONST; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		inline virtual EFeatureType get_feature_type()
+		virtual EFeatureType get_feature_type()
 		{
 			return F_ANY;
 		}
@@ -73,7 +73,7 @@ class CConstKernel: public CKernel
 		 *
 		 * @return feature class ANY
 		 */
-		inline virtual EFeatureClass get_feature_class()
+		virtual EFeatureClass get_feature_class()
 		{
 			return C_ANY;
 		}
@@ -91,7 +91,7 @@ class CConstKernel: public CKernel
 		 * @param col dummy col
 		 * @return computed kernel function (const value)
 		 */
-		inline virtual float64_t compute(int32_t row, int32_t col)
+		virtual float64_t compute(int32_t row, int32_t col)
 		{
 			return const_value;
 		}

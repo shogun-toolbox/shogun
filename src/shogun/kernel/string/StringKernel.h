@@ -66,7 +66,7 @@ template <class ST> class CStringKernel : public CKernel
 		 *
 		 * @return feature class STRING
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
+		virtual EFeatureClass get_feature_class() { return C_STRING; }
 
 		/** return feature type the kernel can deal with
 		 *

@@ -209,7 +209,7 @@ class CGMM : public CDistribution
 		SGVector<float64_t> cluster(SGVector<float64_t> point);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GMM"; }
+		virtual const char* get_name() const { return "GMM"; }
 
 	private:
 		/** 1NN assignment initialization

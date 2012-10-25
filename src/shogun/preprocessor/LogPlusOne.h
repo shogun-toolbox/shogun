@@ -59,10 +59,10 @@ class CLogPlusOne : public CDensePreprocessor<float64_t>
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 		/** @return object name */
-		virtual inline const char* get_name() const { return "LogPlusOne"; }
+		virtual const char* get_name() const { return "LogPlusOne"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreprocessorType get_type() const { return P_LOGPLUSONE; }
+		virtual EPreprocessorType get_type() const { return P_LOGPLUSONE; }
 };
 }
 #endif

@@ -53,7 +53,7 @@ public:
 	}
 
 	/** get name */
-	virtual inline const char* get_name() const { return "GradientCriterion"; }
+	virtual const char* get_name() const { return "GradientCriterion"; }
 
 private:
 	/*Evaluation Direction*/

@@ -91,7 +91,7 @@ class CBinaryLabels : public CDenseLabels
 		void scores_to_probabilities();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "BinaryLabels"; }
+		virtual const char* get_name() const { return "BinaryLabels"; }
 };
 }
 #endif

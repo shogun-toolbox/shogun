@@ -68,29 +68,29 @@ class CKernelDistance: public CDistance
 		 *
 		 * @return distance type DISTANCE
 		 */
-		inline virtual EDistanceType get_distance_type() { return D_UNKNOWN; }
+		virtual EDistanceType get_distance_type() { return D_UNKNOWN; }
 		/** return feature type the distance can deal with
 		 *
 		 * @return feature type of distance used
 		 */
-		inline virtual EFeatureType get_feature_type() { return kernel->get_feature_type(); }
+		virtual EFeatureType get_feature_type() { return kernel->get_feature_type(); }
 
 		/** return feature class the distance can deal with
 		 *
 		 * @return feature class of distance used
 		 */
-		inline virtual EFeatureClass get_feature_class() { return kernel->get_feature_class(); }
+		virtual EFeatureClass get_feature_class() { return kernel->get_feature_class(); }
 
 		/** return the distances's name
 		 *
 		 * @return name Distance
 		 */
-		inline virtual const char* get_name() const { return "KernelDistance"; }
+		virtual const char* get_name() const { return "KernelDistance"; }
 
 		/** clean up kernel
 		 *
 		 */
-		inline virtual void cleanup() { return kernel->cleanup(); }
+		virtual void cleanup() { return kernel->cleanup(); }
 
 	protected:
 		/** compute kernel function for features a and b

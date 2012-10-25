@@ -101,7 +101,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual float64_t normalize(
+		virtual float64_t normalize(
 				float64_t value, int32_t idx_lhs, int32_t idx_rhs)
 		{
 			value += (-ktrain_row_means[idx_lhs] - ktest_row_means[idx_rhs] + ktrain_mean);
@@ -112,7 +112,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		inline virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
+		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
 			SG_ERROR("normalize_lhs not implemented");
 			return 0;
@@ -122,7 +122,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		inline virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
+		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
 			SG_ERROR("normalize_rhs not implemented");
 			return 0;
@@ -147,7 +147,7 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "ZeroMeanCenterKernelNormalizer"; }
+		virtual const char* get_name() const { return "ZeroMeanCenterKernelNormalizer"; }
 
 	protected:
 		/** train row means */

@@ -115,10 +115,10 @@ public:
 	 */
 	bool get_write_to_cache() { return write_to_cache; }
 
-	inline virtual bool is_seekable() { return false; }
+	virtual bool is_seekable() { return false; }
 
 	/** @return object name */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "StreamingVwFile";
 	}

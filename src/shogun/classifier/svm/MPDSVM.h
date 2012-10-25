@@ -37,10 +37,10 @@ class CMPDSVM : public CSVM
 		 *
 		 * @return classifier type MPD
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_MPD; }
+		virtual EMachineType get_classifier_type() { return CT_MPD; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "MPDSVM"; }
+		virtual const char* get_name() const { return "MPDSVM"; }
 
 	protected:
 		/** train SVM classifier

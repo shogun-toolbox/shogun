@@ -51,7 +51,7 @@ public:
 	}
 
 	/** get name */
-	virtual inline const char* get_name() const { return "MeanAbsoluteError"; }
+	virtual const char* get_name() const { return "MeanAbsoluteError"; }
 };
 
 }

@@ -123,7 +123,7 @@ class CQPBSVMLib: public CSGObject
 #endif
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "QPBSVMLib"; }
+		inline const char* get_name() const { return "QPBSVMLib"; }
 
 	protected:
 		/** matrix H */

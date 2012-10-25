@@ -151,7 +151,7 @@ class CPositionalPWM : public CDistribution
 		void compute_scoring(int32_t max_degree);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "PositionalPWM"; }
+		virtual const char* get_name() const { return "PositionalPWM"; }
 
 	private:
 		/** Initialize parameters for serialization */

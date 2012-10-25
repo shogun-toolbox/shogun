@@ -697,7 +697,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param t optimization type to set
 		 */
-		virtual inline void set_optimization_type(EOptimizationType t) { opt_type=t;}
+		virtual void set_optimization_type(EOptimizationType t) { opt_type=t;}
 
 		/** check if optimization is initialized
 		 *

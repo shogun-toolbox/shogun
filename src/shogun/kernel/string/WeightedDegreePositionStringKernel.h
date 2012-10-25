@@ -118,7 +118,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		inline virtual bool init_optimization(
+		virtual bool init_optimization(
 			int32_t p_count, int32_t *IDX, float64_t * alphas)
 		{
 			return init_optimization(p_count, IDX, alphas, -1);
@@ -150,7 +150,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 	 	* @param idx index to compute
 	 	* @return optimized value at given index
 	 	*/
-		inline virtual float64_t compute_optimized(int32_t idx)
+		virtual float64_t compute_optimized(int32_t idx)
 		{
 			ASSERT(get_is_initialized());
 			ASSERT(alphabet);
@@ -182,7 +182,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		/** clear normal
 		 * subkernel functionality
 		 */
-		inline virtual void clear_normal()
+		virtual void clear_normal()
 		{
 			if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
 			{
@@ -208,7 +208,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		inline virtual void add_to_normal(int32_t idx, float64_t weight)
+		virtual void add_to_normal(int32_t idx, float64_t weight)
 		{
 			add_example_to_tree(idx, weight);
 			set_is_initialized(true);
@@ -218,7 +218,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 *
 		 * @return number of subkernels
 		 */
-		inline virtual int32_t get_num_subkernels()
+		virtual int32_t get_num_subkernels()
 		{
 			if (position_weights!=NULL)
 				return (int32_t) ceil(1.0*seq_length/mkl_stepsize) ;

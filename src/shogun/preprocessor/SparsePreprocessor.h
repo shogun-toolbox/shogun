@@ -47,13 +47,13 @@ public:
 	virtual SGSparseVector<ST>* apply_to_sparse_feature_vector(SGSparseVector<ST>* f, int32_t &len)=0;
 
 	/// return that we are simple minded features (just fixed size matrices)
-	inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+	virtual EFeatureClass get_feature_class() { return C_SPARSE; }
 
 	/// return the name of the preprocessor
-	virtual inline const char* get_name() const { return "UNKNOWN"; }
+	virtual const char* get_name() const { return "UNKNOWN"; }
 
 	/// return a type of preprocessor
-	virtual inline EPreprocessorType get_type() const { return P_UNKNOWN; }
+	virtual EPreprocessorType get_type() const { return P_UNKNOWN; }
 
 };
 }

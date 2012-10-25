@@ -82,7 +82,7 @@ public:
 	virtual void get_vector_and_label(VwExample* &ex, int32_t &len, float64_t &label);
 
 	/** @return object name */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "StreamingVwCacheFile";
 	}

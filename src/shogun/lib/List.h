@@ -51,7 +51,7 @@ class CListElement :public CSGObject
 		virtual ~CListElement() { data = NULL; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "ListElement"; }
+		virtual const char* get_name() const { return "ListElement"; }
 
 	private:
 		void init()
@@ -538,7 +538,7 @@ class CList : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "List"; }
+		virtual const char* get_name() const { return "List"; }
 
 	private:
 		/** if data is to be deleted on object destruction */

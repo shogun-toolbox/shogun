@@ -38,10 +38,10 @@ class CGPBTSVM : public CSVM
 		 *
 		 * @return classifier type GPBT
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_GPBT; }
+		virtual EMachineType get_classifier_type() { return CT_GPBT; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GPBTSVM"; }
+		virtual const char* get_name() const { return "GPBTSVM"; }
 
 	protected:
 		/** train SVM classifier

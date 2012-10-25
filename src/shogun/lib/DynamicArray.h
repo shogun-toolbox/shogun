@@ -631,7 +631,7 @@ template <class T> class CDynamicArray :public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const
+		virtual const char* get_name() const
 		{
 			return "DynamicArray";
 		}

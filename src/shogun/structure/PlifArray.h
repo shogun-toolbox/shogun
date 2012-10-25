@@ -120,7 +120,7 @@ class CPlifArray: public CPlifBase
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "PlifArray"; }
+		virtual const char* get_name() const { return "PlifArray"; }
 
 	protected:
 		/** plif array */

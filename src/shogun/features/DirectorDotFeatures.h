@@ -373,7 +373,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "DirectorDotFeatures"; }
+		virtual const char* get_name() const { return "DirectorDotFeatures"; }
 };
 }
 #endif // USE_SWIG_DIRECTORS

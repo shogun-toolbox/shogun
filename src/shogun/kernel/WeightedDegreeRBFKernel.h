@@ -59,14 +59,14 @@ class CWeightedDegreeRBFKernel: public CDotKernel
 		 *
 		 * @return name Gaussian
 		 */
-		inline virtual const char* get_name() const { return "WeightedDegreeRBFKernel"; }
+		virtual const char* get_name() const { return "WeightedDegreeRBFKernel"; }
 
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class SIMPLE
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *

@@ -63,7 +63,7 @@ class CSGDQN : public CLinearMachine
 		 *
 		 * @return classifier type SVMSGDQN
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_SGDQN; }
+		virtual EMachineType get_classifier_type() { return CT_SGDQN; }
 
 		/** train classifier
 		 *
@@ -126,7 +126,7 @@ class CSGDQN : public CLinearMachine
 		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SGDQN"; }
+		virtual const char* get_name() const { return "SGDQN"; }
 
 	protected:
 		/** calibrate */

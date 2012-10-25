@@ -223,7 +223,7 @@ class CGUIClassifier : public CSGObject
 		bool train_wdocas();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUIClassifier"; }
+		virtual const char* get_name() const { return "GUIClassifier"; }
 
 	protected:
 		/** ui */

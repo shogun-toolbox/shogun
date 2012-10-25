@@ -55,7 +55,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 *
 		 * @return dimensionality
 		 */
-		inline virtual int32_t get_dim_feature_space() const
+		virtual int32_t get_dim_feature_space() const
 		{
 			return w_dim;
 		}
@@ -119,7 +119,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * @param num which vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual inline int32_t get_nnz_features_for_vector(int32_t num)
+		virtual int32_t get_nnz_features_for_vector(int32_t num)
 		{
 			return w_dim/alphabet_size;
 		}
@@ -134,7 +134,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 *
 		 * @return templated feature type
 		 */
-		inline virtual EFeatureType get_feature_type() const
+		virtual EFeatureType get_feature_type() const
 		{
 			return F_UNKNOWN;
 		}
@@ -143,17 +143,17 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class() const
+		virtual EFeatureClass get_feature_class() const
 		{
 			return C_WD;
 		}
 
-		inline virtual int32_t get_num_vectors() const
+		virtual int32_t get_num_vectors() const
 		{
 			return num_strings;
 		}
 
-		inline virtual int32_t get_size() const
+		virtual int32_t get_size() const
 		{
 			return sizeof(float64_t);
 		}
@@ -218,7 +218,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		virtual void free_feature_iterator(void* iterator);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "HashedWDFeaturesTransposed"; }
+		virtual const char* get_name() const { return "HashedWDFeaturesTransposed"; }
 
 	protected:
 

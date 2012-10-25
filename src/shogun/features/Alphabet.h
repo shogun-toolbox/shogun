@@ -255,7 +255,7 @@ class CAlphabet : public CSGObject
 
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Alphabet"; }
+		virtual const char* get_name() const { return "Alphabet"; }
 
 		/** translate from single order
 		 *

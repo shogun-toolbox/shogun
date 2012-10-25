@@ -508,7 +508,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SparseFeatures"; }
+		virtual const char* get_name() const { return "SparseFeatures"; }
 
 	protected:
 		/** compute feature vector for sample num

@@ -629,7 +629,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "StringFeatures"; }
+		virtual const char* get_name() const { return "StringFeatures"; }
 
 		/** post method when subset is changed */
 		virtual void subset_changed_post();

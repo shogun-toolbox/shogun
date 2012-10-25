@@ -73,7 +73,7 @@ class CKNN : public CDistanceMachine
 		 *
 		 * @return classifier type KNN
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_KNN; }
+		virtual EMachineType get_classifier_type() { return CT_KNN; }
 		//inline EDistanceType get_distance_type() { return DT_KNN;}
 
 		/** classify objects
@@ -156,7 +156,7 @@ class CKNN : public CDistanceMachine
 		inline bool get_use_covertree() const { return m_use_covertree; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "KNN"; }
+		virtual const char* get_name() const { return "KNN"; }
 
 	protected:
 		/** Stores feature data of underlying model.

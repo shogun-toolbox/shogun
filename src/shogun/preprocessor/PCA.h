@@ -93,10 +93,10 @@ class CPCA: public CDimensionReductionPreprocessor
 		SGVector<float64_t> get_mean();
 
 		/** @return object name */
-		virtual inline const char* get_name() const { return "PCA"; }
+		virtual const char* get_name() const { return "PCA"; }
 
 		/** @return a type of preprocessor */
-		virtual inline EPreprocessorType get_type() const { return P_PCA; }
+		virtual EPreprocessorType get_type() const { return P_PCA; }
 
 	protected:
 

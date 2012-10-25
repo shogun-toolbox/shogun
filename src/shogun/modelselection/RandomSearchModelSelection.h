@@ -54,7 +54,7 @@ public:
 	virtual CParameterCombination* select_model(bool print_state=false);
 
 	/** @return name of the SGSerializable */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "RandomSearchModelSelection";
 	}

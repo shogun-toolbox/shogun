@@ -125,7 +125,7 @@ public:
 	 *
 	 * @return name of the SGSerializable
 	 */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "ExactInferenceMethod";
 	}

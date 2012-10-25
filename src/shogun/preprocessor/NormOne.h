@@ -58,10 +58,10 @@ class CNormOne : public CDensePreprocessor<float64_t>
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 		/** @return object name */
-		virtual inline const char* get_name() const { return "NormOne"; }
+		virtual const char* get_name() const { return "NormOne"; }
 
 		/// return a type of preprocessor
-		virtual inline EPreprocessorType get_type() const { return P_NORMONE; }
+		virtual EPreprocessorType get_type() const { return P_NORMONE; }
 };
 }
 #endif

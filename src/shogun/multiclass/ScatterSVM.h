@@ -74,7 +74,7 @@ class CScatterSVM : public CMulticlassSVM
 		 *
 		 * @return classifier type LIBSVM
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_SCATTERSVM; }
+		virtual EMachineType get_classifier_type() { return CT_SCATTERSVM; }
 
 		/** classify one example
 		 *
@@ -90,7 +90,7 @@ class CScatterSVM : public CMulticlassSVM
 		virtual CLabels* classify_one_vs_rest();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "ScatterSVM"; }
+		virtual const char* get_name() const { return "ScatterSVM"; }
 
 	protected:
 		/** train SVM classifier

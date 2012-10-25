@@ -63,7 +63,7 @@ class CSVMSGD : public CLinearMachine
 		 *
 		 * @return classifier type SVMOCAS
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_SVMSGD; }
+		virtual EMachineType get_classifier_type() { return CT_SVMSGD; }
 
 		/** set C
 		 *
@@ -134,7 +134,7 @@ class CSVMSGD : public CLinearMachine
 		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SVMSGD"; }
+		virtual const char* get_name() const { return "SVMSGD"; }
 
 	protected:
 		/** calibrate */

@@ -166,10 +166,10 @@ public:
 	void cleanup();
 
 	/// return the name of the preprocessor
-	virtual inline const char* get_name() const { return "RandomFourierGaussPreproc"; }
+	virtual const char* get_name() const { return "RandomFourierGaussPreproc"; }
 
 	/// return a type of preprocessor
-	virtual inline EPreprocessorType get_type() const { return P_RANDOMFOURIERGAUSS; }
+	virtual EPreprocessorType get_type() const { return P_RANDOMFOURIERGAUSS; }
 
 protected:
 

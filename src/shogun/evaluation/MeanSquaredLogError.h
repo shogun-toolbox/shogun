@@ -52,7 +52,7 @@ public:
 	}
 
 	/** get name */
-	virtual inline const char* get_name() const { return "MeanSquaredLogError"; }
+	virtual const char* get_name() const { return "MeanSquaredLogError"; }
 };
 
 }

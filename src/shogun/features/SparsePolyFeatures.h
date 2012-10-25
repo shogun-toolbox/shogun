@@ -51,32 +51,32 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return dimensions of feature space
 		 */
-		inline virtual int32_t get_dim_feature_space() const;
+		virtual int32_t get_dim_feature_space() const;
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num index of vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual inline int32_t get_nnz_features_for_vector(int32_t num);
+		virtual int32_t get_nnz_features_for_vector(int32_t num);
 
 		/** get feature type
 		 *
 		 * @return feature type
 		 */
-		inline virtual EFeatureType get_feature_type() const;
+		virtual EFeatureType get_feature_type() const;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		inline virtual EFeatureClass get_feature_class() const;
+		virtual EFeatureClass get_feature_class() const;
 
 		/** get number of vectors
 		 *
 		 * @return number of vectors
 		 */
-		inline virtual int32_t get_num_vectors() const;
+		virtual int32_t get_num_vectors() const;
 
 		/** compute dot product between vector1 and vector2,
 		 *  appointed by their indices
@@ -91,7 +91,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return size
 		 */
-		inline virtual int32_t get_size() const;
+		virtual int32_t get_size() const;
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -151,7 +151,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @return name of class
 		 */
-		inline virtual const char* get_name() const { return "SparsePolyFeatures"; }
+		virtual const char* get_name() const { return "SparsePolyFeatures"; }
 
 		/** compute dot product of vector with index arg1
 		 *  with an given second vector

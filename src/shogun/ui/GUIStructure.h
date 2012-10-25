@@ -248,7 +248,7 @@ class CGUIStructure : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUIStructure"; }
+		virtual const char* get_name() const { return "GUIStructure"; }
 
 	protected:
 		/** ui */

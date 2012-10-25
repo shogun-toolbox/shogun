@@ -77,13 +77,13 @@ class CExponentialKernel: public CDotKernel
 		 *
 		 * @return name Exponential
 		 */
-		inline virtual const char* get_name() const { return "ExponentialKernel"; }
+		virtual const char* get_name() const { return "ExponentialKernel"; }
 
 		/** return the kernel's width
 		 *
 		 * @return kernel width
 		 */
-		inline virtual float64_t get_width() const
+		virtual float64_t get_width() const
 		{
 			return m_width;
 		}

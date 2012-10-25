@@ -121,7 +121,7 @@ public:
 	virtual ~CSerializableXmlFile();
 
 	/** @return object name */
-	inline virtual const char* get_name() const {
+	virtual const char* get_name() const {
 		return "SerializableXmlFile";
 	}
 

@@ -99,19 +99,19 @@ class CCustomDistance: public CDistance
 		 *
 		 * @return distance type CUSTOM
 		 */
-		inline virtual EDistanceType get_distance_type() { return D_CUSTOM; }
+		virtual EDistanceType get_distance_type() { return D_CUSTOM; }
 
 		/** return feature type the distance can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_ANY; }
+		virtual EFeatureType get_feature_type() { return F_ANY; }
 
 		/** return feature class the distance can deal with
 		 *
 		 * @return feature class ANY
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_ANY; }
+		virtual EFeatureClass get_feature_class() { return C_ANY; }
 
 		/** return the distance's name
 		 *
@@ -330,7 +330,7 @@ class CCustomDistance: public CDistance
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual inline int32_t get_num_vec_lhs()
+		virtual int32_t get_num_vec_lhs()
 		{
 			return num_rows;
 		}
@@ -339,7 +339,7 @@ class CCustomDistance: public CDistance
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual inline int32_t get_num_vec_rhs()
+		virtual int32_t get_num_vec_rhs()
 		{
 			return num_cols;
 		}
@@ -348,7 +348,7 @@ class CCustomDistance: public CDistance
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual inline bool has_features()
+		virtual bool has_features()
 		{
 			return (num_rows>0) && (num_cols>0);
 		}
@@ -360,7 +360,7 @@ class CCustomDistance: public CDistance
 		 * @param col col
 		 * @return computed distance function
 		 */
-		inline virtual float64_t compute(int32_t row, int32_t col)
+		virtual float64_t compute(int32_t row, int32_t col)
 		{
 			ASSERT(dmatrix);
 

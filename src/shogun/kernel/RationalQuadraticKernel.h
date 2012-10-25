@@ -63,27 +63,27 @@ public:
 	/**
 	 * @return kernel type
 	 */
-	inline virtual EKernelType get_kernel_type() { return K_RATIONAL_QUADRATIC; }
+	virtual EKernelType get_kernel_type() { return K_RATIONAL_QUADRATIC; }
 
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
+	virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
+	virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "RationalQuadraticKernel"; }
+	virtual const char* get_name() const { return "RationalQuadraticKernel"; }
 
 	/**
 	 * @return coef - coefficient parameter of kernel
 	 */
-	inline virtual const float64_t get_coef() const { return m_coef; }
+	virtual const float64_t get_coef() const { return m_coef; }
 
 	/** setter for degree parameter
 	 *  @param coef coefficient parameter of kernel

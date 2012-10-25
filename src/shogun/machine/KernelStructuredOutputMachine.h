@@ -49,7 +49,7 @@ class CKernelStructuredOutputMachine : public CStructuredOutputMachine
 		CKernel* get_kernel() const;
 
 		/** @return object name */
-		inline virtual const char* get_name() const 
+		virtual const char* get_name() const 
 		{ 
 			return "KernelStructuredOutputMachine"; 
 		}

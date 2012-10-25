@@ -95,7 +95,7 @@ class CSignal : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Signal"; }
+		virtual const char* get_name() const { return "Signal"; }
 
 	protected:
 		/** signals; handling external lib  */

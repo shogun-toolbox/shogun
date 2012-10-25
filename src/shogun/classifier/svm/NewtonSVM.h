@@ -46,7 +46,7 @@ class CNewtonSVM : public CLinearMachine
 		 *
 		 * @return classifier type NewtonSVM
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_NEWTONSVM; }
+		virtual EMachineType get_classifier_type() { return CT_NEWTONSVM; }
 
 		/**
 		 * set C
@@ -92,7 +92,7 @@ class CNewtonSVM : public CLinearMachine
 		inline void set_num_iter(int32_t iter) { num_iter=iter; }
 		
 		/** @return object name */
-		inline virtual const char* get_name() const { return "NewtonSVM"; }
+		virtual const char* get_name() const { return "NewtonSVM"; }
 	
 	protected:
 		/** train SVM classifier

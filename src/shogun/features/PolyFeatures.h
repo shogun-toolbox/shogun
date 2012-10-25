@@ -102,7 +102,7 @@ class CPolyFeatures : public CDotFeatures
 		 *
 		 * @return name of class
 		 */
-		inline virtual const char* get_name() const { return "PolyFeatures"; }
+		virtual const char* get_name() const { return "PolyFeatures"; }
 
 		/** compute dot product of vector with index arg1
 		 *  with an given second vector

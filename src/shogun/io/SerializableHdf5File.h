@@ -157,7 +157,7 @@ public:
 	virtual ~CSerializableHdf5File();
 
 	/** @return object name */
-	inline virtual const char* get_name() const {
+	virtual const char* get_name() const {
 		return "SerializableHdf5File";
 	}
 

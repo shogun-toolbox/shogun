@@ -54,7 +54,7 @@ class CIntronList : public CSGObject
 		/**
 		 * @return object name
 		 */
-		inline virtual const char* get_name() const { return "IntronList"; }
+		virtual const char* get_name() const { return "IntronList"; }
 	protected:
 		/** number of positions */
 		int32_t m_length;

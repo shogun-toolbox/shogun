@@ -61,7 +61,7 @@ public:
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
 	/** @return object name */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "MKLMulticlassGLPK";
 	}

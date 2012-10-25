@@ -88,7 +88,7 @@ public:
 	int32_t get_num_attributes();
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "AttributeFeatures"; }
+	virtual const char* get_name() const { return "AttributeFeatures"; }
 
 	/** duplicate feature object
 	 *

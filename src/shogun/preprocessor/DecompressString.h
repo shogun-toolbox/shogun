@@ -66,7 +66,7 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 		virtual ST* apply_to_string(ST* f, int32_t &len);
 
 		/** @return object name */
-		virtual inline const char* get_name() const { return "DecompressString"; }
+		virtual const char* get_name() const { return "DecompressString"; }
 
 		/// return a type of preprocessor TODO: template specification of get_type
 		virtual EPreprocessorType get_type() const;

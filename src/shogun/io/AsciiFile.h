@@ -377,7 +377,7 @@ public:
 	//@}
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "AsciiFile"; }
+	virtual const char* get_name() const { return "AsciiFile"; }
 
 	/**
 	 * getdelim() implementation.

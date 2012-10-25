@@ -78,7 +78,7 @@ public:
 	 *
 	 * @return degrees of freedom
 	 */
-	inline virtual float64_t get_degrees_freedom() {return m_df;}
+	virtual float64_t get_degrees_freedom() {return m_df;}
 	
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f

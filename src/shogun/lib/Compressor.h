@@ -95,7 +95,7 @@ namespace shogun
 				uint8_t* uncompressed, uint64_t& uncompressed_size);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Compressor"; }
+		virtual const char* get_name() const { return "Compressor"; }
 
 	protected:
 		/** compressor type */

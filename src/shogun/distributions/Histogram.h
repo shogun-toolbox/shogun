@@ -50,7 +50,7 @@ class CHistogram : public CDistribution
 		 *
 		 * @return number of model parameters
 		 */
-		virtual inline int32_t get_num_model_parameters() { return (1<<16); }
+		virtual int32_t get_num_model_parameters() { return (1<<16); }
 
 		/** get logarithm of given model parameter
 		 *
@@ -89,7 +89,7 @@ class CHistogram : public CDistribution
 		virtual SGVector<float64_t> get_histogram();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Histogram"; }
+		virtual const char* get_name() const { return "Histogram"; }
 
 	protected:
 		/** histogram */

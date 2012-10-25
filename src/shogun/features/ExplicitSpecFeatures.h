@@ -166,7 +166,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		virtual int32_t get_size() const;
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "ExplicitSpecFeatures"; }
+		virtual const char* get_name() const { return "ExplicitSpecFeatures"; }
 
 	protected:
 		/** obtain the k-spectrum from a list of strings

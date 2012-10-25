@@ -56,7 +56,7 @@ class CSubGradientLPM : public CLinearMachine
 			CLabels* trainlab);
 		virtual ~CSubGradientLPM();
 
-		virtual inline EMachineType get_classifier_type() { return CT_SUBGRADIENTLPM; }
+		virtual EMachineType get_classifier_type() { return CT_SUBGRADIENTLPM; }
 
 		/** set C
 		 *
@@ -117,7 +117,7 @@ class CSubGradientLPM : public CLinearMachine
 		void cleanup();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SubGradientLPM"; }
+		virtual const char* get_name() const { return "SubGradientLPM"; }
 
 	protected:
 		/** train classifier

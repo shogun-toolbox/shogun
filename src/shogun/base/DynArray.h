@@ -502,7 +502,7 @@ template <class T> class DynArray
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "DynArray"; }
+		virtual const char* get_name() const { return "DynArray"; }
 
 	protected:
 		/** shrink/grow step size */

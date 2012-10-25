@@ -68,7 +68,7 @@ class CRegressionLabels : public CDenseLabels
 		virtual ELabelType get_label_type();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "RegressionLabels"; }
+		virtual const char* get_name() const { return "RegressionLabels"; }
 };
 }
 #endif

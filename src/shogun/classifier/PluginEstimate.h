@@ -56,7 +56,7 @@ class CPluginEstimate: public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CStringFeatures<uint16_t>* feat)
+		virtual void set_features(CStringFeatures<uint16_t>* feat)
 		{
 			SG_UNREF(features);
 			SG_REF(feat);
@@ -196,7 +196,7 @@ class CPluginEstimate: public CMachine
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "PluginEstimate"; }
+		virtual const char* get_name() const { return "PluginEstimate"; }
 
 	protected:
 		/** train plugin estimate classifier

@@ -95,7 +95,7 @@ public:
 		virtual bool get_bias_enabled() { return use_bias; }
 
 		/** @return Object name */
-		inline virtual const char* get_name() const { return "OnlineLibLinear"; }
+		virtual const char* get_name() const { return "OnlineLibLinear"; }
 
 		/** start training */
 		virtual void start_train();

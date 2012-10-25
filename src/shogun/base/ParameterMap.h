@@ -130,7 +130,7 @@ public:
 	bool operator>(const ParameterMapElement& other) const;
 
 	/** @return name of the SG_SERIALIZABLE */
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "ParameterMapElement";
 	}

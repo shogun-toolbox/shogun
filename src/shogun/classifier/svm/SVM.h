@@ -229,7 +229,7 @@ class CSVM : public CKernelMachine
 				(CMKL* mkl, const float64_t* sumw, const float64_t suma));
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "SVM"; }
+		virtual const char* get_name() const { return "SVM"; }
 
 	protected:
 

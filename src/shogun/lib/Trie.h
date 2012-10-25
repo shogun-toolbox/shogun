@@ -624,7 +624,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 			const int32_t debug);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Trie"; }
+		virtual const char* get_name() const { return "Trie"; }
 
 	public:
 		/** number of symbols */

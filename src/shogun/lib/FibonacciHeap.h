@@ -62,7 +62,7 @@ public:
 	/** Constructor for heap with specified capacity */
 	CFibonacciHeap(int32_t capacity);
 
-	virtual inline const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "FibonacciHeap";
 	}

@@ -110,7 +110,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CDotFeatures* feat)
+		virtual void set_features(CDotFeatures* feat)
 		{
 			SG_REF(feat);
 			SG_UNREF(features);

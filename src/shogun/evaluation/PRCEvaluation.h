@@ -38,7 +38,7 @@ public:
 	virtual ~CPRCEvaluation();
 
 	/** get name */
-	virtual inline const char* get_name() const { return "PRCEvaluation"; };
+	virtual const char* get_name() const { return "PRCEvaluation"; };
 
 	/** evaluate PRC and auPRC
 	 * @param predicted labels

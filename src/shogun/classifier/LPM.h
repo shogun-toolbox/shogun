@@ -48,7 +48,7 @@ class CLPM : public CLinearMachine
 		CLPM();
 		virtual ~CLPM();
 
-		inline virtual EMachineType get_classifier_type()
+		virtual EMachineType get_classifier_type()
 		{
 			return CT_LPM;
 		}
@@ -57,7 +57,7 @@ class CLPM : public CLinearMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CDotFeatures* feat)
+		virtual void set_features(CDotFeatures* feat)
 		{
 			if (feat->get_feature_class() != C_SPARSE ||
 				feat->get_feature_type() != F_DREAL)
@@ -84,7 +84,7 @@ class CLPM : public CLinearMachine
 		inline float64_t get_epsilon() { return epsilon; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LPM"; }
+		virtual const char* get_name() const { return "LPM"; }
 
 	protected:
 		/** train classifier

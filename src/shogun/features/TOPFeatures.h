@@ -114,7 +114,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		bool compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "TOPFeatures"; }
+		virtual const char* get_name() const { return "TOPFeatures"; }
 
 	protected:
 		/** compute feature vector

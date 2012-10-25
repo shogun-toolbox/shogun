@@ -75,7 +75,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 *
 		 * @return name Regulatory Modules
 		 */
-		inline virtual const char* get_name() const { return "RegulatoryModulesStringKernel"; }
+		virtual const char* get_name() const { return "RegulatoryModulesStringKernel"; }
 
 		/** set motif positions
 		 *

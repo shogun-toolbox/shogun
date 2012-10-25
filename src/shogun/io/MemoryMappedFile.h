@@ -260,7 +260,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "MemoryMappedFile"; }
+		virtual const char* get_name() const { return "MemoryMappedFile"; }
 
 	protected:
 		/** file descriptor */

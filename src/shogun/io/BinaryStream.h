@@ -204,7 +204,7 @@ template <class T> class CBinaryStream : public CSGObject
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "BinaryStream"; }
+		virtual const char* get_name() const { return "BinaryStream"; }
 
 	protected:
 		/** file descriptor */

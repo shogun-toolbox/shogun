@@ -213,7 +213,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		}
 
 		//TODO change to pure virtual
-		inline virtual EProblemType get_machine_problem_type() const
+		virtual EProblemType get_machine_problem_type() const
 		{
 			return CKernelMachine::get_machine_problem_type();
 		}

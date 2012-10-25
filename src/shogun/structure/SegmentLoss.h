@@ -86,7 +86,7 @@ class CSegmentLoss : public CSGObject
 		/**
 		 * @return object name
 		 */
-		inline virtual const char* get_name() const { return "SegmentLoss"; }
+		virtual const char* get_name() const { return "SegmentLoss"; }
 	protected:
 
 		/** segment loss matrix*/

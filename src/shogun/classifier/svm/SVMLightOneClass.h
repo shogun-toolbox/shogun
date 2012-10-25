@@ -45,7 +45,7 @@ class CSVMLightOneClass: public CSVMLight
 		 *
 		 * @return classifier type LIGHTONECLASS
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_LIGHTONECLASS; }
+		virtual EMachineType get_classifier_type() { return CT_LIGHTONECLASS; }
 
 	protected:
 		/** train one class svm

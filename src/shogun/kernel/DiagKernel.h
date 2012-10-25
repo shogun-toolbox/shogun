@@ -58,7 +58,7 @@ class CDiagKernel: public CKernel
 		 *
 		 * @return feature type ANY
 		 */
-		inline virtual EFeatureType get_feature_type()
+		virtual EFeatureType get_feature_type()
 		{
 			return F_ANY;
 		}
@@ -67,7 +67,7 @@ class CDiagKernel: public CKernel
 		 *
 		 * @return feature class ANY
 		 */
-		inline virtual EFeatureClass get_feature_class()
+		virtual EFeatureClass get_feature_class()
 		{
 			return C_ANY;
 		}
@@ -93,7 +93,7 @@ class CDiagKernel: public CKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		inline virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
 			if (idx_a==idx_b)
 				return diag;

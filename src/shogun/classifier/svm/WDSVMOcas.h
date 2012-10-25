@@ -55,7 +55,7 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @return classifier type WDSVMOCAS
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_WDSVMOCAS; }
+		virtual EMachineType get_classifier_type() { return CT_WDSVMOCAS; }
 
 		/** set C
 		 *
@@ -172,7 +172,7 @@ class CWDSVMOcas : public CMachine
 		 * @param num number of example to classify
 		 * @return classified result
 		 */
-		inline virtual float64_t apply_one(int32_t num)
+		virtual float64_t apply_one(int32_t num)
 		{
 			ASSERT(features);
 			if (!wd_weights)
@@ -302,7 +302,7 @@ class CWDSVMOcas : public CMachine
 
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "WDSVMOcas"; }
+		virtual const char* get_name() const { return "WDSVMOcas"; }
 
 	protected:
 		/** train classifier

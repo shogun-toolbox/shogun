@@ -312,7 +312,7 @@ public:
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual inline EFeatureType get_feature_type() const;
+	virtual EFeatureType get_feature_type() const;
 
 	/**
 	 * Return the feature class
@@ -326,14 +326,14 @@ public:
 	 *
 	 * @return StreamingVwFeatures
 	 */
-	inline virtual const char* get_name() const { return "StreamingVwFeatures"; }
+	virtual const char* get_name() const { return "StreamingVwFeatures"; }
 
 	/**
 	 * Return the number of vectors stored in this object.
 	 *
 	 * @return 1 if current_example exists, else 0.
 	 */
-	inline virtual int32_t get_num_vectors() const;
+	virtual int32_t get_num_vectors() const;
 
 	/**
 	 * Return the size of one T object.

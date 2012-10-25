@@ -172,7 +172,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 *
 		 * @return feature type ULONG
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_ULONG; }
+		virtual EFeatureType get_feature_type() { return F_ULONG; }
 
 		/** get dictionary
 		 *

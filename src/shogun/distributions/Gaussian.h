@@ -104,7 +104,7 @@ class CGaussian : public CDistribution
 		 * @param point point for which to compute the PDF
 		 * @return computed PDF
 		 */
-		virtual inline float64_t compute_PDF(SGVector<float64_t> point)
+		virtual float64_t compute_PDF(SGVector<float64_t> point)
 		{
 			return CMath::exp(compute_log_PDF(point));
 		}
@@ -202,7 +202,7 @@ class CGaussian : public CDistribution
 		SGVector<float64_t> sample();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Gaussian"; }
+		virtual const char* get_name() const { return "Gaussian"; }
 
 	private:
 		/** Initialize parameters for serialization */

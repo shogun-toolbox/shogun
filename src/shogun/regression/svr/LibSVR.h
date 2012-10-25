@@ -74,7 +74,7 @@ class CLibSVR : public CSVM
 		virtual EMachineType get_classifier_type();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LibSVR"; }
+		virtual const char* get_name() const { return "LibSVR"; }
 
 	protected:
 		/** train regression

@@ -103,7 +103,7 @@ class CHierarchical : public CDistanceMachine
 		SGMatrix<int32_t> get_cluster_pairs();
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Hierarchical"; }
+		virtual const char* get_name() const { return "Hierarchical"; }
 
 	protected:
 		/** estimate hierarchical clustering

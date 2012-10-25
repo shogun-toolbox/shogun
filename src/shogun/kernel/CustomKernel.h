@@ -102,19 +102,19 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return kernel type CUSTOM
 		 */
-		inline virtual EKernelType get_kernel_type() { return K_CUSTOM; }
+		virtual EKernelType get_kernel_type() { return K_CUSTOM; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_ANY; }
+		virtual EFeatureType get_feature_type() { return F_ANY; }
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class ANY
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_ANY; }
+		virtual EFeatureClass get_feature_class() { return C_ANY; }
 
 		/** return the kernel's name
 		 *
@@ -340,7 +340,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual inline int32_t get_num_vec_lhs()
+		virtual int32_t get_num_vec_lhs()
 		{
 			return m_row_subset_stack->has_subsets()
 					? m_row_subset_stack->get_size() : num_lhs;
@@ -352,7 +352,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual inline int32_t get_num_vec_rhs()
+		virtual int32_t get_num_vec_rhs()
 		{
 			return m_col_subset_stack->has_subsets()
 					? m_col_subset_stack->get_size() : num_rhs;
@@ -364,7 +364,7 @@ class CCustomKernel: public CKernel
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual inline bool has_features()
+		virtual bool has_features()
 		{
 			return (get_num_vec_lhs()>0) && (get_num_vec_rhs()>0);
 		}
@@ -394,7 +394,7 @@ class CCustomKernel: public CKernel
 		 * @param col col
 		 * @return computed kernel function
 		 */
-		inline virtual float64_t compute(int32_t row, int32_t col)
+		virtual float64_t compute(int32_t row, int32_t col)
 		{
 			ASSERT(kmatrix.matrix);
 

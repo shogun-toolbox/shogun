@@ -351,7 +351,7 @@ public:
 
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "HDF5File"; }
+	virtual const char* get_name() const { return "HDF5File"; }
 
 protected:
 	/** determine the hdf5 type compatible to 'bool' */

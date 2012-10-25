@@ -130,7 +130,7 @@ public:
 	 */
 	virtual float64_t compute_threshold(float64_t alpha);
 
-	inline virtual const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "HSIC";
 	}

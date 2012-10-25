@@ -79,12 +79,12 @@ public:
 	/** get name
 	 * @return classifier name
 	 */
-	virtual inline const char* get_name() const { return "GaussianNaiveBayes"; };
+	virtual const char* get_name() const { return "GaussianNaiveBayes"; };
 
 	/** get classifier type
 	 * @return classifier type
 	 */
-	virtual inline EMachineType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
+	virtual EMachineType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
 
 protected:
 

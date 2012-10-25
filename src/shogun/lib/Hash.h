@@ -119,7 +119,7 @@ class CHash : public CSGObject
 		static uint32_t MurmurHashString(substring s, uint32_t h);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Hash"; }
+		virtual const char* get_name() const { return "Hash"; }
 
 	protected:
 

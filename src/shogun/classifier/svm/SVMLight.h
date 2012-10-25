@@ -250,7 +250,7 @@ class CSVMLight : public CSVM
    *
    * @return classifier type LIGHT
    */
-  virtual inline EMachineType get_classifier_type() { return CT_LIGHT; }
+  virtual EMachineType get_classifier_type() { return CT_LIGHT; }
 
   /** get runtime
    *
@@ -608,7 +608,7 @@ protected:
 	* @param j at index j
 	* @return computed kernel item at index i, j
 	*/
-	inline virtual float64_t compute_kernel(int32_t i, int32_t j)
+	virtual float64_t compute_kernel(int32_t i, int32_t j)
 	{
 		return kernel->kernel(i, j);
 	}
@@ -638,7 +638,7 @@ protected:
 	static void* reactivate_inactive_examples_linadd_helper(void* p);
 
 	/** @return object name */
-	inline virtual const char* get_name() const { return "SVMLight"; }
+	virtual const char* get_name() const { return "SVMLight"; }
 
 	/* interface to QP-solver */
 	float64_t *optimize_qp( QP *qp,float64_t *epsilon_crit, int32_t nx,

@@ -91,7 +91,7 @@ class CLDA : public CLinearMachine
 		 *
 		 * @return classifier type LDA
 		 */
-		inline virtual EMachineType get_classifier_type()
+		virtual EMachineType get_classifier_type()
 		{
 			return CT_LDA;
 		}
@@ -100,7 +100,7 @@ class CLDA : public CLinearMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CDotFeatures* feat)
+		virtual void set_features(CDotFeatures* feat)
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
@@ -110,7 +110,7 @@ class CLDA : public CLinearMachine
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LDA"; }
+		virtual const char* get_name() const { return "LDA"; }
 
 	protected:
 		/** train LDA classifier

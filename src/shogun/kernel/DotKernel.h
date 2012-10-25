@@ -83,7 +83,7 @@ class CDotKernel : public CKernel
 		 *
 		 * @return feature class ANY
 		 */
-		inline virtual EFeatureClass get_feature_class() { return C_ANY; }
+		virtual EFeatureClass get_feature_class() { return C_ANY; }
 
 		/** return feature type the kernel can deal with
 		 *
@@ -91,7 +91,7 @@ class CDotKernel : public CKernel
 		 *
 		 * @return ANY feature type
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_ANY; }
+		virtual EFeatureType get_feature_type() { return F_ANY; }
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.

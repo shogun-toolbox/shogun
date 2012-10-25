@@ -53,7 +53,7 @@ class CLPBoost : public CLinearMachine
 		CLPBoost();
 		virtual ~CLPBoost();
 
-		inline virtual EMachineType get_classifier_type()
+		virtual EMachineType get_classifier_type()
 		{
 			return CT_LPBOOST;
 		}
@@ -65,7 +65,7 @@ class CLPBoost : public CLinearMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual inline void set_features(CDotFeatures* feat)
+		virtual void set_features(CDotFeatures* feat)
 		{
 			if (feat->get_feature_class() != C_SPARSE ||
 				feat->get_feature_type() != F_DREAL)
@@ -94,7 +94,7 @@ class CLPBoost : public CLinearMachine
 		float64_t find_max_violator(int32_t& max_dim);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LPBoost"; }
+		virtual const char* get_name() const { return "LPBoost"; }
 
 	protected:
 		/** train classifier

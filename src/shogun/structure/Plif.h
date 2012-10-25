@@ -425,7 +425,7 @@ class CPlif: public CPlifBase
 		static void delete_penalty_struct(CPlif** PEN, int32_t P);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "Plif"; }
+		virtual const char* get_name() const { return "Plif"; }
 
 	protected:
 		/** len */

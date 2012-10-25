@@ -83,7 +83,7 @@ class CLibLinear : public CLinearMachine
 		 *
 		 * @return the classifier type
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_LIBLINEAR; }
+		virtual EMachineType get_classifier_type() { return CT_LIBLINEAR; }
 
 		/** set C
 		 *
@@ -129,7 +129,7 @@ class CLibLinear : public CLinearMachine
 		inline bool get_bias_enabled() { return use_bias; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LibLinear"; }
+		virtual const char* get_name() const { return "LibLinear"; }
 
 		/** get the maximum number of iterations liblinear is allowed to do */
 		inline int32_t get_max_iterations()

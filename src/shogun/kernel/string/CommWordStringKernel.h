@@ -143,7 +143,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 *
 		 * @return feature type WORD
 		 */
-		inline virtual EFeatureType get_feature_type() { return F_WORD; }
+		virtual EFeatureType get_feature_type() { return F_WORD; }
 
 		/** get dictionary
 		 *
@@ -212,7 +212,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		inline virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
 		{
 			return compute_helper(idx_a, idx_b, false);
 		}

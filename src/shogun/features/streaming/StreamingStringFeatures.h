@@ -207,7 +207,7 @@ public:
 	 *
 	 * @return StreamingSparseFeatures
 	 */
-	inline virtual const char* get_name() const { return "StreamingStringFeatures"; }
+	virtual const char* get_name() const { return "StreamingStringFeatures"; }
 
 	/**
 	 * Return the number of vectors stored in this object.

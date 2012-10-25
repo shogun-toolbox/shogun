@@ -71,28 +71,28 @@ class CSphericalKernel: public CKernel
 	/**
 	 * @return kernel type
 	 */
-	inline virtual EKernelType get_kernel_type() { return K_SPHERICAL; }
+	virtual EKernelType get_kernel_type() { return K_SPHERICAL; }
 
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "SphericalKernel"; }
+	virtual const char* get_name() const { return "SphericalKernel"; }
 
 	/** set the kernel's sigma
 	 *
 	 * @param s kernel sigma
 	 */
-	inline virtual void set_sigma(float64_t s)
+	virtual void set_sigma(float64_t s)
 	{
 	  	sigma=s;
 	}
@@ -101,7 +101,7 @@ class CSphericalKernel: public CKernel
 	 *
 	 * @return kernel sigma
 	 */
-	inline virtual float64_t get_sigma() const
+	virtual float64_t get_sigma() const
 	{
 		return sigma;
 	}

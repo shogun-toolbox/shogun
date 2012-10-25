@@ -67,22 +67,22 @@ public:
 	/**
 	 * @return kernel type
 	 */
-	inline virtual EKernelType get_kernel_type() { return K_ANOVA; }
+	virtual EKernelType get_kernel_type() { return K_ANOVA; }
 
 	/**
 	 * @return type of features
 	 */
-	inline virtual EFeatureType get_feature_type() { return F_DREAL; }
+	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 	/**
 	 * @return class of features
 	 */
-	inline virtual EFeatureClass get_feature_class() { return C_DENSE; }
+	virtual EFeatureClass get_feature_class() { return C_DENSE; }
 
 	/**
 	 * @return name of kernel
 	 */
-	inline virtual const char* get_name() const { return "ANOVAKernel"; }
+	virtual const char* get_name() const { return "ANOVAKernel"; }
 
 	/** getter for degree parameter
 	 *  @return kernel parameter cardinality

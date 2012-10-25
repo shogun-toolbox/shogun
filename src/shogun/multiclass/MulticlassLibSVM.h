@@ -41,10 +41,10 @@ class CMulticlassLibSVM : public CMulticlassSVM
 		 *
 		 * @return classifier type LIBSVMMULTICLASS
 		 */
-		virtual inline EMachineType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
+		virtual EMachineType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "MulticlassLibSVM"; }
+		virtual const char* get_name() const { return "MulticlassLibSVM"; }
 
 	protected:
 		/** train multiclass SVM classifier

@@ -38,7 +38,7 @@ class CGUIMath : public CSGObject
 		void init_random(uint32_t initseed=0);
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "GUIMath"; }
+		virtual const char* get_name() const { return "GUIMath"; }
 	protected:
 		/** ui */
 		CSGInterface* ui;

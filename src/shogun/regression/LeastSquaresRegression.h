@@ -58,13 +58,13 @@ class CLeastSquaresRegression : public CLinearRidgeRegression
 		 *
 		 * @return classifier type LeastSquaresRegression
 		 */
-		inline virtual EMachineType get_classifier_type()
+		virtual EMachineType get_classifier_type()
 		{
 			return CT_LEASTSQUARESREGRESSION;
 		}
 
 		/** @return object name */
-		inline virtual const char* get_name() const { return "LeastSquaresRegression"; }
+		virtual const char* get_name() const { return "LeastSquaresRegression"; }
 
 	private:
 		void init();

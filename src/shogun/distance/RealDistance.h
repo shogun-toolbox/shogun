@@ -43,7 +43,7 @@ public:
 	 *
 	 * @return feature type DREAL
 	 */
-	inline virtual EFeatureType get_feature_type() { return F_DREAL; }
+	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.

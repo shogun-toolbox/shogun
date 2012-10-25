@@ -168,14 +168,14 @@ public:
 	 *
 	 * @return ParseBuffer
 	 */
-	inline virtual const char* get_name() const { return "ParseBuffer"; }
+	virtual const char* get_name() const { return "ParseBuffer"; }
 
 protected:
 	/**
 	 * Increments the 'read' position in the buffer.
 	 *
 	 */
-	inline virtual void inc_read_index()
+	virtual void inc_read_index()
 	{
 		ex_read_index=(ex_read_index + 1) % ring_size;
 	}
@@ -184,7 +184,7 @@ protected:
 	 * Increments the 'write' position in the buffer.
 	 *
 	 */
-	inline virtual void inc_write_index()
+	virtual void inc_write_index()
 	{
 		ex_write_index=(ex_write_index + 1) % ring_size;
 	}

@@ -95,7 +95,7 @@ public:
 	EEvaluationDirection get_evaluation_direction();
 
 	/** get name */
-	virtual inline const char* get_name() const
+	virtual const char* get_name() const
 	{
 		return "ContingencyTableEvaluation";
 	}
@@ -290,7 +290,7 @@ public:
 	/* virtual destructor */
 	virtual ~CAccuracyMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "AccuracyMeasure"; };
+	virtual const char* get_name() const { return "AccuracyMeasure"; };
 };
 
 /** @brief class ErrorRateMeasure
@@ -310,7 +310,7 @@ public:
 	/* virtual destructor */
 	virtual ~CErrorRateMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "ErrorRateMeasure"; };
+	virtual const char* get_name() const { return "ErrorRateMeasure"; };
 };
 
 /** @brief class BALMeasure
@@ -330,7 +330,7 @@ public:
 	/* virtual destructor */
 	virtual ~CBALMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "BALMeasure"; };
+	virtual const char* get_name() const { return "BALMeasure"; };
 };
 
 /** @brief class WRACCMeasure
@@ -350,7 +350,7 @@ public:
 	/* virtual destructor */
 	virtual ~CWRACCMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "WRACCMeasure"; };
+	virtual const char* get_name() const { return "WRACCMeasure"; };
 };
 
 /** @brief class F1Measure
@@ -370,7 +370,7 @@ public:
 	/* virtual destructor */
 	virtual ~CF1Measure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "F1Measure"; };
+	virtual const char* get_name() const { return "F1Measure"; };
 };
 
 /** @brief class CrossCorrelationMeasure
@@ -390,7 +390,7 @@ public:
 	/* virtual destructor */
 	virtual ~CCrossCorrelationMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "CrossCorrelationMeasure"; };
+	virtual const char* get_name() const { return "CrossCorrelationMeasure"; };
 };
 
 /** @brief class RecallMeasure
@@ -410,7 +410,7 @@ public:
 	/* virtual destructor */
 	virtual ~CRecallMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "RecallMeasure"; };
+	virtual const char* get_name() const { return "RecallMeasure"; };
 };
 
 /** @brief class PrecisionMeasure
@@ -430,7 +430,7 @@ public:
 	/* virtual destructor */
 	virtual ~CPrecisionMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "PrecisionMeasure"; };
+	virtual const char* get_name() const { return "PrecisionMeasure"; };
 };
 
 /** @brief class SpecificityMeasure
@@ -450,7 +450,7 @@ public:
 	/* virtual destructor */
 	virtual ~CSpecificityMeasure() {};
 	/* name */
-	virtual inline const char* get_name() const { return "SpecificityMeasure"; };
+	virtual const char* get_name() const { return "SpecificityMeasure"; };
 };
 }
 #endif /* CONTINGENCYTABLEEVALUATION_H_ */
