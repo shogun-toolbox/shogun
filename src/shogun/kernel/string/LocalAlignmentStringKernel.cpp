@@ -188,14 +188,12 @@ void CLocalAlignmentStringKernel::init_static_variables()
 	register int32_t i;
 
 	/* Initialization of the array which gives the position of each amino-acid in the set of amino-acid */
-	if ((aaIndex=(int32_t *)calloc(NLET,sizeof(int32_t)))==NULL)
-		SG_ERROR("run out o memory");
+	aaIndex = SG_CALLOC(int32_t, NLET);
 	for (i=0;i<NAA;i++)
 		aaIndex[aaList[i]-'A']=i;
 
 	/* Initialization of the array which indicates whether a char is an amino-acid */
-	if ((isAA=(int32_t *)calloc(256,sizeof(int32_t)))==NULL)
-		SG_ERROR("run out of memory");
+	isAA = SG_CALLOC(int32_t, 256);
 	for (i=0;i<NAA;i++)
 		isAA[(int32_t)aaList[i]]=1;
 
@@ -379,10 +377,8 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 
 	/* Create aax and aay */
 
-	if ((aax=(int32_t *)calloc(lx,sizeof(int32_t)))==NULL)
-		SG_ERROR("run out of memory");
-	if ((aay=(int32_t *)calloc(ly,sizeof(int32_t)))==NULL)
-		SG_ERROR("run out of memory");
+	aax = SG_CALLOC(int32_t, lx);
+	aay = SG_CALLOC(int32_t, ly);
 
 	/* Extract the characters corresponding to aminoacids and keep their indexes */
 
