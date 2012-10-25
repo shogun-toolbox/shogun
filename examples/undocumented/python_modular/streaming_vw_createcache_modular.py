@@ -42,4 +42,4 @@ def streaming_vw_createcache_modular (fname):
 	#return vw
 
 if __name__ == "__main__":
-	streaming_vw_createcache_modular(*parameter_list[0])
+	0#streaming_vw_createcache_modular(*parameter_list[0])
