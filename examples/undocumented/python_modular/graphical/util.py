@@ -110,6 +110,6 @@ def compute_output_plot_isolines_sine(classifier, kernel, train, regression=Fals
 	if regression:
 		y=classifier.apply().get_labels()
 	else:
-		y=classifier.apply().get_confidences()
+		y=classifier.apply().get_values()
 
 	return x, y
