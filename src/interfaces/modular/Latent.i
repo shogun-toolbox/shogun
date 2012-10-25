@@ -8,6 +8,10 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifdef USE_SWIG_DIRECTORS
+%feature("director") shogun::CDirectorLatentModel;
+#endif
+
 /* Remove C Prefix */
 %rename(LatentModel) CLatentModel;
 
@@ -15,8 +19,13 @@
 
 %rename(LatentSVM) CLatentSVM;
 
+%rename(DirectorLatentModel) CDirectorLatentModel;
+
+
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/latent/LatentModel.h>
+
+%include <shogun/latent/DirectorLatentModel.h>
 
 %include <shogun/machine/LinearLatentMachine.h>
 

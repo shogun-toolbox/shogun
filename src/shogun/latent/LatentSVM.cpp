@@ -60,10 +60,14 @@ CLatentLabels* CLatentSVM::apply_latent()
 float64_t CLatentSVM::do_inner_loop(float64_t cooling_eps)
 {
 	CLabels* ys = m_model->get_labels()->get_labels();
-	CSVMOcas svm(m_C, features, ys);
+	CDotFeatures* feats = (m_model->get_caching() ?
+			m_model->get_psi_feature_vectors() :
+			m_model->get_psi_feature_vectors());
+	CSVMOcas svm(m_C, feats, ys);
 	svm.set_epsilon(cooling_eps);
 	svm.train();
 	SG_UNREF(ys);
+	SG_UNREF(feats);
 
 	/* copy the resulting w */
 	SGVector<float64_t> cur_w = svm.get_w();

@@ -30,7 +30,8 @@ CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
 	set_model(model);
 
 	index_t feat_dim = m_model->get_dim();
-	set_w(SGVector<float64_t> (feat_dim));
+	w.resize_vector(feat_dim);
+	w.zero();
 }
 
 CLinearLatentMachine::~CLinearLatentMachine()
@@ -57,18 +58,15 @@ void CLinearLatentMachine::set_model(CLatentModel* latent_model)
 	m_model = latent_model;
 }
 
-void CLinearLatentMachine::cache_psi_vectors()
-{
-	set_features(m_model->get_psi_feature_vectors());
-}
-
 bool CLinearLatentMachine::train_machine(CFeatures* data)
 {
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n");
 
+	SG_DEBUG("PSI size: %d\n", m_model->get_dim());
+	SG_DEBUG("Number of training data: %d\n", m_model->get_num_vectors());
 	SG_DEBUG("Initialise PSI (x,h)\n");
-	cache_psi_vectors();
+	m_model->cache_psi_features();
 
 	/*
 	 * define variables for calculating the stopping
@@ -77,13 +75,13 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 	float64_t decrement = 0.0, primal_obj = 0.0, prev_po = 0.0;
 	float64_t inner_eps = 0.5*m_C*m_epsilon;
 	bool stop = false;
-	int32_t iter = 0;
+	m_cur_iter = 0;
 
 	/* do CCCP */
 	SG_DEBUG("Starting CCCP\n");
-	while ((iter < 2)||(!stop&&(iter < m_max_iter)))
+	while ((m_cur_iter < 2)||(!stop&&(m_cur_iter < m_max_iter)))
 	{
-		SG_DEBUG("iteration: %d\n", iter);
+		SG_DEBUG("iteration: %d\n", m_cur_iter);
 		/* do the SVM optimisation with fixed h* */
 		SG_DEBUG("Do the inner loop of CCCP: optimize for w for fixed h*\n");
 		primal_obj = do_inner_loop(inner_eps);
@@ -106,10 +104,10 @@ bool CLinearLatentMachine::train_machine(CFeatures* data)
 		m_model->argmax_h(w);
 
 		SG_DEBUG("Recalculating PSI (x,h) with the new h variables\n");
-		cache_psi_vectors();
+		m_model->cache_psi_features();
 
 		/* increment iteration counter */
-		iter++;
+		m_cur_iter++;
 	}
 
 	return true;
@@ -120,8 +118,6 @@ void CLinearLatentMachine::init()
 	m_C = 10.0;
 	m_epsilon = 1E-3;
 	m_max_iter = 400;
-	features = new CDenseFeatures<float64_t> ();
-	SG_REF(features);
 	m_model = NULL;
 
 	m_parameters->add(&m_C, "C",  "Cost constant.");

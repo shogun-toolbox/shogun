@@ -14,13 +14,19 @@
 using namespace shogun;
 
 CLatentModel::CLatentModel()
-	: m_features(NULL), m_labels(NULL)
+	: m_features(NULL),
+	m_labels(NULL),
+	m_do_caching(false),
+	m_cached_psi(NULL)
 {
 	register_parameters();
 }
 
-CLatentModel::CLatentModel(CLatentFeatures* feats, CLatentLabels* labels)
-	: m_features(feats), m_labels(labels)
+CLatentModel::CLatentModel(CLatentFeatures* feats, CLatentLabels* labels, bool do_caching)
+	: m_features(feats),
+	m_labels(labels),
+	m_do_caching(do_caching),
+	m_cached_psi(NULL)
 {
 	register_parameters();
 	SG_REF(m_features);
@@ -31,6 +37,7 @@ CLatentModel::~CLatentModel()
 {
 	SG_UNREF(m_labels);
 	SG_UNREF(m_features);
+	SG_UNREF(m_cached_psi);
 }
 
 int32_t CLatentModel::get_num_vectors() const
@@ -82,5 +89,34 @@ void CLatentModel::register_parameters()
 {
 	m_parameters->add((CSGObject**) &m_features, "features", "Latent features");
 	m_parameters->add((CSGObject**) &m_labels, "labels", "Latent labels");
+	m_parameters->add((CSGObject**) &m_cached_psi, "cached psi", "Cached PSI features after argmax_h");
+	m_parameters->add(&m_do_caching, "do caching", "Indicate whether or not do PSI vector caching after argmax_h");
 }
 
+
+CLatentFeatures* CLatentModel::get_features() const
+{
+	SG_REF(m_features);
+	return m_features;
+}
+
+void CLatentModel::cache_psi_features()
+{
+	if (m_do_caching)
+	{
+		if (m_cached_psi)
+			SG_UNREF(m_cached_psi);
+		m_cached_psi = this->get_psi_feature_vectors();
+		SG_REF(m_cached_psi);
+	}
+}
+
+CDotFeatures* CLatentModel::get_cached_psi_features() const
+{
+	if (m_do_caching)
+	{
+		SG_REF(m_cached_psi);
+		return m_cached_psi;
+	}
+	return NULL;
+}
