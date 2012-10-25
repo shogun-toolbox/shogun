@@ -28,4 +28,4 @@ def streaming_vw_modular (dummy):
 	#return vw
 
 if __name__ == "__main__":
-	streaming_vw_modular(*parameter_list[0])
+	0#streaming_vw_modular(*parameter_list[0])
