@@ -126,7 +126,7 @@ class Form(QMainWindow):
         svm.set_epsilon(1e-2)
 
         x=numpy.linspace(-5.0,5.0,100)
-        y=svm.apply(RealFeatures(numpy.array([x]))).get_confidences()
+        y=svm.apply(RealFeatures(numpy.array([x]))).get_values()
 
         self.axes.plot(x,y,'r-')
 
