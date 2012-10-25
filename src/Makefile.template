@@ -266,7 +266,7 @@ install-python_modular: $(TEMPLATE_TARGET)
 	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 	for i in Kernel Distance Features Classifier Regression Converter \
 		Loss Clustering Evaluation IO Library Mathematics \
-		ModelSelection Preprocessor Structure Distribution Statistics;\
+		ModelSelection Preprocessor Structure Distribution Statistics Latent;\
 	do \
 		install -d -m755 "$(DESTDIR)$(PYDIR)/shogun/$$i" ;\
 		echo "from modshogun import *" > "$(DESTDIR)$(PYDIR)/shogun/$$i/__init__.py" ;\
