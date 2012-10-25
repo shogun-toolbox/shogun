@@ -98,6 +98,11 @@ class CLinearKernel: public CDotKernel
 	 	*/
 		virtual float64_t compute_optimized(int32_t idx);
 
+		virtual void clear_normal()
+		{
+			normal = SGVector<float64_t>();
+		}
+
 		/** add to normal vector
 		 *
 		 * @param idx where to add
