@@ -263,8 +263,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 {
     $result=$1;
 }
-#elseif defined(SWIGPERL)
+#endif
 
+#if defined(SWIGPERL)
 %{
   static int print_sgobject(SV* pobj, FILE *f, int flags) {
     void *argp;
