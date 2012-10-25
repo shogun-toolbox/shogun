@@ -100,7 +100,9 @@ class CLinearKernel: public CDotKernel
 
 		virtual void clear_normal()
 		{
-			normal = SGVector<float64_t>();
+			normal = SGVector<float64_t>(((CDotFeatures*)lhs)->get_dim_feature_space());
+			normal.zero();
+			set_is_initialized(true);
 		}
 
 		/** add to normal vector
