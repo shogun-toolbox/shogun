@@ -107,9 +107,6 @@ namespace shogun
 		protected:
 			virtual bool train_machine(CFeatures* data=NULL);
 
-			/** cache PSI vectors */
-			virtual void cache_psi_vectors();
-
 			/** inner loop of the latent machine
 			 *
 			 * @param cooling_eps epsilon
@@ -129,6 +126,8 @@ namespace shogun
 			float64_t m_epsilon;
 			/** max iterations */
 			int32_t m_max_iter;
+
+			int32_t m_cur_iter;
 
 		private:
 			/** initalize the values to default values */

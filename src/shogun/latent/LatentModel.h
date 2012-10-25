@@ -14,6 +14,7 @@
 #include <shogun/labels/LatentLabels.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
@@ -37,8 +38,9 @@ namespace shogun
 			 *
 			 * @param feats Latent features
 			 * @param labels Latent labels
+			 * @param do_caching whether caching of PSI vectors is enabled or not. Enabled by default.
 			 */
-			CLatentModel(CLatentFeatures* feats, CLatentLabels* labels);
+			CLatentModel(CLatentFeatures* feats, CLatentLabels* labels, bool do_caching = true);
 
 			/** destructor */
 			virtual ~CLatentModel();
@@ -73,6 +75,12 @@ namespace shogun
 			 */
 			void set_features(CLatentFeatures* feats);
 
+			/** get latent features
+			 *
+			 * @return latent features
+			 */
+			CLatentFeatures* get_features() const;
+
 			/** Calculate the PSI vectors for all features
 			 *
 			 * @return PSI vectors
@@ -96,6 +104,35 @@ namespace shogun
 			 */
 			virtual void argmax_h(const SGVector<float64_t>& w);
 
+			/** cache the PSI vectors
+			 *
+			 */
+			void cache_psi_features();
+
+			/** get the cached PSI vectors
+			 *
+			 * @return the cached PSI vectors
+			 */
+			CDotFeatures* get_cached_psi_features() const;
+
+			/** get caching 
+			 *
+			 * @return true if caching of PSI vectors is enabled; false otherwise
+			 */
+			inline bool get_caching() const
+			{
+				return m_do_caching;
+			}
+
+			/** set caching of PSI features
+			 *
+			 * @param caching true if one wants to cache PSI vectors; false otherwise
+			 */
+			inline void set_caching(bool caching)
+			{
+				m_do_caching = caching;
+			}
+
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable
@@ -107,6 +144,10 @@ namespace shogun
 			CLatentFeatures* m_features;
 			/** corresponding labels for the train set */
 			CLatentLabels* m_labels;
+			/** boolean that indicates whether caching of PSI vectors is enabled or not */
+			bool m_do_caching;
+			/** cached PSI feature vectors after argmax_h */
+			CDotFeatures* m_cached_psi;
 
 		private:
 			/** register the parameters */
