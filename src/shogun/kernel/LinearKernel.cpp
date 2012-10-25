@@ -83,7 +83,6 @@ bool CLinearKernel::init_optimization(CKernelMachine* km)
 
 bool CLinearKernel::delete_optimization()
 {
-	SG_FREE(normal);
 	normal = SGVector<float64_t>();
 	set_is_initialized(false);
 
