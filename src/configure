@@ -34,9 +34,10 @@ EXT_LIB_SWIG_RUBY_MODULAR=.so
 EXT_DOXY=.doxy
 EXT_SWIG_DOXY=_doxygen.i
 SWIGFLAGS="-w473 -w454 -w312 -w325 -fvirtual"
-SWIG=swig
+SWIG="swig -v -Wall"
 DOXYGEN=doxygen
 RUBY=ruby
+PERL=perl
 PYTHON=python
 PYVER=
 GMOCK=gmock-config
@@ -563,6 +564,32 @@ check_python()
 		PYVER="`echo $PYVER | cut -f 1-2 -d '.'`"
 	else
 		die "python not detected (required)"
+	fi
+}
+
+check_perl()
+{
+	echocheck "Perl"
+	if $PERL -V >/dev/null 2>&1
+	then
+		PLVER="`$PERL -v 2>&1 | grep version | cut -f 9 -d ' '`"
+		echores "${PLVER}"
+		PLVER="`echo $PLVER | cut -f 2 -d 'v' | cut -f 1-2 -d '.'`"
+	else
+		die "perl not detected (required)"
+	fi
+}
+
+check_perldl()
+{
+	echocheck "Perl Data Language"
+	PDLVER=
+	if $PERL -MPDL -e "1;" >/dev/null 2>&1
+	then
+	    PDLVER=`$PERL -MPDL -e 'print($PDL::Version::VERSION =~ m/^\d+\.\d+/g)'`
+	    echores "${PDLVER}"
+	else
+	     echores "perl DL not detected (required)"
 	fi
 }
 
@@ -1675,6 +1702,9 @@ set_install_dirs() {
 		else
 			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/site-packages"
 		fi
+	fi
+	if test -z "$_pldir" ; then
+	    _pldir="`$PERL -e 'print join(\"\\n\",  @INC)' | grep $_prefix | head -1 |sed 's,.*/lib/,,'`"
 	fi
 }
 

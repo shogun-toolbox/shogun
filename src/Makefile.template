@@ -7,7 +7,7 @@
 SRCDIR = .
 
 ifeq (../.config,$(wildcard ../.config))
-CONFIGPATH = ../
+CONFIGPATH = ..
 all: build
 include ../.config
 ifeq (../.config-local,$(wildcard ../.config-local))
@@ -15,7 +15,7 @@ include ../.config-local
 endif
 else
 ifeq (../../.config,$(wildcard ../../.config))
-CONFIGPATH = ../../
+CONFIGPATH = ../..
 all: build
 include ../../.config
 ifeq (../../.config-local,$(wildcard ../../.config-local))
@@ -120,6 +120,8 @@ TAR:=$(CONFIGPATH)/shogun-$(shell date +%Y-%m-%d).tar
 PRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PYDIR) $(DESTDIR)$(LIBDIR)/shogun)
 ORELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)$(LIBDIR)/shogun)
 RRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
+PLRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PLDIR) $(DESTDIR)$(LIBDIR)/Shogun)
+
 
 foo: 
 	echo $(SWIGLIBFILES)
@@ -191,7 +193,6 @@ install-libshogun: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
-
 	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o \
 		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
@@ -221,24 +222,24 @@ install-r_static: $(TEMPLATE_TARGET)
 	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB) $(SAVERDS)
 
 install-elwms_static: $(TEMPLATE_TARGET)
-	#one .so file
+#one .so file
 ifneq ($(ELWMS_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(LIBDIR)/shogun
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)/shogun
 endif
-	#python
+#python
 ifneq ($(PYTHON_STATIC_TARGET),)
 	rm -f $(DESTDIR)$(PYDIR)/$(TEMPLATE_TARGET) 
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	cd $(DESTDIR)$(PYDIR) && ln -s $(PRELPATH)/$(TEMPLATE_TARGET)
 endif
-	#octave
+#octave
 ifneq ($(OCTAVE_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	rm -f $(DESTDIR)$(OCTDIR)/elwms.oct
 	cd $(DESTDIR)$(OCTDIR) && ln -s $(ORELPATH)/$(TEMPLATE_TARGET) elwms.oct
 endif
-	#r
+#r
 ifneq ($(R_STATIC_TARGET),)
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/demo
 	install -d -m755 $(DESTDIR)$(RDIR)/elwms/libs
@@ -277,6 +278,19 @@ install-python_modular: $(TEMPLATE_TARGET)
 #for i in $(SWIGPYFILES) ; do echo $$i \
 #	| sed -e 's=.*/="=' -e 's/\.py/", /' \
 #	>>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
+
+#TODO#PTZ121026...shall use mechanics of Makefile.PL 
+install-perl_modular: $(TEMPLATE_TARGET)
+	install -d -m755 "$(DESTDIR)$(PLDIR)/shogun"
+	install -m644 $(SWIGPLFILES) "$(DESTDIR)$(PLDIR)"
+	install -m755 $(SWIGLIBFILES) "$(DESTDIR)$(PLDIR)"
+	for i in Kernel Distance Features Classifier Regression Converter \
+		Loss Clustering Evaluation IO Library Mathematics \
+		ModelSelection Preprocessor Structure Distribution Statistics Latent;\
+	do \
+		install -d -m755 "$(DESTDIR)$(PLDIR)/Shogun/$$i" ;\
+		echo "package Shogun::$${i};use modshogun;1;" > "$(DESTDIR)$(PLDIR)/Shogun/$$i.pm" ;\
+	done
 
 install-r_modular: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(RDIR)/shogun/demo
@@ -325,7 +339,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd $(CONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
+	-cd $(CONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
 		CC=$(COMP_CPP) \
 		LIBRARY_PATH="$(LIBRARY_PATH)" \
 		LIB_PATH="$(DESTDIR)$(LIBDIR)" \
@@ -344,6 +358,7 @@ run-testsuite-python_static:
 	cd $(CONFIGPATH)/../tests/integration/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
+
 check-examples-python_static:
 	cd $(CONFIGPATH)/../examples/undocumented/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
@@ -392,19 +407,37 @@ run-testsuite-python_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
+
+run-testsuite-perl_modular:
+	cd $(CONFIGPATH)/../tests/integration/perl_modular && (\
+	 $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) PERLPATH="$(DESTDIR)$(PLDIR)" 	\
+	 $(LIBRARY_PATH)="/usr/src/shogun/src/interfaces/perl_modular:/usr/src/shogun/src/shogun" \
+	 ./test_all.sh)
+	cd $(CONFIGPATH)/../tests/integration/perl_modular && (\
+	$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLPATH="$(DESTDIR)$(PLDIR)" \
+	$(LIBRARY_PATH)="/usr/src/shogun/src/interfaces/perl_modular:/usr/src/shogun/src/shogun" \
+	./tester.pl)
+
 check-examples-python_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
+check-examples-perl_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/perl_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
+		PERLPATH="$(DESTDIR)$(PLDIR)" ./check.sh    )
+
 run-testsuite-java_modular:
-	#TODO
+#TODO
+
 check-examples-java_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/java_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
 
 run-testsuite-csharp_modular:
-	#TODO
+#TODO
+
 check-examples-csharp_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/csharp_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
@@ -428,14 +461,16 @@ check-examples-octave_modular:
 		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
 run-testsuite-lua_modular:
-	#TODO
+#TODO
+
 check-examples-lua_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/lua_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		LUA_CPATH="$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)/?.so" ./check.sh )
 
 run-testsuite-ruby_modular:
-	#TODO
+#TODO
+
 check-examples-ruby_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/ruby_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
@@ -496,6 +531,9 @@ doc-octave_modular:
 	true
 
 doc-python_modular:
+	true
+
+doc-perl_modular:
 	true
 
 doc-r_modular:
@@ -571,6 +609,26 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@echo -e " */\n" >> $@
 	@cat  $< >> $@
 	@$(PYTHON) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
+
+%.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PL) $(HEADERFILES)
+	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PL)"
+	@echo "/*" > $@
+	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
+	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
+	@echo -e " */\n" >> $@
+	@cat  $< >> $@
+	@$(PERL) $*.$(EXT_CPP_PL) $@ $(HEADERFILES)
+
+%.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PM) $(HEADERFILES)
+	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PM)"
+	@echo "/*" > $@
+	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
+	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
+	@echo -e " */\n" >> $@
+	@cat  $< >> $@
+	@$(PERL) $*.$(EXT_CPP_PM) $@ $(HEADERFILES)
+
+
 
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
