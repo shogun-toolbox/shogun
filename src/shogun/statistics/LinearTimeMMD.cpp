@@ -49,6 +49,7 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 void CLinearTimeMMD::init()
 {
+#ifdef HAVE_LAPACK
 	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
 			"iterations for qp solver", MS_NOT_AVAILABLE);
 	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
@@ -57,6 +58,7 @@ void CLinearTimeMMD::init()
 			"kernel weights", MS_NOT_AVAILABLE);
 	SG_ADD(&m_opt_regularization_eps, "opt_regularization_eps", "Regularization"
 			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
+#endif //HAVE_LAPACK
 
 	m_opt_max_iterations=10000;
 	m_opt_epsilon=10E-15;
