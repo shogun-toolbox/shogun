@@ -58,12 +58,13 @@ void CLinearTimeMMD::init()
 			"kernel weights", MS_NOT_AVAILABLE);
 	SG_ADD(&m_opt_regularization_eps, "opt_regularization_eps", "Regularization"
 			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
-#endif //HAVE_LAPACK
 
 	m_opt_max_iterations=10000;
 	m_opt_epsilon=10E-15;
 	m_opt_low_cut=10E-7;
 	m_opt_regularization_eps=0;
+#endif //HAVE_LAPACK
+
 	m_streaming_p=NULL;
 	m_streaming_q=NULL;
 	m_blocksize=10000;
