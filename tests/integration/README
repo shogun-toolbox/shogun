@@ -13,7 +13,7 @@ There are two major functions:
 - Generate testcase data.
    This is run seldomly, usually when new functionality has been added or
    algorithmic bugs have been found. The generator is implemented in python
-   and uses SHOGUN's interface python-modular. The resulting files are in
+   and uses SHOGUN's interface python-modular or perl-modular. The resulting files are in
    matlab/octave format.
 
    Just issue
@@ -58,6 +58,7 @@ There are two major functions:
   To test individually, issue
 
     ./test_one.py ../data/<category>/<testcase>.m (python)
+    ./test_one.pl ../data/<category>/<testcase>.m (perl)
     ./test_one.sh ../data/<category>/<testcase>.m (matlab/octave/R)
 
   If you run tests individually, you get to see more than ERROR in case
@@ -123,7 +124,7 @@ given below is hopefully sufficient to help the uninitiated to succeed.
    somewhat similar code - the static and the dynamic interfaces.
 
 
-   Static interfaces (python/, matlab_and_octave/, r/):
+   Static interfaces (python/, perl/, matlab_and_octave/, r/):
 
    Of course, the details are dependent on the actual interface, but all of
    them have some utility functions (util.py, util/*) to check accuracy, set
@@ -137,7 +138,7 @@ given below is hopefully sufficient to help the uninitiated to succeed.
    testcase file into a local format. It then calls a module from the
    appropriate category. As in the generator, each category is represented in
    one file, e.g.  kernel.py/kernel.m/kernel.R.
-   For python, the function test() is the entry point from which various
+   For python or for perl, the function test() is the entry point from which various
    evaluate() functions are spawned, depending on the item to be tested. these
    evaluations are similar to the generator's compute() functions, but instead
    of writing the results and parameters too file, they are compared to the
@@ -153,10 +154,10 @@ given below is hopefully sufficient to help the uninitiated to succeed.
    in its own syntax of course and without the global variable cludge.
 
 
-   Modular interfaces (python-modular/, octave-modular/, r-modular/):
+   Modular interfaces (python-modular/, perl-modular/, octave-modular/, r-modular/):
 
    Essentially, the structure is the same as in the static interfaces with
-   the main difference being a different object handling in python/R as in
+   the main difference being a different object handling in python/R, perl/R as in
    get_* functions to return the created objects instead of set_* where the
    data is fed bit by bit into one big state machine called SHOGUN.
    octave still uses set_* because it makes use of global variables which

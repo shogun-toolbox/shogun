@@ -1,0 +1,13 @@
+This directory contains mostly legacy regression test scripts that will soon no
+longer be used (bummer, all this work for nothing!).
+
+The new way to check for regressions is via the following two
+scripts:
+
+  generator.pl  - to generate regression tests and
+  tester.pl - to check for regressions
+
+So tester.pl is sufficient.
+
+
+26/10/2012 <ptizoom@gmail.com>
