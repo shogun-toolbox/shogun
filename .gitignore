@@ -25,6 +25,12 @@ configure.log
 *.oct
 .localvimrc
 
+*~
+\#*\#
+
+*.orig
+
+
 # /doc/
 /doc/html
 /doc/html_cn
@@ -39,6 +45,8 @@ configure.log
 /src/interfaces/*/Makefile
 /src/examples
 /src/shogun/.clang_complete
+/src/configure-*-*.c*
+
 
 # static interfaces
 /src/interfaces/cmdline_static/shogun
@@ -72,6 +80,7 @@ configure.log
 /src/interfaces/*_modular/Statistics.i
 /src/interfaces/*_modular/Latent.i
 
+
 # particular modular ones
 /src/interfaces/csharp_modular/*.cs
 /src/interfaces/java_modular/*.java
@@ -82,6 +91,8 @@ configure.log
 /src/interfaces/python_modular/*.py
 /src/interfaces/r_modular/*.R
 /src/interfaces/r_modular/*.RData
+/src/interfaces/perl_modular/*.pm
+/.duped_py_pl.pb
 
 # /examples/
 *.log
