@@ -108,8 +108,3 @@ examples/undocumented/python_modular/*
 
 # /tests
 /tests/unit/shogun-unit-test
-
-
-# git modules
-/doc/tutorial
-/data
