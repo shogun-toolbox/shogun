@@ -1,5 +1,6 @@
-#!/usr/bin/perl -I ../../../src/interfaces/perldl_modular -I .
-use lib  qw(../../../src/interfaces/perldl_modular);
+#!/usr/bin/perl -I ../../../src/interfaces/perl_modular -I .
+#TODO:PTZ121027 remove this hack by using use a Env{???}
+use lib  qw(../../../src/interfaces/perl_modular);
 use PDL;
 use modshogun;
 use generator qw(setup_tests get_fname blacklist get_test_mod run_test);

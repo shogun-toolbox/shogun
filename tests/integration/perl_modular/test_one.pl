@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-
-use lib qw(. /usr/src/shogun/src/interfaces/perldl_modular /usr/src/shogun/src/shogun);
+#TODO:PTZ121027 remove this hack by using use a Env{???}
+use lib qw(. /usr/src/shogun/src/interfaces/perl_modular /usr/src/shogun/src/shogun);
 use PDL;
 use PDL::Char;
 
