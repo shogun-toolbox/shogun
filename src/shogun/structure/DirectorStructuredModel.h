@@ -53,7 +53,7 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, int32_t lab_idx);
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, int32_t lab_idx);
 
 		/**
 		 * get joint feature vector
@@ -91,7 +91,7 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 *
 		 * @return loss value
 		 */
-		float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
