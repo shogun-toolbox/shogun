@@ -25,6 +25,9 @@ CCrossValidationMulticlassStorage::CCrossValidationMulticlassStorage(bool comput
 	m_true_labels = NULL;
 	m_num_classes = 0;
 	m_binary_evaluations = new CDynamicObjectArray();
+
+	m_fold_ROC_graphs=NULL;
+	m_conf_matrices=NULL;
 }
 
 
