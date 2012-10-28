@@ -126,6 +126,23 @@ public:
 	 */
 	virtual float64_t compute_p_value(float64_t statistic);
 
+	/** Performs the complete two-sample test on current data and returns a
+	 * p-value.
+	 *
+	 * In case null distribution should be estimated with MMD1_GAUSSIAN,
+	 * statistic and p-value are computed in the same loop, which is more
+	 * efficient than first computing statistic and then computung p-values.
+	 *
+	 * In case of bootstrapping, superclass method is called.
+	 *
+	 * The method for computing the p-value can be set via
+	 * set_null_approximation_method().
+	 *
+	 * @return p-value such that computed statistic is the (1-p) quantile
+	 * of the estimated null distribution
+	 */
+	virtual float64_t perform_test();
+
 	/** computes a threshold based on current method for approximating the
 	 * null-distribution. The threshold is the value that a statistic has
 	 * to have in ordner to reject the null-hypothesis.

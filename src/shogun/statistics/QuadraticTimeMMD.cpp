@@ -317,6 +317,9 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 
 SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 {
+	SG_WARNING("CQuadraticTimeMMD::fit_null_gamma(): TODO: combine with "
+			"compute_statistic to be more efficient!\n");
+
 	if (m_m!=m_p_and_q->get_num_vectors()/2)
 	{
 		SG_ERROR("%s::compute_p_value_gamma(): Currently, only equal "
