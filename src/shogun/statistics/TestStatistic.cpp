@@ -46,3 +46,17 @@ void CTestStatistic::set_bootstrap_iterations(index_t
 {
 	m_bootstrap_iterations=bootstrap_iterations;
 }
+
+float64_t CTestStatistic::perform_test()
+{
+	/* baseline method here is simply to compute statistic and p-value
+	 * separately */
+	float64_t statistic=compute_statistic();
+	return compute_p_value(statistic);
+}
+
+bool CTestStatistic::perform_test(float64_t alpha)
+{
+	float64_t p_value=perform_test();
+	return p_value<alpha;
+}

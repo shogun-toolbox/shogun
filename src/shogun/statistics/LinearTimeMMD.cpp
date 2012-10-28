@@ -244,6 +244,34 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 	return result;
 }
 
+float64_t CLinearTimeMMD::perform_test()
+{
+	float64_t result=0;
+
+	switch (m_null_approximation_method)
+	{
+	case MMD1_GAUSSIAN:
+		{
+			/* compute statistic and variance in the same loop */
+			float64_t statistic;
+			float64_t variance;
+			compute_statistic_and_variance(statistic, variance);
+
+			/* estimate Gaussian distribution */
+			result=1.0-CStatistics::normal_cdf(statistic,
+					CMath::sqrt(variance));
+		}
+		break;
+
+	default:
+		/* bootstrapping can be done separately in superclass */
+		result=CTestStatistic::perform_test();
+		break;
+	}
+
+	return result;
+}
+
 SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
 {
 	SGVector<float64_t> samples(m_bootstrap_iterations);
