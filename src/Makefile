@@ -84,6 +84,8 @@ check-examples: $(PARTDEPS)
 
 doc:  $(PARTDEPS)
 	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) doc-$(part) &&) true
+tutorial:
+	$(MAKE) -C ../doc/tutorial
 
 distclean: clean
 	$(MAKE) -C shogun distclean
