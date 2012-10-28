@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 2011 Abhinav Maurya
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -44,6 +45,19 @@ CGaussianKernel::CGaussianKernel(
 CGaussianKernel::~CGaussianKernel()
 {
 	cleanup();
+}
+
+CGaussianKernel* CGaussianKernel::obtain_from_generic(CKernel* kernel)
+{
+	if (kernel->get_kernel_type()!=K_GAUSSIAN)
+	{
+		SG_SERROR("CGaussianKernel::obtain_from_generic(): provided kernel is "
+				"not of type CGaussianKernel!\n");
+	}
+
+	/* since an additional reference is returned */
+	SG_REF(kernel);
+	return (CGaussianKernel*)kernel;
 }
 
 #include <typeinfo>

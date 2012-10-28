@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 2011 Abhinav Maurya
+ * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -67,6 +68,12 @@ class CGaussianKernel: public CDotKernel
 			float64_t width, int32_t size=10);
 
 		virtual ~CGaussianKernel();
+
+		/** @param kernel is casted to CGaussianKernel, error if not possible
+		 * is SG_REF'ed
+		 * @return casted CGaussianKernel object
+		 */
+		static CGaussianKernel* obtain_from_generic(CKernel* kernel);
 
 		/** Make a shallow copy of the kernel */
 		virtual CSGObject *shallow_copy() const;
