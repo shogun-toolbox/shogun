@@ -69,6 +69,37 @@ class CTestStatistic : public CSGObject
 		 */
 		virtual float64_t compute_threshold(float64_t alpha)=0;
 
+		/** Performs the complete two-sample test on current data and returns a
+		 * p-value.
+		 *
+		 * This is a wrapper that calls compute_statistic first and then
+		 * calls compute_p_value using the obtained statistic. In some statistic
+		 * classes, it might be possible to compute statistic and p-value in
+		 * one single run which is more efficient. Therefore, this method might
+		 * be overwritten in subclasses.
+		 *
+		 * The method for computing the p-value can be set via
+		 * set_null_approximation_method().
+		 *
+		 * @return p-value such that computed statistic is the (1-p) quantile
+		 * of the estimated null distribution
+		 */
+		virtual float64_t perform_test();
+
+		/** Performs the complete two-sample test on current data and returns
+		 * a binary answer wheter null hypothesis is rejected or not.
+		 *
+		 * This is just a wrapper for the above perform_test() method that
+		 * returns a p-value. If this p-value lies below the test level alpha,
+		 * the null hypothesis is rejected.
+		 *
+		 * Should not be overwritten in subclasses. (Therefore not virtual)
+		 *
+		 * @param alpha test level alpha.
+		 * @return true if null hypothesis is rejected and false otherwise
+		 */
+		bool perform_test(float64_t alpha);
+
 		/** merges both sets of samples and computes the test statistic
 		 * m_bootstrap_iteration times
 		 *
