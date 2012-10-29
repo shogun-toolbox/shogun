@@ -1569,7 +1569,8 @@ CStringFeatures<SSKFeature>* obtain_sssk_double_from_char(int **S, int *len, int
 }
 */
 
-template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(SGVector<index_t> indices)
+template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(
+		SGVector<index_t> indices)
 {
 	/* string list to create new CStringFeatures from */
 	SGStringList<ST> list_copy(indices.vlen, max_string_length);
@@ -1595,6 +1596,10 @@ template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(SGVector<index_t>
 
 	/* max string length may have changed */
 	result->determine_maximum_string_length();
+
+	/* keep things from original features (otherwise assertions in x-val) */
+	result->order=order;
+	result->compute_symbol_mask_table(result->alphabet->get_num_symbols());
 
 	SG_REF(result);
 
