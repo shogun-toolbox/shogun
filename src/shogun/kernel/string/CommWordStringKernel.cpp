@@ -583,7 +583,7 @@ char* CCommWordStringKernel::compute_consensus(
 		}
 	}
 
-	SG_PRINT("max_idx:%i, max_score:%f\n", max_idx, max_score);
+	SG_DEBUG("max_idx:%i, max_score:%f\n", max_idx, max_score);
 
 	for (int32_t i=result_len-1; i>=num_feat; i--)
 		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (uint16_t) max_idx >> (num_bits*(result_len-1-i)), 1) );
