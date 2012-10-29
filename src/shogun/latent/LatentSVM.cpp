@@ -34,7 +34,7 @@ CLatentLabels* CLatentSVM::apply_latent()
 	if (!m_model)
 		SG_ERROR("LatentModel is not set!\n");
 
-	if (!features)
+	if (m_model->get_num_vectors() < 1)
 		return NULL;
 
 	index_t num_examples = m_model->get_num_vectors();
@@ -61,7 +61,7 @@ float64_t CLatentSVM::do_inner_loop(float64_t cooling_eps)
 {
 	CLabels* ys = m_model->get_labels()->get_labels();
 	CDotFeatures* feats = (m_model->get_caching() ?
-			m_model->get_psi_feature_vectors() :
+			m_model->get_cached_psi_features() :
 			m_model->get_psi_feature_vectors());
 	CSVMOcas svm(m_C, feats, ys);
 	svm.set_epsilon(cooling_eps);
