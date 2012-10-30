@@ -728,7 +728,11 @@ EOF
 					die "could not find java includes"
 				fi
 			fi
-			INCLUDES_JAVA="$INCLUDES_JAVA $INCLUDES_JAVA/`uname -s | tr 'A-Z' 'a-z'`"
+
+			if test -n "$INCLUDES_JAVA"
+			then
+				INCLUDES_JAVA="$INCLUDES_JAVA $INCLUDES_JAVA/`uname -s | tr 'A-Z' 'a-z'`"
+			fi
 
 			COMPFLAGS_CPP="$COMPFLAGS_CPP -fno-strict-aliasing"
 			COMPFLAGS_C="$COMPFLAGS_C -fno-strict-aliasing"
