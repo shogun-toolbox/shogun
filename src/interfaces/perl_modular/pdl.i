@@ -28,50 +28,9 @@ extern "C" {
 
     /* Functions to extract array attributes.
      */
-    //SVt_PDLV was not declared in this scope
-    //is this a piddle?    SvGETMAGIC(a);
-    //return((SvROK(a) && SvTYPE(SvRV(a)) == SVt_PDLV) ? true : false);
-#if 0
-    char *objname = "PDL"; /* XXX maybe that class should actually depend on the value set
-                              by pp_bless ? (CS) */
-    HV *bless_stash = 0;
-    SV *parent = 0;
-    int   nreturn;
-    SV *y_SV;
-    pdl  *x;
-    pdl  *shift;
-    pdl  *y;
-    if (SvROK(ST(0)) && ((SvTYPE(SvRV(ST(0))) == SVt_PVMG) || (SvTYPE(SvRV(ST(0))) == SVt_PVHV))) {
-        parent = ST(0);
-        if (sv_isobject(parent))
-            objname = HvNAME((bless_stash = SvSTASH(SvRV(ST(0)))));  PDL_COMMENT("The package to bless output vars into is taken from the first input var")
-    }
-
-    nreturn = 1;
-    x = PDL->SvPDLV(ST(0));
-    shift = PDL->SvPDLV(ST(1));
-    if (strcmp(objname,"PDL") == 0) { PDL_COMMENT("shortcut if just PDL")
-        y_SV = sv_newmortal();
-        y = PDL->null();
-        PDL->SetSV_PDL(y_SV,y);
-        if (bless_stash) y_SV = sv_bless(y_SV, bless_stash);
-    } else {
-        PUSHMARK(SP);
-        XPUSHs(sv_2mortal(newSVpv(objname, 0)));
-        PUTBACK;
-        perl_call_method("initialize", G_SCALAR);
-        SPAGAIN;
-        y_SV = POPs;
-        PUTBACK;
-        y = PDL->SvPDLV(y_SV);
-#endif
-
 
         static pdl* if_piddle(SV* a) {
             pdl* it = 0;
-            //PDL_COMMENT("Check if you can get a package name for this input value.  ")
-            //PDL_COMMENT("It can be either a PDL (SVt_PVMG) or a hash which is a     ")
-            //PDL_COMMENT("derived PDL subclass (SVt_PVHV)                            ")
             if (SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV))) {
 #if 0
                 const char *objname = "PDL";
@@ -87,15 +46,7 @@ extern "C" {
             return it;
         }
 
-        //is there such think
-        //  return (int) PyArray_TYPE(a);
-        //maybe we talk about MAGIC
-        //but perl does not care any types can be put in a array...
-        //pdl *p = SvPDLV(a);
-        //SV* a = p->sv;
-        //return SvTYPE(SvRV(a));
-        //Basic/Core/pdlapi.c
-
+ 
         static int array_type(SV* sv) {
             pdl* it = PDL->SvPDLV(sv);
             return it->datatype;
@@ -249,49 +200,6 @@ extern "C" {
 #define XS_PDL_setflag(reg,flagval,val) (val?(reg |= flagval):(reg &= ~flagval))
 
 
-#if 0
-        XS(XS_PDL_set_inplace)
-        {
-#ifdef dVAR
-            dVAR; dXSARGS;
-#else
-            dXSARGS;
-#endif
-            if (items != 2)
-                croak_xs_usage(cv,  "self, val");
-            {
-                pdl *	self = SvPDLV(ST(0));
-                int	val = (int)SvIV(ST(1));
-#line 453 "Core.xs"
-                setflag(self->state,PDL_INPLACE,val);
-#line 743 "Core.c"
-            }
-            XSRETURN_EMPTY;
-        }
-
-        XS(XS_PDL_get_dataref)
-        {
-#ifdef dVAR
-            dVAR; dXSARGS;
-#else
-            dXSARGS;
-#endif
-            if (items != 1)
-                croak_xs_usage(cv,  "self");
-            {
-                pdl *	self = SvPDLV(ST(0));
-                SV *	RETVAL;
-                if(self->state & PDL_DONTTOUCHDATA) {
-                    croak("Trying to get dataref to magical (mmaped?) pdl");
-                }
-                pdl_make_physical(self); /* XXX IS THIS MEMLEAK WITHOUT MORTAL? */
-                RETVAL = (newRV(self->datasv));
-                ST(0) = RETVAL;
-                sv_2mortal(ST(0));
-            }
-            XSRETURN(1);
-        }
-#endif
 
         /* this is horrible - the routines from bad should perhaps be here instead ? */
         double pdl_get_badvalue( int datatype ) {
@@ -368,60 +276,6 @@ extern "C" {
             pdl_set(ret->data, ret->datatype, NULL, NULL, NULL, 0, 0, data);
         }
 
-#if 0
-
-        //include in a pdl_swig.i
-        SV* pdl_core_listref_c(pdl* x)
-        {
-            PDL_Long * inds;
-            PDL_Long * incs;
-            int offs;
-            void *data;
-            int ind;
-            int lind;
-            int stop = 0;
-            AV *av;
-
-            SV *sv;
-            double pdl_val, pdl_badval;
-            int badflag = (x->state & PDL_BADVAL) > 0;
-
-            if ( badflag ) {
-                pdl_badval = pdl_get_pdl_badvalue( x );
-            }
-            pdl_make_physvaffine( x );
-            inds = (PDL_Long*) pdl_malloc( sizeof( PDL_Long ) * x->ndims); /* GCC -> on stack :( */
-            data = PDL_REPRP(x);
-            incs = (PDL_VAFFOK(x) ? x->vafftrans->incs : x->dimincs);
-            offs = PDL_REPROFFS(x);
-            av = newAV();
-            av_extend(av,x->nvals);
-            lind=0;
-            for(ind=0; ind < x->ndims; ind++) inds[ind] = 0;
-            while(!stop) {
-                pdl_val = pdl_at(data, x->datatype, inds, x->dims, incs, offs, x->ndims );
-                if ( badflag && pdl_val == pdl_badval ) {
-                    sv = newSVpvn( "BAD", 3 );
-                } else {
-                    //not sure... 
-                    sv = newSVnv( pdl_val );
-                }
-                av_store(av, lind, sv);
-
-                lind++;
-                stop = 1;
-                for(ind = 0; ind < x->ndims; ind++) {
-                    if(++(inds[ind]) >= x->dims[ind]) {
-                        inds[ind] = 0;
-                    } else {
-                        stop = 0; break;
-                    }
-                }
-            }
-            return  newRV_noinc((SV *)av);
-        }
-#endif
-
 
         //I made it up
         SV* pdl_core_listref_pv_string(pdl * x)
@@ -472,69 +326,6 @@ extern "C" {
             return  newRV_noinc((SV *)av);
         }
 
-#if 0
-        //in Char.pm
-        sub string {		
-            my $self   = shift;
-            my $level  = shift || 0;
-
-            my $sep = $PDL::use_commas ? "," : " ";
-
-            if ($self->dims == 1) {
-                my $str = ${$self->get_dataref}; # get copy of string
-                    $str =~ s/\00+$//g; # get rid of any null padding
-                    return "\'". $str. "\'". $sep;
-            } else {
-                my @dims = reverse $self->dims;
-                my $ret = '';
-                $ret .= (" " x $level) . '[' . ((@dims == 2) ? ' ' : "\n");
-                for (my $i=0;$i<$dims[0];$i++) {
-                    my $slicestr = ":," x (scalar(@dims)-1) . "($i)";
-                    my $substr = $self->slice($slicestr);
-                    $ret .= $substr->string($level+1);
-                }
-                $ret .= (" " x $level) . ']' . $sep . "\n";
-                return $ret;
-            }
-
-        }
-#endif
 
         %}
 
-#if 0
-    //typemaps from PDL itself in pdl.i
-    TYPEMAP
-        pdl*	T_PDL
-        pdl *	T_PDL
-        Logical	T_IV
-        float	T_NV
-        INPUT
-        T_PDL
-        $var = PDL->SvPDLV($arg)
-        OUTPUT
-        T_PDL
-        PDL->SetSV_PDL($arg,$var);
-    /* Two dimensional output arrays */
-    %define TYPEMAP_OUT_SGMATRIX_(type,typecode)
-        %typemap(out) shogun::SGMatrix<type>
-        {
-            if (!matrix_to_pdl($result, $1, typecode))
-                SWIG_fail;
-        }
-    %enddef
-#endif
-#if 0
-
-        %define TYPEMAP_PDL
-        %typemap(out) pdl*
-        {
-            PDL->SetSV_PDL($result, $1);
-        }
-
-    %typemap(in) pdl*
-    {
-        $result = PDL->SvPDLV($1)
-    }
-    %enddef
-#endif
