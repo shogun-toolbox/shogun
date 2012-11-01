@@ -103,7 +103,6 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 					model->nr_class, num_classes);
 		}
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef));
-		SG_PRINT("Num classes = %d\n",num_classes);
 		create_multiclass_svm(num_classes);
 
 		int32_t* offsets=SG_MALLOC(int32_t, num_classes);
