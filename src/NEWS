@@ -13,11 +13,13 @@
 		- New concept of artificial data generator classes: Based on streaming
 		  features. First implemented instance is CMeanShiftDataGenerator.
 		  Use above new concepts to get non-streaming data if desired.
-		- Accelerated projected gradient multiclass logistic regression classifier by Sergey Lisitsyn  
+		- Accelerated projected gradient multiclass logistic regression classifier by Sergey Lisitsyn
 	* Bugfixes:
 		- Fix for shallow copy of gaussian kernel by Matt Aasted
 		- Fixed a bug when using StringFeatures along with kernel machines in
 		  cross-validation which cause an assertion error. Thanks to Eric (yoo)!
+		- Fix for 3-class case training of MulticlassLibSVM reported by Arya Iranmehr
+		  suggested by Oksana Bayda
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData
 		- "confidences" in context of CLabel and subclasses are now "values"

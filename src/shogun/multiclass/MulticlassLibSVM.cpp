@@ -103,6 +103,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 					model->nr_class, num_classes);
 		}
 		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef));
+		SG_PRINT("Num classes = %d\n",num_classes);
 		create_multiclass_svm(num_classes);
 
 		int32_t* offsets=SG_MALLOC(int32_t, num_classes);
@@ -153,24 +154,30 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 
 				int32_t idx=0;
 
-				if (sgn>0)
+				if (num_classes > 3)
 				{
-					for (k=0; k<model->label[i]; k++)
-						idx+=num_classes-k-1;
+					if (sgn>0)
+					{
+						for (k=0; k<model->label[i]; k++)
+							idx+=num_classes-k-1;
+	
+						for (l=model->label[i]+1; l<model->label[j]; l++)
+							idx++;
+					}
+					else
+					{
+						for (k=0; k<model->label[j]; k++)
+							idx+=num_classes-k-1;
 
-					for (l=model->label[i]+1; l<model->label[j]; l++)
-						idx++;
+						for (l=model->label[j]+1; l<model->label[i]; l++)
+							idx++;
+					}
 				}
 				else
 				{
-					for (k=0; k<model->label[j]; k++)
-						idx+=num_classes-k-1;
-
-					for (l=model->label[j]+1; l<model->label[i]; l++)
-						idx++;
+					idx = model->label[j]+model->label[i] - 3;
 				}
-
-
+//
 //				if (sgn>0)
 //					idx=((num_classes-1)*model->label[i]+model->label[j])/2;
 //				else
@@ -181,7 +188,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 						s, num_sv, model->l, bias, model->label[i],
 						model->label[j], idx);
 
-				set_svm(idx, svm);
+				REQUIRE(set_svm(idx, svm),"SVM set failed");
 				s++;
 			}
 		}
