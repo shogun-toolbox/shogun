@@ -59,7 +59,10 @@ enum EMessageType
 
 #ifdef DARWIN
 #include <Availability.h>
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_7
+#ifndef __MAC_10_8
+#define __MAC_10_8 1080
+#endif
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_8
 #define CONST_DIRENT_T struct dirent
 #else
 #define CONST_DIRENT_T const struct dirent
