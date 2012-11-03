@@ -1,8 +1,10 @@
 %ignore *::operator[];
 %ignore *::operator();
 %ignore *::operator=;
+#if !defined(SWIGPERL)
 %ignore shogun::SGVector::operator+=;
 %ignore shogun::SGVector::operator+;
+#endif
 %ignore *::operator==;
 %ignore *::operator!=;
 %ignore *::operator bool*;
