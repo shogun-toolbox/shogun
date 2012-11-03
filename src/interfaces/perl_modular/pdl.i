@@ -31,16 +31,7 @@ extern "C" {
 
         static pdl* if_piddle(SV* a) {
             pdl* it = 0;
-            if (SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV))) {
-#if 0
-                const char *objname = "PDL";
-                HV *bless_stash = 0;
-                SV *parent = a;
-                if(sv_isobject(parent)) {
-                    objname = HvNAME((bless_stash = SvSTASH(SvRV(a))));
-                }
-                //PDL_COMMENT("The package to bless output vars into is taken from the first input var")
-#endif
+            if(SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV))) {
                 it = PDL->SvPDLV(a);
             }
             return it;
@@ -79,7 +70,7 @@ extern "C" {
 
         static bool array_is_contiguous(SV* sv) {
             //PTZ120930 can we call XS_PDL_iscontig(sv); line 342 "Core.xs"
-            pdl* x = SvPDLV(sv);
+            pdl* x =  PDL->SvPDLV(sv);
             int RETVAL = true;
             pdl_make_physvaffine( x );
             if PDL_VAFFOK(x) {
@@ -120,6 +111,18 @@ extern "C" {
         {
             return(is_pdl_narry(sv, 1, 2));
         }
+
+        static bool is_swig_this_or_piddle_vector(SV* a, int typecode, swig_type_info *_t)
+	{
+	    void *vptr = 0;
+	    int res = SWIG_ConvertPtr(a, &vptr, _t, 0);
+	    if(SWIG_CheckState(res)) {
+	      return true;
+	    } else {
+	      return(is_pdl_narry(a, 1, 2));
+	    }
+        }
+
         //check  for rectangular matrix (2D)
         static int is_pdl_matrix(SV* sv, int typecode)
         {
@@ -324,8 +327,17 @@ extern "C" {
                 }
             }
             return  newRV_noinc((SV *)av);
-        }
+        }        
+%}
 
+%typecheck(SWIG_TYPECHECK_POINTER) pdl* {
+  $1 = is_piddle($input);
+}
 
-        %}
+%typemap(in) pdl* {
+  $result = PDL->SvPDLV($1)
+}
 
+%typemap(out) pdl* {
+  PDL->SetSV_PDL($result, $1);
+}

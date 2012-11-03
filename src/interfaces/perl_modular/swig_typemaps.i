@@ -128,11 +128,14 @@ extern "C" {
         }
 
 
+ 
+
     template <class type>
         static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
         {
-            pdl* it = SvPDLV(obj);
-            it = pdl_get_convertedpdl(it, typecode);
+            pdl* it = PDL->SvPDLV(obj);
+            it = PDL->get_convertedpdl(it, typecode);
+	      //pdl_get_convertedpdl
             PDL->make_physical(it); /* Wasteful*/
             if(!PDL_ENSURE_ALLOCATED(it)) {
                 warn("could not allocate PDL vector memory");
@@ -149,8 +152,6 @@ extern "C" {
             return true;
         }
 
-    //PTZ121005 not really ready, need to know what is given PDL or sg_vec
-    //PTZ121004 my understanding is sg_vec given, but why return it...?
 
     template <class type>
         static bool vector_to_pdl(SV* rsv, SGVector<type> sg_vec, int typecode)
@@ -761,15 +762,26 @@ fail:
 
     /* One dimensional input arrays */
 %define TYPEMAP_IN_SGVECTOR(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<type>
+%typecheck(SWIG_TYPECHECK_POINTER) shogun::SGVector<type> = SWIGTYPE;
+%typecheck(5) shogun::SGVector< type >
 {
-  $1 = is_pdl_vector($input, typecode);
+  void * v_p = 0;
+  int res = SWIG_ConvertPtr($input, &v_p, $&1_descriptor, 0);
+  if(SWIG_CheckState(res)) {
+    $1 = true;
+  } else {
+    $1 = is_pdl_vector($input, typecode);
+  }
 }
-
-%typemap(in) shogun::SGVector<type>
+%typemap(in) shogun::SGVector< type >
 {
-  if (!vector_from_pdl<type>($1, $input, typecode))
+  void * v_p = 0;
+  int res = SWIG_ConvertPtr($input, &v_p, $&1_descriptor, 0);
+  if(SWIG_IsOK(res) && v_p) {
+    $1 = *(reinterpret_cast< shogun::SGVector< type > * >(v_p));
+  } else if(!vector_from_pdl< type >($1, $input, typecode)) {
     SWIG_fail;
+  }
 }
 %enddef
 
@@ -795,12 +807,12 @@ TYPEMAP_IN_SGVECTOR(SV*,	   PDL_OBJECT)
 %define TYPEMAP_OUT_SGVECTOR(type,typecode)
 %typemap(out) shogun::SGVector<type>
 {
-  $result = sv_newmortal();
-  if(!vector_to_pdl($result, $1, typecode))
+  SWIG_Object r = VOID_Object;
+  if(!vector_to_pdl(r, $1, typecode))
     SWIG_fail;
-  if(!is_piddle($result))
+  if(!is_piddle(r))
     SWIG_fail;
-  argvi++;
+  %set_output(r);
 }
 %enddef
 
