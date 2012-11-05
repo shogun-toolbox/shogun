@@ -47,9 +47,6 @@ TEST(LatentSVM, ctor)
 	EXPECT_CALL(*model, get_dim())
 		.Times(Exactly(1));
 
-	EXPECT_CALL(*model, get_num_vectors())
-		.Times(Exactly(1));
-
 	CLatentSVM* lsvm = new CLatentSVM(model, 10);
 
 	SG_UNREF(lsvm);
@@ -62,7 +59,8 @@ TEST(LatentSVM, apply)
 
 	MockCLatentModel* model = new MockCLatentModel();
 	int32_t dim = 10, samples = 20;
-	SGVector<float64_t> a(dim);
+	SGMatrix<float64_t> feats(dim, samples);
+	CDenseFeatures<float64_t>* dense_feats = new CDenseFeatures<float64_t>(feats);
 	CData* data = new CData();
 	CLatentFeatures* f = new CLatentFeatures(samples);
 
@@ -79,14 +77,16 @@ TEST(LatentSVM, apply)
 		.Times(samples)
 		.WillRepeatedly(Return(data));
 
-	EXPECT_CALL(*model, get_psi_feature_vector(_))
-		.Times(samples)
-		.WillRepeatedly(Return(a));
+	EXPECT_CALL(*model, get_psi_feature_vectors())
+		.Times(1)
+		.WillOnce(Return(dense_feats));
+
 
 	CLatentSVM* lsvm = new CLatentSVM(model, 10);
 
 	lsvm->apply(f);
 
 	SG_UNREF(lsvm);
+	SG_UNREF(dense_feats);
 }
 
