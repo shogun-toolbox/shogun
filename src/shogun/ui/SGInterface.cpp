@@ -1343,8 +1343,6 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<uint8_t>* strs=NULL;
 				source->get_string_list(strs, num_str, max_str_len);
 				target->set_string_list(strs, num_str);
-				for (int32_t i=0; i<num_str; i++)
-					strs[i].~SGString<uint8_t>();
 				SG_FREE(strs);
 				break;
 			}
@@ -1355,8 +1353,6 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<char>* strs;
 				source->get_string_list(strs, num_str,max_str_len);
 				target->set_string_list(strs, num_str);
-				for (int32_t i=0; i<num_str; i++)
-					strs[i].~SGString<char>();
 				SG_FREE(strs);
 				break;
 			}
@@ -1367,8 +1363,6 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<int32_t>* strs;
 				source->get_string_list(strs, num_str,max_str_len);
 				target->set_string_list(strs, num_str);
-				for (int32_t i=0; i<num_str; i++)
-					strs[i].~SGString<int32_t>();
 				SG_FREE(strs);
 				break;
 			}
@@ -1379,8 +1373,6 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<int16_t>* strs=NULL;
 				source->get_string_list(strs, num_str, max_str_len);
 				target->set_string_list(strs, num_str);
-				for (int32_t i=0; i<num_str; i++)
-					strs[i].~SGString<int16_t>();
 				SG_FREE(strs);
 				break;
 			}
@@ -1391,8 +1383,6 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 				SGString<uint16_t>* strs=NULL;
 				source->get_string_list(strs, num_str, max_str_len);
 				target->set_string_list(strs, num_str);
-				for (int32_t i=0; i<num_str; i++)
-					strs[i].~SGString<uint16_t>();
 				SG_FREE(strs);
 				break;
 			}
@@ -6261,9 +6251,6 @@ bool CSGInterface::cmd_get_plif_struct()
 	bool* all_do_calc = SG_MALLOC(bool, N);
 	for (int32_t i=0;i<N;i++)
 	{
-		new (&names[i]) SGString<char>();
-		new (&all_transform[i]) SGString<char>();
-
 		ids[i]=PEN[i]->get_id();
 		names[i].string = PEN[i]->get_plif_name();
 		names[i].slen = strlen(PEN[i]->get_plif_name());

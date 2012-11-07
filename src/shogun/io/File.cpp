@@ -132,8 +132,6 @@ void CFile::get_string_list(
 
 	for(int32_t i = 0;i < num_str;i++)
 	{
-		new (&strings[i]) SGString<bool>();
-
 		strings[i].slen = strs[i].slen;
                 strings[i].string = SG_MALLOC(bool, strs[i].slen);
 		for(int32_t j = 0;j < strs[i].slen;j++)
@@ -141,7 +139,7 @@ void CFile::get_string_list(
 	}
 
 	for(int32_t i = 0;i < num_str;i++)
-		strs[i].~SGString<int8_t>();
+		SG_FREE(strs[i].string);
 	SG_FREE(strs);
 }
 

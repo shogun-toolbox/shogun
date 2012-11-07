@@ -206,7 +206,6 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
 
         for (int32_t i=0; i<num_strings; i++)
         {
-            new (&strings[i]) SGString<sg_type>();
             if (!c.elem(i).oct_type_check() || !c.elem(i).rows()==1)
             {
                 /* SG_ERROR("Expected String of type " error_string " as argument %d.\n", m_rhs_counter);*/
@@ -244,7 +243,6 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
 
         for (int32_t i=0; i<num_strings; i++)
         { 
-            new (&strings[i]) SGString<sg_type>();
             if (len>0) 
             { 
                 strings[i].slen=len; /* all must have same length in octave */

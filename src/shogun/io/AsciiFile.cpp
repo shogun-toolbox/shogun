@@ -515,7 +515,6 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 					int32_t len=i-old_sz;
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
-					new (&strings[lines]) SGString<uint8_t>();
 					strings[lines].slen=len+overflow_len;
 					strings[lines].string=SG_MALLOC(uint8_t, len+overflow_len);
 
@@ -609,7 +608,6 @@ void CAsciiFile::get_int8_string_list(SGString<int8_t>*& strings, int32_t& num_s
 					int32_t len=i-old_sz;
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
-					new (&strings[lines]) SGString<int8_t>();
 					strings[lines].slen=len+overflow_len;
 					strings[lines].string=SG_MALLOC(int8_t, len+overflow_len);
 
@@ -703,7 +701,6 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 					int32_t len=i-old_sz;
 					max_string_len=CMath::max(max_string_len, len+overflow_len);
 
-					new (&strings[lines]) SGString<char>();
 					strings[lines].slen=len+overflow_len;
 					strings[lines].string=SG_MALLOC(char, len+overflow_len);
 

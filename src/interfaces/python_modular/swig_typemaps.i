@@ -371,7 +371,6 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
         int32_t max_len=0;
         for (int32_t i=0; i<size; i++)
         {
-            new (&strings[i]) SGString<type>();
             PyObject *o = PyList_GetItem(list,i);
             if (typecode == NPY_STRING || typecode == NPY_UNICODE)
             {
@@ -405,7 +404,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be strings");
 
                     for (int32_t j=0; j<i; j++)
-                        strings[i].~SGString<type>();
+                        SG_FREE(strings[i].string);
                     SG_FREE(strings);
                     return false;
                 }
@@ -440,7 +439,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
                     PyErr_SetString(PyExc_TypeError, "all elements in list must be of same array type");
 
                     for (int32_t j=0; j<i; j++)
-                        strings[i].~SGString<type>();
+                        SG_FREE(strings[i].string);
                     SG_FREE(strings);
                     return false;
                 }

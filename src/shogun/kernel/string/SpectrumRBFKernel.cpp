@@ -269,8 +269,6 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 	int max_len = 0;
 	for (int i=0; i < nof_sequences; ++i)
 	{
-		new (&sequences[i]) SGString<char>();
-
 		int len = seqs[i].length();
 		sequences[i].string = SG_MALLOC(char, len+1);
 		sequences[i].slen = len;

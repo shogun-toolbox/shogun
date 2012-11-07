@@ -198,7 +198,6 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 		len = cols;
 		max_len = shogun::CMath::max(len, max_len);
 
-        new (&strings[i]) SGString<SGTYPE>();
 		strings[i].slen = len;
 		strings[i].string = NULL;
 
@@ -297,7 +296,6 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 		len = strlen(str);
 		max_len = shogun::CMath::max(len, max_len);
 
-		new (&strings[i]) SGString<char>();
 		strings[i].slen = len;
 		strings[i].string = NULL;
 

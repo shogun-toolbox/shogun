@@ -324,7 +324,6 @@ void CRInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, in
 
 		for (int32_t i=0; i<num_str; i++)
 		{
-			new (&strings[i]) SGString<char>();
 			char* dst=SG_MALLOC(char, max_string_len+1);
 			for (int32_t j=0; j<max_string_len; j++)
 			{
@@ -347,8 +346,6 @@ void CRInterface::get_string_list(SGString<char>*& strings, int32_t& num_str, in
 
 		for (int32_t i=0; i<num_str; i++)
 		{
-			new (&strings[i]) SGString<char>();
-
 			SEXPREC* s= STRING_ELT(strs,i);
 			char* c= (char*) CHAR(s);
 			int32_t len=LENGTH(s);

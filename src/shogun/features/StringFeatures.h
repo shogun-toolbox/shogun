@@ -120,6 +120,23 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * */
 		virtual void cleanup();
 
+		/** cleanup a single feature vector
+		 *
+		 * possible with subset
+		 *
+		 * @param num number of the vector
+		 * */
+		virtual void cleanup_feature_vector(int32_t num);
+
+		/** cleanup multiple feature vectors
+		 *
+		 * possible with subset
+		 *
+		 * @param start index of first vector to be cleaned
+		 * @param stop index of the last vector to be cleaned
+		 * */
+		virtual void cleanup_feature_vectors(int32_t start, int32_t stop);
+
 		/** get feature class
 		 *
 		 * @return feature class STRING

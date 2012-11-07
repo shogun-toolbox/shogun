@@ -42,9 +42,7 @@ public:
 		SGReferencedData(ref_counting),
 		num_strings(num_s), max_string_length(max_length)
 	{
-		strings = SG_MALLOC(SGString<T>, num_strings);
-		for (int32_t i=0; i<num_strings; i++)
-			new (&strings[i]) SGString<T>();
+		strings=SG_MALLOC(SGString<T>, num_strings);
 	}
 
 	/** copy constructor */
@@ -79,11 +77,8 @@ protected:
 	}
 
 	/** free data */
-	virtual void free_data()
+	void free_data()
 	{
-		for (int32_t i=0; i<num_strings; i++)
-			strings[i].~SGString<T>();
-
 		SG_FREE(strings);
 
 		strings = NULL;

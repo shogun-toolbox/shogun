@@ -391,7 +391,6 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																					\
 			oct_type str=c.elem(i).oct_converter();									\
 																					\
-			new (&strings[i]) SGString<sg_type>();									\
 			int32_t len=str.cols();													\
 			if (len>0) 																\
 			{ 																		\
@@ -420,7 +419,6 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 																					\
 		for (int32_t i=0; i<num_str; i++) 											\
 		{ 																			\
-			new (&strings[i]) SGString<sg_type>();									\
 			if (len>0) 																\
 			{ 																		\
 				strings[i].slen=len; /* all must have same length in octave */ 		\

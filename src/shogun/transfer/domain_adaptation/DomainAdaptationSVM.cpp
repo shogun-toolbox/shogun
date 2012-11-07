@@ -117,9 +117,8 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	//train SVM
 	bool success = CSVMLight::train_machine();
 	SG_UNREF(labels);
-	SG_UNREF(parent_svm_out);
 
-	ASSERT(presvm);
+	ASSERT(presvm)
 
 	return success;
 

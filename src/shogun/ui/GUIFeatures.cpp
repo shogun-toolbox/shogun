@@ -330,7 +330,6 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 
 		for (int32_t i=0; i<num_vec; i++)
 		{
-			new (&strings[i]) SGString<char>();
 			bool to_free=false;
 			int32_t len=0;
 			char* str=src->get_feature_vector(i, len, to_free);

@@ -42,7 +42,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_
 	SG_REF(alphabet);
 	num_symbols=alphabet->get_num_symbols();
 	original_num_symbols=num_symbols;
-	set_features(string_list);
+	set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_list, CAlphabet* alpha)
@@ -54,7 +54,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_
 	SG_REF(alphabet);
 	num_symbols=alphabet->get_num_symbols();
 	original_num_symbols=num_symbols;
-	set_features(string_list);
+	set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(CAlphabet* alpha)
@@ -92,8 +92,6 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(const CStringFeatures & 
 
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			new (&features[i]) SGString<ST>();
-
 			features[i].string=SG_MALLOC(ST, orig.features[i].slen);
 			features[i].slen=orig.features[i].slen;
 			memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].slen);
@@ -137,14 +135,23 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 {
 	remove_all_subsets();
 
-	if (features)
+	if (single_string)
 	{
-		for (int32_t i=0; i<num_vectors; i++)
-		{
-			//SG_PRINT("RC of %d is %d\n",i,features[i].ref_count());
-			features[i].~SGString<ST>();
-		}
+		SG_FREE(single_string);
+		single_string=NULL;
 	}
+	else
+		cleanup_feature_vectors(0, num_vectors-1);
+
+	/*
+	if (single_string)
+	{
+		SG_FREE(single_string);
+		single_string=NULL;
+	}
+	else
+		cleanup_feature_vectors(0, num_vectors-1);
+	*/
 
 	num_vectors=0;
 	SG_FREE(features);
@@ -160,6 +167,39 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 	SG_UNREF(alphabet);
 	alphabet=alpha;
 	SG_REF(alphabet);
+}
+
+template<class ST> void CStringFeatures<ST>::cleanup_feature_vector(int32_t num)
+{
+	ASSERT(num<get_num_vectors());
+
+	if (features)
+	{
+		int32_t real_num=m_subset_stack->subset_idx_conversion(num);
+		SG_FREE(features[real_num].string);
+		features[real_num].string=NULL;
+		features[real_num].slen=0;
+
+		determine_maximum_string_length();
+	}
+}
+
+template<class ST> void CStringFeatures<ST>::cleanup_feature_vectors(int32_t start, int32_t stop)
+{
+	if (features && get_num_vectors())
+	{
+		ASSERT(start<get_num_vectors());
+		ASSERT(stop<get_num_vectors());
+
+		for (int32_t i=start; i<=stop; i++)
+		{
+			int32_t real_num=m_subset_stack->subset_idx_conversion(i);
+			SG_FREE(features[real_num].string);
+			features[real_num].string=NULL;
+			features[real_num].slen=0;
+		}
+		determine_maximum_string_length();
+	}
 }
 
 template<class ST> EFeatureClass CStringFeatures<ST>::get_feature_class() const { return C_STRING; }
@@ -211,7 +251,9 @@ template<class ST> void CStringFeatures<ST>::set_feature_vector(SGVector<ST> vec
 	if (vector.vlen<=0)
 		SG_ERROR("String has zero or negative length\n");
 
-	features[num] = SGString<ST>(vector.vlen);
+	cleanup_feature_vector(num);
+	features[num].slen=vector.vlen;
+	features[num].string=SG_MALLOC(ST, vector.vlen);
 	memcpy(features[num].string, vector.vector, vector.vlen*sizeof(ST));
 
 	determine_maximum_string_length();
@@ -291,7 +333,6 @@ template<class ST> SGString<ST>* CStringFeatures<ST>::get_transposed(int32_t &nu
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		new (&sf[i]) SGString<ST>();
 		sf[i].string=SG_MALLOC(ST, num_feat);
 		sf[i].slen=num_feat;
 	}
@@ -479,7 +520,6 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 					//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
 					max_string_length=CMath::max(max_string_length, len+overflow_len);
 
-					new (&features[lines]) SGString<ST>();
 					features[lines].slen=len;
 					features[lines].string=SG_MALLOC(ST, len);
 
@@ -596,7 +636,6 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 				}
 
 				len=fasta_len-spanned_lines;
-				new (&strings[i]) SGString<ST>();
 				strings[i].string=SG_MALLOC(ST, len);
 				strings[i].slen=len;
 
@@ -660,7 +699,6 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 	if (bitremap_in_single_string)
 	{
 		strings=SG_MALLOC(SGString<ST>, 1);
-		new (&strings) SGString<ST>();
 		strings[0].string=SG_MALLOC(ST, num);
 		strings[0].slen=num;
 		f.get_line(len, offs);
@@ -694,7 +732,6 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 		}
 		else
 		{
-			new (&strings[i]) SGString<ST>();
 			strings[i].string=SG_MALLOC(ST, len);
 			strings[i].slen=len;
 			str=strings[i].string;
@@ -765,7 +802,6 @@ template<class ST> bool CStringFeatures<ST>::load_from_directory(char* dirname)
 
 		for (int32_t i=0; i<n; i++)
 		{
-			new (&strings[i]) SGString<ST>();
 			char* fname=SGIO::concat_filename(namelist[i]->d_name);
 
 			struct stat s;
@@ -837,11 +873,7 @@ template<class ST> bool CStringFeatures<ST>::set_features(SGString<ST>* p_featur
 
 			// TODO remove copying
 			features = SG_MALLOC(SGString<ST>,p_num_vectors);
-			for (int32_t i=0; i<p_num_vectors; i++)
-			{
-				new (&features[i]) SGString<ST>();
-				features[i] = p_features[i];
-			}
+			memcpy(features,p_features,sizeof(SGString<ST>)*p_num_vectors);
 			num_vectors = p_num_vectors;
 			max_string_length = p_max_string_length;
 
@@ -868,7 +900,6 @@ template<class ST> bool CStringFeatures<ST>::append_features(CStringFeatures<ST>
 	{
 		int32_t real_i = sf->m_subset_stack->subset_idx_conversion(i);
 		int32_t length=sf->features[real_i].slen;
-		new (&new_features[i]) SGString<ST>();
 		new_features[i].string=SG_MALLOC(ST, length);
 		memcpy(new_features[i].string, sf->features[real_i].string, length);
 		new_features[i].slen=length;
@@ -906,8 +937,6 @@ template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_fea
 
 		for (int32_t i=0; i<num_vectors; i++)
 		{
-			new (&new_features[i]) SGString<ST>();
-
 			if (i<old_num_vectors)
 			{
 				new_features[i].string=features[i].string;
@@ -963,7 +992,6 @@ template<class ST> SGString<ST>* CStringFeatures<ST>::copy_features(int32_t& num
 		int32_t len;
 		bool free_vec;
 		ST* vec=get_feature_vector(i, len, free_vec);
-		new (&new_feat[i]) SGString<ST>();
 		new_feat[i].string=SG_MALLOC(ST, len);
 		new_feat[i].slen=len;
 		memcpy(new_feat[i].string, vec, ((size_t) len) * sizeof(ST));
@@ -1043,7 +1071,8 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 		// vector raw data
 		if (decompress)
 		{
-			new (&features[i]) SGString<ST>(len_uncompressed);
+			features[i].string=SG_MALLOC(ST, len_uncompressed);
+			features[i].slen=len_uncompressed;
 			uint8_t* compressed=SG_MALLOC(uint8_t, len_compressed);
 			if (fread(compressed, sizeof(uint8_t), len_compressed, file)!=(size_t) len_compressed)
 				SG_ERROR("failed to read compressed data (expected %d bytes)", len_compressed);
@@ -1057,7 +1086,8 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 		else
 		{
 			int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
-			new (&features[i]) SGString<ST>(len_compressed+offs);
+			features[i].string=SG_MALLOC(ST, len_compressed+offs);
+			features[i].slen=len_compressed+offs;
 			int32_t* feat32ptr=((int32_t*) (features[i].string));
 			memset(features[i].string, 0, offs*sizeof(ST));
 			feat32ptr[0]=(int32_t) len_compressed;
@@ -1185,11 +1215,11 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t
 	int32_t offs=0;
 	for (int32_t i=0; i<num_vectors; i++)
 	{
-		new (&f[i]) SGString<ST>(&features[0].string[offs+skip], window_size-skip, false);
+		f[i].string=&features[0].string[offs+skip];
+		f[i].slen=window_size-skip;
 		offs+=step_size;
 	}
 	single_string=features[0].string;
-	features[0].~SGString<ST>();
 	SG_FREE(features);
 	features=f;
 	max_string_length=window_size-skip;
@@ -1232,7 +1262,8 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t 
 
 		if (p>=0 && p<=len-window_size)
 		{
-			new (&f[i]) SGString<ST>(&features[0].string[p+skip], window_size-skip, false);
+			f[i].string=&features[0].string[p+skip];
+			f[i].slen=window_size-skip;
 		}
 		else
 		{
@@ -1247,7 +1278,6 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t 
 		}
 	}
 
-	features[0].~SGString<ST>();
 	SG_FREE(features);
 	features=f;
 	max_string_length=window_size-skip;
@@ -1475,7 +1505,6 @@ template<class ST> void CStringFeatures<ST>::create_random(float64_t* hist, int3
 
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		new (&sf[i]) SGString<ST>();
 		sf[i].string=SG_MALLOC(ST, cols);
 		sf[i].slen=cols;
 
@@ -1583,12 +1612,10 @@ template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(
 
 		/* copy string */
 		SGString<ST> current_string=features[real_idx];
-		list_copy.strings[i] = current_string;
-		/*
+		SGString<ST> string_copy(current_string.slen);
 		memcpy(string_copy.string, current_string.string,
 			current_string.slen*sizeof(ST));
 		list_copy.strings[i]=string_copy;
-		*/
 	}
 
 	/* create copy instance */
@@ -1960,7 +1987,6 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 
 	for (int32_t i=0; i<num_vectors; i++)
 	{
-		new (&features[i]) SGString<ST>();
 		int32_t len=-1;
 		bool vfree;
 		CT* c=sf->get_feature_vector(i, len, vfree);

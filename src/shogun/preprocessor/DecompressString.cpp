@@ -67,6 +67,8 @@ bool CDecompressString<ST>::apply_to_string_features(CFeatures* f)
 		((CStringFeatures<ST>*)f)->
 			free_feature_vector(vec, i, free_vec);
 		((CStringFeatures<ST>*)f)->
+			cleanup_feature_vector(i);
+		((CStringFeatures<ST>*)f)->
 			set_feature_vector(i, decompressed, len);
 	}
 	return true;

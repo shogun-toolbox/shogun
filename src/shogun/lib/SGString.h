@@ -16,56 +16,35 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGReferencedData.h>
 
 namespace shogun
 {
 
 /** @brief shogun string */
-template<class T> class SGString : public SGReferencedData
+template<class T> class SGString
 {
 public:
 	/** default constructor */
-	SGString() : SGReferencedData()
-	{
-		init_data();
-	}
+	SGString() : string(NULL), slen(0), do_free(false) { }
 
 	/** constructor for setting params */
-	SGString(T* s, index_t l, bool ref_counting=true) : 
-		SGReferencedData(ref_counting), 
-		string(s), slen(l)
-	{
-	}
+	SGString(T* s, index_t l, bool free_s=false)
+		: string(s), slen(l), do_free(free_s) { }
 
 	/** constructor for setting params from a SGVector*/
-	SGString(SGVector<T> v, bool ref_counting=true) :
-		SGReferencedData(ref_counting),
-		slen(v.vlen)
-	{
-		string = SG_MALLOC(T, slen);
-		memcpy(string, v.vector, sizeof(T)*slen);
-	}
+	SGString(SGVector<T> v)
+		: string(v.vector), slen(v.vlen), do_free(v.do_free) { }
 
 	/** constructor to create new string in memory */
-	SGString(index_t len, bool ref_counting=true) :
-		slen(len)
+	SGString(index_t len, bool free_s=false) :
+		slen(len), do_free(free_s)
 	{
-		string=SG_MALLOC(T, len);
+		string=SG_CALLOC(T, len);
 	}
 
 	/** copy constructor */
-	SGString(const SGString &orig) : 
-		SGReferencedData(orig)
-	{
-		copy_data(orig);
-	}
-
-	/** destructor */
-	virtual ~SGString() 
-	{
-		unref();
-	}
+	SGString(const SGString &orig)
+		: string(orig.string), slen(orig.slen), do_free(orig.do_free) { }
 
 	/** equality operator */
 	bool operator==(const SGString & other) const
@@ -82,36 +61,31 @@ public:
 		return true;
 	}
 
-protected:
-
-	/** copy data */
-	virtual void copy_data(const SGReferencedData &orig)
-	{
-		string = ((SGString*)(&orig))->string;
-		slen = ((SGString*)(&orig))->slen;
-	}
-
-	/** init data */
-	virtual void init_data()
-	{
-		string = NULL;
-		slen = 0;
-	}
-
 	/** free string */
-	virtual void free_data()
+	void free_string()
 	{
-		SG_FREE(string);
-		string = NULL;
-		slen = 0;
+		if (do_free)
+			SG_FREE(string);
+
+		string=NULL;
+		do_free=false;
+		slen=0;
+	}
+
+	/** destroy string */
+	void destroy_string()
+	{
+		do_free=true;
+		free_string();
 	}
 
 public:
-
 	/** string  */
 	T* string;
 	/** length of string  */
 	index_t slen;
+	/** whether string needs to be freed */
+	bool do_free;
 };
 }
 #endif // __SGSTRING_H__
