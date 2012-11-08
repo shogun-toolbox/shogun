@@ -13,14 +13,6 @@ using namespace shogun;
 
 CStreamingDotFeatures::CStreamingDotFeatures() : CStreamingFeatures()
 {
-	init();
-	set_property(FP_STREAMING_DOT);
-}
-
-CStreamingDotFeatures::CStreamingDotFeatures(CStreamingFile* file, bool is_labelled,
-		int32_t size) : CStreamingFeatures()
-{
-	init(file, is_labelled, size);
 	set_property(FP_STREAMING_DOT);
 }
 
@@ -102,12 +94,4 @@ void CStreamingDotFeatures::free_feature_iterator(void* iterator)
 {
 	SG_NOTIMPLEMENTED;
 	return;
-}
-
-void CStreamingDotFeatures::init()
-{
-}
-
-void CStreamingDotFeatures::init(CStreamingFile *file, bool is_labelled, int32_t size)
-{
 }

@@ -380,6 +380,7 @@ void CStreamingSparseFeatures<T>::init(CStreamingFile* file,
 	init();
 	has_labels = is_labelled;
 	working_file = file;
+	SG_REF(working_file);
 	parser.init(file, is_labelled, size);
 }
 
