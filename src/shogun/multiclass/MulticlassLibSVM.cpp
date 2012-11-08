@@ -172,9 +172,13 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 							idx++;
 					}
 				}
-				else
+				else if (num_classes == 3)
 				{
 					idx = model->label[j]+model->label[i] - 3;
+				}
+				else if (num_classes == 2)
+				{
+					idx = i;
 				}
 //
 //				if (sgn>0)
