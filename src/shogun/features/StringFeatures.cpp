@@ -1668,6 +1668,7 @@ template<class ST> void CStringFeatures<ST>::init()
 	symbol_mask_table=0;
 	preprocess_on_get=false;
 	feature_cache=NULL;
+	symbol_mask_table_len=256;
 
 	m_parameters->add((CSGObject**) &alphabet, "alphabet");
 	m_parameters->add_vector(&features, &num_vectors, "features",
@@ -1691,6 +1692,7 @@ template<class ST> void CStringFeatures<ST>::init()
 	 * /// order used in higher order mapping
 	 * ST* symbol_mask_table;
 	 */
+	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask table", "fuck you");
 }
 
 /** get feature type the char feature can deal with

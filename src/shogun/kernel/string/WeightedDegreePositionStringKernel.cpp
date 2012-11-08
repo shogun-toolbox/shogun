@@ -1944,6 +1944,7 @@ void CWeightedDegreePositionStringKernel::init()
 	m_parameters->add_vector(&shift, &shift_len,
 			"shift",
 			"Shift Vector.");
+	SG_ADD(&max_shift, "max_shift", "Maximal shift.", MS_AVAILABLE);
 	SG_ADD(&mkl_stepsize, "mkl_stepsize", "MKL step size.", MS_AVAILABLE);
 	SG_ADD(&degree, "degree", "Order of WD kernel.", MS_AVAILABLE);
 	SG_ADD(&max_mismatch, "max_mismatch",
