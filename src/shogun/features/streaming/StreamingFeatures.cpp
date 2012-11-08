@@ -25,11 +25,6 @@ CStreamingFeatures::~CStreamingFeatures()
 	SG_DEBUG("leaving CStreamingFeatures::~CStreamingFeatures()\n");
 }
 
-CStreamingFeatures::CStreamingFeatures(CStreamingFile* file,
-		bool is_labelled, int32_t size) : CFeatures()
-{
-}
-
 void CStreamingFeatures::set_read_functions()
 {
 	set_vector_reader();

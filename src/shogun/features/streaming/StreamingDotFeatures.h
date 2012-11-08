@@ -180,13 +180,6 @@ public:
 	 */
 	virtual void free_feature_iterator(void* iterator);
 
-private:
-	virtual void init();
-
-	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size);
-
-
-
 protected:
 
 	/// feature weighting in combined dot features

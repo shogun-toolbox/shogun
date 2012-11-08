@@ -79,15 +79,6 @@ public:
 	CStreamingFeatures();
 
 	/**
-	 * Constructor with input information passed.
-	 *
-	 * @param file CStreamingFile to take input from.
-	 * @param is_labelled Whether examples are labelled or not.
-	 * @param size Number of examples to be held in the parser's "ring".
-	 */
-	CStreamingFeatures(CStreamingFile* file, bool is_labelled, int32_t size);
-
-	/**
 	 * Destructor
 	 */
 	virtual ~CStreamingFeatures();

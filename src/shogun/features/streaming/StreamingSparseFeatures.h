@@ -70,7 +70,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	~CStreamingSparseFeatures();
+	virtual ~CStreamingSparseFeatures();
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -371,9 +371,6 @@ private:
 protected:
 	/// The parser object, which reads from input and returns parsed example objects.
 	CInputParser< SGSparseVectorEntry<T> > parser;
-
-	/// The StreamingFile object to read from.
-	CStreamingFile* working_file;
 
 	/// The current example's feature vector as an SGVector<T>
 	SGSparseVector<T> current_sgvector;
