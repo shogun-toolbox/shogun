@@ -136,6 +136,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
  using namespace shogun;
 %}
+
 #if  defined (SWIGPERL) && defined(HAVE_PDL)
 %header %{
   SV* CoreSV;
@@ -143,10 +144,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %}
 #endif
 
-#if  defined (SWIGPERL) && defined(HAVE_PDL)
 %init %{
-  //PTZ120930 boot PDL, load PDL stuff??? and define a PDL
-  //pl_require('PDL');
+
+#if  defined (SWIGPERL) && defined(HAVE_PDL)
   //check Core.xs //Core* PDL_p = pdl__Core_get_Core();
   //PDL_COMMENT("Get pointer to structure of core shared C routines")
   //PDL_COMMENT("make sure PDL::Core is loaded")
@@ -158,17 +158,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     Perl_croak(aTHX_ "Can't load PDL::Core module");
   PDL = INT2PTR(Core*, SvIV( CoreSV ));
   //  PDL_COMMENT("Core* value")
-
-#if !defined(XS_VERSION)
-#define XS_VERSION "NAN"
 #endif
 
-  if (PDL->Version != PDL_CORE_VERSION)
-    Perl_croak(aTHX_ "[PDL->Version: %d PDL_CORE_VERSION: %d XS_VERSION: %s] PDL::Bad needs to be recompiled against the newly installed PDL", PDL->Version, PDL_CORE_VERSION, XS_VERSION);
-%}
-#endif
 
-%init %{
 #ifdef SWIGPYTHON
         import_array();
 #endif
@@ -182,7 +174,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
                 &sg_global_print_error);
 #endif
 #endif
-
 
 
 #ifdef SWIGRUBY
@@ -263,9 +254,8 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 {
     $result=$1;
 }
-#endif
 
-#if defined(SWIGPERL)
+#elif defined(SWIGPERL)
 %{
   static int print_sgobject(SV* pobj, FILE *f, int flags) {
     void *argp;
@@ -280,25 +270,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     return 0;
   }
 %}
-//PTZ120924 whao...need to try harder...?
-
-%typemap(out) SV* __reduce_ex__(int proto)
-{
-  //TPZ120926 not good!!use stack spare..
-
-  return SWIG_CALLXS("__reduce__");
-
-    //return PyObject_CallMethod(self, (char*) "__reduce__", (char*) "");
-}
-
-%typemap(in) __setstate__(SV* state) {
-    $1 = $input;
-}       
-
-%typemap(out) SV* __getstate__()
-{
-    $result = $1;
-}
 #endif
 
 %exception
