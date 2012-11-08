@@ -87,3 +87,7 @@
 %include "Loss.i"
 %include "Statistics.i"
 %include "Latent.i"
+
+#if defined(SWIGPERL)
+%include "abstract_types_extension.i"
+#endif
