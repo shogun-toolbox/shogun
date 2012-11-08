@@ -1,12 +1,17 @@
 %ignore *::operator[];
-%ignore *::operator();
 %ignore *::operator=;
+%ignore *::operator();
 #if !defined(SWIGPERL)
 %ignore shogun::SGVector::operator+=;
 %ignore shogun::SGVector::operator+;
-#endif
 %ignore *::operator==;
 %ignore *::operator!=;
+#endif
+#if defined(SWIGPERL)
+%ignore shogun::CSGObject::next;
+%ignore shogun::bmrm_ll::next;
+#endif
+
 %ignore *::operator bool*;
 %ignore *::operator char*;
 %ignore *::operator unsigned char*;
@@ -23,6 +28,7 @@
 
 %ignore ref;
 %ignore unref;
+
 
 #ifdef SWIGCSHARP
 %ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
@@ -43,6 +49,20 @@
 %ignore ConsensusEntry;
 %ignore DNATrie;
 %ignore Model;
+
+#if !defined(SWIGPERL)
+/*%rename("%s") *::LatentModel; */
+/* ../../shogun/lib/SGReferencedData.h:66: Warning 362: operator= ignored */
+%ignore shogun::SGReferencedData::operator=;
+
+/* ../../shogun/lib/DynamicArray.h:589: Warning 362: operator= ignored */
+/* ../../shogun/base/DynArray.h:502: Warning 362: operator= ignored */
+/* ../../shogun/lib/Trie.h:175: Warning 362: operator= ignored */
+/* ../../shogun/lib/DynamicObjectArray.h:418: Warning 362: operator= ignored */
+/* ../../shogun/structure/libbmrm.h:95: Warning 314: 'next' is a perl keyword */
+/* ../../shogun/classifier/mkl/MKLMulticlass.h:105: Warning 362: operator=  */
+#endif
+
 %ignore substring;
 %ignore LaRankOutput;
 %ignore larank_kcache_s;
