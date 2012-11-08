@@ -100,6 +100,8 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(RationalQuadraticKernel) CRationalQuadraticKernel;
 %rename(MultiquadricKernel) CMultiquadricKernel;
 %rename(JensenShannonKernel) CJensenShannonKernel;
+%rename(LinearARDKernel) CLinearARDKernel;
+%rename(GaussianARDKernel) CGaussianARDKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -212,5 +214,7 @@ namespace shogun
 %include <shogun/kernel/MultiquadricKernel.h>
 %include <shogun/kernel/RationalQuadraticKernel.h>
 %include <shogun/kernel/JensenShannonKernel.h>
+%include <shogun/kernel/LinearARDKernel.h>
+%include <shogun/kernel/GaussianARDKernel.h>
 
 EXTEND_CUSTOMKERNEL(CustomKernel, float32_t, NPY_FLOAT32)

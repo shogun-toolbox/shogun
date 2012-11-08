@@ -71,4 +71,6 @@
 #include <shogun/kernel/RationalQuadraticKernel.h>
 #include <shogun/kernel/CircularKernel.h>
 #include <shogun/kernel/JensenShannonKernel.h>
+#include <shogun/kernel/LinearARDKernel.h>
+#include <shogun/kernel/GaussianARDKernel.h>
 %}
