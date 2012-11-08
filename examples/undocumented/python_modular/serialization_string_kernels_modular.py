@@ -148,7 +148,7 @@ def construct_features(features):
     return feat_comb
 
 
-def serialization_strings_kernel_modular():
+def serialization_string_kernels_modular():
     """
     serialize svm with string kernels
     """
