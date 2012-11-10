@@ -85,7 +85,7 @@ CDenseFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(C
 #endif
 	SG_FREE(lhs_M);
 	SG_FREE(rhs_M);
-	SGVector<float64_t>::display_vector(evals,m_target_dim);
+	//SGVector<float64_t>::display_vector(evals,m_target_dim);
 	SG_FREE(evals);
 
 	if (info!=0)
