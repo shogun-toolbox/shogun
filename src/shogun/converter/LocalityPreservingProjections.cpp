@@ -67,7 +67,7 @@ CDenseFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(C
 	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,XTM,dim,feature_matrix.matrix,dim,0.0,lhs_M,dim);
 
 	for (i=0; i<N; i++)
-		cblas_dscal(dim,D_diag_vector[i],feature_matrix.matrix+i*dim,1);
+		cblas_dscal(dim,CMath::sqrt(D_diag_vector[i]),feature_matrix.matrix+i*dim,1);
 
 	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,feature_matrix.matrix,dim,feature_matrix.matrix,dim,0.0,rhs_M,dim);
 
@@ -81,10 +81,11 @@ CDenseFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(C
 	arpack_dsxupd(lhs_M,rhs_M,false,dim,m_target_dim,"LA",false,3,true,false,-1e-9,0.0,
 	              evals,evectors,info);
 #else
-	wrap_dsygvx(1,'V','U',dim,lhs_M,dim,rhs_M,dim,dim-m_target_dim+1,dim,evals,evectors,&info);
+	wrap_dsygvx(1,'V','U',dim,lhs_M,dim,rhs_M,dim,1,m_target_dim,evals,evectors,&info);
 #endif
 	SG_FREE(lhs_M);
 	SG_FREE(rhs_M);
+	SGVector<float64_t>::display_vector(evals,m_target_dim);
 	SG_FREE(evals);
 
 	if (info!=0)
