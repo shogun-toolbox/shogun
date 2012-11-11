@@ -18,6 +18,7 @@ our %EXPORT_TAGS =
 Exporter::export_ok_tags(qw/all/);
 
 our $example_dir = '../../../examples/undocumented/perl_modular';
+#TODO::PTZ121109 relpath is quite wrong
 our $test_dir = '../../regression/tests';
 our @blacklist = ("classifier_libsvm_minimal_modular.t",
 		"kernel_combined_modular.t",
@@ -46,30 +47,36 @@ sub setup_tests($) {
 
 sub check_for_function($)
 {
+#TODO::PTZ121109
     my ($fname) = @_;
     my $fh = IO::File->new($fname, "r");
     if (defined $fh) {
 	while(my $l = <$fh>) {
 	    if($l =~ /^\s*sub /) {
-		return true;
+		return 1;
 	    }
 	}
     }
-    return false;
+    return 0;
 }
 sub get_test_mod
 {
     my ($t) = @_;
     if (($t =~ /.t$/)
 	and not ($t =~ /^\./)
-	and !(grep($t, @blacklist)))
+	and !(grep(/$t/, @blacklist)))
     {
-	my $mod_name = $t =~ s/\..*$//;
-	if(not &check_for_function($t)) {	    
-	    warn("ERROR (no function)");
-	}
-        #return __import__(mod_name), mod_name
-	return(ref($mod_name), $mod_name);
+	(my $mod_name = $t) =~ s/\..*$//;
+	my $mod = $mod_name;
+	$mod =~ s#.*/##g;
+	$mod =~ s#_.*##g;
+	#TODO::PTZ121109 $t is path less...
+	#if(not &check_for_function($t)) {	    
+	#TODO::PTZ121109   warn("ERROR (no function)");
+	#}
+	$mod = eval( 'modshogun::' . $mod)->new();
+	#TODO::PTZ121109 something for $mod->{parameter_list}
+	return($mod, $mod_name);
     }
 }
 

@@ -160,7 +160,7 @@ foreach my $filename (@ARGV) {
     }
 }
 
-$res;
+exit($res);
 
 __END__
 
