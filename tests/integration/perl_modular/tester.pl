@@ -31,7 +31,7 @@ sub typecheck
     (my $rfa = ref($a)) =~ s/\(.*$//;
     (my $rfb = ref($b)) =~ s/\(.*$//;
     if($rfa =~ /Shogun.*Labels/ and $rfb =~ /Shogun.*Labels/) {
-	return true;
+	return 1;
     }
     return($rfa eq $rfb);
 }
@@ -40,7 +40,7 @@ sub typecheck
 sub compare
 {
     my($a, $b, $tolerance) = @_;
-    if(not &typecheck($a, $b)) { return false;}
+    if(not &typecheck($a, $b)) { return 0;}
     if(ref($a) =~ /PDL::ndarray/) {
 	if($tolerance) {
 	    return (max(abs($a - $b)) < $tolerance);
@@ -50,13 +50,13 @@ sub compare
     } elsif( &isinstance($a, modshogun::SGObject)) {
 	return like(Dumper($a), Dumper($b));
     } elsif(ref($a) =~ qr'ARRAY') {
-	if($#$a != $#$b) {return false;}
+	if($#$a != $#$b) {return 0;}
 	while((my ($obj1) = pop(@$a)) && (my ($obj2) = pop(@$b))) {
 	    if( not &compare($obj1, $obj2, $tolerance)) {
-		return false;
+		return 0;
 	    }
 	}
-	return true;
+	return 1;
     }
     return $a <=> $b;
 }
@@ -76,69 +76,71 @@ sub compare_dbg_helper
     my $rfb = ref($b);
     if(not &typecheck($a, $b)) {
 	printf( "Type mismatch (type(a)=%s vs type(b)=%s)", ref($a), ref($b));
-	    return false;
+	    return 0;
     }
     if(ref($a) =~ /PDL/) {
 	if ($tolerance){
 	    if (max(abs($a - $b)) < $tolerance) {
-		return true;
+		return 1;
 	    }else{
 		print "PDL Array mismatch > max_tol";
 		print $a-$b;
-		return false;
+		return 0;
 	    }
 	}else{
 	    if (&is_like($a, $b)){
-		return true;
+		return 1;
 	    }else{
 		print "PDL Array mismatch";
 		print $a-$b;
-		return false;
+		return 0;
 	    }
 	}
     } elsif(ref($a) =~ /modshogun::SGObject/){
 	if(&like(Dumper($a), Dumper($b))) {
-	    return true;
+	    return 1;
 	}
 	print("a=", Dumper($a));
 	print("b=", Dumper($b));
-	return false;
+	return 0;
     } elsif( $rfa =~ 'ARRAY') {
 	if($#a != $#b) {
 	    printf( "Length mismatch (len(a)=%d vs len(b)=%d)", $#a, $#b);
-	    return false;
+	    return 0;
 	}
 	while(my ($obj1, $obj2) = each &zip($a,$b)) {
 	    if( not &compare_dbg($obj1, $obj2, $tolerance)) {
-		return false;
+		return 0;
 	    }
 	}
-	return true;
+	return 1;
     }
 
     if ($a == $b) {
-	return true;
+	return 1;
     } else {
 	print "a!=b";
 	print "a=", $a;
 	print "b=", $b;
-	return false;
+	return 0;
     }
 }
 sub tester
 {
     my ($tests, $cmp_method, $tolerance, $failures, $missing) = @_;
     foreach my $t (@$tests) {
-
+	my $n = 0;
 	my ($mod, $mod_name) = &get_test_mod($t);
-	my $n=$#{$mod->{parameter_list}};
-	unless($n) {next;}
-	if(@_) {
-	    warn( "%-60s ERROR (%s)" ,$t,@_);
-	    next;
+	if($mod && 0) {
+#TODO::PTZ121109 parameter_list nowhere to be seen... maybe loadfile_parameter
+	    $n = $#{$mod->{parameter_list}};
+	    unless($n >= 0) {next;}
+	    if($@) {
+		warn( "%-60s ERROR (%s)", $t, $@);
+		next;
+	    }
 	}
 	my $fname = "";
-
 	foreach my $i (0..$n) {
 	    $fname = &get_fname($mod_name, $i);
 	    my $setting_str = sprintf("%s setting %d/%d", $t, $i+1, $n);
@@ -153,8 +155,8 @@ sub tester
 		    }
 		}
 		#PTZ12106todo ... use ok(...); or so...
-		if(@_) {
-		    warn($setting_str, @_);
+		if($@) {
+		    warn($setting_str, $@);
 		    #except IOError, e:
 		    if(not $failures) {
 			warn( "%-60s NO TEST", $setting_str);

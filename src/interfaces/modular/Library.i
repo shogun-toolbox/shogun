@@ -242,8 +242,10 @@ namespace shogun
     SERIALIZABLE_DUMMY(SGString<floatmax_t>);
 #endif
 
+#if !defined(SWIGPERL)
 %ignore SGVector<float64_t>::operator+=;
 %ignore SGVector<float64_t>::operator+;
+#endif
 
 #ifdef USE_BOOL
     %template(BoolVector) SGVector<bool>;
