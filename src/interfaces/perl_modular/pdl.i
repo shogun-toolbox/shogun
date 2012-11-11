@@ -25,6 +25,35 @@ extern "C" {
     //PTZ121012 from PDL
 #define MAX_DIMENSIONS 100
 #define MAX_VAR_DIMS 32
+    /* Given a SV, return a string describing its type.
+     */
+    static const char* typecode_string(SV* a) {
+        if(!SvOK(a)) return "C NULL value";
+        if (SvVOK(a)) return "v-string";
+        if (SvIOK(a)) return "int";
+        if (SvNOK(a)) return "double";
+        //if (SvOK(a)) return "array";
+        if (SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV)))
+            //{(SvROK(a) && SvTYPE(SvRV(a)) == SVt_PDLV))
+            return "piddle";
+        //TODO::PTZ120927, I am sure I can do better!!!, with returning the name of obj!
+        //look at swig_.cxx
+        return "unknown type";
+    }
+
+    static const char* typecode_string(int typecode) {
+        const char* type_names[24] = {"bool","byte","unsigned byte","short",
+            "unsigned short","int","unsigned int","long",
+            "unsigned long","long long", "unsigned long long",
+            "float","double","long double",
+            "complex float","complex double","complex long double",
+            "object","string","unicode","void", "piddle","notype","char"};
+        const char* user_def="user defined";
+        if (typecode > 24)
+            return user_def;
+        else
+            return type_names[typecode];
+    }
 
     /* Functions to extract array attributes.
      */
@@ -280,7 +309,7 @@ extern "C" {
         }
 
 
-        //I made it up
+        //PTZ121111 I made it up, not used.
         SV* pdl_core_listref_pv_string(pdl * x)
         {
             PDL_Long * inds;
@@ -328,6 +357,174 @@ extern "C" {
             }
             return  newRV_noinc((SV *)av);
         }        
+    /*
+    //TODO::PTZ121111 there is an unfortunate need to transpose...
+    PDL dimension format is reverse to the mathematical conventions (sigh).
+     which means a transposition of dimensions and memory.... 
+     so bye bye to  sequencial  memcopy until a genious programmer knows better.
+    ie.:
+     PDL sequence(3,2) is dim [3,2] and [[0 1 2] [3 4 5]]
+    in memory... 
+    .
+    -
+    0		<=> pdl->at(0,0) <=> sg->at(0,0)
+    -
+    1		<=> pdl->at(0,1) <=> sg->at(0,1)
+    -
+    2		<=> pdl->at(0,2) <=> sg->at(1,0) ...
+    -
+    ...
+    -
+    4
+    -
+    5
+    -
+    .
+    */
+
+    template <class type>
+      static bool sg_to_pdl(SV* rsv, type* data_sg, index_t* dims_sg, index_t ndims_sg, int typecode)
+        {
+	  pdl* it = PDL->pdlnew();
+	  if(!it) {
+	    return false;
+	  }
+	  PDL_Long *dims_pdl = (PDL_Long *) pdl_malloc(sizeof(PDL_Long) * ndims_sg);
+	  PDL_Long *inds = (PDL_Long *) pdl_malloc(sizeof(PDL_Long) * ndims_sg);
+	  if(!inds) {
+	      return false;
+	  }
+	  for(int i = 0; i < ndims_sg; i++) {
+	    dims_pdl[ndims_sg - i - 1] = *dims_sg + i;
+	    inds[i] = 0;
+	  }
+	  PDL->setdims(it, dims_pdl, ndims_sg);
+
+	  it->datatype = typecode;
+	  PDL->allocdata(it);
+	  type *data_pdl = (type *) PDL_REPRP(it);
+	  if(!data_pdl) {
+	    PDL->destroy(it);
+	    return false;
+	  }
+	  PDL_Long* incs_pdl = (PDL_VAFFOK(it) ? it->vafftrans->incs : it->dimincs);
+	  PDL_Long offs_pdl = PDL_REPROFFS(it);
+	  PDL_Long nvals_pdl = it->nvals;
+	  
+	  type pdl_val;
+	  int lind = 0;
+	  int stop = 0;
+	  int i_pdl = 0;
+	  while(!stop && lind < nvals_pdl) {
+	    pdl_val = *data_sg + lind;
+
+	    data_pdl[i_pdl] = pdl_val;
+
+	    lind++;
+	    stop = 1;
+	    i_pdl = 0;
+	    for(int i = ndims_sg - 1; 0 <= i; i--) {
+	      if(stop) {
+		if(++(inds[i]) >= dims_pdl[i]) {
+		  inds[i] = 0;
+		} else {
+		  stop = 0;
+		}
+	      }
+	      //PTZ121111 find a better algo using a stack...or this pdl_affine wizbiz
+	      i_pdl += dims_pdl[i] * inds[i];
+	    }
+	  }
+	  PDL->SetSV_PDL(rsv, it);
+	  return true;
+	}
+
+    template <class type>
+        static bool sg_from_pdl(type** data_sg, index_t** dims_sg, index_t* ndims_sg, SV* rsv, int typecode)
+        {
+            pdl* it = PDL->SvPDLV(rsv);
+
+            PDL->make_physdims(it);
+            index_t ndims = it->ndims;
+            PDL_Long *dims_pdl = it->dims;
+            if(!(it->state && PDL_NOMYDIMS)) {
+	      return false;
+	    }
+	    PDL_Long *inds = (PDL_Long *) pdl_malloc(sizeof(PDL_Long) * ndims);
+	    if(inds == 0) {
+	      return false;
+	    }
+	    //PTZ121111 use PDL stuff instead of SG here...
+	    *dims_sg = SG_MALLOC(index_t, ndims);
+	    if((*dims_sg) == 0) {
+	      return false;
+	    }
+	    for(int i = 0; i < ndims; i++) {
+	      *((*dims_sg) + i) = dims_pdl[ndims - i - 1];
+	      inds[i] = 0;
+	    }
+
+            //from set_datatype
+            PDL->make_physical(it);
+	    if(!PDL_ENSURE_ALLOCATED(it)) {
+	      warn("could not allocate PDL (rectangular) matrix memory");
+	      return false;
+            }
+	    if(it->trans) {
+                pdl_destroytransform(it->trans, 1);
+            }
+
+	    //PTZ121111_TMP?
+            pdl_converttype(&it, typecode, PDL_PERM);
+            //pdl_make_physvaffine(it);
+
+	    void* data_pdl = PDL_REPRP(it);
+	    PDL_Long* incs_pdl = (PDL_VAFFOK(it) ? it->vafftrans->incs : it->dimincs);
+            PDL_Long offs_pdl = PDL_REPROFFS(it);
+            PDL_Long nvals_pdl = it->nvals;
+
+	    //PTZ121111 use PDL stuff instead of SG here...
+            *data_sg = SG_MALLOC(type, nvals_pdl);
+	    if((*data_sg) == 0) {
+	      return false;
+	    }
+  
+	    int badflag = (it->state & PDL_BADVAL) > 0;
+            type pdl_badval;
+            if(badflag) {
+                pdl_badval = pdl_get_pdl_badvalue(it);
+            }
+
+	    type pdl_val;
+            int lind = 0;
+            int stop = 0;
+            while(!stop && lind < nvals_pdl) {
+                pdl_val = pdl_at(data_pdl, it->datatype, inds, dims_pdl, incs_pdl, offs_pdl, ndims);
+                if(badflag && pdl_val == pdl_badval) {
+		  //TODO::PTZ121111 inf, nan handling 
+		  //sv = newSVpvn( "BAD", 3 );
+		  //change it to a NON_ variable INFTY, MAX_REAL, MACHINE_EPSILON;ALMOST_INFTY;
+		  //pdl_val is double
+		  // pdl_val = NAN;
+                }
+                *((*data_sg) + lind) = pdl_val;
+                lind++;
+                stop = 1;
+                for(int i = ndims - 1; 0 <= i; i--) {
+		  if(++(inds[i]) >= dims_pdl[i]) {
+                        inds[i] = 0;
+                    } else {
+                        stop = 0;
+                        break;
+                    }
+                }
+            }
+	    if(lind == nvals_pdl) {
+	      *ndims_sg = ndims;
+	      return true;
+	    }
+	    return false;
+        }
 %}
 
 %typecheck(SWIG_TYPECHECK_POINTER) pdl* {

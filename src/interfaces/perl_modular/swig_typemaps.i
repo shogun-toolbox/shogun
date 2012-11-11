@@ -21,41 +21,7 @@ extern "C" {
 }
 #include <shogun/lib/DataType.h>
 
-    /* Functions to extract array attributes.
-     */
-
-    /* Given a SV, return a string describing its type.
-     */
-    static const char* typecode_string(SV* a) {
-        if(!SvOK(a)) return "C NULL value";
-        if (SvVOK(a)) return "v-string";
-        if (SvIOK(a)) return "int";
-        if (SvNOK(a)) return "double";
-        //if (SvOK(a)) return "array";
-        if (SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV)))
-            //{(SvROK(a) && SvTYPE(SvRV(a)) == SVt_PDLV))
-            return "piddle";
-        //TODO::PTZ120927, I am sure I can do better!!!, with returning the name of obj!
-        //look at swig_.cxx
-        return "unknown type";
-    }
-
-    static const char* typecode_string(int typecode) {
-        const char* type_names[24] = {"bool","byte","unsigned byte","short",
-            "unsigned short","int","unsigned int","long",
-            "unsigned long","long long", "unsigned long long",
-            "float","double","long double",
-            "complex float","complex double","complex long double",
-            "object","string","unicode","void", "piddle","notype","char"};
-        const char* user_def="user defined";
-        if (typecode > 24)
-            return user_def;
-        else
-            return type_names[typecode];
-    }
-
     //PTZ121010 doesnot think we need this since already called in the swig interface...
-    //const class->get_copy
     static void* get_copy(void* src, size_t len)
     {
         void* copy = SG_MALLOC(uint8_t, len);
@@ -63,96 +29,8 @@ extern "C" {
         return copy;
     }
 
-    /* =pod
-     *
-     * Given a piddle, check to see if it is contiguous (packed).
-     * If so,
-     * return the input pointer and flag it as not a new object.  If it is
-     * not contiguous, create a new AV using the original data,
-     * flag it as a new object and return the pointer.
-     *
-     * If array is NULL or dimensionality or typecode does not match
-     * return NULL
-     *
-     * =cut
-     */
-    static SV* make_contiguous
-        (SV* ary
-         , int* is_new_object
-         , int dims
-         , int typecode
-         , bool force_copy = false
-        )
-        {
-            SV* array = NULL;
-            pdl* my_pdl = NULL;
-
-            /* mapping of SvPDLV */
-            my_pdl = PDL->SvPDLV(ary);
-
-            if(force_copy == true) {
-                //const char* opt = "";
-                //char* const opt = "";
-                //char * opt = "";
-                char opt[] = "";
-                sv_setsv(array, pdl_copy(my_pdl, opt));
-            } else {
-                //pdl *pnew = pdl_hard_copy(my_pdl);
-            }
-
-            /* change dims... */
-            //PDL_Long* my_dims_pdl = pdl_packdims(ary, ndims);
-            //as in pdlapi.c
-            //pdl_setdims(my_pdl, my_pdl->dims, dims);
-            PDL->reallocdims(my_pdl, dims);
-            //maybe pdl_setdims_careful(my_pdl);
-
-            /* change type... */
-            {
-                pdl* old_pdl = my_pdl;
-                my_pdl = pdl_get_convertedpdl(old_pdl, typecode);
-                if(my_pdl != old_pdl) {
-                    pdl_destroy(old_pdl);
-                }
-            }
-            PDL->make_physical(my_pdl);
-
-
-            PDL->SetSV_PDL(array, my_pdl);
-
-            if(array != ary) {
-                *is_new_object = 1;
-            } else  *is_new_object = 0;
-
-            return array;
-        }
-
-
- 
-
-    template <class type>
-        static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
-        {
-            pdl* it = PDL->SvPDLV(obj);
-            it = PDL->get_convertedpdl(it, typecode);
-	      //pdl_get_convertedpdl
-            PDL->make_physical(it); /* Wasteful*/
-            if(!PDL_ENSURE_ALLOCATED(it)) {
-                warn("could not allocate PDL vector memory");
-                return false;
-            }
-            //PTZ121008 still not sure of this one
-            //SvREFCNT_inc(it->datasv);
-            void* data = get_copy(PDL_REPRP(it), sizeof(type) * it->nvals);
-            sg_vec = shogun::SGVector<type>((type*) data, it->dims[0]);
-
-            //PTZ120927 shall I deference it? it will free it->data
-            //pdl_destroy(it); //shall increment the vector? not here
-
-            return true;
-        }
-
-
+    /* OUT typemaps */
+    /****************/
     template <class type>
         static bool vector_to_pdl(SV* rsv, SGVector<type> sg_vec, int typecode)
         {
@@ -165,136 +43,196 @@ extern "C" {
             PDL->setdims(it, dims, 1);
             it->datatype = typecode;
             PDL->allocdata(it);
-            void* data = PDL_REPRP(it);
+            void *data = PDL_REPRP(it);
             if(!data) {
                 PDL->destroy(it);
                 return false;
             }
-            memcpy((type*)data, sg_vec.vector, clen);
+            memcpy((type *)data, sg_vec.vector, clen);
             PDL->SetSV_PDL(rsv, it);
             return true;
         }
 
-
+    template <class type>
+      static bool matrix_to_pdl(SV* rsv, SGMatrix< type > matrix_sg, int typecode)
+      {
+	index_t dims_sg[2] = {matrix_sg.num_rows, matrix_sg.num_cols};
+	bool e = sg_to_pdl(rsv, matrix_sg.matrix, dims_sg, 2, typecode);
+	return e;
+      }
 
     template <class type>
-        static bool matrix_from_pdl(SGMatrix<type>& sg_matrix, SV* obj, int typecode)
+      static bool array_to_pdl(SV* rsv, SGNDArray< type > array_sg, int typecode)
+      {
+	bool e = sg_to_pdl(rsv, array_sg.array, array_sg.dims, array_sg.num_dims, typecode);
+	return e;
+      }
+
+    template <class type>
+      static bool string_to_pdl(SV* rsv, SGStringList<type> sg_strings, int typecode)
+            {
+                pdl* it = PDL->pdlnew();
+#if 0
+
+                //bless it to a PDL::Char...
+                char objname[] = "PDL::Char";
+                //HV *bless_stash = 0;
+                SV *y_SV;
+
+                PUSHMARK(SP);
+                XPUSHs(sv_2mortal(newSVpv(objname, 0)));
+                PUTBACK;
+                perl_call_method("initialize", G_SCALAR);
+                SPAGAIN;
+                rsv = POPs;
+                PUTBACK;
+                it = PDL->SvPDLV(rsv);
+                //int ndims_pdl = 2;
+
+#endif
+                if(!it) {
+                    return false;
+                }
+                shogun::SGString<type>* sg_str = sg_strings.strings;
+                int32_t sg_num = sg_strings.num_strings;
+                //work out max len!
+                STRLEN sg_slen_max = sg_strings.max_string_length;
+                if(sg_slen_max <= 0) {
+                    warn("this is an all-null string dimension");
+                    return false;
+                }
+                PDL_Long dims_pdl[3] = {sg_slen_max, sg_num, 1};
+                PDL->setdims(it, dims_pdl, 3);
+                it->datatype = typecode;
+                PDL->allocdata(it);
+                void* data_pdl = PDL_REPRP(it);
+                if(!data_pdl) {
+                    PDL->destroy(it);
+                    return false;
+                }
+                for(int32_t i = 0; i < sg_num; i++) {
+                    //PTZ121012 really to check this with unicode types also...
+                    memcpy((type*) data_pdl + (i * sg_slen_max), sg_str[i].string, sizeof(type) * sg_str[i].slen);
+                    //PTZ121012 shall have calloced also...
+                }
+                PDL->SetSV_PDL(rsv, it);
+                return true;
+            }
+
+        template <class type>
+            static bool spmatrix_to_pdl(SV* rsv, SGSparseMatrix<type> sg_matrix, int typecode)
+            {
+                shogun::SGSparseVector<type>* sfm = sg_matrix.sparse_matrix;
+                AV* tuple_av = newAV();
+                AV* ind_av = newAV();
+                int32_t ind_i = 0;
+                av_store(ind_av, 0, newSViv((IV) ind_i));
+
+                AV* data_av = newAV();
+                AV* idx_av = newAV();
+                int32_t ij = 0;
+                //PTZ120928 so slow....
+                for(int32_t i = 0; i < sg_matrix.num_vectors; i++) {
+                    ind_i += sfm[i].num_feat_entries;
+                    av_store(ind_av, i + 1, newSViv((IV) ind_i));
+                    for(int32_t j = 0; j < sfm[i].num_feat_entries; j++) {
+                        av_store(idx_av,  ij, newSViv((IV) sfm[i].features[j].feat_index));
+                        //PTZ120928 here typecode shall be used...
+                        av_store(data_av, ij, newSVuv((NV) sfm[i].features[j].entry     ));
+                        ij++;
+                    }
+                }
+                //PTZ120928 could do with Tie magic..might need to reference AV*???SvRV(_av)
+                //PTZ121004 and add it into a pdl!
+                av_store(tuple_av, 0, (SV*)data_av);
+                av_store(tuple_av, 1, (SV*)idx_av );
+
+                //SV*     newSVrv(SV *const rv, const char *const classname)
+                //SV* sv_pdl = newSVrv(rsv, "PDL");
+                sv_setsv_mg(rsv, *av_store(tuple_av, 2, (SV*)ind_av));
+
+                return true;
+fail:
+                return false;
+            }
+
+
+        template <class type>
+            static bool spvector_to_pdl(SV* rsv, SGSparseVector<type> sg_vector, int typecode)
+            {
+                AV* tuple_av = newAV();
+                AV* data_av = newAV();
+                AV* idx_av = newAV();
+
+                for (int32_t j = 0; j < sg_vector.num_feat_entries; j++) {
+                    av_store(idx_av,  j, newSViv((IV) sg_vector.features[j].feat_index));
+                    av_store(data_av, j, newSVuv((NV) sg_vector.features[j].entry     ));
+
+                    //PTZ120929 check swig ways also...for handling values
+                }
+                //PTZ120928 could do with Tie magic..
+                av_store(tuple_av, 0, newRV((SV*)data_av));
+                //*obj = *av_store(tuple_av, 1, newRV((SV*)idx_av));
+                sv_setsv_mg(rsv, *av_store(tuple_av, 1, newRV((SV*)idx_av)));
+                return true;
+            }
+
+
+
+
+
+
+
+    /* IN typemaps */
+    /***************/
+
+    template <class type>
+        static bool vector_from_pdl(SGVector<type>& sg_vec, SV* obj, int typecode)
         {
-            pdl* it = if_piddle(obj);
-            it = pdl_get_convertedpdl(it, typecode);
-            PDL->make_physical(it); /* Wasteful but needed */
+            pdl* it = PDL->SvPDLV(obj);
+            it = PDL->get_convertedpdl(it, typecode);
+            PDL->make_physical(it);
             if(!PDL_ENSURE_ALLOCATED(it)) {
-                warn("could not allocate PDL (rectangular) matrix memory");
+                warn("could not allocate PDL vector memory");
                 return false;
             }
             void* data = get_copy(PDL_REPRP(it), sizeof(type) * it->nvals);
-            sg_matrix = shogun::SGMatrix<type>((type*) data, it->dims[1], it->dims[0], true);
+            sg_vec = SGVector<type>((type *)data, it->dims[0]);
             return true;
         }
-
-
 
     template <class type>
-        static bool matrix_to_pdl(SV* rsv, SGMatrix<type> sg_matrix, int typecode)
+        static bool matrix_from_pdl(SGMatrix<type>& matrix_sg, SV* rsv, int typecode)
         {
-            pdl* it = PDL->pdlnew();
-            if(!it) {
-                return false;
-            }
-            STRLEN clen = sizeof(type)
-                * size_t(sg_matrix.num_rows)
-                * size_t(sg_matrix.num_cols);
-            PDL_Long dims[2] = {sg_matrix.num_cols, sg_matrix.num_rows};
-            PDL->setdims(it, dims, 2);
-            it->datatype = typecode;
-            PDL->allocdata(it);
-            void* data = PDL_REPRP(it);
-            if(!data) {
-                PDL->destroy(it);
-                return false;
-            }
-            memcpy((type*) data, sg_matrix.matrix, clen);
-            PDL->SetSV_PDL(rsv, it);
-            return true;
-        }
+	  type* data_sg = 0;
+	  index_t* dims_sg = 0;
+	  index_t ndims_sg = 0;
+	  bool e = sg_from_pdl< type >(&data_sg, &dims_sg, &ndims_sg, rsv, typecode);
+	  if(e) {
+	    matrix_sg = SGMatrix< type > (data_sg, dims_sg[0],  dims_sg[1], true);
+	    return true;
+	  }
+	  if(dims_sg) {SG_FREE(dims_sg);}
+	  if(data_sg) {SG_FREE(data_sg);}
+	  return false;
+	}
 
-
-    /*
-       make piddle belonging to 'class' and of type 'type'
-       from avref 'array_ref' which is checked for being
-       rectangular first
-     */
-
-    template <class type>
-        static bool array_from_pdl(SGNDArray<type>& sg_array, SV* obj, int typecode)
+    template < class type >
+        static bool array_from_pdl(SGNDArray<type>& array_sg, SV* rsv, int typecode)
         {
-            int level = 0;
-
-            pdl* it = PDL->SvPDLV(obj);
-            PDL->make_physdims(it);
-
-            int32_t ndims_pdl = it->ndims; //could try pdl::getndims(it)
-            int32_t* dims_sg = SG_MALLOC(int32_t, ndims_pdl);
-
-            PDL_Long* dims_pdl = it->dims;
-            PDL_Long* inds = (PDL_Long*) pdl_malloc(sizeof(PDL_Long) * it->ndims); /* GCC -> on stack :( */
-            void* data_pdl = PDL_REPRP(it);
-            PDL_Long* incs_pdl = (PDL_VAFFOK(it) ? it->vafftrans->incs : it->dimincs);
-            PDL_Long offs_pdl = PDL_REPROFFS(it);
-            double pdl_val, pdl_badval;
-            type* data_p = (type*) data_pdl;
-            int lind = 0;
-            int stop = 0;
-            int badflag = (it->state & PDL_BADVAL) > 0;
-            if(badflag) {
-                pdl_badval = pdl_get_pdl_badvalue(it);
-            }
-
-
-            for(int i = 0; i < ndims_pdl; i++) {
-                //int jl = ndims_pdl - j + level;	
-                *(dims_sg + i) = dims_pdl[i]; //also pdl::getdim(it, j)
-                inds[i] = 0;
-            }
-
-            PDL->make_physdims(it);
-            PDL_Long nvals_pdl = it->nvals;
-
-            //from set_datatype
-            PDL->make_physical(it); /* Wasteful because linearise the array*/
-            if(it->trans) {
-                pdl_destroytransform(it->trans, 1);
-            }
-            /*     if(! (a->state && PDL_NOMYDIMS)) { */
-            pdl_converttype(&it, typecode, PDL_PERM); //_TMP?
-
-            //pdl_make_physvaffine(it);
-            while(!stop) {
-                pdl_val = pdl_at(data_pdl, it->datatype, inds, dims_pdl, incs_pdl, offs_pdl, ndims_pdl);
-                //if(badflag && pdl_val == pdl_badval) {
-                //sv = newSVpvn( "BAD", 3 );
-                //change it to a NON_ variable
-                //}
-                *(data_p + lind) = (type) pdl_val;//pdl_val is double
-                lind++;
-                stop = 1;
-                for(int i = 0; i < it->ndims; i++) {
-                    if(++(inds[i]) >= it->dims[i]) {
-                        inds[i] = 0;
-                    } else {
-                        stop = 0;
-                        break;
-                    }
-                }
-            }
-            sg_array = SGNDArray<type>(data_p, dims_sg, ndims_pdl);
-            //PTZ120929 referencing...?
-            return true;
-        }
-
-
-
-
+	  type* data_sg = 0;
+	  index_t* dims_sg = 0;
+	  index_t ndims_sg = 0;
+	  bool e = sg_from_pdl< type >(&data_sg, &dims_sg, &ndims_sg, rsv, typecode);
+	  if(e) {
+	    array_sg = SGNDArray< type >(data_sg, dims_sg, ndims_sg);
+	    return true;
+	  }
+	  if(dims_sg) {SG_FREE(dims_sg);}
+	  if(data_sg) {SG_FREE(data_sg);}
+	  return false;
+	}
+    /* string stuff */
 
         /*
          * typically, a PDL::Char dimension will be....
@@ -305,8 +243,8 @@ extern "C" {
          *
          */
 
-        template <class type>
-            static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode)
+    template <class type>
+      static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode)
             {
                 pdl* it = if_piddle(sv);
                 if(it) {
@@ -438,57 +376,6 @@ extern "C" {
 
 
         template <class type>
-            static bool string_to_pdl(SV* rsv, SGStringList<type> sg_strings, int typecode)
-            {
-                pdl* it = PDL->pdlnew();
-#if 0
-
-                //bless it to a PDL::Char...
-                char objname[] = "PDL::Char";
-                //HV *bless_stash = 0;
-                SV *y_SV;
-
-                PUSHMARK(SP);
-                XPUSHs(sv_2mortal(newSVpv(objname, 0)));
-                PUTBACK;
-                perl_call_method("initialize", G_SCALAR);
-                SPAGAIN;
-                rsv = POPs;
-                PUTBACK;
-                it = PDL->SvPDLV(rsv);
-                //int ndims_pdl = 2;
-
-#endif
-                if(!it) {
-                    return false;
-                }
-                shogun::SGString<type>* sg_str = sg_strings.strings;
-                int32_t sg_num = sg_strings.num_strings;
-                //work out max len!
-                STRLEN sg_slen_max = sg_strings.max_string_length;
-                if(sg_slen_max <= 0) {
-                    warn("this is an all-null string dimension");
-                    return false;
-                }
-                PDL_Long dims_pdl[3] = {sg_slen_max, sg_num, 1};
-                PDL->setdims(it, dims_pdl, 3);
-                it->datatype = typecode;
-                PDL->allocdata(it);
-                void* data_pdl = PDL_REPRP(it);
-                if(!data_pdl) {
-                    PDL->destroy(it);
-                    return false;
-                }
-                for(int32_t i = 0; i < sg_num; i++) {
-                    //PTZ121012 really to check this with unicode types also...
-                    memcpy((type*) data_pdl + (i * sg_slen_max), sg_str[i].string, sizeof(type) * sg_str[i].slen);
-                    //PTZ121012 shall have calloced also...
-                }
-                PDL->SetSV_PDL(rsv, it);
-                return true;
-            }
-
-        template <class type>
             static bool spmatrix_from_pdl(SGSparseMatrix<type>& sg_matrix, SV* obj, int typecode)
             {
                 if(!(SvROK(obj) && SvTYPE(SvRV(obj)) == SVt_PVAV))
@@ -551,69 +438,11 @@ extern "C" {
 
 
 
-        template <class type>
-            static bool spmatrix_to_pdl(SV* rsv, SGSparseMatrix<type> sg_matrix, int typecode)
-            {
-                shogun::SGSparseVector<type>* sfm = sg_matrix.sparse_matrix;
-                AV* tuple_av = newAV();
-                AV* ind_av = newAV();
-                int32_t ind_i = 0;
-                av_store(ind_av, 0, newSViv((IV) ind_i));
-
-                AV* data_av = newAV();
-                AV* idx_av = newAV();
-                int32_t ij = 0;
-                //PTZ120928 so slow....
-                for(int32_t i = 0; i < sg_matrix.num_vectors; i++) {
-                    ind_i += sfm[i].num_feat_entries;
-                    av_store(ind_av, i + 1, newSViv((IV) ind_i));
-                    for(int32_t j = 0; j < sfm[i].num_feat_entries; j++) {
-                        av_store(idx_av,  ij, newSViv((IV) sfm[i].features[j].feat_index));
-                        //PTZ120928 here typecode shall be used...
-                        av_store(data_av, ij, newSVuv((NV) sfm[i].features[j].entry     ));
-                        ij++;
-                    }
-                }
-                //PTZ120928 could do with Tie magic..might need to reference AV*???SvRV(_av)
-                //PTZ121004 and add it into a pdl!
-                av_store(tuple_av, 0, (SV*)data_av);
-                av_store(tuple_av, 1, (SV*)idx_av );
-
-                //SV*     newSVrv(SV *const rv, const char *const classname)
-                //SV* sv_pdl = newSVrv(rsv, "PDL");
-                sv_setsv_mg(rsv, *av_store(tuple_av, 2, (SV*)ind_av));
-
-                return true;
-fail:
-                return false;
-            }
-
-
-        template <class type>
-            static bool spvector_to_pdl(SV* rsv, SGSparseVector<type> sg_vector, int typecode)
-            {
-                AV* tuple_av = newAV();
-                AV* data_av = newAV();
-                AV* idx_av = newAV();
-
-                for (int32_t j = 0; j < sg_vector.num_feat_entries; j++) {
-                    av_store(idx_av,  j, newSViv((IV) sg_vector.features[j].feat_index));
-                    av_store(data_av, j, newSVuv((NV) sg_vector.features[j].entry     ));
-
-                    //PTZ120929 check swig ways also...for handling values
-                }
-                //PTZ120928 could do with Tie magic..
-                av_store(tuple_av, 0, newRV((SV*)data_av));
-                //*obj = *av_store(tuple_av, 1, newRV((SV*)idx_av));
-                sv_setsv_mg(rsv, *av_store(tuple_av, 1, newRV((SV*)idx_av)));
-                return true;
-            }
-
 
         %}
 
-    /* CFeatures to ... */
-    %define FEATURES_BY_TYPECODE(obj, f, type, typecode)
+/* CFeatures to ... */
+%define FEATURES_BY_TYPECODE(obj, f, type, typecode)
         switch (typecode) {
             case F_BOOL:
                 obj=SWIG_NewPointerObj(f, $descriptor(type<bool> *), SWIG_POINTER_EXCEPTION);
@@ -654,11 +483,12 @@ fail:
             default:
                 obj=SWIG_NewPointerObj(f, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
                 break;
-        }
-    %enddef
+        }    
+%enddef
 
-        %typemap(out) shogun::CFeatures*
-        {
+        
+%typemap(out) shogun::CFeatures*
+{
             int feats_class=$1->get_feature_class();
             int feats_type=$1->get_feature_type();
             switch (feats_class){
