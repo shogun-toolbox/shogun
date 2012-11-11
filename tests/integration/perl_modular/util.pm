@@ -35,7 +35,7 @@ sub check_accuracy {
 	    push(@output, sprintf('%s: %e', $key, $val));
 	}
     }
-    printf(join(', ', @output) . ' <--- accuracy: %e', $accuracy);
+    printf("/n". join(', ', @output) . ' <--- accuracy: %e' . "/n", $accuracy);
     foreach my $val (values(%$kwargs)) {
 	if($val > $acc) {
 	    return 0;#false

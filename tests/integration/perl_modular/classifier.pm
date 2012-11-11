@@ -153,6 +153,7 @@ sub _evaluate {
     my $sgio =  $classifier->get_global_io();
     $sgio->enable_progress();
     $sgio->set_loglevel($modshogun::MSG_GCDEBUG);
+    $sgio->set_loglevel($modshogun::MSG_INFO);
 
     $classifier->{parallel} = modshogun::Parallel->new();
     $classifier->{parallel}->set_num_threads($indata->{$prefix.'num_threads'});
@@ -194,7 +195,7 @@ sub _evaluate {
     }
     $classifier->train();
 
-    my $res= &_get_results($indata, $prefix, $classifier, $machine, $feats);
+    my $res = &_get_results($indata, $prefix, $classifier, $machine, $feats);
     return &util::check_accuracy
 	($res->{'accuracy'},
 	 {alphas=>$res->{'alphas'}, bias=>$res->{'bias'}, sv=>$res->{'sv'},
