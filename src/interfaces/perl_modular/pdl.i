@@ -16,11 +16,10 @@
 %constant  bool False = false;
 
 %{
-
 extern "C" {
-#include  <pdl.h>
+#include <pdl.h>
 #include <pdlcore.h>
-#include  <values.h>
+#include <values.h>
 }
     //PTZ121012 from PDL
 #define MAX_DIMENSIONS 100
@@ -57,7 +56,8 @@ extern "C" {
 
     /* Functions to extract array attributes.
      */
-
+    //TODO::PTZ121113 not completly right since Hash object will also be detected
+    //, better use magic, SvPOK(a)
         static pdl* if_piddle(SV* a) {
             pdl* it = 0;
             if(SvROK(a) && ((SvTYPE(SvRV(a)) == SVt_PVMG) || (SvTYPE(SvRV(a)) == SVt_PVHV))) {
@@ -152,19 +152,19 @@ extern "C" {
 	    }
         }
 
-        //check  for rectangular matrix (2D)
+        /* check  for rectangular matrix (2D) */
         static int is_pdl_matrix(SV* sv, int typecode)
         {
             return(is_pdl_narry(sv, 2, 3));
         }
 
-        //check  for PDL (rectangular) array N-ary
+        /* check  for PDL (rectangular) array N-ary */
         static int is_pdl_array(SV* sv, int typecode)
         {
             return(is_pdl_narry(sv, 3, MAX_DIMENSIONS));
         }
 
-        //check  for sparse? matrix (2D) 
+        /* check  for sparse? matrix (2D)  */
         static int is_pdl_sparse_matrix(SV* sv, int typecode)
         {
             return(array_is_contiguous(sv) && is_pdl_matrix(sv, typecode));
@@ -395,7 +395,7 @@ extern "C" {
 	      return false;
 	  }
 	  for(int i = 0; i < ndims_sg; i++) {
-	    dims_pdl[ndims_sg - i - 1] = *dims_sg + i;
+	    dims_pdl[ndims_sg - i - 1] = *(dims_sg + i);
 	    inds[i] = 0;
 	  }
 	  PDL->setdims(it, dims_pdl, ndims_sg);
@@ -411,15 +411,15 @@ extern "C" {
 	  PDL_Long offs_pdl = PDL_REPROFFS(it);
 	  PDL_Long nvals_pdl = it->nvals;
 	  
-	  type pdl_val;
+	  type val_sg;
 	  int lind = 0;
 	  int stop = 0;
 	  int i_pdl = 0;
 	  while(!stop && lind < nvals_pdl) {
-	    pdl_val = *data_sg + lind;
-
-	    data_pdl[i_pdl] = pdl_val;
-
+	    val_sg = data_sg[lind];
+	    //TODO::PTZ121113 check bad values (nan,inf) according to sign and types!
+	    pdl_set(data_pdl, typecode, inds, dims_pdl, incs_pdl, offs_pdl, ndims_sg, val_sg);
+	    //TODO::PTZ121113 try to trick pdl_get_offset (in pdlsections.c)
 	    lind++;
 	    stop = 1;
 	    i_pdl = 0;
@@ -429,10 +429,12 @@ extern "C" {
 		  inds[i] = 0;
 		} else {
 		  stop = 0;
+		  break;
 		}
 	      }
 	      //PTZ121111 find a better algo using a stack...or this pdl_affine wizbiz
-	      i_pdl += dims_pdl[i] * inds[i];
+	      //TODO::PTZ121113 try to trick pdl_get_offset with right offset and dims ... increment
+	      //i_pdl += dims_pdl[i] * inds[i];
 	    }
 	  }
 	  PDL->SetSV_PDL(rsv, it);
@@ -499,25 +501,26 @@ extern "C" {
             int lind = 0;
             int stop = 0;
             while(!stop && lind < nvals_pdl) {
-                pdl_val = pdl_at(data_pdl, it->datatype, inds, dims_pdl, incs_pdl, offs_pdl, ndims);
-                if(badflag && pdl_val == pdl_badval) {
+	      //TODO::PTZ121113 still, try to trick pdl_get_offset (in pdlsections.c)
+	      pdl_val = pdl_at(data_pdl, typecode, inds, dims_pdl, incs_pdl, offs_pdl, ndims);
+	      if(badflag && pdl_val == pdl_badval) {
 		  //TODO::PTZ121111 inf, nan handling 
 		  //sv = newSVpvn( "BAD", 3 );
 		  //change it to a NON_ variable INFTY, MAX_REAL, MACHINE_EPSILON;ALMOST_INFTY;
 		  //pdl_val is double
 		  // pdl_val = NAN;
-                }
-                *((*data_sg) + lind) = pdl_val;
-                lind++;
-                stop = 1;
-                for(int i = ndims - 1; 0 <= i; i--) {
-		  if(++(inds[i]) >= dims_pdl[i]) {
-                        inds[i] = 0;
-                    } else {
-                        stop = 0;
-                        break;
-                    }
-                }
+	      }
+	      *((*data_sg) + lind) = pdl_val;
+	      lind++;
+	      stop = 1;
+	      for(int i = ndims - 1; 0 <= i; i--) {
+		if(++(inds[i]) >= dims_pdl[i]) {
+		  inds[i] = 0;
+		} else {
+		  stop = 0;
+		  break;
+		}
+	      }
             }
 	    if(lind == nvals_pdl) {
 	      *ndims_sg = ndims;

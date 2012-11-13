@@ -180,12 +180,12 @@ sub _evaluate {
 	eval { $classifier->set_epsilon($indata->{$prefix.'epsilon'}); };
 	if($@) {
 #Can't locate object method "set_epsilon" via package "modshogun::SVMSGD" at classifier.pm line 167.
-	    warn(Dumper($classifier));
+	    warn($@, Dumper($classifier));
 	    #return false;
 	}
     }
     if(defined($indata->{$prefix.'max_train_time'})){
-	$classifier->set_max_train_time($indata->{$prefix.'max_train_time'});
+	$classifier->set_max_train_time($indata->{$prefix.'max_train_time'} * 1000);
     }
     if(defined($indata->{$prefix.'linadd_enabled'})){
 	$classifier->set_linadd_enabled($indata->{$prefix.'linadd_enabled'});
