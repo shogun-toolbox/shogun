@@ -14,11 +14,6 @@
 %include pdl.i
 
 %{
-
-extern "C" {
-#include  <pdl.h>
-#include  <pdlcore.h>
-}
 #include <shogun/lib/DataType.h>
 
     //PTZ121010 doesnot think we need this since already called in the swig interface...
@@ -176,7 +171,6 @@ fail:
                 sv_setsv_mg(rsv, *av_store(tuple_av, 1, newRV((SV*)idx_av)));
                 return true;
             }
-
 
 
 
@@ -592,8 +586,7 @@ fail:
 
     /* One dimensional input arrays */
 %define TYPEMAP_IN_SGVECTOR(type,typecode)
-%typecheck(SWIG_TYPECHECK_POINTER) shogun::SGVector<type> = SWIGTYPE;
-%typecheck(5) shogun::SGVector< type >
+%typecheck(SWIG_TYPECHECK_POINTER) shogun::SGVector< type >
 {
   void * v_p = 0;
   int res = SWIG_ConvertPtr($input, &v_p, $&1_descriptor, 0);
@@ -638,10 +631,8 @@ TYPEMAP_IN_SGVECTOR(SV*,	   PDL_OBJECT)
 %typemap(out) shogun::SGVector<type>
 {
   SWIG_Object r = VOID_Object;
-  if(!vector_to_pdl(r, $1, typecode))
-    SWIG_fail;
-  if(!is_piddle(r))
-    SWIG_fail;
+  if(!vector_to_pdl(r, $1, typecode)) SWIG_fail;
+  if(!is_piddle(r)) SWIG_fail;
   %set_output(r);
 }
 %enddef
@@ -666,15 +657,25 @@ TYPEMAP_OUT_SGVECTOR(SV*,	    PDL_OBJECT)
 
  /* Two dimensional(rectangular) input arrays */
 %define TYPEMAP_IN_SGMATRIX(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGMatrix<type>
+%typecheck(SWIG_TYPECHECK_POINTER) shogun::SGMatrix< type >
 {
-  $1 = is_pdl_matrix($input, typecode);
+  void * m_p = 0;
+  int res = SWIG_ConvertPtr($input, &m_p, $&1_descriptor, 0);
+  if(SWIG_CheckState(res)) {
+    $1 = true;
+  } else {
+    $1 = is_pdl_matrix($input, typecode);
+  }
 }
-
-%typemap(in) shogun::SGMatrix<type>
+%typemap(in) shogun::SGMatrix< type >
 {
-  if(!matrix_from_pdl<type>($1, $input, typecode))
+  void * m_p = 0;
+  int res = SWIG_ConvertPtr($input, &m_p, $&1_descriptor, 0);
+  if(SWIG_IsOK(res) && m_p) {
+    $1 = *(reinterpret_cast< shogun::SGMatrix< type > * >(m_p));
+  } else if(!matrix_from_pdl< type >($1, $input, typecode)) {
     SWIG_fail;
+  }
 }
 %enddef
 
@@ -700,12 +701,10 @@ TYPEMAP_IN_SGMATRIX(SV*,	   PDL_OBJECT)
 %define TYPEMAP_OUT_SGMATRIX(type,typecode)
 %typemap(out) shogun::SGMatrix<type>
 {
-  $result = sv_newmortal();
-  if(!matrix_to_pdl($result, $1, typecode))
-    SWIG_fail;
-  if(!is_piddle($result))
-    SWIG_fail;
-  argvi++;
+  SWIG_Object r = VOID_Object;
+  if(!matrix_to_pdl(r, $1, typecode)) SWIG_fail;
+  if(!is_piddle(r)) SWIG_fail;
+  %set_output(r);
 }
 %enddef
 
