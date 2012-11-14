@@ -230,22 +230,21 @@ fail:
 
         /*
          * typically, a PDL::Char dimension will be....
-         * ...(strlen~columns)_0 x rows_1 x .... x (size_t)_last
-         *
-         * we are looking for a sequence of strings.
-         *
+         * ...(strlen~columns)_ x rows_ x twist_ x .... x (size_t)_
+         * and sequencialy set so in memory:
+	 * string_[.0xxx0]....string_[.nxxxn]
          *
          */
-
+    //TODO::PTZ121114 really to put into pdl.i
     template <class type>
-      static bool string_from_pdl(SGStringList<type>& sg_strings, SV* sv, U32 typecode)
+      static bool string_from_pdl(SGStringList< type >& sg_strings, SV* sv, U32 typecode)
             {
                 pdl* it = if_piddle(sv);
                 if(it) {
                     it = pdl_get_convertedpdl(it, typecode);
                     PDL->make_physical(it); /* Wasteful*/
                     if(!PDL_ENSURE_ALLOCATED(it)) {
-                        pdl_dump(it);
+                        pdl_dump(it); /* never happens */
                         return false;
                     }
                     void* data = PDL_REPRP(it);
@@ -267,7 +266,7 @@ fail:
                         return false;
                     }
                     int l_sz = it->nvals / l_len_max;
-                    shogun::SGString<type>* l_ss = SG_MALLOC(shogun::SGString<type>, l_sz);
+                    SGString< type >* l_ss = SG_MALLOC(SGString< type >, l_sz);
                     if(!l_ss) {
                         return false;
                     }
@@ -288,25 +287,26 @@ fail:
                         const char* el_str;
                         SV* el_pv;
                         int i = pdl_get_offset(inds, it->dims, incs, offs, it->ndims);
-                        if(i >= l_sz) {
-                            warn("offset error in string conversion::bayling out");
+			//TODO::PTZ121114 nvals is always in char unit, what happens when short unit (unicode)?
+			el_str = (char*) data + i;
+                        el_len = strnlen(el_str, l_len_max);
+                        if(i + el_len > it->nvals) {
+                            warn("string_from_pdl::offset error in string conversion::bayling out");
                             for(int32_t j = 0; j < lind; j++)
-                                l_ss[j].~SGString<type>();
+                                l_ss[j].~SGString< type >();
                             SG_FREE(l_ss);
                             //free(inds);
                             return false;
                         }
-                        //PTZ121012 not sure about number types.
-                        el_str = (char*) data + i;
-                        el_len = strnlen(el_str, l_len_max);
-                        new(&l_ss[lind]) SGString<type>();
+                        new(&l_ss[lind]) SGString< type >();
                         l_ss[lind].slen = el_len;
                         l_ss[lind].string = NULL;
                         if(el_len > 0) {
                             l_ss[lind].string = SG_MALLOC(type, el_len);
                             if(!l_ss[lind].string) {
-                                for(int32_t j = 0; j <= lind; j++)
-                                    l_ss[j].~SGString<type>();
+			      warn("string_from_pdl::out of memory");
+			      for(int32_t j = 0; j <= lind; j++)
+                                    l_ss[j].~SGString< type >();
                                 SG_FREE(l_ss);
                                 //free(inds);
                                 return false;	
@@ -317,8 +317,8 @@ fail:
                             }
                         }
                         lind++;
-                        stop = 1;
-                        for(int n = 0; n < ndims; n++) {
+			stop = 1;
+			for(int n = ndims - 1; 0 < n; n--) {
                             if(++(inds[n]) >= it->dims[n]) {
                                 inds[n] = 0;
                             } else {
@@ -333,7 +333,7 @@ fail:
                 return false;
             }
 
-
+    //TODO:PTZ121114 later...
         template <class type>
             static bool string_from_perl(SGStringList<type>& sg_strings, SV* sv, U32 typecode)
             {
@@ -759,16 +759,26 @@ TYPEMAP_INND(SV*,	    PDL_OBJECT)
 #undef TYPEMAP_INND
 
 /* input typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES_IN(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGStringList<type>
+%define TYPEMAP_STRINGFEATURES_IN(type, typecode)
+%typecheck(SWIG_TYPECHECK_POINTER) shogun::SGStringList< type >
 {
-  $1 = is_pdl_string($input, typecode);
+  void * s_p = 0;
+  int res = SWIG_ConvertPtr($input, &s_p, $&1_descriptor, 0);
+  if(SWIG_CheckState(res)) {
+    $1 = true;
+  } else {
+    $1 = is_pdl_string($input, typecode);
+  }
 }
-
-%typemap(in) shogun::SGStringList<type>
+%typemap(in) shogun::SGStringList< type >
 {
-  if(!string_from_pdl<type>($1, $input, typecode))
+  void * s_p = 0;
+  int res = SWIG_ConvertPtr($input, &s_p, $&1_descriptor, 0);
+  if(SWIG_IsOK(res) && s_p) {
+    $1 = *(reinterpret_cast< shogun::SGStringList< type > * >(s_p));
+  } else if(!string_from_pdl< type >($1, $input, typecode)) {
     SWIG_fail;
+  }
 }
 %enddef
 
@@ -790,15 +800,13 @@ TYPEMAP_STRINGFEATURES_IN(SV*,		 PDL_OBJECT)
 #undef TYPEMAP_STRINGFEATURES_IN
 
 /* output typemap for CStringFeatures */
-%define TYPEMAP_STRINGFEATURES_OUT(type,typecode)
+%define TYPEMAP_STRINGFEATURES_OUT(type, typecode)
 %typemap(out) shogun::SGStringList<type>
 {
-  $result = sv_newmortal();
-  if(!string_to_pdl($result, $1, typecode))
-    SWIG_fail;
-  if(!is_piddle($result))
-    SWIG_fail;
-  argvi++;
+  SWIG_Object r = VOID_Object;
+  if(!string_to_pdl(r, $1, typecode)) SWIG_fail;
+  if(!is_piddle(r)) SWIG_fail;
+  %set_output(r);
 }
 %enddef
 
