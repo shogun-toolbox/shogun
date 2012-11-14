@@ -10,7 +10,10 @@
 
 #include <shogun/structure/CCSOSVM.h>
 #include <shogun/mathematics/Mosek.h>
+
+#ifdef USE_MOSEK
 #include <mosek.h>
+#endif
 
 using namespace shogun;
 
@@ -43,6 +46,7 @@ CCCSOSVM::~CCCSOSVM()
 
 int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* alpha, int32_t k, float64_t* dual_obj, float64_t rho)
 {
+#ifdef USE_MOSEK
 	int32_t t;
 	index_t Q_size = k*(k+1)/2;
 	SGVector<float64_t> c(k);
@@ -194,6 +198,9 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	free(qsubj);
 
 	return r;
+#else
+	return -1;
+#endif
 }
 
 bool CCCSOSVM::train_machine(CFeatures* data)
@@ -323,24 +330,49 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 		/* update proximal_rhs */
 		for (index_t i = 0; i < size_active; i++)
-			proximal_rhs[i] = delta[i] - rho/(1+rho)*gammaG0[i];
-		//      proximal_rhs[i] = (1+rho)*delta[i] - rho*gammaG0[i];
+		{
+			switch(m_qp_type)
+			{
+				case MOSEK:
+					proximal_rhs[i] = delta[i] - rho/(1+rho)*gammaG0[i];
+					break;
+				case SVMLIGHT:
+					proximal_rhs[i] = (1+rho)*delta[i] - rho*gammaG0[i];
+					break;
+				default:
+					SG_ERROR("Invalid QPType: %d\n", m_qp_type);
+			}
+		}
 
-#ifdef USE_MOSEK
-		/* solve QP to update alpha */
-		dual_obj = 0;
-		r = mosek_qp_optimize(G, proximal_rhs.vector, alpha.vector, size_active, &dual_obj, rho);
-#endif
-		/*
-			 if (size_active>1) {
-			 if (svmModel!=NULL) free_model(svmModel,0);
-			 svmModel = (MODEL*)my_malloc(sizeof(MODEL)); 
-			 svm_learn_optimization(dXc,proximal_rhs,size_active,sm->sizePsi,&lparm,&kparm,NULL,svmModel,alpha); 
-			 } else {
-			 assert(size_active==1); 
-			 alpha[0] = m_C; 
-			 }
-			 */
+		switch(m_qp_type)
+		{
+			case MOSEK:
+				/* solve QP to update alpha */
+				dual_obj = 0;
+				r = mosek_qp_optimize(G, proximal_rhs.vector, alpha.vector, size_active, &dual_obj, rho);
+				break;
+			case SVMLIGHT:
+				/* TODO: port required functionality from the latest SVM^light into shogun
+				 * in order to be able to support this
+				 *
+				if (size_active>1)
+				{
+					if (svmModel!=NULL)
+						free_model(svmModel,0);
+					svmModel = (MODEL*)my_malloc(sizeof(MODEL));
+					svm_learn_optimization(dXc,proximal_rhs,size_active,sm->sizePsi,&lparm,&kparm,NULL,svmModel,alpha);
+				}
+				else
+				{
+					ASSERT(size_active==1);
+					alpha[0] = m_C;
+				}
+				*/
+				break;
+			default:
+				SG_ERROR("Invalid QPType: %d\n", m_qp_type);
+		}
+
 		/* DEBUG */
 		//printf("r: %d\n", r); fflush(stdout);
 		//printf("dual: %.16lf\n", dual_obj);
@@ -360,11 +392,14 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				}
 			}
 		}
-		/* compute dual obj
-		dual_obj = +0.5*(1+rho)*m_w.dot(m_w.vector, m_w.vector, m_w.vlen);
-		for (j=0;j<size_active;j++)
-			dual_obj -= proximal_rhs[j]/(1+rho)*alpha[j];
-		*/
+
+		if (m_qp_type == SVMLIGHT)
+		{
+			/* compute dual obj */
+			dual_obj = +0.5*(1+rho)*m_w.dot(m_w.vector, m_w.vector, m_w.vlen);
+			for (int32_t j=0;j<size_active;j++)
+				dual_obj -= proximal_rhs[j]/(1+rho)*alpha[j];
+		}
 
 		z_k_norm = CMath::sqrt(m_w.dot(m_w.vector, m_w.vector, m_w.vlen));
 		m_w.vec1_plus_scalar_times_vec2(m_w.vector, rho/(1+rho), w_b.vector, w_b.vlen);
@@ -650,6 +685,7 @@ void CCCSOSVM::init()
 	m_max_iter = 1000;
 	m_max_rho = m_C;
 	m_primal_obj = CMath::INFTY;
+	m_qp_type = MOSEK;
 
 	SG_ADD(&m_C, "m_C", "C", MS_NOT_AVAILABLE);
 	SG_ADD(&m_eps, "m_eps", "Epsilon", MS_NOT_AVAILABLE);
@@ -659,4 +695,5 @@ void CCCSOSVM::init()
 	SG_ADD(&m_max_iter, "m_max_iter", "Maximum number of iterations", MS_NOT_AVAILABLE);
 	SG_ADD(&m_max_rho, "m_max_rho", "Max rho", MS_NOT_AVAILABLE);
 	SG_ADD(&m_primal_obj, "m_primal_obj", "Primal objective value", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_qp_type, "m_qp_type", "QP Solver Type", MS_NOT_AVAILABLE);
 }

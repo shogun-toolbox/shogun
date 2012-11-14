@@ -17,6 +17,17 @@
 
 namespace shogun
 {
+
+	/**
+	 * Enum
+	 * Training method selection
+	 */
+	enum EQPType
+	{
+		MOSEK=1,         /**< MOSEK. */
+		SVMLIGHT=2       /**< SVM^Light */
+	};
+
 	/**
 	 *
 	 */
@@ -123,6 +134,16 @@ namespace shogun
 				m_max_rho = max_rho;
 			}
 
+			inline EQPType get_qp_type() const
+			{
+				return m_qp_type;
+			}
+
+			inline void set_qp_type(EQPType type)
+			{
+				m_qp_type = type;
+			}
+
 		protected:
 			bool train_machine(CFeatures* data=NULL);
 
@@ -155,6 +176,7 @@ namespace shogun
 			index_t m_cleanup_check;
 			index_t m_idle_iter;
 
+			EQPType m_qp_type;
 	};
 }
 
