@@ -63,13 +63,18 @@ public:
 	 * and return the vector and its length len by reference
 	 */
 	//@{
+	virtual void get_vector(int8_t*& vector, int32_t& len);
 	virtual void get_vector(uint8_t*& vector, int32_t& len);
 	virtual void get_vector(char*& vector, int32_t& len);
 	virtual void get_vector(int32_t*& vector, int32_t& len);
+	virtual void get_vector(uint32_t*& vector, int32_t& len);
 	virtual void get_vector(float64_t*& vector, int32_t& len);
 	virtual void get_vector(float32_t*& vector, int32_t& len);
+	virtual void get_vector(floatmax_t*& vector, int32_t& len);
 	virtual void get_vector(int16_t*& vector, int32_t& len);
 	virtual void get_vector(uint16_t*& vector, int32_t& len);
+	virtual void get_vector(int64_t*& vector, int32_t& len);
+	virtual void get_vector(uint64_t*& vector, int32_t& len);
 	//@}
 
 	/** @name Matrix Access Functions
@@ -230,13 +235,18 @@ public:
 	 * to e.g. a file
 	 */
 	//@{
+	virtual void set_vector(const int8_t* vector, int32_t len);
 	virtual void set_vector(const uint8_t* vector, int32_t len);
 	virtual void set_vector(const char* vector, int32_t len);
 	virtual void set_vector(const int32_t* vector, int32_t len);
-	virtual void set_vector( const float32_t* vector, int32_t len);
+	virtual void set_vector(const uint32_t* vector, int32_t len);
+	virtual void set_vector(const float32_t* vector, int32_t len);
 	virtual void set_vector(const float64_t* vector, int32_t len);
+	virtual void set_vector(const floatmax_t* vector, int32_t len);
 	virtual void set_vector(const int16_t* vector, int32_t len);
 	virtual void set_vector(const uint16_t* vector, int32_t len);
+	virtual void set_vector(const int64_t* vector, int32_t len);
+	virtual void set_vector(const uint64_t* vector, int32_t len);
 	//@}
 
 
