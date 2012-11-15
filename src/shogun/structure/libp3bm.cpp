@@ -259,14 +259,14 @@ bmrm_return_value_T svm_p3bm_solver(
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 	}
 
-	wdist=::sqrt(sq_norm_Wdiff);
+	wdist=CMath::sqrt(sq_norm_Wdiff);
 
 	p3bmrm.Fp=R+0.5*_lambda*sq_norm_W + alpha*sq_norm_Wdiff;
 	p3bmrm.Fd=-LIBBMRM_PLUS_INF;
 	lastFp=p3bmrm.Fp;
 
 	/* if there is initial W, then set K to be 0.01 times its norm */
-	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*::sqrt(sq_norm_W);
+	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*CMath::sqrt(sq_norm_W);
 
 	LIBBMRM_MEMCPY(prevW, W, nDim*sizeof(float64_t));
 
@@ -413,7 +413,7 @@ bmrm_return_value_T svm_p3bm_solver(
 			for (uint32_t i=0; i<nDim; ++i)
 				sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
-			if (::sqrt(sq_norm_Wdiff) <= K)
+			if (CMath::sqrt(sq_norm_Wdiff) <= K)
 			{
 				flag=false;
 
@@ -476,7 +476,7 @@ bmrm_return_value_T svm_p3bm_solver(
 				for (uint32_t i=0; i<nDim; ++i)
 					sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
-				if (::sqrt(sq_norm_Wdiff) > K)
+				if (CMath::sqrt(sq_norm_Wdiff) > K)
 				{
 					/* if there is a record of some good solution (i.e. adjust alpha by division by 2) */
 
@@ -664,7 +664,7 @@ bmrm_return_value_T svm_p3bm_solver(
 			sq_norm_Wdiff+=(W[i]-prevW[i])*(W[i]-prevW[i]);
 		}
 
-		wdist=::sqrt(sq_norm_Wdiff);
+		wdist=CMath::sqrt(sq_norm_Wdiff);
 
 		/* Keep history of Fp, Fd and wdist */
 		p3bmrm.hist_Fp[p3bmrm.nIter]=p3bmrm.Fp;

@@ -412,7 +412,7 @@ bmrm_return_value_T svm_bmrm_solver(
 
 		bmrm.Fp=R+0.5*_lambda*sq_norm_W;
 		bmrm.Fd=-qp_exitflag.QP;
-		wdist=::sqrt(sq_norm_Wdiff);
+		wdist=CMath::sqrt(sq_norm_Wdiff);
 
 		/* Stopping conditions */
 
