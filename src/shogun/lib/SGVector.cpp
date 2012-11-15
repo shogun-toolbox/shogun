@@ -14,6 +14,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/io/File.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -660,6 +661,22 @@ template<class T> float64_t SGVector<T>::mean() const
 		cum += vector[i];
 
 	return cum/vlen;
+}
+
+template<class T> void SGVector<T>::load(CFile* loader)
+{
+	SG_SET_LOCALE_C;
+	ASSERT(loader);
+	loader->get_vector(vector, vlen);
+	SG_RESET_LOCALE;
+}
+
+template<class T> void SGVector<T>::save(CFile* saver)
+{
+	SG_SET_LOCALE_C;
+	ASSERT(saver);
+	saver->set_vector(vector, vlen);
+	SG_RESET_LOCALE;
 }
 
 template class SGVector<bool>;

@@ -19,8 +19,11 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
 
+
 namespace shogun
 {
+	class CFile;
+
 /** @brief shogun vector */
 template<class T> class SGVector : public SGReferencedData
 {
@@ -555,6 +558,18 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return the mean value
 		 */
 		float64_t mean() const;
+
+		/** load vector from file
+		 *
+		 * @param loader File object via which to load data
+		 */
+		void load(CFile* loader);
+
+		/** save vector to file
+		 *
+		 * @param saver File object via which to save data
+		 */
+		void save(CFile* saver);
 
 	protected:
 		/** needs to be overridden to copy data */
