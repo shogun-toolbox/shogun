@@ -47,13 +47,18 @@ void CBinaryFile::fname(sg_type*& vec, int32_t& len)								\
 		SG_ERROR("Failed to read Matrix\n");										\
 }
 
+GET_VECTOR(get_vector, int8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT8))
 GET_VECTOR(get_vector, uint8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT8))
 GET_VECTOR(get_vector, char, TSGDataType(CT_VECTOR, ST_NONE, PT_CHAR))
 GET_VECTOR(get_vector, int32_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT32))
+GET_VECTOR(get_vector, uint32_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT32))
 GET_VECTOR(get_vector, float32_t, TSGDataType(CT_VECTOR, ST_NONE, PT_FLOAT32))
 GET_VECTOR(get_vector, float64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_FLOAT64))
+GET_VECTOR(get_vector, floatmax_t, TSGDataType(CT_VECTOR, ST_NONE, PT_FLOATMAX))
 GET_VECTOR(get_vector, int16_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT16))
 GET_VECTOR(get_vector, uint16_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT16))
+GET_VECTOR(get_vector, int64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT64))
+GET_VECTOR(get_vector, uint64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
@@ -229,13 +234,18 @@ void CBinaryFile::fname(const sg_type* vec, int32_t len)			\
 			fwrite(vec, sizeof(sg_type), len, file)!=(size_t) len)	\
 		SG_ERROR("Failed to write vector\n");						\
 }
+SET_VECTOR(set_vector, int8_t, (CT_VECTOR, ST_NONE, PT_INT8))
 SET_VECTOR(set_vector, uint8_t, (CT_VECTOR, ST_NONE, PT_UINT8))
 SET_VECTOR(set_vector, char, (CT_VECTOR, ST_NONE, PT_CHAR))
 SET_VECTOR(set_vector, int32_t, (CT_VECTOR, ST_NONE, PT_INT32))
+SET_VECTOR(set_vector, uint32_t, (CT_VECTOR, ST_NONE, PT_UINT32))
 SET_VECTOR(set_vector, float32_t, (CT_VECTOR, ST_NONE, PT_FLOAT32))
 SET_VECTOR(set_vector, float64_t, (CT_VECTOR, ST_NONE, PT_FLOAT64))
+SET_VECTOR(set_vector, floatmax_t, (CT_VECTOR, ST_NONE, PT_FLOATMAX))
 SET_VECTOR(set_vector, int16_t, (CT_VECTOR, ST_NONE, PT_INT16))
 SET_VECTOR(set_vector, uint16_t, (CT_VECTOR, ST_NONE, PT_INT16))
+SET_VECTOR(set_vector, int64_t, (CT_VECTOR, ST_NONE, PT_INT64))
+SET_VECTOR(set_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, dtype) \

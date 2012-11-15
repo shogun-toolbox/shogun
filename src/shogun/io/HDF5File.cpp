@@ -105,13 +105,18 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 }
 
 GET_VECTOR(get_vector, bool, (CT_VECTOR, ST_NONE, PT_BOOL))
+GET_VECTOR(get_vector, int8_t, (CT_VECTOR, ST_NONE, PT_INT8))
 GET_VECTOR(get_vector, uint8_t, (CT_VECTOR, ST_NONE, PT_UINT8))
 GET_VECTOR(get_vector, char, (CT_VECTOR, ST_NONE, PT_CHAR))
 GET_VECTOR(get_vector, int32_t, (CT_VECTOR, ST_NONE, PT_INT32))
+GET_VECTOR(get_vector, uint32_t, (CT_VECTOR, ST_NONE, PT_UINT32))
 GET_VECTOR(get_vector, float32_t, (CT_VECTOR, ST_NONE, PT_FLOAT32))
 GET_VECTOR(get_vector, float64_t, (CT_VECTOR, ST_NONE, PT_FLOAT64))
+GET_VECTOR(get_vector, floatmax_t, (CT_VECTOR, ST_NONE, PT_FLOATMAX))
 GET_VECTOR(get_vector, int16_t, (CT_VECTOR, ST_NONE, PT_INT16))
 GET_VECTOR(get_vector, uint16_t, (CT_VECTOR, ST_NONE, PT_INT16))
+GET_VECTOR(get_vector, int64_t, (CT_VECTOR, ST_NONE, PT_INT64))
+GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 #undef GET_VECTOR
 
 #define GET_MATRIX(fname, sg_type, datatype)										\
@@ -263,13 +268,18 @@ void CHDF5File::fname(const sg_type* vec, int32_t len)						\
 	H5Sclose(dataspace);													\
 }
 SET_VECTOR(set_vector, bool, DT_VECTOR_BOOL, boolean_type)
+SET_VECTOR(set_vector, int8_t, DT_VECTOR_BYTE, H5T_NATIVE_INT8)
 SET_VECTOR(set_vector, uint8_t, DT_VECTOR_BYTE, H5T_NATIVE_UINT8)
 SET_VECTOR(set_vector, char, DT_VECTOR_CHAR, H5T_NATIVE_CHAR)
 SET_VECTOR(set_vector, int32_t, DT_VECTOR_INT, H5T_NATIVE_INT32)
+SET_VECTOR(set_vector, uint32_t, DT_VECTOR_UINT, H5T_NATIVE_UINT32)
 SET_VECTOR(set_vector, float32_t, DT_VECTOR_SHORTREAL, H5T_NATIVE_FLOAT)
 SET_VECTOR(set_vector, float64_t, DT_VECTOR_REAL, H5T_NATIVE_DOUBLE)
+SET_VECTOR(set_vector, floatmax_t, DT_VECTOR_LONGREAL, H5T_NATIVE_LDOUBLE)
 SET_VECTOR(set_vector, int16_t, DT_VECTOR_SHORT, H5T_NATIVE_INT16)
 SET_VECTOR(set_vector, uint16_t, DT_VECTOR_WORD, H5T_NATIVE_UINT16)
+SET_VECTOR(set_vector, int64_t, DT_VECTOR_LONG, H5T_NATIVE_LLONG)
+SET_VECTOR(set_vector, uint64_t, DT_VECTOR_ULONG, H5T_NATIVE_ULLONG)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, sg_type, dtype, h5type)								\
