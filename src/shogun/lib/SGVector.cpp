@@ -670,31 +670,7 @@ template<class T> void SGVector<T>::load(CFile* loader)
 	loader->get_vector(vector, vlen);
 	SG_RESET_LOCALE;
 }
-/*
-#define SAVE(f_write, sg_type)												\
-template<> void SGVector<sg_type>::save(CFile* writer)				\
-{ 																			\
-	SG_SET_LOCALE_C;														\
-	ASSERT(writer);															\
-	writer->f_write(vector, vlen);			\
-	SG_RESET_LOCALE;														\
-}
 
-SAVE(set_vector, bool)
-SAVE(set_vector, char)
-SAVE(set_int8_matrix, int8_t)
-SAVE(set_vector, uint8_t)
-SAVE(set_vector, int16_t)
-SAVE(set_vector, uint16_t)
-SAVE(set_vector, int32_t)
-SAVE(set_vector, uint32_t)
-SAVE(set_vector, int64_t)
-SAVE(set_vector, uint64_t)
-SAVE(set_vector, float32_t)
-SAVE(set_vector, float64_t)
-SAVE(set_vector, floatmax_t)
-#undef SAVE
-*/
 template<class T> void SGVector<T>::save(CFile* saver)
 {
 	SG_SET_LOCALE_C;
