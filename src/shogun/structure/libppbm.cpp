@@ -252,9 +252,8 @@ bmrm_return_value_T svm_ppbm_solver(
 			}
 		}
 
-		rsum=0.0;
 		A_2=get_cutting_plane(CPList_tail);
-		SGVector<float64_t>::dot(A_2, A_2, nDim);
+		rsum = SGVector<float64_t>::dot(A_2, A_2, nDim);
 
 		H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)]=rsum;
 
