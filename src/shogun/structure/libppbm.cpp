@@ -197,10 +197,10 @@ bmrm_return_value_T svm_ppbm_solver(
 	sq_norm_W=0.0;
 	sq_norm_Wdiff=0.0;
 
+	b[0] = SGVector<float64_t>::dot(subgrad, W, nDim);
+	sq_norm_W = SGVector<float64_t>::dot(W, W, nDim);
 	for (uint32_t j=0; j<nDim; ++j)
 	{
-		b[0]+=subgrad[j]*W[j];
-		sq_norm_W+=W[j]*W[j];
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 	}
 
@@ -244,28 +244,17 @@ bmrm_return_value_T svm_ppbm_solver(
 			{
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
-				rsum=0.0;
+				rsum=SGVector<float64_t>::dot(A_1, A_2, nDim);
 
-				for (uint32_t j=0; j<nDim; ++j)
-				{
-					rsum+=A_1[j]*A_2[j];
-				}
-
-				H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)]=rsum;
-			}
-
-			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
-			{
-				H[LIBBMRM_INDEX(ppbmrm.nCP, i, BufSize)]=
-					H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)];
+				H[LIBBMRM_INDEX(ppbmrm.nCP, i, BufSize)]
+					= H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)]
+					= rsum;
 			}
 		}
 
 		rsum=0.0;
 		A_2=get_cutting_plane(CPList_tail);
-
-		for (uint32_t i=0; i<nDim; ++i)
-			rsum+=A_2[i]*A_2[i];
+		SGVector<float64_t>::dot(A_2, A_2, nDim);
 
 		H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)]=rsum;
 
@@ -297,12 +286,10 @@ bmrm_return_value_T svm_ppbm_solver(
 
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
-				rsum=0.0;
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				for (uint32_t j=0; j<nDim; ++j)
-					rsum+=A_1[j]*prevW[j];
+				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -368,8 +355,7 @@ bmrm_return_value_T svm_ppbm_solver(
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 
-					for (uint32_t j=0; j<nDim; ++j)
-						rsum+=A_1[j]*prevW[j];
+					rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
 
 					b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 					diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -475,8 +461,7 @@ bmrm_return_value_T svm_ppbm_solver(
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				for (uint32_t j=0; j<nDim; ++j)
-					rsum+=A_1[j]*prevW[j];
+				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -528,20 +513,17 @@ bmrm_return_value_T svm_ppbm_solver(
 
 		/* risk and subgradient computation */
 		R = model->risk(subgrad, W);
-		b[ppbmrm.nCP]=-R;
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 
-		sq_norm_W=0.0;
-		sq_norm_Wdiff=0.0;
-		sq_norm_prevW=0.0;
+		sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
+		sq_norm_prevW=SGVector<float64_t>::dot(prevW, prevW, nDim);
+		b[ppbmrm.nCP]=SGVector<float64_t>::dot(subgrad, W, nDim) - R;
 
+		sq_norm_Wdiff=0.0;
 		for (uint32_t j=0; j<nDim; ++j)
 		{
-			b[ppbmrm.nCP]+=subgrad[j]*W[j];
-			sq_norm_W+=W[j]*W[j];
 			sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
-			sq_norm_prevW+=prevW[j]*prevW[j];
 		}
 
 		/* compute Fp and Fd */

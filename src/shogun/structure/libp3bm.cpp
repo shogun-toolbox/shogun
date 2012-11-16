@@ -431,12 +431,10 @@ bmrm_return_value_T svm_p3bm_solver(
 
 				for (uint32_t i=0; i<p3bmrm.nCP; ++i)
 				{
-					rsum=0.0;
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 
-					for (uint32_t j=0; j<nDim; ++j)
-						rsum+=A_1[j]*prevW[j];
+					rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
 
 					b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 					diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -538,12 +536,10 @@ bmrm_return_value_T svm_p3bm_solver(
 
 			for (uint32_t i=0; i<p3bmrm.nCP; ++i)
 			{
-				rsum=0.0;
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				for (uint32_t j=0; j<nDim; ++j)
-					rsum+=A_1[j]*prevW[j];
+				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
