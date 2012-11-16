@@ -11,10 +11,6 @@
  * Implementation of the BMRM solver
  *--------------------------------------------------------------------- */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
 #include <shogun/structure/libbmrm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
