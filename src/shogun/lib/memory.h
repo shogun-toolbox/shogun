@@ -20,24 +20,25 @@
 
 /* wrappers for malloc, free, realloc, calloc */
 #ifdef TRACE_MEMORY_ALLOCS
-#define SG_MALLOC(type, len) (type*) sg_malloc(sizeof(type)*size_t(len), __FILE__, __LINE__)
+#define SG_INPLACE_MALLOC(type, len) (type*) sg_inplace_malloc(sizeof(type)*size_t(len), __FILE__, __LINE__)
 #define SG_MALLOC(type, len) (type*) sg_malloc(sizeof(type)*size_t(len), __FILE__, __LINE__)
 #define SG_CALLOC(type, len) (type*) sg_calloc(size_t(len), sizeof(type), __FILE__, __LINE__)
 #define SG_REALLOC(type, ptr, len) (type*) sg_realloc(ptr, sizeof(type)*size_t(len), __FILE__, __LINE__)
 #define SG_FREE(ptr) sg_free(ptr)
 
-void* sg_malloc(size_t size, const char* file, int line);
+void* sg_inplace_malloc(size_t size, const char* file, int line);
 void  sg_free(void* ptr);
 void* sg_realloc(void* ptr, size_t size, const char* file, int line);
 void* sg_calloc(size_t num, size_t size, const char* file, int line);
 #else //TRACE_MEMORY_ALLOCS
 
-#define SG_MALLOC(type, len) (type*) sg_malloc(sizeof(type)*size_t(len))
+#define SG_INPLACE_MALLOC(type, len) (type*) sg_inplace_malloc<type>(sizeof(type)*size_t(len))
 #define SG_MALLOC(type, len) (type*) sg_malloc(sizeof(type)*size_t(len))
 #define SG_CALLOC(type, len) (type*) sg_calloc(size_t(len), sizeof(type))
 #define SG_REALLOC(type, ptr, len) (type*) sg_realloc(ptr, sizeof(type)*size_t(len))
 #define SG_FREE(ptr) sg_free(ptr)
 
+void* sg_inplace_malloc<type>(size_t size);
 void* sg_malloc(size_t size);
 void  sg_free(void* ptr);
 void* sg_realloc(void* ptr, size_t size);
