@@ -1,6 +1,6 @@
-2012-10-01 Soeren Sonnenburg <sonne@debian.org>
+2012-12-01 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 2.0.1 (libshogun 13.0, data 0.4, parameter 1)
+	* SHOGUN Release version 2.1.0 (libshogun 13.0, data 0.4, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Linear Time MMD two-sample test now works on streaming-features, which 
