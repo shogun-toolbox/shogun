@@ -1064,7 +1064,7 @@ ssize_t CAsciiFile::getdelim(char **lineptr, size_t *n, char delimiter, FILE *st
 			if (feof(stream))
 				return -1;
 			total_bytes_read+=bytes_read;
-			*lineptr=SG_REALLOC(char, *lineptr, (*n)*2);
+			*lineptr=SG_REALLOC(char, *lineptr, *n, (*n)*2);
 			*n=(*n)*2;
 			// A better reallocated size should be used
 		}
