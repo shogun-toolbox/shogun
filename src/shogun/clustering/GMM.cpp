@@ -770,7 +770,8 @@ SGVector<float64_t> CGMM::cluster(SGVector<float64_t> point)
 
 void CGMM::register_params()
 {
-	m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
+	//TODO serialization broken
+	//m_parameters->add((SGVector<CSGObject*>*) &m_components, "m_components", "Mixture components");
 	m_parameters->add(&m_coefficients, "m_coefficients", "Mixture coefficients.");
 }
 
