@@ -18,7 +18,7 @@
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
+struct S_THREAD_PARAM_KERNEL_MACHINE
 {
 	CKernelMachine* kernel_machine;
 	float64_t* result;
@@ -335,7 +335,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 			if (num_threads < 2)
 			{
-				S_THREAD_PARAM params;
+				S_THREAD_PARAM_KERNEL_MACHINE params;
 				params.kernel_machine=this;
 				params.result = output.vector;
 				params.start=0;
@@ -349,7 +349,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 			else
 			{
 				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
+				S_THREAD_PARAM_KERNEL_MACHINE* params = SG_MALLOC(S_THREAD_PARAM_KERNEL_MACHINE, num_threads);
 				int32_t step= num_vectors/num_threads;
 
 				int32_t t;
@@ -420,7 +420,7 @@ float64_t CKernelMachine::apply_one(int32_t num)
 
 void* CKernelMachine::apply_helper(void* p)
 {
-	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	S_THREAD_PARAM_KERNEL_MACHINE* params = (S_THREAD_PARAM_KERNEL_MACHINE*) p;
 	float64_t* result = params->result;
 	CKernelMachine* kernel_machine = params->kernel_machine;
 
@@ -550,7 +550,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 
 	if (num_threads<2)
 	{
-		S_THREAD_PARAM params;
+		S_THREAD_PARAM_KERNEL_MACHINE params;
 		params.kernel_machine=this;
 		params.result=output.vector;
 
@@ -567,7 +567,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-		S_THREAD_PARAM* params=SG_MALLOC(S_THREAD_PARAM, num_threads);
+		S_THREAD_PARAM_KERNEL_MACHINE* params=SG_MALLOC(S_THREAD_PARAM_KERNEL_MACHINE, num_threads);
 		int32_t step= num_inds/num_threads;
 
 		int32_t t;

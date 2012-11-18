@@ -28,7 +28,7 @@
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
+struct S_THREAD_PARAM_WD
 {
 
 	int32_t* vec;
@@ -825,7 +825,7 @@ bool CWeightedDegreeStringKernel::init_block_weights()
 
 void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 {
-	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	S_THREAD_PARAM_WD* params = (S_THREAD_PARAM_WD*) p;
 	int32_t j=params->j;
 	CWeightedDegreeStringKernel* wd=params->kernel;
 	CTrie<DNATrie>* tries=params->tries;
@@ -889,7 +889,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 #endif
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
-			S_THREAD_PARAM params;
+			S_THREAD_PARAM_WD params;
 			params.vec=vec;
 			params.result=result;
 			params.weights=weights;
@@ -914,7 +914,7 @@ void CWeightedDegreeStringKernel::compute_batch(
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-			S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
+			S_THREAD_PARAM_WD* params = SG_MALLOC(S_THREAD_PARAM_WD, num_threads);
 			int32_t step= num_vec/num_threads;
 			int32_t t;
 

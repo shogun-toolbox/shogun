@@ -521,47 +521,47 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
     this->input_source = this_obj->input_source;
 
     while (1)
-    {
-        pthread_mutex_lock(&examples_state_lock);
-        if (parsing_done)
-        {
-            pthread_mutex_unlock(&examples_state_lock);
-            return NULL;
-        }
-        pthread_mutex_unlock(&examples_state_lock);
+	{
+		pthread_mutex_lock(&examples_state_lock);
+		if (parsing_done)
+		{
+			pthread_mutex_unlock(&examples_state_lock);
+			return NULL;
+		}
+		pthread_mutex_unlock(&examples_state_lock);
 
-        pthread_testcancel();
+		pthread_testcancel();
 
-	current_example = examples_ring->get_free_example();
-	current_feature_vector = current_example->fv.vector;
-	current_len = current_example->fv.vlen;
-	current_label = current_example->label;
+		current_example = examples_ring->get_free_example();
+		current_feature_vector = current_example->fv.vector;
+		current_len = current_example->fv.vlen;
+		current_label = current_example->label;
 
-        if (example_type == E_LABELLED)
-            get_vector_and_label(current_feature_vector, current_len, current_label);
-        else
-            get_vector_only(current_feature_vector,	current_len);
+		if (example_type == E_LABELLED)
+			get_vector_and_label(current_feature_vector, current_len, current_label);
+		else
+			get_vector_only(current_feature_vector,	current_len);
 
-        if (current_len < 0)
-        {
-            pthread_mutex_lock(&examples_state_lock);
-            parsing_done = true;
-            pthread_cond_signal(&examples_state_changed);
-            pthread_mutex_unlock(&examples_state_lock);
-            return NULL;
-        }
+		if (current_len < 0)
+		{
+			pthread_mutex_lock(&examples_state_lock);
+			parsing_done = true;
+			pthread_cond_signal(&examples_state_changed);
+			pthread_mutex_unlock(&examples_state_lock);
+			return NULL;
+		}
 
-        current_example->label = current_label;
-        current_example->fv.vector = current_feature_vector;
-        current_example->fv.vlen = current_len;
+		current_example->label = current_label;
+		current_example->fv.vector = current_feature_vector;
+		current_example->fv.vlen = current_len;
 
-        examples_ring->copy_example(current_example);
+		examples_ring->copy_example(current_example);
 
-        pthread_mutex_lock(&examples_state_lock);
-        number_of_vectors_parsed++;
-        pthread_cond_signal(&examples_state_changed);
-        pthread_mutex_unlock(&examples_state_lock);
-    }
+		pthread_mutex_lock(&examples_state_lock);
+		number_of_vectors_parsed++;
+		pthread_cond_signal(&examples_state_changed);
+		pthread_mutex_unlock(&examples_state_lock);
+	}
 #endif /* HAVE_PTHREAD */
     return NULL;
 }

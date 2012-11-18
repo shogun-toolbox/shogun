@@ -38,7 +38,7 @@ extern "C" {
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
+struct S_THREAD_PARAM_SVRLIGHT
 {
 	float64_t* lin;
 	int32_t start, end;
@@ -361,7 +361,7 @@ float64_t CSVRLight::compute_objective_function(
 
 void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 {
-	S_THREAD_PARAM * params = (S_THREAD_PARAM*) params_ ;
+	S_THREAD_PARAM_SVRLIGHT * params = (S_THREAD_PARAM_SVRLIGHT*) params_ ;
 
 	int32_t jj=0, j=0 ;
 
@@ -440,7 +440,7 @@ void CSVRLight::update_linear_component(
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
 					pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-					S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, parallel->get_num_threads()-1);
+					S_THREAD_PARAM_SVRLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVRLIGHT, parallel->get_num_threads()-1);
 					int32_t start = 0 ;
 					int32_t step = num_elem/parallel->get_num_threads() ;
 					int32_t end = step ;

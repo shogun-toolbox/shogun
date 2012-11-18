@@ -60,7 +60,7 @@ struct S_THREAD_PARAM_REACTIVATE_LINADD
 	int32_t end;
 };
 
-struct S_THREAD_PARAM
+struct S_THREAD_PARAM_SVMLIGHT
 {
 	float64_t * lin ;
 	float64_t* W;
@@ -96,7 +96,7 @@ struct S_THREAD_PARAM_KERNEL
 
 void* CSVMLight::update_linear_component_linadd_helper(void* p)
 {
-	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	S_THREAD_PARAM_SVMLIGHT* params = (S_THREAD_PARAM_SVMLIGHT*) p;
 
 	int32_t jj=0, j=0 ;
 
@@ -1468,7 +1468,7 @@ void CSVMLight::update_linear_component(
 					for (jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
 					pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-					S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, parallel->get_num_threads()-1);
+					S_THREAD_PARAM_SVMLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVMLIGHT, parallel->get_num_threads()-1);
 					int32_t start = 0 ;
 					int32_t step = num_elem/parallel->get_num_threads();
 					int32_t end = step ;
@@ -1639,7 +1639,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 	else
 	{
 		pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
-		S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, parallel->get_num_threads()-1);
+		S_THREAD_PARAM_SVMLIGHT* params = SG_MALLOC(S_THREAD_PARAM_SVMLIGHT, parallel->get_num_threads()-1);
 		int32_t step= num/parallel->get_num_threads();
 
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
@@ -1670,7 +1670,7 @@ void CSVMLight::update_linear_component_mkl_linadd(
 
 void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
 {
-	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	S_THREAD_PARAM_SVMLIGHT* params = (S_THREAD_PARAM_SVMLIGHT*) p;
 
 	int32_t num_kernels=params->kernel->get_num_subkernels();
 

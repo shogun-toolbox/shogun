@@ -31,7 +31,7 @@ using namespace shogun;
 #define TRIES(X) ((use_poim_tries) ? (poim_tries.X) : (tries.X))
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-template <class Trie> struct S_THREAD_PARAM
+template <class Trie> struct S_THREAD_PARAM_WDS
 {
 	int32_t* vec;
 	float64_t* result;
@@ -1171,7 +1171,7 @@ bool CWeightedDegreePositionStringKernel::init_block_weights()
 
 void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 {
-	S_THREAD_PARAM<DNATrie>* params = (S_THREAD_PARAM<DNATrie>*) p;
+	S_THREAD_PARAM_WDS<DNATrie>* params = (S_THREAD_PARAM_WDS<DNATrie>*) p;
 	int32_t j=params->j;
 	CWeightedDegreePositionStringKernel* wd=params->kernel;
 	CTrie<DNATrie>* tries=params->tries;
@@ -1258,7 +1258,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 #endif
 			{
 				init_optimization(num_suppvec, IDX, alphas, j);
-				S_THREAD_PARAM<DNATrie> params;
+				S_THREAD_PARAM_WDS<DNATrie> params;
 				params.vec=vec;
 				params.result=result;
 				params.weights=weights;
@@ -1286,7 +1286,7 @@ void CWeightedDegreePositionStringKernel::compute_batch(
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-			S_THREAD_PARAM<DNATrie>* params = SG_MALLOC(S_THREAD_PARAM<DNATrie>, num_threads);
+			S_THREAD_PARAM_WDS<DNATrie>* params = SG_MALLOC(S_THREAD_PARAM_WDS<DNATrie>, num_threads);
 			int32_t step= num_vec/num_threads;
 			int32_t t;
 

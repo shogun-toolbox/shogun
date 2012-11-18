@@ -27,7 +27,7 @@
 using namespace shogun;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct S_THREAD_PARAM
+struct S_THREAD_PARAM_COMBINED_KERNEL
 {
 	CKernel* kernel;
 	float64_t* result;
@@ -368,7 +368,7 @@ void CCombinedKernel::compute_batch(
 
 void* CCombinedKernel::compute_optimized_kernel_helper(void* p)
 {
-	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
+	S_THREAD_PARAM_COMBINED_KERNEL* params= (S_THREAD_PARAM_COMBINED_KERNEL*) p;
 	int32_t* vec_idx=params->vec_idx;
 	CKernel* k=params->kernel;
 	float64_t* result=params->result;
@@ -381,7 +381,7 @@ void* CCombinedKernel::compute_optimized_kernel_helper(void* p)
 
 void* CCombinedKernel::compute_kernel_helper(void* p)
 {
-	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
+	S_THREAD_PARAM_COMBINED_KERNEL* params= (S_THREAD_PARAM_COMBINED_KERNEL*) p;
 	int32_t* vec_idx=params->vec_idx;
 	CKernel* k=params->kernel;
 	float64_t* result=params->result;
@@ -419,7 +419,7 @@ void CCombinedKernel::emulate_compute_batch(
 
 			if (num_threads < 2)
 			{
-				S_THREAD_PARAM params;
+				S_THREAD_PARAM_COMBINED_KERNEL params;
 				params.kernel=k;
 				params.result=result;
 				params.start=0;
@@ -431,7 +431,7 @@ void CCombinedKernel::emulate_compute_batch(
 			else
 			{
 				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
+				S_THREAD_PARAM_COMBINED_KERNEL* params = SG_MALLOC(S_THREAD_PARAM_COMBINED_KERNEL, num_threads);
 				int32_t step= num_vec/num_threads;
 
 				int32_t t;
@@ -476,7 +476,7 @@ void CCombinedKernel::emulate_compute_batch(
 
 			if (num_threads < 2)
 			{
-				S_THREAD_PARAM params;
+				S_THREAD_PARAM_COMBINED_KERNEL params;
 				params.kernel=k;
 				params.result=result;
 				params.start=0;
@@ -491,7 +491,7 @@ void CCombinedKernel::emulate_compute_batch(
 			else
 			{
 				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				S_THREAD_PARAM* params = SG_MALLOC(S_THREAD_PARAM, num_threads);
+				S_THREAD_PARAM_COMBINED_KERNEL* params = SG_MALLOC(S_THREAD_PARAM_COMBINED_KERNEL, num_threads);
 				int32_t step= num_vec/num_threads;
 
 				int32_t t;
