@@ -42,8 +42,6 @@ public:
 	/** destructor */
 	virtual ~CMultitaskROCEvaluation()
 	{
-		for (int32_t i=0; i<m_num_tasks; i++)
-			m_tasks_indices[i].~SGVector<index_t>();
 		SG_FREE(m_tasks_indices);
 	}
 

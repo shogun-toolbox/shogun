@@ -120,8 +120,6 @@ bool CMultitaskL12LogisticRegression::train_machine(CFeatures* data)
 	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
 #endif
 
-	for (int32_t i=0; i<options.n_tasks; i++)
-		options.tasks_indices[i].~SGVector<index_t>();
 	SG_FREE(options.tasks_indices);
 	
 	return true;

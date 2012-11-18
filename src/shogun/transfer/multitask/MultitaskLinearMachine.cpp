@@ -95,8 +95,6 @@ void CMultitaskLinearMachine::post_lock(CLabels* labels, CFeatures* features_)
 		m_tasks_indices.push_back(indices_set);
 	}
 
-	for (int32_t i=0; i<n_tasks; i++)
-		tasks_indices[i].~SGVector<index_t>();
 	SG_FREE(tasks_indices);
 }
 
@@ -121,14 +119,12 @@ bool CMultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 	SGVector<index_t>* tasks = SG_MALLOC(SGVector<index_t>, n_tasks);
 	for (int32_t i=0; i<n_tasks; i++)
 	{
-		new (&tasks[i]) SGVector<index_t>(cutted_task_indices[i].size());
+		tasks[i]=SGVector<index_t>(cutted_task_indices[i].size());
 		for (int32_t j=0; j<(int)cutted_task_indices[i].size(); j++)
 			tasks[i][j] = cutted_task_indices[i][j];
 		//tasks[i].display_vector();
 	}
 	bool res = train_locked_implementation(tasks);
-	for (int32_t i=0; i<n_tasks; i++)
-		tasks[i].~SGVector<index_t>();
 	SG_FREE(tasks);
 	return res;
 }
@@ -224,7 +220,6 @@ SGVector<index_t>* CMultitaskLinearMachine::get_subset_tasks_indices()
 	SGVector<index_t>* subset_tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
 	for (int32_t i=0; i<n_tasks; i++)
 	{
-		new (&subset_tasks_indices[i]) SGVector<index_t>();
 		SGVector<index_t> task = tasks_indices[i];
 		//task.display_vector("task");
 		vector<index_t> cutted = vector<index_t>();
@@ -239,8 +234,6 @@ SGVector<index_t>* CMultitaskLinearMachine::get_subset_tasks_indices()
 		//cutted_task.display_vector("cutted");
 		subset_tasks_indices[i] = cutted_task;
 	}
-	for (int32_t i=0; i<n_tasks; i++)
-		tasks_indices[i].~SGVector<index_t>();
 	SG_FREE(tasks_indices);
 	
 	return subset_tasks_indices;

@@ -105,8 +105,6 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 		default: 
 			SG_ERROR("Not supported task relation type\n");
 	}
-	for (int32_t i=0; i<options.n_tasks; i++)
-		options.tasks_indices[i].~SGVector<index_t>();
 	SG_FREE(options.tasks_indices);
 
 	return true;

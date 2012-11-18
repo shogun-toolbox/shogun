@@ -151,7 +151,6 @@ SGVector<index_t>* CTaskTree::get_tasks_indices() const
 	CTask* iterator = (CTask*)blocks->get_first_element();
 	do
 	{
-		new (&tasks_indices[t_i]) SGVector<index_t>();
 		tasks_indices[t_i] = iterator->get_indices();
 		//REQUIRE(iterator->is_contiguous(),"Task is not contiguous");
 		//ind[t_i+1] = iterator->get_indices()[iterator->get_indices().vlen-1] + 1;

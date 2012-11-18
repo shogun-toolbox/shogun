@@ -27,8 +27,6 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 
 	if (m_num_tasks>0)
 	{
-		for (int32_t t=0; t<m_num_tasks; t++)
-			m_tasks_indices[t].~SGVector<index_t>();
 		SG_FREE(m_tasks_indices);
 	}
 	m_num_tasks = m_task_relation->get_num_tasks();
@@ -37,7 +35,6 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 	SGVector<index_t>* tasks_indices = m_task_relation->get_tasks_indices();
 	for (int32_t t=0; t<m_num_tasks; t++)
 	{
-		new (&m_tasks_indices[t]) SGVector<index_t>();
 		vector<index_t> task_indices_cut;
 		SGVector<index_t> task_indices = tasks_indices[t];
 		//task_indices.display_vector("task indices");
@@ -55,7 +52,6 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 			cutted[i] = task_indices_cut[i];
 		//cutted.display_vector("cutted");
 		m_tasks_indices[t] = cutted;
-		tasks_indices[t].~SGVector<index_t>();
 	}
 	SG_FREE(tasks_indices);
 }

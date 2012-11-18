@@ -14,8 +14,6 @@ CMulticlassLabels::CMulticlassLabels(int32_t num_labels) : CDenseLabels(num_labe
 {
 	m_multiclass_confidences = SG_MALLOC(SGVector<float64_t>, num_labels);
 	m_num_multiclass_confidences = num_labels;
-	for (int32_t i=0; i<num_labels; i++)
-		new (&m_multiclass_confidences[i]) SGVector<float64_t>();
 }
 
 CMulticlassLabels::CMulticlassLabels(const SGVector<float64_t> src) : CDenseLabels()
@@ -33,8 +31,6 @@ CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 
 CMulticlassLabels::~CMulticlassLabels()
 {
-	for (int32_t i=0; i<m_num_multiclass_confidences; i++)
-		m_multiclass_confidences[i].~SGVector<float64_t>();
 	SG_FREE(m_multiclass_confidences);
 }
 

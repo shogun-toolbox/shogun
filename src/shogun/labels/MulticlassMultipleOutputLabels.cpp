@@ -23,14 +23,10 @@ CMulticlassMultipleOutputLabels::CMulticlassMultipleOutputLabels(int32_t num_lab
 	init();
 	m_labels = SG_MALLOC(SGVector<index_t>, num_labels);
 	m_n_labels = num_labels;
-	for (int32_t i=0; i<m_n_labels; i++)
-		new (&m_labels[i]) SGVector<index_t>();
 }
 
 CMulticlassMultipleOutputLabels::~CMulticlassMultipleOutputLabels()
 {
-	for (int32_t i=0; i<m_n_labels; i++)
-		m_labels[i].~SGVector<index_t>();
 	SG_FREE(m_labels);
 }
 

@@ -44,7 +44,6 @@ SGVector<index_t>* CTaskGroup::get_tasks_indices() const
 	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
 	for (int32_t i=0; i<n_tasks; i++)
 	{
-		new (&tasks_indices[i]) SGVector<index_t>();
 		CTask* task = (CTask*)m_tasks->get_element(i);
 		tasks_indices[i] = task->get_indices();
 		SG_UNREF(task);

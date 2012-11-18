@@ -103,8 +103,6 @@ void CMultitaskCompositeMachine::post_lock(CLabels* labels, CFeatures* features)
 		m_tasks_indices.push_back(indices_set);
 	}
 
-	for (int32_t i=0; i<n_tasks; i++)
-		tasks_indices[i].~SGVector<index_t>();
 	SG_FREE(tasks_indices);
 }
 
