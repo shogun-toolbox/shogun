@@ -172,13 +172,13 @@ namespace shogun
 			int32_t nl = CMath::max (256, ol);
 			while (nl < n)
 				nl = nl + nl;
-			self->i2r = SG_REALLOC (int32_t, self->i2r, nl);
-			self->r2i = SG_REALLOC (int32_t, self->r2i, nl);
-			self->rsize = SG_REALLOC (int32_t, self->rsize, nl);
-			self->qnext = SG_REALLOC (int32_t, self->qnext, (1 + nl));
-			self->qprev = SG_REALLOC (int32_t, self->qprev, (1 + nl));
-			self->rdiag = SG_REALLOC (float32_t, self->rdiag, nl);
-			self->rdata = SG_REALLOC (float32_t*, self->rdata, nl);
+			self->i2r = SG_REALLOC (int32_t, self->i2r, self->l, nl);
+			self->r2i = SG_REALLOC (int32_t, self->r2i, self->l, nl);
+			self->rsize = SG_REALLOC (int32_t, self->rsize, self->l, nl);
+			self->qnext = SG_REALLOC (int32_t, self->qnext, 1+self->l, (1 + nl));
+			self->qprev = SG_REALLOC (int32_t, self->qprev, 1+self->l, (1 + nl));
+			self->rdiag = SG_REALLOC (float32_t, self->rdiag, self->l, nl);
+			self->rdata = SG_REALLOC (float32_t*, self->rdata, self->l, nl);
 			self->rnext = self->qnext + 1;
 			self->rprev = self->qprev + 1;
 			for (i = ol; i < nl; i++)

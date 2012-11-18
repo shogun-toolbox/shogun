@@ -22,7 +22,7 @@
 #ifdef TRACE_MEMORY_ALLOCS
 #define SG_MALLOC(type, len) sg_generic_malloc<type>(size_t(len), __FILE__, __LINE__)
 #define SG_CALLOC(type, len) sg_generic_calloc<type>(size_t(len), __FILE__, __LINE__)
-#define SG_REALLOC(type, ptr, len) sg_generic_realloc<type>(ptr, size_t(len), __FILE__, __LINE__)
+#define SG_REALLOC(type, ptr, old_len, len) sg_generic_realloc<type>(ptr, size_t(old_len), size_t(len), __FILE__, __LINE__)
 #define SG_FREE(ptr) sg_generic_free(ptr)
 
 void* sg_malloc(size_t size, const char* file, int line);
@@ -39,7 +39,7 @@ template <class T> T* sg_generic_calloc(size_t len, const char* file, int line)
 }
 
 void* sg_realloc(void* ptr, size_t size, const char* file, int line);
-template <class T> T* sg_generic_realloc(T* ptr, size_t len, const char* file, int line)
+template <class T> T* sg_generic_realloc(T* ptr, size_t old_len, size_t len, const char* file, int line)
 {
 	return (T*) sg_realloc(ptr, sizeof(T)*len, file, line);
 }
@@ -53,7 +53,7 @@ template <class T> void sg_generic_free(T* ptr)
 
 #define SG_MALLOC(type, len) sg_generic_malloc<type>(size_t(len))
 #define SG_CALLOC(type, len) sg_generic_calloc<type>(size_t(len))
-#define SG_REALLOC(type, ptr, len) sg_generic_realloc<type>(ptr, size_t(len))
+#define SG_REALLOC(type, ptr, old_len, len) sg_generic_realloc<type>(ptr, size_t(old_len), size_t(len))
 #define SG_FREE(ptr) sg_generic_free(ptr)
 
 void* sg_malloc(size_t size);
@@ -63,7 +63,7 @@ template <class T> T* sg_generic_malloc(size_t len)
 }
 
 void* sg_realloc(void* ptr, size_t size);
-template <class T> T* sg_generic_realloc(T* ptr, size_t len)
+template <class T> T* sg_generic_realloc(T* ptr, size_t old_len, size_t len)
 {
 	return (T*) sg_realloc(ptr, sizeof(T)*len);
 }

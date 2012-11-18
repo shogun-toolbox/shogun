@@ -338,7 +338,7 @@ template <class T> class DynArray
 			T* p;
 
 			if (use_sg_mallocs)
-				p = SG_REALLOC(T, array, new_num_elements);
+				p = SG_REALLOC(T, array, num_elements, new_num_elements);
 			else
 				p = (T*) realloc(array, new_num_elements*sizeof(T));
 			if (p)

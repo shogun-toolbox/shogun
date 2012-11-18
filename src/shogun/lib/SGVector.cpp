@@ -94,7 +94,7 @@ template<class T> void SGVector<T>::set_element(const T& p_element, index_t inde
 
 template<class T> void SGVector<T>::resize_vector(int32_t n)
 {
-	vector=SG_REALLOC(T, vector, n);
+	vector=SG_REALLOC(T, vector, vlen, n);
 
 	if (n > vlen)
 		memset(&vector[vlen], 0, (n-vlen)*sizeof(T));

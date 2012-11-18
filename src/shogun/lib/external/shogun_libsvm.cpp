@@ -158,7 +158,7 @@ int32_t Cache::get_data(const int32_t index, Qfloat **data, int32_t len)
 		}
 
 		// allocate new space
-		h->data = SG_REALLOC(Qfloat, h->data, len);
+		h->data = SG_REALLOC(Qfloat, h->data, h->len, len);
 		size -= more;
 		CMath::swap(h->len,len);
 	}
@@ -2306,9 +2306,10 @@ void svm_group_classes(
 		{
 			if(nr_class == max_nr_class)
 			{
+				int32_t old_max_nr_class=max_nr_class;
 				max_nr_class *= 2;
-				label=SG_REALLOC(int32_t, label,max_nr_class);
-				count=SG_REALLOC(int32_t, count,max_nr_class);
+				label=SG_REALLOC(int32_t, label,old_max_nr_class, max_nr_class);
+				count=SG_REALLOC(int32_t, count,old_max_nr_class, max_nr_class);
 			}
 			label[nr_class] = this_label;
 			count[nr_class] = 1;
@@ -2680,9 +2681,10 @@ const char *svm_check_parameter(
 			{
 				if(nr_class == max_nr_class)
 				{
+					int32_t old_max_nr_class = max_nr_class;
 					max_nr_class *= 2;
-					label=SG_REALLOC(int32_t, label, max_nr_class);
-					count=SG_REALLOC(int32_t, count, max_nr_class);
+					label=SG_REALLOC(int32_t, label, old_max_nr_class, max_nr_class);
+					count=SG_REALLOC(int32_t, count, old_max_nr_class, max_nr_class);
 				}
 				label[nr_class] = this_label;
 				count[nr_class] = 1;

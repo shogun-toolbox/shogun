@@ -207,7 +207,7 @@ template<class T> class SGVector : public SGReferencedData
 			if (old_size==new_size)
 				return;
 
-			data = SG_REALLOC(T, data, new_size);
+			data = SG_REALLOC(T, data, old_size, new_size);
 		}
 
 		/// || x ||_2

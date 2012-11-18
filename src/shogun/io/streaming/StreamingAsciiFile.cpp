@@ -89,7 +89,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 																			\
 		/* now copy data into vector */										\
 		if (old_len < num_feat)												\
-				vector=SG_REALLOC(sg_type, vector, num_feat);				\
+				vector=SG_REALLOC(sg_type, vector, old_len, num_feat);		\
 																			\
 		for (int32_t i=0; i<num_feat; i++)									\
 		{																	\
@@ -134,7 +134,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 				substring* feature_start = &words[0];						\
 																			\
 				if (len > old_len)											\
-						vector = SG_REALLOC(sg_type, vector, len);			\
+						vector = SG_REALLOC(sg_type, vector, old_len, len);	\
 																			\
 				int32_t j=0;												\
 				for (substring* i = feature_start; i != words.end; i++)		\
@@ -207,7 +207,7 @@ GET_FLOAT_VECTOR(float64_t)
 				label=atof(items->get_element(0));						\
 				/* now copy rest of the data into vector */				\
 				if (old_len < num_feat - 1)								\
-						vector=SG_REALLOC(sg_type, vector, num_feat-1);	\
+						vector=SG_REALLOC(sg_type, vector, old_len, num_feat-1);	\
 																		\
 				for (int32_t i=1; i<num_feat; i++)						\
 				{														\
@@ -255,7 +255,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 				substring* feature_start = &words[1];					\
 																		\
 				if (len > old_len)										\
-						vector = SG_REALLOC(sg_type, vector, len);		\
+						vector = SG_REALLOC(sg_type, vector, old_len, len);	\
 																		\
 				int32_t j=0;											\
 				for (substring* i = feature_start; i != words.end; i++)	\

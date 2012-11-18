@@ -271,9 +271,14 @@ template<> type* sg_generic_calloc<type >(size_t len, const char* file, int line
 	return new type[len]();																		\
 }																								\
 																								\
-template<> type* sg_generic_realloc<type >(type* ptr, size_t len, const char* file, int line)	\
+template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len, const char* file, int line)	\
 {																								\
-	return NULL;																				\
+	type* new_ptr = new type[len]();															\
+	size_t min_len=CMath::min(old_len, len);													\
+	for (size_t i=0; i<min_len; i++)															\
+		new_ptr[i]=ptr[i];																		\
+	delete[] ptr;																				\
+	return new_ptr;																				\
 }																								\
 																								\
 template<> void sg_generic_free<type >(type* ptr)												\
@@ -294,9 +299,14 @@ template<> type* sg_generic_calloc<type >(size_t len)				\
 	return new type[len]();											\
 }																	\
 																	\
-template<> type* sg_generic_realloc<type >(type* ptr, size_t len)	\
+template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len)	\
 {																	\
-	return NULL;													\
+	type* new_ptr = new type[len]();								\
+	size_t min_len=CMath::min(old_len, len);						\
+	for (size_t i=0; i<min_len; i++)								\
+		new_ptr[i]=ptr[i];											\
+	delete[] ptr;													\
+	return new_ptr;													\
 }																	\
 																	\
 template<> void sg_generic_free<type >(type* ptr)					\

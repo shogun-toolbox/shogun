@@ -131,7 +131,7 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 
 	if (ex.vlen > w_dim)
 	{
-		w = SG_REALLOC(float32_t, w, ex.vlen);
+		w = SG_REALLOC(float32_t, w, w_dim, ex.vlen);
 		memset(&w[w_dim], 0, (ex.vlen - w_dim)*sizeof(float32_t));
 		w_dim = ex.vlen;
 	}

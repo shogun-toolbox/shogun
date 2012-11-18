@@ -520,8 +520,9 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public CSGObject
 				return;
 			SG_DEBUG( "Extending TreeMem from %i to %i elements\n",
 					TreeMemPtrMax, (int32_t) ((float64_t)TreeMemPtrMax*1.2));
+			int32_t old_sz=TreeMemPtrMax;
 			TreeMemPtrMax = (int32_t) ((float64_t)TreeMemPtrMax*1.2);
-			TreeMem = SG_REALLOC(Trie, TreeMem, TreeMemPtrMax);
+			TreeMem = SG_REALLOC(Trie, TreeMem, old_sz, TreeMemPtrMax);
 		}
 
 		/** set weights in tree

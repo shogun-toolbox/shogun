@@ -170,7 +170,7 @@ inline void v_array<T>::push(const T &new_elem)
 		size_t old_length = end_array - begin;
 		size_t new_length = 2 * old_length + 3;
 		//size_t new_length = old_length + 1;
-		begin = SG_REALLOC(T, begin, new_length);
+		begin = SG_REALLOC(T, begin, old_length, new_length);
 		end = begin + old_length;
 		end_array = begin + new_length;
 	}
@@ -185,7 +185,7 @@ inline void v_array<T>::push_many(const T* new_elem, size_t num)
 		size_t length = end - begin;
 		size_t new_length = CMath::max(2 * (size_t)(end_array - begin) + 3,
 					       end - begin + num);
-		begin = SG_REALLOC(T, begin, new_length);
+		begin = SG_REALLOC(T, begin, length, new_length);
 		end = begin + length;
 		end_array = begin + new_length;
 	}
@@ -197,7 +197,7 @@ template<class T>
 inline void v_array<T>::reserve(size_t length)
 {
 	size_t old_length = end_array-begin;
-	begin = SG_REALLOC(T, begin, length);
+	begin = SG_REALLOC(T, begin, old_length, length);
 	if (old_length < length)
 		memset(begin + old_length, 0, (length - old_length)*sizeof(T));
 
