@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef MKLMULTICLASSOPTIMIZATIONBASE_H_
-#define MKLMULTICLASSOPTIMIZATIONBASE_H_
+#ifndef MKLMulticlassOPTIMIZATIONBASE_H_
+#define MKLMulticlassOPTIMIZATIONBASE_H_
 
 #include <vector>
 #include <shogun/base/SGObject.h>
@@ -20,25 +20,25 @@ namespace shogun
 /** @brief MKLMulticlassOptimizationBase is a helper class for MKLMulticlass.
  *
  *	it is a virtual base class for MKLMulticlassGLPK and MKLMulticlassGradient which are instances of optimization
- *
+ * 	
  */
 class MKLMulticlassOptimizationBase: public CSGObject
 {
 public:
 	/** Class default Constructor
-	 *
+	 * 
 	 */
-	MKLMulticlassOptimizationBase();
+   MKLMulticlassOptimizationBase();
 	/** Class default Destructor
-	 *
+	 * 
 	 */
-	virtual ~MKLMulticlassOptimizationBase();
+   virtual ~MKLMulticlassOptimizationBase();
 
-	/** initializes solver
+	/** initializes solver 
 	 *
 	 * @param numkernels2 is the number of kernels
-	 *
-	 *
+	 * 
+	 * 
 	 */
 	virtual void setup(const int32_t numkernels2);
 
@@ -47,8 +47,8 @@ public:
 	 * @param normw2 is the vector of \f$ \|w_k \|^2 \f$ for all kernels
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
-	 * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
-	 *
+    * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
+	 * 
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas);
@@ -56,14 +56,14 @@ public:
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
-	 *
+	 * 
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "MKLMulticlassOptimizationBase";
+      return "MKLMulticlassOptimizationBase";
 	}
 
 	/** sets p-norm parameter for MKL

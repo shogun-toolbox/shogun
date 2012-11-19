@@ -6,10 +6,13 @@
  *
  * Written (W) 2009 Alexander Binder
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ *
+ * Update to patch 0.10.0 - thanks to Eric aka Yoo (thereisnoknife@gmail.com)
+ *
  */
 
-#ifndef MKLMULTICLASSGLPK_H_
-#define MKLMULTICLASSGLPK_H_
+#ifndef MKLMulticlassGLPK_H_
+#define MKLMulticlassGLPK_H_
 
 #include <vector>
 #include <shogun/base/SGObject.h>
@@ -26,19 +29,19 @@ class MKLMulticlassGLPK: public MKLMulticlassOptimizationBase
 {
 public:
 	/** Class default Constructor
-	 *
+	 * 
 	 */
-	MKLMulticlassGLPK();
+   MKLMulticlassGLPK();
 	/** Class default Destructor
-	 *
+	 * 
 	 */
-	virtual ~MKLMulticlassGLPK();
+   virtual ~MKLMulticlassGLPK();
 
-	/** initializes GLPK LP sover
+	/** initializes GLPK LP sover 
 	 *
 	 * @param numkernels2 is the number of kernels
-	 *
-	 *
+	 * 
+	 * 
 	 */
 	virtual void setup(const int32_t numkernels2);
 
@@ -47,8 +50,8 @@ public:
 	 * @param normw2 is the vector of \f$ \|w_k \|^2 \f$ for all kernels
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
-	 * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
-	 *
+    * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
+	 * 
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas);
@@ -56,14 +59,14 @@ public:
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
-	 *
+	 * 
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "MKLMulticlassGLPK";
+      return "MKLMulticlassGLPK";
 	}
 
 protected:
@@ -71,18 +74,18 @@ protected:
 	 * protected to avoid its usage because member glp_prob* linearproblem;
 	 * from GLPK package is not copyable
 	 */
-	MKLMulticlassGLPK(MKLMulticlassGLPK & gl);
+   MKLMulticlassGLPK(MKLMulticlassGLPK & gl);
 	/** Class Assignment operator
 	 * protected to avoid its usage because member glp_prob* linearproblem;
 	 * from GLPK package is not copyable
 	 */
-	MKLMulticlassGLPK operator=(MKLMulticlassGLPK & gl);
+   MKLMulticlassGLPK operator=(MKLMulticlassGLPK & gl);
 
 protected:
 	/** stores the number of kernels which acts as a parameter for the LP */
 	int32_t numkernels;
-	/** GLPK data structure of type glp_prob* */
-	void* linearproblem;
+   /** GLPK data structure of type glp_prob* */
+   void* linearproblem;
 };
 }
 
