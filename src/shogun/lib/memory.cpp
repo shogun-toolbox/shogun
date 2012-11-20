@@ -294,13 +294,11 @@ template<> void sg_generic_free<type >(type* ptr)												\
 #define SG_SPECIALIZED_MALLOC(type)									\
 template<> type* sg_generic_malloc<type >(size_t len)				\
 {																	\
-	printf("new[]\n"); \
 	return new type[len]();											\
 }																	\
 																	\
 template<> type* sg_generic_calloc<type >(size_t len)				\
 {																	\
-	printf("new[]\n"); \
 	return new type[len]();											\
 }																	\
 																	\
