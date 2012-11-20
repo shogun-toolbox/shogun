@@ -395,7 +395,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	{
 		ASSERT(m_machines->get_num_elements()>0);
 		for (int32_t i=0; i<num_vectors; i++)
-			output->set_label(i, apply(i));
+			output->set_label(i, apply_one(i));
 	}
 #ifdef USE_SVMLIGHT
 	else if (scatter_type == NO_BIAS_SVMLIGHT)
@@ -484,7 +484,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	return output;
 }
 
-float64_t CScatterSVM::apply(int32_t num)
+float64_t CScatterSVM::apply_one(int32_t num)
 {
 	ASSERT(m_machines->get_num_elements()>0);
 	float64_t* outputs=SG_MALLOC(float64_t, m_machines->get_num_elements());

@@ -13,6 +13,7 @@
 #define __SGSTRINGLIST_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGReferencedData.h>

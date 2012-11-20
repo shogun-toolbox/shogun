@@ -12,8 +12,6 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/memory.h>
-
 #ifndef __COMMON_H__
 #define __COMMON_H__
 

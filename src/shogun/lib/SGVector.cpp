@@ -12,6 +12,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/io/File.h>
@@ -80,6 +81,26 @@ template<class T> SGVector<T> SGVector<T>::clone() const
 	return SGVector<T>(clone_vector(vector, vlen), vlen);
 }
 
+template<class T> T* SGVector<T>::clone_vector(const T* vec, int32_t len)
+{
+	T* result = SG_MALLOC(T, len);
+	memcpy(result, vec, sizeof(T)*len);
+	return result;
+}
+
+template<class T> void SGVector<T>::fill_vector(T* vec, int32_t len, T value)
+{
+	for (int32_t i=0; i<len; i++)
+		vec[i]=value;
+}
+
+template<class T> void SGVector<T>::range_fill_vector(T* vec, int32_t len, T start)
+{
+	for (int32_t i=0; i<len; i++)
+		vec[i]=i+start;
+}
+
+
 template<class T> const T& SGVector<T>::get_element(index_t index)
 {
 	ASSERT(vector && (index>=0) && (index<vlen));
@@ -99,6 +120,17 @@ template<class T> void SGVector<T>::resize_vector(int32_t n)
 	if (n > vlen)
 		memset(&vector[vlen], 0, (n-vlen)*sizeof(T));
 	vlen=n;
+}
+
+/** addition operator */
+template<class T> SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
+{
+	ASSERT(x.vector && vector);
+	ASSERT(x.vlen == vlen);
+
+	SGVector<T> result=clone();
+	result.add(x);
+	return result;
 }
 
 template<class T> void SGVector<T>::add(const SGVector<T> x)
@@ -421,6 +453,15 @@ void SGVector<T>::permute_vector(SGVector<T> vec)
 	}
 }
 
+template <class T>
+void SGVector<T>::resize(T* &data, int64_t old_size, int64_t new_size)
+{
+	if (old_size==new_size)
+		return;
+
+	data = SG_REALLOC(T, data, old_size, new_size);
+}
+
 template <>
 bool SGVector<bool>::twonorm(const bool* x, int32_t len)
 {
@@ -602,6 +643,47 @@ template <class T>
 
 		return maxv;
 	}
+
+template <class T>
+int32_t SGVector<T>::arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
+{
+	ASSERT(len > 0 || inc > 0);
+
+	T maxv = vec[0];
+	int32_t maxIdx = 0;
+
+	for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+	{
+		if (vec[j] > maxv)
+			maxv = vec[j], maxIdx = i;
+	}
+
+	if (maxv_ptr != NULL)
+		*maxv_ptr = maxv;
+
+	return maxIdx;
+}
+
+/// return arg_min(vec)
+template <class T>
+int32_t SGVector<T>::arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr)
+{
+	ASSERT(len > 0 || inc > 0);
+
+	T minv = vec[0];
+	int32_t minIdx = 0;
+
+	for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+	{
+		if (vec[j] < minv)
+			minv = vec[j], minIdx = i;
+	}
+
+	if (minv_ptr != NULL)
+		*minv_ptr = minv;
+
+	return minIdx;
+}
 
 /// return sum(abs(vec))
 template <class T>

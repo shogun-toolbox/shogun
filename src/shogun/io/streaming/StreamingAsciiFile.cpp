@@ -139,7 +139,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 				int32_t j=0;												\
 				for (substring* i = feature_start; i != words.end; i++)		\
 				{															\
-						vector[j++] = float_of_substring(*i);				\
+						vector[j++] = SGIO::float_of_substring(*i);			\
 				}															\
 		}
 
@@ -249,7 +249,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 																		\
 				CAsciiFile::tokenize(' ', example_string, words);		\
 																		\
-				label = float_of_substring(words[0]);					\
+				label = SGIO::float_of_substring(words[0]);				\
 																		\
 				len = words.index() - 1;								\
 				substring* feature_start = &words[1];					\
@@ -260,7 +260,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 				int32_t j=0;											\
 				for (substring* i = feature_start; i != words.end; i++)	\
 				{														\
-						vector[j++] = float_of_substring(*i);			\
+						vector[j++] = SGIO::float_of_substring(*i);		\
 				}														\
 		}
 

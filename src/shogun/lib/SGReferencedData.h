@@ -9,7 +9,6 @@
 #ifndef __SGREFERENCED_DATA_H__
 #define __SGREFERENCED_DATA_H__
 
-#include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 
 #ifdef HAVE_PTHREAD
@@ -34,144 +33,43 @@ class SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGReferencedData(bool ref_counting=true) : m_refcount(NULL)
-		{ 
-			if (ref_counting)
-			{
-				m_refcount = SG_CALLOC(refcount_t, 1);
-				PTHREAD_LOCK_INIT(&m_refcount->lock);
-			}
-
-			ref();
-		}
+		SGReferencedData(bool ref_counting=true);
 
 		/** copy constructor */
-		SGReferencedData(const SGReferencedData &orig)
-			: m_refcount(orig.m_refcount)
-		{
-			ref();
-		}
+		SGReferencedData(const SGReferencedData &orig);
 
 		/** override assignment operator to increase refcount on assignments */
-		SGReferencedData& operator= (const SGReferencedData &orig)
-		{
-			if (this == &orig)
-				return *this;
-
-			unref();
-			copy_data(orig);
-			copy_refcount(orig);
-			ref();
-			return *this;
-		}
+		SGReferencedData& operator= (const SGReferencedData &orig);
 
 		/** empty destructor
 		 *
 		 * NOTE: unref() has to be called in derived classes
 		 * to avoid memory leaks.
 		 */
-		virtual ~SGReferencedData()
-		{
-		}
+		virtual ~SGReferencedData();
 
 		/** display reference counter
 		 *
 		 * @return reference count
 		 */
-		int32_t ref_count()
-		{
-			if (m_refcount == NULL)
-				return -1;
-
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&m_refcount->lock);
-#endif
-			int32_t c = m_refcount->rc;
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
-
-#ifdef DEBUG_SGVECTOR
-			SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this);
-#endif
-			return c;
-		}
+		int32_t ref_count();
 
 	protected:
 		/** copy refcount */
-		void copy_refcount(const SGReferencedData &orig)
-		{
-			m_refcount=orig.m_refcount;
-		}
+		void copy_refcount(const SGReferencedData &orig);
 
 		/** increase reference counter
 		 *
 		 * @return reference count
 		 */
-		int32_t ref()
-		{
-			if (m_refcount == NULL)
-			{
-				return -1;
-			}
-
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&m_refcount->lock);
-#endif
-			int32_t c = ++(m_refcount->rc);
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
-#ifdef DEBUG_SGVECTOR
-			SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this);
-#endif
-			return c;
-		}
+		int32_t ref();
 
 		/** decrement reference counter and deallocate object if refcount is zero
 		 * before or after decrementing it
 		 *
 		 * @return reference count
 		 */
-		int32_t unref()
-		{
-			if (m_refcount == NULL)
-			{
-				init_data();
-				m_refcount=NULL;
-				return -1;
-			}
-
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&m_refcount->lock);
-#endif
-			int32_t c = --(m_refcount->rc);
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
-			if (c<=0)
-			{
-#ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d data %p destroying\n", c, this);
-#endif
-				free_data();
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK_DESTROY(&m_refcount->lock);
-#endif
-				SG_FREE(m_refcount);
-				m_refcount=NULL;
-				return 0;
-			}
-			else
-			{
-#ifdef DEBUG_SGVECTOR
-				SG_SGCDEBUG("unref() refcount %d data %p decreased\n", c, this);
-#endif
-				init_data();
-				m_refcount=NULL;
-				return c;
-			}
-		}
+		int32_t unref();
 
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig)=0;

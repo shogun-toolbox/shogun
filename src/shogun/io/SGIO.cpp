@@ -303,3 +303,57 @@ const char* SGIO::get_msg_intro(EMessageType prio) const
 
 	return NULL;
 }
+
+char* SGIO::c_string_of_substring(substring s)
+{
+	uint32_t len = s.end - s.start+1;
+	char* ret = SG_CALLOC(char, len);
+	memcpy(ret,s.start,len-1);
+	return ret;
+}
+
+void SGIO::print_substring(substring s)
+{
+	char* c_string = c_string_of_substring(s);
+	SG_SPRINT("%s\n", c_string);
+	SG_FREE(c_string);
+}
+
+float32_t SGIO::float_of_substring(substring s)
+{
+	char* endptr = s.end;
+	float32_t f = strtof(s.start,&endptr);
+	if (endptr == s.start && s.start != s.end)
+		SG_SERROR("error: %s is not a float!\n", c_string_of_substring(s));
+
+	return f;
+}
+
+float64_t SGIO::double_of_substring(substring s)
+{
+	char* endptr = s.end;
+	float64_t f = strtod(s.start,&endptr);
+	if (endptr == s.start && s.start != s.end)
+		SG_SERROR("Error!:%s is not a double!\n", c_string_of_substring(s));
+
+	return f;
+}
+
+int32_t SGIO::int_of_substring(substring s)
+{
+	char* c_string = c_string_of_substring(s);
+	int32_t int_val = atoi(c_string);
+	SG_FREE(c_string);
+
+	return int_val;
+}
+
+uint32_t SGIO::ulong_of_substring(substring s)
+{
+	return strtoul(s.start,NULL,10);
+}
+
+uint32_t SGIO::ss_length(substring s)
+{
+	return (s.end - s.start);
+}

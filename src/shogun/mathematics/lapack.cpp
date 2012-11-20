@@ -15,6 +15,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_LAPACK
+#include <shogun/lib/memory.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/Parallel.h>

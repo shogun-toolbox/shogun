@@ -13,15 +13,13 @@
 #define __SGVECTOR_H__
 
 #include <algorithm>
-
-#include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
 
 
 namespace shogun
 {
+	template <class T> class SGSparseVector;
 	class CFile;
 
 /** @brief shogun vector */
@@ -78,26 +76,13 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector<T> clone() const;
 
 		/** clone vector */
-		static T* clone_vector(const T* vec, int32_t len)
-		{
-			T* result = SG_MALLOC(T, len);
-			memcpy(result, vec, sizeof(T)*len);
-			return result;
-		}
+		static T* clone_vector(const T* vec, int32_t len);
 
 		/** fill vector */
-		static void fill_vector(T* vec, int32_t len, T value)
-		{
-			for (int32_t i=0; i<len; i++)
-				vec[i]=value;
-		}
+		static void fill_vector(T* vec, int32_t len, T value);
 
 		/** range fill vector */
-		static void range_fill_vector(T* vec, int32_t len, T start=0)
-		{
-			for (int32_t i=0; i<len; i++)
-				vec[i]=i+start;
-		}
+		static void range_fill_vector(T* vec, int32_t len, T start=0);
 
 		/** random vector */
 		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
@@ -169,15 +154,7 @@ template<class T> class SGVector : public SGReferencedData
 		void add(const T x);
 
 		/** addition operator */
-		SGVector<T> operator+ (SGVector<T> x)
-		{
-			ASSERT(x.vector && vector);
-			ASSERT(x.vlen == vlen);
-
-			SGVector<T> result=clone();
-			result.add(x);
-			return result;
-		}
+		SGVector<T> operator+ (SGVector<T> x);
 
 		/** inplace addition operator */
 		SGVector<T> operator+= (SGVector<T> x)
@@ -202,13 +179,7 @@ template<class T> class SGVector : public SGReferencedData
 		/** resize array from old_size to new_size (keeping as much array
 		 * content as possible intact)
 		 */
-		static inline void resize(T* &data, int64_t old_size, int64_t new_size)
-		{
-			if (old_size==new_size)
-				return;
-
-			data = SG_REALLOC(T, data, old_size, new_size);
-		}
+		static void resize(T* &data, int64_t old_size, int64_t new_size);
 
 		/// || x ||_2
 		static T twonorm(const T* x, int32_t len);
@@ -428,44 +399,10 @@ template<class T> class SGVector : public SGReferencedData
 		static T max(T* vec, int32_t len);
 
 		/// return arg_max(vec)
-		static inline int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL)
-		{
-			ASSERT(len > 0 || inc > 0);
-
-			T maxv = vec[0];
-			int32_t maxIdx = 0;
-
-			for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
-			{
-				if (vec[j] > maxv)
-					maxv = vec[j], maxIdx = i;
-			}
-
-			if (maxv_ptr != NULL)
-				*maxv_ptr = maxv;
-
-			return maxIdx;
-		}
+		static int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL);
 
 		/// return arg_min(vec)
-		static inline int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL)
-		{
-			ASSERT(len > 0 || inc > 0);
-
-			T minv = vec[0];
-			int32_t minIdx = 0;
-
-			for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
-			{
-				if (vec[j] < minv)
-					minv = vec[j], minIdx = i;
-			}
-
-			if (minv_ptr != NULL)
-				*minv_ptr = minv;
-
-			return minIdx;
-		}
+		static int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL);
 
 		/// return sum(abs(vec))
 		static T sum_abs(T* vec, int32_t len);

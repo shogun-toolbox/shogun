@@ -12,6 +12,7 @@
 #define __MEMORY_H__
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,18 +20,38 @@
 #include <new>
 
 /* wrappers for malloc, free, realloc, calloc */
+
+/* overload new() / delete */
+void* operator new(size_t size) throw (std::bad_alloc);
+void operator delete(void *p) throw();
+
+/* overload new[] / delete[] */
+void* operator new[](size_t size) throw(std::bad_alloc);
+void operator delete[](void *p) throw();
+
 #ifdef TRACE_MEMORY_ALLOCS
 #define SG_MALLOC(type, len) sg_generic_malloc<type>(size_t(len), __FILE__, __LINE__)
 #define SG_CALLOC(type, len) sg_generic_calloc<type>(size_t(len), __FILE__, __LINE__)
 #define SG_REALLOC(type, ptr, old_len, len) sg_generic_realloc<type>(ptr, size_t(old_len), size_t(len), __FILE__, __LINE__)
 #define SG_FREE(ptr) sg_generic_free(ptr)
+#else //TRACE_MEMORY_ALLOCS
 
+#define SG_MALLOC(type, len) sg_generic_malloc<type>(size_t(len))
+#define SG_CALLOC(type, len) sg_generic_calloc<type>(size_t(len))
+#define SG_REALLOC(type, ptr, old_len, len) sg_generic_realloc<type>(ptr, size_t(old_len), size_t(len))
+#define SG_FREE(ptr) sg_generic_free(ptr)
+#endif //TRACE_MEMORY_ALLOCS
+
+#include <shogun/lib/SGVector.h>
+
+namespace shogun
+{
+#ifdef TRACE_MEMORY_ALLOCS
 void* sg_malloc(size_t size, const char* file, int line);
 template <class T> T* sg_generic_malloc(size_t len, const char* file, int line)
 {
 	return (T*) sg_malloc(sizeof(T)*len, file, line);
 }
-
 
 void* sg_calloc(size_t num, size_t size, const char* file, int line);
 template <class T> T* sg_generic_calloc(size_t len, const char* file, int line)
@@ -47,15 +68,9 @@ template <class T> T* sg_generic_realloc(T* ptr, size_t old_len, size_t len, con
 void  sg_free(void* ptr);
 template <class T> void sg_generic_free(T* ptr)
 {
-	sg_free(ptr);
+	sg_free((void*) ptr);
 }
 #else //TRACE_MEMORY_ALLOCS
-
-#define SG_MALLOC(type, len) sg_generic_malloc<type>(size_t(len))
-#define SG_CALLOC(type, len) sg_generic_calloc<type>(size_t(len))
-#define SG_REALLOC(type, ptr, old_len, len) sg_generic_realloc<type>(ptr, size_t(old_len), size_t(len))
-#define SG_FREE(ptr) sg_generic_free(ptr)
-
 void* sg_malloc(size_t size);
 template <class T> T* sg_generic_malloc(size_t len)
 {
@@ -80,19 +95,7 @@ template <class T> void sg_generic_free(T* ptr)
 	sg_free(ptr);
 }
 #endif //TRACE_MEMORY_ALLOCS
-
-/* overload new() / delete */
-void* operator new(size_t size) throw (std::bad_alloc);
-void operator delete(void *p) throw();
-
-/* overload new[] / delete[] */
-void* operator new[](size_t size) throw(std::bad_alloc);
-void operator delete[](void *p) throw();
-
-
 #ifdef TRACE_MEMORY_ALLOCS
-namespace shogun
-{
 /** @brief memory block */
 class MemoryBlock
 {
@@ -132,8 +135,37 @@ class MemoryBlock
 		int line;
 		bool is_sgobject;
 };
-}
-
 void list_memory_allocs();
 #endif
+
+#ifdef TRACE_MEMORY_ALLOCS
+#define SG_SPECIALIZED_MALLOC(type)																\
+template<> type* sg_generic_malloc<type >(size_t len, const char* file, int line);				\
+template<> type* sg_generic_calloc<type >(size_t len, const char* file, int line);				\
+template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len, const char* file, int line);	\
+template<> void sg_generic_free<type >(type* ptr);
+#else // TRACE_MEMORY_ALLOCS
+#define SG_SPECIALIZED_MALLOC(type)													\
+template<> type* sg_generic_malloc<type >(size_t len);								\
+template<> type* sg_generic_calloc<type >(size_t len);								\
+template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len);	\
+template<> void sg_generic_free<type >(type* ptr);
+#endif // TRACE_MEMORY_ALLOCS
+
+SG_SPECIALIZED_MALLOC(SGVector<bool>)
+SG_SPECIALIZED_MALLOC(SGVector<char>)
+SG_SPECIALIZED_MALLOC(SGVector<int8_t>)
+SG_SPECIALIZED_MALLOC(SGVector<uint8_t>)
+SG_SPECIALIZED_MALLOC(SGVector<int16_t>)
+SG_SPECIALIZED_MALLOC(SGVector<uint16_t>)
+SG_SPECIALIZED_MALLOC(SGVector<int32_t>)
+SG_SPECIALIZED_MALLOC(SGVector<uint32_t>)
+SG_SPECIALIZED_MALLOC(SGVector<int64_t>)
+SG_SPECIALIZED_MALLOC(SGVector<uint64_t>)
+SG_SPECIALIZED_MALLOC(SGVector<float32_t>)
+SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
+SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
+#undef SG_SPECIALIZED_MALLOC
+}
+
 #endif // __MEMORY_H__

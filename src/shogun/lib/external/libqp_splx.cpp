@@ -76,6 +76,7 @@
 #include <limits.h>
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
 #include <shogun/lib/external/libqp.h>
 namespace shogun
 {

@@ -7,9 +7,11 @@
  * Written (W) 2011 Sergey Lisitsyn
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
+#include <shogun/lib/config.h>
 
-#include <shogun/mathematics/arpack.h>
 #ifdef HAVE_ARPACK
+#include <shogun/lib/memory.h>
+#include <shogun/mathematics/arpack.h>
 #ifdef HAVE_LAPACK
 #include <shogun/io/SGIO.h>
 #include <string.h>

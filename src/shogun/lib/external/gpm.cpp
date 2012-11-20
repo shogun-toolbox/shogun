@@ -387,14 +387,18 @@ int32_t gvpm(
               kktlam = kktlam/it;
               info   = 1;
               for (i = 0; i < it; i++)
+			  {
                   if (fabs(iy[ipt[i]]*g[ipt[i]]+kktlam) > tol)
                   {
                       info = 0;
                       break;
                   }
+			  }
 
               if (info == 1)
+			  {
                   for (i = 0; i < luv; i++)
+				  {
                       if (x[uv[i]] <= DELTAsv)
                       {
                           if (g[uv[i]] + kktlam*iy[uv[i]] < -tol)
@@ -411,6 +415,8 @@ int32_t gvpm(
                               break;
                           }
                       }
+				  }
+			  }
 
               if (info == 1)
                   goto Clean;

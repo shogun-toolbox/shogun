@@ -110,6 +110,20 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 #define REQUIRE(x, ...) { if (!(x)) SG_SERROR(__VA_ARGS__); }
 
+/**
+ * @brief struct Substring, specified by
+ * start position and end position.
+ *
+ * Used to mark strings in a buffer, where they
+ * need not be delimited by NUL characters.
+ */
+struct substring
+{
+	/** start */
+	char *start;
+	/** end */
+	char *end;
+};
 
 /** @brief Class SGIO, used to do input output operations throughout shogun.
  *
@@ -366,6 +380,55 @@ class SGIO
             return 0;
         }
 
+		/**
+		 * Return a C string from the substring
+		 * @param s substring
+		 * @return new C string representation
+		 */
+		static char* c_string_of_substring(substring s);
+
+		/**
+		 * Print the substring
+		 * @param s substring
+		 */
+		static void print_substring(substring s);
+
+		/**
+		 * Get value of substring as float
+		 * (if possible)
+		 * @param s substring
+		 * @return float32_t value of substring
+		 */
+		static float32_t float_of_substring(substring s);
+
+		/**
+		 * Return value of substring as double
+		 * @param s substring
+		 * @return substring as double
+		 */
+		static float64_t double_of_substring(substring s);
+
+		/**
+		 * Integer value of substring
+		 * @param s substring
+		 * @return int value of substring
+		 */
+		static int32_t int_of_substring(substring s);
+
+		/**
+		 * Unsigned long value of substring
+		 * @param s substring
+		 * @return unsigned long value of substring
+		 */
+		static uint32_t ulong_of_substring(substring s);
+
+		/**
+		 * Length of substring
+		 * @param s substring
+		 * @return length of substring
+		 */
+		static uint32_t ss_length(substring s);
+
 		/** increase reference counter
 		 *
 		 * @return reference count
@@ -447,111 +510,5 @@ class SGIO
 	private:
 		int32_t refcount;
 };
-
-/**
- * @brief struct Substring, specified by
- * start position and end position.
- *
- * Used to mark strings in a buffer, where they
- * need not be delimited by NUL characters.
- */
-struct substring
-{
-	/** start */
-	char *start;
-	/** end */
-	char *end;
-};
-
-
-/**
- * Return a C string from the substring
- * @param s substring
- * @return new C string representation
- */
-inline char* c_string_of_substring(substring s)
-{
-	uint32_t len = s.end - s.start+1;
-	char* ret = SG_CALLOC(char, len);
-	memcpy(ret,s.start,len-1);
-	return ret;
-}
-
-/**
- * Print the substring
- * @param s substring
- */
-inline void print_substring(substring s)
-{
-	char* c_string = c_string_of_substring(s);
-	SG_SPRINT("%s\n", c_string);
-	SG_FREE(c_string);
-}
-
-/**
- * Get value of substring as float
- * (if possible)
- * @param s substring
- * @return float32_t value of substring
- */
-inline float32_t float_of_substring(substring s)
-{
-	char* endptr = s.end;
-	float32_t f = strtof(s.start,&endptr);
-	if (endptr == s.start && s.start != s.end)
-		SG_SERROR("error: %s is not a float!\n", c_string_of_substring(s));
-
-	return f;
-}
-
-/**
- * Return value of substring as double
- * @param s substring
- * @return substring as double
- */
-inline float64_t double_of_substring(substring s)
-{
-	char* endptr = s.end;
-	float64_t f = strtod(s.start,&endptr);
-	if (endptr == s.start && s.start != s.end)
-		SG_SERROR("Error!:%s is not a double!\n", c_string_of_substring(s));
-
-	return f;
-}
-
-/**
- * Integer value of substring
- * @param s substring
- * @return int value of substring
- */
-inline int32_t int_of_substring(substring s)
-{
-	char* c_string = c_string_of_substring(s);
-	int32_t int_val = atoi(c_string);
-	SG_FREE(c_string);
-
-	return int_val;
-}
-
-/**
- * Unsigned long value of substring
- * @param s substring
- * @return unsigned long value of substring
- */
-inline uint32_t ulong_of_substring(substring s)
-{
-	return strtoul(s.start,NULL,10);
-}
-
-/**
- * Length of substring
- * @param s substring
- * @return length of substring
- */
-inline uint32_t ss_length(substring s)
-{
-	return (s.end - s.start);
-}
-
 }
 #endif // __SGIO_H__

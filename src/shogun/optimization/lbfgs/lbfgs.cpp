@@ -68,6 +68,8 @@ licence.
 
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
 
 namespace shogun
 {

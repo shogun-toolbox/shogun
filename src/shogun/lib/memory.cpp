@@ -13,7 +13,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -142,6 +141,8 @@ void operator delete[](void *p) throw()
 	free(p);
 }
 
+namespace shogun
+{
 void* sg_malloc(size_t size
 #ifdef TRACE_MEMORY_ALLOCS
 		, const char* file, int line
@@ -274,7 +275,9 @@ template<> type* sg_generic_calloc<type >(size_t len, const char* file, int line
 template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len, const char* file, int line)	\
 {																								\
 	type* new_ptr = new type[len]();															\
-	size_t min_len=CMath::min(old_len, len);													\
+	size_t min_len=old_len;																		\
+	if (len<min_len)																			\
+		min_len=len;																			\
 	for (size_t i=0; i<min_len; i++)															\
 		new_ptr[i]=ptr[i];																		\
 	delete[] ptr;																				\
@@ -291,18 +294,22 @@ template<> void sg_generic_free<type >(type* ptr)												\
 #define SG_SPECIALIZED_MALLOC(type)									\
 template<> type* sg_generic_malloc<type >(size_t len)				\
 {																	\
+	printf("new[]\n"); \
 	return new type[len]();											\
 }																	\
 																	\
 template<> type* sg_generic_calloc<type >(size_t len)				\
 {																	\
+	printf("new[]\n"); \
 	return new type[len]();											\
 }																	\
 																	\
 template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len)	\
 {																	\
 	type* new_ptr = new type[len]();								\
-	size_t min_len=CMath::min(old_len, len);						\
+	size_t min_len=old_len;											\
+	if (len<min_len)												\
+		min_len=len;												\
 	for (size_t i=0; i<min_len; i++)								\
 		new_ptr[i]=ptr[i];											\
 	delete[] ptr;													\
@@ -328,4 +335,5 @@ SG_SPECIALIZED_MALLOC(SGVector<uint64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
-#undef SG_GENERIC_MALLOC
+#undef SG_SPECIALIZED_MALLOC
+}

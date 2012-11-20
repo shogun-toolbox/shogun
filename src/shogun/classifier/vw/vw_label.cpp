@@ -23,16 +23,16 @@ void VwLabel::label_from_substring(v_array<substring>& words)
 	case 0:
 		break;
 	case 1:
-		label = float_of_substring(words[0]);
+		label = SGIO::float_of_substring(words[0]);
 		break;
 	case 2:
-		label = float_of_substring(words[0]);
-		weight = float_of_substring(words[1]);
+		label = SGIO::float_of_substring(words[0]);
+		weight = SGIO::float_of_substring(words[1]);
 		break;
 	case 3:
-		label = float_of_substring(words[0]);
-		weight = float_of_substring(words[1]);
-		initial = float_of_substring(words[2]);
+		label = SGIO::float_of_substring(words[0]);
+		weight = SGIO::float_of_substring(words[1]);
+		initial = SGIO::float_of_substring(words[2]);
 		break;
 	default:
 		SG_SERROR("malformed example!\n"

@@ -174,7 +174,7 @@ int32_t CVwParser::read_svmlight_features(CIOBuffer* buf, VwExample*& ae)
 	vw_size_t mask = env->mask;
 	tokenize(' ', example_string, words);
 
-	ae->ld->label = float_of_substring(words[0]);
+	ae->ld->label = SGIO::float_of_substring(words[0]);
 	ae->ld->weight = 1.;
 	ae->ld->initial = 0.;
 	set_minmax(ae->ld->label);
@@ -216,7 +216,7 @@ int32_t CVwParser::read_dense_features(CIOBuffer* buf, VwExample*& ae)
 	vw_size_t mask = env->mask;
 	tokenize(' ', example_string, words);
 
-	ae->ld->label = float_of_substring(words[0]);
+	ae->ld->label = SGIO::float_of_substring(words[0]);
 	ae->ld->weight = 1.;
 	ae->ld->initial = 0.;
 	set_minmax(ae->ld->label);
@@ -231,7 +231,7 @@ int32_t CVwParser::read_dense_features(CIOBuffer* buf, VwExample*& ae)
 	int32_t j=0;
 	for (substring* i = feature_start; i != words.end; i++)
 	{
-		float32_t v = float_of_substring(*i);
+		float32_t v = SGIO::float_of_substring(*i);
 		vw_size_t word_hash = j & mask;
 		VwFeature f = {v,word_hash};
 		ae->sum_feat_sq[index] += v*v;
@@ -281,14 +281,14 @@ void CVwParser::feature_value(substring &s, v_array<substring>& feat_name, float
 		v = 1.;
 		break;
 	case 2:
-		v = float_of_substring(feat_name[1]);
+		v = SGIO::float_of_substring(feat_name[1]);
 		if (isnan(v))
 			SG_SERROR("error NaN value for feature %s! Terminating!\n",
-				  c_string_of_substring(feat_name[0]));
+				  SGIO::c_string_of_substring(feat_name[0]));
 		break;
 	default:
 		SG_SERROR("Examples with a weird name, i.e., '%s'\n",
-			  c_string_of_substring(s));
+			  SGIO::c_string_of_substring(s));
 	}
 }
 
