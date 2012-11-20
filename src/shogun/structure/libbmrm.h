@@ -162,7 +162,8 @@ inline void clean_icp(ICP_stats* icp_stats,
 		bool*& map,
 		uint32_t cleanAfter,
 		float64_t*& b,
-		uint32_t*& I
+		uint32_t*& I,
+		uint32_t cp_models = 0
 		);
 
 /** Get cutting plane

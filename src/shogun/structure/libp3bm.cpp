@@ -223,7 +223,7 @@ bmrm_return_value_T svm_p3bm_solver(
 	for (uint32_t p=1; p<cp_models; ++p)
 	{
 		Rt[p] = model->risk(subgrad_t[p], W, info[p]);
-		b[p]=-Rt[p];
+		b[p]=SGVector<float64_t>::dot(subgrad_t[p], W, nDim) - Rt[p];
 		add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 	}
 
@@ -233,15 +233,11 @@ bmrm_return_value_T svm_p3bm_solver(
 	for (uint32_t p=0; p<cp_models; ++p)
 		R+=Rt[p];
 
-	sq_norm_W=0.0;
+	sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
 	sq_norm_Wdiff=0.0;
 
 	for (uint32_t j=0; j<nDim; ++j)
 	{
-		for (uint32_t p=0; p<cp_models; ++p)
-			b[p]+=subgrad_t[p][j]*W[j];
-
-		sq_norm_W+=W[j]*W[j];
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 	}
 
@@ -285,12 +281,7 @@ bmrm_return_value_T svm_p3bm_solver(
 
 				for (uint32_t p=0; p<cp_models; ++p)
 				{
-					rsum=0.0;
-
-					for (uint32_t j=0; j<nDim; ++j)
-					{
-						rsum+=subgrad_t[p][j]*A_1[j];
-					}
+					rsum=SGVector<float64_t>::dot(A_1, subgrad_t[p], nDim);
 
 					H[LIBBMRM_INDEX(p, cp_i, BufSize)]=rsum;
 				}
@@ -308,10 +299,7 @@ bmrm_return_value_T svm_p3bm_solver(
 
 				for (uint32_t p=0; p<cp_models; ++p)
 				{
-					rsum=0.0;
-
-					for (uint32_t j=0; j<nDim; ++j)
-						rsum+=subgrad_t[p][j]*A_1[j];
+					rsum=SGVector<float64_t>::dot(A_1, subgrad_t[p], nDim);
 
 					H[LIBBMRM_INDEX(p3bmrm.nCP+p, cp_i, BufSize)]=rsum;
 				}
@@ -355,12 +343,10 @@ bmrm_return_value_T svm_p3bm_solver(
 
 			for (uint32_t i=0; i<p3bmrm.nCP; ++i)
 			{
-				rsum=0.0;
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				for (uint32_t j=0; j<nDim; ++j)
-					rsum+=A_1[j]*prevW[j];
+				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -577,30 +563,25 @@ bmrm_return_value_T svm_p3bm_solver(
 
 			W[i]=(2*alpha*prevW[i]-rsum)/(_lambda+2*alpha);
 		}
-
 		/* risk and subgradient computation */
+
 		R=0.0;
 
 		for (uint32_t p=0; p<cp_models; ++p)
 		{
 			Rt[p] = model->risk(subgrad_t[p], W, info[p]);
-			b[p3bmrm.nCP+p]=-Rt[p];
+			b[p3bmrm.nCP+p] = SGVector<float64_t>::dot(subgrad_t[p], W, nDim) - Rt[p];
 			add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 			R+=Rt[p];
 		}
 
-		sq_norm_W=0.0;
+		sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
+		sq_norm_prevW=SGVector<float64_t>::dot(prevW, prevW, nDim);
 		sq_norm_Wdiff=0.0;
-		sq_norm_prevW=0.0;
 
 		for (uint32_t j=0; j<nDim; ++j)
 		{
-			for (uint32_t p=0; p<cp_models; ++p)
-				b[p3bmrm.nCP+p]+=subgrad_t[p][j]*W[j];
-
-			sq_norm_W+=W[j]*W[j];
 			sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
-			sq_norm_prevW+=prevW[j]*prevW[j];
 		}
 
 		/* compute Fp and Fd */
@@ -674,7 +655,9 @@ bmrm_return_value_T svm_p3bm_solver(
 		/* Inactive Cutting Planes (ICP) removal */
 		if (cleanICP)
 		{
-			clean_icp(&icp_stats, p3bmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
+			clean_icp(&icp_stats, p3bmrm, &CPList_head,
+					&CPList_tail, H, diag_H, beta, map,
+					cleanAfter, b, I, cp_models);
 		}
 	} /* end of main loop */
 

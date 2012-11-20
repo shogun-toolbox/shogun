@@ -95,7 +95,8 @@ inline void clean_icp(ICP_stats* icp_stats,
 		bool*& map,
 		uint32_t cleanAfter,
 		float64_t*& b,
-		uint32_t*& I
+		uint32_t*& I,
+		uint32_t cp_models
 		)
 {
 	/* find ICP */
@@ -137,7 +138,7 @@ inline void clean_icp(ICP_stats* icp_stats,
 			remove_cutting_plane(head, tail, map, icp_stats->ICPs[i]);
 
 			LIBBMRM_MEMMOVE(b+tmp_idx, b+tmp_idx+1,
-					(bmrm.nCP-tmp_idx)*sizeof(float64_t));
+					(bmrm.nCP+cp_models-tmp_idx)*sizeof(float64_t));
 			LIBBMRM_MEMMOVE(beta+tmp_idx, beta+tmp_idx+1,
 					(bmrm.nCP-tmp_idx)*sizeof(float64_t));
 			LIBBMRM_MEMMOVE(diag_H+tmp_idx, diag_H+tmp_idx+1,
