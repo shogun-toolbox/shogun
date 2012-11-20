@@ -6,14 +6,9 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char** argv)
 {
-	init_shogun(&print_message);
+	init_shogun_with_defaults();
 	index_t num_vec=3;
 	index_t num_feat=2;
 	index_t num_class=2;
