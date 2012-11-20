@@ -365,19 +365,14 @@ bmrm_return_value_T svm_p3bm_solver(
 			Fd_alpha0=-qp_exitflag.QP;
 
 			/* obtain w_t and check if norm(w_{t+1} -w_t) <= K */
-			for (uint32_t i=0; i<nDim; ++i)
+			memset(wt, 0, sizeof(float64_t)*nDim);
+			SGVector<float64_t>::vec1_plus_scalar_times_vec2(wt, 2*alpha/(_lambda+2*alpha), prevW, nDim);
+			cp_ptr=CPList_head;
+			for (uint32_t j=0; j<p3bmrm.nCP; ++j)
 			{
-				rsum=0.0;
-				cp_ptr=CPList_head;
-
-				for (uint32_t j=0; j<p3bmrm.nCP; ++j)
-				{
-					A_1=get_cutting_plane(cp_ptr);
-					cp_ptr=cp_ptr->next;
-					rsum+=A_1[i]*beta[j];
-				}
-
-				wt[i]=(2*alpha*prevW[i] - rsum)/(_lambda+2*alpha);
+				A_1=get_cutting_plane(cp_ptr);
+				cp_ptr=cp_ptr->next;
+				SGVector<float64_t>::vec1_plus_scalar_times_vec2(wt, -beta[j]/(_lambda+2*alpha), A_1, nDim);
 			}
 
 			sq_norm_Wdiff=0.0;
@@ -426,19 +421,14 @@ bmrm_return_value_T svm_p3bm_solver(
 				qp_cnt++;
 
 				/* obtain w_t and check if norm(w_{t+1}-w_t) <= K */
-				for (uint32_t i=0; i<nDim; ++i)
+				memset(wt, 0, sizeof(float64_t)*nDim);
+				SGVector<float64_t>::vec1_plus_scalar_times_vec2(wt, 2*alpha/(_lambda+2*alpha), prevW, nDim);
+				cp_ptr=CPList_head;
+				for (uint32_t j=0; j<p3bmrm.nCP; ++j)
 				{
-					rsum=0.0;
-					cp_ptr=CPList_head;
-
-					for (uint32_t j=0; j<p3bmrm.nCP; ++j)
-					{
-						A_1=get_cutting_plane(cp_ptr);
-						cp_ptr=cp_ptr->next;
-						rsum+=A_1[i]*beta[j];
-					}
-
-					wt[i]=(2*alpha*prevW[i] - rsum)/(_lambda+2*alpha);
+					A_1=get_cutting_plane(cp_ptr);
+					cp_ptr=cp_ptr->next;
+					SGVector<float64_t>::vec1_plus_scalar_times_vec2(wt, -beta[j]/(_lambda+2*alpha), A_1, nDim);
 				}
 
 				sq_norm_Wdiff=0.0;
@@ -549,22 +539,17 @@ bmrm_return_value_T svm_p3bm_solver(
 		}
 
 		/* W update */
-		for (uint32_t i=0; i<nDim; ++i)
+		memset(W, 0, sizeof(float64_t)*nDim);
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(W, 2*alpha/(_lambda+2*alpha), prevW, nDim);
+		cp_ptr=CPList_head;
+		for (uint32_t j=0; j<p3bmrm.nCP; ++j)
 		{
-			rsum=0.0;
-			cp_ptr=CPList_head;
-
-			for (uint32_t j=0; j<p3bmrm.nCP; ++j)
-			{
-				A_1=get_cutting_plane(cp_ptr);
-				cp_ptr=cp_ptr->next;
-				rsum+=A_1[i]*beta[j];
-			}
-
-			W[i]=(2*alpha*prevW[i]-rsum)/(_lambda+2*alpha);
+			A_1=get_cutting_plane(cp_ptr);
+			cp_ptr=cp_ptr->next;
+			SGVector<float64_t>::vec1_plus_scalar_times_vec2(W, -beta[j]/(_lambda+2*alpha), A_1, nDim);
 		}
-		/* risk and subgradient computation */
 
+		/* risk and subgradient computation */
 		R=0.0;
 
 		for (uint32_t p=0; p<cp_models; ++p)
