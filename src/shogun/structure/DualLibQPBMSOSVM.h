@@ -26,7 +26,8 @@ enum ESolver
 {
 	BMRM=1,		/**< Standard BMRM algorithm. */
 	PPBMRM=2,	/**< Proximal Point BMRM (BMRM with prox-term) */
-	P3BMRM=3	/**< Proximal Point P-BMRM (multiple cutting plane models) */
+	P3BMRM=3,	/**< Proximal Point P-BMRM (multiple cutting plane models) */
+	NCBM=4
 };
 
 /**
