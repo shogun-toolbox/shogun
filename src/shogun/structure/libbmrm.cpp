@@ -85,6 +85,88 @@ void remove_cutting_plane(
 	LIBBMRM_FREE(cp_list_ptr);
 }
 
+inline void clean_icp(ICP_stats* icp_stats,
+		bmrm_return_value_T& bmrm,
+		bmrm_ll** head,
+		bmrm_ll** tail,
+		float64_t*& H,
+		float64_t*& diag_H,
+		float64_t*& beta,
+		bool*& map,
+		uint32_t cleanAfter,
+		float64_t*& b,
+		uint32_t*& I
+		)
+{
+	/* find ICP */
+	uint32_t cntICP=0;
+	uint32_t cntACP=0;
+	bmrm_ll* cp_ptr=*head;
+	uint32_t tmp_idx=0;
+
+	while (cp_ptr != *tail)
+	{
+		if (icp_stats->ICPcounter[tmp_idx++]>=cleanAfter)
+		{
+			icp_stats->ICPs[cntICP++]=cp_ptr->address;
+		}
+		else
+		{
+			icp_stats->ACPs[cntACP++]=tmp_idx-1;
+		}
+
+		cp_ptr=cp_ptr->next;
+	}
+
+	/* do ICP removal */
+	if (cntICP > 0)
+	{
+		uint32_t nCP_new=bmrm.nCP-cntICP;
+
+		for (uint32_t i=0; i<cntICP; ++i)
+		{
+			tmp_idx=0;
+			cp_ptr=*head;
+
+			while(cp_ptr->address != icp_stats->ICPs[i])
+			{
+				cp_ptr=cp_ptr->next;
+				tmp_idx++;
+			}
+
+			remove_cutting_plane(head, tail, map, icp_stats->ICPs[i]);
+
+			LIBBMRM_MEMMOVE(b+tmp_idx, b+tmp_idx+1,
+					(bmrm.nCP-tmp_idx)*sizeof(float64_t));
+			LIBBMRM_MEMMOVE(beta+tmp_idx, beta+tmp_idx+1,
+					(bmrm.nCP-tmp_idx)*sizeof(float64_t));
+			LIBBMRM_MEMMOVE(diag_H+tmp_idx, diag_H+tmp_idx+1,
+					(bmrm.nCP-tmp_idx)*sizeof(float64_t));
+			LIBBMRM_MEMMOVE(I+tmp_idx, I+tmp_idx+1,
+					(bmrm.nCP-tmp_idx)*sizeof(uint32_t));
+			LIBBMRM_MEMMOVE(icp_stats->ICPcounter+tmp_idx, icp_stats->ICPcounter+tmp_idx+1,
+					(bmrm.nCP-tmp_idx)*sizeof(uint32_t));
+		}
+
+		/* H */
+		for (uint32_t i=0; i < nCP_new; ++i)
+		{
+			for (uint32_t j=0; j < nCP_new; ++j)
+			{
+				icp_stats->H_buff[LIBBMRM_INDEX(i, j, icp_stats->maxCPs)]=
+					H[LIBBMRM_INDEX(icp_stats->ACPs[i], icp_stats->ACPs[j], icp_stats->maxCPs)];
+			}
+		}
+
+		for (uint32_t i=0; i<nCP_new; ++i)
+			for (uint32_t j=0; j<nCP_new; ++j)
+				H[LIBBMRM_INDEX(i, j, icp_stats->maxCPs)]=
+					icp_stats->H_buff[LIBBMRM_INDEX(i, j, icp_stats->maxCPs)];
+
+		bmrm.nCP=nCP_new;
+	}
+}
+
 /*----------------------------------------------------------------------
   Returns pointer at i-th column of Hessian matrix.
   ----------------------------------------------------------------------*/
@@ -111,18 +193,15 @@ bmrm_return_value_T svm_bmrm_solver(
 	float64_t *b, *beta, *diag_H, *prevW;
 	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0, wdist=0.0;
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff=0.0;
-	uint32_t *I, *ICPcounter, *ACPs, cntICP=0, cntACP=0;
+	uint32_t *I;
 	uint8_t S=1;
 	uint32_t nDim=model->get_dim();
-	float64_t **ICPs;
 
 	CTime ttime;
 	float64_t tstart, tstop;
 
-	uint32_t nCP_new=0;
-
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
-	float64_t *A_1=NULL, *A_2=NULL, *H_buff;
+	float64_t *A_1=NULL, *A_2=NULL;
 	bool *map=NULL;
 
 
@@ -138,10 +217,6 @@ bmrm_return_value_T svm_bmrm_solver(
 	subgrad=NULL;
 	diag_H=NULL;
 	I=NULL;
-	ICPcounter=NULL;
-	ICPs=NULL;
-	ACPs=NULL;
-	H_buff=NULL;
 	prevW=NULL;
 
 	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
@@ -200,25 +275,33 @@ bmrm_return_value_T svm_bmrm_solver(
 		goto cleanup;
 	}
 
-	ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	ICP_stats icp_stats;
+	icp_stats.maxCPs = BufSize;
 
-	if (ICPcounter==NULL)
+	icp_stats.ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	if (icp_stats.ICPcounter==NULL)
 	{
 		bmrm.exitflag=-2;
 		goto cleanup;
 	}
 
-	ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
-
-	if (ICPs==NULL)
+	icp_stats.ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
+	if (icp_stats.ICPs==NULL)
 	{
 		bmrm.exitflag=-2;
 		goto cleanup;
 	}
 
-	ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	icp_stats.ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	if (icp_stats.ACPs==NULL)
+	{
+		bmrm.exitflag=-2;
+		goto cleanup;
+	}
 
-	if (ACPs==NULL)
+	/* Temporary buffers for ICP removal */
+	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	if (icp_stats.H_buff==NULL)
 	{
 		bmrm.exitflag=-2;
 		goto cleanup;
@@ -237,15 +320,6 @@ bmrm_return_value_T svm_bmrm_solver(
 	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, sizeof(bmrm_ll));
 
 	if (cp_list==NULL)
-	{
-		bmrm.exitflag=-2;
-		goto cleanup;
-	}
-
-	/* Temporary buffers for ICP removal */
-	H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
-
-	if (H_buff==NULL)
 	{
 		bmrm.exitflag=-2;
 		goto cleanup;
@@ -339,9 +413,25 @@ bmrm_return_value_T svm_bmrm_solver(
 		bmrm.nCP++;
 		beta[bmrm.nCP]=0.0; // [beta; 0]
 
+#if 0
+		/* TODO: scaling...*/
+		float64_t scale = SGVector<float64_t>::max(diag_H, BufSize)/(1000.0*_lambda);
+		SGVector<float64_t> sb(bmrm.nCP);
+		sb.zero();
+		sb.vec1_plus_scalar_times_vec2(sb.vector, 1/scale, b, bmrm.nCP);
+
+		SGVector<float64_t> sh(bmrm.nCP);
+		sh.zero();
+		sb.vec1_plus_scalar_times_vec2(sh.vector, 1/scale, diag_H, bmrm.nCP);
+
+		qp_exitflag =
+			libqp_splx_solver(&get_col, sh.vector, sb.vector, &C, I, &S, beta,
+				bmrm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
+#else
 		/* call QP solver */
 		qp_exitflag=libqp_splx_solver(&get_col, diag_H, b, &C, I, &S, beta,
 				bmrm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
+#endif
 
 		bmrm.qp_exitflag=qp_exitflag.exitflag;
 
@@ -354,11 +444,11 @@ bmrm_return_value_T svm_bmrm_solver(
 			if (beta[aaa]>epsilon)
 			{
 				++bmrm.nzA;
-				ICPcounter[aaa]=0;
+				icp_stats.ICPcounter[aaa]=0;
 			}
 			else
 			{
-				ICPcounter[aaa]+=1;
+				icp_stats.ICPcounter[aaa]+=1;
 			}
 		}
 
@@ -429,73 +519,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		/* Inactive Cutting Planes (ICP) removal */
 		if (cleanICP)
 		{
-			/* find ICP */
-			cntICP=0;
-			cntACP=0;
-			cp_ptr=CPList_head;
-			uint32_t tmp_idx=0;
-
-			while (cp_ptr != CPList_tail)
-			{
-				if (ICPcounter[tmp_idx++]>=cleanAfter)
-				{
-					ICPs[cntICP++]=cp_ptr->address;
-				}
-				else
-				{
-					ACPs[cntACP++]=tmp_idx-1;
-				}
-
-				cp_ptr=cp_ptr->next;
-			}
-
-			/* do ICP removal */
-			if (cntICP > 0)
-			{
-				nCP_new=bmrm.nCP-cntICP;
-
-				for (uint32_t i=0; i<cntICP; ++i)
-				{
-					tmp_idx=0;
-					cp_ptr=CPList_head;
-
-					while(cp_ptr->address != ICPs[i])
-					{
-						cp_ptr=cp_ptr->next;
-						tmp_idx++;
-					}
-
-					remove_cutting_plane(&CPList_head, &CPList_tail, map, ICPs[i]);
-
-					LIBBMRM_MEMMOVE(b+tmp_idx, b+tmp_idx+1,
-							(bmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(beta+tmp_idx, beta+tmp_idx+1,
-							(bmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(diag_H+tmp_idx, diag_H+tmp_idx+1,
-							(bmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(I+tmp_idx, I+tmp_idx+1,
-							(bmrm.nCP-tmp_idx)*sizeof(uint32_t));
-					LIBBMRM_MEMMOVE(ICPcounter+tmp_idx, ICPcounter+tmp_idx+1,
-							(bmrm.nCP-tmp_idx)*sizeof(uint32_t));
-				}
-
-				/* H */
-				for (uint32_t i=0; i < nCP_new; ++i)
-				{
-					for (uint32_t j=0; j < nCP_new; ++j)
-					{
-						H_buff[LIBBMRM_INDEX(i, j, BufSize)]=
-							H[LIBBMRM_INDEX(ACPs[i], ACPs[j], BufSize)];
-					}
-				}
-
-				for (uint32_t i=0; i<nCP_new; ++i)
-					for (uint32_t j=0; j<nCP_new; ++j)
-						H[LIBBMRM_INDEX(i, j, BufSize)]=
-							H_buff[LIBBMRM_INDEX(i, j, BufSize)];
-
-				bmrm.nCP=nCP_new;
-			}
+			clean_icp(&icp_stats, bmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
 		}
 	} /* end of main loop */
 
@@ -524,10 +548,10 @@ cleanup:
 	LIBBMRM_FREE(subgrad);
 	LIBBMRM_FREE(diag_H);
 	LIBBMRM_FREE(I);
-	LIBBMRM_FREE(ICPcounter);
-	LIBBMRM_FREE(ICPs);
-	LIBBMRM_FREE(ACPs);
-	LIBBMRM_FREE(H_buff);
+	LIBBMRM_FREE(icp_stats.ICPcounter);
+	LIBBMRM_FREE(icp_stats.ICPs);
+	LIBBMRM_FREE(icp_stats.ACPs);
+	LIBBMRM_FREE(icp_stats.H_buff);
 	LIBBMRM_FREE(map);
 	LIBBMRM_FREE(prevW);
 

@@ -51,13 +51,12 @@ bmrm_return_value_T svm_ppbm_solver(
 	float64_t *prevW, *wt, alpha, alpha_start, alpha_good=0.0, Fd_alpha0=0.0;
 	float64_t lastFp, wdist, gamma=0.0;
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
-	uint32_t *I, *I2, *I_start, *I_good, *ICPcounter, *ACPs, cntICP=0, cntACP=0;
+	uint32_t *I, *I2, *I_start, *I_good;
 	uint8_t S=1;
 	uint32_t nDim=model->get_dim();
-	float64_t **ICPs;
-	uint32_t nCP_new=0, qp_cnt=0;
+	uint32_t qp_cnt=0;
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
-	float64_t *A_1=NULL, *A_2=NULL, *H_buff;
+	float64_t *A_1=NULL, *A_2=NULL;
 	bool *map=NULL, tuneAlpha=true, flag=true, alphaChanged=false, isThereGoodSolution=false;
 
 	CTime ttime;
@@ -76,12 +75,8 @@ bmrm_return_value_T svm_ppbm_solver(
 	subgrad=NULL;
 	diag_H=NULL;
 	I=NULL;
-	ICPcounter=NULL;
-	ICPs=NULL;
-	ACPs=NULL;
 	prevW=NULL;
 	wt=NULL;
-	H_buff=NULL;
 	diag_H2=NULL;
 	b2=NULL;
 	I2=NULL;
@@ -107,11 +102,12 @@ bmrm_return_value_T svm_ppbm_solver(
 
 	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
 
-	ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-
-	ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
-
-	ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	/* structure for maintaining inactive CPs info */
+	ICP_stats icp_stats;
+	icp_stats.maxCPs = BufSize;
+	icp_stats.ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	icp_stats.ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
+	icp_stats.ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
 
 	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, sizeof(bmrm_ll));
 
@@ -120,8 +116,9 @@ bmrm_return_value_T svm_ppbm_solver(
 	wt= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
 
 	if (H==NULL || A==NULL || b==NULL || beta==NULL || subgrad==NULL ||
-			diag_H==NULL || I==NULL || ICPcounter==NULL ||	ICPs==NULL ||
-			ACPs==NULL || cp_list==NULL || prevW==NULL || wt==NULL)
+			diag_H==NULL || I==NULL || icp_stats.ICPcounter==NULL ||
+			icp_stats.ICPs==NULL || icp_stats.ACPs==NULL ||
+			cp_list==NULL || prevW==NULL || wt==NULL)
 	{
 		ppbmrm.exitflag=-2;
 		goto cleanup;
@@ -138,9 +135,9 @@ bmrm_return_value_T svm_ppbm_solver(
 	memset( (bool*) map, true, BufSize);
 
 	/* Temporary buffers for ICP removal */
-	H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
 
-	if (H_buff==NULL)
+	if (icp_stats.H_buff==NULL)
 	{
 		ppbmrm.exitflag=-2;
 		goto cleanup;
@@ -486,11 +483,11 @@ bmrm_return_value_T svm_ppbm_solver(
 			if (beta[aaa]>epsilon)
 			{
 				++ppbmrm.nzA;
-				ICPcounter[aaa]=0;
+				icp_stats.ICPcounter[aaa]=0;
 			}
 			else
 			{
-				ICPcounter[aaa]+=1;
+				icp_stats.ICPcounter[aaa]+=1;
 			}
 		}
 
@@ -596,72 +593,7 @@ bmrm_return_value_T svm_ppbm_solver(
 		/* Inactive Cutting Planes (ICP) removal */
 		if (cleanICP)
 		{
-			/* find ICP */
-			cntICP=0;
-			cntACP=0;
-			cp_ptr=CPList_head;
-			uint32_t tmp_idx=0;
-
-			while (cp_ptr != CPList_tail)
-			{
-				if (ICPcounter[tmp_idx++]>=cleanAfter)
-				{
-					ICPs[cntICP++]=cp_ptr->address;
-				}
-				else
-				{
-					ACPs[cntACP++]=tmp_idx-1;
-				}
-
-				cp_ptr=cp_ptr->next;
-			}
-
-			/* do ICP removal */
-			if (cntICP > 0)
-			{
-				nCP_new=ppbmrm.nCP-cntICP;
-
-				for (uint32_t i=0; i<cntICP; ++i)
-				{
-					tmp_idx=0;
-					cp_ptr=CPList_head;
-
-					while(cp_ptr->address != ICPs[i])
-					{
-						cp_ptr=cp_ptr->next;
-						tmp_idx++;
-					}
-
-					remove_cutting_plane(&CPList_head, &CPList_tail, map, ICPs[i]);
-
-					LIBBMRM_MEMMOVE(b+tmp_idx, b+tmp_idx+1,
-							(ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(beta+tmp_idx, beta+tmp_idx+1,
-							(ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(diag_H+tmp_idx, diag_H+tmp_idx+1,
-							(ppbmrm.nCP-tmp_idx)*sizeof(float64_t));
-					LIBBMRM_MEMMOVE(I+tmp_idx, I+tmp_idx+1,
-							(ppbmrm.nCP-tmp_idx)*sizeof(uint32_t));
-					LIBBMRM_MEMMOVE(ICPcounter+tmp_idx, ICPcounter+tmp_idx+1,
-							(ppbmrm.nCP-tmp_idx)*sizeof(uint32_t));
-				}
-
-				/* H */
-				for (uint32_t i=0; i < nCP_new; ++i)
-				{
-					for (uint32_t j=0; j < nCP_new; ++j)
-					{
-						H_buff[LIBBMRM_INDEX(i, j, BufSize)]=
-							H[LIBBMRM_INDEX(ACPs[i], ACPs[j], BufSize)];
-					}
-				}
-
-				for (uint32_t i=0; i<nCP_new; ++i)
-					for (uint32_t j=0; j<nCP_new; ++j)
-						H[LIBBMRM_INDEX(i, j, BufSize)]=H_buff[LIBBMRM_INDEX(i, j, BufSize)];
-
-				ppbmrm.nCP=nCP_new;
-			}
+			clean_icp(&icp_stats, ppbmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
 		}
 	} /* end of main loop */
 
@@ -690,10 +622,10 @@ cleanup:
 	LIBBMRM_FREE(subgrad);
 	LIBBMRM_FREE(diag_H);
 	LIBBMRM_FREE(I);
-	LIBBMRM_FREE(ICPcounter);
-	LIBBMRM_FREE(ICPs);
-	LIBBMRM_FREE(ACPs);
-	LIBBMRM_FREE(H_buff);
+	LIBBMRM_FREE(icp_stats.ICPcounter);
+	LIBBMRM_FREE(icp_stats.ICPs);
+	LIBBMRM_FREE(icp_stats.ACPs);
+	LIBBMRM_FREE(icp_stats.H_buff);
 	LIBBMRM_FREE(map);
 	LIBBMRM_FREE(prevW);
 	LIBBMRM_FREE(wt);
