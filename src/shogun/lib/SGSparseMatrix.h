@@ -41,7 +41,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		}
 
 		/** constructor to create new matrix in memory */
-		SGSparseMatrix(index_t num_vec, index_t num_feat, bool ref_counting=true) :
+		SGSparseMatrix(index_t num_feat, index_t num_vec, bool ref_counting=true) :
 			SGReferencedData(ref_counting),
 			num_vectors(num_vec), num_features(num_feat)
 		{
