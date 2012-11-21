@@ -631,6 +631,28 @@ template <class T>
 		return minv;
 	}
 
+#ifdef HAVE_LAPACK
+template <>
+float64_t SGVector<float64_t>::max(float64_t* vec, int32_t len)
+{
+	ASSERT(len>0);
+	int32_t skip = 1;
+	int32_t idx = cblas_idamax(len, vec, skip);
+
+	return vec[idx];
+}
+
+template <>
+float32_t SGVector<float32_t>::max(float32_t* vec, int32_t len)
+{
+	ASSERT(len>0);
+	int32_t skip = 1;
+	int32_t idx = cblas_isamax(len, vec, skip);
+
+	return vec[idx];
+}
+#endif
+
 /** @return max(vec) */
 template <class T>
 	T SGVector<T>::max(T* vec, int32_t len)
@@ -643,6 +665,32 @@ template <class T>
 
 		return maxv;
 	}
+
+#ifdef HAVE_LAPACK
+template <>
+int32_t SGVector<float64_t>::arg_max(float64_t* vec, int32_t inc, int32_t len, float64_t* maxv_ptr)
+{
+	ASSERT(len>0 || inc > 0);
+	int32_t idx = cblas_idamax(len, vec, inc);
+
+	if (maxv_ptr != NULL)
+		*maxv_ptr = vec[idx*inc];
+
+	return idx;
+}
+
+template <>
+int32_t SGVector<float32_t>::arg_max(float32_t* vec, int32_t inc, int32_t len, float32_t* maxv_ptr)
+{
+	ASSERT(len>0 || inc > 0);
+	int32_t idx = cblas_isamax(len, vec, inc);
+
+	if (maxv_ptr != NULL)
+		*maxv_ptr = vec[idx*inc];
+
+	return idx;
+}
+#endif
 
 template <class T>
 int32_t SGVector<T>::arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
