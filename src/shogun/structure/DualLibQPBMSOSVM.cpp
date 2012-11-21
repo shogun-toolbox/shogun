@@ -107,8 +107,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 			break;
 		case NCBM:
 			m_result=svm_ncbm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
-					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
-					m_verbose);
+					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, false, m_verbose);
 	}
 
 	if (m_result.exitflag==1)

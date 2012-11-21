@@ -329,8 +329,6 @@ bmrm_return_value_T svm_ncbm_solver(
 		bool             cleanICP,
 		uint32_t         cleanAfter,
 		bool             is_convex,
-		float64_t        K,
-		uint32_t         Tmax,
 		bool             verbose
 		)
 {
