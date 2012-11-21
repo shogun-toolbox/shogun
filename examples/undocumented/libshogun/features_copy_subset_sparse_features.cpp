@@ -21,8 +21,8 @@ void test()
 	index_t num_features=3;
 
 	/* create some sparse data */
-	SGSparseMatrix<float64_t> data=SGSparseMatrix<float64_t>(num_vectors,
-			num_features);
+	SGSparseMatrix<float64_t> data=SGSparseMatrix<float64_t>(num_features,
+			num_vectors);
 
 	for (index_t i=0; i<num_vectors; ++i)
 	{
