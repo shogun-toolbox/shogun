@@ -13,57 +13,34 @@
 #ifndef __SGSPARSEMATRIX_H__
 #define __SGSPARSEMATRIX_H__
 
-#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGReferencedData.h>
-#include <shogun/lib/SGSparseVector.h>
 
 namespace shogun
 {
+
+template <class T> class SGSparseVector;
+
 /** @brief template class SGSparseMatrix */
 template <class T> class SGSparseMatrix : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGSparseMatrix() : SGReferencedData()
-		{
-			init_data();
-		}
+		SGSparseMatrix();
 
 		/** constructor for setting params */
 		SGSparseMatrix(SGSparseVector<T>* vecs, index_t num_feat,
-				index_t num_vec, bool ref_counting=true) :
-			SGReferencedData(ref_counting),
-			num_vectors(num_vec), num_features(num_feat),
-			sparse_matrix(vecs)
-		{
-		}
+				index_t num_vec, bool ref_counting=true);
 
 		/** constructor to create new matrix in memory */
-		SGSparseMatrix(index_t num_feat, index_t num_vec, bool ref_counting=true) :
-			SGReferencedData(ref_counting),
-			num_vectors(num_vec), num_features(num_feat)
-		{
-			sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
-			for (int32_t i=0; i<num_vectors; i++)
-			{
-				new (&sparse_matrix[i]) SGSparseVector<T>();
-				sparse_matrix[i] = SGSparseVector<T>(num_feat);
-			}
-		}
+		SGSparseMatrix(index_t num_feat, index_t num_vec, bool ref_counting=true);
 
 		/** copy constructor */
-		SGSparseMatrix(const SGSparseMatrix &orig) : SGReferencedData(orig)
-		{
-			copy_data(orig);
-		}
+		SGSparseMatrix(const SGSparseMatrix &orig);
 
 		/** destructor */
-		virtual ~SGSparseMatrix()
-		{
-			unref();
-		}
+		virtual ~SGSparseMatrix();
 
 		/** index access operator */
 		inline const SGSparseVector<T>& operator[](index_t index) const
@@ -80,31 +57,13 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 protected:
 
 		/** copy data */
-		virtual void copy_data(const SGReferencedData& orig)
-		{
-			sparse_matrix = ((SGSparseMatrix*)(&orig))->sparse_matrix;
-			num_vectors = ((SGSparseMatrix*)(&orig))->num_vectors;
-			num_features = ((SGSparseMatrix*)(&orig))->num_features;
-		}
+		virtual void copy_data(const SGReferencedData& orig);
 
 		/** init data */
-		virtual void init_data()
-		{
-			sparse_matrix = NULL;
-			num_vectors = 0;
-			num_features = 0;
-		}
+		virtual void init_data();
 
 		/** free data */
-		virtual void free_data()
-		{
-			for (int32_t i=0; i<num_vectors; i++)
-				(&sparse_matrix[i])->~SGSparseVector<T>();
-
-			SG_FREE(sparse_matrix);
-			num_vectors = 0;
-			num_features = 0;
-		}
+		virtual void free_data();
 
 public:
 
