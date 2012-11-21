@@ -42,10 +42,9 @@ void operator delete[](void *p) throw();
 #define SG_FREE(ptr) sg_generic_free(ptr)
 #endif //TRACE_MEMORY_ALLOCS
 
-#include <shogun/lib/SGVector.h>
-
 namespace shogun
 {
+	template <class T> class SGVector;
 #ifdef TRACE_MEMORY_ALLOCS
 void* sg_malloc(size_t size, const char* file, int line);
 template <class T> T* sg_generic_malloc(size_t len, const char* file, int line)

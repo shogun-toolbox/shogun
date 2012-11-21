@@ -10,7 +10,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_ARPACK
-#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/arpack.h>
 #ifdef HAVE_LAPACK
 #include <shogun/io/SGIO.h>

@@ -10,7 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>

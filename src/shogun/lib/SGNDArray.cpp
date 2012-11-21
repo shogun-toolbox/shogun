@@ -10,7 +10,7 @@
  * Copyright (C) 2012 Soeren Sonnenburg
  */
 
-#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
 #include <shogun/lib/SGNDArray.h>
 #include <shogun/lib/SGReferencedData.h>
 

@@ -14,7 +14,7 @@
 */
 
 #include <stdlib.h>
-#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
 #ifndef VARRAY_H__

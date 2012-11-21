@@ -13,13 +13,15 @@
 #define __SGOBJECT_H__
 
 #include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
+#include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/ShogunException.h>
-#include <shogun/lib/memory.h>
+
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
+
+#include <shogun/io/SGIO.h>
 
 
 #ifdef HAVE_PTHREAD
@@ -315,7 +317,7 @@ public:
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs()
 	{
-        	::list_memory_allocs();
+        	shogun::list_memory_allocs();
 	}
 #endif
 

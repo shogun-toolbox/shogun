@@ -1,4 +1,5 @@
-#include <shogun/lib/memory.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/SGReferencedData.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 

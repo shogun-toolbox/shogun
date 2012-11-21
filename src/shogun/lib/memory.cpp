@@ -9,7 +9,6 @@
  */
 
 #include <shogun/lib/ShogunException.h>
-#include <shogun/lib/memory.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
 #include <shogun/base/SGObject.h>
