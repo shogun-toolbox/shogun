@@ -9,6 +9,94 @@
 namespace shogun {
 
 template <class T>
+SGMatrix<T>::SGMatrix() : SGReferencedData()
+{
+	init_data();
+}
+
+template <class T>
+SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting)
+	: SGReferencedData(ref_counting), matrix(m),
+	num_rows(nrows), num_cols(ncols) { }
+
+template <class T>
+SGMatrix<T>::SGMatrix(index_t nrows, index_t ncols, bool ref_counting)
+	: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols)
+{
+	matrix=SG_MALLOC(T, ((int64_t) nrows)*ncols);
+}
+
+template <class T>
+SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
+{
+	copy_data(orig);
+}
+
+template <class T>
+SGMatrix<T>::~SGMatrix()
+{
+	unref();
+}
+
+template <class T>
+bool SGMatrix<T>::operator==(SGMatrix<T>& other)
+{
+	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
+		return false;
+
+	if (matrix!=other.matrix)
+		return false;
+
+	return true;
+}
+
+template <class T>
+bool SGMatrix<T>::equals(SGMatrix<T>& other)
+{
+	if (num_rows!=other.num_rows || num_cols!=other.num_cols)
+		return false;
+
+	for (index_t i=0; i<num_rows*num_cols; ++i)
+	{
+		if (matrix[i]!=other.matrix[i])
+			return false;
+	}
+
+	return true;
+}
+
+template <class T>
+void SGMatrix<T>::set_const(T const_elem)
+{
+	for (index_t i=0; i<num_rows*num_cols; i++)
+		matrix[i]=const_elem ;
+}
+
+template <class T>
+void SGMatrix<T>::zero()
+{
+	if (matrix && (num_rows*num_cols))
+		set_const(0);
+}
+
+template <class T>
+SGMatrix<T> SGMatrix<T>::clone()
+{
+	return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
+			num_rows, num_cols);
+}
+
+template <class T>
+T* SGMatrix<T>::clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
+{
+	T* result = SG_MALLOC(T, int64_t(nrows)*ncols);
+	for (int64_t i=0; i<int64_t(nrows)*ncols; i++)
+		result[i]=matrix[i];
+
+	return result;
+}
+
+template <class T>
 void SGMatrix<T>::transpose_matrix(
 	T*& matrix, int32_t& num_feat, int32_t& num_vec)
 {
@@ -24,6 +112,63 @@ void SGMatrix<T>::transpose_matrix(
 	matrix=transposed;
 
 	CMath::swap(num_feat, num_vec);
+}
+
+template <class T>
+void SGMatrix<T>::create_diagonal_matrix(T* matrix, T* v,int32_t size)
+{
+	for(int32_t i=0;i<size;i++)
+	{
+		for(int32_t j=0;j<size;j++)
+		{
+			if(i==j)
+				matrix[j*size+i]=v[i];
+			else
+				matrix[j*size+i]=0;
+		}
+	}
+}
+
+template <class T>
+float64_t SGMatrix<T>::trace(
+	float64_t* mat, int32_t cols, int32_t rows)
+{
+	float64_t trace=0;
+	for (int32_t i=0; i<rows; i++)
+		trace+=mat[i*cols+i];
+	return trace;
+}
+
+template <class T>
+T* SGMatrix<T>::get_row_sum(T* matrix, int32_t m, int32_t n)
+{
+	T* rowsums=SG_CALLOC(T, n);
+
+	for (int32_t i=0; i<n; i++)
+	{
+		for (int32_t j=0; j<m; j++)
+			rowsums[i]+=matrix[j+int64_t(i)*m];
+	}
+	return rowsums;
+}
+
+template <class T>
+T* SGMatrix<T>::get_column_sum(T* matrix, int32_t m, int32_t n)
+{
+	T* colsums=SG_CALLOC(T, m);
+
+	for (int32_t i=0; i<n; i++)
+	{
+		for (int32_t j=0; j<m; j++)
+			colsums[j]+=matrix[j+int64_t(i)*m];
+	}
+	return colsums;
+}
+
+template <class T>
+void SGMatrix<T>::center()
+{
+	center_matrix(matrix, num_rows, num_cols);
 }
 
 template <class T>
@@ -677,6 +822,31 @@ SGMatrix<T> SGMatrix<T>::get_allocated_matrix(index_t num_rows,
 	}
 
 	return result;
+}
+
+template<class T>
+void SGMatrix<T>::copy_data(const SGReferencedData &orig)
+{
+	matrix=((SGMatrix*)(&orig))->matrix;
+	num_rows=((SGMatrix*)(&orig))->num_rows;
+	num_cols=((SGMatrix*)(&orig))->num_cols;
+}
+
+template<class T>
+void SGMatrix<T>::init_data()
+{
+	matrix=NULL;
+	num_rows=0;
+	num_cols=0;
+}
+
+template<class T>
+void SGMatrix<T>::free_data()
+{
+	SG_FREE(matrix);
+	matrix=NULL;
+	num_rows=0;
+	num_cols=0;
 }
 
 template class SGMatrix<bool>;

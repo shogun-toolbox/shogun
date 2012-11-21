@@ -26,34 +26,19 @@ template<class T> class SGMatrix : public SGReferencedData
 {
 	public:
 		/** default constructor */
-		SGMatrix() : SGReferencedData()
-		{
-			init_data();
-		}
+		SGMatrix();
 
 		/** constructor for setting params */
-		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true)
-			: SGReferencedData(ref_counting), matrix(m),
-			num_rows(nrows), num_cols(ncols) { }
+		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true);
 
 		/** constructor to create new matrix in memory */
-		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true)
-			: SGReferencedData(ref_counting), num_rows(nrows), num_cols(ncols)
-		{
-			matrix=SG_MALLOC(T, ((int64_t) nrows)*ncols);
-		}
+		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
 
 		/** copy constructor */
-		SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
-		{
-			copy_data(orig);
-		}
+		SGMatrix(const SGMatrix &orig);
 
 		/** empty destructor */
-		virtual ~SGMatrix()
-		{
-			unref();
-		}
+		virtual ~SGMatrix();
 
 		/** get a column vector
 		 * @param col column index
@@ -98,16 +83,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/** check for pointer identity */
-		inline bool operator==(SGMatrix<T>& other)
-		{
-			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
-				return false;
-
-			if (matrix!=other.matrix)
-				return false;
-
-			return true;
-		}
+		bool operator==(SGMatrix<T>& other);
 
 		/** operator overload for element-wise matrix comparison.
 		 * Note that only numerical data is compared
@@ -115,69 +91,26 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * @param other matrix to compare with
 		 * @return true iff all elements are equal
 		 */
-		inline bool equals(SGMatrix<T>& other)
-		{
-			if (num_rows!=other.num_rows || num_cols!=other.num_cols)
-				return false;
-
-			for (index_t i=0; i<num_rows*num_cols; ++i)
-			{
-				if (matrix[i]!=other.matrix[i])
-					return false;
-			}
-
-			return true;
-		}
+		bool equals(SGMatrix<T>& other);
 
 		/** set matrix to a constant */
-		void set_const(T const_elem)
-		{
-			for (index_t i=0; i<num_rows*num_cols; i++)
-				matrix[i]=const_elem ;
-		}
+		void set_const(T const_elem);
 
 		/** fill matrix with zeros */
-		void zero()
-		{
-			if (matrix && (num_rows*num_cols))
-				set_const(0);
-		}
+		void zero();
 
 		/** clone matrix */
-		SGMatrix<T> clone()
-		{
-			return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
-					num_rows, num_cols);
-		}
+		SGMatrix<T> clone();
 
-		/** clone vector */
-		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols)
-		{
-			T* result = SG_MALLOC(T, int64_t(nrows)*ncols);
-			for (int64_t i=0; i<int64_t(nrows)*ncols; i++)
-				result[i]=matrix[i];
-
-			return result;
-		}
+		/** clone matrix */
+		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols);
 
 		/** transpose matrix */
 		static void transpose_matrix(
 			T*& matrix, int32_t& num_feat, int32_t& num_vec);
 
 		/** create diagonal matrix */
-		static void create_diagonal_matrix(T* matrix, T* v,int32_t size)
-		{
-			for(int32_t i=0;i<size;i++)
-			{
-				for(int32_t j=0;j<size;j++)
-				{
-					if(i==j)
-						matrix[j*size+i]=v[i];
-					else
-						matrix[j*size+i]=0;
-				}
-			}
-		}
+		static void create_diagonal_matrix(T* matrix, T* v,int32_t size);
 
 		/** returns the identity matrix, scaled by a factor
 		 *
@@ -259,46 +192,17 @@ template<class T> class SGMatrix : public SGReferencedData
 #endif
 
 		/** compute trace */
-		static inline float64_t trace(
-			float64_t* mat, int32_t cols, int32_t rows)
-		{
-			float64_t trace=0;
-			for (int32_t i=0; i<rows; i++)
-				trace+=mat[i*cols+i];
-			return trace;
-		}
+		static float64_t trace(
+			float64_t* mat, int32_t cols, int32_t rows);
 
 		/** sums up all rows of a matrix and returns the resulting rowvector */
-		static T* get_row_sum(T* matrix, int32_t m, int32_t n)
-		{
-			T* rowsums=SG_CALLOC(T, n);
-
-			for (int32_t i=0; i<n; i++)
-			{
-				for (int32_t j=0; j<m; j++)
-					rowsums[i]+=matrix[j+int64_t(i)*m];
-			}
-			return rowsums;
-		}
+		static T* get_row_sum(T* matrix, int32_t m, int32_t n);
 
 		/** sums up all columns of a matrix and returns the resulting columnvector */
-		static T* get_column_sum(T* matrix, int32_t m, int32_t n)
-		{
-			T* colsums=SG_CALLOC(T, m);
-
-			for (int32_t i=0; i<n; i++)
-			{
-				for (int32_t j=0; j<m; j++)
-					colsums[j]+=matrix[j+int64_t(i)*m];
-			}
-			return colsums;
-		}
+		static T* get_column_sum(T* matrix, int32_t m, int32_t n);
 
 		/** Centers the matrix, i.e. removes column/row mean from columns/rows */
-		void center()
-		{
-			center_matrix(matrix, num_rows, num_cols);
-		}
+		void center();
 
 		/** Centers  matrix (e.g. kernel matrix in feature space INPLACE */
 		static void center_matrix(T* matrix, int32_t m, int32_t n);
@@ -334,30 +238,14 @@ template<class T> class SGMatrix : public SGReferencedData
 				index_t num_cols, SGMatrix<T> pre_allocated=SGMatrix<T>());
 
 	protected:
-		/** needs to be overridden to copy data */
-		virtual void copy_data(const SGReferencedData &orig)
-		{
-			matrix=((SGMatrix*)(&orig))->matrix;
-			num_rows=((SGMatrix*)(&orig))->num_rows;
-			num_cols=((SGMatrix*)(&orig))->num_cols;
-		}
+		/** overridden to copy data */
+		virtual void copy_data(const SGReferencedData &orig);
 
-		/** needs to be overridden to initialize empty data */
-		virtual void init_data()
-		{
-			matrix=NULL;
-			num_rows=0;
-			num_cols=0;
-		}
+		/** overridden to initialize empty data */
+		virtual void init_data();
 
-		/** needs to be overridden to free data */
-		virtual void free_data()
-		{
-			SG_FREE(matrix);
-			matrix=NULL;
-			num_rows=0;
-			num_cols=0;
-		}
+		/** overridden to free data */
+		virtual void free_data();
 
 	public:
 		/** matrix  */
