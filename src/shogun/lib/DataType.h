@@ -17,17 +17,9 @@
 #include <shogun/io/SGIO.h>
 
 #define PT_NOT_GENERIC	PT_SGOBJECT
-#define PT_LONGEST	floatmax_t
 
 namespace shogun
 {
-
-//class CMath;
-template<class T> class CCache;
-
-/** index */
-typedef int32_t index_t;
-
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum EContainerType
