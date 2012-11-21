@@ -33,6 +33,7 @@ IGNORE_IN_CLASSLIST struct line_search_res
 	/* */
 	float64_t a;
 	float64_t fval;
+	float64_t reg;
 	SGVector<float64_t> solution;
 	SGVector<float64_t> gradient;
 };
@@ -66,7 +67,8 @@ inline static line_search_res zoom
 	uint32_t iter = 0;
 	while (1)
 	{
-		float64_t d1 = g_lo+g_hi - CMath::max(3*(f_lo*f_hi)/(a_lo-a_hi), 0.0);
+		//float64_t d1 = g_lo+g_hi - CMath::max(3*(f_lo*f_hi)/(a_lo-a_hi), 0.0);
+		float64_t d1 = g_lo+g_hi - 3*(f_lo*f_hi)/(a_lo-a_hi);
 		float64_t d2 = CMath::sqrt(CMath::max(d1*d1 - g_lo*g_hi, 0.0));
 //		float64_t d2 = CMath::sqrt(d1*d1 - g_lo*g_hi);
 		float64_t a_j = a_hi -(a_hi-a_lo)*(g_hi+d2-d1)/(g_hi-g_lo+2*d2);
@@ -91,9 +93,10 @@ inline static line_search_res zoom
 				search_dir.vector, cur_solution.vlen);
 
 		float64_t cur_fval = model->risk(cur_grad.vector, cur_solution.vector);
-		cur_fval
-			+= 0.5*lambda*cur_solution.dot(cur_solution.vector,
+		float64_t cur_reg
+			= 0.5*lambda*cur_solution.dot(cur_solution.vector,
 					cur_solution.vector, cur_solution.vlen);
+		cur_fval += cur_reg;
 
 		cur_grad.vec1_plus_scalar_times_vec2(cur_grad.vector, lambda, cur_solution.vector, cur_grad.vlen);
 
@@ -117,11 +120,13 @@ inline static line_search_res zoom
 			{
 				ls_res.a = a_j;
 				ls_res.fval = cur_fval;
+				ls_res.reg = cur_reg;
 				ls_res.gradient = cur_grad;
 				ls_res.solution = cur_solution;
 //				SG_SPRINT("in zoom (wolfe2): %f\n", cur_fval);
 				return ls_res;
 			}
+
 			if (cur_lgrad*(a_hi - a_lo) >= 0)
 			{
 				a_hi = a_lo;
@@ -142,6 +147,7 @@ inline static line_search_res zoom
 		{
 			ls_res.a = a_j;
 			ls_res.fval = cur_fval;
+			ls_res.reg = cur_reg;
 			ls_res.gradient = cur_grad;
 			ls_res.solution = cur_solution;
 //			SG_SPRINT("in zoom iter: %d %f\n", iter, cur_fval);
@@ -193,15 +199,26 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 	{
 		x.add(x.vector, 1.0, initial_solution.vector, cur_a, search_dir.vector, x.vlen);
 		float64_t cur_fval = model->risk(cur_subgrad.vector, x.vector);
-		cur_fval += 0.5*lambda*x.dot(x.vector, x.vector, x.vlen);
+		float64_t cur_reg = 0.5*lambda*x.dot(x.vector, x.vector, x.vlen);
+		cur_fval += cur_reg;
 
 		cur_subgrad.vec1_plus_scalar_times_vec2(cur_subgrad.vector, lambda, x.vector, x.vlen);
 		if (iter == 0)
 		{
 			line_search_res ls_res;
 			ls_res.fval = cur_fval;
+			ls_res.reg = cur_reg;
+#if 1
 			ls_res.gradient = cur_subgrad;
 			ls_res.solution = x;
+#else			
+			ls_res.gradient.resize_vector(x.vlen);
+			memcpy(ls_res.gradient.vector, cur_subgrad.vector, sizeof(float64_t)*x.vlen);
+			ls_res.solution.resize_vector(x.vlen);
+			memcpy(ls_res.solution.vector, x.vector, sizeof(float64_t)*x.vlen);
+#endif
+//			SG_SPRINT("%ld\n", ls_res.solution.vector);
+//			ls_res.solution.display_vector();
 			ret.push_back(ls_res);
 		}
 
@@ -227,6 +244,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 			line_search_res ls_res;
 			ls_res.a = cur_a;
 			ls_res.fval = cur_fval;
+			ls_res.reg = cur_reg;
 			ls_res.solution = x;
 			ls_res.gradient = cur_subgrad;
 			ret.push_back(ls_res);
@@ -246,14 +264,15 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 		}
 		/* */
 		iter++;
-		if ((CMath::abs(cur_a - amax) <= 0.01*amax) || (iter > max_iter))
+		if ((CMath::abs(cur_a - amax) <= 0.01*amax) || (iter >= max_iter))
 		{
 			line_search_res ls_res;
 			ls_res.a = cur_a;
 			ls_res.fval = cur_fval;
+			ls_res.reg = cur_reg;
 			ls_res.solution = x;
 			ls_res.gradient = cur_subgrad;
-//			SG_SPRINT("iter %d\n", iter);
+			SG_SPRINT("iter %d\n", iter);
 			ret.push_back(ls_res);
 			return ret;
 		}
@@ -309,6 +328,7 @@ bmrm_return_value_T svm_ncbm_solver(
 		uint32_t         _BufSize,
 		bool             cleanICP,
 		uint32_t         cleanAfter,
+		bool             is_convex,
 		float64_t        K,
 		uint32_t         Tmax,
 		bool             verbose
@@ -394,14 +414,16 @@ bmrm_return_value_T svm_ncbm_solver(
 	/* initial solution */
 	SGVector<float64_t> cur_subgrad(w_dim);
 	SGVector<float64_t> cur_w(w_dim);
+	memcpy(cur_w.vector, w, sizeof(float64_t)*w_dim);
 	float64_t cur_risk = model->risk(cur_subgrad.vector, cur_w.vector);
 	bias[0] = -cur_risk;
 	best_Fp = 0.5*_lambda*cur_w.dot(cur_w.vector, cur_w.vector, cur_w.vlen) + cur_risk;
+	best_risk = cur_risk;
 	memcpy(best_w.vector, cur_w.vector, w_dim);
 	memcpy(best_subgrad.vector, cur_subgrad.vector, w_dim);
 
 	/* create a double-linked list over the A the subgrad matrix */
-	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
+	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_list=NULL;
 	cp_list = (bmrm_ll*) SG_CALLOC(bmrm_ll, 1);
 	if (cp_list==NULL)
 	{
@@ -426,6 +448,7 @@ bmrm_return_value_T svm_ncbm_solver(
 
 	float64_t astar = 0.01;
 
+	SG_SPRINT("clean icps: %d\n", cleanICP);
 	while (ncbm.exitflag==0)
 	{
 		tstart=ttime.cur_time_diff(false);
@@ -435,10 +458,12 @@ bmrm_return_value_T svm_ncbm_solver(
 //		bias.display_vector();
 
 		/* TODO: scaling...*/
-		bool scaling = 0;
+		bool scaling = 1;
 		if (scaling)
 		{
-			float64_t scale = SGVector<float64_t>::max(diag_H.vector, diag_H.vlen)/(1000.0*_lambda);
+			float64_t max = SGVector<float64_t>::max(H.matrix, H.num_rows*H.num_cols);
+			float64_t scale = CMath::abs(max)/(1000.0*_lambda);
+
 			SGVector<float64_t> sb(ncbm.nCP);
 			sb.zero();
 			sb.vec1_plus_scalar_times_vec2(sb.vector, 1/scale, bias.vector, ncbm.nCP);
@@ -450,9 +475,8 @@ bmrm_return_value_T svm_ncbm_solver(
 			for (int32_t i=0; i < maxCPs*maxCPs; ++i)
 				H.matrix[i] *= 1/scale;
 
-			uint8_t z = 0;
 			qp_exitflag =
-				libqp_splx_solver(&get_col, sh.vector, sb.vector, &b, I.vector, &z, x.vector,
+				libqp_splx_solver(&get_col, sh.vector, sb.vector, &b, I.vector, &S, x.vector,
 						ncbm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
 
 			for (int32_t i=0; i < maxCPs*maxCPs; ++i)
@@ -504,7 +528,7 @@ bmrm_return_value_T svm_ncbm_solver(
 			SGVector<float64_t>::vec1_plus_scalar_times_vec2(cur_w.vector, -x[i]/_lambda, A_1, w_dim);
 		}
 
-		bool calc_gap = true;
+		bool calc_gap = false;
 		if (calc_gap)
 		{
 			SGVector<float64_t> scores(ncbm.nCP);
@@ -566,6 +590,7 @@ bmrm_return_value_T svm_ncbm_solver(
 		}
 		else
 		{
+			tstart=ttime.cur_time_diff(false);
 			/* do line searching */
 			SGVector<float64_t> search_dir(w_dim);
 			search_dir.add(search_dir.vector, 1.0, cur_w.vector, -1.0, best_w.vector, w_dim);
@@ -590,9 +615,6 @@ bmrm_return_value_T svm_ncbm_solver(
 			float64_t reg = 0.0;
 			if (ls_res[0].fval != ls_res[1].fval)
 			{
-				reg
-					= 0.5*_lambda*SGVector<float64_t>::dot(ls_res[0].solution.vector, ls_res[0].solution.vector, w_dim);
-
 				ls_res[0].gradient.vec1_plus_scalar_times_vec2(ls_res[0].gradient.vector, -_lambda, ls_res[0].solution.vector, w_dim);
 
 				add_cutting_plane(&CPList_tail, map, A.matrix,
@@ -600,15 +622,12 @@ bmrm_return_value_T svm_ncbm_solver(
 
 				bias[ncbm.nCP]
 					= SGVector<float64_t>::dot(ls_res[0].solution.vector, ls_res[0].gradient, w_dim)
-					- (ls_res[0].fval - reg);
+					- (ls_res[0].fval - ls_res[0].reg);
 
 				update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
 
 				wbest_candidates.push_back(ls_res[0]);
 			}
-
-			reg
-				= 0.5*_lambda*SGVector<float64_t>::dot(ls_res[1].solution.vector, ls_res[1].solution.vector, w_dim);
 
 			ls_res[1].gradient.vec1_plus_scalar_times_vec2(ls_res[1].gradient.vector, -_lambda, ls_res[1].solution.vector, w_dim);
 
@@ -617,7 +636,7 @@ bmrm_return_value_T svm_ncbm_solver(
 
 			bias[ncbm.nCP]
 				= ls_res[1].solution.dot(ls_res[1].solution.vector, ls_res[1].gradient.vector, w_dim)
-				- (ls_res[1].fval - reg);
+				- (ls_res[1].fval - ls_res[1].reg);
 
 			update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
 
@@ -645,6 +664,9 @@ bmrm_return_value_T svm_ncbm_solver(
 			}
 
 			astar = astar * norm_dir;
+
+			tstop=ttime.cur_time_diff(false);
+			SG_SPRINT("\t\tline search time: %.5lf\n", tstop-tstart);
 		}
 
 		/* search for the best w among the new candidates */
@@ -654,14 +676,14 @@ bmrm_return_value_T svm_ncbm_solver(
 		for (index_t i = 0; i < wbest_candidates.size(); i++)
 		{
 			if (verbose)
-				SG_SPRINT("\t\t %d fcurrent: %f\n", i, wbest_candidates[i].fval);
+				SG_SPRINT("\t\t %d fcurrent: %.16lf\n", i, wbest_candidates[i].fval);
 
 			bool is_best = false;
 
 			if (wbest_candidates[i].fval < best_Fp)
 			{
 				best_Fp = wbest_candidates[i].fval;
-				best_risk = 0;
+				best_risk = wbest_candidates[i].fval - wbest_candidates[i].reg;
 				memcpy(best_w, wbest_candidates[i].solution.vector, sizeof(float64_t)*w_dim);
 				memcpy(w, wbest_candidates[i].solution.vector, sizeof(float64_t)*w_dim);
 				memcpy(best_subgrad.vector, wbest_candidates[i].gradient.vector, sizeof(float64_t)*w_dim);
@@ -674,40 +696,39 @@ bmrm_return_value_T svm_ncbm_solver(
 							CMath::pow(best_w.twonorm(best_w.vector, w_dim), 2));
 			}
 
-			bool is_convex = true;
 			if (!is_convex)
 			{
 				if (is_best)
 				{
-
+						SG_SPRINT("\t\tcurrent is best...\n");
 				}
 				else
 				{
+					index_t cp_idx = ncbm.nCP-(wbest_candidates.size()-i);
+
 					/* conflict */
 					float64_t score
 						= SGVector<float64_t>::dot(best_w.vector,
 								wbest_candidates[i].gradient.vector, w_dim)
-						+ (-1.0*bias[ncbm.nCP]);
+						+ (-1.0*bias[cp_idx]);
 					if (score > best_risk)
 					{
 						float64_t U
 							= best_risk
 							- SGVector<float64_t>::dot(best_w.vector,
 									wbest_candidates[i].gradient.vector, w_dim);
-
+/*
 						float64_t w_norm
 							= SGVector<float64_t>::dot(wbest_candidates[i].solution.vector,
 									wbest_candidates[i].solution.vector, w_dim);
-
+*/
 						float64_t L
-							= best_Fp - 0.5*_lambda*w_norm
+							= best_Fp - wbest_candidates[i].reg
 							- SGVector<float64_t>::dot(wbest_candidates[i].solution.vector,
 									wbest_candidates[i].gradient.vector, w_dim);
 						
-						index_t cp_idx = ncbm.nCP-i;
-
 						if (verbose)
-							SG_SPRINT("CONFLICT Rbest=%g score=%g L=%g U=%g\n", best_risk, score, L, U);
+							SG_SPRINT("CONFLICT Rbest=%.6lg score=%g L=%.6lg U=%.6lg\n", best_risk, score, L, U);
 						if (L <= U)
 						{
 							if (verbose)
@@ -718,16 +739,25 @@ bmrm_return_value_T svm_ncbm_solver(
 						{
 							wbest_candidates[i].gradient.zero();
 							SGVector<float64_t>::vec1_plus_scalar_times_vec2(wbest_candidates[i].gradient.vector, -_lambda, best_w.vector, w_dim);
-	
+
+							cp_ptr = CPList_tail;
+							for (index_t j = wbest_candidates.size()-1; i < j; --j)
+							{
+								cp_ptr = cp_ptr->prev;
+								SG_SPRINT("tail - %d\n (%d)", j, i);
+							}
+
+							float64_t* cp = get_cutting_plane(cp_ptr);
+							LIBBMRM_MEMCPY(cp, wbest_candidates[i].gradient.vector, w_dim*sizeof(float64_t));
+
 							/* update the corresponding column and row in H */
 							cp_ptr = CPList_head;
-							for (index_t i = 0; i < ncbm.nCP; ++i)
+							for (index_t i = 0; i < ncbm.nCP-1; ++i)
 							{
 								float64_t* a = get_cutting_plane(cp_ptr);
 								cp_ptr = cp_ptr->next;
 								float64_t dot_val
 									= SGVector<float64_t>::dot(a, wbest_candidates[i].gradient.vector, w_dim);
-
 
 								H.matrix[LIBBMRM_INDEX(cp_idx, i, maxCPs)]
 									= H.matrix[LIBBMRM_INDEX(i, cp_idx, maxCPs)]
@@ -740,7 +770,7 @@ bmrm_return_value_T svm_ncbm_solver(
 
 
 							bias[cp_idx]
-								= best_Fp - 0.5*_lambda*w_norm
+								= best_Fp - wbest_candidates[i].reg
 								- SGVector<float64_t>::dot(wbest_candidates[i].solution.vector,
 										wbest_candidates[i].gradient.vector, w_dim);
 	

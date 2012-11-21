@@ -32,6 +32,7 @@ namespace shogun
 			uint32_t         _BufSize,
 			bool             cleanICP,
 			uint32_t         cleanAfter,
+			bool             is_convex,
 			float64_t        K,
 			uint32_t         Tmax,
 			bool             verbose
