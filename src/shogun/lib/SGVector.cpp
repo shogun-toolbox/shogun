@@ -19,10 +19,8 @@
 #include <shogun/mathematics/lapack.h>
 #include <algorithm>
 
-
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#endif
+
 
 namespace shogun {
 
@@ -901,6 +899,41 @@ template<class T> void SGVector<T>::save(CFile* saver)
 	ASSERT(saver);
 	saver->set_vector(vector, vlen);
 	SG_RESET_LOCALE;
+}
+		
+#define MATHOP(op)								\
+template <class T> void SGVector<T>::op()		\
+{												\
+	for (int32_t i=0; i<vlen; i++)				\
+		vector[i]=(T) CMath::op((double) vector[i]);		\
+}
+
+MATHOP(abs)
+MATHOP(acos)
+MATHOP(asin)
+MATHOP(atan)
+MATHOP(cos)
+MATHOP(cosh)
+MATHOP(exp)
+MATHOP(log)
+MATHOP(log10)
+MATHOP(sin)
+MATHOP(sinh)
+MATHOP(sqrt)
+MATHOP(tan)
+MATHOP(tanh)
+#undef MATHOP
+		
+template <class T> void SGVector<T>::atan2(T x)
+{
+	for (int32_t i=0; i<vlen; i++)
+		vector[i]=CMath::atan2(vector[i], x);
+}
+		
+template <class T> void SGVector<T>::pow(T q)
+{
+	for (int32_t i=0; i<vlen; i++)
+		vector[i]=(T) CMath::pow((double) vector[i], (double) q);
 }
 
 template class SGVector<bool>;

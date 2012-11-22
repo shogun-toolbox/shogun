@@ -475,18 +475,18 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param p the predicate, it should accept the value of the element and return a bool
 		 */
 		template <typename Predicate>
-			SGVector<index_t> find_if(Predicate p)
-			{
-				SGVector<index_t> idx(vlen);
-				index_t k=0; 
+		SGVector<index_t> find_if(Predicate p)
+		{
+			SGVector<index_t> idx(vlen);
+			index_t k=0; 
 
-				for (index_t i=0; i < vlen; ++i)
-					if (p(vector[i]))
-						idx[k++] = i;
+			for (index_t i=0; i < vlen; ++i)
+				if (p(vector[i]))
+					idx[k++] = i;
 
-				idx.vlen = k;
-				return idx;
-			}
+			idx.vlen = k;
+			return idx;
+		}
 
 		/// scale vector inplace
 		void scale(T alpha);
@@ -508,6 +508,39 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param saver File object via which to save data
 		 */
 		void save(CFile* saver);
+
+		/// absolute value of vector elements
+		void abs();
+		/// arc cosine of vector elements
+		void acos();
+		/// arc sine of vector elements
+		void asin();
+		/// arc tangent of vector elements
+		void atan();
+		/// atan2 of vector elements
+		void atan2(T x);
+		/// cosine of vector elements
+		void cos();
+		/// hyperbolic cosine of vector elements
+		void cosh();
+		/// exponential of vector elements
+		void exp();
+		/// natural logarithm of vector elements
+		void log();
+		/// common logarithm of vector elements
+		void log10();
+		/// power of vector elements
+		void pow(T q);
+		/// sine of vector elements
+		void sin();
+		/// hyperbolic sine of vector elements
+		void sinh();
+		/// square root of vector elements
+		void sqrt();
+		/// tangent of vector elements
+		void tan();
+		/// hyperbolic tangent of vector elements
+		void tanh();
 
 	protected:
 		/** needs to be overridden to copy data */

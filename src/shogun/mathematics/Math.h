@@ -292,6 +292,11 @@ class CMath : public CSGObject
 #endif
 		}
 
+		static inline int32_t pow(bool x, int32_t n)
+		{
+			return 0;
+		}
+
 		static inline int32_t pow(int32_t x, int32_t n)
 		{
 			ASSERT(n>=0);
@@ -326,10 +331,28 @@ class CMath : public CSGObject
 			return ::exp((double) x);
 		}
 
+		/** @return tangens of input */
+		static inline float64_t tan(float64_t x)
+		{
+			return ::tan((double) x);
+		}
+
 		/** @return arcus tangens of input */
 		static inline float64_t atan(float64_t x)
 		{
 			return ::atan((double) x);
+		}
+
+		/** @return arcus tangens of input */
+		static inline float64_t atan2(float64_t x, float64_t y)
+		{
+			return ::atan2((double) x, (double) y);
+		}
+
+		/** @return tangens hyperbolicus of input */
+		static inline float64_t tanh(float64_t x)
+		{
+			return ::tanh((double) x);
 		}
 
 		static inline float64_t log10(float64_t v)
@@ -356,10 +379,31 @@ class CMath : public CSGObject
 			return ::sin(x);
 		}
 
+		static inline float64_t asin(float64_t x)
+		{
+			return ::asin(x);
+		}
+
+		static inline float64_t sinh(float64_t x)
+		{
+			return ::asinh(x);
+		}
+
 		static inline float64_t cos(float64_t x)
 		{
 			return ::cos(x);
 		}
+
+		static inline float64_t acos(float64_t x)
+		{
+			return ::acos(x);
+		}
+
+		static inline float64_t cosh(float64_t x)
+		{
+			return ::cosh(x);
+		}
+
 
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
