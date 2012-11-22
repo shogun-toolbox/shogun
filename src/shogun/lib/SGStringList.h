@@ -15,77 +15,42 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/lib/SGString.h>
 
 namespace shogun
 {
+
 /** @brief template class SGStringList */
 template <class T> struct SGStringList : public SGReferencedData
 {
 public:
 	/** default constructor */
-	SGStringList() : SGReferencedData()
-	{
-		init_data();
-	}
+	SGStringList();
 
 	/** constructor for setting params */
 	SGStringList(SGString<T>* s, index_t num_s, index_t max_length,
-			bool ref_counting=true) : 
-		SGReferencedData(ref_counting), num_strings(num_s),
-		max_string_length(max_length), strings(s)
-	{
-	}
+			bool ref_counting=true);
 
 	/** constructor to create new string list in memory */
-	SGStringList(index_t num_s, index_t max_length, bool ref_counting=true) : 
-		SGReferencedData(ref_counting),
-		num_strings(num_s), max_string_length(max_length)
-	{
-		strings=SG_MALLOC(SGString<T>, num_strings);
-	}
+	SGStringList(index_t num_s, index_t max_length, bool ref_counting=true);
 
 	/** copy constructor */
-	SGStringList(const SGStringList &orig) :
-		SGReferencedData(orig)
-	{
-		copy_data(orig);
-	}
+	SGStringList(const SGStringList &orig);
 
 	/** destructor */
-	virtual ~SGStringList()
-	{
-		unref();
-	}
+	virtual ~SGStringList();
 
 protected:
 
 	/** copy data */
-	virtual void copy_data(const SGReferencedData &orig)
-	{
-		strings = ((SGStringList*)(&orig))->strings;
-		num_strings = ((SGStringList*)(&orig))->num_strings;
-		max_string_length = ((SGStringList*)(&orig))->max_string_length;
-	}
+	virtual void copy_data(const SGReferencedData &orig);
 
 	/** init data */
-	virtual void init_data()
-	{
-		strings = NULL;
-		num_strings = 0;
-		max_string_length = 0;
-	}
+	virtual void init_data();
 
 	/** free data */
-	void free_data()
-	{
-		SG_FREE(strings);
-
-		strings = NULL;
-		num_strings = 0;
-		max_string_length = 0;
-	}
+	void free_data();
 
 public:
 	/** number of strings */

@@ -69,7 +69,7 @@ void test()
 			"feature matrix");
 
 	/* create subset indices */
-	SGVector<index_t> subset_idx(CMath::randperm(num_subset_idx),
+	SGVector<index_t> subset_idx(SGVector<index_t>::randperm(num_subset_idx),
 			num_subset_idx);
 
 	/* print subset indices */

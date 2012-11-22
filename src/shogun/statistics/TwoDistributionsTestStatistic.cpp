@@ -104,8 +104,8 @@ float64_t CTwoDistributionsTestStatistic::compute_p_value(
 		SGVector<float64_t> values=bootstrap_null();
 
 		/* find out percentile of parameter "statistic" in null distribution */
-		CMath::qsort(values);
-		float64_t i=CMath::find_position_to_insert(values, statistic);
+		values.qsort();
+		float64_t i=values.find_position_to_insert(statistic);
 
 		/* return corresponding p-value */
 		result=1.0-i/values.vlen;

@@ -11,6 +11,7 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/base/SGObject.h>
 
 using namespace shogun;

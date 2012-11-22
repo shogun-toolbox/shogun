@@ -253,7 +253,7 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 			SG_DEBUG("SPE's loop, iteration %d of %d\n", i, max_iter);
 
 		// Select the vectors to be updated in this iteration
-		int32_t* J = CMath::randperm(N);
+		int32_t* J = SGVector<int32_t>::randperm(N);
 
 		// Pointer to the first set of vector indices to update
 		int32_t* ind1 = J;

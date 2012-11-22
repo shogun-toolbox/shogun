@@ -11,6 +11,7 @@
 #include <shogun/base/init.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 

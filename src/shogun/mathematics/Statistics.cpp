@@ -1938,8 +1938,9 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	}
 	SG_FREE(idxs);
 
-	CMath::qsort(permuted_idxs, sample_size);
-	return SGVector<int32_t>(permuted_idxs, sample_size);
+	SGVector<int32_t> result=SGVector<int32_t>(permuted_idxs, sample_size);
+	result.qsort();
+	return result;
 }
 
 float64_t CStatistics::dlgamma(float64_t x)

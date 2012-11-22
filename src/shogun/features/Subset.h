@@ -11,12 +11,13 @@
 #ifndef __SUBSET_H_
 #define __SUBSET_H_
 
+#include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
-
 /** @brief Wrapper class for an index subset which is used by SubsetStack. */
 class CSubset: public CSGObject
 {

@@ -11,6 +11,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>

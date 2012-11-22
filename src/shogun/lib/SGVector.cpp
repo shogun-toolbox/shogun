@@ -10,12 +10,14 @@
  * Copyright (C) 2012 Soeren Sonnenburg
  */
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/io/File.h>
+
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/lapack.h>
+
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -23,97 +25,132 @@
 
 namespace shogun {
 
-template<class T> SGVector<T>::SGVector() : SGReferencedData()
+template<class T>
+SGVector<T>::SGVector() : SGReferencedData()
 {
 	init_data();
 }
 
-template<class T> SGVector<T>::SGVector(T* v, index_t len, bool ref_counting)
+template<class T>
+SGVector<T>::SGVector(T* v, index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vector(v), vlen(len)
 {
 }
 
-template<class T> SGVector<T>::SGVector(index_t len, bool ref_counting)
+template<class T>
+SGVector<T>::SGVector(index_t len, bool ref_counting)
 : SGReferencedData(ref_counting), vlen(len)
 {
 	vector=SG_MALLOC(T, len);
 }
 
-template<class T> SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
+template<class T>
+SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
 {
 	copy_data(orig);
 }
 
-template<class T> SGVector<T>::~SGVector()
+template<class T>
+SGVector<T>::~SGVector()
 {
 	unref();
 }
 
-template<class T> void SGVector<T>::zero()
+template<class T>
+void SGVector<T>::zero()
 {
 	if (vector && vlen)
 		set_const(0);
 }
 
-template<class T> void SGVector<T>::set_const(T const_elem)
+template<class T>
+void SGVector<T>::set_const(T const_elem)
 {
 	for (index_t i=0; i<vlen; i++)
 		vector[i]=const_elem ;
 }
 
-template<class T> void SGVector<T>::range_fill(T start)
+template<class T>
+void SGVector<T>::range_fill(T start)
 {
 	range_fill_vector(vector, vlen, start);
 }
 
-template<class T> void SGVector<T>::random(T min_value, T max_value)
+template<class T>
+void SGVector<T>::random(T min_value, T max_value)
 {
 	random_vector(vector, vlen, min_value, max_value);
 }
 
-template<class T> void SGVector<T>::randperm()
+template<class T>
+void SGVector<T>::randperm()
 {
 	randperm(vector, vlen);
 }
 
-template<class T> SGVector<T> SGVector<T>::clone() const
+template <class T>
+void SGVector<T>::qsort()
+{
+	CMath::qsort<T>(vector, vlen);
+}
+
+template <class T>
+index_t SGVector<T>::find_position_to_insert(T element)
+{
+	index_t i;
+	for (i=0; i<vlen; ++i)
+	{
+		if (vector[i]>element)
+			break;
+	}
+	return i;
+}
+
+template<class T>
+SGVector<T> SGVector<T>::clone() const
 {
 	return SGVector<T>(clone_vector(vector, vlen), vlen);
 }
 
-template<class T> T* SGVector<T>::clone_vector(const T* vec, int32_t len)
+template<class T>
+T* SGVector<T>::clone_vector(const T* vec, int32_t len)
 {
 	T* result = SG_MALLOC(T, len);
 	memcpy(result, vec, sizeof(T)*len);
 	return result;
 }
 
-template<class T> void SGVector<T>::fill_vector(T* vec, int32_t len, T value)
+template<class T>
+void SGVector<T>::fill_vector(T* vec, int32_t len, T value)
 {
 	for (int32_t i=0; i<len; i++)
 		vec[i]=value;
 }
 
-template<class T> void SGVector<T>::range_fill_vector(T* vec, int32_t len, T start)
+template<class T>
+void SGVector<T>::range_fill_vector(T* vec, int32_t len, T start)
 {
 	for (int32_t i=0; i<len; i++)
 		vec[i]=i+start;
 }
 
 
-template<class T> const T& SGVector<T>::get_element(index_t index)
+template<class T>
+const T& SGVector<T>::get_element(index_t index)
 {
 	ASSERT(vector && (index>=0) && (index<vlen));
 	return vector[index];
 }
 
-template<class T> void SGVector<T>::set_element(const T& p_element, index_t index)
+template<class T>
+void SGVector<T>::set_element(const T& p_element, index_t index)
 {
 	ASSERT(vector && (index>=0) && (index<vlen));
 	vector[index]=p_element;
 }
 
-template<class T> void SGVector<T>::resize_vector(int32_t n)
+template<class T>
+void SGVector<T>::resize_vector(int32_t n)
 {
 	vector=SG_REALLOC(T, vector, vlen, n);
 
@@ -123,7 +160,8 @@ template<class T> void SGVector<T>::resize_vector(int32_t n)
 }
 
 /** addition operator */
-template<class T> SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
+template<class T>
+SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 {
 	ASSERT(x.vector && vector);
 	ASSERT(x.vlen == vlen);
@@ -133,7 +171,8 @@ template<class T> SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 	return result;
 }
 
-template<class T> void SGVector<T>::add(const SGVector<T> x)
+template<class T>
+void SGVector<T>::add(const SGVector<T> x)
 {
 	ASSERT(x.vector && vector);
 	ASSERT(x.vlen == vlen);
@@ -142,7 +181,8 @@ template<class T> void SGVector<T>::add(const SGVector<T> x)
 		vector[i]+=x.vector[i];
 }
 
-template<class T> void SGVector<T>::add(const T x)
+template<class T>
+void SGVector<T>::add(const T x)
 {
 	ASSERT(vector);
 
@@ -150,7 +190,8 @@ template<class T> void SGVector<T>::add(const T x)
 		vector[i]+=x;
 }
 
-template<class T> void SGVector<T>::add(const SGSparseVector<T>& x)
+template<class T>
+void SGVector<T>::add(const SGSparseVector<T>& x)
 {
 	if (x.features)
 	{
@@ -163,31 +204,36 @@ template<class T> void SGVector<T>::add(const SGSparseVector<T>& x)
 	}
 }
 
-template<class T> void SGVector<T>::display_size() const
+template<class T>
+void SGVector<T>::display_size() const
 {
 	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen);
 }
 
-template<class T> void SGVector<T>::copy_data(const SGReferencedData &orig)
+template<class T>
+void SGVector<T>::copy_data(const SGReferencedData &orig)
 {
 	vector=((SGVector*)(&orig))->vector;
 	vlen=((SGVector*)(&orig))->vlen;
 }
 
-template<class T> void SGVector<T>::init_data()
+template<class T>
+void SGVector<T>::init_data()
 {
 	vector=NULL;
 	vlen=0;
 }
 
-template<class T> void SGVector<T>::free_data()
+template<class T>
+void SGVector<T>::free_data()
 {
 	SG_FREE(vector);
 	vector=NULL;
 	vlen=0;
 }
 
-template<class T> void SGVector<T>::display_vector(const char* name,
+template<class T>
+void SGVector<T>::display_vector(const char* name,
 		const char* prefix) const
 {
 	display_vector(vector, vlen, name, prefix);
@@ -413,7 +459,6 @@ float32_t SGVector<T>::dot(const float32_t* v1, const float32_t* v2, int32_t n)
 	return r;
 }
 
-/** random vector */
 template <class T>
 	void SGVector<T>::random_vector(T* vec, int32_t len, T min_value, T max_value)
 	{
@@ -421,7 +466,15 @@ template <class T>
 			vec[i]=CMath::random(min_value, max_value);
 	}
 
-/** random permatutaion */
+template <class T>
+T* SGVector<T>::randperm(int32_t n)
+{
+	T* perm = SG_MALLOC(T, n);
+	randperm(perm, n);
+
+	return perm;
+}
+
 template <class T>
 void SGVector<T>::randperm(T* perm, int32_t n)
 {
@@ -429,6 +482,7 @@ void SGVector<T>::randperm(T* perm, int32_t n)
 		perm[i] = i;
 	permute(perm,n);
 }
+
 
 /** permute */
 template <class T>
@@ -438,7 +492,8 @@ void SGVector<T>::permute(T* vec, int32_t n)
 		CMath::swap(vec[i], vec[CMath::random(i, n-1)]);
 }
 
-template<class T> void SGVector<T>::permute()
+template<class T>
+void SGVector<T>::permute()
 {
 	SGVector<T>::permute(vector, vlen);
 }
@@ -754,7 +809,7 @@ bool SGVector<T>::fequal(T x, T y, float64_t precision)
 template <class T>
 int32_t SGVector<T>::unique(T* output, int32_t size)
 {
-	CMath::qsort(output, size);
+	CMath::qsort<T>(output, size);
 	int32_t j=0;
 
 	for (int32_t i=0; i<size; i++)

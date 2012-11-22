@@ -178,8 +178,8 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		/* get samples from null-distribution and compute p-value of statistic */
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
-		CMath::qsort(null_samples);
-		index_t pos=CMath::find_position_to_insert(null_samples, statistic);
+		null_samples.qsort();
+		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
 #else // HAVE_LAPACK
 		SG_ERROR("CQuadraticTimeMMD::compute_p_value(): Only possible if "
@@ -216,7 +216,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		/* get samples from null-distribution and compute threshold */
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
-		CMath::qsort(null_samples);
+		null_samples.qsort();
 		result=null_samples[CMath::floor(null_samples.vlen*(1-alpha))];
 #else // HAVE_LAPACK
 		SG_ERROR("CQuadraticTimeMMD::compute_threshold(): Only possible if "

@@ -15,69 +15,39 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
+
+template<class T> class SGVector;
 
 /** @brief shogun string */
 template<class T> class SGString
 {
 public:
 	/** default constructor */
-	SGString() : string(NULL), slen(0), do_free(false) { }
+	SGString();
 
 	/** constructor for setting params */
-	SGString(T* s, index_t l, bool free_s=false)
-		: string(s), slen(l), do_free(free_s) { }
+	SGString(T* s, index_t l, bool free_s=false);
 
 	/** constructor for setting params from a SGVector*/
-	SGString(SGVector<T> v)
-		: string(v.vector), slen(v.vlen), do_free(v.do_free) { }
+	SGString(SGVector<T> v);
 
 	/** constructor to create new string in memory */
-	SGString(index_t len, bool free_s=false) :
-		slen(len), do_free(free_s)
-	{
-		string=SG_CALLOC(T, len);
-	}
+	SGString(index_t len, bool free_s=false);
 
 	/** copy constructor */
-	SGString(const SGString &orig)
-		: string(orig.string), slen(orig.slen), do_free(orig.do_free) { }
+	SGString(const SGString &orig);
 
 	/** equality operator */
-	bool operator==(const SGString & other) const
-	{
-		if (other.slen != slen)
-			return false;
-
-		for (int i = 0; i < slen; i++)
-		{
-			if (other.string[i] != string[i])
-				return false;
-		}
-
-		return true;
-	}
+	bool operator==(const SGString & other) const;
 
 	/** free string */
-	void free_string()
-	{
-		if (do_free)
-			SG_FREE(string);
-
-		string=NULL;
-		do_free=false;
-		slen=0;
-	}
+	void free_string();
 
 	/** destroy string */
-	void destroy_string()
-	{
-		do_free=true;
-		free_string();
-	}
+	void destroy_string();
 
 public:
 	/** string  */

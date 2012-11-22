@@ -69,8 +69,32 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void random(T min_value, T max_value);
 
-		/** random permutate */
+		/** Returns a random permutation of number from 0 to len-1 */
 		void randperm();
+
+		/** Returns a random permutation of number from 0 to n-1.
+		 * Caller has to free memory.
+		 *
+		 * @param n range of permutation
+		 * @return random permutation of number from 0 to n-1
+		 */
+		static T* randperm(int32_t n);
+
+		/** For a sorted (ascending) vector, gets the index after the first
+		 * element that is smaller than the given one
+		 *
+		 * @param vector vector to find position in
+		 * @param element element to find index for
+		 * @return index of the first element greater than given one
+		 */
+		index_t find_position_to_insert(T element);
+
+		/** performs a quicksort on the given vector
+		 * it is sorted from in ascending (for type T)
+		 *
+		 * @param vector vector to sort
+		 */
+		void qsort();
 
 		/** clone vector */
 		SGVector<T> clone() const;

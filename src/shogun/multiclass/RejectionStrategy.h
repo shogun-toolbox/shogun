@@ -151,7 +151,7 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 			int32_t Ni = N/10 - 1;
 
 			SGVector<float64_t> outputs_local = outputs.clone();
-			CMath::qsort(outputs_local.vector,N);
+			outputs_local.qsort();
 
 			float64_t Q = 0.0;
 			if (N==10)

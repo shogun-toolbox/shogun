@@ -541,35 +541,6 @@ class CMath : public CSGObject
 				return nnz;
 			}
 
-		/** Returns a random permutation of number from 0 to n-1
-		 * @param n range of permutation
-		 * @return random permutation of number from 0 to n-1
-		 */
-		static inline SGVector<int32_t> randperm_vec(int32_t n)
-		{
-			SGVector<int32_t> result(randperm(n), n);
-			return result;
-		}
-
-		/** Returns a random permutation of number from 0 to n-1.
-		 * Caller has to free memory.
-		 *
-		 * @param n range of permutation
-		 * @return random permutation of number from 0 to n-1
-		 */
-		static inline int32_t* randperm(int32_t n)
-		{
-			int32_t* perm = SG_MALLOC(int32_t, n);
-
-			if (!perm)
-				return NULL;
-			for (int32_t i = 0; i < n; i++)
-				perm[i] = i;
-			for (int32_t i = 0; i < n; i++)
-				swap(perm[random(0, n - 1)], perm[i]);
-			return perm;
-		}
-
 		static inline int64_t nchoosek(int32_t n, int32_t k)
 		{
 			int64_t res=1;
@@ -586,11 +557,65 @@ class CMath : public CSGObject
 		static void sort(int32_t *a, int32_t cols, int32_t sort_col=0);
 		static void sort(float64_t *a, int32_t*idx, int32_t N);
 
-		/*
-		 * Inline function to extract the byte at position p (from left)
-		 * of an 64 bit integer. The function is somewhat identical to
-		 * accessing an array of characters via [].
-		 */
+		/** performs a quicksort on an array output of length size
+		 * it is sorted from in ascending (for type T) */
+		template <class T>
+			static void qsort(T* output, int32_t size)
+			{
+				if (size==1)
+					return;
+
+				if (size==2)
+				{
+					if (output[0] > output [1])
+						CMath::swap(output[0],output[1]);
+					return;
+				}
+				//T split=output[random(0,size-1)];
+				T split=output[size/2];
+
+				int32_t left=0;
+				int32_t right=size-1;
+
+				while (left<=right)
+				{
+					while (output[left] < split)
+						left++;
+					while (output[right] > split)
+						right--;
+
+					if (left<=right)
+					{
+						CMath::swap(output[left],output[right]);
+						left++;
+						right--;
+					}
+				}
+
+				if (right+1> 1)
+					qsort(output,right+1);
+
+				if (size-left> 1)
+					qsort(&output[left],size-left);
+			}
+
+		/** performs insertion sort of an array output of length size
+		 * it is sorted from in ascending (for type T) */
+		template <class T>
+			static void insertion_sort(T* output, int32_t size)
+			{
+				for (int32_t i=0; i<size-1; i++)
+				{
+					int32_t j=i-1;
+					T value=output[i];
+					while (j >= 0 && output[j] > value)
+					{
+						output[j+1] = output[j];
+						j--;
+					}
+					output[j+1]=value;
+				}
+			}
 
 		/** performs a in-place radix sort in ascending order */
 		template <class T>
@@ -599,6 +624,11 @@ class CMath : public CSGObject
 				radix_sort_helper(array,size,0);
 			}
 
+		/*
+		 * Inline function to extract the byte at position p (from left)
+		 * of an 64 bit integer. The function is somewhat identical to
+		 * accessing an array of characters via [].
+		 */
 		template <class T>
 			static inline uint8_t byte(T word, uint16_t p)
 			{
@@ -702,96 +732,6 @@ class CMath : public CSGObject
 						count[c] = 0;
 					}
 				}
-			}
-
-		/** performs insertion sort of an array output of length size
-		 * it is sorted from in ascending (for type T) */
-		template <class T>
-			static void insertion_sort(T* output, int32_t size)
-			{
-				for (int32_t i=0; i<size-1; i++)
-				{
-					int32_t j=i-1;
-					T value=output[i];
-					while (j >= 0 && output[j] > value)
-					{
-						output[j+1] = output[j];
-						j--;
-					}
-					output[j+1]=value;
-				}
-			}
-
-		/** For a sorted (ascending) vector, gets the index after the first
-		 * element that is smaller than the given one
-		 *
-		 * @param vector vector to find position in
-		 * @param element element to find index for
-		 * @return index of the first element greater than given one
-		 */
-		template <class T>
-			static index_t find_position_to_insert(SGVector<T> vector, T element)
-		{
-			index_t i;
-			for (i=0; i<vector.vlen; ++i)
-			{
-				if (vector[i]>element)
-					break;
-			}
-			return i;
-		}
-
-		/** performs a quicksort on the given vector
-		 * it is sorted from in ascending (for type T)
-		 *
-		 * @param vector vector to sort
-		 */
-		template <class T>
-			static void qsort(SGVector<T> vector)
-		{
-			qsort(vector.vector, vector.vlen);
-		}
-
-		/** performs a quicksort on an array output of length size
-		 * it is sorted from in ascending (for type T) */
-		template <class T>
-			static void qsort(T* output, int32_t size)
-			{
-				if (size==1)
-					return;
-
-				if (size==2)
-				{
-					if (output[0] > output [1])
-						swap(output[0],output[1]);
-					return;
-				}
-				//T split=output[random(0,size-1)];
-				T split=output[size/2];
-
-				int32_t left=0;
-				int32_t right=size-1;
-
-				while (left<=right)
-				{
-					while (output[left] < split)
-						left++;
-					while (output[right] > split)
-						right--;
-
-					if (left<=right)
-					{
-						swap(output[left],output[right]);
-						left++;
-						right--;
-					}
-				}
-
-				if (right+1> 1)
-					qsort(output,right+1);
-
-				if (size-left> 1)
-					qsort(&output[left],size-left);
 			}
 
 		/** Performs a quicksort on an array of pointers.

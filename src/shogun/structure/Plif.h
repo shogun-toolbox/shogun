@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/PlifBase.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
