@@ -448,61 +448,61 @@ finalbeta=oldweights;
 void MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2)
 {
 	if(pnorm<1 )
-      SG_ERROR("MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1");
+		SG_ERROR("MKLMulticlassGradient::computeweights(std::vector<float64_t> & weights2) : parameter pnorm<1");
 
-   SG_SDEBUG("MKLMulticlassGradient::computeweights(...): pnorm %f\n",pnorm);
+	SG_SDEBUG("MKLMulticlassGradient::computeweights(...): pnorm %f\n",pnorm);
 
-	int maxnumlinesrch=15;
-	float64_t maxdiff=1e-6;
+	std::vector<float64_t> initw(weights2);
+	linesearch2(weights2,initw);
 
-   std::vector<float64_t> initw(weights2);
-   linesearch2(weights2,initw);
-
-   SG_SINFO("MKLMulticlassGradient::computeweights(...): newweights \n");
-   for(size_t i=0;i<weights2.size();++i)
+	SG_SINFO("MKLMulticlassGradient::computeweights(...): newweights \n");
+	for(size_t i=0;i<weights2.size();++i)
 	{
 		SG_SINFO(" %f",weights2[i]);
 	}
-   SG_SINFO(" \n");
+	SG_SINFO(" \n");
 
-   /*
-	bool finished =false;
-	int numiter=0;
-	do
+	/*
+	   int maxnumlinesrch=15;
+	   float64_t maxdiff=1e-6;
+
+	   bool finished =false;
+	   int numiter=0;
+	   do
+	   {
+	   ++numiter;
+	   std::vector<float64_t> initw(weights2);
+	   linesearch(weights2,initw);
+	   float64_t norm=0;
+	   if(!initw.empty())
+	   {
+	   for(size_t i=0;i<weights2.size();++i)
+	   {
+	   norm+=(weights2[i]-initw[i])*(weights2[i]-initw[i]);
+	   }
+	   norm=sqrt(norm);
+	   }
+	   else
+	   {
+	   norm=maxdiff+1;
+	   }
+
+	   if((norm < maxdiff) ||(numiter>=maxnumlinesrch ))
+	   {
+	   finished=true;
+	   }
+	// for(size_t i=0;i<weights2.size();++i)
+	// {
+	//    SG_SINFO("MKLMulticlassGradient::computeweights(...): oldweights %f\n",initw[i]);
+	//	}
+	SG_SINFO("MKLMulticlassGradient::computeweights(...): newweights at iter %d normdiff %f\n",numiter,norm);
+	for(size_t i=0;i<weights2.size();++i)
 	{
-		++numiter;
-		std::vector<float64_t> initw(weights2);
-		linesearch(weights2,initw);
-		float64_t norm=0;
-		if(!initw.empty())
-		{
-		for(size_t i=0;i<weights2.size();++i)
-		{
-			norm+=(weights2[i]-initw[i])*(weights2[i]-initw[i]);
-		}
-			norm=sqrt(norm);
-		}
-		else
-		{
-			norm=maxdiff+1;
-		}
-
-		if((norm < maxdiff) ||(numiter>=maxnumlinesrch ))
-		{
-			finished=true;
-		}
-      // for(size_t i=0;i<weights2.size();++i)
-      // {
-      //    SG_SINFO("MKLMulticlassGradient::computeweights(...): oldweights %f\n",initw[i]);
-      //	}
-      SG_SINFO("MKLMulticlassGradient::computeweights(...): newweights at iter %d normdiff %f\n",numiter,norm);
-      for(size_t i=0;i<weights2.size();++i)
-      {
-         SG_SINFO(" %f",weights2[i]);
-      }
-      SG_SINFO(" \n");
+	SG_SINFO(" %f",weights2[i]);
+	}
+	SG_SINFO(" \n");
 	}
 	while(false==finished);
-   */
+	*/
 
 }

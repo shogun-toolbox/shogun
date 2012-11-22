@@ -208,7 +208,6 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	if (data)
 		set_features(data);
 
-	float64_t xi;
 	SGVector<float64_t> alpha;
 	float64_t** G; /* Gram matrix */
 	std::vector<SGSparseVector<float64_t> > dXc; /* constraint matrix */
@@ -218,7 +217,6 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	float64_t dual_obj, alphasum;
 	int32_t iter, size_active;
 	float64_t value;
-	int32_t r;
 	SGVector<int32_t> idle; /* for cleaning up */
 	float64_t margin;
 	float64_t primal_obj;
@@ -255,7 +253,6 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 	iter = 0;
 	size_active = 0;
-	xi = 0.0;
 	G = NULL;
 
 	new_constraint = find_cutting_plane(&margin);
@@ -304,11 +301,11 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		gammaG0.resize_vector(size_active);
 
 		/* update Gram matrix */
-		G = SG_REALLOC(float64_t*, G, size_active);
+		G = SG_REALLOC(float64_t*, G, size_active-1, size_active);
 		G[size_active - 1] = NULL;
 		for (index_t j=0; j < size_active;j++)
 		{
-			G[j] = SG_REALLOC(float64_t, G[j], size_active);
+			G[j] = SG_REALLOC(float64_t, G[j], size_active-1, size_active);
 		}
 		for (index_t j=0; j < size_active-1; j++)
 		{
@@ -349,7 +346,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 			case MOSEK:
 				/* solve QP to update alpha */
 				dual_obj = 0;
-				r = mosek_qp_optimize(G, proximal_rhs.vector, alpha.vector, size_active, &dual_obj, rho);
+				mosek_qp_optimize(G, proximal_rhs.vector, alpha.vector, size_active, &dual_obj, rho);
 				break;
 			case SVMLIGHT:
 				/* TODO: port required functionality from the latest SVM^light into shogun
@@ -642,7 +639,7 @@ int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, S
 	delta.resize_vector(new_size_active);
 	gammaG0.resize_vector(new_size_active);
 	proximal_rhs.resize_vector(new_size_active);
-	G = SG_REALLOC(float64_t*, G, new_size_active);
+	G = SG_REALLOC(float64_t*, G, size_active, new_size_active);
 	dXc.resize(new_size_active);
 	cut_error.resize_vector(new_size_active);
 
@@ -668,7 +665,7 @@ int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, S
 	}
 	idle.resize_vector(new_size_active);
 	for (k=0;k<new_size_active;k++)
-		G[k] = SG_REALLOC(float64_t, G[k], new_size_active);
+		G[k] = SG_REALLOC(float64_t, G[k], size_active, new_size_active);
 
 	*ptr_G = G;
 
