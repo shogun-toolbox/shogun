@@ -12,7 +12,6 @@
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
 
-#include <algorithm>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGReferencedData.h>
 
@@ -72,6 +71,9 @@ template<class T> class SGVector : public SGReferencedData
 		/** Returns a random permutation of number from 0 to len-1 */
 		void randperm();
 
+		/** Returns a random permutation of number from 0 to n-1 */
+		static SGVector<T> randperm_vec(int32_t n);
+
 		/** Returns a random permutation of number from 0 to n-1.
 		 * Caller has to free memory.
 		 *
@@ -95,6 +97,14 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param vector vector to sort
 		 */
 		void qsort();
+
+		/** get sorted index.
+		 *
+		 * idx = v.argsort() is similar to Matlab [~, idx] = sort(v)
+		 *
+		 * @return sorted index for this vector
+		 */
+		SGVector<index_t> argsort();
 
 		/** clone vector */
 		SGVector<T> clone() const;
@@ -477,39 +487,6 @@ template<class T> class SGVector : public SGReferencedData
 				idx.vlen = k;
 				return idx;
 			}
-
-		/** Helper functor for the function sorted_index */
-		struct IndexSorter
-		{
-			/** constructor */
-			IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
-
-			/** access operator */
-			bool operator() (index_t i, index_t j) const
-			{
-				return data[i] < data[j];
-			}
-
-			/** data */
-			const T* data;
-		};
-		/** get sorted index.
-		 *
-		 * idx = v.sorted_index() is similar to Matlab [~, idx] = sort(v)
-		 *
-		 * @return sorted index for this vector
-		 */
-		SGVector<index_t> sorted_index()
-		{
-			IndexSorter cmp(this);
-			SGVector<index_t> idx(vlen);
-			for (index_t i=0; i < vlen; ++i)
-				idx[i] = i;
-
-			std::sort(idx.vector, idx.vector+vlen, cmp);
-
-			return idx;
-		}
 
 		/// scale vector inplace
 		void scale(T alpha);

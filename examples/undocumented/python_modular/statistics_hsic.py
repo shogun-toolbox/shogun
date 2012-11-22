@@ -18,7 +18,7 @@ def statistics_hsic ():
 	from shogun.Statistics import HSIC
 	from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
 	from shogun.Distance import EuclideanDistance
-	from shogun.Mathematics import Statistics, Math
+	from shogun.Mathematics import Statistics, IntVector
 
 	# note that the HSIC has to store kernel matrices
 	# which upper bounds the sample size
@@ -39,7 +39,7 @@ def statistics_hsic ():
 	# However, shoguns kernel width is different to usual parametrization
 	# Therefore 0.5*2*median_distance^2
 	# Use a subset of data for that, only 200 elements. Median is stable
-	subset=Math.randperm_vec(features_x.get_num_vectors())
+	subset=IntVector.randperm_vec(features_x.get_num_vectors())
 	subset=subset[0:200]
 	features_x.add_subset(subset)
 	dist=EuclideanDistance(features_x, features_x)

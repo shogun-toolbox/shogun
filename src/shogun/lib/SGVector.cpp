@@ -17,6 +17,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <algorithm>
 
 
 #ifdef HAVE_EIGEN3
@@ -93,6 +94,37 @@ void SGVector<T>::qsort()
 {
 	CMath::qsort<T>(vector, vlen);
 }
+
+/** Helper functor for the function argsort */
+template<class T>
+struct IndexSorter
+{
+	/** constructor */
+	IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
+
+	/** access operator */
+	bool operator() (index_t i, index_t j) const
+	{
+		return data[i] < data[j];
+	}
+
+	/** data */
+	const T* data;
+};
+
+template<class T>
+SGVector<index_t> SGVector<T>::argsort()
+{
+	IndexSorter<T> cmp(this);
+	SGVector<index_t> idx(vlen);
+	for (index_t i=0; i < vlen; ++i)
+		idx[i] = i;
+
+	std::sort(idx.vector, idx.vector+vlen, cmp);
+
+	return idx;
+}
+
 
 template <class T>
 index_t SGVector<T>::find_position_to_insert(T element)
@@ -467,6 +499,12 @@ template <class T>
 	}
 
 template <class T>
+SGVector<T> SGVector<T>::randperm_vec(int32_t n)
+{
+	return SGVector<T>(randperm(n), n);
+}
+
+template <class T>
 T* SGVector<T>::randperm(int32_t n)
 {
 	T* perm = SG_MALLOC(T, n);
@@ -833,7 +871,8 @@ SGVector<index_t> SGVector<T>::find(T elem)
 	return idx;
 }
 
-template<class T> void SGVector<T>::scale(T alpha)
+template<class T>
+void SGVector<T>::scale(T alpha)
 {
 	scale_vector(alpha, vector, vlen);
 }
