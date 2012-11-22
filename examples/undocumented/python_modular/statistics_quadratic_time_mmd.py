@@ -16,7 +16,7 @@ def statistics_quadratic_time_mmd ():
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
 	from shogun.Distance import EuclideanDistance
-	from shogun.Mathematics import Statistics, Math
+	from shogun.Mathematics import Statistics, IntVector
 
 	# note that the quadratic time mmd has to store kernel matrices
 	# which upper bounds the sample size
@@ -45,7 +45,7 @@ def statistics_quadratic_time_mmd ():
 	# Therefore 0.5*2*median_distance^2
 	# Use a subset of data for that, only 200 elements. Median is stable
 	# Use a permutation set to temporarily merge features in merged examples
-	subset=Math.randperm_vec(features.get_num_vectors())
+	subset=IntVector.randperm_vec(features.get_num_vectors())
 	subset=subset[0:200]
 	features.add_subset(subset)
 	dist=EuclideanDistance(features, features)
