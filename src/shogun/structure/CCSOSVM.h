@@ -33,9 +33,16 @@ namespace shogun
 	class CCCSOSVM : public CLinearStructuredOutputMachine
 	{
 		public:
+			/** default constructor*/
 			CCCSOSVM();
 
-			CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w = 0);
+			/** constructor
+			 * @param model structured output model
+			 * @param w initial w (optional)
+			 */
+			CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w = SGVector<float64_t>());
+
+			/** destructor */
 			virtual ~CCCSOSVM();
 
 			/** @return object name */
@@ -133,11 +140,19 @@ namespace shogun
 				m_max_rho = max_rho;
 			}
 
+			/** get the currently used qp solver
+			 *
+			 * @return qp solver
+			 */
 			inline EQPType get_qp_type() const
 			{
 				return m_qp_type;
 			}
 
+			/** set the qp solver to be used
+			 *
+			 * @param type qp solver
+			 */
 			inline void set_qp_type(EQPType type)
 			{
 				m_qp_type = type;
@@ -149,7 +164,7 @@ namespace shogun
 		private:
 			/** find new cutting plane
 			 *
-			 * @param marin new margin value
+			 * @param margin new margin value
 			 * @return new cutting plane
 			 */
 			SGSparseVector<float64_t> find_cutting_plane(float64_t* margin);

@@ -32,6 +32,11 @@ public:
 	/** Constructor */
 	CMeanShiftDataGenerator();
 
+	/** Constructor
+	 *
+	 * @param mean_shift
+	 * @param dim
+	 */
 	CMeanShiftDataGenerator(T mean_shift, index_t dim);
 
 	/** Destructor */
@@ -43,10 +48,19 @@ public:
 		return "MeanShiftDataGenerator";
 	}
 
+
+	/*
+	 * set the mean shift model
+	 *
+	 * @param mean_shift
+	 * @param dimension
+	 */
 	void set_mean_shift_model(T mean_shift, index_t dimension);
 
+	/** get the next example from stream */
 	bool get_next_example();
 
+	/** release the example when done w/ processing */
 	void release_example();
 
 private:
@@ -56,6 +70,7 @@ private:
 protected:
 	/** model of data to generate */
 	T m_mean_shift;
+	/** dimension */
 	index_t m_dimension;
 };
 

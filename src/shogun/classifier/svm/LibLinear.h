@@ -45,7 +45,7 @@ namespace shogun
 class CLibLinear : public CLinearMachine
 {
 	public:
-		MACHINE_PROBLEM_TYPE(PT_BINARY);
+		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor  */
 		CLibLinear();
@@ -69,11 +69,17 @@ class CLibLinear : public CLinearMachine
 		/** destructor */
 		virtual ~CLibLinear();
 
+		/**
+		 * @return the currently used liblinear solver
+		 */
 		inline LIBLINEAR_SOLVER_TYPE get_liblinear_solver_type()
 		{
 			return liblinear_solver_type;
 		}
 
+		/**
+		 * @param set the liblinear solver
+		 */
 		inline void set_liblinear_solver_type(LIBLINEAR_SOLVER_TYPE st)
 		{
 			liblinear_solver_type=st;
