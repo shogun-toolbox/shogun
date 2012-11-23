@@ -126,7 +126,7 @@ namespace shogun
 			float64_t m_epsilon;
 			/** max iterations */
 			int32_t m_max_iter;
-
+			/** current iteration */
 			int32_t m_cur_iter;
 
 		private:

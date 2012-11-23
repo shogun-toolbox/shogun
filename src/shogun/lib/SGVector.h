@@ -85,16 +85,13 @@ template<class T> class SGVector : public SGReferencedData
 		/** For a sorted (ascending) vector, gets the index after the first
 		 * element that is smaller than the given one
 		 *
-		 * @param vector vector to find position in
 		 * @param element element to find index for
 		 * @return index of the first element greater than given one
 		 */
 		index_t find_position_to_insert(T element);
 
-		/** performs a quicksort on the given vector
+		/** quicksort the vector
 		 * it is sorted from in ascending (for type T)
-		 *
-		 * @param vector vector to sort
 		 */
 		void qsort();
 

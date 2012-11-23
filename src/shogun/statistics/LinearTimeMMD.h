@@ -91,6 +91,7 @@ public:
 	 * @param kernel kernel to use
 	 * @param p streaming features p to use
 	 * @param q streaming features q to use
+	 * @param m index of first sample of q
 	 * @param blocksize size of examples that are processed at once when
 	 * computing statistic/threshold. If larger than m/2, all examples will be
 	 * processed at once. Memory consumption increased linearly in the

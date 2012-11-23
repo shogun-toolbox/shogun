@@ -10,10 +10,11 @@
 
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
-
+	
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -166,5 +167,7 @@ SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
 #undef SG_SPECIALIZED_MALLOC
 }
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #endif // __MEMORY_H__

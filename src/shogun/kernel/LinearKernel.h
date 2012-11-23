@@ -114,8 +114,7 @@ class CLinearKernel: public CDotKernel
 
 		/** get normal vector
 		 *
-		 * @param dst_w store w in this argument
-		 * @param dst_dims dimension of w
+		 * @return normal vector
 		 */
 		SGVector<float64_t> get_w() const 
 		{

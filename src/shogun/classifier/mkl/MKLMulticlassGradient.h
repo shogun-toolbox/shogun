@@ -76,13 +76,6 @@ public:
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
-	/** sets L^p norm
-	*
-	* @param weights2 stores the new weights
-	* 
-	*/
-	
-
 	/** @return object name */
 	virtual const char* get_name() const
 	{
@@ -98,10 +91,11 @@ protected:
 	/** helper routine for MKL optimization, performs linesearch
 	*
 	*	@param oldweights - MKL weights to start from 
-	*	@param weights - new MKL weights
+	*	@param finalbeta - new MKL weights
 	*
 	*/
-void linesearch2(std::vector<float64_t> & finalbeta,const std::vector<float64_t> & oldweights);
+	void linesearch2(std::vector<float64_t> & finalbeta,const std::vector<float64_t> & oldweights);
+
 	/** helper routine for MKL optimization, computes form manifold coordinates the point on the manifold
 	*
 	*	@param gammas  - manifold coordinates
@@ -118,6 +112,7 @@ void linesearch2(std::vector<float64_t> & finalbeta,const std::vector<float64_t>
 	*
 	*/
 	void gengammagradient( ::std::vector<float64_t> & gammagradient ,const ::std::vector<float64_t> & gammas,const int32_t dim);
+
 	/** helper routine for MKL optimization, computes optimization objective for one contraint 
 	*
 	*	@param weights - MKL weights
@@ -125,10 +120,11 @@ void linesearch2(std::vector<float64_t> & finalbeta,const std::vector<float64_t>
 	*
 	*/
 	float64_t objectives(const ::std::vector<float64_t> & weights, const int32_t index);
+
 	/** helper routine for MKL optimization, performs linesearch
 	*
 	*	@param oldweights - MKL weights to start from 
-	*	@param weights - new MKL weights
+	*	@param finalbeta - new MKL weights
 	*
 	*/
 	void linesearch(std::vector<float64_t> & finalbeta,const std::vector<float64_t> & oldweights);
