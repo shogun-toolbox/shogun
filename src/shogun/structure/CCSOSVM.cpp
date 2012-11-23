@@ -210,7 +210,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 	SGVector<float64_t> alpha;
 	float64_t** G; /* Gram matrix */
-	std::vector<SGSparseVector<float64_t> > dXc; /* constraint matrix */
+	DynArray<SGSparseVector<float64_t> > dXc; /* constraint matrix */
 	//	DOC **dXc; /* constraint matrix */
 	SGVector<float64_t> delta; /* rhs of constraints */
 	SGSparseVector<float64_t> new_constraint;
@@ -274,7 +274,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		SG_PRINT(".");
 
 		/* add constraint */
-		dXc.resize(size_active);
+		dXc.resize_array(size_active);
 		dXc[size_active - 1] = new_constraint;
 		//		dXc[size_active - 1].add(new_constraint);
 		/*
@@ -594,7 +594,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, SGVector<float64_t>&alpha,
 		SGVector<float64_t>& delta, SGVector<float64_t>& gammaG0,
 		SGVector<float64_t>& proximal_rhs, float64_t ***ptr_G,
-		std::vector<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error)
+		DynArray<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error)
 {
 	int32_t i, j, new_size_active;
 	index_t k;
@@ -640,7 +640,7 @@ int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, S
 	gammaG0.resize_vector(new_size_active);
 	proximal_rhs.resize_vector(new_size_active);
 	G = SG_REALLOC(float64_t*, G, size_active, new_size_active);
-	dXc.resize(new_size_active);
+	dXc.resize_array(new_size_active);
 	cut_error.resize_vector(new_size_active);
 
 	/* resize G and idle */
