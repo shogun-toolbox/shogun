@@ -505,6 +505,31 @@ template<class ST> void CDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, in
 	free_feature_vector(vec1, vec_idx1, vfree);
 }
 
+template<>
+void CDenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+		float64_t* vec2, int32_t vec2_len, bool abs_val)
+{
+	ASSERT(vec2_len == num_features);
+
+	int32_t vlen;
+	bool vfree;
+	float64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
+
+	ASSERT(vlen == num_features);
+
+	if (abs_val)
+	{
+		for (int32_t i = 0; i < num_features; i++)
+			vec2[i] += alpha * CMath::abs(vec1[i]);
+	}
+	else
+	{
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(vec2, alpha, vec1, num_features);
+	}
+
+	free_feature_vector(vec1, vec_idx1, vfree);
+}
+
 template<class ST> int32_t CDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
 {
 	return num_features;
