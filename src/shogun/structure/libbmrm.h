@@ -148,11 +148,9 @@ void remove_cutting_plane(
 		float64_t* 	icp);
 
 /**
- *
- *
- *
+ * Clean-up in-active cutting planes
  */
-inline void clean_icp(ICP_stats* icp_stats,
+void clean_icp(ICP_stats* icp_stats,
 		bmrm_return_value_T& bmrm,
 		bmrm_ll** head,
 		bmrm_ll** tail,

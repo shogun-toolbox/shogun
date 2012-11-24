@@ -85,7 +85,7 @@ void remove_cutting_plane(
 	LIBBMRM_FREE(cp_list_ptr);
 }
 
-inline void clean_icp(ICP_stats* icp_stats,
+void clean_icp(ICP_stats* icp_stats,
 		bmrm_return_value_T& bmrm,
 		bmrm_ll** head,
 		bmrm_ll** tail,
