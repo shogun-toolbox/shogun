@@ -32,8 +32,9 @@ namespace shogun
 			uint32_t         _BufSize,
 			bool             cleanICP,
 			uint32_t         cleanAfter,
-			bool             is_convex,
-			bool             verbose
+			bool             is_convex = false,
+			bool             line_search = true,
+			bool             verbose = false
 			);
 }
 #endif /* libncbm_h */
