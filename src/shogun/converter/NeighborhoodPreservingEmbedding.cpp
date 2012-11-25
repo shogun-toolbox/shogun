@@ -19,6 +19,7 @@
 #include <shogun/lib/Time.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

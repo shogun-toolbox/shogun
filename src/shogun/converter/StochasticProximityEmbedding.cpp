@@ -16,6 +16,7 @@
 #include <shogun/lib/CoverTree.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/distance/Distance.h>
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

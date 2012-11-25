@@ -19,6 +19,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/EuclideanDistance.h>
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

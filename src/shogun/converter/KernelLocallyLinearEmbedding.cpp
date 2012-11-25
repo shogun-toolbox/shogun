@@ -18,10 +18,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/Signal.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 
