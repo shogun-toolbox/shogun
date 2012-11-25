@@ -76,8 +76,8 @@ void SGVector<float64_t>::set_const(float64_t const_elem)
 	catlas_dset(vlen, const_elem, vector, 1);
 }
 
-template<class T>
-void SGVector<T>::set_const(T const_elem)
+template<>
+void SGVector<float32_t>::set_const(float32_t const_elem)
 {
 	catlas_sset(vlen, const_elem, vector, 1);
 }
