@@ -20,16 +20,20 @@
 #include <vector>
 #include <utility>
 
-#ifndef TAPKEE_DEBUG
-	#define EIGEN_NO_DEBUG
+#ifdef TAPKEE_EIGEN_INCLUDE_FILE
+	#include TAPKEE_EIGEN_INCLUDE_FILE
+#else 
+	#ifndef TAPKEE_DEBUG
+		#define EIGEN_NO_DEBUG
+	#endif
+	#define EIGEN_RUNTIME_NO_MALLOC
+	#define EIGEN_MATRIXBASE_PLUGIN "utils/matrix.hpp"
+	#define EIGEN_DONT_PARALLELIZE
+	#include <Eigen/Dense>
+	#include <Eigen/Sparse>
+	#include <Eigen/SparseCholesky>
+	//#include <eigen3/Eigen/SuperLUSupport>
 #endif
-#define EIGEN_RUNTIME_NO_MALLOC
-#define EIGEN_MATRIXBASE_PLUGIN "utils/matrix.hpp"
-#define EIGEN_DONT_PARALLELIZE
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include <Eigen/SparseCholesky>
-//#include <eigen3/Eigen/SuperLUSupport>
 
 #ifdef TAPKEE_GPU
 	#define VIENNACL_HAVE_EIGEN 1
