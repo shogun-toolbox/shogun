@@ -69,7 +69,7 @@ void SGVector<T>::set_const(T const_elem)
 		vector[i]=const_elem ;
 }
 
-#if HAVE_ATLAS
+#if HAVE_LAPACK
 template<>
 void SGVector<float64_t>::set_const(float64_t const_elem)
 {
