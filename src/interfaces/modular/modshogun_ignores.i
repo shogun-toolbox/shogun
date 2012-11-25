@@ -41,6 +41,7 @@
 %ignore shogun::SGVector::display_vector;
 %ignore shogun::SGMatrix::display_matrix;
 
+%ignore shogun::ICP_stats;
 %ignore shogun::bmrm_ll;
 %ignore shogun::TMultipleCPinfo;
 %ignore refcount_t;
