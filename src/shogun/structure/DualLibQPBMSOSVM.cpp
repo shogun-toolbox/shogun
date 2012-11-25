@@ -11,6 +11,7 @@
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/structure/libppbm.h>
 #include <shogun/structure/libp3bm.h>
+#include <shogun/structure/libncbm.h>
 
 using namespace shogun;
 
@@ -104,6 +105,10 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
 					m_cp_models, m_verbose);
 			break;
+		case NCBM:
+			m_result=svm_ncbm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
+					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, true /* convex */,
+					true /* use line search*/, m_verbose);
 	}
 
 	if (m_result.exitflag==1)

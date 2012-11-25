@@ -99,6 +99,24 @@ IGNORE_IN_CLASSLIST struct bmrm_ll {
 	uint32_t    idx;
 };
 
+IGNORE_IN_CLASSLIST struct ICP_stats
+{
+	/* maximum number of CP stats we can hold */
+	uint32_t maxCPs;
+
+	/** vector of the number of iterations the CPs were inactive */
+	uint32_t* ICPcounter;
+
+	/** vector of addresses of the inactive CPs that needs to be pruned */
+	float64_t** ICPs;
+
+	/** vector of the active CPs */
+	uint32_t* ACPs;
+
+	/** Temporary buffer for storing H */
+	float64_t* H_buff;
+};
+
 /** Add cutting plane
  *
  * @param tail 		Pointer to the last CP entry
@@ -128,6 +146,23 @@ void remove_cutting_plane(
 		bmrm_ll**	tail,
 		bool*		map,
 		float64_t* 	icp);
+
+/**
+ * Clean-up in-active cutting planes
+ */
+void clean_icp(ICP_stats* icp_stats,
+		bmrm_return_value_T& bmrm,
+		bmrm_ll** head,
+		bmrm_ll** tail,
+		float64_t*& H,
+		float64_t*& diag_H,
+		float64_t*& beta,
+		bool*& map,
+		uint32_t cleanAfter,
+		float64_t*& b,
+		uint32_t*& I,
+		uint32_t cp_models = 0
+		);
 
 /** Get cutting plane
  *
