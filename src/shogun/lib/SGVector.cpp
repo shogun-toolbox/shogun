@@ -69,6 +69,20 @@ void SGVector<T>::set_const(T const_elem)
 		vector[i]=const_elem ;
 }
 
+#if HAVE_LAPACK
+template<>
+void SGVector<float64_t>::set_const(float64_t const_elem)
+{
+	catlas_dset(vlen, const_elem, vector, 1);
+}
+
+template<>
+void SGVector<float32_t>::set_const(float32_t const_elem)
+{
+	catlas_sset(vlen, const_elem, vector, 1);
+}
+#endif
+
 template<class T>
 void SGVector<T>::range_fill(T start)
 {
@@ -457,15 +471,13 @@ float64_t SGVector<T>::dot(const float64_t* v1, const float64_t* v2, int32_t n)
 	Eigen::Map<const Eigen::VectorXd> ev1(v1,n);
 	Eigen::Map<const Eigen::VectorXd> ev2(v2,n);
 	r = ev1.dot(ev2);
-#else
-#ifdef HAVE_LAPACK
+#elif HAVE_LAPACK
 	int32_t skip=1;
 	r = cblas_ddot(n, v1, skip, v2, skip);
 #else
 	for (int32_t i=0; i<n; i++)
 		r+=v1[i]*v2[i];
-#endif /* HAVE_LAPACK */
-#endif /* HAVE_EIGEN3 */
+#endif
 	return r;
 }
 
@@ -477,15 +489,13 @@ float32_t SGVector<T>::dot(const float32_t* v1, const float32_t* v2, int32_t n)
 	Eigen::Map<const Eigen::VectorXf> ev1(v1,n);
 	Eigen::Map<const Eigen::VectorXf> ev2(v2,n);
 	r = ev1.dot(ev2);
-#else
-#ifdef HAVE_LAPACK
+#elif HAVE_LAPACK
 	int32_t skip=1;
 	r = cblas_sdot(n, v1, skip, v2, skip);
 #else
 	for (int32_t i=0; i<n; i++)
 		r+=v1[i]*v2[i];
-#endif /* HAVE_LAPACK */
-#endif /* HAVE_EIGEN3 */
+#endif
 	return r;
 }
 
@@ -835,6 +845,24 @@ T SGVector<T>::sum_abs(T* vec, int32_t len)
 	return result;
 }
 
+#if HAVE_LAPACK
+template <>
+float64_t SGVector<float64_t>::sum_abs(float64_t* vec, int32_t len)
+{
+	float64_t result=0;
+	result = cblas_dasum(len, vec, 1);
+	return result;
+}
+
+template <>
+float32_t SGVector<float32_t>::sum_abs(float32_t* vec, int32_t len)
+{
+	float32_t result=0;
+	result = cblas_sasum(len, vec, 1);
+	return result;
+}
+#endif
+
 /// return sum(abs(vec))
 template <class T>
 bool SGVector<T>::fequal(T x, T y, float64_t precision)
@@ -868,6 +896,27 @@ SGVector<index_t> SGVector<T>::find(T elem)
 	idx.vlen = k;
 	return idx;
 }
+
+template<class T>
+void SGVector<T>::scale_vector(T alpha, T* vec, int32_t len)
+{
+	for (int32_t i=0; i<len; i++)
+		vec[i]*=alpha;
+}
+
+#ifdef HAVE_LAPACK
+template<>
+void SGVector<float64_t>::scale_vector(float64_t alpha, float64_t* vec, int32_t len)
+{
+	cblas_dscal(len, alpha, vec, 1);
+}
+
+template<>
+void SGVector<float32_t>::scale_vector(float32_t alpha, float32_t* vec, int32_t len)
+{
+	cblas_sscal(len, alpha, vec, 1);
+}
+#endif
 
 template<class T>
 void SGVector<T>::scale(T alpha)
