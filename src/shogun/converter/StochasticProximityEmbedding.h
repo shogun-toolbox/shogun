@@ -133,16 +133,6 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		/** default init */
 		void init();
 
-		/** constructs neighborhood matrix by distance
-		 * @param distance distance among features
-		 * @param k number of neighbors
-		 * @param N number of features
-		 * @param max_dist maximum distance among features
-		 * @return matrix containing indexes of neighbors of i-th vector in 
-		 * i-th column
-		 */
-		virtual SGMatrix<int32_t> get_neighborhood_matrix(CDistance* distance, int32_t k, int32_t N, float64_t max_dist);
-
 		/** apply embedding to CDistance
 		 * @param distance TODO Euclidean works fine, check with others
 		 * @return new features in the embedded space

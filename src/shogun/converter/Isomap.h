@@ -75,32 +75,11 @@ protected:
 	/** default init */
 	virtual void init();
 
-	/** process distance matrix (redefined in isomap, for mds does nothing)
-	 * @param distance_matrix distance matrix
-	 * @return processed distance matrix
-	 */
-	virtual SGMatrix<float64_t> process_distance_matrix(SGMatrix<float64_t> distance_matrix);
-
-
 /// FIELDS
 protected:
 
 	/** k, number of neighbors for K-Isomap */
 	int32_t m_k;
-
-/// THREADS
-protected:
-
-	/** run dijkstra thread
-	 * @param p thread params
-	 */
-	static void* run_dijkstra_thread(void* p);
-
-	/** approximate geodesic distance with shortest path in kNN graph
-	 * @param D_matrix distance matrix (deleted on exit)
-	 * @return approximate geodesic distance matrix
-	 */
-	SGMatrix<float64_t> isomap_distance(SGMatrix<float64_t> D_matrix);
 
 };
 }

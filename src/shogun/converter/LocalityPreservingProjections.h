@@ -47,15 +47,6 @@ public:
 	 	/** get name */
 	virtual const char* get_name() const;
 
-protected:
-
-	/** construct embedding
-	 * @param features features
-	 * @param W_matrix W matrix to be used
-	 */
-	virtual CDenseFeatures<float64_t>* construct_embedding(CFeatures* features,
-	                                                        SGMatrix<float64_t> W_matrix);
-
 };
 }
 

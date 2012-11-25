@@ -54,22 +54,6 @@ public:
 	/** get name */
 	virtual const char* get_name() const;
 
-/// HELPERS
-protected:
-
-	/** construct weight matrix
-	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
-	                                                    SGMatrix<int32_t> neighborhood_matrix);
-
-/// THREADS
-protected:
-
-	/** run kernel ltsa thread
-	 * @param p thread params
-	 */
-	static void* run_kltsa_thread(void* p);
-
 };
 }
 

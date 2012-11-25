@@ -57,25 +57,6 @@ public:
 	/** get name */
 	virtual const char* get_name() const;
 
-/// HELPER
-protected:
-
-	/** construct weight matrix
-	 * @param simple_features features to be used
-	 * @param W_matrix weight matrix
-	 * @param neighborhood_matrix matrix containing neighbor idxs
-	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CDenseFeatures<float64_t>* simple_features,float64_t* W_matrix,
-                                                            SGMatrix<int32_t> neighborhood_matrix);
-
-/// THREAD
-protected:
-
-	/** run hessian estimation thread
-	 * @param p thread params
-	 */
-	static void* run_hessianestimation_thread(void* p);
-
 };
 }
 
