@@ -400,11 +400,7 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 		/// scale vector inplace
-		static inline void scale_vector(T alpha, T* vec, int32_t len)
-		{
-			for (int32_t i=0; i<len; i++)
-				vec[i]*=alpha;
-		}
+		static void scale_vector(T alpha, T* vec, int32_t len);
 
 		/// return sum(vec)
 		static inline T sum(T* vec, int32_t len)
