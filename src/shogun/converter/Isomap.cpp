@@ -17,10 +17,7 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/CoverTree.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

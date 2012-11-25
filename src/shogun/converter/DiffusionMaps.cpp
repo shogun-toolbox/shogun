@@ -20,6 +20,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/Time.h>
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

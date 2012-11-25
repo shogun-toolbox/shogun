@@ -13,6 +13,9 @@
 #ifdef HAVE_EIGEN3
 #define EIGEN_RUNTIME_NO_MALLOC
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <Eigen/SparseCholesky>
+#define EIGEN_MATRIXBASE_PLUGIN <shogun/lib/tapkee/utils/matrix.hpp>
 #endif
 
 #endif

@@ -17,10 +17,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/lib/Signal.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 
