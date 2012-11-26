@@ -69,7 +69,7 @@ void SGVector<T>::set_const(T const_elem)
 		vector[i]=const_elem ;
 }
 
-#if HAVE_ATLAS
+#if HAVE_ATLAS || HAVE_MVEC
 template<>
 void SGVector<float64_t>::set_const(float64_t const_elem)
 {
@@ -81,7 +81,7 @@ void SGVector<float32_t>::set_const(float32_t const_elem)
 {
 	catlas_sset(vlen, const_elem, vector, 1);
 }
-#endif // HAVE_ATLAS
+#endif // HAVE_ATLAS || HAVE_MVEC
 
 template<class T>
 void SGVector<T>::range_fill(T start)
