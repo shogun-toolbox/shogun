@@ -128,12 +128,8 @@ void CDenseLabels::ensure_valid(const char* context)
 void CDenseLabels::load(CFile* loader)
 {
 	remove_subset();
-
-	SG_SET_LOCALE_C;
 	m_labels = SGVector<float64_t>();
-	ASSERT(loader);
-	loader->get_vector(m_labels.vector, m_labels.vlen);
-	SG_RESET_LOCALE;
+	m_labels.load(loader);
 }
 
 void CDenseLabels::save(CFile* writer)
@@ -141,11 +137,7 @@ void CDenseLabels::save(CFile* writer)
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("save() is not possible on subset");
 
-	SG_SET_LOCALE_C;
-	ASSERT(writer);
-	ASSERT(m_labels.vector && m_labels.vlen>0);
-	writer->set_vector(m_labels.vector, m_labels.vlen);
-	SG_RESET_LOCALE;
+	m_labels.save(writer);
 }
 
 bool CDenseLabels::set_label(int32_t idx, float64_t label)

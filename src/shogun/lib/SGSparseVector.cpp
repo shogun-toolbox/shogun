@@ -1,4 +1,5 @@
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun {
 
@@ -105,25 +106,15 @@ void SGSparseVector<T>::free_data()
 }
 
 template <class T>
-int32_t SGSparseVector<T>::floor_log(index_t n)
-{
-	register int32_t i;
-	for (i = 0; n != 0; i++)
-		n >>= 1;
-
-	return i;
-}
-
-template <class T>
 int32_t SGSparseVector<T>::cmp_dot_prod_symmetry_fast(index_t alen, index_t blen)
 {
 	if (alen > blen) // no need for floats here
 	{
-		return (blen * floor_log(alen) < alen) ? -1 : 0;
+		return (blen * CMath::floor_log(alen) < alen) ? -1 : 0;
 	}
 	else // alen <= blen
 	{
-		return (alen * floor_log(blen) < blen) ? 1 : 0;
+		return (alen * CMath::floor_log(blen) < blen) ? 1 : 0;
 	}
 }
 

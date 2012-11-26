@@ -936,16 +936,18 @@ template<class T> float64_t SGVector<T>::mean() const
 
 template<class T> void SGVector<T>::load(CFile* loader)
 {
-	SG_SET_LOCALE_C;
 	ASSERT(loader);
+
+	SG_SET_LOCALE_C;
 	loader->get_vector(vector, vlen);
 	SG_RESET_LOCALE;
 }
 
 template<class T> void SGVector<T>::save(CFile* saver)
 {
-	SG_SET_LOCALE_C;
 	ASSERT(saver);
+
+	SG_SET_LOCALE_C;
 	saver->set_vector(vector, vlen);
 	SG_RESET_LOCALE;
 }

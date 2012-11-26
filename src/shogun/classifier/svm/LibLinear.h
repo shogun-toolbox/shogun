@@ -77,8 +77,9 @@ class CLibLinear : public CLinearMachine
 			return liblinear_solver_type;
 		}
 
-		/**
-		 * @param set the liblinear solver
+		/** set the liblinear solver
+		 *
+		 * @param st the liblinear solver
 		 */
 		inline void set_liblinear_solver_type(LIBLINEAR_SOLVER_TYPE st)
 		{

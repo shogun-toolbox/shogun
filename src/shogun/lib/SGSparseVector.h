@@ -97,8 +97,6 @@ protected:
 
 	virtual void free_data();
 
-	static int32_t floor_log(index_t n);
-
 	static int32_t cmp_dot_prod_symmetry_fast(index_t alen, index_t blen);
 
 	static T dot_prod_asymmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b);

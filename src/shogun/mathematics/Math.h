@@ -374,6 +374,15 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
+		static inline index_t floor_log(index_t n)
+		{
+			index_t i;
+			for (i = 0; n != 0; i++)
+				n >>= 1;
+
+			return i;
+		}
+
 		static inline float64_t sin(float64_t x)
 		{
 			return ::sin(x);
