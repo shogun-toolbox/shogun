@@ -89,7 +89,7 @@ void clean_icp(ICP_stats* icp_stats,
 		bmrm_return_value_T& bmrm,
 		bmrm_ll** head,
 		bmrm_ll** tail,
-		float64_t*& H,
+		float64_t*& Hmat,
 		float64_t*& diag_H,
 		float64_t*& beta,
 		bool*& map,
@@ -155,13 +155,13 @@ void clean_icp(ICP_stats* icp_stats,
 			for (uint32_t j=0; j < nCP_new; ++j)
 			{
 				icp_stats->H_buff[LIBBMRM_INDEX(i, j, icp_stats->maxCPs)]=
-					H[LIBBMRM_INDEX(icp_stats->ACPs[i], icp_stats->ACPs[j], icp_stats->maxCPs)];
+					Hmat[LIBBMRM_INDEX(icp_stats->ACPs[i], icp_stats->ACPs[j], icp_stats->maxCPs)];
 			}
 		}
 
 		for (uint32_t i=0; i<nCP_new; ++i)
 			for (uint32_t j=0; j<nCP_new; ++j)
-				H[LIBBMRM_INDEX(i, j, icp_stats->maxCPs)]=
+				Hmat[LIBBMRM_INDEX(i, j, icp_stats->maxCPs)]=
 					icp_stats->H_buff[LIBBMRM_INDEX(i, j, icp_stats->maxCPs)];
 
 		bmrm.nCP=nCP_new;

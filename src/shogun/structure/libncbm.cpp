@@ -188,7 +188,6 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 
 	float64_t prev_a = 0;
 	float64_t cur_a = astart;
-	line_search_res ls_res;
 
 	std::vector<line_search_res> ret;
 	while (1)
@@ -204,12 +203,12 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 		cur_subgrad.vec1_plus_scalar_times_vec2(cur_subgrad.vector, lambda, x.vector, x.vlen);
 		if (iter == 0)
 		{
-			line_search_res ls_res;
-			ls_res.fval = cur_fval;
-			ls_res.reg = cur_reg;
-			ls_res.gradient = cur_subgrad;
-			ls_res.solution = x;
-			ret.push_back(ls_res);
+			line_search_res initial_step;
+			initial_step.fval = cur_fval;
+			initial_step.reg = cur_reg;
+			initial_step.gradient = cur_subgrad;
+			initial_step.solution = x;
+			ret.push_back(initial_step);
 		}
 
 		float64_t cur_lgrad
@@ -278,7 +277,7 @@ inline void update_H(bmrm_return_value_T& ncbm,
 		SGMatrix<float64_t>& H,
 		SGVector<float64_t>& diag_H,
 		float64_t lambda,
-		uint32_t maxCPs,
+		uint32_t maxCP,
 		int32_t w_dim)
 {
 	float64_t* a_2 = get_cutting_plane(tail);
@@ -291,16 +290,16 @@ inline void update_H(bmrm_return_value_T& ncbm,
 
 		float64_t dot_val = SGVector<float64_t>::dot(a_2, a_1, w_dim);
 
-		H.matrix[LIBBMRM_INDEX(ncbm.nCP, i, maxCPs)]
-			= H.matrix[LIBBMRM_INDEX(i, ncbm.nCP, maxCPs)]
+		H.matrix[LIBBMRM_INDEX(ncbm.nCP, i, maxCP)]
+			= H.matrix[LIBBMRM_INDEX(i, ncbm.nCP, maxCP)]
 			= dot_val/lambda;
 	}
 
 	/* set the diagonal element, i.e. subgrad_i*subgrad_i' */
 	float64_t dot_val = SGVector<float64_t>::dot(a_2, a_2, w_dim);
-	H[LIBBMRM_INDEX(ncbm.nCP, ncbm.nCP, maxCPs)]=dot_val/lambda;
+	H[LIBBMRM_INDEX(ncbm.nCP, ncbm.nCP, maxCP)]=dot_val/lambda;
 
-	diag_H[ncbm.nCP]=H[LIBBMRM_INDEX(ncbm.nCP, ncbm.nCP, maxCPs)];
+	diag_H[ncbm.nCP]=H[LIBBMRM_INDEX(ncbm.nCP, ncbm.nCP, maxCP)];
 
 	ncbm.nCP++;
 }
@@ -702,15 +701,15 @@ bmrm_return_value_T svm_ncbm_solver(
 
 						/* update the corresponding column and row in H */
 						cp_ptr = CPList_head;
-						for (index_t i = 0; i < ncbm.nCP-1; ++i)
+						for (index_t j = 0; j < ncbm.nCP-1; ++j)
 						{
 							float64_t* a = get_cutting_plane(cp_ptr);
 							cp_ptr = cp_ptr->next;
 							float64_t dot_val
 								= SGVector<float64_t>::dot(a, wbest_candidates[i].gradient.vector, w_dim);
 
-							H.matrix[LIBBMRM_INDEX(cp_idx, i, maxCPs)]
-								= H.matrix[LIBBMRM_INDEX(i, cp_idx, maxCPs)]
+							H.matrix[LIBBMRM_INDEX(cp_idx, j, maxCPs)]
+								= H.matrix[LIBBMRM_INDEX(j, cp_idx, maxCPs)]
 								= dot_val/_lambda;
 						}
 
