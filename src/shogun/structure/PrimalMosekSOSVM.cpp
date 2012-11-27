@@ -245,4 +245,9 @@ float64_t CPrimalMosekSOSVM::compute_primal_objective() const
 	return po_value;
 }
 
+EMachineType CPrimalMosekSOSVM::get_classifier_type()
+{
+	return CT_PRIMALMOSEKSOSVM;
+}
+
 #endif /* USE_MOSEK */
