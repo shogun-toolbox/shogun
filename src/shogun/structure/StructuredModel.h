@@ -14,6 +14,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/StructuredLabels.h>
+
+#include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/StructuredData.h>
 
