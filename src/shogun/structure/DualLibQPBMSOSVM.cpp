@@ -120,3 +120,9 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 		return false;
 	}
 }
+
+EMachineType CDualLibQPBMSOSVM::get_classifier_type()
+{
+	return CT_LIBQPSOSVM;
+}
+
