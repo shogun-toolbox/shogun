@@ -17,6 +17,9 @@ class MulticlassStructuredModel(DirectorStructuredModel):
 		self.dim = features.get_dim_feature_space()*labels.get_num_classes()
 		self.n_classes = labels.get_num_classes()
 		self.n_feats = features.get_dim_feature_space()
+		#self.use_director_risk()
+	def director_risk(self,subgrad,w,params):
+		return 0.0
 	def get_dim(self):
 		return self.dim
 	def argmax(self,w,feat_idx,training):
@@ -115,9 +118,9 @@ sosvm.set_solver(BMRM)		# select training algorithm
 sosvm.train()
 
 res = sosvm.get_result()
-Fps = np.array(res.hist_Fp)
-Fds = np.array(res.hist_Fp)
-wdists = np.array(res.hist_wdist)
+Fps = np.array([res.hist_Fp[i] for i in xrange(res.hist_Fp.size())])
+Fds = np.array([res.hist_Fd[i] for i in xrange(res.hist_Fd.size())])
+wdists = np.array([res.hist_wdist[i] for i in xrange(res.hist_wdist.size())])
 
 plt.figure()
 plt.subplot(221)

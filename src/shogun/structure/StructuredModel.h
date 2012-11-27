@@ -26,7 +26,8 @@ namespace shogun
  * \struct TMultipleCPinfo
  * Multiple cutting plane models helper
  */
-IGNORE_IN_CLASSLIST struct TMultipleCPinfo {
+struct TMultipleCPinfo {
+	TMultipleCPinfo(uint32_t __from, uint32_t _N) : _from(__from), N(_N) {  }
 	/** where this portion of data starts */
 	uint32_t _from;
 	/** how many examples belong to this portion of data */
@@ -240,6 +241,10 @@ class CStructuredModel : public CSGObject
 		 */
 		virtual float64_t risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
 
+		virtual float64_t director_risk(SGVector<float64_t> subgrad, SGVector<float64_t> W, TMultipleCPinfo info);
+
+		void use_director_risk() { m_use_director_risk = true; }
+
 	private:
 		/** internal initialization */
 		void init();
@@ -250,6 +255,9 @@ class CStructuredModel : public CSGObject
 
 		/** feature vectors */
 		CFeatures* m_features;
+
+		/** Whether to use custom risk function */
+		bool m_use_director_risk;
 
 }; /* class CStructuredModel */
 

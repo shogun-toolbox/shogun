@@ -12,7 +12,7 @@
 
 using namespace shogun;
 
-CStructuredModel::CStructuredModel() : CSGObject()
+CStructuredModel::CStructuredModel() : CSGObject(), m_use_director_risk(false)
 {
 	init();
 }
@@ -143,8 +143,18 @@ int32_t CStructuredModel::get_num_aux_con() const
 	return 0;
 }
 
+float64_t CStructuredModel::director_risk(SGVector<float64_t> subgrad, SGVector<float64_t> W, TMultipleCPinfo info)
+{
+	SG_NOTIMPLEMENTED;
+}
+
 float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
 {
+	int32_t dim = this->get_dim();
+	
+	if (m_use_director_risk)
+		return director_risk(SGVector<float64_t>(subgrad,dim,false),SGVector<float64_t>(W,dim,false),info ? *info : TMultipleCPinfo(0,m_features->get_num_vectors()));
+	
 	int32_t from=0, to=0;
 	if (info)
 	{
@@ -157,7 +167,6 @@ float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 		to = m_features->get_num_vectors();
 	}
 
-	int32_t dim = this->get_dim();
 	float64_t R = 0.0;
 	for (int32_t i=0; i<dim; i++)
 		subgrad[i] = 0;

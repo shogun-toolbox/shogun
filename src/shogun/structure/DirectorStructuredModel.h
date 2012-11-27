@@ -101,6 +101,8 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 * @return loss value
 		 */
 		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+		
+		using CStructuredModel::director_risk;
 
 		using CStructuredModel::risk;
 
