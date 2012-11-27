@@ -80,16 +80,16 @@ void CBinaryFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		
 
 GET_MATRIX(get_matrix, char, TSGDataType(CT_MATRIX, ST_NONE, PT_CHAR))
 GET_MATRIX(get_matrix, uint8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_UINT8))
-GET_MATRIX(get_int8_matrix, int8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT8))
+GET_MATRIX(get_matrix, int8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT8))
 GET_MATRIX(get_matrix, int32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT32))
-GET_MATRIX(get_uint_matrix, uint32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT32))
-GET_MATRIX(get_long_matrix, int64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
-GET_MATRIX(get_ulong_matrix, uint64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
+GET_MATRIX(get_matrix, uint32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT32))
+GET_MATRIX(get_matrix, int64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
+GET_MATRIX(get_matrix, uint64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
 GET_MATRIX(get_matrix, int16_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT16))
 GET_MATRIX(get_matrix, uint16_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT16))
 GET_MATRIX(get_matrix, float32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOAT32))
 GET_MATRIX(get_matrix, float64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOAT64))
-GET_MATRIX(get_longreal_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOATMAX))
+GET_MATRIX(get_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_MATRIX
 
 #define GET_NDARRAY(fname,sg_type,datatype)									\
@@ -263,16 +263,16 @@ void CBinaryFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec
 }
 SET_MATRIX(set_matrix, char, (CT_MATRIX, ST_NONE, PT_CHAR))
 SET_MATRIX(set_matrix, uint8_t, (CT_MATRIX, ST_NONE, PT_UINT8))
-SET_MATRIX(set_int8_matrix, int8_t, (CT_MATRIX, ST_NONE, PT_INT8))
+SET_MATRIX(set_matrix, int8_t, (CT_MATRIX, ST_NONE, PT_INT8))
 SET_MATRIX(set_matrix, int32_t, (CT_MATRIX, ST_NONE, PT_INT32))
-SET_MATRIX(set_uint_matrix, uint32_t, (CT_MATRIX, ST_NONE, PT_INT32))
-SET_MATRIX(set_long_matrix, int64_t, (CT_MATRIX, ST_NONE, PT_INT64))
-SET_MATRIX(set_ulong_matrix, uint64_t, (CT_MATRIX, ST_NONE, PT_INT64))
+SET_MATRIX(set_matrix, uint32_t, (CT_MATRIX, ST_NONE, PT_INT32))
+SET_MATRIX(set_matrix, int64_t, (CT_MATRIX, ST_NONE, PT_INT64))
+SET_MATRIX(set_matrix, uint64_t, (CT_MATRIX, ST_NONE, PT_INT64))
 SET_MATRIX(set_matrix, int16_t, (CT_MATRIX, ST_NONE, PT_INT16))
 SET_MATRIX(set_matrix, uint16_t, (CT_MATRIX, ST_NONE, PT_INT16))
 SET_MATRIX(set_matrix, float32_t, (CT_MATRIX, ST_NONE, PT_FLOAT32))
 SET_MATRIX(set_matrix, float64_t, (CT_MATRIX, ST_NONE, PT_FLOAT64))
-SET_MATRIX(set_longreal_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
+SET_MATRIX(set_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef SET_MATRIX
 
 #define SET_NDARRAY(fname,sg_type,datatype)									\

@@ -87,7 +87,7 @@ public:
 			char*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_matrix(
 			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_uint_matrix(
+	virtual void get_matrix(
 			uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_long_matrix(
 			int64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -248,17 +248,17 @@ public:
 			const char* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_matrix(
 			const int32_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_uint_matrix(
+	virtual void set_matrix(
 			const uint32_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_long_matrix(
+	virtual void set_matrix(
 			const int64_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_ulong_matrix(
+	virtual void set_matrix(
 			const uint64_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_matrix(
 			const float32_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_matrix(
 			const float64_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_longreal_matrix(
+	virtual void set_matrix(
 			const floatmax_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_matrix(
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec);
@@ -334,7 +334,7 @@ public:
 			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
 
-	virtual void get_int8_matrix(int8_t*&, int32_t&, int32_t&)
+	virtual void get_matrix(int8_t*&, int32_t&, int32_t&)
 	{
 		SG_NOTIMPLEMENTED;
 	}

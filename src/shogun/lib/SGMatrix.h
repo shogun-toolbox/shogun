@@ -21,6 +21,8 @@ namespace shogun
 {
 	template<class T> class SGVector;
 	template<class T> class SGMatrixList;
+	class CFile;
+
 /** @brief shogun matrix */
 template<class T> class SGMatrix : public SGReferencedData
 {
@@ -236,6 +238,18 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		static SGMatrix<T> get_allocated_matrix(index_t num_rows,
 				index_t num_cols, SGMatrix<T> pre_allocated=SGMatrix<T>());
+
+		/** load matrix from file
+		 *
+		 * @param loader File object via which to load data
+		 */
+		void load(CFile* loader);
+
+		/** save matrix to file
+		 *
+		 * @param saver File object via which to save data
+		 */
+		void save(CFile* saver);
 
 	protected:
 		/** overridden to copy data */

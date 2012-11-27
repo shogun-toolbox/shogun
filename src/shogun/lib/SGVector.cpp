@@ -438,8 +438,16 @@ void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
 }
 
 template <class T>
-void SGVector<T>::vec1_plus_scalar_times_vec2(float64_t* vec1,
-		const float64_t scalar, const float64_t* vec2, int32_t n)
+void SGVector<T>::vec1_plus_scalar_times_vec2(T* vec1,
+		const T scalar, const T* vec2, int32_t n)
+{
+	for (int32_t i=0; i<n; i++)
+		vec1[i]+=scalar*vec2[i];
+}
+
+template <>
+void SGVector<float64_t>::vec1_plus_scalar_times_vec2(float64_t* vec1,
+		float64_t scalar, const float64_t* vec2, int32_t n)
 {
 #ifdef HAVE_LAPACK
 	int32_t skip=1;
@@ -450,9 +458,9 @@ void SGVector<T>::vec1_plus_scalar_times_vec2(float64_t* vec1,
 #endif
 }
 
-template <class T>
-void SGVector<T>::vec1_plus_scalar_times_vec2(float32_t* vec1,
-		const float32_t scalar, const float32_t* vec2, int32_t n)
+template <>
+void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
+		float32_t scalar, const float32_t* vec2, int32_t n)
 {
 #ifdef HAVE_LAPACK
 	int32_t skip=1;
@@ -937,6 +945,7 @@ template<class T> float64_t SGVector<T>::mean() const
 template<class T> void SGVector<T>::load(CFile* loader)
 {
 	ASSERT(loader);
+	unref();
 
 	SG_SET_LOCALE_C;
 	loader->get_vector(vector, vlen);

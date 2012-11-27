@@ -975,58 +975,20 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	return result;
 }
 
-#define LOAD(f_load, sg_type)												\
-template<> void CDenseFeatures<sg_type>::load(CFile* loader)				\
-{ 																			\
-	SG_SET_LOCALE_C;														\
-	ASSERT(loader);															\
-	sg_type* matrix;														\
-	int32_t num_feat;														\
-	int32_t num_vec;														\
-	loader->f_load(matrix, num_feat, num_vec);								\
-	set_feature_matrix(SGMatrix<sg_type>(matrix, num_feat, num_vec));		\
-	SG_RESET_LOCALE;														\
+template<class ST>
+void CDenseFeatures<ST>::load(CFile* loader)
+{
+	SGMatrix<ST> matrix;
+	matrix.load(loader);
+	set_feature_matrix(matrix);
 }
 
-LOAD(get_matrix, bool)
-LOAD(get_matrix, char)
-LOAD(get_int8_matrix, int8_t)
-LOAD(get_matrix, uint8_t)
-LOAD(get_matrix, int16_t)
-LOAD(get_matrix, uint16_t)
-LOAD(get_matrix, int32_t)
-LOAD(get_uint_matrix, uint32_t)
-LOAD(get_long_matrix, int64_t)
-LOAD(get_ulong_matrix, uint64_t)
-LOAD(get_matrix, float32_t)
-LOAD(get_matrix, float64_t)
-LOAD(get_longreal_matrix, floatmax_t)
-#undef LOAD
-
-#define SAVE(f_write, sg_type)												\
-template<> void CDenseFeatures<sg_type>::save(CFile* writer)				\
-{ 																			\
-	SG_SET_LOCALE_C;														\
-	ASSERT(writer);															\
-	writer->f_write(feature_matrix.matrix, feature_matrix.num_rows,			\
-			feature_matrix.num_cols);										\
-	SG_RESET_LOCALE;														\
+template<class ST>
+void CDenseFeatures<ST>::save(CFile* writer)
+{
+	feature_matrix.save(writer);
 }
 
-SAVE(set_matrix, bool)
-SAVE(set_matrix, char)
-SAVE(set_int8_matrix, int8_t)
-SAVE(set_matrix, uint8_t)
-SAVE(set_matrix, int16_t)
-SAVE(set_matrix, uint16_t)
-SAVE(set_matrix, int32_t)
-SAVE(set_uint_matrix, uint32_t)
-SAVE(set_long_matrix, int64_t)
-SAVE(set_ulong_matrix, uint64_t)
-SAVE(set_matrix, float32_t)
-SAVE(set_matrix, float64_t)
-SAVE(set_longreal_matrix, floatmax_t)
-#undef SAVE
 
 template class CDenseFeatures<bool>;
 template class CDenseFeatures<char>;

@@ -1,5 +1,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/io/File.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
@@ -847,6 +848,26 @@ void SGMatrix<T>::free_data()
 	matrix=NULL;
 	num_rows=0;
 	num_cols=0;
+}
+
+template<class T>
+void SGMatrix<T>::load(CFile* loader)
+{
+	ASSERT(loader);
+	unref();
+
+	SG_SET_LOCALE_C;
+	loader->get_matrix(matrix, num_rows, num_cols);
+	SG_RESET_LOCALE;
+}
+
+template<class T>
+void SGMatrix<T>::save(CFile* writer)
+{
+	ASSERT(writer);
+	SG_SET_LOCALE_C;
+	writer->set_matrix(matrix, num_rows, num_cols);
+	SG_RESET_LOCALE;
 }
 
 template class SGMatrix<bool>;
