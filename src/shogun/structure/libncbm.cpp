@@ -283,7 +283,7 @@ inline void update_H(bmrm_return_value_T& ncbm,
 	float64_t* a_2 = get_cutting_plane(tail);
 	bmrm_ll* cp_ptr=head;
 
-	for (index_t i=0; i < ncbm.nCP; ++i)
+	for (uint32_t i=0; i < ncbm.nCP; ++i)
 	{
 		float64_t* a_1 = get_cutting_plane(cp_ptr);
 		cp_ptr=cp_ptr->next;
@@ -636,7 +636,7 @@ bmrm_return_value_T svm_ncbm_solver(
 		/* search for the best w among the new candidates */
 		if (verbose)
 			SG_SPRINT("\t searching for the best Fp:\n");
-		for (index_t i = 0; i < wbest_candidates.size(); i++)
+		for (size_t i = 0; i < wbest_candidates.size(); i++)
 		{
 			if (verbose)
 				SG_SPRINT("\t\t %d fcurrent: %.16lf\n", i, wbest_candidates[i].fval);
@@ -701,7 +701,7 @@ bmrm_return_value_T svm_ncbm_solver(
 
 						/* update the corresponding column and row in H */
 						cp_ptr = CPList_head;
-						for (index_t j = 0; j < ncbm.nCP-1; ++j)
+						for (uint32_t j = 0; j < ncbm.nCP-1; ++j)
 						{
 							float64_t* a = get_cutting_plane(cp_ptr);
 							cp_ptr = cp_ptr->next;
