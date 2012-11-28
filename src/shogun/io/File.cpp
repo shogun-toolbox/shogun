@@ -125,7 +125,7 @@ void CFile::get_string_list(
 		int32_t& max_string_len)
 {
 	SGString<int8_t>* strs;
-	get_int8_string_list(strs, num_str, max_string_len);
+	get_string_list(strs, num_str, max_string_len);
 
 	ASSERT(num_str>0 && max_string_len>0);
 	strings=SG_MALLOC(SGString<bool>, num_str);
@@ -155,7 +155,7 @@ void CFile::set_string_list(const SGString<bool>* strings, int32_t num_str)
 		strs[i].string[j] = strings[i].string[j] != 0 ? 1 : 0;
 	}
 
-	set_int8_string_list(strs,num_str);
+	set_string_list(strs,num_str);
 
 	for(int32_t i = 0;i < num_str;i++)
 		SG_FREE(strs[i].string);

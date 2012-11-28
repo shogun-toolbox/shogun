@@ -161,16 +161,16 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 GET_SPARSEMATRIX(get_sparse_matrix, bool, TSGDataType(CT_MATRIX, ST_NONE, PT_BOOL))
 GET_SPARSEMATRIX(get_sparse_matrix, char, TSGDataType(CT_MATRIX, ST_NONE, PT_CHAR))
 GET_SPARSEMATRIX(get_sparse_matrix, uint8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_UINT8))
-GET_SPARSEMATRIX(get_int8_sparsematrix, int8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT8))
+GET_SPARSEMATRIX(get_sparse_matrix, int8_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT8))
 GET_SPARSEMATRIX(get_sparse_matrix, int32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT32))
-GET_SPARSEMATRIX(get_uint_sparsematrix, uint32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT32))
-GET_SPARSEMATRIX(get_long_sparsematrix, int64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
-GET_SPARSEMATRIX(get_ulong_sparsematrix, uint64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
+GET_SPARSEMATRIX(get_sparse_matrix, uint32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT32))
+GET_SPARSEMATRIX(get_sparse_matrix, int64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
+GET_SPARSEMATRIX(get_sparse_matrix, uint64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT64))
 GET_SPARSEMATRIX(get_sparse_matrix, int16_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT16))
 GET_SPARSEMATRIX(get_sparse_matrix, uint16_t, TSGDataType(CT_MATRIX, ST_NONE, PT_INT16))
 GET_SPARSEMATRIX(get_sparse_matrix, float32_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOAT32))
 GET_SPARSEMATRIX(get_sparse_matrix, float64_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOAT64))
-GET_SPARSEMATRIX(get_longreal_sparsematrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOATMAX))
+GET_SPARSEMATRIX(get_sparse_matrix, floatmax_t, TSGDataType(CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef GET_SPARSEMATRIX
 
 
@@ -208,16 +208,16 @@ void CBinaryFile::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& 
 
 GET_STRING_LIST(get_string_list, char, TSGDataType(CT_VECTOR, ST_NONE, PT_CHAR))
 GET_STRING_LIST(get_string_list, uint8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_UINT8))
-GET_STRING_LIST(get_int8_string_list, int8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT8))
+GET_STRING_LIST(get_string_list, int8_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT8))
 GET_STRING_LIST(get_string_list, int32_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT32))
-GET_STRING_LIST(get_uint_string_list, uint32_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT32))
-GET_STRING_LIST(get_long_string_list, int64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT64))
-GET_STRING_LIST(get_ulong_string_list, uint64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT64))
+GET_STRING_LIST(get_string_list, uint32_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT32))
+GET_STRING_LIST(get_string_list, int64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT64))
+GET_STRING_LIST(get_string_list, uint64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT64))
 GET_STRING_LIST(get_string_list, int16_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT16))
 GET_STRING_LIST(get_string_list, uint16_t, TSGDataType(CT_VECTOR, ST_NONE, PT_INT16))
 GET_STRING_LIST(get_string_list, float32_t, TSGDataType(CT_VECTOR, ST_NONE, PT_FLOAT32))
 GET_STRING_LIST(get_string_list, float64_t, TSGDataType(CT_VECTOR, ST_NONE, PT_FLOAT64))
-GET_STRING_LIST(get_longreal_string_list, floatmax_t, TSGDataType(CT_VECTOR, ST_NONE, PT_FLOATMAX))
+GET_STRING_LIST(get_string_list, floatmax_t, TSGDataType(CT_VECTOR, ST_NONE, PT_FLOATMAX))
 #undef GET_STRING_LIST
 
 /** set functions - to pass data from shogun to the target interface */
@@ -335,16 +335,16 @@ void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix, 	\
 SET_SPARSEMATRIX(set_sparse_matrix, bool, (CT_MATRIX, ST_NONE, PT_BOOL))
 SET_SPARSEMATRIX(set_sparse_matrix, char, (CT_MATRIX, ST_NONE, PT_CHAR))
 SET_SPARSEMATRIX(set_sparse_matrix, uint8_t, (CT_MATRIX, ST_NONE, PT_UINT8))
-SET_SPARSEMATRIX(set_int8_sparsematrix, int8_t, (CT_MATRIX, ST_NONE, PT_INT8))
+SET_SPARSEMATRIX(set_sparse_matrix, int8_t, (CT_MATRIX, ST_NONE, PT_INT8))
 SET_SPARSEMATRIX(set_sparse_matrix, int32_t, (CT_MATRIX, ST_NONE, PT_INT32))
-SET_SPARSEMATRIX(set_uint_sparsematrix, uint32_t, (CT_MATRIX, ST_NONE, PT_INT32))
-SET_SPARSEMATRIX(set_long_sparsematrix, int64_t, (CT_MATRIX, ST_NONE, PT_INT64))
-SET_SPARSEMATRIX(set_ulong_sparsematrix, uint64_t, (CT_MATRIX, ST_NONE, PT_INT64))
+SET_SPARSEMATRIX(set_sparse_matrix, uint32_t, (CT_MATRIX, ST_NONE, PT_INT32))
+SET_SPARSEMATRIX(set_sparse_matrix, int64_t, (CT_MATRIX, ST_NONE, PT_INT64))
+SET_SPARSEMATRIX(set_sparse_matrix, uint64_t, (CT_MATRIX, ST_NONE, PT_INT64))
 SET_SPARSEMATRIX(set_sparse_matrix, int16_t, (CT_MATRIX, ST_NONE, PT_INT16))
 SET_SPARSEMATRIX(set_sparse_matrix, uint16_t, (CT_MATRIX, ST_NONE, PT_INT16))
 SET_SPARSEMATRIX(set_sparse_matrix, float32_t, (CT_MATRIX, ST_NONE, PT_FLOAT32))
 SET_SPARSEMATRIX(set_sparse_matrix, float64_t, (CT_MATRIX, ST_NONE, PT_FLOAT64))
-SET_SPARSEMATRIX(set_longreal_sparsematrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
+SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, (CT_MATRIX, ST_NONE, PT_FLOATMAX))
 #undef SET_SPARSEMATRIX
 
 #define SET_STRING_LIST(fname, sg_type, dtype) \
@@ -364,16 +364,16 @@ void CBinaryFile::fname(const SGString<sg_type>* strings, int32_t num_str)	\
 }
 SET_STRING_LIST(set_string_list, char, (CT_VECTOR, ST_NONE, PT_CHAR))
 SET_STRING_LIST(set_string_list, uint8_t, (CT_VECTOR, ST_NONE, PT_UINT8))
-SET_STRING_LIST(set_int8_string_list, int8_t, (CT_VECTOR, ST_NONE, PT_INT8))
+SET_STRING_LIST(set_string_list, int8_t, (CT_VECTOR, ST_NONE, PT_INT8))
 SET_STRING_LIST(set_string_list, int32_t, (CT_VECTOR, ST_NONE, PT_INT32))
-SET_STRING_LIST(set_uint_string_list, uint32_t, (CT_VECTOR, ST_NONE, PT_INT32))
-SET_STRING_LIST(set_long_string_list, int64_t, (CT_VECTOR, ST_NONE, PT_INT64))
-SET_STRING_LIST(set_ulong_string_list, uint64_t, (CT_VECTOR, ST_NONE, PT_INT64))
+SET_STRING_LIST(set_string_list, uint32_t, (CT_VECTOR, ST_NONE, PT_INT32))
+SET_STRING_LIST(set_string_list, int64_t, (CT_VECTOR, ST_NONE, PT_INT64))
+SET_STRING_LIST(set_string_list, uint64_t, (CT_VECTOR, ST_NONE, PT_INT64))
 SET_STRING_LIST(set_string_list, int16_t, (CT_VECTOR, ST_NONE, PT_INT16))
 SET_STRING_LIST(set_string_list, uint16_t, (CT_VECTOR, ST_NONE, PT_INT16))
 SET_STRING_LIST(set_string_list, float32_t, (CT_VECTOR, ST_NONE, PT_FLOAT32))
 SET_STRING_LIST(set_string_list, float64_t, (CT_VECTOR, ST_NONE, PT_FLOAT64))
-SET_STRING_LIST(set_longreal_string_list, floatmax_t, (CT_VECTOR, ST_NONE, PT_FLOATMAX))
+SET_STRING_LIST(set_string_list, floatmax_t, (CT_VECTOR, ST_NONE, PT_FLOATMAX))
 #undef SET_STRING_LIST
 
 

@@ -1074,16 +1074,16 @@ template<> void CSparseFeatures<sg_type>::load(CFile* loader)	\
 LOAD(get_sparse_matrix, bool)
 LOAD(get_sparse_matrix, char)
 LOAD(get_sparse_matrix, uint8_t)
-LOAD(get_int8_sparsematrix, int8_t)
+LOAD(get_sparse_matrix, int8_t)
 LOAD(get_sparse_matrix, int16_t)
 LOAD(get_sparse_matrix, uint16_t)
 LOAD(get_sparse_matrix, int32_t)
-LOAD(get_uint_sparsematrix, uint32_t)
-LOAD(get_long_sparsematrix, int64_t)
-LOAD(get_ulong_sparsematrix, uint64_t)
+LOAD(get_sparse_matrix, uint32_t)
+LOAD(get_sparse_matrix, int64_t)
+LOAD(get_sparse_matrix, uint64_t)
 LOAD(get_sparse_matrix, float32_t)
 LOAD(get_sparse_matrix, float64_t)
-LOAD(get_longreal_sparsematrix, floatmax_t)
+LOAD(get_sparse_matrix, floatmax_t)
 #undef LOAD
 
 #define WRITE(fname, sg_type)											\
@@ -1099,16 +1099,16 @@ template<> void CSparseFeatures<sg_type>::save(CFile* writer)	\
 WRITE(set_sparse_matrix, bool)
 WRITE(set_sparse_matrix, char)
 WRITE(set_sparse_matrix, uint8_t)
-WRITE(set_int8_sparsematrix, int8_t)
+WRITE(set_sparse_matrix, int8_t)
 WRITE(set_sparse_matrix, int16_t)
 WRITE(set_sparse_matrix, uint16_t)
 WRITE(set_sparse_matrix, int32_t)
-WRITE(set_uint_sparsematrix, uint32_t)
-WRITE(set_long_sparsematrix, int64_t)
-WRITE(set_ulong_sparsematrix, uint64_t)
+WRITE(set_sparse_matrix, uint32_t)
+WRITE(set_sparse_matrix, int64_t)
+WRITE(set_sparse_matrix, uint64_t)
 WRITE(set_sparse_matrix, float32_t)
 WRITE(set_sparse_matrix, float64_t)
-WRITE(set_longreal_sparsematrix, floatmax_t)
+WRITE(set_sparse_matrix, floatmax_t)
 #undef WRITE
 
 template class CSparseFeatures<bool>;

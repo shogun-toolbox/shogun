@@ -1927,17 +1927,17 @@ template<> void CStringFeatures<sg_type>::load(CFile* loader)		\
 
 LOAD(get_string_list, bool)
 LOAD(get_string_list, char)
-LOAD(get_int8_string_list, int8_t)
+LOAD(get_string_list, int8_t)
 LOAD(get_string_list, uint8_t)
 LOAD(get_string_list, int16_t)
 LOAD(get_string_list, uint16_t)
 LOAD(get_string_list, int32_t)
-LOAD(get_uint_string_list, uint32_t)
-LOAD(get_long_string_list, int64_t)
-LOAD(get_ulong_string_list, uint64_t)
+LOAD(get_string_list, uint32_t)
+LOAD(get_string_list, int64_t)
+LOAD(get_string_list, uint64_t)
 LOAD(get_string_list, float32_t)
 LOAD(get_string_list, float64_t)
-LOAD(get_longreal_string_list, floatmax_t)
+LOAD(get_string_list, floatmax_t)
 #undef LOAD
 
 #define SAVE(f_write, sg_type)												\
@@ -1953,17 +1953,17 @@ template<> void CStringFeatures<sg_type>::save(CFile* writer)		\
 
 SAVE(set_string_list, bool)
 SAVE(set_string_list, char)
-SAVE(set_int8_string_list, int8_t)
+SAVE(set_string_list, int8_t)
 SAVE(set_string_list, uint8_t)
 SAVE(set_string_list, int16_t)
 SAVE(set_string_list, uint16_t)
 SAVE(set_string_list, int32_t)
-SAVE(set_uint_string_list, uint32_t)
-SAVE(set_long_string_list, int64_t)
-SAVE(set_ulong_string_list, uint64_t)
+SAVE(set_string_list, uint32_t)
+SAVE(set_string_list, int64_t)
+SAVE(set_string_list, uint64_t)
 SAVE(set_string_list, float32_t)
 SAVE(set_string_list, float64_t)
-SAVE(set_longreal_string_list, floatmax_t)
+SAVE(set_string_list, floatmax_t)
 #undef SAVE
 
 template <class ST> template <class CT>
