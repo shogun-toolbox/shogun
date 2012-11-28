@@ -158,6 +158,12 @@ namespace shogun
 				m_qp_type = type;
 			}
 
+			/** get classifier type
+			 *
+			 * @return classifier type CT_CCSOSVM
+			 */
+			virtual EMachineType get_classifier_type();
+
 		protected:
 			bool train_machine(CFeatures* data=NULL);
 

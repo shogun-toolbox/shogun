@@ -224,6 +224,12 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 			m_w=W;
 		}
 
+		/** get classifier type
+		 *
+		 * @return classifier type CT_LIBQPSOSVM
+		 */
+		virtual EMachineType get_classifier_type();
+
 	protected:
 		/** train dual SO-SVM
 		 *

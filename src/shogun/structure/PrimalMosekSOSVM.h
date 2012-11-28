@@ -62,6 +62,12 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "PrimalMosekSOSVM"; }
 
+		/** get classifier type
+		 *
+		 * @return classifier type CT_PRIMALMOSEKSOSVM
+		 */
+		virtual EMachineType get_classifier_type();
+
 	protected:
 		/** train primal SO-SVM
 		 *

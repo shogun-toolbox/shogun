@@ -694,3 +694,8 @@ void CCCSOSVM::init()
 	SG_ADD(&m_primal_obj, "m_primal_obj", "Primal objective value", MS_NOT_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_qp_type, "m_qp_type", "QP Solver Type", MS_NOT_AVAILABLE);
 }
+
+EMachineType CCCSOSVM::get_classifier_type()
+{
+	return CT_CCSOSVM;
+}
