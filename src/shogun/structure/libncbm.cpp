@@ -690,7 +690,7 @@ bmrm_return_value_T svm_ncbm_solver(
 						SGVector<float64_t>::vec1_plus_scalar_times_vec2(wbest_candidates[i].gradient.vector, -_lambda, best_w.vector, w_dim);
 
 						cp_ptr = CPList_tail;
-						for (index_t j = wbest_candidates.size()-1; i < j; --j)
+						for (size_t j = wbest_candidates.size()-1; i < j; --j)
 						{
 							cp_ptr = cp_ptr->prev;
 							SG_SPRINT("tail - %d\n (%d)", j, i);
