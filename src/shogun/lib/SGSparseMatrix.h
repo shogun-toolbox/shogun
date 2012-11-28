@@ -21,6 +21,7 @@ namespace shogun
 {
 
 template <class T> class SGSparseVector;
+class CFile;
 
 /** @brief template class SGSparseMatrix */
 template <class T> class SGSparseMatrix : public SGReferencedData
@@ -53,6 +54,18 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		{
 			return sparse_matrix[index];
 		}
+
+		/** load sparse matrix from file
+		 *
+		 * @param loader File object via which to load data
+		 */
+		void load(CFile* loader);
+
+		/** save sparse matrix to file
+		 *
+		 * @param saver File object via which to save data
+		 */
+		void save(CFile* saver);
 
 protected:
 

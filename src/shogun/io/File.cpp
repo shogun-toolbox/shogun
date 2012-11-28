@@ -178,6 +178,42 @@ char* CFile::get_variable_name()
 	return strdup(variable_name);
 }
 
+#define SPARSE_VECTOR_GETTER(type)										\
+void CFile::set_sparse_vector(											\
+			const SGSparseVectorEntry<type>* entries, int32_t num_feat)	\
+{																		\
+	SGSparseVector<type> v((SGSparseVectorEntry<type>*) entries, num_feat, false);	\
+	set_sparse_matrix(&v, 0, 1);										\
+}																		\
+																		\
+void CFile::get_sparse_vector(											\
+			SGSparseVectorEntry<type>*& entries, int32_t& num_feat)		\
+{																		\
+	SGSparseVector<type>* v;											\
+	int32_t dummy;														\
+	int32_t nvec;														\
+	get_sparse_matrix(v, dummy, nvec);									\
+	ASSERT(nvec==1);													\
+	entries=v->features;												\
+	num_feat=v->num_feat_entries;										\
+}
+SPARSE_VECTOR_GETTER(bool)
+SPARSE_VECTOR_GETTER(int8_t)
+SPARSE_VECTOR_GETTER(uint8_t)
+SPARSE_VECTOR_GETTER(char)
+SPARSE_VECTOR_GETTER(int32_t)
+SPARSE_VECTOR_GETTER(uint32_t)
+SPARSE_VECTOR_GETTER(float32_t)
+SPARSE_VECTOR_GETTER(float64_t)
+SPARSE_VECTOR_GETTER(floatmax_t)
+SPARSE_VECTOR_GETTER(int16_t)
+SPARSE_VECTOR_GETTER(uint16_t)
+SPARSE_VECTOR_GETTER(int64_t)
+SPARSE_VECTOR_GETTER(uint64_t)
+
+#undef SPARSE_VECTOR_GETTER
+
+
 char* CFile::read_whole_file(char* fname, size_t& len)
 {
     FILE* tmpf=fopen(fname, "r");

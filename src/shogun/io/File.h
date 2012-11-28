@@ -20,6 +20,7 @@ namespace shogun
 {
 template <class ST> class SGString;
 template <class ST> class SGSparseVector;
+template <class ST> class SGSparseVectorEntry;
 
 /** @brief A File access base class.
  *
@@ -186,6 +187,41 @@ public:
 	virtual void get_ndarray(
 			uint16_t*& array, int32_t*& dims, int32_t& num_dims)=0;
 	//@}
+	//
+	/** @name Sparse Vector Access Functions
+	 *
+	 * Functions to access sparse matrices of one of the several base data types.
+	 * These functions are used when loading sparse vectors from e.g. file
+	 * and return the sparse vectors and its length num_feat by reference
+	 */
+	//@{
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<bool>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<uint8_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<int8_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<char>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<int32_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<uint32_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<int64_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<uint64_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<int16_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<uint16_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<float32_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<float64_t>*& entries, int32_t& num_feat);
+	virtual void get_sparse_vector(
+			SGSparseVectorEntry<floatmax_t>*& entries, int32_t& num_feat);
+	//@}
 
 	/** @name Sparse Matrix Access Functions
 	 *
@@ -332,6 +368,41 @@ public:
 			const int16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
 	virtual void set_matrix(
 			const uint16_t* matrix, int32_t num_feat, int32_t num_vec)=0;
+	//@}
+	//
+	/** @name Sparse Vector Access Functions
+	 *
+	 * Functions to access sparse vectors of one of the several base data types.
+	 * These functions are used when writing sparse vectors of num_feat entries
+	 * to e.g. a file
+	 */
+	//@{
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<bool>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<uint8_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<int8_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<char>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<int32_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<uint32_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<int64_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<uint64_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<int16_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<uint16_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<float32_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<float64_t>* entries, int32_t num_feat);
+	virtual void set_sparse_vector(
+			const SGSparseVectorEntry<floatmax_t>* entries, int32_t num_feat);
 	//@}
 
 	/** @name Sparse Matrix Access Functions

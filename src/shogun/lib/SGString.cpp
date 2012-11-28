@@ -1,5 +1,6 @@
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/io/File.h>
 
 namespace shogun
 {
@@ -57,6 +58,26 @@ void SGString<T>::destroy_string()
 {
 	do_free=true;
 	free_string();
+}
+
+template<class T> void SGString<T>::load(CFile* loader)
+{
+	ASSERT(loader);
+	free_string();
+
+	SG_SET_LOCALE_C;
+	loader->get_vector(string, slen);
+	do_free=true;
+	SG_RESET_LOCALE;
+}
+
+template<class T> void SGString<T>::save(CFile* saver)
+{
+	ASSERT(saver);
+
+	SG_SET_LOCALE_C;
+	saver->set_vector(string, slen);
+	SG_RESET_LOCALE;
 }
 
 template class SGString<bool>;

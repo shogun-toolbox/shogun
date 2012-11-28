@@ -1,5 +1,6 @@
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/io/File.h>
 
 namespace shogun {
 
@@ -42,6 +43,28 @@ SGSparseMatrix<T>::~SGSparseMatrix()
 {
 	unref();
 }
+
+template<class T>
+void SGSparseMatrix<T>::load(CFile* loader)
+{
+	ASSERT(loader);
+	unref();
+
+	SG_SET_LOCALE_C;
+	loader->get_sparse_matrix(sparse_matrix, num_features, num_vectors);
+	SG_RESET_LOCALE;
+}
+
+template<class T>
+void SGSparseMatrix<T>::save(CFile* saver)
+{
+	ASSERT(saver);
+
+	SG_SET_LOCALE_C;
+	saver->set_sparse_matrix(sparse_matrix, num_features, num_vectors);
+	SG_RESET_LOCALE;
+}
+		
 
 template <class T>
 void SGSparseMatrix<T>::copy_data(const SGReferencedData& orig)

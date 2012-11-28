@@ -1,5 +1,6 @@
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGString.h>
+#include <shogun/io/File.h>
 
 namespace shogun
 {
@@ -38,6 +39,26 @@ SGStringList<T>::~SGStringList()
 {
 	unref();
 }
+
+template<class T> void SGStringList<T>::load(CFile* loader)
+{
+	ASSERT(loader);
+	unref();
+
+	SG_SET_LOCALE_C;
+	loader->get_string_list(strings, num_strings, max_string_length);
+	SG_RESET_LOCALE;
+}
+
+template<class T> void SGStringList<T>::save(CFile* saver)
+{
+	ASSERT(saver);
+
+	SG_SET_LOCALE_C;
+	saver->set_string_list(strings, num_strings);
+	SG_RESET_LOCALE;
+}
+
 
 template <class T>
 void SGStringList<T>::copy_data(const SGReferencedData &orig)

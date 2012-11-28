@@ -20,7 +20,7 @@
 
 namespace shogun
 {
-
+	class CFile;
 
 /** @brief template class SGSparseVectorEntry */
 template <class T> struct SGSparseVectorEntry
@@ -89,8 +89,20 @@ public:
 	 * @return dot product between a and b
 	 */
 	static T sparse_dot(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
-protected:
 
+	/** load vector from file
+	 *
+	 * @param loader File object via which to load data
+	 */
+	void load(CFile* loader);
+
+	/** save vector to file
+	 *
+	 * @param saver File object via which to save data
+	 */
+	void save(CFile* saver);
+
+protected:
 	virtual void copy_data(const SGReferencedData& orig);
 
 	virtual void init_data();

@@ -20,6 +20,7 @@ namespace shogun
 {
 
 template<class T> class SGVector;
+class CFile;
 
 /** @brief shogun string */
 template<class T> class SGString
@@ -48,6 +49,18 @@ public:
 
 	/** destroy string */
 	void destroy_string();
+
+	/** load string from file
+	 *
+	 * @param loader File object via which to load data
+	 */
+	void load(CFile* loader);
+
+	/** save string to file
+	 *
+	 * @param saver File object via which to save data
+	 */
+	void save(CFile* saver);
 
 public:
 	/** string  */

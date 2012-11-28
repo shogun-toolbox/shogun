@@ -1,5 +1,6 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/io/File.h>
 
 namespace shogun {
 
@@ -83,6 +84,28 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector
 		return dot_prod_asymmetric(b, a);
 	}
 }
+
+template<class T> void SGSparseVector<T>::load(CFile* loader)
+{
+	ASSERT(loader);
+	unref();
+
+	SG_SET_LOCALE_C;
+	loader->get_sparse_vector(features, num_feat_entries);
+	SG_RESET_LOCALE;
+}
+
+template<class T> void SGSparseVector<T>::save(CFile* saver)
+{
+	ASSERT(saver);
+
+	SG_SET_LOCALE_C;
+	saver->set_sparse_vector(features, num_feat_entries);
+	SG_RESET_LOCALE;
+}
+		
+
+
 
 template <class T>
 void SGSparseVector<T>::copy_data(const SGReferencedData& orig)
