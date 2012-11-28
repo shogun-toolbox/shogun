@@ -140,6 +140,8 @@ public:
 	virtual void get_sparse_matrix(
 			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
+			SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	virtual void get_sparse_matrix(
 			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
 			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -174,6 +176,9 @@ public:
 	//@{
 	virtual void get_string_list(
 			SGString<bool>*& strings, int32_t& num_str,
+			int32_t& max_string_len);
+	virtual void get_string_list(
+			SGString<int8_t>*& strings, int32_t& num_str,
 			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
@@ -278,6 +283,8 @@ public:
 	virtual void set_sparse_matrix(
 			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_sparse_matrix(
 			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
 			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
@@ -312,6 +319,8 @@ public:
 	//@{
 	virtual void set_string_list(
 			const SGString<bool>* strings, int32_t num_str);
+	virtual void set_string_list(
+			const SGString<int8_t>* strings, int32_t num_str);
 	virtual void set_string_list(
 			const SGString<uint8_t>* strings, int32_t num_str);
 	virtual void set_string_list(

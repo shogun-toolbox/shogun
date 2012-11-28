@@ -207,6 +207,7 @@ void CHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32
 }
 GET_SPARSEMATRIX(get_sparse_matrix, bool, DT_SPARSE_BOOL)
 GET_SPARSEMATRIX(get_sparse_matrix, char, DT_SPARSE_CHAR)
+GET_SPARSEMATRIX(get_sparse_matrix, int8_t, DT_SPARSE_INT8)
 GET_SPARSEMATRIX(get_sparse_matrix, uint8_t, DT_SPARSE_BYTE)
 GET_SPARSEMATRIX(get_sparse_matrix, int32_t, DT_SPARSE_INT)
 GET_SPARSEMATRIX(get_sparse_matrix, uint32_t, DT_SPARSE_UINT)
@@ -227,6 +228,7 @@ void CHDF5File::fname(SGString<sg_type>*& strings, int32_t& num_str, int32_t& ma
 
 GET_STRING_LIST(get_string_list, bool, DT_STRING_BOOL)
 GET_STRING_LIST(get_string_list, char, DT_STRING_CHAR)
+GET_STRING_LIST(get_string_list, int8_t, DT_STRING_INT8)
 GET_STRING_LIST(get_string_list, uint8_t, DT_STRING_BYTE)
 GET_STRING_LIST(get_string_list, int32_t, DT_STRING_INT)
 GET_STRING_LIST(get_string_list, uint32_t, DT_STRING_UINT)
@@ -333,6 +335,7 @@ void CHDF5File::fname(const SGSparseVector<sg_type>* matrix, 	\
 }
 SET_SPARSEMATRIX(set_sparse_matrix, bool, DT_SPARSE_BOOL)
 SET_SPARSEMATRIX(set_sparse_matrix, char, DT_SPARSE_CHAR)
+SET_SPARSEMATRIX(set_sparse_matrix, int8_t, DT_SPARSE_INT8)
 SET_SPARSEMATRIX(set_sparse_matrix, uint8_t, DT_SPARSE_BYTE)
 SET_SPARSEMATRIX(set_sparse_matrix, int32_t, DT_SPARSE_INT)
 SET_SPARSEMATRIX(set_sparse_matrix, uint32_t, DT_SPARSE_UINT)
@@ -354,6 +357,7 @@ void CHDF5File::fname(const SGString<sg_type>* strings, int32_t num_str)	\
 }
 SET_STRING_LIST(set_string_list, bool, DT_STRING_BOOL)
 SET_STRING_LIST(set_string_list, char, DT_STRING_CHAR)
+SET_STRING_LIST(set_string_list, int8_t, DT_STRING_INT8)
 SET_STRING_LIST(set_string_list, uint8_t, DT_STRING_BYTE)
 SET_STRING_LIST(set_string_list, int32_t, DT_STRING_INT)
 SET_STRING_LIST(set_string_list, uint32_t, DT_STRING_UINT)
