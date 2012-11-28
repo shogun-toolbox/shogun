@@ -89,15 +89,15 @@ public:
 			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_matrix(
 			uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_long_matrix(
+	virtual void get_matrix(
 			int64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_ulong_matrix(
+	virtual void get_matrix(
 			uint64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_matrix(
 			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_matrix(
 			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_longreal_matrix(
+	virtual void get_matrix(
 			floatmax_t*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_matrix(
 			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
@@ -242,6 +242,8 @@ public:
 	//@{
 	virtual void set_matrix(
 			const bool* matrix, int32_t num_feat, int32_t num_vec);
+	virtual void set_matrix(
+			const int8_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_matrix(
 			const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_matrix(

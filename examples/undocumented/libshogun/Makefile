@@ -103,6 +103,7 @@ TARGETS = basic_minimal \
 		  classifier_multiclass_ecoc_random \
 		  streaming_from_dense \
 		  streaming_generators \
+		  library_hdf5 \
 
 all: $(TARGETS)
 
