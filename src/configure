@@ -161,9 +161,10 @@ MAKE=make
 COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse"
 COMP_DEFAULT_OPTS="-Wall -O2"
 COMP_NO_OPTS="-Wall -O0"
-COMPFLAGS_C=-fPIC
-COMPFLAGS_CPP=-fPIC
-COMPFLAGS_SWIG_CPP="-fPIC -O0"
+FPIC=
+COMPFLAGS_C=
+COMPFLAGS_CPP=
+COMPFLAGS_SWIG_CPP="-O0"
 COMPFLAGS_GMOCK_CPP=""
 SEDMI='sed -i'
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
@@ -843,9 +844,9 @@ EOF
 			RUBYSO=`$RUBY -e 'require "mkmf"; puts RbConfig::expand("$(RUBY_SO_NAME)")'`
 			if ld -o "$TMPO" -l$RUBYSO >/dev/null 2>&1
 			then
-				POSTLINKFLAGS_RUBY="-l$RUBYSO -fPIC -shared -ldl"
+				POSTLINKFLAGS_RUBY="-l$RUBYSO -shared -ldl"
 			else
-				POSTLINKFLAGS_RUBY="-lruby -fPIC -shared -ldl"
+				POSTLINKFLAGS_RUBY="-lruby -shared -ldl"
 			fi
 			EXT_IF_SWIG_RUBY_MODULAR='stop'
 			PRE_LIB_SWIG_RUBY_MODULAR=
@@ -1031,6 +1032,25 @@ EOF
 		fi
 	fi
 }
+
+check_fpic()
+{
+	echocheck "Position independent code (PIC)"
+	if cygwin
+	then
+		FPIC=
+		echores "no"
+	else
+		FPIC=-fPIC
+		echores "yes"
+	fi
+
+	COMPFLAGS_C="$FPIC $COMPFLAGS_C"
+	COMPFLAGS_CPP="$FPIC $COMPFLAGS_CPP"
+	COMPFLAGS_SWIG_CPP="$FPIC $COMPFLAGS_SWIG_CPP"
+}
+
+
 
 check_makedepend()
 {
@@ -3090,17 +3110,20 @@ EOF
 	echocheck "Posix threads support"
 	_pthread=no
 
-	for pthr in -pthread -lpthread
-	do
-		if cc_check $pthr
-		then
-			COMPFLAGS_C="$COMPFLAGS_C $pthr"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP $pthr"
-			POSTLINKFLAGS="$POSTLINKFLAGS $pthr"
-			_pthread=yes
-			break
-		fi
-	done
+	if ! cygwin
+	then
+		for pthr in -pthread -lpthread
+		do
+			if cc_check $pthr
+			then
+				COMPFLAGS_C="$COMPFLAGS_C $pthr"
+				COMPFLAGS_CPP="$COMPFLAGS_CPP $pthr"
+				POSTLINKFLAGS="$POSTLINKFLAGS $pthr"
+				_pthread=yes
+				break
+			fi
+		done
+	fi
 
 	if test "$_pthread" = yes
 	then
@@ -4251,8 +4274,8 @@ test_matlab()
 			then
 				if x86_64
 				then
-					COMPFLAGS_C_MATLAB="$COMPFLAGS_C_MATLAB -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
-					COMPFLAGS_CPP_MATLAB="$COMPFLAGS_CPP_MATLAB -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+					COMPFLAGS_C_MATLAB="$COMPFLAGS_C_MATLAB -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+					COMPFLAGS_CPP_MATLAB="$COMPFLAGS_CPP_MATLAB -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
 					LINKFLAGS_MATLAB="$LINKFLAGS_MATLAB -shared -Wl,--version-script,$MATLAB_LIBDIR/glnxa64/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnxa64 -L$MATLAB_BINDIR/glnxa64 -lmx -lmex -lmat"
 					INCLUDES_MATLAB="$INCLUDES_MATLAB -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
 					MATLAB_TARGET="sg.mexa64"
@@ -4464,8 +4487,8 @@ EOF
 				oct_oct_inc_dir=`octave-config -p OCTINCLUDEDIR`
 				oct_oct_inc_dir=`echo ${oct_oct_inc_dir} | sed 's/\/octave$//'`
 				INCLUDES_OCTAVE="$INCLUDES_OCTAVE -I${oct_oct_inc_dir} -I${oct_inc_dir}"
-				COMPFLAGS_CPP_OCTAVE="$COMPFLAGS_CPP -fPIC"
-				COMPFLAGS_C_OCTAVE="$COMPFLAGS_C -fPIC"
+				COMPFLAGS_CPP_OCTAVE="$COMPFLAGS_CPP"
+				COMPFLAGS_C_OCTAVE="$COMPFLAGS_C"
 
 				echocheck "Octave Developer Files"
 				if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check_so $COMPFLAGS_CPP_OCTAVE $INCLUDES_OCTAVE $LINKFLAGS_OCTAVE $POSTLINKFLAGS_OCTAVE
@@ -4618,8 +4641,8 @@ test_python()
 			EXT_LIB_SWIG_PYTHON_MODULAR=`$PYTHON -c "from distutils.sysconfig import get_config_vars, get_config_var; sle=(get_config_var('SO').replace('.'+get_config_var('SOABI'),'',1) if 'SOABI' in get_config_vars() else get_config_var('SO')); print(sle)"`
 			test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print('python'+sys.version[0:3])"`${EXT_LIB_SWIG_PYTHON_MODULAR%.*}
 			INCLUDES_PYTHON="$_pyinclude $INCLUDES_PYTHON"
-			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP_PYTHON"
-			COMPFLAGS_C_PYTHON="-fno-strict-aliasing -fPIC $COMPFLAGS_C_PYTHON"
+			COMPFLAGS_CPP_PYTHON="-fno-strict-aliasing $COMPFLAGS_CPP_PYTHON"
+			COMPFLAGS_C_PYTHON="-fno-strict-aliasing $COMPFLAGS_C_PYTHON"
 
 			if darwin
 			then
@@ -4874,9 +4897,9 @@ EOF
 	fi
 
 	if darwin; then
-		 POSTLINKFLAGS_LIBSHOGUN="-fPIC ${SONAMEOPT}${_libdir}/${LIBSHOGUN_SONAME} ${SHAREDOPTS}"
+		 POSTLINKFLAGS_LIBSHOGUN="${SONAMEOPT}${_libdir}/${LIBSHOGUN_SONAME} ${SHAREDOPTS}"
 	else
-		POSTLINKFLAGS_LIBSHOGUN="-fPIC ${SONAMEOPT}${LIBSHOGUN_SONAME} ${SHAREDOPTS}"
+		POSTLINKFLAGS_LIBSHOGUN="${SONAMEOPT}${LIBSHOGUN_SONAME} ${SHAREDOPTS}"
 	fi
 }
 
@@ -5298,7 +5321,10 @@ clean_up()
 # Mac OS gcc tends to make external debug files when testing compiler
 darwin_clean_up()
 {
-	rm -rf configure-*.dSYM
+	if darwin
+	then
+		rm -rf configure-*.dSYM
+	fi
 }
 
 test_static_linking()
@@ -5340,6 +5366,7 @@ set_install_dirs
 detect_ldd
 detect_cc
 determine_system_name
+check_fpic
 check_makedepend
 check_python
 check_pkg_config
@@ -5389,6 +5416,7 @@ test_lua
 test_modular
 test_static_linking
 svmlight_warn_license
+cygwin_fixup
 write_dot_config "$SRCDIR/.config"
 
 if test "$_libshogun" = internal
@@ -5396,8 +5424,5 @@ then
 	write_config_h "$SRCDIR/shogun/lib/config.h"
 fi
 clean_up
-if darwin
-then
-	darwin_clean_up
-fi	
+darwin_clean_up
 type_buildinfo
