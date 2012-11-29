@@ -166,8 +166,8 @@ float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 	int32_t from=0, to=0;
 	if (info)
 	{
-		from = info->_from;
-		to = (info->N == 0) ? m_features->get_num_vectors() : from+info->N;
+		from = info->m_from;
+		to = (info->m_N == 0) ? m_features->get_num_vectors() : from+info->m_N;
 	}
 	else
 	{

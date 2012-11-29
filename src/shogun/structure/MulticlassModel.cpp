@@ -174,8 +174,8 @@ float64_t CMulticlassModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPin
 
 	if (info)
 	{
-		from=info->_from;
-		to=(info->N == 0) ? X->get_num_vectors() : from+info->N;
+		from=info->m_from;
+		to=(info->m_N == 0) ? X->get_num_vectors() : from+info->m_N;
 	} else {
 		from=0;
 		to=X->get_num_vectors();

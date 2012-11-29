@@ -158,9 +158,9 @@ bmrm_return_value_T svm_p3bm_solver(
 			goto cleanup;
 		}
 
-		info[p]->_from=to;
+		info[p]->m_from=to;
 		to=((p+1)*N > (uint32_t)num_feats) ? (uint32_t)num_feats : (p+1)*N;
-		info[p]->N=to-info[p]->_from;
+		info[p]->m_N=to-info[p]->m_from;
 	}
 
 	map= (bool*) LIBBMRM_CALLOC(BufSize, sizeof(bool));

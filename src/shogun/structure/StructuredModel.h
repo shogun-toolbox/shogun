@@ -29,11 +29,11 @@ namespace shogun
  * Multiple cutting plane models helper
  */
 IGNORE_IN_CLASSLIST struct TMultipleCPinfo {
-	TMultipleCPinfo(uint32_t __from, uint32_t _N) : _from(__from), N(_N) {  }
+	TMultipleCPinfo(uint32_t from, uint32_t N) : m_from(from), m_N(N) {  }
 	/** where this portion of data starts */
-	uint32_t _from;
+	uint32_t m_from;
 	/** how many examples belong to this portion of data */
-	uint32_t N;
+	uint32_t m_N;
 };
 
 class CStructuredModel;
