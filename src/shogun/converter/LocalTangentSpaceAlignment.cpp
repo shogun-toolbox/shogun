@@ -150,7 +150,7 @@ SGMatrix<float64_t> CLocalTangentSpaceAlignment::construct_weight_matrix(CDenseF
 	single_thread_param.G_matrix = G_matrix;
 	single_thread_param.mean_vector = mean_vector;
 	single_thread_param.local_feature_matrix = local_feature_matrix;
-	single_thread_param.feature_matrix = feature_matrix;
+	single_thread_param.feature_matrix = feature_matrix.matrix;
 	single_thread_param.s_values_vector = s_values_vector;
 	single_thread_param.q_matrix = q_matrix;
 	single_thread_param.W_matrix = W_matrix;
