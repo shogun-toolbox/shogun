@@ -68,6 +68,7 @@ else
   _svm_light=no
   _gpl=yes
 fi
+_pthread=auto
 _spinlocks=auto
 _cplex=auto
 _lpsolve=no
@@ -3132,7 +3133,10 @@ EOF
 		echores "yes"
 	else
 		echores "no"
-		die "no posix threading support found (libpthread)"
+		if test "$_pthread" = yes
+		then
+			die "no posix threading support found (libpthread)"
+		fi
 	fi
 }
 
