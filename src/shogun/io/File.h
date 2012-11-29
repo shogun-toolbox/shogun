@@ -20,7 +20,7 @@ namespace shogun
 {
 template <class ST> class SGString;
 template <class ST> class SGSparseVector;
-template <class ST> class SGSparseVectorEntry;
+template <class ST> struct SGSparseVectorEntry;
 
 /** @brief A File access base class.
  *
