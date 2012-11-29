@@ -5420,7 +5420,6 @@ test_lua
 test_modular
 test_static_linking
 svmlight_warn_license
-cygwin_fixup
 write_dot_config "$SRCDIR/.config"
 
 if test "$_libshogun" = internal
