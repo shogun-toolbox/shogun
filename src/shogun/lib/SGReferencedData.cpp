@@ -14,7 +14,9 @@ SGReferencedData::SGReferencedData(bool ref_counting) : m_refcount(NULL)
 	if (ref_counting)
 	{
 		m_refcount = SG_CALLOC(refcount_t, 1);
+#ifdef HAVE_PTHREAD
 		PTHREAD_LOCK_INIT(&m_refcount->lock);
+#endif
 	}
 
 	ref();
