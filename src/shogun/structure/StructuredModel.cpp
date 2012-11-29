@@ -12,8 +12,11 @@
 
 using namespace shogun;
 
-CStructuredModel::CStructuredModel() : CSGObject(), m_use_director_risk(false)
+CStructuredModel::CStructuredModel() : CSGObject()
 {
+#ifdef USE_SWIG_DIRECTORS
+	m_use_director_risk=false;
+#endif
 	init();
 }
 
@@ -143,18 +146,22 @@ int32_t CStructuredModel::get_num_aux_con() const
 	return 0;
 }
 
+#ifdef USE_SWIG_DIRECTORS
 float64_t CStructuredModel::director_risk(SGVector<float64_t> subgrad, SGVector<float64_t> W, TMultipleCPinfo info)
 {
 	SG_NOTIMPLEMENTED;
 	return -1;
 }
+#endif
 
 float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
 {
 	int32_t dim = this->get_dim();
 	
+#ifdef USE_SWIG_DIRECTORS
 	if (m_use_director_risk)
 		return director_risk(SGVector<float64_t>(subgrad,dim,false),SGVector<float64_t>(W,dim,false),info ? *info : TMultipleCPinfo(0,m_features->get_num_vectors()));
+#endif
 	
 	int32_t from=0, to=0;
 	if (info)
