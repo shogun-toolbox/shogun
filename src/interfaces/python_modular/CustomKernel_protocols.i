@@ -633,7 +633,7 @@ int frombuffer(PyObject* exporter, bool copy)
 	res1=PyObject_CheckBuffer(exporter);
 	if (!res1)
 	{
-		PyErr_SetString(PyExc_BufferError, "this object don't support buffer protocol");
+		PyErr_SetString(PyExc_BufferError, "this object does not support the python buffer protocol");
 		return -1;
 	}
 
