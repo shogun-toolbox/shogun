@@ -541,10 +541,12 @@ template <class T> class CDynamicArray :public CSGObject
 			m_array.set_array(p_array, p_size, p_size);
 		}
 
-		/** clear the array (with zeros) */
-		inline void clear_array()
+		/** clear the array (with e.g. zeros)
+		 * @param value value to fill array with
+		 */
+		inline void clear_array(T value)
 		{
-			m_array.clear_array();
+			m_array.clear_array(value);
 		}
 
 		/** operator overload for array read only access

@@ -71,7 +71,6 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  m_seq_len(0),
 	  m_orf_info(1,2),
 	  m_plif_list(1),
-	  m_PEN(1,1),
 	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), m_segment_loss(1,1,2),
 	  m_segment_ids(1),
 	  m_segment_mask(1),
@@ -128,8 +127,6 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	m_mod_words.set_array_name("mod_words");
 	m_orf_info.set_array_name("orf_info");
 	m_segment_sum_weights.set_array_name("segment_sum_weights");
-	m_PEN.set_array_name("PEN");
-	m_PEN_state_signals.set_array_name("PEN_state_signals");
 	m_dict_weights.set_array_name("dict_weights");
 	m_states.set_array_name("states");
 	m_positions.set_array_name("positions");
@@ -230,7 +227,6 @@ void CDynProg::set_num_states(int32_t p_N)
 	m_end_state_distribution_q_deriv.resize_array(m_N) ;
 
 	m_orf_info.resize_array(m_N,2) ;
-	m_PEN.resize_array(m_N,m_N) ;
 }
 
 int32_t CDynProg::get_num_states()

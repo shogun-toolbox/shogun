@@ -365,37 +365,38 @@ class CDynamicObjectArray : public CSGObject
 		{
 			CSGObject* e=m_array.get_element(idx);
 			SG_UNREF(e);
+			m_array.set_element(NULL, idx);
 
 			return m_array.delete_element(idx);
 		}
 
-		/** resize array
-		 *
-		 * @param ndim1 new dimension 1
-		 * @param ndim2 new dimension 2
-		 * @param ndim3 new dimension 3
-		 * @return if resizing was successful
-		 */
-		inline bool resize_array(int32_t ndim1, int32_t ndim2=1, int32_t ndim3=1)
-		{
-			dim1_size=ndim1;
-			dim2_size=ndim2;
-			dim3_size=ndim3;
-			return m_array.resize_array(ndim1*ndim2*ndim3);
-		}
+		///** resize array
+		// *
+		// * @param ndim1 new dimension 1
+		// * @param ndim2 new dimension 2
+		// * @param ndim3 new dimension 3
+		// * @return if resizing was successful
+		// */
+		//inline bool resize_array(int32_t ndim1, int32_t ndim2=1, int32_t ndim3=1)
+		//{
+		//	dim1_size=ndim1;
+		//	dim2_size=ndim2;
+		//	dim3_size=ndim3;
+		//	return m_array.resize_array(ndim1*ndim2*ndim3);
+		//}
 
 		/** clear the array (with zeros) */
 		inline void clear_array()
 		{
 			unref_all();
-			m_array.clear_array();
+			m_array.clear_array(NULL);
 		}
 
 		/** resets the array */
 		inline void reset_array()
 		{
 			unref_all();
-			m_array.reset();
+			m_array.reset(NULL);
 		}
 
 		/** operator overload for array assignment

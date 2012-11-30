@@ -311,7 +311,7 @@ template <class T> class DynArray
 				for (int32_t i=idx; i<last_element_idx; i++)
 					array[i]=array[i+1];
 
-				memset(&array[last_element_idx], 0, sizeof(T));
+				//memset(&array[last_element_idx], 0, sizeof(T));
 				last_element_idx--;
 
 				if (num_elements - last_element_idx
@@ -343,16 +343,16 @@ template <class T> class DynArray
 			if (p)
 			{
 				array=p;
-				if (new_num_elements > num_elements)
-				{
-					memset(&array[num_elements], 0,
-						(new_num_elements-num_elements)*sizeof(T));
-				}
-				else if (n+1<new_num_elements)
-				{
-					memset(&array[n+1], 0,
-						(new_num_elements-n-1)*sizeof(T));
-				}
+				//if (new_num_elements > num_elements)
+				//{
+				//	memset(&array[num_elements], 0,
+				//		(new_num_elements-num_elements)*sizeof(T));
+				//}
+				//else if (n+1<new_num_elements)
+				//{
+				//	memset(&array[n+1], 0,
+				//		(new_num_elements-n-1)*sizeof(T));
+				//}
 
 				//in case of shrinking we must adjust last element idx
 				if (n-1<last_element_idx)
@@ -430,17 +430,20 @@ template <class T> class DynArray
 			free_array=true;
 		}
 
-		/** clear the array (with zeros) */
-		inline void clear_array()
+		/** clear the array (with e.g. zeros) */
+		inline void clear_array(T value)
 		{
 			if (last_element_idx >= 0)
-				memset(array, 0, (last_element_idx+1)*sizeof(T));
+			{
+				for (int32_t i=0; i<last_element_idx+1; i++)
+					array[i]=value;
+			}
 		}
 
 		/** resets the array (as if it was just created), keeps granularity */
-		void reset()
+		void reset(T value)
 		{
-			clear_array();
+			clear_array(value);
 			last_element_idx=-1;
 		}
 

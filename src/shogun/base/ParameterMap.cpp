@@ -316,7 +316,7 @@ void ParameterMap::finalize_map()
 	for (index_t i=0; i<m_multi_map_elements.get_num_elements(); ++i)
 		delete m_multi_map_elements[i];
 
-	m_multi_map_elements.reset();
+	m_multi_map_elements.reset(NULL);
 //	SG_SPRINT("\nstarting finalization\n");
 
 	/* iterate over all elements of map elements (have all one value (put)) and

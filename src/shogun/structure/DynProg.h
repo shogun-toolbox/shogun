@@ -669,10 +669,6 @@ protected:
 	CDynamicArray<float64_t> m_segment_sum_weights; // 2d
 	/** Plif list */
 	CDynamicObjectArray m_plif_list; // CPlifBase*
-	/** PEN */
-	CDynamicObjectArray m_PEN; // 2d, CPlifBase*
-	/** PEN state signals */
-	CDynamicObjectArray m_PEN_state_signals; // 2d, CPlifBase*
 	/** a single string (to be segmented) */
 	CDynamicArray<char> m_genestr;
 	/**

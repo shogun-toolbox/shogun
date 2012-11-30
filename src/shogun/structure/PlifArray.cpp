@@ -54,7 +54,7 @@ void CPlifArray::add_plif(CPlifBase* new_plif)
 
 void CPlifArray::clear()
 {
-	m_array.clear_array();
+	m_array.clear_array(NULL);
 	min_value = -1e6 ;
 	max_value = 1e6 ;
 }
