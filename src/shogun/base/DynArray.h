@@ -46,9 +46,9 @@ template <class T> class DynArray
 			use_sg_mallocs=tracable;
 
 			if (use_sg_mallocs)
-				array=SG_CALLOC(T, p_resize_granularity);
+				array=SG_MALLOC(T, p_resize_granularity);
 			else
-				array=(T*) calloc(p_resize_granularity, sizeof(T));
+				array=(T*) malloc(size_t(p_resize_granularity)*sizeof(T));
 
 			num_elements=p_resize_granularity;
 			last_element_idx=-1;
@@ -311,7 +311,6 @@ template <class T> class DynArray
 				for (int32_t i=idx; i<last_element_idx; i++)
 					array[i]=array[i+1];
 
-				//memset(&array[last_element_idx], 0, sizeof(T));
 				last_element_idx--;
 
 				if (num_elements - last_element_idx
@@ -343,16 +342,6 @@ template <class T> class DynArray
 			if (p)
 			{
 				array=p;
-				//if (new_num_elements > num_elements)
-				//{
-				//	memset(&array[num_elements], 0,
-				//		(new_num_elements-num_elements)*sizeof(T));
-				//}
-				//else if (n+1<new_num_elements)
-				//{
-				//	memset(&array[n+1], 0,
-				//		(new_num_elements-n-1)*sizeof(T));
-				//}
 
 				//in case of shrinking we must adjust last element idx
 				if (n-1<last_element_idx)
