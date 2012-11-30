@@ -84,6 +84,16 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
+		/** 
+		 * get the matrix (no copying is done here)
+		 *
+		 * @return the refcount increased matrix
+		 */
+		inline SGMatrix<T> get()
+		{
+			return *this;
+		}
+
 		/** check for pointer identity */
 		bool operator==(SGMatrix<T>& other);
 

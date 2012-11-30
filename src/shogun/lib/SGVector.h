@@ -124,6 +124,17 @@ template<class T> class SGVector : public SGReferencedData
 		/** permute */
 		static void permute(T* vec, int32_t n);
 
+
+		/** 
+		 * get the vector (no copying is done here)
+		 *
+		 * @return the refcount increased vector
+		 */
+		SGVector<T> get()
+		{
+			return *this;
+		}
+
 		/** get vector element at index
 		 *
 		 * @param index index

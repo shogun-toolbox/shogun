@@ -50,6 +50,16 @@ public:
 	/** destroy string */
 	void destroy_string();
 
+	/** 
+	 * get the string (no copying is done here)
+	 *
+	 * @return the refcount increased string
+	 */
+	inline SGString<T> get()
+	{
+		return *this;
+	}
+
 	/** load string from file
 	 *
 	 * @param loader File object via which to load data

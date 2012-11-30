@@ -55,6 +55,16 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 			return sparse_matrix[index];
 		}
 
+		/** 
+		 * get the sparse matrix (no copying is done here)
+		 *
+		 * @return the refcount increased matrix
+		 */
+		inline SGSparseMatrix<T> get()
+		{
+			return *this;
+		}
+
 		/** load sparse matrix from file
 		 *
 		 * @param loader File object via which to load data

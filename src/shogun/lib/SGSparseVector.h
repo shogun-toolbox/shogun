@@ -90,6 +90,16 @@ public:
 	 */
 	static T sparse_dot(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
 
+	/** 
+	 * get the sparse vector (no copying is done here)
+	 *
+	 * @return the refcount increased vector
+	 */
+	inline SGSparseVector<T> get()
+	{
+		return *this;
+	}
+
 	/** load vector from file
 	 *
 	 * @param loader File object via which to load data

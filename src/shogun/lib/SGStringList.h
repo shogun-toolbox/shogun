@@ -41,6 +41,16 @@ public:
 	/** destructor */
 	virtual ~SGStringList();
 
+	/** 
+	 * get the string list (no copying is done here)
+	 *
+	 * @return the refcount increased string list
+	 */
+	inline SGStringList<T> get()
+	{
+		return *this;
+	}
+
 	/** load strings from file
 	 *
 	 * @param loader File object via which to load data
