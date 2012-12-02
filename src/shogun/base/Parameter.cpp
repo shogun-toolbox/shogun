@@ -1693,10 +1693,10 @@ TParameter::delete_cont()
 			case PT_FLOATMAX:
 				SG_FREE(*(floatmax_t**) m_parameter); break;
 			case PT_SGOBJECT:
-				CSGObject** buf =
-					*(CSGObject***) m_parameter;
+				CSGObject** buf = *(CSGObject***) m_parameter;
+
 				for (index_t i=0; i<old_length; i++)
-					if (buf[i] != NULL) SG_UNREF(buf[i]);
+					SG_UNREF(buf[i]);
 
 				SG_FREE(buf);
 				break;
