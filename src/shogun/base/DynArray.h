@@ -326,12 +326,17 @@ template <class T> class DynArray
 		/** resize the array
 		 *
 		 * @param n new size
+		 * @param exact_resize resize exactly to size n
 		 * @return if resizing was successful
 		 */
-		bool resize_array(int32_t n)
+		bool resize_array(int32_t n, bool exact_resize=false)
 		{
-			int32_t new_num_elements=((n/resize_granularity)+1)
-				*resize_granularity;
+			int32_t new_num_elements=n;
+			
+			if (!exact_resize)
+			{
+				new_num_elements=((n/resize_granularity)+1)*resize_granularity;
+			}
 
 			T* p;
 
@@ -339,7 +344,8 @@ template <class T> class DynArray
 				p = SG_REALLOC(T, array, num_elements, new_num_elements);
 			else
 				p = (T*) realloc(array, new_num_elements*sizeof(T));
-			if (p)
+
+			if (p || new_num_elements==0)
 			{
 				array=p;
 

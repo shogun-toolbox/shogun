@@ -33,16 +33,11 @@ class CDynamicObjectArray : public CSGObject
 		CDynamicObjectArray()
 		: CSGObject(), m_array(), name("Array")
 		{
-			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
-					"array", "Memory for dynamic array.");
-			SG_ADD(&m_array.last_element_idx, "last_element_idx",
-					"Element with largest index.", MS_NOT_AVAILABLE);
-			SG_ADD(&m_array.resize_granularity, "resize_granularity",
-					"shrink/grow step size.", MS_NOT_AVAILABLE);
-
 			dim1_size=1;
 			dim2_size=1;
 			dim3_size=1;
+
+			init();
 		}
 
 		/** constructor
@@ -54,16 +49,11 @@ class CDynamicObjectArray : public CSGObject
 		CDynamicObjectArray(int32_t dim1, int32_t dim2=1, int32_t dim3=1)
 		: CSGObject(), m_array(dim1*dim2*dim3), name("Array")
 		{
-			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
-					"array", "Memory for dynamic array.");
-			SG_ADD(&m_array.last_element_idx, "last_element_idx",
-					"Element with largest index.", MS_NOT_AVAILABLE);
-			SG_ADD(&m_array.resize_granularity, "resize_granularity",
-					"shrink/grow step size.", MS_NOT_AVAILABLE);
-
 			dim1_size=dim1;
 			dim2_size=dim2;
 			dim3_size=dim3;
+
+			init();
 		}
 
 		/** constructor
@@ -76,16 +66,11 @@ class CDynamicObjectArray : public CSGObject
 		CDynamicObjectArray(CSGObject** p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
 		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array), name("Array")
 		{
-			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
-					"array", "Memory for dynamic array.");
-			SG_ADD(&m_array.last_element_idx, "last_element_idx",
-					"Element with largest index.", MS_NOT_AVAILABLE);
-			SG_ADD(&m_array.resize_granularity, "resize_granularity",
-					"shrink/grow step size.", MS_NOT_AVAILABLE);
-
 			dim1_size=p_dim1_size;
 			dim2_size=1;
 			dim3_size=1;
+
+			init();
 		}
 
 		/** constructor
@@ -100,16 +85,11 @@ class CDynamicObjectArray : public CSGObject
 						bool p_free_array=true, bool p_copy_array=false)
 		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array), name("Array")
 		{
-			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
-					"array", "Memory for dynamic array.");
-			SG_ADD(&m_array.last_element_idx, "last_element_idx",
-					"Element with largest index.", MS_NOT_AVAILABLE);
-			SG_ADD(&m_array.resize_granularity, "resize_granularity",
-					"shrink/grow step size.", MS_NOT_AVAILABLE);
-
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=1;
+
+			init();
 		}
 
 		/** constructor
@@ -125,16 +105,11 @@ class CDynamicObjectArray : public CSGObject
 						int32_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
 		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array), name("Array")
 		{
-			m_parameters->add_vector(&m_array.array, &m_array.num_elements,
-					"array", "Memory for dynamic array.");
-			SG_ADD(&m_array.last_element_idx, "last_element_idx",
-					"Element with largest index.", MS_NOT_AVAILABLE);
-			SG_ADD(&m_array.resize_granularity, "resize_granularity",
-					"shrink/grow step size.", MS_NOT_AVAILABLE);
-
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
 			dim3_size=p_dim3_size;
+
+			init();
 		}
 
 		virtual ~CDynamicObjectArray() { unref_all(); }
@@ -443,15 +418,67 @@ class CDynamicObjectArray : public CSGObject
 		virtual const char* get_name() const
 		{ return "DynamicObjectArray"; }
 
+		/** Can (optionally) be overridden to pre-initialize some member
+		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+		 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
+		 *  is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void load_serializable_pre() throw (ShogunException)
+		{
+			CSGObject::load_serializable_pre();
+
+			m_array.resize_array(m_array.get_num_elements(), true);
+		}
+
+		/** Can (optionally) be overridden to pre-initialize some member
+		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
+		 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_PRE
+		 *  is called.
+		 *
+		 *  @exception ShogunException Will be thrown if an error
+		 *                             occurres.
+		 */
+		virtual void save_serializable_pre() throw (ShogunException)
+		{
+			CSGObject::save_serializable_pre();
+
+			m_array.resize_array(m_array.get_num_elements(), true);
+		}
+
 	private:
+
+		/** register parameters */
+		virtual void init()
+		{
+			m_parameters->add_vector(&m_array.array, &m_array.num_elements, "array",
+									 "Memory for dynamic array.");	
+
+			SG_ADD(&m_array.last_element_idx,
+							  "last_element_idx",
+							  "Element with largest index.", MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.resize_granularity,
+							  "resize_granularity",
+							  "shrink/grow step size.", MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.use_sg_mallocs,
+							  "use_sg_malloc",
+							  "whether SG_MALLOC or malloc should be used",
+							  MS_NOT_AVAILABLE);
+			SG_ADD(&m_array.free_array,
+							  "free_array",
+							  "whether array must be freed",
+							  MS_NOT_AVAILABLE);
+		}
+
 		/** de-reference all elements of this array once */
 		inline void unref_all()
 		{
 			/* SG_UNREF all my elements */
 			for (index_t i=0; i<m_array.get_num_elements(); ++i)
 			{
-				CSGObject* elem=m_array.get_element(i);
-				SG_UNREF(elem);
+				SG_UNREF(*m_array.get_element_ptr(i));
 			}
 		}
 
