@@ -10,16 +10,12 @@
 
 #include <shogun/base/init.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/features/DenseFeatures.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 class CTestClassInt : public CSGObject
 {
@@ -284,7 +280,8 @@ void test_load_file_parameters()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
+	init_shogun_with_defaults();
+	sg_io->set_loglevel(MSG_DEBUG);
 
 	test_load_file_parameters();
 
