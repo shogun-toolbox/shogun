@@ -14,6 +14,7 @@
 		  features. First implemented instance is CMeanShiftDataGenerator.
 		  Use above new concepts to get non-streaming data if desired.
 		- Accelerated projected gradient multiclass logistic regression classifier by Sergey Lisitsyn
+		- New CCSOSVM based structured output solver by Viktor Gal
 	* Bugfixes:
 		- Fix for shallow copy of gaussian kernel by Matt Aasted
 		- Fixed a bug when using StringFeatures along with kernel machines in
@@ -26,6 +27,9 @@
 		- CLinearTimeMMD constructor changes, only streaming features allowed
 		- CDataGenerator will soon be removed and replaced by new streaming-
 		  based classes.
+		- SGVector, SGMatrix, SGSparseVector, SGSparseVector, SGSparseMatrix
+		  refactoring: Now contains load/save routines, relevant functions from
+		  CMath, and implementations went to .cpp file
 
 2012-09-01 Soeren Sonnenburg <sonne@debian.org>
 
