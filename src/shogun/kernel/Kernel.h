@@ -797,6 +797,13 @@ class CKernel : public CSGObject
 		 */
 		virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
 				CSGObject* obj, index_t index = -1);
+
+		/** Obtains a kernel from a generic SGObject with error checking. Note
+		 * that if passing NULL, result will be NULL
+		 * @param kernel Object to cast to CKernel, is *not* SG_REFed
+		 * @return object casted to CKernel, NULL if not possible
+		 */
+		static CKernel* obtain_from_generic(CSGObject* kernel);
 	protected:
 		/** set property
 		 *
