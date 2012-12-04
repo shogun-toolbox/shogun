@@ -3383,6 +3383,7 @@ EOF
 						fi
 
 
+
 						cat > $TMPC << EOF
 #include </System/Library/Frameworks/vecLib.framework/Headers/cblas.h>
 #include </System/Library/Frameworks/vecLib.framework/Headers/clapack.h>
@@ -3448,6 +3449,33 @@ EOF
 				fi
 			fi
 		fi
+	fi
+}
+
+check_catlas()
+{
+	echocheck "catlas"
+
+	cat > $TMPC << EOF
+#include <cblas.h>
+
+int main(int argc, char** argv)
+{
+	int vlen = 17;
+	double const_elem = 17.0;
+	double vector[17];
+	catlas_sset(vlen, const_elem, vector, 1);
+	catlas_dset(vlen, const_elem, vector, 1);
+	return 0;
+}
+EOF
+	if cc_check
+	then
+		echores "yes"
+		HAVE_CATLAS='#define HAVE_CATLAS 1'
+		DEFINES="$DEFINES -DHAVE_CATLAS"
+	else
+		echores "no"
 	fi
 }
 
@@ -5243,6 +5271,7 @@ $HAVE_SUPERLU
 $HAVE_NLOPT
 $HAVE_EIGEN3
 $HAVE_ATLAS
+$HAVE_CATLAS
 $HAVE_PTHREAD
 $HAVE_ACML
 $HAVE_MKL
@@ -5390,6 +5419,7 @@ check_hdf5
 check_json
 check_xml
 check_lapack
+check_catlas
 check_superlu
 check_mosek
 check_arpack
