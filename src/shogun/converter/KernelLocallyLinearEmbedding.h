@@ -67,30 +67,6 @@ public:
 	/** get name */
 	virtual const char* get_name() const;
 
-/// HELPERS
-protected:
-
-	/** construct weight matrix */
-	virtual SGMatrix<float64_t> construct_weight_matrix(SGMatrix<float64_t> kernel_matrix,
-	                                                    SGMatrix<int32_t> neighborhood_matrix);
-
-	/** construct neighborhood matrix by kernel matrix
-	 * @param kernel_matrix kernel matrix to be used
-	 * @param k k
-	 * @return matrix containing indexes of neighbors of i-th object
-	 * in i-th column
-	 */
-	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> kernel_matrix, int32_t k);
-
-
-/// THREADS
-protected:
-
-	/** runs linear reconstruction thread
-	 * @param p thread params
-	 */
-	static void* run_linearreconstruction_thread(void* p);
-
 };
 }
 

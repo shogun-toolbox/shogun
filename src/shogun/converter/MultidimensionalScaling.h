@@ -120,24 +120,6 @@ protected:
 	/** default initialization */
 	virtual void init();
 
-	 /** classical embedding
-	 * @param distance_matrix distance matrix to be used for embedding
-	 * @return new feature matrix representing given distance
-	 */
-	SGMatrix<float64_t> classic_embedding(SGMatrix<float64_t> distance_matrix);
-
-	 /** landmark embedding (approximate, accuracy varies with m_landmark_num parameter)
-	 * @param distance_matrix distance matrix to be used for embedding
-	 * @return new feature matrix representing given distance matrix
-	 */
-	SGMatrix<float64_t> landmark_embedding(SGMatrix<float64_t> distance_matrix);
-
-	/** process distance matrix (redefined in isomap, for mds does nothing)
-	 * @param distance_matrix distance matrix
-	 * @return processed distance matrix
-	 */
-	virtual SGMatrix<float64_t> process_distance_matrix(SGMatrix<float64_t> distance_matrix);
-
 /// FIELDS
 protected:
 
@@ -149,22 +131,6 @@ protected:
 
 	/** number of landmarks */
 	int32_t m_landmark_number;
-
-/// STATIC
-protected:
-
-	/** run triangulation thread for landmark embedding
-	 * @param p thread parameters
-	 */
-	static void* run_triangulation_thread(void* p);
-
-	/** subroutine used to shuffle count indexes among of total_count ones
-	 * with Fisher-Yates (known as Knuth too) shuffle algorithm
-	 * @param count number of indexes to be shuffled and returned
-	 * @param total_count total number of indexes
-	 * @return sorted shuffled indexes for landmarks
-	 */
-	static SGVector<int32_t> shuffle(int32_t count, int32_t total_count);
 
 };
 
