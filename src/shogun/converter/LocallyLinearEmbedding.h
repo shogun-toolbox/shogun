@@ -129,16 +129,6 @@ public:
 	 */
 	float64_t get_nullspace_shift() const;
 
-	/** setter for use arpack parameter
-	 * @param use_arpack use arpack value
-	 */
-	void set_use_arpack(bool use_arpack);
-
-	/** getter for use arpack parameter
-	 * @return use_arpack value
-	 */
-	bool get_use_arpack() const;
-
 	/** get name */
 	virtual const char* get_name() const;
 
@@ -147,52 +137,6 @@ protected:
 
 	/** default init */
 	void init();
-
-	/** constructs weight matrix
-	 * @param simple_features features to be used
-	 * @param W_matrix weight matrix
-	 * @param neighborhood_matrix matrix containing neighbor idxs
-	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CDenseFeatures<float64_t>* simple_features,float64_t* W_matrix,
-                                                            SGMatrix<int32_t> neighborhood_matrix);
-
-	/** constructs embedding
-	 * @param matrix computed weight matrix
-	 * @param dimension dimension of embedding
-	 * @return embedding features
-	 */
-	virtual SGMatrix<float64_t> construct_embedding(SGMatrix<float64_t> matrix,int dimension);
-
-	/** constructs neighborhood matrix by distance
-	 * @param distance_matrix distance matrix to be used
-	 * @param k number of neighbors
-	 * @return matrix containing indexes of neighbors of i-th vector in i-th column
-	 */
-	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
-
-	/** estimates k using ternary search
-	 * @param simple_features simple features to use
-	 * @param neighborhood_matrix matrix containing indexes of neighbors for every vector
-	 * @return optimal k (in means of reconstruction error)
-	 */
-	int32_t estimate_k(CDenseFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix);
-
-	/** computes reconstruction error using subset of given features
-	 * @param k
-	 * @param dim
-	 * @param N
-	 * @param feature_matrix
-	 * @param z_matrix
-	 * @param covariance_matrix
-	 * @param resid_vector
-	 * @param id_vector
-	 * @param neighborhood_matrix
-	 * @return residual sum
-	 */
-	float64_t compute_reconstruction_error(int32_t k, int dim, int N, float64_t* feature_matrix,
-	                                       float64_t* z_matrix, float64_t* covariance_matrix,
-	                                       float64_t* resid_vector, float64_t* id_vector,
-	                                       SGMatrix<int32_t> neighborhood_matrix);
 
 	/// FIELDS
 protected:
@@ -209,19 +153,8 @@ protected:
 	/** regularization shift of nullspace finding step */
 	float64_t m_nullspace_shift;
 
-	/** whether use arpack or not */
-	bool m_use_arpack;
-
 	/** whether use automatic k or not */
 	bool m_auto_k;
-
-	/// THREADS
-protected:
-
-	/** runs linear reconstruction thread
-	 * @param p thread params
-	 */
-	static void* run_linearreconstruction_thread(void* p);
 
 };
 }

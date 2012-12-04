@@ -52,15 +52,6 @@ public:
 	/** get name */
 	virtual const char* get_name() const;
 
-protected:
-
-	/** constructs embedding
-	 * @param simple features to be used
-	 * @param matrix weight matrix
-	 * @param dimension dimension of embedding
-	 * @return null-space approximation feature matrix
-	 */
-	virtual SGMatrix<float64_t> construct_embedding(CFeatures* features, SGMatrix<float64_t> matrix, int dimension);
 };
 }
 
