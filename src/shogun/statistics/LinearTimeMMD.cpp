@@ -201,7 +201,6 @@ SGVector<float64_t> CLinearTimeMMD::compute_h_terms()
 
 	/* these sums are needed to compute online statistic/variance */
 	index_t num_examples_processed=0;
-	index_t term_counter=1;
 	while (num_examples_processed<m_2)
 	{
 		/* number of example to look at in this iteration */
