@@ -1,9 +1,14 @@
 #ifndef TAPKEE_ISOMAP_H_
 #define TAPKEE_ISOMAP_H_
 
-#include "../utils/fibonacci_heap.hpp"
+#include <utils/fibonacci_heap.hpp>
 #include <limits>
 using std::numeric_limits;
+
+namespace tapkee
+{
+namespace tapkee_internal
+{
 
 //! Computes shortest distances (so-called geodesic distances)
 //! using Dijkstra algorithm.
@@ -179,5 +184,7 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 	return shortest_distances;
 }
 
+}
+}
 
 #endif

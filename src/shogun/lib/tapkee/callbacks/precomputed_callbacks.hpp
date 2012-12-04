@@ -20,12 +20,12 @@
 // linear kernel i.e. dot product between two vectors.
 struct precomputed_kernel_callback
 {
-	precomputed_kernel_callback(const DenseMatrix& matrix) : kernel_matrix(matrix) {};
-	inline DefaultScalarType operator()(int a, int b) const
+	precomputed_kernel_callback(const tapkee::DenseMatrix& matrix) : kernel_matrix(matrix) {};
+	inline tapkee::DefaultScalarType operator()(int a, int b) const
 	{
 		return kernel_matrix(a,b);
 	}
-	const DenseMatrix& kernel_matrix;
+	const tapkee::DenseMatrix& kernel_matrix;
 };
 // That's mandatory to specify that kernel_callback
 // is a kernel (and it is good to know that it is linear).
@@ -37,12 +37,12 @@ TAPKEE_CALLBACK_IS_KERNEL(precomputed_kernel_callback);
 // euclidean distance between two vectors.
 struct precomputed_distance_callback
 {
-	precomputed_distance_callback(const DenseMatrix& matrix) : distance_matrix(matrix) {};
-	inline DefaultScalarType operator()(int a, int b) const
+	precomputed_distance_callback(const tapkee::DenseMatrix& matrix) : distance_matrix(matrix) {};
+	inline tapkee::DefaultScalarType operator()(int a, int b) const
 	{
 		return distance_matrix(a,b);
 	}
-	const DenseMatrix& distance_matrix;
+	const tapkee::DenseMatrix& distance_matrix;
 };
 // That's mandatory to specify that distance_callback
 // is a distance

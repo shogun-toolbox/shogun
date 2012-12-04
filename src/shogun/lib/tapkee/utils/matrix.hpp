@@ -1,13 +1,13 @@
 #ifndef TAPKEE_MATRIX_H_
 #define TAPKEE_MATRIX_H_
 
-void centerMatrix()
+void centerMatrix(tapkee::DenseMatrix& matrix)
 {
-	Matrix<Scalar,1,Dynamic> col_means = this->colwise().mean();
-	Scalar grand_mean = this->mean();
-	this->array() += grand_mean;
-	this->rowwise() -= col_means;
-	this->colwise() -= col_means.transpose();
+	Eigen::Matrix<tapkee::DenseMatrix::Scalar,1,Eigen::Dynamic> col_means = matrix.colwise().mean();
+	tapkee::DenseMatrix::Scalar grand_mean = matrix.mean();
+	matrix.array() += grand_mean;
+	matrix.rowwise() -= col_means;
+	matrix.colwise() -= col_means.transpose();
 }
 
 #endif

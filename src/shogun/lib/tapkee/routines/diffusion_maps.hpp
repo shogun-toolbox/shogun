@@ -10,6 +10,11 @@
 #ifndef TAPKEE_DIFFUSION_MAPS_H_
 #define TAPKEE_DIFFUSION_MAPS_H_
 
+namespace tapkee
+{
+namespace tapkee_internal
+{
+
 //! Computes diffusion process matrix. Uses the following algorithm:
 //!
 //! <ol>
@@ -67,5 +72,8 @@ DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, Random
 
 	return diffusion_matrix;
 };
+
+}
+}
 
 #endif

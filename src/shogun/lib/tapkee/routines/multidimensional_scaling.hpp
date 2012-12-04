@@ -7,6 +7,11 @@
 using std::random_shuffle;
 using std::fill;
 
+namespace tapkee
+{
+namespace tapkee_internal
+{
+
 template <class RandomAccessIterator>
 Landmarks select_landmarks_random(RandomAccessIterator begin, RandomAccessIterator end, DefaultScalarType ratio)
 {
@@ -113,5 +118,8 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 	}
 	return distance_matrix;
 };
+
+}
+}
 
 #endif

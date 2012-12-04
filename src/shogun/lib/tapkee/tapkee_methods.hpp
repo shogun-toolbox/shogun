@@ -11,6 +11,7 @@
 #define TAPKEE_METHODS_H_
 
 #include "tapkee_defines.hpp"
+#include "utils/matrix.hpp"
 #include "routines/locally_linear.hpp"
 #include "routines/eigen_embedding.hpp"
 #include "routines/generalized_eigen_embedding.hpp"
@@ -21,6 +22,11 @@
 #include "routines/pca.hpp"
 #include "routines/spe.hpp"
 #include "neighbors/neighbors.hpp"
+
+namespace tapkee
+{
+namespace tapkee_internal
+{
 
 std::string get_method_name(TAPKEE_METHOD m)
 {
@@ -41,6 +47,7 @@ std::string get_method_name(TAPKEE_METHOD m)
 		case PCA: return "Principal Component Analysis";
 		case KERNEL_PCA: return "Kernel Principal Component Analysis";
 		case STOCHASTIC_PROXIMITY_EMBEDDING: return "Stochastic Proximity Embedding";
+		case PASS_THRU: return "passing through";
 		default: return "Method name unknown (yes this is a bug)";
 	}
 }
@@ -77,7 +84,7 @@ CONCRETE_IMPLEMENTATION(KERNEL_LOCALLY_LINEAR_EMBEDDING)
 		Neighbors neighbors =
 			find_neighbors(neighbors_method,begin,end,kernel_callback,k);
 		SparseWeightMatrix weight_matrix =
-			klle_weight_matrix(begin,end,neighbors,kernel_callback,eigenshift);
+			linear_weight_matrix(begin,end,neighbors,kernel_callback,eigenshift);
 		return eigen_embedding<SparseWeightMatrix,InverseSparseMatrixOperation>(eigen_method,
 			weight_matrix,target_dimension,SKIP_ONE_EIGENVALUE);
 	}
@@ -99,7 +106,7 @@ CONCRETE_IMPLEMENTATION(KERNEL_LOCAL_TANGENT_SPACE_ALIGNMENT)
 		Neighbors neighbors = 
 			find_neighbors(neighbors_method,begin,end,kernel_callback,k);
 		SparseWeightMatrix weight_matrix = 
-			kltsa_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension,eigenshift);
+			tangent_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension,eigenshift);
 		return eigen_embedding<SparseWeightMatrix,InverseSparseMatrixOperation>(eigen_method,
 			weight_matrix,target_dimension,SKIP_ONE_EIGENVALUE);
 	}
@@ -141,7 +148,7 @@ CONCRETE_IMPLEMENTATION(MULTIDIMENSIONAL_SCALING)
 
 		timed_context context("Embeding with MDS");
 		DenseSymmetricMatrix distance_matrix = compute_distance_matrix(begin,end,distance_callback);
-		distance_matrix.centerMatrix();
+		centerMatrix(distance_matrix);
 		EmbeddingResult result = eigen_embedding<DenseSymmetricMatrix,
 				#ifdef TAPKEE_GPU
 						GPUDenseMatrixOperation
@@ -173,7 +180,7 @@ CONCRETE_IMPLEMENTATION(LANDMARK_MULTIDIMENSIONAL_SCALING)
 		DenseSymmetricMatrix distance_matrix = 
 			compute_distance_matrix(begin,landmarks,distance_callback);
 		DenseVector landmark_distances_squared = distance_matrix.colwise().mean();
-		distance_matrix.centerMatrix();
+		centerMatrix(distance_matrix);
 		EmbeddingResult landmarks_embedding = 
 			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
 					distance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
@@ -257,7 +264,7 @@ CONCRETE_IMPLEMENTATION(NEIGHBORHOOD_PRESERVING_EMBEDDING)
 		Neighbors neighbors = 
 			find_neighbors(neighbors_method,begin,end,kernel_callback,k);
 		SparseWeightMatrix weight_matrix = 
-			klle_weight_matrix(begin,end,neighbors,kernel_callback,eigenshift);
+			linear_weight_matrix(begin,end,neighbors,kernel_callback,eigenshift);
 		DenseSymmetricMatrixPair eig_matrices =
 			construct_neighborhood_preserving_eigenproblem(weight_matrix,begin,end,
 				feature_vector_callback,dimension);
@@ -284,7 +291,7 @@ CONCRETE_IMPLEMENTATION(HESSIAN_LOCALLY_LINEAR_EMBEDDING)
 		Neighbors neighbors =
 			find_neighbors(neighbors_method,begin,end,kernel_callback,k);
 		SparseWeightMatrix weight_matrix =
-			hlle_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension);
+			hessian_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension);
 		return eigen_embedding<SparseWeightMatrix,InverseSparseMatrixOperation>(eigen_method,
 			weight_matrix,target_dimension,SKIP_ONE_EIGENVALUE);
 	}
@@ -395,7 +402,7 @@ CONCRETE_IMPLEMENTATION(LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT)
 		Neighbors neighbors = 
 			find_neighbors(neighbors_method,begin,end,kernel_callback,k);
 		SparseWeightMatrix weight_matrix = 
-			kltsa_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension,eigenshift);
+			tangent_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension,eigenshift);
 		DenseSymmetricMatrixPair eig_matrices =
 			construct_lltsa_eigenproblem(weight_matrix,begin,end,
 				feature_vector_callback,dimension);
@@ -430,6 +437,27 @@ CONCRETE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING)
 	}
 };
 
+CONCRETE_IMPLEMENTATION(PASS_THRU)
+{
+	EmbeddingResult embed(RandomAccessIterator begin, RandomAccessIterator end,
+                          KernelCallback, DistanceCallback, FeatureVectorCallback feature_callback, 
+                          ParametersMap options)
+	{
+		OBTAIN_PARAMETER(unsigned int,dimension,CURRENT_DIMENSION);
+
+		DenseMatrix feature_matrix(dimension,(end-begin));
+		DenseVector feature_vector(dimension);
+		for (RandomAccessIterator iter=begin; iter!=end; ++iter)
+		{
+			feature_callback(*iter,feature_vector);
+			feature_matrix.col(iter-begin).array() = feature_vector;
+		}
+		return EmbeddingResult(feature_matrix.transpose(),DenseVector());
+	}
+};
+
+}
+}
 #undef CONCRETE_IMPLEMENTATION
 #undef OBTAIN_PARAMETER
 #undef SKIP_ONE_EIGENVALUE

@@ -10,14 +10,19 @@
 #ifndef TAPKEE_LOCALLY_LINEAR_H_
 #define TAPKEE_LOCALLY_LINEAR_H_
 
-#include "eigen_embedding.hpp"
-#include "../tapkee_defines.hpp"
+#include <routines/eigen_embedding.hpp>
+#include <tapkee_defines.hpp>
+
+namespace tapkee
+{
+namespace tapkee_internal
+{
 
 template <class RandomAccessIterator, class PairwiseCallback>
-SparseWeightMatrix kltsa_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
-                                       const Neighbors& neighbors, PairwiseCallback callback, 
-                                       unsigned int target_dimension, DefaultScalarType shift,
-                                       bool partial_eigendecomposer=false)
+SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+                                         const Neighbors& neighbors, PairwiseCallback callback, 
+                                         unsigned int target_dimension, DefaultScalarType shift,
+                                         bool partial_eigendecomposer=false)
 {
 	timed_context context("KLTSA weight matrix computation");
 	const unsigned int k = neighbors[0].size();
@@ -49,7 +54,7 @@ SparseWeightMatrix kltsa_weight_matrix(RandomAccessIterator begin, RandomAccessI
 			}
 		}
 		
-		gram_matrix.centerMatrix();
+		centerMatrix(gram_matrix);
 
 		UNRESTRICT_ALLOC;
 		if (partial_eigendecomposer)
@@ -82,8 +87,8 @@ SparseWeightMatrix kltsa_weight_matrix(RandomAccessIterator begin, RandomAccessI
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
-SparseWeightMatrix klle_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
-                                      const Neighbors& neighbors, PairwiseCallback callback, DefaultScalarType shift)
+SparseWeightMatrix linear_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+                                        const Neighbors& neighbors, PairwiseCallback callback, DefaultScalarType shift)
 {
 	timed_context context("KLLE weight computation");
 	const unsigned int k = neighbors[0].size();
@@ -99,7 +104,7 @@ SparseWeightMatrix klle_weight_matrix(RandomAccessIterator begin, RandomAccessIt
 	DenseVector weights;
 	
 	RESTRICT_ALLOC;
-	for (RandomAccessIterator iter=iter_begin; iter!=iter_end; ++iter)
+	for (iter=iter_begin; iter!=iter_end; ++iter)
 	{
 		DefaultScalarType kernel_value = callback(*iter,*iter);
 		const LocalNeighbors& current_neighbors = neighbors[iter-begin];
@@ -138,11 +143,12 @@ SparseWeightMatrix klle_weight_matrix(RandomAccessIterator begin, RandomAccessIt
 	return weight_matrix;
 }
 
-	template <class RandomAccessIterator, class PairwiseCallback>
-SparseWeightMatrix hlle_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
-                                      const Neighbors& neighbors, PairwiseCallback callback, unsigned int target_dimension)
+template <class RandomAccessIterator, class PairwiseCallback>
+SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+                                         const Neighbors& neighbors, PairwiseCallback callback, 
+                                         unsigned int target_dimension)
 {
-	timed_context context("KLTSA weight matrix computation");
+	timed_context context("Hessian weight matrix computation");
 	const unsigned int k = neighbors[0].size();
 
 	SparseTriplets sparse_triplets;
@@ -150,8 +156,9 @@ SparseWeightMatrix hlle_weight_matrix(RandomAccessIterator begin, RandomAccessIt
 
 	RandomAccessIterator iter_begin = begin, iter_end = end;
 	DenseMatrix gram_matrix = DenseMatrix::Zero(k,k);
-	DenseVector rhs = DenseVector::Ones(k);
-	DenseMatrix G = DenseMatrix::Zero(k,target_dimension+1);
+
+	unsigned int dp = target_dimension*(target_dimension+1)/2;
+	DenseMatrix Yi(k,1+target_dimension+dp);
 
 	RandomAccessIterator iter;
 	for (iter=iter_begin; iter!=iter_end; ++iter)
@@ -168,20 +175,49 @@ SparseWeightMatrix hlle_weight_matrix(RandomAccessIterator begin, RandomAccessIt
 			}
 		}
 		
+		centerMatrix(gram_matrix);
+		
 		DefaultDenseSelfAdjointEigenSolver sae_solver;
 		sae_solver.compute(gram_matrix);
 
-		G.col(0).setConstant(1/sqrt(DefaultScalarType(k)));
-		G.rightCols(target_dimension).noalias() = sae_solver.eigenvectors().rightCols(target_dimension);
-		gram_matrix = G * G.transpose();
+		Yi.col(0).setConstant(1.0);
+		Yi.block(0,1,k,target_dimension).noalias() = sae_solver.eigenvectors().rightCols(target_dimension);
+
+		unsigned int ct = 0;
+		for (unsigned int j=0; j<target_dimension; ++j)
+		{
+			for (unsigned int p=0; p<target_dimension-j; ++p)
+			{
+				Yi.col(ct+p+1+target_dimension).noalias() = Yi.col(j+1).cwiseProduct(Yi.col(j+p+1));
+			}
+			ct += ct + target_dimension - j;
+		}
 		
-		sparse_triplets.push_back(SparseTriplet(iter-begin,iter-begin,1e-8));
+		for (unsigned int i=0; i<Yi.cols(); i++)
+		{
+			for (unsigned int j=0; j<i; j++)
+			{
+				DefaultScalarType r = Yi.col(i).dot(Yi.col(j));
+				Yi.col(i) -= r*Yi.col(j);
+			}
+			DefaultScalarType norm = Yi.col(i).norm();
+			Yi.col(i) *= (1.f / norm);
+		}
+		for (unsigned int i=0; i<dp; i++)
+		{
+			DefaultScalarType colsum = Yi.col(1+target_dimension+i).sum();
+			if (colsum > 1e-4)
+				Yi.col(1+target_dimension+i).array() /= colsum;
+		}
+
+		// reuse gram matrix storage m'kay?
+		gram_matrix.noalias() = Yi.rightCols(dp)*(Yi.rightCols(dp).transpose());
+
 		for (unsigned int i=0; i<k; ++i)
 		{
-			sparse_triplets.push_back(SparseTriplet(current_neighbors[i],current_neighbors[i],1.0));
 			for (unsigned int j=0; j<k; ++j)
 				sparse_triplets.push_back(SparseTriplet(current_neighbors[i],current_neighbors[j],
-				                                        -gram_matrix(i,j)));
+				                                        gram_matrix(i,j)));
 		}
 	}
 
@@ -269,6 +305,9 @@ DenseSymmetricMatrixPair construct_lltsa_eigenproblem(SparseWeightMatrix W,
 	UNRESTRICT_ALLOC;
 
 	return DenseSymmetricMatrixPair(lhs,rhs);
+}
+
+}
 }
 
 #endif
