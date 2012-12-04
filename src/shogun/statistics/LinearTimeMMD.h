@@ -176,6 +176,8 @@ public:
 	virtual void compute_statistic_and_variance(float64_t& statistic,
 			float64_t& variance);
 
+	virtual SGVector<float64_t> compute_h_terms();
+
 	/** Mimics bootstrapping for the linear time MMD. However, samples are not
 	 * permutated but constantly streamed and then merged. Usually, this is not
 	 * necessary since there is the Gaussian approximation for the null
