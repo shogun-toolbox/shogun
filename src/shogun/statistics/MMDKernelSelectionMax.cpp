@@ -7,25 +7,25 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/statistics/MaxMMDKernelSelection.h>
+#include <shogun/statistics/MMDKernelSelectionMax.h>
 #include <shogun/statistics/KernelTwoSampleTestStatistic.h>
 
 using namespace shogun;
 
-CMaxMMDKernelSelection::CMaxMMDKernelSelection() : CMMDKernelSelection()
+CMMDKernelSelectionMax::CMMDKernelSelectionMax() : CMMDKernelSelection()
 {
 }
 
-CMaxMMDKernelSelection::CMaxMMDKernelSelection(
+CMMDKernelSelectionMax::CMMDKernelSelectionMax(
 		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelection(mmd)
 {
 }
 
-CMaxMMDKernelSelection::~CMaxMMDKernelSelection()
+CMMDKernelSelectionMax::~CMMDKernelSelectionMax()
 {
 }
 
-float64_t CMaxMMDKernelSelection::compute_measure(CKernel* kernel)
+float64_t CMMDKernelSelectionMax::compute_measure(CKernel* kernel)
 {
 	/* just return plain MMD */
 	m_mmd->set_kernel(kernel);

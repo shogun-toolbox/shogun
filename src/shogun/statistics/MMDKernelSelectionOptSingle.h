@@ -7,8 +7,8 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#ifndef __OPTIMALLINEARKERNELSELECTION_H_
-#define __OPTIMALLINEARKERNELSELECTION_H_
+#ifndef __MMDKERNELSELECTIONOPTSINGLE_H_
+#define __MMDKERNELSELECTIONOPTSINGLE_H_
 
 #include <shogun/statistics/MMDKernelSelection.h>
 
@@ -17,25 +17,27 @@ namespace shogun
 
 class CLinearTimeMMD;
 
-class COptimalLinearMMDKernelSelection: public CMMDKernelSelection
+class CMMDKernelSelectionOptSingle: public CMMDKernelSelection
 {
 public:
 
 	/** Default constructor */
-	COptimalLinearMMDKernelSelection();
+	CMMDKernelSelectionOptSingle();
 
-	/** Constructor that initialises the underlying MMD instance
+	/** Constructor that initialises the underlying MMD instance. Currently,
+	 * only the linear time MMD is developed
 	 *
-	 * @param linear time mmd MMD instance to use.
+	 * @param mmd MMD instance to use
 	 * @param lamda ridge that is added to standard deviation
 	 */
-	COptimalLinearMMDKernelSelection(CLinearTimeMMD* mmd, float64_t lambda);
+	CMMDKernelSelectionOptSingle(CKernelTwoSampleTestStatistic* mmd,
+			float64_t lambda);
 
 	/** Destructor */
-	virtual ~COptimalLinearMMDKernelSelection();
+	virtual ~CMMDKernelSelectionOptSingle();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "OptimalLinearMMDKernelSelection"; }
+	const char* get_name() const { return "MMDKernelSelectionOptSingle"; }
 
 protected:
 	virtual float64_t compute_measure(CKernel* kernel);
@@ -46,11 +48,10 @@ private:
 
 protected:
 	/** Ridge that is added to the denumerator of the ratio of MMD and its
-	 * standard deviation
-	 */
+	 * standard deviation */
 	float64_t m_lambda;
 };
 
 }
 
-#endif /* __OPTIMALLINEARKERNELSELECTION_H_ */
+#endif /* __MMDKERNELSELECTIONOPTSINGLE_H_ */

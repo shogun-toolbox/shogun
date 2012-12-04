@@ -7,33 +7,33 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#ifndef __MAXMMDKERNELSELECTION_H_
-#define __MAXMMDKERNELSELECTION_H_
+#ifndef __MMDKERNELSELECTIONMAXMMD_H_
+#define __MMDKERNELSELECTIONMAXMMD_H_
 
 #include <shogun/statistics/MMDKernelSelection.h>
 
 namespace shogun
 {
 
-class CMaxMMDKernelSelection: public CMMDKernelSelection
+class CMMDKernelSelectionMax: public CMMDKernelSelection
 {
 public:
 
 	/** Default constructor */
-	CMaxMMDKernelSelection();
+	CMMDKernelSelectionMax();
 
 	/** Constructor that initialises the underlying MMD instance
 	 *
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
 	 */
-	CMaxMMDKernelSelection(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelectionMax(CKernelTwoSampleTestStatistic* mmd);
 
 	/** Destructor */
-	virtual ~CMaxMMDKernelSelection();
+	virtual ~CMMDKernelSelectionMax();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MaxMMDKernelSelection"; }
+	const char* get_name() const { return "MMDKernelSelectionMax"; }
 
 protected:
 	virtual float64_t compute_measure(CKernel* kernel);
@@ -41,4 +41,4 @@ protected:
 
 }
 
-#endif /* __MAXMMDKERNELSELECTION_H_ */
+#endif /* __MMDKERNELSELECTIONMAXMMD_H_ */
