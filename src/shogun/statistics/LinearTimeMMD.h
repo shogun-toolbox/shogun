@@ -240,7 +240,6 @@ public:
 private:
 	void init();
 
-public:
 #ifdef HAVE_LAPACK
 	/** return pointer to i-th column of m_Q. Helper for libqp */
 	static const float64_t* get_Q_col(uint32_t i);
