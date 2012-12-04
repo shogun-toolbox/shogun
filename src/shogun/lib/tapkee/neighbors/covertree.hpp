@@ -1,7 +1,7 @@
 #ifndef COVERTREE_H_
 #define COVERTREE_H_
 
-#include "covertree_point.hpp"
+#include <neighbors/covertree_point.hpp>
 #include <cmath>
 #include <limits>
 #include <stdio.h>
@@ -30,6 +30,11 @@
 using std::swap;
 using std::min;
 using std::numeric_limits;
+
+namespace tapkee
+{
+namespace tapkee_internal
+{
 
 /**
  * Cover tree node TODO better doc
@@ -863,4 +868,7 @@ void unequal_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_no
 	batch_nearest_neighbor(dcb, top_node, query, results);
 }
 */
+
+}
+}
 #endif

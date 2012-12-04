@@ -89,6 +89,9 @@ class LoggingSingleton
 			return s;
 		}
 
+		LoggerImplementation* get_logger_impl() const { return impl; }
+		void set_logger_impl(LoggerImplementation* i) { delete impl; impl = i; }
+
 		LEVEL_HANDLERS(info);
 		LEVEL_HANDLERS(warning);
 		LEVEL_HANDLERS(error);
@@ -97,6 +100,9 @@ class LoggingSingleton
 };
 
 #undef LEVEL_HANDLERS
+#undef LEVEL_HANDLERS_DECLARATION
+#undef LEVEL_HANDLERS_DEFAULT_IMPL
 #undef LEVEL_ENABLED_FIELD
+#undef LEVEL_ENABLED_FIELD_INITIALIZER
 
 #endif

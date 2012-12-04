@@ -12,13 +12,18 @@
 #ifndef TAPKEE_NEIGHBORS_H_
 #define TAPKEE_NEIGHBORS_H_
 
-#include "covertree.hpp"
+#include <neighbors/covertree.hpp>
 #include <vector>
 #include <utility>
 #include <algorithm>
 
 using std::nth_element;
 using std::pair;
+
+namespace tapkee
+{
+namespace tapkee_internal
+{
 
 std::string get_neighbors_method_name(TAPKEE_NEIGHBORS_METHOD m)
 {
@@ -137,5 +142,8 @@ Neighbors find_neighbors(TAPKEE_NEIGHBORS_METHOD method, const RandomAccessItera
 	}
 	return Neighbors();
 };
+
+}
+}
 
 #endif

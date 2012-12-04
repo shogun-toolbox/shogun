@@ -10,7 +10,10 @@
 #ifndef TAPKEE_PCA_H_
 #define TAPKEE_PCA_H_
 
-#include "../utils/time.hpp"
+namespace tapkee
+{
+namespace tapkee_internal
+{
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
 EmbeddingResult project(const ProjectionResult& projection_result, RandomAccessIterator begin,
@@ -72,9 +75,12 @@ DenseSymmetricMatrix compute_centered_kernel_matrix(RandomAccessIterator begin, 
 		}
 	}
 
-	kernel_matrix.centerMatrix();
+	centerMatrix(kernel_matrix);
 
 	return kernel_matrix;
 };
+
+}
+}
 
 #endif

@@ -17,10 +17,15 @@
 #define TAPKEE_EIGEN_EMBEDDING_H_
 
 #ifndef TAPKEE_NO_ARPACK
-	#include "../utils/arpack_wrapper.hpp"
+	#include <utils/arpack_wrapper.hpp>
 #endif
-#include "matrix_operations.hpp"
-#include "../tapkee_defines.hpp"
+#include <routines/matrix_operations.hpp>
+#include <tapkee_defines.hpp>
+
+namespace tapkee
+{
+namespace tapkee_internal
+{
 
 std::string get_eigen_embedding_name(TAPKEE_EIGEN_EMBEDDING_METHOD m)
 {
@@ -32,9 +37,6 @@ std::string get_eigen_embedding_name(TAPKEE_EIGEN_EMBEDDING_METHOD m)
 		default: return "Unknown eigendecomposition method (yes it is a bug)";
 	}
 }
-
-namespace eigen_embedding_internal
-{
 
 //! Templated implementation of eigendecomposition-based embedding. 
 template <class MatrixType, class MatrixTypeOperation, int IMPLEMENTATION> 
@@ -170,8 +172,6 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, RANDOMIZED>
 	}
 };
 
-};
-
 //! Multiple implementation handler method for various eigendecomposition methods. 
 //!
 //! Has three template parameters:
@@ -209,19 +209,20 @@ EmbeddingResult eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method, const Matr
 	switch (method)
 	{
 		case ARPACK: 
-			return eigen_embedding_internal::
-				eigen_embedding_impl<MatrixType, MatrixTypeOperation, 
+			return eigen_embedding_impl<MatrixType, MatrixTypeOperation, 
 				ARPACK>().embed(m, target_dimension, skip);
 		case RANDOMIZED: 
-			return eigen_embedding_internal::
-				eigen_embedding_impl<MatrixType, MatrixTypeOperation,
+			return eigen_embedding_impl<MatrixType, MatrixTypeOperation,
 				RANDOMIZED>().embed(m, target_dimension, skip);
 		case EIGEN_DENSE_SELFADJOINT_SOLVER:
-			return eigen_embedding_internal::
-				eigen_embedding_impl<MatrixType, MatrixTypeOperation, 
+			return eigen_embedding_impl<MatrixType, MatrixTypeOperation, 
 				EIGEN_DENSE_SELFADJOINT_SOLVER>().embed(m, target_dimension, skip);
 		default: break;
 	}
 	return EmbeddingResult();
 };
+
+}
+}
+
 #endif

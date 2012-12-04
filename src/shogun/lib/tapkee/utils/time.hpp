@@ -12,7 +12,7 @@
 #include <ctime>
 #include <string>
 #include <sstream>
-#include "logging.hpp"
+#include <utils/logging.hpp>
 
 using std::string;
 using std::stringstream;

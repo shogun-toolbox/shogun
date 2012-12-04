@@ -11,6 +11,11 @@
 #ifndef TAPKEE_MATRIX_OPS_H_
 #define TAPKEE_MATRIX_OPS_H_
 
+namespace tapkee
+{
+namespace tapkee_internal
+{
+
 //! Matrix-matrix operation used to 
 //! compute smallest eigenvalues and 
 //! associated eigenvectors. Essentially
@@ -148,5 +153,8 @@ struct GPUDenseMatrixOperation
 };
 const char* GPUDenseMatrixOperation::ARPACK_CODE = "LM";
 #endif
+
+}
+}
 
 #endif

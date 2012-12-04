@@ -13,12 +13,13 @@
 #ifndef TAPKEE_DEFINES_H_
 #define TAPKEE_DEFINES_H_
 
-#include "utils/any.hpp"
-#include "utils/time.hpp"
-#include "utils/logging.hpp"
+#include <utils/any.hpp>
+#include <utils/time.hpp>
+#include <utils/logging.hpp>
 #include <map>
 #include <vector>
 #include <utility>
+#include <callbacks/traits.hpp>
 
 #ifdef TAPKEE_EIGEN_INCLUDE_FILE
 	#include TAPKEE_EIGEN_INCLUDE_FILE
@@ -27,12 +28,9 @@
 		#define EIGEN_NO_DEBUG
 	#endif
 	#define EIGEN_RUNTIME_NO_MALLOC
-	#define EIGEN_MATRIXBASE_PLUGIN "utils/matrix.hpp"
-	#define EIGEN_DONT_PARALLELIZE
 	#include <Eigen/Dense>
 	#include <Eigen/Sparse>
 	#include <Eigen/SparseCholesky>
-	//#include <eigen3/Eigen/SuperLUSupport>
 #endif
 
 #ifdef TAPKEE_GPU
@@ -49,6 +47,9 @@
 	#define RESTRICT_ALLOC
 	#define UNRESTRICT_ALLOC
 #endif
+
+namespace tapkee 
+{
 
 // Customizable types
 #ifdef TAPKEE_CUSTOM_INTERNAL_NUMTYPE
@@ -116,6 +117,7 @@ enum TAPKEE_METHOD
 	STOCHASTIC_PROXIMITY_EMBEDDING,
 	KERNEL_PCA,
 	PCA,
+	PASS_THRU,
 	UNKNOWN_METHOD
 };
 
@@ -166,7 +168,6 @@ typedef INTERNAL_PAIR<DenseSymmetricMatrix,DenseSymmetricMatrix> DenseSymmetricM
 #undef INTERNAL_VECTOR
 #undef INTERNAL_PAIR
 
-#include "callbacks/traits.hpp"
 
 struct ProjectingImplementation
 {
@@ -183,5 +184,7 @@ struct ProjectingFunction
 	}
 	ProjectingImplementation* implementation;
 };
+
+} // namespace tapkee
 
 #endif

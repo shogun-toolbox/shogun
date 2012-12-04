@@ -16,6 +16,11 @@
 
 using std::sqrt;
 
+namespace tapkee
+{
+namespace tapkee_internal
+{
+
 /** @brief Class v_array taken directly from JL's implementation */
 template<class T> 
 class v_array{
@@ -136,5 +141,8 @@ inline DefaultScalarType distance(const DistanceCallback& dcb, const CoverTreePo
 template <class RandomAccessIterator>
 void print(const CoverTreePoint<RandomAccessIterator>&)
 {
+}
+
+}
 }
 #endif /* _JL_COVERTREE_POINT_H_*/

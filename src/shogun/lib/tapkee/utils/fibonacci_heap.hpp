@@ -13,6 +13,11 @@
 
 #include <cmath>
 
+namespace tapkee
+{
+namespace tapkee_internal
+{
+
 struct FibonacciHeapNode
 {
 	FibonacciHeapNode() : parent(NULL), child(NULL), left(NULL), right(NULL),
@@ -446,4 +451,8 @@ protected:
 	/** size of supporting array */
 	int Dn;
 };
+
+}
+}
+
 #endif /* FIBONACCI_H_ */

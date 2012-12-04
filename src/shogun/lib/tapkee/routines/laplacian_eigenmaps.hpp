@@ -9,7 +9,12 @@
 
 #ifndef TAPKEE_LAPLACIAN_EIGENMAPS_H_
 #define TAPKEE_LAPLACIAN_EIGENMAPS_H_
-	
+
+namespace tapkee
+{
+namespace tapkee_internal
+{
+
 //! Computes laplacian of neighborhood graph.
 //!
 //! Follows the algorithm described below:
@@ -93,6 +98,9 @@ DenseSymmetricMatrixPair construct_locality_preserving_eigenproblem(SparseWeight
 	}
 
 	return DenseSymmetricMatrixPair(lhs,rhs);
+}
+
+}
 }
 
 #endif

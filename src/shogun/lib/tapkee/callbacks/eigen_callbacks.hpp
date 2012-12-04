@@ -19,12 +19,12 @@
 // vector to given DenseVector instance.
 struct feature_vector_callback
 {
-	feature_vector_callback(const DenseMatrix& matrix) : feature_matrix(matrix) {};
-	inline void operator()(int i, DenseVector& vector) const
+	feature_vector_callback(const tapkee::DenseMatrix& matrix) : feature_matrix(matrix) {};
+	inline void operator()(int i, tapkee::DenseVector& vector) const
 	{
 		vector = feature_matrix.col(i);
 	}
-	const DenseMatrix& feature_matrix;
+	const tapkee::DenseMatrix& feature_matrix;
 };
 
 // Kernel function callback that computes
@@ -33,12 +33,12 @@ struct feature_vector_callback
 // linear kernel i.e. dot product between two vectors.
 struct kernel_callback
 {
-	kernel_callback(const DenseMatrix& matrix) : feature_matrix(matrix) {};
-	inline DefaultScalarType operator()(int a, int b) const
+	kernel_callback(const tapkee::DenseMatrix& matrix) : feature_matrix(matrix) {};
+	inline tapkee::DefaultScalarType operator()(int a, int b) const
 	{
 		return feature_matrix.col(a).dot(feature_matrix.col(b));
 	}
-	const DenseMatrix& feature_matrix;
+	const tapkee::DenseMatrix& feature_matrix;
 };
 // That's mandatory to specify that kernel_callback
 // is a kernel (and it is good to know that it is linear).
@@ -50,12 +50,12 @@ TAPKEE_CALLBACK_IS_LINEAR_KERNEL(kernel_callback);
 // euclidean distance between two vectors.
 struct distance_callback
 {
-	distance_callback(const DenseMatrix& matrix) : feature_matrix(matrix) {};
-	inline DefaultScalarType operator()(int a, int b) const
+	distance_callback(const tapkee::DenseMatrix& matrix) : feature_matrix(matrix) {};
+	inline tapkee::DefaultScalarType operator()(int a, int b) const
 	{
 		return (feature_matrix.col(a)-feature_matrix.col(b)).norm();
 	}
-	const DenseMatrix& feature_matrix;
+	const tapkee::DenseMatrix& feature_matrix;
 };
 // That's mandatory to specify that distance_callback
 // is a distance

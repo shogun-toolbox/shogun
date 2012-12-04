@@ -10,10 +10,12 @@
 #ifndef TAPKEE_GENERALIZED_EIGEN_EMBEDDING_H_
 #define TAPKEE_GENERALIZED_EIGEN_EMBEDDING_H_
 
-#include "../utils/arpack_wrapper.hpp"
-#include "matrix_operations.hpp"
+#include <utils/arpack_wrapper.hpp>
+#include <routines/matrix_operations.hpp>
 
-namespace generalized_eigen_embedding_internal
+namespace tapkee
+{
+namespace tapkee_internal
 {
 
 //! Templated implementation of eigendecomposition-based embedding. 
@@ -62,8 +64,6 @@ struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOper
 	}
 };
 
-};
-
 //! Adapter method for various generalized eigendecomposition methods. Currently
 //! supports two methods:
 //! <ul>
@@ -78,12 +78,10 @@ EmbeddingResult generalized_eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method
 	switch (method)
 	{
 		case ARPACK: 
-			return generalized_eigen_embedding_internal::
-				generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOperation, 
+			return generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOperation, 
 				ARPACK>().embed(lhs, rhs, target_dimension, skip);
 		case EIGEN_DENSE_SELFADJOINT_SOLVER:
-			return generalized_eigen_embedding_internal::
-				generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOperation,
+			return generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOperation,
 				EIGEN_DENSE_SELFADJOINT_SOLVER>().embed(lhs, rhs, target_dimension, skip);
 		case RANDOMIZED:
 			// TODO fail here
@@ -92,4 +90,8 @@ EmbeddingResult generalized_eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method
 	}
 	return EmbeddingResult();
 };
+
+}
+}
+
 #endif

@@ -10,9 +10,6 @@
 #ifndef TAPKEE_SAMMON_H_
 #define TAPKEE_SAMMON_H_
 
-#include "../defines.hpp"
-#include "multidimensional_scaling.hpp"
-
 template <class RandomAccessIterator, class DistanceCallback>
 EmbeddingResult sammon_mapping(RandomAccessIterator begin, RandomAccessIterator end,
 		DistanceCallback callback,
