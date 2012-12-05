@@ -75,7 +75,7 @@ void CLinearTimeMMD::init()
 void CLinearTimeMMD::compute_statistic_and_variance(
 		float64_t& statistic, float64_t& variance)
 {
-	SG_DEBUG("entering CLinearTimeMMD::compute_statistic_and_variance()\n");
+	SG_DEBUG("entering %s::compute_statistic_and_variance()\n", get_name());
 
 	REQUIRE(m_streaming_p, "%s::compute_statistic_and_variance: streaming "
 			"features p required!\n", get_name());
@@ -173,7 +173,88 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 	variance=M2/(m_2-1)/m_2;
 	SG_DEBUG("variance: %f\n", variance);
 
-	SG_DEBUG("leaving CLinearTimeMMD::compute_statistic_and_variance()\n");
+	SG_DEBUG("leaving %s::compute_statistic_and_variance()\n", get_name());
+}
+
+SGVector<float64_t> CLinearTimeMMD::compute_h_terms()
+{
+	SG_DEBUG("entering %s::compute_h_terms()\n", get_name());
+
+	REQUIRE(m_streaming_p, "%s::compute_h_terms: streaming "
+			"features p required!\n", get_name());
+	REQUIRE(m_streaming_q, "%s::compute_h_terms: streaming "
+			"features q required!\n", get_name());
+
+	REQUIRE(m_kernel, "%s::compute_h_terms: kernel needed!\n",
+			get_name());
+
+	/* the method is basically the same as compute_variance_and_statistic(),
+	 * however, it does not sum up but rather store all terms for the MMD */
+
+	/* m is number of samples from each distribution, m_2 is half of it
+	 * using names from JLMR paper (see class documentation) */
+	index_t m_2=m_m/2;
+	SG_DEBUG("m_m=%d\n", m_m);
+
+	/* allocate space for result */
+	SGVector<float64_t> h(m_2);
+
+	/* these sums are needed to compute online statistic/variance */
+	index_t num_examples_processed=0;
+	while (num_examples_processed<m_2)
+	{
+		/* number of example to look at in this iteration */
+		index_t num_this_run=CMath::min(m_blocksize, m_2-num_examples_processed);
+		SG_DEBUG("processing %d more examples. %d so far processed. Blocksize "
+				"is %d\n", num_this_run, num_examples_processed, m_blocksize);
+
+		/* stream data from both distributions */
+		CFeatures* p1=m_streaming_p->get_streamed_features(num_this_run);
+		CFeatures* p2=m_streaming_p->get_streamed_features(num_this_run);
+		CFeatures* q1=m_streaming_q->get_streamed_features(num_this_run);
+		CFeatures* q2=m_streaming_q->get_streamed_features(num_this_run);
+		SG_REF(p1);
+		SG_REF(p2);
+		SG_REF(q1);
+		SG_REF(q2);
+
+		/* compute kernel matrix diagonals */
+		SG_DEBUG("processing kernel diagonal pp\n");
+		m_kernel->init(p1, p2);
+		SGVector<float64_t> pp=m_kernel->get_kernel_diagonal();
+
+		SG_DEBUG("processing kernel diagonal qq\n");
+		m_kernel->init(q1, q2);
+		SGVector<float64_t> qq=m_kernel->get_kernel_diagonal();
+
+		SG_DEBUG("processing kernel diagonal pq\n");
+		m_kernel->init(p1, q2);
+		SGVector<float64_t> pq=m_kernel->get_kernel_diagonal();
+
+		SG_DEBUG("processing kernel diagonal qp\n");
+		m_kernel->init(q1, p2);
+		SGVector<float64_t> qp=m_kernel->get_kernel_diagonal();
+
+		/* fill in processed part of h-term */
+		for (index_t i=0; i<pp.vlen; ++i)
+			h[num_examples_processed+i]=pp[i]+qq[i]-pq[i]-qp[i];
+
+		/* clean up */
+		SG_UNREF(p1);
+		SG_UNREF(p2);
+		SG_UNREF(q1);
+		SG_UNREF(q2);
+
+		/* add number of processed examples for this run */
+		num_examples_processed+=num_this_run;
+	}
+	SG_DEBUG("Done compouting h-terms, processed 2*%d examples.\n",
+			num_examples_processed);
+
+	SG_WARNING("%s::compute_h_terms(): Not yet tested!\n");
+
+	SG_DEBUG("leaving %s::compute_h_terms()\n", get_name());
+	return h;
 }
 
 float64_t CLinearTimeMMD::compute_statistic()

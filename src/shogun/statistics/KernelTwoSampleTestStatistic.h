@@ -64,6 +64,11 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 
 		virtual ~CKernelTwoSampleTestStatistic();
 
+		/** Setter for the underlying kernel
+		 * @param kernel new kernel to use
+		 */
+		void set_kernel(CKernel* kernel);
+
 		/** merges both sets of samples and computes the test statistic
 		 * m_bootstrap_iteration times. This version checks if a precomputed
 		 * custom kernel is used, and, if so, just permutes it instead of re-
