@@ -176,6 +176,8 @@ public:
 	virtual void compute_statistic_and_variance(float64_t& statistic,
 			float64_t& variance);
 
+	virtual SGVector<float64_t> compute_h_terms();
+
 	/** Mimics bootstrapping for the linear time MMD. However, samples are not
 	 * permutated but constantly streamed and then merged. Usually, this is not
 	 * necessary since there is the Gaussian approximation for the null
@@ -240,7 +242,6 @@ public:
 private:
 	void init();
 
-public:
 #ifdef HAVE_LAPACK
 	/** return pointer to i-th column of m_Q. Helper for libqp */
 	static const float64_t* get_Q_col(uint32_t i);

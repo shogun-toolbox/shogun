@@ -868,6 +868,20 @@ void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
 	combined_kernel_weight = weights.vector[0] ;
 }
 
+CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
+{
+	if (kernel)
+	{
+		CKernel* casted=dynamic_cast<CKernel*>(kernel);
+		REQUIRE(casted, "CKernel::obtain_from_generic(): Error, provided object"
+				" of class \"%s\" is not a subclass of CKernel!\n",
+				kernel->get_name());
+		return casted;
+	}
+	else
+		return NULL;
+}
+
 bool CKernel::init_optimization_svm(CSVM * svm)
 {
 	int32_t num_suppvec=svm->get_num_support_vectors();
