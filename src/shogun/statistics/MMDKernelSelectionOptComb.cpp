@@ -222,6 +222,4 @@ CKernel* CMMDKernelSelectionOptComb::select_kernel()
 			" optimal weight selection for combined kernels!\n", get_name());
 	return NULL;
 }
-
-}
 #endif
