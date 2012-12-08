@@ -780,6 +780,12 @@ class CKernel : public CSGObject
 		 * @return subkernel weights
 		 */
 		virtual const float64_t* get_subkernel_weights(int32_t& num_weights);
+		
+		/** get subkernel weights (swig compatible)
+		 *
+		 * @return subkernel weights
+		 */
+		virtual SGVector<float64_t> get_subkernel_weights();
 
 		/** set subkernel weights
 		 *
