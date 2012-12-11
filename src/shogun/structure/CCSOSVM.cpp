@@ -44,22 +44,22 @@ CCCSOSVM::~CCCSOSVM()
 
 }
 
-int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* alpha, int32_t k, float64_t* dual_obj, float64_t rho)
+int32_t CCCSOSVM::mosek_qp_optimize(float64_t* dual_obj, float64_t rho)
 {
 #ifdef USE_MOSEK
 	int32_t t;
-	index_t Q_size = k*(k+1)/2;
-	SGVector<float64_t> c(k);
+	index_t Q_size = m_size_active*(m_size_active+1)/2;
+	SGVector<float64_t> c(m_size_active);
 	MSKlidxt *aptrb;
 	MSKlidxt *aptre;
 	MSKidxt *asub;
-	SGVector<float64_t> aval(k);
+	SGVector<float64_t> aval(m_size_active);
 	MSKboundkeye bkc[1];
 	float64_t blc[1];
 	float64_t buc[1];
 	MSKboundkeye *bkx;
-	SGVector<float64_t> blx(k);
-	SGVector<float64_t> bux(k);
+	SGVector<float64_t> blx(m_size_active);
+	SGVector<float64_t> bux(m_size_active);
 	MSKidxt *qsubi,*qsubj;
 	SGVector<float64_t> qval(Q_size);
 
@@ -67,10 +67,10 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	MSKtask_t task;
 	MSKrescodee r;
 
-	aptrb = (MSKlidxt*) SG_MALLOC(MSKlidxt, k);
-	aptre = (MSKlidxt*) SG_MALLOC(MSKlidxt, k);
-	asub = (MSKidxt*) SG_MALLOC(MSKidxt, k);
-	bkx = (MSKboundkeye*) SG_MALLOC(MSKboundkeye, k);
+	aptrb = (MSKlidxt*) SG_MALLOC(MSKlidxt, m_size_active);
+	aptre = (MSKlidxt*) SG_MALLOC(MSKlidxt, m_size_active);
+	asub = (MSKidxt*) SG_MALLOC(MSKidxt, m_size_active);
+	bkx = (MSKboundkeye*) SG_MALLOC(MSKboundkeye, m_size_active);
 	qsubi = (MSKidxt*) SG_MALLOC(MSKidxt, Q_size);
 	qsubj = (MSKidxt*) SG_MALLOC(MSKidxt, Q_size);
 
@@ -92,9 +92,9 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	/* DEBUG */
 
 
-	for (int32_t i=0; i < k;i++)
+	for (int32_t i=0; i < m_size_active; i++)
 	{
-		c[i] = -delta[i];
+		c[i] = -m_delta[i];
 		aptrb[i] = i;
 		aptre[i] = i+1;
 		asub[i] = 0;
@@ -123,7 +123,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	if (r==MSK_RES_OK)
 	{
 		/* create the optimization task */
-		r = MSK_maketask(env,1,k,&task);
+		r = MSK_maketask(env,1,m_size_active,&task);
 
 		if (r==MSK_RES_OK)
 		{
@@ -132,8 +132,8 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 			if (r==MSK_RES_OK)
 			{
 				r = MSK_inputdata(task,
-						1,k,
-						1,k,
+						1,m_size_active,
+						1,m_size_active,
 						c,0.0,
 						aptrb,aptre,
 						asub,aval,
@@ -145,16 +145,16 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 			if (r==MSK_RES_OK) {
 				/* coefficients for the Gram matrix */
 				t = 0;
-				for (int32_t i=0;i<k;i++) {
+				for (int32_t i=0;i<m_size_active;i++) {
 					for (int32_t j=0;j<=i;j++) {
 						qsubi[t] = i;
 						qsubj[t] = j;
-						qval[t] = G[i][j]/(1+rho);
+						qval[t] = m_G[i][j]/(1+rho);
 						t++;
 					}
 				}
 
-				r = MSK_putqobj(task, k*(k+1)/2, qsubi,qsubj,qval);
+				r = MSK_putqobj(task, Q_size, qsubi,qsubj,qval);
 			}
 
 			/* DEBUG */
@@ -179,8 +179,8 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 						MSK_SOL_ITR,
 						MSK_SOL_ITEM_XX,
 						0,
-						k,
-						alpha);
+						m_size_active,
+						m_alpha);
 				/* output the objective value */
 				MSK_getprimalobj(task, MSK_SOL_ITR, dual_obj);
 			}
@@ -208,20 +208,13 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	if (data)
 		set_features(data);
 
-	SGVector<float64_t> alpha;
-	float64_t** G; /* Gram matrix */
-	DynArray<SGSparseVector<float64_t> > dXc; /* constraint matrix */
 	//	DOC **dXc; /* constraint matrix */
-	SGVector<float64_t> delta; /* rhs of constraints */
 	SGSparseVector<float64_t> new_constraint;
 	float64_t dual_obj, alphasum;
-	int32_t iter, size_active;
+	int32_t iter;
 	float64_t value;
-	SGVector<int32_t> idle; /* for cleaning up */
 	float64_t margin;
 	float64_t primal_obj;
-	SGVector<float64_t> proximal_rhs;
-	SGVector<float64_t> gammaG0;
 	float64_t min_rho = 0.001;
 	float64_t serious_counter=0;
 	float64_t rho = 1.0; /* temporarily set it to 1 first */
@@ -234,7 +227,6 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 	float64_t v_k;
 	float64_t obj_difference;
-	SGVector<float64_t> cut_error; // cut_error[i] = alpha_{k,i} at current center x_k
 	float64_t sigma_k;
 	float64_t m2 = 0.2;
 	float64_t m3 = 0.9;
@@ -252,8 +244,8 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	SGVector<float64_t> w_b = m_w.clone();
 
 	iter = 0;
-	size_active = 0;
-	G = NULL;
+	m_size_active = 0;
+	m_G = NULL;
 
 	new_constraint = find_cutting_plane(&margin);
 	value = margin - new_constraint.dense_dot(1.0, m_w.vector, m_w.vlen, 0);
@@ -263,19 +255,18 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	expected_descent = -primal_obj_b;
 	initial_primal_obj = primal_obj_b;
 
-	SG_INFO("Running CCCP inner loop solver: ");
-
 	while ((!suff_decrease_cond)&&(expected_descent<-m_eps)&&(iter<m_max_iter))
 	{
 		iter+=1;
-		size_active+=1;
+		m_size_active+=1;
 
 		SG_DEBUG("ITER %d\n", iter);
 		SG_PRINT(".");
 
 		/* add constraint */
-		dXc.resize_array(size_active);
-		dXc[size_active - 1] = new_constraint;
+		//m_dXc.resize_array(m_size_active);
+		m_dXc.resize(m_size_active);
+		m_dXc[m_size_active - 1] = new_constraint;
 		//		dXc[size_active - 1].add(new_constraint);
 		/*
 			 dXc = (DOC**)realloc(dXc, sizeof(DOC*)*size_active);
@@ -284,57 +275,57 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 			 dXc[size_active-1]->slackid = 1; // only one common slackid (one-slack)
 			 dXc[size_active-1]->costfactor = 1.0;
 			 */
-		delta.resize_vector(size_active);
-		delta[size_active-1] = margin;
-		alpha.resize_vector(size_active);
-		alpha[size_active-1] = 0.0;
-		idle.resize_vector(size_active);
-		idle[size_active-1] = 0;
+		m_delta.resize_vector(m_size_active);
+		m_delta[m_size_active-1] = margin;
+		m_alpha.resize_vector(m_size_active);
+		m_alpha[m_size_active-1] = 0.0;
+		m_idle.resize_vector(m_size_active);
+		m_idle[m_size_active-1] = 0;
 		/* proximal point */
-		proximal_rhs.resize_vector(size_active);
-		cut_error.resize_vector(size_active);
+		m_proximal_rhs.resize_vector(m_size_active);
+		m_cut_error.resize_vector(m_size_active);
 		// note g_i = - new_constraint
-		cut_error[size_active-1] = m_C*(new_constraint.dense_dot(1.0, w_b.vector, w_b.vlen, 0) - new_constraint.dense_dot(1.0, m_w.vector, m_w.vlen, 0));
-		cut_error[size_active-1] += (primal_obj_b - 0.5*w_b.dot(w_b.vector, w_b.vector, w_b.vlen));
-		cut_error[size_active-1] -= (primal_obj - 0.5*m_w.dot(m_w.vector, m_w.vector, m_w.vlen));
+		m_cut_error[m_size_active-1] = m_C*(new_constraint.dense_dot(1.0, w_b.vector, w_b.vlen, 0) - new_constraint.dense_dot(1.0, m_w.vector, m_w.vlen, 0));
+		m_cut_error[m_size_active-1] += (primal_obj_b - 0.5*w_b.dot(w_b.vector, w_b.vector, w_b.vlen));
+		m_cut_error[m_size_active-1] -= (primal_obj - 0.5*m_w.dot(m_w.vector, m_w.vector, m_w.vlen));
 
-		gammaG0.resize_vector(size_active);
+		m_gamma_G0.resize_vector(m_size_active);
 
 		/* update Gram matrix */
-		G = SG_REALLOC(float64_t*, G, size_active-1, size_active);
-		G[size_active - 1] = NULL;
-		for (index_t j=0; j < size_active;j++)
+		m_G = SG_REALLOC(float64_t*, m_G, m_size_active-1, m_size_active);
+		m_G[m_size_active - 1] = NULL;
+		for (index_t j=0; j < m_size_active;j++)
 		{
-			G[j] = SG_REALLOC(float64_t, G[j], size_active-1, size_active);
+			m_G[j] = SG_REALLOC(float64_t, m_G[j], m_size_active-1, m_size_active);
 		}
-		for (index_t j=0; j < size_active-1; j++)
+		for (index_t j=0; j < m_size_active-1; j++)
 		{
-			G[size_active-1][j] = dXc[size_active-1].sparse_dot(dXc[j]);
-			G[j][size_active-1] = G[size_active-1][j];
+			m_G[m_size_active-1][j] = m_dXc[m_size_active-1].sparse_dot(m_dXc[j]);
+			m_G[j][m_size_active-1] = m_G[m_size_active-1][j];
 		}
-		G[size_active-1][size_active-1] = dXc[size_active-1].sparse_dot(dXc[size_active-1]);
+		m_G[m_size_active-1][m_size_active-1] = m_dXc[m_size_active-1].sparse_dot(m_dXc[m_size_active-1]);
 
 		/* update gammaG0 */
 		if (null_step==1)
 		{
-			gammaG0[size_active-1] = dXc[size_active-1].dense_dot(1.0, w_b.vector, w_b.vlen, 0);
+			m_gamma_G0[m_size_active-1] = m_dXc[m_size_active-1].dense_dot(1.0, w_b.vector, w_b.vlen, 0);
 		}
 		else
 		{
-			for (index_t i = 0; i < size_active; i++)
-				gammaG0[i] = dXc[i].dense_dot(1.0, w_b.vector, w_b.vlen, 0);
+			for (index_t i = 0; i < m_size_active; i++)
+				m_gamma_G0[i] = m_dXc[i].dense_dot(1.0, w_b.vector, w_b.vlen, 0);
 		}
 
 		/* update proximal_rhs */
-		for (index_t i = 0; i < size_active; i++)
+		for (index_t i = 0; i < m_size_active; i++)
 		{
 			switch(m_qp_type)
 			{
 				case MOSEK:
-					proximal_rhs[i] = delta[i] - rho/(1+rho)*gammaG0[i];
+					m_proximal_rhs[i] = m_delta[i] - rho/(1+rho)*m_gamma_G0[i];
 					break;
 				case SVMLIGHT:
-					proximal_rhs[i] = (1+rho)*delta[i] - rho*gammaG0[i];
+					m_proximal_rhs[i] = (1+rho)*m_delta[i] - rho*m_gamma_G0[i];
 					break;
 				default:
 					SG_ERROR("Invalid QPType: %d\n", m_qp_type);
@@ -346,7 +337,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 			case MOSEK:
 				/* solve QP to update alpha */
 				dual_obj = 0;
-				mosek_qp_optimize(G, proximal_rhs.vector, alpha.vector, size_active, &dual_obj, rho);
+				mosek_qp_optimize(&dual_obj, rho);
 				break;
 			case SVMLIGHT:
 				/* TODO: port required functionality from the latest SVM^light into shogun
@@ -376,16 +367,16 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		/* END DEBUG */
 
 		m_w.zero();
-		for (index_t j = 0; j < size_active; j++)
+		for (index_t j = 0; j < m_size_active; j++)
 		{
-			if (alpha[j]>m_C*m_alpha_thrld)
+			if (m_alpha[j]>m_C*m_alpha_thrld)
 			{
 				// TODO: move this to SGVector
 				// basically it's vector[i]= scale*sparsevector[i]
-				for (index_t k = 0; k < dXc[j].num_feat_entries; k++)
+				for (index_t k = 0; k < m_dXc[j].num_feat_entries; k++)
 				{
-					index_t idx = dXc[j].features[k].feat_index;
-					m_w[idx] += alpha[j]/(1+rho)*dXc[j].features[k].entry;
+					index_t idx = m_dXc[j].features[k].feat_index;
+					m_w[idx] += m_alpha[j]/(1+rho)*m_dXc[j].features[k].entry;
 				}
 			}
 		}
@@ -394,8 +385,8 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		{
 			/* compute dual obj */
 			dual_obj = +0.5*(1+rho)*m_w.dot(m_w.vector, m_w.vector, m_w.vlen);
-			for (int32_t j=0;j<size_active;j++)
-				dual_obj -= proximal_rhs[j]/(1+rho)*alpha[j];
+			for (int32_t j=0;j<m_size_active;j++)
+				dual_obj -= m_proximal_rhs[j]/(1+rho)*m_alpha[j];
 		}
 
 		z_k_norm = CMath::sqrt(m_w.dot(m_w.vector, m_w.vector, m_w.vlen));
@@ -404,28 +395,28 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		/* detect if step size too small */
 		sigma_k = 0;
 		alphasum = 0;
-		for (index_t j = 0; j < size_active; j++)
+		for (index_t j = 0; j < m_size_active; j++)
 		{
-			sigma_k += alpha[j]*cut_error[j];
-			alphasum+=alpha[j];
+			sigma_k += m_alpha[j]*m_cut_error[j];
+			alphasum+=m_alpha[j];
 		}
 		sigma_k/=m_C;
 		gTd = -m_C*(new_constraint.dense_dot(1.0, m_w.vector, m_w.vlen, 0)
 				- new_constraint.dense_dot(1.0, w_b.vector, w_b.vlen, 0));
 
-		for (index_t j = 0; j < size_active; j++)
-			SG_DEBUG("alpha[%d]: %.8g, cut_error[%d]: %.8g\n", j, alpha[j], j, cut_error[j]);
+		for (index_t j = 0; j < m_size_active; j++)
+			SG_DEBUG("alpha[%d]: %.8g, cut_error[%d]: %.8g\n", j, m_alpha[j], j, m_cut_error[j]);
 		SG_DEBUG("sigma_k: %.8g\n", sigma_k);
 		SG_DEBUG("alphasum: %.8g\n", alphasum);
 		SG_DEBUG("g^T d: %.8g\n", gTd);
 
 		/* update cleanup information */
-		for (index_t j = 0; j < size_active; j++)
+		for (index_t j = 0; j < m_size_active; j++)
 		{
-			if (alpha[j]<m_alpha_thrld*m_C)
-				idle[j]++;
+			if (m_alpha[j]<m_alpha_thrld*m_C)
+				m_idle[j]++;
 			else
-				idle[j]=0;
+				m_idle[j]=0;
 		}
 
 		new_constraint = find_cutting_plane(&margin);
@@ -468,12 +459,12 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				SG_DEBUG("SERIOUS STEP\n");
 
 				/* update cut_error */
-				for (index_t i = 0; i < size_active; i++)
+				for (index_t i = 0; i < m_size_active; i++)
 				{
-					cut_error[i] -= (primal_obj_b - 0.5*w_b.dot(w_b.vector, w_b.vector, w_b.vlen));
-					cut_error[i] -= m_C*dXc[i].dense_dot(1.0, w_b.vector, w_b.vlen, 0);
-					cut_error[i] += (primal_obj - 0.5*m_w.dot(m_w, m_w, m_w.vlen));
-					cut_error[i] += m_C*dXc[i].dense_dot(1.0, m_w.vector, m_w.vlen, 0);
+					m_cut_error[i] -= (primal_obj_b - 0.5*w_b.dot(w_b.vector, w_b.vector, w_b.vlen));
+					m_cut_error[i] -= m_C*m_dXc[i].dense_dot(1.0, w_b.vector, w_b.vlen, 0);
+					m_cut_error[i] += (primal_obj - 0.5*m_w.dot(m_w, m_w, m_w.vlen));
+					m_cut_error[i] += m_C*m_dXc[i].dense_dot(1.0, m_w.vector, m_w.vlen, 0);
 				}
 				primal_obj_b = primal_obj;
 				/* copy w_b <- m_w */
@@ -497,7 +488,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		{ /* no sufficient decrease */
 			serious_counter--;
 
-			if ((cut_error[size_active-1]>m3*last_sigma_k)&&(CMath::abs(obj_difference)>last_z_k_norm+last_sigma_k))
+			if ((m_cut_error[m_size_active-1]>m3*last_sigma_k)&&(CMath::abs(obj_difference)>last_z_k_norm+last_sigma_k))
 			{
 				SG_DEBUG("NULL STEP: NS(ii) FAILS.\n");
 				rho = CMath::min(10*rho,m_max_rho);
@@ -517,16 +508,14 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		/* clean up */
 		if (iter % m_cleanup_check == 0)
 		{
-			size_active = resize_cleanup(size_active, idle, alpha, delta, gammaG0, proximal_rhs, &G, dXc, cut_error);
-			ASSERT(size_active == proximal_rhs.vlen);
+			resize_cleanup();
+			ASSERT(m_size_active == m_proximal_rhs.vlen);
 		}
 	} // end cutting plane while loop
 
-	SG_INFO(" Inner loop optimization finished.\n");
-
-	for (index_t j = 0; j < size_active; j++)
-		free(G[j]);
-	free(G);
+	for (index_t j = 0; j < m_size_active; j++)
+		free(m_G[j]);
+	free(m_G);
 
 	/* copy */
 	for (index_t i=0; i < m_model->get_dim(); i++)
@@ -591,85 +580,79 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	return cut_plane;
 }
 
-int32_t CCCSOSVM::resize_cleanup(int32_t size_active, SGVector<int32_t>& idle, SGVector<float64_t>&alpha,
-		SGVector<float64_t>& delta, SGVector<float64_t>& gammaG0,
-		SGVector<float64_t>& proximal_rhs, float64_t ***ptr_G,
-		DynArray<SGSparseVector<float64_t> >& dXc, SGVector<float64_t>& cut_error)
+void CCCSOSVM::resize_cleanup()
 {
 	int32_t i, j, new_size_active;
 	index_t k;
 
-	float64_t **G = *ptr_G;
-
 	i=0;
-	while ((i<size_active)&&(idle[i]<m_idle_iter))
+	while ((i<m_size_active)&&(m_idle[i]<m_idle_iter))
 		i++;
 
 	j=i;
-	while((j<size_active)&&(idle[j]>=m_idle_iter))
+	while((j<m_size_active)&&(m_idle[j]>=m_idle_iter))
 		j++;
 
-	while (j<size_active)
+	while (j<m_size_active)
 	{
 		/* copying */
-		alpha[i] = alpha[j];
-		delta[i] = delta[j];
-		gammaG0[i] = gammaG0[j];
-		cut_error[i] = cut_error[j];
+		m_alpha[i] = m_alpha[j];
+		m_delta[i] = m_delta[j];
+		m_gamma_G0[i] = m_gamma_G0[j];
+		m_cut_error[i] = m_cut_error[j];
 
-		free(G[i]);
-		G[i] = G[j];
-		G[j] = NULL;
+		free(m_G[i]);
+		m_G[i] = m_G[j];
+		m_G[j] = NULL;
 	//	free_example(dXc[i],0);
-		dXc[i] = dXc[j];
+		m_dXc[i] = m_dXc[j];
 //		dXc[j] = NULL;
 
 		i++;
 		j++;
-		while((j<size_active)&&(idle[j]>=m_idle_iter))
+		while((j<m_size_active)&&(m_idle[j]>=m_idle_iter))
 			j++;
 	}
-	for (k=i;k<size_active;k++)
+	for (k=i;k<m_size_active;k++)
 	{
-		if (G[k]!=NULL) free(G[k]);
+		if (m_G[k]!=NULL) free(m_G[k]);
 //		if (dXc[k].num_feat_entries > 0) SG_UNREF(dXc[k]);
 	}
 	new_size_active = i;
-	alpha.resize_vector(new_size_active);
-	delta.resize_vector(new_size_active);
-	gammaG0.resize_vector(new_size_active);
-	proximal_rhs.resize_vector(new_size_active);
-	G = SG_REALLOC(float64_t*, G, size_active, new_size_active);
-	dXc.resize_array(new_size_active);
-	cut_error.resize_vector(new_size_active);
+	m_alpha.resize_vector(new_size_active);
+	m_delta.resize_vector(new_size_active);
+	m_gamma_G0.resize_vector(new_size_active);
+	m_proximal_rhs.resize_vector(new_size_active);
+	m_G = SG_REALLOC(float64_t*, m_G, m_size_active, new_size_active);
+	m_dXc.resize(new_size_active);
+//	m_dXc.resize_array(new_size_active);
+	m_cut_error.resize_vector(new_size_active);
 
 	/* resize G and idle */
 	i=0;
-	while ((i<size_active)&&(idle[i]<m_idle_iter))
+	while ((i<m_size_active)&&(m_idle[i]<m_idle_iter))
 		i++;
 
 	j=i;
-	while((j<size_active)&&(idle[j]>=m_idle_iter))
+	while((j<m_size_active)&&(m_idle[j]>=m_idle_iter))
 		j++;
 
-	while (j<size_active)
+	while (j<m_size_active)
 	{
-		idle[i] = idle[j];
+		m_idle[i] = m_idle[j];
 		for (k=0;k<new_size_active;k++)
-			G[k][i] = G[k][j];
+			m_G[k][i] = m_G[k][j];
 
 		i++;
 		j++;
-		while((j<size_active)&&(idle[j]>=m_idle_iter))
+		while((j<m_size_active)&&(m_idle[j]>=m_idle_iter))
 			j++;
 	}
-	idle.resize_vector(new_size_active);
+	m_idle.resize_vector(new_size_active);
 	for (k=0;k<new_size_active;k++)
-		G[k] = SG_REALLOC(float64_t, G[k], size_active, new_size_active);
+		m_G[k] = SG_REALLOC(float64_t, m_G[k], m_size_active, new_size_active);
 
-	*ptr_G = G;
-
-	return new_size_active;
+	m_size_active = new_size_active;
 }
 
 void CCCSOSVM::init()

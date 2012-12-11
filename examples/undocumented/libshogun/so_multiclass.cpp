@@ -14,6 +14,7 @@
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <shogun/structure/CCSOSVM.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
@@ -112,9 +113,11 @@ int main(int argc, char ** argv)
 	// Create SO-SVM
 	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
 	CDualLibQPBMSOSVM* bundle = new CDualLibQPBMSOSVM(model, loss, labels, 1000);
+	CCCSOSVM* ccsosvm = new CCCSOSVM(model);
 	bundle->set_verbose(false);
 	SG_REF(sosvm);
 	SG_REF(bundle);
+	SG_REF(ccsosvm);
 
 	CTime start;
 	float64_t t1;
@@ -122,8 +125,11 @@ int main(int argc, char ** argv)
 	SG_SPRINT(">>>> PrimalMosekSOSVM trained in %9.4f\n", (t1 = start.cur_time_diff(false)));
 	bundle->train();
 	SG_SPRINT(">>>> BMRM trained in %9.4f\n", start.cur_time_diff(false)-t1);
+	ccsosvm->train();
+	SG_SPRINT(">>>> CCSOSVM trained in %9.4f\n", start.cur_time_diff(false)-t1);
 	CStructuredLabels* out = CStructuredLabels::obtain_from_generic(sosvm->apply());
 	CStructuredLabels* bout = CStructuredLabels::obtain_from_generic(bundle->apply());
+	CStructuredLabels* cout = CStructuredLabels::obtain_from_generic(ccsosvm->apply());
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
 	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
@@ -163,9 +169,10 @@ int main(int argc, char ** argv)
 	SG_REF(structured_evaluator);
 	SG_REF(multiclass_evaluator);
 
-	SG_SPRINT("SO-SVM: %5.2f%\n", 100.0*structured_evaluator->evaluate(out, labels));
-	SG_SPRINT("BMRM:   %5.2f%\n", 100.0*structured_evaluator->evaluate(bout, labels));
-	SG_SPRINT("MC:     %5.2f%\n", 100.0*multiclass_evaluator->evaluate(mout, mlabels));
+	SG_SPRINT("SO-SVM:\t\t%5.2f%\n", 100.0*structured_evaluator->evaluate(out, labels));
+	SG_SPRINT("BMRM:\t\t%5.2f%\n", 100.0*structured_evaluator->evaluate(bout, labels));
+	SG_SPRINT("CCSOSVM:\t%5.2f%\n", 100.0*structured_evaluator->evaluate(cout, labels));
+	SG_SPRINT("MC:\t\t%5.2f%\n", 100.0*multiclass_evaluator->evaluate(mout, mlabels));
 
 	// Free memory
 	SG_UNREF(multiclass_evaluator);
@@ -174,6 +181,8 @@ int main(int argc, char ** argv)
 	SG_UNREF(mc_svm);
 	SG_UNREF(bundle);
 	SG_UNREF(sosvm);
+	SG_UNREF(ccsosvm);
+	SG_UNREF(cout);
 	SG_UNREF(bout);
 	SG_UNREF(out);
 	exit_shogun();
