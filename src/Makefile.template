@@ -202,7 +202,7 @@ install-libshogun: $(TEMPLATE_TARGET)
 	rm -f $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB) $(DESTDIR)$(LIBDIR)/$(TEMPLATE_SONAME)
 	cd $(DESTDIR)$(LIBDIR) && ( ln -s $(TEMPLATE_TARGET) libshogun.$(EXT_LIB); \
 	ln -s $(TEMPLATE_TARGET) $(TEMPLATE_SONAME) )
-	-ldconfig
+	-ldconfig 2>&1 /dev/null
 
 install-python_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
