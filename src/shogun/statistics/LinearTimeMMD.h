@@ -189,51 +189,6 @@ public:
 	 */
 	virtual SGVector<float64_t> bootstrap_null();
 
-#ifdef HAVE_LAPACK
-	/** Selects optimal kernel weights (if the underlying kernel and features
-	 * are combined ones) using the ratio of the squared MMD by its standard
-	 * deviation as a criterion, i.e.
-	 * \f[
-	 * \frac{\text{MMD}_l^2[\mathcal{F},X,Y]}{\sigma_l}
-	 * \f]
-	 * where both expressions are estimated in linear time.
-	 * This comes down to solving a convex program which is quadratic in the
-	 * number of kernels.
-	 *
-	 * SHOGUN has to be compiled with LAPACK to make this available. See
-	 * set_opt* methods for optimization parameters.
-	 *
-	 * IMPORTANT: Kernel weights have to be learned on different data than is
-	 * used for testing/evaluation!
-	 */
-	virtual void optimize_kernel_weights();
-
-	/** Sets the max. number of iterations for optimizing kernel weights */
-	void set_opt_max_iterations(index_t opt_max_iterations)
-	{
-		m_opt_max_iterations=opt_max_iterations;
-	}
-
-	/** Sets the stopping criterion epsilon for optimizing kernel weights */
-	void set_opt_epsilon(float64_t opt_epsilon) {
-		m_opt_epsilon=opt_epsilon;
-	}
-
-	/** Sets the low cut for optimizing kernel weights (weight below are set
-	 * to zero */
-	void set_opt_low_cut(float64_t opt_low_cut)
-	{
-		m_opt_low_cut=opt_low_cut;
-	}
-
-	/** Sets regularization constant. This value is added on diagonal of
-	 * matrix for optimizing kernel weights */
-	void set_opt_regularization_eps(float64_t opt_regularization_eps)
-	{
-		m_opt_regularization_eps=opt_regularization_eps;
-	}
-#endif //HAVE_LAPACK
-
 	virtual const char* get_name() const
 	{
 		return "LinearTimeMMD";
@@ -241,14 +196,6 @@ public:
 
 private:
 	void init();
-
-#ifdef HAVE_LAPACK
-	/** return pointer to i-th column of m_Q. Helper for libqp */
-	static const float64_t* get_Q_col(uint32_t i);
-
-	/** helper functions that prints current state */
-	static void print_state(libqp_state_T state);
-#endif //HAVE_LAPACK
 
 protected:
 	/** Streaming feature objects that are used instead of merged samples */
@@ -259,23 +206,6 @@ protected:
 
 	/** Number of examples processed at once, i.e. in one burst */
 	index_t m_blocksize;
-
-#ifdef HAVE_LAPACK
-	/** maximum number of iterations of qp solver */
-	index_t m_opt_max_iterations;
-
-	/** stopping accuracy of qp solver */
-	float64_t m_opt_epsilon;
-
-	/** low cut for weights, if weights are under this value, are set to zero */
-	float64_t m_opt_low_cut;
-
-	/** regularization epsilon that is added to diagonal of Q matrix */
-	float64_t m_opt_regularization_eps;
-
-	/** matrix for selection of kernel weights (static because of libqp) */
-	static SGMatrix<float64_t> m_Q;
-#endif //HAVE_LAPACK
 
 };
 
