@@ -51,6 +51,22 @@ public:
 	 *
 	 * @return combined kernel with all underlying kernels and optimal weights
 	 */
+
+	/** Selects optimal kernel weights using the ratio of the squared MMD by its
+	 * standard deviation as a criterion, i.e.
+	 * \f[
+	 * \frac{\text{MMD}_l^2[\mathcal{F},X,Y]}{\sigma_l}
+	 * \f]
+	 * where both expressions are estimated in linear time.
+	 * This comes down to solving a convex program which is quadratic in the
+	 * number of kernels.
+	 *
+	 * SHOGUN has to be compiled with LAPACK to make this available. See
+	 * set_opt* methods for optimization parameters.
+	 *
+	 * IMPORTANT: Kernel weights have to be learned on different data than is
+	 * used for testing/evaluation!
+	 */
 	virtual CKernel* select_kernel();
 
 

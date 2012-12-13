@@ -57,9 +57,24 @@ SGVector<float64_t> CMMDKernelSelectionOptComb::compute_measures()
 
 void CMMDKernelSelectionOptComb::init()
 {
+//	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
+//			"iterations for qp solver", MS_NOT_AVAILABLE);
+//	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
+//			MS_NOT_AVAILABLE);
+//	SG_ADD(&m_opt_low_cut, "opt_low_cut", "Low cut value for optimization "
+//			"kernel weights", MS_NOT_AVAILABLE);
+//	SG_ADD(&m_opt_regularization_eps, "opt_regularization_eps", "Regularization"
+//			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
+	SG_WARNING("%s::init(): register parameters!\n", get_name());
+
 	/* set to a sensible standard value that proved to be useful in
 	 * experiments */
 	m_lambda=10E-5;
+
+	/* sensible values for optimization */
+	m_opt_max_iterations=10000;
+	m_opt_epsilon=10E-15;
+	m_opt_low_cut=10E-7;
 }
 
 #ifdef HAVE_LAPACK
