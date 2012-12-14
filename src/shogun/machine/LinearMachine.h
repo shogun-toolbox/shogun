@@ -74,49 +74,32 @@ class CLinearMachine : public CMachine
 		 *
 		 * @return weight vector
 		 */
-		virtual SGVector<float64_t> get_w() const
-		{
-			return w;
-		}
+		virtual SGVector<float64_t> get_w() const;
 
 		/** set w
 		 *
 		 * @param src_w new w
 		 */
-		virtual void set_w(const SGVector<float64_t> src_w)
-		{
-			w=src_w;
-		}
+		virtual void set_w(const SGVector<float64_t> src_w);
 
 		/** set bias
 		 *
 		 * @param b new bias
 		 */
-		virtual void set_bias(float64_t b)
-		{
-			bias=b;
-		}
+		virtual void set_bias(float64_t b);
 
 		/** get bias
 		 *
 		 * @return bias
 		 */
-		virtual float64_t get_bias()
-		{
-			return bias;
-		}
+		virtual float64_t get_bias();
 
 		/** set features
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(CDotFeatures* feat)
-		{
-			SG_REF(feat);
-			SG_UNREF(features);
-			features=feat;
-		}
-		
+		virtual void set_features(CDotFeatures* feat);
+
 		/** apply linear machine to data
 		 * for binary classification problem
 		 *
@@ -140,7 +123,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @return features
 		 */
-		virtual CDotFeatures* get_features() { SG_REF(features); return features; }
+		virtual CDotFeatures* get_features();
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
@@ -150,10 +133,7 @@ class CLinearMachine : public CMachine
 		virtual const char* get_name() const { return "LinearMachine"; }
 
 		/** clone */
-		virtual CMachine* clone()
-		{
-			return new CLinearMachine(this);
-		}
+		virtual CMachine* clone();
 
 	protected:
 
@@ -168,7 +148,7 @@ class CLinearMachine : public CMachine
 		 * Linear machines store the normal vector of the separating hyperplane
 		 * and therefore the model anyway
 		 */
-		virtual void store_model_features() {}
+		virtual void store_model_features();
 
 	private:
 

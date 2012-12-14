@@ -32,30 +32,21 @@ public:
     /** get name */
     virtual const char* get_name() const { return "BaseMulticlassMachine"; }
 
-	
 	/** get number of machines
 	 *
 	 * @return number of machines
 	 */
-	inline int32_t get_num_machines() const
-	{
-		return m_machines->get_num_elements();
-	}
+	int32_t get_num_machines() const;
 
 	/** get problem type */
-	virtual EProblemType get_machine_problem_type() const 
-	{
-		return PT_MULTICLASS;
-	}
-
+	virtual EProblemType get_machine_problem_type() const;
+	
 	/** check whether the labels is valid.
 	 *
 	 * @param lab the labels being checked, guaranteed to be non-NULL
 	 */
-	virtual bool is_label_valid(CLabels *lab) const
-	{
-		return lab->get_label_type() == LT_MULTICLASS;
-	}
+	virtual bool is_label_valid(CLabels *lab) const;
+
 protected:
 
 	/** machines */

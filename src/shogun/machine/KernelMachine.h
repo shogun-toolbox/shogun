@@ -282,13 +282,10 @@ class CKernelMachine : public CMachine
 		virtual void data_unlock();
 
 		/** @return whether machine supports locking */
-		virtual bool supports_locking() const { return true; }
+		virtual bool supports_locking() const;
 
 		/** clone */
-		virtual CMachine* clone()
-		{
-			return new CKernelMachine(this);
-		}
+		virtual CMachine* clone();
 
 	protected:
 

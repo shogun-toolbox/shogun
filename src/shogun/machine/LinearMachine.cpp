@@ -81,3 +81,46 @@ SGVector<float64_t> CLinearMachine::apply_get_outputs(CFeatures* data)
 	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);
 	return SGVector<float64_t>(out,num);
 }
+
+SGVector<float64_t> CLinearMachine::get_w() const
+{
+	return w;
+}
+
+void CLinearMachine::set_w(const SGVector<float64_t> src_w)
+{
+	w=src_w;
+}
+
+void CLinearMachine::set_bias(float64_t b)
+{
+	bias=b;
+}
+
+float64_t CLinearMachine::get_bias()
+{
+	return bias;
+}
+
+void CLinearMachine::set_features(CDotFeatures* feat)
+{
+	SG_REF(feat);
+	SG_UNREF(features);
+	features=feat;
+}
+
+CDotFeatures* CLinearMachine::get_features() 
+{
+	SG_REF(features);
+	return features;
+}
+
+CMachine* CLinearMachine::clone()
+{
+	return new CLinearMachine(this);
+}
+
+void CLinearMachine::store_model_features()
+{
+}
+

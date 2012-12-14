@@ -23,3 +23,19 @@ CBaseMulticlassMachine::~CBaseMulticlassMachine()
 {
 	SG_UNREF(m_machines);
 }
+
+int32_t CBaseMulticlassMachine::get_num_machines() const
+{
+	return m_machines->get_num_elements();
+}
+
+EProblemType CBaseMulticlassMachine::get_machine_problem_type() const
+{
+	return PT_MULTICLASS;
+}
+
+bool CBaseMulticlassMachine::is_label_valid(CLabels *lab) const
+{
+	return lab->get_label_type() == LT_MULTICLASS;
+}
+

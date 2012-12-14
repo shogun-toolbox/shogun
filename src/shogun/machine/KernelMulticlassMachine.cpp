@@ -79,3 +79,107 @@ void CKernelMulticlassMachine::store_model_features()
 	SG_UNREF(lhs);
 	SG_UNREF(rhs);
 }
+
+CKernelMulticlassMachine::CKernelMulticlassMachine() : CMulticlassMachine(), m_kernel(NULL)
+{
+	SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", MS_AVAILABLE);
+}
+
+/** standard constructor
+ * @param strategy multiclass strategy
+ * @param kernel kernel
+ * @param machine kernel machine
+ * @param labs labels
+ */
+CKernelMulticlassMachine::CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs) :
+	CMulticlassMachine(strategy,(CMachine*)machine,labs), m_kernel(NULL)
+{
+	set_kernel(kernel);
+	SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", MS_AVAILABLE);
+}
+
+/** destructor */
+CKernelMulticlassMachine::~CKernelMulticlassMachine()
+{
+	SG_UNREF(m_kernel);
+}
+
+/** set kernel
+ *
+ * @param k kernel
+ */
+void CKernelMulticlassMachine::set_kernel(CKernel* k)
+{
+	((CKernelMachine*)m_machine)->set_kernel(k);
+	SG_REF(k);
+	SG_UNREF(m_kernel);
+	m_kernel=k;
+}
+
+CKernel* CKernelMulticlassMachine::get_kernel()
+{
+	SG_REF(m_kernel);
+	return m_kernel;
+}
+
+bool CKernelMulticlassMachine::init_machine_for_train(CFeatures* data)
+{
+	if (data)
+		m_kernel->init(data,data);
+
+	((CKernelMachine*)m_machine)->set_kernel(m_kernel);
+
+	return true;
+}
+
+bool CKernelMulticlassMachine::init_machines_for_apply(CFeatures* data)
+{
+	if (data)
+	{
+		/* set data to rhs for this kernel */
+		CFeatures* lhs=m_kernel->get_lhs();
+		m_kernel->init(lhs, data);
+		SG_UNREF(lhs);
+	}
+
+	/* set kernel to all sub-machines */
+	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	{
+		CKernelMachine *machine=
+				(CKernelMachine*)m_machines->get_element(i);
+		machine->set_kernel(m_kernel);
+		SG_UNREF(machine);
+	}
+
+	return true;
+}
+
+bool CKernelMulticlassMachine::is_ready()
+{
+	if (m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
+			return true;
+
+	return false;
+}
+
+CMachine* CKernelMulticlassMachine::get_machine_from_trained(CMachine* machine)
+{
+	return new CKernelMachine((CKernelMachine*)machine);
+}
+
+int32_t CKernelMulticlassMachine::get_num_rhs_vectors()
+{
+	return m_kernel->get_num_vec_rhs();
+}
+
+void CKernelMulticlassMachine::add_machine_subset(SGVector<index_t> subset)
+{
+	SG_NOTIMPLEMENTED;
+}
+
+void CKernelMulticlassMachine::remove_machine_subset()
+{
+	SG_NOTIMPLEMENTED;
+}
+
+

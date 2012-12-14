@@ -700,3 +700,14 @@ void CKernelMachine::init()
 	);
 	m_parameter_map->finalize_map();
 }
+
+CMachine* CKernelMachine::clone()
+{
+	return new CKernelMachine(this);
+}
+
+bool CKernelMachine::supports_locking() const
+{
+	return true;
+}
+

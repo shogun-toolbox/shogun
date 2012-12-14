@@ -36,24 +36,21 @@ class CDistanceMachine : public CMachine
 	public:
 		/** default constructor */
 		CDistanceMachine();
+
+		/** destructor */
 		virtual ~CDistanceMachine();
 
 		/** set distance
 		 *
 		 * @param d distance to set
 		 */
-		inline void set_distance(CDistance* d)
-		{
-			SG_UNREF(distance);
-			SG_REF(d);
-			distance=d;
-		}
+		void set_distance(CDistance* d);
 
 		/** get distance
 		 *
 		 * @return distance
 		 */
-		inline CDistance* get_distance() { SG_REF(distance); return distance; }
+		CDistance* get_distance() const;
 
 		/**
 		 * get distance functions for lhs feature vectors
@@ -112,11 +109,7 @@ class CDistanceMachine : public CMachine
 		 * cluster centers are in lhs of distance variable, it is unimplemented
 		 * here and HAS to be implemented in subclasses.
 		 */
-		virtual void store_model_features()
-		{
-			SG_ERROR("store_model_features not yet implemented for %s!\n",
-					get_name());
-		}
+		virtual void store_model_features();
 
 		/**
 		 * pthread function for compute distance values

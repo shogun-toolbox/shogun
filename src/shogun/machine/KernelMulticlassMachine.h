@@ -29,10 +29,7 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 {
 	public:
 		/** default constructor  */
-		CKernelMulticlassMachine() : CMulticlassMachine(), m_kernel(NULL)
-		{
-			SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", MS_AVAILABLE);
-		}
+		CKernelMulticlassMachine();
 
 		/** standard constructor
 		 * @param strategy multiclass strategy
@@ -40,18 +37,10 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 * @param machine kernel machine
 		 * @param labs labels
 		 */
-		CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs) :
-			CMulticlassMachine(strategy,(CMachine*)machine,labs), m_kernel(NULL)
-		{
-			set_kernel(kernel);
-			SG_ADD((CSGObject**)&m_kernel,"kernel", "The kernel to be used", MS_AVAILABLE);
-		}
+		CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CKernelMachine* machine, CLabels* labs);
 
 		/** destructor */
-		virtual ~CKernelMulticlassMachine()
-		{
-			SG_UNREF(m_kernel);
-		}
+		virtual ~CKernelMulticlassMachine();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -63,23 +52,13 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @param k kernel
 		 */
-		void set_kernel(CKernel* k)
-		{
-			((CKernelMachine*)m_machine)->set_kernel(k);
-			SG_REF(k);
-			SG_UNREF(m_kernel);
-			m_kernel=k;
-		}
+		void set_kernel(CKernel* k);
 
 		/** get kernel
 		 *
 		 * @return kernel
 		 */
-		CKernel* get_kernel()
-		{
-			SG_REF(m_kernel);
-			return m_kernel;
-		}
+		CKernel* get_kernel();
 
 		/** Stores feature data of underlying model.
 		 *
@@ -92,74 +71,28 @@ class CKernelMulticlassMachine : public CMulticlassMachine
 	protected:
 
 		/** init machine for training with kernel init */
-		virtual bool init_machine_for_train(CFeatures* data)
-		{
-			if (data)
-				m_kernel->init(data,data);
-
-			((CKernelMachine*)m_machine)->set_kernel(m_kernel);
-
-			return true;
-		}
+		virtual bool init_machine_for_train(CFeatures* data);
 
 		/** init machines for applying with kernel init */
-		virtual bool init_machines_for_apply(CFeatures* data)
-		{
-			if (data)
-			{
-				/* set data to rhs for this kernel */
-				CFeatures* lhs=m_kernel->get_lhs();
-				m_kernel->init(lhs, data);
-				SG_UNREF(lhs);
-			}
-
-			/* set kernel to all sub-machines */
-			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
-			{
-				CKernelMachine *machine=
-						(CKernelMachine*)m_machines->get_element(i);
-				machine->set_kernel(m_kernel);
-				SG_UNREF(machine);
-			}
-
-			return true;
-		}
+		virtual bool init_machines_for_apply(CFeatures* data);
 
 		/** check kernel availability */
-		virtual bool is_ready()
-		{
-			if (m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
-					return true;
-
-			return false;
-		}
+		virtual bool is_ready();
 
 		/** construct kernel machine from given kernel machine */
-		virtual CMachine* get_machine_from_trained(CMachine* machine)
-		{
-			return new CKernelMachine((CKernelMachine*)machine);
-		}
+		virtual CMachine* get_machine_from_trained(CMachine* machine);
 
 		/** return number of rhs feature vectors */
-		virtual int32_t get_num_rhs_vectors()
-		{
-			return m_kernel->get_num_vec_rhs();
-		}
+		virtual int32_t get_num_rhs_vectors();
 
 		/** set subset to the features of the machine, deletes old one
 		 *
 		 * @param subset subset indices to set
 		 */
-		virtual void add_machine_subset(SGVector<index_t> subset)
-		{
-			SG_NOTIMPLEMENTED;
-		}
+		virtual void add_machine_subset(SGVector<index_t> subset);
 
 		/** deletes any subset set to the features of the machine */
-		virtual void remove_machine_subset()
-		{
-			SG_NOTIMPLEMENTED;
-		}
+		virtual void remove_machine_subset();
 
 	protected:
 

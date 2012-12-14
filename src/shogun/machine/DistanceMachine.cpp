@@ -258,3 +258,23 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 	/* implicit cast */
 	return best_index;
 }
+
+void CDistanceMachine::set_distance(CDistance* d)
+{
+	SG_UNREF(distance);
+	SG_REF(d);
+	distance=d;
+}
+
+CDistance* CDistanceMachine::get_distance() const
+{
+	SG_REF(distance);
+	return distance;
+}
+
+void CDistanceMachine::store_model_features()
+{
+	SG_ERROR("store_model_features not yet implemented for %s!\n",
+	         get_name());
+}
+
