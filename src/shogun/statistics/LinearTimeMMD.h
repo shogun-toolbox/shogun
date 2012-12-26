@@ -199,15 +199,6 @@ public:
 	virtual void compute_statistic_and_Q(
 			SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q);
 
-//	/** Computes h-terms of whose mean is the MMD and whos variance is computed
-//	 * in compute_variance_estimate(). Note that these are stored in memory, so
-//	 * in contrast to compute_statistic_and_variance() and
-//	 * compute_variance_estimate(), this method has space costs linear in the
-//	 * number of processed samples. The method is needed for optimising
-//	 * weights of convex kernel combinations.
-//	 */
-//	virtual SGVector<float64_t> compute_h_terms(bool multiple_kernels=false);
-
 	/** Mimics bootstrapping for the linear time MMD. However, samples are not
 	 * permutated but constantly streamed and then merged. Usually, this is not
 	 * necessary since there is the Gaussian approximation for the null
