@@ -192,12 +192,13 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 	mmd->set_bootstrap_iterations(100); // speed up
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 	float64_t bootstrap_variance=CStatistics::variance(null_samples);
-	float64_t statistic, estimated_variance;
+	SGVector<float64_t> statistic;
+	SGVector<float64_t> estimated_variance;
 
 	/* it is also possible to compute these separately, but this only requires
 	 * one loop and values are connected */
 	mmd->compute_statistic_and_variance(statistic, estimated_variance);
-	float64_t variance_error=CMath::abs(bootstrap_variance-estimated_variance);
+	float64_t variance_error=CMath::abs(bootstrap_variance-estimated_variance[0]);
 
 	/* start parser of streaming features */
 	gen_p->end_parser();
@@ -205,10 +206,10 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 
 	/* assert that variances error is less than 10E-5 of statistic */
 	SG_SPRINT("null distribution variance: %f\n", bootstrap_variance);
-	SG_SPRINT("estimated variance: %f\n", estimated_variance);
-	SG_SPRINT("linear mmd itself: %f\n", statistic);
+	SG_SPRINT("estimated variance: %f\n", estimated_variance[0]);
+	SG_SPRINT("linear mmd itself: %f\n", statistic[0]);
 	SG_SPRINT("variance error: %f\n", variance_error);
-	SG_SPRINT("error/statistic: %f\n", variance_error/statistic);
+	SG_SPRINT("error/statistic: %f\n", variance_error/statistic[0]);
 //	ASSERT(variance_error/statistic<10E-5);
 
 	SG_UNREF(mmd);
