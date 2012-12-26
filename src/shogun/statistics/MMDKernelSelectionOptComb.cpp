@@ -113,7 +113,8 @@ CKernel* CMMDKernelSelectionOptComb::select_kernel()
 
 		/* compute h-terms for current kernel */
 		m_mmd->set_kernel(current);
-		SGVector<float64_t> h=((CLinearTimeMMD*)m_mmd)->compute_h_terms();
+//		SGVector<float64_t> h=((CLinearTimeMMD*)m_mmd)->compute_h_terms();
+		SGVector<float64_t> h(num_kernels);
 
 		/* copy vector wise to H matrix */
 		memcpy(&H(0, count), h.vector, h.vlen*sizeof(float64_t));
