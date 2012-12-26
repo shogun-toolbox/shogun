@@ -61,7 +61,6 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		SGVector<float64_t>& statistic, SGVector<float64_t>& variance,
 		bool multiple_kernels)
 {
-	SG_WARNING("CLinearTimeMMD::compute_statistic_and_variance() is not tested!\n");
 	SG_DEBUG("entering %s::compute_statistic_and_variance()\n", get_name());
 
 	REQUIRE(m_streaming_p, "%s::compute_statistic_and_variance: streaming "
@@ -179,8 +178,6 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 			if (multiple_kernels)
 			{
 				SG_UNREF(kernel);
-
-				/* safe since the number of iterations are from combined kernel */
 				kernel=((CCombinedKernel*)m_kernel)->get_next_kernel();
 			}
 		}
@@ -228,7 +225,7 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 			get_name());
 
 	/* make sure multiple_kernels flag is used only with a combined kernel */
-	REQUIRE(!m_kernel->get_kernel_type()==K_COMBINED,
+	REQUIRE(m_kernel->get_kernel_type()==K_COMBINED,
 			"%s::compute_statistic_and_Q: underlying kernel is not of "
 			"type K_COMBINED\n", get_name());
 
@@ -271,13 +268,26 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 	statistic.zero();
 	Q.zero();
 
+	/* produce two kernel lists to iterate doubly nested */
+	CList* list_i=new CList();
+	CList* list_j=new CList();
+	CKernel* kernel=combined->get_first_kernel();
+	while (kernel)
+	{
+		list_i->append_element(kernel);
+		list_j->append_element(kernel);
+		SG_UNREF(kernel);
+		kernel=((CCombinedKernel*)m_kernel)->get_next_kernel();
+	}
+
 	index_t num_examples_processed=0;
 	index_t term_counter_Q=1;
 	index_t term_counter_statistic=1;
 	while (num_examples_processed<m_4)
 	{
 		/* number of example to look at in this iteration */
-		index_t num_this_run=CMath::min(m_blocksize, m_4-num_examples_processed);
+		index_t num_this_run=CMath::min(m_blocksize,
+				CMath::max(0, m_4-num_examples_processed));
 		SG_DEBUG("processing %d more examples. %d so far processed. Blocksize "
 				"is %d\n", num_this_run, num_examples_processed, m_blocksize);
 
@@ -302,36 +312,22 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 		/* now for each of these streamed data instances, iterate through all
 		 * kernels and update Q matrix while also computing MMD statistic */
 
-		/* produce two kernel lists to iterate doubly nested */
-		CList* list_i=new CList();
-		CList* list_j=new CList();
-		CKernel* kernel=combined->get_first_kernel();
-		for (index_t i=0; i<num_kernels; ++i)
-		{
-			list_i->append_element(kernel);
-			list_j->append_element(kernel);
-
-			SG_UNREF(kernel);
-			kernel=((CCombinedKernel*)m_kernel)->get_next_kernel();
-		}
-
-		/* iterate through all kernel pairs for current data */
-		CKernel* kernel_i=(CKernel*)list_i->get_first_element();
-		CKernel* kernel_j=(CKernel*)list_j->get_first_element();
 
 		/* preallocate some memory for faster processing */
 		SGVector<float64_t> pp(num_this_run);
 		SGVector<float64_t> qq(num_this_run);
 		SGVector<float64_t> pq(num_this_run);
 		SGVector<float64_t> qp(num_this_run);
-		SGVector<float64_t> h_i_a;
-		SGVector<float64_t> h_i_b;
-		SGVector<float64_t> h_j_a;
-		SGVector<float64_t> h_j_b;
+		SGVector<float64_t> h_i_a(num_this_run);
+		SGVector<float64_t> h_i_b(num_this_run);
+		SGVector<float64_t> h_j_a(num_this_run);
+		SGVector<float64_t> h_j_b(num_this_run);
 
 		/* iterate through Q matrix and update values, compute mmd */
-		for (index_t i=0; i<num_kernels; ++i)
+		CKernel* kernel_i=(CKernel*)list_i->get_first_element();
+		for (index_t i=0; i<num_kernels-1; ++i)
 		{
+
 			/* compute all necessary 8 h-vectors for this burst.
 			 * h_delta-terms for each kernel, expression 7 of NIPS paper
 			 * first kernel */
@@ -360,7 +356,8 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 			for (index_t it=0; it<num_this_run; ++it)
 				h_i_b[it]=pp[it]+qq[it]-pq[it]-qp[it];
 
-			for (index_t j=0; j<num_kernels; ++j)
+			CKernel* kernel_j=(CKernel*)list_j->get_first_element();
+			for (index_t j=0; j<num_kernels-1; ++j)
 			{
 				/* compute all necessary 8 h-vectors for this burst.
 				 * h_delta-terms for each kernel, expression 7 of NIPS paper
@@ -398,11 +395,10 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 				/* update covariance element for the current burst. This is a
 				 * running average of the product of the h_delta terms of each
 				 * kernel */
-				for (index_t it=0; it<num_this_run; ++i)
+				for (index_t it=0; it<num_this_run; ++it)
 					Q(i,j)=Q(i,j)+(term[it]-Q(i,j)/term_counter_Q++);
 
 				/* next kernel j */
-				SG_UNREF(kernel_j);
 				kernel_j=(CKernel*)list_j->get_next_element();
 			}
 
@@ -424,13 +420,8 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 			}
 
 			/* next kernel i */
-			SG_UNREF(kernel_i);
 			kernel_i=(CKernel*)list_i->get_next_element();
 		}
-
-		/* clean up */
-		SG_UNREF(list_i);
-		SG_UNREF(list_j);
 
 		/* clean up streamed data */
 		SG_UNREF(p1a);
@@ -445,6 +436,11 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 		/* add number of processed examples for this run */
 		num_examples_processed+=num_this_run;
 	}
+
+	/* clean up */
+	SG_UNREF(list_i);
+	SG_UNREF(list_j);
+
 	SG_DEBUG("Done compouting statistic, processed 4*%d examples.\n",
 			num_examples_processed);
 
