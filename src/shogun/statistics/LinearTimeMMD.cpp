@@ -270,7 +270,8 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 	Q.zero();
 
 	index_t num_examples_processed=0;
-	index_t term_counter=1;
+	index_t term_counter_Q=1;
+	index_t term_counter_statistic=1;
 	while (num_examples_processed<m_4)
 	{
 		/* number of example to look at in this iteration */
@@ -329,34 +330,39 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 		/* iterate through Q matrix and update values, compute mmd */
 		for (index_t i=0; i<num_kernels; ++i)
 		{
+			/* compute all necessary 8 h-vectors for this burst.
+			 * h_delta-terms for each kernel, expression 7 of NIPS paper
+			 * first kernel */
+
+			/* first kernel, a-part */
+			kernel_i->init(p1a, p2a);
+			pp=kernel_i->get_kernel_diagonal(pp);
+			kernel_i->init(q1a, q2a);
+			qq=kernel_i->get_kernel_diagonal(qq);
+			kernel_i->init(p1a, q2a);
+			pq=kernel_i->get_kernel_diagonal(pq);
+			kernel_i->init(q1a, p2a);
+			qp=kernel_i->get_kernel_diagonal(qp);
+			for (index_t it=0; it<num_this_run; ++it)
+				h_i_a[it]=pp[it]+qq[it]-pq[it]-qp[it];
+
+			/* first kernel, b-part */
+			kernel_i->init(p1b, p2b);
+			pp=kernel_i->get_kernel_diagonal(pp);
+			kernel_i->init(q1b, q2b);
+			qq=kernel_i->get_kernel_diagonal(qq);
+			kernel_i->init(p1b, q2b);
+			pq=kernel_i->get_kernel_diagonal(pq);
+			kernel_i->init(q1b, p2b);
+			qp=kernel_i->get_kernel_diagonal(qp);
+			for (index_t it=0; it<num_this_run; ++it)
+				h_i_b[it]=pp[it]+qq[it]-pq[it]-qp[it];
+
 			for (index_t j=0; j<num_kernels; ++j)
 			{
 				/* compute all necessary 8 h-vectors for this burst.
-				 * h_delta-terms for each kernel, expression 7 of NIPS paper */
-
-				/* first kernel, a-part */
-				kernel_i->init(p1a, p2a);
-				pp=kernel_i->get_kernel_diagonal(pp);
-				kernel_i->init(q1a, q2a);
-				qq=kernel_i->get_kernel_diagonal(qq);
-				kernel_i->init(p1a, q2a);
-				pq=kernel_i->get_kernel_diagonal(pq);
-				kernel_i->init(q1a, p2a);
-				qp=kernel_i->get_kernel_diagonal(qp);
-				for (index_t it=0; it<num_this_run; ++it)
-					h_i_a[it]=pp[it]+qq[it]-pq[it]-qp[it];
-
-				/* first kernel, b-part */
-				kernel_i->init(p1b, p2b);
-				pp=kernel_i->get_kernel_diagonal(pp);
-				kernel_i->init(q1b, q2b);
-				qq=kernel_i->get_kernel_diagonal(qq);
-				kernel_i->init(p1b, q2b);
-				pq=kernel_i->get_kernel_diagonal(pq);
-				kernel_i->init(q1b, p2b);
-				qp=kernel_i->get_kernel_diagonal(qp);
-				for (index_t it=0; it<num_this_run; ++it)
-					h_i_b[it]=pp[it]+qq[it]-pq[it]-qp[it];
+				 * h_delta-terms for each kernel, expression 7 of NIPS paper
+				 * second kernel */
 
 				/* second kernel, a-part */
 				kernel_j->init(p1a, p2a);
@@ -388,18 +394,32 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 					term[it]=(h_i_a[it]-h_i_b[it])*(h_j_a[it]-h_j_b[it]);
 
 				/* update covariance element for the current burst. This is a
-				 * runnung average of the product of the h_delta terms of each
+				 * running average of the product of the h_delta terms of each
 				 * kernel */
 				for (index_t it=0; it<num_this_run; ++i)
-					Q(i,j)=Q(i,j)+(term[it]-Q(i,j)/term_counter);
+					Q(i,j)=Q(i,j)+(term[it]-Q(i,j)/term_counter_Q++);
 
 				/* next kernel j */
 				SG_UNREF(kernel_j);
 				kernel_j=(CKernel*)list_j->get_next_element();
 			}
 
-			/* online update of mmd statistic */
-//			statistic[i]=statistic[i]+(h-statistic[i])/(i+1);
+			/* update MMD statistic online computation for kernel i, using
+			 * vectors that were computed above */
+			SGVector<float64_t> h(num_this_run*2);
+			for (index_t it=0; it<num_this_run; ++it)
+			{
+				/* update statistic for kernel i (outer loop) and update using
+				 * all elements of the h_i_a, h_i_b vectors (iterate over it) */
+				statistic[i]=statistic[i]+
+						(h_i_a[it]-statistic[i])/term_counter_statistic;
+
+				/* Make sure to use all data, i.e. part a and b */
+				statistic[i]=statistic[i]+
+						(h_i_b[it]-statistic[i])/(term_counter_statistic+1);
+
+				term_counter_statistic+=2;
+			}
 
 			/* next kernel i */
 			SG_UNREF(kernel_i);
@@ -422,7 +442,6 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 
 		/* add number of processed examples for this run */
 		num_examples_processed+=num_this_run;
-		term_counter++;
 	}
 	SG_DEBUG("Done compouting statistic, processed 4*%d examples.\n",
 			num_examples_processed);
