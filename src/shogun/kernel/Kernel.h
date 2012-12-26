@@ -250,7 +250,7 @@ class CKernel : public CSGObject
 		 * @param preallocated vector with space for results
 		 */
 		SGVector<float64_t> get_kernel_diagonal(SGVector<float64_t>
-				preallocated=SGVector<float64_t>(0))
+				preallocated=SGVector<float64_t>())
 		{
 			REQUIRE(lhs, "CKernel::get_kernel_diagonal(): Left-handside "
 					"features missing!\n");
