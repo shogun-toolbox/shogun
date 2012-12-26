@@ -61,6 +61,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		SGVector<float64_t>& statistic, SGVector<float64_t>& variance,
 		bool multiple_kernels)
 {
+	SG_WARNING("CLinearTimeMMD::compute_statistic_and_variance() is not tested!\n");
 	SG_DEBUG("entering %s::compute_statistic_and_variance()\n", get_name());
 
 	REQUIRE(m_streaming_p, "%s::compute_statistic_and_variance: streaming "
@@ -215,6 +216,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 void CLinearTimeMMD::compute_statistic_and_Q(
 		SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q)
 {
+	SG_WARNING("CLinearTimeMMD::compute_statistic_and_Q() is not tested!\n");
 	SG_DEBUG("entering %s::compute_statistic_and_Q()\n", get_name());
 
 	REQUIRE(m_streaming_p, "%s::compute_statistic_and_Q: streaming "
