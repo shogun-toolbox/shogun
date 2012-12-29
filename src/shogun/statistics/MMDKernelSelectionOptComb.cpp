@@ -71,10 +71,12 @@ void CMMDKernelSelectionOptComb::init()
 	 * experiments */
 	m_lambda=10E-5;
 
+#ifdef HAVE_LAPACK
 	/* sensible values for optimization */
 	m_opt_max_iterations=10000;
 	m_opt_epsilon=10E-15;
 	m_opt_low_cut=10E-7;
+#endif
 }
 
 #ifdef HAVE_LAPACK
