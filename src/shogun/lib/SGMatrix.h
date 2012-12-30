@@ -111,6 +111,9 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** fill matrix with zeros */
 		void zero();
 
+		/** returns the maximum single element of the matrix */
+		T max_single();
+
 		/** clone matrix */
 		SGMatrix<T> clone();
 

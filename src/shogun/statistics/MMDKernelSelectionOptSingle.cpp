@@ -9,6 +9,7 @@
 
 #include <shogun/statistics/MMDKernelSelectionOptSingle.h>
 #include <shogun/statistics/LinearTimeMMD.h>
+#include <shogun/kernel/CombinedKernel.h>
 
 using namespace shogun;
 
@@ -36,18 +37,32 @@ CMMDKernelSelectionOptSingle::~CMMDKernelSelectionOptSingle()
 {
 }
 
-float64_t CMMDKernelSelectionOptSingle::compute_measure(CKernel* kernel)
+SGVector<float64_t> CMMDKernelSelectionOptSingle::compute_measures()
 {
-	/* compute MMD and its standard deviation estimate on given kernel */
-	m_mmd->set_kernel(kernel);
+	/* create combined kernel to compute mmds on */
+	CCombinedKernel* combined=new CCombinedKernel();
+	CKernel* current=(CCombinedKernel*)m_kernel_list->get_first_element();
+	while(current)
+	{
+		combined->append_kernel(current);
+		SG_UNREF(current);
+		current=(CCombinedKernel*)m_kernel_list->get_next_element();
+	}
+
+	/* comnpute mmd on all subkernels of combined kernel. This is done in order
+	 * to compute the mmds all on the same data */
+	m_mmd->set_kernel(combined);
+	SGVector<float64_t> mmds;
+	SGVector<float64_t> vars;
+	((CLinearTimeMMD*)m_mmd)->compute_statistic_and_variance(mmds, vars, true);
 
 	/* we know that the underlying MMD is linear time version, cast is safe */
-	float64_t statistic;
-	float64_t variance;
-	((CLinearTimeMMD*)m_mmd)->compute_statistic_and_variance(statistic,
-			variance);
+	SGVector<float64_t> measures(mmds.vlen);
 
-	return statistic/(CMath::sqrt(variance)+m_lambda);
+	for (index_t i=0; i<measures.vlen; ++i)
+		measures[i]=mmds[i]/(vars[i]+m_lambda);
+
+	return measures;
 }
 
 void CMMDKernelSelectionOptSingle::init()

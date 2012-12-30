@@ -10,6 +10,7 @@
 #include <shogun/base/init.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
@@ -192,12 +193,13 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 	mmd->set_bootstrap_iterations(100); // speed up
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 	float64_t bootstrap_variance=CStatistics::variance(null_samples);
-	float64_t statistic, estimated_variance;
+	SGVector<float64_t> statistic;
+	SGVector<float64_t> estimated_variance;
 
 	/* it is also possible to compute these separately, but this only requires
 	 * one loop and values are connected */
 	mmd->compute_statistic_and_variance(statistic, estimated_variance);
-	float64_t variance_error=CMath::abs(bootstrap_variance-estimated_variance);
+	float64_t variance_error=CMath::abs(bootstrap_variance-estimated_variance[0]);
 
 	/* start parser of streaming features */
 	gen_p->end_parser();
@@ -205,10 +207,10 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 
 	/* assert that variances error is less than 10E-5 of statistic */
 	SG_SPRINT("null distribution variance: %f\n", bootstrap_variance);
-	SG_SPRINT("estimated variance: %f\n", estimated_variance);
-	SG_SPRINT("linear mmd itself: %f\n", statistic);
+	SG_SPRINT("estimated variance: %f\n", estimated_variance[0]);
+	SG_SPRINT("linear mmd itself: %f\n", statistic[0]);
 	SG_SPRINT("variance error: %f\n", variance_error);
-	SG_SPRINT("error/statistic: %f\n", variance_error/statistic);
+	SG_SPRINT("error/statistic: %f\n", variance_error/statistic[0]);
 //	ASSERT(variance_error/statistic<10E-5);
 
 	SG_UNREF(mmd);
@@ -257,6 +259,127 @@ void test_linear_mmd_type2_error()
 	SG_UNREF(mmd);
 }
 
+void test_linear_mmd_statistic_and_Q_fixed()
+{
+	index_t m=8;
+	index_t d=3;
+	SGMatrix<float64_t> data(d,2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	/* normalise data to get some reasonable values for Q matrix */
+	float64_t max_p=data_p.max_single();
+	float64_t max_q=data_q.max_single();
+
+	SG_SPRINT("%f, %f\n", max_p, max_q);
+
+	for (index_t i=0; i<d*m; ++i)
+	{
+		data_p.matrix[i]/=max_p;
+		data_q.matrix[i]/=max_q;
+	}
+
+	data_p.display_matrix("data_p");
+	data_q.display_matrix("data_q");
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p_1=
+			new CStreamingDenseFeatures<float64_t>(features_p);
+	CStreamingFeatures* streaming_q_1=
+			new CStreamingDenseFeatures<float64_t>(features_q);
+	CStreamingFeatures* streaming_p_2=
+			new CStreamingDenseFeatures<float64_t>(features_p);
+	CStreamingFeatures* streaming_q_2=
+			new CStreamingDenseFeatures<float64_t>(features_q);
+
+	/* create combined kernel with values 2^5 to 2^7 */
+	CCombinedKernel* kernel=new CCombinedKernel();
+	for (index_t i=5; i<=7; ++i)
+	{
+		/* shoguns kernel width is different */
+		float64_t sigma=CMath::pow(2, i);
+		float64_t sq_sigma_twice=sigma*sigma*2;
+		kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
+	}
+
+	/* create MMD instance */
+	CLinearTimeMMD* mmd_1=new CLinearTimeMMD(kernel, streaming_p_1,
+			streaming_q_1, m);
+	CLinearTimeMMD* mmd_2=new CLinearTimeMMD(kernel, streaming_p_2,
+			streaming_q_2, m);
+
+	/* results only equal if blocksize is larger than number of samples (other-
+	 * wise, samples are processed in a different combination). In practice,
+	 * just use some large value */
+	mmd_1->set_blocksize(m);
+	mmd_2->set_blocksize(m);
+
+	/* start streaming features parser */
+	streaming_p_1->start_parser();
+	streaming_q_1->start_parser();
+	streaming_p_2->start_parser();
+	streaming_q_2->start_parser();
+
+	/* test method */
+	SGVector<float64_t> mmds_1;
+	SGMatrix<float64_t> Q;
+	mmd_1->compute_statistic_and_Q(mmds_1, Q);
+	SGVector<float64_t> mmds_2=mmd_2->compute_statistic(true);
+
+	/* display results */
+	Q.display_matrix("Q");
+	mmds_1.display_vector("mmds_1");
+	mmds_2.display_vector("mmds_2");
+
+	/* assert that both MMD methods give the same results */
+	ASSERT(mmds_1.vlen==mmds_2.vlen);
+	for (index_t i=0; i<mmds_1.vlen; ++i)
+		ASSERT(mmds_1[i]==mmds_2[i]);
+
+	/* assert actual result against fixed MATLAB code */
+//	1.0e-03 *
+//	   0.156085264965383
+//	   0.039043151854851
+//	   0.009762153067083
+	ASSERT(CMath::abs(mmds_1[0]-0.000156085264965383)<10E-18);
+	ASSERT(CMath::abs(mmds_1[1]-0.000039043151854851)<10E-18);
+	ASSERT(CMath::abs(mmds_1[2]-0.000009762153067083)<10E-18);
+
+	/* assert correctness of Q matrix */
+//	   1.0e-07 *
+//	   0.403271337407935   0.100876370041104   0.025222752103390
+//	   0.100876370041104   0.025233734937354   0.006309349164329
+//	   0.025222752103390   0.006309349164329   0.001577566181822
+	ASSERT(CMath::abs(Q(0,0)-0.403271337407935E-7)<10E-22);
+	ASSERT(CMath::abs(Q(1,0)-0.100876370041104E-7)<10E-22);
+	ASSERT(CMath::abs(Q(2,0)-0.025222752103390E-7)<10E-22);
+	ASSERT(CMath::abs(Q(0,1)-0.100876370041104E-7)<10E-22);
+	ASSERT(CMath::abs(Q(1,1)-0.025233734937354E-7)<10E-22);
+	ASSERT(CMath::abs(Q(2,1)-0.006309349164329E-7)<10E-22);
+	ASSERT(CMath::abs(Q(0,2)-0.025222752103390E-7)<10E-22);
+	ASSERT(CMath::abs(Q(1,2)-0.006309349164329E-7)<10E-22);
+	ASSERT(CMath::abs(Q(2,2)-0.001577566181822E-7)<10E-22);
+
+	/* start streaming features parser */
+	streaming_p_1->end_parser();
+	streaming_q_1->end_parser();
+	streaming_p_2->end_parser();
+	streaming_q_2->end_parser();
+
+	SG_UNREF(mmd_1);
+	SG_UNREF(mmd_2);
+}
+
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
@@ -271,6 +394,7 @@ int main(int argc, char** argv)
 	test_linear_mmd_variance_estimate();
 	test_linear_mmd_variance_estimate_vs_bootstrap();
 	test_linear_mmd_type2_error();
+	test_linear_mmd_statistic_and_Q_fixed();
 
 	exit_shogun();
 	return 0;
