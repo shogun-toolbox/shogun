@@ -115,12 +115,17 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 	statistic.zero();
 	variance.zero();
 
+	/* needed for online mean and variance */
+	SGVector<index_t> term_counters(num_kernels);
+	term_counters.set_const(1);
+
+	/* term counter to compute online mean and variance */
 	index_t num_examples_processed=0;
-	index_t term_counter=1;
 	while (num_examples_processed<m_2)
 	{
 		/* number of example to look at in this iteration */
-		index_t num_this_run=CMath::min(m_blocksize, m_2-num_examples_processed);
+		index_t num_this_run=CMath::min(m_blocksize,
+				CMath::max(0, m_2-num_examples_processed));
 		SG_DEBUG("processing %d more examples. %d so far processed. Blocksize "
 				"is %d\n", num_this_run, num_examples_processed, m_blocksize);
 
@@ -141,6 +146,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		if (multiple_kernels)
 			kernel=((CCombinedKernel*)m_kernel)->get_first_kernel();
 
+		/* iterate through all kernels for this data */
 		for (index_t i=0; i<num_kernels; ++i)
 		{
 			/* compute kernel matrix diagonals */
@@ -161,19 +167,18 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 			 * C.f. for example Wikipedia */
 			for (index_t j=0; j<num_this_run; ++j)
 			{
-				/* compute sum of current h terms for current kernel*/
+				/* compute sum of current h terms for current kernel */
 				current=pp[j]+qq[j]-pq[j]-qp[j];
 
 				/* D. Knuth's online variance algorithm for current kernel */
 				delta=current-statistic[i];
-				statistic[i]=statistic[i]+delta/term_counter++;
-				variance[i]=variance[i]+delta*(current-statistic[i]);
+				statistic[i]+=delta/term_counters[i]++;
+				variance[i]+=delta*(current-statistic[i]);
 
-				SG_DEBUG("burst: current=%f, delta=%f, statistic=%f, M2=%f, "
-						"kernel_idx=%d\n", current, delta, statistic[i],
-						variance[i], i);
+				SG_DEBUG("burst: current=%f, delta=%f, statistic=%f, "
+						"variance=%f, kernel_idx=%d\n", current, delta,
+						statistic[i], variance[i], i);
 			}
-
 			/* if multiple kernels should be computed, set next kernel */
 			if (multiple_kernels)
 			{
@@ -280,9 +285,13 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 		kernel=((CCombinedKernel*)m_kernel)->get_next_kernel();
 	}
 
+	/* needed for online mean and variance */
+	SGVector<index_t> term_counters_statistic(num_kernels);
+	SGMatrix<index_t> term_counters_Q(num_kernels, num_kernels);
+	term_counters_statistic.set_const(1);
+	term_counters_Q.set_const(1);
+
 	index_t num_examples_processed=0;
-	index_t term_counter_Q=1;
-	index_t term_counter_statistic=1;
 	while (num_examples_processed<m_4)
 	{
 		/* number of example to look at in this iteration */
@@ -325,9 +334,8 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 
 		/* iterate through Q matrix and update values, compute mmd */
 		CKernel* kernel_i=(CKernel*)list_i->get_first_element();
-		for (index_t i=0; i<num_kernels-1; ++i)
+		for (index_t i=0; i<num_kernels; ++i)
 		{
-
 			/* compute all necessary 8 h-vectors for this burst.
 			 * h_delta-terms for each kernel, expression 7 of NIPS paper
 			 * first kernel */
@@ -356,8 +364,10 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 			for (index_t it=0; it<num_this_run; ++it)
 				h_i_b[it]=pp[it]+qq[it]-pq[it]-qp[it];
 
+			/* iterate through j, but use symmetry in order to save half of the
+			 * computations */
 			CKernel* kernel_j=(CKernel*)list_j->get_first_element();
-			for (index_t j=0; j<num_kernels-1; ++j)
+			for (index_t j=0; j<=i; ++j)
 			{
 				/* compute all necessary 8 h-vectors for this burst.
 				 * h_delta-terms for each kernel, expression 7 of NIPS paper
@@ -387,16 +397,20 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 				for (index_t it=0; it<num_this_run; ++it)
 					h_j_b[it]=pp[it]+qq[it]-pq[it]-qp[it];
 
-				/* current term, expression 7 of NIPS paper */
-				SGVector<float64_t> term(num_this_run);
+				float64_t term;
 				for (index_t it=0; it<num_this_run; ++it)
-					term[it]=(h_i_a[it]-h_i_b[it])*(h_j_a[it]-h_j_b[it]);
+				{
+					/* current term of expression 7 of NIPS paper */
+					term=(h_i_a[it]-h_i_b[it])*(h_j_a[it]-h_j_b[it]);
 
-				/* update covariance element for the current burst. This is a
-				 * running average of the product of the h_delta terms of each
-				 * kernel */
-				for (index_t it=0; it<num_this_run; ++it)
-					Q(i,j)=Q(i,j)+(term[it]-Q(i,j)/term_counter_Q++);
+					/* update covariance element for the current burst. This is a
+					 * running average of the product of the h_delta terms of each
+					 * kernel */
+					Q(i, j)+=(term-Q(i, j))/term_counters_Q(i, j)++;
+				}
+
+				/* use symmetry */
+				Q(j, i)=Q(i, j);
 
 				/* next kernel j */
 				kernel_j=(CKernel*)list_j->get_next_element();
@@ -410,13 +424,11 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 				/* update statistic for kernel i (outer loop) and update using
 				 * all elements of the h_i_a, h_i_b vectors (iterate over it) */
 				statistic[i]=statistic[i]+
-						(h_i_a[it]-statistic[i])/term_counter_statistic;
+						(h_i_a[it]-statistic[i])/term_counters_statistic[i]++;
 
 				/* Make sure to use all data, i.e. part a and b */
 				statistic[i]=statistic[i]+
-						(h_i_b[it]-statistic[i])/(term_counter_statistic+1);
-
-				term_counter_statistic+=2;
+						(h_i_b[it]-statistic[i])/(term_counters_statistic[i]++);
 			}
 
 			/* next kernel i */

@@ -210,6 +210,11 @@ public:
 	 */
 	virtual SGVector<float64_t> bootstrap_null();
 
+	/** Setter for the blocksize of examples to be processed at once
+	 * @param blocksize new blocksize to use
+	 */
+	void set_blocksize(index_t blocksize) { m_blocksize=blocksize; }
+
 	virtual const char* get_name() const
 	{
 		return "LinearTimeMMD";
