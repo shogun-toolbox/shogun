@@ -67,10 +67,6 @@ void CMMDKernelSelectionOptComb::init()
 //			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
 	SG_WARNING("%s::init(): register parameters!\n", get_name());
 
-	/* set to a sensible standard value that proved to be useful in
-	 * experiments */
-	m_lambda=10E-5;
-
 #ifdef HAVE_LAPACK
 	/* sensible values for optimization */
 	m_opt_max_iterations=10000;
@@ -95,21 +91,10 @@ void CMMDKernelSelectionOptComb::print_state(libqp_state_T state)
 
 CKernel* CMMDKernelSelectionOptComb::select_kernel()
 {
-	/* for readability */
-	index_t num_kernels=m_kernel_list->get_num_elements();
-
-	/* result kernel is a combined one */
-	CCombinedKernel* kernel=new CCombinedKernel;
-	SG_REF(kernel);
-
-	/* build resulting combined kernel */
-	CKernel* current=(CKernel*)m_kernel_list->get_first_element();
-	for (index_t i=0; i<num_kernels; ++i)
-	{
-		kernel->append_kernel(current);
-		SG_UNREF(current);
-		current=(CKernel*)m_kernel_list->get_next_element();
-	}
+	/* cast is safe due to assertion in constructor */
+	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
+	index_t num_kernels=kernel->get_num_subkernels();
+	SG_UNREF(kernel);
 
 	/* allocate space for MMDs and Q matrix */
 	SGVector<float64_t> mmds(num_kernels);

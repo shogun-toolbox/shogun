@@ -39,19 +39,8 @@ CMMDKernelSelectionOptSingle::~CMMDKernelSelectionOptSingle()
 
 SGVector<float64_t> CMMDKernelSelectionOptSingle::compute_measures()
 {
-	/* create combined kernel to compute mmds on */
-	CCombinedKernel* combined=new CCombinedKernel();
-	CKernel* current=(CCombinedKernel*)m_kernel_list->get_first_element();
-	while(current)
-	{
-		combined->append_kernel(current);
-		SG_UNREF(current);
-		current=(CCombinedKernel*)m_kernel_list->get_next_element();
-	}
-
-	/* comnpute mmd on all subkernels of combined kernel. This is done in order
-	 * to compute the mmds all on the same data */
-	m_mmd->set_kernel(combined);
+	/* comnpute mmd on all subkernels using the same data. Note that underlying
+	 * kernel was asserted to be a combined one */
 	SGVector<float64_t> mmds;
 	SGVector<float64_t> vars;
 	((CLinearTimeMMD*)m_mmd)->compute_statistic_and_variance(mmds, vars, true);
