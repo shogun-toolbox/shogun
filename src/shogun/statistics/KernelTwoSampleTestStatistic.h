@@ -11,6 +11,7 @@
 #define __KERNELTWOSAMPLETESTSTATISTIC_H_
 
 #include <shogun/statistics/TwoDistributionsTestStatistic.h>
+#include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {
@@ -67,7 +68,20 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		/** Setter for the underlying kernel
 		 * @param kernel new kernel to use
 		 */
-		void set_kernel(CKernel* kernel);
+		inline virtual void set_kernel(CKernel* kernel)
+		{
+			/* ref before unref to prevent deleting in case objects are the same */
+			SG_REF(kernel);
+			SG_UNREF(m_kernel);
+			m_kernel=kernel;
+		}
+
+		/** @return underlying kernel, is SG_REF'ed */
+		inline virtual CKernel* get_kernel()
+		{
+			SG_REF(m_kernel);
+			return m_kernel;
+		}
 
 		/** merges both sets of samples and computes the test statistic
 		 * m_bootstrap_iteration times. This version checks if a precomputed
