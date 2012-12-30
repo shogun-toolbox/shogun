@@ -81,6 +81,19 @@ void SGMatrix<T>::zero()
 }
 
 template <class T>
+T SGMatrix<T>::max_single()
+{
+	T max=matrix[0];
+	for (index_t i=1; i<num_rows*num_cols; ++i)
+	{
+		if (matrix[i]>max)
+			max=matrix[i];
+	}
+
+	return max;
+}
+
+template <class T>
 SGMatrix<T> SGMatrix<T>::clone()
 {
 	return SGMatrix<T>(clone_matrix(matrix, num_rows, num_cols),
