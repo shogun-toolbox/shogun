@@ -79,6 +79,7 @@ SGVector<float64_t> CMMDKernelSelection::compute_measures()
 
 CKernel* CMMDKernelSelection::select_kernel()
 {
+	SG_DEBUG("entering %s::select_kernel()\n", get_name());
 	REQUIRE(m_mmd, "CMMDKernelSelection::select_kernel(): No MMD instance "
 			"set!\n");
 
@@ -93,8 +94,11 @@ CKernel* CMMDKernelSelection::select_kernel()
 	{
 		/* compute measure and update maximum measure kernel */
 		measures[i]=compute_measure(current);
+		SG_PRINT("Computed measure for %s at %p: %f\n", current->get_name(),
+				current, measures[i]);
 		if (measures[i]>max_measure)
 		{
+			SG_PRINT("found new maximum!\n");
 			max_measure=measures[i];
 			max_kernel=current;
 		}
@@ -104,6 +108,8 @@ CKernel* CMMDKernelSelection::select_kernel()
 		current=CKernel::obtain_from_generic(m_kernel_list->get_next_element());
 		++i;
 	}
+
+	SG_DEBUG("leaving %s::select_kernel()\n", get_name());
 
 	/* increase refcount of resulting kernel and return */
 	SG_REF(max_kernel);

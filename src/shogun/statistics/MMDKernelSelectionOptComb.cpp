@@ -99,36 +99,24 @@ CKernel* CMMDKernelSelectionOptComb::select_kernel()
 	index_t num_kernels=m_kernel_list->get_num_elements();
 
 	/* result kernel is a combined one */
-	CCombinedKernel* combined_kernel=new CCombinedKernel();
-	SG_REF(combined_kernel);
+	CCombinedKernel* kernel=new CCombinedKernel;
+	SG_REF(kernel);
 
-	/* go through all kernels and compute h-terms. Copy them to a matrix H */
-	SGMatrix<float64_t> H(m_mmd->get_m()/2, num_kernels);
+	/* build resulting combined kernel */
 	CKernel* current=(CKernel*)m_kernel_list->get_first_element();
-	index_t count=0;
-	while (current)
+	for (index_t i=0; i<num_kernels; ++i)
 	{
-		/* construct combined kernel on the fly */
-		combined_kernel->append_kernel(current);
-
-		/* compute h-terms for current kernel */
-		m_mmd->set_kernel(current);
-		SGVector<float64_t> h=((CLinearTimeMMD*)m_mmd)->compute_h_terms();
-
-		/* copy vector wise to H matrix */
-		memcpy(&H(0, count), h.vector, h.vlen*sizeof(float64_t));
-
-		/* proceed to next kernel */
+		kernel->append_kernel(current);
 		SG_UNREF(current);
 		current=(CKernel*)m_kernel_list->get_next_element();
-		++count;
 	}
 
-	/* compute mean values (=MMDs) */
-	SGVector<float64_t> mmds=CStatistics::matrix_mean(H);
+	/* allocate space for MMDs and Q matrix */
+	SGVector<float64_t> mmds(num_kernels);
+	m_Q=SGMatrix<float64_t>(num_kernels, num_kernels);
 
-	/* compute empirical covariance matrix Q from H, H can be overwritten */
-	m_Q=CStatistics::covariance_matrix(H, true);
+	/* online compute mmds and covariance matrix Q of kernels */
+	((CLinearTimeMMD*)m_mmd)->compute_statistic_and_Q(mmds, m_Q);
 
 	/* evtl regularize to avoid numerical problems (see NIPS paper) */
 	if (m_lambda)
@@ -226,11 +214,11 @@ CKernel* CMMDKernelSelectionOptComb::select_kernel()
 		x[i]/=sum_weights;
 
 	/* set combined kernel weights and return */
-	combined_kernel->set_subkernel_weights(x);
+	kernel->set_subkernel_weights(x);
 
 	SG_WARNING("CMMDKernelSelectionOptComb::select_kernel() is not tested!\n");
 
-	return combined_kernel;
+	return kernel;
 }
 #else
 CKernel* CMMDKernelSelectionOptComb::select_kernel()

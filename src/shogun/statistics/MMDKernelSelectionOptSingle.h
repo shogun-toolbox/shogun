@@ -36,11 +36,22 @@ public:
 	/** Destructor */
 	virtual ~CMMDKernelSelectionOptSingle();
 
+	/** Overwrites superclass method and ensures that all statistics are
+	 * computed on the same data. Since linear time MMD is a streaming
+	 * statistic, just computing all statistics one after another would use
+	 * different data. This method makes sure that all kernels are used at once
+	 *
+	 * @return vector with kernel criterion values for all attached kernels
+	 */
+	virtual SGVector<float64_t> compute_measures();
+
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionOptSingle"; }
 
 protected:
-	virtual float64_t compute_measure(CKernel* kernel);
+	/** This method is not used, since compute_measures() is overwritten
+	 * @param kernel */
+	virtual float64_t compute_measure(CKernel* kernel) { return 0; };
 
 private:
 	/** Initializer */

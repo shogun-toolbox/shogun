@@ -246,8 +246,11 @@ class CKernel : public CSGObject
 		/** @return Vector with diagonal elements of the kernel matrix.
 		 * Note that left- and right-handside features must be set and of equal
 		 * size
+		 *
+		 * @param preallocated vector with space for results
 		 */
-		SGVector<float64_t> get_kernel_diagonal()
+		SGVector<float64_t> get_kernel_diagonal(SGVector<float64_t>
+				preallocated=SGVector<float64_t>())
 		{
 			REQUIRE(lhs, "CKernel::get_kernel_diagonal(): Left-handside "
 					"features missing!\n");
@@ -259,13 +262,20 @@ class CKernel : public CSGObject
 					"CKernel::get_kernel_diagonal(): Left- and right-"
 					"handside features must be equal sized\n");
 
-			/* note that features are asserted to be of equal size */
-			SGVector<float64_t> diagonal(lhs->get_num_vectors());
+			/* allocate space if necessary */
+			if (!preallocated.vector)
+				preallocated=SGVector<float64_t>(lhs->get_num_vectors());
+			else
+			{
+				REQUIRE(preallocated.vlen==lhs->get_num_vectors(),
+						"%s::get_kernel_diagonal(): Preallocated vector has"
+						" wrong size!\n", get_name());
+			}
 
-			for (index_t i=0; i<diagonal.vlen; ++i)
-				diagonal[i]=kernel(i, i);
+			for (index_t i=0; i<preallocated.vlen; ++i)
+				preallocated[i]=kernel(i, i);
 
-			return diagonal;
+			return preallocated;
 		}
 
 		/**
