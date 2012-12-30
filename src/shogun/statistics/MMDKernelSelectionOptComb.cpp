@@ -39,18 +39,10 @@ CMMDKernelSelectionOptComb::~CMMDKernelSelectionOptComb()
 {
 }
 
-float64_t CMMDKernelSelectionOptComb::compute_measure(CKernel* kernel)
-{
-	/* we do not select the kernel via selecting the best of single measures */
-	SG_ERROR("%s::compute_measure(): Method must not be used, use"
-			" select_kernel() instead!\n", get_name());
-	return 0;
-}
-
 SGVector<float64_t> CMMDKernelSelectionOptComb::compute_measures()
 {
 	/* we do not select the kernel via selecting the best of single measures */
-	SG_ERROR("%s::compute_measure(): Method must not be used, use"
+	SG_ERROR("%s::compute_measures(): Method must not be used, use"
 			" select_kernel() instead!\n", get_name());
 	return SGVector<float64_t>();
 }

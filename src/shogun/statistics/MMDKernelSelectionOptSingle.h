@@ -48,11 +48,6 @@ public:
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionOptSingle"; }
 
-protected:
-	/** This method is not used, since compute_measures() is overwritten
-	 * @param kernel */
-	virtual float64_t compute_measure(CKernel* kernel) { return 0; };
-
 private:
 	/** Initializer */
 	void init();

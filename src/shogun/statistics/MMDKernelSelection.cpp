@@ -63,67 +63,60 @@ void CMMDKernelSelection::init()
 			MS_NOT_AVAILABLE);
 }
 
-SGVector<float64_t> CMMDKernelSelection::compute_measures()
-{
-	/* cast is safe due to assertion in constructor */
-	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
-	/* compute measure for all kernels */
-	SGVector<float64_t> measures(kernel->get_num_subkernels());
-	CKernel* current=kernel->get_first_kernel();
-	index_t i=0;
-	while (current)
-	{
-		measures[i++]=compute_measure(current);
-		SG_UNREF(current);
-		current=kernel->get_next_kernel();
-	}
-
-	/* clean up */
-	SG_UNREF(kernel);
-
-	return measures;
-}
+//SGVector<float64_t> CMMDKernelSelection::compute_measures()
+//{
+//	/* cast is safe due to assertion in constructor */
+//	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
+//	/* compute measure for all kernels */
+//	SGVector<float64_t> measures(kernel->get_num_subkernels());
+//	CKernel* current=kernel->get_first_kernel();
+//	index_t i=0;
+//	while (current)
+//	{
+//		measures[i++]=compute_measure(current);
+//		SG_UNREF(current);
+//		current=kernel->get_next_kernel();
+//	}
+//
+//	/* clean up */
+//	SG_UNREF(kernel);
+//
+//	return measures;
+//}
 
 CKernel* CMMDKernelSelection::select_kernel()
 {
 	SG_DEBUG("entering %s::select_kernel()\n", get_name());
 
-	/* cast is safe due to assertion in constructor */
-	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
+	/* compute measures and return single kernel with maximum measure */
 
-	/* compute measure for all kernels and remember yet largest */
-	SGVector<float64_t> measures(kernel->get_num_subkernels());
-	CKernel* current=kernel->get_first_kernel();
-	CKernel* max_kernel=current;
-	float64_t max_measure=-CMath::INFTY;
-	index_t i=0;
-	while (current)
+	SGVector<float64_t> measures=compute_measures();
+
+	/* find maximum and return corresponding kernel */
+	float64_t max=measures[0];
+	index_t max_idx=0;
+	for (index_t i=1; i<measures.vlen; ++i)
 	{
-		/* compute measure and update maximum measure kernel */
-		measures[i]=compute_measure(current);
-		SG_PRINT("Computed measure for %s at %p: %f\n", current->get_name(),
-				current, measures[i]);
-		if (measures[i]>max_measure)
+		if (measures[i]>max)
 		{
-			SG_PRINT("found new maximum!\n");
-			max_measure=measures[i];
-			max_kernel=current;
+			max=measures[i];
+			max_idx=i;
 		}
-
-		/* proceed to next */
-		SG_UNREF(current);
-		current=kernel->get_next_kernel();
-		++i;
 	}
 
+	/* find kernel with corresponding index */
+	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
+	CKernel* current=combined->get_first_kernel();
+	while (max_idx)
+	{
+		SG_UNREF(current);
+		current=combined->get_next_kernel();
+	}
+
+	SG_UNREF(combined);
 	SG_DEBUG("leaving %s::select_kernel()\n", get_name());
 
-	/* increase refcount of resulting kernel and return */
-	SG_REF(max_kernel);
-
-	/* clean up */
-	SG_UNREF(kernel);
-
-	return max_kernel;
+	SG_REF(current);
+	return current;
 }
 

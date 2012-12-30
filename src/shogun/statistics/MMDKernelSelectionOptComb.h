@@ -74,10 +74,6 @@ public:
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionOptComb"; }
 
-protected:
-	virtual float64_t compute_measure(CKernel* kernel);
-
-
 private:
 	/** Initializer */
 	void init();
