@@ -100,12 +100,12 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 
 	/* ensure right dimensions */
 	REQUIRE(statistic.vlen==num_kernels, "%s::compute_statistic_and_variance: "
-			"statistic vector size does not match number of kernels\n",
-			get_name());
+			"statistic vector size (%d) does not match number of kernels (%d)\n",
+			 get_name(), statistic.vlen, num_kernels);
 
 	REQUIRE(variance.vlen==num_kernels, "%s::compute_statistic_and_variance: "
-			"variance vector size does not match number of kernels\n",
-			get_name());
+			"variance vector size (%d) does not match number of kernels (%d)\n",
+			 get_name(), variance.vlen, num_kernels);
 
 	/* temp variable in the algorithm */
 	float64_t current;
@@ -258,16 +258,16 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 
 	/* ensure right dimensions */
 	REQUIRE(statistic.vlen==num_kernels, "%s::compute_statistic_and_variance: "
-			"statistic vector size does not match number of kernels\n",
-			get_name());
+			"statistic vector size (%d) does not match number of kernels (%d)\n",
+			 get_name(), statistic.vlen, num_kernels);
 
 	REQUIRE(Q.num_rows==num_kernels, "%s::compute_statistic_and_variance: "
-			"Q number of rows does not match number of kernels\n",
-			get_name());
+			"Q number of rows does (%d) not match number of kernels (%d)\n",
+			 get_name(), Q.num_rows, num_kernels);
 
 	REQUIRE(Q.num_cols==num_kernels, "%s::compute_statistic_and_variance: "
-			"Q number of columns does not match number of kernels\n",
-			get_name());
+			"Q number of columns (%d) does not match number of kernels (%d)\n",
+			 get_name(), Q.num_cols, num_kernels);
 
 	/* initialise statistic and variance since they are cumulative */
 	statistic.zero();
