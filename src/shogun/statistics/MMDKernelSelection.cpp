@@ -8,7 +8,7 @@
  */
 
 #include <shogun/statistics/MMDKernelSelection.h>
-#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/statistics/KernelTwoSampleTestStatistic.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
@@ -31,9 +31,19 @@ CMMDKernelSelection::CMMDKernelSelection(
 			"provided!\n");
 	REQUIRE(dynamic_cast<CLinearTimeMMD*>(mmd) ||
 			dynamic_cast<CQuadraticTimeMMD*>(mmd),
-			"CMMDKernelSelection::CMMDKernelSelection(): Provided instance "
+			"CMMDKernelSelection::CMMDKernelSelection(): provided instance "
 			"for kernel two sample testing has to be a MMD-based class! The "
 			"provided is of class \"%s\"\n", mmd->get_name());
+
+	/* ensure that there is a combined kernel */
+	CKernel* kernel=mmd->get_kernel();
+	REQUIRE(kernel, "CMMDKernelSelection::CMMDKernelSelection(): underlying "
+			"\"%s\" has no kernel set!\n", mmd->get_name());
+	REQUIRE(kernel->get_kernel_type()==K_COMBINED, "CMMDKernelSelection::"
+			"CMMDKernelSelection(): kernel of underlying \"%s\" is of type \"%s\""
+			" but is has to be CCombinedKernel\n", mmd->get_name(),
+			kernel->get_name());
+	SG_UNREF(kernel);
 
 	m_mmd=mmd;
 	SG_REF(m_mmd);
@@ -42,86 +52,73 @@ CMMDKernelSelection::CMMDKernelSelection(
 
 CMMDKernelSelection::~CMMDKernelSelection()
 {
-	SG_UNREF(m_kernel_list);
 	SG_UNREF(m_mmd);
 }
 
 void CMMDKernelSelection::init()
 {
-	m_kernel_list=new CList(true);
 	m_mmd=NULL;
 
-	SG_ADD((CSGObject**)&m_kernel_list, "kernel_list",
-			"List of kernels to consider", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_mmd, "mmd", "Underlying MMD instance",
 			MS_NOT_AVAILABLE);
 }
 
-SGVector<float64_t> CMMDKernelSelection::compute_measures()
-{
-	REQUIRE(m_mmd, "CMMDKernelSelection::compute_measures(): No MMD instance "
-			"set!\n");
-
-	/* compute measure for all kernels */
-	SGVector<float64_t> measures(m_kernel_list->get_num_elements());
-	CKernel* current=CKernel::obtain_from_generic(
-			m_kernel_list->get_first_element());
-	index_t i=0;
-	while (current)
-	{
-		measures[i++]=compute_measure(current);
-		SG_UNREF(current);
-		current=CKernel::obtain_from_generic(m_kernel_list->get_next_element());
-	}
-
-	return measures;
-}
+//SGVector<float64_t> CMMDKernelSelection::compute_measures()
+//{
+//	/* cast is safe due to assertion in constructor */
+//	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
+//	/* compute measure for all kernels */
+//	SGVector<float64_t> measures(kernel->get_num_subkernels());
+//	CKernel* current=kernel->get_first_kernel();
+//	index_t i=0;
+//	while (current)
+//	{
+//		measures[i++]=compute_measure(current);
+//		SG_UNREF(current);
+//		current=kernel->get_next_kernel();
+//	}
+//
+//	/* clean up */
+//	SG_UNREF(kernel);
+//
+//	return measures;
+//}
 
 CKernel* CMMDKernelSelection::select_kernel()
 {
 	SG_DEBUG("entering %s::select_kernel()\n", get_name());
-	REQUIRE(m_mmd, "CMMDKernelSelection::select_kernel(): No MMD instance "
-			"set!\n");
 
-	/* compute measure for all kernels and remember yet largest */
-	SGVector<float64_t> measures(m_kernel_list->get_num_elements());
-	CKernel* current=CKernel::obtain_from_generic(
-			m_kernel_list->get_first_element());
-	CKernel* max_kernel=current;
-	float64_t max_measure=-CMath::INFTY;
-	index_t i=0;
-	while (current)
+	/* compute measures and return single kernel with maximum measure */
+
+	SGVector<float64_t> measures=compute_measures();
+
+	/* find maximum and return corresponding kernel */
+	float64_t max=measures[0];
+	index_t max_idx=0;
+	for (index_t i=1; i<measures.vlen; ++i)
 	{
-		/* compute measure and update maximum measure kernel */
-		measures[i]=compute_measure(current);
-		SG_PRINT("Computed measure for %s at %p: %f\n", current->get_name(),
-				current, measures[i]);
-		if (measures[i]>max_measure)
+		if (measures[i]>max)
 		{
-			SG_PRINT("found new maximum!\n");
-			max_measure=measures[i];
-			max_kernel=current;
+			max=measures[i];
+			max_idx=i;
 		}
-
-		/* proceed to next */
-		SG_UNREF(current);
-		current=CKernel::obtain_from_generic(m_kernel_list->get_next_element());
-		++i;
 	}
 
+	/* find kernel with corresponding index */
+	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
+	CKernel* current=combined->get_first_kernel();
+	while (max_idx)
+	{
+		SG_UNREF(current);
+		current=combined->get_next_kernel();
+	}
+
+	SG_UNREF(combined);
 	SG_DEBUG("leaving %s::select_kernel()\n", get_name());
 
-	/* increase refcount of resulting kernel and return */
-	SG_REF(max_kernel);
-	return max_kernel;
+	/* current is not SG_UNREF'ed nor SG_REF'ed since the counter needs to be
+	 * incremented exactly by one */
+
+	return current;
 }
 
-void CMMDKernelSelection::add_kernel(CKernel* kernel)
-{
-	m_kernel_list->append_element(kernel);
-}
-
-void CMMDKernelSelection::remove_all_kernels()
-{
-	m_kernel_list->delete_all_elements();
-}

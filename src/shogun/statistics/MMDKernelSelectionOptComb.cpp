@@ -39,18 +39,10 @@ CMMDKernelSelectionOptComb::~CMMDKernelSelectionOptComb()
 {
 }
 
-float64_t CMMDKernelSelectionOptComb::compute_measure(CKernel* kernel)
-{
-	/* we do not select the kernel via selecting the best of single measures */
-	SG_ERROR("%s::compute_measure(): Method must not be used, use"
-			" select_kernel() instead!\n", get_name());
-	return 0;
-}
-
 SGVector<float64_t> CMMDKernelSelectionOptComb::compute_measures()
 {
 	/* we do not select the kernel via selecting the best of single measures */
-	SG_ERROR("%s::compute_measure(): Method must not be used, use"
+	SG_ERROR("%s::compute_measures(): Method must not be used, use"
 			" select_kernel() instead!\n", get_name());
 	return SGVector<float64_t>();
 }
@@ -66,10 +58,6 @@ void CMMDKernelSelectionOptComb::init()
 //	SG_ADD(&m_opt_regularization_eps, "opt_regularization_eps", "Regularization"
 //			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
 	SG_WARNING("%s::init(): register parameters!\n", get_name());
-
-	/* set to a sensible standard value that proved to be useful in
-	 * experiments */
-	m_lambda=10E-5;
 
 #ifdef HAVE_LAPACK
 	/* sensible values for optimization */
@@ -95,21 +83,9 @@ void CMMDKernelSelectionOptComb::print_state(libqp_state_T state)
 
 CKernel* CMMDKernelSelectionOptComb::select_kernel()
 {
-	/* for readability */
-	index_t num_kernels=m_kernel_list->get_num_elements();
-
-	/* result kernel is a combined one */
-	CCombinedKernel* kernel=new CCombinedKernel;
-	SG_REF(kernel);
-
-	/* build resulting combined kernel */
-	CKernel* current=(CKernel*)m_kernel_list->get_first_element();
-	for (index_t i=0; i<num_kernels; ++i)
-	{
-		kernel->append_kernel(current);
-		SG_UNREF(current);
-		current=(CKernel*)m_kernel_list->get_next_element();
-	}
+	/* cast is safe due to assertion in constructor */
+	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
+	index_t num_kernels=kernel->get_num_subkernels();
 
 	/* allocate space for MMDs and Q matrix */
 	SGVector<float64_t> mmds(num_kernels);
@@ -128,7 +104,7 @@ CKernel* CMMDKernelSelectionOptComb::select_kernel()
 
 	if (sg_io->get_loglevel()==MSG_DEBUG)
 	{
-		m_Q.display_matrix("(evtl. regularized) Q");
+		m_Q.display_matrix("(regularized) Q");
 		mmds.display_vector("mmds");
 	}
 
@@ -163,61 +139,72 @@ CKernel* CMMDKernelSelectionOptComb::select_kernel()
 
 	if (!one_pos)
 	{
-		SG_WARNING("All mmd estimates are negative. This is techical possible,"
-				" although extremely rare. Consider using different kernels\n");
+		SG_WARNING("%s::CMMDKernelSelectionOptComb(): all mmd estimates are "
+				"negative. This is techically possible, although extremely"
+				" rare. Consider using different kernels. "
+				"This combination will lead to a bad two-sample test. Since any"
+				"combination is bad, will now just return equally distributed "
+				"kernel weights\n", get_name());
 
 		/* if no element is positive, we can choose arbritary weights since
 		 * the results will be bad anyway */
-		SG_NOTIMPLEMENTED;
+		x.set_const(1.0/num_kernels);
+		kernel->set_subkernel_weights(x);
 	}
-
-	/* init vectors */
-	for (index_t i=0; i<num_kernels; ++i)
+	else
 	{
-		Q_diag[i]=m_Q(i,i);
-		f[i]=0;
-		lb[i]=0;
-		ub[i]=CMath::INFTY;
-
-		/* initial point has to be feasible, i.e. mmds'*x = b */
-		x[i]=1.0/sum_mmds;
-	}
-
-	/* start libqp solver with desired parameters */
-	SG_DEBUG("starting libqp optimization\n");
-	libqp_state_T qp_exitflag=libqp_gsmo_solver(&get_Q_col, Q_diag.vector,
-			f.vector, mmds.vector,
-			one_pos ? 1 : -1,
-			lb.vector, ub.vector,
-			x.vector, num_kernels, m_opt_max_iterations,
-			m_opt_epsilon, &print_state);
-
-	SG_DEBUG("libqp returns: nIts=%d, exit_flag: %d\n", qp_exitflag.nIter,
-			qp_exitflag.exitflag);
-
-	/* set really small entries to zero and sum up for normalization */
-	float64_t sum_weights=0;
-	for (index_t i=0; i<x.vlen; ++i)
-	{
-		if (x[i]<m_opt_low_cut)
+		SG_DEBUG("one MMD entry is positive, performing optimisation\n");
+		/* do optimisation, init vectors */
+		for (index_t i=0; i<num_kernels; ++i)
 		{
-			SG_DEBUG("lowcut: weight[%i]=%f<%f; setting to zero\n", i, x[i],
-					m_opt_low_cut);
-			x[i]=0;
+			Q_diag[i]=m_Q(i,i);
+			f[i]=0;
+			lb[i]=0;
+			ub[i]=CMath::INFTY;
+
+			/* initial point has to be feasible, i.e. mmds'*x = b */
+			x[i]=1.0/sum_mmds;
 		}
 
-		sum_weights+=x[i];
+		/* start libqp solver with desired parameters */
+		SG_DEBUG("starting libqp optimization\n");
+		libqp_state_T qp_exitflag=libqp_gsmo_solver(&get_Q_col, Q_diag.vector,
+				f.vector, mmds.vector,
+				one_pos ? 1 : -1,
+				lb.vector, ub.vector,
+				x.vector, num_kernels, m_opt_max_iterations,
+				m_opt_epsilon, &print_state);
+
+		SG_DEBUG("libqp returns: nIts=%d, exit_flag: %d\n", qp_exitflag.nIter,
+				qp_exitflag.exitflag);
+
+		/* set really small entries to zero and sum up for normalization */
+		float64_t sum_weights=0;
+		for (index_t i=0; i<x.vlen; ++i)
+		{
+			if (x[i]<m_opt_low_cut)
+			{
+				SG_DEBUG("lowcut: weight[%i]=%f<%f; setting to zero\n", i, x[i],
+						m_opt_low_cut);
+				x[i]=0;
+			}
+
+			sum_weights+=x[i];
+		}
+
+		/* normalize (allowed since problem is scale invariant) */
+		for (index_t i=0; i<x.vlen; ++i)
+			x[i]/=sum_weights;
+
+		/* set combined kernel weights and return */
+		kernel->set_subkernel_weights(x);
 	}
 
-	/* normalize (allowed since problem is scale invariant) */
-	for (index_t i=0; i<x.vlen; ++i)
-		x[i]/=sum_weights;
+	/* need to free this matriy by hand since static and ref-counting does not
+	 * work */
+	m_Q.~SGMatrix();
 
-	/* set combined kernel weights and return */
-	kernel->set_subkernel_weights(x);
-
-	SG_WARNING("CMMDKernelSelectionOptComb::select_kernel() is not tested!\n");
-
+	/* do not unref kernel because it is returned */
 	return kernel;
 }
 #else

@@ -537,6 +537,9 @@ class CList : public CSGObject
 			}
 		}
 
+		/** @return delete_data flag which indicates if list SG_REF's stuff */
+		inline bool get_delete_data() { return delete_data; }
+
 		/** @return object name */
 		virtual const char* get_name() const { return "List"; }
 
