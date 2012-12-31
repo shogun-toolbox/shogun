@@ -31,7 +31,7 @@ public:
 	 * @param lamda ridge that is added to standard deviation
 	 */
 	CMMDKernelSelectionOptSingle(CKernelTwoSampleTestStatistic* mmd,
-			float64_t lambda);
+			float64_t lambda=10E-5);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionOptSingle();
