@@ -93,6 +93,7 @@ TARGETS = basic_minimal \
 		  transfer_multitasklogisticregression \
 		  statistics_quadratic_time_mmd \
 		  statistics_linear_time_mmd \
+		  statistics_mmd_kernel_selection \
 		  statistics_hsic \
 		  classifier_featureblocklogisticregression \
 		  so_multiclass_BMRM \
