@@ -29,12 +29,13 @@ public:
 	/** Constructor that initialises the underlying MMD instance
 	 *
 	 * @param linear time mmd MMD instance to use.
-	 * @param lamda ridge that is added to standard deviation
+	 * @param lamda ridge that is added to standard deviation, a sensible value
+	 * is 10E-% which is the default
 	 * @param combine_kernels switches between two modes: using a single best
 	 * kernel and using the best weights for a convex combination of kernels
 	 */
 	CMMDKernelSelectionOptComb(CKernelTwoSampleTestStatistic* mmd,
-			float64_t lambda);
+			float64_t lambda=10E-5);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionOptComb();
@@ -72,10 +73,6 @@ public:
 
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionOptComb"; }
-
-protected:
-	virtual float64_t compute_measure(CKernel* kernel);
-
 
 private:
 	/** Initializer */

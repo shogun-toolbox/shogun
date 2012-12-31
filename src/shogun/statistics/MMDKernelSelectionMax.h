@@ -32,11 +32,12 @@ public:
 	/** Destructor */
 	virtual ~CMMDKernelSelectionMax();
 
+	/** TODO */
+	virtual SGVector<float64_t> compute_measures();
+
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionMax"; }
 
-protected:
-	virtual float64_t compute_measure(CKernel* kernel);
 };
 
 }

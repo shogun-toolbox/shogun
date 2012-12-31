@@ -31,7 +31,7 @@ public:
 	 * @param lamda ridge that is added to standard deviation
 	 */
 	CMMDKernelSelectionOptSingle(CKernelTwoSampleTestStatistic* mmd,
-			float64_t lambda);
+			float64_t lambda=10E-5);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionOptSingle();
@@ -47,11 +47,6 @@ public:
 
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionOptSingle"; }
-
-protected:
-	/** This method is not used, since compute_measures() is overwritten
-	 * @param kernel */
-	virtual float64_t compute_measure(CKernel* kernel) { return 0; };
 
 private:
 	/** Initializer */

@@ -25,9 +25,8 @@ CMMDKernelSelectionMax::~CMMDKernelSelectionMax()
 {
 }
 
-float64_t CMMDKernelSelectionMax::compute_measure(CKernel* kernel)
+SGVector<float64_t> CMMDKernelSelectionMax::compute_measures()
 {
-	/* just return plain MMD */
-	m_mmd->set_kernel(kernel);
-	return m_mmd->compute_statistic();
+	/* simply return vector with MMDs */
+	return m_mmd->compute_statistic(true);
 }

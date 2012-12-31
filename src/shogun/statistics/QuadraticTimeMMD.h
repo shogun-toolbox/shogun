@@ -121,6 +121,13 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 */
 		virtual float64_t compute_statistic();
 
+		/** TODO */
+		virtual SGVector<float64_t> compute_statistic(bool multiple_kernels)
+		{
+			SG_NOTIMPLEMENTED;
+			return SGVector<float64_t>(0);
+		}
+
 		/** computes a p-value based on current method for approximating the
 		 * null-distribution. The p-value is the 1-p quantile of the null-
 		 * distribution where the given statistic lies in.

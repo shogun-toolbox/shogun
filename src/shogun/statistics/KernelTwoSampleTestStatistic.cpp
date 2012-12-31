@@ -102,11 +102,3 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 
 	return results;
 }
-
-void CKernelTwoSampleTestStatistic::set_kernel(CKernel* kernel)
-{
-	/* ref before unref to prevent deleting in case objects are the same */
-	SG_REF(kernel);
-	SG_UNREF(m_kernel);
-	m_kernel=kernel;
-}
