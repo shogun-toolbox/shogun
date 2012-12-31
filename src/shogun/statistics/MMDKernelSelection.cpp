@@ -116,7 +116,9 @@ CKernel* CMMDKernelSelection::select_kernel()
 	SG_UNREF(combined);
 	SG_DEBUG("leaving %s::select_kernel()\n", get_name());
 
-	SG_REF(current);
+	/* current is not SG_UNREF'ed nor SG_REF'ed since the counter needs to be
+	 * incremented exactly by one */
+
 	return current;
 }
 
