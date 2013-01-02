@@ -7,8 +7,8 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#ifndef __MMDKERNELSELECTIONMAXMMD_H_
-#define __MMDKERNELSELECTIONMAXMMD_H_
+#ifndef __MMDKERNELSELECTIONMAX_H_
+#define __MMDKERNELSELECTIONMAX_H_
 
 #include <shogun/statistics/MMDKernelSelection.h>
 
@@ -42,4 +42,4 @@ public:
 
 }
 
-#endif /* __MMDKERNELSELECTIONMAXMMD_H_ */
+#endif /* __MMDKERNELSELECTIONMAX_H_ */
