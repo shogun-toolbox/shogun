@@ -49,7 +49,7 @@ SGVector<float64_t> CMMDKernelSelectionOptSingle::compute_measures()
 	SGVector<float64_t> measures(mmds.vlen);
 
 	for (index_t i=0; i<measures.vlen; ++i)
-		measures[i]=mmds[i]/(vars[i]+m_lambda);
+		measures[i]=mmds[i]/(CMath::sqrt(vars[i])+m_lambda);
 
 	return measures;
 }
