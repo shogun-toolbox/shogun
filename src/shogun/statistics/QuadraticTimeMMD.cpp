@@ -11,6 +11,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 
 using namespace shogun;
 
@@ -202,6 +203,47 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	}
 
 	return result;
+}
+
+SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(
+		bool multiple_kernels)
+{
+	SGVector<float64_t> mmds;
+	if (!multiple_kernels)
+	{
+		/* just one mmd result */
+		mmds=SGVector<float64_t>(1);
+		mmds[0]=compute_statistic();
+	}
+	else
+	{
+		REQUIRE(m_kernel->get_kernel_type()==K_COMBINED,
+			"%s::compute_statistic: multiple kernels specified,"
+			"but underlying kernel is not of type K_COMBINED\n", get_name());
+
+		/* cast and allocate memory for results */
+		CCombinedKernel* combined=(CCombinedKernel*)m_kernel;
+		SG_REF(combined);
+		mmds=SGVector<float64_t>(combined->get_num_subkernels());
+
+		/* iterate through all kernels and compute statistic */
+		CKernel* current=combined->get_first_kernel();
+		for (index_t i=0; i<mmds.vlen; ++i)
+		{
+			/* temporarily replace underlying kernel and compute statistic */
+			m_kernel=current;
+			mmds[i]=compute_statistic();
+
+			SG_UNREF(current);
+			current=combined->get_next_kernel();
+		}
+
+		/* restore combined kernel */
+		m_kernel=combined;
+		SG_UNREF(combined);
+	}
+
+	return mmds;
 }
 
 float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)

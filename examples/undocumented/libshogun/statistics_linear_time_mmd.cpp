@@ -380,6 +380,99 @@ void test_linear_mmd_statistic_and_Q_fixed()
 	SG_UNREF(mmd_2);
 }
 
+void test_linear_mmd_statistic_and_variance_fixed()
+{
+	index_t m=8;
+	index_t d=3;
+	SGMatrix<float64_t> data(d,2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	/* normalise data to get some reasonable values for Q matrix */
+	float64_t max_p=data_p.max_single();
+	float64_t max_q=data_q.max_single();
+
+	SG_SPRINT("%f, %f\n", max_p, max_q);
+
+	for (index_t i=0; i<d*m; ++i)
+	{
+		data_p.matrix[i]/=max_p;
+		data_q.matrix[i]/=max_q;
+	}
+
+	data_p.display_matrix("data_p");
+	data_q.display_matrix("data_q");
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=
+			new CStreamingDenseFeatures<float64_t>(features_p);
+	CStreamingFeatures* streaming_q=
+			new CStreamingDenseFeatures<float64_t>(features_q);
+
+	/* create combined kernel with values 2^5 to 2^7 */
+	CCombinedKernel* kernel=new CCombinedKernel();
+	for (index_t i=5; i<=7; ++i)
+	{
+		/* shoguns kernel width is different */
+		float64_t sigma=CMath::pow(2, i);
+		float64_t sq_sigma_twice=sigma*sigma*2;
+		kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
+	}
+
+	/* create MMD instance */
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p,
+			streaming_q, m);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* test method */
+	SGVector<float64_t> mmds;
+	SGVector<float64_t> vars;
+	mmd->compute_statistic_and_variance(mmds, vars, true);
+
+	/* display results */
+	vars.display_vector("vars");
+	mmds.display_vector("mmds");
+
+	/* assert actual result against fixed MATLAB code */
+//	mmds=
+//	1.0e-03 *
+//	   0.156085264965383
+//	   0.039043151854851
+//	   0.009762153067083
+	ASSERT(CMath::abs(mmds[0]-0.000156085264965383)<10E-18);
+	ASSERT(CMath::abs(mmds[1]-0.000039043151854851)<10E-18);
+	ASSERT(CMath::abs(mmds[2]-0.000009762153067083)<10E-18);
+
+	/* assert correctness of variance estimates */
+//	vars =
+//	   1.0e-08 *
+//	   0.418667765635434
+//	   0.026197180636036
+//	   0.001637799815771
+	ASSERT(CMath::abs(vars[0]-0.418667765635434E-8)<10E-23);
+	ASSERT(CMath::abs(vars[1]-0.026197180636036E-8)<10E-23);
+	ASSERT(CMath::abs(vars[2]-0.001637799815771E-8)<10E-23);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
@@ -395,6 +488,7 @@ int main(int argc, char** argv)
 	test_linear_mmd_variance_estimate_vs_bootstrap();
 	test_linear_mmd_type2_error();
 	test_linear_mmd_statistic_and_Q_fixed();
+	test_linear_mmd_statistic_and_variance_fixed();
 
 	exit_shogun();
 	return 0;
