@@ -52,7 +52,9 @@ void CMMDKernelSelectionComb::init()
 }
 
 #ifdef HAVE_LAPACK
-SGMatrix<float64_t> CMMDKernelSelectionComb::m_Q=SGMatrix<float64_t>();
+/* no reference counting */
+SGMatrix<float64_t> CMMDKernelSelectionComb::m_Q=SGMatrix<float64_t>(0, 0,
+		false);
 
 const float64_t* CMMDKernelSelectionComb::get_Q_col(uint32_t i)
 {
