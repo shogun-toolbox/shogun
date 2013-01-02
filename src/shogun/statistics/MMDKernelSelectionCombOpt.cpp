@@ -43,6 +43,12 @@ SGVector<float64_t> CMMDKernelSelectionCombOpt::compute_measures()
 
 	/* allocate space for MMDs and Q matrix */
 	SGVector<float64_t> mmds(num_kernels);
+
+	/* free matrix by hand since it is static */
+	SG_FREE(m_Q.matrix);
+	m_Q.matrix=NULL;
+	m_Q.num_rows=0;
+	m_Q.num_cols=0;
 	m_Q=SGMatrix<float64_t>(num_kernels, num_kernels, false);
 
 	/* online compute mmds and covariance matrix Q of kernels */
@@ -65,7 +71,7 @@ SGVector<float64_t> CMMDKernelSelectionCombOpt::compute_measures()
 	/* solve the generated problem */
 	SGVector<float64_t> result=solve_optimization(mmds);
 
-	/* free matrix by hand since it is static */
+	/* free matrix by hand since it is static (again) */
 	SG_FREE(m_Q.matrix);
 	m_Q.matrix=NULL;
 	m_Q.num_rows=0;

@@ -45,14 +45,23 @@ SGVector<float64_t> CMMDKernelSelectionCombMaxL2::compute_measures()
 	/* compute mmds for all underlying kernels and create identity matrix Q
 	 * (see NIPS paper) */
 	SGVector<float64_t> mmds=m_mmd->compute_statistic(true);
+
+	/* free matrix by hand since it is static */
+	SG_FREE(m_Q.matrix);
+	m_Q.matrix=NULL;
+	m_Q.num_rows=0;
+	m_Q.num_cols=0;
 	m_Q=SGMatrix<float64_t>(num_kernels, num_kernels, false);
 	for (index_t i=0; i<num_kernels; ++i)
-		m_Q(i, i)=1;
+	{
+		for (index_t j=0; j<num_kernels; ++j)
+			m_Q(i, j)=i==j ? 1 : 0;
+	}
 
 	/* solve the generated problem */
 	SGVector<float64_t> result=solve_optimization(mmds);
 
-	/* free matrix by hand since it is static */
+	/* free matrix by hand since it is static (again) */
 	SG_FREE(m_Q.matrix);
 	m_Q.matrix=NULL;
 	m_Q.num_rows=0;
