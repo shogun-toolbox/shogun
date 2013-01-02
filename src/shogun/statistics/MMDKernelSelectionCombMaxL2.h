@@ -4,42 +4,44 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2013 Heiko Strathmann
  */
 
-#ifndef __MMDKERNELSELECTIONMAX_H_
-#define __MMDKERNELSELECTIONMAX_H_
+#ifndef __MMDKERNELSELECTIONCOMBMAXL2_H_
+#define __MMDKERNELSELECTIONCOMBMAXL2_H_
 
 #include <shogun/statistics/MMDKernelSelection.h>
+#include <shogun/statistics/MMDKernelSelectionComb.h>
 
 namespace shogun
 {
 
-class CMMDKernelSelectionMax: public CMMDKernelSelection
+class CMMDKernelSelectionCombMaxL2: public CMMDKernelSelectionComb
 {
 public:
 
 	/** Default constructor */
-	CMMDKernelSelectionMax();
+	CMMDKernelSelectionCombMaxL2();
 
-	/** Constructor that initialises the underlying MMD instance
+	/** TODO
+	 * Constructor that initialises the underlying MMD instance
 	 *
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
 	 */
-	CMMDKernelSelectionMax(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelectionCombMaxL2(CKernelTwoSampleTestStatistic* mmd,
+			float64_t lambda=10E-5);
 
 	/** Destructor */
-	virtual ~CMMDKernelSelectionMax();
+	virtual ~CMMDKernelSelectionCombMaxL2();
 
 	/** TODO */
 	virtual SGVector<float64_t> compute_measures();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionMax"; }
-
+	const char* get_name() const { return "MMDKernelSelectionCombMaxL2"; }
 };
 
 }
 
-#endif /* __MMDKERNELSELECTIONMAX_H_ */
+#endif /* __MMDKERNELSELECTIONCOMBMAXL2_H_ */
