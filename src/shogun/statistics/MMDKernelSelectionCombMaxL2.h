@@ -10,6 +10,7 @@
 #ifndef __MMDKERNELSELECTIONCOMBMAXL2_H_
 #define __MMDKERNELSELECTIONCOMBMAXL2_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/statistics/MMDKernelSelection.h>
 #include <shogun/statistics/MMDKernelSelectionComb.h>
 
@@ -35,8 +36,10 @@ public:
 	/** Destructor */
 	virtual ~CMMDKernelSelectionCombMaxL2();
 
+#ifdef HAVE_LAPACK
 	/** TODO */
 	virtual SGVector<float64_t> compute_measures();
+#endif
 
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionCombMaxL2"; }

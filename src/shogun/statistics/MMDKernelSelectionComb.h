@@ -10,6 +10,8 @@
 #ifndef __MMDKERNELSELECTIONCOMB_H_
 #define __MMDKERNELSELECTIONCOMB_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/MMDKernelSelection.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/external/libqp.h>
@@ -59,11 +61,11 @@ private:
 	/** initializer */
 	void init();
 
-#ifdef HAVE_LAPACK
 protected:
 	/** TODO */
 	virtual SGVector<float64_t> solve_optimization(SGVector<float64_t> mmds);
 
+#ifdef HAVE_LAPACK
 	/** return pointer to i-th column of m_Q. Helper for libqp */
 	static const float64_t* get_Q_col(uint32_t i);
 
