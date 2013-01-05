@@ -24,7 +24,9 @@ CMMDKernelSelectionComb::CMMDKernelSelectionComb(
 		CMMDKernelSelection(mmd)
 {
 	init();
+#ifdef HAVE_LAPACK
 	m_lambda=lambda;
+#endif
 }
 
 CMMDKernelSelectionComb::~CMMDKernelSelectionComb()
@@ -191,7 +193,7 @@ SGVector<float64_t> CMMDKernelSelectionComb::compute_measures()
 	SG_ERROR("CMMDKernelSelectionComb::select_kernel(): LAPACK needs to be "
 			"installed in order to use weight optimisation for combined "
 			"kernels!\n");
-	return SGVector<float64_t>;
+	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
@@ -200,6 +202,6 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 	SG_ERROR("CMMDKernelSelectionComb::solve_optimization(): LAPACK needs to be "
 			"installed in order to use weight optimisation for combined "
 			"kernels!\n");
-	return SGVector<float64_t>;
+	return SGVector<float64_t>();
 }
 #endif
