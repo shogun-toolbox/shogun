@@ -57,10 +57,6 @@ public:
 	/** @return name of the SGSerializable */
 	const char* get_name() const=0;
 
-private:
-	/** initializer */
-	void init();
-
 protected:
 	/** TODO */
 	virtual SGVector<float64_t> solve_optimization(SGVector<float64_t> mmds);
@@ -88,6 +84,10 @@ protected:
 	/** matrix for selection of kernel weights (static because of libqp) */
 	static SGMatrix<float64_t> m_Q;
 #endif
+
+private:
+	/** initializer */
+	void init();
 };
 
 }
