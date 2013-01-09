@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #ifndef __LINEARTIMEMMD_H_
@@ -214,6 +214,28 @@ public:
 	 * @param blocksize new blocksize to use
 	 */
 	void set_blocksize(index_t blocksize) { m_blocksize=blocksize; }
+
+	/** Not implemented for linear time MMD since it uses streaming feautres */
+	virtual void set_p_and_q(CFeatures* p_and_q);
+
+	/** Not implemented for linear time MMD since it uses streaming feautres */
+	virtual CFeatures* get_p_and_q();
+
+	/** Getter for streaming features of p distribution.
+	 * @return streaming features object for p distribution, SG_REF'ed
+	 */
+	virtual CStreamingFeatures* get_streaming_p();
+
+	/** Getter for streaming features of q distribution.
+	 * @return streaming features object for q distribution, SG_REF'ed
+	 */
+	virtual CStreamingFeatures* get_streaming_q();
+
+	/** returns the statistic type of this test statistic */
+	virtual EStatisticType get_statistic_type() const
+	{
+		return S_LINEAR_TIME_MMD;
+	}
 
 	virtual const char* get_name() const
 	{

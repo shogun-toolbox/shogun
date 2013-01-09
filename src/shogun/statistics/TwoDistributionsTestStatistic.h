@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #ifndef __TwoDistributionsTestStatistic_H_
@@ -88,6 +88,11 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 * @param p_and_q joint features from p and q to set
 		 */
 		virtual void set_p_and_q(CFeatures* p_and_q);
+
+		/** Getter for joint features, SG_REF's
+		 * @return joint feature object
+		 */
+		virtual CFeatures* get_p_and_q();
 
 		/** @return number of to be used samples m */
 		virtual index_t get_m() { return m_m; }
