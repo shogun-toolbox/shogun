@@ -59,7 +59,7 @@ SGVector<float64_t> CMMDKernelSelectionCombMaxL2::compute_measures()
 	}
 
 	/* solve the generated problem */
-	SGVector<float64_t> result=solve_optimization(mmds);
+	SGVector<float64_t> result=CMMDKernelSelectionComb::solve_optimization(mmds);
 
 	/* free matrix by hand since it is static (again) */
 	SG_FREE(m_Q.matrix);
