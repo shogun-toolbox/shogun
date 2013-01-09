@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #include <shogun/statistics/LinearTimeMMD.h>
