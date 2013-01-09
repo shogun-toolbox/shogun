@@ -15,6 +15,12 @@
 namespace shogun
 {
 
+/** enum for different statistic types */
+enum EStatisticType
+{
+	S_LINEAR_TIME_MMD, S_QUADRATIC_TIME_MMD, S_HSIC
+};
+
 /** enum for different method to approximate null-distibution */
 enum ENullApproximationMethod
 {
@@ -118,6 +124,9 @@ class CTestStatistic : public CSGObject
 		 */
 		virtual void set_null_approximation_method(
 				ENullApproximationMethod null_approximation_method);
+
+		/** returns the statistic type of this test statistic */
+		virtual EStatisticType get_statistic_type() const=0;
 
 		virtual const char* get_name() const=0;
 

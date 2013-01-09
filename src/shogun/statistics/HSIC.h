@@ -135,6 +135,12 @@ public:
 		return "HSIC";
 	}
 
+	/** returns the statistic type of this test statistic */
+	virtual EStatisticType get_statistic_type() const
+	{
+		return S_HSIC;
+	}
+
 	/** Approximates the null-distribution by a two parameter gamma
 	 * distribution. Returns parameters.
 	 *

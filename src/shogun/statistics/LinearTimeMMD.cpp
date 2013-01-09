@@ -604,3 +604,27 @@ SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
 	return samples;
 }
 
+void CLinearTimeMMD::set_p_and_q(CFeatures* p_and_q)
+{
+	SG_ERROR("%s::set_p_and_q(): Method not implemented since linear time mmd"
+			" is based on streaming features\n", get_name());
+}
+
+CFeatures* CLinearTimeMMD::get_p_and_q()
+{
+	SG_ERROR("%s::get_p_and_q(): Method not implemented since linear time mmd"
+			" is based on streaming features\n", get_name());
+	return NULL;
+}
+
+CStreamingFeatures* CLinearTimeMMD::get_streaming_p()
+{
+	SG_REF(m_streaming_p);
+	return m_streaming_p;
+}
+
+CStreamingFeatures* CLinearTimeMMD::get_streaming_q()
+{
+	SG_REF(m_streaming_q);
+	return m_streaming_q;
+}

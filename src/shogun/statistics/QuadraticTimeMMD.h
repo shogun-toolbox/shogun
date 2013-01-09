@@ -154,6 +154,12 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 			return "QuadraticTimeMMD";
 		};
 
+		/** returns the statistic type of this test statistic */
+		virtual EStatisticType get_statistic_type() const
+		{
+			return S_QUADRATIC_TIME_MMD;
+		}
+
 #ifdef HAVE_LAPACK
 		/* returns a set of samples of an estimate of the null distribution
 		 * using the Eigen-spectrum of the centered kernel matrix of the merged

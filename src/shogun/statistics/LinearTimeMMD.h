@@ -215,6 +215,28 @@ public:
 	 */
 	void set_blocksize(index_t blocksize) { m_blocksize=blocksize; }
 
+	/** Not implemented for linear time MMD since it uses streaming feautres */
+	virtual void set_p_and_q(CFeatures* p_and_q);
+
+	/** Not implemented for linear time MMD since it uses streaming feautres */
+	virtual CFeatures* get_p_and_q();
+
+	/** Getter for streaming features of p distribution.
+	 * @return streaming features object for p distribution, SG_REF'ed
+	 */
+	virtual CStreamingFeatures* get_streaming_p();
+
+	/** Getter for streaming features of q distribution.
+	 * @return streaming features object for q distribution, SG_REF'ed
+	 */
+	virtual CStreamingFeatures* get_streaming_q();
+
+	/** returns the statistic type of this test statistic */
+	virtual EStatisticType get_statistic_type() const
+	{
+		return S_LINEAR_TIME_MMD;
+	}
+
 	virtual const char* get_name() const
 	{
 		return "LinearTimeMMD";

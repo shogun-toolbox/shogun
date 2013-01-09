@@ -89,6 +89,11 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 */
 		virtual void set_p_and_q(CFeatures* p_and_q);
 
+		/** Getter for joint features, SG_REF's
+		 * @return joint feature object
+		 */
+		virtual CFeatures* get_p_and_q();
+
 		/** @return number of to be used samples m */
 		virtual index_t get_m() { return m_m; }
 
