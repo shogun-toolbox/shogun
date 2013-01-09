@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #include <shogun/statistics/MMDKernelSelection.h>
@@ -29,8 +29,8 @@ CMMDKernelSelection::CMMDKernelSelection(
 	/* ensure that mmd contains an instance of a MMD related class */
 	REQUIRE(mmd, "CMMDKernelSelection::CMMDKernelSelection(): No MMD instance "
 			"provided!\n");
-	REQUIRE(dynamic_cast<CLinearTimeMMD*>(mmd) ||
-			dynamic_cast<CQuadraticTimeMMD*>(mmd),
+	REQUIRE(mmd->get_statistic_type()==S_LINEAR_TIME_MMD ||
+			mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD,
 			"CMMDKernelSelection::CMMDKernelSelection(): provided instance "
 			"for kernel two sample testing has to be a MMD-based class! The "
 			"provided is of class \"%s\"\n", mmd->get_name());

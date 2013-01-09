@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #ifndef __HSIC_H_
@@ -133,6 +133,12 @@ public:
 	virtual const char* get_name() const
 	{
 		return "HSIC";
+	}
+
+	/** returns the statistic type of this test statistic */
+	virtual EStatisticType get_statistic_type() const
+	{
+		return S_HSIC;
 	}
 
 	/** Approximates the null-distribution by a two parameter gamma

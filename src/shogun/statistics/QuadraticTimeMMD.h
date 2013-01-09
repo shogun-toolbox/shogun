@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #ifndef __QUADRACTIMEMMD_H_
@@ -153,6 +153,12 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		{
 			return "QuadraticTimeMMD";
 		};
+
+		/** returns the statistic type of this test statistic */
+		virtual EStatisticType get_statistic_type() const
+		{
+			return S_QUADRATIC_TIME_MMD;
+		}
 
 #ifdef HAVE_LAPACK
 		/* returns a set of samples of an estimate of the null distribution

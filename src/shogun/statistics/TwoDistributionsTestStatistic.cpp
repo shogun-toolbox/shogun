@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #include <shogun/statistics/TwoDistributionsTestStatistic.h>
@@ -147,4 +147,10 @@ void CTwoDistributionsTestStatistic::set_p_and_q(CFeatures* p_and_q)
 	SG_REF(p_and_q);
 	SG_UNREF(m_p_and_q);
 	m_p_and_q=p_and_q;
+}
+
+CFeatures* CTwoDistributionsTestStatistic::get_p_and_q()
+{
+	SG_UNREF(m_p_and_q);
+	return m_p_and_q;
 }

@@ -4,42 +4,54 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012-2013 Heiko Strathmann
+ * Written (W) 2013 Heiko Strathmann
  */
 
-#ifndef __MMDKERNELSELECTIONMAX_H_
-#define __MMDKERNELSELECTIONMAX_H_
+#ifndef __MMDKERNELSELECTIONMEDIAN_H_
+#define __MMDKERNELSELECTIONMEDIAN_H_
 
 #include <shogun/statistics/MMDKernelSelection.h>
 
 namespace shogun
 {
 
-class CMMDKernelSelectionMax: public CMMDKernelSelection
+class CMMDKernelSelectionMedian: public CMMDKernelSelection
 {
 public:
 
 	/** Default constructor */
-	CMMDKernelSelectionMax();
+	CMMDKernelSelectionMedian();
 
 	/** Constructor that initialises the underlying MMD instance
 	 *
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
-	 * test. Currently: linear or quadratic time MMD.
+	 * test.
+	 * TODO
 	 */
-	CMMDKernelSelectionMax(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelectionMedian(CKernelTwoSampleTestStatistic* mmd,
+			index_t num_data_distance=1000);
 
 	/** Destructor */
-	virtual ~CMMDKernelSelectionMax();
+	virtual ~CMMDKernelSelectionMedian();
 
 	/** TODO */
 	virtual SGVector<float64_t> compute_measures();
 
+	/** TODO */
+	virtual CKernel* select_kernel();
+
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionMax"; }
 
+private:
+	/* initialises and registers member variables */
+	void init();
+
+protected:
+	/** maximum number of data to be used for median distance computation */
+	index_t m_num_data_distance;
 };
 
 }
 
-#endif /* __MMDKERNELSELECTIONMAX_H_ */
+#endif /* __MMDKERNELSELECTIONMEDIAN_H_ */
