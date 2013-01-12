@@ -24,13 +24,18 @@
 #ifdef TAPKEE_EIGEN_INCLUDE_FILE
 	#include TAPKEE_EIGEN_INCLUDE_FILE
 #else 
-	fucker
 	#ifndef TAPKEE_DEBUG
 		#define EIGEN_NO_DEBUG
 	#endif
 	#define EIGEN_RUNTIME_NO_MALLOC
+	#include <Eigen/Eigen>
 	#include <Eigen/Dense>
-	#include <Eigen/Sparse>
+	#if EIGEN_VERSION_AT_LEAST(3,1,0)
+		#include <Eigen/Sparse>
+	#else
+		#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+		#include <unsupported/Eigen/SparseExtra>
+	#endif
 #endif
 
 #ifdef EIGEN_RUNTIME_NO_MALLOC
