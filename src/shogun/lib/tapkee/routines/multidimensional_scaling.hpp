@@ -1,7 +1,6 @@
 #ifndef tapkee_mds_h_
 #define tapkee_mds_h_
 
-#include <omp.h>
 #include <algorithm>
 
 using std::random_shuffle;
