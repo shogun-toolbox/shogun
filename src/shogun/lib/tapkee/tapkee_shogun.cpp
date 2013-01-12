@@ -1,6 +1,9 @@
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 #define TAPKEE_EIGEN_INCLUDE_FILE <shogun/mathematics/eigen3.h>
+#ifndef HAVE_ARPACK
+	#define TAPKEE_NO_ARPACK 
+#endif
 #include <shogun/lib/tapkee/tapkee.hpp>
 #include <shogun/lib/tapkee/callbacks/pimpl_callbacks.hpp>
 
