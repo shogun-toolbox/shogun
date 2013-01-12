@@ -81,12 +81,14 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 	}
 	//UNRESTRICT_ALLOC;
 
-	SparseWeightMatrix weight_matrix(end-begin,end-begin);
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	weight_matrix.reserve(sparse_triplets.size());
+	Eigen::DynamicSparseMatrix<DefaultScalarType> dynamic_weight_matrix(end-begin,end-begin);
+	dynamic_weight_matrix.reserve(sparse_triplets.size());
 	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
-		weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+		dynamic_weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+	SparseWeightMatrix weight_matrix(dynamic_weight_matrix);
 #else
+	SparseWeightMatrix weight_matrix(end-begin,end-begin);
 	weight_matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
 #endif
 
@@ -144,12 +146,14 @@ SparseWeightMatrix linear_weight_matrix(RandomAccessIterator begin, RandomAccess
 	}
 	//UNRESTRICT_ALLOC;
 
-	SparseWeightMatrix weight_matrix(end-begin,end-begin);
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	weight_matrix.reserve(sparse_triplets.size());
+	Eigen::DynamicSparseMatrix<DefaultScalarType> dynamic_weight_matrix(end-begin,end-begin);
+	dynamic_weight_matrix.reserve(sparse_triplets.size());
 	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
-		weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+		dynamic_weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+	SparseWeightMatrix weight_matrix(dynamic_weight_matrix);
 #else
+	SparseWeightMatrix weight_matrix(end-begin,end-begin);
 	weight_matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
 #endif
 
@@ -234,12 +238,14 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 		}
 	}
 
-	SparseWeightMatrix weight_matrix(end-begin,end-begin);
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	weight_matrix.reserve(sparse_triplets.size());
+	Eigen::DynamicSparseMatrix<DefaultScalarType> dynamic_weight_matrix(end-begin,end-begin);
+	dynamic_weight_matrix.reserve(sparse_triplets.size());
 	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
-		weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+		dynamic_weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+	SparseWeightMatrix weight_matrix(dynamic_weight_matrix);
 #else
+	SparseWeightMatrix weight_matrix(end-begin,end-begin);
 	weight_matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
 #endif
 
