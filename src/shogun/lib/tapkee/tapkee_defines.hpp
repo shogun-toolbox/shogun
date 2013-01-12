@@ -31,7 +31,6 @@
 	#define EIGEN_RUNTIME_NO_MALLOC
 	#include <Eigen/Dense>
 	#include <Eigen/Sparse>
-	#include <Eigen/SparseCholesky>
 #endif
 
 #ifdef EIGEN_RUNTIME_NO_MALLOC
@@ -63,7 +62,11 @@ namespace tapkee
 	//! default selfadjoint solver
 	typedef Eigen::SelfAdjointEigenSolver<DenseMatrix> DefaultDenseSelfAdjointEigenSolver;
 	//! default sparse solver
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	typedef Eigen::SimplicialCholesky<SparseWeightMatrix> DefaultSparseSolver;
+#else
 	typedef Eigen::SimplicialLDLT<SparseWeightMatrix> DefaultSparseSolver;
+#endif
 
 #ifdef TAPKEE_CUSTOM_PROPERTIES
 	#include TAPKEE_CUSTOM_PROPERTIES
@@ -149,7 +152,29 @@ enum TAPKEE_EIGEN_EMBEDDING_METHOD
 #define INTERNAL_VECTOR std::vector
 #define INTERNAL_PAIR std::pair
 
-typedef Eigen::Triplet<DefaultScalarType> SparseTriplet;
+
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	namespace tapkee {
+	template <typename T>
+	struct Triplet
+	{
+		Triplet(unsigned int colIndex, unsigned int rowIndex, T valueT) : 
+			col_(colIndex), row_(rowIndex), value_(valueT)
+		{
+		}
+		unsigned int col() const { return col_; };
+		unsigned int row() const { return row_; };
+		T value() const { return value_; };
+		unsigned int col_;
+		unsigned int row_;
+		T value_;
+	};
+	};
+	typedef tapkee::Triplet<DefaultScalarType> SparseTriplet;
+#else
+	typedef Eigen::Triplet<DefaultScalarType> SparseTriplet;
+#endif
+
 typedef INTERNAL_VECTOR<SparseTriplet> SparseTriplets;
 typedef INTERNAL_VECTOR<unsigned int> LocalNeighbors;
 typedef INTERNAL_VECTOR<LocalNeighbors> Neighbors;

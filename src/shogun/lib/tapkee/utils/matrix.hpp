@@ -4,10 +4,10 @@
 namespace tapkee 
 {
 
-void centerMatrix(tapkee::DenseMatrix& matrix)
+void centerMatrix(DenseMatrix& matrix)
 {
-	Eigen::Matrix<tapkee::DenseMatrix::Scalar,1,Eigen::Dynamic> col_means = matrix.colwise().mean();
-	tapkee::DenseMatrix::Scalar grand_mean = matrix.mean();
+	Eigen::Matrix<DenseMatrix::Scalar,1,Eigen::Dynamic> col_means = matrix.colwise().mean();
+	DenseMatrix::Scalar grand_mean = matrix.mean();
 	matrix.array() += grand_mean;
 	matrix.rowwise() -= col_means;
 	matrix.colwise() -= col_means.transpose();

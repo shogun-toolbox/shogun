@@ -63,7 +63,13 @@ Laplacian compute_laplacian(RandomAccessIterator begin,
 		sparse_triplets.push_back(SparseTriplet(i,i,D(i)));
 
 	SparseWeightMatrix weight_matrix(end-begin,end-begin);
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	weight_matrix.reserve(sparse_triplets.size());
+	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
+		weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+#else
 	weight_matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
+#endif
 	weight_matrix.cwiseMax(SparseWeightMatrix(weight_matrix.transpose()));
 
 	return Laplacian(weight_matrix,DenseDiagonalMatrix(D));

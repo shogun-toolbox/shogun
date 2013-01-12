@@ -82,7 +82,13 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 	//UNRESTRICT_ALLOC;
 
 	SparseWeightMatrix weight_matrix(end-begin,end-begin);
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	weight_matrix.reserve(sparse_triplets.size());
+	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
+		weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+#else
 	weight_matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
+#endif
 
 	return weight_matrix;
 }
@@ -139,7 +145,13 @@ SparseWeightMatrix linear_weight_matrix(RandomAccessIterator begin, RandomAccess
 	//UNRESTRICT_ALLOC;
 
 	SparseWeightMatrix weight_matrix(end-begin,end-begin);
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	weight_matrix.reserve(sparse_triplets.size());
+	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
+		weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+#else
 	weight_matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
+#endif
 
 	return weight_matrix;
 }
@@ -223,7 +235,13 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 	}
 
 	SparseWeightMatrix weight_matrix(end-begin,end-begin);
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	weight_matrix.reserve(sparse_triplets.size());
+	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
+		weight_matrix.coeffRef(it->col(),it->row()) += it->value();
+#else
 	weight_matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
+#endif
 
 	return weight_matrix;
 };
@@ -258,7 +276,7 @@ DenseSymmetricMatrixPair construct_neighborhood_preserving_eigenproblem(SparseWe
 		}
 	}
 	
-	rhs += rhs.transpose();
+	rhs += rhs.transpose().eval();
 	rhs /= 2;
 
 	//UNRESTRICT_ALLOC;
