@@ -4,19 +4,15 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Sergey Lisitsyn
+ * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include <shogun/converter/LocalityPreservingProjections.h>
-#ifdef HAVE_LAPACK
-#include <shogun/mathematics/arpack.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/lib/FibonacciHeap.h>
-#include <shogun/mathematics/Math.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/io/SGIO.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/lib/Signal.h>
+#include <shogun/kernel/LinearKernel.h>
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 
@@ -34,75 +30,19 @@ const char* CLocalityPreservingProjections::get_name() const
 	return "LocalityPreservingProjections";
 };
 
-CDenseFeatures<float64_t>* CLocalityPreservingProjections::construct_embedding(CFeatures* features,
-                                                                                SGMatrix<float64_t> W_matrix)
+CFeatures* CLocalityPreservingProjections::apply(CFeatures* features) 
 {
-	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
-	ASSERT(simple_features);
-	int i,j;
-	int N = simple_features->get_num_vectors();
-	int dim = simple_features->get_num_features();
-
-	float64_t* D_diag_vector = SG_CALLOC(float64_t, N);
-	for (i=0; i<N; i++)
-	{
-		for (j=0; j<N; j++)
-			D_diag_vector[i] += W_matrix[i*N+j];
-	}
-
-	// W = -W
-	for (i=0; i<N*N; i++)
-		if (W_matrix[i]>0.0)
-			W_matrix[i] *= -1.0;
-	// W = W + D
-	for (i=0; i<N; i++)
-		W_matrix[i*N+i] += D_diag_vector[i];
-
-	SGMatrix<float64_t> feature_matrix = simple_features->get_feature_matrix();
-	float64_t* XTM = SG_MALLOC(float64_t, dim*N);
-	float64_t* lhs_M = SG_MALLOC(float64_t, dim*dim);
-	float64_t* rhs_M = SG_MALLOC(float64_t, dim*dim);
-
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasNoTrans,dim,N,N,1.0,feature_matrix.matrix,dim,W_matrix.matrix,N,0.0,XTM,dim);
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,XTM,dim,feature_matrix.matrix,dim,0.0,lhs_M,dim);
-
-	for (i=0; i<N; i++)
-		cblas_dscal(dim,CMath::sqrt(D_diag_vector[i]),feature_matrix.matrix+i*dim,1);
-
-	cblas_dgemm(CblasColMajor,CblasNoTrans,CblasTrans,dim,dim,N,1.0,feature_matrix.matrix,dim,feature_matrix.matrix,dim,0.0,rhs_M,dim);
-
-	for (i=0; i<N; i++)
-		cblas_dscal(dim,1.0/D_diag_vector[i],feature_matrix.matrix+i*dim,1);
-
-	float64_t* evals = SG_MALLOC(float64_t, dim);
-	float64_t* evectors = SG_MALLOC(float64_t, m_target_dim*dim);
-	int32_t info = 0;
-#ifdef HAVE_ARPACK
-	arpack_dsxupd(lhs_M,rhs_M,false,dim,m_target_dim,"LA",false,3,true,false,-1e-9,0.0,
-	              evals,evectors,info);
-#else
-	wrap_dsygvx(1,'V','U',dim,lhs_M,dim,rhs_M,dim,1,m_target_dim,evals,evectors,&info);
-#endif
-	SG_FREE(lhs_M);
-	SG_FREE(rhs_M);
-	//SGVector<float64_t>::display_vector(evals,m_target_dim);
-	SG_FREE(evals);
-
-	if (info!=0)
-		SG_ERROR("Failed to solve eigenproblem (%d)\n",info);
-
-	cblas_dgemm(CblasColMajor,CblasTrans,CblasNoTrans,N,m_target_dim,dim,1.0,feature_matrix.matrix,dim,evectors,dim,0.0,XTM,N);
-	SG_FREE(evectors);
-
-	SGMatrix<float64_t> new_features(m_target_dim,N);
-	for (i=0; i<m_target_dim; i++)
-	{
-		for (j=0; j<N; j++)
-			new_features[j*m_target_dim+i] = XTM[i*N+j];
-	}
-	SG_FREE(D_diag_vector);
-	SG_FREE(XTM);
-	return new CDenseFeatures<float64_t>(new_features);
+	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
+	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
+	parameters.n_neighbors = m_k;
+	parameters.gaussian_kernel_width = m_tau;
+	parameters.method = SHOGUN_LOCALITY_PRESERVING_PROJECTIONS;
+	parameters.target_dimension = m_target_dim;
+	parameters.kernel = kernel;
+	parameters.features = (CDotFeatures*)features;
+	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
+	SG_UNREF(kernel);
+	return embedding;
 }
 
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */

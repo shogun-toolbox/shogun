@@ -47,7 +47,7 @@ malsar_result_t malsar_low_rank(
 
 	double rho_L2 = 0.0;
 
-	internal::set_is_malloc_allowed(false);
+	//internal::set_is_malloc_allowed(false);
 	bool done = false;
 	while (!done && iter <= options.max_iter)
 	{
@@ -93,7 +93,7 @@ malsar_result_t malsar_low_rank(
 		while (inner_iter <= 1000)
 		{
 			// compute trace projection of Ws - gWs/gamma with 2*rho/gamma
-			internal::set_is_malloc_allowed(true);
+			//internal::set_is_malloc_allowed(true);
 			Wzp.setZero();
 			JacobiSVD<MatrixXd> svd((Ws - gWs/gamma).transpose(),ComputeThinU | ComputeThinV);
 			for (int i=0; i<svd.singularValues().size(); i++)
@@ -103,7 +103,7 @@ malsar_result_t malsar_low_rank(
 					       svd.singularValues()[i]*
 					       svd.matrixV().col(i).transpose()).transpose();
 			}
-			internal::set_is_malloc_allowed(false);
+			//internal::set_is_malloc_allowed(false);
 			// walk in direction of antigradient 
 			Czp = Cs - gCs/gamma;
 			
@@ -160,10 +160,10 @@ malsar_result_t malsar_low_rank(
 		// compute objective value
 		obj_old = obj;
 		obj = Fzp;
-		internal::set_is_malloc_allowed(true);
+		//internal::set_is_malloc_allowed(true);
 		JacobiSVD<MatrixXd> svd(Wzp, EigenvaluesOnly);
 		obj += rho*svd.singularValues().sum();
-		internal::set_is_malloc_allowed(false);
+		//internal::set_is_malloc_allowed(false);
 
 
 		// check if process should be terminated 
@@ -197,7 +197,7 @@ malsar_result_t malsar_low_rank(
 		t_old = t;
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
-	internal::set_is_malloc_allowed(true);
+	//internal::set_is_malloc_allowed(true);
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj);
 
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);

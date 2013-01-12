@@ -89,7 +89,7 @@ slep_result_t slep_mc_plain_lr(
 	int iter = 0;
 	bool done = false;
 	CTime time;
-	internal::set_is_malloc_allowed(false);
+	//internal::set_is_malloc_allowed(false);
 	while ((!done) && (iter<options.max_iter) && (!CSignal::cancel_computations()))
 	{
 		double beta = (alphap-1)/alpha;
@@ -214,7 +214,7 @@ slep_result_t slep_mc_plain_lr(
 		iter++;
 	}
 	SG_SINFO("%d iterations passed, objective = %f\n",iter,objective);
-	internal::set_is_malloc_allowed(true);
+	//internal::set_is_malloc_allowed(true);
 
 	// output computed weight vectors and intercepts
 	SGMatrix<float64_t> r_w(n_feats,n_classes);

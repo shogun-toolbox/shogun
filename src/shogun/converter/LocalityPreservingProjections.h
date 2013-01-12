@@ -4,14 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Sergey Lisitsyn
+ * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef LOCALITYPRESERVINGPROJECTIONS_H_
 #define LOCALITYPRESERVINGPROJECTIONS_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/converter/LaplacianEigenmaps.h>
 
 namespace shogun
@@ -20,8 +20,7 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief class LocalityPreservingProjections (part of the
- * Efficient Dimensionality Reduction Toolkit) used to compute
+/** @brief class LocalityPreservingProjections used to compute
  * embeddings of data using Locality Preserving Projections method
  * as described in
  *
@@ -44,20 +43,14 @@ public:
 	/** destructor */
 	virtual ~CLocalityPreservingProjections();
 
-	 	/** get name */
+	/** get name */
 	virtual const char* get_name() const;
 
-protected:
-
-	/** construct embedding
-	 * @param features features
-	 * @param W_matrix W matrix to be used
-	 */
-	virtual CDenseFeatures<float64_t>* construct_embedding(CFeatures* features,
-	                                                        SGMatrix<float64_t> W_matrix);
+	/** apply */
+	virtual CFeatures* apply(CFeatures* features);
 
 };
 }
 
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* LOCALITYPRESERVINGPROJECTIONS_H_ */

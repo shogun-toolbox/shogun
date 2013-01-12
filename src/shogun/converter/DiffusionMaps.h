@@ -52,11 +52,11 @@ public:
 	 */
 	virtual CFeatures* apply(CFeatures* features);
 
-	/** embed kernel
-	 * @param kernel to use for embedding
+	/** embed distance
+	 * @param distance to use for embedding
 	 * @return embedding simple features
 	 */
-	virtual CDenseFeatures<float64_t>* embed_kernel(CKernel* kernel);
+	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
 
 	/** setter for t parameter
 	 * @param t t value
@@ -67,6 +67,16 @@ public:
 	 * @return t value
 	 */
 	int32_t get_t() const;
+
+	/** setter for width parameter
+	 * @param width width value
+	 */
+	void set_width(float64_t width);
+
+	/** getter for width parameter
+	 * @return width value
+	 */
+	float64_t get_width() const;
 
 	/** get name */
 	virtual const char* get_name() const;
@@ -80,6 +90,9 @@ protected:
 
 	/** number of steps */
 	int32_t m_t;
+
+	/** gaussian kernel width */
+	float64_t m_width;
 
 };
 }

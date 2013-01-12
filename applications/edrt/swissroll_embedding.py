@@ -27,10 +27,9 @@ converters.append((cisomap,"Isomap with k=%d" % cisomap.get_k()))
 from shogun.Converter import DiffusionMaps
 from shogun.Kernel import GaussianKernel
 dm = DiffusionMaps()
-dm.set_t(1)
-kernel = GaussianKernel(100,10.0)
-dm.set_kernel(kernel)
-converters.append((dm,"Diffusion Maps with t=%d, sigma=%f" % (dm.get_t(),kernel.get_width())))
+dm.set_t(2)
+dm.set_width(1000.0)
+converters.append((dm,"Diffusion Maps with t=%d, sigma=%f" % (dm.get_t(),dm.get_width())))
 
 from shogun.Converter import HessianLocallyLinearEmbedding
 hlle = HessianLocallyLinearEmbedding()
@@ -44,8 +43,8 @@ converters.append((ltsa,"LTSA with k=%d" % (ltsa.get_k())))
 
 from shogun.Converter import LaplacianEigenmaps
 le = LaplacianEigenmaps()
-le.set_k(15)
-le.set_tau(25.0)
+le.set_k(20)
+le.set_tau(100.0)
 converters.append((le,"Laplacian Eigenmaps with k=%d, tau=%d" % (le.get_k(),le.get_tau())))
 
 import matplotlib

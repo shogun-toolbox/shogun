@@ -11,8 +11,9 @@
 #define EIGEN3_H_
 
 #ifdef HAVE_EIGEN3
-#define EIGEN_RUNTIME_NO_MALLOC
+//#define EIGEN_RUNTIME_NO_MALLOC
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 #endif
 
 #endif
