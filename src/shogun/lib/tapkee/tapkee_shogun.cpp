@@ -1,3 +1,12 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
+ */
+
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
 #define TAPKEE_EIGEN_INCLUDE_FILE <shogun/mathematics/eigen3.h>
@@ -150,6 +159,8 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 		case SHOGUN_LANDMARK_ISOMAP:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::LANDMARK_ISOMAP;
+			tapkee_parameters[tapkee::LANDMARK_RATIO] = 
+				parameters.landmark_ratio;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
 				parameters.n_neighbors;
 			N = parameters.distance->get_num_vec_lhs();
