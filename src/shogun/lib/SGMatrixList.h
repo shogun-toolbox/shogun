@@ -74,7 +74,7 @@ template<class T> class SGMatrixList : public SGReferencedData
 
 	protected:
 		/** copy data */
-		virtual void copy_data(SGReferencedData const & orig);
+		virtual void copy_data(const SGReferencedData &orig);
 
 		/** initialize empty data */
 		virtual void init_data();

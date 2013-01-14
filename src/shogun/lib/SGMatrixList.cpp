@@ -47,7 +47,7 @@ SGMatrixList<T>::~SGMatrixList()
 }
 
 template <class T>
-void SGMatrixList<T>::copy_data(SGReferencedData const & orig)
+void SGMatrixList<T>::copy_data(const SGReferencedData &orig)
 {
 	matrix_list  = ((SGMatrixList*) (&orig))->matrix_list;
 	num_matrices = ((SGMatrixList*) (&orig))->num_matrices;
