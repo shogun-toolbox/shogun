@@ -11,7 +11,7 @@
 "The `modshogun` module gathers all modules available in the SHOGUN toolkit."
 %enddef
 
-#ifdef USE_SWIG_DIRECTORS
+#if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %module(directors="1", docstring=DOCSTR) modshogun
 #else
 %module(docstring=DOCSTR) modshogun

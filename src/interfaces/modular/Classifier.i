@@ -14,7 +14,7 @@
 %feature("autodoc", "get_alphas(self) -> [] of float") get_alphas;
 #endif
 
-#ifdef USE_SWIG_DIRECTORS
+#if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorLinearMachine;
 %feature("director") shogun::CDirectorKernelMachine;
 %feature("director:except") {

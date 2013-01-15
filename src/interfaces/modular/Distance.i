@@ -12,7 +12,7 @@
 %feature("autodoc", "get_distance_matrix(self) -> numpy 2dim array of float") get_distance_matrix;
 #endif
 
-#ifdef USE_SWIG_DIRECTORS
+#if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorDistance;
 %feature("director:except") {
     if ($error != NULL) {

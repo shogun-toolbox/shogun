@@ -12,7 +12,7 @@
 %newobject CGradientEvaluation::evaluate();
 %newobject CCrossValidation::evaluate();
 
-#ifdef USE_SWIG_DIRECTORS
+#if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorContingencyTableEvaluation;
 #endif
 

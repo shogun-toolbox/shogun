@@ -22,7 +22,7 @@
 %newobject create_merged_copy(CFeatures* other);
 %newobject copy_subset(SGVector<index_t> indices);
 
-#ifdef USE_SWIG_DIRECTORS
+#if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorDotFeatures;
 %feature("director:except") {
     if ($error != NULL) {
