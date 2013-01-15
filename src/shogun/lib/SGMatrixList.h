@@ -16,6 +16,7 @@
 
 namespace shogun
 {
+	template<class T> class SGMatrix;
 
 /** @brief shogun matrix list */
 template<class T> class SGMatrixList : public SGReferencedData

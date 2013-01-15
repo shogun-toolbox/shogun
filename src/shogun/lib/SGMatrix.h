@@ -20,7 +20,6 @@
 namespace shogun
 {
 	template<class T> class SGVector;
-	template<class T> class SGMatrixList;
 	class CFile;
 
 /** @brief shogun matrix */
