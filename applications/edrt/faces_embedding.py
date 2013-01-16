@@ -29,14 +29,14 @@ path = '../../data/faces/'
 converter = KernelLocallyLinearEmbedding
 nd,md,features = build_features(path)
 converter_instance = converter()
-converter_instance.parallel.set_num_threads(2)
-converter_instance.set_k(10)
-converter_instance.set_kernel(GaussianKernel(50,500000.0))
+converter_instance.set_k(20)
+converter_instance.set_kernel(LinearKernel())
 converter_instance.set_nullspace_shift(1e-3)
 converter_instance.set_target_dim(2)
 
 start = time.time()
 new_features = converter_instance.embed(features).get_feature_matrix()
+print new_features.shape
 end = time.time()
 
 clusterer = KMeans

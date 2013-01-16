@@ -4,14 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Sergey Lisitsyn
+ * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef MULTIDIMENSIONALSCALING_H_
 #define MULTIDIMENSIONALSCALING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
@@ -36,15 +36,11 @@ class CDistance;
  * Sparse multidimensional scaling using landmark points
  * V De Silva, J B Tenenbaum (2004) Technology, p. 1-4
  *
- * In this preprocessor the LAPACK routine DSYEVR is used for
- * solving an eigenproblem. If ARPACK library is available,
- * its routines DSAUPD/DSEUPD are used instead.
- *
  * Note that target dimension should be set with reasonable value
  * (using set_target_dim). In case it is higher than intrinsic
  * dimensionality of the dataset 'extra' features of the output
  * might be inconsistent (essentially, according to zero or
- * negative eigenvalues). In this case a warning is showed.
+ * negative eigenvalues). In this case a warning is fired.
  *
  * It is possible to apply multidimensional scaling to any
  * given distance using apply_to_distance_matrix method.
@@ -120,24 +116,6 @@ protected:
 	/** default initialization */
 	virtual void init();
 
-	 /** classical embedding
-	 * @param distance_matrix distance matrix to be used for embedding
-	 * @return new feature matrix representing given distance
-	 */
-	SGMatrix<float64_t> classic_embedding(SGMatrix<float64_t> distance_matrix);
-
-	 /** landmark embedding (approximate, accuracy varies with m_landmark_num parameter)
-	 * @param distance_matrix distance matrix to be used for embedding
-	 * @return new feature matrix representing given distance matrix
-	 */
-	SGMatrix<float64_t> landmark_embedding(SGMatrix<float64_t> distance_matrix);
-
-	/** process distance matrix (redefined in isomap, for mds does nothing)
-	 * @param distance_matrix distance matrix
-	 * @return processed distance matrix
-	 */
-	virtual SGMatrix<float64_t> process_distance_matrix(SGMatrix<float64_t> distance_matrix);
-
 /// FIELDS
 protected:
 
@@ -150,24 +128,8 @@ protected:
 	/** number of landmarks */
 	int32_t m_landmark_number;
 
-/// STATIC
-protected:
-
-	/** run triangulation thread for landmark embedding
-	 * @param p thread parameters
-	 */
-	static void* run_triangulation_thread(void* p);
-
-	/** subroutine used to shuffle count indexes among of total_count ones
-	 * with Fisher-Yates (known as Knuth too) shuffle algorithm
-	 * @param count number of indexes to be shuffled and returned
-	 * @param total_count total number of indexes
-	 * @return sorted shuffled indexes for landmarks
-	 */
-	static SGVector<int32_t> shuffle(int32_t count, int32_t total_count);
-
 };
 
 }
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* MULTIDIMENSIONALSCALING_H_ */

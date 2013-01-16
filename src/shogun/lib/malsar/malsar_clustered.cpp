@@ -78,7 +78,7 @@ malsar_result_t malsar_clustered(
 	double* ub = SG_MALLOC(double, n_tasks);
 	double* x = SG_CALLOC(double, n_tasks);
 
-	internal::set_is_malloc_allowed(false);
+	//internal::set_is_malloc_allowed(false);
 	bool done = false;
 	while (!done && iter <= options.max_iter)
 	{
@@ -93,7 +93,7 @@ malsar_result_t malsar_clustered(
 		// zero gradient
 		gWs.setZero();
 		gCs.setZero();
-		internal::set_is_malloc_allowed(true);
+		//internal::set_is_malloc_allowed(true);
 		SG_SDEBUG("Computing gradient\n");
 		IM = (eta*MatrixXd::Identity(n_tasks,n_tasks)+Ms);
 		// cout << "M" << endl << Ms << endl;
@@ -103,7 +103,7 @@ malsar_result_t malsar_clustered(
 		//cout << "invEtaMWt" << endl << invEtaMWt << endl;
 		gMs.noalias() = -c*(Ws.transpose()*Ws)*IMsqinv;
 		gWs.noalias() += 2*c*invEtaMWt.transpose();
-		internal::set_is_malloc_allowed(false);
+		//internal::set_is_malloc_allowed(false);
 
 		// compute gradient and objective at search point
 		double Fs = 0;
@@ -140,7 +140,7 @@ malsar_result_t malsar_clustered(
 			Wzp = Ws - gWs/gamma;
 			Czp = Cs - gCs/gamma;
 			// compute singular projection of Ms - gMs/gamma with k
-			internal::set_is_malloc_allowed(true);
+			//internal::set_is_malloc_allowed(true);
 			EigenSolver<MatrixXd> eigensolver(Ms-gMs/gamma);
 
 			// solve problem
@@ -169,16 +169,16 @@ malsar_result_t malsar_clustered(
 			Map<VectorXd> Mzp_DiagSigz(x,n_tasks);
 			Mzp_Pz = eigensolver.eigenvectors().real();
 			Mzp = Mzp_Pz*Mzp_DiagSigz.asDiagonal()*Mzp_Pz.transpose();
-			internal::set_is_malloc_allowed(false);
+			//internal::set_is_malloc_allowed(false);
 			// walk in direction of antigradient 
 			for (int i=0; i<n_tasks; i++)
 				Mzp_DiagSigz[i] += eta;
-			internal::set_is_malloc_allowed(true);
+			//internal::set_is_malloc_allowed(true);
 			invEtaMWt = (Mzp_Pz*
 			             (Mzp_DiagSigz.cwiseInverse().asDiagonal())*
 			             Mzp_Pz.transpose())*
 			             Wzp.transpose();
-			internal::set_is_malloc_allowed(false);
+			//internal::set_is_malloc_allowed(false);
 			// compute objective at line search point
 			Fzp = 0.0;
 			for (task=0; task<n_tasks; task++)
@@ -285,7 +285,7 @@ malsar_result_t malsar_clustered(
 		t_old = t;
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
-	internal::set_is_malloc_allowed(true);
+	//internal::set_is_malloc_allowed(true);
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj);
 	
 	SG_FREE(H_diag_matrix);

@@ -10,6 +10,9 @@ features = sg.RealFeatures(feature_matrix)
 # create Isomap converter instance
 converter = sg.Isomap()
 
+# set number of neighbors to be used
+converter.set_k(15)
+
 # set target dimensionality
 converter.set_target_dim(2)
 

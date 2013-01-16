@@ -15,17 +15,17 @@ converter.set_target_dim(2)
 # set number of time-steps
 converter.set_t(2)
 
-# create Gaussian kernel instance
-kernel = sg.GaussianKernel(100,10.0)
-# enable converter instance to use created kernel instance
-converter.set_kernel(kernel)
+# create euclidean distance instance
+distance = sg.EuclideanDistance()
+# enable converter instance to use created distance instance
+converter.set_distance(distance)
 
 # compute embedding with Diffusion Maps method
 embedding = converter.embed(features)
 
-# compute linear kernel matrix
-kernel_matrix = np.dot(feature_matrix.T,feature_matrix)
+# compute custom distance matrix
+distance_matrix = np.exp(-np.dot(feature_matrix.T,feature_matrix))
 # create Custom Kernel instance
-custom_kernel = sg.CustomKernel(kernel_matrix)
-# construct embedding based on created kernel
-kernel_embedding = converter.embed_kernel(custom_kernel)
+custom_distance = sg.CustomDistance(distance_matrix)
+# construct embedding based on created distance
+distance_embedding = converter.embed_distance(custom_distance)
