@@ -1,5 +1,5 @@
 import modshogun as sg
-import dataloader as loader
+import data
 
 # load data
 feature_matrix = loader.load('mnist.mat')

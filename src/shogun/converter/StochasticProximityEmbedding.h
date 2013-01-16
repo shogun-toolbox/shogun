@@ -4,14 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2012-2013 Fernando José Iglesias García
+ * Copyright (C) 2012-2013 Fernando José Iglesias García
  */
 
 #ifndef STOCHASTICPROXIMITYEMBEDDING_H_
 #define STOCHASTICPROXIMITYEMBEDDING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
@@ -133,16 +133,6 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		/** default init */
 		void init();
 
-		/** constructs neighborhood matrix by distance
-		 * @param distance distance among features
-		 * @param k number of neighbors
-		 * @param N number of features
-		 * @param max_dist maximum distance among features
-		 * @return matrix containing indexes of neighbors of i-th vector in 
-		 * i-th column
-		 */
-		virtual SGMatrix<int32_t> get_neighborhood_matrix(CDistance* distance, int32_t k, int32_t N, float64_t max_dist);
-
 		/** apply embedding to CDistance
 		 * @param distance TODO Euclidean works fine, check with others
 		 * @return new features in the embedded space
@@ -168,5 +158,5 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 } /* namespace shogun */
 
 
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* STOCHASTICPROXIMITYEMBEDDING_H_ */ 

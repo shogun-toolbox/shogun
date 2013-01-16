@@ -4,14 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Sergey Lisitsyn
+ * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef LOCALLYLINEAREMBEDDING_H_
 #define LOCALLYLINEAREMBEDDING_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
@@ -23,8 +23,7 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief class LocallyLinearEmbedding (part of the Efficient
- * Dimensionality Reduction Toolkit) used to embed
+/** @brief class LocallyLinearEmbedding used to embed
  * data using Locally Linear Embedding algorithm described in
  *
  * Saul, L. K., Ave, P., Park, F., & Roweis, S. T. (2001).
@@ -32,26 +31,11 @@ class CDistance;
  * Retrieved from:
  * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7319&rep=rep1&type=pdf
  *
- * The process of finding nearest neighbors is parallel and
- * involves Fibonacci Heap and Euclidean distance.
- *
- * Linear reconstruction step runs in parallel for objects and
- * involves LAPACK routine DPOSV for solving a system of linear equations.
- *
- * The eigenproblem stated in the algorithm is solved with LAPACK routine
- * DSYEVR or with ARPACK DSAUPD/DSEUPD routines if available.
- *
  * Due to computation speed, ARPACK is being used with small
  * regularization of weight matrix and Cholesky factorization is used
  * internally for Lanzcos iterations (in case of only LAPACK is available)
  * and SUPERLU library for fast solving sparse equations stated by ARPACK
  * is being used if available.
- *
- * This class also have capability of selecting k automatically in
- * range between "k" and "max_k" in case if "auto_k" is true. This
- * is being done using ternary search of minima of
- * the mean reconstruction error. The reconstruction error is
- * considered to have only one global minimum in this mode.
  *
  * It is optimized with alignment formulation as described in
  *
@@ -89,26 +73,6 @@ public:
 	 */
 	int32_t get_k() const;
 
-	/** setter for max_k parameter
-	 * @param max_k max_k value
-	 */
-	void set_max_k(int32_t max_k);
-
-	/** getter for max_k parameter
-	 * @return m_max_k value
-	 */
-	int32_t get_max_k() const;
-
-	/** setter for auto_k parameter
-	 * @param auto_k auto_k value
-	 */
-	void set_auto_k(bool auto_k);
-
-	/** getter for auto_k parameter
-	 * @return m_auto_k value
-	 */
-	bool get_auto_k() const;
-
 	/** setter for reconstruction shift parameter
 	 * @param reconstruction_shift reconstruction shift value
 	 */
@@ -129,16 +93,6 @@ public:
 	 */
 	float64_t get_nullspace_shift() const;
 
-	/** setter for use arpack parameter
-	 * @param use_arpack use arpack value
-	 */
-	void set_use_arpack(bool use_arpack);
-
-	/** getter for use arpack parameter
-	 * @return use_arpack value
-	 */
-	bool get_use_arpack() const;
-
 	/** get name */
 	virtual const char* get_name() const;
 
@@ -148,60 +102,11 @@ protected:
 	/** default init */
 	void init();
 
-	/** constructs weight matrix
-	 * @param simple_features features to be used
-	 * @param W_matrix weight matrix
-	 * @param neighborhood_matrix matrix containing neighbor idxs
-	 */
-	virtual SGMatrix<float64_t> construct_weight_matrix(CDenseFeatures<float64_t>* simple_features,float64_t* W_matrix,
-                                                            SGMatrix<int32_t> neighborhood_matrix);
-
-	/** constructs embedding
-	 * @param matrix computed weight matrix
-	 * @param dimension dimension of embedding
-	 * @return embedding features
-	 */
-	virtual SGMatrix<float64_t> construct_embedding(SGMatrix<float64_t> matrix,int dimension);
-
-	/** constructs neighborhood matrix by distance
-	 * @param distance_matrix distance matrix to be used
-	 * @param k number of neighbors
-	 * @return matrix containing indexes of neighbors of i-th vector in i-th column
-	 */
-	virtual SGMatrix<int32_t> get_neighborhood_matrix(SGMatrix<float64_t> distance_matrix, int32_t k);
-
-	/** estimates k using ternary search
-	 * @param simple_features simple features to use
-	 * @param neighborhood_matrix matrix containing indexes of neighbors for every vector
-	 * @return optimal k (in means of reconstruction error)
-	 */
-	int32_t estimate_k(CDenseFeatures<float64_t>* simple_features, SGMatrix<int32_t> neighborhood_matrix);
-
-	/** computes reconstruction error using subset of given features
-	 * @param k
-	 * @param dim
-	 * @param N
-	 * @param feature_matrix
-	 * @param z_matrix
-	 * @param covariance_matrix
-	 * @param resid_vector
-	 * @param id_vector
-	 * @param neighborhood_matrix
-	 * @return residual sum
-	 */
-	float64_t compute_reconstruction_error(int32_t k, int dim, int N, float64_t* feature_matrix,
-	                                       float64_t* z_matrix, float64_t* covariance_matrix,
-	                                       float64_t* resid_vector, float64_t* id_vector,
-	                                       SGMatrix<int32_t> neighborhood_matrix);
-
 	/// FIELDS
 protected:
 
 	/** number of neighbors */
 	int32_t m_k;
-
-	/** maximum number of neighbors */
-	int32_t m_max_k;
 
 	/** regularization shift of reconstruction step */
 	float64_t m_reconstruction_shift;
@@ -209,22 +114,8 @@ protected:
 	/** regularization shift of nullspace finding step */
 	float64_t m_nullspace_shift;
 
-	/** whether use arpack or not */
-	bool m_use_arpack;
-
-	/** whether use automatic k or not */
-	bool m_auto_k;
-
-	/// THREADS
-protected:
-
-	/** runs linear reconstruction thread
-	 * @param p thread params
-	 */
-	static void* run_linearreconstruction_thread(void* p);
-
 };
 }
 
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* LOCALLYLINEAREMBEDDING_H_ */

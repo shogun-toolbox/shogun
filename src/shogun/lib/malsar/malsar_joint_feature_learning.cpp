@@ -48,7 +48,7 @@ malsar_result_t malsar_joint_feature_learning(
 	double gamma=1, gamma_inc=2;
 	double obj=0.0, obj_old=0.0;
 
-	internal::set_is_malloc_allowed(false);
+	//internal::set_is_malloc_allowed(false);
 	bool done = false;
 	while (!done && iter <= options.max_iter && !CSignal::cancel_computations())
 	{
@@ -211,7 +211,7 @@ malsar_result_t malsar_joint_feature_learning(
 		t_old = t;
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
-	internal::set_is_malloc_allowed(true);
+	//internal::set_is_malloc_allowed(true);
 	SG_SDONE();
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj);
 

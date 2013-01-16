@@ -4,17 +4,15 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Sergey Lisitsyn
+ * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/converter/MultidimensionalScaling.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Features.h>
@@ -34,10 +32,6 @@ class CDistance;
  * Global versus local methods in nonlinear dimensionality reduction.
  * Advances in Neural Information Processing Systems 15, 15(Figure 2), 721-728. MIT Press.
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.9.3407&rep=rep1&type=pdf
- *
- * Shortest paths are being computed with Dijkstra's algorithm with heap
- * in parallel. Due to sparsity of the kNN graph Fibonacci Heap with
- * amortized O(1) Extract-Min operation time complexity is used.
  *
  * It is possible to apply preprocessor to specified distance using
  * apply_to_distance.
@@ -69,18 +63,14 @@ public:
 	 */
 	int32_t get_k() const;
 
+	/** embed distance */
+	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+
 /// HELPERS
 protected:
 
 	/** default init */
 	virtual void init();
-
-	/** process distance matrix (redefined in isomap, for mds does nothing)
-	 * @param distance_matrix distance matrix
-	 * @return processed distance matrix
-	 */
-	virtual SGMatrix<float64_t> process_distance_matrix(SGMatrix<float64_t> distance_matrix);
-
 
 /// FIELDS
 protected:
@@ -88,21 +78,7 @@ protected:
 	/** k, number of neighbors for K-Isomap */
 	int32_t m_k;
 
-/// THREADS
-protected:
-
-	/** run dijkstra thread
-	 * @param p thread params
-	 */
-	static void* run_dijkstra_thread(void* p);
-
-	/** approximate geodesic distance with shortest path in kNN graph
-	 * @param D_matrix distance matrix (deleted on exit)
-	 * @return approximate geodesic distance matrix
-	 */
-	SGMatrix<float64_t> isomap_distance(SGMatrix<float64_t> D_matrix);
-
 };
 }
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* ISOMAP_H_ */

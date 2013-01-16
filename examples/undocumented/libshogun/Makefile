@@ -76,7 +76,6 @@ TARGETS = basic_minimal \
 		  converter_localtangentspacealignment \
 		  converter_hessianlocallylinearembedding \
 		  converter_kernellocallylinearembedding \
-		  converter_kernellocaltangentspacealignment \
 		  converter_multidimensionalscaling \
 		  converter_isomap \
 		  converter_diffusionmaps \
