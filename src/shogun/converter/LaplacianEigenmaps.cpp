@@ -4,13 +4,13 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Sergey Lisitsyn
+ * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include <shogun/converter/LaplacianEigenmaps.h>
 #include <shogun/converter/EmbeddingConverter.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
