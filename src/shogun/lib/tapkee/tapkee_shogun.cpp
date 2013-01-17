@@ -9,6 +9,8 @@
 
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
+#ifdef HAVE_EIGEN3
+
 #define TAPKEE_EIGEN_INCLUDE_FILE <shogun/mathematics/eigen3.h>
 #ifndef HAVE_ARPACK
 	#define TAPKEE_NO_ARPACK 
@@ -190,4 +192,4 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	return new CDenseFeatures<float64_t>(feature_matrix);
 }
 
-
+#endif

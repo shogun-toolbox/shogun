@@ -10,6 +10,8 @@
 #ifndef TAPKEE_SHOGUN_ADAPTER
 #define TAPKEE_SHOGUN_ADAPTER
 
+#ifdef HAVE_EIGEN3
+
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>
@@ -54,4 +56,5 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
 }
 
+#endif
 #endif 
