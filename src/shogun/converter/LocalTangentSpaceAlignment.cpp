@@ -9,7 +9,7 @@
  */
 
 #include <shogun/converter/LocalTangentSpaceAlignment.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>

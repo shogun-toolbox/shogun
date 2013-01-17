@@ -4,15 +4,15 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011 Sergey Lisitsyn
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Sergey Lisitsyn
+ * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef DIFFUSIONMAPS_H_
 #define DIFFUSIONMAPS_H_
 #include <shogun/lib/config.h>
 #include <shogun/converter/EmbeddingConverter.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 
