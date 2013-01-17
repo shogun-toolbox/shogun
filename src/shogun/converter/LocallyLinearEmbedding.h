@@ -31,12 +31,6 @@ class CDistance;
  * Retrieved from:
  * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.123.7319&rep=rep1&type=pdf
  *
- * Due to computation speed, ARPACK is being used with small
- * regularization of weight matrix and Cholesky factorization is used
- * internally for Lanzcos iterations (in case of only LAPACK is available)
- * and SUPERLU library for fast solving sparse equations stated by ARPACK
- * is being used if available.
- *
  * It is optimized with alignment formulation as described in
  *
  * Zhao, D. (2006).

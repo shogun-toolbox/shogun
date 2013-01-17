@@ -11,7 +11,7 @@
 #include <shogun/converter/DiffusionMaps.h>
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
@@ -85,4 +85,4 @@ CDenseFeatures<float64_t>* CDiffusionMaps::embed_distance(CDistance* distance)
 	parameters.distance = distance;
 	return tapkee_embed(parameters);
 }
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
