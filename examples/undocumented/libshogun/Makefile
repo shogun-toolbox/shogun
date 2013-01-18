@@ -103,6 +103,7 @@ TARGETS = basic_minimal \
 		  streaming_from_dense \
 		  streaming_generators \
 		  library_hdf5 \
+		  library_serialization \
 
 all: $(TARGETS)
 
