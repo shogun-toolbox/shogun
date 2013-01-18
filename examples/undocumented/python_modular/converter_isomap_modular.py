@@ -7,18 +7,20 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 parameter_list = [[data]]
 
 def converter_isomap_modular (data):
-	from shogun.Features import RealFeatures
-	from shogun.Converter import Isomap
-	
-	features = RealFeatures(data)
+	try:
+		from shogun.Features import RealFeatures
+		from shogun.Converter import Isomap
 		
-	converter = Isomap()
-	converter.set_k(20)
-	converter.set_target_dim(1)
-	converter.apply(features)
+		features = RealFeatures(data)
+			
+		converter = Isomap()
+		converter.set_k(20)
+		converter.set_target_dim(1)
+		converter.apply(features)
 
-	return features
-
+		return features
+	except ImportError:
+		print('No Eigen3 available')
 
 if __name__=='__main__':
 	print('Isomap')
