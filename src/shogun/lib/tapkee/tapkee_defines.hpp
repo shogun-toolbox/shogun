@@ -153,10 +153,13 @@ enum TAPKEE_EIGEN_EMBEDDING_METHOD
 	UNKNOWN_EIGEN_METHOD
 };
 
-// Internal types
-#define INTERNAL_VECTOR std::vector
-#define INTERNAL_PAIR std::pair
-
+// Internal types (can be overrided)
+#ifndef TAPKEE_INTERNAL_VECTOR
+	#define TAPKEE_INTERNAL_VECTOR std::vector
+#endif
+#ifndef TAPKEE_INTERNAL_PAIR
+	#define TAPKEE_INTERNAL_PAIR std::pair
+#endif
 
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	namespace tapkee {
@@ -180,19 +183,18 @@ enum TAPKEE_EIGEN_EMBEDDING_METHOD
 	typedef Eigen::Triplet<DefaultScalarType> SparseTriplet;
 #endif
 
-typedef INTERNAL_VECTOR<SparseTriplet> SparseTriplets;
-typedef INTERNAL_VECTOR<unsigned int> LocalNeighbors;
-typedef INTERNAL_VECTOR<LocalNeighbors> Neighbors;
-typedef INTERNAL_PAIR<DenseMatrix,DenseVector> EmbeddingResult;
-typedef INTERNAL_PAIR<DenseMatrix,DenseVector> ProjectionResult;
+typedef TAPKEE_INTERNAL_VECTOR<SparseTriplet> SparseTriplets;
+typedef TAPKEE_INTERNAL_VECTOR<unsigned int> LocalNeighbors;
+typedef TAPKEE_INTERNAL_VECTOR<LocalNeighbors> Neighbors;
+typedef TAPKEE_INTERNAL_PAIR<DenseMatrix,DenseVector> EmbeddingResult;
+typedef TAPKEE_INTERNAL_PAIR<DenseMatrix,DenseVector> ProjectionResult;
 typedef Eigen::DiagonalMatrix<DefaultScalarType,Eigen::Dynamic> DenseDiagonalMatrix;
-typedef INTERNAL_VECTOR<unsigned int> Landmarks;
-typedef INTERNAL_PAIR<SparseWeightMatrix,DenseDiagonalMatrix> Laplacian;
-typedef INTERNAL_PAIR<DenseSymmetricMatrix,DenseSymmetricMatrix> DenseSymmetricMatrixPair;
+typedef TAPKEE_INTERNAL_VECTOR<unsigned int> Landmarks;
+typedef TAPKEE_INTERNAL_PAIR<SparseWeightMatrix,DenseDiagonalMatrix> Laplacian;
+typedef TAPKEE_INTERNAL_PAIR<DenseSymmetricMatrix,DenseSymmetricMatrix> DenseSymmetricMatrixPair;
 
-#undef INTERNAL_VECTOR
-#undef INTERNAL_PAIR
-
+#undef TAPKEE_INTERNAL_VECTOR
+#undef TAPKEE_INTERNAL_PAIR
 
 struct ProjectionImplementation
 {

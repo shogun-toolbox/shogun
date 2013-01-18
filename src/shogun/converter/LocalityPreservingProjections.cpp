@@ -32,16 +32,15 @@ const char* CLocalityPreservingProjections::get_name() const
 
 CFeatures* CLocalityPreservingProjections::apply(CFeatures* features) 
 {
-	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
+	m_distance->init(features,features);
 	parameters.n_neighbors = m_k;
 	parameters.gaussian_kernel_width = m_tau;
 	parameters.method = SHOGUN_LOCALITY_PRESERVING_PROJECTIONS;
 	parameters.target_dimension = m_target_dim;
-	parameters.kernel = kernel;
+	parameters.distance = m_distance;
 	parameters.features = (CDotFeatures*)features;
 	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	SG_UNREF(kernel);
 	return embedding;
 }
 

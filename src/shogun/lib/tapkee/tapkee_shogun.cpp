@@ -68,7 +68,7 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	tapkee_parameters[tapkee::EIGEN_EMBEDDING_METHOD] = tapkee::ARPACK;
 	tapkee_parameters[tapkee::NEIGHBORS_METHOD] = tapkee::COVER_TREE;
 	tapkee_parameters[tapkee::TARGET_DIMENSION] = parameters.target_dimension;
-	tapkee_parameters[tapkee::EIGENSHIFT] = 1e-9;
+	tapkee_parameters[tapkee::EIGENSHIFT] = parameters.eigenshift;
 	tapkee_parameters[tapkee::CHECK_CONNECTIVITY] = true;
 	size_t N = 0;
 
@@ -87,6 +87,8 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 				tapkee::KERNEL_LOCALLY_LINEAR_EMBEDDING;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
 				parameters.n_neighbors;
+			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
+				(uint32_t)parameters.features->get_dim_feature_space();
 			N = parameters.kernel->get_num_vec_lhs();
 			break;
 		case SHOGUN_LOCAL_TANGENT_SPACE_ALIGNMENT:
@@ -137,6 +139,8 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 				parameters.n_neighbors;
 			tapkee_parameters[tapkee::GAUSSIAN_KERNEL_WIDTH] =
 				parameters.gaussian_kernel_width;
+			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
+				(uint32_t)parameters.features->get_dim_feature_space();
 			N = parameters.distance->get_num_vec_lhs();
 			break;
 		case SHOGUN_MULTIDIMENSIONAL_SCALING:
@@ -171,6 +175,16 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::STOCHASTIC_PROXIMITY_EMBEDDING;
 			N = parameters.distance->get_num_vec_lhs();
+			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
+				parameters.n_neighbors;
+			tapkee_parameters[tapkee::SPE_TOLERANCE] = 
+				parameters.spe_tolerance;
+			tapkee_parameters[tapkee::SPE_NUM_UPDATES] = 
+				parameters.spe_num_updates;
+			if (parameters.spe_global_strategy) 
+				tapkee_parameters[tapkee::SPE_GLOBAL_STRATEGY] = true;
+			else
+				tapkee_parameters[tapkee::SPE_GLOBAL_STRATEGY] = false;
 			break;
 	}
 	

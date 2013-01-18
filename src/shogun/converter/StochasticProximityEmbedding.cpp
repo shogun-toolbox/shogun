@@ -130,7 +130,10 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 	parameters.n_neighbors = m_k;
 	parameters.method = SHOGUN_STOCHASTIC_PROXIMITY_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
+	parameters.spe_num_updates = m_nupdates;
+	parameters.spe_tolerance = m_tolerance;
 	parameters.distance = distance;
+	parameters.spe_global_strategy = (m_strategy==SPE_GLOBAL);
 	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
 	return embedding;
 }

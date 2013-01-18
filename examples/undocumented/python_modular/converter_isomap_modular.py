@@ -13,7 +13,7 @@ def converter_isomap_modular (data):
 	features = RealFeatures(data)
 		
 	converter = Isomap()
-	converter.set_k(6)
+	converter.set_k(20)
 	converter.set_target_dim(1)
 	converter.apply(features)
 

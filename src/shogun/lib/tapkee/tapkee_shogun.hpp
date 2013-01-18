@@ -46,11 +46,15 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 	uint32_t n_neighbors;
 	uint32_t n_timesteps;
 	uint32_t target_dimension;
+	uint32_t spe_num_updates;
+	float64_t eigenshift;
 	float64_t landmark_ratio;
 	float64_t gaussian_kernel_width;
+	float64_t spe_tolerance;
 	CKernel* kernel;
 	CDistance* distance;
 	CDotFeatures* features;
+	bool spe_global_strategy;
 };
 
 CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);

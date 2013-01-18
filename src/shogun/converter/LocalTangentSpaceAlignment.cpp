@@ -35,6 +35,7 @@ CFeatures* CLocalTangentSpaceAlignment::apply(CFeatures* features)
 	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
+	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_LOCAL_TANGENT_SPACE_ALIGNMENT;
 	parameters.target_dimension = m_target_dim;
 	parameters.kernel = kernel;

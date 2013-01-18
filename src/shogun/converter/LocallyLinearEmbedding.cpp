@@ -84,6 +84,7 @@ CFeatures* CLocallyLinearEmbedding::apply(CFeatures* features)
 	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
+	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_LOCALLY_LINEAR_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
 	parameters.kernel = kernel;
