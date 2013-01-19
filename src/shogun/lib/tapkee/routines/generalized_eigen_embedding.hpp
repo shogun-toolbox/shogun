@@ -38,11 +38,15 @@ struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOper
 	{
 		timed_context context("ARPACK DSXUPD generalized eigendecomposition");
 
+#ifndef TAPKEE_NO_ARPACK
 		ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixTypeOperation> arpack(lhs,rhs,target_dimension+skip,"SM");
 
 		DenseMatrix embedding_feature_matrix = (arpack.eigenvectors()).block(0,skip,lhs.cols(),target_dimension);
 
 		return EmbeddingResult(embedding_feature_matrix,arpack.eigenvalues().tail(target_dimension));
+#else
+		return EmbeddingResult();
+#endif
 	}
 };
 
@@ -77,9 +81,11 @@ EmbeddingResult generalized_eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method
 {
 	switch (method)
 	{
+#ifndef TAPKEE_NO_ARPACK
 		case ARPACK: 
 			return generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOperation, 
 				ARPACK>().embed(lhs, rhs, target_dimension, skip);
+#endif
 		case EIGEN_DENSE_SELFADJOINT_SOLVER:
 			return generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOperation,
 				EIGEN_DENSE_SELFADJOINT_SOLVER>().embed(lhs, rhs, target_dimension, skip);
