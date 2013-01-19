@@ -10,7 +10,9 @@
 #ifndef TAPKEE_GENERALIZED_EIGEN_EMBEDDING_H_
 #define TAPKEE_GENERALIZED_EIGEN_EMBEDDING_H_
 
-#include <shogun/lib/tapkee/utils/arpack_wrapper.hpp>
+#ifndef TAPKEE_NO_ARPACK
+	#include <shogun/lib/tapkee/utils/arpack_wrapper.hpp>
+#endif
 #include <shogun/lib/tapkee/routines/matrix_operations.hpp>
 
 namespace tapkee
