@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 	SG_REF(features);
 	CIsomap* isomap = new CIsomap();
 	isomap->set_target_dim(2);
-	isomap->set_landmark(true);
+	isomap->set_landmark(false);
 	isomap->set_k(4);
 	isomap->parallel->set_num_threads(4);
 	CDenseFeatures<double>* embedding = isomap->embed(features);
