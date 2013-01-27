@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
 #ifndef TAPKEE_PCA_H_
@@ -16,12 +16,14 @@ namespace tapkee_internal
 {
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
-EmbeddingResult project(const ProjectionResult& projection_result, RandomAccessIterator begin,
-                        RandomAccessIterator end, FeatureVectorCallback callback, unsigned int dimension)
+EmbeddingResult project(const ProjectionResult& projection_result, const DenseVector& mean_vector,
+                        RandomAccessIterator begin, RandomAccessIterator end, 
+                        FeatureVectorCallback callback, unsigned int dimension)
 {
 	timed_context context("Data projection");
 
 	DenseVector current_vector(dimension);
+	DenseVector current_vector_subtracted_mean(dimension);
 
 	const DenseSymmetricMatrix& projection_matrix = projection_result.first;
 
@@ -30,29 +32,43 @@ EmbeddingResult project(const ProjectionResult& projection_result, RandomAccessI
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{
 		callback(*iter,current_vector);
-		embedding.row(iter-begin) = projection_matrix.transpose()*current_vector;
+		current_vector_subtracted_mean = current_vector - mean_vector;
+		embedding.row(iter-begin) = projection_matrix.transpose()*current_vector_subtracted_mean;
 	}
 
 	return EmbeddingResult(embedding,DenseVector());
 }
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
+DenseVector compute_mean(RandomAccessIterator begin, RandomAccessIterator end,
+                         FeatureVectorCallback callback, unsigned int dimension) 
+{
+	DenseVector mean = DenseVector::Zero(dimension);
+	DenseVector current_vector(dimension);
+	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
+	{
+		callback(*iter,current_vector);
+		mean += current_vector;
+	}
+	mean.array() /= (end-begin);
+	return mean;
+}
+
+template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
-                                               FeatureVectorCallback callback, unsigned int dimension)
+                                               DenseVector mean, FeatureVectorCallback callback, unsigned int dimension)
 {
 	timed_context context("Constructing PCA covariance matrix");
 
 	DenseSymmetricMatrix covariance_matrix = DenseSymmetricMatrix::Zero(dimension,dimension);
 	
-	DenseVector sum = DenseVector::Zero(dimension);
 	DenseVector current_vector(dimension);
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{
 		callback(*iter,current_vector);
-		sum += current_vector;
 		covariance_matrix.selfadjointView<Eigen::Upper>().rankUpdate(current_vector,1.0);
 	}
-	covariance_matrix.selfadjointView<Eigen::Upper>().rankUpdate(sum,-1.0/(end-begin));
+	covariance_matrix.selfadjointView<Eigen::Upper>().rankUpdate(mean,-1.0);
 
 	return covariance_matrix;
 };

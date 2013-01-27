@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
 #ifndef TAPKEE_METHODS_H_
@@ -255,7 +255,6 @@ CONCRETE_IMPLEMENTATION(LANDMARK_ISOMAP)
 	}
 };
 
-
 CONCRETE_IMPLEMENTATION(NEIGHBORHOOD_PRESERVING_EMBEDDING)
 {
 	EmbeddingResult embed(RandomAccessIterator begin, RandomAccessIterator end,
@@ -281,8 +280,10 @@ CONCRETE_IMPLEMENTATION(NEIGHBORHOOD_PRESERVING_EMBEDDING)
 		ProjectionResult projection_result = 
 			generalized_eigen_embedding<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseMatrixOperation>(
 				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
+		DenseVector mean_vector = 
+			compute_mean(begin,end,feature_vector_callback,dimension);
 		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
-		return project(projection_result,begin,end,feature_vector_callback,dimension);
+		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
 };
 
@@ -356,9 +357,11 @@ CONCRETE_IMPLEMENTATION(LOCALITY_PRESERVING_PROJECTIONS)
 		ProjectionResult projection_result = 
 			generalized_eigen_embedding<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseMatrixOperation>(
 				eigen_method,eigenproblem_matrices.first,eigenproblem_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
+		DenseVector mean_vector = 
+			compute_mean(begin,end,feature_vector_callback,dimension);
 		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
 		// TODO to be improved with out-of-sample projection
-		return project(projection_result,begin,end,feature_vector_callback,dimension);
+		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
 };
 
@@ -373,12 +376,14 @@ CONCRETE_IMPLEMENTATION(PCA)
 		OBTAIN_PARAMETER(unsigned int,dimension,CURRENT_DIMENSION);
 		
 		timed_context context("Embedding with PCA");
+		DenseVector mean_vector = 
+			compute_mean(begin,end,feature_vector_callback,dimension);
 		DenseSymmetricMatrix centered_covariance_matrix = 
-			compute_covariance_matrix(begin,end,feature_vector_callback,dimension);
+			compute_covariance_matrix(begin,end,mean_vector,feature_vector_callback,dimension);
 		ProjectionResult projection_result = 
 			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,centered_covariance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
 		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
-		return project(projection_result,begin,end,feature_vector_callback,dimension);
+		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
 };
 
@@ -424,8 +429,10 @@ CONCRETE_IMPLEMENTATION(LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT)
 		ProjectionResult projection_result = 
 			generalized_eigen_embedding<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseMatrixOperation>(
 				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
+		DenseVector mean_vector = 
+			compute_mean(begin,end,feature_vector_callback,dimension);
 		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
-		return project(projection_result,begin,end,feature_vector_callback,dimension);
+		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
 };
 
