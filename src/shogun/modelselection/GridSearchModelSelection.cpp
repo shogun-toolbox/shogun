@@ -53,7 +53,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 	}
 	else
 	{
-		if (print_state) SG_PRINT("Direction is maximize\n");
+		if (print_state) SG_PRINT("Direction is minimize\n");
 		best_result->mean=CMath::ALMOST_INFTY;
 	}
 
