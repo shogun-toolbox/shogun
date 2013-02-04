@@ -62,7 +62,7 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 	}
 	else
 	{
-		if (print_state) SG_PRINT("Direction is maximize\n");
+		if (print_state) SG_PRINT("Direction is minimize\n");
 		best_result->mean=CMath::ALMOST_INFTY;
 	}
 
