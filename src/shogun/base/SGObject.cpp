@@ -1175,26 +1175,28 @@ bool CSGObject::is_param_new(const SGParamInfo param_info) const
 void CSGObject::get_parameter_incremental_hash(Parameter* param,
 		uint32_t& hash, uint32_t& carry, uint32_t& total_length)
 {
-	if (param)
+	if (!param)
+		return;
+
+	for (index_t i=0; i<param->get_num_parameters(); i++)
 	{
-		for (index_t i=0; i<param->get_num_parameters(); i++)
+		TParameter* p = param->get_parameter(i);
+
+		if (!p || !p->is_valid())
+			continue;
+
+		if (p->m_datatype.m_ptype != PT_SGOBJECT)
 		{
-			TParameter* p = param->get_parameter(i);
-
-			if (p->m_datatype.m_ptype == PT_SGOBJECT)
-			{
-				CSGObject* child =
-						*((CSGObject**)(p->m_parameter));
-
-				if (child)
-					get_parameter_incremental_hash(
-							child->m_parameters, hash,
-							carry, total_length);
-			}
-
-			else
-				p->get_incremental_hash(hash, carry, total_length);
+			p->get_incremental_hash(hash, carry, total_length);
+			continue;
 		}
+
+		CSGObject* child = *((CSGObject**)(p->m_parameter));
+
+		if (child)
+			get_parameter_incremental_hash(
+					child->m_parameters, hash,
+					carry, total_length);
 	}
 }
 

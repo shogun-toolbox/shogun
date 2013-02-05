@@ -354,8 +354,7 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 	if(update_parameter_hash())
 		update_all();
 
-	SGVector<float64_t> result(m_alpha);
-	return result;
+	return SGVector<float64_t>(m_alpha);
 }
 
 SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
@@ -363,8 +362,7 @@ SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 	if(update_parameter_hash())
 		update_all();
 
-	SGMatrix<float64_t> result(m_L);
-	return result;
+	return SGMatrix<float64_t>(m_L);
 }
 
 void CExactInferenceMethod::update_train_kernel()

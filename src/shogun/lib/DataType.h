@@ -160,7 +160,7 @@ struct TSGDataType
 	/** get num of elements
 	 * @return number of (matrix, vector, scalar) elements of type
 	 */
-	index_t get_num_elements();
+	int64_t get_num_elements();
 };
 }
 #endif /* __DATATYPE_H__  */

@@ -51,7 +51,7 @@ template <class T> class DynArray
 				array=(T*) malloc(size_t(p_resize_granularity)*sizeof(T));
 
 			num_elements=p_resize_granularity;
-			last_element_idx=-1;
+			current_num_elements=0;
 		}
 
 		/** constructor
@@ -127,7 +127,7 @@ template <class T> class DynArray
 		 */
 		inline int32_t get_num_elements() const
 		{
-			return last_element_idx+1;
+			return current_num_elements;
 		}
 
 		/** get array element at index
@@ -148,7 +148,7 @@ template <class T> class DynArray
 		 */
 		inline T get_last_element() const
 		{
-			return array[last_element_idx];
+			return array[current_num_elements-1];
 		}
 
 		/** get array element at index as pointer
@@ -192,7 +192,7 @@ template <class T> class DynArray
 			{
 				return false;
 			}
-			else if (index <= last_element_idx)
+			else if (index <= current_num_elements-1)
 			{
 				array[index]=element;
 				return true;
@@ -200,7 +200,7 @@ template <class T> class DynArray
 			else if (index < num_elements)
 			{
 				array[index]=element;
-				last_element_idx=index;
+				current_num_elements=index+1;
 				return true;
 			}
 			else
@@ -220,9 +220,9 @@ template <class T> class DynArray
 		 */
 		inline bool insert_element(T element, int32_t index)
 		{
-			if (append_element(get_element(last_element_idx)))
+			if (append_element(get_element(current_num_elements-1)))
 			{
-				for (int32_t i=last_element_idx-1; i>index; i--)
+				for (int32_t i=current_num_elements-2; i>index; i--)
 				{
 					array[i]=array[i-1];
 				}
@@ -241,7 +241,7 @@ template <class T> class DynArray
 		 */
 		inline bool append_element(T element)
 		{
-			return set_element(element, last_element_idx+1);
+			return set_element(element, current_num_elements);
 		}
 
 		/** STD VECTOR compatible. Append array element to the end
@@ -251,8 +251,10 @@ template <class T> class DynArray
 		 */
 		inline void push_back(T element)
 		{
-			if (get_num_elements() < 0) set_element(element, 0);
-			else set_element(element, get_num_elements());
+			if (get_num_elements() < 0)
+				set_element(element, 0);
+			else
+				set_element(element, get_num_elements());
 		}
 
 		/** STD VECTOR compatible. Delete array element at the end
@@ -260,7 +262,9 @@ template <class T> class DynArray
 		 */
 		inline void pop_back()
 		{
-			if (get_num_elements() <= 0) return;
+			if (get_num_elements() <= 0)
+				return;
+
 			delete_element(get_num_elements()-1);
 		}
 
@@ -271,7 +275,9 @@ template <class T> class DynArray
 		 */
 		inline T back() const
 		{
-			if (get_num_elements() <= 0) return get_element(0);
+			if (get_num_elements() <= 0)
+				return get_element(0);
+
 			return get_element(get_num_elements()-1);
 		}
 
@@ -306,16 +312,16 @@ template <class T> class DynArray
 		 */
 		inline bool delete_element(int32_t idx)
 		{
-			if (idx>=0 && idx<=last_element_idx)
+			if (idx>=0 && idx<=current_num_elements-1)
 			{
-				for (int32_t i=idx; i<last_element_idx; i++)
+				for (int32_t i=idx; i<current_num_elements-1; i++)
 					array[i]=array[i+1];
 
-				last_element_idx--;
+				current_num_elements--;
 
-				if (num_elements - last_element_idx
+				if (num_elements - current_num_elements - 1
 					> resize_granularity)
-					resize_array(last_element_idx+1);
+					resize_array(current_num_elements);
 
 				return true;
 			}
@@ -350,8 +356,8 @@ template <class T> class DynArray
 				array=p;
 
 				//in case of shrinking we must adjust last element idx
-				if (n-1<last_element_idx)
-					last_element_idx=n-1;
+				if (n-1<current_num_elements-1)
+					current_num_elements=n;
 
 				num_elements=new_num_elements;
 				return true;
@@ -398,7 +404,7 @@ template <class T> class DynArray
 				array=p_array;
 
 			num_elements=p_array_size;
-			last_element_idx=p_num_elements-1;
+			current_num_elements=p_num_elements;
 			free_array=p_free_array;
 		}
 
@@ -421,16 +427,16 @@ template <class T> class DynArray
 			memcpy(array, p_array, p_array_size*sizeof(T));
 
 			num_elements=p_array_size;
-			last_element_idx=p_num_elements-1;
+			current_num_elements=p_num_elements;
 			free_array=true;
 		}
 
 		/** clear the array (with e.g. zeros) */
 		inline void clear_array(T value)
 		{
-			if (last_element_idx >= 0)
+			if (current_num_elements-1 >= 0)
 			{
-				for (int32_t i=0; i<last_element_idx+1; i++)
+				for (int32_t i=0; i<current_num_elements; i++)
 					array[i]=value;
 			}
 		}
@@ -439,14 +445,14 @@ template <class T> class DynArray
 		void reset(T value)
 		{
 			clear_array(value);
-			last_element_idx=-1;
+			current_num_elements=0;
 		}
 
 		/** randomizes the array */
 		void shuffle()
 		{
-			for (index_t i=0; i<=last_element_idx; ++i)
-				CMath::swap(array[i], array[CMath::random(i, last_element_idx)]);
+			for (index_t i=0; i<=current_num_elements-1; ++i)
+				CMath::swap(array[i], array[CMath::random(i, current_num_elements-1)]);
 		}
 
 		/** set array with a constant */
@@ -493,7 +499,7 @@ template <class T> class DynArray
 
 			memcpy(array, orig.array, sizeof(T)*orig.num_elements);
 			num_elements=orig.num_elements;
-			last_element_idx=orig.last_element_idx;
+			current_num_elements=orig.current_num_elements;
 
 			return *this;
 		}
@@ -511,8 +517,8 @@ template <class T> class DynArray
 		/** the number of potentially used elements in array */
 		int32_t num_elements;
 
-		/** the element in the array that has largest index */
-		int32_t last_element_idx;
+		/** the number of currently used elements */
+		int32_t current_num_elements;
 
 		/** whether SG_MALLOC or just malloc etc shall be used */
 		bool use_sg_mallocs;

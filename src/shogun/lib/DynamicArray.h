@@ -616,12 +616,12 @@ template <class T> class CDynamicArray :public CSGObject
 		{
 			set_generic<T>();
 
-			m_parameters->add_vector(&m_array.array, &m_array.num_elements, "array",
-									 "Memory for dynamic array.");	
-
-			SG_ADD(&m_array.last_element_idx,
-							  "last_element_idx",
-							  "Element with largest index.", MS_NOT_AVAILABLE);
+			m_parameters->add_vector(&m_array.array,
+					&m_array.current_num_elements, "array",
+					"Memory for dynamic array.");	
+			SG_ADD(&m_array.num_elements,
+							  "num_elements",
+							  "Number of Elements.", MS_NOT_AVAILABLE);
 			SG_ADD(&m_array.resize_granularity,
 							  "resize_granularity",
 							  "shrink/grow step size.", MS_NOT_AVAILABLE);

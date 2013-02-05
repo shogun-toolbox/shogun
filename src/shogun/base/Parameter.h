@@ -119,6 +119,8 @@ struct TParameter
 	void get_incremental_hash(
 			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
 
+	bool is_valid();
+
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont();

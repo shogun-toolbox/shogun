@@ -310,7 +310,7 @@ size_t TSGDataType::get_size()
 	return 0;
 }
 
-index_t TSGDataType::get_num_elements()
+int64_t TSGDataType::get_num_elements()
 {
 	switch (m_ctype)
 	{

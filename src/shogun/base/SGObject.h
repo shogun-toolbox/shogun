@@ -410,6 +410,7 @@ protected:
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
+public:
 	/** Updates the hash of current parameter combination.
 	 *
 	 * @return bool if parameter combination has changed since last

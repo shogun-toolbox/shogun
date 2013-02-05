@@ -2264,6 +2264,12 @@ void TParameter::get_incremental_hash(
 }
 
 bool
+TParameter::is_valid()
+{
+	return m_datatype.get_num_elements() > 0;
+}
+
+bool
 TParameter::save(CSerializableFile* file, const char* prefix)
 {
 	const int32_t buflen=100;

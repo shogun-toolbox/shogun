@@ -61,7 +61,8 @@ public:
 	virtual void remove_all_subsets();
 
 	/** @return size of active subset */
-	inline index_t get_size() {
+	inline index_t get_size()
+	{
 		if (!has_subsets())
 			SG_WARNING("CSubsetStack::get_size(): No subset in stack!\n");
 
