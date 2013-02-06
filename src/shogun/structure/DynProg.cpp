@@ -71,7 +71,6 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  m_seq_len(0),
 	  m_orf_info(1,2),
 	  m_plif_list(1),
-	  m_PEN(1,1),
 	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), 
 	  m_segment_ids(1),
 	  m_segment_mask(1),
