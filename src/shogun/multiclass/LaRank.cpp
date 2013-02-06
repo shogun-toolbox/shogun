@@ -584,7 +584,7 @@ int32_t LaRankOutput::getSV (float32_t* &sv) const
 CLaRank::CLaRank (): CMulticlassSVM(new CMulticlassOneVsRestStrategy()),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
-	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
+	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
 	batch_mode(true), step(0)
 {
 }
@@ -593,7 +593,7 @@ CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
 	CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
-	w_pro (1), w_rep (1), w_opt (1), y0 (0), dual (0),
+	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
 	batch_mode(true), step(0)
 {
 }
@@ -724,7 +724,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 	float64_t dual_increase = pro_ret.dual_increase;
 	float64_t duration = (CTime::get_curtime() - time1);
 	float64_t coeff = dual_increase / (0.00001 + duration);
-	dual += dual_increase;
+	m_dual += dual_increase;
 	n_pro++;
 	w_pro = 0.05 * coeff + (1 - 0.05) * w_pro;
 
@@ -752,7 +752,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 			float64_t ldual_increase = reprocess ();
 			float64_t lduration = (CTime::get_curtime () - ltime1);
 			float64_t lcoeff = ldual_increase / (0.00001 + lduration);
-			dual += ldual_increase;
+			m_dual += ldual_increase;
 			n_rep++;
 			w_rep = 0.05 * lcoeff + (1 - 0.05) * w_rep;
 		}
@@ -762,7 +762,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 			float64_t ldual_increase = optimize ();
 			float64_t lduration = (CTime::get_curtime () - ltime1);
 			float64_t lcoeff = ldual_increase / (0.00001 + lduration);
-			dual += ldual_increase;
+			m_dual += ldual_increase;
 			n_opt++;
 			w_opt = 0.05 * lcoeff + (1 - 0.05) * w_opt;
 		}

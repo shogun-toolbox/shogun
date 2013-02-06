@@ -416,7 +416,7 @@ namespace shogun
 			float64_t w_opt;
 
 			int32_t y0;
-			float64_t dual;
+			float64_t m_dual;
 
 			struct outputgradient_t
 			{
