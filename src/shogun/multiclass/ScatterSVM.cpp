@@ -78,7 +78,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 
 	}
 	SG_FREE(numc);
-	m_num_classes=m_num_classes;
+	m_num_classes=Nc;
 
 	bool result=false;
 

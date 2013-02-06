@@ -109,7 +109,7 @@ protected:
 	 * @param task
 	 * @param filename
 	 */
-	virtual void init(FILE* fstream, char task, const char* filename);
+	void init(FILE* fstream, char task, const char* filename);
 
 	/* ************************************************************ */
 	/* Begin of abstract write methods  */

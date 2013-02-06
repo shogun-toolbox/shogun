@@ -22,7 +22,7 @@ namespace shogun
 {
 
 /** @brief template class SGStringList */
-template <class T> struct SGStringList : public SGReferencedData
+template <class T> class SGStringList : public SGReferencedData
 {
 public:
 	/** default constructor */

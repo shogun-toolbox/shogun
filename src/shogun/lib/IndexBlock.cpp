@@ -12,7 +12,6 @@
 using namespace shogun;
 
 CIndexBlock::CIndexBlock() : CSGObject(),
-	m_block_name("block"),
 	m_min_index(0), m_max_index(0),
 	m_weight(1.0), m_sub_blocks(NULL)
 {
@@ -22,8 +21,7 @@ CIndexBlock::CIndexBlock() : CSGObject(),
 
 CIndexBlock::CIndexBlock(index_t min_index, index_t max_index, 
              float64_t weight, const char* name) :
-	CSGObject(), m_block_name(name),
-	m_min_index(min_index), m_max_index(max_index),
+	CSGObject(), m_min_index(min_index), m_max_index(max_index),
 	m_weight(weight), m_sub_blocks(NULL)
 {
 	m_sub_blocks = new CList(true);

@@ -66,10 +66,6 @@ public:
 	void add_sub_block(CIndexBlock* sub_block);
 
 private:
-
-	/** name of the block */
-	const char* m_block_name;
-
 	/** min index */
 	index_t m_min_index;
 
