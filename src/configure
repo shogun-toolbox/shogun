@@ -159,9 +159,13 @@ test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
-COMP_OPTS="-Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse"
-COMP_DEFAULT_OPTS="-Wall -O2"
-COMP_NO_OPTS="-Wall -O0"
+COMP_WARNINGS="-Wall -Werror-implicit-function-declaration -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-deprecated"
+COMP_OPTS="$COMP_WARNINGS-O9 -fexpensive-optimizations\
+	-frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2\
+	-fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse"
+
+COMP_DEFAULT_OPTS="$COMP_WARNINGS -O2"
+COMP_NO_OPTS="$COMP_WARNINGS -O0"
 FPIC=
 COMPFLAGS_C=
 COMPFLAGS_CPP=
@@ -3464,7 +3468,8 @@ int main(int argc, char** argv)
 	int vlen = 17;
 	double const_elem = 17.0;
 	double vector[17];
-	catlas_sset(vlen, const_elem, vector, 1);
+	float fvector[17];
+	catlas_sset(vlen, (float) const_elem, fvector, 1);
 	catlas_dset(vlen, const_elem, vector, 1);
 	return 0;
 }
@@ -4981,12 +4986,6 @@ EOF
 
 write_dot_config()
 {
-
-#enable additional warnings / -Wfloat-equal -W
-if test "$_cc_major" -ge "3" 2>/dev/null ; then
-	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow/'`
-	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-deprecated/'`
-fi
 
 cat > "$1" <<EOF
 SRCDIR			= ${SRCDIR}
