@@ -35,7 +35,10 @@ void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 	m_num_limits=num_limits;
 	m_PEN = SG_MALLOC(CPlif*, num_plifs);
 	for (int32_t i=0; i<num_plifs; i++)
+	{
 		m_PEN[i]=new CPlif(num_limits) ;
+		SG_REF(m_PEN[i]);
+	}
 }
 
 void CPlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
@@ -183,10 +186,6 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 	int32_t num_states = penalties_array.dims[0];
 	int32_t num_plifs = get_num_plifs();
 
-	for (int32_t i=0; i<m_num_states*m_num_states; i++)
-		delete  m_plif_matrix[i];
-	SG_FREE(m_plif_matrix);
-
 	m_num_states = num_states;
 	m_plif_matrix = SG_MALLOC(CPlifBase*, num_states*num_states);
 
@@ -206,6 +205,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 				if (!plif_array)
 				{
 					plif_array = new CPlifArray() ;
+					SG_REF(plif_array);
 					plif_array->clear() ;
 				}
 
@@ -233,8 +233,9 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 				m_plif_matrix[i+j*num_states] = plif ;
 			}
 			else
+			{
 				m_plif_matrix[i+j*num_states] = plif_array ;
-
+			}
 		}
 	}
 	return true;

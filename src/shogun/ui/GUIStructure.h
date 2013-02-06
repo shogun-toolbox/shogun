@@ -178,8 +178,8 @@ class CGUIStructure : public CSGObject
 		inline bool set_orf_info(
 			int32_t* orf_info, int32_t Norf_info, int32_t Morf_info)
 		{
-			if (m_orf_info!=orf_info)
-				SG_FREE(m_orf_info);
+			//if (m_orf_info!=orf_info)
+			//	SG_FREE(m_orf_info);
 			int32_t* cp_array = SG_MALLOC(int32_t, Norf_info*Morf_info);
 			memcpy(cp_array, orf_info,Norf_info*Morf_info*sizeof(int32_t));
 			m_orf_info = cp_array;

@@ -32,6 +32,8 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 	m_num_segment_types = m;
 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
+
+	//m_segment_loss.display_array();
 }
 
 void CSegmentLoss::set_segment_ids(CDynamicArray<int32_t>* segment_ids)

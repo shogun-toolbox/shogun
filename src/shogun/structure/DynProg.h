@@ -213,18 +213,11 @@ public:
 	 */
 	void set_gene_string(SGVector<char> genestr);
 
-
 	/** set best path dict weights
 	 *
 	 * @param dictionary_weights dictionary weights
 	 */
 	void set_dict_weights(SGMatrix<float64_t> dictionary_weights);
-
-	/** set best path segment loss
-	 *
-	 * @param segment_loss segment loss
-	 */
-	void best_path_set_segment_loss(SGMatrix<float64_t> segment_loss);
 
 	/** set best path segmend ids mask
 	 *
@@ -692,8 +685,6 @@ protected:
 	uint16_t*** m_wordstr;
 	/** dict weights */
 	CDynamicArray<float64_t> m_dict_weights; // 2d
-	/** segment loss */
-	CDynamicArray<float64_t> m_segment_loss; // 3d
 	/** segment IDs */
 	CDynamicArray<int32_t> m_segment_ids;	
 	/** segment mask */
