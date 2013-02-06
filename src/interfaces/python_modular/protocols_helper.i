@@ -68,8 +68,6 @@ BUFFER_MATRIX_INFO(float64_t)
 
 %wrapper
 %{
-#include <cstring>
-
 void get_slice_in_bounds(Py_ssize_t* ilow, Py_ssize_t* ihigh, Py_ssize_t max_idx)
 {
 	if (*ilow<0)
