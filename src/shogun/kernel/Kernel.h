@@ -329,7 +329,7 @@ class CKernel : public CSGObject
 			// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
 			bool symmetric= (lhs && lhs==rhs && m==n);
 
-			SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n)
+			SG_DEBUG("returning kernel matrix of size %dx%d\n", m, n)
 
 			result=SG_MALLOC(T, total_num);
 

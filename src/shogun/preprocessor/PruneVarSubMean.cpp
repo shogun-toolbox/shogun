@@ -90,7 +90,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 			}
 		}
 
-		SG_INFO( "Reducing number of features from %i to %i\n", num_features, num_ok) 
+		SG_INFO("Reducing number of features from %i to %i\n", num_features, num_ok) 
 
 		SG_FREE(idx);
 		idx=SG_MALLOC(int, num_ok);
@@ -138,8 +138,8 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 	int32_t num_features=0;
 	float64_t* m=((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 
-	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features)
-	SG_INFO( "Preprocessing feature matrix\n")
+	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
+	SG_INFO("Preprocessing feature matrix\n")
 	for (int32_t vec=0; vec<num_vectors; vec++)
 	{
 		float64_t* v_src=&m[num_features*vec];
@@ -159,7 +159,7 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 
 	((CDenseFeatures<float64_t>*) features)->set_num_features(num_idx);
 	((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
-	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features)
+	SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features)
 
 	return ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
 }

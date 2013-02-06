@@ -115,7 +115,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	struct svm_node* x_space;
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", problem.l)
+	SG_INFO("%d trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -249,7 +249,7 @@ bool CScatterSVM::train_testrule12()
 {
 	struct svm_node* x_space;
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", problem.l)
+	SG_INFO("%d trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -379,7 +379,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	CMulticlassLabels* output=NULL;
 	if (!m_kernel)
 	{
-		SG_ERROR( "SVM can not proceed without kernel!\n")
+		SG_ERROR("SVM can not proceed without kernel!\n")
 		return NULL;
 	}
 

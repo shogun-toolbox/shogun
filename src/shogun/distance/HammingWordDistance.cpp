@@ -31,7 +31,7 @@ CHammingWordDistance::CHammingWordDistance(bool sign)
 	init();
 	use_sign=sign;
 
-	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0)
+	SG_DEBUG("CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0)
 }
 
 CHammingWordDistance::CHammingWordDistance(
@@ -41,7 +41,7 @@ CHammingWordDistance::CHammingWordDistance(
 	init();
 	use_sign=sign;
 
-	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0)
+	SG_DEBUG("CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0)
 
 	init(l, r);
 }

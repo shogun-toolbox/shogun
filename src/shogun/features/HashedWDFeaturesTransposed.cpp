@@ -284,7 +284,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n")
+			SG_INFO("prematurely stopped.           \n")
 #endif
 }
 
@@ -368,7 +368,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n")
+			SG_INFO("prematurely stopped.           \n")
 #endif
 }
 

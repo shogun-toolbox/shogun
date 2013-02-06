@@ -285,7 +285,7 @@ template<class ST> ST* CStringFeatures<ST>::get_feature_vector(int32_t num, int3
 	}
 	else
 	{
-		SG_DEBUG( "computing feature vector!\n") 
+		SG_DEBUG("computing feature vector!\n") 
 		ST* feat=compute_feature_vector(num, len);
 		dofree=true;
 
@@ -1168,7 +1168,7 @@ template<class ST> int32_t CStringFeatures<ST>::get_size() const { return sizeof
 
 template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
-	SG_DEBUG( "force: %d\n", force_preprocessing)
+	SG_DEBUG("force: %d\n", force_preprocessing)
 
 	for (int32_t i=0; i<get_num_preprocessors(); i++)
 	{
@@ -1176,7 +1176,7 @@ template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_prepr
 		{
 			set_preprocessed(i);
 			CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
-			SG_INFO( "preprocessing using preproc %s\n", p->get_name())
+			SG_INFO("preprocessing using preproc %s\n", p->get_name())
 
 			if (!p->apply_to_string_features(this))
 			{
@@ -1325,7 +1325,7 @@ template<class ST> void CStringFeatures<ST>::embed_features(int32_t p_order)
 	else
 		num_symbols=original_num_symbols;
 
-	SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols)
+	SG_INFO("max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols)
 
 	if ( ((floatmax_t) num_symbols) > CMath::powl(((floatmax_t) 2),((floatmax_t) sizeof(ST)*8)) )
 		SG_WARNING("symbols did not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val)
@@ -1914,7 +1914,7 @@ template<> 	void CStringFeatures<floatmax_t>::unembed_word(floatmax_t word, uint
 #define LOAD(f_load, sg_type)												\
 template<> void CStringFeatures<sg_type>::load(CFile* loader)		\
 {																			\
-	SG_INFO( "loading...\n")												\
+	SG_INFO("loading...\n")												\
 																			\
 	SG_SET_LOCALE_C;													\
 	SGString<sg_type>* strs;												\
@@ -1984,7 +1984,7 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 	max_string_length=sf->get_max_vector_length()-start;
 	features=SG_MALLOC(SGString<ST>, num_vectors);
 
-	SG_DEBUG( "%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
+	SG_DEBUG("%1.0llf symbols in StringFeatures<*> %d symbols in histogram\n", sf->get_num_symbols(),
 			alpha->get_num_symbols_in_histogram());
 
 	for (int32_t i=0; i<num_vectors; i++)
@@ -2011,15 +2011,15 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 		num_symbols=CMath::powl((floatmax_t) 2, (floatmax_t) max_val*p_order);
 	else
 		num_symbols=original_num_symbols;
-	SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols)
+	SG_INFO("max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols)
 
 	if ( ((floatmax_t) num_symbols) > CMath::powl(((floatmax_t) 2),((floatmax_t) sizeof(ST)*8)) )
 	{
-		SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val)
+		SG_ERROR("symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val)
 		return false;
 	}
 
-	SG_DEBUG( "translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) 
+	SG_DEBUG("translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) 
 	for (int32_t line=0; line<num_vectors; line++)
 	{
 		int32_t len=0;

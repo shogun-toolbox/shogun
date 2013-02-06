@@ -49,7 +49,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 	}
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", problem.l)
+	SG_INFO("%d trainlabels\n", problem.l)
 
 	// set linear term
 	if (m_linear_term.vlen>0)

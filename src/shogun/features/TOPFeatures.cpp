@@ -80,7 +80,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	compute_relevant_indizes(n, &neg_relevant_indizes);
 	num_features=compute_num_features();
 
-	SG_DEBUG( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) 
+	SG_DEBUG("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) 
 }
 
 float64_t* CTOPFeatures::compute_feature_vector(
@@ -198,22 +198,22 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	ASSERT(pos->get_observations())
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0)
+	SG_INFO("allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0)
 	feature_matrix = SGMatrix<float64_t>(num_features,num_vectors);
 	if (!feature_matrix.matrix)
 	{
-      SG_ERROR( "allocation not successful!")
+      SG_ERROR("allocation not successful!")
 		return NULL ;
 	} ;
 
-	SG_INFO( "calculating top feature matrix\n")
+	SG_INFO("calculating top feature matrix\n")
 
 	for (int32_t x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
-			SG_DEBUG( "%02d%%.", (int) (100.0*x/num_vectors))
+			SG_DEBUG("%02d%%.", (int) (100.0*x/num_vectors))
 		else if (!(x % (num_vectors/200+1)))
-			SG_DEBUG( ".")
+			SG_DEBUG(".")
 
 		compute_feature_vector(&feature_matrix[x*num_features], x, len);
 	}

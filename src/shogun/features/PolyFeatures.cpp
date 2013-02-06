@@ -225,7 +225,7 @@ void CPolyFeatures::store_multi_index()
 
         uint16_t* exponents = SG_MALLOC(uint16_t, m_input_dimensions);
         if (!exponents)
-		SG_ERROR( "Error allocating mem \n")
+		SG_ERROR("Error allocating mem \n")
 	/*copy adress: otherwise it will be overwritten in recursion*/
         uint16_t* index = m_multi_index;
         enumerate_multi_index(0, &index, exponents, m_degree);
@@ -268,7 +268,7 @@ void CPolyFeatures::store_multinomial_coefficients()
 	m_multinomial_coefficients = SG_MALLOC(float64_t, m_output_dimensions);
 	int32_t* exponents = SG_MALLOC(int32_t, m_input_dimensions);
 	if (!exponents)
-		SG_ERROR( "Error allocating mem \n")
+		SG_ERROR("Error allocating mem \n")
 	int32_t j=0;
 	for (j=0; j<m_input_dimensions; j++)
 		exponents[j] = 0;

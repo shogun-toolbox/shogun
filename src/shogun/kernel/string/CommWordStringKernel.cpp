@@ -48,7 +48,7 @@ bool CCommWordStringKernel::init_dictionary(int32_t size)
 	dictionary_size= size;
 	SG_FREE(dictionary_weights);
 	dictionary_weights=SG_MALLOC(float64_t, size);
-	SG_DEBUG( "using dictionary of %d words\n", size)
+	SG_DEBUG("using dictionary of %d words\n", size)
 	clear_normal();
 
 	return dictionary_weights!=NULL;
@@ -317,7 +317,7 @@ bool CCommWordStringKernel::init_optimization(
 
 bool CCommWordStringKernel::delete_optimization()
 {
-	SG_DEBUG( "deleting CCommWordStringKernel optimization\n")
+	SG_DEBUG("deleting CCommWordStringKernel optimization\n")
 
 	clear_normal();
 	return true;
@@ -327,7 +327,7 @@ float64_t CCommWordStringKernel::compute_optimized(int32_t i)
 {
 	if (!get_is_initialized())
 	{
-      SG_ERROR( "CCommWordStringKernel optimization not initialized\n")
+      SG_ERROR("CCommWordStringKernel optimization not initialized\n")
 		return 0 ;
 	}
 

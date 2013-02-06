@@ -147,7 +147,7 @@ CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel()
 
 void CWeightedDegreePositionStringKernel::remove_lhs()
 {
-	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n")
+	SG_DEBUG("deleting CWeightedDegreePositionStringKernel optimization\n")
 	delete_optimization();
 
 	tries.destroy();
@@ -172,7 +172,7 @@ void CWeightedDegreePositionStringKernel::create_empty_tries()
 		poim_tries.create(seq_length, false);  // still buggy
 	}
 	else
-		SG_ERROR( "unknown optimization type\n")
+		SG_ERROR("unknown optimization type\n")
 }
 
 bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
@@ -182,8 +182,8 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l,r);
 
-	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) 
-	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) 
+	SG_DEBUG("lhs_changed: %i\n", lhs_changed) 
+	SG_DEBUG("rhs_changed: %i\n", rhs_changed) 
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
@@ -226,7 +226,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 void CWeightedDegreePositionStringKernel::cleanup()
 {
-	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n")
+	SG_DEBUG("deleting CWeightedDegreePositionStringKernel optimization\n")
 	delete_optimization();
 
 	SG_FREE(block_weights);
@@ -256,17 +256,17 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 
 	if (max_mismatch!=0)
 	{
-		SG_ERROR( "CWeightedDegreePositionStringKernel optimization not implemented for mismatch!=0\n")
+		SG_ERROR("CWeightedDegreePositionStringKernel optimization not implemented for mismatch!=0\n")
 		return false ;
 	}
 
 	if (tree_num<0)
-		SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n")
+		SG_DEBUG("deleting CWeightedDegreePositionStringKernel optimization\n")
 
 	delete_optimization();
 
 	if (tree_num<0)
-		SG_DEBUG( "initializing CWeightedDegreePositionStringKernel optimization\n") 
+		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n") 
 
 	for (int32_t i=0; i<p_count; i++)
 	{
@@ -295,7 +295,7 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 	if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
 	{
 		tries.set_use_compact_terminal_nodes(false) ;
-		SG_DEBUG( "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") 
+		SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY\n") 
 	}
 
 	if (get_is_initialized())
@@ -305,7 +305,7 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			tries.delete_trees(false);  // still buggy
 		else {
-			SG_ERROR( "unknown optimization type\n")
+			SG_ERROR("unknown optimization type\n")
 		}
 		set_is_initialized(false);
 
@@ -674,7 +674,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			max_s=shift[i];
 		else {
-			SG_ERROR( "unknown optimization type\n")
+			SG_ERROR("unknown optimization type\n")
 		}
 
 		for (int32_t s=max_s; s>=0; s--)
@@ -715,7 +715,7 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(
 		max_s=shift[tree_num];
 	}
 	else {
-		SG_ERROR( "unknown optimization type\n")
+		SG_ERROR("unknown optimization type\n")
 	}
 	for (int32_t i=CMath::max(0,tree_num-max_shift);
 			i<CMath::min(len,tree_num+degree+max_shift); i++)
@@ -1839,8 +1839,8 @@ void CWeightedDegreePositionStringKernel::compute_POIM2(
 
 	if ((max_degree < 1) || (max_degree > 12))
 	{
-		//SG_WARNING( "max_degree out of range 1..12 (%d).\n", max_degree)
-		SG_WARNING( "max_degree out of range 1..12 (%d). setting to 1.\n", max_degree)
+		//SG_WARNING("max_degree out of range 1..12 (%d).\n", max_degree)
+		SG_WARNING("max_degree out of range 1..12 (%d). setting to 1.\n", max_degree)
 		max_degree=1;
 	}
 

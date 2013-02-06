@@ -163,7 +163,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			if (get_is_initialized())
 				return compute_by_tree(idx);
 
-			SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n")
+			SG_ERROR("CWeightedDegreeStringKernel optimization not initialized\n")
 			return 0;
 		}
 
@@ -257,7 +257,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 				return ;
 			}
 
-			SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n")
+			SG_ERROR("CWeightedDegreeStringKernel optimization not initialized\n")
 		}
 
 		/** get subkernel weights
@@ -296,7 +296,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 			int32_t num_weights2=w.vlen;
 			int32_t num_weights = get_num_subkernels();
 			if (num_weights!=num_weights2)
-				SG_ERROR( "number of weights do not match\n")
+				SG_ERROR("number of weights do not match\n")
 
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)

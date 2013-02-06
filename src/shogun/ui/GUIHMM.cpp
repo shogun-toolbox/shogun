@@ -547,7 +547,7 @@ bool CGUIHMM::best_path(int32_t from, int32_t to)
 	SG_PRINT("\n")
 
 	//for (t=0; t<p_observations->get_vector_length(0)-1 && t<to; t++)
-	//	SG_PRINT( "%d ", PATH(0)[t])
+	//	SG_PRINT("%d ", PATH(0)[t])
 	//
 	return true;
 }

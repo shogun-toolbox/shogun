@@ -1443,7 +1443,7 @@ inline float64_t model_derivative_b(T_STATES i, uint16_t j, int32_t dimension)
 			sum= CMath::logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_feature(dimension,t)));
 	}
 	//if (sum==-CMath::INFTY)
-	// SG_DEBUG( "log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) 
+	// SG_DEBUG("log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) 
 	return sum;
 }
 //@}
@@ -1507,9 +1507,9 @@ protected:
 	inline void error(int32_t p_line, const char* str)
 	{
 		if (p_line)
-			SG_ERROR( "error in line %d %s\n", p_line, str)
+			SG_ERROR("error in line %d %s\n", p_line, str)
 		else
-			SG_ERROR( "error %s\n", str)
+			SG_ERROR("error %s\n", str)
 	}
 	//@}
 

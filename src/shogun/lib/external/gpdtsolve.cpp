@@ -964,7 +964,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   t = clock() - t;
   if (verbosity > 0 && PreprocessMode != 0)
   {
-      SG_INFO( "  Time for setup: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC)
+      SG_INFO("  Time for setup: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC)
       SG_INFO(
               "\n\n*********** Begin decomposition technique...\n");
   }
@@ -1008,10 +1008,10 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
 
   if (verbosity == 1)
   {
-      SG_INFO( "  IT  | Prep Time | Solver IT | Solver Time |")
-      SG_INFO( " Grad Time | KKT violation\n")
-      SG_INFO( "------+-----------+-----------+-------------+")
-      SG_INFO( "-----------+--------------\n")
+      SG_INFO("  IT  | Prep Time | Solver IT | Solver Time |")
+      SG_INFO(" Grad Time | KKT violation\n")
+      SG_INFO("------+-----------+-----------+-------------+")
+      SG_INFO("-----------+--------------\n")
   }
 
   /***************************************************************************/
@@ -1032,9 +1032,9 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       if (verbosity > 1)
           SG_INFO("\n*********** ITERATION: %d\n", nit + 1)
       else if (verbosity > 0)
-          SG_INFO( "%5d |", nit + 1)
+          SG_INFO("%5d |", nit + 1)
       else
-          SG_INFO( ".")
+          SG_INFO(".")
       fflush(stdout);
 
       nzout = 0;
@@ -1053,7 +1053,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       }
 
       if (verbosity > 1)
-          SG_INFO( "  spe: %e ", sp_e)
+          SG_INFO("  spe: %e ", sp_e)
 
       for (i = 0; i < chunk_size; i++)
           sp_y[i] = y_in(i);
@@ -1288,7 +1288,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
     if (verbosity > 1)
         SG_INFO("  Gradient updating time: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC)
     else if (verbosity > 0)
-        SG_INFO( "  %8.2lf |", (float64_t)t/CLOCKS_PER_SEC)
+        SG_INFO("  %8.2lf |", (float64_t)t/CLOCKS_PER_SEC)
     tot_st_time += (float64_t)t/CLOCKS_PER_SEC;
 
     /*** global updating of the solution vector ***/
@@ -1377,7 +1377,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   delete Cache;
 
   aux = KER->KernelEvaluations;
-  SG_INFO( "- Total CPU time: %lf\n", total_time)
+  SG_INFO("- Total CPU time: %lf\n", total_time)
   if (verbosity > 0)
   {
       SG_INFO(
@@ -1394,7 +1394,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       SG_INFO(
               "- Total gradient updating time: %lf\n", tot_st_time);
   }
-  SG_INFO( "- Objective function value: %lf\n", fval)
+  SG_INFO("- Objective function value: %lf\n", fval)
   objective_value=fval;
   return aux;
 }

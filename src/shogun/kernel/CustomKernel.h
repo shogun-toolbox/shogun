@@ -176,7 +176,7 @@ class CCustomKernel: public CKernel
 			}
 
 			cleanup_custom();
-			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
 
 			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, len), cols, cols);
 			upper_diagonal=true;
@@ -225,7 +225,7 @@ class CCustomKernel: public CKernel
 			ASSERT(rows==cols)
 
 			cleanup_custom();
-			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols)
+			SG_DEBUG("using custom kernel of size %dx%d\n", cols,cols)
 
 			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, cols*(cols+1)/2), rows, cols);
 			upper_diagonal = true;
@@ -286,7 +286,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			int32_t rows=full_kernel_matrix.num_rows;
 			int32_t cols=full_kernel_matrix.num_cols;
-			SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols)
+			SG_DEBUG("using custom kernel of size %dx%d\n", rows,cols)
 
 			kmatrix=SGMatrix<float32_t>(rows,cols);
 			upper_diagonal = false;

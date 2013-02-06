@@ -379,7 +379,7 @@ finalbeta=oldweights;
 
 	for( int32_t p=0; p<num_kernels; ++p )
 	{
-		//SG_PRINT( "MKL-direct:  sumw[%3d] = %e  ( oldbeta = %e )\n", p, sumw[p], old_beta[p] )
+		//SG_PRINT("MKL-direct:  sumw[%3d] = %e  ( oldbeta = %e )\n", p, sumw[p], old_beta[p] )
 		if(  oldweights[p] >= 0.0 )
 		{
 			finalbeta[p] = normsofsubkernels.back()[p] * oldweights[p]*oldweights[p] / pnorm;
@@ -411,20 +411,20 @@ finalbeta=oldweights;
 	const float64_t R = CMath::sqrt( preR / pnorm ) * epsRegul;
 	if( !( R >= 0 ) )
 	{
-		SG_PRINT( "MKL-direct: p = %.3f\n", pnorm )
-		SG_PRINT( "MKL-direct: nofKernelsGood = %d\n", nofKernelsGood )
-		SG_PRINT( "MKL-direct: Z = %e\n", Z )
-		SG_PRINT( "MKL-direct: eps = %e\n", epsRegul )
+		SG_PRINT("MKL-direct: p = %.3f\n", pnorm )
+		SG_PRINT("MKL-direct: nofKernelsGood = %d\n", nofKernelsGood )
+		SG_PRINT("MKL-direct: Z = %e\n", Z )
+		SG_PRINT("MKL-direct: eps = %e\n", epsRegul )
 		for( int32_t p=0; p<num_kernels; ++p )
 		{
 			const float64_t t = CMath::pow( oldweights[p] - finalbeta[p], 2.0 );
-			SG_PRINT( "MKL-direct: t[%3d] = %e  ( diff = %e = %e - %e )\n", p, t, oldweights[p]-finalbeta[p], oldweights[p], finalbeta[p] )
+			SG_PRINT("MKL-direct: t[%3d] = %e  ( diff = %e = %e - %e )\n", p, t, oldweights[p]-finalbeta[p], oldweights[p], finalbeta[p] )
 		}
-		SG_PRINT( "MKL-direct: preR = %e\n", preR )
-		SG_PRINT( "MKL-direct: preR/p = %e\n", preR/pnorm )
-		SG_PRINT( "MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/pnorm) )
-		SG_PRINT( "MKL-direct: R = %e\n", R )
-		SG_ERROR( "Assertion R >= 0 failed!\n" )
+		SG_PRINT("MKL-direct: preR = %e\n", preR )
+		SG_PRINT("MKL-direct: preR/p = %e\n", preR/pnorm )
+		SG_PRINT("MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/pnorm) )
+		SG_PRINT("MKL-direct: R = %e\n", R )
+		SG_ERROR("Assertion R >= 0 failed!\n" )
 	}
 
 	Z = 0.0;

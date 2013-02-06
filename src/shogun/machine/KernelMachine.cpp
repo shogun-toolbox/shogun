@@ -226,12 +226,12 @@ bool CKernelMachine::init_kernel_optimization()
 		SG_FREE(sv_weight);
 
 		if (!ret)
-			SG_ERROR( "initialization of kernel optimization failed\n")
+			SG_ERROR("initialization of kernel optimization failed\n")
 
 		return ret;
 	}
 	else
-		SG_ERROR( "initialization of kernel optimization failed\n")
+		SG_ERROR("initialization of kernel optimization failed\n")
 
 	return false;
 }
@@ -287,7 +287,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 	if (kernel->get_num_vec_rhs()>0)
 	{
-		SG_DEBUG( "computing output on %d test examples\n", num_vectors)
+		SG_DEBUG("computing output on %d test examples\n", num_vectors)
 
 		CSignal::clear_cancel();
 

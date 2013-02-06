@@ -222,11 +222,11 @@ bool CCommUlongStringKernel::init_optimization(
 	if (count<=0)
 	{
 		set_is_initialized(true);
-		SG_DEBUG( "empty set of SVs\n")
+		SG_DEBUG("empty set of SVs\n")
 		return true;
 	}
 
-	SG_DEBUG( "initializing CCommUlongStringKernel optimization\n")
+	SG_DEBUG("initializing CCommUlongStringKernel optimization\n")
 
 	for (int32_t i=0; i<count; i++)
 	{
@@ -236,7 +236,7 @@ bool CCommUlongStringKernel::init_optimization(
 		add_to_normal(IDX[i], weights[i]);
 	}
 
-	SG_PRINT( "Done.         \n")
+	SG_PRINT("Done.         \n")
 
 	set_is_initialized(true);
 	return true;
@@ -244,7 +244,7 @@ bool CCommUlongStringKernel::init_optimization(
 
 bool CCommUlongStringKernel::delete_optimization()
 {
-	SG_DEBUG( "deleting CCommUlongStringKernel optimization\n")
+	SG_DEBUG("deleting CCommUlongStringKernel optimization\n")
 	clear_normal();
 	return true;
 }
@@ -259,7 +259,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 
 	if (!get_is_initialized())
 	{
-      SG_ERROR( "CCommUlongStringKernel optimization not initialized\n")
+      SG_ERROR("CCommUlongStringKernel optimization not initialized\n")
 		return 0 ;
 	}
 

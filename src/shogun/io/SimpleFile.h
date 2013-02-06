@@ -80,7 +80,7 @@ template <class T> class CSimpleFile : public CSGObject
 						{
 							if ((num=(int64_t) ftell(file)) != -1)
 							{
-								SG_INFO( "file of size %ld bytes == %ld entries detected\n", num,num/sizeof(T))
+								SG_INFO("file of size %ld bytes == %ld entries detected\n", num,num/sizeof(T))
 								num/=sizeof(T);
 							}
 							else
@@ -95,7 +95,7 @@ template <class T> class CSimpleFile : public CSGObject
 
 					if (!seek_status)
 					{
-						SG_ERROR( "filesize autodetection failed\n")
+						SG_ERROR("filesize autodetection failed\n")
 						num=0;
 						return NULL;
 					}
@@ -112,10 +112,10 @@ template <class T> class CSimpleFile : public CSGObject
 						status=((int64_t) num_read == num);
 
 						if (!status)
-							SG_ERROR( "only %ld of %ld entries read. io error\n", (int64_t) num_read, num)
+							SG_ERROR("only %ld of %ld entries read. io error\n", (int64_t) num_read, num)
 					}
 					else
-						SG_ERROR( "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename)
+						SG_ERROR("failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename)
 				}
 				return target;
 			}
@@ -172,10 +172,10 @@ template <class T> class CSimpleFile : public CSGObject
 						status=((int64_t) num_read == num);
 
 						if (!status)
-							SG_ERROR( "only %ld of %ld entries read. io error\n", (int64_t) num_read, num)
+							SG_ERROR("only %ld of %ld entries read. io error\n", (int64_t) num_read, num)
 					}
 					else
-						SG_ERROR( "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename)
+						SG_ERROR("failed to allocate memory while trying to read %ld entries from file \"s\"\n", (int64_t) num, filename)
 
 						*/
 		}

@@ -64,7 +64,7 @@ bool CPlif::set_transform_type(const char *type_str)
 		transform = T_LINEAR_PLUS3 ;
 	else
 	{
-		SG_ERROR( "unknown transform type (%s)\n", type_str) 
+		SG_ERROR("unknown transform type (%s)\n", type_str) 
 		return false ;
 	}
 	return true ;
@@ -228,7 +228,7 @@ float64_t CPlif::lookup_penalty(float64_t p_value, float64_t* svm_values) const
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_ERROR( "unknown transform\n") 
+		SG_ERROR("unknown transform\n") 
 		break ;
 	}
 
@@ -305,7 +305,7 @@ void CPlif::penalty_add_derivative(float64_t p_value, float64_t* svm_values, flo
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_ERROR( "unknown transform\n") 
+		SG_ERROR("unknown transform\n") 
 		break ;
 	}
 
@@ -352,7 +352,7 @@ void CPlif::penalty_add_derivative_svm(float64_t p_value, float64_t *d_values, f
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_ERROR( "unknown transform\n") 
+		SG_ERROR("unknown transform\n") 
 		break ;
 	}
 

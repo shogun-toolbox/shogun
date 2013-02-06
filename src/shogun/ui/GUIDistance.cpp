@@ -161,18 +161,18 @@ bool CGUIDistance::save_distance(char* param)
 			}
 			catch (...)
 			{
-				SG_ERROR( "writing to file %s failed!\n", filename)
+				SG_ERROR("writing to file %s failed!\n", filename)
 			}
 
-			SG_INFO( "successfully written distance to \"%s\" !\n", filename)
+			SG_INFO("successfully written distance to \"%s\" !\n", filename)
 			result=true;
 			SG_UNREF(file);
 		}
 		else
-			SG_ERROR( "see help for params\n")
+			SG_ERROR("see help for params\n")
 	}
 	else
-		SG_ERROR( "no distance set / distance not initialized!\n")
+		SG_ERROR("no distance set / distance not initialized!\n")
 	return result;
 }
 

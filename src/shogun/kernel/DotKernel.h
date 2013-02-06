@@ -71,7 +71,7 @@ class CDotKernel : public CKernel
 
 			if ( ((CDotFeatures*) l)->get_dim_feature_space() != ((CDotFeatures*) r)->get_dim_feature_space() )
 			{
-				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+				SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CDotFeatures*) l)->get_dim_feature_space(),((CDotFeatures*) r)->get_dim_feature_space());
 			}
 			return true;

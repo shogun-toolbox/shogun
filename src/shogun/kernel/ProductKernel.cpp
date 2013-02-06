@@ -62,10 +62,10 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 				SG_UNREF(lf);
 				SG_UNREF(rf);
 				SG_UNREF(k);
-				SG_ERROR( "ProductKernel: Number of features/kernels does not match - bailing out\n")
+				SG_ERROR("ProductKernel: Number of features/kernels does not match - bailing out\n")
 			}
 
-			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name())
+			SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
 			result=k->init(lf,rf);
 			SG_UNREF(lf);
 			SG_UNREF(rf);
@@ -75,7 +75,7 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 		}
 		else
 		{
-			SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name())
+			SG_DEBUG("Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name())
 			if (!k->has_features())
 				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n")
 			if (k->get_num_vec_lhs() != num_lhs)
@@ -90,11 +90,11 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 
 	if (!result)
 	{
-		SG_INFO( "ProductKernel: Initialising the following kernel failed\n")
+		SG_INFO("ProductKernel: Initialising the following kernel failed\n")
 		if (k)
 			k->list_kernel();
 		else
-			SG_INFO( "<NULL>\n")
+			SG_INFO("<NULL>\n")
 		return false;
 	}
 
@@ -103,7 +103,7 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 		SG_UNREF(lf);
 		SG_UNREF(rf);
 		SG_UNREF(k);
-		SG_ERROR( "ProductKernel: Number of features/kernels does not match - bailing out\n")
+		SG_ERROR("ProductKernel: Number of features/kernels does not match - bailing out\n")
 	}
 
 	initialized=true;
@@ -191,7 +191,7 @@ void CProductKernel::list_kernels()
 {
 	CKernel* k;
 
-	SG_INFO( "BEGIN PRODUCT KERNEL LIST - ")
+	SG_INFO("BEGIN PRODUCT KERNEL LIST - ")
 	this->list_kernel();
 
 	CListElement* current = NULL ;
@@ -202,7 +202,7 @@ void CProductKernel::list_kernels()
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
-	SG_INFO( "END PRODUCT KERNEL LIST - ")
+	SG_INFO("END PRODUCT KERNEL LIST - ")
 }
 
 //Adapted from CCombinedKernel

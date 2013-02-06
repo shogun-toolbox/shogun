@@ -189,10 +189,10 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 					}
 					ASSERT(n==num_combined)
 					result=true;
-					SG_INFO( "END PREPROCESSING COMBINED FEATURES\n")
+					SG_INFO("END PREPROCESSING COMBINED FEATURES\n")
 				}
 				else
-					SG_ERROR( "combined features not compatible\n")
+					SG_ERROR("combined features not compatible\n")
 			}
 			else
 			{
@@ -222,11 +222,11 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 		{
 			// if we don't have a preproc for trainfeatures we
 			// don't need a preproc for test features
-			SG_DEBUG( "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preprocessors(), testfeat->get_num_preprocessors())
+			SG_DEBUG("%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preprocessors(), testfeat->get_num_preprocessors())
 
 			if (trainfeat->get_num_preprocessors() < testfeat->get_num_preprocessors())
 			{
-				SG_ERROR( "more preprocessors attached to test features than to train features\n")
+				SG_ERROR("more preprocessors attached to test features than to train features\n")
 				return false;
 			}
 
@@ -269,7 +269,7 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 		return true;
 	}
 	else
-		SG_ERROR( "no features for preprocessing available!\n")
+		SG_ERROR("no features for preprocessing available!\n")
 
 	return false;
 }
@@ -316,7 +316,7 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 			};
 			break;
 		case C_COMBINED:
-			SG_ERROR( "Combined feature objects cannot be preprocessed. Only its sub-feature objects!\n")
+			SG_ERROR("Combined feature objects cannot be preprocessed. Only its sub-feature objects!\n")
 			break;
 		default:
 			SG_NOTIMPLEMENTED

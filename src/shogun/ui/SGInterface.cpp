@@ -1208,7 +1208,7 @@ CSGInterface::CSGInterface(bool print_copyright)
 		SG_PRINT("( seeding random number generator with %u (seed size %d))\n",
 				CMath::get_seed(), RNG_SEED_SIZE);
 #ifdef USE_LOGCACHE
-		SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",
+		SG_PRINT("initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",
 				CMath::get_log_range(),CMath::get_log_accuracy(),sizeof(float64_t),
 				CMath::get_log_range()*CMath::get_log_accuracy()*sizeof(float64_t)/(1024.0*1024.0));
 #else
@@ -4024,7 +4024,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 			int32_t max_order=get_int();
 			if ((max_order<1) || (max_order>12))
 			{
-				SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order)
+				SG_WARNING("max_order out of range 1..12 (%d). setting to 1\n", max_order)
 				max_order=1;
 			}
 
@@ -4403,7 +4403,7 @@ bool CSGInterface::cmd_get_SPEC_scoring()
 
 	if ((max_order<1) || (max_order>8))
 	{
-		SG_WARNING( "max_order out of range 1..8 (%d). setting to 1\n", max_order)
+		SG_WARNING("max_order out of range 1..8 (%d). setting to 1\n", max_order)
 		max_order=1;
 	}
 
@@ -4510,7 +4510,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		/*
 		if ((max_order < 1) || (max_order > 12))
 		{
-			SG_WARNING( "max_order out of range 1..12 (%d). setting to 1.\n", max_order)
+			SG_WARNING("max_order out of range 1..12 (%d). setting to 1.\n", max_order)
 			max_order=1;
 		}
 		*/
@@ -5718,7 +5718,7 @@ bool CSGInterface::cmd_get_viterbi_path()
 	}
 	((CStringFeatures<uint16_t>*) feat)->free_feature_vector(vec, dim, free_vec);
 
-	SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat)
+	SG_DEBUG("computing viterbi path for vector %d (length %d)\n", dim, num_feat)
 	float64_t likelihood=0;
 	T_STATES* path=h->get_path(dim, likelihood);
 
@@ -6769,7 +6769,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (!h->check_svm_arrays())
 	{
-		SG_ERROR( "svm arrays inconsistent\n") 
+		SG_ERROR("svm arrays inconsistent\n") 
 		CPlif::delete_penalty_struct(PEN, Nplif) ;
 		return false ;
 	}
@@ -6943,7 +6943,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ;
 
 	if (!h->check_svm_arrays())
-		SG_ERROR( "svm arrays inconsistent\n") 
+		SG_ERROR("svm arrays inconsistent\n") 
 
 	int32_t *my_path = SG_MALLOC(int32_t, Nmypos_seq+1);
 	memset(my_path, -1, Nmypos_seq*sizeof(int32_t)) ;

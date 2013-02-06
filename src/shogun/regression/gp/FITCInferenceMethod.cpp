@@ -195,10 +195,10 @@ void CFITCInferenceMethod::check_members()
 		SG_ERROR("Regular and Latent Features do not match in dimensionality!\n")
 
 	if (!m_kernel)
-		SG_ERROR( "No kernel assigned!\n")
+		SG_ERROR("No kernel assigned!\n")
 
 	if (!m_mean)
-		SG_ERROR( "No mean function assigned!\n")
+		SG_ERROR("No mean function assigned!\n")
 
 	if (m_model->get_model_type() != LT_GAUSSIAN)
 	{

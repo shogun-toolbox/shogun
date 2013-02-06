@@ -205,7 +205,7 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 		ASSERT(old_ii<ii)
 
 		if (ii < 0 || ii >= num_vec)
-			SG_ERROR( "Index out of range: should be 0<%d<%d\n", ii, num_vec)
+			SG_ERROR("Index out of range: should be 0<%d<%d\n", ii, num_vec)
 
 		if (i == ii)
 			continue;
@@ -364,7 +364,7 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("A subset is set, cannot call apply_preproc\n")
 
-	SG_DEBUG( "force: %d\n", force_preprocessing)
+	SG_DEBUG("force: %d\n", force_preprocessing)
 
 	if (feature_matrix.matrix && get_num_preprocessors())
 	{
@@ -375,7 +375,7 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 				set_preprocessed(i);
 				CDensePreprocessor<ST>* p =
 						(CDensePreprocessor<ST>*) get_preprocessor(i);
-				SG_INFO( "preprocessing using preproc %s\n", p->get_name())
+				SG_INFO("preprocessing using preproc %s\n", p->get_name())
 
 				if (p->apply_to_feature_matrix(this).matrix == NULL)
 				{
@@ -392,10 +392,10 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 	else
 	{
 		if (!feature_matrix.matrix)
-			SG_ERROR( "no feature matrix\n")
+			SG_ERROR("no feature matrix\n")
 
 		if (!get_num_preprocessors())
-			SG_ERROR( "no preprocessors available\n")
+			SG_ERROR("no preprocessors available\n")
 
 		return false;
 	}

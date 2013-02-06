@@ -192,7 +192,7 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 			SG_ERROR("Writing to file %s failed!\n", filename)
 		}
 
-		SG_INFO( "Successfully written features into \"%s\" !\n", filename)
+		SG_INFO("Successfully written features into \"%s\" !\n", filename)
 		result=true;
 
 	} else
@@ -236,7 +236,7 @@ bool CGUIFeatures::reshape(char* target, int32_t num_feat, int32_t num_vec)
 	bool result=false;
 	if (f_ptr)
 	{
-		SG_INFO( "reshape data to %d x %d\n", num_feat, num_vec)
+		SG_INFO("reshape data to %d x %d\n", num_feat, num_vec)
 		result=(*f_ptr)->reshape(num_feat, num_vec);
 
 		if (!result)

@@ -71,7 +71,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_virtual_data= num_data*(num_classes-1);
 
-	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes)
+	SG_INFO("%d trainlabels, %d classes\n", num_data, num_classes)
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)

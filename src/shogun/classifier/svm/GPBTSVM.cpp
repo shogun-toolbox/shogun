@@ -50,7 +50,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	prob.KER=new sKernel(kernel, lab.vlen);
 	prob.y=lab.vector;
 	prob.ell=lab.vlen;
-	SG_INFO( "%d trainlabels\n", prob.ell)
+	SG_INFO("%d trainlabels\n", prob.ell)
 
 	//  /*** set options defaults ***/
 	prob.delta = epsilon;
@@ -71,14 +71,14 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		prob.maxmw = 5;
 
 	/*** set the problem description for final report ***/
-	SG_INFO( "\nTRAINING PARAMETERS:\n")
-	SG_INFO( "\tNumber of training documents: %d\n", prob.ell)
-	SG_INFO( "\tq: %d\n", prob.chunk_size)
-	SG_INFO( "\tn: %d\n", prob.q)
-	SG_INFO( "\tC: %lf\n", prob.c_const)
-	SG_INFO( "\tkernel type: %d\n", prob.ker_type)
-	SG_INFO( "\tcache size: %dMb\n", prob.maxmw)
-	SG_INFO( "\tStopping tolerance: %lf\n", prob.delta)
+	SG_INFO("\nTRAINING PARAMETERS:\n")
+	SG_INFO("\tNumber of training documents: %d\n", prob.ell)
+	SG_INFO("\tq: %d\n", prob.chunk_size)
+	SG_INFO("\tn: %d\n", prob.q)
+	SG_INFO("\tC: %lf\n", prob.c_const)
+	SG_INFO("\tkernel type: %d\n", prob.ker_type)
+	SG_INFO("\tcache size: %dMb\n", prob.maxmw)
+	SG_INFO("\tStopping tolerance: %lf\n", prob.delta)
 
 	//  /*** compute the number of cache rows up to maxmw Mb. ***/
 	if (prob.preprocess_size == -1)

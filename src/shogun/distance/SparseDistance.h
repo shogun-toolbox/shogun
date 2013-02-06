@@ -40,7 +40,7 @@ template <class ST> class CSparseDistance : public CDistance
 
 			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features() )
 			{
-				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+				SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
 			}
 			return true;

@@ -120,10 +120,10 @@ void CExactInferenceMethod::check_members()
 	}
 
 	if (!m_kernel)
-		SG_ERROR( "No kernel assigned!\n")
+		SG_ERROR("No kernel assigned!\n")
 
 	if (!m_mean)
-		SG_ERROR( "No mean function assigned!\n")
+		SG_ERROR("No mean function assigned!\n")
 
 	if (m_model->get_model_type() != LT_GAUSSIAN)
 	{

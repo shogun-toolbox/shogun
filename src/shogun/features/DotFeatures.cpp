@@ -146,7 +146,7 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n")
+			SG_INFO("prematurely stopped.           \n")
 #endif
 }
 
@@ -224,7 +224,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n")
+			SG_INFO("prematurely stopped.           \n")
 #endif
 }
 

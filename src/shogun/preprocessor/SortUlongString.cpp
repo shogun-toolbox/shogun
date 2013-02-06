@@ -71,7 +71,7 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 			get_feature_vector(i, len, free_vec);
 		ASSERT(!free_vec) // won't work with non-in-memory string features
 
-		SG_DEBUG( "sorting string of length %i\n", len)
+		SG_DEBUG("sorting string of length %i\n", len)
 
 		//CMath::qsort(vec, len);
 		CMath::radix_sort(vec, len);

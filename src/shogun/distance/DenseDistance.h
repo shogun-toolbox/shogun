@@ -43,7 +43,7 @@ template <class ST> class CDenseDistance : public CDistance
 
 			if ( ((CDenseFeatures<ST>*) l)->get_num_features() != ((CDenseFeatures<ST>*) r)->get_num_features() )
 			{
-				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+				SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CDenseFeatures<ST>*) l)->get_num_features(),((CDenseFeatures<ST>*) r)->get_num_features());
 			}
 

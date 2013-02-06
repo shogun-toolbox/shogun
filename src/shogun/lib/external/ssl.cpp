@@ -816,7 +816,7 @@ int32_t optimize_w(
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
-				SG_SDEBUG( "epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f\n", BIG_EPSILON, EPSILON)
+				SG_SDEBUG("epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f\n", BIG_EPSILON, EPSILON)
 				continue;
 			}
 			else

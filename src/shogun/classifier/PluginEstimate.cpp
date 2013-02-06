@@ -86,7 +86,7 @@ bool CPluginEstimate::train_machine(CFeatures* data)
 			neg_indizes[neg_idx++]=i;
 	}
 
-	SG_INFO( "training using pseudos %f and %f\n", m_pos_pseudo, m_neg_pseudo)
+	SG_INFO("training using pseudos %f and %f\n", m_pos_pseudo, m_neg_pseudo)
 	pos_model->train(pos_indizes, pos_idx, m_pos_pseudo);
 	neg_model->train(neg_indizes, neg_idx, m_neg_pseudo);
 
@@ -127,7 +127,7 @@ float64_t CPluginEstimate::apply_one(int32_t vec_idx)
 	uint16_t* vector=features->get_feature_vector(vec_idx, len, free_vec);
 
 	if ((!pos_model) || (!neg_model))
-		SG_ERROR( "model(s) not assigned\n")
+		SG_ERROR("model(s) not assigned\n")
 
 	float64_t result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
 	features->free_feature_vector(vector, vec_idx, free_vec);

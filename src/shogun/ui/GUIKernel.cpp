@@ -293,7 +293,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring(
 	}
 
 	for (i=0; i<length; i++)
-		SG_INFO( "shift[%i]=%i\n", i, shifts[i])
+		SG_INFO("shift[%i]=%i\n", i, shifts[i])
 
 	float64_t* weights=get_weights(order, max_mismatch);
 

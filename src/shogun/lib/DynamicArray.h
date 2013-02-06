@@ -553,24 +553,24 @@ template <class T> class CDynamicArray :public CSGObject
 		inline void display_array()
 		{
 			if (get_name())
-				SG_PRINT( "DynamicArray '%s' of size: %dx%dx%d\n", get_name(), dim1_size, dim2_size, dim3_size)
+				SG_PRINT("DynamicArray '%s' of size: %dx%dx%d\n", get_name(), dim1_size, dim2_size, dim3_size)
 			else
-				SG_PRINT( "DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size)
+				SG_PRINT("DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size)
 
 			for (int32_t k=0; k<dim3_size; k++)
 				for (int32_t i=0; i<dim1_size; i++)
 				{
-					SG_PRINT( "element(%d,:,%d) = [ ",i, k)
+					SG_PRINT("element(%d,:,%d) = [ ",i, k)
 					for (int32_t j=0; j<dim2_size; j++)
-						SG_PRINT( "%1.1f,", (float32_t) element(i,j,k))
-					SG_PRINT( " ]\n")
+						SG_PRINT("%1.1f,", (float32_t) element(i,j,k))
+					SG_PRINT(" ]\n")
 				}
 		}
 	
 		/** display array's size */
 		inline void display_size()
 		{
-			SG_PRINT( "DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size)
+			SG_PRINT("DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size)
 		}
 
 		/** @return object name */

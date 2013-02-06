@@ -139,7 +139,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		train_lab=SG_MALLOC(int32_t, m_k);
 	}
 
-	SG_INFO( "%d test examples\n", num_lab)
+	SG_INFO("%d test examples\n", num_lab)
 	CSignal::clear_cancel();
 
 	///histogram of classes and returned output
@@ -345,7 +345,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	///histogram of classes and returned output
 	int32_t* classes=SG_MALLOC(int32_t, m_num_classes);
 	
-	SG_INFO( "%d test examples\n", num_lab)
+	SG_INFO("%d test examples\n", num_lab)
 	CSignal::clear_cancel();
 
 	if ( ! m_use_covertree )

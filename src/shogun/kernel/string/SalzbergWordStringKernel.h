@@ -63,7 +63,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 			pos_prior=pos_prior_ ;
 			neg_prior=neg_prior_ ;
 			if (fabs(pos_prior+neg_prior-1)>1e-6)
-				SG_WARNING( "priors don't sum to 1: %f+%f-1=%f\n", pos_prior, neg_prior, pos_prior+neg_prior-1) 
+				SG_WARNING("priors don't sum to 1: %f+%f-1=%f\n", pos_prior, neg_prior, pos_prior+neg_prior-1) 
 		};
 
 		/** set prior probs from labels

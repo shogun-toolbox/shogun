@@ -407,7 +407,7 @@ int CWDSVMOcas::add_new_cut(
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			SG_SWARNING( "pthread_join failed\n")
+			SG_SWARNING("pthread_join failed\n")
 
 		//float32_t* a=params_add[t].new_a;
 		//for (i=0; i<nDim; i++)
@@ -590,7 +590,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			SG_SWARNING( "pthread_join failed\n")
+			SG_SWARNING("pthread_join failed\n")
 	}
 	SG_FREE(threads);
 	SG_FREE(params_output);

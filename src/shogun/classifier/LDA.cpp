@@ -70,14 +70,14 @@ bool CLDA::train_machine(CFeatures* data)
 			classidx_pos[num_pos++]=i;
 		else
 		{
-			SG_ERROR( "found label != +/- 1 bailing...")
+			SG_ERROR("found label != +/- 1 bailing...")
 			return false;
 		}
 	}
 
 	if (num_neg<=0 || num_pos<=0)
 	{
-		SG_ERROR( "whooooo ? only a single class found\n")
+		SG_ERROR("whooooo ? only a single class found\n")
 		return false;
 	}
 

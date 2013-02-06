@@ -44,7 +44,7 @@ CCombinedDotFeatures::~CCombinedDotFeatures()
 
 void CCombinedDotFeatures::list_feature_objs()
 {
-	SG_INFO( "BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
+	SG_INFO("BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 
 	CListElement* current = NULL ;
@@ -56,7 +56,7 @@ void CCombinedDotFeatures::list_feature_objs()
 		f=get_next_feature_obj(current);
 	}
 
-	SG_INFO( "END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
+	SG_INFO("END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 }
 

@@ -110,12 +110,12 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		int32_t num_params2=(int32_t) llen*l->get_num_symbols()+rlen*r->get_num_symbols();
 		if ((!estimate) || (!estimate->check_models()))
 		{
-			SG_ERROR( "no estimate available\n")
+			SG_ERROR("no estimate available\n")
 			return false ;
 		} ;
 		if (num_params2!=estimate->get_num_params())
 		{
-			SG_ERROR( "number of parameters of estimate and feature representation do not match\n")
+			SG_ERROR("number of parameters of estimate and feature representation do not match\n")
 			return false ;
 		} ;
 

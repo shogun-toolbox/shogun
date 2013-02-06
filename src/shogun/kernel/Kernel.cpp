@@ -188,7 +188,7 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	if (buffer_size>((uint64_t) totdoc)*totdoc)
 		buffer_size=((uint64_t) totdoc)*totdoc;
 
-	SG_INFO( "using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name())
+	SG_INFO("using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name())
 
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)))
@@ -695,7 +695,7 @@ void CKernel::remove_rhs()
 
 void CKernel::list_kernel()
 {
-	SG_INFO( "%p - \"%s\" weight=%1.2f OPT:%s", this, get_name(),
+	SG_INFO("%p - \"%s\" weight=%1.2f OPT:%s", this, get_name(),
 			get_combined_kernel_weight(),
 			get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" :
 			"SLOWBUTMEMEFFICIENT");
@@ -802,26 +802,26 @@ void CKernel::list_kernel()
 		ENUM_CASE(F_LONGREAL)
 		ENUM_CASE(F_ANY)
 	}
-	SG_INFO( "\n")
+	SG_INFO("\n")
 }
 #undef ENUM_CASE
 
 bool CKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t * weights)
 {
-   SG_ERROR( "kernel does not support linadd optimization\n")
+   SG_ERROR("kernel does not support linadd optimization\n")
 	return false ;
 }
 
 bool CKernel::delete_optimization()
 {
-   SG_ERROR( "kernel does not support linadd optimization\n")
+   SG_ERROR("kernel does not support linadd optimization\n")
 	return false;
 }
 
 float64_t CKernel::compute_optimized(int32_t vector_idx)
 {
-   SG_ERROR( "kernel does not support linadd optimization\n")
+   SG_ERROR("kernel does not support linadd optimization\n")
 	return 0;
 }
 
@@ -829,17 +829,17 @@ void CKernel::compute_batch(
 	int32_t num_vec, int32_t* vec_idx, float64_t* target, int32_t num_suppvec,
 	int32_t* IDX, float64_t* weights, float64_t factor)
 {
-   SG_ERROR( "kernel does not support batch computation\n")
+   SG_ERROR("kernel does not support batch computation\n")
 }
 
 void CKernel::add_to_normal(int32_t vector_idx, float64_t weight)
 {
-   SG_ERROR( "kernel does not support linadd optimization, add_to_normal not implemented\n")
+   SG_ERROR("kernel does not support linadd optimization, add_to_normal not implemented\n")
 }
 
 void CKernel::clear_normal()
 {
-   SG_ERROR( "kernel does not support linadd optimization, clear_normal not implemented\n")
+   SG_ERROR("kernel does not support linadd optimization, clear_normal not implemented\n")
 }
 
 int32_t CKernel::get_num_subkernels()
@@ -850,7 +850,7 @@ int32_t CKernel::get_num_subkernels()
 void CKernel::compute_by_subkernel(
 	int32_t vector_idx, float64_t * subkernel_contrib)
 {
-   SG_ERROR( "kernel compute_by_subkernel not implemented\n")
+   SG_ERROR("kernel compute_by_subkernel not implemented\n")
 }
 
 const float64_t* CKernel::get_subkernel_weights(int32_t &num_weights)
@@ -870,7 +870,7 @@ void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
 {
 	ASSERT(weights.vector)
 	if (weights.vlen!=1)
-      SG_ERROR( "number of subkernel weights should be one ...\n")
+      SG_ERROR("number of subkernel weights should be one ...\n")
 
 	combined_kernel_weight = weights.vector[0] ;
 }

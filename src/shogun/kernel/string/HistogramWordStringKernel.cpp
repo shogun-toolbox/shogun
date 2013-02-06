@@ -68,7 +68,7 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ASSERT(l)
 	ASSERT(r)
 
-	SG_DEBUG( "init: lhs: %ld   rhs: %ld\n", l, r) 
+	SG_DEBUG("init: lhs: %ld   rhs: %ld\n", l, r) 
 	int32_t i;
 	initialized=false;
 
@@ -128,12 +128,12 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 		if ((!estimate) || (!estimate->check_models()))
 		{
-			SG_ERROR( "no estimate available\n")
+			SG_ERROR("no estimate available\n")
 			return false ;
 		} ;
 		if (num_params2!=estimate->get_num_params())
 		{
-			SG_ERROR( "number of parameters of estimate and feature representation do not match\n")
+			SG_ERROR("number of parameters of estimate and feature representation do not match\n")
 			return false ;
 		} ;
 

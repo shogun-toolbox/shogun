@@ -85,8 +85,8 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 			}
 		}
 		//compute_objective();
-		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias())
-		SG_INFO( "Number of SV: %ld\n", get_num_support_vectors())
+		SG_INFO("obj = %.16f, rho = %.16f\n",get_objective(),get_bias())
+		SG_INFO("Number of SV: %ld\n", get_num_support_vectors())
 
 		SG_FREE(alphas);
 		SG_FREE(lb);
@@ -96,7 +96,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 	}
 
 	if (!result)
-		SG_ERROR( "cplex svm failed")
+		SG_ERROR("cplex svm failed")
 
 	return result;
 }

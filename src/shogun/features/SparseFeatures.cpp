@@ -240,7 +240,7 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 
 			SG_FREE(tmp_feat_after);
 			result.num_feat_entries=tmp_len ;
-			SG_DEBUG( "len: %d len2: %d\n", result.num_feat_entries, num_features)
+			SG_DEBUG("len: %d len2: %d\n", result.num_feat_entries, num_features)
 		}
 		return result ;
 	}
@@ -405,7 +405,7 @@ template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 	SGMatrix<ST> full(num_features, get_num_vectors());
 	full.zero();
 
-	SG_INFO( "converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features)
+	SG_INFO("converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features)
 
 	for (int32_t v=0; v<full.num_cols; v++)
 	{
@@ -483,16 +483,16 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 			}
 			else
 			{
-				SG_ERROR( "allocation of sparse feature matrix failed\n")
+				SG_ERROR("allocation of sparse feature matrix failed\n")
 				result=false;
 			}
 
-			SG_INFO( "sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
+			SG_INFO("sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
 					num_total_entries, int64_t(num_feat)*num_vec, (100.0*num_total_entries)/(int64_t(num_feat)*num_vec));
 		}
 		else
 		{
-			SG_ERROR( "huh ? zero size matrix given ?\n")
+			SG_ERROR("huh ? zero size matrix given ?\n")
 			result=false;
 		}
 	}
@@ -502,7 +502,7 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 
 template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
-	SG_INFO( "force: %d\n", force_preprocessing)
+	SG_INFO("force: %d\n", force_preprocessing)
 
 	if ( sparse_feature_matrix && get_num_preprocessors() )
 	{
@@ -511,7 +511,7 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 			if ( (!is_preprocessed(i) || force_preprocessing) )
 			{
 				set_preprocessed(i);
-				SG_INFO( "preprocessing using preproc %s\n", get_preprocessor(i)->get_name())
+				SG_INFO("preprocessing using preproc %s\n", get_preprocessor(i)->get_name())
 				if (((CSparsePreprocessor<ST>*) get_preprocessor(i))->apply_to_sparse_feature_matrix(this) == NULL)
 					return false;
 			}
@@ -521,7 +521,7 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 	}
 	else
 	{
-		SG_WARNING( "no sparse feature matrix available or features already preprocessed - skipping.\n")
+		SG_WARNING("no sparse feature matrix available or features already preprocessed - skipping.\n")
 		return false;
 	}
 }

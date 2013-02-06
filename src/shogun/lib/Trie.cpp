@@ -65,7 +65,7 @@ void CTrie<POIMTrie>::POIMs_extract_W(
   const int32_t N = length;
   int32_t i;
   for( i = 0; i < N; ++i ) {
-    //SG_PRINT( "W_helper( %d )\n", i )
+    //SG_PRINT("W_helper( %d )\n", i )
     POIMs_extract_W_helper( trees[i], 0, i*NUM_SYMS, 0*NUM_SYMS, W, K );
   }
 }
@@ -230,7 +230,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 
   // --- add w and return results
   const float64_t w0 = node->weight;
-  //SG_PRINT( "  d=%d, node=%d, dS=%.3f, w=%.3f\n", depth, nodeIdx, node->S, w0 )
+  //SG_PRINT("  d=%d, node=%d, dS=%.3f, w=%.3f\n", depth, nodeIdx, node->S, w0 )
   node->S += w0;
   node->L += w0;
   node->R += w0;
@@ -297,7 +297,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
 	const float64_t valS, const float64_t valL, const float64_t valR,
 	const int32_t debug)
 {
-	//SG_PRINT( "i=%d, d=%d, y=%d:  w=%.3f \n", i, k, y, valW )
+	//SG_PRINT("i=%d, d=%d, y=%d:  w=%.3f \n", i, k, y, valW )
 	const int32_t nk = nofsKmers[ k ];
 	ASSERT(1<=k && k<=K)
 	ASSERT(0<=y && y<nk)
@@ -323,8 +323,8 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
 			for( j = 0; j < nr; ++j )
 			{
 				if( !( 0 <= z && z < nz ) ) {
-					SG_PRINT( "k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz )
-					SG_PRINT( "  j=%d, y=%d, z=%d \n", j, y, z )
+					SG_PRINT("k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz )
+					SG_PRINT("  j=%d, y=%d, z=%d \n", j, y, z )
 				}
 				ASSERT(0<=z && z<nz)
 				poim[ z ] += valL - valW;

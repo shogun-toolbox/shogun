@@ -124,8 +124,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 	CKernel::init(l, r);
 
-	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows)
-	SG_DEBUG( "num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), kmatrix.num_cols)
+	SG_DEBUG("num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows)
+	SG_DEBUG("num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), kmatrix.num_cols)
 	ASSERT(l->get_num_vectors()==kmatrix.num_rows)
 	ASSERT(r->get_num_vectors()==kmatrix.num_cols)
 	return init_normalizer();
