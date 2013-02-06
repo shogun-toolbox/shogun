@@ -68,7 +68,7 @@ float64_t CPolyMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 	for (i = 0, sum = inhomogene; i<alen; i++)
 	{
 		if (avec[i]==bvec[i])

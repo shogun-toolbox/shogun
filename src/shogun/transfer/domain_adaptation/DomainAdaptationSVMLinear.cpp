@@ -41,7 +41,7 @@ CDomainAdaptationSVMLinear::~CDomainAdaptationSVMLinear()
 {
 
 	SG_UNREF(presvm);
-	SG_DEBUG("deleting DomainAdaptationSVMLinear\n");
+	SG_DEBUG("deleting DomainAdaptationSVMLinear\n")
 }
 
 
@@ -79,16 +79,16 @@ bool CDomainAdaptationSVMLinear::is_presvm_sane()
 
 	if (!presvm) {
 
-		SG_WARNING("presvm is null");
+		SG_WARNING("presvm is null")
 
 	} else {
 
         if (presvm->get_bias() != 0) {
-            SG_ERROR("presvm bias not set to zero");
+            SG_ERROR("presvm bias not set to zero")
         }
 
         if (presvm->get_features()->get_feature_type() != this->get_features()->get_feature_type()) {
-            SG_ERROR("feature types do not agree");
+            SG_ERROR("feature types do not agree")
         }
     }
 
@@ -103,15 +103,15 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 	CDotFeatures* tmp_data;
 
 	if (m_labels->get_label_type() != LT_BINARY)
-		SG_ERROR("DomainAdaptationSVMLinear requires binary labels\n");
+		SG_ERROR("DomainAdaptationSVMLinear requires binary labels\n")
 
 	if (train_data)
 	{
 		if (!train_data->has_property(FP_DOT))
-			SG_ERROR("DotFeatures expected\n");
+			SG_ERROR("DotFeatures expected\n")
 
 		if (((CBinaryLabels*) m_labels)->get_num_labels() != train_data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 
 		tmp_data = (CDotFeatures*) train_data;
 	}
@@ -127,12 +127,12 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 
     if (presvm)
     {
-    	ASSERT(presvm->get_bias() == 0.0);
+    	ASSERT(presvm->get_bias() == 0.0)
 
         // bias of parent SVM was set to zero in constructor, already contains B
         CBinaryLabels* parent_svm_out = presvm->apply_binary(tmp_data);
 
-        SG_DEBUG("pre-computing linear term from presvm\n");
+        SG_DEBUG("pre-computing linear term from presvm\n")
 
         // pre-compute linear term
         for (int32_t i=0; i!=num_training_points; i++)
@@ -212,7 +212,7 @@ void CDomainAdaptationSVMLinear::set_train_factor(float64_t factor)
 
 CBinaryLabels* CDomainAdaptationSVMLinear::apply_binary(CFeatures* data)
 {
-	ASSERT(presvm->get_bias()==0.0);
+	ASSERT(presvm->get_bias()==0.0)
 
 	int32_t num_examples = data->get_num_vectors();
 

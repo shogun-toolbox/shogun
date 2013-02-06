@@ -164,19 +164,19 @@ class CCustomKernel: public CKernel
 				SG_ERROR("%s::set_triangle_kernel_matrix_from_triangle_generic "
 						"not possible with subset. Remove first\n", get_name());
 			}
-			ASSERT(tri_kernel_matrix.vector);
+			ASSERT(tri_kernel_matrix.vector)
 
 			int64_t len = tri_kernel_matrix.vlen;
 			int64_t cols = (int64_t) floor(-0.5 + CMath::sqrt(0.25+2*len));
 
 			if (cols*(cols+1)/2 != len)
 			{
-				SG_ERROR("km should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n");
+				SG_ERROR("km should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n")
 				return false;
 			}
 
 			cleanup_custom();
-			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
+			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols)
 
 			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, len), cols, cols);
 			upper_diagonal=true;
@@ -222,10 +222,10 @@ class CCustomKernel: public CKernel
 
 			int32_t rows = full_kernel_matrix.num_rows;
 			int32_t cols = full_kernel_matrix.num_cols;
-			ASSERT(rows==cols);
+			ASSERT(rows==cols)
 
 			cleanup_custom();
-			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
+			SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols)
 
 			kmatrix=SGMatrix<float32_t>(SG_MALLOC(float32_t, cols*(cols+1)/2), rows, cols);
 			upper_diagonal = true;
@@ -286,7 +286,7 @@ class CCustomKernel: public CKernel
 			cleanup_custom();
 			int32_t rows=full_kernel_matrix.num_rows;
 			int32_t cols=full_kernel_matrix.num_cols;
-			SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);
+			SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols)
 
 			kmatrix=SGMatrix<float32_t>(rows,cols);
 			upper_diagonal = false;
@@ -396,7 +396,7 @@ class CCustomKernel: public CKernel
 		 */
 		virtual float64_t compute(int32_t row, int32_t col)
 		{
-			ASSERT(kmatrix.matrix);
+			ASSERT(kmatrix.matrix)
 
 			index_t real_row=m_row_subset_stack->subset_idx_conversion(row);
 			index_t real_col=m_col_subset_stack->subset_idx_conversion(col);

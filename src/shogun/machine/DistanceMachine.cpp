@@ -51,9 +51,9 @@ void CDistanceMachine::init()
 void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t idx_a2,int32_t idx_b)
 {
     int32_t num_threads=parallel->get_num_threads();
-    ASSERT(num_threads>0);
+    ASSERT(num_threads>0)
 
-    ASSERT(result);
+    ASSERT(result)
 
     if (num_threads < 2)
     {
@@ -113,9 +113,9 @@ void CDistanceMachine::distances_lhs(float64_t* result,int32_t idx_a1,int32_t id
 void CDistanceMachine::distances_rhs(float64_t* result,int32_t idx_b1,int32_t idx_b2,int32_t idx_a)
 {
     int32_t num_threads=parallel->get_num_threads();
-    ASSERT(num_threads>0);
+    ASSERT(num_threads>0)
 
-    ASSERT(result);
+    ASSERT(result)
 
     if (num_threads < 2)
     {

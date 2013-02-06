@@ -30,7 +30,7 @@ class CBitString : public CSGObject
 	public:
 		/** default constructor  */
 		CBitString() {
-			SG_UNSTABLE("CBitString::CBitString()", "\n");
+			SG_UNSTABLE("CBitString::CBitString()", "\n")
 
 			alphabet = NULL;
 			string = NULL;
@@ -111,7 +111,7 @@ class CBitString : public CSGObject
 				j++;
 			}
 
-			ASSERT(j==stream_len);
+			ASSERT(j==stream_len)
 		}
 
 		/** load fasta file as bit string
@@ -133,10 +133,10 @@ class CBitString : public CSGObject
 			char* id=f.get_line(id_len, offs);
 
 			if (!id_len || id[0]!='>')
-				SG_SERROR("No fasta hunks (lines starting with '>') found\n");
+				SG_SERROR("No fasta hunks (lines starting with '>') found\n")
 
 			if (offs==f.get_size())
-				SG_SERROR("Empty file?\n");
+				SG_SERROR("Empty file?\n")
 
 			char* fasta=NULL;
 			char* s=NULL;
@@ -151,10 +151,10 @@ class CBitString : public CSGObject
 					fasta=s;
 
 				if (!s || len==0)
-					SG_SERROR("Error reading fasta entry in line %d len=%ld", spanned_lines+1, len);
+					SG_SERROR("Error reading fasta entry in line %d len=%ld", spanned_lines+1, len)
 
 				if (s[0]=='>')
-					SG_SERROR("Multiple fasta hunks (lines starting with '>') are not supported!\n");
+					SG_SERROR("Multiple fasta hunks (lines starting with '>') are not supported!\n")
 
 				if (offs==f.get_size())
 				{
@@ -262,7 +262,7 @@ class CBitString : public CSGObject
 		 */
 		inline uint64_t operator[](uint64_t index) const
 		{
-			ASSERT(index<length);
+			ASSERT(index<length)
 
 			uint64_t bitindex=alphabet->get_num_bits()*index;
 			int32_t ws=8*sizeof(uint64_t);
@@ -270,7 +270,7 @@ class CBitString : public CSGObject
 			int32_t j=bitindex % ws;
 			int32_t missing=word_len-(ws-j);
 
-			//SG_SPRINT("i=%lld j=%d ws=%d word_len=%d missing=%d left=%llx shift=%d\n", i, j, ws, word_len, missing, ( string[i] << j ) & mask, ws-word_len);
+			//SG_SPRINT("i=%lld j=%d ws=%d word_len=%d missing=%d left=%llx shift=%d\n", i, j, ws, word_len, missing, ( string[i] << j ) & mask, ws-word_len)
 			uint64_t res= ((string[i] << j) & mask ) >> (ws-word_len);
 
 			if (missing>0)
@@ -288,7 +288,7 @@ class CBitString : public CSGObject
 		 */
 		inline void set_binary_word(uint16_t word, uint64_t index)
 		{
-			ASSERT(index<length);
+			ASSERT(index<length)
 
 			uint64_t bitindex=alphabet->get_num_bits()*index;
 			int32_t ws=8*sizeof(uint64_t);

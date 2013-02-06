@@ -39,7 +39,7 @@ int32_t CTaskGroup::get_num_tasks() const
 SGVector<index_t>* CTaskGroup::get_tasks_indices() const
 {
 	int32_t n_tasks = m_tasks->get_num_elements();
-	SG_DEBUG("Number of tasks = %d\n", n_tasks);
+	SG_DEBUG("Number of tasks = %d\n", n_tasks)
 	
 	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
 	for (int32_t i=0; i<n_tasks; i++)

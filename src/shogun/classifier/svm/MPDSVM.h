@@ -77,13 +77,13 @@ class CMPDSVM : public CSVM
 			if (kernel_cache->is_cached(i))
 			{
 				line=kernel_cache->lock_entry(i);
-				ASSERT(line);
+				ASSERT(line)
 			}
 
 			if (!line)
 			{
 				line=kernel_cache->set_entry(i);
-				ASSERT(line);
+				ASSERT(line)
 
 				for (int32_t j=0; j<m_labels->get_num_labels(); j++)
 					line[j]=(KERNELCACHE_ELEM) ((CBinaryLabels*) m_labels)->get_label(i)*((CBinaryLabels*) m_labels)->get_label(j)*kernel->kernel(i,j);

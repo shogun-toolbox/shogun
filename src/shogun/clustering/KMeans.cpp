@@ -46,16 +46,16 @@ CKMeans::~CKMeans()
 
 bool CKMeans::train_machine(CFeatures* data)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 
 	if (data)
 		distance->init(data, data);
 
-	ASSERT(distance->get_feature_type()==F_DREAL);
+	ASSERT(distance->get_feature_type()==F_DREAL)
 
 	CDenseFeatures<float64_t>* lhs=
 			(CDenseFeatures<float64_t>*)distance->get_lhs();
-	ASSERT(lhs);
+	ASSERT(lhs)
 	int32_t num=lhs->get_num_vectors();
 	SG_UNREF(lhs);
 
@@ -85,7 +85,7 @@ bool CKMeans::save(FILE* dstfile)
 
 void CKMeans::set_k(int32_t p_k)
 {
-	ASSERT(p_k>0);
+	ASSERT(p_k>0)
 	this->k=p_k;
 }
 
@@ -96,7 +96,7 @@ int32_t CKMeans::get_k()
 
 void CKMeans::set_max_iter(int32_t iter)
 {
-	ASSERT(iter>0);
+	ASSERT(iter>0)
 	max_iter=iter;
 }
 
@@ -176,9 +176,9 @@ void *sqdist_thread_func(void * P)
 
 void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 {
-	ASSERT(distance && distance->get_feature_type()==F_DREAL);
+	ASSERT(distance && distance->get_feature_type()==F_DREAL)
 	CDenseFeatures<float64_t>* lhs = (CDenseFeatures<float64_t>*) distance->get_lhs();
-	ASSERT(lhs && lhs->get_num_features()>0 && lhs->get_num_vectors()>0);
+	ASSERT(lhs && lhs->get_num_features()>0 && lhs->get_num_vectors()>0)
 
 	int32_t XSize=lhs->get_num_vectors();
 	dimensions=lhs->get_num_features();
@@ -239,7 +239,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	}
 	else
 	{
-		ASSERT(mus_start);
+		ASSERT(mus_start)
 
 		/// set rhs to mus_start
 		rhs_mus->copy_feature_matrix(SGMatrix<float64_t>(mus_start,dimensions,k));
@@ -301,10 +301,10 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 	{
 		iter++;
 		if (iter==max_iter-1)
-			SG_WARNING("kmeans clustering changed throughout %d iterations stopping...\n", max_iter-1);
+			SG_WARNING("kmeans clustering changed throughout %d iterations stopping...\n", max_iter-1)
 
 		if (iter%1000 == 0)
-			SG_INFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed);
+			SG_INFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed)
 		changed=0;
 
 #ifdef MUSRECALC

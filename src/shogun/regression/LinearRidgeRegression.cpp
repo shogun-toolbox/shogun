@@ -43,22 +43,22 @@ void CLinearRidgeRegression::init()
 bool CLinearRidgeRegression::train_machine(CFeatures* data)
 {
 	if (!m_labels)
-		SG_ERROR("No labels set\n");
+		SG_ERROR("No labels set\n")
 
 	if (!data)
 		data=features;
 
 	if (!data)
-		SG_ERROR("No features set\n");
+		SG_ERROR("No features set\n")
 
 	if (m_labels->get_num_labels() != data->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n");
+		SG_ERROR("Number of training vectors does not match number of labels\n")
 
 	if (data->get_feature_class() != C_DENSE)
-		SG_ERROR("Expected Dense Features\n");
+		SG_ERROR("Expected Dense Features\n")
 
 	if (data->get_feature_type() != F_DREAL)
-		SG_ERROR("Expected Real Features\n");
+		SG_ERROR("Expected Real Features\n")
 
 	CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
 	int32_t num_feat=feats->get_num_features();
@@ -78,7 +78,7 @@ bool CLinearRidgeRegression::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num_vec; i++)
 	{
 		SGVector<float64_t> v = feats->get_feature_vector(i);
-		ASSERT(v.vlen==num_feat);
+		ASSERT(v.vlen==num_feat)
 
 		cblas_dger(CblasColMajor, num_feat,num_feat, 1.0, v.vector,1,
 				v.vector,1, kernel_matrix.matrix, num_feat);

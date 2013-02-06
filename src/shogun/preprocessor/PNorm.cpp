@@ -30,7 +30,7 @@ CPNorm::CPNorm (double p)
 : CDensePreprocessor<float64_t>(),
  m_p (p)
 {
-	ASSERT (m_p >= 1.0);
+	ASSERT (m_p >= 1.0)
 	register_param ();
 }
 
@@ -41,8 +41,8 @@ CPNorm::~CPNorm ()
 /// initialize preprocessor from features
 bool CPNorm::init (CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_DENSE);
-	ASSERT(features->get_feature_type()==F_DREAL);
+	ASSERT(features->get_feature_class()==C_DENSE)
+	ASSERT(features->get_feature_type()==F_DREAL)
 
 	return true;
 }
@@ -99,7 +99,7 @@ SGVector<float64_t> CPNorm::apply_to_feature_vector (SGVector<float64_t> vector)
 
 void CPNorm::set_pnorm (double pnorm)
 {
-	ASSERT (pnorm >= 1.0);
+	ASSERT (pnorm >= 1.0)
 	m_p = pnorm;
 	register_param ();
 }

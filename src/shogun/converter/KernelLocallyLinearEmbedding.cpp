@@ -41,7 +41,7 @@ CKernelLocallyLinearEmbedding::~CKernelLocallyLinearEmbedding()
 
 CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
 {
-	ASSERT(features);
+	ASSERT(features)
 	SG_REF(features);
 
 	// get dimensionality and number of vectors of data
@@ -51,7 +51,7 @@ CFeatures* CKernelLocallyLinearEmbedding::apply(CFeatures* features)
 		         m_k, N);
 
 	// compute kernel matrix
-	ASSERT(m_kernel);
+	ASSERT(m_kernel)
 	m_kernel->init(features,features);
 	CDenseFeatures<float64_t>* embedding = embed_kernel(m_kernel);
 	m_kernel->cleanup();

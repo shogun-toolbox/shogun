@@ -108,11 +108,11 @@ CSerializableXmlFile::init(bool format)
 	LIBXML_TEST_VERSION;
 
 	if (m_filename == NULL || *m_filename == '\0') {
-		SG_WARNING("Filename not given for opening file!\n");
+		SG_WARNING("Filename not given for opening file!\n")
 		close(); return;
 	}
 
-	SG_DEBUG("Opening '%s'\n", m_filename);
+	SG_DEBUG("Opening '%s'\n", m_filename)
 
 	xmlNode* tmp;
 	switch (m_task) {
@@ -120,7 +120,7 @@ CSerializableXmlFile::init(bool format)
 		if ((m_doc = xmlReadFile(m_filename, NULL, XML_PARSE_HUGE | XML_PARSE_NONET)) == NULL
 			|| (tmp = xmlDocGetRootElement(m_doc)) == NULL)
 		{
-			SG_WARNING("Could not open file `%s' for reading!\n", m_filename);
+			SG_WARNING("Could not open file `%s' for reading!\n", m_filename)
 			close(); return;
 		}
 		m_stack_stream.push_back(tmp);

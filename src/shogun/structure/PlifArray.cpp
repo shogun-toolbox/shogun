@@ -35,13 +35,13 @@ CPlifArray::~CPlifArray()
 
 void CPlifArray::add_plif(CPlifBase* new_plif)
 {
-	ASSERT(new_plif);
+	ASSERT(new_plif)
 	m_array.append_element(new_plif) ;
 
 	min_value = -1e6 ;
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 	{
-		ASSERT(m_array[i]);
+		ASSERT(m_array[i])
 		if (!m_array[i]->uses_svm_values())
 			min_value = CMath::max(min_value, m_array[i]->get_min_value()) ;
 	}
@@ -66,7 +66,7 @@ float64_t CPlifArray::lookup_penalty(
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
 	{
-		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value);
+		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value)
 		return -CMath::INFTY ;
 	}
 	float64_t ret = 0.0 ;
@@ -82,7 +82,7 @@ float64_t CPlifArray::lookup_penalty(
 	//max_value = 1e6 ;
 	if (p_value<min_value || p_value>max_value)
 	{
-		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value);
+		//SG_WARNING("lookup_penalty: p_value: %i min_value: %f, max_value: %f\n",p_value, min_value, max_value)
 		return -CMath::INFTY ;
 	}
 	float64_t ret = 0.0 ;
@@ -93,9 +93,9 @@ float64_t CPlifArray::lookup_penalty(
 #ifdef PLIFARRAY_DEBUG
 		CPlif * plif = (CPlif*)m_array[i] ;
 		if (plif->get_use_svm())
-			SG_PRINT("penalty[%i]=%1.5f (use_svm=%i -> %1.5f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1]) ;
+			SG_PRINT("penalty[%i]=%1.5f (use_svm=%i -> %1.5f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1]) 
 		else
-			SG_PRINT("penalty[%i]=%1.5f\n", i, val) ;
+			SG_PRINT("penalty[%i]=%1.5f\n", i, val) 
 #endif
 	}
 	return ret ;
@@ -132,10 +132,10 @@ int32_t CPlifArray::get_max_id() const
 
 void CPlifArray::get_used_svms(int32_t* num_svms, int32_t* svm_ids)
 {
-	SG_PRINT("get_used_svms: num: %i \n",m_array.get_num_elements());
+	SG_PRINT("get_used_svms: num: %i \n",m_array.get_num_elements())
 	for (int32_t i=0; i<m_array.get_num_elements(); i++)
 	{
 		m_array[i]->get_used_svms(num_svms, svm_ids);
 	}
-	SG_PRINT("\n");
+	SG_PRINT("\n")
 }

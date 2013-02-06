@@ -62,7 +62,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		 */
 		inline void set_C(float64_t C)
 		{
-			ASSERT(C>0);
+			ASSERT(C>0)
 			m_C = C;
 		}
 		/** get C
@@ -75,7 +75,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		 */
 		inline void set_epsilon(float64_t epsilon)
 		{
-			ASSERT(epsilon>0);
+			ASSERT(epsilon>0)
 			m_epsilon = epsilon;
 		}
 		/** get epsilon
@@ -118,7 +118,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		 */
 		inline void set_max_iter(int32_t max_iter)
 		{
-			ASSERT(max_iter>0);
+			ASSERT(max_iter>0)
 			m_max_iter = max_iter;
 		}
 		/** get max iter

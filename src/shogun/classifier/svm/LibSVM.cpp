@@ -34,8 +34,8 @@ bool CLibSVM::train_machine(CFeatures* data)
 {
 	struct svm_node* x_space;
 
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
@@ -49,13 +49,13 @@ bool CLibSVM::train_machine(CFeatures* data)
 	}
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", problem.l);
+	SG_INFO( "%d trainlabels\n", problem.l)
 
 	// set linear term
 	if (m_linear_term.vlen>0)
 	{
 		if (m_labels->get_num_labels()!=m_linear_term.vlen)
-            SG_ERROR("Number of training vectors does not match length of linear term\n");
+            SG_ERROR("Number of training vectors does not match length of linear term\n")
 
 		// set with linear term from base class
 		problem.pv = get_linear_term_array();
@@ -86,8 +86,8 @@ bool CLibSVM::train_machine(CFeatures* data)
 	int32_t weights_label[2]={-1,+1};
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
-	ASSERT(kernel && kernel->has_features());
-    ASSERT(kernel->get_num_vec_lhs()==problem.l);
+	ASSERT(kernel && kernel->has_features())
+    ASSERT(kernel->get_num_vec_lhs()==problem.l)
 
 	param.svm_type=solver_type; // C SVM or NU_SVM
 	param.kernel_type = LINEAR;
@@ -110,14 +110,14 @@ bool CLibSVM::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem, &param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg);
+		SG_ERROR("Error: %s\n",error_msg)
 
 	model = svm_train(&problem, &param);
 
 	if (model)
 	{
-		ASSERT(model->nr_class==2);
-		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]));
+		ASSERT(model->nr_class==2)
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]))
 
 		int32_t num_sv=model->l;
 

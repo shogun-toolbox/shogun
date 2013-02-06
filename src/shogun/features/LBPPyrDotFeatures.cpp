@@ -126,7 +126,7 @@ using namespace shogun;
 
 CLBPPyrDotFeatures::CLBPPyrDotFeatures() : CDotFeatures()
 {
-	SG_UNSTABLE("CLBPPyrDotFeatures::CLBPPyrDotFeatures()", "\n");
+	SG_UNSTABLE("CLBPPyrDotFeatures::CLBPPyrDotFeatures()", "\n")
 
 	m_feat = NULL;
 
@@ -139,7 +139,7 @@ CLBPPyrDotFeatures::CLBPPyrDotFeatures() : CDotFeatures()
 CLBPPyrDotFeatures::CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* images, uint16_t num_pyramids)
 	: CDotFeatures()
 {
-	ASSERT(images);
+	ASSERT(images)
 
 	m_feat = images;
 	SG_REF(m_feat);
@@ -154,8 +154,8 @@ CLBPPyrDotFeatures::~CLBPPyrDotFeatures()
 
 CLBPPyrDotFeatures::CLBPPyrDotFeatures(const CLBPPyrDotFeatures & orig)
 {
-	SG_PRINT("CLBPPyrDotFeatures:\n");
-	SG_NOTIMPLEMENTED;
+	SG_PRINT("CLBPPyrDotFeatures:\n")
+	SG_NOTIMPLEMENTED
 };
 
 int32_t CLBPPyrDotFeatures::get_dim_feature_space() const
@@ -194,31 +194,31 @@ int32_t CLBPPyrDotFeatures::get_size() const
 
 void* CLBPPyrDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CLBPPyrDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 void CLBPPyrDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 
 float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	if (vec2_len != vec_nDim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim)
 
 	//int32_t vlen;
 	//bool do_free;
@@ -286,7 +286,7 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	if (vec2_len != vec_nDim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, vec_nDim=%d\n", vec2_len, vec_nDim)
 
 	//int32_t vlen;
 	//bool do_free;

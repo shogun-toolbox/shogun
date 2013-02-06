@@ -25,7 +25,7 @@ CDistribution::~CDistribution()
 
 float64_t CDistribution::get_log_likelihood_sample()
 {
-	ASSERT(features);
+	ASSERT(features)
 
 	float64_t sum=0;
 	for (int32_t i=0; i<features->get_num_vectors(); i++)
@@ -36,7 +36,7 @@ float64_t CDistribution::get_log_likelihood_sample()
 
 SGVector<float64_t> CDistribution::get_log_likelihood()
 {
-	ASSERT(features);
+	ASSERT(features)
 
 	int32_t num=features->get_num_vectors();
 	float64_t* vec=SG_MALLOC(float64_t, num);

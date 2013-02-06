@@ -60,8 +60,8 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	if (data && (CDotFeatures*)data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(features);
-	ASSERT(m_labels);
+	ASSERT(features)
+	ASSERT(m_labels)
 	
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
@@ -103,7 +103,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 		}
 		break;
 		default: 
-			SG_ERROR("Not supported task relation type\n");
+			SG_ERROR("Not supported task relation type\n")
 	}
 	SG_FREE(options.tasks_indices);
 
@@ -112,8 +112,8 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 
 bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
-	ASSERT(features);
-	ASSERT(m_labels);
+	ASSERT(features)
+	ASSERT(m_labels)
 	
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
@@ -155,7 +155,7 @@ bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>
 		}
 		break;
 		default: 
-			SG_ERROR("Not supported task relation type\n");
+			SG_ERROR("Not supported task relation type\n")
 	}
 	return true;
 }
@@ -195,22 +195,22 @@ float64_t CMultitaskLogisticRegression::get_q() const
 
 void CMultitaskLogisticRegression::set_max_iter(int32_t max_iter)
 {
-	ASSERT(max_iter>=0);
+	ASSERT(max_iter>=0)
 	m_max_iter = max_iter;
 }
 void CMultitaskLogisticRegression::set_regularization(int32_t regularization)
 {
-	ASSERT(regularization==0 || regularization==1);
+	ASSERT(regularization==0 || regularization==1)
 	m_regularization = regularization;
 }
 void CMultitaskLogisticRegression::set_termination(int32_t termination)
 {
-	ASSERT(termination>=0 && termination<=4);
+	ASSERT(termination>=0 && termination<=4)
 	m_termination = termination;
 }
 void CMultitaskLogisticRegression::set_tolerance(float64_t tolerance)
 {
-	ASSERT(tolerance>0.0);
+	ASSERT(tolerance>0.0)
 	m_tolerance = tolerance;
 }
 void CMultitaskLogisticRegression::set_z(float64_t z)

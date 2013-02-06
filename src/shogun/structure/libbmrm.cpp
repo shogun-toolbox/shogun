@@ -31,7 +31,7 @@ void add_cutting_plane(
 		float64_t*	cp_data,
 		uint32_t 	dim)
 {
-	ASSERT(map[free_idx]);
+	ASSERT(map[free_idx])
 
 	LIBBMRM_MEMCPY(A+free_idx*dim, cp_data, dim*sizeof(float64_t));
 	map[free_idx]=false;
@@ -40,7 +40,7 @@ void add_cutting_plane(
 
 	if (cp==NULL)
 	{
-		SG_SERROR("Out of memory.\n");
+		SG_SERROR("Out of memory.\n")
 		return;
 	}
 
@@ -511,7 +511,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		if (bmrm.nCP>=BufSize)
 		{
 			bmrm.exitflag=-2;
-			SG_SERROR("Buffer exceeded.\n");
+			SG_SERROR("Buffer exceeded.\n")
 		}
 
 		/* keep W (for wdist history track) */

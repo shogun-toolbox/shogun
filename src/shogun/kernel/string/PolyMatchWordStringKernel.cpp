@@ -68,7 +68,7 @@ float64_t CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	int32_t sum=0;
 

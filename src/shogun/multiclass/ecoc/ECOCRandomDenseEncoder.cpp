@@ -20,7 +20,7 @@ CECOCRandomDenseEncoder::CECOCRandomDenseEncoder(int32_t maxiter, int32_t codele
     :m_maxiter(maxiter), m_codelen(codelen), m_pposone(pposone)
 {
     if (!check_probability(pposone))
-        SG_ERROR("invalid probability of +1");
+        SG_ERROR("invalid probability of +1")
 
     init();
 }
@@ -35,7 +35,7 @@ void CECOCRandomDenseEncoder::init()
 void CECOCRandomDenseEncoder::set_probability(float64_t pposone)
 {
     if (!check_probability(pposone))
-        SG_ERROR("probability of 0, +1 and -1 must sum to one");
+        SG_ERROR("probability of 0, +1 and -1 must sum to one")
 
     m_pposone = pposone;
 }

@@ -21,7 +21,7 @@ CRationalQuadraticKernel::CRationalQuadraticKernel(): CKernel(0), m_distance(NUL
 CRationalQuadraticKernel::CRationalQuadraticKernel(int32_t cache, float64_t coef, CDistance* distance)
 : CKernel(cache), m_distance(distance), m_coef(coef)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 	init();
 }
@@ -29,7 +29,7 @@ CRationalQuadraticKernel::CRationalQuadraticKernel(int32_t cache, float64_t coef
 CRationalQuadraticKernel::CRationalQuadraticKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist)
 : CKernel(10), m_distance(dist), m_coef(coef)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 	init();
 	init(l, r);
@@ -43,7 +43,7 @@ CRationalQuadraticKernel::~CRationalQuadraticKernel()
 
 bool CRationalQuadraticKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	CKernel::init(l,r);
 	m_distance->init(l,r);
 	return init_normalizer();

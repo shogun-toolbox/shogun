@@ -58,9 +58,9 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
 	CStringKernel<uint16_t>::init(p_l,p_r);
 	CStringFeatures<uint16_t>* l=(CStringFeatures<uint16_t>*) p_l;
-	ASSERT(l);
+	ASSERT(l)
 	CStringFeatures<uint16_t>* r=(CStringFeatures<uint16_t>*) p_r;
-	ASSERT(r);
+	ASSERT(r)
 
 	int32_t i;
 	initialized=false;
@@ -110,21 +110,21 @@ bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 		int32_t num_params2=(int32_t) llen*l->get_num_symbols()+rlen*r->get_num_symbols();
 		if ((!estimate) || (!estimate->check_models()))
 		{
-			SG_ERROR( "no estimate available\n");
+			SG_ERROR( "no estimate available\n")
 			return false ;
 		} ;
 		if (num_params2!=estimate->get_num_params())
 		{
-			SG_ERROR( "number of parameters of estimate and feature representation do not match\n");
+			SG_ERROR( "number of parameters of estimate and feature representation do not match\n")
 			return false ;
 		} ;
 
 		SG_FREE(variance);
 		SG_FREE(mean);
 		mean=SG_MALLOC(float64_t, num_params);
-		ASSERT(mean);
+		ASSERT(mean)
 		variance=SG_MALLOC(float64_t, num_params);
-		ASSERT(variance);
+		ASSERT(variance)
 
 		for (i=0; i<num_params; i++)
 		{
@@ -322,7 +322,7 @@ float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t result = sum_m2_s2 ; // does not contain 0-th element
 
@@ -352,8 +352,8 @@ float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
 {
-	ASSERT(labels);
-	ASSERT(labels->get_label_type() == LT_BINARY);
+	ASSERT(labels)
+	ASSERT(labels->get_label_type() == LT_BINARY)
 	labels->ensure_valid();
 
 	int32_t num_pos=0, num_neg=0;

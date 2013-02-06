@@ -38,9 +38,9 @@ CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> trai
 SGVector<float64_t> CKernelMeanMatching::compute_weights()
 {
 	int32_t i,j;
-	ASSERT(m_kernel);
-	ASSERT(m_training_indices.vlen);
-	ASSERT(m_test_indices.vlen);
+	ASSERT(m_kernel)
+	ASSERT(m_training_indices.vlen)
+	ASSERT(m_test_indices.vlen)
 
 	int32_t n_tr = m_training_indices.vlen;
 	int32_t n_te = m_test_indices.vlen;

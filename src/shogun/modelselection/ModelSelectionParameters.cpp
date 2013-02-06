@@ -66,7 +66,7 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 {
 	/* only possible if there are no values set */
 	if (m_values)
-		SG_ERROR("not possible to append child: there already is a range\n");
+		SG_ERROR("not possible to append child: there already is a range\n")
 
 	/* do a basic check if the add is possible */
 	if (m_sgobject)
@@ -85,7 +85,7 @@ void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
 		}
 		else
 		{
-			SG_ERROR("Not possible to add child which has no name.\n");
+			SG_ERROR("Not possible to add child which has no name.\n")
 		}
 	}
 
@@ -196,11 +196,11 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 	}
 	else if (value_type==MSPT_NONE)
 	{
-		SG_ERROR("Value node has no type!\n");
+		SG_ERROR("Value node has no type!\n")
 	}
 	else
 	{
-		SG_ERROR("Unknown type for model selection parameter!\n");
+		SG_ERROR("Unknown type for model selection parameter!\n")
 	}
 }
 
@@ -280,10 +280,10 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			p->add(&((int32_t*)m_values)[i], m_node_name);;
 			break;
 		case MSPT_NONE:
-			SG_ERROR("Value node has no type!\n");
+			SG_ERROR("Value node has no type!\n")
 			break;
 		default:
-			SG_ERROR("Unknown type for model selection parameter!\n");
+			SG_ERROR("Unknown type for model selection parameter!\n")
 			break;
 		}
 
@@ -294,7 +294,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 
 	/*Complain if we have a bad node*/
 	if (!((m_sgobject && m_node_name) || (!m_node_name && !m_sgobject)))
-		SG_ERROR("Illegal CModelSelectionParameters node type.\n");
+		SG_ERROR("Illegal CModelSelectionParameters node type.\n")
 
 	/* Incorporate SGObject and root nodes with children*/
 	if (m_child_nodes->get_num_elements())
@@ -379,7 +379,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 				p->add(&((int32_t*)m_values)[i], m_node_name);;
 				break;
 			case MSPT_NONE:
-				SG_ERROR("%sValue node has no type!\n", prefix);
+				SG_ERROR("%sValue node has no type!\n", prefix)
 				break;
 			default:
 				SG_ERROR("%sUnknown type for model selection parameter!\n",
@@ -405,7 +405,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 	 * combine them iteratively children which are something different
 	 */
 	if (!((m_sgobject && m_node_name) || (!m_node_name && !m_sgobject)))
-		SG_ERROR("%sIllegal CModelSelectionParameters node type.\n", prefix);
+		SG_ERROR("%sIllegal CModelSelectionParameters node type.\n", prefix)
 
 	/* only consider combinations if this node has children */
 	if (m_child_nodes->get_num_elements())
@@ -468,7 +468,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		else
 		{
 			/* extract all tree sets of non-value nodes */
-//			SG_PRINT("%sextracting combinations of non-value nodes\n", prefix);
+//			SG_PRINT("%sextracting combinations of non-value nodes\n", prefix)
 			CDynamicObjectArray* non_value_combinations=
 					new CDynamicObjectArray();
 			for (index_t i=0; i<non_value_children.get_num_elements(); ++i)
@@ -478,7 +478,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 						(CModelSelectionParameters*)
 						non_value_children.get_element(i);
 
-//				SG_PRINT("%s\tcurrent non-value child\n", prefix);
+//				SG_PRINT("%s\tcurrent non-value child\n", prefix)
 //				non_value_child->print_tree(num_prefix+1);
 
 				CDynamicObjectArray* current_combination=
@@ -486,7 +486,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 				non_value_combinations->append_element(current_combination);
 				SG_UNREF(non_value_child);
 
-//				SG_PRINT("%s\tcombinations of non-value nodes:\n", prefix);
+//				SG_PRINT("%s\tcombinations of non-value nodes:\n", prefix)
 //				for (index_t j=0; j<current_combination->get_num_elements(); ++j)
 //				{
 //					CParameterCombination* c=(CParameterCombination*)
@@ -632,9 +632,9 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 	if (has_children())
 	{
 		if (m_sgobject)
-			SG_PRINT("%s%s:\"%s\"\n", prefix, m_node_name, m_sgobject->get_name());
+			SG_PRINT("%s%s:\"%s\"\n", prefix, m_node_name, m_sgobject->get_name())
 		else
-			SG_PRINT("%s%s with\n", prefix, m_node_name ? m_node_name : "root");
+			SG_PRINT("%s%s with\n", prefix, m_node_name ? m_node_name : "root")
 
 		/* now recursively print successors */
 
@@ -653,14 +653,14 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		 * without children*/
 		if (m_sgobject)
 		{
-			SG_PRINT("%s%s:\"%s\"\n", prefix, m_node_name, m_sgobject->get_name());
+			SG_PRINT("%s%s:\"%s\"\n", prefix, m_node_name, m_sgobject->get_name())
 		}
 		else
 		{
 			if (m_values)
 			{
 				// value node
-				SG_PRINT("%s%s with values: ", prefix, m_node_name);
+				SG_PRINT("%s%s with values: ", prefix, m_node_name)
 
 				switch (m_value_type)
 				{
@@ -677,15 +677,15 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 							m_values_length);;
 					break;
 				case MSPT_NONE:
-					SG_ERROR("Value node has no type!\n");
+					SG_ERROR("Value node has no type!\n")
 					break;
 				default:
-					SG_ERROR("Unknown type for model selection parameter!\n");
+					SG_ERROR("Unknown type for model selection parameter!\n")
 					break;
 				}
 			}
 			else
-				SG_PRINT("root\n");
+				SG_PRINT("root\n")
 		}
 	}
 
@@ -709,10 +709,10 @@ void CModelSelectionParameters::delete_values()
 			SG_FREE((int32_t*)m_values);
 			break;
 		case MSPT_NONE:
-			SG_ERROR("Value node has no type!\n");
+			SG_ERROR("Value node has no type!\n")
 			break;
 		default:
-			SG_ERROR("Unknown type for model selection parameter!\n");
+			SG_ERROR("Unknown type for model selection parameter!\n")
 			break;
 		}
 	}

@@ -578,12 +578,12 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 		{
 			int len=0;
 			char* var_name = from_if->get_string(len);
-			from_if->SG_DEBUG("var_name = '%s'\n", var_name);
+			SG_OBJ_DEBUG(from_if, "var_name = '%s'\n", var_name);
 			if (strmatch(var_name, "rfile"))
 			{
 				len=0;
 				rfile=from_if->get_string(len);
-				from_if->SG_DEBUG("rfile = '%s'\n", rfile);
+				SG_OBJ_DEBUG(from_if, "rfile = '%s'\n", rfile);
 				break;
 			}
 			else
@@ -600,7 +600,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 	}
 	catch (ShogunException e)
 	{
-		from_if->SG_PRINT("%s", e.get_exception_string());
+		SG_OBJ_PRINT(from_if, "%s", e.get_exception_string())
 		return true;
 	}
 	
@@ -625,20 +625,20 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 	if (err)
 	{
 		UNPROTECT(3);
-		from_if->SG_PRINT("Error occurred\n");
+		SG_OBJ_PRINT(from_if, "Error occurred\n");
 		return true;
 	}
 
 	SEXP results;
 	PROTECT(results=findVar(install("results"), R_GlobalEnv));
-	from_if->SG_DEBUG("Found type %d\n", TYPEOF(results));
+	SG_OBJ_DEBUG(from_if, "Found type %d\n", TYPEOF(results));
 
 	try
 	{
 		if (TYPEOF(results)==LISTSXP)
 		{
 			int32_t sz=Rf_length(results);
-			from_if->SG_DEBUG("Found %d args\n", sz);
+			SG_OBJ_DEBUG(from_if, "Found %d args\n", sz);
 
 			if (sz>0 && from_if->create_return_values(sz))
 			{
@@ -653,7 +653,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 			else if (sz!=from_if->get_nlhs())
 			{
 				UNPROTECT(4);
-				from_if->SG_PRINT("Number of return values (%d) does not match "
+				SG_OBJ_PRINT(from_if, "Number of return values (%d) does not match "
 						"number of expected return values (%d).\n",
 						sz, from_if->get_nlhs());
 				return true;
@@ -663,7 +663,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 	catch (ShogunException e)
 	{
 		UNPROTECT(4);
-		from_if->SG_PRINT("%s", e.get_exception_string());
+		SG_OBJ_PRINT(from_if, "%s", e.get_exception_string());
 	}
 
 	UNPROTECT(4);

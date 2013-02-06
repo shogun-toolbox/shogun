@@ -226,7 +226,7 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 	read_lock = SG_MALLOC(pthread_mutex_t, 1);
 	write_lock = SG_MALLOC(pthread_mutex_t, 1);
 
-	SG_SINFO("Initialized with ring size: %d.\n", ring_size);
+	SG_SINFO("Initialized with ring size: %d.\n", ring_size)
 
 	ex_write_index = 0;
 	ex_read_index = 0;

@@ -61,7 +61,7 @@ void CECOCDiscriminantEncoder::set_labels(CLabels *labels)
 SGMatrix<int32_t> CECOCDiscriminantEncoder::create_codebook(int32_t num_classes)
 {
     if (!m_features || !m_labels)
-        SG_ERROR("Need features and labels to learn the codebook");
+        SG_ERROR("Need features and labels to learn the codebook")
 
     m_feats = m_features->get_feature_matrix();
     m_codebook = SGMatrix<int32_t>(m_num_trees * (num_classes-1), num_classes);

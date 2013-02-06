@@ -71,7 +71,7 @@ void CStreamingVwFeatures::reset_stream()
 		parser.start_parser();
 	}
 	else
-		SG_ERROR("The input cannot be reset! Please use 1 pass.\n");
+		SG_ERROR("The input cannot be reset! Please use 1 pass.\n")
 }
 
 CVwEnvironment* CStreamingVwFeatures::get_env()
@@ -273,7 +273,7 @@ VwExample* CStreamingVwFeatures::get_example()
 
 float64_t CStreamingVwFeatures::get_label()
 {
-	ASSERT(has_labels);
+	ASSERT(has_labels)
 
 	return current_label;
 }
@@ -302,7 +302,7 @@ int32_t CStreamingVwFeatures::get_dim_feature_space() const
 
 float32_t CStreamingVwFeatures::dot(CStreamingDotFeatures* df)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return CMath::INFTY;
 }
 

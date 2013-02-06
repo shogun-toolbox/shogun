@@ -144,7 +144,7 @@ template<class ST> void CDenseFeatures<ST>::set_feature_vector(SGVector<ST> vect
 	}
 
 	if (!feature_matrix.matrix)
-		SG_ERROR("Requires a in-memory feature matrix\n");
+		SG_ERROR("Requires a in-memory feature matrix\n")
 
 	if (vector.vlen != num_features)
 		SG_ERROR(
@@ -189,10 +189,10 @@ template<class ST> void CDenseFeatures<ST>::free_feature_vector(SGVector<ST> vec
 template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t idx_len)
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call vector_subset\n");
+		SG_ERROR("A subset is set, cannot call vector_subset\n")
 
-	ASSERT(feature_matrix.matrix);
-	ASSERT(idx_len<=num_vectors);
+	ASSERT(feature_matrix.matrix)
+	ASSERT(idx_len<=num_vectors)
 
 	int32_t num_vec = num_vectors;
 	num_vectors = idx_len;
@@ -202,10 +202,10 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 	for (int32_t i = 0; i < idx_len; i++)
 	{
 		int32_t ii = idx[i];
-		ASSERT(old_ii<ii);
+		ASSERT(old_ii<ii)
 
 		if (ii < 0 || ii >= num_vec)
-			SG_ERROR( "Index out of range: should be 0<%d<%d\n", ii, num_vec);
+			SG_ERROR( "Index out of range: should be 0<%d<%d\n", ii, num_vec)
 
 		if (i == ii)
 			continue;
@@ -220,10 +220,10 @@ template<class ST> void CDenseFeatures<ST>::vector_subset(int32_t* idx, int32_t 
 template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t idx_len)
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call feature_subset\n");
+		SG_ERROR("A subset is set, cannot call feature_subset\n")
 
-	ASSERT(feature_matrix.matrix);
-	ASSERT(idx_len<=num_features);
+	ASSERT(feature_matrix.matrix)
+	ASSERT(idx_len<=num_features)
 	int32_t num_feat = num_features;
 	num_features = idx_len;
 
@@ -236,7 +236,7 @@ template<class ST> void CDenseFeatures<ST>::feature_subset(int32_t* idx, int32_t
 		for (int32_t j = 0; j < idx_len; j++)
 		{
 			int32_t jj = idx[j];
-			ASSERT(old_jj<jj);
+			ASSERT(old_jj<jj)
 			if (jj < 0 || jj >= num_feat)
 				SG_ERROR(
 						"Index out of range: should be 0<%d<%d\n", jj, num_feat);
@@ -326,7 +326,7 @@ template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int
 template<class ST> void CDenseFeatures<ST>::copy_feature_matrix(SGMatrix<ST> src)
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call copy_feature_matrix\n");
+		SG_ERROR("A subset is set, cannot call copy_feature_matrix\n")
 
 	free_feature_matrix();
 	feature_matrix = src.clone();
@@ -342,7 +342,7 @@ template<class ST> void CDenseFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 	int32_t num_feat = df->get_dim_feature_space();
 	int32_t num_vec = df->get_num_vectors();
 
-	ASSERT(num_feat>0 && num_vec>0);
+	ASSERT(num_feat>0 && num_vec>0)
 
 	free_feature_matrix();
 	feature_matrix = SGMatrix<ST>(num_feat, num_vec);
@@ -350,7 +350,7 @@ template<class ST> void CDenseFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 	for (int32_t i = 0; i < num_vec; i++)
 	{
 		SGVector<float64_t> v = df->get_computed_dot_feature_vector(i);
-		ASSERT(num_feat==v.vlen);
+		ASSERT(num_feat==v.vlen)
 
 		for (int32_t j = 0; j < num_feat; j++)
 			feature_matrix.matrix[i * int64_t(num_feat) + j] = (ST) v.vector[j];
@@ -362,9 +362,9 @@ template<class ST> void CDenseFeatures<ST>::obtain_from_dot(CDotFeatures* df)
 template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call apply_preproc\n");
+		SG_ERROR("A subset is set, cannot call apply_preproc\n")
 
-	SG_DEBUG( "force: %d\n", force_preprocessing);
+	SG_DEBUG( "force: %d\n", force_preprocessing)
 
 	if (feature_matrix.matrix && get_num_preprocessors())
 	{
@@ -375,7 +375,7 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 				set_preprocessed(i);
 				CDensePreprocessor<ST>* p =
 						(CDensePreprocessor<ST>*) get_preprocessor(i);
-				SG_INFO( "preprocessing using preproc %s\n", p->get_name());
+				SG_INFO( "preprocessing using preproc %s\n", p->get_name())
 
 				if (p->apply_to_feature_matrix(this).matrix == NULL)
 				{
@@ -392,10 +392,10 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 	else
 	{
 		if (!feature_matrix.matrix)
-			SG_ERROR( "no feature matrix\n");
+			SG_ERROR( "no feature matrix\n")
 
 		if (!get_num_preprocessors())
-			SG_ERROR( "no preprocessors available\n");
+			SG_ERROR( "no preprocessors available\n")
 
 		return false;
 	}
@@ -419,7 +419,7 @@ template<class ST> void CDenseFeatures<ST>::set_num_features(int32_t num)
 template<class ST> void CDenseFeatures<ST>::set_num_vectors(int32_t num)
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call set_num_vectors\n");
+		SG_ERROR("A subset is set, cannot call set_num_vectors\n")
 
 	num_vectors = num;
 	initialize_cache();
@@ -428,7 +428,7 @@ template<class ST> void CDenseFeatures<ST>::set_num_vectors(int32_t num)
 template<class ST> void CDenseFeatures<ST>::initialize_cache()
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call initialize_cache\n");
+		SG_ERROR("A subset is set, cannot call initialize_cache\n")
 
 	if (num_features && num_vectors)
 	{
@@ -444,7 +444,7 @@ template<class ST> EFeatureClass CDenseFeatures<ST>::get_feature_class() const  
 template<class ST> bool CDenseFeatures<ST>::reshape(int32_t p_num_features, int32_t p_num_vectors)
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("A subset is set, cannot call reshape\n");
+		SG_ERROR("A subset is set, cannot call reshape\n")
 
 	if (p_num_features * p_num_vectors
 			== this->num_features * this->num_vectors)
@@ -461,9 +461,9 @@ template<class ST> int32_t CDenseFeatures<ST>::get_dim_feature_space() const { r
 template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 		int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CDenseFeatures<ST>* sf = (CDenseFeatures<ST>*) df;
 
 	int32_t len1, len2;
@@ -483,13 +483,13 @@ template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatu
 template<class ST> void CDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 		float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	ST* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 
 	if (abs_val)
 	{
@@ -509,13 +509,13 @@ template<>
 void CDenseFeatures<float64_t>::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 		float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	float64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 
 	if (abs_val)
 	{
@@ -594,7 +594,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
 		ST* target)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	len = 0;
 	return NULL;
 }
@@ -640,13 +640,13 @@ GET_FEATURE_TYPE(F_LONGREAL, floatmax_t)
 template<> float64_t CDenseFeatures<bool>::dense_dot(int32_t vec_idx1,
 		const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	bool* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -660,13 +660,13 @@ template<> float64_t CDenseFeatures<bool>::dense_dot(int32_t vec_idx1,
 template<> float64_t CDenseFeatures<char>::dense_dot(int32_t vec_idx1,
 		const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	char* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -680,13 +680,13 @@ template<> float64_t CDenseFeatures<char>::dense_dot(int32_t vec_idx1,
 template<> float64_t CDenseFeatures<int8_t>::dense_dot(int32_t vec_idx1,
 		const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	int8_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -700,13 +700,13 @@ template<> float64_t CDenseFeatures<int8_t>::dense_dot(int32_t vec_idx1,
 template<> float64_t CDenseFeatures<uint8_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	uint8_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -720,13 +720,13 @@ template<> float64_t CDenseFeatures<uint8_t>::dense_dot(
 template<> float64_t CDenseFeatures<int16_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	int16_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -740,13 +740,13 @@ template<> float64_t CDenseFeatures<int16_t>::dense_dot(
 template<> float64_t CDenseFeatures<uint16_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	uint16_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -760,13 +760,13 @@ template<> float64_t CDenseFeatures<uint16_t>::dense_dot(
 template<> float64_t CDenseFeatures<int32_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	int32_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -780,13 +780,13 @@ template<> float64_t CDenseFeatures<int32_t>::dense_dot(
 template<> float64_t CDenseFeatures<uint32_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	uint32_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -800,13 +800,13 @@ template<> float64_t CDenseFeatures<uint32_t>::dense_dot(
 template<> float64_t CDenseFeatures<int64_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	int64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -820,13 +820,13 @@ template<> float64_t CDenseFeatures<int64_t>::dense_dot(
 template<> float64_t CDenseFeatures<uint64_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	uint64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -840,13 +840,13 @@ template<> float64_t CDenseFeatures<uint64_t>::dense_dot(
 template<> float64_t CDenseFeatures<float32_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	float32_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -860,13 +860,13 @@ template<> float64_t CDenseFeatures<float32_t>::dense_dot(
 template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	float64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = SGVector<float64_t>::dot(vec1, vec2, num_features);
 
 	free_feature_vector(vec1, vec_idx1, vfree);
@@ -877,13 +877,13 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 template<> float64_t CDenseFeatures<floatmax_t>::dense_dot(
 		int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == num_features);
+	ASSERT(vec2_len == num_features)
 
 	int32_t vlen;
 	bool vfree;
 	floatmax_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
-	ASSERT(vlen == num_features);
+	ASSERT(vlen == num_features)
 	float64_t result = 0;
 
 	for (int32_t i = 0; i < num_features; i++)
@@ -931,7 +931,7 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 		CFeatures* other)
 {
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("entering %s::create_merged_copy()\n", get_name())
 	if (get_feature_type()!=other->get_feature_type() ||
 			get_feature_class()!=other->get_feature_class() ||
 			strcmp(get_name(), other->get_name()))
@@ -958,12 +958,12 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	SGMatrix<ST> data(num_features, num_vectors+casted->get_num_vectors());
 
 	/* copy data of this instance */
-	SG_DEBUG("copying matrix of this instance\n");
+	SG_DEBUG("copying matrix of this instance\n")
 	memcpy(data.matrix, feature_matrix.matrix,
 			num_features*num_vectors*sizeof(ST));
 
 	/* copy data of provided instance */
-	SG_DEBUG("copying matrix of provided instance\n");
+	SG_DEBUG("copying matrix of provided instance\n")
 	memcpy(&data.matrix[num_vectors*num_features],
 			casted->feature_matrix.matrix,
 			casted->num_features*casted->num_vectors*sizeof(ST));
@@ -971,7 +971,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	/* create new instance and return */
 	CDenseFeatures<ST>* result=new CDenseFeatures<ST>(data);
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name())
 	return result;
 }
 

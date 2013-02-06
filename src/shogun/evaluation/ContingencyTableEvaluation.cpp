@@ -15,8 +15,8 @@ using namespace shogun;
 
 float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted->get_label_type()==LT_BINARY);
-	ASSERT(ground_truth->get_label_type()==LT_BINARY);
+	ASSERT(predicted->get_label_type()==LT_BINARY)
+	ASSERT(ground_truth->get_label_type()==LT_BINARY)
 
 	/* commented out: what if a machine only returns +1 in apply() ??
 	 * Heiko Strathamn */
@@ -48,7 +48,7 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 			return get_custom_score();
 	}
 
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 42;
 }
 
@@ -77,7 +77,7 @@ inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_directio
 	case CUSTOM:
 		return get_custom_direction();
 	default:
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 
 	return ED_MINIMIZE;
@@ -85,8 +85,8 @@ inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_directio
 
 void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
 {
-	ASSERT(ground_truth->get_label_type() == LT_BINARY);
-	ASSERT(predicted->get_label_type() == LT_BINARY);
+	ASSERT(ground_truth->get_label_type() == LT_BINARY)
+	ASSERT(predicted->get_label_type() == LT_BINARY)
 
 	if (predicted->get_num_labels()!=ground_truth->get_num_labels())
 	{

@@ -54,14 +54,14 @@ void CLinearTimeMMD::init()
 	m_streaming_q=NULL;
 	m_blocksize=10000;
 
-	SG_WARNING("%s::init(): register params!\n", get_name());
+	SG_WARNING("%s::init(): register params!\n", get_name())
 }
 
 void CLinearTimeMMD::compute_statistic_and_variance(
 		SGVector<float64_t>& statistic, SGVector<float64_t>& variance,
 		bool multiple_kernels)
 {
-	SG_DEBUG("entering %s::compute_statistic_and_variance()\n", get_name());
+	SG_DEBUG("entering %s::compute_statistic_and_variance()\n", get_name())
 
 	REQUIRE(m_streaming_p, "%s::compute_statistic_and_variance: streaming "
 			"features p required!\n", get_name());
@@ -80,7 +80,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 	 * using names from JLMR paper (see class documentation) */
 	index_t m_2=m_m/2;
 
-	SG_DEBUG("m_m=%d\n", m_m);
+	SG_DEBUG("m_m=%d\n", m_m)
 
 	/* find out whether single or multiple kernels (cast is safe, check above) */
 	index_t num_kernels=1;
@@ -212,14 +212,14 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
 		variance.display_vector("variances");
 
-	SG_DEBUG("leaving %s::compute_statistic_and_variance()\n", get_name());
+	SG_DEBUG("leaving %s::compute_statistic_and_variance()\n", get_name())
 }
 
 void CLinearTimeMMD::compute_statistic_and_Q(
 		SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q)
 {
-	SG_WARNING("CLinearTimeMMD::compute_statistic_and_Q() is not tested!\n");
-	SG_DEBUG("entering %s::compute_statistic_and_Q()\n", get_name());
+	SG_WARNING("CLinearTimeMMD::compute_statistic_and_Q() is not tested!\n")
+	SG_DEBUG("entering %s::compute_statistic_and_Q()\n", get_name())
 
 	REQUIRE(m_streaming_p, "%s::compute_statistic_and_Q: streaming "
 			"features p required!\n", get_name());
@@ -242,7 +242,7 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 			get_name());
 	index_t m_4=m_m/4;
 
-	SG_DEBUG("m_m=%d\n", m_m);
+	SG_DEBUG("m_m=%d\n", m_m)
 
 	/* find out whether single or multiple kernels (cast is safe, check above) */
 	index_t num_kernels=combined->get_num_subkernels();
@@ -456,7 +456,7 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 	SG_DEBUG("Done compouting statistic, processed 4*%d examples.\n",
 			num_examples_processed);
 
-	SG_DEBUG("leaving %s::compute_statistic_and_Q()\n", get_name());
+	SG_DEBUG("leaving %s::compute_statistic_and_Q()\n", get_name())
 }
 
 float64_t CLinearTimeMMD::compute_statistic()

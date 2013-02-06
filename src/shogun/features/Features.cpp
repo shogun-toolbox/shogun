@@ -44,7 +44,7 @@ CFeatures::CFeatures(CFile* loader)
 	init();
 
 	load(loader);
-	SG_INFO("Feature object loaded (%p)\n",this) ;
+	SG_INFO("Feature object loaded (%p)\n",this) 
 }
 
 CFeatures::~CFeatures()
@@ -80,8 +80,8 @@ void CFeatures::init()
 /// set preprocessor
 int32_t CFeatures::add_preprocessor(CPreprocessor* p)
 {
-	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
-	ASSERT(p);
+	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc)
+	ASSERT(p)
 
 	bool* preprocd=SG_MALLOC(bool, num_preproc+1);
 	CPreprocessor** pps=SG_MALLOC(CPreprocessor*, num_preproc+1);
@@ -100,7 +100,7 @@ int32_t CFeatures::add_preprocessor(CPreprocessor* p)
 	num_preproc++;
 
 	for (int32_t i=0; i<num_preproc; i++)
-		SG_INFO( "preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
+		SG_INFO( "preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) 
 
 	SG_REF(p);
 
@@ -178,7 +178,7 @@ CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 		num_preproc--;
 
 		for (int32_t i=0; i<num_preproc; i++)
-			SG_INFO( "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
+			SG_INFO( "preproc[%d]=%s\n",i, preproc[i]->get_name()) 
 	}
 
 	SG_UNREF(removed_preproc);
@@ -207,104 +207,104 @@ int32_t CFeatures::get_cache_size() const
 
 bool CFeatures::reshape(int32_t num_features, int32_t num_vectors)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
 void CFeatures::list_feature_obj() const
 {
-	SG_INFO( "%p - ", this);
+	SG_INFO( "%p - ", this)
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:
-			SG_INFO( "C_UNKNOWN ");
+			SG_INFO( "C_UNKNOWN ")
 			break;
 		case C_DENSE:
-			SG_INFO( "C_DENSE ");
+			SG_INFO( "C_DENSE ")
 			break;
 		case C_SPARSE:
-			SG_INFO( "C_SPARSE ");
+			SG_INFO( "C_SPARSE ")
 			break;
 		case C_STRING:
-			SG_INFO( "C_STRING ");
+			SG_INFO( "C_STRING ")
 			break;
 		case C_COMBINED:
-			SG_INFO( "C_COMBINED ");
+			SG_INFO( "C_COMBINED ")
 			break;
 		case C_COMBINED_DOT:
-			SG_INFO( "C_COMBINED_DOT ");
+			SG_INFO( "C_COMBINED_DOT ")
 			break;
 		case C_WD:
-			SG_INFO( "C_WD ");
+			SG_INFO( "C_WD ")
 			break;
 		case C_SPEC:
-			SG_INFO( "C_SPEC ");
+			SG_INFO( "C_SPEC ")
 			break;
 		case C_WEIGHTEDSPEC:
-			SG_INFO( "C_WEIGHTEDSPEC ");
+			SG_INFO( "C_WEIGHTEDSPEC ")
 			break;
 		case C_STREAMING_DENSE:
-			SG_INFO( "C_STREAMING_DENSE ");
+			SG_INFO( "C_STREAMING_DENSE ")
 			break;
 		case C_STREAMING_SPARSE:
-			SG_INFO( "C_STREAMING_SPARSE ");
+			SG_INFO( "C_STREAMING_SPARSE ")
 			break;
 		case C_STREAMING_STRING:
-			SG_INFO( "C_STREAMING_STRING ");
+			SG_INFO( "C_STREAMING_STRING ")
 			break;
 		case C_STREAMING_VW:
-			SG_INFO( "C_STREAMING_VW ");
+			SG_INFO( "C_STREAMING_VW ")
 			break;
 		case C_ANY:
-			SG_INFO( "C_ANY ");
+			SG_INFO( "C_ANY ")
 			break;
 		default:
-         SG_ERROR( "ERROR UNKNOWN FEATURE CLASS");
+         SG_ERROR( "ERROR UNKNOWN FEATURE CLASS")
 	}
 
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			SG_INFO( "F_UNKNOWN \n");
+			SG_INFO( "F_UNKNOWN \n")
 			break;
 		case F_CHAR:
-			SG_INFO( "F_CHAR \n");
+			SG_INFO( "F_CHAR \n")
 			break;
 		case F_BYTE:
-			SG_INFO( "F_BYTE \n");
+			SG_INFO( "F_BYTE \n")
 			break;
 		case F_SHORT:
-			SG_INFO( "F_SHORT \n");
+			SG_INFO( "F_SHORT \n")
 			break;
 		case F_WORD:
-			SG_INFO( "F_WORD \n");
+			SG_INFO( "F_WORD \n")
 			break;
 		case F_INT:
-			SG_INFO( "F_INT \n");
+			SG_INFO( "F_INT \n")
 			break;
 		case F_UINT:
-			SG_INFO( "F_UINT \n");
+			SG_INFO( "F_UINT \n")
 			break;
 		case F_LONG:
-			SG_INFO( "F_LONG \n");
+			SG_INFO( "F_LONG \n")
 			break;
 		case F_ULONG:
-			SG_INFO( "F_ULONG \n");
+			SG_INFO( "F_ULONG \n")
 			break;
 		case F_SHORTREAL:
-			SG_INFO( "F_SHORTEAL \n");
+			SG_INFO( "F_SHORTEAL \n")
 			break;
 		case F_DREAL:
-			SG_INFO( "F_DREAL \n");
+			SG_INFO( "F_DREAL \n")
 			break;
 		case F_LONGREAL:
-			SG_INFO( "F_LONGREAL \n");
+			SG_INFO( "F_LONGREAL \n")
 			break;
 		case F_ANY:
-			SG_INFO( "F_ANY \n");
+			SG_INFO( "F_ANY \n")
 			break;
 		default:
-         SG_ERROR( "ERROR UNKNOWN FEATURE TYPE\n");
+         SG_ERROR( "ERROR UNKNOWN FEATURE TYPE\n")
 	}
 }
 
@@ -312,14 +312,14 @@ void CFeatures::list_feature_obj() const
 void CFeatures::load(CFile* loader)
 {
 	SG_SET_LOCALE_C;
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	SG_RESET_LOCALE;
 }
 
 void CFeatures::save(CFile* writer)
 {
 	SG_SET_LOCALE_C;
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	SG_RESET_LOCALE;
 }
 

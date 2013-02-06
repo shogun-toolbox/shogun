@@ -1058,9 +1058,9 @@ class CSGInterface : public CSGObject
 		/// get command name like 'get_svm', 'new_hmm', etc.
 		char* get_command(int32_t &len)
 		{
-			ASSERT(m_rhs_counter==0);
+			ASSERT(m_rhs_counter==0)
 			if (m_nrhs<=0)
-				SG_SERROR("No input arguments supplied.\n");
+				SG_SERROR("No input arguments supplied.\n")
 
 			return get_string(len);
 		}

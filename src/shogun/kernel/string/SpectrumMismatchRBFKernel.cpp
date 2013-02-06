@@ -87,8 +87,8 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l,r);
 
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed);
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed);
+	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
+	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
@@ -100,7 +100,7 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
-	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet());
+	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet())
 	SG_UNREF(ralphabet);
 
 	compute_all() ;
@@ -367,7 +367,7 @@ bool CSpectrumMismatchRBFKernel::set_weights(
 {
 	if (d==128 && len==128)
 	{
-		SG_DEBUG("Setting AA_matrix\n") ;
+		SG_DEBUG("Setting AA_matrix\n") 
 		memcpy(AA_matrix, ws, 128*128*sizeof(float64_t)) ;
 		return true ;
 	}
@@ -375,19 +375,19 @@ bool CSpectrumMismatchRBFKernel::set_weights(
 	if (d==1 && len==1)
 	{
 		sigma=ws[0] ;
-		SG_DEBUG("Setting sigma to %e\n", sigma) ;
+		SG_DEBUG("Setting sigma to %e\n", sigma) 
 		return true ;
 	}
 
 	if (d==2 && len==2)
 	{
 		target_letter_0=ws[0] ;
-		SG_DEBUG("Setting target letter to %c\n", target_letter_0) ;
+		SG_DEBUG("Setting target letter to %c\n", target_letter_0) 
 		return true ;
 	}
 
 	if (d!=degree || len<1)
-		SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+		SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n")
 
 	length=len;
 
@@ -416,11 +416,11 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_, int32_t nr
 	if (AA_matrix_)
 	{
 		if (nr!=128 || nc!=128)
-			SG_ERROR("AA_matrix should be of shape 128x128\n");
+			SG_ERROR("AA_matrix should be of shape 128x128\n")
 		SG_FREE(AA_matrix);
 		AA_matrix=SG_MALLOC(float64_t, nc*nr);
 		memcpy(AA_matrix, AA_matrix_, nc*nr*sizeof(float64_t)) ;
-		SG_DEBUG("Setting AA_matrix\n") ;
+		SG_DEBUG("Setting AA_matrix\n") 
 		memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 		return true ;
 	}

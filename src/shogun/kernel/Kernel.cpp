@@ -73,12 +73,12 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 CKernel::~CKernel()
 {
 	if (get_is_initialized())
-		SG_ERROR("Kernel still initialized on destruction.\n");
+		SG_ERROR("Kernel still initialized on destruction.\n")
 
 	remove_lhs_and_rhs();
 	SG_UNREF(normalizer);
 
-	SG_INFO("Kernel deleted (%p).\n", this);
+	SG_INFO("Kernel deleted (%p).\n", this)
 }
 
 #ifdef USE_SVMLIGHT
@@ -97,19 +97,19 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 
 bool CKernel::init(CFeatures* l, CFeatures* r)
 {
-	SG_DEBUG("entering CKernel::init(%p, %p)\n", l, r);
+	SG_DEBUG("entering CKernel::init(%p, %p)\n", l, r)
 
 	/* make sure that features are not deleted if same ones are used */
 	SG_REF(l);
 	SG_REF(r);
 
 	//make sure features were indeed supplied
-	REQUIRE(l, "CKernel::init(%p, %p): LHS features required!\n", l, r);
-	REQUIRE(r, "CKernel::init(%p, %p): RHS features required!\n", l, r);
+	REQUIRE(l, "CKernel::init(%p, %p): LHS features required!\n", l, r)
+	REQUIRE(r, "CKernel::init(%p, %p): RHS features required!\n", l, r)
 
 	//make sure features are compatible
-	ASSERT(l->get_feature_class()==r->get_feature_class());
-	ASSERT(l->get_feature_type()==r->get_feature_type());
+	ASSERT(l->get_feature_class()==r->get_feature_class())
+	ASSERT(l->get_feature_type()==r->get_feature_type())
 
 	//remove references to previous features
 	remove_lhs_and_rhs();
@@ -124,8 +124,8 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	lhs=l;
 	rhs=r;
 
-	ASSERT(!num_lhs || num_lhs==l->get_num_vectors());
-	ASSERT(!num_rhs || num_rhs==l->get_num_vectors());
+	ASSERT(!num_lhs || num_lhs==l->get_num_vectors())
+	ASSERT(!num_rhs || num_rhs==l->get_num_vectors())
 
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
@@ -134,7 +134,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	SG_UNREF(r);
 	SG_UNREF(l);
 
-	SG_DEBUG("leaving CKernel::init(%p, %p)\n", l, r);
+	SG_DEBUG("leaving CKernel::init(%p, %p)\n", l, r)
 	return true;
 }
 
@@ -188,10 +188,10 @@ void CKernel::kernel_cache_init(int32_t buffsize, bool regression_hack)
 	if (buffer_size>((uint64_t) totdoc)*totdoc)
 		buffer_size=((uint64_t) totdoc)*totdoc;
 
-	SG_INFO( "using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name());
+	SG_INFO( "using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name())
 
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
-	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)));
+	ASSERT(buffer_size < (((uint64_t) 1) << (sizeof(KERNELCACHE_IDX)*8-1)))
 
 	kernel_cache.index = SG_MALLOC(int32_t, totdoc);
 	kernel_cache.occu = SG_MALLOC(int32_t, totdoc);
@@ -385,7 +385,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		S_KTHREAD_PARAM* params = SG_MALLOC(S_KTHREAD_PARAM, nthreads-1);
 		int32_t num_threads=nthreads-1;
 		int32_t num_vec=get_num_vec_lhs();
-		ASSERT(num_vec>0);
+		ASSERT(num_vec>0)
 		uint8_t* needs_computation=SG_CALLOC(uint8_t, num_vec);
 
 		int32_t step=0;
@@ -407,7 +407,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 			cache[num]= kernel_cache_clean_and_malloc(idx);
 
 			if (!cache[num])
-				SG_ERROR("Kernel cache full! => increase cache size\n");
+				SG_ERROR("Kernel cache full! => increase cache size\n")
 
 			num++;
 		}
@@ -469,7 +469,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 		for (int32_t t=0; t<num_threads; t++)
 		{
 			if (pthread_join(threads[t], NULL) != 0)
-				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
+				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
 		}
 
 		SG_FREE(needs_computation);
@@ -647,7 +647,7 @@ void CKernel::save(CFile* writer)
 
 void CKernel::remove_lhs_and_rhs()
 {
-	SG_DEBUG("entering CKernel::remove_lhs_and_rhs\n");
+	SG_DEBUG("entering CKernel::remove_lhs_and_rhs\n")
 	if (rhs!=lhs)
 		SG_UNREF(rhs);
 	rhs = NULL;
@@ -661,7 +661,7 @@ void CKernel::remove_lhs_and_rhs()
 #ifdef USE_SVMLIGHT
 	cache_reset();
 #endif //USE_SVMLIGHT
-	SG_DEBUG("leaving CKernel::remove_lhs_and_rhs\n");
+	SG_DEBUG("leaving CKernel::remove_lhs_and_rhs\n")
 }
 
 void CKernel::remove_lhs()
@@ -691,7 +691,7 @@ void CKernel::remove_rhs()
 #endif //USE_SVMLIGHT
 }
 
-#define ENUM_CASE(n) case n: SG_INFO(#n " "); break;
+#define ENUM_CASE(n) case n: SG_INFO(#n " ") break;
 
 void CKernel::list_kernel()
 {
@@ -802,26 +802,26 @@ void CKernel::list_kernel()
 		ENUM_CASE(F_LONGREAL)
 		ENUM_CASE(F_ANY)
 	}
-	SG_INFO( "\n");
+	SG_INFO( "\n")
 }
 #undef ENUM_CASE
 
 bool CKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t * weights)
 {
-   SG_ERROR( "kernel does not support linadd optimization\n");
+   SG_ERROR( "kernel does not support linadd optimization\n")
 	return false ;
 }
 
 bool CKernel::delete_optimization()
 {
-   SG_ERROR( "kernel does not support linadd optimization\n");
+   SG_ERROR( "kernel does not support linadd optimization\n")
 	return false;
 }
 
 float64_t CKernel::compute_optimized(int32_t vector_idx)
 {
-   SG_ERROR( "kernel does not support linadd optimization\n");
+   SG_ERROR( "kernel does not support linadd optimization\n")
 	return 0;
 }
 
@@ -829,17 +829,17 @@ void CKernel::compute_batch(
 	int32_t num_vec, int32_t* vec_idx, float64_t* target, int32_t num_suppvec,
 	int32_t* IDX, float64_t* weights, float64_t factor)
 {
-   SG_ERROR( "kernel does not support batch computation\n");
+   SG_ERROR( "kernel does not support batch computation\n")
 }
 
 void CKernel::add_to_normal(int32_t vector_idx, float64_t weight)
 {
-   SG_ERROR( "kernel does not support linadd optimization, add_to_normal not implemented\n");
+   SG_ERROR( "kernel does not support linadd optimization, add_to_normal not implemented\n")
 }
 
 void CKernel::clear_normal()
 {
-   SG_ERROR( "kernel does not support linadd optimization, clear_normal not implemented\n");
+   SG_ERROR( "kernel does not support linadd optimization, clear_normal not implemented\n")
 }
 
 int32_t CKernel::get_num_subkernels()
@@ -850,7 +850,7 @@ int32_t CKernel::get_num_subkernels()
 void CKernel::compute_by_subkernel(
 	int32_t vector_idx, float64_t * subkernel_contrib)
 {
-   SG_ERROR( "kernel compute_by_subkernel not implemented\n");
+   SG_ERROR( "kernel compute_by_subkernel not implemented\n")
 }
 
 const float64_t* CKernel::get_subkernel_weights(int32_t &num_weights)
@@ -868,9 +868,9 @@ SGVector<float64_t> CKernel::get_subkernel_weights()
 
 void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
 {
-	ASSERT(weights.vector);
+	ASSERT(weights.vector)
 	if (weights.vlen!=1)
-      SG_ERROR( "number of subkernel weights should be one ...\n");
+      SG_ERROR( "number of subkernel weights should be one ...\n")
 
 	combined_kernel_weight = weights.vector[0] ;
 }

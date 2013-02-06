@@ -59,14 +59,14 @@ CCustomKernel::init()
 CCustomKernel::CCustomKernel()
 : CKernel(10), kmatrix(), upper_diagonal(false)
 {
-	SG_DEBUG("created CCustomKernel\n");
+	SG_DEBUG("created CCustomKernel\n")
 	init();
 }
 
 CCustomKernel::CCustomKernel(CKernel* k)
 : CKernel(10)
 {
-	SG_DEBUG("created CCustomKernel\n");
+	SG_DEBUG("created CCustomKernel\n")
 	init();
 
 	/* if constructed from a custom kernel, use same kernel matrix */
@@ -83,28 +83,28 @@ CCustomKernel::CCustomKernel(CKernel* k)
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
+	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
 	init();
 	set_full_kernel_matrix_from_full(km);
-	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
+	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float32_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
+	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
 	init();
 	set_full_kernel_matrix_from_full(km);
-	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n");
+	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
 }
 
 CCustomKernel::~CCustomKernel()
 {
-	SG_DEBUG("Entering CCustomKernel::~CCustomKernel()\n");
+	SG_DEBUG("Entering CCustomKernel::~CCustomKernel()\n")
 	cleanup();
 	SG_UNREF(m_row_subset_stack);
 	SG_UNREF(m_col_subset_stack);
-	SG_DEBUG("Leaving CCustomKernel::~CCustomKernel()\n");
+	SG_DEBUG("Leaving CCustomKernel::~CCustomKernel()\n")
 }
 
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
@@ -124,23 +124,23 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 	CKernel::init(l, r);
 
-	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows);
-	SG_DEBUG( "num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), kmatrix.num_cols);
-	ASSERT(l->get_num_vectors()==kmatrix.num_rows);
-	ASSERT(r->get_num_vectors()==kmatrix.num_cols);
+	SG_DEBUG( "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows)
+	SG_DEBUG( "num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), kmatrix.num_cols)
+	ASSERT(l->get_num_vectors()==kmatrix.num_rows)
+	ASSERT(r->get_num_vectors()==kmatrix.num_cols)
 	return init_normalizer();
 }
 
 void CCustomKernel::cleanup_custom()
 {
-	SG_DEBUG("Entering CCustomKernel::cleanup_custom()\n");
+	SG_DEBUG("Entering CCustomKernel::cleanup_custom()\n")
 	remove_all_row_subsets();
 	remove_all_col_subsets();
 
 	kmatrix=SGMatrix<float32_t>();
 	upper_diagonal=false;
 
-	SG_DEBUG("Leaving CCustomKernel::cleanup_custom()\n");
+	SG_DEBUG("Leaving CCustomKernel::cleanup_custom()\n")
 }
 
 void CCustomKernel::cleanup()
@@ -215,10 +215,10 @@ void CCustomKernel::print_kernel_matrix(const char* prefix) const
 		{
 			index_t real_i=m_row_subset_stack->subset_idx_conversion(i);
 			index_t real_j=m_col_subset_stack->subset_idx_conversion(j);
-			SG_PRINT("%s%4.2f", prefix, kmatrix.matrix[kmatrix.num_rows*real_j+real_i]);
+			SG_PRINT("%s%4.2f", prefix, kmatrix.matrix[kmatrix.num_rows*real_j+real_i])
 			if (j<num_cols-1)
-				SG_PRINT(", \t");
+				SG_PRINT(", \t")
 		}
-		SG_PRINT("\n");
+		SG_PRINT("\n")
 	}
 }

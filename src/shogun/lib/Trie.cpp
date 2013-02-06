@@ -20,8 +20,8 @@ void CTrie<POIMTrie>::POIMs_extract_W_helper(
 	const int32_t nodeIdx, const int32_t depth, const int32_t offset,
 	const int32_t y0, float64_t* const* const W, const int32_t K )
 {
-	ASSERT(nodeIdx!=NO_CHILD);
-	ASSERT(depth<K);
+	ASSERT(nodeIdx!=NO_CHILD)
+	ASSERT(depth<K)
 	float64_t* const W_kiy = & W[ depth ][ offset + y0 ];
 	POIMTrie* const node = &TreeMem[ nodeIdx ];
 	int32_t sym;
@@ -31,7 +31,7 @@ void CTrie<POIMTrie>::POIMs_extract_W_helper(
 		const int32_t offset1 = offset * NUM_SYMS;
 		for( sym = 0; sym < NUM_SYMS; ++sym )
 		{
-			ASSERT(W_kiy[sym]==0);
+			ASSERT(W_kiy[sym]==0)
 			const int32_t childIdx = node->children[ sym ];
 			if( childIdx != NO_CHILD )
 			{
@@ -47,10 +47,10 @@ void CTrie<POIMTrie>::POIMs_extract_W_helper(
 	}
 	else
 	{
-		ASSERT(depth==degree-1);
+		ASSERT(depth==degree-1)
 		for( sym = 0; sym < NUM_SYMS; ++sym )
 		{
-			ASSERT(W_kiy[sym]==0);
+			ASSERT(W_kiy[sym]==0)
 			W_kiy[ sym ] = node->child_weights[ sym ];
 		}
 	}
@@ -60,12 +60,12 @@ template <>
 void CTrie<POIMTrie>::POIMs_extract_W(
 	float64_t* const* const W, const int32_t K)
 {
-  ASSERT(degree>=1);
-  ASSERT(K>=1);
+  ASSERT(degree>=1)
+  ASSERT(K>=1)
   const int32_t N = length;
   int32_t i;
   for( i = 0; i < N; ++i ) {
-    //SG_PRINT( "W_helper( %d )\n", i );
+    //SG_PRINT( "W_helper( %d )\n", i )
     POIMs_extract_W_helper( trees[i], 0, i*NUM_SYMS, 0*NUM_SYMS, W, K );
   }
 }
@@ -76,8 +76,8 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper1(
 	int32_t left_tries_idx[4], const int32_t depth, int32_t const lastSym,
 	float64_t* S, float64_t* L, float64_t* R )
 {
-  ASSERT(depth==degree-1);
-  ASSERT(nodeIdx!=NO_CHILD);
+  ASSERT(depth==degree-1)
+  ASSERT(nodeIdx!=NO_CHILD)
 
   const float64_t* const distribLeft  = & distrib[ (i-1)     * NUM_SYMS ];
   POIMTrie* const node = &TreeMem[ nodeIdx ];
@@ -110,7 +110,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper1(
 	  {
 		  POIMTrie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
 
-		  ASSERT(nodeLeft);
+		  ASSERT(nodeLeft)
 		  const float64_t w2 = nodeLeft->child_weights[ lastSym ];
 		  const float64_t pLeft = distribLeft[ symLeft ];
 		  const float64_t incr2 = pLeft * w2;
@@ -136,8 +136,8 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 	int32_t left_tries_idx[4], const int32_t depth, float64_t* S, float64_t* L,
 	float64_t* R )
 {
-  ASSERT(0<=depth && depth<=degree-2);
-  ASSERT(nodeIdx!=NO_CHILD);
+  ASSERT(0<=depth && depth<=degree-2)
+  ASSERT(nodeIdx!=NO_CHILD)
 
   const float64_t* const distribLeft  = & distrib[ (i-1)     * NUM_SYMS ];
   POIMTrie* const node = &TreeMem[ nodeIdx ];
@@ -169,7 +169,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 				  if (left_tries_idx[symLeft] != NO_CHILD)
 				  {
 					  POIMTrie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
-					  ASSERT(nodeLeft);
+					  ASSERT(nodeLeft)
 					  new_left_tries_idx[ symLeft ]=nodeLeft->children[ symRight ];
 				  }
 			  }
@@ -194,7 +194,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 	  if (left_tries_idx[symLeft] != NO_CHILD)
 	  {
 		  const POIMTrie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
-		  ASSERT(nodeLeft);
+		  ASSERT(nodeLeft)
 		  const float64_t pLeft = distribLeft[ symLeft ];
 
 		  node->S += pLeft * nodeLeft->S;
@@ -230,7 +230,7 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2(
 
   // --- add w and return results
   const float64_t w0 = node->weight;
-  //SG_PRINT( "  d=%d, node=%d, dS=%.3f, w=%.3f\n", depth, nodeIdx, node->S, w0 );
+  //SG_PRINT( "  d=%d, node=%d, dS=%.3f, w=%.3f\n", depth, nodeIdx, node->S, w0 )
   node->S += w0;
   node->L += w0;
   node->R += w0;
@@ -248,7 +248,7 @@ void CTrie<POIMTrie>::POIMs_precalc_SLR( const float64_t* const distrib )
 		return;
 	}
 
-	ASSERT(degree>=2);
+	ASSERT(degree>=2)
 	const int32_t N = length;
 	float64_t dummy;
 	int32_t symLeft;
@@ -261,7 +261,7 @@ void CTrie<POIMTrie>::POIMs_precalc_SLR( const float64_t* const distrib )
 		POIMs_calc_SLR_helper2( distrib, i, trees[i], leftSubtrees, 0, &dummy, &dummy, &dummy );
 
 		const POIMTrie* const node = &TreeMem[ trees[i] ];
-		ASSERT(trees[i]!=NO_CHILD);
+		ASSERT(trees[i]!=NO_CHILD)
 
 		for(symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
 			leftSubtrees[ symLeft ] = node->children[ symLeft ];
@@ -273,7 +273,7 @@ void CTrie<POIMTrie>::POIMs_get_SLR(
 	const int32_t parentIdx, const int32_t sym, const int32_t depth,
 	float64_t* S, float64_t* L, float64_t* R )
 {
-  ASSERT(parentIdx!=NO_CHILD);
+  ASSERT(parentIdx!=NO_CHILD)
   const POIMTrie* const parent = &TreeMem[ parentIdx ];
   if( depth < degree ) {
     const int32_t nodeIdx = parent->children[ sym ];
@@ -282,7 +282,7 @@ void CTrie<POIMTrie>::POIMs_get_SLR(
     *L = node->L;
     *R = node->R;
   } else {
-    ASSERT(depth==degree);
+    ASSERT(depth==degree)
     const float64_t w = parent->child_weights[ sym ];
     *S = w;
     *L = w;
@@ -297,10 +297,10 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
 	const float64_t valS, const float64_t valL, const float64_t valR,
 	const int32_t debug)
 {
-	//SG_PRINT( "i=%d, d=%d, y=%d:  w=%.3f \n", i, k, y, valW );
+	//SG_PRINT( "i=%d, d=%d, y=%d:  w=%.3f \n", i, k, y, valW )
 	const int32_t nk = nofsKmers[ k ];
-	ASSERT(1<=k && k<=K);
-	ASSERT(0<=y && y<nk);
+	ASSERT(1<=k && k<=K)
+	ASSERT(0<=y && y<nk)
 	int32_t z;
 	int32_t j;
 
@@ -323,10 +323,10 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
 			for( j = 0; j < nr; ++j )
 			{
 				if( !( 0 <= z && z < nz ) ) {
-					SG_PRINT( "k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz );
-					SG_PRINT( "  j=%d, y=%d, z=%d \n", j, y, z );
+					SG_PRINT( "k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz )
+					SG_PRINT( "  j=%d, y=%d, z=%d \n", j, y, z )
 				}
-				ASSERT(0<=z && z<nz);
+				ASSERT(0<=z && z<nz)
 				poim[ z ] += valL - valW;
 				++z;
 			}
@@ -343,7 +343,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper2(
 			float64_t* const poim = & poims[ k+l-1 ][ (i-l)*nz ];
 			z = y;
 			for( j = 0; j < nl; ++j ) {
-				ASSERT(0<=z && z<nz);
+				ASSERT(0<=z && z<nz)
 				poim[ z ] += valR - valW;
 				z += nk;
 			}
@@ -357,8 +357,8 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper1(
 	const int32_t y0, float64_t* const* const poims, const int32_t K,
 	const int32_t debug)
 {
-	ASSERT(nodeIdx!=NO_CHILD);
-	ASSERT(depth<K);
+	ASSERT(nodeIdx!=NO_CHILD)
+	ASSERT(depth<K)
 	POIMTrie* const node = &TreeMem[ nodeIdx ];
 	int32_t sym;
 	if( depth < degree-1 )
@@ -381,7 +381,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper1(
 		}
 		else
 		{
-			ASSERT(depth==K-1);
+			ASSERT(depth==K-1)
 			for( sym = 0; sym < NUM_SYMS; ++sym )
 			{
 				const int32_t childIdx = node->children[ sym ];
@@ -396,7 +396,7 @@ void CTrie<POIMTrie>::POIMs_add_SLR_helper1(
 	}
 	else
 	{
-		ASSERT(depth==degree-1);
+		ASSERT(depth==degree-1)
 		for( sym = 0; sym < NUM_SYMS; ++sym )
 		{
 			const float64_t w = node->child_weights[ sym ];
@@ -412,8 +412,8 @@ template <>
 void CTrie<POIMTrie>::POIMs_add_SLR(
 	float64_t* const* const poims, const int32_t K, const int32_t debug)
 {
-  ASSERT(degree>=1);
-  ASSERT(K>=1);
+  ASSERT(degree>=1)
+  ASSERT(K>=1)
   {
     const int32_t m = ( degree > K ) ? degree : K;
     nofsKmers = SG_MALLOC(int32_t,  m+1 );

@@ -31,17 +31,17 @@ CMPDSVM::~CMPDSVM()
 
 bool CMPDSVM::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
-	ASSERT(kernel);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
+	ASSERT(kernel)
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		kernel->init(data, data);
 	}
-	ASSERT(kernel->has_features());
+	ASSERT(kernel->has_features())
 
 	//const float64_t nu=0.32;
 	const float64_t alpha_eps=1e-12;
@@ -50,7 +50,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	//const bool nustop=false;
 	//const int32_t k=2;
 	const int32_t n=m_labels->get_num_labels();
-	ASSERT(n>0);
+	ASSERT(n>0)
 	//const float64_t d = 1.0/n/nu; //NUSVC
 	const float64_t d = get_C1(); //CSVC
 	const float64_t primaleps=eps;
@@ -132,7 +132,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		}
 
 		if (maxpidx<0 || maxdviol<0)
-			SG_ERROR( "no violation no convergence, should not happen!\n");
+			SG_ERROR( "no violation no convergence, should not happen!\n")
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
@@ -151,11 +151,11 @@ bool CMPDSVM::train_machine(CFeatures* data)
 					obj+=0.5*((CBinaryLabels*) m_labels)->get_label(i)*((CBinaryLabels*) m_labels)->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
 			}
 
-			SG_DEBUG( "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter);
+			SG_DEBUG( "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter)
 		}
 
 		//for (int32_t i=0; i<n; i++)
-		//	SG_DEBUG( "alphas:%f dalphas:%f\n", alphas[i], dalphas[i]);
+		//	SG_DEBUG( "alphas:%f dalphas:%f\n", alphas[i], dalphas[i])
 
 		primalcool = (maxpviol < primaleps*stopfac);
 		dualcool = (maxdviol < dualeps*stopfac) || (!free_alpha);
@@ -164,14 +164,14 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		if (primalcool && dualcool)
 		{
 			if (!free_alpha)
-				SG_INFO( " no free alpha, stopping! #iter=%d\n", niter);
+				SG_INFO( " no free alpha, stopping! #iter=%d\n", niter)
 			else
-				SG_INFO( " done! #iter=%d\n", niter);
+				SG_INFO( " done! #iter=%d\n", niter)
 			break;
 		}
 
 
-		ASSERT(maxpidx>=0 && maxpidx<n);
+		ASSERT(maxpidx>=0 && maxpidx<n)
 		// hessian updates
 		hstep=-hessres[maxpidx]/compute_H(maxpidx,maxpidx);
 		//hstep[0]=-hessres[maxpidx]/(compute_H(maxpidx,maxpidx)+hessreg);
@@ -226,7 +226,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	}
 
 	if (niter >= maxiter)
-		SG_WARNING( "increase maxiter ... \n");
+		SG_WARNING( "increase maxiter ... \n")
 
 
 	int32_t nsv=0;
@@ -253,8 +253,8 @@ bool CMPDSVM::train_machine(CFeatures* data)
 		}
 	}
 	compute_svm_dual_objective();
-	SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
-	SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
+	SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias())
+	SG_INFO( "Number of SV: %ld\n", get_num_support_vectors())
 
 	SG_FREE(alphas);
 	SG_FREE(dalphas);

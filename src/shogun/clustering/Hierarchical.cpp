@@ -58,16 +58,16 @@ EMachineType CHierarchical::get_classifier_type()
 
 bool CHierarchical::train_machine(CFeatures* data)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 
 	if (data)
 		distance->init(data, data);
 
 	CFeatures* lhs=distance->get_lhs();
-	ASSERT(lhs);
+	ASSERT(lhs)
 
 	int32_t num=lhs->get_num_vectors();
-	ASSERT(num>0);
+	ASSERT(num>0)
 
 	const int32_t num_pairs=num*(num-1)/2;
 
@@ -96,7 +96,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 			index[offs].idx2=j;
 			offs++;					//offs=i*(i+1)/2+j
 		}
-		SG_PROGRESS(i, 0, num-1);
+		SG_PROGRESS(i, 0, num-1)
 	}
 
 	CMath::qsort_index<float64_t,pair>(distances, index, (num-1)*num/2);
@@ -118,7 +118,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 			if (c1==c2)
 				continue;
 
-			SG_PROGRESS(k, 0, num_pairs-1);
+			SG_PROGRESS(k, 0, num_pairs-1)
 
 			if (c1<c2)
 			{
@@ -139,7 +139,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 					assignment[m] = c;
 			}
 #ifdef DEBUG_HIERARCHICAL
-			SG_PRINT("l=%04i i=%04i j=%04i c1=%+04d c2=%+04d c=%+04d dist=%6.6f\n", l,i,j, c1,c2,c, merge_distance[l]);
+			SG_PRINT("l=%04i i=%04i j=%04i c1=%+04d c2=%+04d c=%+04d dist=%6.6f\n", l,i,j, c1,c2,c, merge_distance[l])
 #endif
 			break;
 		}
@@ -147,7 +147,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 
 	assignment_size=num;
 	table_size=l-1;
-	ASSERT(table_size>0);
+	ASSERT(table_size>0)
 	SG_FREE(distances);
 	SG_FREE(index);
 	SG_UNREF(lhs)

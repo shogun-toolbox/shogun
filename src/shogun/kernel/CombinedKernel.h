@@ -173,7 +173,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline bool insert_kernel(CKernel* k)
 		{
-			ASSERT(k);
+			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
 
 			if (!(k->has_property(KP_LINADD)))
@@ -189,7 +189,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline bool append_kernel(CKernel* k)
 		{
-			ASSERT(k);
+			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
 
 			if (!(k->has_property(KP_LINADD)))
@@ -415,12 +415,12 @@ class CCombinedKernel : public CKernel
 		 */
 		inline void adjust_num_lhs_rhs_initialized(CKernel* k)
 		{
-			ASSERT(k);
+			ASSERT(k)
 
 			if (k->get_num_vec_lhs())
 			{
 				if (num_lhs)
-					ASSERT(num_lhs==k->get_num_vec_lhs());
+					ASSERT(num_lhs==k->get_num_vec_lhs())
 				num_lhs=k->get_num_vec_lhs();
 
 				if (!get_num_subkernels())
@@ -437,7 +437,7 @@ class CCombinedKernel : public CKernel
 			if (k->get_num_vec_rhs())
 			{
 				if (num_rhs)
-					ASSERT(num_rhs==k->get_num_vec_rhs());
+					ASSERT(num_rhs==k->get_num_vec_rhs())
 				num_rhs=k->get_num_vec_rhs();
 
 				if (!get_num_subkernels())

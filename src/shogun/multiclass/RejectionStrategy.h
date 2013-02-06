@@ -128,7 +128,7 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 				s_index = 6;
 			else if (significance_level==0.2)
 				s_index = 7;
-			else SG_ERROR("Given significance level is not supported");
+			else SG_ERROR("Given significance level is not supported")
 		}
 
 		virtual ~CDixonQTestRejectionStrategy() 
@@ -146,7 +146,7 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 		{
 			int32_t N = outputs.vlen;
 			if (N<10 || N>100) 
-				SG_ERROR("Given number of classes is not supported.");
+				SG_ERROR("Given number of classes is not supported.")
 
 			int32_t Ni = N/10 - 1;
 

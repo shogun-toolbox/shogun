@@ -54,18 +54,18 @@ CSVMOcas::~CSVMOcas()
 
 bool CSVMOcas::train_machine(CFeatures* data)
 {
-	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
-	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) ;
+	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
+	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) 
 
-	ASSERT(m_labels);
-  ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels)
+  ASSERT(m_labels->get_label_type() == LT_BINARY)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
-	ASSERT(features);
+	ASSERT(features)
 
 	int32_t num_vec=features->get_num_vectors();
 	lab = SGVector<float64_t>(num_vec);
@@ -76,7 +76,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	w.zero();
 
 	if (num_vec!=lab.vlen || num_vec<=0)
-		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen);
+		SG_ERROR("num_vec=%d num_train_labels=%d\n", num_vec, lab.vlen)
 
 	SG_FREE(old_w);
 	old_w=SG_CALLOC(float64_t, w.vlen);
@@ -121,12 +121,12 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	
 	uint32_t num_cut_planes = result.nCutPlanes;
 
-	SG_DEBUG("num_cut_planes=%d\n", num_cut_planes);
+	SG_DEBUG("num_cut_planes=%d\n", num_cut_planes)
 	for (uint32_t i=0; i<num_cut_planes; i++)
 	{
-		SG_DEBUG("cp_value[%d]=%p\n", i, cp_value);
+		SG_DEBUG("cp_value[%d]=%p\n", i, cp_value)
 		SG_FREE(cp_value[i]);
-		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index);
+		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index)
 		SG_FREE(cp_index[i]);
 	}
 	
@@ -324,7 +324,7 @@ void CSVMOcas::compute_W(
 
 	*sq_norm_W = SGVector<float64_t>::dot(W,W, nDim) + CMath::sq(bias);
 	*dp_WoldW = SGVector<float64_t>::dot(W,oldW, nDim) + bias*old_bias;
-	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW);
+	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
 
 	o->bias = bias;
 	o->old_bias = old_bias;

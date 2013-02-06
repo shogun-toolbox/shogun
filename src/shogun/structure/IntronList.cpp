@@ -55,10 +55,10 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 	{
 		while (k<len)
 		{
-			//SG_PRINT("i:%i, m_all_pos[i]:%i, k:%i, end_pos[k]: %i\n", i, m_all_pos[i], k, end_pos[k]) ;
+			//SG_PRINT("i:%i, m_all_pos[i]:%i, k:%i, end_pos[k]: %i\n", i, m_all_pos[i], k, end_pos[k]) 
 			if (k>0)
 				if (end_pos[k]<end_pos[k-1])
-					SG_ERROR("end pos array is not sorted: end_pos[k-1]:%i end_pos[k]:%i\n", end_pos[k-1], end_pos[k]);
+					SG_ERROR("end pos array is not sorted: end_pos[k-1]:%i end_pos[k]:%i\n", end_pos[k-1], end_pos[k])
 			if (end_pos[k]>=m_all_pos[i])
 				break;
 			else
@@ -67,26 +67,26 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 		}
 		while (k<len && end_pos[k]==m_all_pos[i])
 		{
-			//SG_PRINT("\tk:%i, end_pos[k]: %i, start_pos[k]:%i\n", k, end_pos[k], start_pos[k]) ;
-			ASSERT(start_pos[k]<end_pos[k]);
-			ASSERT(end_pos[k]<=m_all_pos[m_length-1]);
+			//SG_PRINT("\tk:%i, end_pos[k]: %i, start_pos[k]:%i\n", k, end_pos[k], start_pos[k]) 
+			ASSERT(start_pos[k]<end_pos[k])
+			ASSERT(end_pos[k]<=m_all_pos[m_length-1])
 			// intron list
 			//------------
 			int32_t from_list_len = m_intron_list[i][0];
 			int32_t* new_list = SG_REALLOC(int32_t, m_intron_list[i], from_list_len, (from_list_len+1));
 			if (new_list == NULL)
-				SG_ERROR("IntronList: Out of mem 4");
+				SG_ERROR("IntronList: Out of mem 4")
 			new_list[from_list_len]= start_pos[k];
 			new_list[0]++;
 			m_intron_list[i] = new_list;
 			// quality list
 			//--------------
 			int32_t q_list_len = m_quality_list[i][0];
-			//SG_PRINT("\t q_list_len:%i, from_list_len:%i \n",q_list_len, from_list_len);
-			ASSERT(q_list_len==from_list_len);
+			//SG_PRINT("\t q_list_len:%i, from_list_len:%i \n",q_list_len, from_list_len)
+			ASSERT(q_list_len==from_list_len)
 			new_list = SG_REALLOC(int32_t, m_quality_list[i], q_list_len, (q_list_len+1));
 			if (new_list == NULL)
-				SG_ERROR("IntronList: Out of mem 5");
+				SG_ERROR("IntronList: Out of mem 5")
 			new_list[q_list_len]= quality[k];
 			new_list[0]++;
 			m_quality_list[i] = new_list;
@@ -102,22 +102,22 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 void CIntronList::get_intron_support(int32_t* values, int32_t from_pos, int32_t to_pos)
 {
 	if (from_pos>=m_length)
-		SG_ERROR("from_pos (%i) is not < m_length (%i)\n",to_pos, m_length);
+		SG_ERROR("from_pos (%i) is not < m_length (%i)\n",to_pos, m_length)
 	if (to_pos>=m_length)
-		SG_ERROR("to_pos (%i) is not < m_length (%i)\n",to_pos, m_length);
+		SG_ERROR("to_pos (%i) is not < m_length (%i)\n",to_pos, m_length)
 	int32_t* from_list = m_intron_list[to_pos];
 	int32_t* q_list = m_quality_list[to_pos];
 
-	//SG_PRINT("from_list[0]: %i\n", from_list[0]);
+	//SG_PRINT("from_list[0]: %i\n", from_list[0])
 
 	int32_t coverage = 0;
 	int32_t quality = 0;
 	for (int i=1;i<from_list[0]; i++)
 	{
-		//SG_PRINT("from_list[%i]: %i, m_all_pos[from_pos]:%i\n", i,  from_list[i], m_all_pos[from_pos]);
+		//SG_PRINT("from_list[%i]: %i, m_all_pos[from_pos]:%i\n", i,  from_list[i], m_all_pos[from_pos])
 		if (from_list[i]==m_all_pos[from_pos])
 		{
-			//SG_PRINT("found intron: %i->%i\n", from_pos, to_pos );
+			//SG_PRINT("found intron: %i->%i\n", from_pos, to_pos )
 			coverage = coverage+1;
 			quality = CMath::max(quality, q_list[i]);
 		}

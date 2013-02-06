@@ -39,7 +39,7 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 			break;
 		case SMT_UNKNOWN:
 		default:
-			SG_ERROR("The EStateModelType given is not valid\n");
+			SG_ERROR("The EStateModelType given is not valid\n")
 	}
 
 	int32_t S = m_state_model->get_num_states();
@@ -85,7 +85,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 		m_transmission_weights(state_seq[i],state_seq[i+1]) += 1;
 
 	SGMatrix< float64_t > obs = mf->get_feature_vector(feat_idx);
-	ASSERT(obs.num_rows == D && obs.num_cols == state_seq.vlen);
+	ASSERT(obs.num_rows == D && obs.num_cols == state_seq.vlen)
 	m_emission_weights.zero();
 	index_t aux_idx, weight_idx;
 
@@ -112,7 +112,7 @@ CResultSet* CHMSVMModel::argmax(
 		bool const training)
 {
 	int32_t dim = get_dim();
-	ASSERT( w.vlen == get_dim() );
+	ASSERT( w.vlen == get_dim() )
 
 	// Shorthand for the number of features of the feature vector
 	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
@@ -393,7 +393,7 @@ bool CHMSVMModel::check_training_setup() const
 	{
 		if ( state_freq[i] <= 0 )
 		{
-			SG_ERROR("What? State %d has never appeared\n", i);
+			SG_ERROR("What? State %d has never appeared\n", i)
 			return false;
 		}
 	}

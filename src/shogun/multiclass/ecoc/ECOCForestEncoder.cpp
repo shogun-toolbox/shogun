@@ -21,6 +21,6 @@ CECOCForestEncoder::CECOCForestEncoder()
 void CECOCForestEncoder::set_num_trees(int32_t num_trees)
 {
     if (num_trees < 1)
-        SG_ERROR("number of trees (%d) should be >= 1", num_trees);
+        SG_ERROR("number of trees (%d) should be >= 1", num_trees)
     m_num_trees = num_trees;
 }

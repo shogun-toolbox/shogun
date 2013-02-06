@@ -34,11 +34,11 @@ CSplineKernel::~CSplineKernel()
 
 bool CSplineKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(l->get_feature_type()==F_DREAL);
-	ASSERT(l->get_feature_type()==r->get_feature_type());
+	ASSERT(l->get_feature_type()==F_DREAL)
+	ASSERT(l->get_feature_type()==r->get_feature_type())
 
-	ASSERT(l->get_feature_class()==C_DENSE);
-	ASSERT(l->get_feature_class()==r->get_feature_class());
+	ASSERT(l->get_feature_class()==C_DENSE)
+	ASSERT(l->get_feature_class()==r->get_feature_class())
 
 	CDotKernel::init(l,r);
 	return init_normalizer();
@@ -56,7 +56,7 @@ float64_t CSplineKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t* avec = ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec = ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen == blen);
+	ASSERT(alen == blen)
 
 	float64_t result = 0;
 	for (int32_t i = 0; i < alen; i++) {

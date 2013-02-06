@@ -16,14 +16,14 @@ using namespace shogun;
 
 float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted && ground_truth);
-	ASSERT(predicted->get_label_type() == LT_MULTICLASS);
-	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS);
+	ASSERT(predicted && ground_truth)
+	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
+	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
 	SGVector<float64_t> label_p=((CMulticlassLabels*) predicted)->get_unique_labels();
 	SGVector<float64_t> label_g=((CMulticlassLabels*) ground_truth)->get_unique_labels();
 
 	if (label_p.vlen != label_g.vlen)
-		SG_ERROR("Number of classes are different\n");
+		SG_ERROR("Number of classes are different\n")
 	uint32_t n_class=label_p.vlen;
 	float64_t n_label=predicted->get_num_labels();
 

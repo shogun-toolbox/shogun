@@ -136,7 +136,7 @@ void CStreamingFileFromDenseFeatures<T>::init()
 	vector_num=0;
 	features=NULL;
 
-	SG_WARNING("%s::init(): register params!\n", get_name());
+	SG_WARNING("%s::init(): register params!\n", get_name())
 }
 
 /* Functions to return the vector from the DenseFeatures object

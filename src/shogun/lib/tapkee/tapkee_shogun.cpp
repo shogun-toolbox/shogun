@@ -27,19 +27,19 @@ class ShogunLoggerImplementation : public tapkee::LoggerImplementation
 {
 	virtual void message_info(const std::string& msg)
 	{
-		SG_SINFO((msg+"\n").c_str());
+		SG_SINFO((msg+"\n").c_str())
 	}
 	virtual void message_warning(const std::string& msg)
 	{
-		SG_SWARNING((msg+"\n").c_str());
+		SG_SWARNING((msg+"\n").c_str())
 	}
 	virtual void message_error(const std::string& msg)
 	{
-		SG_SERROR((msg+"\n").c_str());
+		SG_SERROR((msg+"\n").c_str())
 	}
 	virtual void message_benchmark(const std::string& msg)
 	{
-		SG_SINFO((msg+"\n").c_str());
+		SG_SINFO((msg+"\n").c_str())
 	}
 };
 

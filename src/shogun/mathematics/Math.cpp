@@ -89,14 +89,14 @@ int32_t CMath::determine_logrange()
 			break;
 	}
 
-    SG_SINFO( "determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc);
+    SG_SINFO( "determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc)
     return i;
 }
 
 int32_t CMath::determine_logaccuracy(int32_t range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(float64_t));
-    SG_SINFO( "determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range);
+    SG_SINFO( "determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range)
     return range;
 }
 

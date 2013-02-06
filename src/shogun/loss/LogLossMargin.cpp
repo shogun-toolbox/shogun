@@ -39,12 +39,12 @@ float64_t CLogLossMargin::second_derivative(float64_t z)
 
 float64_t CLogLossMargin::get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return -1;
 }
 
 float64_t CLogLossMargin::get_square_grad(float64_t prediction, float64_t label)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return -1;
 }

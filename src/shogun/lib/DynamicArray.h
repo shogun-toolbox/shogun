@@ -246,9 +246,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		inline T& element(T* p_array, int32_t idx1, int32_t idx2=0, int32_t idx3=0)
 		{
-			ASSERT(idx1>=0 && idx1<dim1_size);
-			ASSERT(idx2>=0 && idx2<dim2_size);
-			ASSERT(idx3>=0 && idx3<dim3_size);
+			ASSERT(idx1>=0 && idx1<dim1_size)
+			ASSERT(idx2>=0 && idx2<dim2_size)
+			ASSERT(idx3>=0 && idx3<dim3_size)
 			return p_array[idx1+dim1_size*(idx2+dim2_size*idx3)];
 		}
 
@@ -264,11 +264,11 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		inline T& element(T* p_array, int32_t idx1, int32_t idx2, int32_t idx3, int32_t p_dim1_size, int32_t p_dim2_size)
 		{
-			ASSERT(p_dim1_size==dim1_size);
-			ASSERT(p_dim2_size==dim2_size);
-			ASSERT(idx1>=0 && idx1<p_dim1_size);
-			ASSERT(idx2>=0 && idx2<p_dim2_size);
-			ASSERT(idx3>=0 && idx3<dim3_size);
+			ASSERT(p_dim1_size==dim1_size)
+			ASSERT(p_dim2_size==dim2_size)
+			ASSERT(idx1>=0 && idx1<p_dim1_size)
+			ASSERT(idx2>=0 && idx2<p_dim2_size)
+			ASSERT(idx3>=0 && idx3<dim3_size)
 			return p_array[idx1+p_dim1_size*(idx2+p_dim2_size*idx3)];
 		}	
 
@@ -553,24 +553,24 @@ template <class T> class CDynamicArray :public CSGObject
 		inline void display_array()
 		{
 			if (get_name())
-				SG_PRINT( "DynamicArray '%s' of size: %dx%dx%d\n", get_name(), dim1_size, dim2_size, dim3_size);
+				SG_PRINT( "DynamicArray '%s' of size: %dx%dx%d\n", get_name(), dim1_size, dim2_size, dim3_size)
 			else
-				SG_PRINT( "DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
+				SG_PRINT( "DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size)
 
 			for (int32_t k=0; k<dim3_size; k++)
 				for (int32_t i=0; i<dim1_size; i++)
 				{
-					SG_PRINT( "element(%d,:,%d) = [ ",i, k);
+					SG_PRINT( "element(%d,:,%d) = [ ",i, k)
 					for (int32_t j=0; j<dim2_size; j++)
-						SG_PRINT( "%1.1f,", (float32_t) element(i,j,k));
-					SG_PRINT( " ]\n");
+						SG_PRINT( "%1.1f,", (float32_t) element(i,j,k))
+					SG_PRINT( " ]\n")
 				}
 		}
 	
 		/** display array's size */
 		inline void display_size()
 		{
-			SG_PRINT( "DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
+			SG_PRINT( "DynamicArray of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size)
 		}
 
 		/** @return object name */

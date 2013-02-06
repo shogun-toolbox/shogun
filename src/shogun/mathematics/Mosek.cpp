@@ -68,7 +68,7 @@ CMosek::~CMosek()
 
 void MSKAPI CMosek::print(void* handle, char str[])
 {
-	SG_SPRINT("%s", str);
+	SG_SPRINT("%s", str)
 }
 
 MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
@@ -164,7 +164,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 		}
 	}
 
-	ASSERT(idx == nnz);
+	ASSERT(idx == nnz)
 
 	asub[idx] = dPsi.vlen + num_aux + train_idx;
 	aval[idx] = -1;
@@ -365,12 +365,12 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 			break;
 		case MSK_SOL_STA_UNKNOWN:
 #ifdef DEBUG_MOSEK
-			SG_PRINT("Undetermined solution status\n");
+			SG_PRINT("Undetermined solution status\n")
 #endif
 			break;
 		default:
 #ifdef DEBUG_MOSEK
-			SG_PRINT("Other solution status\n");
+			SG_PRINT("Other solution status\n")
 #endif
 			break; 	// to avoid compile error when DEBUG_MOSEK
 				// is not defined
@@ -385,8 +385,8 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 
 		MSK_getcodedesc(m_rescode, symname, desc);
 
-		SG_PRINT("An error occurred optimizing with MOSEK\n");
-		SG_PRINT("ERROR %s - '%s'\n", symname, desc);
+		SG_PRINT("An error occurred optimizing with MOSEK\n")
+		SG_PRINT("ERROR %s - '%s'\n", symname, desc)
 	}
 
 	return m_rescode;
@@ -404,7 +404,7 @@ void CMosek::display_problem()
 	m_rescode = MSK_getnumvar(m_task, &num_var);
 	m_rescode = MSK_getnumcon(m_task, &num_con);
 
-	SG_PRINT("\nMatrix Q^0:\n");
+	SG_PRINT("\nMatrix Q^0:\n")
 	for ( int32_t i = 0 ; i < num_var ; ++i )
 	{
 		for ( int32_t j = 0 ; j < num_var ; ++j )
@@ -412,17 +412,17 @@ void CMosek::display_problem()
 			float64_t qij;
 			m_rescode = MSK_getqobjij(m_task, i, j, &qij);
 			if ( qij != 0.0 )
-				SG_PRINT("(%d,%d)\t%.2f\n", i, j, qij);
+				SG_PRINT("(%d,%d)\t%.2f\n", i, j, qij)
 		}
 	}
-	SG_PRINT("\n");
+	SG_PRINT("\n")
 
-	SG_PRINT("\nVector c:\n");
+	SG_PRINT("\nVector c:\n")
 	SGVector< float64_t > c(num_var);
 	m_rescode = MSK_getc(m_task, c.vector);
 	c.display_vector();
 
-	SG_PRINT("\n\nMatrix A:\n");
+	SG_PRINT("\n\nMatrix A:\n")
 	for ( int32_t i = 0 ; i < num_con ; ++i )
 	{
 		for ( int32_t j = 0 ; j < num_var ; ++j )
@@ -430,31 +430,31 @@ void CMosek::display_problem()
 			float64_t aij;
 			m_rescode = MSK_getaij(m_task, i, j, &aij);
 			if ( aij != 0.0 )
-				SG_PRINT("(%d,%d)\t%.2f\n", i, j, aij);
+				SG_PRINT("(%d,%d)\t%.2f\n", i, j, aij)
 		}
 	}
-	SG_PRINT("\n");
+	SG_PRINT("\n")
 
-	SG_PRINT("\nConstraint Bounds, vector b:\n");
+	SG_PRINT("\nConstraint Bounds, vector b:\n")
 	for ( int32_t i = 0 ; i < num_con ; ++i )
 	{
 		MSKboundkeye bk;
 		float64_t bl, bu;
 		m_rescode = MSK_getbound(m_task, MSK_ACC_CON, i, &bk, &bl, &bu);
 
-		SG_PRINT("%6.2f %6.2f\n", bl, bu);
+		SG_PRINT("%6.2f %6.2f\n", bl, bu)
 	}
 
-	SG_PRINT("\nVariable Bounds, vectors lb and ub:\n");
+	SG_PRINT("\nVariable Bounds, vectors lb and ub:\n")
 	for ( int32_t i = 0 ; i < num_var ; ++i )
 	{
 		MSKboundkeye bk;
 		float64_t bl, bu;
 		m_rescode = MSK_getbound(m_task, MSK_ACC_VAR, i, &bk, &bl, &bu);
 
-		SG_PRINT("%6.2f %6.2f\n", bl, bu);
+		SG_PRINT("%6.2f %6.2f\n", bl, bu)
 	}
-	SG_PRINT("\n");
+	SG_PRINT("\n")
 }
 
 

@@ -70,7 +70,7 @@ float64_t CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 	float64_t result=SGVector<float64_t>::dot(avec, bvec, alen);
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
@@ -81,10 +81,10 @@ bool CLinearStringKernel::init_optimization(
 	int32_t num_suppvec, int32_t *sv_idx, float64_t *alphas)
 {
 	int32_t num_feat = ((CStringFeatures<char>*) lhs)->get_max_vector_length();
-	ASSERT(num_feat);
+	ASSERT(num_feat)
 
 	normal = SG_MALLOC(float64_t, num_feat);
-	ASSERT(normal);
+	ASSERT(normal)
 	clear_normal();
 
 	for (int32_t i = 0; i<num_suppvec; i++)
@@ -92,7 +92,7 @@ bool CLinearStringKernel::init_optimization(
 		int32_t alen;
 		bool free_avec;
 		char *avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(sv_idx[i], alen, free_avec);
-		ASSERT(avec);
+		ASSERT(avec)
 
 		for (int32_t j = 0; j<num_feat; j++)
 		{

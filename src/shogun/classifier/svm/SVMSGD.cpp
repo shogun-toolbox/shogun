@@ -70,23 +70,23 @@ void CSVMSGD::set_loss_function(CLossFunction* loss_func)
 bool CSVMSGD::train_machine(CFeatures* data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
 
-	ASSERT(features);
+	ASSERT(features)
 
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
-	ASSERT(num_vec>0);
+	ASSERT(num_vec==num_train_labels)
+	ASSERT(num_vec>0)
 
 	w=SGVector<float64_t>(features->get_dim_feature_space());
 	w.zero();
@@ -102,13 +102,13 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
-	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
+	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0)
 
 
 	//do the sgd
 	calibrate();
 
-	SG_INFO("Training on %d vectors\n", num_vec);
+	SG_INFO("Training on %d vectors\n", num_vec)
 	CSignal::clear_cancel();
 
 	ELossType loss_type = loss->get_loss_type();
@@ -151,24 +151,24 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	}
 
 	float64_t wnorm =  SGVector<float64_t>::dot(w.vector,w.vector, w.vlen);
-	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
+	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias)
 
 	return true;
 }
 
 void CSVMSGD::calibrate()
 {
-	ASSERT(features);
+	ASSERT(features)
 	int32_t num_vec=features->get_num_vectors();
 	int32_t c_dim=features->get_dim_feature_space();
 
-	ASSERT(num_vec>0);
-	ASSERT(c_dim>0);
+	ASSERT(num_vec>0)
+	ASSERT(c_dim>0)
 
 	float64_t* c=SG_MALLOC(float64_t, c_dim);
 	memset(c, 0, c_dim*sizeof(float64_t));
 
-	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim);
+	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim)
 
 	// compute average gradient size
 	int32_t n = 0;
@@ -190,7 +190,7 @@ void CSVMSGD::calibrate()
 
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
-	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
+	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale)
 
 	SG_FREE(c);
 }

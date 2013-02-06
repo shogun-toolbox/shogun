@@ -183,7 +183,7 @@ class CGUIFeatures : public CSGObject
 			if (src && src->get_feature_class()==C_STRING)
 			{
 				//create dense features with 0 cache
-				SG_INFO("Converting CT STRING features to ST STRING ones (order=%i).\n",order);
+				SG_INFO("Converting CT STRING features to ST STRING ones (order=%i).\n",order)
 				bool free_alpha=false;
 
 				if (!alpha)
@@ -202,7 +202,7 @@ class CGUIFeatures : public CSGObject
 				CStringFeatures<ST>* sf=new CStringFeatures<ST>(alpha);
 				if (sf && sf->obtain_from_char_features(src, start, order, gap, rev=='r'))
 				{
-					SG_INFO("Conversion was successful.\n");
+					SG_INFO("Conversion was successful.\n")
 					return sf;
 				}
 
@@ -211,7 +211,7 @@ class CGUIFeatures : public CSGObject
 				SG_UNREF(sf);
 			}
 			else
-				SG_ERROR("No features of class/type STRING/CT available.\n");
+				SG_ERROR("No features of class/type STRING/CT available.\n")
 
 			return NULL;
 		}

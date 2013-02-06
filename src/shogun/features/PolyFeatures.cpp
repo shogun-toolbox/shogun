@@ -19,7 +19,7 @@ CPolyFeatures::CPolyFeatures(CDenseFeatures<float64_t>* feat, int32_t degree, bo
 	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL),
 		m_normalization_values(NULL)
 {
-	ASSERT(feat);
+	ASSERT(feat)
 
 	m_feat = feat;
 	SG_REF(m_feat);
@@ -47,8 +47,8 @@ CPolyFeatures::~CPolyFeatures()
 
 CPolyFeatures::CPolyFeatures(const CPolyFeatures & orig)
 {
-	SG_PRINT("CPolyFeatures:\n");
-	SG_NOTIMPLEMENTED;
+	SG_PRINT("CPolyFeatures:\n")
+	SG_NOTIMPLEMENTED
 };
 
 int32_t CPolyFeatures::get_dim_feature_space() const
@@ -87,28 +87,28 @@ int32_t CPolyFeatures::get_size() const
 
 void* CPolyFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CPolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 void CPolyFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 
 
 float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 
 	CPolyFeatures* pf=(CPolyFeatures*) df;
 
@@ -143,7 +143,7 @@ float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx
 float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	if (vec2_len != m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
 
 	int32_t len;
 	bool do_free;
@@ -171,7 +171,7 @@ float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	if (vec2_len != m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
 
 	int32_t len;
 	bool do_free;
@@ -225,7 +225,7 @@ void CPolyFeatures::store_multi_index()
 
         uint16_t* exponents = SG_MALLOC(uint16_t, m_input_dimensions);
         if (!exponents)
-		SG_ERROR( "Error allocating mem \n");
+		SG_ERROR( "Error allocating mem \n")
 	/*copy adress: otherwise it will be overwritten in recursion*/
         uint16_t* index = m_multi_index;
         enumerate_multi_index(0, &index, exponents, m_degree);
@@ -268,7 +268,7 @@ void CPolyFeatures::store_multinomial_coefficients()
 	m_multinomial_coefficients = SG_MALLOC(float64_t, m_output_dimensions);
 	int32_t* exponents = SG_MALLOC(int32_t, m_input_dimensions);
 	if (!exponents)
-		SG_ERROR( "Error allocating mem \n");
+		SG_ERROR( "Error allocating mem \n")
 	int32_t j=0;
 	for (j=0; j<m_input_dimensions; j++)
 		exponents[j] = 0;
@@ -362,7 +362,7 @@ float64_t CPolyFeatures::factln(int32_t n)
 {
 	static float64_t a[101];
 
-	if (n < 0) SG_ERROR("Negative factorial in routine factln\n");
+	if (n < 0) SG_ERROR("Negative factorial in routine factln\n")
 	if (n <= 1) return 0.0;
 	if (n <= 100) return a[n] ? a[n] : (a[n]=gammln(n+1.0));
 	else return gammln(n+1.0);

@@ -78,7 +78,7 @@ float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 		diff=avec.clone();
 	}
 
-	ASSERT(diff.vlen == bvec.vlen);
+	ASSERT(diff.vlen == bvec.vlen)
 
 	for (int32_t i=0; i < diff.vlen; i++)
 		diff[i] = bvec.vector[i] - diff[i];

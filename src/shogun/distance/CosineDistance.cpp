@@ -51,7 +51,7 @@ float64_t CCosineDistance::compute(int32_t idx_a, int32_t idx_b)
 	float64_t* bvec=
 		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 	float64_t s=0;
 	float64_t ab=0;
 	float64_t sa=0;

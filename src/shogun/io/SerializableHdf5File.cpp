@@ -132,7 +132,7 @@ CSerializableHdf5File::index2string(
 	char* dest, size_t n, EContainerType ctype, index_t y, index_t x)
 {
 	switch (ctype) {
-	case CT_NDARRAY: SG_SNOTIMPLEMENTED;
+	case CT_NDARRAY: SG_SNOTIMPLEMENTED
 	case CT_SCALAR: return false;
 	case CT_VECTOR: case CT_SGVECTOR: snprintf(dest, n, "y%u", y); break;
 	case CT_MATRIX: case CT_SGMATRIX: snprintf(dest, n, "y%u_x%u", y, x); break;
@@ -177,7 +177,7 @@ CSerializableHdf5File::dspace_select(EContainerType ctype, index_t y,
 
 	hsize_t coord[2];
 	switch (ctype) {
-	case CT_NDARRAY: SG_NOTIMPLEMENTED;
+	case CT_NDARRAY: SG_NOTIMPLEMENTED
 	case CT_SCALAR: return false;
 	case CT_MATRIX: case CT_SGMATRIX: coord[1] = x; /* break;  */
 	case CT_VECTOR: case CT_SGVECTOR: coord[0] = y; break;
@@ -374,7 +374,7 @@ void
 CSerializableHdf5File::init(const char* fname)
 {
 	if (m_filename == NULL || *m_filename == '\0') {
-		SG_WARNING("Filename not given for opening file!\n");
+		SG_WARNING("Filename not given for opening file!\n")
 		close(); return;
 	}
 
@@ -394,7 +394,7 @@ CSerializableHdf5File::init(const char* fname)
 	}
 
 	if (h5stream < 0) {
-		SG_WARNING("Could not open file `%s'!\n", m_filename);
+		SG_WARNING("Could not open file `%s'!\n", m_filename)
 		close(); return;
 	}
 
@@ -505,7 +505,7 @@ CSerializableHdf5File::write_cont_begin_wrapped(
 
 	switch (type->m_ctype) {
 	case CT_NDARRAY:
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	case CT_SCALAR:
 		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
 				 "during writing Hdf5File!");
@@ -743,7 +743,7 @@ CSerializableHdf5File::write_type_begin_wrapped(
 
 	switch (type->m_ctype) {
 	case CT_NDARRAY:
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	case CT_SCALAR:
 		m->rank = 0;
 		if (type->m_stype == ST_STRING) m->vltype = SG_MALLOC(hvl_t, 1);

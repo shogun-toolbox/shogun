@@ -52,7 +52,7 @@ float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 		get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	for (int32_t i=0; i<alen; i++)
 		result+=CMath::sq(avec[i] - bvec[i]);
@@ -85,7 +85,7 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 		get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
 		get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	for (int32_t i=0; i<alen; i++)
 	{

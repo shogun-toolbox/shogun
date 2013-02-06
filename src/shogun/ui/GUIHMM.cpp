@@ -52,17 +52,17 @@ bool CGUIHMM::new_hmm(int32_t n, int32_t m)
 bool CGUIHMM::baum_welch_train()
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	if (!trainfeatures)
-		SG_ERROR("Assign train features first.\n");
+		SG_ERROR("Assign train features first.\n")
 	if (trainfeatures->get_feature_type()!=F_WORD ||
 		trainfeatures->get_feature_class()!=C_STRING)
-		SG_ERROR("Features must be STRING of type WORD.\n");
+		SG_ERROR("Features must be STRING of type WORD.\n")
 
 	CStringFeatures<uint16_t>* sf=(CStringFeatures<uint16_t>*) trainfeatures;
-	SG_DEBUG("Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (int64_t) sf->get_original_num_symbols(), (int64_t) sf->get_num_symbols(), sf->get_order(), (int64_t) sf->get_max_num_symbols());
+	SG_DEBUG("Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (int64_t) sf->get_original_num_symbols(), (int64_t) sf->get_num_symbols(), sf->get_order(), (int64_t) sf->get_max_num_symbols())
 
 	working->set_observations(sf);
 
@@ -73,14 +73,14 @@ bool CGUIHMM::baum_welch_train()
 bool CGUIHMM::baum_welch_trans_train()
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	if (!trainfeatures)
-		SG_ERROR("Assign train features first.\n");
+		SG_ERROR("Assign train features first.\n")
 	if (trainfeatures->get_feature_type()!=F_WORD ||
 		trainfeatures->get_feature_class()!=C_STRING)
-		SG_ERROR("Features must be STRING of type WORD.\n");
+		SG_ERROR("Features must be STRING of type WORD.\n")
 
 	working->set_observations((CStringFeatures<uint16_t>*) trainfeatures);
 
@@ -91,9 +91,9 @@ bool CGUIHMM::baum_welch_trans_train()
 bool CGUIHMM::baum_welch_train_defined()
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 	if (!working->get_observations())
-		SG_ERROR("Assign observation first.\n");
+		SG_ERROR("Assign observation first.\n")
 
 	return working->baum_welch_viterbi_train(BW_DEFINED);
 }
@@ -101,9 +101,9 @@ bool CGUIHMM::baum_welch_train_defined()
 bool CGUIHMM::viterbi_train()
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 	if (!working->get_observations())
-		SG_ERROR("Assign observation first.\n");
+		SG_ERROR("Assign observation first.\n")
 
 	return working->baum_welch_viterbi_train(VIT_NORMAL);
 }
@@ -111,9 +111,9 @@ bool CGUIHMM::viterbi_train()
 bool CGUIHMM::viterbi_train_defined()
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 	if (!working->get_observations())
-		SG_ERROR("Assign observation first.\n");
+		SG_ERROR("Assign observation first.\n")
 
 	return working->baum_welch_viterbi_train(VIT_DEFINED);
 }
@@ -121,14 +121,14 @@ bool CGUIHMM::viterbi_train_defined()
 bool CGUIHMM::linear_train(char align)
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	CFeatures* trainfeatures=ui->ui_features->get_train_features();
 	if (!trainfeatures)
-		SG_ERROR("Assign train features first.\n");
+		SG_ERROR("Assign train features first.\n")
 	if (trainfeatures->get_feature_type()!=F_WORD ||
 		trainfeatures->get_feature_class()!=C_STRING)
-		SG_ERROR("Features must be STRING of type WORD.\n");
+		SG_ERROR("Features must be STRING of type WORD.\n")
 
 	working->set_observations((CStringFeatures<uint16_t>*) ui->
 		ui_features->get_train_features());
@@ -136,11 +136,11 @@ bool CGUIHMM::linear_train(char align)
 	bool right_align=false;
 	if (align=='r')
 	{
-		SG_INFO("Using alignment to right.\n");
+		SG_INFO("Using alignment to right.\n")
 		right_align=true;
 	}
 	else
-		SG_INFO("Using alignment to left.\n");
+		SG_INFO("Using alignment to left.\n")
 	working->linear_train(right_align);
 
 	return true;
@@ -150,7 +150,7 @@ CRegressionLabels* CGUIHMM::classify(CRegressionLabels* result)
 {
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
-	ASSERT(obs);
+	ASSERT(obs)
 	int32_t num_vec=obs->get_num_vectors();
 
 	//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
@@ -174,7 +174,7 @@ float64_t CGUIHMM::classify_example(int32_t idx)
 {
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
-	ASSERT(obs);
+	ASSERT(obs)
 
 	//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
 	//CStringFeatures<uint16_t>* old_neg=neg->get_observations();
@@ -190,11 +190,11 @@ float64_t CGUIHMM::classify_example(int32_t idx)
 
 CRegressionLabels* CGUIHMM::one_class_classify(CRegressionLabels* result)
 {
-	ASSERT(working);
+	ASSERT(working)
 
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
-	ASSERT(obs);
+	ASSERT(obs)
 	int32_t num_vec=obs->get_num_vectors();
 
 	//CStringFeatures<uint16_t>* old_pos=working->get_observations();
@@ -212,11 +212,11 @@ CRegressionLabels* CGUIHMM::one_class_classify(CRegressionLabels* result)
 
 CRegressionLabels* CGUIHMM::linear_one_class_classify(CRegressionLabels* result)
 {
-	ASSERT(working);
+	ASSERT(working)
 
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
-	ASSERT(obs);
+	ASSERT(obs)
 	int32_t num_vec=obs->get_num_vectors();
 
 	//CStringFeatures<uint16_t>* old_pos=working->get_observations();
@@ -235,11 +235,11 @@ CRegressionLabels* CGUIHMM::linear_one_class_classify(CRegressionLabels* result)
 
 float64_t CGUIHMM::one_class_classify_example(int32_t idx)
 {
-	ASSERT(working);
+	ASSERT(working)
 
 	CStringFeatures<uint16_t>* obs= (CStringFeatures<uint16_t>*) ui->
 		ui_features->get_test_features();
-	ASSERT(obs);
+	ASSERT(obs)
 
 	//CStringFeatures<uint16_t>* old_pos=pos->get_observations();
 
@@ -254,26 +254,26 @@ float64_t CGUIHMM::one_class_classify_example(int32_t idx)
 bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 	if (!filename)
-		SG_ERROR("Invalid filename.\n");
+		SG_ERROR("Invalid filename.\n")
 
 	FILE* model_file=fopen(filename, "r");
 	if (!model_file)
-		SG_ERROR("Opening file %s failed.\n", filename);
+		SG_ERROR("Opening file %s failed.\n", filename)
 
 	CHMM* h=new CHMM(model_file,PSEUDO);
 	if (!h || !h->get_status())
 	{
 		SG_UNREF(h);
 		fclose(model_file);
-		SG_ERROR("Reading file %s failed.\n", filename);
+		SG_ERROR("Reading file %s failed.\n", filename)
 	}
 
 	fclose(model_file);
-	SG_INFO("File %s successfully read.\n", filename);
+	SG_INFO("File %s successfully read.\n", filename)
 
-	SG_DEBUG("h %d , M: %d\n", h, h->get_M());
+	SG_DEBUG("h %d , M: %d\n", h, h->get_M())
 	if (base1!=-1 && base2!=-1)
 	{
 		float64_t* cur_o=SG_MALLOC(float64_t, h->get_M());
@@ -301,43 +301,43 @@ bool CGUIHMM::append_model(char* filename, int32_t base1, int32_t base2)
 		working->append_model(h);
 
 	SG_UNREF(h);
-	SG_INFO("New model has %i states.\n", working->get_N());
+	SG_INFO("New model has %i states.\n", working->get_N())
 	return true;
 }
 
 bool CGUIHMM::add_states(int32_t num_states, float64_t value)
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	working->add_states(num_states, value);
-	SG_INFO("New model has %i states, value %f.\n", working->get_N(), value);
+	SG_INFO("New model has %i states, value %f.\n", working->get_N(), value)
 	return true;
 }
 
 bool CGUIHMM::set_pseudo(float64_t pseudo)
 {
 	PSEUDO=pseudo;
-	SG_INFO("Current setting: pseudo=%e.\n", PSEUDO);
+	SG_INFO("Current setting: pseudo=%e.\n", PSEUDO)
 	return true;
 }
 
 bool CGUIHMM::convergence_criteria(int32_t num_iterations, float64_t epsilon)
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	working->set_iterations(num_iterations);
 	working->set_epsilon(epsilon);
 
-	SG_INFO("Current HMM convergence criteria: iterations=%i, epsilon=%e\n", working->get_iterations(), working->get_epsilon());
+	SG_INFO("Current HMM convergence criteria: iterations=%i, epsilon=%e\n", working->get_iterations(), working->get_epsilon())
 	return true;
 }
 
 bool CGUIHMM::set_hmm_as(char* target)
 {
 	if (!working)
-		SG_ERROR("Create HMM first!\n");
+		SG_ERROR("Create HMM first!\n")
 
 	if (strncmp(target, "POS", 3)==0)
 	{
@@ -358,7 +358,7 @@ bool CGUIHMM::set_hmm_as(char* target)
 		working=NULL;
 	}
 	else
-		SG_ERROR("Target POS|NEG|TEST is missing.\n");
+		SG_ERROR("Target POS|NEG|TEST is missing.\n")
 
 	return true;
 }
@@ -369,7 +369,7 @@ bool CGUIHMM::load(char* filename)
 
 	FILE* model_file=fopen(filename, "r");
 	if (!model_file)
-		SG_ERROR("Opening file %s failed.\n", filename);
+		SG_ERROR("Opening file %s failed.\n", filename)
 
 	SG_UNREF(working);
 	working=new CHMM(model_file, PSEUDO);
@@ -377,7 +377,7 @@ bool CGUIHMM::load(char* filename)
 
 	if (working && working->get_status())
 	{
-		SG_INFO("Loaded HMM successfully from file %s.\n", filename);
+		SG_INFO("Loaded HMM successfully from file %s.\n", filename)
 		result=true;
 	}
 
@@ -391,7 +391,7 @@ bool CGUIHMM::save(char* filename, bool is_binary)
 	bool result=false;
 
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	FILE* file=fopen(filename, "w");
 	if (file)
@@ -403,9 +403,9 @@ bool CGUIHMM::save(char* filename, bool is_binary)
 	}
 
 	if (!file || !result)
-		SG_ERROR("Writing to file %s failed!\n", filename);
+		SG_ERROR("Writing to file %s failed!\n", filename)
 	else
-		SG_INFO("Successfully written model into %s!\n", filename);
+		SG_INFO("Successfully written model into %s!\n", filename)
 
 	if (file)
 		fclose(file);
@@ -416,20 +416,20 @@ bool CGUIHMM::save(char* filename, bool is_binary)
 bool CGUIHMM::load_definitions(char* filename, bool do_init)
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	bool result=false;
 	FILE* def_file=fopen(filename, "r");
 	if (!def_file)
-		SG_ERROR("Opening file %s failed\n", filename);
+		SG_ERROR("Opening file %s failed\n", filename)
 
 	if (working->load_definitions(def_file, true, do_init))
 	{
-		SG_INFO("Definitions successfully read from %s.\n", filename);
+		SG_INFO("Definitions successfully read from %s.\n", filename)
 		result=true;
 	}
 	else
-		SG_ERROR("Couldn't load definitions form file %s.\n", filename);
+		SG_ERROR("Couldn't load definitions form file %s.\n", filename)
 
 	fclose(def_file);
 	return result;
@@ -440,7 +440,7 @@ bool CGUIHMM::save_likelihood(char* filename, bool is_binary)
 	bool result=false;
 
 	if (!working)
-		SG_ERROR("Create HMM first\n");
+		SG_ERROR("Create HMM first\n")
 
 	FILE* file=fopen(filename, "w");
 	if (file)
@@ -454,9 +454,9 @@ bool CGUIHMM::save_likelihood(char* filename, bool is_binary)
 	}
 
 	if (!file || !result)
-		SG_ERROR("Writing to file %s failed!\n", filename);
+		SG_ERROR("Writing to file %s failed!\n", filename)
 	else
-		SG_INFO("Successfully written likelihoods into %s!\n", filename);
+		SG_INFO("Successfully written likelihoods into %s!\n", filename)
 
 	if (file)
 		fclose(file);
@@ -468,7 +468,7 @@ bool CGUIHMM::save_path(char* filename, bool is_binary)
 {
 	bool result=false;
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	FILE* file=fopen(filename, "w");
 	if (file)
@@ -479,16 +479,16 @@ bool CGUIHMM::save_path(char* filename, bool is_binary)
 		//else
 		CStringFeatures<uint16_t>* obs=(CStringFeatures<uint16_t>*) ui->
 			ui_features->get_test_features();
-		ASSERT(obs);
+		ASSERT(obs)
 		working->set_observations(obs);
 
 		result=working->save_path(file);
 	}
 
 	if (!file || !result)
-		SG_ERROR("Writing to file %s failed!\n", filename);
+		SG_ERROR("Writing to file %s failed!\n", filename)
 	else
-		SG_INFO("Successfully written path into %s!\n", filename);
+		SG_INFO("Successfully written path into %s!\n", filename)
 
 	if (file)
 		fclose(file);
@@ -499,7 +499,7 @@ bool CGUIHMM::save_path(char* filename, bool is_binary)
 bool CGUIHMM::chop(float64_t value)
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	working->chop(value);
 	return true;
@@ -508,7 +508,7 @@ bool CGUIHMM::chop(float64_t value)
 bool CGUIHMM::likelihood()
 {
 	if (!working)
-		SG_ERROR("Create HMM first!\n");
+		SG_ERROR("Create HMM first!\n")
 
 	working->output_model(false);
 	return true;
@@ -517,7 +517,7 @@ bool CGUIHMM::likelihood()
 bool CGUIHMM::output_hmm()
 {
 	if (!working)
-		SG_ERROR("Create HMM first!\n");
+		SG_ERROR("Create HMM first!\n")
 
 	working->output_model(true);
 	return true;
@@ -526,7 +526,7 @@ bool CGUIHMM::output_hmm()
 bool CGUIHMM::output_hmm_defined()
 {
 	if (!working)
-		SG_ERROR("Create HMM first!\n");
+		SG_ERROR("Create HMM first!\n")
 
 	working->output_model_defined(true);
 	return true;
@@ -537,17 +537,17 @@ bool CGUIHMM::best_path(int32_t from, int32_t to)
 	// FIXME: from unused???
 
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	//get path
 	working->best_path(0);
 
 	for (int32_t t=0; t<working->get_observations()->get_vector_length(0)-1 && t<to; t++)
-		SG_PRINT("%d ", working->get_best_path_state(0, t));
-	SG_PRINT("\n");
+		SG_PRINT("%d ", working->get_best_path_state(0, t))
+	SG_PRINT("\n")
 
 	//for (t=0; t<p_observations->get_vector_length(0)-1 && t<to; t++)
-	//	SG_PRINT( "%d ", PATH(0)[t]);
+	//	SG_PRINT( "%d ", PATH(0)[t])
 	//
 	return true;
 }
@@ -555,7 +555,7 @@ bool CGUIHMM::best_path(int32_t from, int32_t to)
 bool CGUIHMM::normalize(bool keep_dead_states)
 {
 	if (!working)
-		SG_ERROR("Create HMM first.\n");
+		SG_ERROR("Create HMM first.\n")
 
 	working->normalize(keep_dead_states);
 	return true;
@@ -564,14 +564,14 @@ bool CGUIHMM::normalize(bool keep_dead_states)
 bool CGUIHMM::relative_entropy(float64_t*& values, int32_t& len)
 {
 	if (!pos || !neg)
-		SG_ERROR("Set pos and neg HMM first!\n");
+		SG_ERROR("Set pos and neg HMM first!\n")
 
 	int32_t pos_N=pos->get_N();
 	int32_t neg_N=neg->get_N();
 	int32_t pos_M=pos->get_M();
 	int32_t neg_M=neg->get_M();
 	if (pos_M!=neg_M || pos_N!=neg_N)
-		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n");
+		SG_ERROR("Pos and neg HMM's differ in number of emissions or states.\n")
 
 	float64_t* p=SG_MALLOC(float64_t, pos_M);
 	float64_t* q=SG_MALLOC(float64_t, neg_M);
@@ -599,7 +599,7 @@ bool CGUIHMM::relative_entropy(float64_t*& values, int32_t& len)
 bool CGUIHMM::entropy(float64_t*& values, int32_t& len)
 {
 	if (!working)
-		SG_ERROR("Create HMM first!\n");
+		SG_ERROR("Create HMM first!\n")
 
 	int32_t n=working->get_N();
 	int32_t m=working->get_M();
@@ -624,10 +624,10 @@ bool CGUIHMM::entropy(float64_t*& values, int32_t& len)
 bool CGUIHMM::permutation_entropy(int32_t width, int32_t seq_num)
 {
 	if (!working)
-		SG_ERROR("Create hmm first.\n");
+		SG_ERROR("Create hmm first.\n")
 
 	if (!working->get_observations())
-		SG_ERROR("Set observations first.\n");
+		SG_ERROR("Set observations first.\n")
 
 	return working->permutation_entropy(width, seq_num);
 }

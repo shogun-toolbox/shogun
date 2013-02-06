@@ -165,24 +165,24 @@ class CCustomDistance: public CDistance
 		bool set_triangle_distance_matrix_from_triangle_generic(
 			const T* dm, int64_t len)
 		{
-			ASSERT(dm);
-			ASSERT(len>0);
+			ASSERT(dm)
+			ASSERT(len>0)
 
 			int64_t cols = (int64_t) floor(-0.5 + CMath::sqrt(0.25+2*len));
 
 			int64_t int32_max=2147483647;
 
 			if (cols> int32_max)
-				SG_ERROR("Matrix larger than %d x %d\n", int32_max);
+				SG_ERROR("Matrix larger than %d x %d\n", int32_max)
 
 			if (cols*(cols+1)/2 != len)
 			{
-				SG_ERROR("dm should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n");
+				SG_ERROR("dm should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n")
 				return false;
 			}
 
 			cleanup_custom();
-			SG_DEBUG( "using custom distance of size %dx%d\n", cols,cols);
+			SG_DEBUG( "using custom distance of size %dx%d\n", cols,cols)
 
 			dmatrix= SG_MALLOC(float32_t, len);
 
@@ -241,10 +241,10 @@ class CCustomDistance: public CDistance
 		bool set_triangle_distance_matrix_from_full_generic(
 			const T* dm, int32_t rows, int32_t cols)
 		{
-			ASSERT(rows==cols);
+			ASSERT(rows==cols)
 
 			cleanup_custom();
-			SG_DEBUG( "using custom distance of size %dx%d\n", cols,cols);
+			SG_DEBUG( "using custom distance of size %dx%d\n", cols,cols)
 
 			dmatrix= SG_MALLOC(float32_t, int64_t(cols)*(cols+1)/2);
 
@@ -306,7 +306,7 @@ class CCustomDistance: public CDistance
 			const T* dm, int32_t rows, int32_t cols)
 		{
 			cleanup_custom();
-			SG_DEBUG( "using custom distance of size %dx%d\n", rows,cols);
+			SG_DEBUG( "using custom distance of size %dx%d\n", rows,cols)
 
 			dmatrix= SG_MALLOC(float32_t, rows*cols);
 
@@ -362,7 +362,7 @@ class CCustomDistance: public CDistance
 		 */
 		virtual float64_t compute(int32_t row, int32_t col)
 		{
-			ASSERT(dmatrix);
+			ASSERT(dmatrix)
 
 			if (upper_diagonal)
 			{

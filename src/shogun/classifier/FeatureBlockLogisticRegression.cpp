@@ -103,25 +103,25 @@ float64_t CFeatureBlockLogisticRegression::get_q() const
 
 void CFeatureBlockLogisticRegression::set_max_iter(int32_t max_iter)
 {
-	ASSERT(max_iter>=0);
+	ASSERT(max_iter>=0)
 	m_max_iter = max_iter;
 }
 
 void CFeatureBlockLogisticRegression::set_regularization(int32_t regularization)
 {
-	ASSERT(regularization==0 || regularization==1);
+	ASSERT(regularization==0 || regularization==1)
 	m_regularization = regularization;
 }
 
 void CFeatureBlockLogisticRegression::set_termination(int32_t termination)
 {
-	ASSERT(termination>=0 && termination<=4);
+	ASSERT(termination>=0 && termination<=4)
 	m_termination = termination;
 }
 
 void CFeatureBlockLogisticRegression::set_tolerance(float64_t tolerance)
 {
-	ASSERT(tolerance>0.0);
+	ASSERT(tolerance>0.0)
 	m_tolerance = tolerance;
 }
 
@@ -140,8 +140,8 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 	if (data && (CDotFeatures*)data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(features);
-	ASSERT(m_labels);
+	ASSERT(features)
+	ASSERT(m_labels)
 
 	int32_t n_vecs = m_labels->get_num_labels();
 	SGVector<float64_t> y(n_vecs);
@@ -166,7 +166,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			options.ind = ind.vector;
 			options.n_feature_blocks = ind.vlen-1;
 			if (ind[ind.vlen-1] > features->get_num_vectors())
-				SG_ERROR("Group of features covers more vectors than available\n");
+				SG_ERROR("Group of features covers more vectors than available\n")
 		
 			options.gWeight = SG_MALLOC(double, options.n_feature_blocks);
 			for (int32_t i=0; i<options.n_feature_blocks; i++)
@@ -217,7 +217,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 		}
 		break;
 		default: 
-			SG_ERROR("Not supported feature relation type\n");
+			SG_ERROR("Not supported feature relation type\n")
 	}
 
 	return true;
@@ -233,7 +233,7 @@ SGVector<float64_t> CFeatureBlockLogisticRegression::apply_get_outputs(CFeatures
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
 		set_features((CDotFeatures*) data);
 	}
@@ -242,8 +242,8 @@ SGVector<float64_t> CFeatureBlockLogisticRegression::apply_get_outputs(CFeatures
 		return SGVector<float64_t>();
 
 	int32_t num=features->get_num_vectors();
-	ASSERT(num>0);
-	ASSERT(w.vlen==features->get_dim_feature_space());
+	ASSERT(num>0)
+	ASSERT(w.vlen==features->get_dim_feature_space())
 
 	float64_t* out=SG_MALLOC(float64_t, num);
 	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);

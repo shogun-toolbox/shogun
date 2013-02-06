@@ -46,9 +46,9 @@ int32_t CBinnedDotFeatures::get_dim_feature_space() const
 
 float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 
 	float64_t result=0;
 	double sum1=0;
@@ -240,19 +240,19 @@ int32_t CBinnedDotFeatures::get_nnz_features_for_vector(int32_t num)
 
 void* CBinnedDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CBinnedDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
 void CBinnedDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 bool CBinnedDotFeatures::get_fill()
@@ -327,7 +327,7 @@ EFeatureClass CBinnedDotFeatures::get_feature_class() const
 
 int32_t CBinnedDotFeatures::get_num_vectors() const
 {
-	ASSERT(m_features);
+	ASSERT(m_features)
 	return m_features->get_num_vectors();
 }
 

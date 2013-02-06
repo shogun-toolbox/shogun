@@ -57,7 +57,7 @@ CGaussianARDKernel::~CGaussianARDKernel()
 float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	if (!lhs || !rhs)
-		SG_ERROR("Features not set!\n");
+		SG_ERROR("Features not set!\n")
 
 	SGVector<float64_t> avec
 		= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
@@ -79,7 +79,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 		CSGObject* obj, index_t index)
 {
 	if (!lhs || !rhs)
-		SG_ERROR("Features not set!\n");
+		SG_ERROR("Features not set!\n")
 
 	if (!strcmp(param->m_name, "weights") && obj == this)
 	{

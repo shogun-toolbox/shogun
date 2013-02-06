@@ -76,12 +76,12 @@ CDistance::~CDistance()
 bool CDistance::init(CFeatures* l, CFeatures* r)
 {
 	//make sure features were indeed supplied
-	ASSERT(l);
-	ASSERT(r);
+	ASSERT(l)
+	ASSERT(r)
 
 	//make sure features are compatible
-	ASSERT(l->get_feature_class()==r->get_feature_class());
-	ASSERT(l->get_feature_type()==r->get_feature_type());
+	ASSERT(l->get_feature_class()==r->get_feature_class())
+	ASSERT(l->get_feature_type()==r->get_feature_type())
 
 	//remove references to previous features
 	remove_lhs_and_rhs();
@@ -143,11 +143,11 @@ void CDistance::remove_rhs()
 CFeatures* CDistance::replace_rhs(CFeatures* r)
 {
 	//make sure features were indeed supplied
-	ASSERT(r);
+	ASSERT(r)
 
 	//make sure features are compatible
-	ASSERT(lhs->get_feature_class()==r->get_feature_class());
-	ASSERT(lhs->get_feature_type()==r->get_feature_type());
+	ASSERT(lhs->get_feature_class()==r->get_feature_class())
+	ASSERT(lhs->get_feature_type()==r->get_feature_type())
 
 	//remove references to previous rhs features
 	CFeatures* tmp=rhs;
@@ -165,11 +165,11 @@ CFeatures* CDistance::replace_rhs(CFeatures* r)
 CFeatures* CDistance::replace_lhs(CFeatures* l)
 {
 	//make sure features were indeed supplied
-	ASSERT(l);
+	ASSERT(l)
 
 	//make sure features are compatible
-	ASSERT(rhs->get_feature_class()==l->get_feature_class());
-	ASSERT(rhs->get_feature_type()==l->get_feature_type());
+	ASSERT(rhs->get_feature_class()==l->get_feature_class())
+	ASSERT(rhs->get_feature_type()==l->get_feature_type())
 
 	//remove references to previous rhs features
 	CFeatures* tmp=lhs;
@@ -188,10 +188,10 @@ void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
 	int32_t num_right=rhs->get_num_vectors();
-	SG_INFO( "precomputing distance matrix (%ix%i)\n", num_left, num_right) ;
+	SG_INFO( "precomputing distance matrix (%ix%i)\n", num_left, num_right) 
 
-	ASSERT(num_left==num_right);
-	ASSERT(lhs==rhs);
+	ASSERT(num_left==num_right)
+	ASSERT(lhs==rhs)
 	int32_t num=num_left;
 
 	SG_FREE(precomputed_matrix);
@@ -199,13 +199,13 @@ void CDistance::do_precompute_matrix()
 
 	for (int32_t i=0; i<num; i++)
 	{
-		SG_PROGRESS(i*i,0,num*num);
+		SG_PROGRESS(i*i,0,num*num)
 		for (int32_t j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
 
-	SG_PROGRESS(num*num,0,num*num);
-	SG_DONE();
+	SG_PROGRESS(num*num,0,num*num)
+	SG_DONE()
 }
 
 SGMatrix<float64_t> CDistance::get_distance_matrix()
@@ -225,14 +225,14 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 	if (has_features())
 	{
 		if (target && (num_vec1!=get_num_vec_lhs() || num_vec2!=get_num_vec_rhs()))
-			SG_ERROR("distance matrix does not fit into target\n");
+			SG_ERROR("distance matrix does not fit into target\n")
 
 		num_vec1=get_num_vec_lhs();
 		num_vec2=get_num_vec_rhs();
 		int64_t total_num=num_vec1*num_vec2;
 		int32_t num_done=0;
 
-		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2)
 
 		if (target)
 			result=target;
@@ -251,7 +251,7 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 					result[j+i*num_vec1]=v;
 
 					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1)
 
 					if (i!=j)
 						num_done+=2;
@@ -269,17 +269,17 @@ float32_t* CDistance::get_distance_matrix_shortreal(
 					result[i+j*num_vec1]=distance(i,j) ;
 
 					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1)
 
 					num_done++;
 				}
 			}
 		}
 
-		SG_DONE();
+		SG_DONE()
 	}
 	else
-      		SG_ERROR("no features assigned to distance\n");
+      		SG_ERROR("no features assigned to distance\n")
 
 	return result;
 }
@@ -293,19 +293,19 @@ float64_t* CDistance::get_distance_matrix_real(
 
 	// check for errors
 	if (!has_features())
-		SG_ERROR("No features assigned to the distance.\n");
+		SG_ERROR("No features assigned to the distance.\n")
 
 	if (target &&
 	    (lhs_vectors_number!=get_num_vec_lhs() ||
 	     rhs_vectors_number!=get_num_vec_rhs()))
-		SG_ERROR("Distance matrix does not fit into the given target.\n");
+		SG_ERROR("Distance matrix does not fit into the given target.\n")
 
 	// init numbers of vectors and total number of distances
 	lhs_vectors_number = get_num_vec_lhs();
 	rhs_vectors_number = get_num_vec_rhs();
 	int64_t total_distances_number = lhs_vectors_number*rhs_vectors_number;
 
-	SG_DEBUG("Calculating distance matrix of size %dx%d.\n", lhs_vectors_number, rhs_vectors_number);
+	SG_DEBUG("Calculating distance matrix of size %dx%d.\n", lhs_vectors_number, rhs_vectors_number)
 
 	// redirect to target or allocate memory
 	if (target)
@@ -321,7 +321,7 @@ float64_t* CDistance::get_distance_matrix_real(
 #ifdef HAVE_PTHREAD
 	// init parallel to work
 	int32_t num_threads = parallel->get_num_threads();
-	ASSERT(num_threads>0);
+	ASSERT(num_threads>0)
 	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
 	DISTANCE_THREAD_PARAM* parameters = SG_MALLOC(DISTANCE_THREAD_PARAM,num_threads);
 	pthread_attr_t attr;

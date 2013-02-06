@@ -132,10 +132,10 @@ public:
 	{
 		CDenseSubsetFeatures<ST> *dsf = dynamic_cast<CDenseSubsetFeatures<ST> *>(df);
 		if (dsf == NULL)
-			SG_ERROR("Require DenseSubsetFeatures of the same kind to perform dot\n");
+			SG_ERROR("Require DenseSubsetFeatures of the same kind to perform dot\n")
 
 		if (m_idx.vlen != dsf->m_idx.vlen)
-			SG_ERROR("Cannot dot vectors of different length\n");
+			SG_ERROR("Cannot dot vectors of different length\n")
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		SGVector<ST> vec2 = dsf->m_fea->get_feature_vector(vec_idx2);
@@ -156,7 +156,7 @@ public:
 	virtual float64_t dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 	{
 		if (m_idx.vlen != vec2_len)
-			SG_ERROR("Cannot dot vectors of different length\n");
+			SG_ERROR("Cannot dot vectors of different length\n")
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 
 		float64_t sum=0;
@@ -177,7 +177,7 @@ public:
 	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val=false)
 	{
 		if (m_idx.vlen != vec2_len)
-			SG_ERROR("Cannot add_to_dense_vec vectors of different length\n");
+			SG_ERROR("Cannot add_to_dense_vec vectors of different length\n")
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		if (abs_val)
@@ -215,7 +215,7 @@ public:
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return NULL;
 	}
 
@@ -231,7 +231,7 @@ public:
 	 */
 	virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return false;
 	}
 
@@ -242,7 +242,7 @@ public:
 	 */
 	virtual void free_feature_iterator(void* iterator)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 private:
 	CDenseFeatures<ST> *m_fea;

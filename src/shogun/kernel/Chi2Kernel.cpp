@@ -62,7 +62,7 @@ float64_t CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
 		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t result=0;
 	for (int32_t i=0; i<alen; i++)

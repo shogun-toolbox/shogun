@@ -43,7 +43,7 @@ void CMMDKernelSelectionComb::init()
 //			"kernel weights", MS_NOT_AVAILABLE);
 //	SG_ADD(&m_opt_regularization_eps, "opt_regularization_eps", "Regularization"
 //			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
-	SG_WARNING("CMMDKernelSelectionComb::init(): register parameters!\n");
+	SG_WARNING("CMMDKernelSelectionComb::init(): register parameters!\n")
 
 #ifdef HAVE_LAPACK
 	/* sensible values for optimization */
@@ -111,7 +111,7 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 	{
 		if (mmds[i]>0)
 		{
-			SG_DEBUG("found at least one positive MMD\n");
+			SG_DEBUG("found at least one positive MMD\n")
 			one_pos=true;
 			break;
 		}
@@ -133,7 +133,7 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 	}
 	else
 	{
-		SG_DEBUG("one MMD entry is positive, performing optimisation\n");
+		SG_DEBUG("one MMD entry is positive, performing optimisation\n")
 		/* do optimisation, init vectors */
 		for (index_t i=0; i<num_kernels; ++i)
 		{
@@ -147,7 +147,7 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 		}
 
 		/* start libqp solver with desired parameters */
-		SG_DEBUG("starting libqp optimization\n");
+		SG_DEBUG("starting libqp optimization\n")
 		libqp_state_T qp_exitflag=libqp_gsmo_solver(&get_Q_col, Q_diag.vector,
 				f.vector, mmds.vector,
 				one_pos ? 1 : -1,
@@ -164,7 +164,7 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 		{
 			if (weights[i]<m_opt_low_cut)
 			{
-				SG_DEBUG("lowcut: weight[%i]=%f<%f; setting to zero\n", i, weights[i],
+				SG_DEBUG("lowcut: weight[%i]=%f<%f setting to zero\n", i, weights[i],
 						m_opt_low_cut);
 				weights[i]=0;
 			}

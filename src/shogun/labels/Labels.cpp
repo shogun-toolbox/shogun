@@ -54,7 +54,7 @@ void CLabels::remove_all_subsets()
 
 float64_t CLabels::get_value(int32_t idx)
 {
-	ASSERT(m_current_values.vector && idx<get_num_labels());
+	ASSERT(m_current_values.vector && idx<get_num_labels())
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	return m_current_values.vector[real_num];
 }
@@ -62,7 +62,7 @@ float64_t CLabels::get_value(int32_t idx)
 void CLabels::set_value(float64_t value, int32_t idx)
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
-	ASSERT(m_current_values.vector && idx<get_num_labels());
+	ASSERT(m_current_values.vector && idx<get_num_labels())
 	m_current_values.vector[real_num]=value;
 }
 

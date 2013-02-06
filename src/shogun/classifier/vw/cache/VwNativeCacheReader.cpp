@@ -68,14 +68,14 @@ void CVwNativeCacheReader::check_cache_metadata()
 	vw_size_t v_length;
 	buf.read_file((char*)&v_length, sizeof(v_length));
 	if(v_length > 29)
-		SG_SERROR("Cache version too long, cache file is probably invalid.\n");
+		SG_SERROR("Cache version too long, cache file is probably invalid.\n")
 
 	char* t=SG_MALLOC(char, v_length);
 	buf.read_file(t,v_length);
 	if (strcmp(t,vw_version) != 0)
 	{
 		SG_FREE(t);
-		SG_SERROR("Cache has possibly incompatible version!\n");
+		SG_SERROR("Cache has possibly incompatible version!\n")
 	}
 	SG_FREE(t);
 
@@ -84,7 +84,7 @@ void CVwNativeCacheReader::check_cache_metadata()
 		return;
 
 	if (cache_numbits != numbits)
-		SG_SERROR("Bug encountered in caching! Bits used for weight in cache: %d.\n", cache_numbits);
+		SG_SERROR("Bug encountered in caching! Bits used for weight in cache: %d.\n", cache_numbits)
 }
 
 char* CVwNativeCacheReader::run_len_decode(char *p, vw_size_t& i)
@@ -180,7 +180,7 @@ bool CVwNativeCacheReader::read_cached_example(VwExample* const ae)
 		buf.set(c);
 		total += storage;
 		if (buf.buf_read(c, storage) < storage)
-			SG_SERROR("Truncated example! Wanted %d bytes!\n", storage);
+			SG_SERROR("Truncated example! Wanted %d bytes!\n", storage)
 
 		char *end = c + storage;
 

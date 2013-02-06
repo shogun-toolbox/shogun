@@ -20,14 +20,14 @@ using namespace shogun;
 CManhattanWordDistance::CManhattanWordDistance()
 : CStringDistance<uint16_t>()
 {
-	SG_DEBUG("CManhattanWordDistance created");
+	SG_DEBUG("CManhattanWordDistance created")
 }
 
 CManhattanWordDistance::CManhattanWordDistance(
 	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r)
 : CStringDistance<uint16_t>()
 {
-	SG_DEBUG("CManhattanWordDistance created");
+	SG_DEBUG("CManhattanWordDistance created")
 
 	init(l, r);
 }

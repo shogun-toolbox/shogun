@@ -17,10 +17,10 @@ using namespace shogun;
 
 float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted && ground_truth);
-	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
-	ASSERT(predicted->get_label_type() == LT_REGRESSION);
-	ASSERT(ground_truth->get_label_type() == LT_REGRESSION);
+	ASSERT(predicted && ground_truth)
+	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
+	ASSERT(predicted->get_label_type() == LT_REGRESSION)
+	ASSERT(ground_truth->get_label_type() == LT_REGRESSION)
 	int32_t length = predicted->get_num_labels();
 	float64_t mse = 0.0;
 	for (int32_t i=0; i<length; i++)

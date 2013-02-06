@@ -63,7 +63,7 @@ void CKernelIndependenceTestStatistic::init()
 
 SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 {
-	SG_DEBUG("entering CKernelIndependenceTestStatistic::bootstrap_null()\n");
+	SG_DEBUG("entering CKernelIndependenceTestStatistic::bootstrap_null()\n")
 
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results;
@@ -116,7 +116,7 @@ SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 	}
 
 
-	SG_DEBUG("leaving CKernelIndependenceTestStatistic::bootstrap_null()\n");
+	SG_DEBUG("leaving CKernelIndependenceTestStatistic::bootstrap_null()\n")
 	return results;
 }
 

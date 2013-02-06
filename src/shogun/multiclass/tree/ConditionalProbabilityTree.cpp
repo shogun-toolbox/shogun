@@ -22,9 +22,9 @@ CMulticlassLabels* CConditionalProbabilityTree::apply_multiclass(CFeatures* data
 	if (data)
 	{
 		if (data->get_feature_class() != C_STREAMING_DENSE)
-			SG_ERROR("Expected StreamingDenseFeatures\n");
+			SG_ERROR("Expected StreamingDenseFeatures\n")
 		if (data->get_feature_type() != F_SHORTREAL)
-			SG_ERROR("Expected float32_t feature type\n");
+			SG_ERROR("Expected float32_t feature type\n")
 
 		set_features(dynamic_cast<CStreamingDenseFeatures<float32_t>* >(data));
 	}
@@ -99,15 +99,15 @@ bool CConditionalProbabilityTree::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (data->get_feature_class() != C_STREAMING_DENSE)
-			SG_ERROR("Expected StreamingDenseFeatures\n");
+			SG_ERROR("Expected StreamingDenseFeatures\n")
 		if (data->get_feature_type() != F_SHORTREAL)
-			SG_ERROR("Expected float32_t features\n");
+			SG_ERROR("Expected float32_t features\n")
 		set_features(dynamic_cast<CStreamingDenseFeatures<float32_t> *>(data));
 	}
 	else
 	{
 		if (!m_feats)
-			SG_ERROR("No data features provided\n");
+			SG_ERROR("No data features provided\n")
 	}
 
 	m_machines->reset_array();
@@ -227,7 +227,7 @@ void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, node_t *nod
 void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t label, node_t *node)
 {
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	ASSERT(mch);
+	ASSERT(mch)
 	mch->train_one(ex, label);
 	SG_UNREF(mch);
 }
@@ -235,7 +235,7 @@ void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t l
 float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, node_t *node)
 {
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	ASSERT(mch);
+	ASSERT(mch)
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 	SG_UNREF(mch);
 	// use sigmoid function to turn the decision value into valid probability

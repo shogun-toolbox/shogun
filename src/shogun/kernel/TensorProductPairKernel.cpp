@@ -57,11 +57,11 @@ float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t* avec=((CDenseFeatures<int32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	int32_t* bvec=((CDenseFeatures<int32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	ASSERT(alen==2);
-	ASSERT(blen==2);
+	ASSERT(alen==2)
+	ASSERT(blen==2)
 
 	CKernel* k=subkernel;
-	ASSERT(k && k->has_features());
+	ASSERT(k && k->has_features())
 
 	int32_t a=avec[0];
 	int32_t b=avec[1];

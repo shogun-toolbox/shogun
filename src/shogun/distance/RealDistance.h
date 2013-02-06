@@ -33,8 +33,8 @@ public:
 	{
 		CDenseDistance<float64_t>::init(l,r);
 
-		ASSERT(l->get_feature_type()==F_DREAL);
-		ASSERT(r->get_feature_type()==F_DREAL);
+		ASSERT(l->get_feature_type()==F_DREAL)
+		ASSERT(r->get_feature_type()==F_DREAL)
 
 		return true;
 	}

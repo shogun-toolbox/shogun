@@ -34,7 +34,7 @@ CIsomap::~CIsomap()
 
 void CIsomap::set_k(int32_t k)
 {
-	ASSERT(k>0);
+	ASSERT(k>0)
 	m_k = k;
 }
 

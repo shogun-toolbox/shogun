@@ -347,27 +347,27 @@ public:
 
 	virtual void get_matrix(int8_t*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 	virtual void get_int8_sparsematrix(shogun::SGSparseVector<signed char>*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 	virtual void get_int8_string_list(shogun::SGString<signed char>*&, int32_t&, int32_t&)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 	virtual void set_int8_matrix(const int8_t*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 	virtual void set_int8_sparsematrix(const shogun::SGSparseVector<signed char>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 	virtual void set_int8_string_list(const shogun::SGString<signed char>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 
 

@@ -46,9 +46,9 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
-			ASSERT(k);
+			ASSERT(k)
 			int32_t n=k->get_num_vec_lhs();
-			ASSERT(n>0);
+			ASSERT(n>0)
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;

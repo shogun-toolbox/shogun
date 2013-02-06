@@ -55,8 +55,8 @@ int count_sub_nodes_recursive(tree_node_t* node, int32_t self)
 void print_tree(tree_node_t* node, int tabs)
 {
 	for (int32_t t=0; t<tabs; t++)
-		SG_SPRINT("  ");
-	SG_SPRINT("%d %d\n",node->idx, node->sub_nodes_count);
+		SG_SPRINT("  ")
+	SG_SPRINT("%d %d\n",node->idx, node->sub_nodes_count)
 	for (int32_t i=0; i<node->n_desc; i++)
 		print_tree(node->desc[i],tabs+1);
 }
@@ -95,7 +95,7 @@ void collect_tree_nodes_recursive(CIndexBlock* subtree_root_block, vector<block_
 		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
 		do
 		{
-			SG_SDEBUG("Block [%d %d] \n",iterator->get_min_index(), iterator->get_max_index());
+			SG_SDEBUG("Block [%d %d] \n",iterator->get_min_index(), iterator->get_max_index())
 			tree_nodes->push_back(block_tree_node_t(iterator->get_min_index(),iterator->get_max_index(),iterator->get_weight()));
 			if (iterator->get_num_sub_blocks()>0)
 				collect_tree_nodes_recursive(iterator, tree_nodes);
@@ -123,7 +123,7 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool incl
 	CIndexBlockRelation(),
 	m_root_block(NULL), m_general(true)
 {
-	ASSERT(adjacency_matrix.num_rows == adjacency_matrix.num_cols);
+	ASSERT(adjacency_matrix.num_rows == adjacency_matrix.num_cols)
 	int32_t n_features = adjacency_matrix.num_rows;
 	
 	// well ordering is assumed
@@ -167,14 +167,14 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool incl
 		}
 	}
 	/*
-	SG_SPRINT("[");
+	SG_SPRINT("[")
 	for (int32_t i=0; i<G.size(); i++)
-		SG_SPRINT(" %d ",G[i]);
-	SG_SPRINT("]\n");
-	SG_SPRINT("[");
+		SG_SPRINT(" %d ",G[i])
+	SG_SPRINT("]\n")
+	SG_SPRINT("[")
 	for (int32_t i=0; i<ind_t.size(); i++)
-		SG_SPRINT(" %d ",ind_t[i]);
-	SG_SPRINT("]\n");
+		SG_SPRINT(" %d ",ind_t[i])
+	SG_SPRINT("]\n")
 	*/
 
 	int32_t supernode_offset = include_supernode ? 3 : 0;
@@ -196,7 +196,7 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool incl
 	print_tree(nodes,0);
 	int32_t n_leaves = count_sub_nodes_recursive(nodes,0);
 	m_precomputed_ind_t = SGVector<float64_t>((n_features-n_leaves)*3);
-	SG_PRINT("n_leaves = %d\n",n_leaves);
+	SG_PRINT("n_leaves = %d\n",n_leaves)
 	vector<block_tree_node_t> blocks;
 	fill_ind_recursive(nodes, &blocks, 1);
 	m_precomputed_ind_t[0] = -1;
@@ -250,7 +250,7 @@ void CIndexBlockTree::set_root_block(CIndexBlock* root_block)
 
 SGVector<index_t> CIndexBlockTree::get_SLEP_ind()
 {
-	SG_SNOTIMPLEMENTED;
+	SG_SNOTIMPLEMENTED
 	return SGVector<index_t>();
 }
 
@@ -271,7 +271,7 @@ SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t() const
 
 	else
 	{
-		ASSERT(m_root_block);
+		ASSERT(m_root_block)
 		CList* blocks = new CList(true);
 
 		vector<block_tree_node_t> tree_nodes = vector<block_tree_node_t>();

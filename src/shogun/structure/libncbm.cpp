@@ -121,7 +121,7 @@ inline static line_search_res zoom
 				ls_res.reg = cur_reg;
 				ls_res.gradient = cur_grad;
 				ls_res.solution = cur_solution;
-//				SG_SPRINT("in zoom (wolfe2): %f\n", cur_fval);
+//				SG_SPRINT("in zoom (wolfe2): %f\n", cur_fval)
 				return ls_res;
 			}
 
@@ -148,7 +148,7 @@ inline static line_search_res zoom
 			ls_res.reg = cur_reg;
 			ls_res.gradient = cur_grad;
 			ls_res.solution = cur_solution;
-//			SG_SPRINT("in zoom iter: %d %f\n", iter, cur_fval);
+//			SG_SPRINT("in zoom iter: %d %f\n", iter, cur_fval)
 			return ls_res;
 		}
 		iter++;
@@ -434,7 +434,7 @@ bmrm_return_value_T svm_ncbm_solver(
 
 	float64_t astar = 0.01;
 
-	SG_SPRINT("clean icps: %d\n", cleanICP);
+	SG_SPRINT("clean icps: %d\n", cleanICP)
 	while (ncbm.exitflag==0)
 	{
 		tstart=ttime.cur_time_diff(false);
@@ -510,7 +510,7 @@ bmrm_return_value_T svm_ncbm_solver(
 			float64_t PO = 0.5*_lambda*w_norm + scores.max(scores.vector, scores.vlen);
 			float64_t QP_gap = PO - ncbm.Fd;
 
-			SG_SPRINT("%4d: primal:%f dual:%f QP_gap:%f\n", ncbm.nIter, PO, ncbm.Fd, QP_gap);
+			SG_SPRINT("%4d: primal:%f dual:%f QP_gap:%f\n", ncbm.nIter, PO, ncbm.Fd, QP_gap)
 		}
 
 		/* Stopping conditions */
@@ -622,7 +622,7 @@ bmrm_return_value_T svm_ncbm_solver(
 				ls.fval = cur_risk+0.5*_lambda*cur_w.dot(cur_w.vector, cur_w.vector, cur_w.vlen);
 				ls.solution = cur_w;
 				ls.gradient = cur_subgrad;
-				SG_SPRINT("%lf\n", ls.fval);
+				SG_SPRINT("%lf\n", ls.fval)
 
 				wbest_candidates.push_back(ls);
 			}
@@ -630,16 +630,16 @@ bmrm_return_value_T svm_ncbm_solver(
 			astar = ls_res[1].a * norm_dir;
 
 			tstop=ttime.cur_time_diff(false);
-			SG_SPRINT("\t\tline search time: %.5lf\n", tstop-tstart);
+			SG_SPRINT("\t\tline search time: %.5lf\n", tstop-tstart)
 		}
 
 		/* search for the best w among the new candidates */
 		if (verbose)
-			SG_SPRINT("\t searching for the best Fp:\n");
+			SG_SPRINT("\t searching for the best Fp:\n")
 		for (size_t i = 0; i < wbest_candidates.size(); i++)
 		{
 			if (verbose)
-				SG_SPRINT("\t\t %d fcurrent: %.16lf\n", i, wbest_candidates[i].fval);
+				SG_SPRINT("\t\t %d fcurrent: %.16lf\n", i, wbest_candidates[i].fval)
 
 			if (wbest_candidates[i].fval < best_Fp)
 			{
@@ -677,11 +677,11 @@ bmrm_return_value_T svm_ncbm_solver(
 								wbest_candidates[i].gradient.vector, w_dim);
 
 					if (verbose)
-						SG_SPRINT("CONFLICT Rbest=%.6lg score=%g L=%.6lg U=%.6lg\n", best_risk, score, L, U);
+						SG_SPRINT("CONFLICT Rbest=%.6lg score=%g L=%.6lg U=%.6lg\n", best_risk, score, L, U)
 					if (L <= U)
 					{
 						if (verbose)
-							SG_SPRINT("%.6lf < %.6lf => changing bias[%d]=%g\n", L, U, cp_idx, L);
+							SG_SPRINT("%.6lf < %.6lf => changing bias[%d]=%g\n", L, U, cp_idx, L)
 						bias[cp_idx]= -L;
 					}
 					else
@@ -693,7 +693,7 @@ bmrm_return_value_T svm_ncbm_solver(
 						for (size_t j = wbest_candidates.size()-1; i < j; --j)
 						{
 							cp_ptr = cp_ptr->prev;
-							SG_SPRINT("tail - %d\n (%d)", j, i);
+							SG_SPRINT("tail - %d\n (%d)", j, i)
 						}
 
 						float64_t* cp = get_cutting_plane(cp_ptr);
@@ -724,7 +724,7 @@ bmrm_return_value_T svm_ncbm_solver(
 									wbest_candidates[i].gradient.vector, w_dim);
 
 						if (verbose)
-							SG_SPRINT("solved by changing nCP=%d bias:%g (%g)\n", cp_idx, bias[cp_idx], L);
+							SG_SPRINT("solved by changing nCP=%d bias:%g (%g)\n", cp_idx, bias[cp_idx], L)
 					}
 				}
 			}

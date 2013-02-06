@@ -62,8 +62,8 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	if (data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(features);
-	ASSERT(m_labels && m_labels->get_label_type()==LT_REGRESSION);
+	ASSERT(features)
+	ASSERT(m_labels && m_labels->get_label_type()==LT_REGRESSION)
 
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
@@ -119,7 +119,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 			solve_l2r_l1l2_svr(&prob);
 			break;
 		default:
-			SG_ERROR("Error: unknown regression type\n");
+			SG_ERROR("Error: unknown regression type\n")
 			break;
 	}
 
@@ -302,7 +302,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
 			Gnorm1_init = Gnorm1_new;
 		iter++;
 
-		SG_SABS_PROGRESS(Gnorm1_new, -CMath::log10(Gnorm1_new), -CMath::log10(eps*Gnorm1_init), -CMath::log10(Gnorm1_init), 6);
+		SG_SABS_PROGRESS(Gnorm1_new, -CMath::log10(Gnorm1_new), -CMath::log10(eps*Gnorm1_init), -CMath::log10(Gnorm1_init), 6)
 
 		if(Gnorm1_new <= eps*Gnorm1_init)
 		{
@@ -319,10 +319,10 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
 		Gmax_old = Gmax_new;
 	}
 
-	SG_DONE();
-	SG_INFO("\noptimization finished, #iter = %d\n", iter);
+	SG_DONE()
+	SG_INFO("\noptimization finished, #iter = %d\n", iter)
 	if(iter >= max_iter)
-		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 11 may be faster\n\n");
+		SG_INFO("\nWARNING: reaching max number of iterations\nUsing -s 11 may be faster\n\n")
 
 	// calculate objective value
 	double v = 0;
@@ -337,8 +337,8 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
 			nSV++;
 	}
 
-	SG_INFO("Objective value = %lf\n", v);
-	SG_INFO("nSV = %d\n",nSV);
+	SG_INFO("Objective value = %lf\n", v)
+	SG_INFO("nSV = %d\n",nSV)
 
 	delete [] beta;
 	delete [] QD;

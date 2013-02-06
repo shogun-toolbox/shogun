@@ -273,7 +273,7 @@ private:
 		else
 		{
 			new_node=array->get_element(free_index);
-			ASSERT(is_free(new_node));
+			ASSERT(is_free(new_node))
 
 			new_index=free_index;
 			free_index=new_node->index;

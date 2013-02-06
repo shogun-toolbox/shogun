@@ -22,7 +22,7 @@ CCauchyKernel::CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist)
 : CKernel(cache), m_distance(dist), m_sigma(sigma)
 {
 	init();
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 }
 
@@ -30,7 +30,7 @@ CCauchyKernel::CCauchyKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDista
 : CKernel(10), m_distance(dist), m_sigma(sigma)
 {
 	init();
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 	init(l, r);
 }
@@ -43,7 +43,7 @@ CCauchyKernel::~CCauchyKernel()
 
 bool CCauchyKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	CKernel::init(l,r);
 	m_distance->init(l,r);
 	return init_normalizer();

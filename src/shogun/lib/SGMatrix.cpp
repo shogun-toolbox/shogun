@@ -246,17 +246,17 @@ void SGMatrix<bool>::display_matrix(
 	const bool* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i] ? 1 : 0,
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -264,17 +264,17 @@ void SGMatrix<char>::display_matrix(
 	const char* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%c%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -282,17 +282,17 @@ void SGMatrix<int8_t>::display_matrix(
 	const int8_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -300,17 +300,17 @@ void SGMatrix<uint8_t>::display_matrix(
 	const uint8_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -318,17 +318,17 @@ void SGMatrix<int16_t>::display_matrix(
 	const int16_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -336,17 +336,17 @@ void SGMatrix<uint16_t>::display_matrix(
 	const uint16_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 
@@ -355,17 +355,17 @@ void SGMatrix<int32_t>::display_matrix(
 	const int32_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -373,34 +373,34 @@ void SGMatrix<uint32_t>::display_matrix(
 	const uint32_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 template <>
 void SGMatrix<int64_t>::display_matrix(
 	const int64_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -408,17 +408,17 @@ void SGMatrix<uint64_t>::display_matrix(
 	const uint64_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%d%s", prefix, matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -426,17 +426,17 @@ void SGMatrix<float32_t>::display_matrix(
 	const float32_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%.18g%s", prefix, (float) matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -444,17 +444,17 @@ void SGMatrix<float64_t>::display_matrix(
 	const float64_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%.18g%s", prefix, (double) matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
@@ -462,23 +462,23 @@ void SGMatrix<floatmax_t>::display_matrix(
 	const floatmax_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s%s=[\n", prefix, name);
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
 	for (int32_t i=0; i<rows; i++)
 	{
-		SG_SPRINT("%s[", prefix);
+		SG_SPRINT("%s[", prefix)
 		for (int32_t j=0; j<cols; j++)
 			SG_SPRINT("%s\t%.18g%s", prefix, (double) matrix[j*rows+i],
 				j==cols-1? "" : ",");
-		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 SGMatrix<char> SGMatrix<char>::create_identity_matrix(index_t size, char scale)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_SNOTIMPLEMENTED
 	return SGMatrix<char>();
 }
 
@@ -685,7 +685,7 @@ float64_t* SGMatrix<T>::pinv(
 	double* vt=SG_MALLOC(double, n*n);
 
 	wrap_dgesvd(jobu, jobvt, m, n, matrix, lda, s, u, ldu, vt, ldvt, &info);
-	ASSERT(info==0);
+	ASSERT(info==0)
 
 	for (int32_t i=0; i<n; i++)
 	{
@@ -706,7 +706,7 @@ float64_t* SGMatrix<T>::pinv(
 template <class T>
 void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 {
-	ASSERT(matrix.num_cols==matrix.num_rows);
+	ASSERT(matrix.num_cols==matrix.num_rows)
 	int32_t* ipiv = SG_MALLOC(int32_t, matrix.num_cols);
 	clapack_dgetrf(CblasColMajor,matrix.num_cols,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
 	clapack_dgetri(CblasColMajor,matrix.num_cols,matrix.matrix,matrix.num_cols,ipiv);
@@ -733,7 +733,7 @@ SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix
 template <class T>
 double* SGMatrix<T>::compute_eigenvectors(double* matrix, int n, int m)
 {
-	ASSERT(n == m);
+	ASSERT(n == m)
 
 	char V='V';
 	char U='U';
@@ -747,7 +747,7 @@ double* SGMatrix<T>::compute_eigenvectors(double* matrix, int n, int m)
 			eigenvalues, &info);
 
 	if (info!=0)
-		SG_SERROR("DSYEV failed with code %d\n", info);
+		SG_SERROR("DSYEV failed with code %d\n", info)
 
 	return eigenvalues;
 }
@@ -760,7 +760,7 @@ void SGMatrix<T>::compute_few_eigenvectors(double* matrix_, double*& eigenvalues
 	eigenvectors = SG_MALLOC(double, (iu-il+1)*n);
 	int status = 0;
 	wrap_dsyevr('V','U',n,matrix_,n,il,iu,eigenvalues,eigenvectors,&status);
-	ASSERT(status==0);
+	ASSERT(status==0)
 }
 
 #endif //HAVE_LAPACK
@@ -866,7 +866,7 @@ void SGMatrix<T>::free_data()
 template<class T>
 void SGMatrix<T>::load(CFile* loader)
 {
-	ASSERT(loader);
+	ASSERT(loader)
 	unref();
 
 	SG_SET_LOCALE_C;
@@ -877,7 +877,7 @@ void SGMatrix<T>::load(CFile* loader)
 template<class T>
 void SGMatrix<T>::save(CFile* writer)
 {
-	ASSERT(writer);
+	ASSERT(writer)
 	SG_SET_LOCALE_C;
 	writer->set_matrix(matrix, num_rows, num_cols);
 	SG_RESET_LOCALE;

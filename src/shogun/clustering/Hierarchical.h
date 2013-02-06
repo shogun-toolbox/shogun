@@ -77,7 +77,7 @@ class CHierarchical : public CDistanceMachine
 		 */
 		inline void set_merges(int32_t m)
 		{
-			ASSERT(m>0);
+			ASSERT(m>0)
 			merges=m;
 		}
 

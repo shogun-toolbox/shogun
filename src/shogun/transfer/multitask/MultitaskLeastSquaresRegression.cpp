@@ -59,7 +59,7 @@ void CMultitaskLeastSquaresRegression::initialize_parameters()
 
 bool CMultitaskLeastSquaresRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
@@ -96,22 +96,22 @@ float64_t CMultitaskLeastSquaresRegression::get_q() const
 
 void CMultitaskLeastSquaresRegression::set_max_iter(int32_t max_iter)
 {
-	ASSERT(max_iter>=0);
+	ASSERT(max_iter>=0)
 	m_max_iter = max_iter;
 }
 void CMultitaskLeastSquaresRegression::set_regularization(int32_t regularization)
 {
-	ASSERT(regularization==0 || regularization==1);
+	ASSERT(regularization==0 || regularization==1)
 	m_regularization = regularization;
 }
 void CMultitaskLeastSquaresRegression::set_termination(int32_t termination)
 {
-	ASSERT(termination>=0 && termination<=4);
+	ASSERT(termination>=0 && termination<=4)
 	m_termination = termination;
 }
 void CMultitaskLeastSquaresRegression::set_tolerance(float64_t tolerance)
 {
-	ASSERT(tolerance>0.0);
+	ASSERT(tolerance>0.0)
 	m_tolerance = tolerance;
 }
 void CMultitaskLeastSquaresRegression::set_z(float64_t z)
@@ -128,8 +128,8 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 	if (data && (CDotFeatures*)data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(features);
-	ASSERT(m_labels);
+	ASSERT(features)
+	ASSERT(m_labels)
 
 	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
 	
@@ -169,7 +169,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 		}
 		break;
 		default: 
-			SG_ERROR("Not supported task relation type\n");
+			SG_ERROR("Not supported task relation type\n")
 	}
 
 	SG_FREE(options.tasks_indices);

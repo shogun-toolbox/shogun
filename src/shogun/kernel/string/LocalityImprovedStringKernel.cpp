@@ -32,7 +32,7 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	inner_degree=id;
 	outer_degree=od;
 
-	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od);
+	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od)
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
@@ -46,7 +46,7 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	inner_degree=id;
 	outer_degree=od;
 
-	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od);
+	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od)
 
 	init(l, r);
 }
@@ -70,7 +70,7 @@ float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
-	ASSERT(alen==blen && alen>0);
+	ASSERT(alen==blen && alen>0)
 
 	int32_t i,t;
 	float64_t* match=SG_MALLOC(float64_t, alen);

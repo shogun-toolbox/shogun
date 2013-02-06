@@ -29,7 +29,7 @@ CBinaryLabels* CBinaryLabels::obtain_from_generic(CLabels* base_labels)
 	if ( base_labels->get_label_type() == LT_BINARY )
 		return (CBinaryLabels*) base_labels;
 	else
-		SG_SERROR("base_labels must be of dynamic type CBinaryLabels");
+		SG_SERROR("base_labels must be of dynamic type CBinaryLabels")
 
 	return NULL;
 }
@@ -76,7 +76,7 @@ ELabelType CBinaryLabels::get_label_type()
 
 void CBinaryLabels::scores_to_probabilities()
 {
-	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n");
+	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n")
 
 	REQUIRE(m_current_values.vector, "%s::scores_to_probabilities() requires "
 			"values vector!\n", get_name());
@@ -84,7 +84,7 @@ void CBinaryLabels::scores_to_probabilities()
 	/* count prior0 and prior1 if needed */
 	int32_t prior0=0;
 	int32_t prior1=0;
-	SG_DEBUG("counting number of positive and negative labels\n");
+	SG_DEBUG("counting number of positive and negative labels\n")
 	{
 		for (index_t i=0; i<m_current_values.vlen; ++i)
 		{
@@ -94,7 +94,7 @@ void CBinaryLabels::scores_to_probabilities()
 				prior0++;
 		}
 	}
-	SG_DEBUG("%d pos; %d neg\n", prior1, prior0);
+	SG_DEBUG("%d pos; %d neg\n", prior1, prior0)
 
 	/* parameter setting */
 	/* maximum number of iterations */
@@ -141,7 +141,7 @@ void CBinaryLabels::scores_to_probabilities()
 	float64_t g2;
 	for (it=0; it<maxiter; ++it)
 	{
-		SG_DEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval);
+		SG_DEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval)
 
 		/* Update Gradient and Hessian (use H' = H + sigma I) */
 		float64_t h11=sigma; //Numerically ensures strict PD
@@ -230,7 +230,7 @@ void CBinaryLabels::scores_to_probabilities()
 				" g1=%f, g2=%f\n", get_name(), g1, g2);
 	}
 
-	SG_DEBUG("fitted sigmoid: a=%f, b=%f\n", a, b);
+	SG_DEBUG("fitted sigmoid: a=%f, b=%f\n", a, b)
 
 	/* now the sigmoid is fitted, convert all values to probabilities */
 	for (index_t i=0; i<m_current_values.vlen; ++i)
@@ -240,5 +240,5 @@ void CBinaryLabels::scores_to_probabilities()
 				1.0/(1+CMath::exp(fApB));
 	}
 
-	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n");
+	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")
 }

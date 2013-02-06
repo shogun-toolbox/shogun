@@ -132,7 +132,7 @@ int32_t CSubGradientLPM::find_active(
 	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
 
 #ifdef DEBUG_SUBGRADIENTSVM
-	//SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
+	//SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon)
 #endif
 
 	if (autoselected_epsilon>work_epsilon)
@@ -146,11 +146,11 @@ int32_t CSubGradientLPM::find_active(
 		while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
 			i++;
 
-		//SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
+		//SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i)
 
 		if (i>=qpsize_max && autoselected_epsilon>epsilon) //qpsize limit
 		{
-			SG_PRINT("qpsize limit (%d) reached\n", qpsize_max);
+			SG_PRINT("qpsize limit (%d) reached\n", qpsize_max)
 			int32_t num_in_qp=i;
 			while (--i>=0 && num_in_qp>=qpsize_max)
 			{
@@ -161,7 +161,7 @@ int32_t CSubGradientLPM::find_active(
 				}
 			}
 
-			//SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
+			//SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon)
 		}
 	}
 
@@ -288,14 +288,14 @@ float64_t CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 		}
 	}
 
-	//SG_PRINT("sgrad:%f\n", sgrad);
+	//SG_PRINT("sgrad:%f\n", sgrad)
 	//CMath::display_vector(A, num_feat+num_vec, "A");
 	//CMath::display_vector(B, num_feat+num_vec, "B");
 	//CMath::display_vector(C, num_feat+num_vec, "C");
 	//CMath::display_vector(D, num_feat+num_vec, "D");
 	//CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point");
 	//CMath::display_vector(hinge_idx, num_feat+num_vec, "hinge_idx");
-	//ASSERT(0);
+	//ASSERT(0)
 
 	CMath::qsort_index(hinge_point, hinge_idx, num_hinge);
 	//CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point_sorted");
@@ -319,7 +319,7 @@ float64_t CSubGradientLPM::line_search(int32_t num_feat, int32_t num_vec)
 	SG_FREE(B);
 	SG_FREE(A);
 
-	//SG_PRINT("alpha=%f\n", alpha);
+	//SG_PRINT("alpha=%f\n", alpha)
 	return alpha;
 }
 
@@ -331,7 +331,7 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 
 	if (zero_idx+num_bound > 0)
 	{
-		//SG_PRINT("num_var:%d (zero:%d, bound:%d) num_feat:%d\n", zero_idx+num_bound, zero_idx,num_bound, num_feat);
+		//SG_PRINT("num_var:%d (zero:%d, bound:%d) num_feat:%d\n", zero_idx+num_bound, zero_idx,num_bound, num_feat)
 		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 		CMath::add(grad_w, 1.0, grad_w, -1.0, sum_CXy_active, num_feat);
 		grad_w[num_feat]= -sum_Cy_active;
@@ -339,7 +339,7 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 		grad_b = -sum_Cy_active;
 
 		//CMath::display_vector(sum_CXy_active, num_feat, "sum_CXy_active");
-		//SG_PRINT("sum_Cy_active=%10.10f\n", sum_Cy_active);
+		//SG_PRINT("sum_Cy_active=%10.10f\n", sum_Cy_active)
 
 		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 
@@ -372,8 +372,8 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 		//	beta[i]=beta[i+num_feat+1];
 
 		//CMath::display_vector(beta, zero_idx+num_bound, "beta");
-		//SG_PRINT("beta[0]=%10.16f\n", beta[0]);
-		//ASSERT(0);
+		//SG_PRINT("beta[0]=%10.16f\n", beta[0])
+		//ASSERT(0)
 
 		//for (int32_t i=0; i<zero_idx+num_bound; i++)
 		//{
@@ -389,7 +389,7 @@ float64_t CSubGradientLPM::compute_min_subgradient(
 
 		//CMath::display_vector(w_zero, zero_idx, "w_zero");
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
-		//SG_PRINT("grad_b=%f\n", grad_b);
+		//SG_PRINT("grad_b=%f\n", grad_b)
 		//
 	}
 	else
@@ -542,22 +542,22 @@ void CSubGradientLPM::cleanup()
 bool CSubGradientLPM::train_machine(CFeatures* data)
 {
 	lpmtim=0;
-	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
-	ASSERT(m_labels);
+	SG_INFO("C=%f epsilon=%f\n", C1, epsilon)
+	ASSERT(m_labels)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
-	ASSERT(features);
+	ASSERT(features)
 
 	int32_t num_iterations=0;
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
+	ASSERT(num_vec==num_train_labels)
 
 	init(num_vec, num_feat);
 
@@ -584,24 +584,24 @@ bool CSubGradientLPM::train_machine(CFeatures* data)
 		update_active(num_feat, num_vec);
 
 #ifdef DEBUG_SUBGRADIENTLPM
-		SG_PRINT("==================================================\niteration: %d ", num_iterations);
+		SG_PRINT("==================================================\niteration: %d ", num_iterations)
 		obj=compute_objective(num_feat, num_vec);
 		SG_PRINT("objective:%.10f alpha: %.10f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f time:%f\n",
 				obj, alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon, loop_time);
 #else
-	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);
+	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6)
 #endif
 		//CMath::display_vector(w, w_dim, "w");
-		//SG_PRINT("bias: %f\n", bias);
+		//SG_PRINT("bias: %f\n", bias)
 		//CMath::display_vector(proj, num_vec, "proj");
 		//CMath::display_vector(idx_active, num_active, "idx_active");
-		//SG_PRINT("num_active: %d\n", num_active);
+		//SG_PRINT("num_active: %d\n", num_active)
 		//CMath::display_vector(idx_bound, num_bound, "idx_bound");
-		//SG_PRINT("num_bound: %d\n", num_bound);
+		//SG_PRINT("num_bound: %d\n", num_bound)
 		//CMath::display_vector(sum_CXy_active, num_feat, "sum_CXy_active");
-		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active);
+		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active)
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
-		//SG_PRINT("grad_b:%f\n", grad_b);
+		//SG_PRINT("grad_b:%f\n", grad_b)
 
 		dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
 
@@ -627,7 +627,7 @@ bool CSubGradientLPM::train_machine(CFeatures* data)
 		{
 			if (last_it_noimprovement==num_iterations-1)
 			{
-				SG_PRINT("no improvement...\n");
+				SG_PRINT("no improvement...\n")
 				num_it_noimprovement++;
 			}
 			else
@@ -649,7 +649,7 @@ bool CSubGradientLPM::train_machine(CFeatures* data)
 			break;
 	}
 
-	SG_INFO("converged after %d iterations\n", num_iterations);
+	SG_INFO("converged after %d iterations\n", num_iterations)
 
 	obj=compute_objective(num_feat, num_vec);
 	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
@@ -657,9 +657,9 @@ bool CSubGradientLPM::train_machine(CFeatures* data)
 
 #ifdef DEBUG_SUBGRADIENTLPM
 	CMath::display_vector(w, w_dim, "w");
-	SG_PRINT("bias: %f\n", bias);
+	SG_PRINT("bias: %f\n", bias)
 #endif
-	SG_PRINT("solver time:%f s\n", lpmtim);
+	SG_PRINT("solver time:%f s\n", lpmtim)
 
 	cleanup();
 

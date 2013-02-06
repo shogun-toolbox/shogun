@@ -84,7 +84,7 @@ void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 	int32_t f = io_temp.open_file(reg_name,'w');
 
 	if (f < 0)
-		SG_SERROR("Can't open: %s for writing! Exiting.\n", reg_name);
+		SG_SERROR("Can't open: %s for writing! Exiting.\n", reg_name)
 
 	const char* vw_version = env->vw_version;
 	vw_size_t v_length = env->v_length;
@@ -171,7 +171,7 @@ void CVwRegressor::load_regressor(char* file)
 	int32_t fd = source.open_file(file, 'r');
 
 	if (fd < 0)
-		SG_SERROR("Unable to open file for loading regressor!\n");
+		SG_SERROR("Unable to open file for loading regressor!\n")
 
 	// Read version info
 	vw_size_t v_length;
@@ -181,7 +181,7 @@ void CVwRegressor::load_regressor(char* file)
 	if (strcmp(t,env->vw_version) != 0)
 	{
 		SG_FREE(t);
-		SG_SERROR("Regressor source has an incompatible VW version!\n");
+		SG_SERROR("Regressor source has an incompatible VW version!\n")
 	}
 	SG_FREE(t);
 
@@ -194,7 +194,7 @@ void CVwRegressor::load_regressor(char* file)
 	source.read_file((char *)&local_num_bits, sizeof(local_num_bits));
 
 	if ((vw_size_t) env->num_bits != local_num_bits)
-		SG_SERROR("Wrong number of bits in regressor source!\n");
+		SG_SERROR("Wrong number of bits in regressor source!\n")
 
 	env->num_bits = local_num_bits;
 

@@ -127,8 +127,8 @@ void MKLMulticlassGLPK::addconstraint(const ::std::vector<float64_t> & normw2,
 {
 #if defined(USE_GLPK)
 
-	ASSERT ((int)normw2.size()==numkernels);
-	ASSERT (sumofpositivealphas>=0);
+	ASSERT ((int)normw2.size()==numkernels)
+	ASSERT (sumofpositivealphas>=0)
 
    glp_add_rows((glp_prob*)linearproblem,1);
 

@@ -583,7 +583,7 @@ bmrm_return_value_T svm_ppbm_solver(
 		if (ppbmrm.nCP>=BufSize)
 		{
 			ppbmrm.exitflag=-2;
-			SG_SERROR("Buffer exceeded.\n");
+			SG_SERROR("Buffer exceeded.\n")
 		}
 
 		/* keep w_t + Fp */

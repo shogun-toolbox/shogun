@@ -69,7 +69,7 @@ class CLPBoost : public CLinearMachine
 		{
 			if (feat->get_feature_class() != C_SPARSE ||
 				feat->get_feature_type() != F_DREAL)
-				SG_ERROR("LPBoost requires SPARSE REAL valued features\n");
+				SG_ERROR("LPBoost requires SPARSE REAL valued features\n")
 
 			CLinearMachine::set_features(feat);
 		}

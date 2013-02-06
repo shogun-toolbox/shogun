@@ -69,9 +69,9 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	if (data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(m_features);
-	ASSERT(m_labels);
-	ASSERT(m_multiclass_strategy);
+	ASSERT(m_features)
+	ASSERT(m_labels)
+	ASSERT(m_multiclass_strategy)
 
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
@@ -111,21 +111,21 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	                 &CMulticlassOCAS::msvm_print,
 	                 &user_data);
 
-	SG_DEBUG("Number of iterations [nIter] = %d \n",value.nIter);
-	SG_DEBUG("Number of cutting planes [nCutPlanes] = %d \n",value.nCutPlanes);
-	SG_DEBUG("Number of non-zero alphas [nNZAlpha] = %d \n",value.nNZAlpha);
-	SG_DEBUG("Number of training errors [trn_err] = %d \n",value.trn_err);
-	SG_DEBUG("Primal objective value [Q_P] = %f \n",value.Q_P);
-	SG_DEBUG("Dual objective value [Q_D] = %f \n",value.Q_D);
-	SG_DEBUG("Output time [output_time] = %f \n",value.output_time);
-	SG_DEBUG("Sort time [sort_time] = %f \n",value.sort_time);
-	SG_DEBUG("Add time [add_time] = %f \n",value.add_time);
-	SG_DEBUG("W time [w_time] = %f \n",value.w_time);
-	SG_DEBUG("QP solver time [qp_solver_time] = %f \n",value.qp_solver_time);
-	SG_DEBUG("OCAS time [ocas_time] = %f \n",value.ocas_time);
-	SG_DEBUG("Print time [print_time] = %f \n",value.print_time);
-	SG_DEBUG("QP exit flag [qp_exitflag] = %d \n",value.qp_exitflag);
-	SG_DEBUG("Exit flag [exitflag] = %d \n",value.exitflag);
+	SG_DEBUG("Number of iterations [nIter] = %d \n",value.nIter)
+	SG_DEBUG("Number of cutting planes [nCutPlanes] = %d \n",value.nCutPlanes)
+	SG_DEBUG("Number of non-zero alphas [nNZAlpha] = %d \n",value.nNZAlpha)
+	SG_DEBUG("Number of training errors [trn_err] = %d \n",value.trn_err)
+	SG_DEBUG("Primal objective value [Q_P] = %f \n",value.Q_P)
+	SG_DEBUG("Dual objective value [Q_D] = %f \n",value.Q_D)
+	SG_DEBUG("Output time [output_time] = %f \n",value.output_time)
+	SG_DEBUG("Sort time [sort_time] = %f \n",value.sort_time)
+	SG_DEBUG("Add time [add_time] = %f \n",value.add_time)
+	SG_DEBUG("W time [w_time] = %f \n",value.w_time)
+	SG_DEBUG("QP solver time [qp_solver_time] = %f \n",value.qp_solver_time)
+	SG_DEBUG("OCAS time [ocas_time] = %f \n",value.ocas_time)
+	SG_DEBUG("Print time [print_time] = %f \n",value.print_time)
+	SG_DEBUG("QP exit flag [qp_exitflag] = %d \n",value.qp_exitflag)
+	SG_DEBUG("Exit flag [exitflag] = %d \n",value.exitflag)
 
 	m_machines->reset_array();
 	for (int32_t i=0; i<num_classes; i++)

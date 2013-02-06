@@ -38,7 +38,7 @@ CLaplacianEigenmaps::~CLaplacianEigenmaps()
 
 void CLaplacianEigenmaps::set_k(int32_t k)
 {
-	ASSERT(k>0);
+	ASSERT(k>0)
 	m_k = k;
 }
 
@@ -69,11 +69,11 @@ CFeatures* CLaplacianEigenmaps::apply(CFeatures* features)
 
 	// get dimensionality and number of vectors of data
 	int32_t N = features->get_num_vectors();
-	ASSERT(m_k<N);
-	ASSERT(m_target_dim<N);
+	ASSERT(m_k<N)
+	ASSERT(m_target_dim<N)
 
 	// compute distance matrix
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	m_distance->init(features,features);
 	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();

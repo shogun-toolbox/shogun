@@ -21,7 +21,7 @@ CMultiquadricKernel::CMultiquadricKernel(): CKernel(0), m_distance(NULL), m_coef
 CMultiquadricKernel::CMultiquadricKernel(int32_t cache, float64_t coef, CDistance* dist)
 : CKernel(cache), m_distance(dist), m_coef(coef)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 	init();
 }
@@ -29,7 +29,7 @@ CMultiquadricKernel::CMultiquadricKernel(int32_t cache, float64_t coef, CDistanc
 CMultiquadricKernel::CMultiquadricKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist)
 : CKernel(10), m_distance(dist), m_coef(coef)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 	init(l, r);
 	init();
@@ -43,7 +43,7 @@ CMultiquadricKernel::~CMultiquadricKernel()
 
 bool CMultiquadricKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	CKernel::init(l,r);
 	m_distance->init(l,r);
 	return init_normalizer();

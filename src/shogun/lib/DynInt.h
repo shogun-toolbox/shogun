@@ -544,7 +544,7 @@ public:
 	void print_hex() const
 	{
 		for (int i=0; i<sz; i++)
-			SG_SPRINT("%.16llx", (uint64_t) integer[i]);
+			SG_SPRINT("%.16llx", (uint64_t) integer[i])
 	}
 
 	/** print the current long integer in bits (without carriage return */

@@ -49,7 +49,7 @@ void CMeanShiftDataGenerator<T>::init()
 template<class T>
 bool CMeanShiftDataGenerator<T>::get_next_example()
 {
-	SG_SDEBUG("entering CMeanShiftDataGenerator::get_next_example()\n");
+	SG_SDEBUG("entering CMeanShiftDataGenerator::get_next_example()\n")
 
 	/* allocate space */
 	SGVector<T> result=SGVector<T>(m_dimension);
@@ -64,7 +64,7 @@ bool CMeanShiftDataGenerator<T>::get_next_example()
 	/* save example back to superclass */
 	CMeanShiftDataGenerator<T>::current_vector=result;
 
-	SG_SDEBUG("leaving CMeanShiftDataGenerator::get_next_example()\n");
+	SG_SDEBUG("leaving CMeanShiftDataGenerator::get_next_example()\n")
 	return true;
 }
 

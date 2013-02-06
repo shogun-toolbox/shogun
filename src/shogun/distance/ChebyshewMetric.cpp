@@ -50,7 +50,7 @@ float64_t CChebyshewMetric::compute(int32_t idx_a, int32_t idx_b)
 	float64_t* bvec=
 		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t result=DBL_MIN;
 

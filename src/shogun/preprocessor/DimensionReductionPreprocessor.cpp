@@ -50,7 +50,7 @@ SGMatrix<float64_t> CDimensionReductionPreprocessor::apply_to_feature_matrix(CFe
 	}
 	else
 	{
-		SG_WARNING("Converter to process was not set.\n");
+		SG_WARNING("Converter to process was not set.\n")
 		return ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 	}
 }
@@ -69,7 +69,7 @@ EPreprocessorType CDimensionReductionPreprocessor::get_type() const { return P_D
 
 void CDimensionReductionPreprocessor::set_target_dim(int32_t dim)
 {
-	ASSERT(dim>0);
+	ASSERT(dim>0)
 	m_target_dim = dim;
 }
 

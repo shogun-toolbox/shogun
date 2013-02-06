@@ -73,7 +73,7 @@ public:
 	virtual void set_labels(CLabels* lab)
 	{
 		CMulticlassLabels *mlab = dynamic_cast<CMulticlassLabels *>(lab);
-		REQUIRE(lab, "requires MulticlassLabes\n");
+		REQUIRE(lab, "requires MulticlassLabes\n")
 
 		CMachine::set_labels(mlab);
 		m_num_classes = mlab->get_num_classes();

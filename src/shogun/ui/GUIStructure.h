@@ -51,7 +51,7 @@ class CGUIStructure : public CSGObject
 		inline CDynProg* get_dyn_prog()
 		{
 			if (!m_dp)
-				SG_ERROR("no DynProg object found, use set_model first\n");
+				SG_ERROR("no DynProg object found, use set_model first\n")
 			return m_dp;
 		}
 
@@ -76,7 +76,7 @@ class CGUIStructure : public CSGObject
 		 */
 		inline CSparseFeatures<float64_t>* get_feature_matrix_sparse(int32_t index)
 		{
-			ASSERT(index>=0 && index<=1) ;
+			ASSERT(index>=0 && index<=1) 
 			if (index==0)
 				return m_feature_matrix_sparse1;
 			if (index==1)

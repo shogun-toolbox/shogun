@@ -782,7 +782,7 @@ void CPythonInterface::run_python_exit()
 
 bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 {
-	from_if->SG_DEBUG("Entering Python\n");
+	SG_OBJ_DEBUG(from_if, "Entering Python\n")
 	PyObject* globals = PyDict_New();
 	PyObject* builtins = PyEval_GetBuiltins();
 	PyDict_SetItemString(globals,"__builtins__", builtins);
@@ -792,12 +792,12 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 	{
 		int len=0;
 		char* var_name = from_if->get_string(len);
-		from_if->SG_DEBUG("var_name = '%s'\n", var_name);
+		SG_OBJ_DEBUG(from_if, "var_name = '%s'\n", var_name);
 		if (strmatch(var_name, "pythoncode"))
 		{
 			len=0;
 			python_code=from_if->get_string(len);
-			from_if->SG_DEBUG("python_code = '%s'\n", python_code);
+			SG_OBJ_DEBUG(from_if, "python_code = '%s'\n", python_code);
 			break;
 		}
 		else
@@ -818,7 +818,7 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 	if (python_code_obj == NULL)
 	{
 		PyErr_Print();
-		from_if->SG_ERROR("Compiling python code failed.");
+		SG_OBJ_ERROR(from_if, "Compiling python code failed.");
 	}
 
 	SG_FREE(python_code);
@@ -834,10 +834,10 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 	if (res == NULL)
 	{
 		PyErr_Print();
-		from_if->SG_ERROR("Running python code failed.\n");
+		SG_OBJ_ERROR(from_if, "Running python code failed.\n");
 	}
 	else
-		from_if->SG_DEBUG("Successfully executed python code.\n");
+		SG_OBJ_DEBUG(from_if, "Successfully executed python code.\n");
 
 	Py_DECREF(res);
 
@@ -847,7 +847,7 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 	if (results)
 	{
 		if (!PyTuple_Check(results))
-			from_if->SG_ERROR("results should be a tuple, e.g. results=(1,2,3) or results=tuple([42])");
+			SG_OBJ_ERROR(from_if, "results should be a tuple, e.g. results=(1,2,3) or results=tuple([42])")
 		else
 			sz=PyTuple_Size(results);
 	}
@@ -867,13 +867,13 @@ bool CPythonInterface::run_python_helper(CSGInterface* from_if)
 	{
 		if (sz>-1 && sz!=from_if->get_nlhs())
 		{
-			from_if->SG_ERROR("Number of return values (%d) does not match number of expected"
-					" return values (%d).\n", sz, from_if->get_nlhs());
+			SG_OBJ_ERROR(from_if, "Number of return values (%d) does not match number of expected"
+					" return values (%d).\n", sz, from_if->get_nlhs())
 		}
 	}
 
 	Py_DECREF(globals);
-	from_if->SG_DEBUG("Leaving Python.\n");
+	SG_OBJ_DEBUG(from_if, "Leaving Python.\n");
 	return true;
 }
 

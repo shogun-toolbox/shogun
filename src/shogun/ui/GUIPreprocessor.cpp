@@ -52,9 +52,9 @@ CPreprocessor* CGUIPreprocessor::create_prunevarsubmean(bool divide_by_std)
 	CPreprocessor* preproc=new CPruneVarSubMean(divide_by_std);
 
 	if (preproc)
-		SG_INFO("PRUNEVARSUBMEAN created (%p), divide_by_std %d", preproc, divide_by_std);
+		SG_INFO("PRUNEVARSUBMEAN created (%p), divide_by_std %d", preproc, divide_by_std)
 	else
-		SG_ERROR("Could not create preproc PRUNEVARSUBMEAN, divide_by_std %d", divide_by_std);
+		SG_ERROR("Could not create preproc PRUNEVARSUBMEAN, divide_by_std %d", divide_by_std)
 
 	return preproc;
 }
@@ -65,13 +65,13 @@ CPreprocessor* CGUIPreprocessor::create_pca(bool do_whitening, float64_t thresho
 	CPreprocessor* preproc=new CPCA(do_whitening, THRESHOLD, threshold);
 
 	if (preproc)
-		SG_INFO("PCA created (%p), do_whitening %i threshold %e", preproc, do_whitening, threshold);
+		SG_INFO("PCA created (%p), do_whitening %i threshold %e", preproc, do_whitening, threshold)
 	else
-		SG_ERROR("Could not create preproc PCA, do_whitening %i threshold %e", do_whitening, threshold);
+		SG_ERROR("Could not create preproc PCA, do_whitening %i threshold %e", do_whitening, threshold)
 
 	return preproc;
 #else //HAVE_LAPACK
-	SG_ERROR("Could not create preproc PCA - lapack not available at compile time\n");
+	SG_ERROR("Could not create preproc PCA - lapack not available at compile time\n")
 	return NULL;
 #endif //HAVE_LAPACK
 }
@@ -93,13 +93,13 @@ CPreprocessor* CGUIPreprocessor::create_generic(EPreprocessorType type)
 		case P_DECOMPRESSCHARSTRING:
 			preproc=new CDecompressString<char>(LZO); break;
 		default:
-			SG_ERROR("Unknown Preprocessor type %d\n", type);
+			SG_ERROR("Unknown Preprocessor type %d\n", type)
 	}
 
 	if (preproc)
-		SG_INFO("Preproc of type %d created (%p).\n", type, preproc);
+		SG_INFO("Preproc of type %d created (%p).\n", type, preproc)
 	else
-		SG_ERROR("Could not create preproc of type %d.\n", type);
+		SG_ERROR("Could not create preproc of type %d.\n", type)
 
 	return preproc;
 }
@@ -118,7 +118,7 @@ bool CGUIPreprocessor::clean_preproc()
 
 bool CGUIPreprocessor::del_preproc()
 {
-	SG_INFO("Deleting preproc %i/(%i).\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
+	SG_INFO("Deleting preproc %i/(%i).\n", preprocs->get_num_elements()-1, preprocs->get_num_elements())
 
 	CSGObject* preproc=preprocs->delete_element();
 	SG_UNREF(preproc);
@@ -134,7 +134,7 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 	{
 		CFeatures* f=ui->ui_features->get_train_features();
 		if (!f)
-			SG_ERROR("No train features assigned!\n");
+			SG_ERROR("No train features assigned!\n")
 
 		if (f->get_feature_class()==C_COMBINED)
 			f=((CCombinedFeatures*)f)->get_last_feature_obj();
@@ -147,11 +147,11 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 	{
 		CFeatures* f_test=ui->ui_features->get_test_features();
 		if (!f_test)
-			SG_ERROR("No test features assigned!\n");
+			SG_ERROR("No test features assigned!\n")
 
 		CFeatures* f_train=ui->ui_features->get_train_features();
 		if (!f_train)
-			SG_ERROR("No train features assigned!\n");
+			SG_ERROR("No train features assigned!\n")
 
 		EFeatureClass fclass_train=f_train->get_feature_class();
 		EFeatureClass fclass_test=f_test->get_feature_class();
@@ -167,32 +167,32 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 					CFeatures* tr_feat=((CCombinedFeatures*) f_train)->get_first_feature_obj();
 
 					int32_t num_combined=((CCombinedFeatures*) f_test)->get_num_feature_obj();
-					ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj()==num_combined);
+					ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj()==num_combined)
 
 					if (!(num_combined && tr_feat && te_feat))
-						SG_ERROR("One of the combined features has no sub-features ?!\n");
+						SG_ERROR("One of the combined features has no sub-features ?!\n")
 
-					SG_INFO("BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects).\n", num_combined);
+					SG_INFO("BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects).\n", num_combined)
 
 					int32_t n=0;
 					while (n<num_combined && tr_feat && te_feat)
 					{
 						// and preprocess using that one
-						SG_INFO("TRAIN ");
+						SG_INFO("TRAIN ")
 						tr_feat->list_feature_obj();
-						SG_INFO("TEST ");
+						SG_INFO("TEST ")
 						te_feat->list_feature_obj();
 						preprocess_features(tr_feat, te_feat, do_force);
 						tr_feat=((CCombinedFeatures*) f_train)->get_next_feature_obj();
 						te_feat=((CCombinedFeatures*) f_test)->get_next_feature_obj();
 						n++;
 					}
-					ASSERT(n==num_combined);
+					ASSERT(n==num_combined)
 					result=true;
-					SG_INFO( "END PREPROCESSING COMBINED FEATURES\n");
+					SG_INFO( "END PREPROCESSING COMBINED FEATURES\n")
 				}
 				else
-					SG_ERROR( "combined features not compatible\n");
+					SG_ERROR( "combined features not compatible\n")
 			}
 			else
 			{
@@ -202,10 +202,10 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 			}
 		}
 		else
-			SG_ERROR("Features not compatible.\n");
+			SG_ERROR("Features not compatible.\n")
 	}
 	else
-		SG_ERROR("Features not correctly assigned!\n");
+		SG_ERROR("Features not correctly assigned!\n")
 
 	/// when successful create new preproc list
 	if (result)
@@ -222,11 +222,11 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 		{
 			// if we don't have a preproc for trainfeatures we
 			// don't need a preproc for test features
-			SG_DEBUG( "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preprocessors(), testfeat->get_num_preprocessors());
+			SG_DEBUG( "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preprocessors(), testfeat->get_num_preprocessors())
 
 			if (trainfeat->get_num_preprocessors() < testfeat->get_num_preprocessors())
 			{
-				SG_ERROR( "more preprocessors attached to test features than to train features\n");
+				SG_ERROR( "more preprocessors attached to test features than to train features\n")
 				return false;
 			}
 
@@ -269,7 +269,7 @@ bool CGUIPreprocessor::preprocess_features(CFeatures* trainfeat, CFeatures* test
 		return true;
 	}
 	else
-		SG_ERROR( "no features for preprocessing available!\n");
+		SG_ERROR( "no features for preprocessing available!\n")
 
 	return false;
 }
@@ -292,7 +292,7 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 				case F_BYTE:
 					return ((CDenseFeatures<uint8_t>*) f)->apply_preprocessor(force);
 				default:
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			break;
 		case C_STRING:
@@ -303,7 +303,7 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 				case F_ULONG:
 					return ((CStringFeatures<uint64_t>*) f)->apply_preprocessor(force);
 				default:
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			break;
 		case C_SPARSE:
@@ -312,14 +312,14 @@ bool CGUIPreprocessor::preproc_all_features(CFeatures* f, bool force)
 				case F_DREAL:
 					return ((CSparseFeatures<float64_t>*) f)->apply_preprocessor(force);
 				default:
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			};
 			break;
 		case C_COMBINED:
-			SG_ERROR( "Combined feature objects cannot be preprocessed. Only its sub-feature objects!\n");
+			SG_ERROR( "Combined feature objects cannot be preprocessed. Only its sub-feature objects!\n")
 			break;
 		default:
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 	}
 
 	return false;

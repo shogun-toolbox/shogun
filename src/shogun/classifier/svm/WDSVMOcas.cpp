@@ -50,7 +50,7 @@ CWDSVMOcas::CWDSVMOcas()
 : CMachine(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(SVM_OCAS)
 {
-	SG_UNSTABLE("CWDSVMOcas::CWDSVMOcas()", "\n");
+	SG_UNSTABLE("CWDSVMOcas::CWDSVMOcas()", "\n")
 
 	w=NULL;
 	old_w=NULL;
@@ -116,12 +116,12 @@ SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_BYTE)
 		{
-			SG_ERROR("Features not of class string type byte\n");
+			SG_ERROR("Features not of class string type byte\n")
 		}
 
 		set_features((CStringFeatures<uint8_t>*) data);
 	}
-	ASSERT(features);
+	ASSERT(features)
 
 	set_wd_weights();
 	set_normalization_const();
@@ -130,7 +130,7 @@ SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 	if (features)
 	{
 		int32_t num=features->get_num_vectors();
-		ASSERT(num>0);
+		ASSERT(num>0)
 
 		outputs = SGVector<float64_t>(num);
 
@@ -143,7 +143,7 @@ SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 
 int32_t CWDSVMOcas::set_wd_weights()
 {
-	ASSERT(degree>0 && degree<=8);
+	ASSERT(degree>0 && degree<=8)
 	SG_FREE(wd_weights);
 	wd_weights=SG_MALLOC(float32_t, degree);
 	SG_FREE(w_offsets);
@@ -161,23 +161,23 @@ int32_t CWDSVMOcas::set_wd_weights()
 
 bool CWDSVMOcas::train_machine(CFeatures* data)
 {
-	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
+	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
 
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	if (data)
 	{
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_BYTE)
 		{
-			SG_ERROR("Features not of class string type byte\n");
+			SG_ERROR("Features not of class string type byte\n")
 		}
 		set_features((CStringFeatures<uint8_t>*) data);
 	}
 
-	ASSERT(get_features());
+	ASSERT(get_features())
 	CAlphabet* alphabet=get_features()->get_alphabet();
-	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA);
+	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA)
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
@@ -186,15 +186,15 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 
 	w_dim_single_char=set_wd_weights();
 	//CMath::display_vector(wd_weights, degree, "wd_weights");
-	SG_DEBUG("w_dim_single_char=%d\n", w_dim_single_char);
+	SG_DEBUG("w_dim_single_char=%d\n", w_dim_single_char)
 	w_dim=string_length*w_dim_single_char;
-	SG_DEBUG("cutting plane has %d dims\n", w_dim);
+	SG_DEBUG("cutting plane has %d dims\n", w_dim)
 	num_vec=get_features()->get_max_vector_length();
 
 	set_normalization_const();
-	SG_INFO("num_vec: %d num_lab: %d\n", num_vec, labvec.vlen);
-	ASSERT(num_vec==labvec.vlen);
-	ASSERT(num_vec>0);
+	SG_INFO("num_vec: %d num_lab: %d\n", num_vec, labvec.vlen)
+	ASSERT(num_vec==labvec.vlen)
+	ASSERT(num_vec>0)
 
 	SG_FREE(w);
 	w=SG_MALLOC(float32_t, w_dim);
@@ -217,7 +217,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	CMath::random_vector(w, w_dim, (float32_t) 0, (float32_t) 1000);
 	compute_output(tmp, this);
 	start=CTime::get_curtime()-start;
-	SG_PRINT("timing:%f\n", start);
+	SG_PRINT("timing:%f\n", start)
 	SG_FREE(tmp);
 	exit(1);*/
 /////speed tests/////
@@ -389,7 +389,7 @@ int CWDSVMOcas::add_new_cut(
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::add_new_cut_helper, (void*)&params_add[t]) != 0)
 		{
 			nthreads=t;
-			SG_SWARNING("thread creation failed\n");
+			SG_SWARNING("thread creation failed\n")
 			break;
 		}
 	}
@@ -407,7 +407,7 @@ int CWDSVMOcas::add_new_cut(
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			SG_SWARNING( "pthread_join failed\n");
+			SG_SWARNING( "pthread_join failed\n")
 
 		//float32_t* a=params_add[t].new_a;
 		//for (i=0; i<nDim; i++)
@@ -569,11 +569,11 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		params_output[t].start = step*t;
 		params_output[t].end = step*(t+1);
 
-		//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output);
+		//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
 		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
 		{
 			nthreads=t;
-			SG_SWARNING("thread creation failed\n");
+			SG_SWARNING("thread creation failed\n")
 			break;
 		}
 	}
@@ -585,12 +585,12 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 	params_output[t].start = step*t;
 	params_output[t].end = nData;
 	compute_output_helper(&params_output[t]);
-	//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output);
+	//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output)
 
 	for (t=0; t<nthreads; t++)
 	{
 		if (pthread_join(threads[t], NULL) != 0)
-			SG_SWARNING( "pthread_join failed\n");
+			SG_SWARNING( "pthread_join failed\n")
 	}
 	SG_FREE(threads);
 	SG_FREE(params_output);
@@ -633,7 +633,7 @@ void CWDSVMOcas::compute_W(
 
 	*sq_norm_W = SGVector<float32_t>::dot(W,W, nDim) +CMath::sq(bias);
 	*dp_WoldW = SGVector<float32_t>::dot(W,oldW, nDim) + bias*old_bias;;
-	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW);
+	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
 
 	o->bias = bias;
 	o->old_bias = old_bias;

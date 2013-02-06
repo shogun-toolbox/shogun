@@ -24,7 +24,7 @@ CScatterSVM::CScatterSVM()
 : CMulticlassSVM(new CMulticlassOneVsRestStrategy()), scatter_type(NO_BIAS_LIBSVM),
   model(NULL), norm_wc(NULL), norm_wcw(NULL), rho(0), m_num_classes(0)
 {
-	SG_UNSTABLE("CScatterSVM::CScatterSVM()", "\n");
+	SG_UNSTABLE("CScatterSVM::CScatterSVM()", "\n")
 }
 
 CScatterSVM::CScatterSVM(SCATTER_TYPE type)
@@ -47,8 +47,8 @@ CScatterSVM::~CScatterSVM()
 
 bool CScatterSVM::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 
 	m_num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_vectors = m_labels->get_num_labels();
@@ -56,7 +56,7 @@ bool CScatterSVM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		m_kernel->init(data, data);
 	}
 
@@ -97,15 +97,15 @@ bool CScatterSVM::train_machine(CFeatures* data)
 		float64_t nu_min=((float64_t) Nc)/num_vectors;
 		float64_t nu_max=((float64_t) Nc)*Nmin/num_vectors;
 
-		SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max);
+		SG_INFO("valid nu interval [%f ... %f]\n", nu_min, nu_max)
 
 		if (get_nu()<nu_min || get_nu()>nu_max)
-			SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max);
+			SG_ERROR("nu out of valid range [%f ... %f]\n", nu_min, nu_max)
 
 		result=train_testrule12();
 	}
 	else
-		SG_ERROR("Unknown Scatter type\n");
+		SG_ERROR("Unknown Scatter type\n")
 
 	return result;
 }
@@ -115,7 +115,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	struct svm_node* x_space;
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", problem.l);
+	SG_INFO( "%d trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -132,8 +132,8 @@ bool CScatterSVM::train_no_bias_libsvm()
 	int32_t weights_label[2]={-1,+1};
 	float64_t weights[2]={1.0,get_C()/get_C()};
 
-	ASSERT(m_kernel && m_kernel->has_features());
-    ASSERT(m_kernel->get_num_vec_lhs()==problem.l);
+	ASSERT(m_kernel && m_kernel->has_features())
+    ASSERT(m_kernel->get_num_vec_lhs()==problem.l)
 
 	param.svm_type=C_SVC; // Nu MC SVM
 	param.kernel_type = LINEAR;
@@ -159,7 +159,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg);
+		SG_ERROR("Error: %s\n",error_msg)
 
 	model = svm_train(&problem, &param);
 	m_kernel->set_normalizer(prev_normalizer);
@@ -167,9 +167,9 @@ bool CScatterSVM::train_no_bias_libsvm()
 
 	if (model)
 	{
-		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef));
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef))
 
-		ASSERT(model->nr_class==m_num_classes);
+		ASSERT(model->nr_class==m_num_classes)
 		create_multiclass_svm(m_num_classes);
 
 		rho=model->rho[0];
@@ -249,7 +249,7 @@ bool CScatterSVM::train_testrule12()
 {
 	struct svm_node* x_space;
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", problem.l);
+	SG_INFO( "%d trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -266,8 +266,8 @@ bool CScatterSVM::train_testrule12()
 	int32_t weights_label[2]={-1,+1};
 	float64_t weights[2]={1.0,get_C()/get_C()};
 
-	ASSERT(m_kernel && m_kernel->has_features());
-    ASSERT(m_kernel->get_num_vec_lhs()==problem.l);
+	ASSERT(m_kernel && m_kernel->has_features())
+    ASSERT(m_kernel->get_num_vec_lhs()==problem.l)
 
 	param.svm_type=NU_MULTICLASS_SVC; // Nu MC SVM
 	param.kernel_type = LINEAR;
@@ -290,15 +290,15 @@ bool CScatterSVM::train_testrule12()
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg);
+		SG_ERROR("Error: %s\n",error_msg)
 
 	model = svm_train(&problem, &param);
 
 	if (model)
 	{
-		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef));
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef))
 
-		ASSERT(model->nr_class==m_num_classes);
+		ASSERT(model->nr_class==m_num_classes)
 		create_multiclass_svm(m_num_classes);
 
 		rho=model->rho[0];
@@ -379,7 +379,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 	CMulticlassLabels* output=NULL;
 	if (!m_kernel)
 	{
-		SG_ERROR( "SVM can not proceed without kernel!\n");
+		SG_ERROR( "SVM can not proceed without kernel!\n")
 		return NULL;
 	}
 
@@ -393,7 +393,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 	if (scatter_type == TEST_RULE1)
 	{
-		ASSERT(m_machines->get_num_elements()>0);
+		ASSERT(m_machines->get_num_elements()>0)
 		for (int32_t i=0; i<num_vectors; i++)
 			output->set_label(i, apply_one(i));
 	}
@@ -441,15 +441,15 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 #endif //USE_SVMLIGHT
 	else
 	{
-		ASSERT(m_machines->get_num_elements()>0);
-		ASSERT(num_vectors==output->get_num_labels());
+		ASSERT(m_machines->get_num_elements()>0)
+		ASSERT(num_vectors==output->get_num_labels())
 		CLabels** outputs=SG_MALLOC(CLabels*, m_machines->get_num_elements());
 
 		for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 		{
-			//SG_PRINT("svm %d\n", i);
+			//SG_PRINT("svm %d\n", i)
 			CSVM *svm = get_svm(i);
-			ASSERT(svm);
+			ASSERT(svm)
 			svm->set_kernel(m_kernel);
 			svm->set_labels(m_labels);
 			outputs[i]=svm->apply();
@@ -486,7 +486,7 @@ CLabels* CScatterSVM::classify_one_vs_rest()
 
 float64_t CScatterSVM::apply_one(int32_t num)
 {
-	ASSERT(m_machines->get_num_elements()>0);
+	ASSERT(m_machines->get_num_elements()>0)
 	float64_t* outputs=SG_MALLOC(float64_t, m_machines->get_num_elements());
 	int32_t winner=0;
 
@@ -527,7 +527,7 @@ float64_t CScatterSVM::apply_one(int32_t num)
 #ifdef USE_SVMLIGHT
 	else if (scatter_type == NO_BIAS_SVMLIGHT)
 	{
-		SG_ERROR("Use classify...\n");
+		SG_ERROR("Use classify...\n")
 	}
 #endif //USE_SVMLIGHT
 	else

@@ -43,7 +43,7 @@ public:
 	/** get ratio */
 	float64_t get_ratio() const { return m_ratio; };
 	/** set ratio */
-	void set_ratio(float64_t ratio) { REQUIRE(ratio>0.0 && ratio<1.0, "Ratio should be in ]0,1[ range"); m_ratio = ratio; };
+	void set_ratio(float64_t ratio) { REQUIRE(ratio>0.0 && ratio<1.0, "Ratio should be in ]0,1[ range"); m_ratio = ratio; }
 
 	/**
 	 * method to select model via grid search

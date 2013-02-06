@@ -49,8 +49,8 @@ CHomogeneousKernelMap::~CHomogeneousKernelMap()
 
 bool CHomogeneousKernelMap::init(CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_DENSE);
-	ASSERT(features->get_feature_type()==F_DREAL);
+	ASSERT(features->get_feature_class()==C_DENSE)
+	ASSERT(features->get_feature_type()==F_DREAL)
 
 	return true;
 }
@@ -63,8 +63,8 @@ void CHomogeneousKernelMap::cleanup()
 
 void CHomogeneousKernelMap::init()
 {
-	SG_DEBUG ("Initialising homogeneous kernel map...\n");
-	ASSERT (m_gamma > 0) ;
+	SG_DEBUG ("Initialising homogeneous kernel map...\n")
+	ASSERT (m_gamma > 0) 
 
 	ASSERT (m_kernel == HomogeneousKernelIntersection ||
 			m_kernel == HomogeneousKernelChi2 ||
@@ -114,7 +114,7 @@ void CHomogeneousKernelMap::init()
 	int tableWidth = m_numSubdivisions * (m_maxExponent - m_minExponent + 1);
 	size_t numElements = (tableHeight * tableWidth + 2*(1+m_order));
 	if (unsigned(m_table.vlen) != numElements) {
-		SG_DEBUG ("reallocating... %d -> %d\n", m_table.vlen, numElements);
+		SG_DEBUG ("reallocating... %d -> %d\n", m_table.vlen, numElements)
 		m_table.vector = SG_REALLOC (float64_t, m_table.vector, m_table.vlen, numElements);
 		m_table.vlen = numElements;
 	}
@@ -298,8 +298,8 @@ CHomogeneousKernelMap::get_smooth_spectrum(float64_t omega) const
 SGVector<float64_t> CHomogeneousKernelMap::apply_to_vector(const SGVector<float64_t>& in_v) const
 {
 	/* assert for in vector */
-	ASSERT (in_v.vlen > 0);
-	ASSERT (in_v.vector != NULL);
+	ASSERT (in_v.vlen > 0)
+	ASSERT (in_v.vector != NULL)
 
 	uint64_t featureDimension = 2*m_order+1;
 

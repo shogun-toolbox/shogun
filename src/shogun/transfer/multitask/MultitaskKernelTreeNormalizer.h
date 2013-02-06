@@ -174,8 +174,8 @@ public:
 	 */
 	CNode* add_node(std::string parent_name, std::string child_name, float64_t beta)
 	{
-		if (child_name=="")	SG_ERROR("child_name empty");
-		if (parent_name=="") SG_ERROR("parent_name empty");
+		if (child_name=="")	SG_ERROR("child_name empty")
+		if (parent_name=="") SG_ERROR("parent_name empty")
 
 
 		CNode* child_node = new CNode();
@@ -446,7 +446,7 @@ public:
 	 */
 	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 	{
-		SG_ERROR("normalize_lhs not implemented");
+		SG_ERROR("normalize_lhs not implemented")
 		return 0;
 	}
 
@@ -456,7 +456,7 @@ public:
 	 */
 	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 	{
-		SG_ERROR("normalize_rhs not implemented");
+		SG_ERROR("normalize_rhs not implemented")
 		return 0;
 	}
 
@@ -536,8 +536,8 @@ public:
 	float64_t get_node_similarity(int32_t node_lhs, int32_t node_rhs)
 	{
 
-		ASSERT(node_lhs < num_nodes && node_lhs >= 0);
-		ASSERT(node_rhs < num_nodes && node_rhs >= 0);
+		ASSERT(node_lhs < num_nodes && node_lhs >= 0)
+		ASSERT(node_rhs < num_nodes && node_rhs >= 0)
 
 		return dependency_matrix[node_lhs * num_nodes + node_rhs];
 
@@ -552,8 +552,8 @@ public:
 			float64_t similarity)
 	{
 
-		ASSERT(node_lhs < num_nodes && node_lhs >= 0);
-		ASSERT(node_rhs < num_nodes && node_rhs >= 0);
+		ASSERT(node_lhs < num_nodes && node_lhs >= 0)
+		ASSERT(node_rhs < num_nodes && node_rhs >= 0)
 
 		dependency_matrix[node_lhs * num_nodes + node_rhs] = similarity;
 

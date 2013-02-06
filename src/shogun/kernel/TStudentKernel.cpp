@@ -30,7 +30,7 @@ CTStudentKernel::CTStudentKernel(int32_t cache, float64_t d, CDistance* dist)
 : CKernel(cache), distance(dist), degree(d)
 {
 	init();
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 }
 
@@ -38,7 +38,7 @@ CTStudentKernel::CTStudentKernel(CFeatures *l, CFeatures *r, float64_t d, CDista
 : CKernel(10), distance(dist), degree(d)
 {
 	init();
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	init(l, r);
 }
@@ -51,7 +51,7 @@ CTStudentKernel::~CTStudentKernel()
 
 bool CTStudentKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	CKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();

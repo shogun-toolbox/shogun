@@ -51,11 +51,11 @@ CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 		if (filename)
 		{
 			if (!(file=fopen((const char*) filename, (const char*) mode)))
-				SG_ERROR("Error opening file '%s'\n", filename);
+				SG_ERROR("Error opening file '%s'\n", filename)
 		}
 	}
 	else
-		SG_ERROR("unknown mode '%c'\n", mode[0]);
+		SG_ERROR("unknown mode '%c'\n", mode[0])
 
 	if (name)
 		set_variable_name(name);
@@ -66,7 +66,7 @@ void CFile::get_vector(bool*& vector, int32_t& len)
 	int32_t* int_vector;
 	get_vector(int_vector, len);
 
-	ASSERT(len>0);
+	ASSERT(len>0)
 	vector= SG_MALLOC(bool, len);
 
 	for (int32_t i=0; i<len; i++)
@@ -127,7 +127,7 @@ void CFile::get_string_list(
 	SGString<int8_t>* strs;
 	get_string_list(strs, num_str, max_string_len);
 
-	ASSERT(num_str>0 && max_string_len>0);
+	ASSERT(num_str>0 && max_string_len>0)
 	strings=SG_MALLOC(SGString<bool>, num_str);
 
 	for(int32_t i = 0;i < num_str;i++)
@@ -193,7 +193,7 @@ void CFile::get_sparse_vector(											\
 	int32_t dummy;														\
 	int32_t nvec;														\
 	get_sparse_matrix(v, dummy, nvec);									\
-	ASSERT(nvec==1);													\
+	ASSERT(nvec==1)													\
 	entries=v->features;												\
 	num_feat=v->num_feat_entries;										\
 }
@@ -217,14 +217,14 @@ SPARSE_VECTOR_GETTER(uint64_t)
 char* CFile::read_whole_file(char* fname, size_t& len)
 {
     FILE* tmpf=fopen(fname, "r");
-    ASSERT(tmpf);
+    ASSERT(tmpf)
     fseek(tmpf,0,SEEK_END);
     len=ftell(tmpf);
-    ASSERT(len>0);
+    ASSERT(len>0)
     rewind(tmpf);
     char* result = SG_MALLOC(char, len);
     size_t total=fread(result,1,len,tmpf);
-    ASSERT(total==len);
+    ASSERT(total==len)
     fclose(tmpf);
     return result;
 }

@@ -33,18 +33,18 @@ CSerializableFile::CSerializableFile(const char* fname, char rw)
 	init(NULL, rw, fname);
 
 	if (m_filename == NULL || *m_filename == '\0') {
-		SG_WARNING("Filename not given for opening file!\n");
+		SG_WARNING("Filename not given for opening file!\n")
 		close(); return;
 	}
 
 	if (rw != 'r' && rw != 'w') {
-		SG_WARNING("Unknown mode '%c'!\n", mode[0]);
+		SG_WARNING("Unknown mode '%c'!\n", mode[0])
 		close(); return;
 	}
 
 	m_fstream = fopen(m_filename, mode);
 	if (!is_opened()) {
-		SG_WARNING("Error opening file '%s'\n", m_filename);
+		SG_WARNING("Error opening file '%s'\n", m_filename)
 		close(); return;
 	}
 }

@@ -46,7 +46,7 @@ public:
 		ASSERT(labels)
 		SG_REF(labels);
 		m_labels=labels;
-		ASSERT(labels->get_label_type()==LT_MULTICLASS);
+		ASSERT(labels->get_label_type()==LT_MULTICLASS)
 		labels->ensure_valid();
 
 		if (normalizer==NULL)
@@ -124,7 +124,7 @@ public:
 	 */
 	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 	{
-		SG_ERROR("normalize_lhs not implemented");
+		SG_ERROR("normalize_lhs not implemented")
 		return 0;
 	}
 
@@ -134,7 +134,7 @@ public:
 	 */
 	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 	{
-		SG_ERROR("normalize_rhs not implemented");
+		SG_ERROR("normalize_rhs not implemented")
 		return 0;
 	}
 

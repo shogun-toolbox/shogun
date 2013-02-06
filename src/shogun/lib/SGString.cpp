@@ -62,7 +62,7 @@ void SGString<T>::destroy_string()
 
 template<class T> void SGString<T>::load(CFile* loader)
 {
-	ASSERT(loader);
+	ASSERT(loader)
 	free_string();
 
 	SG_SET_LOCALE_C;
@@ -73,7 +73,7 @@ template<class T> void SGString<T>::load(CFile* loader)
 
 template<class T> void SGString<T>::save(CFile* saver)
 {
-	ASSERT(saver);
+	ASSERT(saver)
 
 	SG_SET_LOCALE_C;
 	saver->set_vector(string, slen);

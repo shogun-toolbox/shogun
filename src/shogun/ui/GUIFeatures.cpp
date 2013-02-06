@@ -63,7 +63,7 @@ bool CGUIFeatures::load(
 		invalidate_test();
 	}
 	else
-		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target)
 
 	SG_UNREF(*f_ptr);
 	*f_ptr=NULL;
@@ -91,13 +91,13 @@ bool CGUIFeatures::load(
 		}
 		else
 		{
-			SG_ERROR("Unknown type.\n");
+			SG_ERROR("Unknown type.\n")
 			return false;
 		}
 	}
 	else if (strncmp(fclass, "SPARSE", 6)==0)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	}
 	else if (strncmp(fclass, "STRING", 6)==0)
 	{
@@ -129,7 +129,7 @@ bool CGUIFeatures::load(
 		}
 		else
 		{
-			SG_ERROR("Unknown type.\n");
+			SG_ERROR("Unknown type.\n")
 			return false;
 		}
 	}
@@ -153,7 +153,7 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 		f_ptr=&test_features;
 	}
 	else
-		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target)
 
 	if (*f_ptr)
 	{
@@ -182,21 +182,21 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 			}
 			else
 			{
-				SG_ERROR("Unknown type.\n");
+				SG_ERROR("Unknown type.\n")
 				return false;
 			}
 			SG_UNREF(file);
 		}
 		catch (...)
 		{
-			SG_ERROR("Writing to file %s failed!\n", filename);
+			SG_ERROR("Writing to file %s failed!\n", filename)
 		}
 
-		SG_INFO( "Successfully written features into \"%s\" !\n", filename);
+		SG_INFO( "Successfully written features into \"%s\" !\n", filename)
 		result=true;
 
 	} else
-		SG_ERROR("Set features first.\n");
+		SG_ERROR("Set features first.\n")
 
 	return result;
 }
@@ -208,7 +208,7 @@ bool CGUIFeatures::clean(char* target)
 	else if (strncmp(target, "TEST", 4)==0)
 		set_test_features(NULL);
 	else
-		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target)
 
 	return true;
 }
@@ -229,18 +229,18 @@ bool CGUIFeatures::reshape(char* target, int32_t num_feat, int32_t num_vec)
 	}
 	else
 	{
-		SG_ERROR("Invalid target %s\n", target);
+		SG_ERROR("Invalid target %s\n", target)
 		return false;
 	}
 
 	bool result=false;
 	if (f_ptr)
 	{
-		SG_INFO( "reshape data to %d x %d\n", num_feat, num_vec);
+		SG_INFO( "reshape data to %d x %d\n", num_feat, num_vec)
 		result=(*f_ptr)->reshape(num_feat, num_vec);
 
 		if (!result)
-			SG_ERROR("Reshaping failed.\n");
+			SG_ERROR("Reshaping failed.\n")
 	}
 
 	return result;
@@ -303,7 +303,7 @@ CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
 		src->get_feature_type()==F_DREAL)
 	{
 		//create sparse features with 0 cache
-		SG_INFO("Attempting to convert dense feature matrix to a sparse one.\n");
+		SG_INFO("Attempting to convert dense feature matrix to a sparse one.\n")
 		CSparseFeatures<float64_t>* target=new CSparseFeatures<float64_t>(0);
 		int32_t num_f=0;
 		int32_t num_v=0;
@@ -314,7 +314,7 @@ CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
 		SG_UNREF(target);
 	}
 	else
-		SG_ERROR("No SIMPLE DREAL features available.\n");
+		SG_ERROR("No SIMPLE DREAL features available.\n")
 
 	return NULL;
 }
@@ -356,7 +356,7 @@ CStringFeatures<char>* CGUIFeatures::convert_simple_char_to_string_char(
 		return target;
 	}
 	else
-		SG_ERROR("No features of class/type SIMPLE/CHAR available.\n");
+		SG_ERROR("No features of class/type SIMPLE/CHAR available.\n")
 
 	return NULL;
 }
@@ -383,7 +383,7 @@ CDenseFeatures<float64_t>* CGUIFeatures::convert_simple_word_to_simple_salzberg(
 				int32_t len=0;
 				bool to_free=false;
 				uint16_t* vec = src->get_feature_vector(i, len, to_free);
-				ASSERT(num_feat==len);
+				ASSERT(num_feat==len)
 
 				for (int32_t j=0; j<num_feat; j++)
 					fm[i*num_feat+j]=
@@ -397,7 +397,7 @@ CDenseFeatures<float64_t>* CGUIFeatures::convert_simple_word_to_simple_salzberg(
 		return target;
 	}
 	else
-		SG_ERROR("No SIMPLE WORD features or PluginEstimator available.\n");
+		SG_ERROR("No SIMPLE WORD features or PluginEstimator available.\n")
 
 	return NULL;
 }
@@ -412,7 +412,7 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(
 		src->get_feature_class()==C_DENSE &&
 		src->get_feature_type()==F_WORD)
 	{
-		SG_INFO("Converting to TOP features.\n");
+		SG_INFO("Converting to TOP features.\n")
 
 		if (ui->ui_hmm->get_pos() && ui->ui_hmm->get_neg())
 		{
@@ -425,13 +425,13 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(
 			tf=new CTOPFeatures(
 				0, ui->ui_hmm->get_pos(), ui->ui_hmm->get_neg(),
 				neglinear, poslinear);
-			ASSERT(tf->set_feature_matrix());
+			ASSERT(tf->set_feature_matrix())
 		}
 		else
-			SG_ERROR("HMMs not correctly assigned!\n");
+			SG_ERROR("HMMs not correctly assigned!\n")
 	}
 	else
-		SG_ERROR("No SIMPLE WORD features available.\n");
+		SG_ERROR("No SIMPLE WORD features available.\n")
 
 	return tf;
 }
@@ -441,7 +441,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(
 {
 	CFKFeatures* fkf=NULL;
 
-	SG_INFO("Converting to FK features.\n");
+	SG_INFO("Converting to FK features.\n")
 
 	if (ui->ui_hmm->get_pos() && ui->ui_hmm->get_neg())
 	{
@@ -460,15 +460,15 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(
 		if (train_features)
 			fkf->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
 		else
-			SG_ERROR("Need train features to set optimal a.\n");
+			SG_ERROR("Need train features to set optimal a.\n")
 
-		ASSERT(fkf->set_feature_matrix());
+		ASSERT(fkf->set_feature_matrix())
 
 		ui->ui_hmm->get_pos()->set_observations(old_obs_pos);
 		ui->ui_hmm->get_neg()->set_observations(old_obs_neg);
 	}
 	else
-		SG_ERROR("HMMs not correctly assigned!\n");
+		SG_ERROR("HMMs not correctly assigned!\n")
 
 	return fkf;
 }
@@ -482,7 +482,7 @@ CDenseFeatures<float64_t>* CGUIFeatures::convert_sparse_real_to_simple_real(
 		src->get_feature_type() == F_DREAL)
 	{
 		//create dense features with 0 cache
-		SG_INFO("Attempting to convert sparse feature matrix to a dense one.\n");
+		SG_INFO("Attempting to convert sparse feature matrix to a dense one.\n")
 		CDenseFeatures<float64_t>* rf=new CDenseFeatures<float64_t>(0);
 		if (rf)
 		{
@@ -492,7 +492,7 @@ CDenseFeatures<float64_t>* CGUIFeatures::convert_sparse_real_to_simple_real(
 		}
 	}
 	else
-		SG_ERROR("No SPARSE REAL features available.\n");
+		SG_ERROR("No SPARSE REAL features available.\n")
 
 	return NULL;
 }
@@ -511,22 +511,22 @@ CDenseFeatures<float64_t>* CGUIFeatures::convert_simple_char_to_simple_align(
 		src->get_feature_type()==F_CHAR)
 	{
 		//create dense features with 0 cache
-		SG_INFO("Converting CHAR features to REAL ones.\n");
+		SG_INFO("Converting CHAR features to REAL ones.\n")
 
 		CDenseFeatures<float64_t>* rf=new CDenseFeatures<float64_t>(0);
 		if (rf)
 		{
-			SG_INFO("Start aligment with gapCost=%1.2f.\n", gap_cost);
+			SG_INFO("Start aligment with gapCost=%1.2f.\n", gap_cost)
 			/*rf->Align_char_features(
 				src, (CDenseFeatures<char>*) ref_features, gap_cost);*/
-			SG_INFO("Conversion was successful.\n");
+			SG_INFO("Conversion was successful.\n")
 			return rf;
 		}
 	}
 	else
-		SG_ERROR("No SIMPLE CHAR features available.\n");
+		SG_ERROR("No SIMPLE CHAR features available.\n")
 
-	SG_ERROR("Conversion failed.\n");
+	SG_ERROR("Conversion failed.\n")
 	return NULL;
 }
 
@@ -554,7 +554,7 @@ bool CGUIFeatures::set_reference_features(char* target)
 
 void CGUIFeatures::add_train_features(CFeatures* f)
 {
-	ASSERT(f);
+	ASSERT(f)
 	invalidate_train();
 
 	if (!train_features)
@@ -577,13 +577,13 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 	if (result)
 		((CCombinedFeatures*) train_features)->list_feature_objs();
 	else
-		SG_ERROR("appending feature object failed\n");
+		SG_ERROR("appending feature object failed\n")
 }
 
 void CGUIFeatures::add_train_dotfeatures(CDotFeatures* f)
 {
-	ASSERT(f);
-	SG_PRINT("DOTFVEC %d\n", f->get_num_vectors());
+	ASSERT(f)
+	SG_PRINT("DOTFVEC %d\n", f->get_num_vectors())
 	invalidate_train();
 
 	if (!train_features)
@@ -595,7 +595,7 @@ void CGUIFeatures::add_train_dotfeatures(CDotFeatures* f)
 	if (train_features->get_feature_class()!=C_COMBINED_DOT)
 	{
 		if (!train_features->has_property(FP_DOT))
-			SG_ERROR("Trainfeatures not based on DotFeatures.\n");
+			SG_ERROR("Trainfeatures not based on DotFeatures.\n")
 
 		CDotFeatures* first_elem=(CDotFeatures*) train_features;
 		train_features=new CCombinedDotFeatures();
@@ -609,12 +609,12 @@ void CGUIFeatures::add_train_dotfeatures(CDotFeatures* f)
 	if (result)
 		((CCombinedDotFeatures*) train_features)->list_feature_objs();
 	else
-		SG_ERROR("appending dot feature object failed\n");
+		SG_ERROR("appending dot feature object failed\n")
 }
 
 void CGUIFeatures::add_test_dotfeatures(CDotFeatures* f)
 {
-	ASSERT(f);
+	ASSERT(f)
 	invalidate_test();
 
 	if (!test_features)
@@ -626,7 +626,7 @@ void CGUIFeatures::add_test_dotfeatures(CDotFeatures* f)
 	if (test_features->get_feature_class()!=C_COMBINED_DOT)
 	{
 		if (!test_features->has_property(FP_DOT))
-			SG_ERROR("Trainfeatures not based on DotFeatures.\n");
+			SG_ERROR("Trainfeatures not based on DotFeatures.\n")
 
 		CDotFeatures* first_elem=(CDotFeatures*) test_features;
 		test_features=new CCombinedDotFeatures();
@@ -640,12 +640,12 @@ void CGUIFeatures::add_test_dotfeatures(CDotFeatures* f)
 	if (result)
 		((CCombinedDotFeatures*) test_features)->list_feature_objs();
 	else
-		SG_ERROR("Appending feature object failed.\n");
+		SG_ERROR("Appending feature object failed.\n")
 }
 
 void CGUIFeatures::add_test_features(CFeatures* f)
 {
-	ASSERT(f);
+	ASSERT(f)
 	invalidate_test();
 
 	if (!test_features)
@@ -668,7 +668,7 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 	if (result)
 		((CCombinedFeatures*) test_features)->list_feature_objs();
 	else
-		SG_ERROR("Appending feature object failed.\n");
+		SG_ERROR("Appending feature object failed.\n")
 }
 
 bool CGUIFeatures::del_last_feature_obj(char* target)
@@ -677,26 +677,26 @@ bool CGUIFeatures::del_last_feature_obj(char* target)
 	if (strncmp(target, "TRAIN", 5)==0)
 	{
 		if (!train_features)
-			SG_ERROR("No train features available.\n");
+			SG_ERROR("No train features available.\n")
 		if (train_features->get_feature_class()!=C_COMBINED)
-			SG_ERROR("Train features are not combined features.\n");
+			SG_ERROR("Train features are not combined features.\n")
 
 		cf=(CCombinedFeatures*) train_features;
 	}
 	else if (strncmp(target, "TEST", 4)==0)
 	{
 		if (!test_features)
-			SG_ERROR("No test features available.\n");
+			SG_ERROR("No test features available.\n")
 		if (test_features->get_feature_class()!=C_COMBINED)
-			SG_ERROR("Test features are not combined features.\n");
+			SG_ERROR("Test features are not combined features.\n")
 
 		cf=(CCombinedFeatures*) test_features;
 	}
 	else
-		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target);
+		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target)
 
 	if (!cf->delete_feature_obj())
-		SG_ERROR("No features available to delete.\n");
+		SG_ERROR("No features available to delete.\n")
 
 	return false;
 }

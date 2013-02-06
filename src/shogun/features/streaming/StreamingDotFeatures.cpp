@@ -19,7 +19,7 @@ CStreamingDotFeatures::CStreamingDotFeatures() : CStreamingFeatures()
 CStreamingDotFeatures::CStreamingDotFeatures(CDotFeatures* dot_features,
 		float64_t* lab)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return;
 }
 
@@ -30,7 +30,7 @@ CStreamingDotFeatures::~CStreamingDotFeatures()
 void CStreamingDotFeatures::dense_dot_range(float32_t* output, float32_t* alphas,
 		float32_t* vec, int32_t dim, float32_t b, int32_t num_vec)
 {
-	ASSERT(num_vec>=0);
+	ASSERT(num_vec>=0)
 
 	int32_t counter=0;
 	start_parser();
@@ -74,24 +74,24 @@ void CStreamingDotFeatures::expand_if_required(float64_t*& vec, int32_t &len)
 
 void* CStreamingDotFeatures::get_feature_iterator()
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 int32_t CStreamingDotFeatures::get_nnz_features_for_vector()
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return -1;
 }
 
 bool CStreamingDotFeatures::get_next_feature(int32_t& index, float32_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
 void CStreamingDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return;
 }

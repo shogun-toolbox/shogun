@@ -32,7 +32,7 @@ CLatentSVM::~CLatentSVM()
 CLatentLabels* CLatentSVM::apply_latent()
 {
 	if (!m_model)
-		SG_ERROR("LatentModel is not set!\n");
+		SG_ERROR("LatentModel is not set!\n")
 
 	if (m_model->get_num_vectors() < 1)
 		return NULL;

@@ -42,7 +42,7 @@ CConjugateIndex::~CConjugateIndex()
 
 void CConjugateIndex::set_features(CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_DENSE);
+	ASSERT(features->get_feature_class()==C_DENSE)
 	SG_REF(features);
 	SG_UNREF(m_features);
 	m_features = (CDenseFeatures<float64_t>*)features;
@@ -70,11 +70,11 @@ bool CConjugateIndex::train_machine(CFeatures* data)
 	if (data)
 		set_features(data);
 
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type()==LT_MULTICLASS);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type()==LT_MULTICLASS)
 
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
-	ASSERT(m_num_classes>=2);
+	ASSERT(m_num_classes>=2)
 	clean_classes();
 
 	int32_t num_vectors;
@@ -87,7 +87,7 @@ bool CConjugateIndex::train_machine(CFeatures* data)
 
 	m_feature_vector = SGVector<float64_t>(num_features);
 
-	SG_PROGRESS(0,0,m_num_classes-1);
+	SG_PROGRESS(0,0,m_num_classes-1)
 
 	for (int32_t label=0; label<m_num_classes; label++)
 	{
@@ -134,9 +134,9 @@ bool CConjugateIndex::train_machine(CFeatures* data)
 		            helper_matrix.matrix,count,
 		            0.0,m_classes[label].matrix,num_features);
 
-		SG_PROGRESS(label+1,0,m_num_classes);
+		SG_PROGRESS(label+1,0,m_num_classes)
 	}
-	SG_DONE();
+	SG_DONE()
 
 	return true;
 };
@@ -146,11 +146,11 @@ CMulticlassLabels* CConjugateIndex::apply_multiclass(CFeatures* data)
 	if (data)
 		set_features(data);
 
-	ASSERT(m_features);
+	ASSERT(m_features)
 
-	ASSERT(m_classes);
-	ASSERT(m_num_classes>1);
-	ASSERT(m_features->get_num_features()==m_feature_vector.vlen);
+	ASSERT(m_classes)
+	ASSERT(m_num_classes>1)
+	ASSERT(m_features->get_num_features()==m_feature_vector.vlen)
 
 	int32_t num_vectors = m_features->get_num_vectors();
 
@@ -158,10 +158,10 @@ CMulticlassLabels* CConjugateIndex::apply_multiclass(CFeatures* data)
 
 	for (int32_t i=0; i<num_vectors;i++)
 	{
-		SG_PROGRESS(i,0,num_vectors-1);
+		SG_PROGRESS(i,0,num_vectors-1)
 		predicted_labels->set_label(i,apply_one(i));
 	}
-	SG_DONE();
+	SG_DONE()
 
 	return predicted_labels;
 };

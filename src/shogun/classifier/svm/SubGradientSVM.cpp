@@ -136,7 +136,7 @@ int32_t CSubGradientSVM::find_active(
 	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec-1)];
 
 #ifdef DEBUG_SUBGRADIENTSVM
-	//SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
+	//SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon)
 #endif
 
 	if (autoselected_epsilon>work_epsilon)
@@ -150,11 +150,11 @@ int32_t CSubGradientSVM::find_active(
 		while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
 			i++;
 
-		//SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
+		//SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i)
 
 		if (i>=qpsize_max && autoselected_epsilon>epsilon) //qpsize limit
 		{
-			SG_INFO("qpsize limit (%d) reached\n", qpsize_max);
+			SG_INFO("qpsize limit (%d) reached\n", qpsize_max)
 			int32_t num_in_qp=i;
 			while (--i>=0 && num_in_qp>=qpsize_max)
 			{
@@ -165,7 +165,7 @@ int32_t CSubGradientSVM::find_active(
 				}
 			}
 
-			//SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
+			//SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon)
 		}
 	}
 
@@ -194,7 +194,7 @@ int32_t CSubGradientSVM::find_active(
 			delta_bound++;
 	}
 
-	//SG_PRINT("delta_bound: %d of %d (%02.2f)\n", delta_bound, num_bound, 100.0*delta_bound/num_bound);
+	//SG_PRINT("delta_bound: %d of %d (%02.2f)\n", delta_bound, num_bound, 100.0*delta_bound/num_bound)
 	return delta_active;
 }
 
@@ -253,11 +253,11 @@ float64_t CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 	//CMath::display_vector(grad_w, num_feat, "grad_w");
 	//CMath::display_vector(grad_proj, num_vec, "grad_proj");
 	//CMath::display_vector(hinge_point, num_vec, "hinge_point");
-	//SG_PRINT("A_zero=%f\n", A_zero);
-	//SG_PRINT("B_zero=%f\n", B_zero);
-	//SG_PRINT("sum_B=%f\n", sum_B);
-	//SG_PRINT("alpha=%f\n", alpha);
-	//SG_PRINT("grad_val=%f\n", grad_val);
+	//SG_PRINT("A_zero=%f\n", A_zero)
+	//SG_PRINT("B_zero=%f\n", B_zero)
+	//SG_PRINT("sum_B=%f\n", sum_B)
+	//SG_PRINT("alpha=%f\n", alpha)
+	//SG_PRINT("grad_val=%f\n", grad_val)
 
 	float64_t old_grad_val = grad_val;
 	float64_t old_alpha = alpha;
@@ -269,7 +269,7 @@ float64_t CSubGradientSVM::line_search(int32_t num_feat, int32_t num_vec)
 
 		if (grad_val > 0)
 		{
-			ASSERT(old_grad_val-grad_val != 0);
+			ASSERT(old_grad_val-grad_val != 0)
 			float64_t gamma = -grad_val/(old_grad_val-grad_val);
 			alpha = old_alpha*gamma + (1-gamma)*alpha;
 		}
@@ -299,7 +299,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 
 		if (num_bound>=qpsize_max && num_it_noimprovement!=10) // if qp gets to large, lets just choose a random beta
 		{
-			//SG_PRINT("qpsize too large  (%d>=%d) choosing random subgradient/beta\n", num_bound, qpsize_max);
+			//SG_PRINT("qpsize too large  (%d>=%d) choosing random subgradient/beta\n", num_bound, qpsize_max)
 			for (int32_t i=0; i<num_bound; i++)
 				beta[i]=CMath::random(0.0,1.0);
 		}
@@ -359,7 +359,7 @@ float64_t CSubGradientSVM::compute_min_subgradient(
 			//CMath::display_vector(beta, num_bound, "beta cplex");
 
 			//CMath::display_vector(grad_w, num_feat, "grad_w");
-			//SG_PRINT("grad_b:%f\n", grad_b);
+			//SG_PRINT("grad_b:%f\n", grad_b)
 		}
 
 		SGVector<float64_t>::add(grad_w, 1.0, w.vector, -1.0, sum_CXy_active, num_feat);
@@ -529,23 +529,23 @@ void CSubGradientSVM::cleanup()
 bool CSubGradientSVM::train_machine(CFeatures* data)
 {
 	tim=0;
-	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
-	ASSERT(m_labels);
+	SG_INFO("C=%f epsilon=%f\n", C1, epsilon)
+	ASSERT(m_labels)
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
-	ASSERT(get_features());
+	ASSERT(get_features())
 
 	int32_t num_iterations=0;
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
+	ASSERT(num_vec==num_train_labels)
 
 	init(num_vec, num_feat);
 
@@ -574,24 +574,24 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 		update_active(num_feat, num_vec);
 
 #ifdef DEBUG_SUBGRADIENTSVM
-		SG_PRINT("==================================================\niteration: %d ", num_iterations);
+		SG_PRINT("==================================================\niteration: %d ", num_iterations)
 		obj=compute_objective(num_feat, num_vec);
 		SG_PRINT("objective:%.10f alpha: %.10f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f time:%f\n",
 				obj, alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon, loop_time);
 #else
-	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);
+	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6)
 #endif
 		//CMath::display_vector(w, w_dim, "w");
-		//SG_PRINT("bias: %f\n", bias);
+		//SG_PRINT("bias: %f\n", bias)
 		//CMath::display_vector(proj, num_vec, "proj");
 		//CMath::display_vector(idx_active, num_active, "idx_active");
-		//SG_PRINT("num_active: %d\n", num_active);
+		//SG_PRINT("num_active: %d\n", num_active)
 		//CMath::display_vector(idx_bound, num_bound, "idx_bound");
-		//SG_PRINT("num_bound: %d\n", num_bound);
+		//SG_PRINT("num_bound: %d\n", num_bound)
 		//CMath::display_vector(sum_CXy_active, num_feat, "sum_CXy_active");
-		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active);
+		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active)
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
-		//SG_PRINT("grad_b:%f\n", grad_b);
+		//SG_PRINT("grad_b:%f\n", grad_b)
 
 		dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
 
@@ -607,7 +607,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 					"work_epsilon: %10.10f delta_active:%d alpha: %10.10f norm_grad: %10.10f a*norm_grad:%10.16f\n",
 					work_epsilon, delta_active, alpha, norm_grad, CMath::abs(alpha*norm_grad));
 #else
-			SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);
+			SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6)
 #endif
 
 			if (work_epsilon<=epsilon && delta_active==0 && CMath::abs(alpha*norm_grad)<1e-6)
@@ -620,7 +620,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 		{
 			if (last_it_noimprovement==num_iterations-1)
 			{
-				SG_PRINT("no improvement...\n");
+				SG_PRINT("no improvement...\n")
 				num_it_noimprovement++;
 			}
 			else
@@ -635,7 +635,7 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 		update_projection(alpha, num_vec);
 		//compute_projection(num_feat, num_vec);
 		//CMath::display_vector(w.vector, w_dim, "w");
-		//SG_PRINT("bias: %f\n", bias);
+		//SG_PRINT("bias: %f\n", bias)
 		//CMath::display_vector(proj, num_vec, "proj");
 
 		t.stop();
@@ -647,9 +647,9 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 		if (get_max_train_time()>0 && time.cur_time_diff()>get_max_train_time())
 			break;
 	}
-	SG_DONE();
+	SG_DONE()
 
-	SG_INFO("converged after %d iterations\n", num_iterations);
+	SG_INFO("converged after %d iterations\n", num_iterations)
 
 	obj=compute_objective(num_feat, num_vec);
 	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
@@ -657,9 +657,9 @@ bool CSubGradientSVM::train_machine(CFeatures* data)
 
 #ifdef DEBUG_SUBGRADIENTSVM
 	CMath::display_vector(w.vector, w.vlen, "w");
-	SG_PRINT("bias: %f\n", bias);
+	SG_PRINT("bias: %f\n", bias)
 #endif
-	SG_INFO("solver time:%f s\n", tim);
+	SG_INFO("solver time:%f s\n", tim)
 
 	cleanup();
 

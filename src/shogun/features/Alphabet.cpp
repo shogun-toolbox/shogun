@@ -78,7 +78,7 @@ CAlphabet::CAlphabet(char* al, int32_t len)
 	else if (len>=(int32_t) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
 		alpha = IUPAC_AMINO_ACID;
 	else {
-      SG_ERROR( "unknown alphabet %s\n", al);
+      SG_ERROR( "unknown alphabet %s\n", al)
    }
 
 	set_alphabet(alpha);
@@ -95,7 +95,7 @@ CAlphabet::CAlphabet(CAlphabet* a)
 : CSGObject()
 {
 	init();
-	ASSERT(a);
+	ASSERT(a)
 	set_alphabet(a->get_alphabet());
 	copy_histogram(a);
 }
@@ -170,7 +170,7 @@ bool CAlphabet::set_alphabet(EAlphabet alpha)
 	init_map_table();
     clear_histogram();
 
-	SG_DEBUG( "initialised alphabet %s\n", get_alphabet_name(alphabet));
+	SG_DEBUG( "initialised alphabet %s\n", get_alphabet_name(alphabet))
 
 	return result;
 }
@@ -588,7 +588,7 @@ void CAlphabet::print_histogram()
 	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
 	{
 		if (histogram[i])
-			SG_PRINT( "hist[%d]=%lld\n", i, histogram[i]);
+			SG_PRINT( "hist[%d]=%lld\n", i, histogram[i])
 	}
 }
 
@@ -613,7 +613,7 @@ bool CAlphabet::check_alphabet(bool print_error)
 	if (!result && print_error)
 	{
 		print_histogram();
-		SG_ERROR( "ALPHABET does not contain all symbols in histogram\n");
+		SG_ERROR( "ALPHABET does not contain all symbols in histogram\n")
 	}
 
 	return result;
@@ -627,7 +627,7 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 		{
 			print_histogram();
 			fprintf(stderr, "get_num_bits_in_histogram()=%i > get_num_bits()=%i\n", get_num_bits_in_histogram(), get_num_bits()) ;
-         SG_ERROR( "ALPHABET too small to contain all symbols in histogram\n");
+         SG_ERROR( "ALPHABET too small to contain all symbols in histogram\n")
 		}
 		return false;
 	}
@@ -818,7 +818,7 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 template <class ST>
 void CAlphabet::translate_from_single_order(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
-	ASSERT(gap>=0);
+	ASSERT(gap>=0)
 
 	const int32_t start_gap=(p_order-gap)/2;
 	const int32_t end_gap=start_gap+gap;
@@ -880,7 +880,7 @@ void CAlphabet::translate_from_single_order(ST* obs, int32_t sequence_length, in
 template <class ST>
 void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap)
 {
-	ASSERT(gap>=0);
+	ASSERT(gap>=0)
 
 	const int32_t start_gap=(p_order-gap)/2;
 	const int32_t end_gap=start_gap+gap;

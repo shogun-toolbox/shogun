@@ -27,7 +27,7 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 {
 	// here we need two matrices. Store it in one: 2N x N
 	if (2*m!=n)
-		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
+		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) 
 
 	m_num_segment_types = m;
 
@@ -47,12 +47,12 @@ void CSegmentLoss::set_segment_mask(CDynamicArray<float64_t>* segment_mask)
 void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 {
 #ifdef DEBUG
-	SG_PRINT("compute loss: len: %i, m_num_segment_types: %i\n", len, m_num_segment_types);
-	SG_PRINT("m_segment_mask->element(0):%f \n", m_segment_mask->element(0));
-	SG_PRINT("m_segment_ids->element(0):%i \n", m_segment_ids->element(0));
+	SG_PRINT("compute loss: len: %i, m_num_segment_types: %i\n", len, m_num_segment_types)
+	SG_PRINT("m_segment_mask->element(0):%f \n", m_segment_mask->element(0))
+	SG_PRINT("m_segment_ids->element(0):%i \n", m_segment_ids->element(0))
 #endif
-	ASSERT(m_segment_ids->get_dim1()==len);
-	ASSERT(m_segment_mask->get_dim1()==len);
+	ASSERT(m_segment_ids->get_dim1()==len)
+	ASSERT(m_segment_mask->get_dim1()==len)
 
 	m_segment_loss_matrix.resize_array(m_num_segment_types,len);
 

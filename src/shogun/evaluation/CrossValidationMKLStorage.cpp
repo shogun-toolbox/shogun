@@ -49,7 +49,7 @@ void CCrossValidationMKLStorage::update_trained_machine(
 	{
 		if (m_mkl_weights.matrix)
 		{
-			SG_DEBUG("deleting memory for mkl weight matrix\n");
+			SG_DEBUG("deleting memory for mkl weight matrix\n")
 			m_mkl_weights=SGMatrix<float64_t>();
 		}
 	}
@@ -57,7 +57,7 @@ void CCrossValidationMKLStorage::update_trained_machine(
 	/* evtl allocate memory (first call) */
 	if (!m_mkl_weights.matrix)
 	{
-		SG_DEBUG("allocating memory for mkl weight matrix\n");
+		SG_DEBUG("allocating memory for mkl weight matrix\n")
 		m_mkl_weights=SGMatrix<float64_t>(w.vlen,m_num_folds*m_num_runs);
 	}
 

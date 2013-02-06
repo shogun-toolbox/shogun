@@ -48,7 +48,7 @@ float64_t CStructuredAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 		case (SDT_SEQUENCE):
 			return evaluate_sequence(pred_labs, true_labs);
 		default:
-			SG_ERROR("Unknown structured data type for evaluation\n");
+			SG_ERROR("Unknown structured data type for evaluation\n")
 	}
 
 	return 0.0;
@@ -57,7 +57,7 @@ float64_t CStructuredAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 SGMatrix< int32_t > CStructuredAccuracy::get_confusion_matrix(
 		CLabels* predicted, CLabels* ground_truth)
 {
-	SG_SERROR("Not implemented\n");
+	SG_SERROR("Not implemented\n")
 	return SGMatrix< int32_t >();
 }
 

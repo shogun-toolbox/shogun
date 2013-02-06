@@ -299,7 +299,7 @@ class CMath : public CSGObject
 
 		static inline int32_t pow(int32_t x, int32_t n)
 		{
-			ASSERT(n>=0);
+			ASSERT(n>=0)
 			int32_t result=1;
 			while (n--)
 				result*=x;
@@ -416,7 +416,7 @@ class CMath : public CSGObject
 
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
-			ASSERT(len>0 && xy);
+			ASSERT(len>0 && xy)
 
 			float64_t area = 0.0;
 
@@ -454,7 +454,7 @@ class CMath : public CSGObject
 				seed=initseed;
 #if !defined(CYGWIN) && !defined(__INTERIX)
 			//seed=42
-			//SG_SPRINT("initializing random number generator with %d (seed size %d)\n", seed, RNG_SEED_SIZE);
+			//SG_SPRINT("initializing random number generator with %d (seed size %d)\n", seed, RNG_SEED_SIZE)
 			initstate(seed, CMath::rand_state, RNG_SEED_SIZE);
 #endif
 		}
@@ -471,28 +471,28 @@ class CMath : public CSGObject
 		static inline uint64_t random(uint64_t min_value, uint64_t max_value)
 		{
 			uint64_t ret = min_value + (uint64_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
-			ASSERT(ret>=min_value && ret<=max_value);
+			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
 		static inline int64_t random(int64_t min_value, int64_t max_value)
 		{
 			int64_t ret = min_value + (int64_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
-			ASSERT(ret>=min_value && ret<=max_value);
+			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
 		static inline uint32_t random(uint32_t min_value, uint32_t max_value)
 		{
 			uint32_t ret = min_value + (uint32_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
-			ASSERT(ret>=min_value && ret<=max_value);
+			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
 		static inline int32_t random(int32_t min_value, int32_t max_value)
 		{
 			int32_t ret = min_value + (int32_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
-			ASSERT(ret>=min_value && ret<=max_value);
+			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
@@ -501,8 +501,8 @@ class CMath : public CSGObject
 			float32_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
 			if (ret<min_value || ret>max_value)
-				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
-			ASSERT(ret>=min_value && ret<=max_value);
+				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
+			ASSERT(ret>=min_value && ret<=max_value)
 			return ret;
 		}
 
@@ -511,8 +511,8 @@ class CMath : public CSGObject
 			float64_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
 			if (ret<min_value || ret>max_value)
-				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
-			ASSERT(ret>=min_value && ret<=max_value);
+				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
+			ASSERT(ret>=min_value && ret<=max_value)
 			return ret;
 		}
 
@@ -521,8 +521,8 @@ class CMath : public CSGObject
 			floatmax_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
 			if (ret<min_value || ret>max_value)
-				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
-			ASSERT(ret>=min_value && ret<=max_value);
+				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
+			ASSERT(ret>=min_value && ret<=max_value)
 			return ret;
 		}
 
@@ -838,16 +838,16 @@ class CMath : public CSGObject
 		/// display bits (useful for debugging)
 		template <class T> static void display_bits(T word, int32_t width=8*sizeof(T))
 		{
-			ASSERT(width>=0);
+			ASSERT(width>=0)
 			for (int i=0; i<width; i++)
 			{
 				T mask = ((T) 1)<<(sizeof(T)*8-1);
 				while (mask)
 				{
 					if (mask & word)
-						SG_SPRINT("1");
+						SG_SPRINT("1")
 					else
-						SG_SPRINT("0");
+						SG_SPRINT("0")
 
 					mask>>=1;
 				}
@@ -1080,7 +1080,7 @@ class CMath : public CSGObject
 
 			if (!CMath::is_finite(q))
 			{
-				SG_SWARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
+				SG_SWARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q)
 				return NAN;
 			}
 			diff = p - q;

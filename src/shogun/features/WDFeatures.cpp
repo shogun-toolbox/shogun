@@ -33,8 +33,8 @@ CWDFeatures::CWDFeatures() :CDotFeatures()
 CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 		int32_t order, int32_t from_order) : CDotFeatures()
 {
-	ASSERT(str);
-	ASSERT(str->have_same_length());
+	ASSERT(str)
+	ASSERT(str->have_same_length())
 	SG_REF(str);
 
 	strings=str;
@@ -76,9 +76,9 @@ CWDFeatures::~CWDFeatures()
 
 float64_t CWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CWDFeatures* wdf = (CWDFeatures*) df;
 
 	int32_t len1, len2;
@@ -87,7 +87,7 @@ float64_t CWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 	uint8_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
 	uint8_t* vec2=wdf->strings->get_feature_vector(vec_idx2, len2, free_vec2);
 
-	ASSERT(len1==len2);
+	ASSERT(len1==len2)
 
 	float64_t sum=0.0;
 
@@ -108,7 +108,7 @@ float64_t CWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	float64_t sum=0;
 	int32_t lim=CMath::min(degree, string_length);
@@ -146,7 +146,7 @@ float64_t CWDFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_
 void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	int32_t lim=CMath::min(degree, string_length);
 	int32_t len;
@@ -184,7 +184,7 @@ void CWDFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t*
 
 void CWDFeatures::set_wd_weights()
 {
-	ASSERT(degree>0 && degree<=8);
+	ASSERT(degree>0 && degree<=8)
 	SG_FREE(wd_weights);
 	wd_weights=SG_MALLOC(float64_t, degree);
 	w_dim=0;
@@ -194,7 +194,7 @@ void CWDFeatures::set_wd_weights()
 		w_dim+=CMath::pow(alphabet_size, i+1)*string_length;
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
 	}
-	SG_DEBUG("created WDFeatures with d=%d (%d), alphabetsize=%d, dim=%d num=%d, len=%d\n", degree, from_degree, alphabet_size, w_dim, num_strings, string_length);
+	SG_DEBUG("created WDFeatures with d=%d (%d), alphabetsize=%d, dim=%d num=%d, len=%d\n", degree, from_degree, alphabet_size, w_dim, num_strings, string_length)
 }
 
 
@@ -211,7 +211,7 @@ void CWDFeatures::set_normalization_const(float64_t n)
 	else
 		normalization_const=n;
 
-	SG_DEBUG("normalization_const:%f\n", normalization_const);
+	SG_DEBUG("normalization_const:%f\n", normalization_const)
 }
 
 void* CWDFeatures::get_feature_iterator(int32_t vector_index)
@@ -264,14 +264,14 @@ bool CWDFeatures::get_next_feature(int32_t& index, float64_t& value, void* itera
 	int32_t i=it->i;
 	int32_t k=it->k;
 #ifdef DEBUG_WDFEATURES
-	SG_PRINT("i=%d k=%d offs=%d o=%d asize=%d asizem1=%d\n", i, k, it->offs, it->o, it->asize, it->asizem1);
+	SG_PRINT("i=%d k=%d offs=%d o=%d asize=%d asizem1=%d\n", i, k, it->offs, it->o, it->asize, it->asizem1)
 #endif
 
 	it->val[i]+=it->asizem1*it->vec[i+k];
 	value=wd_weights[k]/normalization_const;
 	index=it->val[i]+it->o;
 #ifdef DEBUG_WDFEATURES
-	SG_PRINT("index=%d val=%f w_size=%d lim=%d vlen=%d\n", index, value, w_dim, it->lim, it->vlen);
+	SG_PRINT("index=%d val=%f w_size=%d lim=%d vlen=%d\n", index, value, w_dim, it->lim, it->vlen)
 #endif
 
 	it->o+=it->asize;
@@ -282,7 +282,7 @@ bool CWDFeatures::get_next_feature(int32_t& index, float64_t& value, void* itera
 
 void CWDFeatures::free_feature_iterator(void* iterator)
 {
-	ASSERT(iterator);
+	ASSERT(iterator)
 	wd_feature_iterator* it=(wd_feature_iterator*) iterator;
 	strings->free_feature_vector(it->vec, it->vidx, it->vfree);
 	SG_FREE(it->val);
@@ -335,7 +335,7 @@ float64_t CWDFeatures::get_normalization_const()
 
 void CWDFeatures::set_wd_weights(SGVector<float64_t> weights)
 {
-	ASSERT(weights.vlen==degree);
+	ASSERT(weights.vlen==degree)
 
 	for (int32_t i=0; i<degree; i++)
 		wd_weights[i]=weights.vector[i];

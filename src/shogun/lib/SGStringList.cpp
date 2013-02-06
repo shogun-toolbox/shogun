@@ -42,7 +42,7 @@ SGStringList<T>::~SGStringList()
 
 template<class T> void SGStringList<T>::load(CFile* loader)
 {
-	ASSERT(loader);
+	ASSERT(loader)
 	unref();
 
 	SG_SET_LOCALE_C;
@@ -52,7 +52,7 @@ template<class T> void SGStringList<T>::load(CFile* loader)
 
 template<class T> void SGStringList<T>::save(CFile* saver)
 {
-	ASSERT(saver);
+	ASSERT(saver)
 
 	SG_SET_LOCALE_C;
 	saver->set_string_list(strings, num_strings);

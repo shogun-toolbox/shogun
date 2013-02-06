@@ -36,17 +36,17 @@ bool CIndexBlockRelation::check_blocks_list(CList* blocks)
 	for (int32_t i=0; i<n_sub_blocks; i++)
 	{
 		if (block_idxs_min[i] != block_idxs_max[i])
-			SG_ERROR("Blocks do overlap and it is not supported\n");
+			SG_ERROR("Blocks do overlap and it is not supported\n")
 	}
 	if (min_idxs[0] != 0) 
-		SG_ERROR("Block with smallest indices start from %d while 0 is required\n", min_idxs[0]);
+		SG_ERROR("Block with smallest indices start from %d while 0 is required\n", min_idxs[0])
 	
 	for (int32_t i=1; i<n_sub_blocks; i++)
 	{
 		if (min_idxs[i] > max_idxs[i-1])
-			SG_ERROR("There is an unsupported gap between %d and %d vectors\n", max_idxs[i-1], min_idxs[i]);
+			SG_ERROR("There is an unsupported gap between %d and %d vectors\n", max_idxs[i-1], min_idxs[i])
 		else if (min_idxs[i] < max_idxs[i-1]) 
-			SG_ERROR("Blocks do overlap and it is not supported\n");
+			SG_ERROR("Blocks do overlap and it is not supported\n")
 	}
 
 	SG_FREE(min_idxs);

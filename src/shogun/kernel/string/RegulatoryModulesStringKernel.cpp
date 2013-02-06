@@ -50,8 +50,8 @@ CRegulatoryModulesStringKernel::~CRegulatoryModulesStringKernel()
 
 bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(motif_positions_lhs);
-	ASSERT(motif_positions_rhs);
+	ASSERT(motif_positions_lhs)
+	ASSERT(motif_positions_rhs)
 
 	if (l->get_num_vectors() != motif_positions_lhs->get_num_vectors())
 		SG_ERROR("Number of vectors does not agree (LHS: %d, Motif LHS: %d).\n",
@@ -68,12 +68,12 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 void CRegulatoryModulesStringKernel::set_motif_positions(
 		CDenseFeatures<uint16_t>* positions_lhs, CDenseFeatures<uint16_t>* positions_rhs)
 {
-	ASSERT(positions_lhs);
-	ASSERT(positions_rhs);
+	ASSERT(positions_lhs)
+	ASSERT(positions_rhs)
 	SG_UNREF(motif_positions_lhs);
 	SG_UNREF(motif_positions_rhs);
 	if (positions_lhs->get_num_features() != positions_rhs->get_num_features())
-		SG_ERROR("Number of dimensions does not agree.\n");
+		SG_ERROR("Number of dimensions does not agree.\n")
 
 	motif_positions_lhs=positions_lhs;
 	motif_positions_rhs=positions_rhs;
@@ -83,8 +83,8 @@ void CRegulatoryModulesStringKernel::set_motif_positions(
 
 float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	ASSERT(motif_positions_lhs);
-	ASSERT(motif_positions_rhs);
+	ASSERT(motif_positions_lhs)
+	ASSERT(motif_positions_rhs)
 
 	bool free_avec, free_bvec;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
@@ -94,7 +94,7 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	bool afree_pos, bfree_pos;
 	uint16_t* positions_a = motif_positions_lhs->get_feature_vector(idx_a, alen_pos, afree_pos);
 	uint16_t* positions_b = motif_positions_rhs->get_feature_vector(idx_b, blen_pos, bfree_pos);
-	ASSERT(alen_pos==blen_pos);
+	ASSERT(alen_pos==blen_pos)
 	int32_t num_pos=alen_pos;
 
 
@@ -196,7 +196,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 
 void CRegulatoryModulesStringKernel::set_wd_weights()
 {
-	ASSERT(degree>0);
+	ASSERT(degree>0)
 
 	SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, degree);

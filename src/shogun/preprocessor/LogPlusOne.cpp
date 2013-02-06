@@ -28,8 +28,8 @@ CLogPlusOne::~CLogPlusOne()
 /// initialize preprocessor from features
 bool CLogPlusOne::init(CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_DENSE);
-	ASSERT(features->get_feature_type()==F_DREAL);
+	ASSERT(features->get_feature_class()==C_DENSE)
+	ASSERT(features->get_feature_type()==F_DREAL)
 
 	return true;
 }

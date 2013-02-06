@@ -32,7 +32,7 @@ CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),
 	lp_glpk = NULL;
 #endif
 
-	SG_DEBUG("creating MKL object %p\n", this);
+	SG_DEBUG("creating MKL object %p\n", this)
 	lp_initialized = false ;
 }
 
@@ -41,7 +41,7 @@ CMKL::~CMKL()
 	// -- Delete beta_local for ElasticnetMKL
 	SG_FREE(beta_local);
 
-	SG_DEBUG("deleting MKL object %p\n", this);
+	SG_DEBUG("deleting MKL object %p\n", this)
 	if (svm)
 		svm->set_callback_function(NULL, NULL);
 	SG_UNREF(svm);
@@ -69,7 +69,7 @@ bool CMKL::init_cplex()
 {
 	while (env==NULL)
 	{
-		SG_INFO( "trying to initialize CPLEX\n") ;
+		SG_INFO( "trying to initialize CPLEX\n") 
 
 		int status = 0; // calling external lib
 		env = CPXopenCPLEX (&status);
@@ -77,10 +77,10 @@ bool CMKL::init_cplex()
 		if ( env == NULL )
 		{
 			char  errmsg[1024];
-			SG_WARNING( "Could not open CPLEX environment.\n");
+			SG_WARNING( "Could not open CPLEX environment.\n")
 			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING( "%s", errmsg);
-			SG_WARNING( "retrying in 60 seconds\n");
+			SG_WARNING( "%s", errmsg)
+			SG_WARNING( "retrying in 60 seconds\n")
 			sleep(60);
 		}
 		else
@@ -89,21 +89,21 @@ bool CMKL::init_cplex()
 			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, CPX_ALG_DUAL);
 			if ( status )
 			{
-            SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
+            SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status)
 			}
 			else
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if ( status )
 				{
-					SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
+					SG_ERROR( "Failure to turn on data checking, error %d.\n", status)
 				}
 				else
 				{
 					lp_cplex = CPXcreateprob (env, &status, "light");
 
 					if ( lp_cplex == NULL )
-						SG_ERROR( "Failed to create LP.\n");
+						SG_ERROR( "Failed to create LP.\n")
 					else
 						CPXchgobjsen (env, lp_cplex, CPX_MIN);  /* Problem is minimization */
 				}
@@ -125,7 +125,7 @@ bool CMKL::cleanup_cplex()
 		lp_initialized = false;
 
 		if (status)
-			SG_WARNING( "CPXfreeprob failed, error code %d.\n", status);
+			SG_WARNING( "CPXfreeprob failed, error code %d.\n", status)
 		else
 			result = true;
 	}
@@ -138,9 +138,9 @@ bool CMKL::cleanup_cplex()
 		if (status)
 		{
 			char  errmsg[1024];
-			SG_WARNING( "Could not close CPLEX environment.\n");
+			SG_WARNING( "Could not close CPLEX environment.\n")
 			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING( "%s", errmsg);
+			SG_WARNING( "%s", errmsg)
 		}
 		else
 			result = true;
@@ -176,12 +176,12 @@ bool CMKL::check_lpx_status(LPX *lp)
 
 	if (status==LPX_INFEAS)
 	{
-		SG_PRINT("solution is infeasible!\n");
+		SG_PRINT("solution is infeasible!\n")
 		return false;
 	}
 	else if(status==LPX_NOFEAS)
 	{
-		SG_PRINT("problem has no feasible solution!\n");
+		SG_PRINT("problem has no feasible solution!\n")
 		return false;
 	}
 	return true;
@@ -190,8 +190,8 @@ bool CMKL::check_lpx_status(LPX *lp)
 
 bool CMKL::train_machine(CFeatures* data)
 {
-	ASSERT(kernel);
-	ASSERT(m_labels && m_labels->get_num_labels());
+	ASSERT(kernel)
+	ASSERT(m_labels && m_labels->get_num_labels())
 
 	if (data)
 	{
@@ -206,36 +206,36 @@ bool CMKL::train_machine(CFeatures* data)
 
 	init_training();
 	if (!svm)
-		SG_ERROR("No constraint generator (SVM) set\n");
+		SG_ERROR("No constraint generator (SVM) set\n")
 
 	int32_t num_label=0;
 	if (m_labels)
 		num_label = m_labels->get_num_labels();
 
-	SG_INFO("%d trainlabels (%ld)\n", num_label, m_labels);
+	SG_INFO("%d trainlabels (%ld)\n", num_label, m_labels)
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
 
-	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon) ;
-	SG_INFO("C_mkl = %1.1e\n", C_mkl) ;
-	SG_INFO("mkl_norm = %1.3e\n", mkl_norm);
-	SG_INFO("solver = %d\n", get_solver_type());
-	SG_INFO("ent_lambda = %f\n", ent_lambda);
-	SG_INFO("mkl_block_norm = %f\n", mkl_block_norm);
+	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon) 
+	SG_INFO("C_mkl = %1.1e\n", C_mkl) 
+	SG_INFO("mkl_norm = %1.3e\n", mkl_norm)
+	SG_INFO("solver = %d\n", get_solver_type())
+	SG_INFO("ent_lambda = %f\n", ent_lambda)
+	SG_INFO("mkl_block_norm = %f\n", mkl_block_norm)
 
 	int32_t num_weights = -1;
 	int32_t num_kernels = kernel->get_num_subkernels();
-	SG_INFO("num_kernels = %d\n", num_kernels);
+	SG_INFO("num_kernels = %d\n", num_kernels)
 	const float64_t* beta_const   = kernel->get_subkernel_weights(num_weights);
 	float64_t* beta = SGVector<float64_t>::clone_vector(beta_const, num_weights);
-	ASSERT(num_weights==num_kernels);
+	ASSERT(num_weights==num_kernels)
 
 	if (get_solver_type()==ST_BLOCK_NORM &&
 			mkl_block_norm>=1 &&
 			mkl_block_norm<=2)
 	{
 		mkl_norm=mkl_block_norm/(2-mkl_block_norm);
-		SG_WARNING("Switching to ST_DIRECT method with mkl_norm=%g\n", mkl_norm);
+		SG_WARNING("Switching to ST_DIRECT method with mkl_norm=%g\n", mkl_norm)
 		set_solver_type(ST_DIRECT);
 	}
 
@@ -310,7 +310,7 @@ bool CMKL::train_machine(CFeatures* data)
 #endif
 		svm->set_callback_function(this, perform_mkl_step_helper);
 		svm->train();
-		SG_DONE();
+		SG_DONE()
 		svm->set_callback_function(NULL, NULL);
 #ifdef USE_REFERENCE_COUNTING
 		if (refs>1)
@@ -332,7 +332,7 @@ bool CMKL::train_machine(CFeatures* data)
 
 			if((training_time_clock.cur_time_diff()>get_max_train_time ())&&(get_max_train_time ()>0))
 			{
-				SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ());
+				SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ())
 				break;
 			}
 
@@ -368,7 +368,7 @@ void CMKL::set_mkl_norm(float64_t norm)
 {
 
   if (norm<1)
-    SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL\n");
+    SG_ERROR("Norm must be >= 1, e.g., 1-norm is the standard MKL; norms>1 nonsparse MKL\n")
 
   mkl_norm = norm;
 }
@@ -376,7 +376,7 @@ void CMKL::set_mkl_norm(float64_t norm)
 void CMKL::set_elasticnet_lambda(float64_t lambda)
 {
   if (lambda>1 || lambda<0)
-    SG_ERROR("0<=lambda<=1\n");
+    SG_ERROR("0<=lambda<=1\n")
 
   if (lambda==0)
     lambda = 1e-6;
@@ -389,7 +389,7 @@ void CMKL::set_elasticnet_lambda(float64_t lambda)
 void CMKL::set_mkl_block_norm(float64_t q)
 {
   if (q<1)
-    SG_ERROR("1<=q<=inf\n");
+    SG_ERROR("1<=q<=inf\n")
 
   mkl_block_norm=q;
 }
@@ -399,14 +399,14 @@ bool CMKL::perform_mkl_step(
 {
 	if((training_time_clock.cur_time_diff()>get_max_train_time ())&&(get_max_train_time ()>0))
 	{
-		SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ());
+		SG_SWARNING("MKL Algorithm terminates PREMATURELY due to current training time exceeding get_max_train_time ()= %f . It may have not converged yet!\n",get_max_train_time ())
 		return true;
 	}
 
 	int32_t num_kernels = kernel->get_num_subkernels();
 	int32_t nweights=0;
 	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
-	ASSERT(nweights==num_kernels);
+	ASSERT(nweights==num_kernels)
 	float64_t* beta = SG_MALLOC(float64_t, num_kernels);
 
 	int32_t inner_iters=0;
@@ -450,7 +450,7 @@ bool CMKL::perform_mkl_step(
 			rho=compute_optimal_betas_via_glpk(beta, old_beta, num_kernels, sumw, suma, inner_iters);
 #endif
 		else
-			SG_ERROR("Solver type not supported (not compiled in?)\n");
+			SG_ERROR("Solver type not supported (not compiled in?)\n")
 
 		w_gap = CMath::abs(1-rho/mkl_objective) ;
 	}
@@ -489,7 +489,7 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 			beta[p] = 0.0;
 			--nofKernelsGood;
 		}
-		ASSERT( beta[p] >= 0 );
+		ASSERT( beta[p] >= 0 )
 	}
 
 	// --- normalize
@@ -503,20 +503,20 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 	const float64_t R = CMath::sqrt( preR ) * epsRegul;
 	if( !( R >= 0 ) )
 	{
-		SG_PRINT( "MKL-direct: p = %.3f\n", 1.0 );
-		SG_PRINT( "MKL-direct: nofKernelsGood = %d\n", nofKernelsGood );
-		SG_PRINT( "MKL-direct: Z = %e\n", Z );
-		SG_PRINT( "MKL-direct: eps = %e\n", epsRegul );
+		SG_PRINT( "MKL-direct: p = %.3f\n", 1.0 )
+		SG_PRINT( "MKL-direct: nofKernelsGood = %d\n", nofKernelsGood )
+		SG_PRINT( "MKL-direct: Z = %e\n", Z )
+		SG_PRINT( "MKL-direct: eps = %e\n", epsRegul )
 		for( p=0; p<num_kernels; ++p )
 		{
 			const float64_t t = CMath::pow( beta_local[p] - beta[p], 2.0 );
-			SG_PRINT( "MKL-direct: t[%3d] = %e  ( diff = %e = %e - %e )\n", p, t, beta_local[p]-beta[p], beta_local[p], beta[p] );
+			SG_PRINT( "MKL-direct: t[%3d] = %e  ( diff = %e = %e - %e )\n", p, t, beta_local[p]-beta[p], beta_local[p], beta[p] )
 		}
-		SG_PRINT( "MKL-direct: preR = %e\n", preR );
-		SG_PRINT( "MKL-direct: preR/p = %e\n", preR );
-		SG_PRINT( "MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR) );
-		SG_PRINT( "MKL-direct: R = %e\n", R );
-		SG_ERROR( "Assertion R >= 0 failed!\n" );
+		SG_PRINT( "MKL-direct: preR = %e\n", preR )
+		SG_PRINT( "MKL-direct: preR/p = %e\n", preR )
+		SG_PRINT( "MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR) )
+		SG_PRINT( "MKL-direct: R = %e\n", R )
+		SG_ERROR( "Assertion R >= 0 failed!\n" )
 	}
 
 	Z = 0.0;
@@ -524,14 +524,14 @@ float64_t CMKL::compute_optimal_betas_elasticnet(
 	{
 		beta[p] += R;
 		Z += beta[p];
-		ASSERT( beta[p] >= 0 );
+		ASSERT( beta[p] >= 0 )
 	}
 	Z = CMath::pow( Z, -1.0 );
-	ASSERT( Z >= 0 );
+	ASSERT( Z >= 0 )
 	for( p=0; p<num_kernels; ++p )
 	{
 		beta[p] *= Z;
-		ASSERT( beta[p] >= 0.0 );
+		ASSERT( beta[p] >= 0.0 )
 		if (beta[p] > 1.0 )
 			beta[p] = 1.0;
 	}
@@ -610,7 +610,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 			nm[k]= CMath::pow(sum, 0.5);
 			del = CMath::max(del, nm[k]);
 
-			// SG_PRINT("nm[%d]=%f\n",k,nm[k]);
+			// SG_PRINT("nm[%d]=%f\n",k,nm[k])
 			k++;
 
 
@@ -630,7 +630,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 			float64_t gg_old = gg;
 			float64_t del_old = del;
 
-			// SG_PRINT("[%d] fval=%f gg=%f del=%f\n", k, ff, gg, del);
+			// SG_PRINT("[%d] fval=%f gg=%f del=%f\n", k, ff, gg, del)
 
 			float64_t step=1.0;
 			do
@@ -650,7 +650,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 
 	}
 	else
-		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
+		SG_ERROR( "cannot compute objective, labels or kernel not set\n")
 
 	return -mkl_obj;
 }
@@ -667,15 +667,15 @@ float64_t CMKL::compute_optimal_betas_block_norm(
 	// --- optimal beta
 	for( p=0; p<num_kernels; ++p )
 	{
-		ASSERT(sumw[p]>=0);
+		ASSERT(sumw[p]>=0)
 
 		beta[p] = CMath::pow( sumw[p], -(2.0-mkl_block_norm)/(2.0-2.0*mkl_block_norm));
 		Z+= CMath::pow( sumw[p], -(mkl_block_norm)/(2.0-2.0*mkl_block_norm));
 
-		ASSERT( beta[p] >= 0 );
+		ASSERT( beta[p] >= 0 )
 	}
 
-	ASSERT(Z>=0);
+	ASSERT(Z>=0)
 
 	Z=1.0/CMath::pow(Z, (2.0-mkl_block_norm)/mkl_block_norm);
 
@@ -707,7 +707,7 @@ float64_t CMKL::compute_optimal_betas_directly(
 	nofKernelsGood = num_kernels;
 	for( p=0; p<num_kernels; ++p )
 	{
-		//SG_PRINT( "MKL-direct:  sumw[%3d] = %e  ( oldbeta = %e )\n", p, sumw[p], old_beta[p] );
+		//SG_PRINT( "MKL-direct:  sumw[%3d] = %e  ( oldbeta = %e )\n", p, sumw[p], old_beta[p] )
 		if( sumw[p] >= 0.0 && old_beta[p] >= 0.0 )
 		{
 			beta[p] = sumw[p] * old_beta[p]*old_beta[p] / mkl_norm;
@@ -718,7 +718,7 @@ float64_t CMKL::compute_optimal_betas_directly(
 			beta[p] = 0.0;
 			--nofKernelsGood;
 		}
-		ASSERT( beta[p] >= 0 );
+		ASSERT( beta[p] >= 0 )
 	}
 
 	// --- normalize
@@ -727,7 +727,7 @@ float64_t CMKL::compute_optimal_betas_directly(
 		Z += CMath::pow( beta[p], mkl_norm );
 
 	Z = CMath::pow( Z, -1.0/mkl_norm );
-	ASSERT( Z >= 0 );
+	ASSERT( Z >= 0 )
 	for( p=0; p<num_kernels; ++p )
 		beta[p] *= Z;
 
@@ -739,20 +739,20 @@ float64_t CMKL::compute_optimal_betas_directly(
 	const float64_t R = CMath::sqrt( preR / mkl_norm ) * epsRegul;
 	if( !( R >= 0 ) )
 	{
-		SG_PRINT( "MKL-direct: p = %.3f\n", mkl_norm );
-		SG_PRINT( "MKL-direct: nofKernelsGood = %d\n", nofKernelsGood );
-		SG_PRINT( "MKL-direct: Z = %e\n", Z );
-		SG_PRINT( "MKL-direct: eps = %e\n", epsRegul );
+		SG_PRINT( "MKL-direct: p = %.3f\n", mkl_norm )
+		SG_PRINT( "MKL-direct: nofKernelsGood = %d\n", nofKernelsGood )
+		SG_PRINT( "MKL-direct: Z = %e\n", Z )
+		SG_PRINT( "MKL-direct: eps = %e\n", epsRegul )
 		for( p=0; p<num_kernels; ++p )
 		{
 			const float64_t t = CMath::pow( old_beta[p] - beta[p], 2.0 );
-			SG_PRINT( "MKL-direct: t[%3d] = %e  ( diff = %e = %e - %e )\n", p, t, old_beta[p]-beta[p], old_beta[p], beta[p] );
+			SG_PRINT( "MKL-direct: t[%3d] = %e  ( diff = %e = %e - %e )\n", p, t, old_beta[p]-beta[p], old_beta[p], beta[p] )
 		}
-		SG_PRINT( "MKL-direct: preR = %e\n", preR );
-		SG_PRINT( "MKL-direct: preR/p = %e\n", preR/mkl_norm );
-		SG_PRINT( "MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/mkl_norm) );
-		SG_PRINT( "MKL-direct: R = %e\n", R );
-		SG_ERROR( "Assertion R >= 0 failed!\n" );
+		SG_PRINT( "MKL-direct: preR = %e\n", preR )
+		SG_PRINT( "MKL-direct: preR/p = %e\n", preR/mkl_norm )
+		SG_PRINT( "MKL-direct: sqrt(preR/p) = %e\n", CMath::sqrt(preR/mkl_norm) )
+		SG_PRINT( "MKL-direct: R = %e\n", R )
+		SG_ERROR( "Assertion R >= 0 failed!\n" )
 	}
 
 	Z = 0.0;
@@ -760,14 +760,14 @@ float64_t CMKL::compute_optimal_betas_directly(
 	{
 		beta[p] += R;
 		Z += CMath::pow( beta[p], mkl_norm );
-		ASSERT( beta[p] >= 0 );
+		ASSERT( beta[p] >= 0 )
 	}
 	Z = CMath::pow( Z, -1.0/mkl_norm );
-	ASSERT( Z >= 0 );
+	ASSERT( Z >= 0 )
 	for( p=0; p<num_kernels; ++p )
 	{
 		beta[p] *= Z;
-		ASSERT( beta[p] >= 0.0 );
+		ASSERT( beta[p] >= 0.0 )
 		if( beta[p] > 1.0 )
 			beta[p] = 1.0;
 	}
@@ -785,10 +785,10 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 		const float64_t* sumw, float64_t suma,
 		 float64_t mkl_objective)
 {
-	SG_DEBUG("MKL via NEWTON\n");
+	SG_DEBUG("MKL via NEWTON\n")
 
 	if (mkl_norm==1)
-		SG_ERROR("MKL via NEWTON works only for norms>1\n");
+		SG_ERROR("MKL via NEWTON works only for norms>1\n")
 
 	const double epsBeta = 1e-32;
 	const double epsGamma = 1e-12;
@@ -818,20 +818,20 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 		if( !( beta[p] >= epsBeta ) )
 			beta[p] = epsBeta;
 
-		ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
+		ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 )
 		Z += CMath::pow( beta[p], mkl_norm );
 	}
 
 	Z = CMath::pow( Z, -1.0/mkl_norm );
 	if( !( fabs(Z-1.0) <= epsGamma ) )
 	{
-		SG_WARNING( "old_beta not normalized (diff=%e);  forcing normalization.  ", Z-1.0 );
+		SG_WARNING( "old_beta not normalized (diff=%e);  forcing normalization.  ", Z-1.0 )
 		for( p=0; p<num_kernels; ++p )
 		{
 			beta[p] *= Z;
 			if( beta[p] > 1.0 )
 				beta[p] = 1.0;
-			ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
+			ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 )
 		}
 	}
 
@@ -842,25 +842,25 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 		if ( !( sumw[p] >= 0 ) )
 		{
 			if( !( sumw[p] >= -epsWsq ) )
-				SG_WARNING( "sumw[%d] = %e;  treated as 0.  ", p, sumw[p] );
+				SG_WARNING( "sumw[%d] = %e;  treated as 0.  ", p, sumw[p] )
 			// should better recompute sumw[] !!!
 		}
 		else
 		{
-			ASSERT( sumw[p] >= 0 );
+			ASSERT( sumw[p] >= 0 )
 			//gamma += CMath::pow( sumw[p] * beta[p]*beta[p], r );
 			gamma += CMath::pow( sumw[p] * beta[p]*beta[p] / mkl_norm, r );
 		}
 	}
 	gamma = CMath::pow( gamma, 1.0/r ) / mkl_norm;
-	ASSERT( gamma > -1e-9 );
+	ASSERT( gamma > -1e-9 )
 	if( !( gamma > epsGamma ) )
 	{
-		SG_WARNING( "bad gamma: %e;  set to %e.  ", gamma, epsGamma );
+		SG_WARNING( "bad gamma: %e;  set to %e.  ", gamma, epsGamma )
 		// should better recompute sumw[] !!!
 		gamma = epsGamma;
 	}
-	ASSERT( gamma >= epsGamma );
+	ASSERT( gamma >= epsGamma )
 	//gamma = -gamma;
 
 	// --- compute objective
@@ -871,8 +871,8 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 		//obj += gamma/mkl_norm * CMath::pow( beta[p], mkl_norm );
 	}
 	if( !( obj >= 0.0 ) )
-		SG_WARNING( "negative objective: %e.  ", obj );
-	//SG_PRINT( "OBJ = %e.  \n", obj );
+		SG_WARNING( "negative objective: %e.  ", obj )
+	//SG_PRINT( "OBJ = %e.  \n", obj )
 
 
 	// === perform Newton steps
@@ -883,7 +883,7 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 		// newtStep = 0.0;
 		for( p=0; p<num_kernels; ++p )
 		{
-			ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 );
+			ASSERT( 0.0 <= beta[p] && beta[p] <= 1.0 )
 			//const float halfw2p = ( sumw[p] >= 0.0 ) ? sumw[p] : 0.0;
 			//const float64_t t1 = halfw2p*beta[p] - mkl_norm*gamma*CMath::pow(beta[p],mkl_norm);
 			//const float64_t t2 = 2.0*halfw2p + gqq1*CMath::pow(beta[p],mkl_norm-1.0);
@@ -896,11 +896,11 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 			else
 				newtDir[p] = ( t1 == 0.0 ) ? 0.0 : ( t1 / t2 );
 			// newtStep += newtDir[p] * grad[p];
-			ASSERT( newtDir[p] == newtDir[p] );
-			//SG_PRINT( "newtDir[%d] = %6.3f = %e / %e \n", p, newtDir[p], t1, t2 );
+			ASSERT( newtDir[p] == newtDir[p] )
+			//SG_PRINT( "newtDir[%d] = %6.3f = %e / %e \n", p, newtDir[p], t1, t2 )
 		}
 		//CMath::display_vector( newtDir, num_kernels, "newton direction  " );
-		//SG_PRINT( "Newton step size = %e\n", Z );
+		//SG_PRINT( "Newton step size = %e\n", Z )
 
 		// --- line search
 		stepSize = 1.0;
@@ -920,24 +920,24 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 						newtBeta[p] = epsBeta;
 					Z += CMath::pow( newtBeta[p], mkl_norm );
 				}
-				ASSERT( 0.0 <= Z );
+				ASSERT( 0.0 <= Z )
 				Z = CMath::pow( Z, -1.0/mkl_norm );
 				if( Z == 0.0 )
 					stepSize /= 2.0;
 			}
 
 			// --- normalize new beta (wrt p-norm)
-			ASSERT( 0.0 < Z );
-			ASSERT( Z < CMath::INFTY );
+			ASSERT( 0.0 < Z )
+			ASSERT( Z < CMath::INFTY )
 			for( p=0; p<num_kernels; ++p )
 			{
 				newtBeta[p] *= Z;
 				if( newtBeta[p] > 1.0 )
 				{
-					//SG_WARNING( "beta[%d] = %e;  set to 1.  ", p, beta[p] );
+					//SG_WARNING( "beta[%d] = %e;  set to 1.  ", p, beta[p] )
 					newtBeta[p] = 1.0;
 				}
-				ASSERT( 0.0 <= newtBeta[p] && newtBeta[p] <= 1.0 );
+				ASSERT( 0.0 <= newtBeta[p] && newtBeta[p] <= 1.0 )
 			}
 
 			// --- objective increased?
@@ -945,7 +945,7 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 			newtObj = 0.0;
 			for( p=0; p<num_kernels; ++p )
 				newtObj += sumw[p] * old_beta[p]*old_beta[p] / newtBeta[p];
-			//SG_PRINT( "step = %.8f:  obj = %e -> %e.  \n", stepSize, obj, newtObj );
+			//SG_PRINT( "step = %.8f:  obj = %e -> %e.  \n", stepSize, obj, newtObj )
 			if ( newtObj < obj - epsNewt*stepSize*obj )
 			{
 				for( p=0; p<num_kernels; ++p )
@@ -975,18 +975,18 @@ float64_t CMKL::compute_optimal_betas_newton(float64_t* beta,
 float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float64_t* old_beta, int32_t num_kernels,
 		  const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
-	SG_DEBUG("MKL via CPLEX\n");
+	SG_DEBUG("MKL via CPLEX\n")
 
 #ifdef USE_CPLEX
-	ASSERT(new_beta);
-	ASSERT(old_beta);
+	ASSERT(new_beta)
+	ASSERT(old_beta)
 
 	int32_t NUMCOLS = 2*num_kernels + 1;
 	double* x=SG_MALLOC(double, NUMCOLS);
 
 	if (!lp_initialized)
 	{
-		SG_INFO( "creating LP\n") ;
+		SG_INFO( "creating LP\n") 
 
 		double   obj[NUMCOLS]; /* calling external lib */
 		double   lb[NUMCOLS]; /* calling external lib */
@@ -1010,11 +1010,11 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 		if ( status ) {
 			char  errmsg[1024];
 			CPXgeterrorstring (env, status, errmsg);
-			SG_ERROR( "%s", errmsg);
+			SG_ERROR( "%s", errmsg)
 		}
 
 		// add constraint sum(w)=1;
-		SG_INFO( "adding the first row\n");
+		SG_INFO( "adding the first row\n")
 		int initial_rmatbeg[1]; /* calling external lib */
 		int initial_rmatind[num_kernels+1]; /* calling external lib */
 		double initial_rmatval[num_kernels+1]; /* calling ext lib */
@@ -1073,7 +1073,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 
 		if ( status )
-			SG_ERROR( "Failed to add the first row.\n");
+			SG_ERROR( "Failed to add the first row.\n")
 
 		lp_initialized = true ;
 
@@ -1102,7 +1102,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
-					SG_ERROR( "Failed to add a smothness row (1).\n");
+					SG_ERROR( "Failed to add a smothness row (1).\n")
 
 				rmatbeg[0] = 0;
 				rhs[0]=0 ;     // rhs=0 ;
@@ -1117,13 +1117,13 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 						rhs, sense, rmatbeg,
 						rmatind, rmatval, NULL, NULL);
 				if ( status )
-					SG_ERROR( "Failed to add a smothness row (2).\n");
+					SG_ERROR( "Failed to add a smothness row (2).\n")
 			}
 		}
 	}
 
 	{ // add the new row
-		//SG_INFO( "add the new row\n") ;
+		//SG_INFO( "add the new row\n") 
 
 		int rmatbeg[1];
 		int rmatind[num_kernels+1];
@@ -1154,7 +1154,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				rhs, sense, rmatbeg,
 				rmatind, rmatval, NULL, NULL);
 		if ( status )
-			SG_ERROR( "Failed to add the new row.\n");
+			SG_ERROR( "Failed to add the new row.\n")
 	}
 
 	inner_iters=0;
@@ -1178,14 +1178,14 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			{
 				//int rows=CPXgetnumrows(env, lp_cplex);
 				//int cols=CPXgetnumcols(env, lp_cplex);
-				//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels);
+				//SG_PRINT("rows:%d, cols:%d (kernel:%d)\n", rows, cols, num_kernels)
 				CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
 				set_qnorm_constraints(beta, num_kernels);
 
 				status = CPXbaropt(env, lp_cplex);
 				if ( status )
-					SG_ERROR( "Failed to optimize Problem.\n");
+					SG_ERROR( "Failed to optimize Problem.\n")
 
 				int solstat=0;
 				double objval=0;
@@ -1195,12 +1195,12 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 				if ( status )
 				{
 					CMath::display_vector(beta, num_kernels, "beta");
-					SG_ERROR( "Failed to obtain solution.\n");
+					SG_ERROR( "Failed to obtain solution.\n")
 				}
 
 				CMath::scale_vector(1/CMath::qnorm(beta, num_kernels, mkl_norm), beta, num_kernels);
 
-				//SG_PRINT("[%d] %f (%f)\n", inner_iters, objval, objval_old);
+				//SG_PRINT("[%d] %f (%f)\n", inner_iters, objval, objval_old)
 				if ((1-abs(objval/objval_old) < 0.1*mkl_epsilon)) // && (inner_iters>2))
 					break;
 
@@ -1212,13 +1212,13 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 		}
 
 		if ( status )
-			SG_ERROR( "Failed to optimize Problem.\n");
+			SG_ERROR( "Failed to optimize Problem.\n")
 
 		// obtain solution
 		int32_t cur_numrows=(int32_t) CPXgetnumrows(env, lp_cplex);
 		int32_t cur_numcols=(int32_t) CPXgetnumcols(env, lp_cplex);
 		int32_t num_rows=cur_numrows;
-		ASSERT(cur_numcols<=2*num_kernels+1);
+		ASSERT(cur_numcols<=2*num_kernels+1)
 
 		float64_t* slack=SG_MALLOC(float64_t, cur_numrows);
 		float64_t* pi=SG_MALLOC(float64_t, cur_numrows);
@@ -1240,7 +1240,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 		int32_t solution_ok = (!status) ;
 		if ( status )
-			SG_ERROR( "Failed to obtain solution.\n");
+			SG_ERROR( "Failed to obtain solution.\n")
 
 		int32_t num_active_rows=0 ;
 		if (solution_ok)
@@ -1285,10 +1285,10 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			// have at most max(100,num_active_rows*2) rows, if not, remove one
 			if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 			{
-				//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
+				//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) 
 				status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
 				if ( status )
-					SG_ERROR( "Failed to remove an old row.\n");
+					SG_ERROR( "Failed to remove an old row.\n")
 			}
 
 			//CMath::display_vector(x, num_kernels, "beta");
@@ -1310,7 +1310,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 	SG_FREE(x);
 #else
-	SG_ERROR("Cplex not enabled at compile time\n");
+	SG_ERROR("Cplex not enabled at compile time\n")
 #endif
 	return rho;
 }
@@ -1318,17 +1318,17 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t* old_beta,
 		int num_kernels, const float64_t* sumw, float64_t suma, int32_t& inner_iters)
 {
-	SG_DEBUG("MKL via GLPK\n");
+	SG_DEBUG("MKL via GLPK\n")
 
 	if (mkl_norm!=1)
-		SG_ERROR("MKL via GLPK works only for norm=1\n");
+		SG_ERROR("MKL via GLPK works only for norm=1\n")
 
 	float64_t obj=1.0;
 #ifdef USE_GLPK
 	int32_t NUMCOLS = 2*num_kernels + 1 ;
 	if (!lp_initialized)
 	{
-		SG_INFO( "creating LP\n") ;
+		SG_INFO( "creating LP\n") 
 
 		//set obj function, note glpk indexing is 1-based
 		lpx_add_cols(lp_glpk, NUMCOLS);
@@ -1404,12 +1404,12 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	lpx_simplex(lp_glpk);
 	bool res = check_lpx_status(lp_glpk);
 	if (!res)
-		SG_ERROR( "Failed to optimize Problem.\n");
+		SG_ERROR( "Failed to optimize Problem.\n")
 
 	int32_t cur_numrows = lpx_get_num_rows(lp_glpk);
 	int32_t cur_numcols = lpx_get_num_cols(lp_glpk);
 	int32_t num_rows=cur_numrows;
-	ASSERT(cur_numcols<=2*num_kernels+1);
+	ASSERT(cur_numcols<=2*num_kernels+1)
 
 	float64_t* col_primal = SG_MALLOC(float64_t, cur_numcols);
 	float64_t* row_primal = SG_MALLOC(float64_t, cur_numrows);
@@ -1463,7 +1463,7 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	SG_FREE(row_primal);
 	SG_FREE(col_primal);
 #else
-	SG_ERROR("Glpk not enabled at compile time\n");
+	SG_ERROR("Glpk not enabled at compile time\n")
 #endif
 
 	return obj;
@@ -1471,16 +1471,16 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 
 void CMKL::compute_sum_beta(float64_t* sumw)
 {
-	ASSERT(sumw);
-	ASSERT(svm);
+	ASSERT(sumw)
+	ASSERT(svm)
 
 	int32_t nsv=svm->get_num_support_vectors();
 	int32_t num_kernels = kernel->get_num_subkernels();
 	SGVector<float64_t> beta=SGVector<float64_t>(num_kernels);
 	int32_t nweights=0;
 	const float64_t* old_beta = kernel->get_subkernel_weights(nweights);
-	ASSERT(nweights==num_kernels);
-	ASSERT(old_beta);
+	ASSERT(nweights==num_kernels)
+	ASSERT(old_beta)
 
 	for (int32_t i=0; i<num_kernels; i++)
 	{
@@ -1559,7 +1559,7 @@ float64_t CMKL::compute_mkl_dual_objective()
 		mkl_obj+=compute_sum_alpha();
 	}
 	else
-		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
+		SG_ERROR( "cannot compute objective, labels or kernel not set\n")
 
 	return -mkl_obj;
 }
@@ -1567,7 +1567,7 @@ float64_t CMKL::compute_mkl_dual_objective()
 #ifdef USE_CPLEX
 void CMKL::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 {
-	ASSERT(num_kernels>0);
+	ASSERT(num_kernels>0)
 
 	float64_t* grad_beta=SG_MALLOC(float64_t, num_kernels);
 	float64_t* hess_beta=SG_MALLOC(float64_t, num_kernels+1);
@@ -1577,8 +1577,8 @@ void CMKL::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 	//CMath::display_vector(beta, num_kernels, "beta");
 	double const_term = 1-CMath::qsq(beta, num_kernels, mkl_norm);
 
-	//SG_PRINT("const=%f\n", const_term);
-	ASSERT(CMath::fequal(const_term, 0.0));
+	//SG_PRINT("const=%f\n", const_term)
+	ASSERT(CMath::fequal(const_term, 0.0))
 
 	for (int32_t i=0; i<num_kernels; i++)
 	{
@@ -1598,12 +1598,12 @@ void CMKL::set_qnorm_constraints(float64_t* beta, int32_t num_kernels)
 	if (num>0)
 	{
 		status = CPXdelqconstrs (env, lp_cplex, 0, 0);
-		ASSERT(!status);
+		ASSERT(!status)
 	}
 
 	status = CPXaddqconstr (env, lp_cplex, num_kernels+1, num_kernels+1, const_term, 'L', ind, lin_term,
 			ind, ind, hess_beta, NULL);
-	ASSERT(!status);
+	ASSERT(!status)
 
 	//CPXwriteprob (env, lp_cplex, "prob.lp", NULL);
 	//CPXqpwrite (env, lp_cplex, "prob.qp");

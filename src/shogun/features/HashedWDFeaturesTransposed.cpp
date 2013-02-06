@@ -64,12 +64,12 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : CDotFeatures()
 {
-	ASSERT(start_order>=0);
-	ASSERT(start_order<order);
-	ASSERT(order<=from_order);
-	ASSERT(hash_bits>0);
-	ASSERT(str);
-	ASSERT(str->have_same_length());
+	ASSERT(start_order>=0)
+	ASSERT(start_order<order)
+	ASSERT(order<=from_order)
+	ASSERT(hash_bits>0)
+	ASSERT(str)
+	ASSERT(str->have_same_length())
 	SG_REF(str);
 
 	strings=str;
@@ -79,8 +79,8 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
-	ASSERT(transposed_num_feat==num_strings);
-	ASSERT(transposed_num_vec==string_length);
+	ASSERT(transposed_num_feat==num_strings)
+	ASSERT(transposed_num_vec==string_length)
 
 	CAlphabet* alpha=str->get_alphabet();
 	alphabet_size=alpha->get_num_symbols();
@@ -89,7 +89,7 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 	degree=order;
 	start_degree=start_order;
 	if (start_degree!=0)
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	from_degree=from_order;
 	m_hash_bits=hash_bits;
 	set_wd_weights();
@@ -124,9 +124,9 @@ CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 
 float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CHashedWDFeaturesTransposed* wdf = (CHashedWDFeaturesTransposed*) df;
 
 	int32_t len1, len2;
@@ -135,7 +135,7 @@ float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, i
 	uint8_t* vec1=strings->get_feature_vector(vec_idx1, len1, free_vec1);
 	uint8_t* vec2=wdf->strings->get_feature_vector(vec_idx2, len2, free_vec2);
 
-	ASSERT(len1==len2);
+	ASSERT(len1==len2)
 
 	float64_t sum=0.0;
 
@@ -157,7 +157,7 @@ float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, i
 float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	float64_t sum=0;
 	int32_t len;
@@ -183,7 +183,7 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 			uint32_t h =
 					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
-			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h);
+			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d h=%d \n", vec[i], k,offs, o, h)
 #endif
 			sum+=vec2[o+(h & mask)]*wd;
 			o+=partial_w_dim;
@@ -199,25 +199,25 @@ float64_t CHashedWDFeaturesTransposed::dense_dot(int32_t vec_idx1, const float64
 
 void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
-	ASSERT(output);
+	ASSERT(output)
 	// write access is internally between output[start..stop] so the following
 	// line is necessary to write to output[0...(stop-start-1)]
 	output-=start;
-	ASSERT(start>=0);
-	ASSERT(start<stop);
-	ASSERT(stop<=get_num_vectors());
+	ASSERT(start>=0)
+	ASSERT(start<stop)
+	ASSERT(stop<=get_num_vectors())
 	uint32_t* index=SG_MALLOC(uint32_t, stop);
 
 	int32_t num_vectors=stop-start;
-	ASSERT(num_vectors>0);
+	ASSERT(num_vectors>0)
 
 	int32_t num_threads=parallel->get_num_threads();
-	ASSERT(num_threads>0);
+	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
 
 	if (dim != w_dim)
-		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim);
+		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
 
 #ifdef HAVE_PTHREAD
 	if (num_threads < 2)
@@ -284,24 +284,24 @@ void CHashedWDFeaturesTransposed::dense_dot_range(float64_t* output, int32_t sta
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n");
+			SG_INFO( "prematurely stopped.           \n")
 #endif
 }
 
 void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
-	ASSERT(sub_index);
-	ASSERT(output);
+	ASSERT(sub_index)
+	ASSERT(output)
 
 	uint32_t* index=SG_MALLOC(uint32_t, num);
 
 	int32_t num_threads=parallel->get_num_threads();
-	ASSERT(num_threads>0);
+	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
 
 	if (dim != w_dim)
-		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim);
+		SG_ERROR("Dimensions don't match, vec_len=%d, w_dim=%d\n", dim, w_dim)
 
 #ifdef HAVE_PTHREAD
 	if (num_threads < 2)
@@ -368,7 +368,7 @@ void CHashedWDFeaturesTransposed::dense_dot_range_subset(int32_t* sub_index, int
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n");
+			SG_INFO( "prematurely stopped.           \n")
 #endif
 }
 
@@ -503,7 +503,7 @@ void* CHashedWDFeaturesTransposed::dense_dot_range_helper(void* p)
 void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	int32_t len;
 	bool free_vec1;
@@ -531,8 +531,8 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 			uint32_t h =
 					CHash::FinalizeIncrementalMurmurHash3(val[i], carry, chunk);
 #ifdef DEBUG_HASHEDWD
-			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h);
-			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o);
+			SG_PRINT("offs=%d o=%d h=%d \n", offs, o, h)
+			SG_PRINT("vec[i]=%d, k=%d, offs=%d o=%d\n", vec[i], k,offs, o)
 #endif
 			vec2[o+(h & mask)]+=wd;
 			val[i] = h;
@@ -549,7 +549,7 @@ void CHashedWDFeaturesTransposed::add_to_dense_vec(float64_t alpha, int32_t vec_
 
 void CHashedWDFeaturesTransposed::set_wd_weights()
 {
-	ASSERT(degree>0);
+	ASSERT(degree>0)
 
 	mask=(uint32_t) (((uint64_t) 1)<<m_hash_bits)-1;
 	partial_w_dim=1<<m_hash_bits;
@@ -580,7 +580,7 @@ void CHashedWDFeaturesTransposed::set_normalization_const(float64_t n)
 	else
 		normalization_const=n;
 
-	SG_DEBUG("normalization_const:%f\n", normalization_const);
+	SG_DEBUG("normalization_const:%f\n", normalization_const)
 }
 
 CFeatures* CHashedWDFeaturesTransposed::duplicate() const
@@ -590,17 +590,17 @@ CFeatures* CHashedWDFeaturesTransposed::duplicate() const
 
 void* CHashedWDFeaturesTransposed::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CHashedWDFeaturesTransposed::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 void CHashedWDFeaturesTransposed::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }

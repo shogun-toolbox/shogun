@@ -26,7 +26,7 @@ CDistanceKernel::CDistanceKernel()
 CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
 : CKernel(size), distance(d)
 {
-  	ASSERT(distance);
+  	ASSERT(distance)
 	set_width(w);
 	SG_REF(distance);
 	register_params();
@@ -37,7 +37,7 @@ CDistanceKernel::CDistanceKernel(
 : CKernel(10), distance(d)
 {
 	set_width(w);
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	init(l, r);
 	register_params();
@@ -53,7 +53,7 @@ CDistanceKernel::~CDistanceKernel()
 
 bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	CKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();

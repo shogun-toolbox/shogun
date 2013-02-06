@@ -175,7 +175,7 @@ slep_result_t slep_mc_tree_lr(
 			// stop if projected gradient is less than 1e-20
 			if (r_sum <= 1e-20)
 			{
-				SG_SINFO("Gradient step makes little improvement (%f)\n",r_sum);
+				SG_SINFO("Gradient step makes little improvement (%f)\n",r_sum)
 				done = true;
 				break;
 			}
@@ -221,13 +221,13 @@ slep_result_t slep_mc_tree_lr(
 		// check for termination of whole process
 		if ((CMath::abs(objective - objective_p) < options.tolerance*CMath::abs(objective_p)) && (iter>2))
 		{
-			SG_SINFO("Objective changes less than tolerance\n");
+			SG_SINFO("Objective changes less than tolerance\n")
 			done = true;
 		}
 
 		iter++;
 	}
-	SG_SINFO("%d iterations passed, objective = %f\n",iter,objective);
+	SG_SINFO("%d iterations passed, objective = %f\n",iter,objective)
 	//internal::set_is_malloc_allowed(true);
 
 	// output computed weight vectors and intercepts

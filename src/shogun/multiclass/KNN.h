@@ -86,7 +86,7 @@ class CKNN : public CDistanceMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)
 		{
-			SG_ERROR( "for performance reasons use apply() instead of apply(int32_t vec_idx)\n");
+			SG_ERROR( "for performance reasons use apply() instead of apply(int32_t vec_idx)\n")
 			return 0;
 		}
 
@@ -115,7 +115,7 @@ class CKNN : public CDistanceMachine
 		 */
 		inline void set_k(int32_t k)
 		{
-			ASSERT(k>0);
+			ASSERT(k>0)
 			m_k=k;
 		}
 
@@ -133,7 +133,7 @@ class CKNN : public CDistanceMachine
 		 */
 		inline void set_q(float64_t q)
 		{
-			ASSERT(q<=1.0 && q>0.0);
+			ASSERT(q<=1.0 && q>0.0)
 			m_q = q;
 		}
 

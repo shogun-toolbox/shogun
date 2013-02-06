@@ -94,23 +94,23 @@ void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c
 bool CSGDQN::train(CFeatures* data)
 {
 
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
 
-	ASSERT(features);
+	ASSERT(features)
 
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
-	ASSERT(num_vec>0);
+	ASSERT(num_vec==num_train_labels)
+	ASSERT(num_vec>0)
 
 	w=SGVector<float64_t>(features->get_dim_feature_space());
 	w.zero();
@@ -125,7 +125,7 @@ bool CSGDQN::train(CFeatures* data)
 	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
-	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
+	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0)
 
 
 	float64_t* Bc=SG_MALLOC(float64_t, w.vlen);
@@ -137,7 +137,7 @@ bool CSGDQN::train(CFeatures* data)
 	//Calibrate
 	calibrate();
 
-	SG_INFO("Training on %d vectors\n", num_vec);
+	SG_INFO("Training on %d vectors\n", num_vec)
 	CSignal::clear_cancel();
 
 	ELossType loss_type = loss->get_loss_type();
@@ -152,7 +152,7 @@ bool CSGDQN::train(CFeatures* data)
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
-			ASSERT(w.vlen==v.vlen);
+			ASSERT(w.vlen==v.vlen)
 			float64_t eta = 1.0/t;
 			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
 			float64_t z = y * features->dense_dot(i, w.vector, w.vlen);
@@ -206,14 +206,14 @@ bool CSGDQN::train(CFeatures* data)
 
 void CSGDQN::calibrate()
 {
-	ASSERT(features);
+	ASSERT(features)
 	int32_t num_vec=features->get_num_vectors();
 	int32_t c_dim=features->get_dim_feature_space();
 
-	ASSERT(num_vec>0);
-	ASSERT(c_dim>0);
+	ASSERT(num_vec>0)
+	ASSERT(c_dim>0)
 
-	SG_INFO("Estimating sparsity num_vec=%d num_feat=%d.\n", num_vec, c_dim);
+	SG_INFO("Estimating sparsity num_vec=%d num_feat=%d.\n", num_vec, c_dim)
 
 	int32_t n = 0;
 	float64_t r = 0;

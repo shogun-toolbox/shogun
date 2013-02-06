@@ -23,7 +23,7 @@ CCircularKernel::CCircularKernel(): CKernel(0), distance(NULL)
 CCircularKernel::CCircularKernel(int32_t size, float64_t sig, CDistance* dist)
 : CKernel(size), distance(dist)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 
 	set_sigma(sig);
@@ -34,7 +34,7 @@ CCircularKernel::CCircularKernel(
 	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
 : CKernel(10), distance(dist)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	set_sigma(sig);
 	init();
@@ -49,7 +49,7 @@ CCircularKernel::~CCircularKernel()
 
 bool CCircularKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	CKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();

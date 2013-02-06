@@ -48,7 +48,7 @@ public:
 	 */
 	virtual float64_t get_custom_score()
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return 0.0;
 	}
 
@@ -57,7 +57,7 @@ public:
 	 */
 	virtual EEvaluationDirection get_custom_direction()
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return ED_MAXIMIZE;
 	}
 

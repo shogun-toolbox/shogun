@@ -433,16 +433,16 @@ template <class T>
 template <class T>
     void CInputParser<T>::start_parser()
 {
-	SG_SDEBUG("entering CInputParser::start_parser()\n");
+	SG_SDEBUG("entering CInputParser::start_parser()\n")
     if (is_running())
     {
-        SG_SERROR("Parser thread is already running! Multiple parse threads not supported.\n");
+        SG_SERROR("Parser thread is already running! Multiple parse threads not supported.\n")
     }
 
-    SG_SDEBUG("creating parse thread\n");
+    SG_SDEBUG("creating parse thread\n")
     pthread_create(&parse_thread, NULL, parse_loop_entry_point, this);
 
-    SG_SDEBUG("leaving CInputParser::start_parser()\n");
+    SG_SDEBUG("leaving CInputParser::start_parser()\n")
 }
 
 template <class T>
@@ -456,7 +456,7 @@ template <class T>
 template <class T>
     bool CInputParser<T>::is_running()
 {
-	SG_SDEBUG("entering CInputParser::is_running()\n");
+	SG_SDEBUG("entering CInputParser::is_running()\n")
     bool ret;
 
     pthread_mutex_lock(&examples_state_lock);
@@ -471,7 +471,7 @@ template <class T>
 
     pthread_mutex_unlock(&examples_state_lock);
 
-    SG_SDEBUG("leaving CInputParser::is_running(), returnung %d\n", ret);
+    SG_SDEBUG("leaving CInputParser::is_running(), returnung %d\n", ret)
     return ret;
 }
 
@@ -661,15 +661,15 @@ template <class T>
 
 template <class T> void CInputParser<T>::end_parser()
 {
-	SG_SDEBUG("entering CInputParser::end_parser\n");
-	SG_SDEBUG("joining parse thread\n");
+	SG_SDEBUG("entering CInputParser::end_parser\n")
+	SG_SDEBUG("joining parse thread\n")
     pthread_join(parse_thread, NULL);
-    SG_SDEBUG("leaving CInputParser::end_parser\n");
+    SG_SDEBUG("leaving CInputParser::end_parser\n")
 }
 
 template <class T> void CInputParser<T>::exit_parser()
 {
-	SG_SDEBUG("cancelling parse thread\n");
+	SG_SDEBUG("cancelling parse thread\n")
     pthread_cancel(parse_thread);
 }
 }

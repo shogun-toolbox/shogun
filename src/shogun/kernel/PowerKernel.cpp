@@ -22,7 +22,7 @@ CPowerKernel::CPowerKernel(int32_t cache, float64_t degree, CDistance* dist)
 : CKernel(cache), distance(dist), m_degree(degree)
 {
 	init();
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 }
 
@@ -30,7 +30,7 @@ CPowerKernel::CPowerKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistan
 : CKernel(10), distance(dist), m_degree(degree)
 {
 	init();
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	init(l, r);
 }
@@ -43,7 +43,7 @@ CPowerKernel::~CPowerKernel()
 
 bool CPowerKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	CKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();

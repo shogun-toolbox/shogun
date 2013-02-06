@@ -44,7 +44,7 @@ CStochasticProximityEmbedding::~CStochasticProximityEmbedding()
 void CStochasticProximityEmbedding::set_k(int32_t k)
 {
 	if ( k <= 0 )
-		SG_ERROR("Number of neighbors k must be greater than 0");
+		SG_ERROR("Number of neighbors k must be greater than 0")
 
 	m_k = k;
 }
@@ -81,7 +81,7 @@ int32_t CStochasticProximityEmbedding::get_tolerance() const
 void CStochasticProximityEmbedding::set_nupdates(int32_t nupdates)
 {
 	if ( nupdates <= 0 )
-		SG_ERROR("The number of updates must be greater than 0");
+		SG_ERROR("The number of updates must be greater than 0")
 
 	m_nupdates = nupdates;
 }
@@ -99,7 +99,7 @@ const char * CStochasticProximityEmbedding::get_name() const
 CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 {
 	if ( !features )
-		SG_ERROR("Features are required to apply SPE\n");
+		SG_ERROR("Features are required to apply SPE\n")
 
 	// Shorthand for the DenseFeatures
 	CDenseFeatures< float64_t >* simple_features = 

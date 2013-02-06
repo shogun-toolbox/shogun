@@ -238,8 +238,8 @@ void wrap_dsyev(char jobz, char uplo, int n, double *a, int lda, double *w, int 
 	int lwork=-1;
 	double work1;
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, &work1, &lwork, info);
-	ASSERT(*info==0);
-	ASSERT(work1>0);
+	ASSERT(*info==0)
+	ASSERT(work1>0)
 	lwork=(int) work1;
 	double* work=SG_MALLOC(double, lwork);
 	DSYEV(&jobz, &uplo, &n, a, &lda, w, work, &lwork, info);
@@ -257,7 +257,7 @@ void wrap_dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double
 	double work1 = 0;
 	int lworka = -1;
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, &work1, &lworka, info);
-	ASSERT(*info==0);
+	ASSERT(*info==0)
 	lworka = (int) work1;
 	double* worka = SG_MALLOC(double, lworka);
 	DGESVD(&jobu, &jobvt, &m, &n, a, &lda, sing, u, &ldu, vt, &ldvt, worka, &lworka, info);
@@ -274,7 +274,7 @@ void wrap_dgeqrf(int m, int n, double *a, int lda, double *tau, int *info)
 	int lwork = -1;
 	double work1 = 0;
 	DGEQRF(&m, &n, a, &lda, tau, &work1, &lwork, info);
-	ASSERT(*info==0);
+	ASSERT(*info==0)
 	lwork = (int)work1;
 	ASSERT(lwork>0)
 	double* work = SG_MALLOC(double, lwork);
@@ -292,9 +292,9 @@ void wrap_dorgqr(int m, int n, int k, double *a, int lda, double *tau, int *info
 	int lwork = -1;
 	double work1 = 0;
 	DORGQR(&m, &n, &k, a, &lda, tau, &work1, &lwork, info);
-	ASSERT(*info==0);
+	ASSERT(*info==0)
 	lwork = (int)work1;
-	ASSERT(lwork>0);
+	ASSERT(lwork>0)
 	double* work = SG_MALLOC(double, lwork);
 	DORGQR(&m, &n, &k, a, &lda, tau, work, &lwork, info);
 	SG_FREE(work);
@@ -321,7 +321,7 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
 	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
                &m,eigenvalues,eigenvectors,&n,isuppz,
                &work1,&lwork,&work2,&liwork,info);
-	ASSERT(*info==0);
+	ASSERT(*info==0)
 	lwork = (int)work1;
 	liwork = work2;
 	double* work = SG_MALLOC(double, lwork);
@@ -329,7 +329,7 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
 	DSYEVR(&jobz,&I,&uplo,&n,a,&lda,&vl,&vu,&il,&iu,&abstol,
                &m,eigenvalues,eigenvectors,&n,isuppz,
                work,&lwork,iwork,&liwork,info);
-	ASSERT(*info==0);
+	ASSERT(*info==0)
 	SG_FREE(work);
 	SG_FREE(iwork);
 	SG_FREE(isuppz);

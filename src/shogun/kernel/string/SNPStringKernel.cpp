@@ -71,7 +71,7 @@ void CSNPStringKernel::cleanup()
 void CSNPStringKernel::obtain_base_strings()
 {
 	//should only be called on training data
-	ASSERT(lhs==rhs);
+	ASSERT(lhs==rhs)
 
 	m_str_len=0;
 
@@ -89,7 +89,7 @@ void CSNPStringKernel::obtain_base_strings()
 		}
 		else
 		{
-			ASSERT(m_str_len==len);
+			ASSERT(m_str_len==len)
 		}
 
 		for (int32_t j=0; j<len; j++)
@@ -128,11 +128,11 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 	if (alen!=m_str_len)
-		SG_ERROR("alen (%d) !=m_str_len (%d)\n", alen, m_str_len);
-	ASSERT(m_str_min);
-	ASSERT(m_str_maj);
+		SG_ERROR("alen (%d) !=m_str_len (%d)\n", alen, m_str_len)
+	ASSERT(m_str_min)
+	ASSERT(m_str_maj)
 
 	float64_t total=0;
 	int32_t inhomogene= (m_inhomogene) ? 1 : 0;

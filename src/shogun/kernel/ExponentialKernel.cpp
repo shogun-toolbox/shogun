@@ -30,7 +30,7 @@ CExponentialKernel::CExponentialKernel(
 : CDotKernel(size), m_distance(distance), m_width(width)
 {
 	init();
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	init(l,r);
 }
@@ -48,7 +48,7 @@ void CExponentialKernel::cleanup()
 
 bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	CDotKernel::init(l, r);
 	m_distance->init(l, r);
 	return init_normalizer();
@@ -56,7 +56,7 @@ bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
 
 float64_t CExponentialKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	float64_t dist=m_distance->distance(idx_a, idx_b);
 	return exp(-dist/m_width);
 }

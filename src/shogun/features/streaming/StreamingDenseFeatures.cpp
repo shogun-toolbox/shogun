@@ -38,7 +38,7 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 		CDenseFeatures<T>* dense_features, float64_t* lab) :
 		CStreamingDotFeatures()
 {
-	REQUIRE(dense_features, "%s::CStreamingDenseFeatures(): Features needed!\n");
+	REQUIRE(dense_features, "%s::CStreamingDenseFeatures(): Features needed!\n")
 
 	CStreamingFileFromDenseFeatures<T>* file;
 	bool is_labelled;
@@ -55,8 +55,8 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 
 template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
-	SG_DEBUG("entering %s::~CStreamingDenseFeatures()\n", get_name());
-	SG_DEBUG("leaving %s::~CStreamingDenseFeatures()\n", get_name());
+	SG_DEBUG("entering %s::~CStreamingDenseFeatures()\n", get_name())
+	SG_DEBUG("leaving %s::~CStreamingDenseFeatures()\n", get_name())
 
 	current_vector.vector=NULL;
 	current_vector.vlen=0;
@@ -77,7 +77,7 @@ template<class T> void CStreamingDenseFeatures<T>::reset_stream()
 template<class T> float32_t CStreamingDenseFeatures<T>::dense_dot(
 		const float32_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len==current_vector.vlen);
+	ASSERT(vec2_len==current_vector.vlen)
 	float32_t result=0;
 
 	for (int32_t i=0; i<current_vector.vlen; i++)
@@ -89,7 +89,7 @@ template<class T> float32_t CStreamingDenseFeatures<T>::dense_dot(
 template<class T> float64_t CStreamingDenseFeatures<T>::dense_dot(
 		const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len==current_vector.vlen);
+	ASSERT(vec2_len==current_vector.vlen)
 	float64_t result=0;
 
 	for (int32_t i=0; i<current_vector.vlen; i++)
@@ -101,7 +101,7 @@ template<class T> float64_t CStreamingDenseFeatures<T>::dense_dot(
 template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 		float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	ASSERT(vec2_len==current_vector.vlen);
+	ASSERT(vec2_len==current_vector.vlen)
 
 	if (abs_val)
 	{
@@ -118,7 +118,7 @@ template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 template<class T> void CStreamingDenseFeatures<T>::add_to_dense_vec(
 		float64_t alpha, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	ASSERT(vec2_len==current_vector.vlen);
+	ASSERT(vec2_len==current_vector.vlen)
 
 	if (abs_val)
 	{
@@ -240,7 +240,7 @@ SGVector<T> CStreamingDenseFeatures<T>::get_vector()
 template<class T>
 float64_t CStreamingDenseFeatures<T>::get_label()
 {
-	ASSERT(has_labels);
+	ASSERT(has_labels)
 
 	return current_label;
 }
@@ -260,9 +260,9 @@ int32_t CStreamingDenseFeatures<T>::get_dim_feature_space() const
 template<class T>
 float32_t CStreamingDenseFeatures<T>::dot(CStreamingDotFeatures* df)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CStreamingDenseFeatures<T>* sf=(CStreamingDenseFeatures<T>*)df;
 
 	SGVector<T> other_vector=sf->get_vector();
@@ -351,7 +351,7 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 			/* evtl output vector */
 			if (sg_io->get_loglevel()==MSG_DEBUG)
 			{
-				SG_DEBUG("%d. ", i);
+				SG_DEBUG("%d. ", i)
 				vec.display_vector("streamed vector");
 			}
 

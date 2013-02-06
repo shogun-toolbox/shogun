@@ -25,7 +25,7 @@ using namespace shogun;
 
 CHDF5File::CHDF5File()
 {
-	SG_UNSTABLE("CHDF5File::CHDF5File()", "\n");
+	SG_UNSTABLE("CHDF5File::CHDF5File()", "\n")
 
 	get_boolean_type();
 	h5file = -1;
@@ -53,11 +53,11 @@ CHDF5File::CHDF5File(char* fname, char rw, const char* name) : CFile()
 				h5file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 			break;
 		default:
-			SG_ERROR("unknown mode '%c'\n", rw);
+			SG_ERROR("unknown mode '%c'\n", rw)
 	};
 
 	if (h5file<0)
-		SG_ERROR("Could not open file '%s'\n", fname);
+		SG_ERROR("Could not open file '%s'\n", fname)
 }
 
 CHDF5File::~CHDF5File()
@@ -69,27 +69,27 @@ CHDF5File::~CHDF5File()
 void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 {																					\
 	if (!h5file)																	\
-		SG_ERROR("File invalid.\n");												\
+		SG_ERROR("File invalid.\n")												\
 																					\
 	int32_t* dims;																	\
 	int32_t ndims;																	\
 	int64_t nelements;																\
 	hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
 	if (dataset<0)																	\
-		SG_ERROR("Error opening data set\n");										\
+		SG_ERROR("Error opening data set\n")										\
 	hid_t dtype = H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
 	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);         \
 	if (h5_type==-1)																\
 	{																				\
 		H5Dclose(dataset);															\
-		SG_INFO("No compatible datatype found\n");									\
+		SG_INFO("No compatible datatype found\n")									\
 	}																				\
 	get_dims(dataset, dims, ndims, nelements);										\
 	if (!((ndims==2 && dims[0]==nelements && dims[1]==1) ||							\
 			(ndims==2 && dims[0]==1 && dims[1]==nelements) ||						\
 			(ndims==1 && dims[0]==nelements)))										\
-		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0]);	\
+		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0])	\
 	vec=SG_MALLOC(sg_type, nelements);														\
 	len=nelements;																	\
 	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
@@ -100,7 +100,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 	if (status<0)																	\
 	{																				\
 		SG_FREE(vec);																\
-		SG_ERROR("Error reading dataset\n");										\
+		SG_ERROR("Error reading dataset\n")										\
 	}																				\
 }
 
@@ -123,25 +123,25 @@ GET_VECTOR(get_vector, uint64_t, (CT_VECTOR, ST_NONE, PT_UINT64))
 void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 {																					\
 	if (!h5file)																	\
-		SG_ERROR("File invalid.\n");												\
+		SG_ERROR("File invalid.\n")												\
 																					\
 	int32_t* dims;																	\
 	int32_t ndims;																	\
 	int64_t nelements;																\
 	hid_t dataset = H5Dopen2(h5file, variable_name, H5P_DEFAULT);					\
 	if (dataset<0)																	\
-		SG_ERROR("Error opening data set\n");										\
+		SG_ERROR("Error opening data set\n")										\
 	hid_t dtype = H5Dget_type(dataset);												\
 	H5T_class_t t_class=H5Tget_class(dtype);										\
 	TSGDataType t datatype; hid_t h5_type=get_compatible_type(t_class, &t);	        \
 	if (h5_type==-1)																\
 	{																				\
 		H5Dclose(dataset);															\
-		SG_INFO("No compatible datatype found\n");									\
+		SG_INFO("No compatible datatype found\n")									\
 	}																				\
 	get_dims(dataset, dims, ndims, nelements);										\
 	if (ndims!=2)																	\
-		SG_ERROR("Error not a 2-dimensional matrix\n");								\
+		SG_ERROR("Error not a 2-dimensional matrix\n")								\
 	matrix=SG_MALLOC(sg_type, nelements);													\
 	num_feat=dims[0];																\
 	num_vec=dims[1];																\
@@ -153,7 +153,7 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 	if (status<0)																	\
 	{																				\
 		SG_FREE(matrix);															\
-		SG_ERROR("Error reading dataset\n");										\
+		SG_ERROR("Error reading dataset\n")										\
 	}																				\
 }
 
@@ -203,7 +203,7 @@ void CHDF5File::get_ndarray(uint16_t*& array, int32_t*& dims, int32_t& num_dims)
 void CHDF5File::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																						\
 	if (!(file))																		\
-		SG_ERROR("File invalid.\n");													\
+		SG_ERROR("File invalid.\n")													\
 }
 GET_SPARSEMATRIX(get_sparse_matrix, bool, DT_SPARSE_BOOL)
 GET_SPARSEMATRIX(get_sparse_matrix, char, DT_SPARSE_CHAR)
@@ -247,7 +247,7 @@ GET_STRING_LIST(get_string_list, floatmax_t, DT_STRING_LONGREAL)
 void CHDF5File::fname(const sg_type* vec, int32_t len)						\
 {																			\
 	if (h5file<0 || !vec)													\
-		SG_ERROR("File or vector invalid.\n");								\
+		SG_ERROR("File or vector invalid.\n")								\
 																			\
 	create_group_hierarchy();												\
 																			\
@@ -255,7 +255,7 @@ void CHDF5File::fname(const sg_type* vec, int32_t len)						\
 	hid_t dataspace, dataset, status;										\
 	dataspace=H5Screate_simple(1, &dims, NULL); 							\
 	if (dataspace<0)														\
-		SG_ERROR("Could not create hdf5 dataspace\n");						\
+		SG_ERROR("Could not create hdf5 dataspace\n")						\
 	dataset=H5Dcreate2(h5file, variable_name, h5type, dataspace, H5P_DEFAULT,\
 			H5P_DEFAULT, H5P_DEFAULT);										\
 	if (dataset<0)															\
@@ -265,7 +265,7 @@ void CHDF5File::fname(const sg_type* vec, int32_t len)						\
 	}																		\
 	status=H5Dwrite(dataset, h5type, H5S_ALL, H5S_ALL, H5P_DEFAULT, vec);	\
 	if (status<0)															\
-		SG_ERROR("Failed to write hdf5 dataset\n");							\
+		SG_ERROR("Failed to write hdf5 dataset\n")							\
 	H5Dclose(dataset);														\
 	H5Sclose(dataspace);													\
 }
@@ -288,7 +288,7 @@ SET_VECTOR(set_vector, uint64_t, DT_VECTOR_ULONG, H5T_NATIVE_ULLONG)
 void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
 {																				\
 	if (h5file<0 || !matrix)													\
-		SG_ERROR("File or matrix invalid.\n");									\
+		SG_ERROR("File or matrix invalid.\n")									\
 																				\
 	create_group_hierarchy();													\
 																				\
@@ -296,7 +296,7 @@ void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	
 	hid_t dataspace, dataset, status;											\
 	dataspace=H5Screate_simple(2, dims, NULL); 									\
 	if (dataspace<0)															\
-		SG_ERROR("Could not create hdf5 dataspace\n");							\
+		SG_ERROR("Could not create hdf5 dataspace\n")							\
 	dataset=H5Dcreate2(h5file, variable_name, h5type, dataspace, H5P_DEFAULT,	\
 			H5P_DEFAULT, H5P_DEFAULT);											\
 	if (dataset<0)																\
@@ -306,7 +306,7 @@ void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	
 	}																			\
 	status=H5Dwrite(dataset, h5type, H5S_ALL, H5S_ALL, H5P_DEFAULT, matrix);	\
 	if (status<0)																\
-		SG_ERROR("Failed to write hdf5 dataset\n");								\
+		SG_ERROR("Failed to write hdf5 dataset\n")								\
 	H5Dclose(dataset);															\
 	H5Sclose(dataspace);														\
 }
@@ -330,7 +330,7 @@ void CHDF5File::fname(const SGSparseVector<sg_type>* matrix, 	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
-		SG_ERROR("File or matrix invalid.\n");				\
+		SG_ERROR("File or matrix invalid.\n")				\
 															\
 }
 SET_SPARSEMATRIX(set_sparse_matrix, bool, DT_SPARSE_BOOL)
@@ -352,7 +352,7 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, DT_SPARSE_LONGREAL)
 void CHDF5File::fname(const SGString<sg_type>* strings, int32_t num_str)	\
 {																						\
 	if (!(file && strings))																\
-		SG_ERROR("File or strings invalid.\n");											\
+		SG_ERROR("File or strings invalid.\n")											\
 																						\
 }
 SET_STRING_LIST(set_string_list, bool, DT_STRING_BOOL)
@@ -388,7 +388,7 @@ void CHDF5File::get_boolean_type()
 			boolean_type = H5T_NATIVE_UINT64;
 			break;
 		default:
-			SG_ERROR("Boolean type not supported on this platform\n");
+			SG_ERROR("Boolean type not supported on this platform\n")
 	}
 }
 
@@ -420,16 +420,16 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 				return -1;
 			}
 		case H5T_STRING:
-			SG_ERROR("Strings not supported");
+			SG_ERROR("Strings not supported")
 			return -1;
 		case H5T_VLEN:
-			SG_ERROR("Variable length containers currently not supported");
+			SG_ERROR("Variable length containers currently not supported")
 			return -1;
 		case H5T_ARRAY:
-			SG_ERROR("Array containers currently not supported");
+			SG_ERROR("Array containers currently not supported")
 			return -1;
 		default:
-			SG_ERROR("Datatype mismatchn");
+			SG_ERROR("Datatype mismatchn")
 			return -1;
 	}
 }
@@ -438,7 +438,7 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 {
 	hid_t dataspace = H5Dget_space(dataset);
 	if (dataspace<0)
-		SG_ERROR("Error obtaining hdf5 dataspace\n");
+		SG_ERROR("Error obtaining hdf5 dataspace\n")
 
 	ndims = H5Sget_simple_extent_ndims(dataspace);
 	total_elements=H5Sget_simple_extent_npoints(dataspace);
@@ -466,7 +466,7 @@ void CHDF5File::create_group_hierarchy()
 				g=H5Gcreate2(h5file, vname, H5P_DEFAULT, H5P_DEFAULT,
 						H5P_DEFAULT);
 				if (g<0)
-					SG_ERROR("Error creating group '%s'\n", vname);
+					SG_ERROR("Error creating group '%s'\n", vname)
 				vname[i]='/';
 			}
 			H5Gclose(g);

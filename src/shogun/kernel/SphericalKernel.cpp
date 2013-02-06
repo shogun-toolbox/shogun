@@ -23,7 +23,7 @@ CSphericalKernel::CSphericalKernel(): CKernel(0), distance(NULL)
 CSphericalKernel::CSphericalKernel(int32_t size, float64_t sig, CDistance* dist)
 : CKernel(size), distance(dist)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	init();
 	set_sigma(sig);
@@ -33,7 +33,7 @@ CSphericalKernel::CSphericalKernel(
 	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
 : CKernel(10), distance(dist)
 {
-  	ASSERT(distance);
+  	ASSERT(distance)
 	SG_REF(distance);
 	init();
 	set_sigma(sig);
@@ -48,7 +48,7 @@ CSphericalKernel::~CSphericalKernel()
 
 bool CSphericalKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	CKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();

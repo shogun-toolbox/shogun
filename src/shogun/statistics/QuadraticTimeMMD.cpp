@@ -147,7 +147,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 float64_t CQuadraticTimeMMD::compute_statistic()
 {
 	if (!m_kernel)
-		SG_ERROR("%s::compute_statistic(): No kernel specified!\n", get_name());
+		SG_ERROR("%s::compute_statistic(): No kernel specified!\n", get_name())
 
 	float64_t result=0;
 	switch (m_statistic_type)

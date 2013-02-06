@@ -33,24 +33,24 @@ CPerceptron::~CPerceptron()
 
 bool CPerceptron::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
 
-	ASSERT(features);
+	ASSERT(features)
 	bool converged=false;
 	int32_t iter=0;
 	SGVector<int32_t> train_labels=((CBinaryLabels*) m_labels)->get_int_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==train_labels.vlen);
+	ASSERT(num_vec==train_labels.vlen)
 	w=SGVector<float64_t>(num_feat);
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
 
@@ -79,9 +79,9 @@ bool CPerceptron::train_machine(CFeatures* data)
 	}
 
 	if (converged)
-		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter);
+		SG_INFO("Perceptron algorithm converged after %d iterations.\n", iter)
 	else
-		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter);
+		SG_WARNING("Perceptron algorithm did not converge after %d iterations.\n", max_iter)
 
 	SG_FREE(output);
 

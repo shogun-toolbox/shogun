@@ -51,13 +51,13 @@ public:
 	 */
 	SGMatrix<float64_t> get_fold_ROC(int32_t run, int32_t fold, int32_t c)
 	{
-		ASSERT(0<=run);
-		ASSERT(run<m_num_runs);
-		ASSERT(0<=fold);
-		ASSERT(fold<m_num_folds);
-		ASSERT(0<=c);
-		ASSERT(c<m_num_classes);
-		REQUIRE(m_compute_ROC, "ROC computation was not enabled\n");
+		ASSERT(0<=run)
+		ASSERT(run<m_num_runs)
+		ASSERT(0<=fold)
+		ASSERT(fold<m_num_folds)
+		ASSERT(0<=c)
+		ASSERT(c<m_num_classes)
+		REQUIRE(m_compute_ROC, "ROC computation was not enabled\n")
 		return m_fold_ROC_graphs[run*m_num_folds*m_num_classes+fold*m_num_classes+c];
 	}
 	
@@ -70,13 +70,13 @@ public:
 	 */
 	SGMatrix<float64_t> get_fold_PRC(int32_t run, int32_t fold, int32_t c)
 	{
-		ASSERT(0<=run);
-		ASSERT(run<m_num_runs);
-		ASSERT(0<=fold);
-		ASSERT(fold<m_num_folds);
-		ASSERT(0<=c);
-		ASSERT(c<m_num_classes);
-		REQUIRE(m_compute_PRC, "PRC computation was not enabled\n");
+		ASSERT(0<=run)
+		ASSERT(run<m_num_runs)
+		ASSERT(0<=fold)
+		ASSERT(fold<m_num_folds)
+		ASSERT(0<=c)
+		ASSERT(c<m_num_classes)
+		REQUIRE(m_compute_PRC, "PRC computation was not enabled\n")
 		return m_fold_PRC_graphs[run*m_num_folds*m_num_classes+fold*m_num_classes+c];
 	}
 
@@ -107,15 +107,15 @@ public:
 	 */
 	float64_t get_fold_evaluation_result(int32_t run, int32_t fold, int32_t c, int32_t e)
 	{
-		ASSERT(0<=run);
-		ASSERT(run<m_num_runs);
-		ASSERT(0<=fold);
-		ASSERT(fold<m_num_folds);
-		ASSERT(0<=c);
-		ASSERT(c<m_num_classes);
-		ASSERT(0<=e);
+		ASSERT(0<=run)
+		ASSERT(run<m_num_runs)
+		ASSERT(0<=fold)
+		ASSERT(fold<m_num_folds)
+		ASSERT(0<=c)
+		ASSERT(c<m_num_classes)
+		ASSERT(0<=e)
 		int32_t n_evals = m_binary_evaluations->get_num_elements();
-		ASSERT(e<n_evals);
+		ASSERT(e<n_evals)
 		return m_evaluations_results[run*m_num_folds*m_num_classes*n_evals+fold*m_num_classes*n_evals+c*n_evals+e];
 	}
 
@@ -125,10 +125,10 @@ public:
 	 */
 	float64_t get_fold_accuracy(int32_t run, int32_t fold)
 	{
-		ASSERT(0<=run);
-		ASSERT(run<m_num_runs);
-		ASSERT(0<=fold);
-		ASSERT(fold<m_num_folds);
+		ASSERT(0<=run)
+		ASSERT(run<m_num_runs)
+		ASSERT(0<=fold)
+		ASSERT(fold<m_num_folds)
 		return m_accuracies[run*m_num_folds+fold];
 	}
 
@@ -138,11 +138,11 @@ public:
 	 */
 	SGMatrix<int32_t> get_fold_conf_matrix(int32_t run, int32_t fold)
 	{
-		ASSERT(0<=run);
-		ASSERT(run<m_num_runs);
-		ASSERT(0<=fold);
-		ASSERT(fold<m_num_folds);
-		REQUIRE(m_compute_conf_matrices, "Confusion matrices computation was not enabled\n");
+		ASSERT(0<=run)
+		ASSERT(run<m_num_runs)
+		ASSERT(0<=fold)
+		ASSERT(fold<m_num_folds)
+		REQUIRE(m_compute_conf_matrices, "Confusion matrices computation was not enabled\n")
 		return m_conf_matrices[run*m_num_folds+fold];
 	}
 

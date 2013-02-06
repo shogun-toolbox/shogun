@@ -49,7 +49,7 @@ void CStructuredModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	SG_ERROR("init_opt is not implemented for %s!\n", get_name());
+	SG_ERROR("init_opt is not implemented for %s!\n", get_name())
 }
 
 void CStructuredModel::set_labels(CStructuredLabels* labels)
@@ -149,7 +149,7 @@ int32_t CStructuredModel::get_num_aux_con() const
 #ifdef USE_SWIG_DIRECTORS
 float64_t CStructuredModel::director_risk(SGVector<float64_t> subgrad, SGVector<float64_t> W, TMultipleCPinfo info)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return -1;
 }
 #endif

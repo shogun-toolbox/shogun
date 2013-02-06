@@ -104,7 +104,7 @@ class CLDA : public CLinearMachine
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
-				SG_ERROR("LDA requires SIMPLE REAL valued features\n");
+				SG_ERROR("LDA requires SIMPLE REAL valued features\n")
 
 			CLinearMachine::set_features(feat);
 		}

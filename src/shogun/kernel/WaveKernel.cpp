@@ -22,7 +22,7 @@ CWaveKernel::CWaveKernel(int32_t cache, float64_t theta, CDistance* dist)
 : CKernel(cache), m_distance(dist), m_theta(theta)
 {
 	init();
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 }
 
@@ -30,7 +30,7 @@ CWaveKernel::CWaveKernel(CFeatures *l, CFeatures *r, float64_t theta, CDistance*
 : CKernel(10), m_distance(dist), m_theta(theta)
 {
 	init();
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	SG_REF(m_distance);
 	init(l, r);
 }
@@ -43,7 +43,7 @@ CWaveKernel::~CWaveKernel()
 
 bool CWaveKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	CKernel::init(l,r);
 	m_distance->init(l,r);
 	return init_normalizer();

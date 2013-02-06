@@ -69,7 +69,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
 		set_features((CDotFeatures*) data);
 	}
@@ -78,8 +78,8 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 		return NULL;
 
 	int32_t num_vecs = m_features->get_num_vectors();
-	ASSERT(num_vecs > 0);
-	ASSERT( m_dim == m_features->get_dim_feature_space() );
+	ASSERT(num_vecs > 0)
+	ASSERT( m_dim == m_features->get_dim_feature_space() )
 
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
@@ -97,7 +97,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 		for ( i = 0 ; i < num_vecs ; ++i )
 		{
 			vec = rf->get_feature_vector(i, vlen, vfree);
-			ASSERT(vec);
+			ASSERT(vec)
 
 			for ( j = 0 ; j < m_dim ; ++j )
 				X[i + j*num_vecs] = vec[j] - m_means[k*m_dim + j];
@@ -142,19 +142,19 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 bool CQDA::train_machine(CFeatures* data)
 {
 	if ( !m_labels )
-		SG_ERROR("No labels allocated in QDA training\n");
+		SG_ERROR("No labels allocated in QDA training\n")
 
 	if ( data )
 	{
 		if ( !data->has_property(FP_DOT) )
-			SG_ERROR("Speficied features are not of type CDotFeatures\n");
+			SG_ERROR("Speficied features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
 	if ( !m_features )
-		SG_ERROR("No features allocated in QDA training\n");
+		SG_ERROR("No features allocated in QDA training\n")
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 	if ( !train_labels.vector )
-		SG_ERROR("No train_labels allocated in QDA training\n");
+		SG_ERROR("No train_labels allocated in QDA training\n")
 
 	cleanup();
 
@@ -162,7 +162,7 @@ bool CQDA::train_machine(CFeatures* data)
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 	if ( num_vec != train_labels.vlen )
-		SG_ERROR("Dimension mismatch between features and labels in QDA training");
+		SG_ERROR("Dimension mismatch between features and labels in QDA training")
 
 	int32_t* class_idxs = SG_MALLOC(int32_t, num_vec*m_num_classes);
 	// number of examples of each class
@@ -176,7 +176,7 @@ bool CQDA::train_machine(CFeatures* data)
 
 		if ( class_idx < 0 || class_idx >= m_num_classes )
 		{
-			SG_ERROR("found label out of {0, 1, 2, ..., num_classes-1}...");
+			SG_ERROR("found label out of {0, 1, 2, ..., num_classes-1}...")
 			return false;
 		}
 		else
@@ -189,7 +189,7 @@ bool CQDA::train_machine(CFeatures* data)
 	{
 		if ( class_nums[i] <= 0 )
 		{
-			SG_ERROR("What? One class with no elements\n");
+			SG_ERROR("What? One class with no elements\n")
 			return false;
 		}
 	}
@@ -227,7 +227,7 @@ bool CQDA::train_machine(CFeatures* data)
 		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
-			ASSERT(vec);
+			ASSERT(vec)
 
 			for ( j = 0 ; j < vlen ; ++j )
 			{
@@ -255,7 +255,7 @@ bool CQDA::train_machine(CFeatures* data)
 
 		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu,
 			rot_mat, ldvt, &info);
-		ASSERT(info == 0);
+		ASSERT(info == 0)
 		buffer=SGMatrix<float64_t>();
 
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
@@ -308,26 +308,26 @@ bool CQDA::train_machine(CFeatures* data)
 	}
 
 #ifdef DEBUG_QDA
-	SG_PRINT(">>> QDA machine trained with %d classes\n", m_num_classes);
+	SG_PRINT(">>> QDA machine trained with %d classes\n", m_num_classes)
 
-	SG_PRINT("\n>>> Displaying means ...\n");
+	SG_PRINT("\n>>> Displaying means ...\n")
 	CMath::display_matrix(m_means.matrix, m_dim, m_num_classes);
 
-	SG_PRINT("\n>>> Displaying scalings ...\n");
+	SG_PRINT("\n>>> Displaying scalings ...\n")
 	CMath::display_matrix(scalings.matrix, m_dim, m_num_classes);
 
-	SG_PRINT("\n>>> Displaying rotations ... \n");
+	SG_PRINT("\n>>> Displaying rotations ... \n")
 	for ( k = 0 ; k < m_num_classes ; ++k )
 		CMath::display_matrix(rotations.get_matrix(k), m_dim, m_dim);
 
-	SG_PRINT("\n>>> Displaying sinvsqrt ... \n");
+	SG_PRINT("\n>>> Displaying sinvsqrt ... \n")
 	sinvsqrt.display_vector();
 
-	SG_PRINT("\n>>> Diplaying m_M matrices ... \n");
+	SG_PRINT("\n>>> Diplaying m_M matrices ... \n")
 	for ( k = 0 ; k < m_num_classes ; ++k )
 		CMath::display_matrix(m_M.get_matrix(k), m_dim, m_dim);
 
-	SG_PRINT("\n>>> Exit DEBUG_QDA\n");
+	SG_PRINT("\n>>> Exit DEBUG_QDA\n")
 #endif
 
 	SG_FREE(class_idxs);

@@ -30,7 +30,7 @@ CVwParser::CVwParser()
 CVwParser::CVwParser(CVwEnvironment* env_to_use)
 	: CSGObject()
 {
-	ASSERT(env_to_use);
+	ASSERT(env_to_use)
 
 	env = env_to_use;
 	hasher = CHash::MurmurHashString;
@@ -262,10 +262,10 @@ void CVwParser::init_cache(char * fname, EVwCacheType type)
 		cache_writer = new CVwNativeCacheWriter(file_name, env);
 		return;
 	case C_PROTOBUF:
-		SG_ERROR("Protocol buffers cache support is not implemented yet.\n");
+		SG_ERROR("Protocol buffers cache support is not implemented yet.\n")
 	}
 
-	SG_ERROR("Unexpected cache type specified!\n");
+	SG_ERROR("Unexpected cache type specified!\n")
 }
 
 void CVwParser::feature_value(substring &s, v_array<substring>& feat_name, float32_t &v)

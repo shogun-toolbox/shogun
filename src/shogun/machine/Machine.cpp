@@ -59,7 +59,7 @@ bool CMachine::train(CFeatures* data)
 	if (train_require_labels())
 	{
 		if (m_labels == NULL)
-			SG_ERROR("%s@%p: No labels given", get_name(), this);
+			SG_ERROR("%s@%p: No labels given", get_name(), this)
 
 		m_labels->ensure_valid(get_name());
 	}
@@ -76,7 +76,7 @@ void CMachine::set_labels(CLabels* lab)
 {
     if (lab != NULL)
         if (!is_label_valid(lab))
-            SG_ERROR("Invalid label for %s", get_name());
+            SG_ERROR("Invalid label for %s", get_name())
 
 	SG_UNREF(m_labels);
 	SG_REF(lab);
@@ -121,7 +121,7 @@ void CMachine::set_store_model_features(bool store_model)
 
 void CMachine::data_lock(CLabels* labs, CFeatures* features)
 {
-	SG_DEBUG("entering %s::data_lock\n", get_name());
+	SG_DEBUG("entering %s::data_lock\n", get_name())
 	if (!supports_locking())
 	{
 		{
@@ -147,16 +147,16 @@ void CMachine::data_lock(CLabels* labs, CFeatures* features)
 
 	m_data_locked=true;
 	post_lock(labs,features);
-	SG_DEBUG("leaving %s::data_lock\n", get_name());
+	SG_DEBUG("leaving %s::data_lock\n", get_name())
 }
 
 void CMachine::data_unlock()
 {
-	SG_DEBUG("entering %s::data_lock\n", get_name());
+	SG_DEBUG("entering %s::data_lock\n", get_name())
 	if (m_data_locked)
 		m_data_locked=false;
 
-	SG_DEBUG("leaving %s::data_lock\n", get_name());
+	SG_DEBUG("leaving %s::data_lock\n", get_name())
 }
 
 CLabels* CMachine::apply(CFeatures* data)
@@ -184,7 +184,7 @@ CLabels* CMachine::apply(CFeatures* data)
 			result=apply_latent(data);
 			break;
 		default:
-			SG_ERROR("Unknown problem type");
+			SG_ERROR("Unknown problem type")
 			break;
 	}
 
@@ -209,7 +209,7 @@ CLabels* CMachine::apply_locked(SGVector<index_t> indices)
 		case PT_LATENT:
 			return apply_locked_latent(indices);
 		default:
-			SG_ERROR("Unknown problem type");
+			SG_ERROR("Unknown problem type")
 			break;
 	}
 	return NULL;
@@ -217,31 +217,31 @@ CLabels* CMachine::apply_locked(SGVector<index_t> indices)
 
 CBinaryLabels* CMachine::apply_binary(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_binary()\n");
+	SG_ERROR("This machine does not support apply_binary()\n")
 	return NULL;
 }
 
 CRegressionLabels* CMachine::apply_regression(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_regression()\n");
+	SG_ERROR("This machine does not support apply_regression()\n")
 	return NULL;
 }
 
 CMulticlassLabels* CMachine::apply_multiclass(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_multiclass()\n");
+	SG_ERROR("This machine does not support apply_multiclass()\n")
 	return NULL;
 }
 
 CStructuredLabels* CMachine::apply_structured(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_structured()\n");
+	SG_ERROR("This machine does not support apply_structured()\n")
 	return NULL;
 }
 
 CLatentLabels* CMachine::apply_latent(CFeatures* data)
 {
-	SG_ERROR("This machine does not support apply_latent()\n");
+	SG_ERROR("This machine does not support apply_latent()\n")
 	return NULL;
 }
 

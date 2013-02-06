@@ -59,7 +59,7 @@ int CIOBuffer::open_file(const char* name, char flag)
 		break;
 
 	default:
-		SG_ERROR("Unknown file operation. Something other than 'r'/'w' specified.\n");
+		SG_ERROR("Unknown file operation. Something other than 'r'/'w' specified.\n")
 		ret = 0;
 	}
 	return ret;
@@ -108,7 +108,7 @@ ssize_t CIOBuffer::write_file(const void* buf, size_t nbytes)
 void CIOBuffer::flush()
 {
 	if (write_file(space.begin, space.index()) != (int) space.index())
-		SG_ERROR("Error, failed to write example!\n");
+		SG_ERROR("Error, failed to write example!\n")
 	space.end = space.begin;
 	fsync(working_file);
 }
@@ -121,7 +121,7 @@ bool CIOBuffer::close_file()
 	{
 		int r = close(working_file);
 		if (r < 0)
-			SG_ERROR("Error closing the file!\n");
+			SG_ERROR("Error closing the file!\n")
 		return true;
 	}
 }

@@ -81,7 +81,7 @@ class CPlif: public CPlifBase
 		 */
 		inline float64_t lookup(float64_t p_value)
 		{
-			ASSERT(use_svm == 0);
+			ASSERT(use_svm == 0)
 			return lookup_penalty(p_value, NULL);
 		}
 
@@ -140,7 +140,7 @@ class CPlif: public CPlifBase
 			else if (transform== T_LINEAR_PLUS3)
 				return "(+3)";
 			else
-				SG_ERROR("wrong type");
+				SG_ERROR("wrong type")
 			return "";
 		}
 
@@ -236,7 +236,7 @@ class CPlif: public CPlifBase
 		void set_plif(
 			int32_t p_len, float64_t *p_limits, float64_t* p_penalties)
 		{
-			ASSERT(len==p_len);
+			ASSERT(len==p_len)
 
 			for (int32_t i=0; i<len; i++)
 			{
@@ -254,7 +254,7 @@ class CPlif: public CPlifBase
 		 */
 		void set_plif_limits(SGVector<float64_t> p_limits)
 		{
-			ASSERT(len==p_limits.vlen);
+			ASSERT(len==p_limits.vlen)
 
 			limits = p_limits;
 
@@ -269,7 +269,7 @@ class CPlif: public CPlifBase
 		 */
 		void set_plif_penalty(SGVector<float64_t> p_penalties)
 		{
-			ASSERT(len==p_penalties.vlen);
+			ASSERT(len==p_penalties.vlen)
 
 			penalties = p_penalties;
 
@@ -287,7 +287,7 @@ class CPlif: public CPlifBase
 			{
 				len=p_len;
 
-				SG_DEBUG( "set_plif len=%i\n", p_len);
+				SG_DEBUG( "set_plif len=%i\n", p_len)
 				limits = SGVector<float64_t>(len);
 				penalties = SGVector<float64_t>(len);
 				cum_derivatives = SGVector<float64_t>(len);
@@ -415,7 +415,7 @@ class CPlif: public CPlifBase
 		 */
 		virtual void list_plif() const
 		{
-			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) ;
+			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) 
 		}
 
 		/** delete plif struct

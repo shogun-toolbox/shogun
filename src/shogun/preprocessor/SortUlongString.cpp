@@ -28,8 +28,8 @@ CSortUlongString::~CSortUlongString()
 /// initialize preprocessor from features
 bool CSortUlongString::init(CFeatures* f)
 {
-	ASSERT(f->get_feature_class()==C_STRING);
-	ASSERT(f->get_feature_type()==F_ULONG);
+	ASSERT(f->get_feature_class()==C_STRING)
+	ASSERT(f->get_feature_type()==F_ULONG)
 
 	return true;
 }
@@ -69,9 +69,9 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 		bool free_vec;
 		uint64_t* vec=((CStringFeatures<uint64_t>*)f)->
 			get_feature_vector(i, len, free_vec);
-		ASSERT(!free_vec); // won't work with non-in-memory string features
+		ASSERT(!free_vec) // won't work with non-in-memory string features
 
-		SG_DEBUG( "sorting string of length %i\n", len);
+		SG_DEBUG( "sorting string of length %i\n", len)
 
 		//CMath::qsort(vec, len);
 		CMath::radix_sort(vec, len);

@@ -65,7 +65,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		{
 			if (this->parallel->get_num_threads()!=1)
 			{
-				SG_WARNING("Enforcing to use only one thread due to restrictions of directors\n");
+				SG_WARNING("Enforcing to use only one thread due to restrictions of directors\n")
 				this->parallel->set_num_threads(1);
 			}
 			return CKernel::init(l, r);
@@ -110,7 +110,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 
 		virtual float64_t kernel_function(int32_t idx_a, int32_t idx_b)
 		{
-			SG_ERROR("Kernel function of Director Kernel needs to be overridden.\n");
+			SG_ERROR("Kernel function of Director Kernel needs to be overridden.\n")
 			return 0;
 		}
 

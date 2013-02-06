@@ -54,8 +54,8 @@ int32_t CMultitaskLinearMachine::get_current_task() const
 
 void CMultitaskLinearMachine::set_current_task(int32_t task)
 {
-	ASSERT(task>=0);
-	ASSERT(task<m_tasks_w.num_cols);
+	ASSERT(task>=0)
+	ASSERT(task<m_tasks_w.num_cols)
 	m_current_task = task;
 }
 
@@ -74,7 +74,7 @@ void CMultitaskLinearMachine::set_task_relation(CTaskRelation* task_relation)
 
 bool CMultitaskLinearMachine::train_machine(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
@@ -101,7 +101,7 @@ void CMultitaskLinearMachine::post_lock(CLabels* labels, CFeatures* features_)
 bool CMultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 {
 	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
-	ASSERT((int)m_tasks_indices.size()==n_tasks);
+	ASSERT((int)m_tasks_indices.size()==n_tasks)
 	vector< vector<index_t> > cutted_task_indices;
 	for (int32_t i=0; i<n_tasks; i++)
 		cutted_task_indices.push_back(vector<index_t>());
@@ -131,7 +131,7 @@ bool CMultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 
 bool CMultitaskLinearMachine::train_locked_implementation(SGVector<index_t>* tasks)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
@@ -157,7 +157,7 @@ CBinaryLabels* CMultitaskLinearMachine::apply_locked_binary(SGVector<index_t> in
 
 float64_t CMultitaskLinearMachine::apply_one(int32_t i)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0.0;
 }
 
@@ -166,7 +166,7 @@ SGVector<float64_t> CMultitaskLinearMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
 		set_features((CDotFeatures*) data);
 	}
@@ -175,7 +175,7 @@ SGVector<float64_t> CMultitaskLinearMachine::apply_get_outputs(CFeatures* data)
 		return SGVector<float64_t>();
 
 	int32_t num=features->get_num_vectors();
-	ASSERT(num>0);
+	ASSERT(num>0)
 	float64_t* out=SG_MALLOC(float64_t, num);
 	for (int32_t i=0; i<num; i++)
 		out[i] = apply_one(i);

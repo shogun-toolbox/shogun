@@ -47,14 +47,14 @@ bool CShareBoost::train_machine(CFeatures* data)
 		set_features(data);
 
 	if (m_features == NULL)
-		SG_ERROR("No features given for training\n");
+		SG_ERROR("No features given for training\n")
 	if (m_labels == NULL)
-		SG_ERROR("No labels given for training\n");
+		SG_ERROR("No labels given for training\n")
 
 	if (m_nonzero_feas <= 0)
-		SG_ERROR("Set a valid (> 0) number of non-zero features to seek before training\n");
+		SG_ERROR("Set a valid (> 0) number of non-zero features to seek before training\n")
 	if (m_nonzero_feas >= dynamic_cast<CDenseFeatures<float64_t>*>(m_features)->get_num_features())
-		SG_ERROR("It doesn't make sense to use ShareBoost with num non-zero features >= num features in the data\n");
+		SG_ERROR("It doesn't make sense to use ShareBoost with num non-zero features >= num features in the data\n")
 
 	m_fea = dynamic_cast<CDenseFeatures<float64_t> *>(m_features)->get_feature_matrix();
 	m_rho = SGMatrix<float64_t>(m_multiclass_strategy->get_num_classes(), m_fea.num_cols);
@@ -198,6 +198,6 @@ void CShareBoost::set_features(CFeatures *f)
 {
 	CDenseFeatures<float64_t> *fea = dynamic_cast<CDenseFeatures<float64_t> *>(f);
 	if (fea == NULL)
-		SG_ERROR("Require DenseFeatures<float64_t>\n");
+		SG_ERROR("Require DenseFeatures<float64_t>\n")
 	CLinearMulticlassMachine::set_features(fea);
 }

@@ -69,7 +69,7 @@ bool CGUIDistance::set_distance(CDistance* dist)
 		SG_UNREF(distance);
 		SG_REF(dist);
 		distance=dist;
-		SG_DEBUG("set new distance (%p).\n", dist);
+		SG_DEBUG("set new distance (%p).\n", dist)
 
 		return true;
 	}
@@ -79,10 +79,10 @@ bool CGUIDistance::set_distance(CDistance* dist)
 
 bool CGUIDistance::init_distance(const char* target)
 {
-	SG_DEBUG("init_distance start\n.");
+	SG_DEBUG("init_distance start\n.")
 
 	if (!distance)
-		SG_ERROR("No distance available.\n");
+		SG_ERROR("No distance available.\n")
 
 	distance->set_precompute_matrix(false);
 	EFeatureClass d_fclass=distance->get_feature_class();
@@ -103,10 +103,10 @@ bool CGUIDistance::init_distance(const char* target)
 				initialized=true;
 			}
 			else
-				SG_ERROR("Distance can not process this train feature type: %d %d.\n", fclass, ftype);
+				SG_ERROR("Distance can not process this train feature type: %d %d.\n", fclass, ftype)
 		}
 		else
-			SG_ERROR("Assign train features first.\n");
+			SG_ERROR("Assign train features first.\n")
 	}
 	else if (!strncmp(target, "TEST", 4))
 	{
@@ -121,23 +121,23 @@ bool CGUIDistance::init_distance(const char* target)
 
 			{
 				if (!initialized)
-					SG_ERROR("Distance not initialized with training examples.\n");
+					SG_ERROR("Distance not initialized with training examples.\n")
 				else
 				{
-					SG_INFO("Initialising distance with TEST DATA, train: %p test %p\n", train, test);
+					SG_INFO("Initialising distance with TEST DATA, train: %p test %p\n", train, test)
 					// lhs -> always train_features; rhs -> always test_features
 					distance->init(train, test);
 				}
 			}
 			else
-				SG_ERROR("Distance can not process this test feature type: %d %d.\n", fclass, ftype);
+				SG_ERROR("Distance can not process this test feature type: %d %d.\n", fclass, ftype)
 		}
 		else
-			SG_ERROR("Assign train and test features first.\n");
+			SG_ERROR("Assign train and test features first.\n")
 	}
 	else
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return false;
 	}
 
@@ -161,18 +161,18 @@ bool CGUIDistance::save_distance(char* param)
 			}
 			catch (...)
 			{
-				SG_ERROR( "writing to file %s failed!\n", filename);
+				SG_ERROR( "writing to file %s failed!\n", filename)
 			}
 
-			SG_INFO( "successfully written distance to \"%s\" !\n", filename);
+			SG_INFO( "successfully written distance to \"%s\" !\n", filename)
 			result=true;
 			SG_UNREF(file);
 		}
 		else
-			SG_ERROR( "see help for params\n");
+			SG_ERROR( "see help for params\n")
 	}
 	else
-		SG_ERROR( "no distance set / distance not initialized!\n");
+		SG_ERROR( "no distance set / distance not initialized!\n")
 	return result;
 }
 
@@ -209,13 +209,13 @@ CDistance* CGUIDistance::create_generic(EDistanceType type)
 		case D_BRAYCURTIS:
 			dist=new CBrayCurtisDistance(); break;
 		default:
-			SG_ERROR("Unknown metric/distance type %d given to create generic distance/metric.\n", type);
+			SG_ERROR("Unknown metric/distance type %d given to create generic distance/metric.\n", type)
 	}
 
 	if (dist)
-		SG_INFO("Metric/Distance of type %d created (%p).\n", type, dist);
+		SG_INFO("Metric/Distance of type %d created (%p).\n", type, dist)
 	else
-		SG_ERROR("Failed creating metric of type %d.\n", type);
+		SG_ERROR("Failed creating metric of type %d.\n", type)
 
 	return dist;
 }
@@ -224,9 +224,9 @@ CDistance* CGUIDistance::create_minkowski(float64_t k)
 {
 	CDistance* dist=new CMinkowskiMetric(k);
 	if (dist)
-		SG_INFO("Minkowski Metric created (%p), k %f.\n", dist, k);
+		SG_INFO("Minkowski Metric created (%p), k %f.\n", dist, k)
 	else
-		SG_ERROR("Failed Creating Minkowski Metric, k %f.\n", k);
+		SG_ERROR("Failed Creating Minkowski Metric, k %f.\n", k)
 
 	return dist;
 }
@@ -240,7 +240,7 @@ CDistance* CGUIDistance::create_hammingword(bool use_sign)
 			dist, use_sign);
 	}
 	else
-		SG_ERROR("Failed Creating HammingWord distance, use sign %d.\n", use_sign);
+		SG_ERROR("Failed Creating HammingWord distance, use sign %d.\n", use_sign)
 
 	return dist;
 }

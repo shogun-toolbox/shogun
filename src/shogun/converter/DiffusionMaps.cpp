@@ -63,11 +63,11 @@ const char* CDiffusionMaps::get_name() const
 
 CFeatures* CDiffusionMaps::apply(CFeatures* features)
 {
-	ASSERT(features);
+	ASSERT(features)
 	// shorthand for simplefeatures
 	SG_REF(features);
 	// compute distance matrix
-	ASSERT(m_distance);
+	ASSERT(m_distance)
 	m_distance->init(features,features);
 	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
 	m_distance->cleanup();

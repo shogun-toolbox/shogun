@@ -104,17 +104,17 @@ void COnlineLibLinear::stop_train()
 {
 	float64_t gap = PGmax_new - PGmin_new;
 
-	SG_DONE();
-	SG_INFO("Optimization finished.\n");
+	SG_DONE()
+	SG_INFO("Optimization finished.\n")
 
 	// calculate objective value
 	for (int32_t i=0; i<w_dim; i++)
 		v += w[i]*w[i];
 	v += bias*bias;
 
-	SG_INFO("Objective value = %lf\n", v/2);
-	SG_INFO("nSV = %d\n", nSV);
-	SG_INFO("gap = %g\n", gap);
+	SG_INFO("Objective value = %lf\n", v/2)
+	SG_INFO("nSV = %d\n", nSV)
+	SG_INFO("gap = %g\n", gap)
 }
 
 void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
@@ -194,7 +194,7 @@ void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t l
 	CStreamingDenseFeatures<float32_t> *feat =
 		dynamic_cast<CStreamingDenseFeatures<float32_t> *>(feature);
 	if (feat == NULL)
-		SG_ERROR("Expected streaming dense feature <float32_t>\n");
+		SG_ERROR("Expected streaming dense feature <float32_t>\n")
 
 	train_one(feat->get_vector(), label);
 }

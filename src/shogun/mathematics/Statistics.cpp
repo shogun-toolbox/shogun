@@ -25,8 +25,8 @@ using namespace shogun;
 
 float64_t CStatistics::mean(SGVector<float64_t> values)
 {
-	ASSERT(values.vlen>0);
-	ASSERT(values.vector);
+	ASSERT(values.vlen>0)
+	ASSERT(values.vector)
 
 	float64_t sum=0;
 	for (index_t i=0; i<values.vlen; ++i)
@@ -201,8 +201,8 @@ float64_t CStatistics::matrix_median(SGMatrix<float64_t> values,
 
 float64_t CStatistics::variance(SGVector<float64_t> values)
 {
-	ASSERT(values.vlen>1);
-	ASSERT(values.vector);
+	ASSERT(values.vlen>1)
+	ASSERT(values.vector)
 
 	float64_t mean=CStatistics::mean(values);
 
@@ -216,9 +216,9 @@ float64_t CStatistics::variance(SGVector<float64_t> values)
 SGVector<float64_t> CStatistics::matrix_mean(SGMatrix<float64_t> values,
 		bool col_wise)
 {
-	ASSERT(values.num_rows>0);
-	ASSERT(values.num_cols>0);
-	ASSERT(values.matrix);
+	ASSERT(values.num_rows>0)
+	ASSERT(values.num_cols>0)
+	ASSERT(values.matrix)
 
 	SGVector<float64_t> result;
 
@@ -253,9 +253,9 @@ SGVector<float64_t> CStatistics::matrix_mean(SGMatrix<float64_t> values,
 SGVector<float64_t> CStatistics::matrix_variance(SGMatrix<float64_t> values,
 		bool col_wise)
 {
-	ASSERT(values.num_rows>0);
-	ASSERT(values.num_cols>0);
-	ASSERT(values.matrix);
+	ASSERT(values.num_rows>0)
+	ASSERT(values.num_cols>0)
+	ASSERT(values.matrix)
 
 	/* first compute mean */
 	SGVector<float64_t> mean=CStatistics::matrix_mean(values, col_wise);
@@ -333,8 +333,8 @@ SGMatrix<float64_t> CStatistics::covariance_matrix(
 float64_t CStatistics::confidence_intervals_mean(SGVector<float64_t> values,
 		float64_t alpha, float64_t& conf_int_low, float64_t& conf_int_up)
 {
-	ASSERT(values.vlen>1);
-	ASSERT(values.vector);
+	ASSERT(values.vlen>1)
+	ASSERT(values.vector)
 
 	/* using one sided student t distribution evaluation */
 	alpha=alpha/2;
@@ -1781,8 +1781,8 @@ SGVector<float64_t> CStatistics::fishers_exact_test_for_multiple_2x3_tables(
 float64_t CStatistics::fishers_exact_test_for_2x3_table(
 		SGMatrix<float64_t> table)
 {
-	ASSERT(table.num_rows==2);
-	ASSERT(table.num_cols==3);
+	ASSERT(table.num_rows==2)
+	ASSERT(table.num_cols==3)
 
 	int32_t m_len=3+2;
 	float64_t* m=SG_MALLOC(float64_t, 3+2);
@@ -1835,14 +1835,14 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 
 //#define DEBUG_FISHER_TABLE
 #ifdef DEBUG_FISHER_TABLE
-	SG_SPRINT("counter=%d\n", counter);
-	SG_SPRINT("dim1=%d\n", dim1);
-	SG_SPRINT("l=%g...%g\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]));
-	SG_SPRINT("n=%g\n", n);
-	SG_SPRINT("prob_table_log=%.18Lg\n", prob_table_log);
-	SG_SPRINT("log_denomf=%.18g\n", log_denomf);
-	SG_SPRINT("log_denom=%.18Lg\n", log_denom);
-	SG_SPRINT("log_nom=%.18g\n", log_nom);
+	SG_SPRINT("counter=%d\n", counter)
+	SG_SPRINT("dim1=%d\n", dim1)
+	SG_SPRINT("l=%g...%g\n", CMath::max(0.0,m[0]-m[4]-0), CMath::min(m[0]-0, m[3]))
+	SG_SPRINT("n=%g\n", n)
+	SG_SPRINT("prob_table_log=%.18Lg\n", prob_table_log)
+	SG_SPRINT("log_denomf=%.18g\n", log_denomf)
+	SG_SPRINT("log_denom=%.18Lg\n", log_denom)
+	SG_SPRINT("log_nom=%.18g\n", log_nom)
 	display_vector(m, m_len, "marginals");
 	display_vector(x, 2*3*counter, "x");
 #endif // DEBUG_FISHER_TABLE
@@ -1874,8 +1874,8 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	}
 
 #ifdef DEBUG_FISHER_TABLE
-	SG_SPRINT("nonrand_p=%.18g\n", nonrand_p);
-	SG_SPRINT("exp_nonrand_p=%.18g\n", CMath::exp(nonrand_p));
+	SG_SPRINT("nonrand_p=%.18g\n", nonrand_p)
+	SG_SPRINT("exp_nonrand_p=%.18g\n", CMath::exp(nonrand_p))
 #endif // DEBUG_FISHER_TABLE
 	nonrand_p=CMath::exp(nonrand_p);
 

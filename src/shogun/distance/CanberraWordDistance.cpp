@@ -20,14 +20,14 @@ using namespace shogun;
 CCanberraWordDistance::CCanberraWordDistance()
 : CStringDistance<uint16_t>()
 {
-	SG_DEBUG("CCanberraWordDistance created");
+	SG_DEBUG("CCanberraWordDistance created")
 }
 
 CCanberraWordDistance::CCanberraWordDistance(
 	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r)
 : CStringDistance<uint16_t>()
 {
-	SG_DEBUG("CCanberraWordDistance created");
+	SG_DEBUG("CCanberraWordDistance created")
 
 	init(l, r);
 }

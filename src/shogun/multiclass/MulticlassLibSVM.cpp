@@ -35,11 +35,11 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 
 	problem = svm_problem();
 
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes);
+	SG_INFO( "%d trainlabels, %d classes\n", problem.l, num_classes)
 
 
 	if (data)
@@ -68,7 +68,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 		x_space[2*i+1].index=-1;
 	}
 
-	ASSERT(m_kernel);
+	ASSERT(m_kernel)
 
 	param.svm_type=solver_type; // C SVM or NU_SVM
 	param.kernel_type = LINEAR;
@@ -91,7 +91,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg);
+		SG_ERROR("Error: %s\n",error_msg)
 
 	model = svm_train(&problem, &param);
 
@@ -102,7 +102,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 			SG_ERROR("LibSVM model->nr_class=%d while num_classes=%d\n",
 					model->nr_class, num_classes);
 		}
-		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef));
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef))
 		create_multiclass_svm(num_classes);
 
 		int32_t* offsets=SG_MALLOC(int32_t, num_classes);
@@ -125,8 +125,8 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 				int32_t num_sv=model->nSV[i]+model->nSV[j];
 				float64_t bias=-model->rho[s];
 
-				ASSERT(num_sv>0);
-				ASSERT(model->sv_coef[i] && model->sv_coef[j-1]);
+				ASSERT(num_sv>0)
+				ASSERT(model->sv_coef[i] && model->sv_coef[j-1])
 
 				CSVM* svm=new CSVM(num_sv);
 
@@ -191,7 +191,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 						s, num_sv, model->l, bias, model->label[i],
 						model->label[j], idx);
 
-				REQUIRE(set_svm(idx, svm),"SVM set failed");
+				REQUIRE(set_svm(idx, svm),"SVM set failed")
 				s++;
 			}
 		}

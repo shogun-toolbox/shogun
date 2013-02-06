@@ -39,7 +39,7 @@ void CSparseInverseCovariance::register_parameters()
 
 SGMatrix<float64_t> CSparseInverseCovariance::estimate(SGMatrix<float64_t> S, float64_t lambda_c)
 {
-	ASSERT(S.num_cols==S.num_rows);
+	ASSERT(S.num_cols==S.num_rows)
 
 	int32_t n = S.num_cols;
 	float64_t sum_S = 0.0;

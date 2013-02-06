@@ -61,12 +61,12 @@ bool CPCA::init(CFeatures* features)
 		// loop varibles
 		int32_t i,j,k;
 
-		ASSERT(features->get_feature_class()==C_DENSE);
-		ASSERT(features->get_feature_type()==F_DREAL);
+		ASSERT(features->get_feature_class()==C_DENSE)
+		ASSERT(features->get_feature_type()==F_DREAL)
 
 		int32_t num_vectors=((CDenseFeatures<float64_t>*)features)->get_num_vectors();
 		int32_t num_features=((CDenseFeatures<float64_t>*)features)->get_num_features();
-		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
+		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features)
 
 		m_mean_vector.vlen = num_features;
 		m_mean_vector.vector = SG_CALLOC(float64_t, num_features);
@@ -107,7 +107,7 @@ bool CPCA::init(CFeatures* features)
 				cov[i*num_features+j]/=(num_vectors-1);
 		}
 
-		SG_INFO("Computing Eigenvalues ... ") ;
+		SG_INFO("Computing Eigenvalues ... ") 
 
 		m_eigenvalues_vector.vector = SGMatrix<float64_t>::compute_eigenvectors(cov,num_features,num_features);
 		m_eigenvalues_vector.vlen = num_features;
@@ -115,7 +115,7 @@ bool CPCA::init(CFeatures* features)
 
 		if (m_mode == FIXED_NUMBER)
 		{
-			ASSERT(m_target_dim <= num_features);
+			ASSERT(m_target_dim <= num_features)
 			num_dim = m_target_dim;
 		}
 		if (m_mode == VARIANCE_EXPLAINED)
@@ -144,7 +144,7 @@ bool CPCA::init(CFeatures* features)
 			}
 		}
 
-		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
+		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) 
 
 		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 		num_old_dim = num_features;
@@ -177,15 +177,15 @@ void CPCA::cleanup()
 
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
-	ASSERT(m_initialized);
+	ASSERT(m_initialized)
 	SGMatrix<float64_t> m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
 	int32_t num_vectors = m.num_cols;
 	int32_t num_features = m.num_rows;
-	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features);
+	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
 	if (m.matrix)
 	{
-		SG_INFO("Preprocessing feature matrix\n");
+		SG_INFO("Preprocessing feature matrix\n")
 		float64_t* res = SG_MALLOC(float64_t, num_dim);
 		float64_t* sub_mean = SG_MALLOC(float64_t, num_features);
 
@@ -212,7 +212,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 
 		((CDenseFeatures<float64_t>*) features)->set_num_features(num_dim);
 		((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
-		SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features);
+		SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features)
 	}
 
 	return m;

@@ -29,7 +29,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures() :CDotFeatures()
 
 CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
-	ASSERT(str);
+	ASSERT(str)
 
 	use_normalization=normalize;
 	num_strings = str->get_num_vectors();
@@ -37,7 +37,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, boo
 
 	obtain_kmer_spectrum(str);
 
-	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings);
+	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings)
 }
 
 CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig),
@@ -60,13 +60,13 @@ int32_t CExplicitSpecFeatures::get_dim_feature_space() const
 
 float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CExplicitSpecFeatures* sf = (CExplicitSpecFeatures*) df;
 
-	ASSERT(vec_idx1 < num_strings);
-	ASSERT(vec_idx2 < sf->num_strings);
+	ASSERT(vec_idx1 < num_strings)
+	ASSERT(vec_idx2 < sf->num_strings)
 	float64_t* vec1=k_spectrum[vec_idx1];
 	float64_t* vec2=sf->k_spectrum[vec_idx2];
 
@@ -75,8 +75,8 @@ float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 
 float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == spec_size);
-	ASSERT(vec_idx1 < num_strings);
+	ASSERT(vec2_len == spec_size)
+	ASSERT(vec_idx1 < num_strings)
 	float64_t* vec1=k_spectrum[vec_idx1];
 	float64_t result=0;
 
@@ -88,8 +88,8 @@ float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 
 void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	ASSERT(vec2_len == spec_size);
-	ASSERT(vec_idx1 < num_strings);
+	ASSERT(vec2_len == spec_size)
+	ASSERT(vec_idx1 < num_strings)
 	float64_t* vec1=k_spectrum[vec_idx1];
 
 	if (abs_val)
@@ -154,24 +154,24 @@ CFeatures* CExplicitSpecFeatures::duplicate() const
 
 void* CExplicitSpecFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CExplicitSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 void CExplicitSpecFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 int32_t CExplicitSpecFeatures::get_nnz_features_for_vector(int32_t num)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 

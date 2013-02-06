@@ -25,7 +25,7 @@ CMKLRegression::~CMKLRegression()
 
 float64_t CMKLRegression::compute_sum_alpha()
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 
 	// not correct needs explicit access to alpha and alpha*
@@ -38,14 +38,14 @@ float64_t CMKLRegression::compute_sum_alpha()
 
 float64_t CMKLRegression::compute_mkl_dual_objective()
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 
 void CMKLRegression::init_training()
 {
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(svm);
-	ASSERT(svm->get_classifier_type() == CT_SVRLIGHT);
-	ASSERT(interleaved_optimization);
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(svm)
+	ASSERT(svm->get_classifier_type() == CT_SVRLIGHT)
+	ASSERT(interleaved_optimization)
 }

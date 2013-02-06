@@ -47,7 +47,7 @@ SGSparseMatrix<T>::~SGSparseMatrix()
 template<class T>
 void SGSparseMatrix<T>::load(CFile* loader)
 {
-	ASSERT(loader);
+	ASSERT(loader)
 	unref();
 
 	SG_SET_LOCALE_C;
@@ -58,7 +58,7 @@ void SGSparseMatrix<T>::load(CFile* loader)
 template<class T>
 void SGSparseMatrix<T>::save(CFile* saver)
 {
-	ASSERT(saver);
+	ASSERT(saver)
 
 	SG_SET_LOCALE_C;
 	saver->set_sparse_matrix(sparse_matrix, num_features, num_vectors);

@@ -106,7 +106,7 @@ public:
 	inline float64_t get_accuracy() const
 	{
 		if (!m_computed)
-			SG_ERROR("Uninitialized, please call evaluate first");
+			SG_ERROR("Uninitialized, please call evaluate first")
 
 		return (m_TP+m_TN)/m_N;
 	};
@@ -117,7 +117,7 @@ public:
 	inline float64_t get_error_rate() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return (m_FP + m_FN)/m_N;
 	};
@@ -128,7 +128,7 @@ public:
 	inline float64_t get_BAL() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return 0.5*(m_FN/(m_FN + m_TP) + m_FP/(m_FP + m_TN));
 	};
@@ -139,7 +139,7 @@ public:
 	inline float64_t get_WRACC() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return m_TP/(m_FN + m_TP) - m_FP/(m_FP + m_TN);
 	};
@@ -150,7 +150,7 @@ public:
 	inline float64_t get_F1() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return (2*m_TP)/(2*m_TP + m_FP + m_FN);
 	};
@@ -161,7 +161,7 @@ public:
 	inline float64_t get_cross_correlation() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return (m_TP*m_TN-m_FP*m_FN)/CMath::sqrt((m_TP+m_FP)*(m_TP+m_FN)*(m_TN+m_FP)*(m_TN+m_FN));
 	};
@@ -172,7 +172,7 @@ public:
 	inline float64_t get_recall() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return m_TP/(m_TP+m_FN);
 	};
@@ -183,7 +183,7 @@ public:
 	inline float64_t get_precision() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return m_TP/(m_TP+m_FP);
 	};
@@ -194,7 +194,7 @@ public:
 	inline float64_t get_specificity() const
 	{
 		if (!m_computed)
-				SG_ERROR("Uninitialized, please call evaluate first");
+				SG_ERROR("Uninitialized, please call evaluate first")
 
 		return m_TN/(m_TN+m_FP);
 	};
@@ -233,7 +233,7 @@ public:
 	 */
 	virtual float64_t get_custom_score()
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return 0.0;
 	}
 
@@ -242,7 +242,7 @@ public:
 	 */
 	virtual EEvaluationDirection get_custom_direction()
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return ED_MAXIMIZE;
 	}
 

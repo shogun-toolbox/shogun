@@ -52,9 +52,9 @@ CGMNPSVM::init()
 
 bool CGMNPSVM::train_machine(CFeatures* data)
 {
-	ASSERT(m_kernel);
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+	ASSERT(m_kernel)
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 
 	if (data)
 	{
@@ -71,7 +71,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_virtual_data= num_data*(num_classes-1);
 
-	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes);
+	SG_INFO( "%d trainlabels, %d classes\n", num_data, num_classes)
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)
@@ -138,8 +138,8 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 			if (all_alphas[j*num_classes+i] != 0)
 				num_sv++;
 		}
-		ASSERT(num_sv>0);
-		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, num_sv, all_bs[i]);
+		ASSERT(num_sv>0)
+		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, num_sv, all_bs[i])
 
 		CSVM* svm=new CSVM(num_sv);
 

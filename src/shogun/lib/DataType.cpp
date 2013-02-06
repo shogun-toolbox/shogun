@@ -322,7 +322,7 @@ int64_t TSGDataType::get_num_elements()
 		case CT_MATRIX: case CT_SGMATRIX:
 			return (*m_length_y)*(*m_length_x);
 		case CT_NDARRAY:
-			SG_SNOTIMPLEMENTED;
+			SG_SNOTIMPLEMENTED
 	}
 	return 0;
 }

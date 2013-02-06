@@ -72,7 +72,7 @@ class CSparseSpatialSampleStringKernel: public CStringKernel<char>
 		 */
 		void set_d(int32_t max_distance)
 		{
-			ASSERT(d>0);
+			ASSERT(d>0)
 			d=max_distance;
 		}
 
@@ -87,7 +87,7 @@ class CSparseSpatialSampleStringKernel: public CStringKernel<char>
 		 */
 		void set_t(int32_t sequence_length)
 		{
-			ASSERT(t==2 || t==3);
+			ASSERT(t==2 || t==3)
 			t=sequence_length;
 		}
 

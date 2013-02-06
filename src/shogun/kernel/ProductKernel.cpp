@@ -19,7 +19,7 @@ CProductKernel::CProductKernel(int32_t size)
 {
 	init();
 
-	SG_INFO("Product kernel created (%p)\n", this) ;
+	SG_INFO("Product kernel created (%p)\n", this) 
 }
 
 CProductKernel::~CProductKernel()
@@ -27,17 +27,17 @@ CProductKernel::~CProductKernel()
 	cleanup();
 	SG_UNREF(kernel_list);
 
-	SG_INFO("Product kernel deleted (%p).\n", this);
+	SG_INFO("Product kernel deleted (%p).\n", this)
 }
 
 //Adapted from CCombinedKernel
 bool CProductKernel::init(CFeatures* l, CFeatures* r)
 {
 	CKernel::init(l,r);
-	ASSERT(l->get_feature_class()==C_COMBINED);
-	ASSERT(r->get_feature_class()==C_COMBINED);
-	ASSERT(l->get_feature_type()==F_UNKNOWN);
-	ASSERT(r->get_feature_type()==F_UNKNOWN);
+	ASSERT(l->get_feature_class()==C_COMBINED)
+	ASSERT(r->get_feature_class()==C_COMBINED)
+	ASSERT(l->get_feature_type()==F_UNKNOWN)
+	ASSERT(r->get_feature_type()==F_UNKNOWN)
 
 	CFeatures* lf=NULL;
 	CFeatures* rf=NULL;
@@ -62,10 +62,10 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 				SG_UNREF(lf);
 				SG_UNREF(rf);
 				SG_UNREF(k);
-				SG_ERROR( "ProductKernel: Number of features/kernels does not match - bailing out\n");
+				SG_ERROR( "ProductKernel: Number of features/kernels does not match - bailing out\n")
 			}
 
-			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
+			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name())
 			result=k->init(lf,rf);
 			SG_UNREF(lf);
 			SG_UNREF(rf);
@@ -75,13 +75,13 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 		}
 		else
 		{
-			SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name());
+			SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name())
 			if (!k->has_features())
-				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n");
+				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n")
 			if (k->get_num_vec_lhs() != num_lhs)
-				SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs());
+				SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs())
 			if (k->get_num_vec_rhs() != num_rhs)
-				SG_ERROR("Number of rhs-feature vectors (%d) not match with number of cols (%d) of custom kernel\n", num_rhs, k->get_num_vec_rhs());
+				SG_ERROR("Number of rhs-feature vectors (%d) not match with number of cols (%d) of custom kernel\n", num_rhs, k->get_num_vec_rhs())
 		}
 
 		SG_UNREF(k);
@@ -90,11 +90,11 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 
 	if (!result)
 	{
-		SG_INFO( "ProductKernel: Initialising the following kernel failed\n");
+		SG_INFO( "ProductKernel: Initialising the following kernel failed\n")
 		if (k)
 			k->list_kernel();
 		else
-			SG_INFO( "<NULL>\n");
+			SG_INFO( "<NULL>\n")
 		return false;
 	}
 
@@ -103,7 +103,7 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 		SG_UNREF(lf);
 		SG_UNREF(rf);
 		SG_UNREF(k);
-		SG_ERROR( "ProductKernel: Number of features/kernels does not match - bailing out\n");
+		SG_ERROR( "ProductKernel: Number of features/kernels does not match - bailing out\n")
 	}
 
 	initialized=true;
@@ -191,7 +191,7 @@ void CProductKernel::list_kernels()
 {
 	CKernel* k;
 
-	SG_INFO( "BEGIN PRODUCT KERNEL LIST - ");
+	SG_INFO( "BEGIN PRODUCT KERNEL LIST - ")
 	this->list_kernel();
 
 	CListElement* current = NULL ;
@@ -202,7 +202,7 @@ void CProductKernel::list_kernels()
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
-	SG_INFO( "END PRODUCT KERNEL LIST - ");
+	SG_INFO( "END PRODUCT KERNEL LIST - ")
 }
 
 //Adapted from CCombinedKernel

@@ -39,22 +39,22 @@ CSVMLin::~CSVMLin()
 
 bool CSVMLin::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
+	ASSERT(m_labels)
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
 
-	ASSERT(features);
+	ASSERT(features)
 
 	SGVector<float64_t> train_labels=((CBinaryLabels*) m_labels)->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==train_labels.vlen);
+	ASSERT(num_vec==train_labels.vlen)
 
 	struct options Options;
 	struct data Data;
@@ -94,7 +94,7 @@ bool CSVMLin::train_machine(CFeatures* data)
 			Data.C[i]=Options.Cn;
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
-	ASSERT(Weights.vec && Weights.d==num_feat+1);
+	ASSERT(Weights.vec && Weights.d==num_feat+1)
 
 	float64_t sgn=train_labels.vector[0];
 	for (int32_t i=0; i<num_feat+1; i++)

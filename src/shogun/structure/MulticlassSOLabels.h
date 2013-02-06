@@ -46,7 +46,7 @@ struct CRealNumber : public CStructuredData
 		if ( base_data->get_structured_data_type() == SDT_REAL )
 			return (CRealNumber*) base_data;
 		else
-			SG_SERROR("base_data must be of dynamic type CRealNumber\n");
+			SG_SERROR("base_data must be of dynamic type CRealNumber\n")
 
 		return NULL;
 	}

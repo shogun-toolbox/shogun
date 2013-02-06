@@ -23,7 +23,7 @@ using namespace shogun;
 
 CAsciiFile::CAsciiFile()
 {
-	SG_UNSTABLE("CAsciiFile::CAsciiFile()", "\n");
+	SG_UNSTABLE("CAsciiFile::CAsciiFile()", "\n")
 }
 
 CAsciiFile::CAsciiFile(FILE* f, const char* name) : CFile(f, name)
@@ -84,15 +84,15 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 {																				\
 	struct stat stats;															\
 	if (stat(filename, &stats)!=0)												\
-		SG_ERROR("Could not get file statistics.\n");							\
+		SG_ERROR("Could not get file statistics.\n")							\
 																				\
 	char* data=SG_MALLOC(char, stats.st_size+1);										\
 	memset(data, 0, sizeof(char)*(stats.st_size+1));							\
 	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
 	if (nread<=0)																\
-		SG_ERROR("Could not read data from %s.\n", filename);					\
+		SG_ERROR("Could not read data from %s.\n", filename)					\
 																				\
-	SG_DEBUG("data read from file:\n%s\n", data);								\
+	SG_DEBUG("data read from file:\n%s\n", data)								\
 																				\
 	/* determine num_feat and num_vec, populate dynamic array */ 				\
 	int32_t nf=0;																\
@@ -133,7 +133,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 		ptr_data++;																\
 	}																			\
 																				\
-	SG_DEBUG("num feat: %d, num_vec %d\n", num_feat, num_vec);					\
+	SG_DEBUG("num feat: %d, num_vec %d\n", num_feat, num_vec)					\
 	SG_FREE(data);																\
 																				\
 	/* now copy data into matrix */ 											\
@@ -169,15 +169,15 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
 {												\
 	struct stat stats;									\
 	if (stat(filename, &stats)!=0)								\
-		SG_ERROR("Could not get file statistics.\n");					\
+		SG_ERROR("Could not get file statistics.\n")					\
 												\
 	char* data=SG_MALLOC(char, stats.st_size+1);							\
 	memset(data, 0, sizeof(char)*(stats.st_size+1));					\
 	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
 	if (nread<=0)										\
-		SG_ERROR("Could not read data from %s.\n", filename);				\
+		SG_ERROR("Could not read data from %s.\n", filename)				\
 												\
-	SG_DEBUG("data read from file:\n%s\n", data);						\
+	SG_DEBUG("data read from file:\n%s\n", data)						\
 												\
 	/* determine size of array */ 								\
 	int32_t length=0;									\
@@ -237,14 +237,14 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
 		ptr_data++;									\
 	}											\
 												\
-	SG_DEBUG("num of data in line: %d, num of lines %d\n", counter, total);			\
+	SG_DEBUG("num of data in line: %d, num of lines %d\n", counter, total)			\
 	SG_FREE(data);										\
 												\
 	/* determining sizes of dimensions*/                                                	\
         char * item;                                                                            \
         item=items->get_element(0);                                                             \
         if(atoi(item) != num_dims)                                                              \
-            SG_ERROR("Invalid number of dimensions!\n");                            		\
+            SG_ERROR("Invalid number of dimensions!\n")                            		\
         SG_FREE(item);                                                                          \
         dims = SG_MALLOC(int32_t, num_dims);                                                           \
         for(int32_t i =0;i < num_dims;i++)                                              	\
@@ -254,7 +254,7 @@ void CAsciiFile::fname(sg_type*& array, int32_t *& dims, int32_t & num_dims)			\
             SG_FREE(item);                                                                      \
         }                                                                                       \
         if (dims[num_dims-1] != length)                                                 	\
-            SG_ERROR("Invalid number of lines in file!\n");                 			\
+            SG_ERROR("Invalid number of lines in file!\n")                 			\
                                                                                     		\
         /* converting array data */								\
         total *= length;									\
@@ -294,7 +294,7 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 		num_vec=0;	\
 		num_feat=0;	\
 	\
-		SG_INFO("counting line numbers in file %s\n", filename);	\
+		SG_INFO("counting line numbers in file %s\n", filename)	\
 		size_t sz=blocksize;	\
 		size_t block_offs=0;	\
 		size_t old_block_offs=0;	\
@@ -315,10 +315,10 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 					old_block_offs=block_offs;	\
 				}	\
 			}	\
-			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");	\
+			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t")	\
 		}	\
 	\
-		SG_INFO("found %d feature vectors\n", num_vec);	\
+		SG_INFO("found %d feature vectors\n", num_vec)	\
 		SG_FREE(dummy);	\
 		blocksize=required_blocksize;	\
 		dummy = SG_MALLOC(uint8_t, blocksize+1); /*allow setting of '\0' at EOL*/	\
@@ -432,12 +432,12 @@ void CAsciiFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int3
 	\
 					old_sz=i+1;	\
 					lines++;	\
-					SG_PROGRESS(lines, 0, num_vec, 1, "LOADING:\t");	\
+					SG_PROGRESS(lines, 0, num_vec, 1, "LOADING:\t")	\
 				}	\
 			}	\
 		}	\
 	\
-		SG_INFO("file successfully read\n");	\
+		SG_INFO("file successfully read\n")	\
 	}	\
 	\
 	SG_FREE(dummy);	\
@@ -472,7 +472,7 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 		num_str=0;
 		max_string_len=0;
 
-		SG_INFO("counting line numbers in file %s\n", filename);
+		SG_INFO("counting line numbers in file %s\n", filename)
 		size_t sz=blocksize;
 		size_t block_offs=0;
 		size_t old_block_offs=0;
@@ -493,11 +493,11 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 					old_block_offs=block_offs;
 				}
 			}
-			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
+			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t")
 		}
 
-		SG_INFO("found %d strings\n", num_str);
-		SG_DEBUG("block_size=%d\n", required_blocksize);
+		SG_INFO("found %d strings\n", num_str)
+		SG_DEBUG("block_size=%d\n", required_blocksize)
 		SG_FREE(dummy);
 		blocksize=required_blocksize;
 		dummy=SG_MALLOC(uint8_t, blocksize);
@@ -534,7 +534,7 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 					//CMath::display_vector(strings[lines].string, len);
 					old_sz=i+1;
 					lines++;
-					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
+					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t")
 				}
 			}
 
@@ -543,9 +543,9 @@ void CAsciiFile::get_string_list(SGString<uint8_t>*& strings, int32_t& num_str, 
 
 			overflow_len=sz-old_sz;
 		}
-		SG_INFO("file successfully read\n");
-		SG_INFO("max_string_length=%d\n", max_string_len);
-		SG_INFO("num_strings=%d\n", num_str);
+		SG_INFO("file successfully read\n")
+		SG_INFO("max_string_length=%d\n", max_string_len)
+		SG_INFO("num_strings=%d\n", num_str)
 	}
 
 	SG_FREE(dummy);
@@ -565,7 +565,7 @@ void CAsciiFile::get_string_list(SGString<int8_t>*& strings, int32_t& num_str, i
 		num_str=0;
 		max_string_len=0;
 
-		SG_INFO("counting line numbers in file %s\n", filename);
+		SG_INFO("counting line numbers in file %s\n", filename)
 		size_t sz=blocksize;
 		size_t block_offs=0;
 		size_t old_block_offs=0;
@@ -586,11 +586,11 @@ void CAsciiFile::get_string_list(SGString<int8_t>*& strings, int32_t& num_str, i
 					old_block_offs=block_offs;
 				}
 			}
-			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
+			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t")
 		}
 
-		SG_INFO("found %d strings\n", num_str);
-		SG_DEBUG("block_size=%d\n", required_blocksize);
+		SG_INFO("found %d strings\n", num_str)
+		SG_DEBUG("block_size=%d\n", required_blocksize)
 		SG_FREE(dummy);
 		blocksize=required_blocksize;
 		dummy=SG_MALLOC(int8_t, blocksize);
@@ -627,7 +627,7 @@ void CAsciiFile::get_string_list(SGString<int8_t>*& strings, int32_t& num_str, i
 					//CMath::display_vector(strings[lines].string, len);
 					old_sz=i+1;
 					lines++;
-					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
+					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t")
 				}
 			}
 
@@ -636,9 +636,9 @@ void CAsciiFile::get_string_list(SGString<int8_t>*& strings, int32_t& num_str, i
 
 			overflow_len=sz-old_sz;
 		}
-		SG_INFO("file successfully read\n");
-		SG_INFO("max_string_length=%d\n", max_string_len);
-		SG_INFO("num_strings=%d\n", num_str);
+		SG_INFO("file successfully read\n")
+		SG_INFO("max_string_length=%d\n", max_string_len)
+		SG_INFO("num_strings=%d\n", num_str)
 	}
 
 	SG_FREE(dummy);
@@ -658,7 +658,7 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 		num_str=0;
 		max_string_len=0;
 
-		SG_INFO("counting line numbers in file %s\n", filename);
+		SG_INFO("counting line numbers in file %s\n", filename)
 		size_t sz=blocksize;
 		size_t block_offs=0;
 		size_t old_block_offs=0;
@@ -679,11 +679,11 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 					old_block_offs=block_offs;
 				}
 			}
-			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
+			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t")
 		}
 
-		SG_INFO("found %d strings\n", num_str);
-		SG_DEBUG("block_size=%d\n", required_blocksize);
+		SG_INFO("found %d strings\n", num_str)
+		SG_DEBUG("block_size=%d\n", required_blocksize)
 		SG_FREE(dummy);
 		blocksize=required_blocksize;
 		dummy=SG_MALLOC(char, blocksize);
@@ -720,7 +720,7 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 					//CMath::display_vector(strings[lines].string, len);
 					old_sz=i+1;
 					lines++;
-					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t");
+					SG_PROGRESS(lines, 0, num_str, 1, "LOADING:\t")
 				}
 			}
 
@@ -729,9 +729,9 @@ void CAsciiFile::get_string_list(SGString<char>*& strings, int32_t& num_str, int
 
 			overflow_len=sz-old_sz;
 		}
-		SG_INFO("file successfully read\n");
-		SG_INFO("max_string_length=%d\n", max_string_len);
-		SG_INFO("num_strings=%d\n", num_str);
+		SG_INFO("file successfully read\n")
+		SG_INFO("max_string_length=%d\n", max_string_len)
+		SG_INFO("num_strings=%d\n", num_str)
 	}
 
 	SG_FREE(dummy);
@@ -827,7 +827,7 @@ SET_VECTOR(set_vector, set_matrix, uint64_t)
 void CAsciiFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
 {																					\
 	if (!(file && matrix))															\
-		SG_ERROR("File or matrix invalid.\n");										\
+		SG_ERROR("File or matrix invalid.\n")										\
 																					\
 	for (int32_t i=0; i<num_vec; i++)												\
 	{																				\
@@ -859,7 +859,7 @@ SET_MATRIX(set_matrix, floatmax_t, floatmax_t, "%.16Lg")
 void CAsciiFile::fname(const sg_type* array, int32_t * dims, int32_t num_dims)	\
 {										\
 	if (!(file && array))							\
-		SG_ERROR("File or data invalid.\n");				\
+		SG_ERROR("File or data invalid.\n")				\
 										\
         size_t total = 1;   							\
         for(int i = 0;i < num_dims;i++)        					\
@@ -899,7 +899,7 @@ SET_NDARRAY(set_ndarray, floatmax_t, floatmax_t, "%Lf")
 void CAsciiFile::fname(const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec)	\
 {																							\
 	if (!(file && matrix))																	\
-		SG_ERROR("File or matrix invalid.\n");												\
+		SG_ERROR("File or matrix invalid.\n")												\
 																							\
 	for (int32_t i=0; i<num_vec; i++)														\
 	{																						\
@@ -939,7 +939,7 @@ SET_SPARSEMATRIX(set_sparse_matrix, floatmax_t, floatmax_t, "%Lf")
 void CAsciiFile::set_string_list(const SGString<uint8_t>* strings, int32_t num_str)
 {
 	if (!(file && strings))
-		SG_ERROR("File or strings invalid.\n");
+		SG_ERROR("File or strings invalid.\n")
 
 	for (int32_t i=0; i<num_str; i++)
 	{
@@ -952,7 +952,7 @@ void CAsciiFile::set_string_list(const SGString<uint8_t>* strings, int32_t num_s
 void CAsciiFile::set_string_list(const SGString<int8_t>* strings, int32_t num_str)
 {
 	if (!(file && strings))
-		SG_ERROR("File or strings invalid.\n");
+		SG_ERROR("File or strings invalid.\n")
 
 	for (int32_t i=0; i<num_str; i++)
 	{
@@ -965,7 +965,7 @@ void CAsciiFile::set_string_list(const SGString<int8_t>* strings, int32_t num_st
 void CAsciiFile::set_string_list(const SGString<char>* strings, int32_t num_str)
 {
 	if (!(file && strings))
-		SG_ERROR("File or strings invalid.\n");
+		SG_ERROR("File or strings invalid.\n")
 
 	for (int32_t i=0; i<num_str; i++)
 	{
@@ -1019,7 +1019,7 @@ template <class T> void CAsciiFile::append_item(
 	memset(item, 0, sizeof(char)*(len+1));
 	item=strncpy(item, ptr_item, len);
 
-	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item);
+	SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item)
 	items->append_element(item);
 }
 

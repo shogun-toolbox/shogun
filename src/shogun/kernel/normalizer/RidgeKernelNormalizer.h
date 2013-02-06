@@ -75,9 +75,9 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		{
 			if (scale<=0)
 			{
-				ASSERT(k);
+				ASSERT(k)
 				int32_t num=k->get_num_vec_lhs();
-				ASSERT(num>0);
+				ASSERT(num>0)
 
 				CFeatures* old_lhs=k->lhs;
 				CFeatures* old_rhs=k->rhs;
@@ -117,7 +117,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
-			SG_ERROR("linadd not supported with Ridge normalization.\n");
+			SG_ERROR("linadd not supported with Ridge normalization.\n")
 			return 0;
 		}
 
@@ -127,7 +127,7 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
-			SG_ERROR("linadd not supported with Ridge normalization.\n");
+			SG_ERROR("linadd not supported with Ridge normalization.\n")
 			return 0;
 		}
 

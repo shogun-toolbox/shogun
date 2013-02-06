@@ -46,14 +46,14 @@ bool CHistogram::train(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_WORD)
 		{
-			SG_ERROR("Expected features of class string type word\n");
+			SG_ERROR("Expected features of class string type word\n")
 		}
 		set_features(data);
 	}
 
-	ASSERT(features);
-	ASSERT(features->get_feature_class()==C_STRING);
-	ASSERT(features->get_feature_type()==F_WORD);
+	ASSERT(features)
+	ASSERT(features->get_feature_class()==C_STRING)
+	ASSERT(features->get_feature_type()==F_WORD)
 
 	for (i=0; i< (int32_t) (1<<16); i++)
 		hist[i]=0;
@@ -81,9 +81,9 @@ bool CHistogram::train(CFeatures* data)
 
 float64_t CHistogram::get_log_likelihood_example(int32_t num_example)
 {
-	ASSERT(features);
-	ASSERT(features->get_feature_class()==C_STRING);
-	ASSERT(features->get_feature_type()==F_WORD);
+	ASSERT(features)
+	ASSERT(features->get_feature_class()==C_STRING)
+	ASSERT(features->get_feature_type()==F_WORD)
 
 	int32_t len;
 	bool free_vec;
@@ -107,9 +107,9 @@ float64_t CHistogram::get_log_derivative(int32_t num_param, int32_t num_example)
 		return -CMath::INFTY;
 	else
 	{
-		ASSERT(features);
-		ASSERT(features->get_feature_class()==C_STRING);
-		ASSERT(features->get_feature_type()==F_WORD);
+		ASSERT(features)
+		ASSERT(features->get_feature_class()==C_STRING)
+		ASSERT(features->get_feature_type()==F_WORD)
 
 		int32_t len;
 		bool free_vec;
@@ -147,7 +147,7 @@ float64_t CHistogram::get_log_model_parameter(int32_t num_param)
 
 bool CHistogram::set_histogram(const SGVector<float64_t> histogram)
 {
-	ASSERT(histogram.vlen==get_num_model_parameters());
+	ASSERT(histogram.vlen==get_num_model_parameters())
 
 	SG_FREE(hist);
 	hist=SG_MALLOC(float64_t, histogram.vlen);

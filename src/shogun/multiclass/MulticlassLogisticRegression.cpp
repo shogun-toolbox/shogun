@@ -51,13 +51,13 @@ CMulticlassLogisticRegression::~CMulticlassLogisticRegression()
 
 bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
 {
-	SG_UNSTABLE("MulticlassLogisticRegression","\n");
+	SG_UNSTABLE("MulticlassLogisticRegression","\n")
 	if (data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(m_features);
-	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS);
-	ASSERT(m_multiclass_strategy);
+	ASSERT(m_features)
+	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
+	ASSERT(m_multiclass_strategy)
 
 	int32_t n_classes = ((CMulticlassLabels*)m_labels)->get_num_classes();
 	int32_t n_feats = m_features->get_dim_feature_space();

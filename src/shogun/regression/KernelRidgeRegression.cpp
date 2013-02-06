@@ -50,7 +50,7 @@ bool CKernelRidgeRegression::train_machine_pinv()
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix<float64_t>();
 	int32_t n = kernel_matrix.num_cols;
 	int32_t m = kernel_matrix.num_rows;
-	ASSERT(kernel_matrix.matrix && m>0 && n>0);
+	ASSERT(kernel_matrix.matrix && m>0 && n>0)
 
 	for(int32_t i=0; i < n; i++)
 		kernel_matrix.matrix[i+i*n]+=m_tau;
@@ -78,7 +78,7 @@ bool CKernelRidgeRegression::train_machine_gs()
 {
 	int32_t n = kernel->get_num_vec_rhs();
 	int32_t m = kernel->get_num_vec_lhs();
-	ASSERT(m>0 && n>0);
+	ASSERT(m>0 && n>0)
 
 	// re-set alphas of kernel machine
 	SGVector<float64_t> b;
@@ -126,18 +126,18 @@ bool CKernelRidgeRegression::train_machine_gs()
 bool CKernelRidgeRegression::train_machine(CFeatures *data)
 {
 	if (!m_labels)
-		SG_ERROR("No labels set\n");
+		SG_ERROR("No labels set\n")
 
 	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Real labels needed for kernel ridge regression.\n");
+		SG_ERROR("Real labels needed for kernel ridge regression.\n")
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		kernel->init(data, data);
 	}
-	ASSERT(kernel && kernel->has_features());
+	ASSERT(kernel && kernel->has_features())
 
 	switch (m_train_func)
 	{

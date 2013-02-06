@@ -27,8 +27,8 @@ CSumOne::~CSumOne()
 /// initialize preprocessor from features
 bool CSumOne::init(CFeatures* features)
 {
-	ASSERT(features->get_feature_class()==C_DENSE);
-	ASSERT(features->get_feature_type()==F_DREAL);
+	ASSERT(features->get_feature_class()==C_DENSE)
+	ASSERT(features->get_feature_type()==F_DREAL)
 
 	return true;
 }

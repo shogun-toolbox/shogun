@@ -23,7 +23,7 @@ CBesselKernel::CBesselKernel(int32_t size, float64_t v, float64_t w,
 		int32_t n, CDistance* dist) :
 	CDistanceKernel(size,w,dist), order(v), degree(n)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	init();
 }
@@ -33,7 +33,7 @@ CBesselKernel::CBesselKernel(CFeatures* l, CFeatures* r, float64_t v,
 	CDistanceKernel(size,w,dist), order(v), degree(n)
 {
 	init();
-	ASSERT(distance);
+	ASSERT(distance)
 	SG_REF(distance);
 	init(l,r);
 }
@@ -50,7 +50,7 @@ void CBesselKernel::cleanup()
 
 bool CBesselKernel::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(distance);
+	ASSERT(distance)
 	CDistanceKernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();

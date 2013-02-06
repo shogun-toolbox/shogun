@@ -78,13 +78,13 @@ void CMultitaskCompositeMachine::set_task_group(CTaskGroup* task_group)
 
 bool CMultitaskCompositeMachine::train_machine(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
 void CMultitaskCompositeMachine::post_lock(CLabels* labels, CFeatures* features)
 {
-	ASSERT(m_task_group);
+	ASSERT(m_task_group)
 	set_features(m_features);
 	if (!m_machine->is_data_locked())
 		m_machine->data_lock(labels,features);
@@ -109,7 +109,7 @@ void CMultitaskCompositeMachine::post_lock(CLabels* labels, CFeatures* features)
 bool CMultitaskCompositeMachine::train_locked(SGVector<index_t> indices)
 {
 	int n_tasks = m_task_group->get_num_tasks();
-	ASSERT((int)m_tasks_indices.size()==n_tasks);
+	ASSERT((int)m_tasks_indices.size()==n_tasks)
 	vector< vector<index_t> > cutted_task_indices;
 	for (int32_t i=0; i<n_tasks; i++)
 		cutted_task_indices.push_back(vector<index_t>());

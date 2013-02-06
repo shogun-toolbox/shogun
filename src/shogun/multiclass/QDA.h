@@ -101,7 +101,7 @@ class CQDA : public CNativeMulticlassMachine
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
-				SG_ERROR("QDA requires SIMPLE REAL valued features\n");
+				SG_ERROR("QDA requires SIMPLE REAL valued features\n")
 
 			SG_UNREF(m_features);
 			SG_REF(feat);

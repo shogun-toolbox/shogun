@@ -36,7 +36,7 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 			(shogun::CGradientResult*)(m_machine_eval->evaluate());
 
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
-		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
+		SG_SERROR("Evaluation result not a GradientEvaluationResult!")
 
 	if ((unsigned)result->total_variables != n)
 	{
@@ -64,7 +64,7 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	    if (param->m_datatype.m_ctype == CT_VECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name)
 
 	    	index_t length = *(param->m_datatype.m_length_y);
 
@@ -85,7 +85,7 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	    else if (param->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_SERROR("Parameter vector %s has no length\n", param->m_name)
 
 	    	index_t length = *(param->m_datatype.m_length_y);
 
@@ -125,7 +125,7 @@ double CGradientModelSelection::nlopt_function(unsigned n,
 	result = (shogun::CGradientResult*)(m_machine_eval->evaluate());
 
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
-		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
+		SG_SERROR("Evaluation result not a GradientEvaluationResult!")
 
 	curr_index = 0;
 
@@ -289,7 +289,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	if (print_state)
 	{
-		SG_PRINT("trying combination:\n");
+		SG_PRINT("trying combination:\n")
 		m_current_combination->print_tree();
 	}
 
@@ -300,7 +300,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	CGradientResult* result = (CGradientResult*)(m_machine_eval->evaluate());
 
 	if (result->get_result_type() != GRADIENTEVALUATION_RESULT)
-		SG_ERROR("Evaluation result not a GradientEvaluationResult!");
+		SG_ERROR("Evaluation result not a GradientEvaluationResult!")
 
 	index_t n = result->total_variables;
 
@@ -331,7 +331,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    if (final->m_datatype.m_ctype == CT_VECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name)
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
@@ -344,7 +344,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name)
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
@@ -389,7 +389,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    if (final->m_datatype.m_ctype == CT_VECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name)
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
@@ -402,7 +402,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	    else if (final->m_datatype.m_ctype == CT_SGVECTOR)
 	    {
 	    	if (!param->m_datatype.m_length_y)
-	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name);
+	    		SG_ERROR("Parameter vector %s has no length\n", param->m_name)
 
 	    	index_t length = *(final->m_datatype.m_length_y);
 
@@ -437,7 +437,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	if (m_machine_eval->get_evaluation_direction() == ED_MINIMIZE)
 	{
 		if (print_state)
-			SG_SPRINT("Minimizing Objective Function\n");
+			SG_SPRINT("Minimizing Objective Function\n")
 
 		nlopt_set_min_objective(opt, nlopt_function, &pack);
 	}
@@ -445,7 +445,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 	else
 	{
 		if (print_state)
-			SG_SPRINT("Maximizing Objective Function\n");
+			SG_SPRINT("Maximizing Objective Function\n")
 
 		nlopt_set_max_objective(opt, nlopt_function, &pack);
 	}
@@ -456,7 +456,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 
 	//Optimize our function!
 	if (nlopt_optimize(opt, x, &minf) < 0)
-		SG_ERROR("nlopt failed!\n");
+		SG_ERROR("nlopt failed!\n")
 
 //	test_gradients();
 
@@ -479,7 +479,7 @@ CParameterCombination* CGradientModelSelection::select_model(bool print_state)
 #endif
 
 	//If we don't have NLOPT then return nothing.
-	SG_PRINT("Shogun not configured for NLOPT. Returning NULL combination\n");
+	SG_PRINT("Shogun not configured for NLOPT. Returning NULL combination\n")
 
 	return NULL;
 }

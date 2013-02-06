@@ -24,9 +24,9 @@ CGUIMath::CGUIMath(CSGInterface* ui_)
 
 void CGUIMath::set_threshold(float64_t value)
 {
-	SG_INFO("Old threshold: %f.\n", threshold);
+	SG_INFO("Old threshold: %f.\n", threshold)
 	threshold=value;
-	SG_INFO("New threshold: %f.\n", threshold);
+	SG_INFO("New threshold: %f.\n", threshold)
 }
 
 void CGUIMath::init_random(uint32_t initseed)

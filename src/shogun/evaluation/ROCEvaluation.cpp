@@ -24,10 +24,10 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 
 float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted && ground_truth);
-	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
-	ASSERT(predicted->get_label_type()==LT_BINARY);
-	ASSERT(ground_truth->get_label_type()==LT_BINARY);
+	ASSERT(predicted && ground_truth)
+	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())
+	ASSERT(predicted->get_label_type()==LT_BINARY)
+	ASSERT(ground_truth->get_label_type()==LT_BINARY)
 	ground_truth->ensure_valid();
 
 	// assume threshold as negative infinity
@@ -83,7 +83,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	}
 
 	// assure both number of positive and negative examples is >0
-	ASSERT(pos_count>0 && neg_count>0);
+	ASSERT(pos_count>0 && neg_count>0)
 
 	int32_t j = 0;
 	float64_t label;
@@ -124,7 +124,7 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 SGMatrix<float64_t> CROCEvaluation::get_ROC()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first");
+		SG_ERROR("Uninitialized, please call evaluate first")
 
 	return m_ROC_graph;
 }
@@ -132,7 +132,7 @@ SGMatrix<float64_t> CROCEvaluation::get_ROC()
 SGVector<float64_t> CROCEvaluation::get_thresholds()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first");
+		SG_ERROR("Uninitialized, please call evaluate first")
 
 	return m_thresholds;
 }
@@ -140,7 +140,7 @@ SGVector<float64_t> CROCEvaluation::get_thresholds()
 float64_t CROCEvaluation::get_auROC()
 {
 	if (!m_computed)
-			SG_ERROR("Uninitialized, please call evaluate first");
+			SG_ERROR("Uninitialized, please call evaluate first")
 
 	return m_auROC;
 }

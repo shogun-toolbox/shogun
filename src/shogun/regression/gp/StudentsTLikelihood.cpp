@@ -145,7 +145,7 @@ SGVector<float64_t>  CStudentsTLikelihood::get_log_probability_derivative_f(
 
 	else
 	{
-		SG_ERROR("Invalid index for derivative\n");
+		SG_ERROR("Invalid index for derivative\n")
 		return sgresult;
 	}
 }

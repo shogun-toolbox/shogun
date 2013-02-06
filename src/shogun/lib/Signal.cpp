@@ -35,14 +35,14 @@ CSignal::CSignal()
 CSignal::~CSignal()
 {
 	if (!unset_handler())
-		SG_PRINT("error uninitalizing signal handler\n");
+		SG_PRINT("error uninitalizing signal handler\n")
 }
 
 void CSignal::handler(int signal)
 {
 	if (signal == SIGINT)
 	{
-		SG_SPRINT("\nImmediately return to prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
+		SG_SPRINT("\nImmediately return to prompt / Prematurely finish computations / Do nothing (I/P/D)? ")
 		char answer=fgetc(stdin);
 
 		if (answer == 'I')
@@ -55,12 +55,12 @@ void CSignal::handler(int signal)
 		else if (answer == 'P')
 			set_cancel();
 		else
-			SG_SPRINT("Continuing...\n");
+			SG_SPRINT("Continuing...\n")
 	}
 	else if (signal == SIGURG)
 		set_cancel();
 	else
-		SG_SPRINT("unknown signal %d received\n", signal);
+		SG_SPRINT("unknown signal %d received\n", signal)
 }
 
 bool CSignal::set_handler()
@@ -85,7 +85,7 @@ bool CSignal::set_handler()
 		{
 			if (sigaction(signals[i], &act, &oldsigaction[i]))
 			{
-				SG_SPRINT("Error trapping signals!\n");
+				SG_SPRINT("Error trapping signals!\n")
 				for (int32_t j=i-1; j>=0; j--)
 					sigaction(signals[i], &oldsigaction[i], NULL);
 
@@ -111,7 +111,7 @@ bool CSignal::unset_handler()
 		{
 			if (sigaction(signals[i], &oldsigaction[i], NULL))
 			{
-				SG_SPRINT("error uninitalizing signal handler for signal %d\n", signals[i]);
+				SG_SPRINT("error uninitalizing signal handler for signal %d\n", signals[i])
 				result=false;
 			}
 		}

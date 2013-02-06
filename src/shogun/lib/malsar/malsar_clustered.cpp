@@ -38,11 +38,11 @@ malsar_result_t malsar_clustered(
 {
 	int task;
 	int n_feats = features->get_dim_feature_space();
-	SG_SDEBUG("n feats = %d\n", n_feats);
+	SG_SDEBUG("n feats = %d\n", n_feats)
 	int n_vecs = features->get_num_vectors();
-	SG_SDEBUG("n vecs = %d\n", n_vecs);
+	SG_SDEBUG("n vecs = %d\n", n_vecs)
 	int n_tasks = options.n_tasks;
-	SG_SDEBUG("n tasks = %d\n", n_tasks);
+	SG_SDEBUG("n tasks = %d\n", n_tasks)
 
 	H_diag_matrix = SG_CALLOC(double, n_tasks*n_tasks);
 	for (int i=0; i<n_tasks; i++)
@@ -83,7 +83,7 @@ malsar_result_t malsar_clustered(
 	while (!done && iter <= options.max_iter)
 	{
 		double alpha = double(t_old - 1)/t;
-		SG_SDEBUG("alpha=%f\n",alpha);
+		SG_SDEBUG("alpha=%f\n",alpha)
 
 		// compute search point
 		Ws = (1+alpha)*Wz - alpha*Wz_old;
@@ -94,7 +94,7 @@ malsar_result_t malsar_clustered(
 		gWs.setZero();
 		gCs.setZero();
 		//internal::set_is_malloc_allowed(true);
-		SG_SDEBUG("Computing gradient\n");
+		SG_SDEBUG("Computing gradient\n")
 		IM = (eta*MatrixXd::Identity(n_tasks,n_tasks)+Ms);
 		// cout << "M" << endl << Ms << endl;
 		// cout << "IM" << endl << IM << endl;
@@ -125,11 +125,11 @@ malsar_result_t malsar_clustered(
 		}
 		//cout << "gWs" << endl << gWs << endl;
 		//cout << "gCs" << endl << gCs << endl;
-		SG_SDEBUG("Computed gradient\n");
+		SG_SDEBUG("Computed gradient\n")
 		
 		// add regularizer
 		Fs += c*(Ws*invEtaMWt).trace();
-		SG_SDEBUG("Fs = %f \n", Fs);
+		SG_SDEBUG("Fs = %f \n", Fs)
 
 		double Fzp = 0.0;
 
@@ -149,23 +149,23 @@ malsar_result_t malsar_clustered(
 			{
 				diag_H[i] = 2.0;
 				f[i] = -2*eigensolver.eigenvalues()[i].real();
-				SG_SDEBUG("%dth eigenvalue %f\n",i,eigensolver.eigenvalues()[i].real());
+				SG_SDEBUG("%dth eigenvalue %f\n",i,eigensolver.eigenvalues()[i].real())
 				a[i] = 1.0;
 				lb[i] = 0.0;
 				ub[i] = 1.0;
 				x[i] = double(options.n_clusters)/n_tasks;
 			}
 			double b = options.n_clusters;//eigensolver.eigenvalues().sum().real();
-			SG_SDEBUG("b = %f\n", b);
-			SG_SDEBUG("Calling libqp\n");
+			SG_SDEBUG("b = %f\n", b)
+			SG_SDEBUG("Calling libqp\n")
 			libqp_state_T problem_state = libqp_gsmo_solver(&get_col,diag_H,f,a,b,lb,ub,x,n_tasks,1000,1e-6,NULL);
-			SG_SDEBUG("Libqp objective = %f\n",problem_state.QP);
-			SG_SDEBUG("Exit code = %d\n",problem_state.exitflag);
-			SG_SDEBUG("%d iteration passed\n",problem_state.nIter);
-			SG_SDEBUG("Solution is \n [ ");
+			SG_SDEBUG("Libqp objective = %f\n",problem_state.QP)
+			SG_SDEBUG("Exit code = %d\n",problem_state.exitflag)
+			SG_SDEBUG("%d iteration passed\n",problem_state.nIter)
+			SG_SDEBUG("Solution is \n [ ")
 			for (int i=0; i<n_tasks; i++)
-				SG_SDEBUG("%f ", x[i]);
-			SG_SDEBUG("]\n");
+				SG_SDEBUG("%f ", x[i])
+			SG_SDEBUG("]\n")
 			Map<VectorXd> Mzp_DiagSigz(x,n_tasks);
 			Mzp_Pz = eigensolver.eigenvectors().real();
 			Mzp = Mzp_Pz*Mzp_DiagSigz.asDiagonal()*Mzp_Pz.transpose();
@@ -286,7 +286,7 @@ malsar_result_t malsar_clustered(
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
 	//internal::set_is_malloc_allowed(true);
-	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj);
+	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj)
 	
 	SG_FREE(H_diag_matrix);
 	SG_FREE(diag_H);

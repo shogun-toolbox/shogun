@@ -60,7 +60,7 @@ void CTwoDistributionsTestStatistic::init()
 
 SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 {
-	SG_DEBUG("entering CTwoDistributionsTestStatistic::bootstrap_null()\n");
+	SG_DEBUG("entering CTwoDistributionsTestStatistic::bootstrap_null()\n")
 
 	REQUIRE(m_p_and_q, "CTwoDistributionsTestStatistic::bootstrap_null(): "
 			"No appended features p and q!\n");
@@ -89,7 +89,7 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 	/* clean up */
 	m_p_and_q->remove_subset();
 
-	SG_DEBUG("leaving CTwoDistributionsTestStatistic::bootstrap_null()\n");
+	SG_DEBUG("leaving CTwoDistributionsTestStatistic::bootstrap_null()\n")
 	return results;
 }
 

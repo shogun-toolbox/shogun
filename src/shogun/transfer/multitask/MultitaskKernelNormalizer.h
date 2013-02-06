@@ -75,21 +75,21 @@ public:
 		k->rhs=old_lhs;
 
 		if (strcmp(k->get_name(), "WeightedDegree") == 0) {
-			SG_INFO("using first-element normalization\n");
+			SG_INFO("using first-element normalization\n")
 			scale=k->compute(0, 0);
 		} else {
-			SG_INFO("no inner normalization for non-WDK kernel\n");
+			SG_INFO("no inner normalization for non-WDK kernel\n")
 			scale=1.0;
 		}
 
 		k->lhs=old_lhs;
 		k->rhs=old_rhs;
 
-		ASSERT(k);
+		ASSERT(k)
 		int32_t num_lhs = k->get_num_vec_lhs();
 		int32_t num_rhs = k->get_num_vec_rhs();
-		ASSERT(num_lhs>0);
-		ASSERT(num_rhs>0);
+		ASSERT(num_lhs>0)
+		ASSERT(num_rhs>0)
 
 		//std::cout << "scale: " << scale << std::endl;
 
@@ -147,7 +147,7 @@ public:
 	 */
 	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 	{
-		SG_ERROR("normalize_lhs not implemented");
+		SG_ERROR("normalize_lhs not implemented")
 		return 0;
 	}
 
@@ -157,7 +157,7 @@ public:
 	 */
 	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 	{
-		SG_ERROR("normalize_rhs not implemented");
+		SG_ERROR("normalize_rhs not implemented")
 		return 0;
 	}
 
@@ -202,8 +202,8 @@ public:
 	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs)
 	{
 
-		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		return similarity_matrix[task_lhs * num_tasks + task_rhs];
 
@@ -218,8 +218,8 @@ public:
 			float64_t similarity)
 	{
 
-		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		similarity_matrix[task_lhs * num_tasks + task_rhs] = similarity;
 

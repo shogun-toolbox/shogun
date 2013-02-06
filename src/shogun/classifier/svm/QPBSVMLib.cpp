@@ -66,7 +66,7 @@ using namespace shogun;
 
 CQPBSVMLib::CQPBSVMLib()
 {
-	SG_UNSTABLE("CQPBSVMLib::CQPBSVMLib()", "\n");
+	SG_UNSTABLE("CQPBSVMLib::CQPBSVMLib()", "\n")
 
 	m_H=0;
 	m_dim = 0;
@@ -85,7 +85,7 @@ CQPBSVMLib::CQPBSVMLib(
 	float64_t* H, int32_t n, float64_t* f, int32_t m, float64_t UB)
 : CSGObject()
 {
-	ASSERT(H && n>0);
+	ASSERT(H && n>0)
 	m_H=H;
 	m_dim = n;
 	m_diag_H=NULL;
@@ -107,7 +107,7 @@ CQPBSVMLib::~CQPBSVMLib()
 int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 {
 	int32_t status = -1;
-	ASSERT(len==m_dim);
+	ASSERT(len==m_dim)
 	float64_t* Nabla=SG_MALLOC(float64_t, m_dim);
 	for (int32_t i=0; i<m_dim; i++)
 		Nabla[i]=m_f[i];
@@ -146,11 +146,11 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 		case QPB_SOLVER_CPLEX:
 			status = qpbsvm_cplex(result, Nabla, &t, &History, verb );
 #else
-			SG_ERROR("cplex not enabled at compile time - unknow solver\n");
+			SG_ERROR("cplex not enabled at compile time - unknow solver\n")
 #endif
 			break;
 		default:
-			SG_ERROR("unknown solver\n");
+			SG_ERROR("unknown solver\n")
 			break;
 	}
 
@@ -297,7 +297,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
   (*ptr_t) = t;
   (*ptr_History) = History;
 
-  SG_PRINT("QP: %f QD: %f\n", Q_P, Q_D);
+  SG_PRINT("QP: %f QD: %f\n", Q_P, Q_D)
 
   return( exitflag );
 }
@@ -504,7 +504,7 @@ int32_t CQPBSVMLib::qpbsvm_scamv(float64_t *x,
       else if( max_viol < Nabla[i]) { u = i; max_viol = Nabla[i]; }
     }
 
-/*    SG_PRINT("%d: max_viol=%m_f, u=%d\n", t, max_viol, u);*/
+/*    SG_PRINT("%d: max_viol=%m_f, u=%d\n", t, max_viol, u)*/
 
     if( max_viol <= m_tolKKT )
     {
@@ -611,7 +611,7 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
 		if (x[i]==0.0 || x[i]==1.0)
 			atbound++;
 	}
-	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim);
+	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim)
 	*ptr_t=0;
 	*ptr_History=NULL;
 	return 0;
@@ -641,7 +641,7 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
 		if (x[i]==0.0 || x[i]==1.0)
 			atbound++;
 	}
-	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim);
+	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim)
 	*ptr_t=0;
 	*ptr_History=NULL;
 	return 0;

@@ -58,7 +58,7 @@ bool CLinearHMM::train(CFeatures* data)
 		if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_WORD)
 		{
-			SG_ERROR("Expected features of class string type word!\n");
+			SG_ERROR("Expected features of class string type word!\n")
 		}
 		set_features(data);
 	}
@@ -228,7 +228,7 @@ float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 		get_feature_vector(num_example, len, free_vec);
 	float64_t result=0;
 	int32_t position=num_param/num_symbols;
-	ASSERT(position>=0 && position<len);
+	ASSERT(position>=0 && position<len)
 	uint16_t sym=(uint16_t) (num_param-position*num_symbols);
 
 	if (vector[position]==sym && transition_probs[num_param]!=0)
@@ -246,7 +246,7 @@ SGVector<float64_t> CLinearHMM::get_transition_probs()
 
 bool CLinearHMM::set_transition_probs(const SGVector<float64_t> probs)
 {
-	ASSERT(probs.vlen == num_params);
+	ASSERT(probs.vlen == num_params)
 
 	if (!log_transition_probs)
 		log_transition_probs=SG_MALLOC(float64_t, num_params);
@@ -270,7 +270,7 @@ SGVector<float64_t> CLinearHMM::get_log_transition_probs()
 
 bool CLinearHMM::set_log_transition_probs(const SGVector<float64_t> probs)
 {
-	ASSERT(probs.vlen == num_params);
+	ASSERT(probs.vlen == num_params)
 
 	if (!log_transition_probs)
 		log_transition_probs=SG_MALLOC(float64_t, num_params);

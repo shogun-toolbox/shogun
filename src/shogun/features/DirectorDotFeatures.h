@@ -44,7 +44,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual int32_t get_num_vectors() const
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return 0;
 		}
 
@@ -58,7 +58,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual int32_t get_dim_feature_space() const
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return 0;
 		}
 
@@ -71,7 +71,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return 0;
 		}
 
@@ -82,7 +82,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual float64_t dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return 0;
 		}
 
@@ -96,7 +96,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual void add_to_dense_sgvec(float64_t alpha, int32_t vec_idx1, SGVector<float64_t> vec2, bool abs_val=false)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 		}
 
 		/** compute dot product between vector1 and a dense vector
@@ -167,7 +167,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual int32_t get_nnz_features_for_vector(int32_t num)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return 0;
 		}
 
@@ -182,7 +182,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return NULL;
 		}
 
@@ -198,7 +198,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return false;
 		}
 
@@ -209,7 +209,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual void free_feature_iterator(void* iterator)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 		}
 
 		/** get mean
@@ -249,7 +249,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual CFeatures* duplicate() const
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return NULL;
 		}
 
@@ -294,7 +294,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual bool reshape(int32_t num_features, int32_t num_vectors)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return false;
 		}
 
@@ -306,7 +306,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 */
 		virtual int32_t get_size() const
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return 0;
 		}
 

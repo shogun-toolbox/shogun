@@ -67,10 +67,10 @@ void CStreamingVwCacheFile::set_env(CVwEnvironment* env_to_use)
 		cache_reader = new CVwNativeCacheReader(buf->working_file, env);
 		return;
 	case C_PROTOBUF:
-		SG_ERROR("Protocol buffers cache support is not implemented yet!\n");
+		SG_ERROR("Protocol buffers cache support is not implemented yet!\n")
 	}
 
-	SG_ERROR("Unexpected cache type to use for reading!\n");
+	SG_ERROR("Unexpected cache type to use for reading!\n")
 }
 
 void CStreamingVwCacheFile::reset_stream()
@@ -93,8 +93,8 @@ void CStreamingVwCacheFile::init(EVwCacheType cache_type)
 		cache_reader = new CVwNativeCacheReader(buf->working_file, env);
 		return;
 	case C_PROTOBUF:
-		SG_ERROR("Protocol buffers cache support is not implemented yet!\n");
+		SG_ERROR("Protocol buffers cache support is not implemented yet!\n")
 	}
 
-	SG_ERROR("Unrecognized cache type to read from!\n");
+	SG_ERROR("Unrecognized cache type to read from!\n")
 }

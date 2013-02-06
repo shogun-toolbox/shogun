@@ -57,7 +57,7 @@ SGVector<float64_t> CMMDKernelSelectionCombOpt::compute_measures()
 	/* evtl regularize to avoid numerical problems (see NIPS paper) */
 	if (m_lambda)
 	{
-		SG_DEBUG("regularizing matrix Q by adding %f to diagonal\n", m_lambda);
+		SG_DEBUG("regularizing matrix Q by adding %f to diagonal\n", m_lambda)
 		for (index_t i=0; i<num_kernels; ++i)
 			m_Q(i,i)+=m_lambda;
 	}

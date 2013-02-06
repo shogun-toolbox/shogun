@@ -89,7 +89,7 @@ public:
 	 */
 	virtual SGVector<index_t> decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs)
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return SGVector<index_t>();
 	}
 

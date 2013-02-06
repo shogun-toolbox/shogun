@@ -33,10 +33,10 @@ template <class ST> class CSparseDistance : public CDistance
 		{
 			CDistance::init(l,r);
 
-			ASSERT(l->get_feature_class()==C_SPARSE);
-			ASSERT(r->get_feature_class()==C_SPARSE);
-			ASSERT(l->get_feature_type()==this->get_feature_type());
-			ASSERT(r->get_feature_type()==this->get_feature_type());
+			ASSERT(l->get_feature_class()==C_SPARSE)
+			ASSERT(r->get_feature_class()==C_SPARSE)
+			ASSERT(l->get_feature_type()==this->get_feature_type())
+			ASSERT(r->get_feature_type()==this->get_feature_type())
 
 			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features() )
 			{

@@ -64,10 +64,10 @@ class CDotKernel : public CKernel
 		{
 			CKernel::init(l,r);
 
-			ASSERT(l->has_property(FP_DOT));
-			ASSERT(r->has_property(FP_DOT));
-			ASSERT(l->get_feature_type() == r->get_feature_type());
-			ASSERT(l->get_feature_class() == r->get_feature_class());
+			ASSERT(l->has_property(FP_DOT))
+			ASSERT(r->has_property(FP_DOT))
+			ASSERT(l->get_feature_type() == r->get_feature_type())
+			ASSERT(l->get_feature_class() == r->get_feature_class())
 
 			if ( ((CDotFeatures*) l)->get_dim_feature_space() != ((CDotFeatures*) r)->get_dim_feature_space() )
 			{

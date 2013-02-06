@@ -182,7 +182,7 @@ class CLibLinearMTL : public CLinearMachine
 		inline void set_linear_term(SGVector<float64_t> linear_term)
 		{
 			if (!m_labels)
-				SG_ERROR("Please assign labels first!\n");
+				SG_ERROR("Please assign labels first!\n")
 
 			int32_t num_labels=m_labels->get_num_labels();
 

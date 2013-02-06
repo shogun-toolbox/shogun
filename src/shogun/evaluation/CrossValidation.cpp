@@ -67,7 +67,7 @@ void CCrossValidation::init()
 
 CEvaluationResult* CCrossValidation::evaluate()
 {
-	SG_DEBUG("entering %s::evaluate()\n", get_name());
+	SG_DEBUG("entering %s::evaluate()\n", get_name())
 
 	REQUIRE(m_machine, "%s::evaluate() is only possible if a machine is "
 			"attached\n", get_name());
@@ -125,7 +125,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 	}
 
 	/* perform all the x-val runs */
-	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs);
+	SG_DEBUG("starting %d runs of cross-validation\n", m_num_runs)
 	for (index_t i=0; i <m_num_runs; ++i)
 	{
 
@@ -139,9 +139,9 @@ CEvaluationResult* CCrossValidation::evaluate()
 					m_xval_outputs->get_next_element();
 		}
 
-		SG_DEBUG("entering cross-validation run %d \n", i);
+		SG_DEBUG("entering cross-validation run %d \n", i)
 		results[i]=evaluate_one_run();
-		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i]);
+		SG_DEBUG("result of cross-validation run %d is %f\n", i, results[i])
 	}
 
 	/* construct evaluation result */
@@ -169,7 +169,7 @@ CEvaluationResult* CCrossValidation::evaluate()
 		m_do_unlock=false;
 	}
 
-	SG_DEBUG("leaving %s::evaluate()\n", get_name());
+	SG_DEBUG("leaving %s::evaluate()\n", get_name())
 
 	SG_REF(result);
 	return result;
@@ -194,17 +194,17 @@ void CCrossValidation::set_conf_int_alpha(float64_t conf_int_alpha)
 void CCrossValidation::set_num_runs(int32_t num_runs)
 {
 	if (num_runs <1)
-		SG_ERROR("%d is an illegal number of repetitions\n", num_runs);
+		SG_ERROR("%d is an illegal number of repetitions\n", num_runs)
 
 	m_num_runs=num_runs;
 }
 
 float64_t CCrossValidation::evaluate_one_run()
 {
-	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name());
+	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
 	index_t num_subsets=m_splitting_strategy->get_num_subsets();
 
-	SG_DEBUG("building index sets for %d-fold cross-validation\n", num_subsets);
+	SG_DEBUG("building index sets for %d-fold cross-validation\n", num_subsets)
 
 	/* build index sets */
 	m_splitting_strategy->build_subsets();
@@ -215,7 +215,7 @@ float64_t CCrossValidation::evaluate_one_run()
 	/* different behavior whether data is locked or not */
 	if (m_machine->is_data_locked())
 	{
-		SG_DEBUG("starting locked evaluation\n", get_name());
+		SG_DEBUG("starting locked evaluation\n", get_name())
 		/* do actual cross-validation */
 		for (index_t i=0; i <num_subsets; ++i)
 		{
@@ -283,12 +283,12 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* clean up */
 			SG_UNREF(result_labels);
 
-			SG_DEBUG("done locked evaluation\n", get_name());
+			SG_DEBUG("done locked evaluation\n", get_name())
 		}
 	}
 	else
 	{
-		SG_DEBUG("starting unlocked evaluation\n", get_name());
+		SG_DEBUG("starting unlocked evaluation\n", get_name())
 		/* tell machine to store model internally
 		 * (otherwise changing subset of features will kaboom the classifier) */
 		m_machine->set_store_model_features(true);
@@ -321,7 +321,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set label subset for training */
 			m_labels->add_subset(inverse_subset_indices);
 
-			SG_DEBUG("training set %d:\n", i);
+			SG_DEBUG("training set %d:\n", i)
 			if (io->get_loglevel()==MSG_DEBUG)
 			{
 				SGVector<index_t>::display_vector(inverse_subset_indices.vector,
@@ -329,9 +329,9 @@ float64_t CCrossValidation::evaluate_one_run()
 			}
 
 			/* train machine on training features and remove subset */
-			SG_DEBUG("starting training\n");
+			SG_DEBUG("starting training\n")
 			m_machine->train(m_features);
-			SG_DEBUG("finished training\n");
+			SG_DEBUG("finished training\n")
 
 			/* evtl. update xvalidation output class */
 			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
@@ -355,7 +355,7 @@ float64_t CCrossValidation::evaluate_one_run()
 			/* set label subset for testing */
 			m_labels->add_subset(subset_indices);
 
-			SG_DEBUG("test set %d:\n", i);
+			SG_DEBUG("test set %d:\n", i)
 			if (io->get_loglevel()==MSG_DEBUG)
 			{
 				SGVector<index_t>::display_vector(subset_indices.vector,
@@ -363,16 +363,16 @@ float64_t CCrossValidation::evaluate_one_run()
 			}
 
 			/* apply machine to test features and remove subset */
-			SG_DEBUG("starting evaluation\n");
-			SG_DEBUG("%p\n", m_features);
+			SG_DEBUG("starting evaluation\n")
+			SG_DEBUG("%p\n", m_features)
 			CLabels* result_labels=m_machine->apply(m_features);
-			SG_DEBUG("finished evaluation\n");
+			SG_DEBUG("finished evaluation\n")
 			m_features->remove_subset();
 			SG_REF(result_labels);
 
 			/* evaluate */
 			results[i]=m_evaluation_criterion->evaluate(result_labels, m_labels);
-			SG_DEBUG("result on fold %d is %f\n", i, results[i]);
+			SG_DEBUG("result on fold %d is %f\n", i, results[i])
 
 			/* evtl. update xvalidation output class */
 			current=(CCrossValidationOutput*)m_xval_outputs->get_first_element();
@@ -393,13 +393,13 @@ float64_t CCrossValidation::evaluate_one_run()
 			m_labels->remove_subset();
 		}
 
-		SG_DEBUG("done unlocked evaluation\n", get_name());
+		SG_DEBUG("done unlocked evaluation\n", get_name())
 	}
 
 	/* build arithmetic mean of results */
 	float64_t mean=CStatistics::mean(results);
 
-	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name());
+	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name())
 	return mean;
 }
 

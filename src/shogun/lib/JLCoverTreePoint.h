@@ -175,7 +175,7 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		}
 	}
 
-	SG_SERROR("Something has gone wrong, case not handled\n");
+	SG_SERROR("Something has gone wrong, case not handled\n")
 	return -1;
 }
 
@@ -206,7 +206,7 @@ v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContaine
 /** Print the information of the CoverTree point */
 void print(CJLCoverTreePoint &p)
 {
-	SG_SERROR("Print JLCoverTreePoint not implemented\n");
+	SG_SERROR("Print JLCoverTreePoint not implemented\n")
 }
 
 } /* namespace shogun */

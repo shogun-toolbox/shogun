@@ -65,7 +65,7 @@ SGVector<float64_t> CLinearMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
 		set_features((CDotFeatures*) data);
 	}
@@ -74,8 +74,8 @@ SGVector<float64_t> CLinearMachine::apply_get_outputs(CFeatures* data)
 		return SGVector<float64_t>();
 
 	int32_t num=features->get_num_vectors();
-	ASSERT(num>0);
-	ASSERT(w.vlen==features->get_dim_feature_space());
+	ASSERT(num>0)
+	ASSERT(w.vlen==features->get_dim_feature_space())
 
 	float64_t* out=SG_MALLOC(float64_t, num);
 	features->dense_dot_range(out, 0, num, NULL, w.vector, w.vlen, bias);

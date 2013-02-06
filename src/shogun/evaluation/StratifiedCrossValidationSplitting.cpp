@@ -44,7 +44,7 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 	}
 	else
 	{
-		SG_ERROR("Multiclass or binary labels required for stratified crossvalidation\n");
+		SG_ERROR("Multiclass or binary labels required for stratified crossvalidation\n")
 	}
 
 	SGVector<index_t> labels_per_class(num_classes);
@@ -90,7 +90,7 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	}
 	else
 	{
-		SG_ERROR("Multiclass or binary labels required for stratified crossvalidation\n");
+		SG_ERROR("Multiclass or binary labels required for stratified crossvalidation\n")
 	}
 
 	/* for every label, build set for indices */

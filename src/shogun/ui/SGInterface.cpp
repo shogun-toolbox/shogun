@@ -1212,7 +1212,7 @@ CSGInterface::CSGInterface(bool print_copyright)
 				CMath::get_log_range(),CMath::get_log_accuracy(),sizeof(float64_t),
 				CMath::get_log_range()*CMath::get_log_accuracy()*sizeof(float64_t)/(1024.0*1024.0));
 #else
-		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::get_log_range());
+		SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", CMath::get_log_range())
 #endif
 	}
 
@@ -1529,7 +1529,7 @@ void CSGInterface::translate_arg(CSGInterface* source, CSGInterface* target)
 			}
 
 		default:
-			SG_ERROR("unknown return type");
+			SG_ERROR("unknown return type")
 			break;
 	}
 }
@@ -1611,11 +1611,11 @@ bool CSGInterface::cmd_get_features()
 	else
 	{
 		SG_FREE(target);
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n")
 	}
 	SG_FREE(target);
 
-	ASSERT(feat);
+	ASSERT(feat)
 
 	switch (feat->get_feature_class())
 	{
@@ -1676,7 +1676,7 @@ bool CSGInterface::cmd_get_features()
 				}
 
 				default:
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			break;
 		}
@@ -1690,14 +1690,14 @@ bool CSGInterface::cmd_get_features()
 					int64_t nnz=((CSparseFeatures<float64_t>*) feat)->
 						get_num_nonzero_entries();
 					SGSparseMatrix<float64_t> fmatrix = ((CSparseFeatures<float64_t>*) feat)->get_sparse_feature_matrix();
-					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", fmatrix.num_features, fmatrix.num_vectors, nnz);
+					SG_INFO("sparse matrix has %d feats, %d vecs and %d nnz elemements\n", fmatrix.num_features, fmatrix.num_vectors, nnz)
 
 					set_sparse_matrix(fmatrix.sparse_matrix, fmatrix.num_features, fmatrix.num_vectors, nnz);
 					break;
 				}
 
 				default:
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			break;
 		}
@@ -1730,7 +1730,7 @@ bool CSGInterface::cmd_get_features()
 				}
 
 				default:
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			break;
 		}
@@ -1748,7 +1748,7 @@ bool CSGInterface::cmd_get_features()
 		}
 
 		default:
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 	}
 
 	return true;
@@ -1769,7 +1769,7 @@ bool CSGInterface::cmd_add_multiple_features()
 
 	int32_t repetitions=get_int();
 
-	ASSERT(repetitions>=1);
+	ASSERT(repetitions>=1)
 
 	return do_set_features(true, false, repetitions);
 }
@@ -1797,7 +1797,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		SG_FREE(target);
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n")
 	}
 
 	CFeatures* feat=NULL;
@@ -1877,7 +1877,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case STRING_CHAR:
 		{
 			if (m_nrhs<4)
-				SG_ERROR("Please specify alphabet!\n");
+				SG_ERROR("Please specify alphabet!\n")
 
 			int32_t num_str=0;
 			int32_t max_str_len=0;
@@ -1886,13 +1886,13 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			int32_t alphabet_len=0;
 			char* alphabet_str=get_string(alphabet_len);
-			ASSERT(alphabet_str);
+			ASSERT(alphabet_str)
 
 			if (strmatch(alphabet_str, "DNABINFILE"))
 			{
 				SG_FREE(alphabet_str);
 
-				ASSERT(fmatrix[0].string);
+				ASSERT(fmatrix[0].string)
 				feat=new CStringFeatures<uint8_t>(DNA);
 
 				try
@@ -1902,7 +1902,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 				catch (...)
 				{
 					SG_UNREF(feat);
-					SG_ERROR("Couldn't load DNA features from file.\n");
+					SG_ERROR("Couldn't load DNA features from file.\n")
 				}
 				feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
 				break;
@@ -1934,7 +1934,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 				{
 					SG_UNREF(alphabet);
 					SG_UNREF(feat);
-					SG_ERROR("Couldnt set byte string features.\n");
+					SG_ERROR("Couldnt set byte string features.\n")
 				}
 
 				SG_UNREF(alphabet);
@@ -1950,7 +1950,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 		case STRING_BYTE:
 		{
 			if (m_nrhs<4)
-				SG_ERROR("Please specify alphabet!\n");
+				SG_ERROR("Please specify alphabet!\n")
 
 			int32_t num_str=0;
 			int32_t max_str_len=0;
@@ -1959,7 +1959,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 
 			int32_t alphabet_len=0;
 			char* alphabet_str=get_string(alphabet_len);
-			ASSERT(alphabet_str);
+			ASSERT(alphabet_str)
 			CAlphabet* alphabet=NULL;
 			alphabet=new CAlphabet(alphabet_str, alphabet_len);
 			SG_FREE(alphabet_str);
@@ -1969,20 +1969,20 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			{
 				SG_UNREF(alphabet);
 				SG_UNREF(feat);
-				SG_ERROR("Couldnt set byte string features.\n");
+				SG_ERROR("Couldnt set byte string features.\n")
 			}
 			feat=create_custom_string_features((CStringFeatures<uint8_t>*) feat);
 			break;
 		}
 
 		default:
-			SG_ERROR("Wrong argument type %d.\n", get_argument_type());
+			SG_ERROR("Wrong argument type %d.\n", get_argument_type())
 	}
 
 	if (check_dot && !feat->has_property(FP_DOT))
 	{
 		SG_UNREF(feat);
-		SG_ERROR("Feature type not supported by DOT Features\n");
+		SG_ERROR("Feature type not supported by DOT Features\n")
 	}
 
 	if (strmatch(target, "TRAIN"))
@@ -2059,7 +2059,7 @@ bool CSGInterface::cmd_convert()
 	if (!features)
 	{
 		SG_FREE(target);
-		SG_ERROR("No \"%s\" features available.\n", target);
+		SG_ERROR("No \"%s\" features available.\n", target)
 	}
 
 	char* from_class=get_str_from_str_or_direct(len);
@@ -2079,7 +2079,7 @@ bool CSGInterface::cmd_convert()
 					((CDenseFeatures<float64_t>*) features));
 			}
 			else
-				SG_NOTIMPLEMENTED;
+				SG_NOTIMPLEMENTED
 		} // from_type REAL
 
 		else if (strmatch(from_type, "CHAR"))
@@ -2099,10 +2099,10 @@ bool CSGInterface::cmd_convert()
 						(CDenseFeatures<char>*) features, gap_cost);
 				}
 				else
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			else
-				SG_NOTIMPLEMENTED;
+				SG_NOTIMPLEMENTED
 		} // from_type CHAR
 
 		else if (strmatch(from_type, "WORD"))
@@ -2114,11 +2114,11 @@ bool CSGInterface::cmd_convert()
 					(CDenseFeatures<uint16_t>*) features);
 			}
 			else
-				SG_NOTIMPLEMENTED;
+				SG_NOTIMPLEMENTED
 		} // from_type WORD
 
 		else
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 	} // from_class SIMPLE
 
 	else if (strmatch(from_class, "SPARSE"))
@@ -2132,10 +2132,10 @@ bool CSGInterface::cmd_convert()
 					(CSparseFeatures<float64_t>*) features);
 			}
 			else
-				SG_NOTIMPLEMENTED;
+				SG_NOTIMPLEMENTED
 		} // from_type REAL
 		else
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 	} // from_class SPARSE
 
 	else if (strmatch(from_class, "STRING"))
@@ -2192,10 +2192,10 @@ bool CSGInterface::cmd_convert()
 						gap, rev);
 				}
 				else
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			else
-				SG_NOTIMPLEMENTED;
+				SG_NOTIMPLEMENTED
 		} // from_type CHAR
 
 		else if (strmatch(from_type, "BYTE"))
@@ -2244,10 +2244,10 @@ bool CSGInterface::cmd_convert()
 						gap, rev);
 				}
 				else
-					SG_NOTIMPLEMENTED;
+					SG_NOTIMPLEMENTED
 			}
 			else
-				SG_NOTIMPLEMENTED;
+				SG_NOTIMPLEMENTED
 		} // from_type uint8_t
 
 		else if (strmatch(from_type, "WORD"))
@@ -2264,7 +2264,7 @@ bool CSGInterface::cmd_convert()
 
 			}
 			else
-				SG_NOTIMPLEMENTED;
+				SG_NOTIMPLEMENTED
 		} // from_type WORD
 
 		else if (strmatch(to_class, "SIMPLE") && strmatch(to_type, "FK"))
@@ -2274,14 +2274,14 @@ bool CSGInterface::cmd_convert()
 		} // to_type FK
 
 		else
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 
 	} // from_class STRING
 
 	if (result && ui_features->set_convert_features(result, target))
-		SG_INFO("Conversion was successful.\n");
+		SG_INFO("Conversion was successful.\n")
 	else
-		SG_ERROR("Conversion failed.\n");
+		SG_ERROR("Conversion failed.\n")
 
 	SG_FREE(target);
 	SG_FREE(from_class);
@@ -2307,14 +2307,14 @@ void CSGInterface::convert_to_bitembedding(CFeatures* &features, bool convert_to
 
 	if (convert_to_word)
 	{
-		SG_INFO("Converting into word-bitembedding\n");
+		SG_INFO("Converting into word-bitembedding\n")
 		features=ui_features->convert_string_char_to_string_generic<char,uint16_t>(
 				(CStringFeatures<char>*) features, order, start, gap, rev);
 	}
 
 	if (convert_to_ulong)
 	{
-		SG_INFO("Converting into ulong-bitembedding\n");
+		SG_INFO("Converting into ulong-bitembedding\n")
 		features=ui_features->convert_string_char_to_string_generic<char,uint64_t>(
 				(CStringFeatures<char>*) features, order, start, gap, rev);
 	}
@@ -2327,7 +2327,7 @@ void CSGInterface::obtain_from_single_string(CFeatures* features)
 
 	int32_t len=0;
 	char* str=get_string(len);
-	ASSERT(str);
+	ASSERT(str)
 
 	if (strmatch(str, "from_position_list"))
 	{
@@ -2338,7 +2338,7 @@ void CSGInterface::obtain_from_single_string(CFeatures* features)
 		obtain_by_sliding_window(features);
 	}
 	else
-		SG_SERROR("Unknown conversion\n");
+		SG_SERROR("Unknown conversion\n")
 }
 
 bool CSGInterface::obtain_from_position_list(CFeatures* features)
@@ -2353,7 +2353,7 @@ bool CSGInterface::obtain_from_position_list(CFeatures* features)
 	if (m_nrhs==8)
 		skip=get_int();
 
-	SG_DEBUG("winsize: %d num_shifts: %d skip: %d\n", winsize, num_shift, skip);
+	SG_DEBUG("winsize: %d num_shifts: %d skip: %d\n", winsize, num_shift, skip)
 
 	CDynamicArray<int32_t> positions(num_shift+1);
 
@@ -2361,7 +2361,7 @@ bool CSGInterface::obtain_from_position_list(CFeatures* features)
 		positions.set_element(shifts[i], i);
 
 	if (features->get_feature_class()!=C_STRING)
-		SG_ERROR("No string features.\n");
+		SG_ERROR("No string features.\n")
 
 	bool success=false;
 	switch (features->get_feature_type())
@@ -2391,7 +2391,7 @@ bool CSGInterface::obtain_from_position_list(CFeatures* features)
 			break;
 		}
 		default:
-			SG_ERROR("Unsupported string features type.\n");
+			SG_ERROR("Unsupported string features type.\n")
 	}
 
 	return success;
@@ -2408,8 +2408,8 @@ bool CSGInterface::obtain_by_sliding_window(CFeatures* features)
 
 	bool success=false;
 
-	ASSERT(features);
-	ASSERT(((CFeatures*) features)->get_feature_class()==C_STRING);
+	ASSERT(features)
+	ASSERT(((CFeatures*) features)->get_feature_class()==C_STRING)
 
 	switch (features->get_feature_type())
 	{
@@ -2422,7 +2422,7 @@ bool CSGInterface::obtain_by_sliding_window(CFeatures* features)
 		case F_ULONG:
 			return ( ((CStringFeatures<uint64_t>*) features)->obtain_by_sliding_window(winsize, shift, skip)>0);
 		default:
-			SG_SERROR("Unsupported string features type.\n");
+			SG_SERROR("Unsupported string features type.\n")
 			return false;
 	}
 
@@ -2471,7 +2471,7 @@ bool CSGInterface::cmd_set_labels()
 	if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 	{
 		SG_FREE(target);
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n")
 	}
 
 	float64_t* lab=NULL;
@@ -2480,7 +2480,7 @@ bool CSGInterface::cmd_set_labels()
 
 	CLabels* labels=ui_labels->infer_labels(lab, len);
 
-	SG_INFO("num labels: %d\n", labels->get_num_labels());
+	SG_INFO("num labels: %d\n", labels->get_num_labels())
 
 	if (strmatch(target, "TRAIN"))
 		ui_labels->set_train_labels(labels);
@@ -2489,7 +2489,7 @@ bool CSGInterface::cmd_set_labels()
 	else
 	{
 		SG_FREE(target);
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n")
 	}
 	SG_FREE(target);
 
@@ -2512,12 +2512,12 @@ bool CSGInterface::cmd_get_labels()
 	else
 	{
 		SG_FREE(target);
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n")
 	}
 	SG_FREE(target);
 
 	if (!labels)
-		SG_ERROR("No labels.\n");
+		SG_ERROR("No labels.\n")
 
 	//FIXME
 	SGVector<float64_t> lab=((CBinaryLabels*) labels)->get_labels();
@@ -2556,7 +2556,7 @@ bool CSGInterface::cmd_set_kernel()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
-	SG_DEBUG("SGInterface: set_kernel\n");
+	SG_DEBUG("SGInterface: set_kernel\n")
 	CKernel* kernel=create_kernel();
 	return ui_kernel->set_kernel(kernel);
 }
@@ -2571,7 +2571,7 @@ bool CSGInterface::cmd_add_kernel()
 	m_nrhs--;
 	CKernel* kernel=create_kernel();
 
-	SG_DEBUG("SGInterface: add_kernel\n");
+	SG_DEBUG("SGInterface: add_kernel\n")
 	return ui_kernel->add_kernel(kernel, weight);
 }
 
@@ -2589,7 +2589,7 @@ CKernel* CSGInterface::create_kernel()
 	int32_t len=0;
 	char* type=get_str_from_str_or_direct(len);
 
-	SG_DEBUG("set_kernel with type: %s\n", type);
+	SG_DEBUG("set_kernel with type: %s\n", type)
 
 	if (strmatch(type, "COMBINED"))
 	{
@@ -2875,7 +2875,7 @@ CKernel* CSGInterface::create_kernel()
 			int32_t l=0;
 			get_vector_from_int_vector_or_str(shifts, l);
 
-			ASSERT(l==length);
+			ASSERT(l==length)
 
 			bool use_normalization=true;
 			if (strmatch(type, "WEIGHTEDDEGREEPOS2_NONORM"))
@@ -2906,7 +2906,7 @@ CKernel* CSGInterface::create_kernel()
 			int32_t* shifts=NULL;
 			int32_t l=0;
 			get_vector_from_int_vector_or_str(shifts, l);
-			ASSERT(l==length);
+			ASSERT(l==length)
 
 			float64_t* position_weights=NULL;
 			if (m_nrhs>9+length)
@@ -3075,7 +3075,7 @@ CKernel* CSGInterface::create_kernel()
 			}
 			else
 			{
-				SG_ERROR("Matrix size %d %d\n", N, M);
+				SG_ERROR("Matrix size %d %d\n", N, M)
 			}
 		}
 		SG_FREE(dtype);
@@ -3241,7 +3241,7 @@ CKernel* CSGInterface::create_kernel()
 				!strmatch(ktype, "FULL2DIAG"))
 		{
 			SG_FREE(ktype);
-			SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n");
+			SG_ERROR("Undefined type, not DIAG, FULL or FULL2DIAG.\n")
 		}
 
 		bool source_is_diag=false;
@@ -3314,10 +3314,10 @@ CKernel* CSGInterface::create_kernel()
 		SG_FREE(dtype);
 	}
 	else
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 
 	SG_FREE(type);
-	SG_DEBUG("created kernel: %p\n", kernel);
+	SG_DEBUG("created kernel: %p\n", kernel)
 	return kernel;
 }
 
@@ -3335,12 +3335,12 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 
 		int32_t feature_class_len=0;
 		char* feature_class_str=get_string(feature_class_len);
-		ASSERT(feature_class_str);
+		ASSERT(feature_class_str)
 		CAlphabet* alphabet=NULL;
 		if (strmatch(feature_class_str, "WD"))
 		{
 			if (m_nrhs!=7)
-				SG_ERROR("Please specify alphabet, WD, order, from_order\n");
+				SG_ERROR("Please specify alphabet, WD, order, from_order\n")
 
 			alphabet=new CAlphabet(RAWDNA);
 			order=get_int();
@@ -3350,7 +3350,7 @@ CFeatures* CSGInterface::create_custom_string_features(CStringFeatures<uint8_t>*
 		else if (strmatch(feature_class_str, "WSPEC"))
 		{
 			if (m_nrhs!=8)
-				SG_ERROR("Please specify alphabet, order, WSPEC, start, normalize\n");
+				SG_ERROR("Please specify alphabet, order, WSPEC, start, normalize\n")
 
 			alphabet=new CAlphabet(RAWDNA);
 			order=get_int();
@@ -3381,11 +3381,11 @@ CFeatures* CSGInterface::create_custom_real_features(CDenseFeatures<float64_t>* 
 		int32_t feature_class_len=0;
 		bool normalize;
 		char* feature_class_str=get_string(feature_class_len);
-		ASSERT(feature_class_str);
+		ASSERT(feature_class_str)
 		if (strmatch(feature_class_str, "POLY"))
 		{
 			//if (m_nrhs!=7)
-			//	SG_ERROR("Please specify POLY, degree\n");
+			//	SG_ERROR("Please specify POLY, degree\n")
 
 			degree=get_int();
 			normalize = get_bool();
@@ -3393,7 +3393,7 @@ CFeatures* CSGInterface::create_custom_real_features(CDenseFeatures<float64_t>* 
 
 		}
 		else
-			SG_ERROR("Unknown feature class: %s\n", feature_class_str);
+			SG_ERROR("Unknown feature class: %s\n", feature_class_str)
 
 		SG_FREE(feature_class_str);
 	}
@@ -3403,7 +3403,7 @@ CFeatures* CSGInterface::create_custom_real_features(CDenseFeatures<float64_t>* 
 
 bool CSGInterface::cmd_init_kernel()
 {
-	SG_DEPRECATED;
+	SG_DEPRECATED
 	return true;
 }
 
@@ -3445,7 +3445,7 @@ bool CSGInterface::cmd_get_kernel_matrix()
 	{
 		CKernel* kernel=ui_kernel->get_kernel();
 		if (!kernel || !kernel->has_features())
-			SG_ERROR("No kernel defined or not initialized.\n");
+			SG_ERROR("No kernel defined or not initialized.\n")
 
 		SGMatrix<float64_t> km=kernel->get_kernel_matrix<float64_t>();
 		set_matrix(km.matrix, km.num_rows, km.num_cols);
@@ -3463,17 +3463,17 @@ bool CSGInterface::cmd_set_WD_position_weights()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 
 	if (kernel->get_kernel_type()==K_COMBINED)
 	{
 		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 		if (!kernel)
-			SG_ERROR("No last kernel.\n");
+			SG_ERROR("No last kernel.\n")
 
 		EKernelType ktype=kernel->get_kernel_type();
 		if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
-			SG_ERROR("Unsupported kernel.\n");
+			SG_ERROR("Unsupported kernel.\n")
 	}
 
 	bool success=false;
@@ -3488,7 +3488,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			(CWeightedDegreeStringKernel*) kernel;
 
 		if (dim!=1 && len>0)
-			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
+			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n")
 
 		ui_kernel->init_kernel("TRAIN");
 		success=k->set_position_weights(weights, len);
@@ -3507,13 +3507,13 @@ bool CSGInterface::cmd_set_WD_position_weights()
 			if (!target)
 			{
 				SG_FREE(weights);
-				SG_ERROR("Couldn't find second argument to method.\n");
+				SG_ERROR("Couldn't find second argument to method.\n")
 			}
 
 			if (!strmatch(target, "TRAIN") && !strmatch(target, "TEST"))
 			{
 				SG_FREE(target);
-				SG_ERROR("Second argument none of TRAIN or TEST.\n");
+				SG_ERROR("Second argument none of TRAIN or TEST.\n")
 			}
 
 			if (strmatch(target, "TEST"))
@@ -3523,7 +3523,7 @@ bool CSGInterface::cmd_set_WD_position_weights()
 		if (dim!=1 && len>0)
 		{
 			SG_FREE(target);
-			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n");
+			SG_ERROR("Dimension mismatch (should be 1 x seq_length or 0x0\n")
 			}
 
 		if (dim==0 && len==0)
@@ -3568,7 +3568,7 @@ bool CSGInterface::cmd_get_subkernel_weights()
 
 	CKernel *kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("Invalid kernel.\n");
+		SG_ERROR("Invalid kernel.\n")
 
 	EKernelType ktype=kernel->get_kernel_type();
 	const float64_t* weights=NULL;
@@ -3597,7 +3597,7 @@ bool CSGInterface::cmd_get_subkernel_weights()
 			get_degree_weights(degree, length);
 	}
 	else
-		SG_ERROR("Setting subkernel weights not supported on this kernel.\n");
+		SG_ERROR("Setting subkernel weights not supported on this kernel.\n")
 
 	if (length==0)
 		length=1;
@@ -3613,7 +3613,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 
 	bool success=false;
 	float64_t* weights=NULL;
@@ -3628,7 +3628,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 			(CWeightedDegreeStringKernel*) kernel;
 		int32_t degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
+			SG_ERROR("WD: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree)
 
 		if (len==1)
 			len=0;
@@ -3641,7 +3641,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 			(CWeightedDegreePositionStringKernel*) kernel;
 		int32_t degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_ERROR("WDPos: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree);
+			SG_ERROR("WDPos: Dimension mismatch (should be (seq_length | 1) x degree) got (%d x %d)\n", len, degree)
 
 		if (len==1)
 			len=0;
@@ -3652,7 +3652,7 @@ bool CSGInterface::cmd_set_subkernel_weights()
 	{
 		int32_t num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
-			SG_ERROR("All: Dimension mismatch (should be 1 x num_subkernels)\n");
+			SG_ERROR("All: Dimension mismatch (should be 1 x num_subkernels)\n")
 
 		kernel->set_subkernel_weights(SGVector<float64_t>(weights, len));
 		success=true;
@@ -3668,9 +3668,9 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_ERROR("Only works for combined kernels.\n");
+		SG_ERROR("Only works for combined kernels.\n")
 
 	bool success=false;
 	float64_t* weights=NULL;
@@ -3679,11 +3679,11 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 	get_matrix(weights, dim, len);
 
 	int32_t idx=get_int();
-	SG_DEBUG("using kernel_idx=%i\n", idx);
+	SG_DEBUG("using kernel_idx=%i\n", idx)
 
 	kernel=((CCombinedKernel*) kernel)->get_kernel(idx);
 	if (!kernel)
-		SG_ERROR("No subkernel at idx %d.\n", idx);
+		SG_ERROR("No subkernel at idx %d.\n", idx)
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype==K_WEIGHTEDDEGREE)
@@ -3692,7 +3692,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 			(CWeightedDegreeStringKernel*) kernel;
 		int32_t degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n")
 
 		if (len==1)
 			len=0;
@@ -3705,7 +3705,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 			(CWeightedDegreePositionStringKernel*) kernel;
 		int32_t degree=k->get_degree();
 		if (dim!=degree || len<1)
-			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n")
 
 		if (len==1)
 			len=0;
@@ -3716,7 +3716,7 @@ bool CSGInterface::cmd_set_subkernel_weights_combined()
 	{
 		int32_t num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
-			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n")
 
 		kernel->set_subkernel_weights(SGVector<float64_t>(weights, len));
 		success=true;
@@ -3741,14 +3741,14 @@ bool CSGInterface::cmd_get_dotfeature_weights_combined()
 	else
 	{
 		SG_FREE(target);
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n")
 	}
 	SG_FREE(target);
 
 	if (!features)
-		SG_ERROR("No features.\n");
+		SG_ERROR("No features.\n")
 	if (features->get_feature_class()!=C_COMBINED_DOT)
-		SG_ERROR("Only works for combined dot features.\n");
+		SG_ERROR("Only works for combined dot features.\n")
 
 	SGVector<float64_t> weights = ((CCombinedDotFeatures*) features)->get_subfeature_weights();
 	set_vector(weights.vector, weights.vlen);
@@ -3772,14 +3772,14 @@ bool CSGInterface::cmd_set_dotfeature_weights_combined()
 	else
 	{
 		SG_FREE(target);
-		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n");
+		SG_ERROR("Unknown target, neither TRAIN nor TEST.\n")
 	}
 	SG_FREE(target);
 
 	if (!features)
-		SG_ERROR("No features.\n");
+		SG_ERROR("No features.\n")
 	if (features->get_feature_class()!=C_COMBINED_DOT)
-		SG_ERROR("Only works for combined dot features.\n");
+		SG_ERROR("Only works for combined dot features.\n")
 
 	float64_t* weights=NULL;
 	int32_t dim=0;
@@ -3798,13 +3798,13 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 	if (kernel->get_kernel_type()!=K_COMBINED)
-		SG_ERROR("Only works for Combined kernels.\n");
+		SG_ERROR("Only works for Combined kernels.\n")
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
-		SG_ERROR("No last kernel.\n");
+		SG_ERROR("No last kernel.\n")
 
 	bool success=false;
 	float64_t* weights=NULL;
@@ -3817,7 +3817,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 	{
 		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
 		if (dim!=k->get_degree() || len<1)
-			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n")
 
 		if (len==1)
 			len=0;
@@ -3829,7 +3829,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 		CWeightedDegreePositionStringKernel* k=
 			(CWeightedDegreePositionStringKernel*) kernel;
 		if (dim!=k->get_degree() || len<1)
-			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n");
+			SG_ERROR("Dimension mismatch (should be de(seq_length | 1) x degree)\n")
 
 		if (len==1)
 			len=0;
@@ -3840,7 +3840,7 @@ bool CSGInterface::cmd_set_last_subkernel_weights()
 	{
 		int32_t num_subkernels=kernel->get_num_subkernels();
 		if (dim!=1 || len!=num_subkernels)
-			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n");
+			SG_ERROR("Dimension mismatch (should be 1 x num_subkernels)\n")
 
 		kernel->set_subkernel_weights(SGVector<float64_t>(weights, len));
 		success=true;
@@ -3856,17 +3856,17 @@ bool CSGInterface::cmd_get_WD_position_weights()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 
 	if (kernel->get_kernel_type()==K_COMBINED)
 	{
 		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 		if (!kernel)
-			SG_ERROR("Couldn't find last kernel.\n");
+			SG_ERROR("Couldn't find last kernel.\n")
 
 		EKernelType ktype=kernel->get_kernel_type();
 		if (ktype!=K_WEIGHTEDDEGREE && ktype!=K_WEIGHTEDDEGREEPOS)
-			SG_ERROR("Wrong subkernel type.\n");
+			SG_ERROR("Wrong subkernel type.\n")
 	}
 
 	int32_t len=0;
@@ -3893,13 +3893,13 @@ bool CSGInterface::cmd_get_last_subkernel_weights()
 	CKernel* kernel=ui_kernel->get_kernel();
 	EKernelType ktype=kernel->get_kernel_type();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 	if (ktype!=K_COMBINED)
-		SG_ERROR("Only works for Combined kernels.\n");
+		SG_ERROR("Only works for Combined kernels.\n")
 
 	kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 	if (!kernel)
-		SG_ERROR("Couldn't find last kernel.\n");
+		SG_ERROR("Couldn't find last kernel.\n")
 
 	int32_t degree=0;
 	int32_t len=0;
@@ -3922,7 +3922,7 @@ bool CSGInterface::cmd_get_last_subkernel_weights()
 		weights=((CWeightedDegreePositionStringKernel*) kernel)->
 			get_degree_weights(degree, len);
 	else
-		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n")
 
 	if (len==0)
 		len=1;
@@ -3939,9 +3939,9 @@ bool CSGInterface::cmd_compute_by_subkernels()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 	if (!kernel->get_rhs())
-		SG_ERROR("No rhs.\n");
+		SG_ERROR("No rhs.\n")
 
 	int32_t num_vec=kernel->get_rhs()->get_num_vectors();
 	int32_t degree=0;
@@ -3954,7 +3954,7 @@ bool CSGInterface::cmd_compute_by_subkernels()
 		CWeightedDegreeStringKernel* k=(CWeightedDegreeStringKernel*) kernel;
 		k->get_degree_weights(degree, len);
 		if (!k->is_tree_initialized())
-			SG_ERROR("Kernel optimization not initialized.\n");
+			SG_ERROR("Kernel optimization not initialized.\n")
 	}
 	else if (ktype==K_WEIGHTEDDEGREEPOS)
 	{
@@ -3962,10 +3962,10 @@ bool CSGInterface::cmd_compute_by_subkernels()
 			(CWeightedDegreePositionStringKernel*) kernel;
 		k->get_degree_weights(degree, len);
 		if (!k->is_tree_initialized())
-			SG_ERROR("Kernel optimization not initialized.\n");
+			SG_ERROR("Kernel optimization not initialized.\n")
 	}
 	else
-		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n");
+		SG_ERROR("Only works for Weighted Degree (Position) kernels.\n")
 
 	if (len==0)
 		len=1;
@@ -4012,26 +4012,26 @@ bool CSGInterface::cmd_get_kernel_optimization()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel defined.\n");
+		SG_ERROR("No kernel defined.\n")
 
 	switch (kernel->get_kernel_type())
 	{
 		case K_WEIGHTEDDEGREEPOS:
 		{
 			if (m_nrhs!=2)
-				SG_ERROR("parameter missing\n");
+				SG_ERROR("parameter missing\n")
 
 			int32_t max_order=get_int();
 			if ((max_order<1) || (max_order>12))
 			{
-				SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
+				SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order)
 				max_order=1;
 			}
 
 			CWeightedDegreePositionStringKernel* k=(CWeightedDegreePositionStringKernel*) kernel;
 			CSVM* svm=(CSVM*) ui_classifier->get_classifier();
 			if (!svm)
-				SG_ERROR("No SVM defined.\n");
+				SG_ERROR("No SVM defined.\n")
 
 			int32_t num_suppvec=svm->get_num_support_vectors();
 			int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
@@ -4076,7 +4076,7 @@ bool CSGInterface::cmd_get_kernel_optimization()
 			return true;
 		}
 		default:
-			SG_ERROR("Unsupported kernel %s.\n", kernel->get_name());
+			SG_ERROR("Unsupported kernel %s.\n", kernel->get_name())
 	}
 
 	return true;
@@ -4099,22 +4099,22 @@ bool CSGInterface::cmd_use_diagonal_speedup()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel defined.\n");
+		SG_ERROR("No kernel defined.\n")
 
 	if (kernel->get_kernel_type()==K_COMBINED)
 	{
-		SG_DEBUG("Identified combined kernel.\n");
+		SG_DEBUG("Identified combined kernel.\n")
 		kernel=((CCombinedKernel*) kernel)->get_last_kernel();
 		if (!kernel)
-			SG_ERROR("No last kernel defined.\n");
+			SG_ERROR("No last kernel defined.\n")
 	}
 
 	if (kernel->get_kernel_type()!=K_COMMWORDSTRING)
-		SG_ERROR("Currently only commwordstring kernel supports diagonal speedup\n");
+		SG_ERROR("Currently only commwordstring kernel supports diagonal speedup\n")
 
 	((CCommWordStringKernel*) kernel)->set_use_dict_diagonal_optimization(speedup);
 
-	SG_INFO("Diagonal speedup %s.\n", speedup ? "enabled" : "disabled");
+	SG_INFO("Diagonal speedup %s.\n", speedup ? "enabled" : "disabled")
 
 	return true;
 }
@@ -4169,7 +4169,7 @@ bool CSGInterface::cmd_set_prior_probs()
 	CSalzbergWordStringKernel* kernel=
 		(CSalzbergWordStringKernel*) ui_kernel->get_kernel();
 	if (kernel->get_kernel_type()!=K_SALZBERG)
-		SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n");
+		SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n")
 
 	float64_t pos_probs=get_real_from_real_or_str();
 	float64_t neg_probs=get_real_from_real_or_str();
@@ -4187,7 +4187,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 	CSalzbergWordStringKernel* kernel=
 		(CSalzbergWordStringKernel*) ui_kernel->get_kernel();
 	if (kernel->get_kernel_type()!=K_SALZBERG)
-	SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n");
+	SG_ERROR("SalzbergWordStringKernel required for setting prior probs!\n")
 
 	float64_t* lab=NULL;
 	int32_t len=0;
@@ -4197,7 +4197,7 @@ bool CSGInterface::cmd_set_prior_probs_from_labels()
 	for (int32_t i=0; i<len; i++)
 	{
 		if (!labels->set_label(i, lab[i]))
-			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i]);
+			SG_ERROR("Couldn't set label %d (of %d): %f.\n", i, len, lab[i])
 	}
 	SG_FREE(lab);
 
@@ -4294,7 +4294,7 @@ bool CSGInterface::cmd_set_distance()
 			distance=ui_distance->create_generic(D_SPARSEEUCLIDEAN);
 	}
 	else
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 
 	SG_FREE(type);
 	SG_FREE(dtype);
@@ -4303,7 +4303,7 @@ bool CSGInterface::cmd_set_distance()
 
 bool CSGInterface::cmd_init_distance()
 {
-	SG_DEPRECATED;
+	SG_DEPRECATED
 	return true;
 }
 
@@ -4321,7 +4321,7 @@ bool CSGInterface::cmd_get_distance_matrix()
 	{
 		CDistance* distance=ui_distance->get_distance();
 		if (!distance || !distance->has_features())
-			SG_ERROR("No distance defined or not initialized.\n");
+			SG_ERROR("No distance defined or not initialized.\n")
 
 		int32_t num_vec_lhs=0;
 		int32_t num_vec_rhs=0;
@@ -4345,12 +4345,12 @@ bool CSGInterface::cmd_get_SPEC_consensus()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 	if (kernel->get_kernel_type()!=K_COMMWORDSTRING)
-		SG_ERROR("Only works for CommWordString kernels.\n");
+		SG_ERROR("Only works for CommWordString kernels.\n")
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	ASSERT(svm);
+	ASSERT(svm)
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
 	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
@@ -4381,14 +4381,14 @@ bool CSGInterface::cmd_get_SPEC_scoring()
 	int32_t max_order=get_int();
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 
 	EKernelType ktype=kernel->get_kernel_type();
 	if (ktype!=K_COMMWORDSTRING && ktype!=K_WEIGHTEDCOMMWORDSTRING)
-		SG_ERROR("Only works for (Weighted) CommWordString kernels.\n");
+		SG_ERROR("Only works for (Weighted) CommWordString kernels.\n")
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	ASSERT(svm);
+	ASSERT(svm)
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
 	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
@@ -4403,7 +4403,7 @@ bool CSGInterface::cmd_get_SPEC_scoring()
 
 	if ((max_order<1) || (max_order>8))
 	{
-		SG_WARNING( "max_order out of range 1..8 (%d). setting to 1\n", max_order);
+		SG_WARNING( "max_order out of range 1..8 (%d). setting to 1\n", max_order)
 		max_order=1;
 	}
 
@@ -4432,12 +4432,12 @@ bool CSGInterface::cmd_get_WD_consensus()
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel.\n");
+		SG_ERROR("No kernel.\n")
 	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n")
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	ASSERT(svm);
+	ASSERT(svm)
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
 	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
@@ -4472,19 +4472,19 @@ bool CSGInterface::cmd_compute_POIM_WD()
 	get_matrix(distribution, num_dfeat, num_dvec);
 
 	if (!distribution)
-		SG_ERROR("Wrong distribution.\n");
+		SG_ERROR("Wrong distribution.\n")
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No Kernel.\n");
+		SG_ERROR("No Kernel.\n")
 	if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-		SG_ERROR("Only works for Weighted Degree Position kernels.\n");
+		SG_ERROR("Only works for Weighted Degree Position kernels.\n")
 
 	int32_t seqlen=0;
 	int32_t num_sym=0;
 	CStringFeatures<char>* sfeat=(CStringFeatures<char>*)
 		(((CWeightedDegreePositionStringKernel*) kernel)->get_lhs());
-	ASSERT(sfeat);
+	ASSERT(sfeat)
 	seqlen=sfeat->get_max_vector_length();
 	num_sym=(int32_t) sfeat->get_num_symbols();
 
@@ -4496,7 +4496,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 	}
 
 		CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-		ASSERT(svm);
+		ASSERT(svm)
 		int32_t num_suppvec=svm->get_num_support_vectors();
 		int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
 		float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
@@ -4510,7 +4510,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 		/*
 		if ((max_order < 1) || (max_order > 12))
 		{
-			SG_WARNING( "max_order out of range 1..12 (%d). setting to 1.\n", max_order);
+			SG_WARNING( "max_order out of range 1..12 (%d). setting to 1.\n", max_order)
 			max_order=1;
 		}
 		*/
@@ -4537,12 +4537,12 @@ bool CSGInterface::cmd_compute_POIM_WD()
 
 		CKernel* kernel=ui_kernel->get_kernel();
 		if (!kernel)
-			SG_ERROR("No kernel.\n");
+			SG_ERROR("No kernel.\n")
 		if (kernel->get_kernel_type()!=K_WEIGHTEDDEGREEPOS)
-			SG_ERROR("Only works for Weighted Degree Position kernels.\n");
+			SG_ERROR("Only works for Weighted Degree Position kernels.\n")
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
-	ASSERT(svm);
+	ASSERT(svm)
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
 	float64_t* sv_weight=SG_MALLOC(float64_t, num_suppvec);
@@ -4557,7 +4557,7 @@ bool CSGInterface::cmd_compute_POIM_WD()
 
 	if ((max_order<1) || (max_order>12))
 	{
-		SG_WARNING("max_order out of range 1..12 (%d). setting to 1\n", max_order);
+		SG_WARNING("max_order out of range 1..12 (%d). setting to 1\n", max_order)
 		max_order=1;
 	}
 
@@ -4586,12 +4586,12 @@ bool CSGInterface::cmd_classify()
 	{
 		CFeatures* feat=ui_features->get_test_features();
 		if (!feat)
-			SG_ERROR("No features found.\n");
+			SG_ERROR("No features found.\n")
 	}
 
 	CLabels* labels=ui_classifier->classify();
 	if (!labels)
-		SG_ERROR("Classify failed\n");
+		SG_ERROR("Classify failed\n")
 
 	int32_t num_vec=labels->get_num_labels();
 	float64_t* result=SG_MALLOC(float64_t, num_vec);
@@ -4614,7 +4614,7 @@ bool CSGInterface::cmd_classify_example()
 	float64_t result=0;
 
 	if (!ui_classifier->classify_example(idx, result))
-		SG_ERROR("Classify_example failed.\n");
+		SG_ERROR("Classify_example failed.\n")
 
 	set_real(result);
 
@@ -4641,12 +4641,12 @@ bool CSGInterface::cmd_get_classifier()
 		weights, rows, cols, bias, brows, bcols, idx))
 		return false;
 
-	//SG_PRINT("brows %d, bcols %d\n", brows, bcols);
+	//SG_PRINT("brows %d, bcols %d\n", brows, bcols)
 	//CMath::display_matrix(bias, brows, bcols);
 	set_matrix(bias, brows, bcols);
 	SG_FREE(bias);
 
-	//SG_PRINT("rows %d, cols %d\n", rows, cols);
+	//SG_PRINT("rows %d, cols %d\n", rows, cols)
 	//CMath::display_matrix(weights, rows, cols);
 	set_matrix(weights, rows, cols);
 	SG_FREE(weights);
@@ -4738,13 +4738,13 @@ bool CSGInterface::cmd_set_svm()
 	get_matrix(alphas, num_feat_alphas, num_vec_alphas);
 
 	if (!alphas)
-		SG_ERROR("No proper alphas given.\n");
+		SG_ERROR("No proper alphas given.\n")
 	if (num_vec_alphas!=2)
-		SG_ERROR("Not 2 vectors in alphas.\n");
+		SG_ERROR("Not 2 vectors in alphas.\n")
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
 	if (!svm)
-		SG_ERROR("No SVM object available.\n");
+		SG_ERROR("No SVM object available.\n")
 
 	svm->create_new_model(num_feat_alphas);
 	svm->set_bias(bias);
@@ -4772,11 +4772,11 @@ bool CSGInterface::cmd_set_linear_classifier()
 	get_vector(w, len);
 
 	if (!len)
-		SG_ERROR("No proper weight vector given.\n");
+		SG_ERROR("No proper weight vector given.\n")
 
 	CLinearMachine* c=(CLinearMachine*) ui_classifier->get_classifier();
 	if (!c)
-		SG_ERROR("No Linear Classifier object available.\n");
+		SG_ERROR("No Linear Classifier object available.\n")
 
 	c->set_w(SGVector<float64_t>(w, len));
 	c->set_bias(bias);
@@ -4790,7 +4790,7 @@ bool CSGInterface::cmd_get_svm_objective()
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
 	if (!svm)
-		SG_ERROR("No SVM set.\n");
+		SG_ERROR("No SVM set.\n")
 
 	set_real(svm->get_objective());
 
@@ -4831,20 +4831,20 @@ bool CSGInterface::do_compute_objective(E_WHICH_OBJ obj)
 
 	CSVM* svm=(CSVM*) ui_classifier->get_classifier();
 	if (!svm)
-		SG_ERROR("No SVM set.\n");
+		SG_ERROR("No SVM set.\n")
 
 	CLabels* trainlabels=NULL;
 	trainlabels=ui_labels->get_train_labels();
 
 	if (!trainlabels)
-		SG_ERROR("No trainlabels available.\n");
+		SG_ERROR("No trainlabels available.\n")
 
 	CKernel* kernel=ui_kernel->get_kernel();
 	if (!kernel)
-		SG_ERROR("No kernel available.\n");
+		SG_ERROR("No kernel available.\n")
 
 	if (!ui_kernel->is_initialized() || !kernel->has_features())
-		SG_ERROR("Kernel not initialized.\n");
+		SG_ERROR("Kernel not initialized.\n")
 
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
@@ -4859,16 +4859,16 @@ bool CSGInterface::do_compute_objective(E_WHICH_OBJ obj)
 			result=svm->compute_svm_dual_objective();
 			break;
 		case  MKL_PRIMAL:
-			ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+			ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION )
 			result=((CMKL*) svm)->compute_mkl_primal_objective();
 			break;
 		case  MKL_DUAL:
-			ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+			ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION )
 			result=((CMKL*) svm)->compute_mkl_dual_objective();
 			break;
 		case  MKL_RELATIVE_DUALITY_GAP:
 			{
-				ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+				ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION )
 				float64_t primal=((CMKL*) svm)->compute_mkl_dual_objective();
 				float64_t dual=((CMKL*) svm)->compute_mkl_primal_objective();
 				result=(primal-dual)/dual;
@@ -4876,14 +4876,14 @@ bool CSGInterface::do_compute_objective(E_WHICH_OBJ obj)
 			break;
 		case  MKL_ABSOLUTE_DUALITY_GAP:
 			{
-				ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION );
+				ASSERT( svm->get_classifier_type() == CT_MKLCLASSIFICATION )
 				float64_t primal=((CMKL*) svm)->compute_mkl_dual_objective();
 				float64_t dual=((CMKL*) svm)->compute_mkl_primal_objective();
 				result=dual-primal;
 			}
 			break;
 		default:
-			SG_SERROR("Error calling do_compute_objective\n");
+			SG_SERROR("Error calling do_compute_objective\n")
 			return false;
 	};
 
@@ -4898,7 +4898,7 @@ bool CSGInterface::cmd_train_classifier()
 
 	CMachine* classifier=ui_classifier->get_classifier();
 	if (!classifier)
-		SG_ERROR("No classifier available.\n");
+		SG_ERROR("No classifier available.\n")
 
 	EMachineType type=classifier->get_classifier_type();
 	switch (type)
@@ -4985,7 +4985,7 @@ bool CSGInterface::cmd_train_classifier()
 			return ui_classifier->train_wdocas();
 
 		default:
-			SG_ERROR("Unknown classifier type %d.\n", type);
+			SG_ERROR("Unknown classifier type %d.\n", type)
 	}
 
 	return false;
@@ -5234,7 +5234,7 @@ bool CSGInterface::cmd_add_preproc()
 #endif
 
 	else
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 
 	SG_FREE(type);
 	return ui_preproc->add_preproc(preproc);
@@ -5395,7 +5395,7 @@ bool CSGInterface::cmd_plugin_estimate_classify()
 
 	CFeatures* feat=ui_features->get_test_features();
 	if (!feat)
-		SG_ERROR("No features found.\n");
+		SG_ERROR("No features found.\n")
 
 	int32_t num_vec=feat->get_num_vectors();
 	float64_t* result=SG_MALLOC(float64_t, num_vec);
@@ -5421,7 +5421,7 @@ bool CSGInterface::cmd_set_plugin_estimate()
 	get_matrix(emission_probs, num_probs, num_vec);
 
 	if (num_vec!=2)
-		SG_ERROR("Need at least 1 set of positive and 1 set of negative params.\n");
+		SG_ERROR("Need at least 1 set of positive and 1 set of negative params.\n")
 
 	float64_t* pos_params=emission_probs;
 	float64_t* neg_params=&(emission_probs[num_probs]);
@@ -5433,7 +5433,7 @@ bool CSGInterface::cmd_set_plugin_estimate()
 	int32_t seq_length=(int32_t) model_sizes[0];
 	int32_t num_symbols=(int32_t) model_sizes[1];
 	if (num_probs!=seq_length*num_symbols)
-		SG_ERROR("Mismatch in number of emission probs and sequence length * number of symbols.\n");
+		SG_ERROR("Mismatch in number of emission probs and sequence length * number of symbols.\n")
 
 	ui_pluginestimate->get_estimator()->set_model_params(
 		pos_params, neg_params, seq_length, num_symbols);
@@ -5655,7 +5655,7 @@ bool CSGInterface::cmd_hmm_likelihood()
 
 	CHMM* h=ui_hmm->get_current();
 	if (!h)
-		SG_ERROR("No HMM.\n");
+		SG_ERROR("No HMM.\n")
 
 	float64_t likelihood=h->model_probability();
 	set_real(likelihood);
@@ -5695,7 +5695,7 @@ bool CSGInterface::cmd_get_viterbi_path()
 		return false;
 
 	int32_t dim=get_int();
-	SG_DEBUG("dim: %f\n", dim);
+	SG_DEBUG("dim: %f\n", dim)
 
 	CHMM* h=ui_hmm->get_current();
 	if (!h)
@@ -5718,7 +5718,7 @@ bool CSGInterface::cmd_get_viterbi_path()
 	}
 	((CStringFeatures<uint16_t>*) feat)->free_feature_vector(vec, dim, free_vec);
 
-	SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
+	SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat)
 	float64_t likelihood=0;
 	T_STATES* path=h->get_path(dim, likelihood);
 
@@ -5814,7 +5814,7 @@ bool CSGInterface::cmd_append_hmm()
 
 	CHMM* old_h=ui_hmm->get_current();
 	if (!old_h)
-		SG_ERROR("No current HMM set.\n");
+		SG_ERROR("No current HMM set.\n")
 
 	float64_t* p=NULL;
 	int32_t N_p=0;
@@ -5966,7 +5966,7 @@ bool CSGInterface::cmd_set_hmm()
 
 	CHMM* current=ui_hmm->get_current();
 	if (!current)
-		SG_ERROR("Need a previously created HMM.\n");
+		SG_ERROR("Need a previously created HMM.\n")
 
 	int32_t i,j;
 
@@ -6100,7 +6100,7 @@ bool CSGInterface::cmd_best_path_2struct()
 	if (m_nrhs!=12 || !create_return_values(3))
 		return false;
 
-	SG_ERROR("Sorry, this parameter list is awful!\n");
+	SG_ERROR("Sorry, this parameter list is awful!\n")
 
 	return true;
 }
@@ -6110,7 +6110,7 @@ void CSGInterface::get_vector(bool*& vector, int32_t& len)
 	int32_t* int_vector;
 	get_vector(int_vector, len);
 
-	ASSERT(len>0);
+	ASSERT(len>0)
 	vector= SG_MALLOC(bool, len);
 
 	for (int32_t i=0; i<len; i++)
@@ -6190,25 +6190,25 @@ bool CSGInterface::cmd_set_plif_struct()
 	get_vector(all_do_calc,Ncalc);
 
 	if (Ncalc!=Nsvm)
-		SG_ERROR("Ncalc!=Nsvm, Ncalc:%i, Nsvm:%i\n",Ncalc,Nsvm);
+		SG_ERROR("Ncalc!=Nsvm, Ncalc:%i, Nsvm:%i\n",Ncalc,Nsvm)
 	if (Ncalc!=Ncache)
-		SG_ERROR("Ncalc!=Ncache, Ncalc:%i, Ncache:%i\n",Ncalc,Ncache);
+		SG_ERROR("Ncalc!=Ncache, Ncalc:%i, Ncache:%i\n",Ncalc,Ncache)
 	if (Ncalc!=Ntransform)
-		SG_ERROR("Ncalc!=Ntransform, Ncalc:%i, Ntransform:%i\n",Ncalc,Ntransform);
+		SG_ERROR("Ncalc!=Ntransform, Ncalc:%i, Ntransform:%i\n",Ncalc,Ntransform)
 	if (Ncalc!=Nmin)
-		SG_ERROR("Ncalc!=Nmin, Ncalc:%i, Nmin:%i\n",Ncalc,Nmin);
+		SG_ERROR("Ncalc!=Nmin, Ncalc:%i, Nmin:%i\n",Ncalc,Nmin)
 	if (Ncalc!=Nmax)
-		SG_ERROR("Ncalc!=Nmax, Ncalc:%i, Nmax:%i\n",Ncalc,Nmax);
+		SG_ERROR("Ncalc!=Nmax, Ncalc:%i, Nmax:%i\n",Ncalc,Nmax)
 	if (Ncalc!=Npenalties)
-		SG_ERROR("Ncalc!=Npenalties, Ncalc:%i, Npenalties:%i\n",Ncalc,Npenalties);
+		SG_ERROR("Ncalc!=Npenalties, Ncalc:%i, Npenalties:%i\n",Ncalc,Npenalties)
 	if (Ncalc!=Nlimits)
-		SG_ERROR("Ncalc!=Nlimits, Ncalc:%i, Nlimits:%i\n",Ncalc,Nlimits);
+		SG_ERROR("Ncalc!=Nlimits, Ncalc:%i, Nlimits:%i\n",Ncalc,Nlimits)
 	if (Ncalc!=Nname)
-		SG_ERROR("Ncalc!=Nname, Ncalc:%i, Nname:%i\n",Ncalc,Nname);
+		SG_ERROR("Ncalc!=Nname, Ncalc:%i, Nname:%i\n",Ncalc,Nname)
 	if (Ncalc!=Nid)
-		SG_ERROR("Ncalc!=Nid, Ncalc:%i, Nid:%i\n",Ncalc,Nid);
+		SG_ERROR("Ncalc!=Nid, Ncalc:%i, Nid:%i\n",Ncalc,Nid)
 	if (Mlimits!=Mpenalties)
-		SG_ERROR("Mlimits!=Mpenalties, Mlimits:%i, Mpenalties:%i\n",Mlimits,Mpenalties);
+		SG_ERROR("Mlimits!=Mpenalties, Mlimits:%i, Mpenalties:%i\n",Mlimits,Mpenalties)
 
 	int32_t N = Ncalc;
 	int32_t M = Mlimits;
@@ -6368,11 +6368,11 @@ bool CSGInterface::cmd_set_model()
 	int32_t* Dim=0;
 	float64_t* penalties_array=NULL;
 	get_ndarray(penalties_array,Dim,numDim);
-	ASSERT(numDim==3);
-	ASSERT(Dim[0]==Dim[1]);
+	ASSERT(numDim==3)
+	ASSERT(Dim[0]==Dim[1])
 
 	if (!pm->compute_plif_matrix(SGNDArray<float64_t>(penalties_array, Dim, numDim, false)))
-		SG_ERROR("error computing plif  matrix\n");
+		SG_ERROR("error computing plif  matrix\n")
 	ui_structure->set_num_states(Dim[0]);
 	SG_FREE(penalties_array);
 
@@ -6388,7 +6388,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t* mod_words;
 	get_matrix(mod_words, Nmod,Mmod);
 	if (Nmod != num_svms)
-		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms);
+		SG_ERROR("should be equal: Nmod: %i, num_svms: %i\n",Nmod,num_svms)
 	ASSERT(Mmod == 2)
 	h->init_mod_words_array(SGMatrix<int32_t>(mod_words, Nmod, Mmod));
 
@@ -6398,7 +6398,7 @@ bool CSGInterface::cmd_set_model()
 	int32_t feat_dim3=0;
 	int32_t* state_signals;
 	get_matrix(state_signals,num_states,feat_dim3);
-	ASSERT(num_states==Dim[0]);
+	ASSERT(num_states==Dim[0])
 	pm->compute_signal_plifs(SGMatrix<int32_t>(state_signals, feat_dim3, num_states));
 
 
@@ -6440,12 +6440,12 @@ bool CSGInterface::cmd_precompute_content_svms()
 	float64_t* weights;
 	get_matrix(weights, Nweights, num_svms);
 	if (Nweights!=5440)
-	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440) ;
+	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440) 
 	ui_structure->set_content_svm_weights(weights, Nweights, num_svms);
 
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
-		SG_ERROR("no DynProg object found, use init_dyn_prog first\n");
+		SG_ERROR("no DynProg object found, use init_dyn_prog first\n")
 
 
 	//float64_t* weights = ui_structure->get_content_svm_weights();
@@ -6458,7 +6458,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	h->init_content_svm_value_array(num_svms);
 	h->set_dict_weights(SGMatrix<float64_t>(weights, Nweights, num_svms));
 	h->precompute_content_values();
-	SG_DEBUG("precompute_content_svms done\n");
+	SG_DEBUG("precompute_content_svms done\n")
 	return true;
 }
 
@@ -6466,7 +6466,7 @@ bool CSGInterface::cmd_get_lin_feat()
 {
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
-		SG_ERROR("no DynProg object found, use set_model first\n");
+		SG_ERROR("no DynProg object found, use set_model first\n")
 
 
 	int32_t dim1, dim2 = 0;
@@ -6497,7 +6497,7 @@ bool CSGInterface::cmd_set_lin_feat()
 
         if (Npos!=seq_len)
 	  {
-	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len) ;
+	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len) 
 
 	    SG_FREE(lin_feat);
 	    SG_FREE(seq);
@@ -6508,7 +6508,7 @@ bool CSGInterface::cmd_set_lin_feat()
 
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
-		SG_ERROR("no DynProg object found, use set_model first\n");
+		SG_ERROR("no DynProg object found, use set_model first\n")
 
 	h->set_pos(SGVector<int32_t>(all_pos, Npos));
 	h->set_gene_string(SGVector<char>(seq, Nseq));
@@ -6528,7 +6528,7 @@ bool CSGInterface::cmd_long_transition_settings()
 
 	CDynProg* h = ui_structure->get_dyn_prog();
         if (!h)
-                SG_ERROR("no DynProg object found, use set_model first\n");
+                SG_ERROR("no DynProg object found, use set_model first\n")
 
 	h->long_transition_settings(use_long_transitions, threshold, max_len);
 
@@ -6546,12 +6546,12 @@ bool CSGInterface::cmd_set_feature_matrix()
 	get_ndarray(features, Dims, numDims);
 
 	if (numDims!=3)
-		SG_ERROR("expected a 3 dimensional array, got %i dimensions\n", numDims);
+		SG_ERROR("expected a 3 dimensional array, got %i dimensions\n", numDims)
 	if (Dims[0]!=num_states)
-		SG_ERROR("number of rows (%i) not equal number of states (%i)\n",Dims[0], num_states);
-	ASSERT(ui_structure->set_feature_matrix(features, Dims));
+		SG_ERROR("number of rows (%i) not equal number of states (%i)\n",Dims[0], num_states)
+	ASSERT(ui_structure->set_feature_matrix(features, Dims))
 
-	ASSERT(ui_structure->set_feature_dims(Dims));
+	ASSERT(ui_structure->set_feature_dims(Dims))
 
 	SG_FREE(features);
 	SG_FREE(Dims);
@@ -6573,8 +6573,8 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	SGSparseVector<float64_t> *features2=NULL ;
 	get_sparse_matrix(features2, dim21, dim22);
 
-	ASSERT(dim11==dim21) ;
-	ASSERT(dim12==dim22) ;
+	ASSERT(dim11==dim21) 
+	ASSERT(dim12==dim22) 
 
 	int32_t *Dims = SG_MALLOC(int32_t, 3);
 	Dims[0]=dim11 ;
@@ -6584,8 +6584,8 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	ASSERT(Dims[0]==num_states)
 	ASSERT(Dims[1]==num_pos)
 
-	ASSERT(ui_structure->set_feature_matrix_sparse(features1, features2, Dims));
-	ASSERT(ui_structure->set_feature_dims(Dims));
+	ASSERT(ui_structure->set_feature_matrix_sparse(features1, features2, Dims))
+	ASSERT(ui_structure->set_feature_dims(Dims))
 
 	SG_FREE(features1);
 	SG_FREE(features2);
@@ -6599,28 +6599,28 @@ bool CSGInterface::cmd_init_intron_list()
 	int32_t Nstart_positions;
 	int32_t* start_positions;
 	get_vector(start_positions, Nstart_positions);
-        //SG_PRINT("Nstart_positions:%i\n",Nstart_positions);
+        //SG_PRINT("Nstart_positions:%i\n",Nstart_positions)
 
 	//ARG2 end_positions
 	int32_t Nend_positions;
 	int32_t* end_positions;
 	get_vector(end_positions, Nend_positions);
-        //SG_PRINT("Nend_positions:%i\n",Nend_positions);
+        //SG_PRINT("Nend_positions:%i\n",Nend_positions)
 
 	//ARG3 quality
 	int32_t Nquality;
         int32_t* quality;
         get_vector(quality, Nquality);
-        //SG_PRINT("Nquality:%i\n",Nquality);
+        //SG_PRINT("Nquality:%i\n",Nquality)
 
 	//ARG4 all candidate positions
 	int32_t Nall_pos;
         int32_t* all_pos;
         get_vector(all_pos, Nall_pos);
-        //SG_PRINT("Nall_pos:%i\n",Nall_pos);
+        //SG_PRINT("Nall_pos:%i\n",Nall_pos)
 
-	ASSERT(Nquality==Nend_positions);
-	ASSERT(Nend_positions==Nstart_positions);
+	ASSERT(Nquality==Nend_positions)
+	ASSERT(Nend_positions==Nstart_positions)
 
 	CIntronList* intron_list = new CIntronList();
 
@@ -6637,11 +6637,11 @@ bool CSGInterface::cmd_init_intron_list()
 	//int32_t testq;
 	//intron_list->get_coverage(&test, &testq, 15 ,16);
 
-	//SG_PRINT("coverage: %i, quality: %i\n",test, testq);
+	//SG_PRINT("coverage: %i, quality: %i\n",test, testq)
 
 	CDynProg* h = ui_structure->get_dyn_prog();
 	if (!h)
-		SG_ERROR("no DynProg object found, use set_model first\n");
+		SG_ERROR("no DynProg object found, use set_model first\n")
 
 	h->set_intron_list(intron_list, 2);
 
@@ -6660,7 +6660,7 @@ bool CSGInterface::cmd_precompute_tiling_features()
 	int32_t Nprobe_pos=0;
 	int32_t* probe_pos;
 	get_vector(probe_pos, Nprobe_pos);
-	ASSERT(Nprobe_pos==Nintensities);
+	ASSERT(Nprobe_pos==Nintensities)
 
 	int32_t Ntiling_plif_ids=0;
 	int32_t* tiling_plif_ids;
@@ -6694,7 +6694,7 @@ bool CSGInterface::cmd_best_path_trans()
 	float64_t* p;
 	get_vector(p, Np);
 	if (Np!=num_states)
-		SG_ERROR("# transitions from initial state (%i) does not match # states (%i)\n", Np, num_states);
+		SG_ERROR("# transitions from initial state (%i) does not match # states (%i)\n", Np, num_states)
 
 	// ARG 2
 	// transitions to end state (#states x 1)
@@ -6702,7 +6702,7 @@ bool CSGInterface::cmd_best_path_trans()
 	float64_t* q;
 	get_vector(q, Nq);
 	if (Nq!=num_states)
-		SG_ERROR("# transitions to end state (%i) does not match # states (%i)\n", Nq, num_states);
+		SG_ERROR("# transitions to end state (%i) does not match # states (%i)\n", Nq, num_states)
 
 	// ARG 3
 	// number of best paths
@@ -6750,10 +6750,10 @@ bool CSGInterface::cmd_best_path_trans()
 	/////////////////////////////////////////////////////////////////////////////////
 	// check input
 	/////////////////////////////////////////////////////////////////////////////////
-	ASSERT(num_states==Nq);
+	ASSERT(num_states==Nq)
 
 	CPlif** PEN=pm->get_PEN();
-	ASSERT(PEN);
+	ASSERT(PEN)
 
 	h->set_p_vector(SGVector<float64_t>(p, num_states));
 	h->set_q_vector(SGVector<float64_t>(q, num_states));
@@ -6769,12 +6769,12 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (!h->check_svm_arrays())
 	{
-		SG_ERROR( "svm arrays inconsistent\n") ;
+		SG_ERROR( "svm arrays inconsistent\n") 
 		CPlif::delete_penalty_struct(PEN, Nplif) ;
 		return false ;
 	}
 
-	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path);
+	SG_DEBUG("best_path_trans: M: %i, Mseg_path: %i\n", M, Mseg_path)
 
 	h->set_observation_matrix(SGNDArray<float64_t>(features, feat_dims, 3, false));
 
@@ -6807,7 +6807,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (segment_loss_non_zero)
 	{
-	        SG_DEBUG("Using version with segment_loss\n") ;
+	        SG_DEBUG("Using version with segment_loss\n") 
 	        if (nbest==1)
 				h->compute_nbest_paths(feat_dims[2], use_orf, 1,true,false);
 	        else
@@ -6815,7 +6815,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	else
 	{
-	        SG_DEBUG("Using version without segment_loss\n") ;
+	        SG_DEBUG("Using version without segment_loss\n") 
 	        if (nbest==1)
 				h->compute_nbest_paths(feat_dims[2], use_orf, 1,false,false);
 	        else
@@ -6867,7 +6867,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	float64_t* p=NULL;
 	get_vector(p, Np);
 	if (Np!=num_states)
-		SG_ERROR("Np!=num_states; Np:%i num_states:%i",Np,num_states);
+		SG_ERROR("Np!=num_states; Np:%i num_states:%i",Np,num_states)
 
 	// ARG 2
 	// transitions to end state (#states x 1)
@@ -6875,7 +6875,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	float64_t* q=NULL;
 	get_vector(q, Nq);
 	if (Nq!=num_states)
-		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states);
+		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states)
 
 
 	// ARG 3
@@ -6923,7 +6923,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	for (int32_t i=0; i<Nplif; i++)
 	{
 		if (i>0 && PEN[i]->get_id()!=i)
-			SG_ERROR("PEN[i]->get_id()!=i; PEN[%i]->get_id():%i  ,\n",i, PEN[i]->get_id());
+			SG_ERROR("PEN[i]->get_id()!=i; PEN[%i]->get_id():%i  ,\n",i, PEN[i]->get_id())
 		if (i>max_plif_id)
 			max_plif_id=i ;
 		if (PEN[i]->get_plif_len()>max_plif_len)
@@ -6943,7 +6943,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ;
 
 	if (!h->check_svm_arrays())
-		SG_ERROR( "svm arrays inconsistent\n") ;
+		SG_ERROR( "svm arrays inconsistent\n") 
 
 	int32_t *my_path = SG_MALLOC(int32_t, Nmypos_seq+1);
 	memset(my_path, -1, Nmypos_seq*sizeof(int32_t)) ;
@@ -7001,7 +7001,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	{
 		int32_t len=0 ;
 		const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
-		ASSERT(len<=max_plif_len) ;
+		ASSERT(len<=max_plif_len) 
 		for (int32_t j=0; j<max_plif_len; j++)
 			a_Plif_deriv.element(id, j)= deriv[j] ;
 	}
@@ -7047,7 +7047,7 @@ bool CSGInterface::cmd_crc()
 
 	int32_t slen=0;
 	char* string=get_string(slen);
-	ASSERT(string);
+	ASSERT(string)
 	uint8_t* bstring=SG_MALLOC(uint8_t, slen);
 
 	for (int32_t i=0; i<slen; i++)
@@ -7103,7 +7103,7 @@ bool CSGInterface::cmd_exec()
 	if (!file)
 	{
 		SG_FREE(filename);
-		SG_ERROR("Error opening file: %s.\n", filename);
+		SG_ERROR("Error opening file: %s.\n", filename)
 	}
 
 	while (!feof(file))
@@ -7128,7 +7128,7 @@ bool CSGInterface::cmd_set_output()
 		fclose(file_out);
 	file_out=NULL;
 
-	SG_INFO("Setting output file to: %s.\n", filename);
+	SG_INFO("Setting output file to: %s.\n", filename)
 
 	if (strmatch(filename, "STDERR"))
 		io->set_target(stderr);
@@ -7138,7 +7138,7 @@ bool CSGInterface::cmd_set_output()
 	{
 		file_out=fopen(filename, "w");
 		if (!file_out)
-			SG_ERROR("Error opening output file %s.\n", filename);
+			SG_ERROR("Error opening output file %s.\n", filename)
 		io->set_target(file_out);
 	}
 
@@ -7175,7 +7175,7 @@ bool CSGInterface::cmd_set_num_threads()
 	int32_t num_threads=get_int_from_int_or_str();
 
 	parallel->set_num_threads(num_threads);
-	SG_INFO("Set number of threads to %d.\n", num_threads);
+	SG_INFO("Set number of threads to %d.\n", num_threads)
 
 	return true;
 }
@@ -7208,7 +7208,7 @@ bool CSGInterface::cmd_translate_string()
 			case 'c': obs[i]=1; break;
 			case 'g': obs[i]=2; break;
 			case 't': obs[i]=3; break;
-			default: SG_ERROR("Wrong letter in string.\n");
+			default: SG_ERROR("Wrong letter in string.\n")
 		}
 	}
 
@@ -7292,7 +7292,7 @@ bool CSGInterface::cmd_print()
 	int32_t len=0;
 	char* msg=get_str_from_str_or_direct(len);
 
-	SG_PRINT("%s\n", msg);
+	SG_PRINT("%s\n", msg)
 
 	SG_FREE(msg);
 	return true;
@@ -7309,12 +7309,12 @@ bool CSGInterface::cmd_echo()
 	if (strmatch(level, "OFF"))
 	{
 		echo=false;
-		SG_INFO("Echo is off.\n");
+		SG_INFO("Echo is off.\n")
 	}
 	else
 	{
 		echo=true;
-		SG_INFO("Echo is on.\n");
+		SG_INFO("Echo is on.\n")
 	}
 
 	SG_FREE(level);
@@ -7348,9 +7348,9 @@ bool CSGInterface::cmd_loglevel()
 	else if (strmatch(level, "EMERGENCY"))
 		io->set_loglevel(MSG_EMERGENCY);
 	else
-		SG_ERROR("Unknown loglevel '%s'.\n", level);
+		SG_ERROR("Unknown loglevel '%s'.\n", level)
 
-	SG_INFO("Loglevel set to %s.\n", level);
+	SG_INFO("Loglevel set to %s.\n", level)
 
 	SG_FREE(level);
 	return true;
@@ -7375,9 +7375,9 @@ bool CSGInterface::cmd_syntax_highlight()
 		io->disable_syntax_highlighting();
 	}
 	else
-		SG_ERROR("arguments to " N_SYNTAX_HIGHLIGHT " are ON|OFF - found '%s'.\n", hili);
+		SG_ERROR("arguments to " N_SYNTAX_HIGHLIGHT " are ON|OFF - found '%s'.\n", hili)
 
-	SG_INFO("Syntax hilighting set to %s.\n", hili);
+	SG_INFO("Syntax hilighting set to %s.\n", hili)
 
 	SG_FREE(hili);
 	return true;
@@ -7396,9 +7396,9 @@ bool CSGInterface::cmd_progress()
 	else if (strmatch(progress, "OFF"))
 		io->disable_progress();
 	else
-		SG_ERROR("arguments to progress are ON|OFF - found '%s'.\n", progress);
+		SG_ERROR("arguments to progress are ON|OFF - found '%s'.\n", progress)
 
-	SG_INFO("Progress set to %s.\n", progress);
+	SG_INFO("Progress set to %s.\n", progress)
 
 	SG_FREE(progress);
 	return true;
@@ -7421,7 +7421,7 @@ bool CSGInterface::cmd_help()
 
 	int32_t i=0;
 
-	SG_PRINT("\n");
+	SG_PRINT("\n")
 	if (m_nrhs==1) // unspecified help
 	{
 		SG_PRINT("Help is available for the following topics.\n"
@@ -7518,7 +7518,7 @@ bool CSGInterface::cmd_help()
 						SG_PRINT("\t%s%s%s\n",
 							hilight.get_command_prefix(),
 							sg_methods[i].command,
-							hilight.get_command_suffix());
+							hilight.get_command_suffix())
 					else // next group reached -> end
 						break;
 				}
@@ -7537,7 +7537,7 @@ bool CSGInterface::cmd_help()
 									hilight.get_command_prefix(),
 									sg_methods[i].command,
 									hilight.get_command_suffix(),
-									sg_methods[i].usage_suffix);
+									sg_methods[i].usage_suffix)
 							break;
 						}
 						else // found group item
@@ -7545,7 +7545,7 @@ bool CSGInterface::cmd_help()
 							SG_PRINT("Commands in group %s%s%s\n\n",
 									hilight.get_command_prefix(),
 									sg_methods[i].command,
-									hilight.get_command_suffix());
+									hilight.get_command_suffix())
 							in_group=true;
 						}
 					}
@@ -7556,7 +7556,7 @@ bool CSGInterface::cmd_help()
 		}
 
 		if (!found)
-			SG_PRINT("Could not find help for command %s.\n", command);
+			SG_PRINT("Could not find help for command %s.\n", command)
 		else if (in_group)
 		{
 			SG_PRINT("\n\nUse sg('%shelp%s', '%s<command>%s')"
@@ -7573,7 +7573,7 @@ bool CSGInterface::cmd_help()
 	}
 
 
-	SG_PRINT("\n");
+	SG_PRINT("\n")
 
 	return true;
 }
@@ -7587,23 +7587,23 @@ bool CSGInterface::cmd_whos()
 		return false;
 
 #ifdef TRACE_MEMORY_ALLOCS
-	SG_PRINT("Blocks allocated by shogun\n");
+	SG_PRINT("Blocks allocated by shogun\n")
 	list_memory_allocs();
-	SG_PRINT("\n");
+	SG_PRINT("\n")
 	return true;
 #else
-	SG_PRINT("Requires shogun to be compiled with --enable-trace-mallocs\n");
+	SG_PRINT("Requires shogun to be compiled with --enable-trace-mallocs\n")
 	return false;
 #endif
 }
 
 bool CSGInterface::cmd_send_command()
 {
-	SG_DEPRECATED;
+	SG_DEPRECATED
 
 	int32_t len=0;
 	char* arg=get_string(len);
-	//SG_DEBUG("legacy: arg == %s\n", arg);
+	//SG_DEBUG("legacy: arg == %s\n", arg)
 	m_legacy_strptr=arg;
 
 	char* command=get_str_from_str(len);
@@ -7614,7 +7614,7 @@ bool CSGInterface::cmd_send_command()
 	{
 		if (strmatch(command, sg_methods[i].command))
 		{
-			SG_DEBUG("legacy: found command %s\n", sg_methods[i].command);
+			SG_DEBUG("legacy: found command %s\n", sg_methods[i].command)
 			// fix-up m_nrhs; +1 to include command
 			m_nrhs=get_num_args_in_str()+1;
 
@@ -7641,7 +7641,7 @@ bool CSGInterface::cmd_send_command()
 	}
 
 	if (!success)
-		SG_ERROR("Non-supported legacy command %s.\n", command);
+		SG_ERROR("Non-supported legacy command %s.\n", command)
 
 	SG_FREE(command);
 	SG_FREE(arg);
@@ -7650,19 +7650,19 @@ bool CSGInterface::cmd_send_command()
 
 bool CSGInterface::cmd_run_python()
 {
-	SG_ERROR("Only available in the elwms interface\n");
+	SG_ERROR("Only available in the elwms interface\n")
 	return false;
 }
 
 bool CSGInterface::cmd_run_octave()
 {
-	SG_ERROR("Only available in the elwms interface\n");
+	SG_ERROR("Only available in the elwms interface\n")
 	return false;
 }
 
 bool CSGInterface::cmd_run_r()
 {
-	SG_ERROR("Only available in the elwms interface\n");
+	SG_ERROR("Only available in the elwms interface\n")
 	return false;
 }
 
@@ -7681,29 +7681,29 @@ bool CSGInterface::cmd_pr_loqo()
 	int32_t nH=0;
 	int32_t mH=0;
 	get_matrix(H, nH, mH);
-	ASSERT(nH==n && mH==n);
+	ASSERT(nH==n && mH==n)
 
 	float64_t* A=NULL;
 	int32_t nA=0;
 	int32_t mA=0;
 	get_matrix(A, nA, mA);
-	ASSERT(mA==n);
+	ASSERT(mA==n)
 	int32_t m=nA;
 
 	float64_t* b=NULL;
 	int32_t lenb=0;
 	get_vector(b, lenb);
-	ASSERT(lenb==m);
+	ASSERT(lenb==m)
 
 	float64_t* l=NULL;
 	int32_t lenl=0;
 	get_vector(l, lenl);
-	ASSERT(lenl==n);
+	ASSERT(lenl==n)
 
 	float64_t* u=NULL;
 	int32_t lenu=0;
 	get_vector(u, lenu);
-	ASSERT(lenu==n);
+	ASSERT(lenu==n)
 
 	float64_t* x=SG_MALLOC(float64_t, 3*n);
 	SGVector<float64_t>::fill_vector(x, 3*n, 0.0);
@@ -7809,7 +7809,7 @@ void CSGInterface::get_vector_from_int_vector_or_str(int32_t*& vector, int32_t& 
 		{
 			str=get_str_from_str(slen);
 			vector[i]=strtol(str, NULL, 10);
-			//SG_DEBUG("vec[%d]: %d\n", i, vector[i]);
+			//SG_DEBUG("vec[%d]: %d\n", i, vector[i])
 			SG_FREE(str);
 		}
 	}
@@ -7836,7 +7836,7 @@ void CSGInterface::get_vector_from_real_vector_or_str(
 		{
 			str=get_str_from_str(slen);
 			vector[i]=strtod(str, NULL);
-			//SG_DEBUG("vec[%d]: %f\n", i, vector[i]);
+			//SG_DEBUG("vec[%d]: %f\n", i, vector[i])
 			SG_FREE(str);
 		}
 	}
@@ -7856,7 +7856,7 @@ int32_t CSGInterface::get_vector_len_from_str(int32_t expected_len)
 		return expected_len;
 	}
 	else
-		SG_ERROR("Expected vector length %d does not match actual length %d.\n", expected_len, num_args);
+		SG_ERROR("Expected vector length %d does not match actual length %d.\n", expected_len, num_args)
 
 	return 0;
 }
@@ -7928,7 +7928,7 @@ bool CSGInterface::handle()
 	char* command=NULL;
 	command=interface->get_command(len);
 
-	SG_DEBUG("command: %s, nrhs %d\n", command, m_nrhs);
+	SG_DEBUG("command: %s, nrhs %d\n", command, m_nrhs)
 	int32_t i=0;
 	while (sg_methods[i].command)
 	{

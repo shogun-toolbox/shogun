@@ -30,11 +30,11 @@ CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
 	m_variances(), m_label_prob(), m_rates()
 {
-	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels());
+	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels())
 	set_labels(train_labels);
 
 	if (!train_examples->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
+		SG_ERROR("Specified features are not of type CDotFeatures\n")
 
 	set_features((CDotFeatures*)train_examples);
 };
@@ -53,7 +53,7 @@ CFeatures* CGaussianNaiveBayes::get_features()
 void CGaussianNaiveBayes::set_features(CFeatures* features)
 {
 	if (!features->has_property(FP_DOT))
-		SG_ERROR("Specified features are not of type CDotFeatures\n");
+		SG_ERROR("Specified features are not of type CDotFeatures\n")
 
 	SG_UNREF(m_features);
 	SG_REF(features);
@@ -66,15 +66,15 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n");
+				SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
 
 	// get int labels to train_labels and check length equality
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 	SGVector<int32_t> train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
-	ASSERT(m_features->get_num_vectors()==train_labels.vlen);
+	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// init min_label, max_label and loop variables
 	int32_t min_label = train_labels.vector[0];
@@ -116,7 +116,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	
 	// current progress
 	int32_t progress = 0;	
-	SG_PROGRESS(progress, 0, max_progress);
+	SG_PROGRESS(progress, 0, max_progress)
 
 	// get sum of features among labels
 	for (i=0; i<train_labels.vlen; i++)
@@ -128,7 +128,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 		m_label_prob.vector[train_labels.vector[i]]+=1.0;
 
 		progress++;
-		SG_PROGRESS(progress, 0, max_progress);
+		SG_PROGRESS(progress, 0, max_progress)
 	}
 
 	// get means of features of labels
@@ -138,7 +138,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 			m_means(j, i) /= m_label_prob.vector[i];
 
 		progress++;
-		SG_PROGRESS(progress, 0, max_progress);
+		SG_PROGRESS(progress, 0, max_progress)
 	}
 
 	// compute squared residuals with means available
@@ -152,7 +152,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 		}
 
 		progress++;
-		SG_PROGRESS(progress, 0, max_progress);
+		SG_PROGRESS(progress, 0, max_progress)
 	}	
 
 	// get variance of features of labels
@@ -165,9 +165,9 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 		m_label_prob.vector[i]/= m_num_classes;
 
 		progress++;
-		SG_PROGRESS(progress, 0, max_progress);
+		SG_PROGRESS(progress, 0, max_progress)
 	}
-	SG_DONE();
+	SG_DONE()
 
 	return true;
 }
@@ -177,7 +177,7 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	if (data)
 		set_features(data);
 
-	ASSERT(m_features);
+	ASSERT(m_features)
 
 	// init number of vectors
 	int32_t num_vectors = m_features->get_num_vectors();
@@ -186,13 +186,13 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	CMulticlassLabels* result = new CMulticlassLabels(num_vectors);
 
 	// classify each example of data
-	SG_PROGRESS(0, 0, num_vectors);
+	SG_PROGRESS(0, 0, num_vectors)
 	for (int i = 0; i < num_vectors; i++)
 	{
 		result->set_label(i,apply_one(i));
-		SG_PROGRESS(i + 1, 0, num_vectors);
+		SG_PROGRESS(i + 1, 0, num_vectors)
 	}
-	SG_DONE();
+	SG_DONE()
 	return result;
 };
 

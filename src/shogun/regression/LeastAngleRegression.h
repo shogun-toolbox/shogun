@@ -123,9 +123,9 @@ public:
 	void switch_w(int32_t num_variable)
 	{
 		if (w.vlen <= 0)
-			SG_ERROR("cannot swith estimator before training");
+			SG_ERROR("cannot swith estimator before training")
 		if (size_t(num_variable) >= m_beta_idx.size() || num_variable < 0)
-			SG_ERROR("cannot switch to an estimator of %d non-zero coefficients", num_variable);
+			SG_ERROR("cannot switch to an estimator of %d non-zero coefficients", num_variable)
 		if (w.vector == NULL)
 			w = SGVector<float64_t>(w.vlen);
 		std::copy(m_beta_path[m_beta_idx[num_variable]].begin(),

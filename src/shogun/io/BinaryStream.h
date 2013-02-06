@@ -48,7 +48,7 @@ template <class T> class CBinaryStream : public CSGObject
 		: CSGObject()
 		{
 			/* open_stream(bs.m_fname, bs.rw); */
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 		}
 
 
@@ -59,7 +59,7 @@ template <class T> class CBinaryStream : public CSGObject
         CBinaryStream(const CBinaryStream &bs)
         {
 			open_stream(bs.m_fname, bs.rw);
-            ASSERT(length==bs.length);
+            ASSERT(length==bs.length)
         }
 
 
@@ -81,14 +81,14 @@ template <class T> class CBinaryStream : public CSGObject
 
 			fd = fopen(fname, flag);
 			if (!fd)
-                SG_ERROR("Error opening file '%s'\n", m_fname);
+                SG_ERROR("Error opening file '%s'\n", m_fname)
 
 			struct stat sb;
 			if (stat(fname, &sb) == -1)
-                SG_ERROR("Error determining file size of '%s'\n", m_fname);
+                SG_ERROR("Error determining file size of '%s'\n", m_fname)
 
 			length = sb.st_size;
-			SG_DEBUG("Opened file '%s' of size %ld byte\n", fname, length);
+			SG_DEBUG("Opened file '%s' of size %ld byte\n", fname, length)
 		}
 
 		/** close a file stream */
@@ -156,17 +156,17 @@ template <class T> class CBinaryStream : public CSGObject
 		 */
 		void pre_buffer(T* buffer, long index, long num) const
 		{
-			ASSERT(index>=0);
-			ASSERT(num>=0);
+			ASSERT(index>=0)
+			ASSERT(num>=0)
 
 			if (num==0)
 				return;
 
 			if (fseek(fd, ((long) sizeof(T))*((long) index), SEEK_SET) != 0)
-				SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
+				SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname)
 
 			if ( fread(buffer, sizeof(T), num, fd) != num)
-				SG_ERROR("Error calling fread (file '%s')\n", m_fname);
+				SG_ERROR("Error calling fread (file '%s')\n", m_fname)
 		}
 
 		/** read next
@@ -193,12 +193,12 @@ template <class T> class CBinaryStream : public CSGObject
 		{
 
 			if (fseek(fd, ((long) sizeof(T))*((long) index), SEEK_SET) != 0)
-				SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname);
+				SG_ERROR("Error seeking to %ld (file '%s')\n", sizeof(T)*((int64_t) index), m_fname)
 
 			T ptr;
 
 			if ( fread(&ptr, sizeof(T), 1, fd) != 1)
-				SG_ERROR("Error calling fread (file '%s')\n", m_fname);
+				SG_ERROR("Error calling fread (file '%s')\n", m_fname)
 
 			return ptr;
 		}

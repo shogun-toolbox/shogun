@@ -49,7 +49,7 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
 	if ( base_labels->get_label_type() == LT_MULTICLASS )
 		return (CMulticlassLabels*) base_labels;
 	else
-		SG_SERROR("base_labels must be of dynamic type CMulticlassLabels");
+		SG_SERROR("base_labels must be of dynamic type CMulticlassLabels")
 
 	return NULL;
 }

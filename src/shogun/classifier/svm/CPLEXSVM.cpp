@@ -30,8 +30,8 @@ CCPLEXSVM::~CCPLEXSVM()
 
 bool CCPLEXSVM::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	bool result = false;
 	CCplex cplex;
@@ -55,7 +55,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 		SGMatrix<float64_t> H=kernel->get_kernel_matrix();
 		m=H.num_rows;
 		n=H.num_cols;
-		ASSERT(n>0 && n==m && n==num_label);
+		ASSERT(n>0 && n==m && n==num_label)
 		float64_t* alphas=SG_MALLOC(float64_t, n);
 		float64_t* lb=SG_MALLOC(float64_t, n);
 		float64_t* ub=SG_MALLOC(float64_t, n);
@@ -85,8 +85,8 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 			}
 		}
 		//compute_objective();
-		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
-		SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
+		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias())
+		SG_INFO( "Number of SV: %ld\n", get_num_support_vectors())
 
 		SG_FREE(alphas);
 		SG_FREE(lb);
@@ -96,7 +96,7 @@ bool CCPLEXSVM::train_machine(CFeatures* data)
 	}
 
 	if (!result)
-		SG_ERROR( "cplex svm failed");
+		SG_ERROR( "cplex svm failed")
 
 	return result;
 }

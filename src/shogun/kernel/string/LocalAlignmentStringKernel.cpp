@@ -97,7 +97,7 @@ int32_t CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(int32_t size)
 : CStringKernel<char>(size)
 {
-	SG_UNSTABLE("LocalAlignmentStringKernel");
+	SG_UNSTABLE("LocalAlignmentStringKernel")
 	init();
 	init_static_variables();
 }
@@ -107,7 +107,7 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
 	float64_t opening, float64_t extension)
 : CStringKernel<char>()
 {
-	SG_UNSTABLE("LocalAlignmentStringKernel");
+	SG_UNSTABLE("LocalAlignmentStringKernel")
 	init();
 	m_opening=opening;
 	m_extension=extension;
@@ -370,10 +370,10 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 	bool free_x, free_y;
 	char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx, free_x);
 	char* y=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_y, ly, free_y);
-	ASSERT(x && y);
+	ASSERT(x && y)
 
 	if ( (lx<1) || (ly<1) )
-		SG_ERROR("empty chain");
+		SG_ERROR("empty chain")
 
 	/* Create aax and aay */
 

@@ -4,9 +4,10 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 1999-2013 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010-2013 Soeren Sonnenburg
  */
 
 #ifndef __SGIO_H__
@@ -74,41 +75,124 @@ enum EMessageType
 #define SG_SET_LOCALE_C setlocale(LC_ALL, "C")
 #define SG_RESET_LOCALE setlocale(LC_ALL, "")
 
+#if !defined(SG_UNLIKELY)
+#if __GNUC__ >= 3
+#define SG_UNLIKELY(expr) __builtin_expect(expr, 0)
+#else
+#define SG_UNLIKELY(expr) expr
+#endif
+#endif
+
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
-#define SG_GCDEBUG(...) io->message(MSG_GCDEBUG, __FILE__, __LINE__, __VA_ARGS__)
-#define SG_DEBUG(...) io->message(MSG_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
-#define SG_INFO(...) io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__)
-#define SG_WARNING(...) io->message(MSG_WARN, __FILE__, __LINE__, __VA_ARGS__)
-#define SG_ERROR(...) io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__)
-#define SG_UNSTABLE(func, ...) io->message(MSG_WARN, __FILE__, __LINE__, \
+#define SG_GCDEBUG(...) {											\
+	if (SG_UNLIKELY(io->loglevel_above(MSG_GCDEBUG)))				\
+		io->message(MSG_GCDEBUG, __FILE__, __LINE__, __VA_ARGS__);	\
+}
+
+#define SG_DEBUG(...) {												\
+	if (SG_UNLIKELY(io->loglevel_above(MSG_DEBUG)))					\
+		io->message(MSG_DEBUG, __FILE__, __LINE__, __VA_ARGS__);	\
+}
+
+#define SG_OBJ_DEBUG(o,...) {										\
+	if (SG_UNLIKELY(o->io->loglevel_above(MSG_DEBUG)))				\
+		o->io->message(MSG_DEBUG, __FILE__, __LINE__, __VA_ARGS__);	\
+}
+
+
+#define SG_INFO(...) {												\
+	if (SG_UNLIKELY(io->loglevel_above(MSG_INFO)))					\
+		io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__);		\
+}
+
+#define SG_CLASS_INFO(c, ...) {										\
+	if (SG_UNLIKELY(c::io->loglevel_above(MSG_INFO)))				\
+		c::io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__);	\
+}
+
+#define SG_WARNING(...) { io->message(MSG_WARN, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_ERROR(...) { io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_OBJ_ERROR(o, ...) { o->io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_CLASS_ERROR(c, ...) { c::io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_UNSTABLE(func, ...) { io->message(MSG_WARN, __FILE__, __LINE__, \
 __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 "work or not to the Shogun mailing list.  Thanking you in " \
-"anticipation.  " __VA_ARGS__)
+"anticipation.  " __VA_ARGS__); }
 
-#define SG_PRINT(...) io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__)
-#define SG_NOTIMPLEMENTED io->not_implemented(__FILE__, __LINE__)
-#define SG_DEPRECATED io->deprecated(__FILE__, __LINE__)
+#define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_NOTIMPLEMENTED { io->not_implemented(__FILE__, __LINE__); }
+#define SG_DEPRECATED { io->deprecated(__FILE__, __LINE__); }
 
-#define SG_PROGRESS(...) io->progress(__VA_ARGS__)
-#define SG_ABS_PROGRESS(...) io->absolute_progress(__VA_ARGS__)
-#define SG_DONE() io->done()
+#define SG_PROGRESS(...) {						\
+	if (SG_UNLIKELY(io->get_show_progress()))	\
+		io->progress(__VA_ARGS__);				\
+}
+
+#define SG_OBJ_PROGRESS(o, ...) {				\
+	if (SG_UNLIKELY(o->io->get_show_progress()))\
+		o->io->progress(__VA_ARGS__);			\
+}
+
+#define SG_ABS_PROGRESS(...) {					\
+	if (SG_UNLIKELY(io->get_show_progress()))	\
+		io->absolute_progress(__VA_ARGS__);		\
+}
+
+#define SG_DONE() {								\
+	if (SG_UNLIKELY(io->get_show_progress()))	\
+		io->done();								\
+}
 
 // printf like function using the global sg_io object
-#define SG_SGCDEBUG(...) sg_io->message(MSG_GCDEBUG,__FILE__, __LINE__, __VA_ARGS__)
-#define SG_SDEBUG(...) sg_io->message(MSG_DEBUG,__FILE__, __LINE__, __VA_ARGS__)
-#define SG_SINFO(...) sg_io->message(MSG_INFO,__FILE__, __LINE__, __VA_ARGS__)
-#define SG_SWARNING(...) sg_io->message(MSG_WARN,__FILE__, __LINE__, __VA_ARGS__)
-#define SG_SERROR(...) sg_io->message(MSG_ERROR,__FILE__, __LINE__, __VA_ARGS__)
-#define SG_SPRINT(...) sg_io->message(MSG_MESSAGEONLY,__FILE__, __LINE__, __VA_ARGS__)
-#define SG_SPROGRESS(...) sg_io->progress(__VA_ARGS__)
-#define SG_SABS_PROGRESS(...) sg_io->absolute_progress(__VA_ARGS__)
-#define SG_SDONE() sg_io->done()
-#define SG_SNOTIMPLEMENTED sg_io->not_implemented(__FILE__, __LINE__)
-#define SG_SDEPRECATED sg_io->deprecated(__FILE__, __LINE__)
+#define SG_SGCDEBUG(...) {											\
+	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_GCDEBUG)))			\
+		sg_io->message(MSG_GCDEBUG,__FILE__, __LINE__, __VA_ARGS__);\
+}
 
-#define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
-#define REQUIRE(x, ...) { if (!(x)) SG_SERROR(__VA_ARGS__); }
+#define SG_SDEBUG(...) {											\
+	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_GCDEBUG)))			\
+		sg_io->message(MSG_DEBUG,__FILE__, __LINE__, __VA_ARGS__);	\
+}
+
+#define SG_SINFO(...) {												\
+	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_INFO)))				\
+		sg_io->message(MSG_INFO,__FILE__, __LINE__, __VA_ARGS__);	\
+}
+
+#define SG_SWARNING(...) { sg_io->message(MSG_WARN,__FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SERROR(...) { sg_io->message(MSG_ERROR,__FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SPRINT(...) { sg_io->message(MSG_MESSAGEONLY,__FILE__, __LINE__, __VA_ARGS__); }
+
+
+#define SG_SPROGRESS(...) {							\
+	if (SG_UNLIKELY(sg_io->get_show_progress()))	\
+		sg_io->progress(__VA_ARGS__);				\
+}
+
+#define SG_SABS_PROGRESS(...) {						\
+	if (SG_UNLIKELY(sg_io->get_show_progress()))	\
+		sg_io->absolute_progress(__VA_ARGS__);		\
+}
+
+#define SG_SDONE() {								\
+	if (SG_UNLIKELY(sg_io->get_show_progress()))	\
+		sg_io->done();								\
+}
+
+#define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__FILE__, __LINE__); }
+#define SG_SDEPRECATED { sg_io->deprecated(__FILE__, __LINE__); }
+
+#define ASSERT(x) { 																	\
+	if (SG_UNLIKELY(!(x)))																\
+		SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__)	\
+}
+
+#define REQUIRE(x, ...) {		\
+	if (SG_UNLIKELY(!(x)))		\
+		SG_SERROR(__VA_ARGS__)	\
+}
 
 /**
  * @brief struct Substring, specified by
@@ -150,6 +234,16 @@ class SGIO
 		 * @return level of log messages
 		 */
 		EMessageType get_loglevel() const;
+
+		/** loglevel above
+		 *
+		 * @return whether loglevel is above specified level and thus the
+		 * message should be printed
+		 */
+		inline bool loglevel_above(EMessageType type) const
+		{
+			return loglevel > type;
+		}
 
 		/** get show_progress
 		 *
@@ -353,8 +447,8 @@ class SGIO
         static inline char* concat_filename(const char* filename)
         {
             if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
-                SG_SERROR("filename too long");
-            SG_SDEBUG("filename=\"%s\"\n", file_buffer);
+                SG_SERROR("filename too long")
+            SG_SDEBUG("filename=\"%s\"\n", file_buffer)
             return file_buffer;
         }
 

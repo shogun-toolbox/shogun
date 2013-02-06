@@ -58,11 +58,11 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
-			ASSERT(k);
+			ASSERT(k)
 			num_sqrtdiag_lhs=k->get_num_vec_lhs();
 			num_sqrtdiag_rhs=k->get_num_vec_rhs();
-			ASSERT(num_sqrtdiag_lhs>0);
-			ASSERT(num_sqrtdiag_rhs>0);
+			ASSERT(num_sqrtdiag_lhs>0)
+			ASSERT(num_sqrtdiag_rhs>0)
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;

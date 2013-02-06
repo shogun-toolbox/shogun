@@ -1581,20 +1581,20 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 
 TParameter::~TParameter()
 {
-//	SG_SDEBUG("entering ~TParameter for \"%s\"\n", m_name);
+//	SG_SDEBUG("entering ~TParameter for \"%s\"\n", m_name)
 	SG_FREE(m_description);
 	SG_FREE(m_name);
 
 	/* possibly delete content, m_parameter variable */
 	if (m_was_allocated_from_scratch)
 	{
-		SG_SDEBUG("deleting from scratch data\n");
+		SG_SDEBUG("deleting from scratch data\n")
 
 		if (m_delete_data)
 		{
 			/* for non-scalar data, delete_cont does the job, rest is handled
 			 * below */
-			SG_SDEBUG("deleting pure data\n");
+			SG_SDEBUG("deleting pure data\n")
 			if (m_datatype.m_ctype!=CT_SCALAR)
 				delete_cont();
 
@@ -1605,7 +1605,7 @@ TParameter::~TParameter()
 		/* free pointer/data */
 		if (m_parameter)
 		{
-			SG_SDEBUG("freeing m_parameter pointer/data at %p\n", m_parameter);
+			SG_SDEBUG("freeing m_parameter pointer/data at %p\n", m_parameter)
 			SG_FREE(m_parameter);
 		}
 
@@ -1617,7 +1617,7 @@ TParameter::~TParameter()
 			SG_FREE(m_datatype.m_length_y);
 	}
 
-//	SG_SDEBUG("leaving ~TParameter\n");
+//	SG_SDEBUG("leaving ~TParameter\n")
 }
 
 char*
@@ -1657,7 +1657,7 @@ TParameter::delete_cont()
 		index_t old_length = m_datatype.m_length_y ? *m_datatype.m_length_y : 0;
 		switch (m_datatype.m_ctype) {
 		case CT_NDARRAY:
-			SG_SNOTIMPLEMENTED;
+			SG_SNOTIMPLEMENTED
 		case CT_MATRIX: case CT_SGMATRIX:
 			old_length *= *m_datatype.m_length_x; break;
 		case CT_SCALAR: case CT_VECTOR: case CT_SGVECTOR: break;
@@ -2196,7 +2196,7 @@ void TParameter::get_incremental_hash(
 	switch (m_datatype.m_ctype)
 	{
 	case CT_NDARRAY:
-		SG_SNOTIMPLEMENTED;
+		SG_SNOTIMPLEMENTED
 	case CT_SCALAR:
 	{
 	    uint8_t* data = ((uint8_t*) m_parameter);
@@ -2227,7 +2227,7 @@ void TParameter::get_incremental_hash(
 		switch (m_datatype.m_ctype)
 		{
 		case CT_NDARRAY:
-			SG_SNOTIMPLEMENTED;
+			SG_SNOTIMPLEMENTED
 			break;
 		case CT_VECTOR: case CT_SGVECTOR:
 			len_real_x = 1;
@@ -2275,7 +2275,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 	const int32_t buflen=100;
 	char* buf=SG_MALLOC(char, buflen);
 	m_datatype.to_string(buf, buflen);
-	SG_SDEBUG("Saving parameter '%s' of type '%s'\n", m_name, buf);
+	SG_SDEBUG("Saving parameter '%s' of type '%s'\n", m_name, buf)
 	SG_FREE(buf);
 
 	if (!file->write_type_begin(&m_datatype, m_name, prefix))
@@ -2283,7 +2283,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 
 	switch (m_datatype.m_ctype) {
 	case CT_NDARRAY:
-		SG_SNOTIMPLEMENTED;
+		SG_SNOTIMPLEMENTED
 	case CT_SCALAR:
 		if (!save_stype(file, m_parameter, prefix)) return false;
 		break;
@@ -2301,7 +2301,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 
 		switch (m_datatype.m_ctype) {
 		case CT_NDARRAY:
-			SG_SNOTIMPLEMENTED;
+			SG_SNOTIMPLEMENTED
 			break;
 		case CT_VECTOR: case CT_SGVECTOR:
 			len_real_x = 1;
@@ -2365,7 +2365,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	const int32_t buflen=100;
 	char* buf=SG_MALLOC(char, buflen);
 	m_datatype.to_string(buf, buflen);
-	SG_SDEBUG("Loading parameter '%s' of type '%s'\n", m_name, buf);
+	SG_SDEBUG("Loading parameter '%s' of type '%s'\n", m_name, buf)
 	SG_FREE(buf);
 
 	if (!file->read_type_begin(&m_datatype, m_name, prefix))
@@ -2374,7 +2374,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	switch (m_datatype.m_ctype)
 	{
 		case CT_NDARRAY:
-			SG_SNOTIMPLEMENTED;
+			SG_SNOTIMPLEMENTED
 		case CT_SCALAR:
 			if (!load_stype(file, m_parameter, prefix))
 				return false;
@@ -2390,7 +2390,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 			switch (m_datatype.m_ctype)
 			{
 				case CT_NDARRAY:
-					SG_SNOTIMPLEMENTED;
+					SG_SNOTIMPLEMENTED
 				case CT_VECTOR: case CT_SGVECTOR:
 					len_read_x = 1;
 					new_cont(len_read_y, len_read_x);
@@ -2423,7 +2423,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 			switch (m_datatype.m_ctype)
 			{
 				case CT_NDARRAY:
-					SG_SNOTIMPLEMENTED;
+					SG_SNOTIMPLEMENTED
 				case CT_VECTOR: case CT_SGVECTOR:
 					*m_datatype.m_length_y = len_read_y;
 					break;
@@ -2466,7 +2466,7 @@ Parameter::add_type(const TSGDataType* type, void* param,
 					 const char* name, const char* description)
 {
 	if (name == NULL || *name == '\0')
-		SG_SERROR("FATAL: Parameter::add_type(): `name' is empty!\n");
+		SG_SERROR("FATAL: Parameter::add_type(): `name' is empty!\n")
 
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
@@ -2515,7 +2515,7 @@ void Parameter::set_from_parameters(Parameter* params)
 		TParameter* current=params->get_parameter(i);
 		TSGDataType current_type=current->m_datatype;
 
-		ASSERT(m_params.get_num_elements());
+		ASSERT(m_params.get_num_elements())
 
 		/* search for own parameter with same name and check types if found */
 		TParameter* own=NULL;
@@ -2630,7 +2630,7 @@ void Parameter::set_from_parameters(Parameter* params)
 				source=*((CSGObject**) current->m_parameter);
 				break;
 			default:
-				SG_SNOTIMPLEMENTED;
+				SG_SNOTIMPLEMENTED
 				break;
 			}
 		}
@@ -2706,7 +2706,7 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x,
 		m_datatype.m_length_y=NULL;
 		break;
 	case CT_NDARRAY:
-		SG_SNOTIMPLEMENTED;
+		SG_SNOTIMPLEMENTED
 	}
 
 	/* check if there is no data loss */
@@ -2766,12 +2766,12 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x,
 
 void TParameter::copy_data(const TParameter* source)
 {
-	SG_SDEBUG("entering TParameter::copy_data for %s\n", m_name);
+	SG_SDEBUG("entering TParameter::copy_data for %s\n", m_name)
 
 	/* assert that type is equal */
-	ASSERT(m_datatype.m_ctype==source->m_datatype.m_ctype);
-	ASSERT(m_datatype.m_stype==source->m_datatype.m_stype);
-	ASSERT(m_datatype.m_ptype==source->m_datatype.m_ptype);
+	ASSERT(m_datatype.m_ctype==source->m_datatype.m_ctype)
+	ASSERT(m_datatype.m_stype==source->m_datatype.m_stype)
+	ASSERT(m_datatype.m_ptype==source->m_datatype.m_ptype)
 
 	/* first delete old data if non-scalar */
 	if (m_datatype.m_ctype!=CT_SCALAR)
@@ -2810,7 +2810,7 @@ void TParameter::copy_data(const TParameter* source)
 
 		/* in this case, data is a pointer pointing to the actual
 		 * data, so copy pointer if non-NULL*/
-		SG_SDEBUG("Copying non-scalar pointer %p\n", *((void**)source->m_parameter));
+		SG_SDEBUG("Copying non-scalar pointer %p\n", *((void**)source->m_parameter))
 		*((void**)m_parameter)=*((void**)source->m_parameter);
 	}
 
@@ -2821,5 +2821,5 @@ void TParameter::copy_data(const TParameter* source)
 	if (source->m_datatype.m_length_y)
 		*m_datatype.m_length_y=*source->m_datatype.m_length_y;
 
-	SG_SDEBUG("leaving TParameter::copy_data for %s\n", m_name);
+	SG_SDEBUG("leaving TParameter::copy_data for %s\n", m_name)
 }

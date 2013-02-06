@@ -118,7 +118,7 @@ class CLinearKernel: public CDotKernel
 		 */
 		SGVector<float64_t> get_w() const 
 		{
-			ASSERT(lhs);
+			ASSERT(lhs)
 			return normal;
 		}
 
@@ -128,7 +128,7 @@ class CLinearKernel: public CDotKernel
 		 */
 		void set_w(SGVector<float64_t> w)
 		{
-			ASSERT(lhs && w.size()==((CDotFeatures*) lhs)->get_dim_feature_space());
+			ASSERT(lhs && w.size()==((CDotFeatures*) lhs)->get_dim_feature_space())
 			this->normal = w;
 		}
 

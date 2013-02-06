@@ -62,7 +62,7 @@ int32_t CCombinedFeatures::get_size() const
 
 void CCombinedFeatures::list_feature_objs()
 {
-	SG_INFO( "BEGIN COMBINED FEATURES LIST - ");
+	SG_INFO( "BEGIN COMBINED FEATURES LIST - ")
 	this->list_feature_obj();
 
 	CListElement* current = NULL ;
@@ -75,7 +75,7 @@ void CCombinedFeatures::list_feature_objs()
 		f=get_next_feature_obj(current);
 	}
 
-	SG_INFO( "END COMBINED FEATURES LIST - ");
+	SG_INFO( "END COMBINED FEATURES LIST - ")
 }
 
 bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_feat)
@@ -98,9 +98,9 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 				{
 					SG_UNREF(f1);
 					SG_UNREF(f2);
-					SG_INFO( "not compatible, combfeat\n");
+					SG_INFO( "not compatible, combfeat\n")
 					comb_feat->list_feature_objs();
-					SG_INFO( "vs this\n");
+					SG_INFO( "vs this\n")
 					this->list_feature_objs();
 					return false;
 				}
@@ -108,18 +108,18 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 				SG_UNREF(f2);
 			}
 
-			SG_DEBUG( "features are compatible\n");
+			SG_DEBUG( "features are compatible\n")
 			result=true;
 		}
 		else
-			SG_WARNING( "first 2 features not compatible\n");
+			SG_WARNING( "first 2 features not compatible\n")
 	}
 	else
 	{
-		SG_WARNING( "number of features in combined feature objects differs (%d != %d)\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj());
-		SG_INFO( "compare\n");
+		SG_WARNING( "number of features in combined feature objects differs (%d != %d)\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj())
+		SG_INFO( "compare\n")
 		comb_feat->list_feature_objs();
-		SG_INFO( "vs this\n");
+		SG_INFO( "vs this\n")
 		this->list_feature_objs();
 	}
 
@@ -153,7 +153,7 @@ CFeatures* CCombinedFeatures::get_last_feature_obj()
 
 bool CCombinedFeatures::insert_feature_obj(CFeatures* obj)
 {
-	ASSERT(obj);
+	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
 
 	if (get_num_vectors()>0 && n!=get_num_vectors())
@@ -168,7 +168,7 @@ bool CCombinedFeatures::insert_feature_obj(CFeatures* obj)
 
 bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
 {
-	ASSERT(obj);
+	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
 
 	if (get_num_vectors()>0 && n!=get_num_vectors())
@@ -210,9 +210,9 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
 {
 	/* TODO, if all features are the same, only one copy should be created
 	 * in memory */
-	SG_WARNING("Heiko Strathmann: FIXME, unefficient!\n");
+	SG_WARNING("Heiko Strathmann: FIXME, unefficient!\n")
 
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("entering %s::create_merged_copy()\n", get_name())
 	if (get_feature_type()!=other->get_feature_type() ||
 			get_feature_class()!=other->get_feature_class() ||
 			strcmp(get_name(), other->get_name()))
@@ -248,13 +248,13 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
 		current_other=get_next_feature_obj();
 	}
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
+	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name())
 	return result;
 }
 
 void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 {
-	SG_DEBUG("entering %s::add_subset()\n", get_name());
+	SG_DEBUG("entering %s::add_subset()\n", get_name())
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	CFeatures* current=get_first_feature_obj();
@@ -277,12 +277,12 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving %s::add_subset()\n", get_name());
+	SG_DEBUG("leaving %s::add_subset()\n", get_name())
 }
 
 void CCombinedFeatures::remove_subset()
 {
-	SG_DEBUG("entering %s::remove_subset()\n", get_name());
+	SG_DEBUG("entering %s::remove_subset()\n", get_name())
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	CFeatures* current=get_first_feature_obj();
@@ -305,12 +305,12 @@ void CCombinedFeatures::remove_subset()
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving %s::remove_subset()\n", get_name());
+	SG_DEBUG("leaving %s::remove_subset()\n", get_name())
 }
 
 void CCombinedFeatures::remove_all_subsets()
 {
-	SG_DEBUG("entering %s::remove_all_subsets()\n", get_name());
+	SG_DEBUG("entering %s::remove_all_subsets()\n", get_name())
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	CFeatures* current=get_first_feature_obj();
@@ -333,7 +333,7 @@ void CCombinedFeatures::remove_all_subsets()
 
 	subset_changed_post();
 	SG_UNREF(processed);
-	SG_DEBUG("leaving %s::remove_all_subsets()\n", get_name());
+	SG_DEBUG("leaving %s::remove_all_subsets()\n", get_name())
 }
 
 CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)

@@ -70,7 +70,7 @@ namespace shogun
 		/**
 		 * Reset the stream, should be overloaded if possible
 		 */
-		virtual void reset_stream() { SG_ERROR("Unable to reset the input stream!\n"); }
+		virtual void reset_stream() { SG_ERROR("Unable to reset the input stream!\n") }
 
 		/** @name Dense Vector Access Functions
 		 *

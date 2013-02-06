@@ -111,13 +111,13 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 					get_first_feature_obj();
 
 			if (!feat->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CFeatures\n");
+				SG_ERROR("Specified features are not of type CFeatures\n")
 
 			if (feat->get_feature_class() != C_DENSE)
-				SG_ERROR("Expected Simple Features\n");
+				SG_ERROR("Expected Simple Features\n")
 
 			if (feat->get_feature_type() != F_DREAL)
-				SG_ERROR("Expected Real Features\n");
+				SG_ERROR("Expected Real Features\n")
 
 			SG_UNREF(feat);
 		}
@@ -125,13 +125,13 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 		else
 		{
 			if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CFeatures\n");
+				SG_ERROR("Specified features are not of type CFeatures\n")
 
 			if (data->get_feature_class() != C_DENSE)
-				SG_ERROR("Expected Simple Features\n");
+				SG_ERROR("Expected Simple Features\n")
 
 			if (data->get_feature_type() != F_DREAL)
-				SG_ERROR("Expected Real Features\n");
+				SG_ERROR("Expected Real Features\n")
 		}
 
 		SG_UNREF(m_data);
@@ -141,7 +141,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	}
 
 	else if (!m_data)
-		SG_ERROR("No testing features!\n");
+		SG_ERROR("No testing features!\n")
 
 	else if (update_parameter_hash())
 		update_kernel_matrices();
@@ -216,7 +216,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 	}
 
 	if (!mean_function)
-		SG_ERROR("Mean function is NULL!\n");
+		SG_ERROR("Mean function is NULL!\n")
 
 
 	SGVector<float64_t> means = mean_function->get_mean_vector(features);
@@ -247,7 +247,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_covariance_vector()
 {
 
 	if (!m_data)
-		SG_ERROR("No testing features!\n");
+		SG_ERROR("No testing features!\n")
 
 	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();
 

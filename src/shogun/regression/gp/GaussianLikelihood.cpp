@@ -89,7 +89,7 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 		result = VectorXd::Zero(result.rows());
 
 	else
-		SG_ERROR("Invalid Index for Likelihood Derivative\n");
+		SG_ERROR("Invalid Index for Likelihood Derivative\n")
 
 	SGVector<float64_t> sgresult(result.rows());
 	

@@ -319,7 +319,7 @@ class CKernel : public CSGObject
 		{
 			T* result = NULL;
 
-			REQUIRE(has_features(), "no features assigned to kernel\n");
+			REQUIRE(has_features(), "no features assigned to kernel\n")
 
 			int32_t m=get_num_vec_lhs();
 			int32_t n=get_num_vec_rhs();
@@ -329,7 +329,7 @@ class CKernel : public CSGObject
 			// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
 			bool symmetric= (lhs && lhs==rhs && m==n);
 
-			SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n);
+			SG_DEBUG( "returning kernel matrix of size %dx%d\n", m, n)
 
 			result=SG_MALLOC(T, total_num);
 
@@ -398,14 +398,14 @@ class CKernel : public CSGObject
 				for (t=0; t<num_threads; t++)
 				{
 					if (pthread_join(threads[t], NULL) != 0)
-						SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads);
+						SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
 				}
 
 				SG_FREE(params);
 				SG_FREE(threads);
 			}
 
-			SG_DONE();
+			SG_DONE()
 
 			return SGMatrix<T>(result,m,n,true);
 		}
@@ -918,7 +918,7 @@ class CKernel : public CSGObject
 							total++;
 
 						if (total%100 == 0)
-							k->SG_PROGRESS(total, total_start, total_end);
+							SG_OBJ_PROGRESS(k, total, total_start, total_end)
 
 						if (CSignal::cancel_computations())
 							break;

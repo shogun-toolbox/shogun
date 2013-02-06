@@ -55,9 +55,9 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		{
 			if (scale<=0)
 			{
-				ASSERT(k);
+				ASSERT(k)
 				int32_t num=k->get_num_vec_lhs();
-				ASSERT(num>0);
+				ASSERT(num>0)
 
 				CFeatures* old_lhs=k->lhs;
 				CFeatures* old_rhs=k->rhs;

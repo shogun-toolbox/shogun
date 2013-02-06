@@ -65,10 +65,10 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 	CStringKernel<uint16_t>::init(p_l,p_r);
 	CStringFeatures<uint16_t>* l=(CStringFeatures<uint16_t>*) p_l;
 	CStringFeatures<uint16_t>* r=(CStringFeatures<uint16_t>*) p_r;
-	ASSERT(l);
-	ASSERT(r);
+	ASSERT(l)
+	ASSERT(r)
 
-	SG_DEBUG( "init: lhs: %ld   rhs: %ld\n", l, r) ;
+	SG_DEBUG( "init: lhs: %ld   rhs: %ld\n", l, r) 
 	int32_t i;
 	initialized=false;
 
@@ -128,12 +128,12 @@ bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 		if ((!estimate) || (!estimate->check_models()))
 		{
-			SG_ERROR( "no estimate available\n");
+			SG_ERROR( "no estimate available\n")
 			return false ;
 		} ;
 		if (num_params2!=estimate->get_num_params())
 		{
-			SG_ERROR( "number of parameters of estimate and feature representation do not match\n");
+			SG_ERROR( "number of parameters of estimate and feature representation do not match\n")
 			return false ;
 		} ;
 
@@ -361,7 +361,7 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t result = plo_lhs[idx_a]*plo_rhs[idx_b]/variance[0];
 	result+= sum_m2_s2 ; // does not contain 0-th element
@@ -385,7 +385,7 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 #ifdef DEBUG_HWSK_COMPUTATION
 	float64_t result2 = compute_slow(idx_a, idx_b) ;
 	if (fabs(result - result2)>1e-10)
-		SG_ERROR("new=%e  old = %e  diff = %e\n", result, result2, result - result2);
+		SG_ERROR("new=%e  old = %e  diff = %e\n", result, result2, result - result2)
 #endif
 	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
@@ -436,7 +436,7 @@ float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t result=(estimate->posterior_log_odds_obsolete(avec, alen)-mean[0])*
 		(estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);

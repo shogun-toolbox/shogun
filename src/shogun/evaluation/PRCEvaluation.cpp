@@ -21,10 +21,10 @@ CPRCEvaluation::~CPRCEvaluation()
 
 float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted && ground_truth);
-	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
-	ASSERT(predicted->get_label_type()==LT_BINARY);
-	ASSERT(ground_truth->get_label_type()==LT_BINARY);
+	ASSERT(predicted && ground_truth)
+	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())
+	ASSERT(predicted->get_label_type()==LT_BINARY)
+	ASSERT(ground_truth->get_label_type()==LT_BINARY)
 	ground_truth->ensure_valid();
 
 	// number of true positive examples
@@ -61,7 +61,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	}
 
 	// assure number of positive examples is >0
-	ASSERT(pos_count>0);
+	ASSERT(pos_count>0)
 
 	// create PRC curve
 	for (i=0; i<length; i++)
@@ -90,7 +90,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 SGMatrix<float64_t> CPRCEvaluation::get_PRC()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first");
+		SG_ERROR("Uninitialized, please call evaluate first")
 
 	return m_PRC_graph;
 }
@@ -98,7 +98,7 @@ SGMatrix<float64_t> CPRCEvaluation::get_PRC()
 SGVector<float64_t> CPRCEvaluation::get_thresholds()
 {
 	if (!m_computed)
-		SG_ERROR("Uninitialized, please call evaluate first");
+		SG_ERROR("Uninitialized, please call evaluate first")
 
 	return m_thresholds;
 }
@@ -106,7 +106,7 @@ SGVector<float64_t> CPRCEvaluation::get_thresholds()
 float64_t CPRCEvaluation::get_auPRC()
 {
 	if (!m_computed)
-			SG_ERROR("Uninitialized, please call evaluate first");
+			SG_ERROR("Uninitialized, please call evaluate first")
 
 	return m_auPRC;
 }

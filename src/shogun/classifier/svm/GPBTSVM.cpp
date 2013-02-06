@@ -36,13 +36,13 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	float64_t* solution;                     /* store the solution found       */
 	QPproblem prob;                          /* object containing the solvers  */
 
-	ASSERT(kernel);
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(kernel)
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		kernel->init(data, data);
 	}
 
@@ -50,7 +50,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	prob.KER=new sKernel(kernel, lab.vlen);
 	prob.y=lab.vector;
 	prob.ell=lab.vlen;
-	SG_INFO( "%d trainlabels\n", prob.ell);
+	SG_INFO( "%d trainlabels\n", prob.ell)
 
 	//  /*** set options defaults ***/
 	prob.delta = epsilon;
@@ -71,14 +71,14 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		prob.maxmw = 5;
 
 	/*** set the problem description for final report ***/
-	SG_INFO( "\nTRAINING PARAMETERS:\n");
-	SG_INFO( "\tNumber of training documents: %d\n", prob.ell);
-	SG_INFO( "\tq: %d\n", prob.chunk_size);
-	SG_INFO( "\tn: %d\n", prob.q);
-	SG_INFO( "\tC: %lf\n", prob.c_const);
-	SG_INFO( "\tkernel type: %d\n", prob.ker_type);
-	SG_INFO( "\tcache size: %dMb\n", prob.maxmw);
-	SG_INFO( "\tStopping tolerance: %lf\n", prob.delta);
+	SG_INFO( "\nTRAINING PARAMETERS:\n")
+	SG_INFO( "\tNumber of training documents: %d\n", prob.ell)
+	SG_INFO( "\tq: %d\n", prob.chunk_size)
+	SG_INFO( "\tn: %d\n", prob.q)
+	SG_INFO( "\tC: %lf\n", prob.c_const)
+	SG_INFO( "\tkernel type: %d\n", prob.ker_type)
+	SG_INFO( "\tcache size: %dMb\n", prob.maxmw)
+	SG_INFO( "\tStopping tolerance: %lf\n", prob.delta)
 
 	//  /*** compute the number of cache rows up to maxmw Mb. ***/
 	if (prob.preprocess_size == -1)
@@ -114,7 +114,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	create_new_model(num_sv);
 	set_bias(prob.bee);
 
-	SG_INFO("SV: %d BSV = %d\n", num_sv, bsv);
+	SG_INFO("SV: %d BSV = %d\n", num_sv, bsv)
 
 	for (i = 0; i < prob.ell; i++)
 	{

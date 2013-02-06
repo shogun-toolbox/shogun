@@ -63,7 +63,7 @@ CTOPFeatures::~CTOPFeatures()
 
 void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 {
-	ASSERT(p && n);
+	ASSERT(p && n)
 	SG_REF(p);
 	SG_REF(n);
 
@@ -80,7 +80,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	compute_relevant_indizes(n, &neg_relevant_indizes);
 	num_features=compute_num_features();
 
-	SG_DEBUG( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
+	SG_DEBUG( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) 
 }
 
 float64_t* CTOPFeatures::compute_feature_vector(
@@ -193,32 +193,32 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	int32_t len=0;
 
 	num_features=get_num_features();
-	ASSERT(num_features);
-	ASSERT(pos);
-	ASSERT(pos->get_observations());
+	ASSERT(num_features)
+	ASSERT(pos)
+	ASSERT(pos->get_observations())
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0);
+	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(float64_t)*num_features*num_vectors/1024.0/1024.0)
 	feature_matrix = SGMatrix<float64_t>(num_features,num_vectors);
 	if (!feature_matrix.matrix)
 	{
-      SG_ERROR( "allocation not successful!");
+      SG_ERROR( "allocation not successful!")
 		return NULL ;
 	} ;
 
-	SG_INFO( "calculating top feature matrix\n");
+	SG_INFO( "calculating top feature matrix\n")
 
 	for (int32_t x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
-			SG_DEBUG( "%02d%%.", (int) (100.0*x/num_vectors));
+			SG_DEBUG( "%02d%%.", (int) (100.0*x/num_vectors))
 		else if (!(x % (num_vectors/200+1)))
-			SG_DEBUG( ".");
+			SG_DEBUG( ".")
 
 		compute_feature_vector(&feature_matrix[x*num_features], x, len);
 	}
 
-	SG_DONE();
+	SG_DONE()
 
 	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;
@@ -260,29 +260,29 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 	if (hmm_idx->num_p > 0)
 	{
 		hmm_idx->idx_p=SG_MALLOC(int32_t, hmm_idx->num_p);
-		ASSERT(hmm_idx->idx_p);
+		ASSERT(hmm_idx->idx_p)
 	}
 
 	if (hmm_idx->num_q > 0)
 	{
 		hmm_idx->idx_q=SG_MALLOC(int32_t, hmm_idx->num_q);
-		ASSERT(hmm_idx->idx_q);
+		ASSERT(hmm_idx->idx_q)
 	}
 
 	if (hmm_idx->num_a > 0)
 	{
 		hmm_idx->idx_a_rows=SG_MALLOC(int32_t, hmm_idx->num_a);
 		hmm_idx->idx_a_cols=SG_MALLOC(int32_t, hmm_idx->num_a);
-		ASSERT(hmm_idx->idx_a_rows);
-		ASSERT(hmm_idx->idx_a_cols);
+		ASSERT(hmm_idx->idx_a_rows)
+		ASSERT(hmm_idx->idx_a_cols)
 	}
 
 	if (hmm_idx->num_b > 0)
 	{
 		hmm_idx->idx_b_rows=SG_MALLOC(int32_t, hmm_idx->num_b);
 		hmm_idx->idx_b_cols=SG_MALLOC(int32_t, hmm_idx->num_b);
-		ASSERT(hmm_idx->idx_b_rows);
-		ASSERT(hmm_idx->idx_b_cols);
+		ASSERT(hmm_idx->idx_b_rows)
+		ASSERT(hmm_idx->idx_b_cols)
 	}
 
 
@@ -295,13 +295,13 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 	{
 		if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
 		{
-			ASSERT(idx_p < hmm_idx->num_p);
+			ASSERT(idx_p < hmm_idx->num_p)
 			hmm_idx->idx_p[idx_p++]=i;
 		}
 
 		if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
 		{
-			ASSERT(idx_q < hmm_idx->num_q);
+			ASSERT(idx_q < hmm_idx->num_q)
 			hmm_idx->idx_q[idx_q++]=i;
 		}
 
@@ -309,7 +309,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 		{
 			if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 			{
-				ASSERT(idx_a < hmm_idx->num_a);
+				ASSERT(idx_a < hmm_idx->num_a)
 				hmm_idx->idx_a_rows[idx_a]=i;
 				hmm_idx->idx_a_cols[idx_a++]=j;
 			}
@@ -319,7 +319,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 		{
 			if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
 			{
-				ASSERT(idx_b < hmm_idx->num_b);
+				ASSERT(idx_b < hmm_idx->num_b)
 				hmm_idx->idx_b_rows[idx_b]=i;
 				hmm_idx->idx_b_cols[idx_b++]=j;
 			}

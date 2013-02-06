@@ -32,7 +32,7 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 	CKernel* kernel=mmd->get_kernel();
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
-	REQUIRE(kernel, "%s::%s(): No kernel set!\n", get_name(), get_name());
+	REQUIRE(kernel, "%s::%s(): No kernel set!\n", get_name(), get_name())
 	REQUIRE(kernel->get_kernel_type()==K_GAUSSIAN, "%s::%s(): Requires "
 			"CGaussianKernel as kernel", get_name(), get_name());
 
@@ -80,7 +80,7 @@ CMMDKernelSelectionMedian::~CMMDKernelSelectionMedian()
 
 void CMMDKernelSelectionMedian::init()
 {
-	SG_WARNING("register params!\n");
+	SG_WARNING("register params!\n")
 
 	/* this is a sensible value */
 	m_num_data_distance=1000;

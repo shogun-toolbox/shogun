@@ -103,8 +103,8 @@ class CDistance : public CSGObject
 			if (idx_a < 0 || idx_b <0)
 				return 0;
 
-			ASSERT(lhs);
-			ASSERT(rhs);
+			ASSERT(lhs)
+			ASSERT(rhs)
 
 			if (lhs==rhs)
 			{
@@ -117,8 +117,8 @@ class CDistance : public CSGObject
 					idx_b=2*num_vectors-1-idx_b;
 			}
 
-			ASSERT(idx_a<lhs->get_num_vectors());
-			ASSERT(idx_b<rhs->get_num_vectors());
+			ASSERT(idx_a<lhs->get_num_vectors())
+			ASSERT(idx_b<rhs->get_num_vectors())
 
 			if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
 				do_precompute_matrix() ;

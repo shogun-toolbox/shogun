@@ -47,9 +47,9 @@ CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 	init();
 
 	if (append_subkernel_weights)
-		SG_INFO( "(subkernel weights are appended)\n") ;
+		SG_INFO( "(subkernel weights are appended)\n") 
 
-	SG_INFO("Combined kernel created (%p)\n", this) ;
+	SG_INFO("Combined kernel created (%p)\n", this) 
 }
 
 CCombinedKernel::~CCombinedKernel()
@@ -60,16 +60,16 @@ CCombinedKernel::~CCombinedKernel()
 	cleanup();
 	SG_UNREF(kernel_list);
 
-	SG_INFO("Combined kernel deleted (%p).\n", this);
+	SG_INFO("Combined kernel deleted (%p).\n", this)
 }
 
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 {
 	CKernel::init(l,r);
-	ASSERT(l->get_feature_class()==C_COMBINED);
-	ASSERT(r->get_feature_class()==C_COMBINED);
-	ASSERT(l->get_feature_type()==F_UNKNOWN);
-	ASSERT(r->get_feature_type()==F_UNKNOWN);
+	ASSERT(l->get_feature_class()==C_COMBINED)
+	ASSERT(r->get_feature_class()==C_COMBINED)
+	ASSERT(l->get_feature_type()==F_UNKNOWN)
+	ASSERT(r->get_feature_type()==F_UNKNOWN)
 
 	CFeatures* lf=NULL;
 	CFeatures* rf=NULL;
@@ -94,10 +94,10 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 				SG_UNREF(lf);
 				SG_UNREF(rf);
 				SG_UNREF(k);
-				SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
+				SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n")
 			}
 
-			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name());
+			SG_DEBUG( "Initializing 0x%p - \"%s\"\n", this, k->get_name())
 			result=k->init(lf,rf);
 			SG_UNREF(lf);
 			SG_UNREF(rf);
@@ -107,13 +107,13 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		}
 		else
 		{
-			SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name());
+			SG_DEBUG( "Initializing 0x%p - \"%s\" (skipping init, this is a CUSTOM kernel)\n", this, k->get_name())
 			if (!k->has_features())
-				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n");
+				SG_ERROR("No kernel matrix was assigned to this Custom kernel\n")
 			if (k->get_num_vec_lhs() != num_lhs)
-				SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs());
+				SG_ERROR("Number of lhs-feature vectors (%d) not match with number of rows (%d) of custom kernel\n", num_lhs, k->get_num_vec_lhs())
 			if (k->get_num_vec_rhs() != num_rhs)
-				SG_ERROR("Number of rhs-feature vectors (%d) not match with number of cols (%d) of custom kernel\n", num_rhs, k->get_num_vec_rhs());
+				SG_ERROR("Number of rhs-feature vectors (%d) not match with number of cols (%d) of custom kernel\n", num_rhs, k->get_num_vec_rhs())
 		}
 
 		SG_UNREF(k);
@@ -122,11 +122,11 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 
 	if (!result)
 	{
-		SG_INFO( "CombinedKernel: Initialising the following kernel failed\n");
+		SG_INFO( "CombinedKernel: Initialising the following kernel failed\n")
 		if (k)
 			k->list_kernel();
 		else
-			SG_INFO( "<NULL>\n");
+			SG_INFO( "<NULL>\n")
 		return false;
 	}
 
@@ -135,7 +135,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		SG_UNREF(lf);
 		SG_UNREF(rf);
 		SG_UNREF(k);
-		SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
+		SG_ERROR( "CombinedKernel: Number of features/kernels does not match - bailing out\n")
 	}
 
 	init_normalizer();
@@ -225,7 +225,7 @@ void CCombinedKernel::list_kernels()
 {
 	CKernel* k;
 
-	SG_INFO( "BEGIN COMBINED KERNEL LIST - ");
+	SG_INFO( "BEGIN COMBINED KERNEL LIST - ")
 	this->list_kernel();
 
 	CListElement* current = NULL ;
@@ -236,7 +236,7 @@ void CCombinedKernel::list_kernels()
 		SG_UNREF(k);
 		k=get_next_kernel(current);
 	}
-	SG_INFO( "END COMBINED KERNEL LIST - ");
+	SG_INFO( "END COMBINED KERNEL LIST - ")
 }
 
 float64_t CCombinedKernel::compute(int32_t x, int32_t y)
@@ -258,7 +258,7 @@ float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 bool CCombinedKernel::init_optimization(
 	int32_t count, int32_t *IDX, float64_t *weights)
 {
-	SG_DEBUG( "initializing CCombinedKernel optimization\n");
+	SG_DEBUG( "initializing CCombinedKernel optimization\n")
 
 	delete_optimization();
 
@@ -274,14 +274,14 @@ bool CCombinedKernel::init_optimization(
 			ret=k->init_optimization(count, IDX, weights);
 		else
 		{
-			SG_WARNING("non-optimizable kernel 0x%X in kernel-list\n", k);
+			SG_WARNING("non-optimizable kernel 0x%X in kernel-list\n", k)
 			have_non_optimizable=true;
 		}
 
 		if (!ret)
 		{
 			have_non_optimizable=true;
-			SG_WARNING("init_optimization of kernel 0x%X failed\n", k);
+			SG_WARNING("init_optimization of kernel 0x%X failed\n", k)
 		}
 
 		SG_UNREF(k);
@@ -290,7 +290,7 @@ bool CCombinedKernel::init_optimization(
 
 	if (have_non_optimizable)
 	{
-		SG_WARNING( "some kernels in the kernel-list are not optimized\n");
+		SG_WARNING( "some kernels in the kernel-list are not optimized\n")
 
 		sv_idx=SG_MALLOC(int32_t, count);
 		sv_weight=SG_MALLOC(float64_t, count);
@@ -337,9 +337,9 @@ void CCombinedKernel::compute_batch(
 	int32_t* IDX, float64_t* weights, float64_t factor)
 {
 	ASSERT(num_vec<=get_num_vec_rhs())
-	ASSERT(num_vec>0);
-	ASSERT(vec_idx);
-	ASSERT(result);
+	ASSERT(num_vec>0)
+	ASSERT(vec_idx)
+	ASSERT(result)
 
 	//we have to do the optimization business ourselves but lets
 	//make sure we start cleanly
@@ -405,8 +405,8 @@ void CCombinedKernel::emulate_compute_batch(
 	CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* result,
 	int32_t num_suppvec, int32_t* IDX, float64_t* weights)
 {
-	ASSERT(k);
-	ASSERT(result);
+	ASSERT(k)
+	ASSERT(result)
 
 	if (k->has_property(KP_LINADD))
 	{
@@ -415,7 +415,7 @@ void CCombinedKernel::emulate_compute_batch(
 			k->init_optimization(num_suppvec, IDX, weights);
 
 			int32_t num_threads=parallel->get_num_threads();
-			ASSERT(num_threads>0);
+			ASSERT(num_threads>0)
 
 			if (num_threads < 2)
 			{
@@ -466,13 +466,13 @@ void CCombinedKernel::emulate_compute_batch(
 	}
 	else
 	{
-		ASSERT(IDX!=NULL || num_suppvec==0);
-		ASSERT(weights!=NULL || num_suppvec==0);
+		ASSERT(IDX!=NULL || num_suppvec==0)
+		ASSERT(weights!=NULL || num_suppvec==0)
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
 			int32_t num_threads=parallel->get_num_threads();
-			ASSERT(num_threads>0);
+			ASSERT(num_threads>0)
 
 			if (num_threads < 2)
 			{
@@ -534,7 +534,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 {
 	if (!get_is_initialized())
 	{
-		SG_ERROR("CCombinedKernel optimization not initialized\n");
+		SG_ERROR("CCombinedKernel optimization not initialized\n")
 		return 0;
 	}
 
@@ -555,8 +555,8 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 		}
 		else
 		{
-			ASSERT(sv_idx!=NULL || sv_count==0);
-			ASSERT(sv_weight!=NULL || sv_count==0);
+			ASSERT(sv_idx!=NULL || sv_count==0)
+			ASSERT(sv_weight!=NULL || sv_count==0)
 
 			if (k->get_combined_kernel_weight()!=0)
 			{ // compute the usual way for any non-optimized kernel
@@ -644,7 +644,7 @@ void CCombinedKernel::compute_by_subkernel(
 
 const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 {
-	SG_DEBUG("entering CCombinedKernel::get_subkernel_weights()\n");
+	SG_DEBUG("entering CCombinedKernel::get_subkernel_weights()\n")
 
 	num_weights = get_num_subkernels() ;
 	SG_FREE(subkernel_weights_buffer);
@@ -652,7 +652,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 
 	if (append_subkernel_weights)
 	{
-		SG_DEBUG("appending kernel weights\n");
+		SG_DEBUG("appending kernel weights\n")
 
 		int32_t i=0 ;
 		CListElement* current = NULL ;
@@ -661,7 +661,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		{
 			int32_t num = -1 ;
 			const float64_t *w = k->get_subkernel_weights(num);
-			ASSERT(num==k->get_num_subkernels());
+			ASSERT(num==k->get_num_subkernels())
 			for (int32_t j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
 
@@ -672,7 +672,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 	}
 	else
 	{
-		SG_DEBUG("not appending kernel weights\n");
+		SG_DEBUG("not appending kernel weights\n")
 		int32_t i=0 ;
 		CListElement* current = NULL ;
 		CKernel* k = get_first_kernel(current);
@@ -686,7 +686,7 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		}
 	}
 
-	SG_DEBUG("leaving CCombinedKernel::get_subkernel_weights()\n");
+	SG_DEBUG("leaving CCombinedKernel::get_subkernel_weights()\n")
 	return subkernel_weights_buffer ;
 }
 
@@ -712,7 +712,7 @@ void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 		while(k)
 		{
 			int32_t num = k->get_num_subkernels() ;
-			ASSERT(i<weights.vlen);
+			ASSERT(i<weights.vlen)
 			k->set_subkernel_weights(SGVector<float64_t>(&weights.vector[i],num, false));
 
 			SG_UNREF(k);
@@ -727,7 +727,7 @@ void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
-			ASSERT(i<weights.vlen);
+			ASSERT(i<weights.vlen)
 			k->set_combined_kernel_weight(weights.vector[i]);
 
 			SG_UNREF(k);

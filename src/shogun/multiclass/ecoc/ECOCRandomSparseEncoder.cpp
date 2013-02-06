@@ -22,7 +22,7 @@ CECOCRandomSparseEncoder::CECOCRandomSparseEncoder(int32_t maxiter, int32_t code
     :m_maxiter(maxiter), m_codelen(codelen), m_pzero(pzero), m_pposone(pposone), m_pnegone(pnegone)
 {
     if (!check_probability(pzero, pposone, pnegone))
-        SG_ERROR("probability of 0, +1 and -1 must sum to one");
+        SG_ERROR("probability of 0, +1 and -1 must sum to one")
 
     init();
 }
@@ -39,7 +39,7 @@ void CECOCRandomSparseEncoder::init()
 void CECOCRandomSparseEncoder::set_probability(float64_t pzero, float64_t pposone, float64_t pnegone)
 {
     if (!check_probability(pzero, pposone, pnegone))
-        SG_ERROR("probability of 0, +1 and -1 must sum to one");
+        SG_ERROR("probability of 0, +1 and -1 must sum to one")
 
     m_pzero   = pzero;
     m_pposone = pposone;

@@ -61,7 +61,7 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual void get_w(float32_t*& dst_w, int32_t& dst_dims)
 		{
-			ASSERT(w && w_dim>0);
+			ASSERT(w && w_dim>0)
 			dst_w=w;
 			dst_dims=w_dim;
 		}
@@ -74,7 +74,7 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual void get_w(float64_t*& dst_w, int32_t& dst_dims)
 		{
-			ASSERT(w && w_dim>0);
+			ASSERT(w && w_dim>0)
 			dst_w=SG_MALLOC(float64_t, w_dim);
 			for (int32_t i=0; i<w_dim; i++)
 				dst_w[i]=w[i];
@@ -167,7 +167,7 @@ class COnlineLinearMachine : public CMachine
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return CMath::INFTY;
 		}
 
@@ -220,7 +220,7 @@ class COnlineLinearMachine : public CMachine
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example
 		 */
-		virtual void train_example(CStreamingDotFeatures *feature, float64_t label) { SG_NOTIMPLEMENTED; }
+		virtual void train_example(CStreamingDotFeatures *feature, float64_t label) { SG_NOTIMPLEMENTED }
 
 	protected:
 		/**

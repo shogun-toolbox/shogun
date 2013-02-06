@@ -40,20 +40,20 @@ CLDA::~CLDA()
 
 bool CLDA::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
+	ASSERT(m_labels)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
-	ASSERT(features);
+	ASSERT(features)
 	SGVector<int32_t> train_labels=((CBinaryLabels*) m_labels)->get_int_labels();
-	ASSERT(train_labels.vector);
+	ASSERT(train_labels.vector)
 
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
-	ASSERT(num_vec==train_labels.vlen);
+	ASSERT(num_vec==train_labels.vlen)
 
 	int32_t* classidx_neg=SG_MALLOC(int32_t, num_vec);
 	int32_t* classidx_pos=SG_MALLOC(int32_t, num_vec);
@@ -70,14 +70,14 @@ bool CLDA::train_machine(CFeatures* data)
 			classidx_pos[num_pos++]=i;
 		else
 		{
-			SG_ERROR( "found label != +/- 1 bailing...");
+			SG_ERROR( "found label != +/- 1 bailing...")
 			return false;
 		}
 	}
 
 	if (num_neg<=0 || num_pos<=0)
 	{
-		SG_ERROR( "whooooo ? only a single class found\n");
+		SG_ERROR( "whooooo ? only a single class found\n")
 		return false;
 	}
 
@@ -102,7 +102,7 @@ bool CLDA::train_machine(CFeatures* data)
 		bool vfree;
 		float64_t* vec=
 			rf->get_feature_vector(classidx_neg[i], vlen, vfree);
-		ASSERT(vec);
+		ASSERT(vec)
 
 		for (j=0; j<vlen; j++)
 		{
@@ -131,7 +131,7 @@ bool CLDA::train_machine(CFeatures* data)
 		bool vfree;
 		float64_t* vec=
 			rf->get_feature_vector(classidx_pos[i], vlen, vfree);
-		ASSERT(vec);
+		ASSERT(vec)
 
 		for (j=0; j<vlen; j++)
 		{
@@ -179,7 +179,7 @@ bool CLDA::train_machine(CFeatures* data)
 		w.vector[i]=w_pos[i]-w_neg[i];
 
 #ifdef DEBUG_LDA
-	SG_PRINT("bias: %f\n", bias);
+	SG_PRINT("bias: %f\n", bias)
 	SGVector<float64_t>::display_vector(w.vector, num_feat, "w");
 	SGVector<float64_t>::display_vector(w_pos, num_feat, "w_pos");
 	SGVector<float64_t>::display_vector(w_neg, num_feat, "w_neg");

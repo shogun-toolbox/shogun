@@ -24,8 +24,8 @@ namespace shogun{
 	CNearestCentroid::CNearestCentroid(CDistance* d, CLabels* trainlab) : CDistanceMachine()
 	{
 		init();
-		ASSERT(d);
-		ASSERT(trainlab);
+		ASSERT(d)
+		ASSERT(trainlab)
 		set_distance(d);
 		set_labels(trainlab);
 	}
@@ -48,14 +48,14 @@ namespace shogun{
 
 	bool CNearestCentroid::train_machine(CFeatures* data)
 	{
-		ASSERT(m_labels);
-		ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
-		ASSERT(distance);
+		ASSERT(m_labels)
+		ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
+		ASSERT(distance)
 		ASSERT( data->get_feature_class() == C_DENSE)
 		if (data)
 		{
 			if (m_labels->get_num_labels() != data->get_num_vectors())
-				SG_ERROR("Number of training vectors does not match number of labels\n");
+				SG_ERROR("Number of training vectors does not match number of labels\n")
 			distance->init(data, data);
 		}
 		else

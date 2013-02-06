@@ -45,14 +45,14 @@ CAUCKernel::~CAUCKernel()
 
 CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 {
-	SG_INFO( "setting up AUC maximization\n") ;
-	ASSERT(labels);
-	ASSERT(labels->get_label_type() == LT_BINARY);
+	SG_INFO( "setting up AUC maximization\n") 
+	ASSERT(labels)
+	ASSERT(labels->get_label_type() == LT_BINARY)
 	labels->ensure_valid();
 
 	// get the original labels
 	SGVector<int32_t> int_labels=((CBinaryLabels*) labels)->get_int_labels();
-	ASSERT(subkernel->get_num_vec_rhs()==int_labels.vlen);
+	ASSERT(subkernel->get_num_vec_rhs()==int_labels.vlen)
 
 	// count positive and negative
 	int32_t num_pos=0;
@@ -68,7 +68,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 
 	// create AUC features and labels (alternate labels)
 	int32_t num_auc = num_pos*num_neg;
-	SG_INFO("num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc);
+	SG_INFO("num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc)
 
 	SGMatrix<uint16_t> features_auc(2,num_auc);
 	int32_t* labels_auc = SG_MALLOC(int32_t, num_auc);
@@ -99,7 +99,7 @@ CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 			}
 
 			n++;
-			ASSERT(n<=num_auc);
+			ASSERT(n<=num_auc)
 		}
 	}
 
@@ -136,10 +136,10 @@ float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
   uint16_t* avec=((CDenseFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
   uint16_t* bvec=((CDenseFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  ASSERT(alen==2);
-  ASSERT(blen==2);
+  ASSERT(alen==2)
+  ASSERT(blen==2)
 
-  ASSERT(subkernel && subkernel->has_features());
+  ASSERT(subkernel && subkernel->has_features())
 
   float64_t k11,k12,k21,k22;
   int32_t idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1];

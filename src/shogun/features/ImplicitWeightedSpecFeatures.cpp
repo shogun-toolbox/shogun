@@ -31,7 +31,7 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures()
 
 CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
 {
-	ASSERT(str);
+	ASSERT(str)
 	strings=str;
 	SG_REF(strings)
 	normalization_factors=NULL;
@@ -82,7 +82,7 @@ bool CImplicitWeightedSpecFeatures::set_wd_weights()
 
 bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 {
-	ASSERT(d==degree);
+	ASSERT(d==degree)
 
 	SG_FREE(spec_weights);
 	spec_weights=SG_MALLOC(float64_t, degree);
@@ -95,7 +95,7 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeig
 	num_strings(orig.num_strings),
 	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	SG_REF(strings);
 }
 
@@ -108,13 +108,13 @@ CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 
 float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CImplicitWeightedSpecFeatures* sf = (CImplicitWeightedSpecFeatures*) df;
 
-	ASSERT(vec_idx1 < num_strings);
-	ASSERT(vec_idx2 < sf->get_num_vectors());
+	ASSERT(vec_idx1 < num_strings)
+	ASSERT(vec_idx2 < sf->get_num_vectors())
 
 	int32_t len1=-1;
 	int32_t len2=-1;
@@ -171,8 +171,8 @@ float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df,
 
 float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2_len == spec_size);
-	ASSERT(vec_idx1 < num_strings);
+	ASSERT(vec2_len == spec_size)
+	ASSERT(vec_idx1 < num_strings)
 
 	float64_t result=0;
 	int32_t len1=-1;
@@ -203,7 +203,7 @@ float64_t CImplicitWeightedSpecFeatures::dense_dot(int32_t vec_idx1, const float
 			result*=normalization_factors[vec_idx1];
 	}
 	else
-		SG_ERROR("huh?\n");
+		SG_ERROR("huh?\n")
 
 	return result;
 }
@@ -303,7 +303,7 @@ bool CImplicitWeightedSpecFeatures::get_next_feature(int32_t& index, float64_t& 
 
 void CImplicitWeightedSpecFeatures::free_feature_iterator(void* iterator)
 {
-	ASSERT(iterator);
+	ASSERT(iterator)
 	wspec_feature_iterator* it=(wspec_feature_iterator*) iterator;
 	strings->free_feature_vector(it->vec, it->vidx, it->vfree);
 	SG_FREE(it);

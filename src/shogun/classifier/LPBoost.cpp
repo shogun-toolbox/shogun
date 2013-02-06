@@ -103,24 +103,24 @@ float64_t CLPBoost::find_max_violator(int32_t& max_dim)
 
 bool CLPBoost::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
-	ASSERT(features);
+	ASSERT(m_labels)
+	ASSERT(features)
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
-	ASSERT(num_vec==num_train_labels);
+	ASSERT(num_vec==num_train_labels)
 	w = SGVector<float64_t>(num_feat);
 	memset(w.vector,0,sizeof(float64_t)*num_feat);
 
 	CCplex solver;
 	solver.init(E_LINEAR);
-	SG_PRINT("setting up lpboost\n");
+	SG_PRINT("setting up lpboost\n")
 	solver.setup_lpboost(C1, num_vec);
-	SG_PRINT("finished setting up lpboost\n");
+	SG_PRINT("finished setting up lpboost\n")
 
 	float64_t result=init(num_vec);
-	ASSERT(result);
+	ASSERT(result)
 
 	int32_t num_hypothesis=0;
 	CTime time;
@@ -130,10 +130,10 @@ bool CLPBoost::train_machine(CFeatures* data)
 	{
 		int32_t max_dim=0;
 		float64_t violator=find_max_violator(max_dim);
-		SG_PRINT("iteration:%06d violator: %10.17f (>1.0) chosen: %d\n", num_hypothesis, violator, max_dim);
+		SG_PRINT("iteration:%06d violator: %10.17f (>1.0) chosen: %d\n", num_hypothesis, violator, max_dim)
 		if (violator <= 1.0+epsilon && num_hypothesis>1) //no constraint violated
 		{
-			SG_PRINT("converged after %d iterations!\n", num_hypothesis);
+			SG_PRINT("converged after %d iterations!\n", num_hypothesis)
 			break;
 		}
 

@@ -123,7 +123,7 @@ public:
 	 */
 	virtual CSGObject *shallow_copy() const
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return NULL;
 	}
 
@@ -132,7 +132,7 @@ public:
 	 */
 	virtual CSGObject *deep_copy() const
 	{
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return NULL;
 	}
 

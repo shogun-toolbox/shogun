@@ -43,7 +43,7 @@ CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
     init();
 
     int32_t num_sv=svs.vlen;
-    ASSERT(num_sv == alphas.vlen);
+    ASSERT(num_sv == alphas.vlen)
     create_new_model(num_sv);
     set_alphas(alphas);
     set_support_vectors(svs);
@@ -130,16 +130,16 @@ void CKernelMachine::set_bias(float64_t bias)
 
 int32_t CKernelMachine::get_support_vector(int32_t idx)
 {
-    ASSERT(m_svs.vector && idx<m_svs.vlen);
+    ASSERT(m_svs.vector && idx<m_svs.vlen)
     return m_svs.vector[idx];
 }
 
 float64_t CKernelMachine::get_alpha(int32_t idx)
 {
     if (!m_alpha.vector)
-        SG_ERROR("No alphas set\n");
+        SG_ERROR("No alphas set\n")
     if (idx>=m_alpha.vlen)
-        SG_ERROR("Alphas index (%d) out of range (%d)\n", idx, m_svs.vlen);
+        SG_ERROR("Alphas index (%d) out of range (%d)\n", idx, m_svs.vlen)
     return m_alpha.vector[idx];
 }
 
@@ -226,12 +226,12 @@ bool CKernelMachine::init_kernel_optimization()
 		SG_FREE(sv_weight);
 
 		if (!ret)
-			SG_ERROR( "initialization of kernel optimization failed\n");
+			SG_ERROR( "initialization of kernel optimization failed\n")
 
 		return ret;
 	}
 	else
-		SG_ERROR( "initialization of kernel optimization failed\n");
+		SG_ERROR( "initialization of kernel optimization failed\n")
 
 	return false;
 }
@@ -253,7 +253,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	SG_DEBUG("entering %s::apply_get_outputs(%s at %p)\n",
 			get_name(), data ? data->get_name() : "NULL", data);
 
-	REQUIRE(kernel, "%s::apply_get_outputs(): No kernel assigned!\n");
+	REQUIRE(kernel, "%s::apply_get_outputs(): No kernel assigned!\n")
 
 	if (!kernel->get_num_vec_lhs())
 	{
@@ -287,7 +287,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 	if (kernel->get_num_vec_rhs()>0)
 	{
-		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
+		SG_DEBUG( "computing output on %d test examples\n", num_vectors)
 
 		CSignal::clear_cancel();
 
@@ -300,7 +300,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 				get_batch_computation_enabled())
 		{
 			output.zero();
-			SG_DEBUG("Batch evaluation enabled\n");
+			SG_DEBUG("Batch evaluation enabled\n")
 			if (get_num_support_vectors()>0)
 			{
 				int32_t* sv_idx=SG_MALLOC(int32_t, get_num_support_vectors());
@@ -331,7 +331,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 		else
 		{
 			int32_t num_threads=parallel->get_num_threads();
-			ASSERT(num_threads>0);
+			ASSERT(num_threads>0)
 
 			if (num_threads < 2)
 			{
@@ -387,10 +387,10 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n");
+			SG_INFO("prematurely stopped.           \n")
 		else
 #endif
-			SG_DONE();
+			SG_DONE()
 	}
 
 	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
@@ -401,7 +401,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 float64_t CKernelMachine::apply_one(int32_t num)
 {
-	ASSERT(kernel);
+	ASSERT(kernel)
 
 	if (kernel->has_property(KP_LINADD) && (kernel->get_is_initialized()))
 	{
@@ -436,7 +436,7 @@ void* CKernelMachine::apply_helper(void* p)
 			int32_t num_vectors=params->end - params->start;
 			int32_t v=vec-params->start;
 			if ( (v% (num_vectors/100+1))== 0)
-				SG_SPROGRESS(v, 0.0, num_vectors-1);
+				SG_SPROGRESS(v, 0.0, num_vectors-1)
 		}
 
 		/* eventually use index mapping if exists */
@@ -450,13 +450,13 @@ void* CKernelMachine::apply_helper(void* p)
 void CKernelMachine::store_model_features()
 {
 	if (!kernel)
-		SG_ERROR("kernel is needed to store SV features.\n");
+		SG_ERROR("kernel is needed to store SV features.\n")
 
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
 
 	if (!lhs)
-		SG_ERROR("kernel lhs is needed to store SV features.\n");
+		SG_ERROR("kernel lhs is needed to store SV features.\n")
 
 	/* copy sv feature data */
 	CFeatures* sv_features=lhs->copy_subset(m_svs);
@@ -478,12 +478,12 @@ void CKernelMachine::store_model_features()
 
 bool CKernelMachine::train_locked(SGVector<index_t> indices)
 {
-	SG_DEBUG("entering %s::train_locked()\n", get_name());
+	SG_DEBUG("entering %s::train_locked()\n", get_name())
 	if (!is_data_locked())
-		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n");
+		SG_ERROR("CKernelMachine::train_locked() call data_lock() before!\n")
 
 	/* this is asusmed here */
-	ASSERT(m_custom_kernel==kernel);
+	ASSERT(m_custom_kernel==kernel)
 
 	/* since its not easily possible to controll the row subsets of the custom
 	 * kernel from outside, we enforce that there is only one row subset by
@@ -508,7 +508,7 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	/* remove label subset after training */
 	m_labels->remove_subset();
 
-	SG_DEBUG("leaving %s::train_locked()\n", get_name());
+	SG_DEBUG("leaving %s::train_locked()\n", get_name())
 	return result;
 }
 
@@ -529,10 +529,10 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 		SGVector<index_t> indices)
 {
 	if (!is_data_locked())
-		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n");
+		SG_ERROR("CKernelMachine::apply_locked() call data_lock() before!\n")
 
 	/* we are working on a custom kernel here */
-	ASSERT(m_custom_kernel==kernel);
+	ASSERT(m_custom_kernel==kernel)
 
 	int32_t num_inds=indices.vlen;
 	SGVector<float64_t> output(num_inds);
@@ -546,7 +546,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 
 	/* custom kernel never has batch evaluation property so dont do this here */
 	int32_t num_threads=parallel->get_num_threads();
-	ASSERT(num_threads>0);
+	ASSERT(num_threads>0)
 
 	if (num_threads<2)
 	{
@@ -609,10 +609,10 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 
 #ifndef WIN32
 	if ( CSignal::cancel_computations() )
-		SG_INFO("prematurely stopped.\n");
+		SG_INFO("prematurely stopped.\n")
 	else
 #endif
-		SG_DONE();
+		SG_DONE()
 
 	return output;
 }
@@ -620,7 +620,7 @@ SGVector<float64_t> CKernelMachine::apply_locked_get_output(
 void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
 {
 	if ( !kernel )
-		SG_ERROR("The kernel is not initialized\n");
+		SG_ERROR("The kernel is not initialized\n")
 
 	/* init kernel with data */
 	kernel->init(features, features);

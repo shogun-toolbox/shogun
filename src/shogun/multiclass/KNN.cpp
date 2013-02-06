@@ -38,8 +38,8 @@ CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
 
 	m_k=k;
 
-	ASSERT(d);
-	ASSERT(trainlab);
+	ASSERT(d)
+	ASSERT(trainlab)
 
 	set_distance(d);
 	set_labels(trainlab);
@@ -71,20 +71,20 @@ CKNN::~CKNN()
 
 bool CKNN::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
-	ASSERT(distance);
+	ASSERT(m_labels)
+	ASSERT(distance)
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		distance->init(data, data);
 	}
 
 	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	m_train_labels.vlen=lab.vlen;
 	m_train_labels.vector=SGVector<int32_t>::clone_vector(lab.vector, lab.vlen);
-	ASSERT(m_train_labels.vlen>0);
+	ASSERT(m_train_labels.vlen>0)
 
 	int32_t max_class=m_train_labels.vector[0];
 	int32_t min_class=m_train_labels.vector[0];
@@ -116,12 +116,12 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	if (m_k == 1)
 		return classify_NN();
 
-	ASSERT(m_num_classes>0);
-	ASSERT(distance);
-	ASSERT(distance->get_num_vec_rhs());
+	ASSERT(m_num_classes>0)
+	ASSERT(distance)
+	ASSERT(distance->get_num_vec_rhs())
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(m_k<=distance->get_num_vec_lhs());
+	ASSERT(m_k<=distance->get_num_vec_lhs())
 
 	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
 
@@ -139,7 +139,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		train_lab=SG_MALLOC(int32_t, m_k);
 	}
 
-	SG_INFO( "%d test examples\n", num_lab);
+	SG_INFO( "%d test examples\n", num_lab)
 	CSignal::clear_cancel();
 
 	///histogram of classes and returned output
@@ -154,7 +154,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	{
 		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 		{
-			SG_PROGRESS(i, 0, num_lab);
+			SG_PROGRESS(i, 0, num_lab)
 
 #ifdef DEBUG_KNN
 			distances_lhs(dists,0,m_train_labels.vlen-1,i);
@@ -164,10 +164,10 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 
 			CMath::qsort_index(dists, train_lab, m_train_labels.vlen);
 
-			SG_PRINT("\nQuick sort query %d\n", i);
+			SG_PRINT("\nQuick sort query %d\n", i)
 			for (int32_t j=0; j<m_k; j++)
-				SG_PRINT("%d ", train_lab[j]);
-			SG_PRINT("\n");
+				SG_PRINT("%d ", train_lab[j])
+			SG_PRINT("\n")
 #endif
 
 			//lhs idx 1..n and rhs idx i
@@ -196,7 +196,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		// are not retrieved in increasing order of distance to the query
 		float64_t old_q = m_q;
 		if ( old_q != 1.0 )
-			SG_INFO("q != 1.0 not supported with cover tree, using q = 1\n");
+			SG_INFO("q != 1.0 not supported with cover tree, using q = 1\n")
 
 		// From the sets of features (lhs and rhs) stored in distance,
 		// build arrays of cover tree points
@@ -233,7 +233,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 #endif
 
 #ifdef DEBUG_KNN
-		SG_PRINT("\nJL Results:\n");
+		SG_PRINT("\nJL Results:\n")
 		for ( int32_t i = 0 ; i < res.index ; ++i )
 		{
 			for ( int32_t j = 0 ; j < res[i].index ; ++j )
@@ -242,7 +242,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 			}
 			printf("\n");
 		}
-		SG_PRINT("\n");
+		SG_PRINT("\n")
 #endif
 
 		for ( int32_t i = 0 ; i < res.index ; ++i )
@@ -260,7 +260,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		m_q = old_q;
 
 #ifdef BENCHMARK_KNN
-		SG_PRINT(">>>> JL applied in %9.4f\n", tstart.cur_time_diff(false));
+		SG_PRINT(">>>> JL applied in %9.4f\n", tstart.cur_time_diff(false))
 #endif
 	}
 
@@ -274,22 +274,22 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 
 CMulticlassLabels* CKNN::classify_NN()
 {
-	ASSERT(distance);
-	ASSERT(m_num_classes>0);
+	ASSERT(distance)
+	ASSERT(m_num_classes>0)
 
 	int32_t num_lab = distance->get_num_vec_rhs();
-	ASSERT(num_lab);
+	ASSERT(num_lab)
 
 	CMulticlassLabels* output = new CMulticlassLabels(num_lab);
 	float64_t* distances = SG_MALLOC(float64_t, m_train_labels.vlen);
 
-	SG_INFO("%d test examples\n", num_lab);
+	SG_INFO("%d test examples\n", num_lab)
 	CSignal::clear_cancel();
 
 	// for each test example
 	for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 	{
-		SG_PROGRESS(i,0,num_lab);
+		SG_PROGRESS(i,0,num_lab)
 
 		// get distances from i-th test example to 0..num_m_train_labels-1 train examples
 		distances_lhs(distances,0,m_train_labels.vlen-1,i);
@@ -319,12 +319,12 @@ CMulticlassLabels* CKNN::classify_NN()
 
 SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 {
-	ASSERT(m_num_classes>0);
-	ASSERT(distance);
-	ASSERT(distance->get_num_vec_rhs());
+	ASSERT(m_num_classes>0)
+	ASSERT(distance)
+	ASSERT(distance->get_num_vec_rhs())
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(m_k<=num_lab);
+	ASSERT(m_k<=num_lab)
 
 	int32_t* output=SG_MALLOC(int32_t, m_k*num_lab);
 
@@ -345,14 +345,14 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	///histogram of classes and returned output
 	int32_t* classes=SG_MALLOC(int32_t, m_num_classes);
 	
-	SG_INFO( "%d test examples\n", num_lab);
+	SG_INFO( "%d test examples\n", num_lab)
 	CSignal::clear_cancel();
 
 	if ( ! m_use_covertree )
 	{
 		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 		{
-			SG_PROGRESS(i, 0, num_lab);
+			SG_PROGRESS(i, 0, num_lab)
 
 			// lhs idx 1..n and rhs idx i
 			distances_lhs(dists,0,m_train_labels.vlen-1,i);
@@ -464,12 +464,12 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 void CKNN::init_distance(CFeatures* data)
 {
 	if (!distance)
-		SG_ERROR("No distance assigned!\n");
+		SG_ERROR("No distance assigned!\n")
 	CFeatures* lhs=distance->get_lhs();
 	if (!lhs || !lhs->get_num_vectors())
 	{
 		SG_UNREF(lhs);
-		SG_ERROR("No vectors on left hand side\n");
+		SG_ERROR("No vectors on left hand side\n")
 	}
 	distance->init(lhs, data);
 	SG_UNREF(lhs);

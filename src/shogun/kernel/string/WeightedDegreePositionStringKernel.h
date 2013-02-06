@@ -152,9 +152,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 	 	*/
 		virtual float64_t compute_optimized(int32_t idx)
 		{
-			ASSERT(get_is_initialized());
-			ASSERT(alphabet);
-			ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA);
+			ASSERT(get_is_initialized())
+			ASSERT(alphabet)
+			ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 			return compute_by_tree(idx);
 		}
 
@@ -187,7 +187,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 			if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
 			{
 				tries.set_use_compact_terminal_nodes(false) ;
-				SG_DEBUG( "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") ;
+				SG_DEBUG( "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") 
 			}
 
 			if (get_is_initialized())
@@ -197,7 +197,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 				else if (opt_type==FASTBUTMEMHUNGRY)
 					tries.delete_trees(false);  // still buggy
 				else
-					SG_ERROR( "unknown optimization type\n");
+					SG_ERROR( "unknown optimization type\n")
 
 				set_is_initialized(false);
 			}
@@ -241,7 +241,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 				return ;
 			}
 
-			SG_ERROR( "CWeightedDegreePositionStringKernel optimization not initialized\n") ;
+			SG_ERROR( "CWeightedDegreePositionStringKernel optimization not initialized\n") 
 		}
 
 		/** get subkernel weights
@@ -277,7 +277,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 			int32_t num_weights = get_num_subkernels() ;
 			if (num_weights!=num_weights2)
-				SG_ERROR( "number of weights do not match\n") ;
+				SG_ERROR( "number of weights do not match\n") 
 
 			if (position_weights!=NULL)
 				for (int32_t i=0; i<num_weights; i++)

@@ -250,7 +250,7 @@ namespace shogun
 
 			LaRankPattern & sample ()
 			{
-				ASSERT (!empty ());
+				ASSERT (!empty ())
 				while (true)
 				{
 					uint32_t r = CMath::random(uint32_t(0), uint32_t(patterns.size ()-1));

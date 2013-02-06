@@ -182,14 +182,14 @@ void SGVector<T>::range_fill_vector(T* vec, int32_t len, T start)
 template<class T>
 const T& SGVector<T>::get_element(index_t index)
 {
-	ASSERT(vector && (index>=0) && (index<vlen));
+	ASSERT(vector && (index>=0) && (index<vlen))
 	return vector[index];
 }
 
 template<class T>
 void SGVector<T>::set_element(const T& p_element, index_t index)
 {
-	ASSERT(vector && (index>=0) && (index<vlen));
+	ASSERT(vector && (index>=0) && (index<vlen))
 	vector[index]=p_element;
 }
 
@@ -207,8 +207,8 @@ void SGVector<T>::resize_vector(int32_t n)
 template<class T>
 SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 {
-	ASSERT(x.vector && vector);
-	ASSERT(x.vlen == vlen);
+	ASSERT(x.vector && vector)
+	ASSERT(x.vlen == vlen)
 
 	SGVector<T> result=clone();
 	result.add(x);
@@ -218,8 +218,8 @@ SGVector<T> SGVector<T>::operator+ (SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const SGVector<T> x)
 {
-	ASSERT(x.vector && vector);
-	ASSERT(x.vlen == vlen);
+	ASSERT(x.vector && vector)
+	ASSERT(x.vlen == vlen)
 
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]+=x.vector[i];
@@ -228,7 +228,7 @@ void SGVector<T>::add(const SGVector<T> x)
 template<class T>
 void SGVector<T>::add(const T x)
 {
-	ASSERT(vector);
+	ASSERT(vector)
 
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]+=x;
@@ -242,7 +242,7 @@ void SGVector<T>::add(const SGSparseVector<T>& x)
 		for (int32_t i=0; i < x.num_feat_entries; i++)
 		{
 			index_t idx = x.features[i].feat_index;
-			ASSERT(idx < vlen);
+			ASSERT(idx < vlen)
 			vector[idx] += x.features[i].entry;
 		}
 	}
@@ -251,7 +251,7 @@ void SGVector<T>::add(const SGSparseVector<T>& x)
 template<class T>
 void SGVector<T>::display_size() const
 {
-	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen);
+	SG_SPRINT("SGVector '%p' of size: %d\n", vector, vlen)
 }
 
 template<class T>
@@ -294,88 +294,88 @@ template <>
 void SGVector<bool>::display_vector(const bool* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i] ? 1 : 0, i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%d%s", prefix, vector[i] ? 1 : 0, i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<char>::display_vector(const char* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%c%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%c%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<uint8_t>::display_vector(const uint8_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<int8_t>::display_vector(const int8_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<uint16_t>::display_vector(const uint16_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<int16_t>::display_vector(const int16_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<int32_t>::display_vector(const int32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 
@@ -383,58 +383,58 @@ template <>
 void SGVector<int64_t>::display_vector(const int64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%lld%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%lld%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<uint64_t>::display_vector(const uint64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%llu%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%llu%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<float32_t>::display_vector(const float32_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%g%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%g%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<float64_t>::display_vector(const float64_t* vector, int32_t n, const char* name,
 		const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%.18g%s", prefix, vector[i], i==n-1? "" : ",");
-	SG_SPRINT("%s]\n", prefix);
+		SG_SPRINT("%s%.18g%s", prefix, vector[i], i==n-1? "" : ",")
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <>
 void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
 		const char* name, const char* prefix)
 {
-	ASSERT(n>=0);
-	SG_SPRINT("%s%s=[", prefix, name);
+	ASSERT(n>=0)
+	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
 	{
 		SG_SPRINT("%s%.36Lg%s", prefix, (long double) vector[i],
 				i==n-1? "" : ",");
 	}
-	SG_SPRINT("%s]\n", prefix);
+	SG_SPRINT("%s]\n", prefix)
 }
 
 template <class T>
@@ -574,14 +574,14 @@ void SGVector<T>::resize(T* &data, int64_t old_size, int64_t new_size)
 template <>
 bool SGVector<bool>::twonorm(const bool* x, int32_t len)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_SNOTIMPLEMENTED
 	return false;
 }
 
 template <>
 char SGVector<char>::twonorm(const char* x, int32_t len)
 {
-	SG_SNOTIMPLEMENTED;
+	SG_SNOTIMPLEMENTED
 	return '\0';
 }
 
@@ -723,7 +723,7 @@ T SGVector<T>::qsq(T* x, int32_t len, float64_t q)
 template <class T>
 T SGVector<T>::qnorm(T* x, int32_t len, float64_t q)
 {
-	ASSERT(q!=0);
+	ASSERT(q!=0)
 	return CMath::pow((float64_t) qsq(x, len, q), 1.0/q);
 }
 
@@ -731,7 +731,7 @@ T SGVector<T>::qnorm(T* x, int32_t len, float64_t q)
 template <class T>
 	T SGVector<T>::min(T* vec, int32_t len)
 	{
-		ASSERT(len>0);
+		ASSERT(len>0)
 		T minv=vec[0];
 
 		for (int32_t i=1; i<len; i++)
@@ -744,7 +744,7 @@ template <class T>
 template <>
 float64_t SGVector<float64_t>::max(float64_t* vec, int32_t len)
 {
-	ASSERT(len>0);
+	ASSERT(len>0)
 	int32_t skip = 1;
 	int32_t idx = cblas_idamax(len, vec, skip);
 
@@ -754,7 +754,7 @@ float64_t SGVector<float64_t>::max(float64_t* vec, int32_t len)
 template <>
 float32_t SGVector<float32_t>::max(float32_t* vec, int32_t len)
 {
-	ASSERT(len>0);
+	ASSERT(len>0)
 	int32_t skip = 1;
 	int32_t idx = cblas_isamax(len, vec, skip);
 
@@ -766,7 +766,7 @@ float32_t SGVector<float32_t>::max(float32_t* vec, int32_t len)
 template <class T>
 	T SGVector<T>::max(T* vec, int32_t len)
 	{
-		ASSERT(len>0);
+		ASSERT(len>0)
 		T maxv=vec[0];
 
 		for (int32_t i=1; i<len; i++)
@@ -779,7 +779,7 @@ template <class T>
 template <>
 int32_t SGVector<float64_t>::arg_max(float64_t* vec, int32_t inc, int32_t len, float64_t* maxv_ptr)
 {
-	ASSERT(len>0 || inc > 0);
+	ASSERT(len>0 || inc > 0)
 	int32_t idx = cblas_idamax(len, vec, inc);
 
 	if (maxv_ptr != NULL)
@@ -791,7 +791,7 @@ int32_t SGVector<float64_t>::arg_max(float64_t* vec, int32_t inc, int32_t len, f
 template <>
 int32_t SGVector<float32_t>::arg_max(float32_t* vec, int32_t inc, int32_t len, float32_t* maxv_ptr)
 {
-	ASSERT(len>0 || inc > 0);
+	ASSERT(len>0 || inc > 0)
 	int32_t idx = cblas_isamax(len, vec, inc);
 
 	if (maxv_ptr != NULL)
@@ -804,7 +804,7 @@ int32_t SGVector<float32_t>::arg_max(float32_t* vec, int32_t inc, int32_t len, f
 template <class T>
 int32_t SGVector<T>::arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
 {
-	ASSERT(len > 0 || inc > 0);
+	ASSERT(len > 0 || inc > 0)
 
 	T maxv = vec[0];
 	int32_t maxIdx = 0;
@@ -825,7 +825,7 @@ int32_t SGVector<T>::arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
 template <class T>
 int32_t SGVector<T>::arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr)
 {
-	ASSERT(len > 0 || inc > 0);
+	ASSERT(len > 0 || inc > 0)
 
 	T minv = vec[0];
 	int32_t minIdx = 0;
@@ -944,7 +944,7 @@ template<class T> float64_t SGVector<T>::mean() const
 
 template<class T> void SGVector<T>::load(CFile* loader)
 {
-	ASSERT(loader);
+	ASSERT(loader)
 	unref();
 
 	SG_SET_LOCALE_C;
@@ -954,7 +954,7 @@ template<class T> void SGVector<T>::load(CFile* loader)
 
 template<class T> void SGVector<T>::save(CFile* saver)
 {
-	ASSERT(saver);
+	ASSERT(saver)
 
 	SG_SET_LOCALE_C;
 	saver->set_vector(vector, vlen);

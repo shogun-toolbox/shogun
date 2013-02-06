@@ -42,10 +42,10 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 		if ( env == NULL )
 		{
 			char  errmsg[1024];
-			SG_WARNING("Could not open CPLEX environment.\n");
+			SG_WARNING("Could not open CPLEX environment.\n")
 			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING("%s", errmsg);
-			SG_WARNING("retrying in %d seconds\n", timeout);
+			SG_WARNING("%s", errmsg)
+			SG_WARNING("retrying in %d seconds\n", timeout)
 			sleep(timeout);
 		}
 		else
@@ -54,18 +54,18 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 
 			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_OFF);
 			if (status)
-				SG_ERROR( "Failure to turn off screen indicator, error %d.\n", status);
+				SG_ERROR( "Failure to turn off screen indicator, error %d.\n", status)
 
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if (status)
-					SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
+					SG_ERROR( "Failure to turn on data checking, error %d.\n", status)
 				else
 				{
 					lp = CPXcreateprob (env, &status, "shogun");
 
 					if ( lp == NULL )
-						SG_ERROR( "Failed to create optimization problem.\n");
+						SG_ERROR( "Failed to create optimization problem.\n")
 					else
 						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 
@@ -74,7 +74,7 @@ bool CCplex::init(E_PROB_TYPE typ, int32_t timeout)
 					else if (problem_type == E_LINEAR)
 						status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 0);
 					if (status)
-						SG_ERROR( "Failure to select dual lp/qp optimization, error %d.\n", status);
+						SG_ERROR( "Failure to select dual lp/qp optimization, error %d.\n", status)
 
 				}
 			}
@@ -93,8 +93,8 @@ bool CCplex::setup_subgradientlpm_QP(
 	bool result=false;
 	int32_t num_variables=num_dim + num_bound+num_zero; // xi, beta
 
-	ASSERT(num_dim>0);
-	ASSERT(num_dim>0);
+	ASSERT(num_dim>0)
+	ASSERT(num_dim>0)
 
 	// setup LP part
 	float64_t* lb=SG_MALLOC(float64_t, num_variables);
@@ -133,7 +133,7 @@ bool CCplex::setup_subgradientlpm_QP(
 			cmatind[offs]=offs;
 			cmatval[offs]=1.0;
 			offs++;
-			ASSERT(offs<cmatsize);
+			ASSERT(offs<cmatsize)
 		}
 		else if (i<num_dim+num_zero) // Z_w*beta_w
 		{
@@ -142,16 +142,16 @@ bool CCplex::setup_subgradientlpm_QP(
 			cmatind[offs]=w_zero[i-num_dim];
 			cmatval[offs]=-1.0;
 			offs++;
-			ASSERT(offs<cmatsize);
+			ASSERT(offs<cmatsize)
 		}
 		else // Z_x*beta_x
 		{
 			int32_t idx=idx_bound[i-num_dim-num_zero];
 			int32_t vlen=0;
 			bool vfree=false;
-			//SG_PRINT("idx=%d\n", idx);
+			//SG_PRINT("idx=%d\n", idx)
 			SGSparseVector<float64_t> vec=features->get_sparse_feature_vector(idx);
-			//SG_PRINT("vlen=%d\n", vlen);
+			//SG_PRINT("vlen=%d\n", vlen)
 
 			cmatbeg[i]=offs;
 			cmatcnt[i]=vlen;
@@ -165,8 +165,8 @@ bool CCplex::setup_subgradientlpm_QP(
 					cmatind[offs]=vec.features[j].feat_index;
 					cmatval[offs]=-val*vec.features[j].entry;
 					offs++;
-					ASSERT(offs<cmatsize);
-					//SG_PRINT("vec[%d]=%10.10f\n", j, vec.features[j].entry);
+					ASSERT(offs<cmatsize)
+					//SG_PRINT("vec[%d]=%10.10f\n", j, vec.features[j].entry)
 				}
 
 				if (use_bias)
@@ -175,7 +175,7 @@ bool CCplex::setup_subgradientlpm_QP(
 					cmatind[offs]=num_dim-1;
 					cmatval[offs]=-val;
 					offs++;
-					ASSERT(offs<cmatsize);
+					ASSERT(offs<cmatsize)
 				}
 			}
 			else
@@ -189,7 +189,7 @@ bool CCplex::setup_subgradientlpm_QP(
 				else
 					cmatval[offs]=0.0;
 				offs++;
-				ASSERT(offs<cmatsize);
+				ASSERT(offs<cmatsize)
 			}
 
 			features->free_feature_vector(vec, idx);
@@ -200,7 +200,7 @@ bool CCplex::setup_subgradientlpm_QP(
 			obj, vee, sense, cmatbeg, cmatcnt, cmatind, cmatval, lb, ub, NULL) == 0;
 
 	if (!result)
-		SG_ERROR("CPXcopylp failed.\n");
+		SG_ERROR("CPXcopylp failed.\n")
 
 	//write_problem("problem.lp");
 
@@ -250,7 +250,7 @@ bool CCplex::setup_subgradientlpm_QP(
 	SG_FREE(qmatval);
 
 	if (!result)
-		SG_ERROR("CPXcopyquad failed.\n");
+		SG_ERROR("CPXcopyquad failed.\n")
 
 	//write_problem("problem.lp");
 	//write_Q("problem.qp");
@@ -263,7 +263,7 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 	init(E_LINEAR);
 	int32_t status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //primal simplex
 	if (status)
-		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
+		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status)
 
 	double* obj=SG_MALLOC(double, num_cols);
 	double* lb=SG_MALLOC(double, num_cols);
@@ -281,7 +281,7 @@ bool CCplex::setup_lpboost(float64_t C, int32_t num_cols)
 	{
 		char  errmsg[1024];
 		CPXgeterrorstring (env, status, errmsg);
-		SG_ERROR( "%s", errmsg);
+		SG_ERROR( "%s", errmsg)
 	}
 	SG_FREE(obj);
 	SG_FREE(lb);
@@ -314,7 +314,7 @@ bool CCplex::add_lpboost_constraint(
 	int32_t status = CPXaddrows (env, lp, 0, 1, len, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
 
 	if ( status )
-		SG_ERROR( "Failed to add the new row.\n");
+		SG_ERROR( "Failed to add the new row.\n")
 
 	return status == 0;
 }
@@ -322,8 +322,8 @@ bool CCplex::add_lpboost_constraint(
 bool CCplex::setup_lpm(
 	float64_t C, CSparseFeatures<float64_t>* x, CBinaryLabels* y, bool use_bias)
 {
-	ASSERT(x);
-	ASSERT(y);
+	ASSERT(x)
+	ASSERT(y)
 	int32_t num_vec=y->get_num_labels();
 	int32_t num_feat=x->get_num_features();
 	int64_t nnz=x->get_num_nonzero_entries();
@@ -399,7 +399,7 @@ bool CCplex::setup_lpm(
 	int32_t num_sfeat=0;
 	int32_t num_svec=0;
 	SGSparseVector<float64_t>* sfeat= x->get_transposed(num_sfeat, num_svec);
-	ASSERT(sfeat);
+	ASSERT(sfeat)
 
 	for (int32_t i=0; i<num_svec; i++)
 	{
@@ -447,7 +447,7 @@ bool CCplex::setup_lpm(
 
 	int32_t status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //barrier
 	if (status)
-		SG_ERROR( "Failure to select barrier optimization, error %d.\n", status);
+		SG_ERROR( "Failure to select barrier optimization, error %d.\n", status)
 	CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
 
 	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN,
@@ -477,7 +477,7 @@ bool CCplex::cleanup()
 		lp_initialized = false;
 
 		if (status)
-			SG_WARNING( "CPXfreeprob failed, error code %d.\n", status);
+			SG_WARNING( "CPXfreeprob failed, error code %d.\n", status)
 		else
 			result = true;
 	}
@@ -490,9 +490,9 @@ bool CCplex::cleanup()
 		if (status)
 		{
 			char  errmsg[1024];
-			SG_WARNING( "Could not close CPLEX environment.\n");
+			SG_WARNING( "Could not close CPLEX environment.\n")
 			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING( "%s", errmsg);
+			SG_WARNING( "%s", errmsg)
 		}
 		else
 			result = true;
@@ -543,7 +543,7 @@ bool CCplex::setup_lp(
 
 	if (constraints_mat==0)
 	{
-		ASSERT(rows==0);
+		ASSERT(rows==0)
 		rows=1;
 		float64_t dummy=0;
 		rhs=&dummy;
@@ -553,7 +553,7 @@ bool CCplex::setup_lp(
 		memset(constraints_mat, 0, sizeof(float64_t)*cols);
 
 		result=dense_to_cplex_sparse(constraints_mat, 0, cols, qmatbeg, qmatcnt, qmatind, qmatval);
-		ASSERT(result);
+		ASSERT(result)
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN,
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
 		SG_FREE(constraints_mat);
@@ -573,7 +573,7 @@ bool CCplex::setup_lp(
 	SG_FREE(qmatind);
 
 	if (!result)
-		SG_WARNING("CPXcopylp failed.\n");
+		SG_WARNING("CPXcopylp failed.\n")
 
 	return result;
 }
@@ -593,7 +593,7 @@ bool CCplex::setup_qp(float64_t* H, int32_t dim)
 	SG_FREE(qmatind);
 
 	if (!result)
-		SG_WARNING("CPXcopyquad failed.\n");
+		SG_WARNING("CPXcopyquad failed.\n")
 
 	return result;
 }
@@ -610,11 +610,11 @@ bool CCplex::optimize(float64_t* sol, float64_t* lambda)
 		status = CPXlpopt (env, lp);
 
 	if (status)
-		SG_WARNING( "Failed to optimize QP.\n");
+		SG_WARNING( "Failed to optimize QP.\n")
 
 	status = CPXsolution (env, lp, &solnstat, &objval, sol, lambda, NULL, NULL);
 
-	//SG_PRINT("obj:%f\n", objval);
+	//SG_PRINT("obj:%f\n", objval)
 
 	return (status==0);
 }

@@ -66,7 +66,7 @@ CSGObject *CGaussianKernel::shallow_copy() const
 	// TODO: remove this after all the classes get shallow_copy properly implemented
 	// this assert is to avoid any subclass of CGaussianKernel accidentally called
 	// with the implement here
-	ASSERT(typeid(*this) == typeid(CGaussianKernel));
+	ASSERT(typeid(*this) == typeid(CGaussianKernel))
 	CGaussianKernel *ker = new CGaussianKernel(cache_size, width);
 	if (lhs)
 	{
@@ -89,7 +89,7 @@ void CGaussianKernel::cleanup()
 
 void CGaussianKernel::precompute_squared_helper(float64_t* &buf, CDotFeatures* df)
 {
-	ASSERT(df);
+	ASSERT(df)
 	int32_t num_vec=df->get_num_vectors();
 	buf=SG_MALLOC(float64_t, num_vec);
 

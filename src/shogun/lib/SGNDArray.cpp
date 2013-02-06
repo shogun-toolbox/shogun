@@ -37,7 +37,7 @@ template<class T> SGNDArray<T>::SGNDArray(index_t* d, index_t nd, bool ref_count
 	index_t total = 1;
 	for (int32_t i=0; i<num_dims; i++)
 		total *= dims[i];
-	ASSERT(total>0);
+	ASSERT(total>0)
 	array = SG_MALLOC(T, total);
 }
 
@@ -78,7 +78,7 @@ template<class T> void SGNDArray<T>::free_data()
 
 template<class T> void SGNDArray<T>::transpose_matrix(index_t matIdx) const
 {
-	ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx);
+	ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx)
 
 	T aux;
 	// Index to acces directly the elements of the matrix of interest

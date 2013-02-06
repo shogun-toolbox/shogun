@@ -155,7 +155,7 @@ class CPlifMatrix: public CSGObject
 		{
 			int32_t id = m_ids[idx];
 			if (id>=m_num_plifs)
-				SG_ERROR("plif id (%i)  exceeds array length (%i)\n",id,m_num_plifs);
+				SG_ERROR("plif id (%i)  exceeds array length (%i)\n",id,m_num_plifs)
 			return id;
 		}
 

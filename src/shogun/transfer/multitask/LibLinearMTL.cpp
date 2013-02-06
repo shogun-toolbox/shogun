@@ -72,16 +72,16 @@ CLibLinearMTL::~CLibLinearMTL()
 bool CLibLinearMTL::train_machine(CFeatures* data)
 {
 	CSignal::clear_cancel();
-	ASSERT(m_labels);
+	ASSERT(m_labels)
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
 		set_features((CDotFeatures*) data);
 	}
-	ASSERT(features);
+	ASSERT(features)
 	m_labels->ensure_valid();
 
 
@@ -131,8 +131,8 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	}
 	neg = prob.l - pos;
 
-	SG_INFO("%d training points %d dims\n", prob.l, prob.n);
-	SG_INFO("%d positives, %d negatives\n", pos, neg);
+	SG_INFO("%d training points %d dims\n", prob.l, prob.n)
+	SG_INFO("%d positives, %d negatives\n", pos, neg)
 
 	double Cp=C1;
 	double Cn=C2;
@@ -351,7 +351,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 
 		iter++;
 		float64_t gap=PGmax_new - PGmin_new;
-		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6);
+		SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps), 6)
 
 		if(gap <= eps)
 		{
@@ -373,8 +373,8 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 			PGmin_old = -CMath::INFTY;
 	}
 
-	SG_DONE();
-	SG_INFO("optimization finished, #iter = %d\n",iter);
+	SG_DONE()
+	SG_INFO("optimization finished, #iter = %d\n",iter)
 	if (iter >= max_iterations)
 	{
 		SG_WARNING("reaching max number of iterations\nUsing -s 2 may be faster"
@@ -432,7 +432,7 @@ obj = reg_obj + C * loss_obj
 return obj
 */
 
-	SG_INFO("DONE to compute Primal OBJ\n");
+	SG_INFO("DONE to compute Primal OBJ\n")
 	// calculate objective value
 	SGMatrix<float64_t> W = get_W();
 
@@ -479,7 +479,7 @@ return obj
 
 	}
 
-	SG_INFO("DONE to compute Primal OBJ, obj=%f\n",obj);
+	SG_INFO("DONE to compute Primal OBJ, obj=%f\n",obj)
 
 	return obj;
 }
@@ -501,7 +501,7 @@ obj -= 0.5 * M[s,t] * alphas[i] * alphas[j] * lt[i] * lt[j] * np.dot(xt[i], xt[j
 return obj
 */
 
-	SG_INFO("starting to compute DUAL OBJ\n");
+	SG_INFO("starting to compute DUAL OBJ\n")
 
 	int32_t num_vec=features->get_num_vectors();
 

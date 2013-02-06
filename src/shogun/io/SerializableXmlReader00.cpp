@@ -109,7 +109,7 @@ SerializableXmlReader00::read_cont_begin_wrapped(
 
 	switch (type->m_ctype) {
 	case CT_NDARRAY:
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	case CT_SCALAR: break;
 	case CT_VECTOR: case CT_SGVECTOR:
 		*len_read_y = xmlChildElementCount(m);
@@ -242,7 +242,7 @@ SerializableXmlReader00::read_item_begin_wrapped(
 {
 	switch (type->m_ctype) {
 	case CT_NDARRAY:
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	case CT_SCALAR: break;
 	case CT_VECTOR: case CT_SGVECTOR:
 		if (y == 0) {

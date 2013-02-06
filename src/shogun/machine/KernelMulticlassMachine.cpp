@@ -174,12 +174,12 @@ int32_t CKernelMulticlassMachine::get_num_rhs_vectors()
 
 void CKernelMulticlassMachine::add_machine_subset(SGVector<index_t> subset)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 void CKernelMulticlassMachine::remove_machine_subset()
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 

@@ -35,10 +35,10 @@ template <class ST> class CDenseDistance : public CDistance
 		{
 			CDistance::init(l,r);
 
-			ASSERT(l->get_feature_class()==C_DENSE);
-			ASSERT(r->get_feature_class()==C_DENSE);
-			ASSERT(l->get_feature_type()==this->get_feature_type());
-			ASSERT(r->get_feature_type()==this->get_feature_type());
+			ASSERT(l->get_feature_class()==C_DENSE)
+			ASSERT(r->get_feature_class()==C_DENSE)
+			ASSERT(l->get_feature_type()==this->get_feature_type())
+			ASSERT(r->get_feature_type()==this->get_feature_type())
 
 
 			if ( ((CDenseFeatures<ST>*) l)->get_num_features() != ((CDenseFeatures<ST>*) r)->get_num_features() )

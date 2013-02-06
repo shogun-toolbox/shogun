@@ -85,7 +85,7 @@ bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
 #else
-	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n");
+	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n")
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
 	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
 #endif
@@ -97,9 +97,9 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	if (data && (CDotFeatures*)data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(features);
-	ASSERT(m_labels);
-	ASSERT(m_task_relation);
+	ASSERT(features)
+	ASSERT(m_labels)
+	ASSERT(m_task_relation)
 
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
@@ -120,7 +120,7 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
 #else
-	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n");
+	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n")
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
 	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
 #endif

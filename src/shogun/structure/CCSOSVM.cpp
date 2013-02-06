@@ -263,15 +263,15 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	expected_descent = -primal_obj_b;
 	initial_primal_obj = primal_obj_b;
 
-	SG_INFO("Running CCCP inner loop solver: ");
+	SG_INFO("Running CCCP inner loop solver: ")
 
 	while ((!suff_decrease_cond)&&(expected_descent<-m_eps)&&(iter<m_max_iter))
 	{
 		iter+=1;
 		size_active+=1;
 
-		SG_DEBUG("ITER %d\n", iter);
-		SG_PRINT(".");
+		SG_DEBUG("ITER %d\n", iter)
+		SG_PRINT(".")
 
 		/* add constraint */
 		dXc.resize_array(size_active);
@@ -337,7 +337,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 					proximal_rhs[i] = (1+rho)*delta[i] - rho*gammaG0[i];
 					break;
 				default:
-					SG_ERROR("Invalid QPType: %d\n", m_qp_type);
+					SG_ERROR("Invalid QPType: %d\n", m_qp_type)
 			}
 		}
 
@@ -361,13 +361,13 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				}
 				else
 				{
-					ASSERT(size_active==1);
+					ASSERT(size_active==1)
 					alpha[0] = m_C;
 				}
 				*/
 				break;
 			default:
-				SG_ERROR("Invalid QPType: %d\n", m_qp_type);
+				SG_ERROR("Invalid QPType: %d\n", m_qp_type)
 		}
 
 		/* DEBUG */
@@ -414,10 +414,10 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				- new_constraint.dense_dot(1.0, w_b.vector, w_b.vlen, 0));
 
 		for (index_t j = 0; j < size_active; j++)
-			SG_DEBUG("alpha[%d]: %.8g, cut_error[%d]: %.8g\n", j, alpha[j], j, cut_error[j]);
-		SG_DEBUG("sigma_k: %.8g\n", sigma_k);
-		SG_DEBUG("alphasum: %.8g\n", alphasum);
-		SG_DEBUG("g^T d: %.8g\n", gTd);
+			SG_DEBUG("alpha[%d]: %.8g, cut_error[%d]: %.8g\n", j, alpha[j], j, cut_error[j])
+		SG_DEBUG("sigma_k: %.8g\n", sigma_k)
+		SG_DEBUG("alphasum: %.8g\n", alphasum)
+		SG_DEBUG("g^T d: %.8g\n", gTd)
 
 		/* update cleanup information */
 		for (index_t j = 0; j < size_active; j++)
@@ -434,7 +434,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		/* print primal objective */
 		primal_obj = 0.5*m_w.dot(m_w.vector, m_w.vector, m_w.vlen)+m_C*value;
 
-		SG_DEBUG("ITER PRIMAL_OBJ %.4f\n", primal_obj);
+		SG_DEBUG("ITER PRIMAL_OBJ %.4f\n", primal_obj)
 
 		temp_var = w_b.dot(w_b.vector, w_b.vector, w_b.vlen);
 		proximal_term = 0.0;
@@ -448,15 +448,15 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 		primal_lower_bound = CMath::max(primal_lower_bound, reg_master_obj - 0.5*rho*(1+rho)*proximal_term);
 
-		SG_DEBUG("ITER REG_MASTER_OBJ: %.4f\n", reg_master_obj);
-		SG_DEBUG("ITER EXPECTED_DESCENT: %.4f\n", expected_descent);
-		SG_DEBUG("ITER PRIMLA_OBJ_B: %.4f\n", primal_obj_b);
-		SG_DEBUG("ITER RHO: %.4f\n", rho);
-		SG_DEBUG("ITER ||w-w_b||^2: %.4f\n", proximal_term);
-		SG_DEBUG("ITER PRIMAL_LOWER_BOUND: %.4f\n", primal_lower_bound);
-		SG_DEBUG("ITER V_K: %.4f\n", v_k); 
-		SG_DEBUG("ITER margin: %.4f\n", margin);
-		SG_DEBUG("ITER psi*-psi: %.4f\n", value-margin);
+		SG_DEBUG("ITER REG_MASTER_OBJ: %.4f\n", reg_master_obj)
+		SG_DEBUG("ITER EXPECTED_DESCENT: %.4f\n", expected_descent)
+		SG_DEBUG("ITER PRIMLA_OBJ_B: %.4f\n", primal_obj_b)
+		SG_DEBUG("ITER RHO: %.4f\n", rho)
+		SG_DEBUG("ITER ||w-w_b||^2: %.4f\n", proximal_term)
+		SG_DEBUG("ITER PRIMAL_LOWER_BOUND: %.4f\n", primal_lower_bound)
+		SG_DEBUG("ITER V_K: %.4f\n", v_k) 
+		SG_DEBUG("ITER margin: %.4f\n", margin)
+		SG_DEBUG("ITER psi*-psi: %.4f\n", value-margin)
 
 		obj_difference = primal_obj - primal_obj_b;
 
@@ -465,7 +465,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 			/* extra condition to be met */
 			if ((gTd>m2*v_k)||(rho<min_rho+1E-8))
 			{
-				SG_DEBUG("SERIOUS STEP\n");
+				SG_DEBUG("SERIOUS STEP\n")
 
 				/* update cut_error */
 				for (index_t i = 0; i < size_active; i++)
@@ -487,7 +487,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 			else
 			{
 				/* increase step size */
-				SG_DEBUG("NULL STEP: SS(ii) FAILS.\n");
+				SG_DEBUG("NULL STEP: SS(ii) FAILS.\n")
 
 				serious_counter--;
 				rho = CMath::max(rho/10,min_rho);
@@ -499,11 +499,11 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 
 			if ((cut_error[size_active-1]>m3*last_sigma_k)&&(CMath::abs(obj_difference)>last_z_k_norm+last_sigma_k))
 			{
-				SG_DEBUG("NULL STEP: NS(ii) FAILS.\n");
+				SG_DEBUG("NULL STEP: NS(ii) FAILS.\n")
 				rho = CMath::min(10*rho,m_max_rho);
 			}
 			else
-				SG_DEBUG("NULL STEP\n");
+				SG_DEBUG("NULL STEP\n")
 		}
 		/* update last_sigma_k */
 		last_sigma_k = sigma_k;
@@ -518,11 +518,11 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		if (iter % m_cleanup_check == 0)
 		{
 			size_active = resize_cleanup(size_active, idle, alpha, delta, gammaG0, proximal_rhs, &G, dXc, cut_error);
-			ASSERT(size_active == proximal_rhs.vlen);
+			ASSERT(size_active == proximal_rhs.vlen)
 		}
 	} // end cutting plane while loop
 
-	SG_INFO(" Inner loop optimization finished.\n");
+	SG_INFO(" Inner loop optimization finished.\n")
 
 	for (index_t j = 0; j < size_active; j++)
 		free(G[j]);

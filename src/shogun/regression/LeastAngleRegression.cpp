@@ -91,24 +91,24 @@ CLeastAngleRegression::~CLeastAngleRegression()
 bool CLeastAngleRegression::train_machine(CFeatures* data)
 {
 	if (!m_labels)
-		SG_ERROR("No labels set\n");
+		SG_ERROR("No labels set\n")
 	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Expected RegressionLabels\n");
+		SG_ERROR("Expected RegressionLabels\n")
 
 	if (!data)
 		data=features;
 
 	if (!data)
-		SG_ERROR("No features set\n");
+		SG_ERROR("No features set\n")
 
 	if (m_labels->get_num_labels() != data->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n");
+		SG_ERROR("Number of training vectors does not match number of labels\n")
 
 	if (data->get_feature_class() != C_DENSE)
-		SG_ERROR("Expected Simple Features\n");
+		SG_ERROR("Expected Simple Features\n")
 
 	if (data->get_feature_type() != F_DREAL)
-		SG_ERROR("Expected Real Features\n");
+		SG_ERROR("Expected Real Features\n")
 
 	CDenseFeatures<float64_t>* feats=(CDenseFeatures<float64_t>*) data;
 	int32_t n_fea = feats->get_num_features();

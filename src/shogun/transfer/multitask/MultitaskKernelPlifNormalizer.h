@@ -221,8 +221,8 @@ public:
 	float64_t get_task_distance(int32_t task_lhs, int32_t task_rhs)
 	{
 
-		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		return distance_matrix[task_lhs * num_tasks + task_rhs];
 
@@ -237,8 +237,8 @@ public:
 			float64_t distance)
 	{
 
-		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		distance_matrix[task_lhs * num_tasks + task_rhs] = distance;
 
@@ -252,8 +252,8 @@ public:
 	float64_t get_task_similarity(int32_t task_lhs, int32_t task_rhs)
 	{
 
-		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		return similarity_matrix[task_lhs * num_tasks + task_rhs];
 
@@ -268,8 +268,8 @@ public:
 			float64_t similarity)
 	{
 
-		ASSERT(task_lhs < num_tasks && task_lhs >= 0);
-		ASSERT(task_rhs < num_tasks && task_rhs >= 0);
+		ASSERT(task_lhs < num_tasks && task_lhs >= 0)
+		ASSERT(task_rhs < num_tasks && task_rhs >= 0)
 
 		similarity_matrix[task_lhs * num_tasks + task_rhs] = similarity;
 

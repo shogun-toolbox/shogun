@@ -40,7 +40,7 @@ template <class ST> ST* CStringFileFeatures<ST>::get_line(uint64_t& len, uint64_
 			if (!CStringFeatures<ST>::alphabet->is_valid((uint8_t) c))
 			{
 				CStringFileFeatures<ST>::cleanup();
-				CStringFeatures<ST>::SG_ERROR("Invalid character (%c) in line %d\n", c, line_nr);
+				SG_CLASS_ERROR(CStringFeatures<ST>, "Invalid character (%c) in line %d\n", c, line_nr)
 			}
 		}
 	}
@@ -70,16 +70,16 @@ template <class ST> void CStringFileFeatures<ST>::cleanup()
 
 template <class ST> void CStringFileFeatures<ST>::cleanup_feature_vector(int32_t num)
 {
-	CStringFeatures<ST>::SG_ERROR("Cleaning single feature vector not"
-			"supported by StringFileFeatures\n");
+	SG_CLASS_ERROR(CStringFeatures<ST>, "Cleaning single feature vector not"
+			"supported by StringFileFeatures\n")
 }
 
 template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int32_t granularity)
 {
 	CStringFileFeatures<ST>::cleanup();
 	uint64_t file_size=file->get_size();
-	ASSERT(granularity>=1);
-	ASSERT(CStringFeatures<ST>::alphabet);
+	ASSERT(granularity>=1)
+	ASSERT(CStringFeatures<ST>::alphabet)
 
 	int64_t buffer_size=granularity;
 	CStringFeatures<ST>::features=SG_MALLOC(SGString<ST>, buffer_size);
@@ -109,10 +109,10 @@ template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int3
 			break;
 	}
 
-	CStringFeatures<ST>::SG_INFO("number of strings:%d\n", CStringFeatures<ST>::num_vectors);
-	CStringFeatures<ST>::SG_INFO("maximum string length:%d\n", CStringFeatures<ST>::max_string_length);
-	CStringFeatures<ST>::SG_INFO("max_value_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_max_value_in_histogram());
-	CStringFeatures<ST>::SG_INFO("num_symbols_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_num_symbols_in_histogram());
+	SG_CLASS_INFO(CStringFeatures<ST>, "number of strings:%d\n", CStringFeatures<ST>::num_vectors)
+	SG_CLASS_INFO(CStringFeatures<ST>,"maximum string length:%d\n", CStringFeatures<ST>::max_string_length)
+	SG_CLASS_INFO(CStringFeatures<ST>,"max_value_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_max_value_in_histogram())
+	SG_CLASS_INFO(CStringFeatures<ST>,"num_symbols_in_histogram:%d\n", CStringFeatures<ST>::alphabet->get_num_symbols_in_histogram())
 
 	if (!CStringFeatures<ST>::alphabet->check_alphabet_size() || !CStringFeatures<ST>::alphabet->check_alphabet())
 		CStringFileFeatures<ST>::cleanup();

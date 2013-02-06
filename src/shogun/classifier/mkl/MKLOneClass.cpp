@@ -20,6 +20,6 @@ float64_t CMKLOneClass::compute_sum_alpha()
 
 void CMKLOneClass::init_training()
 {
-	ASSERT(svm);
-	ASSERT(svm->get_classifier_type() == CT_LIBSVMONECLASS);
+	ASSERT(svm)
+	ASSERT(svm->get_classifier_type() == CT_LIBSVMONECLASS)
 }

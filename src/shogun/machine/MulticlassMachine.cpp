@@ -70,7 +70,7 @@ void CMulticlassMachine::init_strategy()
 CBinaryLabels* CMulticlassMachine::get_submachine_outputs(int32_t i)
 {
 	CMachine *machine = (CMachine*)m_machines->get_element(i);
-	ASSERT(machine);
+	ASSERT(machine)
 	CBinaryLabels* output = machine->apply_binary();
 	SG_UNREF(machine);
 	return output;
@@ -109,7 +109,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 
 		int32_t num_machines=m_machines->get_num_elements();
 		if (num_machines <= 0)
-			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
+			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
@@ -135,7 +135,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 		return_labels=result;
 	}
 	else
-		SG_ERROR("Not ready");
+		SG_ERROR("Not ready")
 
 
 	SG_DEBUG("leaving %s::apply_multiclass(%s at %p)\n",
@@ -160,8 +160,8 @@ CMulticlassMultipleOutputLabels* CMulticlassMachine::apply_multiclass_multiple_o
 
 		int32_t num_machines=m_machines->get_num_elements();
 		if (num_machines <= 0)
-			SG_ERROR("num_machines = %d, did you train your machine?", num_machines);
-		REQUIRE(n_outputs<=num_machines,"You request more outputs than machines available");
+			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
+		REQUIRE(n_outputs<=num_machines,"You request more outputs than machines available")
 
 		CMulticlassMultipleOutputLabels* result=new CMulticlassMultipleOutputLabels(num_vectors);
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
@@ -186,17 +186,17 @@ CMulticlassMultipleOutputLabels* CMulticlassMachine::apply_multiclass_multiple_o
 		return_labels=result;
 	}
 	else
-		SG_ERROR("Not ready");
+		SG_ERROR("Not ready")
 
 	return return_labels;
 }
 
 bool CMulticlassMachine::train_machine(CFeatures* data)
 {
-	ASSERT(m_multiclass_strategy);
+	ASSERT(m_multiclass_strategy)
 
 	if ( !data && !is_ready() )
-		SG_ERROR("Please provide training data.\n");
+		SG_ERROR("Please provide training data.\n")
 	else
 		init_machine_for_train(data);
 
@@ -235,7 +235,7 @@ float64_t CMulticlassMachine::apply_one(int32_t vec_idx)
 {
 	init_machines_for_apply(NULL);
 
-	ASSERT(m_machines->get_num_elements()>0);
+	ASSERT(m_machines->get_num_elements()>0)
 	SGVector<float64_t> outputs(m_machines->get_num_elements());
 
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)

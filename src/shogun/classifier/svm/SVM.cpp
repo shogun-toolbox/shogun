@@ -100,7 +100,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
-		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+		SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 	}
 	else
 	{
@@ -108,7 +108,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("%SVM", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+			SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 		}
 		line_number++;
 	}
@@ -117,19 +117,19 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," numsv=%d; \n", &int_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+		SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 	}
 
 	if (!feof(modelfl))
 		line_number++;
 
-	SG_INFO( "loading %ld support vectors\n",int_buffer);
+	SG_INFO( "loading %ld support vectors\n",int_buffer)
 	create_new_model(int_buffer);
 
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+		SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 	}
 
 	if (!feof(modelfl))
@@ -140,7 +140,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
-		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+		SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 	}
 
 	if (!feof(modelfl))
@@ -151,7 +151,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%8s\n", char_buffer) == EOF)
 	{
 		result=false;
-		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+		SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 	}
 	else
 	{
@@ -159,7 +159,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("alphas=[", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+			SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 		}
 		line_number++;
 	}
@@ -172,7 +172,7 @@ bool CSVM::load(FILE* modelfl)
 		if (fscanf(modelfl," \[%lf,%d]; \n", &double_buffer, &int_buffer) != 2)
 		{
 			result=false;
-			SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+			SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 		}
 
 		if (!feof(modelfl))
@@ -185,7 +185,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%2s", char_buffer) == EOF)
 	{
 		result=false;
-		SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+		SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 	}
 	else
 	{
@@ -193,7 +193,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("];", char_buffer)!=0)
 		{
 			result=false;
-			SG_ERROR( "error in svm file, line nr:%d\n", line_number);
+			SG_ERROR( "error in svm file, line nr:%d\n", line_number)
 		}
 		line_number++;
 	}
@@ -208,9 +208,9 @@ bool CSVM::save(FILE* modelfl)
 	SG_SET_LOCALE_C;
 
 	if (!kernel)
-		SG_ERROR("Kernel not defined!\n");
+		SG_ERROR("Kernel not defined!\n")
 
-	SG_INFO( "Writing model file...");
+	SG_INFO( "Writing model file...")
 	fprintf(modelfl,"%%SVM\n");
 	fprintf(modelfl,"numsv=%d;\n", get_num_support_vectors());
 	fprintf(modelfl,"kernel='%s';\n", kernel->get_name());
@@ -224,7 +224,7 @@ bool CSVM::save(FILE* modelfl)
 
 	fprintf(modelfl, "];\n");
 
-	SG_DONE();
+	SG_DONE()
 	SG_RESET_LOCALE;
 	return true ;
 }
@@ -259,7 +259,7 @@ float64_t CSVM::compute_svm_dual_objective()
 		}
 	}
 	else
-		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
+		SG_ERROR( "cannot compute objective, labels or kernel not set\n")
 
 	return objective;
 }
@@ -294,7 +294,7 @@ float64_t CSVM::compute_svm_primal_objective()
 
 	}
 	else
-		SG_ERROR( "cannot compute objective, labels or kernel not set\n");
+		SG_ERROR( "cannot compute objective, labels or kernel not set\n")
 
 	return regularizer+loss;
 }
@@ -313,10 +313,10 @@ float64_t* CSVM::get_linear_term_array()
 
 void CSVM::set_linear_term(const SGVector<float64_t> linear_term)
 {
-	ASSERT(linear_term.vector);
+	ASSERT(linear_term.vector)
 
 	if (!m_labels)
-		SG_ERROR("Please assign labels first!\n");
+		SG_ERROR("Please assign labels first!\n")
 
 	int32_t num_labels=m_labels->get_num_labels();
 

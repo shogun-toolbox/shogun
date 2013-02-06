@@ -44,7 +44,7 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 	if (data != NULL)
 	{
 		CDenseFeatures<float64_t> *feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
-		REQUIRE(feats != NULL, ("Require non-NULL dense features of float64_t\n"));
+		REQUIRE(feats != NULL, ("Require non-NULL dense features of float64_t\n"))
 		set_features(feats);
 	}
 
@@ -129,15 +129,15 @@ float64_t CRelaxedTree::apply_one(int32_t idx)
 bool CRelaxedTree::train_machine(CFeatures* data)
 {
 	if (m_machine_for_confusion_matrix == NULL)
-		SG_ERROR("Call set_machine_for_confusion_matrix before training\n");
+		SG_ERROR("Call set_machine_for_confusion_matrix before training\n")
 	if (m_kernel == NULL)
-		SG_ERROR("assign a valid kernel before training\n");
+		SG_ERROR("assign a valid kernel before training\n")
 
 	if (data)
 	{
 		CDenseFeatures<float64_t> *feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 		if (feats == NULL)
-			SG_ERROR("Require non-NULL dense features of float64_t\n");
+			SG_ERROR("Require non-NULL dense features of float64_t\n")
 		set_features(feats);
 	}
 
@@ -402,7 +402,7 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 	CMulticlassLabels *labels = dynamic_cast<CMulticlassLabels *>(m_labels);
 
 	SGVector<float64_t> resp = eval_binary_model_K(svm);
-	ASSERT(resp.vlen == labels->get_num_labels());
+	ASSERT(resp.vlen == labels->get_num_labels())
 
 	SGVector<float64_t> xi_pos_class(classes.vlen), xi_neg_class(classes.vlen);
 	SGVector<float64_t> delta_pos(classes.vlen), delta_neg(classes.vlen);
@@ -615,7 +615,7 @@ void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVe
 			if (d <= B_prime - m_B - 2)
 			{
 				mu[class_index[ctr]] = new_mu[ctr];
-				ASSERT(new_mu[ctr] == -1);
+				ASSERT(new_mu[ctr] == -1)
 				d += 2;
 				for (index_t i=0; i < class_index.vlen; ++i)
 				{
@@ -696,7 +696,7 @@ void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVe
 					}
 					else
 					{
-						ASSERT(l > 0);
+						ASSERT(l > 0)
 						mu[class_index[l]] = 0;
 						mu[class_index[ctr]] = -1;
 						d++;
@@ -804,7 +804,7 @@ void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVe
 			if (d >= -m_B - B_prime - 2)
 			{
 				mu[class_index[ctr]] = new_mu[ctr];
-				ASSERT(new_mu[ctr] == 1);
+				ASSERT(new_mu[ctr] == 1)
 				d += 2;
 
 				for (index_t i=0; i < class_index.vlen; ++i)
@@ -886,7 +886,7 @@ void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVe
 					}
 					else
 					{
-						ASSERT(l > 0);
+						ASSERT(l > 0)
 						mu[class_index[l]] = 0;
 						mu[class_index[ctr]] = -1;
 						d++;

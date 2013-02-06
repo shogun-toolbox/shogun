@@ -31,7 +31,7 @@ CPositionalPWM::~CPositionalPWM()
 
 bool CPositionalPWM::train(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return true;
 }
 
@@ -42,7 +42,7 @@ int32_t CPositionalPWM::get_num_model_parameters()
 
 float64_t CPositionalPWM::get_log_model_parameter(int32_t num_param)
 {
-	ASSERT(num_param>0 && num_param<=m_pwm.num_rows*m_pwm.num_cols+2);
+	ASSERT(num_param>0 && num_param<=m_pwm.num_rows*m_pwm.num_cols+2)
 
 	if (num_param<m_pwm.num_rows*m_pwm.num_cols)
 	{
@@ -56,15 +56,15 @@ float64_t CPositionalPWM::get_log_model_parameter(int32_t num_param)
 
 float64_t CPositionalPWM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 
 float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
 {
-	ASSERT(features);
-	ASSERT(features->get_feature_class() == C_STRING);
-	ASSERT(features->get_feature_type()==F_BYTE);
+	ASSERT(features)
+	ASSERT(features->get_feature_class() == C_STRING)
+	ASSERT(features->get_feature_type()==F_BYTE)
 
 	CStringFeatures<uint8_t>* strs=(CStringFeatures<uint8_t>*) features;
 
@@ -86,7 +86,7 @@ float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
 
 float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len, float64_t pos)
 {
-	ASSERT(m_pwm.num_cols == len);
+	ASSERT(m_pwm.num_cols == len)
 	float64_t score = CMath::log(1/(m_sigma*CMath::sqrt(2*M_PI))) -
 			CMath::sq(pos-m_mean)/(2*CMath::sq(m_sigma));
 
@@ -98,7 +98,7 @@ float64_t CPositionalPWM::get_log_likelihood_window(uint8_t* window, int32_t len
 
 void CPositionalPWM::compute_w(int32_t num_pos)
 {
-	ASSERT(m_pwm.num_rows>0 && m_pwm.num_cols>0);
+	ASSERT(m_pwm.num_rows>0 && m_pwm.num_cols>0)
 
 	int32_t m_w_rows = CMath::pow(m_pwm.num_rows, m_pwm.num_cols);
 	int32_t m_w_cols = num_pos;

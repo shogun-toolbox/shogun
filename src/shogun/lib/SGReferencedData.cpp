@@ -58,7 +58,7 @@ int32_t SGReferencedData::ref_count()
 #endif 
 
 #ifdef DEBUG_SGVECTOR
-	SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this);
+	SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this)
 #endif
 	return c;
 }
@@ -88,7 +88,7 @@ int32_t SGReferencedData::ref()
 	PTHREAD_UNLOCK(&m_refcount->lock);
 #endif 
 #ifdef DEBUG_SGVECTOR
-	SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this);
+	SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this)
 #endif
 	return c;
 }
@@ -117,7 +117,7 @@ int32_t SGReferencedData::unref()
 	if (c<=0)
 	{
 #ifdef DEBUG_SGVECTOR
-		SG_SGCDEBUG("unref() refcount %d data %p destroying\n", c, this);
+		SG_SGCDEBUG("unref() refcount %d data %p destroying\n", c, this)
 #endif
 		free_data();
 #ifdef HAVE_PTHREAD
@@ -130,7 +130,7 @@ int32_t SGReferencedData::unref()
 	else
 	{
 #ifdef DEBUG_SGVECTOR
-		SG_SGCDEBUG("unref() refcount %d data %p decreased\n", c, this);
+		SG_SGCDEBUG("unref() refcount %d data %p decreased\n", c, this)
 #endif
 		init_data();
 		m_refcount=NULL;

@@ -689,7 +689,7 @@ ocas_return_value_T svm_ocas_solver(
     new_cut[i] = i;
 
 	gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
-	SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6);
+	SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6)
 
   ocas.trn_err = nData;
   ocas.ocas_time = get_time() - ocas_start_time;
@@ -759,7 +759,7 @@ ocas_return_value_T svm_ocas_solver(
         }
         ocas.output_time += get_time()-start_time;
 				gap=(ocas.Q_P-ocas.Q_D)/CMath::abs(ocas.Q_P);
-        SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6);
+        SG_SABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(TolRel), 6)
 
         xi = 0;
         cut_length = 0;

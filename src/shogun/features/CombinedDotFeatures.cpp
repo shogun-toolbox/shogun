@@ -44,7 +44,7 @@ CCombinedDotFeatures::~CCombinedDotFeatures()
 
 void CCombinedDotFeatures::list_feature_objs()
 {
-	SG_INFO( "BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions);
+	SG_INFO( "BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 
 	CListElement* current = NULL ;
@@ -56,7 +56,7 @@ void CCombinedDotFeatures::list_feature_objs()
 		f=get_next_feature_obj(current);
 	}
 
-	SG_INFO( "END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions);
+	SG_INFO( "END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 }
 
@@ -76,7 +76,7 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 		else if (vec != f->get_num_vectors())
 		{
 			f->list_feature_obj();
-			SG_ERROR("Number of vectors (%d) mismatches in above feature obj (%d)\n", vec, f->get_num_vectors());
+			SG_ERROR("Number of vectors (%d) mismatches in above feature obj (%d)\n", vec, f->get_num_vectors())
 		}
 
 		SG_UNREF(f);
@@ -86,16 +86,16 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 
 	num_dimensions=dim;
 	num_vectors=vec;
-	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions);
+	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions)
 }
 
 float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
 	float64_t result=0;
 
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CCombinedDotFeatures* cf = (CCombinedDotFeatures*) df;
 
 	CListElement* current1 = NULL;
@@ -117,7 +117,7 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t 
 	}
 
 	// check that both have same number of feature objects inside
-	ASSERT(f1 == NULL && f2 == NULL);
+	ASSERT(f1 == NULL && f2 == NULL)
 
 	return result;
 }
@@ -147,7 +147,7 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 {
 	if (stop<=start)
 		return;
-	ASSERT(dim==num_dimensions);
+	ASSERT(dim==num_dimensions)
 
 	CListElement* current = NULL;
 	CDotFeatures* f=get_first_feature_obj(current);
@@ -182,7 +182,7 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 {
 	if (num<=0)
 		return;
-	ASSERT(dim==num_dimensions);
+	ASSERT(dim==num_dimensions)
 
 	CListElement* current = NULL;
 	CDotFeatures* f=get_first_feature_obj(current);
@@ -242,7 +242,7 @@ void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 
 bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	ASSERT(iterator);
+	ASSERT(iterator)
 	combined_feature_iterator* it = (combined_feature_iterator*) iterator;
 
 	while (it->f)
@@ -301,7 +301,7 @@ CDotFeatures* CCombinedDotFeatures::get_last_feature_obj()
 
 bool CCombinedDotFeatures::insert_feature_obj(CDotFeatures* obj)
 {
-	ASSERT(obj);
+	ASSERT(obj)
 	bool result=feature_list->insert_element(obj);
 	update_dim_feature_space_and_num_vec();
 	return result;
@@ -309,7 +309,7 @@ bool CCombinedDotFeatures::insert_feature_obj(CDotFeatures* obj)
 
 bool CCombinedDotFeatures::append_feature_obj(CDotFeatures* obj)
 {
-	ASSERT(obj);
+	ASSERT(obj)
 	bool result=feature_list->append_element(obj);
 	update_dim_feature_space_and_num_vec();
 	return result;
@@ -353,7 +353,7 @@ int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
 SGVector<float64_t> CCombinedDotFeatures::get_subfeature_weights()
 {
 	int32_t num_weights = get_num_feature_obj();
-	ASSERT(num_weights > 0);
+	ASSERT(num_weights > 0)
 
 	float64_t* weights=SG_MALLOC(float64_t, num_weights);
 
@@ -378,7 +378,7 @@ void CCombinedDotFeatures::set_subfeature_weights(SGVector<float64_t> weights)
 	CListElement* current = NULL ;
 	CDotFeatures* f = get_first_feature_obj(current);
 
-	ASSERT(weights.vlen==get_num_feature_obj());
+	ASSERT(weights.vlen==get_num_feature_obj())
 
 	while(f)
 	{

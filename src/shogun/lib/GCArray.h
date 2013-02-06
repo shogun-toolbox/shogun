@@ -31,7 +31,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		/** default constructor  */
 		CGCArray() : CSGObject()
 		{
-			SG_UNSTABLE("CGCArray::CGCArray()", "\n");
+			SG_UNSTABLE("CGCArray::CGCArray()", "\n")
 
 			array = NULL;
 			size=0;
@@ -43,7 +43,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		  */
 		CGCArray(int32_t sz) : CSGObject()
 		{
-			ASSERT(sz>0);
+			ASSERT(sz>0)
 			array = SG_CALLOC(T, sz);
 			size=sz;
 		}
@@ -63,8 +63,8 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		 */
 		inline void set(T element, int32_t index)
 		{
-			ASSERT(index>=0);
-			ASSERT(index<size);
+			ASSERT(index>=0)
+			ASSERT(index<size)
 			SG_UNREF(array[index]);
 			array[index]=element;
 			SG_REF(element);
@@ -77,8 +77,8 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		 */
 		inline T get(int32_t index)
 		{
-			ASSERT(index>=0);
-			ASSERT(index<size);
+			ASSERT(index>=0)
+			ASSERT(index<size)
 			T element=array[index];
 			SG_REF(element); //???
 			return element;

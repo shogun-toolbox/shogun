@@ -20,7 +20,7 @@ CMulticlassLabels* CVwConditionalProbabilityTree::apply_multiclass(CFeatures* da
 	if (data)
 	{
 		if (data->get_feature_class() != C_STREAMING_VW)
-			SG_ERROR("Expected StreamingVwFeatures\n");
+			SG_ERROR("Expected StreamingVwFeatures\n")
 		set_features(dynamic_cast<CStreamingVwFeatures*>(data));
 	}
 
@@ -96,13 +96,13 @@ bool CVwConditionalProbabilityTree::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (data->get_feature_class() != C_STREAMING_VW)
-			SG_ERROR("Expected StreamingVwFeatures\n");
+			SG_ERROR("Expected StreamingVwFeatures\n")
 		set_features(dynamic_cast<CStreamingVwFeatures*>(data));
 	}
 	else
 	{
 		if (!m_feats)
-			SG_ERROR("No data features provided\n");
+			SG_ERROR("No data features provided\n")
 	}
 
 	m_machines->reset_array();
@@ -212,7 +212,7 @@ void CVwConditionalProbabilityTree::train_path(VwExample *ex, node_t *node)
 float64_t CVwConditionalProbabilityTree::train_node(VwExample *ex, node_t *node)
 {
 	CVowpalWabbit *vw = dynamic_cast<CVowpalWabbit*>(m_machines->get_element(node->machine()));
-	ASSERT(vw);
+	ASSERT(vw)
 	float64_t pred = vw->predict_and_finalize(ex);
 	if (ex->ld->label != FLT_MAX)
 		vw->get_learner()->train(ex, ex->eta_round);

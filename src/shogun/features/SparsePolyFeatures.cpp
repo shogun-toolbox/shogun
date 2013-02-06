@@ -30,7 +30,7 @@ CSparsePolyFeatures::CSparsePolyFeatures()
 CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize, int32_t hash_bits)
 	: CDotFeatures(), m_normalization_values(NULL)
 {
-	ASSERT(feat);
+	ASSERT(feat)
 
 	m_feat = feat;
 	SG_REF(m_feat);
@@ -53,8 +53,8 @@ CSparsePolyFeatures::~CSparsePolyFeatures()
 
 CSparsePolyFeatures::CSparsePolyFeatures(const CSparsePolyFeatures & orig)
 {
-	SG_PRINT("CSparsePolyFeatures:\n");
-	SG_NOTIMPLEMENTED;
+	SG_PRINT("CSparsePolyFeatures:\n")
+	SG_NOTIMPLEMENTED
 }
 
 int32_t CSparsePolyFeatures::get_dim_feature_space() const
@@ -97,26 +97,26 @@ int32_t CSparsePolyFeatures::get_size() const
 
 void* CSparsePolyFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CSparsePolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 void CSparsePolyFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 
 	CSparsePolyFeatures* pf=(CSparsePolyFeatures*) df;
 
@@ -136,7 +136,7 @@ float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t v
 float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	if (vec2_len != m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
 
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
 
@@ -172,7 +172,7 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 			}
 		}
 		else if (m_degree==3)
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 	}
 
 	if (m_normalize)
@@ -185,7 +185,7 @@ float64_t CSparsePolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2
 void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	if (vec2_len!=m_output_dimensions)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
 
 	SGSparseVector<float64_t> vec=m_feat->get_sparse_feature_vector(vec_idx1);
 
@@ -225,7 +225,7 @@ void CSparsePolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, fl
 		}
 	}
 	else if (m_degree==3)
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 
 	m_feat->free_feature_vector(vec_idx1);
 }

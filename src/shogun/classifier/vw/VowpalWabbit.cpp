@@ -121,7 +121,7 @@ void CVowpalWabbit::set_prediction_out(char* file_name)
 	save_predictions = true;
 	prediction_fd = open(file_name, O_CREAT|O_TRUNC|O_WRONLY, 0666);
 	if (prediction_fd < 0)
-		SG_SERROR("Unable to open prediction file %s for writing!\n", file_name);
+		SG_SERROR("Unable to open prediction file %s for writing!\n", file_name)
 }
 
 void CVowpalWabbit::add_quadratic_pair(char* pair)
@@ -131,7 +131,7 @@ void CVowpalWabbit::add_quadratic_pair(char* pair)
 
 bool CVowpalWabbit::train_machine(CFeatures* feat)
 {
-	ASSERT(features || feat);
+	ASSERT(features || feat)
 	if (feat && (features != (CStreamingVwFeatures*) feat))
 	{
 		SG_UNREF(features);
@@ -378,24 +378,24 @@ void CVowpalWabbit::output_prediction(int32_t f, float32_t res, float32_t weight
 		ssize_t t;
 		t = write(f, temp, num);
 		if (t != num)
-			SG_SERROR("Write error!\n");
+			SG_SERROR("Write error!\n")
 
 		if (tag.begin != tag.end)
 		{
 			temp[0] = ' ';
 			t = write(f, temp, 1);
 			if (t != 1)
-				SG_SERROR("Write error!\n");
+				SG_SERROR("Write error!\n")
 
 			t = write(f, tag.begin, sizeof(char)*tag.index());
 			if (t != (ssize_t) (sizeof(char)*tag.index()))
-				SG_SERROR("Write error!\n");
+				SG_SERROR("Write error!\n")
 		}
 
 		temp[0] = '\n';
 		t = write(f, temp, 1);
 		if (t != 1)
-			SG_SERROR("Write error!\n");
+			SG_SERROR("Write error!\n")
 	}
 }
 

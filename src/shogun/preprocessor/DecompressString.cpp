@@ -25,7 +25,7 @@ CDecompressString<ST>::~CDecompressString()
 template <class ST>
 bool CDecompressString<ST>::init(CFeatures* f)
 {
-	ASSERT(f->get_feature_class()==C_STRING);
+	ASSERT(f->get_feature_class()==C_STRING)
 	return true;
 }
 
@@ -81,7 +81,7 @@ ST* CDecompressString<ST>::apply_to_string(ST* f, int32_t &len)
 	uint64_t uncompressed_size=((int32_t*) f)[1];
 
 	int32_t offs=CMath::ceil(2.0*sizeof(int32_t)/sizeof(ST));
-	ASSERT(uint64_t(len)==uint64_t(offs)+compressed_size);
+	ASSERT(uint64_t(len)==uint64_t(offs)+compressed_size)
 
 	len=uncompressed_size;
 	uncompressed_size*=sizeof(ST);
@@ -89,7 +89,7 @@ ST* CDecompressString<ST>::apply_to_string(ST* f, int32_t &len)
 	compressor->decompress((uint8_t*) (&f[offs]), compressed_size,
 			(uint8_t*) vec, uncompressed_size);
 
-	ASSERT(uncompressed_size==((uint64_t) len)*sizeof(ST));
+	ASSERT(uncompressed_size==((uint64_t) len)*sizeof(ST))
 	return vec;
 }
 

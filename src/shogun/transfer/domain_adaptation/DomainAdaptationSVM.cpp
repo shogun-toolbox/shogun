@@ -35,7 +35,7 @@ CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab
 CDomainAdaptationSVM::~CDomainAdaptationSVM()
 {
 	SG_UNREF(presvm);
-	SG_DEBUG("deleting DomainAdaptationSVM\n");
+	SG_DEBUG("deleting DomainAdaptationSVM\n")
 }
 
 
@@ -58,23 +58,23 @@ void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 bool CDomainAdaptationSVM::is_presvm_sane()
 {
 	if (!presvm) {
-		SG_ERROR("presvm is null");
+		SG_ERROR("presvm is null")
 	}
 
 	if (presvm->get_num_support_vectors() == 0) {
-		SG_ERROR("presvm has no support vectors, please train first");
+		SG_ERROR("presvm has no support vectors, please train first")
 	}
 
 	if (presvm->get_bias() != 0) {
-		SG_ERROR("presvm bias not set to zero");
+		SG_ERROR("presvm bias not set to zero")
 	}
 
 	if (presvm->get_kernel()->get_kernel_type() != this->get_kernel()->get_kernel_type()) {
-		SG_ERROR("kernel types do not agree");
+		SG_ERROR("kernel types do not agree")
 	}
 
 	if (presvm->get_kernel()->get_feature_type() != this->get_kernel()->get_feature_type()) {
-		SG_ERROR("feature types do not agree");
+		SG_ERROR("feature types do not agree")
 	}
 
 	return true;
@@ -87,12 +87,12 @@ bool CDomainAdaptationSVM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		kernel->init(data, data);
 	}
 
 	if (m_labels->get_label_type() != LT_BINARY)
-		SG_ERROR("DomainAdaptationSVM requires binary labels\n");
+		SG_ERROR("DomainAdaptationSVM requires binary labels\n")
 
 	int32_t num_training_points = get_labels()->get_num_labels();
 	CBinaryLabels* labels = (CBinaryLabels*) get_labels();
@@ -152,8 +152,8 @@ void CDomainAdaptationSVM::set_train_factor(float64_t factor)
 
 CBinaryLabels* CDomainAdaptationSVM::apply_binary(CFeatures* data)
 {
-	ASSERT(data);
-	ASSERT(presvm->get_bias()==0.0);
+	ASSERT(data)
+	ASSERT(presvm->get_bias()==0.0)
 
 	int32_t num_examples = data->get_num_vectors();
 

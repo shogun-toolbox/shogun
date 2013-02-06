@@ -86,7 +86,7 @@ void
 CSerializableJsonFile::init(const char* fname)
 {
 	if (m_filename == NULL || *m_filename == '\0') {
-		SG_WARNING("Filename not given for opening file!\n");
+		SG_WARNING("Filename not given for opening file!\n")
 		close(); return;
 	}
 

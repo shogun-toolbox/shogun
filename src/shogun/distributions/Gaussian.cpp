@@ -25,8 +25,8 @@ CGaussian::CGaussian() : CDistribution(), m_constant(0), m_d(), m_u(), m_mean(),
 CGaussian::CGaussian(const SGVector<float64_t> mean, SGMatrix<float64_t> cov,
 					ECovType cov_type) : CDistribution(), m_d(), m_u(), m_cov_type(cov_type)
 {
-	ASSERT(mean.vlen==cov.num_rows);
-	ASSERT(cov.num_rows==cov.num_cols);
+	ASSERT(mean.vlen==cov.num_rows)
+	ASSERT(cov.num_rows==cov.num_cols)
 
 	m_mean=mean;
 
@@ -64,7 +64,7 @@ bool CGaussian::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n");
+				SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features(data);
 	}
 
@@ -92,19 +92,19 @@ int32_t CGaussian::get_num_model_parameters()
 
 float64_t CGaussian::get_log_model_parameter(int32_t num_param)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 
 float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 
 float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 {
-	ASSERT(features->has_property(FP_DOT));
+	ASSERT(features->has_property(FP_DOT))
 	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
 	float64_t answer=compute_log_PDF(v);
 	return answer;
@@ -112,8 +112,8 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 
 float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
 {
-	ASSERT(m_mean.vector && m_d.vector);
-	ASSERT(point.vlen == m_mean.vlen);
+	ASSERT(m_mean.vector && m_d.vector)
+	ASSERT(point.vlen == m_mean.vlen)
 	float64_t* difference=SG_MALLOC(float64_t, m_mean.vlen);
 	memcpy(difference, point.vector, sizeof(float64_t)*m_mean.vlen);
 
@@ -164,8 +164,8 @@ void CGaussian::set_mean(SGVector<float64_t> mean)
 
 void CGaussian::set_cov(SGMatrix<float64_t> cov)
 {
-	ASSERT(cov.num_rows==cov.num_cols);
-	ASSERT(cov.num_rows==m_mean.vlen);
+	ASSERT(cov.num_rows==cov.num_cols)
+	ASSERT(cov.num_rows==m_mean.vlen)
 	decompose_cov(cov);
 	init();
 }
@@ -184,7 +184,7 @@ SGMatrix<float64_t> CGaussian::get_cov()
 	if (m_cov_type==FULL)
 	{
 		if (!m_u.matrix)
-			SG_ERROR("Unitary matrix not set\n");
+			SG_ERROR("Unitary matrix not set\n")
 
 		float64_t* temp_holder=SG_MALLOC(float64_t, m_d.vlen*m_d.vlen);
 		float64_t* diag_holder=SG_MALLOC(float64_t, m_d.vlen*m_d.vlen);

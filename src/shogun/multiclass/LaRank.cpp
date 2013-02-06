@@ -124,8 +124,8 @@ namespace shogun
 
 	static void larank_kcache_set_maximum_size (larank_kcache_t * self, int64_t entries)
 	{
-		ASSERT (self);
-		ASSERT (entries > 0);
+		ASSERT (self)
+		ASSERT (entries > 0)
 		self->maxsize = entries;
 		xpurge (self);
 	}
@@ -323,9 +323,9 @@ namespace shogun
 
 	static float64_t larank_kcache_query (larank_kcache_t * self, int32_t i, int32_t j)
 	{
-		ASSERT (self);
-		ASSERT (i >= 0);
-		ASSERT (j >= 0);
+		ASSERT (self)
+		ASSERT (i >= 0)
+		ASSERT (j >= 0)
 		return xquery (self, i, j);
 	}
 
@@ -336,7 +336,7 @@ namespace shogun
 		larank_kcache_t *selflast = self->prevbuddy;
 		larank_kcache_t *buddylast = buddy->prevbuddy;
 		/* check functions are identical */
-		ASSERT (self->func == buddy->func);
+		ASSERT (self->func == buddy->func)
 		/* make sure we are not already buddies */
 		do
 		{
@@ -355,7 +355,7 @@ namespace shogun
 
 	static float32_t* larank_kcache_query_row (larank_kcache_t * self, int32_t i, int32_t len)
 	{
-		ASSERT (i >= 0);
+		ASSERT (i >= 0)
 		if (i < self->l && len <= self->rsize[i])
 		{
 			self->rnext[self->rprev[i]] = self->rnext[i];
@@ -607,9 +607,9 @@ bool CLaRank::train_machine(CFeatures* data)
 {
 	tau = 0.0001;
 
-	ASSERT(m_kernel);
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+	ASSERT(m_kernel)
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 
 	CSignal::clear_cancel();
 
@@ -623,7 +623,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		m_kernel->init(data, data);
 	}
 
-	ASSERT(m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs());
+	ASSERT(m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
 
 	nb_train=m_labels->get_num_labels();
 	cache = m_kernel->get_cache_size();
@@ -631,7 +631,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	int32_t n_it = 1;
 	float64_t gap = DBL_MAX;
 
-	SG_INFO("Training on %d examples\n", nb_train);
+	SG_INFO("Training on %d examples\n", nb_train)
 	while (gap > get_C() && (!CSignal::cancel_computations()))      // stopping criteria
 	{
 		float64_t tr_err = 0;
@@ -650,19 +650,19 @@ bool CLaRank::train_machine(CFeatures* data)
 			}
 		}
 
-		SG_DEBUG("End of iteration %d\n", n_it++);
-		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100);
+		SG_DEBUG("End of iteration %d\n", n_it++)
+		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100)
 		gap = computeGap ();
-		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C()), 6);
+		SG_ABS_PROGRESS(gap, -CMath::log10(gap), -CMath::log10(DBL_MAX), -CMath::log10(get_C()), 6)
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
 	}
-	SG_DONE();
+	SG_DONE()
 
 	int32_t num_classes = outputs.size();
 	create_multiclass_svm(num_classes);
-	SG_DEBUG("%d classes\n", num_classes);
+	SG_DEBUG("%d classes\n", num_classes)
 
 	// Used for saving a model file
 	int32_t i=0;
@@ -675,8 +675,8 @@ bool CLaRank::train_machine(CFeatures* data)
 		float32_t* beta=o->getBetas();
 		int32_t *r2i = larank_kcache_r2i (k, l);
 
-		ASSERT(l>0);
-		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, l, 0.0);
+		ASSERT(l>0)
+		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, l, 0.0)
 
 		CSVM* svm=new CSVM(l);
 

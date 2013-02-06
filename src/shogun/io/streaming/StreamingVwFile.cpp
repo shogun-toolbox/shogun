@@ -48,7 +48,7 @@ void CStreamingVwFile::set_parser_type(E_VW_PARSER_TYPE type)
 		return;
 	}
 
-	SG_SERROR("Unrecognized parser type!\n");
+	SG_SERROR("Unrecognized parser type!\n")
 }
 
 void CStreamingVwFile::get_vector(VwExample* &ex, int32_t &len)

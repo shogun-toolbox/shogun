@@ -22,26 +22,26 @@ using namespace shogun;
 void CCrossValidationPrintOutput::init_num_runs(index_t num_runs,
 		const char* prefix)
 {
-	SG_PRINT("%scross validation number of runs %d\n", prefix, num_runs);
+	SG_PRINT("%scross validation number of runs %d\n", prefix, num_runs)
 }
 
 /** init number of folds */
 void CCrossValidationPrintOutput::init_num_folds(index_t num_folds,
 		const char* prefix)
 {
-	SG_PRINT("%scross validation number of folds %d\n", prefix, num_folds);
+	SG_PRINT("%scross validation number of folds %d\n", prefix, num_folds)
 }
 
 void CCrossValidationPrintOutput::update_run_index(index_t run_index,
 		const char* prefix)
 {
-	SG_PRINT("%scross validation run %d\n", prefix, run_index);
+	SG_PRINT("%scross validation run %d\n", prefix, run_index)
 }
 
 void CCrossValidationPrintOutput::update_fold_index(index_t fold_index,
 		const char* prefix)
 {
-	SG_PRINT("%sfold %d\n", prefix, fold_index);
+	SG_PRINT("%sfold %d\n", prefix, fold_index)
 }
 
 void CCrossValidationPrintOutput::update_train_indices(
@@ -63,14 +63,14 @@ void CCrossValidationPrintOutput::update_trained_machine(
 	{
 		CLinearMachine* linear_machine=(CLinearMachine*)machine;
 		linear_machine->get_w().display_vector("learned_w", prefix);
-		SG_PRINT("%slearned_bias=%f\n", prefix, linear_machine->get_bias());
+		SG_PRINT("%slearned_bias=%f\n", prefix, linear_machine->get_bias())
 	}
 
 	if (dynamic_cast<CKernelMachine*>(machine))
 	{
 		CKernelMachine* kernel_machine=(CKernelMachine*)machine;
 		kernel_machine->get_alphas().display_vector("learned_alphas", prefix);
-		SG_PRINT("%slearned_bias=%f\n", prefix, kernel_machine->get_bias());
+		SG_PRINT("%slearned_bias=%f\n", prefix, kernel_machine->get_bias())
 	}
 
 	if (dynamic_cast<CLinearMulticlassMachine*>(machine)
@@ -83,7 +83,7 @@ void CCrossValidationPrintOutput::update_trained_machine(
 		for (int i=0; i<mc_machine->get_num_machines(); i++)
 		{
 			CMachine* sub_machine=mc_machine->get_machine(i);
-            //SG_PRINT("%smulti-class machine %d:\n", i, sub_machine);
+            //SG_PRINT("%smulti-class machine %d:\n", i, sub_machine)
 			this->update_trained_machine(sub_machine, new_prefix);
 			SG_UNREF(sub_machine);
 		}
@@ -128,7 +128,7 @@ void CCrossValidationPrintOutput::update_test_true_result(CLabels* results,
 void CCrossValidationPrintOutput::update_evaluation_result(float64_t result,
 		const char* prefix)
 {
-	SG_PRINT("%sevaluation result=%f\n", prefix, result);
+	SG_PRINT("%sevaluation result=%f\n", prefix, result)
 }
 
 char* CCrossValidationPrintOutput::append_tab_to_string(const char* string)

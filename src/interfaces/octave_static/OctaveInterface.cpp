@@ -544,11 +544,11 @@ void COctaveInterface::set_sparse_matrix(const SGSparseVector<float64_t>* matrix
 void COctaveInterface::function_name(const SGString<sg_type>* strings, int32_t num_str)	\
 {																					\
 	if (!strings)																	\
-		SG_ERROR("Given strings are invalid.\n");									\
+		SG_ERROR("Given strings are invalid.\n")									\
 																					\
 	Cell c= Cell(dim_vector(num_str));												\
 	if (c.nelem()!=num_str)															\
-		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str);			\
+		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str)			\
 																					\
 	for (int32_t i=0; i<num_str; i++)												\
 	{																				\
@@ -557,7 +557,7 @@ void COctaveInterface::function_name(const SGString<sg_type>* strings, int32_t n
 		{																			\
 			oct_type str(dim_vector(1,len));										\
 			if (str.cols()!=len)													\
-				SG_ERROR("Couldn't create " error_string " String %d of length %d.\n", i, len);	\
+				SG_ERROR("Couldn't create " error_string " String %d of length %d.\n", i, len)	\
 																					\
 			for (int32_t j=0; j<len; j++)											\
 				str(j)= (if_type) strings[i].string[j];								\
@@ -649,7 +649,7 @@ void COctaveInterface::run_octave_exit()
 
 bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 {
-	from_if->SG_DEBUG("Entering Octave\n");
+	SG_OBJ_DEBUG(from_if, "Entering Octave\n");
 	octave_save_signal_mask ();
 
 	if (octave_set_current_context)
@@ -679,12 +679,12 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 		{
 			int len=0;
 			char* var_name = from_if->get_string(len);
-			from_if->SG_DEBUG("var_name = '%s'\n", var_name);
+			SG_OBJ_DEBUG(from_if, "var_name = '%s'\n", var_name);
 			if (strmatch(var_name, "octavecode"))
 			{
 				len=0;
 				octave_code=from_if->get_string(len);
-				from_if->SG_DEBUG("octave_code = '%s'\n", octave_code);
+				SG_OBJ_DEBUG(from_if, "octave_code = '%s'\n", octave_code);
 				break;
 			}
 			else
@@ -735,7 +735,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 		{
 			if (results(0).is_cs_list())
 			{
-				from_if->SG_DEBUG("Found return list of length %d\n", results(0).length());
+				SG_OBJ_DEBUG(from_if, "Found return list of length %d\n", results(0).length());
 				results=results(0).list_value();
 				sz=results.length();
 			}
@@ -743,7 +743,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 
 		if (sz>0 && from_if->create_return_values(sz))
 		{
-			from_if->SG_DEBUG("Found %d args\n", sz);
+			SG_OBJ_DEBUG(from_if, "Found %d args\n", sz);
 			COctaveInterface* out = new COctaveInterface(results, sz, false);
 
 			//process d
@@ -756,7 +756,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 		{
 			if (sz!=from_if->get_nlhs())
 			{
-				from_if->SG_ERROR("Number of return values (%d) does not match number of expected"
+				SG_OBJ_ERROR(from_if, "Number of return values (%d) does not match number of expected"
 						" return values (%d).\n", sz, from_if->get_nlhs());
 			}
 		}
@@ -780,7 +780,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 	octave_restore_signal_mask();
 	octave_initialized = false;
 
-	from_if->SG_DEBUG("Leaving Octave.\n");
+	SG_OBJ_DEBUG(from_if, "Leaving Octave.\n");
 	return true;
 }
 

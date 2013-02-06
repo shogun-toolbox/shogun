@@ -48,7 +48,7 @@ bool CCommWordStringKernel::init_dictionary(int32_t size)
 	dictionary_size= size;
 	SG_FREE(dictionary_weights);
 	dictionary_weights=SG_MALLOC(float64_t, size);
-	SG_DEBUG( "using dictionary of %d words\n", size);
+	SG_DEBUG( "using dictionary of %d words\n", size)
 	clear_normal();
 
 	return dictionary_weights!=NULL;
@@ -70,7 +70,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	{
 		SG_FREE(dict_diagonal_optimization);
 		dict_diagonal_optimization=SG_MALLOC(int32_t, int32_t(((CStringFeatures<uint16_t>*)l)->get_num_symbols()));
-		ASSERT(((CStringFeatures<uint16_t>*)l)->get_num_symbols() == ((CStringFeatures<uint16_t>*)r)->get_num_symbols()) ;
+		ASSERT(((CStringFeatures<uint16_t>*)l)->get_num_symbols() == ((CStringFeatures<uint16_t>*)r)->get_num_symbols()) 
 	}
 
 	return init_normalizer();
@@ -92,12 +92,12 @@ float64_t CCommWordStringKernel::compute_diag(int32_t idx_a)
 	uint16_t* av=l->get_feature_vector(idx_a, alen, free_av);
 
 	float64_t result=0.0 ;
-	ASSERT(l==r);
-	ASSERT(sizeof(uint16_t)<=sizeof(float64_t));
-	ASSERT((1<<(sizeof(uint16_t)*8)) > alen);
+	ASSERT(l==r)
+	ASSERT(sizeof(uint16_t)<=sizeof(float64_t))
+	ASSERT((1<<(sizeof(uint16_t)*8)) > alen)
 
 	int32_t num_symbols=(int32_t) l->get_num_symbols();
-	ASSERT(num_symbols<=dictionary_size);
+	ASSERT(num_symbols<=dictionary_size)
 
 	int32_t* dic = dict_diagonal_optimization;
 	memset(dic, 0, num_symbols*sizeof(int32_t));
@@ -297,16 +297,16 @@ bool CCommWordStringKernel::init_optimization(
 	if (count<=0)
 	{
 		set_is_initialized(true);
-		SG_DEBUG("empty set of SVs\n");
+		SG_DEBUG("empty set of SVs\n")
 		return true;
 	}
 
-	SG_DEBUG("initializing CCommWordStringKernel optimization\n");
+	SG_DEBUG("initializing CCommWordStringKernel optimization\n")
 
 	for (int32_t i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
-			SG_PROGRESS(i, 0, count);
+			SG_PROGRESS(i, 0, count)
 
 		add_to_normal(IDX[i], weights[i]);
 	}
@@ -317,7 +317,7 @@ bool CCommWordStringKernel::init_optimization(
 
 bool CCommWordStringKernel::delete_optimization()
 {
-	SG_DEBUG( "deleting CCommWordStringKernel optimization\n");
+	SG_DEBUG( "deleting CCommWordStringKernel optimization\n")
 
 	clear_normal();
 	return true;
@@ -327,7 +327,7 @@ float64_t CCommWordStringKernel::compute_optimized(int32_t i)
 {
 	if (!get_is_initialized())
 	{
-      SG_ERROR( "CCommWordStringKernel optimization not initialized\n");
+      SG_ERROR( "CCommWordStringKernel optimization not initialized\n")
 		return 0 ;
 	}
 
@@ -376,14 +376,14 @@ float64_t* CCommWordStringKernel::compute_scoring(
 	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
 	int32_t num_suppvec, int32_t* IDX, float64_t* alphas, bool do_init)
 {
-	ASSERT(lhs);
+	ASSERT(lhs)
 	CStringFeatures<uint16_t>* str=((CStringFeatures<uint16_t>*) lhs);
 	num_feat=1;//str->get_max_vector_length();
 	CAlphabet* alpha=str->get_alphabet();
-	ASSERT(alpha);
+	ASSERT(alpha)
 	int32_t num_bits=alpha->get_num_bits();
 	int32_t order=str->get_order();
-	ASSERT(max_degree<=order);
+	ASSERT(max_degree<=order)
 	//int32_t num_words=(int32_t) str->get_num_symbols();
 	int32_t num_words=(int32_t) str->get_original_num_symbols();
 	int32_t offset=0;
@@ -498,16 +498,16 @@ float64_t* CCommWordStringKernel::compute_scoring(
 char* CCommWordStringKernel::compute_consensus(
 	int32_t &result_len, int32_t num_suppvec, int32_t* IDX, float64_t* alphas)
 {
-	ASSERT(lhs);
-	ASSERT(IDX);
-	ASSERT(alphas);
+	ASSERT(lhs)
+	ASSERT(IDX)
+	ASSERT(alphas)
 
 	CStringFeatures<uint16_t>* str=((CStringFeatures<uint16_t>*) lhs);
 	int32_t num_words=(int32_t) str->get_num_symbols();
 	int32_t num_feat=str->get_max_vector_length();
 	int64_t total_len=((int64_t) num_feat) * num_words;
 	CAlphabet* alpha=((CStringFeatures<uint16_t>*) lhs)->get_alphabet();
-	ASSERT(alpha);
+	ASSERT(alpha)
 	int32_t num_bits=alpha->get_num_bits();
 	int32_t order=str->get_order();
 	int32_t max_idx=-1;
@@ -563,7 +563,7 @@ char* CCommWordStringKernel::compute_consensus(
 					max_score=sc;
 				}
 			}
-			ASSERT(max_idx!=-1);
+			ASSERT(max_idx!=-1)
 
 			score[num_words*i + t1]=max_score;
 			bt[num_words*i + t1]=max_idx;
@@ -583,7 +583,7 @@ char* CCommWordStringKernel::compute_consensus(
 		}
 	}
 
-	SG_DEBUG("max_idx:%i, max_score:%f\n", max_idx, max_score);
+	SG_DEBUG("max_idx:%i, max_score:%f\n", max_idx, max_score)
 
 	for (int32_t i=result_len-1; i>=num_feat; i--)
 		result[i]=alpha->remap_to_char( (uint8_t) str->get_masked_symbols( (uint16_t) max_idx >> (num_bits*(result_len-1-i)), 1) );

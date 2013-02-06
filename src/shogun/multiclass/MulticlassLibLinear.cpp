@@ -58,9 +58,9 @@ CMulticlassLibLinear::~CMulticlassLibLinear()
 SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
 {
 	if (!m_train_state)
-		SG_ERROR("Please enable save_train_state option and train machine.\n");
+		SG_ERROR("Please enable save_train_state option and train machine.\n")
 
-	ASSERT(m_labels && m_labels->get_label_type() == LT_MULTICLASS);
+	ASSERT(m_labels && m_labels->get_label_type() == LT_MULTICLASS)
 
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
@@ -94,9 +94,9 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	if (data)
 		set_features((CDotFeatures*)data);
 
-	ASSERT(m_features);
-	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS);
-	ASSERT(m_multiclass_strategy);
+	ASSERT(m_features)
+	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
+	ASSERT(m_multiclass_strategy)
 
 	int32_t num_vectors = m_features->get_num_vectors();
 	int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();

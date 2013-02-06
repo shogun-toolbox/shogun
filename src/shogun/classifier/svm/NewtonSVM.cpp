@@ -48,17 +48,17 @@ CNewtonSVM::~CNewtonSVM()
 
 bool CNewtonSVM::train_machine(CFeatures* data)
 {
-	ASSERT(m_labels);
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(m_labels)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n");
+			SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features((CDotFeatures*) data);
 	}
 
-	ASSERT(features);
+	ASSERT(features)
 
 	SGVector<float64_t> train_labels=((CBinaryLabels*) m_labels)->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
@@ -68,7 +68,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	x_n=num_vec;
 	x_d=num_feat;
 
-	ASSERT(num_vec==train_labels.vlen);
+	ASSERT(num_vec==train_labels.vlen)
 
 	float64_t* weights = SG_CALLOC(float64_t, x_d+1);
 	float64_t* out=SG_MALLOC(float64_t, x_n);
@@ -84,23 +84,23 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 
 		if (iter>num_iter)
 		{
-			SG_PRINT("Maximum number of Newton steps reached. Try larger lambda");
+			SG_PRINT("Maximum number of Newton steps reached. Try larger lambda")
 			break;
 		}
 
 		obj_fun_linear(weights, out, &obj, sv, &size_sv, grad);
 
 #ifdef DEBUG_NEWTON
-		SG_PRINT("fun linear passed !\n");
-		SG_PRINT("Obj =%f\n", obj);
-		SG_PRINT("Grad=\n");
+		SG_PRINT("fun linear passed !\n")
+		SG_PRINT("Obj =%f\n", obj)
+		SG_PRINT("Grad=\n")
 
 		for (int32_t i=0; i<x_d+1; i++)
-			SG_PRINT("grad[%d]=%.16g\n", i, grad[i]);
-		SG_PRINT("SV=\n");
+			SG_PRINT("grad[%d]=%.16g\n", i, grad[i])
+		SG_PRINT("SV=\n")
 
 		for (int32_t i=0; i<size_sv; i++)
-			SG_PRINT("sv[%d]=%d\n", i, sv[i]);
+			SG_PRINT("sv[%d]=%d\n", i, sv[i])
 #endif
 
 		SGVector<float64_t> sgv;
@@ -177,13 +177,13 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 		line_search_linear(weights, step, out, &t);
 
 #ifdef DEBUG_NEWTON
-		SG_PRINT("t=%f\n\n", t);
+		SG_PRINT("t=%f\n\n", t)
 
 		for (int32_t i=0; i<x_n; i++)
-			SG_PRINT("out[%d]=%.16g\n", i, out[i]);
+			SG_PRINT("out[%d]=%.16g\n", i, out[i])
 
 		for (int32_t i=0; i<x_d+1; i++)
-			SG_PRINT("weights[%d]=%.16g\n", i, weights[i]);
+			SG_PRINT("weights[%d]=%.16g\n", i, weights[i])
 #endif
 
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(weights, t, step, r);
@@ -210,7 +210,7 @@ bool CNewtonSVM::train_machine(CFeatures* data)
 	}
 
 #ifdef V_NEWTON
-	SG_PRINT("FINAL W AND BIAS Vector=\n\n");
+	SG_PRINT("FINAL W AND BIAS Vector=\n\n")
 	CMath::display_matrix(weights, x_d+1, 1);
 #endif
 
@@ -249,7 +249,7 @@ void CNewtonSVM::line_search_linear(float64_t* weights, float64_t* d, float64_t*
 	CMath::display_vector(d, x_d+1, "Weight vector");
 
 	for (int32_t i=0; i<x_d+1; i++)
-		SG_SPRINT("Xd[%d]=%.18g\n", i, Xd[i]);
+		SG_SPRINT("Xd[%d]=%.18g\n", i, Xd[i])
 
 	CMath::display_vector(Xd, x_n, "XD vector=");
 #endif
@@ -335,7 +335,7 @@ void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 
 #ifdef DEBUG_NEWTON
 	for (int32_t i=0; i<x_n; i++)
-		SG_SPRINT("out[%d]=%.16g\n", i, out[i]);
+		SG_SPRINT("out[%d]=%.16g\n", i, out[i])
 #endif
 
 	//create copy of w0
@@ -366,7 +366,7 @@ void CNewtonSVM::obj_fun_linear(float64_t* weights, float64_t* out,
 	{
 		features->add_to_dense_vec(temp[i], i, temp1, x_d);
 #ifdef DEBUG_NEWTON
-		SG_SPRINT("\ntemp[%d]=%f", i, temp[i]);
+		SG_SPRINT("\ntemp[%d]=%f", i, temp[i])
 		CMath::display_vector(vec.vector, x_d, "vector");
 		CMath::display_vector(temp1, x_d, "debuging");
 #endif

@@ -76,11 +76,11 @@ public:
 	 * @param k kernel */
 	virtual bool init(CKernel* k)
 	{
-		ASSERT(k);
+		ASSERT(k)
 		int32_t num_lhs = k->get_num_vec_lhs();
 		int32_t num_rhs = k->get_num_vec_rhs();
-		ASSERT(num_lhs>0);
-		ASSERT(num_rhs>0);
+		ASSERT(num_lhs>0)
+		ASSERT(num_rhs>0)
 
 
 		//same as first-element normalizer
@@ -90,10 +90,10 @@ public:
 		k->rhs=old_lhs;
 
 		if (std::string(k->get_name()) == "WeightedDegree") {
-			SG_INFO("using first-element normalization\n");
+			SG_INFO("using first-element normalization\n")
 			scale=k->compute(0, 0);
 		} else {
-			SG_INFO("no inner normalization for non-WDK kernel\n");
+			SG_INFO("no inner normalization for non-WDK kernel\n")
 			scale=1.0;
 		}
 
@@ -135,7 +135,7 @@ public:
 	 */
 	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 	{
-		SG_ERROR("normalize_lhs not implemented");
+		SG_ERROR("normalize_lhs not implemented")
 		return 0;
 	}
 
@@ -145,7 +145,7 @@ public:
 	 */
 	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 	{
-		SG_ERROR("normalize_rhs not implemented");
+		SG_ERROR("normalize_rhs not implemented")
 		return 0;
 	}
 
@@ -252,7 +252,7 @@ public:
 	{
 		normalization_constant = constant;
 
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 		return 0.0;
 	}
 

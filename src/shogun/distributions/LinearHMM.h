@@ -131,7 +131,7 @@ class CLinearHMM : public CDistribution
 		virtual float64_t get_derivative_obsolete(
 			uint16_t* vector, int32_t len, int32_t pos)
 		{
-			ASSERT(pos<len);
+			ASSERT(pos<len)
 			return get_likelihood_example(vector, len)/transition_probs[pos*num_symbols+vector[pos]];
 		}
 
@@ -172,8 +172,8 @@ class CLinearHMM : public CDistribution
 		 */
 		virtual float64_t get_log_model_parameter(int32_t num_param)
 		{
-			ASSERT(log_transition_probs);
-			ASSERT(num_param<num_params);
+			ASSERT(log_transition_probs)
+			ASSERT(num_param<num_params)
 
 			return log_transition_probs[num_param];
 		}

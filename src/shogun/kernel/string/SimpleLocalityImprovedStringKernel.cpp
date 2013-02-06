@@ -19,7 +19,7 @@ using namespace shogun;
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel()
 : CStringKernel<char>()
 {
-	SG_UNSTABLE("SimpleLocalityImprovedStringKernel");
+	SG_UNSTABLE("SimpleLocalityImprovedStringKernel")
 	init();
 }
 
@@ -27,7 +27,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	int32_t size, int32_t l, int32_t id, int32_t od)
 : CStringKernel<char>(size)
 {
-	SG_UNSTABLE("SimpleLocalityImprovedStringKernel");
+	SG_UNSTABLE("SimpleLocalityImprovedStringKernel")
 	init();
 
 	length=l;
@@ -40,7 +40,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 	int32_t len, int32_t id, int32_t od)
 : CStringKernel<char>()
 {
-	SG_UNSTABLE("SimpleLocalityImprovedStringKernel");
+	SG_UNSTABLE("SimpleLocalityImprovedStringKernel")
 	init();
 
 	length=len;
@@ -145,8 +145,8 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	}
 	}
 
-	ASSERT((DEGREE1 & ~0x7) == 0);
-	ASSERT((DEGREE2 & ~0x7) == 0);
+	ASSERT((DEGREE1 & ~0x7) == 0)
+	ASSERT((DEGREE2 & ~0x7) == 0)
 
 	pyra_len = NOF_NTS-PYRAL+1;
 	pyra_len2 = (int32_t) pyra_len/2;
@@ -214,7 +214,7 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	// can only deal with strings of same length
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t dpt;
 

@@ -77,7 +77,7 @@ CResultSet* CMulticlassModel::argmax(
 	}
 
 	int32_t dim = get_dim();
-	ASSERT(dim == w.vlen);
+	ASSERT(dim == w.vlen)
 
 	// Find the class that gives the maximum score
 
@@ -122,8 +122,8 @@ float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
 	CRealNumber* rn1 = CRealNumber::obtain_from_generic(y1);
 	CRealNumber* rn2 = CRealNumber::obtain_from_generic(y2);
-	ASSERT(rn1 != NULL);
-	ASSERT(rn2 != NULL);
+	ASSERT(rn1 != NULL)
+	ASSERT(rn2 != NULL)
 
 	return delta_loss(rn1->value, rn2->value);
 }

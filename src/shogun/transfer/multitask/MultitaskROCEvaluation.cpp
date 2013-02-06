@@ -19,7 +19,7 @@ using namespace shogun;
 void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 {
 	indices.display_vector("indices");
-	ASSERT(m_task_relation);
+	ASSERT(m_task_relation)
 
 	set<index_t> indices_set;
 	for (int32_t i=0; i<indices.vlen; i++)
@@ -42,7 +42,7 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 		{
 			if (indices_set.count(task_indices[i]))
 			{
-				//SG_SPRINT("%d is in %d task\n",task_indices[i],t);
+				//SG_SPRINT("%d is in %d task\n",task_indices[i],t)
 				task_indices_cut.push_back(task_indices[i]);
 			}
 		}
@@ -58,13 +58,13 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 
 float64_t CMultitaskROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	//SG_SPRINT("Evaluate\n");
+	//SG_SPRINT("Evaluate\n")
 	predicted->remove_all_subsets();
 	ground_truth->remove_all_subsets();
 	float64_t result = 0.0;
 	for (int32_t t=0; t<m_num_tasks; t++)
 	{
-		//SG_SPRINT("%d task", t);
+		//SG_SPRINT("%d task", t)
 		//m_tasks_indices[t].display_vector();
 		predicted->add_subset(m_tasks_indices[t]);
 		ground_truth->add_subset(m_tasks_indices[t]);

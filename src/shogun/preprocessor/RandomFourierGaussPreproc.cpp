@@ -210,7 +210,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 	}
 
 
-	SG_INFO("initializing randomcoefficients \n") ;
+	SG_INFO("initializing randomcoefficients \n") 
 
 	float64_t pi = 3.14159265;
 
@@ -248,7 +248,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 		}
 	}
 
-	SG_INFO("finished: initializing randomcoefficients \n") ;
+	SG_INFO("finished: initializing randomcoefficients \n") 
 
 	return true;
 }
@@ -258,8 +258,8 @@ void CRandomFourierGaussPreproc::get_randomcoefficients(
 		float64_t ** randomcoeff_multiplicative2, int32_t *dim_feature_space2,
 		int32_t *dim_input_space2, float64_t* kernelwidth2) const {
 
-	ASSERT(randomcoeff_additive2);
-	ASSERT(randomcoeff_multiplicative2);
+	ASSERT(randomcoeff_additive2)
+	ASSERT(randomcoeff_multiplicative2)
 
 	if (!test_rfinited()) {
 		*dim_feature_space2 = 0;
@@ -329,14 +329,14 @@ bool CRandomFourierGaussPreproc::init(CFeatures *f) {
 				"CRandomFourierGaussPreproc::init (CFeatures *f): dim_feature_space<=0 is not allowed, use void set_dim_feature_space(const int32 dim) before!\n");
 	}
 
-	SG_INFO("calling CRandomFourierGaussPreproc::init(...)\n");
+	SG_INFO("calling CRandomFourierGaussPreproc::init(...)\n")
 	int32_t num_features =
 			((CDenseFeatures<float64_t>*) f)->get_num_features();
 
 	if (!test_rfinited()) {
 		dim_input_space = num_features;
 		init_randomcoefficients();
-		ASSERT( test_rfinited());
+		ASSERT( test_rfinited())
 		return true;
 	} else {
 		dim_input_space = num_features;
@@ -375,7 +375,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 	int32_t num_features = 0;
 	float64_t* m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix(
 			num_features, num_vectors);
-	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features);
+	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
 	if (num_features!=cur_dim_input_space)
 	{

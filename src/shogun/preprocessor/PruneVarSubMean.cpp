@@ -33,8 +33,8 @@ bool CPruneVarSubMean::init(CFeatures* features)
 {
 	if (!initialized)
 	{
-		ASSERT(features->get_feature_class()==C_DENSE);
-		ASSERT(features->get_feature_type()==F_DREAL);
+		ASSERT(features->get_feature_class()==C_DENSE)
+		ASSERT(features->get_feature_type()==F_DREAL)
 
 		CDenseFeatures<float64_t>* simple_features=(CDenseFeatures<float64_t>*) features;
 		int32_t num_examples = simple_features->get_num_vectors();
@@ -90,7 +90,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 			}
 		}
 
-		SG_INFO( "Reducing number of features from %i to %i\n", num_features, num_ok) ;
+		SG_INFO( "Reducing number of features from %i to %i\n", num_features, num_ok) 
 
 		SG_FREE(idx);
 		idx=SG_MALLOC(int, num_ok);
@@ -132,14 +132,14 @@ void CPruneVarSubMean::cleanup()
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* features)
 {
-	ASSERT(initialized);
+	ASSERT(initialized)
 
 	int32_t num_vectors=0;
 	int32_t num_features=0;
 	float64_t* m=((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
 
-	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features);
-	SG_INFO( "Preprocessing feature matrix\n");
+	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features)
+	SG_INFO( "Preprocessing feature matrix\n")
 	for (int32_t vec=0; vec<num_vectors; vec++)
 	{
 		float64_t* v_src=&m[num_features*vec];
@@ -159,7 +159,7 @@ SGMatrix<float64_t> CPruneVarSubMean::apply_to_feature_matrix(CFeatures* feature
 
 	((CDenseFeatures<float64_t>*) features)->set_num_features(num_idx);
 	((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
-	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features);
+	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features)
 
 	return ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
 }

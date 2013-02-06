@@ -66,19 +66,19 @@ float64_t CDotFeatures::dense_dot_sgvec(int32_t vec_idx1, SGVector<float64_t> ve
 
 void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
-	ASSERT(output);
+	ASSERT(output)
 	// write access is internally between output[start..stop] so the following
 	// line is necessary to write to output[0...(stop-start-1)]
 	output-=start;
-	ASSERT(start>=0);
-	ASSERT(start<stop);
-	ASSERT(stop<=get_num_vectors());
+	ASSERT(start>=0)
+	ASSERT(start<stop)
+	ASSERT(stop<=get_num_vectors())
 
 	int32_t num_vectors=stop-start;
-	ASSERT(num_vectors>0);
+	ASSERT(num_vectors>0)
 
 	int32_t num_threads=parallel->get_num_threads();
-	ASSERT(num_threads>0);
+	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
 
@@ -146,17 +146,17 @@ void CDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t sto
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n");
+			SG_INFO( "prematurely stopped.           \n")
 #endif
 }
 
 void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b)
 {
-	ASSERT(sub_index);
-	ASSERT(output);
+	ASSERT(sub_index)
+	ASSERT(output)
 
 	int32_t num_threads=parallel->get_num_threads();
-	ASSERT(num_threads>0);
+	ASSERT(num_threads>0)
 
 	CSignal::clear_cancel();
 
@@ -224,7 +224,7 @@ void CDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float
 
 #ifndef WIN32
 		if ( CSignal::cancel_computations() )
-			SG_INFO( "prematurely stopped.           \n");
+			SG_INFO( "prematurely stopped.           \n")
 #endif
 }
 
@@ -287,8 +287,8 @@ SGMatrix<float64_t> CDotFeatures::get_computed_dot_feature_matrix()
 	int64_t offs=0;
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
-	ASSERT(num>0);
-	ASSERT(dim>0);
+	ASSERT(num>0)
+	ASSERT(dim>0)
 
 	SGMatrix<float64_t> m(dim, num);
 	m.zero();
@@ -306,8 +306,8 @@ SGVector<float64_t> CDotFeatures::get_computed_dot_feature_vector(int32_t num)
 {
 
 	int32_t dim=get_dim_feature_space();
-	ASSERT(num>=0 && num<=get_num_vectors());
-	ASSERT(dim>0);
+	ASSERT(num>=0 && num<=get_num_vectors())
+	ASSERT(dim>0)
 
 	SGVector<float64_t> v(dim);
 	v.zero();
@@ -385,8 +385,8 @@ SGVector<float64_t> CDotFeatures::get_mean()
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
-	ASSERT(num>0);
-	ASSERT(dim>0);
+	ASSERT(num>0)
+	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
     memset(mean.vector, 0, sizeof(float64_t)*dim);
@@ -401,15 +401,15 @@ SGVector<float64_t> CDotFeatures::get_mean()
 
 SGVector<float64_t> CDotFeatures::get_mean(CDotFeatures* lhs, CDotFeatures* rhs)
 {
-	ASSERT(lhs && rhs);
-	ASSERT(lhs->get_dim_feature_space() == rhs->get_dim_feature_space());
+	ASSERT(lhs && rhs)
+	ASSERT(lhs->get_dim_feature_space() == rhs->get_dim_feature_space())
 
 	int32_t num_lhs=lhs->get_num_vectors();
 	int32_t num_rhs=rhs->get_num_vectors();
 	int32_t dim=lhs->get_dim_feature_space();
-	ASSERT(num_lhs>0);
-	ASSERT(num_rhs>0);
-	ASSERT(dim>0);
+	ASSERT(num_lhs>0)
+	ASSERT(num_rhs>0)
+	ASSERT(dim>0)
 
 	SGVector<float64_t> mean(dim);
     memset(mean.vector, 0, sizeof(float64_t)*dim);
@@ -428,8 +428,8 @@ SGMatrix<float64_t> CDotFeatures::get_cov()
 {
 	int32_t num=get_num_vectors();
 	int32_t dim=get_dim_feature_space();
-	ASSERT(num>0);
-	ASSERT(dim>0);
+	ASSERT(num>0)
+	ASSERT(dim>0)
 
 	SGMatrix<float64_t> cov(dim, dim);
 
@@ -478,12 +478,12 @@ SGMatrix<float64_t> CDotFeatures::compute_cov(CDotFeatures* lhs, CDotFeatures* r
 	{
 		nums[i]=feats[i]->get_num_vectors();
 		dims[i]=feats[i]->get_dim_feature_space();
-		ASSERT(nums[i]>0);
-		ASSERT(dims[i]>0);
+		ASSERT(nums[i]>0)
+		ASSERT(dims[i]>0)
 		num += nums[i];
 	}
 
-	ASSERT(dims[0]==dims[1]);
+	ASSERT(dims[0]==dims[1])
 	int32_t dim = dims[0];
 
 	SGMatrix<float64_t> cov(dim, dim);
@@ -531,7 +531,7 @@ void CDotFeatures::display_progress(int32_t start, int32_t stop, int32_t v)
 	int32_t i=v-start;
 
 	if ( (i% (num_vectors/100+1))== 0)
-		SG_PROGRESS(v, 0.0, num_vectors-1);
+		SG_PROGRESS(v, 0.0, num_vectors-1)
 }
 
 void CDotFeatures::init()

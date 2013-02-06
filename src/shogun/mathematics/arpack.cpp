@@ -53,17 +53,17 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 	{
 #ifndef HAVE_SUPERLU
 		use_superlu=false;
-		SG_SINFO("Required SUPERLU isn't available in this configuration\n");
+		SG_SINFO("Required SUPERLU isn't available in this configuration\n")
 #endif
 	}
 
 	// check if nev is greater than n
 	if (nev>n)
-		SG_SERROR("Number of required eigenpairs is greater than order of the matrix\n");
+		SG_SERROR("Number of required eigenpairs is greater than order of the matrix\n")
 
 	// check specified mode
 	if (mode!=1 && mode!=3)
-		SG_SERROR("Mode not supported yet\n");
+		SG_SERROR("Mode not supported yet\n")
 
 	// init ARPACK's reverse communication parameter
  	// (should be zero initially)
@@ -153,7 +153,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		// subtract shift from main diagonal if necessary
 		if (shift!=0.0)
 		{
-			SG_SDEBUG("ARPACK: Subtracting shift\n");
+			SG_SDEBUG("ARPACK: Subtracting shift\n")
 			// if right hand side diagonal matrix is provided
 
 			if (rhs && is_rhs_diag)
@@ -170,7 +170,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		if (use_superlu)
 		{
 #ifdef HAVE_SUPERLU
-			SG_SDEBUG("SUPERLU: Constructing sparse matrix.\n");
+			SG_SDEBUG("SUPERLU: Constructing sparse matrix.\n")
 			int nnz = 0;
 			// get number of non-zero elements
 			for (i=0; i<n*n; i++)
@@ -218,14 +218,14 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 			dCreate_Dense_Matrix(&slu_B,n,1,slu_Bv,n,SLU_DN,SLU_D,SLU_GE);
 			dCreate_Dense_Matrix(&slu_X,n,1,slu_Xv,n,SLU_DN,SLU_D,SLU_GE);
 			slu_B.ncol = 0;
-			SG_SDEBUG("SUPERLU: Factorizing\n");
+			SG_SDEBUG("SUPERLU: Factorizing\n")
 			dgssvx(&options, &slu_A, perm_c, perm_r, etree, equed, R, C,
 			       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond, &ferr, &berr,
 			       &mem_usage,&stat,&slu_info);
 			slu_B.ncol = 1;
 			if (slu_info)
 			{
-				SG_SERROR("SUPERLU: Failed to factorize matrix, got %d code\n", slu_info);
+				SG_SERROR("SUPERLU: Failed to factorize matrix, got %d code\n", slu_info)
 			}
 			options.Fact = FACTORED;
 #endif
@@ -236,20 +236,20 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 			if (pos)
 			{
 				// with Cholesky
-				SG_SDEBUG("ARPACK: Using Cholesky factorization.\n");
+				SG_SDEBUG("ARPACK: Using Cholesky factorization.\n")
 				clapack_dpotrf(CblasColMajor,CblasUpper,n,matrix,n);
 			}
 			else
 			{
 				// with LUP
-				SG_SDEBUG("ARPACK: Using LUP factorization.\n");
+				SG_SDEBUG("ARPACK: Using LUP factorization.\n")
 				ipiv = SG_CALLOC(int, n);
 				clapack_dgetrf(CblasColMajor,n,n,matrix,n,ipiv);
 			}
 		}
 	}
 	// main computation loop
-	SG_SDEBUG("ARPACK: Starting main computation DSAUPD loop.\n");
+	SG_SDEBUG("ARPACK: Starting main computation DSAUPD loop.\n")
 	do
 	{
 		dsaupd_(&ido, bmat, &n, which_, &nev, &tol, resid,
@@ -297,7 +297,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 						       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond,
 						       &ferr, &berr, &mem_usage, &stat, &slu_info);
 						if (slu_info)
-							SG_SERROR("SUPERLU: GOT %d\n", slu_info);
+							SG_SERROR("SUPERLU: GOT %d\n", slu_info)
 						// move elements from resulting X to workd+ipntr(1)
 						for (i=0; i<n; i++)
 							(workd+ipntr[1]-1)[i] = slu_Xv[i];
@@ -328,7 +328,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 							       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond,
 							       &ferr, &berr, &mem_usage, &stat, &slu_info);
 							if (slu_info)
-								SG_SERROR("SUPERLU: GOT %d\n", slu_info);
+								SG_SERROR("SUPERLU: GOT %d\n", slu_info)
 							for (i=0; i<n; i++)
 								(workd+ipntr[1]-1)[i] = slu_Xv[i];
 #endif
@@ -355,7 +355,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 							       &slu_L, &slu_U, work, lwork, &slu_B, &slu_X, &rpg, &rcond,
 							       &ferr, &berr, &mem_usage, &stat, &slu_info);
 							if (slu_info)
-								SG_SERROR("SUPERLU: GOT %d\n", slu_info);
+								SG_SERROR("SUPERLU: GOT %d\n", slu_info)
 							for (i=0; i<n; i++)
 								(workd+ipntr[1]-1)[i] = slu_Xv[i];
 #endif
@@ -416,18 +416,18 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 	if (info<0)
 	{
 		if ((info<=-1)&&(info>=-6))
-			SG_SWARNING("ARPACK: DSAUPD failed. Wrong parameter passed.\n");
+			SG_SWARNING("ARPACK: DSAUPD failed. Wrong parameter passed.\n")
 		else if (info==-7)
-			SG_SWARNING("ARPACK: DSAUPD failed. Workaround array size is not sufficient.\n");
+			SG_SWARNING("ARPACK: DSAUPD failed. Workaround array size is not sufficient.\n")
 		else
-			SG_SWARNING("ARPACK: DSAUPD failed. Error code: %d.\n", info);
+			SG_SWARNING("ARPACK: DSAUPD failed. Error code: %d.\n", info)
 
 		status = info;
 	}
 	else
 	{
 		if (info==1)
-			SG_SWARNING("ARPACK: Maximum number of iterations reached.\n");
+			SG_SWARNING("ARPACK: Maximum number of iterations reached.\n")
 
 		// allocate select for dseupd
 		int* select = SG_MALLOC(int, ncv);
@@ -442,7 +442,7 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		// specify that eigenvectors are going to be computed too
 		int rvec = 1;
 
-		SG_SDEBUG("APRACK: Starting DSEUPD.\n");
+		SG_SDEBUG("APRACK: Starting DSEUPD.\n")
 
 		// call dseupd_ routine
 		dseupd_(&rvec, all_, select, d, v, &ldv, &sigma, bmat,
@@ -452,12 +452,12 @@ void arpack_dsxupd(double* matrix, double* rhs, bool is_rhs_diag, int n, int nev
 		// check for errors
 		if (ierr!=0)
 		{
-			SG_SWARNING("ARPACK: DSEUPD failed with status %d.\n", ierr);
+			SG_SWARNING("ARPACK: DSEUPD failed with status %d.\n", ierr)
 			status = -1;
 		}
 		else
 		{
-			SG_SDEBUG("ARPACK: Storing eigenpairs.\n");
+			SG_SDEBUG("ARPACK: Storing eigenpairs.\n")
 
 			// store eigenpairs to specified arrays
 			for (i=0; i<nev; i++)

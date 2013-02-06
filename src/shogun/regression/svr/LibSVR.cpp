@@ -43,14 +43,14 @@ EMachineType CLibSVR::get_classifier_type()
 
 bool CLibSVR::train_machine(CFeatures* data)
 {
-	ASSERT(kernel);
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_REGRESSION);
+	ASSERT(kernel)
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_REGRESSION)
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		kernel->init(data, data);
 	}
 
@@ -59,7 +59,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	struct svm_node* x_space;
 
 	problem.l=m_labels->get_num_labels();
-	SG_INFO( "%d trainlabels\n", problem.l);
+	SG_INFO( "%d trainlabels\n", problem.l)
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
@@ -97,14 +97,14 @@ bool CLibSVR::train_machine(CFeatures* data)
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
-		SG_ERROR("Error: %s\n",error_msg);
+		SG_ERROR("Error: %s\n",error_msg)
 
 	model = svm_train(&problem, &param);
 
 	if (model)
 	{
-		ASSERT(model->nr_class==2);
-		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]));
+		ASSERT(model->nr_class==2)
+		ASSERT((model->l==0) || (model->l>0 && model->SV && model->sv_coef && model->sv_coef[0]))
 
 		int32_t num_sv=model->l;
 

@@ -39,15 +39,15 @@ CMulticlassOVREvaluation::~CMulticlassOVREvaluation()
 
 float64_t CMulticlassOVREvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(m_binary_evaluation);
-	ASSERT(predicted);
-	ASSERT(ground_truth);
+	ASSERT(m_binary_evaluation)
+	ASSERT(predicted)
+	ASSERT(ground_truth)
 	int32_t n_labels = predicted->get_num_labels();
-	ASSERT(n_labels);
+	ASSERT(n_labels)
 	CMulticlassLabels* predicted_mc = (CMulticlassLabels*)predicted;
 	CMulticlassLabels* ground_truth_mc = (CMulticlassLabels*)ground_truth;
 	int32_t n_classes = predicted_mc->get_multiclass_confidences(0).size();
-	ASSERT(n_classes>0);
+	ASSERT(n_classes>0)
 	m_last_results = SGVector<float64_t>(n_classes);
 	
 	SGMatrix<float64_t> all(n_labels,n_classes);

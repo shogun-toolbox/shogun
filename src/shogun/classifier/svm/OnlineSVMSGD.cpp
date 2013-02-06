@@ -70,15 +70,15 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
-			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
+			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
 		set_features((CStreamingDotFeatures*) data);
 	}
 
 	features->start_parser();
 
 	// allocate memory for w and initialize everyting w and bias with 0
-	ASSERT(features);
-	ASSERT(features->get_has_labels());
+	ASSERT(features)
+	ASSERT(features->get_has_labels())
 	if (w)
 		SG_FREE(w);
 	w_dim=1;
@@ -93,7 +93,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
-	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0);
+	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0)
 
 	//do the sgd
 	calibrate();
@@ -159,7 +159,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 
 	features->end_parser();
 	float64_t wnorm =  SGVector<float32_t>::dot(w,w, w_dim);
-	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias);
+	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias)
 
 	return true;
 }
@@ -192,7 +192,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 			break;
 	}
 
-	SG_PRINT("Online SGD calibrated using %d vectors.\n", n);
+	SG_PRINT("Online SGD calibrated using %d vectors.\n", n)
 
 	// bias update scaling
 	bscale = 0.5*m/n;
@@ -200,7 +200,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
 
-	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale);
+	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale)
 
 	SG_FREE(c);
 }

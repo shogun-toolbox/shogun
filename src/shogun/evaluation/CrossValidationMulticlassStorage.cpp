@@ -64,11 +64,11 @@ CCrossValidationMulticlassStorage::~CCrossValidationMulticlassStorage()
 void CCrossValidationMulticlassStorage::post_init()
 {
 	if (m_initialized)
-		SG_ERROR("CrossValidationMulticlassStorage was already initialized once\n");
+		SG_ERROR("CrossValidationMulticlassStorage was already initialized once\n")
 
 	if (m_compute_ROC)
 	{
-		SG_DEBUG("Allocating %d ROC graphs\n", m_num_folds*m_num_runs*m_num_classes);
+		SG_DEBUG("Allocating %d ROC graphs\n", m_num_folds*m_num_runs*m_num_classes)
 		m_fold_ROC_graphs = SG_MALLOC(SGMatrix<float64_t>, m_num_folds*m_num_runs*m_num_classes);
 		for (int32_t i=0; i<m_num_folds*m_num_runs*m_num_classes; i++)
 			new (&m_fold_ROC_graphs[i]) SGMatrix<float64_t>();
@@ -76,7 +76,7 @@ void CCrossValidationMulticlassStorage::post_init()
 
 	if (m_compute_PRC)
 	{
-		SG_DEBUG("Allocating %d PRC graphs\n", m_num_folds*m_num_runs*m_num_classes);
+		SG_DEBUG("Allocating %d PRC graphs\n", m_num_folds*m_num_runs*m_num_classes)
 		m_fold_PRC_graphs = SG_MALLOC(SGMatrix<float64_t>, m_num_folds*m_num_runs*m_num_classes);
 		for (int32_t i=0; i<m_num_folds*m_num_runs*m_num_classes; i++)
 			new (&m_fold_PRC_graphs[i]) SGMatrix<float64_t>();
@@ -99,7 +99,7 @@ void CCrossValidationMulticlassStorage::post_init()
 
 void CCrossValidationMulticlassStorage::init_expose_labels(CLabels* labels)
 {
-	ASSERT((CMulticlassLabels*)labels);
+	ASSERT((CMulticlassLabels*)labels)
 	m_num_classes = ((CMulticlassLabels*)labels)->get_num_classes();
 }
 
@@ -110,7 +110,7 @@ void CCrossValidationMulticlassStorage::post_update_results()
 	int32_t n_evals = m_binary_evaluations->get_num_elements();
 	for (int32_t c=0; c<m_num_classes; c++)
 	{
-		SG_DEBUG("Computing ROC for run %d fold %d class %d", m_current_run_index, m_current_fold_index, c);
+		SG_DEBUG("Computing ROC for run %d fold %d class %d", m_current_run_index, m_current_fold_index, c)
 		CBinaryLabels* pred_labels_binary = m_pred_labels->get_binary_for_class(c);
 		CBinaryLabels* true_labels_binary = m_true_labels->get_binary_for_class(c);
 		if (m_compute_ROC)

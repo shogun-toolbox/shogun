@@ -75,7 +75,7 @@ SSKFeatures *CSparseSpatialSampleStringKernel::extractTriple(int **S, int *len, 
 			c++;
 		}
 	}
-	ASSERT(nfeat==c);
+	ASSERT(nfeat==c)
 	F = SG_MALLOC(SSKFeatures, 1);
 	(*F).features = features;
 	(*F).group = group;
@@ -374,6 +374,6 @@ float64_t CSparseSpatialSampleStringKernel::compute(int32_t idx_a, int32_t idx_b
 	if (t==3)
 		compute_triple(idx_a, idx_b);
 
-	SG_ERROR("t out of range - shouldn't happen\n");
+	SG_ERROR("t out of range - shouldn't happen\n")
 	return -1;
 }

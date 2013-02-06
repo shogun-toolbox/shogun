@@ -43,7 +43,7 @@ bool CGUILabels::load(char* filename, char* target)
 	else if (strncmp(target, "TRAIN", 5)==0)
 		labels=train_labels;
 	else
-		SG_ERROR("Invalid target %s.\n", target);
+		SG_ERROR("Invalid target %s.\n", target)
 
 	if (labels)
 	{
@@ -64,7 +64,7 @@ bool CGUILabels::load(char* filename, char* target)
 			return true;
 		}
 		else
-			SG_ERROR("Loading labels failed.\n");
+			SG_ERROR("Loading labels failed.\n")
 
 		SG_UNREF(file);
 	}

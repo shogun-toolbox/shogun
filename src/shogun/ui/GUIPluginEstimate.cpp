@@ -36,9 +36,9 @@ bool CGUIPluginEstimate::new_estimator(float64_t pos, float64_t neg)
 	SG_REF(estimator);
 
 	if (!estimator)
-		SG_ERROR("Could not create new plugin estimator, pos_pseudo %f, neg_pseudo %f\n", pos_pseudo, neg_pseudo);
+		SG_ERROR("Could not create new plugin estimator, pos_pseudo %f, neg_pseudo %f\n", pos_pseudo, neg_pseudo)
 	else
-		SG_INFO("Created new plugin estimator (%p), pos_pseudo %f, neg_pseudo %f\n", estimator, pos_pseudo, neg_pseudo);
+		SG_INFO("Created new plugin estimator (%p), pos_pseudo %f, neg_pseudo %f\n", estimator, pos_pseudo, neg_pseudo)
 
 	return true;
 }
@@ -51,19 +51,19 @@ bool CGUIPluginEstimate::train()
 	bool result=false;
 
 	if (!trainlabels)
-		SG_ERROR("No labels available.\n");
+		SG_ERROR("No labels available.\n")
 
 	if (!trainfeatures)
-		SG_ERROR("No features available.\n");
+		SG_ERROR("No features available.\n")
 
-	ASSERT(trainfeatures->get_feature_type()==F_WORD);
+	ASSERT(trainfeatures->get_feature_type()==F_WORD)
 
 	estimator->set_features(trainfeatures);
 	estimator->set_labels(trainlabels);
 	if (estimator)
 		result=estimator->train();
 	else
-		SG_ERROR("No estimator available.\n");
+		SG_ERROR("No estimator available.\n")
 
 	return result;
 }
@@ -86,13 +86,13 @@ CLabels* CGUIPluginEstimate::apply()
 
 	if (!estimator)
 	{
-		SG_ERROR( "no estimator available") ;
+		SG_ERROR( "no estimator available") 
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		SG_ERROR( "no test features available") ;
+		SG_ERROR( "no test features available") 
 		return 0;
 	}
 
@@ -107,13 +107,13 @@ float64_t CGUIPluginEstimate::apply_one(int32_t idx)
 
 	if (!estimator)
 	{
-		SG_ERROR( "no estimator available") ;
+		SG_ERROR( "no estimator available") 
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		SG_ERROR( "no test features available") ;
+		SG_ERROR( "no test features available") 
 		return 0;
 	}
 

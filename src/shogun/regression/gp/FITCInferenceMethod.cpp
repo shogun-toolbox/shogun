@@ -117,19 +117,19 @@ void CFITCInferenceMethod::update_all()
 void CFITCInferenceMethod::check_members()
 {
 	if (!m_labels)
-		SG_ERROR("No labels set\n");
+		SG_ERROR("No labels set\n")
 
 	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Expected RegressionLabels\n");
+		SG_ERROR("Expected RegressionLabels\n")
 
 	if (!m_features)
-		SG_ERROR("No features set!\n");
+		SG_ERROR("No features set!\n")
 
 	if (!m_latent_features)
-		SG_ERROR("No latent features set!\n");
+		SG_ERROR("No latent features set!\n")
 
 	if (m_labels->get_num_labels() != m_features->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n");
+		SG_ERROR("Number of training vectors does not match number of labels\n")
 
 	if(m_features->get_feature_class() == C_COMBINED)
 	{
@@ -138,13 +138,13 @@ void CFITCInferenceMethod::check_members()
 				get_first_feature_obj();
 
 		if (!feat->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n");
+			SG_ERROR("Specified features are not of type CFeatures\n")
 
 		if (feat->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
+			SG_ERROR("Expected Simple Features\n")
 
 		if (feat->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
+			SG_ERROR("Expected Real Features\n")
 
 		SG_UNREF(feat);
 	}
@@ -152,13 +152,13 @@ void CFITCInferenceMethod::check_members()
 	else
 	{
 		if (!m_features->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n");
+			SG_ERROR("Specified features are not of type CFeatures\n")
 
 		if (m_features->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
+			SG_ERROR("Expected Simple Features\n")
 
 		if (m_features->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
+			SG_ERROR("Expected Real Features\n")
 	}
 
 	if(m_latent_features->get_feature_class() == C_COMBINED)
@@ -168,13 +168,13 @@ void CFITCInferenceMethod::check_members()
 				get_first_feature_obj();
 
 		if (!feat->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n");
+			SG_ERROR("Specified features are not of type CFeatures\n")
 
 		if (feat->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
+			SG_ERROR("Expected Simple Features\n")
 
 		if (feat->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
+			SG_ERROR("Expected Real Features\n")
 
 		SG_UNREF(feat);
 	}
@@ -182,23 +182,23 @@ void CFITCInferenceMethod::check_members()
 	else
 	{
 		if (!m_latent_features->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n");
+			SG_ERROR("Specified features are not of type CFeatures\n")
 
 		if (m_latent_features->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n");
+			SG_ERROR("Expected Simple Features\n")
 
 		if (m_latent_features->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n");
+			SG_ERROR("Expected Real Features\n")
 	}
 
 	if (m_latent_matrix.num_rows != m_feature_matrix.num_rows)
-		SG_ERROR("Regular and Latent Features do not match in dimensionality!\n");
+		SG_ERROR("Regular and Latent Features do not match in dimensionality!\n")
 
 	if (!m_kernel)
-		SG_ERROR( "No kernel assigned!\n");
+		SG_ERROR( "No kernel assigned!\n")
 
 	if (!m_mean)
-		SG_ERROR( "No mean function assigned!\n");
+		SG_ERROR( "No mean function assigned!\n")
 
 	if (m_model->get_model_type() != LT_GAUSSIAN)
 	{

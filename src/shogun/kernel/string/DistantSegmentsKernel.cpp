@@ -55,10 +55,10 @@ float64_t CDistantSegmentsKernel::compute(int32_t idx_a, int32_t idx_b)
 			free_a);
 	char* b=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, bLength,
 			free_b);
-	ASSERT(a && b);
+	ASSERT(a && b)
 
 	if ((aLength<1)||(bLength<1))
-		SG_ERROR("Empty sequences");
+		SG_ERROR("Empty sequences")
 
 	float64_t result=compute(a, aLength, b, bLength, m_delta, m_theta);
 

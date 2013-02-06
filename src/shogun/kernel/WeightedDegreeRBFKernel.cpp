@@ -44,13 +44,13 @@ CWeightedDegreeRBFKernel::~CWeightedDegreeRBFKernel()
 bool CWeightedDegreeRBFKernel::init(CFeatures* l, CFeatures* r)
 {
 	CDotKernel::init(l, r);
-	SG_DEBUG("Initialized WeightedDegreeRBFKernel (%p).\n", this);
+	SG_DEBUG("Initialized WeightedDegreeRBFKernel (%p).\n", this)
 	return init_normalizer();
 }
 
 bool CWeightedDegreeRBFKernel::init_wd_weights()
 {
-	ASSERT(degree>0);
+	ASSERT(degree>0)
 
 	if (weights!=0)	SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, degree);
@@ -66,7 +66,7 @@ bool CWeightedDegreeRBFKernel::init_wd_weights()
 		for (i=0; i<degree; i++)
 			weights[i]/=sum;
 
-		SG_DEBUG("Initialized weights for WeightedDegreeRBFKernel (%p).\n", this);
+		SG_DEBUG("Initialized weights for WeightedDegreeRBFKernel (%p).\n", this)
 		return true;
 	}
 	else
@@ -81,8 +81,8 @@ float64_t CWeightedDegreeRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
-	ASSERT(alen%nof_properties == 0);
+	ASSERT(alen==blen)
+	ASSERT(alen%nof_properties == 0)
 
 	float64_t result=0;
 

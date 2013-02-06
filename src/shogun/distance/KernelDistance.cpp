@@ -29,7 +29,7 @@ CKernelDistance::CKernelDistance(float64_t w, CKernel* k)
 
 	kernel=k;
 	width=w;
-	ASSERT(kernel);
+	ASSERT(kernel)
 	SG_REF(kernel);
 }
 
@@ -41,7 +41,7 @@ CKernelDistance::CKernelDistance(
 
 	kernel=k;
 	width=w;
-	ASSERT(kernel);
+	ASSERT(kernel)
 	SG_REF(kernel);
 
 	init(l, r);
@@ -57,7 +57,7 @@ CKernelDistance::~CKernelDistance()
 
 bool CKernelDistance::init(CFeatures* l, CFeatures* r)
 {
-	ASSERT(kernel);
+	ASSERT(kernel)
 	kernel->init(l,r);
 	return CDistance::init(l,r);
 }

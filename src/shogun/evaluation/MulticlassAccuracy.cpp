@@ -17,10 +17,10 @@ using namespace shogun;
 
 float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted && ground_truth);
-	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
-	ASSERT(predicted->get_label_type() == LT_MULTICLASS);
-	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS);
+	ASSERT(predicted && ground_truth)
+	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
+	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
+	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)
 	int32_t length = predicted->get_num_labels();
 	int32_t correct = 0;
 	if (m_ignore_rejects)
@@ -45,7 +45,7 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 				correct++;
 		}
 		m_rejects_num = length-total;
-		SG_DEBUG("correct=%d, total=%d, rejected=%d\n",correct,total,length-total);
+		SG_DEBUG("correct=%d, total=%d, rejected=%d\n",correct,total,length-total)
 		return ((float64_t)correct)/total;
 	}
 	return 0.0;
@@ -53,7 +53,7 @@ float64_t CMulticlassAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 
 SGMatrix<int32_t> CMulticlassAccuracy::get_confusion_matrix(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels());
+	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	int32_t length = ground_truth->get_num_labels();
 	int32_t num_classes = ((CMulticlassLabels*) ground_truth)->get_num_classes();
 	SGMatrix<int32_t> confusion_matrix(num_classes, num_classes);

@@ -64,7 +64,7 @@ class CCrossValidationResult : public CEvaluationResult
 						conf_int_up, conf_int_alpha, mean);
 			}
 			else
-				SG_SPRINT("%f\n", mean);
+				SG_SPRINT("%f\n", mean)
 		}
 
 	public:

@@ -21,7 +21,7 @@ CBalancedConditionalProbabilityTree::CBalancedConditionalProbabilityTree()
 void CBalancedConditionalProbabilityTree::set_alpha(float64_t alpha)
 {
 	if (alpha < 0 || alpha > 1)
-		SG_ERROR("expect 0 <= alpha <= 1, but got %g\n", alpha);
+		SG_ERROR("expect 0 <= alpha <= 1, but got %g\n", alpha)
 	m_alpha = alpha;
 }
 

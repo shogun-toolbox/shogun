@@ -30,7 +30,7 @@ CVwCacheReader::CVwCacheReader(char * fname, CVwEnvironment* env_to_use)
 	fd = open(fname, O_RDONLY);
 
 	if (fd < 0)
-		SG_SERROR("Error opening the file %s for reading from cache!\n");
+		SG_SERROR("Error opening the file %s for reading from cache!\n")
 
 	env = env_to_use;
 	SG_REF(env);

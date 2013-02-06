@@ -73,7 +73,7 @@ void CMKLMulticlass::initsvm()
 {
    if (!m_labels)
 	{
-      SG_ERROR("CMKLMulticlass::initsvm(): the set labels is NULL\n");
+      SG_ERROR("CMKLMulticlass::initsvm(): the set labels is NULL\n")
 	}
 
 	SG_UNREF(svm);
@@ -96,7 +96,7 @@ void CMKLMulticlass::initlpsolver()
 {
    if (!m_kernel)
 	{
-      SG_ERROR("CMKLMulticlass::initlpsolver(): the set kernel is NULL\n");
+      SG_ERROR("CMKLMulticlass::initlpsolver(): the set kernel is NULL\n")
 	}
 
    if (m_kernel->get_kernel_type()!=K_COMBINED)
@@ -108,7 +108,7 @@ void CMKLMulticlass::initlpsolver()
 
    int numker=dynamic_cast<CCombinedKernel *>(m_kernel)->get_num_subkernels();
 
-	ASSERT(numker>0);
+	ASSERT(numker>0)
 	/*
 	if (lpw)
 	{
@@ -147,7 +147,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 		wnew=weightshistory.back();
 		float64_t delta=0;
 
-		ASSERT (wold.size()==wnew.size());
+		ASSERT (wold.size()==wnew.size())
 
 
 		if((pnorm<=1)&&(!normweightssquared.empty()))
@@ -169,7 +169,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			delta+=0.5*normweightssquared[maxind];
 			//delta=fabs(delta);
-			SG_SINFO("L1 Norm chosen, MKL part of duality gap %f \n",delta);
+			SG_SINFO("L1 Norm chosen, MKL part of duality gap %f \n",delta)
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
 				return(true);
@@ -195,10 +195,10 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			else
 			{
-            SG_SWARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n");
+            SG_SWARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
 				delta=sqrt(delta);
 			}			
-				SG_SINFO("weight delta %f \n",delta);
+				SG_SINFO("weight delta %f \n",delta)
 
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
@@ -257,7 +257,7 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
    SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
    std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
 
-	ASSERT (trainlabels2.size()>0);
+	ASSERT (trainlabels2.size()>0)
 	float64_t sum=0;
 
    for (int32_t nc=0; nc< ((CMulticlassLabels*) m_labels)->get_num_classes();++nc)
@@ -335,9 +335,9 @@ float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 
 bool CMKLMulticlass::train_machine(CFeatures* data)
 {
-   ASSERT(m_kernel);
-   ASSERT(m_labels && m_labels->get_num_labels());
-   ASSERT(m_labels->get_label_type() == LT_MULTICLASS);
+   ASSERT(m_kernel)
+   ASSERT(m_labels && m_labels->get_num_labels())
+   ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
 
    int numcl=((CMulticlassLabels*) m_labels)->get_num_classes();
 
@@ -392,7 +392,7 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 
 
 	//set alphas, bias, support vecs
-	ASSERT(numcl>=1);
+	ASSERT(numcl>=1)
    create_multiclass_svm(numcl);
 
 	for (int32_t i=0; i<numcl; i++)
@@ -455,5 +455,5 @@ void CMKLMulticlass::set_mkl_norm(float64_t norm)
 {
 	pnorm=norm;
 	if(pnorm<1 )
-      SG_ERROR("CMKLMulticlass::set_mkl_norm(float64_t norm) : parameter pnorm<1");
+      SG_ERROR("CMKLMulticlass::set_mkl_norm(float64_t norm) : parameter pnorm<1")
 }

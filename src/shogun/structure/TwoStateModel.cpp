@@ -62,7 +62,7 @@ float64_t CTwoStateModel::loss(CSequence* label_seq_lhs, CSequence* label_seq_rh
 	SGVector< int32_t > state_seq_lhs = labels_to_states(label_seq_lhs);
 	SGVector< int32_t > state_seq_rhs = labels_to_states(label_seq_rhs);
 
-	ASSERT(state_seq_lhs.vlen == state_seq_rhs.vlen);
+	ASSERT(state_seq_lhs.vlen == state_seq_rhs.vlen)
 
 	float64_t ret = 0.0;
 	for ( int32_t i = 0 ; i < state_seq_lhs.vlen ; ++i )
@@ -201,7 +201,7 @@ void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 		int32_t num_feats) const
 {
-	REQUIRE(num_free_states == 2, "Using the TwoStateModel only two states are free\n");
+	REQUIRE(num_free_states == 2, "Using the TwoStateModel only two states are free\n")
 
 	SGVector< int32_t > monotonicity(num_feats*num_free_states);
 

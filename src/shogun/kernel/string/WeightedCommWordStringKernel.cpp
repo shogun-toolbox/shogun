@@ -25,7 +25,7 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	int32_t size, bool us)
 : CCommWordStringKernel(size, us)
 {
-	ASSERT(us==false);
+	ASSERT(us==false)
 	init();
 }
 
@@ -34,7 +34,7 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	int32_t size)
 : CCommWordStringKernel(size, us)
 {
-	ASSERT(us==false);
+	ASSERT(us==false)
 	init();
 
 	init(l,r);
@@ -84,7 +84,7 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 
 bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 {
-	ASSERT(w.vlen==degree);
+	ASSERT(w.vlen==degree)
 
 	SG_FREE(weights);
 	weights = w.vector;
@@ -220,8 +220,8 @@ void CWeightedCommWordStringKernel::add_to_normal(
 
 void CWeightedCommWordStringKernel::merge_normal()
 {
-	ASSERT(get_is_initialized());
-	ASSERT(use_sign==false);
+	ASSERT(get_is_initialized())
+	ASSERT(use_sign==false)
 
 	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
 	uint32_t num_symbols=(uint32_t) s->get_num_symbols();
@@ -253,9 +253,9 @@ void CWeightedCommWordStringKernel::merge_normal()
 float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 {
 	if (!get_is_initialized())
-		SG_ERROR( "CCommWordStringKernel optimization not initialized\n");
+		SG_ERROR( "CCommWordStringKernel optimization not initialized\n")
 
-	ASSERT(use_sign==false);
+	ASSERT(use_sign==false)
 
 	float64_t result=0;
 	bool free_vec;

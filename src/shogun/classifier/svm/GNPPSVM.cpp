@@ -32,19 +32,19 @@ CGNPPSVM::~CGNPPSVM()
 
 bool CGNPPSVM::train_machine(CFeatures* data)
 {
-	ASSERT(kernel);
-	ASSERT(m_labels && m_labels->get_num_labels());
-	ASSERT(m_labels->get_label_type() == LT_BINARY);
+	ASSERT(kernel)
+	ASSERT(m_labels && m_labels->get_num_labels())
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n");
+			SG_ERROR("Number of training vectors does not match number of labels\n")
 		kernel->init(data, data);
 	}
 
 	int32_t num_data=m_labels->get_num_labels();
-	SG_INFO("%d trainlabels\n", num_data);
+	SG_INFO("%d trainlabels\n", num_data)
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
 	for (int32_t i=0; i<num_data; i++)
@@ -55,7 +55,7 @@ bool CGNPPSVM::train_machine(CFeatures* data)
 		else if (lab==-1)
 			vector_y[i]=2;
 		else
-			SG_ERROR("label unknown (%f)\n", lab);
+			SG_ERROR("label unknown (%f)\n", lab)
 	}
 
 	float64_t C=get_C1();

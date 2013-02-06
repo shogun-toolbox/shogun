@@ -62,7 +62,7 @@ float64_t CHSIC::compute_statistic()
 	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
 			"kernel specified!\n", get_name());
 
-	REQUIRE(m_p_and_q, "%s::compute_statistic: features needed!\n", get_name());
+	REQUIRE(m_p_and_q, "%s::compute_statistic: features needed!\n", get_name())
 
 	/* compute kernel matrices */
 	SGMatrix<float64_t> K=get_kernel_matrix_K();
@@ -135,7 +135,7 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
 			"kernel specified!\n", get_name());
 
-	REQUIRE(m_p_and_q, "%s::fit_null_gamma: features needed!\n", get_name());
+	REQUIRE(m_p_and_q, "%s::fit_null_gamma: features needed!\n", get_name())
 
 	index_t m=m_m;
 
@@ -171,7 +171,7 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 		trace+=CMath::pow(K(i,i)*L(i,i), 2);
 
 	trace/=36.0;
-	SG_DEBUG("trace %f\n", trace);
+	SG_DEBUG("trace %f\n", trace)
 
 	/* compute sum of elements of MATLAB: (1/6 * Kc.*Lc).^2 */
 	float64_t sum=0;
@@ -181,38 +181,38 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 			sum+=CMath::pow(K(i,j)*L(i,j), 2);
 	}
 	sum/=36.0;
-	SG_DEBUG("sum %f\n", sum);
+	SG_DEBUG("sum %f\n", sum)
 
 	/* compute MATLAB: 1/m/(m-1)*(sum(sum(varHSIC)) - sum(diag(varHSIC))),
 	 * second term is bias correction */
 	float64_t var_hsic=1.0/m/(m-1)*(sum-trace);
-	SG_DEBUG("1.0/m/(m-1)*(sum-trace): %f\n", var_hsic);
+	SG_DEBUG("1.0/m/(m-1)*(sum-trace): %f\n", var_hsic)
 
 	/* finally, compute variance of hsic under H0
 	 * MATLAB: varHSIC = 72*(m-4)*(m-5)/m/(m-1)/(m-2)/(m-3)  *  varHSIC */
 	var_hsic=72.0*(m-4)*(m-5)/m/(m-1)/(m-2)/(m-3)*var_hsic;
-	SG_DEBUG("var_hsic: %f\n", var_hsic);
+	SG_DEBUG("var_hsic: %f\n", var_hsic)
 
 	/* compute mean of matrices with diagonal elements zero on the base of sums
 	 * and trace from K and L which were computed above */
 	float64_t mu_x=1.0/m/(m-1)*(sum_K-trace_K);
 	float64_t mu_y=1.0/m/(m-1)*(sum_L-trace_L);
-	SG_DEBUG("mu_x: %f, mu_y: %f\n", mu_x, mu_y);
+	SG_DEBUG("mu_x: %f, mu_y: %f\n", mu_x, mu_y)
 
 	/* compute mean under H0, MATLAB: 1/m * ( 1 +muX*muY  - muX - muY ) */
 	float64_t m_hsic=1.0/m*(1+mu_x*mu_y-mu_x-mu_y);
-	SG_DEBUG("m_hsic: %f\n", m_hsic);
+	SG_DEBUG("m_hsic: %f\n", m_hsic)
 
 	/* finally, compute parameters of gamma distirbution */
 	float64_t a=CMath::pow(m_hsic, 2)/var_hsic;
 	float64_t b=var_hsic*m/m_hsic;
-	SG_DEBUG("a: %f, b: %f\n", a, b);
+	SG_DEBUG("a: %f, b: %f\n", a, b)
 
 	SGVector<float64_t> result(2);
 	result[0]=a;
 	result[1]=b;
 
-	SG_DEBUG(("leaving %s::fit_null_gamma()\n"), get_name());
+	SG_DEBUG(("leaving %s::fit_null_gamma()\n"), get_name())
 	return result;
 }
 
@@ -289,7 +289,7 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
 
 SGVector<float64_t> CHSIC::bootstrap_null()
 {
-	SG_DEBUG("entering CHSIC::bootstrap_null()\n");
+	SG_DEBUG("entering CHSIC::bootstrap_null()\n")
 
 	/* replace current kernel via precomputed custom kernel and call superclass
 	 * method */
@@ -324,6 +324,6 @@ SGVector<float64_t> CHSIC::bootstrap_null()
 	SG_UNREF(precomputed_q);
 
 
-	SG_DEBUG("leaving CHSIC::bootstrap_null()\n");
+	SG_DEBUG("leaving CHSIC::bootstrap_null()\n")
 	return null_samples;
 }

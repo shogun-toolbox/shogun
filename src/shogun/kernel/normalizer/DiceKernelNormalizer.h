@@ -54,11 +54,11 @@ class CDiceKernelNormalizer : public CKernelNormalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
-			ASSERT(k);
+			ASSERT(k)
 			num_diag_lhs=k->get_num_vec_lhs();
 			num_diag_rhs=k->get_num_vec_rhs();
-			ASSERT(num_diag_lhs>0);
-			ASSERT(num_diag_rhs>0);
+			ASSERT(num_diag_lhs>0)
+			ASSERT(num_diag_rhs>0)
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;
@@ -95,7 +95,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
-			SG_ERROR("linadd not supported with Dice normalization.\n");
+			SG_ERROR("linadd not supported with Dice normalization.\n")
 			return 0;
 		}
 
@@ -105,7 +105,7 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
-			SG_ERROR("linadd not supported with Dice normalization.\n");
+			SG_ERROR("linadd not supported with Dice normalization.\n")
 			return 0;
 		}
 

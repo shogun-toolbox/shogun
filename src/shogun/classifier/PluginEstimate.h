@@ -132,7 +132,7 @@ class CPluginEstimate: public CMachine
 		{
 			if ((!pos_model) || (!neg_model))
 			{
-				SG_ERROR( "no model available\n");
+				SG_ERROR( "no model available\n")
 				return false;
 			}
 
@@ -143,8 +143,8 @@ class CPluginEstimate: public CMachine
 
 			seq_length = pos_model->get_sequence_length();
 			num_symbols = pos_model->get_num_symbols();
-			ASSERT(pos_model->get_num_model_parameters()==neg_model->get_num_model_parameters());
-			ASSERT(pos_model->get_num_symbols()==neg_model->get_num_symbols());
+			ASSERT(pos_model->get_num_model_parameters()==neg_model->get_num_model_parameters())
+			ASSERT(pos_model->get_num_symbols()==neg_model->get_num_symbols())
 			return true;
 		}
 
@@ -170,8 +170,8 @@ class CPluginEstimate: public CMachine
 			SG_REF(neg_model);
 
 			num_params=pos_model->get_num_model_parameters();
-			ASSERT(seq_length*num_symbols==num_params);
-			ASSERT(num_params==neg_model->get_num_model_parameters());
+			ASSERT(seq_length*num_symbols==num_params)
+			ASSERT(num_params==neg_model->get_num_model_parameters())
 
 			pos_model->set_log_transition_probs(SGVector<float64_t>(pos_params, num_params));
 			neg_model->set_log_transition_probs(SGVector<float64_t>(neg_params, num_params));

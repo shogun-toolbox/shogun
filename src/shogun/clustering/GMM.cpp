@@ -48,7 +48,7 @@ CGMM::CGMM(int32_t n, ECovType cov_type) : CDistribution(), m_components(), m_co
 
 CGMM::CGMM(vector<CGaussian*> components, SGVector<float64_t> coefficients, bool copy) : CDistribution()
 {
-	ASSERT(int32_t(components.size())==coefficients.vlen);
+	ASSERT(int32_t(components.size())==coefficients.vlen)
 
 	if (!copy)
 	{
@@ -112,13 +112,13 @@ void CGMM::cleanup()
 
 bool CGMM::train(CFeatures* data)
 {
-	ASSERT(m_components.size() != 0);
+	ASSERT(m_components.size() != 0)
 
 	/** init features with data if necessary and assure type is correct */
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n");
+				SG_ERROR("Specified features are not of type CDotFeatures\n")
 		set_features(data);
 	}
 
@@ -128,7 +128,7 @@ bool CGMM::train(CFeatures* data)
 float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_change)
 {
 	if (!features)
-		SG_ERROR("No features to train on.\n");
+		SG_ERROR("No features to train on.\n")
 
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
@@ -199,10 +199,10 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 float64_t CGMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov, int32_t max_em_iter, float64_t min_change)
 {
 	if (!features)
-		SG_ERROR("No features to train on.\n");
+		SG_ERROR("No features to train on.\n")
 
 	if (m_components.size()<3)
-		SG_ERROR("Can't run SMEM with less than 3 component mixture model.\n");
+		SG_ERROR("Can't run SMEM with less than 3 component mixture model.\n")
 
 	CDotFeatures* dotdata=(CDotFeatures *) features;
 	int32_t num_vectors=dotdata->get_num_vectors();
@@ -638,20 +638,20 @@ int32_t CGMM::get_num_model_parameters()
 
 float64_t CGMM::get_log_model_parameter(int32_t num_param)
 {
-	ASSERT(num_param==1);
+	ASSERT(num_param==1)
 
 	return CMath::log(m_components.size());
 }
 
 float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 
 float64_t CGMM::get_log_likelihood_example(int32_t num_example)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 1;
 }
 
@@ -662,25 +662,25 @@ float64_t CGMM::get_likelihood_example(int32_t num_example)
 
 SGVector<float64_t> CGMM::get_nth_mean(int32_t num)
 {
-	ASSERT(num<int32_t(m_components.size()));
+	ASSERT(num<int32_t(m_components.size()))
 	return m_components[num]->get_mean();
 }
 
 void CGMM::set_nth_mean(SGVector<float64_t> mean, int32_t num)
 {
-	ASSERT(num<int32_t(m_components.size()));
+	ASSERT(num<int32_t(m_components.size()))
 	m_components[num]->set_mean(mean);
 }
 
 SGMatrix<float64_t> CGMM::get_nth_cov(int32_t num)
 {
-	ASSERT(num<int32_t(m_components.size()));
+	ASSERT(num<int32_t(m_components.size()))
 	return m_components[num]->get_cov();
 }
 
 void CGMM::set_nth_cov(SGMatrix<float64_t> cov, int32_t num)
 {
-	ASSERT(num<int32_t(m_components.size()));
+	ASSERT(num<int32_t(m_components.size()))
 	m_components[num]->set_cov(cov);
 }
 
@@ -741,7 +741,7 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 
 SGVector<float64_t> CGMM::sample()
 {
-	ASSERT(m_components.size());
+	ASSERT(m_components.size())
 	float64_t rand_num=CMath::random(float64_t(0), float64_t(1));
 	float64_t cum_sum=0;
 	for (int32_t i=0; i<m_coefficients.vlen; i++)

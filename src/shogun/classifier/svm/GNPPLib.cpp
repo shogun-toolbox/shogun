@@ -32,7 +32,7 @@ using namespace shogun;
 
 CGNPPLib::CGNPPLib()
 {
-	SG_UNSTABLE("CGNPPLib::CGNPPLib()", "\n");
+	SG_UNSTABLE("CGNPPLib::CGNPPLib()", "\n")
 
 	kernel_columns = NULL;
 	cache_index = NULL;
@@ -56,8 +56,8 @@ CGNPPLib::CGNPPLib(
   Cache_Size = ((int64_t) kernel->get_cache_size())*1024*1024/(sizeof(float64_t)*num_data);
   Cache_Size = CMath::min(Cache_Size, (int64_t) num_data);
 
-  SG_INFO("using %d kernel cache lines\n", Cache_Size);
-  ASSERT(Cache_Size>=2);
+  SG_INFO("using %d kernel cache lines\n", Cache_Size)
+  ASSERT(Cache_Size>=2)
 
   /* allocates memory for kernel cache */
   kernel_columns = SG_MALLOC(float64_t*, Cache_Size);
@@ -128,13 +128,13 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
   /* ------------------------------------------------------------ */
 
   Ha1 = SG_MALLOC(float64_t, dim);
-  if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n");
+  if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n")
   Ha2 = SG_MALLOC(float64_t, dim);
-  if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n");
+  if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n")
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
   History = SG_MALLOC(float64_t, History_size*2);
-  if( History == NULL ) SG_ERROR("Not enough memory.\n");
+  if( History == NULL ) SG_ERROR("Not enough memory.\n")
 
   /* inx1 = firts of find( y ==1 ), inx2 = firts of find( y ==2 ) */
   v1 = -1; v2 = -1; i = 0;
@@ -310,7 +310,7 @@ int8_t CGNPPLib::gnpp_mdm(float64_t *diag_H,
     }
     else {
       tmp_ptr = SG_MALLOC(float64_t, (History_size+HISTORY_BUF)*2);
-      if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n");
+      if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n")
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
         tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];
@@ -395,13 +395,13 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
   /* ------------------------------------------------------------ */
 
   Ha1 = SG_MALLOC(float64_t, dim);
-  if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n");
+  if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n")
   Ha2 = SG_MALLOC(float64_t, dim);
-  if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n");
+  if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n")
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
   History = SG_MALLOC(float64_t, History_size*2);
-  if( History == NULL ) SG_ERROR("Not enough memory.\n");
+  if( History == NULL ) SG_ERROR("Not enough memory.\n")
 
   /* inx1 = firts of find( y ==1 ), inx2 = firts of find( y ==2 ) */
   v1 = -1; v2 = -1; i = 0;
@@ -646,7 +646,7 @@ int8_t CGNPPLib::gnpp_imdm(float64_t *diag_H,
     }
     else {
       tmp_ptr = SG_MALLOC(float64_t, (History_size+HISTORY_BUF)*2);
-      if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n");
+      if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n")
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
         tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];

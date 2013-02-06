@@ -167,7 +167,7 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 {
 	switch (type->m_ctype) {
 	case CT_NDARRAY:
-		SG_NOTIMPLEMENTED;
+		SG_NOTIMPLEMENTED
 	case CT_SCALAR:
 		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
 				 "during writing AsciiFile!");

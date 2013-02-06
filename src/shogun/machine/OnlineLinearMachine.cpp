@@ -48,13 +48,13 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
-			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
+			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
 
 		set_features((CStreamingDotFeatures*) data);
 	}
 
-	ASSERT(features);
-	ASSERT(features->has_property(FP_STREAMING_DOT));
+	ASSERT(features)
+	ASSERT(features->has_property(FP_STREAMING_DOT))
 
 	DynArray<float64_t>* labels_dynarray=new DynArray<float64_t>();
 	int32_t num_labels=0;
@@ -93,7 +93,7 @@ bool COnlineLinearMachine::train_machine(CFeatures *data)
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
-			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n");
+			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
 		set_features((CStreamingDotFeatures*) data);
 	}
 	start_train();

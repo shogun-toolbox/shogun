@@ -37,7 +37,7 @@ CGridSearchModelSelection::~CGridSearchModelSelection()
 CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 {
 	if (print_state)
-		SG_PRINT("Generating parameter combinations\n");
+		SG_PRINT("Generating parameter combinations\n")
 
 	/* Retrieve all possible parameter combinations */
 	CDynamicObjectArray* combinations=
@@ -48,12 +48,12 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 	CParameterCombination* best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 	{
-		if (print_state) SG_PRINT("Direction is maximize\n");
+		if (print_state) SG_PRINT("Direction is maximize\n")
 		best_result->mean=CMath::ALMOST_NEG_INFTY;
 	}
 	else
 	{
-		if (print_state) SG_PRINT("Direction is minimize\n");
+		if (print_state) SG_PRINT("Direction is minimize\n")
 		best_result->mean=CMath::ALMOST_INFTY;
 	}
 
@@ -69,7 +69,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 		/* eventually print */
 		if (print_state)
 		{
-			SG_PRINT("trying combination:\n");
+			SG_PRINT("trying combination:\n")
 			current_combination->print_tree();
 		}
 
@@ -81,7 +81,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				(CCrossValidationResult*)(m_machine_eval->evaluate());
 
 		if (result->get_result_type() != CROSSVALIDATION_RESULT)
-			SG_ERROR("Evaluation result is not of type CCrossValidationResult!");
+			SG_ERROR("Evaluation result is not of type CCrossValidationResult!")
 
 		if (print_state)
 			result->print_result();

@@ -37,7 +37,7 @@ namespace shogun
 
 void nrerror(char error_text[])
 {
-	SG_SDEBUG("terminating optimizer - %s\n", error_text);
+	SG_SDEBUG("terminating optimizer - %s\n", error_text)
  // exit(1);
 }
 
@@ -79,7 +79,7 @@ bool choldc(float64_t* a, int32_t n, float64_t* p)
 	}
 
 	if (result>0)
-		SG_SDEBUG("Choldc failed, matrix not positive definite\n");
+		SG_SDEBUG("Choldc failed, matrix not positive definite\n")
 
 	SG_FREE(a2);
 
@@ -105,7 +105,7 @@ bool choldc(float64_t a[], int32_t n, float64_t p[])
 			{
 				if (sum <= 0.0)
 				{
-					SG_SDEBUG("Choldc failed, matrix not positive definite");
+					SG_SDEBUG("Choldc failed, matrix not positive definite")
 					sum = 0.0;
 					return false;
 				}
@@ -455,10 +455,10 @@ int32_t pr_loqo(
 
   /* the main loop */
   if (verb >= STATUS) {
-	  SG_SDEBUG("counter | pri_inf  | dual_inf  | pri_obj   | dual_obj  | ");
-	  SG_SDEBUG("sigfig | alpha  | nu \n");
-	  SG_SDEBUG("-------------------------------------------------------");
-	  SG_SDEBUG("---------------------------\n");
+	  SG_SDEBUG("counter | pri_inf  | dual_inf  | pri_obj   | dual_obj  | ")
+	  SG_SDEBUG("sigfig | alpha  | nu \n")
+	  SG_SDEBUG("-------------------------------------------------------")
+	  SG_SDEBUG("---------------------------\n")
   }
 
   while (status == STILL_RUNNING) {
@@ -641,8 +641,8 @@ int32_t pr_loqo(
 
 exit_optimizer:
   if ((status == 1) && (verb >= STATUS)) {
-	  SG_SDEBUG("----------------------------------------------------------------------------------\n");
-	  SG_SDEBUG("optimization converged\n");
+	  SG_SDEBUG("----------------------------------------------------------------------------------\n")
+	  SG_SDEBUG("optimization converged\n")
   }
 
   /* free memory */

@@ -39,7 +39,7 @@ CDenseFeatures<float64_t>* CEmbeddingConverter::embed(CFeatures* features)
 
 void CEmbeddingConverter::set_target_dim(int32_t dim)
 {
-	ASSERT(dim>0);
+	ASSERT(dim>0)
 	m_target_dim = dim;
 }
 

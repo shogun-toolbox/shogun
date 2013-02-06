@@ -239,7 +239,7 @@ class CMachine : public CSGObject
 		/** applies to one vector */
 		virtual float64_t apply_one(int32_t i)
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return 0.0;
 		}
 
@@ -291,14 +291,14 @@ class CMachine : public CSGObject
 		/** returns type of problem machine solves */
 		virtual EProblemType get_machine_problem_type() const
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return PT_BINARY;
 		}
 
 		/** clone */
 		virtual CMachine* clone()
 		{
-			SG_NOTIMPLEMENTED;
+			SG_NOTIMPLEMENTED
 			return NULL;
 		}
 

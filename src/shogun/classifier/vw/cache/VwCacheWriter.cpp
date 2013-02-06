@@ -30,7 +30,7 @@ CVwCacheWriter::CVwCacheWriter(char * fname, CVwEnvironment* env_to_use)
 	fd = open(fname, O_CREAT | O_TRUNC | O_RDWR, 0666);
 
 	if (fd < 0)
-		SG_SERROR("Error opening the file %s for writing cache!\n");
+		SG_SERROR("Error opening the file %s for writing cache!\n")
 
 	env = env_to_use;
 	SG_REF(env);

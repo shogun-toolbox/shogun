@@ -17,10 +17,10 @@ using namespace shogun;
 
 float64_t CMeanSquaredLogError::evaluate(CLabels* predicted, CLabels* ground_truth)
 {
-	ASSERT(predicted && ground_truth);
-	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels());
-	ASSERT(predicted->get_label_type()==LT_REGRESSION);
-	ASSERT(ground_truth->get_label_type()==LT_REGRESSION);
+	ASSERT(predicted && ground_truth)
+	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())
+	ASSERT(predicted->get_label_type()==LT_REGRESSION)
+	ASSERT(ground_truth->get_label_type()==LT_REGRESSION)
 
 	int32_t length=predicted->get_num_labels();
 	float64_t msle=0.0;

@@ -208,7 +208,7 @@ bool CStreamingStringFeatures<T>::get_next_example()
 	/* Check the input using src alphabet, alpha_ascii */
 	if ( !(alpha_ascii->check_alphabet_size() && alpha_ascii->check_alphabet()) )
 	{
-		SG_ERROR("StreamingStringFeatures: The given input was found to be incompatible with the alphabet!\n");
+		SG_ERROR("StreamingStringFeatures: The given input was found to be incompatible with the alphabet!\n")
 		return 0;
 	}
 
@@ -237,7 +237,7 @@ SGString<T> CStreamingStringFeatures<T>::get_vector()
 template <class T>
 float64_t CStreamingStringFeatures<T>::get_label()
 {
-	ASSERT(has_labels);
+	ASSERT(has_labels)
 
 	return current_label;
 }

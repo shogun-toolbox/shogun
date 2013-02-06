@@ -16,7 +16,7 @@ using namespace shogun;
 
 CSNPFeatures::CSNPFeatures()
 {
-	SG_UNSTABLE("CSNPFeatures::CSNPFeatures()", "\n");
+	SG_UNSTABLE("CSNPFeatures::CSNPFeatures()", "\n")
 
 	strings = NULL;
 
@@ -33,17 +33,17 @@ CSNPFeatures::CSNPFeatures()
 CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures(),
 	m_str_min(NULL), m_str_maj(NULL)
 {
-	ASSERT(str);
-	ASSERT(str->have_same_length());
+	ASSERT(str)
+	ASSERT(str->have_same_length())
 	SG_REF(str);
 
 	strings=str;
 	string_length=str->get_max_vector_length();
-	ASSERT((string_length & 1) == 0); // length divisible by 2
+	ASSERT((string_length & 1) == 0) // length divisible by 2
 	w_dim=3*string_length/2;
 	num_strings=str->get_num_vectors();
 	CAlphabet* alpha=str->get_alphabet();
-	ASSERT(alpha->get_alphabet()==SNP);
+	ASSERT(alpha->get_alphabet()==SNP)
 	SG_UNREF(alpha);
 
 	obtain_base_strings();
@@ -58,7 +58,7 @@ CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
 {
 	SG_REF(strings);
 	string_length=strings->get_max_vector_length();
-	ASSERT((string_length & 1) == 0); // length divisible by 2
+	ASSERT((string_length & 1) == 0) // length divisible by 2
 	w_dim=3*string_length;
 	num_strings=strings->get_num_vectors();
 	CAlphabet* alpha=strings->get_alphabet();
@@ -129,9 +129,9 @@ char* CSNPFeatures::get_major_base_string()
 
 float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 {
-	ASSERT(df);
-	ASSERT(df->get_feature_type() == get_feature_type());
-	ASSERT(df->get_feature_class() == get_feature_class());
+	ASSERT(df)
+	ASSERT(df->get_feature_type() == get_feature_type())
+	ASSERT(df->get_feature_class() == get_feature_class())
 	CSNPFeatures* sf=(CSNPFeatures*) df;
 
 	int32_t alen, blen;
@@ -140,11 +140,11 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 	uint8_t* avec = strings->get_feature_vector(idx_a, alen, free_avec);
 	uint8_t* bvec = sf->strings->get_feature_vector(idx_b, blen, free_bvec);
 
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 	if (alen!=string_length)
-		SG_ERROR("alen (%d) !=string_length (%d)\n", alen, string_length);
-	ASSERT(m_str_min);
-	ASSERT(m_str_maj);
+		SG_ERROR("alen (%d) !=string_length (%d)\n", alen, string_length)
+	ASSERT(m_str_min)
+	ASSERT(m_str_maj)
 
 	float64_t total=0;
 
@@ -188,7 +188,7 @@ float64_t CSNPFeatures::dot(int32_t idx_a, CDotFeatures* df, int32_t idx_b)
 float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	float64_t sum=0;
 	int32_t len;
@@ -227,7 +227,7 @@ float64_t CSNPFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32
 void CSNPFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	if (vec2_len != w_dim)
-		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim);
+		SG_ERROR("Dimensions don't match, vec2_dim=%d, w_dim=%d\n", vec2_len, w_dim)
 
 	int32_t len;
 	bool free_vec1;
@@ -270,7 +270,7 @@ void CSNPFeatures::find_minor_major_strings(uint8_t* minor, uint8_t* major)
 		int32_t len;
 		bool free_vec;
 		uint8_t* vec = ((CStringFeatures<uint8_t>*) strings)->get_feature_vector(i, len, free_vec);
-		ASSERT(string_length==len);
+		ASSERT(string_length==len)
 
 		for (int32_t j=0; j<len; j++)
 		{
@@ -325,7 +325,7 @@ void CSNPFeatures::set_normalization_const(float64_t n)
 	else
 		normalization_const=n;
 
-	SG_DEBUG("normalization_const:%f\n", normalization_const);
+	SG_DEBUG("normalization_const:%f\n", normalization_const)
 }
 
 void* CSNPFeatures::get_feature_iterator(int32_t vector_index)
@@ -407,7 +407,7 @@ SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)
 SGMatrix<float64_t> CSNPFeatures::get_2x3_table(CSNPFeatures* pos, CSNPFeatures* neg)
 {
 
-	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length());
+	ASSERT(pos->strings->get_max_vector_length() == neg->strings->get_max_vector_length())
 	int32_t len=pos->strings->get_max_vector_length();
 
 	float64_t* table=SG_MALLOC(float64_t, 3*2*len/2);

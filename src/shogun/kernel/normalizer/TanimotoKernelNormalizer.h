@@ -47,11 +47,11 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
-			ASSERT(k);
+			ASSERT(k)
 			int32_t num_lhs=k->get_num_vec_lhs();
 			int32_t num_rhs=k->get_num_vec_rhs();
-			ASSERT(num_lhs>0);
-			ASSERT(num_rhs>0);
+			ASSERT(num_lhs>0)
+			ASSERT(num_rhs>0)
 
 			CFeatures* old_lhs=k->lhs;
 			CFeatures* old_rhs=k->rhs;
@@ -88,7 +88,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs)
 		{
-			SG_ERROR("linadd not supported with Tanimoto normalization.\n");
+			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
 			return 0;
 		}
 
@@ -98,7 +98,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 */
 		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs)
 		{
-			SG_ERROR("linadd not supported with Tanimoto normalization.\n");
+			SG_ERROR("linadd not supported with Tanimoto normalization.\n")
 			return 0;
 		}
 

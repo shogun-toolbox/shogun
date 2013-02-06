@@ -42,7 +42,7 @@ SGSparseVector<T>::~SGSparseVector()
 template <class T>
 T SGSparseVector<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 {
-	ASSERT(vec);
+	ASSERT(vec)
 	T result=b;
 
 	if (features)
@@ -87,7 +87,7 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector
 
 template<class T> void SGSparseVector<T>::load(CFile* loader)
 {
-	ASSERT(loader);
+	ASSERT(loader)
 	unref();
 
 	SG_SET_LOCALE_C;
@@ -97,7 +97,7 @@ template<class T> void SGSparseVector<T>::load(CFile* loader)
 
 template<class T> void SGSparseVector<T>::save(CFile* saver)
 {
-	ASSERT(saver);
+	ASSERT(saver)
 
 	SG_SET_LOCALE_C;
 	saver->set_sparse_vector(features, num_feat_entries);
@@ -162,7 +162,7 @@ T SGSparseVector<T>::dot_prod_asymmetric(const SGSparseVector<T>& a, const SGSpa
 template <class T>
 T SGSparseVector<T>::dot_prod_symmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
 {
-	ASSERT(a.num_feat_entries > 0 && b.num_feat_entries > 0);
+	ASSERT(a.num_feat_entries > 0 && b.num_feat_entries > 0)
 	T dot_prod = 0;
 	index_t a_idx = 0, b_idx = 0;
 	while (true)

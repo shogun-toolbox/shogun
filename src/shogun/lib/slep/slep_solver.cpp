@@ -114,7 +114,7 @@ double compute_lambda(
 {
 	double lambda_max = 0.0;
 	if (z<0 || z>1)
-		SG_SERROR("z is not in range [0,1]");
+		SG_SERROR("z is not in range [0,1]")
 
 	double q_bar = 0.0;
 	if (options.q==1)
@@ -124,7 +124,7 @@ double compute_lambda(
 	else 
 		q_bar = options.q/(options.q-1);
 
-	SG_SINFO("q bar = %f \n",q_bar);
+	SG_SINFO("q bar = %f \n",q_bar)
 
 	switch (options.mode)
 	{
@@ -183,7 +183,7 @@ double compute_lambda(
 					for (int i=0; i<n_vecs; i++)
 						y[i]>0 ? m1++ : m2++;
 
-					SG_SDEBUG("# pos = %d , # neg = %d\n",m1,m2);
+					SG_SDEBUG("# pos = %d , # neg = %d\n",m1,m2)
 
 					for (int i=0; i<n_vecs; i++)
 					{
@@ -242,7 +242,7 @@ double compute_lambda(
 				
 				sum = CMath::pow(sum, 1.0/q_bar);
 				sum /= options.gWeight[t];
-				SG_SINFO("sum = %f\n",sum);
+				SG_SINFO("sum = %f\n",sum)
 				if (sum>lambda_max)
 					lambda_max = sum;
 			}
@@ -270,7 +270,7 @@ double compute_lambda(
 		break;
 	}
 
-	SG_SINFO("Computed lambda = %f * %f = %f\n",z,lambda_max,z*lambda_max);
+	SG_SINFO("Computed lambda = %f * %f = %f\n",z,lambda_max,z*lambda_max)
 	return z*lambda_max;
 }
 
@@ -317,8 +317,8 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
                                            const slep_options& options)
 {
 	double fun_s = 0.0;
-	//SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs));
-	//SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks));
+	//SG_SDEBUG("As=%f\n", SGVector<float64_t>::dot(As,As,n_vecs))
+	//SG_SDEBUG("sc=%f\n", SGVector<float64_t>::dot(sc,sc,n_tasks))
 	switch (options.mode)
 	{
 		case MULTITASK_GROUP:
@@ -394,7 +394,7 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 			}
 		break;
 	}
-	SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks));
+	SG_SDEBUG("G=%f\n", SGVector<float64_t>::dot(g,g,n_feats*n_tasks))
 
 	return fun_s;
 }
@@ -432,8 +432,8 @@ slep_result_t slep_solver(
 			n_blocks = 1;
 		break;
 	}
-	SG_SDEBUG("n_tasks = %d, n_blocks = %d\n",n_tasks,n_blocks);
-	SG_SDEBUG("n_nodes = %d\n",options.n_nodes);
+	SG_SDEBUG("n_tasks = %d, n_blocks = %d\n",n_tasks,n_blocks)
+	SG_SDEBUG("n_nodes = %d\n",options.n_nodes)
 
 	int iter = 1;
 	bool done = false;
@@ -537,7 +537,7 @@ slep_result_t slep_solver(
 
 		double fun_s = search_point_gradient_and_objective(features, ATx, As, sc, y, n_vecs, n_feats, n_tasks, g, gc, options);
 
-		//SG_SDEBUG("fun_s = %f\n", fun_s);
+		//SG_SDEBUG("fun_s = %f\n", fun_s)
 
 		if (options.mode==PLAIN || options.mode==FUSED)
 			fun_s += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
@@ -660,11 +660,11 @@ slep_result_t slep_solver(
 			for (i=0; i<n_vecs; i++)
 				func += CMath::sq(Aw[i] - y[i]);
 		}
-		SG_SDEBUG("Obj = %f + %f = %f \n",fun_x, regularizer, func);
+		SG_SDEBUG("Obj = %f + %f = %f \n",fun_x, regularizer, func)
 
 		if (gradient_break)
 		{
-			SG_SINFO("Gradient norm is less than 1e-20\n");
+			SG_SINFO("Gradient norm is less than 1e-20\n")
 			break;
 		}
 
@@ -678,7 +678,7 @@ slep_result_t slep_solver(
 					step = CMath::abs(func-funcp);
 					if (step <= options.tolerance)
 					{
-						SG_SINFO("Objective changes less than tolerance\n");
+						SG_SINFO("Objective changes less than tolerance\n")
 						done = true;
 					}
 				}
@@ -689,7 +689,7 @@ slep_result_t slep_solver(
 					step = CMath::abs(func-funcp);
 					if (step <= step*options.tolerance)
 					{
-						SG_SINFO("Objective changes relatively less than tolerance\n");
+						SG_SINFO("Objective changes relatively less than tolerance\n")
 						done = true;
 					}
 				}
@@ -697,7 +697,7 @@ slep_result_t slep_solver(
 			case 2:
 				if (func <= options.tolerance)
 				{
-					SG_SINFO("Objective is less than tolerance\n");
+					SG_SINFO("Objective is less than tolerance\n")
 					done = true;
 				}
 			break;
@@ -718,7 +718,7 @@ slep_result_t slep_solver(
 
 		iter++;
 	}
-	SG_SINFO("Finished %d iterations, objective = %f\n", iter, func);
+	SG_SINFO("Finished %d iterations, objective = %f\n", iter, func)
 
 	SG_FREE(ATx);
 	SG_FREE(wp);

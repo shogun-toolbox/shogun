@@ -55,9 +55,9 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 */
 		inline bool set_machine(int32_t num, CMachine* machine)
 		{
-			ASSERT(num<m_machines->get_num_elements() && num>=0);
+			ASSERT(num<m_machines->get_num_elements() && num>=0)
 			if (machine != NULL && !is_acceptable_machine(machine))
-				SG_ERROR("Machine %s is not acceptable by %s", machine->get_name(), this->get_name());
+				SG_ERROR("Machine %s is not acceptable by %s", machine->get_name(), this->get_name())
 
 			m_machines->set_element(machine, num);
 			return true;

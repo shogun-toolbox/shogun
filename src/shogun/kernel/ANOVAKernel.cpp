@@ -66,7 +66,7 @@ float64_t CANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
 		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
 		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t result = compute_recursive1(avec, bvec, alen);
 
@@ -85,7 +85,7 @@ float64_t CANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
 		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
 		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	float64_t result = compute_recursive2(avec, bvec, alen);
 
@@ -110,9 +110,9 @@ void CANOVAKernel::allocate_arrays()
 {
 	cleanup();
 
-	ASSERT(lhs && rhs);
+	ASSERT(lhs && rhs)
 	int32_t num_feat = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
-	ASSERT(num_feat == ((CDenseFeatures<float64_t>*) rhs)->get_num_features());
+	ASSERT(num_feat == ((CDenseFeatures<float64_t>*) rhs)->get_num_features())
 
 	//compute_recursive1
 	DP_len=(cardinality+1)*(num_feat+1);
@@ -154,11 +154,11 @@ void CANOVAKernel::register_params()
 
 float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len)
 {
-	ASSERT(DP);
+	ASSERT(DP)
 	int32_t d=cardinality;
 	int32_t offs=cardinality+1;
 
-	ASSERT(DP_len==(len+1)*offs);
+	ASSERT(DP_len==(len+1)*offs)
 
 	for (int32_t j=0; j < len+1; j++)
 		DP[j] = 1.0;
@@ -181,9 +181,9 @@ float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int
 
 float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len)
 {
-	ASSERT(vec_pow);
-	ASSERT(KS);
-	ASSERT(KD);
+	ASSERT(vec_pow)
+	ASSERT(KS)
+	ASSERT(KD)
 
 	int32_t d=cardinality;
 	for (int32_t i=0; i < len; i++)

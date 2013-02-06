@@ -70,24 +70,24 @@ public:
 	 */
 	void print_result()
 	{
-		SG_SPRINT("Quantity: [");
+		SG_SPRINT("Quantity: [")
 
 		for (index_t i = 0; i < quantity.vlen; i++)
-			SG_SPRINT("%f, ", quantity[i]);
+			SG_SPRINT("%f, ", quantity[i])
 
-		SG_SPRINT("] ");
+		SG_SPRINT("] ")
 
-		SG_SPRINT("Gradient: [");
+		SG_SPRINT("Gradient: [")
 
 		for (index_t i = 0; i < gradient.get_num_elements(); i++)
 		{
 			char* name = gradient.get_node_ptr(i)->key->m_name;
 			for (index_t j = 0; j < gradient.get_element_ptr(i)->vlen; j++)
-				SG_SPRINT("%s: %f, ", (*gradient.get_element_ptr(i))[j], name);
+				SG_SPRINT("%s: %f, ", (*gradient.get_element_ptr(i))[j], name)
 		}
-		SG_SPRINT("]\n");
+		SG_SPRINT("]\n")
 
-		SG_SPRINT("Total Variables: %i\n", total_variables);
+		SG_SPRINT("Total Variables: %i\n", total_variables)
 
 	}
 };

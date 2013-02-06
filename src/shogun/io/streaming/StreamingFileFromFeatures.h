@@ -66,7 +66,7 @@ public:
 	 */
 	virtual void set_features(CFeatures* feat)
 	{
-		ASSERT(feat);
+		ASSERT(feat)
 		features=feat;
 	}
 
@@ -77,7 +77,7 @@ public:
 	 */
 	virtual void set_labels(float64_t* lab)
 	{
-		ASSERT(lab);
+		ASSERT(lab)
 		labels=lab;
 	}
 

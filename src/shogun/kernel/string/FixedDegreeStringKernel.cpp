@@ -69,7 +69,7 @@ float64_t CFixedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	// can only deal with strings of same length
-	ASSERT(alen==blen);
+	ASSERT(alen==blen)
 
 	int64_t sum = 0;
 	for (int32_t i = 0; i<alen-degree+1; i++)

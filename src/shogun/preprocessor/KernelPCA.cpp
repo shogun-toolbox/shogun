@@ -77,7 +77,7 @@ bool CKernelPCA::init(CFeatures* features)
 		m_kernel->cleanup();
 		int32_t n = kernel_matrix.num_cols;
 		int32_t m = kernel_matrix.num_rows;
-		ASSERT(n==m);
+		ASSERT(n==m)
 
 		float64_t* bias_tmp = SGMatrix<float64_t>::get_column_sum(kernel_matrix.matrix, n,n);
 		SGVector<float64_t>::scale_vector(-1.0/n, bias_tmp, n);
@@ -118,7 +118,7 @@ bool CKernelPCA::init(CFeatures* features)
 		SG_FREE(bias_tmp);
 
 		m_initialized=true;
-		SG_INFO("Done\n");
+		SG_INFO("Done\n")
 		return true;
 	}
 	return false;
@@ -127,7 +127,7 @@ bool CKernelPCA::init(CFeatures* features)
 
 SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 {
-	ASSERT(m_initialized);
+	ASSERT(m_initialized)
 	CDenseFeatures<float64_t>* simple_features = (CDenseFeatures<float64_t>*)features;
 
 	int32_t num_vectors = simple_features->get_num_vectors();
@@ -159,7 +159,7 @@ SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
 
 SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	ASSERT(m_initialized);
+	ASSERT(m_initialized)
 	SGVector<float64_t> result = SGVector<float64_t>(m_target_dim);
 	m_kernel->init(new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector.vector,vector.vlen,1)),
 	               m_init_features);
@@ -184,7 +184,7 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 
 CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* features)
 {
-	ASSERT(m_initialized);
+	ASSERT(m_initialized)
 
 	int32_t num_vectors = features->get_num_vectors();
 	int32_t i,j,k;
