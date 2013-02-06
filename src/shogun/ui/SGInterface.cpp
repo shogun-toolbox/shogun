@@ -6353,7 +6353,6 @@ bool CSGInterface::cmd_clean_up_dyn_prog()
 
 bool CSGInterface::cmd_set_model()
 {
-
 	CPlifMatrix* pm=ui_structure->get_plif_matrix();
 
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -6400,7 +6399,6 @@ bool CSGInterface::cmd_set_model()
 	get_matrix(state_signals,num_states,feat_dim3);
 	ASSERT(num_states==Dim[0])
 	pm->compute_signal_plifs(SGMatrix<int32_t>(state_signals, feat_dim3, num_states));
-
 
 	// ARG 5
 	// ORF info (#states x 2)
@@ -6668,6 +6666,10 @@ bool CSGInterface::cmd_precompute_tiling_features()
 
 	h->init_tiling_data(probe_pos,intensities, Nprobe_pos);
 	h->precompute_tiling_plifs(PEN, tiling_plif_ids, Ntiling_plif_ids);
+
+	SG_FREE(intensities);
+	SG_FREE(probe_pos);
+
 	return true;
 }
 
@@ -6718,7 +6720,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	else
 		nbest =all_nbest[0];
-	SG_FREE(all_nbest);
+	//SG_FREE(all_nbest);
 
 	// ARG 4
 	// segment path (2 x #feature_positions)
@@ -6780,13 +6782,11 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (seg_path!=NULL)
 	{
-		h->best_path_set_segment_loss(SGMatrix<float64_t>(loss, Nloss, Mloss, false)) ;
 		seg_loss_obj->set_segment_loss(loss, Nloss, Mloss);
 	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
-		h->best_path_set_segment_loss(SGMatrix<float64_t>(zero2, 2, 1)) ;
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
 	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
@@ -6797,9 +6797,6 @@ bool CSGInterface::cmd_best_path_trans()
 		if (loss[i]>1e-3)
 			segment_loss_non_zero=true;
 	}
-
-	SG_FREE(loss);
-	loss=NULL;
 
 	h->set_orf_info(SGMatrix<int32_t>(orf_info, num_states, 2));
 	h->set_sparse_features(features_sparse1, features_sparse2);
@@ -6822,15 +6819,14 @@ bool CSGInterface::cmd_best_path_trans()
 				h->compute_nbest_paths(feat_dims[2], use_orf, 2,false,false);
 	}
 
-	SGVector<float64_t> p_prob=h->get_scores();
-
-	SGMatrix<int32_t> states=h->get_states();
-
-	SGMatrix<int32_t> my_pos=h->get_positions();
-
+	SGVector<float64_t> p_prob = h->get_scores();
+	SGMatrix<int32_t> states = h->get_states();
+	SGMatrix<int32_t> my_pos = h->get_positions();
+	//SG_DEBUG("SGInterface: transcribe results...\n") ;
 	// transcribe result
-	float64_t* d_my_path= SG_MALLOC(float64_t, (nbest+nother)*M);
-	float64_t* d_my_pos= SG_MALLOC(float64_t, (nbest+nother)*M);
+	float64_t* d_my_path = SG_MALLOC(float64_t, (nbest+nother)*M);
+	float64_t* d_my_pos = SG_MALLOC(float64_t, (nbest+nother)*M);
+	float64_t* d_my_prob = SG_MALLOC(float64_t, nbest+nother);
 
 	for (int32_t k=0; k<(nbest+nother); k++)
 	{
@@ -6839,11 +6835,14 @@ bool CSGInterface::cmd_best_path_trans()
 			d_my_path[i*(nbest+nother)+k] = states.matrix[i+k*M] ;
 			d_my_pos[i*(nbest+nother)+k] = my_pos.matrix[i+k*M] ;
 		}
+		d_my_prob[k] = p_prob.vector[k];
 	}
-	set_vector(p_prob.vector,nbest+nother);
+	//set_vector(p_prob.vector,nbest+nother);
+	set_vector(d_my_prob, nbest+nother);
 	set_vector(d_my_path, (nbest+nother)*M);
 	set_vector(d_my_pos, (nbest+nother)*M);
 
+	SG_FREE(d_my_prob);
 	SG_FREE(d_my_path);
 	SG_FREE(d_my_pos);
 
@@ -6876,7 +6875,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	get_vector(q, Nq);
 	if (Nq!=num_states)
 		SG_ERROR("Nq!=num_states; Nq:%i num_states:%i",Nq,num_states)
-
 
 	// ARG 3
 	// segment path (2 x #feature_positions)
@@ -6914,9 +6912,6 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	int32_t Nmypos_seq=0;
 	int32_t* mypos_seq=NULL;
 	get_vector(mypos_seq, Nmypos_seq);
-
-
-	//a => a_trans
 
 	int32_t max_plif_id = 0 ;
 	int32_t max_plif_len = 1 ;
@@ -6959,13 +6954,11 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 
 	if (seg_path!=NULL)
 	{
-		h->best_path_set_segment_loss(SGMatrix<float64_t>(loss, Nloss, Mloss)) ;
 		seg_loss_obj->set_segment_loss(loss, Nloss, Mloss);
 	}
 	else
 	{
 		float64_t zero2[2] = {0.0, 0.0} ;
-		h->best_path_set_segment_loss(SGMatrix<float64_t>(zero2, 2, 1, false)) ;
 		seg_loss_obj->set_segment_loss(zero2, 2, 1);
 	}
 	h->set_content_type_array(SGMatrix<float64_t>(seg_path,Nseg_path,Mseg_path));
@@ -7017,15 +7010,15 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	SG_FREE(p_p_deriv);
 	SG_FREE(p_q_deriv);
 	SG_FREE(p_Plif_deriv);
-	free(p_my_scores);
-	free(p_my_losses);
+	SG_FREE(p_my_scores);
+	SG_FREE(p_my_losses);
 
 	SG_FREE(my_path);
 	SG_FREE(my_pos);
 
-	SG_FREE(p);
-	SG_FREE(q);
-	SG_FREE(a_trans);
+	//SG_FREE(p);
+	//SG_FREE(q);
+	//SG_FREE(a_trans);
 	SG_FREE(loss);
 	SG_FREE(mystate_seq);
 	SG_FREE(mypos_seq);

@@ -71,7 +71,8 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	  m_seq_len(0),
 	  m_orf_info(1,2),
 	  m_plif_list(1),
-	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), m_segment_loss(1,1,2),
+	  m_PEN(1,1),
+	  m_genestr(1), m_wordstr(NULL), m_dict_weights(1,1), 
 	  m_segment_ids(1),
 	  m_segment_mask(1),
 	  m_my_state_seq(1),
@@ -134,7 +135,6 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 
 
 	m_observation_matrix.set_array_name("m_observation_matrix");
-	m_segment_loss.set_array_name("m_segment_loss");
 	m_seg_loss_obj = new CSegmentLoss();
 }
 
@@ -785,35 +785,14 @@ void CDynProg::set_dict_weights(SGMatrix<float64_t> dictionary_weights)
 	m_dict_weights.set_array(dictionary_weights.matrix, dictionary_weights.num_rows, m_num_svms, true, true) ;
 
 	// initialize, so it does not bother when not used
-	m_segment_loss.resize_array(m_max_a_id+1, m_max_a_id+1, 2) ;
-	m_segment_loss.set_const(0) ;
 	m_segment_ids.resize_array(m_observation_matrix.get_dim2()) ;
 	m_segment_mask.resize_array(m_observation_matrix.get_dim2()) ;
 	m_segment_ids.set_const(0) ;
 	m_segment_mask.set_const(0) ;
 }
 
-void CDynProg::best_path_set_segment_loss(SGMatrix<float64_t> segment_loss)
+void CDynProg::best_path_set_segment_ids_mask(int32_t* segment_ids, float64_t* segment_mask, int32_t m)
 {
-	int32_t m=segment_loss.num_rows;
-	int32_t n=segment_loss.num_cols;
-	// here we need two matrices. Store it in one: 2N x N
-	if (2*m!=n)
-		SG_ERROR("segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) 
-
-	if (m!=m_max_a_id+1)
-		SG_ERROR("segment_loss size should match m_max_a_id: %i!=%i\n", m, m_max_a_id+1) 
-
-	m_segment_loss.set_array(segment_loss.matrix, m, n/2, 2, true, true) ;
-	/*for (int32_t i=0; i<n; i++)
-		for (int32_t j=0; j<n; j++)
-		SG_DEBUG("loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) */
-}
-
-void CDynProg::best_path_set_segment_ids_mask(
-	int32_t* segment_ids, float64_t* segment_mask, int32_t m)
-{
-
 	if (m!=m_observation_matrix.get_dim2())
 		SG_ERROR("size of segment_ids or segment_mask (%i)  does not match the size of the feature matrix (%i)", m, m_observation_matrix.get_dim2())
 	int32_t max_id = 0;
@@ -2175,7 +2154,6 @@ void CDynProg::best_path_trans_deriv(
 
 #ifdef DYNPROG_DEBUG
 
-
 		if (i>0)// test if segment loss is additive
 		{
 			float32_t loss1 = m_seg_loss_obj->get_segment_loss(my_pos_seq[i-1], my_pos_seq[i], elem_id);
@@ -2384,6 +2362,7 @@ void CDynProg::best_path_trans_deriv(
 			}
 
 		}
+
 #ifdef DYNPROG_DEBUG
 		SG_DEBUG("%i. scores[i]=%f\n", i, my_scores[i]) 
 #endif
@@ -2442,6 +2421,7 @@ void CDynProg::best_path_trans_deriv(
 		total_loss += my_losses[i] ;
 		//#endif
 	}
+
 	//#ifdef DYNPROG_DEBUG
 	//SG_PRINT("total score = %f \n", total_score) 
 	//SG_PRINT("total loss = %f \n", total_loss) 
