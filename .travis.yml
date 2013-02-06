@@ -18,4 +18,4 @@ before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev
 before_script: cd ./src
-script: ./configure --interfaces=cmdline_static && make -j 4 && sudo make install && make tests
+script: ./configure --disable-optimizations --interfaces=cmdline_static && make -j 4 && sudo make install && make tests
