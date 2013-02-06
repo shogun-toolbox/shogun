@@ -16,7 +16,6 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distance/Distance.h>
-#include <shogun/lib/CoverTree.h>
 #include <shogun/machine/DistanceMachine.h>
 
 namespace shogun

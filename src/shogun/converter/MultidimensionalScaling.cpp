@@ -12,7 +12,6 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/converter/EmbeddingConverter.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/arpack.h>
 #include <shogun/distance/CustomDistance.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
