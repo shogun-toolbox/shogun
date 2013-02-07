@@ -4,10 +4,17 @@ Explanation of directory content
 README       - this file
 Makefile     - to create release archives
 src          - shogun source code
+data         - shogun data sets (required for some examples / applications -
+               these need to be downloaded separately via the download site or
+               git submodule update --init from the root of the git checkout
 doc          - documentation (to be built using doxygen)
 examples     - example files for all interfaces
 applications - applications of shogun
 testsuite    - the shogun test suite
+
+Current build status of master: http://shogun-toolbox.org/buildbot/waterfall
+Travis CI checks https://travis-ci.org/shogun-toolbox/shogun
+
 
 The following table depicts the status of each interface available in shogun:
 
@@ -16,11 +23,11 @@ The following table depicts the status of each interface available in shogun:
 +==================+===========================================================+
 |python_modular    | mature (no known problems)                                |
 |octave_modular    | mature (no known problems)                                |
-|java_modular      | beta quality - not all examples are ported and working    |
-|lua_modular       | alpha work in progress quality - some examples work,      |
-|                  | string typemaps are unstable                              |
-|ruby_modular      | pre-alpha work in progress quality - proof-of-concept only|
-|csharp_modular    | pre-alpha work in progress quality - proof-of-concept only|
+|java_modular      | stable (no known problems; not all examples are ported)   |
+|ruby_modular      | stable (no known problems; only few examples ported)      |
+|csharp_modular    | stable (no known problems; not all examples are ported)   |
+|lua_modular       | alpha (some examples work, string typemaps are unstable   |
+|perl_modular      | pre-alpha work in progress quality                        |
 |r_modular         | pre-alpha quality (swig does not properly handle reference|
 |                  | counting and thus only for the brave:                     |
 |                  | --disable-reference-counting to get it to work, but beware|
