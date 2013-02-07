@@ -16,6 +16,12 @@ SGMatrix<T>::SGMatrix() : SGReferencedData()
 }
 
 template <class T>
+SGMatrix<T>::SGMatrix(bool ref_counting) : SGReferencedData(ref_counting)
+{
+	init_data();
+}
+
+template <class T>
 SGMatrix<T>::SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting)
 	: SGReferencedData(ref_counting), matrix(m),
 	num_rows(nrows), num_cols(ncols) { }

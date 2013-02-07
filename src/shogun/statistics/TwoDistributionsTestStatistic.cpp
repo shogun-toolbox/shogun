@@ -151,6 +151,6 @@ void CTwoDistributionsTestStatistic::set_p_and_q(CFeatures* p_and_q)
 
 CFeatures* CTwoDistributionsTestStatistic::get_p_and_q()
 {
-	SG_UNREF(m_p_and_q);
+	SG_REF(m_p_and_q);
 	return m_p_and_q;
 }

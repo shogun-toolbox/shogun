@@ -29,6 +29,10 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** default constructor */
 		SGMatrix();
 
+		/** constructor for setting reference counting while not creating
+		 * the matrix in memory (use this for static SGMatrix instances) */
+		SGMatrix(bool ref_counting);
+
 		/** constructor for setting params */
 		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true);
 
