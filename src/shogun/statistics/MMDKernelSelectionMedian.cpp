@@ -13,6 +13,7 @@
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/mathematics/Statistics.h>
 
 
@@ -28,13 +29,27 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 		CKernelTwoSampleTestStatistic* mmd, index_t num_data_distance) :
 		CMMDKernelSelection(mmd)
 {
-	/* assert that a Gaussian kernel is used */
+	/* assert that a combined kernel is used */
 	CKernel* kernel=mmd->get_kernel();
 	CFeatures* lhs=kernel->get_lhs();
 	CFeatures* rhs=kernel->get_rhs();
-	REQUIRE(kernel, "%s::%s(): No kernel set!\n", get_name(), get_name())
-	REQUIRE(kernel->get_kernel_type()==K_GAUSSIAN, "%s::%s(): Requires "
-			"CGaussianKernel as kernel", get_name(), get_name());
+	REQUIRE(kernel, "%s::%s(): No kernel set!\n", get_name(), get_name());
+	REQUIRE(kernel->get_kernel_type()==K_COMBINED, "%s::%s(): Requires "
+			"CombinedKernel as kernel. Yours is %s", get_name(), get_name(),
+			kernel->get_name());
+
+	/* assert that all subkernels are Gaussian kernels */
+	CCombinedKernel* combined=(CCombinedKernel*)kernel;
+	CKernel* subkernel=combined->get_first_kernel();
+	index_t i=0;
+	while (subkernel)
+	{
+		REQUIRE(kernel, "%s::%s(): Subkernel (i) of current kernel is not"
+				" of type GaussianKernel\n", get_name(), get_name(), i);
+		SG_UNREF(subkernel);
+		subkernel=combined->get_next_kernel();
+		i++;
+	}
 
 	/* assert 64 bit dense features since EuclideanDistance can only handle
 	 * those */
@@ -105,12 +120,16 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 	{
 		/* fixed data, create merged copy of a random subset */
 
-		/* create vector with random indices subset */
-		SGVector<index_t> indices(m_mmd->get_m());
-		indices.range_fill();
-		indices.permute();
-		SGVector<index_t> subset(num_data);
-		memcpy(subset.vector, indices.vector, num_data);
+		/* create vector with that correspond to the num_data first points of
+		 * each distribution, remember data is stored jointly */
+		SGVector<index_t> subset(num_data*2);
+		index_t m=m_mmd->get_m();
+		for (index_t i=0; i<num_data; ++i)
+		{
+			/* num_data samples from each half of joint sample */
+			subset[i]=i;
+			subset[i+num_data]=i+m;
+		}
 
 		/* add subset and compute pairwise distances */
 		CQuadraticTimeMMD* quad_mmd=(CQuadraticTimeMMD*)m_mmd;
@@ -120,6 +139,8 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 		/* cast is safe, see constructor */
 		CDenseFeatures<float64_t>* dense_features=
 				(CDenseFeatures<float64_t>*) features;
+
+		dense_features->get_feature_matrix().display_matrix("dense");
 
 		CEuclideanDistance* distance=new CEuclideanDistance(dense_features,
 				dense_features);
@@ -162,16 +183,55 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 		SG_UNREF(q);
 	}
 
+	/* create a vector where the zeros have been removed, use upper triangle
+	 * only since distances are symmetric */
+	SGVector<float64_t> dist_vec(dists.num_rows*(dists.num_rows-1)/2);
+	index_t write_idx=0;
+	for (index_t i=0; i<dists.num_rows; ++i)
+	{
+		for (index_t j=i+1; j<dists.num_rows; ++j)
+			dist_vec[write_idx++]=dists(i,j);
+	}
+
 	/* now we have distance matrix, compute median, allow to modify matrix */
-	float64_t median_distance=CStatistics::matrix_median(dists, true);
+	float64_t median_distance=CStatistics::median(dist_vec, true);
+	SG_DEBUG("median_distance: %f\n", median_distance);
 
-	/* shogun has no square and factor two in its kernel width */
-	float64_t shogun_sigma=CMath::pow(median_distance, 2);
+	/* shogun has no square and factor two in its kernel width, MATLAB does
+	 * median_width = sqrt(0.5*median_distance), we do this */
+	float64_t shogun_sigma=median_distance;
+	SG_DEBUG("kernel width (shogun): %f\n", shogun_sigma);
 
-	/* cast is safe, see constructor */
-	CGaussianKernel* kernel=(CGaussianKernel*) m_mmd->get_kernel();
-	kernel->set_width(shogun_sigma);
+	/* now of all kernels, find the one which has its width closest
+	 * Cast is safe due to constructor of MMDKernelSelection class */
+	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
+	CKernel* current=combined->get_first_kernel();
+	float64_t min_distance=CMath::MAX_REAL_NUMBER;
+	CKernel* min_kernel=NULL;
+	float64_t distance;
+	for (index_t i=0; i<combined->get_num_subkernels(); ++i)
+	{
+		REQUIRE(current->get_kernel_type()==K_GAUSSIAN, "%s::select_kernel(): "
+				"%d-th kernel is not a Gaussian but \"%s\"!\n", get_name(), i,
+				current->get_name());
 
-	/* no unref since kernel is returned */
-	return kernel;
+		/* check if width is closer to median width */
+		distance=CMath::abs(((CGaussianKernel*)current)->get_width()-
+				shogun_sigma);
+
+		if (distance<min_distance)
+		{
+			min_distance=distance;
+			min_kernel=current;
+		}
+
+		/* next kernel */
+		SG_UNREF(current);
+		current=combined->get_next_kernel();
+	}
+	SG_UNREF(combined);
+
+	/* returned referenced kernel */
+	SG_REF(min_kernel);
+	return min_kernel;
 }
