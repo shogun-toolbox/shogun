@@ -40,7 +40,8 @@ RUBY=ruby
 PERL=perl
 PYTHON=python
 PYVER=
-GMOCK=gmock-config
+GMOCK_DIR="/usr/src/gmock"
+GTEST_DIR="/usr/src/gtest"
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
@@ -516,41 +517,51 @@ EOF
 check_gmock()
 {
 	echocheck "Google C++ Mocking Framework"
-
-cat >$TMPCXX << EOF
-#include <iostream>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-using ::testing::Test;
-
-int main(int argc, char** argv)
-{
-        ::testing::InitGoogleMock(&argc, argv);
-        return RUN_ALL_TESTS();
-}
-EOF
-
-	GMOCK_LDADD="-lgmock -lgtest -lpthread -D_THREAD_SAFE"
 	if test "$_gmock" = yes || test "$_gmock" = auto
 	then
-		if $GMOCK --version > /dev/null 2>&1
+		if test -e "$GTEST_DIR/src/gtest-all.cc";
 		then
-			USE_GMOCK='yes'
-			COMPFLAGS_GMOCK_CPP=`$GMOCK --cppflags --cxxflags`
-			LINKFLAGS_GMOCK=`$GMOCK --ldflags --libs`
-			echores `$GMOCK --version`
-		elif cxx_check $GMOCK_LDADD
+			GTEST_HEADER_PATH="$GTEST_DIR/include"
+			if test -e "$GTEST_HEADER_PATH/gtest/gtest.h"
+			then
+				COMPFLAGS_GTEST_CPP="-I$GTEST_HEADER_PATH"
+			elif test -e "/usr/include/gtest/gtest.h"
+			then
+				COMPFLAGS_GTEST_CPP='-I/usr/include'
+			else
+				USE_GMOCK='no'
+				echores "could not find gtest.h header"
+				break
+			fi
+		else
+			if test "$_gmock" = yes
+			then
+				die "could not find google testing framework source"
+			else
+				USE_GMOCK='no'
+				echores "unit testing framework not detected, for unit testing please install it"
+			fi
+		fi
+		
+		if test -e "$GMOCK_DIR/src/gmock-all.cc"
 		then
-			echores "yes"
-			USE_GMOCK='yes'
-			LINKFLAGS_GMOCK=$GMOCK_LDADD
+			GMOCK_HEADER_PATH="$GMOCK_DIR/include"
+			if test -e "$GMOCK_HEADER_PATH/gmock/gmock.h"
+			then
+				COMPFLAGS_GMOCK_CPP="-I$GMOCK_HEADER_PATH"
+				USE_GMOCK='yes'
+				echores "yes"
+			else
+				USE_GMOCK='no'
+				echores "no"
+			fi
+
 		else
 			if test "$_gmock" = yes
 			then
 				die "google mock not detected"
 			else
-				echores "not detected, for unit testing please install it"
+				echores "mocking framework not detected, for unit testing please install it"
 				USE_GMOCK='no'
 			fi
 		fi
@@ -1439,7 +1450,8 @@ Miscellaneous options:
   --enable-static                build a statically linked binary (to the extend possible);
                                  set further linking options with --enable-static="-lm -lglpk"
   --python=python                use this python executable [python]
-  --gmock=gmock-config           use this gmock-config script [gmock]
+  --gmock=PATH			 the path to the Google C++ Mocking framework source [default: /usr/src/gmock]
+  --gtest=PATH			 the path to the Google C++ test framework source [default: /usr/src/gtest]
   --ruby=ruby                    use this ruby executable [ruby]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
@@ -1546,7 +1558,10 @@ EOF
 		PYTHON=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --gmock=*)
-		GMOCK=`echo $ac_option | cut -d '=' -f 2`
+		GMOCK_DIR=`echo $ac_option | cut -d '=' -f 2`
+		;;
+	  --gtest=*)
+		GTEST_DIR=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --ruby=*)
 		RUBY=`echo $ac_option | cut -d '=' -f 2`
@@ -5051,12 +5066,14 @@ COMPFLAGS_C			= ${COMPFLAGS_C}
 COMPFLAGS_CPP		= ${COMPFLAGS_CPP}
 COMPFLAGS_SWIG_CPP	= ${COMPFLAGS_SWIG_CPP}
 COMPFLAGS_GMOCK_CPP	= ${COMPFLAGS_GMOCK_CPP}
-LINKFLAGS_GMOCK = ${LINKFLAGS_GMOCK}
+COMPFLAGS_GTEST_CPP	= ${COMPFLAGS_GTEST_CPP}
 INCLUDES			= ${INCLUDES}
 PRELINKFLAGS		= ${PRELINKFLAGS}
 LINKFLAGS 			= ${LINKFLAGS}
 POSTLINKFLAGS		= ${POSTLINKFLAGS}
 USE_GMOCK = ${USE_GMOCK}
+GTEST_DIR = ${GTEST_DIR}
+GMOCK_DIR = ${GMOCK_DIR}
 
 INCLUDES_STATIC_INTERFACES	= ${INCLUDES_STATIC_INTERFACES}
 LINKFLAGS_STATIC_INTERFACES	= ${LINKFLAGS_STATIC_INTERFACES}
