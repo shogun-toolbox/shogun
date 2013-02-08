@@ -94,19 +94,31 @@ TEST(SGVectorTest,misc)
 	a.random(-1024.0, 1024.0);
 	
 	/* test, min, max, sum */
-	float64_t min = 1025, max = -1025, sum = 0.0, sum_abs = 0.0;
+	int arg_max = 0, arg_max_abs = 0;
+	float64_t min = 1025, max = -1025, sum = 0.0, max_abs = - 1, sum_abs = 0.0;
 	for (int32_t i = 0; i < a.vlen; ++i)
 	{
 		sum += a[i];
 		sum_abs += CMath::abs(a[i]);
+		if (CMath::abs(a[i]) > max)
+		{
+			max_abs = CMath::abs(a[i]);
+			arg_max_abs=i;
+		}
 		if (a[i] > max)
+		{
 			max = a[i];
+			arg_max=i;
+		}
 		if (a[i] < min)
 			min = a[i];
 	}
 	
 	EXPECT_EQ(min, SGVector<float64_t>::min(a.vector,a.vlen));
 	EXPECT_EQ(max, SGVector<float64_t>::max(a.vector,a.vlen));
+	EXPECT_EQ(arg_max, SGVector<float64_t>::arg_max(a.vector,1, a.vlen, NULL));
+	EXPECT_EQ(max_abs, SGVector<float64_t>::max_abs(a.vector,a.vlen));
+	EXPECT_EQ(arg_max_abs, SGVector<float64_t>::arg_max_abs(a.vector, 1, a.vlen, NULL));
 	EXPECT_EQ(sum, SGVector<float64_t>::sum(a.vector,a.vlen));
 	EXPECT_EQ(sum_abs, SGVector<float64_t>::sum_abs(a.vector, a.vlen));
 

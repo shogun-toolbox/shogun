@@ -1,4 +1,4 @@
-.PHONY: ChangeLog
+.PHONY: ChangeLog unit-tests
 
 ifneq (.config,$(wildcard .config))
 all:
@@ -66,8 +66,10 @@ uninstall:
 	@test -z "$(RDIR)" || rm -rf "$(DESTDIR)$(RDIR)/shogun"
 	@test -z "$(OCTDIR)" || rm -rf "$(DESTDIR)$(OCTDIR)/shogun"
 
-unit-tests:
-ifeq (yes, $(USE_GMOCK))
+include .config
+unit-tests: .config
+	echo $(USE_GMOCK)
+ifneq ($(USE_GMOCK),)
 	$(MAKE) -C ../tests/unit
 endif
 

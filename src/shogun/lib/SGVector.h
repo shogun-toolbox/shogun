@@ -421,11 +421,17 @@ template<class T> class SGVector : public SGReferencedData
 		/** @return min(vec) */
 		static T min(T* vec, int32_t len);
 
+		/** @return max(abs(vec)) */
+		static T max_abs(T* vec, int32_t len);
+
 		/** @return max(vec) */
 		static T max(T* vec, int32_t len);
 
 		/// return arg_max(vec)
 		static int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL);
+
+		/// return arg_max_abs(vec)
+		static int32_t arg_max_abs(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL);
 
 		/// return arg_min(vec)
 		static int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL);

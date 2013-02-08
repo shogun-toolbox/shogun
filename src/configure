@@ -551,7 +551,7 @@ check_gmock()
 		if test "$_gmock" = yes || test "$_gmock" = auto
 		then
 			echores "yes"
-			USE_GMOCK='#define USE_GMOCK'
+			USE_GMOCK='yes'
 		fi
 	fi
 }
@@ -592,7 +592,7 @@ check_gtest()
 		if test "$_gtest" = yes || test "$_gtest" = auto
 		then
 			echores "yes"
-			USE_GTEST='#define USE_GTEST'
+			USE_GTEST='yes'
 		fi
 	fi
 }

@@ -742,64 +742,97 @@ template <class T>
 
 #ifdef HAVE_LAPACK
 template <>
-float64_t SGVector<float64_t>::max(float64_t* vec, int32_t len)
+float64_t SGVector<float64_t>::max_abs(float64_t* vec, int32_t len)
 {
 	ASSERT(len>0)
 	int32_t skip = 1;
 	int32_t idx = cblas_idamax(len, vec, skip);
 
-	return vec[idx];
+	return CMath::abs(vec[idx]);
 }
 
 template <>
-float32_t SGVector<float32_t>::max(float32_t* vec, int32_t len)
+float32_t SGVector<float32_t>::max_abs(float32_t* vec, int32_t len)
 {
 	ASSERT(len>0)
 	int32_t skip = 1;
 	int32_t idx = cblas_isamax(len, vec, skip);
 
-	return vec[idx];
+	return CMath::abs(vec[idx]);
 }
 #endif
 
+/** @return max_abs(vec) */
+template <class T>
+T SGVector<T>::max_abs(T* vec, int32_t len)
+{
+	ASSERT(len>0)
+	T maxv=CMath::abs(vec[0]);
+
+	for (int32_t i=1; i<len; i++)
+		maxv=CMath::max(CMath::abs(vec[i]), maxv);
+
+	return maxv;
+}
+
 /** @return max(vec) */
 template <class T>
-	T SGVector<T>::max(T* vec, int32_t len)
-	{
-		ASSERT(len>0)
-		T maxv=vec[0];
+T SGVector<T>::max(T* vec, int32_t len)
+{
+	ASSERT(len>0)
+	T maxv=vec[0];
 
-		for (int32_t i=1; i<len; i++)
-			maxv=CMath::max(vec[i], maxv);
+	for (int32_t i=1; i<len; i++)
+		maxv=CMath::max(vec[i], maxv);
 
-		return maxv;
-	}
+	return maxv;
+}
 
 #ifdef HAVE_LAPACK
 template <>
-int32_t SGVector<float64_t>::arg_max(float64_t* vec, int32_t inc, int32_t len, float64_t* maxv_ptr)
+int32_t SGVector<float64_t>::arg_max_abs(float64_t* vec, int32_t inc, int32_t len, float64_t* maxv_ptr)
 {
 	ASSERT(len>0 || inc > 0)
 	int32_t idx = cblas_idamax(len, vec, inc);
 
 	if (maxv_ptr != NULL)
-		*maxv_ptr = vec[idx*inc];
+		*maxv_ptr = CMath::abs(vec[idx*inc]);
 
 	return idx;
 }
 
 template <>
-int32_t SGVector<float32_t>::arg_max(float32_t* vec, int32_t inc, int32_t len, float32_t* maxv_ptr)
+int32_t SGVector<float32_t>::arg_max_abs(float32_t* vec, int32_t inc, int32_t len, float32_t* maxv_ptr)
 {
 	ASSERT(len>0 || inc > 0)
 	int32_t idx = cblas_isamax(len, vec, inc);
 
 	if (maxv_ptr != NULL)
-		*maxv_ptr = vec[idx*inc];
+		*maxv_ptr = CMath::abs(vec[idx*inc]);
 
 	return idx;
 }
 #endif
+
+template <class T>
+int32_t SGVector<T>::arg_max_abs(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
+{
+	ASSERT(len > 0 || inc > 0)
+
+	T maxv = CMath::abs(vec[0]);
+	int32_t maxIdx = 0;
+
+	for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+	{
+		if (CMath::abs(vec[j]) > maxv)
+			maxv = CMath::abs(vec[j]), maxIdx = i;
+	}
+
+	if (maxv_ptr != NULL)
+		*maxv_ptr = maxv;
+
+	return maxIdx;
+}
 
 template <class T>
 int32_t SGVector<T>::arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
