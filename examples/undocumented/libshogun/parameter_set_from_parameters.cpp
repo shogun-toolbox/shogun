@@ -236,9 +236,9 @@ int main(int argc, char **argv)
 	result&=test_float_vector();
 
 	if (result)
-		SG_SPRINT("SUCCESS!\n");
+		SG_SPRINT("SUCCESS!\n")
 	else
-		SG_SPRINT("FAILURE!\n");
+		SG_SPRINT("FAILURE!\n")
 
 	exit_shogun();
 

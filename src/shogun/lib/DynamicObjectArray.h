@@ -345,21 +345,6 @@ class CDynamicObjectArray : public CSGObject
 			return m_array.delete_element(idx);
 		}
 
-		///** resize array
-		// *
-		// * @param ndim1 new dimension 1
-		// * @param ndim2 new dimension 2
-		// * @param ndim3 new dimension 3
-		// * @return if resizing was successful
-		// */
-		//inline bool resize_array(int32_t ndim1, int32_t ndim2=1, int32_t ndim3=1)
-		//{
-		//	dim1_size=ndim1;
-		//	dim2_size=ndim2;
-		//	dim3_size=ndim3;
-		//	return m_array.resize_array(ndim1*ndim2*ndim3);
-		//}
-
 		/** clear the array (with zeros) */
 		inline void clear_array()
 		{

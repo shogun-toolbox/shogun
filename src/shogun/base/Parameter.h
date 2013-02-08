@@ -119,6 +119,9 @@ struct TParameter
 	void get_incremental_hash(
 			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
 
+	/** test if parameter can be validly accessed, e.g., in case of a
+	 * list/vector/matrix of objects the list/vector/matrix has non-zero length
+	 */
 	bool is_valid();
 
 private:
