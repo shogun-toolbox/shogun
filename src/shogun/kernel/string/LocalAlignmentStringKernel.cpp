@@ -97,7 +97,6 @@ int32_t CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(int32_t size)
 : CStringKernel<char>(size)
 {
-	SG_UNSTABLE("LocalAlignmentStringKernel")
 	init();
 	init_static_variables();
 }
@@ -107,7 +106,6 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
 	float64_t opening, float64_t extension)
 : CStringKernel<char>()
 {
-	SG_UNSTABLE("LocalAlignmentStringKernel")
 	init();
 	m_opening=opening;
 	m_extension=extension;
