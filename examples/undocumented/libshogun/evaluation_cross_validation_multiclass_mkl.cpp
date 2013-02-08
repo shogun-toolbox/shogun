@@ -24,6 +24,10 @@ using namespace shogun;
 
 void test_multiclass_mkl_cv()
 {
+
+	/* init random number generator for reproducible results of cross-validation in the light of ASSERT(result->mean>0.9); some lines down below */
+	CMath::init_random(1);
+
 	/* stream data from a file */
 	int32_t num_vectors=50;
 	int32_t num_feats=2;
