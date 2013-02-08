@@ -68,8 +68,6 @@ TARGETS = basic_minimal \
 		  base_migration_multiple_dependencies \
 		  splitting_stratified_crossvalidation \
 		  splitting_standard_crossvalidation \
-		  mathematics_arpack \
-		  library_fibonacci_heap \
 		  library_set \
 		  library_map \
 		  mathematics_lapack \
