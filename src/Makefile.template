@@ -193,16 +193,16 @@ install-libshogun: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
 	install -m755 $(TEMPLATE_STATIC) $(DESTDIR)$(LIBDIR)
-	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o \
-		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \)\
+	find ./ -mindepth 1 -type d ! \( -path '*.git*' -o \
+		-path '*interface*' -o -path '*doxygen*' -o -path '*tapkee*' \)\
 		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
-	find ./ -mindepth 1 -type d ! \( -path '*.svn*' -o -name '*wrap*' -o \
-		-name '*interface*' -o -name '*guilib*' -o -name '*doxygen*' \) \
+	find ./ -mindepth 1 -type d ! \( -path '*.git*' -o -path '*wrap*' -o \
+		-name '*optimization' -o -name '*transfer' -o -path '*tapkee*' -o -path '*doxygen*' \) \
 		-exec sh -c "install -m644 {}/*.h $(DESTDIR)$(INCDIR)/shogun/{}" \;
 	rm -f $(DESTDIR)$(LIBDIR)/libshogun.$(EXT_LIB) $(DESTDIR)$(LIBDIR)/$(TEMPLATE_SONAME)
 	cd $(DESTDIR)$(LIBDIR) && ( ln -s $(TEMPLATE_TARGET) libshogun.$(EXT_LIB); \
 	ln -s $(TEMPLATE_TARGET) $(TEMPLATE_SONAME) )
-	-ldconfig 2>&1 /dev/null
+	ldconfig >/dev/null 2>&1 || true
 
 install-python_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
