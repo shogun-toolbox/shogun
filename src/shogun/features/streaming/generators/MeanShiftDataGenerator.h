@@ -4,11 +4,11 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#ifndef __STREAMINGDENSEDATAGENERATOR_H_
-#define __STREAMINGDENSEDATAGENERATOR_H_
+#ifndef __MEANSHIFTDATAGENERATOR_H_
+#define __MEANSHIFTDATAGENERATOR_H_
 
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 
@@ -76,4 +76,4 @@ protected:
 
 }
 
-#endif /* __STREAMINGDENSEDATAGENERATOR_H_ */
+#endif /* __MEANSHIFTDATAGENERATOR_H_ */
