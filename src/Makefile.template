@@ -163,6 +163,7 @@ swigdocclean:
 
 clean: swigclean swigdocclean
 	@rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o")
+	@rm -f $(shell find . -name "*.gcno")
 	@rm -f $(shell find . -name "*.a" -o -name "*.so*" -o -name "*.dylib" -o -name "*.dll" -o -name "*~" -o -name ".#*")
 	@rm -f $(SRCTMPFILES)
 	@rm -f $(shell find . -type f -name '*.py' ! -name '__*.py' ! -name '*.*.py' | grep -v svn)
