@@ -120,7 +120,7 @@ TEST(SGVectorTest,misc)
 	EXPECT_EQ(max_abs, SGVector<float64_t>::max_abs(a.vector,a.vlen));
 	EXPECT_EQ(arg_max_abs, SGVector<float64_t>::arg_max_abs(a.vector, 1, a.vlen, NULL));
 	EXPECT_EQ(sum, SGVector<float64_t>::sum(a.vector,a.vlen));
-	EXPECT_EQ(sum_abs, SGVector<float64_t>::sum_abs(a.vector, a.vlen));
+	EXPECT_DOUBLE_EQ(sum_abs, SGVector<float64_t>::sum_abs(a.vector, a.vlen));
 
 	/* test ::vector_multiply(...) */
 	SGVector<float64_t> c(10);
@@ -145,5 +145,5 @@ TEST(SGVectorTest,misc)
 	SGVector<float64_t> d(b_clone, b.vlen);
 	SGVector<float64_t>::vec1_plus_scalar_times_vec2(d.vector, 1.3, d.vector, b.vlen);
 	for (int32_t i = 0; i < d.vlen; ++i)
-		EXPECT_EQ(d[i],b[i]+1.3*b[i]);
+		EXPECT_DOUBLE_EQ(d[i],b[i]+1.3*b[i]);
 }
