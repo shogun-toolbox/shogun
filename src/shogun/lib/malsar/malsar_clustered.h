@@ -18,6 +18,12 @@
 namespace shogun 
 {
 
+/**
+ * Routine for learning a linear multitask
+ * logistic regression model using
+ * Clustered multitask learning algorithm.
+ *
+ */
 malsar_result_t malsar_clustered(
 		CDotFeatures* features,
 		double* y,

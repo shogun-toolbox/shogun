@@ -18,6 +18,12 @@
 namespace shogun 
 {
 
+/**
+ * Routine for learning a linear multitask 
+ * logistic regression model
+ * using Joint Feature algorithm.
+ *
+ */
 malsar_result_t malsar_joint_feature_learning(
 		CDotFeatures* features,
 		double* y,

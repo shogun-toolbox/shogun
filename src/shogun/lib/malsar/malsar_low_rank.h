@@ -18,6 +18,12 @@
 namespace shogun 
 {
 
+/**
+ * Routine for learning a linear multitask
+ * logistic regression model using
+ * Low Rank multitask algorithm.
+ *
+ */
 malsar_result_t malsar_low_rank(
 		CDotFeatures* features,
 		double* y,
