@@ -1,4 +1,6 @@
 SHOGUNSRCTOP=../../src
+VALGRINDOPTS=
+#VALGRINDOPTS=--leak-check=full
 
 ifeq ($(SHOGUNSRCTOP)/.config,$(wildcard $(SHOGUNSRCTOP)/.config))
 CONFIGPATH = $(SHOGUNSRCTOP)
@@ -29,6 +31,9 @@ shogun-unit-test: libgmock.a shogun-lib $(TESTOBJFILES)
 
 build: shogun-unit-test
 	@$(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) ./shogun-unit-test
+
+valgrind: shogun-unit-test
+	@$(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) valgrind $(VALGRINDOPTS) ./shogun-unit-test
 
 %$(EXT_OBJ_TEST): %$(EXT_SRC_TEST)
 	$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
