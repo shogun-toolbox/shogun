@@ -81,7 +81,6 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 %rename(ImplicitWeightedSpecFeatures) CImplicitWeightedSpecFeatures;
 %rename(DataGenerator) CDataGenerator;
 %rename(LatentFeatures) CLatentFeatures;
-%rename(MeanShiftDataGenerator) CMeanShiftDataGenerator;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/features/FeatureTypes.h>
@@ -95,7 +94,6 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 %include <shogun/features/streaming/StreamingDotFeatures.h>
 %include <shogun/features/streaming/StreamingVwFeatures.h>
 %include <shogun/features/DataGenerator.h>
-%include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 
 /* Templated Class StringFeatures */
 %include <shogun/features/StringFeatures.h>
@@ -424,6 +422,9 @@ namespace shogun
     %template(StreamingRealFeatures) CStreamingDenseFeatures<float64_t>;
 #endif
 }
+
+%rename(MeanShiftDataGenerator) CMeanShiftDataGenerator;
+%include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 
 /* Templated Class DenseSubsetFeatures */
 %include <shogun/features/DenseSubsetFeatures.h>
