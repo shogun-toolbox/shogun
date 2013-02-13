@@ -25,7 +25,7 @@ shogun-lib:
 	@$(MAKE) -C $(SHOGUNSRCTOP)/shogun
 
 shogun-unit-test: libgmock.a shogun-lib $(TESTOBJFILES)
-	@$(LINK) -o shogun-unit-test $(TESTOBJFILES) $(LINKFLAGS) -L$(SHOGUNSRCTOP)/shogun -lshogun libgmock.a $(LINKFLAGS_GMOCK)
+	@$(LINK) -o shogun-unit-test $(TESTOBJFILES) $(LINKFLAGS) -L$(SHOGUNSRCTOP)/shogun -lshogun libgmock.a $(LINKFLAGS_GMOCK) $(POSTLINKFLAGS)
 
 build: shogun-unit-test
 	@$(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) ./shogun-unit-test
