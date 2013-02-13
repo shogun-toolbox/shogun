@@ -95,12 +95,12 @@ TEST(SGVectorTest,misc)
 	
 	/* test, min, max, sum */
 	int arg_max = 0, arg_max_abs = 0;
-	float64_t min = 1025, max = -1025, sum = 0.0, max_abs = - 1, sum_abs = 0.0;
+	float64_t min = 1025, max = -1025, sum = 0.0, max_abs = -1, sum_abs = 0.0;
 	for (int32_t i = 0; i < a.vlen; ++i)
 	{
 		sum += a[i];
 		sum_abs += CMath::abs(a[i]);
-		if (CMath::abs(a[i]) > max)
+		if (CMath::abs(a[i]) > max_abs)
 		{
 			max_abs = CMath::abs(a[i]);
 			arg_max_abs=i;
