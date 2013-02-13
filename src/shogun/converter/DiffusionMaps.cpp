@@ -21,6 +21,7 @@ CDiffusionMaps::CDiffusionMaps() :
 		CEmbeddingConverter()
 {
 	m_t = 10;
+	m_width = 1.0;
 	set_distance(new CEuclideanDistance());
 
 	init();
