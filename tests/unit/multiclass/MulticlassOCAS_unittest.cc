@@ -37,8 +37,9 @@ TEST(MulticlassOCASTest,train)
 
   CMulticlassLabels* ground_truth = new CMulticlassLabels(labels);
   CMulticlassOCAS* mocas = new CMulticlassOCAS(C, train_feats, ground_truth);
-  mocas->train();
   mocas->parallel->set_num_threads(1);
+  mocas->set_epsilon(1e-5);
+  mocas->train();
 
   CLabels* pred = mocas->apply(test_feats);
   for (int i = 0; i < set_size; ++i)
