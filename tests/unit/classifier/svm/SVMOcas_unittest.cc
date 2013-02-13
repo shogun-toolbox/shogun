@@ -30,7 +30,11 @@ TEST(SVMOcasTest,train)
 	CBinaryLabels* ground_truth = new CBinaryLabels(labels);
 
 	CSVMOcas* ocas = new CSVMOcas(1.0, train_feats, ground_truth);
+	ocas->set_epsilon(1e-5);
 	ocas->train();
+	float64_t objective = ocas->compute_primal_objective();
+
+	EXPECT_NEAR(objective, 0.022321841487323236, 1e-2);
 	
 	CLabels* pred = ocas->apply(test_feats);
 	for (int i = 0; i < num_samples; ++i)
