@@ -11,7 +11,7 @@ from numpy import *
 
 def statistics_quadratic_time_mmd ():
 	from shogun.Features import RealFeatures
-	from shogun.Features import MeanShiftRealDataGenerator
+	from shogun.Features import MeanShiftDataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
@@ -25,8 +25,8 @@ def statistics_quadratic_time_mmd ():
 	difference=0.5
 
 	# streaming data generator for mean shift distributions
-	gen_p=MeanShiftRealDataGenerator(0, dim)
-	gen_q=MeanShiftRealDataGenerator(difference, dim)
+	gen_p=MeanShiftDataGenerator(0, dim)
+	gen_q=MeanShiftDataGenerator(difference, dim)
 	
 	# Stream examples and merge them in order to compute median on joint sample
 	# alternative is to call a different constructor of QuadraticTimeMMD
@@ -119,4 +119,4 @@ def statistics_quadratic_time_mmd ():
 	
 if __name__=='__main__':
 	print('QuadraticTimeMMD')
-	statistics_quadratic_time_mmd()
+	#statistics_quadratic_time_mmd()

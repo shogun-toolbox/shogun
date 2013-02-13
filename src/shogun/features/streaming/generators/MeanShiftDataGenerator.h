@@ -4,11 +4,11 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#ifndef __STREAMINGDENSEDATAGENERATOR_H_
-#define __STREAMINGDENSEDATAGENERATOR_H_
+#ifndef __MEANSHIFTDATAGENERATOR_H_
+#define __MEANSHIFTDATAGENERATOR_H_
 
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 
@@ -25,8 +25,7 @@ namespace shogun
  * This allows to treat generated data as a stream via the standard streaming
  * features interface
  */
-template <class T> class CMeanShiftDataGenerator:
-	public CStreamingDenseFeatures<T>
+class CMeanShiftDataGenerator: public CStreamingDenseFeatures<float64_t>
 {
 public:
 	/** Constructor */
@@ -37,7 +36,7 @@ public:
 	 * @param mean_shift
 	 * @param dim
 	 */
-	CMeanShiftDataGenerator(T mean_shift, index_t dim);
+	CMeanShiftDataGenerator(float64_t mean_shift, index_t dim);
 
 	/** Destructor */
 	virtual ~CMeanShiftDataGenerator();
@@ -55,7 +54,7 @@ public:
 	 * @param mean_shift
 	 * @param dimension
 	 */
-	void set_mean_shift_model(T mean_shift, index_t dimension);
+	void set_mean_shift_model(float64_t mean_shift, index_t dimension);
 
 	/** get the next example from stream */
 	bool get_next_example();
@@ -69,11 +68,12 @@ private:
 
 protected:
 	/** model of data to generate */
-	T m_mean_shift;
+	float64_t m_mean_shift;
+
 	/** dimension */
 	index_t m_dimension;
 };
 
 }
 
-#endif /* __STREAMINGDENSEDATAGENERATOR_H_ */
+#endif /* __MEANSHIFTDATAGENERATOR_H_ */

@@ -28,7 +28,7 @@ void test_linear_mmd_fixed()
 	index_t d=3;
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-	SGMatrix<float64_t> data(d,2*m);
+	SGMatrix<float64_t> data(d, 2*m);
 	for (index_t i=0; i<2*d*m; ++i)
 		data.matrix[i]=i;
 
@@ -43,10 +43,10 @@ void test_linear_mmd_fixed()
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
 	/* create stremaing features from dense features */
-	CStreamingFeatures* streaming_p=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q=
-			new CStreamingDenseFeatures<float64_t>(features_q);
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
 
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
@@ -85,10 +85,8 @@ void test_linear_mmd_random()
 	SGVector<float64_t> mmds(num_runs);
 
 	/* create data generator classes that implement a meanshift in q */
-	CMeanShiftDataGenerator<float64_t>* gen_p=
-			new CMeanShiftDataGenerator<float64_t>(0, d);
-	CMeanShiftDataGenerator<float64_t>* gen_q=
-			new CMeanShiftDataGenerator<float64_t>(difference, d);
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, d);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, d);
 
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
@@ -128,10 +126,8 @@ void test_linear_mmd_variance_estimate()
 	SGVector<float64_t> vars(num_runs);
 
 	/* create data generator classes that implement a meanshift in q */
-	CMeanShiftDataGenerator<float64_t>* gen_p=
-			new CMeanShiftDataGenerator<float64_t>(0, d);
-	CMeanShiftDataGenerator<float64_t>* gen_q=
-			new CMeanShiftDataGenerator<float64_t>(difference, d);
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, d);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, d);
 
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
@@ -174,10 +170,8 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 	float64_t sigma=2;
 
 	/* create data generator classes that implement a meanshift in q */
-	CMeanShiftDataGenerator<float64_t>* gen_p=
-			new CMeanShiftDataGenerator<float64_t>(0, d);
-	CMeanShiftDataGenerator<float64_t>* gen_q=
-			new CMeanShiftDataGenerator<float64_t>(difference, d);
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, d);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, d);
 
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
@@ -199,7 +193,8 @@ void test_linear_mmd_variance_estimate_vs_bootstrap()
 	/* it is also possible to compute these separately, but this only requires
 	 * one loop and values are connected */
 	mmd->compute_statistic_and_variance(statistic, estimated_variance);
-	float64_t variance_error=CMath::abs(bootstrap_variance-estimated_variance[0]);
+	float64_t variance_error=CMath::abs(
+			bootstrap_variance-estimated_variance[0]);
 
 	/* start parser of streaming features */
 	gen_p->end_parser();
@@ -228,10 +223,8 @@ void test_linear_mmd_type2_error()
 	index_t num_errors=0;
 
 	/* create data generator classes that implement a meanshift in q */
-	CMeanShiftDataGenerator<float64_t>* gen_p=
-			new CMeanShiftDataGenerator<float64_t>(0, d);
-	CMeanShiftDataGenerator<float64_t>* gen_q=
-			new CMeanShiftDataGenerator<float64_t>(difference, d);
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, d);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, d);
 
 	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(100, sigma*sigma*2);
@@ -255,7 +248,6 @@ void test_linear_mmd_type2_error()
 	 * [0.024568646859226, 0.222231353140774] */
 //	ASSERT(type_2_error>0.024568646859226);
 //	ASSERT(type_2_error<0.222231353140774);
-
 	SG_UNREF(mmd);
 }
 
@@ -263,7 +255,7 @@ void test_linear_mmd_statistic_and_Q_fixed()
 {
 	index_t m=8;
 	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
+	SGMatrix<float64_t> data(d, 2*m);
 	for (index_t i=0; i<2*d*m; ++i)
 		data.matrix[i]=i;
 
@@ -293,14 +285,14 @@ void test_linear_mmd_statistic_and_Q_fixed()
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
 	/* create stremaing features from dense features */
-	CStreamingFeatures* streaming_p_1=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q_1=
-			new CStreamingDenseFeatures<float64_t>(features_q);
-	CStreamingFeatures* streaming_p_2=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q_2=
-			new CStreamingDenseFeatures<float64_t>(features_q);
+	CStreamingFeatures* streaming_p_1=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q_1=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+	CStreamingFeatures* streaming_p_2=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q_2=new CStreamingDenseFeatures<float64_t>(
+			features_q);
 
 	/* create combined kernel with values 2^5 to 2^7 */
 	CCombinedKernel* kernel=new CCombinedKernel();
@@ -384,7 +376,7 @@ void test_linear_mmd_statistic_and_variance_fixed()
 {
 	index_t m=8;
 	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
+	SGMatrix<float64_t> data(d, 2*m);
 	for (index_t i=0; i<2*d*m; ++i)
 		data.matrix[i]=i;
 
@@ -414,10 +406,10 @@ void test_linear_mmd_statistic_and_variance_fixed()
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
 	/* create stremaing features from dense features */
-	CStreamingFeatures* streaming_p=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q=
-			new CStreamingDenseFeatures<float64_t>(features_q);
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
 
 	/* create combined kernel with values 2^5 to 2^7 */
 	CCombinedKernel* kernel=new CCombinedKernel();
@@ -430,8 +422,7 @@ void test_linear_mmd_statistic_and_variance_fixed()
 	}
 
 	/* create MMD instance */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p,
-			streaming_q, m);
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
 
 	/* start streaming features parser */
 	streaming_p->start_parser();

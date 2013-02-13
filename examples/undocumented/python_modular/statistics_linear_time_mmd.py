@@ -11,7 +11,7 @@ from numpy import *
 
 def statistics_linear_time_mmd ():
 	from shogun.Features import RealFeatures
-	from shogun.Features import MeanShiftRealDataGenerator
+	from shogun.Features import MeanShiftDataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import LinearTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
@@ -24,8 +24,8 @@ def statistics_linear_time_mmd ():
 	difference=0.5
 
 	# streaming data generator for mean shift distributions
-	gen_p=MeanShiftRealDataGenerator(0, dim)
-	gen_q=MeanShiftRealDataGenerator(difference, dim)
+	gen_p=MeanShiftDataGenerator(0, dim)
+	gen_q=MeanShiftDataGenerator(difference, dim)
 
 	# compute median data distance in order to use for Gaussian kernel width
 	# 0.5*median_distance normally (factor two in Gaussian kernel)
@@ -82,5 +82,4 @@ def statistics_linear_time_mmd ():
 	
 if __name__=='__main__':
 	print('LinearTimeMMD')
-	# uncomment for now since it break build, TODO
 	#statistics_linear_time_mmd()
