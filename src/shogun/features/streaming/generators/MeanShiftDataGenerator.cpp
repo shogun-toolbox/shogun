@@ -12,13 +12,13 @@
 using namespace shogun;
 
 CMeanShiftDataGenerator::CMeanShiftDataGenerator() :
-		CStreamingDenseFeatures()
+		CStreamingDenseFeatures<float64_t>()
 {
 	init();
 }
 
 CMeanShiftDataGenerator::CMeanShiftDataGenerator(float64_t mean_shift,
-		index_t dimension): CStreamingDenseFeatures()
+		index_t dimension): CStreamingDenseFeatures<float64_t>()
 {
 	init();
 	set_mean_shift_model(mean_shift, dimension);
