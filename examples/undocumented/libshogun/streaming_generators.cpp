@@ -23,8 +23,7 @@ void test_mean_shift()
 	index_t mean_shift=100;
 	index_t num_runs=1000;
 
-	CMeanShiftDataGenerator<float64_t>* gen=new CMeanShiftDataGenerator<
-			float64_t>(mean_shift, dimension);
+	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(mean_shift, dimension);
 
 	SGVector<float64_t> avg(dimension);
 	avg.zero();
