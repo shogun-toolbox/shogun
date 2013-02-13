@@ -63,6 +63,7 @@ CDenseFeatures<float64_t>* CKernelLocallyLinearEmbedding::embed_kernel(CKernel* 
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
+	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_KERNEL_LOCALLY_LINEAR_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
 	parameters.kernel = kernel;
