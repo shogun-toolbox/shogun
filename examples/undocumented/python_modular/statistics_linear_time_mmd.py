@@ -82,4 +82,4 @@ def statistics_linear_time_mmd ():
 	
 if __name__=='__main__':
 	print('LinearTimeMMD')
-	#statistics_linear_time_mmd()
+	statistics_linear_time_mmd()

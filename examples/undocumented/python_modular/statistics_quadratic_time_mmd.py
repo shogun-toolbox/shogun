@@ -119,4 +119,4 @@ def statistics_quadratic_time_mmd ():
 	
 if __name__=='__main__':
 	print('QuadraticTimeMMD')
-	#statistics_quadratic_time_mmd()
+	statistics_quadratic_time_mmd()
