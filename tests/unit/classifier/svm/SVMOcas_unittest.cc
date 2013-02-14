@@ -8,6 +8,7 @@ using namespace shogun;
 TEST(SVMOcasTest,train)
 {
 	index_t num_samples = 50;
+	CMath::init_random(5);
 	SGMatrix<float64_t> data =
 		CDataGenerator::generate_gaussians(num_samples, 2, 2);
 	CDenseFeatures<float64_t> features(data);
@@ -30,6 +31,7 @@ TEST(SVMOcasTest,train)
 	CBinaryLabels* ground_truth = new CBinaryLabels(labels);
 
 	CSVMOcas* ocas = new CSVMOcas(1.0, train_feats, ground_truth);
+	ocas->parallel->set_num_threads(1);
 	ocas->set_epsilon(1e-5);
 	ocas->train();
 	float64_t objective = ocas->compute_primal_objective();
