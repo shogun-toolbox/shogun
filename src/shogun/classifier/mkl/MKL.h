@@ -11,6 +11,8 @@
 #ifndef __MKL_H__
 #define __MKL_H__
 
+#include <shogun/lib/config.h>
+
 #ifdef USE_GLPK
 #include <glpk.h>
 #endif
