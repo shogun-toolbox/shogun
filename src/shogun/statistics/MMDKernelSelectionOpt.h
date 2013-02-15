@@ -17,12 +17,12 @@ namespace shogun
 
 class CLinearTimeMMD;
 
-class CMMDKernelSelectionOptSingle: public CMMDKernelSelection
+class CMMDKernelSelectionOpt: public CMMDKernelSelection
 {
 public:
 
 	/** Default constructor */
-	CMMDKernelSelectionOptSingle();
+	CMMDKernelSelectionOpt();
 
 	/** Constructor that initialises the underlying MMD instance. Currently,
 	 * only the linear time MMD is developed
@@ -30,11 +30,11 @@ public:
 	 * @param mmd MMD instance to use
 	 * @param lamda ridge that is added to standard deviation
 	 */
-	CMMDKernelSelectionOptSingle(CKernelTwoSampleTestStatistic* mmd,
+	CMMDKernelSelectionOpt(CKernelTwoSampleTestStatistic* mmd,
 			float64_t lambda=10E-5);
 
 	/** Destructor */
-	virtual ~CMMDKernelSelectionOptSingle();
+	virtual ~CMMDKernelSelectionOpt();
 
 	/** Overwrites superclass method and ensures that all statistics are
 	 * computed on the same data. Since linear time MMD is a streaming
@@ -46,7 +46,7 @@ public:
 	virtual SGVector<float64_t> compute_measures();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionOptSingle"; }
+	const char* get_name() const { return "MMDKernelSelectionOpt"; }
 
 private:
 	/** Initializer */

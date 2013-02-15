@@ -12,7 +12,7 @@
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/statistics/MMDKernelSelectionCombOpt.h>
 #include <shogun/statistics/MMDKernelSelectionCombMaxL2.h>
-#include <shogun/statistics/MMDKernelSelectionOptSingle.h>
+#include <shogun/statistics/MMDKernelSelectionOpt.h>
 #include <shogun/statistics/MMDKernelSelectionMax.h>
 #include <shogun/statistics/MMDKernelSelectionMedian.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
@@ -247,8 +247,8 @@ void test_kernel_choice_linear_time_mmd_opt_single()
 			streaming_q, m);
 
 	/* kernel selection instance with regularisation term */
-	CMMDKernelSelectionOptSingle* selection=
-			new CMMDKernelSelectionOptSingle(mmd, 10E-5);
+	CMMDKernelSelectionOpt* selection=
+			new CMMDKernelSelectionOpt(mmd, 10E-5);
 
 	/* start streaming features parser */
 	streaming_p->start_parser();

@@ -7,19 +7,19 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/MMDKernelSelectionOptSingle.h>
+#include <shogun/statistics/MMDKernelSelectionOpt.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/kernel/CombinedKernel.h>
 
 using namespace shogun;
 
-CMMDKernelSelectionOptSingle::CMMDKernelSelectionOptSingle() :
+CMMDKernelSelectionOpt::CMMDKernelSelectionOpt() :
 		CMMDKernelSelection()
 {
 	init();
 }
 
-CMMDKernelSelectionOptSingle::CMMDKernelSelectionOptSingle(
+CMMDKernelSelectionOpt::CMMDKernelSelectionOpt(
 		CKernelTwoSampleTestStatistic* mmd, float64_t lambda) :
 		CMMDKernelSelection(mmd)
 {
@@ -33,11 +33,11 @@ CMMDKernelSelectionOptSingle::CMMDKernelSelectionOptSingle(
 	m_lambda=lambda;
 }
 
-CMMDKernelSelectionOptSingle::~CMMDKernelSelectionOptSingle()
+CMMDKernelSelectionOpt::~CMMDKernelSelectionOpt()
 {
 }
 
-SGVector<float64_t> CMMDKernelSelectionOptSingle::compute_measures()
+SGVector<float64_t> CMMDKernelSelectionOpt::compute_measures()
 {
 	/* comnpute mmd on all subkernels using the same data. Note that underlying
 	 * kernel was asserted to be a combined one */
@@ -54,7 +54,7 @@ SGVector<float64_t> CMMDKernelSelectionOptSingle::compute_measures()
 	return measures;
 }
 
-void CMMDKernelSelectionOptSingle::init()
+void CMMDKernelSelectionOpt::init()
 {
 	/* set to a sensible standard value that proved to be useful in
 	 * experiments, see NIPS paper */
