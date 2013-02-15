@@ -18,11 +18,11 @@ CGaussianBlobsDataGenerator::CGaussianBlobsDataGenerator() :
 }
 
 CGaussianBlobsDataGenerator::CGaussianBlobsDataGenerator(index_t sqrt_num_blobs,
-		float64_t distance, float64_t epsilon, float64_t angle) :
+		float64_t distance, float64_t stretch, float64_t angle) :
 		CStreamingDenseFeatures<float64_t>()
 {
 	init();
-	set_blobs_model(sqrt_num_blobs, distance, epsilon, angle);
+	set_blobs_model(sqrt_num_blobs, distance, stretch, angle);
 }
 
 CGaussianBlobsDataGenerator::~CGaussianBlobsDataGenerator()
@@ -30,11 +30,11 @@ CGaussianBlobsDataGenerator::~CGaussianBlobsDataGenerator()
 }
 
 void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
-		float64_t distance, float64_t epsilon, float64_t angle)
+		float64_t distance, float64_t stretch, float64_t angle)
 {
 	m_sqrt_num_blobs=sqrt_num_blobs;
 	m_distance=distance;
-	m_epsilon=epsilon;
+	m_stretch=stretch;
 	m_angle=angle;
 
 	/* precompute cholesky decomposition, start with rotation matrix */
@@ -46,7 +46,7 @@ void CGaussianBlobsDataGenerator::set_blobs_model(index_t sqrt_num_blobs,
 
 	/* diagonal eigenvalue matrix */
 	SGMatrix<float64_t> L(2, 2);
-	L(0, 0)=CMath::sqrt(epsilon);
+	L(0, 0)=CMath::sqrt(stretch);
 	L(1, 0)=0;
 	L(0, 1)=0;
 	L(1, 1)=1;
@@ -60,7 +60,7 @@ void CGaussianBlobsDataGenerator::init()
 	SG_SWARNING("%s::init(): register parameters!\n", get_name());
 	m_sqrt_num_blobs=1;
 	m_distance=0;
-	m_epsilon=1;
+	m_stretch=1;
 	m_angle=0;
 	m_cholesky=SGMatrix<float64_t>(2, 2);
 	m_cholesky(0, 0)=1;
