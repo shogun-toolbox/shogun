@@ -50,9 +50,9 @@ void CSVM::set_defaults(int32_t num_sv)
 	SG_ADD(&C1, "C1", "", MS_AVAILABLE);
 	SG_ADD(&C2, "C2", "", MS_AVAILABLE);
 	SG_ADD(&svm_loaded, "svm_loaded", "SVM is loaded.", MS_NOT_AVAILABLE);
-	SG_ADD(&epsilon, "epsilon", "", MS_NOT_AVAILABLE);
+	SG_ADD(&epsilon, "epsilon", "", MS_AVAILABLE);
 	SG_ADD(&tube_epsilon, "tube_epsilon",
-			"Tube epsilon for support vector regression.", MS_NOT_AVAILABLE);
+			"Tube epsilon for support vector regression.", MS_AVAILABLE);
 	SG_ADD(&nu, "nu", "", MS_AVAILABLE);
 	SG_ADD(&objective, "objective", "", MS_NOT_AVAILABLE);
 	SG_ADD(&qpsize, "qpsize", "", MS_NOT_AVAILABLE);
