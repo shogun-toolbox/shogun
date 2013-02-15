@@ -24,7 +24,7 @@ public:
 	/** Constructor
 	 */
 	CGaussianBlobsDataGenerator(index_t sqrt_num_blobs, float64_t distance,
-			float64_t epsilon, float64_t angle);
+			float64_t stretch, float64_t angle);
 
 	/** Destructor */
 	virtual ~CGaussianBlobsDataGenerator();
@@ -40,7 +40,7 @@ public:
 	 *
 	 */
 	void set_blobs_model(index_t sqrt_num_blobs, float64_t distance,
-			float64_t epsilon, float64_t angle);
+			float64_t stretch, float64_t angle);
 
 	/** get the next example from stream */
 	bool get_next_example();
@@ -55,7 +55,7 @@ private:
 protected:
 	index_t m_sqrt_num_blobs;
 	float64_t m_distance;
-	float64_t m_epsilon;
+	float64_t m_stretch;
 	float64_t m_angle;
 	SGMatrix<float64_t> m_cholesky;
 };

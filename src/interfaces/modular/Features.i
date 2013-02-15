@@ -423,8 +423,12 @@ namespace shogun
 #endif
 }
 
+/* these classes need the above typed CFeature definitions */
 %rename(MeanShiftDataGenerator) CMeanShiftDataGenerator;
 %include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+
+%rename(GaussianBlobsDataGenerator) CGaussianBlobsDataGenerator;
+%include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 
 /* Templated Class DenseSubsetFeatures */
 %include <shogun/features/DenseSubsetFeatures.h>

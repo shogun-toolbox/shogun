@@ -43,6 +43,7 @@
 #include <shogun/features/ImplicitWeightedSpecFeatures.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/MatrixFeatures.h>
 %}
