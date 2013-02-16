@@ -48,6 +48,7 @@ struct ShogunFeatureVectorCallback
 	ShogunFeatureVectorCallback(CDotFeatures* f) : features(f) { }
 	inline void operator()(int i, tapkee::DenseVector& vector) const
 	{
+		vector.setZero();
 		features->add_to_dense_vec(1.0,i,vector.data(),features->get_dim_feature_space());
 	}
 	CDotFeatures* features;
