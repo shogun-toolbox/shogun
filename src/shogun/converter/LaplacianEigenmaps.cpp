@@ -21,7 +21,6 @@ CLaplacianEigenmaps::CLaplacianEigenmaps() :
 {
 	m_k = 3;
 	m_tau = 1.0;
-	m_distance = new CEuclideanDistance();
 
 	init();
 }
