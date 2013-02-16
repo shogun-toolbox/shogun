@@ -282,7 +282,7 @@ CONCRETE_IMPLEMENTATION(NEIGHBORHOOD_PRESERVING_EMBEDDING)
 				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
 		DenseVector mean_vector = 
 			compute_mean(begin,end,feature_vector_callback,dimension);
-		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
+		//ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
 		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
 };
@@ -359,7 +359,7 @@ CONCRETE_IMPLEMENTATION(LOCALITY_PRESERVING_PROJECTIONS)
 				eigen_method,eigenproblem_matrices.first,eigenproblem_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
 		DenseVector mean_vector = 
 			compute_mean(begin,end,feature_vector_callback,dimension);
-		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
+		//ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
 		// TODO to be improved with out-of-sample projection
 		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
@@ -382,7 +382,7 @@ CONCRETE_IMPLEMENTATION(PCA)
 			compute_covariance_matrix(begin,end,mean_vector,feature_vector_callback,dimension);
 		ProjectionResult projection_result = 
 			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,centered_covariance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
-		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
+		//ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
 		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
 };
@@ -431,7 +431,7 @@ CONCRETE_IMPLEMENTATION(LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT)
 				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
 		DenseVector mean_vector = 
 			compute_mean(begin,end,feature_vector_callback,dimension);
-		ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
+		//ProjectingFunction projecting_function(new MatrixProjectionImplementation(projection_result.first));
 		return project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension);
 	}
 };
