@@ -1,5 +1,6 @@
 *.o
 *.gcno
+*.gcda
 *.class
 *doxygen_xml
 *_wrap.h
