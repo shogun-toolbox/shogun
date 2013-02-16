@@ -12,6 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/class_list.h>
 #include <shogun/lib/Hash.h>
+#include <shogun/lib/memory.h>
 
 using namespace shogun;
 
@@ -1658,6 +1659,7 @@ TParameter::delete_cont()
 		switch (m_datatype.m_ctype) {
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED
+			break;
 		case CT_MATRIX: case CT_SGMATRIX:
 			old_length *= *m_datatype.m_length_x; break;
 		case CT_SCALAR: case CT_VECTOR: case CT_SGVECTOR: break;
@@ -1923,7 +1925,8 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 				= SG_MALLOC(SGSparseVector<uint16_t>, new_length); break;
 		case PT_INT32:
 			*(SGSparseVector<int32_t>**) m_parameter
-				= SG_MALLOC(SGSparseVector<int32_t>, new_length); break;
+				= SG_MALLOC(SGSparseVector<int32_t>, new_length);
+			break;
 		case PT_UINT32:
 			*(SGSparseVector<uint32_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<uint32_t>, new_length); break;
@@ -1948,8 +1951,6 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 					 "Sparse<SGSerializable*>");
 			break;
 		}
-		memset(*(void**) m_parameter, 0, new_length
-			   *m_datatype.sizeof_stype());
 		break;
 	} /* switch (m_datatype.m_stype)  */
 
@@ -2197,6 +2198,7 @@ void TParameter::get_incremental_hash(
 	{
 	case CT_NDARRAY:
 		SG_SNOTIMPLEMENTED
+		break;
 	case CT_SCALAR:
 	{
 	    uint8_t* data = ((uint8_t*) m_parameter);
@@ -2284,6 +2286,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 	switch (m_datatype.m_ctype) {
 	case CT_NDARRAY:
 		SG_SNOTIMPLEMENTED
+		break;
 	case CT_SCALAR:
 		if (!save_stype(file, m_parameter, prefix)) return false;
 		break;
@@ -2375,6 +2378,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	{
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED
+			break;
 		case CT_SCALAR:
 			if (!load_stype(file, m_parameter, prefix))
 				return false;
@@ -2391,6 +2395,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 			{
 				case CT_NDARRAY:
 					SG_SNOTIMPLEMENTED
+					break;
 				case CT_VECTOR: case CT_SGVECTOR:
 					len_read_x = 1;
 					new_cont(len_read_y, len_read_x);
@@ -2424,6 +2429,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 			{
 				case CT_NDARRAY:
 					SG_SNOTIMPLEMENTED
+					break;
 				case CT_VECTOR: case CT_SGVECTOR:
 					*m_datatype.m_length_y = len_read_y;
 					break;
@@ -2707,6 +2713,7 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x,
 		break;
 	case CT_NDARRAY:
 		SG_SNOTIMPLEMENTED
+		break;
 	}
 
 	/* check if there is no data loss */

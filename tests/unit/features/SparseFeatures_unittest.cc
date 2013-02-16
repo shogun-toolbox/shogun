@@ -39,8 +39,5 @@ TEST(SparseFeaturesTest,serialization)
 	EXPECT_TRUE(data_loaded.equals(data));
 
 	SG_UNREF(sparse_features);
-
-	//destroying the object will crash - serialization currently doesn't
-	//support inplace constructor for SGSparseVector. Disabling for now.
-	//SG_UNREF(sparse_features_loaded);
+	SG_UNREF(sparse_features_loaded);
 }

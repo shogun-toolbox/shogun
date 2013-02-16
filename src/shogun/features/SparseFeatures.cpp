@@ -1,3 +1,4 @@
+#include <shogun/lib/memory.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/preprocessor/SparsePreprocessor.h>
 #include <shogun/mathematics/Math.h>
@@ -29,7 +30,6 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseVector<ST>* src,
 	//SG_MALLOC(SGSparseVector<ST>, num_vec);
 	//for (int32_t i=0; i< num_vec; i++)
 	//{
-	//	new (&sparse_feature_matrix[i]) SGSparseVector<ST>();
 	//	sparse_feature_matrix[i] = src[i];
 	//}
 }
@@ -65,10 +65,7 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 		free_sparse_feature_matrix();
 		sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
 		for (int32_t i=0; i< num_vectors; i++)
-		{
-			new (&sparse_feature_matrix[i]) SGSparseVector<ST>();
 			sparse_feature_matrix[i] = orig.sparse_feature_matrix[i];
-		}
 	}
 
 	m_subset_stack=orig.m_subset_stack;
@@ -87,11 +84,9 @@ template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 {
 	free_sparse_features();
 }
+
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
 {
-	for (int32_t i=0; i<num_vectors; i++)
-		(&sparse_feature_matrix[i])->~SGSparseVector();
-
 	SG_FREE(sparse_feature_matrix);
 	num_vectors=0;
 	num_features=0;
@@ -359,13 +354,15 @@ template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32
 
 	// allocate room for future feature vectors
 	SGSparseVector<ST>* sfm=SG_MALLOC(SGSparseVector<ST>, num_vec);
+
 	for (int32_t v=0; v<num_vec; v++)
-		new (&sfm[v]) SGSparseVector<ST>(hist[v]);
+		sfm[v]=SGSparseVector<ST>(hist[v]);
 
 	// fill future feature vectors with content
 	memset(hist,0,sizeof(int32_t)*num_features);
 	for (int32_t v=0; v<num_feat; v++)
 	{
+
 		SGSparseVector<ST> sv=get_sparse_feature_vector(v);
 
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
@@ -389,11 +386,9 @@ template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseM
 		SG_ERROR("set_sparse_feature_matrix() not allowed with subset\n")
 
 	SGSparseVector<ST>* sparse_matrix = SG_MALLOC(SGSparseVector<ST>, sm.num_vectors);
+
 	for (int32_t i=0; i<sm.num_vectors; i++)
-	{
-		new (&sparse_matrix[i]) SGSparseVector<ST>();
 		sparse_matrix[i] = sm[i];
-	}
 
 	sparse_feature_matrix=sparse_matrix;
 	num_features=sm.num_features;
@@ -463,7 +458,6 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 			{
 				for (int32_t i=0; i< num_vec; i++)
 				{
-					new(&sparse_feature_matrix[i]) SGSparseVector<ST>();
 					sparse_feature_matrix[i] = SGSparseVector<ST>(num_feat_entries[i]);
 					int32_t sparse_feat_idx=0;
 
@@ -708,8 +702,6 @@ template<class ST> CRegressionLabels* CSparseFeatures<ST>::load_svmlight_file(ch
 
 		lab=new CRegressionLabels(num_vectors);
 		sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
-		for (int32_t i=0; i<num_vectors; i++)
-			new (&sparse_feature_matrix[i]) SGSparseVector<ST>();
 		rewind(f);
 		sz=blocksize;
 		int32_t lines=0;
@@ -1014,7 +1006,6 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 	}
 
 	CFeatures* result=new CSparseFeatures<ST>(matrix_copy);
-	SG_REF(result);
 	return result;
 }
 
@@ -1059,12 +1050,12 @@ GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
 #undef GET_FEATURE_TYPE
 
 #define LOAD(fname, sg_type)											\
-template<> void CSparseFeatures<sg_type>::load(CFile* loader)	\
+template<> void CSparseFeatures<sg_type>::load(CFile* loader)			\
 {																		\
-	remove_all_subsets();													\
+	remove_all_subsets();												\
 	SG_SET_LOCALE_C;													\
 	ASSERT(loader)														\
-	SGSparseVector<sg_type>* matrix=NULL;										\
+	SGSparseVector<sg_type>* matrix=NULL;								\
 	int32_t num_feat=0;													\
 	int32_t num_vec=0;													\
 	loader->fname(matrix, num_feat, num_vec);							\
@@ -1087,9 +1078,9 @@ LOAD(get_sparse_matrix, floatmax_t)
 #undef LOAD
 
 #define WRITE(fname, sg_type)											\
-template<> void CSparseFeatures<sg_type>::save(CFile* writer)	\
+template<> void CSparseFeatures<sg_type>::save(CFile* writer)			\
 {																		\
-	if (m_subset_stack->has_subsets())														\
+	if (m_subset_stack->has_subsets())									\
 		SG_ERROR("save() not allowed with subset\n")					\
 	SG_SET_LOCALE_C;													\
 	ASSERT(writer)														\

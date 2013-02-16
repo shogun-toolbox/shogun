@@ -12,6 +12,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGSparseVector.h>
 #include <shogun/base/SGObject.h>
 
 using namespace shogun;
@@ -333,5 +334,19 @@ SG_SPECIALIZED_MALLOC(SGVector<uint64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
+
+SG_SPECIALIZED_MALLOC(SGSparseVector<bool>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<char>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<int8_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<uint8_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<int16_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<uint16_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<int32_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<uint32_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<int64_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<uint64_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<float32_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<float64_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<floatmax_t>)
 #undef SG_SPECIALIZED_MALLOC
 }

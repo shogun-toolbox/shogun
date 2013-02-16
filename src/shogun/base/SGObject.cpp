@@ -301,7 +301,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	{
 		save_serializable_pre();
 	}
-	catch (ShogunException e)
+	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::save_serializable_pre(): ShogunException: "
 				   "%s\n", prefix, get_name(),
@@ -327,7 +327,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 	{
 		save_serializable_post();
 	}
-	catch (ShogunException e)
+	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::save_serializable_post(): ShogunException: "
 				   "%s\n", prefix, get_name(),
@@ -359,7 +359,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	{
 		load_serializable_pre();
 	}
-	catch (ShogunException e)
+	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::load_serializable_pre(): ShogunException: "
 				   "%s\n", prefix, get_name(),
@@ -500,7 +500,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 	{
 		load_serializable_post();
 	}
-	catch (ShogunException e)
+	catch (ShogunException& e)
 	{
 		SG_SWARNING("%s%s::load_serializable_post(): ShogunException: "
 		            "%s\n", prefix, get_name(),

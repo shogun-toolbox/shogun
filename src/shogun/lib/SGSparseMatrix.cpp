@@ -25,11 +25,6 @@ SGSparseMatrix<T>::SGSparseMatrix(index_t num_feat, index_t num_vec, bool ref_co
 	num_vectors(num_vec), num_features(num_feat)
 {
 	sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
-	for (int32_t i=0; i<num_vectors; i++)
-	{
-		new (&sparse_matrix[i]) SGSparseVector<T>();
-		sparse_matrix[i] = SGSparseVector<T>(num_feat);
-	}
 }
 
 template <class T>
@@ -85,9 +80,6 @@ void SGSparseMatrix<T>::init_data()
 template <class T>
 void SGSparseMatrix<T>::free_data()
 {
-	for (int32_t i=0; i<num_vectors; i++)
-		(&sparse_matrix[i])->~SGSparseVector<T>();
-
 	SG_FREE(sparse_matrix);
 	num_vectors = 0;
 	num_features = 0;
@@ -107,4 +99,3 @@ template class SGSparseMatrix<float32_t>;
 template class SGSparseMatrix<float64_t>;
 template class SGSparseMatrix<floatmax_t>;
 }
-
