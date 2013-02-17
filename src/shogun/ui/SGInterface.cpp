@@ -3071,7 +3071,7 @@ CKernel* CSGInterface::create_kernel()
 			{
 				AA_matrix=SG_MALLOC(float64_t, N*M);
 				memcpy(AA_matrix, helper_matrix, N*M*sizeof(float64_t)) ;
-				kernel=ui_kernel->create_spectrummismatchrbf(size, AA_matrix, max_mismatch, degree, width);
+				kernel=ui_kernel->create_spectrummismatchrbf(size, AA_matrix, 128, 128, max_mismatch, degree, width);
 			}
 			else
 			{
