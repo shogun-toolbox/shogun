@@ -16,11 +16,6 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 class CTestClassInt : public CSGObject
 {
 public:
@@ -336,7 +331,7 @@ void test_load_file_parameter()
 	current=params->get_element(1);
 	ASSERT(!strcmp(current->m_name, "matrix"));
 	SGMatrix<float64_t> matrix(*(float64_t**)current->m_parameter,
-			*current->m_datatype.m_length_y, *current->m_datatype.m_length_x);
+			*current->m_datatype.m_length_y, *current->m_datatype.m_length_x, false);
 	SG_SPRINT("checking \"matrix:\n");
 	SG_SPRINT("number of rows: %d==%d\n", *current->m_datatype.m_length_y,
 			int_instance->m_matrix_rows);
@@ -397,7 +392,7 @@ void test_load_file_parameter()
 
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
+	init_shogun_with_defaults();
 
 	test_load_file_parameter();
 
