@@ -87,7 +87,7 @@ class CMulticlassTreeGuidedLogisticRegression : public CLinearMulticlassMachine
 		inline int32_t get_max_iter() const { return m_max_iter; }
 		
 		/** set index tree
-		 * @param tree tree
+		 * @param index_tree index tree
 		 */
 		inline void set_index_tree(CIndexBlockTree* index_tree)
 		{
