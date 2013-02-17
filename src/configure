@@ -1474,12 +1474,12 @@ Miscellaneous options:
   --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
   --enable-swig-directors        enables swig based director classes [disabled]
   --enable-path-debug            enable viterbi path debugging [disabled]
-  --enable-profile               compile profiling information into shogun [disable]
+  --enable-profile               compile profiling and test coverage information into shogun (gpof, gcov) [disable]
   --enable-static                build a statically linked binary (to the extend possible);
                                  set further linking options with --enable-static="-lm -lglpk"
   --python=python                use this python executable [python]
-  --gmock=PATH			 the path to the Google C++ Mocking framework source [default: /usr/src/gmock]
-  --gtest=PATH			 the path to the Google C++ test framework source [default: /usr/src/gtest]
+  --gmock=PATH                   the path to the Google C++ Mocking framework source [default: /usr/src/gmock]
+  --gtest=PATH                   the path to the Google C++ test framework source [default: /usr/src/gtest]
   --ruby=ruby                    use this ruby executable [ruby]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
@@ -2941,9 +2941,9 @@ fi
 
   if test "$_profile" = yes
   then
-	  COMPFLAGS_CPP="$COMPFLAGS_CPP -pg"
-	  COMPFLAGS_C="$COMPFLAGS_CPP -pg"
-	  LINKFLAGS="$LINKFLAGS -pg"
+	  COMPFLAGS_CPP="$COMPFLAGS_CPP -fprofile-arcs -ftest-coverage -pg"
+	  COMPFLAGS_C="$COMPFLAGS_CPP -fprofile-arcs -ftest-coverage -pg"
+	  LINKFLAGS="$LINKFLAGS -fprofile-arcs -ftest-coverage -pg"
   fi
 }
 
