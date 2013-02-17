@@ -26,6 +26,7 @@ public:
 	 *
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test.
+	 * @param num_data_distance TODO description
 	 * TODO
 	 */
 	CMMDKernelSelectionMedian(CKernelTwoSampleTestStatistic* mmd,

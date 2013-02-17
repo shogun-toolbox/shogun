@@ -28,7 +28,7 @@ public:
 	 * only the linear time MMD is developed
 	 *
 	 * @param mmd MMD instance to use
-	 * @param lamda ridge that is added to standard deviation
+	 * @param lambda ridge that is added to standard deviation
 	 */
 	CMMDKernelSelectionOpt(CKernelTwoSampleTestStatistic* mmd,
 			float64_t lambda=10E-5);
