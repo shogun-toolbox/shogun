@@ -6,6 +6,8 @@
 
 using namespace shogun;
 
+#ifdef HAVE_EIGEN3
+
 TEST(MultidimensionaScalingTest,distance_preserving)
 {
 	const index_t n_samples = 100;
@@ -48,3 +50,5 @@ TEST(MultidimensionaScalingTest,distance_preserving)
 	SG_UNREF(euclidean_distance);
 	SG_UNREF(euclidean_distance_for_embedding);
 }
+
+#endif
