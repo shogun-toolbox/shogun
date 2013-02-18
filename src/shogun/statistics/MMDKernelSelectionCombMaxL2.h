@@ -29,6 +29,8 @@ public:
 	 *
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
+	 * @param lambda ridge that is added to standard deviation, a sensible value
+	 * is 10E-5 which is the default
 	 */
 	CMMDKernelSelectionCombMaxL2(CKernelTwoSampleTestStatistic* mmd,
 			float64_t lambda=10E-5);
