@@ -12,8 +12,8 @@
 
 #include <shogun/lib/common.h>
 
-#include <shogun/io/StreamingVwFile.h>
-#include <shogun/features/StreamingVwFeatures.h>
+#include <shogun/io/streaming/StreamingVwFile.h>
+#include <shogun/features/streaming/StreamingVwFeatures.h>
 #include <shogun/classifier/vw/VowpalWabbit.h>
 
 using namespace shogun;
@@ -22,7 +22,7 @@ int main()
 {
 	init_shogun_with_defaults();
 
-	char* train_file_name = "../data/train_sparsereal.light";
+	const char* train_file_name = "../data/train_sparsereal.light";
 	CStreamingVwFile* train_file = new CStreamingVwFile(train_file_name);
 	train_file->set_parser_type(T_SVMLIGHT); // Treat the file as SVMLight format
 	SG_REF(train_file);
