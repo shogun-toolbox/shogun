@@ -10,9 +10,9 @@ using namespace shogun;
 
 TEST(MultidimensionaScalingTest,distance_preserving)
 {
-	const index_t n_samples = 100;
+	const index_t n_samples = 10;
 	const index_t n_gaussians = 5;
-	const index_t n_dimensions = 50;
+	const index_t n_dimensions = 5;
 	CDenseFeatures<float64_t>* high_dimensional_features = 
 		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions)); 
 	
