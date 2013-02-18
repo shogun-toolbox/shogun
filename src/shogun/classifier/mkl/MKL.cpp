@@ -409,7 +409,7 @@ bool CMKL::perform_mkl_step(
 	ASSERT(nweights==num_kernels)
 	float64_t* beta = SG_MALLOC(float64_t, num_kernels);
 
-#if defined(USE_CPLEX) || defined(USE_GPLK)
+#if defined(USE_CPLEX) || defined(USE_GLPK)
 	int32_t inner_iters=0;
 #endif
 	float64_t mkl_objective=0;
