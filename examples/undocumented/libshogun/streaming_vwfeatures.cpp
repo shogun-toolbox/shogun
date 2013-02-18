@@ -13,8 +13,8 @@
 
 #include <shogun/lib/common.h>
 
-#include <shogun/io/StreamingVwFile.h>
-#include <shogun/features/StreamingVwFeatures.h>
+#include <shogun/io/streaming/StreamingVwFile.h>
+#include <shogun/features/streaming/StreamingVwFeatures.h>
 #include <shogun/classifier/svm/OnlineSVMSGD.h>
 
 using namespace shogun;
