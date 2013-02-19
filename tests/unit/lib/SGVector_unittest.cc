@@ -34,6 +34,30 @@ TEST(SGVectorTest,ctor)
 
 }
 
+TEST(SGVectorTest,setget)
+{
+	SGVector<index_t> v(4);
+	v[0]=12;
+	v[1]=1;
+	v[2]=7;
+	v[3]=9;
+
+	EXPECT_EQ(v[0], 12);
+	EXPECT_EQ(v[1], 1);
+	EXPECT_EQ(v[2], 7);
+	EXPECT_EQ(v[3], 9);
+
+	v.set_element(3,0);
+	v.set_element(2,1);
+	v.set_element(1,2);
+	v.set_element(0,3);
+
+	EXPECT_EQ(v[0], 3);
+	EXPECT_EQ(v[1], 2);
+	EXPECT_EQ(v[2], 1);
+	EXPECT_EQ(v[3], 0);
+}
+
 TEST(SGVectorTest,add)
 {
 	SGVector<float64_t> a(10);
