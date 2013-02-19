@@ -61,13 +61,11 @@ struct TParameter
 	 * for non-scalars, the pointer to the data is allocated
 	 * for non-scalars, the actual data is also allocated via cont_new()
 	 *
-	 * @param len_y desired y length of the data
-	 * @param len_x desired x length of the data
+	 * @param dims desired length of the data
 	 * @param new_cont_call whether new_cont should be called, if false, only scalar
 	 * non-sgobject data will be allocated (needed for migration)
 	 * */
-	void allocate_data_from_scratch(index_t len_y, index_t len_x,
-			bool new_cont_call=true);
+	void allocate_data_from_scratch(SGVector<index_t> dims,	bool new_cont_call=true);
 
 	/** Given another TParameter instance (with same type, except for lengths)
 	 * all its data is copied to the current one. This means in case of numeric
@@ -127,7 +125,7 @@ struct TParameter
 private:
 	char* new_prefix(const char* s1, const char* s2);
 	void delete_cont();
-	void new_cont(index_t new_len_y, index_t new_len_x);
+	void new_cont(SGVector<index_t> dims);
 	bool new_sgserial(CSGObject** param, EPrimitiveType generic,
 					  const char* sgserializable_name,
 					  const char* prefix);

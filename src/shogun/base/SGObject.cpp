@@ -33,7 +33,6 @@ namespace shogun
 	class IO;
 	class Version;
 
-	extern CMath* sg_math;
 	extern Parallel* sg_parallel;
 	extern SGIO* sg_io;
 	extern Version* sg_version;
@@ -308,6 +307,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 				   e.get_exception_string());
 		return false;
 	}
+
 	if (!m_save_pre_called)
 	{
 		SG_SWARNING("%s%s::save_serializable_pre(): Implementation "
@@ -348,7 +348,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 
 	SG_DEBUG("DONE SAVING CSGObject '%s' (%p)\n", get_name(), this)
 
-	return true;;
+	return true;
 }
 
 bool CSGObject::load_serializable(CSerializableFile* file,
@@ -612,7 +612,10 @@ DynArray<TParameter*>* CSGObject::load_file_parameters(
 
 			/* allocate data/length variables for the TParameter, lengths are not
 			 * important now, so set to one */
-			loaded->allocate_data_from_scratch(1, 1);
+			SGVector<index_t> dims(2);
+			dims[0]=1;
+			dims[1]=1;
+			loaded->allocate_data_from_scratch(dims);
 
 			/* tell instance to load data from file */
 			if (!loaded->load(file, prefix))
@@ -891,16 +894,17 @@ void CSGObject::one_to_one_migration_prepare(DynArray<TParameter*>* param_base,
 	replacement=new TParameter(&type, NULL, target->m_name,
 			to_migrate->m_description);
 
+	SGVector<index_t> dims(2);
+	dims[0]=1;
+	dims[1]=1;
 	/* allocate content to write into, lengths are needed for this */
-	index_t len_x=1;
 	if (to_migrate->m_datatype.m_length_x)
-		len_x=*to_migrate->m_datatype.m_length_x;
+		dims[0]=*to_migrate->m_datatype.m_length_x;
 
-	index_t len_y=1;
 	if (to_migrate->m_datatype.m_length_y)
-		len_y=*to_migrate->m_datatype.m_length_y;
+		dims[1]=*to_migrate->m_datatype.m_length_y;
 
-	replacement->allocate_data_from_scratch(len_y, len_x);
+	replacement->allocate_data_from_scratch(dims);
 
 	/* in case of sgobject, copy pointer data and SG_REF */
 	if (to_migrate->m_datatype.m_ptype==PT_SGOBJECT)
@@ -964,17 +968,18 @@ TParameter* CSGObject::migrate(DynArray<TParameter*>* param_base,
 		result=new TParameter(&to_migrate->m_datatype, NULL, to_migrate->m_name,
 				to_migrate->m_description);
 
-		int len_x=1;
+		SGVector<index_t> dims(2);
+		dims[0]=1;
+		dims[1]=1;
 		if (to_migrate->m_datatype.m_length_x)
-			len_x=*to_migrate->m_datatype.m_length_x;
+			dims[0]=*to_migrate->m_datatype.m_length_x;
 
-		int len_y=1;
 		if (to_migrate->m_datatype.m_length_y)
-			len_y=*to_migrate->m_datatype.m_length_y;
+			dims[1]=*to_migrate->m_datatype.m_length_y;
 
 		/* allocate lengths and evtl scalar data but not non-scalar data (no
 		 * new_cont call */
-		result->allocate_data_from_scratch(len_y, len_x, false);
+		result->allocate_data_from_scratch(dims, false);
 
 		/* now use old data */
 		if (to_migrate->m_datatype.m_ctype==CT_SCALAR &&

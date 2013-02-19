@@ -13,10 +13,10 @@
 #include <shogun/base/class_list.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/memory.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
-extern IO* sg_io;
 
 /* **************************************************************** */
 /* Scalar wrappers  */
@@ -1793,16 +1793,16 @@ TParameter::delete_cont()
 }
 
 void
-TParameter::new_cont(index_t new_len_y, index_t new_len_x)
+TParameter::new_cont(SGVector<index_t> dims)
 {
 	char* s=SG_MALLOC(char, 200);
 	m_datatype.to_string(s, 200);
-	SG_SDEBUG("entering TParameter::new_cont(%d, %d) for \"%s\" of type %s\n",
-			new_len_y, new_len_x, s, m_name ? m_name : "(nil)");
+	SG_SDEBUG("entering TParameter::new_cont for \"%s\" of type %s with",
+			s, m_name ? m_name : "(nil)");
 	SG_FREE(s);
 	delete_cont();
 
-	index_t new_length = new_len_y*new_len_x;
+	index_t new_length = dims.product();
 	if (new_length == 0) return;
 
 	switch (m_datatype.m_stype) {
@@ -1956,8 +1956,8 @@ TParameter::new_cont(index_t new_len_y, index_t new_len_x)
 
 	s=SG_MALLOC(char, 200);
 	m_datatype.to_string(s, 200);
-	SG_SDEBUG("leaving TParameter::new_cont(%d, %d) for \"%s\" of type %s\n",
-			new_len_y, new_len_x, s, m_name ? m_name : "(nil)");
+	SG_SDEBUG("leaving TParameter::new_cont for \"%s\" of type %s\n",
+			s, m_name ? m_name : "(nil)");
 	SG_FREE(s);
 }
 
@@ -2385,10 +2385,11 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 			break;
 
 		case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
-			index_t len_read_y = 0, len_read_x = 0;
+			SGVector<index_t> dims(2);
+			dims.zero();
 
 			if (!file->read_cont_begin(&m_datatype, m_name, prefix,
-						&len_read_y, &len_read_x))
+						&dims.vector[1], &dims.vector[0]))
 				return false;
 
 			switch (m_datatype.m_ctype)
@@ -2397,19 +2398,19 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 					SG_SNOTIMPLEMENTED
 					break;
 				case CT_VECTOR: case CT_SGVECTOR:
-					len_read_x = 1;
-					new_cont(len_read_y, len_read_x);
+					dims[0]=1;
+					new_cont(dims);
 					break;
 				case CT_MATRIX: case CT_SGMATRIX:
-					new_cont(len_read_y, len_read_x);
+					new_cont(dims);
 					break;
 				case CT_SCALAR:
 					break;
 			}
 
-			for (index_t x=0; x<len_read_x; x++)
+			for (index_t x=0; x<dims[0]; x++)
 			{
-				for (index_t y=0; y<len_read_y; y++)
+				for (index_t y=0; y<dims[1]; y++)
 				{
 					if (!file->read_item_begin(
 								&m_datatype, m_name, prefix, y, x))
@@ -2417,7 +2418,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 
 					if (!load_stype(
 								file, (*(char**) m_parameter)
-								+ (x*len_read_y + y)*m_datatype.sizeof_stype(),
+								+ (x*dims[1] + y)*m_datatype.sizeof_stype(),
 								prefix)) return false;
 					if (!file->read_item_end(
 								&m_datatype, m_name, prefix, y, x))
@@ -2431,18 +2432,18 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 					SG_SNOTIMPLEMENTED
 					break;
 				case CT_VECTOR: case CT_SGVECTOR:
-					*m_datatype.m_length_y = len_read_y;
+					*m_datatype.m_length_y = dims[1];
 					break;
 				case CT_MATRIX: case CT_SGMATRIX:
-					*m_datatype.m_length_y = len_read_y;
-					*m_datatype.m_length_x = len_read_x;
+					*m_datatype.m_length_y = dims[1];
+					*m_datatype.m_length_x = dims[0];
 					break;
 				case CT_SCALAR:
 					break;
 			}
 
 			if (!file->read_cont_end(&m_datatype, m_name, prefix,
-						len_read_y, len_read_x))
+						dims[1], dims[0]))
 				return false;
 
 			break;
@@ -2685,11 +2686,11 @@ bool TParameter::operator>(const TParameter& other) const
 	return strcmp(m_name, other.m_name)>0;
 }
 
-void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x,
+void TParameter::allocate_data_from_scratch(SGVector<index_t> dims,
 		bool new_cont_call)
 {
-	SG_SDEBUG("entering TParameter::allocate_data_from_scratch(%d,%d) of "
-			"\"%s\"\n", len_y, len_x, m_name);
+	SG_SDEBUG("entering TParameter::allocate_data_from_scratch of "
+			"\"%s\"\n", m_name);
 
 	/* set flag to delete all this stuff later on */
 	m_was_allocated_from_scratch=true;
@@ -2699,13 +2700,13 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x,
 	{
 	case CT_VECTOR: case CT_SGVECTOR:
 		m_datatype.m_length_y=SG_MALLOC(index_t, 1);
-		*m_datatype.m_length_y=len_y;
+		*m_datatype.m_length_y=dims[1];
 		break;
 	case CT_MATRIX: case CT_SGMATRIX:
 		m_datatype.m_length_x=SG_MALLOC(index_t, 1);
 		m_datatype.m_length_y=SG_MALLOC(index_t, 1);
-		*m_datatype.m_length_y=len_y;
-		*m_datatype.m_length_x=len_x;
+		*m_datatype.m_length_y=dims[1];
+		*m_datatype.m_length_x=dims[0];
 		break;
 	case CT_SCALAR:
 		m_datatype.m_length_x=NULL;
@@ -2764,11 +2765,11 @@ void TParameter::allocate_data_from_scratch(index_t len_y, index_t len_x,
 		 * to write directly to the array data after this call, it is
 		 * necessary */
 		if (new_cont_call)
-			new_cont(len_y, len_x);
+			new_cont(dims);
 	}
 
-	SG_SDEBUG("leaving TParameter::allocate_data_from_scratch(%d,%d) of "
-				"\"%s\"\n", len_y, len_x, m_name);
+	SG_SDEBUG("leaving TParameter::allocate_data_from_scratch of "
+				"\"%s\"\n", m_name);
 }
 
 void TParameter::copy_data(const TParameter* source)

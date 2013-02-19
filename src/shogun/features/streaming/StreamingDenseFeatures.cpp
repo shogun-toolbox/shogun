@@ -57,9 +57,6 @@ template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
 	SG_DEBUG("entering %s::~CStreamingDenseFeatures()\n", get_name())
 	SG_DEBUG("leaving %s::~CStreamingDenseFeatures()\n", get_name())
-
-	current_vector.vector=NULL;
-	current_vector.vlen=0;
 }
 
 template<class T> void CStreamingDenseFeatures<T>::reset_stream()
@@ -144,9 +141,7 @@ template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
 {
-//	if (current_vector.vector)
-		return 1;
-//	return 0;
+	return 1;
 }
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_size() const
@@ -191,9 +186,7 @@ template<class T>
 void CStreamingDenseFeatures<T>::init()
 {
 	working_file=NULL;
-	current_vector.vector=NULL;
 	seekable=false;
-	current_vector.vlen=-1;
 }
 
 template<class T>

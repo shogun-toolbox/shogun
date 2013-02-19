@@ -417,6 +417,27 @@ template<class T> class SGVector : public SGReferencedData
 			return sum(vec.vector, vec.vlen);
 		}
 
+		/// return the product of the vectors elements
+		static inline T product(T* vec, int32_t len)
+		{
+			T result=1;
+			for (int32_t i=0; i<len; i++)
+				result*=vec[i];
+
+			return result;
+		}
+
+		/// return sum(vec)
+		static inline T product(SGVector<T> vec)
+		{
+			return product(vec.vector, vec.vlen);
+		}
+
+		/// return sum(vec)
+		inline T product()
+		{
+			return product(vector, vlen);
+		}
 
 		/** @return min(vec) */
 		static T min(T* vec, int32_t len);
