@@ -27,6 +27,8 @@
 		  suggested by Oksana Bayda
 		- Fix for wrong Spectrum mismatch RBF construction in static interfaces reported
 		  by Nona Kermani
+                - Fix for wrong include in SGMatrix causing build fail on Mac OS X 
+                  (thanks to @bianjiang)
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData
 		- "confidences" in context of CLabel and subclasses are now "values"
