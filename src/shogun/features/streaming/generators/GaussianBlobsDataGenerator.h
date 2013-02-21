@@ -32,7 +32,7 @@ public:
 	/** @return name of SG_SERIALIZABLE */
 	virtual const char* get_name() const
 	{
-		return "MeanShiftDataGenerator";
+		return "GaussianBlobsDataGenerator";
 	}
 
 	/*
