@@ -16,7 +16,7 @@
 #include <shogun/statistics/MMDKernelSelectionMax.h>
 #include <shogun/statistics/MMDKernelSelectionMedian.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
@@ -24,482 +24,80 @@
 
 using namespace shogun;
 
-void test_kernel_choice_linear_time_mmd_opt_comb()
+
+void kernel_choice_linear_time_mmd_opt_single()
 {
-	index_t m=8;
-	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
-	for (index_t i=0; i<2*d*m; ++i)
-		data.matrix[i]=i;
+	index_t m=10000;
+	index_t num_blobs=3;
+	float64_t distance=3;
+	float64_t stretch=10;
+	float64_t angle=CMath::PI/4;
 
-	/* create data matrix for each features (appended is not supported) */
-	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+	CGaussianBlobsDataGenerator* gen_p=new CGaussianBlobsDataGenerator(
+				num_blobs, distance, stretch, angle);
 
-	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+	CGaussianBlobsDataGenerator* gen_q=new CGaussianBlobsDataGenerator(
+				num_blobs, distance, 1, 1);
 
-	/* normalise data to get some reasonable values for Q matrix */
-	float64_t max_p=data_p.max_single();
-	float64_t max_q=data_q.max_single();
-
-	SG_SPRINT("%f, %f\n", max_p, max_q);
-
-	for (index_t i=0; i<d*m; ++i)
-	{
-		data_p.matrix[i]/=max_p;
-		data_q.matrix[i]/=max_q;
-	}
-
-	data_p.display_matrix("data_p");
-	data_q.display_matrix("data_q");
-
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
-
-	/* create stremaing features from dense features */
-	CStreamingFeatures* streaming_p=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q=
-			new CStreamingDenseFeatures<float64_t>(features_q);
-
-	/* create kernels with sigmas 2^5 to 2^7 */
-	CCombinedKernel* combined_kernel=new CCombinedKernel();
-	for (index_t i=5; i<=7; ++i)
+	/* create kernels */
+	CCombinedKernel* combined=new CCombinedKernel();
+	float64_t sigma_from=-3;
+	float64_t sigma_to=10;
+	float64_t sigma_step=1;
+	float64_t sigma=sigma_from;
+	while (sigma<=sigma_to)
 	{
 		/* shoguns kernel width is different */
-		float64_t sigma=CMath::pow(2, i);
-		float64_t sq_sigma_twice=sigma*sigma*2;
-		combined_kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
+		float64_t width=CMath::pow(2.0, sigma);
+		float64_t sq_width_twice=width*width*2;
+		combined->append_kernel(new CGaussianKernel(10, sq_width_twice));
+		sigma+=sigma_step;
 	}
 
 	/* create MMD instance */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined_kernel, streaming_p,
-			streaming_q, m);
-
-	/* kernel selection instance with regularisation term */
-	CMMDKernelSelectionCombOpt* selection=new CMMDKernelSelectionCombOpt(mmd,
-			10E-5);
-
-	/* start streaming features parser */
-	streaming_p->start_parser();
-	streaming_q->start_parser();
-
-	CKernel* result=selection->select_kernel();
-	CCombinedKernel* casted=dynamic_cast<CCombinedKernel*>(result);
-	ASSERT(casted);
-	SGVector<float64_t> weights=casted->get_subkernel_weights();
-	weights.display_vector("weights");
-
-	/* assert weights against matlab */
-//	w_opt =
-//	   0.761798190146441
-//	   0.190556117891148
-//	   0.047645691962411
-	ASSERT(CMath::abs(weights[0]-0.761798190146441)<10E-15);
-	ASSERT(CMath::abs(weights[1]-0.190556117891148)<10E-15);
-	ASSERT(CMath::abs(weights[2]-0.047645691962411)<10E-15);
-
-
-	/* start streaming features parser */
-	streaming_p->end_parser();
-	streaming_q->end_parser();
-
-	SG_UNREF(selection);
-	SG_UNREF(result);
-}
-
-void test_kernel_choice_linear_time_mmd_maxl2_comb()
-{
-	index_t m=8;
-	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
-	for (index_t i=0; i<2*d*m; ++i)
-		data.matrix[i]=i;
-
-	/* create data matrix for each features (appended is not supported) */
-	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
-
-	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
-
-	/* normalise data to get some reasonable values for Q matrix */
-	float64_t max_p=data_p.max_single();
-	float64_t max_q=data_q.max_single();
-
-	SG_SPRINT("%f, %f\n", max_p, max_q);
-
-	for (index_t i=0; i<d*m; ++i)
-	{
-		data_p.matrix[i]/=max_p;
-		data_q.matrix[i]/=max_q;
-	}
-
-	data_p.display_matrix("data_p");
-	data_q.display_matrix("data_q");
-
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
-
-	/* create stremaing features from dense features */
-	CStreamingFeatures* streaming_p=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q=
-			new CStreamingDenseFeatures<float64_t>(features_q);
-
-	/* create kernels with sigmas 2^5 to 2^7 */
-	CCombinedKernel* combined_kernel=new CCombinedKernel();
-	for (index_t i=5; i<=7; ++i)
-	{
-		/* shoguns kernel width is different */
-		float64_t sigma=CMath::pow(2, i);
-		float64_t sq_sigma_twice=sigma*sigma*2;
-		combined_kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
-	}
-
-	/* create MMD instance */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined_kernel, streaming_p,
-			streaming_q, m);
-
-	/* kernel selection instance with regularisation term */
-	CMMDKernelSelectionCombMaxL2* selection=new CMMDKernelSelectionCombMaxL2(
-			mmd, 10E-5);
-
-	/* start streaming features parser */
-	streaming_p->start_parser();
-	streaming_q->start_parser();
-
-	CKernel* result=selection->select_kernel();
-	CCombinedKernel* casted=dynamic_cast<CCombinedKernel*>(result);
-	ASSERT(casted);
-	SGVector<float64_t> weights=casted->get_subkernel_weights();
-	weights.display_vector("weights");
-
-	/* assert weights against matlab */
-//	w_l2 =
-//	   0.761798188424313
-//	   0.190556119182660
-//	   0.047645692393028
-	ASSERT(CMath::abs(weights[0]-0.761798188424313)<10E-15);
-	ASSERT(CMath::abs(weights[1]-0.190556119182660)<10E-15);
-	ASSERT(CMath::abs(weights[2]-0.047645692393028)<10E-15);
-
-	/* start streaming features parser */
-	streaming_p->end_parser();
-	streaming_q->end_parser();
-
-	SG_UNREF(selection);
-	SG_UNREF(result);
-}
-
-void test_kernel_choice_linear_time_mmd_opt_single()
-{
-	index_t m=8;
-	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
-	for (index_t i=0; i<2*d*m; ++i)
-		data.matrix[i]=i;
-
-	/* create data matrix for each features (appended is not supported) */
-	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
-
-	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
-
-	/* normalise data to get some reasonable values for Q matrix */
-	float64_t max_p=data_p.max_single();
-	float64_t max_q=data_q.max_single();
-
-	SG_SPRINT("%f, %f\n", max_p, max_q);
-
-	for (index_t i=0; i<d*m; ++i)
-	{
-		data_p.matrix[i]/=max_p;
-		data_q.matrix[i]/=max_q;
-	}
-
-	data_p.display_matrix("data_p");
-	data_q.display_matrix("data_q");
-
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
-
-	/* create stremaing features from dense features */
-	CStreamingFeatures* streaming_p=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q=
-			new CStreamingDenseFeatures<float64_t>(features_q);
-
-	/* create kernels with sigmas 2^5 to 2^7 */
-	CCombinedKernel* combined_kernel=new CCombinedKernel();
-	for (index_t i=5; i<=7; ++i)
-	{
-		/* shoguns kernel width is different */
-		float64_t sigma=CMath::pow(2, i);
-		float64_t sq_sigma_twice=sigma*sigma*2;
-		combined_kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
-	}
-
-	/* create MMD instance */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined_kernel, streaming_p,
-			streaming_q, m);
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m);
 
 	/* kernel selection instance with regularisation term */
 	CMMDKernelSelectionOpt* selection=
 			new CMMDKernelSelectionOpt(mmd, 10E-5);
 
-	/* start streaming features parser */
-	streaming_p->start_parser();
-	streaming_q->start_parser();
-
+	/* compute ratios of MMD divided by standard deviation (only if needed) */
+	SG_SPRINT("computing ratios\n");
 	SGVector<float64_t> ratios=selection->compute_measures();
 	ratios.display_vector("ratios");
 
-	/* assert weights against matlab */
-//	ratios =
-//	   0.947668253683719
-//	   0.336041393822230
-//	   0.093824478467851
-	ASSERT(CMath::abs(ratios[0]-0.947668253683719)<10E-15);
-	ASSERT(CMath::abs(ratios[1]-0.336041393822230)<10E-15);
-	ASSERT(CMath::abs(ratios[2]-0.093824478467851)<10E-15);
+	/* select kernel (and cast) */
+	SG_SPRINT("selecting kernel\n");
+	CKernel* selected=selection->select_kernel();
+	CGaussianKernel* casted=CGaussianKernel::obtain_from_generic(selected);
+	SG_SPRINT("best kernel width: %f\n", casted->get_width());
+	mmd->set_kernel(selected);
+	SG_UNREF(casted);
+	SG_UNREF(selected);
 
-	/* start streaming features parser */
-	streaming_p->end_parser();
-	streaming_q->end_parser();
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
 
-	SG_UNREF(selection);
-}
-
-void test_kernel_choice_linear_time_mmd_maxmmd_single()
-{
-	index_t m=8;
-	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
-	for (index_t i=0; i<2*d*m; ++i)
-		data.matrix[i]=i;
-
-	/* create data matrix for each features (appended is not supported) */
-	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
-
-	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
-
-	/* normalise data to get some reasonable values for Q matrix */
-	float64_t max_p=data_p.max_single();
-	float64_t max_q=data_q.max_single();
-
-	SG_SPRINT("%f, %f\n", max_p, max_q);
-
-	for (index_t i=0; i<d*m; ++i)
+	/* compute tpye I and II error (use many more trials). Type I error is only
+	 * estimated to check MMD1_GAUSSIAN method for estimating the null
+	 * distribution. Note that testing has to happen on difference data than
+	 * kernel selecting, but the linear time mmd does this implicitly */
+	float64_t alpha=0.05;
+	index_t num_trials=5;
+	SGVector<float64_t> typeIerrors(num_trials);
+	SGVector<float64_t> typeIIerrors(num_trials);
+	for (index_t i=0; i<num_trials; ++i)
 	{
-		data_p.matrix[i]/=max_p;
-		data_q.matrix[i]/=max_q;
+		/* this effectively means that p=q - rejecting is tpye I error */
+		mmd->set_simulate_h0(true);
+		typeIerrors[i]=mmd->perform_test()>alpha;
+		mmd->set_simulate_h0(false);
+
+		typeIIerrors[i]=mmd->perform_test()>alpha;
 	}
 
-	data_p.display_matrix("data_p");
-	data_q.display_matrix("data_q");
+	SG_SPRINT("type I error: %f\n", CStatistics::mean(typeIerrors));
+	SG_SPRINT("type II error: %f\n", CStatistics::mean(typeIIerrors));
 
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
-
-	/* create stremaing features from dense features */
-	CStreamingFeatures* streaming_p=
-			new CStreamingDenseFeatures<float64_t>(features_p);
-	CStreamingFeatures* streaming_q=
-			new CStreamingDenseFeatures<float64_t>(features_q);
-
-	/* create kernels with sigmas 2^5 to 2^7 */
-	CCombinedKernel* combined_kernel=new CCombinedKernel();
-	for (index_t i=5; i<=7; ++i)
-	{
-		/* shoguns kernel width is different */
-		float64_t sigma=CMath::pow(2, i);
-		float64_t sq_sigma_twice=sigma*sigma*2;
-		combined_kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
-	}
-
-	/* create MMD instance */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined_kernel, streaming_p,
-			streaming_q, m);
-
-	/* kernel selection instance */
-	CMMDKernelSelectionMax* selection=
-			new CMMDKernelSelectionMax(mmd);
-
-	/* start streaming features parser */
-	streaming_p->start_parser();
-	streaming_q->start_parser();
-
-	/* assert that the correct kernel is returned since I checked the MMD
-	 * already very often */
-	CKernel* result=selection->select_kernel();
-	CGaussianKernel* casted=dynamic_cast<CGaussianKernel*>(result);
-	ASSERT(casted);
-
-	/* assert weights against matlab */
-	CKernel* reference=combined_kernel->get_first_kernel();
-	ASSERT(result==reference);
-	SG_UNREF(reference);
-
-	/* start streaming features parser */
-	streaming_p->end_parser();
-	streaming_q->end_parser();
-
-	SG_UNREF(selection);
-	SG_UNREF(result);
-}
-
-void test_kernel_choice_quadratic_time_mmd_maxmmd_single()
-{
-	index_t m=8;
-	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
-	for (index_t i=0; i<2*d*m; ++i)
-		data.matrix[i]=i;
-
-	/* create data matrix for each features (appended is not supported) */
-	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
-
-	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
-
-	/* normalise data to get some reasonable values for Q matrix */
-	float64_t max_p=data_p.max_single();
-	float64_t max_q=data_q.max_single();
-
-	SG_SPRINT("%f, %f\n", max_p, max_q);
-
-	for (index_t i=0; i<d*m; ++i)
-	{
-		data_p.matrix[i]/=max_p;
-		data_q.matrix[i]/=max_q;
-	}
-
-	data_p.display_matrix("data_p");
-	data_q.display_matrix("data_q");
-
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
-
-	/* create kernels with sigmas 2^5 to 2^7 */
-	CCombinedKernel* combined_kernel=new CCombinedKernel();
-	for (index_t i=5; i<=7; ++i)
-	{
-		/* shoguns kernel width is different */
-		float64_t sigma=CMath::pow(2, i);
-		float64_t sq_sigma_twice=sigma*sigma*2;
-		combined_kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
-	}
-
-	/* create MMD instance, convienience constructor */
-	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(combined_kernel, features_p,
-			features_q);
-
-	/* kernel selection instance */
-	CMMDKernelSelectionMax* selection=
-			new CMMDKernelSelectionMax(mmd);
-
-	/* assert correct mmd values, maxmmd criterion is already checked with
-	 * linear time mmd maxmmd selection. Do biased and unbiased m*MMD */
-
-	/* unbiased m*MMD */
-	SGVector<float64_t> measures=selection->compute_measures();
-	measures.display_vector("unbiased mmd");
-//	unbiased_quad_mmds =
-//	   0.001164382204818   0.000291185913881   0.000072802127661
-	ASSERT(CMath::abs(measures[0]-0.001164382204818)<10E-15);
-	ASSERT(CMath::abs(measures[1]-0.000291185913881)<10E-15);
-	ASSERT(CMath::abs(measures[2]-0.000072802127661)<10E-15);
-
-	/* biased m*MMD */
-	mmd->set_statistic_type(BIASED);
-	measures=selection->compute_measures();
-	measures.display_vector("biased mmd");
-//	biased_quad_mmds =
-//	   0.001534961982492   0.000383849322208   0.000095969134022
-	ASSERT(CMath::abs(measures[0]-0.001534961982492)<10E-15);
-	ASSERT(CMath::abs(measures[1]-0.000383849322208)<10E-15);
-	ASSERT(CMath::abs(measures[2]-0.000095969134022)<10E-15);
-
-	/* since convienience constructor was use for mmd, features have to be
-	 * cleaned up by hand */
-	SG_UNREF(features_p);
-	SG_UNREF(features_q);
-
-	SG_UNREF(selection);
-}
-
-void test_kernel_choice_median()
-{
-	index_t m=8;
-	index_t d=3;
-	SGMatrix<float64_t> data(d,2*m);
-	for (index_t i=0; i<2*d*m; ++i)
-		data.matrix[i]=i;
-
-	/* create data matrix for each features (appended is not supported) */
-	SGMatrix<float64_t> data_p(d, m);
-	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
-
-	SGMatrix<float64_t> data_q(d, m);
-	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
-
-	/* normalise data to get some reasonable values for Q matrix */
-	float64_t max_p=data_p.max_single();
-	float64_t max_q=data_q.max_single();
-
-	SG_SPRINT("%f, %f\n", max_p, max_q);
-
-	for (index_t i=0; i<d*m; ++i)
-	{
-		data_p.matrix[i]/=max_p;
-		data_q.matrix[i]/=max_q;
-	}
-
-	data_p.display_matrix("data_p");
-	data_q.display_matrix("data_q");
-
-	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
-	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
-
-	/* create Gaussian kernelkernels with sigmas 2^5 to 2^7 */
-	CCombinedKernel* combined_kernel=new CCombinedKernel();
-	SG_SPRINT("adding widths (std)(shogun): ");
-	for (index_t i=-5; i<=7; ++i)
-	{
-		/* shoguns kernel width is different */
-		float64_t sigma=CMath::pow(2.0, i);
-		float64_t sq_sigma_twice=sigma*sigma*2;
-		SG_SPRINT("(%f)(%f) ", sigma, sq_sigma_twice);
-		combined_kernel->append_kernel(new CGaussianKernel(10, sq_sigma_twice));
-	}
-	SG_SPRINT("\n");
-
-	/* create MMD instance, convienience constructor */
-	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(combined_kernel, features_p,
-			features_q);
-
-	/* kernel selection instance */
-	CMMDKernelSelectionMedian* selection=
-			new CMMDKernelSelectionMedian(mmd);
-
-	/* we know that a Gaussian kernel is returned when using median, the
-	 * fifth one here one here */
-	CGaussianKernel* kernel=(CGaussianKernel*)selection->select_kernel();
-	SG_SPRINT("median kernel width: %f\n", kernel->get_width());
-	ASSERT(kernel->get_width()==0.5);
-
-	SG_UNREF(kernel);
-
-	/* since convienience constructor was use for mmd, features have to be
-	 * cleaned up by hand */
-	SG_UNREF(features_p);
-	SG_UNREF(features_q);
 
 	SG_UNREF(selection);
 }
@@ -509,18 +107,7 @@ int main(int argc, char** argv)
 	init_shogun_with_defaults();
 //	sg_io->set_loglevel(MSG_DEBUG);
 
-	/* linear time mmd */
-	test_kernel_choice_linear_time_mmd_maxmmd_single();
-	test_kernel_choice_linear_time_mmd_opt_single();
-	test_kernel_choice_linear_time_mmd_opt_comb();
-	test_kernel_choice_linear_time_mmd_maxl2_comb();
-
-	/* quadratic time mmd */
-	test_kernel_choice_quadratic_time_mmd_maxmmd_single();
-
-	/* median distance for quadratic mmd (no need for linear if this works) */
-	test_kernel_choice_median();
-
+	kernel_choice_linear_time_mmd_opt_single();
 
 	exit_shogun();
 	return 0;
