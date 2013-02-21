@@ -240,7 +240,8 @@ public:
 	/** @param simulate_h0 if true, samples from p and q will be mixed and
 	 * permuted
 	 */
-	void set_simulate_h0(bool simulate_h0);
+	inline void set_simulate_h0(bool simulate_h0) { m_simulate_h0=simulate_h0; }
+
 
 	virtual const char* get_name() const
 	{

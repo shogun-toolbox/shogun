@@ -710,7 +710,3 @@ CStreamingFeatures* CLinearTimeMMD::get_streaming_q()
 	return m_streaming_q;
 }
 
-void CLinearTimeMMD::set_simulate_h0(bool simulate_h0)
-{
-	m_simulate_h0=simulate_h0;
-}
