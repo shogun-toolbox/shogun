@@ -107,14 +107,14 @@ CKernel* CMMDKernelSelection::select_kernel()
 	/* find kernel with corresponding index */
 	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
 	CKernel* current=combined->get_first_kernel();
-	while (max_idx)
+	for (index_t i=0; i<max_idx; ++i)
 	{
 		SG_UNREF(current);
 		current=combined->get_next_kernel();
 	}
 
 	SG_UNREF(combined);
-	SG_DEBUG("leaving CMMDKernelSelection::select_kernel()\n")
+	SG_DEBUG("leaving CMMDKernelSelection::select_kernel()\n");
 
 	/* current is not SG_UNREF'ed nor SG_REF'ed since the counter needs to be
 	 * incremented exactly by one */
