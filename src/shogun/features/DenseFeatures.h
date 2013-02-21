@@ -6,7 +6,7 @@
  *
  * Written (W) 1999-2010 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -482,9 +482,17 @@ public:
 	 */
 	virtual bool is_equal(CDenseFeatures* rhs);
 
-	/** Takes another feature instance and returns a new instance which is
+	/** Takes a list of feature instances and returns a new instance which is
 	 * a concatenation of a copy if this instace's data and the given
-	 * instance's data. Note that the feature types have to be equal.
+	 * instancess data. Note that the feature types have to be equal.
+	 *
+	 * @param other feature object to append
+	 * @return new feature object which contains copy of data of this
+	 * instance and of given one
+	 */
+	CFeatures* create_merged_copy(CList* other);
+
+	/** Convenience method for method with same name and list as parameter.
 	 *
 	 * @param other feature object to append
 	 * @return new feature object which contains copy of data of this
