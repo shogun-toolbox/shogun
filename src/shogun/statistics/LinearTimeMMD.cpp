@@ -139,6 +139,43 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		SG_REF(q1);
 		SG_REF(q2);
 
+		/* check whether h0 should be simulated and permute if so */
+		if (m_simulate_h0)
+		{
+			/* create merged copy of all feature instances to permute */
+			CList* list=new CList();
+			list->append_element(p2);
+			list->append_element(q1);
+			list->append_element(q2);
+			CFeatures* merged=p1->create_merged_copy(list);
+			SG_UNREF(list);
+
+			/* permute */
+			SGVector<index_t> inds(merged->get_num_vectors());
+			inds.range_fill();
+			inds.permute();
+			merged->add_subset(inds);
+
+			/* copy back, replacing old features */
+			SG_UNREF(p1);
+			SG_UNREF(p2);
+			SG_UNREF(q1);
+			SG_UNREF(q2);
+
+			SGVector<index_t> copy(num_this_run);
+			copy.range_fill();
+			p1=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			p2=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			q1=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			q2=merged->copy_subset(copy);
+
+			/* clean up and note that copy_subset does a SG_REF */
+			SG_UNREF(merged);
+		}
+
 		/* if multiple kernels are used, compute all of them on streamed data,
 		 * if multiple kernels flag is false, the above loop will be executed
 		 * only once */
@@ -318,9 +355,61 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 		SG_REF(q2a);
 		SG_REF(q2b);
 
+		/* check whether h0 should be simulated and permute if so */
+		if (m_simulate_h0)
+		{
+			/* create merged copy of all feature instances to permute */
+			CList* list=new CList();
+			list->append_element(p1b);
+			list->append_element(p2a);
+			list->append_element(p2b);
+			list->append_element(q1a);
+			list->append_element(q1b);
+			list->append_element(q2a);
+			list->append_element(q2b);
+			CFeatures* merged=p1a->create_merged_copy(list);
+			SG_UNREF(list);
+
+			/* permute */
+			SGVector<index_t> inds(merged->get_num_vectors());
+			inds.range_fill();
+			inds.permute();
+			merged->add_subset(inds);
+
+			/* copy back, replacing old features */
+			SG_UNREF(p1a);
+			SG_UNREF(p1b);
+			SG_UNREF(p2a);
+			SG_UNREF(p2b);
+			SG_UNREF(q1a);
+			SG_UNREF(q1b);
+			SG_UNREF(q2a);
+			SG_UNREF(q2b);
+
+			SGVector<index_t> copy(num_this_run);
+			copy.range_fill();
+			p1a=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			p1b=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			p2a=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			p2b=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			q1a=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			q1b=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			q2a=merged->copy_subset(copy);
+			copy.add(num_this_run);
+			q2b=merged->copy_subset(copy);
+
+			/* clean up and note that copy_subset does a SG_REF */
+			SG_UNREF(merged);
+		}
+
 		/* now for each of these streamed data instances, iterate through all
 		 * kernels and update Q matrix while also computing MMD statistic */
-
 
 		/* preallocate some memory for faster processing */
 		SGVector<float64_t> pp(num_this_run);
@@ -573,29 +662,20 @@ SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
 {
 	SGVector<float64_t> samples(m_bootstrap_iterations);
 
-	/* instead of permutating samples, just samples new data all the time.
-	 * In order to merge p and q, simply randomly select p and q for each
-	 * feature object inernally */
+	/* instead of permutating samples, just samples new data all the time. */
 	CStreamingFeatures* p=m_streaming_p;
 	CStreamingFeatures* q=m_streaming_q;
 	SG_REF(p);
 	SG_REF(q);
+
+	bool old=m_simulate_h0;
+	set_simulate_h0(true);
 	for (index_t i=0; i<m_bootstrap_iterations; ++i)
 	{
-		/* merge samples by randomly shuffling p and q */
-		if (CMath::random(0,1))
-			m_streaming_p=p;
-		else
-			m_streaming_p=q;
-
-		if (CMath::random(0,1))
-			m_streaming_q=p;
-		else
-			m_streaming_q=q;
-
 		/* compute statistic for this permutation of mixed samples */
 		samples[i]=compute_statistic();
 	}
+	set_simulate_h0(old);
 	m_streaming_p=p;
 	m_streaming_q=q;
 	SG_UNREF(p);
