@@ -29,8 +29,8 @@ void kernel_choice_linear_time_mmd_opt_single()
 {
 	index_t m=10000;
 	index_t num_blobs=3;
-	float64_t distance=3;
-	float64_t stretch=10;
+	float64_t distance=10;
+	float64_t stretch=5;
 	float64_t angle=CMath::PI/4;
 
 	CGaussianBlobsDataGenerator* gen_p=new CGaussianBlobsDataGenerator(
@@ -47,7 +47,7 @@ void kernel_choice_linear_time_mmd_opt_single()
 	float64_t sigma=sigma_from;
 	while (sigma<=sigma_to)
 	{
-		/* shoguns kernel width is different */
+		/* shoguns kernel width is different to standard form. See documentation */
 		float64_t width=CMath::pow(2.0, sigma);
 		float64_t sq_width_twice=width*width*2;
 		combined->append_kernel(new CGaussianKernel(10, sq_width_twice));
@@ -57,7 +57,8 @@ void kernel_choice_linear_time_mmd_opt_single()
 	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m);
 
-	/* kernel selection instance with regularisation term */
+	/* kernel selection instance with regularisation term. This one can be replaced by any other
+	 * method for selecting a single kernel */
 	CMMDKernelSelectionOpt* selection=
 			new CMMDKernelSelectionOpt(mmd, 10E-5);
 
@@ -82,6 +83,8 @@ void kernel_choice_linear_time_mmd_opt_single()
 	 * distribution. Note that testing has to happen on difference data than
 	 * kernel selecting, but the linear time mmd does this implicitly */
 	float64_t alpha=0.05;
+	
+	/* number of trials should be larger to compute tight confidence bounds */
 	index_t num_trials=5;
 	SGVector<float64_t> typeIerrors(num_trials);
 	SGVector<float64_t> typeIIerrors(num_trials);
