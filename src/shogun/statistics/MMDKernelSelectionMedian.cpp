@@ -78,6 +78,8 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 				"Only 64 bit float streaming dense features allowed, these (q) "
 				"are \"%s\" and of type %d\n",
 				get_name(), q->get_name(), q->get_feature_type());
+		SG_UNREF(p);
+		SG_UNREF(q);
 	}
 
 	SG_UNREF(kernel);
@@ -177,8 +179,8 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 
 		/* clean up */
 		SG_UNREF(distance);
-		SG_REF(p_streamed);
-		SG_REF(q_streamed);
+		SG_UNREF(p_streamed);
+		SG_UNREF(q_streamed);
 		SG_UNREF(p);
 		SG_UNREF(q);
 	}
