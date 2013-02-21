@@ -56,8 +56,6 @@ void CTwoDistributionsTestStatistic::init()
 
 	m_p_and_q=NULL;
 	m_m=0;
-	SG_WARNING("CTwoDistributionsTestStatistic::init() register parameters!\n");
-	m_simulate_h0=false;
 }
 
 SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
@@ -70,14 +68,26 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results(m_bootstrap_iterations);
 
-	bool old=m_simulate_h0;
-	set_simulate_h0(true);
+	/* memory for index permutations, (would slow down loop) */
+	SGVector<index_t> ind_permutation(2*m_m);
+	ind_permutation.range_fill();
+	m_p_and_q->add_subset(ind_permutation);
+
 	for (index_t i=0; i<m_bootstrap_iterations; ++i)
 	{
+		/* idea: merge features of p and q, shuffle, and compute statistic.
+		 * This is done using subsets here */
+
+		/* create index permutation and add as subset. This will mix samples
+		 * from p and q */
+		SGVector<int32_t>::permute_vector(ind_permutation);
+
 		/* compute statistic for this permutation of mixed samples */
 		results[i]=compute_statistic();
 	}
-	set_simulate_h0(old);
+
+	/* clean up */
+	m_p_and_q->remove_subset();
 
 	SG_DEBUG("leaving CTwoDistributionsTestStatistic::bootstrap_null()\n")
 	return results;
@@ -143,10 +153,5 @@ CFeatures* CTwoDistributionsTestStatistic::get_p_and_q()
 {
 	SG_REF(m_p_and_q);
 	return m_p_and_q;
-}
-
-void CTwoDistributionsTestStatistic::set_simulate_h0(bool simulate_h0)
-{
-	m_simulate_h0=simulate_h0;
 }
 

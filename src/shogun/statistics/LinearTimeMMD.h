@@ -237,6 +237,11 @@ public:
 		return S_LINEAR_TIME_MMD;
 	}
 
+	/** @param simulate_h0 if true, samples from p and q will be mixed and
+	 * permuted
+	 */
+	void set_simulate_h0(bool simulate_h0);
+
 	virtual const char* get_name() const
 	{
 		return "LinearTimeMMD";
@@ -255,6 +260,7 @@ protected:
 	/** Number of examples processed at once, i.e. in one burst */
 	index_t m_blocksize;
 
+	bool m_simulate_h0;
 };
 
 }

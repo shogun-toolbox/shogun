@@ -53,6 +53,7 @@ void CLinearTimeMMD::init()
 	m_streaming_p=NULL;
 	m_streaming_q=NULL;
 	m_blocksize=10000;
+	m_simulate_h0=false;
 
 	SG_WARNING("%s::init(): register params!\n", get_name())
 }
@@ -707,4 +708,9 @@ CStreamingFeatures* CLinearTimeMMD::get_streaming_q()
 {
 	SG_REF(m_streaming_q);
 	return m_streaming_q;
+}
+
+void CLinearTimeMMD::set_simulate_h0(bool simulate_h0)
+{
+	m_simulate_h0=simulate_h0;
 }

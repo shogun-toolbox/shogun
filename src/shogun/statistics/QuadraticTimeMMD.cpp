@@ -68,15 +68,6 @@ void CQuadraticTimeMMD::init()
 
 float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 {
-	/* check whether samples have to be mixed and permuted */
-	if (m_simulate_h0)
-	{
-		SGVector<index_t> inds(m_p_and_q->get_num_vectors());
-		inds.range_fill();
-		inds.permute();
-		m_p_and_q->add_subset(inds);
-	}
-
 	/* split computations into three terms from JLMR paper (see documentation )*/
 	index_t m=m_m;
 
@@ -112,26 +103,11 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	}
 	third*=2.0/m;
 
-	/* check whether samples were mixed and permuted */
-	if (m_simulate_h0)
-	{
-		m_p_and_q->remove_subset();
-	}
-
 	return first+second-third;
 }
 
 float64_t CQuadraticTimeMMD::compute_biased_statistic()
 {
-	/* check whether samples have to be mixed and permuted */
-	if (m_simulate_h0)
-	{
-		SGVector<index_t> inds(m_p_and_q->get_num_vectors());
-		inds.range_fill();
-		inds.permute();
-		m_p_and_q->add_subset(inds);
-	}
-
 	/* split computations into three terms from JLMR paper (see documentation )*/
 	index_t m=m_m;
 
@@ -164,12 +140,6 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 			third+=m_kernel->kernel(i,j);
 	}
 	third*=2.0/m;
-
-	/* check whether samples were mixed and permuted */
-	if (m_simulate_h0)
-	{
-		m_p_and_q->remove_subset();
-	}
 
 	return first+second-third;
 }
@@ -319,15 +289,6 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		index_t num_eigenvalues)
 {
-	/* check whether samples have to be mixed and permuted */
-	if (m_simulate_h0)
-	{
-		SGVector<index_t> inds(m_p_and_q->get_num_vectors());
-		inds.range_fill();
-		inds.permute();
-		m_p_and_q->add_subset(inds);
-	}
-
 	if (m_m!=m_p_and_q->get_num_vectors()/2)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Currently, only equal "
@@ -392,27 +353,12 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		null_samples[i]*=2;
 	}
 
-	/* check whether samples were mixed and permuted */
-	if (m_simulate_h0)
-	{
-		m_p_and_q->remove_subset();
-	}
-
 	return null_samples;
 }
 #endif // HAVE_LAPACK
 
 SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 {
-	/* check whether samples have to be mixed and permuted */
-	if (m_simulate_h0)
-	{
-		SGVector<index_t> inds(m_p_and_q->get_num_vectors());
-		inds.range_fill();
-		inds.permute();
-		m_p_and_q->add_subset(inds);
-	}
-
 	SG_WARNING("CQuadraticTimeMMD::fit_null_gamma(): TODO: combine with "
 			"compute_statistic to be more efficient!\n");
 
@@ -477,12 +423,6 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 	SGVector<float64_t> result(2);
 	result[0]=a;
 	result[1]=b;
-
-	/* check whether samples were mixed and permuted */
-	if (m_simulate_h0)
-	{
-		m_p_and_q->remove_subset();
-	}
 
 	return result;
 }

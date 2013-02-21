@@ -94,11 +94,6 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		 */
 		virtual CFeatures* get_p_and_q();
 
-		/** @param simulate_h0 if true, samples from p and q will be mixed and
-		 * permuted
-		 */
-		void set_simulate_h0(bool simulate_h0);
-
 		/** @return number of to be used samples m */
 		index_t get_m() { return m_m; }
 
@@ -113,9 +108,6 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 
 		/** defines the first index of samples of q */
 		index_t m_m;
-
-		/** if true, p and q are mixed when computing statistics */
-		bool m_simulate_h0;
 };
 
 }
