@@ -1,3 +1,16 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2010 Soeren Sonnenburg
+ * Written (W) 1999-2008 Gunnar Raetsch
+ * Written (W) 2011-2013 Heiko Strathmann
+ * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2010 Berlin Institute of Technology
+ */
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/io/SGIO.h>
@@ -929,49 +942,102 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 }
 
 template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
-		CFeatures* other)
+		CList* others)
 {
-	SG_DEBUG("entering %s::create_merged_copy()\n", get_name())
-	if (get_feature_type()!=other->get_feature_type() ||
-			get_feature_class()!=other->get_feature_class() ||
-			strcmp(get_name(), other->get_name()))
-	{
-		SG_ERROR("%s::create_merged_copy(): Features are of different type!\n",
-				get_name());
-	}
+	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
 
-	CDenseFeatures<ST>* casted=dynamic_cast<CDenseFeatures<ST>* >(other);
+	if (!others)
+		return NULL;
 
-	if (!casted)
+	/* first, check other features and count number of elements */
+	CSGObject* other=others->get_first_element();
+	index_t num_vectors_merged=num_vectors;
+	SG_PRINT("Size of this instance: %d\n", num_vectors);
+	while (other)
 	{
-		SG_ERROR("%s::create_merged_copy(): Could not cast object of %s to "
-				"same type as %s\n",get_name(), other->get_name(), get_name());
-	}
+		CDenseFeatures<ST>* casted=dynamic_cast<CDenseFeatures<ST>* >(other);
 
-	if (num_features!=casted->num_features)
-	{
-		SG_ERROR("%s::create_merged_copy(): Provided feature object has "
-				"different dimension than this one\n");
+		if (!casted)
+		{
+			SG_ERROR("%s::create_merged_copy(): Could not cast object of %s to "
+					"same type as %s\n",get_name(), other->get_name(), get_name());
+		}
+
+		if (get_feature_type()!=casted->get_feature_type() ||
+				get_feature_class()!=casted->get_feature_class() ||
+				strcmp(get_name(), casted->get_name()))
+		{
+			SG_ERROR("%s::create_merged_copy(): Features are of different type!\n",
+					get_name());
+		}
+
+		if (num_features!=casted->num_features)
+		{
+			SG_ERROR("%s::create_merged_copy(): Provided feature object has "
+					"different dimension than this one\n");
+		}
+
+		num_vectors_merged+=casted->get_num_vectors();
+		SG_PRINT("Size of other instance: %d\n", casted->get_num_vectors());
+
+		/* check if reference counting is used */
+		if (others->get_delete_data())
+			SG_UNREF(other);
+		other=others->get_next_element();
 	}
 
 	/* create new feature matrix and copy both instances data into it */
-	SGMatrix<ST> data(num_features, num_vectors+casted->get_num_vectors());
+	SG_PRINT("Size of new merged instance: %d\n", num_vectors_merged);
+	SGMatrix<ST> data(num_features, num_vectors_merged);
 
 	/* copy data of this instance */
 	SG_DEBUG("copying matrix of this instance\n")
 	memcpy(data.matrix, feature_matrix.matrix,
 			num_features*num_vectors*sizeof(ST));
 
-	/* copy data of provided instance */
-	SG_DEBUG("copying matrix of provided instance\n")
-	memcpy(&data.matrix[num_vectors*num_features],
-			casted->feature_matrix.matrix,
-			casted->num_features*casted->num_vectors*sizeof(ST));
+	/* count number of vectors (not elements) processed so far */
+	index_t num_processed=num_vectors;
+
+	/* now copy data of other features bock wise */
+	other=others->get_first_element();
+	while (other)
+	{
+		/* cast is safe due to above check */
+		CDenseFeatures<ST>* casted=(CDenseFeatures<ST>*)other;
+
+		SG_DEBUG("copying matrix of provided instance\n")
+		memcpy(&(data.matrix[num_processed*num_features]),
+				casted->get_feature_matrix().matrix,
+				num_features*casted->get_num_vectors()*sizeof(ST));
+
+		/* update counting */
+		num_processed+=casted->get_num_vectors();
+
+		/* check if reference counting is used */
+		if (others->get_delete_data())
+			SG_UNREF(other);
+		other=others->get_next_element();
+	}
 
 	/* create new instance and return */
 	CDenseFeatures<ST>* result=new CDenseFeatures<ST>(data);
 
-	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name())
+	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
+	return result;
+}
+
+template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
+		CFeatures* other)
+{
+	SG_DEBUG("entering %s::create_merged_copy()\n", get_name());
+
+	/* create list with one element and call general method */
+	CList* list=new CList();
+	list->append_element(other);
+	CFeatures* result=create_merged_copy(list);
+	SG_UNREF(list);
+
+	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name());
 	return result;
 }
 

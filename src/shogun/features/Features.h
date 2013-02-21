@@ -221,9 +221,23 @@ class CFeatures : public CSGObject
 		 */
 		void unset_property(EFeatureProperty p);
 
-		/** Takes another feature instance and returns a new instance which is
-		 * a concatenation of a copy if this instace's data and the given
-		 * instance's data. Note that the feature types have to be equal.
+		/** Takes a list of feature instances and returns a new instance being
+		 * a concatenation of a copy of this instace's data and the given
+		 * instancess data. Note that the feature types have to be equal.
+		 *
+		 * NOT IMPLEMENTED!
+		 *
+		 * @param others list of feature objects to append
+		 * @return new feature object which contains copy of data of this
+		 * instance and given ones
+		 */
+		virtual CFeatures* create_merged_copy(CList* others)
+		{
+			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n")
+			return NULL;
+		}
+
+		/** Convenience method for method with same name and list as parameter.
 		 *
 		 * NOT IMPLEMENTED!
 		 *
