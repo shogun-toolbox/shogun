@@ -985,7 +985,6 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	}
 
 	/* create new feature matrix and copy both instances data into it */
-	SG_PRINT("Size of new merged instance: %d\n", num_vectors_merged);
 	SGMatrix<ST> data(num_features, num_vectors_merged);
 
 	/* copy data of this instance */
