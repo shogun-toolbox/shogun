@@ -952,7 +952,6 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	/* first, check other features and count number of elements */
 	CSGObject* other=others->get_first_element();
 	index_t num_vectors_merged=num_vectors;
-	SG_PRINT("Size of this instance: %d\n", num_vectors);
 	while (other)
 	{
 		CDenseFeatures<ST>* casted=dynamic_cast<CDenseFeatures<ST>* >(other);
@@ -978,7 +977,6 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 		}
 
 		num_vectors_merged+=casted->get_num_vectors();
-		SG_PRINT("Size of other instance: %d\n", casted->get_num_vectors());
 
 		/* check if reference counting is used */
 		if (others->get_delete_data())

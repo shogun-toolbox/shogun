@@ -95,7 +95,7 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		virtual CFeatures* get_p_and_q();
 
 		/** @return number of to be used samples m */
-		virtual index_t get_m() { return m_m; }
+		index_t get_m() { return m_m; }
 
 		virtual const char* get_name() const=0;
 
