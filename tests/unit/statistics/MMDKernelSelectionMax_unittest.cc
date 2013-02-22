@@ -121,7 +121,7 @@ TEST(MMDKernelSelectionMax,select_kernel_linear_time_mmd)
 	float64_t max_p=data_p.max_single();
 	float64_t max_q=data_q.max_single();
 
-	SG_SPRINT("%f, %f\n", max_p, max_q);
+	//SG_SPRINT("%f, %f\n", max_p, max_q);
 
 	for (index_t i=0; i<d*m; ++i)
 	{
@@ -129,8 +129,8 @@ TEST(MMDKernelSelectionMax,select_kernel_linear_time_mmd)
 		data_q.matrix[i]/=max_q;
 	}
 
-	data_p.display_matrix("data_p");
-	data_q.display_matrix("data_q");
+	//data_p.display_matrix("data_p");
+	//data_q.display_matrix("data_q");
 
 	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
