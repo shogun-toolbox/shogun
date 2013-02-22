@@ -16,10 +16,12 @@
 #include <shogun/lib/tapkee/utils/any.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 #include <shogun/lib/tapkee/utils/logging.hpp>
+#include <shogun/lib/tapkee/callbacks/traits.hpp>
+#include <shogun/lib/tapkee/routines/methods_traits.hpp>
+
 #include <map>
 #include <vector>
 #include <utility>
-#include <shogun/lib/tapkee/callbacks/traits.hpp>
 
 #ifdef TAPKEE_EIGEN_INCLUDE_FILE
 	#include TAPKEE_EIGEN_INCLUDE_FILE
@@ -32,8 +34,12 @@
 	#include <Eigen/Dense>
 	#if EIGEN_VERSION_AT_LEAST(3,1,0)
 		#include <Eigen/Sparse>
+		#if defined(TAPKEE_SUPERLU_AVAILABLE) && defined(TAPKEE_USE_SUPERLU)
+			#include <Eigen/SuperLUSupport>
+		#endif
 	#else
 		#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+		#define TAPKEE_OLD_EIGEN
 		#include <unsupported/Eigen/SparseExtra>
 	#endif
 #endif
@@ -67,10 +73,14 @@ namespace tapkee
 	//! default selfadjoint solver
 	typedef Eigen::SelfAdjointEigenSolver<DenseMatrix> DefaultDenseSelfAdjointEigenSolver;
 	//! default sparse solver
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+#ifdef TAPKEE_OLD_EIGEN
 	typedef Eigen::SimplicialCholesky<SparseWeightMatrix> DefaultSparseSolver;
 #else
-	typedef Eigen::SimplicialLDLT<SparseWeightMatrix> DefaultSparseSolver;
+	#if defined(TAPKEE_SUPERLU_AVAILABLE) && defined(TAPKEE_USE_SUPERLU)
+		typedef Eigen::SuperLU<SparseWeightMatrix> DefaultSparseSolver;
+	#else
+		typedef Eigen::SimplicialLDLT<SparseWeightMatrix> DefaultSparseSolver;
+	#endif
 #endif
 
 #ifdef TAPKEE_CUSTOM_PROPERTIES
@@ -124,6 +134,24 @@ enum TAPKEE_METHOD
 	UNKNOWN_METHOD
 };
 
+METHOD_THAT_NEEDS_ONLY_KERNEL_IS(KERNEL_LOCALLY_LINEAR_EMBEDDING);
+METHOD_THAT_NEEDS_KERNEL_AND_FEATURES_IS(NEIGHBORHOOD_PRESERVING_EMBEDDING);
+METHOD_THAT_NEEDS_ONLY_KERNEL_IS(KERNEL_LOCAL_TANGENT_SPACE_ALIGNMENT);
+METHOD_THAT_NEEDS_KERNEL_AND_FEATURES_IS(LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT);
+METHOD_THAT_NEEDS_ONLY_KERNEL_IS(HESSIAN_LOCALLY_LINEAR_EMBEDDING);
+METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(LAPLACIAN_EIGENMAPS);
+METHOD_THAT_NEEDS_DISTANCE_AND_FEATURES_IS(LOCALITY_PRESERVING_PROJECTIONS);
+METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(DIFFUSION_MAP);
+METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(ISOMAP);
+METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(LANDMARK_ISOMAP);
+METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(MULTIDIMENSIONAL_SCALING);
+METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(LANDMARK_MULTIDIMENSIONAL_SCALING);
+METHOD_THAT_NEEDS_DISTANCE_AND_FEATURES_IS(STOCHASTIC_PROXIMITY_EMBEDDING);
+METHOD_THAT_NEEDS_ONLY_KERNEL_IS(KERNEL_PCA);
+METHOD_THAT_NEEDS_ONLY_FEATURES_IS(PCA);
+METHOD_THAT_NEEDS_NOTHING_IS(PASS_THRU);
+METHOD_THAT_NEEDS_NOTHING_IS(UNKNOWN_METHOD);
+
 //! Neighbors computation method
 enum TAPKEE_NEIGHBORS_METHOD
 {
@@ -161,7 +189,7 @@ enum TAPKEE_EIGEN_EMBEDDING_METHOD
 	#define TAPKEE_INTERNAL_PAIR std::pair
 #endif
 
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+#ifdef TAPKEE_OLD_EIGEN
 	namespace tapkee {
 	template <typename T>
 	struct Triplet
