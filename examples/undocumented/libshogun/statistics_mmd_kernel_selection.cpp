@@ -27,6 +27,8 @@ using namespace shogun;
 
 void kernel_choice_linear_time_mmd_opt_single()
 {
+	/* Note that the linear time mmd is designed for large datasets. Results on
+	 * this small number will be bad (unstable, type I error wrong) */
 	index_t m=1000;
 	index_t num_blobs=3;
 	float64_t distance=3;
@@ -57,11 +59,23 @@ void kernel_choice_linear_time_mmd_opt_single()
 	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m);
 
-	/* kernel selection instance with regularisation term */
+	/* kernel selection instance with regularisation term. May be replaced by
+	 * other methods for selecting single kernels */
 	CMMDKernelSelectionOpt* selection=
 			new CMMDKernelSelectionOpt(mmd, 10E-5);
+//
+	/* select kernel that maximised MMD */
+//	CMMDKernelSelectionMax* selection=
+//			new CMMDKernelSelectionMax(mmd);
 
-	/* compute ratios of MMD divided by standard deviation (only if needed) */
+//	/* select kernel with width closest to median data distance */
+//	CMMDKernelSelectionMedian* selection=
+//			new CMMDKernelSelectionMedian(mmd, 10E-5);
+
+	/* compute measures.
+	 * For Opt: ratio of MMD and standard deviation
+	 * For Max: MMDs of single kernels
+	 * for Medigan: Does not work! */
 	SG_SPRINT("computing ratios\n");
 	SGVector<float64_t> ratios=selection->compute_measures();
 	ratios.display_vector("ratios");
@@ -70,7 +84,7 @@ void kernel_choice_linear_time_mmd_opt_single()
 	SG_SPRINT("selecting kernel\n");
 	CKernel* selected=selection->select_kernel();
 	CGaussianKernel* casted=CGaussianKernel::obtain_from_generic(selected);
-	SG_SPRINT("best kernel width: %f\n", casted->get_width());
+	SG_SPRINT("selected kernel width: %f\n", casted->get_width());
 	mmd->set_kernel(selected);
 	SG_UNREF(casted);
 	SG_UNREF(selected);
@@ -104,6 +118,8 @@ void kernel_choice_linear_time_mmd_opt_single()
 
 void kernel_choice_linear_time_mmd_opt_comb()
 {
+	/* Note that the linear time mmd is designed for large datasets. Results on
+	 * this small number will be bad (unstable, type I error wrong) */
 	index_t m=1000;
 	index_t num_blobs=3;
 	float64_t distance=3;
@@ -136,9 +152,14 @@ void kernel_choice_linear_time_mmd_opt_comb()
 	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m);
 
-	/* kernel selection instance with regularisation term */
+	/* kernel selection instance with regularisation term. May be replaced by
+	 * other methods for selecting single kernels */
 	CMMDKernelSelectionCombOpt* selection=
 			new CMMDKernelSelectionCombOpt(mmd, 10E-5);
+
+	/* maximise L2 regularised MMD */
+//	CMMDKernelSelectionCombMaxL2* selection=
+//			new CMMDKernelSelectionCombMaxL2(mmd, 10E-5);
 
 	/* select kernel (does the same as above, but sets weights to kernel) */
 	SG_SPRINT("selecting kernel\n");
@@ -180,7 +201,10 @@ int main(int argc, char** argv)
 	init_shogun_with_defaults();
 //	sg_io->set_loglevel(MSG_DEBUG);
 
+	/* select a single kernel for linear time MMD */
 	kernel_choice_linear_time_mmd_opt_single();
+
+	/* select combined kernels for linear time MMD */
 	kernel_choice_linear_time_mmd_opt_comb();
 
 	exit_shogun();

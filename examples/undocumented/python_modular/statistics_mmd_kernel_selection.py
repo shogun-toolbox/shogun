@@ -10,17 +10,20 @@
 from numpy import *
 from pylab import *
 
-def kernel_choice_linear_time_mmd_opt_single():
+def kernel_choice_linear_time_mmd_single():
 	from shogun.Features import RealFeatures
 	from shogun.Features import GaussianBlobsDataGenerator
 	from shogun.Kernel import GaussianKernel, CombinedKernel
 	from shogun.Statistics import LinearTimeMMD
+	from shogun.Statistics import MMDKernelSelectionMedian
+	from shogun.Statistics import MMDKernelSelectionMax
 	from shogun.Statistics import MMDKernelSelectionOpt
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
 	from shogun.Distance import EuclideanDistance
 	from shogun.Mathematics import Statistics, Math
 
 	# note that the linear time statistic is designed for much larger datasets
+	# results for this low number will be bad (unstable, type I error wrong)
 	m=1000
 	distance=10
 	stretch=5
@@ -63,13 +66,18 @@ def kernel_choice_linear_time_mmd_opt_single():
 	# kernel selection instance (this can easily replaced by the other methods for selecting
 	# single kernels
 	selection=MMDKernelSelectionOpt(mmd)
+	#selection=MMDKernelSelectionMax(mmd)
+	#selection=MMDKernelSelectionMedian(mmd)
 	
-	# print ratios of mmd divided by standard deviation (just for information)
+	# print measures (just for information)
+	# in case Opt: ratios of MMD and standard deviation
+	# in case Max: MMDs for each kernel
+	# Does not work for median method
 	ratios=selection.compute_measures()
-	print "ratios:", ratios
+	print "Measures:", ratios
 	subplot(2,2,3)
 	plot(ratios)
-	title('ratios')
+	title('Measures')
 	
 	# perform kernel selection
 	kernel=selection.select_kernel()
@@ -99,17 +107,19 @@ def kernel_choice_linear_time_mmd_opt_single():
 	print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
 	
 	
-def kernel_choice_linear_time_mmd_opt_comb():
+def kernel_choice_linear_time_mmd_comb():
 	from shogun.Features import RealFeatures
 	from shogun.Features import GaussianBlobsDataGenerator
 	from shogun.Kernel import GaussianKernel, CombinedKernel
 	from shogun.Statistics import LinearTimeMMD
+	from shogun.Statistics import MMDKernelSelectionCombMaxL2
 	from shogun.Statistics import MMDKernelSelectionCombOpt
 	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
 	from shogun.Distance import EuclideanDistance
 	from shogun.Mathematics import Statistics, Math
 
 	# note that the linear time statistic is designed for much larger datasets
+	# results for this low number will be bad (unstable, type I error wrong)
 	m=1000
 	distance=10
 	stretch=5
@@ -136,7 +146,6 @@ def kernel_choice_linear_time_mmd_opt_comb():
 	plot(data[0][num_plot+1:2*num_plot], data[1][num_plot+1:2*num_plot], 'b.', label='$x$', alpha=0.5)
 	title('$Y\sim q$')
 
-
 	# create combined kernel with Gaussian kernels inside (shoguns Gaussian kernel is
 	# different to the standard form, see documentation)
 	sigmas=[2**x for x in range(-3,10)]
@@ -152,6 +161,7 @@ def kernel_choice_linear_time_mmd_opt_comb():
 	# kernel selection instance (this can easily replaced by the other methods for selecting
 	# combined kernels
 	selection=MMDKernelSelectionCombOpt(mmd)
+	#selection=MMDKernelSelectionCombMaxL2(mmd)
 	
 	# perform kernel selection (kernel is automatically set)
 	kernel=selection.select_kernel()
@@ -184,6 +194,6 @@ def kernel_choice_linear_time_mmd_opt_comb():
 	
 if __name__=='__main__':
 	print('MMDKernelSelection')
-	kernel_choice_linear_time_mmd_opt_single()
-	kernel_choice_linear_time_mmd_opt_comb()
+	kernel_choice_linear_time_mmd_single()
+	kernel_choice_linear_time_mmd_comb()
 	#show()
