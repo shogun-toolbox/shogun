@@ -8,7 +8,7 @@
 # Written (C) 2013 Heiko Strathmann
 #
 from numpy import *
-from pylab import *
+#from pylab import *
 
 def kernel_choice_linear_time_mmd_single():
 	from shogun.Features import RealFeatures
@@ -40,15 +40,15 @@ def kernel_choice_linear_time_mmd_single():
 	features=features.create_merged_copy(gen_q.get_streamed_features(num_plot))
 	data=features.get_feature_matrix()
 	
-	figure()
-	subplot(2,2,1)
-	grid(True)
-	plot(data[0][0:num_plot], data[1][0:num_plot], 'r.', label='$x$')
-	title('$X\sim p$')
-	subplot(2,2,2)
-	grid(True)
-	plot(data[0][num_plot+1:2*num_plot], data[1][num_plot+1:2*num_plot], 'b.', label='$x$', alpha=0.5)
-	title('$Y\sim q$')
+	#figure()
+	#subplot(2,2,1)
+	#grid(True)
+	#plot(data[0][0:num_plot], data[1][0:num_plot], 'r.', label='$x$')
+	#title('$X\sim p$')
+	#subplot(2,2,2)
+	#grid(True)
+	#plot(data[0][num_plot+1:2*num_plot], data[1][num_plot+1:2*num_plot], 'b.', label='$x$', alpha=0.5)
+	#title('$Y\sim q$')
 
 
 	# create combined kernel with Gaussian kernels inside (shoguns Gaussian kernel is
@@ -75,9 +75,9 @@ def kernel_choice_linear_time_mmd_single():
 	# Does not work for median method
 	ratios=selection.compute_measures()
 	print "Measures:", ratios
-	subplot(2,2,3)
-	plot(ratios)
-	title('Measures')
+	#subplot(2,2,3)
+	#plot(ratios)
+	#title('Measures')
 	
 	# perform kernel selection
 	kernel=selection.select_kernel()
@@ -136,15 +136,15 @@ def kernel_choice_linear_time_mmd_comb():
 	features=features.create_merged_copy(gen_q.get_streamed_features(num_plot))
 	data=features.get_feature_matrix()
 	
-	figure()
-	subplot(2,2,1)
-	grid(True)
-	plot(data[0][0:num_plot], data[1][0:num_plot], 'r.', label='$x$')
-	title('$X\sim p$')
-	subplot(2,2,2)
-	grid(True)
-	plot(data[0][num_plot+1:2*num_plot], data[1][num_plot+1:2*num_plot], 'b.', label='$x$', alpha=0.5)
-	title('$Y\sim q$')
+	#figure()
+	#subplot(2,2,1)
+	#grid(True)
+	#plot(data[0][0:num_plot], data[1][0:num_plot], 'r.', label='$x$')
+	#title('$X\sim p$')
+	#subplot(2,2,2)
+	#grid(True)
+	#plot(data[0][num_plot+1:2*num_plot], data[1][num_plot+1:2*num_plot], 'b.', label='$x$', alpha=0.5)
+	#title('$Y\sim q$')
 
 	# create combined kernel with Gaussian kernels inside (shoguns Gaussian kernel is
 	# different to the standard form, see documentation)
@@ -167,9 +167,9 @@ def kernel_choice_linear_time_mmd_comb():
 	kernel=selection.select_kernel()
 	kernel=CombinedKernel.obtain_from_generic(kernel)
 	print "selected kernel weights:", kernel.get_subkernel_weights()
-	subplot(2,2,3)
-	plot(kernel.get_subkernel_weights())
-	title("Kernel weights")
+	#subplot(2,2,3)
+	#plot(kernel.get_subkernel_weights())
+	#title("Kernel weights")
 	
 	# compute tpye I and II error (use many more trials). Type I error is only
 	# estimated to check MMD1_GAUSSIAN method for estimating the null
