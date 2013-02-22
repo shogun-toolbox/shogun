@@ -12,7 +12,8 @@
 		  CFeatures* object of corresponding type. See
 		  CStreamingFeatures::get_streamed_features().
 		- New concept of artificial data generator classes: Based on streaming
-		  features. First implemented instance is CMeanShiftDataGenerator.
+		  features. First implemented instances are CMeanShiftDataGenerator and
+		  CGaussianBlobsDataGenerator.
 		  Use above new concepts to get non-streaming data if desired. 
 		- Accelerated projected gradient multiclass logistic regression classifier by Sergey Lisitsyn
 		- New CCSOSVM based structured output solver by Viktor Gal

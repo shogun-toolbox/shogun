@@ -62,12 +62,13 @@ class CFeatures;
  * To choose, use set_null_approximation_method() and choose from
  *
  * MMD1_GAUSSIAN: Approximates the null-distribution with a Gaussian. Only use
- * from at least 1000 samples.
+ * from at least 1000 samples. If using, check if type I error equals the
+ * desired value.
  *
  * BOOTSTRAPPING: For permuting available samples to sample null-distribution
  *
  * Comes with a method for selecting kernel weights, if a combined kernel on
- * combined features is used. See optimize_kernel_weights(). See [2]
+ * combined features is used. See optimize_kernel_weights(). See [2] TODO update!
  *
  * A very basic method for kernel selection when using CGaussianKernel is to
  * use the median distance of the underlying data. See examples how to do that.
