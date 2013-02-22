@@ -135,10 +135,6 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		CFeatures* p2=m_streaming_p->get_streamed_features(num_this_run);
 		CFeatures* q1=m_streaming_q->get_streamed_features(num_this_run);
 		CFeatures* q2=m_streaming_q->get_streamed_features(num_this_run);
-		SG_REF(p1);
-		SG_REF(p2);
-		SG_REF(q1);
-		SG_REF(q2);
 
 		/* check whether h0 should be simulated and permute if so */
 		if (m_simulate_h0)
@@ -176,6 +172,12 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 			/* clean up and note that copy_subset does a SG_REF */
 			SG_UNREF(merged);
 		}
+
+		/* reference produced features */
+		SG_REF(p1);
+		SG_REF(p2);
+		SG_REF(q1);
+		SG_REF(q2);
 
 		/* if multiple kernels are used, compute all of them on streamed data,
 		 * if multiple kernels flag is false, the above loop will be executed
@@ -256,7 +258,6 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 void CLinearTimeMMD::compute_statistic_and_Q(
 		SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q)
 {
-	SG_WARNING("CLinearTimeMMD::compute_statistic_and_Q() is not tested!\n")
 	SG_DEBUG("entering %s::compute_statistic_and_Q()\n", get_name())
 
 	REQUIRE(m_streaming_p, "%s::compute_statistic_and_Q: streaming "
@@ -347,14 +348,6 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 		CFeatures* q1b=m_streaming_q->get_streamed_features(num_this_run);
 		CFeatures* q2a=m_streaming_q->get_streamed_features(num_this_run);
 		CFeatures* q2b=m_streaming_q->get_streamed_features(num_this_run);
-		SG_REF(p1a);
-		SG_REF(p1b);
-		SG_REF(p2a);
-		SG_REF(p2b);
-		SG_REF(q1a);
-		SG_REF(q1b);
-		SG_REF(q2a);
-		SG_REF(q2b);
 
 		/* check whether h0 should be simulated and permute if so */
 		if (m_simulate_h0)
@@ -408,6 +401,16 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 			/* clean up and note that copy_subset does a SG_REF */
 			SG_UNREF(merged);
 		}
+
+		/* reference the produced features */
+		SG_REF(p1a);
+		SG_REF(p1b);
+		SG_REF(p2a);
+		SG_REF(p2b);
+		SG_REF(q1a);
+		SG_REF(q1b);
+		SG_REF(q2a);
+		SG_REF(q2b);
 
 		/* now for each of these streamed data instances, iterate through all
 		 * kernels and update Q matrix while also computing MMD statistic */
