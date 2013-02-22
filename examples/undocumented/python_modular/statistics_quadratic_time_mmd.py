@@ -20,7 +20,7 @@ def statistics_quadratic_time_mmd ():
 
 	# note that the quadratic time mmd has to store kernel matrices
 	# which upper bounds the sample size
-	n=500
+	n=100
 	dim=2
 	difference=0.5
 

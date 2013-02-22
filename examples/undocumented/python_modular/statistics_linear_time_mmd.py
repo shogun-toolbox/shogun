@@ -19,7 +19,8 @@ def statistics_linear_time_mmd ():
 	from shogun.Mathematics import Statistics, Math
 
 	# note that the linear time statistic is designed for much larger datasets
-	n=10000
+	# so increase to get reasonable results
+	n=1000
 	dim=2
 	difference=0.5
 
@@ -79,6 +80,24 @@ def statistics_linear_time_mmd ():
 	null_samples=mmd.bootstrap_null()
 	print "null mean:", mean(null_samples)
 	print "null variance:", var(null_samples)
+	
+	# compute type I and type II errors for Gaussian approximation
+	# number of trials should be larger to compute tight confidence bounds
+	mmd.set_null_approximation_method(MMD1_GAUSSIAN)
+	num_trials=5;
+	alpha=0.05 # test power
+	typeIerrors=[0 for x in range(num_trials)]
+	typeIIerrors=[0 for x in range(num_trials)]
+	for i in range(num_trials):
+		# this effectively means that p=q - rejecting is tpye I error
+		mmd.set_simulate_h0(True)
+		typeIerrors[i]=mmd.perform_test()>alpha
+		mmd.set_simulate_h0(False)
+		
+		typeIIerrors[i]=mmd.perform_test()>alpha
+	
+	print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
+	
 	
 if __name__=='__main__':
 	print('LinearTimeMMD')
