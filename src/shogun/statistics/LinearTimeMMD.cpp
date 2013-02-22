@@ -172,19 +172,24 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 			/* clean up and note that copy_subset does a SG_REF */
 			SG_UNREF(merged);
 		}
-
-		/* reference produced features */
-		SG_REF(p1);
-		SG_REF(p2);
-		SG_REF(q1);
-		SG_REF(q2);
+		else
+		{
+			/* reference produced features (only if copy_subset was not used) */
+			SG_REF(p1);
+			SG_REF(p2);
+			SG_REF(q1);
+			SG_REF(q2);
+		}
 
 		/* if multiple kernels are used, compute all of them on streamed data,
 		 * if multiple kernels flag is false, the above loop will be executed
 		 * only once */
 		CKernel* kernel=m_kernel;
 		if (multiple_kernels)
+		{
+			SG_DEBUG("using multiple kernels\n");
 			kernel=((CCombinedKernel*)m_kernel)->get_first_kernel();
+		}
 
 		/* iterate through all kernels for this data */
 		for (index_t i=0; i<num_kernels; ++i)
@@ -401,16 +406,18 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 			/* clean up and note that copy_subset does a SG_REF */
 			SG_UNREF(merged);
 		}
-
-		/* reference the produced features */
-		SG_REF(p1a);
-		SG_REF(p1b);
-		SG_REF(p2a);
-		SG_REF(p2b);
-		SG_REF(q1a);
-		SG_REF(q1b);
-		SG_REF(q2a);
-		SG_REF(q2b);
+		else
+		{
+			/* reference the produced features (only if copy subset was not used) */
+			SG_REF(p1a);
+			SG_REF(p1b);
+			SG_REF(p2a);
+			SG_REF(p2b);
+			SG_REF(q1a);
+			SG_REF(q1b);
+			SG_REF(q2a);
+			SG_REF(q2b);
+		}
 
 		/* now for each of these streamed data instances, iterate through all
 		 * kernels and update Q matrix while also computing MMD statistic */
