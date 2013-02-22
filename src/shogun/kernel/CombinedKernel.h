@@ -56,7 +56,9 @@ class CCombinedKernel : public CKernel
 
 		virtual ~CCombinedKernel();
 
-		/** initialize kernel
+		/** initialize kernel. Provided features have to be combined features.
+		 * If they are not, all subkernels are tried to be initialised with the
+		 * single same passed features objects
 		 *
 		 * @param lhs features of left-hand side
 		 * @param rhs features of right-hand side
@@ -374,13 +376,14 @@ class CCombinedKernel : public CKernel
 		/** precompute all sub-kernels */
 		bool precompute_subkernels();
 
-		/** casts kernel to combined kernel
-		 * @param n kernel to cast
+		/** Returns a  casted version of the given kernel. Throws an error
+		 * if parameter is not of class CombinedKernel. SG_REF's the returned
+		 * kernel
+		 *
+		 * @param kernel kernel to cast to CombinedKernel
+		 * @return casted version of kernel.
 		 */
-		CCombinedKernel* KernelToCombinedKernel(shogun::CKernel* n)
-		{
-			return dynamic_cast<CCombinedKernel*>(n);
-		}
+		static CCombinedKernel* obtain_from_generic(CKernel* kernel);
 
 		/** return derivative with respect to specified parameter
 		 *

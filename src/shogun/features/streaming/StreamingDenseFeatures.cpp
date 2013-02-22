@@ -56,6 +56,9 @@ template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
 template<class T> CStreamingDenseFeatures<T>::~CStreamingDenseFeatures()
 {
 	SG_DEBUG("entering %s::~CStreamingDenseFeatures()\n", get_name())
+	/* needed to prevent double free memory errors */
+	current_vector.vector=NULL;
+	current_vector.vlen=0;
 	SG_DEBUG("leaving %s::~CStreamingDenseFeatures()\n", get_name())
 }
 
@@ -187,6 +190,10 @@ void CStreamingDenseFeatures<T>::init()
 {
 	working_file=NULL;
 	seekable=false;
+
+	/* needed to prevent double free memory errors */
+	current_vector.vector=NULL;
+	current_vector.vlen=-1;
 }
 
 template<class T>
