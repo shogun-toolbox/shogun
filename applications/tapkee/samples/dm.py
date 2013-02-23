@@ -14,6 +14,8 @@ converter = sg.DiffusionMaps()
 converter.set_target_dim(2)
 # set number of time-steps
 converter.set_t(2)
+# set width of gaussian kernel
+converter.set_width(10.0)
 
 # create euclidean distance instance
 distance = sg.EuclideanDistance()

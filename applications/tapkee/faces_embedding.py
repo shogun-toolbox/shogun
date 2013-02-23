@@ -26,12 +26,10 @@ def build_features(path):
 	return nd,md,RealFeatures(feature_matrix)
 
 path = '../../data/faces/'
-converter = KernelLocallyLinearEmbedding
+converter = DiffusionMaps
 nd,md,features = build_features(path)
 converter_instance = converter()
-converter_instance.set_k(20)
-converter_instance.set_kernel(LinearKernel())
-converter_instance.set_nullspace_shift(1e-3)
+converter_instance.set_t(5)
 converter_instance.set_target_dim(2)
 
 start = time.time()
@@ -52,7 +50,7 @@ fig = figure()
 ax = fig.add_subplot(111,axisbg='#ffffff')
 ax.scatter(new_features[0],new_features[1],color='black')
 import random
-for i in random.sample(range(len(new_features[0])),15):
+for i in range(len(new_features[0])):
 	feature_vector = features.get_feature_vector(i)
 	Z = zeros([nd,md,4])
 	Z[:,:,0] = 255-feature_vector.reshape(nd,md)[::-1,:]
@@ -61,7 +59,7 @@ for i in random.sample(range(len(new_features[0])),15):
 	for k in range(nd):
 		for j in range(md):
 			Z[k,j,3] = pow(sin(k*pi/nd)*sin(j*pi/md),0.5)
-	imagebox = OffsetImage(Z,cmap=cm.gray,zoom=1.0)
+	imagebox = OffsetImage(Z,cmap=cm.gray,zoom=0.25)
 	ab = AnnotationBbox(imagebox, (new_features[0,i],new_features[1,i]),
 						pad=0.001,frameon=False)
 	ax.add_artist(ab)

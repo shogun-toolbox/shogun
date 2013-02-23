@@ -2,7 +2,7 @@ import modshogun as sg
 import data
 
 # load data
-feature_matrix = loader.load('mnist.mat')
+feature_matrix = data.swissroll()
 # create features instance
 features = sg.RealFeatures(feature_matrix)
 

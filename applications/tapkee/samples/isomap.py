@@ -19,10 +19,6 @@ converter.set_target_dim(2)
 # compute embedding with Isomap method
 embedding = converter.embed(features)
 
-# enable landmark approximation
-converter.set_landmark(True)
-# set number of landmarks
-converter.set_landmark_number(100)
 # set number of threads
 converter.parallel.set_num_threads(2)
 # compute approximate embedding

@@ -29,7 +29,7 @@ from shogun.Kernel import GaussianKernel
 dm = DiffusionMaps()
 dm.set_t(2)
 dm.set_width(1000.0)
-converters.append((dm,"Diffusion Maps with t=%d, sigma=%f" % (dm.get_t(),dm.get_width())))
+converters.append((dm,"Diffusion Maps with t=%d, sigma=%.1f" % (dm.get_t(),dm.get_width())))
 
 from shogun.Converter import HessianLocallyLinearEmbedding
 hlle = HessianLocallyLinearEmbedding()
@@ -63,6 +63,8 @@ except:
 	swiss_roll_fig = Axes3D(figure)
 
 swiss_roll_fig.scatter(X[0], X[1], X[2], s=10, c=tt, cmap=plt.cm.Spectral)
+swiss_roll_fig._axis3don = False
+plt.suptitle('Swissroll embedding',fontsize=9)
 plt.subplots_adjust(hspace=0.4)
 
 from shogun.Features import RealFeatures
@@ -80,7 +82,7 @@ for (i, (converter, label)) in enumerate(converters):
 	embedding_subplot.scatter(new_feats[0],new_feats[1], c=tt, cmap=plt.cm.Spectral)
 	plt.axis('tight')
 	plt.xticks([]), plt.yticks([])
-	plt.title(label)
+	plt.title(label,fontsize=9)
 	print converter.get_name(), 'done'
 	
 plt.show()
