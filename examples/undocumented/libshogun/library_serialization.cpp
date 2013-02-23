@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	SGMatrix<int32_t> data(3, 20);
 
 	/* fill matrix with random data */
-	for (index_t i=0; i<10*3; ++i)
+	for (index_t i=0; i<20*3; ++i)
 	{
 		if (i%2==0)
 			data.matrix[i]=0;
@@ -37,4 +37,8 @@ int main(int argc, char** argv)
 	file = new CSerializableAsciiFile("sparseFeatures.txt", 'r');
 	sparse_features_loaded->load_serializable(file);
 	SG_UNREF(file);
+	SG_UNREF(sparse_features_loaded);
+	SG_UNREF(sparse_features);
+
+	exit_shogun();
 }
