@@ -193,15 +193,19 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	for (size_t i=0; i<N; i++)
 		indices[i] = i;
 
-	tapkee::DenseMatrix result = tapkee::embed(indices.begin(),indices.end(),
+	tapkee::ReturnResult result = tapkee::embed(indices.begin(),indices.end(),
 			kernel_callback,distance_callback,features_callback,tapkee_parameters);
+	tapkee::DenseMatrix result_embedding = result.first;
+	// destroy projecting function
+	result.second.clear();
+
 	SGMatrix<float64_t> feature_matrix(parameters.target_dimension,N);
 	// TODO avoid copying
 	for (uint32_t i=0; i<N; i++) 
 	{
 		for (uint32_t j=0; j<parameters.target_dimension; j++) 
 		{
-			feature_matrix(j,i) = result(i,j);
+			feature_matrix(j,i) = result_embedding(i,j);
 		}
 	}
 	return new CDenseFeatures<float64_t>(feature_matrix);

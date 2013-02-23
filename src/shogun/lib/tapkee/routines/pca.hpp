@@ -16,9 +16,9 @@ namespace tapkee_internal
 {
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
-EmbeddingResult project(const ProjectionResult& projection_result, const DenseVector& mean_vector,
-                        RandomAccessIterator begin, RandomAccessIterator end, 
-                        FeatureVectorCallback callback, unsigned int dimension)
+DenseMatrix project(const ProjectionResult& projection_result, const DenseVector& mean_vector,
+                    RandomAccessIterator begin, RandomAccessIterator end, 
+                    FeatureVectorCallback callback, unsigned int dimension)
 {
 	timed_context context("Data projection");
 
@@ -36,7 +36,7 @@ EmbeddingResult project(const ProjectionResult& projection_result, const DenseVe
 		embedding.row(iter-begin) = projection_matrix.transpose()*current_vector_subtracted_mean;
 	}
 
-	return EmbeddingResult(embedding,DenseVector());
+	return embedding;
 }
 
 template <class RandomAccessIterator, class FeatureVectorCallback>

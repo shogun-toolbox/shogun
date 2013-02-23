@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (w) 2012, Fernando J. Iglesias Garcia
- * Copyright (c) 2012, Fernando J. Iglesias Garcia
+ * Written (w) 2012-2013 Fernando J. Iglesias Garcia
+ * Copyright (c) 2012-2013 Fernando J. Iglesias Garcia
  */
 
 #ifndef TAPKEE_SPE_H_
@@ -20,7 +20,7 @@ namespace tapkee_internal
 {
 
 template <class RandomAccessIterator, class PairwiseCallback>
-EmbeddingResult spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
+DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		PairwiseCallback callback, const Neighbors& neighbors,
 		unsigned int target_dimension, bool global_strategy,
 		DefaultScalarType tolerance, int nupdates)
@@ -167,7 +167,7 @@ EmbeddingResult spe_embedding(RandomAccessIterator begin, RandomAccessIterator e
 		lambda = lambda - ( lambda / max_iter );
 	}
 
-	return EmbeddingResult(Y.transpose(),DenseVector());
+	return Y.transpose();
 };
 
 }

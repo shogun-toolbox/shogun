@@ -16,12 +16,11 @@
 #include <shogun/lib/tapkee/utils/any.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 #include <shogun/lib/tapkee/utils/logging.hpp>
-#include <shogun/lib/tapkee/callbacks/traits.hpp>
-#include <shogun/lib/tapkee/routines/methods_traits.hpp>
-
 #include <map>
 #include <vector>
 #include <utility>
+#include <shogun/lib/tapkee/callbacks/traits.hpp>
+#include <shogun/lib/tapkee/routines/methods_traits.hpp>
 
 #ifdef TAPKEE_EIGEN_INCLUDE_FILE
 	#include TAPKEE_EIGEN_INCLUDE_FILE
@@ -108,8 +107,6 @@ enum TAPKEE_PARAMETERS
 	/* DefaultScalarType */ EIGENSHIFT,
 	/* bool */ CHECK_CONNECTIVITY
 };
-//! Parameters map type
-typedef std::map<TAPKEE_PARAMETERS, any> ParametersMap;
 
 //! Dimension reduction method
 //! All methods require 
@@ -188,6 +185,9 @@ enum TAPKEE_EIGEN_EMBEDDING_METHOD
 #ifndef TAPKEE_INTERNAL_PAIR
 	#define TAPKEE_INTERNAL_PAIR std::pair
 #endif
+#ifndef TAPKEE_INTERNAL_MAP
+	#define TAPKEE_INTERNAL_MAP std::map
+#endif
 
 #ifdef TAPKEE_OLD_EIGEN
 	namespace tapkee {
@@ -211,36 +211,19 @@ enum TAPKEE_EIGEN_EMBEDDING_METHOD
 	typedef Eigen::Triplet<DefaultScalarType> SparseTriplet;
 #endif
 
+typedef TAPKEE_INTERNAL_MAP<TAPKEE_PARAMETERS, any> ParametersMap;
 typedef TAPKEE_INTERNAL_VECTOR<SparseTriplet> SparseTriplets;
 typedef TAPKEE_INTERNAL_VECTOR<unsigned int> LocalNeighbors;
 typedef TAPKEE_INTERNAL_VECTOR<LocalNeighbors> Neighbors;
 typedef TAPKEE_INTERNAL_PAIR<DenseMatrix,DenseVector> EmbeddingResult;
+#include <shogun/lib/tapkee/tapkee_projection.hpp>
+typedef TAPKEE_INTERNAL_PAIR<DenseMatrix,tapkee::ProjectingFunction> ReturnResult;
 typedef TAPKEE_INTERNAL_PAIR<DenseMatrix,DenseVector> ProjectionResult;
 typedef Eigen::DiagonalMatrix<DefaultScalarType,Eigen::Dynamic> DenseDiagonalMatrix;
 typedef TAPKEE_INTERNAL_VECTOR<unsigned int> Landmarks;
 typedef TAPKEE_INTERNAL_PAIR<SparseWeightMatrix,DenseDiagonalMatrix> Laplacian;
 typedef TAPKEE_INTERNAL_PAIR<DenseSymmetricMatrix,DenseSymmetricMatrix> DenseSymmetricMatrixPair;
 
-#undef TAPKEE_INTERNAL_VECTOR
-#undef TAPKEE_INTERNAL_PAIR
-
-struct ProjectionImplementation
-{
-	virtual ~ProjectionImplementation()
-	{
-	}
-	virtual DenseVector project(const DenseVector& vec) = 0;
-};
-
-struct ProjectingFunction
-{
-	ProjectingFunction(ProjectionImplementation* impl) : implementation(impl) {};
-	inline DenseVector operator()(const DenseVector& vec)
-	{
-		return implementation->project(vec);
-	}
-	ProjectionImplementation* implementation;
-};
 
 } // namespace tapkee
 

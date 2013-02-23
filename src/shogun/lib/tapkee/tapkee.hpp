@@ -46,12 +46,11 @@ namespace tapkee
 //! @param feature_vector_callback the feature vector access callback descrbied before 
 //! @param options parameter map
 template <class RandomAccessIterator, class KernelCallback, class DistanceCallback, class FeatureVectorCallback>
-DenseMatrix embed(RandomAccessIterator begin, RandomAccessIterator end,
-                  KernelCallback kernel_callback, DistanceCallback distance_callback,
-                  FeatureVectorCallback feature_vector_callback, ParametersMap options)
+ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
+                   KernelCallback kernel_callback, DistanceCallback distance_callback,
+                   FeatureVectorCallback feature_vector_callback, ParametersMap options)
 {
-	//Eigen::initParallel();
-	EmbeddingResult embedding_result;
+	ReturnResult return_result;
 
 	TAPKEE_METHOD method;
 	try 
@@ -67,7 +66,7 @@ DenseMatrix embed(RandomAccessIterator begin, RandomAccessIterator end,
 		tapkee_internal::embedding_impl<RandomAccessIterator,KernelCallback,DistanceCallback,FeatureVectorCallback,X>().embed(\
 		begin,end,kernel_callback,distance_callback,feature_vector_callback,options)
 #define HANDLE_IMPLEMENTATION(X) \
-	case X: embedding_result = CALL_IMPLEMENTATION(X); break
+	case X: return_result = CALL_IMPLEMENTATION(X); break
 #define NO_IMPLEMENTATION_YET printf("Not implemented\n"); exit(EXIT_FAILURE)
 
 	try 
@@ -107,7 +106,7 @@ DenseMatrix embed(RandomAccessIterator begin, RandomAccessIterator end,
 #undef HANDLE_IMPLEMENTATION
 #undef NO_IMPLEMENTATION_YET
 
-	return embedding_result.first;
+	return return_result;
 };
 
 } // namespace tapkee
