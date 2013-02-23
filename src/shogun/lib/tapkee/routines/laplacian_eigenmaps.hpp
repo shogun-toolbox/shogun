@@ -55,7 +55,8 @@ Laplacian compute_laplacian(RandomAccessIterator begin,
 			DefaultScalarType distance = callback(*iter,begin[current_neighbors[i]]);
 			DefaultScalarType heat = exp(-distance*distance/width);
 			D(iter-begin) += heat;
-			//sparse_triplets.push_back(SparseTriplet(begin[current_neighbors[i]],(iter-begin),-heat));
+			D(current_neighbors[i]) += heat;
+			sparse_triplets.push_back(SparseTriplet(current_neighbors[i],(iter-begin),-heat));
 			sparse_triplets.push_back(SparseTriplet((iter-begin),current_neighbors[i],-heat));
 		}
 	}

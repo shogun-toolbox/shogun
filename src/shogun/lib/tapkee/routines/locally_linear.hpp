@@ -81,7 +81,7 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 	}
 	//UNRESTRICT_ALLOC;
 
-#ifdef TAPKEE_OLD_EIGEN
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	Eigen::DynamicSparseMatrix<DefaultScalarType> dynamic_weight_matrix(end-begin,end-begin);
 	dynamic_weight_matrix.reserve(sparse_triplets.size());
 	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
@@ -146,7 +146,7 @@ SparseWeightMatrix linear_weight_matrix(RandomAccessIterator begin, RandomAccess
 	}
 	//UNRESTRICT_ALLOC;
 
-#ifdef TAPKEE_OLD_EIGEN
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	Eigen::DynamicSparseMatrix<DefaultScalarType> dynamic_weight_matrix(end-begin,end-begin);
 	dynamic_weight_matrix.reserve(sparse_triplets.size());
 	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
@@ -238,7 +238,7 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 		}
 	}
 
-#ifdef TAPKEE_OLD_EIGEN
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	Eigen::DynamicSparseMatrix<DefaultScalarType> dynamic_weight_matrix(end-begin,end-begin);
 	dynamic_weight_matrix.reserve(sparse_triplets.size());
 	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
