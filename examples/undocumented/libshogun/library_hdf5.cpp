@@ -18,6 +18,8 @@ int main(int argc, char** argv)
 	hdf->get_matrix(mat, num_feat, num_vec);
 
 	SGMatrix<float64_t>::display_matrix(mat, num_feat, num_vec);
+	SG_FREE(mat);
+	SG_UNREF(hdf);
 #endif
 
 	exit_shogun();
