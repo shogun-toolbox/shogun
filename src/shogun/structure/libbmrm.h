@@ -101,7 +101,7 @@ IGNORE_IN_CLASSLIST struct bmrm_ll {
 
 IGNORE_IN_CLASSLIST struct ICP_stats
 {
-	/* maximum number of CP stats we can hold */
+	/** maximum number of CP stats we can hold */
 	uint32_t maxCPs;
 
 	/** vector of the number of iterations the CPs were inactive */
