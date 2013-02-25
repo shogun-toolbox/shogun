@@ -176,6 +176,14 @@ class CDenseLabels : public CLabels
 		 */
 		void set_int_labels(SGVector<int32_t> labels);
 
+		/** set INT64 labels
+		 *
+		 * not possible on subset
+		 *
+		 * @param labels INT labels
+		 */
+		void set_int_labels(SGVector<int64_t> labels);
+
 		/** get number of labels, depending on whether a subset is set
 		 *
 		 * @return number of labels
