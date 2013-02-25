@@ -20,6 +20,15 @@ CBinaryLabels::CBinaryLabels(SGVector<int32_t> src) : CDenseLabels()
 	set_values(values);
 }
 
+CBinaryLabels::CBinaryLabels(SGVector<int64_t> src) : CDenseLabels()
+{
+	SGVector<float64_t> values(src.vlen);
+	for (int32_t i=0; i<values.vlen; i++)
+		values[i] = src[i];
+	set_int_labels(src);
+	set_values(values);
+}
+
 CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDenseLabels()
 {
 	SGVector<float64_t> labels(src.vlen);

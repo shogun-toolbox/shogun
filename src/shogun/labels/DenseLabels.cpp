@@ -119,6 +119,17 @@ void CDenseLabels::set_int_labels(SGVector<int32_t> lab)
 		set_int_label(i, lab.vector[i]);
 }
 
+void CDenseLabels::set_int_labels(SGVector<int64_t> lab)
+{
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("set_int_labels() is not possible on subset")
+
+	m_labels = SGVector<float64_t>(lab.vlen);
+
+	for (int32_t i=0; i<lab.vlen; i++)
+		set_int_label(i, lab.vector[i]);
+}
+
 void CDenseLabels::ensure_valid(const char* context)
 {
     if (m_labels.vector == NULL)
