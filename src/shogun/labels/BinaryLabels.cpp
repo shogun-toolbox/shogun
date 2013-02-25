@@ -11,7 +11,7 @@ CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels)
 {
 }
 
-#ifndef SWIGJAVA
+#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 CBinaryLabels::CBinaryLabels(SGVector<int32_t> src) : CDenseLabels()
 {
 	SGVector<float64_t> values(src.vlen);

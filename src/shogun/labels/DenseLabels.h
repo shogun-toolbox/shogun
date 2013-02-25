@@ -176,7 +176,7 @@ class CDenseLabels : public CLabels
 		 */
 		void set_int_labels(SGVector<int32_t> labels);
 
-#ifndef SWIGJAVA
+#if !defined(SWIGJAVA) && !defined(SWIGCSHAPR)
 		/** set INT64 labels
 		 *
 		 * not possible on subset

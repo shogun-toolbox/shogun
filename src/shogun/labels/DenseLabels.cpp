@@ -119,7 +119,7 @@ void CDenseLabels::set_int_labels(SGVector<int32_t> lab)
 		set_int_label(i, lab.vector[i]);
 }
 
-#ifndef SWIGJAVA
+#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 void CDenseLabels::set_int_labels(SGVector<int64_t> lab)
 {
 	if (m_subset_stack->has_subsets())

@@ -45,7 +45,7 @@ class CBinaryLabels : public CDenseLabels
 		 */
 		CBinaryLabels(int32_t num_labels);
 
-#ifndef SWIGJAVA
+#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
 		/** constructor
 		 * sets labels with src elements
 		 *
