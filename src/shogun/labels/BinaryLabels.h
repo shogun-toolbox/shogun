@@ -45,6 +45,7 @@ class CBinaryLabels : public CDenseLabels
 		 */
 		CBinaryLabels(int32_t num_labels);
 
+#ifndef SWIGJAVA
 		/** constructor
 		 * sets labels with src elements
 		 *
@@ -58,6 +59,7 @@ class CBinaryLabels : public CDenseLabels
 		 * @param src labels to set
 		 */
 		CBinaryLabels(SGVector<int64_t> src);
+#endif
 
 		/** constructor
 		 * sets values from src vector
