@@ -53,6 +53,13 @@ class CBinaryLabels : public CDenseLabels
 		CBinaryLabels(SGVector<int32_t> src);
 		
 		/** constructor
+		 * sets labels with src elements (int64 version)
+		 *
+		 * @param src labels to set
+		 */
+		CBinaryLabels(SGVector<int64_t> src);
+
+		/** constructor
 		 * sets values from src vector
 		 * sets labels with sign of src elements with added threshold
 		 *
