@@ -113,7 +113,7 @@ float64_t CTwoDistributionsTestStatistic::compute_p_value(
 	else
 	{
 		SG_ERROR("CTwoDistributionsTestStatistics::compute_p_value(): Unknown"
-				"method to approximate null distribution!\n");
+				" method to approximate null distribution!\n");
 	}
 
 	return result;

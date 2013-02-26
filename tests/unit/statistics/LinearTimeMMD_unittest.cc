@@ -12,7 +12,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
 #include <gtest/gtest.h>
 
@@ -23,7 +23,7 @@ using namespace shogun;
  * this is rather complicated, i.e. create dense features and then create
  * streaming dense features from them. Normally, just use streaming features
  * directly. */
-TEST(MMDKernelSelectionOpt,test_linear_mmd_fixed)
+TEST(LinearTimeMMD,test_linear_mmd_fixed)
 {
 	index_t m=2;
 	index_t d=3;
@@ -72,7 +72,7 @@ TEST(MMDKernelSelectionOpt,test_linear_mmd_fixed)
 	SG_UNREF(mmd);
 }
 
-void test_linear_mmd_statistic_and_Q_fixed()
+TEST(LinearTimeMMD,test_linear_mmd_statistic_and_Q_fixed)
 {
 	index_t m=8;
 	index_t d=3;
@@ -193,7 +193,7 @@ void test_linear_mmd_statistic_and_Q_fixed()
 	SG_UNREF(mmd_2);
 }
 
-void test_linear_mmd_statistic_and_variance_fixed()
+TEST(LinearTimeMMD,test_linear_mmd_statistic_and_variance_fixed)
 {
 	index_t m=8;
 	index_t d=3;

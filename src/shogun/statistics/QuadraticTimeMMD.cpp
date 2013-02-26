@@ -298,7 +298,7 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 	if (num_samples<=2)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Number of samples has to be at"
-				" least 2, better in the hundrets", get_name());
+				" least 2, better in the hundreds", get_name());
 	}
 
 	if (num_eigenvalues>2*m_m-1)
