@@ -37,7 +37,8 @@ enum TAPKEE_METHODS_FOR_SHOGUN
 	SHOGUN_LANDMARK_MULTIDIMENSIONAL_SCALING,
 	SHOGUN_ISOMAP,
 	SHOGUN_LANDMARK_ISOMAP,
-	SHOGUN_STOCHASTIC_PROXIMITY_EMBEDDING
+	SHOGUN_STOCHASTIC_PROXIMITY_EMBEDDING,
+	SHOGUN_FACTOR_ANALYSIS,
 };
 
 struct TAPKEE_PARAMETERS_FOR_SHOGUN
@@ -55,6 +56,8 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 	CDistance* distance;
 	CDotFeatures* features;
 	bool spe_global_strategy;
+	uint32_t fa_max_iters;
+	float64_t fa_epsilon;
 };
 
 CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
