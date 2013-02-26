@@ -10,6 +10,7 @@
 #include <shogun/base/init.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
@@ -88,17 +89,21 @@ void quadratic_time_mmd()
 	CFeatures* p_and_q=mmd->get_p_and_q();
 
 	/* use a precomputed kernel to be faster */
+	CCustomKernel* precomputed=new CCustomKernel(kernel);
 	for (index_t i=0; i<num_trials; ++i)
 	{
 		/* this effectively means that p=q - rejecting is tpye I error */
 		inds.permute();
-		p_and_q->add_subset(inds);
+		precomputed->add_row_subset(inds);
+		precomputed->add_col_subset(inds);
 		typeIerrors[i]=mmd->perform_test()>alpha;
-		p_and_q->remove_subset();
+		precomputed->remove_row_subset();
+		precomputed->remove_col_subset();
 
 		typeIIerrors[i]=mmd->perform_test()>alpha;
 	}
 	SG_UNREF(p_and_q);
+	SG_UNREF(precomputed);
 
 	SG_SPRINT("type I error: %f\n", CStatistics::mean(typeIerrors));
 	SG_SPRINT("type II error: %f\n", CStatistics::mean(typeIIerrors));
