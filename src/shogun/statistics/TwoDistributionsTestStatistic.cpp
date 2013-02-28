@@ -68,10 +68,10 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results(m_bootstrap_iterations);
 
-	/* memory for index permutations, (would slow down loop) */
+	/* memory for index permutations. Adding of subset has to happen
+	 * inside the loop since it may be copied if there already is one set */
 	SGVector<index_t> ind_permutation(2*m_m);
 	ind_permutation.range_fill();
-	m_p_and_q->add_subset(ind_permutation);
 
 	for (index_t i=0; i<m_bootstrap_iterations; ++i)
 	{
@@ -83,11 +83,10 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 		SGVector<int32_t>::permute_vector(ind_permutation);
 
 		/* compute statistic for this permutation of mixed samples */
+		m_p_and_q->add_subset(ind_permutation);
 		results[i]=compute_statistic();
+		m_p_and_q->remove_subset();
 	}
-
-	/* clean up */
-	m_p_and_q->remove_subset();
 
 	SG_DEBUG("leaving CTwoDistributionsTestStatistic::bootstrap_null()\n")
 	return results;
