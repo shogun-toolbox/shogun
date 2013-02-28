@@ -24,6 +24,7 @@ CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
 	m_nupdates  = 100;
 	m_strategy  = SPE_GLOBAL;
 	m_tolerance = 1e-5;
+	m_max_iteration  = 0;
 
 	init();
 }
@@ -34,6 +35,8 @@ void CStochasticProximityEmbedding::init()
 	SG_ADD((machine_int_t*) &m_strategy, "m_strategy", "SPE strategy", 
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter", 
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations",
 			MS_NOT_AVAILABLE);
 }
 
@@ -91,6 +94,16 @@ int32_t CStochasticProximityEmbedding::get_nupdates() const
 	return m_nupdates;
 }
 
+void CStochasticProximityEmbedding::set_max_iteration(const int32_t max_iteration)
+{
+	m_max_iteration = max_iteration;
+}
+
+int32_t CStochasticProximityEmbedding::get_max_iteration() const
+{
+	return m_max_iteration;
+}
+
 const char * CStochasticProximityEmbedding::get_name() const
 {
 	return "StochasticProximityEmbedding";
@@ -134,6 +147,7 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 	parameters.spe_tolerance = m_tolerance;
 	parameters.distance = distance;
 	parameters.spe_global_strategy = (m_strategy==SPE_GLOBAL);
+	parameters.max_iteration = m_max_iteration;
 	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
 	return embedding;
 }

@@ -18,10 +18,14 @@ namespace tapkee_internal
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseMatrix project(RandomAccessIterator begin, RandomAccessIterator end, FeatureVectorCallback callback,
-		unsigned int dimension, const unsigned int max_iter, const DefaultScalarType epsilon,
+		unsigned int dimension, unsigned int max_iter, const DefaultScalarType epsilon,
 		const unsigned int target_dimension, const DenseVector& mean_vector)
 {
 	timed_context context("Data projection");
+
+	// Initialize the maximum number of iterations if appropriate
+	if (max_iter == 0)
+		max_iter = 200;
 
 	// The number of data points
 	const unsigned int n = end-begin;

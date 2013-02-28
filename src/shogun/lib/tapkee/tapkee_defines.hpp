@@ -98,7 +98,6 @@ enum TAPKEE_PARAMETERS
 	/* DefaultScalarType */ LANDMARK_RATIO,
 	/* DefaultScalarType */ EIGENSHIFT,
 	/* bool */ CHECK_CONNECTIVITY,
-	/* unsigned int */ FA_MAX_ITERS,
 	/* DefaultScalarType */ FA_EPSILON,
 };
 

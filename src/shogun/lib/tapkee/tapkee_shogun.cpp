@@ -190,8 +190,8 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 		case SHOGUN_FACTOR_ANALYSIS:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] =
 				tapkee::FACTOR_ANALYSIS;
-			tapkee_parameters[tapkee::FA_MAX_ITERS] =
-				parameters.fa_max_iters;
+			tapkee_parameters[tapkee::MAX_ITERATION] =
+				parameters.max_iteration;
 			tapkee_parameters[tapkee::FA_EPSILON] =
 				parameters.fa_epsilon;
 			break;

@@ -450,6 +450,7 @@ CONCRETE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING)
 		OBTAIN_PARAMETER(DefaultScalarType,tolerance,SPE_TOLERANCE);
 		OBTAIN_PARAMETER(unsigned int,nupdates,SPE_NUM_UPDATES);
 		OBTAIN_PARAMETER(bool,check_connectivity,CHECK_CONNECTIVITY);
+		OBTAIN_PARAMETER(unsigned int,max_iteration,MAX_ITERATION);
 
 		Neighbors neighbors;
 		if (!global_strategy)
@@ -459,7 +460,7 @@ CONCRETE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING)
 
 		timed_context context("Embedding with SPE");
 		return ReturnResult(spe_embedding(begin,end,distance_callback,neighbors,
-				target_dimension,global_strategy,tolerance,nupdates), tapkee::ProjectingFunction());
+				target_dimension,global_strategy,tolerance,nupdates,max_iteration), tapkee::ProjectingFunction());
 	}
 };
 
@@ -490,12 +491,12 @@ CONCRETE_IMPLEMENTATION(FACTOR_ANALYSIS)
 	{
 		OBTAIN_PARAMETER(unsigned int,current_dimension,CURRENT_DIMENSION);
 		OBTAIN_PARAMETER(unsigned int,target_dimension,TARGET_DIMENSION);
-		OBTAIN_PARAMETER(unsigned int,max_iters,FA_MAX_ITERS);
+		OBTAIN_PARAMETER(unsigned int,max_iteration,MAX_ITERATION);
 		OBTAIN_PARAMETER(DefaultScalarType,epsilon,FA_EPSILON);
 
 		timed_context context("Embedding with FA");
 		DenseVector mean_vector = compute_mean(begin,end,callback,current_dimension);
-		return ReturnResult(project(begin,end,callback,current_dimension,max_iters,epsilon,
+		return ReturnResult(project(begin,end,callback,current_dimension,max_iteration,epsilon,
                                     target_dimension, mean_vector), tapkee::ProjectingFunction());
 	}
 };
