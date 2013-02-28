@@ -125,6 +125,18 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 */
 		int32_t get_nupdates() const;
 
+		/** setter for the maximum number of iterations
+		 *
+		 * @param max_iteration the maximum number of iterations
+		 */
+		void set_max_iteration(const int32_t max_iteration);
+
+		/** getter for the maximum number of iterations
+		 *
+		 * @return the maximum number of iterations
+		 */
+		int32_t get_max_iteration() const;
+
 		/** get name */
 		virtual const char* get_name() const;
 
@@ -152,6 +164,9 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 
 		/** number of apdates per SPE iteration */
 		int32_t m_nupdates;
+
+		/** maximum number of iterations */
+		int32_t m_max_iteration;
 
 };
 
