@@ -68,7 +68,8 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results(m_bootstrap_iterations);
 
-	/* memory for index permutations, (would slow down loop) */
+	/* memory for index permutations. Adding of subset has to happen
+	 * inside the loop since it may be copied if there already is one set */
 	SGVector<index_t> ind_permutation(2*m_m);
 	ind_permutation.range_fill();
 
