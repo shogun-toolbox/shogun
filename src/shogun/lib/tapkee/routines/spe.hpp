@@ -23,7 +23,7 @@ template <class RandomAccessIterator, class PairwiseCallback>
 DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		PairwiseCallback callback, const Neighbors& neighbors,
 		unsigned int target_dimension, bool global_strategy,
-		DefaultScalarType tolerance, int nupdates)
+		DefaultScalarType tolerance, int nupdates, unsigned int max_iter)
 {
 	timed_context context("SPE embedding computation");
 	unsigned int k = 0;
@@ -63,9 +63,13 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	typedef std::vector<int>::iterator IndexIterator;
 
 	// Maximum number of iterations
-	int max_iter = 2000 + round(0.04 * N*N);
-	if (!global_strategy)
-		max_iter *= 3;
+	if (max_iter == 0)
+	{
+		max_iter = 2000 + round(0.04 * N*N);
+		if (!global_strategy)
+			max_iter *= 3;
+	}
+
 	// Learning parameter
 	DefaultScalarType lambda = 1.0;
 	// Vector of indices used for shuffling
@@ -84,7 +88,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	if (!global_strategy)
 		ind1Neighbors.resize(k*nupdates);
 
-	for (int i=0; i<max_iter; ++i)
+	for (unsigned int i=0; i<max_iter; ++i)
 	{
 		// Shuffle to select the vectors to update in this iteration
 		std::random_shuffle(indices.begin(),indices.end());

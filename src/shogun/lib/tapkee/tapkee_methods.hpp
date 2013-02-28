@@ -20,6 +20,7 @@
 #include <shogun/lib/tapkee/routines/isomap.hpp>
 #include <shogun/lib/tapkee/routines/pca.hpp>
 #include <shogun/lib/tapkee/routines/spe.hpp>
+#include <shogun/lib/tapkee/routines/fa.hpp>
 #include <shogun/lib/tapkee/neighbors/neighbors.hpp>
 
 namespace tapkee
@@ -47,6 +48,7 @@ std::string get_method_name(TAPKEE_METHOD m)
 		case KERNEL_PCA: return "Kernel Principal Component Analysis";
 		case STOCHASTIC_PROXIMITY_EMBEDDING: return "Stochastic Proximity Embedding";
 		case PASS_THRU: return "passing through";
+		case FACTOR_ANALYSIS: return "Factor Analysis";
 		default: return "Method name unknown (yes this is a bug)";
 	}
 }
@@ -448,6 +450,7 @@ CONCRETE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING)
 		OBTAIN_PARAMETER(DefaultScalarType,tolerance,SPE_TOLERANCE);
 		OBTAIN_PARAMETER(unsigned int,nupdates,SPE_NUM_UPDATES);
 		OBTAIN_PARAMETER(bool,check_connectivity,CHECK_CONNECTIVITY);
+		OBTAIN_PARAMETER(unsigned int,max_iteration,MAX_ITERATION);
 
 		Neighbors neighbors;
 		if (!global_strategy)
@@ -457,7 +460,7 @@ CONCRETE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING)
 
 		timed_context context("Embedding with SPE");
 		return ReturnResult(spe_embedding(begin,end,distance_callback,neighbors,
-				target_dimension,global_strategy,tolerance,nupdates), tapkee::ProjectingFunction());
+				target_dimension,global_strategy,tolerance,nupdates,max_iteration), tapkee::ProjectingFunction());
 	}
 };
 
@@ -477,6 +480,24 @@ CONCRETE_IMPLEMENTATION(PASS_THRU)
 			feature_matrix.col(iter-begin).array() = feature_vector;
 		}
 		return ReturnResult(feature_matrix.transpose(),tapkee::ProjectingFunction());
+	}
+};
+
+CONCRETE_IMPLEMENTATION(FACTOR_ANALYSIS)
+{
+	ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
+                       KernelCallback, DistanceCallback,
+                       FeatureVectorCallback callback, ParametersMap options)
+	{
+		OBTAIN_PARAMETER(unsigned int,current_dimension,CURRENT_DIMENSION);
+		OBTAIN_PARAMETER(unsigned int,target_dimension,TARGET_DIMENSION);
+		OBTAIN_PARAMETER(unsigned int,max_iteration,MAX_ITERATION);
+		OBTAIN_PARAMETER(DefaultScalarType,epsilon,FA_EPSILON);
+
+		timed_context context("Embedding with FA");
+		DenseVector mean_vector = compute_mean(begin,end,callback,current_dimension);
+		return ReturnResult(project(begin,end,callback,current_dimension,max_iteration,epsilon,
+                                    target_dimension, mean_vector), tapkee::ProjectingFunction());
 	}
 };
 
