@@ -16,7 +16,7 @@ namespace tapkee_internal
 {
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
-DenseMatrix project(const ProjectionResult& projection_result, const DenseVector& mean_vector,
+DenseMatrix project(const DenseMatrix& projection_matrix, const DenseVector& mean_vector,
                     RandomAccessIterator begin, RandomAccessIterator end, 
                     FeatureVectorCallback callback, unsigned int dimension)
 {
@@ -24,8 +24,6 @@ DenseMatrix project(const ProjectionResult& projection_result, const DenseVector
 
 	DenseVector current_vector(dimension);
 	DenseVector current_vector_subtracted_mean(dimension);
-
-	const DenseSymmetricMatrix& projection_matrix = projection_result.first;
 
 	DenseMatrix embedding = DenseMatrix::Zero((end-begin),projection_matrix.cols());
 

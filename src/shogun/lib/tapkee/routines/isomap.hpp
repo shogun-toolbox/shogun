@@ -1,8 +1,19 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
+ *
+ */
+
 #ifndef TAPKEE_ISOMAP_H_
 #define TAPKEE_ISOMAP_H_
 
 #include <shogun/lib/tapkee/utils/fibonacci_heap.hpp>
 #include <limits>
+
 using std::numeric_limits;
 
 namespace tapkee
@@ -66,7 +77,7 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 				if (s[w] == false)
 				{
 					// get distance from k to i through min_item
-					DefaultScalarType dist = shortest_distances(k,min_item) + callback(begin[min_item],begin[i]);
+					DefaultScalarType dist = shortest_distances(k,min_item) + callback(begin[min_item],begin[w]);
 					// if distance can be relaxed
 					if (dist < shortest_distances(k,w))
 					{
@@ -98,28 +109,29 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 }
 
 //! Computes shortest distances (so-called geodesic distances)
-//! using Dijkstra algorithm.
+//! using Dijkstra algorithm with landmarks.
 //!
 //! @param begin begin data iterator
 //! @param end end data iterator
+//! @param landmarks landmarks
 //! @param neighbors neighbors of each vector
 //! @param callback distance callback
 //!
 template <class RandomAccessIterator, class DistanceCallback>
-DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, RandomAccessIterator, 
+DenseMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
 		const Landmarks& landmarks, const Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
 	const unsigned int n_neighbors = neighbors[0].size();
-	const unsigned int N = (landmarks.size());
+	const unsigned int N = end-begin;
 	FibonacciHeap* heap = new FibonacciHeap(N);
 
 	bool* s = new bool[N];
 	bool* f = new bool[N];
 
-	DenseSymmetricMatrix shortest_distances(N,N);
+	DenseMatrix shortest_distances(landmarks.size(),N);
 	
-	for (unsigned int k=0; k<N; k++)
+	for (unsigned int k=0; k<landmarks.size(); k++)
 	{
 		// fill s and f with false, fill shortest_D with infinity
 		for (unsigned int j=0; j<N; j++)
@@ -129,10 +141,10 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 			f[j] = false;
 		}
 		// set distance from k to k as zero
-		shortest_distances(k,k) = 0.0;
+		shortest_distances(k,landmarks[k]) = 0.0;
 
 		// insert kth object to heap with zero distance and set f[k] true
-		heap->insert(k,0.0);
+		heap->insert(landmarks[k],0.0);
 		f[k] = true;
 
 		// while heap is not empty
@@ -153,7 +165,7 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 				if (s[w] == false)
 				{
 					// get distance from k to i through min_item
-					DefaultScalarType dist = shortest_distances(k,min_item) + callback(begin[landmarks[min_item]],begin[landmarks[i]]);
+					DefaultScalarType dist = shortest_distances(k,min_item) + callback(begin[min_item],begin[w]);
 					// if distance can be relaxed
 					if (dist < shortest_distances(k,w))
 					{

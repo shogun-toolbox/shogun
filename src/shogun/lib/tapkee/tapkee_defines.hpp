@@ -33,6 +33,9 @@
 	#include <Eigen/Dense>
 	#if EIGEN_VERSION_AT_LEAST(3,1,0)
 		#include <Eigen/Sparse>
+		#if defined(TAPKEE_SUPERLU_AVAILABLE) && defined(TAPKEE_USE_SUPERLU)
+			#include <Eigen/SuperLUSupport>
+		#endif
 	#else
 		#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 		#include <unsupported/Eigen/SparseExtra>
@@ -71,7 +74,11 @@ namespace tapkee
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	typedef Eigen::SimplicialCholesky<SparseWeightMatrix> DefaultSparseSolver;
 #else
-	typedef Eigen::SimplicialLDLT<SparseWeightMatrix> DefaultSparseSolver;
+	#if defined(TAPKEE_SUPERLU_AVAILABLE) && defined(TAPKEE_USE_SUPERLU)
+		typedef Eigen::SuperLU<SparseWeightMatrix> DefaultSparseSolver;
+	#else
+		typedef Eigen::SimplicialLDLT<SparseWeightMatrix> DefaultSparseSolver;
+	#endif
 #endif
 
 #ifdef TAPKEE_CUSTOM_PROPERTIES
@@ -120,6 +127,7 @@ enum TAPKEE_METHOD
 	STOCHASTIC_PROXIMITY_EMBEDDING,
 	KERNEL_PCA,
 	PCA,
+	RANDOM_PROJECTION,
 	PASS_THRU,
 	FACTOR_ANALYSIS,
 	UNKNOWN_METHOD
@@ -140,6 +148,7 @@ METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(LANDMARK_MULTIDIMENSIONAL_SCALING);
 METHOD_THAT_NEEDS_DISTANCE_AND_FEATURES_IS(STOCHASTIC_PROXIMITY_EMBEDDING);
 METHOD_THAT_NEEDS_ONLY_KERNEL_IS(KERNEL_PCA);
 METHOD_THAT_NEEDS_ONLY_FEATURES_IS(PCA);
+METHOD_THAT_NEEDS_ONLY_FEATURES_IS(RANDOM_PROJECTION);
 METHOD_THAT_NEEDS_NOTHING_IS(PASS_THRU);
 METHOD_THAT_NEEDS_ONLY_FEATURES_IS(FACTOR_ANALYSIS);
 METHOD_THAT_NEEDS_NOTHING_IS(UNKNOWN_METHOD);

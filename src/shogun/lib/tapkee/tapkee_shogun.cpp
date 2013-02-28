@@ -182,6 +182,8 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 				parameters.spe_tolerance;
 			tapkee_parameters[tapkee::SPE_NUM_UPDATES] = 
 				parameters.spe_num_updates;
+			tapkee_parameters[tapkee::MAX_ITERATION] =
+				parameters.max_iteration;
 			if (parameters.spe_global_strategy) 
 				tapkee_parameters[tapkee::SPE_GLOBAL_STRATEGY] = true;
 			else

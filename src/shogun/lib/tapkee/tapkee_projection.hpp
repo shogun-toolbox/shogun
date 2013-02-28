@@ -36,7 +36,7 @@ struct ProjectingFunction
 
 struct MatrixProjectionImplementation : public ProjectionImplementation
 {
-	MatrixProjectionImplementation(DenseMatrix matrix) : mat(matrix) 
+	MatrixProjectionImplementation(DenseMatrix matrix, DenseVector mean) : proj_mat(matrix), mean_vec(mean)
 	{
 	}
 
@@ -46,10 +46,11 @@ struct MatrixProjectionImplementation : public ProjectionImplementation
 
 	virtual DenseVector project(const DenseVector& vec) 
 	{
-		return mat*vec;
+		return proj_mat*(vec-mean_vec);
 	}
 
-	DenseMatrix mat;
+	DenseMatrix proj_mat;
+	DenseVector mean_vec;
 };
 
 

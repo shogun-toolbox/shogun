@@ -19,6 +19,7 @@
 #include <shogun/lib/tapkee/routines/laplacian_eigenmaps.hpp>
 #include <shogun/lib/tapkee/routines/isomap.hpp>
 #include <shogun/lib/tapkee/routines/pca.hpp>
+#include <shogun/lib/tapkee/routines/random_projection.hpp>
 #include <shogun/lib/tapkee/routines/spe.hpp>
 #include <shogun/lib/tapkee/routines/fa.hpp>
 #include <shogun/lib/tapkee/neighbors/neighbors.hpp>
@@ -218,8 +219,17 @@ CONCRETE_IMPLEMENTATION(ISOMAP)
 			find_neighbors(neighbors_method,begin,end,distance_callback,k,check_connectivity);
 		DenseSymmetricMatrix shortest_distances_matrix = 
 			compute_shortest_distances_matrix(begin,end,neighbors,distance_callback);
-		return ReturnResult(eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-			shortest_distances_matrix,target_dimension,SKIP_NO_EIGENVALUES).first, tapkee::ProjectingFunction());
+		shortest_distances_matrix = shortest_distances_matrix.array().square();
+		centerMatrix(shortest_distances_matrix);
+		shortest_distances_matrix.array() *= -0.5;
+		
+		EmbeddingResult embedding = eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
+			shortest_distances_matrix,target_dimension,SKIP_NO_EIGENVALUES);
+
+		for (unsigned int i=0; i<target_dimension; i++)
+			embedding.first.col(i).array() *= sqrt(embedding.second(i));
+		
+		return ReturnResult(embedding.first, tapkee::ProjectingFunction());
 	}
 };
 
@@ -241,18 +251,27 @@ CONCRETE_IMPLEMENTATION(LANDMARK_ISOMAP)
 			find_neighbors(neighbors_method,begin,end,distance_callback,k,check_connectivity);
 		Landmarks landmarks = 
 			select_landmarks_random(begin,end,ratio);
-		DenseSymmetricMatrix distance_matrix = 
+		DenseMatrix distance_matrix = 
 			compute_shortest_distances_matrix(begin,end,landmarks,neighbors,distance_callback);
-		DenseVector landmark_distances_squared = distance_matrix.colwise().mean();
-		centerMatrix(distance_matrix);
+		distance_matrix = distance_matrix.array().square();
+		
+		DenseVector col_means = distance_matrix.colwise().mean();
+		DenseVector row_means = distance_matrix.rowwise().mean();
+		DefaultScalarType grand_mean = distance_matrix.mean();
+		distance_matrix.array() += grand_mean;
+		distance_matrix.colwise() -= row_means;
+		distance_matrix.rowwise() -= col_means.transpose();
 		distance_matrix.array() *= -0.5;
+
 		EmbeddingResult landmarks_embedding = 
 			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-					distance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
+					distance_matrix*distance_matrix.transpose(),target_dimension,SKIP_NO_EIGENVALUES);
+
+		DenseMatrix embedding = distance_matrix.transpose()*landmarks_embedding.first;
+
 		for (unsigned int i=0; i<target_dimension; i++)
-			landmarks_embedding.first.col(i).array() *= sqrt(landmarks_embedding.second(i));
-		return ReturnResult(triangulate(begin,end,distance_callback,landmarks,
-			landmark_distances_squared,landmarks_embedding,target_dimension).first, tapkee::ProjectingFunction());
+			embedding.col(i).array() /= sqrt(sqrt(landmarks_embedding.second(i)));
+		return ReturnResult(embedding,tapkee::ProjectingFunction());
 	}
 };
 
@@ -283,8 +302,8 @@ CONCRETE_IMPLEMENTATION(NEIGHBORHOOD_PRESERVING_EMBEDDING)
 				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
 		DenseVector mean_vector = 
 			compute_mean(begin,end,feature_vector_callback,dimension);
-		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first));
-		return ReturnResult(project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension),projecting_function);
+		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
+		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension),projecting_function);
 	}
 };
 
@@ -360,8 +379,8 @@ CONCRETE_IMPLEMENTATION(LOCALITY_PRESERVING_PROJECTIONS)
 				eigen_method,eigenproblem_matrices.first,eigenproblem_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
 		DenseVector mean_vector = 
 			compute_mean(begin,end,feature_vector_callback,dimension);
-		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first));
-		return ReturnResult(project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension),projecting_function);
+		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
+		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension),projecting_function);
 	}
 };
 
@@ -382,8 +401,31 @@ CONCRETE_IMPLEMENTATION(PCA)
 			compute_covariance_matrix(begin,end,mean_vector,feature_vector_callback,dimension);
 		ProjectionResult projection_result = 
 			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,centered_covariance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
-		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first));
-		return ReturnResult(project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension), projecting_function);
+		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
+		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension), projecting_function);
+	}
+};
+
+CONCRETE_IMPLEMENTATION(RANDOM_PROJECTION)
+{
+	ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
+	                   KernelCallback, DistanceCallback, FeatureVectorCallback feature_vector_callback,
+	                   ParametersMap options)
+	{
+		OBTAIN_PARAMETER(unsigned int,target_dimension,TARGET_DIMENSION);
+		OBTAIN_PARAMETER(unsigned int,dimension,CURRENT_DIMENSION);
+
+		timed_context context("Embedding with Random Projection");
+
+		DenseMatrix projection_matrix = 
+			gaussian_projection_matrix(dimension, target_dimension);
+
+		DenseVector mean_vector = 
+			compute_mean(begin,end,feature_vector_callback,dimension);
+
+		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_matrix,mean_vector));
+
+		return ReturnResult(project(projection_matrix,mean_vector,begin,end,feature_vector_callback,dimension), projecting_function);
 	}
 };
 
@@ -431,8 +473,8 @@ CONCRETE_IMPLEMENTATION(LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT)
 				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
 		DenseVector mean_vector = 
 			compute_mean(begin,end,feature_vector_callback,dimension);
-		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first));
-		return ReturnResult(project(projection_result,mean_vector,begin,end,feature_vector_callback,dimension),
+		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
+		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension),
 				projecting_function);
 	}
 };
