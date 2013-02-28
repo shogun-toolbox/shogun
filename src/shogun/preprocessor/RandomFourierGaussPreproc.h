@@ -19,6 +19,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 
+
+
 namespace shogun {
 /** @brief Preprocessor CRandomFourierGaussPreproc
  * implements Random Fourier Features for the Gauss kernel a la Ali Rahimi and Ben Recht Nips2007
@@ -73,6 +75,25 @@ public:
 	 * in order to work this routine requires the steps described above under cases (1) or two (2) before calling this routine
 	 */
 	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+
+
+	/** default processing routine, 
+	 * @param features the features to be processed, must be of type 
+	 
+	 * (features->get_feature_class()==C_SPARSE)
+         * ||(features->get_feature_class()==C_DENSE)
+	 *
+	 *   (features->get_feature_type()==F_SHORTREAL)
+	 * ||(features->get_feature_type()==F_DREAL)
+	 * ||(features->get_feature_type()==F_LONGREAL)
+	 *
+	 * uses dense dot
+	 * 
+	 * @return the processed feature matrix from the CDenseFeatures<float64_t> class
+	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
+	 */
+CDenseFeatures<float64_t>* apply_to_dotfeatures_sparse_or_dense_with_real(CDotFeatures* features);
+
 
 	/** inherited from base class
 	 * @return C_DENSE
@@ -221,11 +242,15 @@ protected:
 	 */
 	float64_t* randomcoeff_additive;
 
+	//CDenseFeatures<float64_t> randomcoeff_additive2; 
+
 	/**
 	 * random coefficient
 	 * length = cur_dim_feature_space* cur_dim_input_space
 	 */
 	float64_t* randomcoeff_multiplicative;
+
+	//CDenseFeatures<float64_t> randomcoeff_multiplicative2;
 };
 }
 #endif

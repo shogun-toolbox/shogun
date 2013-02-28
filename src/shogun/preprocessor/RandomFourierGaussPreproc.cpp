@@ -408,6 +408,56 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 		return SGMatrix<float64_t>();
 }
 
+
+CDenseFeatures<float64_t>* CRandomFourierGaussPreproc::apply_to_dotfeatures_sparse_or_dense_with_real(CDotFeatures* features)
+{
+
+
+	if(!(
+		(features->get_feature_class()==C_SPARSE)
+		||(features->get_feature_class()==C_DENSE)
+	))
+	{
+		SG_ERROR("features->get_feature_class()!=C_SPARSE\n")
+	}
+	 
+	if(!(
+  		(features->get_feature_type()==F_SHORTREAL)
+		||(features->get_feature_type()==F_DREAL)
+		||(features->get_feature_type()==F_LONGREAL)
+	))
+	{
+		SG_ERROR("features->get_feature_type() is not real\n")
+	}
+
+	init(features);
+
+	int32_t num_features = features->get_dim_feature_space();
+	if (num_features!=cur_dim_input_space)
+	{
+		throw ShogunException("class CRandomFourierGaussPreproc: num_features!=cur_dim_input_space is not allowed\n");
+	}
+
+	int32_t num_samples=features->get_num_vectors();
+	SGMatrix<float64_t> outmatrix(cur_dim_feature_space,num_samples);
+
+	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);
+	for (int32_t vecind = 0; vecind < num_samples; vecind++)
+	{
+		for (int32_t od = 0; od < cur_dim_feature_space; ++od)
+		{
+			float64_t tmpval=randomcoeff_additive[od]+features->dense_dot (vecind, randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space);
+			outmatrix.matrix[od+cur_dim_feature_space*vecind]=val*cos(tmpval);
+		}
+	}
+
+	CDenseFeatures<float64_t> * result = new CDenseFeatures<float64_t>(outmatrix);
+
+	return(result);
+
+}
+
+
 void CRandomFourierGaussPreproc::cleanup()
 {
 
