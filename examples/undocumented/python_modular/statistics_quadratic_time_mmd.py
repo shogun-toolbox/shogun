@@ -5,117 +5,103 @@
 # the Free Software Foundation either version 3 of the License, or
 # (at your option) any later version.
 #
-# Written (C) 2012 Heiko Strathmann
+# Written (C) 2013 Heiko Strathmann
 #
 from numpy import *
 
 def statistics_quadratic_time_mmd ():
 	from shogun.Features import RealFeatures
 	from shogun.Features import MeanShiftDataGenerator
-	from shogun.Kernel import GaussianKernel
+	from shogun.Kernel import GaussianKernel, CustomKernel
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
-	from shogun.Distance import EuclideanDistance
-	from shogun.Mathematics import Statistics, IntVector
+	from shogun.Mathematics import Statistics, IntVector, RealVector
 
-	# note that the quadratic time mmd has to store kernel matrices
-	# which upper bounds the sample size
-	n=100
-	dim=2
-	difference=0.5
+	# number of examples kept low in order to make things fast
+	m=30;
+	dim=2;
+	difference=0.5;
 
 	# streaming data generator for mean shift distributions
-	gen_p=MeanShiftDataGenerator(0, dim)
-	gen_q=MeanShiftDataGenerator(difference, dim)
-	
-	# Stream examples and merge them in order to compute median on joint sample
-	# alternative is to call a different constructor of QuadraticTimeMMD
-	features=gen_p.get_streamed_features(n)
-	features=features.create_merged_copy(gen_q.get_streamed_features(n))
-	
-	# use data generator class to produce example data
-	data=features.get_feature_matrix()
-	
-	print "dimension means of X", mean(data.T[0:n].T)
-	print "dimension means of Y", mean(data.T[n:2*n+1].T)
+	gen_p=MeanShiftDataGenerator(0, dim);
+	gen_q=MeanShiftDataGenerator(difference, dim);
 
-	# compute median data distance in order to use for Gaussian kernel width
-	# 0.5*median_distance normally (factor two in Gaussian kernel)
-	# However, shoguns kernel width is different to usual parametrization
-	# Therefore 0.5*2*median_distance^2
-	# Use a subset of data for that, only 200 elements. Median is stable
-	# Use a permutation set to temporarily merge features in merged examples
-	subset=IntVector.randperm_vec(features.get_num_vectors())
-	subset=subset[0:200]
-	features.add_subset(subset)
-	dist=EuclideanDistance(features, features)
-	distances=dist.get_distance_matrix()
-	features.remove_subset()
-	median_distance=Statistics.matrix_median(distances, True)
-	sigma=median_distance**2
-	print "median distance for Gaussian kernel:", sigma
-	kernel=GaussianKernel(10,sigma)
+	# stream some data from generator
+	feat_p=gen_p.get_streamed_features(m);
+	feat_q=gen_q.get_streamed_features(m);
 
-	mmd=QuadraticTimeMMD(kernel,features, n)
+	# set kernel a-priori. usually one would do some kernel selection. See
+	# other examples for this.
+	width=10;
+	kernel=GaussianKernel(10, width);
+
+	# create quadratic time mmd instance. Note that this constructor
+	# copies p and q and does not reference them
+	mmd=QuadraticTimeMMD(kernel, feat_p, feat_q);
 
 	# perform test: compute p-value and test if null-hypothesis is rejected for
-	# a test level of 0.05 using different methods to approximate
-	# null-distribution
-	statistic=mmd.compute_statistic()
-	alpha=0.05
+	# a test level of 0.05
+	alpha=0.05;
 	
-	print "computing p-value using bootstrapping"
-	mmd.set_null_approximation_method(BOOTSTRAP)
-	# normally, at least 250 iterations should be done, but that takes long
-	mmd.set_bootstrap_iterations(10)
-	# bootstrapping allows usage of unbiased or biased statistic
-	mmd.set_statistic_type(UNBIASED)
-	p_value=mmd.compute_p_value(statistic)
-	print "p_value:", p_value
-	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
-	
-	# only can do this if SHOGUN was compiled with LAPACK so check
-	if "sample_null_spectrum" in dir(QuadraticTimeMMD):
-		print "computing p-value using spectrum method"
-		mmd.set_null_approximation_method(MMD2_SPECTRUM)
-		# normally, at least 250 iterations should be done, but that takes long
-		mmd.set_num_samples_sepctrum(50)
-		mmd.set_num_eigenvalues_spectrum(n-10)
-		# spectrum method computes p-value for biased statistics only
-		mmd.set_statistic_type(BIASED)
-		p_value=mmd.compute_p_value(statistic)
-		print "p_value:", p_value
-		print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
-	
-	print "computing p-value using gamma method"
-	mmd.set_null_approximation_method(MMD2_GAMMA)
-	# gamma method computes p-value for biased statistics only
-	mmd.set_statistic_type(BIASED)
-	p_value=mmd.compute_p_value(statistic)
-	print "p_value:", p_value
-	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
-	
-	# sample from null distribution (these may be plotted or whatsoever)
-	# mean should be close to zero, variance stronly depends on data/kernel
-	# bootstrapping, biased statistic
-	print "sampling null distribution using bootstrapping"
-	mmd.set_null_approximation_method(BOOTSTRAP)
-	mmd.set_statistic_type(BIASED)
-	mmd.set_bootstrap_iterations(10)
-	null_samples=mmd.bootstrap_null()
-	print "null mean:", mean(null_samples)
-	print "null variance:", var(null_samples)
-	
-	# sample from null distribution (these may be plotted or whatsoever)
-	# mean should be close to zero, variance stronly depends on data/kernel
-	# spectrum, biased statistic
-	print "sampling null distribution using spectrum method"
-	mmd.set_null_approximation_method(MMD2_SPECTRUM)
-	mmd.set_statistic_type(BIASED)
-	# 200 samples using 100 eigenvalues
-	null_samples=mmd.sample_null_spectrum(50,10)
-	print "null mean:", mean(null_samples)
-	print "null variance:", var(null_samples)
+	# using bootstrapping (slow, not the most reliable way. Consider pre-
+	# computing the kernel when using it, see below).
+	# Also, in practice, use at least 250 iterations
+	mmd.set_null_approximation_method(BOOTSTRAP);
+	mmd.set_bootstrap_iterations(3);
+	p_value=mmd.perform_test();
+	# reject if p-value is smaller than test level
+	print "bootstrap: p!=q: ", p_value<alpha
+
+	# using spectrum method. Use at least 250 samples from null.
+	# This is consistent but sometimes breaks, always monitor type I error.
+	# See tutorial for number of eigenvalues to use .
+	# Only works with BIASED statistic
+	mmd.set_statistic_type(BIASED);
+	mmd.set_null_approximation_method(MMD2_SPECTRUM);
+	mmd.set_num_eigenvalues_spectrum(3);
+	mmd.set_num_samples_sepctrum(250);
+	p_value=mmd.perform_test();
+	# reject if p-value is smaller than test level
+	print "spectrum: p!=q: ", p_value<alpha
+
+	# using gamma method. This is a quick hack, which works most of the time
+	# but is NOT guaranteed to. See tutorial for details.
+	# Only works with BIASED statistic
+	mmd.set_statistic_type(BIASED);
+	mmd.set_null_approximation_method(MMD2_GAMMA);
+	p_value=mmd.perform_test();
+	# reject if p-value is smaller than test level
+	print "gamma: p!=q: ", p_value<alpha
+
+	# compute tpye I and II error (use many more trials in practice).
+	# Type I error is not necessary if one uses bootstrapping. We do it here
+	# anyway, but note that this is an efficient way of computing it.
+	# Also note that testing has to happen on
+	# difference data than kernel selection, but the linear time mmd does this
+	# implicitly and we used a fixed kernel here.
+	mmd.set_null_approximation_method(BOOTSTRAP);
+	mmd.set_bootstrap_iterations(5);
+	num_trials=5;
+	type_I_errors=RealVector(num_trials);
+	type_II_errors=RealVector(num_trials);
+	inds=int32(array([x for x in range(2*m)])) # numpy
+	p_and_q=mmd.get_p_and_q();
+
+	# use a precomputed kernel to be faster
+	kernel.init(p_and_q, p_and_q);
+	precomputed=CustomKernel(kernel);
+	mmd.set_kernel(precomputed);
+	for i in range(num_trials):
+		# this effectively means that p=q - rejecting is tpye I error
+		inds=random.permutation(inds) # numpy permutation
+		precomputed.add_row_subset(inds);
+		precomputed.add_col_subset(inds);
+		type_I_errors[i]=mmd.perform_test()>alpha;
+		precomputed.remove_row_subset();
+		precomputed.remove_col_subset();
+
+		# on normal data, this gives type II error
+		type_II_errors[i]=mmd.perform_test()>alpha;
 	
 if __name__=='__main__':
 	print('QuadraticTimeMMD')
