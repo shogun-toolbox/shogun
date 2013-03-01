@@ -50,9 +50,9 @@ void quadratic_time_mmd()
 	 * Also, in practice, use at least 250 iterations */
 	mmd->set_null_approximation_method(BOOTSTRAP);
 	mmd->set_bootstrap_iterations(3);
-	float64_t p_value_bootstrap=mmd->perform_test();
+	float64_t p_value=mmd->perform_test();
 	/* reject if p-value is smaller than test level */
-	SG_SPRINT("bootstrap: p!=q: %d\n", p_value_bootstrap<alpha);
+	SG_SPRINT("bootstrap: p!=q: %d\n", p_value<alpha);
 
 	/* using spectrum method. Use at least 250 samples from null.
 	 * This is consistent but sometimes breaks, always monitor type I error.
@@ -62,18 +62,18 @@ void quadratic_time_mmd()
 	mmd->set_null_approximation_method(MMD2_SPECTRUM);
 	mmd->set_num_eigenvalues_spectrum(3);
 	mmd->set_num_samples_sepctrum(250);
-	p_value_bootstrap=mmd->perform_test();
+	p_value=mmd->perform_test();
 	/* reject if p-value is smaller than test level */
-	SG_SPRINT("spectrum: p!=q: %d\n", p_value_bootstrap<alpha);
+	SG_SPRINT("spectrum: p!=q: %d\n", p_value<alpha);
 
 	/* using gamma method. This is a quick hack, which works most of the time
 	 * but is NOT guaranteed to. See tutorial for details.
 	 * Only works with BIASED statistic */
 	mmd->set_statistic_type(BIASED);
 	mmd->set_null_approximation_method(MMD2_GAMMA);
-	p_value_bootstrap=mmd->perform_test();
+	p_value=mmd->perform_test();
 	/* reject if p-value is smaller than test level */
-	SG_SPRINT("gamma: p!=q: %d\n", p_value_bootstrap<alpha);
+	SG_SPRINT("gamma: p!=q: %d\n", p_value<alpha);
 
 	/* compute tpye I and II error (use many more trials in practice).
 	 * Type I error is not necessary if one uses bootstrapping. We do it here
@@ -81,32 +81,37 @@ void quadratic_time_mmd()
 	 * Also note that testing has to happen on
 	 * difference data than kernel selection, but the linear time mmd does this
 	 * implicitly and we used a fixed kernel here. */
-	index_t num_trials=3;
-	SGVector<float64_t> typeIerrors(num_trials);
-	SGVector<float64_t> typeIIerrors(num_trials);
+	mmd->set_null_approximation_method(BOOTSTRAP);
+	mmd->set_bootstrap_iterations(5);
+	index_t num_trials=5;
+	SGVector<float64_t> type_I_errors(num_trials);
+	SGVector<float64_t> type_II_errors(num_trials);
 	SGVector<index_t> inds(2*m);
 	inds.range_fill();
 	CFeatures* p_and_q=mmd->get_p_and_q();
 
 	/* use a precomputed kernel to be faster */
+	kernel->init(p_and_q, p_and_q);
 	CCustomKernel* precomputed=new CCustomKernel(kernel);
+	mmd->set_kernel(precomputed);
 	for (index_t i=0; i<num_trials; ++i)
 	{
 		/* this effectively means that p=q - rejecting is tpye I error */
 		inds.permute();
 		precomputed->add_row_subset(inds);
 		precomputed->add_col_subset(inds);
-		typeIerrors[i]=mmd->perform_test()>alpha;
+		type_I_errors[i]=mmd->perform_test()>alpha;
 		precomputed->remove_row_subset();
 		precomputed->remove_col_subset();
 
-		typeIIerrors[i]=mmd->perform_test()>alpha;
+		/* on normal data, this gives type II error */
+		type_II_errors[i]=mmd->perform_test()>alpha;
 	}
 	SG_UNREF(p_and_q);
 	SG_UNREF(precomputed);
 
-	SG_SPRINT("type I error: %f\n", CStatistics::mean(typeIerrors));
-	SG_SPRINT("type II error: %f\n", CStatistics::mean(typeIIerrors));
+	SG_SPRINT("type I error: %f\n", CStatistics::mean(type_I_errors));
+	SG_SPRINT("type II error: %f\n", CStatistics::mean(type_II_errors));
 
 	/* clean up */
 	SG_UNREF(mmd);
