@@ -50,11 +50,11 @@ float64_t CROCEvaluation::evaluate_roc(CLabels* predicted, CLabels* ground_truth
 	float64_t* labels = SGVector<float64_t>::clone_vector(orig_labels.vector, length);
 
 	// get sorted indexes
-	int32_t* idxs = SG_MALLOC(int32_t, length);
+	SGVector<int32_t> idxs(length);
 	for(i=0; i<length; i++)
 		idxs[i] = i;
 
-	CMath::qsort_backward_index(labels,idxs,length);
+	CMath::qsort_backward_index(labels,idxs.vector,idxs.vlen);
 
 	// number of different predicted labels
 	int32_t diff_count=1;
