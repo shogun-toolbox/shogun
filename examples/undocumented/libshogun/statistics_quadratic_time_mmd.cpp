@@ -108,7 +108,6 @@ void quadratic_time_mmd()
 		type_II_errors[i]=mmd->perform_test()>alpha;
 	}
 	SG_UNREF(p_and_q);
-	SG_UNREF(precomputed);
 
 	SG_SPRINT("type I error: %f\n", CStatistics::mean(type_I_errors));
 	SG_SPRINT("type II error: %f\n", CStatistics::mean(type_II_errors));
