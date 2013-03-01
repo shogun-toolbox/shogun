@@ -58,3 +58,52 @@ TEST(CustomKernelTest,add_row_subset)
 	SG_UNREF(custom);
 }
 
+TEST(CustomKernelTest,add_row_subset_constructor)
+{
+	index_t n=4;
+	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(1, 2);
+	CDenseFeatures<float64_t>* feats=
+			(CDenseFeatures<float64_t>*)gen->get_streamed_features(n);
+	CGaussianKernel* gaussian=new CGaussianKernel(feats, feats, 2, 10);
+	CCustomKernel* main_kernel=new CCustomKernel(gaussian);
+
+	/* create custom kernel copy of gaussien and assert equalness */
+	SGMatrix<float64_t> kmg=gaussian->get_kernel_matrix();
+	SGMatrix<float64_t> km=main_kernel->get_kernel_matrix();
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			ASSERT(CMath::abs(kmg(i, j)-km(i, j))<1E-7);
+	}
+
+	/* create copy of custom kernel and assert equalness */
+	CCustomKernel* copy=new CCustomKernel(km);
+	SGMatrix<float64_t> kmc=copy->get_kernel_matrix();
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			ASSERT(km(i, j)==kmc(i, j));
+	}
+
+	/* add a subset to the custom kernel, create copy, create another kernel
+	 * from this, assert equalness */
+	SGVector<index_t> inds(n);
+	inds.range_fill();
+	inds.permute();
+	main_kernel->add_row_subset(inds);
+	SGMatrix<float64_t> main_subset_matrix=main_kernel->get_kernel_matrix();
+	main_kernel->remove_row_subset();
+	main_kernel->remove_col_subset();
+	CCustomKernel* main_subset_copy=new CCustomKernel(main_subset_matrix);
+	SGMatrix<float64_t> main_subset_copy_matrix=main_subset_copy->get_kernel_matrix();
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			ASSERT(main_subset_matrix(i, j)==main_subset_copy_matrix(i, j));
+	}
+
+	SG_UNREF(gaussian);
+	SG_UNREF(main_kernel);
+	SG_UNREF(copy);
+	SG_UNREF(gen);
+}
