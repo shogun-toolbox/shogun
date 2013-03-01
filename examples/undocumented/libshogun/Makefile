@@ -100,6 +100,7 @@ TARGETS = basic_minimal \
 		  streaming_generators \
 		  library_hdf5 \
 		  library_serialization \
+		  classifier_svmlight_string_features_precomputed_kernel \
 
 all: $(TARGETS)
 
