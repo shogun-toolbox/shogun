@@ -4,19 +4,18 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011-2012 Heiko Strathmann
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Written (W) 2011-2013 Heiko Strathmann
  */
 
 #include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Subset.h>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 
-void test()
+TEST(StringFeaturesTest,copy_subset)
 {
-
 	index_t num_strings=10;
 	index_t max_string_length=20;
 	index_t min_string_length=max_string_length/2;
@@ -52,10 +51,8 @@ void test()
 
 	index_t offset_subset=1;
 	SGVector<index_t> feature_subset(8);
-	SGVector<index_t>::range_fill_vector(feature_subset.vector, feature_subset.vlen,
-			offset_subset);
-	SGVector<index_t>::display_vector(feature_subset.vector, feature_subset.vlen,
-			"feature subset");
+	feature_subset.range_fill(offset_subset);
+	feature_subset.display_vector("feature subset");
 
 	f->add_subset(feature_subset);
 	SG_SPRINT("feature vectors after setting subset on original data:\n");
@@ -72,13 +69,10 @@ void test()
 		f->free_feature_vector(vec, i);
 	}
 
-
 	index_t offset_copy=2;
 	SGVector<index_t> feature_copy_subset(4);
-	SGVector<index_t>::range_fill_vector(feature_copy_subset.vector,
-			feature_copy_subset.vlen, offset_copy);
-	SGVector<index_t>::display_vector(feature_copy_subset.vector, feature_copy_subset.vlen,
-			"indices that are to be copied");
+	feature_copy_subset.range_fill(offset_copy);
+	feature_copy_subset.display_vector("indices that are to be copied");
 
 	CStringFeatures<char>* subset_copy=(CStringFeatures<char>*)f->copy_subset(
 			feature_copy_subset);
@@ -103,7 +97,7 @@ void test()
 		for (index_t j=0; j<vec.vlen; ++j)
 		{
 			index_t offset_idx=i+(offset_copy+offset_subset);
-			ASSERT(vec.vector[j]==strings.strings[offset_idx].string[j]);
+			EXPECT_EQ(vec.vector[j], strings.strings[offset_idx].string[j]);
 		}
 
 		subset_copy->free_feature_vector(vec, i);
@@ -112,15 +106,3 @@ void test()
 	SG_UNREF(f);
 	SG_UNREF(subset_copy);
 }
-
-int main(int argc, char **argv)
-{
-	init_shogun_with_defaults();
-
-	test();
-
-	exit_shogun();
-
-	return 0;
-}
-

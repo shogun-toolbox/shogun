@@ -54,7 +54,6 @@ TARGETS = basic_minimal \
 		  features_subset_simple_features \
 		  features_subset_sparse_features \
 		  features_copy_subset_simple_features \
-		  features_copy_subset_string_features \
 		  features_copy_subset_sparse_features \
 		  labels_binary_fit_sigmoid \
 		  mathematics_confidence_intervals \
@@ -101,6 +100,7 @@ TARGETS = basic_minimal \
 		  streaming_generators \
 		  library_hdf5 \
 		  library_serialization \
+		  classifier_svmlight_string_features_precomputed_kernel \
 
 all: $(TARGETS)
 

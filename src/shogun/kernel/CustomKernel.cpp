@@ -202,23 +202,3 @@ void CCustomKernel::col_subset_changed_post()
 	else
 		num_rhs=kmatrix.num_cols;
 }
-
-void CCustomKernel::print_kernel_matrix(const char* prefix) const
-{
-	index_t num_rows=m_row_subset_stack->has_subsets()
-			? m_row_subset_stack->get_size() : kmatrix.num_rows;
-	index_t num_cols=m_col_subset_stack->has_subsets()
-			? m_col_subset_stack->get_size() : kmatrix.num_cols;
-	for (index_t i=0; i<num_rows; ++i)
-	{
-		for (index_t j=0; j<num_cols; ++j)
-		{
-			index_t real_i=m_row_subset_stack->subset_idx_conversion(i);
-			index_t real_j=m_col_subset_stack->subset_idx_conversion(j);
-			SG_PRINT("%s%4.2f", prefix, kmatrix.matrix[kmatrix.num_rows*real_j+real_i])
-			if (j<num_cols-1)
-				SG_PRINT(", \t")
-		}
-		SG_PRINT("\n")
-	}
-}

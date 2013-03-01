@@ -19,7 +19,9 @@
 		- New CCSOSVM based structured output solver by Viktor Gal
 		- A collection of kernel selection methods for MMD-based kernel two-
 		  sample tests, including optimal kernel choice for single and combined
-		  kernels for the linear time MMD by Heiko Strathmann
+		  kernels for the linear time MMD. This finishes the kernel MMD framework
+		  and also comes with new, more illustrative examples and tests.
+		  By Heiko Strathmann
 	* Bugfixes:
 		- Fix for shallow copy of gaussian kernel by Matt Aasted
 		- Fixed a bug when using StringFeatures along with kernel machines in
@@ -30,6 +32,8 @@
 		  by Nona Kermani
                 - Fix for wrong include in SGMatrix causing build fail on Mac OS X 
                   (thanks to @bianjiang)
+        - Fixed a bug that caused kernel machines to return non-sense when using
+          custom kernel matrices with subsets attached to them
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData
 		- "confidences" in context of CLabel and subclasses are now "values"
