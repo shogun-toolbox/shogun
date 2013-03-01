@@ -369,18 +369,24 @@ class CCustomKernel: public CKernel
 			return (get_num_vec_lhs()>0) && (get_num_vec_rhs()>0);
 		}
 
-		/** prints the kernel matrix
-		 *
-		 * @param prefix prefix for every line
-		 */
-		void print_kernel_matrix(const char* prefix="") const;
-
-		/** returns kernel matrix as is
+		/** returns kernel matrix as is (not possible with subset)
 		 *
 		 * @return kernel matrix
 		 */
 		SGMatrix<float32_t> get_float32_kernel_matrix()
 		{
+			REQUIRE(!m_row_subset_stack, "%s::get_float32_kernel_matrix(): "
+						"Not possible with row subset active! If you want to"
+						" create a %s from another one with a subset, use"
+						"get_kernel_matrix() and the SGMatrix constructor!\n",
+						get_name(), get_name());
+
+			REQUIRE(!m_col_subset_stack, "%s::get_float32_kernel_matrix(): "
+					"Not possible with collumn subset active! If you want to"
+					" create a %s from another one with a subset, use"
+					"get_kernel_matrix() and the SGMatrix constructor!\n",
+					get_name(), get_name());
+
 			return kmatrix;
 		}
 
@@ -396,7 +402,8 @@ class CCustomKernel: public CKernel
 		 */
 		virtual float64_t compute(int32_t row, int32_t col)
 		{
-			ASSERT(kmatrix.matrix)
+			REQUIRE(kmatrix.matrix, "%s::compute(%d, %d): No kenrel matrix "
+					"set!\n", get_name(), row, col);
 
 			index_t real_row=m_row_subset_stack->subset_idx_conversion(row);
 			index_t real_col=m_col_subset_stack->subset_idx_conversion(col);
@@ -415,10 +422,7 @@ class CCustomKernel: public CKernel
 				}
 			}
 			else
-			{
-				int64_t r=real_row;
-				return kmatrix.matrix[r*kmatrix.num_cols+real_col];
-			}
+				return kmatrix(real_row, real_col);
 		}
 
 	protected:
