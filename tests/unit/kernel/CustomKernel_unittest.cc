@@ -73,7 +73,7 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			ASSERT(CMath::abs(kmg(i, j)-km(i, j))<1E-7);
+			EXPECT_LE(CMath::abs(kmg(i, j)-km(i, j)), 1E-7);
 	}
 
 	/* create copy of custom kernel and assert equalness */
@@ -82,7 +82,7 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			ASSERT(km(i, j)==kmc(i, j));
+			EXPECT_EQ(km(i, j), kmc(i, j));
 	}
 
 	/* add a subset to the custom kernel, create copy, create another kernel
@@ -99,7 +99,7 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			ASSERT(main_subset_matrix(i, j)==main_subset_copy_matrix(i, j));
+			EXPECT_EQ(main_subset_matrix(i, j), main_subset_copy_matrix(i, j));
 	}
 
 	SG_UNREF(gaussian);
