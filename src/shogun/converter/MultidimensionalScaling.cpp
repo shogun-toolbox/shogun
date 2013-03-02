@@ -85,6 +85,10 @@ CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* d
 	{
 		parameters.method = SHOGUN_LANDMARK_MULTIDIMENSIONAL_SCALING;
 		parameters.landmark_ratio = float64_t(m_landmark_number)/distance->get_num_vec_lhs();
+		if (parameters.landmark_ratio > 1.0) {
+			SG_WARNING("Number of landmarks (%d) exceeds number of feature vectors (%d)",m_landmark_number,distance->get_num_vec_lhs());
+			parameters.landmark_ratio = 1.0;
+		}
 	}
 	else 
 	{
