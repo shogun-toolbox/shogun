@@ -286,7 +286,7 @@ std::cout << " absolute differences between rf approximation with inited coeffic
 std::cout << "finished"<<std::endl;
 b=time(NULL);
 std::cout<< "elapsed time in seconds "<<b-a <<std::endl;
-std::cout << "effective kernel widths for gaussian kernel versus RFgauss approximation "<< avgdist1 << " " <<avgdist2/(1.0-numnegratio) << std::endl<< " ratio of negative entries in RFgauss approx kernel (that are bad results) "<< numnegratio<<std::endl;
+std::cout <<std::endl<< "effective kernel widths for gaussian kernel versus RFgauss approximation "<< avgdist1 << " " <<avgdist2/(1.0-numnegratio) << std::endl<< " ratio of negative entries in RFgauss approx kernel (that are bad results) "<< numnegratio<<std::endl;
 
 
 
