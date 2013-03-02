@@ -81,6 +81,7 @@ TARGETS = basic_minimal \
 		  converter_linearlocaltangentspacealignment \
 		  converter_localitypreservingprojections \
 		  converter_stochasticproximityembedding \
+		  converter_factoranalysis \
 		  serialization_basic_tests \
 		  kernel_machine_train_locked \
 		  statistics \

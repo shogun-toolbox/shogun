@@ -190,6 +190,8 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 				tapkee_parameters[tapkee::SPE_GLOBAL_STRATEGY] = false;
 			break;
 		case SHOGUN_FACTOR_ANALYSIS:
+			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
+				(uint32_t)parameters.features->get_dim_feature_space();
 			tapkee_parameters[tapkee::REDUCTION_METHOD] =
 				tapkee::FACTOR_ANALYSIS;
 			tapkee_parameters[tapkee::MAX_ITERATION] =

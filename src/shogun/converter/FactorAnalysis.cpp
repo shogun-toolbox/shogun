@@ -63,6 +63,7 @@ CFeatures* CFactorAnalysis::apply(CFeatures* features)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.max_iteration = m_max_iteration;
+	parameters.features = (CDotFeatures*)features;
 	parameters.fa_epsilon = m_epsilon;
 	parameters.method = SHOGUN_FACTOR_ANALYSIS;
 	parameters.target_dimension = m_target_dim;
