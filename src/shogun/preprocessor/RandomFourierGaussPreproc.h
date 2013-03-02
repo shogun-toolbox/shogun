@@ -48,7 +48,7 @@ namespace shogun {
  * 2c) set_dim_input_space(const int32_t dim);
  * 2d) init_randomcoefficients() or apply_to_feature_matrix(...)
  */
-class CRandomFourierGaussPreproc: public CDensePreprocessor<float64_t> {
+class CRandomFourierGaussPreproc: public CPreprocessor {
 public:
 	/** default constructor */
 	CRandomFourierGaussPreproc();
@@ -61,38 +61,33 @@ public:
 	 */
 	~CRandomFourierGaussPreproc();
 
-	/** default processing routine, inherited from base class
-	 * @param features the features to be processed, must be of type CDenseFeatures<float64_t>
-	 * @return the processed feature matrix from the CDenseFeatures<float64_t> class
-	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
-	 */
-	virtual SGMatrix<float64_t> apply_to_feature_matrix(CFeatures* features); // ref count fo the feature matrix???
-
-
-	/** alternative processing routine, inherited from base class
-	 * @param vector the feature vector to be processed
-	 * @return processed feature vector
-	 * in order to work this routine requires the steps described above under cases (1) or two (2) before calling this routine
-	 */
-	virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
-
 
 	/** default processing routine, 
 	 * @param features the features to be processed, must be of type 
 	 
 	 * (features->get_feature_class()==C_SPARSE)
          * ||(features->get_feature_class()==C_DENSE)
+	 * ||(features->get_feature_class()==C_BINNED_DOT)
+	 * ||(features->get_feature_class()==C_COMBINED_DOT)
 	 *
 	 *   (features->get_feature_type()==F_SHORTREAL)
 	 * ||(features->get_feature_type()==F_DREAL)
 	 * ||(features->get_feature_type()==F_LONGREAL)
+	 * ||(features->get_feature_type()==F_INT)
+	 * ||(features->get_feature_type()==F_UINT)
+	 * ||(features->get_feature_type()==F_LONG)
+	 * ||(features->get_feature_type()==F_ULONG)
 	 *
 	 * uses dense dot
+	 *
+	 * USAGE WARNING: during testing you must use the same random coefficients as have been used during training, use get_randomcoefficients and set_randomcoefficients for securing that!
+	 * always required is to call set_parameters() before usage
+	 * a call to init_randomcoefficients_from_scratch(); resets coefficients (or sets them for the first time, set_parameters() does NOT set them)!
 	 * 
 	 * @return the processed feature matrix from the CDenseFeatures<float64_t> class
 	 * in case (2) (see description above) this routine requires only steps 2a) and 2b), the rest is determined automatically
 	 */
-CDenseFeatures<float64_t>* apply_to_dotfeatures_sparse_or_dense_with_real(CDotFeatures* features);
+	CDenseFeatures<float64_t>* apply_to_dotfeatures_sparse_or_dense_with_real(CDotFeatures* features);
 
 
 	/** inherited from base class
@@ -105,25 +100,21 @@ CDenseFeatures<float64_t>* apply_to_dotfeatures_sparse_or_dense_with_real(CDotFe
 	 */
 	virtual EFeatureClass get_feature_class();
 
+
 	/** initializer routine
-	 * calls set_dim_input_space(const int32_t dim); with the proper value
-	 * calls init_randomcoefficients(); this call does NOT override a previous call to void set_randomcoefficients(...) IF and ONLY IF
-	 * the dimensions of input AND feature space are equal to the values from the previous call to void set_randomcoefficients(...)
-	 * @param f the features to be processed, must be of type CDenseFeatures<float64_t>
-	 * @return true if new random coefficients were generated, false if old ones from a call to set_randomcoefficients(...) are kept
+	 * sets parameters
+	 * @param dim_input_space2 the dimensionality of the input features, given by the features you want to use
+	 * @param dim_feature_space2 the dimensionality of the output features, a higher values gives a better approximation of the gaussian kernel, typically dim_feature_space2 >> dim_input_space2
+	 * @param kernelwidth2 the gaussian kernel width, too small values result in bad approximations up to negative eigenvalues
+	 * @return true always
 	 */
-	virtual bool init(CFeatures *f);
+        virtual bool set_parameters(const int32_t dim_input_space2, const int32_t dim_feature_space2, const float64_t kernelwidth2);
 
-	/**  setter for kernel width
-	 * @param width kernel width to be set
-	 */
-	void set_kernelwidth(const float64_t width);
 
-	/**  getter for kernel width
-	 * @return kernel width
-	 * throws exception if kernelwidth <=0
+	/** computes new random coefficients 
+	 * @return true always
 	 */
-	float64_t get_kernelwidth( ) const;
+	bool init_randomcoefficients_from_scratch();
 
 	/**  getter for the random coefficients
 	 * necessary for creating random fourier features compatible to the current ones
@@ -144,31 +135,7 @@ CDenseFeatures<float64_t>* apply_to_dotfeatures_sparse_or_dense_with_real(CDotFe
 			float64_t * randomcoeff_multiplicative2,
 			const int32_t dim_feature_space2, const int32_t dim_input_space2, const float64_t kernelwidth2);
 
-	/** a setter
-	 * @param dim the value of protected member dim_input_space
-	 * throws a shogun exception if dim<=0
-	 */
-	void set_dim_input_space(const int32_t dim);
 
-	/** a setter
-	 * @param dim the value of protected member dim_feature_space
-	 * throws a shogun exception if dim<=0
-	 *
-	 */
-	void set_dim_feature_space(const int32_t dim);
-
-	/** computes new random coefficients IF test_rfinited() evaluates to false
-	 * test_rfinited() evaluates to TRUE if void set_randomcoefficients(...) hase been called and the values set by set_dim_input_space(...) , set_dim_feature_space(...) and set_kernelwidth(...) are consistent to the call of void set_randomcoefficients(...)
-	 *
-	 * throws shogun exception if dim_feature_space <= 0 or dim_input_space <= 0
-	 *
-	 * @return returns true if test_rfinited() evaluates to false and new coefficients are computed
-	 * returns false if test_rfinited() evaluates to true and old random coefficients are kept which were set by a previous call to void set_randomcoefficients(...)
-	 *
-	 * this function is useful if you want to use apply_to_feature_vector but cannot call before it init(CFeatures *f)
-	 *
-	 */
-	bool init_randomcoefficients();
 
 
 	/** a getter
@@ -181,6 +148,12 @@ CDenseFeatures<float64_t>* apply_to_dotfeatures_sparse_or_dense_with_real(CDotFe
 	 */
 	int32_t get_dim_feature_space() const;
 
+	/**  getter for kernel width
+	 * @return kernel width
+	 * throws exception if kernelwidth <=0
+	 */
+	float64_t get_kernelwidth( ) const;
+
 	/** inherited from base class
 	 * does nothing
 	 */
@@ -192,7 +165,17 @@ CDenseFeatures<float64_t>* apply_to_dotfeatures_sparse_or_dense_with_real(CDotFe
 	/// return a type of preprocessor
 	virtual EPreprocessorType get_type() const { return P_RANDOMFOURIERGAUSS; }
 
+	virtual bool init (CFeatures *features); // does nothing
+
 protected:
+
+
+
+
+	/**
+	* checks whether this feature can be used woth RF preprocessor
+	*/
+	virtual bool check_applicability_to_feature(CFeatures* features);
 
 	/**
 	 * helper for copy constructor and assignment operator=
@@ -205,20 +188,11 @@ protected:
 	 */
 	float64_t kernelwidth;
 
-	/** dimension of input features
-	 * width of gaussian kernel in the form of exp(-x^2 / (2.0 kernelwidth^2) ) NOTE the 2.0 and the power ^2 !
-	 */
-	float64_t cur_kernelwidth;
 
 	/** desired dimension of input features as set by void set_dim_input_space(const int32_t dim)
 	 *
 	 */
 	int32_t dim_input_space;
-
-	/** actual dimension of input features as set by bool init_randomcoefficients() or void set_randomcoefficients
-	 *
-	 */
-	int32_t cur_dim_input_space;
 
 
 	/** desired dimension of output features  as set by void set_dim_feature_space(const int32_t dim)
@@ -226,10 +200,7 @@ protected:
 	 */
 	int32_t dim_feature_space;
 
-	/** actual dimension of output features as set by bool init_randomcoefficients() or void set_randomcoefficients
-	 *
-	 */
-	int32_t cur_dim_feature_space;
+
 
 	/**
 	 * tests whether rf features have already been initialized
