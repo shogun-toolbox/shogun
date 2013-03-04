@@ -1,5 +1,14 @@
-#ifndef tapkee_mds_h_
-#define tapkee_mds_h_
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
+ */
+
+#ifndef TAPKEE_MDS_H_
+#define TAPKEE_MDS_H_
 
 #include <algorithm>
 
@@ -12,14 +21,14 @@ namespace tapkee_internal
 {
 
 template <class RandomAccessIterator>
-Landmarks select_landmarks_random(RandomAccessIterator begin, RandomAccessIterator end, DefaultScalarType ratio)
+Landmarks select_landmarks_random(RandomAccessIterator begin, RandomAccessIterator end, ScalarType ratio)
 {
 	Landmarks landmarks;
 	landmarks.reserve(end-begin);
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 		landmarks.push_back(iter-begin);
 	random_shuffle(landmarks.begin(),landmarks.end());
-	landmarks.erase(landmarks.begin() + static_cast<unsigned int>(landmarks.size()*ratio),landmarks.end());
+	landmarks.erase(landmarks.begin() + static_cast<IndexType>(landmarks.size()*ratio),landmarks.end());
 	return landmarks;
 }
 
@@ -35,7 +44,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, Landmar
 	{
 		for (Landmarks::const_iterator j_iter=i_iter; j_iter!=landmarks.end(); ++j_iter)
 		{
-			DefaultScalarType d = callback(*(begin+*i_iter),*(begin+*j_iter));
+			ScalarType d = callback(*(begin+*i_iter),*(begin+*j_iter));
 			d *= d;
 			distance_matrix(i_iter-landmarks.begin(),j_iter-landmarks.begin()) = d;
 			distance_matrix(j_iter-landmarks.begin(),i_iter-landmarks.begin()) = d;
@@ -47,7 +56,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, Landmar
 template <class RandomAccessIterator, class PairwiseCallback>
 EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end, PairwiseCallback distance_callback,
                             const Landmarks& landmarks, const DenseVector& landmark_distances_squared, 
-                            EmbeddingResult& landmarks_embedding, unsigned int target_dimension)
+                            EmbeddingResult& landmarks_embedding, IndexType target_dimension)
 {
 	timed_context context("Landmark triangulation");
 	
@@ -63,7 +72,7 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 		embedding.row(*iter).noalias() = landmarks_embedding.first.row(iter-landmarks.begin());
 	}
 
-	for (unsigned int i=0; i<target_dimension; ++i)
+	for (IndexType i=0; i<target_dimension; ++i)
 		landmarks_embedding.first.col(i).array() /= landmarks_embedding.second(i);
 
 	RandomAccessIterator iter;
@@ -78,9 +87,9 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 		if (!to_process[iter-begin])
 			continue;
 
-		for (unsigned int i=0; i<distances_to_landmarks.size(); ++i)
+		for (IndexType i=0; i<distances_to_landmarks.size(); ++i)
 		{
-			DefaultScalarType d = distance_callback(*iter,begin[landmarks[i]]);
+			ScalarType d = distance_callback(*iter,begin[landmarks[i]]);
 			distances_to_landmarks(i) = d*d;
 		}
 		//distances_to_landmarks.array().square();
@@ -107,7 +116,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 	{
 		for (RandomAccessIterator j_iter=i_iter; j_iter!=end; ++j_iter)
 		{
-			DefaultScalarType d = callback(*i_iter,*j_iter);
+			ScalarType d = callback(*i_iter,*j_iter);
 			d *= d;
 			distance_matrix(i_iter-begin,j_iter-begin) = d;
 			distance_matrix(j_iter-begin,i_iter-begin) = d;

@@ -47,7 +47,7 @@ struct distances_comparator
 
 template <class RandomAccessIterator, class PairwiseCallback>
 Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccessIterator end, 
-                         PairwiseCallback callback, unsigned int k)
+                         PairwiseCallback callback, IndexType k)
 {
 	timed_context context("Covertree-based neighbors search");
 
@@ -70,7 +70,7 @@ Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccess
 		LocalNeighbors local_neighbors;
 		local_neighbors.reserve(k);
 		
-		for (unsigned int j=1; j<=k; ++j) // j=0 is the query point
+		for (IndexType j=1; j<=k; ++j) // j=0 is the query point
 		{
 			// The actual query point is found as a neighbor, just ignore it
 			if (res[i][j].iter_-begin==res[i][0].iter_-begin)
@@ -88,10 +88,10 @@ Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccess
 
 template <class RandomAccessIterator, class PairwiseCallback>
 Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
-                                         const PairwiseCallback& callback, unsigned int k)
+                                         const PairwiseCallback& callback, IndexType k)
 {
 	timed_context context("Distance sorting based neighbors search");
-	typedef std::pair<RandomAccessIterator, DefaultScalarType> DistanceRecord;
+	typedef std::pair<RandomAccessIterator, ScalarType> DistanceRecord;
 	typedef std::vector<DistanceRecord> Distances;
 
 	Neighbors neighbors;
@@ -126,7 +126,7 @@ Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, cons
 template <class RandomAccessIterator, class PairwiseCallback>
 Neighbors find_neighbors(TAPKEE_NEIGHBORS_METHOD method, const RandomAccessIterator& begin, 
                          const RandomAccessIterator& end, const PairwiseCallback& callback, 
-                         unsigned int k, bool check_connectivity)
+                         IndexType k, bool check_connectivity)
 {
 	if (k > (end-begin-1))
 	{

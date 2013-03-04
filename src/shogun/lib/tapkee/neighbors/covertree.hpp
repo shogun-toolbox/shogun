@@ -16,7 +16,7 @@
 
 /* Whatever structure/class/type is used for P, it must have the following functions defined:
 
-   DefaultScalarType distance(P v1, P v2, DefaultScalarType upper_bound);
+   ScalarType distance(P v1, P v2, ScalarType upper_bound);
    : this returns the distance between two P objects
    : the distance does not have to be calculated fully if it's more than upper_bound
 
@@ -47,7 +47,7 @@ struct node
 	{
 	}
 
-	node(P _p, DefaultScalarType _max_dist, DefaultScalarType _parent_dist, node<P>* _children,
+	node(P _p, ScalarType _max_dist, ScalarType _parent_dist, node<P>* _children,
 	     unsigned short int _num_children, short int _scale) : p(_p), 
 		max_dist(_max_dist), parent_dist(_parent_dist), children(_children),
 		num_children(_num_children), scale(_scale) 
@@ -58,10 +58,10 @@ struct node
 	P p;
 
 	/** The maximum distance to any grandchild */
-	DefaultScalarType max_dist;
+	ScalarType max_dist;
 
 	/** The distance to the parent */
-	DefaultScalarType parent_dist;
+	ScalarType parent_dist;
 
 	/** Pointer to the list of children of this node */
 	node<P>* children;
@@ -94,21 +94,21 @@ struct ds_node {
 	ds_node() : dist(), p() {}
 
 	/** Vector of distances TODO better doc*/
-	v_array<DefaultScalarType> dist;
+	v_array<ScalarType> dist;
 
 	/** Point TODO better doc */
 	P p;
 };
 
-static DefaultScalarType base = COVERTREE_BASE;
-static DefaultScalarType il2 = 1. / log(base);
+static ScalarType base = COVERTREE_BASE;
+static ScalarType il2 = 1. / log(base);
 
-inline DefaultScalarType dist_of_scale (int s)
+inline ScalarType dist_of_scale (int s)
 {
 	return pow(base, s);
 }
 
-inline int get_scale(DefaultScalarType d)
+inline int get_scale(ScalarType d)
 {
 	return (int)ceil(il2 * log(d));
 }
@@ -129,9 +129,9 @@ node<P> new_leaf(const P &p)
 }
 
 	template<class P>
-DefaultScalarType max_set(v_array<ds_node<P> > &v)
+ScalarType max_set(v_array<ds_node<P> > &v)
 {
-	DefaultScalarType max = 0.;
+	ScalarType max = 0.;
 	for (int i = 0; i < v.index; i++)
 		if ( max < v[i].dist.last()) 
 			max = v[i].dist.last();
@@ -165,8 +165,8 @@ void print(int depth, node<P> &top_node)
 template<class P>
 void split(v_array<ds_node<P> >& point_set, v_array<ds_node<P> >& far_set, int max_scale)
 {
-	unsigned int new_index = 0;
-	DefaultScalarType fmax = dist_of_scale(max_scale);
+	IndexType new_index = 0;
+	ScalarType fmax = dist_of_scale(max_scale);
 	for (int i = 0; i < point_set.index; i++)
 	{
 		if (point_set[i].dist.last() <= fmax) 
@@ -185,11 +185,11 @@ void dist_split(const DistanceCallback& dcb, v_array<ds_node<P> >& point_set,
 		P new_point, 
 		int max_scale)
 {
-	unsigned int new_index = 0;
-	DefaultScalarType fmax = dist_of_scale(max_scale);
+	IndexType new_index = 0;
+	ScalarType fmax = dist_of_scale(max_scale);
 	for(int i = 0; i < point_set.index; i++) 
 	{
-		DefaultScalarType new_d;
+		ScalarType new_d;
 		new_d = distance(dcb, new_point, point_set[i].p, fmax);
 		if (new_d <= fmax ) 
 		{
@@ -217,7 +217,7 @@ node<P> batch_insert(const DistanceCallback& dcb, const P& p,
 	if (point_set.index == 0) 
 		return new_leaf(p);
 	else {
-		DefaultScalarType max_dist = max_set(point_set); //O(|point_set|)
+		ScalarType max_dist = max_set(point_set); //O(|point_set|)
 		int next_scale = min(max_scale - 1, get_scale(max_dist));
 		if (next_scale == -2147483647-1) // We have points with distance 0.
 		{
@@ -258,7 +258,7 @@ node<P> batch_insert(const DistanceCallback& dcb, const P& p,
 				v_array<ds_node<P> > new_consumed_set = pop(stack);
 				while (point_set.index != 0) { //O(|point_set| * num_children)
 					P new_point = point_set.last().p;
-					DefaultScalarType new_dist = point_set.last().dist.last();
+					ScalarType new_dist = point_set.last().dist.last();
 					push(consumed_set, point_set.last());
 					point_set.decr();
 
@@ -271,7 +271,7 @@ node<P> batch_insert(const DistanceCallback& dcb, const P& p,
 
 					push(children, new_child);
 
-					DefaultScalarType fmax = dist_of_scale(max_scale);
+					ScalarType fmax = dist_of_scale(max_scale);
 					for(int i = 0; i< new_point_set.index; i++) //O(|new_point_set|)
 					{
 						new_point_set[i].dist.decr();
@@ -312,14 +312,14 @@ node<P> batch_create(const DistanceCallback& dcb, v_array<P> points)
 
 	for (int i = 1; i < points.index; i++) {
 		ds_node<P> temp;
-		push(temp.dist, distance(dcb, points[0], points[i], numeric_limits<DefaultScalarType>::max()));
+		push(temp.dist, distance(dcb, points[0], points[i], numeric_limits<ScalarType>::max()));
 		temp.p = points[i];
 		push(point_set,temp);
 	}
 
 	v_array<ds_node<P> > consumed_set;
 
-	DefaultScalarType max_dist = max_set(point_set);
+	ScalarType max_dist = max_set(point_set);
 
 	node<P> top = batch_insert (dcb, points[0],
 			get_scale(max_dist),
@@ -398,14 +398,14 @@ template <class P>
 struct d_node 
 {
 	/** Distance TODO better doc*/
-	DefaultScalarType dist;
+	ScalarType dist;
 
 	/** List of nodes TODO better doc*/
 	const node<P> *n;
 };
 
 template <class P>
-inline DefaultScalarType compare(const d_node<P> *p1, const d_node<P>* p2)
+inline ScalarType compare(const d_node<P> *p1, const d_node<P>* p2)
 {
 	return p1 -> dist - p2 -> dist;
 }
@@ -480,17 +480,17 @@ v_array<v_array<d_node<P> > > get_cover_sets(v_array<v_array<v_array<d_node<P> >
 	return ret;
 }
 
-inline bool shell(DefaultScalarType parent_query_dist, DefaultScalarType child_parent_dist, DefaultScalarType upper_bound)
+inline bool shell(ScalarType parent_query_dist, ScalarType child_parent_dist, ScalarType upper_bound)
 {
 	return parent_query_dist - child_parent_dist <= upper_bound;
 	//    && child_parent_dist - parent_query_dist <= upper_bound;
 }
 
 int internal_k =1;
-void update_k(DefaultScalarType *k_upper_bound, DefaultScalarType upper_bound)
+void update_k(ScalarType *k_upper_bound, ScalarType upper_bound)
 {
-	DefaultScalarType *end = k_upper_bound + internal_k-1;
-	DefaultScalarType *begin = k_upper_bound;
+	ScalarType *end = k_upper_bound + internal_k-1;
+	ScalarType *begin = k_upper_bound;
 	for (;end != begin; begin++)
 	{
 		if (upper_bound < *(begin+1))
@@ -503,55 +503,55 @@ void update_k(DefaultScalarType *k_upper_bound, DefaultScalarType upper_bound)
 	if (end == begin)
 		*begin = upper_bound;
 }
-DefaultScalarType *alloc_k()
+ScalarType *alloc_k()
 {
-	return (DefaultScalarType*)malloc(sizeof(DefaultScalarType) * internal_k);
+	return (ScalarType*)malloc(sizeof(ScalarType) * internal_k);
 }
-void set_k(DefaultScalarType* begin, DefaultScalarType max)
+void set_k(ScalarType* begin, ScalarType max)
 {
-	for(DefaultScalarType *end = begin+internal_k;end != begin; begin++)
+	for(ScalarType *end = begin+internal_k;end != begin; begin++)
 		*begin = max;
 }
 
-DefaultScalarType internal_epsilon =0.;
-//void update_epsilon(DefaultScalarType *upper_bound, DefaultScalarType new_dist) {}
-DefaultScalarType *alloc_epsilon()
+ScalarType internal_epsilon =0.;
+//void update_epsilon(ScalarType *upper_bound, ScalarType new_dist) {}
+ScalarType *alloc_epsilon()
 {
-	return (DefaultScalarType *)malloc(sizeof(DefaultScalarType));
+	return (ScalarType *)malloc(sizeof(ScalarType));
 }
-void set_epsilon(DefaultScalarType* begin)
+void set_epsilon(ScalarType* begin)
 {
 	*begin = internal_epsilon;
 }
 
-void update_unequal(DefaultScalarType *upper_bound, DefaultScalarType new_dist) 
+void update_unequal(ScalarType *upper_bound, ScalarType new_dist) 
 {
 	if (new_dist != 0.)
 		*upper_bound = new_dist;
 }
-DefaultScalarType* (*alloc_unequal)() = alloc_epsilon;
-void set_unequal(DefaultScalarType* begin, DefaultScalarType max)
+ScalarType* (*alloc_unequal)() = alloc_epsilon;
+void set_unequal(ScalarType* begin, ScalarType max)
 {
 	*begin = max;
 }
 
-void (*update)(DefaultScalarType *foo, DefaultScalarType bar) = update_k;
-void (*setter)(DefaultScalarType *foo, DefaultScalarType bar) = set_k;
-DefaultScalarType* (*alloc_upper)() = alloc_k;
+void (*update)(ScalarType *foo, ScalarType bar) = update_k;
+void (*setter)(ScalarType *foo, ScalarType bar) = set_k;
+ScalarType* (*alloc_upper)() = alloc_k;
 
 template <class P, class DistanceCallback>
 inline void copy_zero_set(const DistanceCallback& dcb, node<P>* query_chi,
-		DefaultScalarType* new_upper_bound, v_array<d_node<P> > &zero_set,
+		ScalarType* new_upper_bound, v_array<d_node<P> > &zero_set,
 		v_array<d_node<P> > &new_zero_set)
 {
 	new_zero_set.index = 0;
 	d_node<P> *end = zero_set.elements + zero_set.index;
 	for (d_node<P> *ele = zero_set.elements; ele != end ; ele++)
 	{
-		DefaultScalarType upper_dist = *new_upper_bound + query_chi->max_dist;
+		ScalarType upper_dist = *new_upper_bound + query_chi->max_dist;
 		if (shell(ele->dist, query_chi->parent_dist, upper_dist))
 		{
-			DefaultScalarType d = distance(dcb, query_chi->p, ele->n->p, upper_dist);
+			ScalarType d = distance(dcb, query_chi->p, ele->n->p, upper_dist);
 
 			if (d <= upper_dist)
 			{
@@ -566,7 +566,7 @@ inline void copy_zero_set(const DistanceCallback& dcb, node<P>* query_chi,
 
 template <class P, class DistanceCallback>
 inline void copy_cover_sets(const DistanceCallback& dcb, node<P>* query_chi,
-		DefaultScalarType* new_upper_bound,
+		ScalarType* new_upper_bound,
 		v_array<v_array<d_node<P> > > &cover_sets,
 		v_array<v_array<d_node<P> > > &new_cover_sets,
 		int current_scale, int max_scale)
@@ -577,10 +577,10 @@ inline void copy_cover_sets(const DistanceCallback& dcb, node<P>* query_chi,
 		d_node<P>* end = cover_sets[current_scale].elements + cover_sets[current_scale].index;
 		for (; ele != end; ele++)
 		{ 
-			DefaultScalarType upper_dist = *new_upper_bound + query_chi->max_dist + ele->n->max_dist;
+			ScalarType upper_dist = *new_upper_bound + query_chi->max_dist + ele->n->max_dist;
 			if (shell(ele->dist, query_chi->parent_dist, upper_dist))
 			{
-				DefaultScalarType d = distance(dcb, query_chi->p, ele->n->p, upper_dist);
+				ScalarType d = distance(dcb, query_chi->p, ele->n->p, upper_dist);
 
 				if (d <= upper_dist)
 				{
@@ -645,7 +645,7 @@ void print_cover_sets(v_array<v_array<d_node<P> > > &cover_sets,
    */
 template <class P, class DistanceCallback>
 inline 
-void descend(const DistanceCallback& dcb, const node<P>* query, DefaultScalarType* upper_bound,
+void descend(const DistanceCallback& dcb, const node<P>* query, ScalarType* upper_bound,
 		int current_scale,int &max_scale, v_array<v_array<d_node<P> > > &cover_sets,
 		v_array<d_node<P> > &zero_set)
 {
@@ -653,7 +653,7 @@ void descend(const DistanceCallback& dcb, const node<P>* query, DefaultScalarTyp
 	for (d_node<P> *parent = cover_sets[current_scale].elements; parent != end; parent++)
 	{
 		const node<P> *par = parent->n;
-		DefaultScalarType upper_dist = *upper_bound + query->max_dist + query->max_dist;
+		ScalarType upper_dist = *upper_bound + query->max_dist + query->max_dist;
 		if (parent->dist <= upper_dist + par->max_dist)
 		{
 			node<P> *chi = par->children;
@@ -675,10 +675,10 @@ void descend(const DistanceCallback& dcb, const node<P>* query, DefaultScalarTyp
 			node<P> *child_end = par->children + par->num_children;
 			for (chi++; chi != child_end; chi++)
 			{
-				DefaultScalarType upper_chi = *upper_bound + chi->max_dist + query->max_dist + query->max_dist;
+				ScalarType upper_chi = *upper_bound + chi->max_dist + query->max_dist + query->max_dist;
 				if (shell(parent->dist, chi->parent_dist, upper_chi))
 				{
-					DefaultScalarType d = distance(dcb, query->p, chi->p, upper_chi);
+					ScalarType d = distance(dcb, query->p, chi->p, upper_chi);
 					if (d <= upper_chi) 
 					{
 						if (d < *upper_bound)
@@ -705,7 +705,7 @@ void descend(const DistanceCallback& dcb, const node<P>* query, DefaultScalarTyp
 
 template <class P, class DistanceCallback>
 void brute_nearest(const DistanceCallback& dcb, const node<P>* query,
-		v_array<d_node<P> > zero_set, DefaultScalarType* upper_bound,
+		v_array<d_node<P> > zero_set, ScalarType* upper_bound,
 		v_array<v_array<P> > &results,
 		v_array<v_array<d_node<P> > > &spare_zero_sets)
 {
@@ -714,7 +714,7 @@ void brute_nearest(const DistanceCallback& dcb, const node<P>* query,
 		v_array<d_node<P> > new_zero_set = pop(spare_zero_sets);
 		node<P> * query_chi = query->children; 
 		brute_nearest(dcb, query_chi, zero_set, upper_bound, results, spare_zero_sets);
-		DefaultScalarType* new_upper_bound = alloc_upper();
+		ScalarType* new_upper_bound = alloc_upper();
 
 		node<P> *child_end = query->children + query->num_children;
 		for (query_chi++;query_chi != child_end; query_chi++)
@@ -745,7 +745,7 @@ void internal_batch_nearest_neighbor(const DistanceCallback& dcb, const node<P> 
 		v_array<d_node<P> > &zero_set,
 		int current_scale,
 		int max_scale,
-		DefaultScalarType* upper_bound,
+		ScalarType* upper_bound,
 		v_array<v_array<P> > &results,
 		v_array<v_array<v_array<d_node<P> > > > &spare_cover_sets,
 		v_array<v_array<d_node<P> > > &spare_zero_sets)
@@ -759,7 +759,7 @@ void internal_batch_nearest_neighbor(const DistanceCallback& dcb, const node<P> 
 			node<P> *query_chi = query->children;
 			v_array<d_node<P> > new_zero_set = pop(spare_zero_sets);
 			v_array<v_array<d_node<P> > > new_cover_sets = get_cover_sets(spare_cover_sets);
-			DefaultScalarType* new_upper_bound = alloc_upper();
+			ScalarType* new_upper_bound = alloc_upper();
 
 			node<P> *child_end = query->children + query->num_children;
 			for (query_chi++; query_chi != child_end; query_chi++)
@@ -801,10 +801,10 @@ void batch_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node
 	v_array<v_array<d_node<P> > > cover_sets = get_cover_sets(spare_cover_sets);
 	v_array<d_node<P> > zero_set = pop(spare_zero_sets);
 
-	DefaultScalarType* upper_bound = alloc_upper();
-	setter(upper_bound,numeric_limits<DefaultScalarType>::max());
+	ScalarType* upper_bound = alloc_upper();
+	setter(upper_bound,numeric_limits<ScalarType>::max());
 
-	DefaultScalarType top_dist = distance(dcb, query.p, top_node.p,numeric_limits<DefaultScalarType>::max());
+	ScalarType top_dist = distance(dcb, query.p, top_node.p,numeric_limits<ScalarType>::max());
 	update(upper_bound, top_dist);
 
 	d_node<P> temp = {top_dist, &top_node};
@@ -847,7 +847,7 @@ void k_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node,
 template <class P, class DistanceCallback>
 void epsilon_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node,
 		const node<P> &query, v_array<v_array<P> > &results,
-		DefaultScalarType epsilon)
+		ScalarType epsilon)
 {
 	internal_epsilon = epsilon;
 	//  update = update_epsilon;

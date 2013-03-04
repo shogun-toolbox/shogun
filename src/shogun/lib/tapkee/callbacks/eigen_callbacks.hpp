@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (c) 2012, Sergey Lisitsyn, Fernando J. Iglesias García
+ * Copyright (c) 2012-2013 Sergey Lisitsyn, Fernando J. Iglesias García
  *
  */
 
@@ -34,7 +34,7 @@ struct feature_vector_callback
 struct kernel_callback
 {
 	kernel_callback(const tapkee::DenseMatrix& matrix) : feature_matrix(matrix) {};
-	inline tapkee::DefaultScalarType operator()(int a, int b) const
+	inline tapkee::ScalarType operator()(int a, int b) const
 	{
 		return feature_matrix.col(a).dot(feature_matrix.col(b));
 	}
@@ -51,7 +51,7 @@ TAPKEE_CALLBACK_IS_LINEAR_KERNEL(kernel_callback);
 struct distance_callback
 {
 	distance_callback(const tapkee::DenseMatrix& matrix) : feature_matrix(matrix) {};
-	inline tapkee::DefaultScalarType operator()(int a, int b) const
+	inline tapkee::ScalarType operator()(int a, int b) const
 	{
 		return (feature_matrix.col(a)-feature_matrix.col(b)).norm();
 	}

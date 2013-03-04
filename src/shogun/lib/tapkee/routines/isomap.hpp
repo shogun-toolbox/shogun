@@ -34,8 +34,8 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 		const Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
-	const unsigned int n_neighbors = neighbors[0].size();
-	const unsigned int N = (end-begin);
+	const IndexType n_neighbors = neighbors[0].size();
+	const IndexType N = (end-begin);
 	FibonacciHeap* heap = new FibonacciHeap(N);
 
 	bool* s = new bool[N];
@@ -43,10 +43,10 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 
 	DenseSymmetricMatrix shortest_distances(N,N);
 	
-	for (unsigned int k=0; k<N; k++)
+	for (IndexType k=0; k<N; k++)
 	{
 		// fill s and f with false, fill shortest_D with infinity
-		for (unsigned int j=0; j<N; j++)
+		for (IndexType j=0; j<N; j++)
 		{
 			shortest_distances(k,j) = numeric_limits<DenseMatrix::Scalar>::max();
 			s[j] = false;
@@ -63,13 +63,13 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 		while (heap->get_num_nodes()>0)
 		{
 			// extract min and set (s)olution state as true and (f)rontier as false
-			DefaultScalarType tmp;
+			ScalarType tmp;
 			int min_item = heap->extract_min(tmp);
 			s[min_item] = true;
 			f[min_item] = false;
 
 			// for-each edge (min_item->w)
-			for (unsigned int i=0; i<n_neighbors; i++)
+			for (IndexType i=0; i<n_neighbors; i++)
 			{
 				// get w idx
 				int w = neighbors[min_item][i];
@@ -77,7 +77,7 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(RandomAccessIterator begi
 				if (s[w] == false)
 				{
 					// get distance from k to i through min_item
-					DefaultScalarType dist = shortest_distances(k,min_item) + callback(begin[min_item],begin[w]);
+					ScalarType dist = shortest_distances(k,min_item) + callback(begin[min_item],begin[w]);
 					// if distance can be relaxed
 					if (dist < shortest_distances(k,w))
 					{
@@ -122,8 +122,8 @@ DenseMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, Random
 		const Landmarks& landmarks, const Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
-	const unsigned int n_neighbors = neighbors[0].size();
-	const unsigned int N = end-begin;
+	const IndexType n_neighbors = neighbors[0].size();
+	const IndexType N = end-begin;
 	FibonacciHeap* heap = new FibonacciHeap(N);
 
 	bool* s = new bool[N];
@@ -131,10 +131,10 @@ DenseMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, Random
 
 	DenseMatrix shortest_distances(landmarks.size(),N);
 	
-	for (unsigned int k=0; k<landmarks.size(); k++)
+	for (IndexType k=0; k<landmarks.size(); k++)
 	{
 		// fill s and f with false, fill shortest_D with infinity
-		for (unsigned int j=0; j<N; j++)
+		for (IndexType j=0; j<N; j++)
 		{
 			shortest_distances(k,j) = numeric_limits<DenseMatrix::Scalar>::max();
 			s[j] = false;
@@ -151,13 +151,13 @@ DenseMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, Random
 		while (heap->get_num_nodes()>0)
 		{
 			// extract min and set (s)olution state as true and (f)rontier as false
-			DefaultScalarType tmp;
+			ScalarType tmp;
 			int min_item = heap->extract_min(tmp);
 			s[min_item] = true;
 			f[min_item] = false;
 
 			// for-each edge (min_item->w)
-			for (unsigned int i=0; i<n_neighbors; i++)
+			for (IndexType i=0; i<n_neighbors; i++)
 			{
 				// get w idx
 				int w = neighbors[min_item][i];
@@ -165,7 +165,7 @@ DenseMatrix compute_shortest_distances_matrix(RandomAccessIterator begin, Random
 				if (s[w] == false)
 				{
 					// get distance from k to i through min_item
-					DefaultScalarType dist = shortest_distances(k,min_item) + callback(begin[min_item],begin[w]);
+					ScalarType dist = shortest_distances(k,min_item) + callback(begin[min_item],begin[w]);
 					// if distance can be relaxed
 					if (dist < shortest_distances(k,w))
 					{

@@ -42,11 +42,15 @@ namespace tapkee
 class LoggerImplementation
 {
 public:
-	virtual ~LoggerImplementation() {}
+	LoggerImplementation() {};
+	virtual ~LoggerImplementation() {};
 	LEVEL_HANDLERS_DECLARATION(info);
 	LEVEL_HANDLERS_DECLARATION(warning);
 	LEVEL_HANDLERS_DECLARATION(error);
 	LEVEL_HANDLERS_DECLARATION(benchmark);
+private:
+	LoggerImplementation& operator=(const LoggerImplementation&);
+	LoggerImplementation(const LoggerImplementation&);
 };
 
 class DefaultLoggerImplementation : public LoggerImplementation
@@ -54,11 +58,15 @@ class DefaultLoggerImplementation : public LoggerImplementation
 public:
 	DefaultLoggerImplementation() : os_(&cout) {}
 	virtual ~DefaultLoggerImplementation() {}
-	ostream* os_;
 	LEVEL_HANDLERS_DEFAULT_IMPL(info);
 	LEVEL_HANDLERS_DEFAULT_IMPL(warning);
 	LEVEL_HANDLERS_DEFAULT_IMPL(error);
 	LEVEL_HANDLERS_DEFAULT_IMPL(benchmark)
+private:
+	DefaultLoggerImplementation& operator=(const DefaultLoggerImplementation&);
+	DefaultLoggerImplementation(const DefaultLoggerImplementation&);
+
+	ostream* os_;
 };
 
 class LoggingSingleton

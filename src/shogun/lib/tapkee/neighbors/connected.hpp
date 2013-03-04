@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (w) 2012, Fernando J. Iglesias Garcia
- * Copyright (c) 2012, Fernando J. Iglesias Garcia
+ * Written (w) 2012-2013 Fernando J. Iglesias Garcia
+ * Copyright (c) 2012-2013 Fernando J. Iglesias Garcia
  */
 
 #ifndef TAPKEE_CONNECTED_H_
@@ -28,7 +28,7 @@ bool is_connected(RandomAccessIterator begin, RandomAccessIterator end,
 	// The number of data points
 	int N = end-begin;
 	// The number of neighbors used in KNN
-	unsigned int k = neighbors[0].size();
+	IndexType k = neighbors[0].size();
 
 	typedef std::stack<int> DFSStack;
 	typedef std::vector<bool> VisitedVector;
@@ -53,7 +53,7 @@ bool is_connected(RandomAccessIterator begin, RandomAccessIterator end,
 
 		const LocalNeighbors& current_neighbors = neighbors[current];
 
-		for(unsigned int j=0; j<k; ++j)
+		for(IndexType j=0; j<k; ++j)
 		{
 			int neighbor = current_neighbors[j];
 			if (!visited[neighbor])

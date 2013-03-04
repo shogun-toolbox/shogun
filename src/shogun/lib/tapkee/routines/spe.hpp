@@ -22,11 +22,11 @@ namespace tapkee_internal
 template <class RandomAccessIterator, class PairwiseCallback>
 DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		PairwiseCallback callback, const Neighbors& neighbors,
-		unsigned int target_dimension, bool global_strategy,
-		DefaultScalarType tolerance, int nupdates, unsigned int max_iter)
+		IndexType target_dimension, bool global_strategy,
+		ScalarType tolerance, int nupdates, IndexType max_iter)
 {
 	timed_context context("SPE embedding computation");
-	unsigned int k = 0;
+	IndexType k = 0;
 	if (!global_strategy)
 		k = neighbors[0].size();
 
@@ -36,7 +36,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		nupdates = N/2;
 
 	// Look for the maximum distance
-	DefaultScalarType max = 0.0;
+	ScalarType max = 0.0;
 	for (RandomAccessIterator i_iter=begin; i_iter!=end; ++i_iter)
 	{
 		for (RandomAccessIterator j_iter=i_iter+1; j_iter!=end; ++j_iter)
@@ -46,7 +46,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	}
 
 	// Distances normalizer used in global strategy
-	DefaultScalarType alpha = 0.0;
+	ScalarType alpha = 0.0;
 	if (global_strategy)
 		alpha = 1.0 / max * std::sqrt(2.0);
 
@@ -71,7 +71,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	}
 
 	// Learning parameter
-	DefaultScalarType lambda = 1.0;
+	ScalarType lambda = 1.0;
 	// Vector of indices used for shuffling
 	Indices indices(N);
 	for (int i=0; i<N; ++i)
@@ -88,7 +88,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	if (!global_strategy)
 		ind1Neighbors.resize(k*nupdates);
 
-	for (unsigned int i=0; i<max_iter; ++i)
+	for (IndexType i=0; i<max_iter; ++i)
 	{
 		// Shuffle to select the vectors to update in this iteration
 		std::random_shuffle(indices.begin(),indices.end());
@@ -106,7 +106,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 				const LocalNeighbors& current_neighbors =
 					neighbors[*ind1++];
 
-				for(unsigned int kk=0; kk<k; ++kk)
+				for(IndexType kk=0; kk<k; ++kk)
 					ind1Neighbors[kk + j*k] = current_neighbors[kk];
 			}
 			// Restore ind1
@@ -115,7 +115,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 			// Generate pseudo-random indices and select final indices
 			for(int j=0; j<nupdates; ++j)
 			{
-				unsigned int r = round( std::rand()*1.0/RAND_MAX*(k-1) ) + k*j;
+				IndexType r = round( std::rand()*1.0/RAND_MAX*(k-1) ) + k*j;
 				indices[nupdates+j] = ind1Neighbors[r];
 			}
 		}

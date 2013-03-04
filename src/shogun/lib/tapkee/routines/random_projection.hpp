@@ -16,7 +16,7 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-DenseMatrix gaussian_projection_matrix(unsigned int target_dimension, unsigned int current_dimension)
+DenseMatrix gaussian_projection_matrix(IndexType target_dimension, unsigned int current_dimension)
 {
 	DenseMatrix projection_matrix(target_dimension,current_dimension);
 
@@ -24,9 +24,9 @@ DenseMatrix gaussian_projection_matrix(unsigned int target_dimension, unsigned i
 	{
 		for (DenseMatrix::Index j=0; j<current_dimension; ++j)
 		{
-			DefaultScalarType v1 = (DefaultScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);
-			DefaultScalarType v2 = (DefaultScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);
-			DefaultScalarType len = sqrt(-2.f*log(v1));
+			ScalarType v1 = (ScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);
+			ScalarType v2 = (ScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);
+			ScalarType len = sqrt(-2.f*log(v1));
 			projection_matrix(i,j) = len*cos(2.f*M_PI*v2)/sqrt(target_dimension);
 		}
 	}

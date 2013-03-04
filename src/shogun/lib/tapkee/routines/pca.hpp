@@ -18,7 +18,7 @@ namespace tapkee_internal
 template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseMatrix project(const DenseMatrix& projection_matrix, const DenseVector& mean_vector,
                     RandomAccessIterator begin, RandomAccessIterator end, 
-                    FeatureVectorCallback callback, unsigned int dimension)
+                    FeatureVectorCallback callback, IndexType dimension)
 {
 	timed_context context("Data projection");
 
@@ -39,7 +39,7 @@ DenseMatrix project(const DenseMatrix& projection_matrix, const DenseVector& mea
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseVector compute_mean(RandomAccessIterator begin, RandomAccessIterator end,
-                         FeatureVectorCallback callback, unsigned int dimension) 
+                         FeatureVectorCallback callback, IndexType dimension) 
 {
 	DenseVector mean = DenseVector::Zero(dimension);
 	DenseVector current_vector(dimension);
@@ -54,7 +54,7 @@ DenseVector compute_mean(RandomAccessIterator begin, RandomAccessIterator end,
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
-                                               DenseVector mean, FeatureVectorCallback callback, unsigned int dimension)
+                                               DenseVector mean, FeatureVectorCallback callback, IndexType dimension)
 {
 	timed_context context("Constructing PCA covariance matrix");
 
@@ -83,7 +83,7 @@ DenseSymmetricMatrix compute_centered_kernel_matrix(RandomAccessIterator begin, 
 	{
 		for (RandomAccessIterator j_iter=i_iter; j_iter!=end; ++j_iter)
 		{
-			DefaultScalarType k = callback(*i_iter,*j_iter);
+			ScalarType k = callback(*i_iter,*j_iter);
 			kernel_matrix(i_iter-begin,j_iter-begin) = k;
 			kernel_matrix(j_iter-begin,i_iter-begin) = k;
 		}

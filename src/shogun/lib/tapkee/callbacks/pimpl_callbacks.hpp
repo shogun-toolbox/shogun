@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  *
  */
 
@@ -19,7 +19,7 @@ template<class Implementation>
 struct pimpl_kernel_callback
 {
 	pimpl_kernel_callback(Implementation* i) : impl(i) {};
-	inline tapkee::DefaultScalarType operator()(int a, int b) const
+	inline tapkee::ScalarType operator()(int a, int b) const
 	{
 		return impl->kernel(a,b);
 	}
@@ -34,7 +34,7 @@ template<class Implementation>
 struct pimpl_distance_callback
 {
 	pimpl_distance_callback(Implementation* i) : impl(i) {};
-	inline tapkee::DefaultScalarType operator()(int a, int b) const
+	inline tapkee::ScalarType operator()(int a, int b) const
 	{
 		return impl->distance(a,b);
 	}

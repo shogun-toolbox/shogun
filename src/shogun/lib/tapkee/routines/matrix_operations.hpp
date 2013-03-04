@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  *
  */
 
@@ -34,7 +34,7 @@ struct InverseSparseMatrixOperation
 	{
 		return solver.solve(operatee);
 	}
-	DefaultSparseSolver solver;
+	SparseSolver solver;
 	static const char* ARPACK_CODE;
 };
 const char* InverseSparseMatrixOperation::ARPACK_CODE = "SM";
@@ -96,9 +96,9 @@ struct GPUDenseImplicitSquareMatrixOperation
 	GPUDenseImplicitSquareMatrixOperation(const DenseMatrix& matrix)
 	{
 		timed_context c("Storing matrices");
-		mat = viennacl::matrix<DefaultScalarType>(matrix.cols(),matrix.rows());
-		vec = viennacl::matrix<DefaultScalarType>(matrix.cols(),1);
-		res = viennacl::matrix<DefaultScalarType>(matrix.cols(),1);
+		mat = viennacl::matrix<ScalarType>(matrix.cols(),matrix.rows());
+		vec = viennacl::matrix<ScalarType>(matrix.cols(),1);
+		res = viennacl::matrix<ScalarType>(matrix.cols(),1);
 		viennacl::copy(matrix,mat);
 	}
 	//! Computes matrix product of the matrix and provided right-hand 
@@ -117,9 +117,9 @@ struct GPUDenseImplicitSquareMatrixOperation
 		viennacl::copy(res,result);
 		return result;
 	}
-	viennacl::matrix<DefaultScalarType> mat;
-	viennacl::matrix<DefaultScalarType> vec;
-	viennacl::matrix<DefaultScalarType> res;
+	viennacl::matrix<ScalarType> mat;
+	viennacl::matrix<ScalarType> vec;
+	viennacl::matrix<ScalarType> res;
 	static const char* ARPACK_CODE;
 };
 const char* GPUDenseImplicitSquareMatrixOperation::ARPACK_CODE = "LM";
@@ -128,9 +128,9 @@ struct GPUDenseMatrixOperation
 {
 	GPUDenseMatrixOperation(const DenseMatrix& matrix)
 	{
-		mat = viennacl::matrix<DefaultScalarType>(matrix.cols(),matrix.rows());
-		vec = viennacl::matrix<DefaultScalarType>(matrix.cols(),1);
-		res = viennacl::matrix<DefaultScalarType>(matrix.cols(),1);
+		mat = viennacl::matrix<ScalarType>(matrix.cols(),matrix.rows());
+		vec = viennacl::matrix<ScalarType>(matrix.cols(),1);
+		res = viennacl::matrix<ScalarType>(matrix.cols(),1);
 		viennacl::copy(matrix,mat);
 	}
 	//! Computes matrix product of the matrix and provided right-hand 
@@ -146,9 +146,9 @@ struct GPUDenseMatrixOperation
 		viennacl::copy(res,result);
 		return result;
 	}
-	viennacl::matrix<DefaultScalarType> mat;
-	viennacl::matrix<DefaultScalarType> vec;
-	viennacl::matrix<DefaultScalarType> res;
+	viennacl::matrix<ScalarType> mat;
+	viennacl::matrix<ScalarType> vec;
+	viennacl::matrix<ScalarType> res;
 	static const char* ARPACK_CODE;
 };
 const char* GPUDenseMatrixOperation::ARPACK_CODE = "LM";

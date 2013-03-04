@@ -8,6 +8,9 @@
  *
  */
 
+#ifndef TAPKEE_METHOD_TRAITS_H_
+#define TAPKEE_METHOD_TRAITS_H_
+
 namespace tapkee
 {
 
@@ -33,3 +36,5 @@ template <int method> struct MethodTraits
 #define METHOD_THAT_NEEDS_NOTHING_IS(X) METHOD_TRAIT(X,false,false,false)
 
 }
+
+#endif
