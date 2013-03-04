@@ -192,6 +192,7 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 		case SHOGUN_FACTOR_ANALYSIS:
 			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
 				(uint32_t)parameters.features->get_dim_feature_space();
+			N = parameters.features->get_num_vectors();
 			tapkee_parameters[tapkee::REDUCTION_METHOD] =
 				tapkee::FACTOR_ANALYSIS;
 			tapkee_parameters[tapkee::MAX_ITERATION] =
