@@ -63,6 +63,7 @@ def linear_time_mmd_graphical():
 	# perform kernel selection
 	kernel=selection.select_kernel()
 	kernel=GaussianKernel.obtain_from_generic(kernel)
+	mmd.set_kernel(kernel);
 	print "selected kernel width:", kernel.get_width()
 	
 	# sample alternative distribution, stream ensures different samples each run
@@ -158,7 +159,6 @@ def linear_time_mmd_graphical():
 	# pull plots a bit apart
 	subplots_adjust(hspace=0.5)
 	subplots_adjust(wspace=0.5)
-	show()
 
 if __name__=='__main__':
 	linear_time_mmd_graphical()
