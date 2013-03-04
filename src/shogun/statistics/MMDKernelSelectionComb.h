@@ -21,6 +21,10 @@ namespace shogun
 
 class CLinearTimeMMD;
 
+/** @brief Base class for kernel selection of combined kernels. Given an MMD
+ * instance whose underlying kernel is a combined one, this class provides an
+ * interface to select weights of this combined kernel.
+ */
 class CMMDKernelSelectionComb: public CMMDKernelSelection
 {
 public:
@@ -28,35 +32,54 @@ public:
 	/** Default constructor */
 	CMMDKernelSelectionComb();
 
-	/** TODO
-	 * Constructor that initialises the underlying MMD instance
+	/** Constructor that initialises the underlying MMD instance. Currently,
+	 * only the linear time MMD is supported
 	 *
-	 * @param mmd linear time mmd MMD instance to use.
-	 * @param lambda ridge that is added to standard deviation, a sensible value
-	 * is 10E-5 which is the default
+	 * @param mmd MMD instance to use
 	 */
-	CMMDKernelSelectionComb(CKernelTwoSampleTestStatistic* mmd,
-			float64_t lambda=10E-5);
+	CMMDKernelSelectionComb(CKernelTwoSampleTestStatistic* mmd);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionComb();
 
 #ifdef HAVE_LAPACK
-	/** TODO
+	/** Abstract method that computes weights of the selected combined kernel.
+	 *
+	 * @return weights of the selected kernel
 	 */
 	virtual SGVector<float64_t> compute_measures()=0;
 #else
+	/** Abstract method that computes weights of the selected combined kernel.
+	 * LAPACK needs to be installed for this method to work. Please install!
+	 *
+	 * @return Throws an error
+	 */
 	virtual SGVector<float64_t> compute_measures();
 #endif
 
-	/* TODO */
+	/** @return computes weights for the underlying kernel, sets them to it, and
+	 * returns it (SG_REF'ed)
+	 *
+	 * @return underlying kernel with weights set
+	 */
 	virtual CKernel* select_kernel();
 
 	/** @return name of the SGSerializable */
 	const char* get_name() const=0;
 
 protected:
-	/** TODO */
+	/** Solves the quadratic program
+	 * \f[
+	 * \min_\beta \{\beta^T Q \beta \quad \text{s.t.}\quad \beta^T \eta=1, \beta\succeq 0\},
+	 * \f]
+	 * where \f$\eta\f$ is a given parameter and \f$Q\f$ is the m_Q member.
+	 *
+	 * Note that at least one element is assumed \f$\eta\f$ has to be positive.
+	 *
+	 * @param mmds values that will be put into \f$\eta\f$. At least one element
+	 * is assumed to be positive
+	 * @return result of optimization \f$\beta\f$
+	 */
 	virtual SGVector<float64_t> solve_optimization(SGVector<float64_t> mmds);
 
 #ifdef HAVE_LAPACK
@@ -65,10 +88,6 @@ protected:
 
 	/** helper function that prints current state */
 	static void print_state(libqp_state_T state);
-
-	/** Ridge that is added to the diagonal of the Q matrix in the optimization
-	 * problem */
-	float64_t m_lambda;
 
 	/** maximum number of iterations of qp solver */
 	index_t m_opt_max_iterations;

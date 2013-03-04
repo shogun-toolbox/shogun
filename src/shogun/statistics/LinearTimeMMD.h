@@ -67,21 +67,10 @@ class CFeatures;
  *
  * BOOTSTRAPPING: For permuting available samples to sample null-distribution
  *
- * Comes with a method for selecting kernel weights, if a combined kernel on
- * combined features is used. See optimize_kernel_weights(). See [2] TODO update!
- *
- * A very basic method for kernel selection when using CGaussianKernel is to
- * use the median distance of the underlying data. See examples how to do that.
- * More advanced methods will follow in the near future. However, the median
- * heuristic works in quite some cases. See [1].
+ * For kernel selection see CMMDKernelSelection.
  *
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
- *
- * [2]: Gretton, A., Sriperumbudur, B., Sejdinovic, D., Strathmann, H.,
- * Balakrishnan, S., Pontil, M., & Fukumizu, K. (2012).
- * Optimal kernel choice for large-scale two-sample tests.
- * Advances in Neural Information Processing Systems.
  */
 class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
 {
@@ -177,13 +166,16 @@ public:
 	 */
 	virtual float64_t compute_variance_estimate();
 
-	/** Computes MMD and a linear time variance estimate using an in-place
-	 * method. TODO update this. TODO update!!!
+	/** Computes MMD and a linear time variance estimate.
+	 * If multiple_kernels is set to true, each subkernel is evaluated on the
+	 * same data.
 	 *
 	 * @param statistic return parameter for statistic, vector with entry for
 	 * each kernel. May be allocated before but doesn not have to be
+	 *
 	 * @param variance return parameter for statistic, vector with entry for
 	 * each kernel. May be allocated before but doesn not have to be
+	 *
 	 * @param multiple_kernels optional flag, if set to true, it is assumed that
 	 * the underlying kernel is of type K_COMBINED. Then, the MMD is computed on
 	 * all subkernel separately rather than computing it on the combination.
@@ -196,7 +188,10 @@ public:
 			SGVector<float64_t>& statistic, SGVector<float64_t>& variance,
 			bool multiple_kernels=false);
 
-	/* TODO document! */
+	/* Same as compute_statistic_and_variance, but computes a linear time
+	 * estimate of the covariance of the multiple-kernel-MMD.
+	 * See [1] for details.
+	 */
 	virtual void compute_statistic_and_Q(
 			SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q);
 

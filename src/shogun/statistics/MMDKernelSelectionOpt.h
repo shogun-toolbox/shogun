@@ -17,6 +17,22 @@ namespace shogun
 
 class CLinearTimeMMD;
 
+/** @brief Implements optimal kernel selection for single kernels.
+ * Given a number of baseline kernels, this method selects the one that
+ * minimizes the type II error for a given type I error for a two-sample test.
+ * This only works for the CLinearTimeMMD statistic.
+ *
+ * The idea is to maximise the ratio of MMD and its standard deviation.
+ *
+ * IMPORTANT: The kernel has to be selected on different data than the two-sample
+ * test is performed on.
+ *
+ * Described in
+ * Gretton, A., Sriperumbudur, B., Sejdinovic, D., Strathmann, H.,
+ * Balakrishnan, S., Pontil, M., & Fukumizu, K. (2012).
+ * Optimal kernel choice for large-scale two-sample tests.
+ * Advances in Neural Information Processing Systems.
+ */
 class CMMDKernelSelectionOpt: public CMMDKernelSelection
 {
 public:
@@ -25,10 +41,11 @@ public:
 	CMMDKernelSelectionOpt();
 
 	/** Constructor that initialises the underlying MMD instance. Currently,
-	 * only the linear time MMD is developed
+	 * only the linear time MMD is supported
 	 *
 	 * @param mmd MMD instance to use
-	 * @param lambda ridge that is added to standard deviation
+	 * @param lambda ridge that is added to standard deviation in order to
+	 * prevent division by zero. A sensivle value is for example 1E-5.
 	 */
 	CMMDKernelSelectionOpt(CKernelTwoSampleTestStatistic* mmd,
 			float64_t lambda=10E-5);

@@ -17,20 +17,35 @@ using namespace shogun;
 CMMDKernelSelectionCombOpt::CMMDKernelSelectionCombOpt() :
 		CMMDKernelSelectionComb()
 {
+	init();
 }
 
 CMMDKernelSelectionCombOpt::CMMDKernelSelectionCombOpt(
 		CKernelTwoSampleTestStatistic* mmd, float64_t lambda) :
-		CMMDKernelSelectionComb(mmd, lambda)
+		CMMDKernelSelectionComb(mmd)
 {
 	/* currently, this method is only developed for the linear time MMD */
 	REQUIRE(dynamic_cast<CLinearTimeMMD*>(mmd), "%s::%s(): Only "
 			"CLinearTimeMMD is currently supported! Provided instance is "
 			"\"%s\"\n", get_name(), get_name(), mmd->get_name());
+
+	init();
+
+	m_lambda=lambda;
 }
 
 CMMDKernelSelectionCombOpt::~CMMDKernelSelectionCombOpt()
 {
+}
+
+void CMMDKernelSelectionCombOpt::init()
+{
+	/* set to a sensible standard value that proved to be useful in
+	 * experiments, see NIPS paper */
+	m_lambda=1E-5;
+
+	SG_ADD(&m_lambda, "lambda", "Regularization parameter lambda",
+			MS_NOT_AVAILABLE);
 }
 
 #ifdef HAVE_LAPACK

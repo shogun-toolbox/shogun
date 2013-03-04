@@ -21,11 +21,11 @@ CMMDKernelSelectionCombMaxL2::CMMDKernelSelectionCombMaxL2() :
 }
 
 CMMDKernelSelectionCombMaxL2::CMMDKernelSelectionCombMaxL2(
-		CKernelTwoSampleTestStatistic* mmd, float64_t lambda) :
-		CMMDKernelSelectionComb(mmd, lambda)
+		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelectionComb(mmd)
 {
 	/* currently, this method is only developed for the linear time MMD */
-	REQUIRE(dynamic_cast<CLinearTimeMMD*>(mmd), "%s::%s(): Only "
+	REQUIRE(mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD ||
+			mmd->get_statistic_type()==S_LINEAR_TIME_MMD, "%s::%s(): Only "
 			"CLinearTimeMMD is currently supported! Provided instance is "
 			"\"%s\"\n", get_name(), get_name(), mmd->get_name());
 }

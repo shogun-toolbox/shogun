@@ -15,6 +15,20 @@
 namespace shogun
 {
 
+/** @brief Kernel selection class that selects the single kernel that maximises
+ * the MMD statistic. Works for CQuadraticTimeMMD and CLinearTimeMMD. This leads
+ * to a heuristic that is better than the standard median heuristic for
+ * Gaussian kernels. However, it comes with no guarantees.
+ *
+ * Optimal selection of single kernels can be found in the class
+ * CMMDKernelSelectionOpt
+ *
+ * This method was first described in
+ * Sriperumbudur, B., Fukumizu, K., Gretton, A., Lanckriet, G. R. G.,
+ * & Schoelkopf, B.
+ * Kernel choice and classifiability for RKHS embeddings of probability
+ * distributions. Advances in Neural Information Processing Systems (2009).
+ */
 class CMMDKernelSelectionMax: public CMMDKernelSelection
 {
 public:
@@ -32,12 +46,11 @@ public:
 	/** Destructor */
 	virtual ~CMMDKernelSelectionMax();
 
-	/** TODO */
+	/** @return vector the MMD of all single baseline kernels */
 	virtual SGVector<float64_t> compute_measures();
 
 	/** @return name of the SGSerializable */
 	const char* get_name() const { return "MMDKernelSelectionMax"; }
-
 };
 
 }
