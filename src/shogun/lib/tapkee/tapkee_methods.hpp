@@ -71,14 +71,16 @@ struct implementation
 	struct implementation<RandomAccessIterator,KernelCallback,DistanceCallback,FeatureVectorCallback,METHOD>
 
 // pure magic, for the brave souls 
-#define VA_NUM_ARGS(...) VA_NUM_ARGS_IMPL(__VA_ARGS__,5,4,3,2,1)
+#define VA_NUM_ARGS(...) VA_NUM_ARGS_IMPL_((__VA_ARGS__, 5,4,3,2,1))
+#define VA_NUM_ARGS_IMPL_(tuple) VA_NUM_ARGS_IMPL tuple
 #define VA_NUM_ARGS_IMPL(_1,_2,_3,_4,_5,N,...) N
-#define MACRO_DISPATCHER(func, ...) MACRO_DISPATCHER_(func, VA_NUM_ARGS(__VA_ARGS__))
-#define MACRO_DISPATCHER_(func, nargs) MACRO_DISPATCHER__(func, nargs)
-#define MACRO_DISPATCHER__(func, nargs) func ## nargs
+#define macro_dispatcher(macro, ...) macro_dispatcher_(macro, VA_NUM_ARGS(__VA_ARGS__))
+#define macro_dispatcher_(macro, nargs) macro_dispatcher__(macro, nargs)
+#define macro_dispatcher__(macro, nargs) macro_dispatcher___(macro, nargs)
+#define macro_dispatcher___(macro, nargs) macro ## nargs
 
 // parameter macro definition
-#define PARAMETER(...) MACRO_DISPATCHER(PARAMETER, __VA_ARGS__)(__VA_ARGS__)
+#define PARAMETER(...) macro_dispatcher(PARAMETER, __VA_ARGS__)(__VA_ARGS__)
 #define PARAMETER3(TYPE,NAME,CODE) PARAMETER_IMPL(TYPE,NAME,CODE,NO_CHECK)
 #define PARAMETER4(TYPE,NAME,CODE,CHECKER) PARAMETER_IMPL(TYPE,NAME,CODE,CHECKER)
 

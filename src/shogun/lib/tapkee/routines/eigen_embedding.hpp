@@ -59,6 +59,7 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, ARPACK>
 		timed_context context("ARPACK eigendecomposition");
 
 #ifdef TAPKEE_NO_ARPACK
+		throw new unsupported_method_error("ARPACK is not available");
 		return EmbeddingResult();
 #else
 		ArpackGeneralizedSelfAdjointEigenSolver<MatrixType, MatrixType, MatrixTypeOperation> 

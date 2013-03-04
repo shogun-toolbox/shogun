@@ -39,7 +39,7 @@ using Eigen::InvalidInput;
 using Eigen::Success;
 using Eigen::NumTraits;
 
-namespace internal 
+namespace arpack_internal 
 {
 	template<typename Scalar, typename RealScalar> struct arpack_wrapper;
 }
@@ -447,9 +447,9 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 	do
 	{
 		//std::cout << "Entering main loop\n";
-		internal::arpack_wrapper<Scalar, RealScalar>::saupd(&ido, bmat, &n, whch, &nev, &tol, resid, 
-		                                                    &ncv, v, &ldv, iparam, ipntr, workd, workl,
-		                                                    &lworkl, &cinfo);
+		arpack_internal::arpack_wrapper<Scalar, RealScalar>::saupd(&ido, bmat, &n, whch, &nev, &tol, resid, 
+		                                                           &ncv, v, &ldv, iparam, ipntr, workd, workl,
+		                                                           &lworkl, &cinfo);
 		if (ido == -1 || ido == 1)
 		{
 			Scalar *in  = workd + ipntr[0] - 1;
@@ -546,9 +546,9 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 		// Final eigenvalues
 		m_eivalues.resize(nev, 1);
 
-		internal::arpack_wrapper<Scalar, RealScalar>::seupd(&rvec, howmny, select, m_eivalues.data(), v, &ldv,
-		                                                    &sigma, bmat, &n, whch, &nev, &tol, resid, &ncv,
-		                                                    v, &ldv, iparam, ipntr, workd, workl, &lworkl, &cinfo);
+		arpack_internal::arpack_wrapper<Scalar, RealScalar>::seupd(&rvec, howmny, select, m_eivalues.data(), v, &ldv,
+		                                                           &sigma, bmat, &n, whch, &nev, &tol, resid, &ncv,
+		                                                           v, &ldv, iparam, ipntr, workd, workl, &lworkl, &cinfo);
 
 		if (cinfo == -14)
 			m_info = NoConvergence;
@@ -620,7 +620,7 @@ extern "C" void dseupd_(int *rvec, char *All, int *select, double *d,
                         int *ldv, int *iparam, int *ipntr, double *workd,
                         double *workl, int *lworkl, int *ierr);
 
-namespace internal {
+namespace arpack_internal {
 
 template<typename Scalar, typename RealScalar> struct arpack_wrapper
 {

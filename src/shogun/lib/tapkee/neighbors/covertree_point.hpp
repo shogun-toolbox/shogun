@@ -108,7 +108,7 @@ v_array<T> pop(v_array<v_array<T> > &stack)
 template <class RandomAccessIterator>
 struct CoverTreePoint
 {
-	CoverTreePoint() : iter_(NULL), norm_(0.0)
+	CoverTreePoint() : iter_(), norm_(0.0)
 	{
 	};
 	CoverTreePoint(const RandomAccessIterator& iter, ScalarType norm) :

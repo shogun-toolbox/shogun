@@ -58,6 +58,7 @@ struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixTypeOper
 		}
 		return EmbeddingResult();
 #else
+		throw new unsupported_method_error("ARPACK is not available");
 		return EmbeddingResult();
 #endif
 	}

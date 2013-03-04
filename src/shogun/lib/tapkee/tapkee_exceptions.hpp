@@ -22,31 +22,31 @@ namespace tapkee
 class wrong_parameter_error : public std::logic_error
 {
 	public: 
-		explicit wrong_parameter_error(const string& what) : std::logic_error(what) {};
+		explicit wrong_parameter_error(const string& what_msg) : std::logic_error(what_msg) {};
 };
 
 class missed_parameter_error : public std::logic_error
 {
 	public:
-		explicit missed_parameter_error(const string& what) : std::logic_error(what) {};
+		explicit missed_parameter_error(const string& what_msg) : std::logic_error(what_msg) {};
 };
 
 class unsupported_method_error : public std::logic_error
 {
 	public:
-		explicit unsupported_method_error(const string& what) : std::logic_error(what) {};
+		explicit unsupported_method_error(const string& what_msg) : std::logic_error(what_msg) {};
 };
 
 class not_enough_memory_error : public std::runtime_error
 {
 	public:
-		explicit not_enough_memory_error(const string& what) : std::runtime_error(what) {};
+		explicit not_enough_memory_error(const string& what_msg) : std::runtime_error(what_msg) {};
 };
 
 class eigendecomposition_error : public std::runtime_error
 {
 	public:
-		explicit eigendecomposition_error(const string& what) : std::runtime_error(what) {};
+		explicit eigendecomposition_error(const string& what_msg) : std::runtime_error(what_msg) {};
 };
 
 }

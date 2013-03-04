@@ -16,7 +16,7 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-DenseMatrix gaussian_projection_matrix(IndexType target_dimension, unsigned int current_dimension)
+DenseMatrix gaussian_projection_matrix(IndexType target_dimension, IndexType current_dimension)
 {
 	DenseMatrix projection_matrix(target_dimension,current_dimension);
 
