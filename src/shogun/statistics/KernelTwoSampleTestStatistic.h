@@ -102,7 +102,7 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		virtual SGVector<float64_t> compute_statistic(
 				bool multiple_kernels)=0;
 
-		/** TODO */
+		/** Wrapper for compute_statistic(false) */
 		virtual float64_t compute_statistic()=0;
 
 		virtual const char* get_name() const=0;

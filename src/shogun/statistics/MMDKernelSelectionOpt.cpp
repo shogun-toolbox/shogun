@@ -58,5 +58,5 @@ void CMMDKernelSelectionOpt::init()
 {
 	/* set to a sensible standard value that proved to be useful in
 	 * experiments, see NIPS paper */
-	m_lambda=10E-5;
+	m_lambda=1E-5;
 }

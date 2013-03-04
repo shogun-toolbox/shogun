@@ -20,13 +20,9 @@ CMMDKernelSelectionComb::CMMDKernelSelectionComb() :
 }
 
 CMMDKernelSelectionComb::CMMDKernelSelectionComb(
-		CKernelTwoSampleTestStatistic* mmd, float64_t lambda) :
-		CMMDKernelSelection(mmd)
+		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelection(mmd)
 {
 	init();
-#ifdef HAVE_LAPACK
-	m_lambda=lambda;
-#endif
 }
 
 CMMDKernelSelectionComb::~CMMDKernelSelectionComb()
@@ -35,17 +31,14 @@ CMMDKernelSelectionComb::~CMMDKernelSelectionComb()
 
 void CMMDKernelSelectionComb::init()
 {
-//	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
-//			"iterations for qp solver", MS_NOT_AVAILABLE);
-//	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
-//			MS_NOT_AVAILABLE);
-//	SG_ADD(&m_opt_low_cut, "opt_low_cut", "Low cut value for optimization "
-//			"kernel weights", MS_NOT_AVAILABLE);
-//	SG_ADD(&m_opt_regularization_eps, "opt_regularization_eps", "Regularization"
-//			" value that is added to diagonal of Q matrix", MS_NOT_AVAILABLE);
-	SG_WARNING("CMMDKernelSelectionComb::init(): register parameters!\n")
-
 #ifdef HAVE_LAPACK
+	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
+			"iterations for qp solver", MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&m_opt_low_cut, "opt_low_cut", "Low cut value for optimization "
+			"kernel weights", MS_NOT_AVAILABLE);
+
 	/* sensible values for optimization */
 	m_opt_max_iterations=10000;
 	m_opt_epsilon=10E-15;

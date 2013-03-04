@@ -97,7 +97,8 @@ CMMDKernelSelectionMedian::~CMMDKernelSelectionMedian()
 
 void CMMDKernelSelectionMedian::init()
 {
-	SG_WARNING("register params!\n")
+	SG_ADD(&m_num_data_distance, "m_num_data_distance", "Number of elements to "
+			"to compute median distance on", MS_NOT_AVAILABLE);
 
 	/* this is a sensible value */
 	m_num_data_distance=1000;

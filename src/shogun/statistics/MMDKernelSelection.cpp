@@ -63,33 +63,11 @@ void CMMDKernelSelection::init()
 			MS_NOT_AVAILABLE);
 }
 
-//SGVector<float64_t> CMMDKernelSelection::compute_measures()
-//{
-//	/* cast is safe due to assertion in constructor */
-//	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
-//	/* compute measure for all kernels */
-//	SGVector<float64_t> measures(kernel->get_num_subkernels());
-//	CKernel* current=kernel->get_first_kernel();
-//	index_t i=0;
-//	while (current)
-//	{
-//		measures[i++]=compute_measure(current);
-//		SG_UNREF(current);
-//		current=kernel->get_next_kernel();
-//	}
-//
-//	/* clean up */
-//	SG_UNREF(kernel);
-//
-//	return measures;
-//}
-
 CKernel* CMMDKernelSelection::select_kernel()
 {
 	SG_DEBUG("entering CMMDKernelSelection::select_kernel()\n")
 
 	/* compute measures and return single kernel with maximum measure */
-
 	SGVector<float64_t> measures=compute_measures();
 
 	/* find maximum and return corresponding kernel */
@@ -118,7 +96,6 @@ CKernel* CMMDKernelSelection::select_kernel()
 
 	/* current is not SG_UNREF'ed nor SG_REF'ed since the counter needs to be
 	 * incremented exactly by one */
-
 	return current;
 }
 
