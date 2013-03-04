@@ -107,7 +107,7 @@ void CMMDKernelSelectionMedian::init()
 SGVector<float64_t> CMMDKernelSelectionMedian::compute_measures()
 {
 	SG_ERROR("%s::compute_measures(): Not implemented. Use select_kernel() "
-	"method!\n", get_name());
+			"method!\n", get_name());
 	return SGVector<float64_t>();
 }
 
