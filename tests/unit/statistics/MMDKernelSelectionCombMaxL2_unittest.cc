@@ -73,9 +73,9 @@ TEST(MMDKernelSelectionCombMaxL2, select_kernel)
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined_kernel, streaming_p,
 			streaming_q, m);
 
-	/* kernel selection instance with regularisation term */
+	/* kernel selection instance */
 	CMMDKernelSelectionCombMaxL2* selection=new CMMDKernelSelectionCombMaxL2(
-			mmd, 10E-5);
+			mmd);
 
 	/* start streaming features parser */
 	streaming_p->start_parser();
