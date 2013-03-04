@@ -93,7 +93,6 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	main_kernel->add_row_subset(inds);
 	SGMatrix<float64_t> main_subset_matrix=main_kernel->get_kernel_matrix();
 	main_kernel->remove_row_subset();
-	main_kernel->remove_col_subset();
 	CCustomKernel* main_subset_copy=new CCustomKernel(main_subset_matrix);
 	SGMatrix<float64_t> main_subset_copy_matrix=main_subset_copy->get_kernel_matrix();
 	for (index_t i=0; i<n; ++i)
