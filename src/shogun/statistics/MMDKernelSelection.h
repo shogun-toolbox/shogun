@@ -18,6 +18,19 @@ namespace shogun
 class CKernelTwoSampleTestStatistic;
 class CKernel;
 
+/** @brief Base class for kernel selection for MMD-based two-sample test
+ * statistic implementations (e.g. MMD).
+ * Provides abstract methods for selecting kernels and computing criteria or
+ * kernel weights for the implemented method. In order to implement new methods
+ * for kernel selection, simply write a new implementation of this class.
+ *
+ * Kernel selection works this way: One passes an instance of CCombinedKernel
+ * to the MMD statistic and appends all kernels that should be considered.
+ * Depending on the type of kernel selection implementation, a single one or
+ * a combination of those baseline kernels is selected and returned to the user.
+ * This kernel can then be passed to the MMD instance to perform a test.
+ *
+ */
 class CMMDKernelSelection: public CSGObject
 {
 public:
@@ -30,30 +43,29 @@ public:
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
 	 */
-	CMMDKernelSelection(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelection(CKernelTwoSampleTestStatistic* statistic);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelection();
 
-	/** TODO */
+	/** If the the implemented method selects a single kernel, this computes
+	 * criteria for all underlying kernels. If the method selects combined
+	 * kernels, this method returns weights for the baseline kernels
+	 *
+	 * @return vector with criteria or kernel weights
+	 */
 	virtual SGVector<float64_t> compute_measures()=0;
 
-	/** TODO */
+	/** Performs kernel selection on the base of the compute_measures() method
+	 * and returns the selected kernel which is either a single or a combined
+	 * one (with weights set)
+	 *
+	 * @return selected kernel (SG_REF'ed)
+	 */
 	virtual CKernel* select_kernel();
 
 	/** @return name of the SGSerializable */
 	const char* get_name() const=0;
-
-protected:
-//	/** Polymorphic function that computes the MMD kernel choice criterion for
-//	 * the provided kernel. This criterion is always assumed to have to be
-//	 * maximised, so in case of type II error related measures, add a minus
-//	 * when implementing in subclasses.
-//	 *
-//	 * @return kernel criterion for given kernel, has to be maximised.
-//	 * @param kernel kernel to compute the measure for
-//	 */
-//	virtual float64_t compute_measure(CKernel* kernel)=0;
 
 private:
 

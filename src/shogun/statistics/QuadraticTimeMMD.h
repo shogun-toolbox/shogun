@@ -69,10 +69,7 @@ enum EQuadraticMMDType
  *
  * BOOTSTRAPPING: For permuting available samples to sample null-distribution
  *
- * A very basic method for kernel selection when using CGaussianKernel is to
- * use the median distance of the underlying data. See examples how to do that.
- * More advanced methods will follow in the near future. However, the median
- * heuristic works in quite some cases. See [1].
+ * For kernel selection see CMMDKernelSelection.
  *
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
@@ -121,7 +118,13 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 */
 		virtual float64_t compute_statistic();
 
-		/** TODO */
+		/** Same as compute_statistic(), but with the possibility to perform on
+		 * multiple kernels at once
+		 *
+		 * @param multiple_kernels if true, and underlying kernel is K_COMBINED,
+		 * method will be executed on all subkernels on the same data
+		 * @return vector of results for subkernels
+		 */
 		virtual SGVector<float64_t> compute_statistic(bool multiple_kernels);
 
 		/** computes a p-value based on current method for approximating the

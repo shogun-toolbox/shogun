@@ -50,12 +50,19 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 void CLinearTimeMMD::init()
 {
+	SG_ADD((CSGObject**)&m_streaming_p, "streaming_p", "Streaming features p",
+				MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_streaming_q, "streaming_q", "Streaming features p",
+				MS_NOT_AVAILABLE);
+	SG_ADD(&m_blocksize, "blocksize", "Number of elements processed at once",
+				MS_NOT_AVAILABLE);
+	SG_ADD(&m_simulate_h0, "simulate_h0", "Whether p and q are mixed",
+				MS_NOT_AVAILABLE);
+
 	m_streaming_p=NULL;
 	m_streaming_q=NULL;
 	m_blocksize=10000;
 	m_simulate_h0=false;
-
-	SG_WARNING("%s::init(): register params!\n", get_name())
 }
 
 void CLinearTimeMMD::compute_statistic_and_variance(
