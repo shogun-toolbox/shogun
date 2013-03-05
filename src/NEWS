@@ -22,6 +22,10 @@
 		  kernels for the linear time MMD. This finishes the kernel MMD framework
 		  and also comes with new, more illustrative examples and tests.
 		  By Heiko Strathmann
+		- New framework for unit-tests based on googletest and googlemock by
+		  Viktor Gal. A (growing) number of unit-tests from now on ensures basic
+		  funcionality of our framework. Since the examples do not have to take
+		  this role anymore, they should become more ilustrative in the future.
 	* Bugfixes:
 		- Fix for shallow copy of gaussian kernel by Matt Aasted
 		- Fixed a bug when using StringFeatures along with kernel machines in

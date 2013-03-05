@@ -17,14 +17,17 @@ namespace shogun
 {
 
 
-/** @brief
- * Class to generate dense features data via the streaming features interface.
+/** Class to generate dense features data via the streaming features interface.
  * The core are pairs of methods to
  * a) set the data model and parameters, and
  * b) to generate a data vector using these model parameters
  * Both methods are automatically called when calling get_next_example()
  * This allows to treat generated data as a stream via the standard streaming
- * features interface
+ * features interface.
+ *
+ * Streaming based data generator that samples from a distribution that is a
+ * multivariate isotropic Gaussian in a certain dimensions, where the first
+ * dimension has its mean shifted by some value.
  */
 class CMeanShiftDataGenerator: public CStreamingDenseFeatures<float64_t>
 {
@@ -49,8 +52,7 @@ public:
 	}
 
 
-	/*
-	 * set the mean shift model
+	/**set the mean shift model
 	 *
 	 * @param mean_shift
 	 * @param dimension

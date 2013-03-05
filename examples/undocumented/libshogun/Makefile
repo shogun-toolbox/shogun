@@ -98,10 +98,10 @@ TARGETS = basic_minimal \
 		  classifier_multiclass_ecoc_discriminant \
 		  classifier_multiclass_ecoc_random \
 		  streaming_from_dense \
-		  streaming_generators \
 		  library_hdf5 \
 		  library_serialization \
 		  classifier_svmlight_string_features_precomputed_kernel \
+  		  classifier_mkl_svmlight_modelselection_bug \
 
 all: $(TARGETS)
 
