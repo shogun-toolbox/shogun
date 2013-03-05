@@ -15,6 +15,18 @@
 namespace shogun
 {
 
+/** Class to generate dense features data via the streaming features interface.
+ * The core are pairs of methods to
+ * a) set the data model and parameters, and
+ * b) to generate a data vector using these model parameters
+ * Both methods are automatically called when calling get_next_example()
+ * This allows to treat generated data as a stream via the standard streaming
+ * features interface.
+ *
+ * Streaming based data generator that samples from a distribution that
+ * is a 2D grid-like mixture of a number Gaussians at a certain distance from each
+ * other, and where each Gaussian is stretched and rotated by a factor.
+ */
 class CGaussianBlobsDataGenerator: public CStreamingDenseFeatures<float64_t>
 {
 public:
@@ -35,9 +47,13 @@ public:
 		return "GaussianBlobsDataGenerator";
 	}
 
-	/*
-	 * set the blobs model
+	/** set the blobs model
 	 *
+	 * @param sqrt_num_blobs number of blobs per row/column in the grid
+	 * @param distance distance of the individual Gaussians
+	 * @param stretch first Eigenvalue of Gaussian will be set to this value.
+	 * This effectively stretches the Gaussian
+	 * @param angle Gaussians are rotated by this angle
 	 */
 	void set_blobs_model(index_t sqrt_num_blobs, float64_t distance,
 			float64_t stretch, float64_t angle);
@@ -53,10 +69,20 @@ private:
 	void init();
 
 protected:
+	/** number of blobs per row/column in the grid */
 	index_t m_sqrt_num_blobs;
+
+	/** distance of the individual Gaussians */
 	float64_t m_distance;
+
+	/** first Eigenvalue of Gaussian will be set to this value */
 	float64_t m_stretch;
+
+	/** Gaussians are rotated by this angle */
 	float64_t m_angle;
+
+	/** Cholesky factor of covariance matrix of single Gaussians. Stored to
+	 * increase sampling performance */
 	SGMatrix<float64_t> m_cholesky;
 };
 

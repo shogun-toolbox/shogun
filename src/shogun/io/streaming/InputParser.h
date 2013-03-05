@@ -471,7 +471,7 @@ template <class T>
 
     pthread_mutex_unlock(&examples_state_lock);
 
-    SG_SDEBUG("leaving CInputParser::is_running(), returnung %d\n", ret)
+    SG_SDEBUG("leaving CInputParser::is_running(), returning %d\n", ret)
     return ret;
 }
 

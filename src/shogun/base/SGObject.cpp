@@ -1215,7 +1215,9 @@ void CSGObject::build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
 
 			dict.add(p, this);
 
-			if ((p->m_datatype.m_ptype == PT_SGOBJECT) && (p->m_datatype.m_ctype == CT_SCALAR) && (*(CSGObject**)(p->m_parameter) != NULL))
+			if ((p->m_datatype.m_ptype == PT_SGOBJECT) &&
+					(p->m_datatype.m_ctype == CT_SCALAR) &&
+					(*(CSGObject**)(p->m_parameter) != NULL))
 			{
 				CSGObject* child =
 						*((CSGObject**)(p->m_parameter));
