@@ -188,7 +188,7 @@ public:
 			SGVector<float64_t>& statistic, SGVector<float64_t>& variance,
 			bool multiple_kernels=false);
 
-	/* Same as compute_statistic_and_variance, but computes a linear time
+	/** Same as compute_statistic_and_variance, but computes a linear time
 	 * estimate of the covariance of the multiple-kernel-MMD.
 	 * See [1] for details.
 	 */
@@ -257,6 +257,8 @@ protected:
 	/** Number of examples processed at once, i.e. in one burst */
 	index_t m_blocksize;
 
+	/** If this is true, samples will be mixed between p and q ind any method
+	 * that computes the statistic */
 	bool m_simulate_h0;
 };
 
