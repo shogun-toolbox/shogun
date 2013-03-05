@@ -101,6 +101,7 @@ TARGETS = basic_minimal \
 		  library_hdf5 \
 		  library_serialization \
 		  classifier_svmlight_string_features_precomputed_kernel \
+  		  classifier_mkl_svmlight_modelselection_bug \
 
 all: $(TARGETS)
 
