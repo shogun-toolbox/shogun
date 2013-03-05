@@ -164,7 +164,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		}
 
 #ifdef HAVE_LAPACK
-		/* returns a set of samples of an estimate of the null distribution
+		/** Returns a set of samples of an estimate of the null distribution
 		 * using the Eigen-spectrum of the centered kernel matrix of the merged
 		 * samples of p and q. May be used to compute p_value (easy)
 		 *

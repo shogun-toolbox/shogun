@@ -22,7 +22,8 @@ namespace shogun
 /** @brief This class implements streaming features with dense feature vectors.
  *
  * The current example is stored as a combination of current_vector
- * and current_label.
+ * and current_label. Call get_next_example() followed by get_current_vector()
+ * to iterate through the stream.
  */
 template<class T> class CStreamingDenseFeatures:
 	public CStreamingDotFeatures
