@@ -4,12 +4,13 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2013 Heiko Strathmann
  */
 
 #include <shogun/base/init.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
+#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -89,6 +90,60 @@ TEST(GaussianBlobsDataGenerator,get_next_example)
 	/* mean is supposed to do [3, 3] */
 	EXPECT_LE(CMath::abs(mean2[0]-3), accuracy);
 	EXPECT_LE(CMath::abs(mean2[1]-3), accuracy);
+
+	SG_UNREF(gen);
+}
+
+TEST(MeanShiftDataGenerator,get_next_example)
+{
+	index_t dimension=3;
+	index_t mean_shift=100;
+	index_t num_runs=1000;
+
+	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(mean_shift, dimension);
+
+	SGVector<float64_t> avg(dimension);
+	avg.zero();
+
+	for (index_t i=0; i<num_runs; ++i)
+	{
+		gen->get_next_example();
+		avg.add(gen->get_vector());
+		gen->release_example();
+	}
+
+	/* average */
+	avg.scale(1.0/num_runs);
+	avg.display_vector("mean_shift");
+
+	/* roughly assert correct model parameters */
+	EXPECT_LE(avg[0]-mean_shift, mean_shift/100);
+	for (index_t i=1; i<dimension; ++i)
+	{
+		EXPECT_LE(avg[i], 0.5);
+		EXPECT_GE(avg[i], -0.5);
+	}
+
+	/* draw whole matrix and test that too */
+	CDenseFeatures<float64_t>* features=
+			(CDenseFeatures<float64_t>*)gen->get_streamed_features(num_runs);
+	avg=SGVector<float64_t>(dimension);
+
+	for (index_t i=0; i<dimension; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<num_runs; ++j)
+			sum+=features->get_feature_matrix()(i, j);
+
+		avg[i]=sum/num_runs;
+	}
+	avg.display_vector("mean_shift");
+
+	ASSERT(avg[0]-mean_shift<mean_shift/100);
+	for (index_t i=1; i<dimension; ++i)
+		ASSERT(avg[i]<0.5 && avg[i]>-0.5);
+
+	SG_UNREF(features);
 
 	SG_UNREF(gen);
 }
