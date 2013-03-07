@@ -11,6 +11,8 @@
 #ifndef TAPKEE_MATRIX_OPS_H_
 #define TAPKEE_MATRIX_OPS_H_
 
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
+
 namespace tapkee
 {
 namespace tapkee_internal
@@ -36,8 +38,10 @@ struct InverseSparseMatrixOperation
 	}
 	SparseSolver solver;
 	static const char* ARPACK_CODE;
+	static const bool largest;
 };
 const char* InverseSparseMatrixOperation::ARPACK_CODE = "SM";
+const bool InverseSparseMatrixOperation::largest = false;
 
 //! Matrix-matrix operation used to
 //! compute largest eigenvalues and
@@ -61,8 +65,10 @@ struct DenseMatrixOperation
 	}
 	const DenseMatrix& _matrix;
 	static const char* ARPACK_CODE;
+	static const bool largest;
 };
 const char* DenseMatrixOperation::ARPACK_CODE = "LM";
+const bool DenseMatrixOperation::largest = true;
 
 //! Matrix-matrix operation used to
 //! compute largest eigenvalues and
@@ -87,8 +93,10 @@ struct DenseImplicitSquareMatrixOperation
 	}
 	const DenseMatrix& _matrix;
 	static const char* ARPACK_CODE;
+	static const bool largest;
 };
 const char* DenseImplicitSquareMatrixOperation::ARPACK_CODE = "LM";
+const bool DenseImplicitSquareMatrixOperation::largest = true;
 
 #ifdef TAPKEE_GPU
 struct GPUDenseImplicitSquareMatrixOperation
@@ -121,8 +129,10 @@ struct GPUDenseImplicitSquareMatrixOperation
 	viennacl::matrix<ScalarType> vec;
 	viennacl::matrix<ScalarType> res;
 	static const char* ARPACK_CODE;
+	static bool largest;
 };
 const char* GPUDenseImplicitSquareMatrixOperation::ARPACK_CODE = "LM";
+const bool GPUDenseImplicitSquareMatrixOperation::largest = true;
 
 struct GPUDenseMatrixOperation
 {
@@ -150,8 +160,10 @@ struct GPUDenseMatrixOperation
 	viennacl::matrix<ScalarType> vec;
 	viennacl::matrix<ScalarType> res;
 	static const char* ARPACK_CODE;
+	static bool largest;
 };
 const char* GPUDenseMatrixOperation::ARPACK_CODE = "LM";
+const bool GPUDenseMatrixOperation::largest = true;
 #endif
 
 }

@@ -75,6 +75,8 @@ namespace tapkee
 		/* ScalarType */ EIGENSHIFT,
 		/* bool */ CHECK_CONNECTIVITY,
 		/* ScalarType */ FA_EPSILON,
+		/* ScalarType */ SNE_PERPLEXITY,
+		/* ScalarType */ SNE_THETA
 	};
 
 	//! Dimension reduction method
@@ -99,6 +101,7 @@ namespace tapkee
 		RANDOM_PROJECTION,
 		PASS_THRU,
 		FACTOR_ANALYSIS,
+		TSNE,
 		UNKNOWN_METHOD
 	};
 
@@ -120,6 +123,7 @@ namespace tapkee
 	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(RANDOM_PROJECTION);
 	METHOD_THAT_NEEDS_NOTHING_IS(PASS_THRU);
 	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(FACTOR_ANALYSIS);
+	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(TSNE);
 	METHOD_THAT_NEEDS_NOTHING_IS(UNKNOWN_METHOD);
 
 	//! Neighbors computation method

@@ -93,6 +93,7 @@ ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
 			HANDLE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING);
 			HANDLE_IMPLEMENTATION(PASS_THRU);
 			HANDLE_IMPLEMENTATION(FACTOR_ANALYSIS);
+			HANDLE_IMPLEMENTATION(TSNE);
 			case UNKNOWN_METHOD: throw wrong_parameter_error("unknown method"); break;
 		}
 	}

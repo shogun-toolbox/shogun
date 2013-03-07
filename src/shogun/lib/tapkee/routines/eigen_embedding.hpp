@@ -39,7 +39,7 @@ std::string get_eigen_embedding_name(TAPKEE_EIGEN_EMBEDDING_METHOD m)
 }
 
 //! Templated implementation of eigendecomposition-based embedding. 
-template <class MatrixType, class MatrixTypeOperation, int IMPLEMENTATION> 
+template <class MatrixType, class MatrixOperationType, int IMPLEMENTATION> 
 struct eigen_embedding_impl
 {
 	//! Construct embedding
@@ -51,8 +51,8 @@ struct eigen_embedding_impl
 };
 
 //! ARPACK implementation of eigendecomposition-based embedding
-template <class MatrixType, class MatrixTypeOperation> 
-struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, ARPACK>
+template <class MatrixType, class MatrixOperationType> 
+struct eigen_embedding_impl<MatrixType, MatrixOperationType, ARPACK>
 {
 	EmbeddingResult embed(const MatrixType& wm, IndexType target_dimension, unsigned int skip)
 	{
@@ -62,8 +62,8 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, ARPACK>
 		throw new unsupported_method_error("ARPACK is not available");
 		return EmbeddingResult();
 #else
-		ArpackGeneralizedSelfAdjointEigenSolver<MatrixType, MatrixType, MatrixTypeOperation> 
-			arpack(wm,target_dimension+skip,MatrixTypeOperation::ARPACK_CODE);
+		ArpackGeneralizedSelfAdjointEigenSolver<MatrixType, MatrixType, MatrixOperationType> 
+			arpack(wm,target_dimension+skip,MatrixOperationType::ARPACK_CODE);
 
 		if (arpack.info() == Eigen::Success)
 		{
@@ -83,8 +83,8 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, ARPACK>
 };
 
 //! Eigen library dense implementation of eigendecomposition-based embedding
-template <class MatrixType, class MatrixTypeOperation> 
-struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, EIGEN_DENSE_SELFADJOINT_SOLVER>
+template <class MatrixType, class MatrixOperationType> 
+struct eigen_embedding_impl<MatrixType, MatrixOperationType, EIGEN_DENSE_SELFADJOINT_SOLVER>
 {
 	EmbeddingResult embed(const MatrixType& wm, IndexType target_dimension, unsigned int skip)
 	{
@@ -95,8 +95,17 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, EIGEN_DENSE_SELFADJ
 
 		if (solver.info() == Eigen::Success)
 		{
-			DenseMatrix embedding_feature_matrix = (solver.eigenvectors()).block(0,skip,wm.cols(),target_dimension);
-			return EmbeddingResult(embedding_feature_matrix,solver.eigenvalues().tail(target_dimension));
+			if (MatrixOperationType::largest)
+			{
+				assert(skip==0);
+				DenseMatrix embedding_feature_matrix = solver.eigenvectors().rightCols(target_dimension);
+				return EmbeddingResult(embedding_feature_matrix,solver.eigenvalues().tail(target_dimension));
+			} 
+			else
+			{
+				DenseMatrix embedding_feature_matrix = solver.eigenvectors().leftCols(target_dimension+skip).rightCols(target_dimension);
+				return EmbeddingResult(embedding_feature_matrix,solver.eigenvalues().segment(skip,skip+target_dimension));
+			}
 		}
 		else
 		{
@@ -107,8 +116,8 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, EIGEN_DENSE_SELFADJ
 };
 
 //! Randomized redsvd-like implementation of eigendecomposition-based embedding
-template <class MatrixType, class MatrixTypeOperation> 
-struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, RANDOMIZED>
+template <class MatrixType, class MatrixOperationType> 
+struct eigen_embedding_impl<MatrixType, MatrixOperationType, RANDOMIZED>
 {
 	EmbeddingResult embed(const MatrixType& wm, IndexType target_dimension, unsigned int skip)
 	{
@@ -134,7 +143,7 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, RANDOMIZED>
 				O(i,j) = len*cos(2.f*M_PI*v2);
 			}
 		}
-		MatrixTypeOperation operation(wm);
+		MatrixOperationType operation(wm);
 
 		DenseMatrix Y = operation(O);
 		for (IndexType i=0; i<Y.cols(); i++)
@@ -159,8 +168,17 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, RANDOMIZED>
 
 		if (eigenOfB.info() == Eigen::Success)
 		{
-			DenseMatrix embedding = (Y*eigenOfB.eigenvectors()).block(0, skip, wm.cols(), target_dimension);
-			return EmbeddingResult(embedding,eigenOfB.eigenvalues());
+			if (MatrixOperationType::largest)
+			{
+				assert(skip==0);
+				DenseMatrix embedding_feature_matrix = (Y*eigenOfB.eigenvectors()).rightCols(target_dimension);
+				return EmbeddingResult(embedding_feature_matrix,eigenOfB.eigenvalues());
+			} 
+			else
+			{
+				DenseMatrix embedding_feature_matrix = (Y*eigenOfB.eigenvectors()).leftCols(target_dimension+skip).rightCols(target_dimension);
+				return EmbeddingResult(embedding_feature_matrix,eigenOfB.eigenvalues());
+			}
 		}
 		else
 		{
@@ -174,13 +192,13 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, RANDOMIZED>
 //!
 //! Has three template parameters:
 //! MatrixType - class of weight matrix to perform eigendecomposition of
-//! MatrixTypeOperation - class of product operation over matrix.
+//! MatrixOperationType - class of product operation over matrix.
 //!
-//! In order to compute largest eigenvalues MatrixTypeOperation should provide
+//! In order to compute largest eigenvalues MatrixOperationType should provide
 //! implementation of operator()(DenseMatrix) which computes right product
 //! of the parameter with the MatrixType.
 //! 
-//! In order to compute smallest eigenvalues MatrixTypeOperation should provide
+//! In order to compute smallest eigenvalues MatrixOperationType should provide
 //! implementation of operator()(DenseMatrix) which solves linear system with
 //! given right-hand side part. 
 //! 
@@ -198,7 +216,7 @@ struct eigen_embedding_impl<MatrixType, MatrixTypeOperation, RANDOMIZED>
 //!        computed
 //! @param skip number of eigenvectors to skip (from either smallest or largest side)
 //!
-template <class MatrixType, class MatrixTypeOperation>
+template <class MatrixType, class MatrixOperationType>
 EmbeddingResult eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method, const MatrixType& m, 
                                 IndexType target_dimension, unsigned int skip)
 {
@@ -207,13 +225,13 @@ EmbeddingResult eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method, const Matr
 	switch (method)
 	{
 		case ARPACK: 
-			return eigen_embedding_impl<MatrixType, MatrixTypeOperation, 
+			return eigen_embedding_impl<MatrixType, MatrixOperationType, 
 				ARPACK>().embed(m, target_dimension, skip);
 		case RANDOMIZED: 
-			return eigen_embedding_impl<MatrixType, MatrixTypeOperation,
+			return eigen_embedding_impl<MatrixType, MatrixOperationType,
 				RANDOMIZED>().embed(m, target_dimension, skip);
 		case EIGEN_DENSE_SELFADJOINT_SOLVER:
-			return eigen_embedding_impl<MatrixType, MatrixTypeOperation, 
+			return eigen_embedding_impl<MatrixType, MatrixOperationType, 
 				EIGEN_DENSE_SELFADJOINT_SOLVER>().embed(m, target_dimension, skip);
 		default: break;
 	}

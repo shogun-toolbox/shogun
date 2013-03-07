@@ -22,6 +22,7 @@ using std::string;
 #define LEVEL_HANDLERS(LEVEL) \
 		void enable_##LEVEL() { LEVEL##_enabled = true; };		\
 		void disable_##LEVEL() { LEVEL##_enabled = false; };	\
+		bool is_##LEVEL##_enabled() { return LEVEL##_enabled; };  \
 		void message_##LEVEL(const string& msg)					\
 		{														\
 			if (LEVEL##_enabled)								\
@@ -46,6 +47,7 @@ public:
 	virtual ~LoggerImplementation() {};
 	LEVEL_HANDLERS_DECLARATION(info);
 	LEVEL_HANDLERS_DECLARATION(warning);
+	LEVEL_HANDLERS_DECLARATION(debug);
 	LEVEL_HANDLERS_DECLARATION(error);
 	LEVEL_HANDLERS_DECLARATION(benchmark);
 private:
@@ -60,6 +62,7 @@ public:
 	virtual ~DefaultLoggerImplementation() {}
 	LEVEL_HANDLERS_DEFAULT_IMPL(info);
 	LEVEL_HANDLERS_DEFAULT_IMPL(warning);
+	LEVEL_HANDLERS_DEFAULT_IMPL(debug);
 	LEVEL_HANDLERS_DEFAULT_IMPL(error);
 	LEVEL_HANDLERS_DEFAULT_IMPL(benchmark)
 private:
@@ -75,6 +78,7 @@ class LoggingSingleton
 		LoggingSingleton() : impl(new DefaultLoggerImplementation),
 			LEVEL_ENABLED_FIELD_INITIALIZER(info,false),
 			LEVEL_ENABLED_FIELD_INITIALIZER(warning,true),
+			LEVEL_ENABLED_FIELD_INITIALIZER(debug,false),
 			LEVEL_ENABLED_FIELD_INITIALIZER(error,true),
 			LEVEL_ENABLED_FIELD_INITIALIZER(benchmark,false)
 		{
@@ -90,6 +94,7 @@ class LoggingSingleton
 
 		LEVEL_ENABLED_FIELD(info);
 		LEVEL_ENABLED_FIELD(warning);
+		LEVEL_ENABLED_FIELD(debug);
 		LEVEL_ENABLED_FIELD(error);
 		LEVEL_ENABLED_FIELD(benchmark);
 
@@ -105,6 +110,7 @@ class LoggingSingleton
 
 		LEVEL_HANDLERS(info);
 		LEVEL_HANDLERS(warning);
+		LEVEL_HANDLERS(debug);
 		LEVEL_HANDLERS(error);
 		LEVEL_HANDLERS(benchmark);
 

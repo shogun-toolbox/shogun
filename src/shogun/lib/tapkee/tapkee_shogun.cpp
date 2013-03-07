@@ -37,6 +37,10 @@ class ShogunLoggerImplementation : public tapkee::LoggerImplementation
 	{
 		SG_SERROR((msg+"\n").c_str())
 	}
+	virtual void message_debug(const std::string& msg)
+	{
+		SG_SDEBUG((msg+"\n").c_str())
+	}
 	virtual void message_benchmark(const std::string& msg)
 	{
 		SG_SINFO((msg+"\n").c_str())
@@ -66,7 +70,11 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	ShogunFeatureVectorCallback features_callback(parameters.features);
 
 	tapkee::ParametersMap tapkee_parameters;
+#ifdef HAVE_ARPACK
 	tapkee_parameters[tapkee::EIGEN_EMBEDDING_METHOD] = tapkee::ARPACK;
+#else
+	tapkee_parameters[tapkee::EIGEN_EMBEDDING_METHOD] = tapkee::EIGEN_DENSE_SELFADJOINT_SOLVER;
+#endif
 	tapkee_parameters[tapkee::NEIGHBORS_METHOD] = tapkee::COVER_TREE;
 	tapkee_parameters[tapkee::TARGET_DIMENSION] = parameters.target_dimension;
 	tapkee_parameters[tapkee::EIGENSHIFT] = parameters.eigenshift;

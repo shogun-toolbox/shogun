@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn, Fernando Iglesias
  */
 
 #ifndef TAPKEE_METHODS_H_
@@ -13,6 +13,7 @@
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 #include <shogun/lib/tapkee/utils/logging.hpp>
+#include <shogun/lib/tapkee/utils/parameters.hpp>
 #include <shogun/lib/tapkee/routines/locally_linear.hpp>
 #include <shogun/lib/tapkee/routines/eigen_embedding.hpp>
 #include <shogun/lib/tapkee/routines/generalized_eigen_embedding.hpp>
@@ -53,6 +54,7 @@ std::string get_method_name(TAPKEE_METHOD m)
 		case PASS_THRU: return "passing through";
 		case RANDOM_PROJECTION: return "Random Projection";
 		case FACTOR_ANALYSIS: return "Factor Analysis";
+		case TSNE: return "t-SNE";
 		default: return "Method name unknown (yes this is a bug)";
 	}
 }
@@ -69,37 +71,6 @@ struct implementation
 #define CONCRETE_IMPLEMENTATION(METHOD) \
 	template <class RandomAccessIterator, class KernelCallback, class DistanceCallback, class FeatureVectorCallback> \
 	struct implementation<RandomAccessIterator,KernelCallback,DistanceCallback,FeatureVectorCallback,METHOD>
-
-// pure magic, for the brave souls 
-#define VA_NUM_ARGS(...) VA_NUM_ARGS_IMPL_((__VA_ARGS__, 5,4,3,2,1))
-#define VA_NUM_ARGS_IMPL_(tuple) VA_NUM_ARGS_IMPL tuple
-#define VA_NUM_ARGS_IMPL(_1,_2,_3,_4,_5,N,...) N
-#define macro_dispatcher(macro, ...) macro_dispatcher_(macro, VA_NUM_ARGS(__VA_ARGS__))
-#define macro_dispatcher_(macro, nargs) macro_dispatcher__(macro, nargs)
-#define macro_dispatcher__(macro, nargs) macro_dispatcher___(macro, nargs)
-#define macro_dispatcher___(macro, nargs) macro ## nargs
-
-// parameter macro definition
-#define PARAMETER(...) macro_dispatcher(PARAMETER, __VA_ARGS__)(__VA_ARGS__)
-#define PARAMETER3(TYPE,NAME,CODE) PARAMETER_IMPL(TYPE,NAME,CODE,NO_CHECK)
-#define PARAMETER4(TYPE,NAME,CODE,CHECKER) PARAMETER_IMPL(TYPE,NAME,CODE,CHECKER)
-
-// implementation of parameter macro
-#define PARAMETER_IMPL(TYPE,NAME,CODE,CHECKER) \
-	if (!options.count(CODE)) \
-		throw missed_parameter_error("No "#NAME" ("#TYPE") parameter set. Should be in map as "#CODE); \
-	TYPE NAME = options[CODE].cast<TYPE>(); \
-	if (!CHECKER) \
-		throw wrong_parameter_error("Check failed "#CHECKER)
-
-// checkers
-#define NO_CHECK true
-#define IN_RANGE(VARIABLE,LOWER,UPPER) \
-	((VARIABLE>=LOWER) && (VARIABLE<UPPER))
-#define NOT(VARIABLE,VALUE) \
-	(VARIABLE!=VALUE)
-#define POSITIVE(VARIABLE) \
-	(VARIABLE>0)
 
 // eigenvalues parameters
 #define SKIP_ONE_EIGENVALUE 1
@@ -573,10 +544,18 @@ CONCRETE_IMPLEMENTATION(FACTOR_ANALYSIS)
 	}
 };
 
+CONCRETE_IMPLEMENTATION(TSNE)
+{
+	ReturnResult operator()(RandomAccessIterator, RandomAccessIterator,
+                            KernelCallback, DistanceCallback,
+                            FeatureVectorCallback, ParametersMap)
+	{
+		return ReturnResult();
+	}
+};
+
 }
 }
 #undef CONCRETE_IMPLEMENTATION
 #undef PARAMETER
-#undef SKIP_ONE_EIGENVALUE
-#undef SKIP_NO_EIGENVALUES
 #endif
