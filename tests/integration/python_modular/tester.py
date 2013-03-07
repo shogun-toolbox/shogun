@@ -112,7 +112,7 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 					print setting_str, e
 			except IOError, e:
 				if not failures:
-					print "%-60s NO TEST" % (setting_str)
+					print "%-60s NO TEST (%s)" % (setting_str, e)
 			except Exception, e:
 				if not missing:
 					print "%-60s EXCEPTION %s" % (setting_str,e)
