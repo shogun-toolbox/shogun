@@ -147,22 +147,21 @@ def construct_features(features):
 
     return feat_comb
 
+parameter_list = [[200, 1, 100]]
 
-def serialization_string_kernels_modular():
+def serialization_string_kernels_modular(n_data, num_shifts, size):
     """
     serialize svm with string kernels
     """
 
     ##################################################
     # set up toy data and svm
-    train_xt, train_lt = generate_random_data(200)
-    test_xt, test_lt = generate_random_data(200)
+    train_xt, train_lt = generate_random_data(n_data)
+    test_xt, test_lt = generate_random_data(n_data)
 
     feats_train = construct_features(train_xt)
     feats_test = construct_features(test_xt)
 
-    num_shifts = 1
-    size = 100
     max_len = len(train_xt[0])
     kernel_wdk = WeightedDegreePositionStringKernel(size, 5)
     shifts_vector = numpy.ones(max_len, dtype=numpy.int32)*num_shifts
@@ -212,9 +211,9 @@ def serialization_string_kernels_modular():
 
     print("all checks passed.")
 
-    return True
+    return out,out2
 
 
 if __name__=='__main__':
-    serialization_string_kernels_modular()
+    serialization_string_kernels_modular(*parameter_list[0])
 

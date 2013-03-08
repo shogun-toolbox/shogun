@@ -5,11 +5,13 @@
 # the Free Software Foundation either version 3 of the License, or
 # (at your option) any later version.
 #
-# Written (C) 2012 Heiko Strathmann
+# Written (C) 2012-2013 Heiko Strathmann
 #
 from numpy import *
 
-def statistics_linear_time_mmd ():
+parameter_list = [[1000,2,0.5]]
+
+def statistics_linear_time_mmd (n,dim,difference):
 	from shogun.Features import RealFeatures
 	from shogun.Features import MeanShiftDataGenerator
 	from shogun.Kernel import GaussianKernel
@@ -18,11 +20,11 @@ def statistics_linear_time_mmd ():
 	from shogun.Distance import EuclideanDistance
 	from shogun.Mathematics import Statistics, Math
 
+	# init seed for reproducability
+	Math.init_random(1)
+
 	# note that the linear time statistic is designed for much larger datasets
 	# so increase to get reasonable results
-	n=1000
-	dim=2
-	difference=0.5
 
 	# streaming data generator for mean shift distributions
 	gen_p=MeanShiftDataGenerator(0, dim)
@@ -63,15 +65,15 @@ def statistics_linear_time_mmd ():
 	print "computing p-value using bootstrapping"
 	mmd.set_null_approximation_method(BOOTSTRAP)
 	mmd.set_bootstrap_iterations(50) # normally, far more iterations are needed
-	p_value=mmd.compute_p_value(statistic)
-	print "p_value:", p_value
-	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
+	p_value_boot=mmd.compute_p_value(statistic)
+	print "p_value_boot:", p_value_boot
+	print "p_value_boot <", alpha, ", i.e. test sais p!=q:", p_value_boot<alpha
 	
 	print "computing p-value using gaussian approximation"
 	mmd.set_null_approximation_method(MMD1_GAUSSIAN)
-	p_value=mmd.compute_p_value(statistic)
-	print "p_value:", p_value
-	print "p_value <", alpha, ", i.e. test sais p!=q:", p_value<alpha
+	p_value_gaussian=mmd.compute_p_value(statistic)
+	print "p_value_gaussian:", p_value_gaussian
+	print "p_value_gaussian <", alpha, ", i.e. test sais p!=q:", p_value_gaussian<alpha
 	
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
@@ -98,7 +100,8 @@ def statistics_linear_time_mmd ():
 	
 	print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
 	
+	return statistic, p_value_boot, p_value_gaussian, null_samples, typeIerrors, typeIIerrors
 	
 if __name__=='__main__':
 	print('LinearTimeMMD')
-	statistics_linear_time_mmd()
+	statistics_linear_time_mmd(*parameter_list[0])

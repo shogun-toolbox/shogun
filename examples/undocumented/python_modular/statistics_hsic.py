@@ -5,26 +5,28 @@
 # the Free Software Foundation either version 3 of the License, or
 # (at your option) any later version.
 #
-# Written (C) 2012 Heiko Strathmann
+# Written (C) 2012-2013 Heiko Strathmann
 #
 from numpy import *
 #from pylab import *
 from math import pi
 
-def statistics_hsic ():
+parameter_list = [[250,3,3]]
+
+def statistics_hsic (n, difference, angle):
 	from shogun.Features import RealFeatures
 	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel
 	from shogun.Statistics import HSIC
 	from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
 	from shogun.Distance import EuclideanDistance
-	from shogun.Mathematics import Statistics, IntVector
+	from shogun.Mathematics import Math, Statistics, IntVector
+	
+	# init seed for reproducability
+	Math.init_random(1)
 
 	# note that the HSIC has to store kernel matrices
 	# which upper bounds the sample size
-	n=250
-	difference=3
-	angle=pi/3
 
 	# use data generator class to produce example data
 	data=DataGenerator.generate_sym_mix_gauss(n,difference,angle)
@@ -72,19 +74,19 @@ def statistics_hsic ():
 	# normally, at least 250 iterations should be done, but that takes long
 	hsic.set_bootstrap_iterations(100)
 	# bootstrapping allows usage of unbiased or biased statistic
-	p_value=hsic.compute_p_value(statistic)
-	thresh=hsic.compute_threshold(alpha)
-	print "p_value:", p_value
-	print "threshold for 0.05 alpha:", thresh
-	print "p_value <", alpha, ", i.e. test sais p and q are dependend:", p_value<alpha
+	p_value_boot=hsic.compute_p_value(statistic)
+	thresh_boot=hsic.compute_threshold(alpha)
+	print "p_value:", p_value_boot
+	print "threshold for 0.05 alpha:", thresh_boot
+	print "p_value <", alpha, ", i.e. test sais p and q are dependend:", p_value_boot<alpha
 
 	print "computing p-value using gamma method"
 	hsic.set_null_approximation_method(HSIC_GAMMA)
-	p_value=hsic.compute_p_value(statistic)
-	thresh=hsic.compute_threshold(alpha)
-	print "p_value:", p_value
-	print "threshold for 0.05 alpha:", thresh
-	print "p_value <", alpha, ", i.e. test sais p and q are dependend::", p_value<alpha
+	p_value_gamma=hsic.compute_p_value(statistic)
+	thresh_gamma=hsic.compute_threshold(alpha)
+	print "p_value:", p_value_gamma
+	print "threshold for 0.05 alpha:", thresh_gamma
+	print "p_value <", alpha, ", i.e. test sais p and q are dependend::", p_value_gamma<alpha
 
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
@@ -96,7 +98,9 @@ def statistics_hsic ():
 	print "null mean:", mean(null_samples)
 	print "null variance:", var(null_samples)
 	#hist(null_samples, 100); show()
+	
+	return p_value_boot, thresh_boot, p_value_gamma, thresh_gamma, statistic, null_samples
 
 if __name__=='__main__':
 	print('HSIC')
-	statistics_hsic()
+	statistics_hsic(*parameter_list[0])
