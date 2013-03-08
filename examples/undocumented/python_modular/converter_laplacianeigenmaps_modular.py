@@ -17,6 +17,7 @@ def converter_laplacianeigenmaps_modular (data,k):
 		converter.set_target_dim(1)
 		converter.set_k(k)
 		converter.set_tau(20.0)
+		converter.apply(features)
 		
 		return features
 	except ImportError:
