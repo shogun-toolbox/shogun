@@ -42,16 +42,16 @@ namespace shogun
  */
 enum EMessageType
 {
-	MSG_GCDEBUG,
-	MSG_DEBUG,
-	MSG_INFO,
-	MSG_NOTICE,
-	MSG_WARN,
-	MSG_ERROR,
-	MSG_CRITICAL,
-	MSG_ALERT,
-	MSG_EMERGENCY,
-	MSG_MESSAGEONLY
+	MSG_GCDEBUG=0,
+	MSG_DEBUG=1,
+	MSG_INFO=2,
+	MSG_NOTICE=3,
+	MSG_WARN=4,
+	MSG_ERROR=5,
+	MSG_CRITICAL=6,
+	MSG_ALERT=7,
+	MSG_EMERGENCY=8,
+	MSG_MESSAGEONLY=9
 };
 
 
@@ -242,7 +242,7 @@ class SGIO
 		 */
 		inline bool loglevel_above(EMessageType type) const
 		{
-			return loglevel >= type;
+			return loglevel <= type;
 		}
 
 		/** get show_progress
