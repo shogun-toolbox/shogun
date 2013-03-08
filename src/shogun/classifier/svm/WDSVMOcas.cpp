@@ -353,8 +353,8 @@ int CWDSVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
+#ifdef HAVE_PTHREAD
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
-	int32_t string_length = o->string_length;
 	uint32_t nDim=(uint32_t) o->w_dim;
 	float32_t** cuts=o->cuts;
 	float64_t* c_bias = o->cp_bias;
@@ -365,7 +365,7 @@ int CWDSVMOcas::add_new_cut(
 	float32_t* new_a=SG_MALLOC(float32_t, nDim);
 	memset(new_a, 0, sizeof(float32_t)*nDim);
 
-#ifdef HAVE_PTHREAD
+	int32_t string_length = o->string_length;
 	int32_t t;
 	int32_t nthreads=o->parallel->get_num_threads()-1;
 	int32_t step= string_length/o->parallel->get_num_threads();
@@ -541,6 +541,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 
 int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 {
+#ifdef HAVE_PTHREAD
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	int32_t nData=o->num_vec;
 	wdocas_thread_params_output* params_output=SG_MALLOC(wdocas_thread_params_output, o->parallel->get_num_threads());
@@ -559,7 +560,7 @@ int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 		nthreads=nData-1;
 		step=1;
 	}
-#ifdef HAVE_PTHREAD
+
 	for (t=0; t<nthreads; t++)
 	{
 		params_output[t].wdocas=o;
