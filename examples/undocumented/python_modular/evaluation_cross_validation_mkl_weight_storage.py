@@ -66,7 +66,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     cross_validation.set_autolock(False)
 
     # append cross vlaidation output classes
-    cross_validation.add_cross_validation_output(CrossValidationPrintOutput())
+    #cross_validation.add_cross_validation_output(CrossValidationPrintOutput())
     mkl_storage=CrossValidationMKLStorage()
     cross_validation.add_cross_validation_output(mkl_storage)
     cross_validation.set_num_runs(3)
@@ -76,17 +76,17 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
 
     # print mkl weights
     weights=mkl_storage.get_mkl_weights()
-    print "mkl weights during cross--validation"
-    print weights
+    #print "mkl weights during cross--validation"
+    #print weights
     
-    print "mean per kernel"
-    print Statistics.matrix_mean(weights, False)
+    #print "mean per kernel"
+    #print Statistics.matrix_mean(weights, False)
     
-    print "variance per kernel"
-    print Statistics.matrix_variance(weights, False)
+    #print "variance per kernel"
+    #print Statistics.matrix_variance(weights, False)
     
-    print "std-dev per kernel"
-    print Statistics.matrix_std_deviation(weights, False)
+    #print "std-dev per kernel"
+    #print Statistics.matrix_std_deviation(weights, False)
     
 
 if __name__=='__main__':
