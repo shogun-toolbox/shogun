@@ -12,7 +12,7 @@
 #include <ctime>
 #include <string>
 #include <sstream>
-#include <utils/logging.hpp>
+#include <shogun/lib/tapkee/utils/logging.hpp>
 
 using std::string;
 using std::stringstream;

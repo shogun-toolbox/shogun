@@ -10,8 +10,8 @@
 #ifndef TAPKEE_MAIN_H_
 #define TAPKEE_MAIN_H_
 
-#include <tapkee_defines.hpp>
-#include <tapkee_methods.hpp>
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/tapkee_methods.hpp>
 
 namespace tapkee
 {

@@ -70,7 +70,7 @@ struct eigen_embedding_impl<MatrixType, MatrixOperationType, ARPACK>
 			stringstream ss;
 			ss << "Took " << arpack.getNbrIterations() << " iterations.";
 			LoggingSingleton::instance().message_info(ss.str());
-			DenseMatrix embedding_feature_matrix = (arpack.eigenvectors()).block(0,skip,wm.cols(),target_dimension);
+			DenseMatrix embedding_feature_matrix = arpack.eigenvectors().rightCols(target_dimension);
 			return EmbeddingResult(embedding_feature_matrix,arpack.eigenvalues().tail(target_dimension));
 		}
 		else

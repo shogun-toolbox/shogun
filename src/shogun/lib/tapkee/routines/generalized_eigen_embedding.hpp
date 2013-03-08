@@ -49,8 +49,8 @@ struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperatio
 			stringstream ss;
 			ss << "Took " << arpack.getNbrIterations() << " iterations.";
 			LoggingSingleton::instance().message_info(ss.str());
-			DenseMatrix embedding_feature_matrix = (arpack.eigenvectors()).leftCols(target_dimension+skip).rightCols(target_dimension);
-			return EmbeddingResult(embedding_feature_matrix,arpack.eigenvalues().segment(skip,target_dimension+skip));
+			DenseMatrix embedding_feature_matrix = (arpack.eigenvectors()).rightCols(target_dimension);
+			return EmbeddingResult(embedding_feature_matrix,arpack.eigenvalues().tail(target_dimension));
 		}
 		else
 		{

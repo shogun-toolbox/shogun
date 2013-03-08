@@ -11,7 +11,7 @@
 #ifndef TAPKEE_MATRIX_OPS_H_
 #define TAPKEE_MATRIX_OPS_H_
 
-#include <tapkee_defines.hpp>
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
 
 namespace tapkee
 {
