@@ -1,7 +1,6 @@
 #undef _POSIX_C_SOURCE
 extern "C" {
 #include <Python.h>
-#include <numpy/arrayobject.h>
 }
 
 #include <shogun/io/SGIO.h>

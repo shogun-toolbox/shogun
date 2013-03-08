@@ -24,9 +24,6 @@
 
 #ifdef HAVE_PYTHON
 %{
-#ifndef SWIG_FILE_WITH_INIT
-#  define NO_IMPORT_ARRAY
-#endif
 #include <stdio.h>
 #include <shogun/lib/DataType.h>
 
