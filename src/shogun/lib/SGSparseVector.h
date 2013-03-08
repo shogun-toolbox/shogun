@@ -119,10 +119,40 @@ protected:
 
 	virtual void free_data();
 
+	/** helper function to compute dot product
+	 *
+	 * determines whether symmetric (similar number of non-zero elements in
+	 * both sparse vectors) or asymetric (logarithmically more elements in one vector)
+	 * dot product computation routine shall be taken
+	 *
+	 * @param alen length of vector a
+	 * @param blen length of vector b
+	 *
+	 * @return -1,0,1 if asymetric(b,a), symmetric(a,b) respectively
+	 * asymmetric(a,b) shall be called
+	 */
 	static int32_t cmp_dot_prod_symmetry_fast(index_t alen, index_t blen);
 
+	/** compute dot product between vectors a and b
+	 *
+	 * particularly fast if len(a) << len(b)
+	 *
+	 * @param a vector a
+	 * @param b vector b
+	 *
+	 * @return dot product
+	 */
 	static T dot_prod_asymmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
 
+	/** compute dot product between vectors a and b
+	 *
+	 * particularly fast if len(a) ~= len(b)
+	 *
+	 * @param a vector a
+	 * @param b vector b
+	 *
+	 * @return dot product
+	 */
 	static T dot_prod_symmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
 
 public:

@@ -135,9 +135,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 		numberofsilpiterations)
 {
 	if ( (max_num_mkl_iters>0) && (numberofsilpiterations>=max_num_mkl_iters) )
-	{
-		return(true);
-	}
+		return true;
 
 	if (weightshistory.size()>1)
 	{
@@ -172,7 +170,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			SG_SINFO("L1 Norm chosen, MKL part of duality gap %f \n",delta)
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
-				return(true);
+				return true;
 			}
 			
 
@@ -202,13 +200,13 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
 			{
-				return(true);
+				return true;
 			}
 
 		}
 	}
 
-	return(false);
+	return false;
 }
 
 void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
@@ -294,7 +292,7 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
 		}
 	}
 
-	return(sum);
+	return sum;
 }
 
 float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
@@ -329,7 +327,7 @@ float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 	SG_UNREF(ker);
 	ker=NULL;
 
-	return(tmp);
+	return tmp;
 }
 
 
@@ -419,7 +417,7 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 		delete lpw;
 	}
 	lpw=NULL;
-	return(true);
+	return true;
 }
 
 

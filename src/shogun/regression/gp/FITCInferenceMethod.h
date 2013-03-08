@@ -43,10 +43,10 @@ class CFITCInferenceMethod: public CInferenceMethod
 
 public:
 
-	/*Default Constructor*/
+	/** Default Constructor*/
 	CFITCInferenceMethod();
 
-	/* Constructor
+	/** Constructor
 	 * @param kernel covariance function
 	 * @param features features to use in inference
 	 * @param mean mean function
@@ -58,7 +58,7 @@ public:
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* latent_features);
 
-	/*Destructor*/
+	/** Destructor*/
 	virtual ~CFITCInferenceMethod();
 
 	/** get Negative Log Marginal Likelihood
@@ -90,7 +90,7 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * 	where \mu is the mean and K is the prior covariance matrix
+	 * 	where \f$\mu\f$ is the mean and K is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -129,7 +129,7 @@ public:
 		return "FITCInferenceMethod";
 	}
 
-	/*Get the gradient
+	/** Get the gradient
 	 *
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
@@ -140,7 +140,7 @@ public:
 		return get_marginal_likelihood_derivatives(para_dict);
 	}
 
-	/*Get the function value
+	/** Get the function value
 	 *
 	 * @return Vector that represents the function value
 	 */
@@ -215,9 +215,6 @@ private:
 	 * V*r = m_chol_utr
 	 */
 	SGVector<float64_t> m_be;
-
-
-
 };
 
 }

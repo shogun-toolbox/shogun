@@ -99,6 +99,7 @@ IGNORE_IN_CLASSLIST struct bmrm_ll {
 	uint32_t    idx;
 };
 
+/** inactive cutting plane statistics */
 IGNORE_IN_CLASSLIST struct ICP_stats
 {
 	/** maximum number of CP stats we can hold */

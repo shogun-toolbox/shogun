@@ -427,13 +427,13 @@ template<class T> class SGVector : public SGReferencedData
 			return result;
 		}
 
-		/// return sum(vec)
+		/// return product(vec)
 		static inline T product(SGVector<T> vec)
 		{
 			return product(vec.vector, vec.vlen);
 		}
 
-		/// return sum(vec)
+		/// return product(vec)
 		inline T product()
 		{
 			return product(vector, vlen);
@@ -578,10 +578,12 @@ template<class T> class SGVector : public SGReferencedData
 		index_t vlen;
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template<> void SGVector<float64_t>::vec1_plus_scalar_times_vec2(float64_t* vec1,
 				const float64_t scalar, const float64_t* vec2, int32_t n);
 
 template<> void SGVector<float32_t>::vec1_plus_scalar_times_vec2(float32_t* vec1,
 				const float32_t scalar, const float32_t* vec2, int32_t n);
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 #endif // __SGVECTOR_H__

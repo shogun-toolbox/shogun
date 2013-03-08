@@ -49,10 +49,10 @@ class CLaplacianInferenceMethod: public CInferenceMethod
 
 public:
 
-	/*Default Constructor*/
+	/** Default Constructor*/
 	CLaplacianInferenceMethod();
 
-	/* Constructor
+	/** Constructor
 	 * @param kernel covariance function
 	 * @param features features to use in inference
 	 * @param mean mean function
@@ -62,7 +62,7 @@ public:
 	CLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	/*Destructor*/
+	/** Destructor*/
 	virtual ~CLaplacianInferenceMethod();
 
 	/** get Negative Log Marginal Likelihood
@@ -95,7 +95,7 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * 	where \mu is the mean and K is the prior covariance matrix
+	 * 	where \f$\mu\f$ is the mean and K is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -134,78 +134,78 @@ public:
 		return "LaplacianInferenceMethod";
 	}
 
-	/*Get the gradient
+	/** Get the gradient
 	 *
 	 * @return Map of gradient. Keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict)
-			{
+	{
 		return get_marginal_likelihood_derivatives(para_dict);
-			}
+	}
 
-	/*Get the function value
+	/** Get the function value
 	 *
 	 * @return Vector that represents the function value
 	 */
 	virtual SGVector<float64_t> get_quantity()
-			{
+	{
 		SGVector<float64_t> result(1);
 		result[0] = get_negative_marginal_likelihood();
 		return result;
-			}
+	}
 
-	/*Get tolerance for Newton Iterations
+	/** Get tolerance for Newton Iterations
 	 *
 	 * @return Tolerance for Newton Iterations
 	 */
 	virtual float64_t get_newton_tolerance() {
 		return m_tolerance;}
 
-	/*Set tolerance for Newton Iterations
+	/** Set tolerance for Newton Iterations
 	 *
 	 * @param Tolerance for Newton Iterations
 	 */
 	virtual void set_newton_tolerance(float64_t tol) {
 		m_tolerance = tol;}
 
-	/*Get tolerance for Brent's Minimization Method
+	/** Get tolerance for Brent's Minimization Method
 	 *
 	 * @return tolerance for Brent's Minimization Method
 	 */
 	virtual float64_t get_minimization_tolerance() {
 		return m_opt_tolerance;}
 
-	/*Set tolerance for Brent's Minimization Method
+	/** Set tolerance for Brent's Minimization Method
 	 *
 	 * @param tolerance for Brent's Minimization Method
 	 */
 	virtual void set_minimization_tolerance(float64_t tol) {
 		m_opt_tolerance = tol;}
 
-	/*Get max iterations for Brent's Minimization Method
+	/** Get max iterations for Brent's Minimization Method
 	 *
 	 * @return max iterations for Brent's Minimization Method
 	 */
 	virtual int32_t get_minimization_iterations() {
 		return m_max;}
 
-	/*Set max iterations for Brent's Minimization Method
+	/** Set max iterations for Brent's Minimization Method
 	 *
 	 * @param max iterations for Brent's Minimization Method
 	 */
 	virtual void set_minimization_tolerance(int32_t itr) {
 		m_max = itr;}
 
-	/*Get max Newton iterations
+	/** Get max Newton iterations
 	 *
 	 * @return max Newton iterations
 	 */
 	virtual int32_t get_newton_iterations() {
 		return m_max_itr;}
 
-	/*Set max Newton iterations
+	/** Set max Newton iterations
 	 *
 	 * @param max Newton iterations
 	 */

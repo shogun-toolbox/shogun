@@ -27,7 +27,9 @@ namespace shogun
 		SVMLIGHT=2       /**< SVM^Light */
 	};
 
-	/**
+	/** @brief CCSOSVM
+	 *
+	 * Convex Concave Procedure Structured Output Support Vector Machine
 	 *
 	 */
 	class CCCSOSVM : public CLinearStructuredOutputMachine

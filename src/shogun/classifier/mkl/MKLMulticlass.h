@@ -95,6 +95,7 @@ protected:
     *
     */
    CMKLMulticlass( const CMKLMulticlass & cm);
+
    /** Class Assignment operator
     * protected to avoid its usage
     *
@@ -132,11 +133,13 @@ protected:
     * float64_t getsumofsignfreealphas();
     */
    void addingweightsstep( const std::vector<float64_t> & curweights);
+
    /** computes the first svm-dependent part used for generating MKL constraints
     * it is
     * \f$ \sum_y b_y^2-\sum_i \sum_{ y | y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
     */
    float64_t getsumofsignfreealphas();
+
    /** computes the second svm-dependent part used for generating MKL
     * constraints
     *
@@ -145,7 +148,6 @@ protected:
     */
    float64_t getsquarenormofprimalcoefficients(
          const int32_t ind);
-
 
    /** train Multiclass MKL classifier
     *
@@ -166,35 +168,40 @@ protected:
    *
    */
    CGMNPSVM* svm;
-   /** the solver wrapper
-   *
-   */
+
+   /** the solver wrapper */
    MKLMulticlassOptimizationBase* lpw;
-   /** stores the last two mkl iteration weights
-   *
-   */
+
+   /** stores the last two mkl iteration weights */
    ::std::vector< std::vector< float64_t> > weightshistory;
 
    /** MKL termination threshold
-   *	is set void set_mkl_epsilon(float64_t eps );
+   *	is set by void set_mkl_epsilon(float64_t eps );
    */
    float64_t mkl_eps;
+
    /** maximal number of MKL iterations
    *	is set by void set_max_num_mkliters(int32_t maxnum);
    */
    int32_t max_num_mkl_iters;
+
    /** MKL norm >=1
    *
    */
    float64_t pnorm;
+
    /** stores the term  \| w_l \|^2 ~~~ "alpha o Y K_l Y o alpha"
    *
    */
    std::vector<float64_t> normweightssquared;
 
+   /** norm term above from previous iteration */
    std::vector<float64_t> oldnormweightssquared;
-   float64_t oldalphaterm;
+
+   /** first svm-dependent part used for generating MKL constraints */
    float64_t curalphaterm;
+   /** alpha term above from previous iteration */
+   float64_t oldalphaterm;
 };
 
 }

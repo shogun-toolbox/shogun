@@ -23,16 +23,16 @@ class CInferenceMethod;
  *
  *  This inference method computes the Gaussian Method
  *  exactly using matrix equations.
- *  /f[
+ *  \f[
  *  	 L = cholesky(K + \sigma^{2}I)
- *  /f]
+ *  \f]
  *
  *	L is the cholesky decomposition of K, the covariance matrix, plus
  *	a diagonal matrix with entries \f$\sigma\f$, the observation noise.
  *
- *  /f[
+ *  \f[
  *  	\boldsymbol{\alpha} = L^{T} \backslash(L \backslash \boldsymbol{y}})
- *  /f]
+ *  \f]
  *
  *  Where \f$L\f$ is the matrix mentioned above, \f$\boldsymbol{y}\f$ are the labels, and
  *  \f$\backslash\f$ is an operator (\f$x = A \backslash B\f$ means \f$Ax=B\f$.)
@@ -50,7 +50,7 @@ public:
 	/** Default Constructor */
 	CExactInferenceMethod();
 
-	/* Constructor
+	/** Constructor
 	 * @param kernel covariance function
 	 * @param features features to use in inference
 	 * @param labels labels of the features
