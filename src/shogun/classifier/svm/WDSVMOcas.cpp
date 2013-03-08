@@ -365,6 +365,7 @@ int CWDSVMOcas::add_new_cut(
 	float32_t* new_a=SG_MALLOC(float32_t, nDim);
 	memset(new_a, 0, sizeof(float32_t)*nDim);
 
+#ifdef HAVE_PTHREAD
 	int32_t t;
 	int32_t nthreads=o->parallel->get_num_threads()-1;
 	int32_t step= string_length/o->parallel->get_num_threads();
@@ -375,7 +376,6 @@ int CWDSVMOcas::add_new_cut(
 		step=1;
 	}
 
-#ifdef HAVE_PTHREAD
 	for (t=0; t<nthreads; t++)
 	{
 		params_add[t].wdocas=o;

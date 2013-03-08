@@ -214,7 +214,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	//	DOC **dXc; /* constraint matrix */
 	SGVector<float64_t> delta; /* rhs of constraints */
 	SGSparseVector<float64_t> new_constraint;
-	float64_t dual_obj, alphasum;
+	float64_t dual_obj=0, alphasum;
 	int32_t iter, size_active;
 	float64_t value;
 	SGVector<int32_t> idle; /* for cleaning up */
