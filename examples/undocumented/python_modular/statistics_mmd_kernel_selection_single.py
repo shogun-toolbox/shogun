@@ -12,7 +12,7 @@ from numpy import *
 
 parameter_list = [[1000,10,5,3,pi/4, "opt"], [1000,10,5,3,pi/4, "max"], [1000,10,5,3,pi/4, "median"]]
 
-def kernel_choice_linear_time_mmd_single(m,distance,stretch,num_blobs,angle,selection_method):
+def statistics_mmd_kernel_selection_single(m,distance,stretch,num_blobs,angle,selection_method):
 	from shogun.Features import RealFeatures
 	from shogun.Features import GaussianBlobsDataGenerator
 	from shogun.Kernel import GaussianKernel, CombinedKernel
@@ -83,7 +83,7 @@ def kernel_choice_linear_time_mmd_single(m,distance,stretch,num_blobs,angle,sele
 	# Does not work for median method
 	if selection_method!="median":
 		ratios=selection.compute_measures()
-		print "Measures:", ratios
+		#print "Measures:", ratios
 		
 	#subplot(2,2,3)
 	#plot(ratios)
@@ -92,7 +92,7 @@ def kernel_choice_linear_time_mmd_single(m,distance,stretch,num_blobs,angle,sele
 	# perform kernel selection
 	kernel=selection.select_kernel()
 	kernel=GaussianKernel.obtain_from_generic(kernel)
-	print "selected kernel width:", kernel.get_width()
+	#print "selected kernel width:", kernel.get_width()
 	
 	# compute tpye I and II error (use many more trials). Type I error is only
 	# estimated to check MMD1_GAUSSIAN method for estimating the null
@@ -114,11 +114,11 @@ def kernel_choice_linear_time_mmd_single(m,distance,stretch,num_blobs,angle,sele
 		
 		typeIIerrors[i]=mmd.perform_test()>alpha
 	
-	print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
+	#print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
 	
 	return kernel,typeIerrors,typeIIerrors
 	
 if __name__=='__main__':
 	print('MMDKernelSelection')
-	kernel_choice_linear_time_mmd_single(*parameter_list[0])
+	statistics_mmd_kernel_selection_single(*parameter_list[0])
 	#show()

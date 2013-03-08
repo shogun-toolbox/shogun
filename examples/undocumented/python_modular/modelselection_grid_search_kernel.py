@@ -39,7 +39,7 @@ def create_param_tree():
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
-	gaussian_kernel.print_modsel_params()
+	#gaussian_kernel.print_modsel_params()
 
 	param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
 	gaussian_kernel_width=ModelSelectionParameters("width")
@@ -51,7 +51,7 @@ def create_param_tree():
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
-	power_kernel.print_modsel_params()
+	#power_kernel.print_modsel_params()
 
 	param_power_kernel=ModelSelectionParameters("kernel", power_kernel)
 	root.append_child(param_power_kernel)
@@ -64,7 +64,7 @@ def create_param_tree():
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
-	metric.print_modsel_params()
+	#metric.print_modsel_params()
 
 	param_power_kernel_metric1=ModelSelectionParameters("distance", metric)
 
@@ -110,18 +110,18 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 
 	# print all parameter available for modelselection
 	# Dont worry if yours is not included, simply write to the mailing list
-	classifier.print_modsel_params()
+	#classifier.print_modsel_params()
 
 	# model parameter selection
 	param_tree=create_param_tree()
-	param_tree.print_tree()
+	#param_tree.print_tree()
 
 	grid_search=GridSearchModelSelection(param_tree, cross)
 
-	print_state=True
+	print_state=False
 	best_combination=grid_search.select_model(print_state)
 	#print("best parameter(s):")
-	best_combination.print_tree()
+	#best_combination.print_tree()
 
 	best_combination.apply_to_machine(classifier)
 
@@ -130,7 +130,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	cross.set_conf_int_alpha(0.01)
 	result=cross.evaluate()
 	casted=CrossValidationResult.obtain_from_generic(result);
-	print "result mean:", casted.mean
+	#print "result mean:", casted.mean
 
 	return classifier,result,casted.mean
 	

@@ -55,8 +55,8 @@ def statistics_hsic (n, difference, angle):
 	features_y.remove_subset()
 	median_distance=Statistics.matrix_median(distances, True)
 	sigma_y=median_distance**2
-	print "median distance for Gaussian kernel on x:", sigma_x
-	print "median distance for Gaussian kernel on y:", sigma_y
+	#print "median distance for Gaussian kernel on x:", sigma_x
+	#print "median distance for Gaussian kernel on y:", sigma_y
 	kernel_x=GaussianKernel(10,sigma_x)
 	kernel_y=GaussianKernel(10,sigma_y)
 
@@ -66,37 +66,37 @@ def statistics_hsic (n, difference, angle):
 	# a test level of 0.05 using different methods to approximate
 	# null-distribution
 	statistic=hsic.compute_statistic()
-	print "HSIC:", statistic
+	#print "HSIC:", statistic
 	alpha=0.05
 
-	print "computing p-value using bootstrapping"
+	#print "computing p-value using bootstrapping"
 	hsic.set_null_approximation_method(BOOTSTRAP)
 	# normally, at least 250 iterations should be done, but that takes long
 	hsic.set_bootstrap_iterations(100)
 	# bootstrapping allows usage of unbiased or biased statistic
 	p_value_boot=hsic.compute_p_value(statistic)
 	thresh_boot=hsic.compute_threshold(alpha)
-	print "p_value:", p_value_boot
-	print "threshold for 0.05 alpha:", thresh_boot
-	print "p_value <", alpha, ", i.e. test sais p and q are dependend:", p_value_boot<alpha
+	#print "p_value:", p_value_boot
+	#print "threshold for 0.05 alpha:", thresh_boot
+	#print "p_value <", alpha, ", i.e. test sais p and q are dependend:", p_value_boot<alpha
 
-	print "computing p-value using gamma method"
+	#print "computing p-value using gamma method"
 	hsic.set_null_approximation_method(HSIC_GAMMA)
 	p_value_gamma=hsic.compute_p_value(statistic)
 	thresh_gamma=hsic.compute_threshold(alpha)
-	print "p_value:", p_value_gamma
-	print "threshold for 0.05 alpha:", thresh_gamma
-	print "p_value <", alpha, ", i.e. test sais p and q are dependend::", p_value_gamma<alpha
+	#print "p_value:", p_value_gamma
+	#print "threshold for 0.05 alpha:", thresh_gamma
+	#print "p_value <", alpha, ", i.e. test sais p and q are dependend::", p_value_gamma<alpha
 
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
 	# bootstrapping, biased statistic
-	print "sampling null distribution using bootstrapping"
+	#print "sampling null distribution using bootstrapping"
 	hsic.set_null_approximation_method(BOOTSTRAP)
 	hsic.set_bootstrap_iterations(100)
 	null_samples=hsic.bootstrap_null()
-	print "null mean:", mean(null_samples)
-	print "null variance:", var(null_samples)
+	#print "null mean:", mean(null_samples)
+	#print "null variance:", var(null_samples)
 	#hist(null_samples, 100); show()
 	
 	return p_value_boot, thresh_boot, p_value_gamma, thresh_gamma, statistic, null_samples

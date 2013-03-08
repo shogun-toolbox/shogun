@@ -47,7 +47,7 @@ def statistics_linear_time_mmd (n,dim,difference):
 	# compute median and determine kernel width (using shogun)
 	median_distance=Statistics.matrix_median(distances, True)
 	sigma=median_distance**2
-	print "median distance for Gaussian kernel:", sigma
+	#print "median distance for Gaussian kernel:", sigma
 	kernel=GaussianKernel(10,sigma)
 
 	# mmd instance using streaming features, blocksize of 10000
@@ -56,32 +56,32 @@ def statistics_linear_time_mmd (n,dim,difference):
 	# perform test: compute p-value and test if null-hypothesis is rejected for
 	# a test level of 0.05
 	statistic=mmd.compute_statistic()
-	print "test statistic:", statistic
+	#print "test statistic:", statistic
 	
 	# do the same thing using two different way to approximate null-dstribution
 	# bootstrapping and gaussian approximation (ony for really large samples)
 	alpha=0.05
 
-	print "computing p-value using bootstrapping"
+	#print "computing p-value using bootstrapping"
 	mmd.set_null_approximation_method(BOOTSTRAP)
 	mmd.set_bootstrap_iterations(50) # normally, far more iterations are needed
 	p_value_boot=mmd.compute_p_value(statistic)
-	print "p_value_boot:", p_value_boot
-	print "p_value_boot <", alpha, ", i.e. test sais p!=q:", p_value_boot<alpha
+	#print "p_value_boot:", p_value_boot
+	#print "p_value_boot <", alpha, ", i.e. test sais p!=q:", p_value_boot<alpha
 	
-	print "computing p-value using gaussian approximation"
+	#print "computing p-value using gaussian approximation"
 	mmd.set_null_approximation_method(MMD1_GAUSSIAN)
 	p_value_gaussian=mmd.compute_p_value(statistic)
-	print "p_value_gaussian:", p_value_gaussian
-	print "p_value_gaussian <", alpha, ", i.e. test sais p!=q:", p_value_gaussian<alpha
+	#print "p_value_gaussian:", p_value_gaussian
+	#print "p_value_gaussian <", alpha, ", i.e. test sais p!=q:", p_value_gaussian<alpha
 	
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
 	mmd.set_null_approximation_method(BOOTSTRAP)
 	mmd.set_bootstrap_iterations(10) # normally, far more iterations are needed
 	null_samples=mmd.bootstrap_null()
-	print "null mean:", mean(null_samples)
-	print "null variance:", var(null_samples)
+	#print "null mean:", mean(null_samples)
+	#print "null variance:", var(null_samples)
 	
 	# compute type I and type II errors for Gaussian approximation
 	# number of trials should be larger to compute tight confidence bounds
@@ -98,7 +98,7 @@ def statistics_linear_time_mmd (n,dim,difference):
 		
 		typeIIerrors[i]=mmd.perform_test()>alpha
 	
-	print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
+	#print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
 	
 	return statistic, p_value_boot, p_value_gaussian, null_samples, typeIerrors, typeIIerrors
 	

@@ -52,7 +52,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	mmd.set_bootstrap_iterations(3);
 	p_value_boot=mmd.perform_test();
 	# reject if p-value is smaller than test level
-	print "bootstrap: p!=q: ", p_value_boot<alpha
+	#print "bootstrap: p!=q: ", p_value_boot<alpha
 
 	# using spectrum method. Use at least 250 samples from null.
 	# This is consistent but sometimes breaks, always monitor type I error.
@@ -64,7 +64,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	mmd.set_num_samples_sepctrum(250);
 	p_value_spectrum=mmd.perform_test();
 	# reject if p-value is smaller than test level
-	print "spectrum: p!=q: ", p_value_spectrum<alpha
+	#print "spectrum: p!=q: ", p_value_spectrum<alpha
 
 	# using gamma method. This is a quick hack, which works most of the time
 	# but is NOT guaranteed to. See tutorial for details.
@@ -73,7 +73,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	mmd.set_null_approximation_method(MMD2_GAMMA);
 	p_value_gamma=mmd.perform_test();
 	# reject if p-value is smaller than test level
-	print "gamma: p!=q: ", p_value_gamma<alpha
+	#print "gamma: p!=q: ", p_value_gamma<alpha
 
 	# compute tpye I and II error (use many more trials in practice).
 	# Type I error is not necessary if one uses bootstrapping. We do it here
@@ -105,7 +105,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 		# on normal data, this gives type II error
 		type_II_errors[i]=mmd.perform_test()>alpha;
 		
-	return type_I_errors,type_I_errors,p_value_boot,p_value_spectrum,p_value_gamma, 
+	return type_I_errors.get(),type_I_errors.get(),p_value_boot,p_value_spectrum,p_value_gamma, 
 	
 if __name__=='__main__':
 	print('QuadraticTimeMMD')

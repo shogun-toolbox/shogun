@@ -28,7 +28,7 @@ def statistics_kmm (n,d):
 
 	kmm = KernelMeanMatching(kernel,array([0,1,2,3,7,8,9],dtype=int32),array([4,5,6],dtype=int32))
 	w = kmm.compute_weights()
-	print w
+	#print w
 	return w
 
 if __name__=='__main__':

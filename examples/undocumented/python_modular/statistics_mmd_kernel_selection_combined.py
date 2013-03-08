@@ -13,7 +13,7 @@ from numpy import *
 parameter_list = [[1000,10,5,3,pi/4, "opt"], [1000,10,5,3,pi/4, "l2"]]
 
 
-def kernel_choice_linear_time_mmd_combined(m,distance,stretch,num_blobs,angle,selection_method):
+def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,selection_method):
 	from shogun.Features import RealFeatures
 	from shogun.Features import GaussianBlobsDataGenerator
 	from shogun.Kernel import GaussianKernel, CombinedKernel
@@ -72,7 +72,7 @@ def kernel_choice_linear_time_mmd_combined(m,distance,stretch,num_blobs,angle,se
 	# perform kernel selection (kernel is automatically set)
 	kernel=selection.select_kernel()
 	kernel=CombinedKernel.obtain_from_generic(kernel)
-	print "selected kernel weights:", kernel.get_subkernel_weights()
+	#print "selected kernel weights:", kernel.get_subkernel_weights()
 	#subplot(2,2,3)
 	#plot(kernel.get_subkernel_weights())
 	#title("Kernel weights")
@@ -96,11 +96,11 @@ def kernel_choice_linear_time_mmd_combined(m,distance,stretch,num_blobs,angle,se
 		
 		typeIIerrors[i]=mmd.perform_test()>alpha
 	
-	print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
+	#print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
 	
 	return kernel,typeIerrors,typeIIerrors
 	
 if __name__=='__main__':
 	print('MMDKernelSelectionCombined')
-	kernel_choice_linear_time_mmd_combined(*parameter_list[0])
+	statistics_mmd_kernel_selection_combined(*parameter_list[0])
 	#show()
