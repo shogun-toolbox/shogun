@@ -1,4 +1,4 @@
-2012-12-01 Soeren Sonnenburg <sonne@debian.org>
+2013-03-08 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 2.1.0 (libshogun 13.0, data 0.4, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
@@ -34,9 +34,9 @@
 		  suggested by Oksana Bayda
 		- Fix for wrong Spectrum mismatch RBF construction in static interfaces reported
 		  by Nona Kermani
-                - Fix for wrong include in SGMatrix causing build fail on Mac OS X 
-                  (thanks to @bianjiang)
-        - Fixed a bug that caused kernel machines to return non-sense when using
+		- Fix for wrong include in SGMatrix causing build fail on Mac OS X 
+		(thanks to @bianjiang)
+		- Fixed a bug that caused kernel machines to return non-sense when using
           custom kernel matrices with subsets attached to them
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData
