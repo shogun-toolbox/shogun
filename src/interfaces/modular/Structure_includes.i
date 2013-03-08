@@ -19,12 +19,7 @@
  #include <shogun/structure/StateModelTypes.h>
  #include <shogun/structure/StateModel.h>
  #include <shogun/structure/TwoStateModel.h>
-
  #include <shogun/structure/DirectorStructuredModel.h>
-
- #include <shogun/structure/libbmrm.h>
- #include <shogun/structure/libppbm.h>
- #include <shogun/structure/libp3bm.h>
  #include <shogun/structure/DualLibQPBMSOSVM.h>
 
 #ifdef USE_MOSEK
