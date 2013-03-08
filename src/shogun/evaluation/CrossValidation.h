@@ -68,7 +68,7 @@ class CCrossValidationResult : public CEvaluationResult
 
 		/** helper method used to specialize a base class instance
 		 *
-		 * @param result its dynamic type must be CCrossValidationResult
+		 * @param eval_result its dynamic type must be CCrossValidationResult
 		 */
 		static CCrossValidationResult* obtain_from_generic(
 				CEvaluationResult* eval_result)
@@ -81,7 +81,7 @@ class CCrossValidationResult : public CEvaluationResult
 					"of wrong type!\n");
 
 			SG_REF(eval_result);
-			return (CCrossValidationResult*)eval_result;
+			return (CCrossValidationResult*) eval_result;
 		}
 
 		/** print result */
