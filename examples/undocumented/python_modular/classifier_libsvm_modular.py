@@ -28,7 +28,7 @@ def classifier_libsvm_modular (fm_train_real=traindat,fm_test_real=testdat,label
 	supportvectors = sv_idx=svm.get_support_vectors()
 	alphas=svm.get_alphas()
 	predictions = svm.apply()
-	print predictions.get_labels()
+	#print predictions.get_labels()
 	return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':

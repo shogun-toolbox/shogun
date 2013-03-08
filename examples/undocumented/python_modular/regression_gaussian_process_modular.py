@@ -44,23 +44,23 @@ def regression_gaussian_process_modular (traindata_real=traindat, \
 
 	predictions = gp.apply_regression()
 
-	print("Alpha Vector")
-	print(alpha)
+	#print("Alpha Vector")
+	#print(alpha)
 
-	print("Labels")
-	print(labels.get_labels())
+	#print("Labels")
+	#print(labels.get_labels())
 
-	print("sW Matrix")
-	print(diagonal)
+	#print("sW Matrix")
+	#print(diagonal)
 
-	print("Covariances")
-	print(covariance.get_labels())
+	#print("Covariances")
+	#print(covariance.get_labels())
 
-	print("Mean Predictions")
-	print(predictions.get_labels())
+	#print("Mean Predictions")
+	#print(predictions.get_labels())
 
-	print("Cholesky Matrix L")
-	print(cholesky)
+	#print("Cholesky Matrix L")
+	#print(cholesky)
 	return gp, alpha, labels, diagonal, covariance, predictions, cholesky
 
 if __name__=='__main__':

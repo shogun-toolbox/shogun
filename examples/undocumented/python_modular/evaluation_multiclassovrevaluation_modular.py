@@ -22,12 +22,12 @@ def evaluation_multiclassovrevaluation_modular (traindat, label_traindat, testda
 	binary_evaluator = ROCEvaluation()
 	evaluator = MulticlassOVREvaluation(binary_evaluator)
 	mean_roc = evaluator.evaluate(predicted_labels,ground_truth_labels)
-	print mean_roc
+	#print mean_roc
 	
 	binary_evaluator = ContingencyTableEvaluation(ACCURACY)
 	evaluator = MulticlassOVREvaluation(binary_evaluator)
 	mean_accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
-	print mean_accuracy
+	#print mean_accuracy
 
 	return mean_roc, mean_accuracy
 

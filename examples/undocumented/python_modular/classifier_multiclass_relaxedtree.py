@@ -10,7 +10,7 @@ def classifier_multiclass_relaxedtree (fm_train_real=traindat,fm_test_real=testd
 	from shogun.Classifier import RelaxedTree, MulticlassLibLinear
 	from shogun.Kernel import GaussianKernel
 
-	print('Working on a problem of %d features and %d samples' % fm_train_real.shape)
+	#print('Working on a problem of %d features and %d samples' % fm_train_real.shape)
 
 	feats_train = RealFeatures(fm_train_real)
 

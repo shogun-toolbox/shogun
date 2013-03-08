@@ -1,27 +1,25 @@
 #!/usr/bin/env python
 import numpy
 from shogun.Features import RealFeatures
-try:
-	from shogun.Distance import DirectorDistance
-except ImportError:
-	print "recompile shogun with --enable-swig-directors"
-	import sys
-	sys.exit(0)
-
-
-class DirectorEuclideanDistance(DirectorDistance):
-	def __init__(self):
-		DirectorDistance.__init__(self, True)
-	def distance_function(self, idx_a, idx_b):
-		seq1 = self.get_lhs().get_feature_vector(idx_a)
-               	seq2 = self.get_rhs().get_feature_vector(idx_b)
-		return numpy.linalg.norm(seq1-seq2)
 
 traindat = numpy.random.random_sample((10,10))
 testdat = numpy.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
 def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
+	try:
+		from shogun.Distance import DirectorDistance
+	except ImportError:
+		print "recompile shogun with --enable-swig-directors"
+		return
+
+	class DirectorEuclideanDistance(DirectorDistance):
+		def __init__(self):
+			DirectorDistance.__init__(self, True)
+		def distance_function(self, idx_a, idx_b):
+			seq1 = self.get_lhs().get_feature_vector(idx_a)
+			seq2 = self.get_rhs().get_feature_vector(idx_b)
+			return numpy.linalg.norm(seq1-seq2)
 
 	from shogun.Distance import EuclideanDistance
 	from modshogun import Time

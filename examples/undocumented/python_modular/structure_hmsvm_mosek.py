@@ -18,8 +18,7 @@ def structure_hmsvm_mosek (m_data_dict=data_dict):
 		from shogun.Structure import PrimalMosekSOSVM
 	except ImportError:
 		print "Mosek not available"
-		import sys
-		sys.exit(0)
+		return
 
 	labels_array = m_data_dict['label'][0]
 

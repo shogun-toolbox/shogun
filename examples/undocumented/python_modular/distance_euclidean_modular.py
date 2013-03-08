@@ -5,9 +5,9 @@ lm=LoadMatrix()
 traindat = lm.load_numbers('../data/fm_train_real.dat')
 testdat = lm.load_numbers('../data/fm_test_real.dat')
 
-parameter_list = [[traindat,testdat],[traindat,testdat]]
+parameter_list = [[traindat,traindat],[traindat,testdat]]
 
-def distance_euclidean_modular (fm_train_real=traindat,fm_test_real=testdat):
+def distance_euclidean_modular(fm_train_real=traindat,fm_test_real=testdat):
 
 	from shogun.Features import RealFeatures
 	from shogun.Distance import EuclideanDistance

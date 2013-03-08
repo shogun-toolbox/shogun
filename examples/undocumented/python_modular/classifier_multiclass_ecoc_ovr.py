@@ -31,10 +31,10 @@ def classifier_multiclass_ecoc_ovr (fm_train_real=traindat,fm_test_real=testdat,
 	out_ecoc = label_ecoc.get_labels() 
 
 	n_diff = (out_mc != out_ecoc).sum()
-	if n_diff == 0:
-		print("Same results for OvR and ECOCOvR")
-	else:
-		print("Different results for OvR and ECOCOvR (%d out of %d are different)" % (n_diff, len(out_mc)))
+	#if n_diff == 0:
+	#	print("Same results for OvR and ECOCOvR")
+	#else:
+	#	print("Different results for OvR and ECOCOvR (%d out of %d are different)" % (n_diff, len(out_mc)))
 
 	if label_test_multiclass is not None:
 		from shogun.Evaluation import MulticlassAccuracy
@@ -42,8 +42,8 @@ def classifier_multiclass_ecoc_ovr (fm_train_real=traindat,fm_test_real=testdat,
 		evaluator = MulticlassAccuracy()
 		acc_mc = evaluator.evaluate(label_mc, labels_test)
 		acc_ecoc = evaluator.evaluate(label_ecoc, labels_test)
-		print('Normal OVR Accuracy = %.4f' % acc_mc)
-		print('ECOC OVR Accuracy   = %.4f' % acc_ecoc)
+		#print('Normal OVR Accuracy = %.4f' % acc_mc)
+		#print('ECOC OVR Accuracy   = %.4f' % acc_ecoc)
 
 	return out_ecoc, out_mc
 

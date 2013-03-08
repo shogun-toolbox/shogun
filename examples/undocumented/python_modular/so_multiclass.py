@@ -3,15 +3,6 @@
 
 import numpy as np
 
-try:
-	from shogun.Features 	import RealFeatures
-	from shogun.Loss     	import HingeLoss
-	from shogun.Structure	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
-except ImportError:
-	print "Mosek not available"
-	import sys
-	sys.exit(0)
-
 def gen_data(num_classes,num_samples,dim):
 	np.random.seed(0)
 	covs = np.array([[[0., -1. ], [2.5,  .7]],
@@ -35,6 +26,14 @@ traindat, label_traindat = gen_data(M,N,dim)
 parameter_list = [[X,y]]
 
 def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat):
+	try:
+		from shogun.Features 	import RealFeatures
+		from shogun.Loss     	import HingeLoss
+		from shogun.Structure	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
+	except ImportError:
+		print "Mosek not available"
+		return
+
 	labels = MulticlassSOLabels(label_train_multiclass)
 	features = RealFeatures(fm_train_real.T)
 

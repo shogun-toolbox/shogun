@@ -86,23 +86,23 @@ def serialization_svmlight_modular (num, dist, width, C):
     # serialize to file
 
     fn = "serialized_svm.bz2"
-    print("serializing SVM to file", fn)
+    #print("serializing SVM to file", fn)
     save(fn, svm)
 
     ##################################################
     # unserialize and sanity check
 
-    print("unserializing SVM")
+    #print("unserializing SVM")
     svm2 = load(fn)
 
-    print("comparing objectives")
+    #print("comparing objectives")
 
     svm2.train()
 
-    print("objective before serialization:", svm.get_objective())
-    print("objective after serialization:", svm2.get_objective())
+    #print("objective before serialization:", svm.get_objective())
+    #print("objective after serialization:", svm2.get_objective())
 
-    print("comparing predictions")
+    #print("comparing predictions")
 
     out =  svm.apply(feats_test).get_labels()
     out2 =  svm2.apply(feats_test).get_labels()
@@ -111,7 +111,7 @@ def serialization_svmlight_modular (num, dist, width, C):
     for i in xrange(len(out)):
         assert abs(out[i] - out2[i] < 0.000001)
 
-    print("all checks passed.")
+    #print("all checks passed.")
 
     return True
 

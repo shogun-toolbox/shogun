@@ -26,7 +26,7 @@ def classifier_libsvm_minimal_modular (fm_train_real=traindat,fm_test_real=testd
 	kernel.init(feats_train, feats_test);
 	out=svm.apply().get_labels();
 	testerr=mean(sign(out)!=label_train_twoclass)
-	print(testerr)
+	#print(testerr)
 
 if __name__=='__main__':
 	print('LibSVM Minimal')

@@ -40,10 +40,10 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 	base_classifier = LibLinear(L2R_L2LOSS_SVC)
 	base_classifier.set_bias_enabled(True)
 
-	print('Testing with %d encoders and %d decoders' % (len(encoders), len(decoders)))
-	print('-' * 70)
-	format_str = '%%15s + %%-10s  %%-10%s %%-10%s %%-10%s'
-	print((format_str % ('s', 's', 's')) % ('encoder', 'decoder', 'codelen', 'time', 'accuracy'))
+	#print('Testing with %d encoders and %d decoders' % (len(encoders), len(decoders)))
+	#print('-' * 70)
+	#format_str = '%%15s + %%-10s  %%-10%s %%-10%s %%-10%s'
+	#print((format_str % ('s', 's', 's')) % ('encoder', 'decoder', 'codelen', 'time', 'accuracy'))
 
 	def run_ecoc(ier, idr):
 		encoder = getattr(Classifier, encoders[ier])()
@@ -78,8 +78,8 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 		        acc_fmt = '.4f'
 
 		    t_elapse = time.clock() - t_begin
-		    print((format_str % ('d', '.3f', acc_fmt)) % 
-		            (encoders[ier][4:-7], decoders[idr][4:-7], codelen, t_elapse, acc))
+		    #print((format_str % ('d', '.3f', acc_fmt)) % 
+		    #        (encoders[ier][4:-7], decoders[idr][4:-7], codelen, t_elapse, acc))
 
 if __name__=='__main__':
     print('MulticlassECOC')

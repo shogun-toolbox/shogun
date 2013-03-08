@@ -21,7 +21,7 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 
 parameter_list = [[traindat,label_traindat]]
 
-def evaluation_cross_validation_classification (traindat=traindat, label_traindat=label_traindat):
+def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_traindat=label_traindat):
     from shogun.Evaluation import CrossValidation, CrossValidationResult
     from shogun.Evaluation import CrossValidationPrintOutput
     from shogun.Evaluation import CrossValidationMKLStorage
@@ -91,4 +91,4 @@ def evaluation_cross_validation_classification (traindat=traindat, label_trainda
 
 if __name__=='__main__':
 	print('Evaluation CrossValidationClassification')
-	evaluation_cross_validation_classification(*parameter_list[0])
+	evaluation_cross_validation_mkl_weight_storage(*parameter_list[0])

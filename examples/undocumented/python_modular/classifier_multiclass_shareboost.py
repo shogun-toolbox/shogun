@@ -9,7 +9,7 @@ def classifier_multiclass_shareboost (fm_train_real=traindat,fm_test_real=testda
     from shogun.Features import RealFeatures, RealSubsetFeatures, MulticlassLabels
     from shogun.Classifier import ShareBoost
 
-    print('Working on a problem of %d features and %d samples' % fm_train_real.shape)
+    #print('Working on a problem of %d features and %d samples' % fm_train_real.shape)
 
     feats_train = RealFeatures(fm_train_real)
 
@@ -17,7 +17,7 @@ def classifier_multiclass_shareboost (fm_train_real=traindat,fm_test_real=testda
 
     shareboost = ShareBoost(feats_train, labels, min(fm_train_real.shape[0]-1, 30))
     shareboost.train();
-    print(shareboost.get_activeset())
+    #print(shareboost.get_activeset())
 
     feats_test  = RealSubsetFeatures(RealFeatures(fm_test_real), shareboost.get_activeset())
     label_pred = shareboost.apply(feats_test)
@@ -29,7 +29,7 @@ def classifier_multiclass_shareboost (fm_train_real=traindat,fm_test_real=testda
         labels_test = MulticlassLabels(label_test_multiclass)
         evaluator = MulticlassAccuracy()
         acc = evaluator.evaluate(label_pred, labels_test)
-        print('Accuracy = %.4f' % acc)
+        #print('Accuracy = %.4f' % acc)
 
     return out
 
