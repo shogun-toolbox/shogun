@@ -66,6 +66,10 @@ class CCrossValidationResult : public CEvaluationResult
 		 */
 		virtual const char* get_name() const { return "CrossValidationResult"; }
 
+		/** helper method used to specialize a base class instance
+		 *
+		 * @param result its dynamic type must be CCrossValidationResult
+		 */
 		static CCrossValidationResult* obtain_from_generic(
 				CEvaluationResult* result)
 		{
@@ -77,7 +81,7 @@ class CCrossValidationResult : public CEvaluationResult
 					"of wrong type!\n");
 
 			SG_REF(result);
-			return (CCrossValidationResult*)result;
+			return (CCrossValidationResult*) result;
 		}
 
 		/** print result */
