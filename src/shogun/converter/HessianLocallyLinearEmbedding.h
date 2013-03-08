@@ -22,8 +22,7 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief class HessianLocallyLinearEmbedding (part of the
- * Efficient Dimensionality Reduction Toolkit) used to preprocess
+/** @brief class HessianLocallyLinearEmbedding used to preprocess
  * data using Hessian Locally Linear Embedding algorithm as described in
  *
  * Donoho, D., & Grimes, C. (2003).
@@ -33,6 +32,8 @@ class CDistance;
  * Be sure k value is set with at least
  * 1+[target dim]+1/2 [target_dim]*[1 + target dim], e.g.
  * greater than 6 for target dimensionality of 2.
+ *
+ * Uses implementation from the Tapkee library.
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','hlle',k);

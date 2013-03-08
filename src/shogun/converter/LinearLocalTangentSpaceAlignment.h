@@ -23,8 +23,7 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief class LinearLocalTangentSpaceAlignment (part of the
- * Efficient Dimensionality Reduction Toolkit) converter used to
+/** @brief class LinearLocalTangentSpaceAlignment converter used to
  * construct embeddings as described in:
  *
  * Zhang, T., Yang, J., Zhao, D., & Ge, X. (2007).
@@ -34,6 +33,8 @@ class CDistance;
  *
  * This method is hardly applicable to very high-dimensional data due to
  * necessity to solve eigenproblem involving matrix of size (dim x dim).
+ * 
+ * Uses implementation from the Tapkee library.
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','lltsa',k);

@@ -22,8 +22,8 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief class DiffusionMaps (part of the Efficient Dimensionality Reduction Toolkit)
- * used to preprocess given data using Diffusion Maps dimensionality
+/** @brief class DiffusionMaps used to preprocess given data 
+ * using Diffusion Maps dimensionality
  * reduction technique as described in
  *
  * Coifman, R., & Lafon, S. (2006).
@@ -31,7 +31,7 @@ class CKernel;
  * Applied and Computational Harmonic Analysis, 21(1), 5-30. Elsevier.
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S1063520306000546
  *
- * Note that this implementation is rather slow with LAPACK.
+ * Uses implementation from the Tapkee library.
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','diffusion_maps',t,width);

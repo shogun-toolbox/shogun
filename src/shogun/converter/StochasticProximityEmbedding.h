@@ -26,8 +26,7 @@ enum ESPEStrategy
 	SPE_LOCAL,
 };
 
-/** @brief class StochasticProximityEmbedding (part of the Efficient 
- * Dimensionality Reduction Toolkit) used to construct embeddings of data using 
+/** @brief class StochasticProximityEmbedding used to construct embeddings of data using 
  * the Stochastic Proximity algorithm.
  *
  * Agrafiotis, D. K. (2002)
@@ -54,6 +53,8 @@ enum ESPEStrategy
  * to be embedded, the distance matrix is never computed explicitily. This has the 
  * drawback that it is likely that the same distances are computed several times during
  * the process.
+ *
+ * Uses implementation from the Tapkee library.
  *
  * Only CEuclideanDistance distance is supported for the moment.
  *

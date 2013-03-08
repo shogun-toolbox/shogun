@@ -18,6 +18,12 @@
 namespace shogun
 {
 
+/** @class class Factor Analysis used to embed 
+ * data using Factor Analysis algorithm.
+ *
+ * Uses implementation from the Tapkee library.
+ *
+ */
 class CFactorAnalysis : public CEmbeddingConverter
 {
 public:

@@ -22,8 +22,7 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief class Multidimensionalscaling (part of the Efficient Dimensionality
- * Reduction Toolkit) is used to perform
+/** @brief class Multidimensionalscaling is used to perform
  * multidimensional scaling (capable of landmark approximation
  * if requested).
  *
@@ -52,6 +51,8 @@ class CDistance;
  * proper triangulation. For reasonable embedding accuracy greater
  * values (30%-50% of total examples number) is pretty good for the
  * most tasks.
+ *
+ * Uses implementation from the Tapkee library.
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','mds');

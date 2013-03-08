@@ -30,6 +30,8 @@ class CDistance;
  * Science, 14, 585-591. MIT Press.
  * Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.19.9400&rep=rep1&type=pdf
  *
+ * Uses implementation from the Tapkee library.
+ *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','laplacian_eigenmaps',k,width);
  *

@@ -24,8 +24,7 @@ namespace shogun
 class CFeatures;
 class CDistance;
 
-/** @brief class Isomap (part of the Efficient Dimension
- * Reduction Toolkit) used to embed data using Isomap algorithm
+/** @brief class Isomap used to embed data using Isomap algorithm
  * as described in
  *
  * Silva, V. D., & Tenenbaum, J. B. (2003).
@@ -35,6 +34,8 @@ class CDistance;
  *
  * It is possible to apply preprocessor to specified distance using
  * apply_to_distance.
+ *
+ * Uses implementation from the Tapkee library.
  *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','isomap',k);

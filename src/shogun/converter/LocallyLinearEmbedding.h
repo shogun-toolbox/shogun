@@ -38,6 +38,8 @@ class CDistance;
  * Pattern Recognition, 39(11), 2233-2235.
  * Retrieved from http://linkinghub.elsevier.com/retrieve/pii/S0031320306002160
  *
+ * Uses implementation from the Tapkee library.
+ *
  * To use this converter with static interfaces please refer it by
  * sg('create_converter','lle',k);
  *
