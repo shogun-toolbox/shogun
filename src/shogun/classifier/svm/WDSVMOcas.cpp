@@ -353,17 +353,17 @@ int CWDSVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
-#ifdef HAVE_PTHREAD
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	uint32_t i;
+	float64_t* c_bias = o->cp_bias;
 	uint32_t nDim=(uint32_t) o->w_dim;
 	float32_t** cuts=o->cuts;
-	float64_t* c_bias = o->cp_bias;
-
-	uint32_t i;
-	wdocas_thread_params_add* params_add=SG_MALLOC(wdocas_thread_params_add, o->parallel->get_num_threads());
-	pthread_t* threads=SG_MALLOC(pthread_t, o->parallel->get_num_threads());
 	float32_t* new_a=SG_MALLOC(float32_t, nDim);
 	memset(new_a, 0, sizeof(float32_t)*nDim);
+#ifdef HAVE_PTHREAD
+
+	wdocas_thread_params_add* params_add=SG_MALLOC(wdocas_thread_params_add, o->parallel->get_num_threads());
+	pthread_t* threads=SG_MALLOC(pthread_t, o->parallel->get_num_threads());
 
 	int32_t string_length = o->string_length;
 	int32_t t;
@@ -414,6 +414,8 @@ int CWDSVMOcas::add_new_cut(
 		//	new_a[i]+=a[i];
 		//SG_FREE(a);
 	}
+	SG_FREE(threads);
+	SG_FREE(params_add);
 #endif /* HAVE_PTHREAD */
 	for(i=0; i < cut_length; i++)
 	{
@@ -430,8 +432,6 @@ int CWDSVMOcas::add_new_cut(
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
 	//CMath::display_vector(cuts[nSel], nDim, "cut[nSel]");
 	//
-	SG_FREE(threads);
-	SG_FREE(params_add);
 
 	return 0;
 }
