@@ -24,14 +24,12 @@ using namespace shogun;
 COligoStringKernel::COligoStringKernel()
   : CStringKernel<char>()
 {
-	SG_UNSTABLE("OligoStringKernel")
 	init();
 }
 
 COligoStringKernel::COligoStringKernel(int32_t cache_sz, int32_t kmer_len, float64_t w)
 : CStringKernel<char>(cache_sz)
 {
-	SG_UNSTABLE("OligoStringKernel")
 	init();
 
 	k=kmer_len;
