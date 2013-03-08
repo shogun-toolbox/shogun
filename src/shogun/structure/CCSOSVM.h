@@ -29,8 +29,11 @@ namespace shogun
 
 	/** @brief CCSOSVM
 	 *
-	 * Convex Concave Procedure Structured Output Support Vector Machine
+	 * Structured Output Support Vector Machine based on [1]
 	 *
+	 * [1] T. Joachims, T. Finley and C.-N. Yu, 
+	 *     Cutting-Plane Training of Structural SVMs,
+	 *     Machine Learning Journal, 77(1):27-59
 	 */
 	class CCCSOSVM : public CLinearStructuredOutputMachine
 	{
@@ -188,16 +191,23 @@ namespace shogun
 			void init();
 
 		private:
+			/** C */
 			float64_t m_C;
+			/** epsilon */
 			float64_t m_eps;
+			/** primary objective value */
 			float64_t m_primal_obj;
 			float64_t m_alpha_thrld;
 			float64_t m_max_rho;
 
+			/** maximum number of iterations */
 			index_t m_max_iter;
+			/** number of iterations before checking for cleaning up idle cutting planes */
 			index_t m_cleanup_check;
+			/** maximum number of idle iterations before marking as an idle cutting plane */
 			index_t m_idle_iter;
 
+			/** QP solver type */
 			EQPType m_qp_type;
 	};
 }
