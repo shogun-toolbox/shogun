@@ -5,11 +5,11 @@
 # the Free Software Foundation either version 3 of the License, or
 # (at your option) any later version.
 #
-# Written (C) 2012 Heiko Strathmann
+# Written (C) 2012-2013 Heiko Strathmann
 #
 
 from numpy import array
-from numpy.random import rand
+from numpy import random
 
 from shogun.Evaluation import CrossValidation, CrossValidationResult
 from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
@@ -22,6 +22,7 @@ from shogun.Distance import MinkowskiMetric
 from shogun.ModelSelection import GridSearchModelSelection
 from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
 from shogun.ModelSelection import ParameterCombination
+from shogun.Mathematics import Math
 
 def create_param_tree():
 	root=ModelSelectionParameters()
@@ -75,14 +76,15 @@ def create_param_tree():
 
 	return root
 
+parameter_list = [[3,20,3]]
 
-def modelselection_grid_search_kernel ():
-	num_subsets=3
-	num_vectors=20
-	dim_vectors=3
-
+def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
+	# init seed for reproducability
+	Math.init_random(1)
+	random.seed(1);
+	
 	# create some (non-sense) data
-	matrix=rand(dim_vectors, num_vectors)
+	matrix=random.rand(dim_vectors, num_vectors)
 
 	# create num_feautres 2-dimensional vectors
 	features=RealFeatures()
@@ -127,11 +129,11 @@ def modelselection_grid_search_kernel ():
 	cross.set_num_runs(10)
 	cross.set_conf_int_alpha(0.01)
 	result=cross.evaluate()
-	print("result: ")
-	#result.print_result()
+	casted=CrossValidationResult.obtain_from_generic(result);
+	print "result mean:", casted.mean
 
-	return 0
+	return classifier,result,casted.mean
 	
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')
-	modelselection_grid_search_kernel()
+	modelselection_grid_search_kernel(*parameter_list[0])
