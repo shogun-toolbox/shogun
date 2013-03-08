@@ -1,0 +1,10 @@
+In this example, kernel selection methods for MMD based statistics are
+illustrated. A difficult synthetic dataset is used to illustrate their
+performance in two-sample testing. All kernel selection methods for MMD
+work via creating a combined kernel with all desired baseline kernels.
+The example demonstrates how to perform kernel selection and use it
+for two-sample testing. Methods for both single and combined kernels
+are demonstrated. In addition, type I and II error estimates
+are computed. As usual, there are more iterations/samples required in
+practice.
+See tutorial and Class documentation for more details.
