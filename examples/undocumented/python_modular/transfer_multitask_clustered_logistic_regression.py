@@ -27,12 +27,12 @@ def transfer_multitask_clustered_logistic_regression (fm_train=traindat,fm_test=
 	task_group.append_task(task_three)
 
 	mtlr = MultitaskClusteredLogisticRegression(1.0,100.0,features,labels,task_group,2)
-	mtlr.io.set_loglevel(MSG_DEBUG)
+	#mtlr.io.set_loglevel(MSG_DEBUG)
 	mtlr.set_tolerance(1e-3) # use 1e-2 tolerance
 	mtlr.set_max_iter(100)
 	mtlr.train()
 	mtlr.set_current_task(0)
-	print mtlr.get_w()
+	#print mtlr.get_w()
 	out = mtlr.apply_regression().get_labels()
 
 	return out

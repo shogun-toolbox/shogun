@@ -153,7 +153,7 @@ void CSubsetStack::remove_subset()
 	}
 	else
 	{
-		SG_WARNING("%s::remove_subset() was called but there is no subset set."
+		SG_DEBUG("%s::remove_subset() was called but there is no subset set."
 				"\n", get_name());
 	}
 }

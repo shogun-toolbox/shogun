@@ -20,26 +20,26 @@ def streaming_vw_createcache_modular (fname):
 	# Supported types are T_DENSE, T_SVMLIGHT and T_VW
 	input_file.set_parser_type(T_SVMLIGHT)
 
-	# Create a StreamingVwFeatures object, `True' indicating the examples are labelled
-	features = StreamingVwFeatures(input_file, True, 1024)
+	## Create a StreamingVwFeatures object, `True' indicating the examples are labelled
+	#features = StreamingVwFeatures(input_file, True, 1024)
 
-	# Create a VW object from the features
-	vw = VowpalWabbit(features)
-	vw.set_no_training(True)
+	## Create a VW object from the features
+	#vw = VowpalWabbit(features)
+	#vw.set_no_training(True)
 
-	# Train (in this case does nothing but run over all examples)
-	vw.train()
+	## Train (in this case does nothing but run over all examples)
+	#vw.train()
 
-	#Finally Train using the generated cache file
+	##Finally Train using the generated cache file
 
-	# Open the input cache file as a StreamingVwCacheFile
-	input_file = StreamingVwCacheFile("vw_cache.dat.cache");
+	## Open the input cache file as a StreamingVwCacheFile
+	#input_file = StreamingVwCacheFile("vw_cache.dat.cache");
 
-	# The rest is exactly as for normal input
-	features = StreamingVwFeatures(input_file, True, 1024);
-	vw = VowpalWabbit(features)
-	vw.train()
-	#return vw
+	## The rest is exactly as for normal input
+	#features = StreamingVwFeatures(input_file, True, 1024);
+	#vw = VowpalWabbit(features)
+	#vw.train()
+	##return vw
 
 if __name__ == "__main__":
-	0#streaming_vw_createcache_modular(*parameter_list[0])
+	streaming_vw_createcache_modular(*parameter_list[0])

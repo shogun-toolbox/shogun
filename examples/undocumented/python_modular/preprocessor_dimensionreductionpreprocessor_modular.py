@@ -4,7 +4,7 @@ from tools.load import LoadMatrix
 lm=LoadMatrix()
 data = lm.load_numbers('../data/fm_train_real.dat')
 
-parameter_list = [[data, 3], [data, 10]]
+parameter_list = [[data, 20], [data, 30]]
 
 def preprocessor_dimensionreductionpreprocessor_modular (data, k):
 	from shogun.Features import RealFeatures

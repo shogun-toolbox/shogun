@@ -29,13 +29,13 @@ def structure_hmsvm_bmrm (m_data_dict=data_dict):
 	sosvm = DualLibQPBMSOSVM(model, loss, labels, 5000.0)
 	sosvm.train()
 
-	print sosvm.get_w()
+	#print sosvm.get_w()
 
 	predicted = sosvm.apply()
 	evaluator = StructuredAccuracy()
 	acc = evaluator.evaluate(predicted, labels)
 
-	print('Accuracy = %.4f' % acc)
+	#print('Accuracy = %.4f' % acc)
 
 if __name__ == '__main__':
 	print("HMSVM BMRM")

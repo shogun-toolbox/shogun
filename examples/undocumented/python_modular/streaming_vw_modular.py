@@ -16,16 +16,16 @@ def streaming_vw_modular (dummy):
 	# Supported types are T_DENSE, T_SVMLIGHT and T_VW
 	input_file.set_parser_type(T_SVMLIGHT)
 
-	# Create a StreamingVwFeatures object, `True' indicating the examples are labelled
-	features = StreamingVwFeatures(input_file, True, 1024)
+	## Create a StreamingVwFeatures object, `True' indicating the examples are labelled
+	#features = StreamingVwFeatures(input_file, True, 1024)
 
-	# Create a VW object from the features
-	vw = VowpalWabbit(features)
+	## Create a VW object from the features
+	#vw = VowpalWabbit(features)
 
-	# Train
-	vw.train()
+	## Train
+	#vw.train()
 
-	#return vw
+	##return vw
 
 if __name__ == "__main__":
-	0#streaming_vw_modular(*parameter_list[0])
+	streaming_vw_modular(*parameter_list[0])

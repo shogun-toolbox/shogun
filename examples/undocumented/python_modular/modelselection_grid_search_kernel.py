@@ -120,7 +120,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 
 	print_state=True
 	best_combination=grid_search.select_model(print_state)
-	print("best parameter(s):")
+	#print("best parameter(s):")
 	best_combination.print_tree()
 
 	best_combination.apply_to_machine(classifier)

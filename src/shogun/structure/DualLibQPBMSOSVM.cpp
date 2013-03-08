@@ -37,7 +37,7 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	set_K(0.4);
 	set_Tmax(100);
 	set_cp_models(1);
-	set_verbose(true);
+	set_verbose(false);
 	set_solver(BMRM);
 
 	// get dimension of w
@@ -64,8 +64,8 @@ CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
 
 void CDualLibQPBMSOSVM::init()
 {
-	SG_ADD(&m_TolRel, "m_TolRel", "Relative tolerance", MS_NOT_AVAILABLE);
-	SG_ADD(&m_TolAbs, "m_TolAbs", "Absolute tolerance", MS_NOT_AVAILABLE);
+	SG_ADD(&m_TolRel, "m_TolRel", "Relative tolerance", MS_AVAILABLE);
+	SG_ADD(&m_TolAbs, "m_TolAbs", "Absolute tolerance", MS_AVAILABLE);
 	SG_ADD(&m_BufSize, "m_BuffSize", "Size of CP Buffer", MS_AVAILABLE);
 	SG_ADD(&m_lambda, "m_lambda", "Regularization constant lambda",
 			MS_AVAILABLE);
@@ -74,12 +74,12 @@ void CDualLibQPBMSOSVM::init()
 	SG_ADD(&m_cleanAfter,
 			"m_cleanAfter",
 			"Number of inactive iterations after which ICP will be removed",
-			MS_NOT_AVAILABLE);
+			MS_AVAILABLE);
 	SG_ADD(&m_K, "m_K", "Parameter K", MS_NOT_AVAILABLE);
 	SG_ADD(&m_Tmax, "m_Tmax", "Parameter Tmax", MS_AVAILABLE);
 	SG_ADD(&m_cp_models, "m_cp_models", "Number of cutting plane models",
 			MS_AVAILABLE);
-	SG_ADD(&m_verbose, "m_verbose", "Verbosity flag", MS_AVAILABLE);
+	SG_ADD(&m_verbose, "m_verbose", "Verbosity flag", MS_NOT_AVAILABLE);
 }
 
 bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)

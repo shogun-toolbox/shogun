@@ -184,24 +184,24 @@ def serialization_string_kernels_modular(n_data, num_shifts, size):
     labels = BinaryLabels(train_lt);
 
     svm = SVMLight(1.0, kernel, labels)
-    svm.io.set_loglevel(MSG_DEBUG)
+    #svm.io.set_loglevel(MSG_DEBUG)
     svm.train(feats_train)
 
     ##################################################
     # serialize to file
 
     fn = "serialized_svm.bz2"
-    print("serializing SVM to file", fn)
+    #print("serializing SVM to file", fn)
     save(fn, svm)
 
     ##################################################
     # unserialize and sanity check
 
-    print("unserializing SVM")
+    #print("unserializing SVM")
     svm2 = load(fn)
 
 
-    print("comparing predictions")
+    #print("comparing predictions")
     out =  svm.apply(feats_test).get_labels()
     out2 =  svm2.apply(feats_test).get_labels()
 
@@ -209,7 +209,7 @@ def serialization_string_kernels_modular(n_data, num_shifts, size):
     for i in xrange(len(out)):
         assert abs(out[i] - out2[i] < 0.000001)
 
-    print("all checks passed.")
+    #print("all checks passed.")
 
     return out,out2
 
