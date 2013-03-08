@@ -53,6 +53,7 @@ public:
 	/** Constructor
 	 * @param kernel covariance function
 	 * @param features features to use in inference
+	 * @param mean Mean function to use
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */

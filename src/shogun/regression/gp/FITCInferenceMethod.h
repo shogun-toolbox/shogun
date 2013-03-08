@@ -52,7 +52,7 @@ public:
 	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
-	 * @param latent features to use
+	 * @param latent_features features to use
 	 */
 	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
@@ -152,11 +152,16 @@ public:
 	}
 
 protected:
-	/** Update Alpha and Cholesky Matrices.
-	 */
+	/** Update alpha matrix */
 	virtual void update_alpha();
+
+	/** Update cholesky Matrix.*/
 	virtual void update_chol();
+
+	/** Update train kernel matrix */
 	virtual void update_train_kernel();
+
+	/** Update data means */
 	virtual void update_all();
 
 private:

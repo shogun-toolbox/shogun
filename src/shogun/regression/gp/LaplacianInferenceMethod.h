@@ -165,7 +165,7 @@ public:
 
 	/** Set tolerance for Newton Iterations
 	 *
-	 * @param Tolerance for Newton Iterations
+	 * @param tol Tolerance for Newton Iterations
 	 */
 	virtual void set_newton_tolerance(float64_t tol) {
 		m_tolerance = tol;}
@@ -179,7 +179,7 @@ public:
 
 	/** Set tolerance for Brent's Minimization Method
 	 *
-	 * @param tolerance for Brent's Minimization Method
+	 * @param tol tolerance for Brent's Minimization Method
 	 */
 	virtual void set_minimization_tolerance(float64_t tol) {
 		m_opt_tolerance = tol;}
@@ -193,7 +193,7 @@ public:
 
 	/** Set max iterations for Brent's Minimization Method
 	 *
-	 * @param max iterations for Brent's Minimization Method
+	 * @param itr max iterations for Brent's Minimization Method
 	 */
 	virtual void set_minimization_tolerance(int32_t itr) {
 		m_max = itr;}
@@ -207,7 +207,7 @@ public:
 
 	/** Set max Newton iterations
 	 *
-	 * @param max Newton iterations
+	 * @param itr max Newton iterations
 	 */
 	virtual void set_newton_tolerance(int32_t itr) {
 		m_max_itr = itr;}
@@ -215,11 +215,16 @@ public:
 
 
 protected:
-	/** Update Alpha and Cholesky Matrices.
-	 */
+	/** Update alpha matrix */
 	virtual void update_alpha();
+
+	/** Update cholesky Matrix.*/
 	virtual void update_chol();
+
+	/** Update train kernel matrix */
 	virtual void update_train_kernel();
+
+	/** Update data means */
 	virtual void update_all();
 
 private:
