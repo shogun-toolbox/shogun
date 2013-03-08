@@ -23,7 +23,7 @@ dim = 2
 
 traindat, label_traindat = gen_data(M,N,dim)
 
-parameter_list = [[X,y]]
+parameter_list = [[traindat,label_traindat]]
 
 def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat):
 	try:
@@ -52,5 +52,5 @@ def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat)
 	print "Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() )
 
 if __name__=='__main__':
-	print('KNN')
-	so_milticlass(*parameter_list[0])
+	print('SO multiclass')
+	so_multiclass(*parameter_list[0])
