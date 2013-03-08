@@ -6,7 +6,7 @@
 		- Linear Time MMD two-sample test now works on streaming-features, which 
 		  allows to perform tests on infinite amounts of data. A block size may
 		  be specified for fast processing. The below features were also added.
-		  By Heiko Strathmann
+		  By Heiko Strathmann.
 		- It is now possible to ask streaming features to produce an instance
 		  of streamed features that are stored in memory and returned as a
 		  CFeatures* object of corresponding type. See
@@ -15,38 +15,43 @@
 		  features. First implemented instances are CMeanShiftDataGenerator and
 		  CGaussianBlobsDataGenerator.
 		  Use above new concepts to get non-streaming data if desired. 
-		- Accelerated projected gradient multiclass logistic regression classifier by Sergey Lisitsyn
+		- Accelerated projected gradient multiclass logistic regression classifier 
+		  by Sergey Lisitsyn.
 		- New CCSOSVM based structured output solver by Viktor Gal
 		- A collection of kernel selection methods for MMD-based kernel two-
 		  sample tests, including optimal kernel choice for single and combined
 		  kernels for the linear time MMD. This finishes the kernel MMD framework
 		  and also comes with new, more illustrative examples and tests.
-		  By Heiko Strathmann
+		  By Heiko Strathmann.
+		- Alpha version of Perl modular interface developed by Christian Montanari
 		- New framework for unit-tests based on googletest and googlemock by
 		  Viktor Gal. A (growing) number of unit-tests from now on ensures basic
 		  funcionality of our framework. Since the examples do not have to take
 		  this role anymore, they should become more ilustrative in the future.
+		- Changed the core of dimension reduction algorithms to the Tapkee library.
 	* Bugfixes:
-		- Fix for shallow copy of gaussian kernel by Matt Aasted
+		- Fix for shallow copy of gaussian kernel by Matt Aasted.
 		- Fixed a bug when using StringFeatures along with kernel machines in
 		  cross-validation which cause an assertion error. Thanks to Eric (yoo)!
 		- Fix for 3-class case training of MulticlassLibSVM reported by Arya Iranmehr
-		  suggested by Oksana Bayda
+		  that was suggested by Oksana Bayda.
 		- Fix for wrong Spectrum mismatch RBF construction in static interfaces reported
-		  by Nona Kermani
+		  by Nona Kermani.
 		- Fix for wrong include in SGMatrix causing build fail on Mac OS X 
-		(thanks to @bianjiang)
+		  (thanks to @bianjiang).
 		- Fixed a bug that caused kernel machines to return non-sense when using
-          custom kernel matrices with subsets attached to them
+          custom kernel matrices with subsets attached to them.
+		- Fix for parameter dictionary creationg causing dereferencing null pointers
+		  with gaussian processes parameter selection.
 	* Cleanup and API Changes:
-		- SGString and SGStringList are now based on SGReferencedData
-		- "confidences" in context of CLabel and subclasses are now "values"
-		- CLinearTimeMMD constructor changes, only streaming features allowed
+		- SGString and SGStringList are now based on SGReferencedData.
+		- "confidences" in context of CLabel and subclasses are now "values".
+		- CLinearTimeMMD constructor changes, only streaming features allowed.
 		- CDataGenerator will soon be removed and replaced by new streaming-
 		  based classes.
 		- SGVector, SGMatrix, SGSparseVector, SGSparseVector, SGSparseMatrix
 		  refactoring: Now contains load/save routines, relevant functions from
-		  CMath, and implementations went to .cpp file
+		  CMath, and implementations went to .cpp file.
 
 2012-09-01 Soeren Sonnenburg <sonne@debian.org>
 
