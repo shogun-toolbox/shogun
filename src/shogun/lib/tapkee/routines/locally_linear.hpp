@@ -96,8 +96,8 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
-SparseWeightMatrix linear_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
-                                        const Neighbors& neighbors, PairwiseCallback callback, ScalarType shift)
+SparseWeightMatrix linear_weight_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
+                                        const Neighbors& neighbors, const PairwiseCallback& callback, const ScalarType shift)
 {
 	timed_context context("KLLE weight computation");
 	const IndexType k = neighbors[0].size();
@@ -105,46 +105,53 @@ SparseWeightMatrix linear_weight_matrix(RandomAccessIterator begin, RandomAccess
 	SparseTriplets sparse_triplets;
 	sparse_triplets.reserve((k*k+2*k+1)*(end-begin));
 
-	RandomAccessIterator iter;
-	RandomAccessIterator iter_begin = begin, iter_end = end;
-	DenseMatrix gram_matrix = DenseMatrix::Zero(k,k);
-	DenseVector dots(k);
-	DenseVector rhs = DenseVector::Ones(k);
-	DenseVector weights;
-	
-	//RESTRICT_ALLOC;
-	for (iter=iter_begin; iter!=iter_end; ++iter)
+#pragma omp parallel shared(begin,end,neighbors,callback,sparse_triplets) default(none)
 	{
-		ScalarType kernel_value = callback(*iter,*iter);
-		const LocalNeighbors& current_neighbors = neighbors[iter-begin];
+		RandomAccessIterator iter;
+		RandomAccessIterator iter_begin = begin, iter_end = end;
+		DenseMatrix gram_matrix = DenseMatrix::Zero(k,k);
+		DenseVector dots(k);
+		DenseVector rhs = DenseVector::Ones(k);
+		DenseVector weights;
 		
-		for (IndexType i=0; i<k; ++i)
-			dots[i] = callback(*iter, begin[current_neighbors[i]]);
-
-		for (IndexType i=0; i<k; ++i)
+		//RESTRICT_ALLOC;
+#pragma omp for nowait
+		for (iter=iter_begin; iter<iter_end; ++iter)
 		{
-			for (IndexType j=i; j<k; ++j)
-				gram_matrix(i,j) = kernel_value - dots(i) - dots(j) + callback(begin[current_neighbors[i]],begin[current_neighbors[j]]);
-		}
-		
-		ScalarType trace = gram_matrix.trace();
-		gram_matrix.diagonal().array() += 1e-3*trace;
-		weights = gram_matrix.selfadjointView<Eigen::Upper>().ldlt().solve(rhs);
-		weights /= weights.sum();
+			ScalarType kernel_value = callback(*iter,*iter);
+			const LocalNeighbors& current_neighbors = neighbors[iter-begin];
+			
+			for (IndexType i=0; i<k; ++i)
+				dots[i] = callback(*iter, begin[current_neighbors[i]]);
 
-		sparse_triplets.push_back(SparseTriplet(iter-begin,iter-begin,1.0+shift));
-		for (IndexType i=0; i<k; ++i)
-		{
-			sparse_triplets.push_back(SparseTriplet(current_neighbors[i],iter-begin,
-			                                        -weights[i]));
-			sparse_triplets.push_back(SparseTriplet(iter-begin,current_neighbors[i],
-			                                        -weights[i]));
-			for (IndexType j=0; j<k; ++j)
-				sparse_triplets.push_back(SparseTriplet(current_neighbors[i],current_neighbors[j],
-				                                        +weights(i)*weights(j)));
+			for (IndexType i=0; i<k; ++i)
+			{
+				for (IndexType j=i; j<k; ++j)
+					gram_matrix(i,j) = kernel_value - dots(i) - dots(j) + callback(begin[current_neighbors[i]],begin[current_neighbors[j]]);
+			}
+			
+			ScalarType trace = gram_matrix.trace();
+			gram_matrix.diagonal().array() += 1e-3*trace;
+			weights = gram_matrix.selfadjointView<Eigen::Upper>().ldlt().solve(rhs);
+			weights /= weights.sum();
+
+#pragma omp critical
+			{
+				sparse_triplets.push_back(SparseTriplet(iter-begin,iter-begin,1.0+shift));
+				for (IndexType i=0; i<k; ++i)
+				{
+					sparse_triplets.push_back(SparseTriplet(current_neighbors[i],iter-begin,
+															-weights[i]));
+					sparse_triplets.push_back(SparseTriplet(iter-begin,current_neighbors[i],
+															-weights[i]));
+					for (IndexType j=0; j<k; ++j)
+						sparse_triplets.push_back(SparseTriplet(current_neighbors[i],current_neighbors[j],
+																+weights(i)*weights(j)));
+				}
+			}
 		}
+		//UNRESTRICT_ALLOC;
 	}
-	//UNRESTRICT_ALLOC;
 
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	Eigen::DynamicSparseMatrix<ScalarType> dynamic_weight_matrix(end-begin,end-begin);

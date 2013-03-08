@@ -33,7 +33,7 @@ Landmarks select_landmarks_random(RandomAccessIterator begin, RandomAccessIterat
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
-DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, Landmarks landmarks, 
+DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, const Landmarks& landmarks, 
                                              PairwiseCallback callback)
 {
 	timed_context context("Multidimensional scaling distance matrix computation");

@@ -11,7 +11,7 @@
 #ifndef TAPKEE_MATRIX_OPS_H_
 #define TAPKEE_MATRIX_OPS_H_
 
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <tapkee_defines.hpp>
 
 namespace tapkee
 {
@@ -20,13 +20,13 @@ namespace tapkee_internal
 
 //! Matrix-matrix operation used to 
 //! compute smallest eigenvalues and 
-//! associated eigenvectors. Essentially
-//! solves linear system with provided
-//! right-hand side part.
+//! associated eigenvectors of a sparse matrix
+//! Essentially solves linear system 
+//! with provided right-hand side part.
 //!
-struct InverseSparseMatrixOperation
+struct SparseInverseMatrixOperation
 {
-	InverseSparseMatrixOperation(const SparseWeightMatrix& matrix) : solver()
+	SparseInverseMatrixOperation(const SparseWeightMatrix& matrix) : solver()
 	{
 		solver.compute(matrix);
 	}
@@ -40,8 +40,33 @@ struct InverseSparseMatrixOperation
 	static const char* ARPACK_CODE;
 	static const bool largest;
 };
-const char* InverseSparseMatrixOperation::ARPACK_CODE = "SM";
-const bool InverseSparseMatrixOperation::largest = false;
+const char* SparseInverseMatrixOperation::ARPACK_CODE = "SM";
+const bool SparseInverseMatrixOperation::largest = false;
+
+//! Matrix-matrix operation used to 
+//! compute smallest eigenvalues and 
+//! associated eigenvectors of a dense matrix
+//! Essentially solves linear system 
+//! with provided right-hand side part.
+//!
+struct DenseInverseMatrixOperation
+{
+	DenseInverseMatrixOperation(const DenseMatrix& matrix) : solver()
+	{
+		solver.compute(matrix);
+	}
+	/** Solves linear system with provided right-hand size
+	 */
+	inline DenseMatrix operator()(const DenseMatrix& operatee)
+	{
+		return solver.solve(operatee);
+	}
+	DenseSolver solver;
+	static const char* ARPACK_CODE;
+	static const bool largest;
+};
+const char* DenseInverseMatrixOperation::ARPACK_CODE = "SM";
+const bool DenseInverseMatrixOperation::largest = false;
 
 //! Matrix-matrix operation used to
 //! compute largest eigenvalues and

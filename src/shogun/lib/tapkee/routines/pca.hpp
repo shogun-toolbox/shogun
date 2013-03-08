@@ -54,7 +54,7 @@ DenseVector compute_mean(RandomAccessIterator begin, RandomAccessIterator end,
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
-                                               DenseVector mean, FeatureVectorCallback callback, IndexType dimension)
+                                               const DenseVector& mean, FeatureVectorCallback callback, IndexType dimension)
 {
 	timed_context context("Constructing PCA covariance matrix");
 

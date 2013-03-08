@@ -78,8 +78,8 @@ Laplacian compute_laplacian(RandomAccessIterator begin,
 }
 
 template<class RandomAccessIterator, class FeatureVectorCallback>
-DenseSymmetricMatrixPair construct_locality_preserving_eigenproblem(SparseWeightMatrix L,
-		DenseDiagonalMatrix D, RandomAccessIterator begin, RandomAccessIterator end, FeatureVectorCallback feature_vector_callback,
+DenseSymmetricMatrixPair construct_locality_preserving_eigenproblem(SparseWeightMatrix& L,
+		DenseDiagonalMatrix& D, RandomAccessIterator begin, RandomAccessIterator end, FeatureVectorCallback feature_vector_callback,
 		IndexType dimension)
 {
 	timed_context context("Constructing LPP eigenproblem");

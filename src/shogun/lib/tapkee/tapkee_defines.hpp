@@ -172,6 +172,8 @@ namespace tapkee
 	typedef Eigen::SparseMatrix<ScalarType> SparseWeightMatrix;
 	//! default selfadjoint solver
 	typedef Eigen::SelfAdjointEigenSolver<DenseMatrix> DenseSelfAdjointEigenSolver;
+	//! default dense solver
+	typedef Eigen::LDLT<DenseMatrix> DenseSolver;
 	//! default sparse solver
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	typedef Eigen::SimplicialCholesky<SparseWeightMatrix> SparseSolver;

@@ -11,6 +11,7 @@
 #ifndef FIBONACCI_H_
 #define FIBONACCI_H_
 
+#include <tapkee_defines.hpp>
 #include <cmath>
 
 namespace tapkee

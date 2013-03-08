@@ -77,8 +77,17 @@ struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperatio
 		Eigen::GeneralizedSelfAdjointEigenSolver<DenseMatrix> solver(dense_lhs, dense_rhs);
 		if (solver.info() == Eigen::Success)
 		{
-			DenseMatrix embedding_feature_matrix = (solver.eigenvectors()).block(0,skip,lhs.cols(),target_dimension);
-			return EmbeddingResult(embedding_feature_matrix,solver.eigenvalues().tail(target_dimension));
+			if (MatrixOperationType::largest)
+			{
+				assert(skip==0);
+				DenseMatrix embedding_feature_matrix = solver.eigenvectors().rightCols(target_dimension);
+				return EmbeddingResult(embedding_feature_matrix,solver.eigenvalues().tail(target_dimension));
+			} 
+			else
+			{
+				DenseMatrix embedding_feature_matrix = solver.eigenvectors().leftCols(target_dimension+skip).rightCols(target_dimension);
+				return EmbeddingResult(embedding_feature_matrix,solver.eigenvalues().segment(skip,skip+target_dimension));
+			}
 		}
 		else
 		{

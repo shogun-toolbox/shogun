@@ -10,8 +10,8 @@
 #ifndef TAPKEE_MAIN_H_
 #define TAPKEE_MAIN_H_
 
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
-#include <shogun/lib/tapkee/tapkee_methods.hpp>
+#include <tapkee_defines.hpp>
+#include <tapkee_methods.hpp>
 
 namespace tapkee
 {
@@ -52,6 +52,7 @@ ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
                    KernelCallback kernel_callback, DistanceCallback distance_callback,
                    FeatureVectorCallback feature_vector_callback, ParametersMap options)
 {
+	Eigen::initParallel();
 	ReturnResult return_result;
 
 	TAPKEE_METHOD method;
