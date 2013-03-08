@@ -101,6 +101,8 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(const CStringFeatures & 
 	if (orig.symbol_mask_table)
 	{
 		symbol_mask_table=SG_MALLOC(ST, 256);
+		symbol_mask_table_len=256;
+
 		for (int32_t i=0; i<256; i++)
 			symbol_mask_table[i]=orig.symbol_mask_table[i];
 	}
@@ -113,7 +115,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet
 : CFeatures(loader), num_vectors(0),
   features(NULL), single_string(NULL), length_of_single_string(0),
   max_string_length(0), order(0),
-  symbol_mask_table(NULL), preprocess_on_get(false), feature_cache(NULL)
+  preprocess_on_get(false), feature_cache(NULL)
 {
 	init();
 
@@ -1370,6 +1372,7 @@ template<class ST> void CStringFeatures<ST>::compute_symbol_mask_table(int64_t m
 
 	SG_FREE(symbol_mask_table);
 	symbol_mask_table=SG_MALLOC(ST, 256);
+	symbol_mask_table_len=256;
 
 	uint64_t mask=0;
 	for (int32_t i=0; i< (int64_t) max_val; i++)
@@ -1665,10 +1668,10 @@ template<class ST> void CStringFeatures<ST>::init()
 	length_of_single_string=0;
 	max_string_length=0;
 	order=0;
-	symbol_mask_table=0;
 	preprocess_on_get=false;
 	feature_cache=NULL;
-	symbol_mask_table_len=256;
+	symbol_mask_table=NULL;
+	symbol_mask_table_len=0;
 
 	m_parameters->add((CSGObject**) &alphabet, "alphabet");
 	m_parameters->add_vector(&features, &num_vectors, "features",
@@ -1688,11 +1691,7 @@ template<class ST> void CStringFeatures<ST>::init()
 	m_parameters->add(&preprocess_on_get, "preprocess_on_get",
 			"Preprocess on-the-fly?");
 
-	/* TODO M_PARAMETERS->ADD?
-	 * /// order used in higher order mapping
-	 * ST* symbol_mask_table;
-	 */
-	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask table", "fuck you");
+	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");
 }
 
 /** get feature type the char feature can deal with
