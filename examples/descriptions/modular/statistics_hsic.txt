@@ -1,0 +1,7 @@
+In this example, HSIC, a kernel-based test for independence is used to detect
+dependence of a mixture of Gaussians and a rotated version of the same data.
+The HSIC statistic is computed and available methods for computing a threshold
+of the null distribution are used. In addition, p-values of the test are
+computed. Note that these methods require more iterations than used here. A
+Gaussian kernel is selected via the median heuristic.
+See tutorial and Class documentation for more details.

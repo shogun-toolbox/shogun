@@ -1,0 +1,10 @@
+In this example, the quadratic time MMD statistic for kernel-based two-sample
+testing is illustrated. It is a statistic for smaller amounts of data where
+one is interested to compute the best possible test. The used dataset is a
+bunch of standard Gaussian vectors where the first dimensions differs in both
+distributions p and q. The test statistic is computed and available methods
+for computing a threshold of the null distribution are used. In addition,
+p-values for the test are computed. Note that these methods require more
+iterations/samples that used here. A Gaussian is with a fixed kernel size is
+used. There are more clever kernel selection methods available.
+See tutorial and Class documentation for more details.

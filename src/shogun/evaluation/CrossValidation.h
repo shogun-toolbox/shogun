@@ -31,6 +31,17 @@ class CCrossValidationResult : public CEvaluationResult
 	public:
 		CCrossValidationResult()
 		{
+			SG_ADD(&mean, "mean", "Mean of results", MS_NOT_AVAILABLE);
+			SG_ADD(&has_conf_int, "has_conf_int", "Has confidence intervals?",
+					MS_NOT_AVAILABLE);
+			SG_ADD(&conf_int_low, "conf_int_low", "Lower confidence bound",
+					MS_NOT_AVAILABLE);
+			SG_ADD(&conf_int_up, "conf_int_up", "Upper confidence bound",
+						MS_NOT_AVAILABLE);
+
+			SG_ADD(&conf_int_alpha, "conf_int_alpha",
+					"Alpha of confidence interval", MS_NOT_AVAILABLE);
+
 			mean = 0;
 			has_conf_int = 0;
 			conf_int_low = 0;
@@ -54,6 +65,20 @@ class CCrossValidationResult : public CEvaluationResult
 		 *  @return name of the SGSerializable
 		 */
 		virtual const char* get_name() const { return "CrossValidationResult"; }
+
+		static CCrossValidationResult* obtain_from_generic(
+				CEvaluationResult* result)
+		{
+			if (!result)
+				return NULL;
+
+			REQUIRE(result->get_result_type()==CROSSVALIDATION_RESULT,
+					"CrossValidationResult::obtain_from_generic(): argument is"
+					"of wrong type!\n");
+
+			SG_REF(result);
+			return (CCrossValidationResult*)result;
+		}
 
 		/** print result */
 		virtual void print_result()

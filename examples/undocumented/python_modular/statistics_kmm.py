@@ -2,13 +2,20 @@
 from numpy import *
 from numpy import random
 
-def statistics_kmm ():
+parameter_list = [[10,3]]
+
+def statistics_kmm (n,d):
 	from shogun.Features import RealFeatures
 	from shogun.Features import DataGenerator
 	from shogun.Kernel import GaussianKernel, MSG_DEBUG
 	from shogun.Statistics import KernelMeanMatching
+	from shogun.Mathematics import Math
 
-	data = random.randn(3,10)
+	# init seed for reproducability
+	Math.init_random(1)
+	random.seed(1);
+
+	data = random.randn(d,n)
 
 	# create shogun feature representation
 	features=RealFeatures(data)
@@ -22,7 +29,8 @@ def statistics_kmm ():
 	kmm = KernelMeanMatching(kernel,array([0,1,2,3,7,8,9],dtype=int32),array([4,5,6],dtype=int32))
 	w = kmm.compute_weights()
 	print w
+	return w
 
 if __name__=='__main__':
 	print('KernelMeanMatching')
-	statistics_kmm()
+	statistics_kmm(*parameter_list[0])

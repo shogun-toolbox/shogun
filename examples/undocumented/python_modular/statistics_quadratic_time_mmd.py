@@ -5,22 +5,24 @@
 # the Free Software Foundation either version 3 of the License, or
 # (at your option) any later version.
 #
-# Written (C) 2013 Heiko Strathmann
+# Written (C) 2012-2013 Heiko Strathmann
 #
 from numpy import *
 
-def statistics_quadratic_time_mmd ():
+parameter_list = [[30,2,0.5]]
+
+def statistics_quadratic_time_mmd (m,dim,difference):
 	from shogun.Features import RealFeatures
 	from shogun.Features import MeanShiftDataGenerator
 	from shogun.Kernel import GaussianKernel, CustomKernel
 	from shogun.Statistics import QuadraticTimeMMD
 	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
-	from shogun.Mathematics import Statistics, IntVector, RealVector
+	from shogun.Mathematics import Statistics, IntVector, RealVector, Math
+	
+	# init seed for reproducability
+	Math.init_random(1)
 
 	# number of examples kept low in order to make things fast
-	m=30;
-	dim=2;
-	difference=0.5;
 
 	# streaming data generator for mean shift distributions
 	gen_p=MeanShiftDataGenerator(0, dim);
@@ -48,9 +50,9 @@ def statistics_quadratic_time_mmd ():
 	# Also, in practice, use at least 250 iterations
 	mmd.set_null_approximation_method(BOOTSTRAP);
 	mmd.set_bootstrap_iterations(3);
-	p_value=mmd.perform_test();
+	p_value_boot=mmd.perform_test();
 	# reject if p-value is smaller than test level
-	print "bootstrap: p!=q: ", p_value<alpha
+	print "bootstrap: p!=q: ", p_value_boot<alpha
 
 	# using spectrum method. Use at least 250 samples from null.
 	# This is consistent but sometimes breaks, always monitor type I error.
@@ -60,18 +62,18 @@ def statistics_quadratic_time_mmd ():
 	mmd.set_null_approximation_method(MMD2_SPECTRUM);
 	mmd.set_num_eigenvalues_spectrum(3);
 	mmd.set_num_samples_sepctrum(250);
-	p_value=mmd.perform_test();
+	p_value_spectrum=mmd.perform_test();
 	# reject if p-value is smaller than test level
-	print "spectrum: p!=q: ", p_value<alpha
+	print "spectrum: p!=q: ", p_value_spectrum<alpha
 
 	# using gamma method. This is a quick hack, which works most of the time
 	# but is NOT guaranteed to. See tutorial for details.
 	# Only works with BIASED statistic
 	mmd.set_statistic_type(BIASED);
 	mmd.set_null_approximation_method(MMD2_GAMMA);
-	p_value=mmd.perform_test();
+	p_value_gamma=mmd.perform_test();
 	# reject if p-value is smaller than test level
-	print "gamma: p!=q: ", p_value<alpha
+	print "gamma: p!=q: ", p_value_gamma<alpha
 
 	# compute tpye I and II error (use many more trials in practice).
 	# Type I error is not necessary if one uses bootstrapping. We do it here
@@ -102,7 +104,9 @@ def statistics_quadratic_time_mmd ():
 
 		# on normal data, this gives type II error
 		type_II_errors[i]=mmd.perform_test()>alpha;
+		
+	return type_I_errors,type_I_errors,p_value_boot,p_value_spectrum,p_value_gamma, 
 	
 if __name__=='__main__':
 	print('QuadraticTimeMMD')
-	statistics_quadratic_time_mmd()
+	statistics_quadratic_time_mmd(*parameter_list[0])
