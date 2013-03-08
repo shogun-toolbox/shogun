@@ -71,17 +71,17 @@ class CCrossValidationResult : public CEvaluationResult
 		 * @param result its dynamic type must be CCrossValidationResult
 		 */
 		static CCrossValidationResult* obtain_from_generic(
-				CEvaluationResult* result)
+				CEvaluationResult* eval_result)
 		{
-			if (!result)
+			if (!eval_result)
 				return NULL;
 
-			REQUIRE(result->get_result_type()==CROSSVALIDATION_RESULT,
+			REQUIRE(eval_result->get_result_type()==CROSSVALIDATION_RESULT,
 					"CrossValidationResult::obtain_from_generic(): argument is"
 					"of wrong type!\n");
 
-			SG_REF(result);
-			return (CCrossValidationResult*) result;
+			SG_REF(eval_result);
+			return (CCrossValidationResult*)eval_result;
 		}
 
 		/** print result */
