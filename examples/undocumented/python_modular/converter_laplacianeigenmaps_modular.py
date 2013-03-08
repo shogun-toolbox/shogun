@@ -16,9 +16,8 @@ def converter_laplacianeigenmaps_modular (data,k):
 		converter = LaplacianEigenmaps()
 		converter.set_target_dim(1)
 		converter.set_k(k)
-		converter.set_tau(2.0)
-		converter.apply(features)
-
+		converter.set_tau(20.0)
+		
 		return features
 	except ImportError:
 		print('No Eigen3 available')
