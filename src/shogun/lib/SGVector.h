@@ -428,12 +428,6 @@ template<class T> class SGVector : public SGReferencedData
 		}
 
 		/// return product(vec)
-		static inline T product(SGVector<T> vec)
-		{
-			return product(vec.vector, vec.vlen);
-		}
-
-		/// return product(vec)
 		inline T product()
 		{
 			return product(vector, vlen);
