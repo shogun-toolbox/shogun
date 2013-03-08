@@ -242,7 +242,7 @@ class SGIO
 		 */
 		inline bool loglevel_above(EMessageType type) const
 		{
-			return loglevel > type;
+			return loglevel >= type;
 		}
 
 		/** get show_progress
