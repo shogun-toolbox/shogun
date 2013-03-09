@@ -8,9 +8,12 @@
  */
 
 /* helper's stuff */
-#if (PY_VERSION_HEX < 0x02060000) || (PY_MAJOR_VERSION >= 3)  
+%init
+%{
+#if (PY_VERSION_HEX < 0x02060000) || (PY_VERSION_HEX >= 0x03000000)
 #define Py_TPFLAGS_HAVE_NEWBUFFER 0
-#endif  
+#endif
+%}
 
 %define BUFFER_VECTOR_INFO(type_name)
 %header
@@ -18,7 +21,7 @@
 
 struct buffer_vector_ ## type_name ## _info
 {
-	SGVector< type_name > buf; 
+	SGVector< type_name > buf;
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
 	void* internal;
@@ -33,7 +36,7 @@ struct buffer_vector_ ## type_name ## _info
 
 struct buffer_matrix_ ## type_name ## _info
 {
-	SGMatrix< type_name >  buf; 
+	SGMatrix< type_name >  buf;
 	Py_ssize_t* shape;
 	Py_ssize_t* strides;
 	void* internal;
