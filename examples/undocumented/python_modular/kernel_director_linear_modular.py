@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import numpy
-from shogun.Features import RealFeatures
+from modshogun import RealFeatures, MSG_DEBUG
 traindat = numpy.random.random_sample((10,10))
 testdat = numpy.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
@@ -25,7 +25,7 @@ def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,
 	from modshogun import Time
 
 	feats_train=RealFeatures(fm_train_real)
-	feats_train.io.set_loglevel(0)
+	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_train.parallel.set_num_threads(1)
 	feats_test=RealFeatures(fm_test_real)
 	 
@@ -40,12 +40,12 @@ def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,
 	#print  "km_train"
 	t=Time()
 	km_train=kernel.get_kernel_matrix()
-	t1=t.cur_time_diff(True)
+	#t1=t.cur_time_diff(True)
 
 	#print  "dkm_train"
 	t=Time()
 	dkm_train=dkernel.get_kernel_matrix()
-	t2=t.cur_time_diff(True)
+	#t2=t.cur_time_diff(True)
 
 	#print "km_train", km_train
 	#print "dkm_train", dkm_train

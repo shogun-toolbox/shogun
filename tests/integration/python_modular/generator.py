@@ -7,7 +7,12 @@ test_dir = '../../../tests/integration/tests'
 blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.py",
 		"kernel_combined_modular.py",
 		"kernel_distance_modular.py",
-		"distribution_hmm_modular.py")
+		"distribution_hmm_modular.py",
+		"distance_director_euclidean_modular.py",
+		"evaluation_director_contingencytableevaluation_modular.py",
+		"features_director_dot_modular.py",
+		"kernel_director_linear_modular.py"
+		)
 
 def get_fname(mod_name, i):
 	return os.path.join(test_dir, mod_name + str(i) + '.txt')

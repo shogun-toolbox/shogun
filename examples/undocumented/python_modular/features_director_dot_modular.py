@@ -61,47 +61,47 @@ def features_director_dot_modular (fm_train_real, fm_test_real,
 	#		return NumpyFeatures(self.data-other.data)
 
 
-	from shogun.Features import RealFeatures, SparseRealFeatures, BinaryLabels
-	from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC_DUAL
-	from shogun.Mathematics import Math_init_random
-	Math_init_random(17)
+	#from shogun.Features import RealFeatures, SparseRealFeatures, BinaryLabels
+	#from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC_DUAL
+	#from shogun.Mathematics import Math_init_random
+	#Math_init_random(17)
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
-	labels=BinaryLabels(label_train_twoclass)
+	#feats_train=RealFeatures(fm_train_real)
+	#feats_test=RealFeatures(fm_test_real)
+	#labels=BinaryLabels(label_train_twoclass)
 
-	dfeats_train=NumpyFeatures(fm_train_real)
-	dfeats_test=NumpyFeatures(fm_test_real)
-	dlabels=BinaryLabels(label_train_twoclass)
+	#dfeats_train=NumpyFeatures(fm_train_real)
+	#dfeats_test=NumpyFeatures(fm_test_real)
+	#dlabels=BinaryLabels(label_train_twoclass)
 
-	print feats_train.get_computed_dot_feature_matrix()
-	print dfeats_train.get_computed_dot_feature_matrix()
+	#print feats_train.get_computed_dot_feature_matrix()
+	#print dfeats_train.get_computed_dot_feature_matrix()
 
-	svm=LibLinear(C, feats_train, labels)
-	svm.set_liblinear_solver_type(L2R_L2LOSS_SVC_DUAL)
-	svm.set_epsilon(epsilon)
-	svm.set_bias_enabled(True)
-	svm.train()
+	#svm=LibLinear(C, feats_train, labels)
+	#svm.set_liblinear_solver_type(L2R_L2LOSS_SVC_DUAL)
+	#svm.set_epsilon(epsilon)
+	#svm.set_bias_enabled(True)
+	#svm.train()
 
-	svm.set_features(feats_test)
-	svm.apply().get_labels()
-	predictions = svm.apply()
+	#svm.set_features(feats_test)
+	#svm.apply().get_labels()
+	#predictions = svm.apply()
 
-	dfeats_train.__disown__()
-	dfeats_train.parallel.set_num_threads(1)
-	dsvm=LibLinear(C, dfeats_train, dlabels)
-	dsvm.set_liblinear_solver_type(L2R_L2LOSS_SVC_DUAL)
-	dsvm.set_epsilon(epsilon)
-	dsvm.set_bias_enabled(True)
-	dsvm.train()
+	#dfeats_train.__disown__()
+	#dfeats_train.parallel.set_num_threads(1)
+	#dsvm=LibLinear(C, dfeats_train, dlabels)
+	#dsvm.set_liblinear_solver_type(L2R_L2LOSS_SVC_DUAL)
+	#dsvm.set_epsilon(epsilon)
+	#dsvm.set_bias_enabled(True)
+	#dsvm.train()
 
-	dfeats_test.__disown__()
-	dfeats_test.parallel.set_num_threads(1)
-	dsvm.set_features(dfeats_test)
-	dsvm.apply().get_labels()
-	dpredictions = dsvm.apply()
+	#dfeats_test.__disown__()
+	#dfeats_test.parallel.set_num_threads(1)
+	#dsvm.set_features(dfeats_test)
+	#dsvm.apply().get_labels()
+	#dpredictions = dsvm.apply()
 
-	return predictions, svm, predictions.get_labels()
+	#return predictions, svm, predictions.get_labels()
 
 if __name__=='__main__':
 	print('DirectorLinear')

@@ -26,11 +26,11 @@ def features_dense_zero_copy_modular (in_data=data):
 		e.frombuffer(a, True)
 
 		a[:,0]=0
-		print a[0:4]
-		print b[0:4]
-		print c[0:4]
-		print d[0:4]
-		print e[0:4]
+		#print a[0:4]
+		#print b[0:4]
+		#print c[0:4]
+		#print d[0:4]
+		#print e[0:4]
 	else:
 		print "numpy version >= 1.5 is needed"
 

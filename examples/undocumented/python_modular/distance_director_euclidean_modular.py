@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import numpy
-from shogun.Features import RealFeatures
+from modshogun import RealFeatures, MSG_DEBUG
 
+numpy.random.seed(17)
 traindat = numpy.random.random_sample((10,10))
 testdat = numpy.random.random_sample((10,10))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
@@ -25,7 +26,7 @@ def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=tes
 	from modshogun import Time
 
 	feats_train=RealFeatures(fm_train_real)
-	feats_train.io.set_loglevel(0)
+	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_train.parallel.set_num_threads(1)
 	feats_test=RealFeatures(fm_test_real)
 
@@ -35,18 +36,18 @@ def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=tes
 	ddistance=DirectorEuclideanDistance()
 	ddistance.init(feats_train, feats_test)
 
-	print  "dm_train"
+	#print  "dm_train"
 	t=Time()
 	dm_train=distance.get_distance_matrix()
-	t1=t.cur_time_diff(True)
+	#t1=t.cur_time_diff(True)
 
-	print  "ddm_train"
+	#print  "ddm_train"
 	t=Time()
 	ddm_train=ddistance.get_distance_matrix()
-	t2=t.cur_time_diff(True)	
+	#t2=t.cur_time_diff(True)	
 
-	print "dm_train", dm_train
-	print "ddm_train", ddm_train
+	#print "dm_train", dm_train
+	#print "ddm_train", ddm_train
 
 	return dm_train, ddm_train
 

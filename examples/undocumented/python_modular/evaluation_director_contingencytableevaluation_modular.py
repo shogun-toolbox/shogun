@@ -29,8 +29,9 @@ def evaluation_director_contingencytableevaluation_modular (ground_truth, predic
 	evaluator = SimpleWeightedBinaryEvaluator()
 	r = evaluator.evaluate(BinaryLabels(ground_truth), BinaryLabels(predicted))
 	r2 = evaluator.get_custom_score()
+	print r,r2
 
-	return r==r2
+	return r,r2
 
 if __name__=='__main__':
 	print('EvaluationDirectorContingencyTableEvaluation')
