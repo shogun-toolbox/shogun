@@ -51,7 +51,6 @@ CMulticlassLogisticRegression::~CMulticlassLogisticRegression()
 
 bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
 {
-	SG_UNSTABLE("MulticlassLogisticRegression","\n")
 	if (data)
 		set_features((CDotFeatures*)data);
 
