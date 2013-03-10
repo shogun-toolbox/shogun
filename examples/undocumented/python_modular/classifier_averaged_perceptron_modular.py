@@ -4,7 +4,7 @@ from numpy import *
 
 parameter_list = [[100, 2, 5,1.,1000,1,1], [100, 2, 5,1.,1000,1,2]]
 
-def classifier_perceptron_modular (n=100, dim=2, distance=5,learn_rate=1.,max_iter=1000,num_threads=1,seed=1):
+def classifier_averaged_perceptron_modular (n=100, dim=2, distance=5,learn_rate=1.,max_iter=1000,num_threads=1,seed=1):
 	from shogun.Features import RealFeatures, BinaryLabels
 	from shogun.Classifier import AveragedPerceptron
 	
@@ -39,4 +39,4 @@ def classifier_perceptron_modular (n=100, dim=2, distance=5,learn_rate=1.,max_it
 
 if __name__=='__main__':
 	print('AveragedPerceptron')
-	classifier_perceptron_modular(*parameter_list[0])
+	classifier_averaged_perceptron_modular(*parameter_list[0])
