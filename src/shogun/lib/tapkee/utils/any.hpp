@@ -16,6 +16,7 @@
 namespace tapkee
 {
 
+//! Contains implementations of 'any' type
 namespace anyimpl
 {
 	struct bad_any_cast 
@@ -116,6 +117,7 @@ namespace anyimpl
 	};
 }
 
+//! A wrapper for values having runtime specified type
 struct any
 {
 private:

@@ -1,19 +1,19 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (c) 2012, Sergey Lisitsyn
- * Written (w) 2012, Fernando J. Iglesias Garcia, John Langford's cover
- * tree port
+ * Copyright (c) 2012-2013 Sergey Lisitsyn, Fernando J. Iglesias Garcia
  */
 
 #ifndef TAPKEE_NEIGHBORS_H_
 #define TAPKEE_NEIGHBORS_H_
 
-#include <shogun/lib/tapkee/neighbors/covertree.hpp>
+/* Tapkee includes */
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#ifdef TAPKEE_USE_LGPL_COVERTREE
+	#include <shogun/lib/tapkee/neighbors/covertree.hpp>
+#endif
 #include <shogun/lib/tapkee/neighbors/connected.hpp>
+/* End of Tapkee includes */
+
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -31,7 +31,9 @@ std::string get_neighbors_method_name(TAPKEE_NEIGHBORS_METHOD m)
 	switch (m)
 	{
 		case BRUTE_FORCE: return "Brute force";
+#ifdef TAPKEE_USE_LGPL_COVERTREE
 		case COVER_TREE: return "Cover tree";
+#endif
 		default: return "Unknown neighbors finding method (yes it is a bug)";
 	}
 }
@@ -45,6 +47,7 @@ struct distances_comparator
 	}
 };
 
+#ifdef TAPKEE_USE_LGPL_COVERTREE
 template <class RandomAccessIterator, class PairwiseCallback>
 Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccessIterator end, 
                          PairwiseCallback callback, IndexType k)
@@ -85,10 +88,11 @@ Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccess
 	free(points.elements);
 	return neighbors;
 }
+#endif
 
 template <class RandomAccessIterator, class PairwiseCallback>
 Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
-                                         const PairwiseCallback& callback, IndexType k)
+                                         PairwiseCallback callback, IndexType k)
 {
 	timed_context context("Distance sorting based neighbors search");
 	typedef std::pair<RandomAccessIterator, ScalarType> DistanceRecord;
@@ -139,7 +143,9 @@ Neighbors find_neighbors(TAPKEE_NEIGHBORS_METHOD method, const RandomAccessItera
 	switch (method)
 	{
 		case BRUTE_FORCE: neighbors = find_neighbors_bruteforce_impl(begin,end,callback,k); break;
+#ifdef TAPKEE_USE_LGPL_COVERTREE
 		case COVER_TREE: neighbors = find_neighbors_covertree_impl(begin,end,callback,k); break;
+#endif
 		default: break;
 	}
 

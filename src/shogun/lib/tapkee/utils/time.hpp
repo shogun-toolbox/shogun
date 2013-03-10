@@ -1,25 +1,26 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
 #ifndef TAPKEE_TIME_H_
 #define TAPKEE_TIME_H_
+
+/* Tapkee includes */
+#include <shogun/lib/tapkee/utils/logging.hpp>
+/* End of Tapkee includes */
+
 #include <ctime>
 #include <string>
 #include <sstream>
-#include <shogun/lib/tapkee/utils/logging.hpp>
 
 using std::string;
 using std::stringstream;
 
 namespace tapkee
 {
-
+namespace tapkee_internal
+{
 #ifdef _OPENMP
 	#define CLOCK_TYPE double
 	#define CLOCK_GET omp_get_wtime()
@@ -44,6 +45,6 @@ struct timed_context
 		LoggingSingleton::instance().message_benchmark(msg_stream.str());
 	}
 };
-
+}
 }
 #endif

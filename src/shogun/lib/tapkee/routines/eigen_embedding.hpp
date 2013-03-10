@@ -1,13 +1,9 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Copyright (c) 2012-2013 Sergey Lisitsyn
  *
  * Randomized eigendecomposition code is inspired by the redsvd library
- * code which is distributed under BSD 3-clause license.
+ * code which is also distributed under BSD 3-clause license.
  *
  * Copyright (c) 2010-2013 Daisuke Okanohara
  *
@@ -16,11 +12,13 @@
 #ifndef TAPKEE_EIGEN_EMBEDDING_H_
 #define TAPKEE_EIGEN_EMBEDDING_H_
 
-#ifndef TAPKEE_NO_ARPACK
+/* Tapkee includes */
+#ifdef TAPKEE_WITH_ARPACK
 	#include <shogun/lib/tapkee/utils/arpack_wrapper.hpp>
 #endif
 #include <shogun/lib/tapkee/routines/matrix_operations.hpp>
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
+/* End of Tapkee includes */
 
 namespace tapkee
 {
@@ -50,6 +48,7 @@ struct eigen_embedding_impl
 	EmbeddingResult embed(const MatrixType& wm, IndexType target_dimension, unsigned int skip);
 };
 
+#ifdef TAPKEE_WITH_ARPACK
 //! ARPACK implementation of eigendecomposition-based embedding
 template <class MatrixType, class MatrixOperationType> 
 struct eigen_embedding_impl<MatrixType, MatrixOperationType, ARPACK>
@@ -58,10 +57,6 @@ struct eigen_embedding_impl<MatrixType, MatrixOperationType, ARPACK>
 	{
 		timed_context context("ARPACK eigendecomposition");
 
-#ifdef TAPKEE_NO_ARPACK
-		throw new unsupported_method_error("ARPACK is not available");
-		return EmbeddingResult();
-#else
 		ArpackGeneralizedSelfAdjointEigenSolver<MatrixType, MatrixType, MatrixOperationType> 
 			arpack(wm,target_dimension+skip,MatrixOperationType::ARPACK_CODE);
 
@@ -78,9 +73,9 @@ struct eigen_embedding_impl<MatrixType, MatrixOperationType, ARPACK>
 			throw eigendecomposition_error("eigendecomposition failed");
 		}
 		return EmbeddingResult();
-#endif
 	}
 };
+#endif
 
 //! Eigen library dense implementation of eigendecomposition-based embedding
 template <class MatrixType, class MatrixOperationType> 
@@ -224,9 +219,11 @@ EmbeddingResult eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method, const Matr
 			" eigendecomposition.");
 	switch (method)
 	{
+#ifdef TAPKEE_WITH_ARPACK
 		case ARPACK: 
 			return eigen_embedding_impl<MatrixType, MatrixOperationType, 
 				ARPACK>().embed(m, target_dimension, skip);
+#endif
 		case RANDOMIZED: 
 			return eigen_embedding_impl<MatrixType, MatrixOperationType,
 				RANDOMIZED>().embed(m, target_dimension, skip);

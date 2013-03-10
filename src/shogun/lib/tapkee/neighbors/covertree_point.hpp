@@ -11,6 +11,10 @@
 #ifndef _JL_COVERTREE_POINT_H_
 #define _JL_COVERTREE_POINT_H_
 
+/* Tapkee includes */
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
+/* End of Tapkee includes */
+
 #include <iostream>
 #include <cmath>
 
@@ -123,7 +127,7 @@ struct CoverTreePoint
 /** Functions declared out of the class definition to respect CoverTree 
  *  structure */
 template <class RandomAccessIterator, class Callback>
-inline ScalarType distance(const Callback& cb, const CoverTreePoint<RandomAccessIterator>& l,
+inline ScalarType distance(Callback cb, const CoverTreePoint<RandomAccessIterator>& l,
 		const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/)
 {
 	//assert(upper_bound>=0);

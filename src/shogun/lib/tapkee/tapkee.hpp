@@ -1,44 +1,45 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
 #ifndef TAPKEE_MAIN_H_
 #define TAPKEE_MAIN_H_
 
+/* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
 #include <shogun/lib/tapkee/tapkee_methods.hpp>
+/* End of Tapkee includes */
 
 namespace tapkee
 {
 
 //! Main entry-point of the library. Constructs dense embedding with specified dimension
-//! using provided data and callbacks. Returns DenseMatrix and ProjectingFunction with 
-//! corresponding ProjectionImplementation.
+//! using provided data and callbacks. Returns ReturnType that is essentially a pair of 
+//! DenseMatrix (embedding of provided data) and ProjectingFunction with 
+//! corresponding ProjectionImplementation used to project data out of sample.
 //!
-//! Has four template parameters:
-//! 
-//! RandomAccessIterator basic random access iterator with no specific capabilities.
+//! @tparam RandomAccessIterator basic random access iterator with no specific capabilities.
 //!
-//! KernelCallback that defines ScalarType operator()(RandomAccessIterator, RandomAccessIterator) operation 
-//! between two iterators. The operation should return value of Mercer kernel function 
-//! between vectors/objects iterators pointing to. KernelCallback should be marked as a kernel function using
-//! TAPKEE_CALLBACK_IS_KERNEL macro (fails on compilation in other case).
+//! @tparam KernelCallback that defines 
+//! @code ScalarType operator()( RandomAccessIterator, RandomAccessIterator) @endcode 
+//! function of two iterators. This method should return value of Mercer kernel function 
+//! between vectors/objects iterators pointing to. The callback should be marked as a kernel function using
+//! @ref tapkee::TAPKEE_CALLBACK_IS_KERNEL macro (fails on compilation in other case).
 //!
-//! DistanceCallback that defines ScalarType operator()(RandomAccessIterator, RandomAccessIterator) operation
-//! between two iterators. DistanceCallback should be marked as a distance function using 
-//! TAPKEE_CALLBACK_IS_DISTANCE macro (fails during compilation in other case).
+//! @tparam DistanceCallback that defines 
+//! @code ScalarType operator()(RandomAccessIterator, RandomAccessIterator) @endcode 
+//! function of two iterators. The callback should be marked as a distance function using 
+//! @ref TAPKEE_CALLBACK_IS_DISTANCE macro (fails during compilation in other case).
 //!
-//! FeatureVectorCallback that defines void operator()(RandomAccessIterator, DenseVector) operation
-//! used to access feature vector pointed by iterator. The callback should put the feature vector pointed by iterator
-//! to the vector of second argument.
+//! @tparam FeatureVectorCallback that defines 
+//! @code void operator()(RandomAccessIterator, DenseVector) @endcode function
+//! used to access feature vector pointed by iterator. The callback should put the feature vector 
+//! pointed by iterator to the second argument vector.
 //!
-//! Parameters required by the chosen algorithm are obtained from the parameter map. It fails during runtime and
-//! throws exception if some of required parameters are not specified or have improper values.
+//! Parameters required by the chosen algorithm are obtained from the parameter map. It gracefully 
+//! fails during runtime and throws an exception if some of required 
+//! parameters are not specified or have improper values.
 //!
 //! @param begin begin iterator of data
 //! @param end end iterator of data
@@ -52,7 +53,9 @@ ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
                    KernelCallback kernel_callback, DistanceCallback distance_callback,
                    FeatureVectorCallback feature_vector_callback, ParametersMap options)
 {
-	//Eigen::initParallel();
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+	Eigen::initParallel();
+#endif
 	ReturnResult return_result;
 
 	TAPKEE_METHOD method;
@@ -94,7 +97,9 @@ ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
 			HANDLE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING);
 			HANDLE_IMPLEMENTATION(PASS_THRU);
 			HANDLE_IMPLEMENTATION(FACTOR_ANALYSIS);
+#ifdef TAPKEE_USE_GPL_TSNE
 			HANDLE_IMPLEMENTATION(TSNE);
+#endif
 			case UNKNOWN_METHOD: throw wrong_parameter_error("unknown method"); break;
 		}
 	}

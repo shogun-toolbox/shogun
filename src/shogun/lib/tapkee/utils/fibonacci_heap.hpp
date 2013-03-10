@@ -1,17 +1,15 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (W) 2011 Evgeniy Andreev (gsomix)
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
+ * Copyright (c) 2011-2013 Evgeniy Andreev
  */
 
 #ifndef FIBONACCI_H_
 #define FIBONACCI_H_
 
+/* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
+/* End of Tapkee includes */
+
 #include <cmath>
 
 namespace tapkee

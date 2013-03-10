@@ -1,15 +1,15 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Written (w) 2012-2013 Fernando J. Iglesias Garcia
- * Copyright (c) 2012-2013 Fernando J. Iglesias Garcia
+ * Copyright (c) 2012-2013 Sergey Lisitsyn, Fernando J. Iglesias Garcia
  */
 
 #ifndef TAPKEE_SPE_H_
 #define TAPKEE_SPE_H_
+
+/* Tapkee includes */
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/utils/time.hpp>
+/* End of Tapkee includes */
 
 #include <algorithm>
 #include <ctime>

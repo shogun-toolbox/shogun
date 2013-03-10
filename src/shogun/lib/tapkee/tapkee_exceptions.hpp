@@ -1,11 +1,6 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (c) 2013 Sergey Lisitsyn
- *
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
 #ifndef TAPKEE_EXCEPTIONS_H_
@@ -19,33 +14,48 @@ using std::string;
 namespace tapkee
 {
 
+//! An exception type that is thrown in case if wrong parameter
+//! value is passed.
 class wrong_parameter_error : public std::logic_error
 {
-	public: 
+	public:
+		/** @param what_msg message of the exception */
 		explicit wrong_parameter_error(const string& what_msg) : std::logic_error(what_msg) {};
 };
 
+//! An exception type that is thrown in case of missed parameter,
+//! i.e. when some required parameter is not set.
 class missed_parameter_error : public std::logic_error
 {
 	public:
+		/** @param what_msg message of the exception */
 		explicit missed_parameter_error(const string& what_msg) : std::logic_error(what_msg) {};
 };
 
+//! An exception type that is thrown when unsupported method
+//! is called.
 class unsupported_method_error : public std::logic_error
 {
 	public:
+		/** @param what_msg message of the exception */
 		explicit unsupported_method_error(const string& what_msg) : std::logic_error(what_msg) {};
 };
 
+//! An exception type that is thrown when the library can't get 
+//! enough memory.
 class not_enough_memory_error : public std::runtime_error
 {
 	public:
+		/** @param what_msg message of the exception */
 		explicit not_enough_memory_error(const string& what_msg) : std::runtime_error(what_msg) {};
 };
 
+//! An exception type that is thrown when eigendecomposition
+//! is failed.
 class eigendecomposition_error : public std::runtime_error
 {
 	public:
+		/** @param what_msg message of the exception */
 		explicit eigendecomposition_error(const string& what_msg) : std::runtime_error(what_msg) {};
 };
 

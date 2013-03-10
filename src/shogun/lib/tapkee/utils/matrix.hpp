@@ -3,7 +3,8 @@
 
 namespace tapkee 
 {
-
+namespace tapkee_internal
+{
 void centerMatrix(DenseMatrix& matrix)
 {
 	Eigen::Matrix<DenseMatrix::Scalar,1,Eigen::Dynamic> col_means = matrix.colwise().mean();
@@ -12,6 +13,6 @@ void centerMatrix(DenseMatrix& matrix)
 	matrix.rowwise() -= col_means;
 	matrix.colwise() -= col_means.transpose();
 };
-
+}
 }
 #endif

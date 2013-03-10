@@ -1,31 +1,18 @@
-/** This file is taken from Eigen, a lightweight C++ template library
- * for linear algebra.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (C) 2012 David Harmon <dharmon@gmail.com>
- * Some adjustments were made by Sergey Lisitsyn
+ * This code is based on Eigen3 ARPACK wrapper
+ * Copyright (c) 2012 David Harmon
  *
- * Eigen is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * Alternatively, you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- * 
- * Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License and a copy of the GNU General Public License along with
- * Eigen. If not, see <http://www.gnu.org/licenses/>.
+ * The code is relicensed under BSD 3-clause with the permission of its
+ * original author. Some changes were made afterwards by Sergey Lisitsyn.
  */
 
 #ifndef EIGEN_ARPACKGENERALIZEDSELFADJOINTEIGENSOLVER_H
 #define EIGEN_ARPACKGENERALIZEDSELFADJOINTEIGENSOLVER_H
+
+/* Tapkee includes */
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
+/* End of Tapkee includes */
 
 using Eigen::Matrix;
 using Eigen::Dynamic;
@@ -39,6 +26,7 @@ using Eigen::InvalidInput;
 using Eigen::Success;
 using Eigen::NumTraits;
 
+//! Namespace that contains ARPACK routines
 namespace arpack_internal 
 {
 	template<typename Scalar, typename RealScalar> struct arpack_wrapper;
@@ -205,7 +193,7 @@ public:
 	* this object was used to solve the eigenproblem for the selfadjoint
 	* matrix \f$ A \f$, then the matrix returned by this function is the
 	* matrix \f$ V \f$ in the eigendecomposition \f$ A V = D V \f$.
-	* For the generalized eigenproblem, the matrix returned is the solution \f$A V = D B V
+	* For the generalized eigenproblem, the matrix returned is the solution of \f$A V = D B V \f$
 	*
 	* Example: \include SelfAdjointEigenSolver_eigenvectors.cpp
 	* Output: \verbinclude SelfAdjointEigenSolver_eigenvectors.out

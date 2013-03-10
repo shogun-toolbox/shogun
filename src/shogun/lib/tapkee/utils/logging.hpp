@@ -1,10 +1,6 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (c) 2012, Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
 #ifndef TAPKEE_LOGGING_H_
@@ -40,6 +36,7 @@ using std::string;
 namespace tapkee
 {
 
+//! A base class for logger required by the library
 class LoggerImplementation
 {
 public:
@@ -55,6 +52,7 @@ private:
 	LoggerImplementation(const LoggerImplementation&);
 };
 
+//! Default std::cout implementation of @ref LoggerImplementation
 class DefaultLoggerImplementation : public LoggerImplementation
 {
 public:
@@ -72,6 +70,9 @@ private:
 	ostream* os_;
 };
 
+//! Main logging singleton used by the library. Can use provided
+//! @ref LoggerImplementation if necessary. By default uses
+//! @ref DefaultLoggerImplementation.
 class LoggingSingleton
 {
 	private:
@@ -99,13 +100,18 @@ class LoggingSingleton
 		LEVEL_ENABLED_FIELD(benchmark);
 
 	public:
+		//! @return instance of the singleton
 		static LoggingSingleton& instance()
 		{
 			static LoggingSingleton s;
 			return s;
 		}
 
+		//! getter for logger implementation
+		//! @return current logger implementation
 		LoggerImplementation* get_logger_impl() const { return impl; }
+		//! setter for logger implementation
+		//! @param i logger implementation to be set
 		void set_logger_impl(LoggerImplementation* i) { delete impl; impl = i; }
 
 		LEVEL_HANDLERS(info);

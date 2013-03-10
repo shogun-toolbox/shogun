@@ -1,19 +1,17 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
  * Copyright (c) 2012-2013 Sergey Lisitsyn
- *
  */
 
 #ifndef TAPKEE_ISOMAP_H_
 #define TAPKEE_ISOMAP_H_
 
+/* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
 #include <shogun/lib/tapkee/utils/fibonacci_heap.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
+/* End of Tapkee includes */
+
 #include <limits>
 
 using std::numeric_limits;
@@ -33,7 +31,7 @@ namespace tapkee_internal
 //!
 template <class RandomAccessIterator, class DistanceCallback>
 DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
-		const Neighbors& neighbors, const DistanceCallback& callback)
+		const Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
 	const IndexType n_neighbors = neighbors[0].size();
@@ -126,7 +124,7 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterato
 //!
 template <class RandomAccessIterator, class DistanceCallback>
 DenseMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
-		const Landmarks& landmarks, const Neighbors& neighbors, const DistanceCallback& callback)
+		const Landmarks& landmarks, const Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
 	const IndexType n_neighbors = neighbors[0].size();

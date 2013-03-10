@@ -1,32 +1,39 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+/* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (c) 2012-2013 Sergey Lisitsyn, Fernando J. Iglesias García
- *
+ * Copyright (c) 2012-2013 Sergey Lisitsyn, Fernando Iglesias
  */
+
+#ifndef TAPKEE_PROJECTION_H_
+#define TAPKEE_PROJECTION_H_
 
 namespace tapkee
 {
 
+//! A base class for implementation of projecting 
 struct ProjectionImplementation
 {
 	virtual ~ProjectionImplementation()
 	{
 	}
+	//! Projects provided vector to new space
+	//! @param vec vector to be projected
+	//! @return projected vector
 	virtual DenseVector project(const DenseVector& vec) = 0;
 };
 
+//! A pimpl wrapper for projecting function
 struct ProjectingFunction
 {
 	ProjectingFunction() : implementation(NULL) {};
 	ProjectingFunction(ProjectionImplementation* impl) : implementation(impl) {};
+	//! Destroys current implementation
 	void clear() 
 	{ 
 		delete implementation;
 	}
+	//! Projects provided vector to new space
+	//! @param vec vector to be projected
+	//! @return projected vector
 	inline DenseVector operator()(const DenseVector& vec)
 	{
 		return implementation->project(vec);
@@ -34,6 +41,8 @@ struct ProjectingFunction
 	ProjectionImplementation* implementation;
 };
 
+//! Basic @ref ProjectionImplementation that subtracts mean from the vector
+//! and multiplies projecting matrix with it.
 struct MatrixProjectionImplementation : public ProjectionImplementation
 {
 	MatrixProjectionImplementation(DenseMatrix matrix, DenseVector mean) : proj_mat(matrix), mean_vec(mean)
@@ -55,4 +64,4 @@ struct MatrixProjectionImplementation : public ProjectionImplementation
 
 
 }
-
+#endif
