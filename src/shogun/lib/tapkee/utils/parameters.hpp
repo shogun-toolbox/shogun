@@ -24,7 +24,15 @@
 #define PARAMETER_IMPL(TYPE,NAME,CODE,CHECKER)                                                         \
 	if (!options.count(CODE))                                                                          \
 		throw missed_parameter_error("No "#NAME" ("#TYPE") parameter set. Should be in map as "#CODE); \
-	TYPE NAME = options[CODE].cast<TYPE>();                                                            \
+	TYPE NAME;                                                                                         \
+	try                                                                                                \
+	{                                                                                                  \
+		NAME = options[CODE].cast<TYPE>();                                                             \
+	}                                                                                                  \
+	catch (tapkee::anyimpl::bad_any_cast&)                                                             \
+	{                                                                                                  \
+		throw wrong_parameter_type_error("Wrong type for parameter "#NAME". Should be "#TYPE);         \
+	}                                                                                                  \
 	if (!CHECKER)                                                                                      \
 		throw wrong_parameter_error("Check failed "#CHECKER);                                          \
 	else                                                                                               \

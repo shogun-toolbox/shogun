@@ -53,19 +53,19 @@ ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
                    KernelCallback kernel_callback, DistanceCallback distance_callback,
                    FeatureVectorCallback feature_vector_callback, ParametersMap options)
 {
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-	Eigen::initParallel();
-#endif
 	ReturnResult return_result;
 
 	TAPKEE_METHOD method;
+	if (!options.count(REDUCTION_METHOD))
+		throw missed_parameter_error("Dimension reduction wasn't specified");
+
 	try 
 	{
 		method = options[REDUCTION_METHOD].cast<TAPKEE_METHOD>();
 	}
 	catch (const anyimpl::bad_any_cast&)
 	{
-		throw wrong_parameter_error("Wrong method specified.");
+		throw wrong_parameter_type_error("Wrong method type specified.");
 	}
 
 #define CALL_IMPLEMENTATION(X) \

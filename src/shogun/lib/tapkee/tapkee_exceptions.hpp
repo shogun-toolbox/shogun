@@ -23,6 +23,16 @@ class wrong_parameter_error : public std::logic_error
 		explicit wrong_parameter_error(const string& what_msg) : std::logic_error(what_msg) {};
 };
 
+//! An exception type that is thrown in case if wrong parameter type
+//! is passed.
+class wrong_parameter_type_error : public std::logic_error
+{
+	public:
+		/** @param what_msg message of the exception */
+		explicit wrong_parameter_type_error(const string& what_msg) : std::logic_error(what_msg) {};
+};
+
+
 //! An exception type that is thrown in case of missed parameter,
 //! i.e. when some required parameter is not set.
 class missed_parameter_error : public std::logic_error
