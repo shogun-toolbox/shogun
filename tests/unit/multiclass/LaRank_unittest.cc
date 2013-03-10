@@ -1,21 +1,13 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 2013 Heiko Strathmann and others
- */
-
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/multiclass/LaRank.h>
 #include <shogun/base/init.h>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 
-void test()
+TEST(LaRank,train)
 {
 	index_t num_vec=10;
 	index_t num_feat=3;
@@ -42,8 +34,8 @@ void test()
 		matrix(label,i)+=distance;
 		matrix_test(label,i)+=distance;
 	}
-	matrix.display_matrix("matrix");
-	labels->get_int_labels().display_vector("labels");
+	//matrix.display_matrix("matrix");
+	//labels->get_int_labels().display_vector("labels");
 
 	// shogun will now own the matrix created
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
@@ -72,33 +64,24 @@ void test()
 	for (index_t i=0; i<output->get_num_labels(); ++i)
 		single_outputs[i]=svm->apply_one(i);
 
-	single_outputs.display_vector("single_outputs");
+	//single_outputs.display_vector("single_outputs");
 
 	for (index_t i=0; i<output->get_num_labels(); ++i)
-		ASSERT(output->get_label(i)==single_outputs[i]);
+		EXPECT_EQ(output->get_label(i), single_outputs[i]);
 
+	// predict test labels (since data is easy this has to be correct
 	CMulticlassLabels* output_test=
 			(CMulticlassLabels*)svm->apply(features_test);
-	labels_test->get_labels().display_vector("labels_test");
-	output_test->get_labels().display_vector("output_test");
+	//labels_test->get_labels().display_vector("labels_test");
+	//output_test->get_labels().display_vector("output_test");
 
 	for (index_t i=0; i<output->get_num_labels(); ++i)
-		ASSERT(labels_test->get_label(i)==output_test->get_label(i));
+		EXPECT_EQ(labels_test->get_label(i), output_test->get_label(i));
 
 	// free up memory
 	SG_UNREF(output);
 	SG_UNREF(labels_test);
 	SG_UNREF(output_test);
 	SG_UNREF(svm);
-}
-
-int main(int argc, char** argv)
-{
-	init_shogun_with_defaults();
-
-	test();
-
-	exit_shogun();
-	return 0;
 }
 
