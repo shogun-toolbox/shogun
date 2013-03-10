@@ -1,16 +1,26 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-lm=LoadMatrix()
 
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+from numpy import *
 
-parameter_list = [[traindat,testdat,label_traindat,1.,1000,1],[traindat,testdat,label_traindat,1.,1000,1]]
+parameter_list = [[100, 2, 5,1.,1000,1,1], [100, 2, 5,1.,1000,1,2]]
 
-def classifier_averaged_perceptron_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,learn_rate=1.,max_iter=1000,num_threads=1):
+def classifier_perceptron_modular (n=100, dim=2, distance=5,learn_rate=1.,max_iter=1000,num_threads=1,seed=1):
 	from shogun.Features import RealFeatures, BinaryLabels
 	from shogun.Classifier import AveragedPerceptron
+	
+	random.seed(seed)
+
+	# produce some (probably) linearly separable training data by hand
+	# Two Gaussians at a far enough distance
+	X=array(random.randn(dim,n))+distance
+	Y=array(random.randn(dim,n))-distance
+	X_test=array(random.randn(dim,n))+distance
+	Y_test=array(random.randn(dim,n))-distance
+	label_train_twoclass=hstack((ones(n), -ones(n)))
+	
+	#plot(X[0,:], X[1,:], 'x', Y[0,:], Y[1,:], 'o')
+	fm_train_real=hstack((X,Y))
+	fm_test_real=hstack((X_test,Y_test))
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -25,9 +35,8 @@ def classifier_averaged_perceptron_modular (fm_train_real=traindat,fm_test_real=
 
 	perceptron.set_features(feats_test)
 	out_labels = perceptron.apply().get_labels()
-	#print(out_labels)
 	return perceptron, out_labels
 
 if __name__=='__main__':
 	print('AveragedPerceptron')
-	classifier_averaged_perceptron_modular(*parameter_list[0])
+	classifier_perceptron_modular(*parameter_list[0])
