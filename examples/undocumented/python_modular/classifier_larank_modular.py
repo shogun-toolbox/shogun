@@ -23,6 +23,7 @@ def classifier_larank_modular (num_vec,num_class,distance,C=0.9,num_threads=1,nu
 
 	feats_train=RealFeatures(fm_train)
 	feats_test=RealFeatures(fm_test)
+	
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
 
