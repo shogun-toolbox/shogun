@@ -100,7 +100,8 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	index_t mean_shift=100;
 	index_t num_runs=1000;
 
-	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(mean_shift, dimension);
+	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(mean_shift,
+			dimension, 0);
 
 	SGVector<float64_t> avg(dimension);
 	avg.zero();
