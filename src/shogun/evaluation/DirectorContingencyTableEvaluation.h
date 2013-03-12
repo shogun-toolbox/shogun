@@ -18,8 +18,9 @@ namespace shogun
 
 #define IGNORE_IN_CLASSLIST
 
-/** @brief The class ContingencyTableEvaluation
+/** @brief The class DirectorContingencyTableEvaluation
  * a base class used to evaluate 2-class classification
+ * using SWIG directors.
  */
 IGNORE_IN_CLASSLIST class CDirectorContingencyTableEvaluation: public CContingencyTableEvaluation
 {
@@ -28,7 +29,7 @@ public:
 
 	/** constructor */
 	CDirectorContingencyTableEvaluation() :
-		CContingencyTableEvaluation()
+		CContingencyTableEvaluation(CUSTOM)
 	{
 	}
 
