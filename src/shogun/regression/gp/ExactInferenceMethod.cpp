@@ -22,7 +22,12 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
 
+#include <Eigen/Dense>
+#include <iostream>
+using namespace std;
+
 using namespace shogun;
+using namespace Eigen;
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
@@ -382,87 +387,59 @@ void CExactInferenceMethod::update_chol()
 {
 	check_members();
 
-	float64_t m_sigma =
+	float64_t sigma =
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	//Placeholder Matrices
-	SGMatrix<float64_t> temp1(m_ktrtr.num_rows,
-			m_ktrtr.num_cols);
+	/* temporaryly add noise */
+	float64_t noise=(m_scale*m_scale)/(sigma*sigma);
+	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
+		m_ktrtr(i, i)+=noise;
 
-	m_kern_with_noise = SGMatrix<float64_t>(m_ktrtr.num_rows,
-			m_ktrtr.num_cols);
+	/* check whether to allocate cholesky mempory */
+	if (!m_L.matrix || m_L.num_rows!=m_ktrtr.num_rows)
+		m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-	SGMatrix<float64_t> temp2(m_ktrtr.num_rows,
-			m_ktrtr.num_cols);
+	/* creates views on kernel and cholesky matrix and perform cholesky */
+	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> L(m_L.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	LLT<MatrixXd> llt;
+	llt.compute(K);
+	L=llt.matrixU();
+	cout << L << endl;
 
-	//Vector to fill matrix diagonals
-	SGVector<float64_t> diagonal(temp1.num_rows);
-	diagonal.fill_vector(diagonal.vector, temp1.num_rows, 1.0);
-
-	temp1.create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
-	temp2.create_diagonal_matrix(temp2.matrix, diagonal.vector, temp2.num_rows);
-
-	//Calculate first (K(X, X)+sigma*I)
-	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper,
-			m_ktrtr.num_rows, temp2.num_cols, (m_scale*m_scale)/(m_sigma*m_sigma),
-			m_ktrtr.matrix, m_ktrtr.num_cols,
-			temp2.matrix, temp2.num_cols, 1.0,
-			temp1.matrix, temp1.num_cols);
-
-	memcpy(m_kern_with_noise.matrix, temp1.matrix,
-			temp1.num_cols*temp1.num_rows*sizeof(float64_t));
-
-	//Get Lower triangle cholesky decomposition of K(X, X)+sigma*I)
-	clapack_dpotrf(CblasColMajor, CblasUpper,
-			temp1.num_rows, temp1.matrix, temp1.num_cols);
-
-	m_L = SGMatrix<float64_t>(temp1.num_rows, temp1.num_cols);
-
-	/* lapack for some reason wants only to calculate the upper triangle
-	 * and leave the lower triangle with junk data. Finishing the job
-	 * by filling the lower triangle with zero entries.
-	 */
-	for (int i = 0; i < temp1.num_rows; i++)
-	{
-		for (int j = 0; j < temp1.num_cols; j++)
-		{
-			if (i > j)
-				temp1(i,j) = 0;
-		}
-	}
-
-	memcpy(m_L.matrix, temp1.matrix,
-			temp1.num_cols*temp1.num_rows*sizeof(float64_t));
+	/* remove noise again */
+	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
+		m_ktrtr(i, i)-=noise;
 }
 
 void CExactInferenceMethod::update_alpha()
 {
-	float64_t m_sigma =
+	float64_t sigma =
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
-
-	//Placeholder Matrices
-	SGMatrix<float64_t> temp1(m_L.num_rows,
-			m_L.num_cols);
 
 	for (int i = 0; i < m_label_vector.vlen; i++)
 		m_label_vector[i] = m_label_vector[i] - m_data_means[i];
 
 	m_alpha = SGVector<float64_t>(m_label_vector.vlen);
 
-	memcpy(temp1.matrix, m_L.matrix,
-			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
+	/* temporaryly add noise */
+	float64_t noise=(m_scale*m_scale)/(sigma*sigma);
+	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
+		m_ktrtr(i, i)+=noise;
 
-	memcpy(m_alpha.vector, m_label_vector.vector,
-			m_label_vector.vlen*sizeof(float64_t));
+	/* creates views on kernel matrix, labels, and alpha and solve system
+	 * (K(X, X)+sigma*I) a = y for a */
+	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<VectorXd> a(m_alpha.vector, m_alpha.vlen);
+	Map<VectorXd> y(m_label_vector.vector, m_label_vector.vlen);
 
-	//Solve (K(X, X)+sigma*I) alpha = labels for alpha.
-	clapack_dposv(CblasColMajor, CblasLower,
-			m_kern_with_noise.num_cols, 1, m_kern_with_noise.matrix,
-			m_kern_with_noise.num_cols, m_alpha.vector,
-			m_kern_with_noise.num_cols);
+	LLT<MatrixXd> llt;
+	llt.compute(K);
+	a=llt.solve(y);
 
-	for (int i = 0; i < m_alpha.vlen; i++)
-		m_alpha[i] = m_alpha[i]/(m_sigma*m_sigma);
+	/* remove noise again */
+	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
+		m_ktrtr(i, i)-=noise;
 
 }
 #endif
