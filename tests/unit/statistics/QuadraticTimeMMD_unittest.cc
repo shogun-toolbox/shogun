@@ -202,8 +202,8 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 	float64_t difference=0.5;
 
 	/* streaming data generator for mean shift distributions */
-	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, dim);
-	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, dim);
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, dim, 0);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, dim, 0);
 
 	/* stream some data from generator */
 	CFeatures* feat_p=gen_p->get_streamed_features(m);

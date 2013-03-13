@@ -27,7 +27,7 @@ class CFeatures;
 class CLabels;
 
 /** @brief Class GaussianProcessRegression implements Gaussian Process
- * Regression.vInstead of a distribution over weights, the GP specifies
+ * Regression. Instead of a distribution over weights, the GP specifies
  * a distribution over functions.
  */
 
@@ -207,14 +207,10 @@ class CGaussianProcessRegression : public CMachine
 		/** testing features */
 		CFeatures* m_data;
 
-		/*Kernel matrix from testing and training
-		 * features
-		 */
+		/** Kernel matrix between training and observed features */
 		SGMatrix<float64_t> m_k_trts;
 
-		/*Kernel matrix from testing
-		 * features
-		 */
+		/*Kernel matrix of observed features with itself */
 		SGMatrix<float64_t> m_k_tsts;
 
 		/** Inference Method */

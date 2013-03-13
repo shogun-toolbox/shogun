@@ -61,7 +61,7 @@ TEST(CustomKernelTest,add_row_subset)
 TEST(CustomKernelTest,add_row_subset_constructor)
 {
 	index_t n=4;
-	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(1, 2);
+	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(1, 2, 0);
 	CDenseFeatures<float64_t>* feats=
 			(CDenseFeatures<float64_t>*)gen->get_streamed_features(n);
 	CGaussianKernel* gaussian=new CGaussianKernel(feats, feats, 2, 10);

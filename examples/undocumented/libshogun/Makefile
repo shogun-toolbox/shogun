@@ -43,6 +43,7 @@ TARGETS = basic_minimal \
 		  regression_gaussian_process_product \
 		  regression_gaussian_process_ard \
 		  regression_gaussian_process_laplace \
+  		  regression_gaussian_process_simple_exact \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \
@@ -102,6 +103,7 @@ TARGETS = basic_minimal \
 		  library_serialization \
 		  classifier_svmlight_string_features_precomputed_kernel \
   		  classifier_mkl_svmlight_modelselection_bug \
+  		  
 
 all: $(TARGETS)
 
