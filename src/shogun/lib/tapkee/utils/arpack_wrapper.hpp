@@ -9,7 +9,6 @@
 
 #ifndef EIGEN_ARPACKGENERALIZEDSELFADJOINTEIGENSOLVER_H
 #define EIGEN_ARPACKGENERALIZEDSELFADJOINTEIGENSOLVER_H
-#ifdef TAPKEE_WITH_ARPACK
 
 /* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
@@ -672,6 +671,5 @@ template <> struct arpack_wrapper<double, double>
 
 }
 
-#endif // TAPKEE_WITH_ARPACK
 #endif // EIGEN_ARPACKSELFADJOINTEIGENSOLVER_H
 

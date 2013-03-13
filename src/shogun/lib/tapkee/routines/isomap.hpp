@@ -129,6 +129,7 @@ DenseMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin,
 	timed_context context("Distances shortest path relaxing");
 	const IndexType n_neighbors = neighbors[0].size();
 	const IndexType N = end-begin;
+	const IndexType N_landmarks = landmarks.size();
 
 	DenseMatrix shortest_distances(landmarks.size(),N);
 	
@@ -140,7 +141,7 @@ DenseMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin,
 		FibonacciHeap* heap = new FibonacciHeap(N);
 
 #pragma omp for nowait
-		for (k=0; k<landmarks.size(); k++)
+		for (k=0; k<N_landmarks; k++)
 		{
 			// fill s and f with false, fill shortest_D with infinity
 			for (IndexType j=0; j<N; j++)

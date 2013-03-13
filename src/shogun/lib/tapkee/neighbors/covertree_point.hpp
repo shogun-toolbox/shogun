@@ -124,22 +124,46 @@ struct CoverTreePoint
 	ScalarType norm_;
 }; /* struct JLCoverTreePoint */
 
+template <bool, class RandomAccessIterator, class Callback> 
+struct distance_impl_if_kernel
+{
+	ScalarType operator()(Callback cb, const CoverTreePoint<RandomAccessIterator>& l,
+                          const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/);
+};
+
 /** Functions declared out of the class definition to respect CoverTree 
  *  structure */
 template <class RandomAccessIterator, class Callback>
 inline ScalarType distance(Callback cb, const CoverTreePoint<RandomAccessIterator>& l,
-		const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/)
+		const CoverTreePoint<RandomAccessIterator>& r, ScalarType upper_bound)
 {
 	//assert(upper_bound>=0);
 
 	if (l.iter_==r.iter_)
 		return 0.0;
 
-	if (BasicCallbackTraits<Callback>::is_kernel())
-		return sqrt(l.norm_ + r.norm_ - 2*cb(*r.iter_,*l.iter_));
-	else	// distance_kernel
-		return cb(*l.iter_,*r.iter_);
+	return distance_impl_if_kernel<BasicCallbackTraits<Callback>::is_kernel,RandomAccessIterator,Callback>()(cb,l,r,upper_bound);
 }
+
+template <class RandomAccessIterator, class Callback>
+struct distance_impl_if_kernel<true,RandomAccessIterator,Callback>
+{
+	inline ScalarType operator()(Callback cb, const CoverTreePoint<RandomAccessIterator>& l,
+                                 const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/)
+	{
+		return sqrt(l.norm_ + r.norm_ - 2*cb(*r.iter_,*l.iter_));
+	}
+};
+
+template <class RandomAccessIterator, class Callback>
+struct distance_impl_if_kernel<false,RandomAccessIterator,Callback>
+{
+	inline ScalarType operator()(Callback cb, const CoverTreePoint<RandomAccessIterator>& l,
+                                 const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/)
+	{
+		return cb(*l.iter_,*r.iter_);
+	}
+};
 
 /** Print the information of the CoverTree point */
 template <class RandomAccessIterator>

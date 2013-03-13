@@ -108,22 +108,23 @@ SparseWeightMatrix linear_weight_matrix(const RandomAccessIterator& begin, const
 
 #pragma omp parallel shared(begin,end,neighbors,callback,sparse_triplets) default(none)
 	{
-		RandomAccessIterator iter;
-		RandomAccessIterator iter_begin = begin, iter_end = end;
+		IndexType index_iter;
 		DenseMatrix gram_matrix = DenseMatrix::Zero(k,k);
 		DenseVector dots(k);
 		DenseVector rhs = DenseVector::Ones(k);
 		DenseVector weights;
+		SparseTriplets local_triplets;
+		local_triplets.reserve(k*k+2*k+1);
 		
 		//RESTRICT_ALLOC;
 #pragma omp for nowait
-		for (iter=iter_begin; iter<iter_end; ++iter)
+		for (index_iter=0; index_iter<(end-begin); index_iter++)
 		{
-			ScalarType kernel_value = callback(*iter,*iter);
-			const LocalNeighbors& current_neighbors = neighbors[iter-begin];
+			ScalarType kernel_value = callback(begin[index_iter],begin[index_iter]);
+			const LocalNeighbors& current_neighbors = neighbors[index_iter];
 			
 			for (IndexType i=0; i<k; ++i)
-				dots[i] = callback(*iter, begin[current_neighbors[i]]);
+				dots[i] = callback(begin[index_iter], begin[current_neighbors[i]]);
 
 			for (IndexType i=0; i<k; ++i)
 			{
@@ -136,20 +137,27 @@ SparseWeightMatrix linear_weight_matrix(const RandomAccessIterator& begin, const
 			weights = gram_matrix.selfadjointView<Eigen::Upper>().ldlt().solve(rhs);
 			weights /= weights.sum();
 
-#pragma omp critical
+			SparseTriplet diagonal_triplet(index_iter,index_iter,1.0+shift);
+			local_triplets.push_back(diagonal_triplet);
+			for (IndexType i=0; i<k; ++i)
 			{
-				sparse_triplets.push_back(SparseTriplet(iter-begin,iter-begin,1.0+shift));
-				for (IndexType i=0; i<k; ++i)
+				SparseTriplet row_side_triplet(current_neighbors[i],index_iter,-weights[i]);
+				SparseTriplet col_side_triplet(index_iter,current_neighbors[i],-weights[i]);
+				local_triplets.push_back(row_side_triplet);
+				local_triplets.push_back(col_side_triplet);
+				for (IndexType j=0; j<k; ++j)
 				{
-					sparse_triplets.push_back(SparseTriplet(current_neighbors[i],iter-begin,
-															-weights[i]));
-					sparse_triplets.push_back(SparseTriplet(iter-begin,current_neighbors[i],
-															-weights[i]));
-					for (IndexType j=0; j<k; ++j)
-						sparse_triplets.push_back(SparseTriplet(current_neighbors[i],current_neighbors[j],
-																+weights(i)*weights(j)));
+					SparseTriplet cross_triplet(current_neighbors[i],current_neighbors[j],weights(i)*weights(j));
+					local_triplets.push_back(cross_triplet);
 				}
 			}
+
+#pragma omp critical
+			{
+				copy(local_triplets.begin(),local_triplets.end(),back_inserter(sparse_triplets));
+			}
+			
+			local_triplets.clear();
 		}
 		//UNRESTRICT_ALLOC;
 	}
@@ -218,7 +226,7 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 			ct += ct + target_dimension - j;
 		}
 		
-		for (IndexType i=0; i<Yi.cols(); i++)
+		for (IndexType i=0; i<IndexType(Yi.cols()); i++)
 		{
 			for (IndexType j=0; j<i; j++)
 			{
