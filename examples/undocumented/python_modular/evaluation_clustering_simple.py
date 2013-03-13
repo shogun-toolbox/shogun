@@ -10,7 +10,6 @@ def run_clustering(data, k):
 	from shogun.Distance import EuclideanDistance
 	from shogun.Features import RealFeatures
 
-	Math_init_random(42)
 	fea = RealFeatures(data)
 	distance = EuclideanDistance(fea, fea)
 	kmeans=KMeans(k, distance)
@@ -34,11 +33,12 @@ def assign_labels(data, centroids, ncenters):
 	knn.train()
 	return knn.apply(fea)
 
-def evaluation_clustering (n_data=100, sqrt_num_blobs=4, distance=5):
+def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	from shogun.Evaluation import ClusteringAccuracy, ClusteringMutualInformation
 	from shogun.Features import MulticlassLabels, GaussianBlobsDataGenerator
 	from shogun.Mathematics import Math
-	
+
+	# reproducable results	
 	Math.init_random(1)
 	
 	# produce sone Gaussian blobs to cluster
@@ -80,4 +80,4 @@ def evaluation_clustering (n_data=100, sqrt_num_blobs=4, distance=5):
 
 if __name__ == '__main__':
 	print('Evaluation Clustering')
-	evaluation_clustering(*parameter_list[0])
+	evaluation_clustering_simple(*parameter_list[0])
