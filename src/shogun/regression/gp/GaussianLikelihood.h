@@ -29,7 +29,7 @@ class CGaussianLikelihood: public CLikelihoodModel
 public:
 
 	/*Constructor*/
-	CGaussianLikelihood();
+	CGaussianLikelihood(float64_t sigma=1);
 
 	/*Destructor*/
 	virtual ~CGaussianLikelihood();
