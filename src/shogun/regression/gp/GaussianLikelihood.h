@@ -27,11 +27,14 @@ class CGaussianLikelihood: public CLikelihoodModel
 {
   
 public:
+	/** Constructor*/
+	CGaussianLikelihood();
 
-	/*Constructor*/
-	CGaussianLikelihood(float64_t sigma=1);
+	/** Constructor
+	 * @param sigma noise parameter */
+	CGaussianLikelihood(float64_t sigma);
 
-	/*Destructor*/
+	/** Destructor*/
 	virtual ~CGaussianLikelihood();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE

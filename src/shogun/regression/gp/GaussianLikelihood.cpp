@@ -17,6 +17,11 @@
 using namespace shogun;
 using namespace Eigen;
 
+CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
+{
+	init();
+}
+
 CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
 {
 	init();
