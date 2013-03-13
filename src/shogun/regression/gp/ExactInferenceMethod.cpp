@@ -21,13 +21,11 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
+using namespace shogun;
 
 #include <Eigen/Dense>
-#include <iostream>
-using namespace std;
-
-using namespace shogun;
 using namespace Eigen;
+
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
@@ -405,7 +403,6 @@ void CExactInferenceMethod::update_chol()
 	LLT<MatrixXd> llt;
 	llt.compute(K);
 	L=llt.matrixU();
-	cout << L << endl;
 
 	/* remove noise again */
 	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
