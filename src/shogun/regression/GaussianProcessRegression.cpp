@@ -22,8 +22,10 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
-
 using namespace shogun;
+
+#include <Eigen/Dense>
+using namespace Eigen;
 
 CGaussianProcessRegression::CGaussianProcessRegression()
 : CMachine()
@@ -166,13 +168,6 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 	if (m_return == GP_RETURN_MEANS)
 	{
-		get_mean_vector().display_size();
-		SG_SPRINT("mean_vector %f\n", get_mean_vector()[0]);
-		SG_SPRINT("mean_vector %f\n", get_mean_vector()[1]);
-		SG_SPRINT("mean_vector %f\n", get_mean_vector()[2]);
-		SG_SPRINT("mean_vector %f\n", get_mean_vector()[3]);
-		SG_SPRINT("mean_vector %f\n", get_mean_vector()[4]);
-		get_mean_vector().display_vector("mean_vector");
 		CRegressionLabels* result =
 				new CRegressionLabels(get_mean_vector());
 
@@ -214,19 +209,19 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 {
 
-	SGVector<float64_t> m_alpha = m_method->get_alpha();
+	SGVector<float64_t> alpha = m_method->get_alpha();
 
 	CMeanFunction* mean_function = m_method->get_mean();
 
 	SGMatrix<float64_t> features;
-        if(m_data->get_feature_class() == C_COMBINED)
-        {
-        	SG_WARNING("%s::get_mean_vector(): This only works for combined"
-        			" features which all share the same underlying object!\n",
-        			get_name());
-	        features = ((CDotFeatures*)((CCombinedFeatures*)m_data)->
-                                        get_first_feature_obj())->
-					get_computed_dot_feature_matrix();
+	if(m_data->get_feature_class() == C_COMBINED)
+	{
+		SG_WARNING("%s::get_mean_vector(): This only works for combined"
+				" features which all share the same underlying object!\n",
+				get_name());
+		features = ((CDotFeatures*)((CCombinedFeatures*)m_data)->
+									get_first_feature_obj())->
+											get_computed_dot_feature_matrix();
 	}
 
 	else
@@ -239,14 +234,13 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 			get_name());
 
 	SGVector<float64_t> means = mean_function->get_mean_vector(features);
-	
 	SGVector< float64_t > result_vector(features.num_cols);
 
-	//Here we multiply K*^t by alpha to receive the mean predictions.
-	cblas_dgemv(CblasColMajor, CblasTrans, m_k_trts.num_rows,
-		    m_alpha.vlen, 1.0, m_k_trts.matrix,
-		    m_k_trts.num_cols, m_alpha.vector, 1, 0.0,
-		    result_vector.vector, 1);
+	/* create eigen3 views an multiply */
+	Map<MatrixXd> K(m_k_trts.matrix, m_k_trts.num_rows, m_k_trts.num_cols);
+	Map<VectorXd> a(alpha.vector, alpha.vlen);
+	Map<VectorXd> r(result_vector.vector, result_vector.vlen);
+	r=K.transpose()*a;
 
 	for (index_t i = 0; i < result_vector.vlen; i++)
 		result_vector[i] += means[i];
