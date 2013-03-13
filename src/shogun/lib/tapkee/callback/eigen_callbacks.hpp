@@ -54,6 +54,6 @@ struct distance_callback
 };
 // That's mandatory to specify that distance_callback
 // is a distance
-TAPKEE_CALLBACK_IS_DISTANCE(distance_callback);
+TAPKEE_CALLBACK_IS_EUCLIDEAN_DISTANCE(distance_callback);
 
 #endif

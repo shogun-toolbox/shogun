@@ -34,39 +34,45 @@ namespace tapkee_internal
 //!
 template <class RandomAccessIterator, class DistanceCallback>
 DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, RandomAccessIterator end, DistanceCallback callback, 
-                                              IndexType timesteps, ScalarType width)
+                                              const IndexType timesteps, const ScalarType width)
 {
 	timed_context context("Diffusion map matrix computation");
 
-	DenseSymmetricMatrix diffusion_matrix(end-begin,end-begin);	
-	DenseVector p = DenseVector::Zero(end-begin);
+	const IndexType n_vectors = end-begin;
+	DenseSymmetricMatrix diffusion_matrix(n_vectors,n_vectors);
+	DenseVector p = DenseVector::Zero(n_vectors);
 
 	RESTRICT_ALLOC;
 
 	// compute gaussian kernel matrix
-	for (RandomAccessIterator i_iter=begin; i_iter!=end; ++i_iter)
+#pragma omp parallel shared(diffusion_matrix,begin,callback) default(none)
 	{
-		for (RandomAccessIterator j_iter=i_iter; j_iter!=end; ++j_iter)
+		IndexType i_index_iter, j_index_iter;
+#pragma omp for nowait
+		for (i_index_iter=0; i_index_iter<n_vectors; ++i_index_iter)
 		{
-			ScalarType k = callback(*i_iter,*j_iter);
-			ScalarType gk = exp(-(k*k)/width);
-			diffusion_matrix(i_iter-begin,j_iter-begin) = gk;
-			diffusion_matrix(j_iter-begin,i_iter-begin) = gk;
+			for (j_index_iter=i_index_iter; j_index_iter<n_vectors; ++j_index_iter)
+			{
+				ScalarType k = callback(begin[i_index_iter],begin[j_index_iter]);
+				ScalarType gk = exp(-(k*k)/width);
+				diffusion_matrix(i_index_iter,j_index_iter) = gk;
+				diffusion_matrix(j_index_iter,i_index_iter) = gk;
+			}
 		}
 	}
 	// compute column sum vector
 	p = diffusion_matrix.colwise().sum();
 
 	// compute full matrix as we need to compute sum later
-	for (IndexType i=0; i<(end-begin); i++)
-		for (IndexType j=0; j<(end-begin); j++)
+	for (IndexType i=0; i<IndexType(end-begin); i++)
+		for (IndexType j=0; j<IndexType(end-begin); j++)
 			diffusion_matrix(i,j) /= pow(p(i)*p(j),timesteps);
 
 	// compute sqrt of column sum vector
 	p = diffusion_matrix.colwise().sum().cwiseSqrt();
 	
-	for (IndexType i=0; i<(end-begin); i++)
-		for (IndexType j=i; j<(end-begin); j++)
+	for (IndexType i=0; i<IndexType(end-begin); i++)
+		for (IndexType j=i; j<IndexType(end-begin); j++)
 			diffusion_matrix(i,j) /= p(i)*p(j);
 
 	UNRESTRICT_ALLOC;

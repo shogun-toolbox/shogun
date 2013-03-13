@@ -61,7 +61,7 @@ Laplacian compute_laplacian(RandomAccessIterator begin,
 			sparse_triplets.push_back(SparseTriplet((iter-begin),current_neighbors[i],-heat));
 		}
 	}
-	for (IndexType i=0; i<(end-begin); ++i)
+	for (IndexType i=0; i<IndexType(end-begin); ++i)
 		sparse_triplets.push_back(SparseTriplet(i,i,D(i)));
 
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET

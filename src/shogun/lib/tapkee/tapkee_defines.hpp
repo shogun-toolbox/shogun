@@ -12,7 +12,7 @@
 /* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_exceptions.hpp>
 #include <shogun/lib/tapkee/utils/any.hpp>
-#include <shogun/lib/tapkee/callbacks/traits.hpp>
+#include <shogun/lib/tapkee/callback/callback_traits.hpp>
 #include <shogun/lib/tapkee/routines/methods_traits.hpp>
 /* End of Tapkee includes */
 
@@ -196,7 +196,8 @@ namespace tapkee
 	typedef double ScalarType;
 #endif
 	//! indexing type (non-overridable)
-	typedef unsigned int IndexType;
+	//! set to int for compatibility with OpenMP 2.0
+	typedef int IndexType;
 	//! dense vector type (non-overridable)
 	typedef Eigen::Matrix<ScalarType,Eigen::Dynamic,1> DenseVector;
 	//! dense matrix type (non-overridable) 

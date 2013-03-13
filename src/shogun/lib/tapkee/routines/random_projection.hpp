@@ -20,9 +20,9 @@ DenseMatrix gaussian_projection_matrix(IndexType target_dimension, IndexType cur
 {
 	DenseMatrix projection_matrix(target_dimension,current_dimension);
 
-	for (DenseMatrix::Index i=0; i<target_dimension; ++i)
+	for (IndexType i=0; i<target_dimension; ++i)
 	{
-		for (DenseMatrix::Index j=0; j<current_dimension; ++j)
+		for (IndexType j=0; j<current_dimension; ++j)
 		{
 			ScalarType v1 = (ScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);
 			ScalarType v2 = (ScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);

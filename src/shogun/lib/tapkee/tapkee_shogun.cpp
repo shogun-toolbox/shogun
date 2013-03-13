@@ -77,8 +77,8 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	tapkee_parameters[tapkee::EIGEN_EMBEDDING_METHOD] = tapkee::EIGEN_DENSE_SELFADJOINT_SOLVER;
 #endif
 	tapkee_parameters[tapkee::NEIGHBORS_METHOD] = tapkee::COVER_TREE;
-	tapkee_parameters[tapkee::TARGET_DIMENSION] = parameters.target_dimension;
-	tapkee_parameters[tapkee::EIGENSHIFT] = parameters.eigenshift;
+	tapkee_parameters[tapkee::TARGET_DIMENSION] = static_cast<tapkee::IndexType>(parameters.target_dimension);
+	tapkee_parameters[tapkee::EIGENSHIFT] = static_cast<tapkee::ScalarType>(parameters.eigenshift);
 	tapkee_parameters[tapkee::CHECK_CONNECTIVITY] = true;
 	size_t N = 0;
 
@@ -89,68 +89,68 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::KERNEL_LOCALLY_LINEAR_EMBEDDING;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			N = parameters.kernel->get_num_vec_lhs();
 			break;
 		case SHOGUN_NEIGHBORHOOD_PRESERVING_EMBEDDING:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::KERNEL_LOCALLY_LINEAR_EMBEDDING;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
-				(uint32_t)parameters.features->get_dim_feature_space();
+				static_cast<tapkee::IndexType>(parameters.features->get_dim_feature_space());
 			N = parameters.kernel->get_num_vec_lhs();
 			break;
 		case SHOGUN_LOCAL_TANGENT_SPACE_ALIGNMENT:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::KERNEL_LOCAL_TANGENT_SPACE_ALIGNMENT;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			N = parameters.kernel->get_num_vec_lhs();
 			break;
 		case SHOGUN_LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
-				(uint32_t)parameters.features->get_dim_feature_space();
+				static_cast<tapkee::IndexType>(parameters.features->get_dim_feature_space());
 			N = parameters.kernel->get_num_vec_lhs();
 			break;
 		case SHOGUN_HESSIAN_LOCALLY_LINEAR_EMBEDDING:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::HESSIAN_LOCALLY_LINEAR_EMBEDDING;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			N = parameters.kernel->get_num_vec_lhs();
 			break;
 		case SHOGUN_DIFFUSION_MAPS:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::DIFFUSION_MAP;
 			tapkee_parameters[tapkee::DIFFUSION_MAP_TIMESTEPS] =
-				parameters.n_timesteps;
+				static_cast<tapkee::IndexType>(parameters.n_timesteps);
 			tapkee_parameters[tapkee::GAUSSIAN_KERNEL_WIDTH] =
-				parameters.gaussian_kernel_width;
+				static_cast<tapkee::ScalarType>(parameters.gaussian_kernel_width);
 			N = parameters.distance->get_num_vec_lhs();
 			break;
 		case SHOGUN_LAPLACIAN_EIGENMAPS:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::LAPLACIAN_EIGENMAPS;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			tapkee_parameters[tapkee::GAUSSIAN_KERNEL_WIDTH] =
-				parameters.gaussian_kernel_width;
+				static_cast<tapkee::ScalarType>(parameters.gaussian_kernel_width);
 			N = parameters.distance->get_num_vec_lhs();
 			break;
 		case SHOGUN_LOCALITY_PRESERVING_PROJECTIONS:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::LOCALITY_PRESERVING_PROJECTIONS;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			tapkee_parameters[tapkee::GAUSSIAN_KERNEL_WIDTH] =
-				parameters.gaussian_kernel_width;
+				static_cast<tapkee::ScalarType>(parameters.gaussian_kernel_width);
 			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
-				(uint32_t)parameters.features->get_dim_feature_space();
+				static_cast<tapkee::IndexType>(parameters.features->get_dim_feature_space());
 			N = parameters.distance->get_num_vec_lhs();
 			break;
 		case SHOGUN_MULTIDIMENSIONAL_SCALING:
@@ -162,23 +162,23 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::LANDMARK_MULTIDIMENSIONAL_SCALING;
 			tapkee_parameters[tapkee::LANDMARK_RATIO] = 
-				parameters.landmark_ratio;
+				static_cast<tapkee::ScalarType>(parameters.landmark_ratio);
 			N = parameters.distance->get_num_vec_lhs();
 			break;
 		case SHOGUN_ISOMAP:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::ISOMAP;
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			N = parameters.distance->get_num_vec_lhs();
 			break;
 		case SHOGUN_LANDMARK_ISOMAP:
 			tapkee_parameters[tapkee::REDUCTION_METHOD] = 
 				tapkee::LANDMARK_ISOMAP;
 			tapkee_parameters[tapkee::LANDMARK_RATIO] = 
-				parameters.landmark_ratio;
+				static_cast<tapkee::ScalarType>(parameters.landmark_ratio);
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			N = parameters.distance->get_num_vec_lhs();
 			break;
 		case SHOGUN_STOCHASTIC_PROXIMITY_EMBEDDING:
@@ -186,13 +186,13 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 				tapkee::STOCHASTIC_PROXIMITY_EMBEDDING;
 			N = parameters.distance->get_num_vec_lhs();
 			tapkee_parameters[tapkee::NUMBER_OF_NEIGHBORS] =
-				parameters.n_neighbors;
+				static_cast<tapkee::IndexType>(parameters.n_neighbors);
 			tapkee_parameters[tapkee::SPE_TOLERANCE] = 
-				parameters.spe_tolerance;
+				static_cast<tapkee::ScalarType>(parameters.spe_tolerance);
 			tapkee_parameters[tapkee::SPE_NUM_UPDATES] = 
-				parameters.spe_num_updates;
+				static_cast<tapkee::IndexType>(parameters.spe_num_updates);
 			tapkee_parameters[tapkee::MAX_ITERATION] =
-				parameters.max_iteration;
+				static_cast<tapkee::IndexType>(parameters.max_iteration);
 			if (parameters.spe_global_strategy) 
 				tapkee_parameters[tapkee::SPE_GLOBAL_STRATEGY] = true;
 			else
@@ -200,14 +200,14 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			break;
 		case SHOGUN_FACTOR_ANALYSIS:
 			tapkee_parameters[tapkee::CURRENT_DIMENSION] = 
-				(uint32_t)parameters.features->get_dim_feature_space();
+				static_cast<tapkee::IndexType>(parameters.features->get_dim_feature_space());
 			N = parameters.features->get_num_vectors();
 			tapkee_parameters[tapkee::REDUCTION_METHOD] =
 				tapkee::FACTOR_ANALYSIS;
 			tapkee_parameters[tapkee::MAX_ITERATION] =
-				parameters.max_iteration;
+				static_cast<tapkee::IndexType>(parameters.max_iteration);
 			tapkee_parameters[tapkee::FA_EPSILON] =
-				parameters.fa_epsilon;
+				static_cast<tapkee::ScalarType>(parameters.fa_epsilon);
 			break;
 	}
 	

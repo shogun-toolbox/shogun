@@ -53,6 +53,9 @@ ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
                    KernelCallback kernel_callback, DistanceCallback distance_callback,
                    FeatureVectorCallback feature_vector_callback, ParametersMap options)
 {
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+	Eigen::initParallel();
+#endif
 	ReturnResult return_result;
 
 	TAPKEE_METHOD method;
@@ -103,7 +106,7 @@ ReturnResult embed(RandomAccessIterator begin, RandomAccessIterator end,
 			case UNKNOWN_METHOD: throw wrong_parameter_error("unknown method"); break;
 		}
 	}
-	catch (const std::bad_alloc& ba)
+	catch (const std::bad_alloc&)
 	{
 		LoggingSingleton::instance().message_error("Not enough memory available.");
 		throw not_enough_memory_error("Not enough memory");

@@ -52,7 +52,8 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		alpha = 1.0 / max * std::sqrt(2.0);
 
 	// Random embedding initialization, Y is the short for embedding_feature_matrix
-	std::srand(std::time(0));
+	// TODO handle this somewhere else
+	std::srand(static_cast<unsigned int>(std::time(0)));
 	DenseMatrix Y = (DenseMatrix::Random(target_dimension,N)
 		       + DenseMatrix::Ones(target_dimension,N)) / 2;
 	// Auxiliary diffference embedding feature matrix
@@ -66,7 +67,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	// Maximum number of iterations
 	if (max_iter == 0)
 	{
-		max_iter = 2000 + floor(0.04 * N*N);
+		max_iter = 2000 + IndexType(floor(0.04 * N*N));
 		if (!global_strategy)
 			max_iter *= 3;
 	}
@@ -116,7 +117,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 			// Generate pseudo-random indices and select final indices
 			for(int j=0; j<nupdates; ++j)
 			{
-				IndexType r = floor( std::rand()*1.0/RAND_MAX*(k-1) ) + k*j;
+				IndexType r = IndexType(floor(std::rand()*1.0/RAND_MAX*(k-1)) + k*j);
 				indices[nupdates+j] = ind1Neighbors[r];
 			}
 		}
