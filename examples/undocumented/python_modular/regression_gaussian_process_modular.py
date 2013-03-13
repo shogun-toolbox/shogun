@@ -2,10 +2,10 @@
 from numpy import * 
 #from pylab import plot, show, legend
 
-parameter_list=[[20,100,6,10,0.5,1], [50,100,10,10,1.5,2]]
+parameter_list=[[20,100,6,10,0.5,1, 1], [20,100,6,10,0.5,1, 2]]
 
 def regression_gaussian_process_modular (n=100,n_test=100, \
-		x_range=6,x_range_test=10,noise_var=0.5,width=1):
+		x_range=6,x_range_test=10,noise_var=0.5,width=1, seed=1):
 		
 	from shogun.Features import RealFeatures, RegressionLabels
 	from shogun.Kernel import GaussianKernel
@@ -15,6 +15,9 @@ def regression_gaussian_process_modular (n=100,n_test=100, \
 	except ImportError:
 		print "Eigen3 needed for Gaussian Processes"
 		return
+		
+	# reproducable results
+	random.seed(seed)
 	
 	# easy regression data: one dimensional noisy sine wave
 	n=15
