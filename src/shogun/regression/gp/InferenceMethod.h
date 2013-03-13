@@ -263,6 +263,8 @@ protected:
 
 	/** Lower triangle Cholesky decomposition of
 	 *  feature matrix
+	 *
+	 *  Heiko Strathmann: In fact this is the upper triangular factor
 	 */
 	SGMatrix<float64_t> m_L;
 
