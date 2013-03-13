@@ -6,42 +6,50 @@ using namespace shogun;
 
 CMulticlassLabels::CMulticlassLabels() : CDenseLabels()
 {
-	m_multiclass_confidences = NULL;
-	m_num_multiclass_confidences = 0;
 }
 
 CMulticlassLabels::CMulticlassLabels(int32_t num_labels) : CDenseLabels(num_labels)
 {
-	m_multiclass_confidences = SG_MALLOC(SGVector<float64_t>, num_labels);
-	m_num_multiclass_confidences = num_labels;
 }
 
 CMulticlassLabels::CMulticlassLabels(const SGVector<float64_t> src) : CDenseLabels()
 {
 	set_labels(src);
-	m_multiclass_confidences = NULL;
-	m_num_multiclass_confidences = 0;
 }
 
 CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
 {
-	m_multiclass_confidences = NULL;
-	m_num_multiclass_confidences = 0;
 }
 
 CMulticlassLabels::~CMulticlassLabels()
 {
-	SG_FREE(m_multiclass_confidences);
 }
 
 void CMulticlassLabels::set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences)
 {
-	m_multiclass_confidences[i] = confidences;
+	REQUIRE(confidences.size()==m_multiclass_confidences.num_rows,"Length of confidences should match size of the matrix");
+	for (index_t j=0; j<confidences.size(); j++) 
+	{
+		m_multiclass_confidences(j,i) = confidences[j];
+	}
 }
 
 SGVector<float64_t> CMulticlassLabels::get_multiclass_confidences(int32_t i)
 {
-	return m_multiclass_confidences[i];
+	SGVector<float64_t> confs(m_multiclass_confidences.num_rows);
+	for (index_t j=0; j<confs.size(); j++) 
+	{
+		confs[j] = m_multiclass_confidences(j,i);
+	}
+	return confs;
+}
+
+void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
+{
+	int32_t n_labels = m_labels.size();
+	REQUIRE(n_labels!=0,"There should be labels to store confidences");
+	
+	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
 }
 
 CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
@@ -82,18 +90,17 @@ CBinaryLabels* CMulticlassLabels::get_binary_for_class(int32_t i)
 	SGVector<float64_t> binary_labels(get_num_labels());
 
 	bool use_confidences = false;
-	if (m_num_multiclass_confidences != 0)
+	if ((m_multiclass_confidences.num_rows != 0) && (m_multiclass_confidences.num_cols != 0))
 	{
-		if (m_multiclass_confidences[i].size())
-			use_confidences = true;
+		use_confidences = true;
 	}
 	if (use_confidences)
 	{
 		for (int32_t k=0; k<binary_labels.vlen; k++)
 		{
-			SGVector<float64_t> confs = m_multiclass_confidences[k];
 			int32_t label = get_int_label(k);
-			binary_labels[k] = label == i ? confs[label] : -confs[label];
+			float64_t confidence = m_multiclass_confidences(label,k);
+			binary_labels[k] = label == i ? confidence : -confidence;
 		}
 	}
 	else

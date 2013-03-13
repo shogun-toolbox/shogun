@@ -107,12 +107,22 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		SGVector<float64_t> get_multiclass_confidences(int32_t i);
 
-		/** sets multiclass confidences
+		/** sets multiclass confidences. to prepare labels
+		 * for storing multiclass confidences call
+		 * @ref allocate_confidences_for
 		 *
 		 * @param i index
 		 * @param confidences confidences to be set for ith result
 		 */
 		void set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences);
+
+		/** allocates matrix to store confidences. should always 
+		 * be called before setting confidences with 
+		 * @ref set_multiclass_confidences
+		 *
+		 * @param n_classes number of classes
+		 */
+		void allocate_confidences_for(int32_t n_classes);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassLabels"; }
@@ -120,10 +130,7 @@ class CMulticlassLabels : public CDenseLabels
 	protected:
 
 		/** multiclass confidences */
-		SGVector<float64_t>* m_multiclass_confidences;
-
-		/** number of multiclass confidences */
-		int32_t m_num_multiclass_confidences;
+		SGMatrix<float64_t> m_multiclass_confidences;
 };
 }
 #endif
