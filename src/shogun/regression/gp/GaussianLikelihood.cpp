@@ -22,9 +22,15 @@ CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
 	init();
 }
 
+CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
+{
+	init();
+	m_sigma=sigma;
+}
+
 void CGaussianLikelihood::init()
 {
-	m_sigma = 0.01;
+	m_sigma = 1;
 	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
 }
 

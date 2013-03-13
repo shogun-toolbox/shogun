@@ -43,6 +43,8 @@
           custom kernel matrices with subsets attached to them.
 		- Fix for parameter dictionary creationg causing dereferencing null pointers
 		  with gaussian processes parameter selection.
+		- Fixed a bug in exact GP regression that caused wrong results
+		- Fixed a bug in exact GP regression that produced memory errors/crashes
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData.
 		- "confidences" in context of CLabel and subclasses are now "values".

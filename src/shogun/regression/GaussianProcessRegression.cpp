@@ -22,8 +22,10 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
-
 using namespace shogun;
+
+#include <Eigen/Dense>
+using namespace Eigen;
 
 CGaussianProcessRegression::CGaussianProcessRegression()
 : CMachine()
@@ -66,14 +68,22 @@ void CGaussianProcessRegression::update_kernel_matrices()
 	{
 		float64_t m_scale = m_method->get_scale();
 
+		/* set training data to latent features if exist, otherwise
+		 * training features */
 		CFeatures* latent_features = m_method->get_latent_features();
-		
 		if (latent_features)
+		{
 			kernel->init(latent_features, m_data);
+			SG_UNREF(latent_features);
+		}
 		else
-			kernel->init(m_data, m_data);
+		{
+			CFeatures* features=m_method->get_features();
+			kernel->init(features, m_data);
+			SG_UNREF(features);
+		}
 
-		//K(X_test, X_train)
+		//K(X_train, X_test)
 		m_k_trts = kernel->get_kernel_matrix();
 
 		for (index_t i = 0; i < m_k_trts.num_rows; i++)
@@ -83,7 +93,6 @@ void CGaussianProcessRegression::update_kernel_matrices()
 		}
 
 		kernel->init(m_data, m_data);
-
 		m_k_tsts = kernel->get_kernel_matrix();
 
 		for (index_t i = 0; i < m_k_tsts.num_rows; i++)
@@ -95,7 +104,6 @@ void CGaussianProcessRegression::update_kernel_matrices()
 		kernel->remove_lhs_and_rhs();
 
 		SG_UNREF(kernel);
-		SG_UNREF(latent_features);
 	}
 }
 
@@ -106,6 +114,10 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 	{
 		if(data->get_feature_class() == C_COMBINED)
 		{
+			SG_WARNING("%s::apply_regression(): This only works for combined"
+						" features which all share the same underlying object!\n",
+						get_name());
+
 			CDotFeatures* feat =
 					(CDotFeatures*)((CCombinedFeatures*)data)->
 					get_first_feature_obj();
@@ -114,7 +126,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 				SG_ERROR("Specified features are not of type CFeatures\n")
 
 			if (feat->get_feature_class() != C_DENSE)
-				SG_ERROR("Expected Simple Features\n")
+				SG_ERROR("Expected Dense Features\n")
 
 			if (feat->get_feature_type() != F_DREAL)
 				SG_ERROR("Expected Real Features\n")
@@ -134,8 +146,8 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 				SG_ERROR("Expected Real Features\n")
 		}
 
-		SG_UNREF(m_data);
 		SG_REF(data);
+		SG_UNREF(m_data);
 		m_data = (CFeatures*)data;
 		update_kernel_matrices();
 	}
@@ -197,16 +209,19 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 {
 
-	SGVector<float64_t> m_alpha = m_method->get_alpha();
+	SGVector<float64_t> alpha = m_method->get_alpha();
 
 	CMeanFunction* mean_function = m_method->get_mean();
 
 	SGMatrix<float64_t> features;
-        if(m_data->get_feature_class() == C_COMBINED)
-        {
-	        features = ((CDotFeatures*)((CCombinedFeatures*)m_data)->
-                                        get_first_feature_obj())->
-					get_computed_dot_feature_matrix();
+	if(m_data->get_feature_class() == C_COMBINED)
+	{
+		SG_WARNING("%s::get_mean_vector(): This only works for combined"
+				" features which all share the same underlying object!\n",
+				get_name());
+		features = ((CDotFeatures*)((CCombinedFeatures*)m_data)->
+									get_first_feature_obj())->
+											get_computed_dot_feature_matrix();
 	}
 
 	else
@@ -215,19 +230,17 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 			get_computed_dot_feature_matrix();
 	}
 
-	if (!mean_function)
-		SG_ERROR("Mean function is NULL!\n")
-
+	REQUIRE(mean_function, "%s::get_mean_vector(): Mean function is NULL!\n",
+			get_name());
 
 	SGVector<float64_t> means = mean_function->get_mean_vector(features);
-	
 	SGVector< float64_t > result_vector(features.num_cols);
 
-	//Here we multiply K*^t by alpha to receive the mean predictions.
-	cblas_dgemv(CblasColMajor, CblasTrans, m_k_trts.num_rows,
-		    m_alpha.vlen, 1.0, m_k_trts.matrix,
-		    m_k_trts.num_cols, m_alpha.vector, 1, 0.0,
-		    result_vector.vector, 1);
+	/* create eigen3 views an multiply */
+	Map<MatrixXd> K(m_k_trts.matrix, m_k_trts.num_rows, m_k_trts.num_cols);
+	Map<VectorXd> a(alpha.vector, alpha.vlen);
+	Map<VectorXd> r(result_vector.vector, result_vector.vlen);
+	r=K.transpose()*a;
 
 	for (index_t i = 0; i < result_vector.vlen; i++)
 		result_vector[i] += means[i];

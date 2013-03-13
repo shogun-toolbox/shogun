@@ -26,7 +26,7 @@ namespace shogun
  * features interface.
  *
  * Streaming based data generator that samples from a distribution that is a
- * multivariate isotropic Gaussian in a certain dimensions, where the first
+ * multivariate isotropic Gaussian in a certain dimensions, where one selected
  * dimension has its mean shifted by some value.
  */
 class CMeanShiftDataGenerator: public CStreamingDenseFeatures<float64_t>
@@ -37,10 +37,12 @@ public:
 
 	/** Constructor
 	 *
-	 * @param mean_shift
-	 * @param dim
+	 * @param mean_shift Selected dimension is shifted by this amount
+	 * @param dimension Number of dimensions
+	 * @param m_dimension_shift Dimension that gets shifted
 	 */
-	CMeanShiftDataGenerator(float64_t mean_shift, index_t dim);
+	CMeanShiftDataGenerator(float64_t mean_shift, index_t dimension,
+			index_t m_dimension_shift=0);
 
 	/** Destructor */
 	virtual ~CMeanShiftDataGenerator();
@@ -51,13 +53,14 @@ public:
 		return "MeanShiftDataGenerator";
 	}
 
-
-	/**set the mean shift model
+	/** Set the mean shift model
 	 *
-	 * @param mean_shift
-	 * @param dimension
+	 * @param mean_shift Selected dimension is shifted by this amount
+	 * @param dimension Number of dimensions
+	 * @param m_dimension_shift Dimension that gets shifted
 	 */
-	void set_mean_shift_model(float64_t mean_shift, index_t dimension);
+	void set_mean_shift_model(float64_t mean_shift, index_t dimension,
+			index_t m_dimension_shift=0);
 
 	/** get the next example from stream */
 	bool get_next_example();
@@ -75,6 +78,9 @@ protected:
 
 	/** dimension */
 	index_t m_dimension;
+
+	/** Dimension that is shifted */
+	index_t m_dimension_shift;
 };
 
 }

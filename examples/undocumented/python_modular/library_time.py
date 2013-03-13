@@ -2,11 +2,11 @@
 import time
 from modshogun import Time
 
-parameter_list = [[1]]
+parameter_list = [[1],[2]]
 def library_time (sleep_secs):
 	# measure wall clock time difference
 	t=Time()
-	time.sleep(1)
+	time.sleep(sleep_secs)
 	diff=t.cur_time_diff()
 
 	# measure CPU time required
