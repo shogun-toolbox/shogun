@@ -57,11 +57,13 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 		centerMatrix(gram_matrix);
 
 		//UNRESTRICT_ALLOC;
+#ifdef TAPKEE_WITH_ARPACK
 		if (partial_eigendecomposer)
 		{
 			G.rightCols(target_dimension).noalias() = eigen_embedding<DenseMatrix,DenseMatrixOperation>(ARPACK,gram_matrix,target_dimension,0).first;
 		}
 		else
+#endif
 		{
 			solver.compute(gram_matrix);
 			G.rightCols(target_dimension).noalias() = solver.eigenvectors().rightCols(target_dimension);

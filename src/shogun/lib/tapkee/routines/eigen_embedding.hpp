@@ -29,7 +29,9 @@ std::string get_eigen_embedding_name(TAPKEE_EIGEN_EMBEDDING_METHOD m)
 {
 	switch (m)
 	{
+#ifdef TAPKEE_WITH_ARPACK
 		case ARPACK: return "ARPACK library";
+#endif
 		case RANDOMIZED: return "randomized (redsvd)";
 		case EIGEN_DENSE_SELFADJOINT_SOLVER: return "dense (Eigen3)";
 		default: return "Unknown eigendecomposition method (yes it is a bug)";
