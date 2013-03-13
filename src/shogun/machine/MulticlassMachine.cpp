@@ -112,7 +112,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
-		result->allocate_confidences_for(m_multiclass_strategy->get_num_classes());
+		result->allocate_confidences_for(num_machines);
 
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
 
