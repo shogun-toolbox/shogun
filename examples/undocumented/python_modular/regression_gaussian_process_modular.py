@@ -1,19 +1,12 @@
 #!/usr/bin/env python
-from numpy import concatenate, ones
-from numpy.random import randn
-num=100
-dist=1
+from numpy import * 
+#from pylab import plot, show, legend
 
-traindat=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
-testdat=concatenate((randn(2,num)-dist, randn(2,num)+dist), axis=1)
-label_traindat = concatenate((-ones(num), ones(num)))
+parameter_list=[[20,100,6,10,0.5,1], [50,100,10,10,1.5,2]]
 
-parameter_list=[[traindat, testdat, label_traindat, 2.1]]
-
-def regression_gaussian_process_modular (traindata_real=traindat, \
-		testdata_real=testdat, \
-		trainlab=label_traindat, width=2.1):
-	from numpy.random import randn
+def regression_gaussian_process_modular (n=100,n_test=100, \
+		x_range=6,x_range_test=10,noise_var=0.5,width=1):
+		
 	from shogun.Features import RealFeatures, RegressionLabels
 	from shogun.Kernel import GaussianKernel
 	try:
@@ -22,46 +15,52 @@ def regression_gaussian_process_modular (traindata_real=traindat, \
 	except ImportError:
 		print "Eigen3 needed for Gaussian Processes"
 		return
-
-	labels=RegressionLabels(trainlab)
-
-	feats_train=RealFeatures(traindata_real)
-	feats_test=RealFeatures(testdata_real)
-	kernel=GaussianKernel(feats_train, feats_train, width)
+	
+	# easy regression data: one dimensional noisy sine wave
+	n=15
+	n_test=100
+	x_range_test=10
+	noise_var=0.5;
+	X=random.rand(1,n)*x_range
+	
+	X_test=array([[float(i)/n_test*x_range_test for i in range(n_test)]])
+	Y_test=sin(X_test)
+	Y=sin(X)+random.randn(n)*noise_var
+	
+	# shogun representation
+	labels=RegressionLabels(Y[0])
+	feats_train=RealFeatures(X)
+	feats_test=RealFeatures(X_test)
+	
+	# GP specification
+	width=1
+	shogun_width=width*width*2
+	kernel=GaussianKernel(10, shogun_width)
 	zmean = ZeroMean()
 	lik = GaussianLikelihood()
 	inf = ExactInferenceMethod(kernel, feats_train, zmean, labels, lik)
 	gp = GaussianProcessRegression(inf, feats_train, labels)
-
+	
+	# some things we can do
 	alpha = inf.get_alpha()
 	diagonal = inf.get_diagonal_vector()
 	cholesky = inf.get_cholesky()
-	gp.set_return_type(GaussianProcessRegression.GP_RETURN_COV)
-
-	covariance = gp.apply_regression(feats_test)
-
+	
+	# inference
 	gp.set_return_type(GaussianProcessRegression.GP_RETURN_MEANS)
+	mean = gp.apply_regression(feats_test)
+	gp.set_return_type(GaussianProcessRegression.GP_RETURN_MEANS)
+	covariance = gp.apply_regression(feats_test)
+	
+	# plot results
+	#plot(X[0],Y[0],'x') # training observations
+	#plot(X_test[0],Y_test[0],'-') # ground truth of test
+	#plot(X_test[0],mean.get_labels(), '-') # mean predictions of test
+	#legend(["training", "ground truth", "mean predictions"])
+	
+	#show()
 
-	predictions = gp.apply_regression()
-
-	#print("Alpha Vector")
-	#print(alpha)
-
-	#print("Labels")
-	#print(labels.get_labels())
-
-	#print("sW Matrix")
-	#print(diagonal)
-
-	#print("Covariances")
-	#print(covariance.get_labels())
-
-	#print("Mean Predictions")
-	#print(predictions.get_labels())
-
-	#print("Cholesky Matrix L")
-	#print(cholesky)
-	return gp, alpha, labels, diagonal, covariance, predictions, cholesky
+	return gp, alpha, labels, diagonal, covariance, mean, cholesky
 
 if __name__=='__main__':
 	print('Gaussian Process Regression')
