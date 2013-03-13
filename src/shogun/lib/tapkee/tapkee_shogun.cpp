@@ -17,7 +17,7 @@
 #endif
 #define TAPKEE_USE_LGPL_COVERTREE
 #include <shogun/lib/tapkee/tapkee.hpp>
-#include <shogun/lib/tapkee/callbacks/pimpl_callbacks.hpp>
+#include <shogun/lib/tapkee/callback/pimpl_callbacks.hpp>
 
 TAPKEE_CALLBACK_IS_KERNEL(pimpl_kernel_callback<CKernel>);
 TAPKEE_CALLBACK_IS_DISTANCE(pimpl_distance_callback<CDistance>);
