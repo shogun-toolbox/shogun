@@ -1,6 +1,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/base/ParameterMap.h>
 
 using namespace shogun;
 
@@ -31,13 +32,17 @@ CMulticlassLabels::~CMulticlassLabels()
 
 void CMulticlassLabels::init()
 {
-	SG_ADD(&m_multiclass_confidences, "multiclass_confidences", "Vectors of "
-			"multiclass confidences", MS_NOT_AVAILABLE);
+	/* for this to work, migration has to be fixed */
+//	SG_ADD(&m_multiclass_confidences, "multiclass_confidences", "Vectors of "
+//			"multiclass confidences", MS_NOT_AVAILABLE);
+
+//	m_parameter_map->finalize_map();
 
 	m_multiclass_confidences=SGMatrix<float64_t>();
 }
 
-void CMulticlassLabels::set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences)
+void CMulticlassLabels::set_multiclass_confidences(int32_t i,
+		SGVector<float64_t> confidences)
 {
 	REQUIRE(confidences.size()==m_multiclass_confidences.num_rows,
 			"%s::set_multiclass_confidences(): Length of confidences should "
@@ -70,7 +75,7 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
 	if (!base_labels)
 		return NULL;
 
-	if(base_labels->get_label_type()!=LT_MULTICLASS)
+	if (base_labels->get_label_type()!=LT_MULTICLASS)
 	{
 		SG_SERROR("CMulticlassLabels::base_labels is of wrong type \"%s\"!\n",
 				base_labels->get_name());
