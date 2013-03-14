@@ -2,51 +2,53 @@
 ###########################################################################
 # kernel ridge regression
 ###########################################################################
-from numpy import array
-from numpy.random import seed, rand
-from tools.load import LoadMatrix
-lm=LoadMatrix()
+from numpy import * 
+#from pylab import plot, show, legend
 
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+parameter_list = [[20,100,6,10,0.5,1, 0.5,1], [20,100,6,10,0.5,1, 2,2]]
 
-
-parameter_list = [[traindat,testdat,label_traindat,0.8,1e-6],[traindat,testdat,label_traindat,0.9,1e-7]]
-
-def regression_kernel_ridge_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,width=0.8,tau=1e-6):
+def regression_kernel_ridge_modular (n=100,n_test=100, \
+		x_range=6,x_range_test=10,noise_var=0.5,width=1, tau=1e-6, seed=1):
 
 	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Kernel import GaussianKernel
 	from shogun.Regression import KernelRidgeRegression
 
-	feats_train=RealFeatures(fm_train)
-	feats_test=RealFeatures(fm_test)
+	# reproducable results
+	random.seed(seed)
 
+	# easy regression data: one dimensional noisy sine wave
+	n=15
+	n_test=100
+	x_range_test=10
+	noise_var=0.5;
+	X=random.rand(1,n)*x_range
+	
+	X_test=array([[float(i)/n_test*x_range_test for i in range(n_test)]])
+	Y_test=sin(X_test)
+	Y=sin(X)+random.randn(n)*noise_var
+	
+	# shogun representation
+	labels=RegressionLabels(Y[0])
+	feats_train=RealFeatures(X)
+	feats_test=RealFeatures(X_test)
+	
 	kernel=GaussianKernel(feats_train, feats_train, width)
-
-	labels=RegressionLabels(label_train)
 
 	krr=KernelRidgeRegression(tau, kernel, labels)
 	krr.train(feats_train)
 
 	kernel.init(feats_train, feats_test)
 	out = krr.apply().get_labels()
+	
+	# plot results
+	#plot(X[0],Y[0],'x') # training observations
+	#plot(X_test[0],Y_test[0],'-') # ground truth of test
+	#plot(X_test[0],out, '-') # mean predictions of test
+	#legend(["training", "ground truth", "mean predictions"])
+	#show()
+	
 	return out,kernel,krr
-
-# equivialent shorter version
-def krr_short ():
-	print('KRR_short')
-	from shogun.Features import RegressionLabels, RealFeatures
-	from shogun.Kernel import GaussianKernel
-	from shogun.Regression import KernelRidgeRegression
-
-	width=0.8; tau=1e-6
-	krr=KernelRidgeRegression(tau, GaussianKernel(0, width), RegressionLabels(label_train))
-	krr.train(RealFeatures(fm_train))
-	out = krr.apply(RealFeatures(fm_test)).get_labels()
-
-	return krr,out
 
 if __name__=='__main__':
 	print('KRR')
