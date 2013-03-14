@@ -8,6 +8,7 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/lib/memory.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Subset.h>
 #include <gtest/gtest.h>
@@ -22,13 +23,13 @@ TEST(StringFeaturesTest,copy_subset)
 
 	SGStringList<char> strings(num_strings, max_string_length);
 
-	SG_SPRINT("original string data:\n");
+	//SG_SPRINT("original string data:\n");
 	for (index_t i=0; i<num_strings; ++i)
 	{
 		index_t len=CMath::random(min_string_length, max_string_length);
 		SGString<char> current(len);
 
-		SG_SPRINT("[%i]: \"", i);
+		//SG_SPRINT("[%i]: \"", i);
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
 		{
@@ -38,10 +39,10 @@ TEST(StringFeaturesTest,copy_subset)
 			char* string=SG_MALLOC(char, 2);
 			string[0]=current.string[j];
 			string[1]='\0';
-			SG_SPRINT("%s", string);
+			//SG_SPRINT("%s", string);
 			SG_FREE(string);
 		}
-		SG_SPRINT("\"\n");
+		//SG_SPRINT("\"\n");
 
 		strings.strings[i]=current;
 	}
@@ -52,19 +53,19 @@ TEST(StringFeaturesTest,copy_subset)
 	index_t offset_subset=1;
 	SGVector<index_t> feature_subset(8);
 	feature_subset.range_fill(offset_subset);
-	feature_subset.display_vector("feature subset");
+	//feature_subset.display_vector("feature subset");
 
 	f->add_subset(feature_subset);
-	SG_SPRINT("feature vectors after setting subset on original data:\n");
+	//SG_SPRINT("feature vectors after setting subset on original data:\n");
 	for (index_t i=0; i<f->get_num_vectors(); ++i)
 	{
 		SGVector<char> vec=f->get_feature_vector(i);
 
-		SG_SPRINT("%i: ", i);
-		for (index_t j=0; j<vec.vlen; ++j)
-			SG_SPRINT("%c", vec.vector[j]);
+		//SG_SPRINT("%i: ", i);
+		//for (index_t j=0; j<vec.vlen; ++j)
+		//	SG_SPRINT("%c", vec.vector[j]);
 
-		SG_SPRINT("\n");
+		//SG_SPRINT("\n");
 
 		f->free_feature_vector(vec, i);
 	}
@@ -72,7 +73,7 @@ TEST(StringFeaturesTest,copy_subset)
 	index_t offset_copy=2;
 	SGVector<index_t> feature_copy_subset(4);
 	feature_copy_subset.range_fill(offset_copy);
-	feature_copy_subset.display_vector("indices that are to be copied");
+	//feature_copy_subset.display_vector("indices that are to be copied");
 
 	CStringFeatures<char>* subset_copy=(CStringFeatures<char>*)f->copy_subset(
 			feature_copy_subset);
@@ -81,11 +82,11 @@ TEST(StringFeaturesTest,copy_subset)
 	{
 		SGVector<char> vec=subset_copy->get_feature_vector(i);
 
-		SG_SPRINT("%i: ", i);
-		for (index_t j=0; j<vec.vlen; ++j)
-			SG_SPRINT("%c", vec.vector[j]);
+		//SG_SPRINT("%i: ", i);
+		//for (index_t j=0; j<vec.vlen; ++j)
+		//	SG_SPRINT("%c", vec.vector[j]);
 
-		SG_SPRINT("\n");
+		//SG_SPRINT("\n");
 
 		subset_copy->free_feature_vector(vec, i);
 	}
