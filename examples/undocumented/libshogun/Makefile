@@ -84,6 +84,7 @@ TARGETS = basic_minimal \
 		  converter_stochasticproximityembedding \
 		  converter_factoranalysis \
 		  serialization_basic_tests \
+		  serialization_multiclass_labels \
 		  kernel_machine_train_locked \
 		  statistics \
 		  transfer_multitaskleastsquaresregression \
