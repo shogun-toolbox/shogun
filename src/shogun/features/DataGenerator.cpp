@@ -104,6 +104,7 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 		{
 			SGVector<float64_t> v = g->sample();
 			memcpy((result.matrix+j*result.num_rows+i*m*dim), v.vector, dim*sizeof(float64_t));
+			SG_FREE(v.vector);
 		}
 
 		SG_UNREF(g);
