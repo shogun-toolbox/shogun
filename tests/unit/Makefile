@@ -38,7 +38,8 @@ valgrind: shogun-unit-test
 valgrind-per-module: shogun-unit-test
 	@$(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) ./shogun-unit-test --gtest_list_tests \
 	 | grep -E '^[a-zA-Z0-9]*\.' \
-	 | xargs -I{} valgrind $(VALGRINDOPTS) ./shogun-unit-test --gtest_filter={}\*
+	 | $(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) \
+	 xargs -I{} valgrind $(VALGRINDOPTS) ./shogun-unit-test --gtest_filter={}\*
 
 %$(EXT_OBJ_TEST): %$(EXT_SRC_TEST)
 	$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
