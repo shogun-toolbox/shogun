@@ -127,6 +127,10 @@ class CMulticlassLabels : public CDenseLabels
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassLabels"; }
 
+	private:
+		/** initialises and register parameters */
+		void init();
+
 	protected:
 
 		/** multiclass confidences */

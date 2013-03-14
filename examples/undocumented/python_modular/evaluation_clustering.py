@@ -72,7 +72,7 @@ def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
 	mutual_info = MIEval.evaluate(gnd_hat, gnd)
 	#print(('Clustering mutual information = %.4f' % mutual_info))
 
-	return gnd, accuracy, mutual_info
+	return gnd, gnd_hat, accuracy, MIEval, mutual_info
 
 if __name__ == '__main__':
 	print('Evaluation Clustering')
