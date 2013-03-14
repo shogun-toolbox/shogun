@@ -84,6 +84,7 @@ TARGETS = basic_minimal \
 		  converter_stochasticproximityembedding \
 		  converter_factoranalysis \
 		  serialization_basic_tests \
+		  serialization_multiclass_labels \
 		  kernel_machine_train_locked \
 		  statistics \
 		  transfer_multitaskleastsquaresregression \
@@ -103,6 +104,7 @@ TARGETS = basic_minimal \
 		  library_serialization \
 		  classifier_svmlight_string_features_precomputed_kernel \
   		  classifier_mkl_svmlight_modelselection_bug \
+  		  base_migration_new_buggy \
   		  
 
 all: $(TARGETS)
