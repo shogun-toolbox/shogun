@@ -131,9 +131,8 @@ TEST(GaussianProcessRegression,apply_regression_larger_test)
 	EXPECT_LE(CMath::abs(prediction_vector[0]-0.221198406887592), 10E-15);
 	EXPECT_LE(CMath::abs(prediction_vector[1]-0.537437461176145), 10E-15);
 	EXPECT_LE(CMath::abs(prediction_vector[2]-0.431605035301329), 10E-15);
-	EXPECT_LE(CMath::abs(prediction_vector[2]-0.373048041692408), 10E-15);
-	EXPECT_LE(CMath::abs(prediction_vector[2]-0.253688340068952), 10E-15);
-
+	EXPECT_LE(CMath::abs(prediction_vector[3]-0.373048041692408), 10E-15);
+	EXPECT_LE(CMath::abs(prediction_vector[4]-0.253688340068952), 10E-15);
 
 	SG_UNREF(predictions);
 	SG_UNREF(gpr);
