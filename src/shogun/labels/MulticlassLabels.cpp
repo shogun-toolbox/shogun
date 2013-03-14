@@ -32,14 +32,10 @@ CMulticlassLabels::~CMulticlassLabels()
 
 void CMulticlassLabels::init()
 {
-	SG_ADD(&m_multiclass_confidences, "multiclass_confidences", "Vectors of "
-			"multiclass confidences", MS_NOT_AVAILABLE);
+	/* for this to work, migration has to be fixed */
+//	SG_ADD(&m_multiclass_confidences, "multiclass_confidences", "Vectors of "
+//			"multiclass confidences", MS_NOT_AVAILABLE);
 
-	/* new parameter from param version 0 to 1 */
-	m_parameter_map->put(
-			new SGParamInfo("multiclass_confidences", CT_SGMATRIX, ST_NONE, PT_FLOAT64, 1),
-			new SGParamInfo()
-		);
 	m_parameter_map->finalize_map();
 
 	m_multiclass_confidences=SGMatrix<float64_t>();
