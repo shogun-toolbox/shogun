@@ -57,7 +57,7 @@ TEST(LaRank,train)
 
 	// classify on training examples
 	CMulticlassLabels* output=(CMulticlassLabels*)svm->apply();
-	output->get_labels().display_vector("batch output");
+	//output->get_labels().display_vector("batch output");
 
 	/* assert that batch apply and apply(index_t) give same result */
 	SGVector<float64_t> single_outputs(output->get_num_labels());

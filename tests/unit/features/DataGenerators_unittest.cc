@@ -115,7 +115,7 @@ TEST(MeanShiftDataGenerator,get_next_example)
 
 	/* average */
 	avg.scale(1.0/num_runs);
-	avg.display_vector("mean_shift");
+	//avg.display_vector("mean_shift");
 
 	/* roughly assert correct model parameters */
 	EXPECT_LE(avg[0]-mean_shift, mean_shift/100);
@@ -138,7 +138,7 @@ TEST(MeanShiftDataGenerator,get_next_example)
 
 		avg[i]=sum/num_runs;
 	}
-	avg.display_vector("mean_shift");
+	//avg.display_vector("mean_shift");
 
 	ASSERT(avg[0]-mean_shift<mean_shift/100);
 	for (index_t i=1; i<dimension; ++i)

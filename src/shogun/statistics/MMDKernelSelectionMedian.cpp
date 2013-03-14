@@ -143,8 +143,6 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 		CDenseFeatures<float64_t>* dense_features=
 				(CDenseFeatures<float64_t>*) features;
 
-		dense_features->get_feature_matrix().display_matrix("dense");
-
 		CEuclideanDistance* distance=new CEuclideanDistance(dense_features,
 				dense_features);
 		dists=distance->get_distance_matrix();
