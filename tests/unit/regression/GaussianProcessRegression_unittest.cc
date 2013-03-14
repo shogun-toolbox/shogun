@@ -1,3 +1,6 @@
+#include <shogun/lib/config.h>
+#ifdef HAVE_EIGEN3
+
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -253,3 +256,5 @@ TEST(GaussianProcessRegression, get_covariance_vector)
 	SG_UNREF(predictions);
 	SG_UNREF(gpr);
 }
+
+#endif
