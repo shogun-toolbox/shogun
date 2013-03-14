@@ -1,3 +1,6 @@
+#include <shogun/lib/config.h>
+#ifdef HAVE_EIGEN3
+
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -164,3 +167,5 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 
 	SG_UNREF(inf);
 }
+
+#endif
