@@ -46,7 +46,7 @@ struct bmrm_return_value_T
 	uint32_t nIter;
 
 	/** getter for nIter */
-	uint32_t get_nIter() const { return nIter; }
+	uint32_t get_n_iters() const { return nIter; }
 
 	/** number of cutting planes */
 	uint32_t nCP;
@@ -74,19 +74,19 @@ struct bmrm_return_value_T
 	SGVector< float64_t > hist_Fp;
 
 	/** getter for hist_Fp */
-	SGVector< float64_t > get_hist_Fp() const { return hist_Fp; };
+	SGVector< float64_t > get_hist_Fp_vector() const { return hist_Fp; };
 
 	/** Track of Fd values in individual iterations */
 	SGVector< float64_t > hist_Fd;
 
 	/** getter for hist_Fd */
-	SGVector< float64_t > get_hist_Fd() const { return hist_Fd; };
+	SGVector< float64_t > get_hist_Fd_vector() const { return hist_Fd; };
 
 	/** Track of w_dist values in individual iterations */
 	SGVector< float64_t > hist_wdist;
 
 	/** getter for hist_wdist */
-	SGVector< float64_t > get_hist_wdist() const { return hist_wdist; };
+	SGVector< float64_t > get_hist_wdist_vector() const { return hist_wdist; };
 };
 
 }
