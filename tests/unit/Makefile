@@ -35,7 +35,7 @@ build: shogun-unit-test
 valgrind: shogun-unit-test
 	@$(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) valgrind $(VALGRINDOPTS) ./shogun-unit-test
 
-valgrind-per-module:
+valgrind-per-module: shogun-unit-test
 	@$(LIBRARY_PATH)=$(SHOGUNSRCTOP)/shogun:$$$(LIBRARY_PATH) ./shogun-unit-test --gtest_list_tests \
 	 | grep -E '^[a-zA-Z0-9]*\.' \
 	 | xargs -I{} valgrind $(VALGRINDOPTS) ./shogun-unit-test --gtest_filter={}\*
