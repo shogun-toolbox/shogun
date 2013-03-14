@@ -150,7 +150,7 @@ TEST(LinearTimeMMD,test_linear_mmd_statistic_and_Q_fixed)
 	SGVector<float64_t> mmds_2=mmd_2->compute_statistic(true);
 
 	/* display results */
-	Q.display_matrix("Q");
+	//Q.display_matrix("Q");
 	//mmds_1.display_vector("mmds_1");
 	//mmds_2.display_vector("mmds_2");
 

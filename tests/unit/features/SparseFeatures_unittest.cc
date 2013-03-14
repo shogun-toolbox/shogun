@@ -19,7 +19,7 @@ TEST(SparseFeaturesTest,serialization)
 			data.matrix[i]=i;
 	}
 
-	data.display_matrix();
+	//data.display_matrix();
 
 	/* create sparse features */
 	CSparseFeatures<int32_t>* sparse_features=new CSparseFeatures<int32_t>(data);
@@ -34,7 +34,7 @@ TEST(SparseFeaturesTest,serialization)
 	SG_UNREF(infile);
 
 	SGMatrix<int32_t> data_loaded = sparse_features_loaded->get_full_feature_matrix();
-	data_loaded.display_matrix();
+	//data_loaded.display_matrix();
 
 	EXPECT_TRUE(data_loaded.equals(data));
 
