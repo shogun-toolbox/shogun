@@ -67,16 +67,18 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 {
 	timed_context context("Landmark triangulation");
 	
-	bool* to_process = new bool[end-begin];
-	fill(to_process,to_process+(end-begin),true);
-	
-	DenseMatrix embedding((end-begin),target_dimension);
+	const IndexType n_vectors = end-begin;
+	const IndexType n_landmarks = landmarks.size();
 
-	for (Landmarks::const_iterator iter=landmarks.begin(); 
-			iter!=landmarks.end(); ++iter)
+	bool* to_process = new bool[n_vectors];
+	fill(to_process,to_process+n_vectors,true);
+	
+	DenseMatrix embedding(n_vectors,target_dimension);
+
+	for (IndexType index_iter=0; index_iter<n_landmarks; ++index_iter)
 	{
-		to_process[*iter] = false;
-		embedding.row(*iter).noalias() = landmarks_embedding.first.row(iter-landmarks.begin());
+		to_process[landmarks[index_iter]] = false;
+		embedding.row(landmarks[index_iter]).noalias() = landmarks_embedding.first.row(index_iter);
 	}
 
 	for (IndexType i=0; i<target_dimension; ++i)
@@ -85,15 +87,15 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 #pragma omp parallel shared(begin,end,to_process,distance_callback,landmarks, \
 		landmarks_embedding,landmark_distances_squared,embedding) default(none)
 	{
-		DenseVector distances_to_landmarks = DenseVector(landmarks.size());
+		DenseVector distances_to_landmarks(n_landmarks);
 		IndexType index_iter;
 #pragma omp for nowait
-		for (index_iter=0; index_iter<IndexType(end-begin); ++index_iter)
+		for (index_iter=0; index_iter<n_vectors; ++index_iter)
 		{
 			if (!to_process[index_iter])
 				continue;
 
-			for (IndexType i=0; i<distances_to_landmarks.size(); ++i)
+			for (IndexType i=0; i<n_landmarks; ++i)
 			{
 				ScalarType d = distance_callback(begin[index_iter],begin[landmarks[i]]);
 				distances_to_landmarks(i) = d*d;
