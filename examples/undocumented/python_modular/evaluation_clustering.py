@@ -27,11 +27,9 @@ parameter_list = [[fea, gnd_raw, 10]]
 
 def run_clustering(data, k):
 	from shogun.Clustering import KMeans
-	from shogun.Mathematics import Math_init_random
 	from shogun.Distance import EuclideanDistance
 	from shogun.Features import RealFeatures
 
-	Math_init_random(42)
 	fea = RealFeatures(data)
 	distance = EuclideanDistance(fea, fea)
 	kmeans=KMeans(k, distance)
@@ -58,6 +56,11 @@ def assign_labels(data, centroids, ncenters):
 def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
 	from shogun.Evaluation import ClusteringAccuracy, ClusteringMutualInformation
 	from shogun.Features import MulticlassLabels
+	from shogun.Mathematics import Math
+	
+	# reproducable results
+	Math.init_random(1)
+	
 	centroids = run_clustering(features, ncenters)
 	gnd_hat = assign_labels(features, centroids, ncenters)
 	gnd = MulticlassLabels(ground_truth)
@@ -66,13 +69,15 @@ def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
 	AccuracyEval.best_map(gnd_hat, gnd)
 
 	accuracy = AccuracyEval.evaluate(gnd_hat, gnd)
-	#print(('Clustering accuracy = %.4f' % accuracy))
+	print(('Clustering accuracy = %.4f' % accuracy))
 
 	MIEval = ClusteringMutualInformation()
 	mutual_info = MIEval.evaluate(gnd_hat, gnd)
-	#print(('Clustering mutual information = %.4f' % mutual_info))
+	print(('Clustering mutual information = %.4f' % mutual_info))
 
-	return gnd, gnd_hat, accuracy, MIEval, mutual_info
+	# TODO mutual information does not work with serialization
+	#return gnd, gnd_hat, accuracy, MIEval, mutual_info
+	return gnd, gnd_hat, accuracy
 
 if __name__ == '__main__':
 	print('Evaluation Clustering')

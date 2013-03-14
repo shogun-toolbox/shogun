@@ -690,10 +690,13 @@ void CKernelMachine::init()
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", MS_NOT_AVAILABLE);
 
+	/* new parameter from param version 0 to 1 */
 	m_parameter_map->put(
 		new SGParamInfo("custom_kernel", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
 		new SGParamInfo()
 	);
+
+	/* new parameter from param version 0 to 1 */
 	m_parameter_map->put(
 		new SGParamInfo("kernel_backup", CT_SCALAR, ST_NONE, PT_SGOBJECT, 1),
 		new SGParamInfo()
