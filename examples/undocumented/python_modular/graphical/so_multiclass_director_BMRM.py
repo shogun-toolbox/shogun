@@ -118,18 +118,18 @@ sosvm.set_solver(BMRM)		# select training algorithm
 sosvm.train()
 
 res = sosvm.get_result()
-Fps = np.array([res.hist_Fp[i] for i in xrange(res.hist_Fp.size())])
-Fds = np.array([res.hist_Fd[i] for i in xrange(res.hist_Fd.size())])
-wdists = np.array([res.hist_wdist[i] for i in xrange(res.hist_wdist.size())])
+Fps = res.get_hist_Fp()
+Fds = res.get_hist_Fd()
+wdists = res.get_hist_wdist()
 
 plt.figure()
 plt.subplot(221)
 plt.title('Fp and Fd history')
-plt.plot(xrange(res.nIter), Fps, hold=True)
-plt.plot(xrange(res.nIter), Fds, hold=True)
+plt.plot(xrange(res.get_nIter()), Fps, hold=True)
+plt.plot(xrange(res.get_nIter()), Fds, hold=True)
 plt.subplot(222)
 plt.title('w dist history')
-plt.plot(xrange(res.nIter), wdists)
+plt.plot(xrange(res.get_nIter()), wdists)
 
 # Evaluation
 out = sosvm.apply()

@@ -13,6 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/structure/StructuredModel.h>
+#include <shogun/structure/bmrm_return_value.h>
 
 #ifndef libbmrm_h
 #define libbmrm_h
@@ -28,65 +29,6 @@
 
 namespace shogun
 {
-/** BMRM result structure */
-struct bmrm_return_value_T
-{
-	/** constructor */
-	bmrm_return_value_T()
-	{
-		nIter = 0;
-		nCP = 0;
-		nzA = 0;
-		Fp = 0;
-		Fd = 0;
-		qp_exitflag = 0;
-		exitflag = 0;
-	};
-
-	/** destructor */
-	~bmrm_return_value_T() { };
-
-	/** dummy load serializable */
-	bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; }
-	
-	/** dummy save serializable */
-	bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; }
-
-	/** number of iterations  */
-	uint32_t nIter;
-
-	/** number of cutting planes */
-	uint32_t nCP;
-
-	/** number of active cutting planes */
-	uint32_t nzA;
-
-	/** primal objective value  */
-	float64_t Fp;
-
-	/** reduced (dual) objective value */
-	float64_t Fd;
-
-	/** exitflag from the last call of the inner QP solver  */
-	int8_t qp_exitflag;
-
-	/** 1 .. bmrm.Q_P - bmrm.Q_D <= TolRel*ABS(bmrm.Q_P)
-	 *  2 .. bmrm.Q_P - bmrm.Q_D <= TolAbs
-	 * -1 .. bmrm.nCutPlanes >= BufSize
-	 * -2 .. not enough memory for the solver
-	 */
-	int8_t exitflag;
-
-	/** Track of Fp values in individual iterations */
-	SGVector< float64_t > hist_Fp;
-
-	/** Track of Fd values in individual iterations */
-	SGVector< float64_t > hist_Fd;
-
-	/** Track of w_dist values in individual iterations */
-	SGVector< float64_t > hist_wdist;
-};
-
 /** Linked list for cutting planes buffer management */
 IGNORE_IN_CLASSLIST struct bmrm_ll {
 	/** Pointer to previous CP entry */

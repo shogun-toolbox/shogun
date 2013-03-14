@@ -37,7 +37,6 @@
 %rename(DirectorStructuredModel) CDirectorStructuredModel;
 %rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
 
-
 #ifdef USE_MOSEK
 %rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
 #endif /* USE_MOSEK */
@@ -55,6 +54,7 @@
 %include <shogun/machine/LinearStructuredOutputMachine.h>
 %include <shogun/machine/KernelStructuredOutputMachine.h>
 
+%include <shogun/structure/bmrm_return_value.h>
 %include <shogun/structure/StructuredModel.h>
 %include <shogun/structure/MulticlassModel.h>
 %include <shogun/structure/MulticlassSOLabels.h>
@@ -65,7 +65,6 @@
 %include <shogun/structure/TwoStateModel.h>
 %include <shogun/structure/DirectorStructuredModel.h>
 %include <shogun/structure/DualLibQPBMSOSVM.h>
-
 
 #ifdef USE_MOSEK
 %include <shogun/structure/PrimalMosekSOSVM.h>
