@@ -13,6 +13,9 @@ def evaluation_multiclassovrevaluation_modular (traindat, label_traindat, testda
 	from shogun.Features import MulticlassLabels
 	from shogun.Evaluation import MulticlassOVREvaluation,ROCEvaluation
 	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
+	from shogun.Mathematics import Math
+	
+	Math.init_random(1)
 
 	ground_truth_labels = MulticlassLabels(label_traindat)
 	svm = MulticlassLibLinear(1.0,RealFeatures(traindat),MulticlassLabels(label_traindat))
