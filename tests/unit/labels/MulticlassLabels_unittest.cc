@@ -20,10 +20,10 @@ TEST(MulticlassLabelsTest,confidences)
 
 	CMulticlassLabels* labels = new CMulticlassLabels(n_labels);
 
-	ASSERT_NO_THROW(labels->allocate_confidences_for(n_classes));
+	EXPECT_NO_THROW(labels->allocate_confidences_for(n_classes));
 
 	for (int i=0; i<n_labels; i++)
-		ASSERT_EQ(labels->get_multiclass_confidences(i).size(),n_classes);
+		EXPECT_EQ(labels->get_multiclass_confidences(i).size(),n_classes);
 
 	for (int i=0; i<n_labels; i++) 
 	{
@@ -37,9 +37,9 @@ TEST(MulticlassLabelsTest,confidences)
 		for (int j=0; j<n_classes; j++) 
 		{
 			if (j==i%n_classes)
-				ASSERT_NEAR(obtained_confs[j],1.0,1e-9);
+				EXPECT_NEAR(obtained_confs[j],1.0,1e-9);
 			else
-				ASSERT_NEAR(obtained_confs[j],0.0,1e-9);
+				EXPECT_NEAR(obtained_confs[j],0.0,1e-9);
 		}
 	}
 	SG_UNREF(labels);
