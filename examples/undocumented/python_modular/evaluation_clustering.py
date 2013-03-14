@@ -69,11 +69,11 @@ def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
 	AccuracyEval.best_map(gnd_hat, gnd)
 
 	accuracy = AccuracyEval.evaluate(gnd_hat, gnd)
-	print(('Clustering accuracy = %.4f' % accuracy))
+	#print(('Clustering accuracy = %.4f' % accuracy))
 
 	MIEval = ClusteringMutualInformation()
 	mutual_info = MIEval.evaluate(gnd_hat, gnd)
-	print(('Clustering mutual information = %.4f' % mutual_info))
+	#print(('Clustering mutual information = %.4f' % mutual_info))
 
 	# TODO mutual information does not work with serialization
 	#return gnd, gnd_hat, accuracy, MIEval, mutual_info
