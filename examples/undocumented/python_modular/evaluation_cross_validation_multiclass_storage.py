@@ -9,11 +9,12 @@
 # Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
 #
 
-from numpy.random import randn
+from numpy.random import randn, seed
 from numpy import *
 
 # generate some overlapping training vectors
-num_vectors=100
+seed(1)
+num_vectors=7
 vec_distance=1
 traindat=concatenate((randn(2,num_vectors)-vec_distance,
 	randn(2,num_vectors)+vec_distance), axis=1)
@@ -31,7 +32,9 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     from shogun.Features import RealFeatures, CombinedFeatures
     from shogun.Kernel import GaussianKernel, CombinedKernel
     from shogun.Classifier import MKLMulticlass
-    from shogun.Mathematics import Statistics, MSG_DEBUG
+    from shogun.Mathematics import Statistics, MSG_DEBUG, Math
+    
+    Math.init_random(1)
 
     # training data, combined features all on same data
     features=RealFeatures(traindat)
@@ -54,7 +57,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
     # "StratifiedCrossValidationSplitting" is also available
-    splitting_strategy=StratifiedCrossValidationSplitting(labels, 5)
+    splitting_strategy=StratifiedCrossValidationSplitting(labels, 3)
 
     # evaluation method
     evaluation_criterium=MulticlassAccuracy()
@@ -79,8 +82,8 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     roc_0_0_0 = multiclass_storage.get_fold_ROC(0,0,0)
     #print roc_0_0_0
     auc_0_0_0 = multiclass_storage.get_fold_evaluation_result(0,0,0,0)
-    #print auc_0_0_0
-    return roc_0_0_0, auc_0_0_0
+    print auc_0_0_0
+    #return roc_0_0_0, auc_0_0_0
 
 
 if __name__=='__main__':
