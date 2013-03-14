@@ -88,8 +88,8 @@ TEST(GaussianProcessRegression,apply_regression_larger_test)
 	X_test[0]=0.3;
 	X_test[1]=1.3;
 	X_test[2]=2.5;
-	X_test[2]=2.7;
-	X_test[2]=3.1;
+	X_test[3]=2.7;
+	X_test[4]=3.1;
 
 
 	for (index_t i=0; i<n; ++i)
@@ -128,11 +128,11 @@ TEST(GaussianProcessRegression,apply_regression_larger_test)
    0.373048041692408
    0.253688340068952 */
 	SGVector<float64_t> prediction_vector=predictions->get_labels();
-//	EXPECT_LE(CMath::abs(prediction_vector[0]-0.221198406887592), 10E-15);
-//	EXPECT_LE(CMath::abs(prediction_vector[1]-0.537437461176145), 10E-15);
-//	EXPECT_LE(CMath::abs(prediction_vector[2]-0.431605035301329), 10E-15);
-//	EXPECT_LE(CMath::abs(prediction_vector[2]-0.373048041692408), 10E-15);
-//	EXPECT_LE(CMath::abs(prediction_vector[2]-0.253688340068952), 10E-15);
+	EXPECT_LE(CMath::abs(prediction_vector[0]-0.221198406887592), 10E-15);
+	EXPECT_LE(CMath::abs(prediction_vector[1]-0.537437461176145), 10E-15);
+	EXPECT_LE(CMath::abs(prediction_vector[2]-0.431605035301329), 10E-15);
+	EXPECT_LE(CMath::abs(prediction_vector[2]-0.373048041692408), 10E-15);
+	EXPECT_LE(CMath::abs(prediction_vector[2]-0.253688340068952), 10E-15);
 
 
 	SG_UNREF(predictions);
