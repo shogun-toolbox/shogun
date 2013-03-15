@@ -112,7 +112,7 @@ prepare-release:
 	@echo "Please check output of 'git status'." | tee --append $(LOGFILE)
 	@echo "Press ENTER to continue or Ctrl-C to abort." | tee --append $(LOGFILE)
 	@read foobar
-	(cd src;  rm -f ChangeLog ; $(MAKE) ChangeLog ; git commit -m "updated changelog" ChangeLog ) | tee --append $(LOGFILE)
+	(cd src &&  rm -f ChangeLog ; ./configure ; $(MAKE) ChangeLog && git commit -m "updated changelog" ChangeLog ) | tee --append $(LOGFILE)
 	#build for all interfaces and update doc
 	git clean -dfx
 	( cd src && ./configure ) | tee --append $(LOGFILE)
@@ -120,7 +120,7 @@ prepare-release:
 	+$(MAKE) -C src install DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	+$(MAKE) -C src doc DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
 	-$(MAKE) -C src tests DESTDIR=/tmp/sg_test_build | tee --append $(LOGFILE)
-	+$(MAKE) -C src distclean | tee --append $(LOGFILE)
+	#$(MAKE) -C src distclean | tee --append $(LOGFILE)
 	git commit doc -m "updated reference documentation" | tee --append $(LOGFILE)
 
 release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
