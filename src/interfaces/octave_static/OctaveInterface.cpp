@@ -24,6 +24,7 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 #include <shogun/base/init.h>
 
 #ifdef HAVE_PYTHON
@@ -344,8 +345,6 @@ void COctaveInterface::get_sparse_matrix(SGSparseVector<float64_t>*& matrix, int
 	int64_t nnz=sm.nelem();
 
 	matrix=SG_MALLOC(SGSparseVector<float64_t>, num_vec);
-	for (int32_t i=0; i<num_vec; i++)
-		new (&matrix[i]) SGSparseVector<float64_t>();
 
 	int64_t offset=0;
 	for (int32_t i=0; i<num_vec; i++)
