@@ -50,6 +50,7 @@ TARGETS = basic_minimal \
 		  modelselection_grid_search_linear features_subset_labels \
 		  modelselection_grid_search_kernel \
 		  modelselection_grid_search_string_kernel \
+		  modelselection_grid_search_multiclass_svm \
 		  features_dense_real_modular \
 		  features_subset_stack \
 		  features_subset_simple_features \
