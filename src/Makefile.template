@@ -389,11 +389,11 @@ check-examples-cmdline_static:
 run-testsuite-octave_static:
 	cd $(CONFIGPATH)/../tests/integration/octave_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
+		OCTAVE_PATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
 check-examples-octave_static:
 	cd $(CONFIGPATH)/../examples/undocumented/octave_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+		OCTAVE_PATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
 
 run-testsuite-matlab_static:
 	cd $(CONFIGPATH)/../tests/integration/matlab_static && \
@@ -402,7 +402,8 @@ run-testsuite-matlab_static:
 
 check-examples-matlab_static:
 	cd $(CONFIGPATH)/../examples/undocumented/matlab_static && \
-		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
+		OCTAVE_PATH="$(DESTDIR)$(OCTDIR)" ./check.sh )
 
 run-testsuite-python_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
@@ -459,11 +460,11 @@ check-examples-r_modular:
 run-testsuite-octave_modular:
 	cd $(CONFIGPATH)/../tests/integration/octave_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
+		OCTAVE_PATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
 check-examples-octave_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/octave_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
+		OCTAVE_PATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
 
 run-testsuite-lua_modular:
 #TODO
@@ -496,7 +497,7 @@ doc-octave_static:
 	echo "/** \page staticoctave Static Matlab/Octave Interface Function Reference" >x
 	-echo "sg('set_output', 'y');sg('help','doxygen');" | \
 		( $(LIBRARY_PATH)=$(CONFIGPATH)/../shogun \
-		OCTAVE_LOADPATH="$(DESTDIR)$(OCTDIR)" octave )
+		OCTAVE_PATH="$(DESTDIR)$(OCTDIR)" octave )
 	echo "*/" >>y
 	cat x y >$(CONFIGPATH)/../doc/pages/StaticOctaveInterface.mainpage
 	rm -f x y
