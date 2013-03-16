@@ -44,7 +44,9 @@ void test()
 	/* number of classes is dimension of data here to have some easy multiclass
 	 * structure  */
 	const unsigned int num_vectors=50;
-	const unsigned int dim_vectors=2; // increase number of classes and things will fail :(
+	const unsigned int dim_vectors=3; 
+	// Heiko: increase number of classes and things will fail :(
+	// Sergey: the special buggy case of 3 classes was hopefully fixed
 
 	float64_t distance=5;
 
@@ -103,7 +105,7 @@ int main(int argc, char **argv)
 {
 	init_shogun_with_defaults();
 
-//	sg_io->set_loglevel(MSG_DEBUG);
+	sg_io->set_loglevel(MSG_DEBUG);
 
 	test();
 

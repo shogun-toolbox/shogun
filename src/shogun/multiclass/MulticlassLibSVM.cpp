@@ -174,7 +174,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 				}
 				else if (num_classes == 3)
 				{
-					idx = model->label[j]+model->label[i] - 3;
+					idx = model->label[j]+model->label[i] - 1;
 				}
 				else if (num_classes == 2)
 				{
