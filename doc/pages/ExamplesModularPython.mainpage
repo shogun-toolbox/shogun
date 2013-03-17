@@ -107,6 +107,9 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/classifier_multiclasslinearmachine_modular.py</b>
 \verbinclude classifier_multiclasslinearmachine_modular.py
 
+\li <b>../examples/documented/python_modular/classifier_multiclasslogisticregression_modular.py</b>
+\verbinclude classifier_multiclasslogisticregression_modular.py
+
 \li <b>../examples/documented/python_modular/classifier_multiclassmachine_modular.py</b>
 \verbinclude classifier_multiclassmachine_modular.py
 
@@ -158,6 +161,9 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/converter_diffusionmaps_modular.py</b>
 \verbinclude converter_diffusionmaps_modular.py
 
+\li <b>../examples/documented/python_modular/converter_factoranalysis_modular.py</b>
+\verbinclude converter_factoranalysis_modular.py
+
 \li <b>../examples/documented/python_modular/converter_hessianlocallylinearembedding_modular.py</b>
 \verbinclude converter_hessianlocallylinearembedding_modular.py
 
@@ -166,9 +172,6 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_modular/converter_kernellocallylinearembedding_modular.py</b>
 \verbinclude converter_kernellocallylinearembedding_modular.py
-
-\li <b>../examples/documented/python_modular/converter_kernellocaltangentspacealignment_modular.py</b>
-\verbinclude converter_kernellocaltangentspacealignment_modular.py
 
 \li <b>../examples/documented/python_modular/converter_laplacianeigenmaps_modular.py</b>
 \verbinclude converter_laplacianeigenmaps_modular.py
@@ -212,11 +215,11 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/distance_cosine_modular.py</b>
 \verbinclude distance_cosine_modular.py
 
-\li <b>../examples/documented/python_modular/distance_director_euclidian_modular.py</b>
-\verbinclude distance_director_euclidian_modular.py
+\li <b>../examples/documented/python_modular/distance_director_euclidean_modular.py</b>
+\verbinclude distance_director_euclidean_modular.py
 
-\li <b>../examples/documented/python_modular/distance_euclidian_modular.py</b>
-\verbinclude distance_euclidian_modular.py
+\li <b>../examples/documented/python_modular/distance_euclidean_modular.py</b>
+\verbinclude distance_euclidean_modular.py
 
 \li <b>../examples/documented/python_modular/distance_geodesic_modular.py</b>
 \verbinclude distance_geodesic_modular.py
@@ -269,6 +272,9 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/evaluation_clustering.py</b>
 \verbinclude evaluation_clustering.py
 
+\li <b>../examples/documented/python_modular/evaluation_clustering_simple.py</b>
+\verbinclude evaluation_clustering_simple.py
+
 \li <b>../examples/documented/python_modular/evaluation_contingencytableevaluation_modular.py</b>
 \verbinclude evaluation_contingencytableevaluation_modular.py
 
@@ -283,6 +289,9 @@ python name_of_example.py
 
 \li <b>../examples/documented/python_modular/evaluation_cross_validation_regression.py</b>
 \verbinclude evaluation_cross_validation_regression.py
+
+\li <b>../examples/documented/python_modular/evaluation_director_contingencytableevaluation_modular.py</b>
+\verbinclude evaluation_director_contingencytableevaluation_modular.py
 
 \li <b>../examples/documented/python_modular/evaluation_meansquarederror_modular.py</b>
 \verbinclude evaluation_meansquarederror_modular.py
@@ -635,6 +644,9 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/serialization_matrix_modular.py</b>
 \verbinclude serialization_matrix_modular.py
 
+\li <b>../examples/documented/python_modular/serialization_string_kernels_modular.py</b>
+\verbinclude serialization_string_kernels_modular.py
+
 \li <b>../examples/documented/python_modular/serialization_svmlight_modular.py</b>
 \verbinclude serialization_svmlight_modular.py
 
@@ -656,8 +668,11 @@ python name_of_example.py
 \li <b>../examples/documented/python_modular/statistics_linear_time_mmd.py</b>
 \verbinclude statistics_linear_time_mmd.py
 
-\li <b>../examples/documented/python_modular/statistics_linear_time_mmd_kernel_choice.py</b>
-\verbinclude statistics_linear_time_mmd_kernel_choice.py
+\li <b>../examples/documented/python_modular/statistics_mmd_kernel_selection_combined.py</b>
+\verbinclude statistics_mmd_kernel_selection_combined.py
+
+\li <b>../examples/documented/python_modular/statistics_mmd_kernel_selection_single.py</b>
+\verbinclude statistics_mmd_kernel_selection_single.py
 
 \li <b>../examples/documented/python_modular/statistics_quadratic_time_mmd.py</b>
 \verbinclude statistics_quadratic_time_mmd.py

@@ -71,6 +71,9 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/base_migration_multiple_dependencies.cpp</b>
 \verbinclude base_migration_multiple_dependencies.cpp
 
+\li <b>../examples/documented/libshogun/base_migration_new_buggy.cpp</b>
+\verbinclude base_migration_new_buggy.cpp
+
 \li <b>../examples/documented/libshogun/base_migration_type_conversion.cpp</b>
 \verbinclude base_migration_type_conversion.cpp
 
@@ -107,6 +110,9 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/classifier_minimal_svm.cpp</b>
 \verbinclude classifier_minimal_svm.cpp
 
+\li <b>../examples/documented/libshogun/classifier_mkl_svmlight_modelselection_bug.cpp</b>
+\verbinclude classifier_mkl_svmlight_modelselection_bug.cpp
+
 \li <b>../examples/documented/libshogun/classifier_mklmulticlass.cpp</b>
 \verbinclude classifier_mklmulticlass.cpp
 
@@ -140,6 +146,9 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/classifier_qda.cpp</b>
 \verbinclude classifier_qda.cpp
 
+\li <b>../examples/documented/libshogun/classifier_svmlight_string_features_precomputed_kernel.cpp</b>
+\verbinclude classifier_svmlight_string_features_precomputed_kernel.cpp
+
 \section libshogun_clustering_examples Clustering
 
 
@@ -152,6 +161,9 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/converter_diffusionmaps.cpp</b>
 \verbinclude converter_diffusionmaps.cpp
 
+\li <b>../examples/documented/libshogun/converter_factoranalysis.cpp</b>
+\verbinclude converter_factoranalysis.cpp
+
 \li <b>../examples/documented/libshogun/converter_hessianlocallylinearembedding.cpp</b>
 \verbinclude converter_hessianlocallylinearembedding.cpp
 
@@ -160,9 +172,6 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 
 \li <b>../examples/documented/libshogun/converter_kernellocallylinearembedding.cpp</b>
 \verbinclude converter_kernellocallylinearembedding.cpp
-
-\li <b>../examples/documented/libshogun/converter_kernellocaltangentspacealignment.cpp</b>
-\verbinclude converter_kernellocaltangentspacealignment.cpp
 
 \li <b>../examples/documented/libshogun/converter_laplacianeigenmaps.cpp</b>
 \verbinclude converter_laplacianeigenmaps.cpp
@@ -218,11 +227,8 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/features_copy_subset_sparse_features.cpp</b>
 \verbinclude features_copy_subset_sparse_features.cpp
 
-\li <b>../examples/documented/libshogun/features_copy_subset_string_features.cpp</b>
-\verbinclude features_copy_subset_string_features.cpp
-
-\li <b>../examples/documented/libshogun/features_create_merged_copy.cpp</b>
-\verbinclude features_create_merged_copy.cpp
+\li <b>../examples/documented/libshogun/features_dense_real_modular.cpp</b>
+\verbinclude features_dense_real_modular.cpp
 
 \li <b>../examples/documented/libshogun/features_subset_labels.cpp</b>
 \verbinclude features_subset_labels.cpp
@@ -263,14 +269,11 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \section libshogun_library_examples Library
 
 
-\li <b>../examples/documented/libshogun/library_cover_tree.cpp</b>
-\verbinclude library_cover_tree.cpp
-
 \li <b>../examples/documented/libshogun/library_dyn_int.cpp</b>
 \verbinclude library_dyn_int.cpp
 
-\li <b>../examples/documented/libshogun/library_fibonacci_heap.cpp</b>
-\verbinclude library_fibonacci_heap.cpp
+\li <b>../examples/documented/libshogun/library_dynarray.cpp</b>
+\verbinclude library_dynarray.cpp
 
 \li <b>../examples/documented/libshogun/library_gc_array.cpp</b>
 \verbinclude library_gc_array.cpp
@@ -278,20 +281,23 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/library_hash.cpp</b>
 \verbinclude library_hash.cpp
 
+\li <b>../examples/documented/libshogun/library_hdf5.cpp</b>
+\verbinclude library_hdf5.cpp
+
 \li <b>../examples/documented/libshogun/library_indirect_object.cpp</b>
 \verbinclude library_indirect_object.cpp
 
 \li <b>../examples/documented/libshogun/library_map.cpp</b>
 \verbinclude library_map.cpp
 
+\li <b>../examples/documented/libshogun/library_serialization.cpp</b>
+\verbinclude library_serialization.cpp
+
 \li <b>../examples/documented/libshogun/library_set.cpp</b>
 \verbinclude library_set.cpp
 
 \section libshogun_mathematics_examples Mathematics
 
-
-\li <b>../examples/documented/libshogun/mathematics_arpack.cpp</b>
-\verbinclude mathematics_arpack.cpp
 
 \li <b>../examples/documented/libshogun/mathematics_confidence_intervals.cpp</b>
 \verbinclude mathematics_confidence_intervals.cpp
@@ -316,6 +322,9 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 
 \li <b>../examples/documented/libshogun/modelselection_grid_search_mkl.cpp</b>
 \verbinclude modelselection_grid_search_mkl.cpp
+
+\li <b>../examples/documented/libshogun/modelselection_grid_search_multiclass_svm.cpp</b>
+\verbinclude modelselection_grid_search_multiclass_svm.cpp
 
 \li <b>../examples/documented/libshogun/modelselection_grid_search_string_kernel.cpp</b>
 \verbinclude modelselection_grid_search_string_kernel.cpp
@@ -380,6 +389,9 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/regression_gaussian_process_product.cpp</b>
 \verbinclude regression_gaussian_process_product.cpp
 
+\li <b>../examples/documented/libshogun/regression_gaussian_process_simple_exact.cpp</b>
+\verbinclude regression_gaussian_process_simple_exact.cpp
+
 \li <b>../examples/documented/libshogun/regression_gaussian_process_sum.cpp</b>
 \verbinclude regression_gaussian_process_sum.cpp
 
@@ -391,6 +403,9 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 
 \li <b>../examples/documented/libshogun/serialization_file_formats.cpp</b>
 \verbinclude serialization_file_formats.cpp
+
+\li <b>../examples/documented/libshogun/serialization_multiclass_labels.cpp</b>
+\verbinclude serialization_multiclass_labels.cpp
 
 \section libshogun_so_examples So
 
@@ -431,8 +446,8 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \li <b>../examples/documented/libshogun/statistics_linear_time_mmd.cpp</b>
 \verbinclude statistics_linear_time_mmd.cpp
 
-\li <b>../examples/documented/libshogun/statistics_linear_time_mmd_kernel_choice.cpp</b>
-\verbinclude statistics_linear_time_mmd_kernel_choice.cpp
+\li <b>../examples/documented/libshogun/statistics_mmd_kernel_selection.cpp</b>
+\verbinclude statistics_mmd_kernel_selection.cpp
 
 \li <b>../examples/documented/libshogun/statistics_quadratic_time_mmd.cpp</b>
 \verbinclude statistics_quadratic_time_mmd.cpp
@@ -440,8 +455,8 @@ LD_LIBRARY_PATH=path/to/libshogun ./name_of_example
 \section libshogun_streaming_examples Streaming
 
 
-\li <b>../examples/documented/libshogun/streaming_from_simple.cpp</b>
-\verbinclude streaming_from_simple.cpp
+\li <b>../examples/documented/libshogun/streaming_from_dense.cpp</b>
+\verbinclude streaming_from_dense.cpp
 
 \li <b>../examples/documented/libshogun/streaming_onlineliblinear.cpp</b>
 \verbinclude streaming_onlineliblinear.cpp
