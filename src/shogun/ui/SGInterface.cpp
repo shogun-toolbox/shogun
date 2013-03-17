@@ -4596,7 +4596,25 @@ bool CSGInterface::cmd_classify()
 	int32_t num_vec=labels->get_num_labels();
 	float64_t* result=SG_MALLOC(float64_t, num_vec);
 	for (int32_t i=0; i<num_vec; i++)
-		result[i]=((CRegressionLabels*) labels)->get_label(i);
+	{
+		float64_t value = 0;
+		switch (labels->get_label_type())
+		{
+			case LT_REGRESSION:
+				value = ((CRegressionLabels*) labels)->get_label(i);
+				break;
+			case LT_BINARY:
+				value = ((CBinaryLabels*) labels)->get_value(i);
+				break;
+			case LT_MULTICLASS:
+				value = ((CMulticlassLabels*) labels)->get_label(i);
+				break;
+			default:
+				SG_NOTIMPLEMENTED;
+				break;
+		}
+		result[i]=value;
+	}
 	SG_UNREF(labels);
 
 	set_vector(result, num_vec);
