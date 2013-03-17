@@ -48,7 +48,7 @@
 		- Fix for a bug with static interfaces causing all outputs to be
 		  -1/+1 instead of real scores (reported by Kamikawa Masahisa).
 	* Cleanup and API Changes:
-		- SGString and SGStringList are now based on SGReferencedData.
+		- SGStringList is now based on SGReferencedData.
 		- "confidences" in context of CLabel and subclasses are now "values".
 		- CLinearTimeMMD constructor changes, only streaming features allowed.
 		- CDataGenerator will soon be removed and replaced by new streaming-
