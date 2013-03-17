@@ -1,4 +1,4 @@
-2013-03-15 Soeren Sonnenburg <sonne@debian.org>
+2013-03-17 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 2.1.0 (libshogun 13.0, data 0.5, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
