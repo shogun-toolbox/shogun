@@ -67,7 +67,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	// Maximum number of iterations
 	if (max_iter == 0)
 	{
-		max_iter = 2000 + IndexType(floor(0.04 * N*N));
+		max_iter = 2000 + static_cast<IndexType>(floor(0.04 * N*N));
 		if (!global_strategy)
 			max_iter *= 3;
 	}
@@ -117,7 +117,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 			// Generate pseudo-random indices and select final indices
 			for(int j=0; j<nupdates; ++j)
 			{
-				IndexType r = IndexType(floor(std::rand()*1.0/RAND_MAX*(k-1)) + k*j);
+				IndexType r = static_cast<IndexType>(floor(std::rand()*1.0/RAND_MAX*(k-1)) + k*j);
 				indices[nupdates+j] = ind1Neighbors[r];
 			}
 		}
@@ -174,9 +174,9 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	}
 
 	return Y.transpose();
-};
+}
 
-}
-}
+} // End of namespace tapkee_internal
+} // End of namespace tapkee
 
 #endif /* TAPKEE_SPE_H_ */

@@ -22,12 +22,12 @@
 
 // implementation of parameter macro
 #define PARAMETER_IMPL(TYPE,NAME,CODE,CHECKER)                                                         \
-	if (!options.count(CODE))                                                                          \
+	if (!parameters.count(CODE))                                                                          \
 		throw missed_parameter_error("No "#NAME" ("#TYPE") parameter set. Should be in map as "#CODE); \
 	TYPE NAME;                                                                                         \
 	try                                                                                                \
 	{                                                                                                  \
-		NAME = options[CODE].cast<TYPE>();                                                             \
+		NAME = parameters[CODE].cast<TYPE>();                                                             \
 	}                                                                                                  \
 	catch (tapkee::anyimpl::bad_any_cast&)                                                             \
 	{                                                                                                  \

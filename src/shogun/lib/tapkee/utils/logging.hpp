@@ -25,7 +25,7 @@ using std::string;
 				impl->message_##LEVEL(msg);						\
 		}
 #define LEVEL_HANDLERS_DECLARATION(LEVEL) \
-		virtual void message_##LEVEL(const string& msg) = 0;
+		virtual void message_##LEVEL(const string& msg) = 0
 #define LEVEL_HANDLERS_DEFAULT_IMPL(LEVEL) \
 		virtual void message_##LEVEL(const string& msg)			\
 		{														\

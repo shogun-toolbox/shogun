@@ -118,7 +118,7 @@ SparseWeightMatrix linear_weight_matrix(const RandomAccessIterator& begin, const
 		
 		//RESTRICT_ALLOC;
 #pragma omp for nowait
-		for (index_iter=0; index_iter<(end-begin); index_iter++)
+		for (index_iter=0; index_iter<static_cast<IndexType>(end-begin); index_iter++)
 		{
 			ScalarType kernel_value = callback(begin[index_iter],begin[index_iter]);
 			const LocalNeighbors& current_neighbors = neighbors[index_iter];
@@ -226,7 +226,7 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 			ct += ct + target_dimension - j;
 		}
 		
-		for (IndexType i=0; i<IndexType(Yi.cols()); i++)
+		for (IndexType i=0; i<static_cast<IndexType>(Yi.cols()); i++)
 		{
 			for (IndexType j=0; j<i; j++)
 			{
@@ -266,7 +266,7 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 #endif
 
 	return weight_matrix;
-};
+}
 
 template<class RandomAccessIterator, class FeatureVectorCallback>
 DenseSymmetricMatrixPair construct_neighborhood_preserving_eigenproblem(SparseWeightMatrix W,
@@ -348,7 +348,7 @@ DenseSymmetricMatrixPair construct_lltsa_eigenproblem(SparseWeightMatrix W,
 	return DenseSymmetricMatrixPair(lhs,rhs);
 }
 
-}
-}
+} // End of namespace tapkee_internal
+} // End of namespace tapkee
 
 #endif

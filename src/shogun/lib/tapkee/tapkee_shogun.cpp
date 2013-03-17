@@ -80,6 +80,7 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	tapkee_parameters[tapkee::TARGET_DIMENSION] = static_cast<tapkee::IndexType>(parameters.target_dimension);
 	tapkee_parameters[tapkee::EIGENSHIFT] = static_cast<tapkee::ScalarType>(parameters.eigenshift);
 	tapkee_parameters[tapkee::CHECK_CONNECTIVITY] = true;
+	tapkee_parameters[tapkee::OUTPUT_FEATURE_VECTORS_ARE_COLUMNS] = true;
 	size_t N = 0;
 
 	switch (parameters.method) 
@@ -227,7 +228,7 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	{
 		for (uint32_t j=0; j<parameters.target_dimension; j++) 
 		{
-			feature_matrix(j,i) = result_embedding(i,j);
+			feature_matrix(j,i) = result_embedding(j,i);
 		}
 	}
 	return new CDenseFeatures<float64_t>(feature_matrix);

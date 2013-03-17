@@ -93,7 +93,7 @@ namespace anyimpl
 	};
 
 	/// Specializations for small types.
-	#define SMALL_POLICY(ANYTYPE) template<> struct choose_policy<ANYTYPE> { typedef small_any_policy<ANYTYPE> type; };
+	#define SMALL_POLICY(ANYTYPE) template<> struct choose_policy<ANYTYPE> { typedef small_any_policy<ANYTYPE> type; }
 
 	SMALL_POLICY(signed char);
 	SMALL_POLICY(unsigned char);
@@ -114,7 +114,7 @@ namespace anyimpl
 	{
 		static typename choose_policy<T>::type policy;
 		return &policy;
-	};
+	}
 }
 
 //! A wrapper for values having runtime specified type

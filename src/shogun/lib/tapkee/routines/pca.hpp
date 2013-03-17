@@ -70,7 +70,7 @@ DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, Rando
 	covariance_matrix.selfadjointView<Eigen::Upper>().rankUpdate(mean,-1.0);
 
 	return covariance_matrix;
-};
+}
 
 template <class RandomAccessIterator, class KernelCallback>
 DenseSymmetricMatrix compute_centered_kernel_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
@@ -93,9 +93,9 @@ DenseSymmetricMatrix compute_centered_kernel_matrix(RandomAccessIterator begin, 
 	centerMatrix(kernel_matrix);
 
 	return kernel_matrix;
-};
+}
 
-}
-}
+} // End of namespace tapkee_internal
+} // End of namespace tapkee
 
 #endif

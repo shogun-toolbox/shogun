@@ -121,9 +121,9 @@ EmbeddingResult generalized_eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method
 		default: break;
 	}
 	return EmbeddingResult();
-};
+}
 
-}
-}
+} // End of namespace tapkee_internal
+} // End of namespace tapkee
 
 #endif

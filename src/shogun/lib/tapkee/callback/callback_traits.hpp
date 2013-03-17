@@ -24,7 +24,7 @@ struct BasicCallbackTraits
 template<> const bool BasicCallbackTraits<X>::is_kernel = KERNEL;                                   \
 template<> const bool BasicCallbackTraits<X>::is_linear_kernel = LINEAR_KERNEL;                     \
 template<> const bool BasicCallbackTraits<X>::is_distance = DISTANCE;                               \
-template<> const bool BasicCallbackTraits<X>::is_euclidean_distance = EUCLIDEAN_DISTANCE;           \
+template<> const bool BasicCallbackTraits<X>::is_euclidean_distance = EUCLIDEAN_DISTANCE            \
 
 /** Macro used to indicate that callback X is a kernel function */
 #define TAPKEE_CALLBACK_IS_KERNEL(X) TAPKEE_CALLBACK_TRAIT_HELPER(X,true,false,false,false)

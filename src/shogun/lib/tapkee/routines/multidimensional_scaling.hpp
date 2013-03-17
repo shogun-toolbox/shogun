@@ -58,7 +58,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 		}
 	}
 	return distance_matrix;
-};
+}
 
 template <class RandomAccessIterator, class PairwiseCallback>
 EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end, PairwiseCallback distance_callback,
@@ -137,9 +137,9 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 		}
 	}
 	return distance_matrix;
-};
+}
 
-}
-}
+} // End of namespace tapkee_internal
+} // End of namespace tapkee
 
 #endif

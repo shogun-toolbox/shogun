@@ -132,11 +132,11 @@ Neighbors find_neighbors(TAPKEE_NEIGHBORS_METHOD method, const RandomAccessItera
                          const RandomAccessIterator& end, const PairwiseCallback& callback, 
                          IndexType k, bool check_connectivity)
 {
-	if (k > IndexType(end-begin-1))
+	if (k > static_cast<IndexType>(end-begin-1))
 	{
 		LoggingSingleton::instance().message_warning("Number of neighbors is greater than number of objects to embed. "
 		                                             "Using greatest possible number of neighbors.");
-		k = IndexType(end-begin-1);
+		k = static_cast<IndexType>(end-begin-1);
 	}
 	LoggingSingleton::instance().message_info("Using " + get_neighbors_method_name(method) + " neighbors computation method.");
 	Neighbors neighbors;
@@ -156,9 +156,9 @@ Neighbors find_neighbors(TAPKEE_NEIGHBORS_METHOD method, const RandomAccessItera
 			LoggingSingleton::instance().message_warning("The neighborhood graph is not connected.");
 	}
 	return neighbors;
-};
+}
 
-}
-}
+} // End of namespace tapkee
+} // End of namespace tapkee_internal
 
 #endif

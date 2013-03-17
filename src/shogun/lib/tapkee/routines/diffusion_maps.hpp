@@ -64,23 +64,23 @@ DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, Random
 	p = diffusion_matrix.colwise().sum();
 
 	// compute full matrix as we need to compute sum later
-	for (IndexType i=0; i<IndexType(end-begin); i++)
-		for (IndexType j=0; j<IndexType(end-begin); j++)
+	for (IndexType i=0; i<n_vectors; i++)
+		for (IndexType j=0; j<n_vectors; j++)
 			diffusion_matrix(i,j) /= pow(p(i)*p(j),timesteps);
 
 	// compute sqrt of column sum vector
 	p = diffusion_matrix.colwise().sum().cwiseSqrt();
 	
-	for (IndexType i=0; i<IndexType(end-begin); i++)
-		for (IndexType j=i; j<IndexType(end-begin); j++)
+	for (IndexType i=0; i<n_vectors; i++)
+		for (IndexType j=i; j<n_vectors; j++)
 			diffusion_matrix(i,j) /= p(i)*p(j);
 
 	UNRESTRICT_ALLOC;
 
 	return diffusion_matrix;
-};
+}
 
-}
-}
+} // End of namespace tapkee_internal
+} // End of namespace tapkee
 
 #endif
