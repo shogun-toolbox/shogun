@@ -1,6 +1,6 @@
 2013-03-15 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 2.1.0 (libshogun 13.0, data 0.4, parameter 1)
+	* SHOGUN Release version 2.1.0 (libshogun 13.0, data 0.5, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
 		- Linear Time MMD two-sample test now works on streaming-features, which 
@@ -23,7 +23,7 @@
 		  kernels for the linear time MMD. This finishes the kernel MMD framework
 		  and also comes with new, more illustrative examples and tests.
 		  By Heiko Strathmann.
-		- Alpha version of Perl modular interface developed by Christian Montanari
+		- Alpha version of Perl modular interface developed by Christian Montanari.
 		- New framework for unit-tests based on googletest and googlemock by
 		  Viktor Gal. A (growing) number of unit-tests from now on ensures basic
 		  funcionality of our framework. Since the examples do not have to take
@@ -43,8 +43,10 @@
           custom kernel matrices with subsets attached to them.
 		- Fix for parameter dictionary creationg causing dereferencing null pointers
 		  with gaussian processes parameter selection.
-		- Fixed a bug in exact GP regression that caused wrong results
-		- Fixed a bug in exact GP regression that produced memory errors/crashes
+		- Fixed a bug in exact GP regression that caused wrong results.
+		- Fixed a bug in exact GP regression that produced memory errors/crashes.
+		- Fix for a bug with static interfaces causing all outputs to be
+		  -1/+1 instead of real scores (reported by Kamikawa Masahisa).
 	* Cleanup and API Changes:
 		- SGString and SGStringList are now based on SGReferencedData.
 		- "confidences" in context of CLabel and subclasses are now "values".
