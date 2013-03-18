@@ -118,6 +118,7 @@ prepare-release:
 	( cd src && ./configure ) | tee -a $(LOGFILE)
 	+$(MAKE) -C src | tee -a $(LOGFILE)
 	+$(MAKE) -C src install DESTDIR=/tmp/sg_test_build | tee -a $(LOGFILE)
+	+$(MAKE) -C examples | tee -a $(LOGFILE)
 	+$(MAKE) -C src doc DESTDIR=/tmp/sg_test_build | tee -a $(LOGFILE)
 	-$(MAKE) -C src tests DESTDIR=/tmp/sg_test_build | tee -a $(LOGFILE)
 	#$(MAKE) -C src distclean | tee --append $(LOGFILE)
@@ -135,7 +136,7 @@ release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.
 data-release:
 	cd data && git checkout-index --prefix=../$(DATADESTDIR)/ -a
 	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar
-	tar -c -f $(DATARELEASENAME).tar -C ../shogun-releases $(DATARELEASENAME)
+	tar -c -f $(DATADESTDIR).tar -C ../shogun-releases $(DATARELEASENAME)
 	$(COMPRESS) -9 $(DATADESTDIR).tar
 
 embed-main-version: src/shogun/lib/versionstring.h
