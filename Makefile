@@ -124,11 +124,11 @@ prepare-release:
 	#$(MAKE) -C src distclean | tee --append $(LOGFILE)
 	git commit doc -m "updated reference documentation" | tee -a $(LOGFILE)
 
-release: src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
+release:
 	rm -rf $(DESTDIR)
 	# copy things over to shogun-releases dir
 	git checkout-index --prefix=$(DESTDIR)/ -a
-	cp src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/versionstring.h
+	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 	tar -c -f $(DESTDIR).tar -C ../shogun-releases $(RELEASENAME)
 	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
@@ -139,16 +139,10 @@ data-release:
 	tar -c -f $(DATADESTDIR).tar -C ../shogun-releases $(DATARELEASENAME)
 	$(COMPRESS) -9 $(DATADESTDIR).tar
 
-embed-main-version: src/shogun/lib/versionstring.h
-	sed -i 's/VERSION_RELEASE "git/VERSION_RELEASE "v$(MAINVERSION)/' src/shogun/lib/versionstring.h
-	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" doc/Doxyfile
-
-git-tag-release: embed-main-version
+git-tag-release:
 	git commit -a -m "Preparing for new Release shogun_$(MAINVERSION)"
-	# create shogun X.Y branch and put in versionstring
+	# create shogun X.Y branch
 	git checkout -b shogun_$(VERSIONBASE)
-	git add -f src/shogun/lib/versionstring.h
-	sed -i "s| lib/versionstring.h||" src/Makefile
 	git commit -a -m "Tagging shogun_$(MAINVERSION) release"
 	git tag shogun_$(MAINVERSION)
 
@@ -191,19 +185,6 @@ update-webpage:
 	rm -rf doc/html*
 
 	cd ../shogun-publicity/website && $(MAKE)
-
-src/shogun/lib/versionstring.h:
-	rm -f src/ChangeLog
-	$(MAKE) -C src ChangeLog
-	$(MAKE) -C src/shogun lib/versionstring.h
-
-$(DESTDIR)/src/shogun/lib/versionstring.h: src/shogun/lib/versionstring.h
-	rm -rf $(DESTDIR)
-	git checkout-index --prefix=$(DESTDIR)/ -a
-	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
-
-	# remove top level makefile from distribution
-	cp -f src/shogun/lib/versionstring.h $(DESTDIR)/src/shogun/lib/
 
 clean:
 	rm -rf $(DESTDIR)

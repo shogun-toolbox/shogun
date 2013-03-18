@@ -86,7 +86,7 @@ POSTLINKFLAGS += $(POSTLINKFLAGS_TEMPLATE)
 PRELINKFLAGS += $(PRELINKFLAGS_TEMPLATE)
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
-GITHEAD = $(shell ls ../../.git/HEAD 2>/dev/null)
+GITHEAD = $(shell ls ../../.git/HEAD ../NEWS 2>/dev/null)
 HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
 CPPTMPFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_CPP_TMP)")
@@ -483,7 +483,7 @@ check-examples-ruby_modular:
 		RUBY=$(RUBY) RUBYLIB="$$RUBYLIB:$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR):." ./check.sh )
 
 lib/versionstring.h:    $(GITHEAD) 
-	        sh $(CONFIGPATH)/.version.sh > $@
+	        PYTHON=$(PYTHON) sh $(CONFIGPATH)/.version.sh > $@
 
 doc-libshogun:	lib/versionstring.h
 	-@$(SEDMI) "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `\

@@ -18,7 +18,7 @@ then
 
 	src="svn"
 	prefix="svn_r"
-elif test -d ../../.git
+elif test -d ../../.gita
 then
 	branch_point=$(git merge-base master HEAD)
 	dateinfo=$(git show --pretty='format:%ai' $branch_point | head -1)
@@ -32,6 +32,17 @@ then
 	revision="`git show --pretty='format:%h'|head -1`"
 	revision_prefix="0x"
 	prefix="git_"
+elif test -f ../NEWS
+then
+	shogun_release=$(head -n3 ../NEWS | tail -n 1)
+	revision=$(echo "${shogun_release}" | awk '{print $5}')
+	prefix="v"
+	dateinfo=$($PYTHON -c 'import os.path,time;print time.strftime("%Y-%m-%d %H:%M", time.gmtime(os.path.getmtime("../NEWS")))')
+	year=$(echo $dateinfo | cut -f 1 -d '-')
+	month=$(echo $dateinfo | cut -f 2 -d '-')
+	day=$(echo $dateinfo | cut -f 3 -d '-' | cut -f 1 -d ' ')
+	hour=$(echo $dateinfo | cut -f 2 -d ' ' | cut -f 1 -d ':')
+	minute=$(echo $dateinfo | cut -f 2 -d ' ' | cut -f 2 -d ':')
 else
 	extra="UNKNOWN_VERSION"
 	revision=9999
@@ -55,7 +66,7 @@ echo "#define MAINVERSION \"${mainversion}\""
 
 echo "#define VERSION_EXTRA \"${extra}\""
 echo "#define VERSION_REVISION ${revision_prefix}${revision}"
-echo "#define VERSION_RELEASE \"${prefix}${revision}_${date}_${time}_${extra}\""
+echo "#define VERSION_RELEASE \"${prefix}${revision}_${date}_${time}${extra}\""
 echo "#define VERSION_YEAR `echo ${year} | sed 's/^[0]//g'`"
 echo "#define VERSION_MONTH `echo ${month} | sed 's/^[0]//g'`"
 echo "#define VERSION_DAY `echo ${day} | sed 's/^[0]//g'`"
