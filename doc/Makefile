@@ -9,16 +9,20 @@ DOCUMENTED_EXAMPLE_DIRS = $(patsubst ../examples/undocumented%,../examples/docum
 MAINVERSION := $(shell awk '/Release/{print $$5;exit}' ../src/NEWS)
 
 
-doc: examples pages/Configure.generated
-	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" Doxyfile
-	sed -i "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" Doxyfile_cn
-	doxygen Doxyfile
+doc: examples pages/Configure.generated Doxyfile_en Doxyfile_cn
+	doxygen Doxyfile_en
 	doxygen Doxyfile_cn
+
+Doxyfile_en: Doxyfile_en.in
+	sed "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" Doxyfile_en.in >Doxyfile_en
+
+Doxyfile_cn: Doxyfile_cn.in
+	sed "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" Doxyfile_cn.in >Doxyfile_cn
 
 pages/Configure.generated:	../src/configure
 	../src/configure --help 2>&1 >$@
 
-doc_cn: examples_cn
+doc_cn: examples_cn Doxyfile_cn
 	doxygen Doxyfile_cn
 
 examples: $(UNDOCUMENTED_EXAMPLE_DIRS) $(EXAMPLE_FILES)
