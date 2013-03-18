@@ -15,10 +15,11 @@ then
 	day=`svn info | grep "^Last Changed Date:" | cut -f 4 -d ' ' | cut -f 3 -d '-'`
 	hour=`svn info | grep "^Last Changed Date:" | cut -f 5 -d ' ' | cut -f 1 -d ':'`
 	minute=`svn info | grep "^Last Changed Date:" | cut -f 5 -d ' ' | cut -f 2 -d ':'`
+	revision_human=$revision
 
 	src="svn"
 	prefix="svn_r"
-elif test -d ../../.gita
+elif test -d ../../.git
 then
 	branch_point=$(git merge-base master HEAD)
 	dateinfo=$(git show --pretty='format:%ai' $branch_point | head -1)
@@ -30,12 +31,14 @@ then
 	minute=$(echo $dateinfo | cut -f 2 -d ' ' | cut -f 2 -d ':')
 
 	revision="`git show --pretty='format:%h'|head -1`"
+	revision_human=$revision
 	revision_prefix="0x"
 	prefix="git_"
 elif test -f ../NEWS
 then
-	shogun_release=$(head -n3 ../NEWS | tail -n 1)
-	revision=$(echo "${shogun_release}" | awk '{print $5}')
+	revision=$($PYTHON -c "print ''.join([ '%0.2x' % int(i) for i in \"$mainversion\".split('.')])")
+	revision_prefix="0x"
+	revision_human=$mainversion
 	prefix="v"
 	dateinfo=$($PYTHON -c 'import os.path,time;print time.strftime("%Y-%m-%d %H:%M", time.gmtime(os.path.getmtime("../NEWS")))')
 	year=$(echo $dateinfo | cut -f 1 -d '-')
@@ -66,7 +69,7 @@ echo "#define MAINVERSION \"${mainversion}\""
 
 echo "#define VERSION_EXTRA \"${extra}\""
 echo "#define VERSION_REVISION ${revision_prefix}${revision}"
-echo "#define VERSION_RELEASE \"${prefix}${revision}_${date}_${time}${extra}\""
+echo "#define VERSION_RELEASE \"${prefix}${revision_human}_${date}_${time}${extra}\""
 echo "#define VERSION_YEAR `echo ${year} | sed 's/^[0]//g'`"
 echo "#define VERSION_MONTH `echo ${month} | sed 's/^[0]//g'`"
 echo "#define VERSION_DAY `echo ${day} | sed 's/^[0]//g'`"
