@@ -47,10 +47,13 @@ class CStructuredModel;
 struct CResultSet : public CSGObject
 {
 	/** constructor */
-	CResultSet() : CSGObject(), argmax(NULL) { };
+	CResultSet();
 
 	/** destructor */
-	virtual ~CResultSet() { SG_UNREF(argmax) }
+	virtual ~CResultSet();
+
+	/** @return name of SGSerializable */
+	virtual const char* get_name() const;
 
 	/** argmax */
 	CStructuredData* argmax;
@@ -67,9 +70,6 @@ struct CResultSet : public CSGObject
 
 	/** delta loss for the prediction vs. truth */
 	float64_t delta;
-
-	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "ResultSet"; }
 };
 
 /**
