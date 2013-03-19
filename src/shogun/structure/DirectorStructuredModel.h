@@ -42,20 +42,6 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		virtual int32_t get_dim() const;
 
 		/**
-		 * gets joint feature vector
-		 *
-		 * \f[
-		 * \vec{\Psi}(\bf{x}_\text{feat\_idx}, \bf{y}_\text{lab\_idx})
-		 * \f]
-		 *
-		 * @param feat_idx index of the feature vector to use
-		 * @param lab_idx index of the structured label to use
-		 *
-		 * @return the joint feature vector
-		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, int32_t lab_idx);
-
-		/**
 		 * get joint feature vector
 		 *
 		 * \f[
@@ -84,15 +70,6 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 */
 		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
 
-		/** computes \f$ \Delta(y_{\text{true}}, y_{\text{pred}}) \f$
-		 *
-		 * @param ytrue_idx index of the true label in labels
-		 * @param ypred the predicted label
-		 *
-		 * @return loss value
-		 */
-		virtual float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
-
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
 		 * @param y1 an instance of structured data
@@ -101,6 +78,27 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 * @return loss value
 		 */
 		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+
+		/**
+		 * method to be called from a SO machine before training
+		 * to ensure that the training data is valid (e.g. check that
+		 * there is at least one example for every class). In this class
+		 * the method is empty and it can be re-implemented for any
+		 * application (e.g. HM-SVM).
+		 */
+		virtual bool check_training_setup() const;
+
+		/** initialize the optimization problem
+		 *
+		 * @param A
+		 * @param a
+		 * @param B
+		 * @param b
+		 * @param lb
+		 * @param ub
+		 * @param C
+		 */
+		virtual void init_opt(SGMatrix< float64_t > & A,  SGVector< float64_t > a, SGMatrix< float64_t > B,  SGVector< float64_t > & b, SGVector< float64_t > lb, SGVector< float64_t > ub, SGMatrix < float64_t >  & C);
 		
 		using CStructuredModel::director_risk;
 

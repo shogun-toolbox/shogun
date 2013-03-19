@@ -76,7 +76,7 @@ template< class ST > class CMatrixFeatures : public CFeatures
 
 		/** get feature class
 		 *
-		 * @return feature class like STRING, SIMPLE, SPARSE...
+		 * @return feature class like STRING, SIMPLE, SPARSE... (C_MATRIX in this case)
 		 */
 		virtual EFeatureClass get_feature_class() const;
 
@@ -135,6 +135,11 @@ template< class ST > class CMatrixFeatures : public CFeatures
 
 		/** @return the number of features */
 		inline int32_t get_num_features() const { return m_num_features; }
+
+		/** helper method used to specialize a base class instance
+		 *
+		 */
+		static CMatrixFeatures* obtain_from_generic(CFeatures* const base_features);
 
 	private:
 		/** internal initialization */

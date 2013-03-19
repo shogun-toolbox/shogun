@@ -12,6 +12,20 @@
 
 using namespace shogun;
 
+CResultSet::CResultSet() : CSGObject(), argmax(NULL)
+{
+}
+
+CResultSet::~CResultSet()
+{
+	SG_UNREF(argmax)
+}
+
+const char* CResultSet::get_name() const
+{
+	return "ResultSet";
+}
+
 CStructuredModel::CStructuredModel() : CSGObject()
 {
 #ifdef USE_SWIG_DIRECTORS
