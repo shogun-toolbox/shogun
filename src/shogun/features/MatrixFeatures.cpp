@@ -65,10 +65,9 @@ template< class ST > EFeatureType CMatrixFeatures< ST >::get_feature_type() cons
 	return F_UNKNOWN;
 }
 
-/* TODO */
 template< class ST > EFeatureClass CMatrixFeatures< ST >::get_feature_class() const
 {
-	return C_UNKNOWN;
+	return C_MATRIX;
 }
 
 /* TODO */
@@ -169,6 +168,14 @@ template< class ST > void CMatrixFeatures< ST >::cleanup()
 	m_features     = SGMatrixList< ST >();
 	m_num_vectors  = 0;
 	m_num_features = 0;
+}
+
+template< class ST > CMatrixFeatures< ST >* CMatrixFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
+{
+	REQUIRE(base_features->get_feature_class() == C_MATRIX,
+			"base_features must be of dynamic type CMatrixFeatures\n")
+
+	return (CMatrixFeatures< ST >*) base_features;
 }
 
 template class CMatrixFeatures<bool>;
