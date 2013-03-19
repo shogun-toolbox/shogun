@@ -83,6 +83,8 @@ def compare_dbg_helper(a, b, tolerance):
 		return False
 
 def tester(tests, cmp_method, tolerance, failures, missing):
+	failed=False
+
 	for t in tests:
 		try:
 			mod, mod_name = get_test_mod(t)
@@ -91,6 +93,7 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 			continue
 		except Exception, e:
 			print "%-60s ERROR (%s)" % (t,e)
+			failed=True
 			continue
 		fname = ""
 
@@ -111,13 +114,17 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 				except Exception, e:
 					print setting_str, e
 			except IOError, e:
+				failed=True
 				if not failures:
 					print "%-60s NO TEST (%s)" % (setting_str, e)
 			except Exception, e:
+				failed=True
 				if not missing:
 					print "%-60s EXCEPTION %s" % (setting_str,e)
+	return failed
 
 if __name__=='__main__':
+	import sys
 	from optparse import OptionParser
 	op=OptionParser()
 	op.add_option("-d", "--debug", action="store_true", default=False,
@@ -136,4 +143,6 @@ if __name__=='__main__':
 	else:
 		cmp_method=compare
 	tests = setup_tests(args)
-	tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing)
+	if tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing):
+		sys.exit(1)
+	sys.exit(0)

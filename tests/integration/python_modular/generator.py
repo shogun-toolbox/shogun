@@ -11,7 +11,10 @@ blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.py",
 		"distance_director_euclidean_modular.py",
 		"evaluation_director_contingencytableevaluation_modular.py",
 		"features_director_dot_modular.py",
-		"kernel_director_linear_modular.py"
+		"kernel_director_linear_modular.py",
+		"classifier_conjugateindex_modular.py",
+		"kernel_top_modular.py",
+		"kernel_fisher_modular.py",
 		)
 
 def get_fname(mod_name, i):
