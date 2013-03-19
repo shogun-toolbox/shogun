@@ -43,12 +43,14 @@ CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
 
 bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 {
+	SG_DEBUG("Entering CPrimalMosekSOSVM::train_machine.\n");
 	if (data)
 		set_features(data);
 
 	CFeatures* model_features = get_features();
 	// Check that the scenary is correct to start with training
 	m_model->check_training_setup();
+	SG_DEBUG("The training setup is correct.\n");
 
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
@@ -58,6 +60,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	int32_t num_aux_con = m_model->get_num_aux_con();
 	// Number of training examples
 	int32_t N = m_model->get_features()->get_num_vectors();
+
+	SG_DEBUG("M=%d, N =%d, num_aux=%d, num_aux_con=%d.\n", M, N, num_aux, num_aux_con);
 
 	// Interface with MOSEK
 	CMosek* mosek = new CMosek(0, M+num_aux+N);
@@ -117,6 +121,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 	do 
 	{
+		SG_DEBUG("Cutting plane training with num_con=%d and old_num_con=%d.\n", num_con, old_num_con);
+
 		old_num_con = num_con;
 
 		for ( int32_t i = 0 ; i < N ; ++i )
@@ -124,7 +130,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			// Predict the result of the ith training example
 			result = m_model->argmax(m_w, i);
 
-			//SG_PRINT("loss %f %f\n", compute_loss_arg(result),  m_loss->loss( compute_loss_arg(result)) )
+			SG_DEBUG("loss %f %f.\n", compute_loss_arg(result),  m_loss->loss( compute_loss_arg(result)) )
 			// Compute the loss associated with the prediction
 			slack = m_loss->loss( compute_loss_arg(result) );
 			cur_list = (CList*) results->get_element(i);
@@ -178,6 +184,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		}
 
 		// Solve the QP
+		SG_DEBUG("Entering mosek QP solver.\n");
+
 		mosek->optimize(sol);
 		for ( int32_t i = 0 ; i < M+num_aux+N ; ++i )
 		{
