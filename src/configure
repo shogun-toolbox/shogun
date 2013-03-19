@@ -1474,7 +1474,7 @@ Miscellaneous options:
   --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
   --enable-swig-directors        enables swig based director classes [disabled]
   --enable-path-debug            enable viterbi path debugging [disabled]
-  --enable-profile               compile profiling and test coverage information into shogun (gpof, gcov) [disable]
+  --enable-profile               compile profiling and test coverage information into shogun (gprof, gcov) [disable]
   --enable-static                build a statically linked binary (to the extend possible);
                                  set further linking options with --enable-static="-lm -lglpk"
   --python=python                use this python executable [python]

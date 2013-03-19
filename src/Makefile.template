@@ -275,12 +275,7 @@ install-python_modular: $(TEMPLATE_TARGET)
 		echo "\"$$i\"," >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py" ;\
 	done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
-#echo "'*'" > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
-#for i in $(SWIGPYFILES) ; do echo $$i \
-#	| sed -e 's=.*/="=' -e 's/\.py/", /' \
-#	>>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
 
-#TODO#PTZ121026...shall use mechanics of Makefile.PL 
 install-perl_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(PLDIR)/shogun"
 	install -m644 $(SWIGPLFILES) "$(DESTDIR)$(PLDIR)"
@@ -340,7 +335,7 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	-cd $(CONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
+	cd $(CONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
 		CC=$(COMP_CPP) \
 		GDB=gdb \
 		GDBOPTS="-x ../../../src/.gdb" \
