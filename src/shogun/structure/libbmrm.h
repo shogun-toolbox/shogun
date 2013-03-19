@@ -13,7 +13,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/structure/StructuredModel.h>
-#include <shogun/structure/bmrm_return_value.h>
+#include <shogun/structure/BmrmStatistics.h>
 
 #ifndef libbmrm_h
 #define libbmrm_h
@@ -94,7 +94,7 @@ void remove_cutting_plane(
  * Clean-up in-active cutting planes
  */
 void clean_icp(ICP_stats* icp_stats,
-		bmrm_return_value_T& bmrm,
+		BmrmStatistics& bmrm,
 		bmrm_ll** head,
 		bmrm_ll** tail,
 		float64_t*& H,
@@ -141,7 +141,7 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
  * @param verbose		Flag that enables/disables screen output
  * @return Structure with BMRM algorithm result
  */
-bmrm_return_value_T svm_bmrm_solver(
+BmrmStatistics svm_bmrm_solver(
 		CStructuredModel *model,
 		float64_t        *W,
 		float64_t        TolRel,

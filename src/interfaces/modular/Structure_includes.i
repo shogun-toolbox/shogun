@@ -11,7 +11,7 @@
  #include <shogun/machine/LinearStructuredOutputMachine.h>
  #include <shogun/machine/KernelStructuredOutputMachine.h>
 
- #include <shogun/structure/bmrm_return_value.h>
+ #include <shogun/structure/BmrmStatistics.h>
  #include <shogun/structure/StructuredModel.h>
  #include <shogun/structure/MulticlassModel.h>
  #include <shogun/structure/MulticlassSOLabels.h>

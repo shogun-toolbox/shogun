@@ -18,11 +18,11 @@
 namespace shogun
 {
 
-/** BMRM result structure */
-struct bmrm_return_value_T
+/** BMRM statistics like number of iterations etc */
+struct BmrmStatistics
 {
 	/** constructor */
-	bmrm_return_value_T()
+	BmrmStatistics()
 	{
 		nIter = 0;
 		nCP = 0;
@@ -34,7 +34,7 @@ struct bmrm_return_value_T
 	};
 
 	/** destructor */
-	virtual ~bmrm_return_value_T() { };
+	virtual ~BmrmStatistics() { };
 
 	/** dummy load serializable */
 	bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; }

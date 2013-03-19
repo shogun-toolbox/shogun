@@ -19,6 +19,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/structure/MulticlassSOLabels.h>
+#include <shogun/structure/BmrmStatistics.h>
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
@@ -225,7 +226,7 @@ int main(int argc, char * argv[])
 
 	sosvm->train();
 
-	bmrm_return_value_T res = sosvm->get_result();
+	BmrmStatistics res = sosvm->get_result();
 
 	SG_SPRINT("result = { Fp=%lf, Fd=%lf, nIter=%d, nCP=%d, nzA=%d, exitflag=%d }\n",
 			res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);

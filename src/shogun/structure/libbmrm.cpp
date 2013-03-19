@@ -86,7 +86,7 @@ void remove_cutting_plane(
 }
 
 void clean_icp(ICP_stats* icp_stats,
-		bmrm_return_value_T& bmrm,
+		BmrmStatistics& bmrm,
 		bmrm_ll** head,
 		bmrm_ll** tail,
 		float64_t*& Hmat,
@@ -176,7 +176,7 @@ static const float64_t *get_col( uint32_t i)
 	return( &H[ BufSize*i ] );
 }
 
-bmrm_return_value_T svm_bmrm_solver(
+BmrmStatistics svm_bmrm_solver(
 		CStructuredModel* model,
 		float64_t*       W,
 		float64_t        TolRel,
@@ -189,7 +189,7 @@ bmrm_return_value_T svm_bmrm_solver(
 		uint32_t         Tmax,
 		bool             verbose)
 {
-	bmrm_return_value_T bmrm;
+	BmrmStatistics bmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
 	float64_t *b, *beta, *diag_H, *prevW;
 	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0, wdist=0.0;

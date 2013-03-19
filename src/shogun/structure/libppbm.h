@@ -36,7 +36,7 @@ namespace shogun
 	 * @param verbose		Flag that enables/disables screen output
 	 * @return Structure with BMRM algorithm result
 	 */
-	bmrm_return_value_T svm_ppbm_solver(
+	BmrmStatistics svm_ppbm_solver(
 			CStructuredModel *model,
 			float64_t   	*W,
 			float64_t   	TolRel,

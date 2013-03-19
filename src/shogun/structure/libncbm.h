@@ -23,7 +23,7 @@ namespace shogun
 	 * min lambda/2 ||w||^2 + R(w)
 	 * where R(w) is a risk funciton of any kind.
 	 */
-	bmrm_return_value_T svm_ncbm_solver(
+	BmrmStatistics svm_ncbm_solver(
 			CStructuredModel *model,
 			float64_t        *w,
 			float64_t        TolRel,

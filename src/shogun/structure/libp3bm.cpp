@@ -31,7 +31,7 @@ static const float64_t *get_col( uint32_t i)
 	return( &H2[ BufSize*i ] );
 }
 
-bmrm_return_value_T svm_p3bm_solver(
+BmrmStatistics svm_p3bm_solver(
 		CStructuredModel* model,
 		float64_t*      W,
 		float64_t       TolRel,
@@ -45,7 +45,7 @@ bmrm_return_value_T svm_p3bm_solver(
 		uint32_t        cp_models,
 		bool            verbose)
 {
-	bmrm_return_value_T p3bmrm;
+	BmrmStatistics p3bmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0}, qp_exitflag_good={0, 0, 0, 0};
 	float64_t *b, *b2, *beta, *beta_good, *beta_start, *diag_H, *diag_H2;
 	float64_t R, *Rt, **subgrad_t, *A, QPSolverTolRel, *C=NULL;

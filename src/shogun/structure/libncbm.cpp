@@ -271,7 +271,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 	}
 }
 
-inline void update_H(bmrm_return_value_T& ncbm,
+inline void update_H(BmrmStatistics& ncbm,
 		bmrm_ll* head,
 		bmrm_ll* tail,
 		SGMatrix<float64_t>& H,
@@ -305,7 +305,7 @@ inline void update_H(bmrm_return_value_T& ncbm,
 }
 
 
-bmrm_return_value_T svm_ncbm_solver(
+BmrmStatistics svm_ncbm_solver(
 		CStructuredModel *model,
 		float64_t        *w,
 		float64_t        TolRel,
@@ -319,7 +319,7 @@ bmrm_return_value_T svm_ncbm_solver(
 		bool             verbose
 		)
 {
-	bmrm_return_value_T ncbm;
+	BmrmStatistics ncbm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
 	int32_t w_dim = model->get_dim();
 

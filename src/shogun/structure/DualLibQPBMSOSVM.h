@@ -199,7 +199,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 *
 		 * @return Result returned from Bundle Method algorithm
 		 */
-		inline bmrm_return_value_T get_result() { return m_result; }
+		inline BmrmStatistics get_result() { return m_result; }
 
 		/** get training algorithm
 		 *
@@ -275,7 +275,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		bool m_verbose;
 
 		/** BMRM result */
-		bmrm_return_value_T m_result;
+		BmrmStatistics m_result;
 
 		/** training algorithm */
 		ESolver m_solver;
