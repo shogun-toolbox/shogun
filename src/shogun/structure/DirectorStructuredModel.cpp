@@ -29,16 +29,8 @@ int32_t CDirectorStructuredModel::get_dim() const
 
 CResultSet* CDirectorStructuredModel::argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training)
 {
-	SG_ERROR("Please implemement get_joint_feature_vector(feat_idx,lab_idx) in your target language before use\n")
+	SG_ERROR("Please implemement argmax(w,feat_idx,lab_idx,training) in your target language before use\n")
 	return NULL;
-}
-
-SGVector< float64_t > CDirectorStructuredModel::get_joint_feature_vector(
-		int32_t feat_idx,
-		int32_t lab_idx)
-{
-	SG_ERROR("Please implemement get_joint_feature_vector(feat_idx,lab_idx) in your target language before use\n")
-	return SGVector<float64_t>();
 }
 
 SGVector< float64_t > CDirectorStructuredModel::get_joint_feature_vector(
@@ -49,15 +41,21 @@ SGVector< float64_t > CDirectorStructuredModel::get_joint_feature_vector(
 	return SGVector<float64_t>();
 }
 
-float64_t CDirectorStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
-{
-	SG_ERROR("Please implemement get_joint_feature_vector(feat_idx,y) in your target language before use\n")
-	return 0.0;
-}
-
 float64_t CDirectorStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
 	SG_ERROR("Please implemement delta_loss(y1,y2) in your target language before use\n")
 	return 0.0;
 }
+
+bool CDirectorStructuredModel::check_training_setup() const
+{
+	SG_ERROR("Please implemement check_trainig_setup() in your target language before use\n")
+	return false;
+}
+
+void CDirectorStructuredModel::init_opt(SGMatrix< float64_t > & A,  SGVector< float64_t > a, SGMatrix< float64_t > B,  SGVector< float64_t > & b, SGVector< float64_t > lb, SGVector< float64_t > ub, SGMatrix < float64_t >  & C)
+{
+	SG_ERROR("Please implemement init_opt(A,a,B,b,lb,ub,C) in your target language before use\n")
+}
+
 #endif /* USE_SWIG_DIRECTORS */
