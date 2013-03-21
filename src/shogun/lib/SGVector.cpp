@@ -50,6 +50,12 @@ SGVector<T>::SGVector(const SGVector &orig) : SGReferencedData(orig)
 }
 
 template<class T>
+void SGVector<T>::set(SGVector<T> orig)
+{
+	*this = SGVector<T>(orig);
+}
+
+template<class T>
 SGVector<T>::~SGVector()
 {
 	unref();
