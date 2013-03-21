@@ -37,6 +37,12 @@ template<class T> class SGVector : public SGReferencedData
 		/** copy constructor */
 		SGVector(const SGVector &orig);
 
+		/** wrapper for the copy constructor useful for SWIG interfaces
+		 *
+		 * @param orig vector to set
+		 */
+		void set(SGVector<T> orig);
+
 		/** empty destructor */
 		virtual ~SGVector();
 
