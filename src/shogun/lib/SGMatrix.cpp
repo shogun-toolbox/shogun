@@ -874,9 +874,13 @@ void SGMatrix<T>::load(CFile* loader)
 {
 	ASSERT(loader)
 	unref();
-
+	
 	SG_SET_LOCALE_C;
-	loader->get_matrix(matrix, num_rows, num_cols);
+	SGMatrix<T> mat;
+	loader->get_matrix(mat.matrix, mat.num_rows, mat.num_cols);
+	copy_data(mat);
+	copy_refcount(mat);
+	ref();
 	SG_RESET_LOCALE;
 }
 

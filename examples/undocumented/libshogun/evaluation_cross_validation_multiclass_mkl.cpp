@@ -9,7 +9,7 @@
  */
 
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/io/streaming/StreamingAsciiFile.h>
+#include <shogun/io/AsciiFile.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
@@ -22,65 +22,41 @@
 
 using namespace shogun;
 
+/* cross-validation instances */
+const index_t n_folds=2;
+const index_t n_runs=2;
+
+/* file data */
+const char fname_feats[]="../data/fm_train_real.dat";
+const char fname_labels[]="../data/label_train_multiclass.dat";
+
 void test_multiclass_mkl_cv()
 {
-
-	/* init random number generator for reproducible results of cross-validation in the light of ASSERT(result->mean>0.9); some lines down below */
+	/* init random number generator for reproducible results of cross-validation in the light of ASSERT(result->mean>0.81); some lines down below */
 	CMath::init_random(1);
 
-	/* stream data from a file */
-	int32_t num_vectors=50;
-	int32_t num_feats=2;
+	/* dense features from matrix */
+	CAsciiFile* feature_file = new CAsciiFile(fname_feats);
+	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
+	mat.load(feature_file);
+	SG_UNREF(feature_file);
 
-	/* file data */
-	char fname_feats[]="../data/fm_train_real.dat";
-	char fname_labels[]="../data/label_train_multiclass.dat";
-	CStreamingAsciiFile* ffeats_train=new CStreamingAsciiFile(fname_feats);
-	CStreamingAsciiFile* flabels_train=new CStreamingAsciiFile(fname_labels);
-	SG_REF(ffeats_train);
-	SG_REF(flabels_train);
+	SGMatrix<int8_t> mat2=SGMatrix<int8_t>();
+	CAsciiFile* feature_file2 = new CAsciiFile(fname_labels);
+	mat2.load(feature_file2);
+	SG_UNREF(feature_file2);
 
-	/* streaming data */
-	CStreamingDenseFeatures<float64_t>* stream_features=
-			new CStreamingDenseFeatures<float64_t>(ffeats_train, false, 1024);
-	CStreamingDenseFeatures<float64_t>* stream_labels=
-			new CStreamingDenseFeatures<float64_t>(flabels_train, true, 1024);
-	SG_REF(stream_features);
-	SG_REF(stream_labels);
-
-	/* matrix data */
-	SGMatrix<float64_t> mat=SGMatrix<float64_t>(num_feats, num_vectors);
-	SGVector<float64_t> vec;
-	stream_features->start_parser();
-
-	index_t count=0;
-	while (stream_features->get_next_example() && count<num_vectors)
-	{
-		vec=stream_features->get_vector();
-		for (int32_t i=0; i<num_feats; ++i)
-			mat(i,count)=vec[i];
-
-		stream_features->release_example();
-		count++;
-	}
-	stream_features->end_parser();
-	mat.num_cols=num_vectors;
-
-	/* dense features from streamed matrix */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(mat);
-	CMulticlassLabels* labels=new CMulticlassLabels(num_vectors);
 	SG_REF(features);
-	SG_REF(labels);
 
-	/* read labels from file */
-	int32_t idx=0;
-	stream_labels->start_parser();
-	while (stream_labels->get_next_example())
-	{
-		labels->set_int_label(idx++, (int32_t)stream_labels->get_label());
-		stream_labels->release_example();
-	}
-	stream_labels->end_parser();
+	/* labels from vector */
+	CAsciiFile* label_file = new CAsciiFile(fname_labels);
+	SGVector<float64_t> label_vec;
+	label_vec.load(label_file);
+	SG_UNREF(label_file);
+
+	CMulticlassLabels* labels=new CMulticlassLabels(label_vec);
+	SG_REF(labels);
 
 	/* combined features and kernel */
 	CCombinedFeatures *cfeats=new CCombinedFeatures();
@@ -114,9 +90,6 @@ void test_multiclass_mkl_cv()
 	mkl->train();
 	cker->get_subkernel_weights().display_vector("weights");
 
-	/* cross-validation instances */
-	index_t n_folds=3;
-	index_t n_runs=5;
 	CMulticlassAccuracy* eval_crit=new CMulticlassAccuracy();
 	CStratifiedCrossValidationSplitting* splitting=
 			new CStratifiedCrossValidationSplitting(labels, n_folds);
@@ -132,13 +105,9 @@ void test_multiclass_mkl_cv()
 			result->mean);
 
 	/* assert high accuracy */
-	ASSERT(result->mean>0.9);
+	ASSERT(result->mean>0.81);
 
 	/* clean up */
-	SG_UNREF(ffeats_train);
-	SG_UNREF(flabels_train);
-	SG_UNREF(stream_features);
-	SG_UNREF(stream_labels);
 	SG_UNREF(features);
 	SG_UNREF(labels);
 	SG_UNREF(cfeats);
@@ -151,7 +120,7 @@ void test_multiclass_mkl_cv()
 int main(int argc, char** argv){
 	shogun::init_shogun_with_defaults();
 
-//	sg_io->set_loglevel(MSG_DEBUG);
+	// sg_io->set_loglevel(MSG_DEBUG);
 
 	/* performs cross-validation on a multi-class mkl machine */
 	test_multiclass_mkl_cv();

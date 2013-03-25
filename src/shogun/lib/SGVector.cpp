@@ -987,7 +987,11 @@ template<class T> void SGVector<T>::load(CFile* loader)
 	unref();
 
 	SG_SET_LOCALE_C;
-	loader->get_vector(vector, vlen);
+	SGVector<T> vec;
+	loader->get_vector(vec.vector, vec.vlen);
+	copy_data(vec);
+	copy_refcount(vec);
+	ref();
 	SG_RESET_LOCALE;
 }
 

@@ -86,8 +86,7 @@ void CAsciiFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
 	if (stat(filename, &stats)!=0)												\
 		SG_ERROR("Could not get file statistics.\n")							\
 																				\
-	char* data=SG_MALLOC(char, stats.st_size+1);										\
-	memset(data, 0, sizeof(char)*(stats.st_size+1));							\
+	char* data=SG_CALLOC(char, stats.st_size+1);								\
 	size_t nread=fread(data, sizeof(char), stats.st_size, file);				\
 	if (nread<=0)																\
 		SG_ERROR("Could not read data from %s.\n", filename)					\
