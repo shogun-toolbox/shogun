@@ -8,9 +8,9 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/io/AsciiFile.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/LinearKernel.h>
 #include <shogun/kernel/PolyKernel.h>
@@ -40,11 +40,6 @@ void test_multiclass_mkl_cv()
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
 	SG_UNREF(feature_file);
-
-	SGMatrix<int8_t> mat2=SGMatrix<int8_t>();
-	CAsciiFile* feature_file2 = new CAsciiFile(fname_labels);
-	mat2.load(feature_file2);
-	SG_UNREF(feature_file2);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(mat);
 	SG_REF(features);
