@@ -23,6 +23,7 @@ void test_svmlight()
 	float64_t p_x=0.5; // probability for class A
 	float64_t mostly_prob=0.8;
 	CDenseLabels* labels=new CBinaryLabels(num_train+num_test);
+	CMath::init_random(17);
 
 	SGStringList<char> data(num_train+num_test, max_length);
 	for (index_t i=0; i<num_train+num_test; ++i)
