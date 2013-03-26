@@ -453,6 +453,16 @@ public:
          */
         static float64_t dlgamma(float64_t x);
 
+#ifdef HAVE_EIGEN3
+        /** The log determinant of a matrix
+ 	*
+ 	* @param m input matrix
+ 	* @return the log determinant value
+ 	*/
+        static float64_t log_det(SGMatrix<float64_t> m);
+#endif
+
+
 
 protected:
 	/** Power series for incomplete beta integral.

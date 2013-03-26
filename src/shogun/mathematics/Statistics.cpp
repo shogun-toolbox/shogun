@@ -21,6 +21,12 @@
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
 #endif //HAVE_LAPACK
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+using namespace Eigen;
+#endif //HAVE_EIGEN3
+
 using namespace shogun;
 
 float64_t CStatistics::mean(SGVector<float64_t> values)
@@ -1953,3 +1959,20 @@ float64_t CStatistics::dlgamma(float64_t x)
         return df;
 }
 
+#ifdef HAVE_EIGEN3
+float64_t CStatistics::log_det(SGMatrix<float64_t> m)
+{
+        /* map the matrix to eigen3 to perform cholesky */
+        Map<MatrixXd> M(m.matrix, m.num_rows, m.num_cols);
+
+        /* computing the cholesky decomposition */
+        LLT<MatrixXd> llt;
+        llt.compute(M);
+
+        /* the lower triangular matrix */
+        MatrixXd l = llt.matrixL();
+        float64_t retval = 2 * log(l.diagonal().sum());
+
+        return retval;
+}
+#endif //HAVE_EIGEN3
