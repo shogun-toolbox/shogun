@@ -2,7 +2,7 @@ LIB_PATH=/usr/lib
 INC_PATH=/usr/include
 VALGRINDOPTS=--tool=memcheck --error-limit=no --trace-children=yes --leak-check=full --show-reachable=yes
 
-INCLUDES=-I/usr/include/atlas -I/usr/include/eigen3
+INCLUDES=
 LIBS=
 LIBS_ADD=-lshogun
 

@@ -1,7 +1,6 @@
+#include <shogun/io/AsciiFile.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/ecoc/ECOCStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
@@ -14,47 +13,29 @@
 
 using namespace shogun;
 
+/* file data */
+const char fname_feats[]="../data/fm_train_real.dat";
+const char fname_labels[]="../data/label_train_multiclass.dat";
+
 void test()
 {
-	// Prepare to read a file for the training data
-	char fname_feats[]  = "../data/fm_train_real.dat";
-	char fname_labels[] = "../data/label_train_multiclass.dat";
-	CStreamingAsciiFile* ffeats_train  = new CStreamingAsciiFile(fname_feats);
-	CStreamingAsciiFile* flabels_train = new CStreamingAsciiFile(fname_labels);
-	SG_REF(ffeats_train);
-	SG_REF(flabels_train);
+	/* dense features from matrix */
+	CAsciiFile* feature_file = new CAsciiFile(fname_feats);
+	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
+	mat.load(feature_file);
+	SG_UNREF(feature_file);
 
-	CStreamingDenseFeatures< float64_t >* stream_features =
-		new CStreamingDenseFeatures< float64_t >(ffeats_train, false, 1024);
-
-	CStreamingDenseFeatures< float64_t >* stream_labels =
-		new CStreamingDenseFeatures< float64_t >(flabels_train, true, 1024);
-
-	SG_REF(stream_features);
-	SG_REF(stream_labels);
-
-	stream_features->start_parser();
-
-	// Read the values from the file and store them in features
-	CDenseFeatures< float64_t >* features=
-			(CDenseFeatures< float64_t >*)
-			stream_features->get_streamed_features(1000);
-
-	stream_features->end_parser();
-
-	CMulticlassLabels* labels = new CMulticlassLabels(features->get_num_vectors());
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(mat);
 	SG_REF(features);
-	SG_REF(labels);
 
-	// Read the labels from the file
-	int32_t idx = 0;
-	stream_labels->start_parser();
-	while ( stream_labels->get_next_example() )
-	{
-		labels->set_int_label( idx++, (int32_t)stream_labels->get_label() );
-		stream_labels->release_example();
-	}
-	stream_labels->end_parser();
+	/* labels from vector */
+	CAsciiFile* label_file = new CAsciiFile(fname_labels);
+	SGVector<float64_t> label_vec;
+	label_vec.load(label_file);
+	SG_UNREF(label_file);
+
+	CMulticlassLabels* labels=new CMulticlassLabels(label_vec);
+	SG_REF(labels);
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
 	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
@@ -88,10 +69,6 @@ void test()
 	SG_UNREF(output);
 	SG_UNREF(features);
 	SG_UNREF(labels);
-	SG_UNREF(ffeats_train);
-	SG_UNREF(flabels_train);
-	SG_UNREF(stream_features);
-	SG_UNREF(stream_labels);
 }
 
 int main(int argc, char** argv)

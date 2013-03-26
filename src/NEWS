@@ -1,6 +1,6 @@
 2013-04-01 Soeren Sonnenburg <sonne@debian.org>
 
-	* SHOGUN Release version 2.2.0 (libshogun 14.0, data 0.5, parameter 1)
+	* SHOGUN Release version 2.2.0 (libshogun 14.0, data 0.6, parameter 1)
 	* This release contains several cleanups and bugfixes:
 	* Features:
 		- None
