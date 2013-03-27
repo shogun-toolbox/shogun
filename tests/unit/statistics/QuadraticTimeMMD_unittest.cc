@@ -273,7 +273,9 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 	SGVector<float64_t> type_II_threshs_pre(num_trials);
 	kernel->init(p_and_q, p_and_q);
 	CCustomKernel* precomputed=new CCustomKernel(kernel);
-	mmd->set_kernel(precomputed);
+	CQuadraticTimeMMD* mmd2=new CQuadraticTimeMMD(precomputed, m);
+	mmd2->set_null_approximation_method(BOOTSTRAP);
+	mmd2->set_bootstrap_iterations(3);
 	inds.range_fill();
 	CMath::init_random(1);
 	for (index_t i=0; i<num_trials; ++i)
@@ -282,14 +284,14 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		inds.permute();
 		precomputed->add_row_subset(inds);
 		precomputed->add_col_subset(inds);
-		type_I_mmds_pre[i]=mmd->compute_statistic();
-		type_I_threshs_pre[i]=mmd->compute_threshold(alpha);
+		type_I_mmds_pre[i]=mmd2->compute_statistic();
+		type_I_threshs_pre[i]=mmd2->compute_threshold(alpha);
 		type_I_errors_pre[i]=type_I_mmds_pre[i]<type_I_threshs_pre[i];
 		precomputed->remove_row_subset();
 		precomputed->remove_col_subset();
 
-		type_II_mmds_pre[i]=mmd->compute_statistic();
-		type_II_threshs_pre[i]=mmd->compute_threshold(alpha);
+		type_II_mmds_pre[i]=mmd2->compute_statistic();
+		type_II_threshs_pre[i]=mmd2->compute_threshold(alpha);
 		type_II_errors_pre[i]=type_II_mmds_pre[i]<type_II_threshs_pre[i];
 	}
 
@@ -303,16 +305,17 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 
 	for (index_t i=0; i<num_trials; ++i)
 	{
-		ASSERT(CMath::abs(type_I_errors[i]-type_I_errors_pre[i])<10E-15);
-		ASSERT(CMath::abs(type_II_errors_pre[i]-type_II_errors_pre[i])<10E-15);
-		ASSERT(CMath::abs(type_I_mmds_pre[i]-type_I_mmds_pre[i])<10E-15);
-		ASSERT(CMath::abs(type_I_threshs_pre[i]-type_I_threshs_pre[i])<10E-15);
-		ASSERT(CMath::abs(type_II_mmds_pre[i]-type_II_mmds_pre[i])<10E-15);
-		ASSERT(CMath::abs(type_II_threshs_pre[i]-type_II_threshs_pre[i])<10E-15);
+		EXPECT_LE(CMath::abs(type_I_errors[i]-type_I_errors_pre[i]), 10E-15);
+		EXPECT_LE(CMath::abs(type_II_errors_pre[i]-type_II_errors_pre[i]), 10E-15);
+		EXPECT_LE(CMath::abs(type_I_mmds_pre[i]-type_I_mmds_pre[i]), 10E-15);
+		EXPECT_LE(CMath::abs(type_I_threshs_pre[i]-type_I_threshs_pre[i]), 10E-15);
+		EXPECT_LE(CMath::abs(type_II_mmds_pre[i]-type_II_mmds_pre[i]), 10E-15);
+		EXPECT_LE(CMath::abs(type_II_threshs_pre[i]-type_II_threshs_pre[i]), 10E-15);
 	}
 
 	/* clean up */
 	SG_UNREF(mmd);
+	SG_UNREF(mmd2);
 	SG_UNREF(gen_p);
 	SG_UNREF(gen_q);
 

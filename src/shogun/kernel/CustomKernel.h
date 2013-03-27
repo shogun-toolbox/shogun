@@ -377,13 +377,13 @@ class CCustomKernel: public CKernel
 		{
 			REQUIRE(!m_row_subset_stack, "%s::get_float32_kernel_matrix(): "
 						"Not possible with row subset active! If you want to"
-						" create a %s from another one with a subset, use"
+						" create a %s from another one with a subset, use "
 						"get_kernel_matrix() and the SGMatrix constructor!\n",
 						get_name(), get_name());
 
 			REQUIRE(!m_col_subset_stack, "%s::get_float32_kernel_matrix(): "
 					"Not possible with collumn subset active! If you want to"
-					" create a %s from another one with a subset, use"
+					" create a %s from another one with a subset, use "
 					"get_kernel_matrix() and the SGMatrix constructor!\n",
 					get_name(), get_name());
 
