@@ -78,14 +78,14 @@ tests:
 	$(MAKE) run-testsuite
 
 run-testsuite: $(PARTDEPS)
-	$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) run-testsuite-$(part))
+	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) run-testsuite-$(part) &&) true
 
 check-examples: $(PARTDEPS)
 	$(MAKE) -C shogun check-examples
-	$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) check-examples-$(part))
+	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) check-examples-$(part) &&) true
 
 doc:  $(PARTDEPS)
-	$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) doc-$(part))
+	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) doc-$(part) &&) true
 tutorial:
 	$(MAKE) -C ../doc/tutorial
 
