@@ -53,6 +53,11 @@ void CKernelTwoSampleTestStatistic::init()
 
 SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 {
+	REQUIRE(m_kernel, "%s::bootstrap_null(): No kernel set!\n", get_name());
+	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
+			"%s::bootstrap_null(): No features and no custom kernel set!\n",
+			get_name());
+
 	/* compute bootstrap statistics for null distribution */
 	SGVector<float64_t> results;
 
@@ -65,7 +70,15 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 		results=SGVector<float64_t>(m_bootstrap_iterations);
 
 		/* memory for index permutations, (would slow down loop) */
-		SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
+
+		/* in case of custom kernel, there are no features */
+		index_t num_data;
+		if (m_kernel->get_kernel_type()==K_CUSTOM)
+			num_data=m_kernel->get_num_vec_lhs();
+		else
+			num_data=m_p_and_q->get_num_vectors();
+
+		SGVector<index_t> ind_permutation(num_data);
 		ind_permutation.range_fill();
 
 		/* check if kernel is a custom kernel. In that case, changing features is
