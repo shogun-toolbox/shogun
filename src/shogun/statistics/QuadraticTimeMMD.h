@@ -17,6 +17,7 @@ namespace shogun
 
 class CFeatures;
 class CKernel;
+class CCustomKernel;
 
 /** Enum to select which statistic type of quadratic time MMD should be computed */
 enum EQuadraticMMDType
@@ -59,7 +60,11 @@ enum EQuadraticMMDType
  * different methods. Bootstrapping, is also possible. If unsure which one to
  * use, bootstrapping with 250 iterations always is correct (but slow).
  *
- * To choose, use set_null_approximation_method() and choose from
+ * To choose, use set_null_approximation_method() and choose from.
+ *
+ * If you do not know about your data, but want to use the MMD from a kernel
+ * matrix, just use the custom kernel constructor. Everything else will work as
+ * usual.
  *
  * MMD2_SPECTRUM: for a fast, consistent test based on the spectrum of the kernel
  * matrix, as described in [2]. Only supported if LAPACK is installed.
@@ -107,6 +112,17 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * SG_REF'ed
 		 */
 		CQuadraticTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
+
+		/** Constructor.
+		 * This is a convienience constructor which copies allows to only specify
+		 * a custom kernel. In this case, the features are completely ignored
+		 * and all computations will be done on the custom kernel
+		 *
+		 * @param custom_kernel custom kernel for MMD, which is a kernel between
+		 * the appended features p and q
+		 * @param m index of first sample of q
+		 */
+		CQuadraticTimeMMD(CCustomKernel* kernel, index_t m);
 
 		virtual ~CQuadraticTimeMMD();
 
