@@ -12,6 +12,7 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
+#include <shogun/kernel/CustomKernel.h>
 
 using namespace shogun;
 
@@ -43,6 +44,12 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p,
 		SG_ERROR("CQuadraticTimeMMD: Only features with equal number of vectors "
 				"are currently possible\n");
 	}
+}
+
+CQuadraticTimeMMD::CQuadraticTimeMMD(CCustomKernel* kernel, index_t m) :
+		CKernelTwoSampleTestStatistic(kernel, NULL, m)
+{
+	init();
 }
 
 CQuadraticTimeMMD::~CQuadraticTimeMMD()
@@ -291,7 +298,19 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		index_t num_eigenvalues)
 {
-	if (m_m!=m_p_and_q->get_num_vectors()/2)
+	REQUIRE(m_kernel, "%s::sample_null_spectrum(%d, %d): No kernel set!\n",
+			get_name(), num_samples, num_eigenvalues);
+	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
+			"%s::sample_null_spectrum(%d, %d): No features set and no custom "
+			"kernel in use!\n", get_name(), num_samples, num_eigenvalues);
+
+	index_t num_data;
+	if (m_kernel->get_kernel_type()==K_CUSTOM)
+		num_data=m_kernel->get_num_vec_rhs();
+	else
+		num_data=m_p_and_q->get_num_vectors();
+
+	if (m_m!=num_data/2)
 	{
 		SG_ERROR("%s::sample_null_spectrum(): Currently, only equal "
 				"sample sizes are supported\n", get_name());
@@ -361,7 +380,18 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 
 SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 {
-	if (m_m!=m_p_and_q->get_num_vectors()/2)
+	REQUIRE(m_kernel, "%s::fit_null_gamma(): No kernel set!\n", get_name());
+	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
+			"%s::fit_null_gamma(): No features set and no custom kernel in"
+			" use!\n", get_name());
+
+	index_t num_data;
+	if (m_kernel->get_kernel_type()==K_CUSTOM)
+		num_data=m_kernel->get_num_vec_rhs();
+	else
+		num_data=m_p_and_q->get_num_vectors();
+
+	if (m_m!=num_data/2)
 	{
 		SG_ERROR("%s::compute_p_value_gamma(): Currently, only equal "
 				"sample sizes are supported\n", get_name());
