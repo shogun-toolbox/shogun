@@ -18,8 +18,8 @@ function y = regression(filename)
 
 	lab=Labels(regression_labels);
 
-	if strcmp(regression_name, 'KRR')==1
-		regression=KRR(regression_tau, kernel, lab);
+	if strcmp(regression_name, 'KernelRidgeRegression')==1
+		regression=KernelRidgeRegression(regression_tau, kernel, lab);
 
 	elseif strcmp(regression_name, 'LibSVR')==1
 		regression=LibSVR(regression_C, regression_epsilon, kernel, lab);

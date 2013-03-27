@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DATAPATH='../data'
+exitcode=0
 
 [ -z "$PYTHON" ] && PYTHON=python
 
@@ -24,6 +25,7 @@ function test_all () {
 		if [ $ret -eq 0 ] ; then
 			echo 'OK'
 		else
+			exitcode=1
 			echo 'ERROR'
 			echo $output
 		fi
@@ -39,3 +41,5 @@ else
 		test_all "$i/*.m"
 	done
 fi
+
+exit $exitcode

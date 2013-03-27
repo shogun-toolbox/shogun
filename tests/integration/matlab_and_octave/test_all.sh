@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DATAPATH='../data'
+exitcode=0
 
 function test_all () {
 	datapath="$1"
@@ -31,6 +32,7 @@ function test_all () {
 
 		# thanks to matlab, 1 means ok and 0 means error
 		if [ "$?" -ne 0 -o "${ans}" -eq 0 ]; then
+			exitcode=1
 			echo ERROR
 			echo ${output}
 		else
@@ -55,3 +57,4 @@ else
 		test_all "$i/*.m"
 	done
 fi
+exit $exitcode

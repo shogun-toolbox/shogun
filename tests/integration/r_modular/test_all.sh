@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DATAPATH='../data'
+exitcode=0
 
 function test_all () {
 	datapath=${1}
@@ -22,6 +23,7 @@ function test_all () {
 
 			output=`R --no-save --no-restore --no-readline --slave ${file} < test_one.R`
 			if [ $? -ne 0 ]; then
+				exitcode=1
 				echo ERROR
 				echo ${output}
 			else
@@ -40,3 +42,4 @@ else
 		test_all "${i}/*.m"
 	done
 fi
+exit $exitcode

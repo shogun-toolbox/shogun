@@ -6,6 +6,7 @@ then
 fi
 
 DATAPATH='../data'
+exitcode=0
 
 function test_all () {
 	datapath="$1"
@@ -27,6 +28,7 @@ function test_all () {
 		if [ $ret -eq 0 ] ; then
 			echo 'OK'
 		else
+			exitcode=1
 			echo 'ERROR'
 			echo $output
 		fi
@@ -42,3 +44,4 @@ else
 		test_all "$i/*.m"
 	done
 fi
+exit $exitcode
