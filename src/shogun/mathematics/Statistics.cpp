@@ -1971,7 +1971,14 @@ float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 
         /* the lower triangular matrix */
         MatrixXd l = llt.matrixL();
-        float64_t retval = 2 * log(l.diagonal().sum());
+
+	/* calculate the log-determinant */
+	VectorXd diag = l.diagonal();
+        float64_t retval = 0.0;
+        for( int32_t i = 0; i < diag.rows(); ++i ) {
+                retval += log(diag(i));
+        }
+        retval *= 2;
 
         return retval;
 }
