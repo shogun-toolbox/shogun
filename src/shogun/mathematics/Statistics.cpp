@@ -1962,24 +1962,24 @@ float64_t CStatistics::dlgamma(float64_t x)
 #ifdef HAVE_EIGEN3
 float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 {
-        /* map the matrix to eigen3 to perform cholesky */
-        Map<MatrixXd> M(m.matrix, m.num_rows, m.num_cols);
+	/* map the matrix to eigen3 to perform cholesky */
+	Map<MatrixXd> M(m.matrix, m.num_rows, m.num_cols);
 
-        /* computing the cholesky decomposition */
-        LLT<MatrixXd> llt;
-        llt.compute(M);
+	/* computing the cholesky decomposition */
+	LLT<MatrixXd> llt;
+	llt.compute(M);
 
-        /* the lower triangular matrix */
-        MatrixXd l = llt.matrixL();
+	/* the lower triangular matrix */
+	MatrixXd l = llt.matrixL();
 
 	/* calculate the log-determinant */
 	VectorXd diag = l.diagonal();
-        float64_t retval = 0.0;
-        for( int32_t i = 0; i < diag.rows(); ++i ) {
-                retval += log(diag(i));
-        }
-        retval *= 2;
+	float64_t retval = 0.0;
+	for( int32_t i = 0; i < diag.rows(); ++i ) {
+		retval += log(diag(i));
+	}
+	retval *= 2;
 
-        return retval;
+	return retval;
 }
 #endif //HAVE_EIGEN3
