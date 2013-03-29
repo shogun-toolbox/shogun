@@ -20,7 +20,11 @@ def _evaluate (indata):
 	kernel.parallel.set_num_threads(indata[prefix+'num_threads'])
 
 	try:
-		rfun=eval(indata[prefix+'name'])
+		name = indata[prefix+'name']
+		if (name=='KERNELRIDGEREGRESSION'):
+			name = 'KernelRidgeRegression'
+		
+		rfun=eval(name)
 	except NameError, e:
 		print "%s is disabled/unavailable!"%indata[prefix+'name']
 		return False
