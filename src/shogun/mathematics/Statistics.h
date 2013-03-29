@@ -453,6 +453,24 @@ public:
          */
         static float64_t dlgamma(float64_t x);
 
+#ifdef HAVE_EIGEN3
+	/** The log determinant of a dense matrix
+	 * 
+	 * The log determinant of a positive definite symmetric real valued
+	 * matrix is calculated as
+	 * \f[
+	 * \text{log\_determinant}(M)
+	 * = \text{log}(\text{determinant}(L)\times\text{determinant}(L'))
+	 * = 2\times \sum_{i}\text{log}(L_{i,i})
+	 * \f]
+	 * Where, \f$M = L\times L'\f$ as per Cholesky decomposition.
+	 *
+	 * @param m input matrix
+	 * @return the log determinant value
+	 */
+	static float64_t log_det(SGMatrix<float64_t> m);
+#endif //HAVE_EIGEN3
+
 
 protected:
 	/** Power series for incomplete beta integral.
