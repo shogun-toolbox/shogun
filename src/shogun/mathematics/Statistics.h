@@ -457,7 +457,7 @@ public:
 	/** The log determinant of a dense matrix
 	 * 
 	 * The log determinant of a positive definite symmetric real valued
- 	 * matrix is calculated as
+	 * matrix is calculated as
 	 * \f[
 	 * \text{log\_determinant}(M)
 	 * = \text{log}(\text{determinant}(L)\times\text{determinant}(L'))
@@ -468,7 +468,7 @@ public:
 	 * @param m input matrix
 	 * @return the log determinant value
 	 */
-        static float64_t log_det(SGMatrix<float64_t> m);
+	static float64_t log_det(SGMatrix<float64_t> m);
 #endif //HAVE_EIGEN3
 
 
