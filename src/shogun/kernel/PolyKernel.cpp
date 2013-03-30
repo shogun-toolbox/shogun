@@ -23,15 +23,12 @@ CPolyKernel::CPolyKernel()
 {
 	init();
 
-	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CPolyKernel::CPolyKernel(int32_t size, int32_t d, bool i)
 : CDotKernel(size), degree(d), inhomogene(i)
 {
 	init();
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
 }
 
 CPolyKernel::CPolyKernel(
@@ -39,8 +36,6 @@ CPolyKernel::CPolyKernel(
 : CDotKernel(size), degree(d), inhomogene(i)
 {
 	init();
-
-	set_normalizer(new CSqrtDiagKernelNormalizer());
 	init(l,r);
 }
 
@@ -72,6 +67,7 @@ float64_t CPolyKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CPolyKernel::init()
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
 	SG_ADD(&degree, "degree", "Degree of polynomial kernel", MS_AVAILABLE);
 	SG_ADD(&inhomogene, "inhomogene", "If kernel is inhomogeneous.",
 			MS_NOT_AVAILABLE);
