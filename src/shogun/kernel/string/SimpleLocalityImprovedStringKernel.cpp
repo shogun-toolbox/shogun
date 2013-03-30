@@ -10,8 +10,8 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/kernel/string/SimpleLocalityImprovedStringKernel.h>
+#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 
