@@ -407,6 +407,8 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 
 void CLocalAlignmentStringKernel::init()
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+
 	initialized=false;
 	isAA=NULL;
 	aaIndex=NULL;
