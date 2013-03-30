@@ -10,6 +10,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/kernel/string/SimpleLocalityImprovedStringKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
@@ -225,6 +226,8 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 
 void CSimpleLocalityImprovedStringKernel::init()
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+
 	length = 3;
 	inner_degree = 3;
 	outer_degree = 1;
