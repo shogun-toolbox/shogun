@@ -23,6 +23,7 @@
 namespace shogun
 {
 template<class T> class SGMatrix;
+template<class T> class SGSparseMatrix;
 
 /** @brief Class that contains certain functions related to statistics, such as
  * probability/cumulative distribution functions, different statistics, etc.
@@ -469,6 +470,24 @@ public:
 	 * @return the log determinant value
 	 */
 	static float64_t log_det(SGMatrix<float64_t> m);
+
+	/** The log determinant of a sparse matrix
+	 * 
+	 * The log determinant of symmetric positive definite sparse matrix
+	 * is calculated in a similar way as the dense case. But using 
+	 * cholesky decomposition on sparse matrices may suffer from fill-in 
+	 * phenomenon, i.e. the factors may not be as sparse. The 
+	 * SimplicialCholesky module for sparse matrix in eigen3 library 
+	 * uses an approach called approximate minimum degree reordering, 
+	 * or amd, which permutes the matrix beforehand and results in much 
+	 * sparser factors. If \f$P\f$ is the permutation matrix, it computes
+	 * \f$\text{LLT}(P\times M\times P^{-1}) = L\times L'\f$.
+	 * 
+	 * @param m input sparse matrix
+	 * @return the log determinant value
+	 */
+	static float64_t log_det(const SGSparseMatrix<float64_t> m);
+
 #endif //HAVE_EIGEN3
 
 
@@ -514,6 +533,24 @@ protected:
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
+#ifdef HAVE_EIGEN3
+	/** EigenTriplet definition
+	 * for Eigen3 backword compatibility.
+	 */
+	template <typename T> struct EigenTriplet
+	{
+		EigenTriplet(index_t colIndex, index_t rowIndex, T valueT) :
+		col_(colIndex), row_(rowIndex), value_(valueT)
+		{
+		}
+		index_t col() const { return col_; };
+		index_t row() const { return row_; };
+		T value() const { return value_; };
+		index_t col_;
+		index_t row_;
+		T value_;
+	};
+#endif //HAVE_EIGEN3
 }
 
 #endif /* __STATISTICS_H_ */

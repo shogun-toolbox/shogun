@@ -2,6 +2,8 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 #include <math.h>
@@ -52,4 +54,46 @@ TEST(Statistics, log_det_test_2)
 
 }
 
-#endif
+// TEST 3 - Sparse matrix
+TEST(Statistics, log_det_test_3)
+{
+	// create a sparse test matrix, symmetric positive definite
+	// whose the diagonal contains all 100's
+	// the rest of first row and first column contains all 1's
+	
+	index_t size = 1000;
+
+	// initialize the matrix
+	SGSparseMatrix<float64_t> M(size, size);
+
+	SGSparseVector<float64_t> *vec;
+
+	// for first row
+	SGSparseVectorEntry<float64_t> *entries = new SGSparseVectorEntry<float64_t>[size];
+	entries[0].feat_index = 0;		// the digonal index for row #1
+	entries[0].entry = 100;
+	for( index_t i = 1; i < size; ++i )
+	{
+		entries[i].feat_index = i;	// fill the index for row #1
+		entries[i].entry = 1;
+	}
+	vec = new SGSparseVector<float64_t>(entries, size);
+	M[0] = vec->get();
+
+	// fill the rest of the rows
+	for( index_t i = 1; i < size; ++i )
+	{
+		entries = new SGSparseVectorEntry<float64_t>[2];
+		entries[0].feat_index = 0;	// the first column
+		entries[0].entry = 1;
+		entries[1].feat_index = i;	// the diagonal element
+		entries[1].entry = 100;
+		vec = new SGSparseVector<float64_t>(entries, 2);
+		M[i] = vec->get();
+	}
+
+	// check if log_det is equal to log(det(M))
+	EXPECT_NEAR(CStatistics::log_det(M), 4605.0649365774307, 1E-10);
+
+}
+#endif // HAVE_EIGEN3
