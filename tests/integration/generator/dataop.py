@@ -5,7 +5,7 @@ import md5
 import string
 import numpy
 from numpy import random, round
-from shogun.Features import Labels
+from shogun.Features import BinaryLabels, RegressionLabels
 
 NUM_VEC_TRAIN=11
 NUM_VEC_TEST=17
@@ -155,13 +155,14 @@ def get_labels (num, ltype='twoclass'):
 	labels=[]
 	if ltype=='twoclass':
 		labels.append(random.rand(num).round()*2-1)
+		# essential to wrap in array(), will segfault sometimes otherwise
+		labels.append(BinaryLabels(numpy.array(labels[0])))
 	elif ltype=='series':
 		labels.append([numpy.double(x) for x in xrange(num)])
+		# essential to wrap in array(), will segfault sometimes otherwise
+		labels.append(RegressionLabels(numpy.array(labels[0])))
 	else:
 		return [None, None]
-
-	# essential to wrap in array(), will segfault sometimes otherwise
-	labels.append(Labels(numpy.array(labels[0])))
 
 	return labels
 
