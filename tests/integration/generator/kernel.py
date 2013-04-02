@@ -406,7 +406,7 @@ def _run_feats_string ():
 	params['args']={'key': ('size', 'degree'), 'val': (10, 3)}
 	_compute(feats, params)
 
-	params['accuracy']=0
+	params['accuracy']=1e-9
 	params['name']='LocalAlignmentString'
 	params['args']={'key': ('size',), 'val': (10,)}
 	_compute(feats, params)
