@@ -5,7 +5,9 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2008 Gunnar Raetsch
+ * Written (W) 2013 Soeren Sonnenburg
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2013 Soeren Sonnenburg
  */
 
 #ifndef _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___
@@ -125,9 +127,7 @@ class CSimpleLocalityImprovedStringKernel: public CStringKernel<char>
 		int32_t outer_degree;
 
 		/** pyramid weights */
-		float64_t *pyramid_weights;
-		/** number of pyramid weights */
-		int32_t num_pyramid_weights;
+		SGVector<float64_t> pyramid_weights;
 };
 }
 #endif /* _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___ */

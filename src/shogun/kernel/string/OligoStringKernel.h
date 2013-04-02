@@ -7,8 +7,9 @@
  * Written (W) 2008 Christian Igel, Tobias Glasmachers
  * Copyright (C) 2008 Christian Igel, Tobias Glasmachers
  *
- * Shogun adjustments (W) 2008-2009 Soeren Sonnenburg
+ * Shogun adjustments (W) 2008-2009,2013 Soeren Sonnenburg
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2013 Soeren Sonnenburg
  */
 #ifndef _OLIGOSTRINGKERNEL_H_
 #define _OLIGOSTRINGKERNEL_H_
@@ -50,6 +51,16 @@ class COligoStringKernel : public CStringKernel<char>
 		 * @param width - equivalent to 2*sigma^2
 		 */
 		COligoStringKernel(int32_t cache_size, int32_t k, float64_t width);
+
+		/** Constructor
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param k k-mer length
+		 * @param width - equivalent to 2*sigma^2
+		 */
+		COligoStringKernel(
+				CStringFeatures<char>* l, CStringFeatures<char>* r,
+				int32_t k, float64_t width);
 
 		/** Destructor */
 		virtual ~COligoStringKernel();
@@ -132,6 +143,18 @@ class COligoStringKernel : public CStringKernel<char>
 			const std::vector< std::pair<int32_t, float64_t> >& y,
 			int32_t max_distance = -1);
 
+		/**
+		  @brief returns the value of the oligo kernel for sequences 'x' and 'y'
+
+		  This function computes the kernel value of the oligo kernel,
+		  which was introduced by Meinicke et al. in 2004. 'x' and
+		  'y' have to be encoded by encodeOligo. 
+		  */
+		float64_t kernelOligo(
+				const std::vector< std::pair<int32_t, float64_t> >& x, 
+				const std::vector< std::pair<int32_t, float64_t> >& y);
+
+
 	private:
 		/**
 		  @brief prepares the exp function cache of the oligo kernel
@@ -158,10 +181,8 @@ class COligoStringKernel : public CStringKernel<char>
 		int32_t k;
 		/** width of kernel */
 		float64_t width;
-		/** cache for exp (see getExpFunctionCache above) */
-		float64_t* gauss_table;
-		/** length of gauss table */
-		int32_t gauss_table_len;
+		/** gauss table cache for exp (see getExpFunctionCache above) */
+		SGVector<float64_t> gauss_table;
 };
 }
 #endif // _OLIGOSTRINGKERNEL_H_

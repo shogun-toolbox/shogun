@@ -7,8 +7,9 @@
  * Written (W) 2008 Christian Igel, Tobias Glasmachers
  * Copyright (C) 2008 Christian Igel, Tobias Glasmachers
  *
- * Shogun adjustments (W) 2008-2009 Soeren Sonnenburg
+ * Shogun adjustments (W) 2008-2009,2013 Soeren Sonnenburg
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2013 Soeren Sonnenburg
  *
  */
 #include <shogun/kernel/string/OligoStringKernel.h>
@@ -36,6 +37,19 @@ COligoStringKernel::COligoStringKernel(int32_t cache_sz, int32_t kmer_len, float
 	width=w;
 }
 
+COligoStringKernel::COligoStringKernel(
+		CStringFeatures<char>* l, CStringFeatures<char>* r,
+		int32_t kmer_len, float64_t w)
+: CStringKernel<char>()
+{
+	init();
+
+	k=kmer_len;
+	width=w;
+
+	init(l, r);
+}
+
 COligoStringKernel::~COligoStringKernel()
 {
 	cleanup();
@@ -43,10 +57,7 @@ COligoStringKernel::~COligoStringKernel()
 
 void COligoStringKernel::cleanup()
 {
-	SG_FREE(gauss_table);
-	gauss_table=NULL;
-	gauss_table_len=0;
-
+	gauss_table=SGVector<float64_t>();
 	CKernel::cleanup();
 }
 
@@ -59,6 +70,9 @@ bool COligoStringKernel::init(CFeatures* l, CFeatures* r)
 			((CStringFeatures<char>*) l)->get_max_vector_length(),
 			((CStringFeatures<char>*) r)->get_max_vector_length()
 			);
+
+	REQUIRE(k>0, "k must be >0\n")
+	REQUIRE(width>0, "width must be >0\n")
 
 	getExpFunctionCache(max_len);
 	return init_normalizer();
@@ -140,14 +154,11 @@ void COligoStringKernel::getSequences(
 
 void COligoStringKernel::getExpFunctionCache(uint32_t sequence_length)
 {
-	SG_FREE(gauss_table);
-	gauss_table=SG_MALLOC(float64_t, sequence_length);
+	gauss_table=SGVector<float64_t>(sequence_length);
 
 	gauss_table[0] = 1;
 	for (uint32_t i = 1; i < sequence_length; i++)
-		gauss_table[i] = exp((-1.0 / (CMath::sq(width))) * CMath::sq((float64_t) i));
-
-	gauss_table_len=sequence_length;
+		gauss_table[i] = exp(-CMath::sq((float64_t) i) / width);
 }
 
 float64_t COligoStringKernel::kernelOligoFast(
@@ -197,7 +208,8 @@ float64_t COligoStringKernel::kernelOligoFast(
 					}
 					else if (y[i2].second == y[i2 + 1].second)
 					{
-						while (y[i2++].second == y[i2].second);
+						while (y[i2].second == y[i2].second)
+							i2++;
 						++i1;
 						c1 = 0;
 					}
@@ -228,6 +240,52 @@ float64_t COligoStringKernel::kernelOligoFast(
 	return result;
 }
 
+float64_t COligoStringKernel::kernelOligo(
+		const std::vector< std::pair<int32_t, float64_t> >&    x, 
+		const std::vector< std::pair<int32_t, float64_t> >&    y)
+{
+	float64_t result = 0;
+	int32_t    i1     = 0;
+	int32_t    i2     = 0;
+	int32_t    c1     = 0;
+	uint32_t x_size = x.size();
+	uint32_t y_size = y.size();
+
+	while ((uint32_t) i1 < x_size && (uint32_t) i2 < y_size)
+	{
+		if (x[i1].second == y[i2].second)
+		{
+			result += exp(-CMath::sq(x[i1].first - y[i2].first) / width);
+
+			if (((uint32_t) i1+1) < x_size && x[i1].second == x[i1 + 1].second)
+			{
+				i1++;
+				c1++;
+			}
+			else if (((uint32_t) i2+1) <y_size && y[i2].second == y[i2 + 1].second)
+			{
+				i2++;
+				i1 -= c1;
+				c1 = 0;
+			}
+			else
+			{
+				i1++;
+				i2++;
+			}
+		}
+		else
+		{
+			if (x[i1].second < y[i2].second)
+				i1++;
+			else
+				i2++;
+
+			c1 = 0;
+		}
+	}
+	return result;
+}		
 
 float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
@@ -239,6 +297,7 @@ float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	std::vector< std::pair<int32_t, float64_t> > benc;
 	encodeOligo(std::string(avec, alen), k, "ACGT", aenc);
 	encodeOligo(std::string(bvec, alen), k, "ACGT", benc);
+	//float64_t result=kernelOligo(aenc, benc);
 	float64_t result=kernelOligoFast(aenc, benc);
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_a);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_b);
@@ -249,13 +308,10 @@ void COligoStringKernel::init()
 {
 	k=0;
 	width=0.0;
-	gauss_table=NULL;
-	gauss_table_len=0;
 
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 
 	SG_ADD(&k, "k", "K-mer length.", MS_AVAILABLE);
 	SG_ADD(&width, "width", "Width of Gaussian.", MS_AVAILABLE);
-	m_parameters->add_vector(&gauss_table, &gauss_table_len, "gauss_table",
-	    "Gauss Cache Table.");
+	SG_ADD(&gauss_table, "gauss_table", "Gauss Cache Table.", MS_NOT_AVAILABLE);
 }

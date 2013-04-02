@@ -12,12 +12,13 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/string/LocalityImprovedStringKernel.h>
+#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/StringFeatures.h>
 
 using namespace shogun;
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel()
-: CStringKernel<char>(0)
+: CStringKernel<char>()
 {
 	init();
 }
@@ -32,13 +33,13 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	inner_degree=id;
 	outer_degree=od;
 
-	SG_INFO("LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od)
+	SG_DEBUG("LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od)
 }
 
 CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t len,
 	int32_t id, int32_t od)
-: CStringKernel<char>(10)
+: CStringKernel<char>()
 {
 	init();
 
@@ -46,7 +47,7 @@ CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
 	inner_degree=id;
 	outer_degree=od;
 
-	SG_INFO("LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od)
+	SG_DEBUG("LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od)
 
 	init(l, r);
 }
@@ -100,6 +101,8 @@ float64_t CLocalityImprovedStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 void CLocalityImprovedStringKernel::init()
 {
+	set_normalizer(new CSqrtDiagKernelNormalizer());
+
 	length = 0;
 	inner_degree = 0;
 	outer_degree = 0;
