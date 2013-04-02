@@ -197,8 +197,7 @@ float64_t COligoStringKernel::kernelOligoFast(
 					}
 					else if (y[i2].second == y[i2 + 1].second)
 					{
-						while (y[i2].second == y[i2+1].second)
-							i2++;
+						while (y[i2++].second == y[i2].second);
 						++i1;
 						c1 = 0;
 					}
