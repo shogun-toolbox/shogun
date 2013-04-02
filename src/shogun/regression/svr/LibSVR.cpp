@@ -18,17 +18,33 @@ CLibSVR::CLibSVR()
 : CSVM()
 {
 	model=NULL;
+	solver_type=LIBSVR_EPSILON_SVR;
 }
 
-CLibSVR::CLibSVR(float64_t C, float64_t eps, CKernel* k, CLabels* lab)
+CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
+		LIBSVR_SOLVER_TYPE st)
 : CSVM()
 {
 	model=NULL;
 
 	set_C(C,C);
-	set_tube_epsilon(eps);
+
+	switch (solver_type)
+	{
+	case LIBSVR_EPSILON_SVR:
+		set_tube_epsilon(svr_param);
+		break;
+	case LIBSVR_NU_SVR:
+		set_nu(svr_param);
+		break;
+	default:
+		SG_ERROR("CLibSVR::CLibSVR(): Unknown solver type!\n");
+		break;
+	}
+
 	set_labels(lab);
 	set_kernel(k);
+	solver_type=st;
 }
 
 CLibSVR::~CLibSVR()
@@ -76,7 +92,19 @@ bool CLibSVR::train_machine(CFeatures* data)
 	int32_t weights_label[2]={-1,+1};
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
-	param.svm_type=EPSILON_SVR; // epsilon SVR
+	switch (solver_type)
+	{
+	case LIBSVR_EPSILON_SVR:
+		param.svm_type=EPSILON_SVR;
+		break;
+	case LIBSVR_NU_SVR:
+		param.svm_type=NU_SVR;
+		break;
+	default:
+		SG_ERROR("%s::train_machine(): Unknown solver type!\n", get_name());
+		break;
+	}
+
 	param.kernel_type = LINEAR;
 	param.degree = 3;
 	param.gamma = 0;	// 1/k

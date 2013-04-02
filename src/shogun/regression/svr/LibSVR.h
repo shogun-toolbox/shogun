@@ -48,23 +48,33 @@ namespace shogun
  * \f}
  * with \f$c_i=y_i+ \epsilon\f$ and \f$c_i^*=-y_i+ \epsilon\f$
  */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+enum LIBSVR_SOLVER_TYPE
+{
+	LIBSVR_EPSILON_SVR = 1,
+	LIBSVR_NU_SVR = 2
+};
+#endif
 class CLibSVR : public CSVM
 {
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
-		/** default constructor */
+		/** default constructor, creates a EPISOLON-SVR */
 		CLibSVR();
 
 		/** constructor
 		 *
 		 * @param C constant C
-		 * @param epsilon tube epsilon
+		 * @param svr_param tube epsilon or SVR-NU depending on solver type
 		 * @param k kernel
 		 * @param lab labels
+		 * @param st solver type to use, EPSILON-SVR or NU-SVR
 		 */
-		CLibSVR(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
+		CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
+				LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR);
+
 		virtual ~CLibSVR();
 
 		/** get classifier type
@@ -94,6 +104,9 @@ class CLibSVR : public CSVM
 
 		/** SVM model */
 		struct svm_model* model;
+
+		/** solver type */
+		LIBSVR_SOLVER_TYPE solver_type;
 };
 }
 #endif
